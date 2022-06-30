@@ -1,112 +1,123 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 99878C433EF
-	for <iommu@archiver.kernel.org>; Thu, 30 Jun 2022 23:31:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 334F1C43334
+	for <iommu@archiver.kernel.org>; Thu, 30 Jun 2022 23:41:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 20497423C2;
-	Thu, 30 Jun 2022 23:31:10 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 20497423C2
-Authentication-Results: smtp4.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20210112 header.b=esSzbAG9
+	by smtp2.osuosl.org (Postfix) with ESMTP id AE40D40236;
+	Thu, 30 Jun 2022 23:41:56 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org AE40D40236
+Authentication-Results: smtp2.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=wdc.com header.i=@wdc.com header.a=rsa-sha256 header.s=dkim.wdc.com header.b=adpt6bQB;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=opensource.wdc.com header.i=@opensource.wdc.com header.a=rsa-sha256 header.s=dkim header.b=P9iYGd3H
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id L6vhvycjiBqC; Thu, 30 Jun 2022 23:31:06 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id jFOYMeJHFx0r; Thu, 30 Jun 2022 23:41:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 87C3F423BD;
-	Thu, 30 Jun 2022 23:31:05 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 87C3F423BD
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 779A6401DF;
+	Thu, 30 Jun 2022 23:41:52 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 779A6401DF
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4E5F8C002D;
-	Thu, 30 Jun 2022 23:31:05 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9ECD4C0011
- for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 23:31:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4DC5BC002D;
+	Thu, 30 Jun 2022 23:41:52 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 90918C0011
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 23:41:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 76D018451E
- for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 23:31:03 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 76D018451E
-Authentication-Results: smtp1.osuosl.org;
- dkim=pass (2048-bit key) header.d=google.com header.i=@google.com
- header.a=rsa-sha256 header.s=20210112 header.b=esSzbAG9
+ by smtp2.osuosl.org (Postfix) with ESMTP id 5BEDC404C0
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 23:41:50 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 5BEDC404C0
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 15b5eC2soJB2 for <iommu@lists.linux-foundation.org>;
- Thu, 30 Jun 2022 23:31:00 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 829C084387
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com
- [IPv6:2607:f8b0:4864:20::b36])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 829C084387
- for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 23:31:00 +0000 (UTC)
-Received: by mail-yb1-xb36.google.com with SMTP id l11so1072322ybu.13
- for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 16:31:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20210112;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=7rzBjlWyrGCVnHojYy7aloe09Kk1ZJFyFafJ4B59izQ=;
- b=esSzbAG9SStIKedEdEyPNCZEwWeV7CGfw2gDAyv7xNkZGiGhAKyelsjm5S6l3zYohJ
- d/Eo0n6Mp+36R9EN/Pq2SisCS+9HoblIrvPkImxxTHiatXxbVEpvW3y/yNgVziC5uyoZ
- vYyHIRU3pYbXRmHkZLlWk/frQQwicQxGxfoUSBXj3PLfoEnFnvnX+lQNgSCCK/G112nQ
- +h/LHrk5XRmANsD8K55QOlIqREK2mYKCbE3t0k3EnnSD9DyzGjrrvdjT+EJJoRKX1F7X
- eGAoOxj+hwQhHxN9wOQ0TOIBLZRRt2Qt2wLPB0KOY9Z/NrqQd5sdoLelt/izUN/UnoDM
- mZeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=7rzBjlWyrGCVnHojYy7aloe09Kk1ZJFyFafJ4B59izQ=;
- b=wXJDlLlWjSKJXH6F40NPpMmI13Ao33rvmtPRJGzOnWAl/P7vDukiQ1WtfM+bOeF2ug
- 4IZ3I30TWfWxBreoHAf6l9xXZ52VXr7kRhH/JRzYZfgDxJAcyit+Dao0ozZk2ZpNsIos
- d2C1RK5ynCK8fOyeTEfYQ9wvmm5ASgqryZkWEzw+xYa+Y6v3WToGRvpNYGaTKgL05Lje
- 372yaWqAz0FU2tLPzJPVOkV9Ed1xnMyTJvr4ADHVfL8E+TJ90TCPl0sycIenDEIuZzwD
- yf7P10ByZg0InBO4qhXe+xkgOIMtKv3FowzPtcJsyfmA1U1poq+HXg7mWXGKlaViIQdZ
- wAdg==
-X-Gm-Message-State: AJIora8vNxrNZHCyU7C6FALkAtxGKNbtgF/aqzUz5Y4BJVkuKKaJadVK
- cZTvri99Ibr9+wsj3iCut08xbzJIdNQ5reJsb4nkNw==
-X-Google-Smtp-Source: AGRyM1vZ35BqSkdVoL3YwWkOXOHYil4MKgDP8iAYz+Rz4wCD4ADLbbR0rsgTYZHYxiDej4wVmrVuer94e9q4LpiXAmA=
-X-Received: by 2002:a25:5bc3:0:b0:669:b722:beb8 with SMTP id
- p186-20020a255bc3000000b00669b722beb8mr12118791ybb.447.1656631859258; Thu, 30
- Jun 2022 16:30:59 -0700 (PDT)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id bSXlIuBZw6Bi for <iommu@lists.linux-foundation.org>;
+ Thu, 30 Jun 2022 23:41:46 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 87EC4401DF
+Received: from esa5.hgst.iphmx.com (esa5.hgst.iphmx.com [216.71.153.144])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 87EC4401DF
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 23:41:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+ d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+ t=1656632504; x=1688168504;
+ h=message-id:date:mime-version:subject:to:cc:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=HnKju8kjGOSRgTCWdAK1YkRQ7CqpE1nsYg1ASv8QOFQ=;
+ b=adpt6bQBy7vdwblR+2PyMA3FjWDFqvAaLgZfrk/a9pgKuzBW2d+5oK1M
+ dm2vOo65HMZgPx6PY5vaFR3fnjq/fBISQ5tz1RxZqx0O+xDL3SjgFSJYs
+ E1DLVm7xygghootonaW+rbadWs68r0Th9xGElbwg1lj0roxcRxXR9Ei0s
+ J50+yLY2dplRW2/BMEXLGkyGiNwPd75XoZlNCOIacucnDi/RaJhTiEwJa
+ PVhs4NlA42wB46yrvRGMAKjDkHs32jYY1GhRvxW+LaAfeHbVJc5N5Re+g
+ EzCbKroWLMzdSFYb/+JtKGRXPbW42Qq+m8APF9K7WcPxNwrkoVPSiBiPi w==;
+X-IronPort-AV: E=Sophos;i="5.92,235,1650902400"; d="scan'208";a="204534653"
+Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com)
+ ([199.255.45.15])
+ by ob1.hgst.iphmx.com with ESMTP; 01 Jul 2022 07:41:42 +0800
+IronPort-SDR: Vj9NxWhNTQokCqnniN5m/73T2Qv8KJ4bt7o5pISK1WDOum0KVmnKU2b6IO6OB++c9P4cAf+riK
+ BtYWAJ1Sx0fjm4nUiU3DwO806TbEt9oo4ruOsu9wvDhmOTgCfjMho13OY4hU9+IYvClr3uw5uI
+ XDCx+eKW7vOYr7kqtiuilruSR87+sgpjzS3OOWJwRuDIIczoSqgKrXoOHXxXRX91feeDf6734B
+ +a+YLx6uuzyPkWAdUFHjmOIVcQsD0MVMr3X/2skfJ5lQjsenXR3b9zEm8i021aiWgFlDZMMg1Z
+ SDQ+sdIfPzw0emq9gsbdkevS
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+ by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256;
+ 30 Jun 2022 15:59:17 -0700
+IronPort-SDR: n6rG0SwlsiHXARUwsgXNWlReXX2xcTEs5Tc9PfSMZH8GQUV/jT/TF36phR6fNrdx5bwFLCoSHW
+ VB8L5K3gybBd2onblSxPvtjDZdcIz0sRZlKVi8MYvveM87U40zMyUG2pQsCuVgHj+483NbkhLp
+ PldvgZqtmKP9RIKKtxmmv9LKSLY7IOAKkjARsjr0mE3sT4kMyfku33OXmdBJa62yZyOPTBlbXr
+ bumr5LeW9DdMCSdcZcI0jNZ2nCM9NplybuOaEuE7KO/yEWEKY60Ikm4hsEOyksiKtB3R/VczB0
+ Jlc=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+ by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256;
+ 30 Jun 2022 16:41:44 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+ by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4LYvxM3wZtz1Rw4L
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 16:41:43 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+ reason="pass (just generated, assumed good)"
+ header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+ opensource.wdc.com; h=content-transfer-encoding:content-type
+ :in-reply-to:organization:from:references:to:content-language
+ :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+ 1656632502; x=1659224503; bh=HnKju8kjGOSRgTCWdAK1YkRQ7CqpE1nsYg1
+ ASv8QOFQ=; b=P9iYGd3HCrOxjqwh9g498JZGUki12Yfnka0lruYdSrS51RQi9dB
+ 4C36ZcMv5PQ2ayLdnbSLbZFyCziR2qZ7NXX02FI2JtsEHBvJv0K+hVe/JpmkW3o5
+ lzjaWmF/XO4hGnvVhA4SNMmXmn6NIEWc/pkOeRZYh6Uwbf+8LWcpJxiTS48GyJJ7
+ EQSNyd/s8Zs1i7oqHOHKMKajVL16c+qo9RZWXdRIMMXV2PsmkGXpOfiYKukihmBD
+ Eryw0wrAkirDxdsAy1lHf/eBUFwKd9eWuvO7B6Rj359rXI/h4+M+Hj6pAM0FKdeU
+ arXm7l4IWe9UTRVWxp8up6NLQqov8cKXlSQ==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+ by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new,
+ port 10026)
+ with ESMTP id MaWrMpu31G-h for <iommu@lists.linux-foundation.org>;
+ Thu, 30 Jun 2022 16:41:42 -0700 (PDT)
+Received: from [10.225.163.102] (unknown [10.225.163.102])
+ by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4LYvxJ3cq3z1RtVk;
+ Thu, 30 Jun 2022 16:41:40 -0700 (PDT)
+Message-ID: <5f79d8e7-0035-cfb0-d612-3e1c7f243f22@opensource.wdc.com>
+Date: Fri, 1 Jul 2022 08:41:39 +0900
 MIME-Version: 1.0
-References: <20220601070707.3946847-1-saravanak@google.com>
- <20220601070707.3946847-2-saravanak@google.com> <YrFzK6EiVvXmzVG6@atomide.com>
- <CAGETcx_1USPRbFKV5j00qkQ-QXJkp7=FAfnFcfiNnM4J5KF1cQ@mail.gmail.com>
- <YrKhkmj3jCQA39X/@atomide.com>
- <CAGETcx_11wO-HkZ2QsBF8o1+L9L3Xe1QBQ_GzegwozxAx1i0jg@mail.gmail.com>
- <YrQP3OZbe8aCQxKU@atomide.com>
- <CAGETcx9aFBzMcuOiTAEy5SJyWw3UfajZ8DVQfW2DGmzzDabZVg@mail.gmail.com>
- <Yrlz/P6Un2fACG98@atomide.com>
- <CAGETcx8c+P0r6ARmhv+ERaz9zAGBOVJQu3bSDXELBycEGfkYQw@mail.gmail.com>
- <CAL_JsqJd3J6k6pRar7CkHVaaPbY7jqvzAePd8rVDisRV-dLLtg@mail.gmail.com>
-In-Reply-To: <CAL_JsqJd3J6k6pRar7CkHVaaPbY7jqvzAePd8rVDisRV-dLLtg@mail.gmail.com>
-Date: Thu, 30 Jun 2022 16:30:23 -0700
-Message-ID: <CAGETcx9ZmeTyP1sJCFZ9pBbMyXeifQFohFvWN3aBPx0sSOJ2VA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/9] PM: domains: Delete usage of
- driver_deferred_probe_check_state()
-To: Rob Herring <robh@kernel.org>
-Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Tony Lindgren <tony@atomide.com>,
- Linus Walleij <linus.walleij@linaro.org>, Eric Dumazet <edumazet@google.com>,
- Pavel Machek <pavel@ucw.cz>, Will Deacon <will@kernel.org>,
- Kevin Hilman <khilman@kernel.org>, Russell King <linux@armlinux.org.uk>,
- Alexander Stein <alexander.stein@ew.tq-group.com>,
- Geert Uytterhoeven <geert@linux-m68k.org>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Android Kernel Team <kernel-team@android.com>,
- Len Brown <len.brown@intel.com>,
- "open list:THERMAL" <linux-pm@vger.kernel.org>,
- "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
- Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- David Ahern <dsahern@kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Linux IOMMU <iommu@lists.linux-foundation.org>,
- netdev <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
- Heiner Kallweit <hkallweit1@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v5 3/5] scsi: core: Cap shost max_sectors according to DMA
+ limits only once
+Content-Language: en-US
+To: John Garry <john.garry@huawei.com>, joro@8bytes.org, will@kernel.org,
+ jejb@linux.ibm.com, martin.petersen@oracle.com, hch@lst.de,
+ m.szyprowski@samsung.com, robin.murphy@arm.com
+References: <1656590892-42307-1-git-send-email-john.garry@huawei.com>
+ <1656590892-42307-4-git-send-email-john.garry@huawei.com>
+Organization: Western Digital Research
+In-Reply-To: <1656590892-42307-4-git-send-email-john.garry@huawei.com>
+Cc: linux-scsi@vger.kernel.org, linux-doc@vger.kernel.org, linuxarm@huawei.com,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org,
+ iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -119,108 +130,67 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Saravana Kannan via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Saravana Kannan <saravanak@google.com>
+From: Damien Le Moal via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Jun 30, 2022 at 4:26 PM Rob Herring <robh@kernel.org> wrote:
->
-> On Thu, Jun 30, 2022 at 5:11 PM Saravana Kannan <saravanak@google.com> wrote:
-> >
-> > On Mon, Jun 27, 2022 at 2:10 AM Tony Lindgren <tony@atomide.com> wrote:
-> > >
-> > > * Saravana Kannan <saravanak@google.com> [220623 08:17]:
-> > > > On Thu, Jun 23, 2022 at 12:01 AM Tony Lindgren <tony@atomide.com> wrote:
-> > > > >
-> > > > > * Saravana Kannan <saravanak@google.com> [220622 19:05]:
-> > > > > > On Tue, Jun 21, 2022 at 9:59 PM Tony Lindgren <tony@atomide.com> wrote:
-> > > > > > > This issue is no directly related fw_devlink. It is a side effect of
-> > > > > > > removing driver_deferred_probe_check_state(). We no longer return
-> > > > > > > -EPROBE_DEFER at the end of driver_deferred_probe_check_state().
-> > > > > >
-> > > > > > Yes, I understand the issue. But driver_deferred_probe_check_state()
-> > > > > > was deleted because fw_devlink=on should have short circuited the
-> > > > > > probe attempt with an  -EPROBE_DEFER before reaching the bus/driver
-> > > > > > probe function and hitting this -ENOENT failure. That's why I was
-> > > > > > asking the other questions.
-> > > > >
-> > > > > OK. So where is the -EPROBE_DEFER supposed to happen without
-> > > > > driver_deferred_probe_check_state() then?
-> > > >
-> > > > device_links_check_suppliers() call inside really_probe() would short
-> > > > circuit and return an -EPROBE_DEFER if the device links are created as
-> > > > expected.
-> > >
-> > > OK
-> > >
-> > > > > Hmm so I'm not seeing any supplier for the top level ocp device in
-> > > > > the booting case without your patches. I see the suppliers for the
-> > > > > ocp child device instances only.
-> > > >
-> > > > Hmmm... this is strange (that the device link isn't there), but this
-> > > > is what I suspected.
-> > >
-> > > Yup, maybe it's because of the supplier being a device in the child
-> > > interconnect for the ocp.
-> >
-> > Ugh... yeah, this is why the normal (not SYNC_STATE_ONLY) device link
-> > isn't being created.
-> >
-> > So the aggregated view is something like (I had to set tabs = 4 space
-> > to fit it within 80 cols):
-> >
-> >     ocp: ocp {         <========================= Consumer
-> >         compatible = "simple-pm-bus";
-> >         power-domains = <&prm_per>; <=========== Supplier ref
-> >
-> >                 l4_wkup: interconnect@44c00000 {
-> >             compatible = "ti,am33xx-l4-wkup", "simple-pm-bus";
-> >
-> >             segment@200000 {  /* 0x44e00000 */
-> >                 compatible = "simple-pm-bus";
-> >
-> >                 target-module@0 { /* 0x44e00000, ap 8 58.0 */
-> >                     compatible = "ti,sysc-omap4", "ti,sysc";
-> >
-> >                     prcm: prcm@0 {
-> >                         compatible = "ti,am3-prcm", "simple-bus";
-> >
-> >                         prm_per: prm@c00 { <========= Actual Supplier
-> >                             compatible = "ti,am3-prm-inst", "ti,omap-prm-inst";
-> >                         };
-> >                     };
-> >                 };
-> >             };
-> >         };
-> >     };
-> >
-> > The power-domain supplier is the great-great-great-grand-child of the
-> > consumer. It's not clear to me how this is valid. What does it even
-> > mean?
-> >
-> > Rob, is this considered a valid DT?
->
-> Valid DT for broken h/w.
+On 6/30/22 21:08, John Garry wrote:
+> The shost->max_sectors is repeatedly capped according to the host DMA
+> mapping limit for each sdev in __scsi_init_queue(). This is unnecessary, so
+> set only once when adding the host.
+> 
+> Signed-off-by: John Garry <john.garry@huawei.com>
+> ---
+>  drivers/scsi/hosts.c    | 5 +++++
+>  drivers/scsi/scsi_lib.c | 4 ----
+>  2 files changed, 5 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/scsi/hosts.c b/drivers/scsi/hosts.c
+> index 8352f90d997d..d04bd2c7c9f1 100644
+> --- a/drivers/scsi/hosts.c
+> +++ b/drivers/scsi/hosts.c
+> @@ -236,6 +236,11 @@ int scsi_add_host_with_dma(struct Scsi_Host *shost, struct device *dev,
+>  
+>  	shost->dma_dev = dma_dev;
+>  
+> +	if (dma_dev->dma_mask) {
+> +		shost->max_sectors = min_t(unsigned int, shost->max_sectors,
+> +				dma_max_mapping_size(dma_dev) >> SECTOR_SHIFT);
+> +	}
 
-I'm not sure even in that case it's valid. When the parent device is
-in reset (when the SoC is coming out of reset), there's no way the
-descendant is functional. And if the descendant is not functional, how
-is the parent device powered up? This just feels like an incorrect
-representation of the real h/w.
+Nit: you could remove the curly brackets... But it being a multi-line
+statement, having them is OK too I think.
 
-> So the domain must be default on and then simple-pm-bus is going to
-> hold a reference to the domain preventing it from ever getting powered
-> off and things seem to work. Except what happens during suspend?
+> +
+>  	error = scsi_mq_setup_tags(shost);
+>  	if (error)
+>  		goto fail;
+> diff --git a/drivers/scsi/scsi_lib.c b/drivers/scsi/scsi_lib.c
+> index 6ffc9e4258a8..6ce8acea322a 100644
+> --- a/drivers/scsi/scsi_lib.c
+> +++ b/drivers/scsi/scsi_lib.c
+> @@ -1884,10 +1884,6 @@ void __scsi_init_queue(struct Scsi_Host *shost, struct request_queue *q)
+>  		blk_queue_max_integrity_segments(q, shost->sg_prot_tablesize);
+>  	}
+>  
+> -	if (dev->dma_mask) {
+> -		shost->max_sectors = min_t(unsigned int, shost->max_sectors,
+> -				dma_max_mapping_size(dev) >> SECTOR_SHIFT);
+> -	}
+>  	blk_queue_max_hw_sectors(q, shost->max_sectors);
+>  	blk_queue_segment_boundary(q, shost->dma_boundary);
+>  	dma_set_seg_boundary(dev, shost->dma_boundary);
 
-But how can simple-pm-bus even get a reference? The PM domain can't
-get added until we are well into the probe of the simple-pm-bus and
-AFAICT the genpd attach is done before the driver probe is even
-called.
+Looks good.
 
--Saravana
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+
+-- 
+Damien Le Moal
+Western Digital Research
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
