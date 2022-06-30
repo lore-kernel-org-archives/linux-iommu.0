@@ -1,73 +1,79 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A39147B
-	for <iommu@lists.linux.dev>; Thu, 30 Jun 2022 12:14:40 +0000 (UTC)
-Received: from fraeml709-chm.china.huawei.com (unknown [172.18.147.226])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LYcdq12gKz6H7dh;
-	Thu, 30 Jun 2022 20:12:15 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml709-chm.china.huawei.com (10.206.15.37) with Microsoft SMTP Server
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C69543D6E
+	for <iommu@lists.linux.dev>; Thu, 30 Jun 2022 12:55:46 +0000 (UTC)
+Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.57])
+	by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LYd9v112wz9smf;
+	Thu, 30 Jun 2022 20:36:35 +0800 (CST)
+Received: from dggpeml500008.china.huawei.com (7.185.36.147) by
+ dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 30 Jun 2022 14:14:38 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 30 Jun 2022 13:14:34 +0100
-From: John Garry <john.garry@huawei.com>
-To: <damien.lemoal@opensource.wdc.com>, <joro@8bytes.org>, <will@kernel.org>,
-	<jejb@linux.ibm.com>, <martin.petersen@oracle.com>, <hch@lst.de>,
-	<m.szyprowski@samsung.com>, <robin.murphy@arm.com>
-CC: <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-ide@vger.kernel.org>, <iommu@lists.linux-foundation.org>,
-	<iommu@lists.linux.dev>, <linux-scsi@vger.kernel.org>, <linuxarm@huawei.com>,
-	John Garry <john.garry@huawei.com>
-Subject: [PATCH v5 5/5] ata: libata-scsi: Cap ata_device->max_sectors according to shost->max_sectors
-Date: Thu, 30 Jun 2022 20:08:12 +0800
-Message-ID: <1656590892-42307-6-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1656590892-42307-1-git-send-email-john.garry@huawei.com>
-References: <1656590892-42307-1-git-send-email-john.garry@huawei.com>
+ 15.1.2375.24; Thu, 30 Jun 2022 20:37:16 +0800
+Received: from huawei.com (10.67.175.34) by dggpeml500008.china.huawei.com
+ (7.185.36.147) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 30 Jun
+ 2022 20:37:16 +0800
+From: Ren Zhijie <renzhijie2@huawei.com>
+To: <hch@lst.de>, <m.szyprowski@samsung.com>, <robin.murphy@arm.com>,
+	<mathieu.poirier@linaro.org>, <mark-pk.tsai@mediatek.com>
+CC: <iommu@lists.linux-foundation.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, Ren Zhijie <renzhijie2@huawei.com>
+Subject: [PATCH -next] dma-mapping: Fix build error unused-value
+Date: Thu, 30 Jun 2022 20:35:28 +0800
+Message-ID: <20220630123528.251181-1-renzhijie2@huawei.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.175.34]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500008.china.huawei.com (7.185.36.147)
 X-CFilter-Loop: Reflected
-Message-ID: <20220630120812.GbQsuoCreB5P14y-2ebx-8foileFeKKo845ZIe3gukA@z>
+Message-ID: <20220630123528.DTjYEiIt1JR4zRD5LiPHIRVDcZPenOjV1Dn2DEuxGVc@z>
 
-ATA devices (struct ata_device) have a max_sectors field which is
-configured internally in libata. This is then used to (re)configure the
-associated sdev request queue max_sectors value from how it is earlier set
-in __scsi_init_queue(). In __scsi_init_queue() the max_sectors value is set
-according to shost limits, which includes host DMA mapping limits.
+If CONFIG_DMA_DECLARE_COHERENT is not set,
+make ARCH=x86_64 CROSS_COMPILE=x86_64-linux-gnu- will be failed, like this:
 
-Cap the ata_device max_sectors according to shost->max_sectors to respect
-this shost limit.
+drivers/remoteproc/remoteproc_core.c: In function ‘rproc_rvdev_release’:
+./include/linux/dma-map-ops.h:182:42: error: statement with no effect [-Werror=unused-value]
+ #define dma_release_coherent_memory(dev) (0)
+                                          ^
+drivers/remoteproc/remoteproc_core.c:464:2: note: in expansion of macro ‘dma_release_coherent_memory’
+  dma_release_coherent_memory(dev);
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+cc1: all warnings being treated as errors
 
-Signed-off-by: John Garry <john.garry@huawei.com>
-Acked-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+The return type of function dma_release_coherent_memory in CONFIG_DMA_DECLARE_COHERENT area is void, so in !CONFIG_DMA_DECLARE_COHERENT area it should neither return any value nor be defined as zero.
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Fixes: e61c451476e6("dma-mapping: Add dma_release_coherent_memory to DMA API")
+Signed-off-by: Ren Zhijie <renzhijie2@huawei.com>
 ---
- drivers/ata/libata-scsi.c | 1 +
- 1 file changed, 1 insertion(+)
+ include/linux/dma-map-ops.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/ata/libata-scsi.c b/drivers/ata/libata-scsi.c
-index 86dbb1cdfabd..24a43d540d9f 100644
---- a/drivers/ata/libata-scsi.c
-+++ b/drivers/ata/libata-scsi.c
-@@ -1060,6 +1060,7 @@ int ata_scsi_dev_config(struct scsi_device *sdev, struct ata_device *dev)
- 		dev->flags |= ATA_DFLAG_NO_UNLOAD;
+diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+index 53db9655efe9..bfffe494356a 100644
+--- a/include/linux/dma-map-ops.h
++++ b/include/linux/dma-map-ops.h
+@@ -179,10 +179,10 @@ static inline int dma_declare_coherent_memory(struct device *dev,
+ 	return -ENOSYS;
+ }
  
- 	/* configure max sectors */
-+	dev->max_sectors = min(dev->max_sectors, sdev->host->max_sectors);
- 	blk_queue_max_hw_sectors(q, dev->max_sectors);
+-#define dma_release_coherent_memory(dev) (0)
+ #define dma_alloc_from_dev_coherent(dev, size, handle, ret) (0)
+ #define dma_release_from_dev_coherent(dev, order, vaddr) (0)
+ #define dma_mmap_from_dev_coherent(dev, vma, vaddr, order, ret) (0)
++static inline void dma_release_coherent_memory(struct device *dev) { }
+ #endif /* CONFIG_DMA_DECLARE_COHERENT */
  
- 	if (dev->class == ATA_DEV_ATAPI) {
+ #ifdef CONFIG_DMA_GLOBAL_POOL
 -- 
-2.35.3
+2.17.1
 
