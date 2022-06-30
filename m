@@ -1,193 +1,144 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2048.outbound.protection.outlook.com [40.107.244.48])
+Received: from esa5.hgst.iphmx.com (esa5.hgst.iphmx.com [216.71.153.144])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 822552F59
-	for <iommu@lists.linux.dev>; Thu, 30 Jun 2022 20:37:14 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=al5yQ5uKrWxWKi2GLB6fekAdy5+IBLcP0GreoJAe9jsd2IiRpZYpgcwPrTC6oAGRK3OpYu8p3M2OzJvGSMhI2OScw/KwNul2syUVNVLnCJ8GAcSgYIKxKTSWCFekEnjvoRStdgd1BrilQXxtKXdgxDBHlQDIXOSBCQo2vIUFXnIywzuXOdz8SgFlhvCX3VIalMoZHmGsaX0bQ3YzVKjw4BuhGi9C8wDp8VkExwW76BaMaq7QlhFlbRD/Bep3eTeiiCAGISisrFCPeLn0LWKwUO1zlq7m9usUTkYieAdYdakdmlfx4hhI75GrG9JBZJC12SeLkWowjDkEBrKNbCNlrg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=RpJ/cMMHOAAeva/rgHTbXEVWpkRp2h2y74yQttJGbTk=;
- b=VqUrUTykaLGXu7M+x1n7k3kP6pFAtl/mSXx484TEpba09z9CXfmgcmfjyXYry7xysyNBa/OhMhgXDn+V05EfFnFC9LJAiqCIk8Ng2IwHIiu7RcI6gMKOccHIu47a6fiJBhQObskvVN3IYvGKx8GbYF2EqF4eyVRXsLJfIKMsoU7CV9iLRi77mqiv5mqqfnkKLegeL/PbUfGLysytS7+ZSHO/lm7dmd9vGd+xgUILT+kS2cFo16HYCynB8Y7DBS539zoGBXqidyKoLhbx8Y8fGtbg5XKGJ3Ds1CuF2vVoWL4puRG1Mkg2IaR3GnXuGaSFaH45uL0mrG09W7NhUo/KFA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
- (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
- (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RpJ/cMMHOAAeva/rgHTbXEVWpkRp2h2y74yQttJGbTk=;
- b=FYQzfn76syJH+i/D6n1usqQFRuwdw8ZKFhtsrRilKLqUNFLIUGwGzoNQejKP5McqOUI26MLsMpCYvhvpIf8Bi9ynu/TwDjievbU7N2/TLXuDd3pyiuR58iKq1t1hviDfF0REVxD99Hu701Ej4xJ+czjvSbY7dU/dT4Q0RTAiaZiXjyhN3BUOVNG6mzcB7CF8XZEPVVIkJ/I3LKcWTFL1A8cfiy8IrNz4CFvHd3OEBqYeVwpeSqkWd4tfI+hunyUJNATQrtA35Dz8akMbQY9LohaGi2R+yU1MuKw1PzGergWrhY+2D4u6mfUZGxl209AZhHZUwaO7VHlSIlu+PUQdfQ==
-Received: from DM6PR11CA0066.namprd11.prod.outlook.com (2603:10b6:5:14c::43)
- by BN6PR1201MB2497.namprd12.prod.outlook.com (2603:10b6:404:b3::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Thu, 30 Jun
- 2022 20:37:10 +0000
-Received: from DM6NAM11FT009.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:14c:cafe::8f) by DM6PR11CA0066.outlook.office365.com
- (2603:10b6:5:14c::43) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.17 via Frontend
- Transport; Thu, 30 Jun 2022 20:37:09 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.238) by
- DM6NAM11FT009.mail.protection.outlook.com (10.13.173.20) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5395.14 via Frontend Transport; Thu, 30 Jun 2022 20:37:09 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- DRHQMAIL105.nvidia.com (10.27.9.14) with Microsoft SMTP Server (TLS) id
- 15.0.1497.32; Thu, 30 Jun 2022 20:37:07 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.26; Thu, 30 Jun 2022 13:37:06 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.11) by mail.nvidia.com
- (10.126.190.182) with Microsoft SMTP Server id 15.2.986.26 via Frontend
- Transport; Thu, 30 Jun 2022 13:37:05 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <joro@8bytes.org>, <will@kernel.org>, <marcan@marcan.st>,
-	<sven@svenpeter.dev>, <robin.murphy@arm.com>, <robdclark@gmail.com>,
-	<baolu.lu@linux.intel.com>, <orsonzhai@gmail.com>, <baolin.wang7@gmail.com>,
-	<zhang.lyra@gmail.com>, <jean-philippe@linaro.org>,
-	<alex.williamson@redhat.com>, <jgg@nvidia.com>, <kevin.tian@intel.com>
-CC: <suravee.suthikulpanit@amd.com>, <alyssa@rosenzweig.io>,
-	<dwmw2@infradead.org>, <mjrosato@linux.ibm.com>,
-	<gerald.schaefer@linux.ibm.com>, <thierry.reding@gmail.com>,
-	<vdumpa@nvidia.com>, <jonathanh@nvidia.com>, <cohuck@redhat.com>,
-	<thunder.leizhen@huawei.com>, <christophe.jaillet@wanadoo.fr>,
-	<chenxiang66@hisilicon.com>, <john.garry@huawei.com>,
-	<yangyingliang@huawei.com>, <iommu@lists.linux-foundation.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-arm-msm@vger.kernel.org>,
-	<linux-s390@vger.kernel.org>, <linux-tegra@vger.kernel.org>,
-	<virtualization@lists.linux-foundation.org>, <kvm@vger.kernel.org>
-Subject: [PATCH v4 4/5] vfio/iommu_type1: Clean up update_dirty_scope in detach_group()
-Date: Thu, 30 Jun 2022 13:36:34 -0700
-Message-ID: <20220630203635.33200-5-nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220630203635.33200-1-nicolinc@nvidia.com>
-References: <20220630203635.33200-1-nicolinc@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE40DEC5
+	for <iommu@lists.linux.dev>; Thu, 30 Jun 2022 23:42:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1656632579; x=1688168579;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=HnKju8kjGOSRgTCWdAK1YkRQ7CqpE1nsYg1ASv8QOFQ=;
+  b=Nj8QUOy2bGrfs5K6hjUcPCFobXd3To29JHiqsCa6YVXn801wek5xs7JT
+   +afklpsptTAMe7INem1ayT/ar2sNP8s6bety4TSnxZ/hLqCzfiCMrHOYV
+   1J7AH96iPQKw+ZWku76V4Jd9bXtWIGf/CEQ3MTGXWYvipuUXxtn+b5iDy
+   YtPXVhLZcwG0DKl1r4E/l2u0Lw+fStb+qXoa1YR4T65jdBgZiiVZ0lAv2
+   PtoIsIsUDqB1WAjjTvoR+9f4La07Q7ZYzCT+4Mm0MdF3GlloA8Nxobp4T
+   Ni/g6Ko3gnSnd3RDkgRc0//0sirfv7UwrMR8thPUnTOi8jzz2wAkXpxaW
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.92,235,1650902400"; 
+   d="scan'208";a="204534658"
+Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 01 Jul 2022 07:41:48 +0800
+IronPort-SDR: 8CZpRwsYOZzfYUAwoadPkxuNdssaZeSlDKRVlnSJgwQfLwTGkvRbgVRGCEM6HA1kgtkawouoi2
+ 208m9anYS3WLYdQG+SVLN3yMDZvCwecGjwxPwtJXLri2ah960BsOOCTFcwJXRIoeWJdul233Cr
+ SCNF817XpKRR4ONhuEd65kjhmjW7z8zwnKh5SRxSQQfdnTSRKUmjc+quL3TYcHWcXu7Wi0fYVV
+ lZoRonSedOYqu2KlZi6HhUkEh/VS3IF7Y42n6YCE43E4Nq+uROHqrBvtnUnYeGhHJwn1LDUwXk
+ MPhg+DZrFlksF+p7jzSvKozM
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 30 Jun 2022 16:04:01 -0700
+IronPort-SDR: RG8GqkYadn8ZXwy/D/H+w+u+ryx8lepCo/nKF16EVb++qQmZObIRlAiBpuUAj8d0KdSTqVWrSq
+ v9PxglaHvvnUKkvhBZLph/GJYpYTUpKgHYZy52Bc5NcYdKxZ5JKvOFHwJAxYgUneCG266lYI0+
+ 5kcVhbcGZIxMKvl8GBnurE658MhqgtcUKx9ktD4N5mce8mtKFFmkSaWmLpRKlBkGaL0oDHFJsA
+ gPjfPYacEf7lWkHlXlgPmpWC6mBymIDGzoYfn7a2xSHkDJo3h5G+HGSNyMPddNEkpCpFr8l0Eq
+ CbM=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 30 Jun 2022 16:41:49 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+	by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4LYvxS50cGz1Rw4L
+	for <iommu@lists.linux.dev>; Thu, 30 Jun 2022 16:41:48 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+	reason="pass (just generated, assumed good)"
+	header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+	opensource.wdc.com; h=content-transfer-encoding:content-type
+	:in-reply-to:organization:from:references:to:content-language
+	:subject:user-agent:mime-version:date:message-id; s=dkim; t=
+	1656632503; x=1659224504; bh=HnKju8kjGOSRgTCWdAK1YkRQ7CqpE1nsYg1
+	ASv8QOFQ=; b=fdFA/DMDUNnWuoxJvFEs4k2Sfhy5E++sWBTPTy7Eka2qQe5b4mq
+	K1cqPQRJIRjxU4I+lTd3cniw8UUNIt4E1vRoLMmXU/+WW8sNXEtQGCeQQ62ueY27
+	BkMHptRLqxK7DSBl1PVhxn0Q2raAR55Vjk2ftBKTTqbj5snr7GAzxAAQsLoEC3d8
+	moh50EvOR0sbHP4CjAhaFDbFTlgb/9bJrklDerRkifo/RFZLxf5XiVdXksiz+kOO
+	VLi038cZnQfYw0wPVMb8pi6gv3iAaCAVcSGneOiK8xo0rse7dZlPYJUEnZcEJzMF
+	p67yuDm7TRtgrBenfZLtsyYUVg6E4bj6K1g==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+	by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id X9Bs6-8peQU1 for <iommu@lists.linux.dev>;
+	Thu, 30 Jun 2022 16:41:43 -0700 (PDT)
+Received: from [10.225.163.102] (unknown [10.225.163.102])
+	by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4LYvxJ3cq3z1RtVk;
+	Thu, 30 Jun 2022 16:41:40 -0700 (PDT)
+Message-ID: <5f79d8e7-0035-cfb0-d612-3e1c7f243f22@opensource.wdc.com>
+Date: Fri, 1 Jul 2022 08:41:39 +0900
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a994b858-e972-4205-ce35-08da5ad84e3a
-X-MS-TrafficTypeDiagnostic: BN6PR1201MB2497:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	0qMR9JU5TWfWWCF2gOdI0zoLvGx1n+sLfgI79ffKec/NuT+IRkIF3nNj0Nww5OYIAXWVKW4lcGRgiSwzwZE5JZKOMu6M8IyyJaFW9Tn/siOkTli8dL9j5OJi814zkmgUkZFDVcyS30rUixEysg3yq2KuaqlK2ZeyCyhDuj+E2010eUQ6zB1KNpVsn36TzjREMo1RPnnDIUt2kON+7akekoq9tByBvUjVUEOVH1y8bpyCO3qYpXw8cI7u6QZmU3HXp9nlrz8yMCnK/VxXkY+5uVorM6+NkdkwY0pqT7EVaA8ZbNqtALfDPjF5HwRtWF5HNeEkItRz5Tq+puFUrVe4r9BUI180HmNwc8Z+Fw4DAUGVbtvto7556PwR7dYloQUY4c5XyHkdO404qSJcE2q20i6db+cP6dPKH4fMdb9Av8v9vrQYUg7WwQISNzXyamLnFCf/8sGhLUJDeN3zA7N8D5+QRcKFPnJ7fX60le2aMp383i34TWL+XXLFnqKFXUi8iNvR0kSoMrVIvV7Ej1RaORcdNCAunynouBwRvCK5nvh3FMhUti219eDYOhDZnLmMvtN5AyKzUcO5x1fR8bQshg7d8PR80oMvWWsUritxh2lFcF//DUyNp35X/7uhJZtczjigwhyukvlIs9WOCgMpuh1V0vdlIIDT+Nrgi4M7K/NjUM7aN4g8OVNLY7L6EvugPVbEM3eGDoXm0DXsGqbF26n/xfqHE//FjrzLUP5g6T0DWm5MMcwPwxpn3ZHaYfdCPT2GMLhHADXZTDyLH3Uo/UdsFhNWK5cRaBXP+v9Sg2An9kUcCyPTaZowcY1mH/+640SVSTdvpWaC+Rba6AWSNVSIJGKG4Dnjwjb4hSMwtefCopNgISvasb6gFVV4pOkETUNnnpuGPCyMZvKuv92d0IQErTEpY5lPFNiQe8axdwNrwIB7aIl2U1HBEN8ibRUf
-X-Forefront-Antispam-Report:
-	CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(136003)(39860400002)(396003)(36840700001)(46966006)(40470700004)(41300700001)(336012)(47076005)(7696005)(1076003)(426003)(81166007)(186003)(6666004)(40460700003)(26005)(83380400001)(8676002)(2616005)(36860700001)(921005)(356005)(82740400003)(70206006)(7416002)(316002)(8936002)(82310400005)(15650500001)(36756003)(7406005)(40480700001)(5660300002)(2906002)(110136005)(54906003)(86362001)(478600001)(70586007)(4326008)(14143004)(36900700001)(83996005)(2101003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jun 2022 20:37:09.5446
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a994b858-e972-4205-ce35-08da5ad84e3a
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT009.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1201MB2497
-Message-ID: <20220630203634.F1tRfx9RLaUKrDvgEe8qmguX79sAb4R-LlMC6YgiWjI@z>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v5 3/5] scsi: core: Cap shost max_sectors according to DMA
+ limits only once
+Content-Language: en-US
+To: John Garry <john.garry@huawei.com>, joro@8bytes.org, will@kernel.org,
+ jejb@linux.ibm.com, martin.petersen@oracle.com, hch@lst.de,
+ m.szyprowski@samsung.com, robin.murphy@arm.com
+Cc: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-ide@vger.kernel.org, iommu@lists.linux-foundation.org,
+ iommu@lists.linux.dev, linux-scsi@vger.kernel.org, linuxarm@huawei.com
+References: <1656590892-42307-1-git-send-email-john.garry@huawei.com>
+ <1656590892-42307-4-git-send-email-john.garry@huawei.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <1656590892-42307-4-git-send-email-john.garry@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Message-ID: <20220630234139.BOnw8NZMQKyMIiuwJ118WHHfJVFGdDf88yqP1W6YFjg@z>
 
-All devices in emulated_iommu_groups have pinned_page_dirty_scope
-set, so the update_dirty_scope in the first list_for_each_entry
-is always false. Clean it up, and move the "if update_dirty_scope"
-part from the detach_group_done routine to the domain_list part.
+On 6/30/22 21:08, John Garry wrote:
+> The shost->max_sectors is repeatedly capped according to the host DMA
+> mapping limit for each sdev in __scsi_init_queue(). This is unnecessary, so
+> set only once when adding the host.
+> 
+> Signed-off-by: John Garry <john.garry@huawei.com>
+> ---
+>  drivers/scsi/hosts.c    | 5 +++++
+>  drivers/scsi/scsi_lib.c | 4 ----
+>  2 files changed, 5 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/scsi/hosts.c b/drivers/scsi/hosts.c
+> index 8352f90d997d..d04bd2c7c9f1 100644
+> --- a/drivers/scsi/hosts.c
+> +++ b/drivers/scsi/hosts.c
+> @@ -236,6 +236,11 @@ int scsi_add_host_with_dma(struct Scsi_Host *shost, struct device *dev,
+>  
+>  	shost->dma_dev = dma_dev;
+>  
+> +	if (dma_dev->dma_mask) {
+> +		shost->max_sectors = min_t(unsigned int, shost->max_sectors,
+> +				dma_max_mapping_size(dma_dev) >> SECTOR_SHIFT);
+> +	}
 
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
- drivers/vfio/vfio_iommu_type1.c | 27 ++++++++++++---------------
- 1 file changed, 12 insertions(+), 15 deletions(-)
+Nit: you could remove the curly brackets... But it being a multi-line
+statement, having them is OK too I think.
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 11be5f95580b..b9ccb3cfac5d 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -2453,14 +2453,12 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
- 	struct vfio_iommu *iommu = iommu_data;
- 	struct vfio_domain *domain;
- 	struct vfio_iommu_group *group;
--	bool update_dirty_scope = false;
- 	LIST_HEAD(iova_copy);
- 
- 	mutex_lock(&iommu->lock);
- 	list_for_each_entry(group, &iommu->emulated_iommu_groups, next) {
- 		if (group->iommu_group != iommu_group)
- 			continue;
--		update_dirty_scope = !group->pinned_page_dirty_scope;
- 		list_del(&group->next);
- 		kfree(group);
- 
-@@ -2469,7 +2467,8 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
- 			WARN_ON(iommu->notifier.head);
- 			vfio_iommu_unmap_unpin_all(iommu);
- 		}
--		goto detach_group_done;
-+		mutex_unlock(&iommu->lock);
-+		return;
- 	}
- 
- 	/*
-@@ -2485,9 +2484,7 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
- 			continue;
- 
- 		iommu_detach_group(domain->domain, group->iommu_group);
--		update_dirty_scope = !group->pinned_page_dirty_scope;
- 		list_del(&group->next);
--		kfree(group);
- 		/*
- 		 * Group ownership provides privilege, if the group list is
- 		 * empty, the domain goes away. If it's the last domain with
-@@ -2510,6 +2507,16 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
- 			vfio_iommu_aper_expand(iommu, &iova_copy);
- 			vfio_update_pgsize_bitmap(iommu);
- 		}
-+		/*
-+		 * Removal of a group without dirty tracking may allow
-+		 * the iommu scope to be promoted.
-+		 */
-+		if (!group->pinned_page_dirty_scope) {
-+			iommu->num_non_pinned_groups--;
-+			if (iommu->dirty_page_tracking)
-+				vfio_iommu_populate_bitmap_full(iommu);
-+		}
-+		kfree(group);
- 		break;
- 	}
- 
-@@ -2518,16 +2525,6 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
- 	else
- 		vfio_iommu_iova_free(&iova_copy);
- 
--detach_group_done:
--	/*
--	 * Removal of a group without dirty tracking may allow the iommu scope
--	 * to be promoted.
--	 */
--	if (update_dirty_scope) {
--		iommu->num_non_pinned_groups--;
--		if (iommu->dirty_page_tracking)
--			vfio_iommu_populate_bitmap_full(iommu);
--	}
- 	mutex_unlock(&iommu->lock);
- }
- 
+> +
+>  	error = scsi_mq_setup_tags(shost);
+>  	if (error)
+>  		goto fail;
+> diff --git a/drivers/scsi/scsi_lib.c b/drivers/scsi/scsi_lib.c
+> index 6ffc9e4258a8..6ce8acea322a 100644
+> --- a/drivers/scsi/scsi_lib.c
+> +++ b/drivers/scsi/scsi_lib.c
+> @@ -1884,10 +1884,6 @@ void __scsi_init_queue(struct Scsi_Host *shost, struct request_queue *q)
+>  		blk_queue_max_integrity_segments(q, shost->sg_prot_tablesize);
+>  	}
+>  
+> -	if (dev->dma_mask) {
+> -		shost->max_sectors = min_t(unsigned int, shost->max_sectors,
+> -				dma_max_mapping_size(dev) >> SECTOR_SHIFT);
+> -	}
+>  	blk_queue_max_hw_sectors(q, shost->max_sectors);
+>  	blk_queue_segment_boundary(q, shost->dma_boundary);
+>  	dma_set_seg_boundary(dev, shost->dma_boundary);
+
+Looks good.
+
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+
 -- 
-2.17.1
-
+Damien Le Moal
+Western Digital Research
