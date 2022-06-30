@@ -1,177 +1,82 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 45405C433EF
-	for <iommu@archiver.kernel.org>; Thu, 30 Jun 2022 09:40:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8DA34C43334
+	for <iommu@archiver.kernel.org>; Thu, 30 Jun 2022 09:41:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id CAEF38452F;
-	Thu, 30 Jun 2022 09:40:17 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org CAEF38452F
+	by smtp3.osuosl.org (Postfix) with ESMTP id 26B626132A;
+	Thu, 30 Jun 2022 09:41:16 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 26B626132A
+Authentication-Results: smtp3.osuosl.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=BEtpPsj3
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 6c8IdiFivNa5; Thu, 30 Jun 2022 09:41:15 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id C19DD61328;
+	Thu, 30 Jun 2022 09:41:14 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org C19DD61328
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A5967C002D;
+	Thu, 30 Jun 2022 09:41:14 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 841C7C0011
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 09:41:13 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 59FB98456F
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 09:41:13 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 59FB98456F
 Authentication-Results: smtp1.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key, unprotected) header.d=csgroup.eu header.i=@csgroup.eu header.a=rsa-sha256 header.s=selector1 header.b=ZU2IHEXg
+ dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com
+ header.a=rsa-sha256 header.s=mimecast20190719 header.b=BEtpPsj3
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id m7mUt1EU8ya2; Thu, 30 Jun 2022 09:40:17 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 7A4A78456F;
-	Thu, 30 Jun 2022 09:40:16 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 7A4A78456F
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2F93BC002D;
-	Thu, 30 Jun 2022 09:40:16 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C5F4BC0011
- for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 09:40:14 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 34B2E41A3E
- for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 09:40:14 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 34B2E41A3E
-Authentication-Results: smtp4.osuosl.org; dkim=pass (2048-bit key,
- unprotected) header.d=csgroup.eu header.i=@csgroup.eu header.a=rsa-sha256
- header.s=selector1 header.b=ZU2IHEXg
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CG9PClF0B33d for <iommu@lists.linux-foundation.org>;
- Thu, 30 Jun 2022 09:40:11 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 4D8B541A1E
-Received: from FRA01-PR2-obe.outbound.protection.outlook.com
- (mail-eopbgr120078.outbound.protection.outlook.com [40.107.12.78])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 4D8B541A1E
- for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 09:40:11 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cvimmMh5CJ7euOtnTel89VL8bNgivy0uPL2CeRAn7Vcpe9gBUhjSUnuXdXZvMPQ/n0DsI17L/98p8k69N2T3arQJywYEog2PLkWoGNWIP5HJbj2zj7KNr4QPjYyb/iXCOBx43UNr1hZa9qB8HRbr5mEBp9jRTVdK23N6bYqF6f51cuXi21Qso2hlXGlEl9li75Wsv7yt/qFfQa44F3AbyQUh5TmrfnZ+f897y4JQnVzOJyMibCi2AmGg5PY8rzu37FvWYL8fBTFTilKhi5k2uvXBrWAltDMgMDxts3KpmRHilzCJOKvFu2tK63AXp2GeD/zg2DMQqffTK5EoKSpX4Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hMeKVwvSbRwvoBs30QPDxE281RsKQasxaJqwbmlllu4=;
- b=cWVt1Jl1jZGKx6339YaVjvgC+rsSAvBh5tvqNlSt6Y7u14QfRwkJNvBa06LuSrvVBQEZhXmMslLmLVJjDFoZ5NWiviTy3pths27RYNWqAatEC7Ne0xb8KntWFD2zjvezgFOUz7bFe05DAEiTex4suREWuYUrUVk+shI9W8OhaGK1ykKyEsmmNNuH5T/1lytOjZcB/ED46de8ymd7yMz52sFxGLSX71pGdyPMdLNhNhL7tDcCrtWjE0+EQAR/9IF1B8yjIJe0eQpQSMh7Tnj3PGoHviQouwNESamlT3NJb8NvM5AwmzSQMydLa46IMaxm4Enn2/ZzLJR41LuWOM1u+w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=csgroup.eu; dmarc=pass action=none header.from=csgroup.eu;
- dkim=pass header.d=csgroup.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=csgroup.eu;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hMeKVwvSbRwvoBs30QPDxE281RsKQasxaJqwbmlllu4=;
- b=ZU2IHEXgYTh3xtZ3bfJeDls6oYA+prJXQ7JDCs10uhCGFDAD5KmeqPAVW0s7IpWv3HjV36sWEdiEczP18K3lS58Jk4SLr8GNbGnDMTzKMnS+Grr9IhIWDSbGxx7vVsNl6RAWwNahrTMqw9N/Cm9XngeHed6AA+dEzJDhjbkTjXoPswDnrixJaf613sMVs3IdulxhCSDCyxGsgMoi9vA7uR1GUGuX1NpHdmZZTZacCxImoMvsNafc3iQcHBTcq011F7dLn/MSdzijUNuQyqDhl4zsEKoLw8UhTK+B0Y2vAzRWpc/kbN2fqkCZUERO+Si8biuVETZQU2cWzMr9LO5rTw==
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
- by PR0P264MB3884.FRAP264.PROD.OUTLOOK.COM (2603:10a6:102:25b::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15; Thu, 30 Jun
- 2022 09:40:07 +0000
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::e063:6eff:d302:8624]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::e063:6eff:d302:8624%5]) with mapi id 15.20.5395.014; Thu, 30 Jun 2022
- 09:40:07 +0000
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
-To: David Laight <David.Laight@ACULAB.COM>, 'Michael Schmitz'
- <schmitzmic@gmail.com>, Arnd Bergmann <arnd@kernel.org>
-Subject: Re: [PATCH v2 3/3] arch/*/: remove CONFIG_VIRT_TO_BUS
-Thread-Topic: [PATCH v2 3/3] arch/*/: remove CONFIG_VIRT_TO_BUS
-Thread-Index: AQHYgko2LS/pMWfW70ubVz2tbpCdNa1UWsAAgA6f54CAANYAgIAAaFUAgAA844CAAOqegIAADSKAgAAV5gCAAigCgIAAGqcA
-Date: Thu, 30 Jun 2022 09:40:07 +0000
-Message-ID: <a36a85a3-3fd3-10ac-cac3-09a90eaf1936@csgroup.eu>
-References: <20220617125750.728590-1-arnd@kernel.org>
- <20220617125750.728590-4-arnd@kernel.org>
- <6ba86afe-bf9f-1aca-7af1-d0d348d75ffc@gmail.com>
- <CAMuHMdVewn0OYA9oJfStk0-+vCKAUou+4Mvd5H2kmrSks1p5jg@mail.gmail.com>
- <b4e5a1c9-e375-63fb-ec7c-abb7384a6d59@gmail.com>
- <9289fd82-285c-035f-5355-4d70ce4f87b0@gmail.com>
- <CAMuHMdXUihTPD9A9hs__Xr2ErfOqkZ5KgCHqm+9HvRf39uS5kA@mail.gmail.com>
- <c30bc9b6-6ccd-8856-dc6b-4e16450dad6f@gmail.com>
- <CAK8P3a1rxEVwVF5U-PO6pQkfURU5Tro1Qp8SPUfHEV9jjWOmCQ@mail.gmail.com>
- <9f812d3d-0fcd-46e6-6d7e-6d4bf66f24ab@gmail.com>
- <26852797d822462abc1c9f96def7fa42@AcuMS.aculab.com>
-In-Reply-To: <26852797d822462abc1c9f96def7fa42@AcuMS.aculab.com>
-Accept-Language: fr-FR, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=csgroup.eu;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 197d08b7-70ce-40d0-7d78-08da5a7c8483
-x-ms-traffictypediagnostic: PR0P264MB3884:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: YgefRFycATSF/wH5lwAcSBvoAr7lJUYaXBANNAXV02nvFe/wclA5C9wg8npkHg2oHXSr/z2GTmIe7BUaP8VnwCheso9HUNnA+ZjUhZPBbW/tPoCYYBVz16D9WagbTJWbcsxQesNlkqzsCF5S3Vsyqm7vbA0KaetOmwOh6j/nZUx8BrcMdDbeUPqR9WLULIdhJEsb89ipeCrnCi53GZ9GkR+AzcVuazueeXyAPgqf0Dt7g5sfMNIEAKC8/F6KyBi4GipGipWAASMrI5ToV3U9ePpQ+ihocAOFiCtTqS9GSChugZOkNZPSjqbTyMa+wpNKZq0yKi4y/g/Psnpu5iZGqG5nzR5pa6D+Y8PRLZ05YOzvlwo38BjAUq+HYZ7eFvgvyvRBtlPHXOsWiqQmjq1tEqK5WsBayuz+uBH+n+NklRkc8lfRzqRBEJD8o5kDsW5VWXPV3exVS3tRpcV3p8HlyQxRZn7Xrxg2b7BFsXS8XuNAOqbBGZZtPJL8q24nlb/N6Kv0IwnUgKcgewsYDmBvg7YRm16sR26puQ75+H8hIbbTRAbMtzJs1rll+x+Rz8peecWqKtVfkn400nSLAPR6LEBhj6srirveJ34Zc0w7r2ivpTEQDpPqfWgdMh4o0d5sAh3yGBGpe4+3/2S48JGDseucXVJhKh5qBD0bye0b3wh+dg49FJQTFLI+vB+XoM8j2dEiaIvTEZXkcaE6pKH7IQh6wh6obbTKk98Soh+Wetwktrag0leyJL6oY3wsOoW6kYRnqXhohKeTUyJKGTibWw+QljPMm1ZLYzV5AgkpfoK6Hgr3E1o6zZan0E1YW4eEs04VXlEdWRKYqCdzItYSh8itBUJVGcdsN0ZY4yS6D52XpQrH+GqQBkgUHPoqhHDm
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM; PTR:; CAT:NONE;
- SFS:(13230016)(4636009)(39860400002)(136003)(366004)(346002)(396003)(376002)(6506007)(186003)(53546011)(2906002)(122000001)(41300700001)(6512007)(2616005)(26005)(31696002)(38100700002)(38070700005)(44832011)(8936002)(478600001)(86362001)(76116006)(64756008)(66446008)(66476007)(66556008)(36756003)(4326008)(8676002)(7416002)(66946007)(6486002)(31686004)(316002)(91956017)(71200400001)(5660300002)(110136005)(54906003)(45980500001)(43740500002);
- DIR:OUT; SFP:1101; 
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?aDVHMlY5U1Q2QVlDUmJ4WVhueDB4Sk1lL1hFRStCenVLTTM2aUg2ekdFczMz?=
- =?utf-8?B?SGFnM0oxT3UxbXBhaWxaRGVENW5MYktKaTY5T0JHajNPdW1iQnlVNmhFNXgw?=
- =?utf-8?B?NFVzNDhQK3JTM2xPK2lWSjdrbytwSlRFL2FLUGhVenZucmk2WHoyQ3pneUF0?=
- =?utf-8?B?RTRWbEpEcnNFdkNieHV5MlhRNWZwMWpuSllVZmkzcjIxZjYyS0VSVkJGZkhC?=
- =?utf-8?B?TFhUeVF2eFJlVVVIRHBhUXhLN1hROHlNYmttSE13OFNJN3BTVW03RE1WQXJP?=
- =?utf-8?B?RWF4U2xwbGc1VmdLb2ZZVi9HOStIVmhPd1FVUXBKRitSTjAzc0l6Unp1NlBh?=
- =?utf-8?B?dmI4K0VlT1czYmFjWkZaL0FjMDhVZllxRXFxYktBNTNpWFpBeUZYaUpDR1VF?=
- =?utf-8?B?eWZTRHNBYzJuSkhLZVB2ZHFucUJKbTllREpQRGNEVnk5UWkwRk9lT0RGV0hR?=
- =?utf-8?B?NHN1NnpUT2k0bVdsK1lGUG4wWnlpOG1NbzV0aVc2dXlHYWZ1QU54YTFlVXVR?=
- =?utf-8?B?YjI5Rm8xbDc1ejN1VTlLMDFsRWNCWUdPWVJ1N2NWeURqdTNSYkZqeTJYL1ky?=
- =?utf-8?B?di8ya1RaVk93b2cxTk1lTlVBOEJ3Z0RZZWhQZStoejYyVk9WdE94aDl0MFVu?=
- =?utf-8?B?QmFCWmo5ZUtxa1pCM3NEbXhzWTFrQjcwelJBbElpdVVHcGZUMm13VjhXdm9j?=
- =?utf-8?B?L1lmRGwvekNRUDVSc1ZLc0M0NmoxcXFPUFJlVlozcHo4bENoaVlJODhRakoy?=
- =?utf-8?B?WVYwaDZuT0JDQWUyTWFsMEQyQXpENG1HTGJ0clhuVFo5QzNVS3loM2FVMUcz?=
- =?utf-8?B?eDR1a1VXY2tuRG5rcG84SFVVL3hzYWx5cFZPdlIyRGQzYldmc01YWmZ2bnhi?=
- =?utf-8?B?b1FJeUlXUE9sR2MxRTNETk9YNjZEaEFNdlRCN280VW1MV01sWFJrT2pRekY1?=
- =?utf-8?B?d0FjaTUvem1xVXprTVBzOFRJeFpkbWVjbEVZN3FUcCtndmJRdExEQUJESlhp?=
- =?utf-8?B?MTE5VlRKQ0x4QTgvbzA0SDF2ZVZod1AyanVxNlZtTFNETHhyYTdVQk5WeE5t?=
- =?utf-8?B?RmhUMFJNR24wbGVmVmk1aUtGTWVsdmpiTlFhUHFqUkIzKzRxMjlnUk9PRU9E?=
- =?utf-8?B?emd3Mm5jYkEvRXU3TVhjN3hXbVd0OEFlQXQyeE1hYXo0MTlLbHpvSHprUTdo?=
- =?utf-8?B?WGJ4ajJiaVR3VEgrU2hTc3YxcjhnUWtvSk1EM3lxcHpPT0d6dFJWM0tQbGQx?=
- =?utf-8?B?cTRLRHpSUGJWN2cxZ1ZGRW14ZjNLNVJSQWxXcWxSS2ZvaG40dmFlZDhFdXQx?=
- =?utf-8?B?dWZ1M05hYVBtYWg4NWQ0VXZ0RXFjL1NWbUcrK1ZTaFdxWEVwdFNqcEJqcDlv?=
- =?utf-8?B?TC9ueVNlZEtCZ3dVS1gzaFBRVGc3V1ZDSWljS0dQb1BoUU0ycDJmQ2FueC93?=
- =?utf-8?B?Wlk3ajF6eUlKSzNxY2krRC94Ym1qN3NPNUlMeGk1YldTN1ZVQVA1MmttQlJl?=
- =?utf-8?B?dDlZSWJjM2taYVZ1K241WWNlUUdLRGRPV1M1VjF5MitGZFdVeFFXcjB2Slcr?=
- =?utf-8?B?ZUU0VVFzWTJaZXkwZXBrcU9lendPZVVVaFJiNmRvN2Vwc3VJMTlDOC9tZjBV?=
- =?utf-8?B?SEs3RTZpeGtPUkozNHJFeElKekRuUlRzcFl0YTJYZDdtcWJUQUliWFZ1WWVC?=
- =?utf-8?B?ZlVvNjN3TDlvQ013OFhULzV6MVo4U0I1ZTRHWEVVeUVmWGNlaXJFUlI2QkFR?=
- =?utf-8?B?SHgxL0ppMGd6ekdjQTZxaFc5MnZnQlZjSWlhODFiS3BIUk9vZTVwT3hDSVJy?=
- =?utf-8?B?QUZCSHFMMFk3UHBzVXZPNktQMm0yKzB0MmNSR3hnTEEvdXRsLzQwR1NkRHY5?=
- =?utf-8?B?VmpOdytkS0FDV09iemNnTXlpc0tEQTQwVzcyTzNsdkRPSlFuY2JuZ3ZQNTha?=
- =?utf-8?B?SmVqcm9BNzhpY1cxZmM5U3E0VysrSEZmYTBjdlBYbVRoY1pkMFh0bVVKbkxz?=
- =?utf-8?B?MTdycWVqcWdhR01GMldreW0rZ1BKYmdLelVWbDVaU0lEdzg1VFdhdmNpNHo0?=
- =?utf-8?B?eUovSng0K0RTMmQxdnR1dlFlNGllc1hncjFGcFY4eFg1WEhxZzZuZ0Y1ekty?=
- =?utf-8?B?Tk81QTZPSWtCeFB4UFZrODhlTGhYUlVrWnRmZ0tiZ2FxSC9XbTMwS0JnTGdp?=
- =?utf-8?Q?1ybU3eQfBpz7KVuGSeaSkX8=3D?=
-Content-ID: <57345C3932941D43899ACCFE1837141A@FRAP264.PROD.OUTLOOK.COM>
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id tcqt-w1Kbh7G for <iommu@lists.linux-foundation.org>;
+ Thu, 30 Jun 2022 09:41:12 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 913218452F
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 913218452F
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 09:41:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1656582071;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:
+ content-transfer-encoding:content-transfer-encoding;
+ bh=FbuvANh9DPr+4RMnaRBYz0BK2bY3nTN9q2d37QGk4z4=;
+ b=BEtpPsj3N2wA9a1O9mMXYi3ORv0RTugNqibquyu9kOgg7MlCDsbK0qyXJt3tVyK2a5kRZo
+ xketj6cn5jjlbQxA//DQtXElqRl8KO3czIFTvl+GkUBjfU9pbSNWFBlOmgAaKWMMjXrmx9
+ OwCbfaMe1wB3poA6gxRPhUdzFGX5jKA=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-498-awS35iiSPmGd0csI-LWKIg-1; Thu, 30 Jun 2022 05:41:06 -0400
+X-MC-Unique: awS35iiSPmGd0csI-LWKIg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com
+ [10.11.54.4])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 601DC811E80;
+ Thu, 30 Jun 2022 09:41:06 +0000 (UTC)
+Received: from laptop.redhat.com (unknown [10.39.193.10])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 5C3DC2026D64;
+ Thu, 30 Jun 2022 09:41:04 +0000 (UTC)
+From: Eric Auger <eric.auger@redhat.com>
+To: eric.auger.pro@gmail.com, eric.auger@redhat.com, jean-philippe@linaro.org,
+ jroedel@suse.de, linux-acpi@vger.kernel.org,
+ iommu@lists.linux-foundation.org, rafael@kernel.org, lenb@kernel.org
+Subject: [PATCH v2] ACPI: VIOT: Fix ACS setup
+Date: Thu, 30 Jun 2022 11:40:59 +0200
+Message-Id: <20220630094059.1204283-1-eric.auger@redhat.com>
 MIME-Version: 1.0
-X-OriginatorOrg: csgroup.eu
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 197d08b7-70ce-40d0-7d78-08da5a7c8483
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Jun 2022 09:40:07.1532 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: wCQCyMvdbRz94JyAWaTJfUZjoHcgPdj7636b4yI5xzQCmQhKbr/l4vwnEyAM82GglD98gdtMJrpaYQXpSpT5OxbizVlsvjGY5Ow/RAZMQik=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR0P264MB3884
-Cc: Linux-Arch <linux-arch@vger.kernel.org>,
- Miquel van Smoorenburg <mikevs@xs4all.net>,
- "Maciej W . Rozycki" <macro@orcam.me.uk>, alpha <linux-alpha@vger.kernel.org>,
- Arnd Bergmann <arnd@arndb.de>, scsi <linux-scsi@vger.kernel.org>,
- linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, Matt Wang <wwentao@vmware.com>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Denis Efremov <efremov@linux.com>, Mark Salyzyn <salyzyn@android.com>,
- Christoph Hellwig <hch@infradead.org>,
- linux-m68k <linux-m68k@lists.linux-m68k.org>,
- Linux IOMMU <iommu@lists.linux-foundation.org>,
- Geert Uytterhoeven <geert@linux-m68k.org>,
- Parisc List <linux-parisc@vger.kernel.org>,
- John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
- Jakub Kicinski <kuba@kernel.org>, Khalid Aziz <khalid@gonehiking.org>,
- Robin Murphy <robin.murphy@arm.com>
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, jinl@redhat.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -184,39 +89,118 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-DQoNCkxlIDMwLzA2LzIwMjIgw6AgMTA6MDQsIERhdmlkIExhaWdodCBhIMOpY3JpdMKgOg0KPiBG
-cm9tOiBNaWNoYWVsIFNjaG1pdHoNCj4+IFNlbnQ6IDI5IEp1bmUgMjAyMiAwMDowOQ0KPj4NCj4+
-IEhpIEFybmQsDQo+Pg0KPj4gT24gMjkvMDYvMjIgMDk6NTAsIEFybmQgQmVyZ21hbm4gd3JvdGU6
-DQo+Pj4gT24gVHVlLCBKdW4gMjgsIDIwMjIgYXQgMTE6MDMgUE0gTWljaGFlbCBTY2htaXR6IDxz
-Y2htaXR6bWljQGdtYWlsLmNvbT4gd3JvdGU6DQo+Pj4+IE9uIDI4LzA2LzIyIDE5OjAzLCBHZWVy
-dCBVeXR0ZXJob2V2ZW4gd3JvdGU6DQo+Pj4+Pj4gVGhlIGRyaXZlciBhbGxvY2F0ZXMgYm91bmNl
-IGJ1ZmZlcnMgdXNpbmcga21hbGxvYyBpZiBpdCBoaXRzIGFuDQo+Pj4+Pj4gdW5hbGlnbmVkIGRh
-dGEgYnVmZmVyIC0gY2FuIHN1Y2ggYnVmZmVycyBzdGlsbCBldmVuIGhhcHBlbiB0aGVzZSBkYXlz
-Pw0KPj4+Pj4gTm8gaWRlYS4NCj4+Pj4gSG1tbSAtIEkgdGhpbmsgSSdsbCBzdGljayBhIFdBUk5f
-T05DRSgpIGluIHRoZXJlIHNvIHdlIGtub3cgd2hldGhlciB0aGlzDQo+Pj4+IGNvZGUgcGF0aCBp
-cyBzdGlsbCBiZWluZyB1c2VkLg0KPj4+IGttYWxsb2MoKSBndWFyYW50ZWVzIGFsaWdubWVudCB0
-byB0aGUgbmV4dCBwb3dlci1vZi10d28gc2l6ZSBvcg0KPj4+IEtNQUxMT0NfTUlOX0FMSUdOLCB3
-aGljaGV2ZXIgaXMgYmlnZ2VyLiBPbiBtNjhrIHRoaXMgbWVhbnMgaXQNCj4+PiBpcyBjYWNoZWxp
-bmUgYWxpZ25lZC4NCj4+DQo+PiBBbmQgYWxsIFNDU0kgYnVmZmVycyBhcmUgYWxsb2NhdGVkIHVz
-aW5nIGttYWxsb2M/IE5vIHdheSBhdCBhbGwgZm9yIHVzZXINCj4+IHNwYWNlIHRvIHBhc3MgdW5h
-bGlnbmVkIGRhdGE/DQo+IA0KPiBJIGRpZG4ndCB0aGluayBrbWFsbG9jKCkgZ2F2ZSBhbnkgc3Vj
-aCBndWFyYW50ZWUgYWJvdXQgYWxpZ25tZW50Lg0KDQpJIGRvZXMgc2luY2UgY29tbWl0IDU5YmI0
-Nzk4NWMxZCAoIm1tLCBzbFthb3VdYjogZ3VhcmFudGVlIG5hdHVyYWwgDQphbGlnbm1lbnQgZm9y
-IGttYWxsb2MocG93ZXItb2YtdHdvKSIpDQoNCkNocmlzdG9waGUNCg0KPiBUaGVyZSBhcmUgY2Fj
-aGUtbGluZSBhbGlnbm1lbnQgcmVxdWlyZW1lbnRzIG9uIHN5c3RlbXMgd2l0aCBub24tY29oZXJl
-bnQNCj4gZG1hLCBidXQgb3RoZXJ3aXNlIHRoZSBhbGlnbm1lbnQgY2FuIGJlIG11Y2ggc21hbGxl
-ci4NCj4gDQo+IE9uZSBvZiB0aGUgYWxsb2NhdG9ycyBhZGRzIGEgaGVhZGVyIHRvIGVhY2ggaXRl
-bSwgSUlSQyB0aGF0IGNhbg0KPiBsZWFkIHRvICd1bmV4cGVjdGVkJyBhbGlnbm1lbnRzIC0gZXNw
-ZWNpYWxseSBvbiBtNjhrLg0KPiANCj4gZG1hX2FsbG9jX2NvaGVyZW50KCkgZG9lcyBhbGlnbiB0
-byBuZXh0ICdwb3dlciBvZiAyJy4NCj4gQW5kIHNvbWV0aW1lcyB5b3UgbmVlZCAoZWcpIDE2ayBh
-bGxvY2F0ZXMgdGhhdCBhcmUgMTZrIGFsaWduZWQuDQo+IA0KPiAJRGF2aWQNCj4gDQo+IC0NCj4g
-UmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1p
-bHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQo+IFJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2Fs
-ZXMpCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11
-IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xp
-c3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+Currently acpi_viot_init() gets called after the pci
+device has been scanned and pci_enable_acs() has been called.
+So pci_request_acs() fails to be taken into account leading
+to wrong single iommu group topologies when dealing with
+multi-function root ports for instance.
+
+We cannot simply move the acpi_viot_init() earlier, similarly
+as the IORT init because the VIOT parsing relies on the pci
+scan. However we can detect VIOT is present earlier and in
+such a case, request ACS. Introduce a new acpi_viot_early_init()
+routine that allows to call pci_request_acs() before the scan.
+
+While at it, guard the call to pci_request_acs() with #ifdef
+CONFIG_PCI.
+
+Fixes: 3cf485540e7b ("ACPI: Add driver for the VIOT table")
+Signed-off-by: Eric Auger <eric.auger@redhat.com>
+Reported-by: Jin Liu <jinl@redhat.com>
+
+---
+
+v1 -> v2:
+- guard acpi_viot_early_init() content with #ifdef CONFIG_PCI
+- do not call acpi_put_table() if acpi_get_table() failed
+- change declaration order of acpi_viot_early_init() stub
+---
+ drivers/acpi/bus.c        |  1 +
+ drivers/acpi/viot.c       | 26 ++++++++++++++++++++------
+ include/linux/acpi_viot.h |  2 ++
+ 3 files changed, 23 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
+index 86fa61a21826..906ad8153fd9 100644
+--- a/drivers/acpi/bus.c
++++ b/drivers/acpi/bus.c
+@@ -1400,6 +1400,7 @@ static int __init acpi_init(void)
+ 
+ 	pci_mmcfg_late_init();
+ 	acpi_iort_init();
++	acpi_viot_early_init();
+ 	acpi_hest_init();
+ 	acpi_ghes_init();
+ 	acpi_scan_init();
+diff --git a/drivers/acpi/viot.c b/drivers/acpi/viot.c
+index d2256326c73a..647f11cf165d 100644
+--- a/drivers/acpi/viot.c
++++ b/drivers/acpi/viot.c
+@@ -248,6 +248,26 @@ static int __init viot_parse_node(const struct acpi_viot_header *hdr)
+ 	return ret;
+ }
+ 
++/**
++ * acpi_viot_early_init - Test the presence of VIOT and enable ACS
++ *
++ * If the VIOT does exist, ACS must be enabled. This cannot be
++ * done in acpi_viot_init() which is called after the bus scan
++ */
++void __init acpi_viot_early_init(void)
++{
++#ifdef CONFIG_PCI
++	acpi_status status;
++	struct acpi_table_header *hdr;
++
++	status = acpi_get_table(ACPI_SIG_VIOT, 0, &hdr);
++	if (ACPI_FAILURE(status))
++		return;
++	pci_request_acs();
++	acpi_put_table(hdr);
++#endif
++}
++
+ /**
+  * acpi_viot_init - Parse the VIOT table
+  *
+@@ -319,12 +339,6 @@ static int viot_pci_dev_iommu_init(struct pci_dev *pdev, u16 dev_id, void *data)
+ 			epid = ((domain_nr - ep->segment_start) << 16) +
+ 				dev_id - ep->bdf_start + ep->endpoint_id;
+ 
+-			/*
+-			 * If we found a PCI range managed by the viommu, we're
+-			 * the one that has to request ACS.
+-			 */
+-			pci_request_acs();
+-
+ 			return viot_dev_iommu_init(&pdev->dev, ep->viommu,
+ 						   epid);
+ 		}
+diff --git a/include/linux/acpi_viot.h b/include/linux/acpi_viot.h
+index 1eb8ee5b0e5f..a5a122431563 100644
+--- a/include/linux/acpi_viot.h
++++ b/include/linux/acpi_viot.h
+@@ -6,9 +6,11 @@
+ #include <linux/acpi.h>
+ 
+ #ifdef CONFIG_ACPI_VIOT
++void __init acpi_viot_early_init(void);
+ void __init acpi_viot_init(void);
+ int viot_iommu_configure(struct device *dev);
+ #else
++static inline void acpi_viot_early_init(void) {}
+ static inline void acpi_viot_init(void) {}
+ static inline int viot_iommu_configure(struct device *dev)
+ {
+-- 
+2.35.3
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
