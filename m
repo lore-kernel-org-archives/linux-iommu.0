@@ -1,132 +1,158 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EED50EBB
-	for <iommu@lists.linux.dev>; Thu, 30 Jun 2022 09:37:26 +0000 (UTC)
-Received: from fraeml705-chm.china.huawei.com (unknown [172.18.147.207])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LYY8N6qV4z686VP;
-	Thu, 30 Jun 2022 17:35:00 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml705-chm.china.huawei.com (10.206.15.54) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Thu, 30 Jun 2022 11:37:23 +0200
-Received: from [10.126.174.156] (10.126.174.156) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 30 Jun 2022 10:37:22 +0100
-Message-ID: <7c29d01d-d90c-58d3-a6e0-0b6c404173ac@huawei.com>
-Date: Thu, 30 Jun 2022 10:37:25 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45575EBB
+	for <iommu@lists.linux.dev>; Thu, 30 Jun 2022 09:41:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1656582070;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=FbuvANh9DPr+4RMnaRBYz0BK2bY3nTN9q2d37QGk4z4=;
+	b=YtTsoyFXOSpY1JloVPJzAIhU7BKOsF6q0szt6MK/5t7jojQvZ0hzEVt5GuHx5jw+T8Mrpy
+	4K2+DOjH5dUhPjepFXQD1vIanZae8VdLiQ72CXuMqoFW6HPPF5ZCDKyZ/wCNeSzzfjc1Qa
+	ubKKCO0WvQtoqwFtp50TLMxnX1MPM8M=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-498-awS35iiSPmGd0csI-LWKIg-1; Thu, 30 Jun 2022 05:41:06 -0400
+X-MC-Unique: awS35iiSPmGd0csI-LWKIg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 601DC811E80;
+	Thu, 30 Jun 2022 09:41:06 +0000 (UTC)
+Received: from laptop.redhat.com (unknown [10.39.193.10])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 5C3DC2026D64;
+	Thu, 30 Jun 2022 09:41:04 +0000 (UTC)
+From: Eric Auger <eric.auger@redhat.com>
+To: eric.auger.pro@gmail.com,
+	eric.auger@redhat.com,
+	jean-philippe@linaro.org,
+	jroedel@suse.de,
+	linux-acpi@vger.kernel.org,
+	iommu@lists.linux-foundation.org,
+	rafael@kernel.org,
+	lenb@kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev,
+	jinl@redhat.com
+Subject: [PATCH v2] ACPI: VIOT: Fix ACS setup
+Date: Thu, 30 Jun 2022 11:40:59 +0200
+Message-ID: <20220630094059.1204283-1-eric.auger@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH] iommu/iova: change IOVA_MAG_SIZE to 127 to save memory
-To: Robin Murphy <robin.murphy@arm.com>, Feng Tang <feng.tang@intel.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	<iommu@lists.linux-foundation.org>, <iommu@lists.linux.dev>, Andrew Morton
-	<akpm@linux-foundation.org>, Christoph Lameter <cl@linux.com>, "Vlastimil
- Babka" <vbabka@suse.cz>
-CC: <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>, Paul Menzel
-	<pmenzel@molgen.mpg.de>
-References: <20220630073304.26945-1-feng.tang@intel.com>
- <13db50bb-57c7-0d54-3857-84b8a4591d9e@arm.com>
-From: John Garry <john.garry@huawei.com>
-In-Reply-To: <13db50bb-57c7-0d54-3857-84b8a4591d9e@arm.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.126.174.156]
-X-ClientProxiedBy: lhreml727-chm.china.huawei.com (10.201.108.78) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Message-ID: <20220630093725.-rSmH_lTMoETpAqmmpl7bWcWY2k9KT9pisGeq8wFxSQ@z>
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+Message-ID: <20220630094059.Hx9VzFWYnFGeVACgnx_dWOwiK4QtGyKGxLVFbx-4yBs@z>
 
-On 30/06/2022 10:02, Robin Murphy wrote:
-> On 2022-06-30 08:33, Feng Tang wrote:
->> kmalloc will round up the request size to power of 2, and current
->> iova_magazine's size is 1032 (1024+8) bytes, so each instance
->> allocated will get 2048 bytes from kmalloc, causing around 1KB
->> waste.
->>
->> And in some exstreme case, the memory wasted can trigger OOM as
->> reported in 2019 on a crash kernel with 256 MB memory [1].
-> 
-> I don't think it really needs pointing out that excessive memory 
-> consumption can cause OOM. Especially not in the particularly silly 
-> context of a system with only 2MB of RAM per CPU - that's pretty much 
-> guaranteed to be doomed one way or another.
-> 
->>    [    4.319253] iommu: Adding device 0000:06:00.2 to group 5
->>    [    4.325869] iommu: Adding device 0000:20:01.0 to group 15
->>    [    4.332648] iommu: Adding device 0000:20:02.0 to group 16
->>    [    4.338946] swapper/0 invoked oom-killer: 
->> gfp_mask=0x6040c0(GFP_KERNEL|__GFP_COMP), nodemask=(null), order=0, 
->> oom_score_adj=0
->>    [    4.350251] swapper/0 cpuset=/ mems_allowed=0
->>    [    4.354618] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 
->> 4.19.57.mx64.282 #1
->>    [    4.355612] Hardware name: Dell Inc. PowerEdge R7425/08V001, 
->> BIOS 1.9.3 06/25/2019
->>    [    4.355612] Call Trace:
->>    [    4.355612]  dump_stack+0x46/0x5b
->>    [    4.355612]  dump_header+0x6b/0x289
->>    [    4.355612]  out_of_memory+0x470/0x4c0
->>    [    4.355612]  __alloc_pages_nodemask+0x970/0x1030
->>    [    4.355612]  cache_grow_begin+0x7d/0x520
->>    [    4.355612]  fallback_alloc+0x148/0x200
->>    [    4.355612]  kmem_cache_alloc_trace+0xac/0x1f0
->>    [    4.355612]  init_iova_domain+0x112/0x170
->>    [    4.355612]  amd_iommu_domain_alloc+0x138/0x1a0
->>    [    4.355612]  iommu_group_get_for_dev+0xc4/0x1a0
->>    [    4.355612]  amd_iommu_add_device+0x13a/0x610
->>    [    4.355612]  add_iommu_group+0x20/0x30
->>    [    4.355612]  bus_for_each_dev+0x76/0xc0
->>    [    4.355612]  bus_set_iommu+0xb6/0xf0
->>    [    4.355612]  amd_iommu_init_api+0x112/0x132
->>    [    4.355612]  state_next+0xfb1/0x1165
->>    [    4.355612]  amd_iommu_init+0x1f/0x67
->>    [    4.355612]  pci_iommu_init+0x16/0x3f
->>    ...
->>    [    4.670295] Unreclaimable slab info:
->>    ...
->>    [    4.857565] kmalloc-2048           59164KB      59164KB
->>
->> Change IOVA_MAG_SIZE from 128 to 127 to make size of 'iova_magazine'
->> 1024 bytes so that no memory will be wasted.
->>
->> [1]. https://lkml.org/lkml/2019/8/12/266
->>
->> Signed-off-by: Feng Tang <feng.tang@intel.com>
->> ---
->>   drivers/iommu/iova.c | 7 ++++++-
->>   1 file changed, 6 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
->> index db77aa675145b..27634ddd9b904 100644
->> --- a/drivers/iommu/iova.c
->> +++ b/drivers/iommu/iova.c
->> @@ -614,7 +614,12 @@ EXPORT_SYMBOL_GPL(reserve_iova);
->>    * dynamic size tuning described in the paper.
->>    */
->> -#define IOVA_MAG_SIZE 128
->> +/*
->> + * As kmalloc's buffer size is fixed to power of 2, 127 is chosen to
->> + * assure size of 'iova_magzine' to be 1024 bytes, so that no memory
-> 
-> Typo: iova_magazine
-> 
->> + * will be wasted.
->> + */
->> +#define IOVA_MAG_SIZE 127
+Currently acpi_viot_init() gets called after the pci
+device has been scanned and pci_enable_acs() has been called.
+So pci_request_acs() fails to be taken into account leading
+to wrong single iommu group topologies when dealing with
+multi-function root ports for instance.
 
-I do wonder if we will see some strange new behaviour since IOVA_FQ_SIZE 
-% IOVA_MAG_SIZE != 0 now...
+We cannot simply move the acpi_viot_init() earlier, similarly
+as the IORT init because the VIOT parsing relies on the pci
+scan. However we can detect VIOT is present earlier and in
+such a case, request ACS. Introduce a new acpi_viot_early_init()
+routine that allows to call pci_request_acs() before the scan.
 
-> 
-> The change itself seems perfectly reasonable, though.
-> 
-> Acked-by: Robin Murphy <robin.murphy@arm.com>
+While at it, guard the call to pci_request_acs() with #ifdef
+CONFIG_PCI.
+
+Fixes: 3cf485540e7b ("ACPI: Add driver for the VIOT table")
+Signed-off-by: Eric Auger <eric.auger@redhat.com>
+Reported-by: Jin Liu <jinl@redhat.com>
+
+---
+
+v1 -> v2:
+- guard acpi_viot_early_init() content with #ifdef CONFIG_PCI
+- do not call acpi_put_table() if acpi_get_table() failed
+- change declaration order of acpi_viot_early_init() stub
+---
+ drivers/acpi/bus.c        |  1 +
+ drivers/acpi/viot.c       | 26 ++++++++++++++++++++------
+ include/linux/acpi_viot.h |  2 ++
+ 3 files changed, 23 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
+index 86fa61a21826..906ad8153fd9 100644
+--- a/drivers/acpi/bus.c
++++ b/drivers/acpi/bus.c
+@@ -1400,6 +1400,7 @@ static int __init acpi_init(void)
+ 
+ 	pci_mmcfg_late_init();
+ 	acpi_iort_init();
++	acpi_viot_early_init();
+ 	acpi_hest_init();
+ 	acpi_ghes_init();
+ 	acpi_scan_init();
+diff --git a/drivers/acpi/viot.c b/drivers/acpi/viot.c
+index d2256326c73a..647f11cf165d 100644
+--- a/drivers/acpi/viot.c
++++ b/drivers/acpi/viot.c
+@@ -248,6 +248,26 @@ static int __init viot_parse_node(const struct acpi_viot_header *hdr)
+ 	return ret;
+ }
+ 
++/**
++ * acpi_viot_early_init - Test the presence of VIOT and enable ACS
++ *
++ * If the VIOT does exist, ACS must be enabled. This cannot be
++ * done in acpi_viot_init() which is called after the bus scan
++ */
++void __init acpi_viot_early_init(void)
++{
++#ifdef CONFIG_PCI
++	acpi_status status;
++	struct acpi_table_header *hdr;
++
++	status = acpi_get_table(ACPI_SIG_VIOT, 0, &hdr);
++	if (ACPI_FAILURE(status))
++		return;
++	pci_request_acs();
++	acpi_put_table(hdr);
++#endif
++}
++
+ /**
+  * acpi_viot_init - Parse the VIOT table
+  *
+@@ -319,12 +339,6 @@ static int viot_pci_dev_iommu_init(struct pci_dev *pdev, u16 dev_id, void *data)
+ 			epid = ((domain_nr - ep->segment_start) << 16) +
+ 				dev_id - ep->bdf_start + ep->endpoint_id;
+ 
+-			/*
+-			 * If we found a PCI range managed by the viommu, we're
+-			 * the one that has to request ACS.
+-			 */
+-			pci_request_acs();
+-
+ 			return viot_dev_iommu_init(&pdev->dev, ep->viommu,
+ 						   epid);
+ 		}
+diff --git a/include/linux/acpi_viot.h b/include/linux/acpi_viot.h
+index 1eb8ee5b0e5f..a5a122431563 100644
+--- a/include/linux/acpi_viot.h
++++ b/include/linux/acpi_viot.h
+@@ -6,9 +6,11 @@
+ #include <linux/acpi.h>
+ 
+ #ifdef CONFIG_ACPI_VIOT
++void __init acpi_viot_early_init(void);
+ void __init acpi_viot_init(void);
+ int viot_iommu_configure(struct device *dev);
+ #else
++static inline void acpi_viot_early_init(void) {}
+ static inline void acpi_viot_init(void) {}
+ static inline int viot_iommu_configure(struct device *dev)
+ {
+-- 
+2.35.3
 
