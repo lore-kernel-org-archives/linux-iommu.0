@@ -4,82 +4,65 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1733FCCA480
-	for <iommu@archiver.kernel.org>; Thu, 30 Jun 2022 14:00:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 62640C43334
+	for <iommu@archiver.kernel.org>; Thu, 30 Jun 2022 14:00:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 97114423EA;
-	Thu, 30 Jun 2022 14:00:42 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 97114423EA
-Authentication-Results: smtp4.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=nh//DLk7
+	by smtp4.osuosl.org (Postfix) with ESMTP id C589D423F3;
+	Thu, 30 Jun 2022 14:00:43 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org C589D423F3
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GIQi4K-Q65k5; Thu, 30 Jun 2022 14:00:41 +0000 (UTC)
+	with ESMTP id pNKmY5dZRAbC; Thu, 30 Jun 2022 14:00:41 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id CC3CD423F0;
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 0B336423C2;
 	Thu, 30 Jun 2022 14:00:40 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org CC3CD423F0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 0B336423C2
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A0168C007A;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D27D9C0080;
 	Thu, 30 Jun 2022 14:00:39 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 42EF6C0011
- for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 09:33:53 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0F8BFC0011
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 12:37:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 061FE8452F
- for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 09:33:53 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 061FE8452F
-Authentication-Results: smtp1.osuosl.org;
- dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com
- header.a=rsa-sha256 header.s=Intel header.b=nh//DLk7
+ by smtp3.osuosl.org (Postfix) with ESMTP id DDF9761368
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 12:37:21 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org DDF9761368
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hjNen4Ugg5lF for <iommu@lists.linux-foundation.org>;
- Thu, 30 Jun 2022 09:33:52 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id O7ydqvNBXqf5 for <iommu@lists.linux-foundation.org>;
+ Thu, 30 Jun 2022 12:37:20 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org C969B84387
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by smtp1.osuosl.org (Postfix) with ESMTPS id C969B84387
- for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 09:33:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1656581631; x=1688117631;
- h=date:from:to:cc:subject:message-id:references:
- mime-version:in-reply-to;
- bh=PgPzLl4LLLWiWoEp5qpCglqPZ3JOM/ueCvqywhPsDcA=;
- b=nh//DLk73Sk/qA8Rf/5Eww21OalrxA2Ct46ybSFx+IObf8Lsw3Ie+6Gt
- FaM9FOtlQeG3M/dAkLKWANN1TeyLlp2f0MdGUg1tpG0RXzI6gBFi077r4
- Ocn4cSI3/VyQ9lfK8vGXW2jO4yPig2h/lMTzLMxH1kgXi7EZDrpHLMkCj
- /YEct4D/Hewbs1F2pPkRwViaOqs6ZsO25wFgoNcWy+moJfh21G97/2fpg
- 0sgD1VRZaLPrzk1KqvRBqCcsXRDVEuh4l4K8u5hIcMAUdi4aDrC/+l6ng
- Wo+vkQ3rTiXGkGxAoYkx7qzCPDNpMCfYEp5Y5UlCOUQyR79/he9wPX3Bk A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10393"; a="368615198"
-X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; d="scan'208";a="368615198"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 30 Jun 2022 02:33:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,233,1650956400"; d="scan'208";a="693983715"
-Received: from shbuild999.sh.intel.com (HELO localhost) ([10.239.146.138])
- by fmsmga002.fm.intel.com with ESMTP; 30 Jun 2022 02:33:47 -0700
-Date: Thu, 30 Jun 2022 17:33:46 +0800
-From: Feng Tang <feng.tang@intel.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/iova: change IOVA_MAG_SIZE to 127 to save memory
-Message-ID: <20220630093346.GD4668@shbuild999.sh.intel.com>
-References: <20220630073304.26945-1-feng.tang@intel.com>
- <13db50bb-57c7-0d54-3857-84b8a4591d9e@arm.com>
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 76A3E61340
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 76A3E61340
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 12:37:20 +0000 (UTC)
+Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.57])
+ by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LYd9v112wz9smf;
+ Thu, 30 Jun 2022 20:36:35 +0800 (CST)
+Received: from dggpeml500008.china.huawei.com (7.185.36.147) by
+ dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 30 Jun 2022 20:37:16 +0800
+Received: from huawei.com (10.67.175.34) by dggpeml500008.china.huawei.com
+ (7.185.36.147) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 30 Jun
+ 2022 20:37:16 +0800
+To: <hch@lst.de>, <m.szyprowski@samsung.com>, <robin.murphy@arm.com>,
+ <mathieu.poirier@linaro.org>, <mark-pk.tsai@mediatek.com>
+Subject: [PATCH -next] dma-mapping: Fix build error unused-value
+Date: Thu, 30 Jun 2022 20:35:28 +0800
+Message-ID: <20220630123528.251181-1-renzhijie2@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <13db50bb-57c7-0d54-3857-84b8a4591d9e@arm.com>
+X-Originating-IP: [10.67.175.34]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500008.china.huawei.com (7.185.36.147)
+X-CFilter-Loop: Reflected
 X-Mailman-Approved-At: Thu, 30 Jun 2022 14:00:37 +0000
-Cc: Paul Menzel <pmenzel@molgen.mpg.de>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org, Christoph Lameter <cl@linux.com>,
- Will Deacon <will@kernel.org>, Andrew Morton <akpm@linux-foundation.org>,
- Vlastimil Babka <vbabka@suse.cz>
+Cc: iommu@lists.linux-foundation.org, Ren Zhijie <renzhijie2@huawei.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,102 +75,44 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: Ren Zhijie via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Ren Zhijie <renzhijie2@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Robin,
-
-On Thu, Jun 30, 2022 at 10:02:00AM +0100, Robin Murphy wrote:
-> On 2022-06-30 08:33, Feng Tang wrote:
-> > kmalloc will round up the request size to power of 2, and current
-> > iova_magazine's size is 1032 (1024+8) bytes, so each instance
-> > allocated will get 2048 bytes from kmalloc, causing around 1KB
-> > waste.
-> > 
-> > And in some exstreme case, the memory wasted can trigger OOM as
-> > reported in 2019 on a crash kernel with 256 MB memory [1].
-> 
-> I don't think it really needs pointing out that excessive memory consumption
-> can cause OOM. Especially not in the particularly silly context of a system
-> with only 2MB of RAM per CPU - that's pretty much guaranteed to be doomed
-> one way or another.
-
-Yes, the 256MB for 128 CPU is kind of extreme, will remove this.
-
-> >    [    4.319253] iommu: Adding device 0000:06:00.2 to group 5
-> >    [    4.325869] iommu: Adding device 0000:20:01.0 to group 15
-> >    [    4.332648] iommu: Adding device 0000:20:02.0 to group 16
-> >    [    4.338946] swapper/0 invoked oom-killer: gfp_mask=0x6040c0(GFP_KERNEL|__GFP_COMP), nodemask=(null), order=0, oom_score_adj=0
-> >    [    4.350251] swapper/0 cpuset=/ mems_allowed=0
-> >    [    4.354618] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.19.57.mx64.282 #1
-> >    [    4.355612] Hardware name: Dell Inc. PowerEdge R7425/08V001, BIOS 1.9.3 06/25/2019
-> >    [    4.355612] Call Trace:
-> >    [    4.355612]  dump_stack+0x46/0x5b
-> >    [    4.355612]  dump_header+0x6b/0x289
-> >    [    4.355612]  out_of_memory+0x470/0x4c0
-> >    [    4.355612]  __alloc_pages_nodemask+0x970/0x1030
-> >    [    4.355612]  cache_grow_begin+0x7d/0x520
-> >    [    4.355612]  fallback_alloc+0x148/0x200
-> >    [    4.355612]  kmem_cache_alloc_trace+0xac/0x1f0
-> >    [    4.355612]  init_iova_domain+0x112/0x170
-> >    [    4.355612]  amd_iommu_domain_alloc+0x138/0x1a0
-> >    [    4.355612]  iommu_group_get_for_dev+0xc4/0x1a0
-> >    [    4.355612]  amd_iommu_add_device+0x13a/0x610
-> >    [    4.355612]  add_iommu_group+0x20/0x30
-> >    [    4.355612]  bus_for_each_dev+0x76/0xc0
-> >    [    4.355612]  bus_set_iommu+0xb6/0xf0
-> >    [    4.355612]  amd_iommu_init_api+0x112/0x132
-> >    [    4.355612]  state_next+0xfb1/0x1165
-> >    [    4.355612]  amd_iommu_init+0x1f/0x67
-> >    [    4.355612]  pci_iommu_init+0x16/0x3f
-> >    ...
-> >    [    4.670295] Unreclaimable slab info:
-> >    ...
-> >    [    4.857565] kmalloc-2048           59164KB      59164KB
-> > 
-> > Change IOVA_MAG_SIZE from 128 to 127 to make size of 'iova_magazine'
-> > 1024 bytes so that no memory will be wasted.
-> > 
-> > [1]. https://lkml.org/lkml/2019/8/12/266
-> > 
-> > Signed-off-by: Feng Tang <feng.tang@intel.com>
-> > ---
-> >   drivers/iommu/iova.c | 7 ++++++-
-> >   1 file changed, 6 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> > index db77aa675145b..27634ddd9b904 100644
-> > --- a/drivers/iommu/iova.c
-> > +++ b/drivers/iommu/iova.c
-> > @@ -614,7 +614,12 @@ EXPORT_SYMBOL_GPL(reserve_iova);
-> >    * dynamic size tuning described in the paper.
-> >    */
-> > -#define IOVA_MAG_SIZE 128
-> > +/*
-> > + * As kmalloc's buffer size is fixed to power of 2, 127 is chosen to
-> > + * assure size of 'iova_magzine' to be 1024 bytes, so that no memory
-> 
-> Typo: iova_magazine
-
-will fix.
-
-> > + * will be wasted.
-> > + */
-> > +#define IOVA_MAG_SIZE 127
-> 
-> The change itself seems perfectly reasonable, though.
-> 
-> Acked-by: Robin Murphy <robin.murphy@arm.com>
- 
-Thanks for the review!
-
-- Feng
-
-> >   #define MAX_GLOBAL_MAGS 32	/* magazines per bin */
-> >   struct iova_magazine {
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SWYgQ09ORklHX0RNQV9ERUNMQVJFX0NPSEVSRU5UIGlzIG5vdCBzZXQsCm1ha2UgQVJDSD14ODZf
+NjQgQ1JPU1NfQ09NUElMRT14ODZfNjQtbGludXgtZ251LSB3aWxsIGJlIGZhaWxlZCwgbGlrZSB0
+aGlzOgoKZHJpdmVycy9yZW1vdGVwcm9jL3JlbW90ZXByb2NfY29yZS5jOiBJbiBmdW5jdGlvbiDi
+gJhycHJvY19ydmRldl9yZWxlYXNl4oCZOgouL2luY2x1ZGUvbGludXgvZG1hLW1hcC1vcHMuaDox
+ODI6NDI6IGVycm9yOiBzdGF0ZW1lbnQgd2l0aCBubyBlZmZlY3QgWy1XZXJyb3I9dW51c2VkLXZh
+bHVlXQogI2RlZmluZSBkbWFfcmVsZWFzZV9jb2hlcmVudF9tZW1vcnkoZGV2KSAoMCkKICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXgpkcml2ZXJzL3JlbW90ZXByb2Mv
+cmVtb3RlcHJvY19jb3JlLmM6NDY0OjI6IG5vdGU6IGluIGV4cGFuc2lvbiBvZiBtYWNybyDigJhk
+bWFfcmVsZWFzZV9jb2hlcmVudF9tZW1vcnnigJkKICBkbWFfcmVsZWFzZV9jb2hlcmVudF9tZW1v
+cnkoZGV2KTsKICBefn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn4KY2MxOiBhbGwgd2FybmluZ3Mg
+YmVpbmcgdHJlYXRlZCBhcyBlcnJvcnMKClRoZSByZXR1cm4gdHlwZSBvZiBmdW5jdGlvbiBkbWFf
+cmVsZWFzZV9jb2hlcmVudF9tZW1vcnkgaW4gQ09ORklHX0RNQV9ERUNMQVJFX0NPSEVSRU5UIGFy
+ZWEgaXMgdm9pZCwgc28gaW4gIUNPTkZJR19ETUFfREVDTEFSRV9DT0hFUkVOVCBhcmVhIGl0IHNo
+b3VsZCBuZWl0aGVyIHJldHVybiBhbnkgdmFsdWUgbm9yIGJlIGRlZmluZWQgYXMgemVyby4KClJl
+cG9ydGVkLWJ5OiBIdWxrIFJvYm90IDxodWxrY2lAaHVhd2VpLmNvbT4KRml4ZXM6IGU2MWM0NTE0
+NzZlNigiZG1hLW1hcHBpbmc6IEFkZCBkbWFfcmVsZWFzZV9jb2hlcmVudF9tZW1vcnkgdG8gRE1B
+IEFQSSIpClNpZ25lZC1vZmYtYnk6IFJlbiBaaGlqaWUgPHJlbnpoaWppZTJAaHVhd2VpLmNvbT4K
+LS0tCiBpbmNsdWRlL2xpbnV4L2RtYS1tYXAtb3BzLmggfCAyICstCiAxIGZpbGUgY2hhbmdlZCwg
+MSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkKCmRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4
+L2RtYS1tYXAtb3BzLmggYi9pbmNsdWRlL2xpbnV4L2RtYS1tYXAtb3BzLmgKaW5kZXggNTNkYjk2
+NTVlZmU5Li5iZmZmZTQ5NDM1NmEgMTAwNjQ0Ci0tLSBhL2luY2x1ZGUvbGludXgvZG1hLW1hcC1v
+cHMuaAorKysgYi9pbmNsdWRlL2xpbnV4L2RtYS1tYXAtb3BzLmgKQEAgLTE3OSwxMCArMTc5LDEw
+IEBAIHN0YXRpYyBpbmxpbmUgaW50IGRtYV9kZWNsYXJlX2NvaGVyZW50X21lbW9yeShzdHJ1Y3Qg
+ZGV2aWNlICpkZXYsCiAJcmV0dXJuIC1FTk9TWVM7CiB9CiAKLSNkZWZpbmUgZG1hX3JlbGVhc2Vf
+Y29oZXJlbnRfbWVtb3J5KGRldikgKDApCiAjZGVmaW5lIGRtYV9hbGxvY19mcm9tX2Rldl9jb2hl
+cmVudChkZXYsIHNpemUsIGhhbmRsZSwgcmV0KSAoMCkKICNkZWZpbmUgZG1hX3JlbGVhc2VfZnJv
+bV9kZXZfY29oZXJlbnQoZGV2LCBvcmRlciwgdmFkZHIpICgwKQogI2RlZmluZSBkbWFfbW1hcF9m
+cm9tX2Rldl9jb2hlcmVudChkZXYsIHZtYSwgdmFkZHIsIG9yZGVyLCByZXQpICgwKQorc3RhdGlj
+IGlubGluZSB2b2lkIGRtYV9yZWxlYXNlX2NvaGVyZW50X21lbW9yeShzdHJ1Y3QgZGV2aWNlICpk
+ZXYpIHsgfQogI2VuZGlmIC8qIENPTkZJR19ETUFfREVDTEFSRV9DT0hFUkVOVCAqLwogCiAjaWZk
+ZWYgQ09ORklHX0RNQV9HTE9CQUxfUE9PTAotLSAKMi4xNy4xCgpfX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlz
+dHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3Jn
+L21haWxtYW4vbGlzdGluZm8vaW9tbXU=
