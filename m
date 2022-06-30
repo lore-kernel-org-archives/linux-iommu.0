@@ -4,131 +4,106 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4C8D0CCA482
-	for <iommu@archiver.kernel.org>; Thu, 30 Jun 2022 20:37:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 85EA2C433EF
+	for <iommu@archiver.kernel.org>; Thu, 30 Jun 2022 21:22:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id CC37C611AA;
-	Thu, 30 Jun 2022 20:37:19 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org CC37C611AA
+	by smtp3.osuosl.org (Postfix) with ESMTP id 153AC60F84;
+	Thu, 30 Jun 2022 21:22:11 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 153AC60F84
 Authentication-Results: smtp3.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=UgIH2PrV
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.a=rsa-sha256 header.s=20200525 header.b=VJXKRmwb
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2uHZnED8uibF; Thu, 30 Jun 2022 20:37:18 +0000 (UTC)
+	with ESMTP id AXmz9PhH7CJa; Thu, 30 Jun 2022 21:22:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 492C360F71;
-	Thu, 30 Jun 2022 20:37:18 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 492C360F71
+	by smtp3.osuosl.org (Postfix) with ESMTPS id A52D360B6C;
+	Thu, 30 Jun 2022 21:22:09 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org A52D360B6C
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 245B9C0021;
-	Thu, 30 Jun 2022 20:37:18 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 921ECC0011;
- Thu, 30 Jun 2022 20:37:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 706F8C002D;
+	Thu, 30 Jun 2022 21:22:09 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 128BAC0011
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 21:22:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 4DE7460AEB;
- Thu, 30 Jun 2022 20:37:15 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 4DE7460AEB
+ by smtp4.osuosl.org (Postfix) with ESMTP id D9DF0423A2
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 21:22:06 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org D9DF0423A2
+Authentication-Results: smtp4.osuosl.org;
+ dkim=pass (2048-bit key) header.d=deltatee.com header.i=@deltatee.com
+ header.a=rsa-sha256 header.s=20200525 header.b=VJXKRmwb
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qPZ9FOg2dZG7; Thu, 30 Jun 2022 20:37:14 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org D063860F83
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com
- (mail-bn7nam10on2085.outbound.protection.outlook.com [40.107.92.85])
- by smtp3.osuosl.org (Postfix) with ESMTPS id D063860F83;
- Thu, 30 Jun 2022 20:37:13 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=O2aYANUfCGPkeKDiw0o1qjtIvr6Fuv4uVqPoOQc/uu8GnwVK3UGeNBhEOMUfpI8B6d22405qaXzDu2avS0d6hDv0L8qCOs9cGvxE8o2oQuHyvNObrpgkvvGpTbXLx0QESA/QwRqqTXVhZ/AgGnkU2HZsoH9NOFlrYBIZoGHI6jj/05D5HU9P1GPauoKh67XrBuKmryCifaGg5EDu8pbrQM1OLCQhYSla2NXUu/1H2W8vanMJVRv14IlOtq/LL0dUwkEjO+POr/QDhyxVM75czw0VUsxBvKX6ep8Gr21KqY9xav36/CFJdBrKyoGJprSjr4em8khODyBqMj8wGOEw/w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0+CRllzmpv7oRNdRZDXprjiWKYiUdQGruH2n+fqJFoo=;
- b=MQU/GIrf3ZdHzbYIWxlv7NlxURRPtAL0iA9LZ8Yciqj0dTUyMGdmrdBWlZkHK7ci6NHW4D/Se1erEtCrP9OexPmYtfeakheQlfrNuBtBJ1xvWfKZGy7pzuCFHGlo0Lc9tUawueEpLjupoNZFdtBOE3NugvTMge0DgAKx87Aarnmc3wGJX57kYaS1RBFqzdujeegMGHq8EC2JanXFGSvPk5YU6ADo82xooAr8ZwrTO1653KHMxt+zV3fyGDxo4oXRI82cwfNBaCVkUXRNJebsXrFwbhjalH/ZbPA6MERd1+U7WCiBSC/95LftFBeH/Da5eH3SIPeihJaR1411c42CXA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
- (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
- (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0+CRllzmpv7oRNdRZDXprjiWKYiUdQGruH2n+fqJFoo=;
- b=UgIH2PrVrETNeuqzTheEshfivDHIwunlqZe4R37QC6cP3ADk/dE/23tB475gqWyzPpAeEIeYMIiO4fADV62AzyKDlHBDXoA89Sb3QlRR6MV2rLDHNrwwwYIXxmcJDtJJP/yyHtc/t4mxBvp0r2GjXH0sOdkJL4p+GHH5bTXTg/MiUo5OhjXLc7lhyQl86PeE8ewIY+gtx8yKGYf0iJQwF5jJT+DI9BpwhCdLqTcf4kBuEalf9UEoJLvrzZ8is7rZBE7pltkDv5NSNJYRv6BPn2oiH6dXi4vDVe35koD09mtViUwMfkb6zfQBYKaZSehGCthF6B+F5uknvBkgpl7QkQ==
-Received: from BN9PR03CA0498.namprd03.prod.outlook.com (2603:10b6:408:130::23)
- by BYAPR12MB3384.namprd12.prod.outlook.com (2603:10b6:a03:d8::19)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.18; Thu, 30 Jun
- 2022 20:37:09 +0000
-Received: from BN8NAM11FT042.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:130:cafe::83) by BN9PR03CA0498.outlook.office365.com
- (2603:10b6:408:130::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14 via Frontend
- Transport; Thu, 30 Jun 2022 20:37:09 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.234) by
- BN8NAM11FT042.mail.protection.outlook.com (10.13.177.85) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5395.14 via Frontend Transport; Thu, 30 Jun 2022 20:37:09 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- DRHQMAIL101.nvidia.com (10.27.9.10) with Microsoft SMTP Server (TLS) id
- 15.0.1497.32; Thu, 30 Jun 2022 20:37:09 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.26; Thu, 30 Jun 2022 13:37:08 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.11) by mail.nvidia.com
- (10.126.190.182) with Microsoft SMTP Server id 15.2.986.26 via Frontend
- Transport; Thu, 30 Jun 2022 13:37:07 -0700
-To: <joro@8bytes.org>, <will@kernel.org>, <marcan@marcan.st>,
- <sven@svenpeter.dev>, <robin.murphy@arm.com>, <robdclark@gmail.com>,
- <baolu.lu@linux.intel.com>, <orsonzhai@gmail.com>, <baolin.wang7@gmail.com>,
- <zhang.lyra@gmail.com>, <jean-philippe@linaro.org>,
- <alex.williamson@redhat.com>, <jgg@nvidia.com>, <kevin.tian@intel.com>
-Subject: [PATCH v4 5/5] vfio/iommu_type1: Simplify group attachment
-Date: Thu, 30 Jun 2022 13:36:35 -0700
-Message-ID: <20220630203635.33200-6-nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220630203635.33200-1-nicolinc@nvidia.com>
-References: <20220630203635.33200-1-nicolinc@nvidia.com>
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id c16bukMEL3uJ for <iommu@lists.linux-foundation.org>;
+ Thu, 30 Jun 2022 21:22:04 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 89C80423A1
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 89C80423A1
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 21:22:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
+ MIME-Version:Date:Message-ID:content-disposition;
+ bh=lcE0RG7zHjzAvuVO13dlZQZgYUdkoKNtHGwpbVB8WSY=; b=VJXKRmwbrfTeru4GStEgHnOFcn
+ 0clAFOb+uSboDe5lSH6bYXIDyM3A7FV1m1Gv40/1WK+WmKuyU4GcovIZln8u/dOZNroWCwnZTCILD
+ UngbBjeNR9R/2lSaYm9F4nCbknUpbtSWveSI8iaLewadz2cRFT6Ts07ys3AhLJ5hULu5Qjjr9GbyR
+ sj5HECu0OR4z2h2JvEHhTUp5YwFApvTKp5tE7hTFr3k6HO4YBl53QWu7GFrHxx2lVEGROAalhImzW
+ soOQzHUJ3ws78RKLCrt/8AG1InmS7nqUSlYNP+aV7cYdnXQFj+ilO5CQMJjbF5y0acg1lAZ0SkjVv
+ HipxMV4Q==;
+Received: from s0106a84e3fe8c3f3.cg.shawcable.net ([24.64.144.200]
+ helo=[192.168.0.10]) by ale.deltatee.com with esmtpsa (TLS1.3) tls
+ TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (Exim 4.94.2)
+ (envelope-from <logang@deltatee.com>)
+ id 1o71bm-003Olq-2k; Thu, 30 Jun 2022 15:21:55 -0600
+Message-ID: <fd9da4cd-b395-fe06-c056-7ffc9f1f55cf@deltatee.com>
+Date: Thu, 30 Jun 2022 15:21:46 -0600
 MIME-Version: 1.0
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b555f144-4cce-4ebf-1fca-08da5ad84e26
-X-MS-TrafficTypeDiagnostic: BYAPR12MB3384:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 2WkKCUrsxMIDpls6t9QOlvN7+aT77r9V8afWbtT194zmO8oYFIG553leG9juabhqLq+urDnULldWidUvy9zDHDRpzJr9LVqd8uM12Tz3H9WA3pod4N1dAKSnS5ojlkvDaxjjhJSSkEkc9vjq0Ol+inwlExCwEIGyNQHnJ/0W9QEAF0zn8eoDtBQxdnKlAEYKraoDf9hOibGwpqZVpU6NGxeRLST0EfZAgxha1Vy4Nf2oWiJZUCKalAtR8IbexLmSwUCEqcVRMN8r8SVEESEYmdS/zGSC9RyuBAJKDK33NXVuL9UPdawHrHSLwWf++n+ZZZNbOYG45QEP8XsobcsyCuJ4zEVUE1uv7qxTLZuxVMLHPwzI1A5PtYkV6dYzmCto7wJ7SXOf1dYJuOdt4XvdSlWb/yVEbzSEtCBBraegZgouNHAu6mRTTSb3aIQ8g5FTMpiPxOSyeVnSYuIZ8a7xu3XmT+oCROmUKknzh7XvD5e+55DOj6R2fT3ZrozcwAi22LKxiWUdsRUXzyoRs1YbKEPOo56jAx7X2mLJPszyzb6TCTrSaVFC29o8kZD5LGmNTxOF61UERFIcpvlesi+JhdPzMAPdkZjjzb0Ilxl1FV30cUW/TBBXzkYLuYRv3JS5+T3XwQsYaaKsTSJNYiJcibeT2tX51EIA2xBfJygffxH4ymvXbKxHa8Bmko/HCMApP6KNgbwlavxJyNPwm967dl9cccl36uokR6d31KqqKjAawsCAo2GiMsZ3Bq8NTmqDh92k1D7Hz3PseivfJSyg0jMyCPvyLYPTjH83G0KcJEKT0JXlKdsi36foP9JD4DyBN4Rib2mk4nJOhY6ZohSO92FuZmO+cYpfQF3uo5Zd38fmrNGCNZNlGG+b/bAdufvCT3bIC5AGxWfp/sxm9t96dGGOe690bveKIpwVtD7ynn0=
-X-Forefront-Antispam-Report: CIP:12.22.5.234; CTRY:US; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:mail.nvidia.com; PTR:InfoNoRecords; CAT:NONE;
- SFS:(13230016)(4636009)(136003)(396003)(376002)(346002)(39860400002)(46966006)(36840700001)(40470700004)(356005)(82740400003)(86362001)(7406005)(70206006)(426003)(2616005)(7696005)(41300700001)(82310400005)(4326008)(83380400001)(6666004)(921005)(40480700001)(336012)(40460700003)(81166007)(478600001)(47076005)(26005)(8936002)(36756003)(70586007)(110136005)(54906003)(7416002)(5660300002)(30864003)(8676002)(2906002)(1076003)(186003)(36860700001)(316002)(83996005)(36900700001)(2101003);
- DIR:OUT; SFP:1101; 
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jun 2022 20:37:09.5028 (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b555f144-4cce-4ebf-1fca-08da5ad84e26
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a; Ip=[12.22.5.234];
- Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT042.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3384
-Cc: virtualization@lists.linux-foundation.org, thierry.reding@gmail.com,
- alyssa@rosenzweig.io, linux-s390@vger.kernel.org, kvm@vger.kernel.org,
- jonathanh@nvidia.com, iommu@lists.linux.dev, yangyingliang@huawei.com,
- gerald.schaefer@linux.ibm.com, linux-arm-msm@vger.kernel.org,
- christophe.jaillet@wanadoo.fr, linux-tegra@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, cohuck@redhat.com,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- dwmw2@infradead.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Content-Language: en-CA
+To: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+ linux-nvme@lists.infradead.org, linux-block@vger.kernel.org,
+ linux-pci@vger.kernel.org, linux-mm@kvack.org,
+ iommu@lists.linux-foundation.org
+References: <20220615161233.17527-1-logang@deltatee.com>
+ <20220615161233.17527-9-logang@deltatee.com>
+ <feecc6fe-a16e-11f2-33c8-3de7c96b9ad5@arm.com>
+ <f56181fb-7035-a775-22b1-77f97d6ec52c@deltatee.com>
+ <7f0673e1-433b-65fb-1d2b-c3e4adeebf87@arm.com>
+ <626de61d-e85e-bc9f-9e3d-836a408c859f@deltatee.com>
+ <f9c1e41b-d2a8-61fe-0888-4f0f988912a7@arm.com>
+From: Logan Gunthorpe <logang@deltatee.com>
+In-Reply-To: <f9c1e41b-d2a8-61fe-0888-4f0f988912a7@arm.com>
+X-SA-Exim-Connect-IP: 24.64.144.200
+X-SA-Exim-Rcpt-To: robin.murphy@arm.com, linux-kernel@vger.kernel.org,
+ linux-nvme@lists.infradead.org, linux-block@vger.kernel.org,
+ linux-pci@vger.kernel.org, linux-mm@kvack.org,
+ iommu@lists.linux-foundation.org, dave.b.minturn@intel.com,
+ martin.oliveira@eideticom.com, rcampbell@nvidia.com, jgg@nvidia.com,
+ jhubbard@nvidia.com, dave.hansen@linux.intel.com, willy@infradead.org,
+ christian.koenig@amd.com, jgg@ziepe.ca, ckulkarnilinux@gmail.com,
+ jason@jlekstrand.net, daniel.vetter@ffwll.ch, helgaas@kernel.org,
+ dan.j.williams@intel.com, sbates@raithlin.com, ira.weiny@intel.com, hch@lst.de,
+ jianxin.xiong@intel.com
+X-SA-Exim-Mail-From: logang@deltatee.com
+Subject: Re: [PATCH v7 08/21] iommu/dma: support PCI P2PDMA pages in dma-iommu
+ map_sg
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+Cc: Minturn Dave B <dave.b.minturn@intel.com>,
+ Ralph Campbell <rcampbell@nvidia.com>, Jason Ekstrand <jason@jlekstrand.net>,
+ Christoph Hellwig <hch@lst.de>, John Hubbard <jhubbard@nvidia.com>,
+ Dave Hansen <dave.hansen@linux.intel.com>,
+ Martin Oliveira <martin.oliveira@eideticom.com>,
+ Matthew Wilcox <willy@infradead.org>, Stephen Bates <sbates@raithlin.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
+ Bjorn Helgaas <helgaas@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>,
+ Daniel Vetter <daniel.vetter@ffwll.ch>,
+ Dan Williams <dan.j.williams@intel.com>, Ira Weiny <ira.weiny@intel.com>,
+ =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+ Xiong Jianxin <jianxin.xiong@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -141,432 +116,107 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Nicolin Chen via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Nicolin Chen <nicolinc@nvidia.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Un-inline the domain specific logic from the attach/detach_group ops into
-two paired functions vfio_iommu_alloc_attach_domain() and
-vfio_iommu_detach_destroy_domain() that strictly deal with creating and
-destroying struct vfio_domains.
-
-Add the logic to check for EMEDIUMTYPE return code of iommu_attach_group()
-and avoid the extra domain allocations and attach/detach sequences of the
-old code. This allows properly detecting an actual attach error, like
--ENOMEM, vs treating all attach errors as an incompatible domain.
-
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Co-developed-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
- drivers/vfio/vfio_iommu_type1.c | 321 +++++++++++++++++---------------
- 1 file changed, 174 insertions(+), 147 deletions(-)
-
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index b9ccb3cfac5d..3ffa4e2d9d18 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -2153,15 +2153,174 @@ static void vfio_iommu_iova_insert_copy(struct vfio_iommu *iommu,
- 	list_splice_tail(iova_copy, iova);
- }
- 
-+static struct vfio_domain *
-+vfio_iommu_alloc_attach_domain(struct bus_type *bus, struct vfio_iommu *iommu,
-+			       struct vfio_iommu_group *group,
-+			       struct list_head *group_resv_regions)
-+{
-+	struct iommu_domain *new_domain;
-+	struct vfio_domain *domain;
-+	phys_addr_t resv_msi_base;
-+	int ret = 0;
-+
-+	/* Try to match an existing compatible domain */
-+	list_for_each_entry (domain, &iommu->domain_list, next) {
-+		ret = iommu_attach_group(domain->domain, group->iommu_group);
-+		/* -EMEDIUMTYPE means an incompatible domain, so try next one */
-+		if (ret == -EMEDIUMTYPE)
-+			continue;
-+		if (ret)
-+			return ERR_PTR(ret);
-+		goto done;
-+	}
-+
-+	new_domain = iommu_domain_alloc(bus);
-+	if (!new_domain)
-+		return ERR_PTR(-EIO);
-+
-+	if (iommu->nesting) {
-+		ret = iommu_enable_nesting(new_domain);
-+		if (ret)
-+			goto out_free_iommu_domain;
-+	}
-+
-+	ret = iommu_attach_group(new_domain, group->iommu_group);
-+	if (ret)
-+		goto out_free_iommu_domain;
-+
-+	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
-+	if (!domain) {
-+		ret = -ENOMEM;
-+		goto out_detach;
-+	}
-+
-+	domain->domain = new_domain;
-+	vfio_test_domain_fgsp(domain);
-+
-+	/*
-+	 * If the IOMMU can block non-coherent operations (ie PCIe TLPs with
-+	 * no-snoop set) then VFIO always turns this feature on because on Intel
-+	 * platforms it optimizes KVM to disable wbinvd emulation.
-+	 */
-+	if (new_domain->ops->enforce_cache_coherency)
-+		domain->enforce_cache_coherency =
-+			new_domain->ops->enforce_cache_coherency(new_domain);
-+
-+	/* replay mappings on new domains */
-+	ret = vfio_iommu_replay(iommu, domain);
-+	if (ret)
-+		goto out_free_domain;
-+
-+	if (vfio_iommu_has_sw_msi(group_resv_regions, &resv_msi_base)) {
-+		ret = iommu_get_msi_cookie(domain->domain, resv_msi_base);
-+		if (ret && ret != -ENODEV)
-+			goto out_free_domain;
-+	}
-+
-+	INIT_LIST_HEAD(&domain->group_list);
-+	list_add(&domain->next, &iommu->domain_list);
-+	vfio_update_pgsize_bitmap(iommu);
-+
-+done:
-+	list_add(&group->next, &domain->group_list);
-+
-+	/*
-+	 * An iommu backed group can dirty memory directly and therefore
-+	 * demotes the iommu scope until it declares itself dirty tracking
-+	 * capable via the page pinning interface.
-+	 */
-+	iommu->num_non_pinned_groups++;
-+
-+	return domain;
-+
-+out_free_domain:
-+	kfree(domain);
-+out_detach:
-+	iommu_detach_group(new_domain, group->iommu_group);
-+out_free_iommu_domain:
-+	iommu_domain_free(new_domain);
-+	return ERR_PTR(ret);
-+}
-+
-+static void vfio_iommu_unmap_unpin_all(struct vfio_iommu *iommu)
-+{
-+	struct rb_node *node;
-+
-+	while ((node = rb_first(&iommu->dma_list)))
-+		vfio_remove_dma(iommu, rb_entry(node, struct vfio_dma, node));
-+}
-+
-+static void vfio_iommu_unmap_unpin_reaccount(struct vfio_iommu *iommu)
-+{
-+	struct rb_node *n, *p;
-+
-+	n = rb_first(&iommu->dma_list);
-+	for (; n; n = rb_next(n)) {
-+		struct vfio_dma *dma;
-+		long locked = 0, unlocked = 0;
-+
-+		dma = rb_entry(n, struct vfio_dma, node);
-+		unlocked += vfio_unmap_unpin(iommu, dma, false);
-+		p = rb_first(&dma->pfn_list);
-+		for (; p; p = rb_next(p)) {
-+			struct vfio_pfn *vpfn = rb_entry(p, struct vfio_pfn,
-+							 node);
-+
-+			if (!is_invalid_reserved_pfn(vpfn->pfn))
-+				locked++;
-+		}
-+		vfio_lock_acct(dma, locked - unlocked, true);
-+	}
-+}
-+
-+static void vfio_iommu_detach_destroy_domain(struct vfio_domain *domain,
-+					     struct vfio_iommu *iommu,
-+					     struct vfio_iommu_group *group)
-+{
-+	iommu_detach_group(domain->domain, group->iommu_group);
-+	list_del(&group->next);
-+	if (!list_empty(&domain->group_list))
-+		goto out_dirty;
-+
-+	/*
-+	 * Group ownership provides privilege, if the group list is empty, the
-+	 * domain goes away. If it's the last domain with iommu and external
-+	 * domain doesn't exist, then all the mappings go away too. If it's the
-+	 * last domain with iommu and external domain exist, update accounting
-+	 */
-+	if (list_is_singular(&iommu->domain_list)) {
-+		if (list_empty(&iommu->emulated_iommu_groups)) {
-+			WARN_ON(iommu->notifier.head);
-+			vfio_iommu_unmap_unpin_all(iommu);
-+		} else {
-+			vfio_iommu_unmap_unpin_reaccount(iommu);
-+		}
-+	}
-+	iommu_domain_free(domain->domain);
-+	list_del(&domain->next);
-+	kfree(domain);
-+	vfio_update_pgsize_bitmap(iommu);
-+
-+out_dirty:
-+	/*
-+	 * Removal of a group without dirty tracking may allow the iommu scope
-+	 * to be promoted.
-+	 */
-+	if (!group->pinned_page_dirty_scope) {
-+		iommu->num_non_pinned_groups--;
-+		if (iommu->dirty_page_tracking)
-+			vfio_iommu_populate_bitmap_full(iommu);
-+	}
-+}
-+
- static int vfio_iommu_type1_attach_group(void *iommu_data,
- 		struct iommu_group *iommu_group, enum vfio_group_type type)
- {
- 	struct vfio_iommu *iommu = iommu_data;
- 	struct vfio_iommu_group *group;
--	struct vfio_domain *domain, *d;
-+	struct vfio_domain *domain;
- 	struct bus_type *bus = NULL;
--	bool resv_msi, msi_remap;
--	phys_addr_t resv_msi_base = 0;
-+	bool msi_remap;
- 	struct iommu_domain_geometry *geo;
- 	LIST_HEAD(iova_copy);
- 	LIST_HEAD(group_resv_regions);
-@@ -2197,26 +2356,17 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	if (ret)
- 		goto out_free_group;
- 
--	ret = -ENOMEM;
--	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
--	if (!domain)
-+	ret = iommu_get_group_resv_regions(iommu_group, &group_resv_regions);
-+	if (ret)
- 		goto out_free_group;
- 
--	ret = -EIO;
--	domain->domain = iommu_domain_alloc(bus);
--	if (!domain->domain)
--		goto out_free_domain;
--
--	if (iommu->nesting) {
--		ret = iommu_enable_nesting(domain->domain);
--		if (ret)
--			goto out_domain;
-+	domain = vfio_iommu_alloc_attach_domain(bus, iommu, group,
-+						&group_resv_regions);
-+	if (IS_ERR(domain)) {
-+		ret = PTR_ERR(domain);
-+		goto out_free_group;
- 	}
- 
--	ret = iommu_attach_group(domain->domain, group->iommu_group);
--	if (ret)
--		goto out_domain;
--
- 	/* Get aperture info */
- 	geo = &domain->domain->geometry;
- 	if (vfio_iommu_aper_conflict(iommu, geo->aperture_start,
-@@ -2225,10 +2375,6 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 		goto out_detach;
- 	}
- 
--	ret = iommu_get_group_resv_regions(iommu_group, &group_resv_regions);
--	if (ret)
--		goto out_detach;
--
- 	if (vfio_iommu_resv_conflict(iommu, &group_resv_regions)) {
- 		ret = -EINVAL;
- 		goto out_detach;
-@@ -2252,11 +2398,6 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	if (ret)
- 		goto out_detach;
- 
--	resv_msi = vfio_iommu_has_sw_msi(&group_resv_regions, &resv_msi_base);
--
--	INIT_LIST_HEAD(&domain->group_list);
--	list_add(&group->next, &domain->group_list);
--
- 	msi_remap = irq_domain_check_msi_remap() ||
- 		    iommu_capable(bus, IOMMU_CAP_INTR_REMAP);
- 
-@@ -2267,107 +2408,25 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 		goto out_detach;
- 	}
- 
--	/*
--	 * If the IOMMU can block non-coherent operations (ie PCIe TLPs with
--	 * no-snoop set) then VFIO always turns this feature on because on Intel
--	 * platforms it optimizes KVM to disable wbinvd emulation.
--	 */
--	if (domain->domain->ops->enforce_cache_coherency)
--		domain->enforce_cache_coherency =
--			domain->domain->ops->enforce_cache_coherency(
--				domain->domain);
--
--	/* Try to match an existing compatible domain */
--	list_for_each_entry(d, &iommu->domain_list, next) {
--		iommu_detach_group(domain->domain, group->iommu_group);
--		if (!iommu_attach_group(d->domain, group->iommu_group)) {
--			list_add(&group->next, &d->group_list);
--			iommu_domain_free(domain->domain);
--			kfree(domain);
--			goto done;
--		}
--
--		ret = iommu_attach_group(domain->domain,  group->iommu_group);
--		if (ret)
--			goto out_domain;
--	}
--
--	vfio_test_domain_fgsp(domain);
--
--	/* replay mappings on new domains */
--	ret = vfio_iommu_replay(iommu, domain);
--	if (ret)
--		goto out_detach;
--
--	if (resv_msi) {
--		ret = iommu_get_msi_cookie(domain->domain, resv_msi_base);
--		if (ret && ret != -ENODEV)
--			goto out_detach;
--	}
--
--	list_add(&domain->next, &iommu->domain_list);
--	vfio_update_pgsize_bitmap(iommu);
--done:
- 	/* Delete the old one and insert new iova list */
- 	vfio_iommu_iova_insert_copy(iommu, &iova_copy);
- 
--	/*
--	 * An iommu backed group can dirty memory directly and therefore
--	 * demotes the iommu scope until it declares itself dirty tracking
--	 * capable via the page pinning interface.
--	 */
--	iommu->num_non_pinned_groups++;
- 	mutex_unlock(&iommu->lock);
- 	vfio_iommu_resv_free(&group_resv_regions);
- 
- 	return 0;
- 
- out_detach:
--	iommu_detach_group(domain->domain, group->iommu_group);
--out_domain:
--	iommu_domain_free(domain->domain);
--	vfio_iommu_iova_free(&iova_copy);
--	vfio_iommu_resv_free(&group_resv_regions);
--out_free_domain:
--	kfree(domain);
-+	vfio_iommu_detach_destroy_domain(domain, iommu, group);
- out_free_group:
- 	kfree(group);
- out_unlock:
- 	mutex_unlock(&iommu->lock);
-+	vfio_iommu_iova_free(&iova_copy);
-+	vfio_iommu_resv_free(&group_resv_regions);
- 	return ret;
- }
- 
--static void vfio_iommu_unmap_unpin_all(struct vfio_iommu *iommu)
--{
--	struct rb_node *node;
--
--	while ((node = rb_first(&iommu->dma_list)))
--		vfio_remove_dma(iommu, rb_entry(node, struct vfio_dma, node));
--}
--
--static void vfio_iommu_unmap_unpin_reaccount(struct vfio_iommu *iommu)
--{
--	struct rb_node *n, *p;
--
--	n = rb_first(&iommu->dma_list);
--	for (; n; n = rb_next(n)) {
--		struct vfio_dma *dma;
--		long locked = 0, unlocked = 0;
--
--		dma = rb_entry(n, struct vfio_dma, node);
--		unlocked += vfio_unmap_unpin(iommu, dma, false);
--		p = rb_first(&dma->pfn_list);
--		for (; p; p = rb_next(p)) {
--			struct vfio_pfn *vpfn = rb_entry(p, struct vfio_pfn,
--							 node);
--
--			if (!is_invalid_reserved_pfn(vpfn->pfn))
--				locked++;
--		}
--		vfio_lock_acct(dma, locked - unlocked, true);
--	}
--}
--
- /*
-  * Called when a domain is removed in detach. It is possible that
-  * the removed domain decided the iova aperture window. Modify the
-@@ -2482,44 +2541,12 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
- 		group = find_iommu_group(domain, iommu_group);
- 		if (!group)
- 			continue;
--
--		iommu_detach_group(domain->domain, group->iommu_group);
--		list_del(&group->next);
--		/*
--		 * Group ownership provides privilege, if the group list is
--		 * empty, the domain goes away. If it's the last domain with
--		 * iommu and external domain doesn't exist, then all the
--		 * mappings go away too. If it's the last domain with iommu and
--		 * external domain exist, update accounting
--		 */
--		if (list_empty(&domain->group_list)) {
--			if (list_is_singular(&iommu->domain_list)) {
--				if (list_empty(&iommu->emulated_iommu_groups)) {
--					WARN_ON(iommu->notifier.head);
--					vfio_iommu_unmap_unpin_all(iommu);
--				} else {
--					vfio_iommu_unmap_unpin_reaccount(iommu);
--				}
--			}
--			iommu_domain_free(domain->domain);
--			list_del(&domain->next);
--			kfree(domain);
--			vfio_iommu_aper_expand(iommu, &iova_copy);
--			vfio_update_pgsize_bitmap(iommu);
--		}
--		/*
--		 * Removal of a group without dirty tracking may allow
--		 * the iommu scope to be promoted.
--		 */
--		if (!group->pinned_page_dirty_scope) {
--			iommu->num_non_pinned_groups--;
--			if (iommu->dirty_page_tracking)
--				vfio_iommu_populate_bitmap_full(iommu);
--		}
-+		vfio_iommu_detach_destroy_domain(domain, iommu, group);
- 		kfree(group);
- 		break;
- 	}
- 
-+	vfio_iommu_aper_expand(iommu, &iova_copy);
- 	if (!vfio_iommu_resv_refresh(iommu, &iova_copy))
- 		vfio_iommu_iova_insert_copy(iommu, &iova_copy);
- 	else
--- 
-2.17.1
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+CgpPbiAyMDIyLTA2LTMwIDA4OjU2LCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4gT24gMjAyMi0wNi0y
+OSAyMzo0MSwgTG9nYW4gR3VudGhvcnBlIHdyb3RlOgo+Pgo+Pgo+PiBPbiAyMDIyLTA2LTI5IDEz
+OjE1LCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4+PiBPbiAyMDIyLTA2LTI5IDE2OjU3LCBMb2dhbiBH
+dW50aG9ycGUgd3JvdGU6Cj4+Pj4KPj4+Pgo+Pj4+Cj4+Pj4gT24gMjAyMi0wNi0yOSAwNjowNywg
+Um9iaW4gTXVycGh5IHdyb3RlOgo+Pj4+PiBPbiAyMDIyLTA2LTE1IDE3OjEyLCBMb2dhbiBHdW50
+aG9ycGUgd3JvdGU6Cj4+Pj4+PiBXaGVuIGEgUENJIFAyUERNQSBwYWdlIGlzIHNlZW4sIHNldCB0
+aGUgSU9WQSBsZW5ndGggb2YgdGhlIHNlZ21lbnQKPj4+Pj4+IHRvIHplcm8gc28gdGhhdCBpdCBp
+cyBub3QgbWFwcGVkIGludG8gdGhlIElPVkEuIFRoZW4sIGluCj4+Pj4+PiBmaW5hbGlzZV9zZygp
+LAo+Pj4+Pj4gYXBwbHkgdGhlIGFwcHJvcHJpYXRlIGJ1cyBhZGRyZXNzIHRvIHRoZSBzZWdtZW50
+LiBUaGUgSU9WQSBpcyBub3QKPj4+Pj4+IGNyZWF0ZWQgaWYgdGhlIHNjYXR0ZXJsaXN0IG9ubHkg
+Y29uc2lzdHMgb2YgUDJQRE1BIHBhZ2VzLgo+Pj4+Pj4KPj4+Pj4+IEEgUDJQRE1BIHBhZ2UgbWF5
+IGhhdmUgdGhyZWUgcG9zc2libGUgb3V0Y29tZXMgd2hlbiBiZWluZyBtYXBwZWQ6Cj4+Pj4+PiDC
+oMKgwqDCoCAxKSBJZiB0aGUgZGF0YSBwYXRoIGJldHdlZW4gdGhlIHR3byBkZXZpY2VzIGRvZXNu
+J3QgZ28gdGhyb3VnaAo+Pj4+Pj4gwqDCoMKgwqDCoMKgwqAgdGhlIHJvb3QgcG9ydCwgdGhlbiBp
+dCBzaG91bGQgYmUgbWFwcGVkIHdpdGggYSBQQ0kgYnVzCj4+Pj4+PiBhZGRyZXNzCj4+Pj4+PiDC
+oMKgwqDCoCAyKSBJZiB0aGUgZGF0YSBwYXRoIGdvZXMgdGhyb3VnaCB0aGUgaG9zdCBicmlkZ2Us
+IGl0IHNob3VsZCBiZQo+Pj4+Pj4gbWFwcGVkCj4+Pj4+PiDCoMKgwqDCoMKgwqDCoCBub3JtYWxs
+eSB3aXRoIGFuIElPTU1VIElPVkEuCj4+Pj4+PiDCoMKgwqDCoCAzKSBJdCBpcyBub3QgcG9zc2li
+bGUgZm9yIHRoZSB0d28gZGV2aWNlcyB0byBjb21tdW5pY2F0ZSBhbmQKPj4+Pj4+IHRodXMKPj4+
+Pj4+IMKgwqDCoMKgwqDCoMKgIHRoZSBtYXBwaW5nIG9wZXJhdGlvbiBzaG91bGQgZmFpbCAoYW5k
+IGl0IHdpbGwgcmV0dXJuCj4+Pj4+PiAtRVJFTU9URUlPKS4KPj4+Pj4+Cj4+Pj4+PiBTaW1pbGFy
+IHRvIGRtYS1kaXJlY3QsIHRoZSBzZ19kbWFfbWFya19wY2lfcDJwZG1hKCkgZmxhZyBpcyB1c2Vk
+IHRvCj4+Pj4+PiBpbmRpY2F0ZSBidXMgYWRkcmVzcyBzZWdtZW50cy4gT24gdW5tYXAsIFAyUERN
+QSBzZWdtZW50cyBhcmUgc2tpcHBlZAo+Pj4+Pj4gb3ZlciB3aGVuIGRldGVybWluaW5nIHRoZSBz
+dGFydCBhbmQgZW5kIElPVkEgYWRkcmVzc2VzLgo+Pj4+Pj4KPj4+Pj4+IFdpdGggdGhpcyBjaGFu
+Z2UsIHRoZSBmbGFncyB2YXJpYWJsZSBpbiB0aGUgZG1hX21hcF9vcHMgaXMgc2V0IHRvCj4+Pj4+
+PiBETUFfRl9QQ0lfUDJQRE1BX1NVUFBPUlRFRCB0byBpbmRpY2F0ZSBzdXBwb3J0IGZvciBQMlBE
+TUEgcGFnZXMuCj4+Pj4+Pgo+Pj4+Pj4gU2lnbmVkLW9mZi1ieTogTG9nYW4gR3VudGhvcnBlIDxs
+b2dhbmdAZGVsdGF0ZWUuY29tPgo+Pj4+Pj4gUmV2aWV3ZWQtYnk6IEphc29uIEd1bnRob3JwZSA8
+amdnQG52aWRpYS5jb20+Cj4+Pj4+PiAtLS0KPj4+Pj4+IMKgwqDCoCBkcml2ZXJzL2lvbW11L2Rt
+YS1pb21tdS5jIHwgNjgKPj4+Pj4+ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
+LS0tLQo+Pj4+Pj4gwqDCoMKgIDEgZmlsZSBjaGFuZ2VkLCA2MSBpbnNlcnRpb25zKCspLCA3IGRl
+bGV0aW9ucygtKQo+Pj4+Pj4KPj4+Pj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2RtYS1p
+b21tdS5jIGIvZHJpdmVycy9pb21tdS9kbWEtaW9tbXUuYwo+Pj4+Pj4gaW5kZXggZjkwMjUxNTcy
+YTVkLi5iMDFjYTBjNmE3YWIgMTAwNjQ0Cj4+Pj4+PiAtLS0gYS9kcml2ZXJzL2lvbW11L2RtYS1p
+b21tdS5jCj4+Pj4+PiArKysgYi9kcml2ZXJzL2lvbW11L2RtYS1pb21tdS5jCj4+Pj4+PiBAQCAt
+MjEsNiArMjEsNyBAQAo+Pj4+Pj4gwqDCoMKgICNpbmNsdWRlIDxsaW51eC9pb3ZhLmg+Cj4+Pj4+
+PiDCoMKgwqAgI2luY2x1ZGUgPGxpbnV4L2lycS5oPgo+Pj4+Pj4gwqDCoMKgICNpbmNsdWRlIDxs
+aW51eC9saXN0X3NvcnQuaD4KPj4+Pj4+ICsjaW5jbHVkZSA8bGludXgvbWVtcmVtYXAuaD4KPj4+
+Pj4+IMKgwqDCoCAjaW5jbHVkZSA8bGludXgvbW0uaD4KPj4+Pj4+IMKgwqDCoCAjaW5jbHVkZSA8
+bGludXgvbXV0ZXguaD4KPj4+Pj4+IMKgwqDCoCAjaW5jbHVkZSA8bGludXgvcGNpLmg+Cj4+Pj4+
+PiBAQCAtMTA2Miw2ICsxMDYzLDE2IEBAIHN0YXRpYyBpbnQgX19maW5hbGlzZV9zZyhzdHJ1Y3Qg
+ZGV2aWNlICpkZXYsCj4+Pj4+PiBzdHJ1Y3Qgc2NhdHRlcmxpc3QgKnNnLCBpbnQgbmVudHMsCj4+
+Pj4+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHNnX2RtYV9hZGRyZXNzKHMpID0gRE1BX01BUFBJ
+TkdfRVJST1I7Cj4+Pj4+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHNnX2RtYV9sZW4ocykgPSAw
+Owo+Pj4+Pj4gwqDCoMKgICvCoMKgwqDCoMKgwqDCoCBpZiAoaXNfcGNpX3AycGRtYV9wYWdlKHNn
+X3BhZ2UocykpICYmICFzX2lvdmFfbGVuKSB7Cj4+Pj4+Cj4+Pj4+IExvZ2ljYWxseSwgc2hvdWxk
+IHdlIG5vdCBiZSBhYmxlIHRvIHVzZSBzZ19pc19kbWFfYnVzX2FkZHJlc3MoKQo+Pj4+PiBoZXJl
+PyBJCj4+Pj4+IHRoaW5rIGl0IHNob3VsZCBiZSBmZWFzaWJsZSwgYW5kIHNpbXBsZXIsIHRvIHBy
+ZXBhcmUgdGhlIHAycCBzZWdtZW50cwo+Pj4+PiB1cC1mcm9udCwgc3VjaCB0aGF0IGF0IHRoaXMg
+cG9pbnQgYWxsIHdlIG5lZWQgdG8gZG8gaXMgcmVzdG9yZSB0aGUKPj4+Pj4gb3JpZ2luYWwgbGVu
+Z3RoIChpZiBldmVuIHRoYXQsIHNlZSBiZWxvdykuCj4+Pj4KPj4+PiBQZXIgbXkgcHJldmlvdXMg
+ZW1haWwsIG5vLCBiZWNhdXNlIHNnX2lzX2RtYV9idXNfYWRkcmVzcygpIGlzIG5vdCBzZXQKPj4+
+PiB5ZXQgYW5kIG5vdCBtZWFudCB0byB0ZWxsIHlvdSBzb21ldGhpbmcgYWJvdXQgdGhlIHBhZ2Uu
+IFRoYXQgZmxhZyB3aWxsCj4+Pj4gYmUgc2V0IGJlbG93IGJ5IHBjaV9wMnBkbWFfbWFwX2J1c19z
+ZWdtZW50KCkgYW5kIHRoZW4gY2hlY2tkIGluCj4+Pj4gaW9tbXVfZG1hX3VubWFwX3NnKCkgdG8g
+ZGV0ZXJtaW5lIGlmIHRoZSBkbWFfYWRkcmVzcyBpbiB0aGUgc2VnbWVudAo+Pj4+IG5lZWRzIHRv
+IGJlIHVubWFwcGVkLgo+Pj4KPj4+IEkga25vdyBpdCdzIG5vdCBzZXQgeWV0IGFzLWlzOyBJJ20g
+c3VnZ2VzdGluZyB0aGluZ3Mgc2hvdWxkIGJlCj4+PiByZXN0cnVjdHVyZWQgc28gdGhhdCBpdCAq
+d291bGQgYmUqLiBJbiB0aGUgbG9naWNhbCBkZXNpZ24gb2YgdGhpcyBjb2RlLAo+Pj4gdGhlIERN
+QSBhZGRyZXNzZXMgYXJlIGVmZmVjdGl2ZWx5IGRldGVybWluZWQgaW4gaW9tbXVfZG1hX21hcF9z
+ZygpLCBhbmQKPj4+IF9fZmluYWxpc2Vfc2coKSBtZXJlbHkgY29udmVydHMgdGhlbSBmcm9tIGEg
+cmVsYXRpdmUgdG8gYW4gYWJzb2x1dGUgZm9ybQo+Pj4gKGFsb25nIHdpdGggdW5kb2luZyB0aGUg
+b3RoZXIgdHJpY2tlcnkpLiBUaHVzIHRoZSBjYWxsIHRvCj4+PiBwY2lfcDJwZG1hX21hcF9idXNf
+c2VnbWVudCgpIGFic29sdXRlbHkgYmVsb25ncyBpbiB0aGUgbWFpbgo+Pj4gaW9tbXVfbWFwX3Nn
+KCkgbG9vcC4KPj4KPj4gSSBkb24ndCBzZWUgaG93IHRoYXQgY2FuIHdvcms6IF9fZmluYWxpc2Vf
+c2coKSBkb2VzIG1vcmUgdGhhbiBjb252ZXJ0Cj4+IHRoZW0gZnJvbSByZWxhdGl2ZSB0byBhYnNv
+bHV0ZSwgaXQgYWxzbyBmaWd1cmVzIG91dCB3aGljaCBTRyBlbnRyeSB3aWxsCj4+IGNvbnRhaW4g
+d2hpY2ggZG1hX2FkZHJlc3Mgc2VnbWVudC4gV2hpY2ggc2VnbWVudCBhIFAyUERNQSBhZGRyZXNz
+IG5lZWRzCj4+IHRvIGJlIHByb2dyYW1tZWQgaW50byBkZXBlbmRzIG9uIHRoZSBob3cgJ2N1cicg
+aXMgY2FsY3VsYXRlZCB3aGljaCBpbgo+PiB0dXJuIGRlcGVuZHMgb24gdGhpbmdzIGxpa2Ugc2Vn
+X21hc2sgYW5kIG1heF9sZW4uIFRoaXMgY2FsY3VsYXRpb24gaXMKPj4gbm90IGRvbmUgaW4gaW9t
+bXVfZG1hX21hcF9zZygpIHNvIEkgZG9uJ3Qgc2VlIGhvdyB0aGVyZSdzIGFueSBob3BlIG9mCj4+
+IGFzc2lnbmluZyB0aGUgYnVzIGFkZHJlc3MgZm9yIHRoZSBQMlAgc2VnbWVudHMgaW4gdGhhdCBm
+dW5jdGlvbi4KPj4KPj4gSWYgdGhlcmUncyBhIHdheSB0byByZXN0cnVjdHVyZSB0aGluZ3Mgc28g
+dGhhdCdzIHBvc3NpYmxlIHRoYXQgSSdtIG5vdAo+PiBzZWVpbmcsIEknbSBvcGVuIHRvIGl0IGJ1
+dCBpdCdzIGNlcnRhaW5seSBub3QgaW1tZWRpYXRlbHkgb2J2aW91cy4KPiAKPiBIdWg/IEl0J3Mg
+c3RpbGwgdmlydHVhbGx5IHRoZSBzYW1lIHRoaW5nOyBpb21tdV9kbWFfbWFwX3NnKCkgY2FsbHMK
+PiBwY2lfcDJwZG1hX21hcF9idXNfc2VnbWVudChzKSBhbmQgc2V0cyBzLT5sZW5ndGggdG8gMCBp
+Zgo+IFBDSV9QMlBETUFfTUFQX0JVU19BRERSLCB0aGVuIF9fZmluYWxpc2Vfc2coKSBjYW4gdXNl
+Cj4gc2dfaXNfZG1hX2J1c19hZGRyZXNzKHMpIGluIHBsYWNlIG9mIGlzX3BjaV9wMnBkbWFfcGFn
+ZShzZ19wYWdlKHMpKSwgYW5kCj4ganVzdCBwcm9wYWdhdGUgdGhlIERNQSBhZGRyZXNzIGFuZCBv
+cmlnaW5hbCBsZW5ndGggZnJvbSBzIHRvIGN1ci4KPiAKPiBIZXJlIHlvdSd2ZSB3cml0dGVuIGEg
+cGF0Y2ggd2hpY2ggbG9va3MgdG8gY29ycmVjdGx5IGludGVycnVwdCBhbnkKPiBvbmdvaW5nIGNv
+bmNhdGVuYXRpb24gc3RhdGUgYW5kIGNvbnZleSBzb21lIGRhdGEgZnJvbSB0aGUgZ2l2ZW4gaW5w
+dXQKPiBzZWdtZW50IHRvIHRoZSBhcHByb3ByaWF0ZSBvdXRwdXQgc2VnbWVudCwgc28gSSdtIGJh
+ZmZsZWQgYnkgd2h5IHlvdSdkCj4gdGhpbmsgeW91IGNvdWxkbid0IGRvIHdoYXQgeW91J3ZlIGFs
+cmVhZHkgZG9uZS4KCkFoLCBJIHVuZGVyc3RhbmQgbm93LCB0aGFua3MgZm9yIHRoZSBwYXRpZW5j
+ZS4gSXQgdG9vayBtZSBhIGNvdXBsZSBvZgpyZWFkIHRocm91Z2hzIGJlZm9yZSBJIGdvdCBpdCwg
+YnV0IEkgZmlndXJlZCBpdCBvdXQgYW5kIG5vdyBoYXZlIGEKd29ya2luZyBpbXBsZW1lbnRhdGlv
+biB0aGF0IGxvb2tzIHJlYWxseSBuaWNlLiBJdCdzIGEgYmlnIGltcHJvdmVtZW50Cm5vdCBuZWVk
+aW5nIHRoZSB0d28gZGlmZmVyZW50IFAyUERNQSBoZWxwZXJzLgoKSSdsbCBzZW5kIGEgdjggb2Yg
+anVzdCB0aGUgZmlyc3QgMTMgcGF0Y2hlcyBuZXh0IHdlZWsgYWZ0ZXIgYSBiaXQgbW9yZQp0ZXN0
+aW5nLiBJJ3ZlIHB1dCBhIGRyYWZ0IGdpdCBicmFuY2ggaGVyZSBpZiB5b3Ugd2FudCB0byBsb29r
+IGF0IGl0CmJlZm9yZSB0aGF0OgoKaHR0cHM6Ly9naXRodWIuY29tL3NiYXRlczEzMDI3Mi9saW51
+eC1wMnBtZW0gIHAycGRtYV9tYXBfdjgKClRoYW5rcyEKCkxvZ2FuCgpfX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVA
+bGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24u
+b3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
