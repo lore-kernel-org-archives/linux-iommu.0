@@ -1,82 +1,141 @@
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C937EBB
-	for <iommu@lists.linux.dev>; Thu, 30 Jun 2022 09:59:16 +0000 (UTC)
-Received: by mail-wr1-f52.google.com with SMTP id k7so1988206wrc.12
-        for <iommu@lists.linux.dev>; Thu, 30 Jun 2022 02:59:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1HMqmjT/Hl6eEoSqluU6kzXOVYJu96vbsB8yRH3pJM0=;
-        b=b/EZPJfCnVquS1NkGq9KsRSBoCZWR7XOtN+NA+DS6Z90ExfXr1goihQkGLPJKgOpGD
-         E41Z7SVhSHeZcyHhReeC5glNz/sMI+cacocAN+FidqgorPd7cmOUipobq8s3bUis9MnM
-         qN2to17GprO8783SMo6neHc53795eruPe6diqQbC/ekLR3M7MhW1cfyEJ61Rna83MVqL
-         6nlD9F4GRvs/uFvHk2Aa7rCsMyacwzeNcrwQP2n8ntFdc8CqWzQNfHv8NM6Zm86Kj1zY
-         ZlVEd7Aoikx9hXwEINGCgvU2Uf2TgLEm2ZqLLW9EV0ImXR0vBTs6xYbWLT8QCxzhNWPs
-         qFMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1HMqmjT/Hl6eEoSqluU6kzXOVYJu96vbsB8yRH3pJM0=;
-        b=qfiLJA7Ba6TwETnyvxJoYlxObi48tacejK4c8jXAljELV5slrK7rpFei1wSzMCJYVi
-         xh9h3BKi6NAZBusjySiNzzKTpdGeXuvVdDqhbernFUv6ijzDr4USLGeLl7wmy0/8GQzf
-         +g/D4RL7pFU4RCkYD/VHCviYvxtmklrbza8EtYVbws2Kn5hOpA73lJEmDbXB/GXNIhtt
-         4VOOjE052OF94DvLIEx5A7BIXGF7Q0Jowk26w/YVw1LB/J3kBpTSk8VjEwtPAMKorFn3
-         Fqtpufz3Ntny5nOVSOMy48VEZWD2GSbnBd14YEDA8IxuI6qKU17DJHepE5ztz5A2SeBl
-         P8cQ==
-X-Gm-Message-State: AJIora9TnmgZznoJ2gDvG2wxx4dR+WbQZm7IxOTPIXd+VyyfZ/h21FVz
-	rdYU/h5ltcecUUB/EiV/i4p36w==
-X-Google-Smtp-Source: AGRyM1vfHfveCYpKUn92Ua/tYhN63FUv0q/bxKLp7QoY98RJ551Y0CyHmJgnGxT6j3AABaTfE3i9OA==
-X-Received: by 2002:adf:d1ca:0:b0:21b:a81c:47f3 with SMTP id b10-20020adfd1ca000000b0021ba81c47f3mr7539642wrd.22.1656583155303;
-        Thu, 30 Jun 2022 02:59:15 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id bi18-20020a05600c3d9200b0039c4506bd25sm2572630wmb.14.2022.06.30.02.59.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Jun 2022 02:59:14 -0700 (PDT)
-Date: Thu, 30 Jun 2022 10:58:50 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Eric Auger <eric.auger@redhat.com>
-Cc: eric.auger.pro@gmail.com, jroedel@suse.de, linux-acpi@vger.kernel.org,
-	iommu@lists.linux-foundation.org, rafael@kernel.org,
-	lenb@kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, jinl@redhat.com
-Subject: Re: [PATCH v2] ACPI: VIOT: Fix ACS setup
-Message-ID: <Yr1z2gC0+8zbzpFf@myrica>
-References: <20220630094059.1204283-1-eric.auger@redhat.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B9D93EBB
+	for <iommu@lists.linux.dev>; Thu, 30 Jun 2022 10:06:30 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 521B11042;
+	Thu, 30 Jun 2022 03:06:30 -0700 (PDT)
+Received: from [10.57.85.25] (unknown [10.57.85.25])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7C3C23F5A1;
+	Thu, 30 Jun 2022 03:06:27 -0700 (PDT)
+Message-ID: <117b31b5-8d06-0af4-7f1c-231d86becf1d@arm.com>
+Date: Thu, 30 Jun 2022 11:06:23 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220630094059.1204283-1-eric.auger@redhat.com>
-Message-ID: <20220630095850.z8dj9GXKBTtRTtVmic44SMpJpbSYJC7o_cA8PjmOO60@z>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] iommu/iova: change IOVA_MAG_SIZE to 127 to save memory
+Content-Language: en-GB
+To: John Garry <john.garry@huawei.com>, Feng Tang <feng.tang@intel.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
+ Andrew Morton <akpm@linux-foundation.org>, Christoph Lameter <cl@linux.com>,
+ Vlastimil Babka <vbabka@suse.cz>
+Cc: linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+ Paul Menzel <pmenzel@molgen.mpg.de>
+References: <20220630073304.26945-1-feng.tang@intel.com>
+ <13db50bb-57c7-0d54-3857-84b8a4591d9e@arm.com>
+ <7c29d01d-d90c-58d3-a6e0-0b6c404173ac@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <7c29d01d-d90c-58d3-a6e0-0b6c404173ac@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Message-ID: <20220630100623.sxMLRmZfqQN6OXdJcFJfTG7S8-oGYdxUu2lAf29zEdo@z>
 
-On Thu, Jun 30, 2022 at 11:40:59AM +0200, Eric Auger wrote:
-> Currently acpi_viot_init() gets called after the pci
-> device has been scanned and pci_enable_acs() has been called.
-> So pci_request_acs() fails to be taken into account leading
-> to wrong single iommu group topologies when dealing with
-> multi-function root ports for instance.
+On 2022-06-30 10:37, John Garry wrote:
+> On 30/06/2022 10:02, Robin Murphy wrote:
+>> On 2022-06-30 08:33, Feng Tang wrote:
+>>> kmalloc will round up the request size to power of 2, and current
+>>> iova_magazine's size is 1032 (1024+8) bytes, so each instance
+>>> allocated will get 2048 bytes from kmalloc, causing around 1KB
+>>> waste.
+>>>
+>>> And in some exstreme case, the memory wasted can trigger OOM as
+>>> reported in 2019 on a crash kernel with 256 MB memory [1].
+>>
+>> I don't think it really needs pointing out that excessive memory 
+>> consumption can cause OOM. Especially not in the particularly silly 
+>> context of a system with only 2MB of RAM per CPU - that's pretty much 
+>> guaranteed to be doomed one way or another.
+>>
+>>>    [    4.319253] iommu: Adding device 0000:06:00.2 to group 5
+>>>    [    4.325869] iommu: Adding device 0000:20:01.0 to group 15
+>>>    [    4.332648] iommu: Adding device 0000:20:02.0 to group 16
+>>>    [    4.338946] swapper/0 invoked oom-killer: 
+>>> gfp_mask=0x6040c0(GFP_KERNEL|__GFP_COMP), nodemask=(null), order=0, 
+>>> oom_score_adj=0
+>>>    [    4.350251] swapper/0 cpuset=/ mems_allowed=0
+>>>    [    4.354618] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 
+>>> 4.19.57.mx64.282 #1
+>>>    [    4.355612] Hardware name: Dell Inc. PowerEdge R7425/08V001, 
+>>> BIOS 1.9.3 06/25/2019
+>>>    [    4.355612] Call Trace:
+>>>    [    4.355612]  dump_stack+0x46/0x5b
+>>>    [    4.355612]  dump_header+0x6b/0x289
+>>>    [    4.355612]  out_of_memory+0x470/0x4c0
+>>>    [    4.355612]  __alloc_pages_nodemask+0x970/0x1030
+>>>    [    4.355612]  cache_grow_begin+0x7d/0x520
+>>>    [    4.355612]  fallback_alloc+0x148/0x200
+>>>    [    4.355612]  kmem_cache_alloc_trace+0xac/0x1f0
+>>>    [    4.355612]  init_iova_domain+0x112/0x170
+>>>    [    4.355612]  amd_iommu_domain_alloc+0x138/0x1a0
+>>>    [    4.355612]  iommu_group_get_for_dev+0xc4/0x1a0
+>>>    [    4.355612]  amd_iommu_add_device+0x13a/0x610
+>>>    [    4.355612]  add_iommu_group+0x20/0x30
+>>>    [    4.355612]  bus_for_each_dev+0x76/0xc0
+>>>    [    4.355612]  bus_set_iommu+0xb6/0xf0
+>>>    [    4.355612]  amd_iommu_init_api+0x112/0x132
+>>>    [    4.355612]  state_next+0xfb1/0x1165
+>>>    [    4.355612]  amd_iommu_init+0x1f/0x67
+>>>    [    4.355612]  pci_iommu_init+0x16/0x3f
+>>>    ...
+>>>    [    4.670295] Unreclaimable slab info:
+>>>    ...
+>>>    [    4.857565] kmalloc-2048           59164KB      59164KB
+>>>
+>>> Change IOVA_MAG_SIZE from 128 to 127 to make size of 'iova_magazine'
+>>> 1024 bytes so that no memory will be wasted.
+>>>
+>>> [1]. https://lkml.org/lkml/2019/8/12/266
+>>>
+>>> Signed-off-by: Feng Tang <feng.tang@intel.com>
+>>> ---
+>>>   drivers/iommu/iova.c | 7 ++++++-
+>>>   1 file changed, 6 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+>>> index db77aa675145b..27634ddd9b904 100644
+>>> --- a/drivers/iommu/iova.c
+>>> +++ b/drivers/iommu/iova.c
+>>> @@ -614,7 +614,12 @@ EXPORT_SYMBOL_GPL(reserve_iova);
+>>>    * dynamic size tuning described in the paper.
+>>>    */
+>>> -#define IOVA_MAG_SIZE 128
+>>> +/*
+>>> + * As kmalloc's buffer size is fixed to power of 2, 127 is chosen to
+>>> + * assure size of 'iova_magzine' to be 1024 bytes, so that no memory
+>>
+>> Typo: iova_magazine
+>>
+>>> + * will be wasted.
+>>> + */
+>>> +#define IOVA_MAG_SIZE 127
 > 
-> We cannot simply move the acpi_viot_init() earlier, similarly
-> as the IORT init because the VIOT parsing relies on the pci
-> scan. However we can detect VIOT is present earlier and in
-> such a case, request ACS. Introduce a new acpi_viot_early_init()
-> routine that allows to call pci_request_acs() before the scan.
-> 
-> While at it, guard the call to pci_request_acs() with #ifdef
-> CONFIG_PCI.
-> 
-> Fixes: 3cf485540e7b ("ACPI: Add driver for the VIOT table")
-> Signed-off-by: Eric Auger <eric.auger@redhat.com>
-> Reported-by: Jin Liu <jinl@redhat.com>
+> I do wonder if we will see some strange new behaviour since IOVA_FQ_SIZE 
+> % IOVA_MAG_SIZE != 0 now...
 
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Tested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+I doubt it - even if a flush queue does happen to be entirely full of 
+equal-sized IOVAs, a CPU's loaded magazines also both being perfectly 
+empty when it comes to dump a full fq seem further unlikely, so in 
+practice I don't see this making any appreciable change to the 
+likelihood of spilling back to the depot or not. In fact the smaller the 
+magazines get, the less time would be spent flushing the depot back to 
+the rbtree, where your interesting workload falls off the cliff and 
+never catches back up with the fq timer, so at some point it might even 
+improve (unless it's also already close to the point where smaller 
+caches would bottleneck allocation)... might be interesting to 
+experiment with a wider range of magazine sizes if you had the time and 
+inclination.
 
+Cheers,
+Robin.
+
+> 
+>>
+>> The change itself seems perfectly reasonable, though.
+>>
+>> Acked-by: Robin Murphy <robin.murphy@arm.com>
+> 
