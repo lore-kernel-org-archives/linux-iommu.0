@@ -4,68 +4,53 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B8157CCA479
-	for <iommu@archiver.kernel.org>; Fri,  1 Jul 2022 12:01:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 311CAC43334
+	for <iommu@archiver.kernel.org>; Fri,  1 Jul 2022 12:16:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 4B3ED8461E;
-	Fri,  1 Jul 2022 12:01:43 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 4B3ED8461E
+	by smtp1.osuosl.org (Postfix) with ESMTP id A3D9682925;
+	Fri,  1 Jul 2022 12:16:31 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org A3D9682925
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id oGtqybNrtW27; Fri,  1 Jul 2022 12:01:42 +0000 (UTC)
+	with ESMTP id iUR_R0_9XJQ0; Fri,  1 Jul 2022 12:16:31 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 23ED181A64;
-	Fri,  1 Jul 2022 12:01:42 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 23ED181A64
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 89F2D826E5;
+	Fri,  1 Jul 2022 12:16:30 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 89F2D826E5
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EAB66C0035;
-	Fri,  1 Jul 2022 12:01:41 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A5C2EC002D
- for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 12:01:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3B9C4C0032;
+	Fri,  1 Jul 2022 12:16:30 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3C848C002D
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 12:16:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 73401404C7
- for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 12:01:40 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 73401404C7
+ by smtp1.osuosl.org (Postfix) with ESMTP id 11475827D9
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 12:16:29 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 11475827D9
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9u_9NGnuvvE4 for <iommu@lists.linux-foundation.org>;
- Fri,  1 Jul 2022 12:01:39 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 86C574020B
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id 86C574020B
- for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 12:01:39 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1C4AB113E;
- Fri,  1 Jul 2022 05:01:39 -0700 (PDT)
-Received: from [10.57.85.162] (unknown [10.57.85.162])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E838D3F792;
- Fri,  1 Jul 2022 05:01:36 -0700 (PDT)
-Message-ID: <1eeeec76-5271-f915-e3fd-f15095efb981@arm.com>
-Date: Fri, 1 Jul 2022 13:01:31 +0100
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id tSS9P688RZpQ for <iommu@lists.linux-foundation.org>;
+ Fri,  1 Jul 2022 12:16:27 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 3F4EA826E5
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 3F4EA826E5
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 12:16:27 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id 8EB0779E; Fri,  1 Jul 2022 14:16:23 +0200 (CEST)
+Date: Fri, 1 Jul 2022 14:16:22 +0200
+From: =?iso-8859-1?Q?J=F6rg_R=F6del?= <joro@8bytes.org>
+To: iommu@lists.linux-foundation.org
+Subject: Re: New IOMMU mailing list coming
+Message-ID: <Yr7lluiS4tz4HPTE@8bytes.org>
+References: <YqhHHBkvGL74azMg@8bytes.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] iommu/iova: change IOVA_MAG_SIZE to 127 to save memory
-Content-Language: en-GB
-To: John Garry <john.garry@huawei.com>, Feng Tang <feng.tang@intel.com>
-References: <20220630073304.26945-1-feng.tang@intel.com>
- <13db50bb-57c7-0d54-3857-84b8a4591d9e@arm.com>
- <7c29d01d-d90c-58d3-a6e0-0b6c404173ac@huawei.com>
- <117b31b5-8d06-0af4-7f1c-231d86becf1d@arm.com>
- <2920df89-9975-5785-f79b-257d3052dfaf@huawei.com>
- <20220701035622.GB14806@shbuild999.sh.intel.com>
- <51af869a-83d4-631a-2d91-edb8b066bf4d@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <51af869a-83d4-631a-2d91-edb8b066bf4d@huawei.com>
-Cc: Paul Menzel <pmenzel@molgen.mpg.de>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org, Christoph Lameter <cl@linux.com>,
- Will Deacon <will@kernel.org>, Andrew Morton <akpm@linux-foundation.org>,
- Vlastimil Babka <vbabka@suse.cz>
+Content-Disposition: inline
+In-Reply-To: <YqhHHBkvGL74azMg@8bytes.org>
+Cc: robin.murphy@arm.com, Alex Williamson <alex.williamson@redhat.com>,
+ Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -78,52 +63,49 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjAyMi0wNy0wMSAxMjozMywgSm9obiBHYXJyeSB3cm90ZToKPiBPbiAwMS8wNy8yMDIyIDA0
-OjU2LCBGZW5nIFRhbmcgd3JvdGU6Cj4+Pj4gaW5jbGluYXRpb24uCj4+Pj4KPj4+IG9rLCB3aGF0
-IHlvdSBhcmUgc2F5aW5nIHNvdW5kcyByZWFzb25hYmxlLiBJIGp1c3QgcmVtZW1iZXIgdGhhdCB3
-aGVuIHdlCj4+PiBhbmFseXplZCB0aGUgbG9uZ3Rlcm0gYWdpbmcgaXNzdWUgdGhhdCB3ZSBjb25j
-bHVkZWQgdGhhdCB0aGUgRlEgc2l6ZSAKPj4+IGFuZCBpdHMKPj4+IHJlbGF0aW9uIHRvIHRoZSBt
-YWdhemluZSBzaXplIHdhcyBhIGZhY3RvciBhbmQgdGhpcyBjaGFuZ2UgbWFrZXMgbWUgYSAKPj4+
-IGxpdHRsZQo+Pj4gd29ycmllZCBhYm91dCBuZXcgaXNzdWVzLiBCZXR0ZXIgdGhlIGRldmlsIHlv
-dSBrbm93IGFuZCBhbGwgdGhhdC4uLgo+Pj4KPj4+IEFueXdheSwgaWYgSSBnZXQgc29tZSB0aW1l
-IEkgbWlnaHQgZG8gc29tZSB0ZXN0aW5nIHRvIHNlZSBpZiB0aGlzIAo+Pj4gY2hhbmdlIGhhcwo+
-Pj4gYW55IGluZmx1ZW5jZS4KPj4+Cj4+PiBBbm90aGVyIHRob3VnaHQgaXMgaWYgd2UgbmVlZCBl
-dmVuIHN0b3JlIHRoZSBzaXplIGluIHRoZSAKPj4+IGlvdmFfbWFnYXppbmU/IG1hZ3MKPj4+IGlu
-IHRoZSBkZXBvdCBhcmUgYWx3YXlzIGZ1bGwuIEFzIHN1Y2gsIHdlIG9ubHkgbmVlZCB3b3JyeSBh
-Ym91dCBtYWdzIAo+Pj4gbG9hZGVkCj4+PiBpbiB0aGUgY3B1IHJjYWNoZSBhbmQgdGhlaXIgc2l6
-ZXMsIHNvIG1heWJlIHdlIGNvdWxkIGhhdmUgc29tZXRoaW5nIGxpa2UKPj4+IHRoaXM6Cj4+Pgo+
-Pj4gc3RydWN0IGlvdmFfbWFnYXppbmUgewo+Pj4gLcKgwqDCoMKgwqDCoCB1bnNpZ25lZCBsb25n
-IHNpemU7Cj4+PiDCoMKgwqDCoMKgwqDCoCB1bnNpZ25lZCBsb25nIHBmbnNbSU9WQV9NQUdfU0la
-RV07Cj4+PiB9Owo+Pj4KPj4+IEBAIC02MzEsNiArNjMwLDggQEAgc3RydWN0IGlvdmFfY3B1X3Jj
-YWNoZSB7Cj4+PiDCoMKgwqDCoMKgwqDCoCBzcGlubG9ja190IGxvY2s7Cj4+PiDCoMKgwqDCoMKg
-wqDCoCBzdHJ1Y3QgaW92YV9tYWdhemluZSAqbG9hZGVkOwo+Pj4gwqDCoMKgwqDCoMKgwqAgc3Ry
-dWN0IGlvdmFfbWFnYXppbmUgKnByZXY7Cj4+PiArwqDCoMKgwqDCoMKgIGludCBsb2FkZWRfc2l6
-ZTsKPj4+ICvCoMKgwqDCoMKgwqAgaW50IHByZXZfc2l6ZTsKPj4+IH07Cj4+Pgo+Pj4gSSBoYXZl
-bid0IHRyaWVkIHRvIGltcGxlbWVudCBpdCB0aG91Z2guLgo+PiBJIGhhdmUgdmVyeSBmZXcga25v
-d2xlZGdlIG9mIGlvdmEsIHNvIHlvdSBjYW4gY2hvc2Ugd2hhdCdzIHRoZSBiZXR0ZXIKPj4gc29s
-dXRpb24uIEkganVzdCB3YW50ZWQgdG8gcmFpc2UgdGhlIHByb2JsZW0gYW5kIHdpbGwgYmUgaGFw
-cHkgdG8gc2VlCj4+IGl0IHNvbHZlZDopCj4gCj4gSSBxdWlja2x5IHRlc3RlZCB5b3VyIHBhdGNo
-IGZvciBwZXJmb3JtYW5jZSBhbmQgc2F3IG5vIG5vdGljZWFibGUgCj4gZGlmZmVyZW5jZSwgd2hp
-Y2ggaXMgbm8gc3VycHJpc2UuCj4gCj4gQnV0IEknbGwgZGVmZXIgdG8gUm9iaW4gaWYgaGUgdGhp
-bmtzIHRoYXQgeW91ciBwYXRjaCBpcyBhIGJldHRlciAKPiBzb2x1dGlvbiAtIEkgd291bGQgZ3Vl
-c3MgdGhhdCBoZSBkb2VzLiBGb3IgbWUgcGVyc29uYWxseSBJIHdvdWxkIHByZWZlciAKPiB0aGF0
-IHRoaXMgdmFsdWUgd2FzIG5vdCBjaGFuZ2VkLCBhcyBJIG1lbnRpb25lZCBiZWZvcmUuCgpUaGlz
-IGlkZWEgaXMgaW50ZXJlc3RpbmcsIGJ1dCBpdCB3b3VsZCBtZWFuIGEgYml0IG1vcmUgZmlkZGx5
-IHdvcmsgdG8gCmtlZXAgdGhpbmdzIGluIHN5bmMgd2hlbiBtYWdhemluZXMgYXJlIGFsbG9jYXRl
-ZCwgZnJlZWQgYW5kIHN3YXBwZWQgCmFyb3VuZC4gSXQgc2VlbXMgbGlrZSB0aGUga2luZCBvZiBu
-b24tb2J2aW91cyB0aGluZyB0aGF0IG1pZ2h0IG1ha2UgCnNlbnNlIGlmIGl0IGdhdmUgYSBzaWdu
-aWZpY2FudCBpbXByb3ZlbWVudCBpbiBjYWNoZSBsb2NhbGl0eSBvciAKc29tZXRoaW5nIGxpa2Ug
-dGhhdCwgYnV0IGZvciBzaW1wbHkgZml4aW5nIGFuIGFsbG9jYXRpb24gc2l6ZSBpdCBmZWVscyBh
-IApiaXQgdG9vIHdhY2t5LgoKIEZyb20gbXkgcGVyc3BlY3RpdmUsIGluZGVlZCBJJ2QgcmF0aGVy
-IGRvIHRoZSBzaW1wbGUgdGhpbmcgZm9yIG5vdyB0byAKYWRkcmVzcyB0aGUgbWVtb3J5IHdhc3Rh
-Z2UgaXNzdWUgZGlyZWN0bHksIHRoZW4gd2UgY2FuIGRvIHRoZSBkZWVwZXIgCnBlcmZvcm1hbmNl
-IGFuYWx5c2lzIG9uIHRvcCB0byBzZWUgaWYgZnVydGhlciB0d2Vha2luZyBvZiBtYWdhemluZSBz
-aXplcyAKYW5kL29yIGRlc2lnbiBpcyBqdXN0aWZpZWQuCgpDaGVlcnMsClJvYmluLgpfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxp
-c3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZv
-dW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Tue, Jun 14, 2022 at 10:30:21AM +0200, J=F6rg R=F6del wrote:
+> Hi all,
+> =
+
+> after several problems with the current IOMMU mailing list (no DKIM
+> support, poor b4 interoperability) we have decided to move the IOMMU
+> development discussions to a new list hosted at lists.linux.dev.
+> =
+
+> The new list is up and running already, to subscribe please send an
+> email to iommu+subscribe@lists.linux.dev. It is not yet archived, but
+> there will be a hard switch between the old and the new list on
+> =
+
+> 	July 5th, 2022
+> =
+
+> After that date the old list will no longer work and the archive will
+> switch to the new mailing list.
+> =
+
+> Sorry for any inconveniences this might cause.
+
+Gentle reminder that the old IOMMU mailing list at
+	iommu@lists.linux-foundation.org
+	=
+
+will no longer be archived from Tuesday, July 5th on and will disappear
+soon after. If not already done, please subscribe to the new mailing
+list at
+
+	iomm+subscribe@lists.linux.dev
+
+Thanks and see you over there!
+
+
+	Joerg
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
