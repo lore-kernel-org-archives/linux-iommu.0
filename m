@@ -4,108 +4,180 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4A224C433EF
-	for <iommu@archiver.kernel.org>; Fri,  1 Jul 2022 07:39:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 87C92C433EF
+	for <iommu@archiver.kernel.org>; Fri,  1 Jul 2022 07:54:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id DA03E84680;
-	Fri,  1 Jul 2022 07:39:14 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org DA03E84680
+	by smtp1.osuosl.org (Postfix) with ESMTP id 094AC84674;
+	Fri,  1 Jul 2022 07:54:07 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 094AC84674
+Authentication-Results: smtp1.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=hCOdPNTp
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wJdx6_xrLEtJ; Fri,  1 Jul 2022 07:39:14 +0000 (UTC)
+	with ESMTP id 85EWPFhFCX6a; Fri,  1 Jul 2022 07:54:06 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 93E2984667;
-	Fri,  1 Jul 2022 07:39:13 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 93E2984667
+	by smtp1.osuosl.org (Postfix) with ESMTPS id B387C83F40;
+	Fri,  1 Jul 2022 07:54:05 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org B387C83F40
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6B969C0071;
-	Fri,  1 Jul 2022 07:39:13 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B6990C002D
- for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 07:39:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 83D8EC0071;
+	Fri,  1 Jul 2022 07:54:05 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F0EC4C002D
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 07:54:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 8FED184674
- for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 07:39:11 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 8FED184674
+ by smtp4.osuosl.org (Postfix) with ESMTP id C8DC441830
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 07:54:03 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org C8DC441830
+Authentication-Results: smtp4.osuosl.org;
+ dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com
+ header.a=rsa-sha256 header.s=Intel header.b=hCOdPNTp
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id oPuX0cWeCtI9 for <iommu@lists.linux-foundation.org>;
- Fri,  1 Jul 2022 07:39:10 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org BDFF984667
-Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com
- [209.85.219.50])
- by smtp1.osuosl.org (Postfix) with ESMTPS id BDFF984667
- for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 07:39:10 +0000 (UTC)
-Received: by mail-qv1-f50.google.com with SMTP id y14so3335687qvs.10
- for <iommu@lists.linux-foundation.org>; Fri, 01 Jul 2022 00:39:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=b36GzMWyZ+B5pJeIXpOWUar+t32MbUtjaNf9+EBzdK8=;
- b=enD/WXmYbFls4y5ll5BJWad8AQk+/JiBE5ZbCtdwobbpkBjizn+1e9UXZFwDzKYdOB
- IyzcCS4CibXOFPdOdub64lVMUpJgAuSVcPvjIw5Ii9UnMAruGz5/uQN08KyYffYMw+eZ
- AwKvEGxFbHqHP4iKF+jfp0y1+C56h9kK/YRxENqfVFfw4dixalUaDSAExbsjL2/SAhoB
- j9uNradrKw5DPP0MXSpYzuebkBh6LMzuHF/57+P1eEDtvDdJM4SI1quDhWT2PZaoMFw/
- MkgO1NuZebOryyuy9tuBXk3DJcpE1nP7RXQhgP/cpNv+vWD+IYWRoYf7PeZjqxa0bV3s
- U9mg==
-X-Gm-Message-State: AJIora8R1lPdPK2yuEXMl1wItlD881Lss298Y5jSwdy24sdHOWAx54nJ
- goO9T74pgu7/+65gpC74xuAgo3pVRsP/Ag==
-X-Google-Smtp-Source: AGRyM1ssADItpqMBdZ6kBM62APhxFUxVzpRcEa4QwE5nDBFSA3qIrLaAyoncgxrUbWVixEUz7i9Ykg==
-X-Received: by 2002:a05:6214:5199:b0:470:9850:409b with SMTP id
- kl25-20020a056214519900b004709850409bmr16240669qvb.10.1656661149372; 
- Fri, 01 Jul 2022 00:39:09 -0700 (PDT)
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com.
- [209.85.128.169]) by smtp.gmail.com with ESMTPSA id
- 194-20020a370acb000000b006a8b6848556sm16956241qkk.7.2022.07.01.00.39.07
- for <iommu@lists.linux-foundation.org>
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Fri, 01 Jul 2022 00:39:08 -0700 (PDT)
-Received: by mail-yw1-f169.google.com with SMTP id
- 00721157ae682-3137316bb69so15265047b3.10
- for <iommu@lists.linux-foundation.org>; Fri, 01 Jul 2022 00:39:07 -0700 (PDT)
-X-Received: by 2002:a81:1c4b:0:b0:31c:5f22:6bd3 with SMTP id
- c72-20020a811c4b000000b0031c5f226bd3mr1406855ywc.47.1656661147084; Fri, 01
- Jul 2022 00:39:07 -0700 (PDT)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id FVvRyl2rFDJU for <iommu@lists.linux-foundation.org>;
+ Fri,  1 Jul 2022 07:54:02 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org AF7BA41835
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id AF7BA41835
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 07:54:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1656662042; x=1688198042;
+ h=from:to:cc:subject:date:message-id:references:
+ in-reply-to:content-transfer-encoding:mime-version;
+ bh=AtYoI350RsCg7NrwkGRN+vOVAcwaYZgJXfXKUwZIZgI=;
+ b=hCOdPNTp/FWt+ecMeGFp4HxOLZsd76BnbpJI1jd//A6KWCbz50EUh0Az
+ 6FJLeMuQaf5MH/cGlPC3Vw0WXBWVPZqidfP5tSymCB4NELNkVCosPZWTh
+ uvqNUu9AOWVDN/I0pBjTlRAm4tF1XoUuMU237M/kaC6mwiEckMxZZQxis
+ wYYOkkdvUAvHLeYDpKhXhJET9t+pzBwI40wuqD6C0V/dv0Skrn3Jmtx3j
+ GrYqoBTM35axYMkVtZY4YITPgR7qr453ZDAG37VFC6MopuFlLMTAgwi7b
+ Hk+Jvgpq7dzpKzdSIv7YY+echzbBAXITiO/QwWWm6s93PYltc/UTFm545 g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="308095371"
+X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; d="scan'208";a="308095371"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 01 Jul 2022 00:54:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; d="scan'208";a="566200909"
+Received: from orsmsx604.amr.corp.intel.com ([10.22.229.17])
+ by orsmga006.jf.intel.com with ESMTP; 01 Jul 2022 00:54:01 -0700
+Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
+ ORSMSX604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Fri, 1 Jul 2022 00:54:01 -0700
+Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
+ ORSMSX608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Fri, 1 Jul 2022 00:54:00 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Fri, 1 Jul 2022 00:54:00 -0700
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.47) by
+ edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Fri, 1 Jul 2022 00:54:00 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kScdWM0+HAlFzwR+ZrmtV2dmOyi4+DtdcEQ+nJALY/0CIBlleIrKYlJm1lkzrB71eUJx+ywXLn5jIsUNg8auzD5VAYuLW7IVNYrOYScUCMRzzKYbcXM9hz9pqri7uVsOTavALtFUa8mef1zNLpDV9UtNQUCTdgzYIPM4S8fbTsNBIhtrEFEWuRk0FyG2ePcSZpXeVQzoRGS4urdOOCNtjDcvLFrXnUyuw0DNc3jYi1QMKkaOJh7DydXNa8+LL2Ab6WDLxtkg5rzfNwbc485sIoS6OIrHgeUsVE5NH17qnRNFD0Af/qrMf9HM/NANPy277lHjXryb1Hi1F9gVrgmM2g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=AtYoI350RsCg7NrwkGRN+vOVAcwaYZgJXfXKUwZIZgI=;
+ b=QZzZYMOBtrgb6bx9oj21qxtxJjSS0Y9HPSmt/mb7vQWsf/pGvElGFUPWPUxOi6uhqMbwoTuONmG6EjM7t7wxdFemuA0p+hoA/R5Bp2eeTOx0o8e8wHhyFpPbQcVUSlVmAfpT5BdZCkanPcIrsS1g8N0F7IV282LKSr0LTT3kUHRIcjzB5K439pcd/B/c93x497Dv2runecW8nNWlRWBKbGhQUSkyQuCLwWC/YjY/ubcyqAn509gsIkoETeiQ9lorWBYAIbWdf1cKpltFPUdD4KlLvApnW8sDrs/mNQHzbY+gQ3Iftj+BJH0SqS3jX+t7WA12yJ40tcG5Z/OXpZG/Vw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by MN2PR11MB3822.namprd11.prod.outlook.com (2603:10b6:208:f8::22)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15; Fri, 1 Jul
+ 2022 07:53:53 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::8435:5a99:1e28:b38c]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::8435:5a99:1e28:b38c%2]) with mapi id 15.20.5395.015; Fri, 1 Jul 2022
+ 07:53:53 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, "iommu@lists.linux-foundation.org"
+ <iommu@lists.linux-foundation.org>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>
+Subject: RE: [PATCH v3 00/11] iommu/vt-d: Optimize the use of locks
+Thread-Topic: [PATCH v3 00/11] iommu/vt-d: Optimize the use of locks
+Thread-Index: AQHYi40cu513zMJJU0+5gNk/q82XNa1pJ19w
+Date: Fri, 1 Jul 2022 07:53:53 +0000
+Message-ID: <BN9PR11MB527645CF20DA53BF9009A9118CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20220629074725.2331441-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20220629074725.2331441-1-baolu.lu@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0150c070-b81c-4242-6900-08da5b36d7d3
+x-ms-traffictypediagnostic: MN2PR11MB3822:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: aYRuWFn6dwnOyLvz9BAXkS91XsH23yAIGwdhfLV8JOVQTBr1LMGRkcOxmfPZyER9dettcwR8PICgrDwFUT18e3ow42iLYev0nS7rHSgZTQ8mE2221b4fy2IFJNBTKWgzLnRXloNJoA+ZFSEB3f9hTbU31jiM5LptJpLXOlHggnmyhRwoj4mfPO1gbwtqc529MCx3uDuwPmus5q7PBSFOB5WZEGZA0TDO2CiH6dcct9tU7FNU3+Fo7MeLTJkU9n6A3GgRD82N/570wV7cMBoU+qqmHLkFx06QqjMR0SCqyfXK0wl53egPE1QUqrlWpYxjRWV6fb8s/yE+uIwBP4NA5aG7o8H3qRQ8VNKAjeSVv1/H6/EXf4m6x16zfjCUK4RUq3PdwZC9fEku9EoisyQLvUmjM3Pe/vWDEHWEnzWEVC95+TOQaN6bVJqDTYxHYcBjcxtEH4LROkcCFB/iut0Qendto7s8AjV5W5bLBC23eyrLUxkBAgjaKyM85cpZHaNte0CoEW1ZaCs/NB+tpfCbyQhhu8zavYdh/Ndx3gwPLILOUxZTS+8fWRPlxN701ofqf1VhBPp2hFc5gGtOPeb+Itt4B7JA7VxzMb7snucnJUKZKBhOmzRrwhok6mQj2EGVG1fchbIK7Aey8Hj4J0JpQHW+JhMlPVk0Wrf9R7Nw1e8nypJnXFmJsWFEK+gUxkR7uVBVYDeu9tk2EEqNUz3YKxvi+Kw2v9pXT4MauhgVkv6LgwpG7z4tdYtn69BchMkzbrRjFSdOCg1YTlF43taErBBhUyWcDEzvedtm1j4pZyiS2R7mfRatEl6Smon+PjqiB6EyYV4enJO8CboNGwwS44n5JaN+nUrBOcIdQ8Fzfh8=
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BN9PR11MB5276.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230016)(136003)(376002)(396003)(366004)(346002)(39860400002)(26005)(55016003)(6506007)(4744005)(9686003)(7696005)(83380400001)(66946007)(4326008)(8936002)(64756008)(66556008)(66446008)(66476007)(8676002)(5660300002)(2906002)(186003)(52536014)(478600001)(38070700005)(45080400002)(966005)(38100700002)(316002)(76116006)(54906003)(110136005)(33656002)(122000001)(82960400001)(71200400001)(41300700001)(86362001);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?MTRJSS9ucDd3WS9UYTdxWnJNYnpXQXVERElOVDBxR0ZHekJ4WTZUKzQ0cTY0?=
+ =?utf-8?B?MG1qSElTeXEzKzZHVEx0dGNyNnQ5dVhqQjJ4S2J4eXZYWC9OQmdoc05TOUY4?=
+ =?utf-8?B?S05ka0t6U0MzQ0dFeU1RMmxycXRONzN0cXZOczk4M0NwOEI1SFN3RGRubEVE?=
+ =?utf-8?B?ZUR3RmZqSFdpTnBKaXhHNi9WWGRRVkUyV1RiSTVzSUkvRVRMMmV1a3BiNGdI?=
+ =?utf-8?B?S0lHV0dYbkpZK0pNbUtWaFBvZWYydTBXK0w0WVpQYmtrUk82REZ6Z3ZzVnlh?=
+ =?utf-8?B?Ui9VMWkzUmlzcVdwNWJITjUxVWpKMTdHd3pDY0FnS2tCY29ZR3gxL2ZlT2V5?=
+ =?utf-8?B?RllSOGZFM3I0QndVTlRPcHVZOUIyckdFQmdSRm54RWtIYjFrVXRNVFUvMDAw?=
+ =?utf-8?B?S2ppRGtieGowbHFqNDRRcUlEQXEzRFVFSEV1Zms3Snd0M3dqcUUzcnJ4eWtW?=
+ =?utf-8?B?ZGpKazVUM2NqeGxIVmdtb096Yll6ZFRnbVN0U2JlNWRMd3Nkb3RNaENrcnNT?=
+ =?utf-8?B?b1NCbG0va1Y1Qkkra0lJTGhrWFpaTUp4SFBUZ2NleVhoY0lTMnF3ZGVQMG5l?=
+ =?utf-8?B?ejEvWnU0REJRcHdmRkxmdU1DL2F5VUkyL0wyQzM5eHYya1BGdklRemNqWXQ0?=
+ =?utf-8?B?OHJBcWV6d1ZnUU9vQWF6VGpVY0o0UUZzdG9ld3JkRHZTTEcwLzRuSmNLYU9D?=
+ =?utf-8?B?czBwMUErbDBsVFFhdlIrZEhrMkdtdW1rVnFlRXBqU0Q2VGQ4TXlMTFBOK1ps?=
+ =?utf-8?B?eWhvSlpoTEhWa0kzR2diMXJhQytMNnZZNjM0WU90VHBndkV0NVNITE1LamJE?=
+ =?utf-8?B?U2JMRndSc01uUnV1T282SlR0OGwvcjBzWUFwTmtmU2d0UHZEQVZISEF3bkk1?=
+ =?utf-8?B?cXZ6clhJRzV4TDAyd1hWZkRFdTJSK0o4SXVvMi9mM2tudTYveHFPcDRqdVZx?=
+ =?utf-8?B?RkhtS2VoZm5wZ0tQU0xTZ2RudUVFODUwYmpySlFmRW9SWit2N0tNY3NMaFlR?=
+ =?utf-8?B?aXpXQTZGZFBCdi95Y3JhbnhTeVUxRzk5WEZueURMTWg1dkhUa1A3T2lHeTA0?=
+ =?utf-8?B?SmVFaUpIWnFoZXk2aCtPZThVaXl2WERZVTlXK0hVOEQ3NVhqa0NwRkZzNmN4?=
+ =?utf-8?B?Q1dqYTA3MkxnRk8xc0o4amRGUkh6SVUrUkRlU2oxUndGZXRTTlpad1FUK2o2?=
+ =?utf-8?B?SzlzUFB4ZVJUMjFEYWFSRGY1cnY4ZjFFd3pRYzl0ZHpialAxeFZ1dGdIQk9P?=
+ =?utf-8?B?YWMvWU56REJackF0YzNJQnduakpUQ1VidzQyTTlLNVh0SWhWa0oxOHRzL1Zt?=
+ =?utf-8?B?MnM2UDNtUnpVa1pDdzFVVlB2ZjJZWFp1MFZWZG1GRlJLbkpiTUVEaSs4NDVa?=
+ =?utf-8?B?NXhEZTBmQmFwZkg0ZGNZa2E0UnR6bzM4VGRQWlhQNWpwelJwaVVzUVBNb3h1?=
+ =?utf-8?B?b0pZajVvZW50SjhIeGVKVHFQaG54SmpRZmIzd1NYUTMyOUVGMU55TkU5aEtt?=
+ =?utf-8?B?TTNpdUhwaGx5a1JtbzNPeWZORWRtbEJ6REVRNnQwNUs5N1orcjhwTzc2MjhZ?=
+ =?utf-8?B?UzJJOTE1Y3BXMDg0cmlMWnlLWDNMelJndEEzN1p5US9hMGF5TDE5NVRscmRl?=
+ =?utf-8?B?TXpDSFNvSGpaRDZaS3hJR1NyK1BLMnRJWjVhT29tS29DcVQwVmF6SnJ0Vms0?=
+ =?utf-8?B?aVpYTTJjQWRUM0IxQVRTNnpQR2N1Y0w1ZFlYVUpRaDM1TVI1TU1lNG51eGR4?=
+ =?utf-8?B?VjJidFVLTy9YRFdDYmhvRUZDcWZVOVVSWXdKQ1pOTW1FVVgzMW9wOU9Eb2dH?=
+ =?utf-8?B?S2FlWnQrcm5oYXlENVVTd094WG1LUGdoeVArTlNsR2czWkt0d0I3d3lpdThO?=
+ =?utf-8?B?bWlxa2QwYnVXSEhnbWd0U3VHcW8zdS9nNk4vb2ZVVG1RSENoRE5CT1ovWjYv?=
+ =?utf-8?B?eFltOU9abU5VVW9ucFZYSm1Wb3JRRWlFRzdFV0FnelRuVlcwOUZHZjJrNGVy?=
+ =?utf-8?B?VldySU9oSjJjVnMzRE93RVNlVmxwRS81enJycFFleTl0ZFBxSmt1c2I3elhs?=
+ =?utf-8?B?QmpIbW9FWTJZMng5dWozWUxxcnRuSXkvdVhETDliZ3VveTRyaUw3RTc3bmlO?=
+ =?utf-8?Q?+s83ial4vJwkWQqwpf3otCfPf?=
 MIME-Version: 1.0
-References: <20220601070707.3946847-1-saravanak@google.com>
- <20220601070707.3946847-2-saravanak@google.com> <YrFzK6EiVvXmzVG6@atomide.com>
- <CAGETcx_1USPRbFKV5j00qkQ-QXJkp7=FAfnFcfiNnM4J5KF1cQ@mail.gmail.com>
- <YrKhkmj3jCQA39X/@atomide.com>
- <CAGETcx_11wO-HkZ2QsBF8o1+L9L3Xe1QBQ_GzegwozxAx1i0jg@mail.gmail.com>
- <YrQP3OZbe8aCQxKU@atomide.com>
- <CAGETcx9aFBzMcuOiTAEy5SJyWw3UfajZ8DVQfW2DGmzzDabZVg@mail.gmail.com>
- <Yrlz/P6Un2fACG98@atomide.com>
- <CAGETcx8c+P0r6ARmhv+ERaz9zAGBOVJQu3bSDXELBycEGfkYQw@mail.gmail.com>
-In-Reply-To: <CAGETcx8c+P0r6ARmhv+ERaz9zAGBOVJQu3bSDXELBycEGfkYQw@mail.gmail.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Fri, 1 Jul 2022 09:38:55 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdW78nybK8LH2cDpM_0TCF-==QojaW8rKjudUhfJWNO0jA@mail.gmail.com>
-Message-ID: <CAMuHMdW78nybK8LH2cDpM_0TCF-==QojaW8rKjudUhfJWNO0jA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/9] PM: domains: Delete usage of
- driver_deferred_probe_check_state()
-To: Saravana Kannan <saravanak@google.com>
-Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Tony Lindgren <tony@atomide.com>,
- Linus Walleij <linus.walleij@linaro.org>, Eric Dumazet <edumazet@google.com>,
- Pavel Machek <pavel@ucw.cz>, Will Deacon <will@kernel.org>,
- Rob Herring <robh@kernel.org>, Kevin Hilman <khilman@kernel.org>,
- Russell King <linux@armlinux.org.uk>,
- Alexander Stein <alexander.stein@ew.tq-group.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Android Kernel Team <kernel-team@android.com>, Len Brown <len.brown@intel.com>,
- Linux PM list <linux-pm@vger.kernel.org>,
- "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
- Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- David Ahern <dsahern@kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Linux IOMMU <iommu@lists.linux-foundation.org>,
- netdev <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
- Heiner Kallweit <hkallweit1@gmail.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0150c070-b81c-4242-6900-08da5b36d7d3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Jul 2022 07:53:53.3508 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: y2cBw9iIPawIUeyG4SeyXSftzOAe/sE9uPt2SY8VVGDllZ2A27PUZ4zpQILX938V6z7+yfSb79VXIIXeEC24TQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB3822
+X-OriginatorOrg: intel.com
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Raj,
+ Ashok" <ashok.raj@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -118,117 +190,24 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Saravana,
-
-On Fri, Jul 1, 2022 at 1:11 AM Saravana Kannan <saravanak@google.com> wrote:
-> On Mon, Jun 27, 2022 at 2:10 AM Tony Lindgren <tony@atomide.com> wrote:
-> > * Saravana Kannan <saravanak@google.com> [220623 08:17]:
-> > > On Thu, Jun 23, 2022 at 12:01 AM Tony Lindgren <tony@atomide.com> wrote:
-> > > > * Saravana Kannan <saravanak@google.com> [220622 19:05]:
-> > > > > On Tue, Jun 21, 2022 at 9:59 PM Tony Lindgren <tony@atomide.com> wrote:
-> > > > > > This issue is no directly related fw_devlink. It is a side effect of
-> > > > > > removing driver_deferred_probe_check_state(). We no longer return
-> > > > > > -EPROBE_DEFER at the end of driver_deferred_probe_check_state().
-> > > > >
-> > > > > Yes, I understand the issue. But driver_deferred_probe_check_state()
-> > > > > was deleted because fw_devlink=on should have short circuited the
-> > > > > probe attempt with an  -EPROBE_DEFER before reaching the bus/driver
-> > > > > probe function and hitting this -ENOENT failure. That's why I was
-> > > > > asking the other questions.
-> > > >
-> > > > OK. So where is the -EPROBE_DEFER supposed to happen without
-> > > > driver_deferred_probe_check_state() then?
-> > >
-> > > device_links_check_suppliers() call inside really_probe() would short
-> > > circuit and return an -EPROBE_DEFER if the device links are created as
-> > > expected.
-> >
-> > OK
-> >
-> > > > Hmm so I'm not seeing any supplier for the top level ocp device in
-> > > > the booting case without your patches. I see the suppliers for the
-> > > > ocp child device instances only.
-> > >
-> > > Hmmm... this is strange (that the device link isn't there), but this
-> > > is what I suspected.
-> >
-> > Yup, maybe it's because of the supplier being a device in the child
-> > interconnect for the ocp.
->
-> Ugh... yeah, this is why the normal (not SYNC_STATE_ONLY) device link
-> isn't being created.
->
-> So the aggregated view is something like (I had to set tabs = 4 space
-> to fit it within 80 cols):
->
->     ocp: ocp {         <========================= Consumer
->         compatible = "simple-pm-bus";
->         power-domains = <&prm_per>; <=========== Supplier ref
->
->                 l4_wkup: interconnect@44c00000 {
->             compatible = "ti,am33xx-l4-wkup", "simple-pm-bus";
->
->             segment@200000 {  /* 0x44e00000 */
->                 compatible = "simple-pm-bus";
->
->                 target-module@0 { /* 0x44e00000, ap 8 58.0 */
->                     compatible = "ti,sysc-omap4", "ti,sysc";
->
->                     prcm: prcm@0 {
->                         compatible = "ti,am3-prcm", "simple-bus";
->
->                         prm_per: prm@c00 { <========= Actual Supplier
->                             compatible = "ti,am3-prm-inst", "ti,omap-prm-inst";
->                         };
->                     };
->                 };
->             };
->         };
->     };
->
-> The power-domain supplier is the great-great-great-grand-child of the
-> consumer. It's not clear to me how this is valid. What does it even
-> mean?
->
-> Rob, is this considered a valid DT?
->
-> Geert, thoughts on whether this is a correct use of simple-pm-bus device?
-
-Well, if the hardware is wired that way...
-
-It's not that dissimilar from CPU cores, and interrupt and GPIO
-controllers in power domains and clocked by controllable clocks:
-you can cut the branch you're sitting on, and you have to be careful
-when going to sleep, and make sure your wake-up sources are still
-functional.
-
-> Also, how is the power domain attach/get working in this case? As far
-> as I can tell, at least for "simple-pm-bus" devices, the pm domain
-> attachment is happening under:
-> really_probe() -> call_driver_probe -> platform_probe() ->
-> dev_pm_domain_attach()
->
-> So, how is the pm domain attach succeeding in the first place without
-> my changes?
-
-That's a software thing ;-)
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+PiBGcm9tOiBMdSBCYW9sdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiBTZW50OiBXZWRu
+ZXNkYXksIEp1bmUgMjksIDIwMjIgMzo0NyBQTQ0KPiANCj4gdjM6DQo+ICAtIFNwbGl0IHJlZHVj
+dGlvbiBvZiBsb2NrIHJhbmdlcyBmcm9tIGNoYW5naW5nIGlycXNhdmUuDQo+ICAgIGh0dHBzOi8v
+bG9yZS5rZXJuZWwub3JnL2xpbnV4LQ0KPiBpb21tdS9CTjlQUjExTUI1Mjc2MEEzRDdDNkJGMUFG
+OUM5RDM0NjU4Q0FBOUBCTjlQUjExTUI1Mjc2Lg0KPiBuYW1wcmQxMS5wcm9kLm91dGxvb2suY29t
+Lw0KPiAgLSBGdWxseSBpbml0aWFsaXplIHRoZSBkZXZfaW5mbyBiZWZvcmUgYWRkaW5nIGl0IHRv
+IHRoZSBsaXN0Lg0KPiAgICBodHRwczovL2xvcmUua2VybmVsLm9yZy9saW51eC0NCj4gaW9tbXUv
+Qk45UFIxMU1CNTI3NjREN0NEODY0NDhDNUU0RUI0NjY2OENBQTlAQk45UFIxMU1CNTI3Ni4NCj4g
+bmFtcHJkMTEucHJvZC5vdXRsb29rLmNvbS8NCj4gIC0gVmFyaW91cyBjb2RlIGFuZCBjb21tZW50
+cyByZWZpbmVtZW50Lg0KPiANCg0KVGhpcyBkb2Vzbid0IHNheSB3aHkgb3JpZ2luYWwgcGF0Y2gy
+IHdhcyByZW1vdmVkOg0KDQoJImlvbW11L3Z0LWQ6IFJlbW92ZSBmb3JfZWFjaF9kZXZpY2VfZG9t
+YWluKCkiDQoNCkl0IHRvb2sgbWUgYSB3aGlsZSB0byByZWFsaXplIHRoYXQgaXQncyBhbHJlYWR5
+IGNvdmVyZWQgYnkgeW91ciBhbm90aGVyDQpwYXRjaCBmaXhpbmcgUklEMlBBU0lELiDwn5iKDQpf
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWls
+aW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5s
+aW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
