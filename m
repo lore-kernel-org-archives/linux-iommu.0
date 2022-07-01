@@ -1,162 +1,81 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1024110E9
-	for <iommu@lists.linux.dev>; Fri,  1 Jul 2022 08:18:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656663532; x=1688199532;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=73qOXj54mzh5bn7snpSdtNZbOJdj9TfQtRUWfAhQ1ss=;
-  b=nOovKHeGS0IvCpkfTHi3/tc3l4YMzfN+YWKjnvDORYRok/K9bMm9NY4c
-   KEYGI27gMNg9T0RB+Ql28gRQb8hp3c+YqcT1+vs4J44aNeJ6IM5hsDOat
-   qooPtL48ojCBpAdjzo2t9ZDfXM7dsphtgT9gWQcdLtfIUoOrEr02hXu6S
-   uiy8YRpUCU+Dq9G4m7I/oqueAhO7tcbPHnHHJaIEn3nGh4FGogDGUW8Pk
-   /aNy7nE8vSgrPAhbvj8O8RxtDariGYgpssf3kM4ZSGnnArgmmbpRZD04L
-   xwHxBbAlik4rvACAP94dooCOswSrtFTt0OjIWi9cYcu7EKyo4DkEgVc07
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="308100835"
-X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="308100835"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 01:18:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="768422848"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by orsmga005.jf.intel.com with ESMTP; 01 Jul 2022 01:18:50 -0700
-Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B4D710F1
+	for <iommu@lists.linux.dev>; Fri,  1 Jul 2022 08:46:35 +0000 (UTC)
+Received: from fraeml701-chm.china.huawei.com (unknown [172.18.147.207])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LZ7zB3G1wz67VqM;
+	Fri,  1 Jul 2022 16:44:06 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml701-chm.china.huawei.com (10.206.15.50) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Fri, 1 Jul 2022 10:46:32 +0200
+Received: from [10.126.173.51] (10.126.173.51) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Fri, 1 Jul 2022 01:18:50 -0700
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Fri, 1 Jul 2022 01:18:50 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Fri, 1 Jul 2022 01:18:50 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.104)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Fri, 1 Jul 2022 01:18:50 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UD+G2dqQLOOqQIoDrk2KbZkzAUxGy+vor/TP/ItHA3gYIIPCSTTQmbcGbb4tNrxT95toqdQZ6CHw9waOPBRm0sLwRpB7ftKV8xeSTQmJI8IMD6CD+3JrRMc+so/0bhLO6fOzLbF6TiVji8PKPW/vR5C0yP/maPIvIl9KpBUE7Vi9LtH85LaW+VpfhqpRq50qsDmCcTH7Wg24GN6ckYQz7t+GtfazQS/c1lgTPZNjUY/7OsGhkS8wAhQ44h9+2eefARAUXmfEkUiZ+h7uY5T1ql6ZN4AMh+43Ct8I/mnuoTcrbhhBsWIOM5VZUmlLgX/r8WF5Z5ZFiTX5za0oNToqsA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=73qOXj54mzh5bn7snpSdtNZbOJdj9TfQtRUWfAhQ1ss=;
- b=hWKLRJKUDelkaJ9+CXYMvItVgwNIdrg5heGtCgQp+Xzu8re0golK5LbNeQYNrRS+PpN1oJtAXybXBMp9+NLvWmSbB6x7nJnAYvRfArBbxvl4antlMN/AD+zEC0bcKjr4zpemurIWaaVuemS3ayxr7qZCsX+XuDdth5Okp3pShWIBaYZNPZGmg4US2Xt86e3u0M7C5Jwn8eCKZHwPtP9IPhlhp3kngQDy9H3UFF5cmIa2uAlsTPjJtWL9y5Dp7dqQWmVv7UyKBcZum8jSRz0EkzNtHTStPM79NN2iYgTk+V7xgOJ/mMgh8T90YclMBgcZB+IwmDCJHutCHGiLkjWgqw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by MW3PR11MB4762.namprd11.prod.outlook.com (2603:10b6:303:5d::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.17; Fri, 1 Jul
- 2022 08:18:48 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::8435:5a99:1e28:b38c]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::8435:5a99:1e28:b38c%2]) with mapi id 15.20.5395.015; Fri, 1 Jul 2022
- 08:18:48 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>, "iommu@lists.linux-foundation.org"
-	<iommu@lists.linux-foundation.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>
-CC: "Raj, Ashok" <ashok.raj@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
-	"Pan, Jacob jun" <jacob.jun.pan@intel.com>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v3 11/11] iommu/vt-d: Convert global spinlock into per
- domain lock
-Thread-Topic: [PATCH v3 11/11] iommu/vt-d: Convert global spinlock into per
- domain lock
-Thread-Index: AQHYi40tpDd6OUEG+UyFq7K+xVikta1pLxKw
-Date: Fri, 1 Jul 2022 08:18:48 +0000
-Message-ID: <BN9PR11MB5276DA58D6BA7B1B366B0AC28CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20220629074725.2331441-1-baolu.lu@linux.intel.com>
- <20220629074725.2331441-12-baolu.lu@linux.intel.com>
-In-Reply-To: <20220629074725.2331441-12-baolu.lu@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5a9e852e-0e97-4a9a-d496-08da5b3a52ee
-x-ms-traffictypediagnostic: MW3PR11MB4762:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: QMvRSG5v3PSj+/NlLR/yQH+DGPN4Z30af37l6kkeGwxBAZ2z/odSSBgBGsDM8MoAVpZeZEBpr9eMRc9dRz4cRyBYVN12xcdqX/HM7k00M2oFD8iSPWLkqRvHifIvExvoNh+cO1UN9DCIQc0hZfkHalLre7C5MNwvyTygcBEjVYZB9MFaOBw7Yx2exHY7elTpm+22IYeP8EPFM+9mYBmhwuBUtVYYM4FfFoYr9lJe0+frrLGlMgHGKQSelLdodlKiK0C99YXJXKX8SrSHFQzUDDxb+tRvwwEqTKUNfMi4esdCC/XoRrShflbm+sRfmKI5tA5ML2attJVsJN2bpGBYc/xYmjqyKPxc7Q3cjbq0feKQBAbGw0Gza8T7Ypps677eLh+pLWpPV9JM6hEGAZqnBNNtS25Ts0XBS4h6k8FaZdvo5Ow09LWsuq4ks9a4juy2AlqDCW7Ymymq5yUEXCuPCburEotBpy0i4oGR52K5TBVBtXEqaxkPnfm2YgQHCjIzjjZgxDtWczxYJkC9gGFokRDPt6gZfz5vjtq1nzyzJkiNvM5k3N/aXFwA2jQvNfgy5jQkd6yeXRWogx/8BoxzcSDu7CRxgc0w7y9wUhV9CyxYEAOszA4N07A2KWYyA5tGwAaR5tyaQ9nhyULCzFVAPMGn/isCtm1znCCdTT+HMVdSAqvgu6LYJrqNYJ5CQ/kJbry8dwKuaWqJDKOpb1rKIgwDDpFSir4zULcYvwX778pD6QQtYBcvoWfIHu5lfyHL7aAo7xLkqysr/+gWKXuT+krIZ52+qpVcclFoDl7y6mtsefgJfgbqKR0gQ0GY9nSq
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(366004)(346002)(396003)(376002)(39860400002)(38100700002)(110136005)(41300700001)(66476007)(54906003)(186003)(33656002)(316002)(2906002)(478600001)(5660300002)(122000001)(7696005)(83380400001)(6506007)(38070700005)(86362001)(4744005)(26005)(82960400001)(8936002)(66556008)(64756008)(8676002)(4326008)(55016003)(66446008)(66946007)(52536014)(76116006)(9686003)(71200400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?0Mha11no+cBDS2N4wGdhTdUbMUXZwAoCPjQM2g7hSZxtyGTxxAQTbDY4TCwk?=
- =?us-ascii?Q?kTsYfOreFboHxMOLGzokaGjiOw5hiLILCCAVmYmbJBJG5du4ZcCr3gbOzpfk?=
- =?us-ascii?Q?N4nGef4MyBuENavGmkXdqTrn/A1cPHfVBPS5bYN6xbzwPktqBhpuj8jcV/YV?=
- =?us-ascii?Q?ZeYZcPVDF/FDqE/CeOrmWr6U+V9IYQgJojzODbcoW5JoyFjGMbzs5DjGxbhL?=
- =?us-ascii?Q?iHQVoPwkb0O4i1sRakDoyTs7QPcxpLShu68o+U53B9yr3OZu9Mswsvll7a3z?=
- =?us-ascii?Q?ptcexXZFjj84aVsi3Vxgl4ByH26k7kzXATZRrvjs0mypMk2qLnv05ZY+XFq9?=
- =?us-ascii?Q?AapXdWkIO5nXRd/lCpfuX9aksOcuoBhfCoV2XGLspBeuMvAbiCwbf+wNky7o?=
- =?us-ascii?Q?ByMzx5X2RhP46VqvGSPR+T24AS0erJ/uV9ToAepkWejLOFHbIHQOhO3yYIy8?=
- =?us-ascii?Q?P24THaIvg6d8CKBKvb4RTadBX91v+EEANH+En33wgm7RT/XkWbk4BDGgZbg4?=
- =?us-ascii?Q?EDQwLQq4hLWwFwVtsOIrzW3QWggsScGx3n+ZSP1EitnIxllUhwmOil14Dua7?=
- =?us-ascii?Q?m49yd9haa+ZDG3EkTIjMlQBA4lHflbZGYq/l1MjSRxUJwUrxeFrhabSr1PKX?=
- =?us-ascii?Q?E8WSDVL+BoKt8n2fBvk4aBoYC53dGJC3ZTnV6gTh773C6O04yQcAmDoqE8S0?=
- =?us-ascii?Q?QlgTh8zUfi7m14m0v/+hph4o+ltgR93i/CN9InzSiNQJkVioiZCGIwkm3aQV?=
- =?us-ascii?Q?OdDC3UuoS+OSeZ7zi+RRg4vqY2aB1e2vlWWGOqghAWc0omo/kmLR4tdCHUgB?=
- =?us-ascii?Q?/pxUWAnAG3CNMdCyjNOHUGIuVa67t0DJCfgMPM+ifmtVbDYsPMNUJLLZo3P6?=
- =?us-ascii?Q?WayCRvKm2tMUezN23bxsxaOjbqgeIIgiNbPktRGdI5wrfqlhFtDyATJOzNBx?=
- =?us-ascii?Q?r6RM5i6q/PxKTvk/fFLH5qap7g3VCbyxekvtVcmcLySXvRRqcTDqzsx+p+Q8?=
- =?us-ascii?Q?G+iBMtywBGCGr6jHBRD9lOVrPE3Q6EoJSqWWJTrCRQ9GA/gc8NNzjFItaAHS?=
- =?us-ascii?Q?mudNUXCwbXE/EUBa5QORodeWmi8eYO9QAxqaxmV2GDo97xXKozPCLm9K3LZK?=
- =?us-ascii?Q?+5aQRc3j5x0RY92swk4p3QgCsXsuWeojT05p0DfIHlNWXt5G+wCNwiIA4ttW?=
- =?us-ascii?Q?vQvZVg0OEPyvqy8AsAjPxEqTlvQJfbvXoelaIEanbJRX+fW30HXlIT7RScat?=
- =?us-ascii?Q?vRvzhKIwmKs819M43enZaXRV4PsPaeIuVY8d4mTW9vuEUnaoZLPz5qZboodL?=
- =?us-ascii?Q?BEC2DRD9rIr4I91//bUX1IXpu708LTupnD3rjKULjcLigCS4iBxwE+0TunZc?=
- =?us-ascii?Q?xB0/+lxylTJkC5QBt7K+6r4HOV4IUP+VtJ3nR75KMrEdWYemE6Zy3w7cxFXO?=
- =?us-ascii?Q?SONAO2vLG1Rg/emSy3OpG1x7jKcTWP8C03bSpI3vFx7uPR20hqnVMTM0ZUmq?=
- =?us-ascii?Q?yNVqTGi/wqyRTz7AQds7vMoVElyiCl4JPLfK0w1eO0iOwlNie03lXYz7sg9R?=
- =?us-ascii?Q?cihnCDhszXKooW+k4UUm0w2zRbROqTX/ElnZnFYe?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ 15.1.2375.24; Fri, 1 Jul 2022 09:46:31 +0100
+Message-ID: <42505bbc-7319-f266-f282-e76ba505725e@huawei.com>
+Date: Fri, 1 Jul 2022 09:46:34 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5a9e852e-0e97-4a9a-d496-08da5b3a52ee
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Jul 2022 08:18:48.3492
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: AqAvglG1p9Eq6GOZnNyxhQRciV3ZctU7sEvQ6H9ZGgtjMdRz32APGGcLS4ihHfRMzEGfFUtpPLo2OIfItcSQoA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4762
-X-OriginatorOrg: intel.com
-Message-ID: <20220701081848.nDpBfEP8BJEl42QSLci_D5Sr76GXRzo6UIt9Pq2gws0@z>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v5 4/5] scsi: scsi_transport_sas: Cap shost max_sectors
+ according to DMA optimal limit
+To: Damien Le Moal <damien.lemoal@opensource.wdc.com>, <joro@8bytes.org>,
+	<will@kernel.org>, <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
+	<hch@lst.de>, <m.szyprowski@samsung.com>, <robin.murphy@arm.com>
+CC: <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-ide@vger.kernel.org>, <iommu@lists.linux-foundation.org>,
+	<iommu@lists.linux.dev>, <linux-scsi@vger.kernel.org>, <linuxarm@huawei.com>
+References: <1656590892-42307-1-git-send-email-john.garry@huawei.com>
+ <1656590892-42307-5-git-send-email-john.garry@huawei.com>
+ <2e6475e5-4899-1e3a-1418-918b9510ec6d@opensource.wdc.com>
+From: John Garry <john.garry@huawei.com>
+In-Reply-To: <2e6475e5-4899-1e3a-1418-918b9510ec6d@opensource.wdc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.126.173.51]
+X-ClientProxiedBy: lhreml712-chm.china.huawei.com (10.201.108.63) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Message-ID: <20220701084634.EDwvFZ3mi_wwY-VBC0WRbimc7KnR6Qhwr0szGCnTYiI@z>
 
-> From: Lu Baolu <baolu.lu@linux.intel.com>
-> Sent: Wednesday, June 29, 2022 3:47 PM
->=20
-> Using a global device_domain_lock spinlock to protect per-domain device
-> tracking lists is an inefficient way, especially considering this lock
-> is also needed in the hot paths. This optimizes the locking mechanism
-> by converting the global lock to per domain lock.
->=20
-> On the other hand, as the device tracking lists are never accessed in
-> any interrupt context, there is no need to disable interrupts while
-> spinning. Replace irqsave variant with spinlock calls.
->=20
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+On 01/07/2022 00:49, Damien Le Moal wrote:
+>>   
+>> +	if (dma_dev) {
+>> +		shost->max_sectors = min_t(unsigned int, shost->max_sectors,
+>> +				dma_opt_mapping_size(dma_dev) >> SECTOR_SHIFT);
+>> +	}
 
-except the previous comment on where to convert spin_lock_irqsave()
-the rest looks good to me.
+Hi Damien,
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+ > Hmm... shost->max_sectors becomes the max_hw_sectors limit for the block
+ > dev. So using dma_max_mapping_size(dma_dev) for that limit makes sense.
+ > Shouldn't dma_opt_mapping_size(dma_dev) be used to limit only the default
+ > "soft" limit (queue max_sectors limit) instead of the hard limit ?
+ >
+
+Sure, it would sensible to use dma_opt_mapping_size() to limit the 
+default queue max sectors limit, while dma_max_mapping_size() limits the 
+host max sectors. But I didn't see in practice how limiting the shost 
+max sectors to dma_opt_mapping_size() makes a difference:
+
+- block queue max_hw_sectors_kb file is read-only, so we cannot change 
+the queue max sectors from there
+
+- And no SAS driver actually tries to modify upwards from the default.
+I do note that USB storage driver as an example of a scsi driver which 
+does (modify from shost max sectors): see scsiglue.c::slave_configure()
+
+Finally there is no common method to limit the default request queue max 
+sectors for those SAS drivers - I would need to add this limit in each 
+of their slave_configure callbacks, and I didn't think that its worth it.
+
+Thanks,
+John
+
