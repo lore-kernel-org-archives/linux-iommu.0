@@ -4,73 +4,84 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1E8BCCCA480
-	for <iommu@archiver.kernel.org>; Fri,  1 Jul 2022 08:46:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A7A19C43334
+	for <iommu@archiver.kernel.org>; Fri,  1 Jul 2022 09:12:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 8E8014184F;
-	Fri,  1 Jul 2022 08:46:39 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 8E8014184F
+	by smtp4.osuosl.org (Postfix) with ESMTP id 1CAEC41874;
+	Fri,  1 Jul 2022 09:12:34 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 1CAEC41874
+Authentication-Results: smtp4.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=WWk6sr7+
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id emGwI9LgThxX; Fri,  1 Jul 2022 08:46:38 +0000 (UTC)
+	with ESMTP id 53VAV6xJVcyq; Fri,  1 Jul 2022 09:12:33 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 150DA417D2;
-	Fri,  1 Jul 2022 08:46:38 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 150DA417D2
+	by smtp4.osuosl.org (Postfix) with ESMTPS id C61A341869;
+	Fri,  1 Jul 2022 09:12:32 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org C61A341869
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E6D19C0032;
-	Fri,  1 Jul 2022 08:46:37 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5EDAFC002D
- for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 08:46:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9898AC0035;
+	Fri,  1 Jul 2022 09:12:32 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 215E8C002D
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 09:12:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 3452482D45
- for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 08:46:37 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 3452482D45
+ by smtp1.osuosl.org (Postfix) with ESMTP id 0A0AC81272
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 09:12:31 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 0A0AC81272
+Authentication-Results: smtp1.osuosl.org;
+ dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com
+ header.a=rsa-sha256 header.s=Intel header.b=WWk6sr7+
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CKt_3fg4grjh for <iommu@lists.linux-foundation.org>;
- Fri,  1 Jul 2022 08:46:35 +0000 (UTC)
+ with ESMTP id FT_elMNrFLJc for <iommu@lists.linux-foundation.org>;
+ Fri,  1 Jul 2022 09:12:30 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org A18AE82A0B
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp1.osuosl.org (Postfix) with ESMTPS id A18AE82A0B
- for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 08:46:35 +0000 (UTC)
-Received: from fraeml701-chm.china.huawei.com (unknown [172.18.147.207])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LZ7zB3G1wz67VqM;
- Fri,  1 Jul 2022 16:44:06 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml701-chm.china.huawei.com (10.206.15.50) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Fri, 1 Jul 2022 10:46:32 +0200
-Received: from [10.126.173.51] (10.126.173.51) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 1 Jul 2022 09:46:31 +0100
-Message-ID: <42505bbc-7319-f266-f282-e76ba505725e@huawei.com>
-Date: Fri, 1 Jul 2022 09:46:34 +0100
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 6FE0080AB1
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 6FE0080AB1
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 09:12:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1656666750; x=1688202750;
+ h=message-id:date:mime-version:cc:subject:to:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=/kNlVEyPH0w8WhI0mhYcgoRy3O47A7bOqC6yeIddZ5M=;
+ b=WWk6sr7+/Hj1Dm1lFwXe+4Vnjwrs41oxnVSqcwdfPG3WgTpMeGSlXfQv
+ wX3S1dMEXQKj/n3b40n/3eAio12B/jynJ3rYmtnHg2rTwW/BQggpc/HsR
+ EPf/Vq+H2akuG32KJgRDeB7Cd3OuL8xoUB29Sl2Cofs+yNPE27F+nXXns
+ Aep8MRHDbqD3OUFKTsFAedhsZz0NPGV78hrJ8ZfIdv1ji0/XIQwJABhUo
+ 1hM91kTSSjZueLzuSAbALH+7GpHtSLjfjEmhxxIyBm7fxt5ri3PCLqbkd
+ uloxnkfKVrmNfR7ETeYO9jkLUIJI8pxaU+dKce+pgIdnYWjbhlQaHd0be g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="271376372"
+X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; d="scan'208";a="271376372"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+ by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 01 Jul 2022 02:12:29 -0700
+X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; d="scan'208";a="659366507"
+Received: from wenjuhe-mobl1.ccr.corp.intel.com (HELO [10.249.171.195])
+ ([10.249.171.195])
+ by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 01 Jul 2022 02:12:27 -0700
+Message-ID: <94c67e49-4604-e296-fa1a-e1105d67c5fd@linux.intel.com>
+Date: Fri, 1 Jul 2022 17:12:25 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v5 4/5] scsi: scsi_transport_sas: Cap shost max_sectors
- according to DMA optimal limit
-To: Damien Le Moal <damien.lemoal@opensource.wdc.com>, <joro@8bytes.org>,
- <will@kernel.org>, <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
- <hch@lst.de>, <m.szyprowski@samsung.com>, <robin.murphy@arm.com>
-References: <1656590892-42307-1-git-send-email-john.garry@huawei.com>
- <1656590892-42307-5-git-send-email-john.garry@huawei.com>
- <2e6475e5-4899-1e3a-1418-918b9510ec6d@opensource.wdc.com>
-In-Reply-To: <2e6475e5-4899-1e3a-1418-918b9510ec6d@opensource.wdc.com>
-X-Originating-IP: [10.126.173.51]
-X-ClientProxiedBy: lhreml712-chm.china.huawei.com (10.201.108.63) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: linux-scsi@vger.kernel.org, linux-doc@vger.kernel.org, linuxarm@huawei.com,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org,
- iommu@lists.linux-foundation.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v3 10/11] iommu/vt-d: Use device_domain_lock accurately
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+References: <20220629074725.2331441-1-baolu.lu@linux.intel.com>
+ <20220629074725.2331441-11-baolu.lu@linux.intel.com>
+ <BN9PR11MB52763F336B2535BC89E2C7498CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB52763F336B2535BC89E2C7498CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Raj,
+ Ashok" <ashok.raj@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,47 +94,29 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: John Garry via iommu <iommu@lists.linux-foundation.org>
-Reply-To: John Garry <john.garry@huawei.com>
 Content-Transfer-Encoding: 7bit
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 01/07/2022 00:49, Damien Le Moal wrote:
->>   
->> +	if (dma_dev) {
->> +		shost->max_sectors = min_t(unsigned int, shost->max_sectors,
->> +				dma_opt_mapping_size(dma_dev) >> SECTOR_SHIFT);
->> +	}
+On 2022/7/1 16:15, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Wednesday, June 29, 2022 3:47 PM
+>>
+>> +	spin_lock_irqsave(&device_domain_lock, flags);
+>>   	list_for_each_entry(info, &domain->devices, link) {
+>> -		if (!info->dev)
+>> -			continue;
+>> -
+> 
+> suppose you can replace all spin_lock_irqsave() with spin_lock()
+> in patch5 instead of leaving some replacement to next patch.
+> 
 
-Hi Damien,
+Make sense. I will update the series.
 
- > Hmm... shost->max_sectors becomes the max_hw_sectors limit for the block
- > dev. So using dma_max_mapping_size(dma_dev) for that limit makes sense.
- > Shouldn't dma_opt_mapping_size(dma_dev) be used to limit only the default
- > "soft" limit (queue max_sectors limit) instead of the hard limit ?
- >
-
-Sure, it would sensible to use dma_opt_mapping_size() to limit the 
-default queue max sectors limit, while dma_max_mapping_size() limits the 
-host max sectors. But I didn't see in practice how limiting the shost 
-max sectors to dma_opt_mapping_size() makes a difference:
-
-- block queue max_hw_sectors_kb file is read-only, so we cannot change 
-the queue max sectors from there
-
-- And no SAS driver actually tries to modify upwards from the default.
-I do note that USB storage driver as an example of a scsi driver which 
-does (modify from shost max sectors): see scsiglue.c::slave_configure()
-
-Finally there is no common method to limit the default request queue max 
-sectors for those SAS drivers - I would need to add this limit in each 
-of their slave_configure callbacks, and I didn't think that its worth it.
-
-Thanks,
-John
-
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
