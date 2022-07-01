@@ -1,186 +1,86 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AA1C10F3
-	for <iommu@lists.linux.dev>; Fri,  1 Jul 2022 03:56:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656647786; x=1688183786;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=RpCqpdA60H48DUaJg+JlKNTs3frcvmd++S2H7WWwe6k=;
-  b=O1qXhJ5K80U18ZVl4yoereTzR7EdJXtQKAHawTEgXN/ezdAvlpc47hfP
-   0F2uXTWfA/dRpc0PdjeUQMmNIIJajaRhpTg1cNgsndxUPcwHZrEYhE5fZ
-   9J9e27E5rQNJVs2idP8U1IQKkv7tOFYoD9SxsUs2WEOjg66baMmiFL5/Q
-   dsdhe826LJjAB4d/kfBryokl3LrLSNfcq2IlxO9lTbd7e7vwB7QvFyFZr
-   J+7AjK6OYXfqBHaH6//kPQlKMyU5xcvY1OghZtmBSi5owATalh6LgtlSf
-   3irWBSbBtrtX85qMlkEjX+CS9slsyrRzyVNK8StDhlv3MUx5qOIaisJpM
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="346533265"
-X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="346533265"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 20:56:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="694339877"
-Received: from shbuild999.sh.intel.com (HELO localhost) ([10.239.146.138])
-  by fmsmga002.fm.intel.com with ESMTP; 30 Jun 2022 20:56:23 -0700
-Date: Fri, 1 Jul 2022 11:56:22 +0800
-From: Feng Tang <feng.tang@intel.com>
-To: John Garry <john.garry@huawei.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, iommu@lists.linux-foundation.org,
-	iommu@lists.linux.dev, Andrew Morton <akpm@linux-foundation.org>,
-	Christoph Lameter <cl@linux.com>, Vlastimil Babka <vbabka@suse.cz>,
-	linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-	Paul Menzel <pmenzel@molgen.mpg.de>
-Subject: Re: [PATCH] iommu/iova: change IOVA_MAG_SIZE to 127 to save memory
-Message-ID: <20220701035622.GB14806@shbuild999.sh.intel.com>
-References: <20220630073304.26945-1-feng.tang@intel.com>
- <13db50bb-57c7-0d54-3857-84b8a4591d9e@arm.com>
- <7c29d01d-d90c-58d3-a6e0-0b6c404173ac@huawei.com>
- <117b31b5-8d06-0af4-7f1c-231d86becf1d@arm.com>
- <2920df89-9975-5785-f79b-257d3052dfaf@huawei.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88E5410E8
+	for <iommu@lists.linux.dev>; Fri,  1 Jul 2022 05:39:56 +0000 (UTC)
+X-UUID: d3de626f0a9f41948a31a199b833470c-20220701
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.7,REQID:7929bfa5-3201-4f8c-be94-3a386a4a7290,OB:0,LO
+	B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+	ION:release,TS:-5
+X-CID-META: VersionHash:87442a2,CLOUDID:ab284486-57f0-47ca-ba27-fe8c57fbf305,C
+	OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+	,QS:nil,BEC:nil,COL:0
+X-UUID: d3de626f0a9f41948a31a199b833470c-20220701
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+	(envelope-from <yong.wu@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+	with ESMTP id 2018787037; Fri, 01 Jul 2022 13:39:47 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Fri, 1 Jul 2022 13:39:46 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 1 Jul 2022 13:39:45 +0800
+From: Yong Wu <yong.wu@mediatek.com>
+To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+	Will Deacon <will@kernel.org>
+CC: <iommu@lists.linux-foundation.org>, <iommu@lists.linux.dev>,
+	<linux-mediatek@lists.infradead.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	<mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>, <libo.kang@mediatek.com>,
+	<chengci.xu@mediatek.com>, <youlin.pei@mediatek.com>,
+	<anan.sun@mediatek.com>, <xueqi.zhang@mediatek.com>, Guenter Roeck
+	<groeck@chromium.org>, Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [PATCH v3 0/7] iommu/mediatek: Improve safety from invalid dts input
+Date: Fri, 1 Jul 2022 13:39:35 +0800
+Message-ID: <20220701053942.3266-1-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2920df89-9975-5785-f79b-257d3052dfaf@huawei.com>
-Message-ID: <20220701035622.3yZSCM6YgktU2jYRQEcvL1smYXE9fpmy53rCwnAmqHw@z>
+Content-Type: text/plain
+X-MTK: N
+Message-ID: <20220701053935.91kjCpp3IGcshHlT7jVAM363DAnBKa6t-teg3X_8iOw@z>
 
-Hi John,
+This patchset contains misc improve patches. Mainly to improve safety from 
+invalid dts input.
 
-On Thu, Jun 30, 2022 at 11:52:18AM +0100, John Garry wrote:
-> > > > 
-> > > > >    [    4.319253] iommu: Adding device 0000:06:00.2 to group 5
-> > > > >    [    4.325869] iommu: Adding device 0000:20:01.0 to group 15
-> > > > >    [    4.332648] iommu: Adding device 0000:20:02.0 to group 16
-> > > > >    [    4.338946] swapper/0 invoked oom-killer:
-> > > > > gfp_mask=0x6040c0(GFP_KERNEL|__GFP_COMP), nodemask=(null),
-> > > > > order=0, oom_score_adj=0
-> > > > >    [    4.350251] swapper/0 cpuset=/ mems_allowed=0
-> > > > >    [    4.354618] CPU: 0 PID: 1 Comm: swapper/0 Not
-> > > > > tainted 4.19.57.mx64.282 #1
-> > > > >    [    4.355612] Hardware name: Dell Inc. PowerEdge
-> > > > > R7425/08V001, BIOS 1.9.3 06/25/2019
-> > > > >    [    4.355612] Call Trace:
-> > > > >    [    4.355612]  dump_stack+0x46/0x5b
-> > > > >    [    4.355612]  dump_header+0x6b/0x289
-> > > > >    [    4.355612]  out_of_memory+0x470/0x4c0
-> > > > >    [    4.355612]  __alloc_pages_nodemask+0x970/0x1030
-> > > > >    [    4.355612]  cache_grow_begin+0x7d/0x520
-> > > > >    [    4.355612]  fallback_alloc+0x148/0x200
-> > > > >    [    4.355612]  kmem_cache_alloc_trace+0xac/0x1f0
-> > > > >    [    4.355612]  init_iova_domain+0x112/0x170
-> 
-> Note for Feng Tang: This callchain does not exist anymore since we separated
-> out the rcache init from the IOVA domain init. Indeed, not so much memory is
-> wasted for unused rcaches now.
- 
-Thanks for the info, I also planned to remove the callstack as Robin suggested.  
+Change notes:
+v3: a) Add platform_device_put from Robin.
+    b) Use component_match_add instead component_match_add_release suggested from Robin.
+    
+v2: https://lore.kernel.org/linux-mediatek/20220616054203.11365-1-yong.wu@mediatek.com/
+    a) Rebase on v5.19-rc1.
+    b) Add a New patch [5/5] just remove a variable that only is for v1.
 
-> My point really is that it would be nicer to see a modern callchain - but
-> don't read that as me saying that the change is this patch is bad.
-> 
-> > > > >    [    4.355612]  amd_iommu_domain_alloc+0x138/0x1a0
-> > > > >    [    4.355612]  iommu_group_get_for_dev+0xc4/0x1a0
-> > > > >    [    4.355612]  amd_iommu_add_device+0x13a/0x610
-> > > > >    [    4.355612]  add_iommu_group+0x20/0x30
-> > > > >    [    4.355612]  bus_for_each_dev+0x76/0xc0
-> > > > >    [    4.355612]  bus_set_iommu+0xb6/0xf0
-> > > > >    [    4.355612]  amd_iommu_init_api+0x112/0x132
-> > > > >    [    4.355612]  state_next+0xfb1/0x1165
-> > > > >    [    4.355612]  amd_iommu_init+0x1f/0x67
-> > > > >    [    4.355612]  pci_iommu_init+0x16/0x3f
-> > > > >    ...
-> > > > >    [    4.670295] Unreclaimable slab info:
-> > > > >    ...
-> > > > >    [    4.857565] kmalloc-2048           59164KB      59164KB
-> > > > > 
-> > > > > Change IOVA_MAG_SIZE from 128 to 127 to make size of 'iova_magazine'
-> > > > > 1024 bytes so that no memory will be wasted.
-> > > > > 
-> > > > > [1]. https://lkml.org/lkml/2019/8/12/266
-> > > > > 
-> > > > > Signed-off-by: Feng Tang <feng.tang@intel.com>
-> > > > > ---
-> > > > >   drivers/iommu/iova.c | 7 ++++++-
-> > > > >   1 file changed, 6 insertions(+), 1 deletion(-)
-> > > > > 
-> > > > > diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> > > > > index db77aa675145b..27634ddd9b904 100644
-> > > > > --- a/drivers/iommu/iova.c
-> > > > > +++ b/drivers/iommu/iova.c
-> > > > > @@ -614,7 +614,12 @@ EXPORT_SYMBOL_GPL(reserve_iova);
-> > > > >    * dynamic size tuning described in the paper.
-> > > > >    */
-> > > > > -#define IOVA_MAG_SIZE 128
-> > > > > +/*
-> > > > > + * As kmalloc's buffer size is fixed to power of 2, 127 is chosen to
-> > > > > + * assure size of 'iova_magzine' to be 1024 bytes, so that no memory
-> > > > 
-> > > > Typo: iova_magazine
-> > > > 
-> > > > > + * will be wasted.
-> > > > > + */
-> > > > > +#define IOVA_MAG_SIZE 127
-> > > 
-> > > I do wonder if we will see some strange new behaviour since
-> > > IOVA_FQ_SIZE % IOVA_MAG_SIZE != 0 now...
-> > 
-> > I doubt it - even if a flush queue does happen to be entirely full of
-> > equal-sized IOVAs, a CPU's loaded magazines also both being perfectly
-> > empty when it comes to dump a full fq seem further unlikely, so in
-> > practice I don't see this making any appreciable change to the
-> > likelihood of spilling back to the depot or not. In fact the smaller the
-> > magazines get, the less time would be spent flushing the depot back to
-> > the rbtree, where your interesting workload falls off the cliff and> > never catches back up with the fq timer, so at some point it might even
-> > improve (unless it's also already close to the point where smaller
-> > caches would bottleneck allocation)... might be interesting to
-> > experiment with a wider range of magazine sizes if you had the time and
-> > inclination.
-> > 
-> 
-> ok, what you are saying sounds reasonable. I just remember that when we
-> analyzed the longterm aging issue that we concluded that the FQ size and its
-> relation to the magazine size was a factor and this change makes me a little
-> worried about new issues. Better the devil you know and all that...
-> 
-> Anyway, if I get some time I might do some testing to see if this change has
-> any influence.
-> 
-> Another thought is if we need even store the size in the iova_magazine? mags
-> in the depot are always full. As such, we only need worry about mags loaded
-> in the cpu rcache and their sizes, so maybe we could have something like
-> this:
-> 
-> struct iova_magazine {
-> -       unsigned long size;
->        unsigned long pfns[IOVA_MAG_SIZE];
-> };
-> 
-> @@ -631,6 +630,8 @@ struct iova_cpu_rcache {
->        spinlock_t lock;
->        struct iova_magazine *loaded;
->        struct iova_magazine *prev;
-> +       int loaded_size;
-> +       int prev_size;
-> };
-> 
-> I haven't tried to implement it though..
+v1: https://lore.kernel.org/linux-mediatek/20220511064920.18455-1-yong.wu@mediatek.com/
+    Base on linux-next-20220510.
+    the improve safety from dts is base on:
+    https://lore.kernel.org/linux-mediatek/20211210205704.1664928-1-linux@roeck-us.net/
 
-I have very few knowledge of iova, so you can chose what's the better
-solution. I just wanted to raise the problem and will be happy to see
-it solved :)
+Guenter Roeck (1):
+  iommu/mediatek: Validate number of phandles associated with
+    "mediatek,larbs"
 
-Thanks,
-Feng
+Yong Wu (6):
+  iommu/mediatek: Use dev_err_probe to mute probe_defer err log
+  iommu/mediatek: Remove unused "mapping" member from mtk_iommu_data
+  iommu/mediatek: Add platform_device_put for recovering the device
+    refcnt
+  iommu/mediatek: Use component_match_add
+  iommu/mediatek: Add error path for loop of mm_dts_parse
+  iommu/mediatek: Improve safety for mediatek,smi property in larb nodes
 
-> Thanks,
-> John
+ drivers/iommu/mtk_iommu.c | 117 +++++++++++++++++++++++++++-----------
+ 1 file changed, 84 insertions(+), 33 deletions(-)
+
+-- 
+2.18.0
+
+
