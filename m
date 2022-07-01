@@ -1,84 +1,87 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BECFDC43334
-	for <iommu@archiver.kernel.org>; Fri,  1 Jul 2022 01:26:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 88AABCCA488
+	for <iommu@archiver.kernel.org>; Fri,  1 Jul 2022 01:27:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 4170660FB8;
-	Fri,  1 Jul 2022 01:26:59 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 4170660FB8
-Authentication-Results: smtp3.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20210112 header.b=ZGHrQo8o
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eADz69eZ9Dq9; Fri,  1 Jul 2022 01:26:56 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 7C47960F40;
-	Fri,  1 Jul 2022 01:26:56 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 7C47960F40
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4020EC002D;
-	Fri,  1 Jul 2022 01:26:56 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CD760C0011
- for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 01:26:54 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 94FB28465A
- for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 01:26:54 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 94FB28465A
+	by smtp1.osuosl.org (Postfix) with ESMTP id 1F0F38465D;
+	Fri,  1 Jul 2022 01:27:00 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 1F0F38465D
 Authentication-Results: smtp1.osuosl.org;
- dkim=pass (2048-bit key) header.d=google.com header.i=@google.com
- header.a=rsa-sha256 header.s=20210112 header.b=ZGHrQo8o
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20210112 header.b=O1+XSLj0
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id E4KzuZCI88Af for <iommu@lists.linux-foundation.org>;
- Fri,  1 Jul 2022 01:26:52 +0000 (UTC)
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id w8cgO-ju0GIb; Fri,  1 Jul 2022 01:26:59 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id BB1588465A;
+	Fri,  1 Jul 2022 01:26:58 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org BB1588465A
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 83FC3C002D;
+	Fri,  1 Jul 2022 01:26:58 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C2EA6C0011
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 01:26:56 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 9D0B240B59
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 01:26:56 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 9D0B240B59
+Authentication-Results: smtp2.osuosl.org;
+ dkim=pass (2048-bit key) header.d=google.com header.i=@google.com
+ header.a=rsa-sha256 header.s=20210112 header.b=O1+XSLj0
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id qsDOmdCnTEiV for <iommu@lists.linux-foundation.org>;
+ Fri,  1 Jul 2022 01:26:55 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 5A2C08463E
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com
- [IPv6:2607:f8b0:4864:20::1149])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 5A2C08463E
- for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 01:26:52 +0000 (UTC)
-Received: by mail-yw1-x1149.google.com with SMTP id
- 00721157ae682-317a4c8a662so8462367b3.6
- for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 18:26:52 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org AD55340931
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com
+ [IPv6:2607:f8b0:4864:20::549])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id AD55340931
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 01:26:55 +0000 (UTC)
+Received: by mail-pg1-x549.google.com with SMTP id
+ e18-20020a656492000000b003fa4033f9a7so484229pgv.17
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Jun 2022 18:26:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20210112;
- h=date:message-id:mime-version:subject:from:to:cc;
- bh=enThZq3GNhnkWKPd/daPanpJOP+0ijq4hNHtFP2b8Uo=;
- b=ZGHrQo8oKcs/1MxqUV66WuroIOiuRhyDQTe/h9dNu56quZHoJH2GUaDbRl2ttRwgEe
- SWqVcY/Veo5jphceJDpwMYzMdOJ0QXdCPktWf948t9BiLW5nmwSSwTlpJciNH3VIewIt
- 3ASh6A26F+KmkZttZjFaUnZEb4Vdr+50D/q0gexLqMMmpJA7NpBHgj2jcBkr1ZyXcHXM
- U6Xnoa3WH+ep5XzMHbrLnEz24W5g5SeejVYD0NuN3ckqaoVAfjVlh+5k/BsS4sAB5hq6
- ohdGwKO24kRPaNPr4udjwZ2k4/3lgZFaY78w+9+WaY8oo3hWqIQJ8JqaHbOBVz/YVY0e
- BS/A==
+ h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+ :cc; bh=N2ZBZX0ts4Mk2TYGZHAbQ0+iD2FAHUFhD02Oe5yw0x8=;
+ b=O1+XSLj0oSVLFId1abGtsY3tm0452of7YtoG6NXZHX/e84inEivfhRvPM2mxa0YyIW
+ IVE4lsrSj5BWadwFDlAWpmHnRK/doKl5AOePnDPGsAS+cA+NgfaWURouVPcfJ+UegMnP
+ gFn2YJgYpdS58AkA+jg1y+IJirkP1kEzvd9LDdSLlSQ/Sq4aCkWSKEc/oTe6fZiOhW65
+ BjkrHlyKrTJJXC29sJDuGTXqd5/40GhwO7WCZbDbcQB2MuJGIhtqAJ7KaIiPcGoYN1l9
+ s4fr0zbsiZbvNiOgTU00jLdLs0pkeLRUFjFRS2ioFddA+CNMuoRvkffPzuaP06JwXoHV
+ SNqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
- h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
- bh=enThZq3GNhnkWKPd/daPanpJOP+0ijq4hNHtFP2b8Uo=;
- b=KrlbtS9t2HGPcl84iBAuavHURUKqFeJCLqIRtnK7pFQVXF1KGzcjtTLUzCGcwqgQRa
- AwKPw1Z0nl5EiP578y5aa3XiR9VelGVeB8xKWnY4zoDZbm7bfRGV/AFYJL+CKBo1S5c/
- 2jgb4e4IcAf7Dz1b25A+E/Fl3eHMrFJziOtSO0hmFIfqYEeYkh18GANg5cjRockqRy8R
- /BoirGHvub8f+bUh/vmkyrcUiDM/iNuZtYJ1YcmcOFsVm9ujWoIYJVv7BfUTFmji+1QH
- HLMVj/R+cYv7mn26HP4RqYEDaqfigxk9NkVEczTn8RFJJX/3LazsZuYuK+Ks1uK1FJsU
- BJTg==
-X-Gm-Message-State: AJIora9YPiafJOyIPQsIRF1ODk/UK8uQDI3pn3cMSI/LNeAYTAzNobfi
- F0Edyoops0M6722eQqdIW3A70GJqRgp+IwM=
-X-Google-Smtp-Source: AGRyM1uVtkICZeFb41qzlKfYUlr23L197fZnFh7B1zLJMqch7Nth1saNWtsGGUH9YN1+Q9+ZxuB5n3WOpcD3GoA=
+ h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+ :references:subject:from:to:cc;
+ bh=N2ZBZX0ts4Mk2TYGZHAbQ0+iD2FAHUFhD02Oe5yw0x8=;
+ b=LXS3QDDd0bFDG/wUih20B9cuOYFV9YSO7Z5mYj65H2Maof+S9gBeXzUXnN/CvGUsbH
+ Mxkz8oUPUXSKoHGgyzPjXnJ+0fLw4CDD13kuwBunjECAZIN/RjlTVe+mIisJC0wIXge/
+ VMHIWINK7ddVjWDOh1gcDQ7h04WRWC8NIJSdS9hodmHReNIG1KOvDw7LzyAzuayGjX2s
+ ZJS1dZ+y4O+Qoj1TegWYnkK3JngeT2urZ144ehKMW4UkR4rv0mbGXSJyjQL0Pt25ISxZ
+ wzMYhDDcASG9gd9EdP0+75KeJktynaFQf0eaXa378dCorpMCL2Jzk0lmPOnZejdTcb70
+ 5CVg==
+X-Gm-Message-State: AJIora8gUuY4nFPmqaaYBzaTYMw0o5/XBCG5+/TZEnOIuxfwECBzZLL0
+ rzSMgSrq0ylle/w39x7O3dOIZMXlUBfL2vM=
+X-Google-Smtp-Source: AGRyM1sj2jrR3+blrSHPqJTzLp24osPeSbuJ6WFdrG/ishciKwr2k4mXrnUZAcDZaxDsMilQN7eUGTW8uxdoZkM=
 X-Received: from saravanak.san.corp.google.com
  ([2620:15c:2d:3:3973:d0f0:34a8:bf61])
- (user=saravanak job=sendgmr) by 2002:a25:4b02:0:b0:66c:8709:44d1 with SMTP id
- y2-20020a254b02000000b0066c870944d1mr12352911yba.602.1656638811027; Thu, 30
- Jun 2022 18:26:51 -0700 (PDT)
-Date: Thu, 30 Jun 2022 18:26:38 -0700
-Message-Id: <20220701012647.2007122-1-saravanak@google.com>
+ (user=saravanak job=sendgmr) by 2002:a05:6a00:1995:b0:525:bca8:b062 with SMTP
+ id d21-20020a056a00199500b00525bca8b062mr18860129pfl.26.1656638814784; Thu,
+ 30 Jun 2022 18:26:54 -0700 (PDT)
+Date: Thu, 30 Jun 2022 18:26:39 -0700
+In-Reply-To: <20220701012647.2007122-1-saravanak@google.com>
+Message-Id: <20220701012647.2007122-2-saravanak@google.com>
 Mime-Version: 1.0
+References: <20220701012647.2007122-1-saravanak@google.com>
 X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [PATCH v2 0/2] Fix console probe delay when stdout-path isn't set
+Subject: [PATCH v2 1/2] driver core: Add probe_no_timeout flag for drivers
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  "Rafael J. Wysocki" <rafael@kernel.org>, 
  Laurentiu Tudor <laurentiu.tudor@nxp.com>, Jiri Slaby <jirislaby@kernel.org>, 
@@ -136,19 +139,19 @@ Cc: andrew lunn <andrew@lunn.ch>, peng fan <peng.fan@nxp.com>,
  sparclinux@vger.kernel.org, linux-riscv@lists.infradead.org,
  will deacon <will@kernel.org>, linux-stm32@st-md-mailman.stormreply.com,
  sascha hauer <sha@pengutronix.de>, Rob Herring <robh@kernel.org>,
- linux-samsung-soc@vger.kernel.org, kevin hilman <khilman@kernel.org>,
- linux-serial@vger.kernel.org, jakub kicinski <kuba@kernel.org>,
- paolo abeni <pabeni@redhat.com>, kernel-team@android.com,
- len brown <len.brown@intel.com>, linux-pm@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, linux-actions@lists.infradead.org,
- linux-gpio@vger.kernel.org, linux-mediatek@lists.infradead.org,
- linux-rpi-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
- linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
- linux-snps-arc@lists.infradead.org, linux-unisoc@lists.infradead.org,
- hideaki yoshifuji <yoshfuji@linux-ipv6.org>, netdev@vger.kernel.org,
- david ahern <dsahern@kernel.org>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
- heiner kallweit <hkallweit1@gmail.com>
+ linux-samsung-soc@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>,
+ kevin hilman <khilman@kernel.org>, linux-serial@vger.kernel.org,
+ jakub kicinski <kuba@kernel.org>, paolo abeni <pabeni@redhat.com>,
+ kernel-team@android.com, len brown <len.brown@intel.com>,
+ linux-pm@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ linux-actions@lists.infradead.org, linux-gpio@vger.kernel.org,
+ linux-mediatek@lists.infradead.org, linux-rpi-kernel@lists.infradead.org,
+ linux-tegra@vger.kernel.org, linux-amlogic@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org, linux-snps-arc@lists.infradead.org,
+ linux-unisoc@lists.infradead.org, hideaki yoshifuji <yoshfuji@linux-ipv6.org>,
+ netdev@vger.kernel.org, david ahern <dsahern@kernel.org>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ linuxppc-dev@lists.ozlabs.org, heiner kallweit <hkallweit1@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -168,124 +171,151 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-These patches are on top of driver-core-next.
+This flag only needs to be set for drivers of devices that meet all the
+following conditions:
+- Need to probe successfully before userspace init in started
+- Have optional suppliers
+- Can't wait for deferred_probe_timeout to expire
 
-Even if stdout-path isn't set in DT, this patch should take console
-probe times back to how they were before the deferred_probe_timeout
-clean up series[1].
+fw_devlink=on uses this info, as needed, to ignore dependencies on supplier
+devices that have not been added or supplier devices that don't have any
+drivers.  It's still up to the driver to decide which of the missing
+suppliers are optional or not.
 
-v1->v2:
-- Fixed the accidental change that Tobias pointed out.
-- Added Tested-by tag
+Fixes: 71066545b48e ("driver core: Set fw_devlink.strict=1 by default")
+Reported-by: Sascha Hauer <sha@pengutronix.de>
+Reported-by: Peng Fan <peng.fan@nxp.com>
+Reported-by: Fabio Estevam <festevam@gmail.com>
+Reported-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+Tested-by: Fabio Estevam <festevam@gmail.com>
+Signed-off-by: Saravana Kannan <saravanak@google.com>
+---
+ drivers/base/base.h           |  1 +
+ drivers/base/core.c           |  7 +++++++
+ drivers/base/dd.c             |  3 +++
+ include/linux/device.h        |  7 +++++++
+ include/linux/device/driver.h | 11 +++++++++++
+ 5 files changed, 29 insertions(+)
 
-[1] - https://lore.kernel.org/lkml/20220601070707.3946847-1-saravanak@google.com/
-
--Saravana
-
-cc: Rob Herring <robh@kernel.org>
-cc: sascha hauer <sha@pengutronix.de>
-cc: peng fan <peng.fan@nxp.com>
-cc: kevin hilman <khilman@kernel.org>
-cc: ulf hansson <ulf.hansson@linaro.org>
-cc: len brown <len.brown@intel.com>
-cc: pavel machek <pavel@ucw.cz>
-cc: joerg roedel <joro@8bytes.org>
-cc: will deacon <will@kernel.org>
-cc: andrew lunn <andrew@lunn.ch>
-cc: heiner kallweit <hkallweit1@gmail.com>
-cc: russell king <linux@armlinux.org.uk>
-cc: "david s. miller" <davem@davemloft.net>
-cc: eric dumazet <edumazet@google.com>
-cc: jakub kicinski <kuba@kernel.org>
-cc: paolo abeni <pabeni@redhat.com>
-cc: linus walleij <linus.walleij@linaro.org>
-cc: hideaki yoshifuji <yoshfuji@linux-ipv6.org>
-cc: david ahern <dsahern@kernel.org>
-cc: kernel-team@android.com
-cc: linux-kernel@vger.kernel.org
-cc: linux-pm@vger.kernel.org
-cc: iommu@lists.linux-foundation.org
-cc: netdev@vger.kernel.org
-cc: linux-gpio@vger.kernel.org
-Cc: kernel@pengutronix.de
-
-Saravana Kannan (2):
-  driver core: Add probe_no_timeout flag for drivers
-  serial: Set probe_no_timeout for all DT based drivers
-
- drivers/base/base.h                         |  1 +
- drivers/base/core.c                         |  7 +++++++
- drivers/base/dd.c                           |  3 +++
- drivers/tty/ehv_bytechan.c                  |  1 +
- drivers/tty/goldfish.c                      |  1 +
- drivers/tty/hvc/hvc_opal.c                  |  1 +
- drivers/tty/serial/8250/8250_aspeed_vuart.c |  1 +
- drivers/tty/serial/8250/8250_bcm2835aux.c   |  1 +
- drivers/tty/serial/8250/8250_bcm7271.c      |  1 +
- drivers/tty/serial/8250/8250_dw.c           |  1 +
- drivers/tty/serial/8250/8250_em.c           |  1 +
- drivers/tty/serial/8250/8250_ingenic.c      |  1 +
- drivers/tty/serial/8250/8250_lpc18xx.c      |  1 +
- drivers/tty/serial/8250/8250_mtk.c          |  1 +
- drivers/tty/serial/8250/8250_of.c           |  1 +
- drivers/tty/serial/8250/8250_omap.c         |  1 +
- drivers/tty/serial/8250/8250_pxa.c          |  1 +
- drivers/tty/serial/8250/8250_tegra.c        |  1 +
- drivers/tty/serial/8250/8250_uniphier.c     |  1 +
- drivers/tty/serial/altera_jtaguart.c        |  1 +
- drivers/tty/serial/altera_uart.c            |  1 +
- drivers/tty/serial/amba-pl011.c             |  1 +
- drivers/tty/serial/apbuart.c                |  1 +
- drivers/tty/serial/ar933x_uart.c            |  1 +
- drivers/tty/serial/arc_uart.c               |  1 +
- drivers/tty/serial/atmel_serial.c           |  1 +
- drivers/tty/serial/bcm63xx_uart.c           |  1 +
- drivers/tty/serial/clps711x.c               |  1 +
- drivers/tty/serial/cpm_uart/cpm_uart_core.c |  1 +
- drivers/tty/serial/digicolor-usart.c        |  1 +
- drivers/tty/serial/fsl_linflexuart.c        |  1 +
- drivers/tty/serial/fsl_lpuart.c             |  1 +
- drivers/tty/serial/imx.c                    |  1 +
- drivers/tty/serial/lantiq.c                 |  1 +
- drivers/tty/serial/liteuart.c               |  1 +
- drivers/tty/serial/lpc32xx_hs.c             |  1 +
- drivers/tty/serial/max310x.c                |  1 +
- drivers/tty/serial/meson_uart.c             |  1 +
- drivers/tty/serial/milbeaut_usio.c          |  1 +
- drivers/tty/serial/mpc52xx_uart.c           |  1 +
- drivers/tty/serial/mps2-uart.c              |  1 +
- drivers/tty/serial/msm_serial.c             |  1 +
- drivers/tty/serial/mvebu-uart.c             |  1 +
- drivers/tty/serial/mxs-auart.c              |  1 +
- drivers/tty/serial/omap-serial.c            |  1 +
- drivers/tty/serial/owl-uart.c               |  1 +
- drivers/tty/serial/pic32_uart.c             |  1 +
- drivers/tty/serial/pmac_zilog.c             |  1 +
- drivers/tty/serial/pxa.c                    |  1 +
- drivers/tty/serial/qcom_geni_serial.c       |  1 +
- drivers/tty/serial/rda-uart.c               |  1 +
- drivers/tty/serial/samsung_tty.c            |  1 +
- drivers/tty/serial/sc16is7xx.c              |  1 +
- drivers/tty/serial/serial-tegra.c           |  1 +
- drivers/tty/serial/sh-sci.c                 |  1 +
- drivers/tty/serial/sifive.c                 |  1 +
- drivers/tty/serial/sprd_serial.c            |  1 +
- drivers/tty/serial/st-asc.c                 |  1 +
- drivers/tty/serial/stm32-usart.c            |  1 +
- drivers/tty/serial/sunhv.c                  |  1 +
- drivers/tty/serial/sunplus-uart.c           |  1 +
- drivers/tty/serial/sunsab.c                 |  1 +
- drivers/tty/serial/sunsu.c                  |  1 +
- drivers/tty/serial/sunzilog.c               |  1 +
- drivers/tty/serial/tegra-tcu.c              |  1 +
- drivers/tty/serial/uartlite.c               |  1 +
- drivers/tty/serial/ucc_uart.c               |  1 +
- drivers/tty/serial/vt8500_serial.c          |  1 +
- drivers/tty/serial/xilinx_uartps.c          |  1 +
- include/linux/device.h                      |  7 +++++++
- include/linux/device/driver.h               | 11 +++++++++++
- 71 files changed, 95 insertions(+)
-
+diff --git a/drivers/base/base.h b/drivers/base/base.h
+index b3a43a164dcd..149822d2086f 100644
+--- a/drivers/base/base.h
++++ b/drivers/base/base.h
+@@ -193,6 +193,7 @@ extern void device_links_no_driver(struct device *dev);
+ extern bool device_links_busy(struct device *dev);
+ extern void device_links_unbind_consumers(struct device *dev);
+ extern void fw_devlink_drivers_done(void);
++extern void fw_devlink_probe_no_timeout(void);
+ 
+ /* device pm support */
+ void device_pm_move_to_tail(struct device *dev);
+diff --git a/drivers/base/core.c b/drivers/base/core.c
+index ccdd5b4295de..8e18904a1584 100644
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -54,6 +54,7 @@ static unsigned int defer_sync_state_count = 1;
+ static DEFINE_MUTEX(fwnode_link_lock);
+ static bool fw_devlink_is_permissive(void);
+ static bool fw_devlink_drv_reg_done;
++static bool fw_devlink_no_timeout;
+ static bool fw_devlink_best_effort;
+ 
+ /**
+@@ -969,6 +970,7 @@ static void device_links_missing_supplier(struct device *dev)
+ static bool dev_is_best_effort(struct device *dev)
+ {
+ 	return (fw_devlink_best_effort && dev->can_match) ||
++		(fw_devlink_no_timeout && dev->probe_no_timeout) ||
+ 		(dev->fwnode && (dev->fwnode->flags & FWNODE_FLAG_BEST_EFFORT));
+ }
+ 
+@@ -1688,6 +1690,11 @@ void fw_devlink_drivers_done(void)
+ 	device_links_write_unlock();
+ }
+ 
++void fw_devlink_probe_no_timeout(void)
++{
++	fw_devlink_no_timeout = true;
++}
++
+ /**
+  * wait_for_init_devices_probe - Try to probe any device needed for init
+  *
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index 70f79fc71539..943b0363aaab 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -324,6 +324,8 @@ static int deferred_probe_initcall(void)
+ 
+ 	if (!IS_ENABLED(CONFIG_MODULES))
+ 		fw_devlink_drivers_done();
++	else
++		fw_devlink_probe_no_timeout();
+ 
+ 	/*
+ 	 * Trigger deferred probe again, this time we won't defer anything
+@@ -734,6 +736,7 @@ static int __driver_probe_device(struct device_driver *drv, struct device *dev)
+ 		return -EBUSY;
+ 
+ 	dev->can_match = true;
++	dev->probe_no_timeout = drv->probe_no_timeout;
+ 	pr_debug("bus: '%s': %s: matched device %s with driver %s\n",
+ 		 drv->bus->name, __func__, dev_name(dev), drv->name);
+ 
+diff --git a/include/linux/device.h b/include/linux/device.h
+index 424b55df0272..e6246b6cf6cf 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -536,6 +536,12 @@ struct device_physical_location {
+  * @can_match:	The device has matched with a driver at least once or it is in
+  *		a bus (like AMBA) which can't check for matching drivers until
+  *		other devices probe successfully.
++ * @probe_no_timeout: Set by driver core to indicate that this device's probe
++ *		can't wait till driver_probe_timeout expires. This information
++ *		is used by fw_devlink=on to avoid deferring the probe of this
++ *		device to wait on supplier devices that haven't been added or
++ *		probed successfully.
++ *		See also: probe_no_timeout in struct driver.
+  * @dma_coherent: this particular device is dma coherent, even if the
+  *		architecture supports non-coherent devices.
+  * @dma_ops_bypass: If set to %true then the dma_ops are bypassed for the
+@@ -642,6 +648,7 @@ struct device {
+ 	bool			of_node_reused:1;
+ 	bool			state_synced:1;
+ 	bool			can_match:1;
++	bool			probe_no_timeout:1;
+ #if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
+     defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
+     defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
+diff --git a/include/linux/device/driver.h b/include/linux/device/driver.h
+index 7acaabde5396..2ce60e511504 100644
+--- a/include/linux/device/driver.h
++++ b/include/linux/device/driver.h
+@@ -55,6 +55,15 @@ enum probe_type {
+  * @owner:	The module owner.
+  * @mod_name:	Used for built-in modules.
+  * @suppress_bind_attrs: Disables bind/unbind via sysfs.
++ * @probe_no_timeout: Set to true by drivers that bind to devices that meet all
++ *		these conditions:
++ *		- Need to probe successfully before userspace init in started
++ *		- Have optional suppliers
++ *		- Can't wait for deferred_probe_timeout to expire
++ *		fw_devlink=on uses this info, as needed, to ignore dependencies
++ *		on supplier devices that have not been added or supplier devices
++ *		that don't have any drivers. It's still up to the driver to
++ *		decide which of the missing suppliers are optional or not.
+  * @probe_type:	Type of the probe (synchronous or asynchronous) to use.
+  * @of_match_table: The open firmware table.
+  * @acpi_match_table: The ACPI match table.
+@@ -101,6 +110,8 @@ struct device_driver {
+ 	const char		*mod_name;	/* used for built-in modules */
+ 
+ 	bool suppress_bind_attrs;	/* disables bind/unbind via sysfs */
++	bool probe_no_timeout;
++
+ 	enum probe_type probe_type;
+ 
+ 	const struct of_device_id	*of_match_table;
 -- 
 2.37.0.rc0.161.g10f37bed90-goog
 
