@@ -1,33 +1,33 @@
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E6B4EC2
-	for <iommu@lists.linux.dev>; Fri,  1 Jul 2022 01:21:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3E33ECA
+	for <iommu@lists.linux.dev>; Fri,  1 Jul 2022 02:40:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656638513; x=1688174513;
+  t=1656643210; x=1688179210;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=H4ENz9j9WZZPAItQz3miCy+CRrDXsBwHO08vdhTePe4=;
-  b=jARrzZQFDE1EFLNeVX+X47vf9M91N2h/dUyRw4I8OUe66qQO+yTcaYT1
-   ptrJq0/cVRN1iaVGOdmgwfp4AvX+gez9ODp7lxAPFM1Em7bA8cH5nqpWI
-   BEeDtCx3YITl9sj9wlqlX0uoRtAfc6hw/D5U84nK7vJXKMrQbKRgKW8fF
-   7tbN1D7s3s8A958jgy/zkLyzugtwf7jtQHqEW4PNue8kNEjaCmtnqUgtQ
-   2qzMw3vX6x4lWhG14tau7cyPmBQloPMjDRL4HbZ6bChkUblnRM4YOTlyV
-   4L/dksfXE5fVXK9fO6RDOhhdnNVcAn177QZkVFBKkk+snvxL5QiRwWxew
+  bh=edwKdOeVps2DTKJzwrZSMgChaL5jo07778euBqV1TM8=;
+  b=caRbIjGkd5t7pSm6fUCEoP7dQ6hFHn7wkIq5r0jVyoWcN6HwAERRgFTm
+   H/lGt2uAIQdi+4xVl6w42MBjW0XD5UKv3ufQTvIkNGtCRzAqo7iy6Cf8Q
+   ePkRcjIHlSMbj+EXize0F0TOVdMKoVJqpKOUcPCHfPTh+Bj4b7fngcMEw
+   tO3rNlDwUvJD0L8GxtSkrIz74EEowf+bIsbaKqnZu9GderfcIKAkTVhWm
+   0SL4gvFKaaIGQ0NNtbRbfzVuLPmXZfhbLbuS8q2J9Nn6uoWJgSS8P1RGE
+   wCXS6Fkzo6BVjNuyR1eDSDTAYEZShzfm5l79SjGIrcGV+t/EN9gAhD1Dr
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="282547313"
+X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="271305105"
 X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="282547313"
+   d="scan'208";a="271305105"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 18:21:52 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 19:40:10 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="589038477"
+   d="scan'208";a="589059098"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by orsmga007.jf.intel.com with ESMTP; 30 Jun 2022 18:21:49 -0700
-Message-ID: <617e5bc8-aaef-c6b9-c50b-8fadb8ea8efb@linux.intel.com>
-Date: Fri, 1 Jul 2022 09:17:33 +0800
+  by orsmga007.jf.intel.com with ESMTP; 30 Jun 2022 19:40:07 -0700
+Message-ID: <595c314b-2d16-aeef-d808-d1cb713ba175@linux.intel.com>
+Date: Fri, 1 Jul 2022 10:35:50 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,67 +42,139 @@ Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>,
  <russ.anderson@hpe.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 2/6] iommu/vt-d: Use IDA interface to manage iommu
- sequence id
+Subject: Re: [PATCH v1 3/6] iommu/vt-d: Refactor iommu information of each
+ domain
 Content-Language: en-US
 To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
  Steve Wahl <steve.wahl@hpe.com>
 References: <20220625125204.2199437-1-baolu.lu@linux.intel.com>
- <20220625125204.2199437-3-baolu.lu@linux.intel.com>
- <BL1PR11MB5271C0143C8EA440BDAF45828CBA9@BL1PR11MB5271.namprd11.prod.outlook.com>
+ <20220625125204.2199437-4-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276A78546BD2B38068385E18CBA9@BN9PR11MB5276.namprd11.prod.outlook.com>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <BL1PR11MB5271C0143C8EA440BDAF45828CBA9@BL1PR11MB5271.namprd11.prod.outlook.com>
+In-Reply-To: <BN9PR11MB5276A78546BD2B38068385E18CBA9@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <20220701011733.fXl6xLt6dLemFT2ShapNyvzodicjPOoZCXqaTli8h4c@z>
+Message-ID: <20220701023550.0sai6OQt56DX8Fr8BPAWlyK-rMQ28VKk_Y4VQwFs3pc@z>
 
-On 6/30/22 4:21 PM, Tian, Kevin wrote:
+On 6/30/22 4:28 PM, Tian, Kevin wrote:
 >> From: Lu Baolu <baolu.lu@linux.intel.com>
 >> Sent: Saturday, June 25, 2022 8:52 PM
 >>
->> @@ -1062,11 +1040,14 @@ static int alloc_iommu(struct dmar_drhd_unit
->> *drhd)
->>   	if (!iommu)
->>   		return -ENOMEM;
+>> +struct iommu_domain_info {
+>> +	struct intel_iommu *iommu;
+>> +	unsigned int refcnt;
+>> +	u16 did;
+>> +};
+>> +
+>>   struct dmar_domain {
+>>   	int	nid;			/* node id */
+>> -
+>> -	unsigned int iommu_refcnt[DMAR_UNITS_SUPPORTED];
+>> -					/* Refcount of devices per iommu */
+>> -
+>> -
+>> -	u16		iommu_did[DMAR_UNITS_SUPPORTED];
+>> -					/* Domain ids per IOMMU. Use u16
+>> since
+>> -					 * domain ids are 16 bit wide
+>> according
+>> -					 * to VT-d spec, section 9.3 */
+> 
+> It'd make sense to keep the comments when moving above fields.
+
+Sure. Updated.
+
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 56c3d1a9e155..fae45bbb0c7f 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -527,8 +527,10 @@ struct context_entry {
+
+  struct iommu_domain_info {
+         struct intel_iommu *iommu;
+-       unsigned int refcnt;
+-       u16 did;
++       unsigned int refcnt;            /* Refcount of devices per iommu */
++       u16 did;                        /* Domain ids per IOMMU. Use u16 
+since
++                                        * domain ids are 16 bit wide 
+according
++                                        * to VT-d spec, section 9.3 */
+  };
+
+
+> 
+>> +	spin_lock(&iommu->lock);
+>> +	curr = xa_load(&domain->iommu_array, iommu->seq_id);
+>> +	if (curr) {
+>> +		curr->refcnt++;
+>> +		kfree(info);
+>> +		goto success;
+> 
+> Not a fan of adding a label for success. Just putting two lines (unlock+
+> return) here is clearer.
+
+Updated.
+
+> 
+>> +	ret = xa_err(xa_store(&domain->iommu_array, iommu->seq_id,
+>> +			      info, GFP_ATOMIC));
+> 
+> check xa_err in separate line.
+
+Sure. Updated as below:
+
+@@ -1778,13 +1780,14 @@ static int domain_attach_iommu(struct 
+dmar_domain *domain,
+         info->did       = num;
+         info->iommu     = iommu;
+         domain->nid     = iommu->node;
+-       ret = xa_err(xa_store(&domain->iommu_array, iommu->seq_id,
+-                             info, GFP_ATOMIC));
+-       if (ret)
++       curr = xa_cmpxchg(&domain->iommu_array, iommu->seq_id,
++                         NULL, info, GFP_ATOMIC);
++       if (curr) {
++               ret = xa_err(curr) ? : -EBUSY;
+                 goto err_clear;
++       }
+         domain_update_iommu_cap(domain);
+
+> 
 >>
->> -	if (dmar_alloc_seq_id(iommu) < 0) {
->> +	iommu->seq_id = ida_alloc_range(&dmar_seq_ids, 0,
->> +					DMAR_UNITS_SUPPORTED,
+>>   static void domain_detach_iommu(struct dmar_domain *domain,
+>>   				struct intel_iommu *iommu)
+>>   {
+>> -	int num;
+>> +	struct iommu_domain_info *info;
+>>
+>>   	spin_lock(&iommu->lock);
+>> -	domain->iommu_refcnt[iommu->seq_id] -= 1;
+>> -	if (domain->iommu_refcnt[iommu->seq_id] == 0) {
+>> -		num = domain->iommu_did[iommu->seq_id];
+>> -		clear_bit(num, iommu->domain_ids);
+>> +	info = xa_load(&domain->iommu_array, iommu->seq_id);
+>> +	if (--info->refcnt == 0) {
+>> +		clear_bit(info->did, iommu->domain_ids);
+>> +		xa_erase(&domain->iommu_array, iommu->seq_id);
+>>   		domain_update_iommu_cap(domain);
+>> -		domain->iommu_did[iommu->seq_id] = 0;
+>> +		kfree(info);
 > 
-> should be "DMAR_UNITS_SUPPORTED - 1"
+> domain->nid may still point to the node of the removed iommu.
 
-Yes, according to "@max: Highest ID to allocate.". Updated.
+Good catch! I should assign it to NUMA_NO_NODE, so that it could be
+updated in the next domain_update_iommu_cap(). Updated as below:
 
->> GFP_KERNEL);
->> +	if (iommu->seq_id < 0) {
->>   		pr_err("Failed to allocate seq_id\n");
->>   		err = -ENOSPC;
->>   		goto error;
->>   	}
-> 
-> ida_alloc_range() returns error code already. No need to change it.
-> 
-
-Agreed. Updated as below:
-
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index bf43889b9d2a..6327b34f5aa7 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -1041,10 +1041,10 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
-                 return -ENOMEM;
-
-         iommu->seq_id = ida_alloc_range(&dmar_seq_ids, 0,
--                                       DMAR_UNITS_SUPPORTED, GFP_KERNEL);
-+                                       DMAR_UNITS_SUPPORTED - 1, 
-GFP_KERNEL);
-         if (iommu->seq_id < 0) {
-                 pr_err("Failed to allocate seq_id\n");
--               err = -ENOSPC;
-+               err = iommu->seq_id;
-                 goto error;
+@@ -1806,6 +1809,7 @@ static void domain_detach_iommu(struct dmar_domain 
+*domain,
+         if (--info->refcnt == 0) {
+                 clear_bit(info->did, iommu->domain_ids);
+                 xa_erase(&domain->iommu_array, iommu->seq_id);
++               domain->nid = NUMA_NO_NODE;
+                 domain_update_iommu_cap(domain);
+                 kfree(info);
          }
-         sprintf(iommu->name, "dmar%d", iommu->seq_id);
 
 Best regards,
 baolu
