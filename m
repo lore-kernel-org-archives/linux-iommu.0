@@ -1,33 +1,33 @@
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3E33ECA
-	for <iommu@lists.linux.dev>; Fri,  1 Jul 2022 02:40:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2366210F3
+	for <iommu@lists.linux.dev>; Fri,  1 Jul 2022 03:17:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656643210; x=1688179210;
+  t=1656645448; x=1688181448;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=edwKdOeVps2DTKJzwrZSMgChaL5jo07778euBqV1TM8=;
-  b=caRbIjGkd5t7pSm6fUCEoP7dQ6hFHn7wkIq5r0jVyoWcN6HwAERRgFTm
-   H/lGt2uAIQdi+4xVl6w42MBjW0XD5UKv3ufQTvIkNGtCRzAqo7iy6Cf8Q
-   ePkRcjIHlSMbj+EXize0F0TOVdMKoVJqpKOUcPCHfPTh+Bj4b7fngcMEw
-   tO3rNlDwUvJD0L8GxtSkrIz74EEowf+bIsbaKqnZu9GderfcIKAkTVhWm
-   0SL4gvFKaaIGQ0NNtbRbfzVuLPmXZfhbLbuS8q2J9Nn6uoWJgSS8P1RGE
-   wCXS6Fkzo6BVjNuyR1eDSDTAYEZShzfm5l79SjGIrcGV+t/EN9gAhD1Dr
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="271305105"
+  bh=X7KG6YEkiVYtWl6cE7h9dCi+akN1ajBggBxEmd4Yg2I=;
+  b=CWNWMEsdpv/7XkqYGOQJog5NFjZgZP+wUWXd/PGgOg7qamSHaRiz4P+j
+   11SkPw7DEyElCrl3JhSyJ5T7glTjB2BBZE0ocO18emWcJv1BT6geM5U1e
+   6KUjOW12aOSfWNUdWEsKmadSOc+SmQYEPn5Mt5nbdOk3pCQyZsmCXmYuj
+   zKVcPOdB6077mSwFQCF2tV4cyc19etG5tnw93TZc3QXYp2LdhNcANMb6S
+   EOBF7Gz2r4zyaiC04r0I1gUGstAK/i4Dw3+3dl1tE+fQ8If7QS8NGMutH
+   uZ4hhYbFUy4DIYyBnjDXeg2TcsW/8Y67XOcNma7+t/Uct182FGfLq9EnA
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="262940441"
 X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="271305105"
+   d="scan'208";a="262940441"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 19:40:10 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 20:17:27 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="589059098"
+   d="scan'208";a="589066578"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by orsmga007.jf.intel.com with ESMTP; 30 Jun 2022 19:40:07 -0700
-Message-ID: <595c314b-2d16-aeef-d808-d1cb713ba175@linux.intel.com>
-Date: Fri, 1 Jul 2022 10:35:50 +0800
+  by orsmga007.jf.intel.com with ESMTP; 30 Jun 2022 20:17:24 -0700
+Message-ID: <239cfd97-b381-f523-f149-e127f44a0780@linux.intel.com>
+Date: Fri, 1 Jul 2022 11:13:07 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,139 +42,77 @@ Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>,
  <russ.anderson@hpe.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 3/6] iommu/vt-d: Refactor iommu information of each
- domain
+Subject: Re: [PATCH v1 4/6] iommu/vt-d: Add VTD_FLAG_IOMMU_PROBED flag
 Content-Language: en-US
 To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
  Steve Wahl <steve.wahl@hpe.com>
 References: <20220625125204.2199437-1-baolu.lu@linux.intel.com>
- <20220625125204.2199437-4-baolu.lu@linux.intel.com>
- <BN9PR11MB5276A78546BD2B38068385E18CBA9@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276A78546BD2B38068385E18CBA9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220625125204.2199437-5-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276F90888CE86824251E5FC8CBA9@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276F90888CE86824251E5FC8CBA9@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <20220701023550.0sai6OQt56DX8Fr8BPAWlyK-rMQ28VKk_Y4VQwFs3pc@z>
+Message-ID: <20220701031307.8YF9pTASMjOgAgOsLw0Hrj3_j13_c98YSePmdLxsD5Y@z>
 
-On 6/30/22 4:28 PM, Tian, Kevin wrote:
+On 6/30/22 4:29 PM, Tian, Kevin wrote:
 >> From: Lu Baolu <baolu.lu@linux.intel.com>
 >> Sent: Saturday, June 25, 2022 8:52 PM
 >>
->> +struct iommu_domain_info {
->> +	struct intel_iommu *iommu;
->> +	unsigned int refcnt;
->> +	u16 did;
->> +};
->> +
->>   struct dmar_domain {
->>   	int	nid;			/* node id */
->> -
->> -	unsigned int iommu_refcnt[DMAR_UNITS_SUPPORTED];
->> -					/* Refcount of devices per iommu */
->> -
->> -
->> -	u16		iommu_did[DMAR_UNITS_SUPPORTED];
->> -					/* Domain ids per IOMMU. Use u16
->> since
->> -					 * domain ids are 16 bit wide
->> according
->> -					 * to VT-d spec, section 9.3 */
+>> In the IOMMU hot-add path, there's a need to check whether an IOMMU
+>> has been probed. Instead of checking the IOMMU pointer in the global
+>> list, it's better to allocate a flag bit in iommu->flags for this
+>> purpose.
 > 
-> It'd make sense to keep the comments when moving above fields.
-
-Sure. Updated.
-
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 56c3d1a9e155..fae45bbb0c7f 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -527,8 +527,10 @@ struct context_entry {
-
-  struct iommu_domain_info {
-         struct intel_iommu *iommu;
--       unsigned int refcnt;
--       u16 did;
-+       unsigned int refcnt;            /* Refcount of devices per iommu */
-+       u16 did;                        /* Domain ids per IOMMU. Use u16 
-since
-+                                        * domain ids are 16 bit wide 
-according
-+                                        * to VT-d spec, section 9.3 */
-  };
-
-
+> Sorry I didn't get the point of original check. This is the hotplug path
+> hence the caller of this function should already figure out it's a new
+> iommu before reaching this point?
 > 
->> +	spin_lock(&iommu->lock);
->> +	curr = xa_load(&domain->iommu_array, iommu->seq_id);
->> +	if (curr) {
->> +		curr->refcnt++;
->> +		kfree(info);
->> +		goto success;
-> 
-> Not a fan of adding a label for success. Just putting two lines (unlock+
-> return) here is clearer.
 
-Updated.
+Either did I. It was added by below commit without any comments about
+this check.
 
-> 
->> +	ret = xa_err(xa_store(&domain->iommu_array, iommu->seq_id,
->> +			      info, GFP_ATOMIC));
-> 
-> check xa_err in separate line.
+commit ffebeb46dd34736c90ffbca1ccb0bef8f4827c44
+Author: Jiang Liu <jiang.liu@linux.intel.com>
+Date:   Sun Nov 9 22:48:02 2014 +0800
 
-Sure. Updated as below:
+     iommu/vt-d: Enhance intel-iommu driver to support DMAR unit hotplug
 
-@@ -1778,13 +1780,14 @@ static int domain_attach_iommu(struct 
-dmar_domain *domain,
-         info->did       = num;
-         info->iommu     = iommu;
-         domain->nid     = iommu->node;
--       ret = xa_err(xa_store(&domain->iommu_array, iommu->seq_id,
--                             info, GFP_ATOMIC));
--       if (ret)
-+       curr = xa_cmpxchg(&domain->iommu_array, iommu->seq_id,
-+                         NULL, info, GFP_ATOMIC);
-+       if (curr) {
-+               ret = xa_err(curr) ? : -EBUSY;
-                 goto err_clear;
-+       }
-         domain_update_iommu_cap(domain);
+     Implement required callback functions for intel-iommu driver
+     to support DMAR unit hotplug.
 
-> 
->>
->>   static void domain_detach_iommu(struct dmar_domain *domain,
->>   				struct intel_iommu *iommu)
->>   {
->> -	int num;
->> +	struct iommu_domain_info *info;
->>
->>   	spin_lock(&iommu->lock);
->> -	domain->iommu_refcnt[iommu->seq_id] -= 1;
->> -	if (domain->iommu_refcnt[iommu->seq_id] == 0) {
->> -		num = domain->iommu_did[iommu->seq_id];
->> -		clear_bit(num, iommu->domain_ids);
->> +	info = xa_load(&domain->iommu_array, iommu->seq_id);
->> +	if (--info->refcnt == 0) {
->> +		clear_bit(info->did, iommu->domain_ids);
->> +		xa_erase(&domain->iommu_array, iommu->seq_id);
->>   		domain_update_iommu_cap(domain);
->> -		domain->iommu_did[iommu->seq_id] = 0;
->> +		kfree(info);
-> 
-> domain->nid may still point to the node of the removed iommu.
+     Signed-off-by: Jiang Liu <jiang.liu@linux.intel.com>
+     Reviewed-by: Yijing Wang <wangyijing@huawei.com>
+     Signed-off-by: Joerg Roedel <jroedel@suse.de>
 
-Good catch! I should assign it to NUMA_NO_NODE, so that it could be
-updated in the next domain_update_iommu_cap(). Updated as below:
+I went through the whole hot-add process and found this check seemed to
+be duplicate.
 
-@@ -1806,6 +1809,7 @@ static void domain_detach_iommu(struct dmar_domain 
-*domain,
-         if (--info->refcnt == 0) {
-                 clear_bit(info->did, iommu->domain_ids);
-                 xa_erase(&domain->iommu_array, iommu->seq_id);
-+               domain->nid = NUMA_NO_NODE;
-                 domain_update_iommu_cap(domain);
-                 kfree(info);
-         }
+Hot-add process starts from dmar_device_hotplug(), it uses a rwlock to
+synchronize the hot-add paths.
+
+2386         down_write(&dmar_global_lock);
+2387         if (insert)
+2388                 ret = dmar_hotplug_insert(tmp);
+2389         else
+2390                 ret = dmar_hotplug_remove(tmp);
+2391         up_write(&dmar_global_lock);
+
+dmar_device_hotplug()
+->dmar_hotplug_insert()
+-->dmar_parse_one_drhd()   /* the added intel_iommu is allocated here*/
+-->dmar_hp_add_drhd()	   /* the intel_iommu is about to bring up */
+--->intel_iommu_add()
+
+The duplicate check here:
+
+         if (g_iommus[iommu->seq_id])
+                 return 0;
+
+All the iommu units are allocated and then initialized in the same
+synchronized path. There is no need to check a duplicate initialization.
+
+I would like to remove this check if no objection.
 
 Best regards,
 baolu
