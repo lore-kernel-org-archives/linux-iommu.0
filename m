@@ -1,96 +1,72 @@
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+Received: from unicom146.biz-email.net (unicom146.biz-email.net [210.51.26.146])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAC6010E9
-	for <iommu@lists.linux.dev>; Fri,  1 Jul 2022 06:53:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656658408; x=1688194408;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=lT6Q657TSg/9MG9w0C8hYZ86wxuoFIRctv6pNkUIO7Y=;
-  b=Gz9bDxP0Epw1jfCk/mYZiEbSAWhCrsKJJFh9H9x0YXtoGNhof3oBWX6u
-   XjbolSmHi5uWx0U6PbacsQuRVVZEBHwf7vEhcLv0EHwZQ9yGPmMYbqjR7
-   xhG7PTDHU6llXIO9BMxqg1ZSSj3Jd9MLIoaGepGFURvMxKyf/mtibgn7m
-   THf/aZTk1BZ965DyiCGgFD8FIEjhg32OQuyxAng4IGxlc0lUdN4Sq2/K/
-   tm4iY8Y3/BDYbwuenBTNme4JpWAbpom5Pg1w38S7MrQoCR9H/l/hZ6gb7
-   QpiIpUYOLofM7RE0/VfQRihtV5FfJtiQ9E++etGn34gMxmiuLxttG3ouK
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="271341197"
-X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="271341197"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 23:53:27 -0700
-X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
-   d="scan'208";a="596134247"
-Received: from pchai-mobl.ccr.corp.intel.com (HELO [10.249.171.241]) ([10.249.171.241])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2022 23:53:15 -0700
-Message-ID: <0db46319-30c9-5d78-4467-79246ac454e4@linux.intel.com>
-Date: Fri, 1 Jul 2022 14:53:13 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 064BB10E9
+	for <iommu@lists.linux.dev>; Fri,  1 Jul 2022 07:05:56 +0000 (UTC)
+Received: from ([60.208.111.195])
+        by unicom146.biz-email.net ((D)) with ASMTP (SSL) id VEE00141;
+        Fri, 01 Jul 2022 15:03:41 +0800
+Received: from localhost.localdomain (10.200.104.97) by
+ jtjnmail201607.home.langchao.com (10.100.2.7) with Microsoft SMTP Server id
+ 15.1.2507.9; Fri, 1 Jul 2022 15:03:44 +0800
+From: Bo Liu <liubo03@inspur.com>
+To: <jean-philippe@linaro.org>, <joro@8bytes.org>, <will@kernel.org>
+CC: <virtualization@lists.linux-foundation.org>,
+	<iommu@lists.linux-foundation.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, Bo Liu <liubo03@inspur.com>
+Subject: [PATCH] iommu/virtio: Handle return of iommu_device_register
+Date: Fri, 1 Jul 2022 01:43:04 -0400
+Message-ID: <20220701054304.6434-1-liubo03@inspur.com>
+X-Mailer: git-send-email 2.18.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Cc: baolu.lu@linux.intel.com, suravee.suthikulpanit@amd.com,
- alyssa@rosenzweig.io, dwmw2@infradead.org, mjrosato@linux.ibm.com,
- gerald.schaefer@linux.ibm.com, thierry.reding@gmail.com, vdumpa@nvidia.com,
- jonathanh@nvidia.com, cohuck@redhat.com, thunder.leizhen@huawei.com,
- christophe.jaillet@wanadoo.fr, chenxiang66@hisilicon.com,
- john.garry@huawei.com, yangyingliang@huawei.com,
- iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-arm-msm@vger.kernel.org, linux-s390@vger.kernel.org,
- linux-tegra@vger.kernel.org, virtualization@lists.linux-foundation.org,
- kvm@vger.kernel.org
-Subject: Re: [PATCH v4 1/5] iommu: Return -EMEDIUMTYPE for incompatible domain
- and device/group
-Content-Language: en-US
-To: Nicolin Chen <nicolinc@nvidia.com>, joro@8bytes.org, will@kernel.org,
- marcan@marcan.st, sven@svenpeter.dev, robin.murphy@arm.com,
- robdclark@gmail.com, orsonzhai@gmail.com, baolin.wang7@gmail.com,
- zhang.lyra@gmail.com, jean-philippe@linaro.org, alex.williamson@redhat.com,
- jgg@nvidia.com, kevin.tian@intel.com
-References: <20220630203635.33200-1-nicolinc@nvidia.com>
- <20220630203635.33200-2-nicolinc@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220630203635.33200-2-nicolinc@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Message-ID: <20220701065313.nTW_zOfeaPIoh47X4f3l77JADpiJxJBMFk5iyYAN1io@z>
+Content-Type: text/plain
+X-Originating-IP: [10.200.104.97]
+tUid: 20227011503418d5d708f5b31f05e32cd5086aa14c86f
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
+Message-ID: <20220701054304.d_oX-T9WJA4rjVkWfuXWx5k-11YiM0tSUfrAlgpzmzM@z>
 
-On 2022/7/1 04:36, Nicolin Chen wrote:
-> Cases like VFIO wish to attach a device to an existing domain that was
-> not allocated specifically from the device. This raises a condition
-> where the IOMMU driver can fail the domain attach because the domain and
-> device are incompatible with each other.
-> 
-> This is a soft failure that can be resolved by using a different domain.
-> 
-> Provide a dedicated errno from the IOMMU driver during attach that the
-> reason attached failed is because of domain incompatability. EMEDIUMTYPE
-> is chosen because it is never used within the iommu subsystem today and
-> evokes a sense that the 'medium' aka the domain is incompatible.
-> 
-> VFIO can use this to know attach is a soft failure and it should continue
-> searching. Otherwise the attach will be a hard failure and VFIO will
-> return the code to userspace.
-> 
-> Update all drivers to return EMEDIUMTYPE in their failure paths that are
-> related to domain incompatability. Also remove adjacent error prints for
-> these soft failures, to prevent a kernel log spam, since -EMEDIUMTYPE is
-> clear enough to indicate an incompatability error.
-> 
-> Add kdocs describing this behavior.
-> 
-> Suggested-by: Jason Gunthorpe<jgg@nvidia.com>
-> Reviewed-by: Kevin Tian<kevin.tian@intel.com>
-> Signed-off-by: Nicolin Chen<nicolinc@nvidia.com>
+iommu_device_register returns an error code and, although it currently
+never fails, we should check its return value anyway.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Bo Liu <liubo03@inspur.com>
+---
+ drivers/iommu/virtio-iommu.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-Best regards,
-baolu
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 25be4b822aa0..12e7d8364560 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -1144,7 +1144,9 @@ static int viommu_probe(struct virtio_device *vdev)
+ 	if (ret)
+ 		goto err_free_vqs;
+ 
+-	iommu_device_register(&viommu->iommu, &viommu_ops, parent_dev);
++	ret = iommu_device_register(&viommu->iommu, &viommu_ops, parent_dev);
++	if (ret)
++		goto err_remove_sysfs;
+ 
+ #ifdef CONFIG_PCI
+ 	if (pci_bus_type.iommu_ops != &viommu_ops) {
+@@ -1175,8 +1177,9 @@ static int viommu_probe(struct virtio_device *vdev)
+ 	return 0;
+ 
+ err_unregister:
+-	iommu_device_sysfs_remove(&viommu->iommu);
+ 	iommu_device_unregister(&viommu->iommu);
++err_remove_sysfs:
++	iommu_device_sysfs_remove(&viommu->iommu);
+ err_free_vqs:
+ 	vdev->config->del_vqs(vdev);
+ 
+-- 
+2.27.0
+
