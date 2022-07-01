@@ -4,74 +4,67 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 53C2DC433EF
-	for <iommu@archiver.kernel.org>; Fri,  1 Jul 2022 11:33:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B8157CCA479
+	for <iommu@archiver.kernel.org>; Fri,  1 Jul 2022 12:01:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id CD5CF81A39;
-	Fri,  1 Jul 2022 11:33:23 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org CD5CF81A39
+	by smtp1.osuosl.org (Postfix) with ESMTP id 4B3ED8461E;
+	Fri,  1 Jul 2022 12:01:43 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 4B3ED8461E
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 93dAgxsRndD4; Fri,  1 Jul 2022 11:33:23 +0000 (UTC)
+	with ESMTP id oGtqybNrtW27; Fri,  1 Jul 2022 12:01:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 7326781A18;
-	Fri,  1 Jul 2022 11:33:22 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 7326781A18
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 23ED181A64;
+	Fri,  1 Jul 2022 12:01:42 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 23ED181A64
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 492FCC0035;
-	Fri,  1 Jul 2022 11:33:22 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C7610C002D
- for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 11:33:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EAB66C0035;
+	Fri,  1 Jul 2022 12:01:41 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A5C2EC002D
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 12:01:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id A07126135B
- for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 11:33:20 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org A07126135B
+ by smtp2.osuosl.org (Postfix) with ESMTP id 73401404C7
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 12:01:40 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 73401404C7
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4mUjnVtcn1Q5 for <iommu@lists.linux-foundation.org>;
- Fri,  1 Jul 2022 11:33:19 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 9u_9NGnuvvE4 for <iommu@lists.linux-foundation.org>;
+ Fri,  1 Jul 2022 12:01:39 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 6C3B860FF8
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 6C3B860FF8
- for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 11:33:19 +0000 (UTC)
-Received: from fraeml707-chm.china.huawei.com (unknown [172.18.147.207])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LZCdf3yhHz6H71B;
- Fri,  1 Jul 2022 19:29:10 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml707-chm.china.huawei.com (10.206.15.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 1 Jul 2022 13:33:16 +0200
-Received: from [10.126.173.51] (10.126.173.51) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 1 Jul 2022 12:33:15 +0100
-Message-ID: <51af869a-83d4-631a-2d91-edb8b066bf4d@huawei.com>
-Date: Fri, 1 Jul 2022 12:33:17 +0100
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 86C574020B
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 86C574020B
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 12:01:39 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1C4AB113E;
+ Fri,  1 Jul 2022 05:01:39 -0700 (PDT)
+Received: from [10.57.85.162] (unknown [10.57.85.162])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E838D3F792;
+ Fri,  1 Jul 2022 05:01:36 -0700 (PDT)
+Message-ID: <1eeeec76-5271-f915-e3fd-f15095efb981@arm.com>
+Date: Fri, 1 Jul 2022 13:01:31 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
 Subject: Re: [PATCH] iommu/iova: change IOVA_MAG_SIZE to 127 to save memory
-To: Feng Tang <feng.tang@intel.com>
+Content-Language: en-GB
+To: John Garry <john.garry@huawei.com>, Feng Tang <feng.tang@intel.com>
 References: <20220630073304.26945-1-feng.tang@intel.com>
  <13db50bb-57c7-0d54-3857-84b8a4591d9e@arm.com>
  <7c29d01d-d90c-58d3-a6e0-0b6c404173ac@huawei.com>
  <117b31b5-8d06-0af4-7f1c-231d86becf1d@arm.com>
  <2920df89-9975-5785-f79b-257d3052dfaf@huawei.com>
  <20220701035622.GB14806@shbuild999.sh.intel.com>
-In-Reply-To: <20220701035622.GB14806@shbuild999.sh.intel.com>
-X-Originating-IP: [10.126.173.51]
-X-ClientProxiedBy: lhreml712-chm.china.huawei.com (10.201.108.63) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: Paul Menzel <pmenzel@molgen.mpg.de>, Robin Murphy <robin.murphy@arm.com>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org, Andrew Morton <akpm@linux-foundation.org>,
- Will Deacon <will@kernel.org>, Christoph Lameter <cl@linux.com>,
+ <51af869a-83d4-631a-2d91-edb8b066bf4d@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <51af869a-83d4-631a-2d91-edb8b066bf4d@huawei.com>
+Cc: Paul Menzel <pmenzel@molgen.mpg.de>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+ iommu@lists.linux-foundation.org, Christoph Lameter <cl@linux.com>,
+ Will Deacon <will@kernel.org>, Andrew Morton <akpm@linux-foundation.org>,
  Vlastimil Babka <vbabka@suse.cz>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -85,57 +78,52 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: John Garry via iommu <iommu@lists.linux-foundation.org>
-Reply-To: John Garry <john.garry@huawei.com>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 01/07/2022 04:56, Feng Tang wrote:
->>> inclination.
->>>
->> ok, what you are saying sounds reasonable. I just remember that when we
->> analyzed the longterm aging issue that we concluded that the FQ size and its
->> relation to the magazine size was a factor and this change makes me a little
->> worried about new issues. Better the devil you know and all that...
->>
->> Anyway, if I get some time I might do some testing to see if this change has
->> any influence.
->>
->> Another thought is if we need even store the size in the iova_magazine? mags
->> in the depot are always full. As such, we only need worry about mags loaded
->> in the cpu rcache and their sizes, so maybe we could have something like
->> this:
->>
->> struct iova_magazine {
->> -       unsigned long size;
->>         unsigned long pfns[IOVA_MAG_SIZE];
->> };
->>
->> @@ -631,6 +630,8 @@ struct iova_cpu_rcache {
->>         spinlock_t lock;
->>         struct iova_magazine *loaded;
->>         struct iova_magazine *prev;
->> +       int loaded_size;
->> +       int prev_size;
->> };
->>
->> I haven't tried to implement it though..
-> I have very few knowledge of iova, so you can chose what's the better
-> solution. I just wanted to raise the problem and will be happy to see
-> it solved:)
-
-I quickly tested your patch for performance and saw no noticeable 
-difference, which is no surprise.
-
-But I'll defer to Robin if he thinks that your patch is a better 
-solution - I would guess that he does. For me personally I would prefer 
-that this value was not changed, as I mentioned before.
-
-thanks,
-John
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjAyMi0wNy0wMSAxMjozMywgSm9obiBHYXJyeSB3cm90ZToKPiBPbiAwMS8wNy8yMDIyIDA0
+OjU2LCBGZW5nIFRhbmcgd3JvdGU6Cj4+Pj4gaW5jbGluYXRpb24uCj4+Pj4KPj4+IG9rLCB3aGF0
+IHlvdSBhcmUgc2F5aW5nIHNvdW5kcyByZWFzb25hYmxlLiBJIGp1c3QgcmVtZW1iZXIgdGhhdCB3
+aGVuIHdlCj4+PiBhbmFseXplZCB0aGUgbG9uZ3Rlcm0gYWdpbmcgaXNzdWUgdGhhdCB3ZSBjb25j
+bHVkZWQgdGhhdCB0aGUgRlEgc2l6ZSAKPj4+IGFuZCBpdHMKPj4+IHJlbGF0aW9uIHRvIHRoZSBt
+YWdhemluZSBzaXplIHdhcyBhIGZhY3RvciBhbmQgdGhpcyBjaGFuZ2UgbWFrZXMgbWUgYSAKPj4+
+IGxpdHRsZQo+Pj4gd29ycmllZCBhYm91dCBuZXcgaXNzdWVzLiBCZXR0ZXIgdGhlIGRldmlsIHlv
+dSBrbm93IGFuZCBhbGwgdGhhdC4uLgo+Pj4KPj4+IEFueXdheSwgaWYgSSBnZXQgc29tZSB0aW1l
+IEkgbWlnaHQgZG8gc29tZSB0ZXN0aW5nIHRvIHNlZSBpZiB0aGlzIAo+Pj4gY2hhbmdlIGhhcwo+
+Pj4gYW55IGluZmx1ZW5jZS4KPj4+Cj4+PiBBbm90aGVyIHRob3VnaHQgaXMgaWYgd2UgbmVlZCBl
+dmVuIHN0b3JlIHRoZSBzaXplIGluIHRoZSAKPj4+IGlvdmFfbWFnYXppbmU/IG1hZ3MKPj4+IGlu
+IHRoZSBkZXBvdCBhcmUgYWx3YXlzIGZ1bGwuIEFzIHN1Y2gsIHdlIG9ubHkgbmVlZCB3b3JyeSBh
+Ym91dCBtYWdzIAo+Pj4gbG9hZGVkCj4+PiBpbiB0aGUgY3B1IHJjYWNoZSBhbmQgdGhlaXIgc2l6
+ZXMsIHNvIG1heWJlIHdlIGNvdWxkIGhhdmUgc29tZXRoaW5nIGxpa2UKPj4+IHRoaXM6Cj4+Pgo+
+Pj4gc3RydWN0IGlvdmFfbWFnYXppbmUgewo+Pj4gLcKgwqDCoMKgwqDCoCB1bnNpZ25lZCBsb25n
+IHNpemU7Cj4+PiDCoMKgwqDCoMKgwqDCoCB1bnNpZ25lZCBsb25nIHBmbnNbSU9WQV9NQUdfU0la
+RV07Cj4+PiB9Owo+Pj4KPj4+IEBAIC02MzEsNiArNjMwLDggQEAgc3RydWN0IGlvdmFfY3B1X3Jj
+YWNoZSB7Cj4+PiDCoMKgwqDCoMKgwqDCoCBzcGlubG9ja190IGxvY2s7Cj4+PiDCoMKgwqDCoMKg
+wqDCoCBzdHJ1Y3QgaW92YV9tYWdhemluZSAqbG9hZGVkOwo+Pj4gwqDCoMKgwqDCoMKgwqAgc3Ry
+dWN0IGlvdmFfbWFnYXppbmUgKnByZXY7Cj4+PiArwqDCoMKgwqDCoMKgIGludCBsb2FkZWRfc2l6
+ZTsKPj4+ICvCoMKgwqDCoMKgwqAgaW50IHByZXZfc2l6ZTsKPj4+IH07Cj4+Pgo+Pj4gSSBoYXZl
+bid0IHRyaWVkIHRvIGltcGxlbWVudCBpdCB0aG91Z2guLgo+PiBJIGhhdmUgdmVyeSBmZXcga25v
+d2xlZGdlIG9mIGlvdmEsIHNvIHlvdSBjYW4gY2hvc2Ugd2hhdCdzIHRoZSBiZXR0ZXIKPj4gc29s
+dXRpb24uIEkganVzdCB3YW50ZWQgdG8gcmFpc2UgdGhlIHByb2JsZW0gYW5kIHdpbGwgYmUgaGFw
+cHkgdG8gc2VlCj4+IGl0IHNvbHZlZDopCj4gCj4gSSBxdWlja2x5IHRlc3RlZCB5b3VyIHBhdGNo
+IGZvciBwZXJmb3JtYW5jZSBhbmQgc2F3IG5vIG5vdGljZWFibGUgCj4gZGlmZmVyZW5jZSwgd2hp
+Y2ggaXMgbm8gc3VycHJpc2UuCj4gCj4gQnV0IEknbGwgZGVmZXIgdG8gUm9iaW4gaWYgaGUgdGhp
+bmtzIHRoYXQgeW91ciBwYXRjaCBpcyBhIGJldHRlciAKPiBzb2x1dGlvbiAtIEkgd291bGQgZ3Vl
+c3MgdGhhdCBoZSBkb2VzLiBGb3IgbWUgcGVyc29uYWxseSBJIHdvdWxkIHByZWZlciAKPiB0aGF0
+IHRoaXMgdmFsdWUgd2FzIG5vdCBjaGFuZ2VkLCBhcyBJIG1lbnRpb25lZCBiZWZvcmUuCgpUaGlz
+IGlkZWEgaXMgaW50ZXJlc3RpbmcsIGJ1dCBpdCB3b3VsZCBtZWFuIGEgYml0IG1vcmUgZmlkZGx5
+IHdvcmsgdG8gCmtlZXAgdGhpbmdzIGluIHN5bmMgd2hlbiBtYWdhemluZXMgYXJlIGFsbG9jYXRl
+ZCwgZnJlZWQgYW5kIHN3YXBwZWQgCmFyb3VuZC4gSXQgc2VlbXMgbGlrZSB0aGUga2luZCBvZiBu
+b24tb2J2aW91cyB0aGluZyB0aGF0IG1pZ2h0IG1ha2UgCnNlbnNlIGlmIGl0IGdhdmUgYSBzaWdu
+aWZpY2FudCBpbXByb3ZlbWVudCBpbiBjYWNoZSBsb2NhbGl0eSBvciAKc29tZXRoaW5nIGxpa2Ug
+dGhhdCwgYnV0IGZvciBzaW1wbHkgZml4aW5nIGFuIGFsbG9jYXRpb24gc2l6ZSBpdCBmZWVscyBh
+IApiaXQgdG9vIHdhY2t5LgoKIEZyb20gbXkgcGVyc3BlY3RpdmUsIGluZGVlZCBJJ2QgcmF0aGVy
+IGRvIHRoZSBzaW1wbGUgdGhpbmcgZm9yIG5vdyB0byAKYWRkcmVzcyB0aGUgbWVtb3J5IHdhc3Rh
+Z2UgaXNzdWUgZGlyZWN0bHksIHRoZW4gd2UgY2FuIGRvIHRoZSBkZWVwZXIgCnBlcmZvcm1hbmNl
+IGFuYWx5c2lzIG9uIHRvcCB0byBzZWUgaWYgZnVydGhlciB0d2Vha2luZyBvZiBtYWdhemluZSBz
+aXplcyAKYW5kL29yIGRlc2lnbiBpcyBqdXN0aWZpZWQuCgpDaGVlcnMsClJvYmluLgpfX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxp
+c3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZv
+dW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
