@@ -1,81 +1,73 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B4D710F1
-	for <iommu@lists.linux.dev>; Fri,  1 Jul 2022 08:46:35 +0000 (UTC)
-Received: from fraeml701-chm.china.huawei.com (unknown [172.18.147.207])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LZ7zB3G1wz67VqM;
-	Fri,  1 Jul 2022 16:44:06 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml701-chm.china.huawei.com (10.206.15.50) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Fri, 1 Jul 2022 10:46:32 +0200
-Received: from [10.126.173.51] (10.126.173.51) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 1 Jul 2022 09:46:31 +0100
-Message-ID: <42505bbc-7319-f266-f282-e76ba505725e@huawei.com>
-Date: Fri, 1 Jul 2022 09:46:34 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 323BB1855
+	for <iommu@lists.linux.dev>; Fri,  1 Jul 2022 09:12:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656666750; x=1688202750;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=/kNlVEyPH0w8WhI0mhYcgoRy3O47A7bOqC6yeIddZ5M=;
+  b=WWk6sr7+/Hj1Dm1lFwXe+4Vnjwrs41oxnVSqcwdfPG3WgTpMeGSlXfQv
+   wX3S1dMEXQKj/n3b40n/3eAio12B/jynJ3rYmtnHg2rTwW/BQggpc/HsR
+   EPf/Vq+H2akuG32KJgRDeB7Cd3OuL8xoUB29Sl2Cofs+yNPE27F+nXXns
+   Aep8MRHDbqD3OUFKTsFAedhsZz0NPGV78hrJ8ZfIdv1ji0/XIQwJABhUo
+   1hM91kTSSjZueLzuSAbALH+7GpHtSLjfjEmhxxIyBm7fxt5ri3PCLqbkd
+   uloxnkfKVrmNfR7ETeYO9jkLUIJI8pxaU+dKce+pgIdnYWjbhlQaHd0be
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10394"; a="346592775"
+X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
+   d="scan'208";a="346592775"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 02:12:29 -0700
+X-IronPort-AV: E=Sophos;i="5.92,236,1650956400"; 
+   d="scan'208";a="659366507"
+Received: from wenjuhe-mobl1.ccr.corp.intel.com (HELO [10.249.171.195]) ([10.249.171.195])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2022 02:12:27 -0700
+Message-ID: <94c67e49-4604-e296-fa1a-e1105d67c5fd@linux.intel.com>
+Date: Fri, 1 Jul 2022 17:12:25 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v5 4/5] scsi: scsi_transport_sas: Cap shost max_sectors
- according to DMA optimal limit
-To: Damien Le Moal <damien.lemoal@opensource.wdc.com>, <joro@8bytes.org>,
-	<will@kernel.org>, <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
-	<hch@lst.de>, <m.szyprowski@samsung.com>, <robin.murphy@arm.com>
-CC: <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-ide@vger.kernel.org>, <iommu@lists.linux-foundation.org>,
-	<iommu@lists.linux.dev>, <linux-scsi@vger.kernel.org>, <linuxarm@huawei.com>
-References: <1656590892-42307-1-git-send-email-john.garry@huawei.com>
- <1656590892-42307-5-git-send-email-john.garry@huawei.com>
- <2e6475e5-4899-1e3a-1418-918b9510ec6d@opensource.wdc.com>
-From: John Garry <john.garry@huawei.com>
-In-Reply-To: <2e6475e5-4899-1e3a-1418-918b9510ec6d@opensource.wdc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Cc: baolu.lu@linux.intel.com, "Raj, Ashok" <ashok.raj@intel.com>,
+ "Liu, Yi L" <yi.l.liu@intel.com>, "Pan, Jacob jun"
+ <jacob.jun.pan@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 10/11] iommu/vt-d: Use device_domain_lock accurately
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+References: <20220629074725.2331441-1-baolu.lu@linux.intel.com>
+ <20220629074725.2331441-11-baolu.lu@linux.intel.com>
+ <BN9PR11MB52763F336B2535BC89E2C7498CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB52763F336B2535BC89E2C7498CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.126.173.51]
-X-ClientProxiedBy: lhreml712-chm.china.huawei.com (10.201.108.63) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Message-ID: <20220701084634.EDwvFZ3mi_wwY-VBC0WRbimc7KnR6Qhwr0szGCnTYiI@z>
+Message-ID: <20220701091225.IpMbkfYb5dUmrfHwMOGkr5UeCb5fEpSYPzw7VqRPAEM@z>
 
-On 01/07/2022 00:49, Damien Le Moal wrote:
->>   
->> +	if (dma_dev) {
->> +		shost->max_sectors = min_t(unsigned int, shost->max_sectors,
->> +				dma_opt_mapping_size(dma_dev) >> SECTOR_SHIFT);
->> +	}
+On 2022/7/1 16:15, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Wednesday, June 29, 2022 3:47 PM
+>>
+>> +	spin_lock_irqsave(&device_domain_lock, flags);
+>>   	list_for_each_entry(info, &domain->devices, link) {
+>> -		if (!info->dev)
+>> -			continue;
+>> -
+> 
+> suppose you can replace all spin_lock_irqsave() with spin_lock()
+> in patch5 instead of leaving some replacement to next patch.
+> 
 
-Hi Damien,
+Make sense. I will update the series.
 
- > Hmm... shost->max_sectors becomes the max_hw_sectors limit for the block
- > dev. So using dma_max_mapping_size(dma_dev) for that limit makes sense.
- > Shouldn't dma_opt_mapping_size(dma_dev) be used to limit only the default
- > "soft" limit (queue max_sectors limit) instead of the hard limit ?
- >
-
-Sure, it would sensible to use dma_opt_mapping_size() to limit the 
-default queue max sectors limit, while dma_max_mapping_size() limits the 
-host max sectors. But I didn't see in practice how limiting the shost 
-max sectors to dma_opt_mapping_size() makes a difference:
-
-- block queue max_hw_sectors_kb file is read-only, so we cannot change 
-the queue max sectors from there
-
-- And no SAS driver actually tries to modify upwards from the default.
-I do note that USB storage driver as an example of a scsi driver which 
-does (modify from shost max sectors): see scsiglue.c::slave_configure()
-
-Finally there is no common method to limit the default request queue max 
-sectors for those SAS drivers - I would need to add this limit in each 
-of their slave_configure callbacks, and I didn't think that its worth it.
-
-Thanks,
-John
-
+Best regards,
+baolu
