@@ -1,165 +1,179 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2067.outbound.protection.outlook.com [40.107.244.67])
+Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46F427498
-	for <iommu@lists.linux.dev>; Fri,  1 Jul 2022 19:08:44 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=P2yBwbVHhlwqWMr+rcJih38kR2f0WcmuhDG0qEHZhtZ0K50xtf17Gym5YjNWk85gSZuAOsQvojhFEyfEXL0XPeA9LbWW1UBB44pkAjoP7bXutp/15NbZBA8eQG5Lz6Yf/3fVDIZK1MwZgAflZbk02juezDV2oJVY8lUjGCQemccQxvqPAmZKO/2yCpqutsbwUbzebbAtfI4u6GmSgm+GTWh5sLLM9gFj6d9nNFIzDvEaqyusfZKvYxCvcFh7x9TIDtzIH+0p+C8LPQHdNjetQu3csl12FDOPvlQLfiervYn66W2OrtQVGY+UfUcK4BsUmz2vssrt2JjDwgxONc26Ww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pgBBg6RFOOt4nf3b+D6oUcpI2maX3OP0rTgHRFsoUH4=;
- b=VR4F3ijcYmdoFvMsyDY2UaSLno2lEYhjxnYbmiEordlyUV8DzaekrHSXNzm0G2MQ/NVsPB8jnaGA8O20jaE4Nnep+F8uMcxNc3cSLz670nAjgZu6FpivW5+KzY61zUEYpyHWq99yPyLbzaLfGuejw4HTKNexrXIviGfOkuQRlKit/XL6d2loRRkGZebj/XkZIFXb6hxKyc42uWADCh1+r/iZY13gL7zjNA7Jp7yT0Nh2HAsjVDtsWQA8I2Oqdt86ExRBVrpemhxM6laDofOVEzlDC+bcgWxm4+qjoe5E7OlG98JVUJncGsiA0kJ5IEBKEkLnLBXPSk1EqvmEBWSmwA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
- (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
- (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pgBBg6RFOOt4nf3b+D6oUcpI2maX3OP0rTgHRFsoUH4=;
- b=qzqIZeYdIapE3Dpa9LTsO93rbewoTVN6+UbAlesOcJz4nOGJZ6Av58V+cK/1O67mxQlMR9XlzbttqDA88QnehrRHfVF2WnXuYTbaKA0QCgFWNJFSjPs5b0XyzvJ5YryWX9kyXoVA0s47i5tyRA+5g3uaseRd8pgicFqobHC6EhUhcatWvDExZ6oTabfa0z+C9h3lzbQ92Hdm+IgmEGG8hqgiL+TD9pU/Cur7b3kciUmFXmzbqIMO3hsxVcjhjps/GyFh9cCFiDBKV2Vr1UCzXvVOKlTj09WRdwejvrIGp+uGfKHekEsB8/YXFcca351lk1+Y2WfiGNaHbCLw1Z0bSw==
-Received: from MW4PR03CA0162.namprd03.prod.outlook.com (2603:10b6:303:8d::17)
- by MW3PR12MB4441.namprd12.prod.outlook.com (2603:10b6:303:59::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.17; Fri, 1 Jul
- 2022 19:08:42 +0000
-Received: from CO1NAM11FT007.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8d:cafe::cd) by MW4PR03CA0162.outlook.office365.com
- (2603:10b6:303:8d::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15 via Frontend
- Transport; Fri, 1 Jul 2022 19:08:42 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.238) by
- CO1NAM11FT007.mail.protection.outlook.com (10.13.174.131) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5395.14 via Frontend Transport; Fri, 1 Jul 2022 19:08:42 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Fri, 1 Jul
- 2022 19:08:41 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Fri, 1 Jul 2022
- 12:08:41 -0700
-Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.7)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26 via Frontend
- Transport; Fri, 1 Jul 2022 12:08:39 -0700
-Date: Fri, 1 Jul 2022 12:08:37 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Robin Murphy <robin.murphy@arm.com>
-CC: <joro@8bytes.org>, <will@kernel.org>, <marcan@marcan.st>,
-	<sven@svenpeter.dev>, <robdclark@gmail.com>, <baolu.lu@linux.intel.com>,
-	<orsonzhai@gmail.com>, <baolin.wang7@gmail.com>, <zhang.lyra@gmail.com>,
-	<jean-philippe@linaro.org>, <alex.williamson@redhat.com>, <jgg@nvidia.com>,
-	<kevin.tian@intel.com>, <suravee.suthikulpanit@amd.com>,
-	<alyssa@rosenzweig.io>, <dwmw2@infradead.org>, <mjrosato@linux.ibm.com>,
-	<gerald.schaefer@linux.ibm.com>, <thierry.reding@gmail.com>,
-	<vdumpa@nvidia.com>, <jonathanh@nvidia.com>, <cohuck@redhat.com>,
-	<thunder.leizhen@huawei.com>, <christophe.jaillet@wanadoo.fr>,
-	<chenxiang66@hisilicon.com>, <john.garry@huawei.com>,
-	<yangyingliang@huawei.com>, <iommu@lists.linux-foundation.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-arm-msm@vger.kernel.org>,
-	<linux-s390@vger.kernel.org>, <linux-tegra@vger.kernel.org>,
-	<virtualization@lists.linux-foundation.org>, <kvm@vger.kernel.org>
-Subject: Re: [PATCH v4 1/5] iommu: Return -EMEDIUMTYPE for incompatible
- domain and device/group
-Message-ID: <Yr9GNTTBTP1i3QSB@Asurada-Nvidia>
-References: <20220630203635.33200-1-nicolinc@nvidia.com>
- <20220630203635.33200-2-nicolinc@nvidia.com>
- <fab41f28-8f48-9f40-09c8-fd5f0714a9e0@arm.com>
- <Yr8kHnK7xRx2DZus@Asurada-Nvidia>
- <2ccb6033-4c34-ff59-50a8-549c924d269d@arm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BD043D6A
+	for <iommu@lists.linux.dev>; Fri,  1 Jul 2022 20:01:11 +0000 (UTC)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+	by mailnew.nyi.internal (Postfix) with ESMTP id 28AC058020B;
+	Fri,  1 Jul 2022 16:01:10 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Fri, 01 Jul 2022 16:01:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+	cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
+	:message-id:mime-version:reply-to:sender:subject:subject:to:to;
+	 s=fm3; t=1656705670; x=1656712870; bh=h3WN3AcddFJuwhQ39XPEdgr5t
+	ejPWmRF9a5JWUKLi6w=; b=mK5frjjpRETCdaizhOvpq/mQo5UlOZqfHCt356wLu
+	+SqVP3qKJ9LvP7YyRWEopUxCgCJ/Co0nb1GRIXbVwdtlJ5JrYoRlSvc+27WDag9+
+	3jqJC6Nc5lLjDB1EbFnpv2S6VMiJgoGG3ESQyrzvFx4wbwb1+hfvfkj14nzE1iZ9
+	iHVs2Uh7tOwAj5coKNt98E1KuIr4Dy7ZidSi8Si+tRxxbGIc8g9/Wkp/PXxkdKWp
+	GwXvkDhS2Mkt7Y8U+OzIUgUEfaENyM7PjR+7UVXgmM8J+652ddmFvBKyk157w8wr
+	Skl8C3hKCbHheCLVFZJbuy7hz1/cffoSdxxCfnrh8YV+w==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:message-id
+	:mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+	:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
+	1656705670; x=1656712870; bh=h3WN3AcddFJuwhQ39XPEdgr5tejPWmRF9a5
+	JWUKLi6w=; b=hcCVwh1PvSeKLtV/WWesjzpJEJOw4znKr5Z/2vhxnZuKQA9kLw4
+	/4+bCBG81guTmscsfsRlkY2MRf/An6IfLb4PqUB9cFC2NzaudqFlvP/yY19K+3XC
+	pDHCoLiIcwUV2Xv5FAIqCmEYAOVR+oCL2f261uukUnOGmb9sZJ1Wjru1FpMPNx9q
+	O20C8qlSGZIk/uqxcd6LnT2yDuqwiTmpUUWND72se1ELzfF/mrU6icJu6Gm0jlH3
+	iWOFR5OoOCZxlEPQplc7c7ud1SjE6qek/nk6mnJ70FNjkvapXHjyVwlAV5qpv1MZ
+	45+fzYTFXAvc9YboPqeOQ31my0wQpPDiZ5Q==
+X-ME-Sender: <xms:e1K_YqJAKXaKPgqyd59ldyt87npfqKJCG8Fa8IiJ1JGRiUiSXx5JZg>
+    <xme:e1K_YiIt8LjVqOvwpx_JqZXxhJz3pskkEoDpx0DfqF9QwrmlD77DvYrLphtzsH91c
+    60EnwaE7sSCA8LhkQ>
+X-ME-Received: <xmr:e1K_YqsbiJXFwsSStjJJO67Bifhg0yOnU6Z4_h1F4ezRCF_0D6gcyJ1rBH7JskXj8BCpGV4CECN0ypLF1eSiq5ghfDtA6Nb3u4bteUm49CHrPVJYe6DLnAKCGajaiAQKWL5-Lw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudehfedgudeggecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgv
+    lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
+    frrghtthgvrhhnpeekheffteehtdetfffgfeetteejvdefleeuvedufffguedtjedvheel
+    vddvfffhveenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuih
+    iivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehshhholhhlrghn
+    ugdrohhrgh
+X-ME-Proxy: <xmx:e1K_YvbVVgQANbs4tH6mMUrH5LaNLres37xpgQFzFinmY6f7nPb4Fg>
+    <xmx:e1K_YhbiP6yq2Gi3AoIAcfhp4QohMreFnvgTLD9awWXIWatRIZ3Cjw>
+    <xmx:e1K_YrCjgb2M3iT9zxycFn46jQ9pLIWED1rqKrx13LiM_I0tfM9RnQ>
+    <xmx:hlK_YgfaZPstR3sDyiLp39VIN104HgzzMuXBbFWrwe3H_JzEL7MHlA>
+Feedback-ID: i0ad843c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 1 Jul 2022 16:00:57 -0400 (EDT)
+From: Samuel Holland <samuel@sholland.org>
+To: Marc Zyngier <maz@kernel.org>,
+	Thomas Gleixner <tglx@linutronix.de>
+Cc: Samuel Holland <samuel@sholland.org>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Bartosz Golaszewski <brgl@bgdev.pl>,	Bjorn Helgaas <bhelgaas@google.com>,
+	Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Broadcom internal kernel review list
+ <bcm-kernel-feedback-list@broadcom.com>,	Chris Zankel <chris@zankel.net>,
+	Colin Ian King <colin.king@intel.com>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	Dexuan Cui <decui@microsoft.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,	Guo Ren <guoren@kernel.org>,
+	"H. Peter Anvin" <hpa@zytor.com>,	Haiyang Zhang <haiyangz@microsoft.com>,
+	Helge Deller <deller@gmx.de>,	Ingo Molnar <mingo@redhat.com>,
+	Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+	"James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+	Jan Beulich <jbeulich@suse.com>,	Joerg Roedel <joro@8bytes.org>,
+	Juergen Gross <jgross@suse.com>,	Julia Lawall <Julia.Lawall@inria.fr>,
+	"K. Y. Srinivasan" <kys@microsoft.com>,
+	Kees Cook <keescook@chromium.org>,
+	=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,	Matt Turner <mattst88@gmail.com>,
+	Max Filippov <jcmvbkbc@gmail.com>,	Maximilian Heyne <mheyne@amazon.de>,
+	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+	Rich Felker <dalias@libc.org>,	Richard Henderson <rth@twiddle.net>,
+	Rikard Falkeborn <rikard.falkeborn@gmail.com>,
+	Rob Herring <robh@kernel.org>,	Russell King <linux@armlinux.org.uk>,
+	Serge Semin <fancer.lancer@gmail.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Stephen Hemminger <sthemmin@microsoft.com>,
+	Sven Schnelle <svens@stackframe.org>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Wei Liu <wei.liu@kernel.org>,	Wei Xu <xuwei5@hisilicon.com>,
+	Will Deacon <will@kernel.org>,
+	Yoshinori Sato <ysato@users.sourceforge.jp>,
+	iommu@lists.linux-foundation.org,	iommu@lists.linux.dev,
+	linux-alpha@vger.kernel.org,	linux-arm-kernel@lists.infradead.org,
+	linux-hyperv@vger.kernel.org,	linux-ia64@vger.kernel.org,
+	linux-kernel@vger.kernel.org,	linux-mips@vger.kernel.org,
+	linux-parisc@vger.kernel.org,	linux-pci@vger.kernel.org,
+	linux-sh@vger.kernel.org,	linux-xtensa@linux-xtensa.org,	x86@kernel.org,
+	xen-devel@lists.xenproject.org
+Subject: [PATCH v3 0/8] genirq: Provide real IRQ affinity masks in non-SMP configs
+Date: Fri,  1 Jul 2022 15:00:48 -0500
+Message-ID: <20220701200056.46555-1-samuel@sholland.org>
+X-Mailer: git-send-email 2.35.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <2ccb6033-4c34-ff59-50a8-549c924d269d@arm.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 01b6b436-906b-4382-a2f9-08da5b951d31
-X-MS-TrafficTypeDiagnostic: MW3PR12MB4441:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	ZDIoIxZhp5YRuL48maMGFt4CYVHCtduSmcEu8nLmCDDzpzANUjJ0WqxDKpVVgKlZcgS4HBnpZDqHQDahEPcEaoVWC5OlTEn3/vJzcFyN4ub1x/YDKwsfQO5MoNK/U4UHCVGzkLSVlwf3CFc2BgR3WZZOjOO3dUiMCuMVFuJGnQRhP4sVRrcSCX0tSjd5MSKo/y+rRVfWc8L6f/3KUislQsvKt2SubJSoOVujAi5DVxghgyiZNjzoyzmCkWdWaTa5w+db/7rz6owpgQh9qFZThbjmQEND9JNcUGchk3a+xqrNaPIWJlF8pYlUs+MOqN7XY1G64AKCRze8QDDTF0l1dAh0TKG7l6H20DtXvXIzjH9RgP3O7NgDEXqvvfx8Eb7xzRBvrNO2V6VnsDg9Z/kxX6JsykfYfNqqyakqAaB02F4g1yGhnp/1sIK2FVbF3LQhCUo2gjnYy2coRGKNXWIQ9kXS6LUBgp+ZT0AkM1/1+HufLgCl4aW8bL5EC2yVpMCLNcrOhOwqkpF6BQLOPdmXDswbsOAZ8hbnp0H1KLKZIFtlMju1ZHWGrvTk+AaZQCUURzJ8zawUMe52fFOjag2InZRsqgWLTjK8nQJjr5Nb8ETuuij6MwbjFP8LbKQlSweUHpo9yI/pwv/tR0dRZ67L+ZozAFe/D8NlplJXMy2A3vMPHA/7dtQV0uffcU6/dLVnqRN0/D7TBDHbKn6S885cTt9rXSynws6nrSTEQ48JrzQkfE5ihX+AfSAW3wQWcrVE+gd1BJNYGqaxcIDQqdSu+4XO3ZNonBDkxO6xRrmGxcAzZwsqP8QxaJLRvafyjJmjaHfx/VWFDsVaSldFKj5yCACZ9Q+3RJMcdoGe1NzfPrI=
-X-Forefront-Antispam-Report:
-	CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(376002)(39860400002)(346002)(40470700004)(36840700001)(46966006)(36860700001)(2906002)(41300700001)(7416002)(7406005)(4326008)(33716001)(8676002)(6916009)(40480700001)(40460700003)(54906003)(316002)(70206006)(55016003)(86362001)(70586007)(82310400005)(478600001)(47076005)(81166007)(5660300002)(426003)(82740400003)(356005)(53546011)(186003)(336012)(8936002)(26005)(9686003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jul 2022 19:08:42.3768
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 01b6b436-906b-4382-a2f9-08da5b951d31
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT007.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4441
-Message-ID: <20220701190837.CYgQYiZLjkqGo1AoYfptYDJSUHgjzAYERIEK8bZL8gI@z>
+Content-Transfer-Encoding: 8bit
+Message-ID: <20220701200048.8xfWjnd9EzNSc_KKavRhipM8Ur3j-H82K8HuLHUKqFQ@z>
 
-On Fri, Jul 01, 2022 at 07:17:38PM +0100, Robin Murphy wrote:
-> External email: Use caution opening links or attachments
-> 
-> 
-> On 01/07/2022 5:43 pm, Nicolin Chen wrote:
-> > On Fri, Jul 01, 2022 at 11:21:48AM +0100, Robin Murphy wrote:
-> > 
-> > > > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > > > index 2ed3594f384e..072cac5ab5a4 100644
-> > > > --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > > > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > > > @@ -1135,10 +1135,8 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
-> > > >        struct arm_smmu_device *smmu;
-> > > >        int ret;
-> > > > 
-> > > > -     if (!fwspec || fwspec->ops != &arm_smmu_ops) {
-> > > > -             dev_err(dev, "cannot attach to SMMU, is it on the same bus?\n");
-> > > > -             return -ENXIO;
-> > > > -     }
-> > > > +     if (!fwspec || fwspec->ops != &arm_smmu_ops)
-> > > > +             return -EMEDIUMTYPE;
-> > > 
-> > > This is the wrong check, you want the "if (smmu_domain->smmu != smmu)"
-> > > condition further down. If this one fails it's effectively because the
-> > > device doesn't have an IOMMU at all, and similar to patch #3 it will be
-> > 
-> > Thanks for the review! I will fix that. The "on the same bus" is
-> > quite eye-catching.
-> > 
-> > > removed once the core code takes over properly (I even have both those
-> > > patches written now!)
-> > 
-> > Actually in my v1 the proposal for ops check returned -EMEDIUMTYPE
-> > also upon an ops mismatch, treating that too as an incompatibility.
-> > Do you mean that we should have fine-grained it further?
-> 
-> On second look, I think this particular check was already entirely
-> redundant by the time I made the fwspec conversion to it, oh well. Since
-> it remains harmless for the time being, let's just ignore it entirely
-> until we can confidently say goodbye to the whole lot[1].
+This series solves some inconsistency with how IRQ affinity masks are
+handled between SMP and non-SMP configurations.
 
-That looks cleaner!
+In non-SMP configs, an IRQ's true affinity is always cpumask_of(0), so
+irq_{,data_}get_affinity_mask now return that, instead of returning an
+uninitialized per-IRQ cpumask. This change makes iterating over the
+affinity mask do the right thing in both SMP and non-SMP configurations.
 
-> I don't think there's any need to differentiate an instance mismatch
-> from a driver mismatch, once the latter becomes realistically possible,
-> mostly due to iommu_domain_alloc() also having to become device-aware to
-> know which driver to allocate from. Thus as far as a user is concerned,
-> if attaching a device to an existing domain fails with -EMEDIUMTYPE,
-> allocating a new domain using the given device, and attaching to that,
-> can be expected to succeed, regardless of why the original attempt was
-> rejected. In fact even in the theoretical different-driver-per-bus model
-> the same principle still holds up.
+To accomplish that:
+ - patches 1-3 disable some library code that was broken anyway on !SMP
+ - patches 4-7 refactor the code so that irq_{,data_}get_affinity_mask
+   can return a const cpumask, since that is what cpumask_of provides
+ - patch 8 drops the per-IRQ cpumask and replaces it with cpumask_of(0)
 
-I see. Thanks for the explanation. 
+This series was split from the v2 series here, which uses the new
+behavior in the RISC-V PLIC irqchip driver:
+
+https://lore.kernel.org/lkml/20220616064028.57933-1-samuel@sholland.org/
+
+Changes in v3:
+ - New patch to fix build errors in uniprocessor MIPS configs
+ - New patch to drop irq_init_effective_affinity
+ - New patch to introduce irq_data_update_affinity
+ - New patch to make the returned cpumasks const
+ - Use cpumask_of(0) instead of cpu_possible_mask
+
+Changes in v2:
+ - New patch to prevent GENERIC_IRQ_IPI from being selected on !SMP
+
+Samuel Holland (8):
+  irqchip/mips-gic: Only register IPI domain when SMP is enabled
+  genirq: GENERIC_IRQ_IPI depends on SMP
+  genirq: GENERIC_IRQ_EFFECTIVE_AFF_MASK depends on SMP
+  genirq: Drop redundant irq_init_effective_affinity
+  genirq: Refactor accessors to use irq_data_get_affinity_mask
+  genirq: Add and use an irq_data_update_affinity helper
+  genirq: Return a const cpumask from irq_data_get_affinity_mask
+  genirq: Provide an IRQ affinity mask in non-SMP configs
+
+ arch/alpha/kernel/irq.c              |  2 +-
+ arch/arm/mach-hisi/Kconfig           |  2 +-
+ arch/ia64/kernel/iosapic.c           |  2 +-
+ arch/ia64/kernel/irq.c               |  4 +-
+ arch/ia64/kernel/msi_ia64.c          |  4 +-
+ arch/mips/cavium-octeon/octeon-irq.c |  4 +-
+ arch/parisc/kernel/irq.c             |  2 +-
+ arch/sh/kernel/irq.c                 |  7 +--
+ arch/x86/hyperv/irqdomain.c          |  2 +-
+ arch/xtensa/kernel/irq.c             |  7 +--
+ drivers/iommu/hyperv-iommu.c         |  2 +-
+ drivers/irqchip/Kconfig              | 19 +++----
+ drivers/irqchip/irq-bcm6345-l1.c     |  4 +-
+ drivers/irqchip/irq-mips-gic.c       | 80 +++++++++++++++++++---------
+ drivers/parisc/iosapic.c             |  2 +-
+ drivers/pci/controller/pci-hyperv.c  | 10 ++--
+ drivers/sh/intc/chip.c               |  2 +-
+ drivers/xen/events/events_base.c     |  7 +--
+ include/linux/irq.h                  | 34 ++++++++----
+ kernel/irq/Kconfig                   |  2 +
+ kernel/irq/chip.c                    |  8 +--
+ kernel/irq/debugfs.c                 |  2 +-
+ kernel/irq/ipi.c                     | 16 +++---
+ kernel/irq/manage.c                  | 10 +---
+ 24 files changed, 140 insertions(+), 94 deletions(-)
+
+-- 
+2.35.1
+
