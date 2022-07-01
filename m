@@ -1,81 +1,139 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 98C76CCA481
-	for <iommu@archiver.kernel.org>; Fri,  1 Jul 2022 16:43:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D7D52C433EF
+	for <iommu@archiver.kernel.org>; Fri,  1 Jul 2022 16:43:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 2580460B8B;
-	Fri,  1 Jul 2022 16:43:19 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 2580460B8B
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ftY-UfHIcV0P; Fri,  1 Jul 2022 16:43:18 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id E5E1360B70;
-	Fri,  1 Jul 2022 16:43:17 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org E5E1360B70
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A6D46C0032;
-	Fri,  1 Jul 2022 16:43:17 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 10991C002D
- for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 16:43:16 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id C8D928470E
- for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 16:43:15 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org C8D928470E
+	by smtp1.osuosl.org (Postfix) with ESMTP id 6435F84716;
+	Fri,  1 Jul 2022 16:43:24 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 6435F84716
+Authentication-Results: smtp1.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=HshpNoOK
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PyspCg__9s0e for <iommu@lists.linux-foundation.org>;
- Fri,  1 Jul 2022 16:43:13 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 7BC5E84706
-Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 7BC5E84706
- for <iommu@lists.linux-foundation.org>; Fri,  1 Jul 2022 16:43:12 +0000 (UTC)
-Received: from dggems701-chm.china.huawei.com (unknown [172.30.72.59])
- by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4LZLb26StgzTwLq;
- Sat,  2 Jul 2022 00:42:22 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- dggems701-chm.china.huawei.com (10.3.19.178) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 2 Jul 2022 00:43:05 +0800
-Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
- lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
- 15.01.2375.024; Fri, 1 Jul 2022 17:43:04 +0100
-To: Robin Murphy <robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, 
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org"
- <linux-acpi@vger.kernel.org>, "iommu@lists.linux-foundation.org"
- <iommu@lists.linux-foundation.org>, "will@kernel.org" <will@kernel.org>
-Subject: RE: [PATCH v13 0/9] ACPI/IORT: Support for IORT RMR node
-Thread-Topic: [PATCH v13 0/9] ACPI/IORT: Support for IORT RMR node
-Thread-Index: AQHYgKBK6ZkZvzZxLEqm8BkaLnkVo61TfSMAgAs//6CABHLxAIABViUAgAVKlWA=
-Date: Fri, 1 Jul 2022 16:43:03 +0000
-Message-ID: <9bcec024bba444caa0f60d37afd88b6b@huawei.com>
-References: <20220615101044.1972-1-shameerali.kolothum.thodi@huawei.com>
- <03b03d88-87cd-0b29-863b-2cb2a9a117d1@arm.com>
- <44338c87254d4d439d29694de8f19435@huawei.com>
- <ff579ecb-9a37-09ef-a975-cf1e25ab731e@arm.com> 
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.126.169.16]
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 50sjZ2wAWNlU; Fri,  1 Jul 2022 16:43:23 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 174148470E;
+	Fri,  1 Jul 2022 16:43:23 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 174148470E
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E6359C0032;
+	Fri,  1 Jul 2022 16:43:22 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C8041C002D;
+ Fri,  1 Jul 2022 16:43:20 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id AFBB7403B3;
+ Fri,  1 Jul 2022 16:43:20 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org AFBB7403B3
+Authentication-Results: smtp2.osuosl.org; dkim=pass (2048-bit key,
+ unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256
+ header.s=selector2 header.b=HshpNoOK
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id xP5t6diFYDTB; Fri,  1 Jul 2022 16:43:18 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 7D3BC404E9
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com
+ (mail-bn1nam07on2079.outbound.protection.outlook.com [40.107.212.79])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 7D3BC404E9;
+ Fri,  1 Jul 2022 16:43:18 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=A8AEb8XbrJmBWLqZ+/Lr/Fypl7HFl3Rg+e3NJIuVpIgkCxzOHOrwmPvVRXOUE5p6IljzHbJpl403m88wxHFHHg5hlMwAZOv/RutSlq3mRKOVQeH9A+u/TRwsGgzVxNnkwUvG19R0K7LY+aKu7GRV0g+24e17TXIwUfOJ5spwBtO8Jvjpme3X/B99xwjJYmrc/QKQv9t4OMBI5Oz1Xb1upET5YMY5z3e5sBZvDWO/WiZ3bRRkUATb1u5hr2KgME6/5/xywpcj9PBL/cAjrdbiRiMX4Q80rxyH8qmZdajydLp//67WRlBMPwnjFtOQmL/LeoImPA4qVFzayPByagNmHg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=J96Z1IiyrT4233SGqgBUZQywiRvohREcngH7MVSfyIk=;
+ b=XBhYvivFekujPTqwmR0Dmm2b9LZUFb96vFK0jbhuNfLIHAhcwJ56FoGwcGc7L7aDOYrWu/7Q+c8N8ZlQV0M+MQKf8ViLjcpa0nkL61dXhEidAV3NfM5Ic7e8E33ooasOfuJHN/owb5Tio3L143j5S7k37CEFKeuqV2OVSTSJbCoNhChAyh8zn7Vv9JshSsw8M8p2f1ZEDB+JzQqNQTX8unpvB34b+GWzcJtDNTxFtwLBojXkg6GEai2IPscWM0soqD4LvYJr+hNIBOlmR2QKbDD8ywJrKvf0I0MiJ9On9ekK1H5F0zHH4G3cm7odwpycDDVx0uqzxprlmqx0wFPIJw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.235) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
+ (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
+ (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=J96Z1IiyrT4233SGqgBUZQywiRvohREcngH7MVSfyIk=;
+ b=HshpNoOKDpZXSWvMZC95Wbtx6PuDO/okXp4geWGfpQ6jDBVNJFKSHR0x4TtIyGOfPTn75LBnuZfSPYmPEqkbytLaFp8nZGLBROXzQQSW9vhZr6NrQcKqqrB8ROJb56VkAX5VL/wLabIcFFe5LcAeR53MtdtpjFn4hce8WK0d+oaWAT2a9tza++gQwqn0AZUVkQfAIawFLwap2GO0mKce2dRLHaX1FfX0NeAiciZPAwle2EZE6wAyBag0YfpN36Q8OBuv9EmydjsnM2qJry4Ztl7riLSCDm8NB3lX2guoSB6Q+xXSvisbjQJCJBNZt2Av9kjuAOGqiaKURl7a68m2lg==
+Received: from BN9PR03CA0886.namprd03.prod.outlook.com (2603:10b6:408:13c::21)
+ by DM6PR12MB5698.namprd12.prod.outlook.com (2603:10b6:5:78::33) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15; Fri, 1 Jul
+ 2022 16:43:15 +0000
+Received: from BN8NAM11FT013.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:13c:cafe::90) by BN9PR03CA0886.outlook.office365.com
+ (2603:10b6:408:13c::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14 via Frontend
+ Transport; Fri, 1 Jul 2022 16:43:14 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.235) by
+ BN8NAM11FT013.mail.protection.outlook.com (10.13.176.182) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5395.14 via Frontend Transport; Fri, 1 Jul 2022 16:43:14 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ DRHQMAIL107.nvidia.com (10.27.9.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.32; Fri, 1 Jul 2022 16:43:13 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.26; Fri, 1 Jul 2022 09:43:13 -0700
+Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com
+ (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26 via Frontend
+ Transport; Fri, 1 Jul 2022 09:43:12 -0700
+Date: Fri, 1 Jul 2022 09:43:10 -0700
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v4 1/5] iommu: Return -EMEDIUMTYPE for incompatible
+ domain and device/group
+Message-ID: <Yr8kHnK7xRx2DZus@Asurada-Nvidia>
+References: <20220630203635.33200-1-nicolinc@nvidia.com>
+ <20220630203635.33200-2-nicolinc@nvidia.com>
+ <fab41f28-8f48-9f40-09c8-fd5f0714a9e0@arm.com>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: "lorenzo.pieralisi@gmail.com" <lorenzo.pieralisi@gmail.com>,
- "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
- "jon@solid-run.com" <jon@solid-run.com>, Linuxarm <linuxarm@huawei.com>,
- Steven Price <steven.price@arm.com>, "hch@infradead.org" <hch@infradead.org>,
- "Guohanjun \(Hanjun Guo\)" <guohanjun@huawei.com>,
- "Sami.Mujawar@arm.com" <Sami.Mujawar@arm.com>,
- wanghuiqiang <wanghuiqiang@huawei.com>
+Content-Disposition: inline
+In-Reply-To: <fab41f28-8f48-9f40-09c8-fd5f0714a9e0@arm.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: da8342bf-82d6-4b41-f875-08da5b80cb07
+X-MS-TrafficTypeDiagnostic: DM6PR12MB5698:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: uYPWP9gbgnY7z1BsnckcbY42Y4appJ7ERQesmeL0i4m5N0+A4QC4DdTgxw6O5yiHWHnz7fH7X9nPzn8pyT9iQgeTJ1bxkGbwqyfyxAYQTlYPoIf4g8lra7tMSVa9Kj90nyCafWnoviIrGzwRTHsIie7sGszG1BL0rnh9RAhqqe+1JNjNmNm/YJknZGWMgSc4xYrN+z+oKw7Z0Gxi+K9K6qjE6jGPNqluYxRLZRGaca+Gm/zLM9LzTgvUZLrCq8l0sUY09ieoGl8v0QXXWC3cMaMGY2iL6jAF7Q9KU9FVdDewI4VF8Lhn+e2XouuxV5KFftLnHBXCJ41GGpgADKcofZ32fkA3h39EU50lM7WzhJ+UTzZrkbG9u3jQAXvY5+MV/kR1kGvd/aFX+2ZA6xiHmju8k8m5zsO7I4bwHsRTOkrr1liGl3Lryp2/jTtLd8FqnMAu6TbRb4ZqRDi3kkMrb8M189j66VIZGwnZP30M9x1QVCNzgM91EK0fVS93PlVgcvnHQkFr2XG/XHuh0AVXG/JoaHWyngGlL6ShP+rj5qb6LenXwL5AAEZEiU3EsQFXqHd4EmyTCZJLL7tsJ8YVOatktDNI9ybBS3JXHnZ7IPy45eOFtImCr1w/iLw8xsW35V0VbuunIrZLQWXb104xQvF1gYmMfwkj0aGyY2blWwIwJWczJMinpp5zqhXU9EDnu/nD12cFW6NpsZozq72g8qScgtAP1KReN5M2tr3qqX1R6CsrZCNiKpGt0NOU3SLE+0RErRqVqJOsIpWNM9yyvhufM6A+vOPjnBeKSB5g2bCORpmz308tA75K8BV9xREJxwq1y+ySNAfDd3mpVEJiGj/i/WcD3Fip5ZdH35CVXPE=
+X-Forefront-Antispam-Report: CIP:12.22.5.235; CTRY:US; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:mail.nvidia.com; PTR:InfoNoRecords; CAT:NONE;
+ SFS:(13230016)(4636009)(346002)(136003)(39860400002)(376002)(396003)(40470700004)(36840700001)(46966006)(6916009)(2906002)(41300700001)(54906003)(7406005)(81166007)(5660300002)(40480700001)(82740400003)(55016003)(8936002)(7416002)(26005)(9686003)(186003)(33716001)(316002)(40460700003)(478600001)(356005)(86362001)(426003)(47076005)(70586007)(336012)(36860700001)(82310400005)(70206006)(4326008)(8676002)(36900700001);
+ DIR:OUT; SFP:1101; 
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jul 2022 16:43:14.4710 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: da8342bf-82d6-4b41-f875-08da5b80cb07
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a; Ip=[12.22.5.235];
+ Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT013.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB5698
+Cc: marcan@marcan.st, linux-kernel@vger.kernel.org, thierry.reding@gmail.com,
+ will@kernel.org, alyssa@rosenzweig.io, jean-philippe@linaro.org,
+ kvm@vger.kernel.org, zhang.lyra@gmail.com, iommu@lists.linux-foundation.org,
+ jonathanh@nvidia.com, iommu@lists.linux.dev, jgg@nvidia.com,
+ yangyingliang@huawei.com, orsonzhai@gmail.com, gerald.schaefer@linux.ibm.com,
+ kevin.tian@intel.com, linux-arm-msm@vger.kernel.org,
+ alex.williamson@redhat.com, christophe.jaillet@wanadoo.fr,
+ linux-tegra@vger.kernel.org, virtualization@lists.linux-foundation.org,
+ linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org,
+ cohuck@redhat.com, baolin.wang7@gmail.com, dwmw2@infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,55 +146,43 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Shameerali Kolothum Thodi via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+From: Nicolin Chen via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Nicolin Chen <nicolinc@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Fri, Jul 01, 2022 at 11:21:48AM +0100, Robin Murphy wrote:
 
-
-> -----Original Message-----
-> From: Shameerali Kolothum Thodi
-> Sent: 28 June 2022 09:00
-> To: 'Robin Murphy' <robin.murphy@arm.com>; joro@8bytes.org;
-> linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
-> iommu@lists.linux-foundation.org
-> Cc: jon@solid-run.com; Linuxarm <linuxarm@huawei.com>;
-> hch@infradead.org; Guohanjun (Hanjun Guo) <guohanjun@huawei.com>;
-> Sami.Mujawar@arm.com; will@kernel.org; wanghuiqiang
-> <wanghuiqiang@huawei.com>; lpieralisi@kernel.org; Steven Price
-> <steven.price@arm.com>; lorenzo.pieralisi@gmail.com
-> Subject: RE: [PATCH v13 0/9] ACPI/IORT: Support for IORT RMR node
-> > > Hi Will/Robin,
-> > >
-> > > Appreciate, if you could please take a look at the remaining SMMU
-> > > related
-> > > patches(7-9) and provide your approval?
-> >
-> > I said v12 looked fine, but for the avoidance of doubt, here it is
-> > again, as formally as can be:
-> >
-> > Acked-by: Robin Murphy <robin.murphy@arm.com>
+> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> > index 2ed3594f384e..072cac5ab5a4 100644
+> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> > @@ -1135,10 +1135,8 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+> >       struct arm_smmu_device *smmu;
+> >       int ret;
+> > 
+> > -     if (!fwspec || fwspec->ops != &arm_smmu_ops) {
+> > -             dev_err(dev, "cannot attach to SMMU, is it on the same bus?\n");
+> > -             return -ENXIO;
+> > -     }
+> > +     if (!fwspec || fwspec->ops != &arm_smmu_ops)
+> > +             return -EMEDIUMTYPE;
 > 
-> Thanks Robin.
-> 
-> Hi Joerg,
-> 
-> Now that we have all the required acks, could you please pick this series via
-> IOMMU tree?
+> This is the wrong check, you want the "if (smmu_domain->smmu != smmu)"
+> condition further down. If this one fails it's effectively because the
+> device doesn't have an IOMMU at all, and similar to patch #3 it will be
 
-Hi Will,
+Thanks for the review! I will fix that. The "on the same bus" is
+quite eye-catching.
 
-Since Joerg hasn't replied yet, just wondering could you please take it through ARM
-SMMU tree if that makes sense? Don't want to miss the 5.20 merge window for this
-series.
+> removed once the core code takes over properly (I even have both those
+> patches written now!)
 
-Thanks,
-Shameer
-
-
+Actually in my v1 the proposal for ops check returned -EMEDIUMTYPE
+also upon an ops mismatch, treating that too as an incompatibility.
+Do you mean that we should have fine-grained it further?
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
