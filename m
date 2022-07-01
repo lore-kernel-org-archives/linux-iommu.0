@@ -1,101 +1,69 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7A3ED1850
-	for <iommu@lists.linux.dev>; Fri,  1 Jul 2022 12:01:39 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1C4AB113E;
-	Fri,  1 Jul 2022 05:01:39 -0700 (PDT)
-Received: from [10.57.85.162] (unknown [10.57.85.162])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E838D3F792;
-	Fri,  1 Jul 2022 05:01:36 -0700 (PDT)
-Message-ID: <1eeeec76-5271-f915-e3fd-f15095efb981@arm.com>
-Date: Fri, 1 Jul 2022 13:01:31 +0100
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB2DD10F0
+	for <iommu@lists.linux.dev>; Fri,  1 Jul 2022 14:34:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CF03C3411E;
+	Fri,  1 Jul 2022 14:34:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1656686047;
+	bh=Fh2Yx93xB3C+S/wXYC4C1fagIRcAr8t3LoCK9meJw6o=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=JlTpod6kmJ8Vu+1s2M+gHRiphuzguWZM2ld9fH1qN7NS79nWrdmbv+BUjm6//ODgJ
+	 LCPmIY9CnRUFe85yAL7RzvXogOD4sxyvoXTFJZkN3az/aTX0nelgkmmEXrG1O00bzD
+	 UcXu4alq2933ycz+RuPskq5jjKS8FS2wbCKi94NOPjDNRY6lmHObra2LjYFtFDs8md
+	 lXhQo8hrv7e2ipOQzBwQibtaUIA+pZoKKX7EN7sc6BEdn2t3goh+FmJeAltt/D1J94
+	 ccC4by786WslgGhWcZLrjLxzTiteIWQCdPuseEhfupAgxheRXluKb6m2aBlvka5IhG
+	 p+d/D/j76b/sA==
+Date: Fri, 1 Jul 2022 15:34:02 +0100
+From: Will Deacon <will@kernel.org>
+To: Xenia Ragiadakou <burzalodowa@gmail.com>
+Cc: joro@8bytes.org, robin.murphy@arm.com,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Fix undefined behavior in GBPA_UPDATE
+Message-ID: <20220701143401.GA28408@willie-the-truck>
+References: <20220630063959.27226-1-burzalodowa@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] iommu/iova: change IOVA_MAG_SIZE to 127 to save memory
-Content-Language: en-GB
-To: John Garry <john.garry@huawei.com>, Feng Tang <feng.tang@intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
- Andrew Morton <akpm@linux-foundation.org>, Christoph Lameter <cl@linux.com>,
- Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org,
- linux-kernel@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>
-References: <20220630073304.26945-1-feng.tang@intel.com>
- <13db50bb-57c7-0d54-3857-84b8a4591d9e@arm.com>
- <7c29d01d-d90c-58d3-a6e0-0b6c404173ac@huawei.com>
- <117b31b5-8d06-0af4-7f1c-231d86becf1d@arm.com>
- <2920df89-9975-5785-f79b-257d3052dfaf@huawei.com>
- <20220701035622.GB14806@shbuild999.sh.intel.com>
- <51af869a-83d4-631a-2d91-edb8b066bf4d@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <51af869a-83d4-631a-2d91-edb8b066bf4d@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Message-ID: <20220701120131._5TAdq4R-AaND6OkLJzppP4lOBiY3SHWbsY0wCADTT4@z>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220630063959.27226-1-burzalodowa@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Message-ID: <20220701143402.PcYe9KkRFfE1BSv7nLYaQPr483GYPzGCbOoB3XtMgrA@z>
 
-On 2022-07-01 12:33, John Garry wrote:
-> On 01/07/2022 04:56, Feng Tang wrote:
->>>> inclination.
->>>>
->>> ok, what you are saying sounds reasonable. I just remember that when we
->>> analyzed the longterm aging issue that we concluded that the FQ size 
->>> and its
->>> relation to the magazine size was a factor and this change makes me a 
->>> little
->>> worried about new issues. Better the devil you know and all that...
->>>
->>> Anyway, if I get some time I might do some testing to see if this 
->>> change has
->>> any influence.
->>>
->>> Another thought is if we need even store the size in the 
->>> iova_magazine? mags
->>> in the depot are always full. As such, we only need worry about mags 
->>> loaded
->>> in the cpu rcache and their sizes, so maybe we could have something like
->>> this:
->>>
->>> struct iova_magazine {
->>> -       unsigned long size;
->>>         unsigned long pfns[IOVA_MAG_SIZE];
->>> };
->>>
->>> @@ -631,6 +630,8 @@ struct iova_cpu_rcache {
->>>         spinlock_t lock;
->>>         struct iova_magazine *loaded;
->>>         struct iova_magazine *prev;
->>> +       int loaded_size;
->>> +       int prev_size;
->>> };
->>>
->>> I haven't tried to implement it though..
->> I have very few knowledge of iova, so you can chose what's the better
->> solution. I just wanted to raise the problem and will be happy to see
->> it solved:)
+On Thu, Jun 30, 2022 at 09:39:59AM +0300, Xenia Ragiadakou wrote:
+> The expression 1 << 31 results in undefined behaviour because the type of
+> integer constant 1 is (signed) int and the result of shifting 1 by 31 bits
+> is not representable in the (signed) int type.
 > 
-> I quickly tested your patch for performance and saw no noticeable 
-> difference, which is no surprise.
+> Change the type of 1 to unsigned int by adding the U suffix.
 > 
-> But I'll defer to Robin if he thinks that your patch is a better 
-> solution - I would guess that he does. For me personally I would prefer 
-> that this value was not changed, as I mentioned before.
+> Signed-off-by: Xenia Ragiadakou <burzalodowa@gmail.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index cd48590ada30..44fbd499edea 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -96,7 +96,7 @@
+>  #define CR2_E2H				(1 << 0)
+>  
+>  #define ARM_SMMU_GBPA			0x44
+> -#define GBPA_UPDATE			(1 << 31)
+> +#define GBPA_UPDATE			(1U << 31)
 
-This idea is interesting, but it would mean a bit more fiddly work to 
-keep things in sync when magazines are allocated, freed and swapped 
-around. It seems like the kind of non-obvious thing that might make 
-sense if it gave a significant improvement in cache locality or 
-something like that, but for simply fixing an allocation size it feels a 
-bit too wacky.
+There are loads of these kicking around in the kernel sources and we compile
+with -fno-strict-overflow.
 
- From my perspective, indeed I'd rather do the simple thing for now to 
-address the memory wastage issue directly, then we can do the deeper 
-performance analysis on top to see if further tweaking of magazine sizes 
-and/or design is justified.
+If you really want to change these, then let's use the BIT() macro instead,
+but I think it's really just churn.
 
-Cheers,
-Robin.
+Will
