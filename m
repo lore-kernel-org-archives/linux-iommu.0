@@ -1,83 +1,96 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5768AC43334
-	for <iommu@archiver.kernel.org>; Sat,  2 Jul 2022 02:00:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8A0E3CCA47B
+	for <iommu@archiver.kernel.org>; Sat,  2 Jul 2022 21:37:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id E773284740;
-	Sat,  2 Jul 2022 02:00:58 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org E773284740
-Authentication-Results: smtp1.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=H9/zdWOE
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id aKsKJh317bOh; Sat,  2 Jul 2022 02:00:58 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id CD3A38472E;
-	Sat,  2 Jul 2022 02:00:57 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org CD3A38472E
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A141BC0035;
-	Sat,  2 Jul 2022 02:00:57 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 384FBC002D
- for <iommu@lists.linux-foundation.org>; Sat,  2 Jul 2022 02:00:56 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 05964418AA
- for <iommu@lists.linux-foundation.org>; Sat,  2 Jul 2022 02:00:56 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 05964418AA
+	by smtp4.osuosl.org (Postfix) with ESMTP id 0F866415EC;
+	Sat,  2 Jul 2022 21:37:31 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 0F866415EC
 Authentication-Results: smtp4.osuosl.org;
- dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com
- header.a=rsa-sha256 header.s=Intel header.b=H9/zdWOE
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=N6w5oPvP
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id N4ZF0KV_pFmm for <iommu@lists.linux-foundation.org>;
- Sat,  2 Jul 2022 02:00:55 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org F2123418A6
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by smtp4.osuosl.org (Postfix) with ESMTPS id F2123418A6
- for <iommu@lists.linux-foundation.org>; Sat,  2 Jul 2022 02:00:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1656727254; x=1688263254;
- h=from:to:cc:subject:date:message-id:in-reply-to:
- references:mime-version:content-transfer-encoding;
- bh=ES4BgWmczuXVvIJOwIS6o6KxGZWScbVt38+yOQD7Uwo=;
- b=H9/zdWOEDQLQ4yJEhDjK/tjIcTvozN4eOvg//ZrRBC8BoTV+W9L1ufvv
- jz5Xu6fOn0ElTfnFeimH/A92zEtUMqx9SgNtNNjNYO7qmY9nOWXw+uU0t
- ThYQjZ+rcqSZ1W6KCqgwt8VmM4NvInzD2mjfqVp7DpnLS1vLgIvosESra
- wjo6qfUWkNPGKsF4UTIVJ3ueopM3mSvIRsHLrkXW0+JhRZCf6AvQl+TfG
- q4SgsbeZfEzIRpcV1VCHcoJanmWkwwsmlSXXrdjcL7hH9mwo+C8pshD04
- O2Kcl3I6LYnQcy+7tgAljo8IxmIUgjDpkTuxtUETTCjczdpKXV03BoXjb g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10395"; a="280338401"
-X-IronPort-AV: E=Sophos;i="5.92,238,1650956400"; d="scan'208";a="280338401"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
- by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 01 Jul 2022 19:00:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,238,1650956400"; d="scan'208";a="589518343"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
- by orsmga007.jf.intel.com with ESMTP; 01 Jul 2022 19:00:51 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>, Steve Wahl <steve.wahl@hpe.com>,
- Kevin Tian <kevin.tian@intel.com>
-Subject: [PATCH v2 6/6] iommu/vt-d: Make DMAR_UNITS_SUPPORTED default 1024
-Date: Sat,  2 Jul 2022 09:56:10 +0800
-Message-Id: <20220702015610.2849494-7-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220702015610.2849494-1-baolu.lu@linux.intel.com>
-References: <20220702015610.2849494-1-baolu.lu@linux.intel.com>
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id iX9mj_kxtFRK; Sat,  2 Jul 2022 21:37:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 7D6B2415E2;
+	Sat,  2 Jul 2022 21:37:29 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 7D6B2415E2
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 62029C0032;
+	Sat,  2 Jul 2022 21:37:29 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B9502C002D
+ for <iommu@lists.linux-foundation.org>; Sat,  2 Jul 2022 21:37:28 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 8577A81469
+ for <iommu@lists.linux-foundation.org>; Sat,  2 Jul 2022 21:37:28 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 8577A81469
+Authentication-Results: smtp1.osuosl.org;
+ dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org
+ header.a=rsa-sha256 header.s=google header.b=N6w5oPvP
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id vZ2dR9E5VRLL for <iommu@lists.linux-foundation.org>;
+ Sat,  2 Jul 2022 21:37:27 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 5E98581462
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com
+ [IPv6:2a00:1450:4864:20::52b])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 5E98581462
+ for <iommu@lists.linux-foundation.org>; Sat,  2 Jul 2022 21:37:27 +0000 (UTC)
+Received: by mail-ed1-x52b.google.com with SMTP id c13so6951643eds.10
+ for <iommu@lists.linux-foundation.org>; Sat, 02 Jul 2022 14:37:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=WV81TTrUzfnxlK8f1IHJz4xXjnSjuTWSu4GCpZi6HEY=;
+ b=N6w5oPvPqSon53fXnJZtzHnqdoTIeYCV6XuIzoHbJZvZSPSWEzPKieCj19s19eJcwL
+ RcIaTUHdUUNr9nkU6I8AoMl8MYOb93MYMUeA0voFGALhae/V7epsJgesAM52ZRW0dX2Y
+ 4yxMLoOi6DW/mQkOXwh0GbnbaVTBgbdxWiAiCbpqEsBEKg6pEaxcBiNh8KoKto2CQ+5k
+ VSW2p4QdgRIqPwEEj8mBNKB9BzfGyNCD8VAk1JR6fgYaS+Xp/nbzdZvzdg3/YaSn/Kpz
+ IQD+4eisIUTicjTxgNLfA7Ka4wWJVD1nwiy7AQb07DRuKpbj8Tux5G3x0Zq9odNjaYHP
+ u+Aw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=WV81TTrUzfnxlK8f1IHJz4xXjnSjuTWSu4GCpZi6HEY=;
+ b=JRnzAX5LjFIb7Lm9JfEpxjnVfAonHu5rrMVh/Svy+02PSfcrTQL5/MQv8fG1+pkHSe
+ OeETb7z0+olBVbDQ6jlaZJTXCcZgqOgD4JqkQZsKjsFmqV1z1Zu51PJUKXo8TyLQ4/xX
+ pPWVcdLR2HqNpIjPEb6zgKgk8VY9JQxXhLGF2P4MgKM2oHVbR/IZXtAZcC1D2iWTx7yt
+ y34/drGDdD6GaYJOqif76/tzKzEnK7pqXiq3ZQgPb+0cvrk7mo+50LlFWfgML329vs9O
+ MgW8zz3lZBNZzkzQDroCHPvIOdoUrXLMixfXVZDkUsArHVmDqmPOPbg9cmafn3lsV8jW
+ 5kXw==
+X-Gm-Message-State: AJIora8aFy1TMliYv+pfRRe6RP1rIwE/9OHYAzCAFcJWzgJPHyA4I58W
+ hsOcSarUV0X5fzEUnejMw1xMWw==
+X-Google-Smtp-Source: AGRyM1tKUcbvm7Pv5J7R8O4WaT3he1b97HxgOQBsVTrAmlhI7zbpEK0Cj+SrJSn0blV18Pjxg6AVHA==
+X-Received: by 2002:aa7:cd91:0:b0:438:33a1:d5aa with SMTP id
+ x17-20020aa7cd91000000b0043833a1d5aamr22690535edv.157.1656797845428; 
+ Sat, 02 Jul 2022 14:37:25 -0700 (PDT)
+Received: from localhost ([31.134.121.151]) by smtp.gmail.com with ESMTPSA id
+ m7-20020a056402050700b004356c0d7436sm17483107edv.42.2022.07.02.14.37.24
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Sat, 02 Jul 2022 14:37:25 -0700 (PDT)
+From: Sam Protsenko <semen.protsenko@linaro.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 0/4] iommu/exynos: Add basic support for SysMMU v7
+Date: Sun,  3 Jul 2022 00:37:20 +0300
+Message-Id: <20220702213724.3949-1-semen.protsenko@linaro.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Cc: Dimitri Sivanich <sivanich@hpe.com>, Russ Anderson <russ.anderson@hpe.com>,
- Mike Travis <mike.travis@hpe.com>, Jerry Snitselaar <jsnitsel@redhat.com>,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, David Woodhouse <dwmw2@infradead.org>
+Cc: Janghyuck Kim <janghyuck.kim@samsung.com>,
+ linux-samsung-soc@vger.kernel.org, Will Deacon <will@kernel.org>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Cho KyongHo <pullip.cho@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -95,42 +108,41 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-If the available hardware exceeds DMAR_UNITS_SUPPORTED (previously set
-to MAX_IO_APICS, or 128), it causes these messages: "DMAR: Failed to
-allocate seq_id", "DMAR: Parse DMAR table failure.", and "x2apic: IRQ
-remapping doesn't support X2APIC mode x2apic disabled"; and the system
-fails to boot properly.
+Existing exynos-iommu driver only supports SysMMU versions up to v5. But
+it's pretty much ready for basic usage with SysMMU v7, only small
+changes have to be done. As SysMMU version is tested dynamically (by
+reading the corresponding register), there is no need to introduce new
+compatible string.
 
-To support up to 64 sockets with 10 DMAR units each (640), make the
-value of DMAR_UNITS_SUPPORTED default 1024.
+One major change is that SysMMU v7 can have different register layouts:
+  - with Virtual Machine support
+  - without Virtual Machine support
 
-Signed-off-by: Steve Wahl<steve.wahl@hpe.com>
-Link: https://lore.kernel.org/linux-iommu/20220615183650.32075-1-steve.wahl@hpe.com/
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
----
- include/linux/dmar.h | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+That can be checked by reading the capability registers. In case the
+SysMMU IP-core is VM-capable, the VM registers have to be used, and some
+additional initialization is needed. That is the case on E850-96 board,
+which non-secure SysMMU (v7.4) implements VM-capable register set.
 
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index cbd714a198a0..d81a51978d01 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -18,11 +18,7 @@
- 
- struct acpi_dmar_header;
- 
--#ifdef	CONFIG_X86
--# define	DMAR_UNITS_SUPPORTED	MAX_IO_APICS
--#else
--# define	DMAR_UNITS_SUPPORTED	64
--#endif
-+#define DMAR_UNITS_SUPPORTED	1024
- 
- /* DMAR Flags */
- #define DMAR_INTR_REMAP		0x1
+The patch series was tested on E850-96 board. Because at the moment
+there are no SysMMU users for that board, the testing was done using so
+called "Emulated Translation" registers available on SysMMU v7. That
+allows one to initiate the translation from CPU, by writing to those
+registers, and then reading the corresponding TLB registers to find out
+the translation result. The testing driver can be found in [1] tree.
+
+[1] https://github.com/joe-skb7/linux/tree/e850-96-mainline-iommu
+
+Sam Protsenko (4):
+  iommu/exynos: Set correct dma mask for SysMMU v5+
+  iommu/exynos: Check if SysMMU v7 has VM registers
+  iommu/exynos: Use lookup based approach to access v7 registers
+  iommu/exynos: Add minimal support for SysMMU v7 with VM registers
+
+ drivers/iommu/exynos-iommu.c | 112 ++++++++++++++++++++++++++++++++---
+ 1 file changed, 104 insertions(+), 8 deletions(-)
+
 -- 
-2.25.1
+2.30.2
 
 _______________________________________________
 iommu mailing list
