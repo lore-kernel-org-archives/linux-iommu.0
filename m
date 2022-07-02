@@ -1,41 +1,41 @@
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34EC4441B
-	for <iommu@lists.linux.dev>; Sat,  2 Jul 2022 21:37:27 +0000 (UTC)
-Received: by mail-ed1-f44.google.com with SMTP id z41so7013977ede.1
-        for <iommu@lists.linux.dev>; Sat, 02 Jul 2022 14:37:26 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 446F31FA8
+	for <iommu@lists.linux.dev>; Sat,  2 Jul 2022 21:37:28 +0000 (UTC)
+Received: by mail-ej1-f48.google.com with SMTP id d2so10096100ejy.1
+        for <iommu@lists.linux.dev>; Sat, 02 Jul 2022 14:37:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WV81TTrUzfnxlK8f1IHJz4xXjnSjuTWSu4GCpZi6HEY=;
-        b=N6w5oPvPqSon53fXnJZtzHnqdoTIeYCV6XuIzoHbJZvZSPSWEzPKieCj19s19eJcwL
-         RcIaTUHdUUNr9nkU6I8AoMl8MYOb93MYMUeA0voFGALhae/V7epsJgesAM52ZRW0dX2Y
-         4yxMLoOi6DW/mQkOXwh0GbnbaVTBgbdxWiAiCbpqEsBEKg6pEaxcBiNh8KoKto2CQ+5k
-         VSW2p4QdgRIqPwEEj8mBNKB9BzfGyNCD8VAk1JR6fgYaS+Xp/nbzdZvzdg3/YaSn/Kpz
-         IQD+4eisIUTicjTxgNLfA7Ka4wWJVD1nwiy7AQb07DRuKpbj8Tux5G3x0Zq9odNjaYHP
-         u+Aw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=aWfZE2YpB25R+rCMwVNZi2s9IwZn0JfO+IgsGnjhYqY=;
+        b=wVSILGBGUjVOC+cfuxxbSMyxpvn6GttZQpREPJStje8Jo1kxV0hOiJBQjYgcMjnGO8
+         HzrlHKacg6/F0WF0UTTYxmtVqmcttqofFOrJX6K+BP9MvvRdIR7qYrVcD7+DFCx3EKT0
+         v7Hte9vIx/BKEL3aPNq1az2t5Nf5ERiriNAhe4KwSJOAyDfa58FaLw+AHHh0SnQeL6jn
+         UMtj1LphcAYF+SCg6rTx11cw/9TDH61FUx3QLb2jvIAt9clvxCy6iYOFU5DZ9Kgf8G9u
+         J/kArGjS3bdmqxj4yPJLCgNcdbkBX/TWXfqGZSQ3YUT28PeuTlKYSuvKmAr01wazLM4f
+         ZKnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WV81TTrUzfnxlK8f1IHJz4xXjnSjuTWSu4GCpZi6HEY=;
-        b=VMf6wMws8nWQI/wqxBV87Kfp64uRVi9IJkDBkOlMU6RBhvQ+QokZp9so/5CFqFo3/Z
-         T6mVK16TqNEUfLw02dvNBTrMFLfNWMyskiHF9cOOHqmjh3Dg0ZlqTuZdbvAtmw2K8o7l
-         wMiLgxk0p9jK+ui87AHAOKSmXW/kJrnTT6plc1dO1pep6Iydg/b8rYLjMPn4tuv9secr
-         qTMF1mFaDUy+tSi7eBmsAW13ajmcSm/XjVcz2C5ROgB/43F5Nt7FZIkmtPrqA8TQETXS
-         43Z42+V9/tbAChYW9DauJ6Mr1gV46Pn0u8Sj+I7gDy9JQfstMBepQZDlmnaU3hu4y333
-         0DZg==
-X-Gm-Message-State: AJIora+SDlNDQUZ09L8cOccF1uBRFaIFJRHr4ZKjlKjlJTZRUTaKQhXC
-	DmJECvDBGfVP/+LaYhfeyh4XuQ==
-X-Google-Smtp-Source: AGRyM1tKUcbvm7Pv5J7R8O4WaT3he1b97HxgOQBsVTrAmlhI7zbpEK0Cj+SrJSn0blV18Pjxg6AVHA==
-X-Received: by 2002:aa7:cd91:0:b0:438:33a1:d5aa with SMTP id x17-20020aa7cd91000000b0043833a1d5aamr22690535edv.157.1656797845428;
-        Sat, 02 Jul 2022 14:37:25 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=aWfZE2YpB25R+rCMwVNZi2s9IwZn0JfO+IgsGnjhYqY=;
+        b=qoNti763WgGyjJ5IiE4tEKP/cca1eH/vbhMftgDBSlSQBPMmma4YbHew7d58hoW4UQ
+         q5D+o+W+rBsSWr2pcl63UAtRHzflkEw6j1bFVh4DNvlZergFjXS7gEPB2TSQsoizMYfN
+         Yv7fQUYDVpJ3IRM/NEEyk7fvKA8ThOuS7ekID3GpMSblzlyh35/LRWUwWEnm083nJR/5
+         ntwWDoimsSO1OXj7zvCASl9PUEfPrftsLdzmj5PwRs0Ob8Fo7tYYG7dOWkORB7Nf6ukf
+         6K6qN6GXGYlNhDTpoNeoEpcXK0gGzYC+TD+aKsty/9lDY4SGRvocDd2CsxPgVBSp6otn
+         y5FQ==
+X-Gm-Message-State: AJIora9vbamq+pLNuKr6NMm+WmO8Etbfyq7ndzO9IBpeFWvFhCWwj9J0
+	LVokTlPKgX7Gusqs0bPJ9TnzjA==
+X-Google-Smtp-Source: AGRyM1sjE5ZjIaY+GfCnbQmj6BkapC2AnzQE+mzuISXF0GaEPi7w7Vucxh56Irz739GXVnorjZvvIA==
+X-Received: by 2002:a17:906:1018:b0:718:dd3f:f28c with SMTP id 24-20020a170906101800b00718dd3ff28cmr21490786ejm.55.1656797846558;
+        Sat, 02 Jul 2022 14:37:26 -0700 (PDT)
 Received: from localhost ([31.134.121.151])
-        by smtp.gmail.com with ESMTPSA id m7-20020a056402050700b004356c0d7436sm17483107edv.42.2022.07.02.14.37.24
+        by smtp.gmail.com with ESMTPSA id a18-20020a170906671200b00718e4e64b7bsm12214247ejp.79.2022.07.02.14.37.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Jul 2022 14:37:25 -0700 (PDT)
+        Sat, 02 Jul 2022 14:37:26 -0700 (PDT)
 From: Sam Protsenko <semen.protsenko@linaro.org>
 To: Marek Szyprowski <m.szyprowski@samsung.com>,
 	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
@@ -51,10 +51,12 @@ Cc: Joerg Roedel <joro@8bytes.org>,
 	linux-arm-kernel@lists.infradead.org,
 	linux-samsung-soc@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 0/4] iommu/exynos: Add basic support for SysMMU v7
-Date: Sun,  3 Jul 2022 00:37:20 +0300
-Message-ID: <20220702213724.3949-1-semen.protsenko@linaro.org>
+Subject: [PATCH 1/4] iommu/exynos: Set correct dma mask for SysMMU v5+
+Date: Sun,  3 Jul 2022 00:37:21 +0300
+Message-ID: <20220702213724.3949-2-semen.protsenko@linaro.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220702213724.3949-1-semen.protsenko@linaro.org>
+References: <20220702213724.3949-1-semen.protsenko@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -62,41 +64,39 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Message-ID: <20220702213720.-TJvwn9D8Q-WUthRVaIR0hfLBF8I5DZr3V6MTvf_Qeo@z>
+Message-ID: <20220702213721.-dED2-Go_xUc2qlHoxCs7WJ1pndCoXyYDHzT8ULQp10@z>
 
-Existing exynos-iommu driver only supports SysMMU versions up to v5. But
-it's pretty much ready for basic usage with SysMMU v7, only small
-changes have to be done. As SysMMU version is tested dynamically (by
-reading the corresponding register), there is no need to introduce new
-compatible string.
+SysMMU v5+ supports 36 bit physical address space. Set corresponding DMA
+mask to avoid falling back to SWTLBIO usage in dma_map_single() because
+of failed dma_capable() check.
 
-One major change is that SysMMU v7 can have different register layouts:
-  - with Virtual Machine support
-  - without Virtual Machine support
+The original code for this fix was suggested by Marek.
 
-That can be checked by reading the capability registers. In case the
-SysMMU IP-core is VM-capable, the VM registers have to be used, and some
-additional initialization is needed. That is the case on E850-96 board,
-which non-secure SysMMU (v7.4) implements VM-capable register set.
+Originally-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+---
+ drivers/iommu/exynos-iommu.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-The patch series was tested on E850-96 board. Because at the moment
-there are no SysMMU users for that board, the testing was done using so
-called "Emulated Translation" registers available on SysMMU v7. That
-allows one to initiate the translation from CPU, by writing to those
-registers, and then reading the corresponding TLB registers to find out
-the translation result. The testing driver can be found in [1] tree.
-
-[1] https://github.com/joe-skb7/linux/tree/e850-96-mainline-iommu
-
-Sam Protsenko (4):
-  iommu/exynos: Set correct dma mask for SysMMU v5+
-  iommu/exynos: Check if SysMMU v7 has VM registers
-  iommu/exynos: Use lookup based approach to access v7 registers
-  iommu/exynos: Add minimal support for SysMMU v7 with VM registers
-
- drivers/iommu/exynos-iommu.c | 112 ++++++++++++++++++++++++++++++++---
- 1 file changed, 104 insertions(+), 8 deletions(-)
-
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 71f2018e23fe..28f8c8d93aa3 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -647,6 +647,14 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
++	if (MMU_MAJ_VER(data->version) >= 5) {
++		ret = dma_set_mask(dev, DMA_BIT_MASK(36));
++		if (ret) {
++			dev_err(dev, "Unable to set DMA mask: %d\n", ret);
++			return ret;
++		}
++	}
++
+ 	/*
+ 	 * use the first registered sysmmu device for performing
+ 	 * dma mapping operations on iommu page tables (cpu cache flush)
 -- 
 2.30.2
 
