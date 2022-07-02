@@ -1,106 +1,117 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C7BD6CCA47F
-	for <iommu@archiver.kernel.org>; Sat,  2 Jul 2022 21:50:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7A3EFC43334
+	for <iommu@archiver.kernel.org>; Sun,  3 Jul 2022 02:29:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 5462F60ACA;
-	Sat,  2 Jul 2022 21:50:26 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 5462F60ACA
-Authentication-Results: smtp3.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=iHgIVjJ6
+	by smtp4.osuosl.org (Postfix) with ESMTP id CDBB5415D0;
+	Sun,  3 Jul 2022 02:29:31 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org CDBB5415D0
+Authentication-Results: smtp4.osuosl.org;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=oGHlDm4t
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gYOpPXIFsL6m; Sat,  2 Jul 2022 21:50:25 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id F29C160A89;
-	Sat,  2 Jul 2022 21:50:24 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org F29C160A89
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id LpgWqz9zLrw9; Sun,  3 Jul 2022 02:29:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 0329C41578;
+	Sun,  3 Jul 2022 02:29:29 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 0329C41578
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CE955C0032;
-	Sat,  2 Jul 2022 21:50:24 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BB593C002D
- for <iommu@lists.linux-foundation.org>; Sat,  2 Jul 2022 21:50:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CB066C0035;
+	Sun,  3 Jul 2022 02:29:29 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2D316C002D;
+ Sat,  2 Jul 2022 01:03:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 8756C82605
- for <iommu@lists.linux-foundation.org>; Sat,  2 Jul 2022 21:50:23 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 8756C82605
-Authentication-Results: smtp1.osuosl.org;
- dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org
- header.a=rsa-sha256 header.s=google header.b=iHgIVjJ6
+ by smtp1.osuosl.org (Postfix) with ESMTP id 07AF183F67;
+ Sat,  2 Jul 2022 01:03:39 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 07AF183F67
+Authentication-Results: smtp1.osuosl.org; dkim=pass (1024-bit key,
+ unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256
+ header.s=key1 header.b=oGHlDm4t
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id VWWlMLOQEH03 for <iommu@lists.linux-foundation.org>;
- Sat,  2 Jul 2022 21:50:22 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 271C3825B1
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com
- [IPv6:2a00:1450:4864:20::22b])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 271C3825B1
- for <iommu@lists.linux-foundation.org>; Sat,  2 Jul 2022 21:50:22 +0000 (UTC)
-Received: by mail-lj1-x22b.google.com with SMTP id n15so6613660ljg.8
- for <iommu@lists.linux-foundation.org>; Sat, 02 Jul 2022 14:50:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=DsgRlOlQk9CwhHGV4ShnBQjDciUiTvVu2KrFtsUP2QE=;
- b=iHgIVjJ6tsmEQTaXwiUnbyprQ6kTlXSHFNFbP2VajQCV/JSloHmhlznAzHVP+LIksk
- kf4DWLS9WEbuQYkPzbQL8UJ02i25dGUxQcwwDGSjd4CyjnacI0+RT3lvgBxhgFea7xCN
- tzEM4P2v2PsBfoQii9r4HIcTknEgNU+aIUFDve19qhg7bF9NImKZ9a5kfpjaU2tNV4if
- 84SqSpogm5hvr2tLQIBISeeh9I3i00LwOijlHRYulnhnwlLVnawP9oVXZZ8bFooJv7u6
- lImxJuTzH9ZMeUTSkVzU3yNKlkSi9JaCNY9LE/9R4tSjkhny8m1KCgdla1t4CNCjm3P2
- 101w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=DsgRlOlQk9CwhHGV4ShnBQjDciUiTvVu2KrFtsUP2QE=;
- b=GBSMkL0YVM8GP7m9fCuqV+YXG2V5cIwPWncS/UbWpo7LNIkyrek0aaBwEg50fudT57
- 2w0wmf+Z/glMzaiaoYh8qDyU8MS6yFnsT8rXNxv5bMbVBySZbG1pbqvW2oEK8+DRmqlB
- He6G1KrwzG7xNQ4q5evvZnUX7iDojkvoNpgibu7nivUbL+ZBmGH58K2lzMZDbQZnF+FO
- R1zeR4zdQEDsjjCQ+zgi6uchEvJvSKn3yDI3rZb6YjIOvep0yV5V73kuNONymWSvRdle
- DFhWcDa0/pXv0cPBv3dZrwMapZGOelUPvt9Jei6DN0dlIaO6Np93nC3yE9Vvl4g6zvLu
- HS4Q==
-X-Gm-Message-State: AJIora8APtUv0is/Z10zhqFOeNxMX35B+qQ7bIP0p0B+BK8NHvEH0bjQ
- dHErMImtVx94Y31PO9T6OXBGTd5+1pg1VHdoVov4UQ==
-X-Google-Smtp-Source: AGRyM1vLXwqhz6BzpCK0xevUybI4ir5IKfjFa4+/fr/QmTio9FpicbapVRcLunnalpFIvKFmIcC0KUay7XBkKRfJ0Sg=
-X-Received: by 2002:a2e:990:0:b0:25a:7c03:eb70 with SMTP id
- 138-20020a2e0990000000b0025a7c03eb70mr12239290ljj.350.1656798619915; Sat, 02
- Jul 2022 14:50:19 -0700 (PDT)
+ with ESMTP id nJAF3MXWRqCK; Sat,  2 Jul 2022 01:03:38 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org B78CF83F78
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id B78CF83F78;
+ Sat,  2 Jul 2022 01:03:37 +0000 (UTC)
+Date: Fri, 1 Jul 2022 18:03:10 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+ t=1656723813;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=UefsvJWBOCsJEHG/jcpgIGR+KBtUCRUqjXcROu7qjh4=;
+ b=oGHlDm4tgr6UzDbC5z/sb7q2WEts5mi8mJ8aiIMXBOzW75BRr4BaIuszRL9hOCzoFfVxku
+ tmO6BM7R9GzDDzZbe/MQeyeOEOAx+3VHqH/w/8ecEZ7fImffcNYGlal4Cw/gQ26E9Sym1J
+ usYWeNXz8OdB9Vt23HLuxwKOwXbZ7ng=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and
+ include these headers.
+From: Roman Gushchin <roman.gushchin@linux.dev>
+To: Andrew Morton <akpm@linux-foundation.org>,
+ kernel test robot <lkp@intel.com>
+Subject: Re: [linux-next:master] BUILD REGRESSION
+ 6cc11d2a1759275b856e464265823d94aabd5eaf
+Message-ID: <Yr+ZTnLb9lJk6fJO@castle>
+References: <62be3696.+PAAAVlbtWK6G2hk%lkp@intel.com>
 MIME-Version: 1.0
-References: <20220120201958.2649-1-semen.protsenko@linaro.org>
- <20220120201958.2649-3-semen.protsenko@linaro.org>
- <a111932a-6685-2a9d-abce-87af26b121a4@canonical.com>
- <CGME20220121110911eucas1p28d11e1b04773e8174b9d65f011dc1977@eucas1p2.samsung.com>
- <CAPLW+4kKR+7hM-eZc8-v6Dzeaj+TPBRmCLDSVNEnfx2WmN2TJA@mail.gmail.com>
- <54b76143-dff3-8a19-7ab9-57fb80d59743@samsung.com>
- <CAPLW+4nxSDeGL-1hFzdDr3vYx+9ct8_YrXfVNgzwm1Gq2=Vh7A@mail.gmail.com>
- <47a0abcc-b3d6-a9a3-8d3a-5689bbf8767a@arm.com>
- <ec775e98-1164-1016-13c7-9247e751782a@samsung.com>
-In-Reply-To: <ec775e98-1164-1016-13c7-9247e751782a@samsung.com>
-From: Sam Protsenko <semen.protsenko@linaro.org>
-Date: Sun, 3 Jul 2022 00:50:08 +0300
-Message-ID: <CAPLW+4=MG2HwySJwZe427aHVtykVA1KBWg6a5qFRnFrWbhb4=w@mail.gmail.com>
-Subject: Re: [RFC 2/3] iommu/samsung: Introduce Exynos sysmmu-v8 driver
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Janghyuck Kim <janghyuck.kim@samsung.com>,
- Catalin Marinas <catalin.marinas@arm.com>, Carlos Llamas <cmllamas@google.com>,
- Will Deacon <will@kernel.org>, Sumit Semwal <sumit.semwal@linaro.org>,
- Will McVicker <willmcvicker@google.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- linux-samsung-soc@vger.kernel.org, Mark Salyzyn <salyzyn@google.com>,
- Jinkyu Yang <jinkyu1.yang@samsung.com>, Thierry Strudel <tstrudel@google.com>,
- Rob Herring <robh+dt@kernel.org>, Cho KyongHo <pullip.cho@samsung.com>,
- linux-arm-kernel@lists.infradead.org, Jonglin Lee <jonglin@google.com>,
- "J . Avila" <elavila@google.com>, Shawn Guo <shawnguo@kernel.org>,
- Alex <acnwigwe@google.com>, linux-kernel@vger.kernel.org,
- Hyesoo Yu <hyesoo.yu@samsung.com>, iommu@lists.linux-foundation.org,
- Robin Murphy <robin.murphy@arm.com>
+Content-Disposition: inline
+In-Reply-To: <62be3696.+PAAAVlbtWK6G2hk%lkp@intel.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
+X-Mailman-Approved-At: Sun, 03 Jul 2022 02:29:28 +0000
+Cc: nvdimm@lists.linux.dev, legousb-devel@lists.sourceforge.net,
+ dri-devel@lists.freedesktop.org, linux-sctp@vger.kernel.org,
+ linux-stm32@st-md-mailman.stormreply.com, linux-samsung-soc@vger.kernel.org,
+ ceph-devel@vger.kernel.org, linux-pm@vger.kernel.org,
+ usbb2k-api-dev@nongnu.org, linux-omap@vger.kernel.org,
+ megaraidlinux.pdl@broadcom.com, linux-usb@vger.kernel.org,
+ linux-wireless@vger.kernel.org, linux-perf-users@vger.kernel.org,
+ netfilter-devel@vger.kernel.org, linux-crypto@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org, linux-wpan@vger.kernel.org,
+ linux-fbdev@vger.kernel.org, linux-parport@lists.infradead.org,
+ samba-technical@lists.samba.org, linux-cxl@vger.kernel.org,
+ virtualization@lists.linux-foundation.org, dm-devel@redhat.com,
+ target-devel@vger.kernel.org, dev@openvswitch.org, linux-cifs@vger.kernel.org,
+ linux-clk@vger.kernel.org, linux-rockchip@lists.infradead.org,
+ iommu@lists.linux.dev, coreteam@netfilter.org, linux-media@vger.kernel.org,
+ linux-watchdog@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ linaro-mm-sig@lists.linaro.org, cgroups@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-block@vger.kernel.org,
+ linux-renesas-soc@vger.kernel.org, linux-integrity@vger.kernel.org,
+ linux-efi@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-pci@vger.kernel.org, linux-fpga@vger.kernel.org,
+ alsa-devel@alsa-project.org, linux-mtd@lists.infradead.org,
+ linux-amlogic@lists.infradead.org, linux-phy@lists.infradead.org,
+ sound-open-firmware@alsa-project.org, linux-rdma@vger.kernel.org,
+ linux-staging@lists.linux.dev, amd-gfx@lists.freedesktop.org,
+ isdn4linux@listserv.isdn4linux.de, linux-input@vger.kernel.org,
+ linux-ext4@vger.kernel.org, mjpeg-users@lists.sourceforge.net,
+ openipmi-developer@lists.sourceforge.net, linux-hwmon@vger.kernel.org,
+ linux-parisc@vger.kernel.org, linux-ide@vger.kernel.org,
+ linux-mmc@vger.kernel.org, iommu@lists.linux-foundation.org,
+ keyrings@vger.kernel.org, netdev@vger.kernel.org, kvm@vger.kernel.org,
+ damon@lists.linux.dev, linux-mm@kvack.org,
+ accessrunner-general@lists.sourceforge.net,
+ linux1394-devel@lists.sourceforge.net, linux-leds@vger.kernel.org,
+ rds-devel@oss.oracle.com, linux-x25@vger.kernel.org, dccp@vger.kernel.org,
+ intel-wired-lan@lists.osuosl.org, linux-serial@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-nfc@lists.01.org,
+ osmocom-net-gprs@lists.osmocom.org, apparmor@lists.ubuntu.com,
+ linux-raid@vger.kernel.org, linux-bcache@vger.kernel.org,
+ linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org,
+ linux-scsi@vger.kernel.org, patches@opensource.cirrus.com,
+ linux-unionfs@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+ ntb@lists.linux.dev, tipc-discussion@lists.sourceforge.net,
+ linuxppc-dev@lists.ozlabs.org, linux-btrfs@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -118,118 +129,102 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 22 Jun 2022 at 12:57, Marek Szyprowski <m.szyprowski@samsung.com> wrote:
->
->
-> On 22.06.2022 11:14, Robin Murphy wrote:
-> > On 2022-06-21 20:57, Sam Protsenko wrote:
-> >> Hi Marek,
-> >>
-> >> On Fri, 21 Jan 2022 at 14:31, Marek Szyprowski
-> >> <m.szyprowski@samsung.com> wrote:
-> >>
-> >> [snip]
-> >>
-> >>>
-> >>> Well, for starting point the existing exynos-iommu driver is really
-> >>> enough. I've played a bit with newer Exyos SoCs some time ago. If I
-> >>> remember right, if you limit the iommu functionality to the essential
-> >>> things like mapping pages to IO-virtual space, the hardware differences
-> >>> between SYSMMU v5 (already supported by the exynos-iommu driver) and v7
-> >>> are just a matter of changing a one register during the initialization
-> >>> and different bits the page fault reason decoding. You must of course
-> >>> rely on the DMA-mapping framework and its implementation based on
-> >>> mainline DMA-IOMMU helpers. All the code for custom iommu group(s)
-> >>> handling or extended fault management are not needed for the initial
-> >>> version.
-> >>>
-> >>
-> >> Thanks for the advice! Just implemented some testing driver, which
-> >> uses "Emulated Translation" registers available on SysMMU v7. That's
-> >> one way to verify the IOMMU driver with no actual users of it. It
-> >> works fine with vendor SysMMU driver I ported to mainline earlier, and
-> >> now I'm trying to use it with exynos-sysmmu driver (existing
-> >> upstream). If you're curious -- I can share the testing driver
-> >> somewhere on GitHub.
-> >>
-> >> I believe the register you mentioned is PT_BASE one, so I used
-> >> REG_V7_FLPT_BASE_VM = 0x800C instead of REG_V5_PT_BASE_PFN. But I
-> >> didn't manage to get that far, unfortunately, as
-> >> exynos_iommu_domain_alloc() function fails in my case, with BUG_ON()
-> >> at this line:
-> >>
-> >>      /* For mapping page table entries we rely on dma == phys */
-> >>      BUG_ON(handle != virt_to_phys(domain->pgtable));
-> >>
-> >> One possible explanation for this BUG is that "dma-ranges" property is
-> >> not provided in DTS (which seems to be the case right now for all
-> >> users of "samsung,exynos-sysmmu" driver). Because of that the SWIOTLB
-> >> is used for dma_map_single() call (in exynos_iommu_domain_alloc()
-> >> function), which in turn leads to that BUG. At least that's what
-> >> happens in my case. The call chain looks like this:
-> >>
-> >>      exynos_iommu_domain_alloc()
-> >>          v
-> >>      dma_map_single()
-> >>          v
-> >>      dma_map_single_attrs()
-> >>          v
-> >>      dma_map_page_attrs()
-> >>          v
-> >>      dma_direct_map_page()  // dma_capable() == false
-> >>          v
-> >>      swiotlb_map()
-> >>          v
-> >>      swiotlb_tbl_map_single()
-> >>
-> >> And the last call of course always returns the address different than
-> >> the address for allocated pgtable. E.g. in my case I see this:
-> >>
-> >>      handle = 0x00000000fbfff000
-> >>      virt_to_phys(domain->pgtable) = 0x0000000880d0c000
-> >>
-> >> Do you know what might be the reason for that? I just wonder how the
-> >> SysMMU driver work for all existing Exynos platforms right now. I feel
-> >> I might be missing something, like some DMA option should be enabled
-> >> so that SWIOTLB is not used, or something like that. Please let me
-> >> know if you have any idea on possible cause. The vendor's SysMMU
-> >> driver is kinda different in that regard, as it doesn't use
-> >> dma_map_single(), so I don't see such issue there.
-> >
-> > If this SysMMU version is capable of addressing more than 32 bits,
-> > then exynos_iommu_probe_device() should set its DMA masks appropriately.
->
-> Well, Sam's question was about the Exynos SYSMMU own platform device,
-> not the device for which Exynos SYSMMU manages the IO virtual address
-> space.
->
-> Simply add something like
->
-> dma_set_mask(dev, DMA_BIT_MASK(36));
->
+esOn Fri, Jul 01, 2022 at 07:49:42AM +0800, kbuild test robot wrote:
+> tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+> branch HEAD: 6cc11d2a1759275b856e464265823d94aabd5eaf  Add linux-next specific files for 20220630
+> 
+> Error/Warning reports:
+> 
+> https://lore.kernel.org/linux-mm/202206301859.UodBCrva-lkp@intel.com
+> 
+> Error/Warning: (recently discovered and may have been fixed)
+> 
+> arch/powerpc/kernel/interrupt.c:542:55: error: suggest braces around empty body in an 'if' statement [-Werror=empty-body]
+> arch/powerpc/kernel/interrupt.c:542:55: warning: suggest braces around empty body in an 'if' statement [-Wempty-body]
+> drivers/pci/endpoint/functions/pci-epf-vntb.c:975:5: warning: no previous prototype for 'pci_read' [-Wmissing-prototypes]
+> drivers/pci/endpoint/functions/pci-epf-vntb.c:984:5: warning: no previous prototype for 'pci_write' [-Wmissing-prototypes]
+> mm/shrinker_debug.c:143:9: warning: function 'shrinker_debugfs_rename' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+> mm/shrinker_debug.c:217:9: warning: function 'shrinker_debugfs_rename' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+> mm/vmscan.c:637:9: warning: function 'prealloc_shrinker' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+> mm/vmscan.c:642:9: warning: function 'prealloc_shrinker' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+> mm/vmscan.c:697:9: warning: function 'register_shrinker' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+> mm/vmscan.c:702:9: warning: function 'register_shrinker' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
 
-Yep, that one worked, thanks! Just submitted a patch, with a bit of
-additions: [1].
+Shrinker-related warnings should be fixed by the following patch.
 
-[1] https://lkml.org/lkml/2022/7/2/269
+Thanks!
 
-> to the beginning of the exynos_sysmmu_probe(). This will disable SWIOTLB
-> and switch to DMA-direct for the Exynos SYSMMU platform device.
->
->
-> > (as a side note since I looked, the use of PAGE_SIZE/PAGE_SHIFT in the
-> > driver looks wrong, since I can't imagine that the hardware knows
-> > whether Linux is using 4KB, 16KB or 64KB and adjusts itself
-> > accordingly...)
->
-> Right, this has to be cleaned up. This driver was never used on systems
-> with kernel configuration for non-4KB pages.
->
-> Best regards
-> --
-> Marek Szyprowski, PhD
-> Samsung R&D Institute Poland
->
+--
+
+From c399aff65c7745a209397a531c5b28fd404d83c2 Mon Sep 17 00:00:00 2001
+From: Roman Gushchin <roman.gushchin@linux.dev>
+Date: Fri, 1 Jul 2022 17:38:31 -0700
+Subject: [PATCH] mm:shrinkers: fix build warnings
+
+Add __printf(a, b) attributes to shrinker functions taking shrinker
+name as an argument to avoid compiler warnings like:
+
+mm/shrinker_debug.c:143:9: warning: function 'shrinker_debugfs_rename'
+  might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+mm/shrinker_debug.c:217:9: warning: function 'shrinker_debugfs_rename'
+  might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+mm/vmscan.c:637:9: warning: function 'prealloc_shrinker' might be a
+  candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+mm/vmscan.c:642:9: warning: function 'prealloc_shrinker' might be a
+  candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+mm/vmscan.c:697:9: warning: function 'register_shrinker' might be a
+  candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+mm/vmscan.c:702:9: warning: function 'register_shrinker' might be a
+  candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+
+Signed-off-by: Roman Gushchin <roman.gushchin@linux.dev>
+---
+ include/linux/shrinker.h | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/include/linux/shrinker.h b/include/linux/shrinker.h
+index 64416f3e0a1f..08e6054e061f 100644
+--- a/include/linux/shrinker.h
++++ b/include/linux/shrinker.h
+@@ -93,9 +93,11 @@ struct shrinker {
+  */
+ #define SHRINKER_NONSLAB	(1 << 3)
+ 
+-extern int prealloc_shrinker(struct shrinker *shrinker, const char *fmt, ...);
++extern int __printf(2, 3) prealloc_shrinker(struct shrinker *shrinker,
++					    const char *fmt, ...);
+ extern void register_shrinker_prepared(struct shrinker *shrinker);
+-extern int register_shrinker(struct shrinker *shrinker, const char *fmt, ...);
++extern int __printf(2, 3) register_shrinker(struct shrinker *shrinker,
++					    const char *fmt, ...);
+ extern void unregister_shrinker(struct shrinker *shrinker);
+ extern void free_prealloced_shrinker(struct shrinker *shrinker);
+ extern void synchronize_shrinkers(void);
+@@ -103,8 +105,8 @@ extern void synchronize_shrinkers(void);
+ #ifdef CONFIG_SHRINKER_DEBUG
+ extern int shrinker_debugfs_add(struct shrinker *shrinker);
+ extern void shrinker_debugfs_remove(struct shrinker *shrinker);
+-extern int shrinker_debugfs_rename(struct shrinker *shrinker,
+-				   const char *fmt, ...);
++extern int __printf(2, 3) shrinker_debugfs_rename(struct shrinker *shrinker,
++						  const char *fmt, ...);
+ #else /* CONFIG_SHRINKER_DEBUG */
+ static inline int shrinker_debugfs_add(struct shrinker *shrinker)
+ {
+@@ -113,8 +115,8 @@ static inline int shrinker_debugfs_add(struct shrinker *shrinker)
+ static inline void shrinker_debugfs_remove(struct shrinker *shrinker)
+ {
+ }
+-static inline int shrinker_debugfs_rename(struct shrinker *shrinker,
+-					  const char *fmt, ...)
++static inline __printf(2, 3)
++int shrinker_debugfs_rename(struct shrinker *shrinker, const char *fmt, ...)
+ {
+ 	return 0;
+ }
+-- 
+2.36.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
