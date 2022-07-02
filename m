@@ -4,85 +4,86 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4E620C43334
-	for <iommu@archiver.kernel.org>; Sat,  2 Jul 2022 21:37:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9B5BCC433EF
+	for <iommu@archiver.kernel.org>; Sat,  2 Jul 2022 21:37:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id D08C78149E;
-	Sat,  2 Jul 2022 21:37:32 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org D08C78149E
+	by smtp1.osuosl.org (Postfix) with ESMTP id 44C3481768;
+	Sat,  2 Jul 2022 21:37:34 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 44C3481768
 Authentication-Results: smtp1.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=wVSILGBG
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=BqX0hBiy
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id pSe_oPw0MkEW; Sat,  2 Jul 2022 21:37:32 +0000 (UTC)
+	with ESMTP id 9eTaC51fdWaj; Sat,  2 Jul 2022 21:37:33 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id AB21581469;
-	Sat,  2 Jul 2022 21:37:31 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org AB21581469
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 2306281516;
+	Sat,  2 Jul 2022 21:37:33 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 2306281516
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 85F24C0032;
-	Sat,  2 Jul 2022 21:37:31 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4D3EFC002D
- for <iommu@lists.linux-foundation.org>; Sat,  2 Jul 2022 21:37:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E2F2AC0081;
+	Sat,  2 Jul 2022 21:37:32 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 40383C002D
+ for <iommu@lists.linux-foundation.org>; Sat,  2 Jul 2022 21:37:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 27D0F60A89
- for <iommu@lists.linux-foundation.org>; Sat,  2 Jul 2022 21:37:30 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 27D0F60A89
-Authentication-Results: smtp3.osuosl.org;
+ by smtp2.osuosl.org (Postfix) with ESMTP id 1576540614
+ for <iommu@lists.linux-foundation.org>; Sat,  2 Jul 2022 21:37:32 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 1576540614
+Authentication-Results: smtp2.osuosl.org;
  dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org
- header.a=rsa-sha256 header.s=google header.b=wVSILGBG
+ header.a=rsa-sha256 header.s=google header.b=BqX0hBiy
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mLla96CexiDu for <iommu@lists.linux-foundation.org>;
- Sat,  2 Jul 2022 21:37:29 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id NtzGV31nLbTh for <iommu@lists.linux-foundation.org>;
+ Sat,  2 Jul 2022 21:37:31 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org A7C0A60A69
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com
- [IPv6:2a00:1450:4864:20::62f])
- by smtp3.osuosl.org (Postfix) with ESMTPS id A7C0A60A69
- for <iommu@lists.linux-foundation.org>; Sat,  2 Jul 2022 21:37:28 +0000 (UTC)
-Received: by mail-ej1-x62f.google.com with SMTP id sb34so9986218ejc.11
- for <iommu@lists.linux-foundation.org>; Sat, 02 Jul 2022 14:37:28 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org B1A19405F8
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com
+ [IPv6:2a00:1450:4864:20::636])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id B1A19405F8
+ for <iommu@lists.linux-foundation.org>; Sat,  2 Jul 2022 21:37:30 +0000 (UTC)
+Received: by mail-ej1-x636.google.com with SMTP id ay16so10046958ejb.6
+ for <iommu@lists.linux-foundation.org>; Sat, 02 Jul 2022 14:37:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=aWfZE2YpB25R+rCMwVNZi2s9IwZn0JfO+IgsGnjhYqY=;
- b=wVSILGBGUjVOC+cfuxxbSMyxpvn6GttZQpREPJStje8Jo1kxV0hOiJBQjYgcMjnGO8
- HzrlHKacg6/F0WF0UTTYxmtVqmcttqofFOrJX6K+BP9MvvRdIR7qYrVcD7+DFCx3EKT0
- v7Hte9vIx/BKEL3aPNq1az2t5Nf5ERiriNAhe4KwSJOAyDfa58FaLw+AHHh0SnQeL6jn
- UMtj1LphcAYF+SCg6rTx11cw/9TDH61FUx3QLb2jvIAt9clvxCy6iYOFU5DZ9Kgf8G9u
- J/kArGjS3bdmqxj4yPJLCgNcdbkBX/TWXfqGZSQ3YUT28PeuTlKYSuvKmAr01wazLM4f
- ZKnw==
+ bh=fjkLlnpo3rJV91gWG5Ub4TjaCmhb4e/5Gjwv7rGBuNk=;
+ b=BqX0hBiyoAeYzJvTN5zLo10CPIik6CQ1uuNpCfO3oq+RooTR3lviNeDHJH/TUUuJKS
+ wUSkXeozyQgNLTM/cvKl2jPJTrzSH0myVq5M75OZivSySF+gkQJ24NlIDVVgrMbqLVGX
+ wkH/4iI0lA4+uHrtf1nuF5wtDyjpFzVf22KES+ZXA7mX/AmqqcIl6kcFyx2NZ2gOLDlt
+ p9mSagqMQh+9sF09gikAhlQeJfk12Cqxl0F9W852boCwBSMqhYRwIUoyGMhDm7HXBKL7
+ g2SABFfGTM0PskN5Bd0582SNluuYumuv8oc6R2l95M6DBu0m7EL/q/aAicGaXR/wWln5
+ Y6Bg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=aWfZE2YpB25R+rCMwVNZi2s9IwZn0JfO+IgsGnjhYqY=;
- b=q0aK0fIK7FQtX8xNUBUkxYPEWKtqbkATYFL42XXs0qQrL+bJbRH2uYmC3+0fJc7AxS
- p62C9LjAMGpod7POUBDetSvv0qNhXdtzXhOVXgZVC04ev+5o55nlsio7I/V6lRm4ewP1
- 9sVfWQ+QR1WexErApAQZKmTHip7GspRypCBnr0hRDA6cgO/xAz2MiIgf+QwkGAA4PA7g
- DqHyvPb5xlmN8st7a0i/xqU7PRZFwGyC0uvcFfGEGICR1oc+pWJ+FJQGyjqHtnjv6Lrb
- +cUs9YVVfUtdVuPLflEqoS5h5npfN/f2VM5hdw0VZK9O4aKyuQiWsJKGsyyn2XBxWsVx
- SLQw==
-X-Gm-Message-State: AJIora/aVfzow7qo8Xd8vI9DZJ6s48y2mGpYAFqvzhZPx9HAV35+rMBO
- Xa6sVemxMZ6N4FBU1xyjE5ohVQ==
-X-Google-Smtp-Source: AGRyM1sjE5ZjIaY+GfCnbQmj6BkapC2AnzQE+mzuISXF0GaEPi7w7Vucxh56Irz739GXVnorjZvvIA==
-X-Received: by 2002:a17:906:1018:b0:718:dd3f:f28c with SMTP id
- 24-20020a170906101800b00718dd3ff28cmr21490786ejm.55.1656797846558; 
- Sat, 02 Jul 2022 14:37:26 -0700 (PDT)
+ bh=fjkLlnpo3rJV91gWG5Ub4TjaCmhb4e/5Gjwv7rGBuNk=;
+ b=Y5daXVxKMGbor39e57r4YHDFKwQC2FULCcK+scaviMOQNOvp3AevyApyKMqyRelm1m
+ 7NqLknOQvdizkJlfFAqcuDBx8VDnKoLd1jJJAEZZU0u7bbc4n0ja47LbifUgHGcPIafK
+ XBE8yZHeP8qBRNRJITzZSH6UZsMwattlYzP50K+CYcRXsfsehieT3cY53KwSepnIl63+
+ ZVE9hWtanKNn9r4We2vu65hpf61iK77yWy/SRgEIfxzWu1O8lnqbPiJA5BnfkUndQeax
+ prZnEwXcHmir0P1liLQnL+yRwv74eliuLnnWgDg31EhBMPx5hLutpjtKByWL2c4Zj1BA
+ Y8ow==
+X-Gm-Message-State: AJIora8e5pGZSZvU8X98HbQIhjWQ60Rflf0oNbnD7dFgn02pIIFXhOmH
+ iiFjMvdqMzRaZKuBeUu3KwdX3g==
+X-Google-Smtp-Source: AGRyM1tIDyoc701JH7tqf6GG8NYNGAr1P57wdNbZb5l5imY87uRjSo8YlTS/OW6VjdvCTXTf8Tu4AA==
+X-Received: by 2002:a17:906:8a53:b0:72a:8a2d:db61 with SMTP id
+ gx19-20020a1709068a5300b0072a8a2ddb61mr10421953ejc.674.1656797848790; 
+ Sat, 02 Jul 2022 14:37:28 -0700 (PDT)
 Received: from localhost ([31.134.121.151]) by smtp.gmail.com with ESMTPSA id
- a18-20020a170906671200b00718e4e64b7bsm12214247ejp.79.2022.07.02.14.37.26
+ lo17-20020a170906fa1100b0072696b3a327sm9436558ejb.187.2022.07.02.14.37.28
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sat, 02 Jul 2022 14:37:26 -0700 (PDT)
+ Sat, 02 Jul 2022 14:37:28 -0700 (PDT)
 From: Sam Protsenko <semen.protsenko@linaro.org>
 To: Marek Szyprowski <m.szyprowski@samsung.com>,
  Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 1/4] iommu/exynos: Set correct dma mask for SysMMU v5+
-Date: Sun,  3 Jul 2022 00:37:21 +0300
-Message-Id: <20220702213724.3949-2-semen.protsenko@linaro.org>
+Subject: [PATCH 3/4] iommu/exynos: Use lookup based approach to access v7
+ registers
+Date: Sun,  3 Jul 2022 00:37:23 +0300
+Message-Id: <20220702213724.3949-4-semen.protsenko@linaro.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220702213724.3949-1-semen.protsenko@linaro.org>
 References: <20220702213724.3949-1-semen.protsenko@linaro.org>
@@ -110,37 +111,94 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SysMMU v5+ supports 36 bit physical address space. Set corresponding DMA
-mask to avoid falling back to SWTLBIO usage in dma_map_single() because
-of failed dma_capable() check.
+SysMMU v7 might have different register layouts (VM capable or non-VM
+capable). Check which layout is implemented in current SysMMU module and
+prepare the corresponding register table for futher usage. This way is
+faster and more elegant than checking corresponding condition (if it's
+VM or non-VM SysMMU) each time before accessing v7 registers. For now
+the register table contains only most basic registers needed to add the
+SysMMU v7 support.
 
-The original code for this fix was suggested by Marek.
+This patch is based on downstream work of next authors:
+  - Janghyuck Kim <janghyuck.kim@samsung.com>
+  - Daniel Mentz <danielmentz@google.com>
 
-Originally-by: Marek Szyprowski <m.szyprowski@samsung.com>
 Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
 ---
- drivers/iommu/exynos-iommu.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/iommu/exynos-iommu.c | 46 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 46 insertions(+)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 71f2018e23fe..28f8c8d93aa3 100644
+index df6ddbebbe2b..47017e8945c5 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -647,6 +647,14 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
- 		}
- 	}
+@@ -180,6 +180,47 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
  
-+	if (MMU_MAJ_VER(data->version) >= 5) {
-+		ret = dma_set_mask(dev, DMA_BIT_MASK(36));
-+		if (ret) {
-+			dev_err(dev, "Unable to set DMA mask: %d\n", ret);
-+			return ret;
-+		}
-+	}
+ #define has_sysmmu(dev)		(dev_iommu_priv_get(dev) != NULL)
+ 
++#define MMU_REG(data, idx)		\
++	((data)->sfrbase + (data)->regs[idx].off)
++#define MMU_VM_REG(data, idx, vmid)	\
++	(MMU_REG(data, idx) + (vmid) * (data)->regs[idx].mult)
 +
- 	/*
- 	 * use the first registered sysmmu device for performing
- 	 * dma mapping operations on iommu page tables (cpu cache flush)
++enum {
++	REG_SET_NON_VM,
++	REG_SET_VM,
++	MAX_REG_SET
++};
++
++enum {
++	IDX_CTRL_VM,
++	IDX_CFG_VM,
++	IDX_FLPT_BASE,
++	IDX_ALL_INV,
++	MAX_REG_IDX
++};
++
++struct sysmmu_vm_reg {
++	unsigned int off;	/* register offset */
++	unsigned int mult;	/* VM index offset multiplier */
++};
++
++static const struct sysmmu_vm_reg sysmmu_regs[MAX_REG_SET][MAX_REG_IDX] = {
++	/* Default register set (non-VM) */
++	{
++		/*
++		 * SysMMUs without VM support do not have CTRL_VM and CFG_VM
++		 * registers. Setting the offsets to 1 will trigger an unaligned
++		 * access exception.
++		 */
++		{0x1}, {0x1}, {0x000c}, {0x0010},
++	},
++	/* VM capable register set */
++	{
++		{0x8000, 0x1000}, {0x8004, 0x1000}, {0x800c, 0x1000},
++		{0x8010, 0x1000},
++	},
++};
++
+ static struct device *dma_dev;
+ static struct kmem_cache *lv2table_kmem_cache;
+ static sysmmu_pte_t *zero_lv2_table;
+@@ -284,6 +325,7 @@ struct sysmmu_drvdata {
+ 
+ 	/* v7 fields */
+ 	bool has_vcr;			/* virtual machine control register */
++	const struct sysmmu_vm_reg *regs; /* register set */
+ };
+ 
+ static struct exynos_iommu_domain *to_exynos_domain(struct iommu_domain *dom)
+@@ -407,6 +449,10 @@ static void sysmmu_get_hw_info(struct sysmmu_drvdata *data)
+ 	__sysmmu_get_version(data);
+ 	if (MMU_MAJ_VER(data->version) >= 7 && __sysmmu_has_capa1(data))
+ 		__sysmmu_get_vcr(data);
++	if (data->has_vcr)
++		data->regs = sysmmu_regs[REG_SET_VM];
++	else
++		data->regs = sysmmu_regs[REG_SET_NON_VM];
+ 
+ 	__sysmmu_disable_clocks(data);
+ }
 -- 
 2.30.2
 
