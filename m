@@ -1,287 +1,112 @@
-Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com [209.85.208.170])
+Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6031291C
-	for <iommu@lists.linux.dev>; Sun,  3 Jul 2022 15:22:09 +0000 (UTC)
-Received: by mail-lj1-f170.google.com with SMTP id bx13so8222215ljb.1
-        for <iommu@lists.linux.dev>; Sun, 03 Jul 2022 08:22:09 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B6E633F8
+	for <iommu@lists.linux.dev>; Sun,  3 Jul 2022 18:50:47 +0000 (UTC)
+Received: by mail-lj1-f169.google.com with SMTP id bx13so8618407ljb.1
+        for <iommu@lists.linux.dev>; Sun, 03 Jul 2022 11:50:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=7h/oDkelqUvQhnXMEHsIGaLApBCL4bVp/zpTNjHKaa0=;
-        b=Ajde41bE2wU0CLXRYXxA4RUv0bp0nc6vv24Jkv3jO+pNmgV5SruaUwkgdZh2uTckb2
-         LjwBe+5chzPdn9GsqinhSMRPDH/BkAH/rWbDiCgv3b73DzTdIIwCuu7rSSyi6XgKQgam
-         QzYkv4hEeMuDSoYQBiHL7V7XX8PuwVWoX68+MhlsNYB1tpAW+qusPDMIKzVjewkktdka
-         B8RzQXojCPXGgXsFV0Py1qu3xQ+dQ+Ph5W2hTs/NfGpTe8YoyNytz8Jxlg3eba2Qpapr
-         0dHtsjY/VCs3nDTxh/rSpBzNfE0J7lWIPD0uFnZAO2fN8qfYU1kzNyc0DtqVW3j5bPa6
-         jQig==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=HodKenU2DqzSAsTr3GOaLCVqw1DOEowtMVHlqD3WUxM=;
+        b=CVxzasIgMMg1pGWidgzNRAOOjqyXaih7Ino2F33/WtmphQ2G35DoChFRM2GMulF6qG
+         RZeAkWgaTLNCKg04WDjgpCbQ20Rc+QdUSoL4H2KT/lPGaN3SWeahcaW/E92RnP/4/5mZ
+         hEOElL2md1ExhXOjnTFhgp1nXv/pwQYqNUsr9glnz3YntmEndmlpmKHFSSgRXB9su2ed
+         EHuUG7Cuba9c7Mhok5IO3HAh4jWKu2BLBrpxhwShteT5hzS4JqnHMj7tscuqtPZVBzu5
+         BHoinNNJqzenJrVc2bLsA3h7Inj6bPR5xf0q3un0x/hCj1bUl/HihG7F6q+BmQ8veBuk
+         uFIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=7h/oDkelqUvQhnXMEHsIGaLApBCL4bVp/zpTNjHKaa0=;
-        b=bOVvSlXmL/zMvRyF8RF55DK3alE+C0VaA3WwLvzBJUk39ORICxsjVNGMVL+e6hf7du
-         tOKhbdj/BYBHDlDg22r5nBBVh66RFOzLSPg+mGLCMm/JyYeRqf01j+CFR4nN1DKsyZN3
-         U43sPGJpR7Pj2GryMv8unVpAJt5a9TMwBXhuDYkobDBhexsE7gcHi1eL2JoUS0HAjXOk
-         l3Ja/NDpw0K8n3w5hGk4XYPGmdvyW4/GBRbrwFDAEcNvjj1wNKC+kT2U2Q0niLZBLSYx
-         yzb4Ar4AwOX52YhFGx5VDdDd2srAuRD7QgpvTXYUV2rOOx9ATocgovSoboCadjZXoJYt
-         5s3g==
-X-Gm-Message-State: AJIora+AUdXPHkaRozkBvkUaboU2LD1QTJaxM2x1ljhqZgn3hHDd6kJy
-	Yx+psodsbeEoLQs7BBLjSdA=
-X-Google-Smtp-Source: AGRyM1trX48ruuzycgoteqtLbzXdO1QJTxFK4a9qaPKv/Ind+sZ8MDYf+3trOk+5IJ6FZryqObKQIg==
-X-Received: by 2002:a2e:9941:0:b0:25b:c885:3143 with SMTP id r1-20020a2e9941000000b0025bc8853143mr14475290ljj.477.1656861727485;
-        Sun, 03 Jul 2022 08:22:07 -0700 (PDT)
-Received: from [192.168.1.7] ([212.22.223.21])
-        by smtp.gmail.com with ESMTPSA id s10-20020a056512202a00b0047255d21132sm4758576lfs.97.2022.07.03.08.22.04
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=HodKenU2DqzSAsTr3GOaLCVqw1DOEowtMVHlqD3WUxM=;
+        b=JQ28RATdFvOVcVSjdvUojWatQrqKhm/0FtuPkYP5usoy/xGHwLbPy0CTnx9OsZJqWO
+         68647sMRMGNOQvt7aVOKt8Q7KpnHLo66aD60IGWEEqM5wosASgtYbLYbhp8okWTQ2pFX
+         EO+uYCjEdh634WeZu6JlAa2s7A1k2eaG6nIe+I5TgLB/wpgn0kWjDgnowe9z+V8Aa/4r
+         S/31PDXRB2tParKpsvkeqb+voZBBbjE7w+re7+GPs/vKhjye/A0bI1c265VnoaXIiv+7
+         MLx/BekDS6JgCSjY2Ae3ThMWZh3FR7hrqytdRzOf/5usbk6zis+OkWjNNIMaTg4lnTvF
+         5qjw==
+X-Gm-Message-State: AJIora/BWkGV2R9iIBknyR/9H8ps4WypZDyXF73Yqg9MN9ci9AIstcSs
+	G4TGDxikkMpDz0sD/w1l/KMX9g==
+X-Google-Smtp-Source: AGRyM1txR24cjSx2T6SRyTgRrItDfRouegXb2R0VU95rLF87PA/vOL7GYszMuNNu6gRD1E1tnL2ZSA==
+X-Received: by 2002:a05:651c:11c1:b0:25a:8968:b834 with SMTP id z1-20020a05651c11c100b0025a8968b834mr13980932ljo.212.1656874245240;
+        Sun, 03 Jul 2022 11:50:45 -0700 (PDT)
+Received: from [192.168.1.52] ([84.20.121.239])
+        by smtp.gmail.com with ESMTPSA id p7-20020a05651238c700b0047f66294ff4sm4808396lft.151.2022.07.03.11.50.43
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 03 Jul 2022 08:22:06 -0700 (PDT)
-Subject: Re: [PATCH v3 6/8] genirq: Add and use an irq_data_update_affinity
- helper
-To: Samuel Holland <samuel@sholland.org>
-Cc: Marc Zyngier <maz@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
- Andy Shevchenko <andy.shevchenko@gmail.com>,
- Bartosz Golaszewski <brgl@bgdev.pl>, Bjorn Helgaas <bhelgaas@google.com>,
- Boris Ostrovsky <boris.ostrovsky@oracle.com>, Borislav Petkov
- <bp@alien8.de>,
- Broadcom internal kernel review list
- <bcm-kernel-feedback-list@broadcom.com>, Chris Zankel <chris@zankel.net>,
- Colin Ian King <colin.king@intel.com>,
- Dave Hansen <dave.hansen@linux.intel.com>, Dexuan Cui <decui@microsoft.com>,
- Florian Fainelli <f.fainelli@gmail.com>, Guo Ren <guoren@kernel.org>,
- "H. Peter Anvin" <hpa@zytor.com>, Haiyang Zhang <haiyangz@microsoft.com>,
- Helge Deller <deller@gmx.de>, Ingo Molnar <mingo@redhat.com>,
- Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
- "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
- Jan Beulich <jbeulich@suse.com>, Joerg Roedel <joro@8bytes.org>,
- Juergen Gross <jgross@suse.com>, Julia Lawall <Julia.Lawall@inria.fr>,
- "K. Y. Srinivasan" <kys@microsoft.com>, Kees Cook <keescook@chromium.org>,
- =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
- Linus Walleij <linus.walleij@linaro.org>,
- Lorenzo Pieralisi <lpieralisi@kernel.org>,
- Mark Rutland <mark.rutland@arm.com>, Matt Turner <mattst88@gmail.com>,
- Max Filippov <jcmvbkbc@gmail.com>, Maximilian Heyne <mheyne@amazon.de>,
- Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
- Rich Felker <dalias@libc.org>, Richard Henderson <rth@twiddle.net>,
- Rikard Falkeborn <rikard.falkeborn@gmail.com>, Rob Herring
- <robh@kernel.org>, Russell King <linux@armlinux.org.uk>,
- Serge Semin <fancer.lancer@gmail.com>,
- Stefano Stabellini <sstabellini@kernel.org>,
- Stephen Hemminger <sthemmin@microsoft.com>,
- Sven Schnelle <svens@stackframe.org>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Wei Liu
- <wei.liu@kernel.org>, Wei Xu <xuwei5@hisilicon.com>,
- Will Deacon <will@kernel.org>, Yoshinori Sato <ysato@users.sourceforge.jp>,
- iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
- linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-hyperv@vger.kernel.org, linux-ia64@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
- linux-parisc@vger.kernel.org, linux-pci@vger.kernel.org,
- linux-sh@vger.kernel.org, linux-xtensa@linux-xtensa.org, x86@kernel.org,
- xen-devel@lists.xenproject.org
-References: <20220701200056.46555-1-samuel@sholland.org>
- <20220701200056.46555-7-samuel@sholland.org>
-From: Oleksandr <olekstysh@gmail.com>
-Message-ID: <c7171195-796a-e61e-f270-864985adc5c3@gmail.com>
-Date: Sun, 3 Jul 2022 18:22:03 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Sun, 03 Jul 2022 11:50:44 -0700 (PDT)
+Message-ID: <9afb1e98-706f-ed61-892c-e3cc321364b4@linaro.org>
+Date: Sun, 3 Jul 2022 20:50:43 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20220701200056.46555-7-samuel@sholland.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/4] iommu/exynos: Set correct dma mask for SysMMU v5+
 Content-Language: en-US
-Message-ID: <20220703152203.yZx2Q89y4z0NHp9GmP1K_mwJ0xso93kdAg_Uk_GnlvA@z>
+To: Sam Protsenko <semen.protsenko@linaro.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Janghyuck Kim <janghyuck.kim@samsung.com>,
+ Cho KyongHo <pullip.cho@samsung.com>, Daniel Mentz <danielmentz@google.com>,
+ Sumit Semwal <sumit.semwal@linaro.org>, iommu@lists.linux-foundation.org,
+ iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220702213724.3949-1-semen.protsenko@linaro.org>
+ <20220702213724.3949-2-semen.protsenko@linaro.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220702213724.3949-2-semen.protsenko@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Message-ID: <20220703185043.J_zEbV5AI9rWRASnvdpVvJNfh49LJXhdVvl4YWRDuRg@z>
 
+On 02/07/2022 23:37, Sam Protsenko wrote:
+> SysMMU v5+ supports 36 bit physical address space. Set corresponding DMA
+> mask to avoid falling back to SWTLBIO usage in dma_map_single() because
+> of failed dma_capable() check.
+> 
+> The original code for this fix was suggested by Marek.
+> 
+> Originally-by: Marek Szyprowski <m.szyprowski@samsung.com>
 
-On 01.07.22 23:00, Samuel Holland wrote:
+This is some tip specific tag, I don't think checkpatch allows it.
+Either use suggesgted-by or co-developed-by + SoB.
 
-
-Hello Samuel
-
-> Some architectures and irqchip drivers modify the cpumask returned by
-> irq_data_get_affinity_mask, usually by copying in to it. This is
-> problematic for uniprocessor configurations, where the affinity mask
-> should be constant, as it is known at compile time.
->
-> Add and use a setter for the affinity mask, following the pattern of
-> irq_data_update_effective_affinity. This allows the getter function to
-> return a const cpumask pointer.
->
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
+> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
 > ---
->
-> Changes in v3:
->   - New patch to introduce irq_data_update_affinity
->
->   arch/alpha/kernel/irq.c          | 2 +-
->   arch/ia64/kernel/iosapic.c       | 2 +-
->   arch/ia64/kernel/irq.c           | 4 ++--
->   arch/ia64/kernel/msi_ia64.c      | 4 ++--
->   arch/parisc/kernel/irq.c         | 2 +-
->   drivers/irqchip/irq-bcm6345-l1.c | 4 ++--
->   drivers/parisc/iosapic.c         | 2 +-
->   drivers/sh/intc/chip.c           | 2 +-
->   drivers/xen/events/events_base.c | 7 ++++---
->   include/linux/irq.h              | 6 ++++++
->   10 files changed, 21 insertions(+), 14 deletions(-)
->
-> diff --git a/arch/alpha/kernel/irq.c b/arch/alpha/kernel/irq.c
-> index f6d2946edbd2..15f2effd6baf 100644
-> --- a/arch/alpha/kernel/irq.c
-> +++ b/arch/alpha/kernel/irq.c
-> @@ -60,7 +60,7 @@ int irq_select_affinity(unsigned int irq)
->   		cpu = (cpu < (NR_CPUS-1) ? cpu + 1 : 0);
->   	last_cpu = cpu;
->   
-> -	cpumask_copy(irq_data_get_affinity_mask(data), cpumask_of(cpu));
-> +	irq_data_update_affinity(data, cpumask_of(cpu));
->   	chip->irq_set_affinity(data, cpumask_of(cpu), false);
->   	return 0;
->   }
-> diff --git a/arch/ia64/kernel/iosapic.c b/arch/ia64/kernel/iosapic.c
-> index 35adcf89035a..99300850abc1 100644
-> --- a/arch/ia64/kernel/iosapic.c
-> +++ b/arch/ia64/kernel/iosapic.c
-> @@ -834,7 +834,7 @@ iosapic_unregister_intr (unsigned int gsi)
->   	if (iosapic_intr_info[irq].count == 0) {
->   #ifdef CONFIG_SMP
->   		/* Clear affinity */
-> -		cpumask_setall(irq_get_affinity_mask(irq));
-> +		irq_data_update_affinity(irq_get_irq_data(irq), cpu_all_mask);
->   #endif
->   		/* Clear the interrupt information */
->   		iosapic_intr_info[irq].dest = 0;
-> diff --git a/arch/ia64/kernel/irq.c b/arch/ia64/kernel/irq.c
-> index ecef17c7c35b..275b9ea58c64 100644
-> --- a/arch/ia64/kernel/irq.c
-> +++ b/arch/ia64/kernel/irq.c
-> @@ -57,8 +57,8 @@ static char irq_redir [NR_IRQS]; // = { [0 ... NR_IRQS-1] = 1 };
->   void set_irq_affinity_info (unsigned int irq, int hwid, int redir)
->   {
->   	if (irq < NR_IRQS) {
-> -		cpumask_copy(irq_get_affinity_mask(irq),
-> -			     cpumask_of(cpu_logical_id(hwid)));
-> +		irq_data_update_affinity(irq_get_irq_data(irq),
-> +					 cpumask_of(cpu_logical_id(hwid)));
->   		irq_redir[irq] = (char) (redir & 0xff);
->   	}
->   }
-> diff --git a/arch/ia64/kernel/msi_ia64.c b/arch/ia64/kernel/msi_ia64.c
-> index df5c28f252e3..025e5133c860 100644
-> --- a/arch/ia64/kernel/msi_ia64.c
-> +++ b/arch/ia64/kernel/msi_ia64.c
-> @@ -37,7 +37,7 @@ static int ia64_set_msi_irq_affinity(struct irq_data *idata,
->   	msg.data = data;
->   
->   	pci_write_msi_msg(irq, &msg);
-> -	cpumask_copy(irq_data_get_affinity_mask(idata), cpumask_of(cpu));
-> +	irq_data_update_affinity(idata, cpumask_of(cpu));
->   
->   	return 0;
->   }
-> @@ -132,7 +132,7 @@ static int dmar_msi_set_affinity(struct irq_data *data,
->   	msg.address_lo |= MSI_ADDR_DEST_ID_CPU(cpu_physical_id(cpu));
->   
->   	dmar_msi_write(irq, &msg);
-> -	cpumask_copy(irq_data_get_affinity_mask(data), mask);
-> +	irq_data_update_affinity(data, mask);
->   
->   	return 0;
->   }
-> diff --git a/arch/parisc/kernel/irq.c b/arch/parisc/kernel/irq.c
-> index 0fe2d79fb123..5ebb1771b4ab 100644
-> --- a/arch/parisc/kernel/irq.c
-> +++ b/arch/parisc/kernel/irq.c
-> @@ -315,7 +315,7 @@ unsigned long txn_affinity_addr(unsigned int irq, int cpu)
->   {
->   #ifdef CONFIG_SMP
->   	struct irq_data *d = irq_get_irq_data(irq);
-> -	cpumask_copy(irq_data_get_affinity_mask(d), cpumask_of(cpu));
-> +	irq_data_update_affinity(d, cpumask_of(cpu));
->   #endif
->   
->   	return per_cpu(cpu_data, cpu).txn_addr;
-> diff --git a/drivers/irqchip/irq-bcm6345-l1.c b/drivers/irqchip/irq-bcm6345-l1.c
-> index 142a7431745f..6899e37810a8 100644
-> --- a/drivers/irqchip/irq-bcm6345-l1.c
-> +++ b/drivers/irqchip/irq-bcm6345-l1.c
-> @@ -216,11 +216,11 @@ static int bcm6345_l1_set_affinity(struct irq_data *d,
->   		enabled = intc->cpus[old_cpu]->enable_cache[word] & mask;
->   		if (enabled)
->   			__bcm6345_l1_mask(d);
-> -		cpumask_copy(irq_data_get_affinity_mask(d), dest);
-> +		irq_data_update_affinity(d, dest);
->   		if (enabled)
->   			__bcm6345_l1_unmask(d);
->   	} else {
-> -		cpumask_copy(irq_data_get_affinity_mask(d), dest);
-> +		irq_data_update_affinity(d, dest);
->   	}
->   	raw_spin_unlock_irqrestore(&intc->lock, flags);
->   
-> diff --git a/drivers/parisc/iosapic.c b/drivers/parisc/iosapic.c
-> index 8a3b0c3a1e92..3a8c98615634 100644
-> --- a/drivers/parisc/iosapic.c
-> +++ b/drivers/parisc/iosapic.c
-> @@ -677,7 +677,7 @@ static int iosapic_set_affinity_irq(struct irq_data *d,
->   	if (dest_cpu < 0)
->   		return -1;
->   
-> -	cpumask_copy(irq_data_get_affinity_mask(d), cpumask_of(dest_cpu));
-> +	irq_data_update_affinity(d, cpumask_of(dest_cpu));
->   	vi->txn_addr = txn_affinity_addr(d->irq, dest_cpu);
->   
->   	spin_lock_irqsave(&iosapic_lock, flags);
-> diff --git a/drivers/sh/intc/chip.c b/drivers/sh/intc/chip.c
-> index 358df7510186..828d81e02b37 100644
-> --- a/drivers/sh/intc/chip.c
-> +++ b/drivers/sh/intc/chip.c
-> @@ -72,7 +72,7 @@ static int intc_set_affinity(struct irq_data *data,
->   	if (!cpumask_intersects(cpumask, cpu_online_mask))
->   		return -1;
->   
-> -	cpumask_copy(irq_data_get_affinity_mask(data), cpumask);
-> +	irq_data_update_affinity(data, cpumask);
->   
->   	return IRQ_SET_MASK_OK_NOCOPY;
->   }
-> diff --git a/drivers/xen/events/events_base.c b/drivers/xen/events/events_base.c
-> index 46d9295d9a6e..5e8321f43cbd 100644
-> --- a/drivers/xen/events/events_base.c
-> +++ b/drivers/xen/events/events_base.c
-> @@ -528,9 +528,10 @@ static void bind_evtchn_to_cpu(evtchn_port_t evtchn, unsigned int cpu,
->   	BUG_ON(irq == -1);
->   
->   	if (IS_ENABLED(CONFIG_SMP) && force_affinity) {
-> -		cpumask_copy(irq_get_affinity_mask(irq), cpumask_of(cpu));
-> -		cpumask_copy(irq_get_effective_affinity_mask(irq),
-> -			     cpumask_of(cpu));
-> +		struct irq_data *data = irq_get_irq_data(irq);
+>  drivers/iommu/exynos-iommu.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index 71f2018e23fe..28f8c8d93aa3 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -647,6 +647,14 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
+>  		}
+>  	}
+>  
+> +	if (MMU_MAJ_VER(data->version) >= 5) {
+> +		ret = dma_set_mask(dev, DMA_BIT_MASK(36));
+> +		if (ret) {
+> +			dev_err(dev, "Unable to set DMA mask: %d\n", ret);
+
+Missing cleanup: iommu_device_unregister
+and probably also: iommu_device_sysfs_remove
+
+> +			return ret;
+> +		}
+> +	}
 > +
-> +		irq_data_update_affinity(data, cpumask_of(cpu));
-> +		irq_data_update_effective_affinity(data, cpumask_of(cpu));
->   	}
+>  	/*
+>  	 * use the first registered sysmmu device for performing
+>  	 * dma mapping operations on iommu page tables (cpu cache flush)
 
 
-
-Nit: commit description says about reusing irq_data_update_affinity() 
-only, but here we also reuse irq_data_update_effective_affinity(), so I 
-would mention that in the description.
-
-Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com> # Xen bits
-
-
-[snip]
-
--- 
-Regards,
-
-Oleksandr Tyshchenko
-
+Best regards,
+Krzysztof
