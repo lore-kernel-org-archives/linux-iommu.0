@@ -1,113 +1,103 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AC130C433EF
-	for <iommu@archiver.kernel.org>; Sun,  3 Jul 2022 15:36:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1FB80C433EF
+	for <iommu@archiver.kernel.org>; Sun,  3 Jul 2022 18:50:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 2B23460BD2;
-	Sun,  3 Jul 2022 15:36:19 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 2B23460BD2
+	by smtp4.osuosl.org (Postfix) with ESMTP id 513AA4090B;
+	Sun,  3 Jul 2022 18:50:52 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 513AA4090B
+Authentication-Results: smtp4.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=CVxzasIg
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id L_rHc57KhyRE; Sun,  3 Jul 2022 18:50:51 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id BF9E9408D7;
+	Sun,  3 Jul 2022 18:50:50 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org BF9E9408D7
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 87EE6C0032;
+	Sun,  3 Jul 2022 18:50:50 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 18EC5C002D
+ for <iommu@lists.linux-foundation.org>; Sun,  3 Jul 2022 18:50:49 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id E77FB6068D
+ for <iommu@lists.linux-foundation.org>; Sun,  3 Jul 2022 18:50:48 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org E77FB6068D
 Authentication-Results: smtp3.osuosl.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=Qm4eCiLF
+ dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org
+ header.a=rsa-sha256 header.s=google header.b=CVxzasIg
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 69VkwBT-cAbO; Sun,  3 Jul 2022 15:36:18 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 09F7260AAE;
-	Sun,  3 Jul 2022 15:36:17 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 09F7260AAE
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CAB31C0032;
-	Sun,  3 Jul 2022 15:36:17 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2ADF5C002D
- for <iommu@lists.linux-foundation.org>; Sun,  3 Jul 2022 15:36:16 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id E5714405E5
- for <iommu@lists.linux-foundation.org>; Sun,  3 Jul 2022 15:36:15 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org E5714405E5
-Authentication-Results: smtp2.osuosl.org;
- dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com
- header.a=rsa-sha256 header.s=mimecast20190719 header.b=Qm4eCiLF
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Ede5HCql4xMF for <iommu@lists.linux-foundation.org>;
- Sun,  3 Jul 2022 15:36:15 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 23066405C6
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.129.124])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 23066405C6
- for <iommu@lists.linux-foundation.org>; Sun,  3 Jul 2022 15:36:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1656862573;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=oMrNKP/vCBD/e31gpGg6HfkwO33FSse+0JtWS4WTRVo=;
- b=Qm4eCiLFFuf0rnxI6nQ8cds6/A9pJkURY2h9zcvcZ83fZKUIx1l3jhx6TPQyCb2pUHI/in
- Ivp5AECEEn5vyGPQg0BZzCt78Rf7amMokZJ3uKr71LPdXnXTq0WTfuF7E2c+71f5hKY2JZ
- dZlMx+Lb2T4tG19VFADXjO9Y18RXKrI=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-47-SeokIBgRO1mSbyk621tZOQ-1; Sun, 03 Jul 2022 11:36:10 -0400
-X-MC-Unique: SeokIBgRO1mSbyk621tZOQ-1
-Received: by mail-wm1-f71.google.com with SMTP id
- i184-20020a1c3bc1000000b003a026f48333so3291196wma.4
- for <iommu@lists.linux-foundation.org>; Sun, 03 Jul 2022 08:36:10 -0700 (PDT)
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Z1SRO8cuE7jT for <iommu@lists.linux-foundation.org>;
+ Sun,  3 Jul 2022 18:50:47 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 795B560B62
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com
+ [IPv6:2a00:1450:4864:20::229])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 795B560B62
+ for <iommu@lists.linux-foundation.org>; Sun,  3 Jul 2022 18:50:47 +0000 (UTC)
+Received: by mail-lj1-x229.google.com with SMTP id v9so8576481ljk.10
+ for <iommu@lists.linux-foundation.org>; Sun, 03 Jul 2022 11:50:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=message-id:date:mime-version:user-agent:subject:content-language:to
+ :cc:references:from:in-reply-to:content-transfer-encoding;
+ bh=HodKenU2DqzSAsTr3GOaLCVqw1DOEowtMVHlqD3WUxM=;
+ b=CVxzasIgMMg1pGWidgzNRAOOjqyXaih7Ino2F33/WtmphQ2G35DoChFRM2GMulF6qG
+ RZeAkWgaTLNCKg04WDjgpCbQ20Rc+QdUSoL4H2KT/lPGaN3SWeahcaW/E92RnP/4/5mZ
+ hEOElL2md1ExhXOjnTFhgp1nXv/pwQYqNUsr9glnz3YntmEndmlpmKHFSSgRXB9su2ed
+ EHuUG7Cuba9c7Mhok5IO3HAh4jWKu2BLBrpxhwShteT5hzS4JqnHMj7tscuqtPZVBzu5
+ BHoinNNJqzenJrVc2bLsA3h7Inj6bPR5xf0q3un0x/hCj1bUl/HihG7F6q+BmQ8veBuk
+ uFIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=oMrNKP/vCBD/e31gpGg6HfkwO33FSse+0JtWS4WTRVo=;
- b=an1IdvU4Ovt3LjODieQ00Zr/2s59nS2scJzaTbg/5TY1Z7Eah2adQls4RBke9k52/f
- vMO0qQeJ/LWlxJHKwqBycnjRL4SB53wEvs+h6Zxw9AE46HWpxE3XgIhQelNwAG7xJaYI
- 0Q+PXIg5j5GLBnLdMFhBXzX9E+tTqSk4qegHRPiaNu+zP4cr/BwTs+bQfng55CjRqdd5
- VdRmKsfCDDiCEoA5OnzIMZXLlbeZpT7q4Ukvd1lUWIPSRMu49g6rl1bNLNBN58dP758M
- XbGWj4WwEyfsvBL/y9rj52QkQ+ajx4auQ5ecMe/R54SJen4I6kN0gf4pnbquIFMeAAsN
- QuSw==
-X-Gm-Message-State: AJIora+jSeCiF/7U/MJwCc6WrT3G7SajUmWMNRPr2+rcQOGpRpLgcU4Y
- gFXZ9MWDfxVqoJOS5Qoxbhcug7AclBmuElEEfGSM+lsMc8yLhUEOLf0dABJ7//+kb1H5nidg91E
- J9Ww+WfLH8zryfvFqbsQrgLlFhLpN
-X-Received: by 2002:a05:600c:3658:b0:3a0:390e:ea00 with SMTP id
- y24-20020a05600c365800b003a0390eea00mr26241432wmq.128.1656862569475; 
- Sun, 03 Jul 2022 08:36:09 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1slUbbrZARxOKqEcZqRJ7u3lLS226MuMPP/AWfWU5makabF0z0BDsEcPRojyiptS+6qPf8yiw==
-X-Received: by 2002:a05:600c:3658:b0:3a0:390e:ea00 with SMTP id
- y24-20020a05600c365800b003a0390eea00mr26241418wmq.128.1656862569321; 
- Sun, 03 Jul 2022 08:36:09 -0700 (PDT)
-Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net.
- [82.17.115.212]) by smtp.gmail.com with ESMTPSA id
- a3-20020a056000100300b0021b943a50b3sm28301105wrx.85.2022.07.03.08.36.05
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sun, 03 Jul 2022 08:36:05 -0700 (PDT)
-Date: Sun, 3 Jul 2022 16:36:04 +0100
-From: Aaron Tomlin <atomlin@redhat.com>
-To: tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
- dave.hansen@linux.intel.com, joro@8bytes.org, will@kernel.org,
- dwmw2@infradead.org, baolu.lu@linux.intel.com, hpa@zytor.com
-Subject: Re: [RFC PATCH 3/3] iommu/vt-d: Show region type in
- arch_rmrr_sanity_check()
-Message-ID: <20220703153604.pmgdrsaszmcwtpa7@ava.usersys.com>
-X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
-X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
-References: <20220611204859.234975-1-atomlin@redhat.com>
- <20220611204859.234975-3-atomlin@redhat.com>
+ h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+ :content-language:to:cc:references:from:in-reply-to
+ :content-transfer-encoding;
+ bh=HodKenU2DqzSAsTr3GOaLCVqw1DOEowtMVHlqD3WUxM=;
+ b=NmG2My/kV/yY8+JAfW/j1QVWO/6qclUQMXQEmG276eBwhVAtfSPvzYbygpCXKFt4lf
+ bp8s2JgQde+FjYId8hpMF9tD/XGpOVQgPAsiCtrGetbZ75OWHgcuNOwNSPYyeTfDD3mo
+ 7toUjgB+q1dssatSZJ9B4OZ31WS0wRn/DbZ9LSOtk+VjZbe3wCfPb/WuFJiHcW1MyX+O
+ UZtHleKkPszt1NJHu0H3DIjOYdo+Gbzdhkvh7Oo9lAKK34WMcHgtIMRD+IcJZ60kVuGx
+ 0N5WHQDwy8DewoAgLiFi3+4CqGqp2GzdgJBdaaIKJ1NYEcGkzwPMdI71qwMuzu7CU7Tt
+ 7okg==
+X-Gm-Message-State: AJIora8AKDHrfZ5FYeUV1NiDOBSe1EFgFiKn1niivf5b1LGuBr2tXEZX
+ Z4cMHKLBS5tktOGnLIUIIjF2gA==
+X-Google-Smtp-Source: AGRyM1txR24cjSx2T6SRyTgRrItDfRouegXb2R0VU95rLF87PA/vOL7GYszMuNNu6gRD1E1tnL2ZSA==
+X-Received: by 2002:a05:651c:11c1:b0:25a:8968:b834 with SMTP id
+ z1-20020a05651c11c100b0025a8968b834mr13980932ljo.212.1656874245240; 
+ Sun, 03 Jul 2022 11:50:45 -0700 (PDT)
+Received: from [192.168.1.52] ([84.20.121.239])
+ by smtp.gmail.com with ESMTPSA id
+ p7-20020a05651238c700b0047f66294ff4sm4808396lft.151.2022.07.03.11.50.43
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Sun, 03 Jul 2022 11:50:44 -0700 (PDT)
+Message-ID: <9afb1e98-706f-ed61-892c-e3cc321364b4@linaro.org>
+Date: Sun, 3 Jul 2022 20:50:43 +0200
 MIME-Version: 1.0
-In-Reply-To: <20220611204859.234975-3-atomlin@redhat.com>
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=atomlin@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Disposition: inline
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- atomlin@atomlin.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/4] iommu/exynos: Set correct dma mask for SysMMU v5+
+Content-Language: en-US
+To: Sam Protsenko <semen.protsenko@linaro.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>
+References: <20220702213724.3949-1-semen.protsenko@linaro.org>
+ <20220702213724.3949-2-semen.protsenko@linaro.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220702213724.3949-2-semen.protsenko@linaro.org>
+Cc: Janghyuck Kim <janghyuck.kim@samsung.com>,
+ linux-samsung-soc@vger.kernel.org, Will Deacon <will@kernel.org>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Cho KyongHo <pullip.cho@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -125,18 +115,50 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat 2022-06-11 21:48 +0100, Aaron Tomlin wrote:
-> This patch will attempt to describe the region type in the event
-> that a given RMRR entry is not within a reserved region.
+On 02/07/2022 23:37, Sam Protsenko wrote:
+> SysMMU v5+ supports 36 bit physical address space. Set corresponding DMA
+> mask to avoid falling back to SWTLBIO usage in dma_map_single() because
+> of failed dma_capable() check.
+> 
+> The original code for this fix was suggested by Marek.
+> 
+> Originally-by: Marek Szyprowski <m.szyprowski@samsung.com>
 
-Any thoughts?
+This is some tip specific tag, I don't think checkpatch allows it.
+Either use suggesgted-by or co-developed-by + SoB.
+
+> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+> ---
+>  drivers/iommu/exynos-iommu.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index 71f2018e23fe..28f8c8d93aa3 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -647,6 +647,14 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
+>  		}
+>  	}
+>  
+> +	if (MMU_MAJ_VER(data->version) >= 5) {
+> +		ret = dma_set_mask(dev, DMA_BIT_MASK(36));
+> +		if (ret) {
+> +			dev_err(dev, "Unable to set DMA mask: %d\n", ret);
+
+Missing cleanup: iommu_device_unregister
+and probably also: iommu_device_sysfs_remove
+
+> +			return ret;
+> +		}
+> +	}
+> +
+>  	/*
+>  	 * use the first registered sysmmu device for performing
+>  	 * dma mapping operations on iommu page tables (cpu cache flush)
 
 
-Kind regards,
-
--- 
-Aaron Tomlin
-
+Best regards,
+Krzysztof
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
