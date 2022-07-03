@@ -1,99 +1,85 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 449F9C433EF
-	for <iommu@archiver.kernel.org>; Sun,  3 Jul 2022 03:57:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A9725C43334
+	for <iommu@archiver.kernel.org>; Sun,  3 Jul 2022 04:34:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id B0BAC4022C;
-	Sun,  3 Jul 2022 03:57:17 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org B0BAC4022C
-Authentication-Results: smtp2.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=sg0Mf81A
+	by smtp4.osuosl.org (Postfix) with ESMTP id 149EA415F1;
+	Sun,  3 Jul 2022 04:34:40 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 149EA415F1
+Authentication-Results: smtp4.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=fkib6gVm
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id hp2h5omfF7QJ; Sun,  3 Jul 2022 03:57:17 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id WLe1us21H25o; Sun,  3 Jul 2022 04:34:39 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 804704002B;
-	Sun,  3 Jul 2022 03:57:16 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 804704002B
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 89505415EF;
+	Sun,  3 Jul 2022 04:34:38 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 89505415EF
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 43D3DC0032;
-	Sun,  3 Jul 2022 03:57:16 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AD412C002D
- for <iommu@lists.linux-foundation.org>; Sun,  3 Jul 2022 03:57:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 559D1C0035;
+	Sun,  3 Jul 2022 04:34:38 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5FFDBC002D
+ for <iommu@lists.linux-foundation.org>; Sun,  3 Jul 2022 04:34:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 8F168400D6
- for <iommu@lists.linux-foundation.org>; Sun,  3 Jul 2022 03:57:15 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 8F168400D6
+ by smtp4.osuosl.org (Postfix) with ESMTP id 321A9415F1
+ for <iommu@lists.linux-foundation.org>; Sun,  3 Jul 2022 04:34:36 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 321A9415F1
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3NM8uFjPT1-k for <iommu@lists.linux-foundation.org>;
- Sun,  3 Jul 2022 03:57:14 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 8444D4002B
-Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com
- [IPv6:2001:4860:4864:20::33])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 8444D4002B
- for <iommu@lists.linux-foundation.org>; Sun,  3 Jul 2022 03:57:14 +0000 (UTC)
-Received: by mail-oa1-x33.google.com with SMTP id
- 586e51a60fabf-101dc639636so8835494fac.6
- for <iommu@lists.linux-foundation.org>; Sat, 02 Jul 2022 20:57:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=8pyUyqVKFfsPns6kkRYcl2oPKrKQVySYYiE4xgpYN7k=;
- b=sg0Mf81AA/jHMB1Cnn1hgvmo9Je2PEjby6cq8FtWMppDV0dwTUm//kJBHbv8pR4BwB
- j/FtBj4e+TRgW0b8LLpE75Wl/UfDgN709J3WOsfkzkGqFrIy564VLTVlm0+sHgOW5DKX
- MSChhovfWwB/MwOeg3N7teweUFs8YJabN58sYDuRd6ZkoX14s1xq1HxH6K3VyF0Bwjry
- i+veKmfxr+3s/KqsXC6tv8EpMERmtrqerMQkdN72RjBqsfbB4eGnIPTLngTx4y1hItZk
- pcd18M4XQ7uT8kIY6cHEz++jthJoe+kJSmxLt8i7cpOKc53OBfjFf7+CQSb5Ufla3+Re
- QOrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=8pyUyqVKFfsPns6kkRYcl2oPKrKQVySYYiE4xgpYN7k=;
- b=JEG8g6ZcfQTOrpgxXdaAdZafucQjUWVS0G8q79AFxmdN0z+nPf8BlWedCP7WSziots
- 1xvPcRKtFOWQglMv9SvPqLygFAi/+5xFlHEeZcpuaFbgzYMrvAkw/KARw4od6e68f1im
- j0NM6zFasGp5ViptkJ6RZXGLy6Wd3t3utnMR6pyZe5L2cbK6WjiiXLzF3RFVNU6NwA6W
- F+YtR5SVC3CICUQVCvRkYQZ9LUyYI768dueRGmKDFLYLk9p6AZNP1ShKz0IDhUt8uuOy
- UorWrlKnBSQCudtWwHIz2zna1N9yKInLr/kOiGGN62mi9nJs6daAGe4e/flUTrS1n+qD
- CdSA==
-X-Gm-Message-State: AJIora+JacB8/4/diMH/NyZ7pky17Zjv28nv0y1KDp6yJ+srUg4LbNGg
- +kpThHN0XMXkYzNk3C+7y+GVKQ==
-X-Google-Smtp-Source: AGRyM1uiElpgE5xH020B9DsxznQsQNmrJaanTne9n2tfx5H6+oy7R6pbP02jWzluWtfowxz9M4K1wQ==
-X-Received: by 2002:a05:6870:8292:b0:101:c67e:1b4d with SMTP id
- q18-20020a056870829200b00101c67e1b4dmr14586983oae.88.1656820633300; 
- Sat, 02 Jul 2022 20:57:13 -0700 (PDT)
-Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net.
- [104.57.184.186]) by smtp.gmail.com with ESMTPSA id
- 25-20020aca0f19000000b0032e5d0b5d5fsm12965910oip.58.2022.07.02.20.57.12
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sat, 02 Jul 2022 20:57:12 -0700 (PDT)
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
-To: Will Deacon <will@kernel.org>, Rob Herring <robh+dt@kernel.org>,
- Andy Gross <agross@kernel.org>, linux-arm-msm@vger.kernel.org,
- Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
- dri-devel@lists.freedesktop.org, Rob Clark <robdclark@gmail.com>,
- Jordan Crouse <jcrouse@codeaurora.org>, Emma Anholt <emma@anholt.net>,
- freedreno@lists.freedesktop.org
-Subject: Re: (subset) [PATCH 2/2] arm64: dts: qcom: sm8250: Enable per-process
- page tables.
-Date: Sat,  2 Jul 2022 22:56:09 -0500
-Message-Id: <165682055971.445910.5959383973914812219.b4-ty@linaro.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220614230136.3726047-2-emma@anholt.net>
-References: <20220614230136.3726047-1-emma@anholt.net>
- <20220614230136.3726047-2-emma@anholt.net>
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id NXy_jMiAQGWU for <iommu@lists.linux-foundation.org>;
+ Sun,  3 Jul 2022 04:34:35 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org CB8CD415EF
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id CB8CD415EF
+ for <iommu@lists.linux-foundation.org>; Sun,  3 Jul 2022 04:34:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1656822874; x=1688358874;
+ h=message-id:date:mime-version:cc:subject:to:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=dggnYSpV7chR/Zf2YHo3sr0zievBBwaxsO/t3s+0h4I=;
+ b=fkib6gVmRBSW8MOcwaIRnUFLLJg9ScROAHS50ixPaZA7fBeuU3sKEZcV
+ 3iQNgMu3QCJ2FJ7aE4m8PeAW7Kp+ENf0na4235q5xbfYEF0ep0/3rlEQf
+ YnVLVS0IFPERosWN2mSXAatE47EfC7BIw6U6UkA3pqmr0paM+KcRQtQra
+ 2Gqo/F/PdJ2/CZFNW2ALyKOOM4xD6r4PaA6kf4+AijuPCsLwQ6b7r3ezl
+ 9awq5N4383N5MY8LeQLZdjHtRnJ8XvzqmRVmLvLULQOTAkMhjI3gCDWoo
+ p6wfajBDuVEFD8iFZNIscNb9JCeFZamoweZB4CtgN6P424nnpDLk2zeFV w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10396"; a="263292560"
+X-IronPort-AV: E=Sophos;i="5.92,241,1650956400"; d="scan'208";a="263292560"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+ by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 02 Jul 2022 21:34:33 -0700
+X-IronPort-AV: E=Sophos;i="5.92,241,1650956400"; d="scan'208";a="648966157"
+Received: from sunqi-mobl1.ccr.corp.intel.com (HELO [10.249.173.69])
+ ([10.249.173.69])
+ by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 02 Jul 2022 21:34:31 -0700
+Message-ID: <c38b7123-f76d-d4b6-f36e-a385d5ea0cf5@linux.intel.com>
+Date: Sun, 3 Jul 2022 12:34:29 +0800
 MIME-Version: 1.0
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v3 02/11] iommu/vt-d: Remove clearing translation data in
+ disable_dmar_iommu()
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+References: <20220629074725.2331441-1-baolu.lu@linux.intel.com>
+ <20220629074725.2331441-3-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276A0E52DB09F5D338CEB998CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276A0E52DB09F5D338CEB998CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Raj,
+ Ashok" <ashok.raj@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -106,26 +92,53 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 14 Jun 2022 16:01:36 -0700, Emma Anholt wrote:
-> This is an SMMU for the adreno gpu, and adding this compatible lets
-> the driver use per-fd page tables, which are required for security
-> between GPU clients.
+On 2022/7/1 15:58, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com> Sent: Wednesday, June 29,
+>> 2022 3:47 PM
+>> 
+>> The disable_dmar_iommu() is called when IOMMU initialization fails
+>> or the IOMMU is hot-removed from the system. In both cases, there
+>> is no need to clear the IOMMU translation data structures for
+>> devices.
+>> 
+>> On the initialization path, the device probing only happens after
+>> the IOMMU is initialized successfully, hence there're no
+>> translation data structures.
+>> 
+>> On the hot-remove path, there is no real use case where the IOMMU
+>> is hot-removed, but the devices that it manages are still alive in
+>> the system. The translation data structures were torn down during
+>> device release, hence there's no need to repeat it in IOMMU
+>> hot-remove path either. This removes the unnecessary code and only
+>> leaves a check.
+>> 
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > 
+> You probably overlooked my last comment on kexec:
 > 
+> https://lore.kernel.org/lkml/BL1PR11MB52711A71AD9F11B7AE42694C8CAC9@BL1PR11MB5271.namprd11.prod.outlook.com/
+>
+>  I think my question is still not answered.
 
-Applied, thanks!
+Sorry! I did overlook that comment. I can see your points now, though it
+seems to be irrelevant to the problems that this series tries to solve.
 
-[2/2] arm64: dts: qcom: sm8250: Enable per-process page tables.
-      commit: 213d7368723709cf4567488e63dd667802378202
+The failure path of copying table still needs some improvement. At least
+the pages allocated for root/context tables should be freed in the
+failure path. Even worse, the software occupied a bit of page table
+entry which is feasible for the old ECS, but not work for the new
+scalable mode anymore.
+
+All these problems deserve a separate series. We could address your
+concerns there. Does this work for you?
 
 Best regards,
--- 
-Bjorn Andersson <bjorn.andersson@linaro.org>
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
