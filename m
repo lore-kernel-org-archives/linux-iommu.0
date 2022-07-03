@@ -1,107 +1,98 @@
-Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 700AF4422
-	for <iommu@lists.linux.dev>; Sat,  2 Jul 2022 21:48:54 +0000 (UTC)
-Received: by mail-lj1-f175.google.com with SMTP id b19so6622044ljf.6
-        for <iommu@lists.linux.dev>; Sat, 02 Jul 2022 14:48:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xwhpF2WN1J6S5lDXRAv+Kjl/+1IwILg/3g/jg+Rhz9c=;
-        b=oCpQEhUQFqNhRyRxjTjg2S5HdHN/+rGO/9TGX6J3EXmBo7rnTdLvPgvWrtCYw2J9UL
-         wPu+VXgoiZTIjlLx8ApyAAFpKJYDCFzUjD+6WIbD9w2kENrTihBt45XO8XYjeSnU93NS
-         krbAIogLcjd8c8Hl+HuDng2dDRSr96aWR3ZV8g8//QDnIuXXK552X9Zyvv13uHm9LwGT
-         Qg2/7MLD3xII8a4IFaufxcAVcoUOcYwp49Xo4IqzHP2n5rUaXUo3LyC/py01oAEAukQp
-         tovSlF37pVHf7oPsn77gzJU3rv/MI1477WsxbQ52/qO1KKeng3K1lsh93mSnr2STndqD
-         2RJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xwhpF2WN1J6S5lDXRAv+Kjl/+1IwILg/3g/jg+Rhz9c=;
-        b=jrcl4Nv60fqsXj5a2N4S+WCOjXMhckKPOvxO0L4CPMSrPSIlYxcv15Fn+r6ndrovMk
-         Fekk8bG+8NHWgRq3+dlwPmK8bOoca4c3aVSR2zf46dZDxsYiCvFbyUdg+K9w0StKYonN
-         2RwD86FrglsFYyoqv5pRQiXa8pRWAdQWY9bumoHwMQw0Ydf02nWnBi5xiRg20cFtk5KA
-         B1rPcPkda6ITVpzoay1d6cylYYVtet3REHm3vUVAwMdCT5UoeuJ+KLUgGQlCoNsbKOGO
-         eoWXqo6FZjwVUGFMBAGffkPWeZrYW+D1WVJ7K8RUpGyWnxz+x2aeGemvPdAckd+YI2Xj
-         0puQ==
-X-Gm-Message-State: AJIora9uOMNbbr0RCZtHzMIXILlhFp5w0mnixHfDi2ZQtlSsCWgSjspn
-	3++De1bpeZeDAmmRHTFaLBZQQIT8ItIVQ6B4HqmJxQ==
-X-Google-Smtp-Source: AGRyM1vFoFHz8ksTCP0i6tWzC5kgSiz3ScxWxfJFYqE/7vLPww6uI//LFWqdzMMDeGA2eY9gG4si//g3WtmRof3kUm0=
-X-Received: by 2002:a2e:8ec9:0:b0:25a:754d:db39 with SMTP id
- e9-20020a2e8ec9000000b0025a754ddb39mr12010480ljl.4.1656798532393; Sat, 02 Jul
- 2022 14:48:52 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3028D1FB3
+	for <iommu@lists.linux.dev>; Sun,  3 Jul 2022 04:34:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656822874; x=1688358874;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=dggnYSpV7chR/Zf2YHo3sr0zievBBwaxsO/t3s+0h4I=;
+  b=fkib6gVmRBSW8MOcwaIRnUFLLJg9ScROAHS50ixPaZA7fBeuU3sKEZcV
+   3iQNgMu3QCJ2FJ7aE4m8PeAW7Kp+ENf0na4235q5xbfYEF0ep0/3rlEQf
+   YnVLVS0IFPERosWN2mSXAatE47EfC7BIw6U6UkA3pqmr0paM+KcRQtQra
+   2Gqo/F/PdJ2/CZFNW2ALyKOOM4xD6r4PaA6kf4+AijuPCsLwQ6b7r3ezl
+   9awq5N4383N5MY8LeQLZdjHtRnJ8XvzqmRVmLvLULQOTAkMhjI3gCDWoo
+   p6wfajBDuVEFD8iFZNIscNb9JCeFZamoweZB4CtgN6P424nnpDLk2zeFV
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10396"; a="308432173"
+X-IronPort-AV: E=Sophos;i="5.92,241,1650956400"; 
+   d="scan'208";a="308432173"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2022 21:34:33 -0700
+X-IronPort-AV: E=Sophos;i="5.92,241,1650956400"; 
+   d="scan'208";a="648966157"
+Received: from sunqi-mobl1.ccr.corp.intel.com (HELO [10.249.173.69]) ([10.249.173.69])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2022 21:34:31 -0700
+Message-ID: <c38b7123-f76d-d4b6-f36e-a385d5ea0cf5@linux.intel.com>
+Date: Sun, 3 Jul 2022 12:34:29 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20220702213724.3949-1-semen.protsenko@linaro.org>
-In-Reply-To: <20220702213724.3949-1-semen.protsenko@linaro.org>
-From: Sam Protsenko <semen.protsenko@linaro.org>
-Date: Sun, 3 Jul 2022 00:48:41 +0300
-Message-ID: <CAPLW+4kYbG7PRYo_L6N5xMa+F9DFBpyph4B+zb2R4kBbE3EKHg@mail.gmail.com>
-Subject: Re: [PATCH 0/4] iommu/exynos: Add basic support for SysMMU v7
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Janghyuck Kim <janghyuck.kim@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, 
-	Daniel Mentz <danielmentz@google.com>, Sumit Semwal <sumit.semwal@linaro.org>, 
-	iommu@lists.linux-foundation.org, iommu@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Message-ID: <20220702214841.D9jCGFweZQuKSS5JqynJ_SaiJRaI1GNOlnuBX95Qhrw@z>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Cc: baolu.lu@linux.intel.com, "Raj, Ashok" <ashok.raj@intel.com>,
+ "Liu, Yi L" <yi.l.liu@intel.com>, "Pan, Jacob jun"
+ <jacob.jun.pan@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 02/11] iommu/vt-d: Remove clearing translation data in
+ disable_dmar_iommu()
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+References: <20220629074725.2331441-1-baolu.lu@linux.intel.com>
+ <20220629074725.2331441-3-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276A0E52DB09F5D338CEB998CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276A0E52DB09F5D338CEB998CBD9@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Message-ID: <20220703043429.CDy54shXGwviSud5wamgq8Rhxe3G9Tjjvnqmtwdfihs@z>
 
-On Sun, 3 Jul 2022 at 00:37, Sam Protsenko <semen.protsenko@linaro.org> wrote:
+On 2022/7/1 15:58, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com> Sent: Wednesday, June 29,
+>> 2022 3:47 PM
+>> 
+>> The disable_dmar_iommu() is called when IOMMU initialization fails
+>> or the IOMMU is hot-removed from the system. In both cases, there
+>> is no need to clear the IOMMU translation data structures for
+>> devices.
+>> 
+>> On the initialization path, the device probing only happens after
+>> the IOMMU is initialized successfully, hence there're no
+>> translation data structures.
+>> 
+>> On the hot-remove path, there is no real use case where the IOMMU
+>> is hot-removed, but the devices that it manages are still alive in
+>> the system. The translation data structures were torn down during
+>> device release, hence there's no need to repeat it in IOMMU
+>> hot-remove path either. This removes the unnecessary code and only
+>> leaves a check.
+>> 
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> 
+> You probably overlooked my last comment on kexec:
+> 
+> https://lore.kernel.org/lkml/BL1PR11MB52711A71AD9F11B7AE42694C8CAC9@BL1PR11MB5271.namprd11.prod.outlook.com/
 >
-> Existing exynos-iommu driver only supports SysMMU versions up to v5. But
-> it's pretty much ready for basic usage with SysMMU v7, only small
-> changes have to be done. As SysMMU version is tested dynamically (by
-> reading the corresponding register), there is no need to introduce new
-> compatible string.
->
-> One major change is that SysMMU v7 can have different register layouts:
->   - with Virtual Machine support
->   - without Virtual Machine support
->
-> That can be checked by reading the capability registers. In case the
-> SysMMU IP-core is VM-capable, the VM registers have to be used, and some
-> additional initialization is needed. That is the case on E850-96 board,
-> which non-secure SysMMU (v7.4) implements VM-capable register set.
->
-> The patch series was tested on E850-96 board. Because at the moment
-> there are no SysMMU users for that board, the testing was done using so
-> called "Emulated Translation" registers available on SysMMU v7. That
-> allows one to initiate the translation from CPU, by writing to those
-> registers, and then reading the corresponding TLB registers to find out
-> the translation result. The testing driver can be found in [1] tree.
->
-> [1] https://github.com/joe-skb7/linux/tree/e850-96-mainline-iommu
->
-> Sam Protsenko (4):
->   iommu/exynos: Set correct dma mask for SysMMU v5+
->   iommu/exynos: Check if SysMMU v7 has VM registers
->   iommu/exynos: Use lookup based approach to access v7 registers
->   iommu/exynos: Add minimal support for SysMMU v7 with VM registers
->
->  drivers/iommu/exynos-iommu.c | 112 ++++++++++++++++++++++++++++++++---
->  1 file changed, 104 insertions(+), 8 deletions(-)
->
-> --
-> 2.30.2
->
+>  I think my question is still not answered.
 
-Hi Marek,
+Sorry! I did overlook that comment. I can see your points now, though it
+seems to be irrelevant to the problems that this series tries to solve.
 
-As I understand, you have some board with SysMMU v7, which is not VM
-capable (judging from the patches you shared earlier). Could you
-please somehow verify if this series works fine for you? For example,
-this testing driver [1] can be helpful.
+The failure path of copying table still needs some improvement. At least
+the pages allocated for root/context tables should be freed in the
+failure path. Even worse, the software occupied a bit of page table
+entry which is feasible for the old ECS, but not work for the new
+scalable mode anymore.
 
-Thanks!
+All these problems deserve a separate series. We could address your
+concerns there. Does this work for you?
 
-[1] https://github.com/joe-skb7/linux/commit/bbadd46fa525fe1fef2ccbdfff81f7d29caf0506
+Best regards,
+baolu
