@@ -1,109 +1,139 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BDE20C433EF
-	for <iommu@archiver.kernel.org>; Mon,  4 Jul 2022 12:39:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A21E8C43334
+	for <iommu@archiver.kernel.org>; Mon,  4 Jul 2022 13:27:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 557BE60E6F;
-	Mon,  4 Jul 2022 12:39:54 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 557BE60E6F
-Authentication-Results: smtp3.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=Q1X8I1wK
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0IjEz0v6GnC9; Mon,  4 Jul 2022 12:39:53 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id DFFAD60E51;
-	Mon,  4 Jul 2022 12:39:52 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org DFFAD60E51
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C5CE1C0032;
-	Mon,  4 Jul 2022 12:39:52 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CD7B6C002D
- for <iommu@lists.linux-foundation.org>; Mon,  4 Jul 2022 12:39:51 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id A731A4049F
- for <iommu@lists.linux-foundation.org>; Mon,  4 Jul 2022 12:39:51 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org A731A4049F
+	by smtp2.osuosl.org (Postfix) with ESMTP id 2A262401F2;
+	Mon,  4 Jul 2022 13:27:46 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 2A262401F2
 Authentication-Results: smtp2.osuosl.org;
- dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org
- header.a=rsa-sha256 header.s=google header.b=Q1X8I1wK
+	dkim=fail reason="signature verification failed" (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=mODYAX8J
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id NWrxRgPWGF4W; Mon,  4 Jul 2022 13:27:45 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id BBDA2401C2;
+	Mon,  4 Jul 2022 13:27:44 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org BBDA2401C2
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8D66DC0032;
+	Mon,  4 Jul 2022 13:27:44 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6EF87C002D
+ for <iommu@lists.linux-foundation.org>; Mon,  4 Jul 2022 13:27:43 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 39D25401F2
+ for <iommu@lists.linux-foundation.org>; Mon,  4 Jul 2022 13:27:43 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 39D25401F2
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pFKfrgbVc5U9 for <iommu@lists.linux-foundation.org>;
- Mon,  4 Jul 2022 12:39:50 +0000 (UTC)
+ with ESMTP id xe4MHwZ6pBmo for <iommu@lists.linux-foundation.org>;
+ Mon,  4 Jul 2022 13:27:42 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 6D49B401A2
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com
- [IPv6:2a00:1450:4864:20::234])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 6D49B401A2
- for <iommu@lists.linux-foundation.org>; Mon,  4 Jul 2022 12:39:50 +0000 (UTC)
-Received: by mail-lj1-x234.google.com with SMTP id bx13so10946511ljb.1
- for <iommu@lists.linux-foundation.org>; Mon, 04 Jul 2022 05:39:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=message-id:date:mime-version:user-agent:subject:content-language:to
- :cc:references:from:in-reply-to:content-transfer-encoding;
- bh=x880kuS6PNUF918Mktd1de/5BgyubBGYBWa3z9pZQa8=;
- b=Q1X8I1wKoipJvnCB/pUw1wiyXOfTGXV/Nce3Mgckmw5ubtkVsRjwxbMsqpkJm3xiEv
- +CvpKh3gKUq0c8sZYrc06FqHc7ANjERfslK4wf8ysBEN+unfPS0eA773kfKt4Af2FpaW
- R7LjUDuBKj8FRN4n+KdITPsrCdWA25m+GGLpGzelaTKyLPFTxD08NdWl7/+f1g0Zn+kO
- kRzfaeEbMcE8Ut6YeIYVUR0tSWxf6wzAR9qzveYFBRykOGJxwesuJsx/xyPMybmhfvj5
- efN3SuCztUGrs4cxI/7g9tbEBiQo1p4AfDn2w7oOuFhtYOkf5n9LhBsdoPhlr9n+yTN6
- XGEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
- :content-language:to:cc:references:from:in-reply-to
- :content-transfer-encoding;
- bh=x880kuS6PNUF918Mktd1de/5BgyubBGYBWa3z9pZQa8=;
- b=TVy8m6Gt2a7eGx3EMgtxZUWml1ZhKn5fQIoDQNg75eNXf3r2KmkxVOyGtDjhH7gaCn
- sgyHZyjl189l+3lEoHdaAGW7C91Db5jjmlQrXlBEI7qJEFl3TaVrBD8iwCCTRD5wgJPv
- j9MyFlh6+qM2Hc1WxYLs9AGU8FvZNSP/CQDdNBLB1qmQNPOS+OtFmiUFRI10mTmVaFVO
- NPvfol5F75uCR7/7g1NXnZbv74MwvDb8PeOXyOLpyYWS7f9TGKXcGEJ2+nwjmElEKZzV
- mWy6OHlKHc6Uj/SwDgWeYmIvcMjxSKLTCfHH7HwxMwoCNNJVzKPOlW2c47lmufkl3/iC
- 6Wtg==
-X-Gm-Message-State: AJIora/HWcu/AtpwUdBTDUl4BCcHymPiGD/twmzImbTkgS+PEx1//vD3
- WWmp2CqI3wKoq+dlaNeXxvPLIg==
-X-Google-Smtp-Source: AGRyM1vqUXvSAsn7AogRlPoSUu3j3CYCJPTYiSe4MRhkAljhqJZmpSrBqVZa8ahYb+Kd5xySXteurQ==
-X-Received: by 2002:a2e:730b:0:b0:25c:63cf:1ffd with SMTP id
- o11-20020a2e730b000000b0025c63cf1ffdmr8410032ljc.208.1656938388417; 
- Mon, 04 Jul 2022 05:39:48 -0700 (PDT)
-Received: from [192.168.1.52] ([84.20.121.239])
- by smtp.gmail.com with ESMTPSA id
- p11-20020a056512234b00b0047f6b4a53cdsm5104577lfu.172.2022.07.04.05.39.47
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Mon, 04 Jul 2022 05:39:47 -0700 (PDT)
-Message-ID: <27c8f7b1-c308-89c2-54be-2d6c1a5527b8@linaro.org>
-Date: Mon, 4 Jul 2022 14:39:46 +0200
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 587CD401C2
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam04on2045.outbound.protection.outlook.com [40.107.101.45])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 587CD401C2
+ for <iommu@lists.linux-foundation.org>; Mon,  4 Jul 2022 13:27:42 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=F1oGSwIREMSnTXU7ZaQu1f4Cy7m/Kjl+SWpMhV9mKJb0OYlMxEF1uX8SF6Rm4LxEyNLZEEShC3RdF2eQsuDxNjfBEz+cpcgLVmkC3aR93A1VG8h9WKgrSrID6yE7u1WbmQXvhHqHeAZXVQuh0AKqgWd2XMYspXnGBNBeqIEABWDhThoFJTmiFtVFT64iJ1NqP36dG89Kzs9F+9FfE+YRNKzIMEXDNAllLMLxW07DpqytmhglVzhpEkHB34nzBRkf21rOyeonoE2Hpa3jnkEFzjrm1pmE/6Z3pIoNPTtG32Ye4dq8KlSjpiDYjID/81+9g/50P3dhIqpqMeqbaUd8gQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=TKF4HsI35KZr//52mwID1VihP4ZF36WwiEafY85fZ9k=;
+ b=Cl4MA9DkW7svC2i63N3jK3oHEMcW5ik4V9DnMvIv0nkIzKanhlm3zZJuDv79DpKnd2jnHmUGaKFtYGFdp8i2Fj2MlhxZyJusmaRZNBOz/x/8cVx9AqdGT5X3rzWzBGimjJRzT8OP/hqvIWFHejNmM6EVLDSqTfkHH55H1JZaqyTwki7Rg2YhIvjnlkNJR8exT3JMARqNeDr6JKjAIrMjUU7KmXcc0Y94+SBuEKkLdH3xaiqDgAbgTthDhtHfjGdENeCFoa50YlddavKcC1EvI7cyGZr7m026G/dIOKJ56i+dfLr5mApbw8+fazWiXCLADkZjrUvUbW5QbiOYdQerXA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TKF4HsI35KZr//52mwID1VihP4ZF36WwiEafY85fZ9k=;
+ b=mODYAX8JIc6OvQcVx7r//TrZyOvTQev9p+XC6bwWtlEZa4DDQbXkA2mlSX6F4NhfL4//sfKoqijTMYSJpk6oqZfn4pC90k27WptT1BevtHuT6NP/bcWGygeLW2YEe7eSUIt7oC8uCuq6xoKZXVQNltBlit8bJ1x1thTbP4kjtad2TEGyEiLvko0b8A12No1AhNJq6KP4j/3cIUWSZjjkQC+hPDCOEc8sDxQfZ5CwZWMtnwPld6pYmJOWqaSZ2gD3Spp4YBiT6sV6v//cYnaKJSHM+F6TAYbEVdyPczkFb6rUTshWpUXX8VXXd5VqNOS4EVY+sZzU60UDk0q7WVFLeg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by MN2PR12MB3614.namprd12.prod.outlook.com (2603:10b6:208:c6::17)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15; Mon, 4 Jul
+ 2022 13:27:40 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ac35:7c4b:3282:abfb]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ac35:7c4b:3282:abfb%3]) with mapi id 15.20.5395.020; Mon, 4 Jul 2022
+ 13:27:40 +0000
+Date: Mon, 4 Jul 2022 10:27:39 -0300
+To: "chenxiang (M)" <chenxiang66@hisilicon.com>
+Subject: Re: [PATCH v3 4/4] vfio: Require that devices support DMA cache
+ coherence
+Message-ID: <20220704132739.GP693670@nvidia.com>
+References: <4-v3-2cf356649677+a32-intel_no_snoop_jgg@nvidia.com>
+ <40454b70-11e1-f9a1-6c26-27e7340f2109@hisilicon.com>
+Content-Disposition: inline
+In-Reply-To: <40454b70-11e1-f9a1-6c26-27e7340f2109@hisilicon.com>
+X-ClientProxiedBy: BL1PR13CA0013.namprd13.prod.outlook.com
+ (2603:10b6:208:256::18) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v1 16/16] arm64: dts: mt8195: Add display node for vdosys0
-Content-Language: en-US
-To: Tinghan Shen <tinghan.shen@mediatek.com>, Yong Wu <yong.wu@mediatek.com>, 
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Chun-Jie Chen <chun-jie.chen@mediatek.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Enric Balletbo i Serra <enric.balletbo@collabora.com>,
- Weiyi Lu <weiyi.lu@mediatek.com>
-References: <20220704100028.19932-1-tinghan.shen@mediatek.com>
- <20220704100028.19932-17-tinghan.shen@mediatek.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220704100028.19932-17-tinghan.shen@mediatek.com>
-Cc: devicetree@vger.kernel.org, "Jason-JH.Lin" <jason-jh.lin@mediatek.com>,
- linux-kernel@vger.kernel.org,
- Project_Global_Chrome_Upstream_Group@mediatek.com,
- iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
- linux-arm-kernel@lists.infradead.org
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1174652e-db4b-4294-9df4-08da5dc0f7e5
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3614:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 6UNmtelwqUvYfMXzxcn9TztwNIp1XpUBmsZhm+CTShaleV1Lfn6q+v550Y+rYxfDSo6cGpAhQcRIRYcj5Aslr3uTso95s3xXvm49Y36hFoWju5X3ZrF2WaEYuJ6AWB1UTHL3lwN9BawAymtsAAEMdJkueVhnVdeY7cTROI3Q/B9pNmNAXjcQsDoBaVzXx5SZwwqBCXLEgVQ/6ghz3qffFx0jBQtIKxEEBkr/MsztvKQUB/L8wFnm9Bqf3moDv/ryBkg+g7wVPU3ah7ps578HejuACBWAA/GJnv3XH7Nlre5FHpoDR59DpSImsKrH6MQtWGB37r9SOC5ZSRAo3xoF0yzu7ujyuOEE2DrrxQ4aqp8n4iH79seyI2LMm5BpYfRvvtnm9tNGFvY+YT8qm/RlzxBR87z1h/5JjrsZGmKqvYGETADuBXlcQMYYoU2CV8haZ2TZhC+PW+rmHs6V4X29fsTPxC/oyXH7xY7Ruf2tTL9WhxM0nH8MSn3J9SmYtAP186w3VZujDtfpoqtTD/hADMBNSJUmCFyIeGMAG/XKcIgwP7wHUvN20mL/w0zUhBAugIhKe3F+agz53olxaQTLfA7lLjYMjoS4V+dUvbIbAJ98DDVBKqr8WuMBQCZdCgj5GcS3HFDokL2GdU9KZqVin44YjwN2Q2+01QqHko4F3J+/49fP/HvVZGR5hC97MLUETd77swOs51y0BZRW4EJjskzCVhKatX5hz3mcyJwQhqHXXGx8sTlble7xZRUPuHOLV1Tu1iNVtPJzctDIVrPxOVtIrjl14hRsci4UOal4gzWozlqLEAObXILCGZM0xsUN
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230016)(4636009)(346002)(39860400002)(366004)(396003)(136003)(376002)(6486002)(478600001)(6512007)(66476007)(54906003)(66946007)(316002)(6916009)(5660300002)(2906002)(33656002)(7416002)(26005)(4744005)(66556008)(2616005)(4326008)(86362001)(6506007)(8936002)(8676002)(1076003)(36756003)(186003)(38100700002)(41300700001)(27376004);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?wub7iXJotPXJqEmDbnB/tWvJqdxVgKerxS311nNcDjbZpwWOmGgXqEzPTxxq?=
+ =?us-ascii?Q?yu4WpxCllGukwdpSAvZ8vV5fX94KjrfTxo2wOBN3rRR0HviV61DEXso/8WDJ?=
+ =?us-ascii?Q?7ncvKMsegmugalchVVlr9agUR0arS/fMNuFqs3AbIlbu4NBZugCNVMg5Ca33?=
+ =?us-ascii?Q?Ia+3Mwj7T7Z1wdG9ZHFI37TzMgf39nLSBopIlJfdBXc5JglK8ncG3zzas/6e?=
+ =?us-ascii?Q?rGt6mhGrxQ83MyuMNZOvh6HYeZQ6nNUpk4CVsUF6m/R6rq3U7X1P/bc3bQHi?=
+ =?us-ascii?Q?560hPwNOOdQh2abNLZ5fnKmPxk77uwiUxguSzDv3OkknZ6coaWTn8FYHIDTO?=
+ =?us-ascii?Q?Lw4Zmu7fEybaLRCu5OQmA3KVPETEjCvqbQxPf6w8Q0DIBudarkkhRGOEHhlx?=
+ =?us-ascii?Q?HT7yokM7n0fLcyUZJp519mNmmkYH4D4c25OLS8t1FuM6Wm3cRpCKDUIBGBGY?=
+ =?us-ascii?Q?yHMNUNNINVhpbYWAVXIVXJlS5Cf0ay/30pHyg70zQhiDXoxlbjP5+ADL7CsU?=
+ =?us-ascii?Q?cvvegSN5fo04SGWeV52EouOHNrJFfoz4yuT5Z3PnhEXiWifN4br4rCKEl8Uu?=
+ =?us-ascii?Q?9MPVNFEvJrX6nTgZGp+AUSEnGyMjVvTQvzZj9XB1i3tdbt5nOh99YYd5exOg?=
+ =?us-ascii?Q?fBDueWeepHnuBYU6B68Nn7EDeyWU2SvGkc3m8ghC0TMD/qXJGgkf2s+yrnwY?=
+ =?us-ascii?Q?hzg506Pdmqq2jFb30VpSK539/mcf7S6mm91kLyEKTd3ctMaKLsToGutOv3yd?=
+ =?us-ascii?Q?v+GK9flQq6ScLBnN9FbkUTkReCY9mHNL7HF4m8fLlrPddR8ocqDUzTFeK5+d?=
+ =?us-ascii?Q?5dzGPBTEgJCgba3uH/KZScG02msHU2sg62Qv6TkHJCk52vltRD6WIu3Yy2Zo?=
+ =?us-ascii?Q?+6er0Io2sk6jY8ZD3rMwE9q40aSGERm/0GIMdN0SlLwSLSyRXIYQC5QvA/6y?=
+ =?us-ascii?Q?vDtLZuOSUIven1hzEtNkWpJLrkYFy0K9jjgW3qHeoQH1pyz2meir7mWguMiG?=
+ =?us-ascii?Q?f3ui9AJw2AcRwlE7ME6hCzd57BubZWsRuPPzjoF7x0SUnV1nTgHxwkW9QkMZ?=
+ =?us-ascii?Q?JuBo5iTtrg+IqsX7Xnw02NC/w48ENRZqTHPBfMcUbZrgOAGZR7UW5eL48nmb?=
+ =?us-ascii?Q?PHXYD7+H64Ep86XgKmFYDfkQTJcV1sWn3tuzmYomHCSspgp/X/IiwiNmbwIH?=
+ =?us-ascii?Q?oT5bkMuNwcRSxIKZQ5mmwCBInfde/7LFzfGGzJo5JLioB6gsKuFgDRTyL+zD?=
+ =?us-ascii?Q?L+PU5JKE6zTlmD8YTRfyEWYcKS/GZddzuvaTjbmHN7yI1vSeViG9ZNGDFzUk?=
+ =?us-ascii?Q?haTJJwqBcp6tYj1/mDMMTai4pL786VTDXXC3t7jzLf/doZ5nSP56Ae1FEuDb?=
+ =?us-ascii?Q?gMFKvDN0AL/8AeEKhZYPACE0cYSTQnf/wSwVa5A9UsqWHn2drlnajqg2fnPI?=
+ =?us-ascii?Q?ITaDAjNM9ZIPdGs3+N7nU4FYWWtDVkLW9c95k3STYiDDq7QmmucVLMAmBoOc?=
+ =?us-ascii?Q?PClQXParJxFl7jcyr36jZulHpfWzkxIOQgOQMjtWvPm5NYA6H3mB+Bmt9Z3m?=
+ =?us-ascii?Q?jmDcwiZbuP13AeRXeH0CwpHyQ0jhvLP19G7KsTQN?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1174652e-db4b-4294-9df4-08da5dc0f7e5
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jul 2022 13:27:40.1408 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: rYaTlEoR/CekgBVcA71FMt+/xoZ5QOQv0ELc1UsW1ucBDvVlS0fU/dTBjdj3jk0Y
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3614
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, kvm@vger.kernel.org,
+ Will Deacon <will@kernel.org>, Cornelia Huck <cohuck@redhat.com>,
+ Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org,
+ Robin Murphy <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -116,159 +146,40 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 04/07/2022 12:00, Tinghan Shen wrote:
-> From: "Jason-JH.Lin" <jason-jh.lin@mediatek.com>
+On Mon, Jul 04, 2022 at 09:21:26PM +0800, chenxiang (M) wrote:
+> Hi,
 > 
-> Add display node for vdosys0 of mt8195.
+> We encounter a issue with the patch: our platform is ARM64, and we run DPDK
+> with smmu disable on VM (without iommu=smmuv3 etc),
 > 
-> Signed-off-by: Jason-JH.Lin <jason-jh.lin@mediatek.com>
-> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
-> ---
->  arch/arm64/boot/dts/mediatek/mt8195.dtsi | 109 +++++++++++++++++++++++
->  1 file changed, 109 insertions(+)
+> so we use noiommu mode with enable_unsafe_noiommu_mode=1 to passthrough the
+> device to VM with following steps (those steps are on VM) :
 > 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-> index 724c6ca837b6..faea8ef33e5a 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-> @@ -1961,6 +1961,7 @@
->  		vdosys0: syscon@1c01a000 {
->  			compatible = "mediatek,mt8195-mmsys", "syscon";
->  			reg = <0 0x1c01a000 0 0x1000>;
-> +			mboxes = <&gce0 0 CMDQ_THR_PRIO_4>;
->  			#clock-cells = <1>;
->  		};
->  
-> @@ -1976,6 +1977,114 @@
->  			power-domains = <&spm MT8195_POWER_DOMAIN_VENC_CORE1>;
->  		};
->  
-> +		ovl0: ovl@1c000000 {
-> +			compatible = "mediatek,mt8195-disp-ovl",
-> +				     "mediatek,mt8183-disp-ovl";
-> +			reg = <0 0x1c000000 0 0x1000>;
-> +			interrupts = <GIC_SPI 636 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
-> +			clocks = <&vdosys0 CLK_VDO0_DISP_OVL0>;
-> +			iommus = <&iommu_vdo M4U_PORT_L0_DISP_OVL0_RDMA0>;
-> +			mediatek,gce-client-reg =
-> +				 <&gce0 SUBSYS_1c00XXXX 0x0000 0x1000>;
-> +		};
-> +
-> +		rdma0: rdma@1c002000 {
-> +			compatible = "mediatek,mt8195-disp-rdma";
-> +			reg = <0 0x1c002000 0 0x1000>;
-> +			interrupts = <GIC_SPI 638 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
-> +			clocks = <&vdosys0 CLK_VDO0_DISP_RDMA0>;
-> +			iommus = <&iommu_vdo M4U_PORT_L0_DISP_RDMA0>;
-> +			mediatek,gce-client-reg =
-> +				 <&gce0 SUBSYS_1c00XXXX 0x2000 0x1000>;
-> +		};
-> +
-> +		color0: color@1c003000 {
-> +			compatible = "mediatek,mt8195-disp-color",
-> +				     "mediatek,mt8173-disp-color";
-> +			reg = <0 0x1c003000 0 0x1000>;
-> +			interrupts = <GIC_SPI 639 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
-> +			clocks = <&vdosys0 CLK_VDO0_DISP_COLOR0>;
-> +			mediatek,gce-client-reg =
-> +				 <&gce0 SUBSYS_1c00XXXX 0x3000 0x1000>;
-> +		};
-> +
-> +		ccorr0: ccorr@1c004000 {
-> +			compatible = "mediatek,mt8195-disp-ccorr",
-> +				     "mediatek,mt8192-disp-ccorr";
-> +			reg = <0 0x1c004000 0 0x1000>;
-> +			interrupts = <GIC_SPI 640 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
-> +			clocks = <&vdosys0 CLK_VDO0_DISP_CCORR0>;
-> +			mediatek,gce-client-reg =
-> +				 <&gce0 SUBSYS_1c00XXXX 0x4000 0x1000>;
-> +		};
-> +
-> +		aal0: aal@1c005000 {
-> +			compatible = "mediatek,mt8195-disp-aal",
-> +				     "mediatek,mt8183-disp-aal";
-> +			reg = <0 0x1c005000 0 0x1000>;
-> +			interrupts = <GIC_SPI 641 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
-> +			clocks = <&vdosys0 CLK_VDO0_DISP_AAL0>;
-> +			mediatek,gce-client-reg =
-> +				 <&gce0 SUBSYS_1c00XXXX 0x5000 0x1000>;
-> +		};
-> +
-> +		gamma0: gamma@1c006000 {
-> +			compatible = "mediatek,mt8195-disp-gamma",
-> +				     "mediatek,mt8183-disp-gamma";
-> +			reg = <0 0x1c006000 0 0x1000>;
-> +			interrupts = <GIC_SPI 642 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
-> +			clocks = <&vdosys0 CLK_VDO0_DISP_GAMMA0>;
-> +			mediatek,gce-client-reg =
-> +				 <&gce0 SUBSYS_1c00XXXX 0x6000 0x1000>;
-> +		};
-> +
-> +		dither0: dither@1c007000 {
-> +			compatible = "mediatek,mt8195-disp-dither",
-> +				     "mediatek,mt8183-disp-dither";
-> +			reg = <0 0x1c007000 0 0x1000>;
-> +			interrupts = <GIC_SPI 643 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
-> +			clocks = <&vdosys0 CLK_VDO0_DISP_DITHER0>;
-> +			mediatek,gce-client-reg =
-> +				 <&gce0 SUBSYS_1c00XXXX 0x7000 0x1000>;
-> +		};
-> +
-> +		dsc0: dsc@1c009000 {
-> +			compatible = "mediatek,mt8195-disp-dsc";
-> +			reg = <0 0x1c009000 0 0x1000>;
-> +			interrupts = <GIC_SPI 645 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
-> +			clocks = <&vdosys0 CLK_VDO0_DSC_WRAP0>;
-> +			mediatek,gce-client-reg =
-> +				 <&gce0 SUBSYS_1c00XXXX 0x9000 0x1000>;
-> +		};
-> +
-> +		merge0: merge0@1c014000 {
+> insmod vfio.ko enable_unsafe_noiommu_mode=1
+> insmod vfio_virqfd.ko
+> insmod vfio-pci-core.ko
+> insmdo vfio-pci.ko
+> insmod vfio_iommu_type1.ko
+> 
+> echo vfio-pci > /sys/bus/pci/devices/0000:00:02.0/driver_override
+> echo 0000:00:02.0 > /sys/bus/pci/drivers_probe ------------------ failed
+> 
+> I find that vfio-pci device is not probed because of the additional check.
+> It works well without this patch.
+> 
+> Do we need to skip the check if enable_unsafe_noiommu_mode=1?
 
-Generic node name.
+Yes, that is definately an unintended mistake.
 
-> +			compatible = "mediatek,mt8195-disp-merge";
-> +			reg = <0 0x1c014000 0 0x1000>;
-> +			interrupts = <GIC_SPI 656 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
-> +			clocks = <&vdosys0 CLK_VDO0_VPP_MERGE0>;
-> +			mediatek,gce-client-reg =
-> +				 <&gce0 SUBSYS_1c01XXXX 0x4000 0x1000>;
-> +		};
-> +
-> +		mutex: mutex0@1c016000 {
-
-Generic node name.
-
-> +			compatible = "mediatek,mt8195-disp-mutex";
-> +			reg = <0 0x1c016000 0 0x1000>;
-> +			interrupts = <GIC_SPI 658 IRQ_TYPE_LEVEL_HIGH 0>;
-> +			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
-> +			clocks = <&vdosys0 CLK_VDO0_DISP_MUTEX0>;
-> +			mediatek,gce-events =
-> +				 <CMDQ_EVENT_VDO0_DISP_STREAM_DONE_0>;
-> +		};
-> +
->  		larb0: larb@1c018000 {
->  			compatible = "mediatek,mt8195-smi-larb";
->  			reg = <0 0x1c018000 0 0x1000>;
-
-
-Best regards,
-Krzysztof
+Thanks,
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
