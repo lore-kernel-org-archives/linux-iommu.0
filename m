@@ -1,114 +1,130 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6151EC43334
-	for <iommu@archiver.kernel.org>; Tue,  5 Jul 2022 13:51:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E06CFC433EF
+	for <iommu@archiver.kernel.org>; Tue,  5 Jul 2022 13:52:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id B3D9040AB6;
-	Tue,  5 Jul 2022 13:51:10 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org B3D9040AB6
-Authentication-Results: smtp2.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=cDfN+bQc
+	by smtp3.osuosl.org (Postfix) with ESMTP id 6E78460A8B;
+	Tue,  5 Jul 2022 13:52:54 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 6E78460A8B
+Authentication-Results: smtp3.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20210112 header.b=f0oPNRCt
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9KKOBwG8eB3I; Tue,  5 Jul 2022 13:51:09 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id o5YNOGd8_BDW; Tue,  5 Jul 2022 13:52:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 41C7F40A8A;
-	Tue,  5 Jul 2022 13:51:09 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 41C7F40A8A
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 0CE7460A8C;
+	Tue,  5 Jul 2022 13:52:53 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 0CE7460A8C
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1CA8FC0032;
-	Tue,  5 Jul 2022 13:51:09 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ADC1CC002D
- for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 13:51:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DBA74C0032;
+	Tue,  5 Jul 2022 13:52:52 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7AA19C002D
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 13:52:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 8654041676
- for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 13:51:07 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 8654041676
-Authentication-Results: smtp4.osuosl.org;
- dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca
- header.a=rsa-sha256 header.s=google header.b=cDfN+bQc
+ by smtp1.osuosl.org (Postfix) with ESMTP id 481E281B35
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 13:52:51 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 481E281B35
+Authentication-Results: smtp1.osuosl.org;
+ dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com
+ header.a=rsa-sha256 header.s=20210112 header.b=f0oPNRCt
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id OQqX6Q0lZPwY for <iommu@lists.linux-foundation.org>;
- Tue,  5 Jul 2022 13:51:05 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id DOYmAwpAy37x for <iommu@lists.linux-foundation.org>;
+ Tue,  5 Jul 2022 13:52:50 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org E4C38408E4
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com
- [IPv6:2607:f8b0:4864:20::833])
- by smtp4.osuosl.org (Postfix) with ESMTPS id E4C38408E4
- for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 13:51:04 +0000 (UTC)
-Received: by mail-qt1-x833.google.com with SMTP id ck6so13680830qtb.7
- for <iommu@lists.linux-foundation.org>; Tue, 05 Jul 2022 06:51:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ziepe.ca; s=google;
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 0DEEC81AF5
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com
+ [IPv6:2a00:1450:4864:20::133])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 0DEEC81AF5
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 13:52:49 +0000 (UTC)
+Received: by mail-lf1-x133.google.com with SMTP id bu42so824189lfb.0
+ for <iommu@lists.linux-foundation.org>; Tue, 05 Jul 2022 06:52:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
  h=date:from:to:cc:subject:message-id:references:mime-version
  :content-disposition:in-reply-to;
- bh=aXXqCO4eYEW7ihl1nkLRPlC9zfL+9NshKktoq8vfUqo=;
- b=cDfN+bQczbdMb2leah0e/N44YCVFwIYBhS6uK2yvKAxV/VrnPHyc+hyWjNAaUg1PfL
- kVcyYs7o5yY5RdPBbZ1Uy12G+gaOeGz7GPvyLzJpp7K+3AfzkxCHdfURo3kwOoQVGHsB
- CgYT4nV/UQd7IrmpI3kE+7IkazWCK3VkAF/AOUDIg9vA84UJqgb+kOFEqstZkexFUiOW
- t4uMNrJQXIZB/yeHytTtD8UoGO1NLRJoiAFfgFOvXzUbr67CkUchXLiOTkdsKPw7QrA5
- 0GMzIsPAHjhYnDnVJ1sJYE4BoAvaoerhS04hqo2hF28Qc0NfnJdWsyByjW3v2jzln7ab
- r2qQ==
+ bh=hnG3EXAGSYglCl/wRCeE6XoUd122X8s3VFjj/Cl4BDo=;
+ b=f0oPNRCtup46ssQPcrkajodUnXaa38S7aucBwdDILFTG2eeb4ezSSagYCCpSaPXn6q
+ pM88V+eJuR+2wDKnqOvmIn2UBQeLj4Dvk+jM/7QzsaH+djXUCf8dVdZrR3Rum0ZxA4Fx
+ 1+V5jQK4WZ6A6r+Z7pGJ3DHRh/l/I+n6TS11toC5D+NwQqpCXjbGQMtOFJd9gZJEVfoN
+ 8o6r4MmM6XpKVa4t/W7kzcEgwfUE3Y+OozwbzeYUm+9Cfc1rCiR8kyXeLGCPMRo+QW0N
+ dWcQwNP8U6XumHQBe98yfaBeLuhKipyLuPvGkvNRoq32ZtcDVOLho4L9W1jGhun/Kcvn
+ 3uIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
  :mime-version:content-disposition:in-reply-to;
- bh=aXXqCO4eYEW7ihl1nkLRPlC9zfL+9NshKktoq8vfUqo=;
- b=O3Om7JbyayDFO+jR3ndBiwfP0QVKyXIMTZxckbAygiM+17EdeLHHoyguWLxRCYWIXE
- FIVf0WsiB4FTe8Hv2bRx1d+Pc4RWjoO0MqVo3b18ixCTSsrNKXIxGrOQM6Q7IvlJeXkv
- Z6DOmM8OkUdWiW6uUgHL27ISpPAhv9uyLRjqGNUOelQLgdrv1K3vP9bGsH1G95OZ9W9l
- kz4O+RBOzeK7xDU/eA3iFVQakdB/JEmIqrqLnnA0SijnyOdrp6aOSYUI0cU4ZAcBjSV9
- W4ZdaHBZ8sDqttj+UTZdtu/jozQdhQfZLGB0GeOrTrEN4CFN6shczP4EBWo+H4lIyKj3
- p3SQ==
-X-Gm-Message-State: AJIora9ylyRt9+f/up/22SGRDV8Kn+bRkWy9khEDj2FZw3g69cEmO0gW
- +cM/RKphBXrTqHrfAiflBfsKkw==
-X-Google-Smtp-Source: AGRyM1tiQ1fXhmwo7QGB7JVrZMkNllap136sZt6NhU7vlDBe2k8co+srzJapO8MDIuFHQGrnlFDnUA==
-X-Received: by 2002:a05:6214:5005:b0:472:e6b0:1fb2 with SMTP id
- jo5-20020a056214500500b00472e6b01fb2mr12627413qvb.124.1657029063626; 
- Tue, 05 Jul 2022 06:51:03 -0700 (PDT)
-Received: from ziepe.ca
- (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net.
- [142.162.113.129]) by smtp.gmail.com with ESMTPSA id
- f10-20020a05620a280a00b006a69d7f390csm27745242qkp.103.2022.07.05.06.51.02
+ bh=hnG3EXAGSYglCl/wRCeE6XoUd122X8s3VFjj/Cl4BDo=;
+ b=4mlehbT5UXlgKY3OcMY5xqmybX2aC7+b4ltuoLF9zxP6x1yrqOheOKTRb0vRqnQ2Pn
+ 3iN39fu6BfsNex7C9xR8FXZxVBqzRn6i+qjiBZp+YbwQ37mIGpYyeh4OKhDNW3lAu2UT
+ 3hgf338Bu9Z23DwpOasieLJbj6rshWfsCb15FzDrNm8DwZzptz9hSDt5L1EsE3pcbGb2
+ nuuwfPlG4SMGiNWhv3I+bBlXbGsTsMuIoge4mVA2AZlI8fuvCKnzGdT0NUx65/nCjlY8
+ IatvW3hufoxUTpnbzjn0ab2TAvk6DpavPU/TPyTEfUKu4bS3qXoFeFcLP5wVjpQ3hI9e
+ xkdg==
+X-Gm-Message-State: AJIora9XTJtYcDZZMq1zqMwGTehg7SfUUwTF056+RmYixivp5BDR/cvT
+ rA3FLqCJwF0RpLj6qjx9WmE=
+X-Google-Smtp-Source: AGRyM1tzQQEVczY5NcmNDovprbd7u0K8INSqZ44DlUGhkZwwx9elVzmtIOyIVqDnGRJUYz9FEGSPyA==
+X-Received: by 2002:a05:6512:b1a:b0:47f:b574:9539 with SMTP id
+ w26-20020a0565120b1a00b0047fb5749539mr21685925lfu.143.1657029167643; 
+ Tue, 05 Jul 2022 06:52:47 -0700 (PDT)
+Received: from mobilestation ([95.79.140.178])
+ by smtp.gmail.com with ESMTPSA id
+ v19-20020ac258f3000000b00483f8c40c14sm262435lfo.243.2022.07.05.06.52.44
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 05 Jul 2022 06:51:02 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94) (envelope-from <jgg@ziepe.ca>)
- id 1o8ixC-006VQ4-6E; Tue, 05 Jul 2022 10:51:02 -0300
-Date: Tue, 5 Jul 2022 10:51:02 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v7 20/21] PCI/P2PDMA: Introduce pci_mmap_p2pmem()
-Message-ID: <20220705135102.GE23621@ziepe.ca>
-References: <20220615161233.17527-1-logang@deltatee.com>
- <20220615161233.17527-21-logang@deltatee.com>
- <20220629064854.GD17576@lst.de>
- <99242789-66a6-bbd2-b56a-e47891f4522e@deltatee.com>
- <20220629175906.GU23621@ziepe.ca> <20220705075108.GB17451@lst.de>
+ Tue, 05 Jul 2022 06:52:47 -0700 (PDT)
+Date: Tue, 5 Jul 2022 16:52:43 +0300
+From: Serge Semin <fancer.lancer@gmail.com>
+To: Samuel Holland <samuel@sholland.org>, Marc Zyngier <maz@kernel.org>
+Subject: Re: [PATCH v3 1/8] irqchip/mips-gic: Only register IPI domain when
+ SMP is enabled
+Message-ID: <20220705135243.ydbwfo4kois64elr@mobilestation>
+References: <20220701200056.46555-1-samuel@sholland.org>
+ <20220701200056.46555-2-samuel@sholland.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20220705075108.GB17451@lst.de>
-Cc: linux-pci@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
- linux-nvme@lists.infradead.org, Stephen Bates <sbates@raithlin.com>,
- linux-mm@kvack.org, Jason Ekstrand <jason@jlekstrand.net>,
- Ira Weiny <ira.weiny@intel.com>, Minturn Dave B <dave.b.minturn@intel.com>,
- Martin Oliveira <martin.oliveira@eideticom.com>,
- Matthew Wilcox <willy@infradead.org>,
- Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
- Bjorn Helgaas <helgaas@kernel.org>, Daniel Vetter <daniel.vetter@ffwll.ch>,
- Ralph Campbell <rcampbell@nvidia.com>, John Hubbard <jhubbard@nvidia.com>,
- linux-block@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
- Dan Williams <dan.j.williams@intel.com>,
- Xiong Jianxin <jianxin.xiong@intel.com>, Robin Murphy <robin.murphy@arm.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Logan Gunthorpe <logang@deltatee.com>,
- Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
+In-Reply-To: <20220701200056.46555-2-samuel@sholland.org>
+Cc: Mark Rutland <mark.rutland@arm.com>,
+ Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+ linux-hyperv@vger.kernel.org, Rich Felker <dalias@libc.org>,
+ linux-ia64@vger.kernel.org, linux-sh@vger.kernel.org,
+ linux-pci@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, linux-mips@vger.kernel.org,
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+ Max Filippov <jcmvbkbc@gmail.com>, Jan Beulich <jbeulich@suse.com>,
+ "H. Peter Anvin" <hpa@zytor.com>, "K. Y. Srinivasan" <kys@microsoft.com>,
+ Sven Schnelle <svens@stackframe.org>,
+ Boris Ostrovsky <boris.ostrovsky@oracle.com>, Rob Herring <robh@kernel.org>,
+ Wei Liu <wei.liu@kernel.org>, Florian Fainelli <f.fainelli@gmail.com>,
+ Stephen Hemminger <sthemmin@microsoft.com>, kernel test robot <lkp@intel.com>,
+ Yoshinori Sato <ysato@users.sourceforge.jp>, Will Deacon <will@kernel.org>,
+ Bartosz Golaszewski <brgl@bgdev.pl>, x86@kernel.org,
+ Dexuan Cui <decui@microsoft.com>, Russell King <linux@armlinux.org.uk>,
+ Wei Xu <xuwei5@hisilicon.com>, Andy Shevchenko <andy.shevchenko@gmail.com>,
+ Ingo Molnar <mingo@redhat.com>,
+ Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+ xen-devel@lists.xenproject.org, Matt Turner <mattst88@gmail.com>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, linux-xtensa@linux-xtensa.org,
+ Kees Cook <keescook@chromium.org>, Haiyang Zhang <haiyangz@microsoft.com>,
+ Rikard Falkeborn <rikard.falkeborn@gmail.com>,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+ Maximilian Heyne <mheyne@amazon.de>, Bjorn Helgaas <bhelgaas@google.com>,
+ Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org,
+ Richard Henderson <rth@twiddle.net>, Juergen Gross <jgross@suse.com>,
+ Chris Zankel <chris@zankel.net>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>, linux-parisc@vger.kernel.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Julia Lawall <Julia.Lawall@inria.fr>,
+ Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+ iommu@lists.linux-foundation.org, linux-alpha@vger.kernel.org,
+ Borislav Petkov <bp@alien8.de>, Colin Ian King <colin.king@intel.com>,
+ Helge Deller <deller@gmx.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -126,28 +142,217 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jul 05, 2022 at 09:51:08AM +0200, Christoph Hellwig wrote:
+Hi Samuel
 
-> But what also really matters here:  I don't want every user that
-> wants to be able to mmap a character device to do all this work.
-> The layering is simply wrong, it needs some character device
-> based helpers, not be open code everywhere.
+On Fri, Jul 01, 2022 at 03:00:49PM -0500, Samuel Holland wrote:
+> The MIPS GIC irqchip driver may be selected in a uniprocessor
+> configuration, but it unconditionally registers an IPI domain.
+> 
+> Limit the part of the driver dealing with IPIs to only be compiled when
+> GENERIC_IRQ_IPI is enabled, which corresponds to an SMP configuration.
 
-I think alot (all?) cases would be happy if the inode was 1:1 with the
-cdev struct device. I suppose the cdev code would still have to create
-pseudo fs, but at least that is hidden.
+Thanks for the patch. Some comment is below.
 
-> In fact I'm not even sure this should be a character device, it seems
-> to fit it way better with the PCI sysfs hierchacy, just like how we
-> map MMIO resources, which these are anyway.  And once it is on sysfs
-> we do have a uniqueue inode and need none of the pseudofs stuff, and
-> don't need all the glue code in nvme either.
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Samuel Holland <samuel@sholland.org>
+> ---
+> 
+> Changes in v3:
+>  - New patch to fix build errors in uniprocessor MIPS configs
+> 
+>  drivers/irqchip/Kconfig        |  3 +-
+>  drivers/irqchip/irq-mips-gic.c | 80 +++++++++++++++++++++++-----------
+>  2 files changed, 56 insertions(+), 27 deletions(-)
+> 
+> diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+> index 1f23a6be7d88..d26a4ff7c99f 100644
+> --- a/drivers/irqchip/Kconfig
+> +++ b/drivers/irqchip/Kconfig
+> @@ -322,7 +322,8 @@ config KEYSTONE_IRQ
+>  
+>  config MIPS_GIC
+>  	bool
+> -	select GENERIC_IRQ_IPI
+> +	select GENERIC_IRQ_IPI if SMP
 
-Shouldn't there be an allocator here? It feels a bit weird that the
-entire CMB is given to a single process, it is a sharable resource,
-isn't it?
+> +	select IRQ_DOMAIN_HIERARCHY
 
-Jason
+It seems to me that the IRQ domains hierarchy is supposed to be
+created only if IPI is required. At least that's what the MIPS GIC
+driver implies. Thus we can go further and CONFIG_IRQ_DOMAIN_HIERARCHY
+ifdef-out the gic_irq_domain_alloc() and gic_irq_domain_free()
+methods definition together with the initialization:
+
+ static const struct irq_domain_ops gic_irq_domain_ops = {
+ 	.xlate = gic_irq_domain_xlate,
++#ifdef CONFIG_IRQ_DOMAIN_HIERARCHY
+ 	.alloc = gic_irq_domain_alloc,
+ 	.free = gic_irq_domain_free,
++#endif
+ 	.map = gic_irq_domain_map,
+};
+
+If the GENERIC_IRQ_IPI config is enabled, CONFIG_IRQ_DOMAIN_HIERARCHY
+will be automatically selected (see the config definition in
+kernel/irq/Kconfig). If the IRQs hierarchy is needed for some another
+functionality like GENERIC_MSI_IRQ_DOMAIN or GPIOs then they will
+explicitly enable the IRQ_DOMAIN_HIERARCHY config thus activating the
+denoted .alloc and .free methods definitions.
+
+To sum up you can get rid of the IRQ_DOMAIN_HIERARCHY config
+force-select from this patch and make the MIPS GIC driver code a bit
+more coherent.
+
+@Marc, please correct me if were wrong.
+
+-Serget
+
+>  	select MIPS_CM
+>  
+>  config INGENIC_IRQ
+> diff --git a/drivers/irqchip/irq-mips-gic.c b/drivers/irqchip/irq-mips-gic.c
+> index ff89b36267dd..8a9efb6ae587 100644
+> --- a/drivers/irqchip/irq-mips-gic.c
+> +++ b/drivers/irqchip/irq-mips-gic.c
+> @@ -52,13 +52,15 @@ static DEFINE_PER_CPU_READ_MOSTLY(unsigned long[GIC_MAX_LONGS], pcpu_masks);
+>  
+>  static DEFINE_SPINLOCK(gic_lock);
+>  static struct irq_domain *gic_irq_domain;
+> -static struct irq_domain *gic_ipi_domain;
+>  static int gic_shared_intrs;
+>  static unsigned int gic_cpu_pin;
+>  static unsigned int timer_cpu_pin;
+>  static struct irq_chip gic_level_irq_controller, gic_edge_irq_controller;
+> +
+> +#ifdef CONFIG_GENERIC_IRQ_IPI
+>  static DECLARE_BITMAP(ipi_resrv, GIC_MAX_INTRS);
+>  static DECLARE_BITMAP(ipi_available, GIC_MAX_INTRS);
+> +#endif /* CONFIG_GENERIC_IRQ_IPI */
+>  
+>  static struct gic_all_vpes_chip_data {
+>  	u32	map;
+> @@ -472,9 +474,11 @@ static int gic_irq_domain_map(struct irq_domain *d, unsigned int virq,
+>  	u32 map;
+>  
+>  	if (hwirq >= GIC_SHARED_HWIRQ_BASE) {
+> +#ifdef CONFIG_GENERIC_IRQ_IPI
+>  		/* verify that shared irqs don't conflict with an IPI irq */
+>  		if (test_bit(GIC_HWIRQ_TO_SHARED(hwirq), ipi_resrv))
+>  			return -EBUSY;
+> +#endif /* CONFIG_GENERIC_IRQ_IPI */
+>  
+>  		err = irq_domain_set_hwirq_and_chip(d, virq, hwirq,
+>  						    &gic_level_irq_controller,
+> @@ -567,6 +571,8 @@ static const struct irq_domain_ops gic_irq_domain_ops = {
+>  	.map = gic_irq_domain_map,
+>  };
+>  
+> +#ifdef CONFIG_GENERIC_IRQ_IPI
+> +
+>  static int gic_ipi_domain_xlate(struct irq_domain *d, struct device_node *ctrlr,
+>  				const u32 *intspec, unsigned int intsize,
+>  				irq_hw_number_t *out_hwirq,
+> @@ -670,6 +676,48 @@ static const struct irq_domain_ops gic_ipi_domain_ops = {
+>  	.match = gic_ipi_domain_match,
+>  };
+>  
+> +static int gic_register_ipi_domain(struct device_node *node)
+> +{
+> +	struct irq_domain *gic_ipi_domain;
+> +	unsigned int v[2], num_ipis;
+> +
+> +	gic_ipi_domain = irq_domain_add_hierarchy(gic_irq_domain,
+> +						  IRQ_DOMAIN_FLAG_IPI_PER_CPU,
+> +						  GIC_NUM_LOCAL_INTRS + gic_shared_intrs,
+> +						  node, &gic_ipi_domain_ops, NULL);
+> +	if (!gic_ipi_domain) {
+> +		pr_err("Failed to add IPI domain");
+> +		return -ENXIO;
+> +	}
+> +
+> +	irq_domain_update_bus_token(gic_ipi_domain, DOMAIN_BUS_IPI);
+> +
+> +	if (node &&
+> +	    !of_property_read_u32_array(node, "mti,reserved-ipi-vectors", v, 2)) {
+> +		bitmap_set(ipi_resrv, v[0], v[1]);
+> +	} else {
+> +		/*
+> +		 * Reserve 2 interrupts per possible CPU/VP for use as IPIs,
+> +		 * meeting the requirements of arch/mips SMP.
+> +		 */
+> +		num_ipis = 2 * num_possible_cpus();
+> +		bitmap_set(ipi_resrv, gic_shared_intrs - num_ipis, num_ipis);
+> +	}
+> +
+> +	bitmap_copy(ipi_available, ipi_resrv, GIC_MAX_INTRS);
+> +
+> +	return 0;
+> +}
+> +
+> +#else /* !CONFIG_GENERIC_IRQ_IPI */
+> +
+> +static inline int gic_register_ipi_domain(struct device_node *node)
+> +{
+> +	return 0;
+> +}
+> +
+> +#endif /* !CONFIG_GENERIC_IRQ_IPI */
+> +
+>  static int gic_cpu_startup(unsigned int cpu)
+>  {
+>  	/* Enable or disable EIC */
+> @@ -688,11 +736,12 @@ static int gic_cpu_startup(unsigned int cpu)
+>  static int __init gic_of_init(struct device_node *node,
+>  			      struct device_node *parent)
+>  {
+> -	unsigned int cpu_vec, i, gicconfig, v[2], num_ipis;
+> +	unsigned int cpu_vec, i, gicconfig;
+>  	unsigned long reserved;
+>  	phys_addr_t gic_base;
+>  	struct resource res;
+>  	size_t gic_len;
+> +	int ret;
+>  
+>  	/* Find the first available CPU vector. */
+>  	i = 0;
+> @@ -780,30 +829,9 @@ static int __init gic_of_init(struct device_node *node,
+>  		return -ENXIO;
+>  	}
+>  
+> -	gic_ipi_domain = irq_domain_add_hierarchy(gic_irq_domain,
+> -						  IRQ_DOMAIN_FLAG_IPI_PER_CPU,
+> -						  GIC_NUM_LOCAL_INTRS + gic_shared_intrs,
+> -						  node, &gic_ipi_domain_ops, NULL);
+> -	if (!gic_ipi_domain) {
+> -		pr_err("Failed to add IPI domain");
+> -		return -ENXIO;
+> -	}
+> -
+> -	irq_domain_update_bus_token(gic_ipi_domain, DOMAIN_BUS_IPI);
+> -
+> -	if (node &&
+> -	    !of_property_read_u32_array(node, "mti,reserved-ipi-vectors", v, 2)) {
+> -		bitmap_set(ipi_resrv, v[0], v[1]);
+> -	} else {
+> -		/*
+> -		 * Reserve 2 interrupts per possible CPU/VP for use as IPIs,
+> -		 * meeting the requirements of arch/mips SMP.
+> -		 */
+> -		num_ipis = 2 * num_possible_cpus();
+> -		bitmap_set(ipi_resrv, gic_shared_intrs - num_ipis, num_ipis);
+> -	}
+> -
+> -	bitmap_copy(ipi_available, ipi_resrv, GIC_MAX_INTRS);
+> +	ret = gic_register_ipi_domain(node);
+> +	if (ret)
+> +		return ret;
+>  
+>  	board_bind_eic_interrupt = &gic_bind_eic_interrupt;
+>  
+> -- 
+> 2.35.1
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
