@@ -1,109 +1,80 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 02E5CC43334
-	for <iommu@archiver.kernel.org>; Tue,  5 Jul 2022 18:17:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id F05D4C43334
+	for <iommu@archiver.kernel.org>; Tue,  5 Jul 2022 18:27:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 48639409BE;
-	Tue,  5 Jul 2022 18:17:04 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 48639409BE
-Authentication-Results: smtp4.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.a=rsa-sha256 header.s=20200525 header.b=lfZ2jUE/
+	by smtp1.osuosl.org (Postfix) with ESMTP id 678A7817A9;
+	Tue,  5 Jul 2022 18:27:35 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 678A7817A9
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id w34ZA35GrVJv; Tue,  5 Jul 2022 18:27:34 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 2012D814B4;
+	Tue,  5 Jul 2022 18:27:34 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 2012D814B4
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E5EA5C0032;
+	Tue,  5 Jul 2022 18:27:33 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E473FC002D
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 18:27:32 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id A78AC415B2
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 18:27:32 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org A78AC415B2
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id V6GDJGozcJMY; Tue,  5 Jul 2022 18:17:01 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 567F9415A1;
-	Tue,  5 Jul 2022 18:17:01 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 567F9415A1
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 268F5C0032;
-	Tue,  5 Jul 2022 18:17:01 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E37E2C002D
- for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 18:16:59 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id BD8C160F3B
- for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 18:16:59 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org BD8C160F3B
-Authentication-Results: smtp3.osuosl.org;
- dkim=pass (2048-bit key) header.d=deltatee.com header.i=@deltatee.com
- header.a=rsa-sha256 header.s=20200525 header.b=lfZ2jUE/
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6J2QP4d5oleF for <iommu@lists.linux-foundation.org>;
- Tue,  5 Jul 2022 18:16:57 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org B0B5660F37
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp3.osuosl.org (Postfix) with ESMTPS id B0B5660F37
- for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 18:16:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
- MIME-Version:Date:Message-ID:content-disposition;
- bh=3rV+tiVBCGETS+0m1VAyBeVrP084h9ybGuEcnOkL1jA=; b=lfZ2jUE/Pcr0euHS/PfSv8pLp+
- 4/PPUzTkxnoApUidHmt7v626OqXgmL9EfNAu2FXDE82dIkZS4evTLlHJEcLA0sTsaZOdUL7sJXe1K
- llHNHqCgIXLxKGdC2EFMJ+uJ5Hokog7lmJrw7QTYdr9sTAhi3Hh9CcwjoJd4Ouhncx4sMJASxJZo5
- Z45htSKhX9sgtg0ghREzgU5ID+skNQqwC9IlBlCgbwMhIXpFTCZpyt8HpOowWyAcZWE8tHzKxRvGy
- MFCCqqfCCaFi3VeOomss+vTbx17EVsq2HRcn8flYVkfHi6Hg6MM5xYspG5eOMY/FjnLQKBs2TXntf
- tmVTSv/w==;
-Received: from guinness.priv.deltatee.com ([172.16.1.162])
- by ale.deltatee.com with esmtpsa (TLS1.3) tls
- TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (Exim 4.94.2)
- (envelope-from <logang@deltatee.com>)
- id 1o8n6O-007Udo-RE; Tue, 05 Jul 2022 12:16:49 -0600
-Message-ID: <b3deacdd-cb76-6ebb-0e29-ef6a5a426a0d@deltatee.com>
-Date: Tue, 5 Jul 2022 12:16:45 -0600
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id kKWjEUdWk8Da for <iommu@lists.linux-foundation.org>;
+ Tue,  5 Jul 2022 18:27:32 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org CD7E64049F
+Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com
+ [209.85.128.177])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id CD7E64049F
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 18:27:31 +0000 (UTC)
+Received: by mail-yw1-f177.google.com with SMTP id
+ 00721157ae682-31c89653790so66623727b3.13
+ for <iommu@lists.linux-foundation.org>; Tue, 05 Jul 2022 11:27:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=yDaZJQ1t7WZXHXc1sh5v+s4p6BMcgf4NLI5GY92Hi9Y=;
+ b=vBHwEyq39b1vTBC+YEdzpAH56B8X1V79r4YIAC8uDBCqwaSM099A6Cm7Y3VjzBS/Ta
+ VmzBfZnggtpw189Geeg+9XQP+1Db35bXa1+NqLggdYi1sDO2HgmEJ+f7bjfGKqYFxTNw
+ XwIcP1NLsUjpV+QyyMxJZhBE7s9pnjIxrFYtnB0CPJoNCscw/PzTrmZJMMWVEyLMnlUE
+ MdY5otKt5FXjTvScjiXrFzaKvxXpe8urpw16aa/HR9Ng2/W+De44nj2bIDhW7xHoFgiD
+ LD0piVPgnt0NjtJggWSjXhjUMDzRijDiZ3lJdQQObj7yzvRXAyhk98E0f67X58AyHFtr
+ p18g==
+X-Gm-Message-State: AJIora/SfWYdVIWudD2KhTUKXuOb7os/N5WgcPiWhW3n4zkM/HUaajy5
+ CnPV2xuEH4rnUj0KgvGKI+a24faEUJ9tm0rbtOU=
+X-Google-Smtp-Source: AGRyM1s2QEn+mZPivlKtPrgixQUmIChTU4gw5ikon89zd7049nfH/7sTVF3gtghrOQrMUchoZ2CX/5thIM3o6KDInik=
+X-Received: by 2002:a0d:d8c8:0:b0:31c:92b1:5dec with SMTP id
+ a191-20020a0dd8c8000000b0031c92b15decmr14867269ywe.19.1657045650713; Tue, 05
+ Jul 2022 11:27:30 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Content-Language: en-CA
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <20220629175906.GU23621@ziepe.ca> <20220705075108.GB17451@lst.de>
- <20220705135102.GE23621@ziepe.ca> <20220705161240.GB13721@lst.de>
- <a509b13c-244b-23fc-f989-339750a733a5@deltatee.com>
- <20220705164315.GB14484@lst.de>
- <acb91f37-0470-8ce4-19e4-426903cbc3a1@deltatee.com>
- <20220705165039.GB14566@lst.de> <YsRzNqmZYlgkL7fI@kroah.com>
- <1bd43ef7-0403-bd25-087c-d54d5af677e4@deltatee.com>
- <YsR4CNDgtt4JWonv@kroah.com>
-From: Logan Gunthorpe <logang@deltatee.com>
-In-Reply-To: <YsR4CNDgtt4JWonv@kroah.com>
-X-SA-Exim-Connect-IP: 172.16.1.162
-X-SA-Exim-Rcpt-To: gregkh@linuxfoundation.org, hch@lst.de, jgg@ziepe.ca,
- linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
- linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org, sbates@raithlin.com,
- dan.j.williams@intel.com, christian.koenig@amd.com, jhubbard@nvidia.com,
- ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch,
- dave.b.minturn@intel.com, jason@jlekstrand.net, dave.hansen@linux.intel.com,
- jianxin.xiong@intel.com, helgaas@kernel.org, ira.weiny@intel.com,
- robin.murphy@arm.com, martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com,
- rcampbell@nvidia.com, bhelgaas@google.com
-X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [PATCH v7 20/21] PCI/P2PDMA: Introduce pci_mmap_p2pmem()
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
-Cc: linux-pci@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
- linux-nvme@lists.infradead.org, Stephen Bates <sbates@raithlin.com>,
- linux-mm@kvack.org, Jason Ekstrand <jason@jlekstrand.net>,
- Ira Weiny <ira.weiny@intel.com>, Christoph Hellwig <hch@lst.de>,
- Minturn Dave B <dave.b.minturn@intel.com>,
- Martin Oliveira <martin.oliveira@eideticom.com>,
- Matthew Wilcox <willy@infradead.org>, Jason Gunthorpe <jgg@ziepe.ca>,
- Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
- Bjorn Helgaas <helgaas@kernel.org>, Daniel Vetter <daniel.vetter@ffwll.ch>,
- Ralph Campbell <rcampbell@nvidia.com>, John Hubbard <jhubbard@nvidia.com>,
- linux-block@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
- Dan Williams <dan.j.williams@intel.com>,
- Xiong Jianxin <jianxin.xiong@intel.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
- =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+References: <20220630094059.1204283-1-eric.auger@redhat.com>
+ <Yr1z2gC0+8zbzpFf@myrica>
+In-Reply-To: <Yr1z2gC0+8zbzpFf@myrica>
+From: "Rafael J. Wysocki" <rafael@kernel.org>
+Date: Tue, 5 Jul 2022 20:27:19 +0200
+Message-ID: <CAJZ5v0hqcUUTVzkHxGr9pB5G-T5ye5g_=DQVO6L347DpXipwOg@mail.gmail.com>
+Subject: Re: [PATCH v2] ACPI: VIOT: Fix ACS setup
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Eric Auger <eric.auger@redhat.com>
+Cc: Joerg Roedel <jroedel@suse.de>, iommu@lists.linux.dev, jinl@redhat.com,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+ "open list:AMD IOMMU \(AMD-VI\)" <iommu@lists.linux-foundation.org>,
+ eric.auger.pro@gmail.com, Len Brown <lenb@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -121,55 +92,33 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Thu, Jun 30, 2022 at 11:59 AM Jean-Philippe Brucker
+<jean-philippe@linaro.org> wrote:
+>
+> On Thu, Jun 30, 2022 at 11:40:59AM +0200, Eric Auger wrote:
+> > Currently acpi_viot_init() gets called after the pci
+> > device has been scanned and pci_enable_acs() has been called.
+> > So pci_request_acs() fails to be taken into account leading
+> > to wrong single iommu group topologies when dealing with
+> > multi-function root ports for instance.
+> >
+> > We cannot simply move the acpi_viot_init() earlier, similarly
+> > as the IORT init because the VIOT parsing relies on the pci
+> > scan. However we can detect VIOT is present earlier and in
+> > such a case, request ACS. Introduce a new acpi_viot_early_init()
+> > routine that allows to call pci_request_acs() before the scan.
+> >
+> > While at it, guard the call to pci_request_acs() with #ifdef
+> > CONFIG_PCI.
+> >
+> > Fixes: 3cf485540e7b ("ACPI: Add driver for the VIOT table")
+> > Signed-off-by: Eric Auger <eric.auger@redhat.com>
+> > Reported-by: Jin Liu <jinl@redhat.com>
+>
+> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Tested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
-
-On 2022-07-05 11:42, Greg Kroah-Hartman wrote:
-> On Tue, Jul 05, 2022 at 11:32:23AM -0600, Logan Gunthorpe wrote:
->>
->>
->> On 2022-07-05 11:21, Greg Kroah-Hartman wrote:
->>> On Tue, Jul 05, 2022 at 06:50:39PM +0200, Christoph Hellwig wrote:
->>>> [note for the newcomers, this is about allowing mmap()ing the PCIe
->>>> P2P memory from the generic PCI P2P code through sysfs, and more
->>>> importantly how to revoke it on device removal]
->>>
->>> We allow mmap on PCIe config space today, right?  Why is this different
->>> from what pci_create_legacy_files() does today?
->>>
->>>> On Tue, Jul 05, 2022 at 10:44:49AM -0600, Logan Gunthorpe wrote:
->>>>> We might be able to. I'm not sure. I'll have to figure out how to find
->>>>> that inode from the p2pdma code. I haven't found an obvious interface to
->>>>> do that.
->>>>
->>>> I think the right way to approach this would be a new sysfs API
->>>> that internally calls unmap_mapping_range internally instead of
->>>> exposing the inode. I suspect that might actually be the right thing
->>>> to do for iomem_inode as well.
->>>
->>> Why do we need something new and how is this any different from the PCI
->>> binary files I mention above?  We have supported PCI hotplug for a very
->>> long time, do the current PCI binary sysfs files not work properly with
->>> mmap and removing a device?
->>
->> The P2PDMA code allocates and hands out struct pages to userspace that
->> are backed with ZONE_DEVICE memory from a device's BAR. This is quite
->> different from the existing binary files mentioned above which neither
->> support struct pages nor allocation.
-> 
-> Why would you want to do this through a sysfs interface?  that feels
-> horrid...
-
-The current version does it through a char device, but that requires
-creating a simple_fs and anon_inode for teardown on driver removal, plus
-a bunch of hooks through the driver that exposes it (NVMe, in this case)
-to set this all up.
-
-Christoph is suggesting a sysfs interface which could potentially avoid
-the anon_inode and all of the extra hooks. It has some significant
-benefits and maybe some small downsides, but I wouldn't describe it as
-horrid.
-
-Logan
+Applied as 5.20 material, thanks!
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
