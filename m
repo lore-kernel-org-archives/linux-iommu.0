@@ -4,139 +4,97 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 84403C433EF
-	for <iommu@archiver.kernel.org>; Tue,  5 Jul 2022 11:58:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 68986C43334
+	for <iommu@archiver.kernel.org>; Tue,  5 Jul 2022 12:58:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 2C1C681570;
-	Tue,  5 Jul 2022 11:58:01 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 2C1C681570
+	by smtp1.osuosl.org (Postfix) with ESMTP id 05E8482C21;
+	Tue,  5 Jul 2022 12:58:47 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 05E8482C21
 Authentication-Results: smtp1.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=RgE+8YDb
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20210112 header.b=d1HUG8b7
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id dBLxw48dly-X; Tue,  5 Jul 2022 11:58:00 +0000 (UTC)
+	with ESMTP id Gtu_OXMQzEID; Tue,  5 Jul 2022 12:58:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id E97B78151E;
-	Tue,  5 Jul 2022 11:57:59 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org E97B78151E
+	by smtp1.osuosl.org (Postfix) with ESMTPS id C0B5D82422;
+	Tue,  5 Jul 2022 12:58:45 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org C0B5D82422
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CC6BDC0032;
-	Tue,  5 Jul 2022 11:57:59 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F06D8C002D
- for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 11:57:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8FDE0C0032;
+	Tue,  5 Jul 2022 12:58:45 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 539EEC002D
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 12:58:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id AD2C140A30
- for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 11:57:57 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org AD2C140A30
-Authentication-Results: smtp2.osuosl.org; dkim=pass (2048-bit key,
- unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256
- header.s=selector2 header.b=RgE+8YDb
+ by smtp4.osuosl.org (Postfix) with ESMTP id 0E0E140877
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 12:58:44 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 0E0E140877
+Authentication-Results: smtp4.osuosl.org;
+ dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com
+ header.a=rsa-sha256 header.s=20210112 header.b=d1HUG8b7
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4B6CV98Ohqf3 for <iommu@lists.linux-foundation.org>;
- Tue,  5 Jul 2022 11:57:57 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id yE1xq7ag2VOf for <iommu@lists.linux-foundation.org>;
+ Tue,  5 Jul 2022 12:58:42 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org D030640141
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com
- (mail-bn1nam07on2081.outbound.protection.outlook.com [40.107.212.81])
- by smtp2.osuosl.org (Postfix) with ESMTPS id D030640141
- for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 11:57:56 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OSYIZ++FU8WWZ19J3tAIU7tmEvHGGpXEqyOMVHa/sHKs91zWkjpE2h/EskUEvpsQKem/5aGD0OJw7ymtijcl6Tn9cjZESw96IVEQ+ZPE2NA324aaINxaTgHSd59rFhVf67Wow3Meb7HKDgrqYQHskhl6EU0X5P1LyJgwqN14GKLOxK7cOzjYM3LBEuu56c/sKSqQaqD1TDpqLsJcmpZ2Ekvqu7bPv0JS2M8Bp1D7/Ez3kONi4y3cJa8eW+Z05snetp2hy0GyEim2YWqdOYrqmso3Xp/Zq8slP+W4cw2lrj8+DoCkRI0vu4ohc9uAiytHxO+DTAOMCYIp2PenAzZmzA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SEZ4XSxUHRmxfNscQCunRzyCKVseRaZTRokpRN9U7FU=;
- b=IA8r6tGgb5UhiP1zAxUjEd1BGujOMRA59URGhZMrasy7Oy/CXow067lLIbn5Ynx/EKYn8XBZt8LCkgRuE4xEhvOmPWpOofYjM2zpJaT7gsnPV+UN4BANkghKCwwJ0mp0REvXnUHXnTTcSlYZgPfY4SJm0k6KctrlgaIoOlWSxQbIYivI+Zz0Va1302CFpxijkV5MAaswaNN6IcNuX6ELAipy9mA4K/ef0fhEzrXaceuURfu1R0nSWat68oQIcQfyigLEO0Lq6SLkozpxDGmTJjNHseZxVlagrCuvux08jiHdjstPJxKiu0f01LA1RKhN7bpWrmfZkt6JTC0/QQQaoQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SEZ4XSxUHRmxfNscQCunRzyCKVseRaZTRokpRN9U7FU=;
- b=RgE+8YDbxrR+GbnO4d2BKapQu+EqIlODeZJr8dCYVpGo4WXPFh9XlxJukarDUEdCBdGbo6IUQ3KG7rIW5NmKgQGnlMQt58GqbCVkC3eMpLDImQvnYwcxS4xXwRyq6W394fcYnGOgPgXYY7QvgN/ps623JEvr0v84fbS6wWxYllevfx6EsT1tnz0Crvz94Luu0dxwINw65pwK4uSLjcxXbbS5+kgWFskExmJjxuVj44yUtr/pufLc8LH3hqPYmn8urt2CpmV31B3fS41fdTYXGizRDlbpDW2w13DCitCp0cbdoX8CsyZxCf2WOBp9OFXxTtg9EKHLs0lvc5kYJTiGiQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by CY5PR12MB6573.namprd12.prod.outlook.com (2603:10b6:930:43::21)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.21; Tue, 5 Jul
- 2022 11:57:53 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ac35:7c4b:3282:abfb]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ac35:7c4b:3282:abfb%3]) with mapi id 15.20.5395.021; Tue, 5 Jul 2022
- 11:57:53 +0000
-Date: Tue, 5 Jul 2022 08:57:51 -0300
-To: Alexey Kardashevskiy <aik@ozlabs.ru>
-Subject: Re: [PATCH kernel] powerpc/iommu: Add simple iommu_ops to report
- capabilities
-Message-ID: <YsQnP/jBG22FnPMA@nvidia.com>
-References: <20220705062235.2276125-1-aik@ozlabs.ru>
-Content-Disposition: inline
-In-Reply-To: <20220705062235.2276125-1-aik@ozlabs.ru>
-X-ClientProxiedBy: YT1PR01CA0147.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:2f::26) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org AC79940869
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com
+ [IPv6:2a00:1450:4864:20::52c])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id AC79940869
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 12:58:41 +0000 (UTC)
+Received: by mail-ed1-x52c.google.com with SMTP id z41so15200803ede.1
+ for <iommu@lists.linux-foundation.org>; Tue, 05 Jul 2022 05:58:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=ThRFRFG6dG3lyoRkGG2bLT7jC0J7ce9MxZGKEc+OGhY=;
+ b=d1HUG8b79zydnFytdZoLA6Fg2PL77XJOEn42q0DWcc/QO7tprXWkJ9NIMNHr0CUCjJ
+ r5/ce5Ar6MdbAz5VcH7McUweQgk6zYMTDJVNiMsacEVTwI1HXGPoklPCkctasJgKe+yY
+ EIazCPHMcc2mNNuEETADN6hupB3/9wPtw778kO4Wdf/07xLVGhWg581czgMfSeGot0WK
+ oT1pTQLXJvb/cklMhFDitswQ+BAekd1nyhENGHBH6ok0DxXLQ1eXE8Ad/TrmHNLVBvQr
+ kHvm2Rqzmgka7nirKvwEIx626ost0xLE+4NfUhSGiYmRrcdiNrzMgZ0hjptzk4TyWtVo
+ cPBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=ThRFRFG6dG3lyoRkGG2bLT7jC0J7ce9MxZGKEc+OGhY=;
+ b=WYIRY6wsgi9Zo+LzXDHK2L0vt/uzDNvu+xaRhabLZOgRanbrRgqhlp1rVTk6o6NftB
+ T6+MJJwW146XcEyVXfP6+GeQt2kWs9OIh68iomL1Q65uG73as6a+CsNps4FBjAhFO3LL
+ mYd2JciR/JuvuMPyR++PDjBk2NL45BTWeN9lxM8XGrf0l0NHo+ywrL3iXHxfMy14QF4i
+ dtU6lU25xvZTOzQ7GGBZVIYJ6YHYMraNO2IhxziGGpy/PisAy4AFp+xDCuhE2gX/Sumn
+ u8xMXnSRMxoPnDkzDe/mZMOPe5YCv07U4YU5Q8T6SCF6dZPZKZOyUqwThnRPFs9B+Np2
+ pRYA==
+X-Gm-Message-State: AJIora/aok7CR5MYbRN4LculBn6yK1uRAyxXhsE/U+3PIHg7WHVhWEvO
+ lDtyg3fLXHz2/yGKASi7T2txAxSCMkQ=
+X-Google-Smtp-Source: AGRyM1uCPRUNy3Pz9Rug5PKlHut5lD1SCgKIZXG+KjGfjNf8Occi/0aEXuBzQyuExMRc1OA8B9eImg==
+X-Received: by 2002:a05:6402:b26:b0:43a:6c93:f4e3 with SMTP id
+ bo6-20020a0564020b2600b0043a6c93f4e3mr11031442edb.327.1657025919660; 
+ Tue, 05 Jul 2022 05:58:39 -0700 (PDT)
+Received: from localhost
+ (p200300e41f12c800f22f74fffe1f3a53.dip0.t-ipconnect.de.
+ [2003:e4:1f12:c800:f22f:74ff:fe1f:3a53])
+ by smtp.gmail.com with ESMTPSA id
+ p26-20020a17090635da00b007105a157706sm15809586ejb.82.2022.07.05.05.58.38
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 05 Jul 2022 05:58:38 -0700 (PDT)
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Rob Herring <robh+dt@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH v6 0/5] iommu: Support mappings/reservations in
+ reserved-memory regions
+Date: Tue,  5 Jul 2022 14:58:29 +0200
+Message-Id: <20220705125834.431711-1-thierry.reding@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 46229f79-0d2a-468e-b1f3-08da5e7d9720
-X-MS-TrafficTypeDiagnostic: CY5PR12MB6573:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DKWEemuCdmHeg3GWX/HXm8QX1zqNO+X70eTbtAg7T/6SnnenhQUzheKm5Ieoim+ysgcIOBMPxvMKkdsUQBNUXIU8PHChCfAX60mHkD8tqvOg/259X2/HVo30qMpFPkGcPnHsHYvodVMj1D6zEksC8PoPP5GC4X7iTiL4sCEZNrDxdWDVIyER7zeahfjNAhVleq6XQJZkOzSRJzDfW+jNL88VjM6CCTHl68xvYsnU5pcx3Cp8Ghw50PteworUgE8lC3P2iBMmNDzANjfRLYg1GbnkJyMPXiy8KkntKaaBYbjL5BxLoyTZNu3OGiTv+B91mH+fAf3FGw7AVrNqjT7ymJaFjmGMwBeAMZzbcjI6ELiTouotabOAgAYFkEyR1DLH0cRhKD9A6Mq4X+OeWOerdD5TGUCwZMMyWSPNDarzY15XpfuMD1HWK1dKVrVrbLFgyTeCyykS4kUyMDIVqwrGlLh7xBdmp0/c0MNdbIRkg77ShlbAQbjJgJhUbfRMe+ZKE1IFzRQJhiwDCX5zIVKmPz1F7KhC9flo9upRkf06gx7vKWtTCHkQLnYS2EzuSTAse0cdL/MLtErbkVQOsKrEvos9w2Z2hmx2/Z0W+1AGrNDl0Ydgz1YRRfnpt+UFwXo5p9AVBfAFDvYGUzlIiNZ5T30mA6pH1VPffTO1LW6GfBY5MtJHaR9Zdo3qxHOvq+cY0kcNynfrfmX7PjYCgvbjukk/v0Vg/T7k7dVb7Luy2qmxOXjmPWGsF5TC8gRAPJTX
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230016)(4636009)(396003)(346002)(376002)(366004)(136003)(39860400002)(36756003)(26005)(2616005)(6506007)(6512007)(186003)(6486002)(83380400001)(478600001)(2906002)(38100700002)(4326008)(8676002)(66476007)(66556008)(66946007)(54906003)(41300700001)(86362001)(8936002)(7416002)(5660300002)(6916009)(316002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?dMaEaxftgyw0NT27JsU2bY/IcOJfByfIKccrX063f8Ex1ShfXFX9vmTcjQY2?=
- =?us-ascii?Q?n9WK7nkm2IQhhRR+63dEd7UP2IhC9AkouciNH4FDCvwtpwkypSK8M7hm7EnU?=
- =?us-ascii?Q?JnnNI2ewOBZ7Dc3ybldKcZ1Z6JUGnzxP2MAsiYznMEdiE51zUAuLDK5hEboM?=
- =?us-ascii?Q?uvOJPyZFFqcFlJKy626MSd+AGAcA8N8bjKud+uvUf+jU7F4PpXRp1K1TP+AR?=
- =?us-ascii?Q?WRT+wgBFAHbV0Ei5mUzLiM/LpnCnNcV1VcKQiEFPNhC8PR8dGap2DOZnHZC1?=
- =?us-ascii?Q?WHxta5BMnP63jzDDHIIpEZ0XBdTXGhWkHhFvpDQ38aCpvyjw8h/T8eL9c0IK?=
- =?us-ascii?Q?uwyEU/94uetqrtHN+8bpzYG29nk5smMrPAZp0RPioJPZg45XKoFDnxJeczHx?=
- =?us-ascii?Q?7CQhRxyEFgXMbzYg1RMT6HI4MltQQBbrOGHeqkVde+xNNL24Ofncn8I7Y/AE?=
- =?us-ascii?Q?hyOtCCJGy67bidLjc98NNPUvFSGOh+1EGMHllxNCCULBcgPSJ6EGzGTGbOtL?=
- =?us-ascii?Q?bzpURDyFSj/1IgGF0D7Y0XkMm4uY9Ysq3PH4gEb6f4k6ypygRQuQahRL28pE?=
- =?us-ascii?Q?kkb2zJo66XTkcS0TdOWik5XWeWZiekyK4brlXnBNnNvt7oppw5BnO2vgLcTx?=
- =?us-ascii?Q?uEbEfZV7vlZFupKBNSt2q8ku+KntBaNrGhn+Gm3QTw/CYF8t0vUJmtbo0mnZ?=
- =?us-ascii?Q?qYqrcpDX3T3Z/qc400cFo6kmjFWuKYJELHqZmVyGLyLGcHyNZXwZmTsx7nP+?=
- =?us-ascii?Q?Qfqt0DhhyijsNGD/glrrxbFKIq0+0In7gNju+eOb/eqLL7iggmdLFKI5IBsw?=
- =?us-ascii?Q?nwLKl8LnuR5V30lLdP0QCrTDV+Gcvyu75R/5r16pwFbIEpqmmVMsgwWQ1ZfY?=
- =?us-ascii?Q?knZWGjI0hEdjB52QtKObmJD0L/lPCcSHimlRNnHhI9M2dEe6HdRirEaOco6Y?=
- =?us-ascii?Q?saY+XhS50VMpiqoYEe5CVdsN20R8pSM4wteggU11yTz1MH6ktaZz6fHMmR/4?=
- =?us-ascii?Q?tin+VQKrJ0C0zE3P5Ji4W9MpJhJfmGSy27bTcGVZSGTpQ272yrOkkpC7w+px?=
- =?us-ascii?Q?j93RYcvrpv9AbiOh+Ud2wH4LfgopDPBKfinB9KNgarLmLwdx696f55LiWjNc?=
- =?us-ascii?Q?a2PhaafPtm8IoWn2VGCzdZc2ob9n7dUykzPD1YOpqgnPmNyvdI/4WAdvXRn8?=
- =?us-ascii?Q?EEBoNFHQPgurF6ynuRD8ZU6ztIwHxYHXkDilhgRMyqTdzgNC9qkdkWq0zMmT?=
- =?us-ascii?Q?SAQHm2/UjJS7F5g3HJsnZPm920pWb4gkPAfNIN5vr/PkVM1KMUKZPDw2S1Fr?=
- =?us-ascii?Q?D9JAzeLoyE+TQj3DNxwLG8xvmsK6f28Ca5KDxS/Z+rJ2ko3PGtl3a+bo77RH?=
- =?us-ascii?Q?S3wCH1kB83/C+Jva/cxletqKnLAcZQivONw0303H2ICnasOpdLmh67vdI5PA?=
- =?us-ascii?Q?K3vSLAgPvTyU8yh4iIl5ubDBOy5vwJCb4x9vlbsP7yLvzsS60doK/CRtQuqa?=
- =?us-ascii?Q?q92gHHvJ84FBODYQ15lHRTdpfOVICMiIrgL7o+PvWJeYnx0FHzZ+t2PWELZs?=
- =?us-ascii?Q?Gz7iqO1R9PMlI1vkdSQ=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 46229f79-0d2a-468e-b1f3-08da5e7d9720
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jul 2022 11:57:52.9052 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: anCtLu6piYtef7P8C6+xBJi1ecQ10a44Y2nDlLjjfn80yBV8Kssmi0ORlMBgMouN
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6573
-Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <jroedel@suse.de>,
- kvm@vger.kernel.org, Fabiano Rosas <farosas@linux.ibm.com>,
- linuxppc-dev@lists.ozlabs.org, Daniel Henrique Barboza <danielhb413@gmail.com>,
- Murilo Opsfelder Araujo <muriloo@linux.ibm.com>, kvm-ppc@vger.kernel.org,
- Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org,
- Michael Ellerman <mpe@ellerman.id.au>, Robin Murphy <robin.murphy@arm.com>
+Cc: devicetree@vger.kernel.org, Will Deacon <will@kernel.org>,
+ Sameer Pujar <spujar@nvidia.com>, iommu@lists.linux-foundation.org,
+ Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+ Dmitry Osipenko <dmitry.osipenko@collabora.com>, linux-tegra@vger.kernel.org,
+ Janne Grunau <j@jannau.net>, Robin Murphy <robin.murphy@arm.com>,
+ asahi@lists.linux.dev
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -149,45 +107,90 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jul 05, 2022 at 04:22:35PM +1000, Alexey Kardashevskiy wrote:
+From: Thierry Reding <treding@nvidia.com>
 
-> I have not looked into the domains for ages, what is missing here? With this
-> on top of 5.19-rc1 VFIO works again on my POWER9 box. Thanks,
+Hi,
 
-Does this solve all the problems or just coherency? It seems like it
-should solve everything now as there will be a IOMMU_DOMAIN_BLOCKED
-and the ref logic will succeed to assign it?
+This version has several fixes over the previous v5, which can be found
+here:
 
-> +static struct iommu_domain *spapr_tce_iommu_domain_alloc(unsigned int type)
-> +{
-> +	struct iommu_domain *domain = kzalloc(sizeof(*domain), GFP_KERNEL);
-> +
-> +	if (!domain)
-> +		return NULL;
+  https://lore.kernel.org/all/20220512190052.1152377-1-thierry.reding@gmail.com/
 
-This should only succeed if type is IOMMU_DOMAIN_BLOCKED
+An example is included in the DT bindings, but here is an extract of
+what I've used to test this:
 
-> +static struct iommu_group *spapr_tce_iommu_device_group(struct device *dev)
-> +{
-> +	struct iommu_group *grp = dev->iommu_group;
-> +
-> +	if (!grp)
-> +		grp = ERR_PTR(-ENODEV);
+        reserved-memory {
+                #address-cells = <2>;
+                #size-cells = <2>;
+                ranges;
 
-It looks like this should just always fail since the code code already
-checks iommu_group before calling this? (Arguably ppc should be
-refactored to use the normal probe_device and device_group ops to
-create groups, but that doesn't seem critical for this.
+                /*
+                 * Creates an identity mapping for the framebuffer that
+                 * the firmware has setup to scan out a bootsplash from.
+                 */
+                fb: framebuffer@92cb2000 {
+                        reg = <0x0 0x92cb2000 0x0 0x00800000>;
+                        iommu-addresses = <&dc0 0x0 0x92cb2000 0x0 0x00800000>;
+                };
 
-Thanks
-Jason
+                /*
+                 * Creates a reservation in the IOVA space to prevent
+                 * any buffers from being mapped to that region. Note
+                 * that on Tegra the range is actually quite different
+                 * from this, but it would conflict with the display
+                 * driver that I tested this against, so this is just
+                 * a dummy region for testing.
+                 */
+                adsp: reservation-adsp {
+                        iommu-addresses = <&dc0 0x0 0x90000000 0x0 0x00010000>;
+                };
+        };
+
+        host1x@50000000 {
+                dc@54200000 {
+                        memory-region = <&fb>, <&adsp>;
+                };
+        };
+
+This is abbreviated a little to focus on the essentials. Note also that
+the ADSP reservation is not actually used on this device and the driver
+for this doesn't exist yet, but I wanted to include this variant for
+testing, because we'll want to use these bindings for the reservation
+use-case as well at some point.
+
+Adding Alyssa and Janne who have in the past tried to make these
+bindings work on Apple M1. Also adding Sameer from the Tegra audio team
+to look at the ADSP reservation and double-check that this is suitable
+for our needs.
+
+Thierry
+
+Navneet Kumar (1):
+  iommu/tegra-smmu: Support managed domains
+
+Thierry Reding (4):
+  dt-bindings: reserved-memory: Document iommu-addresses
+  iommu: Implement of_iommu_get_resv_regions()
+  iommu: dma: Use of_iommu_get_resv_regions()
+  iommu/tegra-smmu: Add support for reserved regions
+
+ .../reserved-memory/reserved-memory.txt       |  1 -
+ .../reserved-memory/reserved-memory.yaml      | 62 +++++++++++++
+ drivers/iommu/dma-iommu.c                     |  3 +
+ drivers/iommu/of_iommu.c                      | 88 +++++++++++++++++++
+ drivers/iommu/tegra-smmu.c                    | 82 +++++++++++++----
+ include/linux/of_iommu.h                      |  8 ++
+ 6 files changed, 225 insertions(+), 19 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
+
+-- 
+2.36.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
