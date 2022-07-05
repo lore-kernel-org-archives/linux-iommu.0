@@ -1,31 +1,31 @@
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A28547C
-	for <iommu@lists.linux.dev>; Tue,  5 Jul 2022 05:12:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5053F7C
+	for <iommu@lists.linux.dev>; Tue,  5 Jul 2022 05:12:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656997927; x=1688533927;
+  t=1656997933; x=1688533933;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=uS+4zAhU3LsHFG2nNclNJmjXA6SLYohmWdVIExa9sM0=;
-  b=n0UqHvyv/29OAyVv3QfEbRH8K/Nbh/BHHYhXHbmJ1RP656wA4vE55UY2
-   TOVX2KVaexVhCrHTnzrM3n68iDhiNiczH0aPOEoxtcr70GdpnhT14bweI
-   +yeSNboJFtE6/YIfTBO96KloCNMSCjqKqzevtA7ANnraXxwk9g/qopfEs
-   9DUbP2hDi0uy7Yvs4PvEhuJIbHrv0ccdzx/2wRe+H515vvfM+A9wtPPe/
-   BItD6BIEB7rC62tt67lWJcmqWxNu9Wj3ShB1MtFQ8r2TxYG5QcptYnxaz
-   KpUHeiQxqTxPZhzLSQoaSfM7w/mIzUjiI4UbA2a+SP8knM3pD4VzUR08I
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="284364898"
+  bh=S5whMXXGsszBDylNhVPSI8VZBjv9fDAEEUSTnAkbGgY=;
+  b=UyTJysArBxXFj+WaTEfXhZewQ4Js8wM0FbTDOauaPsxL86hkroEeQ3fL
+   YcmNdklRynS/euqR4TQOMNDEpXTGbm2ZZaTgk79N5Ic6oyWkaPw+r8D7x
+   aGO+dfC16dCg9YdzDQrQnx4BU65f2ohQEvWgxNGNbi/yH1l5AVGZJgYK3
+   eLNgZDbXsxC21+ljnz84v/a3lFRp37TYVtiZVQ5zJenyKb7ms7lb4gBHu
+   AzFXHLbrI70CtaCnOlfnbX7OOoBn24F8RQqv7+8/DqXkjBFOPyVgYicBR
+   wPV+b5j2wGZrVESyca2bWx9CsegMDw7elMsJeulSDzqSHzXlZp4cY/1gH
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="263046131"
 X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
-   d="scan'208";a="284364898"
+   d="scan'208";a="263046131"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 22:12:07 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 22:12:12 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
-   d="scan'208";a="542807494"
+   d="scan'208";a="542807526"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga003.jf.intel.com with ESMTP; 04 Jul 2022 22:12:03 -0700
+  by orsmga003.jf.intel.com with ESMTP; 04 Jul 2022 22:12:07 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Jason Gunthorpe <jgg@nvidia.com>,
@@ -44,10 +44,11 @@ Cc: Eric Auger <eric.auger@redhat.com>,
 	Zhu Tony <tony.zhu@intel.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v10 06/12] iommu/vt-d: Add SVA domain support
-Date: Tue,  5 Jul 2022 13:07:04 +0800
-Message-Id: <20220705050710.2887204-7-baolu.lu@linux.intel.com>
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: [PATCH v10 07/12] arm-smmu-v3/sva: Add SVA domain support
+Date: Tue,  5 Jul 2022 13:07:05 +0800
+Message-Id: <20220705050710.2887204-8-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
 References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
@@ -63,107 +64,128 @@ Add support for SVA domain allocation and provide an SVA-specific
 iommu_domain_ops.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Tested-by: Tony Zhu <tony.zhu@intel.com>
+Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
 ---
- include/linux/intel-iommu.h |  5 ++++
- drivers/iommu/intel/iommu.c |  2 ++
- drivers/iommu/intel/svm.c   | 49 +++++++++++++++++++++++++++++++++++++
- 3 files changed, 56 insertions(+)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  6 ++
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 69 +++++++++++++++++++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  3 +
+ 3 files changed, 78 insertions(+)
 
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 31e3edc0fc7e..9007428a68f1 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -743,6 +743,7 @@ void intel_svm_unbind(struct iommu_sva *handle);
- u32 intel_svm_get_pasid(struct iommu_sva *handle);
- int intel_svm_page_response(struct device *dev, struct iommu_fault_event *evt,
- 			    struct iommu_page_response *msg);
-+struct iommu_domain *intel_svm_domain_alloc(void);
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index d2ba86470c42..96399dd3a67a 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -758,6 +758,7 @@ struct iommu_sva *arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm);
+ void arm_smmu_sva_unbind(struct iommu_sva *handle);
+ u32 arm_smmu_sva_get_pasid(struct iommu_sva *handle);
+ void arm_smmu_sva_notifier_synchronize(void);
++struct iommu_domain *arm_smmu_sva_domain_alloc(void);
+ #else /* CONFIG_ARM_SMMU_V3_SVA */
+ static inline bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
+ {
+@@ -803,5 +804,10 @@ static inline u32 arm_smmu_sva_get_pasid(struct iommu_sva *handle)
+ }
  
- struct intel_svm_dev {
- 	struct list_head list;
-@@ -768,6 +769,10 @@ struct intel_svm {
- };
- #else
- static inline void intel_svm_check(struct intel_iommu *iommu) {}
-+static inline struct iommu_domain *intel_svm_domain_alloc(void)
+ static inline void arm_smmu_sva_notifier_synchronize(void) {}
++
++static inline struct iommu_domain *arm_smmu_sva_domain_alloc(void)
 +{
 +	return NULL;
 +}
- #endif
- 
- #ifdef CONFIG_INTEL_IOMMU_DEBUGFS
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 44016594831d..993a1ce509a8 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4298,6 +4298,8 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
- 		return domain;
- 	case IOMMU_DOMAIN_IDENTITY:
- 		return &si_domain->domain;
-+	case IOMMU_DOMAIN_SVA:
-+		return intel_svm_domain_alloc();
- 	default:
- 		return NULL;
- 	}
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index d04880a291c3..7d4f9d173013 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -931,3 +931,52 @@ int intel_svm_page_response(struct device *dev,
- 	mutex_unlock(&pasid_mutex);
- 	return ret;
+ #endif /* CONFIG_ARM_SMMU_V3_SVA */
+ #endif /* _ARM_SMMU_V3_H */
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+index f155d406c5d5..fc4555dac5b4 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+@@ -549,3 +549,72 @@ void arm_smmu_sva_notifier_synchronize(void)
+ 	 */
+ 	mmu_notifier_synchronize();
  }
 +
-+static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
-+				   struct device *dev, ioasid_t pasid)
++static int arm_smmu_sva_set_dev_pasid(struct iommu_domain *domain,
++				      struct device *dev, ioasid_t id)
 +{
-+	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+	struct intel_iommu *iommu = info->iommu;
-+	struct mm_struct *mm = domain->mm;
-+	struct iommu_sva *sva;
 +	int ret = 0;
++	struct mm_struct *mm;
++	struct iommu_sva *handle;
 +
-+	mutex_lock(&pasid_mutex);
-+	sva = intel_svm_bind_mm(iommu, dev, mm);
-+	if (IS_ERR(sva))
-+		ret = PTR_ERR(sva);
-+	mutex_unlock(&pasid_mutex);
++	if (domain->type != IOMMU_DOMAIN_SVA)
++		return -EINVAL;
++
++	mm = domain->mm;
++	if (WARN_ON(!mm))
++		return -ENODEV;
++
++	mutex_lock(&sva_lock);
++	handle = __arm_smmu_sva_bind(dev, mm);
++	if (IS_ERR(handle))
++		ret = PTR_ERR(handle);
++	mutex_unlock(&sva_lock);
 +
 +	return ret;
 +}
 +
-+static void intel_svm_block_dev_pasid(struct iommu_domain *domain,
-+				      struct device *dev, ioasid_t pasid)
++static void arm_smmu_sva_block_dev_pasid(struct iommu_domain *domain,
++					 struct device *dev, ioasid_t id)
 +{
-+	mutex_lock(&pasid_mutex);
-+	intel_svm_unbind_mm(dev, pasid);
-+	mutex_unlock(&pasid_mutex);
++	struct mm_struct *mm = domain->mm;
++	struct arm_smmu_bond *bond = NULL, *t;
++	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
++
++	mutex_lock(&sva_lock);
++	list_for_each_entry(t, &master->bonds, list) {
++		if (t->mm == mm) {
++			bond = t;
++			break;
++		}
++	}
++
++	if (!WARN_ON(!bond) && refcount_dec_and_test(&bond->refs)) {
++		list_del(&bond->list);
++		arm_smmu_mmu_notifier_put(bond->smmu_mn);
++		kfree(bond);
++	}
++	mutex_unlock(&sva_lock);
 +}
 +
-+static void intel_svm_domain_free(struct iommu_domain *domain)
++static void arm_smmu_sva_domain_free(struct iommu_domain *domain)
 +{
-+	kfree(to_dmar_domain(domain));
++	kfree(domain);
 +}
 +
-+static const struct iommu_domain_ops intel_svm_domain_ops = {
-+	.set_dev_pasid		= intel_svm_set_dev_pasid,
-+	.block_dev_pasid	= intel_svm_block_dev_pasid,
-+	.free			= intel_svm_domain_free,
++static const struct iommu_domain_ops arm_smmu_sva_domain_ops = {
++	.set_dev_pasid		= arm_smmu_sva_set_dev_pasid,
++	.block_dev_pasid	= arm_smmu_sva_block_dev_pasid,
++	.free			= arm_smmu_sva_domain_free,
 +};
 +
-+struct iommu_domain *intel_svm_domain_alloc(void)
++struct iommu_domain *arm_smmu_sva_domain_alloc(void)
 +{
-+	struct dmar_domain *domain;
++	struct iommu_domain *domain;
 +
 +	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
 +	if (!domain)
 +		return NULL;
-+	domain->domain.ops = &intel_svm_domain_ops;
++	domain->ops = &arm_smmu_sva_domain_ops;
 +
-+	return &domain->domain;
++	return domain;
 +}
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index ae8ec8df47c1..a30b252e2f95 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1999,6 +1999,9 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+ {
+ 	struct arm_smmu_domain *smmu_domain;
+ 
++	if (type == IOMMU_DOMAIN_SVA)
++		return arm_smmu_sva_domain_alloc();
++
+ 	if (type != IOMMU_DOMAIN_UNMANAGED &&
+ 	    type != IOMMU_DOMAIN_DMA &&
+ 	    type != IOMMU_DOMAIN_DMA_FQ &&
 -- 
 2.25.1
 
