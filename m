@@ -1,217 +1,315 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 864417C
-	for <iommu@lists.linux.dev>; Tue,  5 Jul 2022 05:12:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656997956; x=1688533956;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=2PIRrxrWkqooSJD1BFX6QzuVGWWS7p2CUAaeu4XMy5U=;
-  b=E2otksIYBIXE5pIg3/EzXVJAPafK5Le5kDCmqCldgJV6k38R96LejWxi
-   YrR1Y6G2fjSecaDQKz2p5pUT55lrnhEKJx6ZFFEV+EO0+UrL4KBdyO/pM
-   lJ7J/vUofi0hh3od0c1jmKUIyOsqJzTa0LPzBJGTpcZzyomrJmS/9aR61
-   6hhXRMjGcfC/qf5MalucPDuKlccLBz9PSGbCOG56VwYBE4WbqbnpmRP0l
-   qdCKGxMvlMy0w70U43lLyHlBLYHkeBqVUuuB3XNv/xYO0W0QLRm8y+Xwq
-   SlQp7U4f4qlNzp31+qnvcthcSEsxwcQ6nKvoAhjTjGJdgaqtIbTwWQHSg
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="263046203"
-X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
-   d="scan'208";a="263046203"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 22:12:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
-   d="scan'208";a="542807653"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga003.jf.intel.com with ESMTP; 04 Jul 2022 22:12:31 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Christoph Hellwig <hch@infradead.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Ashok Raj <ashok.raj@intel.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD54333C7
+	for <iommu@lists.linux.dev>; Tue,  5 Jul 2022 13:52:49 +0000 (UTC)
+Received: by mail-lf1-f43.google.com with SMTP id f39so20689300lfv.3
+        for <iommu@lists.linux.dev>; Tue, 05 Jul 2022 06:52:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hnG3EXAGSYglCl/wRCeE6XoUd122X8s3VFjj/Cl4BDo=;
+        b=f0oPNRCtup46ssQPcrkajodUnXaa38S7aucBwdDILFTG2eeb4ezSSagYCCpSaPXn6q
+         pM88V+eJuR+2wDKnqOvmIn2UBQeLj4Dvk+jM/7QzsaH+djXUCf8dVdZrR3Rum0ZxA4Fx
+         1+V5jQK4WZ6A6r+Z7pGJ3DHRh/l/I+n6TS11toC5D+NwQqpCXjbGQMtOFJd9gZJEVfoN
+         8o6r4MmM6XpKVa4t/W7kzcEgwfUE3Y+OozwbzeYUm+9Cfc1rCiR8kyXeLGCPMRo+QW0N
+         dWcQwNP8U6XumHQBe98yfaBeLuhKipyLuPvGkvNRoq32ZtcDVOLho4L9W1jGhun/Kcvn
+         3uIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hnG3EXAGSYglCl/wRCeE6XoUd122X8s3VFjj/Cl4BDo=;
+        b=JDfDl0G/kzOhEbMR/j9306VILTvHfx13ISmOvURLXmQ/bW3dLKqjSCEb7YrgiTrGkd
+         3evonECmseuk29DVUu98wkyKzPqVLBNuv377SvWUrRPXPBOfAFBhVsFFCX1YJtAj2Pbp
+         iUX52WwoZynUxeXSyv9mrAkB1bUgJbP7gkSKskrMtSucKetioLpfoZN4qxQPKyLzZQ+/
+         FRa3sHdawtbAkY/IAlbj5qKc7FiTOR/+SQXxBuuZBqfppiFhXQGojXzCi9pZJz27E8kY
+         r0BxX1WEhBCBQyaEtmJNvLZQMrVJO2ws0LB7p0cuBpCZCABkWpoPzCL5SiHpppqGG15b
+         rt5w==
+X-Gm-Message-State: AJIora+O1TmpK0MlKwgTYY7dX9D6wXlP6FNxGDa7v1xN3QZ+l+iT4fgt
+	65AZH7V+eBt/dasDR1RvLHY=
+X-Google-Smtp-Source: AGRyM1tzQQEVczY5NcmNDovprbd7u0K8INSqZ44DlUGhkZwwx9elVzmtIOyIVqDnGRJUYz9FEGSPyA==
+X-Received: by 2002:a05:6512:b1a:b0:47f:b574:9539 with SMTP id w26-20020a0565120b1a00b0047fb5749539mr21685925lfu.143.1657029167643;
+        Tue, 05 Jul 2022 06:52:47 -0700 (PDT)
+Received: from mobilestation ([95.79.140.178])
+        by smtp.gmail.com with ESMTPSA id v19-20020ac258f3000000b00483f8c40c14sm262435lfo.243.2022.07.05.06.52.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 06:52:47 -0700 (PDT)
+Date: Tue, 5 Jul 2022 16:52:43 +0300
+From: Serge Semin <fancer.lancer@gmail.com>
+To: Samuel Holland <samuel@sholland.org>, Marc Zyngier <maz@kernel.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Bartosz Golaszewski <brgl@bgdev.pl>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Chris Zankel <chris@zankel.net>,
+	Colin Ian King <colin.king@intel.com>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	Dexuan Cui <decui@microsoft.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Guo Ren <guoren@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Helge Deller <deller@gmx.de>, Ingo Molnar <mingo@redhat.com>,
+	Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+	"James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+	Jan Beulich <jbeulich@suse.com>, Joerg Roedel <joro@8bytes.org>,
+	Juergen Gross <jgross@suse.com>,
+	Julia Lawall <Julia.Lawall@inria.fr>,
+	"K. Y. Srinivasan" <kys@microsoft.com>,
+	Kees Cook <keescook@chromium.org>,
+	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Matt Turner <mattst88@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>,
+	Maximilian Heyne <mheyne@amazon.de>,
+	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+	Rich Felker <dalias@libc.org>, Richard Henderson <rth@twiddle.net>,
+	Rikard Falkeborn <rikard.falkeborn@gmail.com>,
+	Rob Herring <robh@kernel.org>, Russell King <linux@armlinux.org.uk>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Stephen Hemminger <sthemmin@microsoft.com>,
+	Sven Schnelle <svens@stackframe.org>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Wei Liu <wei.liu@kernel.org>, Wei Xu <xuwei5@hisilicon.com>,
 	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>,
-	Dave Jiang <dave.jiang@intel.com>,
-	Vinod Koul <vkoul@kernel.org>
-Cc: Eric Auger <eric.auger@redhat.com>,
-	Liu Yi L <yi.l.liu@intel.com>,
-	Jacob jun Pan <jacob.jun.pan@intel.com>,
-	Zhangfei Gao <zhangfei.gao@linaro.org>,
-	Zhu Tony <tony.zhu@intel.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH v10 12/12] iommu: Rename iommu-sva-lib.{c,h}
-Date: Tue,  5 Jul 2022 13:07:10 +0800
-Message-Id: <20220705050710.2887204-13-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
-References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
+	Yoshinori Sato <ysato@users.sourceforge.jp>,
+	iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
+	linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-hyperv@vger.kernel.org, linux-ia64@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+	linux-parisc@vger.kernel.org, linux-pci@vger.kernel.org,
+	linux-sh@vger.kernel.org, linux-xtensa@linux-xtensa.org,
+	x86@kernel.org, xen-devel@lists.xenproject.org,
+	kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH v3 1/8] irqchip/mips-gic: Only register IPI domain when
+ SMP is enabled
+Message-ID: <20220705135243.ydbwfo4kois64elr@mobilestation>
+References: <20220701200056.46555-1-samuel@sholland.org>
+ <20220701200056.46555-2-samuel@sholland.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220701200056.46555-2-samuel@sholland.org>
+Message-ID: <20220705135243.zWDSfiQfOE9EMigOH0VGF6-wcx9Bw_4poeNKk8PqkCI@z>
 
-Rename iommu-sva-lib.c[h] to iommu-sva.c[h] as it contains all code
-for SVA implementation in iommu core.
+Hi Samuel
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
-Tested-by: Tony Zhu <tony.zhu@intel.com>
----
- drivers/iommu/{iommu-sva-lib.h => iommu-sva.h}  | 6 +++---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 2 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 2 +-
- drivers/iommu/intel/iommu.c                     | 2 +-
- drivers/iommu/intel/svm.c                       | 2 +-
- drivers/iommu/io-pgfault.c                      | 2 +-
- drivers/iommu/{iommu-sva-lib.c => iommu-sva.c}  | 2 +-
- drivers/iommu/iommu.c                           | 2 +-
- drivers/iommu/Makefile                          | 2 +-
- 9 files changed, 11 insertions(+), 11 deletions(-)
- rename drivers/iommu/{iommu-sva-lib.h => iommu-sva.h} (95%)
- rename drivers/iommu/{iommu-sva-lib.c => iommu-sva.c} (99%)
+On Fri, Jul 01, 2022 at 03:00:49PM -0500, Samuel Holland wrote:
+> The MIPS GIC irqchip driver may be selected in a uniprocessor
+> configuration, but it unconditionally registers an IPI domain.
+> 
+> Limit the part of the driver dealing with IPIs to only be compiled when
+> GENERIC_IRQ_IPI is enabled, which corresponds to an SMP configuration.
 
-diff --git a/drivers/iommu/iommu-sva-lib.h b/drivers/iommu/iommu-sva.h
-similarity index 95%
-rename from drivers/iommu/iommu-sva-lib.h
-rename to drivers/iommu/iommu-sva.h
-index 1b3ace4b5863..7215a761b962 100644
---- a/drivers/iommu/iommu-sva-lib.h
-+++ b/drivers/iommu/iommu-sva.h
-@@ -2,8 +2,8 @@
- /*
-  * SVA library for IOMMU drivers
-  */
--#ifndef _IOMMU_SVA_LIB_H
--#define _IOMMU_SVA_LIB_H
-+#ifndef _IOMMU_SVA_H
-+#define _IOMMU_SVA_H
- 
- #include <linux/ioasid.h>
- #include <linux/mm_types.h>
-@@ -72,4 +72,4 @@ iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
- 	return IOMMU_PAGE_RESP_INVALID;
- }
- #endif /* CONFIG_IOMMU_SVA */
--#endif /* _IOMMU_SVA_LIB_H */
-+#endif /* _IOMMU_SVA_H */
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index e36c689f56c5..b33bc592ccfa 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -10,7 +10,7 @@
- #include <linux/slab.h>
- 
- #include "arm-smmu-v3.h"
--#include "../../iommu-sva-lib.h"
-+#include "../../iommu-sva.h"
- #include "../../io-pgtable-arm.h"
- 
- struct arm_smmu_mmu_notifier {
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 8b9b78c7a67d..79e8991e9181 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -31,7 +31,7 @@
- #include <linux/amba/bus.h>
- 
- #include "arm-smmu-v3.h"
--#include "../../iommu-sva-lib.h"
-+#include "../../iommu-sva.h"
- 
- static bool disable_bypass = true;
- module_param(disable_bypass, bool, 0444);
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 37d68eda1889..d16ab6d1cc05 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -27,7 +27,7 @@
- #include <linux/tboot.h>
- 
- #include "../irq_remapping.h"
--#include "../iommu-sva-lib.h"
-+#include "../iommu-sva.h"
- #include "pasid.h"
- #include "cap_audit.h"
- 
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index db55b06cafdf..58656a93b201 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -25,7 +25,7 @@
- 
- #include "pasid.h"
- #include "perf.h"
--#include "../iommu-sva-lib.h"
-+#include "../iommu-sva.h"
- 
- static irqreturn_t prq_event_thread(int irq, void *d);
- static void intel_svm_drain_prq(struct device *dev, u32 pasid);
-diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-index d1c522f4ab34..7a60b123e6b9 100644
---- a/drivers/iommu/io-pgfault.c
-+++ b/drivers/iommu/io-pgfault.c
-@@ -11,7 +11,7 @@
- #include <linux/slab.h>
- #include <linux/workqueue.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- /**
-  * struct iopf_queue - IO Page Fault queue
-diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva.c
-similarity index 99%
-rename from drivers/iommu/iommu-sva-lib.c
-rename to drivers/iommu/iommu-sva.c
-index 536d34855c74..21ffbf1ac39e 100644
---- a/drivers/iommu/iommu-sva-lib.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -6,7 +6,7 @@
- #include <linux/sched/mm.h>
- #include <linux/iommu.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- static DEFINE_MUTEX(iommu_sva_lock);
- static DECLARE_IOASID_SET(iommu_sva_pasid);
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index c6e9c8e82771..8b9350e10d0b 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -29,7 +29,7 @@
- #include <trace/events/iommu.h>
- #include <linux/sched/mm.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- static struct kset *iommu_group_kset;
- static DEFINE_IDA(iommu_group_ida);
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 44475a9b3eea..c1763476162b 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -27,6 +27,6 @@ obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
- obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
- obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
- obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
--obj-$(CONFIG_IOMMU_SVA) += iommu-sva-lib.o io-pgfault.o
-+obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o io-pgfault.o
- obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
- obj-$(CONFIG_APPLE_DART) += apple-dart.o
--- 
-2.25.1
+Thanks for the patch. Some comment is below.
 
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Samuel Holland <samuel@sholland.org>
+> ---
+> 
+> Changes in v3:
+>  - New patch to fix build errors in uniprocessor MIPS configs
+> 
+>  drivers/irqchip/Kconfig        |  3 +-
+>  drivers/irqchip/irq-mips-gic.c | 80 +++++++++++++++++++++++-----------
+>  2 files changed, 56 insertions(+), 27 deletions(-)
+> 
+> diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+> index 1f23a6be7d88..d26a4ff7c99f 100644
+> --- a/drivers/irqchip/Kconfig
+> +++ b/drivers/irqchip/Kconfig
+> @@ -322,7 +322,8 @@ config KEYSTONE_IRQ
+>  
+>  config MIPS_GIC
+>  	bool
+> -	select GENERIC_IRQ_IPI
+> +	select GENERIC_IRQ_IPI if SMP
+
+> +	select IRQ_DOMAIN_HIERARCHY
+
+It seems to me that the IRQ domains hierarchy is supposed to be
+created only if IPI is required. At least that's what the MIPS GIC
+driver implies. Thus we can go further and CONFIG_IRQ_DOMAIN_HIERARCHY
+ifdef-out the gic_irq_domain_alloc() and gic_irq_domain_free()
+methods definition together with the initialization:
+
+ static const struct irq_domain_ops gic_irq_domain_ops = {
+ 	.xlate = gic_irq_domain_xlate,
++#ifdef CONFIG_IRQ_DOMAIN_HIERARCHY
+ 	.alloc = gic_irq_domain_alloc,
+ 	.free = gic_irq_domain_free,
++#endif
+ 	.map = gic_irq_domain_map,
+};
+
+If the GENERIC_IRQ_IPI config is enabled, CONFIG_IRQ_DOMAIN_HIERARCHY
+will be automatically selected (see the config definition in
+kernel/irq/Kconfig). If the IRQs hierarchy is needed for some another
+functionality like GENERIC_MSI_IRQ_DOMAIN or GPIOs then they will
+explicitly enable the IRQ_DOMAIN_HIERARCHY config thus activating the
+denoted .alloc and .free methods definitions.
+
+To sum up you can get rid of the IRQ_DOMAIN_HIERARCHY config
+force-select from this patch and make the MIPS GIC driver code a bit
+more coherent.
+
+@Marc, please correct me if were wrong.
+
+-Serget
+
+>  	select MIPS_CM
+>  
+>  config INGENIC_IRQ
+> diff --git a/drivers/irqchip/irq-mips-gic.c b/drivers/irqchip/irq-mips-gic.c
+> index ff89b36267dd..8a9efb6ae587 100644
+> --- a/drivers/irqchip/irq-mips-gic.c
+> +++ b/drivers/irqchip/irq-mips-gic.c
+> @@ -52,13 +52,15 @@ static DEFINE_PER_CPU_READ_MOSTLY(unsigned long[GIC_MAX_LONGS], pcpu_masks);
+>  
+>  static DEFINE_SPINLOCK(gic_lock);
+>  static struct irq_domain *gic_irq_domain;
+> -static struct irq_domain *gic_ipi_domain;
+>  static int gic_shared_intrs;
+>  static unsigned int gic_cpu_pin;
+>  static unsigned int timer_cpu_pin;
+>  static struct irq_chip gic_level_irq_controller, gic_edge_irq_controller;
+> +
+> +#ifdef CONFIG_GENERIC_IRQ_IPI
+>  static DECLARE_BITMAP(ipi_resrv, GIC_MAX_INTRS);
+>  static DECLARE_BITMAP(ipi_available, GIC_MAX_INTRS);
+> +#endif /* CONFIG_GENERIC_IRQ_IPI */
+>  
+>  static struct gic_all_vpes_chip_data {
+>  	u32	map;
+> @@ -472,9 +474,11 @@ static int gic_irq_domain_map(struct irq_domain *d, unsigned int virq,
+>  	u32 map;
+>  
+>  	if (hwirq >= GIC_SHARED_HWIRQ_BASE) {
+> +#ifdef CONFIG_GENERIC_IRQ_IPI
+>  		/* verify that shared irqs don't conflict with an IPI irq */
+>  		if (test_bit(GIC_HWIRQ_TO_SHARED(hwirq), ipi_resrv))
+>  			return -EBUSY;
+> +#endif /* CONFIG_GENERIC_IRQ_IPI */
+>  
+>  		err = irq_domain_set_hwirq_and_chip(d, virq, hwirq,
+>  						    &gic_level_irq_controller,
+> @@ -567,6 +571,8 @@ static const struct irq_domain_ops gic_irq_domain_ops = {
+>  	.map = gic_irq_domain_map,
+>  };
+>  
+> +#ifdef CONFIG_GENERIC_IRQ_IPI
+> +
+>  static int gic_ipi_domain_xlate(struct irq_domain *d, struct device_node *ctrlr,
+>  				const u32 *intspec, unsigned int intsize,
+>  				irq_hw_number_t *out_hwirq,
+> @@ -670,6 +676,48 @@ static const struct irq_domain_ops gic_ipi_domain_ops = {
+>  	.match = gic_ipi_domain_match,
+>  };
+>  
+> +static int gic_register_ipi_domain(struct device_node *node)
+> +{
+> +	struct irq_domain *gic_ipi_domain;
+> +	unsigned int v[2], num_ipis;
+> +
+> +	gic_ipi_domain = irq_domain_add_hierarchy(gic_irq_domain,
+> +						  IRQ_DOMAIN_FLAG_IPI_PER_CPU,
+> +						  GIC_NUM_LOCAL_INTRS + gic_shared_intrs,
+> +						  node, &gic_ipi_domain_ops, NULL);
+> +	if (!gic_ipi_domain) {
+> +		pr_err("Failed to add IPI domain");
+> +		return -ENXIO;
+> +	}
+> +
+> +	irq_domain_update_bus_token(gic_ipi_domain, DOMAIN_BUS_IPI);
+> +
+> +	if (node &&
+> +	    !of_property_read_u32_array(node, "mti,reserved-ipi-vectors", v, 2)) {
+> +		bitmap_set(ipi_resrv, v[0], v[1]);
+> +	} else {
+> +		/*
+> +		 * Reserve 2 interrupts per possible CPU/VP for use as IPIs,
+> +		 * meeting the requirements of arch/mips SMP.
+> +		 */
+> +		num_ipis = 2 * num_possible_cpus();
+> +		bitmap_set(ipi_resrv, gic_shared_intrs - num_ipis, num_ipis);
+> +	}
+> +
+> +	bitmap_copy(ipi_available, ipi_resrv, GIC_MAX_INTRS);
+> +
+> +	return 0;
+> +}
+> +
+> +#else /* !CONFIG_GENERIC_IRQ_IPI */
+> +
+> +static inline int gic_register_ipi_domain(struct device_node *node)
+> +{
+> +	return 0;
+> +}
+> +
+> +#endif /* !CONFIG_GENERIC_IRQ_IPI */
+> +
+>  static int gic_cpu_startup(unsigned int cpu)
+>  {
+>  	/* Enable or disable EIC */
+> @@ -688,11 +736,12 @@ static int gic_cpu_startup(unsigned int cpu)
+>  static int __init gic_of_init(struct device_node *node,
+>  			      struct device_node *parent)
+>  {
+> -	unsigned int cpu_vec, i, gicconfig, v[2], num_ipis;
+> +	unsigned int cpu_vec, i, gicconfig;
+>  	unsigned long reserved;
+>  	phys_addr_t gic_base;
+>  	struct resource res;
+>  	size_t gic_len;
+> +	int ret;
+>  
+>  	/* Find the first available CPU vector. */
+>  	i = 0;
+> @@ -780,30 +829,9 @@ static int __init gic_of_init(struct device_node *node,
+>  		return -ENXIO;
+>  	}
+>  
+> -	gic_ipi_domain = irq_domain_add_hierarchy(gic_irq_domain,
+> -						  IRQ_DOMAIN_FLAG_IPI_PER_CPU,
+> -						  GIC_NUM_LOCAL_INTRS + gic_shared_intrs,
+> -						  node, &gic_ipi_domain_ops, NULL);
+> -	if (!gic_ipi_domain) {
+> -		pr_err("Failed to add IPI domain");
+> -		return -ENXIO;
+> -	}
+> -
+> -	irq_domain_update_bus_token(gic_ipi_domain, DOMAIN_BUS_IPI);
+> -
+> -	if (node &&
+> -	    !of_property_read_u32_array(node, "mti,reserved-ipi-vectors", v, 2)) {
+> -		bitmap_set(ipi_resrv, v[0], v[1]);
+> -	} else {
+> -		/*
+> -		 * Reserve 2 interrupts per possible CPU/VP for use as IPIs,
+> -		 * meeting the requirements of arch/mips SMP.
+> -		 */
+> -		num_ipis = 2 * num_possible_cpus();
+> -		bitmap_set(ipi_resrv, gic_shared_intrs - num_ipis, num_ipis);
+> -	}
+> -
+> -	bitmap_copy(ipi_available, ipi_resrv, GIC_MAX_INTRS);
+> +	ret = gic_register_ipi_domain(node);
+> +	if (ret)
+> +		return ret;
+>  
+>  	board_bind_eic_interrupt = &gic_bind_eic_interrupt;
+>  
+> -- 
+> 2.35.1
+> 
