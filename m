@@ -1,114 +1,70 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 35E0CCCA47B
-	for <iommu@archiver.kernel.org>; Tue,  5 Jul 2022 08:44:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6D388C43334
+	for <iommu@archiver.kernel.org>; Tue,  5 Jul 2022 09:06:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id A3B8B60EE4;
-	Tue,  5 Jul 2022 08:44:50 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org A3B8B60EE4
-Authentication-Results: smtp3.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20210112 header.b=oVdJFaZL
+	by smtp1.osuosl.org (Postfix) with ESMTP id E19CC81DCA;
+	Tue,  5 Jul 2022 09:06:38 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org E19CC81DCA
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id USvHXS5T6bnt; Tue,  5 Jul 2022 08:44:49 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 1aUmndryWtO1; Tue,  5 Jul 2022 09:06:38 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 9F86560E72;
-	Tue,  5 Jul 2022 08:44:48 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 9F86560E72
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 925D981DBF;
+	Tue,  5 Jul 2022 09:06:37 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 925D981DBF
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6E159C0032;
-	Tue,  5 Jul 2022 08:44:48 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 72E2DC002D
- for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 08:44:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 58155C0032;
+	Tue,  5 Jul 2022 09:06:37 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B5442C002D
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 09:06:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 4A62D41748
- for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 08:44:47 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 4A62D41748
-Authentication-Results: smtp4.osuosl.org;
- dkim=pass (2048-bit key) header.d=google.com header.i=@google.com
- header.a=rsa-sha256 header.s=20210112 header.b=oVdJFaZL
+ by smtp4.osuosl.org (Postfix) with ESMTP id 8F2D8408EA
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 09:06:35 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 8F2D8408EA
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0NnMRYU0XCjL for <iommu@lists.linux-foundation.org>;
- Tue,  5 Jul 2022 08:44:45 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org E3FDF41719
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com
- [IPv6:2607:f8b0:4864:20::b2f])
- by smtp4.osuosl.org (Postfix) with ESMTPS id E3FDF41719
- for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 08:44:44 +0000 (UTC)
-Received: by mail-yb1-xb2f.google.com with SMTP id 76so5017276ybd.0
- for <iommu@lists.linux-foundation.org>; Tue, 05 Jul 2022 01:44:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20210112;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=2nqg94hUDjf5VEy31mCYebRLyQWKOgGJpJElSft6kJk=;
- b=oVdJFaZLt6iik+gYVPoDhE3E0/T/qMpp81wNqUxEUTmekiaqU9ynpZ0mDpnp2WD8cV
- 1XxBK2Tr40GZWioBld+i2V2kPexOZDXUouMVZ8Ta2CmvZ6vewWiUjnGTEovIbce1WKpR
- nRulH13G0QJpSAV8IrG/vyGQL8xWb2qk/6ax3FTz3YAu5ngRNie2xDTdyn/3wo8LdI4n
- 4XMCNJA3C+XzvqbqeIqouGJjzVPFaCYGN7b0gBNrXW2dEfwZAh5IeAKq/qf7jDjP6DxQ
- sJuscQX3dxs/MUyavOF2DrQo82K7EPd+OrV7QEVmkdbS/+lXRLFYmWGyqUhmElgGNChc
- XHOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=2nqg94hUDjf5VEy31mCYebRLyQWKOgGJpJElSft6kJk=;
- b=8Qc7CO5xew17sKPvvYi/sxqcgWdwsSmzkKwiYvY6yEvB8ZCZk9eVPggDx1ZyMByexw
- r+kuxW6KS20Kbf+ANyxo/XwYoVvi7w/GQDXZHSIvA7DzO5DqogZbEOMcKY8/T1DzqnOd
- q8+L21UiA3t0sOcLYb3C98wLjJsrLC0qJWKw8XFNZ7wzXlXUo2YQAlK2ckbnp7qQnfef
- g6fBWTjP8rTnpZDWPkJ/9As5mDh8hYZKnBENLfS/ik33RdzCofd8rKj8+zIdqhK+8i3e
- O/lJlrYkVCVV2YW6IJ7+l0ijc6RYDfQKaLl5P17oSMXgwnvlE1vowfYRd2WGd1gzCI7y
- KJMA==
-X-Gm-Message-State: AJIora/9UF14r1txYNI4HwYYSR2bAXAugOycLARmPL79tXRsblD58foe
- 00FxxOkw/0czT1E+qMxzPhu4Mf3xrJVZdoa6RLPfOw==
-X-Google-Smtp-Source: AGRyM1s3KR9timt0Nv154BBVjZtVup9YxTIdAuMg5rdc0L5tuSQBdw4qLUFuMUr86cFiFJimYkgebSO//Pbzv6BbJEU=
-X-Received: by 2002:a25:abce:0:b0:66e:38e8:d286 with SMTP id
- v72-20020a25abce000000b0066e38e8d286mr12961807ybi.447.1657010683689; Tue, 05
- Jul 2022 01:44:43 -0700 (PDT)
+ with ESMTP id Ju4Fi_NmPqf2 for <iommu@lists.linux-foundation.org>;
+ Tue,  5 Jul 2022 09:06:33 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 96931408D5
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 96931408D5
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 09:06:33 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F1563152B;
+ Tue,  5 Jul 2022 02:06:32 -0700 (PDT)
+Received: from [10.57.86.91] (unknown [10.57.86.91])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AF36E3F792;
+ Tue,  5 Jul 2022 02:06:30 -0700 (PDT)
+Message-ID: <d36c80e3-2b04-b83b-3eb6-0f1d66d68fcf@arm.com>
+Date: Tue, 5 Jul 2022 10:06:26 +0100
 MIME-Version: 1.0
-References: <YrQP3OZbe8aCQxKU@atomide.com>
- <CAGETcx9aFBzMcuOiTAEy5SJyWw3UfajZ8DVQfW2DGmzzDabZVg@mail.gmail.com>
- <Yrlz/P6Un2fACG98@atomide.com>
- <CAGETcx8c+P0r6ARmhv+ERaz9zAGBOVJQu3bSDXELBycEGfkYQw@mail.gmail.com>
- <CAL_JsqJd3J6k6pRar7CkHVaaPbY7jqvzAePd8rVDisRV-dLLtg@mail.gmail.com>
- <CAGETcx9ZmeTyP1sJCFZ9pBbMyXeifQFohFvWN3aBPx0sSOJ2VA@mail.gmail.com>
- <Yr6HQOtS4ctUYm9m@atomide.com> <Yr6QUzdoFWv/eAI6@atomide.com>
- <CAGETcx-0bStPx8sF3BtcJFiu74NwiB0btTQ+xx_B=8B37TEb8w@mail.gmail.com>
- <CAGETcx-Yp2JKgCNfaGD0SzZg9F2Xnu8A3zXmV5=WX1hY7uR=0g@mail.gmail.com>
- <20220701150848.75eeprptmb5beip7@bogus>
- <CAGETcx_Y-9WBeRwf22v3NSuY8PGpPrTxtx_uBqe_Q7rD6mEQMQ@mail.gmail.com>
-In-Reply-To: <CAGETcx_Y-9WBeRwf22v3NSuY8PGpPrTxtx_uBqe_Q7rD6mEQMQ@mail.gmail.com>
-Date: Tue, 5 Jul 2022 01:44:07 -0700
-Message-ID: <CAGETcx8hECfU9-rXpXnnB5m4HcTBJVKNuG77FjhpqRcBkOOotw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/9] PM: domains: Delete usage of
- driver_deferred_probe_check_state()
-To: Sudeep Holla <sudeep.holla@arm.com>
-Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Tony Lindgren <tony@atomide.com>,
- Linus Walleij <linus.walleij@linaro.org>, Eric Dumazet <edumazet@google.com>,
- Pavel Machek <pavel@ucw.cz>, Will Deacon <will@kernel.org>,
- Rob Herring <robh@kernel.org>, Kevin Hilman <khilman@kernel.org>,
- Russell King <linux@armlinux.org.uk>,
- Alexander Stein <alexander.stein@ew.tq-group.com>,
- Geert Uytterhoeven <geert@linux-m68k.org>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Android Kernel Team <kernel-team@android.com>,
- Len Brown <len.brown@intel.com>,
- "open list:THERMAL" <linux-pm@vger.kernel.org>,
- "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
- Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- David Ahern <dsahern@kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Linux IOMMU <iommu@lists.linux-foundation.org>,
- netdev <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
- Heiner Kallweit <hkallweit1@gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 03/14] iommu: Move bus setup to IOMMU device
+ registration
+Content-Language: en-GB
+To: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org
+References: <cover.1650890638.git.robin.murphy@arm.com>
+ <1faba5b5c094379df3d99b8fec924ab50ad75482.1650890638.git.robin.murphy@arm.com>
+ <0e459e6e-f236-7a58-970a-a47677a23b44@linux.intel.com>
+ <fa0d0663-5393-c533-105a-85bd2e9e0649@arm.com>
+ <1322706e-5905-433b-5bc5-ed44f881b510@arm.com>
+ <fc0ddc34-e289-d225-f9ae-bf629e834a6b@linux.intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <fc0ddc34-e289-d225-f9ae-bf629e834a6b@linux.intel.com>
+Cc: jean-philippe@linaro.org, zhang.lyra@gmail.com,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ thierry.reding@gmail.com, gerald.schaefer@linux.ibm.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -121,117 +77,135 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Saravana Kannan via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Saravana Kannan <saravanak@google.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Jul 1, 2022 at 12:13 PM Saravana Kannan <saravanak@google.com> wrote:
->
-> On Fri, Jul 1, 2022 at 8:08 AM Sudeep Holla <sudeep.holla@arm.com> wrote:
-> >
-> > Hi, Saravana,
-> >
-> > On Fri, Jul 01, 2022 at 01:26:12AM -0700, Saravana Kannan wrote:
-> >
-> > [...]
-> >
-> > > Can you check if this hack helps? If so, then I can think about
-> > > whether we can pick it up without breaking everything else. Copy-paste
-> > > tab mess up warning.
-> >
-> > Sorry for jumping in late and not even sure if this is right thread.
-> > I have not bisected anything yet, but I am seeing issues on my Juno R2
-> > with SCMI enabled power domains and Coresight AMBA devices.
-> >
-> > OF: amba_device_add() failed (-19) for /etf@20010000
-> > OF: amba_device_add() failed (-19) for /tpiu@20030000
-> > OF: amba_device_add() failed (-19) for /funnel@20040000
-> > OF: amba_device_add() failed (-19) for /etr@20070000
-> > OF: amba_device_add() failed (-19) for /stm@20100000
-> > OF: amba_device_add() failed (-19) for /replicator@20120000
-> > OF: amba_device_add() failed (-19) for /cpu-debug@22010000
-> > OF: amba_device_add() failed (-19) for /etm@22040000
-> > OF: amba_device_add() failed (-19) for /cti@22020000
-> > OF: amba_device_add() failed (-19) for /funnel@220c0000
-> > OF: amba_device_add() failed (-19) for /cpu-debug@22110000
-> > OF: amba_device_add() failed (-19) for /etm@22140000
-> > OF: amba_device_add() failed (-19) for /cti@22120000
-> > OF: amba_device_add() failed (-19) for /cpu-debug@23010000
-> > OF: amba_device_add() failed (-19) for /etm@23040000
-> > OF: amba_device_add() failed (-19) for /cti@23020000
-> > OF: amba_device_add() failed (-19) for /funnel@230c0000
-> > OF: amba_device_add() failed (-19) for /cpu-debug@23110000
-> > OF: amba_device_add() failed (-19) for /etm@23140000
-> > OF: amba_device_add() failed (-19) for /cti@23120000
-> > OF: amba_device_add() failed (-19) for /cpu-debug@23210000
-> > OF: amba_device_add() failed (-19) for /etm@23240000
-> > OF: amba_device_add() failed (-19) for /cti@23220000
-> > OF: amba_device_add() failed (-19) for /cpu-debug@23310000
-> > OF: amba_device_add() failed (-19) for /etm@23340000
-> > OF: amba_device_add() failed (-19) for /cti@23320000
-> > OF: amba_device_add() failed (-19) for /cti@20020000
-> > OF: amba_device_add() failed (-19) for /cti@20110000
-> > OF: amba_device_add() failed (-19) for /funnel@20130000
-> > OF: amba_device_add() failed (-19) for /etf@20140000
-> > OF: amba_device_add() failed (-19) for /funnel@20150000
-> > OF: amba_device_add() failed (-19) for /cti@20160000
-> >
-> > These are working fine with deferred probe in the mainline.
-> > I tried the hack you have suggested here(rather Tony's version),
->
-> Thanks for trying that.
->
-> > also
-> > tried with fw_devlink=0 and fw_devlink=1
->
-> 0 and 1 aren't valid input to fw_devlink. But yeah, I don't expect
-> disabling it to make anything better.
->
-> > && fw_devlink.strict=0
-> > No change in the behaviour.
-> >
-> > The DTS are in arch/arm64/boot/dts/arm/juno-*-scmi.dts and there
-> > coresight devices are mostly in juno-cs-r1r2.dtsi
->
-> Thanks
->
-> > Let me know if there is anything obvious or you want me to bisect which
-> > means I need more time. I can do that next week.
->
-> I'll let you know once I poke at the DTS. We need to figure out why
-> fw_devlink wasn't blocking these from getting to the error (same as in
-> Tony's case). But since these are amba devices, I think I have some
-> guesses.
->
-> This is an old series that had some issues in some cases and I haven't
-> gotten around to looking at it. You can give that a shot if you can
-> apply it to a recent tree.
-> https://lore.kernel.org/lkml/20210304195101.3843496-1-saravanak@google.com/
-
-I rebased it to driver-core-next and tested the patch  (for
-correctness, not with your issue though). I'm fairly sure it should
-help with your issue. Can you give it a shot please?
-
-https://lore.kernel.org/lkml/20220705083934.3974140-1-saravanak@google.com/T/#u
-
--Saravana
-
->
-> After looking at that old patch again, I think I know what's going on.
-> For normal devices, the pm domain attach happens AFTER the device is
-> added and fw_devlink has had a chance to set up device links. And if
-> the suppliers aren't ready, really_probe() won't get as far as
-> dev_pm_domain_attach(). But for amba, the clock and pm domain
-> suppliers are "grabbed" before adding the device.
->
-> So with that old patch + always returning -EPROBE_DEFER in
-> amba_device_add() if amba_read_periphid() fails should fix your issue.
->
-> -Saravana
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjAyMi0wNy0wNSAwNTo1MSwgQmFvbHUgTHUgd3JvdGU6Cj4gSGkgUm9iaW4sCj4gCj4gT24g
+MjAyMi80LzMwIDAyOjA2LCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4+IE9uIDI5LzA0LzIwMjIgOTo1
+MCBhbSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+Pj4gT24gMjAyMi0wNC0yOSAwNzo1NywgQmFvbHUg
+THUgd3JvdGU6Cj4+Pj4gSGkgUm9iaW4sCj4+Pj4KPj4+PiBPbiAyMDIyLzQvMjggMjE6MTgsIFJv
+YmluIE11cnBoeSB3cm90ZToKPj4+Pj4gTW92ZSB0aGUgYnVzIHNldHVwIHRvIGlvbW11X2Rldmlj
+ZV9yZWdpc3RlcigpLiBUaGlzIHNob3VsZCBhbGxvdwo+Pj4+PiBidXNfaW9tbXVfcHJvYmUoKSB0
+byBiZSBjb3JyZWN0bHkgcmVwbGF5ZWQgZm9yIG11bHRpcGxlIElPTU1VIAo+Pj4+PiBpbnN0YW5j
+ZXMsCj4+Pj4+IGFuZCBsZWF2ZXMgYnVzX3NldF9pb21tdSgpIGFzIGEgZ2xvcmlmaWVkIG5vLW9w
+IHRvIGJlIGNsZWFuZWQgdXAgbmV4dC4KPj4+Pgo+Pj4+IEkgcmUtZmV0Y2hlZCB0aGUgbGF0ZXN0
+IHBhdGNoZXMgb24KPj4+Pgo+Pj4+IGh0dHBzOi8vZ2l0bGFiLmFybS5jb20vbGludXgtYXJtL2xp
+bnV4LXJtLy0vY29tbWl0cy9pb21tdS9idXMKPj4+Pgo+Pj4+IGFuZCByb2xsZWQgYmFjayB0aGUg
+aGVhZCB0byAiaW9tbXU6IENsZWFudXAgYnVzX3NldF9pb21tdSIuCj4+Pj4KPj4+PiBUaGUgdGVz
+dCBtYWNoaW5lIHN0aWxsIGhhbmdzIGR1cmluZyBib290Lgo+Pj4+Cj4+Pj4gSSB3ZW50IHRocm91
+Z2ggdGhlIGNvZGUuIEl0IHNlZW1zIHRoYXQgdGhlIC5wcm9iZV9kZXZpY2UgZm9yIEludGVsIAo+
+Pj4+IElPTU1VCj4+Pj4gZHJpdmVyIGNhbid0IGhhbmRsZSB0aGUgcHJvYmUgcmVwbGF5IHdlbGwu
+IEl0IGFsd2F5cyBhc3N1bWVzIHRoYXQgdGhlCj4+Pj4gZGV2aWNlIGhhcyBuZXZlciBiZWVuIHBy
+b2JlZC4KPj4+Cj4+PiBIbW0sIGJ1dCBwcm9iZV9pb21tdV9ncm91cCgpIGlzIHN1cHBvc2VkIHRv
+IHByZXZlbnQgdGhlIAo+Pj4gX19pb21tdV9wcm9iZV9kZXZpY2UoKSBjYWxsIGV2ZW4gaGFwcGVu
+aW5nIGlmIHRoZSBkZXZpY2UgKmhhcyogCj4+PiBhbHJlYWR5IGJlZW4gcHJvYmVkIGJlZm9yZSA6
+Lwo+Pj4KPj4+IEkndmUgc3RpbGwgZ290IGFuIG9sZCBJbnRlbCBib3ggc3BhcmUgaW4gdGhlIG9m
+ZmljZSBzbyBJJ2xsIHJpZyB0aGF0IAo+Pj4gdXAgYW5kIHNlZSBpZiBJIGNhbiBzZWUgd2hhdCBt
+aWdodCBiZSBnb2luZyBvbiBoZXJlLi4uCj4+Cj4+IE9LLCBvbiBhIFhlb24gd2l0aCB0d28gRE1B
+UiB1bml0cywgdGhpcyBzZWVtcyB0byBib290IE9LIHdpdGggb3IgCj4+IHdpdGhvdXQgcGF0Y2gg
+IzEsIHNvIGl0IGRvZXNuJ3Qgc2VlbSB0byBiZSBhIGdlbmVyYWwgcHJvYmxlbSB3aXRoIAo+PiBy
+ZXBsYXlpbmcgaW4gaW9tbXVfZGV2aWNlX3JlZ2lzdGVyKCksIG9yIHdpdGggcGxhdGZvcm0gZGV2
+aWNlcy4gTm90IAo+PiBzdXJlIHdoZXJlIHRvIGdvIGZyb20gaGVyZS4uLiA6Lwo+IAo+IFRoZSBr
+ZXJuZWwgYm9vdCBwYW5pYyBtZXNzYWdlOgo+IAo+IFvCoMKgwqAgNi42Mzk0MzJdIEJVRzoga2Vy
+bmVsIE5VTEwgcG9pbnRlciBkZXJlZmVyZW5jZSwgYWRkcmVzczogCj4gMDAwMDAwMDAwMDAwMDAy
+OAo+IFvCoMKgwqAgNi43NDM4MjldICNQRjogc3VwZXJ2aXNvciByZWFkIGFjY2VzcyBpbiBrZXJu
+ZWwgbW9kZQo+IFvCoMKgwqAgNi43NDM4MjldICNQRjogZXJyb3JfY29kZSgweDAwMDApIC0gbm90
+LXByZXNlbnQgcGFnZQo+IFvCoMKgwqAgNi43NDM4MjldIFBHRCAwCj4gW8KgwqDCoCA2Ljc0Mzgy
+OV0gT29wczogMDAwMCBbIzFdIFBSRUVNUFQgU01QIE5PUFRJCj4gW8KgwqDCoCA2Ljc0MzgyOV0g
+Q1BVOiAwIFBJRDogMSBDb21tOiBzd2FwcGVyLzAgVGFpbnRlZDogR8KgwqDCoMKgwqDCoMKgwqDC
+oCBJIAo+ICDCoDUuMTkuMC1yYzMrICMxODIKPiBbwqDCoMKgIDYuNzQzODI5XSBSSVA6IDAwMTA6
+X19pb21tdV9wcm9iZV9kZXZpY2UrMHgxMTUvMHgyMDAKPiBbwqDCoMKgIDYuNzQzODI5XSBDb2Rl
+OiA4OSBmZiBlOCAzZSBlMSBmZiBmZiA0OCA4NSBjMCAwZiA4NSA0NyBmZiBmZiBmZiA0MSAKPiBi
+ZCBmNCBmZiBmZiBmZiBlYiA4MyA0OCA4YiA4MyBkOCAwMiAwMCAwMCA0OCA4OSBkZiA0OCA4YiA0
+MCAzOCA0OCA4YiA0MCAKPiAxMCA8NDg+IDhiIDQwIDI4IGZmIGQwIDBmIDFmIDAwIDQ4IDg5IGMx
+IDQ4IDg1IGMwIDBmIDg0IGI3IDAwIDAwIDAwIDQ4Cj4gW8KgwqDCoCA2Ljc0MzgyOV0gUlNQOiAw
+MDAwOmZmMzA2MDVjMDAwNjNkNDAgRUZMQUdTOiAwMDAxMDI0Ngo+IFvCoMKgwqAgNi43NDM4Mjld
+IFJBWDogMDAwMDAwMDAwMDAwMDAwMCBSQlg6IGZmMTI4YjljNWZkYzkwZDAgUkNYOiAKPiAwMDAw
+MDAwMDAwMDAwMDAwCj4gW8KgwqDCoCA2Ljc0MzgyOV0gUkRYOiAwMDAwMDAwMDgwMDAwMDAxIFJT
+STogMDAwMDAwMDAwMDAwMDI0NiBSREk6IAo+IGZmMTI4YjljNWZkYzkwZDAKPiBbwqDCoMKgIDYu
+NzQzODI5XSBSQlA6IGZmZmZmZmZmYjYwYzM0ZTAgUjA4OiBmZmZmZmZmZmI2ODY2NGQwIFIwOTog
+Cj4gZmYxMjhiOTUwMWQ0Y2U0MAo+IFvCoMKgwqAgNi43NDM4MjldIFIxMDogZmZmZmZmZmZiNjI2
+NzA5NiBSMTE6IGZmMTI4Yjk1MDAxNGMyNjcgUjEyOiAKPiBmZjMwNjA1YzAwMDYzZGUwCj4gW8Kg
+wqDCoCA2Ljc0MzgyOV0gUjEzOiAwMDAwMDAwMDAwMWI5ZDI4IFIxNDogZmYxMjhiOTUwMDFiOWQy
+OCBSMTU6IAo+IGZmMTI4YjljNWZkYzkzYTgKPiBbwqDCoMKgIDYuNzQzODI5XSBGUzrCoCAwMDAw
+MDAwMDAwMDAwMDAwKDAwMDApIEdTOmZmMTI4YjljNWZjMDAwMDAoMDAwMCkgCj4ga25sR1M6MDAw
+MDAwMDAwMDAwMDAwMAo+IFvCoMKgwqAgNi43NDM4MjldIENTOsKgIDAwMTAgRFM6IDAwMDAgRVM6
+IDAwMDAgQ1IwOiAwMDAwMDAwMDgwMDUwMDMzCj4gW8KgwqDCoCA2Ljc0MzgyOV0gQ1IyOiAwMDAw
+MDAwMDAwMDAwMDI4IENSMzogMDAwMDAwMDE0OTIxMDAwMSBDUjQ6IAo+IDAwMDAwMDAwMDA3NzFl
+ZjAKPiBbwqDCoMKgIDYuNzQzODI5XSBEUjA6IDAwMDAwMDAwMDAwMDAwMDAgRFIxOiAwMDAwMDAw
+MDAwMDAwMDAwIERSMjogCj4gMDAwMDAwMDAwMDAwMDAwMAo+IFvCoMKgwqAgNi43NDM4MjldIERS
+MzogMDAwMDAwMDAwMDAwMDAwMCBEUjY6IDAwMDAwMDAwZmZmZjA3ZjAgRFI3OiAKPiAwMDAwMDAw
+MDAwMDAwNDAwCj4gW8KgwqDCoCA2Ljc0MzgyOV0gUEtSVTogNTU1NTU1NTQKPiBbwqDCoMKgIDYu
+NzQzODI5XSBDYWxsIFRyYWNlOgo+IFvCoMKgwqAgNi43NDM4MjldwqAgPFRBU0s+Cj4gW8KgwqDC
+oCA2Ljc0MzgyOV3CoCA/IF9yYXdfc3Bpbl9sb2NrX2lycXNhdmUrMHgxNy8weDQwCj4gW8KgwqDC
+oCA2Ljc0MzgyOV3CoCA/IF9faW9tbXVfcHJvYmVfZGV2aWNlKzB4MjAwLzB4MjAwCj4gW8KgwqDC
+oCA2Ljc0MzgyOV3CoCBwcm9iZV9pb21tdV9ncm91cCsweDJkLzB4NDAKPiBbwqDCoMKgIDYuNzQz
+ODI5XcKgIGJ1c19mb3JfZWFjaF9kZXYrMHg3NC8weGMwCj4gW8KgwqDCoCA2Ljc0MzgyOV3CoCBi
+dXNfaW9tbXVfcHJvYmUrMHg0OC8weDJkMAo+IFvCoMKgwqAgNi43NDM4MjldwqAgaW9tbXVfZGV2
+aWNlX3JlZ2lzdGVyKzB4ZGUvMHgxMjAKPiBbwqDCoMKgIDYuNzQzODI5XcKgIGludGVsX2lvbW11
+X2luaXQrMHgzNWYvMHg1ZjIKPiBbwqDCoMKgIDYuNzQzODI5XcKgID8gaW9tbXVfc2V0dXArMHgy
+N2QvMHgyN2QKPiBbwqDCoMKgIDYuNzQzODI5XcKgID8gcmRpbml0X3NldHVwKzB4MmMvMHgyYwo+
+IFvCoMKgwqAgNi43NDM4MjldwqAgcGNpX2lvbW11X2luaXQrMHhlLzB4MzIKPiBbwqDCoMKgIDYu
+NzQzODI5XcKgIGRvX29uZV9pbml0Y2FsbCsweDQxLzB4MjAwCj4gW8KgwqDCoCA2Ljc0MzgyOV3C
+oCBrZXJuZWxfaW5pdF9mcmVlYWJsZSsweDFkZS8weDIyOAo+IFvCoMKgwqAgNi43NDM4MjldwqAg
+PyByZXN0X2luaXQrMHhjMC8weGMwCj4gW8KgwqDCoCA2Ljc0MzgyOV3CoCBrZXJuZWxfaW5pdCsw
+eDE2LzB4MTIwCj4gW8KgwqDCoCA2Ljc0MzgyOV3CoCByZXRfZnJvbV9mb3JrKzB4MWYvMHgzMAo+
+IFvCoMKgwqAgNi43NDM4MjldwqAgPC9UQVNLPgo+IFvCoMKgwqAgNi43NDM4MjldIE1vZHVsZXMg
+bGlua2VkIGluOgo+IFvCoMKgwqAgNi43NDM4MjldIENSMjogMDAwMDAwMDAwMDAwMDAyOAo+IFvC
+oMKgwqAgNi43NDM4MjldIC0tLVsgZW5kIHRyYWNlIDAwMDAwMDAwMDAwMDAwMDAgXS0tLQo+IFvC
+oMKgwqAgNi43NDM4MjldIFJJUDogMDAxMDpfX2lvbW11X3Byb2JlX2RldmljZSsweDExNS8weDIw
+MAo+IFvCoMKgwqAgNi43NDM4MjldIENvZGU6IDg5IGZmIGU4IDNlIGUxIGZmIGZmIDQ4IDg1IGMw
+IDBmIDg1IDQ3IGZmIGZmIGZmIDQxIAo+IGJkIGY0IGZmIGZmIGZmIGViIDgzIDQ4IDhiIDgzIGQ4
+IDAyIDAwIDAwIDQ4IDg5IGRmIDQ4IDhiIDQwIDM4IDQ4IDhiIDQwIAo+IDEwIDw0OD4gOGIgNDAg
+MjggZmYgZDAgMGYgMWYgMDAgNDggODkgYzEgNDggODUgYzAgMGYgODQgYjcgMDAgMDAgMDAgNDgK
+PiBbwqDCoMKgIDYuNzQzODI5XSBSU1A6IDAwMDA6ZmYzMDYwNWMwMDA2M2Q0MCBFRkxBR1M6IDAw
+MDEwMjQ2Cj4gW8KgwqDCoCA2Ljc0MzgyOV0gUkFYOiAwMDAwMDAwMDAwMDAwMDAwIFJCWDogZmYx
+MjhiOWM1ZmRjOTBkMCBSQ1g6IAo+IDAwMDAwMDAwMDAwMDAwMDAKPiBbwqDCoMKgIDYuNzQzODI5
+XSBSRFg6IDAwMDAwMDAwODAwMDAwMDEgUlNJOiAwMDAwMDAwMDAwMDAwMjQ2IFJESTogCj4gZmYx
+MjhiOWM1ZmRjOTBkMAo+IFvCoMKgwqAgNi43NDM4MjldIFJCUDogZmZmZmZmZmZiNjBjMzRlMCBS
+MDg6IGZmZmZmZmZmYjY4NjY0ZDAgUjA5OiAKPiBmZjEyOGI5NTAxZDRjZTQwCj4gW8KgwqDCoCA2
+Ljc0MzgyOV0gUjEwOiBmZmZmZmZmZmI2MjY3MDk2IFIxMTogZmYxMjhiOTUwMDE0YzI2NyBSMTI6
+IAo+IGZmMzA2MDVjMDAwNjNkZTAKPiBbwqDCoMKgIDYuNzQzODI5XSBSMTM6IDAwMDAwMDAwMDAx
+YjlkMjggUjE0OiBmZjEyOGI5NTAwMWI5ZDI4IFIxNTogCj4gZmYxMjhiOWM1ZmRjOTNhOAo+IFvC
+oMKgwqAgNi43NDM4MjldIEZTOsKgIDAwMDAwMDAwMDAwMDAwMDAoMDAwMCkgR1M6ZmYxMjhiOWM1
+ZmMwMDAwMCgwMDAwKSAKPiBrbmxHUzowMDAwMDAwMDAwMDAwMDAwCj4gW8KgwqDCoCA2Ljc0Mzgy
+OV0gQ1M6wqAgMDAxMCBEUzogMDAwMCBFUzogMDAwMCBDUjA6IDAwMDAwMDAwODAwNTAwMzMKPiBb
+wqDCoMKgIDYuNzQzODI5XSBDUjI6IDAwMDAwMDAwMDAwMDAwMjggQ1IzOiAwMDAwMDAwMTQ5MjEw
+MDAxIENSNDogCj4gMDAwMDAwMDAwMDc3MWVmMAo+IFvCoMKgwqAgNi43NDM4MjldIERSMDogMDAw
+MDAwMDAwMDAwMDAwMCBEUjE6IDAwMDAwMDAwMDAwMDAwMDAgRFIyOiAKPiAwMDAwMDAwMDAwMDAw
+MDAwCj4gW8KgwqDCoCA2Ljc0MzgyOV0gRFIzOiAwMDAwMDAwMDAwMDAwMDAwIERSNjogMDAwMDAw
+MDBmZmZmMDdmMCBEUjc6IAo+IDAwMDAwMDAwMDAwMDA0MDAKPiBbwqDCoMKgIDYuNzQzODI5XSBQ
+S1JVOiA1NTU1NTU1NAo+IFvCoMKgwqAgNi43NDM4MjldIEtlcm5lbCBwYW5pYyAtIG5vdCBzeW5j
+aW5nOiBGYXRhbCBleGNlcHRpb24KPiBbwqDCoMKgIDYuNzQzODI5XSAtLS1bIGVuZCBLZXJuZWwg
+cGFuaWMgLSBub3Qgc3luY2luZzogRmF0YWwgZXhjZXB0aW9uIF0tLS0KPiAKPiBUaGUgIk5VTEwg
+cG9pbnRlciBkZXJlZmVyZW5jZSIgaGFwcGVucyBhdCBsaW5lIDE2MjAgb2YgYmVsb3cgY29kZS4K
+PiAKPiAxNjEwIHN0YXRpYyBzdHJ1Y3QgaW9tbXVfZ3JvdXAgKmlvbW11X2dyb3VwX2dldF9mb3Jf
+ZGV2KHN0cnVjdCBkZXZpY2UgKmRldikKPiAxNjExIHsKPiAxNjEywqDCoMKgwqDCoMKgwqDCoCBj
+b25zdCBzdHJ1Y3QgaW9tbXVfb3BzICpvcHMgPSBkZXZfaW9tbXVfb3BzKGRldik7Cj4gMTYxM8Kg
+wqDCoMKgwqDCoMKgwqAgc3RydWN0IGlvbW11X2dyb3VwICpncm91cDsKPiAxNjE0wqDCoMKgwqDC
+oMKgwqDCoCBpbnQgcmV0Owo+IDE2MTUKPiAxNjE2wqDCoMKgwqDCoMKgwqDCoCBncm91cCA9IGlv
+bW11X2dyb3VwX2dldChkZXYpOwo+IDE2MTfCoMKgwqDCoMKgwqDCoMKgIGlmIChncm91cCkKPiAx
+NjE4wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcmV0dXJuIGdyb3VwOwo+IDE2MTkK
+PiAxNjIwwqDCoMKgwqDCoMKgwqDCoCBncm91cCA9IG9wcy0+ZGV2aWNlX2dyb3VwKGRldik7Cj4g
+MTYyMcKgwqDCoMKgwqDCoMKgwqAgaWYgKFdBUk5fT05fT05DRShncm91cCA9PSBOVUxMKSkKPiAx
+NjIywqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcmV0dXJuIEVSUl9QVFIoLUVJTlZB
+TCk7Cj4gMTYyMwo+IDE2MjTCoMKgwqDCoMKgwqDCoMKgIGlmIChJU19FUlIoZ3JvdXApKQo+IDE2
+MjXCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gZ3JvdXA7Cj4gCj4gVGhp
+cyBwbGF0Zm9ybSBoYXMgbXVsdGlwbGUgSU9NTVUgdW5pdHMsIGVhY2ggc2VydmluZyBkaWZmZXJl
+bnQgUENJCj4gZGV2aWNlcy4gVGhlIG9wcyBmaWVsZCBvZiBlYWNoIGlvbW11X2RldmljZSBpcyBp
+bml0aWFsaXplZCBpbgo+IGlvbW11X2RldmljZV9yZWdpc3RlcigpLCBoZW5jZSB3aGVuIHRoZSBm
+aXJzdCBJT01NVSBkZXZpY2UgZ2V0cwo+IHJlZ2lzdGVyZWQsIG9wcyBmaWVsZHMgb2Ygb3RoZXIg
+aW9tbXVfZGV2aWNlcyBhcmUgTlVMTC4KPiAKPiBVbmZvcnR1bmF0ZWx5IGJ1c19pb21tdV9wcm9i
+ZSgpIGNhbGxlZCBpbiBpb21tdV9kZXZpY2VfcmVnaXN0ZXIoKSBwcm9iZXMKPiAqYWxsKiBQQ0kg
+ZGV2aWNlcy4gVGhpcyBwcm9iYWJseSBsZWFkcyB0byBhYm92ZSBOVUxMIHBvaW50ZXIgZGVyZWZl
+cmVuY2UKPiBpc3N1ZS4KPiAKPiBQbGVhc2UgY29ycmVjdCBtZSBpZiBJIG92ZXJsb29rZWQgYW55
+dGhpbmcuCgpIYSwgYXMgaXQgaGFwcGVucyBJIGFsc28ganVzdCBmaWd1cmVkIHRoaXMgb3V0IHll
+c3RlcmRheSAoYWZ0ZXIgCnJlbWVtYmVyaW5nIHRoZSBpbXBvcnRhbnQgZGV0YWlsIG9mICJpbnRl
+bF9pb21tdT1vbiIsIHRyeWluZyB0aGUgbG9ja2RlcCAKdGVzdCksIHNvIGl0J3MgZ29vZCB0byBo
+YXZlIGNvbmZpcm1hdGlvbiwgdGhhbmtzISBJJ2xsIHRlc3QgYSBmaXggdG9kYXkgCmFuZCBzZW5k
+IHYzIHNvb24uCgpDaGVlcnMsClJvYmluLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91
+bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlz
+dGluZm8vaW9tbXU=
