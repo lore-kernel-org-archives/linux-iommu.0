@@ -1,241 +1,84 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3B2446001
-	for <iommu@lists.linux.dev>; Tue,  5 Jul 2022 17:09:10 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4070F1595;
-	Tue,  5 Jul 2022 10:09:10 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 611683F66F;
-	Tue,  5 Jul 2022 10:09:08 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org
-Cc: will@kernel.org,
-	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	baolu.lu@linux.intel.com,
-	suravee.suthikulpanit@amd.com,
-	vasant.hegde@amd.com,
-	mjrosato@linux.ibm.com,
-	gerald.schaefer@linux.ibm.com,
-	schnelle@linux.ibm.com,
-	linux-s390@vger.kernel.org,
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A9716001
+	for <iommu@lists.linux.dev>; Tue,  5 Jul 2022 17:43:30 +0000 (UTC)
+Received: by mail-wm1-f53.google.com with SMTP id o16-20020a05600c379000b003a02eaea815so8235152wmr.0
+        for <iommu@lists.linux.dev>; Tue, 05 Jul 2022 10:43:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=BKDOb4xlZp4MaUsVZxk18FvC9MTm4XhyouNs2L3jRNQ=;
+        b=G0X8ImN2RMYiGMiFNphfKdlxW6zMCVZIp5lWBwjZ+bL31Vn++3Cur6/ybppQF8izva
+         3kR8eoD+QGt6WAxugtpTapdxkEU/XzIo9w0PbBok+y0wZLGG9rrW1gwKxJEUSsqJLuwa
+         L3gV0+NajJmYaOKamQ+CudIBUDvwGZj2xZFXq4CnWcVkZr6KVLkmc4F+VliXfTUgnCl0
+         0Aps/GnkGGn0jTKmcOwvxfI1pyL34OwidbDnp+5mTkTpjNdgCxWJeJSGZMjnmw0CIFWb
+         XM6XnMbettTLuqgIrE/qaetQ47FOFXqYUbB3/lkkv7l/HLNy0zGYopVysXl5C/8PTspB
+         u41Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=BKDOb4xlZp4MaUsVZxk18FvC9MTm4XhyouNs2L3jRNQ=;
+        b=BlkcvhQ6nAKVhCgwuIklx2C+tXkAf1dCyuG+2gJAxRcYEOREY81UnxOuRNpqniqAis
+         i+hEf5Ah7ju0RKRdfTHB/lc8O6xvPfqC1uHqR0CqJM6quVC9WvpS3h58q3flrDfByGLw
+         QPD8PtNgf+6kc/d4v5Tdf1GqSdQsFWjmeoit1mu55Pzr8l95N7KAp5+ROU8wKDFAQdAV
+         ok+xhKrd7nWNxZOC8F7A54Sf5In4hv9X+w3iHkE4lR6nyVJofSmGr0vUQ8WU1339i+4c
+         ZFxLvrysNq46+wQH5YyCLMmvFZL3aOBW2ctMkT7QKjC7LoY/jkyJX/fzwn4nrB5xYagW
+         GKpg==
+X-Gm-Message-State: AJIora+ij7lBzftK2vHw11HHZTJO2bYfA29hD6Kn2si2edg578Kvkl2y
+	xz19KaUvuK8GUIHkuTCrimfFRQ==
+X-Google-Smtp-Source: AGRyM1shDXUmV/7o3y063+Nyrzm5QDMjcyksWy5xl5QFnim77i91N380LMA7XTtoDBeD8UufCtcF4Q==
+X-Received: by 2002:a05:600c:3491:b0:3a1:8609:ba7e with SMTP id a17-20020a05600c349100b003a18609ba7emr30360640wmq.79.1657043008462;
+        Tue, 05 Jul 2022 10:43:28 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
+        by smtp.gmail.com with ESMTPSA id l1-20020a5d4bc1000000b00219e77e489fsm32675353wrt.17.2022.07.05.10.43.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Jul 2022 10:43:28 -0700 (PDT)
+Date: Tue, 5 Jul 2022 18:43:03 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+	Christoph Hellwig <hch@infradead.org>,
+	Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.com>,
+	Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
+	Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
+	Jacob jun Pan <jacob.jun.pan@intel.com>,
+	Zhangfei Gao <zhangfei.gao@linaro.org>,
+	Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v3 15/15] iommu: Clean up bus_set_iommu()
-Date: Tue,  5 Jul 2022 18:08:38 +0100
-Message-Id: <dc44a2269276e1d0fa6715d4530a51df4e7b781c.1657034828.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.36.1.dirty
-In-Reply-To: <cover.1657034827.git.robin.murphy@arm.com>
-References: <cover.1657034827.git.robin.murphy@arm.com>
+Subject: Re: [PATCH v10 08/12] iommu/sva: Refactoring
+ iommu_sva_bind/unbind_device()
+Message-ID: <YsR4JzFgvm20fs7E@myrica>
+References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
+ <20220705050710.2887204-9-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220705050710.2887204-9-baolu.lu@linux.intel.com>
 
-Clean up the remaining trivial bus_set_iommu() callsites along
-with the implementation. Now drivers only have to know and care
-about iommu_device instances, phew!
+On Tue, Jul 05, 2022 at 01:07:06PM +0800, Lu Baolu wrote:
+> The existing iommu SVA interfaces are implemented by calling the SVA
+> specific iommu ops provided by the IOMMU drivers. There's no need for
+> any SVA specific ops in iommu_ops vector anymore as we can achieve
+> this through the generic attach/detach_dev_pasid domain ops.
+> 
+> This refactors the IOMMU SVA interfaces implementation by using the
+> set/block_pasid_dev ops and align them with the concept of the SVA
+> iommu domain. Put the new SVA code in the sva related file in order
+> to make it self-contained.
+> 
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+> Tested-by: Tony Zhu <tony.zhu@intel.com>
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
-
-v3: Also catch Intel's cheeky open-coded assignment
-
- drivers/iommu/arm/arm-smmu/qcom_iommu.c |  4 ----
- drivers/iommu/fsl_pamu_domain.c         |  4 ----
- drivers/iommu/intel/iommu.c             |  2 --
- drivers/iommu/iommu.c                   | 24 ------------------------
- drivers/iommu/msm_iommu.c               |  2 --
- drivers/iommu/rockchip-iommu.c          |  2 --
- drivers/iommu/s390-iommu.c              |  6 ------
- drivers/iommu/sprd-iommu.c              |  5 -----
- drivers/iommu/sun50i-iommu.c            |  2 --
- include/linux/iommu.h                   |  1 -
- 10 files changed, 52 deletions(-)
-
-diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index 4c077c38fbd6..80af00f468b4 100644
---- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -845,8 +845,6 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
- 		goto err_pm_disable;
- 	}
- 
--	bus_set_iommu(&platform_bus_type, &qcom_iommu_ops);
--
- 	if (qcom_iommu->local_base) {
- 		pm_runtime_get_sync(dev);
- 		writel_relaxed(0xffffffff, qcom_iommu->local_base + SMMU_INTR_SEL_NS);
-@@ -864,8 +862,6 @@ static int qcom_iommu_device_remove(struct platform_device *pdev)
- {
- 	struct qcom_iommu_dev *qcom_iommu = platform_get_drvdata(pdev);
- 
--	bus_set_iommu(&platform_bus_type, NULL);
--
- 	pm_runtime_force_suspend(&pdev->dev);
- 	platform_set_drvdata(pdev, NULL);
- 	iommu_device_sysfs_remove(&qcom_iommu->iommu);
-diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-index 94b4589dc67c..09aa90c27723 100644
---- a/drivers/iommu/fsl_pamu_domain.c
-+++ b/drivers/iommu/fsl_pamu_domain.c
-@@ -481,11 +481,7 @@ int __init pamu_domain_init(void)
- 	if (ret) {
- 		iommu_device_sysfs_remove(&pamu_iommu);
- 		pr_err("Can't register iommu device\n");
--		return ret;
- 	}
- 
--	bus_set_iommu(&platform_bus_type, &fsl_pamu_ops);
--	bus_set_iommu(&pci_bus_type, &fsl_pamu_ops);
--
- 	return ret;
- }
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 3e02c08802a0..388dd0e22fb9 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4031,7 +4031,6 @@ static int __init probe_acpi_namespace_devices(void)
- 					continue;
- 				}
- 
--				pn->dev->bus->iommu_ops = &intel_iommu_ops;
- 				ret = iommu_probe_device(pn->dev);
- 				if (ret)
- 					break;
-@@ -4153,7 +4152,6 @@ int __init intel_iommu_init(void)
- 	}
- 	up_read(&dmar_global_lock);
- 
--	bus_set_iommu(&pci_bus_type, &intel_iommu_ops);
- 	if (si_domain && !hw_pass_through)
- 		register_memory_notifier(&intel_iommu_memory_nb);
- 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index acb7b2ab0b79..c10ecb87fd9c 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1834,30 +1834,6 @@ static int iommu_bus_init(struct bus_type *bus)
- 	return err;
- }
- 
--/**
-- * bus_set_iommu - set iommu-callbacks for the bus
-- * @bus: bus.
-- * @ops: the callbacks provided by the iommu-driver
-- *
-- * This function is called by an iommu driver to set the iommu methods
-- * used for a particular bus. Drivers for devices on that bus can use
-- * the iommu-api after these ops are registered.
-- * This special function is needed because IOMMUs are usually devices on
-- * the bus itself, so the iommu drivers are not initialized when the bus
-- * is set up. With this function the iommu-driver can set the iommu-ops
-- * afterwards.
-- */
--int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops)
--{
--	if (bus->iommu_ops && ops && bus->iommu_ops != ops)
--		return -EBUSY;
--
--	bus->iommu_ops = ops;
--
--	return 0;
--}
--EXPORT_SYMBOL_GPL(bus_set_iommu);
--
- bool iommu_present(struct bus_type *bus)
- {
- 	return bus->iommu_ops != NULL;
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index f09aedfdd462..4a71989406dc 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -797,8 +797,6 @@ static int msm_iommu_probe(struct platform_device *pdev)
- 		goto fail;
- 	}
- 
--	bus_set_iommu(&platform_bus_type, &msm_iommu_ops);
--
- 	pr_info("device mapped at %p, irq %d with %d ctx banks\n",
- 		iommu->base, iommu->irq, iommu->ncb);
- 
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index ab57c4b8fade..a3fc59b814ab 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -1300,8 +1300,6 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	if (!dma_dev)
- 		dma_dev = &pdev->dev;
- 
--	bus_set_iommu(&platform_bus_type, &rk_iommu_ops);
--
- 	pm_runtime_enable(dev);
- 
- 	for (i = 0; i < iommu->num_irq; i++) {
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index c898bcbbce11..dd957145fb81 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -385,9 +385,3 @@ static const struct iommu_ops s390_iommu_ops = {
- 		.free		= s390_domain_free,
- 	}
- };
--
--static int __init s390_iommu_init(void)
--{
--	return bus_set_iommu(&pci_bus_type, &s390_iommu_ops);
--}
--subsys_initcall(s390_iommu_init);
-diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
-index bd409bab6286..6770e6a72283 100644
---- a/drivers/iommu/sprd-iommu.c
-+++ b/drivers/iommu/sprd-iommu.c
-@@ -507,9 +507,6 @@ static int sprd_iommu_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto remove_sysfs;
- 
--	if (!iommu_present(&platform_bus_type))
--		bus_set_iommu(&platform_bus_type, &sprd_iommu_ops);
--
- 	ret = sprd_iommu_clk_enable(sdev);
- 	if (ret)
- 		goto unregister_iommu;
-@@ -545,8 +542,6 @@ static int sprd_iommu_remove(struct platform_device *pdev)
- 	iommu_group_put(sdev->group);
- 	sdev->group = NULL;
- 
--	bus_set_iommu(&platform_bus_type, NULL);
--
- 	platform_set_drvdata(pdev, NULL);
- 	iommu_device_sysfs_remove(&sdev->iommu);
- 	iommu_device_unregister(&sdev->iommu);
-diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
-index c54ab477b8fd..e104543b78d9 100644
---- a/drivers/iommu/sun50i-iommu.c
-+++ b/drivers/iommu/sun50i-iommu.c
-@@ -968,8 +968,6 @@ static int sun50i_iommu_probe(struct platform_device *pdev)
- 	if (ret < 0)
- 		goto err_unregister;
- 
--	bus_set_iommu(&platform_bus_type, &sun50i_iommu_ops);
--
- 	return 0;
- 
- err_unregister:
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 5e1afe169549..2cb05ff89f03 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -412,7 +412,6 @@ static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
- 	return dev->iommu->iommu_dev->ops;
- }
- 
--extern int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops);
- extern int bus_iommu_probe(struct bus_type *bus);
- extern bool iommu_present(struct bus_type *bus);
- extern bool device_iommu_capable(struct device *dev, enum iommu_cap cap);
--- 
-2.36.1.dirty
+Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
