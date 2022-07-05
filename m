@@ -1,31 +1,31 @@
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02BAE7C
-	for <iommu@lists.linux.dev>; Tue,  5 Jul 2022 05:12:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61D7E7C
+	for <iommu@lists.linux.dev>; Tue,  5 Jul 2022 05:12:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656997923; x=1688533923;
+  t=1656997925; x=1688533925;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Eh7Ts/jrbu3gu6i73diB/9eZuSBu3uGNqSXuF4Z/1cg=;
-  b=gQRQBaCn/AC/ce9w/2P7UCcXFbHMB5dkKD9/g66JICkmHgKbiD4pl6qf
-   0BtxZaOVBVJCd/1NiSLDEwGpNRNPhKtKBwC1++cutdHh4k4ek5qHwfgau
-   9qoLcr7HtAg0zBGiKNHS6oXMdMDcag5kkdHIqV3RvUazpqw1SkWX52ZFx
-   Ll/i+0jf0Q3kMLO2c+GRwxOpuikk2S48lNttOZ+EnNCnpVY+7AdGvU+bp
-   pElLwk3Gvidgo3+UwGDefpZ6pjyu8urwaaJLr9KJseKOzDvG9PtdjOfAH
-   GiiqTgJEtg7vVB+ZJS8nLYSyqafoJsY9gEJ+djNkbIok1/ZvlucinzaqT
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="284364862"
+  bh=fTrtMAAJhQfGMMOU6j85FQf2LBXIcS+qto9gmyXkZP4=;
+  b=b0GdN+uV1oiU782tIIHjXv+ETij9F8Ntr5vRrEYBd9jSYflfs4BYuxL5
+   OQvYlb3IPzxCzvSK96g17L+Ch7UNwCFQSv3ZHotRpAkR9biC2nWOQPBZ0
+   6GM5I95qb9anUhzsjHris/wUhz889uLmBbSlTa4BbPY6T6fIDr8aW2yx5
+   tRQx/a0nXoRUAUzdFVEtQ+aQTITNIaE5uR3UpmzZa6+e4ZG+geWB5fV/0
+   TZQ0065fiDMDtTExCvKdn09hIOpiAvXOx8gj0C56kbIbiQ46SHyPeajeQ
+   EFMakvSkmvBHtp1F58FIiAuiYaVJT0aI9xEmswkaUcsJwd7npAm21t/ut
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="284364885"
 X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
-   d="scan'208";a="284364862"
+   d="scan'208";a="284364885"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 22:11:58 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 22:12:03 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
-   d="scan'208";a="542807414"
+   d="scan'208";a="542807440"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga003.jf.intel.com with ESMTP; 04 Jul 2022 22:11:53 -0700
+  by orsmga003.jf.intel.com with ESMTP; 04 Jul 2022 22:11:58 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Jason Gunthorpe <jgg@nvidia.com>,
@@ -46,9 +46,9 @@ Cc: Eric Auger <eric.auger@redhat.com>,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>,
 	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH v10 04/12] iommu: Add attach/detach_dev_pasid iommu interface
-Date: Tue,  5 Jul 2022 13:07:02 +0800
-Message-Id: <20220705050710.2887204-5-baolu.lu@linux.intel.com>
+Subject: [PATCH v10 05/12] iommu: Add IOMMU SVA domain support
+Date: Tue,  5 Jul 2022 13:07:03 +0800
+Message-Id: <20220705050710.2887204-6-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
 References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
@@ -60,182 +60,146 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Attaching an IOMMU domain to a PASID of a device is a generic operation
-for modern IOMMU drivers which support PASID-granular DMA address
-translation. Currently visible usage scenarios include (but not limited):
+The sva iommu_domain represents a hardware pagetable that the IOMMU
+hardware could use for SVA translation. This adds some infrastructure
+to support SVA domain in the iommu common layer. It includes:
 
- - SVA (Shared Virtual Address)
- - kernel DMA with PASID
- - hardware-assist mediated device
+- Extend the iommu_domain to support a new IOMMU_DOMAIN_SVA domain
+  type. The IOMMU drivers that support allocation of the SVA domain
+  should provide its own sva domain specific iommu_domain_ops.
+- Add a helper to allocate an SVA domain. The iommu_domain_free()
+  is still used to free an SVA domain.
 
-This adds a pair of domain ops for this purpose and adds the interfaces
-for device drivers to attach/detach a domain to/from a {device, PASID}.
-Some buses, like PCI, route packets without considering the PASID value.
-Thus a DMA target address with PASID might be treated as P2P if the
-address falls into the MMIO BAR of other devices in the group. To make
-things simple, these interfaces only apply to devices belonging to the
-singleton groups, and the singleton is immutable in fabric (i.e. not
-affected by hotplug).
+The report_iommu_fault() should be replaced by the new
+iommu_report_device_fault(). Leave the existing fault handler with the
+existing users and the newly added SVA members excludes it.
 
+Suggested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
 Tested-by: Tony Zhu <tony.zhu@intel.com>
 ---
- include/linux/iommu.h | 21 ++++++++++++
- drivers/iommu/iommu.c | 75 +++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 96 insertions(+)
+ include/linux/iommu.h | 24 ++++++++++++++++++++++--
+ drivers/iommu/iommu.c | 20 ++++++++++++++++++++
+ 2 files changed, 42 insertions(+), 2 deletions(-)
 
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index f41eb2b3c7da..f2b5aa7efe43 100644
+index f2b5aa7efe43..42f0418dc22c 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -262,6 +262,8 @@ struct iommu_ops {
-  * struct iommu_domain_ops - domain specific operations
-  * @attach_dev: attach an iommu domain to a device
-  * @detach_dev: detach an iommu domain from a device
-+ * @set_dev_pasid: set an iommu domain to a pasid of device
-+ * @block_dev_pasid: block pasid of device from using iommu domain
-  * @map: map a physically contiguous memory region to an iommu domain
-  * @map_pages: map a physically contiguous set of pages of the same size to
-  *             an iommu domain.
-@@ -282,6 +284,10 @@ struct iommu_ops {
- struct iommu_domain_ops {
- 	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
- 	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
-+	int (*set_dev_pasid)(struct iommu_domain *domain, struct device *dev,
-+			     ioasid_t pasid);
-+	void (*block_dev_pasid)(struct iommu_domain *domain, struct device *dev,
-+				ioasid_t pasid);
+@@ -64,6 +64,8 @@ struct iommu_domain_geometry {
+ #define __IOMMU_DOMAIN_PT	(1U << 2)  /* Domain is identity mapped   */
+ #define __IOMMU_DOMAIN_DMA_FQ	(1U << 3)  /* DMA-API uses flush queue    */
  
- 	int (*map)(struct iommu_domain *domain, unsigned long iova,
- 		   phys_addr_t paddr, size_t size, int prot, gfp_t gfp);
-@@ -679,6 +685,10 @@ int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner);
++#define __IOMMU_DOMAIN_SVA	(1U << 4)  /* Shared process address space */
++
+ /*
+  * This are the possible domain-types
+  *
+@@ -77,6 +79,8 @@ struct iommu_domain_geometry {
+  *				  certain optimizations for these domains
+  *	IOMMU_DOMAIN_DMA_FQ	- As above, but definitely using batched TLB
+  *				  invalidation.
++ *	IOMMU_DOMAIN_SVA	- DMA addresses are shared process address
++ *				  spaces represented by mm_struct's.
+  */
+ #define IOMMU_DOMAIN_BLOCKED	(0U)
+ #define IOMMU_DOMAIN_IDENTITY	(__IOMMU_DOMAIN_PT)
+@@ -86,15 +90,23 @@ struct iommu_domain_geometry {
+ #define IOMMU_DOMAIN_DMA_FQ	(__IOMMU_DOMAIN_PAGING |	\
+ 				 __IOMMU_DOMAIN_DMA_API |	\
+ 				 __IOMMU_DOMAIN_DMA_FQ)
++#define IOMMU_DOMAIN_SVA	(__IOMMU_DOMAIN_SVA)
+ 
+ struct iommu_domain {
+ 	unsigned type;
+ 	const struct iommu_domain_ops *ops;
+ 	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
+-	iommu_fault_handler_t handler;
+-	void *handler_token;
+ 	struct iommu_domain_geometry geometry;
+ 	struct iommu_dma_cookie *iova_cookie;
++	union {
++		struct {
++			iommu_fault_handler_t handler;
++			void *handler_token;
++		};
++		struct {	/* IOMMU_DOMAIN_SVA */
++			struct mm_struct *mm;
++		};
++	};
+ };
+ 
+ static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
+@@ -685,6 +697,8 @@ int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner);
  void iommu_group_release_dma_owner(struct iommu_group *group);
  bool iommu_group_dma_owner_claimed(struct iommu_group *group);
  
-+int iommu_attach_device_pasid(struct iommu_domain *domain, struct device *dev,
-+			      ioasid_t pasid);
-+void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
-+			       ioasid_t pasid);
- #else /* CONFIG_IOMMU_API */
- 
- struct iommu_ops {};
-@@ -1052,6 +1062,17 @@ static inline bool iommu_group_dma_owner_claimed(struct iommu_group *group)
- {
++struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
++					    struct mm_struct *mm);
+ int iommu_attach_device_pasid(struct iommu_domain *domain, struct device *dev,
+ 			      ioasid_t pasid);
+ void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
+@@ -1063,6 +1077,12 @@ static inline bool iommu_group_dma_owner_claimed(struct iommu_group *group)
  	return false;
  }
-+
-+static inline int iommu_attach_device_pasid(struct iommu_domain *domain,
-+					    struct device *dev, ioasid_t pasid)
-+{
-+	return -ENODEV;
-+}
-+
-+static inline void iommu_detach_device_pasid(struct iommu_domain *domain,
-+					     struct device *dev, ioasid_t pasid)
-+{
-+}
- #endif /* CONFIG_IOMMU_API */
  
- /**
++static inline struct iommu_domain *
++iommu_sva_domain_alloc(struct device *dev, struct mm_struct *mm)
++{
++	return NULL;
++}
++
+ static inline int iommu_attach_device_pasid(struct iommu_domain *domain,
+ 					    struct device *dev, ioasid_t pasid)
+ {
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 74a0a3ec0907..be48b09371f4 100644
+index be48b09371f4..10479c5e4d23 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -39,6 +39,7 @@ struct iommu_group {
- 	struct kobject kobj;
- 	struct kobject *devices_kobj;
- 	struct list_head devices;
-+	struct xarray pasid_array;
- 	struct mutex mutex;
- 	void *iommu_data;
- 	void (*iommu_data_release)(void *iommu_data);
-@@ -660,6 +661,7 @@ struct iommu_group *iommu_group_alloc(void)
- 	mutex_init(&group->mutex);
- 	INIT_LIST_HEAD(&group->devices);
- 	INIT_LIST_HEAD(&group->entry);
-+	xa_init(&group->pasid_array);
+@@ -27,6 +27,7 @@
+ #include <linux/module.h>
+ #include <linux/cc_platform.h>
+ #include <trace/events/iommu.h>
++#include <linux/sched/mm.h>
  
- 	ret = ida_alloc(&iommu_group_ida, GFP_KERNEL);
- 	if (ret < 0) {
-@@ -3271,3 +3273,76 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group)
- 	return user;
+ static struct kset *iommu_group_kset;
+ static DEFINE_IDA(iommu_group_ida);
+@@ -1957,6 +1958,8 @@ EXPORT_SYMBOL_GPL(iommu_domain_alloc);
+ 
+ void iommu_domain_free(struct iommu_domain *domain)
+ {
++	if (domain->type == IOMMU_DOMAIN_SVA)
++		mmdrop(domain->mm);
+ 	iommu_put_dma_cookie(domain);
+ 	domain->ops->free(domain);
+ }
+@@ -3274,6 +3277,23 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group)
  }
  EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
-+
-+static bool iommu_group_immutable_singleton(struct iommu_group *group,
-+					    struct device *dev)
+ 
++struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
++					    struct mm_struct *mm)
 +{
-+	int count;
++	const struct iommu_ops *ops = dev_iommu_ops(dev);
++	struct iommu_domain *domain;
 +
-+	mutex_lock(&group->mutex);
-+	count = iommu_group_device_count(group);
-+	mutex_unlock(&group->mutex);
++	domain = ops->domain_alloc(IOMMU_DOMAIN_SVA);
++	if (!domain)
++		return NULL;
 +
-+	if (count != 1)
-+		return false;
++	domain->type = IOMMU_DOMAIN_SVA;
++	mmgrab(mm);
++	domain->mm = mm;
 +
-+	/*
-+	 * The PCI device could be considered to be fully isolated if all
-+	 * devices on the path from the device to the host-PCI bridge are
-+	 * protected from peer-to-peer DMA by ACS.
-+	 */
-+	if (dev_is_pci(dev))
-+		return pci_acs_path_enabled(to_pci_dev(dev), NULL,
-+					    REQ_ACS_FLAGS);
-+
-+	/*
-+	 * Otherwise, the device came from DT/ACPI, assume it is static and
-+	 * then singleton can know from the device count in the group.
-+	 */
-+	return true;
++	return domain;
 +}
 +
-+int iommu_attach_device_pasid(struct iommu_domain *domain, struct device *dev,
-+			      ioasid_t pasid)
-+{
-+	struct iommu_group *group;
-+	void *curr;
-+	int ret;
-+
-+	if (!domain->ops->set_dev_pasid)
-+		return -EOPNOTSUPP;
-+
-+	group = iommu_group_get(dev);
-+	if (!group || !iommu_group_immutable_singleton(group, dev)) {
-+		iommu_group_put(group);
-+		return -EINVAL;
-+	}
-+
-+	mutex_lock(&group->mutex);
-+	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, GFP_KERNEL);
-+	if (curr) {
-+		ret = xa_err(curr) ? : -EBUSY;
-+		goto out_unlock;
-+	}
-+	ret = domain->ops->set_dev_pasid(domain, dev, pasid);
-+	if (ret)
-+		xa_erase(&group->pasid_array, pasid);
-+out_unlock:
-+	mutex_unlock(&group->mutex);
-+	iommu_group_put(group);
-+
-+	return ret;
-+}
-+
-+void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
-+			       ioasid_t pasid)
-+{
-+	struct iommu_group *group = iommu_group_get(dev);
-+
-+	mutex_lock(&group->mutex);
-+	domain->ops->block_dev_pasid(domain, dev, pasid);
-+	xa_erase(&group->pasid_array, pasid);
-+	mutex_unlock(&group->mutex);
-+
-+	iommu_group_put(group);
-+}
+ static bool iommu_group_immutable_singleton(struct iommu_group *group,
+ 					    struct device *dev)
+ {
 -- 
 2.25.1
 
