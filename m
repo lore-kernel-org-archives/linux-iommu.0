@@ -4,84 +4,87 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6C3E3C43334
-	for <iommu@archiver.kernel.org>; Tue,  5 Jul 2022 02:58:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D1C9BC43334
+	for <iommu@archiver.kernel.org>; Tue,  5 Jul 2022 04:51:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id D394640541;
-	Tue,  5 Jul 2022 02:58:53 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org D394640541
+	by smtp2.osuosl.org (Postfix) with ESMTP id 3CBBA401F1;
+	Tue,  5 Jul 2022 04:51:12 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 3CBBA401F1
 Authentication-Results: smtp2.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=kjTas8jb
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=kmj0Dv15
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id LROSWNuQ0eLu; Tue,  5 Jul 2022 02:58:52 +0000 (UTC)
+	with ESMTP id 8lsrQXuSiHmp; Tue,  5 Jul 2022 04:51:11 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 5B53C40131;
-	Tue,  5 Jul 2022 02:58:52 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 5B53C40131
+	by smtp2.osuosl.org (Postfix) with ESMTPS id CBA9140131;
+	Tue,  5 Jul 2022 04:51:10 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org CBA9140131
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 34D76C0032;
-	Tue,  5 Jul 2022 02:58:52 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D2BD9C002D
- for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 02:58:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8E096C0032;
+	Tue,  5 Jul 2022 04:51:10 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7B841C002D
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 04:51:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id AC15360A8C
- for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 02:58:50 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org AC15360A8C
-Authentication-Results: smtp3.osuosl.org;
+ by smtp4.osuosl.org (Postfix) with ESMTP id 463F5416E2
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 04:51:08 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 463F5416E2
+Authentication-Results: smtp4.osuosl.org;
  dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com
- header.a=rsa-sha256 header.s=Intel header.b=kjTas8jb
+ header.a=rsa-sha256 header.s=Intel header.b=kmj0Dv15
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id q5Ok7lVwJFys for <iommu@lists.linux-foundation.org>;
- Tue,  5 Jul 2022 02:58:49 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id pkHCTiaW_zVU for <iommu@lists.linux-foundation.org>;
+ Tue,  5 Jul 2022 04:51:06 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 48522606C0
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 48522606C0
- for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 02:58:49 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 18F804168B
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 18F804168B
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Jul 2022 04:51:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1656989929; x=1688525929;
- h=date:from:to:cc:subject:message-id:references:
- mime-version:in-reply-to;
- bh=IDbhF7wCQCWGlR+mgr4YPKJMsld6Uv/Sy7LrfLbGeWc=;
- b=kjTas8jbtlzDJBMJNfzaYBsd35JeHSVGJ2O4ISIG0XsOAV1ZpifU02U8
- gfBkktU78vA70uPNj5B8YZXC04rUmGIhnTs8xblkFsoC3bUT2HFBquN1h
- FjTk/HES374Mumzah0oXBxed+C1apwKTwUxoWiFdK7QYEWvtE1Q0Qm2nj
- 0ocyAY+YOL6LkFR5N0oqdh82xBwrigKqrUXgtp+uafpddfERgZ/a5ywIa
- OB+30RKLVs7LOuIdUdwjxcIZwCdzhcLmydK0HzJirefhXC1f2A8AUNNAd
- xhA5OMrtaRYavH+jZS09F5/suHDK048X0Dv589md8lmXG+nqybR2ZwEgy w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="347214635"
-X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; d="scan'208";a="347214635"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
- by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 04 Jul 2022 19:58:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; d="scan'208";a="597146062"
-Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
- by fmsmga007.fm.intel.com with ESMTP; 04 Jul 2022 19:58:44 -0700
-Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
- (envelope-from <lkp@intel.com>) id 1o8Ylv-000Idm-Jw;
- Tue, 05 Jul 2022 02:58:43 +0000
-Date: Tue, 5 Jul 2022 10:57:57 +0800
-From: kernel test robot <lkp@intel.com>
-To: Mikko Perttunen <cyndis@kapsi.fi>, thierry.reding@gmail.com,
- jonathanh@nvidia.com, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, robh+dt@kernel.org, krzysztof.kozlowski@canonical.com
-Subject: Re: [PATCH v6 04/10] gpu: host1x: Add context device management code
-Message-ID: <202207051045.JWeVR4tW-lkp@intel.com>
-References: <20220621151022.1416300-5-cyndis@kapsi.fi>
+ t=1656996666; x=1688532666;
+ h=message-id:date:mime-version:cc:subject:to:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=ct9HkUkrnk5nhlxXQ8iJ0J2EEXFdvdkjBbdBFA1gdng=;
+ b=kmj0Dv15Woc90FpULxPz+PJxA6teOOY1ii6tIEWK1hvt+eXQ/nlR20mS
+ FaMHCchi6xNkriSlybRzLMIesc4zXK59bAbthLUgJgm+wwn5nNYxhEIOX
+ 1hq1/RPe8HAUlvvJtke+CXSVft4vOMw/WHrqWeXjjW6ez4cOzwpIhxy6Q
+ EyT4s8gKiftHlBSEU2XQdgnkoczSmKdJ3esLe+IHqGZetCO2V8X4zZfaG
+ 7GRDf/Dnoctym5bSDIhG5Adm0ipfbPNQlXPTYQcaDAW1iEwDxeFygKq7q
+ 3mK1KDGgCmgdk1Pxu6us7Rye4uQCZfYtBmMlZ/HPasEgAP6hApLVnDEjF w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="369573772"
+X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; d="scan'208";a="369573772"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+ by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 04 Jul 2022 21:51:05 -0700
+X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; d="scan'208";a="649920196"
+Received: from peiwenzx-mobl.ccr.corp.intel.com (HELO [10.249.173.7])
+ ([10.249.173.7])
+ by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 04 Jul 2022 21:51:02 -0700
+Message-ID: <fc0ddc34-e289-d225-f9ae-bf629e834a6b@linux.intel.com>
+Date: Tue, 5 Jul 2022 12:51:00 +0800
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20220621151022.1416300-5-cyndis@kapsi.fi>
-Cc: devicetree@vger.kernel.org, kbuild-all@lists.01.org,
- linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
- Mikko Perttunen <mperttunen@nvidia.com>, iommu@lists.linux-foundation.org,
- linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2 03/14] iommu: Move bus setup to IOMMU device
+ registration
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org
+References: <cover.1650890638.git.robin.murphy@arm.com>
+ <1faba5b5c094379df3d99b8fec924ab50ad75482.1650890638.git.robin.murphy@arm.com>
+ <0e459e6e-f236-7a58-970a-a47677a23b44@linux.intel.com>
+ <fa0d0663-5393-c533-105a-85bd2e9e0649@arm.com>
+ <1322706e-5905-433b-5bc5-ed44f881b510@arm.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <1322706e-5905-433b-5bc5-ed44f881b510@arm.com>
+Cc: jean-philippe@linaro.org, zhang.lyra@gmail.com,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ thierry.reding@gmail.com, gerald.schaefer@linux.ibm.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,134 +97,164 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Mikko,
+Hi Robin,
 
-Thank you for the patch! Yet something to improve:
+On 2022/4/30 02:06, Robin Murphy wrote:
+> On 29/04/2022 9:50 am, Robin Murphy wrote:
+>> On 2022-04-29 07:57, Baolu Lu wrote:
+>>> Hi Robin,
+>>>
+>>> On 2022/4/28 21:18, Robin Murphy wrote:
+>>>> Move the bus setup to iommu_device_register(). This should allow
+>>>> bus_iommu_probe() to be correctly replayed for multiple IOMMU 
+>>>> instances,
+>>>> and leaves bus_set_iommu() as a glorified no-op to be cleaned up next.
+>>>
+>>> I re-fetched the latest patches on
+>>>
+>>> https://gitlab.arm.com/linux-arm/linux-rm/-/commits/iommu/bus
+>>>
+>>> and rolled back the head to "iommu: Cleanup bus_set_iommu".
+>>>
+>>> The test machine still hangs during boot.
+>>>
+>>> I went through the code. It seems that the .probe_device for Intel IOMMU
+>>> driver can't handle the probe replay well. It always assumes that the
+>>> device has never been probed.
+>>
+>> Hmm, but probe_iommu_group() is supposed to prevent the 
+>> __iommu_probe_device() call even happening if the device *has* already 
+>> been probed before :/
+>>
+>> I've still got an old Intel box spare in the office so I'll rig that 
+>> up and see if I can see what might be going on here...
+> 
+> OK, on a Xeon with two DMAR units, this seems to boot OK with or without 
+> patch #1, so it doesn't seem to be a general problem with replaying in 
+> iommu_device_register(), or with platform devices. Not sure where to go 
+> from here... :/
 
-[auto build test ERROR on drm/drm-next]
-[also build test ERROR on tegra/for-next linus/master v5.19-rc5]
-[cannot apply to tegra-drm/drm/tegra/for-next next-20220704]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+The kernel boot panic message:
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Mikko-Perttunen/Host1x-context-isolation-support/20220621-231339
-base:   git://anongit.freedesktop.org/drm/drm drm-next
-config: arm-randconfig-r005-20220703 (https://download.01.org/0day-ci/archive/20220705/202207051045.JWeVR4tW-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/2501beeae7469b805f9f624049fd56643cf6e18e
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Mikko-Perttunen/Host1x-context-isolation-support/20220621-231339
-        git checkout 2501beeae7469b805f9f624049fd56643cf6e18e
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+[    6.639432] BUG: kernel NULL pointer dereference, address: 
+0000000000000028
+[    6.743829] #PF: supervisor read access in kernel mode
+[    6.743829] #PF: error_code(0x0000) - not-present page
+[    6.743829] PGD 0
+[    6.743829] Oops: 0000 [#1] PREEMPT SMP NOPTI
+[    6.743829] CPU: 0 PID: 1 Comm: swapper/0 Tainted: G          I 
+  5.19.0-rc3+ #182
+[    6.743829] RIP: 0010:__iommu_probe_device+0x115/0x200
+[    6.743829] Code: 89 ff e8 3e e1 ff ff 48 85 c0 0f 85 47 ff ff ff 41 
+bd f4 ff ff ff eb 83 48 8b 83 d8 02 00 00 48 89 df 48 8b 40 38 48 8b 40 
+10 <48> 8b 40 28 ff d0 0f 1f 00 48 89 c1 48 85 c0 0f 84 b7 00 00 00 48
+[    6.743829] RSP: 0000:ff30605c00063d40 EFLAGS: 00010246
+[    6.743829] RAX: 0000000000000000 RBX: ff128b9c5fdc90d0 RCX: 
+0000000000000000
+[    6.743829] RDX: 0000000080000001 RSI: 0000000000000246 RDI: 
+ff128b9c5fdc90d0
+[    6.743829] RBP: ffffffffb60c34e0 R08: ffffffffb68664d0 R09: 
+ff128b9501d4ce40
+[    6.743829] R10: ffffffffb6267096 R11: ff128b950014c267 R12: 
+ff30605c00063de0
+[    6.743829] R13: 00000000001b9d28 R14: ff128b95001b9d28 R15: 
+ff128b9c5fdc93a8
+[    6.743829] FS:  0000000000000000(0000) GS:ff128b9c5fc00000(0000) 
+knlGS:0000000000000000
+[    6.743829] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    6.743829] CR2: 0000000000000028 CR3: 0000000149210001 CR4: 
+0000000000771ef0
+[    6.743829] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 
+0000000000000000
+[    6.743829] DR3: 0000000000000000 DR6: 00000000ffff07f0 DR7: 
+0000000000000400
+[    6.743829] PKRU: 55555554
+[    6.743829] Call Trace:
+[    6.743829]  <TASK>
+[    6.743829]  ? _raw_spin_lock_irqsave+0x17/0x40
+[    6.743829]  ? __iommu_probe_device+0x200/0x200
+[    6.743829]  probe_iommu_group+0x2d/0x40
+[    6.743829]  bus_for_each_dev+0x74/0xc0
+[    6.743829]  bus_iommu_probe+0x48/0x2d0
+[    6.743829]  iommu_device_register+0xde/0x120
+[    6.743829]  intel_iommu_init+0x35f/0x5f2
+[    6.743829]  ? iommu_setup+0x27d/0x27d
+[    6.743829]  ? rdinit_setup+0x2c/0x2c
+[    6.743829]  pci_iommu_init+0xe/0x32
+[    6.743829]  do_one_initcall+0x41/0x200
+[    6.743829]  kernel_init_freeable+0x1de/0x228
+[    6.743829]  ? rest_init+0xc0/0xc0
+[    6.743829]  kernel_init+0x16/0x120
+[    6.743829]  ret_from_fork+0x1f/0x30
+[    6.743829]  </TASK>
+[    6.743829] Modules linked in:
+[    6.743829] CR2: 0000000000000028
+[    6.743829] ---[ end trace 0000000000000000 ]---
+[    6.743829] RIP: 0010:__iommu_probe_device+0x115/0x200
+[    6.743829] Code: 89 ff e8 3e e1 ff ff 48 85 c0 0f 85 47 ff ff ff 41 
+bd f4 ff ff ff eb 83 48 8b 83 d8 02 00 00 48 89 df 48 8b 40 38 48 8b 40 
+10 <48> 8b 40 28 ff d0 0f 1f 00 48 89 c1 48 85 c0 0f 84 b7 00 00 00 48
+[    6.743829] RSP: 0000:ff30605c00063d40 EFLAGS: 00010246
+[    6.743829] RAX: 0000000000000000 RBX: ff128b9c5fdc90d0 RCX: 
+0000000000000000
+[    6.743829] RDX: 0000000080000001 RSI: 0000000000000246 RDI: 
+ff128b9c5fdc90d0
+[    6.743829] RBP: ffffffffb60c34e0 R08: ffffffffb68664d0 R09: 
+ff128b9501d4ce40
+[    6.743829] R10: ffffffffb6267096 R11: ff128b950014c267 R12: 
+ff30605c00063de0
+[    6.743829] R13: 00000000001b9d28 R14: ff128b95001b9d28 R15: 
+ff128b9c5fdc93a8
+[    6.743829] FS:  0000000000000000(0000) GS:ff128b9c5fc00000(0000) 
+knlGS:0000000000000000
+[    6.743829] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    6.743829] CR2: 0000000000000028 CR3: 0000000149210001 CR4: 
+0000000000771ef0
+[    6.743829] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 
+0000000000000000
+[    6.743829] DR3: 0000000000000000 DR6: 00000000ffff07f0 DR7: 
+0000000000000400
+[    6.743829] PKRU: 55555554
+[    6.743829] Kernel panic - not syncing: Fatal exception
+[    6.743829] ---[ end Kernel panic - not syncing: Fatal exception ]---
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+The "NULL pointer dereference" happens at line 1620 of below code.
 
-All errors (new ones prefixed by >>):
+1610 static struct iommu_group *iommu_group_get_for_dev(struct device *dev)
+1611 {
+1612         const struct iommu_ops *ops = dev_iommu_ops(dev);
+1613         struct iommu_group *group;
+1614         int ret;
+1615
+1616         group = iommu_group_get(dev);
+1617         if (group)
+1618                 return group;
+1619
+1620         group = ops->device_group(dev);
+1621         if (WARN_ON_ONCE(group == NULL))
+1622                 return ERR_PTR(-EINVAL);
+1623
+1624         if (IS_ERR(group))
+1625                 return group;
 
-   drivers/gpu/host1x/context.c: In function 'host1x_memory_context_list_init':
->> drivers/gpu/host1x/context.c:80:40: error: 'struct iommu_fwspec' has no member named 'ids'
-      80 |                 ctx->stream_id = fwspec->ids[0] & 0xffff;
-         |                                        ^~
+This platform has multiple IOMMU units, each serving different PCI
+devices. The ops field of each iommu_device is initialized in
+iommu_device_register(), hence when the first IOMMU device gets
+registered, ops fields of other iommu_devices are NULL.
 
+Unfortunately bus_iommu_probe() called in iommu_device_register() probes
+*all* PCI devices. This probably leads to above NULL pointer dereference
+issue.
 
-vim +80 drivers/gpu/host1x/context.c
+Please correct me if I overlooked anything.
 
-    15	
-    16	int host1x_memory_context_list_init(struct host1x *host1x)
-    17	{
-    18		struct host1x_memory_context_list *cdl = &host1x->context_list;
-    19		struct device_node *node = host1x->dev->of_node;
-    20		struct host1x_memory_context *ctx;
-    21		unsigned int i;
-    22		int err;
-    23	
-    24		cdl->devs = NULL;
-    25		cdl->len = 0;
-    26		mutex_init(&cdl->lock);
-    27	
-    28		err = of_property_count_u32_elems(node, "iommu-map");
-    29		if (err < 0)
-    30			return 0;
-    31	
-    32		cdl->devs = kcalloc(err, sizeof(*cdl->devs), GFP_KERNEL);
-    33		if (!cdl->devs)
-    34			return -ENOMEM;
-    35		cdl->len = err / 4;
-    36	
-    37		for (i = 0; i < cdl->len; i++) {
-    38			struct iommu_fwspec *fwspec;
-    39	
-    40			ctx = &cdl->devs[i];
-    41	
-    42			ctx->host = host1x;
-    43	
-    44			device_initialize(&ctx->dev);
-    45	
-    46			/*
-    47			 * Due to an issue with T194 NVENC, only 38 bits can be used.
-    48			 * Anyway, 256GiB of IOVA ought to be enough for anyone.
-    49			 */
-    50			ctx->dma_mask = DMA_BIT_MASK(38);
-    51			ctx->dev.dma_mask = &ctx->dma_mask;
-    52			ctx->dev.coherent_dma_mask = ctx->dma_mask;
-    53			dev_set_name(&ctx->dev, "host1x-ctx.%d", i);
-    54			ctx->dev.bus = &host1x_context_device_bus_type;
-    55			ctx->dev.parent = host1x->dev;
-    56	
-    57			dma_set_max_seg_size(&ctx->dev, UINT_MAX);
-    58	
-    59			err = device_add(&ctx->dev);
-    60			if (err) {
-    61				dev_err(host1x->dev, "could not add context device %d: %d\n", i, err);
-    62				goto del_devices;
-    63			}
-    64	
-    65			err = of_dma_configure_id(&ctx->dev, node, true, &i);
-    66			if (err) {
-    67				dev_err(host1x->dev, "IOMMU configuration failed for context device %d: %d\n",
-    68					i, err);
-    69				device_del(&ctx->dev);
-    70				goto del_devices;
-    71			}
-    72	
-    73			fwspec = dev_iommu_fwspec_get(&ctx->dev);
-    74			if (!fwspec) {
-    75				dev_err(host1x->dev, "Context device %d has no IOMMU!\n", i);
-    76				device_del(&ctx->dev);
-    77				goto del_devices;
-    78			}
-    79	
-  > 80			ctx->stream_id = fwspec->ids[0] & 0xffff;
-    81		}
-    82	
-    83		return 0;
-    84	
-    85	del_devices:
-    86		while (i--)
-    87			device_del(&cdl->devs[i].dev);
-    88	
-    89		kfree(cdl->devs);
-    90		cdl->len = 0;
-    91	
-    92		return err;
-    93	}
-    94	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
