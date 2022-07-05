@@ -1,31 +1,31 @@
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 697497C
-	for <iommu@lists.linux.dev>; Tue,  5 Jul 2022 05:11:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD6F97C
+	for <iommu@lists.linux.dev>; Tue,  5 Jul 2022 05:11:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656997904; x=1688533904;
+  t=1656997908; x=1688533908;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Qo+6klAfeW414OJoIRT3UwYdgTWk/xVjBH9Ql67rjGo=;
-  b=dIQWK04MrCJlAvvjQ1v0k82mmYd61A449/3V24fcAqoFsigGmCXQz1/9
-   YGG4wkiT/NcgqQOlNhjEwoGfP4QbH3OlEBPmVoVXsCebHEyHoNB4avtCT
-   pChWXv+tpEp0hBZWgkH7SeecEn8tRVpik6lY1eisRpb7JzvUmlX+SKgX1
-   SPmAmB/+GbHQoKTSDOEwJVeteEkSL/EgaMmm5eOqhP+vFPjdw8bXVB+F4
-   nnDqmCc3IGQPRjtO633Uw8i6ImefOtlDSLCBQQccfjaPXAdn/ljfoshuX
-   JFvvZx247vIjhqPZiak4b3gqvXof5bjQWa9NtiZFIlEYaeTaluhxhAFIE
+  bh=AOuJcckSmEJG/2YCRrXp2jo9koUTopyV3uPrKxZRKYg=;
+  b=I1TdH8N2yHzVX9QGn4FDSsWMdMwdWPrTY6D81CPHFjIMiD0qtOCLETEc
+   kDJVzMQ/HMj1MXN9DfUCwJQc4eh9bh31eHTDjPq3syeZqfmo0oxGL+XoM
+   kOmesizeR+qN4pgZpgpRSunRggomMtTNa7kEx86BuxFaWNiFt8WPr0nR+
+   aCeAvSoxDMd8JqOMGxK4le3CCGm9yB/sTKLiOFrJMFTGStrx68XispiPK
+   5eVsrsgspN4u6LVGzypT+T4Ez2CvX2Rs9DiMvr/nZSu/UScPVh3gZWzhi
+   Jw9W7aCnaWDm5dElL0PCqGLlf4V9BTg9UgVC5Enn7jVhj+uhXAxQYxBUo
    w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="369577693"
+X-IronPort-AV: E=McAfee;i="6400,9594,10398"; a="369577703"
 X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
-   d="scan'208";a="369577693"
+   d="scan'208";a="369577703"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 22:11:44 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2022 22:11:48 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,245,1650956400"; 
-   d="scan'208";a="542807360"
+   d="scan'208";a="542807370"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga003.jf.intel.com with ESMTP; 04 Jul 2022 22:11:39 -0700
+  by orsmga003.jf.intel.com with ESMTP; 04 Jul 2022 22:11:44 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Jason Gunthorpe <jgg@nvidia.com>,
@@ -44,11 +44,10 @@ Cc: Eric Auger <eric.auger@redhat.com>,
 	Zhu Tony <tony.zhu@intel.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH v10 01/12] iommu: Add max_pasids field in struct iommu_device
-Date: Tue,  5 Jul 2022 13:06:59 +0800
-Message-Id: <20220705050710.2887204-2-baolu.lu@linux.intel.com>
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v10 02/12] iommu: Add max_pasids field in struct dev_iommu
+Date: Tue,  5 Jul 2022 13:07:00 +0800
+Message-Id: <20220705050710.2887204-3-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
 References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
@@ -60,106 +59,85 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Use this field to keep the number of supported PASIDs that an IOMMU
-hardware is able to support. This is a generic attribute of an IOMMU
-and lifting it into the per-IOMMU device structure makes it possible
-to allocate a PASID for device without calls into the IOMMU drivers.
-Any iommu driver that supports PASID related features should set this
-field before enabling them on the devices.
-
-In the Intel IOMMU driver, intel_iommu_sm is moved to CONFIG_INTEL_IOMMU
-enclave so that the pasid_supported() helper could be used in dmar.c
-without compilation errors.
+Use this field to save the number of PASIDs that a device is able to
+consume. It is a generic attribute of a device and lifting it into the
+per-device dev_iommu struct could help to avoid the boilerplate code
+in various IOMMU drivers.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
 Tested-by: Tony Zhu <tony.zhu@intel.com>
 ---
- include/linux/intel-iommu.h                 | 3 ++-
- include/linux/iommu.h                       | 2 ++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 1 +
- drivers/iommu/intel/dmar.c                  | 7 +++++++
- 4 files changed, 12 insertions(+), 1 deletion(-)
+ include/linux/iommu.h |  2 ++
+ drivers/iommu/iommu.c | 20 ++++++++++++++++++++
+ 2 files changed, 22 insertions(+)
 
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 4f29139bbfc3..e065cbe3c857 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -479,7 +479,6 @@ enum {
- #define VTD_FLAG_IRQ_REMAP_PRE_ENABLED	(1 << 1)
- #define VTD_FLAG_SVM_CAPABLE		(1 << 2)
- 
--extern int intel_iommu_sm;
- extern spinlock_t device_domain_lock;
- 
- #define sm_supported(iommu)	(intel_iommu_sm && ecap_smts((iommu)->ecap))
-@@ -786,6 +785,7 @@ struct context_entry *iommu_context_addr(struct intel_iommu *iommu, u8 bus,
- extern const struct iommu_ops intel_iommu_ops;
- 
- #ifdef CONFIG_INTEL_IOMMU
-+extern int intel_iommu_sm;
- extern int iommu_calculate_agaw(struct intel_iommu *iommu);
- extern int iommu_calculate_max_sagaw(struct intel_iommu *iommu);
- extern int dmar_disabled;
-@@ -802,6 +802,7 @@ static inline int iommu_calculate_max_sagaw(struct intel_iommu *iommu)
- }
- #define dmar_disabled	(1)
- #define intel_iommu_enabled (0)
-+#define intel_iommu_sm (0)
- #endif
- 
- static inline const char *decode_prq_descriptor(char *str, size_t size,
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 5e1afe169549..03fbb1b71536 100644
+index 03fbb1b71536..418a1914a041 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -318,12 +318,14 @@ struct iommu_domain_ops {
-  * @list: Used by the iommu-core to keep a list of registered iommus
-  * @ops: iommu-ops for talking to this iommu
-  * @dev: struct device for sysfs handling
-+ * @max_pasids: number of supported PASIDs
-  */
- struct iommu_device {
- 	struct list_head list;
- 	const struct iommu_ops *ops;
- 	struct fwnode_handle *fwnode;
- 	struct device *dev;
-+	u32 max_pasids;
+@@ -364,6 +364,7 @@ struct iommu_fault_param {
+  * @fwspec:	 IOMMU fwspec data
+  * @iommu_dev:	 IOMMU device this device is linked to
+  * @priv:	 IOMMU Driver private data
++ * @max_pasids:  number of PASIDs this device can consume
+  *
+  * TODO: migrate other per device data pointers under iommu_dev_data, e.g.
+  *	struct iommu_group	*iommu_group;
+@@ -375,6 +376,7 @@ struct dev_iommu {
+ 	struct iommu_fwspec		*fwspec;
+ 	struct iommu_device		*iommu_dev;
+ 	void				*priv;
++	u32				max_pasids;
  };
  
- /**
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 88817a3376ef..ae8ec8df47c1 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -3546,6 +3546,7 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 	/* SID/SSID sizes */
- 	smmu->ssid_bits = FIELD_GET(IDR1_SSIDSIZE, reg);
- 	smmu->sid_bits = FIELD_GET(IDR1_SIDSIZE, reg);
-+	smmu->iommu.max_pasids = 1UL << smmu->ssid_bits;
+ int iommu_device_register(struct iommu_device *iommu,
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index cdc86c39954e..0cb0750f61e8 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -20,6 +20,7 @@
+ #include <linux/idr.h>
+ #include <linux/err.h>
+ #include <linux/pci.h>
++#include <linux/pci-ats.h>
+ #include <linux/bitops.h>
+ #include <linux/property.h>
+ #include <linux/fsl/mc.h>
+@@ -218,6 +219,24 @@ static void dev_iommu_free(struct device *dev)
+ 	kfree(param);
+ }
  
- 	/*
- 	 * If the SMMU supports fewer bits than would fill a single L2 stream
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 592c1e1a5d4b..6c338888061a 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -1123,6 +1123,13 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
- 
- 	raw_spin_lock_init(&iommu->register_lock);
- 
-+	/*
-+	 * A value of N in PSS field of eCap register indicates hardware
-+	 * supports PASID field of N+1 bits.
-+	 */
-+	if (pasid_supported(iommu))
-+		iommu->iommu.max_pasids = 2UL << ecap_pss(iommu->ecap);
++static u32 dev_iommu_get_max_pasids(struct device *dev)
++{
++	u32 max_pasids = 0, bits = 0;
++	int ret;
 +
- 	/*
- 	 * This is only for hotplug; at boot time intel_iommu_enabled won't
- 	 * be set yet. When intel_iommu_init() runs, it registers the units
++	if (dev_is_pci(dev)) {
++		ret = pci_max_pasids(to_pci_dev(dev));
++		if (ret > 0)
++			max_pasids = ret;
++	} else {
++		ret = device_property_read_u32(dev, "pasid-num-bits", &bits);
++		if (!ret)
++			max_pasids = 1UL << bits;
++	}
++
++	return min_t(u32, max_pasids, dev->iommu->iommu_dev->max_pasids);
++}
++
+ static int __iommu_probe_device(struct device *dev, struct list_head *group_list)
+ {
+ 	const struct iommu_ops *ops = dev->bus->iommu_ops;
+@@ -243,6 +262,7 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
+ 	}
+ 
+ 	dev->iommu->iommu_dev = iommu_dev;
++	dev->iommu->max_pasids = dev_iommu_get_max_pasids(dev);
+ 
+ 	group = iommu_group_get_for_dev(dev);
+ 	if (IS_ERR(group)) {
 -- 
 2.25.1
 
