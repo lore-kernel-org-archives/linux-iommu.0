@@ -4,120 +4,80 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6FE09C43334
-	for <iommu@archiver.kernel.org>; Wed,  6 Jul 2022 11:45:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 47DFFC433EF
+	for <iommu@archiver.kernel.org>; Wed,  6 Jul 2022 11:45:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 0D39960F19;
-	Wed,  6 Jul 2022 11:45:37 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 0D39960F19
+	by smtp3.osuosl.org (Postfix) with ESMTP id EF0AF607B5;
+	Wed,  6 Jul 2022 11:45:48 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org EF0AF607B5
 Authentication-Results: smtp3.osuosl.org;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=24odeKAW
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20201202 header.b=KMVJJ+Ju
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9rO_GsSOswR0; Wed,  6 Jul 2022 11:45:36 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id AAF97607B5;
-	Wed,  6 Jul 2022 11:45:35 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org AAF97607B5
+	with ESMTP id tFmsL27inKrX; Wed,  6 Jul 2022 11:45:48 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id D4EFE60C08;
+	Wed,  6 Jul 2022 11:45:47 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org D4EFE60C08
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7E045C0035;
-	Wed,  6 Jul 2022 11:45:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B0A78C0035;
+	Wed,  6 Jul 2022 11:45:47 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C8BF5C002D
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 11:45:34 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A1104C002D
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 11:45:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id A142B415E3
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 11:45:34 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org A142B415E3
-Authentication-Results: smtp4.osuosl.org; dkim=pass (1024-bit key,
- unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256
- header.s=selector1 header.b=24odeKAW
+ by smtp4.osuosl.org (Postfix) with ESMTP id 6DACD40921
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 11:45:46 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 6DACD40921
+Authentication-Results: smtp4.osuosl.org;
+ dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org
+ header.a=rsa-sha256 header.s=k20201202 header.b=KMVJJ+Ju
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 5CG961OFFwWU for <iommu@lists.linux-foundation.org>;
- Wed,  6 Jul 2022 11:45:33 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 82AE340921
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam12on2074.outbound.protection.outlook.com [40.107.243.74])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 82AE340921
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 11:45:33 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NHwmm7ufS5bWsSNJjv25IHKZ6DsIIXFHUcpWVlRUn/Ith/gT8JsTMRuDh3gnYXXLNYbomY7lZwjDa3yiHU5568225tS3sJowEqLhhkcrxXeQ8vfatRm1xNibLuWujAe1NOTQKMpqFMrXSh08iRMZJfxx9eizy0K7fvuTA0FYCBwXtoQa/IWpVKSaztAuvhuq3Ofok6YtynSNz7iCx2IPA44EEKzMD7CwxWSfZLnHYEPYaJZ1Ebh5P2n8/voP/PS9D2tdUkaP5WV69cVjHvgLT/qb6+ljvx5Mi7FhAiosGXt3v+xdX8fT/MHnKdfzT/Pt/CArgWA//XA7IBxLjio0WA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HF71CcV6VEQRTk4bBQRFLJ/eDKiV8Xa27OI3QKnJBj4=;
- b=acKUuKOkg8UpSw6Na1iS0gPu138XJTG+6MXej6NN2/Kgf9s1sKgmmsdBN3weKjTfaZbbhTwerCePgo1W7zGP//X8mhPeW9WWHZfEZbz707eYOXDc3ShKOLQ7JU6rTcXITXAc4JkSXRC96CX7+yZA8PyyTZuRasss6o8UcNkE5KlWKARf/fgFcmD+Sut0KjmibjkSvcmeEzoIKBHAWEt/YY8FzlPeXkyfJ6E2EmR1vE5S4FgMDjll1MPeHVRHZkRzolOkVxZ1m7+RpYK62UA09j0qhVOAD1vKPetXs6hrF46VFRc9mzrGmAes9JxamgA3qIvYnx2ZOLMFsSnd+PQKBA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HF71CcV6VEQRTk4bBQRFLJ/eDKiV8Xa27OI3QKnJBj4=;
- b=24odeKAWR8Rhw6NRkVX5dIfqIhv334RpV9SSO6IoqhWuWvl5yTi4JrToG7z6+ivLL0Zopm314qPMTSNsp2Mt+LAy2+TdhJF3/mf5HIYk1Skz8uC7qQwkYJNvQb75WD61aj+AlV2XOa2u+G6M1ijhD5kWOtNdv9zb+sP7PE+4/zc=
-Received: from MWHPR11CA0030.namprd11.prod.outlook.com (2603:10b6:300:115::16)
- by BN6PR1201MB0018.namprd12.prod.outlook.com (2603:10b6:405:54::8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.14; Wed, 6 Jul
- 2022 11:45:30 +0000
-Received: from CO1NAM11FT064.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:115:cafe::7f) by MWHPR11CA0030.outlook.office365.com
- (2603:10b6:300:115::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.19 via Frontend
- Transport; Wed, 6 Jul 2022 11:45:30 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT064.mail.protection.outlook.com (10.13.175.77) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5417.15 via Frontend Transport; Wed, 6 Jul 2022 11:45:29 +0000
-Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 6 Jul
- 2022 06:45:26 -0500
-To: <joro@8bytes.org>, <iommu@lists.linux.dev>
-Subject: [PATCH v3 RESEND 12/35] iommu/amd: Introduce per PCI segment alias
- table size
-Date: Wed, 6 Jul 2022 17:08:02 +0530
-Message-ID: <20220706113825.25582-13-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220706113825.25582-1-vasant.hegde@amd.com>
-References: <20220706113825.25582-1-vasant.hegde@amd.com>
+ with ESMTP id wvS5Y1zqhKpA for <iommu@lists.linux-foundation.org>;
+ Wed,  6 Jul 2022 11:45:45 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 9621B40289
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 9621B40289
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 11:45:45 +0000 (UTC)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by dfw.source.kernel.org (Postfix) with ESMTPS id 3DEC861EE5;
+ Wed,  6 Jul 2022 11:45:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51827C3411C;
+ Wed,  6 Jul 2022 11:45:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1657107943;
+ bh=aBdtVMhRidxJCeoJx5DEXlpzuQlURSLwQpWLFBNxTts=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=KMVJJ+JukHbibk6ztwsiqZjPY7NNGnu5ye/kkkr65U8rnR50ws1YnUZgNFk5+4LZc
+ qrbPtRrZznfI6mp0+7/SBCTIuK0aG3D3ThJ7VLx2nNaiiNl9OpsfDK46GwzWVI7h2s
+ 5Ddwh1l7nAR/g30vK7bn6t3ky+UZJFIeAD7s8RkA/GT1UGOlPd+fv2yaHwJZYA+LeP
+ oGdC0e0RO7pFN3Q/dmlVtqZVcVLeIuY7H1u1dOPKEtzBve5qL1g19QKv7seksr02zn
+ lbmy3N4magjeo+Y2st5Z7HoMGPOHMilLgnLHgoDR52kgWGTLrcjbXaeFhwRj7HJn5l
+ E+rKgbU5XqcVA==
+Date: Wed, 6 Jul 2022 12:45:37 +0100
+From: Will Deacon <will@kernel.org>
+To: Luca Weiss <luca@z3ntu.xyz>
+Subject: Re: [PATCH v2 1/4] dt-bindings: qcom-iommu: Add Qualcomm MSM8953
+ compatible
+Message-ID: <20220706114536.GA2403@willie-the-truck>
+References: <20220612092218.424809-1-luca@z3ntu.xyz>
+ <20220612092218.424809-2-luca@z3ntu.xyz>
 MIME-Version: 1.0
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 01e7fbeb-fc2d-419b-402c-08da5f4506e4
-X-MS-TrafficTypeDiagnostic: BN6PR1201MB0018:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: K5hxalQ/lNz0XPzgbhnmIUq9PZ8Ro4E80Z4Q0Q+534au8B5DU8J7d3QndYsm5LrzdOy8/z7BjsYSt21oeXaOF0tu8lVtfMkbVO8iS42aj0ZrMAYjuxoLrVT/sJHPe0Ygwi5/NSOGY7YCDA+8sDlSEPfE9Mru9QJwXhB+CbRzQXNBs2d3eve0ioUnGErt8b/nLJYtHa9MPTDUITewnaKCvi4jCkQVB7v7fhKTQ0VktaqtEwgprPQTVsL3QqlaiAUWZ8p/tFOZJh9Vst0gizcDGxHl3T/g7PyiVDI3sByutDPjGsN4gK9LwoX9oywr4CiYQdih669iAu8zCmDw3LHsi9UOzcuTlR3FLbasucJY222n8V+NAMrHjPG+9QP00aRIRqswe9l9SXwdna+oIJ2lkXMkH8sYoddEBaFlLHQGFsRih+vgtzaFDM4FV//8wzZ4lJAXhV2zIO4G02ZmDwgklCh5CJoUBualgAl1M88vOTJIeKskGHTL+Uw9O+A22wWv0k+pdjkAb+qkfCr8fAoeYyq8FUuE2ihiwHkrswA9wFzF9x7TdPKZ5WD4eygz2UVWBrCpDF8WkDcf0SNgiyHyXxE5CY3SiWK1jBkLzUT5sG3j4UqobPoHqVfy5xeqdmyLLFGEjJg0mXC+DtzlWnt3815L0ac8FmaIBW1bAhyOZRkm/KYkYo2PfWgHXDXARA7TMuSMDcGMhbQgbVpA63MvX9CL6W31oAnsrd4yPUXZ9LrkLTzvKOA1io53t4mfnM1cWBHaZFJHWm/aMHvFgKNTtqozXGLP50LsEFlULUzFVYdd+je4LPSY29FXEFaMSiHt+5lJFE6VM+xkqZpRO0pZwQvnS/te9Duh+X3Dv//e7R0TfoKKcjxDYHk+IjanhX7L
-X-Forefront-Antispam-Report: CIP:165.204.84.17; CTRY:US; LANG:en; SCL:1; SRV:;
- IPV:CAL; SFV:NSPM; H:SATLEXMB04.amd.com; PTR:InfoDomainNonexistent; CAT:NONE;
- SFS:(13230016)(4636009)(396003)(346002)(376002)(39860400002)(136003)(46966006)(36840700001)(40470700004)(36756003)(26005)(40460700003)(7696005)(2616005)(34020700004)(186003)(16526019)(83380400001)(82740400003)(336012)(1076003)(478600001)(40480700001)(2906002)(44832011)(4326008)(8676002)(70206006)(70586007)(54906003)(86362001)(82310400005)(41300700001)(8936002)(81166007)(5660300002)(426003)(36860700001)(6666004)(47076005)(316002)(356005)(110136005)(36900700001);
- DIR:OUT; SFP:1101; 
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jul 2022 11:45:29.7475 (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 01e7fbeb-fc2d-419b-402c-08da5f4506e4
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d; Ip=[165.204.84.17];
- Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT064.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1201MB0018
-Cc: iommu@lists.linux-foundation.org, Vasant Hegde <vasant.hegde@amd.com>
+Content-Disposition: inline
+In-Reply-To: <20220612092218.424809-2-luca@z3ntu.xyz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+ iommu@lists.linux-foundation.org, Andy Gross <agross@kernel.org>,
+ ~postmarketos/upstreaming@lists.sr.ht,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ phone-devel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -130,70 +90,35 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Vasant Hegde via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Vasant Hegde <vasant.hegde@amd.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-It will replace global "alias_table_size" variable.
+On Sun, Jun 12, 2022 at 11:22:13AM +0200, Luca Weiss wrote:
+> Document the compatible used for IOMMU on the msm8953 SoC.
+> 
+> Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+> ---
+> Changes from v1:
+> - new patch
+> 
+>  Documentation/devicetree/bindings/iommu/qcom,iommu.txt | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+> index 059139abce35..e6cecfd360eb 100644
+> --- a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+> +++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+> @@ -10,6 +10,7 @@ to non-secure vs secure interrupt line.
+>  - compatible       : Should be one of:
+>  
+>                          "qcom,msm8916-iommu"
+> +                        "qcom,msm8953-iommu"
 
-Co-developed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
----
- drivers/iommu/amd/amd_iommu_types.h | 3 +++
- drivers/iommu/amd/init.c            | 5 +++--
- 2 files changed, 6 insertions(+), 2 deletions(-)
+I'm assuming Andy or Bjorn will pick this up.
 
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 1dbe9c7f973d..8638b1107dd2 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -558,6 +558,9 @@ struct amd_iommu_pci_seg {
- 	/* Size of the device table */
- 	u32 dev_table_size;
- 
-+	/* Size of the alias table */
-+	u32 alias_table_size;
-+
- 	/*
- 	 * device table virtual address
- 	 *
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 4a1807f7a8b9..22a632397818 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -712,7 +712,7 @@ static int __init alloc_alias_table(struct amd_iommu_pci_seg *pci_seg)
- 	int i;
- 
- 	pci_seg->alias_table = (void *)__get_free_pages(GFP_KERNEL,
--						    get_order(alias_table_size));
-+					get_order(pci_seg->alias_table_size));
- 	if (!pci_seg->alias_table)
- 		return -ENOMEM;
- 
-@@ -728,7 +728,7 @@ static int __init alloc_alias_table(struct amd_iommu_pci_seg *pci_seg)
- static void __init free_alias_table(struct amd_iommu_pci_seg *pci_seg)
- {
- 	free_pages((unsigned long)pci_seg->alias_table,
--		   get_order(alias_table_size));
-+		   get_order(pci_seg->alias_table_size));
- 	pci_seg->alias_table = NULL;
- }
- 
-@@ -1583,6 +1583,7 @@ static struct amd_iommu_pci_seg *__init alloc_pci_segment(u16 id,
- 	pci_seg->last_bdf = last_bdf;
- 	DUMP_printk("PCI segment : 0x%0x, last bdf : 0x%04x\n", id, last_bdf);
- 	pci_seg->dev_table_size     = tbl_size(DEV_TABLE_ENTRY_SIZE);
-+	pci_seg->alias_table_size   = tbl_size(ALIAS_TABLE_ENTRY_SIZE);
- 
- 	pci_seg->id = id;
- 	init_llist_head(&pci_seg->dev_data_list);
--- 
-2.31.1
-
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
