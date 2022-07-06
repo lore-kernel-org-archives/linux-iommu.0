@@ -1,41 +1,41 @@
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9AC87C
-	for <iommu@lists.linux.dev>; Wed,  6 Jul 2022 19:51:22 +0000 (UTC)
-Received: by mail-ed1-f44.google.com with SMTP id r18so20556592edb.9
-        for <iommu@lists.linux.dev>; Wed, 06 Jul 2022 12:51:22 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 288117C
+	for <iommu@lists.linux.dev>; Wed,  6 Jul 2022 19:51:32 +0000 (UTC)
+Received: by mail-ed1-f43.google.com with SMTP id e40so20579711eda.2
+        for <iommu@lists.linux.dev>; Wed, 06 Jul 2022 12:51:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=T/Uniy8LBcxVwi6NUSTS6A3GCA+91o6vI7rMz3Wtdlk=;
-        b=qiUwOsPCNmCmsMJzHRsMCaqHx/A29XFx+rEtXjpqLg05bj73vgI77R8nubnEYJ+G4/
-         p3lABAQJJTZVJuLPfbcf0/Fbe8CGrKSC202O5G+CGOx6Ltsc0jTW4ZBsabqe1nhSvicM
-         hGITTa5Eqvo/4HZ2OLE8sSJ1r0Z5cDjhIo9poy31FT4uT+YeMzQBou6F7hhhgFNb0vJB
-         gmaOFBXvzYhqf5RoSr/SXJ6AaRWj15Xso85XVvRCE/8azbqlsFTr9Nc43wazo2H6U4Up
-         0lZgKwKvQDF3FBwGEZ7WpsN1gQthA4oR2esJEp+LJQ6WbXe6sXLmZpHrG7GEeW8fjJtk
-         O26g==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=940NON5ZiCzvUCu0CiIkGxD8PkrHui9fksTxAlvFF2Q=;
+        b=WD0C7sqAbS/txx8ZqA2ZODw2GWOvOZUpy0KcNt4GEbk3hexy6PqipKnUOgnU/RQZj7
+         DAPrsGVCzF2QPmv9S6BDYMgfx9Ic7s1TIWhwJSf5xBaivP9Ymlr9cWWFdW78LXCa3ZJc
+         zdIU2bTW3ijEsmGqK7YeX+sgqONpDpotZUTnlmvDJ0YT4D/t1pYpKal5WjL2bp5NUxNu
+         PcOP/CfQqL+bX9x27rKyKKehJ6719Bl0f7yb+57RBkEOO6GZtffD2YffmLbr9nRfGTi2
+         GrbJNHqUcZNtdn52CTSFohmmQ6/2uaCCLchXKCO8IHROMUd7DXmlGifRDXi6wOjdOEog
+         GtrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=T/Uniy8LBcxVwi6NUSTS6A3GCA+91o6vI7rMz3Wtdlk=;
-        b=NxFs5F7o4fp6VvX2juTRoVgPgGFEcCeGjMAf0kQhQnaZeGlcj3XfK880Uxo4LVfVC8
-         rCqmFCtUqZpn+l6Er6eZsHpGcHDX2H46LwuUpcZyPu+l62NBiB1kw8EZkx0CF911b9JG
-         Wzf291FgypbQQSAbsHqQ/Iy/lgn8denj/5AdElHHNpcmIqhqB8M0VoGy7w0+yNQhat+d
-         SCaQTdrkl28fAqo2MP1ARSlG1eovkWNNUBVx/19qkxRy9BA4b80OZInLQ55/Y6IIGt0W
-         oDkFHTh2iBCCkSfi/bm9v03YHWoSMc6V0SZ3cqQ2+EMtfdY8jyCoCYzLhKu6IJbmwcgb
-         HW8w==
-X-Gm-Message-State: AJIora/rMKnSeI9kNxu3CIQEW5E3JLvV788+r/Lf+Y4As5iOhntSc///
-	zu0DwD5wFMgyxw7Nm3V9R/M=
-X-Google-Smtp-Source: AGRyM1tL5OpzeEvjnryKM1zyCU6rO5tLkN/wI78MRbQT2J+6bNMgnN1GnuVvmU0S8Pptetfi9UCRhA==
-X-Received: by 2002:a05:6402:42cb:b0:43a:5df2:bb5d with SMTP id i11-20020a05640242cb00b0043a5df2bb5dmr23876112edc.36.1657137080986;
-        Wed, 06 Jul 2022 12:51:20 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=940NON5ZiCzvUCu0CiIkGxD8PkrHui9fksTxAlvFF2Q=;
+        b=LI+XbCdMqVu7Y/PwffLOyMEjgZKPoAJEdwYsPxtiR1vKFD0P6VgD4zF4REPntKBeuz
+         vJmxG2ektR8K1gUZDWwCSD/y5yKR7s4Jxej7YUYQTINaPGZsQykTToka8tz1N/SOtlwD
+         h8LpUsZJJE0hApPbHlp4jtFaJfk7W7ashvSOQKXv5qc4qs2W6KDv1nZOzxQ8YxR3zi3G
+         nzYEwSaI6ZO95vUOTk4vfMztrQI1kWYNFDtqMYMzY+bZURZq9bwt7A8mVckTiLKOChnf
+         v8IMijkuZeunzT+Z1UAH3AtYEhpXfe3vkORSMn5crZNWxxmqAM250MeTet7Ulydfa26U
+         w9WA==
+X-Gm-Message-State: AJIora/riTowjqX3Gjv+Gs0ryci0Xjbl7fZkoREMlOef6qs24kFHprTE
+	37+IBX9P/u07Lku1lMwUZ/M=
+X-Google-Smtp-Source: AGRyM1uUFyCfr9/9lM3NU3hu2Vav+/0R7nlwqn8fsfMebpuG36p/QatZHggyU+N4+LYrdP/Tmf2M8A==
+X-Received: by 2002:a05:6402:4507:b0:43a:5b42:2be5 with SMTP id ez7-20020a056402450700b0043a5b422be5mr23610276edb.392.1657137090388;
+        Wed, 06 Jul 2022 12:51:30 -0700 (PDT)
 Received: from anparri.mshome.net (host-79-49-199-193.retail.telecomitalia.it. [79.49.199.193])
-        by smtp.gmail.com with ESMTPSA id kz11-20020a17090777cb00b0072af18329c4sm1968127ejc.225.2022.07.06.12.51.18
+        by smtp.gmail.com with ESMTPSA id kz11-20020a17090777cb00b0072af18329c4sm1968127ejc.225.2022.07.06.12.51.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 12:51:20 -0700 (PDT)
+        Wed, 06 Jul 2022 12:51:30 -0700 (PDT)
 From: "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
 To: Christoph Hellwig <hch@lst.de>,
 	Marek Szyprowski <m.szyprowski@samsung.com>,
@@ -57,10 +57,12 @@ Cc: linux-kernel@vger.kernel.org,
 	linux-hyperv@vger.kernel.org,
 	x86@kernel.org,
 	"Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
-Subject: [RFC PATCH 0/2] dma_direct_{alloc,free}() for Hyper-V IVMs
-Date: Wed,  6 Jul 2022 21:50:25 +0200
-Message-Id: <20220706195027.76026-1-parri.andrea@gmail.com>
+Subject: [RFC PATCH 1/2] swiotlb,dma-direct: Move swiotlb_unencrypted_base to direct.c
+Date: Wed,  6 Jul 2022 21:50:26 +0200
+Message-Id: <20220706195027.76026-2-parri.andrea@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220706195027.76026-1-parri.andrea@gmail.com>
+References: <20220706195027.76026-1-parri.andrea@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -69,22 +71,150 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Through swiotlb_unencrypted_base.
+The variable will come in handy to enable dma_direct_{alloc,free}()
+for Hyper-V AMD SEV-SNP Isolated VMs.
 
-P.S.  I'm on vacation for the next couple of weeks starting next Monday;
-Dexuan/Michael should be able to address review feedback in that period.
+Rename swiotlb_unencrypted_base to dma_unencrypted_base to indicate
+that the notion is not restricted to SWIOTLB.
 
-Andrea Parri (Microsoft) (2):
-  swiotlb,dma-direct: Move swiotlb_unencrypted_base to direct.c
-  dma-direct: Fix dma_direct_{alloc,free}() for Hyperv-V IVMs
+No functional change.
+
+Suggested-by: Michael Kelley <mikelley@microsoft.com>
+Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+---
+Yeah, this is in some sense trading the dependency on SWIOTLB for a
+dependency on HAS_DMA:
+
+Q1. I'm unable to envision a scenario where SWIOTLB without HAS_DMA
+would make sense but I'm also expecting one of the kernel test bots
+to try such a nonsensical configuration... should the references to
+dma_unencrypted_base in swiotlb.c be protected with HAS_DMA? other?
+
+Q2. Can the #ifdef CONFIG_HAS_DMA in arch/x86/kernel/cpu/mshyperv.c
+be removed? can we make HYPERV "depends on HAS_DMA"?
+
+...
 
  arch/x86/kernel/cpu/mshyperv.c |  6 +++---
  include/linux/dma-direct.h     |  2 ++
  include/linux/swiotlb.h        |  2 --
- kernel/dma/direct.c            | 38 +++++++++++++++++++++++++++++++++-
- kernel/dma/swiotlb.c           | 12 +++++------
- 5 files changed, 47 insertions(+), 13 deletions(-)
+ kernel/dma/direct.c            |  8 ++++++++
+ kernel/dma/swiotlb.c           | 12 +++++-------
+ 5 files changed, 18 insertions(+), 12 deletions(-)
 
+diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
+index 831613959a92a..47e9cece86ff8 100644
+--- a/arch/x86/kernel/cpu/mshyperv.c
++++ b/arch/x86/kernel/cpu/mshyperv.c
+@@ -18,7 +18,7 @@
+ #include <linux/kexec.h>
+ #include <linux/i8253.h>
+ #include <linux/random.h>
+-#include <linux/swiotlb.h>
++#include <linux/dma-direct.h>
+ #include <asm/processor.h>
+ #include <asm/hypervisor.h>
+ #include <asm/hyperv-tlfs.h>
+@@ -333,8 +333,8 @@ static void __init ms_hyperv_init_platform(void)
+ 
+ 		if (hv_get_isolation_type() == HV_ISOLATION_TYPE_SNP) {
+ 			static_branch_enable(&isolation_type_snp);
+-#ifdef CONFIG_SWIOTLB
+-			swiotlb_unencrypted_base = ms_hyperv.shared_gpa_boundary;
++#ifdef CONFIG_HAS_DMA
++			dma_unencrypted_base = ms_hyperv.shared_gpa_boundary;
+ #endif
+ 		}
+ 		/* Isolation VMs are unenlightened SEV-based VMs, thus this check: */
+diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
+index 18aade195884d..0b7e4c4b7b34c 100644
+--- a/include/linux/dma-direct.h
++++ b/include/linux/dma-direct.h
+@@ -14,6 +14,8 @@
+ 
+ extern unsigned int zone_dma_bits;
+ 
++extern phys_addr_t dma_unencrypted_base;
++
+ /*
+  * Record the mapping of CPU physical to DMA addresses for a given region.
+  */
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index 7ed35dd3de6e7..fa2e85f21af61 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -190,6 +190,4 @@ static inline bool is_swiotlb_for_alloc(struct device *dev)
+ }
+ #endif /* CONFIG_DMA_RESTRICTED_POOL */
+ 
+-extern phys_addr_t swiotlb_unencrypted_base;
+-
+ #endif /* __LINUX_SWIOTLB_H */
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 8d0b68a170422..06b2b901e37a3 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -22,6 +22,14 @@
+  */
+ unsigned int zone_dma_bits __ro_after_init = 24;
+ 
++/*
++ * Certain Confidential Computing solutions, such as Hyper-V AMD SEV-SNP
++ * isolated VMs, use dma_unencrypted_base as a watermark: memory addresses
++ * below dma_unencrypted_base are treated as private, while memory above
++ * dma_unencrypted_base is treated as shared.
++ */
++phys_addr_t dma_unencrypted_base;
++
+ static inline dma_addr_t phys_to_dma_direct(struct device *dev,
+ 		phys_addr_t phys)
+ {
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index cb50f8d383606..78d4f5294a56c 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -67,8 +67,6 @@ static bool swiotlb_force_disable;
+ 
+ struct io_tlb_mem io_tlb_default_mem;
+ 
+-phys_addr_t swiotlb_unencrypted_base;
+-
+ static unsigned long default_nslabs = IO_TLB_DEFAULT_SIZE >> IO_TLB_SHIFT;
+ 
+ static int __init
+@@ -142,7 +140,7 @@ static inline unsigned long nr_slots(u64 val)
+ 
+ /*
+  * Remap swioltb memory in the unencrypted physical address space
+- * when swiotlb_unencrypted_base is set. (e.g. for Hyper-V AMD SEV-SNP
++ * when dma_unencrypted_base is set. (e.g. for Hyper-V AMD SEV-SNP
+  * Isolation VMs).
+  */
+ #ifdef CONFIG_HAS_IOMEM
+@@ -150,8 +148,8 @@ static void *swiotlb_mem_remap(struct io_tlb_mem *mem, unsigned long bytes)
+ {
+ 	void *vaddr = NULL;
+ 
+-	if (swiotlb_unencrypted_base) {
+-		phys_addr_t paddr = mem->start + swiotlb_unencrypted_base;
++	if (dma_unencrypted_base) {
++		phys_addr_t paddr = mem->start + dma_unencrypted_base;
+ 
+ 		vaddr = memremap(paddr, bytes, MEMREMAP_WB);
+ 		if (!vaddr)
+@@ -213,10 +211,10 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
+ 	}
+ 
+ 	/*
+-	 * If swiotlb_unencrypted_base is set, the bounce buffer memory will
++	 * If dma_unencrypted_base is set, the bounce buffer memory will
+ 	 * be remapped and cleared in swiotlb_update_mem_attributes.
+ 	 */
+-	if (swiotlb_unencrypted_base)
++	if (dma_unencrypted_base)
+ 		return;
+ 
+ 	memset(vaddr, 0, bytes);
 -- 
 2.25.1
 
