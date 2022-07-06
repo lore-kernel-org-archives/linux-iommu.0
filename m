@@ -1,33 +1,33 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2053.outbound.protection.outlook.com [40.107.223.53])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 049282F3A
-	for <iommu@lists.linux.dev>; Wed,  6 Jul 2022 11:43:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 743232F3A
+	for <iommu@lists.linux.dev>; Wed,  6 Jul 2022 11:43:48 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DICcoRCbPLAgUSjZrjpklBQyzXuw/bpNdFsTiJTx8jwbM85b6eosUdbW2yfIqrlhsIFm3qh1imG0NjK7bXCofmhUmHsgtS0TW6B5AhM6r4/JJAJda6dVhZs2QtYyr/ivnQZhhGT9DW3mR+BDQe2nMaZzuXpvtBhRR/9O7poMWGZgqvvEd1LUcZJx80Fr+3gKcDIuSdbZWQVA9MQjwKoSkBSM7Zzci9V0rcI6FsoVEzJs6nI6dMfVVAYOYA3/mn83QYNIeyr1UATF8xlQUt0HOO+e603ucBKxnwDQRQkQjX8AJcAEgpoyxkaJc87mlxP7owxDJI6TEvtAiQo2ZyHRxA==
+ b=j0PSkNeCghttgIid/+Kx3cLTWaQB/46iQhB26yDvPsaly2+TChho2nCBH69ot0pCZDOoh75nM6Ze1fwav+jmzE7ABpEEqGx0TAnVWfFyCQCpOrGB2XwcoFhKkPbPe8lFAbQSbamIjbKbCFzh7z2VDA/s26ThOjutZCyPxG/VJHrJWOEkBvJ0QogNhVmz/A5apyxNMbHAillOk1nTEUrjOUh5JU2ZxVPGS+eZExw4GPtQB5J+KeqAnNpaAKir+CJm7zhTUkxDjMAnkSm4mrGSWC0gi8Dv5SMSBFgjsKfMzK59SAhHys+pFhp96U+am9LBnrQOeE+rVi5gtrctdyM0Gw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kPU+HtbhsrLxYONmb1KZU0jiRXYn5SBW4PvA0uExPlI=;
- b=iQZ93vFfYIK95zqua0i0mOlGwmYL/h7dYMsXYN7M3JaUASSFbKtQbYctKDUxKNvfeisB8kzOyn+rchcmQgX4qF9/sqLxsEbPb9VeRKSs1uJiP2AyDVsw5Ql0rUMWzgShNscF1AqbAHDb1K2Fo9p4FsrsaLTKk6Exb0A2J5a9l6bHCzLDF0PevVV3uBS0exwNrIkndD9pCg7VjJYBE8pidJK7u514Bi3cKJsfGnPeqidjWinJkJA8v5V817LKYok2oSLeQLicu7SumqhFwqA8LAkfTaAWJyxLrEcGOK/qTbj8OKRJVul5VEjk3ibPKT4NdvySUic15s8D9BQKSOeNeg==
+ bh=9echDqOKJGNQeDnnZWr1O9BDdaaHPHA6kXbvnwejgN0=;
+ b=A5Cf2El7r5yiXoCZ9ygoG2Cf1EkyL6ULvqIYKZG8PEvgbvRgiYmC7pskE6Ywgb7ehOI4A1JuMvsEdiUCpn3prsq391k7OObezNjkCc9W0Oz532/HUppUA4sODOw0SKlbbLqEJhbufkXNFOcc9KHkX39tLutNrsGniSNZglhjAonuSBhDdgdwGyV9snv6Ac+BxlnmLlph4XbO80GavYcPrKX9TYDuMuIYLb6WQESqhIwScIewVZTVuNR2H1m8QhB2ugcWJ0+2xVmrhinvk7wjChn0YRHD5YBFQ0kCtv7tXq9mmvFSKXK8aPYMuxaOe1jjitb/9lA7Kjhvhp38U+gN8A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kPU+HtbhsrLxYONmb1KZU0jiRXYn5SBW4PvA0uExPlI=;
- b=OeessVGwRWnEREtzbl3ZcMR94NzfRX52MwSP3liwZuEhojo+JnhFFJdFnsVl0M3eQEOjnh1SGSNYN5sQRFnOzmN7dq1MYlwdC71r/7alYgXjwht16H9vN8IB0JbF0Qu1pH94NFw+2zxm39Ybhu6Sgg6hW/ulwwItwE72/EOuoSc=
-Received: from BN9PR03CA0564.namprd03.prod.outlook.com (2603:10b6:408:138::29)
- by DM4PR12MB6568.namprd12.prod.outlook.com (2603:10b6:8:8f::19) with
+ bh=9echDqOKJGNQeDnnZWr1O9BDdaaHPHA6kXbvnwejgN0=;
+ b=o9vU/LH5Er397etqEjNiwKoO1EGcmnzGl/qJBzM6hrvk8cHWcUvn9eC5A/R6i9icb1S5F2q8OCJzYQ0my6ox5BMhxzBFkl2v0PvEvd3mohh6kYpohCD8UKtB6V8lvAxoAs3rxTmYSrwFnOkzbGx7z2jsojF9pfEx9WFUW1gKJDs=
+Received: from BN9PR03CA0630.namprd03.prod.outlook.com (2603:10b6:408:106::35)
+ by DM4PR12MB6205.namprd12.prod.outlook.com (2603:10b6:8:a8::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.21; Wed, 6 Jul
- 2022 11:43:27 +0000
-Received: from BN8NAM11FT063.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:138:cafe::e8) by BN9PR03CA0564.outlook.office365.com
- (2603:10b6:408:138::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15 via Frontend
- Transport; Wed, 6 Jul 2022 11:43:27 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16; Wed, 6 Jul
+ 2022 11:43:42 +0000
+Received: from BN8NAM11FT013.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:106::4) by BN9PR03CA0630.outlook.office365.com
+ (2603:10b6:408:106::35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.15 via Frontend
+ Transport; Wed, 6 Jul 2022 11:43:42 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -35,20 +35,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT063.mail.protection.outlook.com (10.13.177.110) with Microsoft SMTP
+ BN8NAM11FT013.mail.protection.outlook.com (10.13.176.182) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5417.15 via Frontend Transport; Wed, 6 Jul 2022 11:43:26 +0000
+ 15.20.5417.15 via Frontend Transport; Wed, 6 Jul 2022 11:43:42 +0000
 Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 6 Jul
- 2022 06:43:24 -0500
+ 2022 06:43:39 -0500
 From: Vasant Hegde <vasant.hegde@amd.com>
 To: <joro@8bytes.org>, <iommu@lists.linux.dev>
 CC: <iommu@lists.linux-foundation.org>, <suravee.suthikulpanit@amd.com>,
 	Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH v3 RESEND 04/35] iommu/amd: Introduce per PCI segment rlookup table
-Date: Wed, 6 Jul 2022 17:07:54 +0530
-Message-ID: <20220706113825.25582-5-vasant.hegde@amd.com>
+Subject: [PATCH v3 RESEND 05/35] iommu/amd: Introduce per PCI segment irq_lookup_table
+Date: Wed, 6 Jul 2022 17:07:55 +0530
+Message-ID: <20220706113825.25582-6-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220706113825.25582-1-vasant.hegde@amd.com>
 References: <20220706113825.25582-1-vasant.hegde@amd.com>
@@ -65,195 +65,114 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b8e1d871-cba8-4af3-567a-08da5f44bda8
-X-MS-TrafficTypeDiagnostic: DM4PR12MB6568:EE_
+X-MS-Office365-Filtering-Correlation-Id: 930c0abf-022b-4b58-5f49-08da5f44c6ac
+X-MS-TrafficTypeDiagnostic: DM4PR12MB6205:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	8rceioWH3phIjeczdcnECYDbfLy8K3n7ilFuewr79VTY18Xt8VPP8vbANIHCtgrPyboqM3RXSooi34j2fHPBAiWkOYGZAEUn9m7JQXUMisyHuuaCXYZ0oS3pHfaRMrKKhEIynW1LwnhPQf9Fdwoa1jR5vQ3pwVg9Wxu65hz9wtg+owv9ekRjS+c0viHs9rZ9QrBXNWLpbNW9sW+r4VvvKPIVu/AoVMdBZbrz0rKIpX21ywk/Nq5Etz5qguQEe83L9N2nm7Qlo1CKx+eknPwhegnmvAPwDuj1XyOj5svEbg1JY9EOVbocwCPFPw6/Aelhm/rMvjIUjNqK2DDmesFtQ5o3xx1YJVZUybZrNubbr7Zg/ZOLaJHsSq+n7NzE4HnTwY1TvrdErCc+KyWuzgh8Mdp3B/qQB82+7OV26gX0wX/XINGD8QNlkQ9Jkp0RoRI8OAorQ+d6FM7HZH/WX9vPaVFaq6fhwUESDTM83T5f1Mqk2m1qoDki2p2yCt+6IKZBIkS992OFnYwaKrw+mdraHTwFdMvaDPKo0zbIRwTmmZAGYSiOqWJP6+UdbmdtbDXgsmjMebLK2Z7MnkX3MQ61eYzZNk/JGzERAVIzKvY1Rmkz9hvsoIbgoDZPoqIHlasUW69/vSLAG7YEEQ8SmUO72XJjRzQwcHHm7yx0C9lTF21xBWM68J7AVu1JI3jdlpjIi0baLKPg2bP/xN8Ac+FkymcQJGpK8O+63FfG56Dh1U+eJTFcdVc6USi7YRxoNBtnkVs+P/cLgsuNVrWEH9H7VnTdBl1Zg6+/pGlHk113ubR6cs3y0+nrnI/73gRwZPtIbEeHXR5mEbX4aXShEKgVXqOBjGqCsQTV5+Dcaut9OA/QVbK5FwceTgu81gzVkwdw
+	lUTBbmKpCPrYp0tjECjCNUxl+i7EVTW+oIgLdSvLfW2WrBwfcW9eItRJtK3uVsDG58loITL6/wYkm7/GYBsGLYm1KdcnnETZjhVBRl27Ovtq2mu/zSatcmBvgDo4sJcD7VvYVBeeasdoQ6aF4CADkqgpgG8gN+La0JehD+3tZhV4XS6fFGk8rEFasflHmo86shRDXmfgJg7GjOgfv/VP/cKhdBjfUoRIe6hdXUMSILqHF4Dnbnftm36wwtERrhwNU4C4RQz4X//sySA66tbk23dGHQPr5ETNwcJq0gGRkXOiAg7YogxkBoytWYJEOQ3yyBUoC99rtH2WyHdrp7RPtpbt4cTY5uj43+pNj+tHmAu/8fKvO4MBcHa3DIBQqN7TBtOKuHvu9g1eHsAZv/jYz9pK5nNCafLPsh2OZXkhmiraTal0+KWdnLXzUzMrEnuhw5qjt0wNqzqV87j5MRDgSo2l6WbsWq8uclvIKv0Upkht0fh9QSPqFJH7LcXNNDy8pRFBDq5XuqBU348N7lMi9x1I7qk+wqy4MxgEmpB4AwqJ4oEPNq+qlrsGnCYW75tgaCu4YoASAOvAcgQNliV8zwz+EXo6tFijSKtkKMvJLa/KVcTkle/B5IWjLpYslDJKnMFlIFV3TMgC/iMA3p7pVUWKiR6lOX0YswZRsyQpzreU6r2yasxpOKmf3PsimDTQEfjmeq6aNJVQvCw7z99QaMVFR2YSHMmZ4alKnmiUKZN6q7/gty/BLgxy9SNNtwtxuDuicqDlDQ2PCohFdjBbhhSJSzUfIu2snn0bBo4xOJ8B4hNxVsDSxsqjaoBaLNE/z3lAkM3IXoKY7WuTeFkjHYNOjf9iHavG3UiLMT43zvO9PH9E07t9uzW8S+epXvGS
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(396003)(346002)(136003)(46966006)(40470700004)(36840700001)(82310400005)(478600001)(336012)(426003)(36860700001)(16526019)(83380400001)(41300700001)(110136005)(36756003)(54906003)(47076005)(316002)(186003)(1076003)(6666004)(40460700003)(44832011)(2616005)(81166007)(4326008)(8676002)(356005)(70206006)(70586007)(26005)(34020700004)(5660300002)(86362001)(8936002)(7696005)(2906002)(40480700001)(82740400003)(36900700001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(136003)(346002)(376002)(396003)(39860400002)(40470700004)(46966006)(36840700001)(8936002)(26005)(4326008)(8676002)(70206006)(70586007)(2616005)(478600001)(40460700003)(86362001)(54906003)(110136005)(5660300002)(316002)(6666004)(2906002)(41300700001)(7696005)(44832011)(40480700001)(16526019)(186003)(36860700001)(34020700004)(47076005)(426003)(336012)(83380400001)(82740400003)(356005)(81166007)(1076003)(82310400005)(36756003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jul 2022 11:43:26.9906
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jul 2022 11:43:42.1321
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b8e1d871-cba8-4af3-567a-08da5f44bda8
+X-MS-Exchange-CrossTenant-Network-Message-Id: 930c0abf-022b-4b58-5f49-08da5f44c6ac
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT063.eop-nam11.prod.protection.outlook.com
+	BN8NAM11FT013.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6568
-Message-ID: <20220706113754.50-mvhZBst9Lbiz-6O20WIMAR6BkEwXQt32l4ZsZ87o@z>
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6205
+Message-ID: <20220706113755.Iw4tJVNyRn-Ir4otyEAhe6qFCLhLCMwuZT66ODjFr8U@z>
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+This will replace global irq lookup table (irq_lookup_table).
 
-This will replace global rlookup table (amd_iommu_rlookup_table).
-Add helper functions to set/get rlookup table for the given device.
-Also add macros to get seg/devid from sbdf.
-
-Co-developed-by: Vasant Hegde <vasant.hegde@amd.com>
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+Co-developed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 ---
- drivers/iommu/amd/amd_iommu.h       |  1 +
- drivers/iommu/amd/amd_iommu_types.h | 11 ++++++++
- drivers/iommu/amd/init.c            | 23 +++++++++++++++
- drivers/iommu/amd/iommu.c           | 44 +++++++++++++++++++++++++++++
- 4 files changed, 79 insertions(+)
+ drivers/iommu/amd/amd_iommu_types.h |  6 ++++++
+ drivers/iommu/amd/init.c            | 27 +++++++++++++++++++++++++++
+ 2 files changed, 33 insertions(+)
 
-diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index 885570cd0d77..2947239700ce 100644
---- a/drivers/iommu/amd/amd_iommu.h
-+++ b/drivers/iommu/amd/amd_iommu.h
-@@ -19,6 +19,7 @@ extern int amd_iommu_init_devices(void);
- extern void amd_iommu_uninit_devices(void);
- extern void amd_iommu_init_notifier(void);
- extern int amd_iommu_init_api(void);
-+extern void amd_iommu_set_rlookup_table(struct amd_iommu *iommu, u16 devid);
- 
- #ifdef CONFIG_AMD_IOMMU_DEBUGFS
- void amd_iommu_debugfs_setup(struct amd_iommu *iommu);
 diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 422ea87ae4c7..d0ee78c656ff 100644
+index d0ee78c656ff..cfb5f0e44186 100644
 --- a/drivers/iommu/amd/amd_iommu_types.h
 +++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -456,6 +456,9 @@ extern bool amdr_ivrs_remap_support;
- /* kmem_cache to get tables with 128 byte alignement */
- extern struct kmem_cache *amd_iommu_irq_cache;
- 
-+#define PCI_SBDF_TO_SEGID(sbdf)		(((sbdf) >> 16) & 0xffff)
-+#define PCI_SBDF_TO_DEVID(sbdf)		((sbdf) & 0xffff)
-+
- /* Make iterating over all pci segment easier */
- #define for_each_pci_segment(pci_seg) \
- 	list_for_each_entry((pci_seg), &amd_iommu_pci_seg_list, list)
-@@ -490,6 +493,7 @@ struct amd_iommu_fault {
- };
- 
- 
-+struct amd_iommu;
- struct iommu_domain;
- struct irq_domain;
- struct amd_irte_ops;
-@@ -554,6 +558,13 @@ struct amd_iommu_pci_seg {
- 	 * page table root pointer.
+@@ -565,6 +565,12 @@ struct amd_iommu_pci_seg {
+ 	 * device id.
  	 */
- 	struct dev_table_entry *dev_table;
+ 	struct amd_iommu **rlookup_table;
 +
 +	/*
-+	 * The rlookup iommu table is used to find the IOMMU which is
-+	 * responsible for a specific device. It is indexed by the PCI
-+	 * device id.
++	 * This table is used to find the irq remapping table for a given
++	 * device id quickly.
 +	 */
-+	struct amd_iommu **rlookup_table;
++	struct irq_remap_table **irq_lookup_table;
  };
  
  /*
 diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 5152243593bf..2fb3e1b82e09 100644
+index 2fb3e1b82e09..f6678dd56e28 100644
 --- a/drivers/iommu/amd/init.c
 +++ b/drivers/iommu/amd/init.c
-@@ -665,6 +665,26 @@ static inline void free_dev_table(struct amd_iommu_pci_seg *pci_seg)
- 	pci_seg->dev_table = NULL;
+@@ -684,6 +684,26 @@ static inline void free_rlookup_table(struct amd_iommu_pci_seg *pci_seg)
+ 	pci_seg->rlookup_table = NULL;
  }
  
-+/* Allocate per PCI segment IOMMU rlookup table. */
-+static inline int __init alloc_rlookup_table(struct amd_iommu_pci_seg *pci_seg)
++static inline int __init alloc_irq_lookup_table(struct amd_iommu_pci_seg *pci_seg)
 +{
-+	pci_seg->rlookup_table = (void *)__get_free_pages(
-+						GFP_KERNEL | __GFP_ZERO,
-+						get_order(rlookup_table_size));
-+	if (pci_seg->rlookup_table == NULL)
++	pci_seg->irq_lookup_table = (void *)__get_free_pages(
++					     GFP_KERNEL | __GFP_ZERO,
++					     get_order(rlookup_table_size));
++	kmemleak_alloc(pci_seg->irq_lookup_table,
++		       rlookup_table_size, 1, GFP_KERNEL);
++	if (pci_seg->irq_lookup_table == NULL)
 +		return -ENOMEM;
 +
 +	return 0;
 +}
 +
-+static inline void free_rlookup_table(struct amd_iommu_pci_seg *pci_seg)
++static inline void free_irq_lookup_table(struct amd_iommu_pci_seg *pci_seg)
 +{
-+	free_pages((unsigned long)pci_seg->rlookup_table,
++	kmemleak_free(pci_seg->irq_lookup_table);
++	free_pages((unsigned long)pci_seg->irq_lookup_table,
 +		   get_order(rlookup_table_size));
-+	pci_seg->rlookup_table = NULL;
++	pci_seg->irq_lookup_table = NULL;
 +}
-+
-+
+ 
  /*
   * Allocates the command buffer. This buffer is per AMD IOMMU. We can
-  * write commands to that buffer later and the IOMMU will execute them
-@@ -1491,6 +1511,8 @@ static struct amd_iommu_pci_seg *__init alloc_pci_segment(u16 id)
- 
- 	if (alloc_dev_table(pci_seg))
- 		return NULL;
-+	if (alloc_rlookup_table(pci_seg))
-+		return NULL;
- 
- 	return pci_seg;
- }
-@@ -1513,6 +1535,7 @@ static void __init free_pci_segments(void)
+@@ -1535,6 +1555,7 @@ static void __init free_pci_segments(void)
  
  	for_each_pci_segment_safe(pci_seg, next) {
  		list_del(&pci_seg->list);
-+		free_rlookup_table(pci_seg);
++		free_irq_lookup_table(pci_seg);
+ 		free_rlookup_table(pci_seg);
  		free_dev_table(pci_seg);
  		kfree(pci_seg);
- 	}
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index ac8f81f527b4..b0262b2e749d 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -146,6 +146,50 @@ struct dev_table_entry *get_dev_table(struct amd_iommu *iommu)
- 	return dev_table;
- }
+@@ -2897,6 +2918,7 @@ static int __init early_amd_iommu_init(void)
+ 		amd_iommu_irq_remap = check_ioapic_information();
  
-+static inline u16 get_device_segment(struct device *dev)
-+{
-+	u16 seg;
+ 	if (amd_iommu_irq_remap) {
++		struct amd_iommu_pci_seg *pci_seg;
+ 		/*
+ 		 * Interrupt remapping enabled, create kmem_cache for the
+ 		 * remapping tables.
+@@ -2913,6 +2935,11 @@ static int __init early_amd_iommu_init(void)
+ 		if (!amd_iommu_irq_cache)
+ 			goto out;
+ 
++		for_each_pci_segment(pci_seg) {
++			if (alloc_irq_lookup_table(pci_seg))
++				goto out;
++		}
 +
-+	if (dev_is_pci(dev)) {
-+		struct pci_dev *pdev = to_pci_dev(dev);
-+
-+		seg = pci_domain_nr(pdev->bus);
-+	} else {
-+		u32 devid = get_acpihid_device_id(dev, NULL);
-+
-+		seg = PCI_SBDF_TO_SEGID(devid);
-+	}
-+
-+	return seg;
-+}
-+
-+/* Writes the specific IOMMU for a device into the PCI segment rlookup table */
-+void amd_iommu_set_rlookup_table(struct amd_iommu *iommu, u16 devid)
-+{
-+	struct amd_iommu_pci_seg *pci_seg = iommu->pci_seg;
-+
-+	pci_seg->rlookup_table[devid] = iommu;
-+}
-+
-+static struct amd_iommu *__rlookup_amd_iommu(u16 seg, u16 devid)
-+{
-+	struct amd_iommu_pci_seg *pci_seg;
-+
-+	for_each_pci_segment(pci_seg) {
-+		if (pci_seg->id == seg)
-+			return pci_seg->rlookup_table[devid];
-+	}
-+	return NULL;
-+}
-+
-+static struct amd_iommu *rlookup_amd_iommu(struct device *dev)
-+{
-+	u16 seg = get_device_segment(dev);
-+	u16 devid = get_device_id(dev);
-+
-+	return __rlookup_amd_iommu(seg, devid);
-+}
-+
- static struct protection_domain *to_pdomain(struct iommu_domain *dom)
- {
- 	return container_of(dom, struct protection_domain, domain);
+ 		irq_lookup_table = (void *)__get_free_pages(
+ 				GFP_KERNEL | __GFP_ZERO,
+ 				get_order(rlookup_table_size));
 -- 
 2.31.1
 
