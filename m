@@ -1,86 +1,167 @@
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE2B36015
-	for <iommu@lists.linux.dev>; Wed,  6 Jul 2022 02:35:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C26917EF
+	for <iommu@lists.linux.dev>; Wed,  6 Jul 2022 03:00:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657074927; x=1688610927;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=/qKfGncLBodraY8iG9SYn0Nbai2B5nyW3PrxStAGttw=;
-  b=IrVja+pQ+SYzyjNCom8dci9YVBvC5Oqh8IATeihSDOBajnpP51NBg58T
-   ZEFg5thziC8bmw1a4E23VjjBkv1PCSBvYgXeJ3i7tGbDIxTDNMMBxbuKO
-   7cqBxgspkb9zrxvEB3B6BQGZqipMrucptT9dZhqjl8/8q54gpv3qRDynT
-   a6Lj9rjqlH3tZ4bCfsNtJV/BiYA8L0aUcnj87hX0pdoVEdbthLe7ZPyTw
-   +Bft9W8qW8qsV8Y9ny+I/CgcsVCbaitB4sXYZ8jMzBIF+5u6VbKsfPAfj
-   PkYA3LGS1/rWiHsFGoa3k5YxXToRuxCXL6vK75tbv1x2hJsMIl+awNIxa
+  t=1657076405; x=1688612405;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=RglkaDn/jOyxV3iDLdnwbZrQLmp90jV1b+cWCbFzid4=;
+  b=epmdikPR6YBEmhRmeyuGfhfJ3pQDdCZc3LPDDzD7ENtrXCeG4GY+Jqub
+   rsQASpg2QQ15sWuC6p7HvAllKucUjzgg0ufZAchy/kvDK0yJ05AWtk/Wb
+   Ofya2OjdpfaFOK6kYCnsBYugqHqsS/iqg1rouTIbkAhtBIjiwHuFEaOzW
+   yEdtKdc4nt/tnkjWyatnz1YJuH6c/9AxLxDHz+rZ6dt0KTI4dpuv1PKi/
+   dKM6cU39WYnlbs+bmTtN7QEmeeNcFfe98OHZQIdB+kP/2mLBrVGEToZ7w
+   jQhe+9ur9oFEaGk4xI4WWbpRfbiibKILwmUuo9r/s+1lNbe2yjA9az9LD
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="264042132"
+X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="283650845"
 X-IronPort-AV: E=Sophos;i="5.92,248,1650956400"; 
-   d="scan'208";a="264042132"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 19:35:27 -0700
+   d="scan'208";a="283650845"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 20:00:04 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,248,1650956400"; 
-   d="scan'208";a="650447066"
-Received: from zhuoliu-mobl1.ccr.corp.intel.com (HELO [10.249.174.206]) ([10.249.174.206])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 19:35:24 -0700
-Message-ID: <d6a8e85b-ab7d-f5c9-a8cb-79dd8e68c967@linux.intel.com>
-Date: Wed, 6 Jul 2022 10:35:22 +0800
+   d="scan'208";a="567874761"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by orsmga006.jf.intel.com with ESMTP; 05 Jul 2022 19:59:51 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: iommu@lists.linux-foundation.org,
+	iommu@lists.linux.dev
+Cc: Kevin Tian <kevin.tian@intel.com>,
+	Ashok Raj <ashok.raj@intel.com>,
+	Liu Yi L <yi.l.liu@intel.com>,
+	Jacob jun Pan <jacob.jun.pan@intel.com>,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v4 01/11] iommu/vt-d: debugfs: Remove device_domain_lock usage
+Date: Wed,  6 Jul 2022 10:55:14 +0800
+Message-ID: <20220706025524.2904370-2-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220706025524.2904370-1-baolu.lu@linux.intel.com>
+References: <20220706025524.2904370-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Cc: baolu.lu@linux.intel.com, will@kernel.org, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, suravee.suthikulpanit@amd.com,
- vasant.hegde@amd.com, mjrosato@linux.ibm.com, gerald.schaefer@linux.ibm.com,
- schnelle@linux.ibm.com, linux-s390@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 04/15] iommu: Move bus setup to IOMMU device
- registration
-Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org
-References: <cover.1657034827.git.robin.murphy@arm.com>
- <5b9b608af21b3c4353af042355973bac55397962.1657034828.git.robin.murphy@arm.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <5b9b608af21b3c4353af042355973bac55397962.1657034828.git.robin.murphy@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Message-ID: <20220706025514.irlAS9VZoaWOh1pOv_ehgvHU6RL-wsfrjjvOU0J_Uw4@z>
 
-On 2022/7/6 01:08, Robin Murphy wrote:
-> @@ -202,12 +210,32 @@ int iommu_device_register(struct iommu_device *iommu,
->   	spin_lock(&iommu_device_lock);
->   	list_add_tail(&iommu->list, &iommu_device_list);
->   	spin_unlock(&iommu_device_lock);
-> +
-> +	for (int i = 0; i < ARRAY_SIZE(iommu_buses); i++) {
-> +		struct bus_type *bus = iommu_buses[i];
-> +		int err;
-> +
-> +		if (bus->iommu_ops && bus->iommu_ops != ops) {
-> +			err = -EBUSY;
-> +		} else {
-> +			bus->iommu_ops = ops;
-> +			err = bus_iommu_probe(bus);
-> +		}
-> +		if (err) {
-> +			iommu_device_unregister(iommu);
-> +			return err;
-> +		}
-> +	}
-> +
->   	return 0;
->   }
->   EXPORT_SYMBOL_GPL(iommu_device_register);
+The domain_translation_struct debugfs node is used to dump the DMAR page
+tables for the PCI devices. It potentially races with setting domains to
+devices. The existing code uses the global spinlock device_domain_lock to
+avoid the races.
 
-With bus_set_iommu() retired, my understanding is that now we embrace
-the first-come-first-serve policy for bus->iommu_ops setting. This will
-lead to problem in different iommu_ops for different bus case. Did I
-overlook anything?
+This removes the use of device_domain_lock outside of iommu.c by replacing
+it with the group mutex lock. Using the group mutex lock is cleaner and
+more compatible to following cleanups.
 
-Best regards,
-baolu
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+---
+ drivers/iommu/intel/iommu.h   |  1 -
+ drivers/iommu/intel/debugfs.c | 43 +++++++++++++++++++++++++----------
+ drivers/iommu/intel/iommu.c   |  2 +-
+ 3 files changed, 32 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 8285fcfa5fea..8deb745d8b36 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -480,7 +480,6 @@ enum {
+ #define VTD_FLAG_SVM_CAPABLE		(1 << 2)
+ 
+ extern int intel_iommu_sm;
+-extern spinlock_t device_domain_lock;
+ 
+ #define sm_supported(iommu)	(intel_iommu_sm && ecap_smts((iommu)->ecap))
+ #define pasid_supported(iommu)	(sm_supported(iommu) &&			\
+diff --git a/drivers/iommu/intel/debugfs.c b/drivers/iommu/intel/debugfs.c
+index d927ef10641b..6e1a3f88abc8 100644
+--- a/drivers/iommu/intel/debugfs.c
++++ b/drivers/iommu/intel/debugfs.c
+@@ -342,13 +342,13 @@ static void pgtable_walk_level(struct seq_file *m, struct dma_pte *pde,
+ 	}
+ }
+ 
+-static int show_device_domain_translation(struct device *dev, void *data)
++static int __show_device_domain_translation(struct device *dev, void *data)
+ {
+-	struct device_domain_info *info = dev_iommu_priv_get(dev);
+-	struct dmar_domain *domain = info->domain;
++	struct dmar_domain *domain;
+ 	struct seq_file *m = data;
+ 	u64 path[6] = { 0 };
+ 
++	domain = to_dmar_domain(iommu_get_domain_for_dev(dev));
+ 	if (!domain)
+ 		return 0;
+ 
+@@ -359,20 +359,39 @@ static int show_device_domain_translation(struct device *dev, void *data)
+ 	pgtable_walk_level(m, domain->pgd, domain->agaw + 2, 0, path);
+ 	seq_putc(m, '\n');
+ 
+-	return 0;
++	/* Don't iterate */
++	return 1;
+ }
+ 
+-static int domain_translation_struct_show(struct seq_file *m, void *unused)
++static int show_device_domain_translation(struct device *dev, void *data)
+ {
+-	unsigned long flags;
+-	int ret;
++	struct iommu_group *group;
+ 
+-	spin_lock_irqsave(&device_domain_lock, flags);
+-	ret = bus_for_each_dev(&pci_bus_type, NULL, m,
+-			       show_device_domain_translation);
+-	spin_unlock_irqrestore(&device_domain_lock, flags);
++	group = iommu_group_get(dev);
++	if (group) {
++		/*
++		 * The group->mutex is held across the callback, which will
++		 * block calls to iommu_attach/detach_group/device. Hence,
++		 * the domain of the device will not change during traversal.
++		 *
++		 * All devices in an iommu group share a single domain, hence
++		 * we only dump the domain of the first device. Even though,
++		 * this code still possibly races with the iommu_unmap()
++		 * interface. This could be solved by RCU-freeing the page
++		 * table pages in the iommu_unmap() path.
++		 */
++		iommu_group_for_each_dev(group, data,
++					 __show_device_domain_translation);
++		iommu_group_put(group);
++	}
+ 
+-	return ret;
++	return 0;
++}
++
++static int domain_translation_struct_show(struct seq_file *m, void *unused)
++{
++	return bus_for_each_dev(&pci_bus_type, NULL, m,
++				show_device_domain_translation);
+ }
+ DEFINE_SHOW_ATTRIBUTE(domain_translation_struct);
+ 
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 10bda4bec8fe..3b6571681bdd 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -314,7 +314,7 @@ static int iommu_skip_te_disable;
+ #define IDENTMAP_GFX		2
+ #define IDENTMAP_AZALIA		4
+ 
+-DEFINE_SPINLOCK(device_domain_lock);
++static DEFINE_SPINLOCK(device_domain_lock);
+ static LIST_HEAD(device_domain_list);
+ 
+ const struct iommu_ops intel_iommu_ops;
+-- 
+2.25.1
+
