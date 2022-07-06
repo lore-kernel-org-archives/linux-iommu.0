@@ -4,107 +4,62 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 23577C43334
-	for <iommu@archiver.kernel.org>; Wed,  6 Jul 2022 15:18:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 961C8C43334
+	for <iommu@archiver.kernel.org>; Wed,  6 Jul 2022 16:45:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id A220883E06;
-	Wed,  6 Jul 2022 15:18:48 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org A220883E06
-Authentication-Results: smtp1.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=tlOoP70f
+	by smtp1.osuosl.org (Postfix) with ESMTP id 175BA81882;
+	Wed,  6 Jul 2022 16:45:54 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 175BA81882
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RjfXv3sbdq_T; Wed,  6 Jul 2022 15:18:47 +0000 (UTC)
+	with ESMTP id AbUIKdqY3deg; Wed,  6 Jul 2022 16:45:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 6AE7783C28;
-	Wed,  6 Jul 2022 15:18:47 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 6AE7783C28
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 8566A81776;
+	Wed,  6 Jul 2022 16:45:52 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 8566A81776
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2C1BCC0035;
-	Wed,  6 Jul 2022 15:18:47 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C55F3C002D
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 15:18:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 57BC4C0033;
+	Wed,  6 Jul 2022 16:45:52 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 30515C002D
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 16:45:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 9F41560FCC
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 15:18:45 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 9F41560FCC
-Authentication-Results: smtp3.osuosl.org;
- dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org
- header.a=rsa-sha256 header.s=google header.b=tlOoP70f
+ by smtp1.osuosl.org (Postfix) with ESMTP id EB49C81882
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 16:45:50 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org EB49C81882
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id iGm2RBCaSYgG for <iommu@lists.linux-foundation.org>;
- Wed,  6 Jul 2022 15:18:44 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 8713D60D53
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com
- [IPv6:2a00:1450:4864:20::133])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 8713D60D53
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 15:18:44 +0000 (UTC)
-Received: by mail-lf1-x133.google.com with SMTP id y16so26449912lfb.9
- for <iommu@lists.linux-foundation.org>; Wed, 06 Jul 2022 08:18:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=message-id:date:mime-version:user-agent:subject:content-language:to
- :cc:references:from:in-reply-to:content-transfer-encoding;
- bh=o34sXf13gS9dNYvfC/d9+rktJGbU/41tC7AjUNaoSfE=;
- b=tlOoP70fhClmeDGn6OyYtjbxbmb1OaS8KTC422YM24182veuP3d/kvBY7X+d7EJ367
- LaLee21l5oFOZHt/LERQLQuMZzVzBH4W1Uh3S+LeoStH84qKP704G6G6+hDP8o5A8rdN
- RIO7uSW8KL2kgCuCd+wAUF+QisuRSOwhJAxD/MU8ilFjcj1leWnB5Y4fXz7MuuNd0yek
- 7aW5PBGTVYZxViG2+A/e8POYcjpJoTfFaN2KaJxBMp/VxNjgGE6tr/PdyGWBzorB8GGv
- Dz6um5/CIwWVK5q1quxiJt0dasAVA/TqoJB0lGiZBlLbTulmwkVUCyz4LAVmm6L2SDAa
- wYOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
- :content-language:to:cc:references:from:in-reply-to
- :content-transfer-encoding;
- bh=o34sXf13gS9dNYvfC/d9+rktJGbU/41tC7AjUNaoSfE=;
- b=GRk5fe+RuVbyxAPmW+ox4aXqgLcCj/qszH4a+uZc9sWD4Bij3U80dbA/UFF8R+XrIt
- DfaOQkJ3gb20fn1Hm6bHlu67Ia8LTGqCT7NqEGGs3T3JtdTCrQLgMsImSxPhoO/3h2h8
- BMuA+8GIhsfze4YM+Z4boli33TGLROIBcG6KUahvgjWlcUOs/YKS39YvyJVp8OOl3Y8g
- mygTfDDa1qEpHdj3zp2pqvWxFmdsJBh9Ig/Iz01Pa/7W1Fz7DUMjOTjEwJFf7+MK7dSl
- v4sA+BkDsNJsDvuBf8WQXwhzXfdb2b7PhBhD8SX1tID3RIbBFrnG2W5/aOBwlC52KFe7
- GTew==
-X-Gm-Message-State: AJIora/gPfUepoOH83gdCM1wuFXGsY+SQWxNHotHPSh7PQpz9ioAEgSn
- bwyeUDaoFyj9RObQ/J48ETZk5g==
-X-Google-Smtp-Source: AGRyM1vdzcWdQzM1UmXWIIm9OeMBRjPNPblppO/1Nm2JRbLD3Lswd6x84BFNiMqKX8XEm3f7WV8inw==
-X-Received: by 2002:a05:6512:3fa7:b0:47f:7387:926c with SMTP id
- x39-20020a0565123fa700b0047f7387926cmr25769600lfa.98.1657120722496; 
- Wed, 06 Jul 2022 08:18:42 -0700 (PDT)
-Received: from [192.168.1.52] ([84.20.121.239])
- by smtp.gmail.com with ESMTPSA id
- t10-20020a056512208a00b00486944fe8d5sm313121lfr.238.2022.07.06.08.18.41
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Wed, 06 Jul 2022 08:18:41 -0700 (PDT)
-Message-ID: <0301ebc6-1222-e813-f237-f14ad8444940@linaro.org>
-Date: Wed, 6 Jul 2022 17:18:40 +0200
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Xz67DoEdUCD2 for <iommu@lists.linux-foundation.org>;
+ Wed,  6 Jul 2022 16:45:49 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 7C32381776
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 7C32381776
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 16:45:49 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D4692106F;
+ Wed,  6 Jul 2022 09:45:48 -0700 (PDT)
+Received: from [10.57.86.2] (unknown [10.57.86.2])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A9D373F66F;
+ Wed,  6 Jul 2022 09:45:46 -0700 (PDT)
+Message-ID: <bfc9cd29-31b9-f7c2-66a7-1fb177a72daf@arm.com>
+Date: Wed, 6 Jul 2022 17:45:42 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH v1 08/16] arm64: dts: mt8195: Add power domains controller
-Content-Language: en-US
-To: Tinghan Shen <tinghan.shen@mediatek.com>, Yong Wu <yong.wu@mediatek.com>, 
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Chun-Jie Chen <chun-jie.chen@mediatek.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Enric Balletbo i Serra <enric.balletbo@collabora.com>,
- Weiyi Lu <weiyi.lu@mediatek.com>
-References: <20220704100028.19932-1-tinghan.shen@mediatek.com>
- <20220704100028.19932-9-tinghan.shen@mediatek.com>
- <3b65405d-167f-a0c7-d15e-5da6f08d99b3@linaro.org>
- <eec6aee5cd023fff6d986882db0330e1ab85a59d.camel@mediatek.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <eec6aee5cd023fff6d986882db0330e1ab85a59d.camel@mediatek.com>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- Project_Global_Chrome_Upstream_Group@mediatek.com,
- iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
- linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCHv2] iommu/arm-smmu-qcom: Add debug support for TLB sync
+ timeouts
+Content-Language: en-GB
+To: Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+ Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>
+References: <20220526041403.9984-1-quic_saipraka@quicinc.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220526041403.9984-1-quic_saipraka@quicinc.com>
+Cc: Rob Clark <robdclark@chromium.org>, linux-arm-msm@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ quic_guptap@quicinc.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -117,87 +72,297 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 06/07/2022 14:00, Tinghan Shen wrote:
-> Hi Krzysztof,
+On 2022-05-26 05:14, Sai Prakash Ranjan wrote:
+> TLB sync timeouts can be due to various reasons such as TBU power down
+> or pending TCU/TBU invalidation/sync and so on. Debugging these often
+> require dumping of some implementation defined registers to know the
+> status of TBU/TCU operations and some of these registers are not
+> accessible in non-secure world such as from kernel and requires SMC
+> calls to read them in the secure world. So, add this debug support
+> to dump implementation defined registers for TLB sync timeout issues.
 > 
-> After discussing your message with our power team, 
-> we realized that we need your help to ensure we fully understand you.
+> Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+> ---
 > 
-> On Mon, 2022-07-04 at 14:38 +0200, Krzysztof Kozlowski wrote:
->> On 04/07/2022 12:00, Tinghan Shen wrote:
->>> Add power domains controller node for mt8195.
->>>
->>> Signed-off-by: Weiyi Lu <weiyi.lu@mediatek.com>
->>> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
->>> ---
->>>  arch/arm64/boot/dts/mediatek/mt8195.dtsi | 327 +++++++++++++++++++++++
->>>  1 file changed, 327 insertions(+)
->>>
->>> diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
->>> index 8d59a7da3271..d52e140d9271 100644
->>> --- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
->>> +++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
->>> @@ -10,6 +10,7 @@
->>>  #include <dt-bindings/interrupt-controller/irq.h>
->>>  #include <dt-bindings/phy/phy.h>
->>>  #include <dt-bindings/pinctrl/mt8195-pinfunc.h>
->>> +#include <dt-bindings/power/mt8195-power.h>
->>>  
->>>  / {
->>>  	compatible = "mediatek,mt8195";
->>> @@ -338,6 +339,332 @@
->>>  			#interrupt-cells = <2>;
->>>  		};
->>>  
->>> +		scpsys: syscon@10006000 {
->>> +			compatible = "syscon", "simple-mfd";
->>
->> These compatibles cannot be alone.
+> Changes in v2:
+>   * Use scm call consistently so that it works on older chipsets where
+>     some of these regs are secure registers.
+>   * Add device specific data to get the implementation defined register
+>     offsets.
 > 
-> the scpsys sub node has the compatible of the power domain driver.
-> do you suggest that the compatible in the sub node should move to here?
-
-Not necessarily, depends. You have here device node representing system
-registers. They need they own compatibles, just like everywhere in the
-kernel (except the broken cases...).
-
-Whether this should be compatible of power-domain driver, it depends
-what this device node is. I don't know, I don't have your datasheets or
-your architecture diagrams...
-
+> ---
+>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 161 ++++++++++++++++++---
+>   drivers/iommu/arm/arm-smmu/arm-smmu.c      |   2 +
+>   drivers/iommu/arm/arm-smmu/arm-smmu.h      |   1 +
+>   3 files changed, 146 insertions(+), 18 deletions(-)
 > 
->>> +			reg = <0 0x10006000 0 0x1000>;
->>> +			#power-domain-cells = <1>;
->>
->> If it is simple MFD, then probably it is not a power domain provider.
->> Decide.
-> 
-> this MFD device is the power controller on mt8195. 
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> index 7820711c4560..bb68aa85b28b 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> @@ -5,13 +5,27 @@
+>   
+>   #include <linux/acpi.h>
+>   #include <linux/adreno-smmu-priv.h>
+> +#include <linux/delay.h>
+>   #include <linux/of_device.h>
+>   #include <linux/qcom_scm.h>
+>   
+>   #include "arm-smmu.h"
+>   
+> +#define QCOM_DUMMY_VAL	-1
+> +
+> +enum qcom_smmu_impl_reg_offset {
+> +	QCOM_SMMU_TBU_PWR_STATUS,
+> +	QCOM_SMMU_STATS_SYNC_INV_TBU_ACK,
+> +	QCOM_SMMU_MMU2QSS_AND_SAFE_WAIT_CNTR,
+> +};
+> +
+> +struct qcom_smmu_config {
+> +	const u32 *reg_offset;
+> +};
+> +
+>   struct qcom_smmu {
+>   	struct arm_smmu_device smmu;
+> +	const struct qcom_smmu_config *cfg;
+>   	bool bypass_quirk;
+>   	u8 bypass_cbndx;
+>   	u32 stall_enabled;
+> @@ -22,6 +36,56 @@ static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
+>   	return container_of(smmu, struct qcom_smmu, smmu);
+>   }
+>   
+> +static void qcom_smmu_tlb_sync(struct arm_smmu_device *smmu, int page,
+> +				int sync, int status)
+> +{
+> +	int ret;
+> +	unsigned int spin_cnt, delay;
+> +	u32 reg, tbu_pwr_status, sync_inv_ack, sync_inv_progress;
+> +	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
+> +	const struct qcom_smmu_config *cfg;
+> +
+> +	arm_smmu_writel(smmu, page, sync, QCOM_DUMMY_VAL);
+> +	for (delay = 1; delay < TLB_LOOP_TIMEOUT; delay *= 2) {
+> +		for (spin_cnt = TLB_SPIN_COUNT; spin_cnt > 0; spin_cnt--) {
+> +			reg = arm_smmu_readl(smmu, page, status);
+> +			if (!(reg & ARM_SMMU_sTLBGSTATUS_GSACTIVE))
+> +				return;
+> +			cpu_relax();
+> +		}
+> +		udelay(delay);
+> +	}
+> +
+> +	dev_err_ratelimited(smmu->dev,
+> +			    "TLB sync timed out -- SMMU may be deadlocked\n");
 
-Then it is not a simple MFD but a power controller. Do not use
-"simple-mfd" compatible.
+Maybe consider a single ratelimit state for the whole function so all 
+the output stays together. If things go sufficiently wrong, mixed up 
+bits of partial output from different events may be misleadingly 
+unhelpful (and at the very least it'll be up to 5x more effective at the 
+intent of limiting log spam).
 
-> Some features need 
-> to do some operations on registers in this node. We think that implement 
-> the operation of these registers as the MFD device can provide flexibility 
-> for future use. We want to clarify if you're saying that an MFD device 
-> cannot be a power domain provider.
+> +	cfg = qsmmu->cfg;
+> +	if (!cfg)
+> +		return;
+> +
+> +	ret = qcom_scm_io_readl(smmu->ioaddr + cfg->reg_offset[QCOM_SMMU_TBU_PWR_STATUS],
+> +				&tbu_pwr_status);
+> +	if (ret)
+> +		dev_err_ratelimited(smmu->dev,
+> +				    "Failed to read TBU power status: %d\n", ret);
+> +
+> +	ret = qcom_scm_io_readl(smmu->ioaddr + cfg->reg_offset[QCOM_SMMU_STATS_SYNC_INV_TBU_ACK],
+> +				&sync_inv_ack);
+> +	if (ret)
+> +		dev_err_ratelimited(smmu->dev,
+> +				    "Failed to read TBU sync/inv ack status: %d\n", ret);
+> +
+> +	ret = qcom_scm_io_readl(smmu->ioaddr + cfg->reg_offset[QCOM_SMMU_MMU2QSS_AND_SAFE_WAIT_CNTR],
+> +				&sync_inv_progress);
+> +	if (ret)
+> +		dev_err_ratelimited(smmu->dev,
+> +				    "Failed to read TCU syn/inv progress: %d\n", ret);
+> +
+> +	dev_err_ratelimited(smmu->dev,
+> +			    "TBU: power_status %#x sync_inv_ack %#x sync_inv_progress %#x\n",
+> +			    tbu_pwr_status, sync_inv_ack, sync_inv_progress);
+> +}
+> +
+>   static void qcom_adreno_smmu_write_sctlr(struct arm_smmu_device *smmu, int idx,
+>   		u32 reg)
+>   {
+> @@ -374,6 +438,7 @@ static const struct arm_smmu_impl qcom_smmu_impl = {
+>   	.def_domain_type = qcom_smmu_def_domain_type,
+>   	.reset = qcom_smmu500_reset,
+>   	.write_s2cr = qcom_smmu_write_s2cr,
+> +	.tlb_sync = qcom_smmu_tlb_sync,
+>   };
+>   
+>   static const struct arm_smmu_impl qcom_adreno_smmu_impl = {
+> @@ -382,12 +447,84 @@ static const struct arm_smmu_impl qcom_adreno_smmu_impl = {
+>   	.reset = qcom_smmu500_reset,
+>   	.alloc_context_bank = qcom_adreno_smmu_alloc_context_bank,
+>   	.write_sctlr = qcom_adreno_smmu_write_sctlr,
+> +	.tlb_sync = qcom_smmu_tlb_sync,
+> +};
+> +
+> +/* Implementation Defined Register Space 0 register offsets */
+> +static const u32 qcom_smmu_impl0_reg_offset[] = {
+> +	[QCOM_SMMU_TBU_PWR_STATUS]		= 0x2204,
+> +	[QCOM_SMMU_STATS_SYNC_INV_TBU_ACK]	= 0x25dc,
+> +	[QCOM_SMMU_MMU2QSS_AND_SAFE_WAIT_CNTR]	= 0x2670,
+> +};
+> +
+> +static const struct qcom_smmu_config qcm2290_smmu_cfg = {
+> +	.reg_offset = qcom_smmu_impl0_reg_offset,
+> +};
+> +
+> +static const struct qcom_smmu_config sc7180_smmu_cfg = {
+> +	.reg_offset = qcom_smmu_impl0_reg_offset,
+> +};
+> +
+> +static const struct qcom_smmu_config sc7280_smmu_cfg = {
+> +	.reg_offset = qcom_smmu_impl0_reg_offset,
+> +};
+> +
+> +static const struct qcom_smmu_config sc8180x_smmu_cfg = {
+> +	.reg_offset = qcom_smmu_impl0_reg_offset,
+> +};
+> +
+> +static const struct qcom_smmu_config sc8280xp_smmu_cfg = {
+> +	.reg_offset = qcom_smmu_impl0_reg_offset,
+> +};
+> +
+> +static const struct qcom_smmu_config sm6125_smmu_cfg = {
+> +	.reg_offset = qcom_smmu_impl0_reg_offset,
+> +};
+> +
+> +static const struct qcom_smmu_config sm6350_smmu_cfg = {
+> +	.reg_offset = qcom_smmu_impl0_reg_offset,
+> +};
+> +
+> +static const struct qcom_smmu_config sm8150_smmu_cfg = {
+> +	.reg_offset = qcom_smmu_impl0_reg_offset,
+> +};
+> +
+> +static const struct qcom_smmu_config sm8250_smmu_cfg = {
+> +	.reg_offset = qcom_smmu_impl0_reg_offset,
+> +};
+> +
+> +static const struct qcom_smmu_config sm8350_smmu_cfg = {
+> +	.reg_offset = qcom_smmu_impl0_reg_offset,
+> +};
+> +
+> +static const struct qcom_smmu_config sm8450_smmu_cfg = {
+> +	.reg_offset = qcom_smmu_impl0_reg_offset,
+> +};
+> +
+> +static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
+> +	{ .compatible = "qcom,msm8998-smmu-v2" },
+> +	{ .compatible = "qcom,qcm2290-smmu-500", .data = &qcm2290_smmu_cfg },
+> +	{ .compatible = "qcom,sc7180-smmu-500", .data = &sc7180_smmu_cfg },
+> +	{ .compatible = "qcom,sc7280-smmu-500", .data = &sc7280_smmu_cfg},
+> +	{ .compatible = "qcom,sc8180x-smmu-500", .data = &sc8180x_smmu_cfg },
+> +	{ .compatible = "qcom,sc8280xp-smmu-500", .data = &sc8280xp_smmu_cfg },
+> +	{ .compatible = "qcom,sdm630-smmu-v2" },
+> +	{ .compatible = "qcom,sdm845-smmu-500" },
+> +	{ .compatible = "qcom,sm6125-smmu-500", .data = &sm6125_smmu_cfg},
+> +	{ .compatible = "qcom,sm6350-smmu-500", .data = &sm6350_smmu_cfg},
+> +	{ .compatible = "qcom,sm8150-smmu-500", .data = &sm8150_smmu_cfg },
+> +	{ .compatible = "qcom,sm8250-smmu-500", .data = &sm8250_smmu_cfg },
+> +	{ .compatible = "qcom,sm8350-smmu-500", .data = &sm8350_smmu_cfg },
+> +	{ .compatible = "qcom,sm8450-smmu-500", .data = &sm8450_smmu_cfg },
+> +	{ }
+>   };
+>   
+>   static struct arm_smmu_device *qcom_smmu_create(struct arm_smmu_device *smmu,
+>   		const struct arm_smmu_impl *impl)
+>   {
+>   	struct qcom_smmu *qsmmu;
+> +	const struct of_device_id *match;
+> +	const struct device_node *np = smmu->dev->of_node;
+>   
+>   	/* Check to make sure qcom_scm has finished probing */
+>   	if (!qcom_scm_is_available())
+> @@ -398,28 +535,16 @@ static struct arm_smmu_device *qcom_smmu_create(struct arm_smmu_device *smmu,
+>   		return ERR_PTR(-ENOMEM);
+>   
+>   	qsmmu->smmu.impl = impl;
+> +	match = of_match_node(qcom_smmu_impl_of_match, np);
+> +	if (!match)
+> +		goto out;
+> +
+> +	qsmmu->cfg = match->data;
 
-MFD device is Linuxism, so it has nothing to do here. I am talking only
-about simple-mfd. simple-mfd is a simple device only instantiating
-children and not providing anything to anyone. Neither to children. This
- the most important part. The children do not depend on anything from
-simple-mfd device. For example simple-mfd device can be shut down
-(gated) and children should still operate. Being a power domain
-controller, contradicts this usually.
+I haven't been the of_device_get_match_data() police for quite some time 
+now, but it's never too late :)
 
-Best regards,
-Krzysztof
+> +out:
+>   	return &qsmmu->smmu;
+>   }
+>   
+> -static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
+> -	{ .compatible = "qcom,msm8998-smmu-v2" },
+> -	{ .compatible = "qcom,qcm2290-smmu-500" },
+> -	{ .compatible = "qcom,sc7180-smmu-500" },
+> -	{ .compatible = "qcom,sc7280-smmu-500" },
+> -	{ .compatible = "qcom,sc8180x-smmu-500" },
+> -	{ .compatible = "qcom,sc8280xp-smmu-500" },
+> -	{ .compatible = "qcom,sdm630-smmu-v2" },
+> -	{ .compatible = "qcom,sdm845-smmu-500" },
+> -	{ .compatible = "qcom,sm6125-smmu-500" },
+> -	{ .compatible = "qcom,sm6350-smmu-500" },
+> -	{ .compatible = "qcom,sm8150-smmu-500" },
+> -	{ .compatible = "qcom,sm8250-smmu-500" },
+> -	{ .compatible = "qcom,sm8350-smmu-500" },
+> -	{ .compatible = "qcom,sm8450-smmu-500" },
+> -	{ }
+> -};
+> -
+>   #ifdef CONFIG_ACPI
+>   static struct acpi_platform_list qcom_acpi_platlist[] = {
+>   	{ "LENOVO", "CB-01   ", 0x8180, ACPI_SIG_IORT, equal, "QCOM SMMU" },
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> index 2ed3594f384e..4c5b51109835 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> @@ -2099,6 +2099,8 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>   	if (IS_ERR(smmu->base))
+>   		return PTR_ERR(smmu->base);
+>   	ioaddr = res->start;
+> +	smmu->ioaddr = ioaddr;
+
+It slightly bothers me to add something to the common structure that's 
+only needed by some weird imp-def feature, but there's plenty of wasted 
+space in there already, and I suppose it is information that the core 
+driver does at least use in passing, so overall I think that's a 
+resounding "meh". Maybe remove the local variable entirely to make it 
+look less redundant?
+
+Thanks,
+Robin.
+
+> +
+>   	/*
+>   	 * The resource size should effectively match the value of SMMU_TOP;
+>   	 * stash that temporarily until we know PAGESIZE to validate it with.
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> index 2b9b42fb6f30..703fd5817ec1 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> @@ -278,6 +278,7 @@ struct arm_smmu_device {
+>   	struct device			*dev;
+>   
+>   	void __iomem			*base;
+> +	phys_addr_t			ioaddr;
+>   	unsigned int			numpage;
+>   	unsigned int			pgshift;
+>   
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
