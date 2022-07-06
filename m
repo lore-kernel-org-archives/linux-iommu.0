@@ -1,32 +1,33 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0A4433C6
-	for <iommu@lists.linux.dev>; Wed,  6 Jul 2022 11:50:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E637133C6
+	for <iommu@lists.linux.dev>; Wed,  6 Jul 2022 11:50:53 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JAL2wXRidFPFB5Xek/GxdcLCSGIifxbYX0+8mDYBwpcmyU7h+zxNwyvGc/BFf8Rvu9M3XpHD2H3VbdZOGasFua/mLv7jXegalpSve9f8/ZvffYD7J6ZJucEsFNQ/W/65kkYACtJSzUzprsZyq3NT0oKbVd55jpaGr5mz4HT8mo9V7WW5ptV7qOZBNOkpf7q62Ktm6Ukh12M4yMVQcSYb0W3a30MFCvMsgEVWr4tl3+tKJKAKn2Og8HZVHJsZVbtr5Z7IZjeEb9uMavryPEv6fxRhORaVYADqPSzEDaP0foz7USlexSMKyEdZoH6mxq4Loju817SZDAulZWycwrPTwA==
+ b=hOKq9YNdzzouc0DcGsOlhdFmDAs2cG4VXjdGt0Vp8fKNZVOxF9oZA77bZPCGe6Xxd25ED/jfQa+LeAcirBSDlCZKnssL2Y8wO2idtjZ8ihiYWVhHoutMaOkimyZr5mFJDHrhlL4ih5w1qD0ZCclIJyG9C1otY/Wn/7GfZfOXV/e2k1xgZVBios4Ukb+0/wUxvjMJoMHLw5g9B5QpPZl3hLlqrVpn6+OEV4L1nr49tWD4IAdsUEHYTrCnPABu3EzF5YzQfM4BuJgdk5zZEqYlh5Kc8lYYJyqcB1EwtQ6Op/Edk4yY/gyCNQ407PqiZO2jsHG0zgvBslQHUEmysDTX4g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=p9l7pfMGEwOGhBcoVligJllp0B4aMs3mlhZxzTG25N0=;
- b=cQXCwW4YL8vS2C2EW+bAbYhwYTkFbdoyKLvD29A12+Z7Bx2XqVqPZgfyl5LAWpILU67BT9vLZq0SGR255BnhLa/dSWFSRYSb88DAvpNkFiBM+fboJpEKACSy5xZLeTlVtmP/FVIuGF4rYn4EtKBSgcQT8lCxJcbN4OlxPWaaOagTqOAS8/hep2AvZCNIIOEV3SjDLUvdrPbgSh7QBV2qON0PhBC8Dx/uFfqnUfMosAnZVA4iFcRedAZszwg85+wvrhPSFxywsLD0Yc4WpkpF/u+alN0FFa63LNC6SBk4jG25KKFd3aK7guGLNCIA75jXN7BISIKJLm3PHByH68qj1g==
+ bh=R+UCYeVBQ9xNc9Zyg+jahl83HG54SuPRWXULBG8IUHc=;
+ b=TjWDH1LEG+MvjUJvjEiwzg1SkW8Blhu45BFpu8HZLGJHjA+IPvAaUAOcoHXqE2NUJNovio0ebscrB5kT4oi9A7JE8oWeLhEgnUbjAFLhJbH+MBvFajETJgkXqyZSyA3EuzB+Eq37RVXz3Yx92SuTezdtTDPfVHemcpfbGWHuqNekaYRuM91c1knEZPqO4ktw3Wmb5hdHnwa+4DsSYQtW3Y9xi2Uu9/fsWUrvtuM//wJUNrYbm+bH3b0keGCEm/KR8eN0PsNikCIWrlhnZsTvXW86CP6h0CaqsRGYXWIr89GvbYKQhL5BbHf6t24yMEJKunop+WDGsKYe/OF3aeMmpw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p9l7pfMGEwOGhBcoVligJllp0B4aMs3mlhZxzTG25N0=;
- b=MlYAtRRzwkFMiZ80HCUxnr/7sJW01XX+3jVFT+/y8pImXYez8YFztnE1C9n1pOiBJyPdUVqKVsFHbp2WjwTUgCX3xYNhj/MKpkz3wLgrMIY19Mfb2D9Qhg8FnIDOe6eoDM0dZaNLwzRVMpRQN/Hg1ND+O5gq1/6whHFOLbUrPiA=
-Received: from MWHPR02CA0005.namprd02.prod.outlook.com (2603:10b6:300:4b::15)
- by DM5PR12MB1179.namprd12.prod.outlook.com (2603:10b6:3:6f::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5395.18; Wed, 6 Jul 2022 11:50:36 +0000
-Received: from CO1NAM11FT028.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:4b:cafe::d0) by MWHPR02CA0005.outlook.office365.com
- (2603:10b6:300:4b::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15 via Frontend
- Transport; Wed, 6 Jul 2022 11:50:36 +0000
+ bh=R+UCYeVBQ9xNc9Zyg+jahl83HG54SuPRWXULBG8IUHc=;
+ b=PPPIKypCL7KlUuzNRFSkUpltmutp32AGULXdcUL7wkg65obSgBoJDTaGf/onQqpMuTnMv5REC0v/OSRAHFmFHwY/wsQvYfP21nd6QOZrZhaO5OPmSjxRbKMSHoJcRflnDoDzCofJAwsHD31EWm4jomyc1DDih2DUZF+M/qCN+4o=
+Received: from MW4PR03CA0298.namprd03.prod.outlook.com (2603:10b6:303:b5::33)
+ by BN6PR12MB1139.namprd12.prod.outlook.com (2603:10b6:404:1d::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.15; Wed, 6 Jul
+ 2022 11:50:51 +0000
+Received: from CO1NAM11FT061.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b5:cafe::f4) by MW4PR03CA0298.outlook.office365.com
+ (2603:10b6:303:b5::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.15 via Frontend
+ Transport; Wed, 6 Jul 2022 11:50:51 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -34,20 +35,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT028.mail.protection.outlook.com (10.13.175.214) with Microsoft SMTP
+ CO1NAM11FT061.mail.protection.outlook.com (10.13.175.200) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5417.15 via Frontend Transport; Wed, 6 Jul 2022 11:50:36 +0000
+ 15.20.5417.15 via Frontend Transport; Wed, 6 Jul 2022 11:50:51 +0000
 Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 6 Jul
- 2022 06:50:32 -0500
+ 2022 06:50:48 -0500
 From: Vasant Hegde <vasant.hegde@amd.com>
 To: <joro@8bytes.org>, <iommu@lists.linux.dev>
 CC: <iommu@lists.linux-foundation.org>, <suravee.suthikulpanit@amd.com>,
 	Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH v3 RESEND 32/35] iommu/amd: Add PCI segment support for ivrs_[ioapic/hpet/acpihid] commands
-Date: Wed, 6 Jul 2022 17:08:22 +0530
-Message-ID: <20220706113825.25582-33-vasant.hegde@amd.com>
+Subject: [PATCH v3 RESEND 33/35] iommu/amd: Print PCI segment ID in error log messages
+Date: Wed, 6 Jul 2022 17:08:23 +0530
+Message-ID: <20220706113825.25582-34-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220706113825.25582-1-vasant.hegde@amd.com>
 References: <20220706113825.25582-1-vasant.hegde@amd.com>
@@ -64,206 +65,152 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 93e46df3-ced2-4df2-e5ac-08da5f45bd74
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1179:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4042e25f-714e-47d1-ae0a-08da5f45c689
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1139:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	3SB+uy0TWlvJnKgXiHYFQS7YeWIYUhWWgOz4PhCUDFGMQxOCJdiTQMG7K4OsscJYl42KnkCBafNeGL9aMPfyv4VFMM/ESbM8RZ7ThXsMhI9jyGP0ef7ToDlS2S1l+vTmo+/n+UrL84IBH0+ek2T5GT5CyVLLw6bAVZgt5BAMxJTqacQAKs5GEfZFou/gDTKPnK4VMmwx6D2WbI9uzScRf52uVOJuby6LYkoRyvtQACFeEjrPyRjtRHcFhenFs7y7SE8cQeRfxyOufnSRC9kbf6MR4eQ3iTeXjO3yosDSO3CHcBgZ+yi6+4KbIK/XUd8oNH9EPExKBYcfIdBPsodSybGe6MsS4TvncHwDl6Aj98rFVdNpBtqunIYBjC6oiBC3I3FnaQuMzkDzCFkVEIOVddam2UratoRhQTW37WwHq0MzacKjpP2TOApYxaHkUZ11xlztboQani+cuzfu0xcEgm7rSVNctxznvVBSJOFUFCLhO5qgEckgfkR8Xlc6Up8FqJpvJvmWviv86tI7a7in2txrVHoOZwQoJqNQc0tDOz5o+qtKd4JSmvoMM6hEcqWMSeT4vqL7iF2jup0vb05ibQFaYnMT381G4nCGkXOnlIcIP0Dz0Orz4juHaAMlLcnnTwEtzwFXt6ZE4tFq9FSszBco4kXuEK1J60Uv1zmLZMvyslCRI5SSYAqmZk48F2AvfNgorBclaIVOQNtHUUJuiMVQzLIbcNQf3RBiD9HqtiBVTXqIsel3v+6Fg9+ZdWpZcAzFFmNvJanMkP7IIBYMCTrnpxi3blSwz8pwcchb3jVi2IqjvZ0iik2aEmhHD7m+bgYdr5DfLdLLESGJaKoKznNa/waFxFwf2ExIWtzui4ImwQD07vNTQXuioyqTFh1m
+	pKeMTRlqnw47cWjZRXRNbsJ2xQgedqiqS2xZH2C3zO5eze67MtDEoJhOdExmFoKUBhw3fanZzRfdABzqiXv1xlVEkK/sbG+GypdgQSFUyQuZkf95zg3mCYLdBHvvw6MQjXm0FWQngqAuwGw5rv+4WzBS1PF0l2OIGN91mzw09f+Pdenp5A3PsY2uL8+zN9iF3zjmINPEbTq64wwWFKMMnCXAoq0PGPNCVCYuynTiyAVJtjFmZp8tc1msmT4rJZvyS3sBJ5Cy9PsBt8SXcjjYU5+C5he5ibRDkDSIzlX4Z+jevNoVdybP9qVJ0mHy7LzMMNOMPk8oL9VjNwT2hbMLJ0rLw4vaQqDmnKHyfYgdpr4cRffpDRmjo7T0fISBLDUvtIDb/i8uXl7u4fKGiepUfSMFMnIfDVRp/jVbkgwWl5AXJd768SurMRfRRTArO+3G1R5BouhqtARNcdrKQPdC+w6lTgyYL3sNw3M81BnAlLVUqS+Z3B24WHGiJqCL+t0fu3e7CrHhMM0B4Pub9FhaYQn/EeR9wgSh5mxWrIcZgQH8wGlWTeEd0W2OC6KEFvFp/gy8WLvsq0PS2h0C/dlBCQShpSa0PWNJ0v8oECWQ7b4xcvSqR54eRZZ7HGdBJO8DknD29fu/GLojj8fP7OBgymn2PZ2KEcqSADsDo2NRACx/e0mQIEIhm/NXGk2PLFgi0o5c8qGW7WCTLtSClTpKJd6UCrJQaAAPCq9WdMJ/NmF1ykjrdqm7NHPCn/eJ/Z53f8rjDOamosPXLe4PQNPp/JFzILYQgENvFUXnOSna3rHjtWPtJ1Rh/UD2C1HiTxLbNIA4gr5kemrgz43v1elxKqmoSfe9TelT6rmq7IPhhd/8hFieu/UV/u2nKJ/QhPb2
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(376002)(346002)(136003)(46966006)(40470700004)(36840700001)(16526019)(186003)(2616005)(40480700001)(1076003)(426003)(82310400005)(47076005)(336012)(36756003)(316002)(54906003)(8676002)(4326008)(83380400001)(110136005)(70206006)(70586007)(5660300002)(8936002)(86362001)(40460700003)(7696005)(44832011)(478600001)(82740400003)(81166007)(356005)(34020700004)(36860700001)(41300700001)(2906002)(26005)(6666004)(36900700001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(346002)(376002)(39860400002)(396003)(136003)(46966006)(36840700001)(40470700004)(2616005)(47076005)(1076003)(426003)(336012)(70206006)(8936002)(4326008)(8676002)(70586007)(5660300002)(36756003)(41300700001)(6666004)(7696005)(86362001)(40480700001)(82310400005)(2906002)(186003)(16526019)(26005)(478600001)(82740400003)(83380400001)(81166007)(356005)(34020700004)(316002)(40460700003)(54906003)(110136005)(44832011)(36860700001)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jul 2022 11:50:36.0408
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jul 2022 11:50:51.2765
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 93e46df3-ced2-4df2-e5ac-08da5f45bd74
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4042e25f-714e-47d1-ae0a-08da5f45c689
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT028.eop-nam11.prod.protection.outlook.com
+	CO1NAM11FT061.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1179
-Message-ID: <20220706113822.Ls5VboUZjoCH8uTHnnOCybkt8ZnLEwTElnfy0QbzmCE@z>
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1139
+Message-ID: <20220706113823.Rc08TcTgEbc8bvCctP-GyKORg-WF5JLdAF9TFUNx4nA@z>
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Print pci segment ID along with bdf. Useful for debugging.
 
-By default, PCI segment is zero and can be omitted. To support system
-with non-zero PCI segment ID, modify the parsing functions to allow
-PCI segment ID.
-
-Co-developed-by: Vasant Hegde <vasant.hegde@amd.com>
+Co-developed-by: Suravee Suthikulpaint <suravee.suthikulpanit@amd.com>
+Signed-off-by: Suravee Suthikulpaint <suravee.suthikulpanit@amd.com>
 Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 ---
- .../admin-guide/kernel-parameters.txt         | 34 ++++++++++----
- drivers/iommu/amd/init.c                      | 44 ++++++++++++-------
- 2 files changed, 52 insertions(+), 26 deletions(-)
+ drivers/iommu/amd/init.c  | 10 +++++-----
+ drivers/iommu/amd/iommu.c | 36 ++++++++++++++++++------------------
+ 2 files changed, 23 insertions(+), 23 deletions(-)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 2522b11e593f..d45e58328ce6 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -2266,23 +2266,39 @@
- 
- 	ivrs_ioapic	[HW,X86-64]
- 			Provide an override to the IOAPIC-ID<->DEVICE-ID
--			mapping provided in the IVRS ACPI table. For
--			example, to map IOAPIC-ID decimal 10 to
--			PCI device 00:14.0 write the parameter as:
-+			mapping provided in the IVRS ACPI table.
-+			By default, PCI segment is 0, and can be omitted.
-+			For example:
-+			* To map IOAPIC-ID decimal 10 to PCI device 00:14.0
-+			  write the parameter as:
- 				ivrs_ioapic[10]=00:14.0
-+			* To map IOAPIC-ID decimal 10 to PCI segment 0x1 and
-+			  PCI device 00:14.0 write the parameter as:
-+				ivrs_ioapic[10]=0001:00:14.0
- 
- 	ivrs_hpet	[HW,X86-64]
- 			Provide an override to the HPET-ID<->DEVICE-ID
--			mapping provided in the IVRS ACPI table. For
--			example, to map HPET-ID decimal 0 to
--			PCI device 00:14.0 write the parameter as:
-+			mapping provided in the IVRS ACPI table.
-+			By default, PCI segment is 0, and can be omitted.
-+			For example:
-+			* To map HPET-ID decimal 0 to PCI device 00:14.0
-+			  write the parameter as:
- 				ivrs_hpet[0]=00:14.0
-+			* To map HPET-ID decimal 10 to PCI segment 0x1 and
-+			  PCI device 00:14.0 write the parameter as:
-+				ivrs_ioapic[10]=0001:00:14.0
- 
- 	ivrs_acpihid	[HW,X86-64]
- 			Provide an override to the ACPI-HID:UID<->DEVICE-ID
--			mapping provided in the IVRS ACPI table. For
--			example, to map UART-HID:UID AMD0020:0 to
--			PCI device 00:14.5 write the parameter as:
-+			mapping provided in the IVRS ACPI table.
-+
-+			For example, to map UART-HID:UID AMD0020:0 to
-+			PCI segment 0x1 and PCI device ID 00:14.5,
-+			write the parameter as:
-+				ivrs_acpihid[0001:00:14.5]=AMD0020:0
-+
-+			By default, PCI segment is 0, and can be omitted.
-+			For example, PCI device 00:14.5 write the parameter as:
- 				ivrs_acpihid[00:14.5]=AMD0020:0
- 
- 	js=		[HW,JOY] Analog joystick
 diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 9693f0b9e07a..9b1026fa7283 100644
+index 9b1026fa7283..3c82d9c5f1c0 100644
 --- a/drivers/iommu/amd/init.c
 +++ b/drivers/iommu/amd/init.c
-@@ -84,6 +84,10 @@
- #define ACPI_DEVFLAG_ATSDIS             0x10000000
+@@ -1855,11 +1855,11 @@ static int __init init_iommu_all(struct acpi_table_header *table)
+ 		h = (struct ivhd_header *)p;
+ 		if (*p == amd_iommu_target_ivhd_type) {
  
- #define LOOP_TIMEOUT	2000000
-+
-+#define IVRS_GET_SBDF_ID(seg, bus, dev, fd)	(((seg & 0xffff) << 16) | ((bus & 0xff) << 8) \
-+						 | ((dev & 0x1f) << 3) | (fn & 0x7))
-+
- /*
-  * ACPI table definitions
-  *
-@@ -3288,15 +3292,17 @@ static int __init parse_amd_iommu_options(char *str)
+-			DUMP_printk("device: %02x:%02x.%01x cap: %04x "
+-				    "seg: %d flags: %01x info %04x\n",
+-				    PCI_BUS_NUM(h->devid), PCI_SLOT(h->devid),
+-				    PCI_FUNC(h->devid), h->cap_ptr,
+-				    h->pci_seg, h->flags, h->info);
++			DUMP_printk("device: %04x:%02x:%02x.%01x cap: %04x "
++				    "flags: %01x info %04x\n",
++				    h->pci_seg, PCI_BUS_NUM(h->devid),
++				    PCI_SLOT(h->devid), PCI_FUNC(h->devid),
++				    h->cap_ptr, h->flags, h->info);
+ 			DUMP_printk("       mmio-addr: %016llx\n",
+ 				    h->mmio_phys);
  
- static int __init parse_ivrs_ioapic(char *str)
- {
--	unsigned int bus, dev, fn;
-+	u32 seg = 0, bus, dev, fn;
- 	int ret, id, i;
--	u16 devid;
-+	u32 devid;
- 
- 	ret = sscanf(str, "[%d]=%x:%x.%x", &id, &bus, &dev, &fn);
--
- 	if (ret != 4) {
--		pr_err("Invalid command line: ivrs_ioapic%s\n", str);
--		return 1;
-+		ret = sscanf(str, "[%d]=%x:%x:%x.%x", &id, &seg, &bus, &dev, &fn);
-+		if (ret != 5) {
-+			pr_err("Invalid command line: ivrs_ioapic%s\n", str);
-+			return 1;
-+		}
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 2dbe17e49ffc..6a1db8f9f453 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -496,8 +496,8 @@ static void amd_iommu_report_rmp_hw_error(struct amd_iommu *iommu, volatile u32
+ 				vmg_tag, spa, flags);
+ 		}
+ 	} else {
+-		pr_err_ratelimited("Event logged [RMP_HW_ERROR device=%02x:%02x.%x, vmg_tag=0x%04x, spa=0x%llx, flags=0x%04x]\n",
+-			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
++		pr_err_ratelimited("Event logged [RMP_HW_ERROR device=%04x:%02x:%02x.%x, vmg_tag=0x%04x, spa=0x%llx, flags=0x%04x]\n",
++			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 			vmg_tag, spa, flags);
  	}
  
- 	if (early_ioapic_map_size == EARLY_MAP_SIZE) {
-@@ -3305,7 +3311,7 @@ static int __init parse_ivrs_ioapic(char *str)
- 		return 1;
+@@ -529,8 +529,8 @@ static void amd_iommu_report_rmp_fault(struct amd_iommu *iommu, volatile u32 *ev
+ 				vmg_tag, gpa, flags_rmp, flags);
+ 		}
+ 	} else {
+-		pr_err_ratelimited("Event logged [RMP_PAGE_FAULT device=%02x:%02x.%x, vmg_tag=0x%04x, gpa=0x%llx, flags_rmp=0x%04x, flags=0x%04x]\n",
+-			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
++		pr_err_ratelimited("Event logged [RMP_PAGE_FAULT device=%04x:%02x:%02x.%x, vmg_tag=0x%04x, gpa=0x%llx, flags_rmp=0x%04x, flags=0x%04x]\n",
++			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 			vmg_tag, gpa, flags_rmp, flags);
  	}
  
--	devid = ((bus & 0xff) << 8) | ((dev & 0x1f) << 3) | (fn & 0x7);
-+	devid = IVRS_GET_SBDF_ID(seg, bus, dev, fn);
- 
- 	cmdline_maps			= true;
- 	i				= early_ioapic_map_size++;
-@@ -3318,15 +3324,17 @@ static int __init parse_ivrs_ioapic(char *str)
- 
- static int __init parse_ivrs_hpet(char *str)
- {
--	unsigned int bus, dev, fn;
-+	u32 seg = 0, bus, dev, fn;
- 	int ret, id, i;
--	u16 devid;
-+	u32 devid;
- 
- 	ret = sscanf(str, "[%d]=%x:%x.%x", &id, &bus, &dev, &fn);
--
- 	if (ret != 4) {
--		pr_err("Invalid command line: ivrs_hpet%s\n", str);
--		return 1;
-+		ret = sscanf(str, "[%d]=%x:%x:%x.%x", &id, &seg, &bus, &dev, &fn);
-+		if (ret != 5) {
-+			pr_err("Invalid command line: ivrs_hpet%s\n", str);
-+			return 1;
-+		}
+@@ -576,8 +576,8 @@ static void amd_iommu_report_page_fault(struct amd_iommu *iommu,
+ 				domain_id, address, flags);
+ 		}
+ 	} else {
+-		pr_err_ratelimited("Event logged [IO_PAGE_FAULT device=%02x:%02x.%x domain=0x%04x address=0x%llx flags=0x%04x]\n",
+-			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
++		pr_err_ratelimited("Event logged [IO_PAGE_FAULT device=%04x:%02x:%02x.%x domain=0x%04x address=0x%llx flags=0x%04x]\n",
++			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 			domain_id, address, flags);
  	}
  
- 	if (early_hpet_map_size == EARLY_MAP_SIZE) {
-@@ -3335,7 +3343,7 @@ static int __init parse_ivrs_hpet(char *str)
- 		return 1;
- 	}
+@@ -620,20 +620,20 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
  
--	devid = ((bus & 0xff) << 8) | ((dev & 0x1f) << 3) | (fn & 0x7);
-+	devid = IVRS_GET_SBDF_ID(seg, bus, dev, fn);
- 
- 	cmdline_maps			= true;
- 	i				= early_hpet_map_size++;
-@@ -3348,15 +3356,18 @@ static int __init parse_ivrs_hpet(char *str)
- 
- static int __init parse_ivrs_acpihid(char *str)
- {
--	u32 bus, dev, fn;
-+	u32 seg = 0, bus, dev, fn;
- 	char *hid, *uid, *p;
- 	char acpiid[ACPIHID_UID_LEN + ACPIHID_HID_LEN] = {0};
- 	int ret, i;
- 
- 	ret = sscanf(str, "[%x:%x.%x]=%s", &bus, &dev, &fn, acpiid);
- 	if (ret != 4) {
--		pr_err("Invalid command line: ivrs_acpihid(%s)\n", str);
--		return 1;
-+		ret = sscanf(str, "[%x:%x:%x.%x]=%s", &seg, &bus, &dev, &fn, acpiid);
-+		if (ret != 5) {
-+			pr_err("Invalid command line: ivrs_acpihid(%s)\n", str);
-+			return 1;
-+		}
- 	}
- 
- 	p = acpiid;
-@@ -3371,8 +3382,7 @@ static int __init parse_ivrs_acpihid(char *str)
- 	i = early_acpihid_map_size++;
- 	memcpy(early_acpihid_map[i].hid, hid, strlen(hid));
- 	memcpy(early_acpihid_map[i].uid, uid, strlen(uid));
--	early_acpihid_map[i].devid =
--		((bus & 0xff) << 8) | ((dev & 0x1f) << 3) | (fn & 0x7);
-+	early_acpihid_map[i].devid = IVRS_GET_SBDF_ID(seg, bus, dev, fn);
- 	early_acpihid_map[i].cmd_line	= true;
- 
- 	return 1;
+ 	switch (type) {
+ 	case EVENT_TYPE_ILL_DEV:
+-		dev_err(dev, "Event logged [ILLEGAL_DEV_TABLE_ENTRY device=%02x:%02x.%x pasid=0x%05x address=0x%llx flags=0x%04x]\n",
+-			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
++		dev_err(dev, "Event logged [ILLEGAL_DEV_TABLE_ENTRY device=%04x:%02x:%02x.%x pasid=0x%05x address=0x%llx flags=0x%04x]\n",
++			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 			pasid, address, flags);
+ 		dump_dte_entry(iommu, devid);
+ 		break;
+ 	case EVENT_TYPE_DEV_TAB_ERR:
+-		dev_err(dev, "Event logged [DEV_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
++		dev_err(dev, "Event logged [DEV_TAB_HARDWARE_ERROR device=%04x:%02x:%02x.%x "
+ 			"address=0x%llx flags=0x%04x]\n",
+-			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
++			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 			address, flags);
+ 		break;
+ 	case EVENT_TYPE_PAGE_TAB_ERR:
+-		dev_err(dev, "Event logged [PAGE_TAB_HARDWARE_ERROR device=%02x:%02x.%x pasid=0x%04x address=0x%llx flags=0x%04x]\n",
+-			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
++		dev_err(dev, "Event logged [PAGE_TAB_HARDWARE_ERROR device=%04x:%02x:%02x.%x pasid=0x%04x address=0x%llx flags=0x%04x]\n",
++			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 			pasid, address, flags);
+ 		break;
+ 	case EVENT_TYPE_ILL_CMD:
+@@ -645,13 +645,13 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+ 			address, flags);
+ 		break;
+ 	case EVENT_TYPE_IOTLB_INV_TO:
+-		dev_err(dev, "Event logged [IOTLB_INV_TIMEOUT device=%02x:%02x.%x address=0x%llx]\n",
+-			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
++		dev_err(dev, "Event logged [IOTLB_INV_TIMEOUT device=%04x:%02x:%02x.%x address=0x%llx]\n",
++			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 			address);
+ 		break;
+ 	case EVENT_TYPE_INV_DEV_REQ:
+-		dev_err(dev, "Event logged [INVALID_DEVICE_REQUEST device=%02x:%02x.%x pasid=0x%05x address=0x%llx flags=0x%04x]\n",
+-			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
++		dev_err(dev, "Event logged [INVALID_DEVICE_REQUEST device=%04x:%02x:%02x.%x pasid=0x%05x address=0x%llx flags=0x%04x]\n",
++			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 			pasid, address, flags);
+ 		break;
+ 	case EVENT_TYPE_RMP_FAULT:
+@@ -663,8 +663,8 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+ 	case EVENT_TYPE_INV_PPR_REQ:
+ 		pasid = PPR_PASID(*((u64 *)__evt));
+ 		tag = event[1] & 0x03FF;
+-		dev_err(dev, "Event logged [INVALID_PPR_REQUEST device=%02x:%02x.%x pasid=0x%05x address=0x%llx flags=0x%04x tag=0x%03x]\n",
+-			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
++		dev_err(dev, "Event logged [INVALID_PPR_REQUEST device=%04x:%02x:%02x.%x pasid=0x%05x address=0x%llx flags=0x%04x tag=0x%03x]\n",
++			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 			pasid, address, flags, tag);
+ 		break;
+ 	default:
 -- 
 2.31.1
 
