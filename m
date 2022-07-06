@@ -1,46 +1,23 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3248820F0
-	for <iommu@lists.linux.dev>; Wed,  6 Jul 2022 03:00:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657076428; x=1688612428;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=A7RBb24g7uZ3YBXaYjY6jWSesk0/66f3mKiYAyMbNb8=;
-  b=nyuNck43NqwfngDHOhm8Brs0sQHSMiXIdRRLs3WbIcOLqn/WTTZfoSO3
-   /FxYJ+lEHicFxSNuA+P3dJLkDYRvbqWJWYSQSzFIA+77uzINJD1CrTGjD
-   ndO8t4nTpLBZ3Hl0TaTwAr2gIGX7JqMbObl+QSJZ6VR0FSjyzERI1wCvt
-   yP2hbiD8fu/c82GKTCTzOlkfmJSurY4FcqxIJjGhiQVGZYoirFGow1Va9
-   d3mYYRIuyzhXEACM5b5S0gfJ8NM4dsN1HihMbmnYxalyc9biMb6mefh/A
-   IQ2LhsvfA/resrG/pfWlj7XOAHxa+VYE3LHiETTcevkNrsbTJf7ceDSsB
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10399"; a="345310083"
-X-IronPort-AV: E=Sophos;i="5.92,248,1650956400"; 
-   d="scan'208";a="345310083"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jul 2022 20:00:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,248,1650956400"; 
-   d="scan'208";a="567875365"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga006.jf.intel.com with ESMTP; 05 Jul 2022 20:00:17 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: iommu@lists.linux-foundation.org,
-	iommu@lists.linux.dev
-Cc: Kevin Tian <kevin.tian@intel.com>,
-	Ashok Raj <ashok.raj@intel.com>,
-	Liu Yi L <yi.l.liu@intel.com>,
-	Jacob jun Pan <jacob.jun.pan@intel.com>,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v4 11/11] iommu/vt-d: Convert global spinlock into per domain lock
-Date: Wed,  6 Jul 2022 10:55:24 +0800
-Message-ID: <20220706025524.2904370-12-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220706025524.2904370-1-baolu.lu@linux.intel.com>
-References: <20220706025524.2904370-1-baolu.lu@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 882022C9E
+	for <iommu@lists.linux.dev>; Wed,  6 Jul 2022 10:40:31 +0000 (UTC)
+Received: from lemmy.home.8bytes.org (p5b006cf2.dip0.t-ipconnect.de [91.0.108.242])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+	(No client certificate requested)
+	by theia.8bytes.org (Postfix) with ESMTPSA id AA1CE219;
+	Wed,  6 Jul 2022 12:33:46 +0200 (CEST)
+From: Joerg Roedel <joro@8bytes.org>
+To: linux-kernel@vger.kernel.org
+Cc: iommu@lists.linux-foundation.org,
+	iommu@lists.linux.dev,
+	Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
+	Joerg Roedel <jroedel@suse.de>
+Subject: [PATCH] MAINTAINERS: Remove iommu@lists.linux-foundation.org
+Date: Wed,  6 Jul 2022 12:33:31 +0200
+Message-ID: <20220706103331.10215-1-joro@8bytes.org>
+X-Mailer: git-send-email 2.36.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,197 +25,111 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Message-ID: <20220706025524.85fCJH8UoXDDhabaSc2P17N_yjPNC_h7d1KvKQ04L6M@z>
+Message-ID: <20220706103331.80pA3PJ-29ivyLsg7yYip4aUpGad8HoHlZ7F12WhghI@z>
 
-Using a global device_domain_lock spinlock to protect per-domain device
-tracking lists is an inefficient way, especially considering this lock
-is also needed in the hot paths. This optimizes the locking mechanism
-by converting the global lock to per domain lock.
+From: Joerg Roedel <jroedel@suse.de>
 
-On the other hand, as the device tracking lists are never accessed in
-any interrupt context, there is no need to disable interrupts while
-spinning. Replace irqsave variant with spinlock calls.
+The IOMMU mailing list has moved to iommu@lists.linux.dev
+and the old list should bounce by now. Remove it from the
+MAINTAINERS file.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/intel/iommu.h |  1 +
- drivers/iommu/intel/iommu.c | 42 ++++++++++++++++++-------------------
- 2 files changed, 22 insertions(+), 21 deletions(-)
+ MAINTAINERS | 11 -----------
+ 1 file changed, 11 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 198c6c822ef4..df64d3d9c49a 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -541,6 +541,7 @@ struct dmar_domain {
- 	u8 force_snooping : 1;		/* Create IOPTEs with snoop control */
- 	u8 set_pte_snp:1;
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 66bffb24a348..ead381fdfc5a 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -426,7 +426,6 @@ F:	drivers/acpi/*thermal*
+ ACPI VIOT DRIVER
+ M:	Jean-Philippe Brucker <jean-philippe@linaro.org>
+ L:	linux-acpi@vger.kernel.org
+-L:	iommu@lists.linux-foundation.org
+ L:	iommu@lists.linux.dev
+ S:	Maintained
+ F:	drivers/acpi/viot.c
+@@ -960,7 +959,6 @@ F:	drivers/video/fbdev/geode/
+ AMD IOMMU (AMD-VI)
+ M:	Joerg Roedel <joro@8bytes.org>
+ R:	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+-L:	iommu@lists.linux-foundation.org
+ L:	iommu@lists.linux.dev
+ S:	Maintained
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+@@ -5979,7 +5977,6 @@ DMA MAPPING HELPERS
+ M:	Christoph Hellwig <hch@lst.de>
+ M:	Marek Szyprowski <m.szyprowski@samsung.com>
+ R:	Robin Murphy <robin.murphy@arm.com>
+-L:	iommu@lists.linux-foundation.org
+ L:	iommu@lists.linux.dev
+ S:	Supported
+ W:	http://git.infradead.org/users/hch/dma-mapping.git
+@@ -5992,7 +5989,6 @@ F:	kernel/dma/
  
-+	spinlock_t lock;		/* Protect device tracking lists */
- 	struct list_head devices;	/* all devices' list */
+ DMA MAPPING BENCHMARK
+ M:	Xiang Chen <chenxiang66@hisilicon.com>
+-L:	iommu@lists.linux-foundation.org
+ L:	iommu@lists.linux.dev
+ F:	kernel/dma/map_benchmark.c
+ F:	tools/testing/selftests/dma/
+@@ -7577,7 +7573,6 @@ F:	drivers/gpu/drm/exynos/exynos_dp*
  
- 	struct dma_pte	*pgd;		/* virtual address */
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 46991e313bf3..e007049eb9ff 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -310,7 +310,6 @@ static int iommu_skip_te_disable;
- #define IDENTMAP_GFX		2
- #define IDENTMAP_AZALIA		4
+ EXYNOS SYSMMU (IOMMU) driver
+ M:	Marek Szyprowski <m.szyprowski@samsung.com>
+-L:	iommu@lists.linux-foundation.org
+ L:	iommu@lists.linux.dev
+ S:	Maintained
+ F:	drivers/iommu/exynos-iommu.c
+@@ -9999,7 +9994,6 @@ F:	drivers/hid/intel-ish-hid/
+ INTEL IOMMU (VT-d)
+ M:	David Woodhouse <dwmw2@infradead.org>
+ M:	Lu Baolu <baolu.lu@linux.intel.com>
+-L:	iommu@lists.linux-foundation.org
+ L:	iommu@lists.linux.dev
+ S:	Supported
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+@@ -10379,7 +10373,6 @@ F:	include/linux/iomap.h
+ IOMMU DRIVERS
+ M:	Joerg Roedel <joro@8bytes.org>
+ M:	Will Deacon <will@kernel.org>
+-L:	iommu@lists.linux-foundation.org
+ L:	iommu@lists.linux.dev
+ S:	Maintained
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+@@ -12539,7 +12532,6 @@ F:	drivers/i2c/busses/i2c-mt65xx.c
  
--static DEFINE_SPINLOCK(device_domain_lock);
- const struct iommu_ops intel_iommu_ops;
+ MEDIATEK IOMMU DRIVER
+ M:	Yong Wu <yong.wu@mediatek.com>
+-L:	iommu@lists.linux-foundation.org
+ L:	iommu@lists.linux.dev
+ L:	linux-mediatek@lists.infradead.org (moderated for non-subscribers)
+ S:	Supported
+@@ -16591,7 +16583,6 @@ F:	drivers/i2c/busses/i2c-qcom-cci.c
  
- static bool translation_pre_enabled(struct intel_iommu *iommu)
-@@ -535,7 +534,7 @@ static int domain_update_device_node(struct dmar_domain *domain)
- 	struct device_domain_info *info;
- 	int nid = NUMA_NO_NODE;
+ QUALCOMM IOMMU
+ M:	Rob Clark <robdclark@gmail.com>
+-L:	iommu@lists.linux-foundation.org
+ L:	iommu@lists.linux.dev
+ L:	linux-arm-msm@vger.kernel.org
+ S:	Maintained
+@@ -19217,7 +19208,6 @@ F:	arch/x86/boot/video*
  
--	spin_lock(&device_domain_lock);
-+	spin_lock(&domain->lock);
- 	list_for_each_entry(info, &domain->devices, link) {
- 		/*
- 		 * There could possibly be multiple device numa nodes as devices
-@@ -547,7 +546,7 @@ static int domain_update_device_node(struct dmar_domain *domain)
- 		if (nid != NUMA_NO_NODE)
- 			break;
- 	}
--	spin_unlock(&device_domain_lock);
-+	spin_unlock(&domain->lock);
- 
- 	return nid;
- }
-@@ -1378,15 +1377,15 @@ iommu_support_dev_iotlb(struct dmar_domain *domain, struct intel_iommu *iommu,
- 	if (!iommu->qi)
- 		return NULL;
- 
--	spin_lock(&device_domain_lock);
-+	spin_lock(&domain->lock);
- 	list_for_each_entry(info, &domain->devices, link) {
- 		if (info->iommu == iommu && info->bus == bus &&
- 		    info->devfn == devfn) {
--			spin_unlock(&device_domain_lock);
-+			spin_unlock(&domain->lock);
- 			return info->ats_supported ? info : NULL;
- 		}
- 	}
--	spin_unlock(&device_domain_lock);
-+	spin_unlock(&domain->lock);
- 
- 	return NULL;
- }
-@@ -1396,7 +1395,7 @@ static void domain_update_iotlb(struct dmar_domain *domain)
- 	struct device_domain_info *info;
- 	bool has_iotlb_device = false;
- 
--	spin_lock(&device_domain_lock);
-+	spin_lock(&domain->lock);
- 	list_for_each_entry(info, &domain->devices, link) {
- 		if (info->ats_enabled) {
- 			has_iotlb_device = true;
-@@ -1404,7 +1403,7 @@ static void domain_update_iotlb(struct dmar_domain *domain)
- 		}
- 	}
- 	domain->has_iotlb_device = has_iotlb_device;
--	spin_unlock(&device_domain_lock);
-+	spin_unlock(&domain->lock);
- }
- 
- static void iommu_enable_dev_iotlb(struct device_domain_info *info)
-@@ -1500,10 +1499,10 @@ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
- 	if (!domain->has_iotlb_device)
- 		return;
- 
--	spin_lock(&device_domain_lock);
-+	spin_lock(&domain->lock);
- 	list_for_each_entry(info, &domain->devices, link)
- 		__iommu_flush_dev_iotlb(info, addr, mask);
--	spin_unlock(&device_domain_lock);
-+	spin_unlock(&domain->lock);
- }
- 
- static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
-@@ -1763,6 +1762,7 @@ static struct dmar_domain *alloc_domain(unsigned int type)
- 		domain->flags |= DOMAIN_FLAG_USE_FIRST_LEVEL;
- 	domain->has_iotlb_device = false;
- 	INIT_LIST_HEAD(&domain->devices);
-+	spin_lock_init(&domain->lock);
- 
- 	return domain;
- }
-@@ -2446,9 +2446,9 @@ static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
- 	if (ret)
- 		return ret;
- 	info->domain = domain;
--	spin_lock(&device_domain_lock);
-+	spin_lock(&domain->lock);
- 	list_add(&info->link, &domain->devices);
--	spin_unlock(&device_domain_lock);
-+	spin_unlock(&domain->lock);
- 
- 	/* PASID table is mandatory for a PCI device in scalable mode. */
- 	if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev)) {
-@@ -4123,6 +4123,7 @@ static void domain_context_clear(struct device_domain_info *info)
- static void dmar_remove_one_dev_info(struct device *dev)
- {
- 	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+	struct dmar_domain *domain = info->domain;
- 	struct intel_iommu *iommu = info->iommu;
- 
- 	if (!dev_is_real_dma_subdevice(info->dev)) {
-@@ -4135,11 +4136,11 @@ static void dmar_remove_one_dev_info(struct device *dev)
- 		intel_pasid_free_table(info->dev);
- 	}
- 
--	spin_lock(&device_domain_lock);
-+	spin_lock(&domain->lock);
- 	list_del(&info->link);
--	spin_unlock(&device_domain_lock);
-+	spin_unlock(&domain->lock);
- 
--	domain_detach_iommu(info->domain, iommu);
-+	domain_detach_iommu(domain, iommu);
- }
- 
- static int md_domain_init(struct dmar_domain *domain, int guest_width)
-@@ -4421,7 +4422,7 @@ static bool domain_support_force_snooping(struct dmar_domain *domain)
- 	struct device_domain_info *info;
- 	bool support = true;
- 
--	assert_spin_locked(&device_domain_lock);
-+	assert_spin_locked(&domain->lock);
- 	list_for_each_entry(info, &domain->devices, link) {
- 		if (!ecap_sc_support(info->iommu->ecap)) {
- 			support = false;
-@@ -4436,8 +4437,7 @@ static void domain_set_force_snooping(struct dmar_domain *domain)
- {
- 	struct device_domain_info *info;
- 
--	assert_spin_locked(&device_domain_lock);
--
-+	assert_spin_locked(&domain->lock);
- 	/*
- 	 * Second level page table supports per-PTE snoop control. The
- 	 * iommu_map() interface will handle this by setting SNP bit.
-@@ -4459,15 +4459,15 @@ static bool intel_iommu_enforce_cache_coherency(struct iommu_domain *domain)
- 	if (dmar_domain->force_snooping)
- 		return true;
- 
--	spin_lock(&device_domain_lock);
-+	spin_lock(&dmar_domain->lock);
- 	if (!domain_support_force_snooping(dmar_domain)) {
--		spin_unlock(&device_domain_lock);
-+		spin_unlock(&dmar_domain->lock);
- 		return false;
- 	}
- 
- 	domain_set_force_snooping(dmar_domain);
- 	dmar_domain->force_snooping = true;
--	spin_unlock(&device_domain_lock);
-+	spin_unlock(&dmar_domain->lock);
- 
- 	return true;
- }
+ SWIOTLB SUBSYSTEM
+ M:	Christoph Hellwig <hch@infradead.org>
+-L:	iommu@lists.linux-foundation.org
+ L:	iommu@lists.linux.dev
+ S:	Supported
+ W:	http://git.infradead.org/users/hch/dma-mapping.git
+@@ -21893,7 +21883,6 @@ XEN SWIOTLB SUBSYSTEM
+ M:	Juergen Gross <jgross@suse.com>
+ M:	Stefano Stabellini <sstabellini@kernel.org>
+ L:	xen-devel@lists.xenproject.org (moderated for non-subscribers)
+-L:	iommu@lists.linux-foundation.org
+ L:	iommu@lists.linux.dev
+ S:	Supported
+ F:	arch/x86/xen/*swiotlb*
 -- 
-2.25.1
+2.36.1
 
