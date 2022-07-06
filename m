@@ -1,20 +1,22 @@
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFBCF2F3A
-	for <iommu@lists.linux.dev>; Wed,  6 Jul 2022 10:59:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C8D52F3A
+	for <iommu@lists.linux.dev>; Wed,  6 Jul 2022 11:31:11 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id 0DCF44CC; Wed,  6 Jul 2022 12:59:42 +0200 (CEST)
-Date: Wed, 6 Jul 2022 12:59:41 +0200
+	id 626004CC; Wed,  6 Jul 2022 13:31:09 +0200 (CEST)
+Date: Wed, 6 Jul 2022 13:31:08 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>,
-	Chenyi Qiang <chenyi.qiang@intel.com>,
-	Ethan Zhao <haifeng.zhao@linux.intel.com>, iommu@lists.linux.dev,
-	iommu@lists.linux-foundation.org
-Subject: Re: [PATCH 0/1] iommu/vt-d: Fixes for v5.19-rc4
-Message-ID: <YsVrHVlLkMzj7c/s@8bytes.org>
-References: <20220625133430.2200315-1-baolu.lu@linux.intel.com>
+To: Feng Tang <feng.tang@intel.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	John Garry <john.garry@huawei.com>,
+	iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Christoph Lameter <cl@linux.com>, Vlastimil Babka <vbabka@suse.cz>,
+	linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iommu/iova: change IOVA_MAG_SIZE to 127 to save memory
+Message-ID: <YsVyfB8ygYm7owJo@8bytes.org>
+References: <20220703114450.15184-1-feng.tang@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -23,22 +25,20 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220625133430.2200315-1-baolu.lu@linux.intel.com>
-Message-ID: <20220706105941.3rv_GDD3704vq0ainiqOEKSKNwAVAm-mWWyTBjL-8xc@z>
+In-Reply-To: <20220703114450.15184-1-feng.tang@intel.com>
+Message-ID: <20220706113108.GAlthXXpRBzk4zUPUpTRUofERUd-URvAW7Uy2iv4sbs@z>
 
-On Sat, Jun 25, 2022 at 09:34:29PM +0800, Lu Baolu wrote:
-> Hi Joerg,
+On Sun, Jul 03, 2022 at 07:44:50PM +0800, Feng Tang wrote:
+> kmalloc will round up the request size to power of 2, and current
+> iova_magazine's size is 1032 (1024+8) bytes, so each instance
+> allocated will get 2048 bytes from kmalloc, causing around 1KB
+> waste.
 > 
-> One fix is queued for v5.19. It aims to fix:
+> Change IOVA_MAG_SIZE from 128 to 127 to make size of 'iova_magazine'
+> 1024 bytes so that no memory will be wasted.
 > 
-> - RID2PASID setup/teardown failures for pci alias devices
-> 
-> Please consider it for the iommu/fix branch.
-> 
-> Best regards,
-> Lu Baolu
-> 
-> Lu Baolu (1):
->   iommu/vt-d: Fix RID2PASID setup/teardown failure
+> Signed-off-by: Feng Tang <feng.tang@intel.com>
+> Acked-by: Robin Murphy <robin.murphy@arm.com>
 
-Queued, thanks Baolu and sorry for the delay.
+Applied, thanks.
+
