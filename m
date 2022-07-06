@@ -1,120 +1,80 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 53E91C433EF
-	for <iommu@archiver.kernel.org>; Wed,  6 Jul 2022 11:51:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0AE51C43334
+	for <iommu@archiver.kernel.org>; Wed,  6 Jul 2022 11:56:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 01C6280D9A;
-	Wed,  6 Jul 2022 11:51:30 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 01C6280D9A
-Authentication-Results: smtp1.osuosl.org;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=e8eAkgxQ
+	by smtp2.osuosl.org (Postfix) with ESMTP id A0E2540B3B;
+	Wed,  6 Jul 2022 11:56:49 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org A0E2540B3B
+Authentication-Results: smtp2.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20201202 header.b=n/XQDNnH
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Aq7l5D7sj16V; Wed,  6 Jul 2022 11:51:29 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id tBWpNLl2kR8a; Wed,  6 Jul 2022 11:56:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id B542180AC0;
-	Wed,  6 Jul 2022 11:51:28 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org B542180AC0
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 7A361400AC;
+	Wed,  6 Jul 2022 11:56:48 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 7A361400AC
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9A81FC0035;
-	Wed,  6 Jul 2022 11:51:28 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8C15DC002D
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 11:51:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5A006C0035;
+	Wed,  6 Jul 2022 11:56:48 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2E4D9C002D
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 11:56:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 5F9B980B1B
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 11:51:27 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 5F9B980B1B
+ by smtp1.osuosl.org (Postfix) with ESMTP id 03B5982668
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 11:56:47 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 03B5982668
+Authentication-Results: smtp1.osuosl.org;
+ dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org
+ header.a=rsa-sha256 header.s=k20201202 header.b=n/XQDNnH
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3OcLGVbE3TCZ for <iommu@lists.linux-foundation.org>;
- Wed,  6 Jul 2022 11:51:26 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 7A76C80AC0
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com
- (mail-mw2nam10on2084.outbound.protection.outlook.com [40.107.94.84])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 7A76C80AC0
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 11:51:26 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HCnX3LXugRCvjiUb6Oaa8y3/kJScjZUHd/CnXL9yZR7NtbGdT9TFG1Uk+ux95VjZix7pDut0NuHvcSGlCN1KraCtuavRVqF57tLY2g/0eb3jzeylAqiw2/sn7vAxYdXXv20VEUMA7UL5VQoqyFjQOo+BRgBtRUgy6ltEXi7pIuVLBPh915R3Lqzc2FmEhgQXCqIhgWAw1knv7y90gmwIU20rhzgxyyD//RvQq2BG5Kh4AUqGPB2uYowUPKpg/WWYbhJzxdPJ7Q92CyFdDinQ6hpMtvboBKy9PdURxYGKn2miweUIh5P4QVio1UgTJbPyfkc35K90eUSSzCi1MXw0+A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7b/ASmGD+kyiWTeF5vwGlzDqFQawyqOI3gFRP+1roTo=;
- b=L5G7HSk0x2nhcRo2U9opEqbjSSVX590ClsBNiGTcaNWi4iilHNjWE8SJJr55tPpcMVWtMQyQsMmPZcbM33qgxzCgyPpjTC9efk16qnT10P0Sn0SGDDOaujoC+WAvurU+FUyzqTT33Rwqbmde73owYxUi9kQDSUz1TJCia7CUdtkg4IO/gM/dtnDApY8J0B04jAKUd1UrgEamF6XunJiZ5ftDOWdqmk7MOUly/b4vxWkpkq/YCstH2UKUAp9brjMtXMgl+1jIAbb+gv4vowQnnf0/+MwHRBvd+5JUXh2Acy+G1Iy14M2/ixJzkW6cFwPXMbTUaMN0Is0aGSZGOA8Wgw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7b/ASmGD+kyiWTeF5vwGlzDqFQawyqOI3gFRP+1roTo=;
- b=e8eAkgxQU+tHfJOoDvV1H+iKXug/4+CBDvnXZ7R/KSPqyVXyk5qwr6swgBqmKJ12lTpsemgHqdspfyG44TMsW4rMPn/pcDLFUh6NUK+GBIiRL3YD9eOFp/ZlOu6DAFfCBevjkGneZ2w2oQOM3KrH2Ez9RIsyFcgfi4/7nzZDhLc=
-Received: from MWHPR2201CA0038.namprd22.prod.outlook.com
- (2603:10b6:301:16::12) by BN6PR12MB1361.namprd12.prod.outlook.com
- (2603:10b6:404:18::7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.15; Wed, 6 Jul
- 2022 11:51:22 +0000
-Received: from CO1NAM11FT059.eop-nam11.prod.protection.outlook.com
- (2603:10b6:301:16:cafe::55) by MWHPR2201CA0038.outlook.office365.com
- (2603:10b6:301:16::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.15 via Frontend
- Transport; Wed, 6 Jul 2022 11:51:22 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT059.mail.protection.outlook.com (10.13.174.160) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5417.15 via Frontend Transport; Wed, 6 Jul 2022 11:51:21 +0000
-Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 6 Jul
- 2022 06:51:18 -0500
-To: <joro@8bytes.org>, <iommu@lists.linux.dev>
-Subject: [PATCH v3 RESEND 35/35] iommu/amd: Update amd_iommu_fault structure
- to include PCI seg ID
-Date: Wed, 6 Jul 2022 17:08:25 +0530
-Message-ID: <20220706113825.25582-36-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220706113825.25582-1-vasant.hegde@amd.com>
-References: <20220706113825.25582-1-vasant.hegde@amd.com>
+ with ESMTP id 6Wmqz3yGRlCv for <iommu@lists.linux-foundation.org>;
+ Wed,  6 Jul 2022 11:56:46 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 53652824DF
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 53652824DF
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 11:56:46 +0000 (UTC)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by dfw.source.kernel.org (Postfix) with ESMTPS id 8DA3761E73;
+ Wed,  6 Jul 2022 11:56:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BBF2C341C0;
+ Wed,  6 Jul 2022 11:56:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1657108605;
+ bh=JhfNIBk6QV+You43ySQJl94/5cn2lk5MAMXG7si7Ar4=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=n/XQDNnHedixbjgH5tLXVkiiS6yP2P29RGmNN5aGNS9kjcwJYBr1jfoklSS6NGgNs
+ UZzlaIe/sNXx963pZsvf1uWRgJjTKF+ZbzRgEkiBVQvumbK6D2cdTdxMMdZoapsNM0
+ Hs8iTTrk1RmrS0fcpA6hWUbba/aGm+wtnLj+YFKoOE9B9LoNTWcCARJV5eujMdtMD+
+ F41ha2s2HXU9wR02GaG7zMoJcoIOiBLUcMVLimqybrXgeD7zKGClr/BNsw++YsLTlG
+ 2pTjEfRCzdxoJa1nrxwuw9IQM9wK8Z4cZKRYXCNkPmNndi+1VTHcqn5vkRcVMtRoTV
+ EMvD8ncAdj7bA==
+Date: Wed, 6 Jul 2022 12:56:39 +0100
+From: Will Deacon <will@kernel.org>
+To: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+Subject: Re: [PATCHv2] iommu/arm-smmu-qcom: Add debug support for TLB sync
+ timeouts
+Message-ID: <20220706115638.GD2403@willie-the-truck>
+References: <20220526041403.9984-1-quic_saipraka@quicinc.com>
 MIME-Version: 1.0
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 456774f8-d489-434d-091b-08da5f45d8c1
-X-MS-TrafficTypeDiagnostic: BN6PR12MB1361:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7BP7bBUUbX7nV/ve3zvhfKq0G1RjgEpws43UXWM+ZF52YIeDmG3hbHlLvlgQ0sjeBoaJvpaFrOMMVePRpC7vi+aCShY0TsC0Bv0zJfDwhneATOV6MBt3ygY1he77/qVH7dh4KSYz4NGcTPKcL3bgXyJ94gUhg1vdihK50sDfENd2owb/cl4nD2ZJ5KH40R5NuTKJsy3wvQ2nyFwB8JaPVBm/jKW6Ygbh3RxSEXGlhBOoaSF+AkrVYkjgTswNiADzUE1CMzluRWT/zMjv8AlicCWuWeb904BJ7lIEJgofTz1Srn7Q6CpCl+ASFokpUlZRSTo0fH6K/ft6SHE0sza57WSmV2/awH+OiyFNfRf9EKfRNy8Ui3cbmi1vpdiEuHAfImq4JnM0PdryrFNkM/a9N9+KN23Js/e1iTKnBdMCd6kpEuf7LTq5YYja5ywbiaRI8dxyLe4qEXvkBfP6f5p5DBZOxJNAKuuuGtYT7JpvbUWARLLyE4IWwcBfV+dP453JZWFaunUFD6LYGY6aOVwkbwljbYJIzNWUMyInMiNk8nyNWjFzDkTUvE0Ggn9ufTcK+n6Apoy+Q4BeCL3nVgNNHhmzgF7stDh1fg8L2w53BHNeGSkFZQLlSj6rG21P18wNSgslWQZJVhbgdlTRcU3xLW14vTFt4Mooy08fk9yDAPBF7tLGgxATbokZtXcNEXACIZv4j1wrEPLY9IK7SuY3V7smw+Rywn+rPlH0CgPPBK8OnftPzJ700TDDp6sbQnDPnAGJQfBYHxMhoyzczUWC/2Upi2s2dUWluq4ZTQaeF1ixJKrdklbtuY0ROOW6ZwqjbsPki6hTKCxLfnCO+mCAlSuphBoRMXlgS5QKJQ2tevBNaCpYUpxwpnnQR4gU8PPV
-X-Forefront-Antispam-Report: CIP:165.204.84.17; CTRY:US; LANG:en; SCL:1; SRV:;
- IPV:CAL; SFV:NSPM; H:SATLEXMB04.amd.com; PTR:InfoDomainNonexistent; CAT:NONE;
- SFS:(13230016)(4636009)(376002)(396003)(136003)(39860400002)(346002)(46966006)(36840700001)(40470700004)(5660300002)(6666004)(82740400003)(356005)(41300700001)(81166007)(4326008)(8676002)(70206006)(70586007)(36860700001)(82310400005)(186003)(16526019)(7696005)(478600001)(316002)(2906002)(8936002)(44832011)(1076003)(2616005)(34020700004)(86362001)(40480700001)(40460700003)(26005)(83380400001)(47076005)(36756003)(110136005)(426003)(336012)(54906003)(36900700001);
- DIR:OUT; SFP:1101; 
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jul 2022 11:51:21.8226 (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 456774f8-d489-434d-091b-08da5f45d8c1
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d; Ip=[165.204.84.17];
- Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT059.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1361
-Cc: iommu@lists.linux-foundation.org, Vasant Hegde <vasant.hegde@amd.com>
+Content-Disposition: inline
+In-Reply-To: <20220526041403.9984-1-quic_saipraka@quicinc.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: Rob Clark <robdclark@chromium.org>, linux-arm-msm@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ quic_guptap@quicinc.com, Robin Murphy <robin.murphy@arm.com>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -127,86 +87,44 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Vasant Hegde via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Vasant Hegde <vasant.hegde@amd.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Rename 'device_id' as 'sbdf' and extend it to 32bit so that we can
-pass PCI segment ID to ppr_notifier(). Also pass PCI segment ID to
-pci_get_domain_bus_and_slot() instead of default value.
+On Thu, May 26, 2022 at 09:44:03AM +0530, Sai Prakash Ranjan wrote:
+> TLB sync timeouts can be due to various reasons such as TBU power down
+> or pending TCU/TBU invalidation/sync and so on. Debugging these often
+> require dumping of some implementation defined registers to know the
+> status of TBU/TCU operations and some of these registers are not
+> accessible in non-secure world such as from kernel and requires SMC
+> calls to read them in the secure world. So, add this debug support
+> to dump implementation defined registers for TLB sync timeout issues.
+> 
+> Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+> ---
+> 
+> Changes in v2:
+>  * Use scm call consistently so that it works on older chipsets where
+>    some of these regs are secure registers.
+>  * Add device specific data to get the implementation defined register
+>    offsets.
+> 
+> ---
+>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 161 ++++++++++++++++++---
+>  drivers/iommu/arm/arm-smmu/arm-smmu.c      |   2 +
+>  drivers/iommu/arm/arm-smmu/arm-smmu.h      |   1 +
+>  3 files changed, 146 insertions(+), 18 deletions(-)
 
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
----
- drivers/iommu/amd/amd_iommu_types.h | 2 +-
- drivers/iommu/amd/iommu.c           | 2 +-
- drivers/iommu/amd/iommu_v2.c        | 9 +++++----
- 3 files changed, 7 insertions(+), 6 deletions(-)
+If this is useful to you, then I suppose it's something we could support,
+however I'm pretty worried about our ability to maintain/scale this stuff
+as it is extended to support additional SoCs and other custom debugging
+features.
 
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 1ca54803702a..40f52d02c5b9 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -486,7 +486,7 @@ extern struct kmem_cache *amd_iommu_irq_cache;
- struct amd_iommu_fault {
- 	u64 address;    /* IO virtual address of the fault*/
- 	u32 pasid;      /* Address space identifier */
--	u16 device_id;  /* Originating PCI device id */
-+	u32 sbdf;	/* Originating PCI device id */
- 	u16 tag;        /* PPR tag */
- 	u16 flags;      /* Fault flags */
- 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 6a1db8f9f453..a56a9ad3273e 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -701,7 +701,7 @@ static void iommu_handle_ppr_entry(struct amd_iommu *iommu, u64 *raw)
- 
- 	fault.address   = raw[1];
- 	fault.pasid     = PPR_PASID(raw[0]);
--	fault.device_id = PPR_DEVID(raw[0]);
-+	fault.sbdf      = PCI_SEG_DEVID_TO_SBDF(iommu->pci_seg->id, PPR_DEVID(raw[0]));
- 	fault.tag       = PPR_TAG(raw[0]);
- 	fault.flags     = PPR_FLAGS(raw[0]);
- 
-diff --git a/drivers/iommu/amd/iommu_v2.c b/drivers/iommu/amd/iommu_v2.c
-index 40484af2ffc2..696d5555be57 100644
---- a/drivers/iommu/amd/iommu_v2.c
-+++ b/drivers/iommu/amd/iommu_v2.c
-@@ -518,15 +518,16 @@ static int ppr_notifier(struct notifier_block *nb, unsigned long e, void *data)
- 	unsigned long flags;
- 	struct fault *fault;
- 	bool finish;
--	u16 tag, devid;
-+	u16 tag, devid, seg_id;
- 	int ret;
- 
- 	iommu_fault = data;
- 	tag         = iommu_fault->tag & 0x1ff;
- 	finish      = (iommu_fault->tag >> 9) & 1;
- 
--	devid = iommu_fault->device_id;
--	pdev = pci_get_domain_bus_and_slot(0, PCI_BUS_NUM(devid),
-+	seg_id = PCI_SBDF_TO_SEGID(iommu_fault->sbdf);
-+	devid = PCI_SBDF_TO_DEVID(iommu_fault->sbdf);
-+	pdev = pci_get_domain_bus_and_slot(seg_id, PCI_BUS_NUM(devid),
- 					   devid & 0xff);
- 	if (!pdev)
- 		return -ENODEV;
-@@ -540,7 +541,7 @@ static int ppr_notifier(struct notifier_block *nb, unsigned long e, void *data)
- 		goto out;
- 	}
- 
--	dev_state = get_device_state(iommu_fault->device_id);
-+	dev_state = get_device_state(iommu_fault->sbdf);
- 	if (dev_state == NULL)
- 		goto out;
- 
--- 
-2.31.1
+Perhaps you could stick it all in arm-smmu-qcom-debug.c and have a new
+config option for that, so at least it's even further out of the way?
 
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
