@@ -1,71 +1,50 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6AC094A3E
-	for <iommu@lists.linux.dev>; Wed,  6 Jul 2022 13:43:48 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 25437106F;
-	Wed,  6 Jul 2022 06:43:48 -0700 (PDT)
-Received: from [10.57.86.2] (unknown [10.57.86.2])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C7F813F792;
-	Wed,  6 Jul 2022 06:43:45 -0700 (PDT)
-Message-ID: <3d613192-f673-852e-9c52-b8a913d25616@arm.com>
-Date: Wed, 6 Jul 2022 14:43:40 +0100
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 884284A3E
+	for <iommu@lists.linux.dev>; Wed,  6 Jul 2022 13:44:52 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 81CAF68AA6; Wed,  6 Jul 2022 15:44:47 +0200 (CEST)
+Date: Wed, 6 Jul 2022 15:44:47 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: John Garry <john.garry@huawei.com>
+Cc: damien.lemoal@opensource.wdc.com, joro@8bytes.org, will@kernel.org,
+	jejb@linux.ibm.com, martin.petersen@oracle.com, hch@lst.de,
+	m.szyprowski@samsung.com, robin.murphy@arm.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-ide@vger.kernel.org, iommu@lists.linux-foundation.org,
+	iommu@lists.linux.dev, linux-scsi@vger.kernel.org,
+	linuxarm@huawei.com
+Subject: Re: [PATCH v5 0/5] DMA mapping changes for SCSI core
+Message-ID: <20220706134447.GA23753@lst.de>
+References: <1656590892-42307-1-git-send-email-john.garry@huawei.com> <b5f80062-e8ef-9597-1b0c-393140950dfb@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v3 03/15] iommu: Always register bus notifiers
-Content-Language: en-GB
-To: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org
-Cc: will@kernel.org, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, suravee.suthikulpanit@amd.com,
- vasant.hegde@amd.com, mjrosato@linux.ibm.com, gerald.schaefer@linux.ibm.com,
- schnelle@linux.ibm.com, linux-s390@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <cover.1657034827.git.robin.murphy@arm.com>
- <8c380309f264cd0dfc73ba2ec060adc9515af2f2.1657034828.git.robin.murphy@arm.com>
- <1fab4c8a-7bc5-9a50-d48a-0dc590cac7a6@linux.intel.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <1fab4c8a-7bc5-9a50-d48a-0dc590cac7a6@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b5f80062-e8ef-9597-1b0c-393140950dfb@huawei.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Message-ID: <20220706134447.aNMi6kv5cb-QPwOrGdFESmRF3OXW3xF8vbRoyup4yAw@z>
 
-On 2022-07-06 02:53, Baolu Lu wrote:
-> On 2022/7/6 01:08, Robin Murphy wrote:
->>   /*
->>    * Use a function instead of an array here because the domain-type is a
->>    * bit-field, so an array would waste memory.
->> @@ -152,6 +172,10 @@ static int __init iommu_subsys_init(void)
->>               (iommu_cmd_line & IOMMU_CMD_LINE_STRICT) ?
->>                   "(set via kernel command line)" : "");
->> +    /* If the system is so broken that this fails, it will WARN 
->> anyway */
-> 
-> Can you please elaborate a bit on this? iommu_bus_init() still return
-> errors.
+On Wed, Jul 06, 2022 at 02:40:44PM +0100, John Garry wrote:
+> On 30/06/2022 13:08, John Garry wrote:
+>
+> Hi Christoph,
+>
+> Can you please consider picking up this series? A few things to note 
+> beforehand:
+>
+> - I changed to only apply the mapping limit to SAS hosts in this version. I 
+> would need a fresh ack from Martin for those SCSI parts, but wanted to make 
+> sure you were ok with it.
 
-Indeed, it's commenting on the fact that we don't try to clean up or 
-propagate an error value further even if it did ever manage to return 
-one. I feared that if I strip the error handling out of iommu_bus_init() 
-itself on the same reasoning, we'll just get constant patches from the 
-static checker brigade trying to add it back, so it seemed like the 
-neatest compromise to keep that decision where it's obviously in an 
-early initcall, rather than in the helper function which can be viewed 
-out of context. However, I'm happy to either expand this comment or go 
-the whole way and make iommu_bus_init() return void if you think it's 
-worthwhile.
+Yes, I've mostly been waiting for an ACK from Martin.
 
-Cheers,
-Robin.
+> - Damien had some doubt on updating the shost max_sectors as opposed to the 
+> per-request queue default, but I think he's ok with it - see patch 4/5
 
-> 
->> +    for (int i = 0; i < ARRAY_SIZE(iommu_buses); i++)
->> +        iommu_bus_init(iommu_buses[i]);
->> +
->>       return 0;
-> 
-> Best regards,
-> baolu
+I'm fine either way.
