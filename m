@@ -1,86 +1,90 @@
-Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC4387C
-	for <iommu@lists.linux.dev>; Wed,  6 Jul 2022 19:51:01 +0000 (UTC)
-Received: from pps.filterd (m0150242.ppops.net [127.0.0.1])
-	by mx0a-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 266IYSeV028868;
-	Wed, 6 Jul 2022 18:55:15 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=pps0720; bh=V/RKn4cwO8Jde9mbP6eJbdj72qAcC8xBRDOOWhNiMSQ=;
- b=pUw4L9rTo/LcMp9rbfH5fVTlVoZPIp2IpjUUFCXGswZVBnMVRknIQWCdfywOivE7pwU/
- amOiqGfhXKw53yx3Xc+dIp6/NP7oHWKsbNUeiaog+z2orlR0oBcl7EaKxtFNHe+/C1CM
- cL33+GW86PUOpuIX8JmVtR9AnblimvI0TEaXupudK67nNhwqG/7RocOXX123ITXehd3A
- vIXzfs+DP/asTrOpSRMXWY9l4Te9pqbEk1Ph1vQJyuat0Ynxm8mrpE7csbXme3VhP7Wg
- ZM2GjUQ2CrK5zvQrRP6JctuvGNjjLI8nO6GdmAN4CfmbUKxhhMwnVZT8xml8dbyXJYMR Ug== 
-Received: from p1lg14880.it.hpe.com (p1lg14880.it.hpe.com [16.230.97.201])
-	by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3h5fst04wu-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 06 Jul 2022 18:55:15 +0000
-Received: from p1lg14886.dc01.its.hpecorp.net (unknown [10.119.18.237])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by p1lg14880.it.hpe.com (Postfix) with ESMTPS id B307B80022C;
-	Wed,  6 Jul 2022 18:55:13 +0000 (UTC)
-Received: from swahl-home.5wahls.com (unknown [16.231.227.36])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	by p1lg14886.dc01.its.hpecorp.net (Postfix) with ESMTPS id CF5F2809A09;
-	Wed,  6 Jul 2022 18:55:11 +0000 (UTC)
-Date: Wed, 6 Jul 2022 13:55:10 -0500
-From: Steve Wahl <steve.wahl@hpe.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Steve Wahl <steve.wahl@hpe.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Jerry Snitselaar <jsnitsel@redhat.com>,
-        Mike Travis <mike.travis@hpe.com>, Dimitri Sivanich <sivanich@hpe.com>,
-        Russ Anderson <russ.anderson@hpe.com>, iommu@lists.linux.dev,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 0/6] iommu/vt-d: Reset DMAR_UNITS_SUPPORTED
-Message-ID: <YsXajixg7mN8PLtX@swahl-home.5wahls.com>
-References: <20220625125204.2199437-1-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220625125204.2199437-1-baolu.lu@linux.intel.com>
-X-Proofpoint-GUID: 7ym3B4n5N3oaqW6wr62eHBRkqpjXsZps
-X-Proofpoint-ORIG-GUID: 7ym3B4n5N3oaqW6wr62eHBRkqpjXsZps
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9AC87C
+	for <iommu@lists.linux.dev>; Wed,  6 Jul 2022 19:51:22 +0000 (UTC)
+Received: by mail-ed1-f44.google.com with SMTP id r18so20556592edb.9
+        for <iommu@lists.linux.dev>; Wed, 06 Jul 2022 12:51:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=T/Uniy8LBcxVwi6NUSTS6A3GCA+91o6vI7rMz3Wtdlk=;
+        b=qiUwOsPCNmCmsMJzHRsMCaqHx/A29XFx+rEtXjpqLg05bj73vgI77R8nubnEYJ+G4/
+         p3lABAQJJTZVJuLPfbcf0/Fbe8CGrKSC202O5G+CGOx6Ltsc0jTW4ZBsabqe1nhSvicM
+         hGITTa5Eqvo/4HZ2OLE8sSJ1r0Z5cDjhIo9poy31FT4uT+YeMzQBou6F7hhhgFNb0vJB
+         gmaOFBXvzYhqf5RoSr/SXJ6AaRWj15Xso85XVvRCE/8azbqlsFTr9Nc43wazo2H6U4Up
+         0lZgKwKvQDF3FBwGEZ7WpsN1gQthA4oR2esJEp+LJQ6WbXe6sXLmZpHrG7GEeW8fjJtk
+         O26g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=T/Uniy8LBcxVwi6NUSTS6A3GCA+91o6vI7rMz3Wtdlk=;
+        b=NxFs5F7o4fp6VvX2juTRoVgPgGFEcCeGjMAf0kQhQnaZeGlcj3XfK880Uxo4LVfVC8
+         rCqmFCtUqZpn+l6Er6eZsHpGcHDX2H46LwuUpcZyPu+l62NBiB1kw8EZkx0CF911b9JG
+         Wzf291FgypbQQSAbsHqQ/Iy/lgn8denj/5AdElHHNpcmIqhqB8M0VoGy7w0+yNQhat+d
+         SCaQTdrkl28fAqo2MP1ARSlG1eovkWNNUBVx/19qkxRy9BA4b80OZInLQ55/Y6IIGt0W
+         oDkFHTh2iBCCkSfi/bm9v03YHWoSMc6V0SZ3cqQ2+EMtfdY8jyCoCYzLhKu6IJbmwcgb
+         HW8w==
+X-Gm-Message-State: AJIora/rMKnSeI9kNxu3CIQEW5E3JLvV788+r/Lf+Y4As5iOhntSc///
+	zu0DwD5wFMgyxw7Nm3V9R/M=
+X-Google-Smtp-Source: AGRyM1tL5OpzeEvjnryKM1zyCU6rO5tLkN/wI78MRbQT2J+6bNMgnN1GnuVvmU0S8Pptetfi9UCRhA==
+X-Received: by 2002:a05:6402:42cb:b0:43a:5df2:bb5d with SMTP id i11-20020a05640242cb00b0043a5df2bb5dmr23876112edc.36.1657137080986;
+        Wed, 06 Jul 2022 12:51:20 -0700 (PDT)
+Received: from anparri.mshome.net (host-79-49-199-193.retail.telecomitalia.it. [79.49.199.193])
+        by smtp.gmail.com with ESMTPSA id kz11-20020a17090777cb00b0072af18329c4sm1968127ejc.225.2022.07.06.12.51.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Jul 2022 12:51:20 -0700 (PDT)
+From: "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
+To: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	KY Srinivasan <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Stephen Hemminger <sthemmin@microsoft.com>,
+	Wei Liu <wei.liu@kernel.org>,
+	Dexuan Cui <decui@microsoft.com>,
+	Michael Kelley <mikelley@microsoft.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	Peter Anvin <hpa@zytor.com>
+Cc: linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org,
+	iommu@lists.linux.dev,
+	linux-hyperv@vger.kernel.org,
+	x86@kernel.org,
+	"Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
+Subject: [RFC PATCH 0/2] dma_direct_{alloc,free}() for Hyper-V IVMs
+Date: Wed,  6 Jul 2022 21:50:25 +0200
+Message-Id: <20220706195027.76026-1-parri.andrea@gmail.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-06_11,2022-06-28_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 phishscore=0
- spamscore=0 lowpriorityscore=0 adultscore=0 bulkscore=0 malwarescore=0
- clxscore=1011 mlxscore=0 mlxlogscore=773 priorityscore=1501 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2207060073
+Content-Transfer-Encoding: 8bit
 
-On Sat, Jun 25, 2022 at 08:51:58PM +0800, Lu Baolu wrote:
-> Hi folks,
-> 
-> This is a follow-up series of changes proposed by this patch:
-> 
-> https://lore.kernel.org/linux-iommu/20220615183650.32075-1-steve.wahl@hpe.com/
-> 
-> It removes several static arrays of size DMAR_UNITS_SUPPORTED and sets
-> the DMAR_UNITS_SUPPORTED to 1024.
-> 
+Through swiotlb_unencrypted_base.
 
-After Kevin Tian's comments, for the whole series:
+P.S.  I'm on vacation for the next couple of weeks starting next Monday;
+Dexuan/Michael should be able to address review feedback in that period.
 
-Reviewed-by: Steve Wahl <steve.wahl@hpe.com>
+Andrea Parri (Microsoft) (2):
+  swiotlb,dma-direct: Move swiotlb_unencrypted_base to direct.c
+  dma-direct: Fix dma_direct_{alloc,free}() for Hyperv-V IVMs
 
---> Steve
+ arch/x86/kernel/cpu/mshyperv.c |  6 +++---
+ include/linux/dma-direct.h     |  2 ++
+ include/linux/swiotlb.h        |  2 --
+ kernel/dma/direct.c            | 38 +++++++++++++++++++++++++++++++++-
+ kernel/dma/swiotlb.c           | 12 +++++------
+ 5 files changed, 47 insertions(+), 13 deletions(-)
 
 -- 
-Steve Wahl, Hewlett Packard Enterprise
+2.25.1
+
