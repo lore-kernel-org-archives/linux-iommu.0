@@ -1,87 +1,79 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B2ACECCA473
-	for <iommu@archiver.kernel.org>; Wed,  6 Jul 2022 12:00:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2B6A4C433EF
+	for <iommu@archiver.kernel.org>; Wed,  6 Jul 2022 12:01:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 44CF640B33;
-	Wed,  6 Jul 2022 12:00:44 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 44CF640B33
+	by smtp4.osuosl.org (Postfix) with ESMTP id B0E3041849;
+	Wed,  6 Jul 2022 12:01:11 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org B0E3041849
+Authentication-Results: smtp4.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20201202 header.b=dOArfIuH
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id w7vgJn2fH70w; Wed,  6 Jul 2022 12:00:43 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id iV-rFsNL9MlQ; Wed,  6 Jul 2022 12:01:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 18AAB400AC;
-	Wed,  6 Jul 2022 12:00:43 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 18AAB400AC
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 6409C41838;
+	Wed,  6 Jul 2022 12:01:10 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 6409C41838
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 026F0C0035;
-	Wed,  6 Jul 2022 12:00:43 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4C9C7C002D
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 12:00:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3A6B8C0035;
+	Wed,  6 Jul 2022 12:01:10 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2C508C002D;
+ Wed,  6 Jul 2022 12:01:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 359F880B02
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 12:00:41 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 359F880B02
+ by smtp3.osuosl.org (Postfix) with ESMTP id ED08160FCE;
+ Wed,  6 Jul 2022 12:01:08 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org ED08160FCE
+Authentication-Results: smtp3.osuosl.org;
+ dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org
+ header.a=rsa-sha256 header.s=k20201202 header.b=dOArfIuH
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZEIf4JI-GJQR for <iommu@lists.linux-foundation.org>;
- Wed,  6 Jul 2022 12:00:40 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id P2ipZV10jwgr; Wed,  6 Jul 2022 12:01:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 4E62B80ABB
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 4E62B80ABB
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 12:00:40 +0000 (UTC)
-X-UUID: 6b753b0c425c4b7083e08b8d4a98e225-20220706
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8, REQID:803bd319-e2e1-46dc-8456-d9e271f6ee69, OB:0,
- LO
- B:0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
- ION:release,TS:0
-X-CID-META: VersionHash:0f94e32, CLOUDID:435bb586-57f0-47ca-ba27-fe8c57fbf305,
- C
- OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
- ,QS:nil,BEC:nil,COL:0
-X-UUID: 6b753b0c425c4b7083e08b8d4a98e225-20220706
-Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by
- mailgw02.mediatek.com (envelope-from <tinghan.shen@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 1654993368; Wed, 06 Jul 2022 20:00:33 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Wed, 6 Jul 2022 20:00:32 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Wed, 6 Jul 2022 20:00:32 +0800
-Message-ID: <eec6aee5cd023fff6d986882db0330e1ab85a59d.camel@mediatek.com>
-Subject: Re: [PATCH v1 08/16] arm64: dts: mt8195: Add power domains controller
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Yong Wu
- <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
- <will@kernel.org>, Rob Herring <robh+dt@kernel.org>, Krzysztof Kozlowski
- <krzysztof.kozlowski+dt@linaro.org>, Matthias Brugger
- <matthias.bgg@gmail.com>, Chun-Jie Chen <chun-jie.chen@mediatek.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, "Enric
- Balletbo i Serra" <enric.balletbo@collabora.com>, Weiyi Lu
- <weiyi.lu@mediatek.com>
-Date: Wed, 6 Jul 2022 20:00:32 +0800
-In-Reply-To: <3b65405d-167f-a0c7-d15e-5da6f08d99b3@linaro.org>
-References: <20220704100028.19932-1-tinghan.shen@mediatek.com>
- <20220704100028.19932-9-tinghan.shen@mediatek.com>
- <3b65405d-167f-a0c7-d15e-5da6f08d99b3@linaro.org>
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org CF0E660FCC
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id CF0E660FCC;
+ Wed,  6 Jul 2022 12:01:06 +0000 (UTC)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by dfw.source.kernel.org (Postfix) with ESMTPS id 2DBCB61F1A;
+ Wed,  6 Jul 2022 12:01:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4789DC3411C;
+ Wed,  6 Jul 2022 12:01:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1657108865;
+ bh=SxZ5gPnL1lJYbbdKlvmsQFgB0lgS1A3kcbUqEn7xBRQ=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=dOArfIuHLw6DUXMjueXyFAFj2MCvfGU248UeblIvaB8Mdpjk6cKv5QRgDqMx2lFNo
+ YPquuSW2tGbSY4szUZ8AsXJ4UhyUu1n+0QYBcu2OKEtSIXoGnTmJMDgFU10bCKD1UL
+ kTnHNnB+u3RvZbLvXiZ4nnoDTn7mOJkFjkNN0pgpo/ij/+tCmur3TTu/VtbTwNvhtJ
+ tLdFw/1/d+h2fNSstaH8dYTmHFiRXZKq0PA7IBfzs3FJSGEA7r1h/dWZxCuN2gcEEg
+ H0JWBi9zioTiZ6u/011hT2D6fRfJ5QMJUeEFfe4rD6K5t9G4KLgqCqr/9rntIR/yjN
+ e9jWJXYnSBCpg==
+Date: Wed, 6 Jul 2022 13:00:59 +0100
+From: Will Deacon <will@kernel.org>
+To: John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH RESEND v5 1/5] iommu: Refactor iommu_group_store_type()
+Message-ID: <20220706120059.GE2403@willie-the-truck>
+References: <1649071634-188535-1-git-send-email-john.garry@huawei.com>
+ <1649071634-188535-2-git-send-email-john.garry@huawei.com>
 MIME-Version: 1.0
-X-MTK: N
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- Project_Global_Chrome_Upstream_Group@mediatek.com,
- iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
- linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <1649071634-188535-2-git-send-email-john.garry@huawei.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: jean-philippe@linaro.org, mst@redhat.com, linuxarm@huawei.com,
+ linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org,
+ iommu@lists.linux-foundation.org, robin.murphy@arm.com, jasowang@redhat.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,72 +86,34 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Tinghan Shen via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Tinghan Shen <tinghan.shen@mediatek.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Krzysztof,
-
-After discussing your message with our power team, 
-we realized that we need your help to ensure we fully understand you.
-
-On Mon, 2022-07-04 at 14:38 +0200, Krzysztof Kozlowski wrote:
-> On 04/07/2022 12:00, Tinghan Shen wrote:
-> > Add power domains controller node for mt8195.
-> > 
-> > Signed-off-by: Weiyi Lu <weiyi.lu@mediatek.com>
-> > Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
-> > ---
-> >  arch/arm64/boot/dts/mediatek/mt8195.dtsi | 327 +++++++++++++++++++++++
-> >  1 file changed, 327 insertions(+)
-> > 
-> > diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-> > index 8d59a7da3271..d52e140d9271 100644
-> > --- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-> > +++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-> > @@ -10,6 +10,7 @@
-> >  #include <dt-bindings/interrupt-controller/irq.h>
-> >  #include <dt-bindings/phy/phy.h>
-> >  #include <dt-bindings/pinctrl/mt8195-pinfunc.h>
-> > +#include <dt-bindings/power/mt8195-power.h>
-> >  
-> >  / {
-> >  	compatible = "mediatek,mt8195";
-> > @@ -338,6 +339,332 @@
-> >  			#interrupt-cells = <2>;
-> >  		};
-> >  
-> > +		scpsys: syscon@10006000 {
-> > +			compatible = "syscon", "simple-mfd";
+On Mon, Apr 04, 2022 at 07:27:10PM +0800, John Garry wrote:
+> Function iommu_group_store_type() supports changing the default domain
+> of an IOMMU group.
 > 
-> These compatibles cannot be alone.
-
-the scpsys sub node has the compatible of the power domain driver.
-do you suggest that the compatible in the sub node should move to here?
-
-> > +			reg = <0 0x10006000 0 0x1000>;
-> > +			#power-domain-cells = <1>;
+> Many conditions need to be satisfied and steps taken for this action to be
+> successful.
 > 
-> If it is simple MFD, then probably it is not a power domain provider.
-> Decide.
+> Satisfying these conditions and steps will be required for setting other
+> IOMMU group attributes, so factor into a common part and a part specific
+> to update the IOMMU group attribute.
+> 
+> No functional change intended.
+> 
+> Some code comments are tidied up also.
+> 
+> Signed-off-by: John Garry <john.garry@huawei.com>
+> ---
+>  drivers/iommu/iommu.c | 96 ++++++++++++++++++++++++++++---------------
+>  1 file changed, 62 insertions(+), 34 deletions(-)
 
-this MFD device is the power controller on mt8195. Some features need 
-to do some operations on registers in this node. We think that implement 
-the operation of these registers as the MFD device can provide flexibility 
-for future use. We want to clarify if you're saying that an MFD device 
-cannot be a power domain provider.
+Acked-by: Will Deacon <will@kernel.org>
 
-
-
-Best regards,
-TingHan
-
-
-
-
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
