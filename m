@@ -1,33 +1,33 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2054.outbound.protection.outlook.com [40.107.220.54])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2051.outbound.protection.outlook.com [40.107.94.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E45B33C6
-	for <iommu@lists.linux.dev>; Wed,  6 Jul 2022 11:46:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A0B033C6
+	for <iommu@lists.linux.dev>; Wed,  6 Jul 2022 11:47:05 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Zby5Le9f/WzVloe/9//0a8DAMAziYkbMJKeRuuwswcfN6jZ9iELQ83KUUCWq6a5rO5X/EKtdOERjIyL+1cMtOrJQnZumi6/dGu5oB1eHkOtMihNC5YDzpq8wA5DCozrHYXmxXhE6uavhpCe1DtNOKdNBU6abJV0medF9GNcUxn5OWByw0BCEJx6ty2mQBsZ2kFwtJ9rFOuP6vaYF/Ch/GL8HzW1/dyRpWYfyBupvWLcU55zAC7I9uV9m9JNxKJpNOcOjCdLkE1ePBhRIEyHvGZ152+x+EwguZzrLUyoiTRo47pKvV2IPKKW6ZpmUDCVkFwUsx6RLHZ8R7RaB++y46A==
+ b=hsYHmCQ7RDJrN+buAQ6UqCjRJU4+O1LZlNAINjOetZZixHXjl7tyWkCUXS301fS5McD/OQX3/s8zsEdDcs4aRa4nJsp0iDhn33ondvsfsvtLRCyXdHnmgAoWAx+goqCpKIfVmuPdATnduZ7BQJAk081kUCtfHGdm3Tlem5hB5DwxFYNhRGEc8x4YK3evJag4COLiIWXmSOd8nN8M6OgTo2uPDc7Wr2gYpbxXYcQiN2SfJnsxkR4c3l2HbvNm6oBPaCCOitzFaljYReRd7CFa1MebwDWZRSjFPz5KoMN4oYnU/u1LWlJagsF2cM+n/HuVWbiRoyUEXxNQP3pezRtOKQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=K8uZ8hvm1dd6UHl0DROTfX/PH+6ZfaPxhigmyby0pac=;
- b=UaJCk+jBfG2GjO/CoqZjVQDn86/urkdfTNvGyi2Mtj6+VzF1w64h6yHs6nDqr+KAgRvr6tKtMOHatxzqQgKlGV8mnf1pO3PiafJ27JLubA+EvgFVQVD4sDiOntXwmHMz0/LIgG7jDdZcsqueV5K9ZyjQN+7gIHm6DTL/27ok5yhtZsGHIzZQ5c8dEgARmKaCCKOFYsj0yd4eho6dFPNF5wmsSucTxLCFpkl5sGQxJOWjIEQQtRkMuALZmL8iYfpBB3QcPjpB0L5zl/oqs+/95wjJSSlmWl1NFJZl/Q+S0l/BVJ66rZ0mq8FBkkKuaszftMlhCJLOqgh33Sl2NcVSUQ==
+ bh=CBNnIXXeXcEcn3R6DcTlZivM3leaNr/PLBvj3kE68nk=;
+ b=MnrzAqtq1xouAufHbHILx4Y9TW2joOYLVys0Q+exdv2Qmb9pWI+EX3i9w/KOwPzeVAuZcHZWBPCQFlZa1n2u+ejmfJRkDT1WuuMi8a4G0h4rh7jI70EQ38Ta0PgOcx2QHeC0oALodouo8hxG2NuHL/UgmJo3kgzLaLvnLkNK/OH/IBhUwN8AuQsN8BfodQBN0K4+mLaCcpUxYbWmIHsL9XOqPyX04DYrHNS+tURYGGvbSlrMR/2PjL9ZMOyFIlb903XLbV6Clz+8z/PsdWK22whOuLLlsMMNEY5q20LnOMHyvXOJDwrytTKvDcl6vQ74KQqeCmRRR7yzj66oRXY1xA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=K8uZ8hvm1dd6UHl0DROTfX/PH+6ZfaPxhigmyby0pac=;
- b=Wv5TJZhoOr1k28q9x2biy6g1hWeC971ZALTwICj1FfS0guUvG1Vc9DiGYXP9PShLOuh9CYKqloboA5B2kcyecn01hlBWaqAJgYGsawKkFFv0HHPHyHA4oqQ1BxauHkcgXOZmw5xMqHaD0jsPdWcbAPOSHiMoeX3m6K7NvJ1pBfM=
-Received: from MWHPR02CA0010.namprd02.prod.outlook.com (2603:10b6:300:4b::20)
- by SJ1PR12MB6196.namprd12.prod.outlook.com (2603:10b6:a03:456::8) with
+ bh=CBNnIXXeXcEcn3R6DcTlZivM3leaNr/PLBvj3kE68nk=;
+ b=KCykiHBCgg2CWwI0gcXTY6SPdoltYwkqkatr1kTIOHN2UASgvVPdiTLNneo6Duex1NJG07e/nOzvQkm7WW8/5v5gz1rAjZtDcVhmTSKbAkAIwLJ2fucNyxiuXiFqBZ2vJWvSjvF+dSCwUdouuPFKAT/KF4xEzuXZKD/AxBjqyEs=
+Received: from MWHPR13CA0039.namprd13.prod.outlook.com (2603:10b6:300:95::25)
+ by BY5PR12MB4902.namprd12.prod.outlook.com (2603:10b6:a03:1dd::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.20; Wed, 6 Jul
- 2022 11:46:46 +0000
-Received: from CO1NAM11FT013.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:4b:cafe::7d) by MWHPR02CA0010.outlook.office365.com
- (2603:10b6:300:4b::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.15 via Frontend
- Transport; Wed, 6 Jul 2022 11:46:46 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.17; Wed, 6 Jul
+ 2022 11:47:02 +0000
+Received: from CO1NAM11FT031.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:300:95:cafe::3c) by MWHPR13CA0039.outlook.office365.com
+ (2603:10b6:300:95::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.9 via Frontend
+ Transport; Wed, 6 Jul 2022 11:47:02 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -35,20 +35,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT013.mail.protection.outlook.com (10.13.174.227) with Microsoft SMTP
+ CO1NAM11FT031.mail.protection.outlook.com (10.13.174.118) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5417.15 via Frontend Transport; Wed, 6 Jul 2022 11:46:46 +0000
+ 15.20.5417.15 via Frontend Transport; Wed, 6 Jul 2022 11:47:01 +0000
 Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 6 Jul
- 2022 06:46:43 -0500
+ 2022 06:46:58 -0500
 From: Vasant Hegde <vasant.hegde@amd.com>
 To: <joro@8bytes.org>, <iommu@lists.linux.dev>
 CC: <iommu@lists.linux-foundation.org>, <suravee.suthikulpanit@amd.com>,
 	Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH v3 RESEND 17/35] iommu/amd: Introduce struct amd_ir_data.iommu
-Date: Wed, 6 Jul 2022 17:08:07 +0530
-Message-ID: <20220706113825.25582-18-vasant.hegde@amd.com>
+Subject: [PATCH v3 RESEND 18/35] iommu/amd: Update amd_irte_ops functions
+Date: Wed, 6 Jul 2022 17:08:08 +0530
+Message-ID: <20220706113825.25582-19-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220706113825.25582-1-vasant.hegde@amd.com>
 References: <20220706113825.25582-1-vasant.hegde@amd.com>
@@ -65,64 +65,90 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7563b947-9e43-49c7-ea79-08da5f4534ac
-X-MS-TrafficTypeDiagnostic: SJ1PR12MB6196:EE_
+X-MS-Office365-Filtering-Correlation-Id: c1a725a4-bcc4-4c1f-6a6c-08da5f453db6
+X-MS-TrafficTypeDiagnostic: BY5PR12MB4902:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	COE2eoUO7CJZqscfQ5wNqtuW0w+bY65rd99EOZFvyfIjkWdlsiO0NiuWO69QWPlsLWNoiuQSHAYEzoOy8IcDz01VAhTkAyCK4+89b5v6iGPjTSRZzPjKFPiWBbv0QsS6nTqSCLkLQiXqivIma1AoiD5ASTyt3u51bobx9hMZ0bmH/L/R0d0Q6fMuoR1EgkRKfmJwlhYfU5LsuHgJxw/YCkOjWsywB2Iw14miD5Qcsz6xRrSgw0nWux3tbOyntNVWzvgqaNYEwZa2E6njVcSlmm4EEYga3moErzYfb7L7mhdNsmNIXvTXLNarNJ4Mry+GUPF5mNMmieQBMzdIAcOtUIyxm2I01Jhi+WyM3SfsrUbXvJ2tbt3gPelfZ+ceySMKiCadSdt50dylAxXDDvxUgSZ7lPh3/Zhx16FIUkMBJ6+U8xdoSd504Ypya7coflyt+PyjuWOpCYNX8jRjABjWA7snTlzeiUv/edR/5oUppKpYz5Ps816cACZn1TaZwvPifOlRll5Y00HX9FCopXDL7BWU+8S3oEp9+ILL+LqbMEIGvApaFAt2UBSNkAfd25fFiSqlw12xqPLHFzRaP9mTZCR69BXK33fl2SElVc/kOyuazSGEmwjzYQIMG58vh//u+JTD+M6S3oQEGTqakTxareco7wpTz5pfSLg07JO0+KOtrDMqbHHAEI8FfoIsCllezaK9dh7HKm+EGaA6a/A42Q02oG7fh/1H6s9Twpgz36DANgxt4LpSliuXxlc3TQTk+i1E+pEg8DVTgqR6FIjfsFzAqaPQjy/TyKar+qpsm3q48FiO2GaLEA+XbnQYEbH3V9gaCG/R0GyQqhaw6pajB8tw+iOGs/jpVD8js/MNJpbpH/2OfI/6rsQHbbUOFzQP
+	7xeuRdCVOMAB9dQl0TOazxxQ17DiWjebAbCfFH8fSdfFZVOPdS+HOT2/lfJdIaJ9FruKjIpmLE3gO/eV1+633pZA2BuYeU3QQDbwNaf9xp/ln0yjJHKMDsIS06KtX/YDkdEwO9VAsH0tYlMtGXCoFMHhBhITBfqB5A2n/1l0UQLOMoEyfXAGqIznHBgiUuO34zX8/4Tm8aiJn2NvQf/rY5PFafh+SmHE5wZsXoi6R6jZgB00unEFojhXdr7Mk6ilUBmhKyF4ssAetgAg/pZ2GcxV7IsaSNxyd4uxL+8rsgTfqSGCFx1iHlksHtXUd/qKiNRKlc4nwbSfEj13q2ZjgAepzVc5qsPlC2s8zUR5nNRG1pYEm13bENr7gzYp3DSR2+W6ue3GQ64rfW6gJvZpA+wD4wTaNBfaLY90hFWM0ijFJ3ImD1gb8GLzD3vsM5MX1jQGnSGTrH4dpFuG0gElWaWvCGEs6ies8yIfHqkDzvGkq2kwSVset7Xn3l6sSkAtpTfMLCU2eXDHGVx0iCMqBHw601I2ebzOAlQIM4cFPw90cq2HaRqNCaVcbC0FN2gk//lvsC7SEVgDmVbGwIVFyn5syLN8fq1a0zzsxNlTozcM4oVwZmNrSiRned/CFIR0GfmIZ+shbNHfQ+oWa/RKKwWEErVNeWqc1sC9XnfDlEtIT0sDOB7DW67frNYQ4InRptc2X1ETvl6OxJf75Zurf/U9RycSZ54yf20Q8fRuqKOtoDO6X+eYBRq8zPUTXE7mjDO625ruyos4S8B0/CY7elLwwZi6Sv8DWVwyPgBW3TnAdh+p/+lMqQweq0aaldQHq7RI1b5snIWj1N0qnX+6X0OZ3mLvyrbmhFky/Tm0mdI81M8FonEEHgaLYcH2mRJd
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(136003)(396003)(346002)(376002)(36840700001)(40470700004)(46966006)(16526019)(186003)(2616005)(40480700001)(1076003)(44832011)(4326008)(82310400005)(6666004)(426003)(47076005)(336012)(110136005)(54906003)(8676002)(70206006)(83380400001)(70586007)(36756003)(316002)(5660300002)(8936002)(40460700003)(478600001)(86362001)(356005)(82740400003)(81166007)(26005)(41300700001)(2906002)(7696005)(34020700004)(36860700001)(36900700001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(136003)(346002)(376002)(396003)(39860400002)(36840700001)(46966006)(40470700004)(6666004)(478600001)(41300700001)(15650500001)(83380400001)(82740400003)(356005)(36756003)(2906002)(7696005)(26005)(81166007)(44832011)(5660300002)(86362001)(40480700001)(36860700001)(70206006)(4326008)(8936002)(110136005)(70586007)(34020700004)(1076003)(47076005)(426003)(336012)(186003)(16526019)(2616005)(8676002)(82310400005)(40460700003)(54906003)(316002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jul 2022 11:46:46.5445
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jul 2022 11:47:01.7218
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7563b947-9e43-49c7-ea79-08da5f4534ac
+X-MS-Exchange-CrossTenant-Network-Message-Id: c1a725a4-bcc4-4c1f-6a6c-08da5f453db6
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT013.eop-nam11.prod.protection.outlook.com
+	CO1NAM11FT031.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6196
-Message-ID: <20220706113807.dd0XJOP2ZBub1Tqod_pGA3-Bem3MCalRBB5ovXOrblM@z>
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4902
+Message-ID: <20220706113808.90gUlybDy0hKH6QFL9k-W4cgLVjY8y9Iq0xxkw8dEJc@z>
 
 From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 
-Add a pointer to struct amd_iommu to amd_ir_data structure, which
-can be used to correlate interrupt remapping data to a per-PCI-segment
-interrupt remapping table.
+Pass amd_iommu structure as one of the parameter to amd_irte_ops functions
+since its needed to activate/deactivate the iommu.
 
-Co-developed-by: Vasant Hegde <vasant.hegde@amd.com>
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 ---
- drivers/iommu/amd/amd_iommu_types.h |  1 +
- drivers/iommu/amd/iommu.c           | 34 +++++++++++++----------------
- 2 files changed, 16 insertions(+), 19 deletions(-)
+ drivers/iommu/amd/amd_iommu_types.h |  6 ++--
+ drivers/iommu/amd/iommu.c           | 51 ++++++++++++-----------------
+ 2 files changed, 24 insertions(+), 33 deletions(-)
 
 diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index ca1a3d55cc83..693926afdd0f 100644
+index 693926afdd0f..67feb847fc13 100644
 --- a/drivers/iommu/amd/amd_iommu_types.h
 +++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -989,6 +989,7 @@ struct irq_2_irte {
+@@ -1007,9 +1007,9 @@ struct amd_ir_data {
  
- struct amd_ir_data {
- 	u32 cached_ga_tag;
-+	struct amd_iommu *iommu;
- 	struct irq_2_irte irq_2_irte;
- 	struct msi_msg msi_entry;
- 	void *entry;    /* Pointer to union irte or struct irte_ga */
+ struct amd_irte_ops {
+ 	void (*prepare)(void *, u32, bool, u8, u32, int);
+-	void (*activate)(void *, u16, u16);
+-	void (*deactivate)(void *, u16, u16);
+-	void (*set_affinity)(void *, u16, u16, u8, u32);
++	void (*activate)(struct amd_iommu *iommu, void *, u16, u16);
++	void (*deactivate)(struct amd_iommu *iommu, void *, u16, u16);
++	void (*set_affinity)(struct amd_iommu *iommu, void *, u16, u16, u8, u32);
+ 	void *(*get)(struct irq_remap_table *, int);
+ 	void (*set_allocated)(struct irq_remap_table *, int);
+ 	bool (*is_allocated)(struct irq_remap_table *, int);
 diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 5e4648cadff9..9f373b164762 100644
+index 9f373b164762..c4701fa957d0 100644
 --- a/drivers/iommu/amd/iommu.c
 +++ b/drivers/iommu/amd/iommu.c
-@@ -3002,16 +3002,11 @@ static int modify_irte(u16 devid, int index, union irte *irte)
+@@ -2934,19 +2934,14 @@ static int alloc_irq_index(u16 devid, int count, bool align,
+ 	return index;
+ }
+ 
+-static int modify_irte_ga(u16 devid, int index, struct irte_ga *irte,
+-			  struct amd_ir_data *data)
++static int modify_irte_ga(struct amd_iommu *iommu, u16 devid, int index,
++			  struct irte_ga *irte, struct amd_ir_data *data)
+ {
+ 	bool ret;
+ 	struct irq_remap_table *table;
+-	struct amd_iommu *iommu;
+ 	unsigned long flags;
+ 	struct irte_ga *entry;
+ 
+-	iommu = amd_iommu_rlookup_table[devid];
+-	if (iommu == NULL)
+-		return -EINVAL;
+-
+ 	table = get_irq_table(iommu, devid);
+ 	if (!table)
+ 		return -ENOMEM;
+@@ -2978,16 +2973,12 @@ static int modify_irte_ga(u16 devid, int index, struct irte_ga *irte,
  	return 0;
  }
  
--static void free_irte(u16 devid, int index)
-+static void free_irte(struct amd_iommu *iommu, u16 devid, int index)
+-static int modify_irte(u16 devid, int index, union irte *irte)
++static int modify_irte(struct amd_iommu *iommu,
++		       u16 devid, int index, union irte *irte)
  {
  	struct irq_remap_table *table;
 -	struct amd_iommu *iommu;
@@ -130,112 +156,126 @@ index 5e4648cadff9..9f373b164762 100644
  
 -	iommu = amd_iommu_rlookup_table[devid];
 -	if (iommu == NULL)
--		return;
+-		return -EINVAL;
 -
  	table = get_irq_table(iommu, devid);
  	if (!table)
- 		return;
-@@ -3195,7 +3190,7 @@ static void irq_remapping_prepare_irte(struct amd_ir_data *data,
- 				       int devid, int index, int sub_handle)
+ 		return -ENOMEM;
+@@ -3049,49 +3040,49 @@ static void irte_ga_prepare(void *entry,
+ 	irte->lo.fields_remap.valid       = 1;
+ }
+ 
+-static void irte_activate(void *entry, u16 devid, u16 index)
++static void irte_activate(struct amd_iommu *iommu, void *entry, u16 devid, u16 index)
  {
- 	struct irq_2_irte *irte_info = &data->irq_2_irte;
--	struct amd_iommu *iommu = amd_iommu_rlookup_table[devid];
-+	struct amd_iommu *iommu = data->iommu;
+ 	union irte *irte = (union irte *) entry;
  
- 	if (!iommu)
- 		return;
-@@ -3336,6 +3331,7 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
- 			goto out_free_data;
- 		}
+ 	irte->fields.valid = 1;
+-	modify_irte(devid, index, irte);
++	modify_irte(iommu, devid, index, irte);
+ }
  
-+		data->iommu = iommu;
- 		irq_data->hwirq = (devid << 16) + i;
- 		irq_data->chip_data = data;
- 		irq_data->chip = &amd_ir_chip;
-@@ -3352,7 +3348,7 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
- 			kfree(irq_data->chip_data);
+-static void irte_ga_activate(void *entry, u16 devid, u16 index)
++static void irte_ga_activate(struct amd_iommu *iommu, void *entry, u16 devid, u16 index)
+ {
+ 	struct irte_ga *irte = (struct irte_ga *) entry;
+ 
+ 	irte->lo.fields_remap.valid = 1;
+-	modify_irte_ga(devid, index, irte, NULL);
++	modify_irte_ga(iommu, devid, index, irte, NULL);
+ }
+ 
+-static void irte_deactivate(void *entry, u16 devid, u16 index)
++static void irte_deactivate(struct amd_iommu *iommu, void *entry, u16 devid, u16 index)
+ {
+ 	union irte *irte = (union irte *) entry;
+ 
+ 	irte->fields.valid = 0;
+-	modify_irte(devid, index, irte);
++	modify_irte(iommu, devid, index, irte);
+ }
+ 
+-static void irte_ga_deactivate(void *entry, u16 devid, u16 index)
++static void irte_ga_deactivate(struct amd_iommu *iommu, void *entry, u16 devid, u16 index)
+ {
+ 	struct irte_ga *irte = (struct irte_ga *) entry;
+ 
+ 	irte->lo.fields_remap.valid = 0;
+-	modify_irte_ga(devid, index, irte, NULL);
++	modify_irte_ga(iommu, devid, index, irte, NULL);
+ }
+ 
+-static void irte_set_affinity(void *entry, u16 devid, u16 index,
++static void irte_set_affinity(struct amd_iommu *iommu, void *entry, u16 devid, u16 index,
+ 			      u8 vector, u32 dest_apicid)
+ {
+ 	union irte *irte = (union irte *) entry;
+ 
+ 	irte->fields.vector = vector;
+ 	irte->fields.destination = dest_apicid;
+-	modify_irte(devid, index, irte);
++	modify_irte(iommu, devid, index, irte);
+ }
+ 
+-static void irte_ga_set_affinity(void *entry, u16 devid, u16 index,
++static void irte_ga_set_affinity(struct amd_iommu *iommu, void *entry, u16 devid, u16 index,
+ 				 u8 vector, u32 dest_apicid)
+ {
+ 	struct irte_ga *irte = (struct irte_ga *) entry;
+@@ -3102,7 +3093,7 @@ static void irte_ga_set_affinity(void *entry, u16 devid, u16 index,
+ 					APICID_TO_IRTE_DEST_LO(dest_apicid);
+ 		irte->hi.fields.destination =
+ 					APICID_TO_IRTE_DEST_HI(dest_apicid);
+-		modify_irte_ga(devid, index, irte, NULL);
++		modify_irte_ga(iommu, devid, index, irte, NULL);
  	}
- 	for (i = 0; i < nr_irqs; i++)
--		free_irte(devid, index + i);
-+		free_irte(iommu, devid, index + i);
- out_free_parent:
- 	irq_domain_free_irqs_common(domain, virq, nr_irqs);
- 	return ret;
-@@ -3371,7 +3367,7 @@ static void irq_remapping_free(struct irq_domain *domain, unsigned int virq,
- 		if (irq_data && irq_data->chip_data) {
- 			data = irq_data->chip_data;
- 			irte_info = &data->irq_2_irte;
--			free_irte(irte_info->devid, irte_info->index);
-+			free_irte(data->iommu, irte_info->devid, irte_info->index);
- 			kfree(data->entry);
- 			kfree(data);
- 		}
-@@ -3389,7 +3385,7 @@ static int irq_remapping_activate(struct irq_domain *domain,
- {
- 	struct amd_ir_data *data = irq_data->chip_data;
- 	struct irq_2_irte *irte_info = &data->irq_2_irte;
--	struct amd_iommu *iommu = amd_iommu_rlookup_table[irte_info->devid];
-+	struct amd_iommu *iommu = data->iommu;
- 	struct irq_cfg *cfg = irqd_cfg(irq_data);
+ }
  
+@@ -3391,7 +3382,7 @@ static int irq_remapping_activate(struct irq_domain *domain,
  	if (!iommu)
-@@ -3406,7 +3402,7 @@ static void irq_remapping_deactivate(struct irq_domain *domain,
- {
- 	struct amd_ir_data *data = irq_data->chip_data;
- 	struct irq_2_irte *irte_info = &data->irq_2_irte;
--	struct amd_iommu *iommu = amd_iommu_rlookup_table[irte_info->devid];
-+	struct amd_iommu *iommu = data->iommu;
- 
- 	if (iommu)
- 		iommu->irte_ops->deactivate(data->entry, irte_info->devid,
-@@ -3502,12 +3498,16 @@ EXPORT_SYMBOL(amd_iommu_deactivate_guest_mode);
- static int amd_ir_set_vcpu_affinity(struct irq_data *data, void *vcpu_info)
- {
- 	int ret;
--	struct amd_iommu *iommu;
- 	struct amd_iommu_pi_data *pi_data = vcpu_info;
- 	struct vcpu_data *vcpu_pi_info = pi_data->vcpu_data;
- 	struct amd_ir_data *ir_data = data->chip_data;
- 	struct irq_2_irte *irte_info = &ir_data->irq_2_irte;
--	struct iommu_dev_data *dev_data = search_dev_data(NULL, irte_info->devid);
-+	struct iommu_dev_data *dev_data;
-+
-+	if (ir_data->iommu == NULL)
-+		return -EINVAL;
-+
-+	dev_data = search_dev_data(ir_data->iommu, irte_info->devid);
- 
- 	/* Note:
- 	 * This device has never been set up for guest mode.
-@@ -3529,10 +3529,6 @@ static int amd_ir_set_vcpu_affinity(struct irq_data *data, void *vcpu_info)
- 		pi_data->is_guest_mode = false;
- 	}
- 
--	iommu = amd_iommu_rlookup_table[irte_info->devid];
--	if (iommu == NULL)
--		return -EINVAL;
--
- 	pi_data->prev_ga_tag = ir_data->cached_ga_tag;
- 	if (pi_data->is_guest_mode) {
- 		ir_data->ga_root_ptr = (pi_data->base >> 12);
-@@ -3578,7 +3574,7 @@ static int amd_ir_set_affinity(struct irq_data *data,
- 	struct irq_2_irte *irte_info = &ir_data->irq_2_irte;
- 	struct irq_cfg *cfg = irqd_cfg(data);
- 	struct irq_data *parent = data->parent_data;
--	struct amd_iommu *iommu = amd_iommu_rlookup_table[irte_info->devid];
-+	struct amd_iommu *iommu = ir_data->iommu;
- 	int ret;
- 
- 	if (!iommu)
-@@ -3648,7 +3644,7 @@ int amd_iommu_update_ga(int cpu, bool is_run, void *data)
- 	    !ref || !entry || !entry->lo.fields_vapic.guest_mode)
  		return 0;
  
--	iommu = amd_iommu_rlookup_table[devid];
-+	iommu = ir_data->iommu;
- 	if (!iommu)
- 		return -ENODEV;
+-	iommu->irte_ops->activate(data->entry, irte_info->devid,
++	iommu->irte_ops->activate(iommu, data->entry, irte_info->devid,
+ 				  irte_info->index);
+ 	amd_ir_update_irte(irq_data, iommu, data, irte_info, cfg);
+ 	return 0;
+@@ -3405,7 +3396,7 @@ static void irq_remapping_deactivate(struct irq_domain *domain,
+ 	struct amd_iommu *iommu = data->iommu;
  
+ 	if (iommu)
+-		iommu->irte_ops->deactivate(data->entry, irte_info->devid,
++		iommu->irte_ops->deactivate(iommu, data->entry, irte_info->devid,
+ 					    irte_info->index);
+ }
+ 
+@@ -3460,7 +3451,7 @@ int amd_iommu_activate_guest_mode(void *data)
+ 	entry->hi.fields.vector            = ir_data->ga_vector;
+ 	entry->lo.fields_vapic.ga_tag      = ir_data->ga_tag;
+ 
+-	return modify_irte_ga(ir_data->irq_2_irte.devid,
++	return modify_irte_ga(ir_data->iommu, ir_data->irq_2_irte.devid,
+ 			      ir_data->irq_2_irte.index, entry, ir_data);
+ }
+ EXPORT_SYMBOL(amd_iommu_activate_guest_mode);
+@@ -3490,7 +3481,7 @@ int amd_iommu_deactivate_guest_mode(void *data)
+ 	entry->hi.fields.destination =
+ 				APICID_TO_IRTE_DEST_HI(cfg->dest_apicid);
+ 
+-	return modify_irte_ga(ir_data->irq_2_irte.devid,
++	return modify_irte_ga(ir_data->iommu, ir_data->irq_2_irte.devid,
+ 			      ir_data->irq_2_irte.index, entry, ir_data);
+ }
+ EXPORT_SYMBOL(amd_iommu_deactivate_guest_mode);
+@@ -3562,7 +3553,7 @@ static void amd_ir_update_irte(struct irq_data *irqd, struct amd_iommu *iommu,
+ 	 * Atomically updates the IRTE with the new destination, vector
+ 	 * and flushes the interrupt entry cache.
+ 	 */
+-	iommu->irte_ops->set_affinity(ir_data->entry, irte_info->devid,
++	iommu->irte_ops->set_affinity(iommu, ir_data->entry, irte_info->devid,
+ 				      irte_info->index, cfg->vector,
+ 				      cfg->dest_apicid);
+ }
 -- 
 2.31.1
 
