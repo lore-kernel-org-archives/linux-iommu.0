@@ -4,99 +4,106 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6CB68C433EF
-	for <iommu@archiver.kernel.org>; Wed,  6 Jul 2022 08:36:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4B47BC433EF
+	for <iommu@archiver.kernel.org>; Wed,  6 Jul 2022 08:57:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id E6CB960F99;
-	Wed,  6 Jul 2022 08:36:20 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org E6CB960F99
+	by smtp3.osuosl.org (Postfix) with ESMTP id C9C8160A9D;
+	Wed,  6 Jul 2022 08:57:48 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org C9C8160A9D
 Authentication-Results: smtp3.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ozlabs-ru.20210112.gappssmtp.com header.i=@ozlabs-ru.20210112.gappssmtp.com header.a=rsa-sha256 header.s=20210112 header.b=dk2nJfeF
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20210112 header.b=WbD1If6f
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zUHIMSsbGUWF; Wed,  6 Jul 2022 08:36:20 +0000 (UTC)
+	with ESMTP id d6rx8u6sTwNS; Wed,  6 Jul 2022 08:57:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 9ABE660FA5;
-	Wed,  6 Jul 2022 08:36:19 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 9ABE660FA5
+	by smtp3.osuosl.org (Postfix) with ESMTPS id A6F3160F99;
+	Wed,  6 Jul 2022 08:57:47 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org A6F3160F99
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 70A22C0033;
-	Wed,  6 Jul 2022 08:36:19 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 52730C002D
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 08:36:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8B0C5C0033;
+	Wed,  6 Jul 2022 08:57:47 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3BEE3C002D
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 08:57:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 25FC583689
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 08:36:18 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 25FC583689
-Authentication-Results: smtp1.osuosl.org;
- dkim=pass (2048-bit key) header.d=ozlabs-ru.20210112.gappssmtp.com
- header.i=@ozlabs-ru.20210112.gappssmtp.com header.a=rsa-sha256
- header.s=20210112 header.b=dk2nJfeF
+ by smtp3.osuosl.org (Postfix) with ESMTP id 1672860F99
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 08:57:46 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 1672860F99
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DC5To3w1ORJ4 for <iommu@lists.linux-foundation.org>;
- Wed,  6 Jul 2022 08:36:16 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id W-lqet63tU73 for <iommu@lists.linux-foundation.org>;
+ Wed,  6 Jul 2022 08:57:45 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 99FE083279
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com
- [IPv6:2607:f8b0:4864:20::536])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 99FE083279
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 08:36:15 +0000 (UTC)
-Received: by mail-pg1-x536.google.com with SMTP id e132so13476005pgc.5
- for <iommu@lists.linux-foundation.org>; Wed, 06 Jul 2022 01:36:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=ozlabs-ru.20210112.gappssmtp.com; s=20210112;
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 69D8C60A9D
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com
+ [IPv6:2607:f8b0:4864:20::534])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 69D8C60A9D
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 08:57:45 +0000 (UTC)
+Received: by mail-pg1-x534.google.com with SMTP id i190so907353pge.7
+ for <iommu@lists.linux-foundation.org>; Wed, 06 Jul 2022 01:57:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
  h=message-id:date:mime-version:user-agent:subject:content-language:to
  :cc:references:from:in-reply-to:content-transfer-encoding;
- bh=3rzfxOGSqbmsMXygj1P/cqh2Us2vss/rVotjH7eOiew=;
- b=dk2nJfeFYSbNNmJ7tfrqvCIB0euid3h5zOgKmeIekOTSjhv32mCcyofMLQzJOxVoHK
- aRq8F2c7iJUjCTd7Y/R57xcY2bQaG6ioi6kv+TLcL+BJXAejshlsS8xum/OPiXvWATUT
- vdpXbQt44L+uRaYXT/JYB1kPPRa5y4RCwgzLVcx6cO8cxsxhXpGhmN3kN09lXKVIZ1EV
- 2RM/eb4YmuKY00crYGVaIq/BcRRUuz6NJ06G7GmqQXyCv3np8UGtERkM6G7D8uEfqBjH
- kNj56D5Yll5Oi4SUi1xuGmI0nMVIO/WeFD/kdtiHRvSGSaLJFJ39dLB9U3M7/SenAMsI
- 7e5g==
+ bh=9bOXUBsbXZmaBYzdut2n91pd8GDpqQDkHHTCpALSOcI=;
+ b=WbD1If6fFhm+DWvJ31AEQrrcggmBAVShmCuXjXNLR/EVZnRJUDmLjPBezh+u8N3upE
+ GXKjZxORcv3nTuTsXheqqTeRS4skn7EUMwPYGKEcKo3ObhN6T6QIWqvqxX6Jr8F8QElY
+ /FFM0dQQSlpothQOx+YeobkCdnpTL1e0JIO9lvz1yIw30dwxN0fdT4a7Kza3H9j4qj6X
+ xkNgj8iH/9xz6YGbQQGnLUiRk7GZcv/bnxehkOG5U5RMwAvat4EhTh1NTM/tC6yV7UUl
+ l/1BXoGHW0yM0j0TcLjhlJm98q9lR4zh/p+boW25L80TLyb3fhDy9DvPsO/ZJQjltXZE
+ u58g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
  :content-language:to:cc:references:from:in-reply-to
  :content-transfer-encoding;
- bh=3rzfxOGSqbmsMXygj1P/cqh2Us2vss/rVotjH7eOiew=;
- b=w/T5iiMM5zdCo0zq8KNHUYW/P8oZXKHFlmAamro16UrT+mi5ojkXr9obgiJHc4Mo+S
- ym5CGwqKjZE4ls5t9Fch2ojdJ8VD06pB8IKXouDLqbHI7Cl4cfnpo8zgQ8dJI1ajAb5B
- IXfbq0aycj5A8RfzAvQwkQncXBdqJD9Hm4lNpIbIzqJHAjoaQSplzOfdLkE/3TyX5bnk
- Jbi4/0BUswIwDu5btRe6mqKZs4pd9KtDat9L15o86v9U96nvMB80ZmhQ6zo9UFvW6Yru
- TS2U0iXSFGd2Xcq8PuW/nU3bJzEl8PNnphvyShVLVPt/lYDHCRFbG9S/Rc/Sn8DaCOja
- Vcgw==
-X-Gm-Message-State: AJIora9381kzLAG5G+RXaEN67l17s7jCKVkuX6ZFDLgze6eIG68RxrdP
- Lae4DQBC5Mbqt/maaA3fS2mmjg==
-X-Google-Smtp-Source: AGRyM1tFhqz+nKiml8dYdUjMlqXU6Xc6JmbRL/P4emD0Q/E95wuRF7UkZpzP0rKmsb8rD5oZaq+n2Q==
-X-Received: by 2002:a05:6a00:17a7:b0:525:4306:72ad with SMTP id
- s39-20020a056a0017a700b00525430672admr45748510pfg.42.1657096575284; 
- Wed, 06 Jul 2022 01:36:15 -0700 (PDT)
-Received: from [192.168.10.153] (203-7-124-83.dyn.iinet.net.au. [203.7.124.83])
+ bh=9bOXUBsbXZmaBYzdut2n91pd8GDpqQDkHHTCpALSOcI=;
+ b=ikRGXe3W1UYQ85e5wjc5agb2PFEOfxdB9oDzUueavx5p/be11wd1OoIdS3vQyE2/XQ
+ vfHQB3MCoaWR/P8kySJHowFAPDMFDFhlSmL10CnkQgLZIPWiAk527OyX3AXY5372C2Y2
+ huwvLV+kIsNq6IMZYsbLDueGZEjXa4h+DdcN5Qu8RbpXyK7azL1eL7VY59yb3TFH9Ksu
+ 4ufDPv+7SW+2kA2CGiY33SexU+VN6QSs5MJOx6rQU7SRc/VeaXM8Q2VgvLnnTRXt1b1v
+ YQxK4mZFMvQoWfG3QG03h67XktM/+LwUgWsUf2W6As1TaHB+RsDY0jfTBLw7U47qpRHh
+ ZkxA==
+X-Gm-Message-State: AJIora9FsWgQ14nOKExAFJSbZxFfguQwXGTQnS/NU10WAEvI6juU+w19
+ t2af70humn/HiHlqMKUINz8=
+X-Google-Smtp-Source: AGRyM1sYGXX9loS3JRKD0954hjKimsXBBNwAgBw0D8WiC3yUj6I/JN7LKTG9QaIQg312XdOckDYv7w==
+X-Received: by 2002:a05:6a00:1303:b0:528:2ed8:7e86 with SMTP id
+ j3-20020a056a00130300b005282ed87e86mr29108564pfu.4.1657097864729; 
+ Wed, 06 Jul 2022 01:57:44 -0700 (PDT)
+Received: from ?IPV6:2404:f801:0:5:8000::75b? ([2404:f801:9000:18:efec::75b])
  by smtp.gmail.com with ESMTPSA id
- m14-20020a056a00080e00b00525b61f4792sm19405754pfk.109.2022.07.06.01.36.10
+ d18-20020a170903231200b0016bf7981d0bsm2501495plh.86.2022.07.06.01.57.35
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Wed, 06 Jul 2022 01:36:14 -0700 (PDT)
-Message-ID: <aef1d470-e8a0-4ba8-2a55-adf05b836684@ozlabs.ru>
-Date: Wed, 6 Jul 2022 18:38:09 +1000
+ Wed, 06 Jul 2022 01:57:43 -0700 (PDT)
+Message-ID: <10062b7d-f0a6-6724-4ccb-506da09a8533@gmail.com>
+Date: Wed, 6 Jul 2022 16:57:33 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.0
-Subject: Re: [PATCH v2 09/14] iommu/ipmmu-vmsa: Clean up bus_set_iommu()
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 2/2] x86/ACPI: Set swiotlb area according to the number of
+ lapic entry in MADT
 Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org
-References: <cover.1650890638.git.robin.murphy@arm.com>
- <01a58dcc9c70836b7556d54dbdac6a340f206781.1650890638.git.robin.murphy@arm.com>
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
-In-Reply-To: <01a58dcc9c70836b7556d54dbdac6a340f206781.1650890638.git.robin.murphy@arm.com>
-Cc: jean-philippe@linaro.org, zhang.lyra@gmail.com,
+To: Christoph Hellwig <hch@infradead.org>
+References: <20220627153150.106995-1-ltykernel@gmail.com>
+ <20220627153150.106995-3-ltykernel@gmail.com>
+ <YrxcCZKvFYjxLf9n@infradead.org>
+ <a876f862-c005-108d-e6f9-68336a8d89f0@gmail.com>
+ <YsVBKgxiQKfnCjvn@infradead.org>
+From: Tianyu Lan <ltykernel@gmail.com>
+In-Reply-To: <YsVBKgxiQKfnCjvn@infradead.org>
+Cc: linux-hyperv@vger.kernel.org, rafael@kernel.org,
+ dave.hansen@linux.intel.com, pavel@ucw.cz, hpa@zytor.com, kys@microsoft.com,
+ wei.liu@kernel.org, Andi Kleen <ak@linux.intel.com>, corbet@lwn.net,
+ damien.lemoal@opensource.wdc.com, x86@kernel.org,
+ michael.h.kelley@microsoft.com, mingo@redhat.com, andi.kleen@intel.com,
+ parri.andrea@gmail.com, len.brown@intel.com,
+ Tianyu Lan <Tianyu.Lan@microsoft.com>, keescook@chromium.org,
+ paulmck@kernel.org, linux-pm@vger.kernel.org, kirill.shutemov@intel.com,
+ bp@alien8.de, songmuchun@bytedance.com, tglx@linutronix.de,
+ vkuznets@redhat.com, rdunlap@infradead.org, linux-doc@vger.kernel.org,
  linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- thierry.reding@gmail.com, gerald.schaefer@linux.ibm.com,
- linux-arm-kernel@lists.infradead.org
+ thomas.lendacky@amd.com, akpm@linux-foundation.org, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -114,83 +121,51 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
-
-On 28/04/2022 23:18, Robin Murphy wrote:
-> Stop calling bus_set_iommu() since it's now unnecessary. This also
-> leaves the custom initcall effectively doing nothing but register
-> the driver, which no longer needs to happen early either, so convert
-> it to builtin_platform_driver().
+On 7/6/2022 4:00 PM, Christoph Hellwig wrote:
+> On Fri, Jul 01, 2022 at 01:02:21AM +0800, Tianyu Lan wrote:
+>>> Can we reorder that initialization?  Because I really hate having
+>>> to have an arch hook in every architecture.
+>>
+>> How about using "flags" parameter of swiotlb_init() to pass area number
+>> or add new parameter for area number?
+>>
+>> I just reposted patch 1 since there is just some coding style issue and area
+>> number may also set via swiotlb kernel parameter. We still need figure out a
+>> good solution to pass area number from architecture code.
 > 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->   drivers/iommu/ipmmu-vmsa.c | 35 +----------------------------------
->   1 file changed, 1 insertion(+), 34 deletions(-)
-> 
-> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> index 8fdb84b3642b..2549d32f0ddd 100644
-> --- a/drivers/iommu/ipmmu-vmsa.c
-> +++ b/drivers/iommu/ipmmu-vmsa.c
-> @@ -1090,11 +1090,6 @@ static int ipmmu_probe(struct platform_device *pdev)
->   		ret = iommu_device_register(&mmu->iommu, &ipmmu_ops, &pdev->dev);
->   		if (ret)
->   			return ret;
-> -
-> -#if defined(CONFIG_IOMMU_DMA)
-> -		if (!iommu_present(&platform_bus_type))
-> -			bus_set_iommu(&platform_bus_type, &ipmmu_ops);
-> -#endif
->   	}
->   
->   	/*
+> What is the problem with calling swiotlb_init after nr_possible_cpus()
+> works?
 
-The comment which starts here did not make it to the patch but it should 
-have as it mentions bus_set_iommu() which is gone by the end of the series.
+Swiotlb_init() is called in the mem_init() of different architects and
+memblock free pages are released to the buddy allocator just after
+calling swiotlb_init() via memblock_free_all().
+
+The mem_init() is called before smp_init(). If calling swiotlb_init()
+after smp_init(), that means we can't allocate large chunk low end
+memory via memblock_alloc() in the swiotlb(). Swiotlb_init() needs
+to rework to allocate memory from the buddy allocator and just like
+swiotlb_init_late() does. This will limit the bounce buffer size.
+Otherwise We need to do the reorder for all achitectures and there maybe
+some other unknown issues.
+
+swiotlb flags parameter of swiotlb_init() seems to be a good place to
+pass the area number in current code. If not set the swiotlb_area
+number/flag, the area number will be one and keep the original behavior
+of one single global spinlock protecting io tlb data structure.
 
 
-More general question/request - could you please include the exact sha1 
-the patchset is based on? It did not apply to any current trees and 
-while it was trivial, it was slightly annoying to resolve the conflicts 
-:)  Thanks,
 
 
-> @@ -1168,32 +1163,4 @@ static struct platform_driver ipmmu_driver = {
->   	.probe = ipmmu_probe,
->   	.remove	= ipmmu_remove,
->   };
-> -
-> -static int __init ipmmu_init(void)
-> -{
-> -	struct device_node *np;
-> -	static bool setup_done;
-> -	int ret;
-> -
-> -	if (setup_done)
-> -		return 0;
-> -
-> -	np = of_find_matching_node(NULL, ipmmu_of_ids);
-> -	if (!np)
-> -		return 0;
-> -
-> -	of_node_put(np);
-> -
-> -	ret = platform_driver_register(&ipmmu_driver);
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -#if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
-> -	if (!iommu_present(&platform_bus_type))
-> -		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
-> -#endif
-> -
-> -	setup_done = true;
-> -	return 0;
-> -}
-> -subsys_initcall(ipmmu_init);
-> +builtin_platform_driver(ipmmu_driver);
 
--- 
-Alexey
+
+
+
+
+
+
+
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
