@@ -1,56 +1,59 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 61164C43334
-	for <iommu@archiver.kernel.org>; Wed,  6 Jul 2022 10:56:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A6B44C43334
+	for <iommu@archiver.kernel.org>; Wed,  6 Jul 2022 10:58:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id DD6F0408F3;
-	Wed,  6 Jul 2022 10:56:26 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org DD6F0408F3
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5O0K5fPMUZaB; Wed,  6 Jul 2022 10:56:26 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 8192F408E1;
-	Wed,  6 Jul 2022 10:56:25 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 8192F408E1
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 61799C0033;
-	Wed,  6 Jul 2022 10:56:25 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 182F6C002D
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 10:56:24 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id E734740283
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 10:56:23 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org E734740283
+	by smtp2.osuosl.org (Postfix) with ESMTP id 377E9404AB;
+	Wed,  6 Jul 2022 10:58:18 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 377E9404AB
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mWF5UqcVhJ18 for <iommu@lists.linux-foundation.org>;
- Wed,  6 Jul 2022 10:56:23 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id mGJYwk5EueEd; Wed,  6 Jul 2022 10:58:17 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 17A9F4015F;
+	Wed,  6 Jul 2022 10:58:17 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 17A9F4015F
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CFDDFC0033;
+	Wed,  6 Jul 2022 10:58:16 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DF171C002D
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 10:58:15 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id A683583083
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 10:58:15 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org A683583083
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id sW8NfYRGkNqW for <iommu@lists.linux-foundation.org>;
+ Wed,  6 Jul 2022 10:58:15 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 5CAFA4015F
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 5CAFA4015F
- for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 10:56:23 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 11DD983046
+Received: from theia.8bytes.org (8bytes.org
+ [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 11DD983046
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Jul 2022 10:58:15 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 504BD4CC; Wed,  6 Jul 2022 12:56:21 +0200 (CEST)
-Date: Wed, 6 Jul 2022 12:56:20 +0200
+ id 6596A4CC; Wed,  6 Jul 2022 12:58:13 +0200 (CEST)
+Date: Wed, 6 Jul 2022 12:58:12 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 0/3] iommu: More internal ops cleanup
-Message-ID: <YsVqVDLvE4q+NIbn@8bytes.org>
-References: <cover.1655822151.git.robin.murphy@arm.com>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH] iommu/exynos: Make driver independent of the system page
+ size
+Message-ID: <YsVqxCpljVAbalgO@8bytes.org>
+References: <CGME20220623093641eucas1p11732bf2c875960f7a2bb1d6fe053bc81@eucas1p1.samsung.com>
+ <20220623093629.32178-1-m.szyprowski@samsung.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <cover.1655822151.git.robin.murphy@arm.com>
-Cc: iommu@lists.linux-foundation.org, will@kernel.org, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20220623093629.32178-1-m.szyprowski@samsung.com>
+Cc: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -68,13 +71,11 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jun 21, 2022 at 04:14:24PM +0100, Robin Murphy wrote:
-> Robin Murphy (3):
->   iommu: Use dev_iommu_ops() for probe_finalize
->   iommu: Make .release_device optional
->   iommu: Clean up release_device checks
+On Thu, Jun 23, 2022 at 11:36:29AM +0200, Marek Szyprowski wrote:
+>  drivers/iommu/exynos-iommu.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
 
-Applied to core branch, thanks.
+Applied, thanks.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
