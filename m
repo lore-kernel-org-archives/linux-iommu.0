@@ -1,155 +1,148 @@
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8C4E362
-	for <iommu@lists.linux.dev>; Thu,  7 Jul 2022 07:46:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657179962; x=1688715962;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=6Qq59lzmIj31cr2gs0M8+etVGqwxhjQq6sLfZk6IdlM=;
-  b=UMiRIHacs2ZOemAOtDaBrnBmC7iBgFSn0nRatoXf+eCpsg2r/cXWfAmP
-   q5K6l9m9seqqr99FInjQ8CUUcLnxEtWuE2of2neszCR05azhMhA/0P5uh
-   K4IkaH/h3v6OwGcfmoZtmOB00zLWEZKMjKK5P7N8rFkCulkQWqnqc5aFw
-   GFsSHwNUfjRKdXk/ZJxizI817RaaHzE+CdBpc7jvz7593Wm2y4XnLcAha
-   Q1LNX7fw7Oga4G9sW31rjX6qbosIBmy3k4KQcKVNwGZ3xHArQx+lICJ7x
-   mqnPRDfvq7uic1kI4EdZr6/HV573hu/1RavUI2ip2Zlwo+QDpMXLMr9/6
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="284698488"
-X-IronPort-AV: E=Sophos;i="5.92,252,1650956400"; 
-   d="scan'208";a="284698488"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jul 2022 00:46:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,252,1650956400"; 
-   d="scan'208";a="568410101"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orsmga006.jf.intel.com with ESMTP; 07 Jul 2022 00:46:01 -0700
-Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Thu, 7 Jul 2022 00:46:01 -0700
-Received: from fmsmsx604.amr.corp.intel.com (10.18.126.84) by
- fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Thu, 7 Jul 2022 00:46:01 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Thu, 7 Jul 2022 00:46:01 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.46) by
- edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Thu, 7 Jul 2022 00:46:00 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gj//5hp/vEgYNEHO7eanRQwT4hwO7RImgAD3Sdqqp8cUa5wdVrOALp5tNeL4XMqZLeTK/SXVwm18MdmHjK9ODKSYJzeZNXiQN75lnNqkTY8dYY+Itecok3LjGCgkVJa0flgdHC2Za/RU1bLtrbTxQw2qUv+hzW/v+REB/MY5EDuP/06nMpLznMd5uGJ811Wt06hmh49qiqSWnzft1je9OvREZJaN72aj58Mk7rxEwiQAEebNF/PNbL0maA07qu70dtQKwkmE9lGOWqMpzK1Bl6PCnvHU3jN+9JobANMjFzy2JCyGOznDiAm4CXx0TGUmlXiPEe5l8USoyG8rXDuFUQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6Qq59lzmIj31cr2gs0M8+etVGqwxhjQq6sLfZk6IdlM=;
- b=B0e+8t79OktxfbIBNBFWjgY2iZxMYPSN/UZixUeXWADMlzWhZeSfoMLxeekPpK2PFmG0UNrPyr88u/maTOFw9WCOD1vgDNRtMw2sY57To+UxbieYcfW+1k0CceA82igHX/jeFMJNevQq/MADk61wu4kl/ZqOanslrbOA6pM/YiXBT6y6I+NsYO/Z7rEaWLHTcuBZnUIoXBy7/ywRf0hIZmhQOEQmvE54Pd6xogVJKFnBFgnbBxEpDK+GW/fmGH2TH36u+ADb4nccgIEedL8vVuvV0bfRZcdFYQBmdgQj18CQx5BcDQn74HoTHzZAsd7nkY6Fu3qOogQBCTh0C8y3rg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by PH7PR11MB5862.namprd11.prod.outlook.com (2603:10b6:510:134::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.20; Thu, 7 Jul
- 2022 07:45:59 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::8435:5a99:1e28:b38c]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::8435:5a99:1e28:b38c%2]) with mapi id 15.20.5395.021; Thu, 7 Jul 2022
- 07:45:59 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Robin Murphy <robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>
-CC: "will@kernel.org" <will@kernel.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "baolu.lu@linux.intel.com"
-	<baolu.lu@linux.intel.com>, "suravee.suthikulpanit@amd.com"
-	<suravee.suthikulpanit@amd.com>, "vasant.hegde@amd.com"
-	<vasant.hegde@amd.com>, "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
-	"gerald.schaefer@linux.ibm.com" <gerald.schaefer@linux.ibm.com>,
-	"schnelle@linux.ibm.com" <schnelle@linux.ibm.com>,
-	"linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v3 15/15] iommu: Clean up bus_set_iommu()
-Thread-Topic: [PATCH v3 15/15] iommu: Clean up bus_set_iommu()
-Thread-Index: AQHYkJH5yIFOSo78w0u9xtztwXlo8q1yieGQ
-Date: Thu, 7 Jul 2022 07:45:59 +0000
-Message-ID: <BN9PR11MB5276AA266B538366C2B3971A8C839@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <cover.1657034827.git.robin.murphy@arm.com>
- <dc44a2269276e1d0fa6715d4530a51df4e7b781c.1657034828.git.robin.murphy@arm.com>
-In-Reply-To: <dc44a2269276e1d0fa6715d4530a51df4e7b781c.1657034828.git.robin.murphy@arm.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 0c1d3e42-91a1-4f65-039f-08da5fecbba5
-x-ms-traffictypediagnostic: PH7PR11MB5862:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ZO5jN7qZChiNjhbLC/0//YNLr0IJk4JxrM/2Bwn7x/gNq1FEx9IRdN5GvrCt03fzFrbmfHmdRmnBci0sRN9BExF4ELr3t91X64GsXPJzf3eTmQR2mvkNT6uw2AECLXyE7g5rA5XHmtRVMhCj9AToSioJ2/NtEBGc7sVVq8FWKlJf7C1v/JbIFNcLsvwk+Vg7J8YOrDlSBdEhkiZqtlLr6VJpTTpLXIIUuPzXmPQmlJq+jsWQFKsxiMGbgSAg1ZLszgnMySDLwIFBTVG1OlOsnbvljZDozxy1ewlyxhShqFY0lxbPM6fRjbcjNCwLHQjshqnICy6CO+eNN7a1FfjkwcQI+PvDsl4vd4Go4Fr81fTAyhncVEUK3VNfHrFwn4hL73qTi50VL/37Z3uwWc8xg469+I1jprR+18tUUKq0dsrW4sA1nRymhSTNmgrD0KivFJMEPCvJsf/8XCi8GyBEekBnAn/pXjvWWrYbel2gr0Bb38JdPWPva/jeitRzS7fC1nmG2dnJEd672RFGtTl3xors2mCJfiKfydH1g7FxJtbGBbOtNzT3en2nokuAPx2gAzrEwQvz4vSDaZjhjo9HiQZUyt7wwluHTYGMX+EhjCy05RluQUr0h02ZpfRhERrkASA0pDliZznC3LzfY1OoalnCM4ADZpUOGxsAmA97PnJL6vO7I/TS+AII+DqFVQiIsBhGz3r3anwInhE6cX68vl6ZGyWBKQLDbYkjNOxagEZHTIblfKmjcQMNt16MdDTvaB7pV8KD3IHeOazn/y69MOprzKtiINpAv0r902xiEbHYrthsxveJXG00dHCjpbf2
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(39860400002)(376002)(396003)(346002)(366004)(26005)(5660300002)(2906002)(71200400001)(55016003)(7696005)(110136005)(9686003)(6506007)(54906003)(8676002)(86362001)(66446008)(8936002)(52536014)(66556008)(316002)(66946007)(4326008)(7416002)(558084003)(66476007)(64756008)(33656002)(82960400001)(186003)(38100700002)(41300700001)(38070700005)(76116006)(122000001)(478600001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?G8x55B3LJqJkSXuJ+mIsxYe/dRLUE0unHgIRB0gyU6eKOcVGSbgTWWpI+116?=
- =?us-ascii?Q?NnxzX/TctarSYYVBp3xlfki7HgG9r2t2AyR3z3jnfghB/HGFR8JedeC3HDfS?=
- =?us-ascii?Q?XmPhEqWkxjuE3NRmDhn9CDPnGOtecdhFSl1anZA+3V6UY/hiYabpC2T/EUOc?=
- =?us-ascii?Q?tp3L5MIm2W9+NDdLvCJnCHMXi+M6TsiQjrFjfP0R0T6jUr4iVQSsuUatyYHK?=
- =?us-ascii?Q?p3rueqOwA6SDpdKtBmxUfUEvrrbGBxXQSuTxaWyDQE1ATdbt3rlhEfcOodrD?=
- =?us-ascii?Q?8vVPVQARExSk9BgZlf8Y/E8ZKw690NlgihHNKhNGQUMIuZyXDP69S39+/L/+?=
- =?us-ascii?Q?Ay/ak0nq60Bf1uvbGGkJK4BhuZGh+BqkXen9Si+xDbAsfsN/epIgdjRZy00A?=
- =?us-ascii?Q?iGc3SmaJsiCLfNx+6LIzFzgMJk0/ogrQMiZnN+A6I+QthdyX70P8Z9tcXZLK?=
- =?us-ascii?Q?rsGevR+GLfxzjXXcefq1IyWRAKIoSnIB/lsS7uRdgSSoF5kyyj7Xn1Nnk0ue?=
- =?us-ascii?Q?MRQ6ViZfwuYjQ6cku48LgF/4Qv2t/sqia8Po66vOFhWzrOYVtf/DcmUGN8AK?=
- =?us-ascii?Q?CPd2+oafoI4v+s7HSnPJQvysvPTDv6GSv/LWuNEYdL95IrCpGEwOzylC9XWJ?=
- =?us-ascii?Q?Ey5T7w0SxGdK+M6FMAL8HqO5JTxmlSTO8VD8RnGGzJiOVtVyBhPB8p7Is48A?=
- =?us-ascii?Q?Bii31VG8iRtdujER7JsSlVCmemMZBJbkKcBEsXebSGhW2afUdllkQk2gYLdh?=
- =?us-ascii?Q?1tUxr9bqnFPTd8dJWl1ztYEIARI01BTRogE2yzZEC/t+U5R3LU8CeAUpyNeJ?=
- =?us-ascii?Q?GKNCUeSd7RebFigt8iGJUxSGs3KxsHJe0nJbSUF6JxPlxjh/KgwVh3pKaz8A?=
- =?us-ascii?Q?3I1QCNLx/u7MWooxKLKvDaZ5pqRhq8QmuegRZbF+wkeULlcwGI5gHPL2k1ZC?=
- =?us-ascii?Q?vkmh/keUPoUMqYr1G+v9X5gKSYa4fv3BTz8YXINpi5lkZz5XVl0QV60nhTez?=
- =?us-ascii?Q?dgrnqnGXXv9cirxL2JPgFLhULhXBsyQnjd2/eqVRyAN9YEacRyJhTP2N+ply?=
- =?us-ascii?Q?zois7cjC6eeBPd03fmo+meKcl3TgEQY2j3Tqvi/SeduoUzJRbW9Kp1Sstv9C?=
- =?us-ascii?Q?P8z6fAlVH0CjjWpboEB6cz19NP9bvkVnolTh+YEIVH9Kdmj9AFfLXctc27Fz?=
- =?us-ascii?Q?lWc5+i5wYMnG9QGWlNxH5SVcUeTuA1ReMXc4Y7EGmGVn2nNmF4o7g8K21hbS?=
- =?us-ascii?Q?kUEDD7YDzI8n6ZWrlPprvgMQCFqwSmlH2xu5Ou1djm5SHcA7vQBgkWr5Pgmd?=
- =?us-ascii?Q?w2nBJN3+cegdF36LH9mdTw+A/56+IxYIlK/UF7Qxaxzlo/6WjOHTqHo7ED1x?=
- =?us-ascii?Q?ejkrT9X0R4XvUX5ikaJJaC9+nLXrSwlHGFjC8IsrH0j9pEW3YW17G5GkQrVF?=
- =?us-ascii?Q?FiE/1dclw1368+6x1lOP60fn4KsBdTX8+Zq3DWCJPwtNivBdGgIF56kYRmE1?=
- =?us-ascii?Q?huVi8xvTg9lIksxWT3TwmYgh53tF1r8hSKuH+WKj5wquQmeuuM7fcYTWhmB7?=
- =?us-ascii?Q?60iteEPcTDwWO+BUGp0kUq0ynVzLMyaxNIHawLj7?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7E0B362;
+	Thu,  7 Jul 2022 08:08:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C8D2C3411E;
+	Thu,  7 Jul 2022 08:08:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1657181316;
+	bh=Mzw+guaGxcvS7S4YlQr9bq/AYy4U/puT8v9DMSRjm+c=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=o8T0RPLH1+QXuxRGiOx0iOcZa4PNW1RYnmq0rwqP4JlY+PYLChMX98BzUOmDLYQt5
+	 WHtgniPDP3fJS/IKoiVXIaVBC8g4rRYZFs4Es7HO3CMez5153+NrgRKDzbP84fxvsI
+	 PrLKzhYgkU2Ze+gIXne4sqvbIkFu3tT1lxy0BeOk=
+Date: Thu, 7 Jul 2022 10:08:33 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: kernel test robot <lkp@intel.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>,
+	virtualization@lists.linux-foundation.org,
+	usbb2k-api-dev@nongnu.org, tipc-discussion@lists.sourceforge.net,
+	target-devel@vger.kernel.org, sound-open-firmware@alsa-project.org,
+	samba-technical@lists.samba.org, rds-devel@oss.oracle.com,
+	patches@opensource.cirrus.com, osmocom-net-gprs@lists.osmocom.org,
+	openipmi-developer@lists.sourceforge.net, nvdimm@lists.linux.dev,
+	ntb@lists.linux.dev, netfilter-devel@vger.kernel.org,
+	netdev@vger.kernel.org, mjpeg-users@lists.sourceforge.net,
+	megaraidlinux.pdl@broadcom.com, linuxppc-dev@lists.ozlabs.org,
+	linux1394-devel@lists.sourceforge.net, linux-x25@vger.kernel.org,
+	linux-wpan@vger.kernel.org, linux-wireless@vger.kernel.org,
+	linux-watchdog@vger.kernel.org, linux-usb@vger.kernel.org,
+	linux-unionfs@vger.kernel.org, linux-tegra@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
+	linux-sctp@vger.kernel.org, linux-scsi@vger.kernel.org,
+	linux-samsung-soc@vger.kernel.org,
+	linux-rockchip@lists.infradead.org,
+	linux-renesas-soc@vger.kernel.org, linux-rdma@vger.kernel.org,
+	linux-raid@vger.kernel.org, linux-pm@vger.kernel.org,
+	linux-phy@lists.infradead.org, linux-perf-users@vger.kernel.org,
+	linux-pci@vger.kernel.org, linux-parport@lists.infradead.org,
+	linux-parisc@vger.kernel.org, linux-omap@vger.kernel.org,
+	linux-nfc@lists.01.org, linux-mtd@lists.infradead.org,
+	linux-mmc@vger.kernel.org, linux-mm@kvack.org,
+	linux-mediatek@lists.infradead.org, linux-media@vger.kernel.org,
+	linux-leds@vger.kernel.org, linux-integrity@vger.kernel.org,
+	linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-ide@vger.kernel.org, linux-hwmon@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, linux-fpga@vger.kernel.org,
+	linux-fbdev@vger.kernel.org, linux-ext4@vger.kernel.org,
+	linux-efi@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-cxl@vger.kernel.org, linux-crypto@vger.kernel.org,
+	linux-clk@vger.kernel.org, linux-cifs@vger.kernel.org,
+	linux-btrfs@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+	linux-block@vger.kernel.org, linux-bcache@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-amlogic@lists.infradead.org, linaro-mm-sig@lists.linaro.org,
+	legousb-devel@lists.sourceforge.net, kvm@vger.kernel.org,
+	keyrings@vger.kernel.org, isdn4linux@listserv.isdn4linux.de,
+	iommu@lists.linux.dev, iommu@lists.linux-foundation.org,
+	intel-wired-lan@lists.osuosl.org, greybus-dev@lists.linaro.org,
+	dri-devel@lists.freedesktop.org, dm-devel@redhat.com,
+	devicetree@vger.kernel.org, dev@openvswitch.org,
+	dccp@vger.kernel.org, damon@lists.linux.dev, coreteam@netfilter.org,
+	cgroups@vger.kernel.org, ceph-devel@vger.kernel.org,
+	ath11k@lists.infradead.org, apparmor@lists.ubuntu.com,
+	amd-gfx@lists.freedesktop.org, alsa-devel@alsa-project.org,
+	accessrunner-general@lists.sourceforge.net
+Subject: Re: [linux-next:master] BUILD REGRESSION
+ 088b9c375534d905a4d337c78db3b3bfbb52c4a0
+Message-ID: <YsaUgfPbOg7WuBuB@kroah.com>
+References: <62c683a2.g1VSVt6BrQC6ZzOz%lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0c1d3e42-91a1-4f65-039f-08da5fecbba5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jul 2022 07:45:59.0951
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: d7UM4aZvk3i5MH80Ns1gEgYb4mXIb2HIyNoWiHvgr5RO+nIVQ1DlQsS68lMOzaxpbJqV6BOxEQs1UoaCjR8lmg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB5862
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <62c683a2.g1VSVt6BrQC6ZzOz%lkp@intel.com>
 
-> From: Robin Murphy <robin.murphy@arm.com>
-> Sent: Wednesday, July 6, 2022 1:09 AM
->=20
-> Clean up the remaining trivial bus_set_iommu() callsites along
-> with the implementation. Now drivers only have to know and care
-> about iommu_device instances, phew!
->=20
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+On Thu, Jul 07, 2022 at 02:56:34PM +0800, kernel test robot wrote:
+> tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+> branch HEAD: 088b9c375534d905a4d337c78db3b3bfbb52c4a0  Add linux-next specific files for 20220706
+> 
+> Error/Warning reports:
+> 
+> https://lore.kernel.org/linux-doc/202207070644.x48XOOvs-lkp@intel.com
+> 
+> Error/Warning: (recently discovered and may have been fixed)
+> 
+> Documentation/arm/google/chromebook-boot-flow.rst: WARNING: document isn't included in any toctree
+> arm-linux-gnueabi-ld: dc_dmub_srv.c:(.text+0x1108): undefined reference to `__aeabi_ddiv'
+> arm-linux-gnueabi-ld: dc_dmub_srv.c:(.text+0x1124): undefined reference to `__aeabi_ui2d'
+> arm-linux-gnueabi-ld: dc_dmub_srv.c:(.text+0x1164): undefined reference to `__aeabi_dmul'
+> arm-linux-gnueabi-ld: dc_dmub_srv.c:(.text+0x1170): undefined reference to `__aeabi_dadd'
+> arm-linux-gnueabi-ld: dc_dmub_srv.c:(.text+0x1180): undefined reference to `__aeabi_dsub'
+> arm-linux-gnueabi-ld: dc_dmub_srv.c:(.text+0x1190): undefined reference to `__aeabi_d2uiz'
+> arm-linux-gnueabi-ld: dc_dmub_srv.c:(.text+0x162c): undefined reference to `__aeabi_d2iz'
+> arm-linux-gnueabi-ld: dc_dmub_srv.c:(.text+0x16b0): undefined reference to `__aeabi_i2d'
+> dc_dmub_srv.c:(.text+0x10f8): undefined reference to `__aeabi_ui2d'
+> dc_dmub_srv.c:(.text+0x464): undefined reference to `__floatunsidf'
+> dc_dmub_srv.c:(.text.dc_dmub_setup_subvp_dmub_command+0x33c): undefined reference to `__floatunsidf'
+> drivers/pci/endpoint/functions/pci-epf-vntb.c:975:5: warning: no previous prototype for 'pci_read' [-Wmissing-prototypes]
+> drivers/pci/endpoint/functions/pci-epf-vntb.c:984:5: warning: no previous prototype for 'pci_write' [-Wmissing-prototypes]
+> drivers/vfio/vfio_iommu_type1.c:2141:35: warning: cast to smaller integer type 'enum iommu_cap' from 'void *' [-Wvoid-pointer-to-enum-cast]
+> mips-linux-ld: dc_dmub_srv.c:(.text.dc_dmub_setup_subvp_dmub_command+0x34c): undefined reference to `__floatunsidf'
+> mips-linux-ld: dc_dmub_srv.c:(.text.dc_dmub_setup_subvp_dmub_command+0x378): undefined reference to `__divdf3'
+> mips-linux-ld: dc_dmub_srv.c:(.text.dc_dmub_setup_subvp_dmub_command+0x38c): undefined reference to `__muldf3'
+> mips-linux-ld: dc_dmub_srv.c:(.text.dc_dmub_setup_subvp_dmub_command+0x3a0): undefined reference to `__adddf3'
+> mips-linux-ld: dc_dmub_srv.c:(.text.dc_dmub_setup_subvp_dmub_command+0x3b4): undefined reference to `__subdf3'
+> mips-linux-ld: dc_dmub_srv.c:(.text.dc_dmub_setup_subvp_dmub_command+0x3d4): undefined reference to `__fixunsdfsi'
+> mips-linux-ld: dc_dmub_srv.c:(.text.dc_dmub_setup_subvp_dmub_command+0x750): undefined reference to `__fixdfsi'
+> mips-linux-ld: dc_dmub_srv.c:(.text.dc_dmub_setup_subvp_dmub_command+0x7c0): undefined reference to `__floatsidf'
+> powerpc-linux-ld: drivers/pci/endpoint/functions/pci-epf-vntb.c:174: undefined reference to `ntb_link_event'
+> xtensa-linux-ld: dc_dmub_srv.c:(.text+0x468): undefined reference to `__divdf3'
+> xtensa-linux-ld: dc_dmub_srv.c:(.text+0x46c): undefined reference to `__muldf3'
+> xtensa-linux-ld: dc_dmub_srv.c:(.text+0x470): undefined reference to `__adddf3'
+> xtensa-linux-ld: dc_dmub_srv.c:(.text+0x474): undefined reference to `__subdf3'
+> xtensa-linux-ld: dc_dmub_srv.c:(.text+0x478): undefined reference to `__fixunsdfsi'
+> xtensa-linux-ld: dc_dmub_srv.c:(.text+0x47c): undefined reference to `__fixdfsi'
+> xtensa-linux-ld: dc_dmub_srv.c:(.text+0x480): undefined reference to `__floatsidf'
+> xtensa-linux-ld: dc_dmub_srv.c:(.text+0x60c): undefined reference to `__floatunsidf'
+> 
+> Unverified Error/Warning (likely false positive, please contact us if interested):
+> 
+> arch/x86/events/core.c:2114 init_hw_perf_events() warn: missing error code 'err'
+> drivers/android/binder.c:1481:19-23: ERROR: from is NULL but dereferenced.
+> drivers/android/binder.c:2920:29-33: ERROR: target_thread is NULL but dereferenced.
+> drivers/android/binder.c:353:25-35: ERROR: node -> proc is NULL but dereferenced.
+> drivers/android/binder.c:4888:16-20: ERROR: t is NULL but dereferenced.
+> drivers/base/regmap/regmap.c:1996:1: internal compiler error: in arc_ifcvt, at config/arc/arc.c:9637
+> drivers/char/random.c:869:1: internal compiler error: in arc_ifcvt, at config/arc/arc.c:9637
+> drivers/firmware/arm_scmi/clock.c:394:1: internal compiler error: in arc_ifcvt, at config/arc/arc.c:9637
+> drivers/firmware/arm_scmi/powercap.c:376:1: internal compiler error: in arc_ifcvt, at config/arc/arc.c:9637
+> drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/vega10_powertune.c:1214:1: internal compiler error: in arc_ifcvt, at config/arc/arc.c:9637
+> drivers/gpu/drm/amd/display/dc/os_types.h: drm/drm_print.h is included more than once.
+> drivers/gpu/drm/bridge/ite-it66121.c:1398:1: internal compiler error: in arc_ifcvt, at config/arc/arc.c:9637
+> drivers/greybus/operation.c:617:1: internal compiler error: in arc_ifcvt, at config/arc/arc.c:9637
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+<snip>
+
+When the compiler crashes, why are you blaming all of these different
+mailing lists?  Perhaps you need to fix your compiler :)
+
+thanks,
+
+greg k-h
