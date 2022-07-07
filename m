@@ -1,46 +1,46 @@
 Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4017649
-	for <iommu@lists.linux.dev>; Thu,  7 Jul 2022 12:50:28 +0000 (UTC)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 267B85tg016848;
-	Thu, 7 Jul 2022 12:49:59 GMT
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9EB3367
+	for <iommu@lists.linux.dev>; Thu,  7 Jul 2022 12:54:58 +0000 (UTC)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 267BE1Vw029078;
+	Thu, 7 Jul 2022 12:54:47 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
+ mime-version : subject : from : to : cc : references : in-reply-to :
  content-type : content-transfer-encoding; s=pp1;
- bh=PlMypm8VbcP08LGJlujs3XGqbcicJ/9URreKUsBksuI=;
- b=q/Pszamyh3B5HDb9S/B7TcIn5gcvMG6Q1eYtJSfwrReBDlgrkstSNuTeN1MUEwXmME+s
- pfkYYGIhTyJJX6TAb5I+hjyfMT+mqOAnNNgJ+0LfF1nO8oZEXjldquwhrayI+Rl9Hhw1
- nnntLET/7wyvA4UGWe/goLJK2PcL+bjDmnnrgnm5SEe6jCsmHowEcpFgKl+Br4g4gE9T
- Oiscp7GxPjBHyc9F2srcaLlYGka8TU86wEmmlWmIO+YAsm8GTqlJ1ea6Ka08rbBECf6D
- QNPRfrvKvM6YvuAy0/YcclsaSz9cvh0bOcxJWKKz3kQ794MI/+kQgaraA6DcouppSxvB HQ== 
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h5w5acpve-1
+ bh=e+6nm5Ds4GELLXBnzsr/JRGB0864mlxyrQfc85EoIRc=;
+ b=aIECZrQI+DB6F31FIq3nIXdf/THBdz85H2+oWZJezjIEunx1vhzQEDuOYB2wCs3UaUcO
+ yOgOpcDvCBGxtVZif3xVp/D8Oqhtoj7FJ8K901lkdr3s+XfFY+f99XIlco3OJgnbpnRI
+ C1D9Qqv0Q54eC/BtLZq8rX4BBwVCratIZIWidvu2z0+mZzoO4FcdF9FucnB6P6mYhgv8
+ uQrdkzBi1zrCsCjDaV60tVaPjfraLcwIspRwzW9xY9+2+CYPb4aNLm6RMAZJIfKWCr2W
+ uA1+PmKk2Gwd9VGA9OX3jQGO2r3SdHBTcaqprfYbSqZfwvHuznD4Pr1C0O9ggi78ISfs Sg== 
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h5xe7jsfk-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 07 Jul 2022 12:49:59 +0000
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-	by ppma01wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 267CZNbX024918;
-	Thu, 7 Jul 2022 12:49:58 GMT
+	Thu, 07 Jul 2022 12:54:46 +0000
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+	by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 267Codfn003924;
+	Thu, 7 Jul 2022 12:54:46 GMT
 Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
-	by ppma01wdc.us.ibm.com with ESMTP id 3h4ud1u9pe-1
+	by ppma04dal.us.ibm.com with ESMTP id 3h4uqy5yn8-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 07 Jul 2022 12:49:58 +0000
+	Thu, 07 Jul 2022 12:54:46 +0000
 Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
-	by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 267Cnvxf33292630
+	by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 267Csi8534341138
 	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 7 Jul 2022 12:49:57 GMT
+	Thu, 7 Jul 2022 12:54:45 GMT
 Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id BFC4128059;
-	Thu,  7 Jul 2022 12:49:57 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id D63E228064;
+	Thu,  7 Jul 2022 12:54:44 +0000 (GMT)
 Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id E73FF2805A;
-	Thu,  7 Jul 2022 12:49:54 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id 40ED128066;
+	Thu,  7 Jul 2022 12:54:42 +0000 (GMT)
 Received: from [9.211.36.1] (unknown [9.211.36.1])
 	by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
-	Thu,  7 Jul 2022 12:49:54 +0000 (GMT)
-Message-ID: <4c25e3ad-0eb6-5c41-48b2-7c10e745bd5d@linux.ibm.com>
-Date: Thu, 7 Jul 2022 08:49:54 -0400
+	Thu,  7 Jul 2022 12:54:41 +0000 (GMT)
+Message-ID: <a6317b8e-87ea-122d-c1fe-c320f030a7f3@linux.ibm.com>
+Date: Thu, 7 Jul 2022 08:54:41 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,6 +51,7 @@ User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
 Subject: Re: [PATCH v3 15/15] iommu: Clean up bus_set_iommu()
 Content-Language: en-US
+From: Matthew Rosato <mjrosato@linux.ibm.com>
 To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org
 Cc: will@kernel.org, iommu@lists.linux.dev,
         linux-arm-kernel@lists.infradead.org, baolu.lu@linux.intel.com,
@@ -59,55 +60,58 @@ Cc: will@kernel.org, iommu@lists.linux.dev,
         linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <cover.1657034827.git.robin.murphy@arm.com>
  <dc44a2269276e1d0fa6715d4530a51df4e7b781c.1657034828.git.robin.murphy@arm.com>
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <dc44a2269276e1d0fa6715d4530a51df4e7b781c.1657034828.git.robin.murphy@arm.com>
+ <4c25e3ad-0eb6-5c41-48b2-7c10e745bd5d@linux.ibm.com>
+In-Reply-To: <4c25e3ad-0eb6-5c41-48b2-7c10e745bd5d@linux.ibm.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: p2HXZFwf2hk_lYIE5Uci5yo70h5FYbeP
-X-Proofpoint-GUID: p2HXZFwf2hk_lYIE5Uci5yo70h5FYbeP
+X-Proofpoint-GUID: 6n0HHPssgA4yMkE6V_M0qX_01p8NmEIU
+X-Proofpoint-ORIG-GUID: 6n0HHPssgA4yMkE6V_M0qX_01p8NmEIU
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-07-07_09,2022-06-28_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 mlxscore=0
- bulkscore=0 clxscore=1011 priorityscore=1501 impostorscore=0 spamscore=0
- phishscore=0 adultscore=0 malwarescore=0 suspectscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2207070050
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 bulkscore=0 mlxlogscore=999 spamscore=0 phishscore=0
+ lowpriorityscore=0 impostorscore=0 suspectscore=0 adultscore=0
+ clxscore=1015 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207070050
 
-On 7/5/22 1:08 PM, Robin Murphy wrote:
-> Clean up the remaining trivial bus_set_iommu() callsites along
-> with the implementation. Now drivers only have to know and care
-> about iommu_device instances, phew!
+On 7/7/22 8:49 AM, Matthew Rosato wrote:
+> On 7/5/22 1:08 PM, Robin Murphy wrote:
+>> Clean up the remaining trivial bus_set_iommu() callsites along
+>> with the implementation. Now drivers only have to know and care
+>> about iommu_device instances, phew!
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+>>
+>> v3: Also catch Intel's cheeky open-coded assignment
+>>
 > 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
+> ...
 > 
-> v3: Also catch Intel's cheeky open-coded assignment
+>> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+>> index c898bcbbce11..dd957145fb81 100644
+>> --- a/drivers/iommu/s390-iommu.c
+>> +++ b/drivers/iommu/s390-iommu.c
+>> @@ -385,9 +385,3 @@ static const struct iommu_ops s390_iommu_ops = {
+>>           .free        = s390_domain_free,
+>>       }
+>>   };
+>> -
+>> -static int __init s390_iommu_init(void)
+>> -{
+>> -    return bus_set_iommu(&pci_bus_type, &s390_iommu_ops);
+>> -}
+>> -subsys_initcall(s390_iommu_init);
+> 
+> Previously s390_iommu_ops was only being set for pci_bus_type, but with 
+> this series it will now also be set for platform_bus_type.
+> 
+> To tolerate that, this series needs a change along the lines of:
 > 
 
-...
-
-> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-> index c898bcbbce11..dd957145fb81 100644
-> --- a/drivers/iommu/s390-iommu.c
-> +++ b/drivers/iommu/s390-iommu.c
-> @@ -385,9 +385,3 @@ static const struct iommu_ops s390_iommu_ops = {
->   		.free		= s390_domain_free,
->   	}
->   };
-> -
-> -static int __init s390_iommu_init(void)
-> -{
-> -	return bus_set_iommu(&pci_bus_type, &s390_iommu_ops);
-> -}
-> -subsys_initcall(s390_iommu_init);
-
-Previously s390_iommu_ops was only being set for pci_bus_type, but with 
-this series it will now also be set for platform_bus_type.
-
-To tolerate that, this series needs a change along the lines of:
-
+...  Sorry, let's try that again without a mangled diff:
 
 From: Matthew Rosato <mjrosato@linux.ibm.com> 
 
@@ -165,6 +169,5 @@ iommu_domain *domain,
 
          return &zdev->iommu_dev; 
 
-  }  return &zdev->iommu_dev; 
-
   }
+
