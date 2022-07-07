@@ -1,148 +1,164 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7E0B362;
-	Thu,  7 Jul 2022 08:08:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C8D2C3411E;
-	Thu,  7 Jul 2022 08:08:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1657181316;
-	bh=Mzw+guaGxcvS7S4YlQr9bq/AYy4U/puT8v9DMSRjm+c=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=o8T0RPLH1+QXuxRGiOx0iOcZa4PNW1RYnmq0rwqP4JlY+PYLChMX98BzUOmDLYQt5
-	 WHtgniPDP3fJS/IKoiVXIaVBC8g4rRYZFs4Es7HO3CMez5153+NrgRKDzbP84fxvsI
-	 PrLKzhYgkU2Ze+gIXne4sqvbIkFu3tT1lxy0BeOk=
-Date: Thu, 7 Jul 2022 10:08:33 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: kernel test robot <lkp@intel.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>,
-	virtualization@lists.linux-foundation.org,
-	usbb2k-api-dev@nongnu.org, tipc-discussion@lists.sourceforge.net,
-	target-devel@vger.kernel.org, sound-open-firmware@alsa-project.org,
-	samba-technical@lists.samba.org, rds-devel@oss.oracle.com,
-	patches@opensource.cirrus.com, osmocom-net-gprs@lists.osmocom.org,
-	openipmi-developer@lists.sourceforge.net, nvdimm@lists.linux.dev,
-	ntb@lists.linux.dev, netfilter-devel@vger.kernel.org,
-	netdev@vger.kernel.org, mjpeg-users@lists.sourceforge.net,
-	megaraidlinux.pdl@broadcom.com, linuxppc-dev@lists.ozlabs.org,
-	linux1394-devel@lists.sourceforge.net, linux-x25@vger.kernel.org,
-	linux-wpan@vger.kernel.org, linux-wireless@vger.kernel.org,
-	linux-watchdog@vger.kernel.org, linux-usb@vger.kernel.org,
-	linux-unionfs@vger.kernel.org, linux-tegra@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
-	linux-sctp@vger.kernel.org, linux-scsi@vger.kernel.org,
-	linux-samsung-soc@vger.kernel.org,
-	linux-rockchip@lists.infradead.org,
-	linux-renesas-soc@vger.kernel.org, linux-rdma@vger.kernel.org,
-	linux-raid@vger.kernel.org, linux-pm@vger.kernel.org,
-	linux-phy@lists.infradead.org, linux-perf-users@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-parport@lists.infradead.org,
-	linux-parisc@vger.kernel.org, linux-omap@vger.kernel.org,
-	linux-nfc@lists.01.org, linux-mtd@lists.infradead.org,
-	linux-mmc@vger.kernel.org, linux-mm@kvack.org,
-	linux-mediatek@lists.infradead.org, linux-media@vger.kernel.org,
-	linux-leds@vger.kernel.org, linux-integrity@vger.kernel.org,
-	linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-ide@vger.kernel.org, linux-hwmon@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, linux-fpga@vger.kernel.org,
-	linux-fbdev@vger.kernel.org, linux-ext4@vger.kernel.org,
-	linux-efi@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-cxl@vger.kernel.org, linux-crypto@vger.kernel.org,
-	linux-clk@vger.kernel.org, linux-cifs@vger.kernel.org,
-	linux-btrfs@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-	linux-block@vger.kernel.org, linux-bcache@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-amlogic@lists.infradead.org, linaro-mm-sig@lists.linaro.org,
-	legousb-devel@lists.sourceforge.net, kvm@vger.kernel.org,
-	keyrings@vger.kernel.org, isdn4linux@listserv.isdn4linux.de,
-	iommu@lists.linux.dev, iommu@lists.linux-foundation.org,
-	intel-wired-lan@lists.osuosl.org, greybus-dev@lists.linaro.org,
-	dri-devel@lists.freedesktop.org, dm-devel@redhat.com,
-	devicetree@vger.kernel.org, dev@openvswitch.org,
-	dccp@vger.kernel.org, damon@lists.linux.dev, coreteam@netfilter.org,
-	cgroups@vger.kernel.org, ceph-devel@vger.kernel.org,
-	ath11k@lists.infradead.org, apparmor@lists.ubuntu.com,
-	amd-gfx@lists.freedesktop.org, alsa-devel@alsa-project.org,
-	accessrunner-general@lists.sourceforge.net
-Subject: Re: [linux-next:master] BUILD REGRESSION
- 088b9c375534d905a4d337c78db3b3bfbb52c4a0
-Message-ID: <YsaUgfPbOg7WuBuB@kroah.com>
-References: <62c683a2.g1VSVt6BrQC6ZzOz%lkp@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36F7239D
+	for <iommu@lists.linux.dev>; Thu,  7 Jul 2022 08:23:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF301C3411E;
+	Thu,  7 Jul 2022 08:23:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1657182181;
+	bh=77PtLpTS/qpbww/8J/LGrQtKTBirOJTX8MN8Ui9XQsg=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=C4XXSYfqBm7jhADxfzqk/6WEI/haJhe/1MyTEVUiYwb5P0Ar3A4NKXEAQujuPspPd
+	 s3qSefHxSM6yAycSBOEk1x5rsX41Lz5CXWMfbKx+MFmlkdtWT2//rWeC4JZmK+kuzf
+	 ECU/jn91qz2SjvVIYKTSlVgpyAEteSUY53CHGeOdfan/ZYOpV2RhOmIOCcQwf6MG7i
+	 sgmXwysrqKOA4mKnZ3tQfGEWbFUHusfDO84IAYjAhD58ooo5Ed5J2OwoavWvff5Afm
+	 EAomLwlKGskSsbFGf0ELGfPJoWMt9Y95OsdWqoGMlW85HJC5m/Hz4sRuAeBe6tWwp9
+	 HHg5eNbfeNzNA==
+Received: from ip-185-104-136-29.ptr.icomera.net ([185.104.136.29] helo=wait-a-minute.misterjones.org)
+	by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.95)
+	(envelope-from <maz@kernel.org>)
+	id 1o9Mmp-005rXS-7E;
+	Thu, 07 Jul 2022 09:22:59 +0100
+Date: Thu, 07 Jul 2022 09:22:26 +0100
+Message-ID: <87czehmiwt.wl-maz@kernel.org>
+From: Marc Zyngier <maz@kernel.org>
+To: Serge Semin <fancer.lancer@gmail.com>
+Cc: Samuel Holland <samuel@sholland.org>,	Thomas Gleixner
+ <tglx@linutronix.de>,	Andy Shevchenko <andy.shevchenko@gmail.com>,	Bartosz
+ Golaszewski <brgl@bgdev.pl>,	Bjorn Helgaas <bhelgaas@google.com>,	Boris
+ Ostrovsky <boris.ostrovsky@oracle.com>,	Borislav Petkov <bp@alien8.de>,
+	Broadcom internal kernel review list
+ <bcm-kernel-feedback-list@broadcom.com>,	Chris Zankel <chris@zankel.net>,
+	Colin Ian King <colin.king@intel.com>,	Dave Hansen
+ <dave.hansen@linux.intel.com>,	Dexuan Cui <decui@microsoft.com>,	Florian
+ Fainelli <f.fainelli@gmail.com>,	Guo Ren <guoren@kernel.org>,
+	"H. Peter Anvin" <hpa@zytor.com>,	Haiyang Zhang <haiyangz@microsoft.com>,
+	Helge Deller <deller@gmx.de>,	Ingo Molnar <mingo@redhat.com>,	Ivan
+ Kokshaysky <ink@jurassic.park.msu.ru>,	"James E.J. Bottomley"
+ <James.Bottomley@HansenPartnership.com>,	Jan Beulich <jbeulich@suse.com>,
+	Joerg Roedel <joro@8bytes.org>,	Juergen Gross <jgross@suse.com>,	Julia
+ Lawall <Julia.Lawall@inria.fr>,	"K. Y. Srinivasan" <kys@microsoft.com>,
+	Kees Cook <keescook@chromium.org>,	Krzysztof =?UTF-8?B?V2lsY3p5xYRza2k=?=
+ <kw@linux.com>,	Linus Walleij <linus.walleij@linaro.org>,	Lorenzo Pieralisi
+ <lpieralisi@kernel.org>,	Mark Rutland <mark.rutland@arm.com>,	Matt Turner
+ <mattst88@gmail.com>,	Max Filippov <jcmvbkbc@gmail.com>,	Maximilian Heyne
+ <mheyne@amazon.de>,	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+	Rich Felker <dalias@libc.org>,	Richard Henderson <rth@twiddle.net>,	Rikard
+ Falkeborn <rikard.falkeborn@gmail.com>,	Rob Herring <robh@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,	Stefano Stabellini
+ <sstabellini@kernel.org>,	Stephen Hemminger <sthemmin@microsoft.com>,	Sven
+ Schnelle <svens@stackframe.org>,	Thomas Bogendoerfer
+ <tsbogend@alpha.franken.de>,	Wei Liu <wei.liu@kernel.org>,	Wei Xu
+ <xuwei5@hisilicon.com>,	Will Deacon <will@kernel.org>,	Yoshinori Sato
+ <ysato@users.sourceforge.jp>,	iommu@lists.linux-foundation.org,
+	iommu@lists.linux.dev,	linux-alpha@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,	linux-hyperv@vger.kernel.org,
+	linux-ia64@vger.kernel.org,	linux-kernel@vger.kernel.org,
+	linux-mips@vger.kernel.org,	linux-parisc@vger.kernel.org,
+	linux-pci@vger.kernel.org,	linux-sh@vger.kernel.org,
+	linux-xtensa@linux-xtensa.org,	x86@kernel.org,
+	xen-devel@lists.xenproject.org,	kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH v3 1/8] irqchip/mips-gic: Only register IPI domain when SMP is enabled
+In-Reply-To: <20220705135243.ydbwfo4kois64elr@mobilestation>
+References: <20220701200056.46555-1-samuel@sholland.org>
+	<20220701200056.46555-2-samuel@sholland.org>
+	<20220705135243.ydbwfo4kois64elr@mobilestation>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <62c683a2.g1VSVt6BrQC6ZzOz%lkp@intel.com>
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.104.136.29
+X-SA-Exim-Rcpt-To: fancer.lancer@gmail.com, samuel@sholland.org, tglx@linutronix.de, andy.shevchenko@gmail.com, brgl@bgdev.pl, bhelgaas@google.com, boris.ostrovsky@oracle.com, bp@alien8.de, bcm-kernel-feedback-list@broadcom.com, chris@zankel.net, colin.king@intel.com, dave.hansen@linux.intel.com, decui@microsoft.com, f.fainelli@gmail.com, guoren@kernel.org, hpa@zytor.com, haiyangz@microsoft.com, deller@gmx.de, mingo@redhat.com, ink@jurassic.park.msu.ru, James.Bottomley@HansenPartnership.com, jbeulich@suse.com, joro@8bytes.org, jgross@suse.com, Julia.Lawall@inria.fr, kys@microsoft.com, keescook@chromium.org, kw@linux.com, linus.walleij@linaro.org, lpieralisi@kernel.org, mark.rutland@arm.com, mattst88@gmail.com, jcmvbkbc@gmail.com, mheyne@amazon.de, oleksandr_tyshchenko@epam.com, dalias@libc.org, rth@twiddle.net, rikard.falkeborn@gmail.com, robh@kernel.org, linux@armlinux.org.uk, sstabellini@kernel.org, sthemmin@microsoft.com, svens@stackframe.org, tsbogend@alpha.franken.de, wei.liu@ke
+ rnel.org, xuwei5@hisilicon.com, will@kernel.org, ysato@users.sourceforge.jp, iommu@lists.linux-foundation.org, iommu@lists.linux.dev, linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-hyperv@vger.kernel.org, linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linux-pci@vger.kernel.org, linux-sh@vger.kernel.org, linux-xtensa@linux-xtensa.org, x86@kernel.org, xen-devel@lists.xenproject.org, lkp@intel.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 
-On Thu, Jul 07, 2022 at 02:56:34PM +0800, kernel test robot wrote:
-> tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-> branch HEAD: 088b9c375534d905a4d337c78db3b3bfbb52c4a0  Add linux-next specific files for 20220706
+On Tue, 05 Jul 2022 14:52:43 +0100,
+Serge Semin <fancer.lancer@gmail.com> wrote:
 > 
-> Error/Warning reports:
+> Hi Samuel
 > 
-> https://lore.kernel.org/linux-doc/202207070644.x48XOOvs-lkp@intel.com
+> On Fri, Jul 01, 2022 at 03:00:49PM -0500, Samuel Holland wrote:
+> > The MIPS GIC irqchip driver may be selected in a uniprocessor
+> > configuration, but it unconditionally registers an IPI domain.
+> > 
+> > Limit the part of the driver dealing with IPIs to only be compiled when
+> > GENERIC_IRQ_IPI is enabled, which corresponds to an SMP configuration.
 > 
-> Error/Warning: (recently discovered and may have been fixed)
+> Thanks for the patch. Some comment is below.
 > 
-> Documentation/arm/google/chromebook-boot-flow.rst: WARNING: document isn't included in any toctree
-> arm-linux-gnueabi-ld: dc_dmub_srv.c:(.text+0x1108): undefined reference to `__aeabi_ddiv'
-> arm-linux-gnueabi-ld: dc_dmub_srv.c:(.text+0x1124): undefined reference to `__aeabi_ui2d'
-> arm-linux-gnueabi-ld: dc_dmub_srv.c:(.text+0x1164): undefined reference to `__aeabi_dmul'
-> arm-linux-gnueabi-ld: dc_dmub_srv.c:(.text+0x1170): undefined reference to `__aeabi_dadd'
-> arm-linux-gnueabi-ld: dc_dmub_srv.c:(.text+0x1180): undefined reference to `__aeabi_dsub'
-> arm-linux-gnueabi-ld: dc_dmub_srv.c:(.text+0x1190): undefined reference to `__aeabi_d2uiz'
-> arm-linux-gnueabi-ld: dc_dmub_srv.c:(.text+0x162c): undefined reference to `__aeabi_d2iz'
-> arm-linux-gnueabi-ld: dc_dmub_srv.c:(.text+0x16b0): undefined reference to `__aeabi_i2d'
-> dc_dmub_srv.c:(.text+0x10f8): undefined reference to `__aeabi_ui2d'
-> dc_dmub_srv.c:(.text+0x464): undefined reference to `__floatunsidf'
-> dc_dmub_srv.c:(.text.dc_dmub_setup_subvp_dmub_command+0x33c): undefined reference to `__floatunsidf'
-> drivers/pci/endpoint/functions/pci-epf-vntb.c:975:5: warning: no previous prototype for 'pci_read' [-Wmissing-prototypes]
-> drivers/pci/endpoint/functions/pci-epf-vntb.c:984:5: warning: no previous prototype for 'pci_write' [-Wmissing-prototypes]
-> drivers/vfio/vfio_iommu_type1.c:2141:35: warning: cast to smaller integer type 'enum iommu_cap' from 'void *' [-Wvoid-pointer-to-enum-cast]
-> mips-linux-ld: dc_dmub_srv.c:(.text.dc_dmub_setup_subvp_dmub_command+0x34c): undefined reference to `__floatunsidf'
-> mips-linux-ld: dc_dmub_srv.c:(.text.dc_dmub_setup_subvp_dmub_command+0x378): undefined reference to `__divdf3'
-> mips-linux-ld: dc_dmub_srv.c:(.text.dc_dmub_setup_subvp_dmub_command+0x38c): undefined reference to `__muldf3'
-> mips-linux-ld: dc_dmub_srv.c:(.text.dc_dmub_setup_subvp_dmub_command+0x3a0): undefined reference to `__adddf3'
-> mips-linux-ld: dc_dmub_srv.c:(.text.dc_dmub_setup_subvp_dmub_command+0x3b4): undefined reference to `__subdf3'
-> mips-linux-ld: dc_dmub_srv.c:(.text.dc_dmub_setup_subvp_dmub_command+0x3d4): undefined reference to `__fixunsdfsi'
-> mips-linux-ld: dc_dmub_srv.c:(.text.dc_dmub_setup_subvp_dmub_command+0x750): undefined reference to `__fixdfsi'
-> mips-linux-ld: dc_dmub_srv.c:(.text.dc_dmub_setup_subvp_dmub_command+0x7c0): undefined reference to `__floatsidf'
-> powerpc-linux-ld: drivers/pci/endpoint/functions/pci-epf-vntb.c:174: undefined reference to `ntb_link_event'
-> xtensa-linux-ld: dc_dmub_srv.c:(.text+0x468): undefined reference to `__divdf3'
-> xtensa-linux-ld: dc_dmub_srv.c:(.text+0x46c): undefined reference to `__muldf3'
-> xtensa-linux-ld: dc_dmub_srv.c:(.text+0x470): undefined reference to `__adddf3'
-> xtensa-linux-ld: dc_dmub_srv.c:(.text+0x474): undefined reference to `__subdf3'
-> xtensa-linux-ld: dc_dmub_srv.c:(.text+0x478): undefined reference to `__fixunsdfsi'
-> xtensa-linux-ld: dc_dmub_srv.c:(.text+0x47c): undefined reference to `__fixdfsi'
-> xtensa-linux-ld: dc_dmub_srv.c:(.text+0x480): undefined reference to `__floatsidf'
-> xtensa-linux-ld: dc_dmub_srv.c:(.text+0x60c): undefined reference to `__floatunsidf'
+> > 
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Signed-off-by: Samuel Holland <samuel@sholland.org>
+> > ---
+> > 
+> > Changes in v3:
+> >  - New patch to fix build errors in uniprocessor MIPS configs
+> > 
+> >  drivers/irqchip/Kconfig        |  3 +-
+> >  drivers/irqchip/irq-mips-gic.c | 80 +++++++++++++++++++++++-----------
+> >  2 files changed, 56 insertions(+), 27 deletions(-)
+> > 
+> > diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+> > index 1f23a6be7d88..d26a4ff7c99f 100644
+> > --- a/drivers/irqchip/Kconfig
+> > +++ b/drivers/irqchip/Kconfig
+> > @@ -322,7 +322,8 @@ config KEYSTONE_IRQ
+> >  
+> >  config MIPS_GIC
+> >  	bool
+> > -	select GENERIC_IRQ_IPI
+> > +	select GENERIC_IRQ_IPI if SMP
 > 
-> Unverified Error/Warning (likely false positive, please contact us if interested):
+> > +	select IRQ_DOMAIN_HIERARCHY
 > 
-> arch/x86/events/core.c:2114 init_hw_perf_events() warn: missing error code 'err'
-> drivers/android/binder.c:1481:19-23: ERROR: from is NULL but dereferenced.
-> drivers/android/binder.c:2920:29-33: ERROR: target_thread is NULL but dereferenced.
-> drivers/android/binder.c:353:25-35: ERROR: node -> proc is NULL but dereferenced.
-> drivers/android/binder.c:4888:16-20: ERROR: t is NULL but dereferenced.
-> drivers/base/regmap/regmap.c:1996:1: internal compiler error: in arc_ifcvt, at config/arc/arc.c:9637
-> drivers/char/random.c:869:1: internal compiler error: in arc_ifcvt, at config/arc/arc.c:9637
-> drivers/firmware/arm_scmi/clock.c:394:1: internal compiler error: in arc_ifcvt, at config/arc/arc.c:9637
-> drivers/firmware/arm_scmi/powercap.c:376:1: internal compiler error: in arc_ifcvt, at config/arc/arc.c:9637
-> drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/vega10_powertune.c:1214:1: internal compiler error: in arc_ifcvt, at config/arc/arc.c:9637
-> drivers/gpu/drm/amd/display/dc/os_types.h: drm/drm_print.h is included more than once.
-> drivers/gpu/drm/bridge/ite-it66121.c:1398:1: internal compiler error: in arc_ifcvt, at config/arc/arc.c:9637
-> drivers/greybus/operation.c:617:1: internal compiler error: in arc_ifcvt, at config/arc/arc.c:9637
+> It seems to me that the IRQ domains hierarchy is supposed to be
+> created only if IPI is required. At least that's what the MIPS GIC
+> driver implies. Thus we can go further and CONFIG_IRQ_DOMAIN_HIERARCHY
+> ifdef-out the gic_irq_domain_alloc() and gic_irq_domain_free()
+> methods definition together with the initialization:
+> 
+>  static const struct irq_domain_ops gic_irq_domain_ops = {
+>  	.xlate = gic_irq_domain_xlate,
+> +#ifdef CONFIG_IRQ_DOMAIN_HIERARCHY
+>  	.alloc = gic_irq_domain_alloc,
+>  	.free = gic_irq_domain_free,
+> +#endif
+>  	.map = gic_irq_domain_map,
+> };
+> 
+> If the GENERIC_IRQ_IPI config is enabled, CONFIG_IRQ_DOMAIN_HIERARCHY
+> will be automatically selected (see the config definition in
+> kernel/irq/Kconfig). If the IRQs hierarchy is needed for some another
+> functionality like GENERIC_MSI_IRQ_DOMAIN or GPIOs then they will
+> explicitly enable the IRQ_DOMAIN_HIERARCHY config thus activating the
+> denoted .alloc and .free methods definitions.
+> 
+> To sum up you can get rid of the IRQ_DOMAIN_HIERARCHY config
+> force-select from this patch and make the MIPS GIC driver code a bit
+> more coherent.
+> 
+> @Marc, please correct me if were wrong.
 
-<snip>
+Either way probably works correctly, but Samuel's approach is more
+readable IMO. It is far easier to reason about a high-level feature
+(GENERIC_IRQ_IPI) than an implementation detail (IRQ_DOMAIN_HIERARCHY).
 
-When the compiler crashes, why are you blaming all of these different
-mailing lists?  Perhaps you need to fix your compiler :)
+If you really want to save a handful of bytes, you can make the
+callbacks conditional on GENERIC_IRQ_IPI, and be done with it. But
+this can come as an additional patch.
 
-thanks,
+Thanks,
 
-greg k-h
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
