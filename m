@@ -1,102 +1,150 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF65F362
-	for <iommu@lists.linux.dev>; Thu,  7 Jul 2022 00:20:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2294368
+	for <iommu@lists.linux.dev>; Thu,  7 Jul 2022 00:53:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657153240; x=1688689240;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=kG5jotEa1Wd96n4KXqFgzVT3ccOLgmmy7vGKrfscZe0=;
-  b=hZJLfMzDLBiqNEGrLH5tSWMvTMJvxUJbmKkZEHpvnTnfN1zlnDcMsNNj
-   FVTuILc/O2GIcrqmbZW/pyp4wLw7a9g4KxDgoJQrHpRaKdFkG+1hmUsZI
-   jZiEIk/DANQSyn4FKPT7d5+q5ullnio10RskJwWLbZbYTLQZTRHFG2y40
-   lfAQvqEC1lihEnpwPON23t6mZQiefPBCzWga6la7LLf49XOa5BMLMZ91j
-   RyXz0pc8Q7mWCF3TwIOnvbGLmxKN6i37QIxDnV4kmtZYgnmWxkrbE8d6x
-   0uDeIL89f2QO4d3bGdLTLIp2WSGvAnazFjx90MybNkisF2klEXXRhXDLY
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="345585440"
+  t=1657155236; x=1688691236;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=cT+kO8u1nsy17EsTDrfucG0qQdcDUIMpKP6JjzuANXk=;
+  b=WtNEVhSqNq3lGRQBvS3iffuAr1/6muxi1hk1zUAFN6QKD7liifPuHcNV
+   CopkBexQu9eCJoiwGKjgEJIrzCcHiTs+ZpKJitlRkkTUJF504/eREl4ru
+   Ynz77QTBipx3sz6+RwggUHGMym5QkpPb7FIMTCGKwk7ipkdfgxbyvpPQ4
+   xJGmvkW7c4S+8AfiLPDjsLUA/9Cb5KIkWYbe8gW3mz5OImJC9J4A6s+u0
+   Sub4qjp4tmGgElcHzQp37ow1kaK5avnNTmu2oRru8Z8Kk4K7pVkobP4SP
+   dpqqaLTuNmwayxMHLwalxBZHx16Lvt2XcCVeL7nPu5EVU32whCdPHPOLP
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="282652838"
 X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
-   d="scan'208";a="345585440"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 17:20:39 -0700
+   d="scan'208";a="282652838"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 17:53:55 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
-   d="scan'208";a="650892999"
-Received: from hualiu-mobl1.ccr.corp.intel.com (HELO [10.249.171.209]) ([10.249.171.209])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 17:20:34 -0700
-Message-ID: <28a58a21-a866-b49c-9977-c8d05b320fbd@linux.intel.com>
-Date: Thu, 7 Jul 2022 08:20:32 +0800
+   d="scan'208";a="770236383"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by orsmga005.jf.intel.com with ESMTP; 06 Jul 2022 17:53:54 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Wed, 6 Jul 2022 17:53:54 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Wed, 6 Jul 2022 17:53:54 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.168)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Wed, 6 Jul 2022 17:53:53 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=k+IAwMfAzm1MzYHxG9P3cIqPrSycePrvIAOwtodwoEyz/fKN2Lz3sw/CKobRU6q8AzpzgMnBE+McF37BBaBXL2WyCaQY9qR+wA2gCUjrcRITdTeB4nOE6WpwmoP/kdpNNTRSCUToVgCdjL8Jr+36TAJ3KYvHXOxUyXQIuh1bquskGaTjiwdKdqNm1T7eP1VSCro0BdnIuf32BEQKVhq3Sucw9YpGopUCLSWJ+7q0uP5Vva7mpbBKYHeHv1EIrFdUchMrHdFDzDpuufXdU05kBekLA+/VglshrCKjK3uUfhJfejOm4CsURXnmTGU+gjvoxb4cuR+MtyAdvcAN9aZSuA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cT+kO8u1nsy17EsTDrfucG0qQdcDUIMpKP6JjzuANXk=;
+ b=G1Ai6PMHr/OXcXBtxjm2zI3Js7Wx0lUhJiOQ/Qa5JPWNAoCvx0Ee3I61jjad/EshUPg+2JdkIB1IG/JlnPTFRpaygyGcimuEC0UGk5fIdSu683a+mp51EiPe/+mpnR8nixgltO8Nh1J+/rmBEPydz7g+Zkoe5Lm0b8VM+h9go7AKq9+3uIWI6FaJ5R+q5tz2o2YxkVySvhyF0JPIxCH2Xwv/N+iOZ/u9j6i91bIs9JraA19JFzY4oPwQeW69ha+cby3cgbwa/rNd3/ex6nGH9AwffNDu1ipHTzkgYMtCDyMk84cB12tYUPCzCg8AMqQ/IB144G0YhUt1ccVPOLwo2g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by DM8PR11MB5672.namprd11.prod.outlook.com (2603:10b6:8:26::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.15; Thu, 7 Jul
+ 2022 00:53:24 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::8435:5a99:1e28:b38c]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::8435:5a99:1e28:b38c%2]) with mapi id 15.20.5395.021; Thu, 7 Jul 2022
+ 00:53:24 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Steve
+ Wahl <steve.wahl@hpe.com>
+CC: David Woodhouse <dwmw2@infradead.org>, Jerry Snitselaar
+	<jsnitsel@redhat.com>, Mike Travis <mike.travis@hpe.com>, Dimitri Sivanich
+	<sivanich@hpe.com>, "Anderson, Russ" <russ.anderson@hpe.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v2 2/6] iommu/vt-d: Use IDA interface to manage iommu
+ sequence id
+Thread-Topic: [PATCH v2 2/6] iommu/vt-d: Use IDA interface to manage iommu
+ sequence id
+Thread-Index: AQHYjbeOXjmNgujITECfoHlwIAha8q1yHF7Q
+Date: Thu, 7 Jul 2022 00:53:23 +0000
+Message-ID: <BN9PR11MB5276C8780FDC02F53E20F51A8C839@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20220702015610.2849494-1-baolu.lu@linux.intel.com>
+ <20220702015610.2849494-3-baolu.lu@linux.intel.com>
+In-Reply-To: <20220702015610.2849494-3-baolu.lu@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9ce9354a-7ba5-4e7b-4417-08da5fb3186d
+x-ms-traffictypediagnostic: DM8PR11MB5672:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: sI3eL9/fztlfjqWXUSw1FmJbOuzSMX6EIDx/RTA/td3fgWzgJuLEabxtDYmuQRGGREG2m7Ggas/bFz9P3HPxGVvmZYHLoFyEsGlZJ/CfdVRlQV6ENf8l7B+cLzWfCL6Rzj4phodTWgkPNR/PINbRkTBscBoVddU7i4W5Mcc8qiSjT5kTe6hhgwQMO4Lktw1+2W6a/wugkxpRR0br8/z348Q2L49eeA1KaTIDTEYuEwmMLI7N1d14t7cFiUbKtWMVERzOPs5zfA9OSqEYDhhXvNlS2t7Zs/5fgOpSWJhdBNMRdnSqHauKhss+xkeZvz8VK9pi50RrJN1fqqGzOiBqvT3hgOqFq/hX59WBJcZSgNg+afrbfTlZz8TGrC422QRxUEDiylErz79ws+MqJ8TwE5Bk50Cc9NLvE26Otsf7gncwsZK5U3rgMld+M0yDpVK/sbpSnU4zJ8Y1CbDa23y81Kn7KlqAloGUQIQKTQCUUyHvqkyMqMFU4sfNvRxdxy3ON7FNiw4Nr7go2ORgsmWt2A4mdCj25epo0niQf9NlWJuJ+zWNyJltd+pwlEJhS4HocjwbaNFxzFwBE0lDN1vbwrpcAH88kTl5RrRWriUTTYa1DH21oj5G7zCktEOMqrgELcZTVBT4vM7zM5NrHZIYZM1KqYzwn8zjJwhTVRn7zCBwq44WylxzochAuhh1bh14Qy7x/G67bXVxGVX5HtJ+C3utWNmgUUqDRNz2TlEc1rZ904fO+u3UxamgNyS4ZJBL+3jsYf39EYpjuHd4ZpUKu93yVCkMGXpZjDgCJp4Q1f3ERw/wg+LWP6L+PNzv70Kx
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(136003)(376002)(396003)(366004)(39860400002)(38070700005)(478600001)(41300700001)(66476007)(66556008)(8936002)(9686003)(4326008)(66446008)(64756008)(6506007)(26005)(7696005)(66946007)(76116006)(186003)(8676002)(558084003)(122000001)(7416002)(5660300002)(86362001)(33656002)(110136005)(54906003)(316002)(82960400001)(52536014)(71200400001)(55016003)(38100700002)(2906002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?HrgGEUTv3MgcFiL4satn/eT6S9X79qdrMIKHHAxBf1v+ZxJquD9PDWuL4Zc2?=
+ =?us-ascii?Q?tCZ/fHmAe6h5/VzJOUmYiIEeVJ899RPDMRcMJ6sxLhIIhHRei16GPtHwc3hC?=
+ =?us-ascii?Q?2ERa04/l8vhBVzpDWtQOE9f+9opl72C7wG2IklhDitZN+wWktqXb3PSgkrUz?=
+ =?us-ascii?Q?6naN8wGlBmA8IVkOLD/nz2XqjeJ+oYhBRCw+HfFHFVe1bWJ8hKBZFhSVJ0do?=
+ =?us-ascii?Q?UU11oJtf9HPYF+tHIGacbMhKA1FA1ouffZFfz0ofiZDxgV6RWaeoQrj4sAqS?=
+ =?us-ascii?Q?gQ1Ml5ZSe0PtzW8y3DjaHrCxAiDxPmjHKhzlL3sI2v3r93LOY/6V1GYVtv60?=
+ =?us-ascii?Q?nDGBBV12RJz6wdzdzVXE71J49VHTw4riFfK5PmwnHPDvW33cSyIYK3Mnwivl?=
+ =?us-ascii?Q?W7LFSqv3a1bTegsCkBYH378edpjIj3yAb+doFNwo1RgsqwVAa1NhMvCTiy60?=
+ =?us-ascii?Q?lQZ9PhDm4cIb/TaDjDmYacbRKWW0ekLf76mZhwSC6hlEyzdHLyjxNVdVIs/z?=
+ =?us-ascii?Q?Ab3OMxhEBGSVn3yaAApZfKwr6A+li3XXkwKVhcyc4YNrFQ3Ix8VztkAE/pIO?=
+ =?us-ascii?Q?teQlyy9arDZ796iPFRk0+psPxa/ZAiPHUhuOnAOuKhodB1PcPke0rQfvjDm1?=
+ =?us-ascii?Q?O+10GtlXDGKeVmeh9JVH4sDc4+XKY0fDgI5km1MewBJIbgyeHas8EzPu6iub?=
+ =?us-ascii?Q?ubbDy5ogpdkyExLiZ2eFGpY58yqq4izSysGQvFqyNjrZ6/n49NcUj2slbAfK?=
+ =?us-ascii?Q?Tc9nAOEFvmZNEbkRHscOcBXmtQtyu84PgKSvOljTfU720feM0ilPUBPcRt9Y?=
+ =?us-ascii?Q?F/8bhYZSTKQLRl6OckYxjmxT/6Ew1t1Oq118jNKaRL0+FmoLt1KntrqdvHBj?=
+ =?us-ascii?Q?NarxmX5YfvEsVRb90iBY4fhvxA9Oi+EPzzg36flzgMDSjNglnWPaEgLXr079?=
+ =?us-ascii?Q?oCjyxMMQQ3Jbxf+yRH68uoMCHH1gl8JF2+O3jtdyxe4CuEObN2+/1hKLDAKb?=
+ =?us-ascii?Q?473GrO2u+GufrHBxb3t73DzftwELkRlR9MSUOMSmMkSUnHGw2hzOMgV9VuOZ?=
+ =?us-ascii?Q?+7AQctXjcSQkF6OIzR5rRjWzkwKbCBBIwgU6TZXgFtnoZL0X4XB/RKvSZC+U?=
+ =?us-ascii?Q?JRWju7Maf0ivtWk82V7wFoTgysFdnifQM9Dp1ZfrUPK6QWp/sqWarlgkc2JB?=
+ =?us-ascii?Q?/SSnBjKIIDXclZ3qIxkjcEfC2fo5WrYjto8xglrhgQKv8Y7mnrxYQPjGlHVn?=
+ =?us-ascii?Q?tvi2+OsZv+ra+zpTEGNjJ5QkK4581zK6kjxUhLslNoOTYvWMOo+/irH530bE?=
+ =?us-ascii?Q?zYTVE7bxB2akdyptTumRj/AlhjH/H7uL2Kph/+ay4FikxyivNKPH3cramYac?=
+ =?us-ascii?Q?BbZmdTVzF8gl+vVajlHO3m1Ftufqj//ezA+ck8qYN7Iw0NTRpDQ/itrTDbOr?=
+ =?us-ascii?Q?/9hPPN2Nbzil0dLq+kf690AEDN05BwVY1ybhO7q01lsT5vVsth/omaT207kh?=
+ =?us-ascii?Q?9Lsdj1I2cgMx9CSyrN8Q8+aZ3GNLps0cB6HcqGXjFobyQTELoTYudUqGDDmn?=
+ =?us-ascii?Q?l2lMra0LKqPhKQbrASbQoK2Vu8JXvj9WSgxfsNcM?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Cc: baolu.lu@linux.intel.com, will@kernel.org, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, suravee.suthikulpanit@amd.com,
- vasant.hegde@amd.com, mjrosato@linux.ibm.com, gerald.schaefer@linux.ibm.com,
- schnelle@linux.ibm.com, linux-s390@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 03/15] iommu: Always register bus notifiers
-Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org
-References: <cover.1657034827.git.robin.murphy@arm.com>
- <8c380309f264cd0dfc73ba2ec060adc9515af2f2.1657034828.git.robin.murphy@arm.com>
- <1fab4c8a-7bc5-9a50-d48a-0dc590cac7a6@linux.intel.com>
- <3d613192-f673-852e-9c52-b8a913d25616@arm.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <3d613192-f673-852e-9c52-b8a913d25616@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9ce9354a-7ba5-4e7b-4417-08da5fb3186d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jul 2022 00:53:23.9476
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: PDJv4polAOLInu26VT2zHgQZ7JvBZFbFjim1kpWxox7XsccROsx2MUd96nIYhSe/gip+Yi12FbA+yosCCs654A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR11MB5672
+X-OriginatorOrg: intel.com
 
-On 2022/7/6 21:43, Robin Murphy wrote:
-> On 2022-07-06 02:53, Baolu Lu wrote:
->> On 2022/7/6 01:08, Robin Murphy wrote:
->>>   /*
->>>    * Use a function instead of an array here because the domain-type 
->>> is a
->>>    * bit-field, so an array would waste memory.
->>> @@ -152,6 +172,10 @@ static int __init iommu_subsys_init(void)
->>>               (iommu_cmd_line & IOMMU_CMD_LINE_STRICT) ?
->>>                   "(set via kernel command line)" : "");
->>> +    /* If the system is so broken that this fails, it will WARN 
->>> anyway */
->>
->> Can you please elaborate a bit on this? iommu_bus_init() still return
->> errors.
-> 
-> Indeed, it's commenting on the fact that we don't try to clean up or 
-> propagate an error value further even if it did ever manage to return 
-> one. I feared that if I strip the error handling out of iommu_bus_init() 
-> itself on the same reasoning, we'll just get constant patches from the 
-> static checker brigade trying to add it back, so it seemed like the 
-> neatest compromise to keep that decision where it's obviously in an 
-> early initcall, rather than in the helper function which can be viewed 
-> out of context. However, I'm happy to either expand this comment or go 
-> the whole way and make iommu_bus_init() return void if you think it's 
-> worthwhile.
+> From: Lu Baolu <baolu.lu@linux.intel.com>
+> Sent: Saturday, July 2, 2022 9:56 AM
+>=20
+> Switch dmar unit sequence id allocation and release from bitmap to IDA
+> interface.
+>=20
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-Thanks for the explanation. It would be helpful if the comment could be
-expanded. In this case, after a long time, people will not consider it
-an oversight. :-)
-
-Best regards,
-baolu
-
-> 
-> Cheers,
-> Robin.
-> 
->>
->>> +    for (int i = 0; i < ARRAY_SIZE(iommu_buses); i++)
->>> +        iommu_bus_init(iommu_buses[i]);
->>> +
->>>       return 0;
->>
->> Best regards,
->> baolu
-> 
-
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
