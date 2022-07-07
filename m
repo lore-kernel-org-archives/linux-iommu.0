@@ -1,151 +1,102 @@
-Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D55B7C
-	for <iommu@lists.linux.dev>; Wed,  6 Jul 2022 19:51:35 +0000 (UTC)
-Received: by mail-ed1-f53.google.com with SMTP id fd6so20574619edb.5
-        for <iommu@lists.linux.dev>; Wed, 06 Jul 2022 12:51:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=uVRJxLaJq0X2dTEVHdjs/5npr6gEQxLAwcn1IdURs/k=;
-        b=eJwRJaLjPY6p5OlY+dBZS+pQVxXthYVL1N5jmkzT/c94q/b9iLcykBlgK1Du7PYrbj
-         MxeFxICUJdjjcV4pgyo6rucoawbvITuvIkDRgC3y6E0n3STMKsOWkCwG5d7oPtTTKfaQ
-         CFJbvl3MaraUV2zfvMLcdpwYHQKkjh3E7iJ+ZuipphJXXm+sIz2ZtJKGA+lV1IAJKXp6
-         gIDZb7UUy806TIzAtvVMLr5gXqD9LzJuCS61E1hq0d01/JhNgeMip92sz5laViF3SkKM
-         OJDCVy+nMHqMI6LD/lQHtr3WAK81du9NPbq0PKiyiXcAkgdviF3QyjkUjKFU06wnf7Gi
-         pZyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=uVRJxLaJq0X2dTEVHdjs/5npr6gEQxLAwcn1IdURs/k=;
-        b=ZPR7XAUUfBPQ+pbvYjJueWHYEDl7EDIqPQGxoRAEfZ+nZlwCieJY70XvnXLfK96Sqr
-         Fk2uDFu8572hIPzT7VF8q8Q39PBCT9v/OhrfVb8hPRAbv93UNIW/kouinCJM8f0WHvPZ
-         bmyE06zcZokacylcZzaqt4qcSrF184Y126YTze703RhGtQgS5wHCEekLqsXCidCy0IUR
-         IugJNG0ZTJTCOek39yfimYQTnnl02DUJmLOVtbvSK8HCcEywbSml4MBgXi8KmVek8Alp
-         Gjwrx0KUflHF4lLBM1SF+6639aknmJsPHMq82MOaBOJxmU5KSSUZHlRK+4l/tNm+JjOq
-         tXzg==
-X-Gm-Message-State: AJIora9LT6bpgk8fPMSaHRz3e1EHO8RZJm2v98XsfvNwpJYuYspBk6jN
-	km2aINbElwfEgZ+aJHcMGFY=
-X-Google-Smtp-Source: AGRyM1tywxH6QPdE1PtguR+LhaF12MVypJNb2omAg0HEbg3t9kWKGwOUtVflZEIr6YXGTMyib1Cy6w==
-X-Received: by 2002:aa7:c45a:0:b0:435:d7a4:99bc with SMTP id n26-20020aa7c45a000000b00435d7a499bcmr56253345edr.158.1657137093482;
-        Wed, 06 Jul 2022 12:51:33 -0700 (PDT)
-Received: from anparri.mshome.net (host-79-49-199-193.retail.telecomitalia.it. [79.49.199.193])
-        by smtp.gmail.com with ESMTPSA id kz11-20020a17090777cb00b0072af18329c4sm1968127ejc.225.2022.07.06.12.51.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 12:51:33 -0700 (PDT)
-From: "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
-To: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	KY Srinivasan <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	Stephen Hemminger <sthemmin@microsoft.com>,
-	Wei Liu <wei.liu@kernel.org>,
-	Dexuan Cui <decui@microsoft.com>,
-	Michael Kelley <mikelley@microsoft.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	Peter Anvin <hpa@zytor.com>
-Cc: linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org,
-	iommu@lists.linux.dev,
-	linux-hyperv@vger.kernel.org,
-	x86@kernel.org,
-	"Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
-Subject: [RFC PATCH 2/2] dma-direct: Fix dma_direct_{alloc,free}() for Hyperv-V IVMs
-Date: Wed,  6 Jul 2022 21:50:27 +0200
-Message-Id: <20220706195027.76026-3-parri.andrea@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220706195027.76026-1-parri.andrea@gmail.com>
-References: <20220706195027.76026-1-parri.andrea@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF65F362
+	for <iommu@lists.linux.dev>; Thu,  7 Jul 2022 00:20:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657153240; x=1688689240;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=kG5jotEa1Wd96n4KXqFgzVT3ccOLgmmy7vGKrfscZe0=;
+  b=hZJLfMzDLBiqNEGrLH5tSWMvTMJvxUJbmKkZEHpvnTnfN1zlnDcMsNNj
+   FVTuILc/O2GIcrqmbZW/pyp4wLw7a9g4KxDgoJQrHpRaKdFkG+1hmUsZI
+   jZiEIk/DANQSyn4FKPT7d5+q5ullnio10RskJwWLbZbYTLQZTRHFG2y40
+   lfAQvqEC1lihEnpwPON23t6mZQiefPBCzWga6la7LLf49XOa5BMLMZ91j
+   RyXz0pc8Q7mWCF3TwIOnvbGLmxKN6i37QIxDnV4kmtZYgnmWxkrbE8d6x
+   0uDeIL89f2QO4d3bGdLTLIp2WSGvAnazFjx90MybNkisF2klEXXRhXDLY
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10400"; a="345585440"
+X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
+   d="scan'208";a="345585440"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 17:20:39 -0700
+X-IronPort-AV: E=Sophos;i="5.92,251,1650956400"; 
+   d="scan'208";a="650892999"
+Received: from hualiu-mobl1.ccr.corp.intel.com (HELO [10.249.171.209]) ([10.249.171.209])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2022 17:20:34 -0700
+Message-ID: <28a58a21-a866-b49c-9977-c8d05b320fbd@linux.intel.com>
+Date: Thu, 7 Jul 2022 08:20:32 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Cc: baolu.lu@linux.intel.com, will@kernel.org, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, suravee.suthikulpanit@amd.com,
+ vasant.hegde@amd.com, mjrosato@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+ schnelle@linux.ibm.com, linux-s390@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 03/15] iommu: Always register bus notifiers
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org
+References: <cover.1657034827.git.robin.murphy@arm.com>
+ <8c380309f264cd0dfc73ba2ec060adc9515af2f2.1657034828.git.robin.murphy@arm.com>
+ <1fab4c8a-7bc5-9a50-d48a-0dc590cac7a6@linux.intel.com>
+ <3d613192-f673-852e-9c52-b8a913d25616@arm.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <3d613192-f673-852e-9c52-b8a913d25616@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-In Hyper-V AMD SEV-SNP Isolated VMs, the virtual address returned by
-dma_direct_alloc() must map above dma_unencrypted_base because the
-memory is shared with the hardware device and must not be encrypted.
+On 2022/7/6 21:43, Robin Murphy wrote:
+> On 2022-07-06 02:53, Baolu Lu wrote:
+>> On 2022/7/6 01:08, Robin Murphy wrote:
+>>>   /*
+>>>    * Use a function instead of an array here because the domain-type 
+>>> is a
+>>>    * bit-field, so an array would waste memory.
+>>> @@ -152,6 +172,10 @@ static int __init iommu_subsys_init(void)
+>>>               (iommu_cmd_line & IOMMU_CMD_LINE_STRICT) ?
+>>>                   "(set via kernel command line)" : "");
+>>> +    /* If the system is so broken that this fails, it will WARN 
+>>> anyway */
+>>
+>> Can you please elaborate a bit on this? iommu_bus_init() still return
+>> errors.
+> 
+> Indeed, it's commenting on the fact that we don't try to clean up or 
+> propagate an error value further even if it did ever manage to return 
+> one. I feared that if I strip the error handling out of iommu_bus_init() 
+> itself on the same reasoning, we'll just get constant patches from the 
+> static checker brigade trying to add it back, so it seemed like the 
+> neatest compromise to keep that decision where it's obviously in an 
+> early initcall, rather than in the helper function which can be viewed 
+> out of context. However, I'm happy to either expand this comment or go 
+> the whole way and make iommu_bus_init() return void if you think it's 
+> worthwhile.
 
-Modify dma_direct_alloc() to do the necessary remapping.  In
-dma_direct_free(), use the (unmodified) DMA address to derive the
-original virtual address and re-encrypt the pages.
+Thanks for the explanation. It would be helpful if the comment could be
+expanded. In this case, after a long time, people will not consider it
+an oversight. :-)
 
-Suggested-by: Michael Kelley <mikelley@microsoft.com>
-Co-developed-by: Dexuan Cui <decui@microsoft.com>
-Signed-off-by: Dexuan Cui <decui@microsoft.com>
-Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
----
- kernel/dma/direct.c | 30 +++++++++++++++++++++++++++++-
- 1 file changed, 29 insertions(+), 1 deletion(-)
+Best regards,
+baolu
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 06b2b901e37a3..c4ce277687a49 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -13,6 +13,7 @@
- #include <linux/vmalloc.h>
- #include <linux/set_memory.h>
- #include <linux/slab.h>
-+#include <linux/io.h> /* for memremap() */
- #include "direct.h"
- 
- /*
-@@ -305,6 +306,21 @@ void *dma_direct_alloc(struct device *dev, size_t size,
- 		ret = page_address(page);
- 		if (dma_set_decrypted(dev, ret, size))
- 			goto out_free_pages;
-+#ifdef CONFIG_HAS_IOMEM
-+		/*
-+		 * Remap the pages in the unencrypted physical address space
-+		 * when dma_unencrypted_base is set (e.g., for Hyper-V AMD
-+		 * SEV-SNP isolated guests).
-+		 */
-+		if (dma_unencrypted_base) {
-+			phys_addr_t ret_pa = virt_to_phys(ret);
-+
-+			ret_pa += dma_unencrypted_base;
-+			ret = memremap(ret_pa, size, MEMREMAP_WB);
-+			if (!ret)
-+				goto out_encrypt_pages;
-+		}
-+#endif
- 	}
- 
- 	memset(ret, 0, size);
-@@ -360,11 +376,23 @@ void dma_direct_free(struct device *dev, size_t size,
- 	    dma_free_from_pool(dev, cpu_addr, PAGE_ALIGN(size)))
- 		return;
- 
--	if (is_vmalloc_addr(cpu_addr)) {
-+	/*
-+	 * If dma_unencrypted_base is set, the virtual address returned by
-+	 * dma_direct_alloc() is in the vmalloc address range.
-+	 */
-+	if (!dma_unencrypted_base && is_vmalloc_addr(cpu_addr)) {
- 		vunmap(cpu_addr);
- 	} else {
- 		if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_CLEAR_UNCACHED))
- 			arch_dma_clear_uncached(cpu_addr, size);
-+#ifdef CONFIG_HAS_IOMEM
-+		if (dma_unencrypted_base) {
-+			memunmap(cpu_addr);
-+			/* re-encrypt the pages using the original address */
-+			cpu_addr = page_address(pfn_to_page(PHYS_PFN(
-+					dma_to_phys(dev, dma_addr))));
-+		}
-+#endif
- 		if (dma_set_encrypted(dev, cpu_addr, size))
- 			return;
- 	}
--- 
-2.25.1
+> 
+> Cheers,
+> Robin.
+> 
+>>
+>>> +    for (int i = 0; i < ARRAY_SIZE(iommu_buses); i++)
+>>> +        iommu_bus_init(iommu_buses[i]);
+>>> +
+>>>       return 0;
+>>
+>> Best regards,
+>> baolu
+> 
 
