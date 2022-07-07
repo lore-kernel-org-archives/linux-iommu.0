@@ -1,101 +1,170 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 58EF7624
-	for <iommu@lists.linux.dev>; Thu,  7 Jul 2022 10:58:46 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 946BC1063;
-	Thu,  7 Jul 2022 03:58:40 -0700 (PDT)
-Received: from [10.57.85.108] (unknown [10.57.85.108])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 524513F66F;
-	Thu,  7 Jul 2022 03:58:38 -0700 (PDT)
-Message-ID: <569e97f6-f78c-1eae-1023-2d5e2df2d40f@arm.com>
-Date: Thu, 7 Jul 2022 11:58:18 +0100
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4017649
+	for <iommu@lists.linux.dev>; Thu,  7 Jul 2022 12:50:28 +0000 (UTC)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 267B85tg016848;
+	Thu, 7 Jul 2022 12:49:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=PlMypm8VbcP08LGJlujs3XGqbcicJ/9URreKUsBksuI=;
+ b=q/Pszamyh3B5HDb9S/B7TcIn5gcvMG6Q1eYtJSfwrReBDlgrkstSNuTeN1MUEwXmME+s
+ pfkYYGIhTyJJX6TAb5I+hjyfMT+mqOAnNNgJ+0LfF1nO8oZEXjldquwhrayI+Rl9Hhw1
+ nnntLET/7wyvA4UGWe/goLJK2PcL+bjDmnnrgnm5SEe6jCsmHowEcpFgKl+Br4g4gE9T
+ Oiscp7GxPjBHyc9F2srcaLlYGka8TU86wEmmlWmIO+YAsm8GTqlJ1ea6Ka08rbBECf6D
+ QNPRfrvKvM6YvuAy0/YcclsaSz9cvh0bOcxJWKKz3kQ794MI/+kQgaraA6DcouppSxvB HQ== 
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h5w5acpve-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 07 Jul 2022 12:49:59 +0000
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+	by ppma01wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 267CZNbX024918;
+	Thu, 7 Jul 2022 12:49:58 GMT
+Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
+	by ppma01wdc.us.ibm.com with ESMTP id 3h4ud1u9pe-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 07 Jul 2022 12:49:58 +0000
+Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
+	by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 267Cnvxf33292630
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 7 Jul 2022 12:49:57 GMT
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id BFC4128059;
+	Thu,  7 Jul 2022 12:49:57 +0000 (GMT)
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id E73FF2805A;
+	Thu,  7 Jul 2022 12:49:54 +0000 (GMT)
+Received: from [9.211.36.1] (unknown [9.211.36.1])
+	by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
+	Thu,  7 Jul 2022 12:49:54 +0000 (GMT)
+Message-ID: <4c25e3ad-0eb6-5c41-48b2-7c10e745bd5d@linux.ibm.com>
+Date: Thu, 7 Jul 2022 08:49:54 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v3 04/15] iommu: Move bus setup to IOMMU device
- registration
-Content-Language: en-GB
-To: "Tian, Kevin" <kevin.tian@intel.com>, "joro@8bytes.org" <joro@8bytes.org>
-Cc: "will@kernel.org" <will@kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>,
- "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
- "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
- "vasant.hegde@amd.com" <vasant.hegde@amd.com>,
- "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
- "gerald.schaefer@linux.ibm.com" <gerald.schaefer@linux.ibm.com>,
- "schnelle@linux.ibm.com" <schnelle@linux.ibm.com>,
- "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v3 15/15] iommu: Clean up bus_set_iommu()
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org
+Cc: will@kernel.org, iommu@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, baolu.lu@linux.intel.com,
+        suravee.suthikulpanit@amd.com, vasant.hegde@amd.com,
+        gerald.schaefer@linux.ibm.com, schnelle@linux.ibm.com,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <cover.1657034827.git.robin.murphy@arm.com>
- <5b9b608af21b3c4353af042355973bac55397962.1657034828.git.robin.murphy@arm.com>
- <BN9PR11MB5276ECD0D25C09D6A3686A3B8C839@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <BN9PR11MB5276ECD0D25C09D6A3686A3B8C839@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <dc44a2269276e1d0fa6715d4530a51df4e7b781c.1657034828.git.robin.murphy@arm.com>
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <dc44a2269276e1d0fa6715d4530a51df4e7b781c.1657034828.git.robin.murphy@arm.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: p2HXZFwf2hk_lYIE5Uci5yo70h5FYbeP
+X-Proofpoint-GUID: p2HXZFwf2hk_lYIE5Uci5yo70h5FYbeP
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-07_09,2022-06-28_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 mlxscore=0
+ bulkscore=0 clxscore=1011 priorityscore=1501 impostorscore=0 spamscore=0
+ phishscore=0 adultscore=0 malwarescore=0 suspectscore=0 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
+ definitions=main-2207070050
 
-On 2022-07-07 07:51, Tian, Kevin wrote:
->> From: Robin Murphy <robin.murphy@arm.com>
->> Sent: Wednesday, July 6, 2022 1:08 AM
->>
->> @@ -202,12 +210,32 @@ int iommu_device_register(struct iommu_device
->> *iommu,
->>   	spin_lock(&iommu_device_lock);
->>   	list_add_tail(&iommu->list, &iommu_device_list);
->>   	spin_unlock(&iommu_device_lock);
->> +
->> +	for (int i = 0; i < ARRAY_SIZE(iommu_buses); i++) {
->> +		struct bus_type *bus = iommu_buses[i];
->> +		int err;
->> +
->> +		if (bus->iommu_ops && bus->iommu_ops != ops) {
->> +			err = -EBUSY;
->> +		} else {
->> +			bus->iommu_ops = ops;
->> +			err = bus_iommu_probe(bus);
->> +		}
->> +		if (err) {
->> +			iommu_device_unregister(iommu);
->> +			return err;
->> +		}
->> +	}
->> +
+On 7/5/22 1:08 PM, Robin Murphy wrote:
+> Clean up the remaining trivial bus_set_iommu() callsites along
+> with the implementation. Now drivers only have to know and care
+> about iommu_device instances, phew!
 > 
-> Probably move above into a new function bus_iommu_probe_all():
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
 > 
-> 	/* probe all buses for devices associated with this iommu */
-> 	err = bus_iommu_probe_all();
-> 	if (err) {
-> 		iommu_device_unregister(iommu);
-> 		return err;
-> 	}
+> v3: Also catch Intel's cheeky open-coded assignment
 > 
-> Just  my personal preference on leaving logic in iommu_device_register()
-> more relevant to the iommu instance itself.
 
-On reflection I think it makes sense to pull the 
-iommu_device_unregister() out of the loop anyway - I think that's really 
-a left-over from between v1 and v2 when that error case briefly jumped 
-to another cleanup loop, before I realised it was actually trivial for 
-iommu_device_unregister() to clean up for itself.
+...
 
-However I now see I've also missed another opportunity, and the -EBUSY 
-case should be hoisted out of the loop as well, since checking 
-iommu_buses[0] is sufficient. Then it's hopefully much clearer that once 
-the bus ops go away we'll be left with just a single extra line for the 
-loop, as in iommu_device_unregister(). Does that sound reasonable?
+> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+> index c898bcbbce11..dd957145fb81 100644
+> --- a/drivers/iommu/s390-iommu.c
+> +++ b/drivers/iommu/s390-iommu.c
+> @@ -385,9 +385,3 @@ static const struct iommu_ops s390_iommu_ops = {
+>   		.free		= s390_domain_free,
+>   	}
+>   };
+> -
+> -static int __init s390_iommu_init(void)
+> -{
+> -	return bus_set_iommu(&pci_bus_type, &s390_iommu_ops);
+> -}
+> -subsys_initcall(s390_iommu_init);
 
-> Apart from that:
-> 
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Previously s390_iommu_ops was only being set for pci_bus_type, but with 
+this series it will now also be set for platform_bus_type.
 
-Thanks! (and for the others as well)
+To tolerate that, this series needs a change along the lines of:
 
-Robin.
+
+From: Matthew Rosato <mjrosato@linux.ibm.com> 
+
+Date: Thu, 7 Jul 2022 08:45:44 -0400 
+
+Subject: [PATCH] iommu/s390: fail probe for non-pci device 
+
+ 
+
+s390-iommu only supports pci_bus_type today 
+
+ 
+
+Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com> 
+
+--- 
+
+  drivers/iommu/s390-iommu.c | 7 ++++++- 
+
+  1 file changed, 6 insertions(+), 1 deletion(-) 
+
+ 
+
+diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c 
+
+index dd957145fb81..762f892b4ec3 100644 
+
+--- a/drivers/iommu/s390-iommu.c 
+
++++ b/drivers/iommu/s390-iommu.c 
+
+@@ -185,7 +185,12 @@ static void s390_iommu_detach_device(struct 
+iommu_domain *domain,
+ 
+
+  static struct iommu_device *s390_iommu_probe_device(struct device 
+*dev)
+  { 
+
+-       struct zpci_dev *zdev = to_zpci_dev(dev); 
+
++       struct zpci_dev *zdev; 
+
++ 
+
++       if (!dev_is_pci(dev)) 
+
++               return ERR_PTR(-ENODEV); 
+
++ 
+
++       zdev = to_zpci_dev(dev); 
+
+ 
+
+         return &zdev->iommu_dev; 
+
+  }  return &zdev->iommu_dev; 
+
+  }
