@@ -1,103 +1,73 @@
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D389728E2
-	for <iommu@lists.linux.dev>; Fri,  8 Jul 2022 15:50:45 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id D5E505F1; Fri,  8 Jul 2022 17:50:37 +0200 (CEST)
-Date: Fri, 8 Jul 2022 17:50:36 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: [git pull] IOMMU Fixes for Linux v5.19-rc5
-Message-ID: <YshSTPK8g5U2NZtR@8bytes.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9E8B29A9
+	for <iommu@lists.linux.dev>; Fri,  8 Jul 2022 16:17:17 +0000 (UTC)
+Received: from fraeml745-chm.china.huawei.com (unknown [172.18.147.207])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Lfdbm5bSbz686M3;
+	Sat,  9 Jul 2022 00:12:52 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml745-chm.china.huawei.com (10.206.15.226) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 8 Jul 2022 18:17:08 +0200
+Received: from [10.195.34.23] (10.195.34.23) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 8 Jul
+ 2022 17:17:07 +0100
+Message-ID: <5fd4814a-81b1-0e71-58e0-57a747eb684e@huawei.com>
+Date: Fri, 8 Jul 2022 17:17:06 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="1xSl/lweFE1sGsPt"
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v5 0/5] DMA mapping changes for SCSI core
+To: "Martin K. Petersen" <martin.petersen@oracle.com>, Christoph Hellwig
+	<hch@lst.de>
+CC: <damien.lemoal@opensource.wdc.com>, <joro@8bytes.org>, <will@kernel.org>,
+	<jejb@linux.ibm.com>, <m.szyprowski@samsung.com>, <robin.murphy@arm.com>,
+	<linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-ide@vger.kernel.org>, <iommu@lists.linux-foundation.org>,
+	<iommu@lists.linux.dev>, <linux-scsi@vger.kernel.org>, <linuxarm@huawei.com>
+References: <1656590892-42307-1-git-send-email-john.garry@huawei.com>
+ <b5f80062-e8ef-9597-1b0c-393140950dfb@huawei.com>
+ <20220706134447.GA23753@lst.de> <yq1y1x47jgn.fsf@ca-mkp.ca.oracle.com>
+From: John Garry <john.garry@huawei.com>
+In-Reply-To: <yq1y1x47jgn.fsf@ca-mkp.ca.oracle.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.195.34.23]
+X-ClientProxiedBy: lhreml748-chm.china.huawei.com (10.201.108.198) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 
+On 07/07/2022 21:35, Martin K. Petersen wrote:
+> Christoph,
+> 
+>> Yes, I've mostly been waiting for an ACK from Martin.
+> Sorry, I'm on vacation this week. The series looks OK to me although I
+> do agree that it would be great if the max was reflected in the queue's
+> hard limit and opt in the soft limit.
 
---1xSl/lweFE1sGsPt
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Ah, I think that I misunderstood Damien's question. I thought he was 
+asking why not keep shost max_sectors at dma_max_mapping_size() and then 
+init each sdev request queue max hw sectors at dma_opt_mapping_size().
 
-Hi Linus,
+But he seems that you want to know why not have the request queue max 
+sectors at dma_opt_mapping_size(). The answer is related to meaning of 
+dma_opt_mapping_size(). If we get any mappings which exceed this size 
+then it can have a big dma mapping performance hit. So I set max hw 
+sectors at this ‘opt’ mapping size to ensure that we get no mappings 
+which exceed this size. Indeed, I think max sectors is 128Kb today for 
+my host, which would be same as dma_opt_mapping_size() value with an 
+IOMMU enabled. And I find that only a small % of request size may exceed 
+this 128kb size, but it still has a big performance impact.
 
-The following changes since commit 88084a3df1672e131ddc1b4e39eeacfd39864acf:
-
-  Linux 5.19-rc5 (2022-07-03 15:39:28 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v5.19-rc5
-
-for you to fetch changes up to c51b8f85c4157eb91c2f4ab34b0c52fea642e77c:
-
-  MAINTAINERS: Remove iommu@lists.linux-foundation.org (2022-07-08 09:34:26 +0200)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v5.19-rc5
-
-Including:
-
-	- Patch for the Intel VT-d driver to fix device setup failures
-	  when the PASID table is shared
-
-	- Fix for Intel VT-d device hot-add failure due to wrong device
-	  notifier order
-
-	- Remove the old IOMMU mailing list from the MAINTAINERS file
-	  now that it has been retired
-
-----------------------------------------------------------------
-Joerg Roedel (1):
-      MAINTAINERS: Remove iommu@lists.linux-foundation.org
-
-Lu Baolu (1):
-      iommu/vt-d: Fix RID2PASID setup/teardown failure
-
-Yian Chen (1):
-      iommu/vt-d: Fix PCI bus rescan device hot add
-
- MAINTAINERS                 | 11 --------
- drivers/iommu/intel/dmar.c  |  2 +-
- drivers/iommu/intel/iommu.c | 24 ----------------
- drivers/iommu/intel/pasid.c | 69 ++-------------------------------------------
- drivers/iommu/intel/pasid.h |  1 -
- include/linux/intel-iommu.h |  3 --
- 6 files changed, 4 insertions(+), 106 deletions(-)
-
-Please pull.
+> 
+> Acked-by: Martin K. Petersen<martin.petersen@oracle.com>
 
 Thanks,
-
-	Joerg
-
---1xSl/lweFE1sGsPt
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmLIUkwACgkQK/BELZcB
-GuPRgxAA3tGreniU/4njpYaYJiXeIkJmwjzlWIRMmvzXFTop7uqtva5ODNDxek2P
-pS6leA7LDyKjEegQuqQ3EKKTC0ZZR0WIgncZyTVjt4cPz6qd2+jZwlMChE/Pw3F/
-FaCunDF90FLJYlWd1sX5ga1hUGaWK5x3NP1bnox69dvr5TrZSPjzIVGLsIY3qO9l
-QmDsDIgREoRp19MpRUp7Qxsjt8aODMQjhTGkXpNXCuwgiXiUENagWpyBX2xfdTVc
-Mx6MxJxkL/Ze2iVrUw8570qPcKIjHR1a6CZ4ophqftRZb3rLExm8qH50o//j7XRy
-FbAxQWRMirsYXGD/Y9wqHq0U8IfJvbo5SupW8HO441s+DeMq52HOr7wpUV8f4e5N
-Xc1qEPBkbiwVC/ULeQi/lCWutPpPFT7vrCPCWNQavvdxXpGRt+geVklS8iTuwHW9
-zg5rVPxvqbRQbNVP+q4vRUcmuqHVDTxgssjlcRgOg6aj/gqtRqNWVdvH/vXW/fhR
-DwDsW9EGevQnWCLuvpExr+rI36utS1gN0NDMlqSkPfFWK76MV4yHlRCJvmrCU6Oq
-kCPAnSoyJuLVBGY0xfv/B4fnIOQrVWTTlX4FivvJBuIiKZdHpw5AIuGAWCXgwb5W
-cprQaA8tdhzihbtsJ5qVQTpTiQZgA4zh2o1HpgWkdqfE7HD0xsY=
-=LrN8
------END PGP SIGNATURE-----
-
---1xSl/lweFE1sGsPt--
+John
