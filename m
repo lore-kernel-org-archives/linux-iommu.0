@@ -1,52 +1,56 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BC9C2575
-	for <iommu@lists.linux.dev>; Fri,  8 Jul 2022 17:08:16 +0000 (UTC)
-Received: by mail-wm1-f46.google.com with SMTP id l68so12727555wml.3
-        for <iommu@lists.linux.dev>; Fri, 08 Jul 2022 10:08:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rjtnXjJTM76a8uBuPAjTSUIAKlaLeiPacD9QEtS4qDw=;
-        b=MDtkeEsInPqXPzZim3GXqcRJnQOfNrk0zyh69sg/F7vVFzZs7k4LbrmXCyoJMhe+pk
-         hV6nsVlhB1c8j3aePLXYPVgjfKdkU6l80MZxTr3QLcbG11/Pkn1zcGUlv8v9uLrr+Y2R
-         zUbnawCQw1MwEaiv2QUN9UWeC6sUxoBqBUMkGsmZnfBgcqnehNvhJ6lSuElTcEB5F4ov
-         fnl76H5vXeqI5YM0r2YMAhMa7Oe2ouD2XUJMLO8XC02bnjHKvz8/Z/bRDT6kP06yvLlp
-         E3VxyeGZdW978yMpMTQWBWvM8vblfY6+0by9evAAG1hP2wYpL7l/LhvUnhkHrHW2V5+B
-         TUHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rjtnXjJTM76a8uBuPAjTSUIAKlaLeiPacD9QEtS4qDw=;
-        b=7DySiOEnrWAEG6KsCP1I74/ZDkTAvASHfAJfMM1wXtGVS2PEpEYxlK4v3//1VxGikr
-         ZEXZBSdAphCWbJj9xObqqUSGcMRqbE2YmzUgzUaocwmkcR/XlPdEdFZRQDKHCY2Ejkra
-         +4j0aKBJq2bDjc3JQYQSOw+t26NvcrWst1M335Ecjpm3lr1BLugWONwwTSYKmEbxoqVt
-         FbSl6RQJWLLOWik77bthFgC7np3G9KLnLDlY5LZLqN1vmfpNmQCXhwFnwoX5uVDkY1vi
-         2egCF+AgG+GmM7AIjvqotaJw09VkuHZZ+Smk7hUr1jOBMcelKTiRndCabG03jQhJWW8f
-         xG3g==
-X-Gm-Message-State: AJIora8PbVCZ5y8MEYyzqmGVsMJAJXSxXlexl1t6WzZuvrY3hu13iRfK
-	oxKEF3R5RGXEjrCWt4uPqoJTCg==
-X-Google-Smtp-Source: AGRyM1uLwrXqWANfQe+1Wila+2ISVN7BYY7M0YDfWZQ2VfUWRzFwS//um4Nxt9sS7P6MX4Tl60U/tQ==
-X-Received: by 2002:a1c:7405:0:b0:3a2:de4f:5f07 with SMTP id p5-20020a1c7405000000b003a2de4f5f07mr840272wmc.117.1657300094872;
-        Fri, 08 Jul 2022 10:08:14 -0700 (PDT)
-Received: from rainbowdash.office.codethink.co.uk ([167.98.27.226])
-        by smtp.gmail.com with ESMTPSA id k9-20020a5d4289000000b0021d9591c64fsm92701wrq.33.2022.07.08.10.08.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Jul 2022 10:08:14 -0700 (PDT)
-From: Ben Dooks <ben.dooks@sifive.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E41DB3229
+	for <iommu@lists.linux.dev>; Fri,  8 Jul 2022 17:21:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=deltatee.com; s=20200525; h=Subject:MIME-Version:Message-Id:Date:Cc:To:From
+	:references:content-disposition:in-reply-to;
+	bh=uL0cDSxKM7w1LKoYjFq3Avjqw8PzKhcnOjWTwepgs2s=; b=l2XZcBZKtMwgd6EiMrf5voDKN1
+	NhJNVZJjz9gYqtN6NxihWiIf0cWC60ZXUEyN3sAUIr7c29RZP13WpnAGCIx3vReG8B1jB5y+CkPKj
+	2PiXQdCEpyZ/9gXtNqiEGCaXJZLLiHvyOEKCsJMRfMcB4Flum+pbm+n8WHuq/yG+SKrfwkNL8CLzm
+	xWjBTahm2x47ICkklDJUnpWfoGYH8gIDlAHSYd2SSBOrHp+G6FSEICulV5nDO7wXZjVi2PJE6AtAz
+	STAVUhmjvYQT6x8dH/PGt12Ahx+IozcOreJiPzwjXEQoooo00kZR3xIaJ2sf8Ea62h9akORgvAWfd
+	gYKLaPXg==;
+Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
+	by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <gunthorp@deltatee.com>)
+	id 1o9rCB-009xkE-SB; Fri, 08 Jul 2022 10:51:13 -0600
+Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
+	(envelope-from <gunthorp@deltatee.com>)
+	id 1o9rC8-0001Jj-Sn; Fri, 08 Jul 2022 10:51:08 -0600
+From: Logan Gunthorpe <logang@deltatee.com>
 To: linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev,
-	iommu@lists.linux-foundation.org
-Cc: Sudip Mukherjee <sudip.mukherjee@sifive.com>,
-	Jude Onyenegecha <jude.onyenegecha@sifive.com>,
-	Ben Dooks <ben.dooks@sifive.com>
-Subject: [PATCH] swiotlb: ensure io_tlb_default_mem spinlock always initialised
-Date: Fri,  8 Jul 2022 18:08:11 +0100
-Message-Id: <20220708170811.270589-1-ben.dooks@sifive.com>
-X-Mailer: git-send-email 2.35.1
+	linux-nvme@lists.infradead.org,
+	linux-block@vger.kernel.org,
+	linux-pci@vger.kernel.org,
+	linux-mm@kvack.org,
+	iommu@lists.linux-foundation.org,
+	iommu@lists.linux.dev
+Cc: Stephen Bates <sbates@raithlin.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+	John Hubbard <jhubbard@nvidia.com>,
+	Don Dutile <ddutile@redhat.com>,
+	Matthew Wilcox <willy@infradead.org>,
+	Daniel Vetter <daniel.vetter@ffwll.ch>,
+	Minturn Dave B <dave.b.minturn@intel.com>,
+	Jason Ekstrand <jason@jlekstrand.net>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	Xiong Jianxin <jianxin.xiong@intel.com>,
+	Bjorn Helgaas <helgaas@kernel.org>,
+	Ira Weiny <ira.weiny@intel.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Martin Oliveira <martin.oliveira@eideticom.com>,
+	Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
+	Ralph Campbell <rcampbell@nvidia.com>,
+	Logan Gunthorpe <logang@deltatee.com>
+Date: Fri,  8 Jul 2022 10:50:51 -0600
+Message-Id: <20220708165104.5005-1-logang@deltatee.com>
+X-Mailer: git-send-email 2.30.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,50 +58,150 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 172.16.1.31
+X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org, linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, iommu@lists.linux.dev, sbates@raithlin.com, hch@lst.de, jgg@ziepe.ca, christian.koenig@amd.com, ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch, jason@jlekstrand.net, dave.hansen@linux.intel.com, helgaas@kernel.org, dan.j.williams@intel.com, dave.b.minturn@intel.com, jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, jhubbard@nvidia.com, rcampbell@nvidia.com, logang@deltatee.com
+X-SA-Exim-Mail-From: gunthorp@deltatee.com
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on ale.deltatee.com
+X-Spam-Level: 
+X-Spam-Status: No, score=-6.5 required=5.0 tests=ALL_TRUSTED,BAYES_00,
+	MYRULES_FREE,MYRULES_NO_TEXT,T_SCC_BODY_TEXT_LINE autolearn=no
+	autolearn_force=no version=3.4.6
+Subject: [PATCH v8 00/13] DMA Mapping P2PDMA Pages
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 
-If the io_tlb_default_mem is used by a device that then gets used
-by the swiotlb code, the spinlock warning is triggered causing a
-lot of stack-trace.
+Hi,
 
-Fix this by making the structure's lock initialised at build time.
+This series is the first 13 patches from my previous Userspace P2P
+with the CMB series[1]. These patches just do the first part which is to
+allow passing P2PDMA pages into dma_map_sg() and support it with both
+dma-direct and dma-iommu. The series ends with dropping the old
+pci_p2pdma_[un]map_sg() interface.
 
-Avoids the following BUG trigger:
+This will be followed up later with the rest of the series which has
+more issues to work out.
 
-[    3.046401] BUG: spinlock bad magic on CPU#3, kworker/u8:0/7
-[    3.046689]  lock: io_tlb_default_mem+0x30/0x60, .magic: 00000000, .owner: <none>/-1, .owner_cpu: 0
-[    3.047217] CPU: 3 PID: 7 Comm: kworker/u8:0 Not tainted 5.17.0-00056-g1e9bac738084-dirty #310
-[    3.048363] Workqueue: events_unbound deferred_probe_work_func
-[    3.048892] Call Trace:
-[    3.049224] [<ffffffff800048aa>] dump_backtrace+0x1c/0x24
-[    3.049576] [<ffffffff805c5f74>] show_stack+0x2c/0x38
-[    3.049898] [<ffffffff805cade2>] dump_stack_lvl+0x40/0x58
-[    3.050216] [<ffffffff805cae0e>] dump_stack+0x14/0x1c
-[    3.050460] [<ffffffff805c69f6>] spin_dump+0x62/0x6e
-[    3.050681] [<ffffffff8004e000>] do_raw_spin_lock+0xb0/0xd0
-[    3.050934] [<ffffffff805d5b58>] _raw_spin_lock_irqsave+0x20/0x2c
-[    3.051157] [<ffffffff80067e38>] swiotlb_tbl_map_single+0xce/0x3da
-[    3.051372] [<ffffffff80068320>] swiotlb_map+0x3a/0x15c
-[    3.051668] [<ffffffff80065a56>] dma_map_page_attrs+0x76/0x162
-[    3.051975] [<ffffffff8031d542>] dw_pcie_host_init+0x326/0x3f2
+This series is based on v5.19-rc5. A git branch is available here:
 
-Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
----
- kernel/dma/swiotlb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+  https://github.com/sbates130272/linux-p2pmem/  p2pdma_map_v8
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index cb50f8d38360..a707a944c39a 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -65,7 +65,7 @@
- static bool swiotlb_force_bounce;
- static bool swiotlb_force_disable;
- 
--struct io_tlb_mem io_tlb_default_mem;
-+struct io_tlb_mem io_tlb_default_mem = { .lock = __SPIN_LOCK_UNLOCKED(io_tlb_default_mem.lock) } ;
- 
- phys_addr_t swiotlb_unencrypted_base;
- 
--- 
-2.35.1
+Logan
 
+[1] https://lkml.kernel.org/r/20220615161233.17527-1-logang@deltatee.com
+
+--
+
+Changes since v7 (first half of the series only):
+  - Rebase onto v5.19-rc5
+  - Collect reviewed-by tags from Christoph
+  - Change the first patch to use a dma_flags field in the scatterlist
+    instead of a bit in the page link, per an idea from Robin
+  - Rework the iommu-dma implementation to store the bus addresses
+    in iommu_dma_map_sg() and only copy them in __finalise_sg. This
+    allows the code to use the same pci_p2pdma_map_segment() helper
+    that the dma-direct code uses and we can drop the two specialized
+    helpers. (Per Robin)
+  - Instead of using a zero length segment which __iommu_map_sg()
+    ignores, explicitly skip segments marked with as a dma bus address.
+    (per Robin)
+  - Rework the iommu_dma_unmap_sg() function per a suggestion from
+    Robin.
+
+Changes since v6:
+  - Rebase onto v5.19-rc1
+  - Rework how the pages are stored in the VMA per Jason's suggestion
+
+Changes since v5:
+  - Rebased onto v5.18-rc1 which includes Christophs cleanup to
+    free_zone_device_page() (similar to Ralph's patch).
+  - Fix bug with concurrent first calls to pci_p2pdma_vma_fault()
+    that caused a double allocation and lost p2p memory. Noticed
+    by Andrew Maier.
+  - Collected a Reviewed-by tag from Chaitanya.
+  - Numerous minor fixes to commit messages
+
+Changes since v4:
+  - Rebase onto v5.17-rc1.
+  - Included Ralph Cambell's patches which removes the ZONE_DEVICE page
+    reference count offset. This is just to demonstrate that this
+    series is compatible with that direction.
+  - Added a comment in pci_p2pdma_map_sg_attrs(), per Chaitanya and
+    included his Reviewed-by tags.
+  - Patch 1 in the last series which cleaned up scatterlist.h
+    has been upstreamed.
+  - Dropped NEED_SG_DMA_BUS_ADDR_FLAG seeing depends on doesn't
+    work with selected symbols, per Christoph.
+  - Switched iov_iter_get_pages_[alloc_]flags to be exported with
+    EXPORT_SYMBOL_GPL, per Christoph.
+  - Renamed zone_device_pages_are_mergeable() to
+    zone_device_pages_have_same_pgmap(), per Christoph.
+  - Renamed .mmap_file_open operation in nvme_ctrl_ops to
+    cdev_file_open(), per Christoph.
+
+Changes since v3:
+  - Add some comment and commit message cleanups I had missed for v3,
+    also moved the prototypes for some of the p2pdma helpers to
+    dma-map-ops.h (which I missed in v3 and was suggested in v2).
+  - Add separate cleanup patch for scatterlist.h and change the macros
+    to functions. (Suggested by Chaitanya and Jason, respectively)
+  - Rename sg_dma_mark_pci_p2pdma() and sg_is_dma_pci_p2pdma() to
+    sg_dma_mark_bus_address() and sg_is_dma_bus_address() which
+    is a more generic name (As requested by Jason)
+  - Fixes to some comments and commit messages as suggested by Bjorn
+    and Jason.
+  - Ensure swiotlb is not used with P2PDMA pages. (Per Jason)
+  - The sgtable coversion in RDMA was split out and sent upstream
+    separately, the new patch is only the removal. (Per Jason)
+  - Moved the FOLL_PCI_P2PDMA check outside of get_dev_pagemap() as
+    Jason suggested this will be removed in the near term.
+  - Add two patches to ensure that zone device pages with different
+    pgmaps are never merged in the block layer or
+    sg_alloc_append_table_from_pages() (Per Jason)
+  - Ensure synchronize_rcu() or call_rcu() is used before returning
+    pages to the genalloc. (Jason pointed out that pages are not
+    gauranteed to be unused in all architectures until at least
+    after an RCU grace period, and that synchronize_rcu() was likely
+    too slow to use in the vma close operation.
+  - Collected Acks and Reviews by Bjorn, Jason and Max.
+
+--
+
+Logan Gunthorpe (13):
+  lib/scatterlist: add flag for indicating P2PDMA segments in an SGL
+  PCI/P2PDMA: Attempt to set map_type if it has not been set
+  PCI/P2PDMA: Introduce helpers for dma_map_sg implementations
+  dma-mapping: allow EREMOTEIO return code for P2PDMA transfers
+  dma-direct: support PCI P2PDMA pages in dma-direct map_sg
+  dma-mapping: add flags to dma_map_ops to indicate PCI P2PDMA support
+  iommu: Explicitly skip bus address marked segments  in
+    __iommu_map_sg()
+  iommu/dma: support PCI P2PDMA pages in dma-iommu map_sg
+  nvme-pci: check DMA ops when indicating support for PCI P2PDMA
+  nvme-pci: convert to using dma_map_sgtable()
+  RDMA/core: introduce ib_dma_pci_p2p_dma_supported()
+  RDMA/rw: drop pci_p2pdma_[un]map_sg()
+  PCI/P2PDMA: Remove pci_p2pdma_[un]map_sg()
+
+ drivers/infiniband/core/rw.c | 45 ++++------------
+ drivers/iommu/dma-iommu.c    | 99 +++++++++++++++++++++++++++++++-----
+ drivers/iommu/iommu.c        |  4 ++
+ drivers/nvme/host/core.c     |  3 +-
+ drivers/nvme/host/nvme.h     |  2 +-
+ drivers/nvme/host/pci.c      | 81 ++++++++++++++---------------
+ drivers/nvme/target/rdma.c   |  2 +-
+ drivers/pci/Kconfig          |  5 ++
+ drivers/pci/p2pdma.c         | 93 +++++++++++----------------------
+ include/linux/dma-map-ops.h  | 63 +++++++++++++++++++++++
+ include/linux/dma-mapping.h  |  5 ++
+ include/linux/pci-p2pdma.h   | 27 ----------
+ include/linux/scatterlist.h  | 69 +++++++++++++++++++++++++
+ include/rdma/ib_verbs.h      | 11 ++++
+ kernel/dma/direct.c          | 43 +++++++++++++---
+ kernel/dma/direct.h          |  8 ++-
+ kernel/dma/mapping.c         | 23 ++++++++-
+ 17 files changed, 390 insertions(+), 193 deletions(-)
+
+
+base-commit: 88084a3df1672e131ddc1b4e39eeacfd39864acf
+--
+2.30.2
