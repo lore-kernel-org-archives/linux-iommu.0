@@ -1,234 +1,209 @@
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81A383229
-	for <iommu@lists.linux.dev>; Fri,  8 Jul 2022 17:22:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
-	Message-Id:Date:Cc:To:From:content-disposition;
-	bh=3m0HqdPfpIwE9OX075f9oLJxQjZz5A8+nk0L6lYXPdw=; b=Bc6JUB9eA4q6GnWKA7t2anav0e
-	DmbFi/UJHIKGLu2kJc7KTSFdMC/fmIhQG7hr6g8pc5ThIGW9THCmQW/pBla0BtWvBaPHgq64ZCIc7
-	ZmKTZ+FlkaD599cdB3avSkWFRB48EmyCSG1zWVAI/D4qCGiLVHwDYyF/Oq+vtMZFMHs/b/GrNA5G6
-	04YW0ju77TC3N1hXXBFNlJK/uBqH9/qEvhOxQqubOUNg8wFQZmhIC0hbaKrNFlisNBALgFL4vUWBR
-	XEEhcACxZQvJOrr3Y+8xTdJcF1B5XR1UnJqJich9cKGVMGKHsv73wovZVD72Zru5i1jqS+2aexCqC
-	Ow3ZhfGQ==;
-Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
-	by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <gunthorp@deltatee.com>)
-	id 1o9rCB-009xkH-SF; Fri, 08 Jul 2022 10:51:13 -0600
-Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
-	(envelope-from <gunthorp@deltatee.com>)
-	id 1o9rC9-0001Js-Bs; Fri, 08 Jul 2022 10:51:09 -0600
-From: Logan Gunthorpe <logang@deltatee.com>
-To: linux-kernel@vger.kernel.org,
-	linux-nvme@lists.infradead.org,
-	linux-block@vger.kernel.org,
-	linux-pci@vger.kernel.org,
-	linux-mm@kvack.org,
-	iommu@lists.linux-foundation.org,
-	iommu@lists.linux.dev
-Cc: Stephen Bates <sbates@raithlin.com>,
-	Christoph Hellwig <hch@lst.de>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-	John Hubbard <jhubbard@nvidia.com>,
-	Don Dutile <ddutile@redhat.com>,
-	Matthew Wilcox <willy@infradead.org>,
-	Daniel Vetter <daniel.vetter@ffwll.ch>,
-	Minturn Dave B <dave.b.minturn@intel.com>,
-	Jason Ekstrand <jason@jlekstrand.net>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	Xiong Jianxin <jianxin.xiong@intel.com>,
-	Bjorn Helgaas <helgaas@kernel.org>,
-	Ira Weiny <ira.weiny@intel.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Martin Oliveira <martin.oliveira@eideticom.com>,
-	Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
-	Ralph Campbell <rcampbell@nvidia.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Bjorn Helgaas <bhelgaas@google.com>
-Date: Fri,  8 Jul 2022 10:50:54 -0600
-Message-Id: <20220708165104.5005-4-logang@deltatee.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220708165104.5005-1-logang@deltatee.com>
-References: <20220708165104.5005-1-logang@deltatee.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A94883229
+	for <iommu@lists.linux.dev>; Fri,  8 Jul 2022 18:13:19 +0000 (UTC)
+Received: by mail-lj1-f179.google.com with SMTP id w2so10473885ljj.7
+        for <iommu@lists.linux.dev>; Fri, 08 Jul 2022 11:13:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xxakuRjObUCkye3AQ22V76C+V/wXWgeyU417sI5Erhk=;
+        b=PyBdwpT1kw0OeeUw6KnFZnNBkmCt38SG1b76RSoRpK1WOdDZj894b0A0jFL7O5PKx+
+         pUHfiV99aQJAcxfxTWtJLs5RXrnjz/xPTcGUsVVpqmdleDtM/GZOu0hn35XCT2PY3ipq
+         SaE+FYpbHu24g1jgO23mGYgMKYAD2EBwkoaC1zx4VlSQ2YC+fT7rEGvvkuueN10p/b4g
+         U3lPgzcYW7/HcxfRrz/6DAR1DKMU8Ki7pHUaUWqvexJ5WzcrKNGX3EcigmIZNLEDcLX/
+         1WbECeQ03q2bCSJdvufKe2C+923wmsFO+0xpjv0d49bF3ePzdeZkKoVCb8jAa+7+Sxgp
+         L7nQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xxakuRjObUCkye3AQ22V76C+V/wXWgeyU417sI5Erhk=;
+        b=xH1hiLz7VEObKFP433KPDOcTreeZ1lEJXd3smZFW2K9knGs/YlSERzzi780s2sztYf
+         bH6B0j10AwN/r9ETpDkivw3hSpPkABXhQnU/UASRjRqCdCS4CpVzsVr1EvVKMPGzoWBu
+         kP8XGRUiXS1Z4Q+hhSfBVJeXPfyDHJXul2xoPxGRq0sF0/NpjqdY2TIYsiSpg6Im+y7Q
+         25n1RtaPCoAOwXhDEmtRgprfeXiJDjb2Q7c+Khau3YfOux6r+jKdfIgI/WD3kSq0T3Cr
+         Fv+LNXFFhKX91AMfokRqzXHxPyyHgMHgiZ12zWpqC9hiLuUiVuBW0VuFLYP5E+YqGllv
+         BbVw==
+X-Gm-Message-State: AJIora97+NokD9u0GhoflUe3ePojHxkPgGnDr7w66o6sq+33VsgA/WSd
+	EK17rNokkaC5o7RcqB1zm9fIBAQPChS4T/38AwE72w==
+X-Google-Smtp-Source: AGRyM1s4khtAdDPD9uAtpQbZOOwGGF2BRshqhouC45A+O1rPRIXlXk8YUZSNdivuO908GgYbfwpcIOkx4P2VtlZmLr8=
+X-Received: by 2002:a2e:bd11:0:b0:25d:4f94:ac79 with SMTP id
+ n17-20020a2ebd11000000b0025d4f94ac79mr2689388ljq.4.1657303997519; Fri, 08 Jul
+ 2022 11:13:17 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 172.16.1.31
-X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org, linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, iommu@lists.linux.dev, sbates@raithlin.com, hch@lst.de, jgg@ziepe.ca, christian.koenig@amd.com, ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch, jason@jlekstrand.net, dave.hansen@linux.intel.com, helgaas@kernel.org, dan.j.williams@intel.com, dave.b.minturn@intel.com, jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, jhubbard@nvidia.com, rcampbell@nvidia.com, logang@deltatee.com, bhelgaas@google.com
-X-SA-Exim-Mail-From: gunthorp@deltatee.com
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on ale.deltatee.com
-X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=5.0 tests=ALL_TRUSTED,BAYES_00,
-	MYRULES_NO_TEXT,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-	version=3.4.6
-Subject: [PATCH v8 03/13] PCI/P2PDMA: Introduce helpers for dma_map_sg implementations
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+References: <20220702213724.3949-1-semen.protsenko@linaro.org>
+ <20220702213724.3949-4-semen.protsenko@linaro.org> <925751c3-83e8-02b8-6a8b-549290522a9e@linaro.org>
+In-Reply-To: <925751c3-83e8-02b8-6a8b-549290522a9e@linaro.org>
+From: Sam Protsenko <semen.protsenko@linaro.org>
+Date: Fri, 8 Jul 2022 21:13:06 +0300
+Message-ID: <CAPLW+4kc86aOVspBz52vt+uhs8GXDNfekd-7jKhyNjUpi8XwLQ@mail.gmail.com>
+Subject: Re: [PATCH 3/4] iommu/exynos: Use lookup based approach to access v7 registers
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Janghyuck Kim <janghyuck.kim@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, 
+	Daniel Mentz <danielmentz@google.com>, Sumit Semwal <sumit.semwal@linaro.org>, 
+	iommu@lists.linux-foundation.org, iommu@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Add pci_p2pdma_map_segment() as a helper for dma_map_sg()
-implementations. It takes an scatterlist segment that must point to a
-pci_p2pdma struct page and will map it if the mapping requires a bus
-address.
+On Sun, 3 Jul 2022 at 22:29, Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 02/07/2022 23:37, Sam Protsenko wrote:
+> > SysMMU v7 might have different register layouts (VM capable or non-VM
+> > capable). Check which layout is implemented in current SysMMU module and
+> > prepare the corresponding register table for futher usage. This way is
+> > faster and more elegant than checking corresponding condition (if it's
+> > VM or non-VM SysMMU) each time before accessing v7 registers. For now
+> > the register table contains only most basic registers needed to add the
+> > SysMMU v7 support.
+> >
+> > This patch is based on downstream work of next authors:
+> >   - Janghyuck Kim <janghyuck.kim@samsung.com>
+> >   - Daniel Mentz <danielmentz@google.com>
+> >
+> > Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+> > ---
+> >  drivers/iommu/exynos-iommu.c | 46 ++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 46 insertions(+)
+> >
+> > diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> > index df6ddbebbe2b..47017e8945c5 100644
+> > --- a/drivers/iommu/exynos-iommu.c
+> > +++ b/drivers/iommu/exynos-iommu.c
+> > @@ -180,6 +180,47 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
+> >
+> >  #define has_sysmmu(dev)              (dev_iommu_priv_get(dev) != NULL)
+> >
+> > +#define MMU_REG(data, idx)           \
+> > +     ((data)->sfrbase + (data)->regs[idx].off)
+>
+> I would expect to see users of this - convert all existing regs.
+>
 
-The return value indicates whether the mapping required a bus address
-or whether the caller still needs to map the segment normally. If the
-segment should not be mapped, -EREMOTEIO is returned.
+I was thinking about doing that as a consequent patch (adding SysMMU
+v1/v5 register sets). But ok, will add in v2. And will probably split
+it per 2 patches:
+  1. Rework existing driver to use register sets (lookup table). To
+keep it as "no functional change" patch.
+  2. Add SysMMU v7 support.
 
-This helper uses a state structure to track the changes to the
-pgmap across calls and avoid needing to lookup into the xarray for
-every page.
+Also, I will probably replace MMU_REG() with more standard approach,
+i.e. will add sysmmu_read() / sysmmu_write() functions instead. It
+should make the code tidier.
 
-The prototype for the helper is added to dma-map-ops.h as it is only
-useful to dma map implementations and don't need to pollute the public
-pci-p2pdma header.
+> > +#define MMU_VM_REG(data, idx, vmid)  \
+> > +     (MMU_REG(data, idx) + (vmid) * (data)->regs[idx].mult)
+> > +
+> > +enum {
+> > +     REG_SET_NON_VM,
+> > +     REG_SET_VM,
+> > +     MAX_REG_SET
+> > +};
+> > +
+> > +enum {
+> > +     IDX_CTRL_VM,
+> > +     IDX_CFG_VM,
+> > +     IDX_FLPT_BASE,
+>
+> Isn't this called REG_MMU_FLUSH? If yes, it's a bit confusing to see
+> different name used.
+>
 
-Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
----
- drivers/pci/p2pdma.c        | 44 +++++++++++++++++++++++++-----
- include/linux/dma-map-ops.h | 53 +++++++++++++++++++++++++++++++++++++
- 2 files changed, 90 insertions(+), 7 deletions(-)
+I used v7 registers naming, as I only added support for v7 register
+set in this patch series. As I said above, I'll add SysMMU v1/v5
+register sets in v2, and rename those indexes to have old register
+names. Despite the differences between register names in SysMMU v1/v5
+and v7, their purpose is the same.
 
-diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
-index 4e8bc457e29a..5d2538aa0778 100644
---- a/drivers/pci/p2pdma.c
-+++ b/drivers/pci/p2pdma.c
-@@ -10,6 +10,7 @@
- 
- #define pr_fmt(fmt) "pci-p2pdma: " fmt
- #include <linux/ctype.h>
-+#include <linux/dma-map-ops.h>
- #include <linux/pci-p2pdma.h>
- #include <linux/module.h>
- #include <linux/slab.h>
-@@ -20,13 +21,6 @@
- #include <linux/seq_buf.h>
- #include <linux/xarray.h>
- 
--enum pci_p2pdma_map_type {
--	PCI_P2PDMA_MAP_UNKNOWN = 0,
--	PCI_P2PDMA_MAP_NOT_SUPPORTED,
--	PCI_P2PDMA_MAP_BUS_ADDR,
--	PCI_P2PDMA_MAP_THRU_HOST_BRIDGE,
--};
--
- struct pci_p2pdma {
- 	struct gen_pool *pool;
- 	bool p2pmem_published;
-@@ -944,6 +938,42 @@ void pci_p2pdma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg,
- }
- EXPORT_SYMBOL_GPL(pci_p2pdma_unmap_sg_attrs);
- 
-+/**
-+ * pci_p2pdma_map_segment - map an sg segment determining the mapping type
-+ * @state: State structure that should be declared outside of the for_each_sg()
-+ *	loop and initialized to zero.
-+ * @dev: DMA device that's doing the mapping operation
-+ * @sg: scatterlist segment to map
-+ *
-+ * This is a helper to be used by non-IOMMU dma_map_sg() implementations where
-+ * the sg segment is the same for the page_link and the dma_address.
-+ *
-+ * Attempt to map a single segment in an SGL with the PCI bus address.
-+ * The segment must point to a PCI P2PDMA page and thus must be
-+ * wrapped in a is_pci_p2pdma_page(sg_page(sg)) check.
-+ *
-+ * Returns the type of mapping used and maps the page if the type is
-+ * PCI_P2PDMA_MAP_BUS_ADDR.
-+ */
-+enum pci_p2pdma_map_type
-+pci_p2pdma_map_segment(struct pci_p2pdma_map_state *state, struct device *dev,
-+		       struct scatterlist *sg)
-+{
-+	if (state->pgmap != sg_page(sg)->pgmap) {
-+		state->pgmap = sg_page(sg)->pgmap;
-+		state->map = pci_p2pdma_map_type(state->pgmap, dev);
-+		state->bus_off = to_p2p_pgmap(state->pgmap)->bus_offset;
-+	}
-+
-+	if (state->map == PCI_P2PDMA_MAP_BUS_ADDR) {
-+		sg->dma_address = sg_phys(sg) + state->bus_off;
-+		sg_dma_len(sg) = sg->length;
-+		sg_dma_mark_bus_address(sg);
-+	}
-+
-+	return state->map;
-+}
-+
- /**
-  * pci_p2pdma_enable_store - parse a configfs/sysfs attribute store
-  *		to enable p2pdma
-diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index 0d5b06b3a4a6..df27ee3c9afc 100644
---- a/include/linux/dma-map-ops.h
-+++ b/include/linux/dma-map-ops.h
-@@ -379,4 +379,57 @@ static inline void debug_dma_dump_mappings(struct device *dev)
- 
- extern const struct dma_map_ops dma_dummy_ops;
- 
-+enum pci_p2pdma_map_type {
-+	/*
-+	 * PCI_P2PDMA_MAP_UNKNOWN: Used internally for indicating the mapping
-+	 * type hasn't been calculated yet. Functions that return this enum
-+	 * never return this value.
-+	 */
-+	PCI_P2PDMA_MAP_UNKNOWN = 0,
-+
-+	/*
-+	 * PCI_P2PDMA_MAP_NOT_SUPPORTED: Indicates the transaction will
-+	 * traverse the host bridge and the host bridge is not in the
-+	 * allowlist. DMA Mapping routines should return an error when
-+	 * this is returned.
-+	 */
-+	PCI_P2PDMA_MAP_NOT_SUPPORTED,
-+
-+	/*
-+	 * PCI_P2PDMA_BUS_ADDR: Indicates that two devices can talk to
-+	 * each other directly through a PCI switch and the transaction will
-+	 * not traverse the host bridge. Such a mapping should program
-+	 * the DMA engine with PCI bus addresses.
-+	 */
-+	PCI_P2PDMA_MAP_BUS_ADDR,
-+
-+	/*
-+	 * PCI_P2PDMA_MAP_THRU_HOST_BRIDGE: Indicates two devices can talk
-+	 * to each other, but the transaction traverses a host bridge on the
-+	 * allowlist. In this case, a normal mapping either with CPU physical
-+	 * addresses (in the case of dma-direct) or IOVA addresses (in the
-+	 * case of IOMMUs) should be used to program the DMA engine.
-+	 */
-+	PCI_P2PDMA_MAP_THRU_HOST_BRIDGE,
-+};
-+
-+struct pci_p2pdma_map_state {
-+	struct dev_pagemap *pgmap;
-+	int map;
-+	u64 bus_off;
-+};
-+
-+#ifdef CONFIG_PCI_P2PDMA
-+enum pci_p2pdma_map_type
-+pci_p2pdma_map_segment(struct pci_p2pdma_map_state *state, struct device *dev,
-+		       struct scatterlist *sg);
-+#else /* CONFIG_PCI_P2PDMA */
-+static inline enum pci_p2pdma_map_type
-+pci_p2pdma_map_segment(struct pci_p2pdma_map_state *state, struct device *dev,
-+		       struct scatterlist *sg)
-+{
-+	return PCI_P2PDMA_MAP_NOT_SUPPORTED;
-+}
-+#endif /* CONFIG_PCI_P2PDMA */
-+
- #endif /* _LINUX_DMA_MAP_OPS_H */
--- 
-2.30.2
+> > +     IDX_ALL_INV,
+>
+> Isn't this called REG_MMU_FLUSH_ENTRY?
+>
+> > +     MAX_REG_IDX
+> > +};
+> > +
+> > +struct sysmmu_vm_reg {
+> > +     unsigned int off;       /* register offset */
+> > +     unsigned int mult;      /* VM index offset multiplier */
+> > +};
+> > +
+> > +static const struct sysmmu_vm_reg sysmmu_regs[MAX_REG_SET][MAX_REG_IDX] = {
+> > +     /* Default register set (non-VM) */
+> > +     {
+> > +             /*
+> > +              * SysMMUs without VM support do not have CTRL_VM and CFG_VM
+> > +              * registers. Setting the offsets to 1 will trigger an unaligned
+> > +              * access exception.
+>
+> So why are you setting offset 1? To trigger unaligned access?
+>
 
+Yes, as comment suggests, 0x1 offset is set intentionally to cause the
+exception. That might be useful for debugging (if driver is trying to
+access some non-existing register on some particular SysMMU version).
+I'll improve the comment in v2.
+
+> > +              */
+> > +             {0x1}, {0x1}, {0x000c}, {0x0010},
+> > +     },
+> > +     /* VM capable register set */
+> > +     {
+> > +             {0x8000, 0x1000}, {0x8004, 0x1000}, {0x800c, 0x1000},
+> > +             {0x8010, 0x1000},
+> > +     },
+> You add here quite a bit of dead code and some hard-coded numbers.
+>
+
+Ok, will remove those multiplier bits for now. It can be added later,
+when implementing domains support (to use VM registers other than n=0
+instance).
+
+> > +};
+> > +
+> >  static struct device *dma_dev;
+> >  static struct kmem_cache *lv2table_kmem_cache;
+> >  static sysmmu_pte_t *zero_lv2_table;
+> > @@ -284,6 +325,7 @@ struct sysmmu_drvdata {
+> >
+> >       /* v7 fields */
+> >       bool has_vcr;                   /* virtual machine control register */
+> > +     const struct sysmmu_vm_reg *regs; /* register set */
+> >  };
+> >
+> >  static struct exynos_iommu_domain *to_exynos_domain(struct iommu_domain *dom)
+> > @@ -407,6 +449,10 @@ static void sysmmu_get_hw_info(struct sysmmu_drvdata *data)
+> >       __sysmmu_get_version(data);
+> >       if (MMU_MAJ_VER(data->version) >= 7 && __sysmmu_has_capa1(data))
+> >               __sysmmu_get_vcr(data);
+> > +     if (data->has_vcr)
+> > +             data->regs = sysmmu_regs[REG_SET_VM];
+> > +     else
+> > +             data->regs = sysmmu_regs[REG_SET_NON_VM];
+>
+> This is set and not read.
+>
+
+It's used in patch 4/4. But as discussed above, I will convert
+existing code (SysMMU v1/v3/v5) to benefit from register set as well.
+Will send in v2.
+
+Thanks for the review!
+
+> >
+> >       __sysmmu_disable_clocks(data);
+> >  }
+>
+>
+> Best regards,
+> Krzysztof
