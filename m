@@ -1,25 +1,25 @@
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44B3B3229
-	for <iommu@lists.linux.dev>; Fri,  8 Jul 2022 17:21:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FD8E3229
+	for <iommu@lists.linux.dev>; Fri,  8 Jul 2022 17:21:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
 	Message-Id:Date:Cc:To:From:content-disposition;
-	bh=8e834mcfkj5DyYp2F7UpIZpl608YuXQCo9cN4RiJA8E=; b=WQyaLzDGqtTKF10L2+k70xp9Zo
-	NYO4sof7irrsBjsiQVjw1cHzkTxZgXB1h5a5O6NMRW89IIoXRNEpVv7KFcBTW6j1OvJcmHsLoJCxn
-	/mEJsikT4B81IGCKUlRCAWy1fZAyQtibqwdtEx9aZxIEgxlSPuXnj12feUz+Be1smzXTtG3cMnLpr
-	dTw46g/FTQ55xAU5+nCGsBrSJ/7qPQcXPPeoZynV3DebYjPLYCOff7+AaQKaksgShCUC08bgOokwT
-	J0OuyWraBgjmAEa2EuGyOYPvCqb2K1T55hrlC5reJaTouQYCjCr2r5r2JIgBk9y/EtpL+8b/QMTdL
-	ELRV/teQ==;
+	bh=wH/GoBr58VENesUO6DJgxxIqxD4czlexnQ7NeoVVJuk=; b=Jbe2lfI6rbht/XeinWp9RDVotY
+	Kl0L6buynwUuOFtnCYzK/H5bXjFp3USRwpaHNOOMIKupvcSEpyQAa7rO2GAesQYennCzUEcGl2ht7
+	rpqrUoDLHMkgvm4ga6KVrPT9nROm8CVoi+kSEirHyA9I8b5bM0snQbp4YEM1nG0j0vd+aFCaRDePs
+	FmmfpBzJR7xQ24W1K/S+vZmy7aiRh/pbN7/BrSuRpFqqjCkJU91Gl04vH6GqnZmyXCvHqbEaX+eD8
+	1KJhLLh/7LccAPIFqs5/u7QXRBRyCa+ef0a+Oy7Uo3DDEq8yGbjIEa9pkP9PVPLtUO1ex/uDOPzNn
+	PVbRVsYw==;
 Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
 	by ale.deltatee.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.94.2)
 	(envelope-from <gunthorp@deltatee.com>)
-	id 1o9rCD-009xkH-83; Fri, 08 Jul 2022 10:51:14 -0600
+	id 1o9rCE-009xkG-08; Fri, 08 Jul 2022 10:51:14 -0600
 Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.94.2)
 	(envelope-from <gunthorp@deltatee.com>)
-	id 1o9rCB-0001KT-5B; Fri, 08 Jul 2022 10:51:11 -0600
+	id 1o9rCA-0001KL-PU; Fri, 08 Jul 2022 10:51:10 -0600
 From: Logan Gunthorpe <logang@deltatee.com>
 To: linux-kernel@vger.kernel.org,
 	linux-nvme@lists.infradead.org,
@@ -48,11 +48,10 @@ Cc: Stephen Bates <sbates@raithlin.com>,
 	Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
 	Ralph Campbell <rcampbell@nvidia.com>,
 	Logan Gunthorpe <logang@deltatee.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
 	Jason Gunthorpe <jgg@nvidia.com>,
 	Max Gurtovoy <mgurtovoy@nvidia.com>
-Date: Fri,  8 Jul 2022 10:51:04 -0600
-Message-Id: <20220708165104.5005-14-logang@deltatee.com>
+Date: Fri,  8 Jul 2022 10:51:02 -0600
+Message-Id: <20220708165104.5005-12-logang@deltatee.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220708165104.5005-1-logang@deltatee.com>
 References: <20220708165104.5005-1-logang@deltatee.com>
@@ -64,157 +63,70 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 172.16.1.31
-X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org, linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, iommu@lists.linux.dev, sbates@raithlin.com, hch@lst.de, jgg@ziepe.ca, christian.koenig@amd.com, ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch, jason@jlekstrand.net, dave.hansen@linux.intel.com, helgaas@kernel.org, dan.j.williams@intel.com, dave.b.minturn@intel.com, jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, logang@deltatee.com, bhelgaas@google.com, jhubbard@nvidia.com, rcampbell@nvidia.com, jgg@nvidia.com, mgurtovoy@nvidia.com
+X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org, linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, iommu@lists.linux.dev, sbates@raithlin.com, hch@lst.de, jgg@ziepe.ca, christian.koenig@amd.com, ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch, jason@jlekstrand.net, dave.hansen@linux.intel.com, helgaas@kernel.org, dan.j.williams@intel.com, dave.b.minturn@intel.com, jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, logang@deltatee.com, jhubbard@nvidia.com, rcampbell@nvidia.com, jgg@nvidia.com, mgurtovoy@nvidia.com
 X-SA-Exim-Mail-From: gunthorp@deltatee.com
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on ale.deltatee.com
 X-Spam-Level: 
 X-Spam-Status: No, score=-6.5 required=5.0 tests=ALL_TRUSTED,BAYES_00,
 	MYRULES_FREE,MYRULES_NO_TEXT,T_SCC_BODY_TEXT_LINE autolearn=no
 	autolearn_force=no version=3.4.6
-Subject: [PATCH v8 13/13] PCI/P2PDMA: Remove pci_p2pdma_[un]map_sg()
+Subject: [PATCH v8 11/13] RDMA/core: introduce ib_dma_pci_p2p_dma_supported()
 X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 
-This interface is superseded by support in dma_map_sg() which now supports
-heterogeneous scatterlists. There are no longer any users, so remove it.
+Introduce the helper function ib_dma_pci_p2p_dma_supported() to check
+if a given ib_device can be used in P2PDMA transfers. This ensures
+the ib_device is not using virt_dma and also that the underlying
+dma_device supports P2PDMA.
+
+Use the new helper in nvme-rdma to replace the existing check for
+ib_uses_virt_dma(). Adding the dma_pci_p2pdma_supported() check allows
+switching away from pci_p2pdma_[un]map_sg().
 
 Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/pci/p2pdma.c       | 66 --------------------------------------
- include/linux/pci-p2pdma.h | 27 ----------------
- 2 files changed, 93 deletions(-)
+ drivers/nvme/target/rdma.c |  2 +-
+ include/rdma/ib_verbs.h    | 11 +++++++++++
+ 2 files changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
-index 5d2538aa0778..4496a7c5c478 100644
---- a/drivers/pci/p2pdma.c
-+++ b/drivers/pci/p2pdma.c
-@@ -872,72 +872,6 @@ static enum pci_p2pdma_map_type pci_p2pdma_map_type(struct dev_pagemap *pgmap,
- 	return type;
+diff --git a/drivers/nvme/target/rdma.c b/drivers/nvme/target/rdma.c
+index 09fdcac87d17..4597bca43a6d 100644
+--- a/drivers/nvme/target/rdma.c
++++ b/drivers/nvme/target/rdma.c
+@@ -415,7 +415,7 @@ static int nvmet_rdma_alloc_rsp(struct nvmet_rdma_device *ndev,
+ 	if (ib_dma_mapping_error(ndev->device, r->send_sge.addr))
+ 		goto out_free_rsp;
+ 
+-	if (!ib_uses_virt_dma(ndev->device))
++	if (ib_dma_pci_p2p_dma_supported(ndev->device))
+ 		r->req.p2p_client = &ndev->device->dev;
+ 	r->send_sge.length = sizeof(*r->req.cqe);
+ 	r->send_sge.lkey = ndev->pd->local_dma_lkey;
+diff --git a/include/rdma/ib_verbs.h b/include/rdma/ib_verbs.h
+index 9c6317cf80d5..523843d9ed6c 100644
+--- a/include/rdma/ib_verbs.h
++++ b/include/rdma/ib_verbs.h
+@@ -4013,6 +4013,17 @@ static inline bool ib_uses_virt_dma(struct ib_device *dev)
+ 	return IS_ENABLED(CONFIG_INFINIBAND_VIRT_DMA) && !dev->dma_device;
  }
  
--static int __pci_p2pdma_map_sg(struct pci_p2pdma_pagemap *p2p_pgmap,
--		struct device *dev, struct scatterlist *sg, int nents)
--{
--	struct scatterlist *s;
--	int i;
--
--	for_each_sg(sg, s, nents, i) {
--		s->dma_address = sg_phys(s) + p2p_pgmap->bus_offset;
--		sg_dma_len(s) = s->length;
--	}
--
--	return nents;
--}
--
--/**
-- * pci_p2pdma_map_sg_attrs - map a PCI peer-to-peer scatterlist for DMA
-- * @dev: device doing the DMA request
-- * @sg: scatter list to map
-- * @nents: elements in the scatterlist
-- * @dir: DMA direction
-- * @attrs: DMA attributes passed to dma_map_sg() (if called)
-- *
-- * Scatterlists mapped with this function should be unmapped using
-- * pci_p2pdma_unmap_sg_attrs().
-- *
-- * Returns the number of SG entries mapped or 0 on error.
-- */
--int pci_p2pdma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
--		int nents, enum dma_data_direction dir, unsigned long attrs)
--{
--	struct pci_p2pdma_pagemap *p2p_pgmap =
--		to_p2p_pgmap(sg_page(sg)->pgmap);
--
--	switch (pci_p2pdma_map_type(sg_page(sg)->pgmap, dev)) {
--	case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
--		return dma_map_sg_attrs(dev, sg, nents, dir, attrs);
--	case PCI_P2PDMA_MAP_BUS_ADDR:
--		return __pci_p2pdma_map_sg(p2p_pgmap, dev, sg, nents);
--	default:
--		/* Mapping is not Supported */
--		return 0;
--	}
--}
--EXPORT_SYMBOL_GPL(pci_p2pdma_map_sg_attrs);
--
--/**
-- * pci_p2pdma_unmap_sg_attrs - unmap a PCI peer-to-peer scatterlist that was
-- *	mapped with pci_p2pdma_map_sg()
-- * @dev: device doing the DMA request
-- * @sg: scatter list to map
-- * @nents: number of elements returned by pci_p2pdma_map_sg()
-- * @dir: DMA direction
-- * @attrs: DMA attributes passed to dma_unmap_sg() (if called)
-- */
--void pci_p2pdma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg,
--		int nents, enum dma_data_direction dir, unsigned long attrs)
--{
--	enum pci_p2pdma_map_type map_type;
--
--	map_type = pci_p2pdma_map_type(sg_page(sg)->pgmap, dev);
--
--	if (map_type == PCI_P2PDMA_MAP_THRU_HOST_BRIDGE)
--		dma_unmap_sg_attrs(dev, sg, nents, dir, attrs);
--}
--EXPORT_SYMBOL_GPL(pci_p2pdma_unmap_sg_attrs);
--
++/*
++ * Check if a IB device's underlying DMA mapping supports P2PDMA transfers.
++ */
++static inline bool ib_dma_pci_p2p_dma_supported(struct ib_device *dev)
++{
++	if (ib_uses_virt_dma(dev))
++		return false;
++
++	return dma_pci_p2pdma_supported(dev->dma_device);
++}
++
  /**
-  * pci_p2pdma_map_segment - map an sg segment determining the mapping type
-  * @state: State structure that should be declared outside of the for_each_sg()
-diff --git a/include/linux/pci-p2pdma.h b/include/linux/pci-p2pdma.h
-index 8318a97c9c61..2c07aa6b7665 100644
---- a/include/linux/pci-p2pdma.h
-+++ b/include/linux/pci-p2pdma.h
-@@ -30,10 +30,6 @@ struct scatterlist *pci_p2pmem_alloc_sgl(struct pci_dev *pdev,
- 					 unsigned int *nents, u32 length);
- void pci_p2pmem_free_sgl(struct pci_dev *pdev, struct scatterlist *sgl);
- void pci_p2pmem_publish(struct pci_dev *pdev, bool publish);
--int pci_p2pdma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
--		int nents, enum dma_data_direction dir, unsigned long attrs);
--void pci_p2pdma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg,
--		int nents, enum dma_data_direction dir, unsigned long attrs);
- int pci_p2pdma_enable_store(const char *page, struct pci_dev **p2p_dev,
- 			    bool *use_p2pdma);
- ssize_t pci_p2pdma_enable_show(char *page, struct pci_dev *p2p_dev,
-@@ -83,17 +79,6 @@ static inline void pci_p2pmem_free_sgl(struct pci_dev *pdev,
- static inline void pci_p2pmem_publish(struct pci_dev *pdev, bool publish)
- {
- }
--static inline int pci_p2pdma_map_sg_attrs(struct device *dev,
--		struct scatterlist *sg, int nents, enum dma_data_direction dir,
--		unsigned long attrs)
--{
--	return 0;
--}
--static inline void pci_p2pdma_unmap_sg_attrs(struct device *dev,
--		struct scatterlist *sg, int nents, enum dma_data_direction dir,
--		unsigned long attrs)
--{
--}
- static inline int pci_p2pdma_enable_store(const char *page,
- 		struct pci_dev **p2p_dev, bool *use_p2pdma)
- {
-@@ -119,16 +104,4 @@ static inline struct pci_dev *pci_p2pmem_find(struct device *client)
- 	return pci_p2pmem_find_many(&client, 1);
- }
- 
--static inline int pci_p2pdma_map_sg(struct device *dev, struct scatterlist *sg,
--				    int nents, enum dma_data_direction dir)
--{
--	return pci_p2pdma_map_sg_attrs(dev, sg, nents, dir, 0);
--}
--
--static inline void pci_p2pdma_unmap_sg(struct device *dev,
--		struct scatterlist *sg, int nents, enum dma_data_direction dir)
--{
--	pci_p2pdma_unmap_sg_attrs(dev, sg, nents, dir, 0);
--}
--
- #endif /* _LINUX_PCI_P2P_H */
+  * ib_dma_mapping_error - check a DMA addr for error
+  * @dev: The device for which the dma_addr was created
 -- 
 2.30.2
 
