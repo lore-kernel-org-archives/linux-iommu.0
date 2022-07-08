@@ -1,101 +1,81 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from mail.kapsi.fi (mail.kapsi.fi [91.232.154.25])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DFC37EB
-	for <iommu@lists.linux.dev>; Fri,  8 Jul 2022 08:17:52 +0000 (UTC)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2686bfeG002418;
-	Fri, 8 Jul 2022 08:17:36 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=xu4rCDT68mfO5MudmK6UmIYbKX3my2hBQzJ60S+24hQ=;
- b=Lyr920IHY24YJdACfJBEbx+YhwQg2zV536m5TfEzFiLuWb9bM4551+eHtC+62umKXNGh
- v/NFJU2uayTkGICCY7Gq0YzsTSmC1y2BQ2OcFyKQ2V96U2JwVg+MRcHdEMYEURPFEL/k
- M3/qUHQt0o1W/uAFQ5ly8pdHc9TCgK1brmj0gI1oGasaDIZ5Wh0UoNxztKvlghseBMDx
- gDwoVcPSEoUllVK8Ld8r3DUZO9V7lHk9I6/yUCWk4sjmvuhpzdJmb27gTHKB+HrMnh2Q
- 9SFGq8Y5D+ntSbxWwQjYJODqmQbKzndjusrSHvJ7Gx7omnj9xIVBtbc0nuSXP/Tl7y96 2A== 
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h6e9ymfyc-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 08 Jul 2022 08:17:36 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-	by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 268860be014846;
-	Fri, 8 Jul 2022 08:17:34 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-	by ppma04ams.nl.ibm.com with ESMTP id 3h4v4jupng-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 08 Jul 2022 08:17:34 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-	by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2688HVlG24903996
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 8 Jul 2022 08:17:31 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 5B368A4054;
-	Fri,  8 Jul 2022 08:17:31 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id ADC66A405F;
-	Fri,  8 Jul 2022 08:17:30 +0000 (GMT)
-Received: from sig-9-145-21-70.uk.ibm.com (unknown [9.145.21.70])
-	by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-	Fri,  8 Jul 2022 08:17:30 +0000 (GMT)
-Message-ID: <44c823d7c9ab15579d30734761200c0a6ed44a6f.camel@linux.ibm.com>
-Subject: Re: [PATCH v3 00/15] iommu: Retire bus_set_iommu()
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org,
-        Matthew Rosato
-	 <mjrosato@linux.ibm.com>
-Cc: will@kernel.org, iommu@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, baolu.lu@linux.intel.com,
-        suravee.suthikulpanit@amd.com, vasant.hegde@amd.com,
-        mjrosato@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org
-Date: Fri, 08 Jul 2022 10:17:30 +0200
-In-Reply-To: <cover.1657034827.git.robin.murphy@arm.com>
-References: <cover.1657034827.git.robin.murphy@arm.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: MWVqaxMEq8CD8_OlP2DoJ9y5jxZ7Sui9
-X-Proofpoint-ORIG-GUID: MWVqaxMEq8CD8_OlP2DoJ9y5jxZ7Sui9
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A83A57A
+	for <iommu@lists.linux.dev>; Fri,  8 Jul 2022 09:09:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
+	s=20161220; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+	References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=ixFXV+1Qd2iJruE4p7B4EgS2FeqpAuYVVZqEbaMEXRg=; b=M1z8RFrv3wFxAs4w7HTugkhoLr
+	S76u1qClQ+NphECxpbgHLG4vYIYkJyS8a5YasaQqP+7VkUhYcp6RNFicg7QS5y52pfppDsSIezYye
+	HXGNLI2Xt8vMONKFa0Z6gd2mzUyW9dqx8QabAJ1omH7XNz7sOeUnWeEsqomQELifnMI5W2vNkWRR1
+	wmJB5AXGJxyUGFnTDjuIShnkXgVL1x2Dy6x9DenFzR8979g8zWV1tsgBlzs44fUBYwyxm5oW+aMfS
+	qSlmXeAYDBhvlVYzLMN4eX9kLE7UiVU5VzlDiCKT/BpmUFti+tmNHBxZUUACo5QC8V5dErLbmwZcg
+	8f9wCR7g==;
+Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70] helo=[192.168.1.10])
+	by mail.kapsi.fi with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+	(Exim 4.94.2)
+	(envelope-from <cyndis@kapsi.fi>)
+	id 1o9jR2-008aYH-P7; Fri, 08 Jul 2022 11:33:59 +0300
+Message-ID: <14151873-8334-7a97-63c2-01cf700a95bd@kapsi.fi>
+Date: Fri, 8 Jul 2022 11:33:59 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-08_06,2022-06-28_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 spamscore=0
- adultscore=0 priorityscore=1501 malwarescore=0 lowpriorityscore=0
- bulkscore=0 mlxlogscore=780 clxscore=1015 suspectscore=0 impostorscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207080030
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH] gpu: host1x: Register context bus unconditionally
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>, thierry.reding@gmail.com,
+ mperttunen@nvidia.com
+Cc: iommu@lists.linux.dev, linux-tegra@vger.kernel.org,
+ dri-devel@lists.freedesktop.org
+References: <503bffe670b24aac0dfb03c8fc16437b8f0cca58.1657215044.git.robin.murphy@arm.com>
+From: Mikko Perttunen <cyndis@kapsi.fi>
+In-Reply-To: <503bffe670b24aac0dfb03c8fc16437b8f0cca58.1657215044.git.robin.murphy@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 91.158.25.70
+X-SA-Exim-Mail-From: cyndis@kapsi.fi
+X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
 
-On Tue, 2022-07-05 at 18:08 +0100, Robin Murphy wrote:
-> v2: https://lore.kernel.org/linux-iommu/cover.1650890638.git.robin.murphy@arm.com/
+On 7/7/22 20:30, Robin Murphy wrote:
+> Conditional registration is a problem for other subsystems which may
+> unwittingly try to interact with host1x_context_device_bus_type in an
+> uninitialised state on non-Tegra platforms. A look under /sys/bus on a
+> typical system already reveals plenty of entries from enabled but
+> otherwise irrelevant configs, so lets keep things simple and register
+> our context bus unconditionally too.
 > 
-> Hi all,
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+>   drivers/gpu/host1x/context_bus.c | 5 -----
+>   1 file changed, 5 deletions(-)
 > 
-> Here's v3, now with working x86! Having finally made sense of how I
-> broke Intel, I've given AMD the same fix by inspection. I'm still not
-> 100% sure about s390, but it looks like it should probably be OK since
-> it seems to register an IOMMU instance for each PCI device (?!) before
-> disappearing into PCI hotplug code, wherein I assume we should never see
-> a PCI device appear without its IOMMU already registered.
+> diff --git a/drivers/gpu/host1x/context_bus.c b/drivers/gpu/host1x/context_bus.c
+> index b0d35b2bbe89..d9421179d7b4 100644
+> --- a/drivers/gpu/host1x/context_bus.c
+> +++ b/drivers/gpu/host1x/context_bus.c
+> @@ -15,11 +15,6 @@ static int __init host1x_context_device_bus_init(void)
+>   {
+>   	int err;
+>   
+> -	if (!of_machine_is_compatible("nvidia,tegra186") &&
+> -	    !of_machine_is_compatible("nvidia,tegra194") &&
+> -	    !of_machine_is_compatible("nvidia,tegra234"))
+> -		return 0;
+> -
+>   	err = bus_register(&host1x_context_device_bus_type);
+>   	if (err < 0) {
+>   		pr_err("bus type registration failed: %d\n", err);
 
-Yes, this is a bit unusual as our PCI architecture doesn't really have
-a notion of an IOMMU device only of I/O translation tables. These are
-then registered per PCI function. PCI functions may share I/O
-translation tables and thus DMA address spaces but this is not done at
-the moment. As Matt already mentioned we do need a small change for
-this patch series. Since that was still mangled in his mail for me I
-just replied with that using "git send-email". With Matt's patch
-applied I can confirm that this works fine for us and does look like a
-useful simplification. So feel free to add my
+Reviewed-by: Mikko Perttunen <mperttunen@nvidia.com>
 
-Tested-by: Niklas Schnelle <schnelle@linux.ibm.com>
-
+Cheers,
+Mikko
