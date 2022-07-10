@@ -1,41 +1,41 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 773D13C2F
-	for <iommu@lists.linux.dev>; Sun, 10 Jul 2022 23:06:12 +0000 (UTC)
-Received: by mail-wm1-f45.google.com with SMTP id 9-20020a1c0209000000b003a2dfdebe47so1269949wmc.3
-        for <iommu@lists.linux.dev>; Sun, 10 Jul 2022 16:06:12 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8B633C2B
+	for <iommu@lists.linux.dev>; Sun, 10 Jul 2022 23:06:13 +0000 (UTC)
+Received: by mail-wr1-f41.google.com with SMTP id q9so4916049wrd.8
+        for <iommu@lists.linux.dev>; Sun, 10 Jul 2022 16:06:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=w2PeNTtURN4eXiGBF6CxKQXSRiBt5jDvHMJleZnMrb8=;
-        b=SfvM5oJytjZQ0qgq6y6BcnOrkFe6G++JtjOTDQFIQy2kgaAxgwLpB5KAEhdQ4dKMz8
-         HoBc+ochk9ozAdgUZ13Hd59aOuAajgWW+mcNk2uZta1Rod3/cklDhVfxVNBZLtY6j3n9
-         DMs9Rfu47zEtjoLQm4yf2J0eUMwvOXkXwrh3RIy3Eavm7GoxQ85kk/KYwqOAe32aIaHr
-         Hx4M1hZpVcUo0CZp3kcDklEjgh4BRVuFJR/GVf1kBEiFg4rxNH3WY6BU5dkBDHxSugGZ
-         fxOCN3PTL3wdpk3L8tQiP5NSQwhY5JCCh1Lm4StdUnkpP2qNOUb7MtzEWBes5MwEu43z
-         89Lw==
+        bh=2f1MNXFf/eUDAId4C2kxkA1MS+WaHjSg/obA+yddoAY=;
+        b=A6jyZM7p9U0gZAji/VRrl+pDcvLiQfuijwn/6vIn34EzJwd59ehp2ngdh+WyHAtEmE
+         qNo5+ArvxzxcNUU9LF1x/MjgqJxm0NAzDazGeB7ijtTcJNUNFjNnEFm9WeMoq5r8p9+k
+         ODQbNzVAlRHYUpWUv7PKYdr+uX2hY4WmRAoCwYrsOIYBtPTFniOGkzGZD2+hh9dGPm6v
+         YrrQJiDqdWxbHTUiGO6tKRrm5pMHfSNZQ89iJseoQCU8iJLMo5SjEp4qG517p6FuNe1E
+         VCWLCy8KbJhR5KM60/QWaGe5DS3/eMRRMmTFrcBxrGXd4LRmZmrr8PG2+6miSEQTZX1b
+         x1mA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=w2PeNTtURN4eXiGBF6CxKQXSRiBt5jDvHMJleZnMrb8=;
-        b=JRZ9W8StCjn2GlQulcdqr+EHb78rloMQVzVM3fOA8qA76ic6OJKb6gacdCQE9nEJd1
-         6/jRSEt5ZZ95qMxFPgiNxE+yiIUgB4szt+cdYnyD234VIeAEyEXJC/NCszyJlCb3I192
-         NgkLwYPx7WlUHsbclEXhzM6aDzaI9Ys589+Sw/XnbUpF0GODKeas3k30y+ho8K6MQNBD
-         oII5dPFgjshaCGY05bjX4KqrWuGCzfsKl+fermcTcuGHEydX7xcXp63Q+y9CluyWef+Q
-         ZnSpVkatbBwsSC9umBbA5E6g57yQOXEptTxms7ZtIZ1tl0ohH/ogzfxmtcWYSCSF2kMB
-         579w==
-X-Gm-Message-State: AJIora8uVFSEqeq2QP6GbyIzWS1PuUjy1qv+xyc7iMIOyJRVOLDYmNjV
-	H2y93k+2Yf7JEpr5mLtLGI4OtWSa7rl4+rMd
-X-Google-Smtp-Source: AGRyM1sZmV2sI4U7V2nh9Zjsi3UJqRjqwe+PtYS7xEw2DVSpOkpBC8oL9Ojd/vLUIfssJW2LX5R2Pg==
-X-Received: by 2002:a05:600c:210d:b0:3a2:e686:e14 with SMTP id u13-20020a05600c210d00b003a2e6860e14mr3277007wml.25.1657494370779;
-        Sun, 10 Jul 2022 16:06:10 -0700 (PDT)
+        bh=2f1MNXFf/eUDAId4C2kxkA1MS+WaHjSg/obA+yddoAY=;
+        b=rd4UyF8pJL/ISUw+X8QWA4Lldf3I2pRw9X8KSx6kTb+2OObDpgnNAO0A3EPUzkaRiu
+         Jkx1vQWmD+8jbHCc3sC0vDGpU68MXC2hFnszZ4wkziYb+gob/OURnUmphdgP+JN0OrDD
+         hSGgmCDVgPfxgKsFsgHy7AtK2NGSXxhTdh9sUBvocq6djdqNO+yHhWX7tLZhCvXyxUBw
+         GtEn5Pyo0I4yDxrOLgOWETvg0g8c30WAAP/Ec+o8Ab2Hu4IwU/7VAlTQTMKiu6c8AiX3
+         J1LIR1/dkB8eZNMBZeD4fRAVQHGSjrjVOIS1gfp/YACFzSb6GVlEY5yFjPJTEDobdYqV
+         DcXA==
+X-Gm-Message-State: AJIora+/mi8VppbVP/z/y6NabLWbSRCAEmCmLeS1OCy+9a/hPw8eFudl
+	zBtEOrwI+jq7/XAVIx863KGkqw==
+X-Google-Smtp-Source: AGRyM1uXSy+6O3wOe/skUDOaKGNjZhKBZ5DB1zppE9YnC4UYd9LI3XBpGotBSKS2BFKSQx6GJYIjSg==
+X-Received: by 2002:a5d:434a:0:b0:21d:aa7e:b1bb with SMTP id u10-20020a5d434a000000b0021daa7eb1bbmr297352wrr.619.1657494371966;
+        Sun, 10 Jul 2022 16:06:11 -0700 (PDT)
 Received: from localhost ([31.134.121.151])
-        by smtp.gmail.com with ESMTPSA id k1-20020adfd841000000b0021d73772c87sm4398867wrl.91.2022.07.10.16.06.10
+        by smtp.gmail.com with ESMTPSA id z11-20020a05600c0a0b00b0039c747a1e8fsm9713112wmp.7.2022.07.10.16.06.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Jul 2022 16:06:10 -0700 (PDT)
+        Sun, 10 Jul 2022 16:06:11 -0700 (PDT)
 From: Sam Protsenko <semen.protsenko@linaro.org>
 To: Marek Szyprowski <m.szyprowski@samsung.com>,
 	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
@@ -51,9 +51,9 @@ Cc: Joerg Roedel <joro@8bytes.org>,
 	linux-arm-kernel@lists.infradead.org,
 	linux-samsung-soc@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 5/7] iommu/exynos: Check if SysMMU v7 has VM registers
-Date: Mon, 11 Jul 2022 02:06:01 +0300
-Message-Id: <20220710230603.13526-6-semen.protsenko@linaro.org>
+Subject: [PATCH v2 6/7] iommu/exynos: Add SysMMU v7 register sets
+Date: Mon, 11 Jul 2022 02:06:02 +0300
+Message-Id: <20220710230603.13526-7-semen.protsenko@linaro.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220710230603.13526-1-semen.protsenko@linaro.org>
 References: <20220710230603.13526-1-semen.protsenko@linaro.org>
@@ -65,82 +65,71 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-SysMMU v7 can have Virtual Machine registers, which implement multiple
-translation domains. The driver should know if it's true or not, as VM
-registers shouldn't be accessed if not present. Read corresponding
-capabilities register to obtain that info, and store it in driver data.
+SysMMU v7 might have different register layouts (VM capable or non-VM
+capable). Check which layout is implemented in current SysMMU module and
+prepare the corresponding register table for futher usage.
 
 Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
 ---
 Changes in v2:
-  - Removed the 'const' qualifier for local non-pointer variables
+  - (none) This patch is new and added in v2
 
- drivers/iommu/exynos-iommu.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ drivers/iommu/exynos-iommu.c | 26 ++++++++++++++++++++++----
+ 1 file changed, 22 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 0cb1ce10db51..48681189ccf8 100644
+index 48681189ccf8..64bf3331064f 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -135,6 +135,9 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
- #define CFG_SYSSEL	(1 << 22) /* System MMU 3.2 only */
- #define CFG_FLPDCACHE	(1 << 20) /* System MMU 3.2+ only */
- 
-+#define CAPA0_CAPA1_EXIST		BIT(11)
-+#define CAPA1_VCR_ENABLED		BIT(14)
-+
- /* common registers */
- #define REG_MMU_VERSION		0x034
- 
-@@ -154,6 +157,10 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
- #define REG_V5_FAULT_AR_VA	0x070
- #define REG_V5_FAULT_AW_VA	0x080
- 
-+/* v7.x registers */
-+#define REG_V7_CAPA0		0x870
-+#define REG_V7_CAPA1		0x874
-+
- #define has_sysmmu(dev)		(dev_iommu_priv_get(dev) != NULL)
- 
+@@ -166,6 +166,8 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
  enum {
-@@ -298,6 +305,9 @@ struct sysmmu_drvdata {
- 
- 	struct iommu_device iommu;	/* IOMMU core handle */
- 	const unsigned int *regs;	/* register set */
-+
-+	/* v7 fields */
-+	bool has_vcr;			/* virtual machine control register */
+ 	REG_SET_V1,
+ 	REG_SET_V5,
++	REG_SET_V7_NON_VM,
++	REG_SET_V7_VM,
+ 	MAX_REG_SET
  };
  
- static struct exynos_iommu_domain *to_exynos_domain(struct iommu_domain *dom)
-@@ -411,11 +421,27 @@ static void __sysmmu_get_version(struct sysmmu_drvdata *data)
- 		MMU_MAJ_VER(data->version), MMU_MIN_VER(data->version));
- }
+@@ -201,6 +203,16 @@ static const unsigned int sysmmu_regs[MAX_REG_SET][MAX_REG_IDX] = {
+ 		0x00, 0x04, 0x08, 0x0c, 0x10, 0x14, 0x18, 0x20, 0x24,
+ 		0x60, 0x64,
+ 	},
++	/* SysMMU v7: Default register set (non-VM) */
++	{
++		0x00, 0x04, 0x08, 0x0c, 0x10, 0x14, 0x18, 0x20, 0x24,
++		0x60, 0x64,
++	},
++	/* SysMMU v7: VM capable register set */
++	{
++		0x00, 0x04, 0x08, 0x800c, 0x8010, 0x8014, 0x8018, 0x8020,
++		0x8024, 0x60, 0x64,
++	},
+ };
  
-+static bool __sysmmu_has_capa1(struct sysmmu_drvdata *data)
-+{
-+	u32 capa0 = readl(data->sfrbase + REG_V7_CAPA0);
-+
-+	return capa0 & CAPA0_CAPA1_EXIST;
-+}
-+
-+static void __sysmmu_get_vcr(struct sysmmu_drvdata *data)
-+{
-+	u32 capa1 = readl(data->sfrbase + REG_V7_CAPA1);
-+
-+	data->has_vcr = capa1 & CAPA1_VCR_ENABLED;
-+}
-+
- static void sysmmu_get_hw_info(struct sysmmu_drvdata *data)
- {
+ static struct device *dma_dev;
+@@ -440,12 +452,18 @@ static void sysmmu_get_hw_info(struct sysmmu_drvdata *data)
  	__sysmmu_enable_clocks(data);
  
  	__sysmmu_get_version(data);
-+	if (MMU_MAJ_VER(data->version) >= 7 && __sysmmu_has_capa1(data))
-+		__sysmmu_get_vcr(data);
- 	if (MMU_MAJ_VER(data->version) < 5)
+-	if (MMU_MAJ_VER(data->version) >= 7 && __sysmmu_has_capa1(data))
+-		__sysmmu_get_vcr(data);
+-	if (MMU_MAJ_VER(data->version) < 5)
++	if (MMU_MAJ_VER(data->version) < 5) {
  		data->regs = sysmmu_regs[REG_SET_V1];
- 	else
+-	else
++	} else if (MMU_MAJ_VER(data->version) < 7) {
+ 		data->regs = sysmmu_regs[REG_SET_V5];
++	} else {
++		if (__sysmmu_has_capa1(data))
++			__sysmmu_get_vcr(data);
++		if (data->has_vcr)
++			data->regs = sysmmu_regs[REG_SET_V7_VM];
++		else
++			data->regs = sysmmu_regs[REG_SET_V7_NON_VM];
++	}
+ 
+ 	__sysmmu_disable_clocks(data);
+ }
 -- 
 2.30.2
 
