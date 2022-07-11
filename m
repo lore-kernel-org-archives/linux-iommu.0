@@ -1,44 +1,44 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C17827A
-	for <iommu@lists.linux.dev>; Mon, 11 Jul 2022 12:45:47 +0000 (UTC)
-Received: by mail-wm1-f47.google.com with SMTP id o19-20020a05600c511300b003a2de48b4bbso3574651wms.5
-        for <iommu@lists.linux.dev>; Mon, 11 Jul 2022 05:45:47 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CDE27A
+	for <iommu@lists.linux.dev>; Mon, 11 Jul 2022 12:54:15 +0000 (UTC)
+Received: by mail-wr1-f52.google.com with SMTP id r14so6902752wrg.1
+        for <iommu@lists.linux.dev>; Mon, 11 Jul 2022 05:54:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=sifive.com; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=t777n2+TDn0IVOqq3hDcAeLbMM3MoxW5K5Rlccw3Od8=;
-        b=CwhBnHwIQx+qc/9lxiXsapAjOzF7ooWQAJ/hwNRTlHBdTs4EGEopz70uNSdV60sMHM
-         rd673qW9ta0iNTurwlWteBP3gKBDPrIIAhfnFY7pOzsaObhiGb6Gq/kwmVztWwIGcN8h
-         WuWyB07It2+WGyZ64k6diIcOHrQ1o7WSZqEzFmYHOGQDltnD/vaj0COXM1FGs0fUzd4H
-         vOAvwTHbSLd1aDiJi+qx3CG1XQyDaJ2ps4f8onCg1kVVPKOhVsvEzA++mHtPKhaFq4oN
-         SOiZ1XTAGR9B5D0whn1vf6LHnKFMr6wDVEo0H+qLzRhZUuaP2Nq8yww5HGfgAUxMbpgA
-         f1Ig==
+        bh=zjEIh4DqFEXRLYwuzGFMNC/3I63SrKxPqVblwnhPmog=;
+        b=kJA/NAnsNsjB3IBO7apOW66xuZ2zMyaJxMhEURJWw1AwKCAKPExd0qEE3n+vu0wSYb
+         CS2PCCgRiEn3I6CslpnOCHwUorwpj6K8k0IgRrGFjn824TgreOnqK8tZwz+4vfN8ytgY
+         icHgMkdCeKHMWvpsvaIfl939GMlDT3Qfw1YZeoJpC7HsKakEY/QZ029hacHl7TBQ5pR9
+         T8x1tiwT5HOx9mCxfaGA3AD7/N8EPrOe/P1BZODfpGh3dWB3/5Lo62edJA4b4ZuQlkzc
+         QXuK6qboNB9OK+040ZMV4tHRgRGIZnmjgeJcXRYLtq4GJCmnNeioX+AgmHjI6JgKEg2b
+         kf+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=t777n2+TDn0IVOqq3hDcAeLbMM3MoxW5K5Rlccw3Od8=;
-        b=m5tviQ3tMqyufSXDhgtLlUdc5CvA4ygbRH3VrATTk4rJRLTPu4d9KYOmhh9wTTg2zI
-         tOTmPhbWmmarb3m+n8F015u1O1+hoFS90i7ygMQVtOClrXWN9AhY8Lf82jPqIKakmPH6
-         EwhALGWS0zRBTZB8dw87BIwg69Pf8l6sDhPwdVOI1HoUfbJ7XMK46K024+g6KwZIG+h2
-         6PQVtmo4Hr+A+Z9471P6gALiEeZAu1qXG+SpisaCVIa+HEtBRQOxMPqI9+mG+OcT0Opl
-         bYcJ8VarZiVvAf6S3oEfEEHUwCErLzhHgMSfOKLXnFI8tmtMTld4FJu+vgdqly/jLV7d
-         CMIg==
-X-Gm-Message-State: AJIora+oAEyKVmufOjSd0iCQuuBVZ5130G10XfkcQZ4RmGWS/fMUp4vR
-	8p8igNr6UxBCsRV3rNiIvQ6XiQ==
-X-Google-Smtp-Source: AGRyM1tz30I9rm8O+KUFpRG0nRJ+cqUu/InH2GzOhqDpt8AIAuAUSg6ATzCTQTbAzLvDu2yXI+R6TA==
-X-Received: by 2002:a7b:c381:0:b0:3a2:aef9:8df4 with SMTP id s1-20020a7bc381000000b003a2aef98df4mr16258084wmj.7.1657543546039;
-        Mon, 11 Jul 2022 05:45:46 -0700 (PDT)
+        bh=zjEIh4DqFEXRLYwuzGFMNC/3I63SrKxPqVblwnhPmog=;
+        b=hSGWPeUzHjNYFmmrqdePpLcuY5rbut/QWH8j/+Uzn0CjAUkoujqcnMEzmKzEcBZpkZ
+         mg+MglBLdfEayhYFQF+ewD13hKcFnTIlfjDmVTRpe1r1HAmUuEkCY/l2AxM1K8nqxK5b
+         u5Y+tLhP2zOUMku+fLKdcYqkRY/bBLONeRrwlmuXMImv2qHx037lU0qT/4KzNH5g1Eol
+         S77HIQQ2L4SWJriDzU7f/6i1QDOBQ46DW2S8pEUaEF915nudKN0BCuocDqAzh/5TIG9l
+         PbyPcwohaS2OO0Bl1s2/2BSveBpPLKrbdVNRK+OO9eT/F9qOuacyqMBA9Cr7sAJL+Dmo
+         ni2g==
+X-Gm-Message-State: AJIora9OMJcVFd2HPiQedpyEjMHYJUYkvBul3S4nOv8Avtk7VpRAy8PA
+	LaOVyNARX1XObCwvqdIjwsuuVw==
+X-Google-Smtp-Source: AGRyM1sEUkePYczWBSqEyhSQyn8LZryJCwMsuoh8eIAEeLas5yuDPs6yaRkyucKd4Hlu6ig/uWlZRw==
+X-Received: by 2002:a5d:4a01:0:b0:21d:8ce1:8b6d with SMTP id m1-20020a5d4a01000000b0021d8ce18b6dmr16532000wrq.718.1657544053570;
+        Mon, 11 Jul 2022 05:54:13 -0700 (PDT)
 Received: from [10.35.4.171] ([167.98.27.226])
-        by smtp.gmail.com with ESMTPSA id f17-20020a5d50d1000000b0021b956da1dcsm5702313wrt.113.2022.07.11.05.45.44
+        by smtp.gmail.com with ESMTPSA id l5-20020a05600c4f0500b003a04e6410e0sm10142773wmq.33.2022.07.11.05.54.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Jul 2022 05:45:45 -0700 (PDT)
-Message-ID: <7906385d-d3f5-113a-4d31-8e9564c3c6ab@sifive.com>
-Date: Mon, 11 Jul 2022 13:45:44 +0100
+        Mon, 11 Jul 2022 05:54:12 -0700 (PDT)
+Message-ID: <265d7b6b-a0a4-ecaf-10bd-15e1ea416a06@sifive.com>
+Date: Mon, 11 Jul 2022 13:54:11 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -50,10 +50,12 @@ User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
 Subject: Re: [PATCH] swiotlb: ensure io_tlb_default_mem spinlock always
  initialised
 Content-Language: en-GB
-To: Conor.Dooley@microchip.com, robin.murphy@arm.com, hch@lst.de
+To: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- iommu@lists.linux-foundation.org, sudip.mukherjee@sifive.com,
- jude.onyenegecha@sifive.com, m.szyprowski@samsung.com
+ iommu@lists.linux-foundation.org,
+ Sudip Mukherjee <sudip.mukherjee@sifive.com>,
+ Jude Onyenegecha <jude.onyenegecha@sifive.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>
 References: <20220708170811.270589-1-ben.dooks@sifive.com>
  <fdf5d34e-7668-c05c-9098-30e34939c88a@arm.com>
  <683344bd-dc9b-0bb5-9377-b3e9ab410a74@sifive.com>
@@ -62,51 +64,66 @@ References: <20220708170811.270589-1-ben.dooks@sifive.com>
  <20220711103921.GA6542@lst.de>
  <43426798-44df-c2c7-1f46-0b79201cb620@sifive.com>
  <ac4944b8-5d15-4761-6315-7dba6eaee0e7@arm.com>
- <fc216e29-7dfb-5265-33d1-b547b8b7bd52@microchip.com>
 From: Ben Dooks <ben.dooks@sifive.com>
-In-Reply-To: <fc216e29-7dfb-5265-33d1-b547b8b7bd52@microchip.com>
+In-Reply-To: <ac4944b8-5d15-4761-6315-7dba6eaee0e7@arm.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 11/07/2022 12:52, Conor.Dooley@microchip.com wrote:
-> 
-> 
-> On 11/07/2022 12:01, Robin Murphy wrote:
->> On 2022-07-11 11:42, Ben Dooks wrote:
->>> On 11/07/2022 11:39, Christoph Hellwig wrote:
->>>> On Mon, Jul 11, 2022 at 11:24:51AM +0100, Ben Dooks wrote:
->>>>> On 11/07/2022 11:21, Christoph Hellwig wrote:
->>>>>> On Mon, Jul 11, 2022 at 11:07:17AM +0100, Robin Murphy wrote:
->>>>>>> If none of your peripherals should need SWIOTLB, then the fact that
->>>>>>> you're ending up in swiotlb_map() at all is a clear sign that
->>>>>>> something's wrong. Most likely someone's forgotten to set their DMA
->>>>>>> masks correctly.
->>>>>>
->>>>>> Yes.
+On 11/07/2022 12:01, Robin Murphy wrote:
+> On 2022-07-11 11:42, Ben Dooks wrote:
+>> On 11/07/2022 11:39, Christoph Hellwig wrote:
+>>> On Mon, Jul 11, 2022 at 11:24:51AM +0100, Ben Dooks wrote:
+>>>> On 11/07/2022 11:21, Christoph Hellwig wrote:
+>>>>> On Mon, Jul 11, 2022 at 11:07:17AM +0100, Robin Murphy wrote:
+>>>>>> If none of your peripherals should need SWIOTLB, then the fact that
+>>>>>> you're ending up in swiotlb_map() at all is a clear sign that
+>>>>>> something's wrong. Most likely someone's forgotten to set their DMA
+>>>>>> masks correctly.
 >>>>>
->>>>> Possibly, we had at least one driver which attempted to set a 32 bit
->>>>> DMA mask which had to be removed as the DMA layer accepts this but
->>>>> since there is no DMA32 memory the allocator then just fails.
->>>>>
->>>>> I expect the above may need to be a separate discussion(s) of how to
->>>>> default the DMA mask and how to stop the implicit acceptance of setting
->>>>> a 32-bit DMA mask.
+>>>>> Yes.
 >>>>
->>>> No.  Linux simply assumes you can do 32-bit DMA and this won't
->>>> change.  So we'll need to fix your platform to support swiotlb
->>>> eventually.
+>>>> Possibly, we had at least one driver which attempted to set a 32 bit
+>>>> DMA mask which had to be removed as the DMA layer accepts this but
+>>>> since there is no DMA32 memory the allocator then just fails.
+>>>>
+>>>> I expect the above may need to be a separate discussion(s) of how to
+>>>> default the DMA mask and how to stop the implicit acceptance of setting
+>>>> a 32-bit DMA mask.
 >>>
->>> Ok, is there any examples currently in the kernel that have no memory
->>> in the DMA32 zone that do use swiotlb?
+>>> No.  Linux simply assumes you can do 32-bit DMA and this won't
+>>> change.  So we'll need to fix your platform to support swiotlb
+>>> eventually.
 >>
->> The arm64 code originally made an assumption that a system with that kind of memory layout would use a DMA offset in the interconnect, and so placed ZONE_DMA32 in the first 4GB of available RAM rather than actual physical address space. The only relatively mainstream platform we subsequently saw with all RAM above 32 bits was AMD Seattle, which also *didn't* use a DMA offset, so it "worked" by virtue of this bodge in the sense that allocations didn't fail, but DMA transactions would then disappear off into nowhere when the device truncated the MSBs of whatever too-big DMA address it was given.
->>
->> I think that stuff's long gone by now, and if any of handful of remaining Seattle users plug in a 32-bit PCIe device and try to use it with the IOMMU disabled, they'll probably see the fireworks as intended.
->>
->> Much as we'd like to make DMA an explicit opt-in for all drivers, that's something which can only really be solved 30 years ago.
+>> Ok, is there any examples currently in the kernel that have no memory
+>> in the DMA32 zone that do use swiotlb?
 > 
+> The arm64 code originally made an assumption that a system with that 
+> kind of memory layout would use a DMA offset in the interconnect, and so 
+> placed ZONE_DMA32 in the first 4GB of available RAM rather than actual 
+> physical address space. The only relatively mainstream platform we 
+> subsequently saw with all RAM above 32 bits was AMD Seattle, which also 
+> *didn't* use a DMA offset, so it "worked" by virtue of this bodge in the 
+> sense that allocations didn't fail, but DMA transactions would then 
+> disappear off into nowhere when the device truncated the MSBs of 
+> whatever too-big DMA address it was given.
 > 
-> Out of curiosity Ben, can you shed any more light on the platform?
+> I think that stuff's long gone by now, and if any of handful of 
+> remaining Seattle users plug in a 32-bit PCIe device and try to use it 
+> with the IOMMU disabled, they'll probably see the fireworks as intended.
+> 
+> Much as we'd like to make DMA an explicit opt-in for all drivers, that's 
+> something which can only really be solved 30 years ago.
 
-Not at the moment, sorry.
+I need to go back and check through what we did to get some that worked
+for us, and then come back and try and make some idea of how that is
+best done with upstream kernel.
+
+It might be possible for the PCIe controller to do some sort of very
+simple IOMMU for the case where we might have somehow an PCI device
+added to the system, but that is a very rare use-case I expect and
+if someone does it they can do the effort of updating the PCIe code
+and everything else that goes with it.
+
+-- 
+Ben
 
