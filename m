@@ -1,106 +1,45 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BD86A7A
-	for <iommu@lists.linux.dev>; Mon, 11 Jul 2022 12:59:36 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 75B5F1576;
-	Mon, 11 Jul 2022 05:59:36 -0700 (PDT)
-Received: from [10.57.85.194] (unknown [10.57.85.194])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 049213F70D;
-	Mon, 11 Jul 2022 05:59:33 -0700 (PDT)
-Message-ID: <638d1d19-dc8a-c5f0-4c91-8ed95de8fe27@arm.com>
-Date: Mon, 11 Jul 2022 13:59:29 +0100
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 311D07A
+	for <iommu@lists.linux.dev>; Mon, 11 Jul 2022 13:40:04 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 7943968AA6; Mon, 11 Jul 2022 15:40:00 +0200 (CEST)
+Date: Mon, 11 Jul 2022 15:40:00 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Ben Dooks <ben.dooks@sifive.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	iommu@lists.linux-foundation.org,
+	Sudip Mukherjee <sudip.mukherjee@sifive.com>,
+	Jude Onyenegecha <jude.onyenegecha@sifive.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH] swiotlb: ensure io_tlb_default_mem spinlock always
+ initialised
+Message-ID: <20220711134000.GA18865@lst.de>
+References: <20220708170811.270589-1-ben.dooks@sifive.com> <fdf5d34e-7668-c05c-9098-30e34939c88a@arm.com> <683344bd-dc9b-0bb5-9377-b3e9ab410a74@sifive.com> <e6c43ef0-870b-5fe6-141e-0a3d566b030e@arm.com> <20220711102134.GB4639@lst.de> <4fa8b709-c883-54dc-c302-20c9e55ae93a@sifive.com> <20220711103921.GA6542@lst.de> <43426798-44df-c2c7-1f46-0b79201cb620@sifive.com> <ac4944b8-5d15-4761-6315-7dba6eaee0e7@arm.com> <265d7b6b-a0a4-ecaf-10bd-15e1ea416a06@sifive.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 1/4] iommu/exynos: Set correct dma mask for SysMMU v5+
-Content-Language: en-GB
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Sam Protsenko <semen.protsenko@linaro.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Janghyuck Kim <janghyuck.kim@samsung.com>,
- Cho KyongHo <pullip.cho@samsung.com>, Daniel Mentz <danielmentz@google.com>,
- Sumit Semwal <sumit.semwal@linaro.org>, iommu@lists.linux-foundation.org,
- iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220702213724.3949-1-semen.protsenko@linaro.org>
- <20220702213724.3949-2-semen.protsenko@linaro.org>
- <9afb1e98-706f-ed61-892c-e3cc321364b4@linaro.org>
- <CAPLW+4kfrHOb8utzynhB=2KLDQu-NC08UYpAVjpg__NQSeSQyg@mail.gmail.com>
- <c2c3c37e-0f63-9b89-ed49-78193c46d7bd@linaro.org>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <c2c3c37e-0f63-9b89-ed49-78193c46d7bd@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <265d7b6b-a0a4-ecaf-10bd-15e1ea416a06@sifive.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On 2022-07-11 13:27, Krzysztof Kozlowski wrote:
-> On 08/07/2022 15:18, Sam Protsenko wrote:
->> On Sun, 3 Jul 2022 at 21:50, Krzysztof Kozlowski
->> <krzysztof.kozlowski@linaro.org> wrote:
->>>
->>> On 02/07/2022 23:37, Sam Protsenko wrote:
->>>> SysMMU v5+ supports 36 bit physical address space. Set corresponding DMA
->>>> mask to avoid falling back to SWTLBIO usage in dma_map_single() because
->>>> of failed dma_capable() check.
->>>>
->>>> The original code for this fix was suggested by Marek.
->>>>
->>>> Originally-by: Marek Szyprowski <m.szyprowski@samsung.com>
->>>
->>> This is some tip specific tag, I don't think checkpatch allows it.
->>> Either use suggesgted-by or co-developed-by + SoB.
->>>
->>
->> Yes, checkpatch is swearing at that line, though I encountered that
->> tag mentioning somewhere in Documentation. Will rework it in v2.
-> 
-> Yes, in tip. It did not go outside of tip.
-> 
->>
->>>> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
->>>> ---
->>>>   drivers/iommu/exynos-iommu.c | 8 ++++++++
->>>>   1 file changed, 8 insertions(+)
->>>>
->>>> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
->>>> index 71f2018e23fe..28f8c8d93aa3 100644
->>>> --- a/drivers/iommu/exynos-iommu.c
->>>> +++ b/drivers/iommu/exynos-iommu.c
->>>> @@ -647,6 +647,14 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
->>>>                }
->>>>        }
->>>>
->>>> +     if (MMU_MAJ_VER(data->version) >= 5) {
->>>> +             ret = dma_set_mask(dev, DMA_BIT_MASK(36));
->>>> +             if (ret) {
->>>> +                     dev_err(dev, "Unable to set DMA mask: %d\n", ret);
->>>
->>> Missing cleanup: iommu_device_unregister
->>> and probably also: iommu_device_sysfs_remove
->>>
->>
->> Right. Also the correct cleanup should be added for failing
->> iommu_device_register() case, above of the quoted code. Will do that
->> in v2, thanks.
->>
->> Another thing is that "remove" method is missing. But guess I'll get
->> to it later, when adding modularization support for this driver.
-> 
-> remove is independent of modules, so it should be here already.
+On Mon, Jul 11, 2022 at 01:54:11PM +0100, Ben Dooks wrote:
+> I need to go back and check through what we did to get some that worked
+> for us, and then come back and try and make some idea of how that is
+> best done with upstream kernel.
+>
+> It might be possible for the PCIe controller to do some sort of very
+> simple IOMMU for the case where we might have somehow an PCI device
+> added to the system, but that is a very rare use-case I expect and
+> if someone does it they can do the effort of updating the PCIe code
+> and everything else that goes with it.
 
-.suppress_bind_attrs is set in the driver, so a .remove method on its 
-own would be dead code, since there's no way for it to be called. We can 
-permit module unloading since the module itself can be reference counted 
-(which in practice usually means that unloading will be denied). However 
-that's not the case for driver binding itself, so it's better not to 
-even pretend that removing an IOMMU's driver while other drivers are 
-using it (usually via DMA ops without even realising) is going to have 
-anything other than catastrophic results.
-
-Thanks,
-Robin.
+Unfortunately there also are plenty of PCIe devices with addressing
+limitation even if the PCIe spec explicitly forbits that.  40, 44 or
+48 bit limitations seems to be more common than 32-bits, though.
