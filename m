@@ -1,45 +1,127 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 311D07A
-	for <iommu@lists.linux.dev>; Mon, 11 Jul 2022 13:40:04 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 7943968AA6; Mon, 11 Jul 2022 15:40:00 +0200 (CEST)
-Date: Mon, 11 Jul 2022 15:40:00 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Ben Dooks <ben.dooks@sifive.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	iommu@lists.linux-foundation.org,
-	Sudip Mukherjee <sudip.mukherjee@sifive.com>,
-	Jude Onyenegecha <jude.onyenegecha@sifive.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH] swiotlb: ensure io_tlb_default_mem spinlock always
- initialised
-Message-ID: <20220711134000.GA18865@lst.de>
-References: <20220708170811.270589-1-ben.dooks@sifive.com> <fdf5d34e-7668-c05c-9098-30e34939c88a@arm.com> <683344bd-dc9b-0bb5-9377-b3e9ab410a74@sifive.com> <e6c43ef0-870b-5fe6-141e-0a3d566b030e@arm.com> <20220711102134.GB4639@lst.de> <4fa8b709-c883-54dc-c302-20c9e55ae93a@sifive.com> <20220711103921.GA6542@lst.de> <43426798-44df-c2c7-1f46-0b79201cb620@sifive.com> <ac4944b8-5d15-4761-6315-7dba6eaee0e7@arm.com> <265d7b6b-a0a4-ecaf-10bd-15e1ea416a06@sifive.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8986F2F2E
+	for <iommu@lists.linux.dev>; Mon, 11 Jul 2022 14:49:49 +0000 (UTC)
+Received: from fraeml705-chm.china.huawei.com (unknown [172.18.147.201])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LhRWV2BZ9z67XMQ;
+	Mon, 11 Jul 2022 22:45:26 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml705-chm.china.huawei.com (10.206.15.54) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Mon, 11 Jul 2022 16:49:46 +0200
+Received: from [10.202.227.197] (10.202.227.197) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 11 Jul 2022 15:49:45 +0100
+Message-ID: <2b36e407-f053-20cc-1d7f-983a4424665c@huawei.com>
+Date: Mon, 11 Jul 2022 15:49:46 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <265d7b6b-a0a4-ecaf-10bd-15e1ea416a06@sifive.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v5 0/5] DMA mapping changes for SCSI core
+To: Damien Le Moal <damien.lemoal@opensource.wdc.com>, "Martin K. Petersen"
+	<martin.petersen@oracle.com>, Christoph Hellwig <hch@lst.de>
+CC: <joro@8bytes.org>, <will@kernel.org>, <jejb@linux.ibm.com>,
+	<m.szyprowski@samsung.com>, <robin.murphy@arm.com>,
+	<linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-ide@vger.kernel.org>, <iommu@lists.linux-foundation.org>,
+	<iommu@lists.linux.dev>, <linux-scsi@vger.kernel.org>, <linuxarm@huawei.com>
+References: <1656590892-42307-1-git-send-email-john.garry@huawei.com>
+ <b5f80062-e8ef-9597-1b0c-393140950dfb@huawei.com>
+ <20220706134447.GA23753@lst.de> <yq1y1x47jgn.fsf@ca-mkp.ca.oracle.com>
+ <5fd4814a-81b1-0e71-58e0-57a747eb684e@huawei.com>
+ <6367a264-a3d3-8857-9b5a-2afcd25580cb@opensource.wdc.com>
+ <a415e4a1-72ce-53e1-437a-fc7e56e4b913@huawei.com>
+ <62b801e8-66b6-0af7-b0c9-195823bf9f62@opensource.wdc.com>
+From: John Garry <john.garry@huawei.com>
+In-Reply-To: <62b801e8-66b6-0af7-b0c9-195823bf9f62@opensource.wdc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.227.197]
+X-ClientProxiedBy: lhreml723-chm.china.huawei.com (10.201.108.74) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 
-On Mon, Jul 11, 2022 at 01:54:11PM +0100, Ben Dooks wrote:
-> I need to go back and check through what we did to get some that worked
-> for us, and then come back and try and make some idea of how that is
-> best done with upstream kernel.
->
-> It might be possible for the PCIe controller to do some sort of very
-> simple IOMMU for the case where we might have somehow an PCI device
-> added to the system, but that is a very rare use-case I expect and
-> if someone does it they can do the effort of updating the PCIe code
-> and everything else that goes with it.
+On 11/07/2022 11:40, Damien Le Moal wrote:
+> On 7/11/22 16:36, John Garry wrote:
+>> On 11/07/2022 00:08, Damien Le Moal wrote:
+>>>> Ah, I think that I misunderstood Damien's question. I thought he was
+>>>> asking why not keep shost max_sectors at dma_max_mapping_size() and then
+>>>> init each sdev request queue max hw sectors at dma_opt_mapping_size().
+>>> I was suggesting the reverse:)  Keep the device hard limit
+>>> (max_hw_sectors) to the max dma mapping and set the soft limit
+>>> (max_sectors) to the optimal dma mapping size.
+>>
+>> Sure, but as I mentioned below, I only see a small % of requests whose
+>> mapping size exceeds max_sectors but that still causes a big performance
+>> hit. So that is why I want to set the hard limit as the optimal dma
+>> mapping size.
+> 
+> How can you possibly end-up with requests larger than max_sectors ? BIO
+> split is done using this limit, right ? Or is it that request merging is
+> allowed up to max_hw_sectors even if the resulting request size exceeds
+> max_sectors ?
+> 
 
-Unfortunately there also are plenty of PCIe devices with addressing
-limitation even if the PCIe spec explicitly forbits that.  40, 44 or
-48 bit limitations seems to be more common than 32-bits, though.
+Ah, I see how I thought that I was seeing requests whose size exceeded 
+max_sectors. Somebody must have changed a single disk in my system and 
+this odd disk has a higher default max_sectors_kb -- 512 vs 128 for the 
+rest.
+
+So ignoring my nonesence that I was seeing oversize requests, as for the 
+idea to set default max_sectors at dma_opt_mapping_size(), I see some 
+issues:
+- for SAS disks I have no common point to impose this limit. Maybe in 
+the slave configure callback, but each SAS driver has its own 
+implementation generally
+- Even if we do config in slave_configure callback the max_sectors value 
+is overwritten later in sd_revalidate_disk().
+
+This following change could sort the issue though:
+
+---8<----
+diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
+index 895b56c8f25e..bb49bea3d161 100644
+--- a/drivers/scsi/sd.c
++++ b/drivers/scsi/sd.c
+@@ -3214,6 +3214,8 @@ static int sd_revalidate_disk(struct gendisk *disk)
+         sector_t old_capacity = sdkp->capacity;
+         unsigned char *buffer;
+         unsigned int dev_max, rw_max;
++       struct Scsi_Host *host = sdp->host;
++       struct device *dev = host->dma_dev;
+
+         SCSI_LOG_HLQUEUE(3, sd_printk(KERN_INFO, sdkp,
+                                       "sd_revalidate_disk\n"));
+@@ -3296,8 +3298,13 @@ static int sd_revalidate_disk(struct gendisk *disk)
+                                       (sector_t)BLK_DEF_MAX_SECTORS);
+         }
+
+-       /* Do not exceed controller limit */
+-       rw_max = min(rw_max, queue_max_hw_sectors(q));
++       if (dev->dma_mask) {
++               /* Do not exceed dma optimal limit */
++               rw_max = min_t(unsigned int, rw_max,
++                               dma_opt_mapping_size(dev) >> SECTOR_SHIFT);
++       } else {
++               rw_max = min(rw_max, queue_max_hw_sectors(q));
++       }
+
+         /*
+          * Only update max_sectors if previously unset or if the 
+current value
+
+--->8---
+
+Or I could go with the method in this series, which is not preferred. 
+Let me know what you think.
+
+Thanks,
+John
+
