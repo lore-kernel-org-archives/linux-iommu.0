@@ -1,44 +1,44 @@
-Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1362E3C1D
-	for <iommu@lists.linux.dev>; Mon, 11 Jul 2022 12:27:20 +0000 (UTC)
-Received: by mail-lj1-f174.google.com with SMTP id o12so3390843ljc.3
-        for <iommu@lists.linux.dev>; Mon, 11 Jul 2022 05:27:20 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C17827A
+	for <iommu@lists.linux.dev>; Mon, 11 Jul 2022 12:45:47 +0000 (UTC)
+Received: by mail-wm1-f47.google.com with SMTP id o19-20020a05600c511300b003a2de48b4bbso3574651wms.5
+        for <iommu@lists.linux.dev>; Mon, 11 Jul 2022 05:45:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=sifive.com; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=HwLJdTH82xNb90qT1vQZYoa9ieJufcUtpYGi92wHmYs=;
-        b=g5ySyal7dv4MPrGsk6WJDHQZmAd3ycF+7ygLYe76Ejh3dbJXv4Ja0B+0uwfKU9VF0R
-         ccv1kW3iKiqX3rsOZB+j1MBGvc5l4NE76IV40lajU4qWQHMfmR0fzy3AFFz81pOxNkBf
-         R7VCd/AUdUW+OqiSPbemtTj8bsBUS1MQv+k/qcuSniIzG/VrLCeyjQcL4MBB1WkobNPP
-         d/H6SF/SsAql4NmPMSGMrADZaQC3TAzPgO5oCW7H/ot9SssgcW6VWsFvN6tLKrcR/fBQ
-         2rSSImhxDdIWa+NaJrXsgRRjJYvgTUi08uH/0nNpqfXwBUoB4iaCYSnwuAkxX+wBrd4F
-         ltbA==
+        bh=t777n2+TDn0IVOqq3hDcAeLbMM3MoxW5K5Rlccw3Od8=;
+        b=CwhBnHwIQx+qc/9lxiXsapAjOzF7ooWQAJ/hwNRTlHBdTs4EGEopz70uNSdV60sMHM
+         rd673qW9ta0iNTurwlWteBP3gKBDPrIIAhfnFY7pOzsaObhiGb6Gq/kwmVztWwIGcN8h
+         WuWyB07It2+WGyZ64k6diIcOHrQ1o7WSZqEzFmYHOGQDltnD/vaj0COXM1FGs0fUzd4H
+         vOAvwTHbSLd1aDiJi+qx3CG1XQyDaJ2ps4f8onCg1kVVPKOhVsvEzA++mHtPKhaFq4oN
+         SOiZ1XTAGR9B5D0whn1vf6LHnKFMr6wDVEo0H+qLzRhZUuaP2Nq8yww5HGfgAUxMbpgA
+         f1Ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=HwLJdTH82xNb90qT1vQZYoa9ieJufcUtpYGi92wHmYs=;
-        b=yUtJqxWbZXrMEAAWH67V+V/KGEl3EuNPDlefQS1fCsamuSLViJehzoGvXQx+KzUjsy
-         0VLEDV3jPETh97xadaBS7KZdDhEVhoYEpObOYeio6bjrWrpeklIkuS7HDcYgY1bEI5ps
-         pC+9r8OmQb67FHNIVfX4jQlFmFSIOVjGVfP9dBW2QPWOcYgMy+bjlb3dbu7I6chJuU43
-         UkdmALtfQYNEwSNlNgE3TR8+F7l+BH26S/cLerYzaR4/Ul8zVqAPZE3dtjw8Lc5WlIm+
-         jSPWfhw6sYqUDiWgns+avfz4mH2B7d2tQ+8UuIFmLeF3Na9OSxYZaGHmAFuOKL785CyY
-         AszQ==
-X-Gm-Message-State: AJIora80dCV1QYdiRm8WVngxiowb0PsEi3wyOdH411smacFUfpHssR4t
-	4e3X/tqsd2qlsy2GleGINm65rw==
-X-Google-Smtp-Source: AGRyM1tHEdXNVASWzQ290O8nAhTmVUh9cRkbOw+puJGj+lykKQ80cpC9LEuZifUvQKY2t6kgXXIRlQ==
-X-Received: by 2002:a2e:9e05:0:b0:25d:6230:ba54 with SMTP id e5-20020a2e9e05000000b0025d6230ba54mr6011067ljk.146.1657542439117;
-        Mon, 11 Jul 2022 05:27:19 -0700 (PDT)
-Received: from [10.0.0.8] (fwa5cab-55.bb.online.no. [88.92.171.55])
-        by smtp.gmail.com with ESMTPSA id p35-20020a05651213a300b0047f933622c8sm1518057lfa.163.2022.07.11.05.27.17
+        bh=t777n2+TDn0IVOqq3hDcAeLbMM3MoxW5K5Rlccw3Od8=;
+        b=m5tviQ3tMqyufSXDhgtLlUdc5CvA4ygbRH3VrATTk4rJRLTPu4d9KYOmhh9wTTg2zI
+         tOTmPhbWmmarb3m+n8F015u1O1+hoFS90i7ygMQVtOClrXWN9AhY8Lf82jPqIKakmPH6
+         EwhALGWS0zRBTZB8dw87BIwg69Pf8l6sDhPwdVOI1HoUfbJ7XMK46K024+g6KwZIG+h2
+         6PQVtmo4Hr+A+Z9471P6gALiEeZAu1qXG+SpisaCVIa+HEtBRQOxMPqI9+mG+OcT0Opl
+         bYcJ8VarZiVvAf6S3oEfEEHUwCErLzhHgMSfOKLXnFI8tmtMTld4FJu+vgdqly/jLV7d
+         CMIg==
+X-Gm-Message-State: AJIora+oAEyKVmufOjSd0iCQuuBVZ5130G10XfkcQZ4RmGWS/fMUp4vR
+	8p8igNr6UxBCsRV3rNiIvQ6XiQ==
+X-Google-Smtp-Source: AGRyM1tz30I9rm8O+KUFpRG0nRJ+cqUu/InH2GzOhqDpt8AIAuAUSg6ATzCTQTbAzLvDu2yXI+R6TA==
+X-Received: by 2002:a7b:c381:0:b0:3a2:aef9:8df4 with SMTP id s1-20020a7bc381000000b003a2aef98df4mr16258084wmj.7.1657543546039;
+        Mon, 11 Jul 2022 05:45:46 -0700 (PDT)
+Received: from [10.35.4.171] ([167.98.27.226])
+        by smtp.gmail.com with ESMTPSA id f17-20020a5d50d1000000b0021b956da1dcsm5702313wrt.113.2022.07.11.05.45.44
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Jul 2022 05:27:18 -0700 (PDT)
-Message-ID: <c2c3c37e-0f63-9b89-ed49-78193c46d7bd@linaro.org>
-Date: Mon, 11 Jul 2022 14:27:16 +0200
+        Mon, 11 Jul 2022 05:45:45 -0700 (PDT)
+Message-ID: <7906385d-d3f5-113a-4d31-8e9564c3c6ab@sifive.com>
+Date: Mon, 11 Jul 2022 13:45:44 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -46,80 +46,67 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 1/4] iommu/exynos: Set correct dma mask for SysMMU v5+
-Content-Language: en-US
-To: Sam Protsenko <semen.protsenko@linaro.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Janghyuck Kim <janghyuck.kim@samsung.com>,
- Cho KyongHo <pullip.cho@samsung.com>, Daniel Mentz <danielmentz@google.com>,
- Sumit Semwal <sumit.semwal@linaro.org>, iommu@lists.linux-foundation.org,
- iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220702213724.3949-1-semen.protsenko@linaro.org>
- <20220702213724.3949-2-semen.protsenko@linaro.org>
- <9afb1e98-706f-ed61-892c-e3cc321364b4@linaro.org>
- <CAPLW+4kfrHOb8utzynhB=2KLDQu-NC08UYpAVjpg__NQSeSQyg@mail.gmail.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAPLW+4kfrHOb8utzynhB=2KLDQu-NC08UYpAVjpg__NQSeSQyg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] swiotlb: ensure io_tlb_default_mem spinlock always
+ initialised
+Content-Language: en-GB
+To: Conor.Dooley@microchip.com, robin.murphy@arm.com, hch@lst.de
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ iommu@lists.linux-foundation.org, sudip.mukherjee@sifive.com,
+ jude.onyenegecha@sifive.com, m.szyprowski@samsung.com
+References: <20220708170811.270589-1-ben.dooks@sifive.com>
+ <fdf5d34e-7668-c05c-9098-30e34939c88a@arm.com>
+ <683344bd-dc9b-0bb5-9377-b3e9ab410a74@sifive.com>
+ <e6c43ef0-870b-5fe6-141e-0a3d566b030e@arm.com> <20220711102134.GB4639@lst.de>
+ <4fa8b709-c883-54dc-c302-20c9e55ae93a@sifive.com>
+ <20220711103921.GA6542@lst.de>
+ <43426798-44df-c2c7-1f46-0b79201cb620@sifive.com>
+ <ac4944b8-5d15-4761-6315-7dba6eaee0e7@arm.com>
+ <fc216e29-7dfb-5265-33d1-b547b8b7bd52@microchip.com>
+From: Ben Dooks <ben.dooks@sifive.com>
+In-Reply-To: <fc216e29-7dfb-5265-33d1-b547b8b7bd52@microchip.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On 08/07/2022 15:18, Sam Protsenko wrote:
-> On Sun, 3 Jul 2022 at 21:50, Krzysztof Kozlowski
-> <krzysztof.kozlowski@linaro.org> wrote:
->>
->> On 02/07/2022 23:37, Sam Protsenko wrote:
->>> SysMMU v5+ supports 36 bit physical address space. Set corresponding DMA
->>> mask to avoid falling back to SWTLBIO usage in dma_map_single() because
->>> of failed dma_capable() check.
->>>
->>> The original code for this fix was suggested by Marek.
->>>
->>> Originally-by: Marek Szyprowski <m.szyprowski@samsung.com>
->>
->> This is some tip specific tag, I don't think checkpatch allows it.
->> Either use suggesgted-by or co-developed-by + SoB.
->>
+On 11/07/2022 12:52, Conor.Dooley@microchip.com wrote:
 > 
-> Yes, checkpatch is swearing at that line, though I encountered that
-> tag mentioning somewhere in Documentation. Will rework it in v2.
-
-Yes, in tip. It did not go outside of tip.
-
 > 
->>> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
->>> ---
->>>  drivers/iommu/exynos-iommu.c | 8 ++++++++
->>>  1 file changed, 8 insertions(+)
+> On 11/07/2022 12:01, Robin Murphy wrote:
+>> On 2022-07-11 11:42, Ben Dooks wrote:
+>>> On 11/07/2022 11:39, Christoph Hellwig wrote:
+>>>> On Mon, Jul 11, 2022 at 11:24:51AM +0100, Ben Dooks wrote:
+>>>>> On 11/07/2022 11:21, Christoph Hellwig wrote:
+>>>>>> On Mon, Jul 11, 2022 at 11:07:17AM +0100, Robin Murphy wrote:
+>>>>>>> If none of your peripherals should need SWIOTLB, then the fact that
+>>>>>>> you're ending up in swiotlb_map() at all is a clear sign that
+>>>>>>> something's wrong. Most likely someone's forgotten to set their DMA
+>>>>>>> masks correctly.
+>>>>>>
+>>>>>> Yes.
+>>>>>
+>>>>> Possibly, we had at least one driver which attempted to set a 32 bit
+>>>>> DMA mask which had to be removed as the DMA layer accepts this but
+>>>>> since there is no DMA32 memory the allocator then just fails.
+>>>>>
+>>>>> I expect the above may need to be a separate discussion(s) of how to
+>>>>> default the DMA mask and how to stop the implicit acceptance of setting
+>>>>> a 32-bit DMA mask.
+>>>>
+>>>> No.  Linux simply assumes you can do 32-bit DMA and this won't
+>>>> change.  So we'll need to fix your platform to support swiotlb
+>>>> eventually.
 >>>
->>> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
->>> index 71f2018e23fe..28f8c8d93aa3 100644
->>> --- a/drivers/iommu/exynos-iommu.c
->>> +++ b/drivers/iommu/exynos-iommu.c
->>> @@ -647,6 +647,14 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
->>>               }
->>>       }
->>>
->>> +     if (MMU_MAJ_VER(data->version) >= 5) {
->>> +             ret = dma_set_mask(dev, DMA_BIT_MASK(36));
->>> +             if (ret) {
->>> +                     dev_err(dev, "Unable to set DMA mask: %d\n", ret);
+>>> Ok, is there any examples currently in the kernel that have no memory
+>>> in the DMA32 zone that do use swiotlb?
 >>
->> Missing cleanup: iommu_device_unregister
->> and probably also: iommu_device_sysfs_remove
+>> The arm64 code originally made an assumption that a system with that kind of memory layout would use a DMA offset in the interconnect, and so placed ZONE_DMA32 in the first 4GB of available RAM rather than actual physical address space. The only relatively mainstream platform we subsequently saw with all RAM above 32 bits was AMD Seattle, which also *didn't* use a DMA offset, so it "worked" by virtue of this bodge in the sense that allocations didn't fail, but DMA transactions would then disappear off into nowhere when the device truncated the MSBs of whatever too-big DMA address it was given.
 >>
+>> I think that stuff's long gone by now, and if any of handful of remaining Seattle users plug in a 32-bit PCIe device and try to use it with the IOMMU disabled, they'll probably see the fireworks as intended.
+>>
+>> Much as we'd like to make DMA an explicit opt-in for all drivers, that's something which can only really be solved 30 years ago.
 > 
-> Right. Also the correct cleanup should be added for failing
-> iommu_device_register() case, above of the quoted code. Will do that
-> in v2, thanks.
 > 
-> Another thing is that "remove" method is missing. But guess I'll get
-> to it later, when adding modularization support for this driver.
+> Out of curiosity Ben, can you shed any more light on the platform?
 
-remove is independent of modules, so it should be here already.
+Not at the moment, sorry.
 
-Best regards,
-Krzysztof
