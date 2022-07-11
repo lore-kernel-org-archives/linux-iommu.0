@@ -1,203 +1,106 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2BDA7A
-	for <iommu@lists.linux.dev>; Mon, 11 Jul 2022 12:56:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1657544187; x=1689080187;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=H1NGFQDl1MDoEEK/sn2Q2LP5VJVYEJxTD0fTNT6cZro=;
-  b=pJjgN1pO5Ip8Chfgje1/7cuoQL9yykeGA+nzdlHgLEGAmool/SAYByEJ
-   O8FokMfkEZ4a6v6DFssPW76p8+f+/GQV89nkSJbE+rLMEn5vPTzkiUtmk
-   gjmVjpcvDirsGD4LJIBFJe91N/6xxK9dKXfUDfn25gsyHAP/DfWDGUJuj
-   7XoAyJHlGPFRoi45EB9vnjYCVEMN9c24tFxPT24sAOCUl23dxe8ivhNoX
-   WaD9Q2lGOaGWvU+SSALPKuZyrKlJ1nxSQyRuc50X7PCz6xBrMx9us3B0Y
-   x7581ITE0guZIUZHKUVwiHqi3BTGCpUlWse1WKn4pDAYgKNjA5iQyAyQ+
-   w==;
-X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
-   d="scan'208";a="167279723"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Jul 2022 05:56:26 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 11 Jul 2022 05:56:26 -0700
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17 via Frontend Transport; Mon, 11 Jul 2022 05:56:26 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YqEzoYew/FeAq2QPp/GbzQabAa/GHCAkSyHnQ8znPErUUlUsmqmMpTBLpJuIb7KNfiS5RnAU8UFm4tUO8ljm6EJQp4PoBrW6LZNlMWsPvMIKVqVcyDBDc+CHHUCAAo1s7w9TsZx4iaB/z2s+JET4GWM+VtF+RMqSynpP3j2767QUJWtQLCeT2ORC82vVV1DCKrgMK3mvnaHf8jDaKrNKGSx6Sv5uUg35iEAcjD7X8Mzru3oFomVr5KekDLU20ibk6niSKwtxlxrmoxbb7smnHoiwnn4FmIrIgQdIOkIIdwAiAHeEx4hBdMYOH8cmKS9CMvdV+cBjPH3Kmnr/rFlCWA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=H1NGFQDl1MDoEEK/sn2Q2LP5VJVYEJxTD0fTNT6cZro=;
- b=ARCpmyIGjdq32k6DVvihoYR4SJpW0lQYZfInayW5ht9+KBYysq0V1sm+0rept4vp4Fkab05EN9XGvylWJQTHCnFEh4NGym51MhOYtN4ZffhOE4XGT3FOcXWBfyBz58vx5jODTq2IIgW8KHCIaKjL0P/NG1UZoh1dbEeiUOvhlPVkRKgAuWy9mMKpB0ai9XDpJXJjxOTyh3wRzdJF8cp6U81GZi6QuFxvaM7t2UEx+CMF2qcWhHBUdlV+s9xBUd0efu6CVfT46IPFlg1cNwVoVveF359jQkTRFk4f3htwdK+AvIM/qnGBGX/dKzdrZrWD1bGramTUtq10/+U5V1Lnog==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=H1NGFQDl1MDoEEK/sn2Q2LP5VJVYEJxTD0fTNT6cZro=;
- b=O3dm89B92f0M5zV08ken0c4JQeWxlUmeg5imvhhDztg4ra5gxqfWi7b2ORXS0/M+N6K1uMXomEj4MH+qvcWdEZXjzJeFmtaKAETyTZNU3GixO5btLTK3fng2Zn35P8o49Cs9FjuoR4SnJGvdDGhyGbax13bDCKznx2+h3xwbNzA=
-Received: from CO1PR11MB5154.namprd11.prod.outlook.com (2603:10b6:303:99::15)
- by DM6PR11MB4091.namprd11.prod.outlook.com (2603:10b6:5:197::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.20; Mon, 11 Jul
- 2022 12:56:16 +0000
-Received: from CO1PR11MB5154.namprd11.prod.outlook.com
- ([fe80::8d4a:1681:398d:9714]) by CO1PR11MB5154.namprd11.prod.outlook.com
- ([fe80::8d4a:1681:398d:9714%5]) with mapi id 15.20.5417.026; Mon, 11 Jul 2022
- 12:56:16 +0000
-From: <Conor.Dooley@microchip.com>
-To: <ben.dooks@sifive.com>, <Conor.Dooley@microchip.com>,
-	<robin.murphy@arm.com>, <hch@lst.de>
-CC: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<iommu@lists.linux-foundation.org>, <sudip.mukherjee@sifive.com>,
-	<jude.onyenegecha@sifive.com>, <m.szyprowski@samsung.com>,
-	<Daire.McNamara@microchip.com>
-Subject: Re: [PATCH] swiotlb: ensure io_tlb_default_mem spinlock always
- initialised
-Thread-Topic: [PATCH] swiotlb: ensure io_tlb_default_mem spinlock always
- initialised
-Thread-Index: AQHYlRyqCglqeptGyE+tRp+rve6Wy615HgsAgAAC/YA=
-Date: Mon, 11 Jul 2022 12:56:16 +0000
-Message-ID: <762b3f80-a925-0a00-1386-b190fe17ea59@microchip.com>
-References: <20220708170811.270589-1-ben.dooks@sifive.com>
- <fdf5d34e-7668-c05c-9098-30e34939c88a@arm.com>
- <683344bd-dc9b-0bb5-9377-b3e9ab410a74@sifive.com>
- <e6c43ef0-870b-5fe6-141e-0a3d566b030e@arm.com> <20220711102134.GB4639@lst.de>
- <4fa8b709-c883-54dc-c302-20c9e55ae93a@sifive.com>
- <20220711103921.GA6542@lst.de>
- <43426798-44df-c2c7-1f46-0b79201cb620@sifive.com>
- <ac4944b8-5d15-4761-6315-7dba6eaee0e7@arm.com>
- <fc216e29-7dfb-5265-33d1-b547b8b7bd52@microchip.com>
- <7906385d-d3f5-113a-4d31-8e9564c3c6ab@sifive.com>
-In-Reply-To: <7906385d-d3f5-113a-4d31-8e9564c3c6ab@sifive.com>
-Accept-Language: en-IE, en-US
-Content-Language: en-IE
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b66f4dc6-59c9-47ca-bb03-08da633cbdf3
-x-ms-traffictypediagnostic: DM6PR11MB4091:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: vRpiytuokVyiy8m+6I9x1NQyA+JiVT3RqeECFH46AYTJ+v0nSg79EjwHi28RctryS22rLZrQK639qXjYo9n/Zx7fxeDfzgQt88BqEvONnOw4f3odm2VUSIWQOalXhi1QsbjWP2YcbvRaAkxQQaRFUoGLloyufH27l32UaJ1tkAeUrAZ+4fe4GhtBWsEtkNmUc48qH2p2ceenI58SoAz3OrsdMW84eYSdu8Qb8kySLJ4Nx2JMWTmP2Kla03C9tUOPeqS4EEkfM915qLBfkZCi2H82KGYfN4ie1evJsx2G3S56rRTdg67DWQSl/CV363Dg4EsGiUdcGI3XAbccdTh7KTgYP694pDsJhZXrJGOwNYj6OHee50tqo0++jYei3r11cGFDObirhvVP6nZxQksuqoSNtVPlt4c4JlPjF91p7Wtdjs4886SPo4iPQAXkPQoRYpTbhZp3vChleUmq0VgpVrKrwqNmK/u2IDoG8E4wGHwTEr8P8urCvVw0TCsdTsfIj3d8mqjTF454O2o4V7lwDJOEXBg8jVWMQEFOE8C4OPMSBWn+EFrGTA0BK52fEu4GV5friddKECjlvfuuRS5e0xnZw34r4RuZOF4HjiRyAqB/89UpD6/WSqdxwcnpcTJApS2nb4zNXrTZcXKClBDFyZJF1dQ4GCcjZ/sDutwL2GXdYb/3pIG+nRgC00ofUWkdUk+HYHMVTm9/B8KaP6Axq/s6jOSzyEB28I0WzGaRu3o4QlwmNIEvZ1oJz77UaynrJZl2rrO00e/EeS8moG7UBVgwGywRMP3c52dsZcJ9g6TBmT5zvDdpjYQvBGRma82wEUieZ7zlzFqpemt0D/ZDotFnX7M9UENxQCbZxf1Gt0pBjMXNC7veYk+g8rq+Deni
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5154.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(376002)(366004)(39860400002)(346002)(396003)(38100700002)(186003)(122000001)(5660300002)(83380400001)(110136005)(66446008)(4326008)(71200400001)(54906003)(66946007)(66476007)(66556008)(316002)(36756003)(8676002)(91956017)(31686004)(64756008)(26005)(76116006)(6512007)(2906002)(31696002)(6486002)(8936002)(53546011)(41300700001)(478600001)(2616005)(38070700005)(107886003)(6506007)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?YXVIc04xN1QxTFVXa2NLQkdXeTVrZnRIaUM2emlYNGFZRXlpQzBoSHNIVlEz?=
- =?utf-8?B?U0czTjRpUGFIWjdCeHJvMy9oLzBnWmhYdTFTK0Y2UHpMZUdQaTRJcTMzam5G?=
- =?utf-8?B?NnBPbExzUzNIVEpXR2VyVGVXS2s3TTZyQ09tYjBGTm16VE5Fa21ZR3Jkd0hz?=
- =?utf-8?B?NnlYaDE0OFdXanhZeVA5Sm50K2V5aHBqcWhDcUJyR3ViY1ZyL1dXbXpidmxQ?=
- =?utf-8?B?NGRpSzJJTm5GUlE4eE03MXplM0xmZHkyRCszRFVibU8xdjJnQkNsRXlaMVRq?=
- =?utf-8?B?L1R3RGV3NWt0R0dLbXlQQVFpYk9VR3F2Wk1RaEZtaG9nZVcvTGJXc3FPNWhM?=
- =?utf-8?B?czF1TWRmenIvREpNRitBVDN4a1dKc2FuaGJLR2VRc0hteEY3NXlTc1dNNDRv?=
- =?utf-8?B?ellGQStYK3lqN0Jid0VxNTljZ3hVM09WTjV0QlVjemhzWFJJUnVSUHlBeVR2?=
- =?utf-8?B?YVN2alBYM2J1VTM3YkhjMmE4bFAvUDIvU2dPeXRlbWZZaldJdVVNTTd2Yzg0?=
- =?utf-8?B?ODUzblAyMHBmN2NVdmJlUGFVS1ZWSE00dUdjS2NXK1FNbVFiQnROUktMQ0ts?=
- =?utf-8?B?TEJiTG9NMDh0WmgySEVCS3lvZ0IrTmFRcmtEUXZCdXo5R1F1Y2JhbGhySUZ3?=
- =?utf-8?B?Q2I4RnFsaWpVK0lZOHptcmFEU3dSdThEa2JWcG1pcWRJUzZGRzdCUTFxN1ZJ?=
- =?utf-8?B?angvalFGTGJ3ZlZCUW1iM3dBSzdSZ1IwOUI3RllPRUlyQVF5WUpaZFhWUVQy?=
- =?utf-8?B?djFIaStGTSt3cTIvUlExMDU2aTBqd1ptcWE5TDY1K1JPWHA1MVlKdGx4akdj?=
- =?utf-8?B?TEduNWt6dS9zMjVDckNFTVFpRjlLSzhoanR6cnIwSDNiWUlLVHVFZmYwNkJF?=
- =?utf-8?B?aTdDbE5tcGtKYmxENUxvcnQ2Q05ZYWYwM2laWDJoY3V1bUU1Qldma1k4dHVl?=
- =?utf-8?B?cHdxVHlWbk1jMTdhRzg2Q0l5UUhteUxGQUY4NEtRM2U4Y0gyRkpUU0RzZUZ1?=
- =?utf-8?B?UHQ1bk1DRGYzVE5jb1VCYXhpazZNanBOR3RzY251Yjl6OE1vZnljZWIyN0xD?=
- =?utf-8?B?NW1ubXdBWWFaVDdxYWNTQk1RNlBJdkNRZTZROTNWSmJKUTlMRWo2dGhkRzcv?=
- =?utf-8?B?VHVUbm1CL0pmdlVRZEEwMWJndWttd3BxaEtGdmhRcjNIblR0QjFvMDlEQm45?=
- =?utf-8?B?a2FyUklzRTFXeVp0dzVITjBWQ25USEJVeTZIa0plU2Fpd0NqbUdvV0lsQ2ZU?=
- =?utf-8?B?eTh2ZzJhTWFrTmh4SFR5OVdTR3RWQXMyd0FCbTZQbjZWbWhrcXJxRmgvT0c0?=
- =?utf-8?B?QlVVc1FqdDFTeThhRlF2V0ZQcUhvUTFKQVFNWkN4ejgzSjR5bkVPTVJpdklI?=
- =?utf-8?B?a2w1WFJDaGlYekJ5OHZlNEZYMEVDVmpQMURJczYyQ3U5Vm1NMHpHTEc1UlRp?=
- =?utf-8?B?dm9ic3dGOUFKaXhpVWE3L2RFaXhVOHlkcTJPOHc4LzRtbWFQOUxDcWVXWVNE?=
- =?utf-8?B?UVJic2lDaWpsMDkrYUIvaWdEdlJmR2JiWE9KYXg3ak5YbTQ2bVd6Ly9YZW9w?=
- =?utf-8?B?QmpTZ0s3U1Q5MDA3cnE4ZUJ5REpPQ3M2UXpidndvMFYxSS8yajZDOTV6LzNv?=
- =?utf-8?B?VEJGQXl6UWtjbjNrVmhpTm5hNTRHV3p4UE1LTncyOVdJOXBFRUxzYUxnQkM2?=
- =?utf-8?B?Q1QwYkxwR2JEeXptL29hZVZ1NDl3Wm9rYzRGYjNJclhCcWtiNzQ5dmF1cktP?=
- =?utf-8?B?YWtzd3lKSDVzVGZoYzdFZytxWjEzV3RVS2pnSENFWDcvMFRtbC9hWXBWU2Vn?=
- =?utf-8?B?eHljb1ExY2pjOEhvMkpNMVBTTC94U1VtMkxldnA2QTFYczd2a245amd4aW4y?=
- =?utf-8?B?cFNaNmtENXQyWXhVZGlCOHk5Zzc5VzVQU3pmcldtK0J3UEY1ODRtZUVnOGhR?=
- =?utf-8?B?TEtjRFBHcDNROWRuZ1dNb0dVUXhEcUJsSDNMTlhLTFkrR3ovZE40ZEdqTExn?=
- =?utf-8?B?ZXRGMkgyZFcrREg1YThDa3NyNHBJaW44M3lCMm1ERmYrS0tJb0ZXYlVvdXhU?=
- =?utf-8?B?eGFrMURGbTVSL1ZUKzlVSG1NVFp3SnNROGxWemlsQmszQWpUTlM3T28wYmdm?=
- =?utf-8?Q?Qj2BjTxwE8MhkpYysYr3xCjNS?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <F8F44B6D6A230245B8C814109558AE21@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BD86A7A
+	for <iommu@lists.linux.dev>; Mon, 11 Jul 2022 12:59:36 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 75B5F1576;
+	Mon, 11 Jul 2022 05:59:36 -0700 (PDT)
+Received: from [10.57.85.194] (unknown [10.57.85.194])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 049213F70D;
+	Mon, 11 Jul 2022 05:59:33 -0700 (PDT)
+Message-ID: <638d1d19-dc8a-c5f0-4c91-8ed95de8fe27@arm.com>
+Date: Mon, 11 Jul 2022 13:59:29 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5154.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b66f4dc6-59c9-47ca-bb03-08da633cbdf3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jul 2022 12:56:16.1932
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: I/IlROz4vA41Tt33TkgEQvVhxVPrqlAZ70sKXl5eU2uhxsONLcoysLNihVU0S3Q2dKzdp2PTLMNakjtOQY9zJg3+Ua8bPKErUPENTJir5NU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4091
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 1/4] iommu/exynos: Set correct dma mask for SysMMU v5+
+Content-Language: en-GB
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ Sam Protsenko <semen.protsenko@linaro.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Janghyuck Kim <janghyuck.kim@samsung.com>,
+ Cho KyongHo <pullip.cho@samsung.com>, Daniel Mentz <danielmentz@google.com>,
+ Sumit Semwal <sumit.semwal@linaro.org>, iommu@lists.linux-foundation.org,
+ iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220702213724.3949-1-semen.protsenko@linaro.org>
+ <20220702213724.3949-2-semen.protsenko@linaro.org>
+ <9afb1e98-706f-ed61-892c-e3cc321364b4@linaro.org>
+ <CAPLW+4kfrHOb8utzynhB=2KLDQu-NC08UYpAVjpg__NQSeSQyg@mail.gmail.com>
+ <c2c3c37e-0f63-9b89-ed49-78193c46d7bd@linaro.org>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <c2c3c37e-0f63-9b89-ed49-78193c46d7bd@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-T24gMTEvMDcvMjAyMiAxMzo0NSwgQmVuIERvb2tzIHdyb3RlOg0KPiBPbiAxMS8wNy8yMDIyIDEy
-OjUyLCBDb25vci5Eb29sZXlAbWljcm9jaGlwLmNvbSB3cm90ZToNCj4+DQo+Pg0KPj4gT24gMTEv
-MDcvMjAyMiAxMjowMSwgUm9iaW4gTXVycGh5IHdyb3RlOg0KPj4+IE9uIDIwMjItMDctMTEgMTE6
-NDIsIEJlbiBEb29rcyB3cm90ZToNCj4+Pj4gT24gMTEvMDcvMjAyMiAxMTozOSwgQ2hyaXN0b3Bo
-IEhlbGx3aWcgd3JvdGU6DQo+Pj4+PiBPbiBNb24sIEp1bCAxMSwgMjAyMiBhdCAxMToyNDo1MUFN
-ICswMTAwLCBCZW4gRG9va3Mgd3JvdGU6DQo+Pj4+Pj4gT24gMTEvMDcvMjAyMiAxMToyMSwgQ2hy
-aXN0b3BoIEhlbGx3aWcgd3JvdGU6DQo+Pj4+Pj4+IE9uIE1vbiwgSnVsIDExLCAyMDIyIGF0IDEx
-OjA3OjE3QU0gKzAxMDAsIFJvYmluIE11cnBoeSB3cm90ZToNCj4+Pj4+Pj4+IElmIG5vbmUgb2Yg
-eW91ciBwZXJpcGhlcmFscyBzaG91bGQgbmVlZCBTV0lPVExCLCB0aGVuIHRoZSBmYWN0IHRoYXQN
-Cj4+Pj4+Pj4+IHlvdSdyZSBlbmRpbmcgdXAgaW4gc3dpb3RsYl9tYXAoKSBhdCBhbGwgaXMgYSBj
-bGVhciBzaWduIHRoYXQNCj4+Pj4+Pj4+IHNvbWV0aGluZydzIHdyb25nLiBNb3N0IGxpa2VseSBz
-b21lb25lJ3MgZm9yZ290dGVuIHRvIHNldCB0aGVpciBETUENCj4+Pj4+Pj4+IG1hc2tzIGNvcnJl
-Y3RseS4NCj4+Pj4+Pj4NCj4+Pj4+Pj4gWWVzLg0KPj4+Pj4+DQo+Pj4+Pj4gUG9zc2libHksIHdl
-IGhhZCBhdCBsZWFzdCBvbmUgZHJpdmVyIHdoaWNoIGF0dGVtcHRlZCB0byBzZXQgYSAzMiBiaXQN
-Cj4+Pj4+PiBETUEgbWFzayB3aGljaCBoYWQgdG8gYmUgcmVtb3ZlZCBhcyB0aGUgRE1BIGxheWVy
-IGFjY2VwdHMgdGhpcyBidXQNCj4+Pj4+PiBzaW5jZSB0aGVyZSBpcyBubyBETUEzMiBtZW1vcnkg
-dGhlIGFsbG9jYXRvciB0aGVuIGp1c3QgZmFpbHMuDQo+Pj4+Pj4NCj4+Pj4+PiBJIGV4cGVjdCB0
-aGUgYWJvdmUgbWF5IG5lZWQgdG8gYmUgYSBzZXBhcmF0ZSBkaXNjdXNzaW9uKHMpIG9mIGhvdyB0
-bw0KPj4+Pj4+IGRlZmF1bHQgdGhlIERNQSBtYXNrIGFuZCBob3cgdG8gc3RvcCB0aGUgaW1wbGlj
-aXQgYWNjZXB0YW5jZSBvZiBzZXR0aW5nDQo+Pj4+Pj4gYSAzMi1iaXQgRE1BIG1hc2suDQo+Pj4+
-Pg0KPj4+Pj4gTm8uwqAgTGludXggc2ltcGx5IGFzc3VtZXMgeW91IGNhbiBkbyAzMi1iaXQgRE1B
-IGFuZCB0aGlzIHdvbid0DQo+Pj4+PiBjaGFuZ2UuwqAgU28gd2UnbGwgbmVlZCB0byBmaXggeW91
-ciBwbGF0Zm9ybSB0byBzdXBwb3J0IHN3aW90bGINCj4+Pj4+IGV2ZW50dWFsbHkuDQo+Pj4+DQo+
-Pj4+IE9rLCBpcyB0aGVyZSBhbnkgZXhhbXBsZXMgY3VycmVudGx5IGluIHRoZSBrZXJuZWwgdGhh
-dCBoYXZlIG5vIG1lbW9yeQ0KPj4+PiBpbiB0aGUgRE1BMzIgem9uZSB0aGF0IGRvIHVzZSBzd2lv
-dGxiPw0KPj4+DQo+Pj4gVGhlIGFybTY0IGNvZGUgb3JpZ2luYWxseSBtYWRlIGFuIGFzc3VtcHRp
-b24gdGhhdCBhIHN5c3RlbSB3aXRoIHRoYXQga2luZCBvZiBtZW1vcnkgbGF5b3V0IHdvdWxkIHVz
-ZSBhIERNQSBvZmZzZXQgaW4gdGhlIGludGVyY29ubmVjdCwgYW5kIHNvIHBsYWNlZCBaT05FX0RN
-QTMyIGluIHRoZSBmaXJzdCA0R0Igb2YgYXZhaWxhYmxlIFJBTSByYXRoZXIgdGhhbiBhY3R1YWwg
-cGh5c2ljYWwgYWRkcmVzcyBzcGFjZS4gVGhlIG9ubHkgcmVsYXRpdmVseSBtYWluc3RyZWFtIHBs
-YXRmb3JtIHdlIHN1YnNlcXVlbnRseSBzYXcgd2l0aCBhbGwgUkFNIGFib3ZlIDMyIGJpdHMgd2Fz
-IEFNRCBTZWF0dGxlLCB3aGljaCBhbHNvICpkaWRuJ3QqIHVzZSBhIERNQSBvZmZzZXQsIHNvIGl0
-ICJ3b3JrZWQiIGJ5IHZpcnR1ZSBvZiB0aGlzIGJvZGdlIGluIHRoZSBzZW5zZSB0aGF0IGFsbG9j
-YXRpb25zIGRpZG4ndCBmYWlsLCBidXQgRE1BIHRyYW5zYWN0aW9ucyB3b3VsZCB0aGVuIGRpc2Fw
-cGVhciBvZmYgaW50byBub3doZXJlIHdoZW4gdGhlIGRldmljZSB0cnVuY2F0ZWQgdGhlIE1TQnMg
-b2Ygd2hhdGV2ZXIgdG9vLWJpZyBETUEgYWRkcmVzcyBpdCB3YXMgZ2l2ZW4uDQo+Pj4NCj4+PiBJ
-IHRoaW5rIHRoYXQgc3R1ZmYncyBsb25nIGdvbmUgYnkgbm93LCBhbmQgaWYgYW55IG9mIGhhbmRm
-dWwgb2YgcmVtYWluaW5nIFNlYXR0bGUgdXNlcnMgcGx1ZyBpbiBhIDMyLWJpdCBQQ0llIGRldmlj
-ZSBhbmQgdHJ5IHRvIHVzZSBpdCB3aXRoIHRoZSBJT01NVSBkaXNhYmxlZCwgdGhleSdsbCBwcm9i
-YWJseSBzZWUgdGhlIGZpcmV3b3JrcyBhcyBpbnRlbmRlZC4NCj4+Pg0KPj4+IE11Y2ggYXMgd2Un
-ZCBsaWtlIHRvIG1ha2UgRE1BIGFuIGV4cGxpY2l0IG9wdC1pbiBmb3IgYWxsIGRyaXZlcnMsIHRo
-YXQncyBzb21ldGhpbmcgd2hpY2ggY2FuIG9ubHkgcmVhbGx5IGJlIHNvbHZlZCAzMCB5ZWFycyBh
-Z28uDQo+Pg0KPj4NCj4+IE91dCBvZiBjdXJpb3NpdHkgQmVuLCBjYW4geW91IHNoZWQgYW55IG1v
-cmUgbGlnaHQgb24gdGhlIHBsYXRmb3JtPw0KPiANCj4gTm90IGF0IHRoZSBtb21lbnQsIHNvcnJ5
-Lg0KDQpObyB3b3JyaWVzLiBGV0lXLCBpZiB5b3UgZG8gZW5kIHVwIGRvaW5nIGFueXRoaW5nIHdp
-dGggbm8tRE1BMzINCnBsYXRmb3JtcyBrZWVwIG1lIENDZWQuIEkndmUgcHJldmlvdXNseSBoaXQg
-bm8tRE1BMzIgcmVsYXRlZCBpc3N1ZXMNCm9uIFBvbGFyRmlyZSBTb0MsIHNvIEknZCBsaWtlIHRv
-IHRlc3QgYW55dGhpbmcgdGhhdCB5b3UgbWF5IGVuZCB1cA0Kd29ya2luZyBvbi4NCg0KVGhhbmtz
-LA0KQ29ub3IuDQo=
+On 2022-07-11 13:27, Krzysztof Kozlowski wrote:
+> On 08/07/2022 15:18, Sam Protsenko wrote:
+>> On Sun, 3 Jul 2022 at 21:50, Krzysztof Kozlowski
+>> <krzysztof.kozlowski@linaro.org> wrote:
+>>>
+>>> On 02/07/2022 23:37, Sam Protsenko wrote:
+>>>> SysMMU v5+ supports 36 bit physical address space. Set corresponding DMA
+>>>> mask to avoid falling back to SWTLBIO usage in dma_map_single() because
+>>>> of failed dma_capable() check.
+>>>>
+>>>> The original code for this fix was suggested by Marek.
+>>>>
+>>>> Originally-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>>>
+>>> This is some tip specific tag, I don't think checkpatch allows it.
+>>> Either use suggesgted-by or co-developed-by + SoB.
+>>>
+>>
+>> Yes, checkpatch is swearing at that line, though I encountered that
+>> tag mentioning somewhere in Documentation. Will rework it in v2.
+> 
+> Yes, in tip. It did not go outside of tip.
+> 
+>>
+>>>> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+>>>> ---
+>>>>   drivers/iommu/exynos-iommu.c | 8 ++++++++
+>>>>   1 file changed, 8 insertions(+)
+>>>>
+>>>> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+>>>> index 71f2018e23fe..28f8c8d93aa3 100644
+>>>> --- a/drivers/iommu/exynos-iommu.c
+>>>> +++ b/drivers/iommu/exynos-iommu.c
+>>>> @@ -647,6 +647,14 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
+>>>>                }
+>>>>        }
+>>>>
+>>>> +     if (MMU_MAJ_VER(data->version) >= 5) {
+>>>> +             ret = dma_set_mask(dev, DMA_BIT_MASK(36));
+>>>> +             if (ret) {
+>>>> +                     dev_err(dev, "Unable to set DMA mask: %d\n", ret);
+>>>
+>>> Missing cleanup: iommu_device_unregister
+>>> and probably also: iommu_device_sysfs_remove
+>>>
+>>
+>> Right. Also the correct cleanup should be added for failing
+>> iommu_device_register() case, above of the quoted code. Will do that
+>> in v2, thanks.
+>>
+>> Another thing is that "remove" method is missing. But guess I'll get
+>> to it later, when adding modularization support for this driver.
+> 
+> remove is independent of modules, so it should be here already.
+
+.suppress_bind_attrs is set in the driver, so a .remove method on its 
+own would be dead code, since there's no way for it to be called. We can 
+permit module unloading since the module itself can be reference counted 
+(which in practice usually means that unloading will be denied). However 
+that's not the case for driver binding itself, so it's better not to 
+even pretend that removing an IOMMU's driver while other drivers are 
+using it (usually via DMA ops without even realising) is going to have 
+anything other than catastrophic results.
+
+Thanks,
+Robin.
