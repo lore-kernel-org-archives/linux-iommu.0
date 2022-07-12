@@ -1,44 +1,44 @@
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
+Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44AC34414
-	for <iommu@lists.linux.dev>; Tue, 12 Jul 2022 16:19:11 +0000 (UTC)
-Received: by mail-lf1-f53.google.com with SMTP id bp17so6937016lfb.3
-        for <iommu@lists.linux.dev>; Tue, 12 Jul 2022 09:19:10 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 759944414
+	for <iommu@lists.linux.dev>; Tue, 12 Jul 2022 16:20:44 +0000 (UTC)
+Received: by mail-lf1-f47.google.com with SMTP id bf9so14758689lfb.13
+        for <iommu@lists.linux.dev>; Tue, 12 Jul 2022 09:20:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=uJ9dVi90hK+YLTAhE7H/lF4J6uUbmiWH1N0eWZR3ZwA=;
-        b=TTsXZieu32r3wAaawionSAU7zpQZb8eC0dCJ0JhkT+ecFFSbVnbKVkFmXYyw1029m2
-         1GR6KJ4SPcmGBcdCugUqdzSuiNXVea9CTYsurcpyvnfKcrCP7dSeuna0fEgPg5N5WJpD
-         hoPACOrCuHbt3ZcML4hZ20i24O19ZQr24EAH14GvGBlggtLW+lL1HkwjutpMHinCzuj5
-         iN4Lls3rZp95yjTD9gF2Le10PFvVzjWghz8ngg9LNvxKb8q9hVejhorDbYGxej2kIjIs
-         fgoS9+T0y/ecsMzfml0R8/b8EhS/ku/nwBqiBlm0Q7x2mdRB8R2ZT/bhEPUavPo1s4Td
-         P02w==
+        bh=pPvdo6E/8z4yuwllWLa9VmBaE7sTUkZvuVnN88mQiew=;
+        b=pjHJ6TMi7gYiJfM3BBjUdaGo3Pz31kFTgqMi699hX4dsUEuKdWS/SzqioBK9aMSMxz
+         jv4bOKzp+vs3j3+I7kcyVuq3zZoWverBE5sE6grD7VEmf6urAWnTCriJJI0qpulJueF2
+         CD7FkE+R6b390qI+JOU0yrli0gfymIxGZaK3ZMNvhlS9iWHKEDmDFrQCHxsg33RZ7TD1
+         HIH8JwEm0etHsY2yiAgX9QeWaUI96KZNE7sS6iK3cW7m1Ubo5KL+KMzjEoCTulsdY2PA
+         WVaZIR/1ljH56ZSpM7ga0WEbM+FHYJKi6ZxM//HZRk/CnivStkxw6KOFjZKwR4Nkt1zT
+         oyZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=uJ9dVi90hK+YLTAhE7H/lF4J6uUbmiWH1N0eWZR3ZwA=;
-        b=a2QYzg+0li+POqhOQCFc/WnJi7LxVxgYrJZZjKIqQdbKFg9v+CxYVQRACd/TY+yiiA
-         32gXUZGpak+u2DLEu24oAboBBTd91d2wE/LqwBQsQo3/q8J1tgeHjuQLtPXBlZzDbJ0A
-         I4nvDKatpU7yItgFi6ZX6OP+eY3GJsyAucE4nZLdMoIjXG5V3UQbiUtzDFbB326dffij
-         uRLCBKWVvkLwNG8hyVgPjwSqYgFL7TjH25nGm6a/g+ANy9mOMqzDUTx1/Lsduh6Sr2tc
-         3nRYUh+iASlHRdG0BKHojeDrQlK2CedRMWnH7wcI/AtbYvlJZo+cle6rXHXNiklnfGRe
-         sZcA==
-X-Gm-Message-State: AJIora/Fc4DQJ0F1cblIYEmTnWPdkv8hFV+0E60Zv2pLcjfF7QRIg7QL
-	aBZz7U11+q2DKg3By25O6k8Xog==
-X-Google-Smtp-Source: AGRyM1uGiF4reCluBJM1q38YblixcNGVUMf8QXzKeopoBX/HMPUAtrhZDOIADX//FSe4WDjod3mUAw==
-X-Received: by 2002:a05:6512:682:b0:489:16b3:14e1 with SMTP id t2-20020a056512068200b0048916b314e1mr16035039lfe.132.1657642749316;
-        Tue, 12 Jul 2022 09:19:09 -0700 (PDT)
+        bh=pPvdo6E/8z4yuwllWLa9VmBaE7sTUkZvuVnN88mQiew=;
+        b=EOWr8Ebur5nwVZDva+oXIN6gOiqoS2twUkmwHn4udt82oL9JtwI4yu7ThLFS18j1eK
+         Y050AetXGx25+7Cgep6+umP1TqSR6mbIjRjiFbeDbh2Zkn58CGAmagrNUu9PMki35UIb
+         6/mtSbFfvI6pDOcwrdGUwMMLb9GPNUZHsPgZvf8ZYL239+Hz1vjMtq0NNK++iYIue+bQ
+         efZSlMwO7mpuHektcjwNGhfi01JaeXaeEIuYZ5GRDmDm7+k4sr3lgvNc3ccD+XMd63/A
+         JenDu7f+wAUjNkp5/8a/BUxOmoD7C7AorxHhHQTOs0FTfxG64hWbfTkLpbga2LfuvK73
+         BDgg==
+X-Gm-Message-State: AJIora++Ew+1W5gRHWCSgrFhYIfZindwOK+osHPtdzQ3KX5o0B+1PF1E
+	pwL66Ndl1gB1sL2Poqej+KA4jw==
+X-Google-Smtp-Source: AGRyM1v98KWxppvdS1K4LP70/57yD3snxlG0GqUiLRvcK8eTNrXTs4BZtDFfUmG8nkYMA6we7cMSvA==
+X-Received: by 2002:a05:6512:1381:b0:489:cd0b:3a03 with SMTP id p1-20020a056512138100b00489cd0b3a03mr11481588lfa.583.1657642842608;
+        Tue, 12 Jul 2022 09:20:42 -0700 (PDT)
 Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
-        by smtp.gmail.com with ESMTPSA id k13-20020ac257cd000000b00489db767c89sm1552945lfo.271.2022.07.12.09.19.07
+        by smtp.gmail.com with ESMTPSA id q6-20020a056512210600b00477c0365b20sm2263111lfr.188.2022.07.12.09.20.40
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Jul 2022 09:19:08 -0700 (PDT)
-Message-ID: <257c64a7-db27-301c-f724-f8c771092466@linaro.org>
-Date: Tue, 12 Jul 2022 18:19:05 +0200
+        Tue, 12 Jul 2022 09:20:42 -0700 (PDT)
+Message-ID: <09c807b3-67c4-1439-793d-2b7d461f4656@linaro.org>
+Date: Tue, 12 Jul 2022 18:20:38 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -47,8 +47,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH v2 1/7] iommu/exynos: Reuse SysMMU constants for page size
- and order
+Subject: Re: [PATCH v2 2/7] iommu/exynos: Handle failed IOMMU device
+ registration properly
 Content-Language: en-US
 To: Sam Protsenko <semen.protsenko@linaro.org>,
  Marek Szyprowski <m.szyprowski@samsung.com>
@@ -61,29 +61,25 @@ Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
  linux-kernel@vger.kernel.org
 References: <20220710230603.13526-1-semen.protsenko@linaro.org>
- <20220710230603.13526-2-semen.protsenko@linaro.org>
+ <20220710230603.13526-3-semen.protsenko@linaro.org>
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220710230603.13526-2-semen.protsenko@linaro.org>
+In-Reply-To: <20220710230603.13526-3-semen.protsenko@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 11/07/2022 01:05, Sam Protsenko wrote:
-> Using SZ_4K in context of SysMMU driver is better than using PAGE_SIZE,
-> as PAGE_SIZE might have different value on different platforms. Though
-> it would be even better to use more specific constants, already existing
-> in SysMMU driver. Make the code more strict by using SPAGE_ORDER and
-> SPAGE_SIZE constants.
-> 
-> It also makes sense, as __sysmmu_tlb_invalidate_entry() also uses
-> SPAGE_* constants for further calculations with num_inv param, so it's
-> logical that num_inv should be previously calculated using also SPAGE_*
-> values.
+> If iommu_device_register() fails in exynos_sysmmu_probe(), the previous
+> calls have to be cleaned up. In this case, the iommu_device_sysfs_add()
+> should be cleaned up, by calling its remove counterpart call.
 > 
 > Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
 
+Fixes: d2c302b6e8b1 ("iommu/exynos: Make use of iommu_device_register
+interface")
+
+
 
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
 
 Best regards,
 Krzysztof
