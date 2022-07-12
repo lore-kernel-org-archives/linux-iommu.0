@@ -1,119 +1,89 @@
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C3BE4414
-	for <iommu@lists.linux.dev>; Tue, 12 Jul 2022 16:00:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657641642; x=1689177642;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=AnwCkEUuxJLCRx7GhtMQk+FLBhJzxZJHbxYHUOLgTl8=;
-  b=P27IVRQNKzmaG2d+TwGBLUdc3yLbidOE8HrVpX4Tex8v3nKDhDDZaLEC
-   y9Y37xDBmVIklq0VyedAFDvj3AIH2NAMezk5ZkREzjE7y2ItwRrO6zaWV
-   eBzbnsIG6tqAP//h2UplzKn8iKxNGVDO2K6B2okAClg+uM2JYBOLxrm2P
-   jsk1az1TxX0LgMpQ9rSPQRjZy79yWTGjxgSFTPpdVkNk1c1THX8qeaodj
-   RhZ7Q5uoNj9Zz1YIj/duwRKBKHYxCe/5IkNUzMj+1ALvEHyX+YtbBzulc
-   kgiM2Vavg1k8zJNqbxMnckeyXA8PcShfOPSyvyIG8m13RG7cNkQRWeGm/
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="282526107"
-X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="282526107"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 09:00:41 -0700
-X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="841430869"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 09:00:38 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1oBIJP-001Bb2-1l;
-	Tue, 12 Jul 2022 19:00:35 +0300
-Date: Tue, 12 Jul 2022 19:00:35 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc: Yury Norov <yury.norov@gmail.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Suresh Siddha <suresh.b.siddha@intel.com>,
-	kernel test robot <oliver.sang@intel.com>, iommu@lists.linux.dev,
-	stable@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/vt-d: avoid invalid memory access via
- node_online(NUMA_NO_NODE)
-Message-ID: <Ys2aoyVn7lc9VIUO@smile.fi.intel.com>
-References: <20220712153836.41599-1-alexandr.lobakin@intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44AC34414
+	for <iommu@lists.linux.dev>; Tue, 12 Jul 2022 16:19:11 +0000 (UTC)
+Received: by mail-lf1-f53.google.com with SMTP id bp17so6937016lfb.3
+        for <iommu@lists.linux.dev>; Tue, 12 Jul 2022 09:19:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=uJ9dVi90hK+YLTAhE7H/lF4J6uUbmiWH1N0eWZR3ZwA=;
+        b=TTsXZieu32r3wAaawionSAU7zpQZb8eC0dCJ0JhkT+ecFFSbVnbKVkFmXYyw1029m2
+         1GR6KJ4SPcmGBcdCugUqdzSuiNXVea9CTYsurcpyvnfKcrCP7dSeuna0fEgPg5N5WJpD
+         hoPACOrCuHbt3ZcML4hZ20i24O19ZQr24EAH14GvGBlggtLW+lL1HkwjutpMHinCzuj5
+         iN4Lls3rZp95yjTD9gF2Le10PFvVzjWghz8ngg9LNvxKb8q9hVejhorDbYGxej2kIjIs
+         fgoS9+T0y/ecsMzfml0R8/b8EhS/ku/nwBqiBlm0Q7x2mdRB8R2ZT/bhEPUavPo1s4Td
+         P02w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=uJ9dVi90hK+YLTAhE7H/lF4J6uUbmiWH1N0eWZR3ZwA=;
+        b=a2QYzg+0li+POqhOQCFc/WnJi7LxVxgYrJZZjKIqQdbKFg9v+CxYVQRACd/TY+yiiA
+         32gXUZGpak+u2DLEu24oAboBBTd91d2wE/LqwBQsQo3/q8J1tgeHjuQLtPXBlZzDbJ0A
+         I4nvDKatpU7yItgFi6ZX6OP+eY3GJsyAucE4nZLdMoIjXG5V3UQbiUtzDFbB326dffij
+         uRLCBKWVvkLwNG8hyVgPjwSqYgFL7TjH25nGm6a/g+ANy9mOMqzDUTx1/Lsduh6Sr2tc
+         3nRYUh+iASlHRdG0BKHojeDrQlK2CedRMWnH7wcI/AtbYvlJZo+cle6rXHXNiklnfGRe
+         sZcA==
+X-Gm-Message-State: AJIora/Fc4DQJ0F1cblIYEmTnWPdkv8hFV+0E60Zv2pLcjfF7QRIg7QL
+	aBZz7U11+q2DKg3By25O6k8Xog==
+X-Google-Smtp-Source: AGRyM1uGiF4reCluBJM1q38YblixcNGVUMf8QXzKeopoBX/HMPUAtrhZDOIADX//FSe4WDjod3mUAw==
+X-Received: by 2002:a05:6512:682:b0:489:16b3:14e1 with SMTP id t2-20020a056512068200b0048916b314e1mr16035039lfe.132.1657642749316;
+        Tue, 12 Jul 2022 09:19:09 -0700 (PDT)
+Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
+        by smtp.gmail.com with ESMTPSA id k13-20020ac257cd000000b00489db767c89sm1552945lfo.271.2022.07.12.09.19.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Jul 2022 09:19:08 -0700 (PDT)
+Message-ID: <257c64a7-db27-301c-f724-f8c771092466@linaro.org>
+Date: Tue, 12 Jul 2022 18:19:05 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220712153836.41599-1-alexandr.lobakin@intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 1/7] iommu/exynos: Reuse SysMMU constants for page size
+ and order
+Content-Language: en-US
+To: Sam Protsenko <semen.protsenko@linaro.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Janghyuck Kim <janghyuck.kim@samsung.com>,
+ Cho KyongHo <pullip.cho@samsung.com>, Daniel Mentz <danielmentz@google.com>,
+ David Virag <virag.david003@gmail.com>,
+ Sumit Semwal <sumit.semwal@linaro.org>, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20220710230603.13526-1-semen.protsenko@linaro.org>
+ <20220710230603.13526-2-semen.protsenko@linaro.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220710230603.13526-2-semen.protsenko@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Tue, Jul 12, 2022 at 05:38:36PM +0200, Alexander Lobakin wrote:
-> KASAN reports:
+On 11/07/2022 01:05, Sam Protsenko wrote:
+> Using SZ_4K in context of SysMMU driver is better than using PAGE_SIZE,
+> as PAGE_SIZE might have different value on different platforms. Though
+> it would be even better to use more specific constants, already existing
+> in SysMMU driver. Make the code more strict by using SPAGE_ORDER and
+> SPAGE_SIZE constants.
 > 
-> [ 4.668325][ T0] BUG: KASAN: wild-memory-access in dmar_parse_one_rhsa (arch/x86/include/asm/bitops.h:214 arch/x86/include/asm/bitops.h:226 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/nodemask.h:415 drivers/iommu/intel/dmar.c:497)
-> [    4.676149][    T0] Read of size 8 at addr 1fffffff85115558 by task swapper/0/0
-> [    4.683454][    T0]
-> [    4.685638][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.19.0-rc3-00004-g0e862838f290 #1
-> [    4.694331][    T0] Hardware name: Supermicro SYS-5018D-FN4T/X10SDV-8C-TLN4F, BIOS 1.1 03/02/2016
-> [    4.703196][    T0] Call Trace:
-> [    4.706334][    T0]  <TASK>
-> [ 4.709133][ T0] ? dmar_parse_one_rhsa (arch/x86/include/asm/bitops.h:214 arch/x86/include/asm/bitops.h:226 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/nodemask.h:415 drivers/iommu/intel/dmar.c:497)
+> It also makes sense, as __sysmmu_tlb_invalidate_entry() also uses
+> SPAGE_* constants for further calculations with num_inv param, so it's
+> logical that num_inv should be previously calculated using also SPAGE_*
+> values.
 > 
-> after converting the type of the first argument (@nr, bit number)
-> of arch_test_bit() from `long` to `unsigned long`[0].
-> 
-> Under certain conditions (for example, when ACPI NUMA is disabled
-> via command line), pxm_to_node() can return %NUMA_NO_NODE (-1).
-> It is valid 'magic' number of NUMA node, but not valid bit number
-> to use in bitops.
-> node_online() eventually descends to test_bit() without checking
-> for the input, assuming it's on caller side (which might be good
-> for perf-critical tasks). There, -1 becomes %ULONG_MAX which leads
-> to an insane array index when calculating bit position in memory.
-> 
-> For now, add an explicit check for @node being not %NUMA_NO_NODE
-> before calling test_bit(). The actual logics didn't change here
-> at all.
-
-Yes, and bitops performance is critical, so it's caller's responsibility to
-supply correct bit number.
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-> Fixes: ee34b32d8c29 ("dmar: support for parsing Remapping Hardware Static Affinity structure")
-> Cc: stable@vger.kernel.org # 2.6.33+
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> ---
->  drivers/iommu/intel/dmar.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-> index 9699ca101c62..64b14ac4c7b0 100644
-> --- a/drivers/iommu/intel/dmar.c
-> +++ b/drivers/iommu/intel/dmar.c
-> @@ -494,7 +494,7 @@ static int dmar_parse_one_rhsa(struct acpi_dmar_header *header, void *arg)
->  		if (drhd->reg_base_addr == rhsa->base_address) {
->  			int node = pxm_to_node(rhsa->proximity_domain);
->  
-> -			if (!node_online(node))
-> +			if (node != NUMA_NO_NODE && !node_online(node))
->  				node = NUMA_NO_NODE;
->  			drhd->iommu->node = node;
->  			return 0;
-> -- 
-> 2.36.1
-> 
-
--- 
-With Best Regards,
-Andy Shevchenko
+> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
 
 
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
