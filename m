@@ -1,38 +1,38 @@
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 968C81FC3
-	for <iommu@lists.linux.dev>; Tue, 12 Jul 2022 00:14:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 149571FB8
+	for <iommu@lists.linux.dev>; Tue, 12 Jul 2022 00:14:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657584866; x=1689120866;
+  t=1657584867; x=1689120867;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=k1ng+aqSA3bxg6XtqN0sxaxbhfr1xdkgYzRBbz8ItSE=;
-  b=ZLKFo3RbwxgtQC6hj7F4XFDHTRzDB2QZsMlSNjnFWj90RKJ7uT84vaDM
-   fNapwIkTMhUUr04OVH6YZS5Li6SiZCOfmgpcyHCNoVSMgC0Z9HyaEYgVC
-   9fxRhMfpIXIpSIoQvtzc5HouIEOAJoKeLE+ZsH6+AH09yET+wKr+9hKg9
-   PrKPDGksCcBYbVLfd+lHR6UEYnnV7TWCMYyS7YNK1IIcKQ2Ezcl0g1AUh
-   r0VpzjA9QQ0aTGO7zhHFwDs0vCq5KMIpg1X3QBdRvVHtASMmXCHepzVD6
-   LMxbwdrrejV0HrDNDKUuJNsO3AoLdi58XhVLHgps0YQ09bDP7eCi+j3Jh
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="285929299"
+  bh=VoY7bFDW0XhDxJcxsRT3+MNmRvmSbnHbKWNookuikwE=;
+  b=eONkQ/Az15qF/AO2iWLuUFwNUPRM+OMpfVRgoox+28ssF68ouccNnrwx
+   G4AdT5HJZpSnDGL8Vyw5TAiZ9t5Eh4p3DYA0+9tzEIPIIrlc8qjzQk7Rw
+   ixeoaYovasDUGvGGQbbovwGVqGPifgZpI0zuBrbzkzhLJnbX7S0nTu4mx
+   9e2mF3/+hqlKSg+YmHmbx1Nck66cjeXtDGXSFg1DXaBypXAaDJ+3bvd2T
+   pfPwlOtagLp1ew3VsqvKyCTtuwjci+RmIuaDpAv29UaaMR9TyU5NCRUtq
+   Yp9cuun+OVHNLFRM2zsC6qzM/LGFxq4J6VG+Eef1LwlyeukhGaeTrf5Gv
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="310412963"
 X-IronPort-AV: E=Sophos;i="5.92,264,1650956400"; 
-   d="scan'208";a="285929299"
+   d="scan'208";a="310412963"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 17:14:26 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 17:14:23 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,264,1650956400"; 
-   d="scan'208";a="592445835"
+   d="scan'208";a="592445830"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga007.jf.intel.com with ESMTP; 11 Jul 2022 17:14:05 -0700
+  by orsmga007.jf.intel.com with ESMTP; 11 Jul 2022 17:14:03 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 16/25] iommu/vt-d: Check device list of domain in domain free path
-Date: Tue, 12 Jul 2022 08:08:59 +0800
-Message-Id: <20220712000908.3431936-17-baolu.lu@linux.intel.com>
+Subject: [PATCH 15/25] iommu/vt-d: Acquiring lock in pasid manipulation helpers
+Date: Tue, 12 Jul 2022 08:08:58 +0800
+Message-Id: <20220712000908.3431936-16-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220712000908.3431936-1-baolu.lu@linux.intel.com>
 References: <20220712000908.3431936-1-baolu.lu@linux.intel.com>
@@ -44,68 +44,248 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-When the IOMMU domain is about to be freed, it should not be set on any
-device. Instead of silently dealing with some bug cases, it's better to
-trigger a warning to report and fix any potential bugs at the first time.
+The iommu->lock is used to protect the per-IOMMU pasid directory table
+and pasid table. Move the spinlock acquisition/release into the helpers
+to make the code self-contained.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Link: https://lore.kernel.org/r/20220706025524.2904370-9-baolu.lu@linux.intel.com
+Link: https://lore.kernel.org/r/20220706025524.2904370-8-baolu.lu@linux.intel.com
 ---
- drivers/iommu/intel/iommu.c | 18 +++---------------
- 1 file changed, 3 insertions(+), 15 deletions(-)
+ drivers/iommu/intel/iommu.c |   2 -
+ drivers/iommu/intel/pasid.c | 103 +++++++++++++++++++-----------------
+ drivers/iommu/intel/svm.c   |   3 --
+ 3 files changed, 55 insertions(+), 53 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 3d53de8c7634..a94fb69e1f9a 100644
+index 7f03576e72d7..3d53de8c7634 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -294,7 +294,6 @@ static LIST_HEAD(dmar_satc_units);
- /* bitmap for indexing intel_iommus */
- static int g_num_of_iommus;
+@@ -2489,7 +2489,6 @@ static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
+ 		}
  
--static void domain_remove_dev_info(struct dmar_domain *domain);
- static void dmar_remove_one_dev_info(struct device *dev);
- static void __dmar_remove_one_dev_info(struct device_domain_info *info);
+ 		/* Setup the PASID entry for requests without PASID: */
+-		spin_lock(&iommu->lock);
+ 		if (hw_pass_through && domain_type_is_si(domain))
+ 			ret = intel_pasid_setup_pass_through(iommu, domain,
+ 					dev, PASID_RID2PASID);
+@@ -2499,7 +2498,6 @@ static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
+ 		else
+ 			ret = intel_pasid_setup_second_level(iommu, domain,
+ 					dev, PASID_RID2PASID);
+-		spin_unlock(&iommu->lock);
+ 		if (ret) {
+ 			dev_err(dev, "Setup RID2PASID failed\n");
+ 			dmar_remove_one_dev_info(dev);
+diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+index 43f090381ec7..7792a1b2ebc4 100644
+--- a/drivers/iommu/intel/pasid.c
++++ b/drivers/iommu/intel/pasid.c
+@@ -450,17 +450,17 @@ void intel_pasid_tear_down_entry(struct intel_iommu *iommu, struct device *dev,
+ 	struct pasid_entry *pte;
+ 	u16 did, pgtt;
  
-@@ -1841,10 +1840,6 @@ static inline int guestwidth_to_adjustwidth(int gaw)
- 
- static void domain_exit(struct dmar_domain *domain)
- {
++	spin_lock(&iommu->lock);
+ 	pte = intel_pasid_get_entry(dev, pasid);
+-	if (WARN_ON(!pte))
+-		return;
 -
--	/* Remove associated devices and clear attached or cached domains */
--	domain_remove_dev_info(domain);
--
- 	if (domain->pgd) {
- 		LIST_HEAD(freelist);
+-	if (!pasid_pte_is_present(pte))
++	if (WARN_ON(!pte) || !pasid_pte_is_present(pte)) {
++		spin_unlock(&iommu->lock);
+ 		return;
++	}
  
-@@ -1852,6 +1847,9 @@ static void domain_exit(struct dmar_domain *domain)
- 		put_pages_list(&freelist);
+ 	did = pasid_get_domain_id(pte);
+ 	pgtt = pasid_pte_get_pgtt(pte);
+-
+ 	intel_pasid_clear_entry(dev, pasid, fault_ignore);
++	spin_unlock(&iommu->lock);
+ 
+ 	if (!ecap_coherent(iommu->ecap))
+ 		clflush_cache_range(pte, sizeof(*pte));
+@@ -496,22 +496,6 @@ static void pasid_flush_caches(struct intel_iommu *iommu,
+ 	}
+ }
+ 
+-static inline int pasid_enable_wpe(struct pasid_entry *pte)
+-{
+-#ifdef CONFIG_X86
+-	unsigned long cr0 = read_cr0();
+-
+-	/* CR0.WP is normally set but just to be sure */
+-	if (unlikely(!(cr0 & X86_CR0_WP))) {
+-		pr_err_ratelimited("No CPU write protect!\n");
+-		return -EINVAL;
+-	}
+-#endif
+-	pasid_set_wpe(pte);
+-
+-	return 0;
+-};
+-
+ /*
+  * Set up the scalable mode pasid table entry for first only
+  * translation type.
+@@ -528,39 +512,52 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
+ 		return -EINVAL;
  	}
  
-+	if (WARN_ON(!list_empty(&domain->devices)))
-+		return;
+-	pte = intel_pasid_get_entry(dev, pasid);
+-	if (WARN_ON(!pte))
++	if (flags & PASID_FLAG_SUPERVISOR_MODE) {
++#ifdef CONFIG_X86
++		unsigned long cr0 = read_cr0();
 +
- 	kfree(domain);
- }
++		/* CR0.WP is normally set but just to be sure */
++		if (unlikely(!(cr0 & X86_CR0_WP))) {
++			pr_err("No CPU write protect!\n");
++			return -EINVAL;
++		}
++#endif
++		if (!ecap_srs(iommu->ecap)) {
++			pr_err("No supervisor request support on %s\n",
++			       iommu->name);
++			return -EINVAL;
++		}
++	}
++
++	if ((flags & PASID_FLAG_FL5LP) && !cap_5lp_support(iommu->cap)) {
++		pr_err("No 5-level paging support for first-level on %s\n",
++		       iommu->name);
+ 		return -EINVAL;
++	}
  
-@@ -2333,16 +2331,6 @@ static void domain_context_clear_one(struct device_domain_info *info, u8 bus, u8
- 	__iommu_flush_dev_iotlb(info, 0, MAX_AGAW_PFN_WIDTH);
- }
+-	/* Caller must ensure PASID entry is not in use. */
+-	if (pasid_pte_is_present(pte))
++	spin_lock(&iommu->lock);
++	pte = intel_pasid_get_entry(dev, pasid);
++	if (!pte) {
++		spin_unlock(&iommu->lock);
++		return -ENODEV;
++	}
++
++	if (pasid_pte_is_present(pte)) {
++		spin_unlock(&iommu->lock);
+ 		return -EBUSY;
++	}
  
--static void domain_remove_dev_info(struct dmar_domain *domain)
--{
--	struct device_domain_info *info, *tmp;
+ 	pasid_clear_entry(pte);
+ 
+ 	/* Setup the first level page table pointer: */
+ 	pasid_set_flptr(pte, (u64)__pa(pgd));
+ 	if (flags & PASID_FLAG_SUPERVISOR_MODE) {
+-		if (!ecap_srs(iommu->ecap)) {
+-			pr_err("No supervisor request support on %s\n",
+-			       iommu->name);
+-			return -EINVAL;
+-		}
+ 		pasid_set_sre(pte);
+-		if (pasid_enable_wpe(pte))
+-			return -EINVAL;
 -
--	spin_lock(&device_domain_lock);
--	list_for_each_entry_safe(info, tmp, &domain->devices, link)
--		__dmar_remove_one_dev_info(info);
--	spin_unlock(&device_domain_lock);
--}
++		pasid_set_wpe(pte);
+ 	}
+ 
+-	if (flags & PASID_FLAG_FL5LP) {
+-		if (cap_5lp_support(iommu->cap)) {
+-			pasid_set_flpm(pte, 1);
+-		} else {
+-			pr_err("No 5-level paging support for first-level\n");
+-			pasid_clear_entry(pte);
+-			return -EINVAL;
+-		}
+-	}
++	if (flags & PASID_FLAG_FL5LP)
++		pasid_set_flpm(pte, 1);
+ 
+ 	if (flags & PASID_FLAG_PAGE_SNOOP)
+ 		pasid_set_pgsnp(pte);
+@@ -572,6 +569,8 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
+ 	/* Setup Present and PASID Granular Transfer Type: */
+ 	pasid_set_translation_type(pte, PASID_ENTRY_PGTT_FL_ONLY);
+ 	pasid_set_present(pte);
++	spin_unlock(&iommu->lock);
++
+ 	pasid_flush_caches(iommu, pte, pasid, did);
+ 
+ 	return 0;
+@@ -629,15 +628,17 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
+ 	pgd_val = virt_to_phys(pgd);
+ 	did = domain->iommu_did[iommu->seq_id];
+ 
++	spin_lock(&iommu->lock);
+ 	pte = intel_pasid_get_entry(dev, pasid);
+ 	if (!pte) {
+-		dev_err(dev, "Failed to get pasid entry of PASID %d\n", pasid);
++		spin_unlock(&iommu->lock);
+ 		return -ENODEV;
+ 	}
+ 
+-	/* Caller must ensure PASID entry is not in use. */
+-	if (pasid_pte_is_present(pte))
++	if (pasid_pte_is_present(pte)) {
++		spin_unlock(&iommu->lock);
+ 		return -EBUSY;
++	}
+ 
+ 	pasid_clear_entry(pte);
+ 	pasid_set_domain_id(pte, did);
+@@ -654,6 +655,8 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
+ 	if (pasid != PASID_RID2PASID)
+ 		pasid_set_sre(pte);
+ 	pasid_set_present(pte);
++	spin_unlock(&iommu->lock);
++
+ 	pasid_flush_caches(iommu, pte, pasid, did);
+ 
+ 	return 0;
+@@ -669,15 +672,17 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
+ 	u16 did = FLPT_DEFAULT_DID;
+ 	struct pasid_entry *pte;
+ 
++	spin_lock(&iommu->lock);
+ 	pte = intel_pasid_get_entry(dev, pasid);
+ 	if (!pte) {
+-		dev_err(dev, "Failed to get pasid entry of PASID %d\n", pasid);
++		spin_unlock(&iommu->lock);
+ 		return -ENODEV;
+ 	}
+ 
+-	/* Caller must ensure PASID entry is not in use. */
+-	if (pasid_pte_is_present(pte))
++	if (pasid_pte_is_present(pte)) {
++		spin_unlock(&iommu->lock);
+ 		return -EBUSY;
++	}
+ 
+ 	pasid_clear_entry(pte);
+ 	pasid_set_domain_id(pte, did);
+@@ -692,6 +697,8 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
+ 	 */
+ 	pasid_set_sre(pte);
+ 	pasid_set_present(pte);
++	spin_unlock(&iommu->lock);
++
+ 	pasid_flush_caches(iommu, pte, pasid, did);
+ 
+ 	return 0;
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index 82288a50660d..64072e628bbd 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -394,11 +394,8 @@ static struct iommu_sva *intel_svm_bind_mm(struct intel_iommu *iommu,
+ 	sflags = (flags & SVM_FLAG_SUPERVISOR_MODE) ?
+ 			PASID_FLAG_SUPERVISOR_MODE : 0;
+ 	sflags |= cpu_feature_enabled(X86_FEATURE_LA57) ? PASID_FLAG_FL5LP : 0;
+-	spin_lock(&iommu->lock);
+ 	ret = intel_pasid_setup_first_level(iommu, dev, mm->pgd, mm->pasid,
+ 					    FLPT_DEFAULT_DID, sflags);
+-	spin_unlock(&iommu->lock);
 -
- static int domain_setup_first_level(struct intel_iommu *iommu,
- 				    struct dmar_domain *domain,
- 				    struct device *dev,
+ 	if (ret)
+ 		goto free_sdev;
+ 
 -- 
 2.25.1
 
