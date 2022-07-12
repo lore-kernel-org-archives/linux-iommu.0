@@ -1,38 +1,38 @@
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D905F1854
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED41C187F
 	for <iommu@lists.linux.dev>; Tue, 12 Jul 2022 00:13:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1657584822; x=1689120822;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=zL0sNIu0hR/7q129LGe91BkLQRpbxXeLJ8hwcGWo304=;
-  b=NiMSK/Ql270yS4N4fNOalv3e+44/FuhjyOXVlMFJGf5TpmGGT2/+R95W
-   Xh9hXuTpjEZEwDDaoDgDb2MCtXDHI2W56DXUC6dgyRH4wAqYGGoL7bjni
-   +9G3SGYcrxiLtOEamEISt+ePzHExeniw/RHX6YMxrsJ1IYQqHXzucBmPB
-   7iquO+LbSRNXESXc7toJLVQYJD6b0pGKY7wM0Dor0pJ2JeoMMI0G6Tvvu
-   OUvS/ItNiQS7sngGDLa7ZSWJsty8cFsoXnAiibSYqgFkA3HsaER+6rcwf
-   uUx0BmZXB5o4YuVGyQ3ExTXJvSU3JfI0tlzftCvFISYSp6YOc8kOVQLXA
+  bh=eG1dMwRZBBGiJ/exhj5l7l6h4h7y0PvHPNn95XiHisA=;
+  b=QIDcU/gbQZ69L+o2qEsZEg4jts46UjxJ0KCU0+WhrvufOM2k35iN59P+
+   VrdMNPJr8rwZj4gpAi929/eM72DdiSRIkiOSqtpI7bcCa/VeVDakmuxte
+   4aYfAvEbdEHqhazp0UmQz6mUnLGGfpv3fJyKHwh3K5Fpt440MpZgTNVU/
+   RdvIrp57HK/tf6XIELrAlx6yEGd3YkK+ecSuNMJ0u3G5x4m0CfpgA5Bwj
+   xeArJPdmM/QRMXjbRTJjuR9WuWsakIfydUhW3BNAOXIziPLOCh7MDJJkG
+   YRjNnoN0hnJriCBzDQ0+iCLoaNImlwVjt/rzxD75wMTLk2IT/f4Yj63Tg
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="264589864"
+X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="264589870"
 X-IronPort-AV: E=Sophos;i="5.92,264,1650956400"; 
-   d="scan'208";a="264589864"
+   d="scan'208";a="264589870"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 17:13:41 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 17:13:42 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,264,1650956400"; 
-   d="scan'208";a="592445683"
+   d="scan'208";a="592445685"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga007.jf.intel.com with ESMTP; 11 Jul 2022 17:13:40 -0700
+  by orsmga007.jf.intel.com with ESMTP; 11 Jul 2022 17:13:41 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 01/25] iommu/vt-d: Move trace/events/intel_iommu.h under iommu
-Date: Tue, 12 Jul 2022 08:08:44 +0800
-Message-Id: <20220712000908.3431936-2-baolu.lu@linux.intel.com>
+Subject: [PATCH 02/25] agp/intel: Use per device iommu check
+Date: Tue, 12 Jul 2022 08:08:45 +0800
+Message-Id: <20220712000908.3431936-3-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220712000908.3431936-1-baolu.lu@linux.intel.com>
 References: <20220712000908.3431936-1-baolu.lu@linux.intel.com>
@@ -44,81 +44,62 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This header file is private to the Intel IOMMU driver. Move it to the
-driver folder.
+The IOMMU subsystem has already provided an interface to query whether
+the IOMMU hardware is enabled for a specific device. This changes the
+check from Intel specific intel_iommu_gfx_mapped (globally exported by
+the Intel IOMMU driver) to probing the presence of IOMMU on a specific
+device using the generic device_iommu_mapped().
+
+This follows commit cca084692394a ("drm/i915: Use per device iommu check")
+which converted drm/i915 driver to use device_iommu_mapped().
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 Reviewed-by: Steve Wahl <steve.wahl@hpe.com>
-Link: https://lore.kernel.org/r/20220514014322.2927339-2-baolu.lu@linux.intel.com
+Link: https://lore.kernel.org/r/20220514014322.2927339-3-baolu.lu@linux.intel.com
 ---
- .../trace/events/intel_iommu.h => drivers/iommu/intel/trace.h | 4 ++++
- drivers/iommu/intel/dmar.c                                    | 2 +-
- drivers/iommu/intel/svm.c                                     | 2 +-
- drivers/iommu/intel/trace.c                                   | 2 +-
- 4 files changed, 7 insertions(+), 3 deletions(-)
- rename include/trace/events/intel_iommu.h => drivers/iommu/intel/trace.h (94%)
+ drivers/char/agp/intel-gtt.c | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
 
-diff --git a/include/trace/events/intel_iommu.h b/drivers/iommu/intel/trace.h
-similarity index 94%
-rename from include/trace/events/intel_iommu.h
-rename to drivers/iommu/intel/trace.h
-index e5c1ca6d16ee..25cb7f88e1a2 100644
---- a/include/trace/events/intel_iommu.h
-+++ b/drivers/iommu/intel/trace.h
-@@ -91,4 +91,8 @@ TRACE_EVENT(prq_report,
- #endif /* _TRACE_INTEL_IOMMU_H */
+diff --git a/drivers/char/agp/intel-gtt.c b/drivers/char/agp/intel-gtt.c
+index 79a1b65527c2..cfcb450e9b59 100644
+--- a/drivers/char/agp/intel-gtt.c
++++ b/drivers/char/agp/intel-gtt.c
+@@ -20,7 +20,7 @@
+ #include <linux/kernel.h>
+ #include <linux/pagemap.h>
+ #include <linux/agp_backend.h>
+-#include <linux/intel-iommu.h>
++#include <linux/iommu.h>
+ #include <linux/delay.h>
+ #include <asm/smp.h>
+ #include "agp.h"
+@@ -573,18 +573,15 @@ static void intel_gtt_cleanup(void)
+  */
+ static inline int needs_ilk_vtd_wa(void)
+ {
+-#ifdef CONFIG_INTEL_IOMMU
+ 	const unsigned short gpu_devid = intel_private.pcidev->device;
  
- /* This part must be outside protection */
-+#undef TRACE_INCLUDE_PATH
-+#undef TRACE_INCLUDE_FILE
-+#define TRACE_INCLUDE_PATH ../../drivers/iommu/intel/
-+#define TRACE_INCLUDE_FILE trace
- #include <trace/define_trace.h>
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 9699ca101c62..f91b45be1d92 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -30,10 +30,10 @@
- #include <linux/numa.h>
- #include <linux/limits.h>
- #include <asm/irq_remapping.h>
--#include <trace/events/intel_iommu.h>
+-	/* Query intel_iommu to see if we need the workaround. Presumably that
+-	 * was loaded first.
++	/*
++	 * Query iommu subsystem to see if we need the workaround. Presumably
++	 * that was loaded first.
+ 	 */
+-	if ((gpu_devid == PCI_DEVICE_ID_INTEL_IRONLAKE_D_IG ||
+-	     gpu_devid == PCI_DEVICE_ID_INTEL_IRONLAKE_M_IG) &&
+-	     intel_iommu_gfx_mapped)
+-		return 1;
+-#endif
+-	return 0;
++	return ((gpu_devid == PCI_DEVICE_ID_INTEL_IRONLAKE_D_IG ||
++		 gpu_devid == PCI_DEVICE_ID_INTEL_IRONLAKE_M_IG) &&
++		device_iommu_mapped(&intel_private.pcidev->dev));
+ }
  
- #include "../irq_remapping.h"
- #include "perf.h"
-+#include "trace.h"
- 
- typedef int (*dmar_res_handler_t)(struct acpi_dmar_header *, void *);
- struct dmar_res_callback {
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 7ee37d996e15..70b40d007a52 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -21,11 +21,11 @@
- #include <linux/ioasid.h>
- #include <asm/page.h>
- #include <asm/fpu/api.h>
--#include <trace/events/intel_iommu.h>
- 
- #include "pasid.h"
- #include "perf.h"
- #include "../iommu-sva-lib.h"
-+#include "trace.h"
- 
- static irqreturn_t prq_event_thread(int irq, void *d);
- static void intel_svm_drain_prq(struct device *dev, u32 pasid);
-diff --git a/drivers/iommu/intel/trace.c b/drivers/iommu/intel/trace.c
-index bfb6a6e37a88..117e626e3ea9 100644
---- a/drivers/iommu/intel/trace.c
-+++ b/drivers/iommu/intel/trace.c
-@@ -11,4 +11,4 @@
- #include <linux/types.h>
- 
- #define CREATE_TRACE_POINTS
--#include <trace/events/intel_iommu.h>
-+#include "trace.h"
+ static bool intel_gtt_can_wc(void)
 -- 
 2.25.1
 
