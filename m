@@ -1,33 +1,33 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2078.outbound.protection.outlook.com [40.107.244.78])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2042.outbound.protection.outlook.com [40.107.220.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FC2415AC
-	for <iommu@lists.linux.dev>; Wed, 13 Jul 2022 22:57:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B716215AC
+	for <iommu@lists.linux.dev>; Wed, 13 Jul 2022 22:57:15 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LCGiOC7Pjn+BOcgAJuvhktzVzh0K2ahw5y2U7pBZGcxWs9pULBFUcGKNolV5USXIUltf/AXL8j3GqiXMt+J0RTW0ZZCU2P+L3Sh8U0FWTNT+i+2Dp8znSvRnTz9FLfpBO/v4qb/tw2OS6rd56zVWsMnFUXYeNAVcZFqQ5mBtkebFV7IxRvAz47b5NO13ESu3bdDzhWt2E5keg//7gRHcXAlFWbBJK8zCsIXkWWkJWTIywGeaXmdQIb0ABeCLKoLgRHst7YUwtQhyTinI63fSDfzjgxrmLReS5S5zRy9l9dGZSicmlyJ6fT9chq3l1rYYUwrKRsSq8GnllIUeSnLjqg==
+ b=U5WswAMrEXbairbdvFW6cA3hAVEisPtkUIyU7DFjUNu7PbBxgWnjFpiQ6gTIFvXrkt0cGfQMakQ9Tl4SZnH4eho+mG865/l098wOVf4ytP9/zR4ESJM5Mw+asf9SyGlzLIemWUVBqRMWOv/gUhasMAI+l42rC/6CjNOgY5fMvwodtyJtRvmHknWKZF6HWpDvqDY6ML4eJ4Dt4vFq4ekLsyiE4cDkj4Vq58cj1SSSGhHLxyFZWTbzWLuajM2aemHnOpZJZMkhAksUshPzy2C2ziHxMXiwLG+nXbOZ4yB13F+WRPTnRIBXfKE5ClW2q37PGDs1lccCh0nZYyH+Vylh2Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=B845tXD9xNEzOhDIFySyO2d5TZVXPQwOdLU4a6VXwEM=;
- b=NTIy8ZRRIGyb3Sp6rqChv0AbMXmtzxqRhShuDXw0+gEhXoPAUDVpms65v5CeCd4y0SLkXCI+JalDWwbeq83eMQq23pI34YihIF2LrOnP0O3mdPm5bfwuUEF320jjb9pUfckvu0W26TVE7Z6ZkLNurNTPMbsojw588rGS88hIymEsP3jTlf1hAPaq/CmsDLdnAyawf45+A1B3lORQLiADRWDqqoPzqsUkLbe/A/R7eKZcHqB4TuYGJpxhuChPst8IFEsQ7UqVwXrfdoKlwOt6h08e6hRna7KcjtE0geiPm5AjzOQH4myrGac1cGKUxFmZxlOhYi2WRZoeFi2xd4Yb7A==
+ bh=UK8oGJQC2CB92dtcgyWqjf5ak6vs82NvNiHrXHfnt7k=;
+ b=hCFTHiszHP/KZxv51lzhBYXxEyzAOuH1tx1sFUu/TCr7xQ1MHfjP0LeqjXbL9Jki22CgTmaYAWod8JfSAu6LKYD3BYjDbY0DwAbgdynWP1XsO2f9+iDXp1wNLlACoT1yqoHQk/l7k2lewOgG2KTj0sgGLmmiILkQq9Z6dUKShHPT4DaJUuMrn3iyIsv4l9sLS3VA1vpe8nX3AHR56ilZycek7eTiQY8UUm89OT5/8WHlIW69rV8Nj7HQvr2GhOjkXKMdGyvOf9IkCqQxFn+7HK+RBeBPbZ8TxNoiZgtOPbgNtqOlDlDxEByXRBKkG/XaGpkOyfruWD8YzAddMf63ZA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=B845tXD9xNEzOhDIFySyO2d5TZVXPQwOdLU4a6VXwEM=;
- b=0qViuFZ/kNCNIA8QNQbS8cwTTwd6KVvbJis8978RPWOTMurklJHksdh7S/cYVJT5Rc9+15c47M4x5+jt4rHW2daTPRn71Z6h5PiTZyUHpa/hpi0ILD2QFnV/b9Wr3ALb+tqBbgvQ3TGVYcXfnrUeUugXz0sMWzZoE3ImkAj0Qi0=
-Received: from BN9PR03CA0511.namprd03.prod.outlook.com (2603:10b6:408:131::6)
- by BN6PR12MB1265.namprd12.prod.outlook.com (2603:10b6:404:1d::11) with
+ bh=UK8oGJQC2CB92dtcgyWqjf5ak6vs82NvNiHrXHfnt7k=;
+ b=ktl0NW+qGB191krtDA5rHqg8RBC9vhaWtU6TCqjG4V2M1DIrD3IqgLw3rFmaAl3YeTWBFEzSnmK84hohKdGZ2uUTGdw4n7iLl+WovBL2KT5rocCgWXGtZCRWfQ9yEL5SWb3VRuH5gkwTfyXBjVpJ8uAvnE0Xr2ihUV1xJrHvnAs=
+Received: from BN9PR03CA0529.namprd03.prod.outlook.com (2603:10b6:408:131::24)
+ by DM5PR12MB1580.namprd12.prod.outlook.com (2603:10b6:4:10::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.12; Wed, 13 Jul
- 2022 22:57:11 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.20; Wed, 13 Jul
+ 2022 22:57:13 +0000
 Received: from BN8NAM11FT067.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:131:cafe::5e) by BN9PR03CA0511.outlook.office365.com
- (2603:10b6:408:131::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.22 via Frontend
- Transport; Wed, 13 Jul 2022 22:57:11 +0000
+ (2603:10b6:408:131:cafe::9d) by BN9PR03CA0529.outlook.office365.com
+ (2603:10b6:408:131::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.12 via Frontend
+ Transport; Wed, 13 Jul 2022 22:57:13 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -37,20 +37,22 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
  BN8NAM11FT067.mail.protection.outlook.com (10.13.177.159) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5438.12 via Frontend Transport; Wed, 13 Jul 2022 22:57:11 +0000
+ 15.20.5438.12 via Frontend Transport; Wed, 13 Jul 2022 22:57:13 +0000
 Received: from sp5-759chost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 13 Jul
- 2022 17:57:07 -0500
+ 2022 17:57:08 -0500
 From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
 CC: <joro@8bytes.org>, <robin.murphy@arm.com>, <vasant.hegde@amd.com>,
 	<ashish.kalra@amd.com>, <jon.grimm@amd.com>, Suravee Suthikulpanit
 	<suravee.suthikulpanit@amd.com>
-Subject: [PATCH v4 0/9] iommu/amd: Enforce IOMMU restrictions for SNP-enabled system
-Date: Wed, 13 Jul 2022 17:56:42 -0500
-Message-ID: <20220713225651.20758-1-suravee.suthikulpanit@amd.com>
+Subject: [PATCH v4 3/9] iommu/amd: Introduce global variable for storing common EFR and EFR2
+Date: Wed, 13 Jul 2022 17:56:45 -0500
+Message-ID: <20220713225651.20758-4-suravee.suthikulpanit@amd.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220713225651.20758-1-suravee.suthikulpanit@amd.com>
+References: <20220713225651.20758-1-suravee.suthikulpanit@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,94 +66,126 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 88eabf3b-7d9d-4a46-43f8-08da65230534
-X-MS-TrafficTypeDiagnostic: BN6PR12MB1265:EE_
+X-MS-Office365-Filtering-Correlation-Id: 38a6d26b-8c2c-4c14-5667-08da65230671
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1580:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	RS3s9g5aIJfP9gZZahFWBQQ3JzQZ5HmR/Fau14/wNIJMYIBp7GdVSMV6xEe9kPTQF1RZoNgdI8KWgx84+Vur2EBGTv3ZtKJ44WZMG9kUwmDvhr/UvYnoaDUrsZXxINhYfqk4jQvaJyKm4pzEtpb7Ff5rzeU849I01d5rEO5KvOLbsJyIMroafpWErG4XJbsXKbaUMOmM/GZ5bm47IgwxPqtjRTw94SYpmCBhFhY82c699gI58Q5PIAlMjaShJnWpgP/bq5uiJVmmb4Q/GL3kF3TNvvC9FZAQrRDGJ6je2W3js2szv0/lIvHWe4/Dc4orGKob7qtuWC+9BUdr57T2Rnh60GfZIvRvWP837ooHZC0rSBjZw8R7C+8Ii43vyylauIdsovMT/tpQKrdewicWx1q96Rr8Bx18ZGGpnYhrp+xdxJF5z0C3gm3JTj566h9q/uveejogb6q6UJcLBhSxtOb7mLZbiaS58yrUxlGaX/VEkshAUNy4nP6vGvoH0PFMhrx9KggqXbKQ5/4uP/rHHIW5oGeIyz8MkB1SGFNA7dYX3Y6L281YkY/EoLZ4EFxB7lNDRGadn6AphzXIJeyKdsK5JYDSuqdjyH1iP9+4D7Ck+BOH983yr5l6j9EHHGrp6fJTaU0+EQLqn34MNFwDXSkvChuAA8TTYAE83Aka7ryoFTfgXkpXCGA9Qv3JMatf4d7mkOVzWVuMXh0DzhUUZQvXd6SFZjtKk646T+CuB7XBwtoqOb8ccJ0jJhEZoJ1aBkTmgCPQwVkz3kJMd1FDpEi4IuI7GDymkDKkmcb1vYohIjonebzPzUO6KS76qonOkSNWiu0Y3oSIe2vIov0uk99F9qgm2LdCiwpHGSa9nB+qij/aImc/v7h1uh6NOHhK
+	t+/QVp394EnZvpkVEtqt/CJ/i4rq3c6viR8zGjhj7Odjb3xhNmnP1hY3EPVxHvYYqX7gKWYWdkldiSPx+fnSUMG9liWqkcYlbBlTvnTHoxKgrzhV+V3JwNi5oXULKSao4cX+24Yy07vUjNY5k4Dz490ccI825uBIlPcx6kBVZ3EffzeZ3zweGfV3JAK3Fg273wzxcSkP0pc2e+rdZSAsnryLovufoFSnUiyGuu7nNR83Nowc82lwtFSwf+EThHv7w4BMaMS8thrALmt/OwiSK1HRFTMsW35Fzi8hLureth0gtd3kiO3LBIazJjub91shmDZnyr0vk/L3fLkK46dUY+cyVFMdB/sIzmqplwP7xhV2SrYKl0caeLaxhL0Za43FxUZiE4ke00Ecm9xvdw1FUqZ0m6CoBJGTfeyP/1uDxbWCm+OEVLZ7+h2n8JdMzF4pUjLX3MBxTDpusFqTdWHwdlNt1q5GKn8rcGouknLq/htEZHuFNvO4HuL2udTjM/YakupBZZFHHAxhgc6D7o57EnsslGVnnHdirBaR6V0t/X2uV34WeCb1pKw63i9KuJWIqTzukzY3FVGMdQi2Gpfk9A2oFZ6x83rbPaMXdvo+rWcEiLNfpKjJXgfnk0PRIUZgfnfpxnGBc2qMIZphA0IGmFK4DXJFmTpP0a3QNfGOeAGpiu1/PWjDlnhFnC/iBFfX1yTIaQuSy2SbuQV4l1fyBRtAzGv39o8eNV5RotcF5R58vKP3QjVi3CrJAgQMqHGktLhNUh/gDEd32yvKPj9OyfwbjaSBIH/Yf/0lSEPkvtnCT3qqZS6ZA2M+YKqNlyk0uXggNNNQFF+/Lo0S1XhossoRXFoBxFpcJGe4mhV9Iso=
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(346002)(39860400002)(136003)(396003)(376002)(46966006)(40470700004)(36840700001)(26005)(41300700001)(7696005)(6666004)(478600001)(1076003)(8676002)(40460700003)(70586007)(70206006)(86362001)(110136005)(82310400005)(316002)(54906003)(83380400001)(4326008)(81166007)(2616005)(36860700001)(16526019)(82740400003)(47076005)(336012)(426003)(356005)(186003)(40480700001)(36756003)(8936002)(5660300002)(2906002)(44832011)(36900700001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(376002)(396003)(346002)(136003)(39860400002)(40470700004)(36840700001)(46966006)(44832011)(6666004)(16526019)(86362001)(186003)(1076003)(82310400005)(5660300002)(478600001)(8936002)(40460700003)(36860700001)(110136005)(2616005)(70206006)(36756003)(7696005)(40480700001)(316002)(4326008)(2906002)(82740400003)(336012)(426003)(47076005)(54906003)(356005)(41300700001)(8676002)(70586007)(26005)(83380400001)(81166007)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2022 22:57:11.1293
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2022 22:57:13.2073
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 88eabf3b-7d9d-4a46-43f8-08da65230534
+X-MS-Exchange-CrossTenant-Network-Message-Id: 38a6d26b-8c2c-4c14-5667-08da65230671
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
 	BN8NAM11FT067.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1265
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1580
 
-To support the new AMD Secure Nested Paging (SNP) feature, AMD IOMMU driver
-needs to be modified to comply with new restrictions enforced by the SNP
-feature.
+Some IOMMU features require that all IOMMUs must support the feature,
+which is determined by checking the support bit in the Extended Feature
+Register 1 and 2 (EFR/EFR2) on all IOMMUs. This check is done by the
+function check_feature_on_all_iommus(), which iterates through all
+IOMMUs everytime it is called.
 
-The SNP feature detection needs to happen early in the IOMMU driver
-initialization, and the feature must be supported across all IOMMUs.
+Instead, introduce a global variable to store common EFR/EFR2 among all
+IOMMUs. In case of inconsistent EFR/EFR2 masks are detected on an IOMMU,
+a FW_BUG warning is reported.
 
-To simplify the detection process, this series introduces global variables
-for tracking IOMMU Extended Feature Registers (EFR and EFR2), which store
-common feature bits across all IOMMUs. These global variables are available
-as soon as the IVRS table is parsed, which happens at the beginning of
-the driver initialization. Therefore, they can be used for early detection
-of SNP feature. (See patch 2 - 5)
+Suggested-by: Joerg Roedel <joro@8bytes.org>
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+---
+ drivers/iommu/amd/amd_iommu.h |  3 +++
+ drivers/iommu/amd/init.c      | 45 ++++++++++++++++++++++++++++-------
+ 2 files changed, 40 insertions(+), 8 deletions(-)
 
-Once the feature is detected, IOMMU driver needs to be informed when the
-feature system-wide. Therefor, the function amd_iommu_snp_enable() is
-introduced in patch 6, and will be called by SEV-SNP driver.
-
-When IOMMU driver initializing the device table entries (DTEs), care must
-be taken when setting up the DTE[TV] bit on SNP-enabled system.
-(See patch 7)
-
-Lastly, an SNP-enabled system requires IOMMU v1 page table to be configured
-with non-zero DTE[Mode] for DMA-capable devices. This affects a number of
-use cases such as IOMMU pass-through mode and AMD IOMMUv2 APIs for binding/
-unbinding pasid cannot be supported with SNP. These are handled in patch 8
-and 9.
-
-Testing:
-  - Tested booting and verify dmesg.
-  - Tested booting with iommu=pt
-  - Tested changing the iommu domain to identity at runtime
-  - Tested loading amd_iommu_v2 driver
-  - Tested booting SEV/SNP-enabled guest
-  - Tested when CONFIG_AMD_MEM_ENCRYPT is not set
-
-Chanages from v3:
-(https://www.spinics.net/lists/kernel/msg4409539.html)
-  - Patch 1, 2, and 5 are new.
-  - Patch 3: Modify to use global common EFR/EFR2 vaiable
-             when tracking supported features.
-
-Best Regards,
-Suravee
-
-Brijesh Singh (1):
-  iommu/amd: Introduce function to check and enable SNP
-
-Suravee Suthikulpanit (8):
-  iommu/amd: Change macro for IOMMU control register bit shift to
-    decimal value
-  iommu/amd: Introduce Support for Extended Feature 2 Register
-  iommu/amd: Introduce global variable for storing common EFR and EFR2
-  iommu/amd: Process all IVHDs before enabling IOMMU features
-  iommu/amd: Globally detect SNP support
-  iommu/amd: Set translation valid bit only when IO page tables are in
-    use
-  iommu/amd: Do not support IOMMU_DOMAIN_IDENTITY after SNP is enabled
-  iommu/amd: Do not support IOMMUv2 APIs when SNP is enabled
-
- drivers/iommu/amd/amd_iommu.h       |   5 +
- drivers/iommu/amd/amd_iommu_types.h |  46 +++++----
- drivers/iommu/amd/init.c            | 153 +++++++++++++++++++++++-----
- drivers/iommu/amd/iommu.c           |  24 ++++-
- include/linux/amd-iommu.h           |   4 +
- 5 files changed, 183 insertions(+), 49 deletions(-)
-
+diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+index 9b7092182ca7..1b945d47741c 100644
+--- a/drivers/iommu/amd/amd_iommu.h
++++ b/drivers/iommu/amd/amd_iommu.h
+@@ -137,4 +137,7 @@ static inline void amd_iommu_apply_ivrs_quirks(void) { }
+ extern void amd_iommu_domain_set_pgtable(struct protection_domain *domain,
+ 					 u64 *root, int mode);
+ extern struct dev_table_entry *get_dev_table(struct amd_iommu *iommu);
++
++extern u64 amd_iommu_efr;
++extern u64 amd_iommu_efr2;
+ #endif
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 92ab02f6c5dc..741fee1abfc4 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -164,6 +164,10 @@ static bool amd_iommu_disabled __initdata;
+ static bool amd_iommu_force_enable __initdata;
+ static int amd_iommu_target_ivhd_type;
+ 
++/* Global EFR and EFR2 registers */
++u64 amd_iommu_efr;
++u64 amd_iommu_efr2;
++
+ LIST_HEAD(amd_iommu_pci_seg_list);	/* list of all PCI segments */
+ LIST_HEAD(amd_iommu_list);		/* list of all AMD IOMMUs in the
+ 					   system */
+@@ -259,21 +263,46 @@ int amd_iommu_get_num_iommus(void)
+ 	return amd_iommus_present;
+ }
+ 
+-#ifdef CONFIG_IRQ_REMAP
+-static bool check_feature_on_all_iommus(u64 mask)
++/*
++ * Iterate through all the IOMMUs to get common EFR
++ * masks among all IOMMUs and warn if found inconsistency.
++ */
++static void get_global_efr(void)
+ {
+-	bool ret = false;
+ 	struct amd_iommu *iommu;
+ 
+ 	for_each_iommu(iommu) {
+-		ret = iommu_feature(iommu, mask);
+-		if (!ret)
+-			return false;
++		u64 tmp = iommu->features;
++		u64 tmp2 = iommu->features2;
++
++		if (list_is_first(&iommu->list, &amd_iommu_list)) {
++			amd_iommu_efr = tmp;
++			amd_iommu_efr2 = tmp2;
++			continue;
++		}
++
++		if (amd_iommu_efr == tmp &&
++		    amd_iommu_efr2 == tmp2)
++			continue;
++
++		pr_err(FW_BUG
++		       "Found inconsistent EFR/EFR2 %#llx,%#llx (global %#llx,%#llx) on iommu%d (%04x:%02x:%02x.%01x).\n",
++		       tmp, tmp2, amd_iommu_efr, amd_iommu_efr2,
++		       iommu->index, iommu->pci_seg->id,
++		       PCI_BUS_NUM(iommu->devid), PCI_SLOT(iommu->devid),
++		       PCI_FUNC(iommu->devid));
++
++		amd_iommu_efr &= tmp;
++		amd_iommu_efr2 &= tmp2;
+ 	}
+ 
+-	return true;
++	pr_info("Using global IVHD EFR:%#llx, EFR2:%#llx\n", amd_iommu_efr, amd_iommu_efr2);
++}
++
++static bool check_feature_on_all_iommus(u64 mask)
++{
++	return !!(amd_iommu_efr & mask);
+ }
+-#endif
+ 
+ /*
+  * For IVHD type 0x11/0x40, EFR is also available via IVHD.
 -- 
 2.32.0
 
