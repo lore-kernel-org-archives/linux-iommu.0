@@ -1,40 +1,60 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F41017C3
-	for <iommu@lists.linux.dev>; Wed, 13 Jul 2022 06:02:57 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 6D6BB68AFE; Wed, 13 Jul 2022 08:02:46 +0200 (CEST)
-Date: Wed, 13 Jul 2022 08:02:46 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Tianyu Lan <ltykernel@gmail.com>
-Cc: kernel test robot <oliver.sang@intel.com>,
-	Tianyu Lan <Tianyu.Lan@microsoft.com>,
-	Christoph Hellwig <hch@lst.de>, linux-doc@vger.kernel.org,
-	iommu@lists.linux.dev, lkp@lists.01.org, lkp@intel.com
-Subject: Re: [EXTERNAL] [swiotlb] 44d89f2248:
- Kernel_panic-not_syncing:swiotlb_init_remap:nslabs=#too_small
-Message-ID: <20220713060246.GA13497@lst.de>
-References: <Ys43FtIumAsHPn+y@xsang-OptiPlex-9020> <c8edfbd4-afad-c018-daf6-aa2ac1f7b2fe@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F04A47A
+	for <iommu@lists.linux.dev>; Wed, 13 Jul 2022 08:16:00 +0000 (UTC)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
+	(No client certificate requested)
+	(Authenticated sender: kholk11)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id 109F06601A33;
+	Wed, 13 Jul 2022 09:15:58 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1657700159;
+	bh=7M53S5bGqltVg134JPN859srEpQycq+FAWS7IeNPoXY=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=T9hMNh8kpXhhbUp3rLUW4Iu54RZG5/uf2pf0R5b7+QhGGtswSG9Mdrl3FBjGfrXOl
+	 yGVr+ZrkZ/rlbPAwI31Uwi3FwudjKSsyfp5hl+XbOnY1SUcZE/rl8fXywDo/TSxXVo
+	 /OOWCHZbs1v+XOKWZdna81RRVPNjZHl9olNYfYGqxAXJuetZC4XNasE2nd3jLCMpa2
+	 wxzBgrh1BdE6rHIn7uXWHI/U3Xom7Ce/+F3ZNPGsHK3Uc2YUT+TEvl7f/zhhDi9nef
+	 L7YpRUJZBcefUY5PsssOyRn3098dPR2J1AvmLxig9iPFAeCPkzX+PoHfCy84CB/Jh4
+	 ZvtZvc8Ww2zcA==
+Message-ID: <fbd48e94-1d99-a005-1c0d-0f5416e2d42f@collabora.com>
+Date: Wed, 13 Jul 2022 10:15:55 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c8edfbd4-afad-c018-daf6-aa2ac1f7b2fe@gmail.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] iommu/mediatek: Log with dev_err_probe when failing to
+ parse dts
+Content-Language: en-US
+To: =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= <nfraprado@collabora.com>,
+ Joerg Roedel <joro@8bytes.org>
+Cc: kernel@collabora.com, Matthias Brugger <matthias.bgg@gmail.com>,
+ Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+ iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-mediatek@lists.infradead.org
+References: <20220712214427.544860-1-nfraprado@collabora.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220712214427.544860-1-nfraprado@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Wed, Jul 13, 2022 at 01:58:38PM +0800, Tianyu Lan wrote:
-> Thanks for report. The issue is caused by auto merging between
-> commit44d89f("swiotlb: split up the global swiotlb lock") and commit 
-> 0bf28fc40(swiotlb: panic if nslabs is too small). nslab is checked before 
-> initialization.
->
-> Christoph, do you prefer to update patch "swiotlb: split up the global 
-> swiotlb lock" or append a fix patch on current brand?
+Il 12/07/22 23:44, Nícolas F. R. A. Prado ha scritto:
+> mtk_iommu_mm_dts_parse() can fail with EPROBE_DEFER if not all larbs
+> have probed yet, so use dev_err_probe() to avoid logging as an error in
+> that case. Also drop the return value from the message since it's
+> already printed by dev_err_probe(), and add the missing newline at the
+> end.
+> 
+> Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+> 
 
-Please just send a patch againt the current tree.  I'll see if squashing
-it in makes any sense.
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+
