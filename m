@@ -1,159 +1,125 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2086.outbound.protection.outlook.com [40.107.92.86])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 007EE15A9
-	for <iommu@lists.linux.dev>; Wed, 13 Jul 2022 05:33:13 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gIGCVy9fw3KNrly9UjQHPY+l0MVCxMr8C5JMHr1rQXGkOpj9XmFEE/1oxIm5ocm2C+a1Q3H+hfmZy3Q6mOLF2kFZ/r458WVo561jkg48X9FIZIKeXDjUqeJiHzU6Agu2RYuhHDezjc63vHxDzkrsH943jSCcZJn4wxOoIuhwgaA0dYpG7I+N9aIiwrDDOPJYrrqSA3+PMz+R8Nq/Ao+2vRPXP975p2OpgI/0zxttCpu1bjVVenTaD+zg3Hb7i3eTlWrMoWPSCd1HpM7f0wJfH8SiWeV0g9nE1fMpWzwiQaLSq53UaoUfbNIXcN2TFgYwXKi5IpYs8kv5iNv5o/f2GA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=D89++7y3Qm1x0qiIzGm7GCfi2AYaG+JYRelSJI9mmn4=;
- b=AoyMBoqex/GJSoDj0GTAw8L/FNq1TFE+N486BRUMTmhCklB60NW/pDEjFsefgn+9wQsgpeIPRMTtnsmnAZNLQuFHDuFRwIb5k1LgSMWqQqXZOsXVXcIux3HiWADoHMDNJT9+eBfPKt70vFudb6Ggw2Xz5+qUlrMVWA4y9efEqi2fOybK8OTRhIyj2NFfual4I/iS0ddGzfnUZrzO230Xo21uHFq+cdJ6cprYpYu+LnIZ+R6goyPzCAlM+j72UrZb2OZNe59AuQbmUl6u4zLoMtxHr816p1ODSadzVbTrSNdHuFZu8zAXgFQVO1VMg0ENg46GNlZ846S6r9aPyafxCA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=D89++7y3Qm1x0qiIzGm7GCfi2AYaG+JYRelSJI9mmn4=;
- b=zlQlkRaIK07RyOkmtS1lv1Q+7qOd0En1FJIf53yajp0hv7CiSbieILPfPBWX7lVxD/la2Hm0cSDNP9uSviyG80sOz0FP5XAeVWR46vLCBZKQb7LNc0QN7uusC3xNHnem1Q+bL2IUwbRKpzlGUD7AsWX1wxAo+6lOP4W/cXIPr1s=
-Received: from BN6PR17CA0011.namprd17.prod.outlook.com (2603:10b6:404:65::21)
- by CH2PR12MB4055.namprd12.prod.outlook.com (2603:10b6:610:78::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.23; Wed, 13 Jul
- 2022 05:33:10 +0000
-Received: from BN8NAM11FT064.eop-nam11.prod.protection.outlook.com
- (2603:10b6:404:65:cafe::b0) by BN6PR17CA0011.outlook.office365.com
- (2603:10b6:404:65::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26 via Frontend
- Transport; Wed, 13 Jul 2022 05:33:09 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT064.mail.protection.outlook.com (10.13.176.160) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5438.12 via Frontend Transport; Wed, 13 Jul 2022 05:33:09 +0000
-Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 13 Jul
- 2022 00:33:07 -0500
-From: Vasant Hegde <vasant.hegde@amd.com>
-To: <joro@8bytes.org>, <iommu@lists.linux.dev>
-CC: <suravee.suthikulpanit@amd.com>, <robin.murphy@arm.com>, Vasant Hegde
-	<vasant.hegde@amd.com>
-Subject: [PATCH v2 6/6] iommu/amd: Add command-line option to enable different page table
-Date: Wed, 13 Jul 2022 11:00:34 +0530
-Message-ID: <20220713053034.12061-7-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220713053034.12061-1-vasant.hegde@amd.com>
-References: <20220713053034.12061-1-vasant.hegde@amd.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75DAD15A9
+	for <iommu@lists.linux.dev>; Wed, 13 Jul 2022 05:58:43 +0000 (UTC)
+Received: by mail-pj1-f47.google.com with SMTP id i8-20020a17090a4b8800b001ef8a65bfbdso1900192pjh.1
+        for <iommu@lists.linux.dev>; Tue, 12 Jul 2022 22:58:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=H8EPVvGCOOTuMU24GvXfD/nUgTEDDy4NdiN0vVT1vrA=;
+        b=pvueZ+MGinFZ5QCN65OEL7NOM/aF/4HZ6hwohPX05k0ZU5mc5JmUk8sPkG3P1ucvN+
+         HhCnTR/6M/eerQUiXebFhJDXTcdGUEUPEEyUd1G01C9+Tf+D5M005wdZJnzdnGSUo1Xn
+         23oeT0NtLMkDpWUevKchbfVKs7wgE+83XswZ4PeNIHn12iikOTkazmkOgt1/KHbgn+yt
+         peKeeXwwJxquDh6kuvigObvFR2Ze8L5yzCpI5TzEx98N+WyyG8jhe26iDnYGgi6SRL63
+         Tjyloh373/IEVceiOUpw2oSrrHf9bbVBa78RhmSW4R7HgHlyiFXfsIErLFQcR0RVy1nj
+         sZKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=H8EPVvGCOOTuMU24GvXfD/nUgTEDDy4NdiN0vVT1vrA=;
+        b=wJ/lmObSN4XuKbw6wkz7ws7jUM+3ePJmeEIqhNG6L6b5Bvy41C0tCDy42EhKlk6fQU
+         iWT3OLBxl2PjWE1P/jksZPZzRqZJcxb2tXZJNq3LBq/p963TE1s6c8qUczqXp4G2A/H3
+         nAPlv6ve4LnX15Qu3nYqhrJM1sLJJxZbGRBAHQrkWLqKlvtRpP1ojUShLHGpQhHu74L4
+         xUlnEYs77IOTJ2Dz7McGWJaZb1bfqbpSTU/ejD5kVmCpdfSytKVm7ZqMcAouGuSLKkKq
+         lEYUQxCtJZlaUrsXoMt8mvWRbD+6riWq1vulE1Wyp9/7A+VRfhq8wi6QrdBAUxsLlvsW
+         6l5Q==
+X-Gm-Message-State: AJIora/lnzajfEMuAkB4Crzan/MlC3K9Big75GQJA4Hr7iEPLMGpVwot
+	Msau06c2KaK8+m/dJ/n8XYU=
+X-Google-Smtp-Source: AGRyM1vLISkoN6gOYT3xRJJUwUEBZgOGqHyElNn7uwLDwEox8QNcRgvH/ZhshJlteRGTc71JggxXiw==
+X-Received: by 2002:a17:90a:ba97:b0:1ef:91ab:de1e with SMTP id t23-20020a17090aba9700b001ef91abde1emr2015361pjr.237.1657691922843;
+        Tue, 12 Jul 2022 22:58:42 -0700 (PDT)
+Received: from ?IPV6:2404:f801:0:5:8000::75b? ([2404:f801:9000:18:efec::75b])
+        by smtp.gmail.com with ESMTPSA id l9-20020a170902f68900b0015e8d4eb24fsm7798551plg.153.2022.07.12.22.58.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Jul 2022 22:58:42 -0700 (PDT)
+Message-ID: <c8edfbd4-afad-c018-daf6-aa2ac1f7b2fe@gmail.com>
+Date: Wed, 13 Jul 2022 13:58:38 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c5b90f3e-a129-463d-92e5-08da64912bf7
-X-MS-TrafficTypeDiagnostic: CH2PR12MB4055:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	+xvlooWfAwM6jnB3yslU8ubBe/lTt1PZCxSxVUudjGiro2gtUTaiXc4BhLTU01D5WRU8pDruOv+qhwjydC8Viy4uc+lkbrOSayrSF+8BRBjDKkGtPEgZSmqD9VbYWD7rfUHehSYAAFq+ejEwgJRxwA7ExZOqoWbTy06dxzbTzquGeeBu1dGt3Bedo6e3D9IiQWqFG1V4eai0Qgw42B2+VRMV+/IJk6IaEM84p0/0vaV8o8prSk07Ms2yTxhIAfk7sD+6UfhmddZnLqUn0+TuO1uZLDSBHz1eaNSFyZ/kMcpWFtRz0vwHHjicTtsaBHu2BQHOdObExjlIrN9jf2kmXKiGlweomOYYIfFUR/KJaaCJ8GdezlvlGssm/Bxv5vvU5vd1QnRJqGWQ3YGWtmjpMGZBaoPxJ+I6Ddf67SRf0Hc+jF3DD4eoYATiAUX89w77HEO2OyVHDwn/zvlYK1NaOpp9XcF3Swg2qew6TjOuHg9pl+Mq0HGgwNnKCsXPY3mIP7QCopAIq6AKv76H+8XSq5RgS7atfKlj3BwygXxIinJHwKpOVMQVH3PPhVf3YVO68854i32zE/Bnw4KOi/9w4NcoClEMdCmXz3alQXPQkUF/5zSvZ/rVIzsfdO2/H54lSuS3Khcqt/G4FBtlV38it/+OGmTxkuE8yPuGTxgBexVhpJxUA3R+I0AhwfhWTFXEnwDTG+0fFspnps+IK+mpw2HnZDko9G3hBsPapt8B/AXDlJzv+V4qs+KLY0L99Xy4ltu+cC9K3jACKC4wFNXR2JjXreSUbvDAiLzNo/PhFnmyk/uyZ/KcWJdK2llaLTykrjTiD+Vz9kSu+2UMOUqTIZGXlfQ8p/ok+nqnLXNbGoU=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(376002)(346002)(39860400002)(40470700004)(46966006)(36840700001)(6666004)(36756003)(44832011)(26005)(478600001)(4326008)(54906003)(110136005)(316002)(47076005)(336012)(426003)(2616005)(41300700001)(70586007)(70206006)(8676002)(1076003)(186003)(16526019)(2906002)(356005)(86362001)(81166007)(83380400001)(82740400003)(40460700003)(8936002)(36860700001)(5660300002)(82310400005)(7696005)(40480700001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2022 05:33:09.6402
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c5b90f3e-a129-463d-92e5-08da64912bf7
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT064.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4055
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [EXTERNAL] [swiotlb] 44d89f2248:
+ Kernel_panic-not_syncing:swiotlb_init_remap:nslabs=#too_small
+Content-Language: en-US
+To: kernel test robot <oliver.sang@intel.com>,
+ Tianyu Lan <Tianyu.Lan@microsoft.com>, Christoph Hellwig <hch@lst.de>
+Cc: linux-doc@vger.kernel.org, iommu@lists.linux.dev, lkp@lists.01.org,
+ lkp@intel.com
+References: <Ys43FtIumAsHPn+y@xsang-OptiPlex-9020>
+From: Tianyu Lan <ltykernel@gmail.com>
+In-Reply-To: <Ys43FtIumAsHPn+y@xsang-OptiPlex-9020>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Enhance amd_iommu command line option to specify v1 or v2 page table.
-By default system will boot in V1 page table mode.
+On 7/13/2022 11:08 AM, kernel test robot wrote:
+> [You don't often get email from oliver.sang@intel.com. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
+> 
+> Greeting,
+> 
+> FYI, we noticed the following commit (built with gcc-11):
+> 
+> commit: 44d89f22489c65400dbf9ed9ad1d18d2ea064b89 ("swiotlb: split up the global swiotlb lock")
+> git://git.infradead.org/users/hch/misc.git swiotlb-cleanup
+> 
+> in testcase: boot
+> 
+> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+> 
+> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
+> 
+> 
+> +---------------------------------------------------------------+------------+------------+
+> |                                                               | 4136ce90f0 | 44d89f2248 |
+> +---------------------------------------------------------------+------------+------------+
+> | boot_successes                                                | 23         | 0          |
+> | boot_failures                                                 | 0          | 18         |
+> | Kernel_panic-not_syncing:swiotlb_init_remap:nslabs=#too_small | 0          | 18         |
+> +---------------------------------------------------------------+------------+------------+
+> 
+> 
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> 
+> 
+> [   30.005215][    T0] Unknown kernel command line parameters "RESULT_ROOT=/result/boot/1/vm-snb/debian-11.1-x86_64-20220510.cgz/x86_64-rhel-8.3-kunit/gcc-11/44d89f22489c65400dbf9ed9ad1d18d2ea064b89/3 BOOT_IMAGE=/pkg/linux/x86_64-rhel-8.3-kunit/gcc-11/44d89f22489c65400dbf9ed9ad1d18d2ea064b89/vmlinuz-5.19.0-rc3-00015-g44d89f22489c branch=hch-misc/swiotlb-cleanup job=/lkp/jobs/scheduled/vm-snb-102/boot-1-debian-11.1-x86_64-20220510.cgz-44d89f22489c65400dbf9ed9ad1d18d2ea064b89-20220713-11587-2q30ty-2.yaml user=lkp ARCH=x86_64 kconfig=x86_64-rhel-8.3-kunit commit=44d89f22489c65400dbf9ed9ad1d18d2ea064b89 vmalloc=256M max_uptime=600 LKP_SERVER=internal-lkp-server selinux=0 softlockup_panic=1 prompt_ramdisk=0 vga=normal", will be passed to user space.
+> [   30.015899][    T0] Dentry cache hash table entries: 2097152 (order: 12, 16777216 bytes, linear)
+> [   30.019270][    T0] Inode-cache hash table entries: 1048576 (order: 11, 8388608 bytes, linear)
+> [   30.020042][    T0] mem auto-init: stack:off, heap alloc:off, heap free:off
+> [   30.020607][    T0] Stack Depot early init allocating hash table with memblock_alloc, 8388608 bytes
+> [   30.023950][    T0] Kernel panic - not syncing: swiotlb_init_remap: nslabs = 0 too small
+> [   30.024616][    T0] CPU: 0 PID: 0 Comm: swapper Not tainted 5.19.0-rc3-00015-g44d89f22489c #1
+> [   30.025310][    T0] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.0-debian-1.16.0-4 04/01/2014
+> [   30.026141][    T0] Call Trace:
+> [   30.026399][    T0]  <TASK>
+> [ 30.026630][ T0] dump_stack_lvl (kbuild/src/consumer/lib/dump_stack.c:107 (discriminator 1))
+> [ 30.026992][ T0] panic (kbuild/src/consumer/kernel/panic.c:292)
+> [ 30.027301][ T0] ? panic_print_sys_info+0x60/0x60
+> [ 30.027770][ T0] ? vclkdev_alloc (kbuild/src/consumer/drivers/iommu/intel/dmar.c:878)
+> [   30.028152][    T0]  ? is_uv_system+0x5/0x40
+> [   30.028503][    T0]  ? up_write+0x48/0x80
+> [   30.028833][    T0]  swiotlb_init_remap+0x36/0x37
+> [   30.029221][    T0]  mem_init+0xe/0x13c
+> [   30.029538][    T0]  mm_init+0x63/0x81
+> [   30.029848][    T0]  start_kernel+0x143/0x39e
+> [   30.030206][    T0]  secondary_startup_64_no_verify+0xe0/0xeb
+> [   30.030680][    T0]  </TASK>
+> 
+> 
 
-Co-developed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
----
-Changes in v2:
-  - Removed separate command line option and enhace amd_iommu option
-  - Update document
+Thanks for report. The issue is caused by auto merging between
+commit44d89f("swiotlb: split up the global swiotlb lock") and commit 
+0bf28fc40(swiotlb: panic if nslabs is too small). nslab is checked 
+before initialization.
 
- .../admin-guide/kernel-parameters.txt         |  2 ++
- drivers/iommu/amd/init.c                      | 23 +++++++++++++++----
- 2 files changed, 20 insertions(+), 5 deletions(-)
-
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index d45e58328ce6..d1919bf4f37a 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -321,6 +321,8 @@
- 			force_enable - Force enable the IOMMU on platforms known
- 				       to be buggy with IOMMU enabled. Use this
- 				       option with care.
-+			pgtbl_v1     - Use v1 page table for DMA-API (Default).
-+			pgtbl_v2     - Use v2 page table for DMA-API.
- 
- 	amd_iommu_dump=	[HW,X86-64]
- 			Enable AMD IOMMU driver option to dump the ACPI table
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index a2929d8b44f4..673c263fea8d 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -3287,17 +3287,30 @@ static int __init parse_amd_iommu_intr(char *str)
- 
- static int __init parse_amd_iommu_options(char *str)
- {
--	for (; *str; ++str) {
-+	if (!str)
-+		return -EINVAL;
-+
-+	while (*str) {
- 		if (strncmp(str, "fullflush", 9) == 0) {
- 			pr_warn("amd_iommu=fullflush deprecated; use iommu.strict=1 instead\n");
- 			iommu_set_dma_strict();
--		}
--		if (strncmp(str, "force_enable", 12) == 0)
-+		} else if (strncmp(str, "force_enable", 12) == 0) {
- 			amd_iommu_force_enable = true;
--		if (strncmp(str, "off", 3) == 0)
-+		} else if (strncmp(str, "off", 3) == 0) {
- 			amd_iommu_disabled = true;
--		if (strncmp(str, "force_isolation", 15) == 0)
-+		} else if (strncmp(str, "force_isolation", 15) == 0) {
- 			amd_iommu_force_isolation = true;
-+		} else if (strncmp(str, "pgtbl_v1", 8) == 0) {
-+			amd_iommu_pgtable = AMD_IOMMU_V1;
-+		} else if (strncmp(str, "pgtbl_v2", 8) == 0) {
-+			amd_iommu_pgtable = AMD_IOMMU_V2;
-+		} else {
-+			pr_notice("Unknown option - '%s'\n", str);
-+		}
-+
-+		str += strcspn(str, ",");
-+		while (*str == ',')
-+			str++;
- 	}
- 
- 	return 1;
--- 
-2.31.1
+Christoph, do you prefer to update patch "swiotlb: split up the global 
+swiotlb lock" or append a fix patch on current brand?
 
