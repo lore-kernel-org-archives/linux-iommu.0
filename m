@@ -1,104 +1,116 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B894A2C80
-	for <iommu@lists.linux.dev>; Wed, 13 Jul 2022 00:02:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C658415AC
+	for <iommu@lists.linux.dev>; Wed, 13 Jul 2022 00:42:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657670560; x=1689206560;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=kdCtzz8hLTDNSKKBbslq6IoltGk6V2ylCavR3y0UtZY=;
-  b=ePJStqxRXYF9uhLc0V4ohLhDKxSK7eChZO12hLMTOUrcUTtCjNhb3GRU
-   NRtY4K9PGYeaKGvamTkFKN0JfkVH65u/Bk6yacgXlOYiR2Ks0R3Wfkv0G
-   l1bhy31B/KbOoqoer3iGPPdkHx1uf7y9qTV16l1WAtxKCWGTe1kK4lq2E
-   ExGg1Z80Kekbj7+gFTvBxXT/0XHrc0eeq58cURTv2A/xU1CgdIyduw7Fp
-   +D7k9LsDLMK2/SFV4vSkE7I5HJendvKG/qcas2jlMkIDQRX05jo1FPoV2
-   LJY5uQYVeLhEUqr1YYy5wXJEgl/TC8SXrJdehBhy4yG4lkT26H92MNlzL
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="349044730"
+  t=1657672971; x=1689208971;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=BwRTZVN9Q+6hvMgPyrEZcFChjkzZyIpbjs6+NA1n+E0=;
+  b=bbhmlFwUxs1qjxHS9dkxzN/HHcnKRxShVnZFfbfk4PM7Qkarq2mkCbgU
+   rykLndMDP/fseretLDyY7OtvSBDwFFrHmgk5z7u46SBE1m5DoaDxSyLO8
+   bwtyTkfVjqDlVJhZcm+sK6Ishi21Go76Mw3D8gryinotOjEHJKpfwW8Oa
+   bqggK6DdQOi8CI0mPgebgy6RTB53hCTB687SL2o0tTzhGbSda80AqlEQj
+   4ujAlmKlyZnxFIrx9BuJ6hCEacNthjq63le8Hd85F5UZPcA8GhRr3RP+m
+   IG5nGcWis7rKVwEytBdtzrdmpfpDaTW0ktGx73I2Dikh7VVgtUWNrF8re
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="265487184"
 X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="349044730"
+   d="scan'208";a="265487184"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 17:02:40 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 17:42:42 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="653125591"
-Received: from jcai9-mobl2.ccr.corp.intel.com (HELO [10.255.29.95]) ([10.255.29.95])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 17:02:37 -0700
-Message-ID: <597af953-b09d-f893-cdce-fa5d840e5cfe@linux.intel.com>
-Date: Wed, 13 Jul 2022 08:02:41 +0800
+   d="scan'208";a="653135650"
+Received: from test.bj.intel.com ([10.238.158.204])
+  by fmsmga008.fm.intel.com with ESMTP; 12 Jul 2022 17:42:40 -0700
+From: Tina Zhang <tina.zhang@intel.com>
+To: iommu@lists.linux.dev
+Cc: joro@8bytes.org,
+	will@kernel.org,
+	kevin.tian@intel.com,
+	jean-philippe@linaro.org,
+	baolu.lu@linux.intel.com,
+	Tina Zhang <tina.zhang@intel.com>
+Subject: [PATCH] iommu/virtio: Add map/unmap_pages() callbacks implementation
+Date: Tue, 12 Jul 2022 20:18:38 -0400
+Message-Id: <20220713001838.17298-1-tina.zhang@intel.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Rasmus Villemoes <linux@rasmusvillemoes.dk>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Suresh Siddha <suresh.b.siddha@intel.com>,
- kernel test robot <oliver.sang@intel.com>, iommu@lists.linux.dev,
- stable@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/vt-d: avoid invalid memory access via
- node_online(NUMA_NO_NODE)
-Content-Language: en-US
-To: Yury Norov <yury.norov@gmail.com>,
- Alexander Lobakin <alexandr.lobakin@intel.com>
-References: <20220712153836.41599-1-alexandr.lobakin@intel.com>
- <20220712154407.42196-1-alexandr.lobakin@intel.com>
- <CAAH8bW8-JL=q_4c_AKROsjC7KyuRWDMFNKBz=6uT+d1mStTE2A@mail.gmail.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <CAAH8bW8-JL=q_4c_AKROsjC7KyuRWDMFNKBz=6uT+d1mStTE2A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2022/7/12 23:54, Yury Norov wrote:
-> On Tue, Jul 12, 2022 at 8:45 AM Alexander Lobakin
-> <alexandr.lobakin@intel.com> wrote:
->>
->> From: Alexander Lobakin <alexandr.lobakin@intel.com>
->> Date: Tue, 12 Jul 2022 17:38:36 +0200
->>
->>> KASAN reports:
->>>
->>> [ 4.668325][ T0] BUG: KASAN: wild-memory-access in dmar_parse_one_rhsa (arch/x86/include/asm/bitops.h:214 arch/x86/include/asm/bitops.h:226 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/nodemask.h:415 drivers/iommu/intel/dmar.c:497)
->>> [    4.676149][    T0] Read of size 8 at addr 1fffffff85115558 by task swapper/0/0
->>> [    4.683454][    T0]
->>> [    4.685638][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.19.0-rc3-00004-g0e862838f290 #1
->>> [    4.694331][    T0] Hardware name: Supermicro SYS-5018D-FN4T/X10SDV-8C-TLN4F, BIOS 1.1 03/02/2016
->>> [    4.703196][    T0] Call Trace:
->>> [    4.706334][    T0]  <TASK>
->>> [ 4.709133][ T0] ? dmar_parse_one_rhsa (arch/x86/include/asm/bitops.h:214 arch/x86/include/asm/bitops.h:226 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/nodemask.h:415 drivers/iommu/intel/dmar.c:497)
->>>
->>> after converting the type of the first argument (@nr, bit number)
->>> of arch_test_bit() from `long` to `unsigned long`[0].
->>>
->>> Under certain conditions (for example, when ACPI NUMA is disabled
->>> via command line), pxm_to_node() can return %NUMA_NO_NODE (-1).
->>> It is valid 'magic' number of NUMA node, but not valid bit number
->>> to use in bitops.
->>> node_online() eventually descends to test_bit() without checking
->>> for the input, assuming it's on caller side (which might be good
->>> for perf-critical tasks). There, -1 becomes %ULONG_MAX which leads
->>> to an insane array index when calculating bit position in memory.
->>>
->>> For now, add an explicit check for @node being not %NUMA_NO_NODE
->>> before calling test_bit(). The actual logics didn't change here
->>> at all.
->>
->> Bah, forgot to insert the link here. Hope not worth resending ._.
->>
->> [0] https://github.com/norov/linux/commit/0e862838f290147ea9c16db852d8d494b552d38d
-> 
-> I'll add this link and apply the patch to the bitmap-for-next, after
-> some testing.
+Map/unmap_pags() allows map and unmap multiple pages of the same size
+in one call, which can improve performance by reducing the numbers of
+vmexits. With map/unmap_pages() implemented, the prior map/unmap()
+callbacks are deprecated.
 
-Thank you!
+Signed-off-by: Tina Zhang <tina.zhang@intel.com>
+---
+ drivers/iommu/virtio-iommu.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-
-Best regards,
-baolu
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 25be4b822aa0..d1626e3de7f8 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -788,11 +788,13 @@ static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 	return 0;
+ }
+ 
+-static int viommu_map(struct iommu_domain *domain, unsigned long iova,
+-		      phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
++static int viommu_map_pages(struct iommu_domain *domain, unsigned long iova,
++			    phys_addr_t paddr, size_t pgsize, size_t pgcount,
++			    int prot, gfp_t gfp, size_t *mapped)
+ {
+ 	int ret;
+ 	u32 flags;
++	size_t size = pgsize * pgcount;
+ 	u64 end = iova + size - 1;
+ 	struct virtio_iommu_req_map map;
+ 	struct viommu_domain *vdomain = to_viommu_domain(domain);
+@@ -823,17 +825,21 @@ static int viommu_map(struct iommu_domain *domain, unsigned long iova,
+ 	ret = viommu_send_req_sync(vdomain->viommu, &map, sizeof(map));
+ 	if (ret)
+ 		viommu_del_mappings(vdomain, iova, end);
++	else if (!ret && mapped)
++		*mapped = size;
+ 
+ 	return ret;
+ }
+ 
+-static size_t viommu_unmap(struct iommu_domain *domain, unsigned long iova,
+-			   size_t size, struct iommu_iotlb_gather *gather)
++static size_t viommu_unmap_pages(struct iommu_domain *domain, unsigned long iova,
++				 size_t pgsize, size_t pgcount,
++				 struct iommu_iotlb_gather *gather)
+ {
+ 	int ret = 0;
+ 	size_t unmapped;
+ 	struct virtio_iommu_req_unmap unmap;
+ 	struct viommu_domain *vdomain = to_viommu_domain(domain);
++	size_t size = pgsize * pgcount;
+ 
+ 	unmapped = viommu_del_mappings(vdomain, iova, iova + size - 1);
+ 	if (unmapped < size)
+@@ -1018,8 +1024,8 @@ static struct iommu_ops viommu_ops = {
+ 	.owner			= THIS_MODULE,
+ 	.default_domain_ops = &(const struct iommu_domain_ops) {
+ 		.attach_dev		= viommu_attach_dev,
+-		.map			= viommu_map,
+-		.unmap			= viommu_unmap,
++		.map_pages		= viommu_map_pages,
++		.unmap_pages		= viommu_unmap_pages,
+ 		.iova_to_phys		= viommu_iova_to_phys,
+ 		.iotlb_sync		= viommu_iotlb_sync,
+ 		.free			= viommu_domain_free,
+-- 
+2.34.1
 
