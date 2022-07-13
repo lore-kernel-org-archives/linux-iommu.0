@@ -1,33 +1,33 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2078.outbound.protection.outlook.com [40.107.93.78])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2063.outbound.protection.outlook.com [40.107.220.63])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D3446AC2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C287C6ABD
 	for <iommu@lists.linux.dev>; Wed, 13 Jul 2022 22:57:17 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SG36u+RoO97b9f74wj4xDlEryoJc4lQBR8eWqQcSziEG2v9Sc4nHPNY7Q8d3ltfS6ljzHdYJWmmaAx84yGOjKuz0PPLyGnXwgWgBgnVTECqYsWFwL/tsMqkHPiDKTmFVMm2dQMHvWAPwG1ehyG6yiw/MfIIDQflG1zZJFnVsbeY5JkiJdze4FBx66JSUXMlta9sZTwTKu0SOBhHs9bROqhX3ufvMBshc4HIdiFOTTENBoaq1Sjxw8wGDKpozcVgH5VGr7MEt7i+w1JFv6Ex4TJxN/cQIht/kOZW8Q5and/h/MzWVa2sXiXjXb9aJ4TyTWJ5C8iEr328uzkF+TPgrvQ==
+ b=HSPqBZh3AMGJiH1Gt71YntKHFoQ3ZqgaCpkvi72Loz99MZRULAXi+YLKYnMN+0SnGCc2yBgXOAw60mAbQmVzHO17sAzMhaAfiekqjTOxWN+x+WaDQQOzQBpfM7FPqa9BDvVYwGNqZlc3K0QlnGooYgDAtVCHB5u1DvYwBPE/NXMvGi2bZV+J0LUA5aiZq5ZfQkDB4qgQ2NAkpFzGeZ4rWf0RBXq5NHC5SbhmrWaMm5Ryausfmb3tzD5mQFv0iJWxgqnXw36Bj4Xu9E9m5qg17/eCrOorq7XF2A9f7Q9BitmbqLfo+52W/Ntx3oee46tS8dU5m9W9PdWHMi+PgUAnQA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LewIl7eqUWEQyB4Fqj4nrwqpbV+qMJOiMTu4eY/ZKL8=;
- b=GViU9ckf31GzCqugqMlgxGKJShjOphGyvjCRvg7K1ZHuEDxXISaVziog2sPEmLQMrek0seNsOhhWyNW3HfmfkDDnQ5E8NHbSyvPO0bIZnR9ExWRjVEwc6FUOmkCvBXspw9FSkF/4ax6GdEbQykQ5nr8Zf010lMbbhvNnxSzXPCO8t3AFSIcNxFdwpsoe9fa54fSw5UxBj8zZ5rYOS2+tah0xobEGuLJFGFwbJ4kmZqx5MF1g/dEeH2htOKcdxf+2nVEBOKOXJFaZfQuPSzuxKoBbuot/vgIBwOK4ATJClVVNqM36mg1tFstyOpnyN7rGIyd1OwDre6p/vPAimivflw==
+ bh=jMmaodeeYOU19ZQMobrkPmzoCRGFrZnR9tmo+HdJutw=;
+ b=m+9khCc7KFXT+FUiAHN2r/HTIU9BfjPDVUG8OdkV6M8UioNIkVtp9fgB6XAvfIogb5xXnKtJMPFAv5StEA/l2SLIszl3aJNsvOk97js9GwEucVGCNbd0EnPbeo/MJjh1hEHnn7CXHh4tjSCoHQ2NfL2usT5XRjYdAWvoQpCW/hcFanUW7mnkbv7wAlWKQ4x5tJSY00GWG6zVN6rwXtDoDqSNdnSDGH7JYVbDuNbaJg4velMt+yLvLxXhy8eXNjM0T7xLfCWjSpF2EmbqPiFILnxjuaOXCeLQ+Yi+G0d8cHD6Ei7z0X/+MJ32RgnK1QY6wz4PYLx0ujkfKcdcFQ7NUA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LewIl7eqUWEQyB4Fqj4nrwqpbV+qMJOiMTu4eY/ZKL8=;
- b=Bv//sTNdaW05un7nKbHbTraApu0UkXajqKO9KFYx1K6ys94i5/Zx052Ksz3iDO5zeeTIh60MbUJvVC7HxJBzvnrwKf8jECTYAC+ABMypIs9eROq8a32yEXerl14NUiGxxRuUl9GSgM9WUG15N9MCKm7Z8LRpLt0u+y6aaQwzAVQ=
-Received: from BN9PR03CA0536.namprd03.prod.outlook.com (2603:10b6:408:131::31)
- by MWHPR12MB1216.namprd12.prod.outlook.com (2603:10b6:300:10::13) with
+ bh=jMmaodeeYOU19ZQMobrkPmzoCRGFrZnR9tmo+HdJutw=;
+ b=JpfRWDasc1Jb9OfabOHUsMRaiVp5YZ7a3qZhEOpiRQ1y/yxKWN5aM/SsKCLqXP6/yDSJRxAkPS1jX7L6K0nS0HSjBW7+r4ZPpGugeYEJ9DEIbfNEAzMUJGwZdqfSBuDUkTuvweid2rqheyqAKJ1+Gv2e8UKV+5HJ7ntFg5Zqsi0=
+Received: from BN8PR15CA0065.namprd15.prod.outlook.com (2603:10b6:408:80::42)
+ by BL0PR12MB2385.namprd12.prod.outlook.com (2603:10b6:207:4d::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.25; Wed, 13 Jul
- 2022 22:57:12 +0000
-Received: from BN8NAM11FT067.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:131:cafe::74) by BN9PR03CA0536.outlook.office365.com
- (2603:10b6:408:131::31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.21 via Frontend
- Transport; Wed, 13 Jul 2022 22:57:12 +0000
+ 2022 22:57:14 +0000
+Received: from BN8NAM11FT032.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:80:cafe::36) by BN8PR15CA0065.outlook.office365.com
+ (2603:10b6:408:80::42) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26 via Frontend
+ Transport; Wed, 13 Jul 2022 22:57:14 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -35,21 +35,21 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT067.mail.protection.outlook.com (10.13.177.159) with Microsoft SMTP
+ BN8NAM11FT032.mail.protection.outlook.com (10.13.177.88) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5438.12 via Frontend Transport; Wed, 13 Jul 2022 22:57:12 +0000
+ 15.20.5438.12 via Frontend Transport; Wed, 13 Jul 2022 22:57:14 +0000
 Received: from sp5-759chost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 13 Jul
- 2022 17:57:08 -0500
+ 2022 17:57:11 -0500
 From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
 CC: <joro@8bytes.org>, <robin.murphy@arm.com>, <vasant.hegde@amd.com>,
 	<ashish.kalra@amd.com>, <jon.grimm@amd.com>, Suravee Suthikulpanit
 	<suravee.suthikulpanit@amd.com>
-Subject: [PATCH v4 2/9] iommu/amd: Introduce Support for Extended Feature 2 Register
-Date: Wed, 13 Jul 2022 17:56:44 -0500
-Message-ID: <20220713225651.20758-3-suravee.suthikulpanit@amd.com>
+Subject: [PATCH v4 7/9] iommu/amd: Set translation valid bit only when IO page tables are in use
+Date: Wed, 13 Jul 2022 17:56:49 -0500
+Message-ID: <20220713225651.20758-8-suravee.suthikulpanit@amd.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220713225651.20758-1-suravee.suthikulpanit@amd.com>
 References: <20220713225651.20758-1-suravee.suthikulpanit@amd.com>
@@ -66,139 +66,94 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3f6d4286-053f-432b-5c91-08da65230614
-X-MS-TrafficTypeDiagnostic: MWHPR12MB1216:EE_
+X-MS-Office365-Filtering-Correlation-Id: bb0ec7a5-8182-456b-91d5-08da65230711
+X-MS-TrafficTypeDiagnostic: BL0PR12MB2385:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	H0uBxr/o4S0CVty1mglZ/9JxuyVjlQgdC7hHSXgDpKLAjoRz+86tXfqBW4jsa64eapqJXowWwF/XA27J5royY7rn29pYdjzunGx8SyteKzyE5sxyuXcDcBG/rhYq/gcwU5o+G5br8d/L0oxG/nwkBs7TmZ86MBlTPHo0om2FA6mSzma0++LzDjr9aHPvfesciXJSFUF9I/nHRfUVsxm2/tVlxYL38W9jZzvTESpboR0aejRx3dIx2ZpwE/IROrAirnboEM7jIst5aSt0rUfg8uc+gwMve6WVpX9IMUHICKCQkaGIXj/motrJOgWUgF1iKxj2Ulwf9bXNjiuKj+HoVg1lEbjdwcqIU2ycho4N01+i0xEGx+of12lX+e9MX+eMTOJlTxXfzOYZZ0mPnCxEDhGTqqfrxNQa0zxnL2IlQqG3PugH46gY2s7t71AfPluNqkqtHyuGA5LiWDP8maKrE6y6kNHxLjDCagC6bUyXI1jNoUfebEsq1/Lawg17ciK5MFlwjW4Q66Y8tJn5SABTole0B1aI9rg7ffsHwj8BYX3NKsu8BPjbQftcbqTPGGhMd5R//PKjEgH+LBayMPrJlXjbci9NDQoiZOSa+o3z5aHf/bljWMEm9UjN8M0gh/puS2G1MyHMw/Pdn0V6ackJStFzyS56vo9u3H5D//DrOzCrp7IkPGHkUCkB+gDxEG/JBGi/pygdP42AUlYpBSSTpFYT383j9rP0VeGRoLblRkAjhGBP1bcRMB4UhWhRIQc2+cmc4GXcu4d3BYa0MoNTKdUklTAQzd3DcY6gLpu+0b0766MLcEqDZYOmWX97RLaGML7YIo1Li+XZRuq4G9nnimtWNFDfA5TeDF33VKy8d7A=
+	weCMUBrRDgUk6eBjMSSTU+xmT9qjLUJSZd7o/zBBtna5zExV1sq9Q5XcCZHvfnDVdwT2VC5d58bkMgQUXfXbvEGrr0W0Tk80JwR97MV1y9gI4aniwFZxlHWAnttYSNrk9N36pN9H0eRqELCLtK3sefp1sz5ADA7jpNOdhwxphcnsRgWFeLzxqJwx02uCIvh6znLkUlvBR+rxTi/CegvDJaMWfAq3MEhYx0mdg4Lat65Gwb1zsP6QpiIf4rEEYSv0gNEJLBYSXrmhg5EhF6Xi8AhK/hvfjvzE6Gmu1DJEGdYf09nSn+oB1Pgza0iVV09FPal9dDrRbLhngPiCXLY0EEi2XL0gvvXVlv8PjCtzknBlh0wn3ozinvN0IllsEndb/g5zgqZ93JKUXsoJuvPMdHZ/WKuLf5z3jBp0bup2vGMdJ/rWW36GH1oGbSQsQN4kyxsZQRdDVjrrg5fM1z3TBc7GTqbY3TxuoPrnGXC6zFkpC5sTgyim/PGAltntLnsj1i6amTjZdj+PZTSl0UelUPkaK1ARlSeKGoUNvwSMKx7gyPVSACiCRjHaH3ujtOk1Kxe3bF+cY2lnBMIzjBqVCr2Jn+Ielveem5MGTyn+GUEfYuXmHtqeunwggVF0QEf8Zprk7XP+0hDP3iRlv+iHMWyGRKBLQywIGn6gCADrY0IHTNMJ2XmnvTGGm39URCKM/hNcf3TwTUb8HJvEyP6W202Iult+HxyYTasW5Jd12gWhYyK8WmxkGnvKl65FuqZWx1NaVKOgeQaWVZjBOx8jSRXtkWQxx1WwOJh6YBPqSELN7qXILsD6iL7WazeGVLMbwpC4KEsMSbvhhn7GblKgdEgj1hZrVio2KKvKZgkBpug=
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(346002)(396003)(376002)(136003)(39860400002)(40470700004)(46966006)(36840700001)(36860700001)(8936002)(8676002)(4326008)(110136005)(478600001)(40480700001)(36756003)(54906003)(316002)(5660300002)(83380400001)(44832011)(82740400003)(7696005)(47076005)(81166007)(356005)(1076003)(70206006)(26005)(2616005)(82310400005)(86362001)(426003)(16526019)(186003)(40460700003)(41300700001)(336012)(2906002)(6666004)(70586007)(36900700001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(396003)(39860400002)(136003)(346002)(376002)(40470700004)(36840700001)(46966006)(83380400001)(426003)(86362001)(186003)(70206006)(316002)(44832011)(81166007)(6666004)(336012)(16526019)(82740400003)(36860700001)(40460700003)(4326008)(54906003)(47076005)(36756003)(110136005)(70586007)(8676002)(40480700001)(2616005)(8936002)(82310400005)(26005)(478600001)(2906002)(41300700001)(5660300002)(356005)(1076003)(7696005)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2022 22:57:12.5823
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2022 22:57:14.2574
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3f6d4286-053f-432b-5c91-08da65230614
+X-MS-Exchange-CrossTenant-Network-Message-Id: bb0ec7a5-8182-456b-91d5-08da65230711
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT067.eop-nam11.prod.protection.outlook.com
+	BN8NAM11FT032.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1216
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB2385
 
-AMD IOMMU spec introduces additional extended feature register
-in the IVRS IVHD offset 80h (for IVHD type 11h and 40h) and MMIO
-offset 1A0h.
+On AMD system with SNP enabled, IOMMU hardware checks the host translation
+valid (TV) and guest translation valid (GV) bits in the device table entry
+(DTE) before accessing the corresponded page tables.
+
+However, current IOMMU driver sets the TV bit for all devices regardless
+of whether the host page table is in use. This results in
+ILLEGAL_DEV_TABLE_ENTRY event for devices, which do not the host page
+table root pointer set up.
+
+Thefore, when SNP is enabled, only set TV bit when DMA remapping is not
+used, which is when domain ID in the AMD IOMMU device table entry (DTE)
+is zero.
 
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 ---
- drivers/iommu/amd/amd_iommu_types.h |  4 ++++
- drivers/iommu/amd/init.c            | 24 ++++++++++++++++--------
- 2 files changed, 20 insertions(+), 8 deletions(-)
+ drivers/iommu/amd/init.c  |  3 ++-
+ drivers/iommu/amd/iommu.c | 16 ++++++++++++++--
+ 2 files changed, 16 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 7c830e3c7a91..3c1205ba636a 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -67,6 +67,7 @@
- #define MMIO_INTCAPXT_EVT_OFFSET	0x0170
- #define MMIO_INTCAPXT_PPR_OFFSET	0x0178
- #define MMIO_INTCAPXT_GALOG_OFFSET	0x0180
-+#define MMIO_EXT_FEATURES2	0x01A0
- #define MMIO_CMD_HEAD_OFFSET	0x2000
- #define MMIO_CMD_TAIL_OFFSET	0x2008
- #define MMIO_EVT_HEAD_OFFSET	0x2010
-@@ -645,6 +646,9 @@ struct amd_iommu {
- 	/* Extended features */
- 	u64 features;
- 
-+	/* Extended features 2 */
-+	u64 features2;
-+
- 	/* IOMMUv2 */
- 	bool is_iommu_v2;
- 
 diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 3c82d9c5f1c0..92ab02f6c5dc 100644
+index 1dd1c2b25898..959595c49656 100644
 --- a/drivers/iommu/amd/init.c
 +++ b/drivers/iommu/amd/init.c
-@@ -114,7 +114,7 @@ struct ivhd_header {
+@@ -2566,7 +2566,8 @@ static void init_device_table_dma(struct amd_iommu_pci_seg *pci_seg)
  
- 	/* Following only valid on IVHD type 11h and 40h */
- 	u64 efr_reg; /* Exact copy of MMIO_EXT_FEATURES */
--	u64 res;
-+	u64 efr_reg2;
- } __attribute__((packed));
- 
- /*
-@@ -283,8 +283,10 @@ static bool check_feature_on_all_iommus(u64 mask)
- static void __init early_iommu_features_init(struct amd_iommu *iommu,
- 					     struct ivhd_header *h)
- {
--	if (amd_iommu_ivinfo & IOMMU_IVINFO_EFRSUP)
-+	if (amd_iommu_ivinfo & IOMMU_IVINFO_EFRSUP) {
- 		iommu->features = h->efr_reg;
-+		iommu->features2 = h->efr_reg2;
-+	}
- 	if (amd_iommu_ivinfo & IOMMU_IVINFO_DMA_REMAP)
- 		amdr_ivrs_remap_support = true;
- }
-@@ -1912,7 +1914,7 @@ static ssize_t amd_iommu_show_features(struct device *dev,
- 				       char *buf)
- {
- 	struct amd_iommu *iommu = dev_to_amd_iommu(dev);
--	return sprintf(buf, "%llx\n", iommu->features);
-+	return sprintf(buf, "%llx:%llx\n", iommu->features2, iommu->features);
- }
- static DEVICE_ATTR(features, S_IRUGO, amd_iommu_show_features, NULL);
- 
-@@ -1939,16 +1941,18 @@ static const struct attribute_group *amd_iommu_groups[] = {
-  */
- static void __init late_iommu_features_init(struct amd_iommu *iommu)
- {
--	u64 features;
-+	u64 features, features2;
- 
- 	if (!(iommu->cap & (1 << IOMMU_CAP_EFR)))
- 		return;
- 
- 	/* read extended feature bits */
- 	features = readq(iommu->mmio_base + MMIO_EXT_FEATURES);
-+	features2 = readq(iommu->mmio_base + MMIO_EXT_FEATURES2);
- 
- 	if (!iommu->features) {
- 		iommu->features = features;
-+		iommu->features2 = features2;
- 		return;
+ 	for (devid = 0; devid <= pci_seg->last_bdf; ++devid) {
+ 		__set_dev_entry_bit(dev_table, devid, DEV_ENTRY_VALID);
+-		__set_dev_entry_bit(dev_table, devid, DEV_ENTRY_TRANSLATION);
++		if (!amd_iommu_snp_en)
++			__set_dev_entry_bit(dev_table, devid, DEV_ENTRY_TRANSLATION);
  	}
- 
-@@ -1956,9 +1960,13 @@ static void __init late_iommu_features_init(struct amd_iommu *iommu)
- 	 * Sanity check and warn if EFR values from
- 	 * IVHD and MMIO conflict.
- 	 */
--	if (features != iommu->features)
--		pr_warn(FW_WARN "EFR mismatch. Use IVHD EFR (%#llx : %#llx).\n",
--			features, iommu->features);
-+	if (features != iommu->features ||
-+	    features2 != iommu->features2) {
-+		pr_warn(FW_WARN
-+			"EFR mismatch. Use IVHD EFR (%#llx : %#llx), EFR2 (%#llx : %#llx).\n",
-+			features, iommu->features,
-+			features2, iommu->features2);
-+	}
  }
  
- static int __init iommu_init_pci(struct amd_iommu *iommu)
-@@ -2080,7 +2088,7 @@ static void print_iommu_info(void)
- 		pci_info(pdev, "Found IOMMU cap 0x%x\n", iommu->cap_ptr);
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index a56a9ad3273e..aedeff8af929 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -1552,7 +1552,15 @@ static void set_dte_entry(struct amd_iommu *iommu, u16 devid,
  
- 		if (iommu->cap & (1 << IOMMU_CAP_EFR)) {
--			pr_info("Extended features (%#llx):", iommu->features);
-+			pr_info("Extended features (%#llx, %#llx):", iommu->features, iommu->features2);
+ 	pte_root |= (domain->iop.mode & DEV_ENTRY_MODE_MASK)
+ 		    << DEV_ENTRY_MODE_SHIFT;
+-	pte_root |= DTE_FLAG_IR | DTE_FLAG_IW | DTE_FLAG_V | DTE_FLAG_TV;
++
++	pte_root |= DTE_FLAG_IR | DTE_FLAG_IW | DTE_FLAG_V;
++
++	/*
++	 * When SNP is enabled, Only set TV bit when IOMMU
++	 * page translation is in use.
++	 */
++	if (!amd_iommu_snp_en || (domain->id != 0))
++		pte_root |= DTE_FLAG_TV;
  
- 			for (i = 0; i < ARRAY_SIZE(feat_str); ++i) {
- 				if (iommu_feature(iommu, (1ULL << i)))
+ 	flags = dev_table[devid].data[1];
+ 
+@@ -1612,7 +1620,11 @@ static void clear_dte_entry(struct amd_iommu *iommu, u16 devid)
+ 	struct dev_table_entry *dev_table = get_dev_table(iommu);
+ 
+ 	/* remove entry from the device table seen by the hardware */
+-	dev_table[devid].data[0]  = DTE_FLAG_V | DTE_FLAG_TV;
++	dev_table[devid].data[0]  = DTE_FLAG_V;
++
++	if (!amd_iommu_snp_en)
++		dev_table[devid].data[0] |= DTE_FLAG_TV;
++
+ 	dev_table[devid].data[1] &= DTE_FLAG_MASK;
+ 
+ 	amd_iommu_apply_erratum_63(iommu, devid);
 -- 
 2.32.0
 
