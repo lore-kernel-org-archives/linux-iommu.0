@@ -1,206 +1,182 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2070.outbound.protection.outlook.com [40.107.93.70])
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2065.outbound.protection.outlook.com [40.107.100.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7391415AA
-	for <iommu@lists.linux.dev>; Wed, 13 Jul 2022 04:07:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE75D15A9
+	for <iommu@lists.linux.dev>; Wed, 13 Jul 2022 05:31:06 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UhwyjgRuRQCdK8XoPUEZiPQqEILMsvHSNbrVAbas3UHnRH7ZOBC0dvLeG5mtZShNJJwBejn1Qu0AsWUFGzFnHW7xNAxmLnDzfh5kLcIlippgclZJDK43QI3rl0ptIBYv/9GwMnHefLsOtK6tsmfH7YIdmAHbq9npDSXqFF2gOmjyu8rbZRhkgsjBoyKvMaFRFVAA0RMRkUF8ivlwqSZCtZJ4gSQaSSTGaM9vyX+1bAhlXKirAVARJbJdR0kUzmnDrjvyCw2dWMz1tNjykHxMvTAtjhl8minteQTQoBIqaxKE59JzC0bPjnfaayAQxLitNXIF8hL37ySZDmvrkE6hlQ==
+ b=IZ0wLh6ehqLL/saJOZCxQBs7pDTT5aMbfK/rngoPT/K8ZIJR1HpBZ96HUHstkFEy+PtCtCSDCTuqwTH7QKz8CydVie5ZgGEJf//9/XU4C3j3Tg7cz6o5y7elZTLwsvsRln8pAYpiFv+eNVsu/yPlGugwaTkZgUcyZ06+qnYytuU18nI/BnE+xqSRbHsmLi993RtvxdCx9IayOIuOGckDp5w++PleiaACPB0RLCojRLZOxFIFCDHyUvaUbrlmvScwInrU5YknFGrWIZl+Pl0/Qz69/25sVXeD7pWLvsdlZNCvNqf7Ug5SX9QC6KE8zY5kx1YsLLaMBd45COfLRH0B1g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=woXKr5ds1bWByjc9k0R33OTRcery66YlEaVUkjMQFQE=;
- b=AX1k3/Y7NwzpnWtBfHubDY3gomOOKr1mi68L5dPcTUYg8w/q9K49zLlYbazeuY2rlnvsRpxYSDC9puidqTE3QVykiyaDm+ART6B4KBSByb3nsZb4XdMLuZFXG5Yp6b5zQjG+O7WKT9PoUumBbGcYVnpa46N64w24xFPyztPDEeWj/lk4aVqihbIAkXpVJap8mJACoZ/AfeMdclBwngeM36VU4w1Mg7QNJLUWuVudyoCBflzqxWgiXNKuA01MbfPCnFq45mfwcfOebZY/U68HOqsssX1MdGZjmNfSYXW4fhEX2gL6uVdaCilqSK1nwKyh/EfOb/kadUIx2AkelEdneA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
+ bh=grczC26srIuVFOmFFCvIV+ixI/gC/xQMqGEK3aim81Q=;
+ b=edI/WRrEBMCJkKM77fd5+pUxxMlHWC/dyK07DJ9bv1T3Z3IIcbmo+mIU/wZ68Y/trHgwHheB5RWim0KBBI7Db7CD0QVlkSuZMdfuVvYntcvZeCaMjIFy12mG2y1yEILMJM7GBhKO657sdOY8va50eGZ4hK4whDlPjwstDw+hjY1Q0HaYwCx8f1YGSTGQ5vT3epBqBIi97802uYcw5eMZhriwTpWQr9OYwMChrMamkHww7n+e97YFiFJbKdRsecd6NSFImqhRqTrRL/TkZ2+PB5BIdH2PU35HOj6n6ZjTZt0ARt/4bXnyyZn1lr0COIURgF5CsBkGyCj35p04Q1CApA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=woXKr5ds1bWByjc9k0R33OTRcery66YlEaVUkjMQFQE=;
- b=1X5Ah5zugaI5M8d4+0SdU2+OeLw3NAUKLiilNkrUGcKSo4StqI3hQlWvjN8Oal2dYECUXIzTNEIQKtI+/bDhqPUeypEfjsbE/DsdK8xcfeKhd5POwHSAXrdEV6DobWz/DX6Knxg2B2GfhffgzQVcRvrZLL+Zd6PUzDuMemPobHw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from IA1PR12MB6043.namprd12.prod.outlook.com (2603:10b6:208:3d5::20)
- by BN9PR12MB5211.namprd12.prod.outlook.com (2603:10b6:408:11c::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.20; Wed, 13 Jul
- 2022 04:07:26 +0000
-Received: from IA1PR12MB6043.namprd12.prod.outlook.com
- ([fe80::4c24:3f6e:e133:c324]) by IA1PR12MB6043.namprd12.prod.outlook.com
- ([fe80::4c24:3f6e:e133:c324%9]) with mapi id 15.20.5417.026; Wed, 13 Jul 2022
- 04:07:26 +0000
-Message-ID: <15337b9f-48d7-d956-5d6c-b40319ba38ad@amd.com>
-Date: Wed, 13 Jul 2022 09:37:15 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v1 3/7] iommu/amd: Fix sparse warning
-Content-Language: en-US
+ bh=grczC26srIuVFOmFFCvIV+ixI/gC/xQMqGEK3aim81Q=;
+ b=eu79R67czSuXT+Os+ZRlbd4uv/+WV62osP69dhZUvrAuMGYWu9AOtZ3wOT9k8+aSLHqtfBycy60n7PGua/4FuHHKH1XmUgUaFLTg2WfG7NhTV9LDCPL98ftu0nc7EZWeDYCihpyFPg4BtLlWHS/aGyWyw4+A9v23wdPsrMtue3g=
+Received: from MWH0EPF00056D14.namprd21.prod.outlook.com
+ (2603:10b6:30f:fff2:0:1:0:1c) by SN1PR12MB2509.namprd12.prod.outlook.com
+ (2603:10b6:802:29::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16; Wed, 13 Jul
+ 2022 05:31:04 +0000
+Received: from CO1NAM11FT026.eop-nam11.prod.protection.outlook.com
+ (2a01:111:f400:7eab::202) by MWH0EPF00056D14.outlook.office365.com
+ (2603:1036:d20::b) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.4 via Frontend
+ Transport; Wed, 13 Jul 2022 05:31:04 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT026.mail.protection.outlook.com (10.13.175.67) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5438.12 via Frontend Transport; Wed, 13 Jul 2022 05:31:03 +0000
+Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 13 Jul
+ 2022 00:30:59 -0500
 From: Vasant Hegde <vasant.hegde@amd.com>
-To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux.dev
-References: <20220603112107.8603-1-vasant.hegde@amd.com>
- <20220603112107.8603-4-vasant.hegde@amd.com> <YrQeXdR8yPOyv957@8bytes.org>
- <82767d0d-a04b-4432-0e7e-77bcca095e09@arm.com>
- <403e6853-86ac-a81f-42a0-2d896163ab81@amd.com>
-In-Reply-To: <403e6853-86ac-a81f-42a0-2d896163ab81@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: PN2PR01CA0148.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:6::33) To IA1PR12MB6043.namprd12.prod.outlook.com
- (2603:10b6:208:3d5::20)
+To: <joro@8bytes.org>, <iommu@lists.linux.dev>
+CC: <suravee.suthikulpanit@amd.com>, <robin.murphy@arm.com>, Vasant Hegde
+	<vasant.hegde@amd.com>
+Subject: [PATCH v2 0/6] iommu/amd: Add Generic IO Page Table Framework Support for v2 Page Table
+Date: Wed, 13 Jul 2022 11:00:28 +0530
+Message-ID: <20220713053034.12061-1-vasant.hegde@amd.com>
+X-Mailer: git-send-email 2.30.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 517dc11e-4e0d-49fc-3bff-08da6485314a
-X-MS-TrafficTypeDiagnostic: BN9PR12MB5211:EE_
+X-MS-Office365-Filtering-Correlation-Id: eb5e77ef-81ab-4795-25dd-08da6490e0eb
+X-MS-TrafficTypeDiagnostic: SN1PR12MB2509:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	ckKrqDKeLuCTEYh/TBRn+eiM4cw3NPSYUMQClFw+HMfOo2lS9bI9+nleOhzrjnTWE6KOq6sYf1UxXbhKF+CoLdsBE7DA9qUqhE6maR1BzVtJ2nSgAqRPoGzmqCBU/2xFbOptojDRm4GTXLwKAdi6keT7cxUGyY3izo0pWqo0AsNKqNRkOSEpLoKl4ekYCvo9KbVP897YcSFNIDB3+BSEKl3bkWfSCIK6GkTnnZadF6n+NeGsdVWpHOcaGGVW6g5k/aNwzYrF7dWPDadKjKOzKaCej56uswODzljDFmA7JPKo8ldkd0pzkAvzCiSP4sFJy9goM+GXAJJV+0Uwl6yt3WMSO+MW09P0vnuznkMPD2ubZksbDYa3PFum1zCQg2wrpafreayBCYueBHi9n3haWROmThCJb8rGP9uGBH4Hppgx1R6TKhUVMAS8KFmRjm96+3pduO8eF8zd5fwX88tWXdLa24ChKibrLj9wwBk1hJZLJFJzc72wt6DAy5sY+Vxrg2hPn08Zrss8fi9V3m/lgMVsx2FGSvMASz0Nn+IwEj10rlD56C9LQ/QPudZEKoSpQaWQDH8+pENsg3KLLlMcAEdB9Ru59HXm01KWe+1S7pnBRKRPbG85oG+7HqxnLGwDLXL3SQJq0bzxFGw1jx52RGfXvRba65McthXzKh5auEFSPevKaWLHaspiKcvAVaZPWAtlt1O87L5Tte/WV5Vb8UMJODxn+jbLfKeGyHKJGaJt2Sq68MhuBgjQceuPo+8cD6SHqmY9llePghTQz74bzQi6jyUYJVKaVuWbYYAkdIa4pkMelBZLd0Tg7OBQmZzdlNnMVtL4aFjEtPVawaRAB6rouprkcWHW1QW06S4UTJM=
+	=?us-ascii?Q?aX99SAwuXWfgjdBYdXlnDOougRTuov4UE1NqX4ZAC/rVNKpGcp/fLMJouxJX?=
+ =?us-ascii?Q?x4MNC2toG2EN93/gbXnP4bCRQgQ5uXyS9HThSqd7pYCRU0VDbzSlJW46BKvO?=
+ =?us-ascii?Q?TYdPpLU/nDeZvOn6MUQSm9W6hLC4SJGeeIVPi2q62HuQB+YFwKSPA37StLOa?=
+ =?us-ascii?Q?o63urG7RB6VA2noIyk2nH683e1vpjFWaoiijRQGEsIhTHaVOBqaXy8XunUJt?=
+ =?us-ascii?Q?1+Z6dnfAVws82TtGa6yOMSbjp+Q4HDHh1oBwYMEmmzqrwG3grRnOkZ58hDC2?=
+ =?us-ascii?Q?Ppbmm6sIt7nANx0VNjCpkhkdbb/leQPMg7WRJ6lKgLUkrC7uXIF8+nt6O4Cj?=
+ =?us-ascii?Q?ptlYLJcardUKLqzQt+LBYDN1Zz1ICk3FDgRW11nj4lfQE0ZIfv7+pLGDVyyi?=
+ =?us-ascii?Q?qHBdeGJqPZrRdFkG80C4h87Fyq/Lkyh+x6TnNRijfMmhPD9iknOXQrjyLB4+?=
+ =?us-ascii?Q?ziZ7UM6CritsT6i4rw2KSNVlAc//JBgApTGgFP1/1s1pzfLrOC6nykSfhE3J?=
+ =?us-ascii?Q?xzgBhV/YxxaXxmwimzM+0yr2tLSaq26XZhkyyEhJBtkN9rDUek6IBSSTdlSp?=
+ =?us-ascii?Q?kr/oqRO0Zl5/bPkmTqGTg3NwdYdwBVOtzR6Ezs/PMCiacMEQa2lfuUZ7itvv?=
+ =?us-ascii?Q?XMWJt759mjSStQQ3nApiwtdJaJirMLWSpjHDGGJ8r46ifTF9egAlmg5MHLmp?=
+ =?us-ascii?Q?4Rb1GrkhzJwzAtOBZsdkBAMmaTfMEWhDqPwabGRbUx1la4IMCsW++RmYtcdX?=
+ =?us-ascii?Q?ryW6D/KGDdulgDIC6TR+184911d4D24E9DJek3MucTkDrrBDnI+IpEBurLHy?=
+ =?us-ascii?Q?X3tTJ9hycKvEL9FCDsvBLQzYeMwD1XdRoadhFBVYEZPSQ6Zf9N3n/b9ndAK6?=
+ =?us-ascii?Q?rKIkA24VI0QcVNCsJiDZAvJ8/NWs4W4g19q77vVrudYATMztyJcjBGHyHdSp?=
+ =?us-ascii?Q?JYggKcCGrCVQoR1givKb3OygWNXDNZP/pmKQN7UniW0=3D?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB6043.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(376002)(136003)(396003)(366004)(39860400002)(2616005)(186003)(41300700001)(4326008)(8676002)(66476007)(86362001)(316002)(6486002)(31696002)(6666004)(66946007)(6512007)(2906002)(478600001)(66556008)(36756003)(31686004)(44832011)(38100700002)(26005)(6506007)(5660300002)(110136005)(53546011)(8936002)(83380400001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?SW0ybDdMbXpVNllQNVUzM3VzK2dzY3FtYTJ0UXVYVXZ1UkRrU1NkeTdBTWw3?=
- =?utf-8?B?cHdvelRTYms2MWxXbGtVbTZiRzVIRUp0RWJUWlVWVGxLTHh4UHErTW9yZVB4?=
- =?utf-8?B?bi9VWWI5OVVEWkxPdFZjN094RGJzNEs5Y2hnbXdxRkRHTE5xNElYd0g3Wnpo?=
- =?utf-8?B?cmtvaW84UWZuQ0hJNkMvU2xHU2JPZ0ZGMFZISjNOV0V3SW9Rb2VDeG50VGJI?=
- =?utf-8?B?M2lRSEdUV1VweGZvcU9hTzREeFpzY2RWYzlpRFl5d0tobFNRVURRdzhja1lL?=
- =?utf-8?B?RzEvc2MvNkhUbTZFdTlMajJsYXV2WHRmWnJiaytBK1JjK2s2eGs0VVlJckc5?=
- =?utf-8?B?a2N5VWVPOFhqeVRFK2Qza0RHSllwUVdvSGQ5TXErcWVIVy9PanJJQmE5Tk5M?=
- =?utf-8?B?TWZDUlpkMjVYMWp4eXhxRjNEVVBsdG1DUHN6MDFHSzIxZGxlYVlNeFpuY1pJ?=
- =?utf-8?B?RXlpWHVFVm0wRWEvUlYxUHZ5ZlR3bEtLYnNMUVI0WFNuYk4rc3BBdC9ObVNm?=
- =?utf-8?B?WTZmUGVSamd1czRoeERzbDdIZGtmdXZiVFU2a3VOSlVQVnh4NGVJajRqVEFh?=
- =?utf-8?B?TFR5Y1JJTUd0NjhPTTJ4TXk1VjBER3hHY1NtVUd1ZHY4aE9VbUFGcEN6WVVP?=
- =?utf-8?B?elltNzhwaWR3VFkxVnI3K2ZVd1lrTXIrTFZQekdWdkVwem9ERzFwd2JKS2VJ?=
- =?utf-8?B?SWxnemhaREw4RWM3bnJEUlRCSXloNnBCd1c1d1FCN2t2MDZwVEsyNVIxbW5N?=
- =?utf-8?B?TlJrMEQwZHhLell0b3JUZTNYVUFyLzhxbTZwVUNRai9LMTc5S0VtNjZKSE45?=
- =?utf-8?B?bjJOVnFsWDZNeGljZGthaVUzTkx6ZW4rOFA2ZU1GT1lnZndKWGRvWEFEMHp5?=
- =?utf-8?B?N2E3VGk3MitXRE1GaE9FYTd2RmJySUpDMnZ3eVhYWjFtbDVrN1ZDS0dEemla?=
- =?utf-8?B?aTBJbm5NSTRiZVlqWU0wbG5PempCT0tITGRBTXdWNnRwcVhsSlpkWXV4M3pS?=
- =?utf-8?B?dXN5aUhIak41VDRoNG4wa21obUMzdTEydmV5bmYzUUx2eDhNZ3pqMTRuUFVY?=
- =?utf-8?B?Q2RTM1NRSXFFQXd6QkxTT2VBSXp0SURFR0dSdndLN2p2aW5NczEzU1UvcTJO?=
- =?utf-8?B?M0psN3QwOUVUUFYybDd0WndxRGd2N0hic1ovUmNCUkl5MkJzTFFqa2ZZbFc2?=
- =?utf-8?B?cXBWVlJqWUlCb3NsVVRSUjFHMW5wWTdzTTBSVjFUNy9RZzZHOGIzK0RsaWxF?=
- =?utf-8?B?NnkyRXZVNkQ0c3R3NXVERCtqM2FkMTBRWFI5RTdSZUpaek9WN3VNWkpFSERP?=
- =?utf-8?B?YVBiSnlZZElJWWZSVGdkOUNZUHFScms3Qi8vMnZCQmh2ejV2ZVNQTkl2RDZH?=
- =?utf-8?B?Tyt1LzU1WlFmQ1JwWWNwTk9mc2lBVkxIbFd1anBZVjZHYmdGREY2bTFIV0NC?=
- =?utf-8?B?ZWRjRXpBVDJlQXJZL1VNVTc3QU1qcXJ0UFFCaGV5V3k0N0Q3TWQyK1hudnNi?=
- =?utf-8?B?alBHOUtidzZQUTJxMFZzTjh6N3JyaTJUU0hWYy9KRllpVVpZR3g3cXJBWHZ1?=
- =?utf-8?B?cXl6T2ZDemhBZ2hhRGZWMTQ4OU5VQkV6TlZJRjgwK2xyUjZjSFJTRHZqRENE?=
- =?utf-8?B?dnhOc1lRN3F1TXM0cmgwVXoxeVRMVnFsNFJXNTUvazNnMjcrcW0vclNwMCtz?=
- =?utf-8?B?K0NxWUhsbWNkUmJmZHBITEloa1U5RGdDQmdHOHlocWF4NHBvZXV2UnhlZGc2?=
- =?utf-8?B?d2hjc3VJeDd4dGhJYnZjcFAwcXpaUzVCREtwQStRUU9MQnBhVnB5ZjROYS9G?=
- =?utf-8?B?RU5NMm5DMnlIKzdKWXgvYlJZN2hqMldjMFhpNndIYjdab1NjTkVabFk0bllZ?=
- =?utf-8?B?c0lxeFRvdmFPL3N4UThEUXRFay9OOUZUR1BBdDhWZGNMWDdFa0lFMGdxdS9H?=
- =?utf-8?B?NG5SbjRXc2k1K2YwRzFnRE0vaWxURDdmWFJHWWFYZ3lURGlhaVpoRENPRGVC?=
- =?utf-8?B?TDRrVUNUdjU2eEVHemwzYktITy9RWG5HOTBpQ3hiay9tNmVVSWNhdy9TbFJB?=
- =?utf-8?B?MWJkU2gyajdUcWFacHNyZ25uZFJPUzg2b2p1aFhBRkdNZXA5YXJIekxXd2VP?=
- =?utf-8?Q?dA6byLrr4qRPViMlUp8V0rN68?=
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(396003)(136003)(376002)(46966006)(36840700001)(40470700004)(70206006)(82310400005)(40480700001)(110136005)(54906003)(966005)(40460700003)(8676002)(41300700001)(70586007)(4326008)(2906002)(6666004)(316002)(83380400001)(8936002)(5660300002)(44832011)(478600001)(47076005)(86362001)(82740400003)(7696005)(36756003)(356005)(26005)(36860700001)(81166007)(426003)(336012)(2616005)(1076003)(186003)(16526019)(71600200004)(41533002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 517dc11e-4e0d-49fc-3bff-08da6485314a
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB6043.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2022 04:07:26.5031
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2022 05:31:03.6046
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Network-Message-Id: eb5e77ef-81ab-4795-25dd-08da6490e0eb
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: U7dVpFEaivY3T1afV9aNkmCMZhDKQwfv7FlmRW0OV/mj+1HWt/AQ2s0VW83cuR0WWlOzCOab36jcXaoEWZeg8Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5211
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1NAM11FT026.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN1PR12MB2509
+
+This series introduces a new usage model for the v2 page table, where it
+can be used to implement support for DMA-API by adopting the generic
+IO page table framework.
+
+One of the target usecases is to support nested IO page tables
+where the guest uses the guest IO page table (v2) for translating
+GVA to GPA, and the hypervisor uses the host I/O page table (v1) for
+translating GPA to SPA. This is a pre-requisite for supporting the new
+HW-assisted vIOMMU presented at the KVM Forum 2020.
+
+  https://static.sched.com/hosted_files/kvmforum2020/26/vIOMMU%20KVM%20Forum%202020.pdf
+
+The following components are introduced in this series:
+
+- Part 1 (patch 1-3 and 5)
+  Refactor the current IOMMU page table code to adopt the generic IO page
+  table framework, and add AMD IOMMU Guest (v2) page table management code.
+
+- Part 2 (patch 4)
+  Add support for the AMD IOMMU Guest IO Protection feature (GIOV)
+  where requests from the I/O device without a PASID are treated as
+  if they have PASID of 0.
+
+- Part 3 (patch 6)
+  Introduce new "amd_iommu_pgtable" command-line to allow users
+  to select the mode of operation (v1 or v2).
+
+See AMD I/O Virtualization Technology Specification for more detail.
+
+  http://www.amd.com/system/files/TechDocs/48882_IOMMU_3.05_PUB.pdf
+
+@Robin,
+   We are not addressing your comment on cleaning up pgsize_bitmap in
+   this series. As mentioned in other thread [1] we can work on that
+   as separate cleanup series.
+
+   [1] https://lore.kernel.org/linux-iommu/15337b9f-48d7-d956-5d6c-b40319ba38ad@amd.com/
 
 
-Hi Robin,
+Thanks,
+Vasant
 
-On 6/27/2022 3:59 PM, Vasant Hegde wrote:
-> 
-> 
-> On 6/23/2022 3:12 PM, Robin Murphy wrote:
->> On 2022-06-23 09:03, Joerg Roedel wrote:
->>> On Fri, Jun 03, 2022 at 04:51:03PM +0530, Vasant Hegde wrote:
->>>> Fix below sparse warning:
->>>>    CHECK   drivers/iommu/amd/iommu.c
->>>>    drivers/iommu/amd/iommu.c:73:24: warning: symbol 'amd_iommu_ops' was not declared. Should it be static?
->>>>
->>>> Also we are going to introduce v2 page table which has different
->>>> pgsize_bitmaps. Hence remove 'const' qualifier.
->>>
->>> I am not a fan of removing the consts. Please use separate ops
->>> structures for v2 page-tables and make then const as well. This probably
->>> also has some optimization potential in the future when we can make the
->>> ops call-back functions page-table specific.
->>
->> TBH it's probably time to retire iommu_ops->pgsize_bitmap anyway. At the very least it would be logical to move it to iommu_domain_ops now, but maybe we could skip ahead and just rely on drivers initialising domain->pgsize_bitmap directly in their .domain_alloc?
->>
-> 
-> Robin,
-> 
-> Something like below? If yes, I will cleanup and get proper fix.
+Changes from v1 -> v2 :
+  - Allow v2 page table only when FEATURE_GT is enabled
+  - V2 page table doesn't support IOMMU passthrough mode. Hence added
+    check to fall back to v1 mode if system is booted with iommu=pt
+  - Overloaded amd_iommu command line option (removed amd_iommu_pgtable option)
+  - Override supported page sizes dynamically instead of selecting at boot time.
 
-Ping.
+V1 patchset : https://lore.kernel.org/linux-iommu/20220603112107.8603-1-vasant.hegde@amd.com/T/#t
 
+Changes from RFC -> v1:
+  - Addressed review comments from Joerg
+  - Reimplemented v2 page table
 
-Will you be cleaning up pgsize_bitmap -OR- do you want me to cleanup (I can do that as separate
-series)?
+RFC patchset : https://lore.kernel.org/linux-iommu/20210312090411.6030-1-suravee.suthikulpanit@amd.com/T/#t
 
--Vasant
+Suravee Suthikulpanit (4):
+  iommu/amd: Refactor amd_iommu_domain_enable_v2 to remove locking
+  iommu/amd: Update sanity check when enable PRI/ATS for IOMMU v1 table
+  iommu/amd: Add support for Guest IO protection
+  iommu/amd: Add support for using AMD IOMMU v2 page table for DMA-API
 
-> 
-> 
-> -Vasant
-> 
-> 
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index 840831d5d2ad..32dd84a7c1da 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -1916,6 +1916,7 @@ static int protection_domain_init_v1(struct protection_domain *domain, int mode)
->  			return -ENOMEM;
->  	}
->  
-> +	domain->domain.pgsize_bitmap	= AMD_IOMMU_PGSIZES;
->  	amd_iommu_domain_set_pgtable(domain, pt_root, mode);
->  
->  	return 0;
-> @@ -2282,7 +2283,6 @@ const struct iommu_ops amd_iommu_ops = {
->  	.get_resv_regions = amd_iommu_get_resv_regions,
->  	.put_resv_regions = generic_iommu_put_resv_regions,
->  	.is_attach_deferred = amd_iommu_is_attach_deferred,
-> -	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
->  	.def_domain_type = amd_iommu_def_domain_type,
->  	.default_domain_ops = &(const struct iommu_domain_ops) {
->  		.attach_dev	= amd_iommu_attach_device,
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 847ad47a2dfd..73cfba6a6728 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/ iommu/iommu.c
-> @@ -1915,8 +1915,6 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
->  		return NULL;
->  
->  	domain->type = type;
-> -	/* Assume all sizes by default; the driver may override this later */
-> -	domain->pgsize_bitmap = bus->iommu_ops->pgsize_bitmap;
->  	if (!domain->ops)
->  		domain->ops = bus->iommu_ops->default_domain_ops;
->  
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 5e1afe169549..0c028aa71b96 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -255,7 +255,6 @@ struct iommu_ops {
->  	int (*def_domain_type)(struct device *dev);
->  
->  	const struct iommu_domain_ops *default_domain_ops;
-> -	unsigned long pgsize_bitmap;
->  	struct module *owner;
->  };
->  
-> 
-> 
->> (and FWIW I'm leaning towards the same for the domain->ops as well; the more I look at ops->default_domain_ops, the more it starts looking like a stupid mess... my stupid mess... sorry about that)
->>
->> Robin.
+Vasant Hegde (2):
+  iommu/amd: Initial support for AMD IOMMU v2 page table
+  iommu/amd: Add command-line option to enable different page table
+
+ .../admin-guide/kernel-parameters.txt         |   2 +
+ drivers/iommu/amd/Makefile                    |   2 +-
+ drivers/iommu/amd/amd_iommu_types.h           |   8 +-
+ drivers/iommu/amd/init.c                      |  36 +-
+ drivers/iommu/amd/io_pgtable_v2.c             | 407 ++++++++++++++++++
+ drivers/iommu/amd/iommu.c                     |  89 +++-
+ drivers/iommu/io-pgtable.c                    |   1 +
+ include/linux/io-pgtable.h                    |   2 +
+ 8 files changed, 518 insertions(+), 29 deletions(-)
+ create mode 100644 drivers/iommu/amd/io_pgtable_v2.c
+
+-- 
+2.31.1
