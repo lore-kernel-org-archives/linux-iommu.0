@@ -1,15 +1,15 @@
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EFF32F44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6217A2F45
 	for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 09:48:04 +0000 (UTC)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.54])
-	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Lk8Hh56KrzhZHY;
-	Thu, 14 Jul 2022 17:26:08 +0800 (CST)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.55])
+	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Lk8Hf6vSpzhZBQ;
+	Thu, 14 Jul 2022 17:26:06 +0800 (CST)
 Received: from localhost.localdomain (10.67.164.66) by
  canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 14 Jul 2022 17:28:44 +0800
+ 15.1.2375.24; Thu, 14 Jul 2022 17:28:42 +0800
 From: Yicong Yang <yangyicong@hisilicon.com>
 To: <gregkh@linuxfoundation.org>, <alexander.shishkin@linux.intel.com>,
 	<leo.yan@linaro.org>, <james.clark@arm.com>, <will@kernel.org>,
@@ -25,12 +25,10 @@ CC: <helgaas@kernel.org>, <lorenzo.pieralisi@arm.com>,
 	<linux-doc@vger.kernel.org>, <prime.zeng@huawei.com>, <liuqi115@huawei.com>,
 	<zhangshaokun@hisilicon.com>, <linuxarm@huawei.com>,
 	<yangyicong@hisilicon.com>
-Subject: [PATCH v10 5/8] perf tool: Add support for HiSilicon PCIe Tune and Trace device driver
-Date: Thu, 14 Jul 2022 17:27:07 +0800
-Message-ID: <20220714092710.53486-6-yangyicong@hisilicon.com>
+Subject: [PATCH v10 0/8]  Add support for HiSilicon PCIe Tune and Trace device
+Date: Thu, 14 Jul 2022 17:27:02 +0800
+Message-ID: <20220714092710.53486-1-yangyicong@hisilicon.com>
 X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220714092710.53486-1-yangyicong@hisilicon.com>
-References: <20220714092710.53486-1-yangyicong@hisilicon.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -44,432 +42,165 @@ X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
  canpemm500009.china.huawei.com (7.192.105.203)
 X-CFilter-Loop: Reflected
 
-From: Qi Liu <liuqi115@huawei.com>
+HiSilicon PCIe tune and trace device (PTT) is a PCIe Root Complex
+integrated Endpoint (RCiEP) device, providing the capability
+to dynamically monitor and tune the PCIe traffic (tune),
+and trace the TLP headers (trace).
 
-HiSilicon PCIe tune and trace device (PTT) could dynamically tune
-the PCIe link's events, and trace the TLP headers).
+PTT tune is designed for monitoring and adjusting PCIe link parameters.
+We provide several parameters of the PCIe link. Through the driver,
+user can adjust the value of certain parameter to affect the PCIe link
+for the purpose of enhancing the performance in certian situation.
 
-This patch add support for PTT device in perf tool, so users could
-use 'perf record' to get TLP headers trace data.
+PTT trace is designed for dumping the TLP headers to the memory, which
+can be used to analyze the transactions and usage condition of the PCIe
+Link. Users can choose filters to trace headers, by either requester
+ID, or those downstream of a set of Root Ports on the same core of the
+PTT device. It's also supported to trace the headers of certain type and
+of certain direction.
 
-Reviewed-by: Leo Yan <leo.yan@linaro.org>
-Signed-off-by: Qi Liu <liuqi115@huawei.com>
-Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
----
- tools/perf/arch/arm/util/auxtrace.c   |  63 +++++++++
- tools/perf/arch/arm/util/pmu.c        |   3 +
- tools/perf/arch/arm64/util/Build      |   2 +-
- tools/perf/arch/arm64/util/hisi-ptt.c | 187 ++++++++++++++++++++++++++
- tools/perf/util/auxtrace.c            |   1 +
- tools/perf/util/auxtrace.h            |   1 +
- tools/perf/util/hisi-ptt.h            |  16 +++
- 7 files changed, 272 insertions(+), 1 deletion(-)
+The driver registers a PMU device for each PTT device. The trace can
+be used through `perf record` and the traced headers can be decoded
+by `perf report`. The perf command support for the device is also
+added in this patchset. The tune can be used through the sysfs
+attributes of related PMU device. See the documentation for the
+detailed usage.
+
+Change since v9:
+- Add sysfs ABI description documentation
+- Remove the controversial available_{root_port, requester}_filters sysfs file
+- Shorten 2 tune sysfs attributes name and add some comments
+- Move hisi_ptt_process_auxtrace_info() to Patch 6.
+- Add RB from Leo and Ack-by from Mathieu, thanks!
+Link: https://lore.kernel.org/lkml/20220606115555.41103-1-yangyicong@hisilicon.com/
+
+Change since v8:
+- Cleanups and one minor fix from Jonathan and John, thanks
+Link: https://lore.kernel.org/lkml/20220516125223.32012-1-yangyicong@hisilicon.com/
+
+Change since v7:
+- Configure the DMA in probe rather than in runtime. Also use devres to manage
+  PMU device as we have no order problem now
+- Refactor the config validation function per John and Leo
+- Use a spinlock hisi_ptt::pmu_lock instead of mutex to serialize the perf process
+  in pmu::start as it's in atomic context
+- Only commit the traced data when stop, per Leo and James
+- Drop the filter dynamically updating patch from this series to simply the review
+  of the driver. That patch will be send separately.
+- add a cpumask sysfs attribute and handle the cpu hotplug events, follow the
+  uncore PMU convention
+- Other cleanups and fixes, both in driver and perf tool
+Link: https://lore.kernel.org/lkml/20220407125841.3678-1-yangyicong@hisilicon.com/
+
+Change since v6:
+- Fix W=1 errors reported by lkp test, thanks
+
+Change since v5:
+- Squash the PMU patch into PATCH 2 suggested by John
+- refine the commit message of PATCH 1 and some comments
+Link: https://lore.kernel.org/lkml/20220308084930.5142-1-yangyicong@hisilicon.com/
+
+Change since v4:
+Address the comments from Jonathan, John and Ma Ca, thanks.
+- Use devm* also for allocating the DMA buffers
+- Remove the IRQ handler stub in Patch 2
+- Make functions waiting for hardware state return boolean
+- Manual remove the PMU device as it should be removed first
+- Modifier the orders in probe and removal to make them matched well
+- Make available {directions,type,format} array const and non-global
+- Using the right filter list in filters show and well protect the
+  list with mutex
+- Record the trace status with a boolean @started rather than enum
+- Optimize the process of finding the PTT devices of the perf-tool
+Link: https://lore.kernel.org/linux-pci/20220221084307.33712-1-yangyicong@hisilicon.com/
+
+Change since v3:
+Address the comments from Jonathan and John, thanks.
+- drop members in the common struct which can be get on the fly
+- reduce buffer struct and organize the buffers with array instead of list
+- reduce the DMA reset wait time to avoid long time busy loop
+- split the available_filters sysfs attribute into two files, for root port
+  and requester respectively. Update the documentation accordingly
+- make IOMMU mapping check earlier in probe to avoid race condition. Also
+  make IOMMU quirk patch prior to driver in the series
+- Cleanups and typos fixes from John and Jonathan
+Link: https://lore.kernel.org/linux-pci/20220124131118.17887-1-yangyicong@hisilicon.com/
+
+Change since v2:
+- address the comments from Mathieu, thanks.
+  - rename the directory to ptt to match the function of the device
+  - spinoff the declarations to a separate header
+  - split the trace function to several patches
+  - some other comments.
+- make default smmu domain type of PTT device to identity
+  Drop the RMR as it's not recommended and use an iommu_def_domain_type
+  quirk to passthrough the device DMA as suggested by Robin. 
+Link: https://lore.kernel.org/linux-pci/20211116090625.53702-1-yangyicong@hisilicon.com/
+
+Change since v1:
+- switch the user interface of trace to perf from debugfs
+- switch the user interface of tune to sysfs from debugfs
+- add perf tool support to start trace and decode the trace data
+- address the comments of documentation from Bjorn
+- add RMR[1] support of the device as trace works in RMR mode or
+  direct DMA mode. RMR support is achieved by common APIs rather
+  than the APIs implemented in [1].
+Link: https://lore.kernel.org/lkml/1618654631-42454-1-git-send-email-yangyicong@hisilicon.com/
+[1] https://lore.kernel.org/linux-acpi/20210805080724.480-1-shameerali.kolothum.thodi@huawei.com/
+
+Qi Liu (3):
+  perf tool: arm: Refactor event list iteration in
+    auxtrace_record__init()
+  perf tool: Add support for HiSilicon PCIe Tune and Trace device driver
+  perf tool: Add support for parsing HiSilicon PCIe Trace packet
+
+Yicong Yang (5):
+  iommu/arm-smmu-v3: Make default domain type of HiSilicon PTT device to
+    identity
+  hwtracing: hisi_ptt: Add trace function support for HiSilicon PCIe
+    Tune and Trace device
+  hwtracing: hisi_ptt: Add tune function support for HiSilicon PCIe Tune
+    and Trace device
+  docs: trace: Add HiSilicon PTT device driver documentation
+  MAINTAINERS: Add maintainer for HiSilicon PTT driver
+
+ .../ABI/testing/sysfs-devices-hisi_ptt        |   61 +
+ Documentation/trace/hisi-ptt.rst              |  298 +++++
+ Documentation/trace/index.rst                 |    1 +
+ MAINTAINERS                                   |    7 +
+ drivers/Makefile                              |    1 +
+ drivers/hwtracing/Kconfig                     |    2 +
+ drivers/hwtracing/ptt/Kconfig                 |   12 +
+ drivers/hwtracing/ptt/Makefile                |    2 +
+ drivers/hwtracing/ptt/hisi_ptt.c              | 1032 +++++++++++++++++
+ drivers/hwtracing/ptt/hisi_ptt.h              |  200 ++++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |   21 +
+ tools/perf/arch/arm/util/auxtrace.c           |  116 +-
+ tools/perf/arch/arm/util/pmu.c                |    3 +
+ tools/perf/arch/arm64/util/Build              |    2 +-
+ tools/perf/arch/arm64/util/hisi-ptt.c         |  187 +++
+ tools/perf/util/Build                         |    2 +
+ tools/perf/util/auxtrace.c                    |    4 +
+ tools/perf/util/auxtrace.h                    |    1 +
+ tools/perf/util/hisi-ptt-decoder/Build        |    1 +
+ .../hisi-ptt-decoder/hisi-ptt-pkt-decoder.c   |  164 +++
+ .../hisi-ptt-decoder/hisi-ptt-pkt-decoder.h   |   31 +
+ tools/perf/util/hisi-ptt.c                    |  192 +++
+ tools/perf/util/hisi-ptt.h                    |   19 +
+ 23 files changed, 2339 insertions(+), 20 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-devices-hisi_ptt
+ create mode 100644 Documentation/trace/hisi-ptt.rst
+ create mode 100644 drivers/hwtracing/ptt/Kconfig
+ create mode 100644 drivers/hwtracing/ptt/Makefile
+ create mode 100644 drivers/hwtracing/ptt/hisi_ptt.c
+ create mode 100644 drivers/hwtracing/ptt/hisi_ptt.h
  create mode 100644 tools/perf/arch/arm64/util/hisi-ptt.c
+ create mode 100644 tools/perf/util/hisi-ptt-decoder/Build
+ create mode 100644 tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.c
+ create mode 100644 tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.h
+ create mode 100644 tools/perf/util/hisi-ptt.c
  create mode 100644 tools/perf/util/hisi-ptt.h
 
-diff --git a/tools/perf/arch/arm/util/auxtrace.c b/tools/perf/arch/arm/util/auxtrace.c
-index 384c7cfda0fd..129ed72391a4 100644
---- a/tools/perf/arch/arm/util/auxtrace.c
-+++ b/tools/perf/arch/arm/util/auxtrace.c
-@@ -4,9 +4,11 @@
-  * Author: Mathieu Poirier <mathieu.poirier@linaro.org>
-  */
- 
-+#include <dirent.h>
- #include <stdbool.h>
- #include <linux/coresight-pmu.h>
- #include <linux/zalloc.h>
-+#include <api/fs/fs.h>
- 
- #include "../../../util/auxtrace.h"
- #include "../../../util/debug.h"
-@@ -14,6 +16,7 @@
- #include "../../../util/pmu.h"
- #include "cs-etm.h"
- #include "arm-spe.h"
-+#include "hisi-ptt.h"
- 
- static struct perf_pmu **find_all_arm_spe_pmus(int *nr_spes, int *err)
- {
-@@ -50,6 +53,52 @@ static struct perf_pmu **find_all_arm_spe_pmus(int *nr_spes, int *err)
- 	return arm_spe_pmus;
- }
- 
-+static struct perf_pmu **find_all_hisi_ptt_pmus(int *nr_ptts, int *err)
-+{
-+	const char *sysfs = sysfs__mountpoint();
-+	struct perf_pmu **hisi_ptt_pmus = NULL;
-+	struct dirent *dent;
-+	char path[PATH_MAX];
-+	DIR *dir = NULL;
-+	int idx = 0;
-+
-+	snprintf(path, PATH_MAX, "%s" EVENT_SOURCE_DEVICE_PATH, sysfs);
-+	dir = opendir(path);
-+	if (!dir) {
-+		pr_err("can't read directory '%s'\n", EVENT_SOURCE_DEVICE_PATH);
-+		*err = -EINVAL;
-+		goto out;
-+	}
-+
-+	while ((dent = readdir(dir))) {
-+		if (strstr(dent->d_name, HISI_PTT_PMU_NAME))
-+			(*nr_ptts)++;
-+	}
-+
-+	if (!(*nr_ptts))
-+		goto out;
-+
-+	hisi_ptt_pmus = zalloc(sizeof(struct perf_pmu *) * (*nr_ptts));
-+	if (!hisi_ptt_pmus) {
-+		pr_err("hisi_ptt alloc failed\n");
-+		*err = -ENOMEM;
-+		goto out;
-+	}
-+
-+	rewinddir(dir);
-+	while ((dent = readdir(dir))) {
-+		if (strstr(dent->d_name, HISI_PTT_PMU_NAME) && idx < (*nr_ptts)) {
-+			hisi_ptt_pmus[idx] = perf_pmu__find(dent->d_name);
-+			if (hisi_ptt_pmus[idx])
-+				idx++;
-+		}
-+	}
-+
-+out:
-+	closedir(dir);
-+	return hisi_ptt_pmus;
-+}
-+
- static struct perf_pmu *find_pmu_for_event(struct perf_pmu **pmus,
- 					   int pmu_nr, struct evsel *evsel)
- {
-@@ -71,17 +120,21 @@ struct auxtrace_record
- {
- 	struct perf_pmu	*cs_etm_pmu = NULL;
- 	struct perf_pmu **arm_spe_pmus = NULL;
-+	struct perf_pmu **hisi_ptt_pmus = NULL;
- 	struct evsel *evsel;
- 	struct perf_pmu *found_etm = NULL;
- 	struct perf_pmu *found_spe = NULL;
-+	struct perf_pmu *found_ptt = NULL;
- 	int auxtrace_event_cnt = 0;
- 	int nr_spes = 0;
-+	int nr_ptts = 0;
- 
- 	if (!evlist)
- 		return NULL;
- 
- 	cs_etm_pmu = perf_pmu__find(CORESIGHT_ETM_PMU_NAME);
- 	arm_spe_pmus = find_all_arm_spe_pmus(&nr_spes, err);
-+	hisi_ptt_pmus = find_all_hisi_ptt_pmus(&nr_ptts, err);
- 
- 	evlist__for_each_entry(evlist, evsel) {
- 		if (cs_etm_pmu && !found_etm)
-@@ -89,9 +142,13 @@ struct auxtrace_record
- 
- 		if (arm_spe_pmus && !found_spe)
- 			found_spe = find_pmu_for_event(arm_spe_pmus, nr_spes, evsel);
-+
-+		if (hisi_ptt_pmus && !found_ptt)
-+			found_ptt = find_pmu_for_event(hisi_ptt_pmus, nr_ptts, evsel);
- 	}
- 
- 	free(arm_spe_pmus);
-+	free(hisi_ptt_pmus);
- 
- 	if (found_etm)
- 		auxtrace_event_cnt++;
-@@ -99,6 +156,9 @@ struct auxtrace_record
- 	if (found_spe)
- 		auxtrace_event_cnt++;
- 
-+	if (found_ptt)
-+		auxtrace_event_cnt++;
-+
- 	if (auxtrace_event_cnt > 1) {
- 		pr_err("Concurrent AUX trace operation not currently supported\n");
- 		*err = -EOPNOTSUPP;
-@@ -111,6 +171,9 @@ struct auxtrace_record
- #if defined(__aarch64__)
- 	if (found_spe)
- 		return arm_spe_recording_init(err, found_spe);
-+
-+	if (found_ptt)
-+		return hisi_ptt_recording_init(err, found_ptt);
- #endif
- 
- 	/*
-diff --git a/tools/perf/arch/arm/util/pmu.c b/tools/perf/arch/arm/util/pmu.c
-index b8b23b9dc598..887c8addc491 100644
---- a/tools/perf/arch/arm/util/pmu.c
-+++ b/tools/perf/arch/arm/util/pmu.c
-@@ -10,6 +10,7 @@
- #include <linux/string.h>
- 
- #include "arm-spe.h"
-+#include "hisi-ptt.h"
- #include "../../../util/pmu.h"
- 
- struct perf_event_attr
-@@ -22,6 +23,8 @@ struct perf_event_attr
- #if defined(__aarch64__)
- 	} else if (strstarts(pmu->name, ARM_SPE_PMU_NAME)) {
- 		return arm_spe_pmu_default_config(pmu);
-+	} else if (strstarts(pmu->name, HISI_PTT_PMU_NAME)) {
-+		pmu->selectable = true;
- #endif
- 	}
- 
-diff --git a/tools/perf/arch/arm64/util/Build b/tools/perf/arch/arm64/util/Build
-index 9fcb4e68add9..337aa9bdf905 100644
---- a/tools/perf/arch/arm64/util/Build
-+++ b/tools/perf/arch/arm64/util/Build
-@@ -11,4 +11,4 @@ perf-$(CONFIG_LIBDW_DWARF_UNWIND) += unwind-libdw.o
- perf-$(CONFIG_AUXTRACE) += ../../arm/util/pmu.o \
- 			      ../../arm/util/auxtrace.o \
- 			      ../../arm/util/cs-etm.o \
--			      arm-spe.o mem-events.o
-+			      arm-spe.o mem-events.o hisi-ptt.o
-diff --git a/tools/perf/arch/arm64/util/hisi-ptt.c b/tools/perf/arch/arm64/util/hisi-ptt.c
-new file mode 100644
-index 000000000000..5340b88b66fa
---- /dev/null
-+++ b/tools/perf/arch/arm64/util/hisi-ptt.c
-@@ -0,0 +1,187 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * HiSilicon PCIe Trace and Tuning (PTT) support
-+ * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/types.h>
-+#include <linux/bitops.h>
-+#include <linux/log2.h>
-+#include <linux/zalloc.h>
-+#include <time.h>
-+
-+#include <internal/lib.h> // page_size
-+#include "../../../util/auxtrace.h"
-+#include "../../../util/cpumap.h"
-+#include "../../../util/debug.h"
-+#include "../../../util/event.h"
-+#include "../../../util/evlist.h"
-+#include "../../../util/evsel.h"
-+#include "../../../util/hisi-ptt.h"
-+#include "../../../util/pmu.h"
-+#include "../../../util/record.h"
-+#include "../../../util/session.h"
-+#include "../../../util/tsc.h"
-+
-+#define KiB(x) ((x) * 1024)
-+#define MiB(x) ((x) * 1024 * 1024)
-+
-+struct hisi_ptt_recording {
-+	struct auxtrace_record	itr;
-+	struct perf_pmu *hisi_ptt_pmu;
-+	struct evlist *evlist;
-+};
-+
-+static size_t
-+hisi_ptt_info_priv_size(struct auxtrace_record *itr __maybe_unused,
-+			struct evlist *evlist __maybe_unused)
-+{
-+	return HISI_PTT_AUXTRACE_PRIV_SIZE;
-+}
-+
-+static int hisi_ptt_info_fill(struct auxtrace_record *itr,
-+			      struct perf_session *session,
-+			      struct perf_record_auxtrace_info *auxtrace_info,
-+			      size_t priv_size)
-+{
-+	struct hisi_ptt_recording *pttr =
-+			container_of(itr, struct hisi_ptt_recording, itr);
-+	struct perf_pmu *hisi_ptt_pmu = pttr->hisi_ptt_pmu;
-+
-+	if (priv_size != HISI_PTT_AUXTRACE_PRIV_SIZE)
-+		return -EINVAL;
-+
-+	if (!session->evlist->core.nr_mmaps)
-+		return -EINVAL;
-+
-+	auxtrace_info->type = PERF_AUXTRACE_HISI_PTT;
-+	auxtrace_info->priv[0] = hisi_ptt_pmu->type;
-+
-+	return 0;
-+}
-+
-+static int hisi_ptt_set_auxtrace_mmap_page(struct record_opts *opts)
-+{
-+	bool privileged = perf_event_paranoid_check(-1);
-+
-+	if (!opts->full_auxtrace)
-+		return 0;
-+
-+	if (opts->full_auxtrace && !opts->auxtrace_mmap_pages) {
-+		if (privileged) {
-+			opts->auxtrace_mmap_pages = MiB(16) / page_size;
-+		} else {
-+			opts->auxtrace_mmap_pages = KiB(128) / page_size;
-+			if (opts->mmap_pages == UINT_MAX)
-+				opts->mmap_pages = KiB(256) / page_size;
-+		}
-+	}
-+
-+	/* Validate auxtrace_mmap_pages */
-+	if (opts->auxtrace_mmap_pages) {
-+		size_t sz = opts->auxtrace_mmap_pages * (size_t)page_size;
-+		size_t min_sz = KiB(8);
-+
-+		if (sz < min_sz || !is_power_of_2(sz)) {
-+			pr_err("Invalid mmap size for HISI PTT: must be at least %zuKiB and a power of 2\n",
-+			       min_sz / 1024);
-+			return -EINVAL;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static int hisi_ptt_recording_options(struct auxtrace_record *itr,
-+				      struct evlist *evlist,
-+				      struct record_opts *opts)
-+{
-+	struct hisi_ptt_recording *pttr =
-+			container_of(itr, struct hisi_ptt_recording, itr);
-+	struct perf_pmu *hisi_ptt_pmu = pttr->hisi_ptt_pmu;
-+	struct evsel *evsel, *hisi_ptt_evsel = NULL;
-+	struct evsel *tracking_evsel;
-+	int err;
-+
-+	pttr->evlist = evlist;
-+	evlist__for_each_entry(evlist, evsel) {
-+		if (evsel->core.attr.type == hisi_ptt_pmu->type) {
-+			if (hisi_ptt_evsel) {
-+				pr_err("There may be only one " HISI_PTT_PMU_NAME "x event\n");
-+				return -EINVAL;
-+			}
-+			evsel->core.attr.freq = 0;
-+			evsel->core.attr.sample_period = 1;
-+			hisi_ptt_evsel = evsel;
-+			opts->full_auxtrace = true;
-+		}
-+	}
-+
-+	err = hisi_ptt_set_auxtrace_mmap_page(opts);
-+	if (err)
-+		return err;
-+	/*
-+	 * To obtain the auxtrace buffer file descriptor, the auxtrace event
-+	 * must come first.
-+	 */
-+	evlist__to_front(evlist, hisi_ptt_evsel);
-+	evsel__set_sample_bit(hisi_ptt_evsel, TIME);
-+
-+	/* Add dummy event to keep tracking */
-+	err = parse_events(evlist, "dummy:u", NULL);
-+	if (err)
-+		return err;
-+
-+	tracking_evsel = evlist__last(evlist);
-+	evlist__set_tracking_event(evlist, tracking_evsel);
-+
-+	tracking_evsel->core.attr.freq = 0;
-+	tracking_evsel->core.attr.sample_period = 1;
-+	evsel__set_sample_bit(tracking_evsel, TIME);
-+
-+	return 0;
-+}
-+
-+static u64 hisi_ptt_reference(struct auxtrace_record *itr __maybe_unused)
-+{
-+	return rdtsc();
-+}
-+
-+static void hisi_ptt_recording_free(struct auxtrace_record *itr)
-+{
-+	struct hisi_ptt_recording *pttr =
-+			container_of(itr, struct hisi_ptt_recording, itr);
-+
-+	free(pttr);
-+}
-+
-+struct auxtrace_record *hisi_ptt_recording_init(int *err,
-+						struct perf_pmu *hisi_ptt_pmu)
-+{
-+	struct hisi_ptt_recording *pttr;
-+
-+	if (!hisi_ptt_pmu) {
-+		*err = -ENODEV;
-+		return NULL;
-+	}
-+
-+	pttr = zalloc(sizeof(*pttr));
-+	if (!pttr) {
-+		*err = -ENOMEM;
-+		return NULL;
-+	}
-+
-+	pttr->hisi_ptt_pmu = hisi_ptt_pmu;
-+	pttr->itr.pmu = hisi_ptt_pmu;
-+	pttr->itr.recording_options = hisi_ptt_recording_options;
-+	pttr->itr.info_priv_size = hisi_ptt_info_priv_size;
-+	pttr->itr.info_fill = hisi_ptt_info_fill;
-+	pttr->itr.free = hisi_ptt_recording_free;
-+	pttr->itr.reference = hisi_ptt_reference;
-+	pttr->itr.read_finish = auxtrace_record__read_finish;
-+	pttr->itr.alignment = 0;
-+
-+	*err = 0;
-+	return &pttr->itr;
-+}
-diff --git a/tools/perf/util/auxtrace.c b/tools/perf/util/auxtrace.c
-index 511dd3caa1bc..c5ef322a30b8 100644
---- a/tools/perf/util/auxtrace.c
-+++ b/tools/perf/util/auxtrace.c
-@@ -1304,6 +1304,7 @@ int perf_event__process_auxtrace_info(struct perf_session *session,
- 	case PERF_AUXTRACE_S390_CPUMSF:
- 		err = s390_cpumsf_process_auxtrace_info(event, session);
- 		break;
-+	case PERF_AUXTRACE_HISI_PTT:
- 	case PERF_AUXTRACE_UNKNOWN:
- 	default:
- 		return -EINVAL;
-diff --git a/tools/perf/util/auxtrace.h b/tools/perf/util/auxtrace.h
-index cd0d25c2751c..71046ef2b750 100644
---- a/tools/perf/util/auxtrace.h
-+++ b/tools/perf/util/auxtrace.h
-@@ -48,6 +48,7 @@ enum auxtrace_type {
- 	PERF_AUXTRACE_CS_ETM,
- 	PERF_AUXTRACE_ARM_SPE,
- 	PERF_AUXTRACE_S390_CPUMSF,
-+	PERF_AUXTRACE_HISI_PTT,
- };
- 
- enum itrace_period_type {
-diff --git a/tools/perf/util/hisi-ptt.h b/tools/perf/util/hisi-ptt.h
-new file mode 100644
-index 000000000000..82283c81b4c1
---- /dev/null
-+++ b/tools/perf/util/hisi-ptt.h
-@@ -0,0 +1,16 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * HiSilicon PCIe Trace and Tuning (PTT) support
-+ * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
-+ */
-+
-+#ifndef INCLUDE__PERF_HISI_PTT_H__
-+#define INCLUDE__PERF_HISI_PTT_H__
-+
-+#define HISI_PTT_PMU_NAME		"hisi_ptt"
-+#define HISI_PTT_AUXTRACE_PRIV_SIZE	sizeof(u64)
-+
-+struct auxtrace_record *hisi_ptt_recording_init(int *err,
-+						struct perf_pmu *hisi_ptt_pmu);
-+
-+#endif
 -- 
 2.24.0
 
