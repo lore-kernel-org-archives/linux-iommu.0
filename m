@@ -1,93 +1,100 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from sinmsgout03.his.huawei.com (sinmsgout03.his.huawei.com [119.8.177.38])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 509262C9D
-	for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 11:14:13 +0000 (UTC)
-Received: by mail-wm1-f41.google.com with SMTP id z23-20020a7bc7d7000000b003a2e00222acso3419594wmk.0
-        for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 04:14:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1mXResJww73UpBUgXzU26mfeHumFONoVe1fD4+eidgY=;
-        b=A0fZCQUjeq/rnKRmKsFqQikxnljB0/oTNVfWBPFQQ840VUkpTS5fWUl/5L+rCXf7Hm
-         AikKqmPcSJSZAEwCWh4LQCHP5j6HOzz5AA7t6vJfQ/IAB8Opt5PAzalXMoHTNnxDTh2z
-         JU/GlYXx6OCGVBY1F0XpsnrE7PA2IYvudA4RUi4rAz4ecUSN8LwoufL75PXZKnUo+Lcg
-         tuOIWx7p4AUWrhIa3o9i+G4PS/JmVsC4qAHnb0qCE8HTuUyBkfdo6UEzOklU4xUwyl8f
-         ObGzdQw0PvBpl7WrkTa+ns6aiNp2CR2KK/fSrXdyrV8j5qjvhqoZiUGDVwFa92y9kVDQ
-         n8NQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1mXResJww73UpBUgXzU26mfeHumFONoVe1fD4+eidgY=;
-        b=vuLBdkp7ztEWS0vtPZkRVpyvmNWGVpSThJyS4hr0o0tu4voPzuz76OVqIyWysv426O
-         NGXZ33BnNxzuECn8gZxdaSx1Hf/ptIi7TJLuCZYMzohzhuepknHYqTMhheH45ZFM1UKD
-         KuCc7p7r37w8m5tSpMVEtdspzoq649U8aIyv3jRhsDnaLdmEfrCTSaZIJaEZVdkjH7cK
-         eCy8BmBubqGHDtJDJ+SfRDQv1DrUstFJxEQTgcp1u2W257yoxuEB1Mwh2XTfJUaum7Iq
-         f4PPQP16gd1Bj073clkBhxjz2B+lI1UHfQVxsxYknRVlRJ/kClDn05ZR8twPSis/Ribi
-         8L9A==
-X-Gm-Message-State: AJIora85PHPYNe8ucXCHAPlIi1tOyiQy3Zli9LouSIen5ITmbw6ySbUw
-	zA9R6ipDB2o6WTSMUS/F1fayOjDpQzKVHQ==
-X-Google-Smtp-Source: AGRyM1uIAChlItXoVW28WYAYQc/hahdPbVdJHphRVg5mE36QmQZpgZSceexJEoWn6QBcqzQFpoiNvg==
-X-Received: by 2002:a05:600c:41c2:b0:3a2:dc9f:959e with SMTP id t2-20020a05600c41c200b003a2dc9f959emr8797324wmh.166.1657797251503;
-        Thu, 14 Jul 2022 04:14:11 -0700 (PDT)
-Received: from localhost.localdomain (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id a8-20020a056000100800b0021db2dcd0aasm1357609wrx.108.2022.07.14.04.14.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jul 2022 04:14:11 -0700 (PDT)
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: joro@8bytes.org
-Cc: will@kernel.org,
-	virtualization@lists.linux-foundation.org,
-	iommu@lists.linux.dev,
-	eric.auger@redhat.com,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH] iommu/virtio: Advertise IOMMU_CAP_CACHE_COHERENCY
-Date: Thu, 14 Jul 2022 12:11:01 +0100
-Message-Id: <20220714111059.708735-1-jean-philippe@linaro.org>
-X-Mailer: git-send-email 2.36.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B4F62C9D
+	for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 11:22:10 +0000 (UTC)
+Received: from fraeml742-chm.china.huawei.com (unknown [172.18.156.207])
+	by sinmsgout03.his.huawei.com (SkyGuard) with ESMTP id 4LkBrC1b2Lz9v7Bs;
+	Thu, 14 Jul 2022 19:20:59 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml742-chm.china.huawei.com (10.206.15.223) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 14 Jul 2022 13:22:03 +0200
+Received: from localhost.localdomain (10.69.192.58) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 14 Jul 2022 12:21:59 +0100
+From: John Garry <john.garry@huawei.com>
+To: <damien.lemoal@opensource.wdc.com>, <joro@8bytes.org>, <will@kernel.org>,
+	<jejb@linux.ibm.com>, <martin.petersen@oracle.com>, <hch@lst.de>,
+	<m.szyprowski@samsung.com>, <robin.murphy@arm.com>
+CC: <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-ide@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-scsi@vger.kernel.org>, <linuxarm@huawei.com>, John Garry
+	<john.garry@huawei.com>
+Subject: [PATCH v6 0/6] DMA mapping changes for SCSI core
+Date: Thu, 14 Jul 2022 19:15:23 +0800
+Message-ID: <1657797329-98541-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 
-Fix virtio-iommu interaction with VFIO, as VFIO now requires
-IOMMU_CAP_CACHE_COHERENCY. virtio-iommu does not support non-cacheable
-mappings, and always expects to be called with IOMMU_CACHE.
+As reported in [0], DMA mappings whose size exceeds the IOMMU IOVA caching
+limit may see a big performance hit.
 
-Fixes: e8ae0e140c05 ("vfio: Require that devices support DMA cache coherence")
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
----
- drivers/iommu/virtio-iommu.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+This series introduces a new DMA mapping API, dma_opt_mapping_size(), so
+that drivers may know this limit when performance is a factor in the
+mapping.
 
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index 25be4b822aa0..bf340d779c10 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -1006,7 +1006,18 @@ static int viommu_of_xlate(struct device *dev, struct of_phandle_args *args)
- 	return iommu_fwspec_add_ids(dev, args->args, 1);
- }
- 
-+static bool viommu_capable(enum iommu_cap cap)
-+{
-+	switch (cap) {
-+	case IOMMU_CAP_CACHE_COHERENCY:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
- static struct iommu_ops viommu_ops = {
-+	.capable		= viommu_capable,
- 	.domain_alloc		= viommu_domain_alloc,
- 	.probe_device		= viommu_probe_device,
- 	.probe_finalize		= viommu_probe_finalize,
+The SCSI SAS transport code is modified only to use this limit. For now I
+did not want to touch other hosts as I have a concern that this change
+could cause a performance regression.
+
+I also added a patch for libata-scsi as it does not currently honour the
+shost max_sectors limit.
+
+[0] https://lore.kernel.org/linux-iommu/20210129092120.1482-1-thunder.leizhen@huawei.com/
+
+Changes since v5:
+- Rebase to Linux 5.19-rc6
+- Add Martin's tags to unmodified patches (thanks!)
+- Apply DMA opt limit to max_sectors in sd driver, and not max_hw_sectors
+
+Changes since v4:
+- tweak libata and other patch titles
+- Add Robin's tag (thanks!)
+- Clarify description of new DMA mapping API
+
+Changes since v3:
+- Apply max DMA optimial limit to SAS hosts only
+  Note: Even though "scsi: core: Cap shost max_sectors only once when
+  adding" is a subset of a previous patch I did not transfer the RB tags
+- Rebase on v5.19-rc4
+
+John Garry (6):
+  dma-mapping: Add dma_opt_mapping_size()
+  dma-iommu: Add iommu_dma_opt_mapping_size()
+  scsi: core: Cap shost max_sectors according to DMA limits only once
+  scsi: sd: Allow max_sectors be capped at DMA optimal size limit
+  scsi: scsi_transport_sas: Cap shost opt_sectors according to DMA
+    optimal limit
+  ata: libata-scsi: Cap ata_device->max_sectors according to
+    shost->max_sectors
+
+ Documentation/core-api/dma-api.rst | 14 ++++++++++++++
+ drivers/ata/libata-scsi.c          |  1 +
+ drivers/iommu/dma-iommu.c          |  6 ++++++
+ drivers/iommu/iova.c               |  5 +++++
+ drivers/scsi/hosts.c               |  5 +++++
+ drivers/scsi/scsi_lib.c            |  4 ----
+ drivers/scsi/scsi_transport_sas.c  |  6 ++++++
+ drivers/scsi/sd.c                  |  2 ++
+ include/linux/dma-map-ops.h        |  1 +
+ include/linux/dma-mapping.h        |  5 +++++
+ include/linux/iova.h               |  2 ++
+ include/scsi/scsi_host.h           |  1 +
+ kernel/dma/mapping.c               | 12 ++++++++++++
+ 13 files changed, 60 insertions(+), 4 deletions(-)
+
 -- 
-2.36.1
+2.35.3
 
