@@ -1,11 +1,11 @@
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 775D07A
-	for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 05:12:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F2257A
+	for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 05:13:53 +0000 (UTC)
 Received: by verein.lst.de (Postfix, from userid 2407)
-	id 8B49567373; Thu, 14 Jul 2022 07:12:48 +0200 (CEST)
-Date: Thu, 14 Jul 2022 07:12:48 +0200
+	id 072FB67373; Thu, 14 Jul 2022 07:13:50 +0200 (CEST)
+Date: Thu, 14 Jul 2022 07:13:49 +0200
 From: Christoph Hellwig <hch@lst.de>
 To: Logan Gunthorpe <logang@deltatee.com>
 Cc: linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
@@ -28,10 +28,9 @@ Cc: linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
 	Martin Oliveira <martin.oliveira@eideticom.com>,
 	Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
 	Ralph Campbell <rcampbell@nvidia.com>
-Subject: Re: [PATCH v8 01/13] lib/scatterlist: add flag for indicating
- P2PDMA segments in an SGL
-Message-ID: <20220714051248.GA23381@lst.de>
-References: <20220708165104.5005-1-logang@deltatee.com> <20220708165104.5005-2-logang@deltatee.com>
+Subject: Re: [PATCH v8 00/13] DMA Mapping P2PDMA Pages
+Message-ID: <20220714051349.GB23381@lst.de>
+References: <20220708165104.5005-1-logang@deltatee.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,13 +39,10 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220708165104.5005-2-logang@deltatee.com>
+In-Reply-To: <20220708165104.5005-1-logang@deltatee.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 
-Do we need the dma_ prefix for the flags field?  That's just what it
-is used for now.
-
-Otherwise looks good:
-
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+I'd like to hear from Robin on the dma-iommu parts, but otherwise
+this looks fine to me modulo a little filed naming change I could
+handle when applying this.
 
