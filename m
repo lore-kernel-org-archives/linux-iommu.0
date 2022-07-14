@@ -1,157 +1,134 @@
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9F564A19
-	for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 13:58:04 +0000 (UTC)
-Received: by mail-lf1-f54.google.com with SMTP id e28so2959884lfj.4
-        for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 06:58:04 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D47EE4C64
+	for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 16:55:53 +0000 (UTC)
+Received: by mail-wm1-f44.google.com with SMTP id c131-20020a1c3589000000b003a2cc290135so3416712wma.2
+        for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 09:55:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AsyrMzElWzo80Z5egogMNWofiRDznVZXTCiFutbvKII=;
-        b=eZvDJbMtdOPQ3Hlc73SGr+GXOezfkTn0ravZ4O7F1MoOod7OhqpD8vvfNfTFMeVp74
-         j5NNgqimVWpvNd+hChUbhIZNlrM3MLHTmzV8E6ztrs4iqKNuKTpgKjgCI4GQK+C5k31G
-         lj6n12ONLcGYveOkj8O41G87V4fCSke/tHYo+N6uFox0EqjJa6jhVvgyoNGqABFydujL
-         sWXjC6waub7/4XEcL6TJUQnrYqacqJKZLdYZ+WzEdL1NQ1xLz9C0JaG+PQbMiWoQEufV
-         qxsp7Y+znXbPuD9CuWNsBW1ZYNAV1G/6IM6bdntXeYy61oTPfMlrmrsJqSzmNcjigXAS
-         u1IQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YL8SXrf5E+M6fcmsXFxLr3AwzTQU1pkyfX1gPaaxl4g=;
+        b=yzTY8/JScLREDVva8u4+YNj6LmYxF9EIVD+XwCtYkLOEVLH1GJrIFioNH+MJj1Vp0I
+         +CCLPrrfeS2nVyApdO73U2IbiOwvXlLe7rZb8fiq+8w9NhCIaZ55EpuPiMqJgNsbw/L9
+         1A4TLgOQr/+peKJ6FjHVmkrOCjDfRs/ax3QRpnuegbonhyxpTRpf9D3PysQMEQcCYyMV
+         w9fTRiJ8fyiptKaY4FS1xvcAaeMc2z25vdEV9G85FN+W3ioM0MnHEkATgMMFzFqx4SUx
+         SDwFQ2HM5GOI+0wEvUKGFiNnE4fDFpVYLYnSg4LHZX+2wNDK9ToB1HBfuKpq1nihMv9F
+         gRsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AsyrMzElWzo80Z5egogMNWofiRDznVZXTCiFutbvKII=;
-        b=oxfUNdwAIK/gFVJ6mnnfN7YDgrsKD7YdUwieST60BC8bjC7kW8H1NmN8dme5FAt+tr
-         /WTFxY+/jZ9PeMzPV+UxyL6qDjTtZ3J+lrh+2E5h97tm/M24+KC2uMJ/7V3sgtdyyQen
-         VYXXiitu1M0XMH0tiEwceZ8yV7KoQ5tT2BIPZGD8XARg7H/0sB9nGQv3suCx5PL1mnD0
-         Q30fIAOJsit76TeQafWuVMYTWRH3hESPNAMS4axzgT2ORr7TZtomNMVV6WvgTYEF+OAu
-         nRb93XvGhwwVv223zv2IQKASFoY3ZH/KuporKCzc9SyhQWPvFG4OjiedtpKYG+xRtoaU
-         e1rw==
-X-Gm-Message-State: AJIora9IdfexRKALCn9O5yo99NQt3k6sS+e7h71SNIqZed8p+uq548dj
-	PU1K3yCDZwyosW2TIfE5LZa3VG4Feobr4BU4JCDkslcdzwPZLg==
-X-Google-Smtp-Source: AGRyM1utf5B4o7kELwBxm7mmneS2IRfBXaZ05RbaenlLg45jt5LuOHpIalhl4TyctEbGWWsqOS6t/zSaVykK5WbqsVo=
-X-Received: by 2002:ac2:47f6:0:b0:488:b649:9f77 with SMTP id
- b22-20020ac247f6000000b00488b6499f77mr5638296lfp.559.1657807082858; Thu, 14
- Jul 2022 06:58:02 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YL8SXrf5E+M6fcmsXFxLr3AwzTQU1pkyfX1gPaaxl4g=;
+        b=gD0KBWjT/qeiW+/b2jRU5T7XJuVBTpGIbh8nhYSqSJwpt1ij+MmtBXREOk6q48j5y9
+         aboGMv/nX3yz5b/vZOWIeKuyZZakJIV1Xm/1lwjw38eAyoSa3YOrceiGA/dPSj0CPWDy
+         pM6/BbpzWZwN/IuFqZW8yUltYZHqfbKgcvlUM1WmLmJTzrtmIwIDOAFjbh7LMK+PdGnM
+         D70coUlAZOmmAJy9kH4mBEBBg5lrzdLWR0DshcMMVOrQzzZKqkVbw7h8skQ7d42/H+Eu
+         LQtlsz4zoH4khea2c7NCCy8TF06MmMHqIMRoM5ideI7p7FXRUpNbSt2Lcikg6+pe7d9/
+         FJcA==
+X-Gm-Message-State: AJIora/O1LgDrfA28BnG0WK8AxFU+7Z1m/XQrkRzuDUIGljke+nDdSMG
+	y9kd+oHY2QOOIJL6j2JyHyeKSw==
+X-Google-Smtp-Source: AGRyM1vFn4HJAkOQC+XNsUm3xozYDCzxYVg/gZigISkKiP71CoqxZWFE7vGtjgNMufO1WXaz+VH3ew==
+X-Received: by 2002:a05:600c:a08:b0:3a1:9319:ab78 with SMTP id z8-20020a05600c0a0800b003a19319ab78mr15875548wmp.158.1657817752131;
+        Thu, 14 Jul 2022 09:55:52 -0700 (PDT)
+Received: from localhost ([31.134.121.151])
+        by smtp.gmail.com with ESMTPSA id p17-20020adff211000000b0021d9207e6f1sm1862666wro.34.2022.07.14.09.55.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 09:55:51 -0700 (PDT)
+From: Sam Protsenko <semen.protsenko@linaro.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Janghyuck Kim <janghyuck.kim@samsung.com>,
+	Cho KyongHo <pullip.cho@samsung.com>,
+	Daniel Mentz <danielmentz@google.com>,
+	David Virag <virag.david003@gmail.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/6] iommu/exynos: Add basic support for SysMMU v7
+Date: Thu, 14 Jul 2022 19:55:44 +0300
+Message-Id: <20220714165550.8884-1-semen.protsenko@linaro.org>
+X-Mailer: git-send-email 2.30.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20220710230603.13526-1-semen.protsenko@linaro.org>
- <20220710230603.13526-7-semen.protsenko@linaro.org> <dcf4da29-9da0-69ea-300e-80d1f5cc10a3@arm.com>
-In-Reply-To: <dcf4da29-9da0-69ea-300e-80d1f5cc10a3@arm.com>
-From: Sam Protsenko <semen.protsenko@linaro.org>
-Date: Thu, 14 Jul 2022 16:57:51 +0300
-Message-ID: <CAPLW+4nc2B0J4yvnz37MrJnTHKtkDCNBX5L2ff_YRGDEbZiKQA@mail.gmail.com>
-Subject: Re: [PATCH v2 6/7] iommu/exynos: Add SysMMU v7 register sets
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Janghyuck Kim <janghyuck.kim@samsung.com>, 
-	Cho KyongHo <pullip.cho@samsung.com>, Daniel Mentz <danielmentz@google.com>, 
-	David Virag <virag.david003@gmail.com>, Sumit Semwal <sumit.semwal@linaro.org>, 
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-On Tue, 12 Jul 2022 at 20:00, Robin Murphy <robin.murphy@arm.com> wrote:
->
-> On 2022-07-11 00:06, Sam Protsenko wrote:
-> > SysMMU v7 might have different register layouts (VM capable or non-VM
-> > capable). Check which layout is implemented in current SysMMU module and
-> > prepare the corresponding register table for futher usage.
-> >
-> > Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
-> > ---
-> > Changes in v2:
-> >    - (none) This patch is new and added in v2
-> >
-> >   drivers/iommu/exynos-iommu.c | 26 ++++++++++++++++++++++----
-> >   1 file changed, 22 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> > index 48681189ccf8..64bf3331064f 100644
-> > --- a/drivers/iommu/exynos-iommu.c
-> > +++ b/drivers/iommu/exynos-iommu.c
-> > @@ -166,6 +166,8 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
-> >   enum {
-> >       REG_SET_V1,
-> >       REG_SET_V5,
-> > +     REG_SET_V7_NON_VM,
-> > +     REG_SET_V7_VM,
-> >       MAX_REG_SET
-> >   };
-> >
-> > @@ -201,6 +203,16 @@ static const unsigned int sysmmu_regs[MAX_REG_SET][MAX_REG_IDX] = {
-> >               0x00, 0x04, 0x08, 0x0c, 0x10, 0x14, 0x18, 0x20, 0x24,
-> >               0x60, 0x64,
-> >       },
-> > +     /* SysMMU v7: Default register set (non-VM) */
-> > +     {
-> > +             0x00, 0x04, 0x08, 0x0c, 0x10, 0x14, 0x18, 0x20, 0x24,
-> > +             0x60, 0x64,
-> > +     },
-> > +     /* SysMMU v7: VM capable register set */
-> > +     {
-> > +             0x00, 0x04, 0x08, 0x800c, 0x8010, 0x8014, 0x8018, 0x8020,
-> > +             0x8024, 0x60, 0x64,
->
-> Yuck, see, it's turning into an unreadable mess already.
->
+Add minimal viable support for SysMMU v7.x, which can be found in modern
+Exynos chips (like Exynos850 or Google's GS101). SysMMU v7.x may
+implement VM register set, and those registers should be initialized
+properly if present. Usually 8 translation domains are supported via VM
+registers (0..7), but only n=0 (default) is used for now.
 
-Will be reworked in v2, using variant struct approach suggested by Krzysztof.
+Existing exynos-iommu driver only supports SysMMU versions up to v5. But
+it's pretty much ready for basic usage with SysMMU v7, only small
+changes have to be done. As SysMMU version is tested dynamically (by
+reading the corresponding register), there is no need to introduce new
+compatible string.
 
-> This is also raising the question of whether it's worth abstracting
-> accesses to the common registers if it means having an ever-increasing
-> number of copies of those same offsets. Personally I'd leave those using
-> regular readl/writel, but even if there's an argument for keeping all
-> the callsites consistent (modulo the one that already can't be), there's
-> no reason the wrappers couldn't pick up the slack, e.g.:
->
+The only major change is that SysMMU v7 can have different register
+layouts:
+  - with Virtual Machine support
+  - without Virtual Machine support
 
-Agreed. Gonna leave the common regs out of it in v2, having only
-non-common registers in the variant structure. Also in v2 gonna stick
-with plain readl/writel calls, using SYSMMU_REG() wrapper suggested by
-Krzysztof.
+That can be checked by reading the capability registers. In the case if
+SysMMU IP-core is VM-capable, the VM registers have to be used, and some
+additional initialization is needed. That is the case on E850-96 board,
+which non-secure SysMMU (v7.4) implements VM-capable register set.
 
-> static void sysmmu_write(struct sysmmu_drvdata *data, size_t idx, u32 val)
-> {
->         unsigned int offset;
->
->         if (idx <= IDX_STATUS) {
->                 offset = idx * 4;
->         } else {
->                 offset = data->regs[idx - IDX_PT_BASE];
->                 if (WARN_ON(!offset))
->                         return;
->         }
->         writel(val, data->sfrbase + offset);
-> }
->
-> Indeed, not abstracting REG_MMU_CTRL via data->regs would then make it
-> trivial to be robust against unimplemented registers without even having
-> to remember to initialise their offsets to some magic value, which seems
-> rather attractive.
->
+Another required change to make SysMMU v7 functional (at least the one
+that has VM registers), is to enable default VM instance. That should
+be added to the code enabling MMU itself. Insights for that change were
+taken by comparing the I/O dump (writel() / readl() operations) for the
+vendor driver and this upstream driver.
 
-Just on the discussion point (as this function won't be present in
-v2): one reason for this rework is to avoid using if-else branching,
-AFAIU those might have some performance impact (caches/branch
-prediction). Also the code looks better that way. Of course, in this
-particular driver those I/O calls don't happen very often, but still.
-One-line static function I used in v1 would be probably inlined by the
-compiler. Also SysMMU register layout(s) doesn't seem to be very
-consistent, w.r.t. offset values :)
+The patch series was tested on E850-96 board. Because at the moment
+there are no SysMMU users for that board, the testing was done using so
+called "Emulated Translation" registers available on SysMMU v7. That
+allows one to initiate the translation from CPU, by writing to those
+registers, and then reading the corresponding TLB registers to find out
+the translation result. The testing driver can be found in [1] tree.
 
-Anyway, I hope the way it's done in v2 will be more to your liking.
+Thanks to Marek, who did let me know it only takes a slight change of
+registers to make this driver work with v7.
 
-> (also, as it only strikes me now, why are we passing enum values around
-> as size_t? That's just odd)
->
-> Thanks,
-> Robin.
->
+[1] https://github.com/joe-skb7/linux/tree/e850-96-mainline-iommu
 
-[snip]
+Changes in v3:
+  - Merged "Check if SysMMU v7 has VM registers" patch into "Add SysMMU
+    v7 register set" patch
+  - Used variant struct instead of arrays for keeping register offsets
+  - Kept common registers out of variant struct
+  - See per-patch changes for more details
+
+Changes in v2:
+  - Addressed all comments on review
+  - Reworked commit messages correspondingly
+  - Added new patch: "iommu/exynos: Handle failed registration properly"
+  - Added new patch: "iommu/exynos: Add SysMMU v7 register sets"
+  - Added new patch: "iommu/exynos: Reuse SysMMU constants for page size
+    and order"
+
+Sam Protsenko (6):
+  iommu/exynos: Reuse SysMMU constants for page size and order
+  iommu/exynos: Handle failed IOMMU device registration properly
+  iommu/exynos: Set correct dma mask for SysMMU v5+
+  iommu/exynos: Abstract non-common registers on different variants
+  iommu/exynos: Add SysMMU v7 register set
+  iommu/exynos: Enable default VM instance on SysMMU v7
+
+ drivers/iommu/exynos-iommu.c | 178 ++++++++++++++++++++++++++---------
+ 1 file changed, 136 insertions(+), 42 deletions(-)
+
+-- 
+2.30.2
+
