@@ -1,75 +1,157 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BC02246B9
-	for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 13:39:45 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A0D501CE2;
-	Thu, 14 Jul 2022 06:39:39 -0700 (PDT)
-Received: from [10.57.86.49] (unknown [10.57.86.49])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A85EC3F73D;
-	Thu, 14 Jul 2022 06:39:37 -0700 (PDT)
-Message-ID: <ddd64256-7553-a1aa-ed63-2138d77ae6af@arm.com>
-Date: Thu, 14 Jul 2022 14:39:32 +0100
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9F564A19
+	for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 13:58:04 +0000 (UTC)
+Received: by mail-lf1-f54.google.com with SMTP id e28so2959884lfj.4
+        for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 06:58:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AsyrMzElWzo80Z5egogMNWofiRDznVZXTCiFutbvKII=;
+        b=eZvDJbMtdOPQ3Hlc73SGr+GXOezfkTn0ravZ4O7F1MoOod7OhqpD8vvfNfTFMeVp74
+         j5NNgqimVWpvNd+hChUbhIZNlrM3MLHTmzV8E6ztrs4iqKNuKTpgKjgCI4GQK+C5k31G
+         lj6n12ONLcGYveOkj8O41G87V4fCSke/tHYo+N6uFox0EqjJa6jhVvgyoNGqABFydujL
+         sWXjC6waub7/4XEcL6TJUQnrYqacqJKZLdYZ+WzEdL1NQ1xLz9C0JaG+PQbMiWoQEufV
+         qxsp7Y+znXbPuD9CuWNsBW1ZYNAV1G/6IM6bdntXeYy61oTPfMlrmrsJqSzmNcjigXAS
+         u1IQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AsyrMzElWzo80Z5egogMNWofiRDznVZXTCiFutbvKII=;
+        b=oxfUNdwAIK/gFVJ6mnnfN7YDgrsKD7YdUwieST60BC8bjC7kW8H1NmN8dme5FAt+tr
+         /WTFxY+/jZ9PeMzPV+UxyL6qDjTtZ3J+lrh+2E5h97tm/M24+KC2uMJ/7V3sgtdyyQen
+         VYXXiitu1M0XMH0tiEwceZ8yV7KoQ5tT2BIPZGD8XARg7H/0sB9nGQv3suCx5PL1mnD0
+         Q30fIAOJsit76TeQafWuVMYTWRH3hESPNAMS4axzgT2ORr7TZtomNMVV6WvgTYEF+OAu
+         nRb93XvGhwwVv223zv2IQKASFoY3ZH/KuporKCzc9SyhQWPvFG4OjiedtpKYG+xRtoaU
+         e1rw==
+X-Gm-Message-State: AJIora9IdfexRKALCn9O5yo99NQt3k6sS+e7h71SNIqZed8p+uq548dj
+	PU1K3yCDZwyosW2TIfE5LZa3VG4Feobr4BU4JCDkslcdzwPZLg==
+X-Google-Smtp-Source: AGRyM1utf5B4o7kELwBxm7mmneS2IRfBXaZ05RbaenlLg45jt5LuOHpIalhl4TyctEbGWWsqOS6t/zSaVykK5WbqsVo=
+X-Received: by 2002:ac2:47f6:0:b0:488:b649:9f77 with SMTP id
+ b22-20020ac247f6000000b00488b6499f77mr5638296lfp.559.1657807082858; Thu, 14
+ Jul 2022 06:58:02 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] iommu/virtio: Advertise IOMMU_CAP_CACHE_COHERENCY
-Content-Language: en-GB
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: joro@8bytes.org, will@kernel.org,
- virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
- eric.auger@redhat.com
-References: <20220714111059.708735-1-jean-philippe@linaro.org>
- <f701a947-3b93-d47e-f806-fd47d281d371@arm.com> <YtATYaBOz5UnTNC6@myrica>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <YtATYaBOz5UnTNC6@myrica>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220710230603.13526-1-semen.protsenko@linaro.org>
+ <20220710230603.13526-7-semen.protsenko@linaro.org> <dcf4da29-9da0-69ea-300e-80d1f5cc10a3@arm.com>
+In-Reply-To: <dcf4da29-9da0-69ea-300e-80d1f5cc10a3@arm.com>
+From: Sam Protsenko <semen.protsenko@linaro.org>
+Date: Thu, 14 Jul 2022 16:57:51 +0300
+Message-ID: <CAPLW+4nc2B0J4yvnz37MrJnTHKtkDCNBX5L2ff_YRGDEbZiKQA@mail.gmail.com>
+Subject: Re: [PATCH v2 6/7] iommu/exynos: Add SysMMU v7 register sets
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Janghyuck Kim <janghyuck.kim@samsung.com>, 
+	Cho KyongHo <pullip.cho@samsung.com>, Daniel Mentz <danielmentz@google.com>, 
+	David Virag <virag.david003@gmail.com>, Sumit Semwal <sumit.semwal@linaro.org>, 
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On 2022-07-14 14:00, Jean-Philippe Brucker wrote:
-> On Thu, Jul 14, 2022 at 01:01:37PM +0100, Robin Murphy wrote:
->> On 2022-07-14 12:11, Jean-Philippe Brucker wrote:
->>> Fix virtio-iommu interaction with VFIO, as VFIO now requires
->>> IOMMU_CAP_CACHE_COHERENCY. virtio-iommu does not support non-cacheable
->>> mappings, and always expects to be called with IOMMU_CACHE.
->>
->> Can we know this is actually true though? What if the virtio-iommu
->> implementation is backed by something other than VFIO, and the underlying
->> hardware isn't coherent? AFAICS the spec doesn't disallow that.
-> 
-> Right, I should add a note about that. If someone does actually want to
-> support non-coherent device, I assume we'll add a per-device property, a
-> 'non-cacheable' mapping flag, and IOMMU_CAP_CACHE_COHERENCY will hold.
-> I'm also planning to add a check on (IOMMU_CACHE && !IOMMU_NOEXEC) in
-> viommu_map(), but not as a fix.
+On Tue, 12 Jul 2022 at 20:00, Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> On 2022-07-11 00:06, Sam Protsenko wrote:
+> > SysMMU v7 might have different register layouts (VM capable or non-VM
+> > capable). Check which layout is implemented in current SysMMU module and
+> > prepare the corresponding register table for futher usage.
+> >
+> > Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+> > ---
+> > Changes in v2:
+> >    - (none) This patch is new and added in v2
+> >
+> >   drivers/iommu/exynos-iommu.c | 26 ++++++++++++++++++++++----
+> >   1 file changed, 22 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> > index 48681189ccf8..64bf3331064f 100644
+> > --- a/drivers/iommu/exynos-iommu.c
+> > +++ b/drivers/iommu/exynos-iommu.c
+> > @@ -166,6 +166,8 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
+> >   enum {
+> >       REG_SET_V1,
+> >       REG_SET_V5,
+> > +     REG_SET_V7_NON_VM,
+> > +     REG_SET_V7_VM,
+> >       MAX_REG_SET
+> >   };
+> >
+> > @@ -201,6 +203,16 @@ static const unsigned int sysmmu_regs[MAX_REG_SET][MAX_REG_IDX] = {
+> >               0x00, 0x04, 0x08, 0x0c, 0x10, 0x14, 0x18, 0x20, 0x24,
+> >               0x60, 0x64,
+> >       },
+> > +     /* SysMMU v7: Default register set (non-VM) */
+> > +     {
+> > +             0x00, 0x04, 0x08, 0x0c, 0x10, 0x14, 0x18, 0x20, 0x24,
+> > +             0x60, 0x64,
+> > +     },
+> > +     /* SysMMU v7: VM capable register set */
+> > +     {
+> > +             0x00, 0x04, 0x08, 0x800c, 0x8010, 0x8014, 0x8018, 0x8020,
+> > +             0x8024, 0x60, 0x64,
+>
+> Yuck, see, it's turning into an unreadable mess already.
+>
 
-But what about all the I/O-coherent PL330s? :P (IIRC you can actually 
-make a Juno do that with S2CR.MTCFG hacks...)
+Will be reworked in v2, using variant struct approach suggested by Krzysztof.
 
-> In the meantime we do need to restore VFIO support under virtio-iommu,
-> since userspace still expects that to work, and the existing use-cases are
-> coherent devices.
+> This is also raising the question of whether it's worth abstracting
+> accesses to the common registers if it means having an ever-increasing
+> number of copies of those same offsets. Personally I'd leave those using
+> regular readl/writel, but even if there's an argument for keeping all
+> the callsites consistent (modulo the one that already can't be), there's
+> no reason the wrappers couldn't pick up the slack, e.g.:
+>
 
-Yeah, I'm not necessarily against adding this as a horrible bodge for 
-now - the reality is that people using VFIO must be doing it on coherent 
-systems or it wouldn't be working properly anyway - as long as we all 
-agree that that's what it is.
+Agreed. Gonna leave the common regs out of it in v2, having only
+non-common registers in the variant structure. Also in v2 gonna stick
+with plain readl/writel calls, using SYSMMU_REG() wrapper suggested by
+Krzysztof.
 
-Next cycle I'll be sending the follow-up patches to bring 
-device_iommu_capable() to its final form (hoping the outstanding VDPA 
-patch lands in the meantime), at which point we get to sort-of-fix the 
-SMMU drivers[1], and can do something similar here too. I guess the main 
-question for virtio-iommu is whether it needs to be described/negotiated 
-in the protocol itself, or can be reliably described by other standard 
-firmware properties (with maybe just a spec not to clarify that 
-coherency must be consistent).
+> static void sysmmu_write(struct sysmmu_drvdata *data, size_t idx, u32 val)
+> {
+>         unsigned int offset;
+>
+>         if (idx <= IDX_STATUS) {
+>                 offset = idx * 4;
+>         } else {
+>                 offset = data->regs[idx - IDX_PT_BASE];
+>                 if (WARN_ON(!offset))
+>                         return;
+>         }
+>         writel(val, data->sfrbase + offset);
+> }
+>
+> Indeed, not abstracting REG_MMU_CTRL via data->regs would then make it
+> trivial to be robust against unimplemented registers without even having
+> to remember to initialise their offsets to some magic value, which seems
+> rather attractive.
+>
 
-Cheers,
-Robin.
+Just on the discussion point (as this function won't be present in
+v2): one reason for this rework is to avoid using if-else branching,
+AFAIU those might have some performance impact (caches/branch
+prediction). Also the code looks better that way. Of course, in this
+particular driver those I/O calls don't happen very often, but still.
+One-line static function I used in v1 would be probably inlined by the
+compiler. Also SysMMU register layout(s) doesn't seem to be very
+consistent, w.r.t. offset values :)
 
-[1] 
-https://gitlab.arm.com/linux-arm/linux-rm/-/commit/d8256bf48c8606cbaa6f0815696c2a6dbb72f1b0
+Anyway, I hope the way it's done in v2 will be more to your liking.
+
+> (also, as it only strikes me now, why are we passing enum values around
+> as size_t? That's just odd)
+>
+> Thanks,
+> Robin.
+>
+
+[snip]
