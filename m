@@ -1,41 +1,41 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A5D54C70
-	for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 16:55:55 +0000 (UTC)
-Received: by mail-wr1-f51.google.com with SMTP id bk26so3346066wrb.11
-        for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 09:55:55 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AAD94C64
+	for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 16:55:56 +0000 (UTC)
+Received: by mail-wr1-f45.google.com with SMTP id b26so3383978wrc.2
+        for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 09:55:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ay55aei4xTrkHOP8ZwisRNILeuMCaqkFFuCni3Xut2k=;
-        b=n/n3e8j6bJWOXrP95ItdWQVXPuQ0bCFwqzgIEykBYyxN3XjVeTR1h2M0DL/r3D8+I3
-         /wlwQamJPhfWq2SMEaES+gscw97bq95Af/SwrUZ2xpihPH0LoDtjSyx5KZ6OX7VHh74Y
-         2ThjifUbf5gBCXdAxi6cnn/9ECyQgHcx/tFyUwbKgSYON23z/QjPXt+UL4mCPvkiiaZB
-         BfzF+kdEOK7IsC22SKqdZgxtyODLUH00aerRHytO8EVmLyMQvKNSH8tlkSRlFMtdPxel
-         VtKnZSYceBp0ZlmE4s7lh/U+Mu4GNt0iBnfIIbXLxlDhGzjC/okAk+Tc/d5AcgkHDnqB
-         b8Qw==
+        bh=S2fOwRS7PBfoQ/JKwgWoKuZEaYFo7PU9A3pBuSjiPrw=;
+        b=FJYTZoClCTlgrArGKeLYT8JUYfT6a60vzX4X3MgwAp51q4tyoTeo+z3gFLcTsZ2bEo
+         j5hT5ULynZb3pQJxareXMpi7f4RSaQGIqIRmviSi/4Xus+TNZzAs7hp452FuzBLFcg7w
+         ywRqEzWxw2c5kKbfm7iRwREbZpU/D9Jbff+gcPJmQI20iQSSqv+5mKOSIMME1uH6Csqf
+         4IHfl34HFOIAJvzJabWhKe77UZiHWzC+CtPvYvqQXckMhS4zPEQZF4UX1Zw1vDU0/CAt
+         dPiIkVHGtob3+NZ66Xeonz4SYNmBVvCx8iC2hnD+CoOV7FIha5uMQbJ52A7oHmZvbs3I
+         60LA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ay55aei4xTrkHOP8ZwisRNILeuMCaqkFFuCni3Xut2k=;
-        b=TH/9qDqlc5jsGoXlfEHg3Joxa76tL9D3b6cWgB9wz57DYElpV9lYvl8hV/vstsMf8N
-         GVOQ/yfnjkDmU5sPN4uM41epkCE97Y1kjDVi27JpMEbSeD/nW3lg9wE3wQRluR3aEy3C
-         lEYH52WMu13nXoFKZLInaeaWg9wyfVO64Ow2rv3o24QOF9wy/qoLgBbphrE9B64C7OHE
-         Y0SQrtSDI3lk8QN+7X6OAmgUFbkik4bCDFDJAMBmnYzodaFT3ScA1lmSR86L/UAIX8lq
-         AyJuEjfxp8y1SaVd6cCtY16pIVwJbTyNkCMAR66jAjBouuV9rFZfEL89yvrEOlFzhu5d
-         Cf0g==
-X-Gm-Message-State: AJIora/jBR4UKPe530LD6SSt4V0Os6Hi8TBnHofQ2c2xASRMTY+0FVUg
-	zhw3nNy4kv9caNAvtd/ksTO8LQ==
-X-Google-Smtp-Source: AGRyM1vl2oDUNW33308hydkFGVWAVq3Dvpg9TwiwSGovoYQ89wJOF+Z1+82DoJM6Mkt65ij0+18yVw==
-X-Received: by 2002:a05:6000:381:b0:21d:bb54:ae2c with SMTP id u1-20020a056000038100b0021dbb54ae2cmr8677229wrf.222.1657817753512;
-        Thu, 14 Jul 2022 09:55:53 -0700 (PDT)
+        bh=S2fOwRS7PBfoQ/JKwgWoKuZEaYFo7PU9A3pBuSjiPrw=;
+        b=f80AXIoeAoNNjZdyMNp4sCrAABr5yILuGBlG0uvV4nusoFznsSkPtlGWWyeAxfTYkm
+         XLSwMhx9T91yxS6I9RBrX89IdPFsS9BHMap4egih4GatxJR7IWEW3epRJrpYkRqVfNAO
+         SOS4I78EuN+iRI1/LID5jjgQGd0u5AD4XRiXEoXCBAfc6O3fq9hvKKvf6RGTWdF0nu28
+         sg2ZXhCM44iOQH1Wei0FT6lqCFKUTGXLF4KRTKIV1zIonstkN5cTTVpHeqF5YK9wMLjw
+         nMtIIh3a4d6YeI6uEKUKp2v/EIxyh1pI0XejX72IzEBQpTtJH+eT4i/A/46r69QlN3o8
+         UtSA==
+X-Gm-Message-State: AJIora+5vAV5nguu5Nt3GGjwW2nE7jdxlrnivtrpc1gCEpt1MniXFxwg
+	Hm5FbUdCka7o3txiUZRafGbPOA==
+X-Google-Smtp-Source: AGRyM1uOCE0ebi2E5Ao34myU6FQDDLS+28S7amW2//dWGnRsQjZ0isNECaLLQ5j97W3z0Vyo//ZQ7g==
+X-Received: by 2002:a5d:6489:0:b0:21d:a9a1:3511 with SMTP id o9-20020a5d6489000000b0021da9a13511mr8725414wri.626.1657817754857;
+        Thu, 14 Jul 2022 09:55:54 -0700 (PDT)
 Received: from localhost ([31.134.121.151])
-        by smtp.gmail.com with ESMTPSA id j9-20020a05600c190900b0039db31f6372sm7440915wmq.2.2022.07.14.09.55.52
+        by smtp.gmail.com with ESMTPSA id z8-20020a1c4c08000000b003942a244f40sm5706762wmf.25.2022.07.14.09.55.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jul 2022 09:55:53 -0700 (PDT)
+        Thu, 14 Jul 2022 09:55:54 -0700 (PDT)
 From: Sam Protsenko <semen.protsenko@linaro.org>
 To: Marek Szyprowski <m.szyprowski@samsung.com>,
 	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
@@ -51,9 +51,9 @@ Cc: Joerg Roedel <joro@8bytes.org>,
 	linux-arm-kernel@lists.infradead.org,
 	linux-samsung-soc@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v3 1/6] iommu/exynos: Reuse SysMMU constants for page size and order
-Date: Thu, 14 Jul 2022 19:55:45 +0300
-Message-Id: <20220714165550.8884-2-semen.protsenko@linaro.org>
+Subject: [PATCH v3 2/6] iommu/exynos: Handle failed IOMMU device registration properly
+Date: Thu, 14 Jul 2022 19:55:46 +0300
+Message-Id: <20220714165550.8884-3-semen.protsenko@linaro.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220714165550.8884-1-semen.protsenko@linaro.org>
 References: <20220714165550.8884-1-semen.protsenko@linaro.org>
@@ -65,17 +65,11 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Using SZ_4K in context of SysMMU driver is better than using PAGE_SIZE,
-as PAGE_SIZE might have different value on different platforms. Though
-it would be even better to use more specific constants, already existing
-in SysMMU driver. Make the code more strict by using SPAGE_ORDER and
-SPAGE_SIZE constants.
+If iommu_device_register() fails in exynos_sysmmu_probe(), the previous
+calls have to be cleaned up. In this case, the iommu_device_sysfs_add()
+should be cleaned up, by calling its remove counterpart call.
 
-It also makes sense, as __sysmmu_tlb_invalidate_entry() also uses
-SPAGE_* constants for further calculations with num_inv param, so it's
-logical that num_inv should be previously calculated using also SPAGE_*
-values.
-
+Fixes: d2c302b6e8b1 ("iommu/exynos: Make use of iommu_device_register interface")
 Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
@@ -83,35 +77,38 @@ Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
 Changes in v3:
   - Added Marek's Acked-by tag
   - Added Krzysztof's R-b tag
+  - Added "Fixes" tag, as suggested by Krzysztof
 
 Changes in v2:
   - (none) This patch is new and added in v2
 
- drivers/iommu/exynos-iommu.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/exynos-iommu.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 79729892eb48..8f80aaa35092 100644
+index 8f80aaa35092..c85db9dab851 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -340,7 +340,7 @@ static void __sysmmu_set_ptbase(struct sysmmu_drvdata *data, phys_addr_t pgd)
- 	if (MMU_MAJ_VER(data->version) < 5)
- 		writel(pgd, data->sfrbase + REG_PT_BASE_ADDR);
- 	else
--		writel(pgd / SZ_4K, data->sfrbase + REG_V5_PT_BASE_PFN);
-+		writel(pgd >> SPAGE_ORDER, data->sfrbase + REG_V5_PT_BASE_PFN);
+@@ -629,7 +629,7 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
  
- 	__sysmmu_tlb_invalidate(data);
+ 	ret = iommu_device_register(&data->iommu, &exynos_iommu_ops, dev);
+ 	if (ret)
+-		return ret;
++		goto err_iommu_register;
+ 
+ 	platform_set_drvdata(pdev, data);
+ 
+@@ -656,6 +656,10 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
+ 	pm_runtime_enable(dev);
+ 
+ 	return 0;
++
++err_iommu_register:
++	iommu_device_sysfs_remove(&data->iommu);
++	return ret;
  }
-@@ -550,7 +550,7 @@ static void sysmmu_tlb_invalidate_entry(struct sysmmu_drvdata *data,
- 		 * 64KB page can be one of 16 consecutive sets.
- 		 */
- 		if (MMU_MAJ_VER(data->version) == 2)
--			num_inv = min_t(unsigned int, size / SZ_4K, 64);
-+			num_inv = min_t(unsigned int, size / SPAGE_SIZE, 64);
  
- 		if (sysmmu_block(data)) {
- 			__sysmmu_tlb_invalidate_entry(data, iova, num_inv);
+ static int __maybe_unused exynos_sysmmu_suspend(struct device *dev)
 -- 
 2.30.2
 
