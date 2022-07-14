@@ -1,84 +1,161 @@
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C1AC46B9
-	for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 13:25:19 +0000 (UTC)
-Received: by mail-lf1-f50.google.com with SMTP id u13so2801198lfn.5
-        for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 06:25:19 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2725D46B9
+	for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 13:38:25 +0000 (UTC)
+Received: by mail-wr1-f51.google.com with SMTP id a5so2577541wrx.12
+        for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 06:38:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cI4EPJZvjOmVCwlncQ06krIDHxj26fKpcWTj2anfYmI=;
-        b=TDrI4nn1sWi8ehUrOQ9H0Jz+yqcwvUJ7TBjohvG0+BYrKTiz5ZnxUFSOOiBL0uiyZS
-         G6a7c2o78hOr1PmYaXtjVLKB38Fs5W9mpgBcOJ2SahEI03CJe7LxUUJ5s1lOxk8SkqRf
-         c0Nw6o6L3iIn1uWJFqbEZBgSzK3ZU9MubvknxRu1f4hvuPGaUTP9XvKqeMewefPyCcQk
-         fv3c5AFAdWJ+TdKFg+rPq3vcx3tXjayipax1LItn3WFjtB8p7NiW7POvVsplMTse7D6I
-         YDEVEKptWa/vzxuRm3mgXAr+Bqy7t26stkLZuYXcD7QYSb49AZpXCKV2v3zhBcBaD0MI
-         deXg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=gZbm5v8jczB3m3Zbghv7hORrbzz+8TA8A7EGSVhjSaQ=;
+        b=QhSFR35ht5QEM5YZF2rpDWTzxDIE4nFn1yZhWPiMSFmnpD/aDrZwGNbmNuamkHO1XF
+         1J4UOj7++gNdTSdZuPgzZvkbRoyZHLZhZb+N2JoI+nCcDQNaD/P8pQ75/GdD+ScQdwp0
+         59oDsFg3whwkWU97Rsn5CqHobBGGRYbjWrEOyblVdLZNk34xQRMRGkLoLnzSInu0dPKM
+         aZVXK/Fey7k6krYGdUv3TzlEFgETj7JSuoN7kMMtQTCiSSFwqaHVrKTyYziyVfG2EiGk
+         5krBajsYVkRMa+oEMQTmJz40cEHzkpD5xdRKxpWJyH+LvNS6bhqZzJy1pKjOn59iCwTx
+         9c5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cI4EPJZvjOmVCwlncQ06krIDHxj26fKpcWTj2anfYmI=;
-        b=6iSad/XeFnLJKYD82mGlqhpZ1iH06FMzvkOsahDba3TtnIEFhLldJKChoIaEpowSBo
-         iWzoGwSGKhEmjizs04IA9WID0rV2P1lb6ZQglq47fA6hEE/hqIqa64Y3oLR/dcwcO08O
-         6N6c0wX/zp77IrOhfKTIVN94viyKbAzTEahE+0oInHrl9Mdjg6BUS7ecs6hXAUCQacYu
-         HQNthj2RxNYPEkqJ3sIF4URM21ZMbVJMi/RPQbnxIatRwA8rNG1riK1FK9fVueBFIC8H
-         9x8KIfO3/Q7jZprkDZAic1LOOAolR6uXgrhLgGCVuQWb5OWt5Eg0r/k+3LX9LesdzkZO
-         uOhg==
-X-Gm-Message-State: AJIora9o1CeWL0RnOzzjs/QNE+4K0wkbTYqjZbc9ctAPn+IpBWG04Lsr
-	b1H9h2TVnH4n/sUKX6IZ9bdIFuy3lZwELRdIfW2I/ncfTWvb/A==
-X-Google-Smtp-Source: AGRyM1tcrTCEOfrbRktfpbwYwNL8Kewo76hUGu+vhbpgDmnZs4CnfFPwH8Ie/NXszeuIdTiIN2vPc0kRFM+JwAusXL0=
-X-Received: by 2002:a05:6512:2252:b0:489:dede:1cb3 with SMTP id
- i18-20020a056512225200b00489dede1cb3mr4979227lfu.503.1657805117555; Thu, 14
- Jul 2022 06:25:17 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=gZbm5v8jczB3m3Zbghv7hORrbzz+8TA8A7EGSVhjSaQ=;
+        b=TUtU2tANR86CoxWYwmVW62RGzMAFRLpxwByBwj3J+jForUvEwK0sGit7b5jGjBeGLL
+         NhSB/wiaFOkXVQ3c79SGA9i0cho9HRXiH9U3W3Mx5DBF+ulF4TVRAA+V+6wRRQeUopRT
+         ivPKAKYLLjXDSrPD5VvdGDS9IL6lvJUi3Gq8iYm5XZtCFN0RgPFv/KtwGnO7cBg3s327
+         AM8anHG8rZQCu5itUWpYw2uD/dHwlkYK4AQFwHeIzCF31kMXDixRnJJ4MPsyaf+5bn79
+         IZXTv/apXQEnoQiHnNYEzqqazQTC1FUE7U334ka27DuAqbg5EJ4gI4UtBfQKUVPXWjTS
+         vu3w==
+X-Gm-Message-State: AJIora8fRP+WkDT9YXfvORFFrXx8MBlmoev1oC4nCrrA/1qaxifJPLjy
+	daopsmI/zdLDOpRHaHkejKOu+Q==
+X-Google-Smtp-Source: AGRyM1uxSpQQUohZAVCvRDTDUH1kMNPkjZLHzaAqEsW41la3u7tmhLBotyjHD8UJYEkeF4RD+P0HJw==
+X-Received: by 2002:a05:6000:81d:b0:21d:a495:6e3 with SMTP id bt29-20020a056000081d00b0021da49506e3mr8401904wrb.502.1657805903332;
+        Thu, 14 Jul 2022 06:38:23 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id n18-20020a05600c4f9200b003a2ec73887fsm8793750wmq.1.2022.07.14.06.38.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 06:38:22 -0700 (PDT)
+Date: Thu, 14 Jul 2022 14:38:20 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Tinghan Shen <tinghan.shen@mediatek.com>
+Cc: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	MandyJH Liu <mandyjh.liu@mediatek.com>,
+	Weiyi Lu <weiyi.lu@mediatek.com>, iommu@lists.linux.dev,
+	linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Project_Global_Chrome_Upstream_Group@mediatek.com
+Subject: Re: [PATCH v2 03/19] dt-bindings: power: mediatek: Add bindings for
+ MediaTek SCPSYS
+Message-ID: <YtAcTCUsy9I67L3V@google.com>
+References: <20220714122837.20094-1-tinghan.shen@mediatek.com>
+ <20220714122837.20094-4-tinghan.shen@mediatek.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20220710230603.13526-1-semen.protsenko@linaro.org>
- <CGME20220710230617eucas1p2a9ba640ab97b608c6fe94007641012a4@eucas1p2.samsung.com>
- <20220710230603.13526-6-semen.protsenko@linaro.org> <00191759-df90-c020-92e8-37454edba6e1@samsung.com>
-In-Reply-To: <00191759-df90-c020-92e8-37454edba6e1@samsung.com>
-From: Sam Protsenko <semen.protsenko@linaro.org>
-Date: Thu, 14 Jul 2022 16:25:06 +0300
-Message-ID: <CAPLW+4kbCfjCqLGhsUUhf3Uzu3xkzoGT76+7LKFVA3Y3ozH6hg@mail.gmail.com>
-Subject: Re: [PATCH v2 5/7] iommu/exynos: Check if SysMMU v7 has VM registers
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Janghyuck Kim <janghyuck.kim@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, 
-	Daniel Mentz <danielmentz@google.com>, David Virag <virag.david003@gmail.com>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, iommu@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220714122837.20094-4-tinghan.shen@mediatek.com>
 
-On Tue, 12 Jul 2022 at 18:47, Marek Szyprowski <m.szyprowski@samsung.com> wrote:
->
->
-> On 11.07.2022 01:06, Sam Protsenko wrote:
-> > SysMMU v7 can have Virtual Machine registers, which implement multiple
-> > translation domains. The driver should know if it's true or not, as VM
-> > registers shouldn't be accessed if not present. Read corresponding
-> > capabilities register to obtain that info, and store it in driver data.
-> >
-> > Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
->
-> I would merge this with the next one. Imho this change doesn't make much
-> sense on it's own.
->
+Subject line should be 'mfd', rather than 'power'.
 
-Will do in v2, thanks!
+On Thu, 14 Jul 2022, Tinghan Shen wrote:
 
-[snip]
+> The System Control Processor System (SCPSYS) has several power
+> management related tasks in the system. Add the bindings for it.
+> 
+> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+> ---
+>  .../bindings/mfd/mediatek,scpsys.yaml         | 62 +++++++++++++++++++
+>  1 file changed, 62 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/mfd/mediatek,scpsys.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/mfd/mediatek,scpsys.yaml b/Documentation/devicetree/bindings/mfd/mediatek,scpsys.yaml
+> new file mode 100644
+> index 000000000000..a8b9220f2f27
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/mfd/mediatek,scpsys.yaml
+> @@ -0,0 +1,62 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/mfd/mediatek,scpsys.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: MediaTek System Control Processor System
+> +
+> +maintainers:
+> +  - MandyJH Liu <mandyjh.liu@mediatek.com>
+> +
+> +description:
+> +  MediaTek System Control Processor System (SCPSYS) has several
+> +  power management tasks. The tasks include MTCMOS power
+> +  domain control, thermal measurement, DVFS, etc.
+> +
+> +properties:
+> +  compatible:
+> +    items:
+> +      - const: mediatek,scpsys
+> +      - const: syscon
+> +      - const: simple-mfd
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  power-controller:
+> +    $ref: /schemas/power/mediatek,power-controller.yaml#
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/clock/mt8195-clk.h>
+> +    #include <dt-bindings/power/mt8195-power.h>
+> +
+> +    syscon@10006000 {
+> +        compatible = "mediatek,scpsys", "syscon", "simple-mfd";
 
->
-> Best regards
-> --
-> Marek Szyprowski, PhD
-> Samsung R&D Institute Poland
->
+Not sure you need bindings for this.  Seems overkill.
+
+I'll let the DT guys have the final say though.
+
+> +        reg = <0x10006000 0x100>;
+> +
+> +        spm: power-controller {
+> +            compatible = "mediatek,mt8195-power-controller";
+> +            #address-cells = <1>;
+> +            #size-cells = <0>;
+> +            #power-domain-cells = <1>;
+> +
+> +            /* sample of power domain nodes */
+> +            power-domain@MT8195_POWER_DOMAIN_PCIE_PHY {
+> +                    reg = <MT8195_POWER_DOMAIN_PCIE_PHY>;
+> +                    #power-domain-cells = <0>;
+> +            };
+> +
+> +            power-domain@MT8195_POWER_DOMAIN_SSUSB_PCIE_PHY {
+> +                    reg = <MT8195_POWER_DOMAIN_SSUSB_PCIE_PHY>;
+> +                    #power-domain-cells = <0>;
+> +            };
+> +        };
+> +    };
+
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
