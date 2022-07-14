@@ -1,73 +1,71 @@
-Received: from sinmsgout03.his.huawei.com (sinmsgout03.his.huawei.com [119.8.177.38])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1C5F3206
-	for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 11:22:32 +0000 (UTC)
-Received: from fraeml735-chm.china.huawei.com (unknown [172.18.156.148])
-	by sinmsgout03.his.huawei.com (SkyGuard) with ESMTP id 4LkBrf1MBCz9xGQ7;
-	Thu, 14 Jul 2022 19:21:22 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml735-chm.china.huawei.com (10.206.15.216) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 14 Jul 2022 13:22:26 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 14 Jul 2022 12:22:22 +0100
-From: John Garry <john.garry@huawei.com>
-To: <damien.lemoal@opensource.wdc.com>, <joro@8bytes.org>, <will@kernel.org>,
-	<jejb@linux.ibm.com>, <martin.petersen@oracle.com>, <hch@lst.de>,
-	<m.szyprowski@samsung.com>, <robin.murphy@arm.com>
-CC: <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-ide@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-scsi@vger.kernel.org>, <linuxarm@huawei.com>, John Garry
-	<john.garry@huawei.com>
-Subject: [PATCH v6 6/6] ata: libata-scsi: Cap ata_device->max_sectors according to shost->max_sectors
-Date: Thu, 14 Jul 2022 19:15:29 +0800
-Message-ID: <1657797329-98541-7-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1657797329-98541-1-git-send-email-john.garry@huawei.com>
-References: <1657797329-98541-1-git-send-email-john.garry@huawei.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BB24A3206
+	for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 12:01:44 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 66CA213D5;
+	Thu, 14 Jul 2022 05:01:44 -0700 (PDT)
+Received: from [10.57.86.49] (unknown [10.57.86.49])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D1B423F792;
+	Thu, 14 Jul 2022 05:01:42 -0700 (PDT)
+Message-ID: <f701a947-3b93-d47e-f806-fd47d281d371@arm.com>
+Date: Thu, 14 Jul 2022 13:01:37 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] iommu/virtio: Advertise IOMMU_CAP_CACHE_COHERENCY
+Content-Language: en-GB
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>, joro@8bytes.org
+Cc: will@kernel.org, virtualization@lists.linux-foundation.org,
+ iommu@lists.linux.dev, eric.auger@redhat.com
+References: <20220714111059.708735-1-jean-philippe@linaro.org>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220714111059.708735-1-jean-philippe@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-ATA devices (struct ata_device) have a max_sectors field which is
-configured internally in libata. This is then used to (re)configure the
-associated sdev request queue max_sectors value from how it is earlier set
-in __scsi_init_queue(). In __scsi_init_queue() the max_sectors value is set
-according to shost limits, which includes host DMA mapping limits.
+On 2022-07-14 12:11, Jean-Philippe Brucker wrote:
+> Fix virtio-iommu interaction with VFIO, as VFIO now requires
+> IOMMU_CAP_CACHE_COHERENCY. virtio-iommu does not support non-cacheable
+> mappings, and always expects to be called with IOMMU_CACHE.
 
-Cap the ata_device max_sectors according to shost->max_sectors to respect
-this shost limit.
+Can we know this is actually true though? What if the virtio-iommu 
+implementation is backed by something other than VFIO, and the 
+underlying hardware isn't coherent? AFAICS the spec doesn't disallow that.
 
-Signed-off-by: John Garry <john.garry@huawei.com>
-Acked-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Acked-by: Martin K. Petersen <martin.petersen@oracle.com>
----
- drivers/ata/libata-scsi.c | 1 +
- 1 file changed, 1 insertion(+)
+Thanks,
+Robin.
 
-diff --git a/drivers/ata/libata-scsi.c b/drivers/ata/libata-scsi.c
-index 86dbb1cdfabd..24a43d540d9f 100644
---- a/drivers/ata/libata-scsi.c
-+++ b/drivers/ata/libata-scsi.c
-@@ -1060,6 +1060,7 @@ int ata_scsi_dev_config(struct scsi_device *sdev, struct ata_device *dev)
- 		dev->flags |= ATA_DFLAG_NO_UNLOAD;
- 
- 	/* configure max sectors */
-+	dev->max_sectors = min(dev->max_sectors, sdev->host->max_sectors);
- 	blk_queue_max_hw_sectors(q, dev->max_sectors);
- 
- 	if (dev->class == ATA_DEV_ATAPI) {
--- 
-2.35.3
-
+> Fixes: e8ae0e140c05 ("vfio: Require that devices support DMA cache coherence")
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> ---
+>   drivers/iommu/virtio-iommu.c | 11 +++++++++++
+>   1 file changed, 11 insertions(+)
+> 
+> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+> index 25be4b822aa0..bf340d779c10 100644
+> --- a/drivers/iommu/virtio-iommu.c
+> +++ b/drivers/iommu/virtio-iommu.c
+> @@ -1006,7 +1006,18 @@ static int viommu_of_xlate(struct device *dev, struct of_phandle_args *args)
+>   	return iommu_fwspec_add_ids(dev, args->args, 1);
+>   }
+>   
+> +static bool viommu_capable(enum iommu_cap cap)
+> +{
+> +	switch (cap) {
+> +	case IOMMU_CAP_CACHE_COHERENCY:
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
+> +}
+> +
+>   static struct iommu_ops viommu_ops = {
+> +	.capable		= viommu_capable,
+>   	.domain_alloc		= viommu_domain_alloc,
+>   	.probe_device		= viommu_probe_device,
+>   	.probe_finalize		= viommu_probe_finalize,
