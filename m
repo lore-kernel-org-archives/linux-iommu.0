@@ -1,44 +1,44 @@
-Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
+Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FDC620E0
-	for <iommu@lists.linux.dev>; Fri, 15 Jul 2022 07:57:20 +0000 (UTC)
-Received: by mail-lj1-f177.google.com with SMTP id by8so1241414ljb.13
-        for <iommu@lists.linux.dev>; Fri, 15 Jul 2022 00:57:20 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 484B220E0
+	for <iommu@lists.linux.dev>; Fri, 15 Jul 2022 08:07:45 +0000 (UTC)
+Received: by mail-lf1-f49.google.com with SMTP id z25so6648076lfr.2
+        for <iommu@lists.linux.dev>; Fri, 15 Jul 2022 01:07:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=pVS+MTH1XwU1cvawHiiTO1k5At4xPOvBRcWn0E0JKnQ=;
-        b=nPbUHaxTybTz+hSdJPP6CMy/vM/46yKwRrdEcsM8O2DT/PEmEm8ExTH8fb2rzJxdNf
-         xjorId7Lq1mqbvJSYX2eyWQlr2irAmSAS6rnsqJDpmwkL+6QGJrJDDAQyzR9Iy8xuw+W
-         G2Ytl4E09lz7ry/bTjvMUCO5DGdJuNBD5GGICRvvIb1oJkkbuio9/j0nVaKx0WPjH71e
-         +AvFWG+fw+j8KIMVJGW2e2zw/kH23rcpmVVe6i5I+58UpQ0pAGEMQ0Ab8I1eatNJjP6W
-         PSc5bjLGmcyTLTiBxDZGy1rct8c9+FJxaOOz8NoDM7ZjauLPS6uNYjJzZUgZotVcLO5+
-         wEfQ==
+        bh=HMDnLfBMBpAnvkfwUu1kUcciuPfA0gd/jLIRz34KC2Q=;
+        b=QR/A/hgSlUZte4asSWtLqDuxQmnKzibCYCIbMKxSECKlou7MyhHtzssTjq2Cn4Xbal
+         aD3L8t39u6mc9+oPXUQSfvD+PP4nSMb2LQA2W0rbI71cLc+BTwovvZFmt0zHNDDrUu5I
+         2L8aIGMmQVLjQmxt5hnkkFaZdbD71unxxwBocmt7CEAySVuMrF39pMUamvqvVkbdJD0g
+         ebFs9dF2iV6izMqIB4odycxP6QsuQrsrQycsSmcJgyP+vvZ/TFAK5/NjcJQacmoKqPeq
+         ZK4ktXuFyA89spS1KOG/mNPTzuzSt2IVJ5KBHfKjlmHrHoB7kJT1XqSXF0ou668qyMGi
+         j9AA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=pVS+MTH1XwU1cvawHiiTO1k5At4xPOvBRcWn0E0JKnQ=;
-        b=O8AQKkL6pFZ/nY/3ulG/a5b8dRjeBBirBoXdOBJEYsQY0qVrwcMI54AhVocq9etCT4
-         9GEYAXehu4o2zacMZJYpv5RN6Iaf8Vl7XNkxnqxeB08Z7A8zB3D2S7XBRtOgzdvkqDnQ
-         YKdceyTFk3H8pIbrNO7fVW+5Ql1wPc/0s8dUuElQc8wg7bpMFmx5yDAtS+VUQK0EdQ4Z
-         nYukE2jrL2cRSPRWx/pVDviJP2VCtcI8u4r77kZITVDIPPBRRGepOATqpWcbK/d1R25q
-         gc/G/ZHHBdVLoRiF6jokggkBOhK6TcOwVZt0vlOdCgQnwesX6rTq02AhvdZBkJEYV4Xj
-         Z6zA==
-X-Gm-Message-State: AJIora9790gzWcqfJOQ1ME1aN87IzcouQzNjnQhKN1BVZvRFs0WFhnso
-	jsq5TWSnN1e0sLtpGrM7GCgvFg==
-X-Google-Smtp-Source: AGRyM1ulJRngwtrHtmZz4bY0FMFRN0qrWGaMpBxRh+yPkwrRe6nsqVmc0rblcJXm/KEw4Ov5c3GRWw==
-X-Received: by 2002:a2e:9854:0:b0:25d:883d:faf2 with SMTP id e20-20020a2e9854000000b0025d883dfaf2mr6010968ljj.223.1657871838444;
-        Fri, 15 Jul 2022 00:57:18 -0700 (PDT)
+        bh=HMDnLfBMBpAnvkfwUu1kUcciuPfA0gd/jLIRz34KC2Q=;
+        b=0cmurDKPA7CblctYcDS66AI1QT+r8CbPIgrkPa/DgSNzi24utjY01fbnSkAqlAa21j
+         PKdURCBUMOsR14UHYXZ513bJE1H1u44uxetC+Jus/9+OXJaZT4LDrin6PFwomvdNyujE
+         BHyUxInCwEJcU2CtN6uJDaK1+S2uHlSclWn9M+qflhTyrHlux5iVhXQM1ap4xsX93qWX
+         +o2m29s515oPfiQZHfOOTqFZgJ6QdV1bwEjYGnxSAYJwPnp3Q7DaMe3MIAEQ4i4r095v
+         Tkc+rmDMoz0D1SIJex/TUTU/iM0z1aDKZfgqwjWRLzFXsAKiAsfevSLDwxjCZ6A5CizS
+         h9Yg==
+X-Gm-Message-State: AJIora/jSKTGUJXf5k91/MD/1O8+Eg8CysEsxOeZFJTuOJ4Jjiawo9St
+	pSitTTWhf477gV8yDwqFeorjag==
+X-Google-Smtp-Source: AGRyM1seZOIBtoRiwdKNcrQKrAEd4sfpxeEoh9duO4f8VVv0gWScXXeRrwqk1ZeqbkII0kyUy0tv8g==
+X-Received: by 2002:a05:6512:acd:b0:489:f4ce:70a2 with SMTP id n13-20020a0565120acd00b00489f4ce70a2mr7571532lfu.322.1657872463261;
+        Fri, 15 Jul 2022 01:07:43 -0700 (PDT)
 Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
-        by smtp.gmail.com with ESMTPSA id b13-20020a056512070d00b0048960b581e3sm778642lfs.8.2022.07.15.00.57.15
+        by smtp.gmail.com with ESMTPSA id c36-20020a05651223a400b0047f79487758sm777934lfv.133.2022.07.15.01.07.41
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Jul 2022 00:57:17 -0700 (PDT)
-Message-ID: <46df4ad5-5102-b5fe-95b7-5b157fb28f01@linaro.org>
-Date: Fri, 15 Jul 2022 09:57:14 +0200
+        Fri, 15 Jul 2022 01:07:42 -0700 (PDT)
+Message-ID: <c2e9f890-98c2-8f09-952d-495f2b57a254@linaro.org>
+Date: Fri, 15 Jul 2022 10:07:40 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -47,8 +47,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH v2 03/19] dt-bindings: power: mediatek: Add bindings for
- MediaTek SCPSYS
+Subject: Re: [PATCH v2 05/19] dt-bindings: power: mediatek: Refine multiple
+ level power domain nodes
 Content-Language: en-US
 To: Tinghan Shen <tinghan.shen@mediatek.com>, Yong Wu <yong.wu@mediatek.com>,
  Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
@@ -63,89 +63,214 @@ Cc: iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
  linux-arm-kernel@lists.infradead.org,
  Project_Global_Chrome_Upstream_Group@mediatek.com
 References: <20220714122837.20094-1-tinghan.shen@mediatek.com>
- <20220714122837.20094-4-tinghan.shen@mediatek.com>
+ <20220714122837.20094-6-tinghan.shen@mediatek.com>
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220714122837.20094-4-tinghan.shen@mediatek.com>
+In-Reply-To: <20220714122837.20094-6-tinghan.shen@mediatek.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 14/07/2022 14:28, Tinghan Shen wrote:
-> The System Control Processor System (SCPSYS) has several power
-> management related tasks in the system. Add the bindings for it.
+> Extract duplicated properties and support more levels of power
+> domain nodes.
+> 
+> This change fix following error when do dtbs_check,
+>     arch/arm64/boot/dts/mediatek/mt8195-evb.dtb: power-controller: power-domain@15:power-domain@16:power-domain@18: 'power-domain@19', 'power-domain@20', 'power-domain@21' do not match any of the regexes: 'pinctrl-[0-9]+'
+> 	 From schema: Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
 > 
 > Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
 > ---
->  .../bindings/mfd/mediatek,scpsys.yaml         | 62 +++++++++++++++++++
->  1 file changed, 62 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/mfd/mediatek,scpsys.yaml
+>  .../power/mediatek,power-controller.yaml      | 119 +-----------------
+>  1 file changed, 6 insertions(+), 113 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/mfd/mediatek,scpsys.yaml b/Documentation/devicetree/bindings/mfd/mediatek,scpsys.yaml
-> new file mode 100644
-> index 000000000000..a8b9220f2f27
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/mfd/mediatek,scpsys.yaml
-> @@ -0,0 +1,62 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/mfd/mediatek,scpsys.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> diff --git a/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml b/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+> index be81cd97afa4..e5494a330716 100644
+> --- a/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+> +++ b/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+> @@ -42,6 +42,10 @@ properties:
+>  
+>  patternProperties:
+>    "^power-domain@[0-9a-f]+$":
+> +    $ref: "#/$defs/power-domain-node"
 > +
-> +title: MediaTek System Control Processor System
-> +
-> +maintainers:
-> +  - MandyJH Liu <mandyjh.liu@mediatek.com>
-> +
-> +description:
-> +  MediaTek System Control Processor System (SCPSYS) has several
-> +  power management tasks. The tasks include MTCMOS power
-> +  domain control, thermal measurement, DVFS, etc.
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - const: mediatek,scpsys
-> +      - const: syscon
-> +      - const: simple-mfd
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  power-controller:
-> +    $ref: /schemas/power/mediatek,power-controller.yaml#
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/clock/mt8195-clk.h>
-> +    #include <dt-bindings/power/mt8195-power.h>
-> +
-> +    syscon@10006000 {
-> +        compatible = "mediatek,scpsys", "syscon", "simple-mfd";
+> +$defs:
+> +  power-domain-node:
+>      type: object
+>      description: |
+>        Represents the power domains within the power controller node as documented
+> @@ -100,122 +104,11 @@ patternProperties:
+>          $ref: /schemas/types.yaml#/definitions/phandle
+>          description: phandle to the device containing the SMI register range.
+>  
+> -    patternProperties:
+> -      "^power-domain@[0-9a-f]+$":
+> -        type: object
+> -        description: |
+> -          Represents a power domain child within a power domain parent node.
+> -
+> -        properties:
+> -
+> -          '#power-domain-cells':
+> -            description:
+> -              Must be 0 for nodes representing a single PM domain and 1 for nodes
+> -              providing multiple PM domains.
+> -
+> -          '#address-cells':
+> -            const: 1
+> -
+> -          '#size-cells':
+> -            const: 0
+> -
+> -          reg:
+> -            maxItems: 1
+> -
+> -          clocks:
+> -            description: |
+> -              A number of phandles to clocks that need to be enabled during domain
+> -              power-up sequencing.
+> -
+> -          clock-names:
+> -            description: |
+> -              List of names of clocks, in order to match the power-up sequencing
+> -              for each power domain we need to group the clocks by name. BASIC
+> -              clocks need to be enabled before enabling the corresponding power
+> -              domain, and should not have a '-' in their name (i.e mm, mfg, venc).
+> -              SUSBYS clocks need to be enabled before releasing the bus protection,
+> -              and should contain a '-' in their name (i.e mm-0, isp-0, cam-0).
+> -
+> -              In order to follow properly the power-up sequencing, the clocks must
+> -              be specified by order, adding first the BASIC clocks followed by the
+> -              SUSBSYS clocks.
+> -
+> -          domain-supply:
+> -            description: domain regulator supply.
+> -
+> -          mediatek,infracfg:
+> -            $ref: /schemas/types.yaml#/definitions/phandle
+> -            description: phandle to the device containing the INFRACFG register range.
+> -
+> -          mediatek,smi:
+> -            $ref: /schemas/types.yaml#/definitions/phandle
+> -            description: phandle to the device containing the SMI register range.
+> -
+> -        patternProperties:
+> -          "^power-domain@[0-9a-f]+$":
+> -            type: object
+> -            description: |
+> -              Represents a power domain child within a power domain parent node.
+> -
+> -            properties:
+> -
+> -              '#power-domain-cells':
+> -                description:
+> -                  Must be 0 for nodes representing a single PM domain and 1 for nodes
+> -                  providing multiple PM domains.
+> -
+> -              '#address-cells':
+> -                const: 1
+> -
+> -              '#size-cells':
+> -                const: 0
+> -
+> -              reg:
+> -                maxItems: 1
+> -
+> -              clocks:
+> -                description: |
+> -                  A number of phandles to clocks that need to be enabled during domain
+> -                  power-up sequencing.
+> -
+> -              clock-names:
+> -                description: |
+> -                  List of names of clocks, in order to match the power-up sequencing
+> -                  for each power domain we need to group the clocks by name. BASIC
+> -                  clocks need to be enabled before enabling the corresponding power
+> -                  domain, and should not have a '-' in their name (i.e mm, mfg, venc).
+> -                  SUSBYS clocks need to be enabled before releasing the bus protection,
+> -                  and should contain a '-' in their name (i.e mm-0, isp-0, cam-0).
+> -
+> -                  In order to follow properly the power-up sequencing, the clocks must
+> -                  be specified by order, adding first the BASIC clocks followed by the
+> -                  SUSBSYS clocks.
+> -
+> -              domain-supply:
+> -                description: domain regulator supply.
+> -
+> -              mediatek,infracfg:
+> -                $ref: /schemas/types.yaml#/definitions/phandle
+> -                description: phandle to the device containing the INFRACFG register range.
+> -
+> -              mediatek,smi:
+> -                $ref: /schemas/types.yaml#/definitions/phandle
+> -                description: phandle to the device containing the SMI register range.
+> -
+> -            required:
+> -              - reg
+> -
+> -            additionalProperties: false
+> -
+> -        required:
+> -          - reg
+> -
+> -        additionalProperties: false
+> -
+>      required:
+>        - reg
+>  
+> -    additionalProperties: false
+> +    additionalProperties:
+> +      $ref: "#/$defs/power-domain-node"
 
-This should be a SoC-specific compatible (and filename).
+That's an interesting construction - endless recurrence. I did not know
+it works like that... How about making it a bit more specific? Defining
+defs "power-domain-node" for just one child (without
+additionalProperties piece) and (maybe with just one more level):
 
-> +        reg = <0x10006000 0x100>;
-> +
-> +        spm: power-controller {
+@@ -43,6 +43,12 @@ patternProperties:
 
-I think you created before less-portable, quite constrained bindings for
-power controller. You now require that mt8195-power-controller is always
-a child of some parent device which will share its regmap/MMIO with it.
+   "^power-domain@[0-9a-f]+$":
 
-And what if in your next block there is no scpsys block and power
-controller is the scpsys alone? It's not possible with your bindings.
+     $ref: "#/$defs/power-domain-node"
 
-Wouldn't it be better to assign some address space to the
-power-controller (now as an offset from scpsys)?
 
-This is just wondering (Rockchip did the same...) and not a blocker as
-power-controller bindings are done.
+
++    patternProperties:
+
++      "^power-domain@[0-9a-f]+$":
+
++        $ref: "#/$defs/power-domain-node"
+
++        unevaluatedProperties: false
+
++    unevaluatedProperties: false
+
++
+
+ $defs:
+
+   power-domain-node:
+
+     type: object
+
+@@ -105,9 +111,6 @@ $defs:
+
+     required:
+
+       - reg
+
+
+
+-    additionalProperties:
+
+-      $ref: "#/$defs/power-domain-node"
+
+-
+
+ required:
+
+   - compatible
+
+
+
 
 Best regards,
 Krzysztof
