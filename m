@@ -1,38 +1,38 @@
-Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
+Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 659DE2F31
-	for <iommu@lists.linux.dev>; Fri, 15 Jul 2022 12:44:52 +0000 (UTC)
-Received: by mail-lj1-f181.google.com with SMTP id 19so5596553ljz.4
-        for <iommu@lists.linux.dev>; Fri, 15 Jul 2022 05:44:52 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A25DD2F31
+	for <iommu@lists.linux.dev>; Fri, 15 Jul 2022 12:53:00 +0000 (UTC)
+Received: by mail-lj1-f173.google.com with SMTP id a10so5624011ljj.5
+        for <iommu@lists.linux.dev>; Fri, 15 Jul 2022 05:53:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=MwAK4H2fVQwUr3+IIFLavhYbNJQlw8pntln2eHgKkYw=;
-        b=xkd2N7NGlJjsxyfWaBYiu4504FmMAzx9WdGCA1mHXUCdraS+3nek0OoHMV5wXltoQK
-         7jBHjR81MK3dEw2/+TT2EoTokOQyoTJ9qd3qMSB6z8xU1AZ02ZJYRDreU0pbsF0lC7XX
-         k/q7vgPIFaur3/c49NhsLqf+q1/UemhMbSvK/HxkNZBfvkILQT8l0lYf48ol0AVzHYQq
-         JYyXqXHpKvn5crcBjkf8fFfm0kHT93fpo4jUstolI3AoNixEisdDaGDUQFKfkJRekkdq
-         8+Y+0h4KgKWhAUcxLQI2yTVbQwbNezkiyp4o+ox2kuVZxaslPGZj/39qUOGar91N0Cix
-         RsOA==
+        bh=mZ8/Kk8xqn/U5Zrjxerr6PVmFRoxppi1f5l4YXjH124=;
+        b=AqgMnti/3ci4pZB3t5vOFhvdOOvdinp8nteW99bMUL9UoGZvBjS3zbYfpTZGZKJLC6
+         VZyB9PWCeIxHFCd8EnynW2jwuaR6AINfnilHhLMeWpabF9KlsOeLzQwHPEWk6erlUohM
+         LyMctbNiV6n5hxdAnLx+hjwGLMZtdzhEx4dI1UrFd/d6nIp6sd14Vg1d6BfEQmvO/GvW
+         4u619HFQzdkg67mP+warBlyStHC1STHui9EjjwfZgUD8H7UY/i6hVmFobmMVVWBR3fTs
+         1jZuOjKqkjQViwR7AsJA4+DKpvEYMdkYYNFLdBWkM8aRyIefRwY3keOaLcvdvX6hjzNJ
+         0BLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=MwAK4H2fVQwUr3+IIFLavhYbNJQlw8pntln2eHgKkYw=;
-        b=MC63f0iORT+qnC7rEyIirhBwg9bkU1kZ3aaihSLtIoY4Ps0E3dAFqZxz0zJ5WF+ZzO
-         yceGwl1gytU/DQ53CuGDR9fUfxuYD4qNsUcgJnEkTIG0LI61JWbYF/pKX2FBx2OGtAC5
-         6s6NZWa6csukoFxzZw7viGEGX1V7gUq2Y7j2t7C5PaOo1vcsXZ1NvPbs0rZMBa6H41mg
-         RqIL2VnI2DKRHp9Z0YNEnbFt2W2tbu1Pg2AVWYfEERmJ7qD/DCAlmelmFHTpryG7bJ0O
-         OXEqIz/FxwgrOtR79lvfW9bPAQnw+fdzoqQhDzT2TQRquqTVTxd5vjiRZBn5Edx9OsC2
-         1Crw==
-X-Gm-Message-State: AJIora9DSHF/T2O/N1IykaJwq1EsopfKI5b2gejW0t4Q4py7Fmf8ULX6
-	v4VlpBczzdGmkJNWFbUPZ3HLlStctVLf0Hg0iNtuhA==
-X-Google-Smtp-Source: AGRyM1sLowP5UFCjY6i+lwr3s+svnMnfBmDjh4s0YfgEmYk4rETNfT++ZPrlf4BUQEqFL0k+8Y+hq9DGBtLWzDqBsxo=
-X-Received: by 2002:a2e:a413:0:b0:25d:4844:9d65 with SMTP id
- p19-20020a2ea413000000b0025d48449d65mr6839813ljn.169.1657889090278; Fri, 15
- Jul 2022 05:44:50 -0700 (PDT)
+        bh=mZ8/Kk8xqn/U5Zrjxerr6PVmFRoxppi1f5l4YXjH124=;
+        b=6JPQ402yvxSPFp28M7H5+ssSShElRnLD/EfuD/QdBOvSj0a0+Ghv0dY34jaQ8hkJsb
+         Jo1XFg3/40UidILuyvvRNvRtFmAGZhSD1+ml4EFGGB3fWSl8TWDhTcgG2VePEfZdCb8I
+         4m8SG/31VbbK3rdLdJQW3vuL/wL9XxsJIQn6Eo9BQbYM4C7dRRF+BeCrH97Iw8y2ebNF
+         Dh2C6PJtPupIi1x5BDd/QRzuRijsa4olSIfwJNyNxEHuDVyDZdtA0W/3lcTBB/30VPoa
+         H9TFXqAxQu1DAgMEWWYAaOxJ2sACxsMt4P28Q2hy/qZ/RBMrSFvLRO0Id/9pzoDvQRvr
+         JjZw==
+X-Gm-Message-State: AJIora8Ni84XYQ3R2OWABSwnqL+qbqAv6bHsgDZlU6b3yXE09vQU75zk
+	u4BF+0T6M3HVux0sB3NHGXHcO+xclzA3ddiOQmAb7Q==
+X-Google-Smtp-Source: AGRyM1vo/rZ1Y8lzetNZ+AEXkDVRwUd7xeNG74T76sfD0ny/1O6Thm61O68lCXsWodd4aqOLumM6j2Ru2wyrbbdXm0A=
+X-Received: by 2002:a2e:83c9:0:b0:24d:a95d:7b7a with SMTP id
+ s9-20020a2e83c9000000b0024da95d7b7amr6811554ljh.254.1657889578650; Fri, 15
+ Jul 2022 05:52:58 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,279 +40,182 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 References: <20220714165550.8884-1-semen.protsenko@linaro.org>
- <20220714165550.8884-5-semen.protsenko@linaro.org> <29cb0b4f-531c-b17a-09b6-2da2faaf9e11@arm.com>
-In-Reply-To: <29cb0b4f-531c-b17a-09b6-2da2faaf9e11@arm.com>
+ <CGME20220714165604eucas1p28f7d938581361401c97135e2725f8c7e@eucas1p2.samsung.com>
+ <20220714165550.8884-6-semen.protsenko@linaro.org> <6cdbc7ec-0cf9-8854-d0e2-36aedda544e2@samsung.com>
+In-Reply-To: <6cdbc7ec-0cf9-8854-d0e2-36aedda544e2@samsung.com>
 From: Sam Protsenko <semen.protsenko@linaro.org>
-Date: Fri, 15 Jul 2022 15:44:39 +0300
-Message-ID: <CAPLW+4nzxAP4jFxxWRTuXWHzEbpsZEVO7OAZH5A_V1Bda-tNBg@mail.gmail.com>
-Subject: Re: [PATCH v3 4/6] iommu/exynos: Abstract non-common registers on
- different variants
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Janghyuck Kim <janghyuck.kim@samsung.com>, 
-	Cho KyongHo <pullip.cho@samsung.com>, Daniel Mentz <danielmentz@google.com>, 
-	David Virag <virag.david003@gmail.com>, Sumit Semwal <sumit.semwal@linaro.org>, 
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Date: Fri, 15 Jul 2022 15:52:47 +0300
+Message-ID: <CAPLW+4=9LJzF0xmAPy-nw2CowaN++Li2MV=SK1zM4e1+1soLtQ@mail.gmail.com>
+Subject: Re: [PATCH v3 5/6] iommu/exynos: Add SysMMU v7 register set
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Janghyuck Kim <janghyuck.kim@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, 
+	Daniel Mentz <danielmentz@google.com>, David Virag <virag.david003@gmail.com>, 
+	Sumit Semwal <sumit.semwal@linaro.org>, iommu@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-On Fri, 15 Jul 2022 at 15:14, Robin Murphy <robin.murphy@arm.com> wrote:
+On Fri, 15 Jul 2022 at 10:28, Marek Szyprowski <m.szyprowski@samsung.com> wrote:
 >
-> On 2022-07-14 17:55, Sam Protsenko wrote:
-> > At the moment the driver supports SysMMU v1..v5 versions. SysMMU v5 has
-> > different register layout than SysMMU v1..v3. Instead of checking the
-> > version each time before reading/writing the registers, let's create
-> > corresponding register structure for each SysMMU version and set the
-> > needed structure on init, checking the SysMMU version one single time.
-> > This way is faster and more elegant.
+> Hi Sam,
+>
+> On 14.07.2022 18:55, Sam Protsenko wrote:
+> > SysMMU v7 might have different register layouts (VM capable or non-VM
+> > capable). Virtual Machine registers (if present) implement multiple
+> > translation domains. If VM registers are not present, the driver
+> > shouldn't try to access those.
 > >
-> > No behavior changes from the user's point of view, it's only a
-> > refactoring patch.
+> > Check which layout is implemented in current SysMMU module (by reading
+> > the capability registers) and prepare the corresponding variant
+> > structure for further usage.
 > >
 > > Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
-> > Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>
+> Looks fine.
+>
+> Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>
+> What about the fault related code in the exynos_sysmmu_irq()? Afair v7
+> has a bit different layout of the status bits.
+>
+
+Hi Marek,
+
+Fault handling is exactly what I'm going to look into next. The idea
+behind this series was to make SysMMU minimally functional on my
+board, so I can proceed with adding more features on top of that
+further. Thanks for your patch you shared btw, I'll try to use it.
+Vendor's downstream kernel's got the whole separate .c file for that,
+will check if anything can be reused from there too. Good thing my
+testing driver [2] also allows generating page faults, so I can at
+least verify if the added code works properly.
+
+Thanks!
+
+[1] https://github.com/joe-skb7/linux/blob/iommu-exynos850-dev/drivers/iommu/samsung-iommu-fault.c
+[2] https://github.com/joe-skb7/linux/blob/e850-96-mainline-iommu/drivers/iommu/samsung-iommu-test.c
+
 > > ---
 > > Changes in v3:
-> >    - Added Marek's Acked-by tag
-> >    - Removed abstracting common regs, used plain readl/writel to access
-> >      those instead
-> >    - Used variant struct instead of array to keep non-common register
-> >      offsets
->
-> I'm a bit late, but just for the record I think the new approach in this
-> version looks really good :)
->
-
-Thank you for the review, Robin!
-
-> Cheers,
-> Robin.
->
-> >    - Removed 0x1 value used as an offset for missing registers
-> >    - Merged __sysmmu_hw_info() into __sysmmu_get_version()
-> >    - Refactored __sysmmu_tlb_invalidate_entry() for "num_inv == 1" case
-> >    - Reworked the commit message w.r.t. all changes
+> >    - Merged "Check if SysMMU v7 has VM registers" patch into this patch
+> >    - Reworked for using variant struct (instead of array)
 > >
 > > Changes in v2:
-> >    - Reworked existing code (SysMMU v1..v5) to use this approach
-> >    - Extracted v7 registers to the separate patches
-> >    - Replaced MMU_REG() with corresponding SysMMU read/write functions
-> >    - Improved the comment for 0x1 offsets triggering an unaligned access
-> >      exception
-> >    - Removed support for VMID number, as only VMID=0 (default) is used
-> >      for now
-> >    - Renamed register index names to reflect the old SysMMU version
-> >      register names
+> >    - (none) This patch is new and added in v2
 > >
-> >   drivers/iommu/exynos-iommu.c | 100 +++++++++++++++++++++--------------
-> >   1 file changed, 60 insertions(+), 40 deletions(-)
+> >   drivers/iommu/exynos-iommu.c | 50 +++++++++++++++++++++++++++++++++---
+> >   1 file changed, 47 insertions(+), 3 deletions(-)
 > >
 > > diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> > index 494f7d7aa9c5..6a0299fe1722 100644
+> > index 6a0299fe1722..fc9ef3ff0057 100644
 > > --- a/drivers/iommu/exynos-iommu.c
 > > +++ b/drivers/iommu/exynos-iommu.c
-> > @@ -148,26 +148,12 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
-> >   #define MAKE_MMU_VER(maj, min)      ((((maj) & 0xF) << 7) | ((min) & 0x7F))
+> > @@ -135,6 +135,9 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
+> >   #define CFG_SYSSEL  (1 << 22) /* System MMU 3.2 only */
+> >   #define CFG_FLPDCACHE       (1 << 20) /* System MMU 3.2+ only */
 > >
-> >   /* v1.x - v3.x registers */
-> > -#define REG_MMU_FLUSH                0x00C
-> > -#define REG_MMU_FLUSH_ENTRY  0x010
-> > -#define REG_PT_BASE_ADDR     0x014
-> > -#define REG_INT_STATUS               0x018
-> > -#define REG_INT_CLEAR                0x01C
-> > -
-> >   #define REG_PAGE_FAULT_ADDR 0x024
-> >   #define REG_AW_FAULT_ADDR   0x028
-> >   #define REG_AR_FAULT_ADDR   0x02C
-> >   #define REG_DEFAULT_SLAVE_ADDR      0x030
-> >
-> >   /* v5.x registers */
-> > -#define REG_V5_PT_BASE_PFN   0x00C
-> > -#define REG_V5_MMU_FLUSH_ALL 0x010
-> > -#define REG_V5_MMU_FLUSH_ENTRY       0x014
-> > -#define REG_V5_MMU_FLUSH_RANGE       0x018
-> > -#define REG_V5_MMU_FLUSH_START       0x020
-> > -#define REG_V5_MMU_FLUSH_END 0x024
-> > -#define REG_V5_INT_STATUS    0x060
-> > -#define REG_V5_INT_CLEAR     0x064
+> > +#define CAPA0_CAPA1_EXIST            BIT(11)
+> > +#define CAPA1_VCR_ENABLED            BIT(14)
+> > +
+> >   /* common registers */
+> >   #define REG_MMU_CTRL                0x000
+> >   #define REG_MMU_CFG         0x004
+> > @@ -157,6 +160,10 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
 > >   #define REG_V5_FAULT_AR_VA  0x070
 > >   #define REG_V5_FAULT_AW_VA  0x080
 > >
-> > @@ -250,6 +236,21 @@ struct exynos_iommu_domain {
-> >       struct iommu_domain domain; /* generic domain data structure */
-> >   };
-> >
-> > +/*
-> > + * SysMMU version specific data. Contains offsets for the registers which can
-> > + * be found in different SysMMU variants, but have different offset values.
-> > + */
-> > +struct sysmmu_variant {
-> > +     u32 pt_base;            /* page table base address (physical) */
-> > +     u32 flush_all;          /* invalidate all TLB entries */
-> > +     u32 flush_entry;        /* invalidate specific TLB entry */
-> > +     u32 flush_range;        /* invalidate TLB entries in specified range */
-> > +     u32 flush_start;        /* start address of range invalidation */
-> > +     u32 flush_end;          /* end address of range invalidation */
-> > +     u32 int_status;         /* interrupt status information */
-> > +     u32 int_clear;          /* clear the interrupt */
-> > +};
+> > +/* v7.x registers */
+> > +#define REG_V7_CAPA0         0x870
+> > +#define REG_V7_CAPA1         0x874
 > > +
-> >   /*
-> >    * This structure hold all data of a single SYSMMU controller, this includes
-> >    * hw resources like registers and clocks, pointers and list nodes to connect
-> > @@ -274,6 +275,30 @@ struct sysmmu_drvdata {
-> >       unsigned int version;           /* our version */
+> >   #define has_sysmmu(dev)             (dev_iommu_priv_get(dev) != NULL)
+> >
+> >   static struct device *dma_dev;
+> > @@ -276,6 +283,9 @@ struct sysmmu_drvdata {
 > >
 > >       struct iommu_device iommu;      /* IOMMU core handle */
-> > +     const struct sysmmu_variant *variant; /* version specific data */
-> > +};
+> >       const struct sysmmu_variant *variant; /* version specific data */
 > > +
-> > +#define SYSMMU_REG(data, reg) ((data)->sfrbase + (data)->variant->reg)
-> > +
-> > +/* SysMMU v1..v3 */
-> > +static const struct sysmmu_variant sysmmu_v1_variant = {
-> > +     .flush_all      = 0x0c,
-> > +     .flush_entry    = 0x10,
-> > +     .pt_base        = 0x14,
-> > +     .int_status     = 0x18,
-> > +     .int_clear      = 0x1c,
-> > +};
-> > +
-> > +/* SysMMU v5 */
-> > +static const struct sysmmu_variant sysmmu_v5_variant = {
-> > +     .pt_base        = 0x0c,
-> > +     .flush_all      = 0x10,
-> > +     .flush_entry    = 0x14,
-> > +     .flush_range    = 0x18,
-> > +     .flush_start    = 0x20,
-> > +     .flush_end      = 0x24,
-> > +     .int_status     = 0x60,
-> > +     .int_clear      = 0x64,
+> > +     /* v7 fields */
+> > +     bool has_vcr;                   /* virtual machine control register */
 > >   };
 > >
-> >   static struct exynos_iommu_domain *to_exynos_domain(struct iommu_domain *dom)
-> > @@ -304,10 +329,7 @@ static bool sysmmu_block(struct sysmmu_drvdata *data)
+> >   #define SYSMMU_REG(data, reg) ((data)->sfrbase + (data)->variant->reg)
+> > @@ -289,7 +299,7 @@ static const struct sysmmu_variant sysmmu_v1_variant = {
+> >       .int_clear      = 0x1c,
+> >   };
 > >
-> >   static void __sysmmu_tlb_invalidate(struct sysmmu_drvdata *data)
-> >   {
-> > -     if (MMU_MAJ_VER(data->version) < 5)
-> > -             writel(0x1, data->sfrbase + REG_MMU_FLUSH);
-> > -     else
-> > -             writel(0x1, data->sfrbase + REG_V5_MMU_FLUSH_ALL);
-> > +     writel(0x1, SYSMMU_REG(data, flush_all));
-> >   }
+> > -/* SysMMU v5 */
+> > +/* SysMMU v5 and v7 (non-VM capable) */
+> >   static const struct sysmmu_variant sysmmu_v5_variant = {
+> >       .pt_base        = 0x0c,
+> >       .flush_all      = 0x10,
+> > @@ -301,6 +311,18 @@ static const struct sysmmu_variant sysmmu_v5_variant = {
+> >       .int_clear      = 0x64,
+> >   };
 > >
-> >   static void __sysmmu_tlb_invalidate_entry(struct sysmmu_drvdata *data,
-> > @@ -315,33 +337,30 @@ static void __sysmmu_tlb_invalidate_entry(struct sysmmu_drvdata *data,
-> >   {
-> >       unsigned int i;
-> >
-> > -     if (MMU_MAJ_VER(data->version) < 5) {
-> > +     if (MMU_MAJ_VER(data->version) < 5 || num_inv == 1) {
-> >               for (i = 0; i < num_inv; i++) {
-> >                       writel((iova & SPAGE_MASK) | 1,
-> > -                                  data->sfrbase + REG_MMU_FLUSH_ENTRY);
-> > +                            SYSMMU_REG(data, flush_entry));
-> >                       iova += SPAGE_SIZE;
-> >               }
-> >       } else {
-> > -             if (num_inv == 1) {
-> > -                     writel((iova & SPAGE_MASK) | 1,
-> > -                                  data->sfrbase + REG_V5_MMU_FLUSH_ENTRY);
-> > -             } else {
-> > -                     writel((iova & SPAGE_MASK),
-> > -                                  data->sfrbase + REG_V5_MMU_FLUSH_START);
-> > -                     writel((iova & SPAGE_MASK) + (num_inv - 1) * SPAGE_SIZE,
-> > -                                  data->sfrbase + REG_V5_MMU_FLUSH_END);
-> > -                     writel(1, data->sfrbase + REG_V5_MMU_FLUSH_RANGE);
-> > -             }
-> > +             writel(iova & SPAGE_MASK, SYSMMU_REG(data, flush_start));
-> > +             writel((iova & SPAGE_MASK) + (num_inv - 1) * SPAGE_SIZE,
-> > +                    SYSMMU_REG(data, flush_end));
-> > +             writel(0x1, SYSMMU_REG(data, flush_range));
-> >       }
-> >   }
-> >
-> >   static void __sysmmu_set_ptbase(struct sysmmu_drvdata *data, phys_addr_t pgd)
-> >   {
-> > +     u32 pt_base;
+> > +/* SysMMU v7: VM capable register set */
+> > +static const struct sysmmu_variant sysmmu_v7_vm_variant = {
+> > +     .pt_base        = 0x800c,
+> > +     .flush_all      = 0x8010,
+> > +     .flush_entry    = 0x8014,
+> > +     .flush_range    = 0x8018,
+> > +     .flush_start    = 0x8020,
+> > +     .flush_end      = 0x8024,
+> > +     .int_status     = 0x60,
+> > +     .int_clear      = 0x64,
+> > +};
 > > +
-> >       if (MMU_MAJ_VER(data->version) < 5)
-> > -             writel(pgd, data->sfrbase + REG_PT_BASE_ADDR);
-> > +             pt_base = pgd;
-> >       else
-> > -             writel(pgd >> SPAGE_ORDER, data->sfrbase + REG_V5_PT_BASE_PFN);
-> > +             pt_base = pgd >> SPAGE_ORDER;
-> >
-> > +     writel(pt_base, SYSMMU_REG(data, pt_base));
-> >       __sysmmu_tlb_invalidate(data);
+> >   static struct exynos_iommu_domain *to_exynos_domain(struct iommu_domain *dom)
+> >   {
+> >       return container_of(dom, struct exynos_iommu_domain, domain);
+> > @@ -380,6 +402,20 @@ static void __sysmmu_disable_clocks(struct sysmmu_drvdata *data)
+> >       clk_disable_unprepare(data->clk_master);
 > >   }
 > >
-> > @@ -378,6 +397,11 @@ static void __sysmmu_get_version(struct sysmmu_drvdata *data)
+> > +static bool __sysmmu_has_capa1(struct sysmmu_drvdata *data)
+> > +{
+> > +     u32 capa0 = readl(data->sfrbase + REG_V7_CAPA0);
+> > +
+> > +     return capa0 & CAPA0_CAPA1_EXIST;
+> > +}
+> > +
+> > +static void __sysmmu_get_vcr(struct sysmmu_drvdata *data)
+> > +{
+> > +     u32 capa1 = readl(data->sfrbase + REG_V7_CAPA1);
+> > +
+> > +     data->has_vcr = capa1 & CAPA1_VCR_ENABLED;
+> > +}
+> > +
+> >   static void __sysmmu_get_version(struct sysmmu_drvdata *data)
+> >   {
+> >       u32 ver;
+> > @@ -397,10 +433,18 @@ static void __sysmmu_get_version(struct sysmmu_drvdata *data)
 > >       dev_dbg(data->sysmmu, "hardware version: %d.%d\n",
 > >               MMU_MAJ_VER(data->version), MMU_MIN_VER(data->version));
 > >
-> > +     if (MMU_MAJ_VER(data->version) < 5)
-> > +             data->variant = &sysmmu_v1_variant;
-> > +     else
-> > +             data->variant = &sysmmu_v5_variant;
-> > +
+> > -     if (MMU_MAJ_VER(data->version) < 5)
+> > +     if (MMU_MAJ_VER(data->version) < 5) {
+> >               data->variant = &sysmmu_v1_variant;
+> > -     else
+> > +     } else if (MMU_MAJ_VER(data->version) < 7) {
+> >               data->variant = &sysmmu_v5_variant;
+> > +     } else {
+> > +             if (__sysmmu_has_capa1(data))
+> > +                     __sysmmu_get_vcr(data);
+> > +             if (data->has_vcr)
+> > +                     data->variant = &sysmmu_v7_vm_variant;
+> > +             else
+> > +                     data->variant = &sysmmu_v5_variant;
+> > +     }
+> >
 > >       __sysmmu_disable_clocks(data);
 > >   }
-> >
-> > @@ -405,19 +429,14 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
-> >       const struct sysmmu_fault_info *finfo;
-> >       unsigned int i, n, itype;
-> >       sysmmu_iova_t fault_addr;
-> > -     unsigned short reg_status, reg_clear;
-> >       int ret = -ENOSYS;
-> >
-> >       WARN_ON(!data->active);
-> >
-> >       if (MMU_MAJ_VER(data->version) < 5) {
-> > -             reg_status = REG_INT_STATUS;
-> > -             reg_clear = REG_INT_CLEAR;
-> >               finfo = sysmmu_faults;
-> >               n = ARRAY_SIZE(sysmmu_faults);
-> >       } else {
-> > -             reg_status = REG_V5_INT_STATUS;
-> > -             reg_clear = REG_V5_INT_CLEAR;
-> >               finfo = sysmmu_v5_faults;
-> >               n = ARRAY_SIZE(sysmmu_v5_faults);
-> >       }
-> > @@ -426,7 +445,7 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
-> >
-> >       clk_enable(data->clk_master);
-> >
-> > -     itype = __ffs(readl(data->sfrbase + reg_status));
-> > +     itype = __ffs(readl(SYSMMU_REG(data, int_status)));
-> >       for (i = 0; i < n; i++, finfo++)
-> >               if (finfo->bit == itype)
-> >                       break;
-> > @@ -443,7 +462,7 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
-> >       /* fault is not recovered by fault handler */
-> >       BUG_ON(ret != 0);
-> >
-> > -     writel(1 << itype, data->sfrbase + reg_clear);
-> > +     writel(1 << itype, SYSMMU_REG(data, int_clear));
-> >
-> >       sysmmu_unblock(data);
-> >
-> > @@ -622,6 +641,8 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
-> >       data->sysmmu = dev;
-> >       spin_lock_init(&data->lock);
-> >
-> > +     __sysmmu_get_version(data);
-> > +
-> >       ret = iommu_device_sysfs_add(&data->iommu, &pdev->dev, NULL,
-> >                                    dev_name(data->sysmmu));
-> >       if (ret)
-> > @@ -633,7 +654,6 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
-> >
-> >       platform_set_drvdata(pdev, data);
-> >
-> > -     __sysmmu_get_version(data);
-> >       if (PG_ENT_SHIFT < 0) {
-> >               if (MMU_MAJ_VER(data->version) < 5) {
-> >                       PG_ENT_SHIFT = SYSMMU_PG_ENT_SHIFT;
+>
+> Best regards
+> --
+> Marek Szyprowski, PhD
+> Samsung R&D Institute Poland
+>
