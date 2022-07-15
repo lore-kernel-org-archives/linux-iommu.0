@@ -1,14 +1,14 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B92602F34
-	for <iommu@lists.linux.dev>; Fri, 15 Jul 2022 12:14:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 09716666C
+	for <iommu@lists.linux.dev>; Fri, 15 Jul 2022 12:37:24 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 784311474;
-	Fri, 15 Jul 2022 05:14:12 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B22081474;
+	Fri, 15 Jul 2022 05:37:24 -0700 (PDT)
 Received: from [10.57.86.139] (unknown [10.57.86.139])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 847EB3F73D;
-	Fri, 15 Jul 2022 05:14:09 -0700 (PDT)
-Message-ID: <29cb0b4f-531c-b17a-09b6-2da2faaf9e11@arm.com>
-Date: Fri, 15 Jul 2022 13:14:04 +0100
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 712783F73D;
+	Fri, 15 Jul 2022 05:37:22 -0700 (PDT)
+Message-ID: <6557623d-3e4e-9f3e-e735-fd9654305f65@arm.com>
+Date: Fri, 15 Jul 2022 13:37:18 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -17,277 +17,170 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH v3 4/6] iommu/exynos: Abstract non-common registers on
- different variants
+Subject: Re: [PATCH v3 01/15] iommu/vt-d: Handle race between registration and
+ device probe
 Content-Language: en-GB
-To: Sam Protsenko <semen.protsenko@linaro.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Janghyuck Kim <janghyuck.kim@samsung.com>,
- Cho KyongHo <pullip.cho@samsung.com>, Daniel Mentz <danielmentz@google.com>,
- David Virag <virag.david003@gmail.com>,
- Sumit Semwal <sumit.semwal@linaro.org>, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+To: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org
+Cc: will@kernel.org, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, suravee.suthikulpanit@amd.com,
+ vasant.hegde@amd.com, mjrosato@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+ schnelle@linux.ibm.com, linux-s390@vger.kernel.org,
  linux-kernel@vger.kernel.org
-References: <20220714165550.8884-1-semen.protsenko@linaro.org>
- <20220714165550.8884-5-semen.protsenko@linaro.org>
+References: <cover.1657034827.git.robin.murphy@arm.com>
+ <894db0ccae854b35c73814485569b634237b5538.1657034828.git.robin.murphy@arm.com>
+ <903a1677-4217-d793-6295-3927143d98fb@linux.intel.com>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220714165550.8884-5-semen.protsenko@linaro.org>
+In-Reply-To: <903a1677-4217-d793-6295-3927143d98fb@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2022-07-14 17:55, Sam Protsenko wrote:
-> At the moment the driver supports SysMMU v1..v5 versions. SysMMU v5 has
-> different register layout than SysMMU v1..v3. Instead of checking the
-> version each time before reading/writing the registers, let's create
-> corresponding register structure for each SysMMU version and set the
-> needed structure on init, checking the SysMMU version one single time.
-> This way is faster and more elegant.
+On 2022-07-08 08:52, Baolu Lu wrote:
+> On 2022/7/6 01:08, Robin Murphy wrote:
+>> That also highlights an issue with intel_iommu_get_resv_regions() taking
+>> dmar_global_lock from within a section where intel_iommu_init() already
+>> holds it, which already exists via probe_acpi_namespace_devices() when
+>> an ANDD device is probed, but gets more obvious with the upcoming change
+>> to iommu_device_register(). Since they are both read locks it manages
+>> not to deadlock in practice, so I'm leaving it here for someone with
+>> more confidence to tackle a larger rework of the locking.
 > 
-> No behavior changes from the user's point of view, it's only a
-> refactoring patch.
-> 
-> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
-> Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> ---
-> Changes in v3:
->    - Added Marek's Acked-by tag
->    - Removed abstracting common regs, used plain readl/writel to access
->      those instead
->    - Used variant struct instead of array to keep non-common register
->      offsets
+> I am trying to reproduce this problem. Strangely, even if I selected
+> CONFIG_LOCKDEP=y, the kernel didn't complain anything. :-)
 
-I'm a bit late, but just for the record I think the new approach in this 
-version looks really good :)
+FWIW, see below for the full report I get with this series applied (my 
+machine doesn't have any ANDD entries to trigger the existing case).
+
+> In fact the rmrr list in the Intel IOMMU driver is always static after
+> parsing the ACPI/DMAR tables. There's no need to protect it with a lock.
+> Hence we can safely remove below down/up_read().
+
+IIRC that leads to RCU warnings via for_each_dev_scope(), though. I did 
+try replacing this down_read() with rcu_read_lock(), but then it doesn't 
+like the GFP_KERNEL allocation in iommu_alloc_resv_region(), and that's 
+where I gave up :)
+
+I'm mostly left wondering whether the dmar_drhd_units list really needs 
+to be RCU protected at all, as that seems to be the root of most of the 
+problems here.
 
 Cheers,
 Robin.
 
->    - Removed 0x1 value used as an offset for missing registers
->    - Merged __sysmmu_hw_info() into __sysmmu_get_version()
->    - Refactored __sysmmu_tlb_invalidate_entry() for "num_inv == 1" case
->    - Reworked the commit message w.r.t. all changes
+> 4512 static void intel_iommu_get_resv_regions(struct device *device,
+> 4513                                          struct list_head *head)
+> 4514 {
+> 4515         int prot = DMA_PTE_READ | DMA_PTE_WRITE;
+> 4516         struct iommu_resv_region *reg;
+> 4517         struct dmar_rmrr_unit *rmrr;
+> 4518         struct device *i_dev;
+> 4519         int i;
+> 4520
+> 4521         down_read(&dmar_global_lock);
+> 4522         for_each_rmrr_units(rmrr) {
+> 4523                 for_each_active_dev_scope(rmrr->devices, 
+> rmrr->devices_cnt,
+> 4524                                           i, i_dev) {
 > 
-> Changes in v2:
->    - Reworked existing code (SysMMU v1..v5) to use this approach
->    - Extracted v7 registers to the separate patches
->    - Replaced MMU_REG() with corresponding SysMMU read/write functions
->    - Improved the comment for 0x1 offsets triggering an unaligned access
->      exception
->    - Removed support for VMID number, as only VMID=0 (default) is used
->      for now
->    - Renamed register index names to reflect the old SysMMU version
->      register names
-> 
->   drivers/iommu/exynos-iommu.c | 100 +++++++++++++++++++++--------------
->   1 file changed, 60 insertions(+), 40 deletions(-)
-> 
-> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index 494f7d7aa9c5..6a0299fe1722 100644
-> --- a/drivers/iommu/exynos-iommu.c
-> +++ b/drivers/iommu/exynos-iommu.c
-> @@ -148,26 +148,12 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
->   #define MAKE_MMU_VER(maj, min)	((((maj) & 0xF) << 7) | ((min) & 0x7F))
->   
->   /* v1.x - v3.x registers */
-> -#define REG_MMU_FLUSH		0x00C
-> -#define REG_MMU_FLUSH_ENTRY	0x010
-> -#define REG_PT_BASE_ADDR	0x014
-> -#define REG_INT_STATUS		0x018
-> -#define REG_INT_CLEAR		0x01C
-> -
->   #define REG_PAGE_FAULT_ADDR	0x024
->   #define REG_AW_FAULT_ADDR	0x028
->   #define REG_AR_FAULT_ADDR	0x02C
->   #define REG_DEFAULT_SLAVE_ADDR	0x030
->   
->   /* v5.x registers */
-> -#define REG_V5_PT_BASE_PFN	0x00C
-> -#define REG_V5_MMU_FLUSH_ALL	0x010
-> -#define REG_V5_MMU_FLUSH_ENTRY	0x014
-> -#define REG_V5_MMU_FLUSH_RANGE	0x018
-> -#define REG_V5_MMU_FLUSH_START	0x020
-> -#define REG_V5_MMU_FLUSH_END	0x024
-> -#define REG_V5_INT_STATUS	0x060
-> -#define REG_V5_INT_CLEAR	0x064
->   #define REG_V5_FAULT_AR_VA	0x070
->   #define REG_V5_FAULT_AW_VA	0x080
->   
-> @@ -250,6 +236,21 @@ struct exynos_iommu_domain {
->   	struct iommu_domain domain; /* generic domain data structure */
->   };
->   
-> +/*
-> + * SysMMU version specific data. Contains offsets for the registers which can
-> + * be found in different SysMMU variants, but have different offset values.
-> + */
-> +struct sysmmu_variant {
-> +	u32 pt_base;		/* page table base address (physical) */
-> +	u32 flush_all;		/* invalidate all TLB entries */
-> +	u32 flush_entry;	/* invalidate specific TLB entry */
-> +	u32 flush_range;	/* invalidate TLB entries in specified range */
-> +	u32 flush_start;	/* start address of range invalidation */
-> +	u32 flush_end;		/* end address of range invalidation */
-> +	u32 int_status;		/* interrupt status information */
-> +	u32 int_clear;		/* clear the interrupt */
-> +};
-> +
->   /*
->    * This structure hold all data of a single SYSMMU controller, this includes
->    * hw resources like registers and clocks, pointers and list nodes to connect
-> @@ -274,6 +275,30 @@ struct sysmmu_drvdata {
->   	unsigned int version;		/* our version */
->   
->   	struct iommu_device iommu;	/* IOMMU core handle */
-> +	const struct sysmmu_variant *variant; /* version specific data */
-> +};
-> +
-> +#define SYSMMU_REG(data, reg) ((data)->sfrbase + (data)->variant->reg)
-> +
-> +/* SysMMU v1..v3 */
-> +static const struct sysmmu_variant sysmmu_v1_variant = {
-> +	.flush_all	= 0x0c,
-> +	.flush_entry	= 0x10,
-> +	.pt_base	= 0x14,
-> +	.int_status	= 0x18,
-> +	.int_clear	= 0x1c,
-> +};
-> +
-> +/* SysMMU v5 */
-> +static const struct sysmmu_variant sysmmu_v5_variant = {
-> +	.pt_base	= 0x0c,
-> +	.flush_all	= 0x10,
-> +	.flush_entry	= 0x14,
-> +	.flush_range	= 0x18,
-> +	.flush_start	= 0x20,
-> +	.flush_end	= 0x24,
-> +	.int_status	= 0x60,
-> +	.int_clear	= 0x64,
->   };
->   
->   static struct exynos_iommu_domain *to_exynos_domain(struct iommu_domain *dom)
-> @@ -304,10 +329,7 @@ static bool sysmmu_block(struct sysmmu_drvdata *data)
->   
->   static void __sysmmu_tlb_invalidate(struct sysmmu_drvdata *data)
->   {
-> -	if (MMU_MAJ_VER(data->version) < 5)
-> -		writel(0x1, data->sfrbase + REG_MMU_FLUSH);
-> -	else
-> -		writel(0x1, data->sfrbase + REG_V5_MMU_FLUSH_ALL);
-> +	writel(0x1, SYSMMU_REG(data, flush_all));
->   }
->   
->   static void __sysmmu_tlb_invalidate_entry(struct sysmmu_drvdata *data,
-> @@ -315,33 +337,30 @@ static void __sysmmu_tlb_invalidate_entry(struct sysmmu_drvdata *data,
->   {
->   	unsigned int i;
->   
-> -	if (MMU_MAJ_VER(data->version) < 5) {
-> +	if (MMU_MAJ_VER(data->version) < 5 || num_inv == 1) {
->   		for (i = 0; i < num_inv; i++) {
->   			writel((iova & SPAGE_MASK) | 1,
-> -				     data->sfrbase + REG_MMU_FLUSH_ENTRY);
-> +			       SYSMMU_REG(data, flush_entry));
->   			iova += SPAGE_SIZE;
->   		}
->   	} else {
-> -		if (num_inv == 1) {
-> -			writel((iova & SPAGE_MASK) | 1,
-> -				     data->sfrbase + REG_V5_MMU_FLUSH_ENTRY);
-> -		} else {
-> -			writel((iova & SPAGE_MASK),
-> -				     data->sfrbase + REG_V5_MMU_FLUSH_START);
-> -			writel((iova & SPAGE_MASK) + (num_inv - 1) * SPAGE_SIZE,
-> -				     data->sfrbase + REG_V5_MMU_FLUSH_END);
-> -			writel(1, data->sfrbase + REG_V5_MMU_FLUSH_RANGE);
-> -		}
-> +		writel(iova & SPAGE_MASK, SYSMMU_REG(data, flush_start));
-> +		writel((iova & SPAGE_MASK) + (num_inv - 1) * SPAGE_SIZE,
-> +		       SYSMMU_REG(data, flush_end));
-> +		writel(0x1, SYSMMU_REG(data, flush_range));
->   	}
->   }
->   
->   static void __sysmmu_set_ptbase(struct sysmmu_drvdata *data, phys_addr_t pgd)
->   {
-> +	u32 pt_base;
-> +
->   	if (MMU_MAJ_VER(data->version) < 5)
-> -		writel(pgd, data->sfrbase + REG_PT_BASE_ADDR);
-> +		pt_base = pgd;
->   	else
-> -		writel(pgd >> SPAGE_ORDER, data->sfrbase + REG_V5_PT_BASE_PFN);
-> +		pt_base = pgd >> SPAGE_ORDER;
->   
-> +	writel(pt_base, SYSMMU_REG(data, pt_base));
->   	__sysmmu_tlb_invalidate(data);
->   }
->   
-> @@ -378,6 +397,11 @@ static void __sysmmu_get_version(struct sysmmu_drvdata *data)
->   	dev_dbg(data->sysmmu, "hardware version: %d.%d\n",
->   		MMU_MAJ_VER(data->version), MMU_MIN_VER(data->version));
->   
-> +	if (MMU_MAJ_VER(data->version) < 5)
-> +		data->variant = &sysmmu_v1_variant;
-> +	else
-> +		data->variant = &sysmmu_v5_variant;
-> +
->   	__sysmmu_disable_clocks(data);
->   }
->   
-> @@ -405,19 +429,14 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
->   	const struct sysmmu_fault_info *finfo;
->   	unsigned int i, n, itype;
->   	sysmmu_iova_t fault_addr;
-> -	unsigned short reg_status, reg_clear;
->   	int ret = -ENOSYS;
->   
->   	WARN_ON(!data->active);
->   
->   	if (MMU_MAJ_VER(data->version) < 5) {
-> -		reg_status = REG_INT_STATUS;
-> -		reg_clear = REG_INT_CLEAR;
->   		finfo = sysmmu_faults;
->   		n = ARRAY_SIZE(sysmmu_faults);
->   	} else {
-> -		reg_status = REG_V5_INT_STATUS;
-> -		reg_clear = REG_V5_INT_CLEAR;
->   		finfo = sysmmu_v5_faults;
->   		n = ARRAY_SIZE(sysmmu_v5_faults);
->   	}
-> @@ -426,7 +445,7 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
->   
->   	clk_enable(data->clk_master);
->   
-> -	itype = __ffs(readl(data->sfrbase + reg_status));
-> +	itype = __ffs(readl(SYSMMU_REG(data, int_status)));
->   	for (i = 0; i < n; i++, finfo++)
->   		if (finfo->bit == itype)
->   			break;
-> @@ -443,7 +462,7 @@ static irqreturn_t exynos_sysmmu_irq(int irq, void *dev_id)
->   	/* fault is not recovered by fault handler */
->   	BUG_ON(ret != 0);
->   
-> -	writel(1 << itype, data->sfrbase + reg_clear);
-> +	writel(1 << itype, SYSMMU_REG(data, int_clear));
->   
->   	sysmmu_unblock(data);
->   
-> @@ -622,6 +641,8 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
->   	data->sysmmu = dev;
->   	spin_lock_init(&data->lock);
->   
-> +	__sysmmu_get_version(data);
-> +
->   	ret = iommu_device_sysfs_add(&data->iommu, &pdev->dev, NULL,
->   				     dev_name(data->sysmmu));
->   	if (ret)
-> @@ -633,7 +654,6 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
->   
->   	platform_set_drvdata(pdev, data);
->   
-> -	__sysmmu_get_version(data);
->   	if (PG_ENT_SHIFT < 0) {
->   		if (MMU_MAJ_VER(data->version) < 5) {
->   			PG_ENT_SHIFT = SYSMMU_PG_ENT_SHIFT;
+> Best regards,
+> baolu
+
+
+---->8-----
+
+[   11.421712] pci 0000:00:1b.0: Adding to iommu group 0
+[   11.421977]
+[   11.421978] ============================================
+[   11.421979] WARNING: possible recursive locking detected
+[   11.421981] 5.19.0-rc3-00015-gdc44a2269276 #32 Not tainted
+[   11.421984] --------------------------------------------
+[   11.421985] swapper/0/1 is trying to acquire lock:
+[   11.421986] ffffffffb987b770 (dmar_global_lock){++++}-{3:3}, at: 
+intel_iommu_get_resv_regions+0x28/0x3a0
+[   11.422000]
+[   11.422000] but task is already holding lock:
+[   11.422001] ffffffffb987b770 (dmar_global_lock){++++}-{3:3}, at: 
+intel_iommu_init+0x1638/0x1a08
+[   11.422011]
+[   11.422011] other info that might help us debug this:
+[   11.422013]  Possible unsafe locking scenario:
+[   11.422013]
+[   11.422013]        CPU0
+[   11.422014]        ----
+[   11.422015]   lock(dmar_global_lock);
+[   11.422018]   lock(dmar_global_lock);
+[   11.422020]
+[   11.422020]  *** DEADLOCK ***
+[   11.422020]
+[   11.422021]  May be due to missing lock nesting notation
+[   11.422021]
+[   11.422022] 2 locks held by swapper/0/1:
+[   11.422024]  #0: ffffffffb987b770 (dmar_global_lock){++++}-{3:3}, at: 
+intel_iommu_init+0x1638/0x1a08
+[   11.422033]  #1: ffff8881077a10c0 (&group->mutex){+.+.}-{3:3}, at: 
+bus_iommu_probe+0x139/0x4c0
+[   11.422044]
+[   11.422044] stack backtrace:
+[   11.422046] CPU: 8 PID: 1 Comm: swapper/0 Not tainted 
+5.19.0-rc3-00015-gdc44a2269276 #32
+[   11.422050] Hardware name: LENOVO 30B6S08J03/1030, BIOS S01KT29A 
+06/20/2016
+[   11.422052] Call Trace:
+[   11.422054]  <TASK>
+[   11.422056]  dump_stack_lvl+0x45/0x59
+[   11.422064]  __lock_acquire.cold+0x131/0x305
+[   11.422075]  ? lockdep_hardirqs_on_prepare+0x220/0x220
+[   11.422082]  ? lock_is_held_type+0xd7/0x130
+[   11.422090]  ? rcu_read_lock_sched_held+0x9c/0xd0
+[   11.422098]  lock_acquire+0x165/0x410
+[   11.422102]  ? intel_iommu_get_resv_regions+0x28/0x3a0
+[   11.422108]  ? lock_release+0x410/0x410
+[   11.422112]  ? __iommu_domain_alloc+0xc5/0x130
+[   11.422116]  ? iommu_group_alloc_default_domain+0x16/0x90
+[   11.422121]  ? bus_iommu_probe+0x26d/0x4c0
+[   11.422126]  ? iommu_device_register+0x11e/0x160
+[   11.422130]  ? intel_iommu_init+0x16e0/0x1a08
+[   11.422135]  ? do_one_initcall+0xb6/0x3c0
+[   11.422140]  ? lock_is_held_type+0xd7/0x130
+[   11.422147]  down_read+0x97/0x2f0
+[   11.422152]  ? intel_iommu_get_resv_regions+0x28/0x3a0
+[   11.422156]  ? rcu_read_lock_bh_held+0xb0/0xb0
+[   11.422161]  ? rwsem_down_read_slowpath+0xa10/0xa10
+[   11.422166]  ? find_held_lock+0x85/0xa0
+[   11.422173]  intel_iommu_get_resv_regions+0x28/0x3a0
+[   11.422178]  ? rcu_read_lock_sched_held+0x9c/0xd0
+[   11.422185]  iommu_create_device_direct_mappings.isra.0+0x11a/0x330
+[   11.422193]  ? iommu_map+0x50/0x50
+[   11.422198]  ? __iommu_domain_alloc+0xc5/0x130
+[   11.422205]  bus_iommu_probe+0x2bc/0x4c0
+[   11.422210]  ? iommu_device_register+0xba/0x160
+[   11.422216]  ? iommu_group_default_domain+0x20/0x20
+[   11.422221]  ? do_raw_spin_lock+0x114/0x1d0
+[   11.422226]  ? rwlock_bug.part.0+0x50/0x50
+[   11.422231]  ? rwsem_down_read_slowpath+0xa10/0xa10
+[   11.422239]  iommu_device_register+0x11e/0x160
+[   11.422244]  intel_iommu_init+0x16e0/0x1a08
+[   11.422249]  ? rcu_read_lock_bh_held+0xb0/0xb0
+[   11.422254]  ? _raw_spin_unlock_irqrestore+0x28/0x50
+[   11.422261]  ? lock_release+0x240/0x410
+[   11.422265]  ? populate_rootfs+0x26/0x37
+[   11.422272]  ? lock_downgrade+0x3a0/0x3a0
+[   11.422277]  ? dmar_parse_one_rmrr+0x203/0x203
+[   11.422281]  ? lock_is_held_type+0xd7/0x130
+[   11.422286]  ? iommu_setup+0x282/0x282
+[   11.422291]  ? rcu_read_lock_sched_held+0x9c/0xd0
+[   11.422296]  ? rcu_read_lock_bh_held+0xb0/0xb0
+[   11.422301]  ? up_write+0xd3/0x260
+[   11.422305]  ? iommu_setup+0x282/0x282
+[   11.422309]  pci_iommu_init+0x15/0x39
+[   11.422313]  do_one_initcall+0xb6/0x3c0
+[   11.422317]  ? initcall_blacklisted+0x120/0x120
+[   11.422322]  ? rcu_read_lock_sched_held+0x9c/0xd0
+[   11.422327]  ? rcu_read_lock_bh_held+0xb0/0xb0
+[   11.422331]  ? kasan_unpoison+0x23/0x50
+[   11.422337]  ? __kasan_slab_alloc+0x2c/0x80
+[   11.422344]  kernel_init_freeable+0x330/0x389
+[   11.422349]  ? rest_init+0x1b0/0x1b0
+[   11.422354]  kernel_init+0x14/0x130
+[   11.422359]  ret_from_fork+0x22/0x30
+[   11.422367]  </TASK>
+
