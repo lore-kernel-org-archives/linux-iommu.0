@@ -1,98 +1,96 @@
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76CCFA42
-	for <iommu@lists.linux.dev>; Mon, 18 Jul 2022 07:01:05 +0000 (UTC)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
-	by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LmXS417GGzFq85;
-	Mon, 18 Jul 2022 14:41:40 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DAA5A42
+	for <iommu@lists.linux.dev>; Mon, 18 Jul 2022 07:10:35 +0000 (UTC)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.57])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LmY0r3K9qzVfrT;
+	Mon, 18 Jul 2022 15:06:36 +0800 (CST)
+Received: from [10.67.102.169] (10.67.102.169) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 18 Jul 2022 14:42:40 +0800
-Received: from [10.174.178.174] (10.174.178.174) by
- dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 18 Jul 2022 14:42:40 +0800
-Subject: Re: [PATCH -next] iommu/dma: Fix missing mutex_init() in
- iommu_get_msi_cookie()
-To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>
-CC: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<iommu@lists.linux-foundation.org>, <will@kernel.org>, <yf.wang@mediatek.com>
-References: <20220627085533.1469141-1-yangyingliang@huawei.com>
- <YtEcB6717b3d5suQ@8bytes.org> <5d056fea-ee52-b7f8-a8c1-095f695ac805@arm.com>
-From: Yang Yingliang <yangyingliang@huawei.com>
-Message-ID: <a3fd3fef-f5fc-d89c-99de-4e7870cc9974@huawei.com>
-Date: Mon, 18 Jul 2022 14:42:39 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+ 15.1.2375.24; Mon, 18 Jul 2022 15:10:22 +0800
+CC: <gregkh@linuxfoundation.org>, <alexander.shishkin@linux.intel.com>,
+	<leo.yan@linaro.org>, <james.clark@arm.com>, <will@kernel.org>,
+	<robin.murphy@arm.com>, <acme@kernel.org>, <peterz@infradead.org>,
+	<corbet@lwn.net>, <mathieu.poirier@linaro.org>, <mark.rutland@arm.com>,
+	<jonathan.cameron@huawei.com>, <john.garry@huawei.com>, <helgaas@kernel.org>,
+	<lorenzo.pieralisi@arm.com>, <suzuki.poulose@arm.com>, <joro@8bytes.org>,
+	<shameerali.kolothum.thodi@huawei.com>, <mingo@redhat.com>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-pci@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
+	<iommu@lists.linux-foundation.org>, <iommu@lists.linux.dev>,
+	<linux-doc@vger.kernel.org>, <prime.zeng@huawei.com>, <liuqi115@huawei.com>,
+	<zhangshaokun@hisilicon.com>, <linuxarm@huawei.com>, Yicong Yang
+	<yangyicong@hisilicon.com>
+Subject: Re: [PATCH v10 7/8] docs: trace: Add HiSilicon PTT device driver
+ documentation
+To: Bagas Sanjaya <bagasdotme@gmail.com>
+References: <20220714092710.53486-1-yangyicong@hisilicon.com>
+ <20220714092710.53486-8-yangyicong@hisilicon.com>
+ <YtEgoZveaZJ3a7+4@debian.me>
+From: Yicong Yang <yangyicong@huawei.com>
+Message-ID: <f0dc5cb8-ec3b-eb8f-98e3-4a6301e8be06@huawei.com>
+Date: Mon, 18 Jul 2022 15:10:22 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <5d056fea-ee52-b7f8-a8c1-095f695ac805@arm.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Originating-IP: [10.174.178.174]
+In-Reply-To: <YtEgoZveaZJ3a7+4@debian.me>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.169]
 X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500007.china.huawei.com (7.185.36.183)
+ canpemm500009.china.huawei.com (7.192.105.203)
 X-CFilter-Loop: Reflected
 
-Hi,
+On 2022/7/15 16:09, Bagas Sanjaya wrote:
+> On Thu, Jul 14, 2022 at 05:27:09PM +0800, Yicong Yang wrote:
+>> +1. Tx path QoS control
+>> +------------------------
+>> +
+> <snip>
+>> +2. Tx path buffer control
+>> +-------------------------
+>> +
+> 
+> Shouldn't Tx in the headings above be lowercase (tx)?
 
-On 2022/7/15 17:28, Robin Murphy wrote:
-> On 2022-07-15 08:49, Joerg Roedel wrote:
->> Adding Robin.
->>
->> On Mon, Jun 27, 2022 at 04:55:33PM +0800, Yang Yingliang wrote:
->>> cookie_alloc() is called by iommu_get_dma_cookie() and 
->>> iommu_get_msi_cookie(),
->>> but the mutex is only initialized in iommu_get_dma_cookie(), move 
->>> mutex_init()
->>> into cookie_alloc() to make sure the mutex will be initialized.
->
-> The mutex is only used in iommu_dma_init_domain(), which is only 
-> called by iommu_setup_dma_ops() for IOMMU_DOMAIN_DMA domains. How is 
-> there a problem here?
-It's no problem now, but I thinks it's better to initialize the 'mutex' 
-in cookie_alloc() to make code stronger.
+Tx is used to keep consistence with other places.
 
-Thanks,
-Yang
->
-> Robin.
->
->>> Fixes: ac9a5d522bb8 ("iommu/dma: Fix race condition during 
->>> iova_domain initialization")
->>> Reported-by: Hulk Robot <hulkci@huawei.com>
->>> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
->>> ---
->>>   drivers/iommu/dma-iommu.c | 2 +-
->>>   1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->>> index 1910f4f1612b..e29157380c48 100644
->>> --- a/drivers/iommu/dma-iommu.c
->>> +++ b/drivers/iommu/dma-iommu.c
->>> @@ -294,6 +294,7 @@ static struct iommu_dma_cookie 
->>> *cookie_alloc(enum iommu_dma_cookie_type type)
->>>       if (cookie) {
->>>           INIT_LIST_HEAD(&cookie->msi_page_list);
->>>           cookie->type = type;
->>> +        mutex_init(&cookie->mutex);
->>>       }
->>>       return cookie;
->>>   }
->>> @@ -311,7 +312,6 @@ int iommu_get_dma_cookie(struct iommu_domain 
->>> *domain)
->>>       if (!domain->iova_cookie)
->>>           return -ENOMEM;
->>>   -    mutex_init(&domain->iova_cookie->mutex);
->>>       return 0;
->>>   }
->>>   --
->>> 2.25.1
-> .
+> 
+>> +1. filter
+>> +---------
+> <snip>
+>> +2. type
+>> +-------
+> <snip>
+>> +3. direction
+>> +------------
+> <snip>
+>> +4. format
+>> +--------------
+> <snip>
+>> +5. memory management
+>> +--------------------
+> <snip>
+>> +6. decoding
+>> +-----------
+> 
+> I think these headings above should use title case instead.
+
+ok.
+
+> 
+> Anyway, the documentation (htmldocs) builds successfully without new
+> warnings.
+> 
+> Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
+> 
+
+Thanks.
+
