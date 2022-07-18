@@ -1,43 +1,49 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6747D7FC
-	for <iommu@lists.linux.dev>; Mon, 18 Jul 2022 01:16:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 479A57FC
+	for <iommu@lists.linux.dev>; Mon, 18 Jul 2022 01:28:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658106997; x=1689642997;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=mf+ou5sUbNJrHFghDywBtdNo5AKN4S9liviBGsFpQzU=;
-  b=fwM0wO/5Y8IWsWgJJVETlXw7j2HzC4XCusW7TbgcXQ+xS5h5Z0EeFM/e
-   X4I8OJSbq1M2D9Cu6Tp258yFXcOn7qBQXog4+uvxMpIXOxHE8gCyHjPpG
-   yTg4McdmOepx9eJruFhbQV2b7HWjRqfEL7eehoyaSit255M6nzdn6wxdb
-   /+RnqQP8M7+aEWoxMy+weajk1cslqBMK53Hl6zn1FifZAOsnrXr88mqRL
-   v0aIiuEkf0ukZVQDQKYJckafupOGdOsWH74gUoCGFtqxUgeQRhjgAeIfB
-   u7jDudciOuY7Nb3AFTPX1oltws2pOvEY9s1equ8owHuUx1iuC2TvX269o
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="269129959"
+  t=1658107714; x=1689643714;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=iSzfrdEqebPw4+c2ygjk35cjtYfG15dYAOW7Bi0/ihU=;
+  b=m/MUC18u/DHVZfmTL2apwpjcGKHnaZXQlBWiq08iW/LhKtL33sTZavZW
+   BlnK3IA7Y2XgKNaqzfJsZBUCNEqTpfrHrYlx9gvd8mjkICt90TBArAbhf
+   khwE4nctI6/wTAAazo1PgeNLeprs90LCuHEX+wfL6mg6mnHq0EWuQa7AC
+   V1T0aDZA/hCFhUrIxrXtwOsT+e8TBZK+Tq4NFYwtvXYGfrIQUPytalPlx
+   4mbG1lR7EcUsvBNzVYeqNoQ5YRHSqZhHJFTwB6O7xubPKwj9bVFX/TveE
+   MxYw/e7aUTXfye2wSnSISlnZ3fEUPQNoOKBMRCuFNJn75rDsKZ4yje9y1
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="266513493"
 X-IronPort-AV: E=Sophos;i="5.92,280,1650956400"; 
-   d="scan'208";a="269129959"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2022 18:16:30 -0700
+   d="scan'208";a="266513493"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2022 18:28:33 -0700
 X-IronPort-AV: E=Sophos;i="5.92,280,1650956400"; 
-   d="scan'208";a="624520476"
+   d="scan'208";a="547294019"
 Received: from spr.sh.intel.com ([10.239.53.122])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2022 18:16:28 -0700
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2022 18:28:30 -0700
 From: Chao Gao <chao.gao@intel.com>
-To: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Cc: Chao Gao <chao.gao@intel.com>,
-	Christoph Hellwig <hch@infradead.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>
-Subject: [RESEND PATCH 3/3] swiotlb: ensure a segment doesn't cross the area boundary
-Date: Mon, 18 Jul 2022 09:16:07 +0800
-Message-Id: <20220718011608.106289-4-chao.gao@intel.com>
+To: linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Cc: dave.hansen@intel.com,
+	len.brown@intel.com,
+	tony.luck@intel.com,
+	rafael.j.wysocki@intel.com,
+	reinette.chatre@intel.com,
+	dan.j.williams@intel.com,
+	kirill.shutemov@linux.intel.com,
+	sathyanarayanan.kuppuswamy@linux.intel.com,
+	ilpo.jarvinen@linux.intel.com,
+	ak@linux.intel.com,
+	alexander.shishkin@linux.intel.com,
+	Chao Gao <chao.gao@intel.com>
+Subject: [RFC v2 0/2] swiotlb performance optimizations
+Date: Mon, 18 Jul 2022 09:28:16 +0800
+Message-Id: <20220718012818.107051-1-chao.gao@intel.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220718011608.106289-1-chao.gao@intel.com>
-References: <20220718011608.106289-1-chao.gao@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -46,44 +52,51 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Free slots tracking assumes that slots in a segment can be allocated to
-fulfill a request. This implies that slots in a segment should belong to
-the same area. Although the possibility of a violation is low, it is better
-to explicitly enforce segments won't span multiple areas by adjusting the
-number of slabs when configuring areas.
+Intent of this post:
+ Seek reviews from Intel reviewers and anyone else in the list
+ interested in IO performance in confidential VMs. Need some acked-by
+ reviewed-by tags before I can add swiotlb maintainers to "to/cc" lists
+ and ask for a review from them.
 
-Signed-off-by: Chao Gao <chao.gao@intel.com>
----
- kernel/dma/swiotlb.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+Changes from v1 to v2:
+- rebase to the latest dma-mapping tree.
+- drop the duplicate patch for mitigating lock contention
+- re-collect perf data
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 9ab87d6d47bc..70fd73fc357a 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -91,12 +91,21 @@ struct io_tlb_area {
- /*
-  * Round up number of slabs to the next power of 2. The last area is going
-  * be smaller than the rest if default_nslabs is not power of two.
-+ * The number of slot in an area should be a multiple of IO_TLB_SEGSIZE,
-+ * otherwise a segment may span two or more areas. It conflicts with free
-+ * contiguous slots tracking: free slots are treated contiguous no matter
-+ * whether they cross an area boundary.
-  *
-  * Return true if default_nslabs is rounded up.
-  */
- static bool round_up_default_nslabs(void)
- {
--	if (!default_nareas || is_power_of_2(default_nslabs))
-+	if (!default_nareas)
-+		return false;
-+
-+	if (default_nslabs < IO_TLB_SEGSIZE * default_nareas)
-+		default_nslabs = IO_TLB_SEGSIZE * default_nareas;
-+	else if (is_power_of_2(default_nslabs))
- 		return false;
- 
- 	default_nslabs = roundup_pow_of_two(default_nslabs);
+swiotlb is now widely used by confidential VMs. This series optimizes
+swiotlb to reduce cache misses and lock contention during bounce buffer
+allocation/free and memory bouncing to improve IO workload performance in
+confidential VMs.
+
+Here are some FIO tests we did to demonstrate the improvement.
+
+Test setup
+----------
+
+A normal VM with 8vCPU and 32G memory, swiotlb is enabled by swiotlb=force.
+FIO block size is 4K and iodepth is 256. Note that a normal VM is used so
+that others lack of necessary hardware to host confidential VMs can reproduce
+results below.
+
+Results
+-------
+
+1 FIO job	read/write	IOPS (k)
+vanilla		read		216 
+		write		251 
+optimized	read		250 
+		write		270 
+
+1-job FIO sequential read/write perf increase by 19% and 8% respectively.
+
+Chao Gao (2):
+  swiotlb: use bitmap to track free slots
+  swiotlb: Allocate memory in a cache-friendly way
+
+ include/linux/swiotlb.h |   8 ++-
+ kernel/dma/swiotlb.c    | 127 +++++++++++++++++-----------------------
+ 2 files changed, 60 insertions(+), 75 deletions(-)
+
 -- 
 2.25.1
 
