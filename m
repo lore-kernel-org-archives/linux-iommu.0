@@ -1,133 +1,77 @@
-Received: from esa2.hgst.iphmx.com (esa2.hgst.iphmx.com [68.232.143.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73787ECC
-	for <iommu@lists.linux.dev>; Mon, 18 Jul 2022 10:49:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1658141351; x=1689677351;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=7rBMGEx1YSGdVB6fbYn5Y5KkPOqfQscgrLN9anE2Owo=;
-  b=aDbbYy/6SQcs0mhOKIZkXKDXWynhzGsUuU9Iwj8gxhQrg2FSi8ezqkU+
-   z0Dhrt5n/voM/6O+IbggO6CvBtwKo1sAqUg3Ov1Pwo1HP69251wt38ZVt
-   BX0pM1sdbiqzPOeKtBbIm0R6Xz2kYpCpLxk7K4gapvXd1eMWqTYbbzvoI
-   51RqMn0JHVVjF0pvPDIhwkR8xVT3VpvwfeWkZhZqD3dADQNVFqk1PCt2n
-   g1/9hr6XYQRV9JQeiorbbWRQlWqkvSuaV5Bxd+Aog0lK8COaS3hd2Ljgu
-   kwxsjHmobvMIPaHwaac053gUIwHqVr62BgmMHkbk8bmFq5O17JxIG4gdM
-   w==;
-X-IronPort-AV: E=Sophos;i="5.92,280,1650902400"; 
-   d="scan'208";a="310361195"
-Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
-  by ob1.hgst.iphmx.com with ESMTP; 18 Jul 2022 18:48:01 +0800
-IronPort-SDR: EAkcZx1ZL46aKn0nWgdMXlzTFj7P007yyCWem9iutwQmQBtL+5ChQPjAFw4954gbFzBMKqJVrh
- cNfLE98CRZzItvb7MqMqhgAlg0eE/3qELAg2uA1ze8qtFoiCrmd/rKkaTI8kTfU4qcdjQS4xsS
- xY3LBtR+59jIAoqxwV/jnCUsTzMsLZDOTRAPbEn+lRS6Sl7vmixzswnM9enIYbHo5YGax5iUkU
- q7u7RpUAnxAV8UOhRP9RdYrXZnxXTwVeIK8CNifFJYkaKJI5NeYD0jIQW0J+sMTdnVpoX3sPbb
- JoAxDPa7QJpzFYjjiWGpLeB6
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
-  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 18 Jul 2022 03:09:27 -0700
-IronPort-SDR: VI92L1u0z8oFCyCIdOP2kX/cwWR/LxrAYz/mgJ9NpCnVWqArrGTO+m2id9QNa+IWUeBtPNpfrU
- yBQagh2DFZQJuQTt6ajd1dkvyckRUnAGgmHPMX6taeE7bXusOujWahUgxw0Gu+Vjm9n83tE8Zy
- u4u2uN7W2Is0w4lDx9OSFBCyXCxLCcoBMc0oVNHS7FwfGdNumxlgl82yRht045MaJY1CM17Ht9
- 0h/wpCPNBUIyeHpcs+rFXow6uMKrKdlFNniRfhGSI6FebtF07xvLr8ucg1PGcoV8TUgcjX7HvP
- wG0=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 18 Jul 2022 03:48:02 -0700
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-	by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4LmdwK1Kq8z1Rw4L
-	for <iommu@lists.linux.dev>; Mon, 18 Jul 2022 03:48:01 -0700 (PDT)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-	reason="pass (just generated, assumed good)"
-	header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-	opensource.wdc.com; h=content-transfer-encoding:content-type
-	:in-reply-to:organization:from:references:to:content-language
-	:subject:user-agent:mime-version:date:message-id; s=dkim; t=
-	1658141280; x=1660733281; bh=7rBMGEx1YSGdVB6fbYn5Y5KkPOqfQscgrLN
-	9anE2Owo=; b=bjN5B1j0Rkc2vSnTaBg0I6yZlDKb3jC/Ey1Ow71t0OK/WvsEBS6
-	zcLef5xxzvKAk6dN3xoqmSaUtbHCa7GpME+/Gyjh24WSx+3oRTp/RTNJw0MQirr9
-	/HS1V4UnLFvDu+T4pFMk4KY+3/YbTd/C+0K+2mxZS9H9jBJuF+QtICaIVfDFwcoq
-	Xf2U2c1D81NnxfOvu3UB2HOllG4nhOn6akT3u2/VfBdiWtKfjfBzx9y4PQm2k+Ek
-	0JsdZ2kx7xVyP3FIIgro3g3SbxmL5fcX2NKc1Qc5XkWcUaSyDtLMWWgD9RAD5Dqz
-	CmPSh/wyz5ZJehHEEZge/Uqk7PRq0biCTqg==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-	by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id CotKiXahLB0Q for <iommu@lists.linux.dev>;
-	Mon, 18 Jul 2022 03:48:00 -0700 (PDT)
-Received: from [10.225.163.120] (unknown [10.225.163.120])
-	by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4LmdwG3P48z1RtVk;
-	Mon, 18 Jul 2022 03:47:58 -0700 (PDT)
-Message-ID: <dad18548-8487-e059-9538-f34ed46d39c0@opensource.wdc.com>
-Date: Mon, 18 Jul 2022 19:47:57 +0900
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE87D320E
+	for <iommu@lists.linux.dev>; Mon, 18 Jul 2022 15:17:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B3DDC36AE5;
+	Mon, 18 Jul 2022 15:17:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1658157431;
+	bh=7vYdhXeQdOu5QO7fBUho2H+EQnIcqXUqzgdSIhY4WMM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=LfCvzksFJwZBgBuzW2Rf+hh7lzSOze0hr87nXoiLN2ybN3Tud+f9IAZyWinu/+q+4
+	 54/G/vPbhIslkJvs5NBprcI2JK4ZuZhngkOyoGb60lz1xVSvFxppoQafFejAlyVrkC
+	 7V2+GF+MTQqPpFSSpxEo0FSS31QhqZU0P4FaH+v1oe0/+axYqjKdVuWbusikDHTY21
+	 OKpKDYcybJc5pOQu6y+7gL3zWWC7q1lLZsC+5mM6o4Ws9NmCaHZB0FwS/bUV5S4EC2
+	 au6e+pEswAgMOIvr0ZvKqaBPBH/97Mx0kNtQUyAhqFk3uDqIyvGblLLieQC0diGvk3
+	 d+7eJhh2A5HGg==
+Date: Mon, 18 Jul 2022 16:17:06 +0100
+From: Will Deacon <will@kernel.org>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
+	linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
+Subject: Re: [PATCH] MAINTAINERS: Add Robin Murphy as IOMMU SUBSYTEM reviewer
+Message-ID: <20220718151704.GB12935@willie-the-truck>
+References: <20220715110334.6969-1-joro@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v6 5/6] scsi: scsi_transport_sas: Cap shost opt_sectors
- according to DMA optimal limit
-Content-Language: en-US
-To: John Garry <john.garry@huawei.com>, joro@8bytes.org, will@kernel.org,
- jejb@linux.ibm.com, martin.petersen@oracle.com, hch@lst.de,
- m.szyprowski@samsung.com, robin.murphy@arm.com
-Cc: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-ide@vger.kernel.org, iommu@lists.linux.dev,
- linux-scsi@vger.kernel.org, linuxarm@huawei.com
-References: <1657797329-98541-1-git-send-email-john.garry@huawei.com>
- <1657797329-98541-6-git-send-email-john.garry@huawei.com>
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <1657797329-98541-6-git-send-email-john.garry@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220715110334.6969-1-joro@8bytes.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On 7/14/22 20:15, John Garry wrote:
-> Streaming DMA mappings may be considerably slower when mappings go through
-> an IOMMU and the total mapping length is somewhat long. This is because the
-> IOMMU IOVA code allocates and free an IOVA for each mapping, which may
-> affect performance.
+On Fri, Jul 15, 2022 at 01:03:34PM +0200, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel@suse.de>
 > 
-> For performance reasons set the request queue max_sectors from
-> dma_opt_mapping_size(), which knows this mapping limit.
+> Robin has been acting as a reviewer of the IOMMU Subsystem for a long
+> time. He is also defacto maintaining the IOMMU DMA-API Layer, so make
+> both roles official by adding Robin to the MAINTAINERS file.
 > 
-> Signed-off-by: John Garry <john.garry@huawei.com>
+> Signed-off-by: Joerg Roedel <jroedel@suse.de>
 > ---
->  drivers/scsi/scsi_transport_sas.c | 6 ++++++
->  1 file changed, 6 insertions(+)
+>  MAINTAINERS | 13 ++++++++++++-
+>  1 file changed, 12 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/scsi/scsi_transport_sas.c b/drivers/scsi/scsi_transport_sas.c
-> index 12bff64dade6..2f88c61216ee 100644
-> --- a/drivers/scsi/scsi_transport_sas.c
-> +++ b/drivers/scsi/scsi_transport_sas.c
-> @@ -225,6 +225,7 @@ static int sas_host_setup(struct transport_container *tc, struct device *dev,
->  {
->  	struct Scsi_Host *shost = dev_to_shost(dev);
->  	struct sas_host_attrs *sas_host = to_sas_host_attrs(shost);
-> +	struct device *dma_dev = shost->dma_dev;
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 8f9ed151ad4c..029f49f29982 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -10448,9 +10448,20 @@ T:	git git://git.kernel.org/pub/scm/fs/xfs/xfs-linux.git
+>  F:	fs/iomap/
+>  F:	include/linux/iomap.h
 >  
->  	INIT_LIST_HEAD(&sas_host->rphy_list);
->  	mutex_init(&sas_host->lock);
-> @@ -236,6 +237,11 @@ static int sas_host_setup(struct transport_container *tc, struct device *dev,
->  		dev_printk(KERN_ERR, dev, "fail to a bsg device %d\n",
->  			   shost->host_no);
->  
-> +	if (dma_dev->dma_mask) {
-> +		shost->opt_sectors = min_t(unsigned int, shost->max_sectors,
-> +				dma_opt_mapping_size(dma_dev) >> SECTOR_SHIFT);
-> +	}
+> -IOMMU DRIVERS
+> +IOMMU DMA-API LAYER
+> +M:	Robin Murphy <robin.murphy@arm.com>
+> +L:	iommu@lists.linux.dev
+> +S:	Maintained
+> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+> +F:	drivers/iommu/dma-iommu.c
+> +F:	drivers/iommu/iova.c
+> +F:	include/linux/dma-iommu.h
+> +F:	include/linux/iova.h
 > +
->  	return 0;
->  }
->  
+> +IOMMU SUBSYSTEM
+>  M:	Joerg Roedel <joro@8bytes.org>
+>  M:	Will Deacon <will@kernel.org>
+> +R:	Robin Murphy <robin.murphy@arm.com>
 
-Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+It's about time!
 
--- 
-Damien Le Moal
-Western Digital Research
+Acked-by: Will Deacon <will@kernel.org>
+
+Will
