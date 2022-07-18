@@ -1,96 +1,74 @@
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DAA5A42
-	for <iommu@lists.linux.dev>; Mon, 18 Jul 2022 07:10:35 +0000 (UTC)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.57])
-	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LmY0r3K9qzVfrT;
-	Mon, 18 Jul 2022 15:06:36 +0800 (CST)
-Received: from [10.67.102.169] (10.67.102.169) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 18 Jul 2022 15:10:22 +0800
-CC: <gregkh@linuxfoundation.org>, <alexander.shishkin@linux.intel.com>,
-	<leo.yan@linaro.org>, <james.clark@arm.com>, <will@kernel.org>,
-	<robin.murphy@arm.com>, <acme@kernel.org>, <peterz@infradead.org>,
-	<corbet@lwn.net>, <mathieu.poirier@linaro.org>, <mark.rutland@arm.com>,
-	<jonathan.cameron@huawei.com>, <john.garry@huawei.com>, <helgaas@kernel.org>,
-	<lorenzo.pieralisi@arm.com>, <suzuki.poulose@arm.com>, <joro@8bytes.org>,
-	<shameerali.kolothum.thodi@huawei.com>, <mingo@redhat.com>,
-	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-pci@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-	<iommu@lists.linux-foundation.org>, <iommu@lists.linux.dev>,
-	<linux-doc@vger.kernel.org>, <prime.zeng@huawei.com>, <liuqi115@huawei.com>,
-	<zhangshaokun@hisilicon.com>, <linuxarm@huawei.com>, Yicong Yang
-	<yangyicong@hisilicon.com>
-Subject: Re: [PATCH v10 7/8] docs: trace: Add HiSilicon PTT device driver
- documentation
-To: Bagas Sanjaya <bagasdotme@gmail.com>
-References: <20220714092710.53486-1-yangyicong@hisilicon.com>
- <20220714092710.53486-8-yangyicong@hisilicon.com>
- <YtEgoZveaZJ3a7+4@debian.me>
-From: Yicong Yang <yangyicong@huawei.com>
-Message-ID: <f0dc5cb8-ec3b-eb8f-98e3-4a6301e8be06@huawei.com>
-Date: Mon, 18 Jul 2022 15:10:22 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F921EA6
+	for <iommu@lists.linux.dev>; Mon, 18 Jul 2022 09:28:39 +0000 (UTC)
+Received: from [10.10.132.242] (unknown [83.149.199.65])
+	by mail.ispras.ru (Postfix) with ESMTPS id 28A5B40737DF;
+	Mon, 18 Jul 2022 09:20:17 +0000 (UTC)
+Message-ID: <28df50012344fb1c925a7ceaf55ae400152ffb48.camel@ispras.ru>
+Subject: [POSSIBLE BUG] iommu/io-pgtable-arm: possible dereferencing of NULL
+ pointer
+From: Subkhankulov Rustam <subkhankulov@ispras.ru>
+To: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, Alexey Khoroshilov <khoroshilov@ispras.ru>, 
+	ldv-project@linuxtesting.org
+Date: Mon, 18 Jul 2022 12:20:06 +0300
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <YtEgoZveaZJ3a7+4@debian.me>
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.102.169]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
 
-On 2022/7/15 16:09, Bagas Sanjaya wrote:
-> On Thu, Jul 14, 2022 at 05:27:09PM +0800, Yicong Yang wrote:
->> +1. Tx path QoS control
->> +------------------------
->> +
-> <snip>
->> +2. Tx path buffer control
->> +-------------------------
->> +
-> 
-> Shouldn't Tx in the headings above be lowercase (tx)?
+Version: 5-19-rc6
 
-Tx is used to keep consistence with other places.
+In function '__arm_lpae_alloc_pages' pointer 'dev' is compared with 
+NULL at [drivers/iommu/io-pgtable-arm.c: 203]. This means that the 
+pointer can be NULL.
 
-> 
->> +1. filter
->> +---------
-> <snip>
->> +2. type
->> +-------
-> <snip>
->> +3. direction
->> +------------
-> <snip>
->> +4. format
->> +--------------
-> <snip>
->> +5. memory management
->> +--------------------
-> <snip>
->> +6. decoding
->> +-----------
-> 
-> I think these headings above should use title case instead.
+-----------------------------------------------------------------------
+203 	p = alloc_pages_node(dev ? dev_to_node(dev) : NUMA_NO_NODE,
+204 			     gfp | __GFP_ZERO, order);
+-----------------------------------------------------------------------
 
-ok.
+Then, if cfg->coherent_walk == 0 at [drivers/iommu/io-pgtable-arm.c: 
+209], function 'dma_map_single', which is defined as 
+'dma_map_single_attrs', is called and pointer dev is passed as 
+first parameter.
 
-> 
-> Anyway, the documentation (htmldocs) builds successfully without new
-> warnings.
-> 
-> Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
-> 
+-----------------------------------------------------------------------
+209 	if (!cfg->coherent_walk) {
+208 		dma = dma_map_single(dev, pages, size, DMA_TO_DEVICE);
+-----------------------------------------------------------------------
 
-Thanks.
+Therefore, pointer 'dev' passed to function 'dev_driver_string' 
+in macro 'dev_WARN_ONCE' at [include/linux/dma-mapping.h: 326], 
+where it is dereferenced at [drivers/base/core.c: 2091].
+
+-----------------------------------------------------------------------
+2083	const char *dev_driver_string(const struct device *dev)
+2084	{
+2085		struct device_driver *drv;
+2086
+---
+2091		drv = READ_ONCE(dev->driver);
+-----------------------------------------------------------------------
+
+Thus, if it is possible that 'dev' is null at the same time 
+that flag 'coherent_walk' is 0, then NULL pointer will be 
+dereferenced.
+
+Should we somehow avoid NULL pointer dereference or is this 
+situation impossible and we should remove comparison with NULL?
+
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
+
+regards,
+Rustam Subkhankulov
 
