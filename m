@@ -1,170 +1,125 @@
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2765A7B
-	for <iommu@lists.linux.dev>; Tue, 19 Jul 2022 08:17:28 +0000 (UTC)
-X-UUID: d21d494d581d44cd925db6dcf01ec486-20220719
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:4fd9f2e5-67de-4d5d-8288-37defb56e580,OB:0,LO
-	B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-	ON:release,TS:0
-X-CID-META: VersionHash:0f94e32,CLOUDID:768fae64-0b3f-4b2c-b3a6-ed5c044366a0,C
-	OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-	,QS:nil,BEC:nil,COL:0
-X-UUID: d21d494d581d44cd925db6dcf01ec486-20220719
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-	(envelope-from <tinghan.shen@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 1610973080; Tue, 19 Jul 2022 16:17:17 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Tue, 19 Jul 2022 16:17:16 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Tue, 19 Jul 2022 16:17:16 +0800
-Message-ID: <c4480c9ea0822ae693ff6a501c073c365e983b83.camel@mediatek.com>
-Subject: Re: [PATCH v2 03/19] dt-bindings: power: mediatek: Add bindings for
- MediaTek SCPSYS
-From: Tinghan Shen <tinghan.shen@mediatek.com>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Yong Wu
-	<yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
-	<will@kernel.org>, Rob Herring <robh+dt@kernel.org>, Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>, Lee Jones <lee.jones@linaro.org>,
-	Matthias Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
-	<angelogioacchino.delregno@collabora.com>, MandyJH Liu
-	<mandyjh.liu@mediatek.com>
-CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date: Tue, 19 Jul 2022 16:17:16 +0800
-In-Reply-To: <46df4ad5-5102-b5fe-95b7-5b157fb28f01@linaro.org>
-References: <20220714122837.20094-1-tinghan.shen@mediatek.com>
-	 <20220714122837.20094-4-tinghan.shen@mediatek.com>
-	 <46df4ad5-5102-b5fe-95b7-5b157fb28f01@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4322F10E9
+	for <iommu@lists.linux.dev>; Tue, 19 Jul 2022 08:50:33 +0000 (UTC)
+Received: by mail-lf1-f54.google.com with SMTP id d12so23574607lfq.12
+        for <iommu@lists.linux.dev>; Tue, 19 Jul 2022 01:50:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=3pxJNE6gYc8cb6d4rkA2eV3Aswi0lfTlAlrCacdvP2w=;
+        b=ijFr0es238AtzUmBFcdhNq9P7S2bQTfENXLr/NSqt5rREGLk235GS2OEVXk806dVZu
+         LZhIf326MJ344Gx/3K/y1+Q6E/BWtau/4SA8q6hRckQA2KZEcTBciFBoUT+zTJN3gZaw
+         bFBVZKNsc1osyAVPJRoYq8QtRgh72fYlykSBxstzpzgPawA/NqvgBZs+xrpGXLRWJhjT
+         9SD45XZSuqB7Vs8eD2J9dcHuuZZpQhFfY+3HxlEDezCy6d74cAfqv7KzmJjpiPVDUPtG
+         V1426Zg579DI0aFdtzg9S6F1fJK5ZFHyrAIZvjtii2W5Ch4dtUqAJY9efj+r6HtPk7BL
+         k65Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=3pxJNE6gYc8cb6d4rkA2eV3Aswi0lfTlAlrCacdvP2w=;
+        b=glO9nX4q6ibkB3d5/qM5lQX5/ikjlDQULEyjoixyJaVjWUxfMnk4B6EYnN1+Wka3Av
+         4EsIaru6/nWpRJYm0lEKn+7wh8R4q88nF778sDcOlrh9YKvgF5D3Ay9CykxL2BJarmz7
+         fMCg6ttKI8wFp0o241UrmYZx1+e8ayFY+RHZI9LuCTTdOdTgXJ3RZBJIxuvSpVz+qOib
+         qhZswPT0ICttQx16zVEoEvIR/JEc4m0wC8IaC6QXvKGJjrmqpIltcArYFcWwBlK9P+C0
+         F3ryDkqiYWzO5X+Gxxf/kU9XGBmPePjR9IpJb4KE0hhXBElRAP1deqOy6/J8DKKTfvOw
+         lNGw==
+X-Gm-Message-State: AJIora+0tkRSk1PuH3+hrk18abG+DaYYAHJvG6qYiQIzA8vcSBmR2gLK
+	/Twqa4V09h34lkfQruy2UG7Y6Q==
+X-Google-Smtp-Source: AGRyM1us868YPpB392tMn7H3KK4A7rfaBwjaayrkHiss5VCTlo/g5OiMzIp0NjvcgAuBi9wC02cPVg==
+X-Received: by 2002:a05:6512:1595:b0:489:da32:ec68 with SMTP id bp21-20020a056512159500b00489da32ec68mr16232700lfb.573.1658220631316;
+        Tue, 19 Jul 2022 01:50:31 -0700 (PDT)
+Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
+        by smtp.gmail.com with ESMTPSA id e22-20020a195016000000b00489de206812sm3061580lfb.151.2022.07.19.01.50.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Jul 2022 01:50:30 -0700 (PDT)
+Message-ID: <2a7280cb-2bcc-4297-8beb-a9249c5bf899@linaro.org>
+Date: Tue, 19 Jul 2022 10:50:29 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 03/19] dt-bindings: power: mediatek: Add bindings for
+ MediaTek SCPSYS
+Content-Language: en-US
+To: Tinghan Shen <tinghan.shen@mediatek.com>, Yong Wu <yong.wu@mediatek.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Lee Jones <lee.jones@linaro.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ MandyJH Liu <mandyjh.liu@mediatek.com>
+Cc: iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220714122837.20094-1-tinghan.shen@mediatek.com>
+ <20220714122837.20094-4-tinghan.shen@mediatek.com>
+ <46df4ad5-5102-b5fe-95b7-5b157fb28f01@linaro.org>
+ <c4480c9ea0822ae693ff6a501c073c365e983b83.camel@mediatek.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <c4480c9ea0822ae693ff6a501c073c365e983b83.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-MTK: N
 
-Hi Krzysztof,
-
-On Fri, 2022-07-15 at 09:57 +0200, Krzysztof Kozlowski wrote:
-> On 14/07/2022 14:28, Tinghan Shen wrote:
-> > The System Control Processor System (SCPSYS) has several power
-> > management related tasks in the system. Add the bindings for it.
-> > 
-> > Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
-> > ---
-> >  .../bindings/mfd/mediatek,scpsys.yaml         | 62 +++++++++++++++++++
-> >  1 file changed, 62 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/mfd/mediatek,scpsys.yaml
-> > 
-> > diff --git a/Documentation/devicetree/bindings/mfd/mediatek,scpsys.yaml
-> > b/Documentation/devicetree/bindings/mfd/mediatek,scpsys.yaml
-> > new file mode 100644
-> > index 000000000000..a8b9220f2f27
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/mfd/mediatek,scpsys.yaml
-> > @@ -0,0 +1,62 @@
-> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> > +%YAML 1.2
-> > +---
-> > +$id: 
-> > https://urldefense.com/v3/__http://devicetree.org/schemas/mfd/mediatek,scpsys.yaml*__;Iw!!CTRNKA9wMg0ARbw!1TUl-dhD0p8qh3rYVk8RtfoKEP88jg8OADMd19qP6siBCQHhFnHWCgsyUqiETyBzxw8$
-> >  
-> > +$schema: 
-> > https://urldefense.com/v3/__http://devicetree.org/meta-schemas/core.yaml*__;Iw!!CTRNKA9wMg0ARbw!1TUl-dhD0p8qh3rYVk8RtfoKEP88jg8OADMd19qP6siBCQHhFnHWCgsyUqiEJQmakAI$
-> >  
-> > +
-> > +title: MediaTek System Control Processor System
-> > +
-> > +maintainers:
-> > +  - MandyJH Liu <mandyjh.liu@mediatek.com>
-> > +
-> > +description:
-> > +  MediaTek System Control Processor System (SCPSYS) has several
-> > +  power management tasks. The tasks include MTCMOS power
-> > +  domain control, thermal measurement, DVFS, etc.
-> > +
-> > +properties:
-> > +  compatible:
-> > +    items:
-> > +      - const: mediatek,scpsys
-> > +      - const: syscon
-> > +      - const: simple-mfd
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  power-controller:
-> > +    $ref: /schemas/power/mediatek,power-controller.yaml#
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +
-> > +additionalProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    #include <dt-bindings/clock/mt8195-clk.h>
-> > +    #include <dt-bindings/power/mt8195-power.h>
-> > +
-> > +    syscon@10006000 {
-> > +        compatible = "mediatek,scpsys", "syscon", "simple-mfd";
+On 19/07/2022 10:17, Tinghan Shen wrote:
+>>> +    syscon@10006000 {
+>>> +        compatible = "mediatek,scpsys", "syscon", "simple-mfd";
+>>
+>> This should be a SoC-specific compatible (and filename).
 > 
-> This should be a SoC-specific compatible (and filename).
+> Ok. I think that you mean "mediatek,mt8195-scpsys".
+> I'll update it in next version.
 
-Ok. I think that you mean "mediatek,mt8195-scpsys".
-I'll update it in next version.
+Yes.
 
 > 
-> > +        reg = <0x10006000 0x100>;
-> > +
-> > +        spm: power-controller {
+>>
+>>> +        reg = <0x10006000 0x100>;
+>>> +
+>>> +        spm: power-controller {
+>>
+>> I think you created before less-portable, quite constrained bindings for
+>> power controller. You now require that mt8195-power-controller is always
+>> a child of some parent device which will share its regmap/MMIO with it.
+>>
+>> And what if in your next block there is no scpsys block and power
+>> controller is the scpsys alone? It's not possible with your bindings.
 > 
-> I think you created before less-portable, quite constrained bindings for
-> power controller. You now require that mt8195-power-controller is always
-> a child of some parent device which will share its regmap/MMIO with it.
+> Do you mean a power controller node that looks like this?
 > 
-> And what if in your next block there is no scpsys block and power
-> controller is the scpsys alone? It's not possible with your bindings.
-
-Do you mean a power controller node that looks like this?
-
-scpsys: power-controller@10006000 {
-	compatible = "mediatek,mt6797-scpsys";
-	#power-domain-cells = <1>;
-
-	// ...
-};
-
+> scpsys: power-controller@10006000 {
+> 	compatible = "mediatek,mt6797-scpsys";
+> 	#power-domain-cells = <1>;
 > 
-> Wouldn't it be better to assign some address space to the
-> power-controller (now as an offset from scpsys)?
+> 	// ...
+> };
 
-Is this mean adding an offset after the node name?
-
-spm: power-controller@0 {
-                     ^^
+Yes, I mean, with an unit address.
 
 > 
-> This is just wondering (Rockchip did the same...) and not a blocker as
-> power-controller bindings are done.
+>>
+>> Wouldn't it be better to assign some address space to the
+>> power-controller (now as an offset from scpsys)?
 > 
-> Best regards,
-> Krzysztof
+> Is this mean adding an offset after the node name?
+> 
+> spm: power-controller@0 {
 
+This or above. I think it does not matter for the bindings - it's an
+implementation detail, whether you give to the child absolute SoC
+address or you give an bus-specific (scpsys) sub-address/offset.
 
-Thanks,
-TingHan
+The point is that you have an unit address, thus in the future this
+could be a device node separate from scpsys.
 
-
+Best regards,
+Krzysztof
