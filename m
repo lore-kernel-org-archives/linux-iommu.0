@@ -1,206 +1,80 @@
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 169DA4C67
-	for <iommu@lists.linux.dev>; Mon, 18 Jul 2022 23:58:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 675C77B
+	for <iommu@lists.linux.dev>; Tue, 19 Jul 2022 00:06:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658188694; x=1689724694;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=jY4YCblaNCyb/LRbAS6ElI6rZb3UlpHUJJKbMY1wf3g=;
-  b=IkpoeyzlOSgcacC+pMlvSn8kP+lpYG8KHT2vePi4K0DQIC6K6LoTJM9w
-   pAKT5WU8yIvArVDFrqSi16PP/CKnALea29y+RcHqd+QJE3R5DIiBGulh8
-   13y4N7WWjWqse8p5QEnVgEEckQy+yjQhbR4ExrRDJnoszmKr55rFkGHIy
-   5yv9+yFBBdzwupZxvIm5j6TcegiLrS8EIXJuqGUbYF5HoIgr+Tw+S6c7d
-   wIhCr9RnVe+3qqsmPI+QIsxtfj0wUSeHch6ZGRhrL21cfiEfG+b85rkut
-   iYks5OXpmNSyMSLnSEkTwuHyNCDMg83LfAJIUJFc0bzEbrqCQBbtMHEc9
+  t=1658189188; x=1689725188;
+  h=message-id:date:mime-version:cc:to:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=29irNU69Aaj6YHBxBjzfv6PGD4zSfN7x3EpWcwWR9p4=;
+  b=dMd/BeJQuElx+5J3mf1BnqOBAdGwY7ir0A5B4FMTw+9lWm+R7H35b8Rb
+   tzA93JzRYJJJc2OQDoqOuPlZvwMa0QCpCzWDOVMn2m0jzH5zgSRRH2fQS
+   ZhYaVIiq7wjsckeXFr0XvYFwv7cOo2oByegvChpb8nhQr8/VBxkoPCqH0
+   497blkZx7/SeZvhC8wRwrZ5EsM9NGndrKqnBJFzNyq5X4FOUvy25AfI+u
+   5UFHSEzW3mhEbq7a0tMEyh5onGr+8UXdiW1ZA9q2MIg/2lHBP11fxlLpw
+   QGtEZJSqGTnd4UIC5IXkRqOJIVNrADiw/QJdWmzCHiBXqjQCt62ZNgMPe
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="286363572"
+X-IronPort-AV: E=McAfee;i="6400,9594,10412"; a="312034259"
 X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="286363572"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 16:58:13 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="312034259"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 17:06:22 -0700
 X-IronPort-AV: E=Sophos;i="5.92,282,1650956400"; 
-   d="scan'208";a="624940776"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga008.jf.intel.com with ESMTP; 18 Jul 2022 16:58:11 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: iommu@lists.linux.dev
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 1/1] iommu/vt-d: Fix possible recursive locking in intel_iommu_init()
-Date: Tue, 19 Jul 2022 07:53:25 +0800
-Message-Id: <20220718235325.3952426-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+   d="scan'208";a="547694963"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.213.128]) ([10.254.213.128])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 17:06:19 -0700
+Message-ID: <9614fd81-5feb-b9c9-8317-26ca82d30d55@linux.intel.com>
+Date: Tue, 19 Jul 2022 08:06:02 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Cc: baolu.lu@linux.intel.com, will@kernel.org, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, suravee.suthikulpanit@amd.com,
+ vasant.hegde@amd.com, mjrosato@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+ schnelle@linux.ibm.com, linux-s390@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org
+References: <cover.1657034827.git.robin.murphy@arm.com>
+ <894db0ccae854b35c73814485569b634237b5538.1657034828.git.robin.murphy@arm.com>
+ <903a1677-4217-d793-6295-3927143d98fb@linux.intel.com>
+ <6557623d-3e4e-9f3e-e735-fd9654305f65@arm.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v3 01/15] iommu/vt-d: Handle race between registration and
+ device probe
+In-Reply-To: <6557623d-3e4e-9f3e-e735-fd9654305f65@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The global rwsem dmar_global_lock was introduced by commit 3a5670e8ac932
-("iommu/vt-d: Introduce a rwsem to protect global data structures"). It
-is used to protect DMAR related global data from DMAR and PCI devices
-hotplug operations.
+Hi Robin,
 
-The dmar_global_lock used in the intel_iommu_init() might cause recursive
-locking issue, where intel_iommu_get_resv_regions() is taking the
-dmar_global_lock from within a section where intel_iommu_init() already
-holds it via probe_acpi_namespace_devices().
+On 2022/7/15 20:37, Robin Murphy wrote:
+>> In fact the rmrr list in the Intel IOMMU driver is always static after
+>> parsing the ACPI/DMAR tables. There's no need to protect it with a lock.
+>> Hence we can safely remove below down/up_read().
+> 
+> IIRC that leads to RCU warnings via for_each_dev_scope(), though. I did 
+> try replacing this down_read() with rcu_read_lock(), but then it doesn't 
+> like the GFP_KERNEL allocation in iommu_alloc_resv_region(), and that's 
+> where I gave up :)
+> 
+> I'm mostly left wondering whether the dmar_drhd_units list really needs 
+> to be RCU protected at all, as that seems to be the root of most of the 
+> problems here.
 
-Using dmar_global_lock in intel_iommu_init() is unnecessary since it is
-unlikely that any IO board must be hot added during the early boot stage.
-This fixes the possible recursive locking issue by moving down DMAR and
-PCI devices hotplug support after the IOMMU is initialized and removing
-the dmar_global_lock uses in intel_iommu_init().
+I just posted a fix patch here:
 
-Fixes: d5692d4af08cd ("iommu/vt-d: Fix suspicious RCU usage in probe_acpi_namespace_devices()")
-Reported-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/linux-iommu/894db0ccae854b35c73814485569b634237b5538.1657034828.git.robin.murphy@arm.com/
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- include/linux/dmar.h        |  4 +++-
- drivers/iommu/intel/dmar.c  |  7 +++++++
- drivers/iommu/intel/iommu.c | 27 ++-------------------------
- 3 files changed, 12 insertions(+), 26 deletions(-)
+https://lore.kernel.org/linux-iommu/20220718235325.3952426-1-baolu.lu@linux.intel.com/
 
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index d81a51978d01..8917a32173c4 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -65,6 +65,7 @@ struct dmar_pci_notify_info {
- 
- extern struct rw_semaphore dmar_global_lock;
- extern struct list_head dmar_drhd_units;
-+extern int intel_iommu_enabled;
- 
- #define for_each_drhd_unit(drhd)					\
- 	list_for_each_entry_rcu(drhd, &dmar_drhd_units, list,		\
-@@ -88,7 +89,8 @@ extern struct list_head dmar_drhd_units;
- static inline bool dmar_rcu_check(void)
- {
- 	return rwsem_is_locked(&dmar_global_lock) ||
--	       system_state == SYSTEM_BOOTING;
-+	       system_state == SYSTEM_BOOTING ||
-+	       (IS_ENABLED(CONFIG_INTEL_IOMMU) && !intel_iommu_enabled);
- }
- 
- #define	dmar_rcu_dereference(p)	rcu_dereference_check((p), dmar_rcu_check())
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 6327b34f5aa7..63f32dfece82 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -2349,6 +2349,13 @@ static int dmar_device_hotplug(acpi_handle handle, bool insert)
- 	if (!dmar_in_use())
- 		return 0;
- 
-+	/*
-+	 * It's unlikely that any I/O board is hot added before the IOMMU
-+	 * subsystem is initialized.
-+	 */
-+	if (IS_ENABLED(CONFIG_INTEL_IOMMU) && !intel_iommu_enabled)
-+		return -EOPNOTSUPP;
-+
- 	if (dmar_detect_dsm(handle, DMAR_DSM_FUNC_DRHD)) {
- 		tmp = handle;
- 	} else {
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 7cca030a508e..59064cf92e7b 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -3013,13 +3013,7 @@ static int __init init_dmars(void)
- 
- #ifdef CONFIG_INTEL_IOMMU_SVM
- 		if (pasid_supported(iommu) && ecap_prs(iommu->ecap)) {
--			/*
--			 * Call dmar_alloc_hwirq() with dmar_global_lock held,
--			 * could cause possible lock race condition.
--			 */
--			up_write(&dmar_global_lock);
- 			ret = intel_svm_enable_prq(iommu);
--			down_write(&dmar_global_lock);
- 			if (ret)
- 				goto free_iommu;
- 		}
-@@ -3932,7 +3926,6 @@ int __init intel_iommu_init(void)
- 	force_on = (!intel_iommu_tboot_noforce && tboot_force_iommu()) ||
- 		    platform_optin_force_iommu();
- 
--	down_write(&dmar_global_lock);
- 	if (dmar_table_init()) {
- 		if (force_on)
- 			panic("tboot: Failed to initialize DMAR table\n");
-@@ -3945,16 +3938,6 @@ int __init intel_iommu_init(void)
- 		goto out_free_dmar;
- 	}
- 
--	up_write(&dmar_global_lock);
--
--	/*
--	 * The bus notifier takes the dmar_global_lock, so lockdep will
--	 * complain later when we register it under the lock.
--	 */
--	dmar_register_bus_notifier();
--
--	down_write(&dmar_global_lock);
--
- 	if (!no_iommu)
- 		intel_iommu_debugfs_init();
- 
-@@ -3999,11 +3982,9 @@ int __init intel_iommu_init(void)
- 		pr_err("Initialization failed\n");
- 		goto out_free_dmar;
- 	}
--	up_write(&dmar_global_lock);
- 
- 	init_iommu_pm_ops();
- 
--	down_read(&dmar_global_lock);
- 	for_each_active_iommu(iommu, drhd) {
- 		/*
- 		 * The flush queue implementation does not perform
-@@ -4021,13 +4002,11 @@ int __init intel_iommu_init(void)
- 				       "%s", iommu->name);
- 		iommu_device_register(&iommu->iommu, &intel_iommu_ops, NULL);
- 	}
--	up_read(&dmar_global_lock);
- 
- 	bus_set_iommu(&pci_bus_type, &intel_iommu_ops);
- 	if (si_domain && !hw_pass_through)
- 		register_memory_notifier(&intel_iommu_memory_nb);
- 
--	down_read(&dmar_global_lock);
- 	if (probe_acpi_namespace_devices())
- 		pr_warn("ACPI name space devices didn't probe correctly\n");
- 
-@@ -4038,17 +4017,15 @@ int __init intel_iommu_init(void)
- 
- 		iommu_disable_protect_mem_regions(iommu);
- 	}
--	up_read(&dmar_global_lock);
--
--	pr_info("Intel(R) Virtualization Technology for Directed I/O\n");
- 
- 	intel_iommu_enabled = 1;
-+	dmar_register_bus_notifier();
-+	pr_info("Intel(R) Virtualization Technology for Directed I/O\n");
- 
- 	return 0;
- 
- out_free_dmar:
- 	intel_iommu_free_dmars();
--	up_write(&dmar_global_lock);
- 	return ret;
- }
- 
--- 
-2.25.1
+It can remove the recursive locking and RCU warnings. Can you please
+take a look at it?
 
+Best regards,
+baolu
