@@ -1,44 +1,36 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 202F65393
-	for <iommu@lists.linux.dev>; Tue, 19 Jul 2022 19:57:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79776C341CE;
-	Tue, 19 Jul 2022 19:57:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D1425393
+	for <iommu@lists.linux.dev>; Tue, 19 Jul 2022 19:57:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A024C36AE2;
+	Tue, 19 Jul 2022 19:57:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1658260631;
-	bh=ttr13LeCzuWb0mQqZMCxUwMmOqVOMkpEHDBdwO513xY=;
+	s=k20201202; t=1658260636;
+	bh=YhW21QMLwSVKvPPwBDPq0FP9/l/ZC8heG1iNknMTX9Q=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=tIIL85hj56Is7sR+SPakwhka9ukvoxiTzAWPskjP2Qa8yF8YZN+0zCaHUuNu9uehN
-	 mwylr9+YuUhvL412WqlCUMP6DgdbxFALCLh++U1sU2BmW5VA2sYC5x7JtltaWfwPkf
-	 37w/KdCKA5gau7xHNm0jXRNEDipWseFYG1KNjOseoplrAMBH033Ld9i8uhu2ZmrD/G
-	 oGc6ZpNbHJkKudwdiGmGI/63UY4Txt65sBndbXozpSFMSZRknNyOdeFKj93pI+kNb0
-	 GKeKBv01WK9mZbSC5szPlcCVPEVLi6z53bHeVSU3qWA2W3wFlo3Hk5oqmImvTWXzg1
-	 4xwCzUGe6H/OA==
+	b=CME/D3RLyVJKigtZx6kw9wcQLFAbZH78IWR8rW7OWDjaOX9EaBfgj4aMA43r5G7wS
+	 6Q6/3BDbsxxZBpHLghfGaR6slRxQdnK0eJLdGuutojlAwmlZqLOK1oh3ce6tYQP4OJ
+	 a0nHoDuY8LnRvzIDOh1c3IA3RFDU7tGli2Laqv8WNo4L3wV+N+X5lBvTt0i5k3SE9+
+	 flKxcBGOwk+v6LyKUJ7+1BuY9PcQC2Vn28ACGDSu4UGw134pKz1Z4FCPrmMKjSuuUc
+	 enmWHWDhu97HNoGoOX/v0RpUVUMszkW+QxzRqcbFcvTJ29FTpqTVGkc8DBPrdvTltU
+	 8ihND0dZRW7Tg==
 From: Will Deacon <will@kernel.org>
-To: Konrad Dybcio <konrad.dybcio@somainline.org>,
-	~postmarketos/upstreaming@lists.sr.ht
+To: robin.murphy@arm.com,
+	linux-arm-msm@vger.kernel.org,
+	iommu@lists.linux.dev,
+	joro@8bytes.org,
+	Liang He <windhl@126.com>,
+	robdclark@gmail.com
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
-	Will Deacon <will@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	marijn.suijten@somainline.org,
-	Joerg Roedel <joro@8bytes.org>,
-	iommu@lists.linux.dev,
-	Robin Murphy <robin.murphy@arm.com>,
-	devicetree@vger.kernel.org,
-	jamipkettunen@somainline.org,
-	Rob Herring <robh+dt@kernel.org>,
-	martin.botka@somainline.org,
-	angelogioacchino.delregno@somainline.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 1/2] dt-bindings: arm-smmu: Add compatible for Qualcomm SM6375
-Date: Tue, 19 Jul 2022 20:56:53 +0100
-Message-Id: <165825146901.2951100.17739649475708755118.b4-ty@kernel.org>
+	Will Deacon <will@kernel.org>
+Subject: Re: [PATCH] iommu/arm-smmu: qcom_iommu: Add of_node_put() when breaking out of loop
+Date: Tue, 19 Jul 2022 20:56:55 +0100
+Message-Id: <165825181062.2951540.268101544682654909.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220716193223.455859-1-konrad.dybcio@somainline.org>
-References: <20220716193223.455859-1-konrad.dybcio@somainline.org>
+In-Reply-To: <20220719124955.1242171-1-windhl@126.com>
+References: <20220719124955.1242171-1-windhl@126.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,17 +40,17 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Sat, 16 Jul 2022 21:32:22 +0200, Konrad Dybcio wrote:
-> Add a compatible for Qualcomm SM6375's broken-as-usual MMU500 impl.
+On Tue, 19 Jul 2022 20:49:55 +0800, Liang He wrote:
+> In qcom_iommu_has_secure_context(), we should call of_node_put()
+> for the reference 'child' when breaking out of for_each_child_of_node()
+> which will automatically increase and decrease the refcount.
 > 
 > 
 
 Applied to will (for-joerg/arm-smmu/updates), thanks!
 
-[1/2] dt-bindings: arm-smmu: Add compatible for Qualcomm SM6375
-      https://git.kernel.org/will/c/743302d4ad6c
-[2/2] iommu/arm-smmu-qcom: Add SM6375 SMMU compatible
-      https://git.kernel.org/will/c/ef660de424cf
+[1/1] iommu/arm-smmu: qcom_iommu: Add of_node_put() when breaking out of loop
+      https://git.kernel.org/will/c/a91eb6803c1c 
 
 Cheers,
 -- 
