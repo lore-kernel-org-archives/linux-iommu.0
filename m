@@ -1,68 +1,86 @@
-Received: from m15111.mail.126.com (m15111.mail.126.com [220.181.15.111])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5D0531C04
-	for <iommu@lists.linux.dev>; Tue, 19 Jul 2022 13:22:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-	s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=GCVlq
-	LoEaaIgAALjbS95tP2uNkJvDM2J9R7TYDiUAHM=; b=DgXYyyJwDAVoxegiTiwUR
-	q6HsVsQCT2IEQpzQbusA8oO5pWr0i3m2KXTey2NZ+a4QlgeyifmD+JFLq+yxXR1a
-	dEk/9EQn11o8PW24Im8yPs2VFAAvI6lRanbsHMisUvsqrXF6TvhDnqNZTQVpmWca
-	bLwyYqegGUn9GQupNMk+8E=
-Received: from localhost.localdomain (unknown [124.16.139.61])
-	by smtp1 (Coremail) with SMTP id C8mowAB3fzdzqNZiREBlHA--.30928S2;
-	Tue, 19 Jul 2022 20:49:56 +0800 (CST)
-From: Liang He <windhl@126.com>
-To: robdclark@gmail.com,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	joro@8bytes.org,
-	iommu@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org,
-	windhl@126.com
-Subject: [PATCH] iommu/arm-smmu: qcom_iommu: Add of_node_put() when breaking out of loop
-Date: Tue, 19 Jul 2022 20:49:55 +0800
-Message-Id: <20220719124955.1242171-1-windhl@126.com>
-X-Mailer: git-send-email 2.25.1
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B20CE4688
+	for <iommu@lists.linux.dev>; Tue, 19 Jul 2022 17:36:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF4BAC341C6;
+	Tue, 19 Jul 2022 17:36:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1658252176;
+	bh=gDYE8ppwu4c1VBpCapCFmc8Ncr59buDgfCRpCfpBWao=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=NQ/tzIcYwRa/8vFPHrtwoZ3BQGroiMAvYMrUVB3PvCWLsfF/G0f/UfevKmHRyA0CP
+	 Lwen4a4231vb+tULXGgwtqcFCtu8tAzfv5TjBvW2Eyt6nYiZV4ihTCNnT6BJINjtHd
+	 bKWVdEAjLu7cqXSwJ30axvps5Gq329wcV5Gnt/xGbVCMeXcXfJy0YdC/cmgZs1znc2
+	 jNGI/WQ4uq4KId6yDE4GzKKfVRfA+bur5CcEGQqivTLpsILKKtjPaIgJk2yfviuY3Y
+	 yovmdFzePKMyFjghQStzwMmJyfM6uLFmc3RzZJ2AvAssPvo7t9MThV2FdGVnmZjObg
+	 IF4e6Io1MioiA==
+Date: Tue, 19 Jul 2022 18:36:10 +0100
+From: Will Deacon <will@kernel.org>
+To: Subkhankulov Rustam <subkhankulov@ispras.ru>
+Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Alexey Khoroshilov <khoroshilov@ispras.ru>,
+	ldv-project@linuxtesting.org
+Subject: Re: [POSSIBLE BUG] iommu/io-pgtable-arm: possible dereferencing of
+ NULL pointer
+Message-ID: <20220719173610.GA14526@willie-the-truck>
+References: <28df50012344fb1c925a7ceaf55ae400152ffb48.camel@ispras.ru>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:C8mowAB3fzdzqNZiREBlHA--.30928S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7Gr4rZFWkKrWUJF1kCw1fXrb_yoWkGFbEkF
-	18Xas3Gr10yrZrAr9FqF43ZrykKws5ZrZxGay8WryrJr17Xr1kJanFqFW8X3yxua1jyFyU
-	G3sxAFZ5ArWUXjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-	9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRMMa0JUUUUU==
-X-Originating-IP: [124.16.139.61]
-X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi3BVDF1pED8wxpQAAsU
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <28df50012344fb1c925a7ceaf55ae400152ffb48.camel@ispras.ru>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-In qcom_iommu_has_secure_context(), we should call of_node_put()
-for the reference 'child' when breaking out of for_each_child_of_node()
-which will automatically increase and decrease the refcount.
+On Mon, Jul 18, 2022 at 12:20:06PM +0300, Subkhankulov Rustam wrote:
+> Version: 5-19-rc6
+> 
+> In function '__arm_lpae_alloc_pages' pointer 'dev' is compared with 
+> NULL at [drivers/iommu/io-pgtable-arm.c: 203]. This means that the 
+> pointer can be NULL.
+> 
+> -----------------------------------------------------------------------
+> 203 	p = alloc_pages_node(dev ? dev_to_node(dev) : NUMA_NO_NODE,
+> 204 			     gfp | __GFP_ZERO, order);
+> -----------------------------------------------------------------------
+> 
+> Then, if cfg->coherent_walk == 0 at [drivers/iommu/io-pgtable-arm.c: 
+> 209], function 'dma_map_single', which is defined as 
+> 'dma_map_single_attrs', is called and pointer dev is passed as 
+> first parameter.
+> 
+> -----------------------------------------------------------------------
+> 209 	if (!cfg->coherent_walk) {
+> 208 		dma = dma_map_single(dev, pages, size, DMA_TO_DEVICE);
+> -----------------------------------------------------------------------
+> 
+> Therefore, pointer 'dev' passed to function 'dev_driver_string' 
+> in macro 'dev_WARN_ONCE' at [include/linux/dma-mapping.h: 326], 
+> where it is dereferenced at [drivers/base/core.c: 2091].
+> 
+> -----------------------------------------------------------------------
+> 2083	const char *dev_driver_string(const struct device *dev)
+> 2084	{
+> 2085		struct device_driver *drv;
+> 2086
+> ---
+> 2091		drv = READ_ONCE(dev->driver);
+> -----------------------------------------------------------------------
+> 
+> Thus, if it is possible that 'dev' is null at the same time 
+> that flag 'coherent_walk' is 0, then NULL pointer will be 
+> dereferenced.
+> 
+> Should we somehow avoid NULL pointer dereference or is this 
+> situation impossible and we should remove comparison with NULL?
 
-Fixes: d051f28c8807 ("iommu/qcom: Initialize secure page table")
-Signed-off-by: Liang He <windhl@126.com>
----
- drivers/iommu/arm/arm-smmu/qcom_iommu.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+I think 'dev' is only null in the case of the selftest initcall
+(see arm_lpae_do_selftests()), and 'coherent_walk' is always true there.
 
-diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index 4a922c7b69ee..b6f90d5b7541 100644
---- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -740,8 +740,10 @@ static bool qcom_iommu_has_secure_context(struct qcom_iommu_dev *qcom_iommu)
- 	struct device_node *child;
- 
- 	for_each_child_of_node(qcom_iommu->dev->of_node, child)
--		if (of_device_is_compatible(child, "qcom,msm-iommu-v1-sec"))
-+		if (of_device_is_compatible(child, "qcom,msm-iommu-v1-sec")) {
-+			of_node_put(child);
- 			return true;
-+		}
- 
- 	return false;
- }
--- 
-2.25.1
-
+Will
