@@ -1,34 +1,31 @@
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F27F17B
-	for <iommu@lists.linux.dev>; Tue, 19 Jul 2022 07:55:32 +0000 (UTC)
-X-UUID: df755e09332c431d97e3d643dcc5ff84-20220719
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2765A7B
+	for <iommu@lists.linux.dev>; Tue, 19 Jul 2022 08:17:28 +0000 (UTC)
+X-UUID: d21d494d581d44cd925db6dcf01ec486-20220719
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:7fc947fc-c367-4c97-9f32-455f38598aa3,OB:0,LO
-	B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
-	ION:release,TS:50
-X-CID-INFO: VERSION:1.1.8,REQID:7fc947fc-c367-4c97-9f32-455f38598aa3,OB:0,LOB:
-	0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
-	N:release,TS:50
-X-CID-META: VersionHash:0f94e32,CLOUDID:2917e0d7-5d6d-4eaf-a635-828a3ee48b7c,C
-	OID:d036aec9d6aa,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-	RL:1,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: df755e09332c431d97e3d643dcc5ff84-20220719
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+X-CID-O-INFO: VERSION:1.1.8,REQID:4fd9f2e5-67de-4d5d-8288-37defb56e580,OB:0,LO
+	B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+	ON:release,TS:0
+X-CID-META: VersionHash:0f94e32,CLOUDID:768fae64-0b3f-4b2c-b3a6-ed5c044366a0,C
+	OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+	,QS:nil,BEC:nil,COL:0
+X-UUID: d21d494d581d44cd925db6dcf01ec486-20220719
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
 	(envelope-from <tinghan.shen@mediatek.com>)
 	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 607164910; Tue, 19 Jul 2022 15:55:23 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Tue, 19 Jul 2022 15:55:21 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 19 Jul 2022 15:55:21 +0800
-Message-ID: <0be4d31850191fe8651348e9695aa025d354be5d.camel@mediatek.com>
-Subject: Re: [PATCH v2 05/19] dt-bindings: power: mediatek: Refine multiple
- level power domain nodes
+	with ESMTP id 1610973080; Tue, 19 Jul 2022 16:17:17 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Tue, 19 Jul 2022 16:17:16 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Tue, 19 Jul 2022 16:17:16 +0800
+Message-ID: <c4480c9ea0822ae693ff6a501c073c365e983b83.camel@mediatek.com>
+Subject: Re: [PATCH v2 03/19] dt-bindings: power: mediatek: Add bindings for
+ MediaTek SCPSYS
 From: Tinghan Shen <tinghan.shen@mediatek.com>
 To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Yong Wu
 	<yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
@@ -41,12 +38,11 @@ CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
 	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
 	<linux-arm-kernel@lists.infradead.org>,
 	<Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date: Tue, 19 Jul 2022 15:55:21 +0800
-In-Reply-To: <631560b2-58f7-064a-020b-d8029f04e451@linaro.org>
+Date: Tue, 19 Jul 2022 16:17:16 +0800
+In-Reply-To: <46df4ad5-5102-b5fe-95b7-5b157fb28f01@linaro.org>
 References: <20220714122837.20094-1-tinghan.shen@mediatek.com>
-	 <20220714122837.20094-6-tinghan.shen@mediatek.com>
-	 <c2e9f890-98c2-8f09-952d-495f2b57a254@linaro.org>
-	 <631560b2-58f7-064a-020b-d8029f04e451@linaro.org>
+	 <20220714122837.20094-4-tinghan.shen@mediatek.com>
+	 <46df4ad5-5102-b5fe-95b7-5b157fb28f01@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
 X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 Precedence: bulk
@@ -60,29 +56,115 @@ X-MTK: N
 
 Hi Krzysztof,
 
-(Remove non-working @mediatek.com)
+On Fri, 2022-07-15 at 09:57 +0200, Krzysztof Kozlowski wrote:
+> On 14/07/2022 14:28, Tinghan Shen wrote:
+> > The System Control Processor System (SCPSYS) has several power
+> > management related tasks in the system. Add the bindings for it.
+> > 
+> > Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+> > ---
+> >  .../bindings/mfd/mediatek,scpsys.yaml         | 62 +++++++++++++++++++
+> >  1 file changed, 62 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/mfd/mediatek,scpsys.yaml
+> > 
+> > diff --git a/Documentation/devicetree/bindings/mfd/mediatek,scpsys.yaml
+> > b/Documentation/devicetree/bindings/mfd/mediatek,scpsys.yaml
+> > new file mode 100644
+> > index 000000000000..a8b9220f2f27
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/mfd/mediatek,scpsys.yaml
+> > @@ -0,0 +1,62 @@
+> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> > +%YAML 1.2
+> > +---
+> > +$id: 
+> > https://urldefense.com/v3/__http://devicetree.org/schemas/mfd/mediatek,scpsys.yaml*__;Iw!!CTRNKA9wMg0ARbw!1TUl-dhD0p8qh3rYVk8RtfoKEP88jg8OADMd19qP6siBCQHhFnHWCgsyUqiETyBzxw8$
+> >  
+> > +$schema: 
+> > https://urldefense.com/v3/__http://devicetree.org/meta-schemas/core.yaml*__;Iw!!CTRNKA9wMg0ARbw!1TUl-dhD0p8qh3rYVk8RtfoKEP88jg8OADMd19qP6siBCQHhFnHWCgsyUqiEJQmakAI$
+> >  
+> > +
+> > +title: MediaTek System Control Processor System
+> > +
+> > +maintainers:
+> > +  - MandyJH Liu <mandyjh.liu@mediatek.com>
+> > +
+> > +description:
+> > +  MediaTek System Control Processor System (SCPSYS) has several
+> > +  power management tasks. The tasks include MTCMOS power
+> > +  domain control, thermal measurement, DVFS, etc.
+> > +
+> > +properties:
+> > +  compatible:
+> > +    items:
+> > +      - const: mediatek,scpsys
+> > +      - const: syscon
+> > +      - const: simple-mfd
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  power-controller:
+> > +    $ref: /schemas/power/mediatek,power-controller.yaml#
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +
+> > +additionalProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    #include <dt-bindings/clock/mt8195-clk.h>
+> > +    #include <dt-bindings/power/mt8195-power.h>
+> > +
+> > +    syscon@10006000 {
+> > +        compatible = "mediatek,scpsys", "syscon", "simple-mfd";
+> 
+> This should be a SoC-specific compatible (and filename).
 
-On Fri, 2022-07-15 at 10:15 +0200, Krzysztof Kozlowski wrote:
-> On 15/07/2022 10:07, Krzysztof Kozlowski wrote:
-> > On 14/07/2022 14:28, Tinghan Shen wrote:
-> > > Extract duplicated properties and support more levels of power
-> > > domain nodes.
+Ok. I think that you mean "mediatek,mt8195-scpsys".
+I'll update it in next version.
+
 > 
-> Can you guys stop cc-ing all the non-working @mediatek.com emails? Every
-> time I got a bunch of bounced:
+> > +        reg = <0x10006000 0x100>;
+> > +
+> > +        spm: power-controller {
 > 
-> 550 Relaying mail to weiyi.lu@mediatek.com is not allowed
+> I think you created before less-portable, quite constrained bindings for
+> power controller. You now require that mt8195-power-controller is always
+> a child of some parent device which will share its regmap/MMIO with it.
 > 
-> and other like that.
+> And what if in your next block there is no scpsys block and power
+> controller is the scpsys alone? It's not possible with your bindings.
+
+Do you mean a power controller node that looks like this?
+
+scpsys: power-controller@10006000 {
+	compatible = "mediatek,mt6797-scpsys";
+	#power-domain-cells = <1>;
+
+	// ...
+};
+
 > 
-> Really, it's being since some time and it became extra annoying.
+> Wouldn't it be better to assign some address space to the
+> power-controller (now as an offset from scpsys)?
+
+Is this mean adding an offset after the node name?
+
+spm: power-controller@0 {
+                     ^^
+
+> 
+> This is just wondering (Rockchip did the same...) and not a blocker as
+> power-controller bindings are done.
 > 
 > Best regards,
 > Krzysztof
 
-I'm sorry for causing the annoying notifications. 
-I'll update the maintainer lists in next version.
 
 Thanks,
 TingHan
+
 
