@@ -1,44 +1,44 @@
 Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A71E602F
-	for <iommu@lists.linux.dev>; Wed, 20 Jul 2022 17:32:25 +0000 (UTC)
-Received: by mail-lf1-f42.google.com with SMTP id n18so31452983lfq.1
-        for <iommu@lists.linux.dev>; Wed, 20 Jul 2022 10:32:25 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E32F602F
+	for <iommu@lists.linux.dev>; Wed, 20 Jul 2022 17:32:53 +0000 (UTC)
+Received: by mail-lf1-f42.google.com with SMTP id t1so31337414lft.8
+        for <iommu@lists.linux.dev>; Wed, 20 Jul 2022 10:32:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=FpdLAALfeFZJFf34lr9EAhmP/cSrmy7SxAXiREu4lCE=;
-        b=e2PwSymV0hA+iIEXs5JnVHMHTYba9XQeH1c2XfY/o0kRymmpd+9BFAruPDv8CzYshH
-         7UNWBFLSTwSwpS7PgmNyLKD7dcV25GMdPqgurrpIqDzTKca1UbsGLc0fX4rKKZVBFR/y
-         tuE4CWS3WSCn8N5efQvbI328K33oijpEPSZLThOZimXoq/kosT5TIMmQpwcvj9Zd1RrD
-         PvqjlNJQwxnzemXPGKP8NdhOCgS3Oyu7a9qARuKOiabCTX0V0lwBJMAnAT5LTbllpfKX
-         t8zNsw2nEL1IgV8iKQxyx31A+hu/coiIuhkosx5vZGkk4e4jyr0Vk0vbcG7gMPruU3FM
-         /XIA==
+        bh=GcNBK7YfKlN5L7E979o1SuVA3j9sFZjXk0q59JTAE0Y=;
+        b=vTNsdywBo8SiezHq39d4MnSeL9RUzWS1d8tMBIYeJe001MMi+Pfnvmut9IFwSAtnN3
+         fGyIN4s7PcC/f8EsnaeMS1xkZaz7UKZrqieviSAqqqh8sb1NOWx6I3+L0Hg7XRlBlVj0
+         1EqUUBDqg1nn1lAH8A5uAqds6Xkz8s5NRfX/MiWSGoIJ46qXJNNoT4J1iD5w43lTie+5
+         Efwe983Fi72oOGbMmZ7cpWuPBDt3gOR1v1OEz5y/0ccoLaKInzUF4DkPbDDP+UpPiSOF
+         MeIEct+0P2goheEhfJJAJaH6CCnH86nKorzu/Phu0LDooAQXOFY3GXM8ZR88ss54PAKP
+         c9lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=FpdLAALfeFZJFf34lr9EAhmP/cSrmy7SxAXiREu4lCE=;
-        b=Yy2AgbYqDkYHAoaPcmQMpYwWaN7bNSfPtebwewOF9Nq7igIJMYBmonw56RHWobFGhP
-         UrYDglKOHG01WP1lK0+esiRoAhGu8rCAe3faNuucCiqSM35cTpWjPStq2s4gm36Lfyak
-         iMwNDuuREF9zb2oeCNymTLmulhdbBWDlnLZXA0M9BlmrlBKdjmh6t5KeZm2YJLfaAxmD
-         krtJ9w+d8t74GocI0aZsTokg/WePzS07D6ptGoqEsf02DWhSeS0mb+v+lotnNAb1QA/0
-         6YA540uIACKVTqa2o9Cwk1ZJVGrIl2cwDP1w5fI61U2/Ly7vK/VRRoGk0P0gCIIX0evB
-         9yFw==
-X-Gm-Message-State: AJIora9Hu3Hk3+l7zajiLtPq7Bfx5zoUjs8hgZw82vqxsGuuqusFlbDJ
-	rasIPWiaD69iEaJOfv6TWY7YGlJe62QdKDqh
-X-Google-Smtp-Source: AGRyM1sjIgDPvW7XqgXeKtiTiExWUywK1Bz9F9BKOt5z1/TReYjxYJre4a0CVxkypZSJHZbV45ScyQ==
-X-Received: by 2002:a19:700b:0:b0:486:e7ec:67ad with SMTP id h11-20020a19700b000000b00486e7ec67admr19129070lfc.263.1658338344098;
-        Wed, 20 Jul 2022 10:32:24 -0700 (PDT)
+        bh=GcNBK7YfKlN5L7E979o1SuVA3j9sFZjXk0q59JTAE0Y=;
+        b=ITobvitCyAC45iR7JbIJ6We/AXZknBSThVJHhq3pNK3rOMfgucpiTg3eWPHwSDWvZ6
+         sTP2XY9BD4wwzi6Ffy4GY2HU8ElJaZ9wOMiyEP+66u83Di5O8LkJRQvFgR5evE585mSG
+         +wLPd/DgTdGUXzX7m6u9Yz75kOECspMMTakrKkk2T0un50hU5Fx4zP5YHZ4mH6QmKEje
+         OCxWmUDqBTR9ei4uQf9SctvbWNqJbYSV0/g0y8NvbXC+r16XFwUdSU2Py7nImCdatq/T
+         rV92VSdyn7yuxboH4c97nimlaGpVSMgl4F/lj4pigOIWjLoBE676HvEJi2f45FcQWaTQ
+         r5aQ==
+X-Gm-Message-State: AJIora+TcwPGTtP/R9YlpySnjnN1qYm+rky05IU+Af81zoO9YF4B10o8
+	RDsi0gE4WYd55z7yFSTHesgU8vCjQMjDejcJ
+X-Google-Smtp-Source: AGRyM1vjhyD+PuVuOucmn/VLbxuPWiERqLYolpXPQm2ecA3hiaYSGUjH7QjRWdaV7kAA5xwQD+EL7A==
+X-Received: by 2002:a05:6512:1312:b0:47f:7bd3:1427 with SMTP id x18-20020a056512131200b0047f7bd31427mr19135756lfu.128.1658338371434;
+        Wed, 20 Jul 2022 10:32:51 -0700 (PDT)
 Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
-        by smtp.gmail.com with ESMTPSA id o13-20020ac25e2d000000b004896ed8dce3sm3917980lfg.2.2022.07.20.10.32.22
+        by smtp.gmail.com with ESMTPSA id b12-20020a056512304c00b0047fac765f39sm3906980lfb.219.2022.07.20.10.32.50
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jul 2022 10:32:23 -0700 (PDT)
-Message-ID: <4afe8a76-08be-224f-d40f-0b45566a5147@linaro.org>
-Date: Wed, 20 Jul 2022 19:32:22 +0200
+        Wed, 20 Jul 2022 10:32:50 -0700 (PDT)
+Message-ID: <5daec4cf-172b-88cd-fbc5-586dceb93d4e@linaro.org>
+Date: Wed, 20 Jul 2022 19:32:49 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -47,8 +47,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH v3 03/21] dt-bindings: power: mediatek: Refine multiple
- level power domain nodes
+Subject: Re: [PATCH v3 04/21] dt-bindings: power: mediatek: Support naming
+ power controller node with unit address
 Content-Language: en-US
 To: Tinghan Shen <tinghan.shen@mediatek.com>, Yong Wu <yong.wu@mediatek.com>,
  Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
@@ -62,53 +62,20 @@ Cc: iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
  linux-arm-kernel@lists.infradead.org,
  Project_Global_Chrome_Upstream_Group@mediatek.com
 References: <20220720123023.13500-1-tinghan.shen@mediatek.com>
- <20220720123023.13500-4-tinghan.shen@mediatek.com>
+ <20220720123023.13500-5-tinghan.shen@mediatek.com>
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220720123023.13500-4-tinghan.shen@mediatek.com>
+In-Reply-To: <20220720123023.13500-5-tinghan.shen@mediatek.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 20/07/2022 14:30, Tinghan Shen wrote:
-> Extract duplicated properties and support more levels of power
-> domain nodes.
-> 
-> This change fix following error when do dtbs_check,
->     arch/arm64/boot/dts/mediatek/mt8195-evb.dtb: power-controller: power-domain@15:power-domain@16:power-domain@18: 'power-domain@19', 'power-domain@20', 'power-domain@21' do not match any of the regexes: 'pinctrl-[0-9]+'
-> 	 From schema: Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+> Support naming power controller node with unit address, also compatible
+> with node names without unit address.
 > 
 > Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
-> ---
->  .../power/mediatek,power-controller.yaml      | 131 +++---------------
->  1 file changed, 17 insertions(+), 114 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml b/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
-> index b448101fac43..321802c95308 100644
-> --- a/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
-> +++ b/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
-> @@ -42,6 +42,23 @@ properties:
->  
->  patternProperties:
->    "^power-domain@[0-9a-f]+$":
-> +    $ref: "#/$defs/power-domain-node"
-> +    patternProperties:
-> +      "^power-domain@[0-9a-f]+$":
-> +        $ref: "#/$defs/power-domain-node"
-> +        patternProperties:
-> +          "^power-domain@[0-9a-f]+$":
-> +            $ref: "#/$defs/power-domain-node"
-> +            patternProperties:
-> +              "^power-domain@[0-9a-f]+$":
-> +                $ref: "#/$defs/power-domain-node"
-> +                unevaluatedProperties: false
-> +            unevaluatedProperties: false
-> +        unevaluatedProperties: false
-> +    unevaluatedProperties: false
-
-I see some beauty in previous endless recurrence, but at least we are
-specific...
 
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 
 Best regards,
