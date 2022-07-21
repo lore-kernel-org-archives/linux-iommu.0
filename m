@@ -1,83 +1,139 @@
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 321A36AA0
-	for <iommu@lists.linux.dev>; Wed, 20 Jul 2022 17:39:27 +0000 (UTC)
-Received: by mail-lf1-f50.google.com with SMTP id d12so31434148lfq.12
-        for <iommu@lists.linux.dev>; Wed, 20 Jul 2022 10:39:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=aeyafCkyinZJZTTcPy1wEfXMzXWZcIm0MV4FRs14iJQ=;
-        b=zreXvg79hkBxKuShfS2H1ZVu3CjpX0spc5x+RYWSF3KMxuyjz5fLD7BBgfbuNGIvaN
-         a2Wol5GaBcqFJs24Or/Cx8yVs8kKCzk2Q2Q+Kbw4VACBuD0IgavdZPfksPMWyjvHRkA3
-         Xtom3dAIkGJ5NScEK9Dlt+XbFEMBKHcftw6XKQlhV5SMy5nxSAzs47rcxyG3JKnh9vEl
-         /OKrKhIMKbRVpK72I4APWWgYq4traCLcCWzFv5auA0G14VIFu2oCCHlZ6ikxN3c33nsV
-         XkKmrckQcwEb+7CWFRCHpGWzPJugLd1eKmVhWrUCUnW87mf1rv/60AlQED8RF/yHnS9t
-         ELtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=aeyafCkyinZJZTTcPy1wEfXMzXWZcIm0MV4FRs14iJQ=;
-        b=zMc/FVgm85rPUzQfWU4U1DXfMQYmv3nOfuULLrM78DfAizxz/h/sXVGhkFmjqQBi84
-         T67vgkjCpo6XBBJt+u0hJZPmj0Hrb1xQ+cf6vqmvSBqsjT8B6/yAdDLfpXBGER3271Gl
-         Hb5S0F0Xmdw7vCoVW+RTdI9K6YR7wSD1heZbOtM6cvuPLIjxYRtNsofT9OJv9jvI/Cxa
-         ZDh4lE6YB/qmNkhHa6DDm0ynUswfkfUp1IFpqBgyGK8iHxCrq35JV5sst5s4VpFW91AC
-         n8sUiQUQn79Llm30LJZ2S1loOP23vKQLwhwq0MMmJDIF6Ob6WDbVz3pG5b3LHcIHElr6
-         Y+aA==
-X-Gm-Message-State: AJIora95Ccjan6LS6BxOjX5upZy5me5ZP1mInn11R2/XaA6DmursvbMB
-	1tsAkBLGeHbBJNyx7O/1P9goCA==
-X-Google-Smtp-Source: AGRyM1tlok4eLvijqT1LvZXgtABKbS0mRRyNVkb8xzG9GzfNEkfDR+8raI0dXp18XCp0w8HM7jBCAA==
-X-Received: by 2002:a05:6512:410:b0:489:d17a:b2c0 with SMTP id u16-20020a056512041000b00489d17ab2c0mr21052431lfk.493.1658338765232;
-        Wed, 20 Jul 2022 10:39:25 -0700 (PDT)
-Received: from [192.168.115.193] (89-162-31-138.fiber.signal.no. [89.162.31.138])
-        by smtp.gmail.com with ESMTPSA id z13-20020a19504d000000b00489e64dcf75sm3940177lfj.204.2022.07.20.10.39.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jul 2022 10:39:24 -0700 (PDT)
-Message-ID: <085a003e-576d-b39a-60ce-ca8f53c89d43@linaro.org>
-Date: Wed, 20 Jul 2022 19:39:23 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 895B81FA5
+	for <iommu@lists.linux.dev>; Thu, 21 Jul 2022 00:35:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1658363704;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=YUjwNdRUT99ASZIZYsMJwCcledX4/RDVaQ7w44xnB7Y=;
+	b=Z0aPrfjBLbiSPrEa1cYeKblF2gSG81Lmvvn5bScjEly9dE44OyQZzOtOkvuNq/8IZe/Qu6
+	WskMUG1Qi5BYHY+ub2g+Ysy1V3wbExLGgrMu8Gpa2uYCHUrdPgik32qOyD1Nb1QEAWkzXI
+	r0aFtdeZ6GVGCwpp/ugmZeHfKYprm3Q=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-382-EJHkHy_0MJmNKSAqYJkZpA-1; Wed, 20 Jul 2022 20:34:56 -0400
+X-MC-Unique: EJHkHy_0MJmNKSAqYJkZpA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 10365811E76;
+	Thu, 21 Jul 2022 00:34:56 +0000 (UTC)
+Received: from cantor.redhat.com (unknown [10.2.16.43])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 6C2C7400DFD7;
+	Thu, 21 Jul 2022 00:34:55 +0000 (UTC)
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iommu/amd: Disable guest vapic logging during early kdump init
+Date: Wed, 20 Jul 2022 17:34:39 -0700
+Message-Id: <20220721003439.403435-1-jsnitsel@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v3 08/21] arm64: dts: mediatek: Update mt81xx scpsys node
- to align with dt-bindings
-Content-Language: en-US
-To: Tinghan Shen <tinghan.shen@mediatek.com>, Yong Wu <yong.wu@mediatek.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Lee Jones <lee.jones@linaro.org>, Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- MandyJH Liu <mandyjh.liu@mediatek.com>
-Cc: iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org,
- Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220720123023.13500-1-tinghan.shen@mediatek.com>
- <20220720123023.13500-9-tinghan.shen@mediatek.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220720123023.13500-9-tinghan.shen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 
-On 20/07/2022 14:30, Tinghan Shen wrote:
-> Update scpsys nodes using simple-mfd in mt81xx SoC devicetree
-> to align with the bindings.
+With commit a8d4a37d1bb9 ("iommu/amd: Restore GA log/tail pointer on
+host resume"), there now is a WARN_ON in iommu_ga_log_enable that
+triggers if the GALOG_RUN bit is set in the MMIO status register, and
+this warning has been reported when a kdump kernel is booting.
 
-"Update" is not accurate enough description. The same in commit title.
-It answers "why" you are doing it, but does not answer what exactly you
-are changing here and what is the effect. IOW, you need to explain the
-true logic behind it - 10006000 is not power domain provider etc.
+We probably don't really care about guest vapic logging during kdump,
+but the proper thing seems to be disabling the GALOG_EN bit in the
+MMIO control register in the kdump code path of
+early_enable_iommus(). The iommu pci init code is going to set the ga
+log address pointers to new values in the amd_iommu struct, and these
+aren't pushed to the iommu until after the warning and return in
+iommu_ga_log_enable(). So worst case, the GALOG bits are set and the
+iommu has stale pointers to the ga log addresses. So disable GALOG_EN
+in early_enable_iommus() and allow iommu_ga_log_enable() to set it up
+properly and enable again.
 
-> 
+Without the fix you will see the following warning when the kdump
+kernel boots:
 
-Best regards,
-Krzysztof
+[    7.731955] ------------[ cut here ]------------
+[    7.736575] WARNING: CPU: 0 PID: 1 at drivers/iommu/amd/init.c:829 iommu_ga_log_enable.isra.0+0x16f/0x190
+[    7.746135] Modules linked in:
+[    7.749193] CPU: 0 PID: 1 Comm: swapper/0 Tainted: G        W        --------  ---  5.19.0-0.rc7.53.eln120.x86_64 #1
+[    7.759706] Hardware name: Dell Inc. PowerEdge R7525/04D5GJ, BIOS 2.1.6 03/09/2021
+[    7.767274] RIP: 0010:iommu_ga_log_enable.isra.0+0x16f/0x190
+[    7.772931] Code: 20 20 00 00 8b 00 f6 c4 01 74 da 48 8b 44 24 08 65 48 2b 04 25 28 00 00 00 75 13 48 83 c4 10 5b 5d e9 f5 00 72 00 0f 0b eb e1 <0f> 0b eb dd e8 f8 66 42 00 48 8b 15 f1 85 53 01 e9 29 ff ff ff 48
+[    7.791679] RSP: 0018:ffffc90000107d20 EFLAGS: 00010206
+[    7.796905] RAX: ffffc90000780000 RBX: 0000000000000100 RCX: ffffc90000780000
+[    7.804038] RDX: 0000000000000001 RSI: ffffc90000780000 RDI: ffff8880451f9800
+[    7.811170] RBP: ffff8880451f9800 R08: ffffffffffffffff R09: 0000000000000000
+[    7.818303] R10: 0000000000000000 R11: 0000000000000000 R12: 0008000000000000
+[    7.825435] R13: ffff8880462ea900 R14: 0000000000000021 R15: 0000000000000000
+[    7.832572] FS:  0000000000000000(0000) GS:ffff888054a00000(0000) knlGS:0000000000000000
+[    7.840657] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    7.846400] CR2: ffff888054dff000 CR3: 0000000053210000 CR4: 0000000000350eb0
+[    7.853533] Call Trace:
+[    7.855979]  <TASK>
+[    7.858085]  amd_iommu_enable_interrupts+0x180/0x270
+[    7.863051]  ? iommu_setup+0x271/0x271
+[    7.866803]  state_next+0x197/0x2c0
+[    7.870295]  ? iommu_setup+0x271/0x271
+[    7.874049]  iommu_go_to_state+0x24/0x2c
+[    7.877976]  amd_iommu_init+0xf/0x29
+[    7.881554]  pci_iommu_init+0xe/0x36
+[    7.885133]  do_one_initcall+0x44/0x200
+[    7.888975]  do_initcalls+0xc8/0xe1
+[    7.892466]  kernel_init_freeable+0x14c/0x199
+[    7.896826]  ? rest_init+0xd0/0xd0
+[    7.900231]  kernel_init+0x16/0x130
+[    7.903723]  ret_from_fork+0x22/0x30
+[    7.907306]  </TASK>
+[    7.909497] ---[ end trace 0000000000000000 ]---
+
+Fixes: 3ac3e5ee5ed5 ("iommu/amd: Copy old trans table from old kernel")
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: Will Deacon <will@kernel.org> (maintainer:IOMMU DRIVERS)
+Cc: iommu@lists.linux.dev
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Jerry Snitselaar <jsnitsel@redhat.com>
+---
+ drivers/iommu/amd/init.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 1d08f87e734b..2b00d7f28df7 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -815,6 +815,11 @@ static void free_ga_log(struct amd_iommu *iommu)
+ #endif
+ }
+ 
++static void iommu_ga_log_disable(struct amd_iommu *iommu)
++{
++	iommu_feature_disable(iommu, CONTROL_GALOG_EN);
++}
++
+ static int iommu_ga_log_enable(struct amd_iommu *iommu)
+ {
+ #ifdef CONFIG_IRQ_REMAP
+@@ -2504,6 +2509,7 @@ static void early_enable_iommus(void)
+ 		for_each_iommu(iommu) {
+ 			iommu_disable_command_buffer(iommu);
+ 			iommu_disable_event_buffer(iommu);
++			iommu_ga_log_disable(iommu);
+ 			iommu_enable_command_buffer(iommu);
+ 			iommu_enable_event_buffer(iommu);
+ 			iommu_enable_ga(iommu);
+
+base-commit: ca85855bdcae8f84f1512e88b4c75009ea17ea2f
+-- 
+2.36.1
+
