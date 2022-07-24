@@ -1,32 +1,32 @@
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 425BF19B
-	for <iommu@lists.linux.dev>; Sun, 24 Jul 2022 08:39:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B64A028F3
+	for <iommu@lists.linux.dev>; Sun, 24 Jul 2022 09:13:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658651969; x=1690187969;
+  t=1658654022; x=1690190022;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=ziLiSEQbzWjCi7B0eTZt1SCYgRe+J/hqHUnOduqyHUc=;
-  b=eLVNLvOKN1cwhjLbT1CeC5W7cZ7adsstdprpEONEnO2x7FOzjvECgjTr
-   RRFpQWE3H90boniAesXROQrVPGPW2HxueOZ8sXHnppcICJW/ZfLXoD9HU
-   w6QFChfLsUhfbZuWd7WFMJSddv/WVEmT9lm9T25394J0q5kmKK3/LNq14
-   1e5YCCJuH7YZa4luQklqJ3vl+9RPIjDn3PwOzEeHPKYRDw2d+roDNBT4p
-   NlDdWOAOQvIDXd1gkSMN6hxhiM/6/PcDYdIf9dQ7K9fZKr3HB4EEAg+8E
-   sE5JXh6Bg7dkbwXazNwKbQlmSkQHXV2x6lcldOaYA7wIRh3fNvzLkZt1H
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10417"; a="285075435"
+  bh=AzxZtybqvJM0/ZZ2jKJszUtZP/9aLY29CH9nP0hU6Gc=;
+  b=WpCocqoy6hO5jonLZ8Du0ed3+sgygYlMXuFo55TGeyuwpWqu9Euo1df7
+   uMZAFo6JMZg+xsuP22UnLADWIY8gzFmKq+iJX26jHInAQwN2oJmDzsdUr
+   FGBeYKju/XfBimujQTPohT5IXJUIqrijVi2EZiBtB0tXiSS9wd7A5l59e
+   H0Cwt1ijQw4jYE2Ar+ZE3f4RmYXU/Wy49l1UUM/p+493fD74v4kUXnsqh
+   BUJ9TE0KqNJbtMldNJgK/g09ljg/HuKH6wjnkPlF0BN3gFZDGPhXkETSw
+   t1wPpyyCrqI4WeDndYh+ELWAxFdeXgBRxU+pCBmalNB+fIYI8P/Bcge9l
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10417"; a="349226707"
 X-IronPort-AV: E=Sophos;i="5.93,190,1654585200"; 
-   d="scan'208";a="285075435"
+   d="scan'208";a="349226707"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 01:39:28 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 02:13:41 -0700
 X-IronPort-AV: E=Sophos;i="5.93,190,1654585200"; 
-   d="scan'208";a="657758458"
+   d="scan'208";a="657763568"
 Received: from zjiang1-mobl.ccr.corp.intel.com (HELO [10.249.170.155]) ([10.249.170.155])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 01:39:23 -0700
-Message-ID: <b31ce6fd-4202-e7bb-61de-3120c1e06825@linux.intel.com>
-Date: Sun, 24 Jul 2022 16:39:21 +0800
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 02:13:37 -0700
+Message-ID: <5d353fe4-b642-992e-ef42-7d7f8b2edf7e@linux.intel.com>
+Date: Sun, 24 Jul 2022 17:13:35 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -59,13 +59,121 @@ Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 2022/7/23 22:11, Jason Gunthorpe wrote:
->> +	xa_erase(&group->pasid_array, pasid);
-> It is worth checking that the value returned from xa_erase is domain
-> and WARN_ON if not, since we are passing domain in..
+>> +void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
+>> +			       ioasid_t pasid)
+>> +{
+>> +	struct iommu_group *group = iommu_group_get(dev);
+>> +
+>> +	mutex_lock(&group->mutex);
+>> +	domain->ops->block_dev_pasid(domain, dev, pasid);
+> I still really this OP, it is nonsense to invoke 'block_dev_pasid' on
+> a domain, it should be on the iommu ops and it should not take in a
+> domain parameter. This is why I prefer we write it as
+> 
+> domain->ops->set_dev_pasid(group->blocking_domain, dev, pasid);
+> 
 
-Yes, will do like this:
+I originally plan to refactor this after both Intel and ARM SMMUv3
+drivers have real blocking domain supports. After revisiting this, it
+seems that the only difficulty is how to check whether a domain is a
+blocking domain. I am going to use below checking code:
 
-WARN_ON(xa_erase(&group->pasid_array, pasid) != domain);
++	/*
++	 * Detach the domain if a blocking domain is set. Check the
++	 * right domain type once the IOMMU driver supports a real
++	 * blocking domain.
++	 */
++	if (!domain || domain->type == IOMMU_DOMAIN_UNMANAGED) {
+
+Does this work for you?
+
+The incremental changes look like below:
+
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index 6633c7b040b8..9f8748b51630 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -890,22 +890,23 @@ static int intel_svm_set_dev_pasid(struct 
+iommu_domain *domain,
+  	int ret = 0;
+
+  	mutex_lock(&pasid_mutex);
+-	sva = intel_svm_bind_mm(iommu, dev, mm);
+-	if (IS_ERR(sva))
+-		ret = PTR_ERR(sva);
++	/*
++	 * Detach the domain if a blocking domain is set. Check the
++	 * right domain type once the IOMMU driver supports a real
++	 * blocking domain.
++	 */
++	if (!domain || domain->type == IOMMU_DOMAIN_UNMANAGED) {
++		intel_svm_unbind_mm(dev, pasid);
++	} else {
++		sva = intel_svm_bind_mm(iommu, dev, mm);
++		if (IS_ERR(sva))
++			ret = PTR_ERR(sva);
++	}
+  	mutex_unlock(&pasid_mutex);
+
+  	return ret;
+  }
+
+-static void intel_svm_block_dev_pasid(struct iommu_domain *domain,
+-				      struct device *dev, ioasid_t pasid)
+-{
+-	mutex_lock(&pasid_mutex);
+-	intel_svm_unbind_mm(dev, pasid);
+-	mutex_unlock(&pasid_mutex);
+-}
+-
+  static void intel_svm_domain_free(struct iommu_domain *domain)
+  {
+  	kfree(to_dmar_domain(domain));
+@@ -913,7 +914,6 @@ static void intel_svm_domain_free(struct 
+iommu_domain *domain)
+
+  static const struct iommu_domain_ops intel_svm_domain_ops = {
+  	.set_dev_pasid		= intel_svm_set_dev_pasid,
+-	.block_dev_pasid	= intel_svm_block_dev_pasid,
+  	.free			= intel_svm_domain_free,
+  };
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index efe6a58eee48..a7f7a611fcce 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -3262,7 +3262,7 @@ void iommu_detach_device_pasid(struct iommu_domain 
+*domain, struct device *dev,
+  	struct iommu_group *group = iommu_group_get(dev);
+
+  	mutex_lock(&group->mutex);
+-	domain->ops->block_dev_pasid(domain, dev, pasid);
++	domain->ops->set_dev_pasid(group->blocking_domain, dev, pasid);
+  	WARN_ON(xa_erase(&group->pasid_array, pasid) != domain);
+  	mutex_unlock(&group->mutex);
+
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index ba6543f4c6a2..c52dccb86460 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -283,7 +283,6 @@ struct iommu_ops {
+   * @attach_dev: attach an iommu domain to a device
+   * @detach_dev: detach an iommu domain from a device
+   * @set_dev_pasid: set an iommu domain to a pasid of device
+- * @block_dev_pasid: block pasid of device from using iommu domain
+   * @map: map a physically contiguous memory region to an iommu domain
+   * @map_pages: map a physically contiguous set of pages of the same 
+size to
+   *             an iommu domain.
+@@ -306,8 +305,6 @@ struct iommu_domain_ops {
+  	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
+  	int (*set_dev_pasid)(struct iommu_domain *domain, struct device *dev,
+  			     ioasid_t pasid);
+-	void (*block_dev_pasid)(struct iommu_domain *domain, struct device *dev,
+-				ioasid_t pasid);
+
+  	int (*map)(struct iommu_domain *domain, unsigned long iova,
+  		   phys_addr_t paddr, size_t size, int prot, gfp_t gfp);
 
 Best regards,
 baolu
