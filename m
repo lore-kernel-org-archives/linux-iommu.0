@@ -1,32 +1,32 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EF107E
-	for <iommu@lists.linux.dev>; Sun, 24 Jul 2022 07:03:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5A5F7E
+	for <iommu@lists.linux.dev>; Sun, 24 Jul 2022 07:23:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658646204; x=1690182204;
+  t=1658647406; x=1690183406;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=YmhanHSqr6bwg4fH+2c4OjhFmUplZmcQFHAOBLtz87U=;
-  b=Ol6XcFqlN/FHfU9CT7o5E1LIVJUmmaCQPvkyrPja2dDoVB/IBfcrIa01
-   YJm7y5JJY0jr19Bd0hOVipIFxCBavVQIIgWJWLoOyctF6MYDwQkQM+Yxy
-   IeTta3HWJ2mssOW10rDYDmAoNCEK8v2vgeUgX9jLBlCxPJBTTli+m4Z0d
-   dh3aZiZrfIHJL9GGjDJ+GaCKuuFlSkLWIcLHq+inbmUexbH/n/DPLJczE
-   9LhkPrDD1xaOmFwHQKoyz8xhP2jPBNtocZEpDe/j4F4/R+FKNp/FToUo4
-   14jLrgw0r0Xfir0OMS05oGfhVTJ8mIN4WHZiR6A2TJPMH7JOf69WIoX2P
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10417"; a="286280685"
+  bh=W/ZfiGZet5U/LoLWUKDc9YKyt+TrQHvH31tE+Q6WVVY=;
+  b=cZpTM0vDkKrrE7Dbdfc1gDO7aPGMxd5f0NPN8p0WO55/o1XMc9Qgp4IJ
+   WtyUxZIq5eY3HMKswKcX747tMWsU3XL9T5+HcSXhvbpL/0OsM78JqaXNf
+   ZwVY+6cfPqdKDb0HjAZJ5RWS9NZ+/Z8rBjprsnAMa4dEs2RPjqtddrc9u
+   Az3gp8kIB8dfej3jtuigpU6eNR+okoA3XBJ7u/oatH6IGfJ8SpTRkRf3+
+   e6+h1QWIJJH/gbWSFdeubAVKp2TNBx+Ilddl4JclCm9n0BtcMNyMtUOtI
+   q6aYoWJriy6XzbV83tRdo8lEKwuijYn44OZ5DF018AtZNROG9nEnwMfaZ
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10417"; a="285070723"
 X-IronPort-AV: E=Sophos;i="5.93,190,1654585200"; 
-   d="scan'208";a="286280685"
+   d="scan'208";a="285070723"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 00:03:23 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 00:23:25 -0700
 X-IronPort-AV: E=Sophos;i="5.93,190,1654585200"; 
-   d="scan'208";a="657734737"
+   d="scan'208";a="657737876"
 Received: from zjiang1-mobl.ccr.corp.intel.com (HELO [10.249.170.155]) ([10.249.170.155])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 00:03:18 -0700
-Message-ID: <686b137f-232a-2a78-beb0-e4373bd20959@linux.intel.com>
-Date: Sun, 24 Jul 2022 15:03:16 +0800
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 00:23:21 -0700
+Message-ID: <5f845a90-97ba-e994-c8b9-91fc6f3ea1c1@linux.intel.com>
+Date: Sun, 24 Jul 2022 15:23:19 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -58,63 +58,102 @@ In-Reply-To: <20220723141118.GD79279@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Hi Jason,
-
-Thank you for reviewing this series.
-
 On 2022/7/23 22:11, Jason Gunthorpe wrote:
-> On Tue, Jul 05, 2022 at 01:07:02PM +0800, Lu Baolu wrote:
->> Attaching an IOMMU domain to a PASID of a device is a generic operation
->> for modern IOMMU drivers which support PASID-granular DMA address
->> translation. Currently visible usage scenarios include (but not limited):
->>
->>   - SVA (Shared Virtual Address)
->>   - kernel DMA with PASID
->>   - hardware-assist mediated device
->>
->> This adds a pair of domain ops for this purpose and adds the interfaces
->> for device drivers to attach/detach a domain to/from a {device, PASID}.
->> Some buses, like PCI, route packets without considering the PASID
->> value.
-> Below the comments touch on ACS, so this is a bit out of date
-> 
->> +static bool iommu_group_immutable_singleton(struct iommu_group *group,
->> +					    struct device *dev)
->> +{
->> +	int count;
->> +
->> +	mutex_lock(&group->mutex);
->> +	count = iommu_group_device_count(group);
->> +	mutex_unlock(&group->mutex);
->> +
->> +	if (count != 1)
->> +		return false;
 >> +
 >> +	/*
->> +	 * The PCI device could be considered to be fully isolated if all
->> +	 * devices on the path from the device to the host-PCI bridge are
->> +	 * protected from peer-to-peer DMA by ACS.
+>> +	 * Otherwise, the device came from DT/ACPI, assume it is static and
+>> +	 * then singleton can know from the device count in the group.
 >> +	 */
->> +	if (dev_is_pci(dev))
->> +		return pci_acs_path_enabled(to_pci_dev(dev), NULL,
->> +					    REQ_ACS_FLAGS);
-> You might want to explain what condition causes ACS isolated devices
-> to share a group in the first place..
+>> +	return true;
+>> +}
+> I would be happer if probe was changed to refuse to add a device to a
+> group if the group's pasid xarray is not empty, as a protective
+> measure.
+
+Agreed. I will add below code.
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 047898666b9f..e43cb6776087 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -895,6 +895,14 @@ int iommu_group_add_device(struct iommu_group 
+*group, struct device *dev)
+         int ret, i = 0;
+         struct group_device *device;
+
++       /*
++        * The iommu_attach_device_pasid() requires a singleton group.
++        * Refuse to add a device into it if this assumption has been
++        * made.
++        */
++       if (!xa_empty(group->pasid_array))
++               return -EBUSY;
++
+         device = kzalloc(sizeof(*device), GFP_KERNEL);
+         if (!device)
+                 return -ENOMEM;
+
 > 
+>> +int iommu_attach_device_pasid(struct iommu_domain *domain, struct device *dev,
+>> +			      ioasid_t pasid)
+>> +{
+>> +	struct iommu_group *group;
+>> +	void *curr;
+>> +	int ret;
+>> +
+>> +	if (!domain->ops->set_dev_pasid)
+>> +		return -EOPNOTSUPP;
+>> +
+>> +	group = iommu_group_get(dev);
+>> +	if (!group || !iommu_group_immutable_singleton(group, dev)) {
+>> +		iommu_group_put(group);
+>> +		return -EINVAL;
+> goto error below
+> 
+>> +	}
+>> +
+>> +	mutex_lock(&group->mutex);
+> Just hold the group->mutex a few lines above and don't put locking in
+> iommu_group_immutable_singleton(), it is clearer
 
-How about rephrasing this part of commit message like below:
+Above two comments agreed. iommu_attach_device_pasid() looks like below
+after update.
 
-Some buses, like PCI, route packets without considering the PASID value.
-Thus a DMA target address with PASID might be treated as P2P if the
-address falls into the MMIO BAR of other devices in the group. To make
-things simple, these interfaces only apply to devices belonging to the
-singleton groups.
+int iommu_attach_device_pasid(struct iommu_domain *domain, struct device 
+*dev,
+                               ioasid_t pasid)
+{
+         struct iommu_group *group;
+         int ret = -EINVAL;
+         void *curr;
 
-Considering that the PCI bus supports hot-plug, even a device boots with
-a singleton group, a later hot-added device is still possible to share
-the group, which breaks the singleton group assumption. In order to
-avoid this situation, this interface requires that the ACS is enabled on
-all devices on the path from the device to the host-PCI bridge.
+         if (!domain->ops->set_dev_pasid)
+                 return -EOPNOTSUPP;
+
+         group = iommu_group_get(dev);
+         if (!group)
+                 return -ENODEV;
+
+         mutex_lock(&group->mutex);
+         if (!iommu_group_immutable_singleton(group, dev))
+                 goto out_unlock;
+
+         curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, 
+GFP_KERNEL);
+         if (curr) {
+                 ret = xa_err(curr) ? : -EBUSY;
+                 goto out_unlock;
+         }
+         ret = domain->ops->set_dev_pasid(domain, dev, pasid);
+         if (ret)
+                 xa_erase(&group->pasid_array, pasid);
+out_unlock:
+         mutex_unlock(&group->mutex);
+         iommu_group_put(group);
+
+         return ret;
+}
 
 Best regards,
 baolu
+
