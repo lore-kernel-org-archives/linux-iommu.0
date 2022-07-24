@@ -1,32 +1,32 @@
 Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B64A028F3
-	for <iommu@lists.linux.dev>; Sun, 24 Jul 2022 09:13:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5B25198
+	for <iommu@lists.linux.dev>; Sun, 24 Jul 2022 11:58:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658654022; x=1690190022;
+  t=1658663920; x=1690199920;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=AzxZtybqvJM0/ZZ2jKJszUtZP/9aLY29CH9nP0hU6Gc=;
-  b=WpCocqoy6hO5jonLZ8Du0ed3+sgygYlMXuFo55TGeyuwpWqu9Euo1df7
-   uMZAFo6JMZg+xsuP22UnLADWIY8gzFmKq+iJX26jHInAQwN2oJmDzsdUr
-   FGBeYKju/XfBimujQTPohT5IXJUIqrijVi2EZiBtB0tXiSS9wd7A5l59e
-   H0Cwt1ijQw4jYE2Ar+ZE3f4RmYXU/Wy49l1UUM/p+493fD74v4kUXnsqh
-   BUJ9TE0KqNJbtMldNJgK/g09ljg/HuKH6wjnkPlF0BN3gFZDGPhXkETSw
-   t1wPpyyCrqI4WeDndYh+ELWAxFdeXgBRxU+pCBmalNB+fIYI8P/Bcge9l
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10417"; a="349226707"
+  bh=KM20Px9+IUMc5pfne0smI8tn/OJ7VtEBAo/304bGylA=;
+  b=OLglnXW+BL7XBcqP48a32jlzQU2OOVz5ZKEnCdKSsKvnBmlmTDZhTJ6H
+   d8N9wqk2/pTJ8Oj3Yu/rBZgkRYSg/1FRYdMnZQ25CblLmmOB8HL10UTYS
+   gytxWs69yHb6NieK8at4KXWxI5o29VwvEoBvny2mhxvJRcZRB4nOVFi6D
+   sRez6qUZzVpfwS9wsXXK3SwEuWSX5FTJMYbRxu/6I2kayl1z0rzUlkpED
+   Fs62To3QsNcxkE7Fy6UUJAun42R9oMa3RWfDGR39u9bKOlVZNhDLgGRMR
+   jgFsxJX2vdAL8hET7nDkmmSdNqKu4y5A74p7cZbWFuvoUaX3ceQhqwQ2L
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10417"; a="349235833"
 X-IronPort-AV: E=Sophos;i="5.93,190,1654585200"; 
-   d="scan'208";a="349226707"
+   d="scan'208";a="349235833"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 02:13:41 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 04:58:40 -0700
 X-IronPort-AV: E=Sophos;i="5.93,190,1654585200"; 
-   d="scan'208";a="657763568"
+   d="scan'208";a="657793537"
 Received: from zjiang1-mobl.ccr.corp.intel.com (HELO [10.249.170.155]) ([10.249.170.155])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 02:13:37 -0700
-Message-ID: <5d353fe4-b642-992e-ef42-7d7f8b2edf7e@linux.intel.com>
-Date: Sun, 24 Jul 2022 17:13:35 +0800
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 04:58:35 -0700
+Message-ID: <e4719cdb-6046-46cf-e63d-a1e7968ffefb@linux.intel.com>
+Date: Sun, 24 Jul 2022 19:58:33 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -46,134 +46,121 @@ Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
  Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony <tony.zhu@intel.com>,
  iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
  Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v10 04/12] iommu: Add attach/detach_dev_pasid iommu
- interface
+Subject: Re: [PATCH v10 07/12] arm-smmu-v3/sva: Add SVA domain support
 Content-Language: en-US
 To: Jason Gunthorpe <jgg@nvidia.com>
 References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
- <20220705050710.2887204-5-baolu.lu@linux.intel.com>
- <20220723141118.GD79279@nvidia.com>
+ <20220705050710.2887204-8-baolu.lu@linux.intel.com>
+ <20220723142009.GG79279@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220723141118.GD79279@nvidia.com>
+In-Reply-To: <20220723142009.GG79279@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2022/7/23 22:11, Jason Gunthorpe wrote:
->> +void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
->> +			       ioasid_t pasid)
->> +{
->> +	struct iommu_group *group = iommu_group_get(dev);
+On 2022/7/23 22:20, Jason Gunthorpe wrote:
+> On Tue, Jul 05, 2022 at 01:07:05PM +0800, Lu Baolu wrote:
+>> Add support for SVA domain allocation and provide an SVA-specific
+>> iommu_domain_ops.
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+>> Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+>> ---
+>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  6 ++
+>>   .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 69 +++++++++++++++++++
+>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  3 +
+>>   3 files changed, 78 insertions(+)
+>>
+>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+>> index d2ba86470c42..96399dd3a67a 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+>> @@ -758,6 +758,7 @@ struct iommu_sva *arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm);
+>>   void arm_smmu_sva_unbind(struct iommu_sva *handle);
+>>   u32 arm_smmu_sva_get_pasid(struct iommu_sva *handle);
+>>   void arm_smmu_sva_notifier_synchronize(void);
+>> +struct iommu_domain *arm_smmu_sva_domain_alloc(void);
+>>   #else /* CONFIG_ARM_SMMU_V3_SVA */
+>>   static inline bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
+>>   {
+>> @@ -803,5 +804,10 @@ static inline u32 arm_smmu_sva_get_pasid(struct iommu_sva *handle)
+>>   }
+>>   
+>>   static inline void arm_smmu_sva_notifier_synchronize(void) {}
 >> +
->> +	mutex_lock(&group->mutex);
->> +	domain->ops->block_dev_pasid(domain, dev, pasid);
-> I still really this OP, it is nonsense to invoke 'block_dev_pasid' on
-> a domain, it should be on the iommu ops and it should not take in a
-> domain parameter. This is why I prefer we write it as
+>> +static inline struct iommu_domain *arm_smmu_sva_domain_alloc(void)
+>> +{
+>> +	return NULL;
+>> +}
+>>   #endif /* CONFIG_ARM_SMMU_V3_SVA */
+>>   #endif /* _ARM_SMMU_V3_H */
+>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+>> index f155d406c5d5..fc4555dac5b4 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+>> @@ -549,3 +549,72 @@ void arm_smmu_sva_notifier_synchronize(void)
+>>   	 */
+>>   	mmu_notifier_synchronize();
+>>   }
+>> +
+>> +static int arm_smmu_sva_set_dev_pasid(struct iommu_domain *domain,
+>> +				      struct device *dev, ioasid_t id)
+>> +{
+>> +	int ret = 0;
+>> +	struct mm_struct *mm;
+>> +	struct iommu_sva *handle;
+>> +
+>> +	if (domain->type != IOMMU_DOMAIN_SVA)
+>> +		return -EINVAL;
 > 
-> domain->ops->set_dev_pasid(group->blocking_domain, dev, pasid);
+> Not needed, this function is only called from the sva ops, other
+> domain types are impossible, we don't need sanity tests in drivers
 > 
+>> +	mm = domain->mm;
+>> +	if (WARN_ON(!mm))
+>> +		return -ENODEV;
+> 
+> Also guarenteed by core code, don't need sanity tests
 
-I originally plan to refactor this after both Intel and ARM SMMUv3
-drivers have real blocking domain supports. After revisiting this, it
-seems that the only difficulty is how to check whether a domain is a
-blocking domain. I am going to use below checking code:
+Above two updated. Thanks!
 
-+	/*
-+	 * Detach the domain if a blocking domain is set. Check the
-+	 * right domain type once the IOMMU driver supports a real
-+	 * blocking domain.
-+	 */
-+	if (!domain || domain->type == IOMMU_DOMAIN_UNMANAGED) {
+> 
+>> +static void arm_smmu_sva_block_dev_pasid(struct iommu_domain *domain,
+>> +					 struct device *dev, ioasid_t id)
+>> +{
+>> +	struct mm_struct *mm = domain->mm;
+>> +	struct arm_smmu_bond *bond = NULL, *t;
+>> +	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
+>> +
+>> +	mutex_lock(&sva_lock);
+>> +	list_for_each_entry(t, &master->bonds, list) {
+>> +		if (t->mm == mm) {
+>> +			bond = t;
+>> +			break;
+> 
+> This doesn't seem like what I would expect, the domain should be used
+> at the key in these datastructures, not the mm..
 
-Does this work for you?
+Both Intel and arm-smmu-v3 SVA code have room to cleanup. I've discussed
+this with Jean. We will cleanup and refactor the individual drivers in
+separated series.
 
-The incremental changes look like below:
+> 
+>> index ae8ec8df47c1..a30b252e2f95 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> @@ -1999,6 +1999,9 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+>>   {
+>>   	struct arm_smmu_domain *smmu_domain;
+>>   
+>> +	if (type == IOMMU_DOMAIN_SVA)
+>> +		return arm_smmu_sva_domain_alloc();
+> 
+> If no drivers are sharing any code with their other alloc paths perhaps we
+> should have a dedicated op for SVA?
 
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 6633c7b040b8..9f8748b51630 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -890,22 +890,23 @@ static int intel_svm_set_dev_pasid(struct 
-iommu_domain *domain,
-  	int ret = 0;
-
-  	mutex_lock(&pasid_mutex);
--	sva = intel_svm_bind_mm(iommu, dev, mm);
--	if (IS_ERR(sva))
--		ret = PTR_ERR(sva);
-+	/*
-+	 * Detach the domain if a blocking domain is set. Check the
-+	 * right domain type once the IOMMU driver supports a real
-+	 * blocking domain.
-+	 */
-+	if (!domain || domain->type == IOMMU_DOMAIN_UNMANAGED) {
-+		intel_svm_unbind_mm(dev, pasid);
-+	} else {
-+		sva = intel_svm_bind_mm(iommu, dev, mm);
-+		if (IS_ERR(sva))
-+			ret = PTR_ERR(sva);
-+	}
-  	mutex_unlock(&pasid_mutex);
-
-  	return ret;
-  }
-
--static void intel_svm_block_dev_pasid(struct iommu_domain *domain,
--				      struct device *dev, ioasid_t pasid)
--{
--	mutex_lock(&pasid_mutex);
--	intel_svm_unbind_mm(dev, pasid);
--	mutex_unlock(&pasid_mutex);
--}
--
-  static void intel_svm_domain_free(struct iommu_domain *domain)
-  {
-  	kfree(to_dmar_domain(domain));
-@@ -913,7 +914,6 @@ static void intel_svm_domain_free(struct 
-iommu_domain *domain)
-
-  static const struct iommu_domain_ops intel_svm_domain_ops = {
-  	.set_dev_pasid		= intel_svm_set_dev_pasid,
--	.block_dev_pasid	= intel_svm_block_dev_pasid,
-  	.free			= intel_svm_domain_free,
-  };
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index efe6a58eee48..a7f7a611fcce 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -3262,7 +3262,7 @@ void iommu_detach_device_pasid(struct iommu_domain 
-*domain, struct device *dev,
-  	struct iommu_group *group = iommu_group_get(dev);
-
-  	mutex_lock(&group->mutex);
--	domain->ops->block_dev_pasid(domain, dev, pasid);
-+	domain->ops->set_dev_pasid(group->blocking_domain, dev, pasid);
-  	WARN_ON(xa_erase(&group->pasid_array, pasid) != domain);
-  	mutex_unlock(&group->mutex);
-
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index ba6543f4c6a2..c52dccb86460 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -283,7 +283,6 @@ struct iommu_ops {
-   * @attach_dev: attach an iommu domain to a device
-   * @detach_dev: detach an iommu domain from a device
-   * @set_dev_pasid: set an iommu domain to a pasid of device
-- * @block_dev_pasid: block pasid of device from using iommu domain
-   * @map: map a physically contiguous memory region to an iommu domain
-   * @map_pages: map a physically contiguous set of pages of the same 
-size to
-   *             an iommu domain.
-@@ -306,8 +305,6 @@ struct iommu_domain_ops {
-  	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
-  	int (*set_dev_pasid)(struct iommu_domain *domain, struct device *dev,
-  			     ioasid_t pasid);
--	void (*block_dev_pasid)(struct iommu_domain *domain, struct device *dev,
--				ioasid_t pasid);
-
-  	int (*map)(struct iommu_domain *domain, unsigned long iova,
-  		   phys_addr_t paddr, size_t size, int prot, gfp_t gfp);
+AFAICS, Robin is refactoring the domain allocation interfaces. How about
+leaving this until we finalize the interface?
 
 Best regards,
 baolu
