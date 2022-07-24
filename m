@@ -1,144 +1,81 @@
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f46.google.com (mail-pj1-f46.google.com [209.85.216.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A7103207
-	for <iommu@lists.linux.dev>; Sun, 24 Jul 2022 14:04:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658671497; x=1690207497;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=4SB7MknA24m1jUG2lvk0lBvwcZyqcGj7Lokl0Nv3fhk=;
-  b=lBydHmpMqWnpC/vVzgz/+MJQXd0kq8WHopmbvP98x2LrWsRz4F90wGGt
-   xRrRMqKda8+a97d3soaVQIXA6tubStIB84Nss7CY46b08WlV0mWJ2HFR9
-   sBN34dcbbB0g+CYo8O303jErL0ml0yK/1EnKiFi01ypSuPRNcLREl/o6x
-   s7t7HU0tQoRc9ZXF/xRc0cF5PFSPiDb7pvj71v2t0PKGf1ok+yOQ4uNiO
-   dLQc+G+CtvPR/uScfjTq4F9TX2/8yNxlQmtln2rS9n1mYZETAnG2q4N08
-   blxZuPlGRZPT/Tv07yNccKygKxbLym02p45muvJpzmevysV7jnrBumTLv
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10417"; a="274406723"
-X-IronPort-AV: E=Sophos;i="5.93,190,1654585200"; 
-   d="scan'208";a="274406723"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 07:04:56 -0700
-X-IronPort-AV: E=Sophos;i="5.93,190,1654585200"; 
-   d="scan'208";a="657820532"
-Received: from zjiang1-mobl.ccr.corp.intel.com (HELO [10.249.170.155]) ([10.249.170.155])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 07:04:52 -0700
-Message-ID: <487b533a-b289-eee7-0bd8-3be36c6e00e3@linux.intel.com>
-Date: Sun, 24 Jul 2022 22:04:50 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B418D33C3
+	for <iommu@lists.linux.dev>; Sun, 24 Jul 2022 14:59:50 +0000 (UTC)
+Received: by mail-pj1-f46.google.com with SMTP id ku18so8227508pjb.2
+        for <iommu@lists.linux.dev>; Sun, 24 Jul 2022 07:59:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Xk8QcPITCD7zASInOLa1R0RXzqRXOUwelC1gE/1VxyQ=;
+        b=fAiepUxK9sA5DHnLfCj/TTTTGGSmd2m9+OxyFBa/JXmjDXjvRJRTkIHYf8+IyXU2s7
+         W1mFhcDj9aed4LSxZ1TmZ+0vZcBGb86C0PT0HZ6IgDBXz2VULXSLqSvYIsLHyE6y4xOq
+         /JKdESHnpNg+eRJ2VqzkVs6RjmJUGmcmdVyOUE3MYSiowchwAuY9inpmGVB5hMW9zz8u
+         ChzTN0f1d1pFHdsRu6LdBJT4eTrFSUZCMkv6HmDupDcU9Wqd+w/0uymEbFZOnL12YEDb
+         5Ozki9IMj0emcV6pQu8vQt95nCbIJgIFXRFwA9BmRaWPPZ+EzltBXdSvBU/1aYxaIUMa
+         XFtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Xk8QcPITCD7zASInOLa1R0RXzqRXOUwelC1gE/1VxyQ=;
+        b=t6GU1kQp6riK4IxP10khE/K66lklzUGGcwprBJFv4QuEfxoJdZ3KeCgMAW0txOYGcI
+         lVui2SlDF2/yJ4v9hAS/QOdStjcqchNCFG677bOsVewg/tB5rKaoZAhfq3x+MtjcqZ9l
+         YAVKI9PSjybDRuuOoO629/7KEflvA5OpvXZHJtqGfWk6vWeUS9T05Zoxm/7l94iV371V
+         MF5EYnDnDCFhw7J7zxkWs5VaX+WgRefE5x8JJ9tqC6vrcNFWr4ZYlFs4mKaX+TZ5VPVb
+         6TseYdDyCPWZeRUBIYDONZCTZj2tyHHwwfJ8K/JV5QGocwPhfhbzdw0jAWeYjvl78zy5
+         fMhQ==
+X-Gm-Message-State: AJIora8g/l0sOB9F9PPy3/Kv0rQevIJJkjz8jq+HS0ZH+k1CKLVGZe5s
+	+UL8gpap1R5EeP+QU8MmgE8=
+X-Google-Smtp-Source: AGRyM1vihI8jIMhLCAgyF58n4D21NvM8f0l7z09f9iCuH5Q7OA5NkCQZV6bc80jT4wquK62eNbfPcw==
+X-Received: by 2002:a17:903:3283:b0:16d:43f8:d971 with SMTP id jh3-20020a170903328300b0016d43f8d971mr7791901plb.171.1658674790006;
+        Sun, 24 Jul 2022 07:59:50 -0700 (PDT)
+Received: from biggie.. ([103.230.148.186])
+        by smtp.gmail.com with ESMTPSA id l16-20020a170902f69000b0016c500fb7bcsm7360900plg.140.2022.07.24.07.59.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Jul 2022 07:59:49 -0700 (PDT)
+From: Gautam Menghani <gautammenghani201@gmail.com>
+To: chenxiang66@hisilicon.com,
+	shuah@kernel.org,
+	liaoyu15@huawei.com
+Cc: Gautam Menghani <gautammenghani201@gmail.com>,
+	song.bao.hua@hisilicon.com,
+	tiantao6@hisilicon.com,
+	iommu@lists.linux.dev,
+	linux-kselftest@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-kernel-mentees@lists.linuxfoundation.org
+Subject: [PATCH] selftests/dma: Add a .gitignore file containing name of executable
+Date: Sun, 24 Jul 2022 20:29:31 +0530
+Message-Id: <20220724145931.32556-1-gautammenghani201@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
- Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
- Jacob jun Pan <jacob.jun.pan@intel.com>,
- Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony <tony.zhu@intel.com>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v10 10/12] iommu: Prepare IOMMU domain for IOPF
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
- <20220705050710.2887204-11-baolu.lu@linux.intel.com>
- <20220723143334.GJ79279@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220723143334.GJ79279@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2022/7/23 22:33, Jason Gunthorpe wrote:
-> On Tue, Jul 05, 2022 at 01:07:08PM +0800, Lu Baolu wrote:
->> This adds some mechanisms around the iommu_domain so that the I/O page
->> fault handling framework could route a page fault to the domain and
->> call the fault handler from it.
->>
->> Add pointers to the page fault handler and its private data in struct
->> iommu_domain. The fault handler will be called with the private data
->> as a parameter once a page fault is routed to the domain. Any kernel
->> component which owns an iommu domain could install handler and its
->> private parameter so that the page fault could be further routed and
->> handled.
->>
->> This also prepares the SVA implementation to be the first consumer of
->> the per-domain page fault handling model. The I/O page fault handler
->> for SVA is copied to the SVA file with mmget_not_zero() added before
->> mmap_read_lock().
->>
->> Suggested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
->> Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
->> Tested-by: Tony Zhu <tony.zhu@intel.com>
->> ---
->>   include/linux/iommu.h         |  3 ++
->>   drivers/iommu/iommu-sva-lib.h |  8 +++++
->>   drivers/iommu/io-pgfault.c    |  7 +++++
->>   drivers/iommu/iommu-sva-lib.c | 58 +++++++++++++++++++++++++++++++++++
->>   drivers/iommu/iommu.c         |  4 +++
->>   5 files changed, 80 insertions(+)
->>
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index ae0cfca064e6..47610f21d451 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -105,6 +105,9 @@ struct iommu_domain {
->>   	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
->>   	struct iommu_domain_geometry geometry;
->>   	struct iommu_dma_cookie *iova_cookie;
->> +	enum iommu_page_response_code (*iopf_handler)(struct iommu_fault *fault,
->> +						      void *data);
->> +	void *fault_data;
->>   	union {
->>   		struct {
->>   			iommu_fault_handler_t handler;
-> 
-> Why do we need two falut callbacks? The only difference is that one is
-> recoverable and the other is not, right?
-> 
-> Can we run both down the same op?
+The dma tests in kselftests are missing a .gitignore file, which leads
+to the dma_map_benchmark executable file showing up in "git status".
+This patch adds a .gitignore file containing the executable name.
 
-The iommu_fault_handler_t is for report_iommu_fault() which could be
-replaced with the newer iommu_report_device_fault().
+Signed-off-by: Gautam Menghani <gautammenghani201@gmail.com>
+---
+ tools/testing/selftests/dma/.gitignore | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 tools/testing/selftests/dma/.gitignore
 
-https://lore.kernel.org/linux-iommu/Yo4Nw9QyllT1RZbd@myrica/
-
-> 
->> +/*
->> + * I/O page fault handler for SVA
->> + */
->> +enum iommu_page_response_code
->> +iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
->> +{
->> +	vm_fault_t ret;
->> +	struct vm_area_struct *vma;
->> +	struct mm_struct *mm = data;
->> +	unsigned int access_flags = 0;
->> +	unsigned int fault_flags = FAULT_FLAG_REMOTE;
->> +	struct iommu_fault_page_request *prm = &fault->prm;
->> +	enum iommu_page_response_code status = IOMMU_PAGE_RESP_INVALID;
->> +
->> +	if (!(prm->flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID))
->> +		return status;
->> +
->> +	if (IS_ERR_OR_NULL(mm) || !mmget_not_zero(mm))
-> 
-> Do not use IS_ERR_ON_NULL. mm should never be null here since the
-> fault handler should have been removed from the domain before the
-> fault_data is changed.
-
-Yes. Updated.
-
-Best regards,
-baolu
+diff --git a/tools/testing/selftests/dma/.gitignore b/tools/testing/selftests/dma/.gitignore
+new file mode 100644
+index 000000000000..668e2f8be2f7
+--- /dev/null
++++ b/tools/testing/selftests/dma/.gitignore
+@@ -0,0 +1 @@
++dma_map_benchmark
+-- 
+2.34.1
 
