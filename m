@@ -1,32 +1,32 @@
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5A5F7E
-	for <iommu@lists.linux.dev>; Sun, 24 Jul 2022 07:23:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 425BF19B
+	for <iommu@lists.linux.dev>; Sun, 24 Jul 2022 08:39:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658647406; x=1690183406;
+  t=1658651969; x=1690187969;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=W/ZfiGZet5U/LoLWUKDc9YKyt+TrQHvH31tE+Q6WVVY=;
-  b=cZpTM0vDkKrrE7Dbdfc1gDO7aPGMxd5f0NPN8p0WO55/o1XMc9Qgp4IJ
-   WtyUxZIq5eY3HMKswKcX747tMWsU3XL9T5+HcSXhvbpL/0OsM78JqaXNf
-   ZwVY+6cfPqdKDb0HjAZJ5RWS9NZ+/Z8rBjprsnAMa4dEs2RPjqtddrc9u
-   Az3gp8kIB8dfej3jtuigpU6eNR+okoA3XBJ7u/oatH6IGfJ8SpTRkRf3+
-   e6+h1QWIJJH/gbWSFdeubAVKp2TNBx+Ilddl4JclCm9n0BtcMNyMtUOtI
-   q6aYoWJriy6XzbV83tRdo8lEKwuijYn44OZ5DF018AtZNROG9nEnwMfaZ
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10417"; a="285070723"
+  bh=ziLiSEQbzWjCi7B0eTZt1SCYgRe+J/hqHUnOduqyHUc=;
+  b=eLVNLvOKN1cwhjLbT1CeC5W7cZ7adsstdprpEONEnO2x7FOzjvECgjTr
+   RRFpQWE3H90boniAesXROQrVPGPW2HxueOZ8sXHnppcICJW/ZfLXoD9HU
+   w6QFChfLsUhfbZuWd7WFMJSddv/WVEmT9lm9T25394J0q5kmKK3/LNq14
+   1e5YCCJuH7YZa4luQklqJ3vl+9RPIjDn3PwOzEeHPKYRDw2d+roDNBT4p
+   NlDdWOAOQvIDXd1gkSMN6hxhiM/6/PcDYdIf9dQ7K9fZKr3HB4EEAg+8E
+   sE5JXh6Bg7dkbwXazNwKbQlmSkQHXV2x6lcldOaYA7wIRh3fNvzLkZt1H
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10417"; a="285075435"
 X-IronPort-AV: E=Sophos;i="5.93,190,1654585200"; 
-   d="scan'208";a="285070723"
+   d="scan'208";a="285075435"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 00:23:25 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 01:39:28 -0700
 X-IronPort-AV: E=Sophos;i="5.93,190,1654585200"; 
-   d="scan'208";a="657737876"
+   d="scan'208";a="657758458"
 Received: from zjiang1-mobl.ccr.corp.intel.com (HELO [10.249.170.155]) ([10.249.170.155])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 00:23:21 -0700
-Message-ID: <5f845a90-97ba-e994-c8b9-91fc6f3ea1c1@linux.intel.com>
-Date: Sun, 24 Jul 2022 15:23:19 +0800
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 01:39:23 -0700
+Message-ID: <b31ce6fd-4202-e7bb-61de-3120c1e06825@linux.intel.com>
+Date: Sun, 24 Jul 2022 16:39:21 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -59,101 +59,13 @@ Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 2022/7/23 22:11, Jason Gunthorpe wrote:
->> +
->> +	/*
->> +	 * Otherwise, the device came from DT/ACPI, assume it is static and
->> +	 * then singleton can know from the device count in the group.
->> +	 */
->> +	return true;
->> +}
-> I would be happer if probe was changed to refuse to add a device to a
-> group if the group's pasid xarray is not empty, as a protective
-> measure.
+>> +	xa_erase(&group->pasid_array, pasid);
+> It is worth checking that the value returned from xa_erase is domain
+> and WARN_ON if not, since we are passing domain in..
 
-Agreed. I will add below code.
+Yes, will do like this:
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 047898666b9f..e43cb6776087 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -895,6 +895,14 @@ int iommu_group_add_device(struct iommu_group 
-*group, struct device *dev)
-         int ret, i = 0;
-         struct group_device *device;
-
-+       /*
-+        * The iommu_attach_device_pasid() requires a singleton group.
-+        * Refuse to add a device into it if this assumption has been
-+        * made.
-+        */
-+       if (!xa_empty(group->pasid_array))
-+               return -EBUSY;
-+
-         device = kzalloc(sizeof(*device), GFP_KERNEL);
-         if (!device)
-                 return -ENOMEM;
-
-> 
->> +int iommu_attach_device_pasid(struct iommu_domain *domain, struct device *dev,
->> +			      ioasid_t pasid)
->> +{
->> +	struct iommu_group *group;
->> +	void *curr;
->> +	int ret;
->> +
->> +	if (!domain->ops->set_dev_pasid)
->> +		return -EOPNOTSUPP;
->> +
->> +	group = iommu_group_get(dev);
->> +	if (!group || !iommu_group_immutable_singleton(group, dev)) {
->> +		iommu_group_put(group);
->> +		return -EINVAL;
-> goto error below
-> 
->> +	}
->> +
->> +	mutex_lock(&group->mutex);
-> Just hold the group->mutex a few lines above and don't put locking in
-> iommu_group_immutable_singleton(), it is clearer
-
-Above two comments agreed. iommu_attach_device_pasid() looks like below
-after update.
-
-int iommu_attach_device_pasid(struct iommu_domain *domain, struct device 
-*dev,
-                               ioasid_t pasid)
-{
-         struct iommu_group *group;
-         int ret = -EINVAL;
-         void *curr;
-
-         if (!domain->ops->set_dev_pasid)
-                 return -EOPNOTSUPP;
-
-         group = iommu_group_get(dev);
-         if (!group)
-                 return -ENODEV;
-
-         mutex_lock(&group->mutex);
-         if (!iommu_group_immutable_singleton(group, dev))
-                 goto out_unlock;
-
-         curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, 
-GFP_KERNEL);
-         if (curr) {
-                 ret = xa_err(curr) ? : -EBUSY;
-                 goto out_unlock;
-         }
-         ret = domain->ops->set_dev_pasid(domain, dev, pasid);
-         if (ret)
-                 xa_erase(&group->pasid_array, pasid);
-out_unlock:
-         mutex_unlock(&group->mutex);
-         iommu_group_put(group);
-
-         return ret;
-}
+WARN_ON(xa_erase(&group->pasid_array, pasid) != domain);
 
 Best regards,
 baolu
-
