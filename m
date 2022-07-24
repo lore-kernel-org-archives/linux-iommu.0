@@ -1,32 +1,32 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BA237E
-	for <iommu@lists.linux.dev>; Sun, 24 Jul 2022 02:59:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EF107E
+	for <iommu@lists.linux.dev>; Sun, 24 Jul 2022 07:03:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658631579; x=1690167579;
+  t=1658646204; x=1690182204;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=tu+rlCbzZUYmb39RdyQ4XYT1JbhjzZ6xE7dWDudpVkc=;
-  b=diGD3ujnvdfVeyG2huAL8mqH2w/zGXUTtiOWo8lR+ncDf19Ft76s2re8
-   zE9sAHKvBUlBgpKThh8vHyRwvgIbHvdyouyB2RtPR54PgXTY4BsNdCycr
-   /x5COBRfM2IB3nydnDj12hrUDcJlbM2X76SERHnrWVIgAbhPoBKns348/
-   inWFS23tuomQkUyWF+zM0ugToWoyzCNLRqAZwS3A8N6HS3rlyfIZlAuqN
-   tHEFWCDnlKzT3N5IkC5YjmohbatiM7u55Xpxyk+lg9VF2rhYjg5movEPN
-   EwOFIXoBn59tPK8KLu7pTXZoSd2jebWtwfd/iQGm330lD0QU9Q3cPeDFr
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10417"; a="373813603"
-X-IronPort-AV: E=Sophos;i="5.93,189,1654585200"; 
-   d="scan'208";a="373813603"
+  bh=YmhanHSqr6bwg4fH+2c4OjhFmUplZmcQFHAOBLtz87U=;
+  b=Ol6XcFqlN/FHfU9CT7o5E1LIVJUmmaCQPvkyrPja2dDoVB/IBfcrIa01
+   YJm7y5JJY0jr19Bd0hOVipIFxCBavVQIIgWJWLoOyctF6MYDwQkQM+Yxy
+   IeTta3HWJ2mssOW10rDYDmAoNCEK8v2vgeUgX9jLBlCxPJBTTli+m4Z0d
+   dh3aZiZrfIHJL9GGjDJ+GaCKuuFlSkLWIcLHq+inbmUexbH/n/DPLJczE
+   9LhkPrDD1xaOmFwHQKoyz8xhP2jPBNtocZEpDe/j4F4/R+FKNp/FToUo4
+   14jLrgw0r0Xfir0OMS05oGfhVTJ8mIN4WHZiR6A2TJPMH7JOf69WIoX2P
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10417"; a="286280685"
+X-IronPort-AV: E=Sophos;i="5.93,190,1654585200"; 
+   d="scan'208";a="286280685"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jul 2022 19:59:38 -0700
-X-IronPort-AV: E=Sophos;i="5.93,189,1654585200"; 
-   d="scan'208";a="657692682"
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 00:03:23 -0700
+X-IronPort-AV: E=Sophos;i="5.93,190,1654585200"; 
+   d="scan'208";a="657734737"
 Received: from zjiang1-mobl.ccr.corp.intel.com (HELO [10.249.170.155]) ([10.249.170.155])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jul 2022 19:59:36 -0700
-Message-ID: <8e970367-746e-0e74-ba39-e941fdbfdab7@linux.intel.com>
-Date: Sun, 24 Jul 2022 10:59:34 +0800
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 00:03:18 -0700
+Message-ID: <686b137f-232a-2a78-beb0-e4373bd20959@linux.intel.com>
+Date: Sun, 24 Jul 2022 15:03:16 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,44 +36,85 @@ MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
 Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Fix possible recursive locking in
- intel_iommu_init()
+ Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
+ Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
+ Jacob jun Pan <jacob.jun.pan@intel.com>,
+ Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony <tony.zhu@intel.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v10 04/12] iommu: Add attach/detach_dev_pasid iommu
+ interface
 Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <20220718235325.3952426-1-baolu.lu@linux.intel.com>
- <BN9PR11MB5276287E75395A59865812978C919@BN9PR11MB5276.namprd11.prod.outlook.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
+ <20220705050710.2887204-5-baolu.lu@linux.intel.com>
+ <20220723141118.GD79279@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276287E75395A59865812978C919@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <20220723141118.GD79279@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Hi Kevin,
+Hi Jason,
 
-On 2022/7/21 15:39, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Tuesday, July 19, 2022 7:53 AM
+Thank you for reviewing this series.
+
+On 2022/7/23 22:11, Jason Gunthorpe wrote:
+> On Tue, Jul 05, 2022 at 01:07:02PM +0800, Lu Baolu wrote:
+>> Attaching an IOMMU domain to a PASID of a device is a generic operation
+>> for modern IOMMU drivers which support PASID-granular DMA address
+>> translation. Currently visible usage scenarios include (but not limited):
 >>
->> @@ -88,7 +89,8 @@ extern struct list_head dmar_drhd_units;
->>   static inline bool dmar_rcu_check(void)
->>   {
->>   	return rwsem_is_locked(&dmar_global_lock) ||
->> -	       system_state == SYSTEM_BOOTING;
->> +	       system_state == SYSTEM_BOOTING ||
->> +	       (IS_ENABLED(CONFIG_INTEL_IOMMU)
->> && !intel_iommu_enabled);
->>   }
+>>   - SVA (Shared Virtual Address)
+>>   - kernel DMA with PASID
+>>   - hardware-assist mediated device
+>>
+>> This adds a pair of domain ops for this purpose and adds the interfaces
+>> for device drivers to attach/detach a domain to/from a {device, PASID}.
+>> Some buses, like PCI, route packets without considering the PASID
+>> value.
+> Below the comments touch on ACS, so this is a bit out of date
 > 
-> intel_iommu_enabled is 0 if CONFIG_INTEL_IOMMU is not set.
+>> +static bool iommu_group_immutable_singleton(struct iommu_group *group,
+>> +					    struct device *dev)
+>> +{
+>> +	int count;
+>> +
+>> +	mutex_lock(&group->mutex);
+>> +	count = iommu_group_device_count(group);
+>> +	mutex_unlock(&group->mutex);
+>> +
+>> +	if (count != 1)
+>> +		return false;
+>> +
+>> +	/*
+>> +	 * The PCI device could be considered to be fully isolated if all
+>> +	 * devices on the path from the device to the host-PCI bridge are
+>> +	 * protected from peer-to-peer DMA by ACS.
+>> +	 */
+>> +	if (dev_is_pci(dev))
+>> +		return pci_acs_path_enabled(to_pci_dev(dev), NULL,
+>> +					    REQ_ACS_FLAGS);
+> You might want to explain what condition causes ACS isolated devices
+> to share a group in the first place..
 > 
-> same for other similar checks.
 
-Sorry that I didn't get your point. If CONFIG_INTEL_IOMMU is not set,
-IS_ENABLED(CONFIG_INTEL_IOMMU) is 0. The adding check has no effect. Did
-I miss anything?
+How about rephrasing this part of commit message like below:
+
+Some buses, like PCI, route packets without considering the PASID value.
+Thus a DMA target address with PASID might be treated as P2P if the
+address falls into the MMIO BAR of other devices in the group. To make
+things simple, these interfaces only apply to devices belonging to the
+singleton groups.
+
+Considering that the PCI bus supports hot-plug, even a device boots with
+a singleton group, a later hot-added device is still possible to share
+the group, which breaks the singleton group assumption. In order to
+avoid this situation, this interface requires that the ACS is enabled on
+all devices on the path from the device to the host-PCI bridge.
 
 Best regards,
 baolu
-
