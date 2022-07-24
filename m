@@ -1,32 +1,32 @@
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BE163207
-	for <iommu@lists.linux.dev>; Sun, 24 Jul 2022 13:48:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A7103207
+	for <iommu@lists.linux.dev>; Sun, 24 Jul 2022 14:04:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658670503; x=1690206503;
+  t=1658671497; x=1690207497;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=2puGSbFV6JbfMw1U8PHnFAbt7zegiUsTaOBtnWFYRPc=;
-  b=JhaVI8caFOFJ09jAMKo4SGIrM22dFvyvuqYq0/bAbnyL6GJzIH7t8Bzz
-   wcUEBLPvn59u1v3tOd029ZEucPui4hooouHXFJJRMXjlmfDoN3pecwbBQ
-   ueNirNg04yGTsG958ABnl3vQjOPSbNoxgm5/1hk/hnBCVXNBPzy4Ulptg
-   mfV/OPxRLJD87K8xrZ7pGkyja93jXYI7N6aHy2dn6H6SWAmNK3u6tkx9V
-   wj8p93dQDbI5tO9PuY1XsTqIKt7Rv4G8+B01I6XDSv8ByS8bOY+/DefTA
-   OpwsZ+jl24w36Rp47GSyADq8vXQ3F3uzkLDbthxEBPuyd4ZwVV2FjGk4F
+  bh=4SB7MknA24m1jUG2lvk0lBvwcZyqcGj7Lokl0Nv3fhk=;
+  b=lBydHmpMqWnpC/vVzgz/+MJQXd0kq8WHopmbvP98x2LrWsRz4F90wGGt
+   xRrRMqKda8+a97d3soaVQIXA6tubStIB84Nss7CY46b08WlV0mWJ2HFR9
+   sBN34dcbbB0g+CYo8O303jErL0ml0yK/1EnKiFi01ypSuPRNcLREl/o6x
+   s7t7HU0tQoRc9ZXF/xRc0cF5PFSPiDb7pvj71v2t0PKGf1ok+yOQ4uNiO
+   dLQc+G+CtvPR/uScfjTq4F9TX2/8yNxlQmtln2rS9n1mYZETAnG2q4N08
+   blxZuPlGRZPT/Tv07yNccKygKxbLym02p45muvJpzmevysV7jnrBumTLv
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10417"; a="288729349"
+X-IronPort-AV: E=McAfee;i="6400,9594,10417"; a="274406723"
 X-IronPort-AV: E=Sophos;i="5.93,190,1654585200"; 
-   d="scan'208";a="288729349"
+   d="scan'208";a="274406723"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 06:48:22 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 07:04:56 -0700
 X-IronPort-AV: E=Sophos;i="5.93,190,1654585200"; 
-   d="scan'208";a="657817092"
+   d="scan'208";a="657820532"
 Received: from zjiang1-mobl.ccr.corp.intel.com (HELO [10.249.170.155]) ([10.249.170.155])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 06:48:17 -0700
-Message-ID: <bffb6e2d-d310-49b9-0725-37ab4263c22d@linux.intel.com>
-Date: Sun, 24 Jul 2022 21:48:15 +0800
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 07:04:52 -0700
+Message-ID: <487b533a-b289-eee7-0bd8-3be36c6e00e3@linux.intel.com>
+Date: Sun, 24 Jul 2022 22:04:50 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -44,192 +44,101 @@ Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
  Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
  Jacob jun Pan <jacob.jun.pan@intel.com>,
  Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony <tony.zhu@intel.com>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v10 08/12] iommu/sva: Refactoring
- iommu_sva_bind/unbind_device()
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v10 10/12] iommu: Prepare IOMMU domain for IOPF
 Content-Language: en-US
 To: Jason Gunthorpe <jgg@nvidia.com>
 References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
- <20220705050710.2887204-9-baolu.lu@linux.intel.com>
- <20220723142650.GH79279@nvidia.com>
+ <20220705050710.2887204-11-baolu.lu@linux.intel.com>
+ <20220723143334.GJ79279@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220723142650.GH79279@nvidia.com>
+In-Reply-To: <20220723143334.GJ79279@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2022/7/23 22:26, Jason Gunthorpe wrote:
-> On Tue, Jul 05, 2022 at 01:07:06PM +0800, Lu Baolu wrote:
->> The existing iommu SVA interfaces are implemented by calling the SVA
->> specific iommu ops provided by the IOMMU drivers. There's no need for
->> any SVA specific ops in iommu_ops vector anymore as we can achieve
->> this through the generic attach/detach_dev_pasid domain ops.
+On 2022/7/23 22:33, Jason Gunthorpe wrote:
+> On Tue, Jul 05, 2022 at 01:07:08PM +0800, Lu Baolu wrote:
+>> This adds some mechanisms around the iommu_domain so that the I/O page
+>> fault handling framework could route a page fault to the domain and
+>> call the fault handler from it.
 >>
->> This refactors the IOMMU SVA interfaces implementation by using the
->> set/block_pasid_dev ops and align them with the concept of the SVA
->> iommu domain. Put the new SVA code in the sva related file in order
->> to make it self-contained.
+>> Add pointers to the page fault handler and its private data in struct
+>> iommu_domain. The fault handler will be called with the private data
+>> as a parameter once a page fault is routed to the domain. Any kernel
+>> component which owns an iommu domain could install handler and its
+>> private parameter so that the page fault could be further routed and
+>> handled.
 >>
+>> This also prepares the SVA implementation to be the first consumer of
+>> the per-domain page fault handling model. The I/O page fault handler
+>> for SVA is copied to the SVA file with mmget_not_zero() added before
+>> mmap_read_lock().
+>>
+>> Suggested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 >> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 >> Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
 >> Tested-by: Tony Zhu <tony.zhu@intel.com>
 >> ---
->>   include/linux/iommu.h         |  67 +++++++++++--------
->>   drivers/iommu/iommu-sva-lib.c |  98 ++++++++++++++++++++++++++++
->>   drivers/iommu/iommu.c         | 119 ++++++++--------------------------
->>   3 files changed, 165 insertions(+), 119 deletions(-)
+>>   include/linux/iommu.h         |  3 ++
+>>   drivers/iommu/iommu-sva-lib.h |  8 +++++
+>>   drivers/iommu/io-pgfault.c    |  7 +++++
+>>   drivers/iommu/iommu-sva-lib.c | 58 +++++++++++++++++++++++++++++++++++
+>>   drivers/iommu/iommu.c         |  4 +++
+>>   5 files changed, 80 insertions(+)
 >>
 >> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index 42f0418dc22c..f59b0ecd3995 100644
+>> index ae0cfca064e6..47610f21d451 100644
 >> --- a/include/linux/iommu.h
 >> +++ b/include/linux/iommu.h
->> @@ -39,7 +39,6 @@ struct device;
->>   struct iommu_domain;
->>   struct iommu_domain_ops;
->>   struct notifier_block;
->> -struct iommu_sva;
->>   struct iommu_fault_event;
->>   struct iommu_dma_cookie;
->>   
->> @@ -57,6 +56,14 @@ struct iommu_domain_geometry {
->>   	bool force_aperture;       /* DMA only allowed in mappable range? */
->>   };
->>   
->> +/**
->> + * struct iommu_sva - handle to a device-mm bond
+>> @@ -105,6 +105,9 @@ struct iommu_domain {
+>>   	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
+>>   	struct iommu_domain_geometry geometry;
+>>   	struct iommu_dma_cookie *iova_cookie;
+>> +	enum iommu_page_response_code (*iopf_handler)(struct iommu_fault *fault,
+>> +						      void *data);
+>> +	void *fault_data;
+>>   	union {
+>>   		struct {
+>>   			iommu_fault_handler_t handler;
+> 
+> Why do we need two falut callbacks? The only difference is that one is
+> recoverable and the other is not, right?
+> 
+> Can we run both down the same op?
+
+The iommu_fault_handler_t is for report_iommu_fault() which could be
+replaced with the newer iommu_report_device_fault().
+
+https://lore.kernel.org/linux-iommu/Yo4Nw9QyllT1RZbd@myrica/
+
+> 
+>> +/*
+>> + * I/O page fault handler for SVA
 >> + */
->> +struct iommu_sva {
->> +	struct device		*dev;
->> +	refcount_t		users;
->> +};
+>> +enum iommu_page_response_code
+>> +iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
+>> +{
+>> +	vm_fault_t ret;
+>> +	struct vm_area_struct *vma;
+>> +	struct mm_struct *mm = data;
+>> +	unsigned int access_flags = 0;
+>> +	unsigned int fault_flags = FAULT_FLAG_REMOTE;
+>> +	struct iommu_fault_page_request *prm = &fault->prm;
+>> +	enum iommu_page_response_code status = IOMMU_PAGE_RESP_INVALID;
 >> +
->>   /* Domain feature flags */
->>   #define __IOMMU_DOMAIN_PAGING	(1U << 0)  /* Support for iommu_map/unmap */
->>   #define __IOMMU_DOMAIN_DMA_API	(1U << 1)  /* Domain for use in DMA-API
->> @@ -105,6 +112,7 @@ struct iommu_domain {
->>   		};
->>   		struct {	/* IOMMU_DOMAIN_SVA */
->>   			struct mm_struct *mm;
->> +			struct iommu_sva bond;
+>> +	if (!(prm->flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID))
+>> +		return status;
+>> +
+>> +	if (IS_ERR_OR_NULL(mm) || !mmget_not_zero(mm))
 > 
-> We can't store a single struct device inside a domain, this is not
-> layed out right.
+> Do not use IS_ERR_ON_NULL. mm should never be null here since the
+> fault handler should have been removed from the domain before the
+> fault_data is changed.
 
-Yes, agreed.
-
-> 
-> The API is really refcounting the PASID:
-> 
->> +struct iommu_sva *iommu_sva_bind_device(struct device *dev,
->> +					struct mm_struct *mm);
->> +void iommu_sva_unbind_device(struct iommu_sva *handle);
-> 
-> So what you need to do is store that 'iommu_sva' in the group's PASID
-> xarray.
-> 
-> The bind logic would be
-> 
->    sva = xa_load(group->pasid, mm->pasid)
->    if (sva)
->       refcount_inc(sva->users)
->       return sva
->    sva = kalloc
->    sva->domain = domain
->    xa_store(group->pasid, sva);
-
-Thanks for the suggestion. It makes a lot of sense to me.
-
-Furthermore, I'd like to separate the generic data from the caller-
-specific things because the group->pasid_array should also be able to
-serve other usages. Hence, the attach/detach_device_pasid interfaces
-might be changed like below:
-
-/* Collection of per-pasid IOMMU data */
-struct group_pasid {
-	struct iommu_domain *domain;
-	void *priv;
-};
-
-/*
-  * iommu_attach_device_pasid() - Attach a domain to pasid of device
-  * @domain: the iommu domain.
-  * @dev: the attached device.
-  * @pasid: the pasid of the device.
-  * @data: private data, NULL if not needed.
-  *
-  * Return: 0 on success, or an error.
-  */
-int iommu_attach_device_pasid(struct iommu_domain *domain, struct device 
-*dev,
-			      ioasid_t pasid, void *data)
-{
-	struct iommu_group *group;
-	struct group_pasid *param;
-	int ret = -EINVAL;
-	void *curr;
-
-	if (!domain->ops->set_dev_pasid)
-		return -EOPNOTSUPP;
-
-	group = iommu_group_get(dev);
-	if (!group)
-		return -ENODEV;
-
-	param = kzalloc(sizeof(*param), GFP_KERNEL);
-	if (!param) {
-		iommu_group_put(group);
-		return -ENOMEM;
-	}
-	param->domain = domain;
-	param->priv = data;
-
-	mutex_lock(&group->mutex);
-	if (!iommu_group_immutable_singleton(group, dev))
-		goto out_unlock;
-
-	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, param, GFP_KERNEL);
-	if (curr) {
-		ret = xa_err(curr) ? : -EBUSY;
-		goto out_unlock;
-	}
-	ret = domain->ops->set_dev_pasid(domain, dev, pasid);
-	if (ret)
-		xa_erase(&group->pasid_array, pasid);
-out_unlock:
-	mutex_unlock(&group->mutex);
-	iommu_group_put(group);
-	if (ret)
-		kfree(param);
-
-	return ret;
-}
-
-/*
-  * iommu_detach_device_pasid() - Detach the domain from pasid of device
-  * @domain: the iommu domain.
-  * @dev: the attached device.
-  * @pasid: the pasid of the device.
-  *
-  * The @domain must have been attached to @pasid of the @dev with
-  * iommu_detach_device_pasid().
-  */
-void iommu_detach_device_pasid(struct iommu_domain *domain, struct 
-device *dev,
-			       ioasid_t pasid)
-{
-	struct iommu_group *group = iommu_group_get(dev);
-	struct group_pasid *param;
-
-	mutex_lock(&group->mutex);
-	domain->ops->set_dev_pasid(group->blocking_domain, dev, pasid);
-	param = xa_erase(&group->pasid_array, pasid);
-	WARN_ON(!param || param->domain != domain);
-	mutex_unlock(&group->mutex);
-
-	iommu_group_put(group);
-	kfree(param);
-}
-
-Does this look right to you?
+Yes. Updated.
 
 Best regards,
 baolu
+
