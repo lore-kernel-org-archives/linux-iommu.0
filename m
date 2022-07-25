@@ -1,154 +1,100 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2080.outbound.protection.outlook.com [40.107.237.80])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC2A8371
-	for <iommu@lists.linux.dev>; Mon, 25 Jul 2022 07:06:11 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Tpj0U1bwRhq0yapZXF4ZxSIT07gOLqJvgG+vSnNdH/POt0SEJ6OGVRX8qdq5EbrEpoD+s9cXLKeuLzJq3TcF5BZuXbiX2yUI8c35j9Jer+gNUDRYGDKb5RfCP4J6YrtqYk0/rllYTx8DDbF6POj5WMeeNtuDfWDA65H3/UwsoK6dkdWaz6bKpCkMAU0s7QmyIerVqDHASBMpz44kdMsm0eCK/Hcd+D+zHRlzuEGgJmnRrDkmAfnVw+p7SnE5M87/sFXyD4qIfJ+AZQKv3qgnVcKXrubaIg4dj07LwFc1ALWSmv8+k2ZgEhkm7R1W7fy8tk4PRUnncpD2QMQvUcWUqA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5T6O33q2ruZSkN7YEnJ/8fvggiIvua8zB54KQPCUdAE=;
- b=bPKaDYHCZgQ4YrQWEhS0IoBExKNc3OFxYlud44m6vBwCV6xl9431Pz1hi1o+UjY3W7LKc7LJ0j2ElUQnbmdZkY3dkuSeSCWzuyZJrCy6herNwE3pzrr8Wm2GHAblK8MpAB9NAOPxGvC01vRjv4pQIT9BOVXMxEdp9maN02qZzw5qKdUcara0sV2z6oa3FJjRvpbCdUZS81ZwlDtk7XStyQ5C5aLcp73gT42wHW+1lagGBNfV01DDWgJdBqLXto7zsoGbz4nbPJbGD67S9nbxziCMSYRr8q8lQSh9+dFowMd6TE8WLG0q2NSGWV/UMlliE74X54/KomMIAqs0+hJ45Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5T6O33q2ruZSkN7YEnJ/8fvggiIvua8zB54KQPCUdAE=;
- b=HpVjjKjC3loHOfzt/Hy/d9jnm+38rGUC0VKvG+/WIO1kstHXIzoJ4KCAfqhoC3ATij5tzIgEmBuWb5SHd5RoybCiw5m2lajNAj1vsGetZsjlirO/mphSBGzUhJ4k73/L8wHAS3e4eDY1UcZxs6kEQE8gOiJJzSYYZynQTB3SkuM=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
- BYAPR12MB2951.namprd12.prod.outlook.com (2603:10b6:a03:138::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.20; Mon, 25 Jul
- 2022 07:06:07 +0000
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::d4af:b726:bc18:e60c]) by DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::d4af:b726:bc18:e60c%7]) with mapi id 15.20.5458.024; Mon, 25 Jul 2022
- 07:06:07 +0000
-Message-ID: <a07eded4-c1d7-edf5-9c0e-dfa0c3373e4c@amd.com>
-Date: Mon, 25 Jul 2022 14:05:59 +0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH] iommu/amd: Disable guest vapic logging during early kdump
- init
-Content-Language: en-US
-To: Joerg Roedel <joro@8bytes.org>, Jerry Snitselaar <jsnitsel@redhat.com>
-Cc: Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20220721003439.403435-1-jsnitsel@redhat.com>
- <Ytq2GRX7UJjvXk4w@8bytes.org>
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-In-Reply-To: <Ytq2GRX7UJjvXk4w@8bytes.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SI2P153CA0022.APCP153.PROD.OUTLOOK.COM (2603:1096:4:190::8)
- To DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 904C0371
+	for <iommu@lists.linux.dev>; Mon, 25 Jul 2022 07:39:52 +0000 (UTC)
+Received: by mail-wm1-f53.google.com with SMTP id 8-20020a05600c024800b003a2fe343db1so5826061wmj.1
+        for <iommu@lists.linux.dev>; Mon, 25 Jul 2022 00:39:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=e1aZ+o8kUOGYYPE2I8Uql3rIMOoNeVnZ6eovO9V2SYI=;
+        b=e0kcc9cMVIDcngDRSTaZnB9OpBUCxX3qmlG7Rf8UF8KxVdSSsYTKRRoayVBXIw3Sng
+         wu03r67IdDvHjuKRBxBG/MxS7zaI0Fo1WODf40DlybOy4RWF2zFeZBXFfeKyNY0k3tY0
+         9acd2YlEjpByWP6lqxFmT8VFC6fWMD8ow89/760tUyLKH0o9qeiprvAj+2sNGlgZhJZI
+         P/HxJLpuRxogFWVWPIjIQAFfo0PO7Gp9AJcrqgFGB0IZOyTnjDFWfH0tafCnnyRMGVx7
+         qdcnwKIosMyB5F+UvM7GWAw6I/korbMgwAcezOoI6zLqC6A5RcxfoKxbs4WKBmEsKJwO
+         BYPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=e1aZ+o8kUOGYYPE2I8Uql3rIMOoNeVnZ6eovO9V2SYI=;
+        b=To/9yQv0tvmQ6GoHQz8s+paSS9n7MAhYIqy1V3PH4mBeddCK5jggcarnJf46J3visV
+         EOxUs9FKcDo6WcEV/ZdKXyZDCBe+a9xMycNnlo3E07A5iDZMT7636xY0cvDi5n9DO4dm
+         P8gU4PGd+++WSZDqAdWPoe/vwHbLq2wCXLZKrOgn9s7HzLjbm5iU+Iz55txcYb83djuZ
+         0MeAbXa9o+5QF7HO+9+RoRvRAP4GqluvEHC3OJf/C9TJgy0qfwk4pDXIqSAVqA1ItmYm
+         TV8rx67wJ/zzDfzc+X1HvKlVKwm6hWpgchwhLUcS9+GhWLfSZgR+0/bdF+XYaR+GpJoK
+         Cv5w==
+X-Gm-Message-State: AJIora9br7BCzkxlgI4ljx5KVYYpB+sXDk34P1nIvoAHF91hLU4pX1dw
+	de5FOBdEVszWnzw5s4pCdd3x+w==
+X-Google-Smtp-Source: AGRyM1v6drvIQaPtLI2eyqwiXdbwRxbi3X7EtVh03o9xVmLSg1+t1aTiJIzZGSIA3tAvrAovwl/Odw==
+X-Received: by 2002:a05:600c:17c7:b0:3a3:f1:148c with SMTP id y7-20020a05600c17c700b003a300f1148cmr20833043wmo.32.1658734790751;
+        Mon, 25 Jul 2022 00:39:50 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
+        by smtp.gmail.com with ESMTPSA id f9-20020adfb609000000b0021e519eba9bsm11085090wre.42.2022.07.25.00.39.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Jul 2022 00:39:50 -0700 (PDT)
+Date: Mon, 25 Jul 2022 08:39:23 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+	Christoph Hellwig <hch@infradead.org>,
+	Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.com>,
+	Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
+	Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
+	Jacob jun Pan <jacob.jun.pan@intel.com>,
+	Zhangfei Gao <zhangfei.gao@linaro.org>,
+	Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v10 08/12] iommu/sva: Refactoring
+ iommu_sva_bind/unbind_device()
+Message-ID: <Yt5IqyZw/Sa6Ck5t@myrica>
+References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
+ <20220705050710.2887204-9-baolu.lu@linux.intel.com>
+ <20220723142650.GH79279@nvidia.com>
+ <bffb6e2d-d310-49b9-0725-37ab4263c22d@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 97e775ba-57ee-4413-c038-08da6e0c2546
-X-MS-TrafficTypeDiagnostic: BYAPR12MB2951:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	EAqME8RdnjTmJkbJSQowkzqjx5pnvZtu8I+ndeuXpa6t+yTpk7hjsCOXB3ccXuVciKRnAymvBjlrEE6t/FjzFdBje/+vGEp4aV0uwIE6KjWICqdPH+7pbPi75mI1AjGDZW6sd+SXE3M4eDVroDiMmFFFWFJWbkj0Zg3tuozfD+LUiM+Ib142hbPYMBnHZF6o4YZfqpCGy4WgFm+9k/8u76rEGcuJOWvjjiQrinnMCXBAipL6cQ9dWvaKWtDTc8uCnZ34L1qH+dhc5NnMYjbZKxgl644pdo3hriMMhQbf7oz1BOnSdOdi6hJFQDBWvnwNFufbN9pTR0HSMHjeSXfE0osfOFkpop+SwjowfaIrzVStbX54iGLuVM1wzlXpuXOkJ8e5E87tgbVdbJEXPMokFpz71Xx2oq2mWmHrOc6tKjEAGDeKDN+/YdTh6BV4IVTw5JFequk7V1jyqlxJODR8eTqPHbTPl3HpGStFhQmCl0NSCoi85Lo1pjSTjlk5+V2A9+o5gIL8IVvVjZKtCaYSYZRtyKEreo1bYew5rT0nCSVpMDmC8ncp9j47LsUIAGPa+f1Rk2yNus7stBaotNgJkBonVFSxt5du1HrUT/we1tkq0G/9zefflcZzdDdhhaSeK87p779XMKlGpEt/kp+ELRfwmvDK04z4JPTL/XOA+Rb92+w8RQVenA8WVgrz8vpkDUMNYXZI59gAruUu/20n3iowBV9XQEydW0iHWMLONA7vTu0QWdVX9YJENc1xANK3aBCO9sCJ3X0p9N8QOvdx2tbzPtpx9v8AhXS96NZPbS83GEkx+w4OE/lPT6+udjPwDZpVBmiJz6a7N46yWYluZA==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5445.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(376002)(366004)(136003)(39860400002)(110136005)(316002)(186003)(2616005)(53546011)(6506007)(31686004)(31696002)(4326008)(86362001)(44832011)(2906002)(5660300002)(36756003)(8936002)(38100700002)(8676002)(6486002)(66476007)(66946007)(6666004)(6512007)(478600001)(66556008)(41300700001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?ZFpYMzV3MmlmK1NuVUFVUW9mek9BZzUxR3BZNlVCYnlkTkZaRWRQU1NHNUs1?=
- =?utf-8?B?MmtpZCtiWjFyRklZamNIdFo2czJnbVZlY2lNOE5CbnplWlJFcmsybk05QkVP?=
- =?utf-8?B?aUZlR2JCRnJzdnhMRzA1Y0V5V3BRamNHaU9BSnRMRU42b3BIVXQzbENDemtu?=
- =?utf-8?B?eXVPMnVzb2kzNXBGQlluc1NSWVBqOEFRcmdhazFjQ3FXMTl4NWxocS85Zi9w?=
- =?utf-8?B?b0pjNE53aVpXbVFMWDRJUkZwL1RHa2Q0cHJFWFh2ZXh5N0NCNENQdldsczZw?=
- =?utf-8?B?S0NHWEtZNTRZbnZQaXhuMHp2aVBraWN6SGEwOW1IWlpLVUpOTUNuU29MYkpI?=
- =?utf-8?B?cklBdnVYdlFjbUNWTFpEYVpUODZub0ZVWHFXWU8xRFlJTko0OGM1V0NXR3FN?=
- =?utf-8?B?Q0ZXWHM3WEg5cEtyVTUxUkIrVWNCZTZCNkpjTDFkL1VaNWFSb1Z2dUxPbnpi?=
- =?utf-8?B?VHRrMHo3ZVAwWXlDbDdCb1dSdWpZMkxEUDlTTW1MclErZTMvTUp2RmFzdnNm?=
- =?utf-8?B?VkN2djA2TmozaTl1YURXOU0ydlZHVDdqQjlZN3h1MFBTMkI1M0x0dWtTcDZv?=
- =?utf-8?B?UjdMUUlMMzJrYU1TM0tLZzFJakN6NDRpd0pXeUxRV25GeGw5bld6N2hycEJZ?=
- =?utf-8?B?bk9NYzNvenpQdUQyOUhoV3QvaUJ6ZVAwOTBWa292TC9seW1QUGZVZE16VDBm?=
- =?utf-8?B?ZldwYkxaTzNEZmFjOHpNdk1uRVFyQmRVcG5udDRXVGJ1TVNmRk9oNnVqM25O?=
- =?utf-8?B?MzdJWmZIbzBLcEtHOW5qTkJ2aGN4OUdMWnVBMkZ0UG5URUxWUUdZQU9LV0Na?=
- =?utf-8?B?L1Z2ckpzZ2FEL0lOc29RZXlqNGlycEJKbXFRNm5pUGJBQVhTdjl3QkRHMzU3?=
- =?utf-8?B?Z2FXZFR3bncrNWZrYnI3QldVeTZONlpPZTloVDZyRDBOMXRObkxmczNyYjRD?=
- =?utf-8?B?ZjBDZjZ3TnFxbkU3ODlNNzFLdWxNQ2g4SGQzUkxHSjR1US9DVk1KeFlYY0ho?=
- =?utf-8?B?Q09oTHZsUnNSTXB3VG43NU04YXF2SDB3LzV4Y25zbWF1emc3dDloM3daQW1o?=
- =?utf-8?B?aDZWVjVNZWx6ZVQxdTNWSDA3V3NtNDJ4WWNHMXdnYmZxaEJnMXhVMkt1VDFv?=
- =?utf-8?B?ek1GaFYzaUNIMzF0aDhHbnFtTkkzeEI1T1BzYU1wbytrTWFNQ0ZLNVZSbXJW?=
- =?utf-8?B?OFpLUEttNGRwUUYyWUM1ckN4WVNBWHBaOVNDWFV4ay9NQ0NoYU5uQjJhWHV5?=
- =?utf-8?B?YnV0S0xNU1hzRGpWNlRmcy90ZFUrcmNZTXd5WGtPbkQwRTRTTWFza056eEI5?=
- =?utf-8?B?NXpHMHArZExxRkZ6TVVMUlo4ZzR3N3QwSjBTNktqNGQ0bkt0TE1teHQxTE03?=
- =?utf-8?B?UEJEcGV3QVVTRDBqVC9xTHoyNDJKSmkxb2p1eWtPdDRXYlRGczhBTXRRNlZU?=
- =?utf-8?B?SE9aM1g4S1o0bzNrMyszNzBYbzhRS1Z2ZDgyV0NLenV3d1VJZlUweEhaOFhB?=
- =?utf-8?B?MFRxSXVqM0ErTWplTzNXSGU5U1oyY2NkUG5ZaGs1STdSQW16dzZ3eitndE5p?=
- =?utf-8?B?WWR0RVEvc2k2RXFhQzBqSWRUL0d6ekZFSm5INDd4MTQra3hmZm5zUUQySmth?=
- =?utf-8?B?OU8wRDBOeTYybG4vazVrMDdLZWVnaUd3VFlXcUNYUnpVcGNjZjJaZHhmTEYx?=
- =?utf-8?B?a2xqVnR6YTFhTkx4VjNWZHB0MEgyY0ltZjh3QWNuN2VtUUYzR01Jb3gvdTVo?=
- =?utf-8?B?TmdQdmVhTkY1d1k2Q3dJcDRDQ2RYZllvR0ZQaEdYbkQraU9Hbk5LWm1BMVRv?=
- =?utf-8?B?T0RNUkhjeE01QTg4bm1PT21iQWZtM3R3N3JpRjVMMmdLVWtJUS9xNVpOYk95?=
- =?utf-8?B?TEtodzNDdW10TEo5REYzMDlEK3lxbUFCYWNXRi9aYjJQSWQxNGFWTTdKWnht?=
- =?utf-8?B?OGZyOG9lWENVUkhhNWxzYkh3OWIyNlArNXJ4d0xSSWRaNVI2a2FaWCswejlX?=
- =?utf-8?B?cVoydGFWSFAvNWxaRWVMUFlxMW81TWkwUUwvcEsxMHVhM1dPWmt4aTFzUk45?=
- =?utf-8?B?UWIwcFc2R3RCbzBWY1FNTFU1Q2hvK2tvQlFaQzhjcHNRalJwZnM1cmZpQUxO?=
- =?utf-8?B?N3ZMMnFLalZLTU9yK3ZzK3dBKzBLbkNFL1JCMDU2YXE1OGt3Qi9qU1F5dmVu?=
- =?utf-8?Q?GTWjP5qsoiUbbQlVoB7sHfAn/pmkkfQHrn7EdySH9nUG?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 97e775ba-57ee-4413-c038-08da6e0c2546
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2022 07:06:07.4320
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: L9WedZR3zFcT1GLP9C5+eZem6ctRemXoCLMiaddAeZ8lUcYJzQsShOVnfZzKyT5PhdY0v11XUYfFPCbEkN+vsQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2951
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bffb6e2d-d310-49b9-0725-37ab4263c22d@linux.intel.com>
 
-Joeg / Jerry,
-
-On 7/22/22 9:37 PM, Joerg Roedel wrote:
-> On Wed, Jul 20, 2022 at 05:34:39PM -0700, Jerry Snitselaar wrote:
->> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
->> index 1d08f87e734b..2b00d7f28df7 100644
->> --- a/drivers/iommu/amd/init.c
->> +++ b/drivers/iommu/amd/init.c
->> @@ -815,6 +815,11 @@ static void free_ga_log(struct amd_iommu *iommu)
->>   #endif
->>   }
->>   
->> +static void iommu_ga_log_disable(struct amd_iommu *iommu)
->> +{
->> +	iommu_feature_disable(iommu, CONTROL_GALOG_EN);
->> +}
->> +
->>   static int iommu_ga_log_enable(struct amd_iommu *iommu)
->>   {
->>   #ifdef CONFIG_IRQ_REMAP
->> @@ -2504,6 +2509,7 @@ static void early_enable_iommus(void)
->>   		for_each_iommu(iommu) {
->>   			iommu_disable_command_buffer(iommu);
->>   			iommu_disable_event_buffer(iommu);
->> +			iommu_ga_log_disable(iommu);
->>   			iommu_enable_command_buffer(iommu);
->>   			iommu_enable_event_buffer(iommu);
->>   			iommu_enable_ga(iommu);
+On Sun, Jul 24, 2022 at 09:48:15PM +0800, Baolu Lu wrote:
+> /*
+>  * iommu_detach_device_pasid() - Detach the domain from pasid of device
+>  * @domain: the iommu domain.
+>  * @dev: the attached device.
+>  * @pasid: the pasid of the device.
+>  *
+>  * The @domain must have been attached to @pasid of the @dev with
+>  * iommu_detach_device_pasid().
+>  */
+> void iommu_detach_device_pasid(struct iommu_domain *domain, struct device
+> *dev,
+> 			       ioasid_t pasid)
+> {
+> 	struct iommu_group *group = iommu_group_get(dev);
+> 	struct group_pasid *param;
 > 
-> Looks about right, but I also let Suravee comment on this.
-> 
-> Disabling the GA-Log under a device still using it should hopefully not
-> put it into some undefined state.
+> 	mutex_lock(&group->mutex);
+> 	domain->ops->set_dev_pasid(group->blocking_domain, dev, pasid);
 
-Sorry for late reply. I have been actually working on the new GAM and GALOG enabling code,
-which should also address this issue as well. I'll send out the patch soon.
+Please also pass the old domain to this detach() function, so that the
+IOMMU driver doesn't have to keep track of them internally.
 
-Regards,
-Suravee
+In addition to clearing contexts, detach() also needs to invalidate TLBs,
+and for that the SMMU driver needs to know the old ASID (!= PASID) that
+was used by the context descriptor.
+
+Thanks,
+Jean
+
+
