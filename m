@@ -1,189 +1,125 @@
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAEC6624
-	for <iommu@lists.linux.dev>; Mon, 25 Jul 2022 08:02:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658736129; x=1690272129;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=R/GBqKKGRZRuPBxl3dSxibgNxqQLQc+jEo21gwA9LoU=;
-  b=OpKCMwclBMFRknL4kNAInYe8WoV0+Du7VTd3bttELoW2ofw+YcTPhXio
-   l6n93cBQp7Fqx72kbng4A4FDWB9/9mNZeouVJLd2LLxwRBgULHpqr8hGN
-   3X8XgHs+h5EiyP4CBHeem8M5cSSL2R2jGNnydLVfxkBiMS/A4GWpvKFe3
-   rXNOGbCm7j3uCC1KMwzDbyDkAv9wPNqYWkhR6k6LTwDAuX9EJp6eWxVWh
-   4sZ8s6hh5NwVXD6JDdEGKon+HBoR9rLC2SqhN8FbtQyoA1WPl3KAdDVZQ
-   MHhiPPlBKTNndexjHDeC1gQnPoFIiqf3BUONAyXMnVRHKayCV7jexH2lK
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10418"; a="288398206"
-X-IronPort-AV: E=Sophos;i="5.93,192,1654585200"; 
-   d="scan'208";a="288398206"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 01:02:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,192,1654585200"; 
-   d="scan'208";a="603296427"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmsmga007.fm.intel.com with ESMTP; 25 Jul 2022 01:02:08 -0700
-Received: from orsmsx604.amr.corp.intel.com (10.22.229.17) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Mon, 25 Jul 2022 01:02:07 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28 via Frontend Transport; Mon, 25 Jul 2022 01:02:07 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.170)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Mon, 25 Jul 2022 01:02:07 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=J76oHI4b0Rr3QjEIA15fZPlyvw08Cma81LLiYU1PplxDnoWGty2zzAZs9gJHq4O8IpZcX1QVbwoiVlpkG+YnK/Zc0Nt26RyfFzh7U9JWaLn8okzSdHMl7KdECxoz1VCIqouvLJUgzOSv5ODbniT/a5Tirmd9nbzAT+ubDIC8z3vuAMr8A2rPGZtSMQ8ElvE0HhpfVczSTT4SvazLn9H1xH0I/KcZXTV60h1BzWPTWwMqG+0iqqHrZqy9zdMJjUGJMd+h7RjHuWFvYEaM0szglRbA+4L2kugXgHQIZq1gUndamdRRfeqVnIYCo4JLYd4RJ+E2QkbaoJIBZU+oEtZ6rg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vbXuwa+vtw3M0n9TIlKHNRxkx36t9evTyTQeXfr4ahM=;
- b=d2FWURHX8ta1/j6xWBgNXgEL4961gGntEOGt3EzY92jdlpqidv4y8dQoXv5oPFDdWwWElwNzv/eeRtcHBhnJEWTc58NsOy2gJNFZvT1fCIfXNsA1dv2YQ6fZ0gVmuevqM4Id3yogFLFa9h7q7RCCobMc+M1wDKKwjtUSpJYHktRP7urWqO7qL2GDwe4uslsDmrlqkzcBwNvIh7LHiWr4nki95dYHKgOj3DIX0Q3yFGj62K4pQW7EhuCHD7EF3z4kJV/vWehBETWWc0H/nzdFsUfwMJrBPxBSs5gHLvk9meTcyntXscaqJYoohuug9xuW+gN/pQHwmJ2WVtfqbnAoBw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by DM6PR11MB3194.namprd11.prod.outlook.com (2603:10b6:5:5c::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.23; Mon, 25 Jul
- 2022 08:02:05 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::8435:5a99:1e28:b38c]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::8435:5a99:1e28:b38c%2]) with mapi id 15.20.5458.024; Mon, 25 Jul 2022
- 08:02:05 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>, Baolu Lu
-	<baolu.lu@linux.intel.com>
-CC: Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
-	Christoph Hellwig <hch@infradead.org>, "Raj, Ashok" <ashok.raj@intel.com>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>, "Jiang, Dave"
-	<dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>, Eric Auger
-	<eric.auger@redhat.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Pan, Jacob jun"
-	<jacob.jun.pan@intel.com>, Zhangfei Gao <zhangfei.gao@linaro.org>, "Zhu,
- Tony" <tony.zhu@intel.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0ACD262D
+	for <iommu@lists.linux.dev>; Mon, 25 Jul 2022 08:47:50 +0000 (UTC)
+Received: by mail-ej1-f43.google.com with SMTP id ez10so19166490ejc.13
+        for <iommu@lists.linux.dev>; Mon, 25 Jul 2022 01:47:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=LMteYojnWBtoBZUgjFuGYDtFnOFLH6JXb9UumNXhn2E=;
+        b=uToNS5kKkiuzs3gCE1rAKXdBoFmN0lpjA5ZkeB4459FtfHbC9+wY5AOtOHYoEUTE9N
+         c0imgAa1Mc/tiaOerXohnyta47hUVxft0Z23bMLD8bWnwKb92hEnK8xjE5xH0G+EgxDt
+         KYyblAehv0WKufr76QTyeVn2e/U+elwAIjeDYRistamWUiJNLyn6aM/I7ot+YL4SRO+q
+         EvjIAeu6U9mb5FE4F+QaHbv6gLhA9zqMHgIrv6/eFu3ebN36y5sbStpoB918gYmMgOi1
+         HTvtMWkEHW5ev+OwZu1+pBe68MjW89sxQFch6LzhUK7ioHBtgnylNr1sBH5kUDPTfZM3
+         WVug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LMteYojnWBtoBZUgjFuGYDtFnOFLH6JXb9UumNXhn2E=;
+        b=DEveXus1pfnTx+MqgOaVlZht2gYV64Y+5thURhOKlxhJjIh8xdDnuY+Enad2MmaNsu
+         qp1ajdPLMjOZWKTZ6JTtCBIseUUvGsAGbGf9NsoruP/RIRhlYR0FKAHmwKFzeoTL6uwm
+         +dNWk3f74iXFPsw3DFdcJdJo1tuqTg4hvs+sVORc5J2ZxjFUxUrgWUEVqdMEP34tPpa/
+         fK98Gw4pcvHcQ+vZz0quVeHYNp2TDJ+XeXGs6Kehs7T8hZMYnbyTsfifemrACCQ3I0eO
+         IYIe9dhI6wBc/IBa8R+43RNjTzeHMcA6DzU6DTsAqWcR7O2wVCe9PfSBiVfPsavHFzkR
+         hSsw==
+X-Gm-Message-State: AJIora/zeONOMQSZFy+8GDKFyQSRKTtIfUSz0BduyjG7fnCXWh4mILdq
+	1ESztlsKGMoFNW5b/+Rik+yYqQ==
+X-Google-Smtp-Source: AGRyM1vk81vhSt+pOYi8QJg6zOOGb6DFzGSak5oaJCagQUdhnuL9SB2HvWOyu2eMNsT6e66zXtlaKQ==
+X-Received: by 2002:a17:906:844f:b0:72b:549e:a654 with SMTP id e15-20020a170906844f00b0072b549ea654mr8879155ejy.535.1658738869244;
+        Mon, 25 Jul 2022 01:47:49 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
+        by smtp.gmail.com with ESMTPSA id la10-20020a170907780a00b0072b13a10477sm5090474ejc.108.2022.07.25.01.47.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Jul 2022 01:47:48 -0700 (PDT)
+Date: Mon, 25 Jul 2022 09:47:22 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Christoph Hellwig <hch@infradead.org>,
+	"Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.com>,
+	"Jiang, Dave" <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
+	Eric Auger <eric.auger@redhat.com>,
+	"Liu, Yi L" <yi.l.liu@intel.com>,
+	"Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+	Zhangfei Gao <zhangfei.gao@linaro.org>,
+	"Zhu, Tony" <tony.zhu@intel.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v10 08/12] iommu/sva: Refactoring
+Subject: Re: [PATCH v10 08/12] iommu/sva: Refactoring
  iommu_sva_bind/unbind_device()
-Thread-Topic: [PATCH v10 08/12] iommu/sva: Refactoring
- iommu_sva_bind/unbind_device()
-Thread-Index: AQHYkC3RawHjE5fI4kOPQdVz+DQ3s62MICIAgAGHjYCAAStGgIAAA18A
-Date: Mon, 25 Jul 2022 08:02:05 +0000
-Message-ID: <BN9PR11MB52769B02DE62A229CCB4F2E38C959@BN9PR11MB5276.namprd11.prod.outlook.com>
+Message-ID: <Yt5YmquF3vf/swBi@myrica>
 References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
  <20220705050710.2887204-9-baolu.lu@linux.intel.com>
  <20220723142650.GH79279@nvidia.com>
  <bffb6e2d-d310-49b9-0725-37ab4263c22d@linux.intel.com>
  <Yt5IqyZw/Sa6Ck5t@myrica>
-In-Reply-To: <Yt5IqyZw/Sa6Ck5t@myrica>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-dlp-version: 11.6.500.17
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e49ff08f-1bad-4771-334b-08da6e13f719
-x-ms-traffictypediagnostic: DM6PR11MB3194:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: RXHHBJc1WXTVpeCm6Psef7Hh72v0PSycqAO0JD3Yp/Mdw5/jMHkyxId0z3nmIx0gzmbipfK2iGkPbG5SqzqATiLgeTQ/z3/heLprc0iRpmId4lurWZaiO/Sf/6uIpXVOHH8sapNpjsKVgLrlRnGCUFG3/Q7OMGHLBMNvDSwRltoqiDp8/yuPLssh1upXOZg46tIQIBH+QKvoEC792knNwbyEMUP6dDVX/HQVe+jf8tDBRyC1EwJnp8NNOA79/Fp79d2n6JPK+qU3+OroFD/yRtRyipsP/tmWv+t87Kw3Ac7VKJQiUPXPGfX+SPViqY4XIWv/oRLQtidpxWgTkQDkM6InU4cudt+WZ8LLOJmuiJVh9HjRfKIA9Is3giruuZeT59/sC7Ip4hO7KxKNROMzPsws49nojDvdFK7eWfs5UrEq69nnnPQYPPmC3N2jZs/9x2tmDg07FH+2XTlrQiv39gQ6CBwC+xIUvj4EMlZ/JLYOZHcGsl7O55/keIrt0QXvDZoS8bLaOjuv4mayXeWdx5Gyo3/7rKSCuK/Z8B2NkQ4YBP7OQoZPUirhssAkzAIkIjKf2Dy3IioNsAKcOBOFX9i0y0unW1aLhj6fyR8ty9+NBTM28fcBj7RT7d00hwoMcdDLeEk5wHgMmQ+shrx8wpLq3BAoGAbuaDWQnaGN2nDgiw6tNgFfyxKRqGyXzMMBR0KbK11EycrlqLW8SKg7V0ULk7z2tNmTn7OgyFPmqnleSYJBuhfGIP3ewgzO2OocDa3jmDhZO6jQlpSeyPc72PxN9gVesCSwO1uw3xvl+zXJbm/AEtVpk/bht+eFmUiKDJgsPgP6xc7ZMt/9NtzOT2EjBNvdvQA2RWRIfM14h6A=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(136003)(39860400002)(366004)(376002)(346002)(4326008)(38070700005)(7416002)(82960400001)(38100700002)(76116006)(8676002)(122000001)(64756008)(66446008)(66476007)(66556008)(66946007)(33656002)(26005)(110136005)(54906003)(55016003)(9686003)(7696005)(6506007)(83380400001)(316002)(186003)(86362001)(52536014)(5660300002)(2906002)(8936002)(41300700001)(71200400001)(478600001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?JAKwgVzxLnJ8QpQUglfIdldn/RkFteYGcS+ttMrhcH/oEEZitEa2QiExz+Tr?=
- =?us-ascii?Q?yUKzmKD4hTTyo83SrOp9eyalQKK3/3mCv7GHnHGlpRp8A1/HlLbwy8Q/eXAN?=
- =?us-ascii?Q?XZF3K1QrQgK8Sd+aX2ySNqQaIqk8aQSsLSHsHxc9UQhjabwuCKt8Yi2ml902?=
- =?us-ascii?Q?YFi/UZ6NG8paKNLgZI6brubJhkpCpyojuLfWNq6YLSCOsnOM89S8oY6Ap3yL?=
- =?us-ascii?Q?ziu7TEGXuB6UQiGOoGAOCb9F9LmCyLfAhvQCUhopjyb+8YD09bW1SSLuml/H?=
- =?us-ascii?Q?WbG5b41rjmADJavYadvR3tpsqZ6TNdmlwN6RyHRb1avpV+2OK2l+GH3eM7cz?=
- =?us-ascii?Q?Cg9h1+3bY8jxKrQ+86yP1Ow5o55sS6WBU+bwCp7RaCzprhSR1epEi/B1j22J?=
- =?us-ascii?Q?7GP7vnjS1H+jYL7C457sBXnW9cTebhnxS79tLeFYXzkRMzwSretBzdMe2xsQ?=
- =?us-ascii?Q?aC4eH7Gy7Cx2zKdiD2yue8SzirTtuDuGHP5NfoICppOKSiuokpnNYe8mGhLS?=
- =?us-ascii?Q?rsPqB7cYoChMq4qO30Apq/J2Q3f4WUnkJaF4c+Pjvcah8CZFtxS/fye3c1pE?=
- =?us-ascii?Q?F+YFnMFk20DyKwHsufCXo/DZm9BSf7Dn5lsxLzLgsOzjcsKKeYX8WOk2woIk?=
- =?us-ascii?Q?hWFESRkQ7BzOgzueCHGVslAq6kOTi1pGNl9feQyLAwqT4Zl3R2mub2uWnrdo?=
- =?us-ascii?Q?Lg2F5Si8qT4Au4bsgHaQPhGfGNOOYWyKqxXGKuOBh7W3XWM/wxRBChWTVcEB?=
- =?us-ascii?Q?OZLZ1Iq5ajqRmjwYT9JiSGzmPGZTEQNsgrU46DEK30YQpG51h9ObFwgFHGf3?=
- =?us-ascii?Q?D7ZHRblZoZb6Vw6uhuVJPFUE5phH4PVAAtEGXiEO6v/gOEvR9OERBFOvAKSn?=
- =?us-ascii?Q?scidDJc60e8h83rnYNkH6rrNu2O1oTeWlLTEinAyYqpaJ24GUVjWQiS/JEIX?=
- =?us-ascii?Q?uwOTIRYQAIp0UMXXFRDQaoKeH3XcAp5U9xl5ej/YiB0xq6aLD0iJ4/e9Y+ME?=
- =?us-ascii?Q?ERvQqiLxFCy1CrGTS8n6gfuD+K+dXy7pn3JYnMt0r5pvfPuGi1EIFi8eCTvu?=
- =?us-ascii?Q?R/uwJVnFY4SWJJhzcCCpClXKvPVx+8+kkTr29+wk/QK49LE7SYEitJt2VEbY?=
- =?us-ascii?Q?bJ0MX5S9BURdrSzEMW2WwgmufK7fG19o0HFoiUGUbB3cUB7NXVpjybbzbEFW?=
- =?us-ascii?Q?kJKogmEbzcyH8tzUOXlTQs9bPhgZmcDSeP6E6mM6RWnj419GQCTVPx8tM3iY?=
- =?us-ascii?Q?WQVSekN5nw0AKKVBA7PfISgCzTnc1GTaSbCfr/agzdNZs4Qnf6+CbZ6WWH3l?=
- =?us-ascii?Q?ntsc33khEFt9vs5fkcjck5XSu8RMDd6TJqtsbB4PMVLZTVnXctFhtdwZpaOL?=
- =?us-ascii?Q?ClFnjA6ilb8as8jIU+9wxk0brvJha/YX8F8INlfWEe+MJOu4vSLCFyftwAX7?=
- =?us-ascii?Q?ncbLhZDrRsjdWQI8r7OTM4MC77LmC3trXIdKLw4e9c/IbND2tutm9WB3Wbzk?=
- =?us-ascii?Q?xZKNVCdLrfQJQ7Cnqm8Fq1zXf48UZwnSQk2wb+bDmTvFex49usGB8qnINtXS?=
- =?us-ascii?Q?szUOEf4+/8uS9XtSN4FNtSCydolnA7tveVa7a+Tn?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ <BN9PR11MB52769B02DE62A229CCB4F2E38C959@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e49ff08f-1bad-4771-334b-08da6e13f719
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jul 2022 08:02:05.4779
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: V0I6FGpjsnGBG9/NoCWEPMtJ3GZjmTEIaQGa+fmVqdQL1zLr8dI6QFX9wmbgo4M1RpeSPw9g9/ZqsRC64qzfsg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3194
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB52769B02DE62A229CCB4F2E38C959@BN9PR11MB5276.namprd11.prod.outlook.com>
 
-> From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> Sent: Monday, July 25, 2022 3:39 PM
->=20
-> On Sun, Jul 24, 2022 at 09:48:15PM +0800, Baolu Lu wrote:
-> > /*
-> >  * iommu_detach_device_pasid() - Detach the domain from pasid of device
-> >  * @domain: the iommu domain.
-> >  * @dev: the attached device.
-> >  * @pasid: the pasid of the device.
-> >  *
-> >  * The @domain must have been attached to @pasid of the @dev with
-> >  * iommu_detach_device_pasid().
-> >  */
-> > void iommu_detach_device_pasid(struct iommu_domain *domain, struct
-> device
-> > *dev,
-> > 			       ioasid_t pasid)
-> > {
-> > 	struct iommu_group *group =3D iommu_group_get(dev);
-> > 	struct group_pasid *param;
-> >
-> > 	mutex_lock(&group->mutex);
-> > 	domain->ops->set_dev_pasid(group->blocking_domain, dev, pasid);
->=20
-> Please also pass the old domain to this detach() function, so that the
-> IOMMU driver doesn't have to keep track of them internally.
+On Mon, Jul 25, 2022 at 08:02:05AM +0000, Tian, Kevin wrote:
+> > From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > Sent: Monday, July 25, 2022 3:39 PM
+> > 
+> > On Sun, Jul 24, 2022 at 09:48:15PM +0800, Baolu Lu wrote:
+> > > /*
+> > >  * iommu_detach_device_pasid() - Detach the domain from pasid of device
+> > >  * @domain: the iommu domain.
+> > >  * @dev: the attached device.
+> > >  * @pasid: the pasid of the device.
+> > >  *
+> > >  * The @domain must have been attached to @pasid of the @dev with
+> > >  * iommu_detach_device_pasid().
+> > >  */
+> > > void iommu_detach_device_pasid(struct iommu_domain *domain, struct
+> > device
+> > > *dev,
+> > > 			       ioasid_t pasid)
+> > > {
+> > > 	struct iommu_group *group = iommu_group_get(dev);
+> > > 	struct group_pasid *param;
+> > >
+> > > 	mutex_lock(&group->mutex);
+> > > 	domain->ops->set_dev_pasid(group->blocking_domain, dev, pasid);
+> > 
+> > Please also pass the old domain to this detach() function, so that the
+> > IOMMU driver doesn't have to keep track of them internally.
+> 
+> The old domain is already tracked in group->pasid_xarray and can
+> be retrieved using [dev, pasid].
 
-The old domain is already tracked in group->pasid_xarray and can
-be retrieved using [dev, pasid].
+Ah yes, I can use that. Something explicit would help avoid breaking the
+driver next time the core changes
 
->=20
-> In addition to clearing contexts, detach() also needs to invalidate TLBs,
-> and for that the SMMU driver needs to know the old ASID (!=3D PASID) that
-> was used by the context descriptor.
->=20
+> 
+> > 
+> > In addition to clearing contexts, detach() also needs to invalidate TLBs,
+> > and for that the SMMU driver needs to know the old ASID (!= PASID) that
+> > was used by the context descriptor.
+> > 
+> 
+> Presumably both ASID and context descriptor are SMMU internal
+> knowledge. What exact information is required from the core API
+> and how is it done today?
 
-Presumably both ASID and context descriptor are SMMU internal
-knowledge. What exact information is required from the core API
-and how is it done today?
+Today the SMMU driver keeps track of bonds, but the goal of this series is
+to move that to the core.
+
+Thanks,
+Jean
+
