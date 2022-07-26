@@ -1,170 +1,265 @@
-Received: from na01-obe.outbound.protection.outlook.com (mail-centralusazon11021025.outbound.protection.outlook.com [52.101.62.25])
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BF98621
-	for <iommu@lists.linux.dev>; Tue, 26 Jul 2022 03:34:20 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=D7IFckYnDeLz/NHH8aV5TAqvf+QtOSuxw77DL3/C9D8xNX4K3TT0crqzdXycC2DlaaPQwqIx9xBacedU7Mhk6+BPCnZYuOOgKdUD0B7p4BEj9zr7eIcWdIlS4zF2aNdr+7V/7jYIJDJwr+8Gc3WETaFFGXrl8/AYFNWam+ZxFpHy+mwIo87cySswL2S3UxhWaO2NMvKKLRH9g2kN0SXTLoRdl8WBGm86Ok8tuig/Ia7O5FtGYuy41DSSzB/lrtw7zAFYjXnyI+xTOat16UATfJEYgwfldNR6hnaoAVPfgU3mpMsW/jbEZAVJcOJrJi8q0wUKwIjPLItDHkbb9wkY9w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=o5QW3EN6nNnoWHZugZqGLlS0BRuyAoAIMHRIRFqYwVo=;
- b=R4tm5ET4tgVSe5nstjQ7VwlbK9Cui1YuE4mP8wMiKGJ4EZjdd7WWetLQGEISRGxyDruj1mQRlPhxC9/cI73NHjEf7hQVI8cO9UKrRHhi/9kWNypxeAFSgzHe6e0SBsHUukvfeQKVtdSVY+TLSordPV2IGxoaIk7jbvTciZXS5zW+zbbznRJU63SFiTuUd7J5SKvVGNDMkCBuCtyuXFBPtRFBWz3Dbo9CN5talGU1mrNNrbK7Bm7xkKBnl7F5VUT4Va52mNcMO+b5pNABiVPQmuVbUfn593FluMF4aTZqWXOQMtgtvDWW8Dm03pm/+7Za1txWZP0tBf3E2mQPwt/Mhw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=o5QW3EN6nNnoWHZugZqGLlS0BRuyAoAIMHRIRFqYwVo=;
- b=ee35oYsUUUlwoNB89/80foKUzEtCMA+kBAnPVPZ8BLfU9NHNwb193aOBtjbWdUR/nRwD/Q6xsv/X9J4bMQkqdKulsbaE/2b8JHvFMUaoX8aXfHiVZYYnMIPCglu0UNGMjfLX8p/AvzAh6Kwg5KW+fGw8TNWlJkxW2pfyytYl7B0=
-Received: from PH0PR21MB3025.namprd21.prod.outlook.com (2603:10b6:510:d2::21)
- by DS7PR21MB3366.namprd21.prod.outlook.com (2603:10b6:8:82::5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5504.1; Tue, 26 Jul 2022 03:34:17 +0000
-Received: from PH0PR21MB3025.namprd21.prod.outlook.com
- ([fe80::ddda:3701:dfb8:6743]) by PH0PR21MB3025.namprd21.prod.outlook.com
- ([fe80::ddda:3701:dfb8:6743%4]) with mapi id 15.20.5504.001; Tue, 26 Jul 2022
- 03:34:17 +0000
-From: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-To: Randy Dunlap <rdunlap@infradead.org>, Stephen Hemminger
-	<sthemmin@microsoft.com>, KY Srinivasan <kys@microsoft.com>, Haiyang Zhang
-	<haiyangz@microsoft.com>, "wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan
- Cui <decui@microsoft.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
-	<robin.murphy@arm.com>, "samuel@sholland.org" <samuel@sholland.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "tsbogend@alpha.franken.de"
-	<tsbogend@alpha.franken.de>, "linux-mips@vger.kernel.org"
-	<linux-mips@vger.kernel.org>
-Subject: RE: [PATCH 1/1] iommu/hyper-v: Use helper instead of directly
- accessing affinity
-Thread-Topic: [PATCH 1/1] iommu/hyper-v: Use helper instead of directly
- accessing affinity
-Thread-Index: AQHYoIotS/wddpzfUkKuAt8ax//n6a2P8LwAgAAMsPA=
-Date: Tue, 26 Jul 2022 03:34:16 +0000
-Message-ID:
- <PH0PR21MB30257943986E96BAF8F925ADD7949@PH0PR21MB3025.namprd21.prod.outlook.com>
-References: <1658796820-2261-1-git-send-email-mikelley@microsoft.com>
- <5ea65d3d-745e-0a16-c885-a224a20ee7ce@infradead.org>
-In-Reply-To: <5ea65d3d-745e-0a16-c885-a224a20ee7ce@infradead.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=49758721-c229-423b-a364-71f147ee7fbc;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-07-26T03:24:45Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9010db87-41ef-48c7-4094-08da6eb7b7e1
-x-ms-traffictypediagnostic: DS7PR21MB3366:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- bXa1WYspzyRkoJiUmJaxSem4nmriunbVJiTy+IHjh2Rdo50AiCvXMwl5ftD8shvn0Mtnucxhm7fkwZyyayyQz/E2FRFaFACEbVVCkC11DYFPgxNLyqLTBl0ldvPits4yJiPVQ3iXt8Mmac9HNhR20BRTU8cXgRopAicE7m/p3gB/ruZwlbGm1ykaH2pZVuDQARqgg8VyTs2LeHyUi6DRA4Bo+hfCN06ebjsNSlnhJKC8DTQhG5nPoBVA3RlGK6RptXKGOTRVLLZgY0Nf8yWJhJfW1sA//O36nht1PwTfVbqOfjt13JKEI1bkxAyk4JGTGImYubPMQKp/SURTsswI0l/wNQOIJK7kKCWJpW5J4FWKYnpb9H74D/CsPhYQ2SiSaHn4MsUsrgYAAMFXteclPEy+Vh0VjSVjhETrkJ2aFEYJOwAuaEVkNCo7SGK4rQ9/qDy31etKogP8nalevw9KZWtgQD63heRolXq0aW0y+8Ftc8dF9Fi6tM9Z6skPYEfRLG9rjw245SvUCjrtvABwmKVLpm8B7PMTj03q86mnOpwKu/o31vzrH9nQNmBsdJH5u/F3H2X3n3ptAMwgvtwpdmc2nEMyRJxLgWIKMY7OgQiJjWyuhJ9dYvuYVIo4jDe/FV9Cr7u0/h+TaVmBFLggditcC1fRfZ0lZXtiXyrXrYvWx7iNtTSyhZyv8nhyFMds1kcdBlpT4JnrcgRFb5bX/4yTTgwk3tDlMirhEjr7/391L4mxkDhYvZtDxFmWAsNuF1Rr75adA/tCVJ8SfUQ507Xw80Lzsdud6eBtW7rkfBLcbS+6cSHv27E5D+NDXh1o730Muj5X8PcVGV4p3Qhb+rPXyzTf6vqLRir0SVHDxX7R6SColVZeour5Txhbzt/y
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR21MB3025.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(136003)(366004)(39860400002)(376002)(346002)(451199009)(52536014)(478600001)(66476007)(55016003)(5660300002)(71200400001)(64756008)(33656002)(8676002)(66446008)(7416002)(6506007)(66556008)(66946007)(7696005)(8936002)(9686003)(83380400001)(76116006)(8990500004)(86362001)(53546011)(26005)(38070700005)(2906002)(110136005)(186003)(82950400001)(41300700001)(122000001)(38100700002)(10290500003)(921005)(82960400001)(316002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?QWdQL0RCWWRjU25oMEZ0UHZyRm9LOFN4ZmEyQjQvdlJHS2tlMW1wRWlxMEVB?=
- =?utf-8?B?cWxadnc0a2VzUmJnYloxK3VxSEFNWEo3ak1iQjBVUlg0R3JGVzRJMlkwYkhp?=
- =?utf-8?B?dklLU2hWZHRPTk1TVWs4RjlQeWpsREZqNnV0VWZFSVVCMHhoOXdCeUxweFd5?=
- =?utf-8?B?UGRGWUQvRElSQ0VWQkVkNGVRWDFRSzB4eERINkV2aTUyRDlLdU1Pa0JnbzMy?=
- =?utf-8?B?clp1azV5NjZJQW52K3NsczZlWi9DQUt4UGljd1dlWXlQVi9PY0NCRmlBS05x?=
- =?utf-8?B?VVBPUENKY25rZEVsUHlnaHVzcXZ6aHdNR2ovSVRzS0gvRnBYUy9maHVjSE9P?=
- =?utf-8?B?bmp0T25pRnJKOGNLaFU2MkJBUjdxRVhTalRtbWtuOHBJS3ZQZlpGcng0eS9Z?=
- =?utf-8?B?ZFJHNHg3SHdDNVJWUjlWOWdZRjJVQ1MvRXFGTUt3MmRncnNodUQ3ZUFjc0tw?=
- =?utf-8?B?dDZoQ1B6WWVhZjZiRnhQdXNOOElvZXNkdC9PZ2lzVy9LQUprNmxsOEd4ZmFX?=
- =?utf-8?B?QVk1TXl6YzVqdlZTYmdBZ1h0RFpsMmVvekIvcUFFRTdjeGUyei9WWVBURlFE?=
- =?utf-8?B?bmRXam5nNkxvbTBidDBLZlFQd2JjMEVHNXhlWHdIOEllZFJpbzRlU0NPbisz?=
- =?utf-8?B?akNlTmczNlpsdEZiUXJNYTc4cU43YVN4bm5iQkFTbUZuZDVueEdpVHFzMndM?=
- =?utf-8?B?YTZQaGt1MEpUMXpPQUVqWEgrM0NNaHdUUzl0MFVGYkNKQ1hvMXg3cjJOT0Jz?=
- =?utf-8?B?SXlySUVMUWlPUm5kMzhUTFhQSXpnZHdrQUlQdy9mQ1FXQ2RXVE1NeHhXV25Q?=
- =?utf-8?B?OGErQ2V2Wmg5TnZtd2toMVN4RFVvVEhHdkFGTDR6aW9YN1N5UWhaYnJ1dmUv?=
- =?utf-8?B?VEF6M0R4akxreDE5L0NMWnJmcDRTTm1TLzFWcVNlMkxFZnlXVDVCSm1hMlhS?=
- =?utf-8?B?RmdHNjBMLzE5dmM4bEhxYnJEOHF6Y1pIbmFuVG5LQ2NGYjMyd1dUWmtVQmpG?=
- =?utf-8?B?MVJ2VDRhZFlCeHJReFZ3US9qc3RnczRrT1c1Ykl6U1BMRlZyMXBMbkszWmZY?=
- =?utf-8?B?d0hTN21mcmZ6Nk0yZFZhcjFyWWYrUk0rc2FLS1d3aEtLZDdBSzZHVXVuc1N3?=
- =?utf-8?B?RFFCMXRUS29lbjRqK3pPc1lhRW9VSjRtZCtWZHgrQlE0b2ZQQmVwYktJTnNz?=
- =?utf-8?B?M1NYWVJVT29ocXRUQmJLbGd1REpvanNjU2RXTVFGVHBIOHRmQ0R4ckxVSTdi?=
- =?utf-8?B?Wnk0bHh1cHBiUDYrUDI3UWpNL3NRQ2JDbkRjQ01QZ2NVM25EOHdnVVB4ZWph?=
- =?utf-8?B?aFZkdnNTaU43RUFlbEJOck05alRJTksyNk0rbjNLalU4bEZnSFFHekxaaU1R?=
- =?utf-8?B?QkRHZlU3RTdNR29KM0RRdzRjSHloeDRBZ1JLMGRkZnZkSFBCSURpeTE3ZVpl?=
- =?utf-8?B?T05GUmFzYStDbmkzbm5BRmdiYkdTWXg0ZjdKMkJlWGxXam0zSkNqc2xIUk1L?=
- =?utf-8?B?eHZlWjhpUlpDU3BtVjlvaExSeEZKTTRtaTNybFBpRnBPMXRHRFNyckc3aGtB?=
- =?utf-8?B?c2x2SEs3YWFkNVorK3RPa0gyOUZsdEhKcFVtU3EvZXI3aFBkbjFDODYwTWo4?=
- =?utf-8?B?eld4UGVNbUo4S0pFUUswc2JmTzArTkwvTzB4c2FCSkNJaVV0OUpTbkZJQTRs?=
- =?utf-8?B?bFdOQ0xvL0Y4T0hZV21VOUtDSmQ3YnlLRGRGRklaTnZDMWpxZ09QbzZFVWs2?=
- =?utf-8?B?cWJLMzNwc0xLSW8yUlc1WG52VEhNSDFQTlgzaUZuNHBGYVBENTRQeXBUVDhp?=
- =?utf-8?B?bW41ZElVS2gweXVwc2FJRUxSYVZwanYwRXRrVlp4alo3cDhYWFRBQUFnaDBF?=
- =?utf-8?B?UGR4OUgyaEI5SEtTMEZlN2JlbXY4WGlJZlY1VlRYYnlWNUhudDJFc0FLRjRN?=
- =?utf-8?B?cFZRUS8xNnZkeE5VT0ozZzNlZWJ6YzNXSDIvN2trQjFhdVhSN3NadW02U0lr?=
- =?utf-8?B?K3hGakljOTVma054TC9KV2RTVkNTY0VxVU91SkVCclZyejRva21zYVdiT0t2?=
- =?utf-8?B?aTRzcWlJbmx0dEs4dlZIdEhDbmhVT2RxVFpoKzEzSEsxejMwVEdkUG5NMENj?=
- =?utf-8?B?RVE2OFpHRHFIdE9xanhaLy9YZkhNTEJOL2FPS203Si9tcjhRNWgzbzQrRTk3?=
- =?utf-8?B?ckE9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73576620
+	for <iommu@lists.linux.dev>; Tue, 26 Jul 2022 06:23:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658816614; x=1690352614;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=hNL6tcITzlHVuP1y/APtKz0FFvD/P1YcuLKevDlDZb8=;
+  b=DHfJ3/DRm6eaDW1G4sjBXtL67a4zh/d+1TsVMZ0tvzd2/HF4ruh+CEEj
+   Z51JQ7IK6u9+EqqcQzswB0nQxKiVRPp3tgZKpfqvKrMxA6NgKD2U+ukKv
+   HHCmmAuZxkMP1S+83uAqDjdwht87f1/NIFi1qwIb7WDpMWlkMDuWlYh4W
+   UzQDu2OiwvpIW6CLdj6RZTflpMmMvYh6G+qMYTBo/W7bd914OSnGD6rBh
+   Glf3xw5sJdK7XX1dQlbE7bN34KT5myZJtqY97ZVJK/j+F0sXWqcDSKcWR
+   OXcs8gXBgx9TMooLoRA2IQNW3ZikFLxJubNlNn9HVLNBqL3x1mY9wJWxw
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10419"; a="313631287"
+X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
+   d="scan'208";a="313631287"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 23:23:32 -0700
+X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
+   d="scan'208";a="575359485"
+Received: from hzhi-mobl4.ccr.corp.intel.com (HELO [10.255.30.159]) ([10.255.30.159])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 23:23:28 -0700
+Message-ID: <6da27a6b-b580-4ba4-24c8-ebdfb2d9345d@linux.intel.com>
+Date: Tue, 26 Jul 2022 14:23:26 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR21MB3025.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9010db87-41ef-48c7-4094-08da6eb7b7e1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jul 2022 03:34:16.8784
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: wDv206Oxq1Ci21WRD0GkFIF5HmvF/1X/lnirbOepS/TlHO9TV3xId8J+V8cbMnmsOAD2TSAlEOD6dTrl1wIYiA+5VhBbfM1GXh8odYm/TL8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR21MB3366
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
+ Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
+ Jacob jun Pan <jacob.jun.pan@intel.com>,
+ Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony <tony.zhu@intel.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v10 04/12] iommu: Add attach/detach_dev_pasid iommu
+ interface
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
+ <20220705050710.2887204-5-baolu.lu@linux.intel.com>
+ <20220723141118.GD79279@nvidia.com>
+ <686b137f-232a-2a78-beb0-e4373bd20959@linux.intel.com>
+ <20220725144005.GE3747@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220725144005.GE3747@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-RnJvbTogUmFuZHkgRHVubGFwIDxyZHVubGFwQGluZnJhZGVhZC5vcmc+IFNlbnQ6IE1vbmRheSwg
-SnVseSAyNSwgMjAyMiA3OjM5IFBNDQo+IA0KPiBPbiA3LzI1LzIyIDE3OjUzLCBNaWNoYWVsIEtl
-bGxleSB3cm90ZToNCj4gPiBSZWNlbnQgY2hhbmdlcyB0byBzb2x2ZSBpbmNvbnNpc3RlbmNpZXMg
-aW4gaGFuZGxpbmcgSVJRIG1hc2tzICNpZmRlZg0KPiA+IG91dCB0aGUgYWZmaW5pdHkgZmllbGQg
-aW4gaXJxX2NvbW1vbl9kYXRhIGZvciBub24tU01QIGNvbmZpZ3VyYXRpb25zLg0KPiA+IFRoZSBj
-dXJyZW50IGNvZGUgaW4gaHlwZXJ2X2lycV9yZW1hcHBpbmdfYWxsb2MoKSBnZXRzIGEgY29tcGls
-ZXIgZXJyb3INCj4gPiBpbiB0aGF0IGNhc2UuDQo+ID4NCj4gPiBGaXggdGhpcyBieSB1c2luZyB0
-aGUgbmV3IGlycV9kYXRhX3VwZGF0ZV9hZmZpbml0eSgpIGhlbHBlciwgd2hpY2gNCj4gPiBoYW5k
-bGVzIHRoZSBub24tU01QIGNhc2UgY29ycmVjdGx5Lg0KPiA+DQo+IA0KPiBSZXBvcnRlZC1ieTog
-UmFuZHkgRHVubGFwIDxyZHVubGFwQGluZnJhZGVhZC5vcmc+DQoNCkluZGVlZC4gIEFwb2xvZ2ll
-cyBmb3Igb21pdHRpbmcgdGhpcyBvcmlnaW5hbGx5Lg0KDQo+ID4gU2lnbmVkLW9mZi1ieTogTWlj
-aGFlbCBLZWxsZXkgPG1pa2VsbGV5QG1pY3Jvc29mdC5jb20+DQo+IFRlc3RlZC1ieTogUmFuZHkg
-RHVubGFwIDxyZHVubGFwQGluZnJhZGVhZC5vcmc+DQo+IEFja2VkLWJ5OiBSYW5keSBEdW5sYXAg
-PHJkdW5sYXBAaW5mcmFkZWFkLm9yZz4NCj4gDQo+IFRoYW5rcy4NCg0KVGhpcyBwYXRjaCBuZWVk
-cyB0byBnbyB0aHJvdWdoIHRoZSBzYW1lIHRyZWUgYXMgU2FtdWVsIEhvbGxhbmQncyBlYXJsaWVy
-DQpwYXRjaCBzZXQgdG8gc29sdmUgaW5jb25zaXN0ZW5jaWVzIGluIGhhbmRsaW5nIElSUSBtYXNr
-cyBvbiBTTVAgYW5kDQpub24tU01QIGNvbmZpZ3MuICAgRnJvbSB3aGF0IEkgY2FuIHRlbGwsIHRo
-YXQncyB0aGUgaXJxL2lycWNoaXAtbmV4dCB0cmVlLg0KDQpGV0lXLCBpdCBhcHBlYXJzIHRoZXJl
-J3MgYW5vdGhlciBvY2N1cnJlbmNlIG9mIHRoaXMgc2FtZSBraW5kIG9mDQpwcm9ibGVtIGluIGFy
-Y2gvbWlwcy9zZ2ktaXAyNy9pcDI3LWlycS5jIHdoZXJlIHRoZSAiYWZmaW5pdHkiIGZpZWxkDQpp
-cyByZWZlcmVuY2VkIHdpdGhvdXQgYW4gI2lmZGVmIENPTkZJR19TTVAuICAgQ29weWluZyB0aGUg
-TUlQUyBtYWludGFpbmVyDQphbmQgbWFpbGluZyBsaXN0IC0tIHRoaXMgb25lIGlzIG91dCBvZiBt
-eSBzY29wZSB0byBmaXguDQoNCk1pY2hhZWwNCg0KPiANCj4gPiAtLS0NCj4gPiAgZHJpdmVycy9p
-b21tdS9oeXBlcnYtaW9tbXUuYyB8IDQgKy0tLQ0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNl
-cnRpb24oKyksIDMgZGVsZXRpb25zKC0pDQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9p
-b21tdS9oeXBlcnYtaW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvaHlwZXJ2LWlvbW11LmMNCj4gPiBp
-bmRleCA1MWJkNjZhLi5lMTkwYmI4IDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvaW9tbXUvaHlw
-ZXJ2LWlvbW11LmMNCj4gPiArKysgYi9kcml2ZXJzL2lvbW11L2h5cGVydi1pb21tdS5jDQo+ID4g
-QEAgLTY4LDcgKzY4LDYgQEAgc3RhdGljIGludCBoeXBlcnZfaXJxX3JlbWFwcGluZ19hbGxvYyhz
-dHJ1Y3QgaXJxX2RvbWFpbg0KPiAqZG9tYWluLA0KPiA+ICB7DQo+ID4gIAlzdHJ1Y3QgaXJxX2Fs
-bG9jX2luZm8gKmluZm8gPSBhcmc7DQo+ID4gIAlzdHJ1Y3QgaXJxX2RhdGEgKmlycV9kYXRhOw0K
-PiA+IC0Jc3RydWN0IGlycV9kZXNjICpkZXNjOw0KPiA+ICAJaW50IHJldCA9IDA7DQo+ID4NCj4g
-PiAgCWlmICghaW5mbyB8fCBpbmZvLT50eXBlICE9IFg4Nl9JUlFfQUxMT0NfVFlQRV9JT0FQSUMg
-fHwgbnJfaXJxcyA+IDEpDQo+ID4gQEAgLTkwLDggKzg5LDcgQEAgc3RhdGljIGludCBoeXBlcnZf
-aXJxX3JlbWFwcGluZ19hbGxvYyhzdHJ1Y3QgaXJxX2RvbWFpbg0KPiAqZG9tYWluLA0KPiA+ICAJ
-ICogSHlwdmVyLVYgSU8gQVBJQyBpcnEgYWZmaW5pdHkgc2hvdWxkIGJlIGluIHRoZSBzY29wZSBv
-Zg0KPiA+ICAJICogaW9hcGljX21heF9jcHVtYXNrIGJlY2F1c2Ugbm8gaXJxIHJlbWFwcGluZyBz
-dXBwb3J0Lg0KPiA+ICAJICovDQo+ID4gLQlkZXNjID0gaXJxX2RhdGFfdG9fZGVzYyhpcnFfZGF0
-YSk7DQo+ID4gLQljcHVtYXNrX2NvcHkoZGVzYy0+aXJxX2NvbW1vbl9kYXRhLmFmZmluaXR5LCAm
-aW9hcGljX21heF9jcHVtYXNrKTsNCj4gPiArCWlycV9kYXRhX3VwZGF0ZV9hZmZpbml0eShpcnFf
-ZGF0YSwgJmlvYXBpY19tYXhfY3B1bWFzayk7DQo+ID4NCj4gPiAgCXJldHVybiAwOw0KPiA+ICB9
-DQo+IA0KPiAtLQ0KPiB+UmFuZHkNCg==
+On 2022/7/25 22:40, Jason Gunthorpe wrote:
+> On Sun, Jul 24, 2022 at 03:03:16PM +0800, Baolu Lu wrote:
+> 
+>> How about rephrasing this part of commit message like below:
+>>
+>> Some buses, like PCI, route packets without considering the PASID value.
+>> Thus a DMA target address with PASID might be treated as P2P if the
+>> address falls into the MMIO BAR of other devices in the group. To make
+>> things simple, these interfaces only apply to devices belonging to the
+>> singleton groups.
+> 
+>   
+>> Considering that the PCI bus supports hot-plug, even a device boots with
+>> a singleton group, a later hot-added device is still possible to share
+>> the group, which breaks the singleton group assumption. In order to
+>> avoid this situation, this interface requires that the ACS is enabled on
+>> all devices on the path from the device to the host-PCI bridge.
+> 
+> But ACS directly fixes the routing issue above
+> 
+> This entire explanation can be recast as saying we block PASID
+> attachment in all cases where the PCI fabric is routing based on
+> address. ACS disables that.
+> 
+> Not sure it even has anything to do with hotplug or singleton??
+
+Yes, agreed. I polished this patch like below. Does it look good to you?
+
+iommu: Add attach/detach_dev_pasid iommu interface
+
+Attaching an IOMMU domain to a PASID of a device is a generic operation
+for modern IOMMU drivers which support PASID-granular DMA address
+translation. Currently visible usage scenarios include (but not limited):
+
+  - SVA (Shared Virtual Address)
+  - kernel DMA with PASID
+  - hardware-assist mediated device
+
+This adds a pair of domain ops for this purpose and adds the interfaces
+for device drivers to attach/detach a domain to/from a {device, PASID}.
+The PCI bus routes packets without considering the PASID value. Thus a
+DMA target address with PASID might be treated as P2P if the address
+falls into the MMIO BAR of other devices in the group. This blocks the
+PASID attachment in all cases where the PCI fabric is routing based on
+address. The ACS disables that.
+
+[...]
+---
+  drivers/iommu/iommu.c | 70 +++++++++++++++++++++++++++++++++++++++++++
+  include/linux/iommu.h | 18 +++++++++++
+  2 files changed, 88 insertions(+)
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 63fc4317cb47..493db6e9302f 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -39,6 +39,7 @@ struct iommu_group {
+  	struct kobject kobj;
+  	struct kobject *devices_kobj;
+  	struct list_head devices;
++	struct xarray pasid_array;
+  	struct mutex mutex;
+  	void *iommu_data;
+  	void (*iommu_data_release)(void *iommu_data);
+@@ -663,6 +664,7 @@ struct iommu_group *iommu_group_alloc(void)
+  	mutex_init(&group->mutex);
+  	INIT_LIST_HEAD(&group->devices);
+  	INIT_LIST_HEAD(&group->entry);
++	xa_init(&group->pasid_array);
+
+  	ret = ida_alloc(&iommu_group_ida, GFP_KERNEL);
+  	if (ret < 0) {
+@@ -3254,3 +3256,71 @@ bool iommu_group_dma_owner_claimed(struct 
+iommu_group *group)
+  	return user;
+  }
+  EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
++
++/*
++ * iommu_attach_device_pasid() - Attach a domain to pasid of device
++ * @domain: the iommu domain.
++ * @dev: the attached device.
++ * @pasid: the pasid of the device.
++ *
++ * Return: 0 on success, or an error.
++ */
++int iommu_attach_device_pasid(struct iommu_domain *domain,
++			      struct device *dev, ioasid_t pasid)
++{
++	struct iommu_group *group;
++	void *curr;
++	int ret;
++
++	if (!domain->ops->set_dev_pasid)
++		return -EOPNOTSUPP;
++
++	/*
++	 * Block PASID attachment in all cases where the PCI fabric is
++	 * routing based on address. ACS disables it.
++	 */
++	if (dev_is_pci(dev) &&
++	    !pci_acs_path_enabled(to_pci_dev(dev), NULL, REQ_ACS_FLAGS))
++		return -ENODEV;
++
++	group = iommu_group_get(dev);
++	if (!group)
++		return -ENODEV;
++
++	mutex_lock(&group->mutex);
++	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, GFP_KERNEL);
++	if (curr) {
++		ret = xa_err(curr) ? : -EBUSY;
++		goto out_unlock;
++	}
++	ret = domain->ops->set_dev_pasid(domain, dev, pasid);
++	if (ret)
++		xa_erase(&group->pasid_array, pasid);
++out_unlock:
++	mutex_unlock(&group->mutex);
++	iommu_group_put(group);
++
++	return ret;
++}
++
++/*
++ * iommu_detach_device_pasid() - Detach the domain from pasid of device
++ * @domain: the iommu domain.
++ * @dev: the attached device.
++ * @pasid: the pasid of the device.
++ *
++ * The @domain must have been attached to @pasid of the @dev with
++ * iommu_detach_device_pasid().
++ */
++void iommu_detach_device_pasid(struct iommu_domain *domain, struct 
+device *dev,
++			       ioasid_t pasid)
++{
++	struct iommu_group *group = iommu_group_get(dev);
++
++	mutex_lock(&group->mutex);
++	domain->ops->set_dev_pasid(group->blocking_domain, dev, pasid);
++	WARN_ON(xa_erase(&group->pasid_array, pasid) != domain);
++	mutex_unlock(&group->mutex);
++
++	iommu_group_put(group);
++}
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 2f237c3cd680..2c385e6d4b1a 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -266,6 +266,7 @@ struct iommu_ops {
+   * struct iommu_domain_ops - domain specific operations
+   * @attach_dev: attach an iommu domain to a device
+   * @detach_dev: detach an iommu domain from a device
++ * @set_dev_pasid: set an iommu domain to a pasid of device
+   * @map: map a physically contiguous memory region to an iommu domain
+   * @map_pages: map a physically contiguous set of pages of the same 
+size to
+   *             an iommu domain.
+@@ -286,6 +287,8 @@ struct iommu_ops {
+  struct iommu_domain_ops {
+  	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
+  	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
++	int (*set_dev_pasid)(struct iommu_domain *domain, struct device *dev,
++			     ioasid_t pasid);
+
+  	int (*map)(struct iommu_domain *domain, unsigned long iova,
+  		   phys_addr_t paddr, size_t size, int prot, gfp_t gfp);
+@@ -680,6 +683,10 @@ int iommu_group_claim_dma_owner(struct iommu_group 
+*group, void *owner);
+  void iommu_group_release_dma_owner(struct iommu_group *group);
+  bool iommu_group_dma_owner_claimed(struct iommu_group *group);
+
++int iommu_attach_device_pasid(struct iommu_domain *domain,
++			      struct device *dev, ioasid_t pasid);
++void iommu_detach_device_pasid(struct iommu_domain *domain,
++			       struct device *dev, ioasid_t pasid);
+  #else /* CONFIG_IOMMU_API */
+
+  struct iommu_ops {};
+@@ -1047,6 +1054,17 @@ static inline bool 
+iommu_group_dma_owner_claimed(struct iommu_group *group)
+  {
+  	return false;
+  }
++
++static inline int iommu_attach_device_pasid(struct iommu_domain *domain,
++					    struct device *dev, ioasid_t pasid)
++{
++	return -ENODEV;
++}
++
++static inline void iommu_detach_device_pasid(struct iommu_domain *domain,
++					     struct device *dev, ioasid_t pasid)
++{
++}
+  #endif /* CONFIG_IOMMU_API */
+
+  /**
+
+Best regards,
+baolu
+
