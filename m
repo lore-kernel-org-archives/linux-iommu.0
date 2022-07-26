@@ -1,138 +1,82 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2077.outbound.protection.outlook.com [40.107.93.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB38D2CA2
-	for <iommu@lists.linux.dev>; Tue, 26 Jul 2022 18:32:51 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=etaGq+J0Wt7zpxgo0mJhOrbg6WZ0e6KCP+441YhU6Qx9jY4q8jIoP9HxUBKchs7yl1i48vAHezFJXOZ/6Lh/49LO+iune+zxyiYnpTX4K3Z3XP+immwHGa+HhPzaAu8S8likVdH1tl8xDoBSOK3O7NIGN2q6z2gJrMntVqAFoVpOBml460h4U99STQk4f8+RHy8Dq7bK17ee+cOK/QFSgmgfjIF3c49rKdiTiOqpVCI+sFCh37982oSir4jQckx6rFycneXLeMY3ixjOHGNEApckkCR1T4s0khK4ulRJzd5ufcQ8Kdpjflbz2PQG18taH2awR4TOVZ+RFKIeqeVljA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=o7KmWCJJiLmmCXvHEW/edwGywv0Y5xwCzERUc9HlzQo=;
- b=h1QPYA+Jym3gWMU3JcuVYHrxfJOG+8jWqZ5f4bDopZx82Xt6svvi6iHyAeA6tN6VVHJRqOiW00l6b2sojwPAUE4o1bqFKhHt7TrBDbi9iZlRxjDXTee7qxet30FDe0qM7Z4zM+qrFKI9zXnXO1KHVCKhSqq2BTCd2eN7kY8p9geMzu2mi0uPN3ldwJ5fdp4dyeoK8XFquT4ukKdBaJjczdvRJtBem2/yTdqOmwEpNJB21r5WLlT68B3irnxmxZ01IIAAYWGFw/Oc4dBnfOAz5DcAJ5l7eZm1sK/v/qPJdy8xT9xIzZzan3d6XP/uVslTuOqKJBzFbaCoeleDy9aFIg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
- (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
- (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=o7KmWCJJiLmmCXvHEW/edwGywv0Y5xwCzERUc9HlzQo=;
- b=R23PdKIehSe/v8/Egr4s14t9166kDSkME/KRemw1pKDZBLTVbaidBpffCU8IvuIZkUu5ZmMhmWcNluuxQA6MbFUkZpCybUFlZkzeTsTtWb1OboXXxLfSkUjkIscTl+xoyCMAmIffGzUPPtu2AX5tRk3kvREU8bo/JJYEp7EsDaAEdQZHEOMK/PVOUiFRb1EJgJNxxTIv8tEdJdCho8fw8GEgTFrVqaLVFZrqnCvpnJ1OQsxaKN/AgENt49oE/+BZjEBGsSjansfG4VjK1lOs8SqzDxuaOg0O0xmYcoBUspFGVZulBOv1lV6Uz4v1ppV0Ane2nEGPtDRuWZtl05UfVg==
-Received: from BN9PR03CA0783.namprd03.prod.outlook.com (2603:10b6:408:13f::8)
- by PH7PR12MB6717.namprd12.prod.outlook.com (2603:10b6:510:1b0::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Tue, 26 Jul
- 2022 18:32:49 +0000
-Received: from BN8NAM11FT047.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:13f:cafe::90) by BN9PR03CA0783.outlook.office365.com
- (2603:10b6:408:13f::8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.23 via Frontend
- Transport; Tue, 26 Jul 2022 18:32:49 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.238) by
- BN8NAM11FT047.mail.protection.outlook.com (10.13.177.220) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5458.17 via Frontend Transport; Tue, 26 Jul 2022 18:32:49 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Tue, 26 Jul
- 2022 18:32:48 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Tue, 26 Jul
- 2022 11:32:47 -0700
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.10)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26 via Frontend
- Transport; Tue, 26 Jul 2022 11:32:45 -0700
-Date: Tue, 26 Jul 2022 11:32:43 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <joro@8bytes.org>, Alex Williamson <alex.williamson@redhat.com>
-CC: <will@kernel.org>, <marcan@marcan.st>, <sven@svenpeter.dev>,
-	<robin.murphy@arm.com>, <robdclark@gmail.com>, <baolu.lu@linux.intel.com>,
-	<orsonzhai@gmail.com>, <baolin.wang7@gmail.com>, <zhang.lyra@gmail.com>,
-	<jean-philippe@linaro.org>, <jgg@nvidia.com>, <kevin.tian@intel.com>,
-	<suravee.suthikulpanit@amd.com>, <alyssa@rosenzweig.io>,
-	<dwmw2@infradead.org>, <mjrosato@linux.ibm.com>,
-	<gerald.schaefer@linux.ibm.com>, <thierry.reding@gmail.com>,
-	<vdumpa@nvidia.com>, <jonathanh@nvidia.com>, <cohuck@redhat.com>,
-	<thunder.leizhen@huawei.com>, <christophe.jaillet@wanadoo.fr>,
-	<chenxiang66@hisilicon.com>, <john.garry@huawei.com>,
-	<yangyingliang@huawei.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-arm-msm@vger.kernel.org>, <linux-s390@vger.kernel.org>,
-	<linux-tegra@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
-	<kvm@vger.kernel.org>
-Subject: Re: [PATCH v5 0/5] cover-letter: Simplify vfio_iommu_type1
- attach/detach routine
-Message-ID: <YuAzS1LatwGEvk7S@Asurada-Nvidia>
-References: <20220701214455.14992-1-nicolinc@nvidia.com>
- <20220706114217.105f4f61.alex.williamson@redhat.com>
- <YsXMMCX5LY/3IOtf@Asurada-Nvidia>
- <20220706120325.4741ff34.alex.williamson@redhat.com>
- <Ys9b7GSImp/sHair@Asurada-Nvidia>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8031B601C
+	for <iommu@lists.linux.dev>; Tue, 26 Jul 2022 20:07:42 +0000 (UTC)
+Received: by mail-ej1-f49.google.com with SMTP id oy13so28082805ejb.1
+        for <iommu@lists.linux.dev>; Tue, 26 Jul 2022 13:07:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cl21jvm8/i18W+G2Dp96sq2YT7qNueybJU+4cdncXPw=;
+        b=U13mmqGzcmzWb0EKUrA4kB7s7tMzu6q+l4RblJKQ00zPQ4+7m3FwXyVCE87ry6V1kZ
+         sKORedh3MR+G+I1H9tP6E1N3O/zdxTv9nlsw1+icTnVo3sqzJQE5fZkatjiL7z7s/Enu
+         4qKcAW0kCJmyl/EzsrTTTKeRrA5/ol04PhdMrRVzXyJ3a3hGL4HjdTyQqibP6x7u25en
+         U3ncncw/T9cB6a41bBVzvYy3ZlJAFzYPtlCe3U9JoIzuk6VrrPyq3SktT1U8gfCOFhY7
+         bWzrISlmDVhU1ejCZkQF9TQeletEngxIXgbinFJ9VNRM2nGdlOzpk0U8obPc6axsTuiK
+         vbng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cl21jvm8/i18W+G2Dp96sq2YT7qNueybJU+4cdncXPw=;
+        b=luf+z40TAusbIbJnLsYy3sYCK2rTsBxdbP7AgzwkpF9+h+7U1PBsQj7xUuFD8+PYoE
+         IbX9J6it4UTeED7oXI0byPR+B+lwz14bAV7bZl8FFFzQCVeVas4PSNcV9sTmy0iIfgLM
+         YKpGzYvPaveDl2xtsRuO7ZRk28cVov3GRdNznKSGq1Ej5/rrnV/IGQvLm0qQQX5zAWj9
+         8m6WQN+UhJE3CkGvLaPpmKTid8jhwOhCvvK+I9KC/4NiDDFaSWkxCYE3f4wuH/IYtGvj
+         UNd43nw8qr4J3ovFobpwJmLO2DaDbz+uquwI8RN7DUOSijfUMq0sdmmJmUW7VL+S5ihZ
+         qnJQ==
+X-Gm-Message-State: AJIora+yvum0dMGUBqZXfQ/kI4Ckfi9b3FMONBfxneTuPZGBvtn1mSFr
+	N0O8QcbX3QEIUMzPH/NT96wHPg==
+X-Google-Smtp-Source: AGRyM1t5Wt6O9sdWkph8CILpfneT+aE9nPQuJidjIxem+m7LXnzboEHCUJeiqep+kJlkPyV5eK5lXg==
+X-Received: by 2002:a17:907:6087:b0:72f:36ff:7fa2 with SMTP id ht7-20020a170907608700b0072f36ff7fa2mr15123309ejc.162.1658866060598;
+        Tue, 26 Jul 2022 13:07:40 -0700 (PDT)
+Received: from localhost ([31.134.121.151])
+        by smtp.gmail.com with ESMTPSA id kz20-20020a17090777d400b00722e203633esm6829623ejc.122.2022.07.26.13.07.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Jul 2022 13:07:40 -0700 (PDT)
+From: Sam Protsenko <semen.protsenko@linaro.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Janghyuck Kim <janghyuck.kim@samsung.com>,
+	Cho KyongHo <pullip.cho@samsung.com>,
+	Daniel Mentz <danielmentz@google.com>,
+	David Virag <virag.david003@gmail.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] iommu/exynos: Add fault handling on SysMMU v7
+Date: Tue, 26 Jul 2022 23:07:37 +0300
+Message-Id: <20220726200739.30017-1-semen.protsenko@linaro.org>
+X-Mailer: git-send-email 2.30.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <Ys9b7GSImp/sHair@Asurada-Nvidia>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5ef99da6-838d-494f-5c78-08da6f353e2b
-X-MS-TrafficTypeDiagnostic: PH7PR12MB6717:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	JKTq9ja6++9To/TifTnBWKAR8eQJHhLvv7kCXdeCIX9uRppKFnhrrlM9RVqnUrWiAggW822U6t5OKC6diMxvG5upIKa16PSg1NcS/N2ipsXeFxr0pZmh5PNP/5LV6mEo0Em9vx9VD0uG09voESZNunmG595b/fM+IY7vG5i8NngW5BRQJr5LHzdv9OrAxV9nm5bH/R//APCKTs1zakP2lYFjIh8CToTVHB0mge4t2IqNhMTMItqgNtPIvZzS44bzLWY3rnyNW9l9Rzj70VepiSQZJP93U/h64M4rl47SozVH2IEbi/jaeGnTiJYE1B1Ex/DRs3LAnDP8CbMIM0DN8TFk9ir3C22hz1ACftiurKKcPJFer4YIL1MILUQEqRqbQ6HxuXZyH7AT8OztE+w1mPf0zsIPtDiQj6m8uhIZCFGMVeMoy+fPON67IJpoxx4jx3wfoooR4f6vgNTZrkKEj3XGi2/0qestSqxHrIYrizGpoDarxu3bQ5ddiJlVF+dq7PF+Txo/Oy8GGpRw9gyjixOX6jacIViPD5MvsZQDqjahQ4nFAY2IPFVrIZHSRXFySgbMYAGqWGk/0HdVHOJ+XgnzP79mqmUn5bny8wpCvHIQxAdEwivN7RioxS1WTsuj/lF01PJc93akbW5ehO25wysr6YBL+wQFuM39UX0iqYA8WiHjY+MEAmh9Y9Ma/atuGrMGauP146wO6JawMj08vc/CmOXjhmeKSKMBbe7GpxnAPuoOUbtfrfW2+DwHZg/8jmHRwriIuAQVp/EG9DKxqCBVt0Vh8+ZwgB1SikdqdIDY+NTVuJNdRA0wR1FqSWcriE9T9e71XZJ4HVQGEfaN+KTeRYYuzIZpsdNRa5B4pPg6MklFQNjFxa855sjMLwbgT4O18Q2MsrV8hkJ8Cc+noKu42/fmUxnkR7own9gzRLM=
-X-Forefront-Antispam-Report:
-	CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(376002)(39860400002)(136003)(46966006)(36840700001)(40470700004)(8676002)(186003)(966005)(81166007)(41300700001)(426003)(336012)(47076005)(9686003)(83380400001)(478600001)(40460700003)(110136005)(54906003)(26005)(86362001)(5660300002)(36860700001)(40480700001)(316002)(7416002)(8936002)(55016003)(7406005)(70586007)(356005)(70206006)(82740400003)(33716001)(2906002)(82310400005)(4326008)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jul 2022 18:32:49.0825
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5ef99da6-838d-494f-5c78-08da6f353e2b
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT047.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6717
+Content-Transfer-Encoding: 8bit
 
-On Wed, Jul 13, 2022 at 04:57:36PM -0700, Nicolin Chen wrote:
+Exynos IOMMU driver implements fault handling for SysMMU v1..v5. But the
+abstraction currently used is not suited for SysMMU v7, as it has quite
+different fault related register set.
 
-> > > > > This is on github:
-> > > > > https://github.com/nicolinc/iommufd/commits/vfio_iommu_attach
-> > > >
-> > > > How do you foresee this going in, I'm imagining Joerg would merge the
-> > > > first patch via the IOMMU tree and provide a topic branch that I'd
-> > > > merge into the vfio tree along with the remaining patches.  Sound
-> > > > right?  Thanks,
-> > >
-> > > We don't have any build dependency between the IOMMU change and
-> > > VFIO changes, yet, without the IOMMU one, any iommu_attach_group()
-> > > failure now would be a hard failure without a chance falling back
-> > > to a new_domain, which is slightly different from the current flow.
-> > >
-> > > For a potential existing use case that relies on reusing existing
-> > > domain, I think it'd be safer to have Joerg acking the first change
-> > > so you merge them all? Thank!
-> > 
-> > Works for me, I'll look for buy-in + ack from Joerg.  Thanks,
-> > 
-> > Alex
-> 
-> Joerg, would it be possible for you to ack at the IOMMU patch?
+This patch series reworks the mentioned fault handling abstraction and
+adds fault handling support for SysMMU v7.
 
-Joerg, sorry for pinning again. Would it be possible for you
-to give an ack at the IOMMU patch so that this series might
-catch the last train of this cycle? Thanks!
+Sam Protsenko (2):
+  iommu/exynos: Abstract getting the fault info
+  iommu/exynos: Implement fault handling on SysMMU v7
+
+ drivers/iommu/exynos-iommu.c | 208 ++++++++++++++++++++++++-----------
+ 1 file changed, 143 insertions(+), 65 deletions(-)
+
+-- 
+2.30.2
+
