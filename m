@@ -1,139 +1,99 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2068.outbound.protection.outlook.com [40.107.243.68])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78ED42579
-	for <iommu@lists.linux.dev>; Tue, 26 Jul 2022 14:00:13 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KRuLbsFFrv2I2R2OQ4eo9KLVbhuZIdaK7gKl//rWnz1QJME37y7o+WLwMPcLuaex8qlyvJtl/ZITHq6NWZefbfS7MRoj8qYJ6v+BZVSV5+v3mtAeOUeAmklzP4S/XTd4br/uh+G95RbqCeuGBcdYh+yVAdkBBb8ZipQX2cCITVW2FaXlmj5UNCiln+bQcKuobhModPbzd8VSmVNRIbQY7ddBr7BxKeohotK9me3KF+qttfvSlnsqNxc9j/nQf8K9f6/cWRdQhJNWK8O/PCDFGQZdaRYFyTx+uIgtBSzTn3uqeZOgeJzghoiIcrT4cht3mFnnqo7BBbEAh3lbuIQRkw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aMsEOEgRkfe8XeThMr+RXdDLR7xaUnyXnTH+MYQFVVE=;
- b=dAAcyjTQBCE7AE4JB66NTM8NPovyaZql6koecPFrZ1wDZNa6CHBB13ucKNLko631dlJl4f+1DBgFncxxyakkHQUrhQsuvUS+mAK15wLuisCyWOW2AD02pEekXmHFhgJkhKtPaxx6LuwlbXquldS4GnHYv0FwWc1NQLTvft8QfGZrASByZzWCG4o/NMYH05ZY9spE7GEq1uEJt879syw4k/MnLGN7i7NQPK6EL/OduQnZHYLEsdrnwF4Sv16Rvy07K+CLr7ndMwGb3TN1z1XcTy8F8YbX7s8HTlxNGrmvbUcZSl2MElmlhRvZQbbyytc7DAr1mU6eVdRRwNiLHokegw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aMsEOEgRkfe8XeThMr+RXdDLR7xaUnyXnTH+MYQFVVE=;
- b=5AwzQJufw9vtzRMsQOgN4eFpxC0V7mOtucr/wvKxh7AhDnwSYIA3Bw5yZsD1mR11EuVlWZSnwX+JvUyV+UaADP5Y0ZTpROpuIZWytIydrisLsAeeBeS1QYSe3CbcJ9MJbCWcXTVb7KV6AEoQryTZROcjpQHOYPHP8/UcK+0IJbY=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
- CY4PR12MB1382.namprd12.prod.outlook.com (2603:10b6:903:40::18) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5458.20; Tue, 26 Jul 2022 14:00:10 +0000
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::d4af:b726:bc18:e60c]) by DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::d4af:b726:bc18:e60c%7]) with mapi id 15.20.5458.025; Tue, 26 Jul 2022
- 14:00:10 +0000
-Message-ID: <d3d885bc-accd-f5a3-d760-f095c7bb1c0f@amd.com>
-Date: Tue, 26 Jul 2022 21:00:03 +0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH] iommu/amd: Disable guest vapic logging during early kdump
- init
-Content-Language: en-US
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Jerry Snitselaar <jsnitsel@redhat.com>, Will Deacon <will@kernel.org>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20220721003439.403435-1-jsnitsel@redhat.com>
- <Ytq2GRX7UJjvXk4w@8bytes.org> <a07eded4-c1d7-edf5-9c0e-dfa0c3373e4c@amd.com>
- <Yt+T5ZcvhGaK1e/h@8bytes.org>
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-In-Reply-To: <Yt+T5ZcvhGaK1e/h@8bytes.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SG2PR04CA0159.apcprd04.prod.outlook.com (2603:1096:4::21)
- To DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 450772590
+	for <iommu@lists.linux.dev>; Tue, 26 Jul 2022 14:38:25 +0000 (UTC)
+Received: by mail-wr1-f54.google.com with SMTP id bn9so9571594wrb.9
+        for <iommu@lists.linux.dev>; Tue, 26 Jul 2022 07:38:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WpHEQnE8K/vPoI4Otp4u/E57Oasf5iTB9YBte/yldMI=;
+        b=7CVCq+I5hrs4TLUEzZY8XHzi6kbr7r8fEpUkokl983SEiHVraFEdGolZB+L8pezqaS
+         M4dRm+5sOuWOt0vjfmqo4E1bmWq+8H59Mx4UZBBiawXVP95lUvOWpHsnlcu3XiJoq1Y+
+         YVPLYWj3+k8oTKAnWvgbwHdbfOjIn6deg9YiMgHhCAff5xhZ4ZS5mO5rZHx27atdNvgH
+         7TslBRjzvM6a0TOjDNHOazhA+nGvmHAg+NSVKj3SAP9mHTC8/vaLvA55Ov7HhleK+i8y
+         lxArgl/yckcxSO0wdMFyAaLBHkUoNPJT81XI3g2YKDSYa7YdtZyKNRggIua4RNlDI8v4
+         4bQQ==
+X-Gm-Message-State: AJIora9/G9VFyTc7H7ZYuMIuUOCxI05Qm/rpMCkSNHqRRcvA2AwKMczZ
+	l/P/jUIjALu65ek8MsNmA60=
+X-Google-Smtp-Source: AGRyM1uNrqBOWOIEvwQhVpPiHZP6UanlaaWN/rdWs5pVkMRmu7BOIZXnafEasMFfzIq/SAfWo73ZKA==
+X-Received: by 2002:adf:db8e:0:b0:21e:4536:a934 with SMTP id u14-20020adfdb8e000000b0021e4536a934mr11377937wri.331.1658846303394;
+        Tue, 26 Jul 2022 07:38:23 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id r11-20020a5d498b000000b0021e42e7c7dbsm15037988wrq.83.2022.07.26.07.38.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Jul 2022 07:38:22 -0700 (PDT)
+Date: Tue, 26 Jul 2022 14:38:21 +0000
+From: Wei Liu <wei.liu@kernel.org>
+To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Cc: Wei Liu <wei.liu@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	Stephen Hemminger <sthemmin@microsoft.com>,
+	KY Srinivasan <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Dexuan Cui <decui@microsoft.com>,
+	"will@kernel.org" <will@kernel.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"samuel@sholland.org" <samuel@sholland.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: [PATCH 1/1] iommu/hyper-v: Use helper instead of directly
+ accessing affinity
+Message-ID: <20220726143821.ezgm5quwcdsagpwf@liuwe-devbox-debian-v2>
+References: <1658796820-2261-1-git-send-email-mikelley@microsoft.com>
+ <Yt+Uro8y219/MNFE@8bytes.org>
+ <20220726130909.jnj5etogffm4b2c5@liuwe-devbox-debian-v2>
+ <PH0PR21MB30257E59393883842CDE0992D7949@PH0PR21MB3025.namprd21.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4c1630a1-1d8f-4adc-4bea-08da6f0f277d
-X-MS-TrafficTypeDiagnostic: CY4PR12MB1382:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	pvOeFBxqJGtNgpbnvM41ZNpqmaxEQn6m8ldPQQnUwMfHjbk37Ti02Xg3Kw28EBqnsza49dXsjB9en2mPCTuyRWRkZ+ZDAWmy6BC+yi+50Fivy6u+i7koW6HtGnpe2ZGL2C2f/aA6GJsmJE9cqQapNg9d4XKBqMa2SjmNyuXYv4M3vUAC/TWqEMnCl2UJ657FbVpDleL18jP0R01UpETrc2jYQsDvuaN5MlsnBFOq90lmIJ7iatW0r8pujWF/SX+rWsB9zG4oRcmxkuC2PNWpksLbgTKWmM5s9nWhnMU9y9nj9GWRisx7bNUr848KFh5YgfQW9qFXhAVcq31TLTMVLB/Osztamnyyk1rIRF+n1+GBhTljYbFxLtKzl00I05o11eyAQPKT36huiQwDGE2Gdf6aeHVoqRwRlTcday85ThbX083ruOGxqfdlxt3ZhyRfZHlAjBTJ52qGFnU3qxd5ePNe4HpgMDe3BmoRJDjlqF76UPvG15c4+j5mcE8338RE77ILBTzgYwY/WdEDO5ViiGChao8c3EPSqjvkaBt27XpW0VmVJRy+ufjv7Rh/zF7Zd1BQtyk2Aml4trhv3PR32prSe90KyUbdaDFLo3K6Xvajs1FDtbbYn+VSpbasrYek3r0aveE8xKLPLBcfuxX+CK1N3r5EBG75GFTSm3ixnwaYt4XKvQipQ4VK3wMPASzroEd3vorUnaHxjcPaocUd9DZyUG5GpX4b7yRTrT4tiA5akyjwcj9qQfm0mJhKh6qZxyfCHUrteVj6fRA25i+TyzNfaMBH+PAWYQVxiNyTnRcF8KxZkexLgezMqgWZLnFJnAJ/tsm4X6evg3zDL8YQ0ZjmE74C8M2G5D0l3/k0fsA=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5445.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(39860400002)(376002)(366004)(136003)(346002)(8676002)(4744005)(4326008)(66556008)(6916009)(66476007)(66946007)(54906003)(53546011)(6486002)(478600001)(966005)(44832011)(6512007)(2906002)(6506007)(316002)(2616005)(8936002)(5660300002)(86362001)(6666004)(41300700001)(36756003)(186003)(31696002)(38100700002)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?azFmajMycXVpcllPTVJjbkNoWWdSWGxBYzNlMHQ5RmR6MFl6S2VsWTNWdDB4?=
- =?utf-8?B?Um1rV2c5Z01HYjA5RXgvckdLNHpjL0hWNklqcGpESVZBcjdBL3NKSC9tbzZ2?=
- =?utf-8?B?MXZ5MWt5RUcvL3pHOHpyaXNLeEI1K0UrK0puc09NSEM5bE9TZEUvNWpTYWF4?=
- =?utf-8?B?dVd4alVNbkFtWDBMdGNRQTdKZGRpTjJuR1FNQS9NK0NtU2FtUFhTZUQ3T3dL?=
- =?utf-8?B?RFpvRVZ0dktyeEhLR0F4QXN2VXMxWmdvMHhmMno2c1N3ZGlPcXQ3QVVtTkx0?=
- =?utf-8?B?YU92UXpvdjZVWHFTYlNzTDVYTXY5VkhuMDFOdnltMFhmKzFIRjVWTWdhL0xa?=
- =?utf-8?B?OWlOWjk4dVlIRjlodmtwak5lUzdQMGpvbDlRYTFtTFhiRTJtRThJclZ2dGFC?=
- =?utf-8?B?RS8yV3VXZDBVc1J6L09RdkNYQjVIQjRJMWhWN1FySTBBMDNpMDl2d2E1ajVx?=
- =?utf-8?B?aDVicVRJRXNsVXhzMkxRR2orQWUwVnJCUHFtcVJSbDVvTTJnV3I2K1ZHWjJs?=
- =?utf-8?B?TnVQOURDNEFLZHI4c2pWNXZiYjRqZzk0aEpmNnJuMUhVOG9jTE1tYTFGV3ho?=
- =?utf-8?B?Vjd3RWsvUTl6anRReFR3ei9mUjc2UWhoN0pJR1NDcDhhVjlTczRsNFZGZmVE?=
- =?utf-8?B?OWFGOXcxaWhrMlN0ZWdmcVJWbTdxOExFTE9FUXVDbnZtT2VuNG5SL2VXTUNI?=
- =?utf-8?B?QTRxUEZEWXVRVUR6WUZaOUFTR1JCTEFoVSthazFuSGRNT1lDT2wwcGdMdFFF?=
- =?utf-8?B?eVE0dWx0a1ZSam5qK3Rkd1paSElmVis4MWQ0NXdRQXdlWDh5TEhSTXp6b3dj?=
- =?utf-8?B?SWZDK3NFczFldkJ0eVBLVG5wUkNhZ1JmRGJVUFQ3VG1BZms2bjVqOU9oQWVZ?=
- =?utf-8?B?WlZaUW5pd3RlVVNLeVNJMERmWnkvQWdsdGNBNFV5OTNrTlV5ckwwOUhkS0tO?=
- =?utf-8?B?cU80SVR4UHI2aG1sUURUS3hXR1h6aHppNjFMRGUrQU85YWNOYmwzUllhTVhl?=
- =?utf-8?B?MlpDZGEzQnVCWjhVcFNsTVdZUGFUNkpBVm42NzFpaGhGaG5vRkhGRzJ1dHdj?=
- =?utf-8?B?eXBkYlVYNitRUnUyME5RM0FBTU5kbG5ES2U4TjVJOTdtSVhYdjF2RytaNys4?=
- =?utf-8?B?eHJ1YXQyUHpMMXBIZ0J1eGh6MDZBRmYveXhmK2VYdzdVa1hvL0VwMzYyc2V1?=
- =?utf-8?B?U0tTKzJ3TSsvMVZVNVVxQlkvWlovK2g4dVFpdUF2TVp1ZjhuNEtFS2hRQmFE?=
- =?utf-8?B?SzA2b3hLOENiU2ozOFVsaWJ6NmpWYWZsRDMrQmZIN0oxZWhESUZXUzhHSlNC?=
- =?utf-8?B?QXFyTzFGRE50RU9iVEpFVVpub1B2MDNUR1NMU0pHaU9QZmR3MWp0M2I5ekZm?=
- =?utf-8?B?N2lYYzAybW91a2RzRjRYM2ZCcHV0ZUsvVnBhZWdvWFZsOXhKbVBIN0h3SUJ5?=
- =?utf-8?B?OGY5SVZiVS94cEVWNEJaZzRNMDJiRjV5c0RHeW9qYzNvbXJUTE5kbDk1R0xz?=
- =?utf-8?B?L1VFcFEyRWlUOXBzSVNONGMxZ0lLYk41TmhvcDBLTWVUMUw3QjlJUjVpN2VE?=
- =?utf-8?B?R2FRTWZOcERvbE4vM2dDMEFaS0MyZFhobE4yTlFTanB1dlFEYjNDVzh4Y0lI?=
- =?utf-8?B?c3d0U0NiWi8xN2VoRklMZU9oekdSU3dIUkQ3M3VtVzg4ZVhFMUxTdGZSbEFJ?=
- =?utf-8?B?N3hML2h6YjNHL3MwQjAwN241WmdtUDM3Zzg2SnMvZ1pQcENyZjA0VWs1dGdO?=
- =?utf-8?B?a09yQTVjcnl0ekcvaGhvbFUzWXNRM3ZnOGRYQzFrZEh6NTNWYjFpdS9ZbHhP?=
- =?utf-8?B?ZEltNjl0V0FKSDZMQUhQblJMYUJjRjhTbmhSTDlJRVordHNkd2pZY2ZGWTQ2?=
- =?utf-8?B?WXlmS0RpZ3VDZWpUWDMwMUZ5Zmc4SmIyRndRT3dGVUx2Lzk2a3RkRFdsdGlB?=
- =?utf-8?B?UHhFd3JUWmxad2dxdHBJSVBUL1ZtVXF2TUdxckVPOFgyVE84VGRzU0F0Y1Ev?=
- =?utf-8?B?YlpSK2JnblBsOEJqa005SVV2cnFOMnRPRUhuQmptNE1GZytEWlkyZjNjQlhU?=
- =?utf-8?B?MTZnd3hNSHEvbmZLNXQyZDc4VXhJU216Z3lVYnFRTVEwTzlTUjFmL2ZRQ1A5?=
- =?utf-8?B?bTlUSkEzbTN0dlBRT05ZcllyZjl6SHRmMVZpSnFXZVhkUDJ2NWY2bkZ6ZDFj?=
- =?utf-8?Q?zUEptl8GO6DjBgjg5leWMewK88fhBM0fQ+QNC24dl9zi?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4c1630a1-1d8f-4adc-4bea-08da6f0f277d
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jul 2022 14:00:10.7811
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lUUIquUZEN7Ju0X2sw2VXRNZXfyvCjZ+fjr60FZ4tRyHCn5ksFNC0bHxQS8waaD0F1AhJYNOQcONr+fOyXTV6w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1382
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PH0PR21MB30257E59393883842CDE0992D7949@PH0PR21MB3025.namprd21.prod.outlook.com>
 
-
-
-On 7/26/22 2:12 PM, Joerg Roedel wrote:
-> Hi Suravee,
+On Tue, Jul 26, 2022 at 01:48:35PM +0000, Michael Kelley (LINUX) wrote:
+> From: Wei Liu <wei.liu@kernel.org> Sent: Tuesday, July 26, 2022 6:09 AM
+> > 
+> > On Tue, Jul 26, 2022 at 09:15:58AM +0200, Joerg Roedel wrote:
+> > > Hi Michael,
+> > >
+> > > On Mon, Jul 25, 2022 at 05:53:40PM -0700, Michael Kelley wrote:
+> > > > Recent changes to solve inconsistencies in handling IRQ masks #ifdef
+> > > > out the affinity field in irq_common_data for non-SMP configurations.
+> > > > The current code in hyperv_irq_remapping_alloc() gets a compiler error
+> > > > in that case.
+> > > >
+> > > > Fix this by using the new irq_data_update_affinity() helper, which
+> > > > handles the non-SMP case correctly.
+> > > >
+> > > > Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+> > >
+> > > Please add a fixes tag.
+> > >
+> > > Where is the change which breaks this currently, in some subsystem tree
+> > > or already upstream?
+> > >
+> > 
+> > The offending patch aa081358 is in linux-next.
+> > 
+> > > In case it is still in a maintainers tree, this patch should be applied
+> > > there. Here is my
+> > >
+> > > Acked-by: Joerg Roedel <jroedel@suse.de>
+> > 
+> > I can take this patch via hyperv-next. This is a good improvement
+> > anyway.
 > 
-> On Mon, Jul 25, 2022 at 02:05:59PM +0700, Suravee Suthikulpanit wrote:
->> Sorry for late reply. I have been actually working on the new GAM and GALOG enabling code,
->> which should also address this issue as well. I'll send out the patch soon.
-> 
-> Okay, how about basing your changes on Jerry's fix? A backportable fix
-> for a real issue is always better than a bigger rework (which can still
-> happen on-top).
-> 
-> Regards,
-> 
-> 	Joerg
+> I don't think this patch should go via hyperv-next.  The helper
+> function is introduced in the linux-next patch in the irq/irqchip-next tree,
+> so this patch should go through irq/irqchip-next to avoid creating an
+> interdependency.
 
-Ahh... I have just sent out the new patch
+This is fine too.
 
-https://lore.kernel.org/lkml/20220726134348.6438-2-suravee.suthikulpanit@amd.com/
-
-Please lemme know in case you want me to rebase this on top of Jerry's.
-
-Suravee
+Wei.
