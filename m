@@ -1,21 +1,22 @@
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 641B77E0
-	for <iommu@lists.linux.dev>; Tue, 26 Jul 2022 07:12:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C2B77E0
+	for <iommu@lists.linux.dev>; Tue, 26 Jul 2022 07:16:01 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id 2550E669; Tue, 26 Jul 2022 09:12:39 +0200 (CEST)
-Date: Tue, 26 Jul 2022 09:12:37 +0200
+	id 7133E669; Tue, 26 Jul 2022 09:15:59 +0200 (CEST)
+Date: Tue, 26 Jul 2022 09:15:58 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Cc: Jerry Snitselaar <jsnitsel@redhat.com>, Will Deacon <will@kernel.org>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/amd: Disable guest vapic logging during early
- kdump init
-Message-ID: <Yt+T5ZcvhGaK1e/h@8bytes.org>
-References: <20220721003439.403435-1-jsnitsel@redhat.com>
- <Ytq2GRX7UJjvXk4w@8bytes.org>
- <a07eded4-c1d7-edf5-9c0e-dfa0c3373e4c@amd.com>
+To: Michael Kelley <mikelley@microsoft.com>
+Cc: sthemmin@microsoft.com, kys@microsoft.com, haiyangz@microsoft.com,
+	wei.liu@kernel.org, decui@microsoft.com, will@kernel.org,
+	robin.murphy@arm.com, samuel@sholland.org,
+	linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: Re: [PATCH 1/1] iommu/hyper-v: Use helper instead of directly
+ accessing affinity
+Message-ID: <Yt+Uro8y219/MNFE@8bytes.org>
+References: <1658796820-2261-1-git-send-email-mikelley@microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -24,18 +25,30 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a07eded4-c1d7-edf5-9c0e-dfa0c3373e4c@amd.com>
+In-Reply-To: <1658796820-2261-1-git-send-email-mikelley@microsoft.com>
 
-Hi Suravee,
+Hi Michael,
 
-On Mon, Jul 25, 2022 at 02:05:59PM +0700, Suravee Suthikulpanit wrote:
-> Sorry for late reply. I have been actually working on the new GAM and GALOG enabling code,
-> which should also address this issue as well. I'll send out the patch soon.
+On Mon, Jul 25, 2022 at 05:53:40PM -0700, Michael Kelley wrote:
+> Recent changes to solve inconsistencies in handling IRQ masks #ifdef
+> out the affinity field in irq_common_data for non-SMP configurations.
+> The current code in hyperv_irq_remapping_alloc() gets a compiler error
+> in that case.
+> 
+> Fix this by using the new irq_data_update_affinity() helper, which
+> handles the non-SMP case correctly.
+> 
+> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
 
-Okay, how about basing your changes on Jerry's fix? A backportable fix
-for a real issue is always better than a bigger rework (which can still
-happen on-top).
+Please add a fixes tag.
 
-Regards,
+Where is the change which breaks this currently, in some subsystem tree
+or already upstream?
 
-	Joerg
+In case it is still in a maintainers tree, this patch should be applied
+there. Here is my
+
+Acked-by: Joerg Roedel <jroedel@suse.de>
+
+for that.
+
