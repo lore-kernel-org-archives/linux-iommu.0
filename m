@@ -1,77 +1,138 @@
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2077.outbound.protection.outlook.com [40.107.93.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23FA44C8B
-	for <iommu@lists.linux.dev>; Tue, 26 Jul 2022 16:22:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
-	MIME-Version:Date:Message-ID:content-disposition;
-	bh=Ms6Eo/4vk2U2FvUSJ1ASbG7HxuQl+uR0mXnaHaYNTv4=; b=NrrgVQUsop8jszUXB0cv9CDrL+
-	fdEfO5urrJbCJWNS1Iq22L1BvAroUNoor2CQLfdd2fNdrd3IpBRHKvsxSYOo0vvWmym8s+v4433IL
-	y1rGN9rbsQ+UvIDbRjl0eOWA1J1Qc4CPH33eBIJYfVPowrgNDYqlXANBYBSkVqIHAY8T5hiM3eVzj
-	bzA9109KtzluUUx/kVOjSvMQWDprJiiWIwyH2jZiYrOkhSLoqIahhj2e9nvvPHfP6OEWaepTh3iLQ
-	9EDAlLY/HgG/NpsGsYFpP2sAW6PiYh6LvI5jOulinFHwJ3MJcCIZZSwUI6umqKiVvyjyiGmC/P1g4
-	7WdDWlCQ==;
-Received: from guinness.priv.deltatee.com ([172.16.1.162])
-	by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-	(Exim 4.94.2)
-	(envelope-from <logang@deltatee.com>)
-	id 1oGMtz-000rlz-Bq; Tue, 26 Jul 2022 09:55:20 -0600
-Message-ID: <a9a1641a-aa5c-ce29-e4a4-c266f4494004@deltatee.com>
-Date: Tue, 26 Jul 2022 09:55:13 -0600
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB38D2CA2
+	for <iommu@lists.linux.dev>; Tue, 26 Jul 2022 18:32:51 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=etaGq+J0Wt7zpxgo0mJhOrbg6WZ0e6KCP+441YhU6Qx9jY4q8jIoP9HxUBKchs7yl1i48vAHezFJXOZ/6Lh/49LO+iune+zxyiYnpTX4K3Z3XP+immwHGa+HhPzaAu8S8likVdH1tl8xDoBSOK3O7NIGN2q6z2gJrMntVqAFoVpOBml460h4U99STQk4f8+RHy8Dq7bK17ee+cOK/QFSgmgfjIF3c49rKdiTiOqpVCI+sFCh37982oSir4jQckx6rFycneXLeMY3ixjOHGNEApckkCR1T4s0khK4ulRJzd5ufcQ8Kdpjflbz2PQG18taH2awR4TOVZ+RFKIeqeVljA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=o7KmWCJJiLmmCXvHEW/edwGywv0Y5xwCzERUc9HlzQo=;
+ b=h1QPYA+Jym3gWMU3JcuVYHrxfJOG+8jWqZ5f4bDopZx82Xt6svvi6iHyAeA6tN6VVHJRqOiW00l6b2sojwPAUE4o1bqFKhHt7TrBDbi9iZlRxjDXTee7qxet30FDe0qM7Z4zM+qrFKI9zXnXO1KHVCKhSqq2BTCd2eN7kY8p9geMzu2mi0uPN3ldwJ5fdp4dyeoK8XFquT4ukKdBaJjczdvRJtBem2/yTdqOmwEpNJB21r5WLlT68B3irnxmxZ01IIAAYWGFw/Oc4dBnfOAz5DcAJ5l7eZm1sK/v/qPJdy8xT9xIzZzan3d6XP/uVslTuOqKJBzFbaCoeleDy9aFIg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.238) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
+ (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
+ (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=o7KmWCJJiLmmCXvHEW/edwGywv0Y5xwCzERUc9HlzQo=;
+ b=R23PdKIehSe/v8/Egr4s14t9166kDSkME/KRemw1pKDZBLTVbaidBpffCU8IvuIZkUu5ZmMhmWcNluuxQA6MbFUkZpCybUFlZkzeTsTtWb1OboXXxLfSkUjkIscTl+xoyCMAmIffGzUPPtu2AX5tRk3kvREU8bo/JJYEp7EsDaAEdQZHEOMK/PVOUiFRb1EJgJNxxTIv8tEdJdCho8fw8GEgTFrVqaLVFZrqnCvpnJ1OQsxaKN/AgENt49oE/+BZjEBGsSjansfG4VjK1lOs8SqzDxuaOg0O0xmYcoBUspFGVZulBOv1lV6Uz4v1ppV0Ane2nEGPtDRuWZtl05UfVg==
+Received: from BN9PR03CA0783.namprd03.prod.outlook.com (2603:10b6:408:13f::8)
+ by PH7PR12MB6717.namprd12.prod.outlook.com (2603:10b6:510:1b0::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Tue, 26 Jul
+ 2022 18:32:49 +0000
+Received: from BN8NAM11FT047.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:13f:cafe::90) by BN9PR03CA0783.outlook.office365.com
+ (2603:10b6:408:13f::8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.23 via Frontend
+ Transport; Tue, 26 Jul 2022 18:32:49 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.238) by
+ BN8NAM11FT047.mail.protection.outlook.com (10.13.177.220) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5458.17 via Frontend Transport; Tue, 26 Jul 2022 18:32:49 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by DRHQMAIL105.nvidia.com
+ (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Tue, 26 Jul
+ 2022 18:32:48 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Tue, 26 Jul
+ 2022 11:32:47 -0700
+Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.10)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26 via Frontend
+ Transport; Tue, 26 Jul 2022 11:32:45 -0700
+Date: Tue, 26 Jul 2022 11:32:43 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <joro@8bytes.org>, Alex Williamson <alex.williamson@redhat.com>
+CC: <will@kernel.org>, <marcan@marcan.st>, <sven@svenpeter.dev>,
+	<robin.murphy@arm.com>, <robdclark@gmail.com>, <baolu.lu@linux.intel.com>,
+	<orsonzhai@gmail.com>, <baolin.wang7@gmail.com>, <zhang.lyra@gmail.com>,
+	<jean-philippe@linaro.org>, <jgg@nvidia.com>, <kevin.tian@intel.com>,
+	<suravee.suthikulpanit@amd.com>, <alyssa@rosenzweig.io>,
+	<dwmw2@infradead.org>, <mjrosato@linux.ibm.com>,
+	<gerald.schaefer@linux.ibm.com>, <thierry.reding@gmail.com>,
+	<vdumpa@nvidia.com>, <jonathanh@nvidia.com>, <cohuck@redhat.com>,
+	<thunder.leizhen@huawei.com>, <christophe.jaillet@wanadoo.fr>,
+	<chenxiang66@hisilicon.com>, <john.garry@huawei.com>,
+	<yangyingliang@huawei.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-arm-msm@vger.kernel.org>, <linux-s390@vger.kernel.org>,
+	<linux-tegra@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+	<kvm@vger.kernel.org>
+Subject: Re: [PATCH v5 0/5] cover-letter: Simplify vfio_iommu_type1
+ attach/detach routine
+Message-ID: <YuAzS1LatwGEvk7S@Asurada-Nvidia>
+References: <20220701214455.14992-1-nicolinc@nvidia.com>
+ <20220706114217.105f4f61.alex.williamson@redhat.com>
+ <YsXMMCX5LY/3IOtf@Asurada-Nvidia>
+ <20220706120325.4741ff34.alex.williamson@redhat.com>
+ <Ys9b7GSImp/sHair@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Content-Language: en-CA
-To: Christoph Hellwig <hch@lst.de>
-Cc: linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
- linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
- Stephen Bates <sbates@raithlin.com>, Dan Williams
- <dan.j.williams@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
- John Hubbard <jhubbard@nvidia.com>, Don Dutile <ddutile@redhat.com>,
- Matthew Wilcox <willy@infradead.org>, Daniel Vetter
- <daniel.vetter@ffwll.ch>, Minturn Dave B <dave.b.minturn@intel.com>,
- Jason Ekstrand <jason@jlekstrand.net>,
- Dave Hansen <dave.hansen@linux.intel.com>,
- Xiong Jianxin <jianxin.xiong@intel.com>, Bjorn Helgaas <helgaas@kernel.org>,
- Ira Weiny <ira.weiny@intel.com>, Robin Murphy <robin.murphy@arm.com>,
- Martin Oliveira <martin.oliveira@eideticom.com>,
- Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
- Ralph Campbell <rcampbell@nvidia.com>
-References: <20220708165104.5005-1-logang@deltatee.com>
- <20220726112906.GA2169@lst.de>
-From: Logan Gunthorpe <logang@deltatee.com>
-In-Reply-To: <20220726112906.GA2169@lst.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 172.16.1.162
-X-SA-Exim-Rcpt-To: hch@lst.de, linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org, linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, iommu@lists.linux.dev, sbates@raithlin.com, dan.j.williams@intel.com, jgg@ziepe.ca, christian.koenig@amd.com, jhubbard@nvidia.com, ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch, dave.b.minturn@intel.com, jason@jlekstrand.net, dave.hansen@linux.intel.com, jianxin.xiong@intel.com, helgaas@kernel.org, ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, rcampbell@nvidia.com
-X-SA-Exim-Mail-From: logang@deltatee.com
-X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on ale.deltatee.com
-X-Spam-Level: 
-X-Spam-Status: No, score=-6.9 required=5.0 tests=ALL_TRUSTED,BAYES_00,
-	NICE_REPLY_A autolearn=ham autolearn_force=no version=3.4.6
-Subject: Re: [PATCH v8 00/13] DMA Mapping P2PDMA Pages
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <Ys9b7GSImp/sHair@Asurada-Nvidia>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5ef99da6-838d-494f-5c78-08da6f353e2b
+X-MS-TrafficTypeDiagnostic: PH7PR12MB6717:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	JKTq9ja6++9To/TifTnBWKAR8eQJHhLvv7kCXdeCIX9uRppKFnhrrlM9RVqnUrWiAggW822U6t5OKC6diMxvG5upIKa16PSg1NcS/N2ipsXeFxr0pZmh5PNP/5LV6mEo0Em9vx9VD0uG09voESZNunmG595b/fM+IY7vG5i8NngW5BRQJr5LHzdv9OrAxV9nm5bH/R//APCKTs1zakP2lYFjIh8CToTVHB0mge4t2IqNhMTMItqgNtPIvZzS44bzLWY3rnyNW9l9Rzj70VepiSQZJP93U/h64M4rl47SozVH2IEbi/jaeGnTiJYE1B1Ex/DRs3LAnDP8CbMIM0DN8TFk9ir3C22hz1ACftiurKKcPJFer4YIL1MILUQEqRqbQ6HxuXZyH7AT8OztE+w1mPf0zsIPtDiQj6m8uhIZCFGMVeMoy+fPON67IJpoxx4jx3wfoooR4f6vgNTZrkKEj3XGi2/0qestSqxHrIYrizGpoDarxu3bQ5ddiJlVF+dq7PF+Txo/Oy8GGpRw9gyjixOX6jacIViPD5MvsZQDqjahQ4nFAY2IPFVrIZHSRXFySgbMYAGqWGk/0HdVHOJ+XgnzP79mqmUn5bny8wpCvHIQxAdEwivN7RioxS1WTsuj/lF01PJc93akbW5ehO25wysr6YBL+wQFuM39UX0iqYA8WiHjY+MEAmh9Y9Ma/atuGrMGauP146wO6JawMj08vc/CmOXjhmeKSKMBbe7GpxnAPuoOUbtfrfW2+DwHZg/8jmHRwriIuAQVp/EG9DKxqCBVt0Vh8+ZwgB1SikdqdIDY+NTVuJNdRA0wR1FqSWcriE9T9e71XZJ4HVQGEfaN+KTeRYYuzIZpsdNRa5B4pPg6MklFQNjFxa855sjMLwbgT4O18Q2MsrV8hkJ8Cc+noKu42/fmUxnkR7own9gzRLM=
+X-Forefront-Antispam-Report:
+	CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(376002)(39860400002)(136003)(46966006)(36840700001)(40470700004)(8676002)(186003)(966005)(81166007)(41300700001)(426003)(336012)(47076005)(9686003)(83380400001)(478600001)(40460700003)(110136005)(54906003)(26005)(86362001)(5660300002)(36860700001)(40480700001)(316002)(7416002)(8936002)(55016003)(7406005)(70586007)(356005)(70206006)(82740400003)(33716001)(2906002)(82310400005)(4326008)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jul 2022 18:32:49.0825
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5ef99da6-838d-494f-5c78-08da6f353e2b
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN8NAM11FT047.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6717
 
+On Wed, Jul 13, 2022 at 04:57:36PM -0700, Nicolin Chen wrote:
 
-
-On 2022-07-26 05:29, Christoph Hellwig wrote:
-> I've applied this to the dma-mapping for-next branch.
+> > > > > This is on github:
+> > > > > https://github.com/nicolinc/iommufd/commits/vfio_iommu_attach
+> > > >
+> > > > How do you foresee this going in, I'm imagining Joerg would merge the
+> > > > first patch via the IOMMU tree and provide a topic branch that I'd
+> > > > merge into the vfio tree along with the remaining patches.  Sound
+> > > > right?  Thanks,
+> > >
+> > > We don't have any build dependency between the IOMMU change and
+> > > VFIO changes, yet, without the IOMMU one, any iommu_attach_group()
+> > > failure now would be a hard failure without a chance falling back
+> > > to a new_domain, which is slightly different from the current flow.
+> > >
+> > > For a potential existing use case that relies on reusing existing
+> > > domain, I think it'd be safer to have Joerg acking the first change
+> > > so you merge them all? Thank!
+> > 
+> > Works for me, I'll look for buy-in + ack from Joerg.  Thanks,
+> > 
+> > Alex
 > 
-> I'd have liked a review from Robin, but as he seems to be out and the
-> rework was to fit his comments I'd rather have us unblocked before
-> the end of the merge window.
+> Joerg, would it be possible for you to ack at the IOMMU patch?
 
-Great thanks! If Robin has some feedback when he gets back I'd be happy
-to make a couple more cleanup patches.
-
-Logan
+Joerg, sorry for pinning again. Would it be possible for you
+to give an ack at the IOMMU patch so that this series might
+catch the last train of this cycle? Thanks!
