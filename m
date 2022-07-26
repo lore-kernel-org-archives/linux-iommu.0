@@ -1,265 +1,41 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73576620
-	for <iommu@lists.linux.dev>; Tue, 26 Jul 2022 06:23:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658816614; x=1690352614;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=hNL6tcITzlHVuP1y/APtKz0FFvD/P1YcuLKevDlDZb8=;
-  b=DHfJ3/DRm6eaDW1G4sjBXtL67a4zh/d+1TsVMZ0tvzd2/HF4ruh+CEEj
-   Z51JQ7IK6u9+EqqcQzswB0nQxKiVRPp3tgZKpfqvKrMxA6NgKD2U+ukKv
-   HHCmmAuZxkMP1S+83uAqDjdwht87f1/NIFi1qwIb7WDpMWlkMDuWlYh4W
-   UzQDu2OiwvpIW6CLdj6RZTflpMmMvYh6G+qMYTBo/W7bd914OSnGD6rBh
-   Glf3xw5sJdK7XX1dQlbE7bN34KT5myZJtqY97ZVJK/j+F0sXWqcDSKcWR
-   OXcs8gXBgx9TMooLoRA2IQNW3ZikFLxJubNlNn9HVLNBqL3x1mY9wJWxw
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10419"; a="313631287"
-X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
-   d="scan'208";a="313631287"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 23:23:32 -0700
-X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
-   d="scan'208";a="575359485"
-Received: from hzhi-mobl4.ccr.corp.intel.com (HELO [10.255.30.159]) ([10.255.30.159])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 23:23:28 -0700
-Message-ID: <6da27a6b-b580-4ba4-24c8-ebdfb2d9345d@linux.intel.com>
-Date: Tue, 26 Jul 2022 14:23:26 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 641B77E0
+	for <iommu@lists.linux.dev>; Tue, 26 Jul 2022 07:12:43 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+	id 2550E669; Tue, 26 Jul 2022 09:12:39 +0200 (CEST)
+Date: Tue, 26 Jul 2022 09:12:37 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: Jerry Snitselaar <jsnitsel@redhat.com>, Will Deacon <will@kernel.org>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/amd: Disable guest vapic logging during early
+ kdump init
+Message-ID: <Yt+T5ZcvhGaK1e/h@8bytes.org>
+References: <20220721003439.403435-1-jsnitsel@redhat.com>
+ <Ytq2GRX7UJjvXk4w@8bytes.org>
+ <a07eded4-c1d7-edf5-9c0e-dfa0c3373e4c@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
- Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
- Jacob jun Pan <jacob.jun.pan@intel.com>,
- Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony <tony.zhu@intel.com>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v10 04/12] iommu: Add attach/detach_dev_pasid iommu
- interface
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
- <20220705050710.2887204-5-baolu.lu@linux.intel.com>
- <20220723141118.GD79279@nvidia.com>
- <686b137f-232a-2a78-beb0-e4373bd20959@linux.intel.com>
- <20220725144005.GE3747@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220725144005.GE3747@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a07eded4-c1d7-edf5-9c0e-dfa0c3373e4c@amd.com>
 
-On 2022/7/25 22:40, Jason Gunthorpe wrote:
-> On Sun, Jul 24, 2022 at 03:03:16PM +0800, Baolu Lu wrote:
-> 
->> How about rephrasing this part of commit message like below:
->>
->> Some buses, like PCI, route packets without considering the PASID value.
->> Thus a DMA target address with PASID might be treated as P2P if the
->> address falls into the MMIO BAR of other devices in the group. To make
->> things simple, these interfaces only apply to devices belonging to the
->> singleton groups.
-> 
->   
->> Considering that the PCI bus supports hot-plug, even a device boots with
->> a singleton group, a later hot-added device is still possible to share
->> the group, which breaks the singleton group assumption. In order to
->> avoid this situation, this interface requires that the ACS is enabled on
->> all devices on the path from the device to the host-PCI bridge.
-> 
-> But ACS directly fixes the routing issue above
-> 
-> This entire explanation can be recast as saying we block PASID
-> attachment in all cases where the PCI fabric is routing based on
-> address. ACS disables that.
-> 
-> Not sure it even has anything to do with hotplug or singleton??
+Hi Suravee,
 
-Yes, agreed. I polished this patch like below. Does it look good to you?
+On Mon, Jul 25, 2022 at 02:05:59PM +0700, Suravee Suthikulpanit wrote:
+> Sorry for late reply. I have been actually working on the new GAM and GALOG enabling code,
+> which should also address this issue as well. I'll send out the patch soon.
 
-iommu: Add attach/detach_dev_pasid iommu interface
+Okay, how about basing your changes on Jerry's fix? A backportable fix
+for a real issue is always better than a bigger rework (which can still
+happen on-top).
 
-Attaching an IOMMU domain to a PASID of a device is a generic operation
-for modern IOMMU drivers which support PASID-granular DMA address
-translation. Currently visible usage scenarios include (but not limited):
+Regards,
 
-  - SVA (Shared Virtual Address)
-  - kernel DMA with PASID
-  - hardware-assist mediated device
-
-This adds a pair of domain ops for this purpose and adds the interfaces
-for device drivers to attach/detach a domain to/from a {device, PASID}.
-The PCI bus routes packets without considering the PASID value. Thus a
-DMA target address with PASID might be treated as P2P if the address
-falls into the MMIO BAR of other devices in the group. This blocks the
-PASID attachment in all cases where the PCI fabric is routing based on
-address. The ACS disables that.
-
-[...]
----
-  drivers/iommu/iommu.c | 70 +++++++++++++++++++++++++++++++++++++++++++
-  include/linux/iommu.h | 18 +++++++++++
-  2 files changed, 88 insertions(+)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 63fc4317cb47..493db6e9302f 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -39,6 +39,7 @@ struct iommu_group {
-  	struct kobject kobj;
-  	struct kobject *devices_kobj;
-  	struct list_head devices;
-+	struct xarray pasid_array;
-  	struct mutex mutex;
-  	void *iommu_data;
-  	void (*iommu_data_release)(void *iommu_data);
-@@ -663,6 +664,7 @@ struct iommu_group *iommu_group_alloc(void)
-  	mutex_init(&group->mutex);
-  	INIT_LIST_HEAD(&group->devices);
-  	INIT_LIST_HEAD(&group->entry);
-+	xa_init(&group->pasid_array);
-
-  	ret = ida_alloc(&iommu_group_ida, GFP_KERNEL);
-  	if (ret < 0) {
-@@ -3254,3 +3256,71 @@ bool iommu_group_dma_owner_claimed(struct 
-iommu_group *group)
-  	return user;
-  }
-  EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
-+
-+/*
-+ * iommu_attach_device_pasid() - Attach a domain to pasid of device
-+ * @domain: the iommu domain.
-+ * @dev: the attached device.
-+ * @pasid: the pasid of the device.
-+ *
-+ * Return: 0 on success, or an error.
-+ */
-+int iommu_attach_device_pasid(struct iommu_domain *domain,
-+			      struct device *dev, ioasid_t pasid)
-+{
-+	struct iommu_group *group;
-+	void *curr;
-+	int ret;
-+
-+	if (!domain->ops->set_dev_pasid)
-+		return -EOPNOTSUPP;
-+
-+	/*
-+	 * Block PASID attachment in all cases where the PCI fabric is
-+	 * routing based on address. ACS disables it.
-+	 */
-+	if (dev_is_pci(dev) &&
-+	    !pci_acs_path_enabled(to_pci_dev(dev), NULL, REQ_ACS_FLAGS))
-+		return -ENODEV;
-+
-+	group = iommu_group_get(dev);
-+	if (!group)
-+		return -ENODEV;
-+
-+	mutex_lock(&group->mutex);
-+	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, GFP_KERNEL);
-+	if (curr) {
-+		ret = xa_err(curr) ? : -EBUSY;
-+		goto out_unlock;
-+	}
-+	ret = domain->ops->set_dev_pasid(domain, dev, pasid);
-+	if (ret)
-+		xa_erase(&group->pasid_array, pasid);
-+out_unlock:
-+	mutex_unlock(&group->mutex);
-+	iommu_group_put(group);
-+
-+	return ret;
-+}
-+
-+/*
-+ * iommu_detach_device_pasid() - Detach the domain from pasid of device
-+ * @domain: the iommu domain.
-+ * @dev: the attached device.
-+ * @pasid: the pasid of the device.
-+ *
-+ * The @domain must have been attached to @pasid of the @dev with
-+ * iommu_detach_device_pasid().
-+ */
-+void iommu_detach_device_pasid(struct iommu_domain *domain, struct 
-device *dev,
-+			       ioasid_t pasid)
-+{
-+	struct iommu_group *group = iommu_group_get(dev);
-+
-+	mutex_lock(&group->mutex);
-+	domain->ops->set_dev_pasid(group->blocking_domain, dev, pasid);
-+	WARN_ON(xa_erase(&group->pasid_array, pasid) != domain);
-+	mutex_unlock(&group->mutex);
-+
-+	iommu_group_put(group);
-+}
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 2f237c3cd680..2c385e6d4b1a 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -266,6 +266,7 @@ struct iommu_ops {
-   * struct iommu_domain_ops - domain specific operations
-   * @attach_dev: attach an iommu domain to a device
-   * @detach_dev: detach an iommu domain from a device
-+ * @set_dev_pasid: set an iommu domain to a pasid of device
-   * @map: map a physically contiguous memory region to an iommu domain
-   * @map_pages: map a physically contiguous set of pages of the same 
-size to
-   *             an iommu domain.
-@@ -286,6 +287,8 @@ struct iommu_ops {
-  struct iommu_domain_ops {
-  	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
-  	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
-+	int (*set_dev_pasid)(struct iommu_domain *domain, struct device *dev,
-+			     ioasid_t pasid);
-
-  	int (*map)(struct iommu_domain *domain, unsigned long iova,
-  		   phys_addr_t paddr, size_t size, int prot, gfp_t gfp);
-@@ -680,6 +683,10 @@ int iommu_group_claim_dma_owner(struct iommu_group 
-*group, void *owner);
-  void iommu_group_release_dma_owner(struct iommu_group *group);
-  bool iommu_group_dma_owner_claimed(struct iommu_group *group);
-
-+int iommu_attach_device_pasid(struct iommu_domain *domain,
-+			      struct device *dev, ioasid_t pasid);
-+void iommu_detach_device_pasid(struct iommu_domain *domain,
-+			       struct device *dev, ioasid_t pasid);
-  #else /* CONFIG_IOMMU_API */
-
-  struct iommu_ops {};
-@@ -1047,6 +1054,17 @@ static inline bool 
-iommu_group_dma_owner_claimed(struct iommu_group *group)
-  {
-  	return false;
-  }
-+
-+static inline int iommu_attach_device_pasid(struct iommu_domain *domain,
-+					    struct device *dev, ioasid_t pasid)
-+{
-+	return -ENODEV;
-+}
-+
-+static inline void iommu_detach_device_pasid(struct iommu_domain *domain,
-+					     struct device *dev, ioasid_t pasid)
-+{
-+}
-  #endif /* CONFIG_IOMMU_API */
-
-  /**
-
-Best regards,
-baolu
-
+	Joerg
