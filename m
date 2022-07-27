@@ -1,189 +1,140 @@
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2079.outbound.protection.outlook.com [40.107.93.79])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3D11601C
-	for <iommu@lists.linux.dev>; Tue, 26 Jul 2022 20:07:44 +0000 (UTC)
-Received: by mail-ej1-f46.google.com with SMTP id va17so28131304ejb.0
-        for <iommu@lists.linux.dev>; Tue, 26 Jul 2022 13:07:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=upg6JemQobvxpbvcYkGZTE7woCjfAjYx23pabDH6S70=;
-        b=KY2REAUeTrxKpGxnAFQJ6G5IfIIF7/usG+WAYcQ8mBBct/cgEIHf6gFa/H+I97ylFy
-         hO1ugpx1K4FDC5+1Wl7nAV9YHIQyhQbkcjR2tCZxnHCqEpsNB5uaRlmAx+c3TMVg8gKD
-         WnFmR3DAUnG1WBLjo5jWhavTgSHvkMUmDsVBNnoeG9uK2ncFB5aB70Qh2lk4LzP597mz
-         iTzEPubySBp2IOKJeqrNSb3Ka09PUGVChg3I2f1ahx/QZJjVOoNRruThA0rztxT4Avaz
-         NB89vxSGFOX4UK0OXQ1w8q8f0uCXY0qLSOB+pn5P6EZZfi34THjmmuttz+9Gz2oJtEm+
-         GQ2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=upg6JemQobvxpbvcYkGZTE7woCjfAjYx23pabDH6S70=;
-        b=ILl7upydW+mzp05cm3nE6dAjyOALhE2390hL46fGBHXfb9tSwfqNWGocQJQSuIdW/u
-         8EQUoiLKsWxEeNjYX0VIx7BjEzQPpkxTsGwhUnM7lT5ozBXRaWlvLAu6tLCENjthjdYM
-         OSn2PwbrvNUC1RbzUiLe7+dKxaUoVRbjQn9sR42EGCjDDkGmA2sYQ0qcBrFzNTf3pZ0r
-         PFsG/AoQFmjkW3MhIexB5VBoTasXtmtyk4BDc9O5Kt9riBupDY5qVT6LeisHRAZalUxN
-         zUHkwyS6kSStNYHdHbaeBrvs/LJYZEBTxlesRRyeiIr2O2bpypU3JRbwNesvh8syi3yv
-         pcyw==
-X-Gm-Message-State: AJIora/niq+JCaNQU/viWlwUlLeUYQ9MnkzcTJjHie1qHtqyVwDuFMNb
-	qjK2j01X7DitwgNicju2ePU6iw==
-X-Google-Smtp-Source: AGRyM1tv8wHXbb3eS/p+8L9YeTdBUJHXMCzexwSOl616wnPkWcjsERUOZMKK3rw0gqgrbcuNtcqbRg==
-X-Received: by 2002:a17:907:9620:b0:72b:5822:93d0 with SMTP id gb32-20020a170907962000b0072b582293d0mr15931780ejc.235.1658866063225;
-        Tue, 26 Jul 2022 13:07:43 -0700 (PDT)
-Received: from localhost ([31.134.121.151])
-        by smtp.gmail.com with ESMTPSA id ba17-20020a0564021ad100b0043c87da1ab6sm862947edb.48.2022.07.26.13.07.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jul 2022 13:07:42 -0700 (PDT)
-From: Sam Protsenko <semen.protsenko@linaro.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Janghyuck Kim <janghyuck.kim@samsung.com>,
-	Cho KyongHo <pullip.cho@samsung.com>,
-	Daniel Mentz <danielmentz@google.com>,
-	David Virag <virag.david003@gmail.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] iommu/exynos: Implement fault handling on SysMMU v7
-Date: Tue, 26 Jul 2022 23:07:39 +0300
-Message-Id: <20220726200739.30017-3-semen.protsenko@linaro.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220726200739.30017-1-semen.protsenko@linaro.org>
-References: <20220726200739.30017-1-semen.protsenko@linaro.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E3AA7E0
+	for <iommu@lists.linux.dev>; Wed, 27 Jul 2022 02:39:30 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eBSnOGuiahEEzGxNvOIt2CrWeQkiAkWoxktPUl+tIrXpD/VmQoA+X681D7vGU0gb34oVlXBG6k8Qm6c1NIq+W6hBmyGMzQRdPjLerztSgRTGKfefjliTauqdOePQFkC4G2o/mop5dljIhSonlol4lo2JFOI9LUECxSki3ImXlYDzniTZrycBA0ecca/V6++jV8ksdq/d8F/JjW1l47XQd1nSm4Mqpi8tkBm3b6s4VquaYX0I3S3CSZiakRaggDjS5y0EwW1Ga3g20L+nFGuOknHuvsgbmgD228vPhzPbCUQk143ELUdd42vm03K0Xap64AP4PqxzHREnvyh4KmRHoQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=nDZd34IMJCasbjHdpsqbcPs8WQh0LQBvkfu7wDDqoYc=;
+ b=CbSAw9+BWo3ZAOWy5MD6pFJvb/KOAIazlmiXrutNwV5oShVJpob+cAD0iIpxFUWCOfSsnSoudXhX+HsxySFoJ3AQ9DbVSbG/4hWb3TbuTMvTgpPt8Bsf+ouYA9zmDQNq36X9iCvJe0Dc8jO9d91xyP9iZul54qD3/Iu+CUeUR6witWXEb8WuCWyaDm9X3pF8syf3DocLXA8hJewfGZ+qDizyn09bBU4Dx427qmhA6cpij2vM9R43q+yDdIgKMl+HexO08u3tSXDy5dIpCAhSJxL8Wte3apWcfiIDZFRrDpA7ZqHlZvKoXlkDxanFZLFi+C6++n0IfP3JckVauPsUfw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nDZd34IMJCasbjHdpsqbcPs8WQh0LQBvkfu7wDDqoYc=;
+ b=q4vMlgqSg0RI8HRB6rkV24qsg4l0jkk5A0oxT6eFPBOOuzjOM0KOarXEA2UGMVicNqjZ70yI6vQPNLLxsw0lHdPqqrvsHfJrd3rBYArPB/ALZV40RL5Zxy8T1t8/zoSVd27EoXkPkQoevdxZpZPOF68d+nZT2njbCxUN3GaZmpI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
+ BN8PR12MB4625.namprd12.prod.outlook.com (2603:10b6:408:71::24) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5438.21; Wed, 27 Jul 2022 02:39:27 +0000
+Received: from DM8PR12MB5445.namprd12.prod.outlook.com
+ ([fe80::d4af:b726:bc18:e60c]) by DM8PR12MB5445.namprd12.prod.outlook.com
+ ([fe80::d4af:b726:bc18:e60c%7]) with mapi id 15.20.5458.025; Wed, 27 Jul 2022
+ 02:39:27 +0000
+Message-ID: <abf52a1f-d2f5-43af-c5da-cc8be90c634c@amd.com>
+Date: Wed, 27 Jul 2022 09:39:19 +0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH 2/2] iommu/amd: Add support for AVIC when SNP is enabled
+Content-Language: en-US
+To: Jerry Snitselaar <jsnitsel@redhat.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
+ will@kernel.org, vasant.hegde@amd.com, jon.grimm@amd.com
+References: <20220726134348.6438-1-suravee.suthikulpanit@amd.com>
+ <20220726134348.6438-3-suravee.suthikulpanit@amd.com>
+ <20220726153227.caqf6hagmwu727ls@cantor>
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+In-Reply-To: <20220726153227.caqf6hagmwu727ls@cantor>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SGBP274CA0015.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::27)
+ To DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 67b306b5-936d-44a5-c53b-08da6f79392d
+X-MS-TrafficTypeDiagnostic: BN8PR12MB4625:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	P6j32X7fru+WBOaJKpA8cCUqf3LLIGCFB/ibcIXXfVocNCjzsNPOm9DrJbYpY/d+Pn2xVQNly9MXmb7TgrU1piTV3HA5A11n/96uiiINrHLb4z2ghAfMA1MGP96QMfGuw3EdjELXEvwoGbVyqIgLYwRFvmolFMgrJVBkgBkfsc8Xo+iuuiTEicTpn3ppbed6egyq+nL+gDE5d5QdXrcE2PJVqW7WzHL5zYHzN1dEIcrmXq2KgeccDf212BjWh5yi3CcsoeYdSDSqGehtvUBEHz8Yn+nvFt3Vdsi9g5nY8N1GViF4FO0puOq1svfbTV/HjJjSS6ApyXkFnd/GOwT8qlONxf3jvn4O9Rnvo7Lz15Et/LrqieE6RoR5tNvjimSJ/jHsyOg5C6thTquJQPcunlhXH86anYgjchowuFLPl20NafHaVc8cwCO4odNnQYVVeC/nksnNXqemuUu3UBJes2XTQgarZvRDYbg+2AOYq06o4hBv0wV+p3d/t6hk/995LMyaxKtGxyNMGdMo1vC2RhNdoiPn+FvjEUgTgJFj4K0GMgTyJ1ZEJeCoxfJzwomzSbhIw36ggHh5v2gKVaIhH0Dajrb7t2P3OkoD7P4SRkN2TonYoJ90R0USMGKCnZngG8PAAsq37xsZlaHYMmQ+avDQDgmEnFAOx48iw3iOs/CXUr69JczXcx2mlBFLMUwkRq2lsm1E4jbxPOQvwZUTt4Pl4ahnA+kbELde2alC19S3hDkLk4SMG3VkEbY36O7E3byreCemN5Q9dJ1HMC/9yKmxfbwPqvVymPf1SXG6ubqBUm5I/a2gfbRYXRt5BOQXxoVfcaqKtq3IIziv/RuWa8pE1G76AYxW6RFhBOI5Ssw=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5445.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(376002)(346002)(366004)(396003)(136003)(66556008)(6512007)(38100700002)(66946007)(31686004)(8936002)(6666004)(4326008)(36756003)(45080400002)(8676002)(31696002)(44832011)(6506007)(478600001)(2906002)(2616005)(41300700001)(53546011)(6916009)(186003)(5660300002)(66476007)(86362001)(6486002)(316002)(83380400001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?eW52bHVuT1phY2REN21qWTRGQlVuakR0M245SzZMeU93RWNGN2gyVFBScUE0?=
+ =?utf-8?B?b1FqMGU1N0s3L3BnRFUyUGFrVUdtWE55NlJ0QkFjWXNSaU85czRJNjJPeGg5?=
+ =?utf-8?B?aWdXVlVBTldYN2dkQjlRVWNYa3F0ZzFscGxaNW5naTN5MGlhOWpBQWcwWHUy?=
+ =?utf-8?B?a0lJNFcvV3lvb1VFdEcwSXZnWWtvT0lydFBSUzltNTJUZzN5N0FaSlBTTkdI?=
+ =?utf-8?B?b3Z3eHJGazQ2bTBYUTVzb1QzL2cwck1WaGdJbTU0cDMzRlppNWNPTHQ2VFZl?=
+ =?utf-8?B?dXBjd3orY2Zueit2OWhlRjQ3N0svbzczQ2o1L2s0cTh3Z25TNEhucWpuY3Vo?=
+ =?utf-8?B?cDdBTTFtWVFRaUNNcUREdmFJQ2FxWWdFVkk1YVQ5MWxKQ1FFZnJvVkEwSTJB?=
+ =?utf-8?B?NGkwbnVJOWR6cURkSFhCdjZ4WDBvU25Xa0YyN1YyOVo1T3ViSWxrVUszeEQx?=
+ =?utf-8?B?U2YzRHBERjdnRVh5SDFZRDd5dmlSZnk3c0FYanZPUXVseWVxclkrQlJ3TVVp?=
+ =?utf-8?B?U2RmQlR2eVRMM3dWWkxqQUlucW5hbXN0eTllSkd3NnR6TVJ0Q3Vrc3I5SURI?=
+ =?utf-8?B?UzZhR1VweW9xRUtyd3pMUUd5L2I3RW9XYTdRR2FzdFRLbi9rclc5ckRZVjht?=
+ =?utf-8?B?b3pYTU5IcXBFTmpoYnBiZkE5L09PYmh1VUN3Unhud0FEcXRiY2xEcGRmNm1O?=
+ =?utf-8?B?Ty96bVA2dUpZMkhxNG01alFDRFdZb3ozSUVPb2c4bStoN3hUb2NyS1lOL3U0?=
+ =?utf-8?B?aWtxYTBrazhYM2pHbjNheXJJWjU3cDl5Y0U0anp4eklmeWNZR2VpSkJlSUNM?=
+ =?utf-8?B?U0I1WWdCZ1BTdWxJSWxnWWxBei9LSGVLR09NNU1mQTBZZkRET3p3aGNZMDIx?=
+ =?utf-8?B?Nk4rRUdsdlZsN09FSmtlbG45VjBQd1UwUWhtQ2xqeDJmZUpodEtFRVBmTG5t?=
+ =?utf-8?B?alovSmYxdFdldDZxUUFqZFVKazRRMEtnNjcwM3RwYUlZVG9KWEdVMlFja3cv?=
+ =?utf-8?B?NXZMWmQrZTFIb1VBVHBBT25ibVA2ditCTUlzL3R5UzU4eisrTWJHdEx0TEZY?=
+ =?utf-8?B?dHdRYTJTcU5QYkNLWDFLb2lud1d0VWVRNDVxdnlNMXd2aE11Y2hycFdJSmFN?=
+ =?utf-8?B?TndmTk5Ec0l4SUlIVDZleHk2Y0hrMGMrVnVzRUo2OWM4bGdlcm5IUUd4T2pk?=
+ =?utf-8?B?cVBLV0dpUElYTGQ4dmpnczZaMmppSlBJcmVoVkppOVNMbFl0azBlZ2ZJZ014?=
+ =?utf-8?B?RzFGTHRML0Jnaml2bHMyaFgySkJRM2tQcnA4bkM4S1NTRjZQSzA0WXlqVG9w?=
+ =?utf-8?B?SEhCVmlzR291RWhaRGliV1RJcXB3aTk2YzJ3SVVVTm92Y1VmWlUyREpJLzg0?=
+ =?utf-8?B?OHdtS1VDWWVLdUIxZlhsRlNDUnhXcDgwdGVYOWVHWWZqUGwxczNRL0JlcUZZ?=
+ =?utf-8?B?V2xPK2k3Vld4RjFLaFZlZlJQWjlVNTRvMCtFUEIxODV0ZjBWMTVHdTZ6bzlE?=
+ =?utf-8?B?UDkrNzdlL2pLQjkvWld1YWZSUG5SdXNrL3ZwNFlZZ05KeVN2MzE0SnlMTmk3?=
+ =?utf-8?B?U2dhVWN6MXpXUWR3V1grT0lBT0ZQdU5VZFBQMUEvcXQ1b2hSdUtCUW5Qa09Q?=
+ =?utf-8?B?THlPbGpJZC81QURYZlBPV3o3V3A4YkN1SnhDVWs3cG9CRlZhS3lRa21TWkdI?=
+ =?utf-8?B?b3dkd3djb0lhZ0VnblVNQVBIZ3dmQkEzOXpwUlpQQVQ5WkgveHJycEx2VGlF?=
+ =?utf-8?B?WEw2NlE1dG84TDBNV0duL0NyL0ttYm9xWWFFVnEyZUtQakt6ZEFDT29uQTNm?=
+ =?utf-8?B?NGJnL2tzSjJ1UGpFYk4wYzVTL0dxM0pWZERtVld3WitaY0VjMlFBQ2YxZDBT?=
+ =?utf-8?B?dmlhU3dVLytuV3diZjhrZTdDTi9ocGRjME10R2NadDRGaEFnL0pZdXNhSWxD?=
+ =?utf-8?B?UTRZS2pPRkVGTkREeVYzQmZYVlpZVlcrSVB2WVJaOThXTnZsTzJ3cHpuNVlr?=
+ =?utf-8?B?WlRlNHpIVEE0VXBWY1RxNzYwZUJ5Vi9uSUJJT0ZPN1BHbzFiOWs0S0R3YmZF?=
+ =?utf-8?B?RVNrajVBUmowVTM3LzJsVnkxaTVyVFRLVTNNWUtMdWV0MG4wRitMTGJmSWt5?=
+ =?utf-8?B?SE90VUNiQk9HYUlLSm13cUxVb2UyU2g0ZjBGaHBWYnZjTEl3S1NlVXQyYnVu?=
+ =?utf-8?Q?IuGocoKU5KHil3OKNF72+7j53TVd9Dihpww4NaJnnz00?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 67b306b5-936d-44a5-c53b-08da6f79392d
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2022 02:39:27.0341
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: G5z1GPx7ZbRnJRLsz94KtwL2c+eSypD5HwzLiFpQAFwOqFfZQi+T4V0c9UCh4mO3978lcl2i7v1mblC/eVnFWA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB4625
 
-SysMMU v7 has a bit different registers for getting the fault info:
-  - there is one single register (MMU_FAULT_VA) to get the fault address
-  - fault access type (R/W) can be read from MMU_FAULT_TRANS_INFO
-    register now
-  - interrupt status register has different bits w.r.t. previous SysMMU
-    versions
-  - VM and non-VM layouts have different register addresses
 
-Add correct fault handling implementation for SysMMU v7, according to
-all mentioned differences. Only VID #0 (default) is handled, as VM
-domains support is not implemented yet.
 
-Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
----
- drivers/iommu/exynos-iommu.c | 48 +++++++++++++++++++++++++++++++++---
- 1 file changed, 44 insertions(+), 4 deletions(-)
+On 7/26/22 10:32 PM, Jerry Snitselaar wrote:
+> On Tue, Jul 26, 2022 at 08:43:48AM -0500, Suravee Suthikulpanit wrote:
+>> In order to support AVIC on SNP-enabled system, The IOMMU driver needs to
+>> check EFR2[SNPAVICSup] and enables the support by setting SNPAVICEn bit
+>> in the IOMMU control register (MMIO offset 18h).
+>>
+>> For detail, please see section "SEV-SNP Guest Virtual APIC Support" of the
+>> AMD I/O Virtualization Technology (IOMMU) Specification.
+>> (https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.amd.com%2Fsystem%2Ffiles%2FTechDocs%2F48882_IOMMU.pdf&amp;data=05%7C01%7Csuravee.suthikulpanit%40amd.com%7C844cc78ad4674484b1f208da6f1c0ee1%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637944463702725122%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=U%2Fe%2FxqqQ14UmlF5ThaB55Col4mbNzuqNj8IqEyxmsxo%3D&amp;reserved=0)
+>>
+>> Signed-off-by: Suravee Suthikulpanit<suravee.suthikulpanit@amd.com>
+> Is this a typo in the 3.06 spec for SNPAVIC_EN?
+> 
+> "001b-111b = Reserved."
+> 
+> Or I guess maybe there is a newer revision that isn't available yet
+> that describes 001b?
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 766d409e084a..ac47c796741b 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -217,6 +217,13 @@ static const char * const sysmmu_v5_fault_names[] = {
- 	"SECURITY PROTECTION"
- };
- 
-+static const char * const sysmmu_v7_fault_names[] = {
-+	"PTW",
-+	"PAGE",
-+	"ACCESS PROTECTION",
-+	"RESERVED"
-+};
-+
- /*
-  * This structure is attached to dev->iommu->priv of the master device
-  * on device add, contains a list of SYSMMU controllers defined by device tree,
-@@ -260,6 +267,8 @@ struct sysmmu_variant {
- 	u32 flush_end;		/* end address of range invalidation */
- 	u32 int_status;		/* interrupt status information */
- 	u32 int_clear;		/* clear the interrupt */
-+	u32 fault_va;		/* IOVA address that caused fault */
-+	u32 fault_info;		/* fault transaction info */
- 
- 	int (*get_fault_info)(struct sysmmu_drvdata *data, unsigned int itype,
- 			      struct sysmmu_fault *fault);
-@@ -337,6 +346,19 @@ static int exynos_sysmmu_v5_get_fault_info(struct sysmmu_drvdata *data,
- 	return 0;
- }
- 
-+static int exynos_sysmmu_v7_get_fault_info(struct sysmmu_drvdata *data,
-+					   unsigned int itype,
-+					   struct sysmmu_fault *fault)
-+{
-+	u32 info = readl(SYSMMU_REG(data, fault_info));
-+
-+	fault->addr = readl(SYSMMU_REG(data, fault_va));
-+	fault->name = sysmmu_v7_fault_names[itype % 4];
-+	fault->type = (info & BIT(20)) ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ;
-+
-+	return 0;
-+}
-+
- /* SysMMU v1..v3 */
- static const struct sysmmu_variant sysmmu_v1_variant = {
- 	.flush_all	= 0x0c,
-@@ -348,7 +370,7 @@ static const struct sysmmu_variant sysmmu_v1_variant = {
- 	.get_fault_info	= exynos_sysmmu_v1_get_fault_info,
- };
- 
--/* SysMMU v5 and v7 (non-VM capable) */
-+/* SysMMU v5 */
- static const struct sysmmu_variant sysmmu_v5_variant = {
- 	.pt_base	= 0x0c,
- 	.flush_all	= 0x10,
-@@ -362,7 +384,23 @@ static const struct sysmmu_variant sysmmu_v5_variant = {
- 	.get_fault_info	= exynos_sysmmu_v5_get_fault_info,
- };
- 
--/* SysMMU v7: VM capable register set */
-+/* SysMMU v7: non-VM capable register layout */
-+static const struct sysmmu_variant sysmmu_v7_variant = {
-+	.pt_base	= 0x0c,
-+	.flush_all	= 0x10,
-+	.flush_entry	= 0x14,
-+	.flush_range	= 0x18,
-+	.flush_start	= 0x20,
-+	.flush_end	= 0x24,
-+	.int_status	= 0x60,
-+	.int_clear	= 0x64,
-+	.fault_va	= 0x70,
-+	.fault_info	= 0x78,
-+
-+	.get_fault_info	= exynos_sysmmu_v7_get_fault_info,
-+};
-+
-+/* SysMMU v7: VM capable register layout */
- static const struct sysmmu_variant sysmmu_v7_vm_variant = {
- 	.pt_base	= 0x800c,
- 	.flush_all	= 0x8010,
-@@ -372,8 +410,10 @@ static const struct sysmmu_variant sysmmu_v7_vm_variant = {
- 	.flush_end	= 0x8024,
- 	.int_status	= 0x60,
- 	.int_clear	= 0x64,
-+	.fault_va	= 0x1000,
-+	.fault_info	= 0x1004,
- 
--	.get_fault_info	= exynos_sysmmu_v5_get_fault_info,
-+	.get_fault_info	= exynos_sysmmu_v7_get_fault_info,
- };
- 
- static struct exynos_iommu_domain *to_exynos_domain(struct iommu_domain *dom)
-@@ -496,7 +536,7 @@ static void __sysmmu_get_version(struct sysmmu_drvdata *data)
- 		if (data->has_vcr)
- 			data->variant = &sysmmu_v7_vm_variant;
- 		else
--			data->variant = &sysmmu_v5_variant;
-+			data->variant = &sysmmu_v7_variant;
- 	}
- 
- 	__sysmmu_disable_clocks(data);
--- 
-2.30.2
+That's correct. The newer version should be coming out soon.
 
+> Reviewed-by: Jerry Snitselaar<jsnitsel@redhat.com>
+
+Thank you,
+Suravee
