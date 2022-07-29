@@ -1,28 +1,31 @@
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C5F42F38
-	for <iommu@lists.linux.dev>; Fri, 29 Jul 2022 06:37:32 +0000 (UTC)
-X-UUID: 2ce6fb9792254010921820f76b3914f7-20220729
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A595E7A
+	for <iommu@lists.linux.dev>; Fri, 29 Jul 2022 06:37:31 +0000 (UTC)
+X-UUID: 14f50cf3960d4a29942b2fdc4691359a-20220729
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:7f675954-17f7-43c6-abd1-dc076a8d1b9c,OB:0,LO
-	B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-	ON:release,TS:0
-X-CID-META: VersionHash:0f94e32,CLOUDID:c1d2a9d0-841b-4e95-ad42-8f86e18f54fc,C
-	OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-	,QS:nil,BEC:nil,COL:0
-X-UUID: 2ce6fb9792254010921820f76b3914f7-20220729
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+X-CID-O-INFO: VERSION:1.1.8,REQID:97abaa7c-351d-4229-8f50-5e277aff95a0,OB:10,L
+	OB:10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
+	CTION:release,TS:95
+X-CID-INFO: VERSION:1.1.8,REQID:97abaa7c-351d-4229-8f50-5e277aff95a0,OB:10,LOB
+	:10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
+	CTION:quarantine,TS:95
+X-CID-META: VersionHash:0f94e32,CLOUDID:8d61b9cf-a6cf-4fb6-be1b-c60094821ca2,C
+	OID:a6dde4aecaf5,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+	RL:0,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 14f50cf3960d4a29942b2fdc4691359a-20220729
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
 	(envelope-from <tinghan.shen@mediatek.com>)
 	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-	with ESMTP id 1324295223; Fri, 29 Jul 2022 14:32:14 +0800
+	with ESMTP id 1948828523; Fri, 29 Jul 2022 14:32:16 +0800
 Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Fri, 29 Jul 2022 14:32:13 +0800
+ 15.2.792.15; Fri, 29 Jul 2022 14:32:15 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
  mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.15 via Frontend Transport; Fri, 29 Jul 2022 14:32:13 +0800
+ 15.2.792.15 via Frontend Transport; Fri, 29 Jul 2022 14:32:15 +0800
 From: Tinghan Shen <tinghan.shen@mediatek.com>
 To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will
  Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
@@ -34,10 +37,11 @@ To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will
 CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
 	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
 	<linux-arm-kernel@lists.infradead.org>,
-	<Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v4 07/20] arm64: dts: mediatek: Update mt81xx scpsys node to align with dt-bindings
-Date: Fri, 29 Jul 2022 14:31:55 +0800
-Message-ID: <20220729063208.16799-8-tinghan.shen@mediatek.com>
+	<Project_Global_Chrome_Upstream_Group@mediatek.com>, Jason-JH.Lin
+	<jason-jh.lin@mediatek.com>
+Subject: [PATCH v4 20/20] arm64: dts: mt8195: Add display node for vdosys0
+Date: Fri, 29 Jul 2022 14:32:08 +0800
+Message-ID: <20220729063208.16799-21-tinghan.shen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220729063208.16799-1-tinghan.shen@mediatek.com>
 References: <20220729063208.16799-1-tinghan.shen@mediatek.com>
@@ -50,83 +54,128 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-MTK: N
 
-Update scpsys nodes using simple-mfd in mt81xx SoC devicetree
-to align with the bindings.
+From: "Jason-JH.Lin" <jason-jh.lin@mediatek.com>
 
-Add specific compatibles for syscon node, even it's a dummy compatible,
-because syscon node must come with a specific compatible.
+Add display node for vdosys0 of mt8195.
 
-Remove the '#power-domain-cells" propertry since the simple-mfd node is
-not the power domain provider; the provider is the child node.
-
+Signed-off-by: Jason-JH.Lin <jason-jh.lin@mediatek.com>
 Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- arch/arm64/boot/dts/mediatek/mt8167.dtsi | 3 +--
- arch/arm64/boot/dts/mediatek/mt8173.dtsi | 3 +--
- arch/arm64/boot/dts/mediatek/mt8183.dtsi | 3 +--
- arch/arm64/boot/dts/mediatek/mt8192.dtsi | 3 +--
- 4 files changed, 4 insertions(+), 8 deletions(-)
+ arch/arm64/boot/dts/mediatek/mt8195.dtsi | 93 ++++++++++++++++++++++++
+ 1 file changed, 93 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8167.dtsi b/arch/arm64/boot/dts/mediatek/mt8167.dtsi
-index 54655f2feb04d..fbe1a1128cc6a 100644
---- a/arch/arm64/boot/dts/mediatek/mt8167.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8167.dtsi
-@@ -36,9 +36,8 @@
+diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+index 84a93b4a4843d..6b4c88b65b7e3 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+@@ -1960,6 +1960,7 @@
+ 		vdosys0: syscon@1c01a000 {
+ 			compatible = "mediatek,mt8195-mmsys", "syscon";
+ 			reg = <0 0x1c01a000 0 0x1000>;
++			mboxes = <&gce0 0 CMDQ_THR_PRIO_4>;
+ 			#clock-cells = <1>;
  		};
  
- 		scpsys: syscon@10006000 {
--			compatible = "syscon", "simple-mfd";
-+			compatible = "mediatek,mt8167-scpsys", "syscon", "simple-mfd";
- 			reg = <0 0x10006000 0 0x1000>;
--			#power-domain-cells = <1>;
- 
- 			spm: power-controller {
- 				compatible = "mediatek,mt8167-power-controller";
-diff --git a/arch/arm64/boot/dts/mediatek/mt8173.dtsi b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-index 6d9513c1f5bfb..b4d48f8b7eebb 100644
---- a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-@@ -444,9 +444,8 @@
+@@ -1975,6 +1976,98 @@
+ 			power-domains = <&spm MT8195_POWER_DOMAIN_VENC_CORE1>;
  		};
  
- 		scpsys: syscon@10006000 {
--			compatible = "syscon", "simple-mfd";
-+			compatible = "mediatek,mt8173-scpsys", "syscon", "simple-mfd";
- 			reg = <0 0x10006000 0 0x1000>;
--			#power-domain-cells = <1>;
- 
- 			/* System Power Manager */
- 			spm: power-controller {
-diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-index 9d32871973a29..28d84f0054ee0 100644
---- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-@@ -761,9 +761,8 @@
- 		};
- 
- 		scpsys: syscon@10006000 {
--			compatible = "syscon", "simple-mfd";
-+			compatible = "mediatek,mt8183-scpsys", "syscon", "simple-mfd";
- 			reg = <0 0x10006000 0 0x1000>;
--			#power-domain-cells = <1>;
- 
- 			/* System Power Manager */
- 			spm: power-controller {
-diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-index cbae5a5ee4a0b..8cd5906fe3a89 100644
---- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -306,9 +306,8 @@
- 		};
- 
- 		scpsys: syscon@10006000 {
--			compatible = "syscon", "simple-mfd";
-+			compatible = "mediatek,mt8192-scpsys", "syscon", "simple-mfd";
- 			reg = <0 0x10006000 0 0x1000>;
--			#power-domain-cells = <1>;
- 
- 			/* System Power Manager */
- 			spm: power-controller {
++		ovl0: ovl@1c000000 {
++			compatible = "mediatek,mt8195-disp-ovl", "mediatek,mt8183-disp-ovl";
++			reg = <0 0x1c000000 0 0x1000>;
++			interrupts = <GIC_SPI 636 IRQ_TYPE_LEVEL_HIGH 0>;
++			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
++			clocks = <&vdosys0 CLK_VDO0_DISP_OVL0>;
++			iommus = <&iommu_vdo M4U_PORT_L0_DISP_OVL0_RDMA0>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c00XXXX 0x0000 0x1000>;
++		};
++
++		rdma0: rdma@1c002000 {
++			compatible = "mediatek,mt8195-disp-rdma";
++			reg = <0 0x1c002000 0 0x1000>;
++			interrupts = <GIC_SPI 638 IRQ_TYPE_LEVEL_HIGH 0>;
++			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
++			clocks = <&vdosys0 CLK_VDO0_DISP_RDMA0>;
++			iommus = <&iommu_vdo M4U_PORT_L0_DISP_RDMA0>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c00XXXX 0x2000 0x1000>;
++		};
++
++		color0: color@1c003000 {
++			compatible = "mediatek,mt8195-disp-color", "mediatek,mt8173-disp-color";
++			reg = <0 0x1c003000 0 0x1000>;
++			interrupts = <GIC_SPI 639 IRQ_TYPE_LEVEL_HIGH 0>;
++			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
++			clocks = <&vdosys0 CLK_VDO0_DISP_COLOR0>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c00XXXX 0x3000 0x1000>;
++		};
++
++		ccorr0: ccorr@1c004000 {
++			compatible = "mediatek,mt8195-disp-ccorr", "mediatek,mt8192-disp-ccorr";
++			reg = <0 0x1c004000 0 0x1000>;
++			interrupts = <GIC_SPI 640 IRQ_TYPE_LEVEL_HIGH 0>;
++			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
++			clocks = <&vdosys0 CLK_VDO0_DISP_CCORR0>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c00XXXX 0x4000 0x1000>;
++		};
++
++		aal0: aal@1c005000 {
++			compatible = "mediatek,mt8195-disp-aal", "mediatek,mt8183-disp-aal";
++			reg = <0 0x1c005000 0 0x1000>;
++			interrupts = <GIC_SPI 641 IRQ_TYPE_LEVEL_HIGH 0>;
++			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
++			clocks = <&vdosys0 CLK_VDO0_DISP_AAL0>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c00XXXX 0x5000 0x1000>;
++		};
++
++		gamma0: gamma@1c006000 {
++			compatible = "mediatek,mt8195-disp-gamma", "mediatek,mt8183-disp-gamma";
++			reg = <0 0x1c006000 0 0x1000>;
++			interrupts = <GIC_SPI 642 IRQ_TYPE_LEVEL_HIGH 0>;
++			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
++			clocks = <&vdosys0 CLK_VDO0_DISP_GAMMA0>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c00XXXX 0x6000 0x1000>;
++		};
++
++		dither0: dither@1c007000 {
++			compatible = "mediatek,mt8195-disp-dither", "mediatek,mt8183-disp-dither";
++			reg = <0 0x1c007000 0 0x1000>;
++			interrupts = <GIC_SPI 643 IRQ_TYPE_LEVEL_HIGH 0>;
++			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
++			clocks = <&vdosys0 CLK_VDO0_DISP_DITHER0>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c00XXXX 0x7000 0x1000>;
++		};
++
++		dsc0: dsc@1c009000 {
++			compatible = "mediatek,mt8195-disp-dsc";
++			reg = <0 0x1c009000 0 0x1000>;
++			interrupts = <GIC_SPI 645 IRQ_TYPE_LEVEL_HIGH 0>;
++			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
++			clocks = <&vdosys0 CLK_VDO0_DSC_WRAP0>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c00XXXX 0x9000 0x1000>;
++		};
++
++		merge0: merge@1c014000 {
++			compatible = "mediatek,mt8195-disp-merge";
++			reg = <0 0x1c014000 0 0x1000>;
++			interrupts = <GIC_SPI 656 IRQ_TYPE_LEVEL_HIGH 0>;
++			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
++			clocks = <&vdosys0 CLK_VDO0_VPP_MERGE0>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c01XXXX 0x4000 0x1000>;
++		};
++
++		mutex: mutex@1c016000 {
++			compatible = "mediatek,mt8195-disp-mutex";
++			reg = <0 0x1c016000 0 0x1000>;
++			interrupts = <GIC_SPI 658 IRQ_TYPE_LEVEL_HIGH 0>;
++			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
++			clocks = <&vdosys0 CLK_VDO0_DISP_MUTEX0>;
++			mediatek,gce-events = <CMDQ_EVENT_VDO0_DISP_STREAM_DONE_0>;
++		};
++
+ 		larb0: larb@1c018000 {
+ 			compatible = "mediatek,mt8195-smi-larb";
+ 			reg = <0 0x1c018000 0 0x1000>;
 -- 
 2.18.0
 
