@@ -1,204 +1,164 @@
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2086.outbound.protection.outlook.com [40.107.223.86])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF1873D9C
-	for <iommu@lists.linux.dev>; Fri, 29 Jul 2022 13:29:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659101343; x=1690637343;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=SAAI+Iht6B1MKDII2o4AFXwjGri9x+VfBRCi3IegauY=;
-  b=SY4ZV13gbSnvYboIMYm3FTh337Oi40se0ni756JQ+2aChpw0CJowzkG6
-   vwdFRAXUIzvhVggwbMIWw3egRu+u0N8q9vWoM9G4j1TtQlJnGYC3ZfPkW
-   C07qCxqLNjJw1MZ7Vglr6U7idAebbl7FtU4PMCrfdaLUC+1xbZBfnfytQ
-   5IWSY9IcBQt+cdH1jTqAvF4hlUw2ZndnvRSnfHgHmSVRwDlm7ujLw8OlF
-   pSmvP+qYT8rVoOIvsQRqbi7VkChn6tQ8SYUmn03MG8OGz9/4OwQAiXXl0
-   aoTzQ3CtDTdmyoZooauacTR74bEaUzBp3VuMHf4eLJSjttY8VBayaaUR1
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10423"; a="289534789"
-X-IronPort-AV: E=Sophos;i="5.93,201,1654585200"; 
-   d="scan'208";a="289534789"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 06:29:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,201,1654585200"; 
-   d="scan'208";a="669269596"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 29 Jul 2022 06:29:00 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1oHQ31-000Bf1-2D;
-	Fri, 29 Jul 2022 13:28:59 +0000
-Date: Fri, 29 Jul 2022 21:28:02 +0800
-From: kernel test robot <lkp@intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: kbuild-all@lists.01.org,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Will Deacon <will@kernel.org>,
-	Jerry Snitselaar <jsnitsel@redhat.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/amd: Fix compile warning in init code
-Message-ID: <202207292151.dVJwr29D-lkp@intel.com>
-References: <20220729100432.22474-1-joro@8bytes.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40B5C4C72
+	for <iommu@lists.linux.dev>; Fri, 29 Jul 2022 17:30:52 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ARq4JLa2TpLcf5Cv0Ua3QM2QZ08h/GgOqhaxJMSnADnKbhYES1bhH6ZGA7BN00pkh4RHlfLzX6FVSUs1ME4xW4Ou56ht1oUX6jBT3/9sIyCSP3QYkG9AKmyAhvmuFKdmsjemrsl9UsBVp8GL3KlL406DeJUYmMPzuerpn358cjeoSr4vlhP+nq9ofioUkgs+f77DcYCqATJ+kLTr+/tbn4oetCZ6oMirYTebZXScAC+peIU7Crt2QmAvz18b9yJWmQ+DOGskCRAQtjmnQMfI6z1HMuKGVROxlP5AqZsGRb/o7E3b1yqwB/xLEIMDtRIiMlvEYYr4KadSm7IKYk2A9w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pqe+kn79OT7U5c0eVBU632BleNTIEotu1HEBxBf0+Kw=;
+ b=fsZFGm944hi/HtXmifQLTUuGwRhXl+lVnlbh2hgvXjpSDyQN7MJGjDitBXbAZE6X+5VrteDhcYqnnONCPqvIRSnCmaxdYnYINRZbza3zXoGXrznxkDdGbn051Sp3fsv8ms5JahxGYHrUeshsGYxDeUTmUhbVqeR2eMqQ8tfM8sWeuLVOeBGthFTmAlF9escq5SkB4DdobHFFS/TOEkASx2cWraQP2Qp6jQhdoXZ7MtmFUWRwsaN9qGBzzMvkmAyJWxAjQQGJvg9970MFOK6oT6uFBymzIIfDTCY9v9V35V/h0/W2XfV/T8Zk8l2m1lG776I3FBYOEwrZzA+pBA/Cyw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pqe+kn79OT7U5c0eVBU632BleNTIEotu1HEBxBf0+Kw=;
+ b=rgyrYdgM2S8F7vPJsC7pKBskdZPXPZyTZQ5XMovrvEca4mk1qHwDttWZiQIN9EwnDt1/WJnUO9Su9kmXJGvV7QoAy+DFDIGNx5WZ+LmfgUVxGuUpy8IaE9L42kvxEOpSWGm5oZ1LmNuk5Qs0oFECcpwk4d7s8QkkKpEwYuytJlrAZGntqqjSgOh9k6wVbkApcORmO2m3/4rUAc4d54J2Og32ehLWEE6sm42oenxDAaLtbygJtUUWJgDEN+KyMZqGUPFwW4i8ENNG0/Ikvmoms5XV41XAMCxoOxEkHuU0am+7k4mGXOOSN0/eqkMIEv0fofjlL8hTWwySkrU37KsaCA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by DS7PR12MB5909.namprd12.prod.outlook.com (2603:10b6:8:7a::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.11; Fri, 29 Jul
+ 2022 17:30:50 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::4cce:310f:93:5d58]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::4cce:310f:93:5d58%8]) with mapi id 15.20.5482.006; Fri, 29 Jul 2022
+ 17:30:50 +0000
+Date: Fri, 29 Jul 2022 14:30:49 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: joro@8bytes.org, will@kernel.org, marcan@marcan.st, sven@svenpeter.dev,
+	robin.murphy@arm.com, robdclark@gmail.com, baolu.lu@linux.intel.com,
+	orsonzhai@gmail.com, baolin.wang7@gmail.com, zhang.lyra@gmail.com,
+	jean-philippe@linaro.org, alex.williamson@redhat.com,
+	kevin.tian@intel.com, suravee.suthikulpanit@amd.com,
+	alyssa@rosenzweig.io, dwmw2@infradead.org, mjrosato@linux.ibm.com,
+	gerald.schaefer@linux.ibm.com, thierry.reding@gmail.com,
+	vdumpa@nvidia.com, jonathanh@nvidia.com, cohuck@redhat.com,
+	thunder.leizhen@huawei.com, christophe.jaillet@wanadoo.fr,
+	chenxiang66@hisilicon.com, john.garry@huawei.com,
+	yangyingliang@huawei.com, iommu@lists.linux-foundation.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+	linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
+	virtualization@lists.linux-foundation.org, kvm@vger.kernel.org
+Subject: Re: [PATCH v5 1/5] iommu: Return -EMEDIUMTYPE for incompatible
+ domain and device/group
+Message-ID: <YuQZSfQtBTBtJOq2@nvidia.com>
+References: <20220701214455.14992-1-nicolinc@nvidia.com>
+ <20220701214455.14992-2-nicolinc@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220701214455.14992-2-nicolinc@nvidia.com>
+X-ClientProxiedBy: MN2PR15CA0031.namprd15.prod.outlook.com
+ (2603:10b6:208:1b4::44) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220729100432.22474-1-joro@8bytes.org>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 87e2ff84-ba7f-4720-ee4a-08da71881479
+X-MS-TrafficTypeDiagnostic: DS7PR12MB5909:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	9n9UroDb54XvkUGt+Q7JyxKJdHq+AqLoS+Ivj1cfkgciJ+GxL/qaOce2l+Q8aaGCp9tlO8GuRqjVLb4klRd1OfsipmijqLUBsVNmXRcCDkoihR1wnpi24+vzTDXuT50/rKkhcJbU/zDYkcP92A0REfHM8H8tiZgKkoZsl7Lw/TzJjXMdRAbiTxAP9c0rmgJkiGcjD5zZ/I5+UxMdf9XB4jBaCqKzPHG1c+v9Ld/0NuRxkgqjlsXY4sVA5OWOKcp8I8nl1PBKqFJdIau6pqx6KpqjTcRtEAfGhxpaljaXRvNdC07OaZ3/f1fqvZ1hxA99341kEX5XklQbsz54VwfkTRRQ/mntg0H/MfVz88ODe+ovE4MRScSgzMy3qqILcMAUWzYU/WnRRpY8cAxInmoOAeY+daaVksAtHmQJfeYLE9vpE0KT4UZ05C0xFjYQ44dQWda+HkRCVToHu3upybFcSLCm7lwTQqFL6TewCyW9ktr8/F15J6beGUZfyhl6zrht7YnLTjY4x4VzJm2QilYPq7X7EdkhA+veUWEaCzk/ve3ZiEQc+IuQzD6eGi9oZJEq6pnz0pg22QeCCI4mNOLTGWyCbYlEwt1w/uBWwtfT+KF0WWx7uITB1qqz34hjMQdyE9jCKH2LmaepafTwkqprVWSYcyTB8uB18iw3XPyWERzcNYgXVkk3z1U0jUS4hFMBPMJuKmHHOb29rpbkO4ozGfcwtkoFlEv0AgjjJPPkenZn4VIin8gTdGcgjvh3XsIs
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(376002)(136003)(39860400002)(396003)(346002)(41300700001)(26005)(6506007)(86362001)(6512007)(6486002)(38100700002)(2616005)(83380400001)(186003)(4326008)(6862004)(5660300002)(7406005)(7416002)(8936002)(66476007)(66556008)(66946007)(36756003)(37006003)(2906002)(8676002)(478600001)(316002)(6636002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?pAf4BFuYy6/pnZBg47tXnnF7rsJt9qgpO9/+gm8EhGJDVyk3weqSpR5Z8P8J?=
+ =?us-ascii?Q?JWqOnl/2vMYrJ5fT2sWJBx0O4Fhbsmu+FGL2cs3BqFjryxYVIy2F8AfEYC/G?=
+ =?us-ascii?Q?ZZ2sDQ3/IeXT7IlODwGh+aFc1W2izwHPJMuFmzbG/pKg9Z9maZdRiDtgSHab?=
+ =?us-ascii?Q?vSo71NK6IT1sEJ2DlTITflKSyI2fI77c7nTEbNKcW5LSID8yeWp56V/0mbcT?=
+ =?us-ascii?Q?F8uXETRE42oPdOnqSb8imeHEvvHN7YnH51SHCgHhAUfQP0hCrDjatb1HOVsI?=
+ =?us-ascii?Q?4Gs0j8q5MRT/q+QM7uuOTWDC5xEtKAWuXiCw9eskIRk+wxG1A+jijt7z95W2?=
+ =?us-ascii?Q?4iPVRECK+/oHGpErVHjzannxZzt5NyQ8TYfsrmZsXnb3qD2A3ht2e7FEJR5Q?=
+ =?us-ascii?Q?PDh7mcGBo3Z03fEwjWNdLY3zeBcs0fBLv7csRSI1MaDLBHBeb3z3EAJR4LDX?=
+ =?us-ascii?Q?M/VA892y8QHaisvXDR+9altc15qI5VYK8UiYEr6uNEx11Bg9dWfq0toUbCBB?=
+ =?us-ascii?Q?MZNCbk5issm4nPtYqVMwll3ql86Z8oZoPZm5sHkCTH+D5YeZPokucTRBS2Ck?=
+ =?us-ascii?Q?Wcru1hZxlXgKFQaCQzU61ZQmwBzL1ODFxMmpUVCYKbj5jxv+O0Hc6OZgTc/h?=
+ =?us-ascii?Q?bW1jxCmWJIjTrXMnrq1spSMMcbK/FR8OjRdyhAGDTe4Iu4L+zxL9Hn7IuhL1?=
+ =?us-ascii?Q?vFTyauceDy2LODgckNBb6/bKhHF6S1DjiLDrkI0RLseYGLALDGMGUJllZD1h?=
+ =?us-ascii?Q?Od3+bqPANTjEtTK4epN5WemyobvWAy20rqUouQOutFlTRvl8D65vb32/O2P+?=
+ =?us-ascii?Q?xnDB6ZLnUk+sFSwmRJ94i7fmqwBHRnmWJcEy5AB2PGOeodBsiZdmdabvPGni?=
+ =?us-ascii?Q?wv4SBPIPOWp2enHAjbrVjDS3MF0mT5lxYXuJdLvbRMTayLsbXR5d+vnybqM+?=
+ =?us-ascii?Q?JPm/3WVwu/drkDoQY2HCwR+vaZeVToHsy4yvGazZeWLhJLGM7FYiLpC2g4b9?=
+ =?us-ascii?Q?LMuaIGG0FaH3jIteP6KyEh7dzTIPqniZlXmf7c2KT92v7QXeCcyfUOUJInok?=
+ =?us-ascii?Q?ZzhaPgt1aSRbhyopj6mxnogfHZvGAZkr5MvRxxWpL1w1MAV3CW2/Ei/h0ecY?=
+ =?us-ascii?Q?W8XZLIOu75tzyO0R//ug1waH1CNj6lyZ3tDsmLFNMBBEBlhAaJPACLx32BBH?=
+ =?us-ascii?Q?zq/phbYlnG8FFiqdLcvjVk6ewCvoz1ZQBfneJBl7cnmVPRyn0YI0K9k5QCHX?=
+ =?us-ascii?Q?L72Q0vr1R93Rx++faCbgnbRieDtPPx7mU7Qc8BzNrTCfBDjniD/SQ4eU1yRa?=
+ =?us-ascii?Q?qy74pIN6bu9/myqYoiAL/c38bPYIWfo+s/Tq8LOmaO42IOYHNWCA9VG9+paC?=
+ =?us-ascii?Q?/v4XK0iCv1rzwcOXtk1ZTm91+AvG+QfGJevog2UcorBYyPYppEbLpmkjBt+F?=
+ =?us-ascii?Q?cfApVYmh/OwUWwEsPKeAHDTMofHudD8Te555bySL9d5BFJdbkEmjs6vWgnmc?=
+ =?us-ascii?Q?DQET+jZIpOHhu9+wa4p7AAdCEYMOWs/ACeGUZ9vLbKAGxJbHjRkDHaAtz+Fc?=
+ =?us-ascii?Q?zsSUkHRWwScNUBmlAdu94zmS9Jbo6k0lAZIM4Uuu?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 87e2ff84-ba7f-4720-ee4a-08da71881479
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jul 2022 17:30:50.1247
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: SG227D2e0Gq+RHV7KxGVYZsYYZdv6z2kuP/5esO/GzUanlRwXfpzHpXlLPBFsrpb
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5909
 
-Hi Joerg,
+On Fri, Jul 01, 2022 at 02:44:51PM -0700, Nicolin Chen wrote:
+> Cases like VFIO wish to attach a device to an existing domain that was
+> not allocated specifically from the device. This raises a condition
+> where the IOMMU driver can fail the domain attach because the domain and
+> device are incompatible with each other.
+> 
+> This is a soft failure that can be resolved by using a different domain.
+> 
+> Provide a dedicated errno from the IOMMU driver during attach that the
+> reason attached failed is because of domain incompatability. EMEDIUMTYPE
+> is chosen because it is never used within the iommu subsystem today and
+> evokes a sense that the 'medium' aka the domain is incompatible.
+> 
+> VFIO can use this to know attach is a soft failure and it should continue
+> searching. Otherwise the attach will be a hard failure and VFIO will
+> return the code to userspace.
+> 
+> Update all drivers to return EMEDIUMTYPE in their failure paths that are
+> related to domain incompatability. Also remove adjacent error prints for
+> these soft failures, to prevent a kernel log spam, since -EMEDIUMTYPE is
+> clear enough to indicate an incompatability error.
+> 
+> Add kdocs describing this behavior.
+> 
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>  drivers/iommu/amd/iommu.c                   |  2 +-
+>  drivers/iommu/apple-dart.c                  |  4 +--
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 15 +++--------
+>  drivers/iommu/arm/arm-smmu/arm-smmu.c       |  5 +---
+>  drivers/iommu/arm/arm-smmu/qcom_iommu.c     |  9 ++-----
+>  drivers/iommu/intel/iommu.c                 | 10 +++-----
+>  drivers/iommu/iommu.c                       | 28 +++++++++++++++++++++
+>  drivers/iommu/ipmmu-vmsa.c                  |  4 +--
+>  drivers/iommu/omap-iommu.c                  |  3 +--
+>  drivers/iommu/s390-iommu.c                  |  2 +-
+>  drivers/iommu/sprd-iommu.c                  |  6 ++---
+>  drivers/iommu/tegra-gart.c                  |  2 +-
+>  drivers/iommu/virtio-iommu.c                |  3 +--
+>  13 files changed, 47 insertions(+), 46 deletions(-)
 
-I love your patch! Yet something to improve:
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-[auto build test ERROR on v5.19-rc8]
-[also build test ERROR on linus/master next-20220728]
-[cannot apply to joro-iommu/next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Joerg-Roedel/iommu-amd-Fix-compile-warning-in-init-code/20220729-180535
-base:    e0dccc3b76fb35bb257b4118367a883073d7390e
-config: x86_64-defconfig (https://download.01.org/0day-ci/archive/20220729/202207292151.dVJwr29D-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/87617e946268b6df880692ca42bae4f7fb7688de
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Joerg-Roedel/iommu-amd-Fix-compile-warning-in-init-code/20220729-180535
-        git checkout 87617e946268b6df880692ca42bae4f7fb7688de
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/iommu/amd/init.c: In function 'iommu_init_pci':
->> drivers/iommu/amd/init.c:1863:15: error: implicit declaration of function 'iommu_init_ga_log'; did you mean 'iommu_init_pci'? [-Werror=implicit-function-declaration]
-    1863 |         ret = iommu_init_ga_log(iommu);
-         |               ^~~~~~~~~~~~~~~~~
-         |               iommu_init_pci
-   drivers/iommu/amd/init.c: In function 'iommu_init_irq':
->> drivers/iommu/amd/init.c:2233:9: error: implicit declaration of function 'iommu_ga_log_enable'; did you mean 'iommu_feature_enable'? [-Werror=implicit-function-declaration]
-    2233 |         iommu_ga_log_enable(iommu);
-         |         ^~~~~~~~~~~~~~~~~~~
-         |         iommu_feature_enable
-   cc1: some warnings being treated as errors
-
-
-vim +1863 drivers/iommu/amd/init.c
-
-a44092e326d403c drivers/iommu/amd/init.c       Suravee Suthikulpanit 2021-01-20  1810  
-24d2c521749d854 drivers/iommu/amd_iommu_init.c Joerg Roedel          2018-10-05  1811  static int __init iommu_init_pci(struct amd_iommu *iommu)
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1812  {
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1813  	int cap_ptr = iommu->cap_ptr;
-8bda0cfbdc1a627 drivers/iommu/amd_iommu_init.c Suravee Suthikulpanit 2016-08-23  1814  	int ret;
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1815  
-d5bf0f4f2bade2f drivers/iommu/amd_iommu_init.c Sinan Kaya            2017-12-19  1816  	iommu->dev = pci_get_domain_bus_and_slot(0, PCI_BUS_NUM(iommu->devid),
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1817  						 iommu->devid & 0xff);
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1818  	if (!iommu->dev)
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1819  		return -ENODEV;
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1820  
-cbbc00be2ce3af5 drivers/iommu/amd_iommu_init.c Jiang Liu             2015-10-09  1821  	/* Prevent binding other PCI device drivers to IOMMU devices */
-cbbc00be2ce3af5 drivers/iommu/amd_iommu_init.c Jiang Liu             2015-10-09  1822  	iommu->dev->match_driver = false;
-cbbc00be2ce3af5 drivers/iommu/amd_iommu_init.c Jiang Liu             2015-10-09  1823  
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1824  	pci_read_config_dword(iommu->dev, cap_ptr + MMIO_CAP_HDR_OFFSET,
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1825  			      &iommu->cap);
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1826  
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1827  	if (!(iommu->cap & (1 << IOMMU_CAP_IOTLB)))
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1828  		amd_iommu_iotlb_sup = false;
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1829  
-a44092e326d403c drivers/iommu/amd/init.c       Suravee Suthikulpanit 2021-01-20  1830  	late_iommu_features_init(iommu);
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1831  
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1832  	if (iommu_feature(iommu, FEATURE_GT)) {
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1833  		int glxval;
-a919a018cccf999 drivers/iommu/amd_iommu_init.c Suravee Suthikulpanit 2014-03-05  1834  		u32 max_pasid;
-a919a018cccf999 drivers/iommu/amd_iommu_init.c Suravee Suthikulpanit 2014-03-05  1835  		u64 pasmax;
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1836  
-a919a018cccf999 drivers/iommu/amd_iommu_init.c Suravee Suthikulpanit 2014-03-05  1837  		pasmax = iommu->features & FEATURE_PASID_MASK;
-a919a018cccf999 drivers/iommu/amd_iommu_init.c Suravee Suthikulpanit 2014-03-05  1838  		pasmax >>= FEATURE_PASID_SHIFT;
-a919a018cccf999 drivers/iommu/amd_iommu_init.c Suravee Suthikulpanit 2014-03-05  1839  		max_pasid  = (1 << (pasmax + 1)) - 1;
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1840  
-a919a018cccf999 drivers/iommu/amd_iommu_init.c Suravee Suthikulpanit 2014-03-05  1841  		amd_iommu_max_pasid = min(amd_iommu_max_pasid, max_pasid);
-a919a018cccf999 drivers/iommu/amd_iommu_init.c Suravee Suthikulpanit 2014-03-05  1842  
-a919a018cccf999 drivers/iommu/amd_iommu_init.c Suravee Suthikulpanit 2014-03-05  1843  		BUG_ON(amd_iommu_max_pasid & ~PASID_MASK);
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1844  
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1845  		glxval   = iommu->features & FEATURE_GLXVAL_MASK;
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1846  		glxval >>= FEATURE_GLXVAL_SHIFT;
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1847  
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1848  		if (amd_iommu_max_glx_val == -1)
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1849  			amd_iommu_max_glx_val = glxval;
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1850  		else
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1851  			amd_iommu_max_glx_val = min(amd_iommu_max_glx_val, glxval);
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1852  	}
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1853  
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1854  	if (iommu_feature(iommu, FEATURE_GT) &&
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1855  	    iommu_feature(iommu, FEATURE_PPR)) {
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1856  		iommu->is_iommu_v2   = true;
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1857  		amd_iommu_v2_present = true;
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1858  	}
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1859  
-f2c2db53b99eb6c drivers/iommu/amd_iommu_init.c Joerg Roedel          2015-10-20  1860  	if (iommu_feature(iommu, FEATURE_PPR) && alloc_ppr_log(iommu))
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1861  		return -ENOMEM;
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1862  
-eb03f2d2f6a4da2 drivers/iommu/amd/init.c       Suravee Suthikulpanit 2021-08-20 @1863  	ret = iommu_init_ga_log(iommu);
-8bda0cfbdc1a627 drivers/iommu/amd_iommu_init.c Suravee Suthikulpanit 2016-08-23  1864  	if (ret)
-8bda0cfbdc1a627 drivers/iommu/amd_iommu_init.c Suravee Suthikulpanit 2016-08-23  1865  		return ret;
-3928aa3f5775fc4 drivers/iommu/amd_iommu_init.c Suravee Suthikulpanit 2016-08-23  1866  
-6664340cf1d541c drivers/iommu/amd/init.c       Nadav Amit            2021-07-23  1867  	if (iommu->cap & (1UL << IOMMU_CAP_NPCACHE)) {
-47a70bea54b7afa drivers/iommu/amd/init.c       Joerg Roedel          2021-08-02  1868  		pr_info("Using strict mode due to virtualization\n");
-47a70bea54b7afa drivers/iommu/amd/init.c       Joerg Roedel          2021-08-02  1869  		iommu_set_dma_strict();
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1870  		amd_iommu_np_cache = true;
-6664340cf1d541c drivers/iommu/amd/init.c       Nadav Amit            2021-07-23  1871  	}
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1872  
-30861ddc9cca479 drivers/iommu/amd_iommu_init.c Steven L Kinney       2013-06-05  1873  	init_iommu_perf_ctr(iommu);
-30861ddc9cca479 drivers/iommu/amd_iommu_init.c Steven L Kinney       2013-06-05  1874  
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1875  	if (is_rd890_iommu(iommu->dev)) {
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1876  		int i, j;
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1877  
-d5bf0f4f2bade2f drivers/iommu/amd_iommu_init.c Sinan Kaya            2017-12-19  1878  		iommu->root_pdev =
-d5bf0f4f2bade2f drivers/iommu/amd_iommu_init.c Sinan Kaya            2017-12-19  1879  			pci_get_domain_bus_and_slot(0, iommu->dev->bus->number,
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1880  						    PCI_DEVFN(0, 0));
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1881  
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1882  		/*
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1883  		 * Some rd890 systems may not be fully reconfigured by the
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1884  		 * BIOS, so it's necessary for us to store this information so
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1885  		 * it can be reprogrammed on resume
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1886  		 */
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1887  		pci_read_config_dword(iommu->dev, iommu->cap_ptr + 4,
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1888  				&iommu->stored_addr_lo);
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1889  		pci_read_config_dword(iommu->dev, iommu->cap_ptr + 8,
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1890  				&iommu->stored_addr_hi);
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1891  
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1892  		/* Low bit locks writes to configuration space */
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1893  		iommu->stored_addr_lo &= ~1;
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1894  
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1895  		for (i = 0; i < 6; i++)
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1896  			for (j = 0; j < 0x12; j++)
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1897  				iommu->stored_l1[i][j] = iommu_read_l1(iommu, i, j);
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1898  
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1899  		for (i = 0; i < 0x83; i++)
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1900  			iommu->stored_l2[i] = iommu_read_l2(iommu, i);
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1901  	}
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1902  
-318fe782539c415 drivers/iommu/amd_iommu_init.c Suravee Suthikulpanit 2013-01-24  1903  	amd_iommu_erratum_746_workaround(iommu);
-358875fd52ab8f0 drivers/iommu/amd_iommu_init.c Jay Cornwall          2016-02-10  1904  	amd_iommu_ats_write_check_workaround(iommu);
-318fe782539c415 drivers/iommu/amd_iommu_init.c Suravee Suthikulpanit 2013-01-24  1905  
-39ab9555c241106 drivers/iommu/amd_iommu_init.c Joerg Roedel          2017-02-01  1906  	iommu_device_sysfs_add(&iommu->iommu, &iommu->dev->dev,
-39ab9555c241106 drivers/iommu/amd_iommu_init.c Joerg Roedel          2017-02-01  1907  			       amd_iommu_groups, "ivhd%d", iommu->index);
-2d471b20c55e13c drivers/iommu/amd/init.c       Robin Murphy          2021-04-01  1908  	iommu_device_register(&iommu->iommu, &amd_iommu_ops, NULL);
-066f2e98d8c7f04 drivers/iommu/amd_iommu_init.c Alex Williamson       2014-06-12  1909  
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1910  	return pci_enable_device(iommu->dev);
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1911  }
-23c742db2171135 drivers/iommu/amd_iommu_init.c Joerg Roedel          2012-06-12  1912  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Jason
