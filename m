@@ -1,54 +1,55 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2086.outbound.protection.outlook.com [40.107.93.86])
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 094597A
-	for <iommu@lists.linux.dev>; Thu, 28 Jul 2022 16:59:22 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WrcgS/jbUikNcoKcc75GVK8qvsvXkF/ckgC7Z4TrCPVPPpc4/AaJyzcv/5l83gKJho4i5JqWE2h+LBYEpwP0mNmd0QVByFeU6JPBB5TjeQCl1heLxyzRE9O3IT4hjdK3ioLuetcX+XlKJnDBrLsHVr+i47N4owmwQQfBm/PPGSqCgxUz536H+VfCrLZBRIrFE9xOM5Pzdj2KOOjyK2wA6WpojIyo1QtOUQZip+Hgp0bkD37WA/P4nwteqGIe1OvnCcwvyrlwdnx8fpBe0qXuEaW8LwP/RS9BS5kSGp19GrJDv8IiV1tdCqvTfW403vTLBxjUKGXXmXsBWovIFFsVeQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sbwfqx7c8hn2p8x1zazq73bZbbCOyYIOP2KNYo4hnkk=;
- b=fZQT90jHvrALGtWaxGJzNPa8dnmUpKKqDmYDLP7iM5y4InGccomCt0Hgq8MS8fjy6cgoxCN09W0IBPbw7UOiMMwHbI58TlmTgRzZEQMbAEGazv5lReJdTEdAo5rdvvBrCukJ/OdGDFTrNpIjxnISO1IDJ1kiocSvjvA+x8Whe9VZnt3+bnQDuujf9XjNyBRQ1Fd67opFTlf8K01Ebw4jtIdL2e/WTxeh0pCaEDPAicgu5FZrq5O2BlmiTnbBdkS8vWBEX0GhwffcSjSAjVb0hIijmjUjCCfNe0B4APxIhNqut9JNKu7iY4LWekOCJtyQa9fBuSMirXGiwezECh/58A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sbwfqx7c8hn2p8x1zazq73bZbbCOyYIOP2KNYo4hnkk=;
- b=YrPgNzXV8qw068Qu7ia/GIxSOgjrIa/XOlnZ57pQwMWdu5MnbRut/F+qNaqczmdIRi+l/TBmcM2wSeTiqdX57ZilHa7w67WzJjhiQcyBtXZeLizezdMW3SCqfFev2zVdRkO7oDyvPJ0orWIi2yR2NH0JdtBf0Oj1eb5OEvjNfLh9rQ9aCrJmvRbfmFL+8/88AljpZSDTgzw3y58K0c21rTacaGtbS0mqHgyGnhVqPM/CYP4H+E4wMlJmXhIehkknIN8C7uLQUq78mLcybXHhyUOdUf0jPnxddVTJq6VkJP+xOy6aC3mO7xdtg7sl26Zvb56GU02FmF5dGYfKWHbdaQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by MN0PR12MB6271.namprd12.prod.outlook.com (2603:10b6:208:3c1::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.6; Thu, 28 Jul
- 2022 16:59:21 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::4cce:310f:93:5d58]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::4cce:310f:93:5d58%8]) with mapi id 15.20.5482.006; Thu, 28 Jul 2022
- 16:59:21 +0000
-Date: Thu, 28 Jul 2022 08:59:45 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Christoph Hellwig <hch@infradead.org>,
-	"Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>,
-	"Jiang, Dave" <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
-	Eric Auger <eric.auger@redhat.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>,
-	"Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-	Zhangfei Gao <zhangfei.gao@linaro.org>,
-	"Zhu, Tony" <tony.zhu@intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C19B07A
+	for <iommu@lists.linux.dev>; Fri, 29 Jul 2022 02:49:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659062951; x=1690598951;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=olo0bzw+vXINDWd3BWcSHONSjh9gy21tiHNZrzdJyYA=;
+  b=lZVevqa2ZkV3PutCqc5cKSGhZmTAKi/wwku4ZSwiW/la06Jv7CXjpEQi
+   ITxKJ/OsYH8eGZWH9g/UcOaPODVnkK+696512ZKu2NaStowUM/DJCxHWN
+   UWusyZgt9QAYKsZ8I2sGd7O3zu5+AoMB7BgY2bHjFndgrP/E0AvLgq2cg
+   wwLObY3kD5RCXWe+ECN7QlN4Y2ev+E11bwt4ew/BGbRCH+6hfPPQLN14y
+   +Hk3X9bsuVjDmRB78g1dqHc58qZiztV6DUag79IPPgu4b2h6SktMVTOVQ
+   /jqYavxLkgWNWYeQOKmxA9tw1HWwSk8+QaAIhVNZX/y7v8PlniWYIO3Gv
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="352674583"
+X-IronPort-AV: E=Sophos;i="5.93,200,1654585200"; 
+   d="scan'208";a="352674583"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 19:49:11 -0700
+X-IronPort-AV: E=Sophos;i="5.93,200,1654585200"; 
+   d="scan'208";a="633974963"
+Received: from xianrong-mobl.ccr.corp.intel.com (HELO [10.255.29.50]) ([10.255.29.50])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 19:49:06 -0700
+Message-ID: <78376ca4-9b55-7609-abf1-27a1a376a8e0@linux.intel.com>
+Date: Fri, 29 Jul 2022 10:49:04 +0800
+Precedence: bulk
+X-Mailing-List: iommu@lists.linux.dev
+List-Id: <iommu.lists.linux.dev>
+List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
+List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Christoph Hellwig <hch@infradead.org>, "Raj, Ashok" <ashok.raj@intel.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ "Jiang, Dave" <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
+ Eric Auger <eric.auger@redhat.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+ "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+ Zhangfei Gao <zhangfei.gao@linaro.org>, "Zhu, Tony" <tony.zhu@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
 Subject: Re: [PATCH v10 04/12] iommu: Add attach/detach_dev_pasid iommu
  interface
-Message-ID: <YuJ6MXoNTj0RKCb8@nvidia.com>
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>
 References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
  <20220705050710.2887204-5-baolu.lu@linux.intel.com>
  <20220723141118.GD79279@nvidia.com>
@@ -59,81 +60,304 @@ References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
  <BN9PR11MB5276974ABA5981A7361953708C979@BN9PR11MB5276.namprd11.prod.outlook.com>
  <20220727115339.GM4438@nvidia.com>
  <BN9PR11MB52766C3D37FA985DEBDC30C78C969@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB52766C3D37FA985DEBDC30C78C969@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: BL0PR03CA0033.namprd03.prod.outlook.com
- (2603:10b6:208:2d::46) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
-Precedence: bulk
-X-Mailing-List: iommu@lists.linux.dev
-List-Id: <iommu.lists.linux.dev>
-List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
-List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d8867778-66d9-4093-db60-08da70ba8422
-X-MS-TrafficTypeDiagnostic: MN0PR12MB6271:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	3McMyEIgsVeudFC3yLD0kSKCLMvbR1zKLgL8SeeKje800Ffy49F6MO/uIXQr6GYAEglWkm5jijx+oWWCiCJzAu0UexcNFAHibEGV5xvZWlVpNKqlUk11LyhWqh5bOhCBQ+2nIeGVGVnzI5lYaC+y6w4k3A//oIcfDtA7QynNfFtnatlm1ZIzBI7xQZca55KETKCTQjX+K0PTnImAe8t6OtobGSF14eeNhBHe5WlWgZissrfoDbeEoy1QwgRv5BafjdVCp+VeUdqY4DuwB1NZHsqMS65xiG+QQCf9GHPs1v46opp+/7ySOptsUs3mzzpJflZ5cPcdp758h+IOhn/+6a/23gAMpGRFQtOKJnF/+7tW9JHNeKITPd+I0YmiKac9Td7nJCgZ55sxphaEcfKDQnnlVq+E39sb8tUAsNb02VSqBUk7WRsJHWj8ZoWzlppe216EM9VlucJY2OMvrQ+/73yNN38gZQ0UEp462hImmN7vYnXQY6PKPQpfRLxa199ROJ2HB3KfuTPQAkOHHIcN5IlzH6RK1ynH17Kpe94D1ri1mqFvpSy1WfpYVfJAbRdK7iMrQnzdjnWNVl3i2hrddAEhzqsWwElvn18FsYM8FnoP//5393XV99GrI4/WSEVWVUgfqzT+frBJwsnkZ0Mib5Z563CnOhkFWiSnyWx0mDaKwCXLKjiy5+FO3UfSRLMzG5w5/UGzomZo4wClCDJAAEOTcmvXzv5VftG6pJSf2qTfpZeVbRhBfO0OCeFefJd+
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(366004)(39860400002)(136003)(376002)(36756003)(7416002)(5660300002)(2906002)(8676002)(6862004)(8936002)(4326008)(66556008)(4744005)(86362001)(66946007)(54906003)(316002)(66476007)(6666004)(41300700001)(6506007)(26005)(2616005)(38100700002)(6512007)(186003)(6486002)(478600001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?ew27bYPqxqRkosDyX4G4BcykDHnlchghGStmpDjxmjIRk+ln3WO0o6MkiY+h?=
- =?us-ascii?Q?8D/FlyWoHUOiXtRr4oy+xOaVevK8LGj6RZjl0eY1NGtqhUW/W74cbnjCKrls?=
- =?us-ascii?Q?qNEqVZG+fPLhxfuT0UG/Zgk45ydKDZwpsZ2MjwK9lFSK0bgrq2c0hD3twlq4?=
- =?us-ascii?Q?K1/Vb3Vbl3MLoz2jw6Kh+b4wUM52fQB4/DGK0Askd1zRQ4SWkimuMrQMDEP1?=
- =?us-ascii?Q?RhmSVAn2HKOAptHxhCRo7casKQpWkG7S7W3TwQwMmyH7HvOfonC1JrE4hjnD?=
- =?us-ascii?Q?GlXOSIsq6FyNDvq2hVLPAEF3PQtlY5fm7/1OeR/KnI5AipGIPYNx77RtIYRj?=
- =?us-ascii?Q?r+SOWi0g3e3xVw24fYu/vlPCRDys0Ffzmk/cKxsK801yVq7oYmFRtYNzeF57?=
- =?us-ascii?Q?5zVZvNRvo+jdj6jxKVFUTUBv4N8LYduZ2Eig1woCbf9g6baPIzAj2heLhysM?=
- =?us-ascii?Q?GwQm6JYzPQfF9o7DTGTDmbffq5uDUOxYAUWwXjN3IJH5GAz88Msh7ruvUGRw?=
- =?us-ascii?Q?W/0IsuzsyKa3+mCO+x3NvOP9ari3CONsLUXRjt2F2pfIlDlzYVUjVfnvStVU?=
- =?us-ascii?Q?1w+770eJm5hbHBHXGXocN6V4ELR6uH+AnQciIHebjhee5m1rxZxoJIunn++F?=
- =?us-ascii?Q?UgtnoHmXHYN1ImveLlzL/237jt5p+E5h/PE4uXH5JKIpycxevXjKemVXloWz?=
- =?us-ascii?Q?5hwB7FbkvWz/SyK/Vd9YGX39J3u0lD9W9n52j+SojiLpumQmP4srYp2pSLZk?=
- =?us-ascii?Q?CgushiOXkir0OvP+lVPSavHWRv79wUIx1UFn4ubGXB+HElxP9TG2Lkum8euR?=
- =?us-ascii?Q?QiycyGyDc398mivDYNlFNkEo0/EEvQZQdJe3Uo0iGS2qiWUzpbzk4ZRY2C1w?=
- =?us-ascii?Q?84h6MVkbD/2u7/W2GM8gFMyWT52ZiLyCNqkBHc4/xh2jlDRJOakPgKZ92Q74?=
- =?us-ascii?Q?oN4QN8WCk8snIgunGRQtdZ1sKPiCV8Q7+CmMbx/B8Vz20dYtDTNZ2WLfAIf9?=
- =?us-ascii?Q?LzQsh8f5ggPgdSWzNDATuvyp36ooumV/XXWdVwZhukd2bwqgZ68/PT5wfElg?=
- =?us-ascii?Q?tTg0hpPoSGkIoPYuE0/OMziCekTVoWdRrEvYCp0dJNcA2xQCl58/ZUdif4Lv?=
- =?us-ascii?Q?lwas1iatyCYFr/Ao7+bqx+HqLMpCoOKeEpa2tmVRXCkH1pthAETy2gbCTAt+?=
- =?us-ascii?Q?+xFWHNVdVSV0SZT22q0su/z9J4kDv2YorK0AxAp6+LLIVD/+ZiApaYSuYGtv?=
- =?us-ascii?Q?ECm3HRwL77erPSOgTETRSacEqAd3LvJY2CSNxUX0Hglm84DfW9Z9agaaAXDb?=
- =?us-ascii?Q?8CwWP8GtZKt4ke32heBG9+qgoTrYCUfPzP6Ai/yYWVMW/ZaMKYOEUlOvz5nu?=
- =?us-ascii?Q?z726LOqO5DrDjW36RjH6tLoJVnTLlhLxzyKElbP+/HYM0DxaARJLE5RiBcFi?=
- =?us-ascii?Q?eBnz3u6xxRWOQXlXzA88XwEfIGavYlKzszS97D6cNt42IrXeJI90JyI/bv3d?=
- =?us-ascii?Q?N7uPb0eULKSqIEOO+xK9Od/sQUqTNWkbpZ3IHSz5Qv3uhk4rN1o2z1/rmicz?=
- =?us-ascii?Q?0nT37+SaVTChDdsYDetdu/uaSsckeG6G0x02QvSj?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d8867778-66d9-4093-db60-08da70ba8422
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2022 16:59:21.1169
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FnjxKrT2Vkd1bO+we5qHdQuLtGL5RqVZOo8Y/FFaaMAWVVsfvQ6UFgBL5EDZE2Js
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6271
+ <YuJ6MXoNTj0RKCb8@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <YuJ6MXoNTj0RKCb8@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Jul 28, 2022 at 03:06:47AM +0000, Tian, Kevin wrote:
-
-> > Then we don't need this weirdo check in the core iommu code at all.
+On 2022/7/28 19:59, Jason Gunthorpe wrote:
+> On Thu, Jul 28, 2022 at 03:06:47AM +0000, Tian, Kevin wrote:
 > 
-> and then we could also move group->pasid_array to device->pasid_array
-> with this approach. Though the end result doesn't change i.e. still only
-> the singleton group can enable pasid the iommu core can just stick to
-> the device manner now.
+>>> Then we don't need this weirdo check in the core iommu code at all.
+>>
+>> and then we could also move group->pasid_array to device->pasid_array
+>> with this approach. Though the end result doesn't change i.e. still only
+>> the singleton group can enable pasid the iommu core can just stick to
+>> the device manner now.
+> 
+> I don't see why, the group is still logically the unit of attachment
+> in the iommu area, and if we have a multi-device group it just means
+> we iterate over all the devices in the group when doing pasid set, no
+> different than a RID.
 
-I don't see why, the group is still logically the unit of attachment
-in the iommu area, and if we have a multi-device group it just means
-we iterate over all the devices in the group when doing pasid set, no
-different than a RID.
+Okay. Based on the discussions in this thread, this patch will evolve to
+look like below. Any comments or concerns?
 
-Jason
+[PATCH 04/12] iommu: Add attach/detach_dev_pasid iommu interface
+
+Attaching an IOMMU domain to a PASID of a device is a generic operation
+for modern IOMMU drivers which support PASID-granular DMA address
+translation. Currently visible usage scenarios include (but not limited):
+
+  - SVA (Shared Virtual Address)
+  - kernel DMA with PASID
+  - hardware-assist mediated device
+
+This adds set_dev_pasid domain ops for this purpose and also adds some
+interfaces for device drivers to attach/detach/retrieve a domain for a
+PASID of a device.
+
+Multiple devices in an iommu group cannot be isolated from each other,
+then it's also difficult to ensure that their pasid address spaces are
+isolated without any guarantee of hardware mechanism. To make things
+simple, this starts the PASID attach/detach support from the devices
+belonging to singleton groups.
+
+Some configurations of the PCI fabric will route device originated TLP
+packets based on the memory addresses. These configurations are
+incompatible with PASID as the PASID packets form a distinct address
+space. For instance, any configuration where switches are present
+without ACS enabled is incompatible. In the future, we can further
+discuss the possibility of moving this restriction into PCI subsystem
+and making it a prerequisite of pci_enable_pasid().
+
+[--tags removed --]
+
+---
+  include/linux/iommu.h |  26 ++++++++
+  drivers/iommu/iommu.c | 146 ++++++++++++++++++++++++++++++++++++++++++
+  2 files changed, 172 insertions(+)
+
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 2f237c3cd680..f1e8953b1e2e 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -266,6 +266,7 @@ struct iommu_ops {
+   * struct iommu_domain_ops - domain specific operations
+   * @attach_dev: attach an iommu domain to a device
+   * @detach_dev: detach an iommu domain from a device
++ * @set_dev_pasid: set an iommu domain to a pasid of device
+   * @map: map a physically contiguous memory region to an iommu domain
+   * @map_pages: map a physically contiguous set of pages of the same 
+size to
+   *             an iommu domain.
+@@ -286,6 +287,8 @@ struct iommu_ops {
+  struct iommu_domain_ops {
+  	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
+  	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
++	int (*set_dev_pasid)(struct iommu_domain *domain, struct device *dev,
++			     ioasid_t pasid);
+
+  	int (*map)(struct iommu_domain *domain, unsigned long iova,
+  		   phys_addr_t paddr, size_t size, int prot, gfp_t gfp);
+@@ -680,6 +683,12 @@ int iommu_group_claim_dma_owner(struct iommu_group 
+*group, void *owner);
+  void iommu_group_release_dma_owner(struct iommu_group *group);
+  bool iommu_group_dma_owner_claimed(struct iommu_group *group);
+
++int iommu_attach_device_pasid(struct iommu_domain *domain,
++			      struct device *dev, ioasid_t pasid);
++void iommu_detach_device_pasid(struct iommu_domain *domain,
++			       struct device *dev, ioasid_t pasid);
++struct iommu_domain *
++iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid);
+  #else /* CONFIG_IOMMU_API */
+
+  struct iommu_ops {};
+@@ -1047,6 +1056,23 @@ static inline bool 
+iommu_group_dma_owner_claimed(struct iommu_group *group)
+  {
+  	return false;
+  }
++
++static inline int iommu_attach_device_pasid(struct iommu_domain *domain,
++					    struct device *dev, ioasid_t pasid)
++{
++	return -ENODEV;
++}
++
++static inline void iommu_detach_device_pasid(struct iommu_domain *domain,
++					     struct device *dev, ioasid_t pasid)
++{
++}
++
++static inline struct iommu_domain *
++iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid)
++{
++	return NULL;
++}
+  #endif /* CONFIG_IOMMU_API */
+
+  /**
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 63fc4317cb47..46b8bffddc4d 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -39,6 +39,7 @@ struct iommu_group {
+  	struct kobject kobj;
+  	struct kobject *devices_kobj;
+  	struct list_head devices;
++	struct xarray pasid_array;
+  	struct mutex mutex;
+  	void *iommu_data;
+  	void (*iommu_data_release)(void *iommu_data);
+@@ -663,6 +664,7 @@ struct iommu_group *iommu_group_alloc(void)
+  	mutex_init(&group->mutex);
+  	INIT_LIST_HEAD(&group->devices);
+  	INIT_LIST_HEAD(&group->entry);
++	xa_init(&group->pasid_array);
+
+  	ret = ida_alloc(&iommu_group_ida, GFP_KERNEL);
+  	if (ret < 0) {
+@@ -890,6 +892,14 @@ int iommu_group_add_device(struct iommu_group 
+*group, struct device *dev)
+  	int ret, i = 0;
+  	struct group_device *device;
+
++	/*
++	 * The iommu_attach_device_pasid() requires a singleton group.
++	 * Refuse to add a device into it if this assumption has been
++	 * made.
++	 */
++	if (!xa_empty(&group->pasid_array))
++		return -EBUSY;
++
+  	device = kzalloc(sizeof(*device), GFP_KERNEL);
+  	if (!device)
+  		return -ENOMEM;
+@@ -3254,3 +3264,139 @@ bool iommu_group_dma_owner_claimed(struct 
+iommu_group *group)
+  	return user;
+  }
+  EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
++
++/*
++ * Check the viability of PASID attach/detach on a @dev of a @group.
++ *
++ * Basically we don't support pasid attach/detach on multi-device groups.
++ * Multiple devices in an iommu group cannot be isolated from each other,
++ * then it's also difficult to ensure that their pasid address spaces are
++ * isolated without any guarantee of hardware mechanism. To make things
++ * simple, let's start the PASID attach/detach support from the devices
++ * belonging to singleton groups.
++ *
++ * Some configurations of the PCI fabric will route device originated TLP
++ * packets based on memory address, and these configurations are
++ * incompatible with PASID as the PASID packets form a distinct address
++ * space. For instance any configuration where switches are present
++ * without ACS enabled is incompatible.
++ */
++static bool iommu_group_device_pasid_viable(struct iommu_group *group,
++					    struct device *dev)
++{
++	int count;
++
++	count = iommu_group_device_count(group);
++	if (count != 1)
++		return false;
++
++	/*
++	 * Block PASID attachment in cases where the PCI fabric is
++	 * routing based on address. PCI/ACS disables that.
++	 */
++	if (dev_is_pci(dev))
++		return pci_acs_path_enabled(to_pci_dev(dev), NULL,
++					    REQ_ACS_FLAGS);
++
++	/*
++	 * Otherwise, the device came from DT/ACPI, assume it is static and
++	 * then singleton can know from the device count in the group.
++	 */
++	return true;
++}
++
++/*
++ * iommu_attach_device_pasid() - Attach a domain to pasid of device
++ * @domain: the iommu domain.
++ * @dev: the attached device.
++ * @pasid: the pasid of the device.
++ *
++ * Return: 0 on success, or an error.
++ */
++int iommu_attach_device_pasid(struct iommu_domain *domain,
++			      struct device *dev, ioasid_t pasid)
++{
++	struct iommu_group *group;
++	int ret = -ENODEV;
++	void *curr;
++
++	if (!domain->ops->set_dev_pasid)
++		return -EOPNOTSUPP;
++
++	group = iommu_group_get(dev);
++	if (!group)
++		return -ENODEV;
++
++	mutex_lock(&group->mutex);
++	if (!iommu_group_device_pasid_viable(group, dev))
++		goto out_unlock;
++	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, GFP_KERNEL);
++	if (curr) {
++		ret = xa_err(curr) ? : -EBUSY;
++		goto out_unlock;
++	}
++	ret = domain->ops->set_dev_pasid(domain, dev, pasid);
++	if (ret)
++		xa_erase(&group->pasid_array, pasid);
++out_unlock:
++	mutex_unlock(&group->mutex);
++	iommu_group_put(group);
++
++	return ret;
++}
++
++/*
++ * iommu_detach_device_pasid() - Detach the domain from pasid of device
++ * @domain: the iommu domain.
++ * @dev: the attached device.
++ * @pasid: the pasid of the device.
++ *
++ * The @domain must have been attached to @pasid of the @dev with
++ * iommu_detach_device_pasid().
++ */
++void iommu_detach_device_pasid(struct iommu_domain *domain, struct 
+device *dev,
++			       ioasid_t pasid)
++{
++	struct iommu_group *group = iommu_group_get(dev);
++
++	mutex_lock(&group->mutex);
++	domain->ops->set_dev_pasid(group->blocking_domain, dev, pasid);
++	WARN_ON(xa_erase(&group->pasid_array, pasid) != domain);
++	mutex_unlock(&group->mutex);
++
++	iommu_group_put(group);
++}
++
++/*
++ * iommu_get_domain_for_dev_pasid() - Retrieve domain for @pasid of @dev
++ * @dev: the queried device
++ * @pasid: the pasid of the device
++ *
++ * This is a variant of iommu_get_domain_for_dev(). It returns the existing
++ * domain attached to pasid of a device. It's only for internal use of the
++ * IOMMU subsystem. The caller must take care to avoid any possible
++ * use-after-free case.
++ *
++ * Return: attached domain on success, NULL otherwise.
++ */
++struct iommu_domain *
++iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid)
++{
++	struct iommu_domain *domain;
++	struct iommu_group *group;
++
++	if (!pasid_valid(pasid))
++		return NULL;
++
++	group = iommu_group_get(dev);
++	if (!group)
++		return NULL;
++	/*
++	 * The xarray protects its internal state with RCU. Hence the domain
++	 * obtained is either NULL or fully formed.
++	 */
++	domain = xa_load(&group->pasid_array, pasid);
++	iommu_group_put(group);
++
++	return domain;
++}
+
+Best regards,
+baolu
