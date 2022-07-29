@@ -1,48 +1,47 @@
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD2811FD8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CCB11FDA
 	for <iommu@lists.linux.dev>; Fri, 29 Jul 2022 06:37:27 +0000 (UTC)
-X-UUID: 000c9eacb80f40af8a4b1f5fb0f0ce3c-20220729
+X-UUID: 74010224b62b4f5db288cd773886e48b-20220729
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:1e1b4e5c-4610-47b1-919c-3ca102592f0a,OB:0,LO
-	B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-	ON:release,TS:0
-X-CID-META: VersionHash:0f94e32,CLOUDID:c9d2a9d0-841b-4e95-ad42-8f86e18f54fc,C
-	OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-	,QS:nil,BEC:nil,COL:0
-X-UUID: 000c9eacb80f40af8a4b1f5fb0f0ce3c-20220729
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+X-CID-O-INFO: VERSION:1.1.8,REQID:b0c81f7f-fe94-4e9d-81aa-1b3a40eb6840,OB:0,LO
+	B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,ACT
+	ION:release,TS:95
+X-CID-INFO: VERSION:1.1.8,REQID:b0c81f7f-fe94-4e9d-81aa-1b3a40eb6840,OB:0,LOB:
+	0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,ACT
+	ION:quarantine,TS:95
+X-CID-META: VersionHash:0f94e32,CLOUDID:58d2a9d0-841b-4e95-ad42-8f86e18f54fc,C
+	OID:e4ce6fe63fb2,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+	RL:1,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 74010224b62b4f5db288cd773886e48b-20220729
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
 	(envelope-from <tinghan.shen@mediatek.com>)
 	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-	with ESMTP id 992836200; Fri, 29 Jul 2022 14:32:15 +0800
+	with ESMTP id 203965242; Fri, 29 Jul 2022 14:32:13 +0800
 Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Fri, 29 Jul 2022 14:32:14 +0800
+ 15.2.792.15; Fri, 29 Jul 2022 14:32:12 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
  mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.15 via Frontend Transport; Fri, 29 Jul 2022 14:32:14 +0800
+ 15.2.792.15 via Frontend Transport; Fri, 29 Jul 2022 14:32:12 +0800
 From: Tinghan Shen <tinghan.shen@mediatek.com>
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, "Will
- Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will
+ Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
 	<robh+dt@kernel.org>, Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>, Lee Jones <lee@kernel.org>, "Matthias
- Brugger" <matthias.bgg@gmail.com>, Tinghan Shen <tinghan.shen@mediatek.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	"MandyJH Liu" <mandyjh.liu@mediatek.com>
+	<krzysztof.kozlowski+dt@linaro.org>, Lee Jones <lee@kernel.org>, Matthias
+ Brugger <matthias.bgg@gmail.com>, Tinghan Shen <tinghan.shen@mediatek.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, MandyJH
+ Liu <mandyjh.liu@mediatek.com>
 CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
 	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
 	<linux-arm-kernel@lists.infradead.org>,
-	<Project_Global_Chrome_Upstream_Group@mediatek.com>, YC Hung
-	<yc.hung@mediatek.corp-partner.google.com>, Allen-KH Cheng
-	<allen-kh.cheng@mediatek.corp-partner.google.com>
-Subject: [PATCH v4 16/20] arm64: dts: mt8195: Add adsp node and adsp mailbox nodes
-Date: Fri, 29 Jul 2022 14:32:04 +0800
-Message-ID: <20220729063208.16799-17-tinghan.shen@mediatek.com>
+	<Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v4 00/20] Add driver nodes for MT8195 SoC
+Date: Fri, 29 Jul 2022 14:31:48 +0800
+Message-ID: <20220729063208.16799-1-tinghan.shen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220729063208.16799-1-tinghan.shen@mediatek.com>
-References: <20220729063208.16799-1-tinghan.shen@mediatek.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,66 +51,79 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-MTK: N
 
-From: YC Hung <yc.hung@mediatek.corp-partner.google.com>
+Add driver nodes for MT8195 SoC.
 
-Add adsp node and adsp mailbox nodes for mt8195.
-
-Signed-off-by: YC Hung <yc.hung@mediatek.corp-partner.google.com>
-Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.corp-partner.google.com>
-Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Patchset 16 "arm64: dts: mt8195: Add adsp node and adsp mailbox" depends on 
+https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git/commit/?id=009b21f392759ca7be91bc4be9d9534f6cee2878
 ---
- arch/arm64/boot/dts/mediatek/mt8195.dtsi | 37 ++++++++++++++++++++++++
- 1 file changed, 37 insertions(+)
+v3 -> v4:
+  - remove unit address of power-controller node name from v3 scpsys bindings
+  - v3 patchset 7 and v3 patchset 6 are combined as v4 patchset 6
+  - add more commit descriptions for updating mt81xx scpsys node 
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-index bbea0acff3d2f..f42d33414125f 100644
---- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-@@ -739,6 +739,43 @@
- 			#clock-cells = <1>;
- 		};
- 
-+		adsp: dsp@10803000 {
-+			compatible = "mediatek,mt8195-dsp";
-+			reg = <0 0x10803000 0 0x1000>,
-+			      <0 0x10840000 0 0x40000>;
-+			reg-names = "cfg", "sram";
-+			clocks = <&topckgen CLK_TOP_ADSP>,
-+				 <&clk26m>,
-+				 <&topckgen CLK_TOP_AUDIO_LOCAL_BUS>,
-+				 <&topckgen CLK_TOP_MAINPLL_D7_D2>,
-+				 <&scp_adsp CLK_SCP_ADSP_AUDIODSP>,
-+				 <&topckgen CLK_TOP_AUDIO_H>;
-+			clock-names = "adsp_sel",
-+				 "clk26m_ck",
-+				 "audio_local_bus",
-+				 "mainpll_d7_d2",
-+				 "scp_adsp_audiodsp",
-+				 "audio_h";
-+			power-domains = <&spm MT8195_POWER_DOMAIN_ADSP>;
-+			mbox-names = "rx", "tx";
-+			mboxes = <&adsp_mailbox0>, <&adsp_mailbox1>;
-+			status = "disabled";
-+		};
-+
-+		adsp_mailbox0: mailbox@10816000 {
-+			compatible = "mediatek,mt8195-adsp-mbox";
-+			#mbox-cells = <0>;
-+			reg = <0 0x10816000 0 0x1000>;
-+			interrupts = <GIC_SPI 702 IRQ_TYPE_LEVEL_HIGH 0>;
-+		};
-+
-+		adsp_mailbox1: mailbox@10817000 {
-+			compatible = "mediatek,mt8195-adsp-mbox";
-+			#mbox-cells = <0>;
-+			reg = <0 0x10817000 0 0x1000>;
-+			interrupts = <GIC_SPI 703 IRQ_TYPE_LEVEL_HIGH 0>;
-+		};
-+
- 		afe: mt8195-afe-pcm@10890000 {
- 			compatible = "mediatek,mt8195-audio";
- 			reg = <0 0x10890000 0 0x10000>;
+v2 -> v3:
+  - fix dsp node name
+  - add descriptions for iommu interrupts
+  - limit the levels of power domain nodes
+  - update maintainer list of power controller yaml
+  - support naming power controller node with unit address
+  - add SoC specific compatible string to scpsys yaml
+
+v1 -> v2:
+  - add new dt-bindings: mfd/mediatek,scpsys.yaml
+    - update compatible string for mt81xx scpsys nodes
+  - apply comments for yaml files: iommu, smi-common, and power-controller
+  - apply comments for dts nodes: power domain, vdosys0. 
+  - apply comments for commit message of watchdog, i2c, and smi-common. 
+  - add review-by tags
+
+---
+Jason-JH.Lin (2):
+  arm64: dts: mt8195: Add gce node
+  arm64: dts: mt8195: Add display node for vdosys0
+
+Tinghan Shen (14):
+  dt-bindings: iommu: mediatek: Increase max interrupt number
+  dt-bindings: memory: mediatek: Update condition for mt8195 smi node
+  dt-bindings: power: mediatek: Refine multiple level power domain nodes
+  dt-bindings: power: mediatek: Support naming power controller node
+    with unit address
+  dt-bindings: power: mediatek: Update maintainer list
+  dt-bindings: power: mediatek: Add bindings for MediaTek SCPSYS
+  arm64: dts: mediatek: Update mt81xx scpsys node to align with
+    dt-bindings
+  arm64: dts: mt8195: Disable watchdog external reset signal
+  arm64: dts: mt8195: Add vdosys and vppsys clock nodes
+  arm64: dts: mt8195: Add power domains controller
+  arm64: dts: mt8195: Add spmi node
+  arm64: dts: mt8195: Add scp node
+  arm64: dts: mt8195: Add audio related nodes
+  arm64: dts: mt8195: Add iommu and smi nodes
+
+Trevor Wu (1):
+  arm64: dts: mt8195: Specify audio reset controller
+
+Tzung-Bi Shih (1):
+  arm64: dts: mt8195: Disable I2C0 node
+
+YC Hung (1):
+  arm64: dts: mt8195: Add adsp node and adsp mailbox nodes
+
+YT Lee (1):
+  arm64: dts: mt8195: Add cpufreq node
+
+ .../bindings/iommu/mediatek,iommu.yaml        |   18 +-
+ .../mediatek,smi-common.yaml                  |   11 +-
+ .../bindings/mfd/mediatek,mt8195-scpsys.yaml  |   67 ++
+ .../power/mediatek,power-controller.yaml      |  137 +--
+ arch/arm64/boot/dts/mediatek/mt8167.dtsi      |    3 +-
+ arch/arm64/boot/dts/mediatek/mt8173.dtsi      |    3 +-
+ arch/arm64/boot/dts/mediatek/mt8183.dtsi      |    3 +-
+ arch/arm64/boot/dts/mediatek/mt8192.dtsi      |    3 +-
+ arch/arm64/boot/dts/mediatek/mt8195.dtsi      | 1056 ++++++++++++++++-
+ 9 files changed, 1173 insertions(+), 128 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/mfd/mediatek,mt8195-scpsys.yaml
+
 -- 
 2.18.0
 
