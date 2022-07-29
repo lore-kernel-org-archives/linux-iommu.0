@@ -1,18 +1,41 @@
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6269F2566
-	for <iommu@lists.linux.dev>; Fri, 29 Jul 2022 08:31:41 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id E2AB7669; Fri, 29 Jul 2022 10:31:33 +0200 (CEST)
-Date: Fri, 29 Jul 2022 10:31:32 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, will@kernel.org,
-	jsnitsel@redhat.com, vasant.hegde@amd.com, jon.grimm@amd.com
-Subject: Re: [PATCH 0/2] iommu/amd: Misc Update for Virtual APIC support
-Message-ID: <YuOa5Eyl4KLGoSRO@8bytes.org>
-References: <20220726134348.6438-1-suravee.suthikulpanit@amd.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8DF94400
+	for <iommu@lists.linux.dev>; Fri, 29 Jul 2022 09:05:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2401C433C1;
+	Fri, 29 Jul 2022 09:05:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1659085537;
+	bh=wvE5EHGmPigV4oD45oTwiHHUQ4e3yEtd8+Rek83/iZI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=u4XFhk2DKQ9ZhFdCgE/O1FOABLAVZrwk5XV7UmcIVw0wNVMKeJ8oCvvhbPIuruugH
+	 lVJ16TpQyhX33sT2ppx+Igx96tQu+Ozi3VhO8Fp70k/RFxgMPRPKZr5MSGiWsvJ9GD
+	 Wn1kY+HYPAecHr7gurrqG2aWeXQUfEWMgIiVr7Ps=
+Date: Fri, 29 Jul 2022 11:05:34 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Yicong Yang <yangyicong@huawei.com>
+Cc: yangyicong@hisilicon.com, alexander.shishkin@linux.intel.com,
+	leo.yan@linaro.org, james.clark@arm.com, will@kernel.org,
+	robin.murphy@arm.com, acme@kernel.org, peterz@infradead.org,
+	corbet@lwn.net, mathieu.poirier@linaro.org, mark.rutland@arm.com,
+	jonathan.cameron@huawei.com, john.garry@huawei.com,
+	helgaas@kernel.org, lorenzo.pieralisi@arm.com,
+	suzuki.poulose@arm.com, joro@8bytes.org,
+	shameerali.kolothum.thodi@huawei.com, mingo@redhat.com,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-pci@vger.kernel.org, linux-perf-users@vger.kernel.org,
+	iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
+	linux-doc@vger.kernel.org, prime.zeng@huawei.com,
+	liuqi115@huawei.com, zhangshaokun@hisilicon.com,
+	linuxarm@huawei.com, bagasdotme@gmail.com
+Subject: Re: [PATCH v11 2/8] hwtracing: hisi_ptt: Add trace function support
+ for HiSilicon PCIe Tune and Trace device
+Message-ID: <YuOi3i0XHV++z1YI@kroah.com>
+References: <20220721130116.43366-1-yangyicong@huawei.com>
+ <20220721130116.43366-3-yangyicong@huawei.com>
+ <YuKZKGKMz+UcbETM@kroah.com>
+ <33f372f6-36bf-f84e-bca0-86347fa4d579@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -21,11 +44,60 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220726134348.6438-1-suravee.suthikulpanit@amd.com>
+In-Reply-To: <33f372f6-36bf-f84e-bca0-86347fa4d579@huawei.com>
 
-On Tue, Jul 26, 2022 at 08:43:46AM -0500, Suravee Suthikulpanit wrote:
-> Suravee Suthikulpanit (2):
->   iommu/amd: Consolidate Virtual APIC (AVIC) Enablement
->   iommu/amd: Add support for AVIC when SNP is enabled
+On Fri, Jul 29, 2022 at 03:29:14PM +0800, Yicong Yang wrote:
+> >> +	/*
+> >> +	 * Handle the interrupt on the same cpu which starts the trace to avoid
+> >> +	 * context mismatch. Otherwise we'll trigger the WARN from the perf
+> >> +	 * core in event_function_local().
+> >> +	 */
+> >> +	WARN_ON(irq_set_affinity(pci_irq_vector(hisi_ptt->pdev, HISI_PTT_TRACE_DMA_IRQ),
+> >> +				 cpumask_of(cpu)));
+> > 
+> > If this hits, you just crashed the machine :(
+> > 
+> 
+> We'll likely to have a calltrace here without crash the machine and reboot in
+> most time, unless user has set panic_on_warn.
 
-Applied, thanks.
+Again, please do not use WARN_ON for this, please read:
+	https://elixir.bootlin.com/linux/v5.19-rc8/source/include/asm-generic/bug.h#L74
+
+If you want a traceback (what would you do with that?), then call the
+function to give you that.  Don't crash people's boxes.
+
+> > Please properly recover from errors if you hit them, like this.  Don't
+> > just give up and throw a message to userspace and watch the machine
+> > reboot with all data lost.
+> > 
+> > Same for the other WARN_ON() instances here.  Handle the error and
+> > report it properly up the call chain.
+> > 
+> 
+> The driver use WARN_ON() in two places, once in pmu::start() and another in cpu teardown's
+> callback, both when the irq_set_affinity() failed. This is common to behave so when driver
+> fails to set irq affinity in pmu::start() and cpu_teardown():
+
+Don't repeat broken patterns please.
+
+> yangyicong@ubuntu:~/mainline_linux/linux/drivers$ grep -rn WARN_ON ./ | grep irq_set_affinity
+> ./perf/arm_smmuv3_pmu.c:649:    WARN_ON(irq_set_affinity(smmu_pmu->irq, cpumask_of(target)));
+> ./perf/arm_smmuv3_pmu.c:895:    WARN_ON(irq_set_affinity(smmu_pmu->irq, cpumask_of(smmu_pmu->on_cpu)));
+> ./perf/arm-ccn.c:1214:          WARN_ON(irq_set_affinity(ccn->irq, cpumask_of(dt->cpu)));
+> ./perf/qcom_l2_pmu.c:796:       WARN_ON(irq_set_affinity(cluster->irq, cpumask_of(cpu)));
+> ./perf/qcom_l2_pmu.c:834:       WARN_ON(irq_set_affinity(cluster->irq, cpumask_of(target)));
+> ./perf/arm_dmc620_pmu.c:624:    WARN_ON(irq_set_affinity(irq->irq_num, cpumask_of(target)));
+> ./perf/fsl_imx8_ddr_perf.c:674: WARN_ON(irq_set_affinity(pmu->irq, cpumask_of(pmu->cpu)));
+> ./perf/xgene_pmu.c:1793:        WARN_ON(irq_set_affinity(xgene_pmu->irq, &xgene_pmu->cpu));
+> ./perf/xgene_pmu.c:1826:        WARN_ON(irq_set_affinity(xgene_pmu->irq, &xgene_pmu->cpu));
+> ./perf/hisilicon/hisi_pcie_pmu.c:658:           WARN_ON(irq_set_affinity(pcie_pmu->irq, cpumask_of(cpu)));
+> ./perf/hisilicon/hisi_pcie_pmu.c:684:   WARN_ON(irq_set_affinity(pcie_pmu->irq, cpumask_of(target)));
+> ./perf/hisilicon/hisi_uncore_pmu.c:495: WARN_ON(irq_set_affinity(hisi_pmu->irq, cpumask_of(cpu)));
+> ./perf/hisilicon/hisi_uncore_pmu.c:528: WARN_ON(irq_set_affinity(hisi_pmu->irq, cpumask_of(target)));
+
+Great, you can fix all of these up as well any time :)
+
+thanks,
+
+greg k-h
