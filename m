@@ -1,21 +1,21 @@
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90FD71FD8
-	for <iommu@lists.linux.dev>; Fri, 29 Jul 2022 06:37:34 +0000 (UTC)
-X-UUID: 99ec3204cc7340058fac7b8843838e67-20220729
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 004AB1FD6
+	for <iommu@lists.linux.dev>; Fri, 29 Jul 2022 06:37:31 +0000 (UTC)
+X-UUID: 7fa01bade5274d308065f3eebd6c470c-20220729
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:9a678884-57d4-41f0-b931-ea48a5773e22,OB:0,LO
+X-CID-O-INFO: VERSION:1.1.8,REQID:8f731520-5905-4513-88d3-16e02407e4cd,OB:0,LO
 	B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
 	ON:release,TS:0
-X-CID-META: VersionHash:0f94e32,CLOUDID:dff1b224-a982-4824-82d2-9da3b6056c2a,C
+X-CID-META: VersionHash:0f94e32,CLOUDID:c6d2a9d0-841b-4e95-ad42-8f86e18f54fc,C
 	OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
 	,QS:nil,BEC:nil,COL:0
-X-UUID: 99ec3204cc7340058fac7b8843838e67-20220729
+X-UUID: 7fa01bade5274d308065f3eebd6c470c-20220729
 Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
 	(envelope-from <tinghan.shen@mediatek.com>)
 	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-	with ESMTP id 1200003236; Fri, 29 Jul 2022 14:32:15 +0800
+	with ESMTP id 1943196696; Fri, 29 Jul 2022 14:32:15 +0800
 Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
  mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
@@ -35,9 +35,9 @@ CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
 	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
 	<linux-arm-kernel@lists.infradead.org>,
 	<Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v4 14/20] arm64: dts: mt8195: Add scp node
-Date: Fri, 29 Jul 2022 14:32:02 +0800
-Message-ID: <20220729063208.16799-15-tinghan.shen@mediatek.com>
+Subject: [PATCH v4 11/20] arm64: dts: mt8195: Add vdosys and vppsys clock nodes
+Date: Fri, 29 Jul 2022 14:31:59 +0800
+Message-ID: <20220729063208.16799-12-tinghan.shen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220729063208.16799-1-tinghan.shen@mediatek.com>
 References: <20220729063208.16799-1-tinghan.shen@mediatek.com>
@@ -50,35 +50,62 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-MTK: N
 
-Add scp node for mt8195.
+Add display clock nodes.
 
 Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- arch/arm64/boot/dts/mediatek/mt8195.dtsi | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ arch/arm64/boot/dts/mediatek/mt8195.dtsi | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-index da2d976ff8441..d10db01a360aa 100644
+index 900aaa16f862f..8d59a7da32714 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-@@ -712,6 +712,16 @@
- 			assigned-clock-parents = <&topckgen CLK_TOP_ULPOSC1_D10>;
+@@ -983,6 +983,12 @@
+ 			#clock-cells = <1>;
  		};
  
-+		scp: scp@10500000 {
-+			compatible = "mediatek,mt8195-scp";
-+			reg = <0 0x10500000 0 0x100000>,
-+			      <0 0x10720000 0 0xe0000>,
-+			      <0 0x10700000 0 0x8000>;
-+			reg-names = "sram", "cfg", "l1tcm";
-+			interrupts = <GIC_SPI 462 IRQ_TYPE_LEVEL_HIGH 0>;
-+			status = "disabled";
++		vppsys0: clock-controller@14000000 {
++			compatible = "mediatek,mt8195-vppsys0";
++			reg = <0 0x14000000 0 0x1000>;
++			#clock-cells = <1>;
 +		};
 +
- 		scp_adsp: clock-controller@10720000 {
- 			compatible = "mediatek,mt8195-scp_adsp";
- 			reg = <0 0x10720000 0 0x1000>;
+ 		wpesys: clock-controller@14e00000 {
+ 			compatible = "mediatek,mt8195-wpesys";
+ 			reg = <0 0x14e00000 0 0x1000>;
+@@ -1001,6 +1007,12 @@
+ 			#clock-cells = <1>;
+ 		};
+ 
++		vppsys1: clock-controller@14f00000 {
++			compatible = "mediatek,mt8195-vppsys1";
++			reg = <0 0x14f00000 0 0x1000>;
++			#clock-cells = <1>;
++		};
++
+ 		imgsys: clock-controller@15000000 {
+ 			compatible = "mediatek,mt8195-imgsys";
+ 			reg = <0 0x15000000 0 0x1000>;
+@@ -1108,5 +1120,17 @@
+ 			reg = <0 0x1b000000 0 0x1000>;
+ 			#clock-cells = <1>;
+ 		};
++
++		vdosys0: syscon@1c01a000 {
++			compatible = "mediatek,mt8195-mmsys", "syscon";
++			reg = <0 0x1c01a000 0 0x1000>;
++			#clock-cells = <1>;
++		};
++
++		vdosys1: syscon@1c100000 {
++			compatible = "mediatek,mt8195-mmsys", "syscon";
++			reg = <0 0x1c100000 0 0x1000>;
++			#clock-cells = <1>;
++		};
+ 	};
+ };
 -- 
 2.18.0
 
