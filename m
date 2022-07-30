@@ -1,31 +1,28 @@
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 771841FAA
-	for <iommu@lists.linux.dev>; Sat, 30 Jul 2022 09:04:30 +0000 (UTC)
-X-UUID: 17148b0f8e4746e59f3a41ae76fc8d76-20220730
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD52F28E8
+	for <iommu@lists.linux.dev>; Sat, 30 Jul 2022 11:49:11 +0000 (UTC)
+X-UUID: d4e95e81f5004808b70140b5086c7ad3-20220730
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:53619742-418e-4633-8c7d-e43f82956eba,OB:10,L
-	OB:10,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,
-	ACTION:release,TS:95
-X-CID-INFO: VERSION:1.1.8,REQID:53619742-418e-4633-8c7d-e43f82956eba,OB:10,LOB
-	:10,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,
-	ACTION:quarantine,TS:95
-X-CID-META: VersionHash:0f94e32,CLOUDID:006acfcf-a6cf-4fb6-be1b-c60094821ca2,C
-	OID:3194848f210a,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-	RL:1,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 17148b0f8e4746e59f3a41ae76fc8d76-20220730
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+X-CID-O-INFO: VERSION:1.1.8,REQID:f9710841-b696-4ed5-8479-505822299514,OB:0,LO
+	B:0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+	ION:release,TS:0
+X-CID-META: VersionHash:0f94e32,CLOUDID:1badd0cf-a6cf-4fb6-be1b-c60094821ca2,C
+	OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+	,QS:nil,BEC:nil,COL:0
+X-UUID: d4e95e81f5004808b70140b5086c7ad3-20220730
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
 	(envelope-from <yf.wang@mediatek.com>)
 	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 2069013212; Sat, 30 Jul 2022 17:04:15 +0800
+	with ESMTP id 1945181272; Sat, 30 Jul 2022 19:49:02 +0800
 Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Sat, 30 Jul 2022 17:04:10 +0800
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Sat, 30 Jul 2022 19:49:00 +0800
 Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
  mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.15 via Frontend Transport; Sat, 30 Jul 2022 17:04:10 +0800
+ 15.2.792.15 via Frontend Transport; Sat, 30 Jul 2022 19:48:59 +0800
 From: <yf.wang@mediatek.com>
 To: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
 	"Marek Szyprowski" <m.szyprowski@samsung.com>, Matthias Brugger
@@ -36,10 +33,11 @@ To: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
 	<linux-mediatek@lists.infradead.org>
 CC: <wsd_upstream@mediatek.com>, Libo Kang <Libo.Kang@mediatek.com>, Ning Li
 	<Ning.Li@mediatek.com>, Yong Wu <Yong.Wu@mediatek.com>, Miles Chen
-	<miles.chen@mediatek.com>, Yunfei Wang <yf.wang@mediatek.com>
-Subject: [PATCH] dma-debug: Remove warning in dma_debug_entry
-Date: Sat, 30 Jul 2022 16:56:55 +0800
-Message-ID: <20220730085657.31977-1-yf.wang@mediatek.com>
+	<miles.chen@mediatek.com>, Yunfei Wang <yf.wang@mediatek.com>, jianjiao zeng
+	<jianjiao.zeng@mediatek.com>
+Subject: [PATCH] dma-debug: Fix overflow issue in bucket_find_contain
+Date: Sat, 30 Jul 2022 19:41:45 +0800
+Message-ID: <20220730114146.32669-1-yf.wang@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -52,43 +50,50 @@ X-MTK: N
 
 From: Yunfei Wang <yf.wang@mediatek.com>
 
-The same physical address can be mapped multiple times, and it is not
-required to have attributes such as DMA_ATTR_SKIP_CPU_SYNC, but
-dma_debug_entry will report an warning if active_cacheline_insert
-returns -EEXIST, which can cause a lot of trouble.
+There are two issue:
+1. If max_rang is set to 0xFFFF_FFFF, and __hash_bucket_find always
+returns NULL, the rang will be accumulated. When rang is accumulated
+to 0xFFFF_E000, after executing rang += (1 << HASH_FN_SHIFT) again,
+rang will overflow to 0, making it impossible to exit the while loop.
+2. dev_addr reduce maybe overflow.
 
-For example, if two dma engine share the same dma-buf, the two dma
-engine drivers will call the DMA API to map their own dma address
-respectively, which is normal follow, but dma_debug_entry will
-report an warning.
+So, add range and dev_addr check to avoid overflow.
 
-In addition, if active_cacheline_insert returns -EEXIST, the
-active_cacheline_inc_overlap function already has the logic to
-check overlapping mappings counter, if it exceeded
-ACTIVE_CACHELINE_MAX_OVERLAP overlapping mappings, it already
-has a warning.
-And also, if warning as panic is turned on, it will cause KE.
-
-So, dma_debug_entry does not need report warning.
-
+Signed-off-by: jianjiao zeng <jianjiao.zeng@mediatek.com>
 Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
 ---
- kernel/dma/debug.c | 3 ---
- 1 file changed, 3 deletions(-)
+ kernel/dma/debug.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 2caafd13f8aa..ad731f7858c9 100644
+index ad731f7858c9..9d7d54cd4c63 100644
 --- a/kernel/dma/debug.c
 +++ b/kernel/dma/debug.c
-@@ -566,9 +566,6 @@ static void add_dma_entry(struct dma_debug_entry *entry, unsigned long attrs)
- 	if (rc == -ENOMEM) {
- 		pr_err_once("cacheline tracking ENOMEM, dma-debug disabled\n");
- 		global_disable = true;
--	} else if (rc == -EEXIST && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)) {
--		err_printk(entry->dev, entry,
--			"cacheline tracking EEXIST, overlapping mappings aren't supported\n");
+@@ -352,6 +352,7 @@ static struct dma_debug_entry *bucket_find_contain(struct hash_bucket **bucket,
+ 
+ 	unsigned int max_range = dma_get_max_seg_size(ref->dev);
+ 	struct dma_debug_entry *entry, index = *ref;
++	unsigned int shift = (1 << HASH_FN_SHIFT);
+ 	unsigned int range = 0;
+ 
+ 	while (range <= max_range) {
+@@ -360,12 +361,15 @@ static struct dma_debug_entry *bucket_find_contain(struct hash_bucket **bucket,
+ 		if (entry)
+ 			return entry;
+ 
++		if (max_range - range < shift || index.dev_addr < shift)
++			return NULL;
++
+ 		/*
+ 		 * Nothing found, go back a hash bucket
+ 		 */
+ 		put_hash_bucket(*bucket, *flags);
+-		range          += (1 << HASH_FN_SHIFT);
+-		index.dev_addr -= (1 << HASH_FN_SHIFT);
++		range          += shift;
++		index.dev_addr -= shift;
+ 		*bucket = get_hash_bucket(&index, flags);
  	}
- }
  
 -- 
 2.18.0
