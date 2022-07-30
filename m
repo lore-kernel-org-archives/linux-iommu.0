@@ -1,92 +1,95 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D8B323A4
-	for <iommu@lists.linux.dev>; Sat, 30 Jul 2022 06:23:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659162201; x=1690698201;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=jJgGhh4GtN+6tyytNQDWb6gnYAcLWIHEmVqW7XXkpeQ=;
-  b=ma+U2lzsaG2U04yvroMTSdTUrLVsjsBcQoXTe1XhOJQREAfqITqAox4X
-   CkSfKKDU0OsPTQRG2XxmKW88oVBxaT0zRPb3kc/uv93qQNPNDeVVxkCA/
-   Dhl98+hYFO4iMZFSaeb5+OTk42EKcxBtU4UbBZeUuYSIuNDK2IR8VU98s
-   Wtzbg8iUTRWH2Odc/cLE1dwQwUQFxgoyZVxecK+oXOysTrEtVGfT/N5uk
-   z0MF83S/V3uzX41PB5jbLNf72r2vrNWYYFl7G2UZBET7/z05V+/gcesya
-   090w+6PqddpQQgxeYDHxopJN/bejAC183DT/b5DzyC7W0ctaIi8Y4xRuc
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10423"; a="287652190"
-X-IronPort-AV: E=Sophos;i="5.93,203,1654585200"; 
-   d="scan'208";a="287652190"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 23:23:20 -0700
-X-IronPort-AV: E=Sophos;i="5.93,203,1654585200"; 
-   d="scan'208";a="660517319"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.210.174]) ([10.254.210.174])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 23:23:16 -0700
-Message-ID: <f1908476-8f83-5467-9172-ec0b7838e67a@linux.intel.com>
-Date: Sat, 30 Jul 2022 14:23:15 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 771841FAA
+	for <iommu@lists.linux.dev>; Sat, 30 Jul 2022 09:04:30 +0000 (UTC)
+X-UUID: 17148b0f8e4746e59f3a41ae76fc8d76-20220730
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:53619742-418e-4633-8c7d-e43f82956eba,OB:10,L
+	OB:10,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,
+	ACTION:release,TS:95
+X-CID-INFO: VERSION:1.1.8,REQID:53619742-418e-4633-8c7d-e43f82956eba,OB:10,LOB
+	:10,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,
+	ACTION:quarantine,TS:95
+X-CID-META: VersionHash:0f94e32,CLOUDID:006acfcf-a6cf-4fb6-be1b-c60094821ca2,C
+	OID:3194848f210a,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+	RL:1,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 17148b0f8e4746e59f3a41ae76fc8d76-20220730
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+	(envelope-from <yf.wang@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 2069013212; Sat, 30 Jul 2022 17:04:15 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Sat, 30 Jul 2022 17:04:10 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.15 via Frontend Transport; Sat, 30 Jul 2022 17:04:10 +0800
+From: <yf.wang@mediatek.com>
+To: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
+	"Marek Szyprowski" <m.szyprowski@samsung.com>, Matthias Brugger
+	<matthias.bgg@gmail.com>, "open list:DMA MAPPING HELPERS"
+	<iommu@lists.linux.dev>, open list <linux-kernel@vger.kernel.org>, "moderated
+ list:ARM/Mediatek SoC support" <linux-arm-kernel@lists.infradead.org>,
+	"moderated list:ARM/Mediatek SoC support"
+	<linux-mediatek@lists.infradead.org>
+CC: <wsd_upstream@mediatek.com>, Libo Kang <Libo.Kang@mediatek.com>, Ning Li
+	<Ning.Li@mediatek.com>, Yong Wu <Yong.Wu@mediatek.com>, Miles Chen
+	<miles.chen@mediatek.com>, Yunfei Wang <yf.wang@mediatek.com>
+Subject: [PATCH] dma-debug: Remove warning in dma_debug_entry
+Date: Sat, 30 Jul 2022 16:56:55 +0800
+Message-ID: <20220730085657.31977-1-yf.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Christoph Hellwig <hch@infradead.org>, "Raj, Ashok" <ashok.raj@intel.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- "Jiang, Dave" <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
- Eric Auger <eric.auger@redhat.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
- "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
- Zhangfei Gao <zhangfei.gao@linaro.org>, "Zhu, Tony" <tony.zhu@intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v10 04/12] iommu: Add attach/detach_dev_pasid iommu
- interface
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>
-References: <20220723141118.GD79279@nvidia.com>
- <686b137f-232a-2a78-beb0-e4373bd20959@linux.intel.com>
- <20220725144005.GE3747@nvidia.com>
- <6da27a6b-b580-4ba4-24c8-ebdfb2d9345d@linux.intel.com>
- <20220726135722.GC4438@nvidia.com>
- <BN9PR11MB5276974ABA5981A7361953708C979@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20220727115339.GM4438@nvidia.com>
- <BN9PR11MB52766C3D37FA985DEBDC30C78C969@BN9PR11MB5276.namprd11.prod.outlook.com>
- <YuJ6MXoNTj0RKCb8@nvidia.com>
- <BN9PR11MB52764B2B1B429ECDA0410D558C999@BN9PR11MB5276.namprd11.prod.outlook.com>
- <YuPQ6om0gELPqoiu@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <YuPQ6om0gELPqoiu@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK: N
 
-On 2022/7/29 20:22, Jason Gunthorpe wrote:
-> The RID issue is that we can't reliably tell the source apart in a
-> group - so all the RIDs in a group have to be considered as the same
-> RID, and mapped to the same PASID table.
-> 
-> But that is the only restriction of a group we have left, because the
-> 'iommu doesn't isolate all traffic' restriction is defined not to
-> exist if PASID is supported.
+From: Yunfei Wang <yf.wang@mediatek.com>
 
-Get you. Thank you for the guide.
+The same physical address can be mapped multiple times, and it is not
+required to have attributes such as DMA_ATTR_SKIP_CPU_SYNC, but
+dma_debug_entry will report an warning if active_cacheline_insert
+returns -EEXIST, which can cause a lot of trouble.
 
-> 
->> So yes, from this angle leaving one table per group is a simpler
->> thing to do, especially when it's unclear whether there is real
->> demand to enable PASID for multi-device group. 😊
-> Except it is confusing, complicated and unnecessary. Treating PASID of
-> multi-device groups the same as everything else is logically simple.
+For example, if two dma engine share the same dma-buf, the two dma
+engine drivers will call the DMA API to map their own dma address
+respectively, which is normal follow, but dma_debug_entry will
+report an warning.
 
-Yes. Considering that current PASID use cases occur only on singleton
-groups, to make things simple, let's start our PASID attachment support
-simply from singleton groups.
+In addition, if active_cacheline_insert returns -EEXIST, the
+active_cacheline_inc_overlap function already has the logic to
+check overlapping mappings counter, if it exceeded
+ACTIVE_CACHELINE_MAX_OVERLAP overlapping mappings, it already
+has a warning.
+And also, if warning as panic is turned on, it will cause KE.
 
-Best regards,
-baolu
+So, dma_debug_entry does not need report warning.
+
+Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+---
+ kernel/dma/debug.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+index 2caafd13f8aa..ad731f7858c9 100644
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -566,9 +566,6 @@ static void add_dma_entry(struct dma_debug_entry *entry, unsigned long attrs)
+ 	if (rc == -ENOMEM) {
+ 		pr_err_once("cacheline tracking ENOMEM, dma-debug disabled\n");
+ 		global_disable = true;
+-	} else if (rc == -EEXIST && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)) {
+-		err_printk(entry->dev, entry,
+-			"cacheline tracking EEXIST, overlapping mappings aren't supported\n");
+ 	}
+ }
+ 
+-- 
+2.18.0
+
