@@ -1,69 +1,70 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E40323C2
-	for <iommu@lists.linux.dev>; Sun, 31 Jul 2022 12:20:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84EA923C2
+	for <iommu@lists.linux.dev>; Sun, 31 Jul 2022 12:36:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659270035; x=1690806035;
+  t=1659271004; x=1690807004;
   h=message-id:date:subject:to:cc:references:from:
    in-reply-to:content-transfer-encoding:mime-version;
-  bh=U3QCial/J8WbZG10q1Dq1+spiAdrqiY14p1rN73IJyY=;
-  b=Pw1UOROm4+QlwH+tEqqjJQx98XL7fmLRbG3XSSb9lSYE7uZyw6ErD1mt
-   XySYcNxaUkuf+vV8PMoeysr+GyFHha1UtEPHLm9uQ+B1PKYWY6fNCYOrV
-   DJjghtgYI+BSy7d5Kn3m/9rnTe30SADHCy6yOpBO4JNCEbqUPSU+oWzXo
-   dDwOJn/6zzK9265vrulrZWdNo2gBfde3SYAOdx61IW3jLwcCa+uW8MQsf
-   39cl6jwjTjMVIY28zsP8YWTrEsHZJLlIVtM4m8hU4aJpAfCBjUX1kWUi5
-   +iamNRDSd197OdI1+Q2R3+mnASez7lIKV7lux2c4uzhD8nq53zMtL5gHe
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10424"; a="350697583"
+  bh=dSEi+o6iX/x0BQ42UHIUhTEp4/VvOYvVYNgiEymkVzU=;
+  b=AJwYgSAYsnYCf49yus5ahQGJdi64YGeQJxZlQjVAKSYQ9YiJgg25RevC
+   2LfIxeKi6iKPyA4NOHXvWetrRhs09bVLQuWLaCL/cqHsGT49CiUdUDyb9
+   NWHdGfW8Ul9Z0nKZpvbJib9KbAwoOuzr9sEOTO1jU8aToE7S/kqgBVvX+
+   aqn8SeLFoAKRF2Ag8wBxp+wnVP2XdSAwgrJ8hoY5gvC7d3DMg5kyhlLO0
+   Ke0wC+u9LfVaSJB7kG+27qWqMSaj4IhznLi3aUN7uvf6cTZpolVhB0Y/Z
+   iZt/amz+eAfRy6C3l623SgrApsBnshj48ggVlARGbVxftOyokaVuVJEAW
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10424"; a="272035511"
 X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
-   d="scan'208";a="350697583"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2022 05:20:35 -0700
+   d="scan'208";a="272035511"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jul 2022 05:36:44 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,206,1654585200"; 
-   d="scan'208";a="743991965"
+   d="scan'208";a="634603833"
 Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmsmga001.fm.intel.com with ESMTP; 31 Jul 2022 05:20:34 -0700
-Received: from orsmsx606.amr.corp.intel.com (10.22.229.19) by
+  by orsmga001.jf.intel.com with ESMTP; 31 Jul 2022 05:36:43 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
  ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Sun, 31 Jul 2022 05:20:34 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ 15.1.2375.28; Sun, 31 Jul 2022 05:36:43 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28 via Frontend Transport; Sun, 31 Jul 2022 05:20:34 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.109)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ 15.1.2375.28 via Frontend Transport; Sun, 31 Jul 2022 05:36:43 -0700
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.174)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.28; Sun, 31 Jul 2022 05:20:34 -0700
+ 15.1.2375.28; Sun, 31 Jul 2022 05:36:42 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Jay6otfZ+14ta+vzBwIKbLuyu5bvbnmv28ZXmdru9gH9QtHLNWYB51BuDFz60D2NSYMivb/NzRBaA8HwQgkRKvj+TC/i++OOOO7VrXs+YDXxqJZHfUi2l5CNpsfTJmQnYpj7i3PENgF+INdPEQdIkFjLxACgE5ATH837tneTYkMsflak1KWKtO7FaE44joPxyynlphnfP0xNX8l8dhCqvRmdfFmfDybunKwYz4LccfexUBa1Sg9H58YAex9mb8+H7WtuSOXTaKCWmLL9clovepg4fVB0KxznoIMAxQGBmFJ9nmTf4yw+L8Y8iYqw713/Lw+s4eh4rXf3nBVL5lvQBA==
+ b=nsp6MC7ZsTS4eHgEAv2j/ceRDnoqxw3wq4yZg3P9/KbWpvWGeWzGjVLZiwDolISJMR+Blc7WL8AmfawJLnVgySYdsUGPnGxBcmbYQn1ByfGTsS65LBr0UCHbmlt9A++DifVxt1obU8gO8Ka+r4Mya3AmkEpUUjg/swOpyNcbcl0PvptJ4mgZ9hOPrFyCvERSht/WL8w8W3R+mF/+t9yjgksI5ifn2Virsa1dac0SkWnAOJbmwf+tRCDc7pE9bMT2stnOjPqtytgwkzQ1ZJsIG0UGBzCiYs+lrf/aPZeqnJHM81VTDdODDbkXmVzwuDpe9OtSh7LJ67zYyqqLj6XJHQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3lcl4zbTssqcQsLvrxbm6JMnCusHO5eQ59uPSNztuxo=;
- b=K3Y9sw1GBkaMNJ+jdWym3hwuI/Hcgdo69P7cT6YFE0oqnSDA7rXyiGJx2EX29AXQDTIOqvzBe57Ke+zRmM+lZBBUpVzywu6AHXYqxi00fyAjWglTijx6LrXiSJ1FPYfjD4qjKg/wFgl/vDyDgOgS8ARVpR85jmCv6B4S/XBN9ivI5iGYuUF9r0swZb95juf1mYgawqRUGTiXdMrtuc8zQ/NHJkalZLV3FklNI4Eapp7zbQE8tdulUs9YCr+zhLe/h3DxofhHYKUn6UjjEsxaYFiWW/G0/k8bgWhYDl2j4Ks7lY82LUvq2+hcirWvY0MwmM9QPA2ziHZB5vEg9+NCGw==
+ bh=edjU6txdNNCK+wZWtVPKqTf2rVOGI9aFBW9180qcE0w=;
+ b=X1nvj2VkoZHvIcrdmONKKOsgiW6xu8tFNhUV3e26Tzce48uElpdUlIdVyQA5h/v1Oxn1FOg6qWfmkSCNI1wsgOVFJWYD/Y1UlSa81ooC7E1qeJ6FXtj9nRdFrMwIm0k5aCpn/PsDBfMQRx5HXzMq0e/OkZXgLcW0rwLa8ImeJWCLFO0hmrY9TDOtnuJLBSlHrRa0bSVn04JYX7giKna+FG9Mu4mdIdPKwLz/jW9tvEcVWBVv7cGNlwdBpQQDCKHY93Yl/dfnwE0TbpwtkW9Tboa1cPiTXecwsfTPPq38YFTnETK1maXCqKgn4GlfZeqJJRhuVEKji6lU8LUyvMgSWA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from PH0PR11MB5658.namprd11.prod.outlook.com (2603:10b6:510:e2::23)
- by DM5PR11MB0026.namprd11.prod.outlook.com (2603:10b6:4:62::35) with
+ by CY4PR1101MB2229.namprd11.prod.outlook.com (2603:10b6:910:19::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.10; Sun, 31 Jul
- 2022 12:20:32 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.15; Sun, 31 Jul
+ 2022 12:36:41 +0000
 Received: from PH0PR11MB5658.namprd11.prod.outlook.com
  ([fe80::d17a:b363:bea8:d12f]) by PH0PR11MB5658.namprd11.prod.outlook.com
  ([fe80::d17a:b363:bea8:d12f%8]) with mapi id 15.20.5482.015; Sun, 31 Jul 2022
- 12:20:32 +0000
-Message-ID: <dd14366b-0b2f-7662-6af9-4ba85848cd9e@intel.com>
-Date: Sun, 31 Jul 2022 20:20:36 +0800
+ 12:36:40 +0000
+Message-ID: <7e9e61e0-bc8a-a757-a666-0a7828b7fde8@intel.com>
+Date: Sun, 31 Jul 2022 20:36:43 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Firefox/91.0 Thunderbird/91.9.1
-Subject: Re: [PATCH v10 06/12] iommu/vt-d: Add SVA domain support
+Subject: Re: [PATCH v10 08/12] iommu/sva: Refactoring
+ iommu_sva_bind/unbind_device()
 Content-Language: en-US
 To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
 	"Jason Gunthorpe" <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
@@ -75,13 +76,13 @@ CC: Eric Auger <eric.auger@redhat.com>, Jacob jun Pan
 	<jacob.jun.pan@intel.com>, Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony
 	<tony.zhu@intel.com>, <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
 References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
- <20220705050710.2887204-7-baolu.lu@linux.intel.com>
+ <20220705050710.2887204-9-baolu.lu@linux.intel.com>
 From: Yi Liu <yi.l.liu@intel.com>
-In-Reply-To: <20220705050710.2887204-7-baolu.lu@linux.intel.com>
+In-Reply-To: <20220705050710.2887204-9-baolu.lu@linux.intel.com>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SG2PR01CA0195.apcprd01.prod.exchangelabs.com
- (2603:1096:4:189::17) To PH0PR11MB5658.namprd11.prod.outlook.com
+X-ClientProxiedBy: SG2PR01CA0158.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:28::14) To PH0PR11MB5658.namprd11.prod.outlook.com
  (2603:10b6:510:e2::23)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -90,170 +91,464 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3d12824a-0170-4fc6-7053-08da72ef1043
-X-MS-TrafficTypeDiagnostic: DM5PR11MB0026:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9c072521-2d32-43bd-f02a-08da72f15183
+X-MS-TrafficTypeDiagnostic: CY4PR1101MB2229:EE_
 X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: q+wqt4eY5SaUopQe2eRqIjoPv3oazr0drvx2JoVEyjJLsuVC00TSjc3xqoXItgdTqrxlupjl+48VZd9w7bsQgxYkMdgo5unDDnppV/kOz/lNiF4ADhzRwoYm2vqVeC0ZNs8HDdyw7i6n/hxGXfPpx6H7nPW1zqeQNfiKBXBgw3ohrlwVoSvDE4/jtVpfkxEanq7Ea8DP0NJIwX5x1QRUBrX909JGw17wklgbDnV5C+kIkoAkUFI32pqRT4YsQmdEjwGwWkRrnBtaBIG0cQCpsx6iJXJVIFTDTQAzi0xbuLp6NOcLcRL2hAiM2l/nz23qkWcfaSzfRSL246k0sdAHkyZawRY22DSJADiO7wk5fBTU55+KWPuJXuJ8tgE2OxgPNTtYtWx1XH7RtB37Jl/9PYUBYNzAs9FZPR5dQqinSahSJRzG3KJo8YzSXfnAjdgxUgrJpB2HJjNk/RlRQelBwN+UmZNeaQfFFq1ggparr9ET0fySmVmCeJF+Wey1aBmOgumD5VE3yr74/7y7Y8KJ6YWvrXbpOZ9wglfKUCDxygxzk9/N5CetW5pwDAnva3oCKCG7rs7wFdWTd30mV0ikxLfZwt5UdylHbJjii/575ZEv2camSlEKEF+roRoFYJJRwAwdbYggz5AgLUoyuYhb3bKdPEy+aMTNuOjhdC02HAJhefw+yqjtEI95fkcNAyQpp4Hsm1NtWdnLzXvjLoIkAJVnQ/m0BSNYhfajVP7xBab9OaryLErGkPHhcA1T6hS1U2JfsTYEe739oaGX+UeUEg7GVXKulUnsVUUCZaAQpoxFmR+n9WPzl4rofqPGb334rDcD7g+AWYP9G2EvHd07I2WjGtOUq6nZRjsamUiyj2c=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5658.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(396003)(376002)(366004)(346002)(39860400002)(38100700002)(921005)(478600001)(6486002)(186003)(2616005)(83380400001)(82960400001)(6506007)(6512007)(41300700001)(26005)(53546011)(31686004)(66556008)(31696002)(7416002)(36756003)(2906002)(86362001)(66476007)(8936002)(8676002)(66946007)(54906003)(4326008)(316002)(5660300002)(110136005)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: vRgMsXJ8nPXTch+7yt6R40kHIwZIgbki4c4lr5R/1LXJyiv47Dz0xiRg+j0lumegRMX6QQ0vGtXNINMhvowtpIHLNFwf5HJ0m03UfXDghJpmygXgzZXDVPoipm2a4NGyJwggbs2apKOjEC/3+IT/A2/l0i/cWwtv/7iPtvFecyQ2Oprg3RQIvAH6f/Jtgx96TNBbuSkIE35gjLKgQrWPkC47zyZlyMTlw2CGXuVr2Rzt08NASD2O51bSSmgf/yGJWwFAWrHBHgRDc2Qbv4AsRFQe0tbEmjGAonZtil8M5lKJoRlb0UyNikAAtE3CjVNudYwLUNPhzcIhd6Dx6jSg9BmFpHycgPuHLBf6CucgP+DQyIEi+98qRXXEcAUkbEK8EQhNF8+RiHqJgJco2Sh3f27ZhQquhHz4cmQs6xaL09eYrYRSLVjmqLMztZYczXNP53OtkKAjXdYRPf/nzG/UWRGHeYmxv7PDHU4WoNPZjdJsmqAZN86Ev9tDHKxT+5se286BSdpYchHTEjXsoobqyNhutnL+L4L4I5/615aL48Bp3oMXWp2NLUC+UDwom62MbQmADw7BWbymFzC4ikxsQtmUFEBNosgDlbwjujXHP8WkcJaTSMAVtNNInMY8dNHFKAFwNKDBoKSaEx8fevYdIFwDJoRsD6DGkUmwE53WiYMzqtZw9BUtopxxwsKut8ZP7sdwePaGTreTGendQvmK3Mledfkwv+7BQGZjMTFbahg8uJewY6oKKGR3Lw5NYw2Zlv3fv2uOGUJ6FaSFIDokZBH9me5NA+WAwKkCyxL7AaStG6i36aCzxFwKSkTRKDw/eU1qEhclsFSwEnhgQDZBHn6xvX94rWeIDaqGQ8Vvhr8=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5658.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(396003)(366004)(346002)(136003)(39860400002)(186003)(6512007)(26005)(38100700002)(8676002)(30864003)(4326008)(66946007)(31686004)(7416002)(66556008)(66476007)(2616005)(5660300002)(36756003)(8936002)(83380400001)(6486002)(54906003)(2906002)(316002)(110136005)(478600001)(53546011)(86362001)(921005)(6506007)(82960400001)(31696002)(41300700001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZkYvRURSQVZDMDV2SVl2OUNGeXZJNmRaRUg3UmI5NzVRR0hzaW1ybDFmZUh6?=
- =?utf-8?B?WTdiRklZQitlenhEUnFKWGhIWFFGTnl2eDlYNjZnVW0ydkRGd2R2UEF3Uk5P?=
- =?utf-8?B?eUt1Z21TVXZ1bEFtSzJubUpheWF1ZDZPbEMxcnRFNFF6bEdGTnQ0NG9XTGdK?=
- =?utf-8?B?THhScWI0QUdwZGdnZ21EZExnNCtpQk1LVDVJT0hxaTg0ODFpTmpBQ3diSkZk?=
- =?utf-8?B?WHFsZk9SMVRZc1MzTnRnczcvRnFYL1ZWc1NvWTUyaE4rcmRXUnJnT3kvcjVT?=
- =?utf-8?B?ZHdQdVZQNnlxSDdCVEZvWFhpbGFqR1VYYXpzQjB2T3czRHdSYyt4RXZkZVFq?=
- =?utf-8?B?dGZsSVh2Q1N1ZG5YbzZjQkdCaTNrbUxlZE5QSjZsUEhKNi9QTXRXVVlmcERp?=
- =?utf-8?B?QmpTZnlyL0hGQTVFZjB4OXZWTVN2bkFPL3JVQ3c5TWpUdkplQUlCeCsvczlW?=
- =?utf-8?B?Mmx4WHkzZElqSFNlZzJjL3dqMDNBL01aRlZqWm5JWXdkQUwrTFRZQTRIRjk5?=
- =?utf-8?B?bUdtOXRoNXdhelZ5NmkxeU1vSkJwVzdWRDdoSysrVU5sajRibXpkRkU0UmpP?=
- =?utf-8?B?N0Z1SGNpbTE1anB6bkdVM25YaEFaOVorQmhaZk05UndQYmprdlllc0k5T3o2?=
- =?utf-8?B?OGVsRDU5NGVRY0haclBLd2ZMWmJnQzVBQ2xqcm8xTUZMcW40M25NdmV5amlB?=
- =?utf-8?B?R2dvVHZ5K05la1NxZDlMdmdqUGIzTDgzZFJWQzBRUXM5V1BxVHg4SXExRS9q?=
- =?utf-8?B?b3FFaElkdmxuVTJpTkNjNEQwZmhSZmVxcnBQa1N6amdhaEt5K2dNVjAyOExs?=
- =?utf-8?B?RERRT0wrYzZtMnMyeWpjRVE2aHpjNzlUZmhTTUUwNDhaU0l2QXIzQ0w4Ujgz?=
- =?utf-8?B?L1BvNVY0NmdWUzU3SHQ5end3MjFtcHFVZ044d0dubGZFSHcwTTVIYUdHK01R?=
- =?utf-8?B?QTFQdk54MmI5MmUvTnVrdWdmeDFEaWlwakl2R2dHRGhwbndLdk5tYnBiLzhl?=
- =?utf-8?B?aStiUDYwSGlGbVVBcFRVQTIxa3VuQkRyWnRkNnJweGpLajhpWXdFWWRtYlFZ?=
- =?utf-8?B?K0FjWWxVN1dTb3RSMTRJbUpWSkpKVDI0TVZGajZLQ0R3WmlGdllqRThzQkU5?=
- =?utf-8?B?S3MwR1hDREN4ZCtoYkhaVk91MTU2a0Z3RSt4dmUyS2taYWIzQ3pvWkFhTFNC?=
- =?utf-8?B?VWpQemNhV3V1YjJvOG5idmRuM2tyMmI5d0gwa3JoRW1PWk8zV3ZsU0ZiQWRJ?=
- =?utf-8?B?b2grUUxQZGVNRHlWOTE4Ynd0WmRsZ3ZPenFSRytrT1BpWTJNTEdSQ3YvZThp?=
- =?utf-8?B?NmhkSGpEZFJNcSsrK1lTU3RVUUZyNGNVZFRHVmczT0t5cmlqRUFCRC95QTM4?=
- =?utf-8?B?T1BibXdwK043VDRBbllRaEZCeURjMjlxZnJkM0R3Q0RqeE9jYVByV1ZWSUVV?=
- =?utf-8?B?anEwQ0c1VzNNOEtCVk1uSFpSMVBxV2pmV2hQbGZwRU1UYittRVo2cmZteE5r?=
- =?utf-8?B?NDk3UFhRcUVoZ0hkR01FVWhZT0JCbTJCcXprRFZCNUE1ZmlZaDVlNHVpVktO?=
- =?utf-8?B?bi9JVTc4QWtmSXNYL1hwdTV3eWRpSExhRkZmZE56NVRNUHdQWWxwT1lpenhB?=
- =?utf-8?B?Y1U3bUJ3OTh5UDlrVjVScjVXMXQwMUJMVE56N0lMQnJnRm93U0J6czJ1ZHdV?=
- =?utf-8?B?OExTbXJkY3Ayd1ZvT0NheXBlbXZ3eHkzOGIzTVZUMmFqcVhmeDZUWjFHQitP?=
- =?utf-8?B?ejh5SmpLUUNKMElCUGVUTDlvVUVIUGRDYStaVDE3K25wSm1xNStGdmhjQnVj?=
- =?utf-8?B?cDVnQnJySkhHM1gvcXBSTGhwUWhPQWQ0ZTgvRTcrUnVWZ2x0S2oxM2U4NkNW?=
- =?utf-8?B?VUU1RjdWYkVGcmU3YlUzc0d5K2hsemdRZFRMMjd2cDVZN2hMWmY5WjlDb0Fl?=
- =?utf-8?B?K08zQjFHRllieUtMNFE1dHBQYXovOHBSdTZBRDJES1FTUndOeXYzcnhRMWtr?=
- =?utf-8?B?VkhscTRHc2hjZEEzT2ZxejNzOHVYL3dlbDZLUjdDVkllazQwdmd6OGJMaTl6?=
- =?utf-8?B?SkNqc1IvakFXN3VIbE45ZDIzNStiTzJOTkRoQTY3SWxnMGhzTGF6aVA0NDl2?=
- =?utf-8?Q?3bn2jJUxmPIcE5Hk3StG9zF7O?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3d12824a-0170-4fc6-7053-08da72ef1043
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SU5EVnFiaWZyc0EwemlRRXFPMHpxTUwwL2svSmVWNFhQZW9PSmUyRFYvODE5?=
+ =?utf-8?B?aitPWTJSYjJEdVNrZW5QYms3RHpVc2xZRThGaU5hdHBLNndqeG9XUEJkbXpX?=
+ =?utf-8?B?VW5lNkVGMDFsYkpGcDJXclRkYlZPcmUxTm9wSWhDaDhHWXVnUDFhbURJMHQw?=
+ =?utf-8?B?TFFLdHFXL2R5ZFR5SFZzN0g2WndiNWJaUm1oL1cxSWxBV0xNcUd6bVBDNWtk?=
+ =?utf-8?B?c0dRREl1RWNPOVgzMDhJeVV1blYySjkyL1ZIS3R2c1lRelBKYUFLa2h3dDBZ?=
+ =?utf-8?B?dGgyM2F6TnJYYm8xTXlDUkp2cWdNL25RVEpiYStrRCtOaFhGKzRaMFBPekJM?=
+ =?utf-8?B?dWxhT3lIdWR0T0lKYzZ3NDk4SFVlMnJQYW9mQ0FEQ09kWWp0RTlzSmFGcUhE?=
+ =?utf-8?B?Y21nTXZYZ1M5Vm9VSzlhZG93SkJjQkZFekdPZlVyeW5HV0xLamlMUndyRGd1?=
+ =?utf-8?B?ME4vRlNYNWRPSkJTb0lzQ3p1cDRqY21HU2hGbTJNU1JLNTd4bFZ2ZnRnSmVt?=
+ =?utf-8?B?MHVtRlY0MlFlNFJDSmZiVmJwc3hpU1crM3diR2luclhIeDJYYmpDK2J2WWRK?=
+ =?utf-8?B?UnlPdnJibUNpMTBDVksyZUJidU93UGxRUlJDazJzM0tZd1RlNkZTUERMWEQ2?=
+ =?utf-8?B?bUJkazhFMnR4Y1BLQkVRWXNrSWtYakg2MS9WdDdJK0NoS1VpY3pBNzlHS2Jy?=
+ =?utf-8?B?ZllEOEdIZTFhVUdqTUJSVHIzYS9DY0N1cEpSeElxenRWTFJIWmVhOS95Mkc4?=
+ =?utf-8?B?dTBLQlR2NzNRaHUxWXBZWHB2WUZ5MVdWNkdBV1RSa041aGV1L1cxYk5NSmM2?=
+ =?utf-8?B?aWFheHdTOHVZT3kwNlNXL256bzVENzI1R29hWEJTYm5weUc0Z2hPSEhxeEhI?=
+ =?utf-8?B?a3FzcGJDMUdtazR3TFVHZXE4dmVrb0pMeHhseUhFSjREZWlhZmY2VU1XajZS?=
+ =?utf-8?B?TjFpUHM5eXlNczVYc2FiVTJPeDRRZUZUMktVdDVoYnU0d3hhdmFCbmgxcHJV?=
+ =?utf-8?B?akxOamlMRFJFUUgrRXovUVViOERSNk51cjZCSU9HVEtYN3NES0YzcENVamhr?=
+ =?utf-8?B?clVwNk1xa0x4UUlJb0JMSzQ5T3libDVtUXgybUZjanM5RmJmSmlEODloL0gx?=
+ =?utf-8?B?OTBNMDJSRzlUYzBHcW5Ick1sZy81SlZ3UDZrZzVUdEhOSncxSTRJaVJ4U3lS?=
+ =?utf-8?B?UjR3b0tITHF3ZnFDYnBuZmZFZjlUY0wzR3BxRStDcVpoZjJVTG90MHdNVmdz?=
+ =?utf-8?B?QVVMd0FzVlBhcjZqWFFXWkpVdFhmRm9xL2Nyc2l1Q1NPM1pSaE93cXBnNDY4?=
+ =?utf-8?B?SUZld284d3hJSkhIS2FFU1JVbCtTcnNKaHNzS1hnZlNybHhnZXNxYzU1Y1lv?=
+ =?utf-8?B?RGlucUNRSXJ6ZnFzNy9WWm9odEJka3Y1WGdtcFBtd0JwSU9DaWx0c0xXZXE2?=
+ =?utf-8?B?ak9YQUVxQXN4T2JvVE9pWW1pTGFQdWlybURtaGU4OG5IM3dCZTFMYXF4TWd6?=
+ =?utf-8?B?M25oaFgvUUJiaVVOU2h2VXAweUx4bkZMOTQ0TG1PRnRDUEtCM0ltVHRsL0pz?=
+ =?utf-8?B?Q2Nna09SMHNiVGNKODhDb0pBUUl6WWRFUGNtWUxnZVU2UlRJNEl6TlNHWTRP?=
+ =?utf-8?B?RFZpRisrb05HbUNqREw5K3E5bW9CcU12VFFvQWk0RGx6S21MT2F6SnIrNlRO?=
+ =?utf-8?B?RzVpUXFvUzBWbmhRbXlqcFNpNjQ1V3lONFZ0aUw3Yll4WWc1VzJVRUJNK2ww?=
+ =?utf-8?B?S3RqV2s3dktURFZpUGxnZGlVR3NTYThmYU1YZ201bnJTZnZYSlRoeW5EbnI0?=
+ =?utf-8?B?L2gwMUJ6RWdqTmZEcW1hVmRlaVdkV2VVUGJWMjIxTnI1NnR0K0s3UFcxQXE1?=
+ =?utf-8?B?dTJ0VFBSRk11bDhxckFoTXNQSTU5UzY4dUhnbnpOQ09XaWhNSXJFSS90N2pk?=
+ =?utf-8?B?L2dmWXdFaEpGaXJwUkZSZnVTSlkxcVdVTHpPdGpvV0Nwb21nN2EwSU15aXI0?=
+ =?utf-8?B?Nnk4WFZPV1lqMkVKVFlkdHo0cXE1WWltQlE3NkhvaTdvV2JVQ2lnaFRoZ0g4?=
+ =?utf-8?B?SXdUK2Jna1F0eWd5QmwySWphSVFLeVFWcGx3aEFvMmh6MmpYa3l6ZTdhRXYw?=
+ =?utf-8?Q?abGIgzLPDVnudHqllhef7uuEX?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9c072521-2d32-43bd-f02a-08da72f15183
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5658.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jul 2022 12:20:32.4763
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jul 2022 12:36:40.8819
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oQl49b7Lv49XDdTqtdunEUiPEvFRUUDZ9SaHeix40es3XbbJq6uVTqnEXDihdyVHpCJm2Iuq1LtLa646mMxquw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR11MB0026
+X-MS-Exchange-CrossTenant-UserPrincipalName: I3DNcC8dkCOdlxx6twYRwyhSUcutqH//9auZBjP9teOLKfX0mSd2TUtYoPFtMAzikhL7zT4PkSJJbvwEGb7F8A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1101MB2229
 X-OriginatorOrg: intel.com
 
 On 2022/7/5 13:07, Lu Baolu wrote:
-> Add support for SVA domain allocation and provide an SVA-specific
-> iommu_domain_ops.
+> The existing iommu SVA interfaces are implemented by calling the SVA
+> specific iommu ops provided by the IOMMU drivers. There's no need for
+> any SVA specific ops in iommu_ops vector anymore as we can achieve
+> this through the generic attach/detach_dev_pasid domain ops.
+
+s/"attach/detach_dev_pasid"/"set/block_pasid_dev"/
+
+> 
+> This refactors the IOMMU SVA interfaces implementation by using the
+> set/block_pasid_dev ops and align them with the concept of the SVA
+> iommu domain. Put the new SVA code in the sva related file in order
+> to make it self-contained.
 > 
 > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
 > Tested-by: Tony Zhu <tony.zhu@intel.com>
 > ---
->   include/linux/intel-iommu.h |  5 ++++
->   drivers/iommu/intel/iommu.c |  2 ++
->   drivers/iommu/intel/svm.c   | 49 +++++++++++++++++++++++++++++++++++++
->   3 files changed, 56 insertions(+)
-
-Reviewed-by: Yi Liu <yi.l.liu@intel.com>
-
-> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-> index 31e3edc0fc7e..9007428a68f1 100644
-> --- a/include/linux/intel-iommu.h
-> +++ b/include/linux/intel-iommu.h
-> @@ -743,6 +743,7 @@ void intel_svm_unbind(struct iommu_sva *handle);
->   u32 intel_svm_get_pasid(struct iommu_sva *handle);
->   int intel_svm_page_response(struct device *dev, struct iommu_fault_event *evt,
->   			    struct iommu_page_response *msg);
-> +struct iommu_domain *intel_svm_domain_alloc(void);
+>   include/linux/iommu.h         |  67 +++++++++++--------
+>   drivers/iommu/iommu-sva-lib.c |  98 ++++++++++++++++++++++++++++
+>   drivers/iommu/iommu.c         | 119 ++++++++--------------------------
+>   3 files changed, 165 insertions(+), 119 deletions(-)
+> 
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 42f0418dc22c..f59b0ecd3995 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -39,7 +39,6 @@ struct device;
+>   struct iommu_domain;
+>   struct iommu_domain_ops;
+>   struct notifier_block;
+> -struct iommu_sva;
+>   struct iommu_fault_event;
+>   struct iommu_dma_cookie;
 >   
->   struct intel_svm_dev {
->   	struct list_head list;
-> @@ -768,6 +769,10 @@ struct intel_svm {
+> @@ -57,6 +56,14 @@ struct iommu_domain_geometry {
+>   	bool force_aperture;       /* DMA only allowed in mappable range? */
 >   };
->   #else
->   static inline void intel_svm_check(struct intel_iommu *iommu) {}
-> +static inline struct iommu_domain *intel_svm_domain_alloc(void)
+>   
+> +/**
+> + * struct iommu_sva - handle to a device-mm bond
+> + */
+> +struct iommu_sva {
+> +	struct device		*dev;
+> +	refcount_t		users;
+> +};
+> +
+>   /* Domain feature flags */
+>   #define __IOMMU_DOMAIN_PAGING	(1U << 0)  /* Support for iommu_map/unmap */
+>   #define __IOMMU_DOMAIN_DMA_API	(1U << 1)  /* Domain for use in DMA-API
+> @@ -105,6 +112,7 @@ struct iommu_domain {
+>   		};
+>   		struct {	/* IOMMU_DOMAIN_SVA */
+>   			struct mm_struct *mm;
+> +			struct iommu_sva bond;
+>   		};
+>   	};
+>   };
+> @@ -638,13 +646,6 @@ struct iommu_fwspec {
+>   /* ATS is supported */
+>   #define IOMMU_FWSPEC_PCI_RC_ATS			(1 << 0)
+>   
+> -/**
+> - * struct iommu_sva - handle to a device-mm bond
+> - */
+> -struct iommu_sva {
+> -	struct device			*dev;
+> -};
+> -
+>   int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
+>   		      const struct iommu_ops *ops);
+>   void iommu_fwspec_free(struct device *dev);
+> @@ -685,11 +686,6 @@ int iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features f);
+>   int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features f);
+>   bool iommu_dev_feature_enabled(struct device *dev, enum iommu_dev_features f);
+>   
+> -struct iommu_sva *iommu_sva_bind_device(struct device *dev,
+> -					struct mm_struct *mm);
+> -void iommu_sva_unbind_device(struct iommu_sva *handle);
+> -u32 iommu_sva_get_pasid(struct iommu_sva *handle);
+> -
+>   int iommu_device_use_default_domain(struct device *dev);
+>   void iommu_device_unuse_default_domain(struct device *dev);
+>   
+> @@ -703,6 +699,8 @@ int iommu_attach_device_pasid(struct iommu_domain *domain, struct device *dev,
+>   			      ioasid_t pasid);
+>   void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
+>   			       ioasid_t pasid);
+> +struct iommu_domain *
+> +iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid);
+>   #else /* CONFIG_IOMMU_API */
+>   
+>   struct iommu_ops {};
+> @@ -1033,21 +1031,6 @@ iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
+>   	return -ENODEV;
+>   }
+>   
+> -static inline struct iommu_sva *
+> -iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
+> -{
+> -	return NULL;
+> -}
+> -
+> -static inline void iommu_sva_unbind_device(struct iommu_sva *handle)
+> -{
+> -}
+> -
+> -static inline u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+> -{
+> -	return IOMMU_PASID_INVALID;
+> -}
+> -
+>   static inline struct iommu_fwspec *dev_iommu_fwspec_get(struct device *dev)
+>   {
+>   	return NULL;
+> @@ -1093,6 +1076,12 @@ static inline void iommu_detach_device_pasid(struct iommu_domain *domain,
+>   					     struct device *dev, ioasid_t pasid)
+>   {
+>   }
+> +
+> +static inline struct iommu_domain *
+> +iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid)
 > +{
 > +	return NULL;
 > +}
+>   #endif /* CONFIG_IOMMU_API */
+>   
+>   /**
+> @@ -1118,4 +1107,26 @@ void iommu_debugfs_setup(void);
+>   static inline void iommu_debugfs_setup(void) {}
 >   #endif
 >   
->   #ifdef CONFIG_INTEL_IOMMU_DEBUGFS
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 44016594831d..993a1ce509a8 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -4298,6 +4298,8 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
->   		return domain;
->   	case IOMMU_DOMAIN_IDENTITY:
->   		return &si_domain->domain;
-> +	case IOMMU_DOMAIN_SVA:
-> +		return intel_svm_domain_alloc();
->   	default:
->   		return NULL;
->   	}
-> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-> index d04880a291c3..7d4f9d173013 100644
-> --- a/drivers/iommu/intel/svm.c
-> +++ b/drivers/iommu/intel/svm.c
-> @@ -931,3 +931,52 @@ int intel_svm_page_response(struct device *dev,
->   	mutex_unlock(&pasid_mutex);
->   	return ret;
+> +#ifdef CONFIG_IOMMU_SVA
+> +struct iommu_sva *iommu_sva_bind_device(struct device *dev,
+> +					struct mm_struct *mm);
+> +void iommu_sva_unbind_device(struct iommu_sva *handle);
+> +u32 iommu_sva_get_pasid(struct iommu_sva *handle);
+> +#else
+> +static inline struct iommu_sva *
+> +iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
+> +{
+> +	return NULL;
+> +}
+> +
+> +static inline void iommu_sva_unbind_device(struct iommu_sva *handle)
+> +{
+> +}
+> +
+> +static inline u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+> +{
+> +	return IOMMU_PASID_INVALID;
+> +}
+> +#endif /* CONFIG_IOMMU_SVA */
+> +
+>   #endif /* __LINUX_IOMMU_H */
+> diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva-lib.c
+> index 106506143896..751366980232 100644
+> --- a/drivers/iommu/iommu-sva-lib.c
+> +++ b/drivers/iommu/iommu-sva-lib.c
+> @@ -4,6 +4,7 @@
+>    */
+>   #include <linux/mutex.h>
+>   #include <linux/sched/mm.h>
+> +#include <linux/iommu.h>
+>   
+>   #include "iommu-sva-lib.h"
+>   
+> @@ -69,3 +70,100 @@ struct mm_struct *iommu_sva_find(ioasid_t pasid)
+>   	return ioasid_find(&iommu_sva_pasid, pasid, __mmget_not_zero);
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_sva_find);
+> +
+> +/**
+> + * iommu_sva_bind_device() - Bind a process address space to a device
+> + * @dev: the device
+> + * @mm: the mm to bind, caller must hold a reference to mm_users
+> + *
+> + * Create a bond between device and address space, allowing the device to access
+> + * the mm using the returned PASID. If a bond already exists between @device and
+> + * @mm, it is returned and an additional reference is taken. Caller must call
+> + * iommu_sva_unbind_device() to release each reference.
+> + *
+> + * iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA) must be called first, to
+> + * initialize the required SVA features.
+> + *
+> + * On error, returns an ERR_PTR value.
+> + */
+> +struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
+> +{
+> +	struct iommu_domain *domain;
+> +	ioasid_t max_pasids;
+> +	int ret = -EINVAL;
+> +
+> +	max_pasids = dev->iommu->max_pasids;
+> +	if (!max_pasids)
+> +		return ERR_PTR(-EOPNOTSUPP);
+> +
+> +	/* Allocate mm->pasid if necessary. */
+> +	ret = iommu_sva_alloc_pasid(mm, 1, max_pasids - 1);
+> +	if (ret)
+> +		return ERR_PTR(ret);
+> +
+> +	mutex_lock(&iommu_sva_lock);
+> +	/* Search for an existing domain. */
+> +	domain = iommu_get_domain_for_dev_pasid(dev, mm->pasid);
+> +	if (domain) {
+> +		refcount_inc(&domain->bond.users);
+> +		goto out_success;
+> +	}
+> +
+> +	/* Allocate a new domain and set it on device pasid. */
+> +	domain = iommu_sva_domain_alloc(dev, mm);
+> +	if (!domain) {
+> +		ret = -ENOMEM;
+> +		goto out_unlock;
+> +	}
+> +
+> +	ret = iommu_attach_device_pasid(domain, dev, mm->pasid);
+> +	if (ret)
+> +		goto out_free_domain;
+> +	domain->bond.dev = dev;
+> +	refcount_set(&domain->bond.users, 1);
+> +
+> +out_success:
+> +	mutex_unlock(&iommu_sva_lock);
+> +	return &domain->bond;
+> +
+> +out_free_domain:
+> +	iommu_domain_free(domain);
+> +out_unlock:
+> +	mutex_unlock(&iommu_sva_lock);
+> +
+> +	return ERR_PTR(ret);
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_sva_bind_device);
+> +
+> +/**
+> + * iommu_sva_unbind_device() - Remove a bond created with iommu_sva_bind_device
+> + * @handle: the handle returned by iommu_sva_bind_device()
+> + *
+> + * Put reference to a bond between device and address space. The device should
+> + * not be issuing any more transaction for this PASID. All outstanding page
+> + * requests for this PASID must have been flushed to the IOMMU.
+> + */
+> +void iommu_sva_unbind_device(struct iommu_sva *handle)
+> +{
+> +	struct device *dev = handle->dev;
+> +	struct iommu_domain *domain =
+> +			container_of(handle, struct iommu_domain, bond);
+> +	ioasid_t pasid = iommu_sva_get_pasid(handle);
+> +
+> +	mutex_lock(&iommu_sva_lock);
+> +	if (refcount_dec_and_test(&domain->bond.users)) {
+> +		iommu_detach_device_pasid(domain, dev, pasid);
+> +		iommu_domain_free(domain);
+> +	}
+> +	mutex_unlock(&iommu_sva_lock);
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_sva_unbind_device);
+> +
+> +u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+> +{
+> +	struct iommu_domain *domain =
+> +			container_of(handle, struct iommu_domain, bond);
+> +
+> +	return domain->mm->pasid;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 10479c5e4d23..e1491eb3c7b6 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2789,97 +2789,6 @@ bool iommu_dev_feature_enabled(struct device *dev, enum iommu_dev_features feat)
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_dev_feature_enabled);
+>   
+> -/**
+> - * iommu_sva_bind_device() - Bind a process address space to a device
+> - * @dev: the device
+> - * @mm: the mm to bind, caller must hold a reference to it
+> - *
+> - * Create a bond between device and address space, allowing the device to access
+> - * the mm using the returned PASID. If a bond already exists between @device and
+> - * @mm, it is returned and an additional reference is taken. Caller must call
+> - * iommu_sva_unbind_device() to release each reference.
+> - *
+> - * iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA) must be called first, to
+> - * initialize the required SVA features.
+> - *
+> - * On error, returns an ERR_PTR value.
+> - */
+> -struct iommu_sva *
+> -iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
+> -{
+> -	struct iommu_group *group;
+> -	struct iommu_sva *handle = ERR_PTR(-EINVAL);
+> -	const struct iommu_ops *ops = dev_iommu_ops(dev);
+> -
+> -	if (!ops->sva_bind)
+> -		return ERR_PTR(-ENODEV);
+> -
+> -	group = iommu_group_get(dev);
+> -	if (!group)
+> -		return ERR_PTR(-ENODEV);
+> -
+> -	/* Ensure device count and domain don't change while we're binding */
+> -	mutex_lock(&group->mutex);
+> -
+> -	/*
+> -	 * To keep things simple, SVA currently doesn't support IOMMU groups
+> -	 * with more than one device. Existing SVA-capable systems are not
+> -	 * affected by the problems that required IOMMU groups (lack of ACS
+> -	 * isolation, device ID aliasing and other hardware issues).
+> -	 */
+> -	if (iommu_group_device_count(group) != 1)
+> -		goto out_unlock;
+> -
+> -	handle = ops->sva_bind(dev, mm);
+> -
+> -out_unlock:
+> -	mutex_unlock(&group->mutex);
+> -	iommu_group_put(group);
+> -
+> -	return handle;
+> -}
+> -EXPORT_SYMBOL_GPL(iommu_sva_bind_device);
+> -
+> -/**
+> - * iommu_sva_unbind_device() - Remove a bond created with iommu_sva_bind_device
+> - * @handle: the handle returned by iommu_sva_bind_device()
+> - *
+> - * Put reference to a bond between device and address space. The device should
+> - * not be issuing any more transaction for this PASID. All outstanding page
+> - * requests for this PASID must have been flushed to the IOMMU.
+> - */
+> -void iommu_sva_unbind_device(struct iommu_sva *handle)
+> -{
+> -	struct iommu_group *group;
+> -	struct device *dev = handle->dev;
+> -	const struct iommu_ops *ops = dev_iommu_ops(dev);
+> -
+> -	if (!ops->sva_unbind)
+> -		return;
+> -
+> -	group = iommu_group_get(dev);
+> -	if (!group)
+> -		return;
+> -
+> -	mutex_lock(&group->mutex);
+> -	ops->sva_unbind(handle);
+> -	mutex_unlock(&group->mutex);
+> -
+> -	iommu_group_put(group);
+> -}
+> -EXPORT_SYMBOL_GPL(iommu_sva_unbind_device);
+> -
+> -u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+> -{
+> -	const struct iommu_ops *ops = dev_iommu_ops(handle->dev);
+> -
+> -	if (!ops->sva_get_pasid)
+> -		return IOMMU_PASID_INVALID;
+> -
+> -	return ops->sva_get_pasid(handle);
+> -}
+> -EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
+> -
+>   /*
+>    * Changes the default domain of an iommu group that has *only* one device
+>    *
+> @@ -3366,3 +3275,31 @@ void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
+>   
+>   	iommu_group_put(group);
 >   }
 > +
-> +static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
-> +				   struct device *dev, ioasid_t pasid)
+> +/*
+> + * This is a variant of iommu_get_domain_for_dev(). It returns the existing
+> + * domain attached to pasid of a device. It's only for internal use of the
+> + * IOMMU subsystem. The caller must take care to avoid any possible
+> + * use-after-free case.
+> + */
+> +struct iommu_domain *
+> +iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid)
 > +{
-> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
-> +	struct intel_iommu *iommu = info->iommu;
-> +	struct mm_struct *mm = domain->mm;
-> +	struct iommu_sva *sva;
-> +	int ret = 0;
+> +	struct iommu_domain *domain;
+> +	struct iommu_group *group;
 > +
-> +	mutex_lock(&pasid_mutex);
-> +	sva = intel_svm_bind_mm(iommu, dev, mm);
-> +	if (IS_ERR(sva))
-> +		ret = PTR_ERR(sva);
-> +	mutex_unlock(&pasid_mutex);
-> +
-> +	return ret;
-> +}
-> +
-> +static void intel_svm_block_dev_pasid(struct iommu_domain *domain,
-> +				      struct device *dev, ioasid_t pasid)
-> +{
-> +	mutex_lock(&pasid_mutex);
-> +	intel_svm_unbind_mm(dev, pasid);
-> +	mutex_unlock(&pasid_mutex);
-> +}
-> +
-> +static void intel_svm_domain_free(struct iommu_domain *domain)
-> +{
-> +	kfree(to_dmar_domain(domain));
-> +}
-> +
-> +static const struct iommu_domain_ops intel_svm_domain_ops = {
-> +	.set_dev_pasid		= intel_svm_set_dev_pasid,
-> +	.block_dev_pasid	= intel_svm_block_dev_pasid,
-> +	.free			= intel_svm_domain_free,
-> +};
-> +
-> +struct iommu_domain *intel_svm_domain_alloc(void)
-> +{
-> +	struct dmar_domain *domain;
-> +
-> +	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
-> +	if (!domain)
+> +	if (!pasid_valid(pasid))
 > +		return NULL;
-> +	domain->domain.ops = &intel_svm_domain_ops;
 > +
-> +	return &domain->domain;
+> +	group = iommu_group_get(dev);
+> +	if (!group)
+> +		return NULL;
+> +	/*
+> +	 * The xarray protects its internal state with RCU. Hence the domain
+> +	 * obtained is either NULL or fully formed.
+> +	 */
+> +	domain = xa_load(&group->pasid_array, pasid);
+> +	iommu_group_put(group);
+> +
+> +	return domain;
 > +}
 
 -- 
