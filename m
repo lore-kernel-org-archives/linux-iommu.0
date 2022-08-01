@@ -1,132 +1,101 @@
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B7497F
-	for <iommu@lists.linux.dev>; Mon,  1 Aug 2022 12:04:35 +0000 (UTC)
-X-UUID: d58cc39d9f234f5cacf6c1f8360cd81f-20220801
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:889e7572-6204-4a66-b48d-5d9ad7953887,OB:0,LO
-	B:10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,AC
-	TION:release,TS:45
-X-CID-INFO: VERSION:1.1.8,REQID:889e7572-6204-4a66-b48d-5d9ad7953887,OB:0,LOB:
-	10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTI
-	ON:release,TS:45
-X-CID-META: VersionHash:0f94e32,CLOUDID:e6cff7cf-a6cf-4fb6-be1b-c60094821ca2,C
-	OID:5b89d6c2bdc6,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-	RL:0,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: d58cc39d9f234f5cacf6c1f8360cd81f-20220801
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-	(envelope-from <yong.wu@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-	with ESMTP id 1827340360; Mon, 01 Aug 2022 20:04:24 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Mon, 1 Aug 2022 20:04:22 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n1.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
- Transport; Mon, 1 Aug 2022 20:04:21 +0800
-Message-ID: <0085fdd057687637ebd5a7688897a279e72e03f6.camel@mediatek.com>
-Subject: Re: [PATCH v4 01/20] dt-bindings: iommu: mediatek: Increase max
- interrupt number
-From: Yong Wu <yong.wu@mediatek.com>
-To: Tinghan Shen <tinghan.shen@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Rob
- Herring" <robh+dt@kernel.org>, Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>, Lee Jones <lee@kernel.org>, "Matthias
- Brugger" <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
-	<angelogioacchino.delregno@collabora.com>, MandyJH Liu
-	<mandyjh.liu@mediatek.com>
-CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<Project_Global_Chrome_Upstream_Group@mediatek.com>,
-	<chengci.xu@mediatek.com>
-Date: Mon, 1 Aug 2022 20:04:21 +0800
-In-Reply-To: <20220729063208.16799-2-tinghan.shen@mediatek.com>
-References: <20220729063208.16799-1-tinghan.shen@mediatek.com>
-	 <20220729063208.16799-2-tinghan.shen@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 634587F
+	for <iommu@lists.linux.dev>; Mon,  1 Aug 2022 12:07:18 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 326EC139F;
+	Mon,  1 Aug 2022 05:07:18 -0700 (PDT)
+Received: from [10.57.10.23] (unknown [10.57.10.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6162E3F73B;
+	Mon,  1 Aug 2022 05:07:15 -0700 (PDT)
+Message-ID: <19a0a508-fb39-8b06-ce0f-ce26767ef57f@arm.com>
+Date: Mon, 1 Aug 2022 13:07:10 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] dma-debug: Remove warning in dma_debug_entry
+Content-Language: en-GB
+To: yf.wang@mediatek.com, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+ open list <linux-kernel@vger.kernel.org>,
+ "moderated list:ARM/Mediatek SoC support"
+ <linux-arm-kernel@lists.infradead.org>,
+ "moderated list:ARM/Mediatek SoC support"
+ <linux-mediatek@lists.infradead.org>
+Cc: wsd_upstream@mediatek.com, Libo Kang <Libo.Kang@mediatek.com>,
+ Ning Li <Ning.Li@mediatek.com>, Yong Wu <Yong.Wu@mediatek.com>,
+ Miles Chen <miles.chen@mediatek.com>
+References: <20220730085657.31977-1-yf.wang@mediatek.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220730085657.31977-1-yf.wang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-MTK: N
 
-On Fri, 2022-07-29 at 14:31 +0800, Tinghan Shen wrote:
-> mt8195 infra iommu uses 5 interrupts.
+On 2022-07-30 09:56, yf.wang@mediatek.com wrote:
+> From: Yunfei Wang <yf.wang@mediatek.com>
 > 
-> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> The same physical address can be mapped multiple times, and it is not
+> required to have attributes such as DMA_ATTR_SKIP_CPU_SYNC, but
+> dma_debug_entry will report an warning if active_cacheline_insert
+> returns -EEXIST, which can cause a lot of trouble.
+> 
+> For example, if two dma engine share the same dma-buf, the two dma
+> engine drivers will call the DMA API to map their own dma address
+> respectively, which is normal follow, but dma_debug_entry will
+> report an warning.
+> 
+> In addition, if active_cacheline_insert returns -EEXIST, the
+> active_cacheline_inc_overlap function already has the logic to
+> check overlapping mappings counter, if it exceeded
+> ACTIVE_CACHELINE_MAX_OVERLAP overlapping mappings, it already
+> has a warning.
+> And also, if warning as panic is turned on, it will cause KE.
+> 
+> So, dma_debug_entry does not need report warning.
+
+I'm sure this has come up before, but I can't remember enough of the 
+context to easily search for the previous thread.
+
+In short, this check is not entirely correct, but removing it isn't 
+right either, since that would be too much of a step backwards in terms 
+of debug coverage IMO. What we need here is to do a bit more work to 
+differentiate between mappings of the exact same buffer, which are 
+allowed, vs. any other kind of partial overlaps which are still illegal 
+and definitely deserve a warning.
+
+Furthermore, even for the valid dma-buf import case I'm not convinced 
+that the SKIP_CPU_SYNC check can be dropped either. If one device can 
+import a buffer while another device is already accessing it, there are 
+definitely combinations of parameters which could lead to potential data 
+loss (e.g. a non-coherent DMA_TO_DEVICE mapping during a non-coherent 
+DMA_FROM_DEVICE access, a or non-coherent DMA_FROM_DEVICE mapping during 
+a coherent DMA_TO_DEVICE access).
+
+Thanks,
+Robin.
+
+> Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
 > ---
->  .../bindings/iommu/mediatek,iommu.yaml         | 18
-> +++++++++++++++++-
->  1 file changed, 17 insertions(+), 1 deletion(-)
+>   kernel/dma/debug.c | 3 ---
+>   1 file changed, 3 deletions(-)
 > 
-> diff --git
-> a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-> b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-> index fee0241b50988..5afe2a0045330 100644
-> --- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-> @@ -91,7 +91,8 @@ properties:
->      maxItems: 1
->  
->    interrupts:
-> -    maxItems: 1
-> +    minItems: 1
-> +    maxItems: 5
->  
->    clocks:
->      items:
-> @@ -191,9 +192,24 @@ allOf:
->                const: mediatek,mt8195-iommu-infra
->  
->      then:
-> +      properties:
-> +        interrupts:
-> +          maxItems: 1
-> +
->        required:
->          - mediatek,larbs
->  
-> +    else:
-> +      properties:
-> +        interrupts:
-> +          description: The IOMMU has 5 banks. Each bank has its own
-> interrupt.
-> +          items:
-> +            - description: The interrupt for IOMMU bank0
-> +            - description: The interrupt for IOMMU bank1
-> +            - description: The interrupt for IOMMU bank2
-> +            - description: The interrupt for IOMMU bank3
-> +            - description: The interrupt for IOMMU bank4
-> +
-
-Thanks for improving this.
-
-Before the meaning for this segment is that it require "mediatek,larbs"
-if it is NOT infra iommu. Here we add a new block for infra iommu.
-then we'd better to remove the "not". this should be more readable.
-Something like below:
-
-if:
-   /* Remove the not here. */
-   properties:
-     compatible:
-       contains:
-         const: mediatek,mt8195-iommu-infra
-then:
-  xxx
-else:
-  xx
-
-
->  additionalProperties: false
->  
->  examples:
-
+> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+> index 2caafd13f8aa..ad731f7858c9 100644
+> --- a/kernel/dma/debug.c
+> +++ b/kernel/dma/debug.c
+> @@ -566,9 +566,6 @@ static void add_dma_entry(struct dma_debug_entry *entry, unsigned long attrs)
+>   	if (rc == -ENOMEM) {
+>   		pr_err_once("cacheline tracking ENOMEM, dma-debug disabled\n");
+>   		global_disable = true;
+> -	} else if (rc == -EEXIST && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)) {
+> -		err_printk(entry->dev, entry,
+> -			"cacheline tracking EEXIST, overlapping mappings aren't supported\n");
+>   	}
+>   }
+>   
