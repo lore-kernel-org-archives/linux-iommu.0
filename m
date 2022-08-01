@@ -1,110 +1,78 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1B30E7F
-	for <iommu@lists.linux.dev>; Mon,  1 Aug 2022 18:48:01 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CAE8F139F;
-	Mon,  1 Aug 2022 11:48:01 -0700 (PDT)
-Received: from [10.57.10.23] (unknown [10.57.10.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1EFDF3F67D;
-	Mon,  1 Aug 2022 11:47:58 -0700 (PDT)
-Message-ID: <15735fab-e53d-e95d-84f8-ae2e435dbb78@arm.com>
-Date: Mon, 1 Aug 2022 19:47:54 +0100
+Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 392F87F
+	for <iommu@lists.linux.dev>; Mon,  1 Aug 2022 19:22:54 +0000 (UTC)
+Received: by mail-pj1-f73.google.com with SMTP id r13-20020a17090a454d00b001f04dfc6195so6565343pjm.2
+        for <iommu@lists.linux.dev>; Mon, 01 Aug 2022 12:22:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
+        bh=xzKHytVvjAao+2ektxnj6IJTTJHXIKpBW60SHOyYd8A=;
+        b=IbUODt/ipvk5XzL0d6Ll8FYMNlWCOw2TGe+4/1TXn/4J72Z4NnLKUwp+3vykOq4Cph
+         v+9PduVmkV7gHlDU7BzBz8nUxBX135N3Xp0dYQqZ0ntyjhUFZXfT92RMXTAxoEbrJtPW
+         oqLUI9k6eLsoyGQA3UF+6GCF7NifNqF8svyfvSd5k7TKUVFyeJFJ6sbxEw2GksNoqlmq
+         oY1FmdrhjTzTb56UdhiiHMGGWaXUBg505x3mEhR310sZ2zFW8Q66BgahHVDHvOpqsbIO
+         NK+wfQdRhogu7xSDRv3pJzTvUufZKNmtcNUYQ9cq3Y1Vnngl/v/SNGUa6MbirS8o7bL7
+         KTLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
+         :from:to:cc;
+        bh=xzKHytVvjAao+2ektxnj6IJTTJHXIKpBW60SHOyYd8A=;
+        b=UBH2etSkS9QtjFw9JzyfByciTGpqkaF9YJqT8RmgK6CRxwLiTrtJJIJaKGxjpevA43
+         /gQuhaLNc+I01bYjEfM5ADmJUL9MIKuaxutvMWoTnUNPIDZ84XSbiRGvrkP9rvaOBYri
+         SpZGifPKlODe93Q6cKT28cSVdsf0PRzRF1mx+//Qw1Qe/kJWCyUmcaygLchg20dlt/4B
+         svHqi+1Yj50CJ1EIaG8WRCwTAnHBe7k3kvoDuKoJWtGL6crwnOVVvoVb7m04o/qMJFnL
+         7p4NuVwVavR+MzqF8nNM8GSiKlKaYtAPSD7xBusFHWfgJ7CDjA9iMcTkgoeXSKFBUW0e
+         OmBA==
+X-Gm-Message-State: ACgBeo0oR3bImCaGyDDx1lewbGmeCvNXfSxOhXpureYFlHR5+3SHulmg
+	pk8YQZ5klqLB4wWpYIMiLsJ+MOl5+8mnxEc=
+X-Google-Smtp-Source: AA6agR6OCI1ewtlVf1n57DMxiF0gydUpv0yJmM/Nnd+N5kO6NjiUbnV0sr7xqRctjNbC+/sO8RfjIlWoqlDHUMs=
+X-Received: from jsperbeck8.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:301f])
+ (user=jsperbeck job=sendgmr) by 2002:a05:6a00:c86:b0:52c:e9ef:c790 with SMTP
+ id a6-20020a056a000c8600b0052ce9efc790mr14411075pfv.50.1659381773627; Mon, 01
+ Aug 2022 12:22:53 -0700 (PDT)
+Date: Mon,  1 Aug 2022 19:22:29 +0000
+Message-Id: <20220801192229.3358786-1-jsperbeck@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] dma-debug: Fix overflow issue in bucket_find_contain
-Content-Language: en-GB
-To: yf.wang@mediatek.com, Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
- open list <linux-kernel@vger.kernel.org>,
- "moderated list:ARM/Mediatek SoC support"
- <linux-arm-kernel@lists.infradead.org>,
- "moderated list:ARM/Mediatek SoC support"
- <linux-mediatek@lists.infradead.org>
-Cc: wsd_upstream@mediatek.com, Libo Kang <Libo.Kang@mediatek.com>,
- Ning Li <Ning.Li@mediatek.com>, Yong Wu <Yong.Wu@mediatek.com>,
- Miles Chen <miles.chen@mediatek.com>,
- jianjiao zeng <jianjiao.zeng@mediatek.com>
-References: <20220730114146.32669-1-yf.wang@mediatek.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220730114146.32669-1-yf.wang@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.1.455.g008518b4e5-goog
+Subject: [PATCH] iommu/amd: use full 64-bit value in build_completion_wait()
+From: John Sperbeck <jsperbeck@google.com>
+To: Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: Logan Odell <loganodell@google.com>, iommu@lists.linux.dev, 
+	John Sperbeck <jsperbeck@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On 2022-07-30 12:41, yf.wang@mediatek.com wrote:
-> From: Yunfei Wang <yf.wang@mediatek.com>
-> 
-> There are two issue:
-> 1. If max_rang is set to 0xFFFF_FFFF, and __hash_bucket_find always
-> returns NULL, the rang will be accumulated. When rang is accumulated
-> to 0xFFFF_E000, after executing rang += (1 << HASH_FN_SHIFT) again,
-> rang will overflow to 0, making it impossible to exit the while loop.
-> 2. dev_addr reduce maybe overflow.
-> 
-> So, add range and dev_addr check to avoid overflow.
-> 
-> Signed-off-by: jianjiao zeng <jianjiao.zeng@mediatek.com>
-> Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
-> ---
->   kernel/dma/debug.c | 8 ++++++--
->   1 file changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-> index ad731f7858c9..9d7d54cd4c63 100644
-> --- a/kernel/dma/debug.c
-> +++ b/kernel/dma/debug.c
-> @@ -352,6 +352,7 @@ static struct dma_debug_entry *bucket_find_contain(struct hash_bucket **bucket,
->   
->   	unsigned int max_range = dma_get_max_seg_size(ref->dev);
->   	struct dma_debug_entry *entry, index = *ref;
-> +	unsigned int shift = (1 << HASH_FN_SHIFT);
->   	unsigned int range = 0;
->   
->   	while (range <= max_range) {
-> @@ -360,12 +361,15 @@ static struct dma_debug_entry *bucket_find_contain(struct hash_bucket **bucket,
->   		if (entry)
->   			return entry;
->   
-> +		if (max_range - range < shift || index.dev_addr < shift)
-> +			return NULL;
+We started using a 64 bit completion value.  Unfortunately, we only
+stored the low 32-bits, so a very large completion value would never
+be matched in iommu_completion_wait().
 
-This seems a bit clunky since the first condition here effectively makes 
-the loop condition redundant.
+Fixes: c69d89aff393 ("iommu/amd: Use 4K page for completion wait write-back semaphore")
+Signed-off-by: John Sperbeck <jsperbeck@google.com>
+---
+ drivers/iommu/amd/iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-FWIW I found the whole "range" business here rather hard to make sense 
-of - personally I'd calculate a lower bound for the address then just 
-iterate down to that, but maybe that's just me :/
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 840831d5d2ad..a0924144bac8 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -874,7 +874,8 @@ static void build_completion_wait(struct iommu_cmd *cmd,
+ 	memset(cmd, 0, sizeof(*cmd));
+ 	cmd->data[0] = lower_32_bits(paddr) | CMD_COMPL_WAIT_STORE_MASK;
+ 	cmd->data[1] = upper_32_bits(paddr);
+-	cmd->data[2] = data;
++	cmd->data[2] = lower_32_bits(data);
++	cmd->data[3] = upper_32_bits(data);
+ 	CMD_SET_TYPE(cmd, CMD_COMPL_WAIT);
+ }
+ 
+-- 
+2.37.1.455.g008518b4e5-goog
 
-Otherwise, at the very least we should be capping max_range so that the 
-loop doesn't go beyond HASH_SIZE iterations and pointlessly search the 
-same buckets more than once - it's stupid to even *get* to the point of 
-having to worry about that overflowing. Whether we really care about 
-dev_addr underflow is then another matter.
-
-Really it would seem even more logical to make this a lower-level 
-function that can walk round the dma_entry_hash array directly and not 
-have to monkey about with the fake "index" entry at all, but cleaning up 
-the almost-unnecessary amount of internal abstractions here is maybe 
-more work than it's worth at this point.
-
-Robin.
-
-> +
->   		/*
->   		 * Nothing found, go back a hash bucket
->   		 */
->   		put_hash_bucket(*bucket, *flags);
-> -		range          += (1 << HASH_FN_SHIFT);
-> -		index.dev_addr -= (1 << HASH_FN_SHIFT);
-> +		range          += shift;
-> +		index.dev_addr -= shift;
->   		*bucket = get_hash_bucket(&index, flags);
->   	}
->   
