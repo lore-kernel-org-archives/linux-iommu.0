@@ -1,168 +1,95 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2059.outbound.protection.outlook.com [40.107.102.59])
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88B147F
-	for <iommu@lists.linux.dev>; Tue,  2 Aug 2022 12:37:10 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=a+UZHd0cQxHAWum65ySCsdLI45lyt3B2fZbyYUcvYOmXoIXjZTcWIGZMqrD/IqqIVAgcFFO4nPBRBsPrlyoyWlkd2ffbLw5C/Wa6brjros9rjtwWqnlxPz68yCpURZ4IwECUPYBim7RTm0EuEbXT5oCWhC7NBgjLzqzl5dmAcGuikNv1clDKjX/1dkMl7VvC+fIvnehs1SzOxs/fkOUFSGtu+KwWDjJSSM+5rOTTdnYhqfKzPuQVjXBW5u1NIIJGcSB7YOTCQ8N4BJZfYjroIKO6SMOJ/cxujX4UC7IZU4QKCKNl1ykOCN99bGA8aLGEuX2/B4IMEifDnq41N0Nikw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yD9nsvKY9Ottwf+VQne/gwje8RD1uIQaKlACll6lAZA=;
- b=enneGfZulFW9AfjR8KsN7sEIXy41bsIon+SNa/+51q1HY1Pxxb0b0mkHjpPLZVT+SPU+66+JbQvGMBSwnnBrcYbZyZ3gI2Q4NTz+olldoz8mxvL73nxwdWw8EJdEY8TE2tfQNy8YIUSMApUyJhfW+/JNUsUJs/6mEEC1Hj3MpMvwsPPYJXkPbDSrOp9MqySEAd2vN3/3gbVIivbJl/avllRsYCsy6Fa6cupcqTPMvBTzNMyNAWFssHc+5RhsGVypJXPIYYN422y+Pg0FjvMe3HGUa+AbsxOiUHwQJqe6HXuNIuqHcxOV3nK7eDY8eMbtlTC3bAfmEhkCXLNyuQpwgw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yD9nsvKY9Ottwf+VQne/gwje8RD1uIQaKlACll6lAZA=;
- b=HhK9WFKRFsLTYA/D5/ROT7Vdl3vKno5X3i2AXs5a0GRYF0cLuevc5mcMXRljYcTfc6LsHRsxu9RY9S9aDZQldd+ivd8MLyNFMAJjNOHAOwPyzvQ2NJLs0qfvQWcDY2lrJShiHSO8XlZUf2XCMo5WfM3f35L9HRi/zoVesH0qV2lkvBp8ahxqTsYOqJWN2CnGqOicONz1lEwBkDyCOl1wLLDAJtAsluvwl8aGEUTXK2FVEpTPnEHzPG/VAp/s5fvmZvxpEjKfbJPx0bvVZb4iJzsmky55aAGgsDkeXTEDWGXwQXmn+7erSh/6orzrvon4r56iFxD/8pBc5wp8Scd18A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by DM6PR12MB4780.namprd12.prod.outlook.com (2603:10b6:5:168::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.14; Tue, 2 Aug
- 2022 12:37:08 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::4cce:310f:93:5d58]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::4cce:310f:93:5d58%8]) with mapi id 15.20.5482.016; Tue, 2 Aug 2022
- 12:37:08 +0000
-Date: Tue, 2 Aug 2022 09:37:07 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@infradead.org>,
-	Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>,
-	Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
-	Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
-	Jacob jun Pan <jacob.jun.pan@intel.com>,
-	Zhangfei Gao <zhangfei.gao@linaro.org>,
-	Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v10 04/12] iommu: Add attach/detach_dev_pasid iommu
- interface
-Message-ID: <Yukac8X81CP7gDsM@nvidia.com>
-References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
- <20220705050710.2887204-5-baolu.lu@linux.intel.com>
- <20220723141118.GD79279@nvidia.com>
- <686b137f-232a-2a78-beb0-e4373bd20959@linux.intel.com>
- <20220725144005.GE3747@nvidia.com>
- <6da27a6b-b580-4ba4-24c8-ebdfb2d9345d@linux.intel.com>
- <20220726135722.GC4438@nvidia.com>
- <806b1437-441b-253b-7f52-ee7a7a9053e9@linux.intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <806b1437-441b-253b-7f52-ee7a7a9053e9@linux.intel.com>
-X-ClientProxiedBy: MN2PR04CA0032.namprd04.prod.outlook.com
- (2603:10b6:208:d4::45) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5F0D7F
+	for <iommu@lists.linux.dev>; Tue,  2 Aug 2022 19:38:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659469125; x=1691005125;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=nh6oqzOP4zkEC2BfS8mKs5YxKTaE500IwLAFVtKjfWc=;
+  b=d54l9mfGMoREcI/2mYslrm1AX5EfZCiX+Q9zt/QoVQgnVkOCFabbzeFg
+   VlmNfBb6hldDVLVQDf1lg4JRdAauaDPDt6lBOa7TTc93FJqXhjwyXbXiD
+   Y5AWIUpet5BuWYWRZGtWUBeZienuB7fVLVUmbJYwgg07drl8a9f8/vMUn
+   Z/xhctbFjFXQxQvyRCIOVFBV3kD/Mv5s8uU37xr4NxML5dqUOLViNJVfz
+   Gz+MUGppJDcv65z+THTdT7IVgvOJ5qGA0SxfzqX79KtqcXqvfX0tSuTgh
+   lom64vJLF4/p638CkUSkiHKi2x0rJ2qan7xvyMTv1sFQ0SWQGBuYRlMze
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10427"; a="351216609"
+X-IronPort-AV: E=Sophos;i="5.93,211,1654585200"; 
+   d="scan'208";a="351216609"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Aug 2022 12:34:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,211,1654585200"; 
+   d="scan'208";a="848320304"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga006.fm.intel.com with ESMTP; 02 Aug 2022 12:34:55 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+	id 0ABD7F7; Tue,  2 Aug 2022 22:35:05 +0300 (EEST)
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Eric Auger <eric.auger@redhat.com>,
+	linux-acpi@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Len Brown <lenb@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/1] ACPI: VIOT: Do not dereference fwnode in struct device
+Date: Tue,  2 Aug 2022 22:35:03 +0300
+Message-Id: <20220802193503.3092-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4791c8a5-57a9-432a-017b-08da7483b6b1
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4780:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	JVUVXtuHwCTlPsTokci1tqH3TZuZ+FqwaLHeMCHgshYRhBQglkUu3nQ/Uq+M4G1hJDw6rRLZVu4PumR2ycdEMOliDj8E/sRSr+A86uOJOh5P81IqG7jR1tMEo4U/nhBpfMVYw6p864cU6yVVSdU2PBMh1hJgyz2FUaHoJEwGfJwCS4mqa7V3E5SbNu4ELrxlrtjmo6qoin82OA18ahBU3yWK4FEDnSkQLl0K1/4MCTd7jtuyJsvLIZhGvfUNDvW+E7bP6Z6/kG6U1hst+v3nZfKxIgo4LUgfwbHcKvvxuqeh+sHjWkTPBw/PeNk96/+KOe11kUNv8UVGO53ERnCNvg9YXS4Vay8c9kCL2vq0iMRzchK04Yl8IQdtQPV9FjsDRzmpcJy9ZCrOpFEBpl1JD2a0XabMOlIIpvzRUfqgMBaBmK/XxvEu73q3/l2NHFwBtDIiOMazoiSp7ENScvlmbpTBhNQqfjq2DcUsjHnE60M8CttcZwNXJIFvsiSfA0qeTPFkYDGHj9Fqpf5HeDxGBwZJQge5gNKko2BqG+VdzJdFc8eE8ZTEE1A+blySQDxhc02EEUiS1g0EqYm9PpKNhmFgI9xDJYLlQmrLH/U+UjUZn7PXgKZgamZj14vZ94rg3WKGOKR6AoQfDJGPTIQwnRqWfuWL9XVS/puSlX1/zEqHqo1fWwPj/119ZlZQM28EfPDtozTCn4qcnd77t975Kf+jLUVulQ1awThbIJiJcM8=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(376002)(136003)(39860400002)(346002)(396003)(478600001)(36756003)(83380400001)(316002)(2616005)(6486002)(2906002)(41300700001)(53546011)(66556008)(66946007)(66476007)(54906003)(26005)(6916009)(6512007)(4326008)(8676002)(6506007)(86362001)(8936002)(186003)(38100700002)(5660300002)(7416002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?+8LiWED+SmhZ4HycP2URKzmZVA5bD9Gay+EaYN8HNWtz9OsmKFwmIDPc/BMC?=
- =?us-ascii?Q?RtxKSPYNvcgXUh8TebjNLxEhoXPeFfsz0maS3XQYy5kHSuo7VurxjydtijWQ?=
- =?us-ascii?Q?aC44I02yFD6CKSEA01QUPw91BF0yWvRcs9Dt9WDd3P4ZiH6/suhUeq5tNqMO?=
- =?us-ascii?Q?FmLtcPlEatA629woAK9sZ+dnrvH31uTe/OwcJuP69N9wbCEnTbOE7k/j93ke?=
- =?us-ascii?Q?NjfoK61AVIQqKGs2KHBe+dzdOP7TwPD+Y/t99oZ2KB3hkH+z6XHMcVpysTEU?=
- =?us-ascii?Q?OaH1HVmvYIKIw9MjMNEQg27vGple7DMeS2F9ZvGag/pfv/huoyY+02anuvUF?=
- =?us-ascii?Q?eyw0QavUUrHTWSKde/yqb9xtHyoUWb+ulwITwXrYLiNZ6qkDbZi1dJ4WvWgX?=
- =?us-ascii?Q?A7fMLMmr58ASTpn9XS6Msv0e+/+wfz5UzwYtsM+cKU+khSm+dvALu+cGgQyJ?=
- =?us-ascii?Q?FPb95cQWIbrDqKYaKTz5g6AZY+V6ge6s1v1qUm2REjD1qjZ+KEFdjkq+D3OG?=
- =?us-ascii?Q?jzrjfMapeaEqz5DpXANa/mPT86CkChBVMSh8HeQQ/Al7F2DpneMhcBWAMQb0?=
- =?us-ascii?Q?r87MzBst1QH9ITExR+DBYJKKkg2EqkNYkKbUFZzV5Uk6ZJF+6AS9FU3hsL0p?=
- =?us-ascii?Q?tebVMohxfI039J/l1hlfShK+mbYvZhNsDuUhI9fSdrmcck3l/oUu/83PBqGm?=
- =?us-ascii?Q?GlOa81tQOiEt4K17hY+NLuoxIraMSIuRkwBm5VL2TGbuaQm+E4SduK3/GK3E?=
- =?us-ascii?Q?rXzqgGfZLVEljsjNiyvcaxjusSmCiTWmrZMXJRiuZLXWDPAXdnIxpfFUj4Wq?=
- =?us-ascii?Q?5hYpCK6n3Ax+lBVDRYcyryR/7mUwVuNA2exx1l1vyTcd/6MNPzjiPjjLesCo?=
- =?us-ascii?Q?TEDi3VFyvjvsD0oYpbXhK6ZF4NU+5qXiPdgjpQQQM1fMunqHC8ceWsxFRhql?=
- =?us-ascii?Q?gP++fhvqc14r7WZpoq2r0o1xhjaedixHJ3ogjL/FcflXD5iQtMryfUoJjgsw?=
- =?us-ascii?Q?go+dQtGrKEugCLgQAfXmMuemHXY70egJ4qGozzWi8H2GZBqYcI95hdf7CZ26?=
- =?us-ascii?Q?ggs7MDMubqqftOBzSM+5vVmOBfONG4BbmvxUDvzqW/WZmp1gLX8/s4XIIAsR?=
- =?us-ascii?Q?yDKWmZOuXmkuHeu89L46wz36vwdY0Aq+d216nCrf6iFxCkn995S39cXSLIDS?=
- =?us-ascii?Q?IPXWHAPgxz7HkPLyp4ott2OXENo+a6n26BFw0bJDbo8lM9rgkAlHOy229Xxh?=
- =?us-ascii?Q?W99ETGvW8a0vICzfTZlfcx8BBG+b1rnGLfWjy+02OMiHU6O2NJbCsc721QgC?=
- =?us-ascii?Q?HLkMujBHke2W/nmfmv/MTK4OyWi4bD6p6KY/FwFQnYd751Ozrq7cGzX9rkFa?=
- =?us-ascii?Q?lhJ5dsp9p6y3VTNOCcXyvc68RunTLiXlnHxOjCUYeVYm8EMxstR1qvQVlrmB?=
- =?us-ascii?Q?6WcF5xaent7s+MTC0hHqx+M2NrsKml9ubKr7MLwrNEUqNUHQNSDimGb/b47u?=
- =?us-ascii?Q?jQ6XnNpEAFnPz41uUNuhzzAQvtGptyVjObhWsoGaI4VGzwqlITKWLaGqrk9r?=
- =?us-ascii?Q?HU8IKUeinOwj6WQlse06i/hy1BWz4UQFq9cEC58B?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4791c8a5-57a9-432a-017b-08da7483b6b1
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Aug 2022 12:37:08.2343
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: W28lg49Dx6IQ6ia3FbVA9T4uHnuDovKnN2YAay0z0Fl3BHz421WM66tcQ7Df1r4Q
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4780
+Content-Transfer-Encoding: 8bit
 
-On Tue, Aug 02, 2022 at 10:19:08AM +0800, Baolu Lu wrote:
-> Hi Jason,
-> 
-> On 7/26/22 9:57 PM, Jason Gunthorpe wrote:
-> > > +	/*
-> > > +	 * Block PASID attachment in all cases where the PCI fabric is
-> > > +	 * routing based on address. ACS disables it.
-> > > +	 */
-> > > +	if (dev_is_pci(dev) &&
-> > > +	    !pci_acs_path_enabled(to_pci_dev(dev), NULL, REQ_ACS_FLAGS))
-> > > +		return -ENODEV;
-> > I would probably still put this in a function just to be clear, and
-> > probably even a PCI layer funcion 'pci_is_pasid_supported' that
-> > clearly indicates that the fabric path can route a PASID packet
-> > without mis-routing it.
-> 
-> I am fine with putting above in a function to make it clear. But I am
-> hesitant to move this part of logic into the PCI layer.
-> 
-> From the perspective of IOMMU, TLPs with PASID prefix form distinct
-> address spaces, so it's reasonable to require ACS protection on the
-> upstream path.
-> 
-> But PCI spec doesn't require this. The interfaces defined in drivers/pci
-> /ats.c should work as well even the IOMMU is disabled.
+In order to make the underneath API easier to change in the future,
+prevent users from dereferencing fwnode from struct device.
+Instead, use the specific dev_fwnode() and device_match_fwnode()
+APIs for that.
 
-No, I don't think so, that is useless.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/acpi/viot.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-PCI SIG has given a bunch of tools, and it is up to the system
-software to figure out how to use them.
-
-There is no reasonable case where Linux would want PASID and broken
-fabric routing - so just block it at the PCI layer.
-
-> Yes, agreed. The iommu groups are not an issue any more. But just like
-> iommu_attach_device(), if multiple devices share a group, there must be
-> some mechanism to make sure that device drivers are aware of this fact
-> and only attach a shared domain to any PASID of those devices.'
-> Otherwise, the iommu_attach/detach_dev_pasid() might be misused.
-
-I think it is the same as the existing attach logic for groups, with
-the sharing, owern and everything else did. No change for pasid.
+diff --git a/drivers/acpi/viot.c b/drivers/acpi/viot.c
+index 647f11cf165d..6132092dab2a 100644
+--- a/drivers/acpi/viot.c
++++ b/drivers/acpi/viot.c
+@@ -88,7 +88,7 @@ static int __init viot_get_pci_iommu_fwnode(struct viot_iommu *viommu,
+ 		return -ENODEV;
+ 	}
  
-> Considering that all existing PASID use cases are singleton group case,
-> probably we can start our support from the simple singleton group case?
+-	fwnode = pdev->dev.fwnode;
++	fwnode = dev_fwnode(&pdev->dev);
+ 	if (!fwnode) {
+ 		/*
+ 		 * PCI devices aren't necessarily described by ACPI. Create a
+@@ -101,7 +101,7 @@ static int __init viot_get_pci_iommu_fwnode(struct viot_iommu *viommu,
+ 		}
+ 		set_primary_fwnode(&pdev->dev, fwnode);
+ 	}
+-	viommu->fwnode = pdev->dev.fwnode;
++	viommu->fwnode = dev_fwnode(&pdev->dev);
+ 	pci_dev_put(pdev);
+ 	return 0;
+ }
+@@ -314,7 +314,7 @@ static int viot_dev_iommu_init(struct device *dev, struct viot_iommu *viommu,
+ 		return -ENODEV;
+ 
+ 	/* We're not translating ourself */
+-	if (viommu->fwnode == dev->fwnode)
++	if (device_match_fwnode(dev, viommu->fwnode))
+ 		return -EINVAL;
+ 
+ 	ops = iommu_ops_from_fwnode(viommu->fwnode);
+-- 
+2.35.1
 
-Don't make confusing unnecessary special cases please.
-
-Jason
