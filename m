@@ -1,86 +1,105 @@
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 946107C
-	for <iommu@lists.linux.dev>; Thu,  4 Aug 2022 16:36:15 +0000 (UTC)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-	by perceval.ideasonboard.com (Postfix) with ESMTPSA id 0208A481;
-	Thu,  4 Aug 2022 18:26:23 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-	s=mail; t=1659630384;
-	bh=lk0zj71snkJBEqFGyEjMR+pLpWZT/9z8Ei+uNiLzHSg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=CIfqTTAoVpMf4gjGhk9eXeaEMUbwZXSAgoJIFjUVQvSG9FWdJv3d+ullST5gy9ntX
-	 51GduWW5UD8/IXlnszfjDI5Tz4acCGuSCSCQULiVvfR6D644E43BNJ5eomqJHs6Q2P
-	 OXLv48QqkoBigfcLYHceMOq8IEd6a6PfOW45zb+0=
-Date: Thu, 4 Aug 2022 19:26:16 +0300
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Suman Anna <s-anna@ti.com>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] iommu/omap: fix buffer overflow in debugfs
-Message-ID: <YuvzKJM66k+ZPD9c@pendragon.ideasonboard.com>
-References: <YuvYh1JbE3v+abd5@kili>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 526057C
+	for <iommu@lists.linux.dev>; Thu,  4 Aug 2022 17:55:41 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 26E7B1063;
+	Thu,  4 Aug 2022 10:55:41 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 044CE3F73B;
+	Thu,  4 Aug 2022 10:55:39 -0700 (PDT)
+Message-ID: <e08386bc-530d-9caf-1130-d952942a6736@arm.com>
+Date: Thu, 4 Aug 2022 18:55:34 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YuvYh1JbE3v+abd5@kili>
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] iommu/virtio: Implement viommu_{un,}map_pages
+Content-Language: en-GB
+To: Erik Kurzinger <ekurzinger@nvidia.com>, iommu@lists.linux.dev
+Cc: "Vaibhav Vyas (SW)" <vavyas@nvidia.com>
+References: <39a54565-0f33-b807-5983-e7a8e92b927a@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <39a54565-0f33-b807-5983-e7a8e92b927a@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Hi Dan,
-
-Thank you for the patch.
-
-On Thu, Aug 04, 2022 at 05:32:39PM +0300, Dan Carpenter wrote:
-> There are two issues here:
+On 02/08/2022 9:04 pm, Erik Kurzinger wrote:
+> Because virtio-iommu currently only implements the map and unmap iommu
+> domain ops, when mapping a block of memory a separate mapping will be
+> created for each page. Since the number of DMA mappings which may exist
+> on the physical IOMMU is limited (either the user's locked memory limit
+> for memory-backed mappings or else the 64K limit imposed by the type1
+> driver), this can become problematic for larger blocks of memory.
 > 
-> 1) The "len" variable needs to be checked before the very first write.
->    Otherwise if omap2_iommu_dump_ctx() with "bytes" less than 32 it is a
->    buffer overflow.
-> 2) The snprintf() function returns the number of bytes that *would* have
->    been copied if there were enough space.  But we want to know the
->    number of bytes which were *actually* copied so use scnprintf()
->    instead.
-> 
-> Fixes: bd4396f09a4a ("iommu/omap: Consolidate OMAP IOMMU modules")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> To avoid such issues, we provide implementations for the map_pages and
+> unmap_pages iommu domain ops. This allow us to only use a single
+> mapping, even for multiple-page blocks of memory. These new functions
+> will simply defer to the existing map and unmap functions, with the size
+> computed from the page size and page count.
+
+FYI, an equivalent patch is already queued up for 5.20/6.0:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git/commit/?h=virtio
+
+Robin.
+
 > ---
->  drivers/iommu/omap-iommu-debug.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+>   drivers/iommu/virtio-iommu.c | 23 +++++++++++++++++++++++
+>   1 file changed, 23 insertions(+)
 > 
-> diff --git a/drivers/iommu/omap-iommu-debug.c b/drivers/iommu/omap-iommu-debug.c
-> index a99afb5d9011..259f65291d90 100644
-> --- a/drivers/iommu/omap-iommu-debug.c
-> +++ b/drivers/iommu/omap-iommu-debug.c
-> @@ -32,12 +32,12 @@ static inline bool is_omap_iommu_detached(struct omap_iommu *obj)
->  		ssize_t bytes;						\
->  		const char *str = "%20s: %08x\n";			\
->  		const int maxcol = 32;					\
-> -		bytes = snprintf(p, maxcol, str, __stringify(name),	\
-> +		if (len < maxcol)					\
-> +			goto out;					\
-> +		bytes = scnprintf(p, maxcol, str, __stringify(name),	\
->  				 iommu_read_reg(obj, MMU_##name));	\
->  		p += bytes;						\
->  		len -= bytes;						\
-> -		if (len < maxcol)					\
-> -			goto out;					\
->  	} while (0)
-
-This could would really benefit from being rewritten using a static
-table of register name and offset and a loop that iterates over it.
-Still, this is a valid bug fix, so
-
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-
->  static ssize_t
-
--- 
-Regards,
-
-Laurent Pinchart
+> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+> index 25be4b822aa0..37f11a799f2a 100644
+> --- a/drivers/iommu/virtio-iommu.c
+> +++ b/drivers/iommu/virtio-iommu.c
+> @@ -827,6 +827,18 @@ static int viommu_map(struct iommu_domain *domain, 
+> unsigned long iova,
+>       return ret;
+>   }
+> 
+> +static int viommu_map_pages(struct iommu_domain *domain,
+> +                unsigned long iova, phys_addr_t paddr,
+> +                size_t pgsize, size_t pgcount,
+> +                int prot, gfp_t gfp, size_t *mapped)
+> +{
+> +    u64 size = pgsize * pgcount;
+> +    int ret = viommu_map(domain, iova, paddr, size, prot, gfp);
+> +    if (!ret && mapped)
+> +        *mapped = size;
+> +    return ret;
+> +}
+> +
+>   static size_t viommu_unmap(struct iommu_domain *domain, unsigned long 
+> iova,
+>                  size_t size, struct iommu_iotlb_gather *gather)
+>   {
+> @@ -854,6 +866,15 @@ static size_t viommu_unmap(struct iommu_domain 
+> *domain, unsigned long iova,
+>       return ret ? 0 : unmapped;
+>   }
+> 
+> +static size_t viommu_unmap_pages(struct iommu_domain *domain,
+> +                 unsigned long iova,
+> +                 size_t pgsize, size_t pgcount,
+> +                 struct iommu_iotlb_gather *gather)
+> +{
+> +    u64 size = pgsize * pgcount;
+> +    return viommu_unmap(domain, iova, size, gather);
+> +}
+> +
+>   static phys_addr_t viommu_iova_to_phys(struct iommu_domain *domain,
+>                          dma_addr_t iova)
+>   {
+> @@ -1019,7 +1040,9 @@ static struct iommu_ops viommu_ops = {
+>       .default_domain_ops = &(const struct iommu_domain_ops) {
+>           .attach_dev        = viommu_attach_dev,
+>           .map            = viommu_map,
+> +        .map_pages        = viommu_map_pages,
+>           .unmap            = viommu_unmap,
+> +        .unmap_pages        = viommu_unmap_pages,
+>           .iova_to_phys        = viommu_iova_to_phys,
+>           .iotlb_sync        = viommu_iotlb_sync,
+>           .free            = viommu_domain_free,
