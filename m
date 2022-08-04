@@ -1,132 +1,113 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74D4C7F
-	for <iommu@lists.linux.dev>; Thu,  4 Aug 2022 09:03:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29064C433D6;
-	Thu,  4 Aug 2022 09:03:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1659603793;
-	bh=SivxL3skWvzw9jhqnKcu/8CxHVkrZngsEGy7QHmjwIE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=VKKKZClcZEJ9Q3mSncYVDlpJDWwX5lRtpWJVA7hyjLfbZ+6VuQD0FBo6dTCyVfVwm
-	 3Z+OPcs+kQzFAMkdB34czVDofL9lxQ3iayIdjT2p06IJtaGmFBLk82Vn7WH3HEKdI7
-	 DNEedPtHJhb3zvI3W7kaN/jmnz9i+WlEeLTlGRAOfRZ/P/FhbyaTQ6wWNnKv8QIDDU
-	 un2vaEgq4hQ5P4lnAss5fn9MSlZ+jVo1OcYVGIhmnqmdtOZDflHdrbXY0TrmZS4/F5
-	 kUejs6MYQKkSPwdEf5pRSqy0/QQXSonr6A7nmYvr9+iznlHJkvU7JqrLRpmP8MOhMn
-	 YiT3WcV4dxkNg==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
-	by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.95)
-	(envelope-from <maz@kernel.org>)
-	id 1oJWl4-000us9-Li;
-	Thu, 04 Aug 2022 10:03:10 +0100
-Date: Thu, 04 Aug 2022 10:03:10 +0100
-Message-ID: <87o7x0wfch.wl-maz@kernel.org>
-From: Marc Zyngier <maz@kernel.org>
-To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc: Randy Dunlap <rdunlap@infradead.org>,
-	Stephen Hemminger
-	<sthemmin@microsoft.com>,
-	KY Srinivasan <kys@microsoft.com>,
-	Haiyang Zhang
-	<haiyangz@microsoft.com>,
-	"wei.liu@kernel.org" <wei.liu@kernel.org>,
-	Dexuan
- Cui <decui@microsoft.com>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com"
-	<robin.murphy@arm.com>,
-	"samuel@sholland.org" <samuel@sholland.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [PATCH 1/1] iommu/hyper-v: Use helper instead of directly accessing affinity
-In-Reply-To: <PH0PR21MB302502058A130F3529FE341DD79C9@PH0PR21MB3025.namprd21.prod.outlook.com>
-References: <1658796820-2261-1-git-send-email-mikelley@microsoft.com>
-	<5ea65d3d-745e-0a16-c885-a224a20ee7ce@infradead.org>
-	<PH0PR21MB302502058A130F3529FE341DD79C9@PH0PR21MB3025.namprd21.prod.outlook.com>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
- (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF75E7F
+	for <iommu@lists.linux.dev>; Thu,  4 Aug 2022 09:17:01 +0000 (UTC)
+X-UUID: 798942ea4ada4b59b2af815de34d7b48-20220804
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=hn3C1DbmbSBxgcXhYKQ0b8hhfjiQV9f02TA0yA5GXLk=;
+	b=OPosYza4sZNTzeuuRCyZPW6B6sDTaZY7i6n4yUKMVgd8HTiXajnQ3G81jNRv4FWRuiUtigA6gpt2uDowHc8LM5UmAZyyLpXwMtHcfSs19qpFb0aI4YiUt2RhZnRPdVoa7Yh4sU81qx+3RSlCS6Gb0bp9jqUbYk0iG3LFtCbIvO4=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:ca628cc1-1086-48a5-927d-98829d52fed3,OB:0,LO
+	B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+	ION:release,TS:50
+X-CID-INFO: VERSION:1.1.8,REQID:ca628cc1-1086-48a5-927d-98829d52fed3,OB:0,LOB:
+	0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+	N:release,TS:50
+X-CID-META: VersionHash:0f94e32,CLOUDID:543338d1-841b-4e95-ad42-8f86e18f54fc,C
+	OID:2780e0fbad96,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+	RL:1,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 798942ea4ada4b59b2af815de34d7b48-20220804
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+	(envelope-from <tinghan.shen@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+	with ESMTP id 385525212; Thu, 04 Aug 2022 17:16:56 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Thu, 4 Aug 2022 17:16:55 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
+ Transport; Thu, 4 Aug 2022 17:16:55 +0800
+Message-ID: <e4ae167cc5f2436097b98c7c26484e9f782797eb.camel@mediatek.com>
+Subject: Re: [PATCH v4 05/20] dt-bindings: power: mediatek: Update
+ maintainer list
+From: Tinghan Shen <tinghan.shen@mediatek.com>
+To: Matthias Brugger <matthias.bgg@gmail.com>, Yong Wu <yong.wu@mediatek.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+	<robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>, Krzysztof Kozlowski
+	<krzysztof.kozlowski+dt@linaro.org>, Lee Jones <lee@kernel.org>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	"MandyJH Liu" <mandyjh.liu@mediatek.com>, Weiyi Lu <weiyi.lu@mediatek.com>
+CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>,
+	<Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date: Thu, 4 Aug 2022 17:16:55 +0800
+In-Reply-To: <11c7b04e-9837-440c-fa5b-3074a706e0ba@gmail.com>
+References: <20220729063208.16799-1-tinghan.shen@mediatek.com>
+	 <20220729063208.16799-6-tinghan.shen@mediatek.com>
+	 <11c7b04e-9837-440c-fa5b-3074a706e0ba@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: text/plain; charset=US-ASCII
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: mikelley@microsoft.com, rdunlap@infradead.org, sthemmin@microsoft.com, kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org, decui@microsoft.com, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, samuel@sholland.org, linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org, iommu@lists.linux.dev
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK: N
 
-On Wed, 03 Aug 2022 17:26:10 +0100,
-"Michael Kelley (LINUX)" <mikelley@microsoft.com> wrote:
+Hi Matthias,
+
+On Thu, 2022-08-04 at 10:43 +0200, Matthias Brugger wrote:
+> Weiyi Lu,
 > 
-> From: Randy Dunlap <rdunlap@infradead.org> Sent: Monday, July 25, 2022 7:39 PM
+> On 29/07/2022 08:31, Tinghan Shen wrote:
+> > Update the maintainer list of power controller binding.
 > > 
-> > On 7/25/22 17:53, Michael Kelley wrote:
-> > > Recent changes to solve inconsistencies in handling IRQ masks #ifdef
-> > > out the affinity field in irq_common_data for non-SMP configurations.
-> > > The current code in hyperv_irq_remapping_alloc() gets a compiler error
-> > > in that case.
-> > >
-> > > Fix this by using the new irq_data_update_affinity() helper, which
-> > > handles the non-SMP case correctly.
-> > >
+> > Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+> > Acked-by: Rob Herring <robh@kernel.org>
+> > ---
+> >   .../devicetree/bindings/power/mediatek,power-controller.yaml    | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
 > > 
-> > Reported-by: Randy Dunlap <rdunlap@infradead.org>
-> > > Signed-off-by: Michael Kelley <mikelley@microsoft.com>
-> > Tested-by: Randy Dunlap <rdunlap@infradead.org>
-> > Acked-by: Randy Dunlap <rdunlap@infradead.org>
-> > 
-> > Thanks.
-> > 
-> > > ---
-> > >  drivers/iommu/hyperv-iommu.c | 4 +---
-> > >  1 file changed, 1 insertion(+), 3 deletions(-)
-> > >
-> > > diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
-> > > index 51bd66a..e190bb8 100644
-> > > --- a/drivers/iommu/hyperv-iommu.c
-> > > +++ b/drivers/iommu/hyperv-iommu.c
-> > > @@ -68,7 +68,6 @@ static int hyperv_irq_remapping_alloc(struct irq_domain
-> > *domain,
-> > >  {
-> > >  	struct irq_alloc_info *info = arg;
-> > >  	struct irq_data *irq_data;
-> > > -	struct irq_desc *desc;
-> > >  	int ret = 0;
-> > >
-> > >  	if (!info || info->type != X86_IRQ_ALLOC_TYPE_IOAPIC || nr_irqs > 1)
-> > > @@ -90,8 +89,7 @@ static int hyperv_irq_remapping_alloc(struct irq_domain *domain,
-> > >  	 * Hypver-V IO APIC irq affinity should be in the scope of
-> > >  	 * ioapic_max_cpumask because no irq remapping support.
-> > >  	 */
-> > > -	desc = irq_data_to_desc(irq_data);
-> > > -	cpumask_copy(desc->irq_common_data.affinity, &ioapic_max_cpumask);
-> > > +	irq_data_update_affinity(irq_data, &ioapic_max_cpumask);
-> > >
-> > >  	return 0;
-> > >  }
-> > 
-> > --
+> > diff --git
+ a/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+> > b/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+> > index 2d6afc0909473..03b7f6aa591d4 100644
+> > ---
+ a/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+> > +++
+ b/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+> > @@ -7,7 +7,7 @@ $schema: 
+> >
+ https://urldefense.com/v3/__http://devicetree.org/meta-schemas/core.yaml*__;Iw!!CTRNKA9wMg0ARbw!0Fm9t0VaOL6Sa_hC5KnVSsSa8A9LD3giZsk9UmSm2U8BkqwKo7-YhZtAaMoqHF2RYvhf1NG1qAc-je5tb-bE03wdVA$
+> >  
+> >   title: Mediatek Power Domains Controller
+> >   
+> >   maintainers:
+> > -  - Weiyi Lu <weiyi.lu@mediatek.com>
+> > +  - MandyJH Liu <mandyjh.liu@mediatek.com>
 > 
-> Marc --
+> Are you ok with this change. Can you provide a Acked-by tag for that?
 > 
-> Could you pick up this patch for the 6.0 merge window?  It's a fix to a
-> side effect of Samuel Holland's series to unify SMP and UP handling of
-> affinity masks that went through your irq/irqchip-next tree.
+> Regards,
+> Matthias
+> 
+> >     - Matthias Brugger <mbrugger@suse.com>
+> >   
+> >   description: |
 
-Applied with a:
 
-Fixes: aa0813581b8d ("genirq: Provide an IRQ affinity mask in non-SMP configs")
+Weiyi has resigned from MediaTek, and MandyJH has taken his place.
+Maybe he still keep an eye on this list, but MandyJH should take over as
+ MediaTek's maintainer.
 
-Thanks,
 
-	M.
+Best regards,
+TingHan
 
--- 
-Without deviation from the norm, progress is not possible.
+
+
