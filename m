@@ -1,143 +1,137 @@
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E78D816
-	for <iommu@lists.linux.dev>; Thu,  4 Aug 2022 10:59:17 +0000 (UTC)
-X-UUID: c751e36dc6e14953a12f57b171e58cf6-20220804
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=T1eKXkGh7jVoiCJx+V8wErnkBaEWGODgPp2hCVxC4ng=;
-	b=E40IZ4QK24xnYOBQZhHFjy+SSnwN0vpFeIs0vnFgOKyeZrUrsCGs5P7f7Udy4d23wrbhj8jvy6AZiJhffvL/m1EIDfhjKuXln/hlg8pbbOJFBRfjPOgZE8onJ267C+VoKahcwUR83ZcjUr2BFK7Y8R43qj8vkHyX7oE2GEEN+kY=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:bc7805d6-4020-45c5-89b4-bc757ecedfe3,OB:0,LO
-	B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-	ION:release,TS:-5
-X-CID-META: VersionHash:0f94e32,CLOUDID:41e94325-a982-4824-82d2-9da3b6056c2a,C
-	OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-	,QS:nil,BEC:nil,COL:0
-X-UUID: c751e36dc6e14953a12f57b171e58cf6-20220804
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
-	(envelope-from <chengci.xu@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 1532538335; Thu, 04 Aug 2022 18:59:12 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Thu, 4 Aug 2022 18:59:10 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
- Transport; Thu, 4 Aug 2022 18:59:10 +0800
-From: Chengci.Xu <chengci.xu@mediatek.com>
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will
- Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
-	<robh+dt@kernel.org>, Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>, Matthias Brugger
-	<matthias.bgg@gmail.com>
-CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<Project_Global_Chrome_Upstream_Group@mediatek.com>, Chengci.Xu
-	<chengci.xu@mediatek.com>
-Subject: [PATCH 3/3] iommu/mediatek: Add MT8188 IOMMU Support
-Date: Thu, 4 Aug 2022 18:58:34 +0800
-Message-ID: <20220804105834.626-4-chengci.xu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220804105834.626-1-chengci.xu@mediatek.com>
-References: <20220804105834.626-1-chengci.xu@mediatek.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 786FE23A1
+	for <iommu@lists.linux.dev>; Thu,  4 Aug 2022 11:13:50 +0000 (UTC)
+Received: by mail-lf1-f43.google.com with SMTP id r17so5334233lfm.11
+        for <iommu@lists.linux.dev>; Thu, 04 Aug 2022 04:13:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Ocrse2lQ6Zu05i5TSECxP89aNNukjo6UNe8sPBi1Tac=;
+        b=Y2sE4cFmB+/Hm7t80UvbhOR/3iDhNxGiy5cDtxtu9grrPVx2hr5S4QbpVJlNmxk6Nh
+         mW7pS10lAUh+BRUSydRJ0e0ES3++9AvWsbBo5QD6+KpFKfQ7qHe4FvJ4X9W6mgScBwO5
+         EY0FwScIlrnBeCj9kj59E2Zv68PyHW5L6+BOpfdqYKEgOc3G5oq5pFMzKZkm3ah4jpHi
+         QnggCBo+4a8zuLbnCkVtz934XZeLP5t5bw+AieLC+OT0Q6dv2xCCekI58pY4x5l4sck9
+         NguMsVmActDL8MZmcrH4fmHm0q5SakwlZyYMV+AO/TNd3t73mvxk5fEJa/2G05oT0a2x
+         UNQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Ocrse2lQ6Zu05i5TSECxP89aNNukjo6UNe8sPBi1Tac=;
+        b=QaBihakEx6cinnTgh6lU0HrOqjPfLXaDeYtAooM5aJ2Ymz6sC74CsKr1oL8AKTuva+
+         8Xjjed6Xu85w2JALFMAs4sFgmktpOwGYeoQpraLhIgX+ZaK/mZviutxHBkGxPgMH2+4N
+         dr6X/MCkaODkKg96WzroCKH9cMtTKmh0t2KTS75GAkbFoumpSIC0AktUA4kxfC9UjZtF
+         BTXMd2ZpoFKOKxu2r4FmRYRbkawhuccDfUGqsz7JNFCaLXzb3L5ak+mbEO3l8I4zb6Z7
+         cQpinX+0hofagKrkxRZ0bnoJUfuZxQAYNN7RNLgKYxn788NcsGEWsBPrhRSSX1HQ1vCZ
+         jA7g==
+X-Gm-Message-State: ACgBeo19+NPG71CZK7Zq3KXMaNbVtXibduQEp7cBblSQdFgNBRw55QBp
+	jDP/RmwfxR83veKbXoc5WkxbSA==
+X-Google-Smtp-Source: AA6agR63N/Slocyhyqr3XJV8eS2xQ5DeoyAUJHauggb0t0T4y0jeXLCPYsVQtaa2lc9r7TngPF7lIg==
+X-Received: by 2002:a05:6512:3f05:b0:48a:ca44:80f2 with SMTP id y5-20020a0565123f0500b0048aca4480f2mr519981lfa.224.1659611628451;
+        Thu, 04 Aug 2022 04:13:48 -0700 (PDT)
+Received: from [192.168.1.6] ([77.222.167.48])
+        by smtp.gmail.com with ESMTPSA id r15-20020ac25f8f000000b0048b03f9adcdsm84592lfe.309.2022.08.04.04.13.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 04 Aug 2022 04:13:47 -0700 (PDT)
+Message-ID: <ae06f644-b988-8fc3-fde8-258299f8f2ae@linaro.org>
+Date: Thu, 4 Aug 2022 13:13:45 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 1/3] dt-bindings: mediatek: mt8188: Add binding for MM &
+ INFRA IOMMU
+Content-Language: en-US
+To: "Chengci.Xu" <chengci.xu@mediatek.com>, Yong Wu <yong.wu@mediatek.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>
+Cc: iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220804105834.626-1-chengci.xu@mediatek.com>
+ <20220804105834.626-2-chengci.xu@mediatek.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220804105834.626-2-chengci.xu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-MT8188 has 3 IOMMU, containing 2 MM IOMMUs, one is for vdo, the other
-is for vpp. and 1 INFRA IOMMU.
+On 04/08/2022 12:58, Chengci.Xu wrote:
+> This patch adds descriptions for mt8188 IOMMU which also use ARM
+> Short-Descriptor translation table format.
+> 
 
-Signed-off-by: Chengci.Xu <chengci.xu@mediatek.com>
----
- drivers/iommu/mtk_iommu.c | 48 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 48 insertions(+)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 6fe780783ec8..98c2eae5229e 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -164,6 +164,7 @@ enum mtk_iommu_plat {
- 	M4U_MT8173,
- 	M4U_MT8183,
- 	M4U_MT8186,
-+	M4U_MT8188,
- 	M4U_MT8192,
- 	M4U_MT8195,
- };
-@@ -1479,6 +1480,50 @@ static const struct mtk_iommu_plat_data
- mt8186_data_mm = {
- 	.iova_region_nr = ARRAY_SIZE(mt8192_multi_dom),
- };
- 
-+static const struct mtk_iommu_plat_data mt8188_data_infra = {
-+	.m4u_plat	  = M4U_MT8188,
-+	.flags            = WR_THROT_EN | DCM_DISABLE | STD_AXI_MODE | PM_CLK_AO |
-+			    MTK_IOMMU_TYPE_INFRA | IFA_IOMMU_PCIE_SUPPORT |
-+			    CFG_IFA_MASTER_IN_ATF,
-+	.pericfg_comp_str = "mediatek,mt8188-pericfg_ao",
-+	.inv_sel_reg      = REG_MMU_INV_SEL_GEN2,
-+	.banks_num	  = 1,
-+	.banks_enable     = {true},
-+	.iova_region      = single_domain,
-+	.iova_region_nr   = ARRAY_SIZE(single_domain),
-+};
-+
-+static const struct mtk_iommu_plat_data mt8188_data_vdo = {
-+	.m4u_plat	= M4U_MT8188,
-+	.flags          = HAS_BCLK | HAS_SUB_COMM_3BITS | OUT_ORDER_WR_EN |
-+			  WR_THROT_EN | IOVA_34_EN | SHARE_PGTABLE | MTK_IOMMU_TYPE_MM,
-+	.hw_list        = &m4ulist,
-+	.inv_sel_reg    = REG_MMU_INV_SEL_GEN2,
-+	.banks_num      = 1,
-+	.banks_enable   = {true},
-+	.iova_region	= mt8192_multi_dom,
-+	.iova_region_nr	= ARRAY_SIZE(mt8192_multi_dom),
-+	.larbid_remap   = {{2}, {0}, {21}, {0}, {19}, {9, 10,
-+			   11 /* 11a */, 25 /* 11c */},
-+			   {13, 0, 29 /* 16b */, 30 /* 17b */, 0}, {5}},
-+};
-+
-+static const struct mtk_iommu_plat_data mt8188_data_vpp = {
-+	.m4u_plat	= M4U_MT8188,
-+	.flags          = HAS_BCLK | HAS_SUB_COMM_3BITS | OUT_ORDER_WR_EN |
-+			  WR_THROT_EN | IOVA_34_EN | SHARE_PGTABLE | MTK_IOMMU_TYPE_MM,
-+	.hw_list        = &m4ulist,
-+	.inv_sel_reg    = REG_MMU_INV_SEL_GEN2,
-+	.banks_num      = 1,
-+	.banks_enable   = {true},
-+	.iova_region	= mt8192_multi_dom,
-+	.iova_region_nr	= ARRAY_SIZE(mt8192_multi_dom),
-+	.larbid_remap   = {{1}, {3}, {23}, {7}, {MTK_INVALID_LARBID},
-+			   {12, 15, 24 /* 11b */}, {14, MTK_INVALID_LARBID,
-+			   16 /* 16a */, 17 /* 17a */, MTK_INVALID_LARBID,
-+			   27, 28 /* ccu0 */, MTK_INVALID_LARBID}, {4, 6}},
-+};
-+
- static const struct mtk_iommu_plat_data mt8192_data = {
- 	.m4u_plat       = M4U_MT8192,
- 	.flags          = HAS_BCLK | HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN |
-@@ -1546,6 +1591,9 @@ static const struct of_device_id mtk_iommu_of_ids[] =
- {
- 	{ .compatible = "mediatek,mt8173-m4u", .data = &mt8173_data},
- 	{ .compatible = "mediatek,mt8183-m4u", .data = &mt8183_data},
- 	{ .compatible = "mediatek,mt8186-iommu-mm",    .data = &mt8186_data_mm},
- /* mm: m4u */
-+	{ .compatible = "mediatek,mt8188-iommu-infra", .data =
- &mt8188_data_infra},
-+	{ .compatible = "mediatek,mt8188-iommu-vdo", .data = &mt8188_data_vdo},
-+	{ .compatible = "mediatek,mt8188-iommu-vpp", .data = &mt8188_data_vpp},
- 	{ .compatible = "mediatek,mt8192-m4u", .data = &mt8192_data},
- 	{ .compatible = "mediatek,mt8195-iommu-infra", .data =
- &mt8195_data_infra},
- 	{ .compatible = "mediatek,mt8195-iommu-vdo",   .data = &mt8195_data_vdo},
--- 
-2.25.1
+Thank you for your patch. There is something to discuss/improve.
 
+>      then:
+>        required:
+> diff --git a/include/dt-bindings/memory/mt8188-memory-port.h
+>  b/include/dt-bindings/memory/mt8188-memory-port.h
+> new file mode 100644
+> index 000000000000..612fd366c3a7
+> --- /dev/null
+> +++ b/include/dt-bindings/memory/mt8188-memory-port.h
+
+Use vendor prefix in filename, so mediatek,mt8188-memory-port.h
+
+> @@ -0,0 +1,482 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+
+
+This should be dual-license, if possible.
+
+
+> +/*
+> + * Copyright (c) 2022 MediaTek Inc.
+> + * Author: Chengci Xu <chengci.xu@mediatek.com>
+> + */
+> +#ifndef _DT_BINDINGS_MEMORY_MT8188_LARB_PORT_H_
+> +#define _DT_BINDINGS_MEMORY_MT8188_LARB_PORT_H_
+> +
+> +#include <dt-bindings/memory/mtk-memory-port.h>
+> +
+> +/*
+> + * MM IOMMU supports 16GB dma address. We separate it to four ranges:
+> + * 0 ~ 4G; 4G ~ 8G; 8G ~ 12G; 12G ~ 16G, we could adjust these masters
+> + * locate in anyone region. BUT:
+> + * a) Make sure all the ports inside a larb are in one range.
+> + * b) The iova of any master can NOT cross the 4G/8G/12G boundary.
+> + *
+> + * This is the suggested mapping in this SoC:
+> + *
+> + * modules    dma-address-region	larbs-ports
+> + * disp         0 ~ 4G                  larb0/1/2/3
+> + * vcodec      4G ~ 8G                  larb19/21/23
+> + * cam/mdp     8G ~ 12G                 the other larbs.
+> + * N/A         12G ~ 16G
+> + * CCU0   0x24000_0000 ~ 0x243ff_ffff   larb27: port 0/1
+> + * CCU1   0x24400_0000 ~ 0x247ff_ffff   larb27: port 2/3
+> + *
+> + * This SoC have two MM IOMMU HWs, this is the connected information:
+> + * iommu-vdo: larb0/2/5/9/10/11A/11C/13/16B/17B/19/21
+> + * iommu-vpp: larb1/3/4/6/7/11B/12/14/15/16A/17A/23/27
+> + */
+> +
+> +/* MM IOMMU larbs */
+> +#define SMI_L0_ID		(0)
+
+No need for ().
+
+> +#define SMI_L1_ID		(1)
+> +#define SMI_L2_ID		(2)
+> +#define SMI_L3_ID		(3)\
+
+
+Best regards,
+Krzysztof
