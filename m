@@ -1,87 +1,86 @@
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36AD12585
-	for <iommu@lists.linux.dev>; Thu,  4 Aug 2022 15:12:35 +0000 (UTC)
-Received: by mail-lf1-f51.google.com with SMTP id e15so21220680lfs.0
-        for <iommu@lists.linux.dev>; Thu, 04 Aug 2022 08:12:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=flkVgJSkLgJ6BOpNMmZn044hSm3xppsdwA5+7hs10Sw=;
-        b=VoNdeeXAdgGXCwnYXIP0vshrJlTj60Rj0SlnPnxPXaKKWiUFheu9gCKm8hfkKqss4q
-         uYQzS3hcLbXxbCwFsFCrf6KwE5Yi2bWFe7YoI0UIhgzlrMqmbNYlgjbPE+tHi/0JDK8p
-         Jx2NKK6q8R9eW80z/ftc4GQg5ypo3E0oKACcSRzK1M/qfq4McC0vPWDXWfaldPwFvaGP
-         R7o4j4FZvOjyxtuiNODfEQ3DyTbxyLjW921OdjA2jHLFmdZL3bpldBpuQQYSIwifglt+
-         ByaQjKOzWHbsGOd6yPtP/Byff7IzkdG3a1TVnSONhRzjxJTK66sDwmzeIBw1LJrSNzGw
-         Sp5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=flkVgJSkLgJ6BOpNMmZn044hSm3xppsdwA5+7hs10Sw=;
-        b=uW3VnfxIJYmoR+faVUCW1EkAEAIvkq1tnrztxv1ptkxPL+CHvce1v380w5UY3mhpH1
-         HqNKmyvAPmu/Rsl3bKVSFcd+S3pr+BEcUkPTXM+X1FCNIgn6h44Kt+YO7C4czOI+o76B
-         31TWPg2Y5iOb6YwXGog9/I8U5S+DKkSX2un63mi5WzwAZLqGpjCUlz8v9ngPplHiZJPL
-         AQtcgBiavhW3Ta83F4PBUvMMfM2NzqjJ47GNAw37a8i3WUsA8Mm180gKkNEwKWAK0vgl
-         /vT8tR09a443lWlrJ3OIYhaVNnuDqIokK31QDyaRia8FftEmBAlNuXaXZSn4xWfi3W0u
-         UoPw==
-X-Gm-Message-State: ACgBeo1wMC2Jedg67BKfGMmfX4anVGizMbnRlcrve9pa3p5H7U9TSnDv
-	KhtpcrnY8krKCFxaYdFnsOs4ZQ==
-X-Google-Smtp-Source: AA6agR4xRfdJNey5VDI+Z+Ke7JJhcpNk9MMKaJuqCPEr/8M6Ybdcf7CJcsxxJBA11P5XBB6r/pHgyA==
-X-Received: by 2002:a05:6512:2202:b0:48a:1153:d3a0 with SMTP id h2-20020a056512220200b0048a1153d3a0mr798559lfu.423.1659625953271;
-        Thu, 04 Aug 2022 08:12:33 -0700 (PDT)
-Received: from [192.168.1.6] ([77.222.167.48])
-        by smtp.gmail.com with ESMTPSA id 11-20020a05651c128b00b0025e51a00a5asm156500ljc.41.2022.08.04.08.12.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Aug 2022 08:12:31 -0700 (PDT)
-Message-ID: <96e66425-ff2a-4640-8b96-48fa39943bf9@linaro.org>
-Date: Thu, 4 Aug 2022 17:12:29 +0200
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 50CAF7C
+	for <iommu@lists.linux.dev>; Thu,  4 Aug 2022 16:31:51 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EE0B1113E;
+	Thu,  4 Aug 2022 09:31:45 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5DCC83F73B;
+	Thu,  4 Aug 2022 09:31:44 -0700 (PDT)
+Message-ID: <90a760c4-6e88-07b4-1f20-8b10414e49aa@arm.com>
+Date: Thu, 4 Aug 2022 17:31:39 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v5 02/20] dt-bindings: memory: mediatek: Update condition
- for mt8195 smi node
-Content-Language: en-US
-To: Tinghan Shen <tinghan.shen@mediatek.com>, Yong Wu <yong.wu@mediatek.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Lee Jones <lee@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- MandyJH Liu <mandyjh.liu@mediatek.com>
-Cc: iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org,
- Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220804021553.14867-1-tinghan.shen@mediatek.com>
- <20220804021553.14867-3-tinghan.shen@mediatek.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220804021553.14867-3-tinghan.shen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] iommu/omap: fix buffer overflow in debugfs
+Content-Language: en-GB
+To: Dan Carpenter <dan.carpenter@oracle.com>, Joerg Roedel <joro@8bytes.org>,
+ Suman Anna <s-anna@ti.com>
+Cc: Will Deacon <will@kernel.org>,
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>, iommu@lists.linux.dev,
+ kernel-janitors@vger.kernel.org
+References: <YuvYh1JbE3v+abd5@kili>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <YuvYh1JbE3v+abd5@kili>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 04/08/2022 04:15, Tinghan Shen wrote:
+On 04/08/2022 3:32 pm, Dan Carpenter wrote:
+> There are two issues here:
 > 
-> It's because the 'mediatek,mt8195-smi-sub-common' compatible incorrectly
-> matches the 'else' conditions for gen2 HW without gals.
+> 1) The "len" variable needs to be checked before the very first write.
+>     Otherwise if omap2_iommu_dump_ctx() with "bytes" less than 32 it is a
+>     buffer overflow.
+> 2) The snprintf() function returns the number of bytes that *would* have
+>     been copied if there were enough space.  But we want to know the
+>     number of bytes which were *actually* copied so use scnprintf()
+>     instead.
 > 
-> Rewrite the 'else' condition to specifically identify the compatibles
-> that utilizing gen2 HW without gals.
+> Fixes: bd4396f09a4a ("iommu/omap: Consolidate OMAP IOMMU modules")
+
+FWIW I think this has actually been broken since day one back in 
+14e0e6796a0d, but I'm also not inclined to care that much - 2014 is 
+already plenty long ago.
+
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> ---
+>   drivers/iommu/omap-iommu-debug.c | 6 +++---
+>   1 file changed, 3 insertions(+), 3 deletions(-)
 > 
-> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
-> Reviewed-by: AngeloGioacchino Del Regno
->  <angelogioacchino.delregno@collabora.com>
+> diff --git a/drivers/iommu/omap-iommu-debug.c b/drivers/iommu/omap-iommu-debug.c
+> index a99afb5d9011..259f65291d90 100644
+> --- a/drivers/iommu/omap-iommu-debug.c
+> +++ b/drivers/iommu/omap-iommu-debug.c
+> @@ -32,12 +32,12 @@ static inline bool is_omap_iommu_detached(struct omap_iommu *obj)
+>   		ssize_t bytes;						\
+>   		const char *str = "%20s: %08x\n";			\
+>   		const int maxcol = 32;					\
+> -		bytes = snprintf(p, maxcol, str, __stringify(name),	\
+> +		if (len < maxcol)					\
+> +			goto out;					\
+> +		bytes = scnprintf(p, maxcol, str, __stringify(name),	\
+>   				 iommu_read_reg(obj, MMU_##name));	\
 
-Unfortunately, your patches got corrupted.
+I suppose snprintf is OK in practice since none of the names are 
+anywhere near 20 characters long anyway, but I agree it's better to be 
+obviously foolproof. Frankly this code is all kinds of horrible anyway, 
+and deserves ripping out and replacing with a simple seq_file, but for 
+this fix as a fix,
 
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
-Best regards,
-Krzysztof
+Cheers,
+Robin.
+
+>   		p += bytes;						\
+>   		len -= bytes;						\
+> -		if (len < maxcol)					\
+> -			goto out;					\
+>   	} while (0)
+>   
+>   static ssize_t
