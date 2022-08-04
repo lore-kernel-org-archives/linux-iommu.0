@@ -1,50 +1,46 @@
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28638635
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03BAD62C
 	for <iommu@lists.linux.dev>; Thu,  4 Aug 2022 02:16:08 +0000 (UTC)
-X-UUID: 28d6e2d29fe14d4ab41b28b25469f192-20220804
+X-UUID: 9bd94f1759d04eddaa387ea9e3c4e0b4-20220804
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=hSxveSoM+vlc9FGeY7IaDK3X39Jv798KY/+ZsIbLEII=;
-	b=er9XExzWJeCOurmtnXR9+buOkdXOTPCZjfVwo9LmuTSWulGqIVKoIA5ylx+5lTY55HIWe76pmbd4xYNZpwkfgQxGf2v1HF4a2Vdr1S4Dd/GsTmL/llxUOwCM2WL+IZ5EYJwyVDBtQOFAJea5DI7yO7keze6PJFCucd5pVfqhOXE=;
+	h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=lyEQisjpvUpjr8lEk/40RGogUyeyNdkm+LWsEQFWji8=;
+	b=Urhg5DspyxgUm+kJUuBGtpv+rCGYDDZLOTGro17o1KHJK9vIYDb9rKUSDYL3LGFhWy1WPYlBIKAQ7z4jXcsQ+v6L/580JmIauWlOogeFwOlb978RMFUEclMpYcM2k3OBnSjzka0VWz1iWD63Tv5TnpWClR6OQa9LzY6ckzhe6Rs=;
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:1fff8a1a-35f2-4695-9333-27eebdbcd2ff,OB:30,L
-	OB:10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,
-	ACTION:release,TS:90
-X-CID-INFO: VERSION:1.1.8,REQID:1fff8a1a-35f2-4695-9333-27eebdbcd2ff,OB:30,LOB
-	:10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,
-	ACTION:quarantine,TS:90
-X-CID-META: VersionHash:0f94e32,CLOUDID:7f432cd1-841b-4e95-ad42-8f86e18f54fc,C
-	OID:a79384265421,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-	RL:0,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 28d6e2d29fe14d4ab41b28b25469f192-20220804
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+X-CID-O-INFO: VERSION:1.1.8,REQID:bd168b28-f196-44bb-aa49-8e4a2306db01,OB:0,LO
+	B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+	ON:release,TS:0
+X-CID-META: VersionHash:0f94e32,CLOUDID:3dc03bd0-a6cf-4fb6-be1b-c60094821ca2,C
+	OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+	,QS:nil,BEC:nil,COL:0
+X-UUID: 9bd94f1759d04eddaa387ea9e3c4e0b4-20220804
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
 	(envelope-from <tinghan.shen@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-	with ESMTP id 1960739390; Thu, 04 Aug 2022 10:15:58 +0800
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 433930023; Thu, 04 Aug 2022 10:15:57 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 4 Aug 2022 10:15:57 +0800
+ 15.2.792.15; Thu, 4 Aug 2022 10:15:55 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 4 Aug 2022 10:15:57 +0800
+ Transport; Thu, 4 Aug 2022 10:15:55 +0800
 From: Tinghan Shen <tinghan.shen@mediatek.com>
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, "Will
- Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will
+ Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
 	<robh+dt@kernel.org>, Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>, Lee Jones <lee@kernel.org>, "Matthias
- Brugger" <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+	<krzysztof.kozlowski+dt@linaro.org>, Lee Jones <lee@kernel.org>, Matthias
+ Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
 	<angelogioacchino.delregno@collabora.com>, Tinghan Shen
 	<tinghan.shen@mediatek.com>, MandyJH Liu <mandyjh.liu@mediatek.com>
 CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
 	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
 	<linux-arm-kernel@lists.infradead.org>,
-	<Project_Global_Chrome_Upstream_Group@mediatek.com>, Henry Chen
-	<henryc.chen@mediatek.com>
-Subject: [PATCH v5 13/20] arm64: dts: mt8195: Add spmi node
-Date: Thu, 4 Aug 2022 10:15:46 +0800
-Message-ID: <20220804021553.14867-14-tinghan.shen@mediatek.com>
+	<Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v5 04/20] dt-bindings: power: mediatek: Support naming power controller node with unit address
+Date: Thu, 4 Aug 2022 10:15:37 +0800
+Message-ID: <20220804021553.14867-5-tinghan.shen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220804021553.14867-1-tinghan.shen@mediatek.com>
 References: <20220804021553.14867-1-tinghan.shen@mediatek.com>
@@ -57,43 +53,32 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-MTK: N
 
-Add spmi node to mt8195.
+Support naming power controller node with unit address, also compatible
+with node names without unit address.
 
-Signed-off-by: Henry Chen <henryc.chen@mediatek.com>
 Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno
  <angelogioacchino.delregno@collabora.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- arch/arm64/boot/dts/mediatek/mt8195.dtsi | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ .../devicetree/bindings/power/mediatek,power-controller.yaml    | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
- b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-index 7e77aecb1296e..da2d976ff8441 100644
---- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-@@ -697,6 +697,21 @@
- 			assigned-clock-parents = <&topckgen CLK_TOP_ULPOSC1_D10>;
- 		};
+diff --git
+ a/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+ b/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+index 321802c95308f..2d6afc0909473 100644
+--- a/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
++++ b/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+@@ -19,7 +19,7 @@ description: |
  
-+		spmi: spmi@10027000 {
-+			compatible = "mediatek,mt8195-spmi";
-+			reg = <0 0x10027000 0 0x000e00>,
-+			      <0 0x10029000 0 0x000100>;
-+			reg-names = "pmif", "spmimst";
-+			clocks = <&infracfg_ao CLK_INFRA_AO_PMIC_AP>,
-+				 <&infracfg_ao CLK_INFRA_AO_PMIC_TMR>,
-+				 <&topckgen CLK_TOP_SPMI_M_MST>;
-+			clock-names = "pmif_sys_ck",
-+				      "pmif_tmr_ck",
-+				      "spmimst_clk_mux";
-+			assigned-clocks = <&topckgen CLK_TOP_PWRAP_ULPOSC>;
-+			assigned-clock-parents = <&topckgen CLK_TOP_ULPOSC1_D10>;
-+		};
-+
- 		scp_adsp: clock-controller@10720000 {
- 			compatible = "mediatek,mt8195-scp_adsp";
- 			reg = <0 0x10720000 0 0x1000>;
+ properties:
+   $nodename:
+-    const: power-controller
++    pattern: '^power-controller(@[0-9a-f]+)?$'
+ 
+   compatible:
+     enum:
 -- 
 2.18.0
 
