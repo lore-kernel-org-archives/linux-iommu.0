@@ -1,139 +1,110 @@
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 880C263D
-	for <iommu@lists.linux.dev>; Thu,  4 Aug 2022 02:16:12 +0000 (UTC)
-X-UUID: 73fbe67277224c8698e231a2c4711b90-20220804
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=7QEfDCmJpysBJ72erbrBABvMpGnkHVze3l/EuEEccys=;
-	b=jq2bAjoYa62PNQto15vHXvGPViBRIRd7FO3InRSrUcLafckwxGhRnxSrBqWR/ncMUq/PssYeWeEjLbK36rvHID3FwPpZonLdxtf3R/x7AdAZSfrT/9S9Puzvqu0reCATtAoQcqUqU+sJYBAKETnt6KTLWYxcFYreTVcoTFJ9hOE=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:5e8eabc8-49ca-45c3-b03e-664e0b4aed57,OB:0,LO
-	B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-	ON:release,TS:0
-X-CID-META: VersionHash:0f94e32,CLOUDID:3ac03bd0-a6cf-4fb6-be1b-c60094821ca2,C
-	OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-	,QS:nil,BEC:nil,COL:0
-X-UUID: 73fbe67277224c8698e231a2c4711b90-20220804
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
-	(envelope-from <tinghan.shen@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 936671233; Thu, 04 Aug 2022 10:15:58 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 4 Aug 2022 10:15:56 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 4 Aug 2022 10:15:56 +0800
-From: Tinghan Shen <tinghan.shen@mediatek.com>
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will
- Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
-	<robh+dt@kernel.org>, Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>, Lee Jones <lee@kernel.org>, Matthias
- Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
-	<angelogioacchino.delregno@collabora.com>, Tinghan Shen
-	<tinghan.shen@mediatek.com>, MandyJH Liu <mandyjh.liu@mediatek.com>
-CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v5 07/20] arm64: dts: mediatek: Update mt81xx scpsys node to align with dt-bindings
-Date: Thu, 4 Aug 2022 10:15:40 +0800
-Message-ID: <20220804021553.14867-8-tinghan.shen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220804021553.14867-1-tinghan.shen@mediatek.com>
-References: <20220804021553.14867-1-tinghan.shen@mediatek.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A57136F
+	for <iommu@lists.linux.dev>; Thu,  4 Aug 2022 02:42:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659580975; x=1691116975;
+  h=message-id:date:mime-version:cc:to:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=Kwn9O26ic+Lid5EKbbW7RQYFFn8IPW4X0XfjtRScmJk=;
+  b=AJnO0lEAR3zWKQJx6GXZyWozYr0l9+A+gDbnv6rN/DHKR4az83ZAk5FX
+   B+xO5L1YdvdE/BottZ4u9E6Qk7bJdU4mNdjKPBEMcIEvbtNjn+Eab1REn
+   LUbFLNefcBKGJJxI8KkZd3Rne4b1qKk8SHOwC1ooEFyWpuMKpW8wWnmWW
+   dJev8HUU2pfXw03l6prID+yL5cflwGjE8wqhwoEyAvEDpJWgiIo80iYkV
+   zTkb84CXvajNAUyMXa3Aq6zHs4J0LYwqCO3+hUbukrnVq+TJfFIVJhYI4
+   dCjjuGy7phMzqGPOl3E3oYWssxB0qYfIHtNrYu9mTRiec6aEKw6VAW1OH
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10428"; a="351537005"
+X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
+   d="scan'208";a="351537005"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 19:42:54 -0700
+X-IronPort-AV: E=Sophos;i="5.93,214,1654585200"; 
+   d="scan'208";a="662339151"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.212.46]) ([10.254.212.46])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Aug 2022 19:42:50 -0700
+Message-ID: <8c46c7a7-dc7b-72d4-2d99-91b8967ff042@linux.intel.com>
+Date: Thu, 4 Aug 2022 10:42:48 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK: N
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
+ Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
+ Jacob jun Pan <jacob.jun.pan@intel.com>,
+ Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony <tony.zhu@intel.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
+ <20220705050710.2887204-5-baolu.lu@linux.intel.com>
+ <20220723141118.GD79279@nvidia.com>
+ <686b137f-232a-2a78-beb0-e4373bd20959@linux.intel.com>
+ <20220725144005.GE3747@nvidia.com>
+ <6da27a6b-b580-4ba4-24c8-ebdfb2d9345d@linux.intel.com>
+ <20220726135722.GC4438@nvidia.com>
+ <806b1437-441b-253b-7f52-ee7a7a9053e9@linux.intel.com>
+ <Yukac8X81CP7gDsM@nvidia.com>
+ <3eb62531-fa1c-4c78-c1d2-526a3758a033@linux.intel.com>
+ <YurGexaP/Q+N02dT@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v10 04/12] iommu: Add attach/detach_dev_pasid iommu
+ interface
+In-Reply-To: <YurGexaP/Q+N02dT@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Update scpsys nodes using simple-mfd in mt81xx SoC devicetree
-to align with the bindings.
+On 2022/8/4 3:03, Jason Gunthorpe wrote:
+> On Wed, Aug 03, 2022 at 09:07:35PM +0800, Baolu Lu wrote:
+>> +/**
+>> + * iommu_device_claim_pasid_owner() - Set ownership of a pasid on device
+>> + * @dev: the device.
+>> + * @pasid: the pasid of the device.
+>> + * @owner: caller specified pointer. Used for exclusive ownership.
+>> + *
+>> + * Return 0 if it is allowed, otherwise an error.
+>> + */
+>> +int iommu_device_claim_pasid_owner(struct device *dev, ioasid_t pasid, void
+>> *owner)
+> 
+> I don't see a use case for a special "pasid owner"
+> 
+> PASID is no different from normal DMA. If the calling driver already
+> has the proper ownership of the device/group then it is fine for that
+> driver to use any kind of IOMMU attachment, RID, PASID, whatever. It
+> doesn't matter *how* the attachment is made.
 
-Add specific compatibles for syscon node, even it's a dummy compatible,
-because syscon node must come with a specific compatible.
+Agreed again.
 
-Remove the '#power-domain-cells" propertry since the simple-mfd node is
-not the power domain provider; the provider is the child node.
+The Linux kernel manages a device at the device driver level, and all
+PASIDs are managed by a device driver. There is really no need to manage
+ownership at the PASID level. The current DMA ownership mechanism can
+manage the exclusions between kernel drivers and user space drivers.
+Sorry that I over considered.
 
-Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
----
- arch/arm64/boot/dts/mediatek/mt8167.dtsi | 3 +--
- arch/arm64/boot/dts/mediatek/mt8173.dtsi | 3 +--
- arch/arm64/boot/dts/mediatek/mt8183.dtsi | 3 +--
- arch/arm64/boot/dts/mediatek/mt8192.dtsi | 3 +--
- 4 files changed, 4 insertions(+), 8 deletions(-)
+> Remember the series that got dropped about converting all the drivers
+> to the new ownership scheme? That is how it should work - owernship
+> and domain attach are two different operations and do not get mixed
+> confusingly together. (and are you going to repost that series? It
+> would be great to get it done)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8167.dtsi
- b/arch/arm64/boot/dts/mediatek/mt8167.dtsi
-index 54655f2feb04d..fbe1a1128cc6a 100644
---- a/arch/arm64/boot/dts/mediatek/mt8167.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8167.dtsi
-@@ -36,9 +36,8 @@
- 		};
- 
- 		scpsys: syscon@10006000 {
--			compatible = "syscon", "simple-mfd";
-+			compatible = "mediatek,mt8167-scpsys", "syscon", "simple-mfd";
- 			reg = <0 0x10006000 0 0x1000>;
--			#power-domain-cells = <1>;
- 
- 			spm: power-controller {
- 				compatible = "mediatek,mt8167-power-controller";
-diff --git a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
- b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-index 6d9513c1f5bfb..b4d48f8b7eebb 100644
---- a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-@@ -444,9 +444,8 @@
- 		};
- 
- 		scpsys: syscon@10006000 {
--			compatible = "syscon", "simple-mfd";
-+			compatible = "mediatek,mt8173-scpsys", "syscon", "simple-mfd";
- 			reg = <0 0x10006000 0 0x1000>;
--			#power-domain-cells = <1>;
- 
- 			/* System Power Manager */
- 			spm: power-controller {
-diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
- b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-index 9d32871973a29..28d84f0054ee0 100644
---- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-@@ -761,9 +761,8 @@
- 		};
- 
- 		scpsys: syscon@10006000 {
--			compatible = "syscon", "simple-mfd";
-+			compatible = "mediatek,mt8183-scpsys", "syscon", "simple-mfd";
- 			reg = <0 0x10006000 0 0x1000>;
--			#power-domain-cells = <1>;
- 
- 			/* System Power Manager */
- 			spm: power-controller {
-diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
- b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-index cbae5a5ee4a0b..8cd5906fe3a89 100644
---- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -306,9 +306,8 @@
- 		};
- 
- 		scpsys: syscon@10006000 {
--			compatible = "syscon", "simple-mfd";
-+			compatible = "mediatek,mt8192-scpsys", "syscon", "simple-mfd";
- 			reg = <0 0x10006000 0 0x1000>;
--			#power-domain-cells = <1>;
- 
- 			/* System Power Manager */
- 			spm: power-controller {
--- 
-2.18.0
+Yes, of cause. I have also some other pending tasks, lock-free page
+table traversal, driver ATS interfaces, ownership scheme for kernel
+drivers, blocking domain improvement, and etc. These are enough to keep
+me busy for a while. :-) If anyone in the community is also interested
+in any task, I will be grateful.
 
+Best regards,
+baolu
