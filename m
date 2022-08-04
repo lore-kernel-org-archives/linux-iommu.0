@@ -1,101 +1,132 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C3F07F
-	for <iommu@lists.linux.dev>; Thu,  4 Aug 2022 08:43:15 +0000 (UTC)
-Received: by mail-wr1-f42.google.com with SMTP id j1so16023215wrw.1
-        for <iommu@lists.linux.dev>; Thu, 04 Aug 2022 01:43:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=Gq6/HNhAQ3BSIj0Ba+RrM6ince6+tYXHxLdu6U01oYA=;
-        b=Bz4WTRlH4WuC24dGsS4v9wUmu3j89xaxP+rFpcK9gzNyf2u7WsaEbVSkqPKTaRhp1K
-         rCtoYXRr7DMDHo0p2wuEyRK5ESAigQlLRsQK048vHx+ZN3MlEJU6NjbligKTJhlDIyCa
-         v6op2mKcqOaJnMtUnL+3EFmjIEyd8NFLRpjI+6Ajx4sstc6mkHuuGC33qfST+QgqVLe0
-         6OxL3SquzsqrtYtHJAICTDBBbSRXx+RqJU98kzovk5vUrn6uhY8GFef0H6u3EW9BCcxA
-         uVmSMsG/ujV2dJnRrdvdW8ZfxWPUNnNXim6cPFWvzprMZqohemyuebKpfnc3SWdroqHK
-         Miag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=Gq6/HNhAQ3BSIj0Ba+RrM6ince6+tYXHxLdu6U01oYA=;
-        b=YWzKSNCuTAWUs8siQNb3LUS3GmhteVKjL6Bo4UjPLuMJE3493gXsfnja/r9oRJkxFm
-         2uGCXbp9MCAW4Cr1flXg1OlmBcW0fBJvXy09/NryM/xeh/+alZGcBhbTlkr7Vpul7OJk
-         p1kGM+WZMpey4ln3DSJdj+ajfFWZzqQYU3Is8kxq5ufiNgo80ouABZqGeSXmia2gvThG
-         M+U8P0eA4Ma5sa9eapWNLq7tF2n8rPJ2zdII+C0KmKPmWMBUDG1EefwCZoiVb3QP6Ba6
-         NVWVfCROWlINd2TKGV7xbF2K1vW/j5uGr0Sy0qwzaUfEBjkzpoTG3MYzxBVMALxDOwqn
-         zoYg==
-X-Gm-Message-State: ACgBeo3G4f1GSSRqEIqaTY/HbDNItnjQSluwty9j3LX7i95sGKRXYctW
-	QYUPGV+n45rrWKfswbTna7g=
-X-Google-Smtp-Source: AA6agR7JMuieExtxMItJInX7x5ROJ6BsC9WvMHLa0/yaf92L6oTFOHBtIasKgc7TcO8y2gvcevC/6A==
-X-Received: by 2002:adf:f407:0:b0:21f:a7b:b81c with SMTP id g7-20020adff407000000b0021f0a7bb81cmr661641wro.42.1659602593746;
-        Thu, 04 Aug 2022 01:43:13 -0700 (PDT)
-Received: from [192.168.1.145] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id b6-20020a5d6346000000b0022063e5228bsm422563wrw.93.2022.08.04.01.43.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Aug 2022 01:43:12 -0700 (PDT)
-Message-ID: <11c7b04e-9837-440c-fa5b-3074a706e0ba@gmail.com>
-Date: Thu, 4 Aug 2022 10:43:06 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74D4C7F
+	for <iommu@lists.linux.dev>; Thu,  4 Aug 2022 09:03:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29064C433D6;
+	Thu,  4 Aug 2022 09:03:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1659603793;
+	bh=SivxL3skWvzw9jhqnKcu/8CxHVkrZngsEGy7QHmjwIE=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=VKKKZClcZEJ9Q3mSncYVDlpJDWwX5lRtpWJVA7hyjLfbZ+6VuQD0FBo6dTCyVfVwm
+	 3Z+OPcs+kQzFAMkdB34czVDofL9lxQ3iayIdjT2p06IJtaGmFBLk82Vn7WH3HEKdI7
+	 DNEedPtHJhb3zvI3W7kaN/jmnz9i+WlEeLTlGRAOfRZ/P/FhbyaTQ6wWNnKv8QIDDU
+	 un2vaEgq4hQ5P4lnAss5fn9MSlZ+jVo1OcYVGIhmnqmdtOZDflHdrbXY0TrmZS4/F5
+	 kUejs6MYQKkSPwdEf5pRSqy0/QQXSonr6A7nmYvr9+iznlHJkvU7JqrLRpmP8MOhMn
+	 YiT3WcV4dxkNg==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+	by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.95)
+	(envelope-from <maz@kernel.org>)
+	id 1oJWl4-000us9-Li;
+	Thu, 04 Aug 2022 10:03:10 +0100
+Date: Thu, 04 Aug 2022 10:03:10 +0100
+Message-ID: <87o7x0wfch.wl-maz@kernel.org>
+From: Marc Zyngier <maz@kernel.org>
+To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Cc: Randy Dunlap <rdunlap@infradead.org>,
+	Stephen Hemminger
+	<sthemmin@microsoft.com>,
+	KY Srinivasan <kys@microsoft.com>,
+	Haiyang Zhang
+	<haiyangz@microsoft.com>,
+	"wei.liu@kernel.org" <wei.liu@kernel.org>,
+	Dexuan
+ Cui <decui@microsoft.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"will@kernel.org" <will@kernel.org>,
+	"robin.murphy@arm.com"
+	<robin.murphy@arm.com>,
+	"samuel@sholland.org" <samuel@sholland.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: [PATCH 1/1] iommu/hyper-v: Use helper instead of directly accessing affinity
+In-Reply-To: <PH0PR21MB302502058A130F3529FE341DD79C9@PH0PR21MB3025.namprd21.prod.outlook.com>
+References: <1658796820-2261-1-git-send-email-mikelley@microsoft.com>
+	<5ea65d3d-745e-0a16-c885-a224a20ee7ce@infradead.org>
+	<PH0PR21MB302502058A130F3529FE341DD79C9@PH0PR21MB3025.namprd21.prod.outlook.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v4 05/20] dt-bindings: power: mediatek: Update maintainer
- list
-Content-Language: en-US
-To: Tinghan Shen <tinghan.shen@mediatek.com>, Yong Wu <yong.wu@mediatek.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Lee Jones <lee@kernel.org>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- MandyJH Liu <mandyjh.liu@mediatek.com>, Weiyi Lu <weiyi.lu@mediatek.com>
-Cc: iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org,
- Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220729063208.16799-1-tinghan.shen@mediatek.com>
- <20220729063208.16799-6-tinghan.shen@mediatek.com>
-From: Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220729063208.16799-6-tinghan.shen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: mikelley@microsoft.com, rdunlap@infradead.org, sthemmin@microsoft.com, kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org, decui@microsoft.com, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, samuel@sholland.org, linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org, iommu@lists.linux.dev
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 
-Weiyi Lu,
-
-On 29/07/2022 08:31, Tinghan Shen wrote:
-> Update the maintainer list of power controller binding.
+On Wed, 03 Aug 2022 17:26:10 +0100,
+"Michael Kelley (LINUX)" <mikelley@microsoft.com> wrote:
 > 
-> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
-> Acked-by: Rob Herring <robh@kernel.org>
-> ---
->   .../devicetree/bindings/power/mediatek,power-controller.yaml    | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> From: Randy Dunlap <rdunlap@infradead.org> Sent: Monday, July 25, 2022 7:39 PM
+> > 
+> > On 7/25/22 17:53, Michael Kelley wrote:
+> > > Recent changes to solve inconsistencies in handling IRQ masks #ifdef
+> > > out the affinity field in irq_common_data for non-SMP configurations.
+> > > The current code in hyperv_irq_remapping_alloc() gets a compiler error
+> > > in that case.
+> > >
+> > > Fix this by using the new irq_data_update_affinity() helper, which
+> > > handles the non-SMP case correctly.
+> > >
+> > 
+> > Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> > > Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+> > Tested-by: Randy Dunlap <rdunlap@infradead.org>
+> > Acked-by: Randy Dunlap <rdunlap@infradead.org>
+> > 
+> > Thanks.
+> > 
+> > > ---
+> > >  drivers/iommu/hyperv-iommu.c | 4 +---
+> > >  1 file changed, 1 insertion(+), 3 deletions(-)
+> > >
+> > > diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
+> > > index 51bd66a..e190bb8 100644
+> > > --- a/drivers/iommu/hyperv-iommu.c
+> > > +++ b/drivers/iommu/hyperv-iommu.c
+> > > @@ -68,7 +68,6 @@ static int hyperv_irq_remapping_alloc(struct irq_domain
+> > *domain,
+> > >  {
+> > >  	struct irq_alloc_info *info = arg;
+> > >  	struct irq_data *irq_data;
+> > > -	struct irq_desc *desc;
+> > >  	int ret = 0;
+> > >
+> > >  	if (!info || info->type != X86_IRQ_ALLOC_TYPE_IOAPIC || nr_irqs > 1)
+> > > @@ -90,8 +89,7 @@ static int hyperv_irq_remapping_alloc(struct irq_domain *domain,
+> > >  	 * Hypver-V IO APIC irq affinity should be in the scope of
+> > >  	 * ioapic_max_cpumask because no irq remapping support.
+> > >  	 */
+> > > -	desc = irq_data_to_desc(irq_data);
+> > > -	cpumask_copy(desc->irq_common_data.affinity, &ioapic_max_cpumask);
+> > > +	irq_data_update_affinity(irq_data, &ioapic_max_cpumask);
+> > >
+> > >  	return 0;
+> > >  }
+> > 
+> > --
 > 
-> diff --git a/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml b/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
-> index 2d6afc0909473..03b7f6aa591d4 100644
-> --- a/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
-> +++ b/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
-> @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
->   title: Mediatek Power Domains Controller
->   
->   maintainers:
-> -  - Weiyi Lu <weiyi.lu@mediatek.com>
-> +  - MandyJH Liu <mandyjh.liu@mediatek.com>
+> Marc --
+> 
+> Could you pick up this patch for the 6.0 merge window?  It's a fix to a
+> side effect of Samuel Holland's series to unify SMP and UP handling of
+> affinity masks that went through your irq/irqchip-next tree.
 
-Are you ok with this change. Can you provide a Acked-by tag for that?
+Applied with a:
 
-Regards,
-Matthias
+Fixes: aa0813581b8d ("genirq: Provide an IRQ affinity mask in non-SMP configs")
 
->     - Matthias Brugger <mbrugger@suse.com>
->   
->   description: |
+Thanks,
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
