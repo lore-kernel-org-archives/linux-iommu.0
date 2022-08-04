@@ -1,49 +1,51 @@
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6851362B
-	for <iommu@lists.linux.dev>; Thu,  4 Aug 2022 02:16:03 +0000 (UTC)
-X-UUID: 724f2b5033614715ab0b907d44318a3e-20220804
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A0597F
+	for <iommu@lists.linux.dev>; Thu,  4 Aug 2022 02:16:04 +0000 (UTC)
+X-UUID: 8eac475c2a414273a2c39bff397ba2db-20220804
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=8O6G4k4vMW79Saml4R4eo//c6gNNaw0fDyOgHkkdvtw=;
-	b=oo92lFEFJnHArzipuSbcdTLGktGOlhNc+oOm9guB3+eGSNAWOWSTkoA+h6Jz/L3ihSqpWP1Id/ObCMIzhU2xkEMdQxDHi/YizNcvfVj9BH7nspTILiZcLQkve8pHWtdbB2cFbNoVAcIwbKY9ELJ3ebmQSGhKTUl5O2FgAFysWEg=;
+	h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=ovUTTgYrcWQQlo3FW629t06R9r9ejSghKKuovvXlD5A=;
+	b=i2cFtuVmS8uHjkLhHA/DFiYinOyrvl2k/0VVHRPu7BG0wunFJ4kjx3cKuALwSjymnzuEPOkgjjVB3bDGVL+tySvgpkwULDkfcaIafE+6NMpkStM2vI1H97NBNg01eSQPrHrmFxniY9V3fuP3ti/xi1wq5d/Jh2VPLy3gxoRkYtI=;
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:b8cfe660-8124-4e03-beab-93826efaf06d,OB:0,LO
-	B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,ACT
-	ION:release,TS:95
-X-CID-INFO: VERSION:1.1.8,REQID:b8cfe660-8124-4e03-beab-93826efaf06d,OB:0,LOB:
-	0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,ACT
-	ION:quarantine,TS:95
-X-CID-META: VersionHash:0f94e32,CLOUDID:14c03bd0-a6cf-4fb6-be1b-c60094821ca2,C
-	OID:e2aee46074ee,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+X-CID-O-INFO: VERSION:1.1.8,REQID:872fd7c3-8caf-483f-9353-b8639a543c21,OB:0,LO
+	B:10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,AC
+	TION:release,TS:95
+X-CID-INFO: VERSION:1.1.8,REQID:872fd7c3-8caf-483f-9353-b8639a543c21,OB:0,LOB:
+	10,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,AC
+	TION:quarantine,TS:95
+X-CID-META: VersionHash:0f94e32,CLOUDID:7ac03bd0-a6cf-4fb6-be1b-c60094821ca2,C
+	OID:f864705f7373,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
 	RL:0,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 724f2b5033614715ab0b907d44318a3e-20220804
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+X-UUID: 8eac475c2a414273a2c39bff397ba2db-20220804
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
 	(envelope-from <tinghan.shen@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 1621848889; Thu, 04 Aug 2022 10:15:57 +0800
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+	with ESMTP id 568264486; Thu, 04 Aug 2022 10:15:59 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 4 Aug 2022 10:15:55 +0800
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 4 Aug 2022 10:15:57 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 4 Aug 2022 10:15:55 +0800
+ Transport; Thu, 4 Aug 2022 10:15:57 +0800
 From: Tinghan Shen <tinghan.shen@mediatek.com>
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, "Will
- Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will
+ Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
 	<robh+dt@kernel.org>, Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>, Lee Jones <lee@kernel.org>, "Matthias
- Brugger" <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+	<krzysztof.kozlowski+dt@linaro.org>, Lee Jones <lee@kernel.org>, Matthias
+ Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
 	<angelogioacchino.delregno@collabora.com>, Tinghan Shen
 	<tinghan.shen@mediatek.com>, MandyJH Liu <mandyjh.liu@mediatek.com>
 CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
 	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
 	<linux-arm-kernel@lists.infradead.org>,
-	<Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v5 02/20] dt-bindings: memory: mediatek: Update condition for mt8195 smi node
-Date: Thu, 4 Aug 2022 10:15:35 +0800
-Message-ID: <20220804021553.14867-3-tinghan.shen@mediatek.com>
+	<Project_Global_Chrome_Upstream_Group@mediatek.com>, YC Hung
+	<yc.hung@mediatek.corp-partner.google.com>, Allen-KH Cheng
+	<allen-kh.cheng@mediatek.corp-partner.google.com>
+Subject: [PATCH v5 16/20] arm64: dts: mt8195: Add adsp node and adsp mailbox nodes
+Date: Thu, 4 Aug 2022 10:15:49 +0800
+Message-ID: <20220804021553.14867-17-tinghan.shen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220804021553.14867-1-tinghan.shen@mediatek.com>
 References: <20220804021553.14867-1-tinghan.shen@mediatek.com>
@@ -56,55 +58,69 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-MTK: N
 
-The max clock items for the dts node with compatible
-'mediatek,mt8195-smi-sub-common' should be 3.
+From: YC Hung <yc.hung@mediatek.corp-partner.google.com>
 
-However, the dtbs_check of such node will get following message,
-arch/arm64/boot/dts/mediatek/mt8195-evb.dtb: smi@14010000: clock-names:
- ['apb', 'smi', 'gals0'] is too long
-         From schema:
- Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+Add adsp node and adsp mailbox nodes for mt8195.
 
-It's because the 'mediatek,mt8195-smi-sub-common' compatible incorrectly
-matches the 'else' conditions for gen2 HW without gals.
-
-Rewrite the 'else' condition to specifically identify the compatibles
-that utilizing gen2 HW without gals.
-
+Signed-off-by: YC Hung <yc.hung@mediatek.corp-partner.google.com>
+Signed-off-by: Allen-KH Cheng
+ <allen-kh.cheng@mediatek.corp-partner.google.com>
 Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno
  <angelogioacchino.delregno@collabora.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- .../memory-controllers/mediatek,smi-common.yaml       | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/mediatek/mt8195.dtsi | 37 ++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
 
-diff --git
- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
- b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
-index 71bc5cefb49cf..4f5dd0a20109e 100644
----
- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
-+++
- b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
-@@ -144,7 +144,16 @@ allOf:
-             - const: gals0
-             - const: gals1
+diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+index bbea0acff3d2f..f42d33414125f 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+@@ -739,6 +739,43 @@
+ 			#clock-cells = <1>;
+ 		};
  
--    else:  # for gen2 HW that don't have gals
-+  - if:  # for gen2 HW that don't have gals
-+      properties:
-+        compatible:
-+          enum:
-+            - mediatek,mt2712-smi-common
-+            - mediatek,mt6795-smi-common
-+            - mediatek,mt8167-smi-common
-+            - mediatek,mt8173-smi-common
++		adsp: dsp@10803000 {
++			compatible = "mediatek,mt8195-dsp";
++			reg = <0 0x10803000 0 0x1000>,
++			      <0 0x10840000 0 0x40000>;
++			reg-names = "cfg", "sram";
++			clocks = <&topckgen CLK_TOP_ADSP>,
++				 <&clk26m>,
++				 <&topckgen CLK_TOP_AUDIO_LOCAL_BUS>,
++				 <&topckgen CLK_TOP_MAINPLL_D7_D2>,
++				 <&scp_adsp CLK_SCP_ADSP_AUDIODSP>,
++				 <&topckgen CLK_TOP_AUDIO_H>;
++			clock-names = "adsp_sel",
++				 "clk26m_ck",
++				 "audio_local_bus",
++				 "mainpll_d7_d2",
++				 "scp_adsp_audiodsp",
++				 "audio_h";
++			power-domains = <&spm MT8195_POWER_DOMAIN_ADSP>;
++			mbox-names = "rx", "tx";
++			mboxes = <&adsp_mailbox0>, <&adsp_mailbox1>;
++			status = "disabled";
++		};
 +
-+    then:
-       properties:
-         clocks:
-           minItems: 2
++		adsp_mailbox0: mailbox@10816000 {
++			compatible = "mediatek,mt8195-adsp-mbox";
++			#mbox-cells = <0>;
++			reg = <0 0x10816000 0 0x1000>;
++			interrupts = <GIC_SPI 702 IRQ_TYPE_LEVEL_HIGH 0>;
++		};
++
++		adsp_mailbox1: mailbox@10817000 {
++			compatible = "mediatek,mt8195-adsp-mbox";
++			#mbox-cells = <0>;
++			reg = <0 0x10817000 0 0x1000>;
++			interrupts = <GIC_SPI 703 IRQ_TYPE_LEVEL_HIGH 0>;
++		};
++
+ 		afe: mt8195-afe-pcm@10890000 {
+ 			compatible = "mediatek,mt8195-audio";
+ 			reg = <0 0x10890000 0 0x10000>;
 -- 
 2.18.0
 
