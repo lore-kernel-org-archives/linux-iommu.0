@@ -1,53 +1,70 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61B771C3E
-	for <iommu@lists.linux.dev>; Sat,  6 Aug 2022 18:19:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 22E02C43144;
-	Sat,  6 Aug 2022 18:19:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1659809979;
-	bh=cWq9xheP+7KOe7HUe2ZItiz2GrkvlBi+Ja9/8eTJd0w=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=j7pDPHUyROka3EugCp+N8WdcYmwqwLKyJemxQ3K8CKIysM4hGj9CgDPScAUEj/1gD
-	 yek0Q7HKjTeM2gSdPbowlOSzxt8pWQQKtbwAisQFi6zApGAyNWUh/2w8HOH964wv++
-	 Jz5suuoGCqB3U1thVwqjWDxd34AzuFJa/P16dvOSDlf8G/TCb3Zp2BSkQDAlO3xLGC
-	 XZLw84VL5JoX/affGiuqhb+1bxiJZ01b0fnll4BdDcCNPXHdQaL7qHnOHb5UUMd0/X
-	 /jgymjwXmxOQN1guMrKKUVhqn5RHrhHZFnjLznftP8sHX1z9fHwgmYyQF4Qa74BpuX
-	 SF3zVwrYKHQiA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 13BE2C43140;
-	Sat,  6 Aug 2022 18:19:39 +0000 (UTC)
-Subject: Re: [GIT PULL] dma-mapping updates for the kernel formetly known as 5.20
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <Yu4iZzP92/f/lNEx@infradead.org>
-References: <Yu4iZzP92/f/lNEx@infradead.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Yu4iZzP92/f/lNEx@infradead.org>
-X-PR-Tracked-Remote: git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.20-2022-08-06
-X-PR-Tracked-Commit-Id: 5c850d31880e00f063fa2a3746ba212c4bcc510f
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: c993e07be023acdeec8e84e2e0743c52adb5fc94
-Message-Id: <165980997907.27284.2765862935033134982.pr-tracker-bot@kernel.org>
-Date: Sat, 06 Aug 2022 18:19:39 +0000
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 186C37C
+	for <iommu@lists.linux.dev>; Sat,  6 Aug 2022 19:40:13 +0000 (UTC)
+Received: by mail-ej1-f53.google.com with SMTP id dc19so10163592ejb.12
+        for <iommu@lists.linux.dev>; Sat, 06 Aug 2022 12:40:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=tOIk9T3mrJJ6IuQUCBUTAzpxYi7UFUGbDAWnXcWZxT0=;
+        b=ePpuRMrAKZw1DYzxtcv62TLH7DJlO326HoiUxhmUAzA0zfgGb9NwLIsmbLIB9w4L4t
+         ZXCv3JltfSSLzfVDQ9mawK0U1XXajiwv0n1F9aZrD2MWbobLvwCn2dQOKWhc8634emfq
+         xfx/Bf9l0Lc+eo4FmcJeKFU/GH/mTNAF1yLWs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=tOIk9T3mrJJ6IuQUCBUTAzpxYi7UFUGbDAWnXcWZxT0=;
+        b=Hp4XXNqtNFUf13e0GFYA6Pqo5v51FsmzS50dsC5pquQYBBz4YNleLIJJrVQC4r+rZ/
+         yoZR/SaTCX1rdvxc6dOVdFkoHin0vkX1JMSB7aREoz/mp6xzBWzac8F9ccl26wUrEGDK
+         vj5zoGv8fMk9uCNvlGgW6F3QWdM9szll7nDYTH+koaW4OSWAXSjsWEKYOO78e3gi06P/
+         PCX8oJtS9M6SlF5FNkHT4lhwHrIyGE00UKoWoBDDU2mArQyIaHsF5lw5JiwQZvHrAk5x
+         tKuV764r9aRKHwa01pYvrx08Cv+fsogZ+bTQabytHp/5+oD8HGLzhW1GDVe3dSM101j/
+         kMWQ==
+X-Gm-Message-State: ACgBeo2+Sym/EWI2fdUHHfMjWDk0jnCm0WFU7f+IqrWjrRM1vXQA+QZl
+	1afA3tlL2njDf2E4ttkgjX3tpRa99zO33xA4
+X-Google-Smtp-Source: AA6agR6svMi1u6gty8q1vX5BnJytsLZy8iCn+/rgihukmVphiMLYUboy00eQKCp6R4Qivmcyx+QUWw==
+X-Received: by 2002:a17:907:2815:b0:730:a098:725b with SMTP id eb21-20020a170907281500b00730a098725bmr8974921ejc.642.1659814812055;
+        Sat, 06 Aug 2022 12:40:12 -0700 (PDT)
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com. [209.85.221.49])
+        by smtp.gmail.com with ESMTPSA id b4-20020a05640202c400b0043a6e807febsm1935722edx.46.2022.08.06.12.40.11
+        for <iommu@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 06 Aug 2022 12:40:11 -0700 (PDT)
+Received: by mail-wr1-f49.google.com with SMTP id z17so6654714wrq.4
+        for <iommu@lists.linux.dev>; Sat, 06 Aug 2022 12:40:11 -0700 (PDT)
+X-Received: by 2002:a5d:6dae:0:b0:220:8005:7dff with SMTP id
+ u14-20020a5d6dae000000b0022080057dffmr6988390wrs.442.1659814811001; Sat, 06
+ Aug 2022 12:40:11 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+References: <YuzlAT7RW1U36+ap@8bytes.org>
+In-Reply-To: <YuzlAT7RW1U36+ap@8bytes.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Sat, 6 Aug 2022 12:39:54 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whs5CR5FRZP_HUksrr9wX6=Rai-S_XTUFJN7jwB5wKN-Q@mail.gmail.com>
+Message-ID: <CAHk-=whs5CR5FRZP_HUksrr9wX6=Rai-S_XTUFJN7jwB5wKN-Q@mail.gmail.com>
+Subject: Re: [git pull] IOMMU Updates for Linux v5.20
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-The pull request you sent on Sat, 6 Aug 2022 10:12:23 +0200:
+On Fri, Aug 5, 2022 at 2:38 AM Joerg Roedel <joro@8bytes.org> wrote:
+>
+> IOMMU Updates for Linux v5.20/v6.0:
 
-> git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.20-2022-08-06
+I'm currently bisecting a boot failure on my desktop, and it's gone
+into the iommu code.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/c993e07be023acdeec8e84e2e0743c52adb5fc94
+I'm assuming it's the 64-bit thing, but I'll bisect further to make sure.
 
-Thank you!
+If it is, it will be reverted as hopelessly optimistic.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+              Linus
