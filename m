@@ -1,81 +1,158 @@
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D47321FD0
-	for <iommu@lists.linux.dev>; Mon,  8 Aug 2022 03:56:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B6597A;
+	Mon,  8 Aug 2022 09:05:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659931010; x=1691467010;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=FCwEs46tCUBeH45UUcOwuVoyCRQxW8P/kZO2NYT1VX4=;
-  b=JZ9SEcqmsl/jMG2hhAptHictYc+GXuLVMybE1HeS3ddJZKTlH1oZI5dG
-   AXZqibTvslr9os96vey0v+phycpjS0VblHGC7CVZ02GhN+SBqkXCeS0UQ
-   7AHTk/5iJpliGwJja3nM5iLbrYqNDOR/pX9IO1phCcVh1Ru4vJy/6CLCV
-   7diUBEMafS3tmBDH3lQbauI5rr0gi0Mn4rDU87IhKl2ronAerRpundkfn
-   c8WQ87ZrWbgNafgtph6BGHzfxRuitJKn5jjAtnpJZr/Ww7KgKUpmoHdt5
-   SUZu6IPgdzQBgi2bqQAp0gVMcB55yTzPppQjcjV5kBXB/EWgqIC+H+o5h
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="273544112"
+  t=1659949525; x=1691485525;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=3RSyZs8bPpTGb7akeM8WJGQC1JyjSH4WIuABkHEYcYc=;
+  b=Rl+jl+rgkyBlV4kKU56+r0XkfxpcIKrnWjx2rd3nfr6HgM7ufLBQzMlm
+   4elYn2mhulbFAoMp3pEICVcMLe31waIoZIj7dTEu3PRVWuRreIlExAk8v
+   ppe3+Ymcykbl4e6oYposi8vMiem8vZrrld9lcusdG94NJ205IVp4ptY+2
+   20ZI81CYqqMzJn3sRlNkVmhmHe6N4aVBlq1aHb5vcVGt+JfjgQnsZ4pE6
+   zWYupnzATXftZ1vOV31ldolttlD/gHzjMwzVuqZMVP2f8EpSDLdKHFFuu
+   CuVcjUkr1Bq0FZArgi6vTJGQ10TxvlqJKhRKaFFq04foXQ28yHfThvlE+
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10432"; a="273591435"
 X-IronPort-AV: E=Sophos;i="5.93,221,1654585200"; 
-   d="scan'208";a="273544112"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 20:56:50 -0700
+   d="scan'208";a="273591435"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Aug 2022 02:05:24 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,221,1654585200"; 
-   d="scan'208";a="931877149"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.211.228]) ([10.254.211.228])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2022 20:56:48 -0700
-Message-ID: <ee49e711-d4bb-bf77-6bb0-714a217f0786@linux.intel.com>
-Date: Mon, 8 Aug 2022 11:56:46 +0800
+   d="scan'208";a="663858497"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 08 Aug 2022 02:05:21 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1oKyhM-000MAw-0C;
+	Mon, 08 Aug 2022 09:05:20 +0000
+Date: Mon, 8 Aug 2022 17:04:40 +0800
+From: kernel test robot <lkp@intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev
+Cc: llvm@lists.linux.dev, kbuild-all@lists.01.org,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Jerry Snitselaar <jsnitsel@redhat.com>, Wen Jin <wen.jin@intel.com>,
+	linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>,
+	stable@vger.kernel.org
+Subject: Re: [PATCH 1/1] iommu/vt-d: Fix kdump kernels boot failure with
+ scalable mode
+Message-ID: <202208081636.6sNc86bT-lkp@intel.com>
+References: <20220808034612.1691470-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Cc: baolu.lu@linux.intel.com
-Subject: Re: Scalable mode and kdump kernels
-Content-Language: en-US
-To: Jerry Snitselaar <jsnitsel@redhat.com>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>
-References: <20220702154956.x2dxqalzjuzjraxk@cantor>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220702154956.x2dxqalzjuzjraxk@cantor>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220808034612.1691470-1-baolu.lu@linux.intel.com>
 
-Hi Jerry,
+Hi Lu,
 
-On 2022/7/2 23:49, Jerry Snitselaar wrote:
-> Apparently there is an issue on Sapphire Rapids if you have the following conditions:
-> 
-> - kernel configured to default to passthrough dma domains, or set it on the command line
-> - scalable mode enabled
-> 
-> If you force a system crash, there will be a number of DMAR faults
-> when booting the kdump kernel, with the result being it doesn't mount
-> the disk and harvest the vmcore.  The fault reason is 0x39, which is no
-> present bit in the scalable mode root entry.
-> 
-> Looking at the translation table copying code, it looks like what is
-> there currently is based on the older 2.5 vt-d spec and the extended
-> root/context entry formats, and doesn't handle the scalable mode
-> formats. The pasid enabled bit has moved in the scalable mode context
-> entry from bit 11 to bit 3, and the translation type mode in the root
-> table address register is different as well. Poking around at it last
-> night, adding code to deal with those just shifts to the problem to
-> the present bit in the scalable mode pasid table entry (fault reason
-> 0x59) which isn't copied.
-> 
-> Beyond the translation table copy bits needing to work with scalable
-> mode formats, should scalable mode force the default dma domain type
-> to switch to one of the translation modes if the default is passthrough?
+I love your patch! Yet something to improve:
 
-I posted a fix patch for this issue. Can you please give it a try?
+[auto build test ERROR on linus/master]
+[also build test ERROR on next-20220808]
+[cannot apply to joro-iommu/next v5.19]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-https://lore.kernel.org/linux-iommu/20220808034612.1691470-1-baolu.lu@linux.intel.com/
+url:    https://github.com/intel-lab-lkp/linux/commits/Lu-Baolu/iommu-vt-d-Fix-kdump-kernels-boot-failure-with-scalable-mode/20220808-115156
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 4e23eeebb2e57f5a28b36221aa776b5a1122dde5
+config: x86_64-randconfig-a011-20220808 (https://download.01.org/0day-ci/archive/20220808/202208081636.6sNc86bT-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 5f1c7e2cc5a3c07cbc2412e851a7283c1841f520)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/335018299049ac5dc13ff12d320b5952bed7e8f8
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Lu-Baolu/iommu-vt-d-Fix-kdump-kernels-boot-failure-with-scalable-mode/20220808-115156
+        git checkout 335018299049ac5dc13ff12d320b5952bed7e8f8
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-Best regards,
-baolu
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from drivers/iommu/intel/dmar.c:33:
+>> drivers/iommu/intel/iommu.h:705:14: error: no member named 'copied_tables' in 'struct intel_iommu'
+           if (!iommu->copied_tables)
+                ~~~~~  ^
+   drivers/iommu/intel/iommu.h:708:51: error: no member named 'copied_tables' in 'struct intel_iommu'
+           return test_bit(((long)bus << 8) | devfn, iommu->copied_tables);
+                                                     ~~~~~  ^
+   include/linux/bitops.h:61:50: note: expanded from macro 'test_bit'
+   #define test_bit(nr, addr)              bitop(_test_bit, nr, addr)
+                                                                ^~~~
+   include/linux/bitops.h:50:37: note: expanded from macro 'bitop'
+             __builtin_constant_p((uintptr_t)(addr) != (uintptr_t)NULL) && \
+                                              ^~~~
+   In file included from drivers/iommu/intel/dmar.c:33:
+   drivers/iommu/intel/iommu.h:708:51: error: no member named 'copied_tables' in 'struct intel_iommu'
+           return test_bit(((long)bus << 8) | devfn, iommu->copied_tables);
+                                                     ~~~~~  ^
+   include/linux/bitops.h:61:50: note: expanded from macro 'test_bit'
+   #define test_bit(nr, addr)              bitop(_test_bit, nr, addr)
+                                                                ^~~~
+   include/linux/bitops.h:51:16: note: expanded from macro 'bitop'
+             (uintptr_t)(addr) != (uintptr_t)NULL &&                       \
+                         ^~~~
+   In file included from drivers/iommu/intel/dmar.c:33:
+   drivers/iommu/intel/iommu.h:708:51: error: no member named 'copied_tables' in 'struct intel_iommu'
+           return test_bit(((long)bus << 8) | devfn, iommu->copied_tables);
+                                                     ~~~~~  ^
+   include/linux/bitops.h:61:50: note: expanded from macro 'test_bit'
+   #define test_bit(nr, addr)              bitop(_test_bit, nr, addr)
+                                                                ^~~~
+   include/linux/bitops.h:52:50: note: expanded from macro 'bitop'
+             __builtin_constant_p(*(const unsigned long *)(addr))) ?       \
+                                                           ^~~~
+   In file included from drivers/iommu/intel/dmar.c:33:
+   drivers/iommu/intel/iommu.h:708:51: error: no member named 'copied_tables' in 'struct intel_iommu'
+           return test_bit(((long)bus << 8) | devfn, iommu->copied_tables);
+                                                     ~~~~~  ^
+   include/linux/bitops.h:61:50: note: expanded from macro 'test_bit'
+   #define test_bit(nr, addr)              bitop(_test_bit, nr, addr)
+                                                                ^~~~
+   include/linux/bitops.h:53:17: note: expanded from macro 'bitop'
+            const##op(nr, addr) : op(nr, addr))
+                          ^~~~
+   In file included from drivers/iommu/intel/dmar.c:33:
+   drivers/iommu/intel/iommu.h:708:51: error: no member named 'copied_tables' in 'struct intel_iommu'
+           return test_bit(((long)bus << 8) | devfn, iommu->copied_tables);
+                                                     ~~~~~  ^
+   include/linux/bitops.h:61:50: note: expanded from macro 'test_bit'
+   #define test_bit(nr, addr)              bitop(_test_bit, nr, addr)
+                                                                ^~~~
+   include/linux/bitops.h:53:32: note: expanded from macro 'bitop'
+            const##op(nr, addr) : op(nr, addr))
+                                         ^~~~
+   6 errors generated.
+
+
+vim +705 drivers/iommu/intel/iommu.h
+
+   702	
+   703	static inline bool context_copied(struct intel_iommu *iommu, u8 bus, u8 devfn)
+   704	{
+ > 705		if (!iommu->copied_tables)
+   706			return false;
+   707	
+   708		return test_bit(((long)bus << 8) | devfn, iommu->copied_tables);
+   709	}
+   710	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
