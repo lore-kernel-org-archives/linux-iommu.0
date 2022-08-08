@@ -1,330 +1,84 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2DB83D6E
-	for <iommu@lists.linux.dev>; Mon,  8 Aug 2022 16:21:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1659975710;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ZIIp+4XezCD9XhW5KqD0Wp8O30CPtOvkN45ZhL43/sI=;
-	b=awkPxjqUn0LbMxlakg6lPLn1bwVvPC5TN1zl8zfdTssmwHusg3zupNTHxRR1Rk1Mdlyfs/
-	OMGkA7zEK7VcRhqRcdVFyarD82YfY2cuDaap72ys0nfWb2YdV/1OoRobjFA4wqz9yp0Lqt
-	Cne5zvD1TVfEGYd6ycjAM0f9MpQOb1o=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-640-TQgBmdtjOt-enrsXdMtgaw-1; Mon, 08 Aug 2022 12:21:49 -0400
-X-MC-Unique: TQgBmdtjOt-enrsXdMtgaw-1
-Received: by mail-qv1-f71.google.com with SMTP id np4-20020a056214370400b00476809b9caeso4731395qvb.0
-        for <iommu@lists.linux.dev>; Mon, 08 Aug 2022 09:21:48 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 301083D88
+	for <iommu@lists.linux.dev>; Mon,  8 Aug 2022 17:19:12 +0000 (UTC)
+Received: by mail-lf1-f50.google.com with SMTP id z6so6177895lfu.9
+        for <iommu@lists.linux.dev>; Mon, 08 Aug 2022 10:19:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=KbpI7aX4OJn+9ta7EZh2prJEXa1vTXGHPmj5GWJjFZo=;
+        b=zlnytlGmuMZ+psy1MdlUiNxuXSiE8ZCQ3Gv5Frvlh8cCNKqt2vz3RyTbRK256z5CKX
+         ZiuNuhAA8KA12Bt3I+BbNroQ91a8BPiMqx26a8cX96K41jkiGVK44WiqKCvPLcROB+9h
+         RMY9cVTGaADY3Uew5DmA0cBp4ZUot3wxoLoTqCOQpZLlYII++6Brua3pyU1+ydwOM6IJ
+         BUIgerP4Y+W2XoSWVc4fw9+o932Bj9skOfT3gBECuXD55/9/WtQgc5G5Avryql3RS6ZX
+         KJKJOgYLQ3PSDLNrWyUjEk0LQY6DhY4+0EDzjqUJLHD/X7Z4ysu2yu2jnnBvISNlVRJd
+         fEIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=ZIIp+4XezCD9XhW5KqD0Wp8O30CPtOvkN45ZhL43/sI=;
-        b=XeDmkjfCkhlMwwFJRM5lF6nirYroWDL/2iNnOniR3NN6eOVemmd1+2dgxG7qFoMCU/
-         z6zcK36EbCuwx5VBy+r9CiZfXQpDQdfVCAw3RrYBETbhT2ZN8msOoD0dztGaTrBmBnym
-         aEhoCI4yUC4SpxxBbD+Basq1P8BXKRjRcebUAR9QcOlb7/Aa4VR6MRtDOXKO6DoDuLm5
-         pn0lg9n5l2vMMma3xfJ56nJZFLcynfXODpHjptR2AmqQb1p/Ed6EIHMVtQZgHSYOvzb3
-         XMoleamWQpDU5UAA8+em2pqy7F48gMonFLDJpvi0YR5jcehh5a4MrN0A/WOsap3c0Ht0
-         M9nw==
-X-Gm-Message-State: ACgBeo0pPsuVZzZxrnC6bI2+PcvEwUGGg+qPulJ/wheEq1nHbDzWnigz
-	3PLCkk2mCOWA2+kI4ST8A+qvwDsM8q46myTnzqkIwEXQyp7RTg916JgRiIFJ2Jd3GwIFNJ3QUUJ
-	lwmQw/U23hm5vrmU=
-X-Received: by 2002:a05:6214:1a07:b0:474:6e80:e1e5 with SMTP id fh7-20020a0562141a0700b004746e80e1e5mr16175793qvb.41.1659975708180;
-        Mon, 08 Aug 2022 09:21:48 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR41H7/KMP6Xrg1+Qu9F5FmU0wuX9R7Ho2OYrizYTxWmBseWvAaRaDU+zCJVlnCznfO7XvDdLA==
-X-Received: by 2002:a05:6214:1a07:b0:474:6e80:e1e5 with SMTP id fh7-20020a0562141a0700b004746e80e1e5mr16175773qvb.41.1659975707871;
-        Mon, 08 Aug 2022 09:21:47 -0700 (PDT)
-Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id bk14-20020a05620a1a0e00b006b967397192sm1079804qkb.69.2022.08.08.09.21.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Aug 2022 09:21:47 -0700 (PDT)
-Date: Mon, 8 Aug 2022 09:21:46 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>, Wen Jin <wen.jin@intel.com>,
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH 1/1] iommu/vt-d: Fix kdump kernels boot failure with
- scalable mode
-Message-ID: <20220808162146.jrykclf5ez4o7j2t@cantor>
-References: <20220808034612.1691470-1-baolu.lu@linux.intel.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=KbpI7aX4OJn+9ta7EZh2prJEXa1vTXGHPmj5GWJjFZo=;
+        b=TDnp1gSeq8e4o5h4KMICW6YPD3SDcdunIBeYLZFCvExndfNEwSFtU7r3Pjv2TL696G
+         lNlt7YzDb4W/cdxiBwMh0nkskaGorDdIG4QFocBmdB5OAUQtPXWdrHOF5O6D+cY32OSB
+         ORTlc2Z0LRavPUhm5ZsuEzvvZQ1R+Z70N5LxtmErm6F4zEzVejMGs1xdgCHYw1e87CyE
+         4wXqad99YdfwyUitAklAl4pLaaaQ7rCO4GFBYAGXQJDMMJFZkueASO/jOG/3yvjT3tud
+         NUECQ4pFFEAOV2KulrArusO88bZZDitmWaRk1xcA8Br+dETbR6GB16VoJLj14uFXTpy5
+         8zmg==
+X-Gm-Message-State: ACgBeo0zZKmxpweuUelhLSpSg2gCuViqp3ldIBXA7RyWDMPsOCFt5ufD
+	DQuvImy6YDEFWdzHKEu/Ff1RCQzIOzsi320/y5F1+w==
+X-Google-Smtp-Source: AA6agR60RUwt3/4FZq6vv68Rd14ohShJ+6I1vuQ8pNpdWDWPZ27+sATnt0BnfGxwaXqeGnKcTp+CfCCKh4dFy7ZrKgQ=
+X-Received: by 2002:a05:6512:2306:b0:48b:26f3:91b1 with SMTP id
+ o6-20020a056512230600b0048b26f391b1mr6621555lfu.11.1659979150181; Mon, 08 Aug
+ 2022 10:19:10 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20220808034612.1691470-1-baolu.lu@linux.intel.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220726200739.30017-1-semen.protsenko@linaro.org>
+In-Reply-To: <20220726200739.30017-1-semen.protsenko@linaro.org>
+From: Sam Protsenko <semen.protsenko@linaro.org>
+Date: Mon, 8 Aug 2022 20:18:58 +0300
+Message-ID: <CAPLW+4kG9V03edHFXWJumuK+tmWiiwF5B7d2O6+Mb_XmfBY5Jw@mail.gmail.com>
+Subject: Re: [PATCH 0/2] iommu/exynos: Add fault handling on SysMMU v7
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Janghyuck Kim <janghyuck.kim@samsung.com>, 
+	Cho KyongHo <pullip.cho@samsung.com>, Daniel Mentz <danielmentz@google.com>, 
+	David Virag <virag.david003@gmail.com>, Sumit Semwal <sumit.semwal@linaro.org>, 
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, Aug 08, 2022 at 11:46:12AM +0800, Lu Baolu wrote:
-> The translation table copying code for kdump kernels is currently based
-> on the extended root/context entry formats of ECS mode defined in older
-> VT-d v2.5, and doesn't handle the scalable mode formats. This causes
-> the kexec capture kernel boot failure with DMAR faults if the IOMMU was
-> enabled in scalable mode by the previous kernel.
-> 
-> The ECS mode has already been deprecated by the VT-d spec since v3.0 and
-> Intel IOMMU driver doesn't support this mode as there's no real hardware
-> implementation. Hence this converts ECS checking in copying table code
-> into scalable mode.
-> 
-> The existing copying code consumes a bit in the context entry as a mark
-> of copied entry. This marker needs to work for the old format as well as
-> for extended context entries. It's hard to find such a bit for both
-> legacy and scalable mode context entries. This replaces it with a per-
-> IOMMU bitmap.
-> 
-> Fixes: 7373a8cc38197 ("iommu/vt-d: Setup context and enable RID2PASID support")
-> Cc: stable@vger.kernel.org
-> Reported-by: Jerry Snitselaar <jsnitsel@redhat.com>
-> Tested-by: Wen Jin <wen.jin@intel.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
+On Tue, 26 Jul 2022 at 23:07, Sam Protsenko <semen.protsenko@linaro.org> wrote:
+>
+> Exynos IOMMU driver implements fault handling for SysMMU v1..v5. But the
+> abstraction currently used is not suited for SysMMU v7, as it has quite
+> different fault related register set.
+>
+> This patch series reworks the mentioned fault handling abstraction and
+> adds fault handling support for SysMMU v7.
+>
+> Sam Protsenko (2):
+>   iommu/exynos: Abstract getting the fault info
+>   iommu/exynos: Implement fault handling on SysMMU v7
+>
+>  drivers/iommu/exynos-iommu.c | 208 ++++++++++++++++++++++++-----------
+>  1 file changed, 143 insertions(+), 65 deletions(-)
+>
+> --
+> 2.30.2
+>
 
-I did a quick test last night, and it was able to harvest the vmcore,
-and boot back up. Before you mentioned part of the issue being that it
-couldn't get to the PGTT field in the pasid table entry. Was that not
-the case, or is it looking at the old kernel pasid dir entries and
-table entries through the pasid dir pointer in the copied context
-entry?
+Hi Marek,
 
-Regards,
-Jerry
+Can you please review and test this series? I only have my E850 (which
+has VM-capable SysMMU register layout). So it would be nice to check
+if it works fine with non-VM SysMMU v7 and older versions.
 
->  drivers/iommu/intel/iommu.h   | 17 ++++++--
->  drivers/iommu/intel/debugfs.c |  3 +-
->  drivers/iommu/intel/iommu.c   | 76 +++++++++--------------------------
->  3 files changed, 35 insertions(+), 61 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-> index fae45bbb0c7f..e9b851c42575 100644
-> --- a/drivers/iommu/intel/iommu.h
-> +++ b/drivers/iommu/intel/iommu.h
-> @@ -197,7 +197,6 @@
->  #define ecap_dis(e)		(((e) >> 27) & 0x1)
->  #define ecap_nest(e)		(((e) >> 26) & 0x1)
->  #define ecap_mts(e)		(((e) >> 25) & 0x1)
-> -#define ecap_ecs(e)		(((e) >> 24) & 0x1)
->  #define ecap_iotlb_offset(e) 	((((e) >> 8) & 0x3ff) * 16)
->  #define ecap_max_iotlb_offset(e) (ecap_iotlb_offset(e) + 16)
->  #define ecap_coherent(e)	((e) & 0x1)
-> @@ -265,7 +264,6 @@
->  #define DMA_GSTS_CFIS (((u32)1) << 23)
->  
->  /* DMA_RTADDR_REG */
-> -#define DMA_RTADDR_RTT (((u64)1) << 11)
->  #define DMA_RTADDR_SMT (((u64)1) << 10)
->  
->  /* CCMD_REG */
-> @@ -579,6 +577,7 @@ struct intel_iommu {
->  
->  #ifdef CONFIG_INTEL_IOMMU
->  	unsigned long 	*domain_ids; /* bitmap of domains */
-> +	unsigned long	*copied_tables; /* bitmap of copied tables */
->  	spinlock_t	lock; /* protect context, domain ids */
->  	struct root_entry *root_entry; /* virtual address */
->  
-> @@ -701,6 +700,19 @@ static inline int nr_pte_to_next_page(struct dma_pte *pte)
->  		(struct dma_pte *)ALIGN((unsigned long)pte, VTD_PAGE_SIZE) - pte;
->  }
->  
-> +static inline bool context_copied(struct intel_iommu *iommu, u8 bus, u8 devfn)
-> +{
-> +	if (!iommu->copied_tables)
-> +		return false;
-> +
-> +	return test_bit(((long)bus << 8) | devfn, iommu->copied_tables);
-> +}
-> +
-> +static inline bool context_present(struct context_entry *context)
-> +{
-> +	return (context->lo & 1);
-> +}
-> +
->  extern struct dmar_drhd_unit * dmar_find_matched_drhd_unit(struct pci_dev *dev);
->  
->  extern int dmar_enable_qi(struct intel_iommu *iommu);
-> @@ -784,7 +796,6 @@ static inline void intel_iommu_debugfs_init(void) {}
->  #endif /* CONFIG_INTEL_IOMMU_DEBUGFS */
->  
->  extern const struct attribute_group *intel_iommu_groups[];
-> -bool context_present(struct context_entry *context);
->  struct context_entry *iommu_context_addr(struct intel_iommu *iommu, u8 bus,
->  					 u8 devfn, int alloc);
->  
-> diff --git a/drivers/iommu/intel/debugfs.c b/drivers/iommu/intel/debugfs.c
-> index 1f925285104e..f4fd249daad9 100644
-> --- a/drivers/iommu/intel/debugfs.c
-> +++ b/drivers/iommu/intel/debugfs.c
-> @@ -241,7 +241,8 @@ static void ctx_tbl_walk(struct seq_file *m, struct intel_iommu *iommu, u16 bus)
->  		if (!context)
->  			return;
->  
-> -		if (!context_present(context))
-> +		if (!context_present(context) ||
-> +		    context_copied(iommu, bus, devfn))
->  			continue;
->  
->  		tbl_wlk.bus = bus;
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 7cca030a508e..889ad2c9a7b9 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -163,38 +163,6 @@ static phys_addr_t root_entry_uctp(struct root_entry *re)
->  	return re->hi & VTD_PAGE_MASK;
->  }
->  
-> -static inline void context_clear_pasid_enable(struct context_entry *context)
-> -{
-> -	context->lo &= ~(1ULL << 11);
-> -}
-> -
-> -static inline bool context_pasid_enabled(struct context_entry *context)
-> -{
-> -	return !!(context->lo & (1ULL << 11));
-> -}
-> -
-> -static inline void context_set_copied(struct context_entry *context)
-> -{
-> -	context->hi |= (1ull << 3);
-> -}
-> -
-> -static inline bool context_copied(struct context_entry *context)
-> -{
-> -	return !!(context->hi & (1ULL << 3));
-> -}
-> -
-> -static inline bool __context_present(struct context_entry *context)
-> -{
-> -	return (context->lo & 1);
-> -}
-> -
-> -bool context_present(struct context_entry *context)
-> -{
-> -	return context_pasid_enabled(context) ?
-> -	     __context_present(context) :
-> -	     __context_present(context) && !context_copied(context);
-> -}
-> -
->  static inline void context_set_present(struct context_entry *context)
->  {
->  	context->lo |= 1;
-> @@ -764,7 +732,8 @@ static int device_context_mapped(struct intel_iommu *iommu, u8 bus, u8 devfn)
->  	spin_lock(&iommu->lock);
->  	context = iommu_context_addr(iommu, bus, devfn, 0);
->  	if (context)
-> -		ret = context_present(context);
-> +		ret = context_present(context) &&
-> +				!context_copied(iommu, bus, devfn);
->  	spin_unlock(&iommu->lock);
->  	return ret;
->  }
-> @@ -1688,6 +1657,11 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
->  		iommu->domain_ids = NULL;
->  	}
->  
-> +	if (iommu->copied_tables) {
-> +		bitmap_free(iommu->copied_tables);
-> +		iommu->copied_tables = NULL;
-> +	}
-> +
->  	/* free context mapping */
->  	free_context_table(iommu);
->  
-> @@ -1913,7 +1887,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
->  		goto out_unlock;
->  
->  	ret = 0;
-> -	if (context_present(context))
-> +	if (context_present(context) && !context_copied(iommu, bus, devfn))
->  		goto out_unlock;
->  
->  	/*
-> @@ -1925,7 +1899,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
->  	 * in-flight DMA will exist, and we don't need to worry anymore
->  	 * hereafter.
->  	 */
-> -	if (context_copied(context)) {
-> +	if (context_copied(iommu, bus, devfn)) {
->  		u16 did_old = context_domain_id(context);
->  
->  		if (did_old < cap_ndoms(iommu->cap)) {
-> @@ -1936,6 +1910,8 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
->  			iommu->flush.flush_iotlb(iommu, did_old, 0, 0,
->  						 DMA_TLB_DSI_FLUSH);
->  		}
-> +
-> +		clear_bit(((long)bus << 8) | devfn, iommu->copied_tables);
->  	}
->  
->  	context_clear_entry(context);
-> @@ -2684,32 +2660,14 @@ static int copy_context_table(struct intel_iommu *iommu,
->  		/* Now copy the context entry */
->  		memcpy(&ce, old_ce + idx, sizeof(ce));
->  
-> -		if (!__context_present(&ce))
-> +		if (!context_present(&ce))
->  			continue;
->  
->  		did = context_domain_id(&ce);
->  		if (did >= 0 && did < cap_ndoms(iommu->cap))
->  			set_bit(did, iommu->domain_ids);
->  
-> -		/*
-> -		 * We need a marker for copied context entries. This
-> -		 * marker needs to work for the old format as well as
-> -		 * for extended context entries.
-> -		 *
-> -		 * Bit 67 of the context entry is used. In the old
-> -		 * format this bit is available to software, in the
-> -		 * extended format it is the PGE bit, but PGE is ignored
-> -		 * by HW if PASIDs are disabled (and thus still
-> -		 * available).
-> -		 *
-> -		 * So disable PASIDs first and then mark the entry
-> -		 * copied. This means that we don't copy PASID
-> -		 * translations from the old kernel, but this is fine as
-> -		 * faults there are not fatal.
-> -		 */
-> -		context_clear_pasid_enable(&ce);
-> -		context_set_copied(&ce);
-> -
-> +		set_bit(((long)bus << 8) | devfn, iommu->copied_tables);
->  		new_ce[idx] = ce;
->  	}
->  
-> @@ -2735,8 +2693,8 @@ static int copy_translation_tables(struct intel_iommu *iommu)
->  	bool new_ext, ext;
->  
->  	rtaddr_reg = dmar_readq(iommu->reg + DMAR_RTADDR_REG);
-> -	ext        = !!(rtaddr_reg & DMA_RTADDR_RTT);
-> -	new_ext    = !!ecap_ecs(iommu->ecap);
-> +	ext        = !!(rtaddr_reg & DMA_RTADDR_SMT);
-> +	new_ext    = !!ecap_smts(iommu->ecap);
->  
->  	/*
->  	 * The RTT bit can only be changed when translation is disabled,
-> @@ -2747,6 +2705,10 @@ static int copy_translation_tables(struct intel_iommu *iommu)
->  	if (new_ext != ext)
->  		return -EINVAL;
->  
-> +	iommu->copied_tables = bitmap_zalloc(BIT_ULL(16), GFP_KERNEL);
-> +	if (!iommu->copied_tables)
-> +		return -ENOMEM;
-> +
->  	old_rt_phys = rtaddr_reg & VTD_PAGE_MASK;
->  	if (!old_rt_phys)
->  		return -EINVAL;
-> -- 
-> 2.25.1
-> 
-
+Thanks!
