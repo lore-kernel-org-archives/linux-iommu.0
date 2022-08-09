@@ -1,95 +1,88 @@
-Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com [209.85.219.180])
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09B1B3D88
-	for <iommu@lists.linux.dev>; Mon,  8 Aug 2022 17:31:41 +0000 (UTC)
-Received: by mail-yb1-f180.google.com with SMTP id 199so14707577ybl.9
-        for <iommu@lists.linux.dev>; Mon, 08 Aug 2022 10:31:41 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70F6C5C90
+	for <iommu@lists.linux.dev>; Tue,  9 Aug 2022 07:20:52 +0000 (UTC)
+Received: by mail-wr1-f50.google.com with SMTP id v3so13384574wrp.0
+        for <iommu@lists.linux.dev>; Tue, 09 Aug 2022 00:20:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=nDZGjC3d6RgPiYxCgLnPjqhoXy38nST01tp2NFMdLgY=;
+        b=xN4KUUb5LpDRsXDr3lg6VqfiiGJiAKnuy4OZkG8jx1/2Heekel3ys6nLkYYNoK6MiQ
+         tEBcu5S5opzm2fPc+3FFmoClgEfRYpsvPM2BKrPp6quT426U1LXghDTLf2eSzG8FKRPU
+         7jkicc6XssGkFQRU3KtP4P4Gju3ebDqXaqouM/CCZPp07GXJTXx9b+mC0puznB4+DTqN
+         Ld8RB/cqU2XQ/R78lAQg/0oZRszHYNaJEEtWvc5nF35NISlUXUEmC51qfir5OeO2srFJ
+         m5FXiL/1kSfn+poFKNQHXg1kTunibiDTeqMn9+YsCithA3QLL4lyGOtIs6HdZryQCWP7
+         NccQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=XE+n3oen5M0Y6e3hQHkhdlIj+r5EImjvF5ySJ/oi7Gg=;
-        b=0gQ9CasHJRU7jCR9efIXWmVK1I5n0mOastyjCY2tTAsKIeKcxc0v7n+XPETPD83Yan
-         FKIRrHyvt8vM80Hn1m7MIu1Mxcbu1+Mc13j/XZI4L4tVxn2II/MyaIzAT19WtjrB6CPu
-         BMp2G1b1s7iquJi6aAZnvvyxw6QFt86vznMg7Mb6IBiMl9S60BIMqb+1NT9ZGpfNyhZF
-         d13pp9SzJPSn3g6SvEVmchQu/rON/caOTeSsjNMZDCUD3I1QgNyeRU3B07SoPxGoHQ01
-         NlrWvNqEk/RS/w7aHmyP6N5Z3Q8CtrZuI5VXcFoi580nv/JBT7lfEPnQrpaGUA2dd3gF
-         yqBw==
-X-Gm-Message-State: ACgBeo29gEwi7Ht6y5mF5NCCj444Ue1IlCkUQCBLHkQoOc3omkOuoqUI
-	l6vnW1znF3TG4Z11ovxT3+2pHbud2bYDMA7zgRI=
-X-Google-Smtp-Source: AA6agR5upNhWU3fVwvA09Is8RJUsteXtRxDRvkNznDvaCZ5QkgtNuY18SStQsaUE4RmZF5tr5yF2iU53FoXtCcjjfTE=
-X-Received: by 2002:a5b:40a:0:b0:677:a43b:dcd3 with SMTP id
- m10-20020a5b040a000000b00677a43bdcd3mr16122549ybp.622.1659979901028; Mon, 08
- Aug 2022 10:31:41 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=nDZGjC3d6RgPiYxCgLnPjqhoXy38nST01tp2NFMdLgY=;
+        b=YjbH6zN3fiCrMrbIiQWWrmhywk8y5XEkjSidUZQb/t2bNi2FlCA7V/zs94kwRHikAJ
+         onhdIUstkaBsyTNxw5VIV2DClxbrfL2jI9DCYXdrA18g/hhbIrUctpaykq2hp3pmvxGT
+         1GwheaTEB7YZZft9LUKINK6mBIpi6wYpEae2ioGw0Q5S7zWBeJx1rpoH8nys4vX5NOAG
+         WguAhFPkNbImB1S8nLbf/1wVezHn4CLqKEfJi94XkFyg1OD5CZmrOWidchKFp0Wiqvq1
+         jl7n3ZlY9l/EDqRcSXNxYt1zBvGqA0NZzM8AMWDlOhoQksOWlw8v7sDwckRahamauebZ
+         kP/A==
+X-Gm-Message-State: ACgBeo3+0TNesF7llDPkBNfFUN8d8kRTg6n1LhQisfY7e6pNKBKUb7ee
+	n2csX1jnefoDGRyNbFFT96f4Kg==
+X-Google-Smtp-Source: AA6agR6QHnlDD3qjHO/gSC+OOdUtehf/UYh9OOQN8/22GLn0m55iV4WWOcGucEL0AAtwWiy4oMW0jw==
+X-Received: by 2002:adf:d1c1:0:b0:220:5ec3:fb62 with SMTP id b1-20020adfd1c1000000b002205ec3fb62mr13237098wrd.69.1660029650688;
+        Tue, 09 Aug 2022 00:20:50 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
+        by smtp.gmail.com with ESMTPSA id n18-20020a05600c501200b003a2d47d3051sm17651203wmr.41.2022.08.09.00.20.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Aug 2022 00:20:50 -0700 (PDT)
+Date: Tue, 9 Aug 2022 08:20:48 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Joerg Roedel <jroedel@suse.de>,
+	virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v1 1/1] iommu/virtio: Do not dereference fwnode in struct
+ device
+Message-ID: <YvIK0KMi1yECL9vc@myrica>
+References: <20220801165142.20898-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20220802193503.3092-1-andriy.shevchenko@linux.intel.com> <f2685007-0331-aaea-bfbe-074a3680fc29@redhat.com>
-In-Reply-To: <f2685007-0331-aaea-bfbe-074a3680fc29@redhat.com>
-From: "Rafael J. Wysocki" <rafael@kernel.org>
-Date: Mon, 8 Aug 2022 19:31:30 +0200
-Message-ID: <CAJZ5v0i7aqURUA3AOpssKCjucPpyys5-KKWgrujxNwxkg_x-+Q@mail.gmail.com>
-Subject: Re: [PATCH v1 1/1] ACPI: VIOT: Do not dereference fwnode in struct device
-To: Eric Auger <eric.auger@redhat.com>, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: ACPI Devel Maling List <linux-acpi@vger.kernel.org>, iommu@lists.linux.dev, 
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, 
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
-	Len Brown <lenb@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220801165142.20898-1-andriy.shevchenko@linux.intel.com>
 
-On Wed, Aug 3, 2022 at 12:03 PM Eric Auger <eric.auger@redhat.com> wrote:
->
-> Hi Andy,
->
-> On 8/2/22 21:35, Andy Shevchenko wrote:
-> > In order to make the underneath API easier to change in the future,
-> > prevent users from dereferencing fwnode from struct device.
-> > Instead, use the specific dev_fwnode() and device_match_fwnode()
-> > APIs for that.
-> >
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Reviewed-by: Eric Auger <eric.auger@redhat.com>
+On Mon, Aug 01, 2022 at 07:51:42PM +0300, Andy Shevchenko wrote:
+> In order to make the underneath API easier to change in the future,
+> prevent users from dereferencing fwnode from struct device.
+> Instead, use the specific device_match_fwnode() API for that.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Applied, thanks!
+Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
-> > ---
-> >  drivers/acpi/viot.c | 6 +++---
-> >  1 file changed, 3 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/acpi/viot.c b/drivers/acpi/viot.c
-> > index 647f11cf165d..6132092dab2a 100644
-> > --- a/drivers/acpi/viot.c
-> > +++ b/drivers/acpi/viot.c
-> > @@ -88,7 +88,7 @@ static int __init viot_get_pci_iommu_fwnode(struct viot_iommu *viommu,
-> >               return -ENODEV;
-> >       }
-> >
-> > -     fwnode = pdev->dev.fwnode;
-> > +     fwnode = dev_fwnode(&pdev->dev);
-> >       if (!fwnode) {
-> >               /*
-> >                * PCI devices aren't necessarily described by ACPI. Create a
-> > @@ -101,7 +101,7 @@ static int __init viot_get_pci_iommu_fwnode(struct viot_iommu *viommu,
-> >               }
-> >               set_primary_fwnode(&pdev->dev, fwnode);
-> >       }
-> > -     viommu->fwnode = pdev->dev.fwnode;
-> > +     viommu->fwnode = dev_fwnode(&pdev->dev);
-> >       pci_dev_put(pdev);
-> >       return 0;
-> >  }
-> > @@ -314,7 +314,7 @@ static int viot_dev_iommu_init(struct device *dev, struct viot_iommu *viommu,
-> >               return -ENODEV;
-> >
-> >       /* We're not translating ourself */
-> > -     if (viommu->fwnode == dev->fwnode)
-> > +     if (device_match_fwnode(dev, viommu->fwnode))
-> >               return -EINVAL;
-> >
-> >       ops = iommu_ops_from_fwnode(viommu->fwnode);
->
+> ---
+>  drivers/iommu/virtio-iommu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+> index 08eeafc9529f..9fe723f55213 100644
+> --- a/drivers/iommu/virtio-iommu.c
+> +++ b/drivers/iommu/virtio-iommu.c
+> @@ -925,7 +925,7 @@ static struct virtio_driver virtio_iommu_drv;
+>  
+>  static int viommu_match_node(struct device *dev, const void *data)
+>  {
+> -	return dev->parent->fwnode == data;
+> +	return device_match_fwnode(dev->parent, data);
+>  }
+>  
+>  static struct viommu_dev *viommu_get_by_fwnode(struct fwnode_handle *fwnode)
+> -- 
+> 2.35.1
+> 
