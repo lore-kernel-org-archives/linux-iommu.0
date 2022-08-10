@@ -1,88 +1,105 @@
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A1E24428
-	for <iommu@lists.linux.dev>; Tue,  9 Aug 2022 13:53:20 +0000 (UTC)
-Received: from notapiano (unknown [193.27.14.109])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: nfraprado)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id 31A1C6601C45;
-	Tue,  9 Aug 2022 14:53:16 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1660053198;
-	bh=R+CpuZN1Sl+R1CObLrG1wLITHiTzHmjmpta/SIREkdM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=SjuY2JQzbM0PFwmAXUkG2NewMPwh5uPBzPQkoYv8b+NViFKYoRaSGYgXA6YSAWYna
-	 qSBCjU78IGhJ0uGfuZn1Dm3GK3sBSeTGvJn1h4XdjaUwFgk2W+FEOhGkRDDJFRzjOJ
-	 h6KRVfb+d4ZURdxwDr4dcpUa4or57PdiFRkAIwdaxAEEn9Px2t9oVIl/E5wlAs04f8
-	 X9cns2SgL1slzGdaZ5yS6uInTQxTVkc37bwEle4BoVpSUOeSYyFPhU4OJDaxvVrrlC
-	 7CWGQFRiCPv/rrgLzG7f46/tSSyyk5QXckkaePiEdtklThsMY+ItVw04TaYHAG3H3X
-	 XVOk1qLihA2aA==
-Date: Tue, 9 Aug 2022 09:53:12 -0400
-From: =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado <nfraprado@collabora.com>
-To: Tinghan Shen <tinghan.shen@mediatek.com>
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Lee Jones <lee@kernel.org>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	MandyJH Liu <mandyjh.liu@mediatek.com>, iommu@lists.linux.dev,
-	linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Project_Global_Chrome_Upstream_Group@mediatek.com
-Subject: Re: [PATCH v5 02/20] dt-bindings: memory: mediatek: Update condition
- for mt8195 smi node
-Message-ID: <20220809135312.hadcs7ti2cgyyuez@notapiano>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1A8918E
+	for <iommu@lists.linux.dev>; Wed, 10 Aug 2022 01:51:43 +0000 (UTC)
+X-UUID: e78040478acc42bd83fbf7e6f2122c14-20220810
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=Z48Z/6BJ44USMBjWFHetu114Y1YDE9zrqDWzGJN6TIE=;
+	b=qX6H7K3rikADL0LoouX5RiB9bp4veNnZ7ANj8Nz1+tlSEl1633b3edOm2ONWTXYe6IlkThgYLXRr51964OwMB9DnxffOkZHnxZvi7GcVnvIoFLGtTq5kjFspxZmmBB3Hm9jgxIiZckRPsb3YIQeuj0rOE4B4tb6hNf+Pp0yxFyw=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.9,REQID:bae890a1-6131-4e6f-acf0-edca531d5bc9,OB:0,LO
+	B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_H
+	am,ACTION:release,TS:0
+X-CID-META: VersionHash:3d8acc9,CLOUDID:59a05eae-9535-44a6-aa9b-7f62b79b6ff6,C
+	OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+	,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: e78040478acc42bd83fbf7e6f2122c14-20220810
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+	(envelope-from <tinghan.shen@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+	with ESMTP id 1860812105; Wed, 10 Aug 2022 09:51:33 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Wed, 10 Aug 2022 09:51:32 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
+ Transport; Wed, 10 Aug 2022 09:51:32 +0800
+Message-ID: <1238beb0a140a0987b8fdda6e7bbadfbb2415ed4.camel@mediatek.com>
+Subject: Re: [PATCH v5 02/20] dt-bindings: memory: mediatek: Update
+ condition for mt8195 smi node
+From: Tinghan Shen <tinghan.shen@mediatek.com>
+To: "=?ISO-8859-1?Q?N=EDcolas?= F. R. A. Prado" <nfraprado@collabora.com>
+CC: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Yong Wu
+	<yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
+	<robh+dt@kernel.org>, Krzysztof Kozlowski
+	<krzysztof.kozlowski+dt@linaro.org>, Lee Jones <lee@kernel.org>, "Matthias
+ Brugger" <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+	<angelogioacchino.delregno@collabora.com>, MandyJH Liu
+	<mandyjh.liu@mediatek.com>, <iommu@lists.linux.dev>,
+	<linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date: Wed, 10 Aug 2022 09:51:32 +0800
+In-Reply-To: <20220809135312.hadcs7ti2cgyyuez@notapiano>
 References: <20220804021553.14867-1-tinghan.shen@mediatek.com>
- <20220804021553.14867-3-tinghan.shen@mediatek.com>
- <96e66425-ff2a-4640-8b96-48fa39943bf9@linaro.org>
- <6a1977971317059fcfad685869b6ccf233edcb68.camel@mediatek.com>
+	 <20220804021553.14867-3-tinghan.shen@mediatek.com>
+	 <96e66425-ff2a-4640-8b96-48fa39943bf9@linaro.org>
+	 <6a1977971317059fcfad685869b6ccf233edcb68.camel@mediatek.com>
+	 <20220809135312.hadcs7ti2cgyyuez@notapiano>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <6a1977971317059fcfad685869b6ccf233edcb68.camel@mediatek.com>
+X-MTK: N
 
-On Tue, Aug 09, 2022 at 07:01:10PM +0800, Tinghan Shen wrote:
-> Hi Krzysztof,
+On Tue, 2022-08-09 at 09:53 -0400, Nícolas F. R. A. Prado wrote:
+> On Tue, Aug 09, 2022 at 07:01:10PM +0800, Tinghan Shen wrote:
+> > Hi Krzysztof,
+> > 
+> > On Thu, 2022-08-04 at 17:12 +0200, Krzysztof Kozlowski wrote:
+> > > On 04/08/2022 04:15, Tinghan Shen wrote:
+> > > > 
+> > > > It's because the 'mediatek,mt8195-smi-sub-common' compatible incorrectly
+> > > > matches the 'else' conditions for gen2 HW without gals.
+> > > > 
+> > > > Rewrite the 'else' condition to specifically identify the compatibles
+> > > > that utilizing gen2 HW without gals.
+> > > > 
+> > > > Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+> > > > Reviewed-by: AngeloGioacchino Del Regno
+> > > >  <angelogioacchino.delregno@collabora.com>
+> > > 
+> > > Unfortunately, your patches got corrupted.
+> > > 
+> > > 
+> > > Best regards,
+> > > Krzysztof
+> > 
+> > Do you mean rebase to the latest linux-next?
+> > I'll rebase in the next version, thanks!
 > 
-> On Thu, 2022-08-04 at 17:12 +0200, Krzysztof Kozlowski wrote:
-> > On 04/08/2022 04:15, Tinghan Shen wrote:
-> > > 
-> > > It's because the 'mediatek,mt8195-smi-sub-common' compatible incorrectly
-> > > matches the 'else' conditions for gen2 HW without gals.
-> > > 
-> > > Rewrite the 'else' condition to specifically identify the compatibles
-> > > that utilizing gen2 HW without gals.
-> > > 
-> > > Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
-> > > Reviewed-by: AngeloGioacchino Del Regno
-> > >  <angelogioacchino.delregno@collabora.com>
-> > 
-> > Unfortunately, your patches got corrupted.
-> > 
-> > 
-> > Best regards,
-> > Krzysztof
+> Hi TingHan,
 > 
-> Do you mean rebase to the latest linux-next?
-> I'll rebase in the next version, thanks!
+> the issue is that some line wrapping happened on your patches, which broke tags
+> and also the diffs themselves (it's very obvious on patch 3). So you need to
+> sort out your setup so that no longer happens, and resend the patch.
+> 
+> Thanks,
+> Nícolas
 
-Hi TingHan,
+I see. I'll send the next version after fix the weired wrapping...
+Thank you.
 
-the issue is that some line wrapping happened on your patches, which broke tags
-and also the diffs themselves (it's very obvious on patch 3). So you need to
-sort out your setup so that no longer happens, and resend the patch.
 
-Thanks,
-N�colas
+Best regards,
+TingHan
+
+
