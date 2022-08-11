@@ -1,47 +1,49 @@
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23C6D20F1
-	for <iommu@lists.linux.dev>; Thu, 11 Aug 2022 02:58:29 +0000 (UTC)
-X-UUID: 3b59ae2eaa32423a8c88d83f33d4e011-20220811
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EEAC20EC
+	for <iommu@lists.linux.dev>; Thu, 11 Aug 2022 02:58:28 +0000 (UTC)
+X-UUID: ed3d26a6179546d1bead17901b8731fd-20220811
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=xMw9tXmV++brY5ivHKXCBUvpp5g7/6jht4LcJUI8d4s=;
-	b=OrBeB1GErWHAYx3CqGhRYmVU2tDgO7zOijoSHJmjDKMc4F1ni6QbbUg7Z7r9vVR7Mk1wQCD/WCN36yn+WcMR8NmkdUcgIryo1Y81W90rZFXRt52aMwNhutpJWskGqnbqlp59m6pIhyBIKR5A+K1JOYVBo5aJ8Lh40szAg9sL8q8=;
+	h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=0xsciSuEWGlfUogQATKa51f0ayGsstjaIavZnJxxmZk=;
+	b=U7A8ID2jhH8/Fq3lq8J1bB00RqPkBsrxtzc2DoZ/BFFsmsO1SPJmdoeJxSg5I2NmN9CQ5skj1Xo0BpXxhB5VKOmjR/ewbGML1UB0uwMCJp8Mh2SaMt97WqJZJOvl8E7w1K203SdeWOHUGDkEv52hrdkFURQ6dnDXRr8ZuDTHQ/A=;
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.9,REQID:34c645ef-685f-4412-a470-04371925ed36,OB:0,LO
-	B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_H
-	am,ACTION:release,TS:0
-X-CID-META: VersionHash:3d8acc9,CLOUDID:11087cae-9535-44a6-aa9b-7f62b79b6ff6,C
-	OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-	,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 3b59ae2eaa32423a8c88d83f33d4e011-20220811
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+X-CID-O-INFO: VERSION:1.1.9,REQID:9022d4cf-5c89-4f5a-be05-6afe2bd6c541,OB:10,L
+	OB:60,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,BULK:0,RULE:Relea
+	se_Ham,ACTION:release,TS:100
+X-CID-INFO: VERSION:1.1.9,REQID:9022d4cf-5c89-4f5a-be05-6afe2bd6c541,OB:10,LOB
+	:60,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,BULK:0,RULE:Spam_GS
+	981B3D,ACTION:quarantine,TS:100
+X-CID-META: VersionHash:3d8acc9,CLOUDID:cea1559c-da39-4e3b-a854-56c7d2111b46,C
+	OID:c61491456753,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+	RL:0,File:nil,Bulk:40,QS:nil,BEC:nil,COL:0
+X-UUID: ed3d26a6179546d1bead17901b8731fd-20220811
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
 	(envelope-from <tinghan.shen@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 1217111730; Thu, 11 Aug 2022 10:58:18 +0800
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+	with ESMTP id 507108906; Thu, 11 Aug 2022 10:58:16 +0800
 Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Thu, 11 Aug 2022 10:58:17 +0800
+ 15.2.792.15; Thu, 11 Aug 2022 10:58:15 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
  mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.15 via Frontend Transport; Thu, 11 Aug 2022 10:58:17 +0800
+ 15.2.792.15 via Frontend Transport; Thu, 11 Aug 2022 10:58:15 +0800
 From: Tinghan Shen <tinghan.shen@mediatek.com>
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will
- Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, "Will
+ Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
 	<robh+dt@kernel.org>, Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>, Lee Jones <lee@kernel.org>, Matthias
- Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+	<krzysztof.kozlowski+dt@linaro.org>, Lee Jones <lee@kernel.org>, "Matthias
+ Brugger" <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
 	<angelogioacchino.delregno@collabora.com>, Tinghan Shen
 	<tinghan.shen@mediatek.com>, MandyJH Liu <mandyjh.liu@mediatek.com>
 CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
 	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
 	<linux-arm-kernel@lists.infradead.org>,
-	<Project_Global_Chrome_Upstream_Group@mediatek.com>, Trevor Wu
-	<trevor.wu@mediatek.com>
-Subject: [PATCH v6 17/20] arm64: dts: mt8195: Specify audio reset controller
-Date: Thu, 11 Aug 2022 10:58:10 +0800
-Message-ID: <20220811025813.21492-18-tinghan.shen@mediatek.com>
+	<Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v6 04/20] dt-bindings: power: mediatek: Support naming power controller node with unit address
+Date: Thu, 11 Aug 2022 10:57:57 +0800
+Message-ID: <20220811025813.21492-5-tinghan.shen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220811025813.21492-1-tinghan.shen@mediatek.com>
 References: <20220811025813.21492-1-tinghan.shen@mediatek.com>
@@ -54,38 +56,29 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-MTK: N
 
-From: Trevor Wu <trevor.wu@mediatek.com>
+Support naming power controller node with unit address, also compatible
+with node names without unit address.
 
-Specify audio reset controller for audio hardware resetting.
-
-Signed-off-by: Trevor Wu <trevor.wu@mediatek.com>
 Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- arch/arm64/boot/dts/mediatek/mt8195.dtsi | 3 +++
- 1 file changed, 3 insertions(+)
+ .../devicetree/bindings/power/mediatek,power-controller.yaml    | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-index f42d33414125f..9c14c42f07139 100644
---- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-@@ -680,6 +680,7 @@
- 				     "mediatek,mt6589-wdt";
- 			mediatek,disable-extrst;
- 			reg = <0 0x10007000 0 0x100>;
-+			#reset-cells = <1>;
- 		};
+diff --git a/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml b/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+index 321802c95308f..2d6afc0909473 100644
+--- a/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
++++ b/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+@@ -19,7 +19,7 @@ description: |
  
- 		apmixedsys: syscon@1000c000 {
-@@ -782,6 +783,8 @@
- 			mediatek,topckgen = <&topckgen>;
- 			power-domains = <&spm MT8195_POWER_DOMAIN_AUDIO>;
- 			interrupts = <GIC_SPI 822 IRQ_TYPE_LEVEL_HIGH 0>;
-+			resets = <&watchdog 14>;
-+			reset-names = "audiosys";
- 			clocks = <&clk26m>,
- 				<&apmixedsys CLK_APMIXED_APLL1>,
- 				<&apmixedsys CLK_APMIXED_APLL2>,
+ properties:
+   $nodename:
+-    const: power-controller
++    pattern: '^power-controller(@[0-9a-f]+)?$'
+ 
+   compatible:
+     enum:
 -- 
 2.18.0
 
