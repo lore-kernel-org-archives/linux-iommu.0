@@ -1,35 +1,35 @@
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6F9420E7
-	for <iommu@lists.linux.dev>; Thu, 11 Aug 2022 02:58:29 +0000 (UTC)
-X-UUID: 9e8015541dd8494cad1dc95eae71b448-20220811
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1599320E6
+	for <iommu@lists.linux.dev>; Thu, 11 Aug 2022 02:58:27 +0000 (UTC)
+X-UUID: 9df42101fb36466d9dc59996463daf50-20220811
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=nDsM0YI7NcS+2YEeFFg2u57cZRpyVIJ9GHF5UscgA3A=;
-	b=QQNP406heU/r0cpAvCC2+BWETfFNDGWM/uy0NvdZDtn3XdoNPfWul+qtbUaQnhqcT4zXoLv6OEXko/yAU57kYG2A74oiJl2R1DVBIrDw71VHqXJvFlQP/OWnbIl11NFNOcpz+9QUK12AtnakV+TWE6AGNfJmM//cHedUxXt5Zag=;
+	h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=SdSvl08QBY24eCCXtUMIqOHU5q/Sxwjp4vGfwhwWU8o=;
+	b=sd22/oerpZK8UVNsT1zPaIu73JFCd8vyP8bwHIbJt/gNXUgG6laFANMUxZqeaVdljSIugUQK4SqWZFCIMUcaMrVKKOCmKnRDEzFOEgUHoTqMOtDjLedqsLVnxwByGXiCa+oycfFkXaJxiM/Ypf0Wz3+Cy4DC511hwBI4MVEwAYQ=;
 X-CID-UNFAMILIAR: 1
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.9,REQID:0ebd3eb2-bdce-4b2a-8a6c-8404f058dac8,OB:0,LO
-	B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,BULK:0,RULE:Release
-	_Ham,ACTION:release,TS:100
-X-CID-INFO: VERSION:1.1.9,REQID:0ebd3eb2-bdce-4b2a-8a6c-8404f058dac8,OB:0,LOB:
-	0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,BULK:0,RULE:Spam_GS98
-	1B3D,ACTION:quarantine,TS:100
-X-CID-META: VersionHash:3d8acc9,CLOUDID:69087cae-9535-44a6-aa9b-7f62b79b6ff6,C
-	OID:255d2d55895e,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-	RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 9e8015541dd8494cad1dc95eae71b448-20220811
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+X-CID-O-INFO: VERSION:1.1.9,REQID:a12b945f-109f-43d1-ad97-610cc5c77ba2,OB:0,LO
+	B:30,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,BULK:0,RULE:Releas
+	e_Ham,ACTION:release,TS:105
+X-CID-INFO: VERSION:1.1.9,REQID:a12b945f-109f-43d1-ad97-610cc5c77ba2,OB:0,LOB:
+	30,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,BULK:0,RULE:Spam_GS9
+	81B3D,ACTION:quarantine,TS:105
+X-CID-META: VersionHash:3d8acc9,CLOUDID:ff99fafc-9e71-4a0f-ba6b-417998daea35,C
+	OID:06ccca463c45,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+	RL:1,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 9df42101fb36466d9dc59996463daf50-20220811
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
 	(envelope-from <tinghan.shen@mediatek.com>)
 	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-	with ESMTP id 666164690; Thu, 11 Aug 2022 10:58:19 +0800
+	with ESMTP id 579568239; Thu, 11 Aug 2022 10:58:17 +0800
 Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Thu, 11 Aug 2022 10:58:17 +0800
+ 15.2.792.15; Thu, 11 Aug 2022 10:58:16 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
  mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.15 via Frontend Transport; Thu, 11 Aug 2022 10:58:17 +0800
+ 15.2.792.15 via Frontend Transport; Thu, 11 Aug 2022 10:58:16 +0800
 From: Tinghan Shen <tinghan.shen@mediatek.com>
 To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will
  Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
@@ -41,11 +41,11 @@ To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will
 CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
 	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
 	<linux-arm-kernel@lists.infradead.org>,
-	<Project_Global_Chrome_Upstream_Group@mediatek.com>, Jason-JH.Lin
-	<jason-jh.lin@mediatek.com>
-Subject: [PATCH v6 20/20] arm64: dts: mt8195: Add display node for vdosys0
-Date: Thu, 11 Aug 2022 10:58:13 +0800
-Message-ID: <20220811025813.21492-21-tinghan.shen@mediatek.com>
+	<Project_Global_Chrome_Upstream_Group@mediatek.com>, Weiyi Lu
+	<weiyi.lu@mediatek.com>
+Subject: [PATCH v6 12/20] arm64: dts: mt8195: Add power domains controller
+Date: Thu, 11 Aug 2022 10:58:05 +0800
+Message-ID: <20220811025813.21492-13-tinghan.shen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220811025813.21492-1-tinghan.shen@mediatek.com>
 References: <20220811025813.21492-1-tinghan.shen@mediatek.com>
@@ -58,128 +58,359 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-MTK: N
 
-From: "Jason-JH.Lin" <jason-jh.lin@mediatek.com>
+Add power domains controller node for mt8195.
 
-Add display node for vdosys0 of mt8195.
-
-Signed-off-by: Jason-JH.Lin <jason-jh.lin@mediatek.com>
+Signed-off-by: Weiyi Lu <weiyi.lu@mediatek.com>
 Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- arch/arm64/boot/dts/mediatek/mt8195.dtsi | 93 ++++++++++++++++++++++++
- 1 file changed, 93 insertions(+)
+ arch/arm64/boot/dts/mediatek/mt8195.dtsi | 326 +++++++++++++++++++++++
+ 1 file changed, 326 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-index 5ad7c42001785..a50ebb5d145f7 100644
+index 8d59a7da32714..7e77aecb1296e 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-@@ -1958,6 +1958,7 @@
- 		vdosys0: syscon@1c01a000 {
- 			compatible = "mediatek,mt8195-mmsys", "syscon";
- 			reg = <0 0x1c01a000 0 0x1000>;
-+			mboxes = <&gce0 0 CMDQ_THR_PRIO_4>;
- 			#clock-cells = <1>;
+@@ -10,6 +10,7 @@
+ #include <dt-bindings/interrupt-controller/irq.h>
+ #include <dt-bindings/phy/phy.h>
+ #include <dt-bindings/pinctrl/mt8195-pinfunc.h>
++#include <dt-bindings/power/mt8195-power.h>
+ 
+ / {
+ 	compatible = "mediatek,mt8195";
+@@ -338,6 +339,331 @@
+ 			#interrupt-cells = <2>;
  		};
  
-@@ -1973,6 +1974,98 @@
- 			power-domains = <&spm MT8195_POWER_DOMAIN_VENC_CORE1>;
- 		};
- 
-+		ovl0: ovl@1c000000 {
-+			compatible = "mediatek,mt8195-disp-ovl", "mediatek,mt8183-disp-ovl";
-+			reg = <0 0x1c000000 0 0x1000>;
-+			interrupts = <GIC_SPI 636 IRQ_TYPE_LEVEL_HIGH 0>;
-+			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
-+			clocks = <&vdosys0 CLK_VDO0_DISP_OVL0>;
-+			iommus = <&iommu_vdo M4U_PORT_L0_DISP_OVL0_RDMA0>;
-+			mediatek,gce-client-reg = <&gce0 SUBSYS_1c00XXXX 0x0000 0x1000>;
++		scpsys: syscon@10006000 {
++			compatible = "mediatek,mt8195-scpsys", "syscon", "simple-mfd";
++			reg = <0 0x10006000 0 0x1000>;
++
++			/* System Power Manager */
++			spm: power-controller {
++				compatible = "mediatek,mt8195-power-controller";
++				#address-cells = <1>;
++				#size-cells = <0>;
++				#power-domain-cells = <1>;
++
++				/* power domain of the SoC */
++				mfg0: power-domain@MT8195_POWER_DOMAIN_MFG0 {
++					reg = <MT8195_POWER_DOMAIN_MFG0>;
++					#address-cells = <1>;
++					#size-cells = <0>;
++					#power-domain-cells = <1>;
++
++					power-domain@MT8195_POWER_DOMAIN_MFG1 {
++						reg = <MT8195_POWER_DOMAIN_MFG1>;
++						clocks = <&apmixedsys CLK_APMIXED_MFGPLL>;
++						clock-names = "mfg";
++						mediatek,infracfg = <&infracfg_ao>;
++						#address-cells = <1>;
++						#size-cells = <0>;
++						#power-domain-cells = <1>;
++
++						power-domain@MT8195_POWER_DOMAIN_MFG2 {
++							reg = <MT8195_POWER_DOMAIN_MFG2>;
++							#power-domain-cells = <0>;
++						};
++
++						power-domain@MT8195_POWER_DOMAIN_MFG3 {
++							reg = <MT8195_POWER_DOMAIN_MFG3>;
++							#power-domain-cells = <0>;
++						};
++
++						power-domain@MT8195_POWER_DOMAIN_MFG4 {
++							reg = <MT8195_POWER_DOMAIN_MFG4>;
++							#power-domain-cells = <0>;
++						};
++
++						power-domain@MT8195_POWER_DOMAIN_MFG5 {
++							reg = <MT8195_POWER_DOMAIN_MFG5>;
++							#power-domain-cells = <0>;
++						};
++
++						power-domain@MT8195_POWER_DOMAIN_MFG6 {
++							reg = <MT8195_POWER_DOMAIN_MFG6>;
++							#power-domain-cells = <0>;
++						};
++					};
++				};
++
++				power-domain@MT8195_POWER_DOMAIN_VPPSYS0 {
++					reg = <MT8195_POWER_DOMAIN_VPPSYS0>;
++					clocks = <&topckgen CLK_TOP_VPP>,
++						 <&topckgen CLK_TOP_CAM>,
++						 <&topckgen CLK_TOP_CCU>,
++						 <&topckgen CLK_TOP_IMG>,
++						 <&topckgen CLK_TOP_VENC>,
++						 <&topckgen CLK_TOP_VDEC>,
++						 <&topckgen CLK_TOP_WPE_VPP>,
++						 <&topckgen CLK_TOP_CFG_VPP0>,
++						 <&vppsys0 CLK_VPP0_SMI_COMMON>,
++						 <&vppsys0 CLK_VPP0_GALS_VDO0_LARB0>,
++						 <&vppsys0 CLK_VPP0_GALS_VDO0_LARB1>,
++						 <&vppsys0 CLK_VPP0_GALS_VENCSYS>,
++						 <&vppsys0 CLK_VPP0_GALS_VENCSYS_CORE1>,
++						 <&vppsys0 CLK_VPP0_GALS_INFRA>,
++						 <&vppsys0 CLK_VPP0_GALS_CAMSYS>,
++						 <&vppsys0 CLK_VPP0_GALS_VPP1_LARB5>,
++						 <&vppsys0 CLK_VPP0_GALS_VPP1_LARB6>,
++						 <&vppsys0 CLK_VPP0_SMI_REORDER>,
++						 <&vppsys0 CLK_VPP0_SMI_IOMMU>,
++						 <&vppsys0 CLK_VPP0_GALS_IMGSYS_CAMSYS>,
++						 <&vppsys0 CLK_VPP0_GALS_EMI0_EMI1>,
++						 <&vppsys0 CLK_VPP0_SMI_SUB_COMMON_REORDER>,
++						 <&vppsys0 CLK_VPP0_SMI_RSI>,
++						 <&vppsys0 CLK_VPP0_SMI_COMMON_LARB4>,
++						 <&vppsys0 CLK_VPP0_GALS_VDEC_VDEC_CORE1>,
++						 <&vppsys0 CLK_VPP0_GALS_VPP1_WPE>,
++						 <&vppsys0 CLK_VPP0_GALS_VDO0_VDO1_VENCSYS_CORE1>;
++					clock-names = "vppsys", "vppsys1", "vppsys2", "vppsys3",
++						      "vppsys4", "vppsys5", "vppsys6", "vppsys7",
++						      "vppsys0-0", "vppsys0-1", "vppsys0-2", "vppsys0-3",
++						      "vppsys0-4", "vppsys0-5", "vppsys0-6", "vppsys0-7",
++						      "vppsys0-8", "vppsys0-9", "vppsys0-10", "vppsys0-11",
++						      "vppsys0-12", "vppsys0-13", "vppsys0-14",
++						      "vppsys0-15", "vppsys0-16", "vppsys0-17",
++						      "vppsys0-18";
++					mediatek,infracfg = <&infracfg_ao>;
++					#address-cells = <1>;
++					#size-cells = <0>;
++					#power-domain-cells = <1>;
++
++					power-domain@MT8195_POWER_DOMAIN_VDEC1 {
++						reg = <MT8195_POWER_DOMAIN_VDEC1>;
++						clocks = <&vdecsys CLK_VDEC_LARB1>;
++						clock-names = "vdec1-0";
++						mediatek,infracfg = <&infracfg_ao>;
++						#power-domain-cells = <0>;
++					};
++
++					power-domain@MT8195_POWER_DOMAIN_VENC_CORE1 {
++						reg = <MT8195_POWER_DOMAIN_VENC_CORE1>;
++						mediatek,infracfg = <&infracfg_ao>;
++						#power-domain-cells = <0>;
++					};
++
++					power-domain@MT8195_POWER_DOMAIN_VDOSYS0 {
++						reg = <MT8195_POWER_DOMAIN_VDOSYS0>;
++						clocks = <&topckgen CLK_TOP_CFG_VDO0>,
++							 <&vdosys0 CLK_VDO0_SMI_GALS>,
++							 <&vdosys0 CLK_VDO0_SMI_COMMON>,
++							 <&vdosys0 CLK_VDO0_SMI_EMI>,
++							 <&vdosys0 CLK_VDO0_SMI_IOMMU>,
++							 <&vdosys0 CLK_VDO0_SMI_LARB>,
++							 <&vdosys0 CLK_VDO0_SMI_RSI>;
++						clock-names = "vdosys0", "vdosys0-0", "vdosys0-1",
++							      "vdosys0-2", "vdosys0-3",
++							      "vdosys0-4", "vdosys0-5";
++						mediatek,infracfg = <&infracfg_ao>;
++						#address-cells = <1>;
++						#size-cells = <0>;
++						#power-domain-cells = <1>;
++
++						power-domain@MT8195_POWER_DOMAIN_VPPSYS1 {
++							reg = <MT8195_POWER_DOMAIN_VPPSYS1>;
++							clocks = <&topckgen CLK_TOP_CFG_VPP1>,
++								 <&vppsys1 CLK_VPP1_VPPSYS1_GALS>,
++								 <&vppsys1 CLK_VPP1_VPPSYS1_LARB>;
++							clock-names = "vppsys1", "vppsys1-0",
++								      "vppsys1-1";
++							mediatek,infracfg = <&infracfg_ao>;
++							#power-domain-cells = <0>;
++						};
++
++						power-domain@MT8195_POWER_DOMAIN_WPESYS {
++							reg = <MT8195_POWER_DOMAIN_WPESYS>;
++							clocks = <&wpesys CLK_WPE_SMI_LARB7>,
++								 <&wpesys CLK_WPE_SMI_LARB8>,
++								 <&wpesys CLK_WPE_SMI_LARB7_P>,
++								 <&wpesys CLK_WPE_SMI_LARB8_P>;
++							clock-names = "wepsys-0", "wepsys-1", "wepsys-2",
++								      "wepsys-3";
++							mediatek,infracfg = <&infracfg_ao>;
++							#power-domain-cells = <0>;
++						};
++
++						power-domain@MT8195_POWER_DOMAIN_VDEC0 {
++							reg = <MT8195_POWER_DOMAIN_VDEC0>;
++							clocks = <&vdecsys_soc CLK_VDEC_SOC_LARB1>;
++							clock-names = "vdec0-0";
++							mediatek,infracfg = <&infracfg_ao>;
++							#power-domain-cells = <0>;
++						};
++
++						power-domain@MT8195_POWER_DOMAIN_VDEC2 {
++							reg = <MT8195_POWER_DOMAIN_VDEC2>;
++							clocks = <&vdecsys_core1 CLK_VDEC_CORE1_LARB1>;
++							clock-names = "vdec2-0";
++							mediatek,infracfg = <&infracfg_ao>;
++							#power-domain-cells = <0>;
++						};
++
++						power-domain@MT8195_POWER_DOMAIN_VENC {
++							reg = <MT8195_POWER_DOMAIN_VENC>;
++							mediatek,infracfg = <&infracfg_ao>;
++							#power-domain-cells = <0>;
++						};
++
++						power-domain@MT8195_POWER_DOMAIN_VDOSYS1 {
++							reg = <MT8195_POWER_DOMAIN_VDOSYS1>;
++							clocks = <&topckgen CLK_TOP_CFG_VDO1>,
++								 <&vdosys1 CLK_VDO1_SMI_LARB2>,
++								 <&vdosys1 CLK_VDO1_SMI_LARB3>,
++								 <&vdosys1 CLK_VDO1_GALS>;
++							clock-names = "vdosys1", "vdosys1-0",
++								      "vdosys1-1", "vdosys1-2";
++							mediatek,infracfg = <&infracfg_ao>;
++							#address-cells = <1>;
++							#size-cells = <0>;
++							#power-domain-cells = <1>;
++
++							power-domain@MT8195_POWER_DOMAIN_DP_TX {
++								reg = <MT8195_POWER_DOMAIN_DP_TX>;
++								mediatek,infracfg = <&infracfg_ao>;
++								#power-domain-cells = <0>;
++							};
++
++							power-domain@MT8195_POWER_DOMAIN_EPD_TX {
++								reg = <MT8195_POWER_DOMAIN_EPD_TX>;
++								mediatek,infracfg = <&infracfg_ao>;
++								#power-domain-cells = <0>;
++							};
++
++							power-domain@MT8195_POWER_DOMAIN_HDMI_TX {
++								reg = <MT8195_POWER_DOMAIN_HDMI_TX>;
++								clocks = <&topckgen CLK_TOP_HDMI_APB>;
++								clock-names = "hdmi_tx";
++								#power-domain-cells = <0>;
++							};
++						};
++
++						power-domain@MT8195_POWER_DOMAIN_IMG {
++							reg = <MT8195_POWER_DOMAIN_IMG>;
++							clocks = <&imgsys CLK_IMG_LARB9>,
++								 <&imgsys CLK_IMG_GALS>;
++							clock-names = "img-0", "img-1";
++							mediatek,infracfg = <&infracfg_ao>;
++							#address-cells = <1>;
++							#size-cells = <0>;
++							#power-domain-cells = <1>;
++
++							power-domain@MT8195_POWER_DOMAIN_DIP {
++								reg = <MT8195_POWER_DOMAIN_DIP>;
++								#power-domain-cells = <0>;
++							};
++
++							power-domain@MT8195_POWER_DOMAIN_IPE {
++								reg = <MT8195_POWER_DOMAIN_IPE>;
++								clocks = <&topckgen CLK_TOP_IPE>,
++									 <&imgsys CLK_IMG_IPE>,
++									 <&ipesys CLK_IPE_SMI_LARB12>;
++								clock-names = "ipe", "ipe-0", "ipe-1";
++								mediatek,infracfg = <&infracfg_ao>;
++								#power-domain-cells = <0>;
++							};
++						};
++
++						power-domain@MT8195_POWER_DOMAIN_CAM {
++							reg = <MT8195_POWER_DOMAIN_CAM>;
++							clocks = <&camsys CLK_CAM_LARB13>,
++								 <&camsys CLK_CAM_LARB14>,
++								 <&camsys CLK_CAM_CAM2MM0_GALS>,
++								 <&camsys CLK_CAM_CAM2MM1_GALS>,
++								 <&camsys CLK_CAM_CAM2SYS_GALS>;
++							clock-names = "cam-0", "cam-1", "cam-2", "cam-3",
++								      "cam-4";
++							mediatek,infracfg = <&infracfg_ao>;
++							#address-cells = <1>;
++							#size-cells = <0>;
++							#power-domain-cells = <1>;
++
++							power-domain@MT8195_POWER_DOMAIN_CAM_RAWA {
++								reg = <MT8195_POWER_DOMAIN_CAM_RAWA>;
++								#power-domain-cells = <0>;
++							};
++
++							power-domain@MT8195_POWER_DOMAIN_CAM_RAWB {
++								reg = <MT8195_POWER_DOMAIN_CAM_RAWB>;
++								#power-domain-cells = <0>;
++							};
++
++							power-domain@MT8195_POWER_DOMAIN_CAM_MRAW {
++								reg = <MT8195_POWER_DOMAIN_CAM_MRAW>;
++								#power-domain-cells = <0>;
++							};
++						};
++					};
++				};
++
++				power-domain@MT8195_POWER_DOMAIN_PCIE_MAC_P0 {
++					reg = <MT8195_POWER_DOMAIN_PCIE_MAC_P0>;
++					mediatek,infracfg = <&infracfg_ao>;
++					#power-domain-cells = <0>;
++				};
++
++				power-domain@MT8195_POWER_DOMAIN_PCIE_MAC_P1 {
++					reg = <MT8195_POWER_DOMAIN_PCIE_MAC_P1>;
++					mediatek,infracfg = <&infracfg_ao>;
++					#power-domain-cells = <0>;
++				};
++
++				power-domain@MT8195_POWER_DOMAIN_PCIE_PHY {
++					reg = <MT8195_POWER_DOMAIN_PCIE_PHY>;
++					#power-domain-cells = <0>;
++				};
++
++				power-domain@MT8195_POWER_DOMAIN_SSUSB_PCIE_PHY {
++					reg = <MT8195_POWER_DOMAIN_SSUSB_PCIE_PHY>;
++					#power-domain-cells = <0>;
++				};
++
++				power-domain@MT8195_POWER_DOMAIN_CSI_RX_TOP {
++					reg = <MT8195_POWER_DOMAIN_CSI_RX_TOP>;
++					clocks = <&topckgen CLK_TOP_SENINF>,
++						 <&topckgen CLK_TOP_SENINF2>;
++					clock-names = "csi_rx_top", "csi_rx_top1";
++					#power-domain-cells = <0>;
++				};
++
++				power-domain@MT8195_POWER_DOMAIN_ETHER {
++					reg = <MT8195_POWER_DOMAIN_ETHER>;
++					clocks = <&pericfg_ao CLK_PERI_AO_ETHERNET_MAC>;
++					clock-names = "ether";
++					#power-domain-cells = <0>;
++				};
++
++				power-domain@MT8195_POWER_DOMAIN_ADSP {
++					reg = <MT8195_POWER_DOMAIN_ADSP>;
++					clocks = <&topckgen CLK_TOP_ADSP>,
++						 <&topckgen CLK_TOP_AUDIO_LOCAL_BUS>;
++					clock-names = "adsp", "adsp1";
++					#address-cells = <1>;
++					#size-cells = <0>;
++					mediatek,infracfg = <&infracfg_ao>;
++					#power-domain-cells = <1>;
++
++					power-domain@MT8195_POWER_DOMAIN_AUDIO {
++						reg = <MT8195_POWER_DOMAIN_AUDIO>;
++						clocks = <&topckgen CLK_TOP_A1SYS_HP>,
++							 <&topckgen CLK_TOP_AUD_INTBUS>,
++							 <&topckgen CLK_TOP_AUDIO_LOCAL_BUS>,
++							 <&infracfg_ao CLK_INFRA_AO_AUDIO_26M_B>;
++						clock-names = "audio", "audio1", "audio2",
++							      "audio3";
++						mediatek,infracfg = <&infracfg_ao>;
++						#power-domain-cells = <0>;
++					};
++				};
++			};
 +		};
 +
-+		rdma0: rdma@1c002000 {
-+			compatible = "mediatek,mt8195-disp-rdma";
-+			reg = <0 0x1c002000 0 0x1000>;
-+			interrupts = <GIC_SPI 638 IRQ_TYPE_LEVEL_HIGH 0>;
-+			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
-+			clocks = <&vdosys0 CLK_VDO0_DISP_RDMA0>;
-+			iommus = <&iommu_vdo M4U_PORT_L0_DISP_RDMA0>;
-+			mediatek,gce-client-reg = <&gce0 SUBSYS_1c00XXXX 0x2000 0x1000>;
-+		};
-+
-+		color0: color@1c003000 {
-+			compatible = "mediatek,mt8195-disp-color", "mediatek,mt8173-disp-color";
-+			reg = <0 0x1c003000 0 0x1000>;
-+			interrupts = <GIC_SPI 639 IRQ_TYPE_LEVEL_HIGH 0>;
-+			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
-+			clocks = <&vdosys0 CLK_VDO0_DISP_COLOR0>;
-+			mediatek,gce-client-reg = <&gce0 SUBSYS_1c00XXXX 0x3000 0x1000>;
-+		};
-+
-+		ccorr0: ccorr@1c004000 {
-+			compatible = "mediatek,mt8195-disp-ccorr", "mediatek,mt8192-disp-ccorr";
-+			reg = <0 0x1c004000 0 0x1000>;
-+			interrupts = <GIC_SPI 640 IRQ_TYPE_LEVEL_HIGH 0>;
-+			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
-+			clocks = <&vdosys0 CLK_VDO0_DISP_CCORR0>;
-+			mediatek,gce-client-reg = <&gce0 SUBSYS_1c00XXXX 0x4000 0x1000>;
-+		};
-+
-+		aal0: aal@1c005000 {
-+			compatible = "mediatek,mt8195-disp-aal", "mediatek,mt8183-disp-aal";
-+			reg = <0 0x1c005000 0 0x1000>;
-+			interrupts = <GIC_SPI 641 IRQ_TYPE_LEVEL_HIGH 0>;
-+			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
-+			clocks = <&vdosys0 CLK_VDO0_DISP_AAL0>;
-+			mediatek,gce-client-reg = <&gce0 SUBSYS_1c00XXXX 0x5000 0x1000>;
-+		};
-+
-+		gamma0: gamma@1c006000 {
-+			compatible = "mediatek,mt8195-disp-gamma", "mediatek,mt8183-disp-gamma";
-+			reg = <0 0x1c006000 0 0x1000>;
-+			interrupts = <GIC_SPI 642 IRQ_TYPE_LEVEL_HIGH 0>;
-+			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
-+			clocks = <&vdosys0 CLK_VDO0_DISP_GAMMA0>;
-+			mediatek,gce-client-reg = <&gce0 SUBSYS_1c00XXXX 0x6000 0x1000>;
-+		};
-+
-+		dither0: dither@1c007000 {
-+			compatible = "mediatek,mt8195-disp-dither", "mediatek,mt8183-disp-dither";
-+			reg = <0 0x1c007000 0 0x1000>;
-+			interrupts = <GIC_SPI 643 IRQ_TYPE_LEVEL_HIGH 0>;
-+			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
-+			clocks = <&vdosys0 CLK_VDO0_DISP_DITHER0>;
-+			mediatek,gce-client-reg = <&gce0 SUBSYS_1c00XXXX 0x7000 0x1000>;
-+		};
-+
-+		dsc0: dsc@1c009000 {
-+			compatible = "mediatek,mt8195-disp-dsc";
-+			reg = <0 0x1c009000 0 0x1000>;
-+			interrupts = <GIC_SPI 645 IRQ_TYPE_LEVEL_HIGH 0>;
-+			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
-+			clocks = <&vdosys0 CLK_VDO0_DSC_WRAP0>;
-+			mediatek,gce-client-reg = <&gce0 SUBSYS_1c00XXXX 0x9000 0x1000>;
-+		};
-+
-+		merge0: merge@1c014000 {
-+			compatible = "mediatek,mt8195-disp-merge";
-+			reg = <0 0x1c014000 0 0x1000>;
-+			interrupts = <GIC_SPI 656 IRQ_TYPE_LEVEL_HIGH 0>;
-+			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
-+			clocks = <&vdosys0 CLK_VDO0_VPP_MERGE0>;
-+			mediatek,gce-client-reg = <&gce0 SUBSYS_1c01XXXX 0x4000 0x1000>;
-+		};
-+
-+		mutex: mutex@1c016000 {
-+			compatible = "mediatek,mt8195-disp-mutex";
-+			reg = <0 0x1c016000 0 0x1000>;
-+			interrupts = <GIC_SPI 658 IRQ_TYPE_LEVEL_HIGH 0>;
-+			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS0>;
-+			clocks = <&vdosys0 CLK_VDO0_DISP_MUTEX0>;
-+			mediatek,gce-events = <CMDQ_EVENT_VDO0_DISP_STREAM_DONE_0>;
-+		};
-+
- 		larb0: larb@1c018000 {
- 			compatible = "mediatek,mt8195-smi-larb";
- 			reg = <0 0x1c018000 0 0x1000>;
+ 		watchdog: watchdog@10007000 {
+ 			compatible = "mediatek,mt8195-wdt",
+ 				     "mediatek,mt6589-wdt";
 -- 
 2.18.0
 
