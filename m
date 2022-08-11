@@ -1,119 +1,96 @@
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CA9F20E7
-	for <iommu@lists.linux.dev>; Thu, 11 Aug 2022 03:03:36 +0000 (UTC)
-X-UUID: 254f0a8c43c140c4960f915263a4ead3-20220811
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=/kGkJO+i32RelUaoL0rep8JkKiuA3qoE/kuH2+wMJFk=;
-	b=uEZz+1eYK8O57DgoiBQ0o85q4fZ+Vnc0yxtZZmGXooIGQI3CNtpndKuAekuns5jD+aPHQKnVIxe/la8l9J8Pahh75BNTkU2qZBYv+MbJSyuexmkYE3YRPVuJ6oFGw667foMxGMk4m6wXA2c3uCV92xvGhCgXso7sCpTW89H4gA8=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.9,REQID:2e75b857-b535-4e9b-be37-213abc38ae67,OB:0,LO
-	B:50,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,BULK:0,RULE:Releas
-	e_Ham,ACTION:release,TS:100
-X-CID-INFO: VERSION:1.1.9,REQID:2e75b857-b535-4e9b-be37-213abc38ae67,OB:0,LOB:
-	50,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,BULK:0,RULE:Spam_GS9
-	81B3D,ACTION:quarantine,TS:100
-X-CID-META: VersionHash:3d8acc9,CLOUDID:01087cae-9535-44a6-aa9b-7f62b79b6ff6,C
-	OID:cced3eb732e9,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-	RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 254f0a8c43c140c4960f915263a4ead3-20220811
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-	(envelope-from <tinghan.shen@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-	with ESMTP id 2099047210; Thu, 11 Aug 2022 10:58:16 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Thu, 11 Aug 2022 10:58:15 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.15 via Frontend Transport; Thu, 11 Aug 2022 10:58:15 +0800
-From: Tinghan Shen <tinghan.shen@mediatek.com>
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, "Will
- Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
-	<robh+dt@kernel.org>, Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>, Lee Jones <lee@kernel.org>, "Matthias
- Brugger" <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
-	<angelogioacchino.delregno@collabora.com>, Tinghan Shen
-	<tinghan.shen@mediatek.com>, MandyJH Liu <mandyjh.liu@mediatek.com>
-CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v6 01/20] dt-bindings: iommu: mediatek: Increase max interrupt number
-Date: Thu, 11 Aug 2022 10:57:54 +0800
-Message-ID: <20220811025813.21492-2-tinghan.shen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220811025813.21492-1-tinghan.shen@mediatek.com>
-References: <20220811025813.21492-1-tinghan.shen@mediatek.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C41AE179
+	for <iommu@lists.linux.dev>; Thu, 11 Aug 2022 06:32:03 +0000 (UTC)
+Received: by mail-lf1-f46.google.com with SMTP id r17so24235075lfm.11
+        for <iommu@lists.linux.dev>; Wed, 10 Aug 2022 23:32:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=pwaxxtmZ04egN1JXyx5JOzRQUW94lUiaaZz7L2gKjJQ=;
+        b=cPzYEHALljaH9F8T4jjeyjWlcKZbOwD0URRq5zJ5FJHrQWpOXIqG/lrZ8wVNXJkden
+         DEsvc7CG7XhY5l+kWtJBdBEMyBsn3YTtIpI9pCMdCuLAjXZuv2oM26irv64MFLRZRQNF
+         7KKYeTSrbMfV/tYBScrmjdZIABN4q7ENBp3ElyCHqcraC3fRz2c4Q1j8eD6n3EDh8FWx
+         +R/trrK0Oi72ZKPc9e+mmImo03+KU/Uv1GmNRijNvI0jl5WddB6n9HRPMuKYiJGgo3zc
+         u+6AneFPp2o1l0wRVjfoIexcUqAJKltPBVYWilGRu+eLcdM5DnuXgtOPm9kVAMObh+8r
+         myCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=pwaxxtmZ04egN1JXyx5JOzRQUW94lUiaaZz7L2gKjJQ=;
+        b=T1na4RDD+zArAiiR3kq4SJ/1mcyhYapezgFSP9DMUzKud817UADFIwAYtW8mBSRXxK
+         5ITKfaLNiHaqVLhS0ulrLkG0mVdjmTyOYrSav62e5my/gcnWfXkisqMWCf1IQdq9TQtB
+         DtHSpuxltcWjULSqKkzM3WKohcr+/DkUtfCjVw50Q12nrtn+LV4Mm4+BP15urT1IBaXE
+         TTsNoFlHiqAcMc+hZAhyjyeao8Mj2Jhh2YEJFkuWZ6knrKhwR5KsHEUc4+RpRX+G7Jvr
+         XTktJPNpmvgaekpfiV6u8RWIicReEEB9ZX74EYhnOui0iJSwsSVEbebT2rOut9Nk7Wtx
+         AVRw==
+X-Gm-Message-State: ACgBeo1w0yADVLTqYKtkGbMdAq+a4c8FHihGkiKrEY5gVBBZptjQPaHd
+	zgFNr7+RYJQQEuDFuayUZMEXFg==
+X-Google-Smtp-Source: AA6agR40tKSBae58qY+7RDCU5j0znPzMxsb7C2ha9lePvz2LVKF+1cqVJCSK8oZ/Qb/kmGsrWR3+1Q==
+X-Received: by 2002:a05:6512:3e07:b0:48b:131:616 with SMTP id i7-20020a0565123e0700b0048b01310616mr12048174lfv.475.1660199521869;
+        Wed, 10 Aug 2022 23:32:01 -0700 (PDT)
+Received: from [192.168.1.39] ([83.146.140.105])
+        by smtp.gmail.com with ESMTPSA id y6-20020ac24e66000000b0048a9a756763sm597726lfs.19.2022.08.10.23.32.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Aug 2022 23:32:01 -0700 (PDT)
+Message-ID: <12a16d64-45e0-620e-34ad-1d671eff5c2e@linaro.org>
+Date: Thu, 11 Aug 2022 09:31:59 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK: N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v6 02/20] dt-bindings: memory: mediatek: Update condition
+ for mt8195 smi node
+Content-Language: en-US
+To: Tinghan Shen <tinghan.shen@mediatek.com>, Yong Wu <yong.wu@mediatek.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Lee Jones <lee@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ MandyJH Liu <mandyjh.liu@mediatek.com>
+Cc: iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220811025813.21492-1-tinghan.shen@mediatek.com>
+ <20220811025813.21492-3-tinghan.shen@mediatek.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220811025813.21492-3-tinghan.shen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-mt8195 infra iommu uses 5 interrupts.
+On 11/08/2022 05:57, Tinghan Shen wrote:
+> The max clock items for the dts node with compatible
+> 'mediatek,mt8195-smi-sub-common' should be 3.
+> 
+> However, the dtbs_check of such node will get following message,
+> arch/arm64/boot/dts/mediatek/mt8195-evb.dtb: smi@14010000: clock-names: ['apb', 'smi', 'gals0'] is too long
+>          From schema: Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+> 
+> It's because the 'mediatek,mt8195-smi-sub-common' compatible incorrectly
+> matches the 'else' conditions for gen2 HW without gals.
+> 
+> Rewrite the 'else' condition to specifically identify the compatibles
+> that utilizing gen2 HW without gals.
+> 
+> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  .../memory-controllers/mediatek,smi-common.yaml       | 11 ++++++++++-
 
-Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- .../bindings/iommu/mediatek,iommu.yaml        | 29 ++++++++++++++-----
- 1 file changed, 22 insertions(+), 7 deletions(-)
+I see there are no dependencies, so I will take it via memory-controller
+tree after the merge window.
 
-diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-index fee0241b50988..f5634c1642e20 100644
---- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-@@ -91,7 +91,8 @@ properties:
-     maxItems: 1
- 
-   interrupts:
--    maxItems: 1
-+    minItems: 1
-+    maxItems: 5
- 
-   clocks:
-     items:
-@@ -183,14 +184,28 @@ allOf:
-       required:
-         - mediatek,infracfg
- 
--  - if: # The IOMMUs don't have larbs.
--      not:
--        properties:
--          compatible:
--            contains:
--              const: mediatek,mt8195-iommu-infra
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: mediatek,mt8195-iommu-infra
- 
-     then:
-+      properties:
-+        interrupts:
-+          description: The IOMMU has 5 banks. Each bank has its own interrupt.
-+          items:
-+            - description: The interrupt for IOMMU bank0
-+            - description: The interrupt for IOMMU bank1
-+            - description: The interrupt for IOMMU bank2
-+            - description: The interrupt for IOMMU bank3
-+            - description: The interrupt for IOMMU bank4
-+
-+    else: # For the MM IOMMU
-+      properties:
-+        interrupts:
-+          maxItems: 1
-+
-       required:
-         - mediatek,larbs
- 
--- 
-2.18.0
-
+Best regards,
+Krzysztof
