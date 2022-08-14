@@ -1,20 +1,20 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35C791C01
-	for <iommu@lists.linux.dev>; Sun, 14 Aug 2022 16:20:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59CF6C433D6;
-	Sun, 14 Aug 2022 16:19:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D785B1C01
+	for <iommu@lists.linux.dev>; Sun, 14 Aug 2022 16:23:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37A5AC433D7;
+	Sun, 14 Aug 2022 16:23:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1660493999;
+	s=k20201202; t=1660494227;
 	bh=YI2a3bQsRpitOm3qvXNGbLX4UFt3jIL05K8HgbujqzQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Q7UL13Xr3n8vsNcHpB5q3DRXA4nVdL1AtEFl6qlMcJOUzN0daGytf/cNN6UIO//Iv
-	 5jjeW+WxKBv6Q0Sm9t+LD7BdYJUDTdyfcahoT90P+AsPnI885nKV8tvBEC9ZT+Moqy
-	 5jM3eoQ2Vy1kjsWUdqRybx8fRkxG54xWxJTtJkuuGev7klSrOrUQ1Tb2uNkwZdqBa5
-	 HKg3e4QDAFg2qKhGNUBW59Irpt2p4LzT4AJR6pCOQ3StgV0ZtDKbAlQrRax/AlI10+
-	 JrfFc3JBGQgVpO+uHWp2Z2vRIuPvfvaHeb1A63q8EfzDofs6tYFO9M6ZBVdu5QZUkT
-	 GnRCVU2jJnZXQ==
+	b=DuQU+yKcKMwY6zgxLG/PUM9Vm9o+9C9u9X7gCGw8byo70EzhgypSiLlBgnm8/Mine
+	 j7HDfSy21Al/EOu4s+SuZtCdSKg0p4YsycwaE8EhD04r4VDBX37X5t48KVh25R8hiV
+	 EqJh7tNCt3a0tYlgMBlLaZbOYSlVSgcS1QSrhm5oDjVxaClISfSTLck+3vQzDmAHSO
+	 nnEzMKl0y+iYK+cVB/11zpdshycBA0SHxQCybzD3mLzFq+wB8w3Q3E+3a0A7VpT53j
+	 9DaAsxgdHfonItzNCV3DVtXCJriIkhv+6EryXpxxNRv+6OxnmTcK1xG3RVuWh/fSX3
+	 deC9Eri/qqbeA==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -29,12 +29,12 @@ Cc: Yunfei Wang <yf.wang@mediatek.com>,
 	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev,
 	linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.19 07/48] iommu/io-pgtable-arm-v7s: Add a quirk to allow pgtable PA up to 35bit
-Date: Sun, 14 Aug 2022 12:19:00 -0400
-Message-Id: <20220814161943.2394452-7-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.18 06/39] iommu/io-pgtable-arm-v7s: Add a quirk to allow pgtable PA up to 35bit
+Date: Sun, 14 Aug 2022 12:22:55 -0400
+Message-Id: <20220814162332.2396012-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220814161943.2394452-1-sashal@kernel.org>
-References: <20220814161943.2394452-1-sashal@kernel.org>
+In-Reply-To: <20220814162332.2396012-1-sashal@kernel.org>
+References: <20220814162332.2396012-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
