@@ -1,59 +1,104 @@
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90E7310EA
-	for <iommu@lists.linux.dev>; Mon, 15 Aug 2022 03:34:01 +0000 (UTC)
-Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.57])
-	by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4M5fYK5t3QzGpVy;
-	Mon, 15 Aug 2022 11:15:33 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by dggpeml500024.china.huawei.com
- (7.185.36.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 15 Aug
- 2022 11:17:03 +0800
-From: Yuan Can <yuancan@huawei.com>
-To: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
-	<iommu@lists.linux.dev>
-CC: <linux-kernel@vger.kernel.org>, <yuancan@huawei.com>
-Subject: [PATCH -next] iommu: Remove duplicate ida_free in iommu_group_alloc
-Date: Mon, 15 Aug 2022 03:14:23 +0000
-Message-ID: <20220815031423.94548-1-yuancan@huawei.com>
-X-Mailer: git-send-email 2.17.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 342347E
+	for <iommu@lists.linux.dev>; Mon, 15 Aug 2022 10:12:25 +0000 (UTC)
+Received: by mail-lf1-f53.google.com with SMTP id u3so9999721lfk.8
+        for <iommu@lists.linux.dev>; Mon, 15 Aug 2022 03:12:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=MdskW5HP+CDyH23eInIpuoo8lXjbVqnmwkTOrQWFXYg=;
+        b=UEx3+L/gV5rSZ6L2pIExhA4Ehw9o+jAookhe3x/Dl20YZFyIOgTKcbXMT/Kbcy0w9T
+         PDDp+S5H5IRKkmc+DWuvU1KlfL/oTOA44P5OfeBI4698ZD/9uYM0so34cliZLrd+iUpd
+         LQWx/p4UsAHk5rO+2I2ee/Q2VD0VZ55wG+ACs37Qh2CSJrdqeJq6jXNha5jO5IHSUMZ+
+         wdyYxXgX71C+f/vC/2yVOsZR+2yUp65e6ibUygaza8v21jfbHoWyGTCRg3Vlgyo241/2
+         +axA/OyBaJibj73Wm4khKZHCXqNw85d50/xKs6fFrjsn4zymMz6DzJun5Xyr0aQOb8G0
+         8iwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=MdskW5HP+CDyH23eInIpuoo8lXjbVqnmwkTOrQWFXYg=;
+        b=BwcS/mc3oCgY3icOwq/db5xOj9JgFzb9AwK9E9B5uMxOAdoyWrNWXeKII71TpwbsrM
+         Ab6y2NUxdNLb+d3umaGRY2OQx6vyl60HYmDCKN9uU/ZY5GK4h31HjWt8Ir/OLGft3Add
+         ydS9Y/aDEc0NQB4FYFn9mXaJM4A9S1YqG+bYsvnSvHHHL2LYGcQnx20BRfZ90zRnjauv
+         KrjHRsH7hK//HgPNq8+sz2jHVdA8B9rBJSkR7Ktdxjq8VqnV3K+RdZa5wZlXHAlSWMiI
+         wWsjUb19NunGZR1j/v7arXNgyjOxpjTLFuCYWtihdfYN4OhgTtZuRXHqUpyKEKEV87rF
+         KM6w==
+X-Gm-Message-State: ACgBeo0Ie2btg3k8er10pUMnsEJ2Fv25ZzEw0ewi3C9Ehq5M0GGm0Aje
+	4hE/vT4dqFnnI+xcTZ6u21E=
+X-Google-Smtp-Source: AA6agR48ajQgkYbbBMkMx9FOY/cUH0YJqIDV8pf/uiQQV6pIiKrB6lPAhRoCRX+EWp5C+JPLBH6S5Q==
+X-Received: by 2002:a19:710f:0:b0:491:fce9:cfb1 with SMTP id m15-20020a19710f000000b00491fce9cfb1mr2367812lfc.264.1660558343143;
+        Mon, 15 Aug 2022 03:12:23 -0700 (PDT)
+Received: from localhost.localdomain (admv234.neoplus.adsl.tpnet.pl. [79.185.51.234])
+        by smtp.gmail.com with ESMTPSA id 18-20020ac25f52000000b0048b1ba4d2a4sm1047264lfz.265.2022.08.15.03.12.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 03:12:22 -0700 (PDT)
+From: Adam Skladowski <a39.skl@gmail.com>
+To: 
+Cc: phone-devel@vger.kernel.org,
+	~postmarketos/upstreaming@lists.sr.ht,
+	Adam Skladowski <a39.skl@gmail.com>,
+	Andy Gross <agross@kernel.org>,
+	Bjorn Andersson <bjorn.andersson@linaro.org>,
+	Konrad Dybcio <konrad.dybcio@somainline.org>,
+	Vinod Koul <vkoul@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Ulf Hansson <ulf.hansson@linaro.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Viresh Kumar <viresh.kumar@linaro.org>,
+	Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+	Loic Poulain <loic.poulain@linaro.org>,
+	Emma Anholt <emma@anholt.net>,
+	Rob Clark <robdclark@chromium.org>,
+	Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+	linux-arm-msm@vger.kernel.org,
+	dmaengine@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-mmc@vger.kernel.org,
+	linux-pm@vger.kernel.org
+Subject: [PATCH 0/7] Compatibles for SM6115
+Date: Mon, 15 Aug 2022 12:09:38 +0200
+Message-Id: <20220815100952.23795-1-a39.skl@gmail.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500024.china.huawei.com (7.185.36.10)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 
-In the iommu_group_alloc, when the kobject_init_and_add
-failed, the group->kobj is associate with iommu_group_ktype,
-thus its release function iommu_group_release will be called
-by the following kobject_put. The iommu_group_release calls
-ida_free with the group->id, so we do not need to do it before
-kobject_put.
+This patch series add bunch of compatibles in preparation
+for sending device tree patches for Snapdragon 662 SoC
 
-Signed-off-by: Yuan Can <yuancan@huawei.com>
----
- drivers/iommu/iommu.c | 1 -
- 1 file changed, 1 deletion(-)
+Adam Skladowski (7):
+  dt-bindings: dmaengine: qcom: gpi: add compatible for SM6115
+  dmaengine: qcom: gpi: Add SM6115 support
+  dt-bindings: mmc: sdhci-msm: Document the SM6115 compatible
+  cpufreq: Add SM6115 to cpufreq-dt-platdev blocklist
+  dt-bindings: arm-smmu: Add compatible for Qualcomm SM6115
+  iommu/arm-smmu-qcom: Add SM6115 support
+  dt-bindings: firmware: document Qualcomm SM6115 SCM
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 780fb7071577..74bc9111c7be 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -654,7 +654,6 @@ struct iommu_group *iommu_group_alloc(void)
- 	ret = kobject_init_and_add(&group->kobj, &iommu_group_ktype,
- 				   NULL, "%d", group->id);
- 	if (ret) {
--		ida_free(&iommu_group_ida, group->id);
- 		kobject_put(&group->kobj);
- 		return ERR_PTR(ret);
- 	}
+ Documentation/devicetree/bindings/dma/qcom,gpi.yaml     | 1 +
+ Documentation/devicetree/bindings/firmware/qcom,scm.txt | 1 +
+ Documentation/devicetree/bindings/iommu/arm,smmu.yaml   | 1 +
+ Documentation/devicetree/bindings/mmc/sdhci-msm.yaml    | 1 +
+ drivers/cpufreq/cpufreq-dt-platdev.c                    | 1 +
+ drivers/dma/qcom/gpi.c                                  | 1 +
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c              | 2 ++
+ 7 files changed, 8 insertions(+)
+
 -- 
-2.17.1
+2.25.1
 
