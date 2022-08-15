@@ -1,41 +1,41 @@
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
+Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com [209.85.208.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F114C7E
-	for <iommu@lists.linux.dev>; Mon, 15 Aug 2022 10:12:43 +0000 (UTC)
-Received: by mail-lf1-f53.google.com with SMTP id u3so10000705lfk.8
-        for <iommu@lists.linux.dev>; Mon, 15 Aug 2022 03:12:43 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2B407E
+	for <iommu@lists.linux.dev>; Mon, 15 Aug 2022 10:12:48 +0000 (UTC)
+Received: by mail-lj1-f180.google.com with SMTP id v10so7167086ljh.9
+        for <iommu@lists.linux.dev>; Mon, 15 Aug 2022 03:12:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=0aiK8oEVUknjQ/kFKM1Zoa7em7h8jPtDacZ1gsZezrs=;
-        b=HWo1DgSkxhAANSjcWUOA0TiwznpZBpDvJCSJ7MjjR4jNaQQsaI1nJqZH6RPmtTNcUS
-         PHEnklUIGr/0mptrSiTImNt4rMpRbXxv6WZ+fiwxpHBCP5HR7IDjLWBXGElqJMLxzcvY
-         MoohSf5bqWRdzJptVhym4klsBeZXbkpvt1phXR9vzKHbn+lqKBBW/PaUO3dif4L49XFk
-         3sueV0Hask46IHCv4HxlQzuDfVmJq06iq9osAUxyK+2pv6A4sl6x7Gyj/i/c995Ut7/Y
-         T+3pMkdKK2sAlGhKGk/A1+cPv3/scbJJbFD2I1fM51MjdZkw5tq4brVKzDL5lp7lEq78
-         Q+Sw==
+        bh=M6PIQlUx6Zdh6S9AJkWXOp4FOoOhzviQOAnjrgwO1aU=;
+        b=WHGZmAbVH/Rt3jRuhcbO3MFReqRlbxNEcw89HPrkihvsw/6AUsLBLpMuuStY2tYoX3
+         oSh5kwhi5Fyl8nm1nALfAIHq9Rd8FatG6DzFHJdsChe0LKyNSdl31DTqcIZKyh05TbLT
+         rOSdSfpb0UFzHzUdQS9Sef9729xmTekAkHhZFthukrCEiDrPZ3dyX6lP7NL33uWLQBMo
+         Ss6+1e+s0/kihYNcMQmeixIz4k/RNE649wo/OiAvfJgoVzmZEdodbwGGwJnaVcXoylUF
+         r+l/8C1DxdD2bACELb7jCojdgZ3iixLENaffCZsrmRk4Ax7AOzDqanM9aHHnzmj0Y8J/
+         BDKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=0aiK8oEVUknjQ/kFKM1Zoa7em7h8jPtDacZ1gsZezrs=;
-        b=5h+yMwyYl5Q2NF/HDExKlE5qUNKWqqhHmT94zexpRYhiSOQ/l8zkRsN4RLEV7qg2DE
-         uF0FaMlovkmIPA6AOiO+1WyVbpTUrKBcmANIuJgnTXbxNNnLfyXNYBF1kM5WkxP5vYT2
-         ioomy/pc7qgblYdummC6CitXwgxYoCGwTUaUFRR3NXwo/0hFVuQld86iFaZDmkitoI9X
-         74ATX3O7P3SuFPVhiBTwWq00s4udX7vp/WR9Iy/SfmO2hVT4cpuoSc1MOwkgG6pNn8vZ
-         qCEGPJEXHTEQBs7/lPsv9hbR0HUwRjr+pFk6gdV4i0RTGiyhTB1XIKK1REa00PK/9/r/
-         8yTw==
-X-Gm-Message-State: ACgBeo1gj7raJo5Et2RQlUwfXUiDnUnRe7c0o681kaVO/71igJ3Ft0rF
-	4eR9YTXKLD8AiV9s9q/JZ98=
-X-Google-Smtp-Source: AA6agR7KF39lbkfwH+fJnTC4y2+jJqk2OXiZ7h/3q79X/zqHE9z1CvaR4+vorBEsi8CYQNY1FxLa1Q==
-X-Received: by 2002:a05:6512:398c:b0:48b:a1e6:c631 with SMTP id j12-20020a056512398c00b0048ba1e6c631mr5171565lfu.229.1660558363510;
-        Mon, 15 Aug 2022 03:12:43 -0700 (PDT)
+        bh=M6PIQlUx6Zdh6S9AJkWXOp4FOoOhzviQOAnjrgwO1aU=;
+        b=w4ybKqRZ5r7wj8H8FZvu3r2nZtsXrt//+WM8akSIaRLruseeQmDdV08dde3dsdiEQS
+         00FZCs96DMAVN1mdTr/8U+fdNB1yjbTH0R/yDW6SUz//QJkJLyQCPw0CAGT/TkzsU1Aq
+         cJdnLNPRCgnDR/GT6km7/H3GtSSHhnbC/fn8GOq4bS7newdMvH6jkRN/02f69qKRJMS2
+         W7gYVvyGE6FI/6rocIQMwRd5Ue6VAeG8gem+vNAi4HtCNIgqkH6K4GKKktGS3/GKY4UM
+         LdqNNm9gjIx532ZXmv5DSnWccvYiJ3WpE7I0B3JLBNTPcnUVb32as0iGkvoyqCKj2DT7
+         H3TA==
+X-Gm-Message-State: ACgBeo3hjwbRuG+LYROkFMgZK4seSWwube9/iiaXuYthfkxnRlp7Ai77
+	XhFSSJ0RyoDsxM5zMoigi7s=
+X-Google-Smtp-Source: AA6agR6ue/K7NDIBySkoofjS+cIh1O8Y2SxFzadrHzRFoVcUPw4z2N/CPH6O60kVQGA+Ty7tgtHhRw==
+X-Received: by 2002:a2e:8885:0:b0:25e:bf9b:2de2 with SMTP id k5-20020a2e8885000000b0025ebf9b2de2mr5014503lji.367.1660558367059;
+        Mon, 15 Aug 2022 03:12:47 -0700 (PDT)
 Received: from localhost.localdomain (admv234.neoplus.adsl.tpnet.pl. [79.185.51.234])
-        by smtp.gmail.com with ESMTPSA id 18-20020ac25f52000000b0048b1ba4d2a4sm1047264lfz.265.2022.08.15.03.12.41
+        by smtp.gmail.com with ESMTPSA id 18-20020ac25f52000000b0048b1ba4d2a4sm1047264lfz.265.2022.08.15.03.12.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 03:12:43 -0700 (PDT)
+        Mon, 15 Aug 2022 03:12:46 -0700 (PDT)
 From: Adam Skladowski <a39.skl@gmail.com>
 To: 
 Cc: phone-devel@vger.kernel.org,
@@ -66,10 +66,10 @@ Cc: phone-devel@vger.kernel.org,
 	iommu@lists.linux.dev,
 	linux-mmc@vger.kernel.org,
 	linux-pm@vger.kernel.org,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Subject: [PATCH 5/7] dt-bindings: arm-smmu: Add compatible for Qualcomm SM6115
-Date: Mon, 15 Aug 2022 12:09:43 +0200
-Message-Id: <20220815100952.23795-6-a39.skl@gmail.com>
+	Adam Skladowski <a_skl39@protonmail.com>
+Subject: [PATCH 6/7] iommu/arm-smmu-qcom: Add SM6115 support
+Date: Mon, 15 Aug 2022 12:09:44 +0200
+Message-Id: <20220815100952.23795-7-a39.skl@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220815100952.23795-1-a39.skl@gmail.com>
 References: <20220815100952.23795-1-a39.skl@gmail.com>
@@ -81,26 +81,26 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add compatible for the Qualcomm SM6115 platform to the ARM SMMU
-DeviceTree binding.
+Add the Qualcomm SM6115 platform to the list of compatible,
+this target uses MMU500 for both APSS and GPU.
 
 Signed-off-by: Adam Skladowski <a39.skl@gmail.com>
 ---
- Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-index 9066e6df1ba1..71f8f638a1f8 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-@@ -41,6 +41,7 @@ properties:
-               - qcom,sdm845-smmu-500
-               - qcom,sdx55-smmu-500
-               - qcom,sdx65-smmu-500
-+              - qcom,sm6115-smmu-500
-               - qcom,sm6350-smmu-500
-               - qcom,sm6375-smmu-500
-               - qcom,sm8150-smmu-500
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index b2708de25ea3..526fec79b4fe 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -432,6 +432,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
+ 	{ .compatible = "qcom,sc8280xp-smmu-500" },
+ 	{ .compatible = "qcom,sdm630-smmu-v2" },
+ 	{ .compatible = "qcom,sdm845-smmu-500" },
++	{ .compatible = "qcom,sm6115-smmu-500" },
+ 	{ .compatible = "qcom,sm6125-smmu-500" },
+ 	{ .compatible = "qcom,sm6350-smmu-500" },
+ 	{ .compatible = "qcom,sm6375-smmu-500" },
 -- 
 2.25.1
 
