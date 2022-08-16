@@ -1,90 +1,90 @@
-Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 378DB1FDA
-	for <iommu@lists.linux.dev>; Tue, 16 Aug 2022 07:49:58 +0000 (UTC)
-Received: by mail-lj1-f169.google.com with SMTP id v10so9839869ljh.9
-        for <iommu@lists.linux.dev>; Tue, 16 Aug 2022 00:49:58 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9CE02F26
+	for <iommu@lists.linux.dev>; Tue, 16 Aug 2022 09:22:04 +0000 (UTC)
+Received: by mail-lf1-f53.google.com with SMTP id c28so10003762lfh.3
+        for <iommu@lists.linux.dev>; Tue, 16 Aug 2022 02:22:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=SAejUFFCQNt+j+xwuoW3jHwPOH/rVvouLgiRHal72RA=;
-        b=Nd2fhV/VaL72FFIo/is9YPIp+d0tc2VTysn21/EE9oHq/0P5hgLRZLPHm0D/XsgD7Z
-         VlbcMgMpbi9+7DL8jKr/9Xz82BEpQhfGShqRHvux+OZ1GDa3EsdJdFIQk7lpP0TFhYo5
-         SvvjG+YbDchXeCdt9Ch9HdM9O9py6p+ZAZfU7TulURI/uSAeG4BHkM+dlHlDpNydENvo
-         Yfy5j1qpm24DloGUssQGnDXTnIMs8JhNn3OC9G/SPKf5hGlXAX2Cb3HMBrNpvMFQymRP
-         WHRBVcOxZs/eLBBnnI6RfVPc9kl74chja5g9sfdMdJTZTiwT3OB7ZMpa72Pvfkl3e6w9
-         yVug==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=Cc5a/Z1OZQ/Sp4oex9dmkDkQnrPr8Y8hlCBI2uCYHzA=;
+        b=fiDRi2HZhnLH0aZUZxx5zMFYg+kRxqfZ8b/gbzXvdbEOMUSsLkKCvcNynL4hySDQxA
+         m1GK8w5qxNUXZbhnbUOAb/RWoVguEnK7mq6wmLTVFwGDw++AVwE97trf0cZJGRUKHk4B
+         ugdqIQgEN/iEh8C4L4b5JRrnQ/26tifMaIyc4O7HpNoSyICCI3YfXHi6BEJAVxkwfsoC
+         4dXDHxU+eadTKBUHD1fgqE6Zq3Hmseu0E10W0cwd/dRDKo7b7wWBN7zhjkCK4R6N9lSf
+         qRZ/bk+TKFGA2FewRcrhJcWB7mn/MYynRQCArUicMErP3l3KcqAYTACWZ1/r4jHH8EoE
+         HRLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=SAejUFFCQNt+j+xwuoW3jHwPOH/rVvouLgiRHal72RA=;
-        b=VBu73aQAU5nGYFmlIL8haBk5vMUPtgXwbVtus0r+gUTsa+7N73MQtwBybpPRcAT1H2
-         itQm0RWiVOvuaboGUYt0bcergHJTHCRQZgzm2hi9ELG+v//iqDAkQdm3M4thO5wl1TJG
-         /o7h6vex4WJelFcFDLyWhiZc34apetVqwZb+ly4GXKFTWCsyqF0crTL/WXa4jFkrO3mr
-         PP63oeHoD/1UW/7vVGzbZnjaAS8Jg8lNkO0O/SWWytCOv7ZvMbV28qeZ4Rg8siSCd0Wa
-         Quwi6w0blZbKV3uWknzpefh+GwAtkSXkhNgP0EVdrcZwlqDaVe/ZRN2NgGNx65KEYZdm
-         1Jng==
-X-Gm-Message-State: ACgBeo1zqAJT3lsHvPGBlaHzUSRmR4tDDYAeP9RtyW6RGK8SYLDds80T
-	f+FPPyg0KkktHRectIWngZYEqA==
-X-Google-Smtp-Source: AA6agR7YnhFNe5Ed7tGtyQ+mDj1iuRvb65JZjphfZX/S5+f6iom4DkcGLIDIQitAULHttjSS/F3bFg==
-X-Received: by 2002:a2e:9950:0:b0:25e:5777:a17b with SMTP id r16-20020a2e9950000000b0025e5777a17bmr5992650ljj.32.1660636196351;
-        Tue, 16 Aug 2022 00:49:56 -0700 (PDT)
-Received: from ?IPV6:2001:14bb:ae:539c:1782:dd68:b0c1:c1a4? (d15l54g8c71znbtrbzt-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1782:dd68:b0c1:c1a4])
-        by smtp.gmail.com with ESMTPSA id z13-20020a05651c11cd00b0025e4fcadc72sm1692421ljo.92.2022.08.16.00.49.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Aug 2022 00:49:55 -0700 (PDT)
-Message-ID: <338f2929-aa67-bf63-2d66-5de48f6af1c4@linaro.org>
-Date: Tue, 16 Aug 2022 10:49:53 +0300
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=Cc5a/Z1OZQ/Sp4oex9dmkDkQnrPr8Y8hlCBI2uCYHzA=;
+        b=0gKWzHaMzQcl4g3VYlkC8IOlMzkQ8zKqaCrs80LHMrVqDEvjaS/QpjIup7Ur8i82qb
+         bVZsVDMsNcDhMHS3Jjypl6/wytrCDbqo+Mp3bysOWuEi09Gv9noS1EI4ZFXH6CpeJxt9
+         GAc53zpQE/Fp8tIugFGaA7EHL+dDUt/YQY9gT/i5cRmLnnZBeDZDT0lSizX3x77bLQOw
+         C0Wtz0tr/UtI/7faTe9V9+Lpz6iJd3NO245OIsgKBfbuPadtSZQoX/nkv2UkK+J0c3cS
+         vtxXsMQIsH4ToK6VAflcdaj2mJkz6RyzXYNyKNeL+NI/4B40uCG3ExolwaEoJehzpVVa
+         y+Vw==
+X-Gm-Message-State: ACgBeo1MG4eZ3TTaQV8Z+wLnGw1N9eCjiSKu2qqPwrcLZT0ymUKTAE98
+	2MFDX6okKwNuohNtMPYRD+DpGA==
+X-Google-Smtp-Source: AA6agR7LFK/9gYrW8u+lnQRIAyItIlW8HzneqHrf3znVQXnPj5MscIKAG/LghM5wSDnWni05dkHGvg==
+X-Received: by 2002:a2e:80da:0:b0:25e:6d34:6169 with SMTP id r26-20020a2e80da000000b0025e6d346169mr6447417ljg.531.1660641722837;
+        Tue, 16 Aug 2022 02:22:02 -0700 (PDT)
+Received: from krzk-bin.. (d15l54g8c71znbtrbzt-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1782:dd68:b0c1:c1a4])
+        by smtp.gmail.com with ESMTPSA id s17-20020a056512215100b0048aea84fa80sm1335691lfr.87.2022.08.16.02.22.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 02:22:02 -0700 (PDT)
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To: yong.wu@mediatek.com,
+	robin.murphy@arm.com,
+	lee@kernel.org,
+	angelogioacchino.delregno@collabora.com,
+	robh+dt@kernel.org,
+	tinghan.shen@mediatek.com,
+	mandyjh.liu@mediatek.com,
+	will@kernel.org,
+	joro@8bytes.org,
+	krzysztof.kozlowski+dt@linaro.org,
+	matthias.bgg@gmail.com
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	linux-kernel@vger.kernel.org,
+	Project_Global_Chrome_Upstream_Group@mediatek.com,
+	iommu@lists.linux.dev,
+	linux-mediatek@lists.infradead.org,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: (subset) [PATCH v4 02/20] dt-bindings: memory: mediatek: Update condition for mt8195 smi node
+Date: Tue, 16 Aug 2022 12:21:59 +0300
+Message-Id: <166064169630.37858.3837655509098916044.b4-ty@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220729063208.16799-3-tinghan.shen@mediatek.com>
+References: <20220729063208.16799-1-tinghan.shen@mediatek.com> <20220729063208.16799-3-tinghan.shen@mediatek.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 7/7] dt-bindings: firmware: document Qualcomm SM6115 SCM
-Content-Language: en-US
-To: Adam Skladowski <a39.skl@gmail.com>
-Cc: phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
- Andy Gross <agross@kernel.org>, Bjorn Andersson
- <bjorn.andersson@linaro.org>, Konrad Dybcio <konrad.dybcio@somainline.org>,
- Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, Ulf Hansson <ulf.hansson@linaro.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>,
- Viresh Kumar <viresh.kumar@linaro.org>,
- Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
- Loic Poulain <loic.poulain@linaro.org>, Emma Anholt <emma@anholt.net>,
- Rob Clark <robdclark@chromium.org>,
- Bhupesh Sharma <bhupesh.sharma@linaro.org>, linux-arm-msm@vger.kernel.org,
- dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-mmc@vger.kernel.org, linux-pm@vger.kernel.org,
- Sibi Sankar <sibis@codeaurora.org>, Adam Skladowski <a_skl39@protonmail.com>
-References: <20220815100952.23795-1-a39.skl@gmail.com>
- <20220815100952.23795-8-a39.skl@gmail.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220815100952.23795-8-a39.skl@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-On 15/08/2022 13:09, Adam Skladowski wrote:
-> Document the compatible for Qualcomm  SM6115 SCM.
+On Fri, 29 Jul 2022 14:31:50 +0800, Tinghan Shen wrote:
+> The max clock items for the dts node with compatible
+> 'mediatek,mt8195-smi-sub-common' should be 3.
 > 
-> Signed-off-by: Adam Skladowski <a39.skl@gmail.com>
-> ---
->  Documentation/devicetree/bindings/firmware/qcom,scm.txt | 1 +
+> However, the dtbs_check of such node will get following message,
+> arch/arm64/boot/dts/mediatek/mt8195-evb.dtb: smi@14010000: clock-names: ['apb', 'smi', 'gals0'] is too long
+>          From schema: Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+> 
+> [...]
 
+Applied, thanks!
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
+[02/20] dt-bindings: memory: mediatek: Update condition for mt8195 smi node
+        https://git.kernel.org/krzk/linux-mem-ctrl/c/9f8fb8032febf594914999c33493c682eaf138cb
 
 Best regards,
-Krzysztof
+-- 
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
