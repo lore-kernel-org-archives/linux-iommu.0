@@ -1,34 +1,23 @@
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A9943C29
-	for <iommu@lists.linux.dev>; Tue, 16 Aug 2022 11:46:20 +0000 (UTC)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.56])
-	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M6TmY1fdkzlW4G;
-	Tue, 16 Aug 2022 19:43:09 +0800 (CST)
-Received: from localhost.localdomain (10.67.164.66) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 16 Aug 2022 19:46:11 +0800
-From: Yicong Yang <yangyicong@huawei.com>
-To: <gregkh@linuxfoundation.org>, <alexander.shishkin@linux.intel.com>,
-	<leo.yan@linaro.org>, <james.clark@arm.com>, <will@kernel.org>,
-	<robin.murphy@arm.com>, <acme@kernel.org>, <peterz@infradead.org>,
-	<corbet@lwn.net>, <mathieu.poirier@linaro.org>, <mark.rutland@arm.com>,
-	<jonathan.cameron@huawei.com>, <john.garry@huawei.com>
-CC: <helgaas@kernel.org>, <lorenzo.pieralisi@arm.com>,
-	<suzuki.poulose@arm.com>, <joro@8bytes.org>,
-	<shameerali.kolothum.thodi@huawei.com>, <mingo@redhat.com>,
-	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-pci@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-	<iommu@lists.linux-foundation.org>, <iommu@lists.linux.dev>,
-	<linux-doc@vger.kernel.org>, <prime.zeng@huawei.com>, <liuqi115@huawei.com>,
-	<zhangshaokun@hisilicon.com>, <linuxarm@huawei.com>,
-	<yangyicong@hisilicon.com>, <bagasdotme@gmail.com>
-Subject: [PATCH v12 0/5] Add driver support for HiSilicon PCIe Tune and Trace device
-Date: Tue, 16 Aug 2022 19:44:09 +0800
-Message-ID: <20220816114414.4092-1-yangyicong@huawei.com>
-X-Mailer: git-send-email 2.31.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 65776110C
+	for <iommu@lists.linux.dev>; Tue, 16 Aug 2022 13:49:17 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4649D1063;
+	Tue, 16 Aug 2022 06:49:11 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 8CDBC3F66F;
+	Tue, 16 Aug 2022 06:49:09 -0700 (PDT)
+From: Robin Murphy <robin.murphy@arm.com>
+To: robert.foss@linaro.org,
+	todor.too@gmail.com,
+	mchehab@kernel.org,
+	stanimir.varbanov@linaro.org
+Cc: linux-media@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: [PATCH] media: qcom: Clean up Kconfig dependencies
+Date: Tue, 16 Aug 2022 14:49:05 +0100
+Message-Id: <edbd6c95873c51853c4f645ee1ed81a3522a5864.1660657745.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.36.1.dirty
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,158 +25,45 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.67.164.66]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
 
-From: Yicong Yang <yangyicong@hisilicon.com>
+Depending on IOMMU_DMA is suspicious, since the low-level DMA ops
+internals and MSI helpers is provides are not of interest to general
+drivers. In practice it mostly seems to be serving as a dependency on
+ARM64 here, so do that properly. The venus driver looks like it won't
+actually be useful at runtime without the IOMMU API, so add that too.
 
-HiSilicon PCIe tune and trace device (PTT) is a PCIe Root Complex integrated
-Endpoint (RCiEP) device, providing the capability to dynamically monitor and
-tune the PCIe traffic (tune), and trace the TLP headers (trace).
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+ drivers/media/platform/qcom/camss/Kconfig | 2 +-
+ drivers/media/platform/qcom/venus/Kconfig | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-PTT tune is designed for monitoring and adjusting PCIe link parameters. We provide
-several parameters of the PCIe link. Through the driver, user can adjust the value
-of certain parameter to affect the PCIe link for the purpose of enhancing the
-performance in certian situation.
-
-PTT trace is designed for dumping the TLP headers to the memory, which can be
-used to analyze the transactions and usage condition of the PCIe Link. Users
-can choose filters to trace headers, by either requester ID, or those downstream
-of a set of Root Ports on the same core of the PTT device. It's also supported
-to trace the headers of certain type and of certain direction.
-
-The driver registers a PMU device for each PTT device. The trace can be used
-through `perf record` and the traced headers can be decoded by `perf report`.
-The tune can be used through the sysfs attributes of related PMU device. See
-the documentation for the detailed usage.
-
-This patchset adds an initial driver support for the PTT device. The userspace
-perf tool support will be sent in a separate patchset.
-
-Change since v11:
-- Drop WARN_ON() for irq_set_affinity() failure per Greg
-- Split out userspace perf support patches according to the comments
-Link: https://lore.kernel.org/lkml/20220721130116.43366-1-yangyicong@huawei.com/
-
-Change since v10:
-- Use title case in the documentation
-- Add RB from Bagas, thanks.
-Link: https://lore.kernel.org/lkml/20220714092710.53486-1-yangyicong@hisilicon.com/
-
-Change since v9:
-- Add sysfs ABI description documentation
-- Remove the controversial available_{root_port, requester}_filters sysfs file
-- Shorten 2 tune sysfs attributes name and add some comments
-- Move hisi_ptt_process_auxtrace_info() to Patch 6.
-- Add RB from Leo and Ack-by from Mathieu, thanks!
-Link: https://lore.kernel.org/lkml/20220606115555.41103-1-yangyicong@hisilicon.com/
-
-Change since v8:
-- Cleanups and one minor fix from Jonathan and John, thanks
-Link: https://lore.kernel.org/lkml/20220516125223.32012-1-yangyicong@hisilicon.com/
-
-Change since v7:
-- Configure the DMA in probe rather than in runtime. Also use devres to manage
-  PMU device as we have no order problem now
-- Refactor the config validation function per John and Leo
-- Use a spinlock hisi_ptt::pmu_lock instead of mutex to serialize the perf process
-  in pmu::start as it's in atomic context
-- Only commit the traced data when stop, per Leo and James
-- Drop the filter dynamically updating patch from this series to simply the review
-  of the driver. That patch will be send separately.
-- add a cpumask sysfs attribute and handle the cpu hotplug events, follow the
-  uncore PMU convention
-- Other cleanups and fixes, both in driver and perf tool
-Link: https://lore.kernel.org/lkml/20220407125841.3678-1-yangyicong@hisilicon.com/
-
-Change since v6:
-- Fix W=1 errors reported by lkp test, thanks
-
-Change since v5:
-- Squash the PMU patch into PATCH 2 suggested by John
-- refine the commit message of PATCH 1 and some comments
-Link: https://lore.kernel.org/lkml/20220308084930.5142-1-yangyicong@hisilicon.com/
-
-Change since v4:
-Address the comments from Jonathan, John and Ma Ca, thanks.
-- Use devm* also for allocating the DMA buffers
-- Remove the IRQ handler stub in Patch 2
-- Make functions waiting for hardware state return boolean
-- Manual remove the PMU device as it should be removed first
-- Modifier the orders in probe and removal to make them matched well
-- Make available {directions,type,format} array const and non-global
-- Using the right filter list in filters show and well protect the
-  list with mutex
-- Record the trace status with a boolean @started rather than enum
-- Optimize the process of finding the PTT devices of the perf-tool
-Link: https://lore.kernel.org/linux-pci/20220221084307.33712-1-yangyicong@hisilicon.com/
-
-Change since v3:
-Address the comments from Jonathan and John, thanks.
-- drop members in the common struct which can be get on the fly
-- reduce buffer struct and organize the buffers with array instead of list
-- reduce the DMA reset wait time to avoid long time busy loop
-- split the available_filters sysfs attribute into two files, for root port
-  and requester respectively. Update the documentation accordingly
-- make IOMMU mapping check earlier in probe to avoid race condition. Also
-  make IOMMU quirk patch prior to driver in the series
-- Cleanups and typos fixes from John and Jonathan
-Link: https://lore.kernel.org/linux-pci/20220124131118.17887-1-yangyicong@hisilicon.com/
-
-Change since v2:
-- address the comments from Mathieu, thanks.
-  - rename the directory to ptt to match the function of the device
-  - spinoff the declarations to a separate header
-  - split the trace function to several patches
-  - some other comments.
-- make default smmu domain type of PTT device to identity
-  Drop the RMR as it's not recommended and use an iommu_def_domain_type
-  quirk to passthrough the device DMA as suggested by Robin. 
-Link: https://lore.kernel.org/linux-pci/20211116090625.53702-1-yangyicong@hisilicon.com/
-
-Change since v1:
-- switch the user interface of trace to perf from debugfs
-- switch the user interface of tune to sysfs from debugfs
-- add perf tool support to start trace and decode the trace data
-- address the comments of documentation from Bjorn
-- add RMR[1] support of the device as trace works in RMR mode or
-  direct DMA mode. RMR support is achieved by common APIs rather
-  than the APIs implemented in [1].
-Link: https://lore.kernel.org/lkml/1618654631-42454-1-git-send-email-yangyicong@hisilicon.com/
-[1] https://lore.kernel.org/linux-acpi/20210805080724.480-1-shameerali.kolothum.thodi@huawei.com/
-
-Yicong Yang (5):
-  iommu/arm-smmu-v3: Make default domain type of HiSilicon PTT device to
-    identity
-  hwtracing: hisi_ptt: Add trace function support for HiSilicon PCIe
-    Tune and Trace device
-  hwtracing: hisi_ptt: Add tune function support for HiSilicon PCIe Tune
-    and Trace device
-  docs: trace: Add HiSilicon PTT device driver documentation
-  MAINTAINERS: Add maintainer for HiSilicon PTT driver
-
- .../ABI/testing/sysfs-devices-hisi_ptt        |   61 +
- Documentation/trace/hisi-ptt.rst              |  298 +++++
- Documentation/trace/index.rst                 |    1 +
- MAINTAINERS                                   |    8 +
- drivers/Makefile                              |    1 +
- drivers/hwtracing/Kconfig                     |    2 +
- drivers/hwtracing/ptt/Kconfig                 |   12 +
- drivers/hwtracing/ptt/Makefile                |    2 +
- drivers/hwtracing/ptt/hisi_ptt.c              | 1047 +++++++++++++++++
- drivers/hwtracing/ptt/hisi_ptt.h              |  200 ++++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |   21 +
- 11 files changed, 1653 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-devices-hisi_ptt
- create mode 100644 Documentation/trace/hisi-ptt.rst
- create mode 100644 drivers/hwtracing/ptt/Kconfig
- create mode 100644 drivers/hwtracing/ptt/Makefile
- create mode 100644 drivers/hwtracing/ptt/hisi_ptt.c
- create mode 100644 drivers/hwtracing/ptt/hisi_ptt.h
-
+diff --git a/drivers/media/platform/qcom/camss/Kconfig b/drivers/media/platform/qcom/camss/Kconfig
+index 4eda48cb1adf..575f42377c12 100644
+--- a/drivers/media/platform/qcom/camss/Kconfig
++++ b/drivers/media/platform/qcom/camss/Kconfig
+@@ -2,7 +2,7 @@ config VIDEO_QCOM_CAMSS
+ 	tristate "Qualcomm V4L2 Camera Subsystem driver"
+ 	depends on V4L_PLATFORM_DRIVERS
+ 	depends on VIDEO_DEV
+-	depends on (ARCH_QCOM && IOMMU_DMA) || COMPILE_TEST
++	depends on (ARCH_QCOM && ARM64) || COMPILE_TEST
+ 	select MEDIA_CONTROLLER
+ 	select VIDEO_V4L2_SUBDEV_API
+ 	select VIDEOBUF2_DMA_SG
+diff --git a/drivers/media/platform/qcom/venus/Kconfig b/drivers/media/platform/qcom/venus/Kconfig
+index bfd50e8f3421..f04b45720bca 100644
+--- a/drivers/media/platform/qcom/venus/Kconfig
++++ b/drivers/media/platform/qcom/venus/Kconfig
+@@ -2,7 +2,7 @@ config VIDEO_QCOM_VENUS
+ 	tristate "Qualcomm Venus V4L2 encoder/decoder driver"
+ 	depends on V4L_MEM2MEM_DRIVERS
+ 	depends on VIDEO_DEV && QCOM_SMEM
+-	depends on (ARCH_QCOM && IOMMU_DMA) || COMPILE_TEST
++	depends on (ARCH_QCOM && ARM64 && IOMMU_API) || COMPILE_TEST
+ 	select QCOM_MDT_LOADER if ARCH_QCOM
+ 	select QCOM_SCM
+ 	select VIDEOBUF2_DMA_CONTIG
 -- 
-2.24.0
+2.36.1.dirty
 
