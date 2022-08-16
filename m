@@ -1,45 +1,45 @@
-Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
+Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE96A1FDA
-	for <iommu@lists.linux.dev>; Tue, 16 Aug 2022 07:49:47 +0000 (UTC)
-Received: by mail-lj1-f171.google.com with SMTP id y23so9829734ljh.12
-        for <iommu@lists.linux.dev>; Tue, 16 Aug 2022 00:49:47 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 378DB1FDA
+	for <iommu@lists.linux.dev>; Tue, 16 Aug 2022 07:49:58 +0000 (UTC)
+Received: by mail-lj1-f169.google.com with SMTP id v10so9839869ljh.9
+        for <iommu@lists.linux.dev>; Tue, 16 Aug 2022 00:49:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc;
-        bh=fWI5Vz3NEJENJRZgoHcLtgrcNY1EYtwbH+VSOPvp12g=;
-        b=hcP6Yo679+KGkm7iKjYV4Vr2yzJpgGvZSXpatLMfra8Yd8ATOpGxxOJ63puZ7NNo/g
-         GRiWIjHa6+stNgvPhNSaM3LPpOrMHmCuYlbm1vOUt+flHbBeVzTg+KStGFRdadBTiVEh
-         jjMvPRn3fd53gkXZrkMttsiqdSJkfdE/v7kehmo3VVkKfXlvXAbkQ45vWFp0gHQeCDpB
-         NukIWYd+SC5ik+hx3hDeaQaDFkTAqNFOXitHpvvA9a50oI2w7eyocv8mMnAciMHdl98c
-         vHJK52El4kJ8ZDTlLlYSgW1uCbD5nFfvCGtMVND3zdtnx+ExpKMZlw+uTdvowPsaNH/w
-         c3Hw==
+        bh=SAejUFFCQNt+j+xwuoW3jHwPOH/rVvouLgiRHal72RA=;
+        b=Nd2fhV/VaL72FFIo/is9YPIp+d0tc2VTysn21/EE9oHq/0P5hgLRZLPHm0D/XsgD7Z
+         VlbcMgMpbi9+7DL8jKr/9Xz82BEpQhfGShqRHvux+OZ1GDa3EsdJdFIQk7lpP0TFhYo5
+         SvvjG+YbDchXeCdt9Ch9HdM9O9py6p+ZAZfU7TulURI/uSAeG4BHkM+dlHlDpNydENvo
+         Yfy5j1qpm24DloGUssQGnDXTnIMs8JhNn3OC9G/SPKf5hGlXAX2Cb3HMBrNpvMFQymRP
+         WHRBVcOxZs/eLBBnnI6RfVPc9kl74chja5g9sfdMdJTZTiwT3OB7ZMpa72Pvfkl3e6w9
+         yVug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc;
-        bh=fWI5Vz3NEJENJRZgoHcLtgrcNY1EYtwbH+VSOPvp12g=;
-        b=tRHGVwfXyXNID0Htwx/fcF30KzPojOclqabAAMTe7tZgENdphNE8wgzJQuSXTSK999
-         ZY4+F8741RqSlaeSgajH31plzDpDxGx63TLUVCemio1iT+XEY/esLj0hIbZRRzj1ATX6
-         eKB5dElfmn90x7uRbI8FB32FLQGmTazQiLVmdn0ZyP2kGdxDbGZ5rYFVswheJV3Fxb80
-         cwlWc0rywA2ZTq4ambJesKXQe2gdCojXqher9dFDLwqNzgVFC3MGDXMQV2fpT4Q2Gd3D
-         ZvzipoF2jU+Yl+2Vv3cXce96TBMdwl+OO/FIvC4itEM0gkglHV6SEih96KRR/iQ0uAVg
-         vJww==
-X-Gm-Message-State: ACgBeo2INXkkG2olz44FFS+0F2YmtHdY+d/2y6MNh/hPVDD7JwzLUj7Q
-	1o1b6zwoQuVcKChhpFtuClrwxA==
-X-Google-Smtp-Source: AA6agR7mpZwwb6aHmQDli3b3DRF0poXvShKgozZp5CGt2ZC03JxidPRufilBX+BbZyB3ZJK9CAL67g==
-X-Received: by 2002:a2e:504:0:b0:25e:4599:4eef with SMTP id 4-20020a2e0504000000b0025e45994eefmr5958922ljf.288.1660636185863;
-        Tue, 16 Aug 2022 00:49:45 -0700 (PDT)
+        bh=SAejUFFCQNt+j+xwuoW3jHwPOH/rVvouLgiRHal72RA=;
+        b=VBu73aQAU5nGYFmlIL8haBk5vMUPtgXwbVtus0r+gUTsa+7N73MQtwBybpPRcAT1H2
+         itQm0RWiVOvuaboGUYt0bcergHJTHCRQZgzm2hi9ELG+v//iqDAkQdm3M4thO5wl1TJG
+         /o7h6vex4WJelFcFDLyWhiZc34apetVqwZb+ly4GXKFTWCsyqF0crTL/WXa4jFkrO3mr
+         PP63oeHoD/1UW/7vVGzbZnjaAS8Jg8lNkO0O/SWWytCOv7ZvMbV28qeZ4Rg8siSCd0Wa
+         Quwi6w0blZbKV3uWknzpefh+GwAtkSXkhNgP0EVdrcZwlqDaVe/ZRN2NgGNx65KEYZdm
+         1Jng==
+X-Gm-Message-State: ACgBeo1zqAJT3lsHvPGBlaHzUSRmR4tDDYAeP9RtyW6RGK8SYLDds80T
+	f+FPPyg0KkktHRectIWngZYEqA==
+X-Google-Smtp-Source: AA6agR7YnhFNe5Ed7tGtyQ+mDj1iuRvb65JZjphfZX/S5+f6iom4DkcGLIDIQitAULHttjSS/F3bFg==
+X-Received: by 2002:a2e:9950:0:b0:25e:5777:a17b with SMTP id r16-20020a2e9950000000b0025e5777a17bmr5992650ljj.32.1660636196351;
+        Tue, 16 Aug 2022 00:49:56 -0700 (PDT)
 Received: from ?IPV6:2001:14bb:ae:539c:1782:dd68:b0c1:c1a4? (d15l54g8c71znbtrbzt-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1782:dd68:b0c1:c1a4])
-        by smtp.gmail.com with ESMTPSA id c1-20020a056512324100b0047255d211b2sm1303086lfr.225.2022.08.16.00.49.43
+        by smtp.gmail.com with ESMTPSA id z13-20020a05651c11cd00b0025e4fcadc72sm1692421ljo.92.2022.08.16.00.49.54
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Aug 2022 00:49:45 -0700 (PDT)
-Message-ID: <4834ec0e-79fb-43b9-bfc0-8bc42646a4d3@linaro.org>
-Date: Tue, 16 Aug 2022 10:49:42 +0300
+        Tue, 16 Aug 2022 00:49:55 -0700 (PDT)
+Message-ID: <338f2929-aa67-bf63-2d66-5de48f6af1c4@linaro.org>
+Date: Tue, 16 Aug 2022 10:49:53 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,8 +48,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.12.0
-Subject: Re: [PATCH 5/7] dt-bindings: arm-smmu: Add compatible for Qualcomm
- SM6115
+Subject: Re: [PATCH 7/7] dt-bindings: firmware: document Qualcomm SM6115 SCM
 Content-Language: en-US
 To: Adam Skladowski <a39.skl@gmail.com>
 Cc: phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
@@ -68,19 +67,20 @@ Cc: phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
  dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux.dev, linux-mmc@vger.kernel.org, linux-pm@vger.kernel.org,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+ Sibi Sankar <sibis@codeaurora.org>, Adam Skladowski <a_skl39@protonmail.com>
 References: <20220815100952.23795-1-a39.skl@gmail.com>
- <20220815100952.23795-6-a39.skl@gmail.com>
+ <20220815100952.23795-8-a39.skl@gmail.com>
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220815100952.23795-6-a39.skl@gmail.com>
+In-Reply-To: <20220815100952.23795-8-a39.skl@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 15/08/2022 13:09, Adam Skladowski wrote:
-> Add compatible for the Qualcomm SM6115 platform to the ARM SMMU
-> DeviceTree binding.
+> Document the compatible for Qualcomm  SM6115 SCM.
 > 
 > Signed-off-by: Adam Skladowski <a39.skl@gmail.com>
+> ---
+>  Documentation/devicetree/bindings/firmware/qcom,scm.txt | 1 +
 
 
 Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
