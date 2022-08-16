@@ -1,84 +1,145 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8D8424C9D
-	for <iommu@lists.linux.dev>; Mon, 15 Aug 2022 19:29:00 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 505E5D6E;
-	Mon, 15 Aug 2022 12:29:00 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id B38853F67D;
-	Mon, 15 Aug 2022 12:28:58 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: hch@lst.de
-Cc: m.szyprowski@samsung.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Yunfei Wang <yf.wang@mediatek.com>
-Subject: [PATCH] dma-debug: Improve search for partial syncs
-Date: Mon, 15 Aug 2022 20:28:40 +0100
-Message-Id: <35bf2add5ae803b0355d556f965090d4014e574e.1660590752.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.36.1.dirty
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A2F47B
+	for <iommu@lists.linux.dev>; Tue, 16 Aug 2022 00:25:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660609545; x=1692145545;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=hgAo02352g+6JB/33fQ+S9BSn2FjdcgB2f41dklFUo0=;
+  b=kxiYXkIkAh1ZCMJTyqujBO/NsEQq+0zWJ2SAud6YK9nXidth9mRK1jWL
+   4WRFjMYEoAtbPG0amtH0RA+Sn6FcZKQLJivYJ+3SlCU6ZbagRHjPY4SYb
+   077c5eF1UXjXi2snXGtUDhN0kWo+KJD87ou41+xB2uw7z0Uoi9tGxAbYJ
+   RgrFkITskUANODogi2xFcjR56IvjKY9IIE7q6ulz4cfkbQhomCEB+lnaO
+   mywMYDMakA/acboDToVAoFpS4SzvYaNr5vCiM+IqiJk483pL8R61b41cN
+   EpDMu/dRx9WTIWX0yaoVE820qmd6N4p6mO2NVokG0xoUyKh2iitLyF/8W
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="272480256"
+X-IronPort-AV: E=Sophos;i="5.93,239,1654585200"; 
+   d="scan'208";a="272480256"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 17:25:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,239,1654585200"; 
+   d="scan'208";a="749112033"
+Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
+  by fmsmga001.fm.intel.com with ESMTP; 15 Aug 2022 17:25:41 -0700
+Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1oNkOr-0001I9-0C;
+	Tue, 16 Aug 2022 00:25:41 +0000
+Date: Tue, 16 Aug 2022 08:25:03 +0800
+From: kernel test robot <lkp@intel.com>
+To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org
+Cc: kbuild-all@lists.01.org, will@kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, baolu.lu@linux.intel.com,
+	kevin.tian@intel.com, suravee.suthikulpanit@amd.com,
+	vasant.hegde@amd.com, mjrosato@linux.ibm.com,
+	schnelle@linux.ibm.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 11/16] iommu/ipmmu-vmsa: Clean up bus_set_iommu()
+Message-ID: <202208160803.PS5lvtSV-lkp@intel.com>
+References: <14377566e449950c19367f75ec1b09724bf0889f.1660572783.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <14377566e449950c19367f75ec1b09724bf0889f.1660572783.git.robin.murphy@arm.com>
 
-When bucket_find_contains() tries to find the original entry for a
-partial sync, it manages to constrain its search in a way that is both
-too restrictive and not restrictive enough. A driver which only uses
-single mappings rather than scatterlists might not set max_seg_size, but
-could still technically perform a partial sync at an offset of more than
-64KB into a sufficiently large mapping, so we could stop searching too
-early before reaching a legitimate entry. Conversely, if no valid entry
-is present and max_range is large enough, we can pointlessly search
-buckets that we've already searched, or that represent an impossible
-wrapping around the bottom of the address space. At worst, the
-(legitimate) case of max_seg_size == UINT_MAX can make the loop
-infinite.
+Hi Robin,
 
-Replace the fragile and frankly hard-to-follow "range" logic with a
-simple counted loop for the number of possible hash buckets below the
-given address.
+I love your patch! Perhaps something to improve:
 
-Reported-by: Yunfei Wang <yf.wang@mediatek.com>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
+[auto build test WARNING on v6.0-rc1]
+[also build test WARNING on linus/master next-20220815]
+[cannot apply to joro-iommu/next krzk/for-next tegra/for-next rockchip/for-next sunxi/sunxi/for-next]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Having come back and looked at this for long enough to realise that
-max_range itself was both wrong and not actually useful, I figured it
-was easiest just to write the whole thing up as an alternative patch.
+url:    https://github.com/intel-lab-lkp/linux/commits/Robin-Murphy/iommu-retire-bus_set_iommu/20220816-002348
+base:    568035b01cfb107af8d2e4bd2fb9aea22cf5b868
+config: x86_64-buildonly-randconfig-r003-20220815 (https://download.01.org/0day-ci/archive/20220816/202208160803.PS5lvtSV-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/72fa5405b9cf32a9814ca7ed6d5b877cabf83efd
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Robin-Murphy/iommu-retire-bus_set_iommu/20220816-002348
+        git checkout 72fa5405b9cf32a9814ca7ed6d5b877cabf83efd
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/iommu/
 
- kernel/dma/debug.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 2caafd13f8aa..18c93c2276ca 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -350,11 +350,10 @@ static struct dma_debug_entry *bucket_find_contain(struct hash_bucket **bucket,
- 						   unsigned long *flags)
- {
- 
--	unsigned int max_range = dma_get_max_seg_size(ref->dev);
- 	struct dma_debug_entry *entry, index = *ref;
--	unsigned int range = 0;
-+	int limit = min(HASH_SIZE, (index.dev_addr >> HASH_FN_SHIFT) + 1);
- 
--	while (range <= max_range) {
-+	for (int i = 0; i < limit; i++) {
- 		entry = __hash_bucket_find(*bucket, ref, containing_match);
- 
- 		if (entry)
-@@ -364,7 +363,6 @@ static struct dma_debug_entry *bucket_find_contain(struct hash_bucket **bucket,
- 		 * Nothing found, go back a hash bucket
- 		 */
- 		put_hash_bucket(*bucket, *flags);
--		range          += (1 << HASH_FN_SHIFT);
- 		index.dev_addr -= (1 << HASH_FN_SHIFT);
- 		*bucket = get_hash_bucket(&index, flags);
- 	}
+All warnings (new ones prefixed by >>):
+
+>> drivers/iommu/ipmmu-vmsa.c:946:34: warning: 'ipmmu_of_ids' defined but not used [-Wunused-const-variable=]
+     946 | static const struct of_device_id ipmmu_of_ids[] = {
+         |                                  ^~~~~~~~~~~~
+
+
+vim +/ipmmu_of_ids +946 drivers/iommu/ipmmu-vmsa.c
+
+7a62ced8ebd0e1 Yoshihiro Shimoda       2021-09-07  945  
+33f3ac9b511612 Magnus Damm             2017-10-16 @946  static const struct of_device_id ipmmu_of_ids[] = {
+33f3ac9b511612 Magnus Damm             2017-10-16  947  	{
+33f3ac9b511612 Magnus Damm             2017-10-16  948  		.compatible = "renesas,ipmmu-vmsa",
+33f3ac9b511612 Magnus Damm             2017-10-16  949  		.data = &ipmmu_features_default,
+60fb0083c9d43b Fabrizio Castro         2018-08-23  950  	}, {
+60fb0083c9d43b Fabrizio Castro         2018-08-23  951  		.compatible = "renesas,ipmmu-r8a774a1",
+60fb0083c9d43b Fabrizio Castro         2018-08-23  952  		.data = &ipmmu_features_rcar_gen3,
+757f26a3a9ec2c Biju Das                2019-09-27  953  	}, {
+757f26a3a9ec2c Biju Das                2019-09-27  954  		.compatible = "renesas,ipmmu-r8a774b1",
+757f26a3a9ec2c Biju Das                2019-09-27  955  		.data = &ipmmu_features_rcar_gen3,
+b6d39cd82241bf Fabrizio Castro         2018-12-13  956  	}, {
+b6d39cd82241bf Fabrizio Castro         2018-12-13  957  		.compatible = "renesas,ipmmu-r8a774c0",
+b6d39cd82241bf Fabrizio Castro         2018-12-13  958  		.data = &ipmmu_features_rcar_gen3,
+4b2aa7a6f9b793 Marian-Cristian Rotariu 2020-07-14  959  	}, {
+4b2aa7a6f9b793 Marian-Cristian Rotariu 2020-07-14  960  		.compatible = "renesas,ipmmu-r8a774e1",
+4b2aa7a6f9b793 Marian-Cristian Rotariu 2020-07-14  961  		.data = &ipmmu_features_rcar_gen3,
+58b8e8bf409236 Magnus Damm             2017-10-16  962  	}, {
+58b8e8bf409236 Magnus Damm             2017-10-16  963  		.compatible = "renesas,ipmmu-r8a7795",
+0b8ac1409641e1 Magnus Damm             2018-06-14  964  		.data = &ipmmu_features_rcar_gen3,
+0b8ac1409641e1 Magnus Damm             2018-06-14  965  	}, {
+0b8ac1409641e1 Magnus Damm             2018-06-14  966  		.compatible = "renesas,ipmmu-r8a7796",
+0b8ac1409641e1 Magnus Damm             2018-06-14  967  		.data = &ipmmu_features_rcar_gen3,
+17fe1618163980 Yoshihiro Shimoda       2020-06-11  968  	}, {
+17fe1618163980 Yoshihiro Shimoda       2020-06-11  969  		.compatible = "renesas,ipmmu-r8a77961",
+17fe1618163980 Yoshihiro Shimoda       2020-06-11  970  		.data = &ipmmu_features_rcar_gen3,
+98dbffd39a6513 Jacopo Mondi            2018-06-14  971  	}, {
+98dbffd39a6513 Jacopo Mondi            2018-06-14  972  		.compatible = "renesas,ipmmu-r8a77965",
+98dbffd39a6513 Jacopo Mondi            2018-06-14  973  		.data = &ipmmu_features_rcar_gen3,
+3701c123e1c13c Simon Horman            2018-06-14  974  	}, {
+3701c123e1c13c Simon Horman            2018-06-14  975  		.compatible = "renesas,ipmmu-r8a77970",
+3701c123e1c13c Simon Horman            2018-06-14  976  		.data = &ipmmu_features_rcar_gen3,
+1cdeb52e5c245b Nikita Yushchenko       2021-09-23  977  	}, {
+1cdeb52e5c245b Nikita Yushchenko       2021-09-23  978  		.compatible = "renesas,ipmmu-r8a77980",
+1cdeb52e5c245b Nikita Yushchenko       2021-09-23  979  		.data = &ipmmu_features_rcar_gen3,
+b0c32912150565 Hai Nguyen Pham         2018-10-17  980  	}, {
+b0c32912150565 Hai Nguyen Pham         2018-10-17  981  		.compatible = "renesas,ipmmu-r8a77990",
+b0c32912150565 Hai Nguyen Pham         2018-10-17  982  		.data = &ipmmu_features_rcar_gen3,
+3701c123e1c13c Simon Horman            2018-06-14  983  	}, {
+3701c123e1c13c Simon Horman            2018-06-14  984  		.compatible = "renesas,ipmmu-r8a77995",
+3701c123e1c13c Simon Horman            2018-06-14  985  		.data = &ipmmu_features_rcar_gen3,
+7a62ced8ebd0e1 Yoshihiro Shimoda       2021-09-07  986  	}, {
+7a62ced8ebd0e1 Yoshihiro Shimoda       2021-09-07  987  		.compatible = "renesas,ipmmu-r8a779a0",
+ae684caf465b7d Yoshihiro Shimoda       2022-02-08  988  		.data = &ipmmu_features_rcar_gen4,
+ae684caf465b7d Yoshihiro Shimoda       2022-02-08  989  	}, {
+9f7d09fe23a011 Yoshihiro Shimoda       2022-06-17  990  		.compatible = "renesas,rcar-gen4-ipmmu-vmsa",
+ae684caf465b7d Yoshihiro Shimoda       2022-02-08  991  		.data = &ipmmu_features_rcar_gen4,
+33f3ac9b511612 Magnus Damm             2017-10-16  992  	}, {
+33f3ac9b511612 Magnus Damm             2017-10-16  993  		/* Terminator */
+33f3ac9b511612 Magnus Damm             2017-10-16  994  	},
+33f3ac9b511612 Magnus Damm             2017-10-16  995  };
+33f3ac9b511612 Magnus Damm             2017-10-16  996  
+
 -- 
-2.36.1.dirty
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
