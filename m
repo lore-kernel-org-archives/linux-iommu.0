@@ -1,116 +1,131 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from mail.wantstofly.org (hmm.wantstofly.org [213.239.204.108])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A82E2561
-	for <iommu@lists.linux.dev>; Wed, 17 Aug 2022 06:06:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-	:Reply-To:Content-Type:Content-ID:Content-Description;
-	bh=YeVjNbbCyrLCxeeK773ZS2fix2ZWLAllDEe+iliUr6U=; b=qyzt4l7OjJR+cqPnAdP1H52KVF
-	ZtymnxPGxQJY6FrrzO45Z07Uvw3hQMjAwqaDmUElj2oGcIgAi99VTn95ndxQ0Z9K01Yl49E9OPJid
-	rRtUTfhzDcjDfl7k3L7flbRjq0hUOtpXEg9J4/QVp+IbG/KjrNLHqIVL1AXJXhUS4xvHCOJhdKOxm
-	pdYazmxiwhplroAwbFACcxL/lcfY27JmT9RaQuQC6iaC7+RAQOdR0qX54LHzhfhnlrlZaUFSES5W7
-	qAYTGyYYRssGkvAMzglkvEShEppsTN49j7+ELzA/4b4AwhlzMW+wVmoFF2dggbwETQSiuK3T3693B
-	HUzVlq5Q==;
-Received: from [2a02:1210:321a:af00:5fac:fede:a3b:c715] (helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-	id 1oOCCb-00BeL0-6y; Wed, 17 Aug 2022 06:06:53 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: iommu@lists.linux.dev,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: Michal Hocko <mhocko@suse.com>,
-	David Rientjes <rientjes@google.com>,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] dma-pool: limit DMA and DMA32 zone size pools
-Date: Wed, 17 Aug 2022 08:06:47 +0200
-Message-Id: <20220817060647.1032426-4-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220817060647.1032426-1-hch@lst.de>
-References: <20220817060647.1032426-1-hch@lst.de>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 141722561
+	for <iommu@lists.linux.dev>; Wed, 17 Aug 2022 06:09:58 +0000 (UTC)
+Received: by mail.wantstofly.org (Postfix, from userid 1000)
+	id 5483F7F54A; Wed, 17 Aug 2022 09:09:57 +0300 (EEST)
+Date: Wed, 17 Aug 2022 09:09:57 +0300
+From: Lennert Buytenhek <buytenh@wantstofly.org>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Bart Van Assche <bvanassche@acm.org>, Sasha Levin <sashal@kernel.org>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+	Christoph Hellwig <hch@infradead.org>,
+	Jason Gunthorpe <jgg@nvidia.com>, Liu Yi L <yi.l.liu@intel.com>,
+	Jacob jun Pan <jacob.jun.pan@intel.com>,
+	linux-kernel@vger.kernel.org,
+	Scarlett Gourley <scarlett@arista.com>,
+	James Sewart <jamessewart@arista.com>,
+	Jack O'Sullivan <jack@arista.com>
+Subject: Re: lockdep splat due to klist iteration from atomic context in
+ Intel IOMMU driver
+Message-ID: <YvyGNeIQTrM4w/fY@wantstofly.org>
+References: <Yvo2dfpEh/WC+Wrr@wantstofly.org>
+ <ab15191c-d79f-b5de-7568-d15b8f8a8aa8@acm.org>
+ <YvpQ5M7//AlrpJGP@wantstofly.org>
+ <94921c7a-778c-911d-4d72-d7815d95c46b@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <94921c7a-778c-911d-4d72-d7815d95c46b@linux.intel.com>
 
-Limit the sizing of the atomic pools for allocations from
-ZONE_DMA and ZONE_DMA32 based on the number of pages actually
-present in those zones instead of the total memory.
+On Wed, Aug 17, 2022 at 12:04:10PM +0800, Baolu Lu wrote:
 
-Fixes: c84dc6e68a1d ("dma-pool: add additional coherent pools to map to gfp mask")
-Reported-by: Michal Hocko <mhocko@suse.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- kernel/dma/pool.c | 40 +++++++++++++++++++++++++++++-----------
- 1 file changed, 29 insertions(+), 11 deletions(-)
+> > > > On a build of 7ebfc85e2cd7 ("Merge tag 'net-6.0-rc1' of
+> > > > git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net"), with
+> > > > CONFIG_INTEL_IOMMU_DEBUGFS enabled, I am seeing the lockdep splat
+> > > > below when an I/O page fault occurs on a machine with an Intel
+> > > > IOMMU in it.
+> > > > 
+> > > > The issue seems to be the klist iterator functions using
+> > > > spin_*lock_irq*() but the klist insertion functions using
+> > > > spin_*lock(), combined with the Intel DMAR IOMMU driver iterating
+> > > > over klists from atomic (hardirq) context as of commit 8ac0b64b9735
+> > > > ("iommu/vt-d: Use pci_get_domain_bus_and_slot() in pgtable_walk()")
+> > > > when CONFIG_INTEL_IOMMU_DEBUGFS is enabled, where
+> > > > pci_get_domain_bus_and_slot() calls into bus_find_device() which
+> > > > iterates over klists.
+> > > > 
+> > > > I found this commit from 2018:
+> > > > 
+> > > > 	commit 624fa7790f80575a4ec28fbdb2034097dc18d051
+> > > > 	Author: Bart Van Assche<bvanassche@acm.org>
+> > > > 	Date:   Fri Jun 22 14:54:49 2018 -0700
+> > > > 
+> > > > 	    scsi: klist: Make it safe to use klists in atomic context
+> > > > 
+> > > > This commit switched lib/klist.c:klist_{prev,next} from
+> > > > spin_{,un}lock() to spin_{lock_irqsave,unlock_irqrestore}(), but left
+> > > > the spin_{,un}lock() calls in add_{head,tail}() untouched.
+> > > > 
+> > > > The simplest fix for this would be to switch lib/klist.c:add_{head,tail}()
+> > > > over to use the IRQ-safe spinlock variants as well?
+> > > Another possibility would be to evaluate whether it is safe to revert commit
+> > > 624fa7790f80 ("scsi: klist: Make it safe to use klists in atomic context").
+> > > That commit is no longer needed by the SRP transport driver since the legacy
+> > > block layer has been removed from the kernel.
+> > And then to fix the 6.0-rc1 iommu/vt-d lockdep splat with
+> > CONFIG_INTEL_IOMMU_DEBUGFS enabled, we could convert the Intel DMAR
+> > IRQ handler to a threaded IRQ handler.  We (Arista) carry the patch
+> > below in our kernel tree, and the last two hunks of the patch do
+> > exactly that, for the same reason (having to call
+> > pci_get_domain_bus_and_slot() from the IRQ handler) but this is
+> > probably too big of a change for 6.0-rc.
+> > 
+> > 
+> > 
+> > commit 90a8e7da0facf198692a641fcfe6f89c478608e0
+> > Author: Lennert Buytenhek<buytenh@wantstofly.org>
+> > Date:   Wed Jul 13 15:34:30 2022 +0300
+> > 
+> >      iommu/vt-d: Use report_iommu_fault()
+> >      This patch makes iommu/vt-d call report_iommu_fault() when an I/O
+> >      page fault occurs, which has two effects:
+> >      1) It allows device drivers to register a callback to be notified
+> >         of I/O page faults, via the iommu_set_fault_handler() API.
+> >      2) It triggers the io_page_fault tracepoint in report_iommu_fault()
+> >         when an I/O page fault occurs.
+> >      The latter point is the main aim of this patch, as it allows
+> >      rasdaemon-like daemons to be notified of I/O page faults, and to
+> >      possibly initiate corrective action in response.
+> 
+> The IOMMU subsystem already has a framework to handle I/O page faults:
+> 
+>     commit fc36479db74e9 "iommu: Add a page fault handler"
+> 
+> And below series,
+> 
+> https://lore.kernel.org/linux-iommu/20220817012024.3251276-1-baolu.lu@linux.intel.com/
+> 
+> is trying to make it more generic. It seems to be more suitable for your
+> case.
+> 
+> The report_iommu_fault() probably will be replaced by
+> iommu_register_device_fault_handler() eventually. So I don't encourage
+> its usage in the VT-d driver.
 
-diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
-index 5b07b0379a501..f629c6dfd8555 100644
---- a/kernel/dma/pool.c
-+++ b/kernel/dma/pool.c
-@@ -193,28 +193,46 @@ static unsigned long calculate_pool_size(unsigned long zone_pages)
- 	return max_t(unsigned long, nr_pages << PAGE_SHIFT, SZ_128K);
- }
- 
-+#if defined(CONFIG_ZONE_DMA) || defined(CONFIG_ZONE_DMA32)
-+static unsigned long __init nr_managed_pages(int zone_idx)
-+{
-+	struct pglist_data *pgdat;
-+	unsigned long nr_pages = 0;
-+
-+	for_each_online_pgdat(pgdat)
-+		nr_pages += zone_managed_pages(&pgdat->node_zones[zone_idx]);
-+	return nr_pages;
-+}
-+#endif /* CONFIG_ZONE_DMA || CONFIG_ZONE_DMA32 */
-+
- static int __init dma_atomic_pool_init(void)
- {
-+	unsigned long nr_zone_dma_pages, nr_zone_dma32_pages;
-+
-+#ifdef CONFIG_ZONE_DMA
-+	nr_zone_dma_pages = nr_managed_pages(ZONE_DMA);
-+	if (nr_zone_dma_pages)
-+		atomic_pool_dma = __dma_atomic_pool_init(
-+				calculate_pool_size(nr_zone_dma_pages),
-+				GFP_DMA);
-+#endif
-+#ifdef CONFIG_ZONE_DMA32
-+	nr_zone_dma32_pages = nr_managed_pages(ZONE_DMA32);
-+	if (nr_zone_dma32_pages)
-+		atomic_pool_dma32 = __dma_atomic_pool_init(
-+				calculate_pool_size(nr_zone_dma32_pages),
-+				GFP_DMA32);
-+#endif
- 	/*
- 	 * If coherent_pool was not used on the command line, default the pool
- 	 * sizes to 128KB per 1GB of memory, min 128KB, max MAX_ORDER-1.
- 	 */
- 	if (!atomic_pool_size)
- 		atomic_pool_size = calculate_pool_size(totalram_pages());
--
--	INIT_WORK(&atomic_pool_work, atomic_pool_work_fn);
--
- 	atomic_pool_kernel = __dma_atomic_pool_init(atomic_pool_size,
- 						    GFP_KERNEL);
--	if (has_managed_dma()) {
--		atomic_pool_dma = __dma_atomic_pool_init(atomic_pool_size,
--						GFP_KERNEL | GFP_DMA);
--	}
--	if (IS_ENABLED(CONFIG_ZONE_DMA32)) {
--		atomic_pool_dma32 = __dma_atomic_pool_init(atomic_pool_size,
--						GFP_KERNEL | GFP_DMA32);
--	}
- 
-+	INIT_WORK(&atomic_pool_work, atomic_pool_work_fn);
- 	dma_atomic_pool_debugfs_init();
- 	return 0;
- }
--- 
-2.30.2
+We use the iommu/io_page_fault tracepoint from userspace to be notified
+of (non-ATS) I/O page faults so that we can detect malfunctioning PCIe
+devices, which in our systems are typically switch/router line cards,
+and take corrective action, such as restarting the offending line card.
 
+Calling report_iommu_fault() causes the iommu/io_page_fault tracepoint
+to be invoked, which is why we made the AMD and Intel IOMMU drivers use
+report_iommu_fault() in our kernel tree.
+
+It seems that iommu_queue_iopf() is specific to the SVA use case, while
+we are not using SVA, in which case it would not address our use case.
+(We don't care about knowing about ATS translation faults, we just want
+to know when a non-ATS PCI device is malfunctioning.)
+
+
+Kind regards,
+Lennert
