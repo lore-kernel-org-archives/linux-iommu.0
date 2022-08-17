@@ -1,52 +1,38 @@
-Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCB1153B8
-	for <iommu@lists.linux.dev>; Wed, 17 Aug 2022 17:34:46 +0000 (UTC)
-Received: by mail-pj1-f41.google.com with SMTP id t22so13105514pjy.1
-        for <iommu@lists.linux.dev>; Wed, 17 Aug 2022 10:34:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=284A91xJpS6nwRvx67VF7YSoP83e6JuEnTUJYB3raPg=;
-        b=bYb4QUNP3jcTW6w5gDojVQgeXieFUswJifAM9vhjd5FVyK6aT/pZ1TVAJ5dVh0bdGC
-         aXbTIhrFz+1A2lDCIfmBaGWPy8SxJvhCvjNoezyYG4Mxudr+RR03FBD6SfcLo2zT+jxd
-         bOzysazjUG8D7hoyV8Wfb3h+0ZUi+pi/+pb3NqUns1qH2tYAbaoUi/xMg2KnOaV6HIwl
-         wF7ggN2pke5cdFaWc1/ty05TbtcDMG4kSYFLdAWr9uCNaZNKf3y65ww6hZPkZvMVi5Rx
-         2cuBoB1OrziAclyREuyqHWWBhEsrhutWB0p7R6xLN54BMQf6fnHp5yV3xuzvmyCEhqwh
-         0GRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=284A91xJpS6nwRvx67VF7YSoP83e6JuEnTUJYB3raPg=;
-        b=S+QVgmmZ0MSGQZVwmRN2U/gZJQPDgPP5l3tozcvq9wQbWrsgHcqPiHX9h2EQHan+aj
-         IUx0isDDZnkVUBOyZWEuciK+d4SRT4FmyNNlrzznJg28PoysovLm8ZrBx33+rAti8i3/
-         JXSJctdOg4WEsxSTuM4UgDBd3AQelk33PZAvmD1iGgmT8TawWTmQJ6LqDMdNM2PgHQVC
-         7sIFbvpTfIL3oLag4gbni/zHAC3l+6vX5erc3XziCoRp6q07MmkAqy988gp7n0oeLK0z
-         uQ4l0BTXFjG5iFFPaC/1AdPi1BFKSVglcdBvGQTzh+ryEqbBQOXXZ+zXQ8EdWSQAXfaW
-         6pxw==
-X-Gm-Message-State: ACgBeo3G56r2rqQPYD90h2ua65DlS6pj4gKgdYmzTxbsZr+ilKvOCs96
-	bPtnpNw6ZOmNd5/d5afp7Ag=
-X-Google-Smtp-Source: AA6agR77E6Bi90PS6CwHLsHj14t+4aZgUalGnRDUpaOb2EZ4IhtQuUC4Pu11YPiVtnY2Q5XTCJifMg==
-X-Received: by 2002:a17:90a:5517:b0:1f8:a7ce:ac33 with SMTP id b23-20020a17090a551700b001f8a7ceac33mr4870074pji.83.1660757686216;
-        Wed, 17 Aug 2022 10:34:46 -0700 (PDT)
-Received: from biggie ([103.230.148.189])
-        by smtp.gmail.com with ESMTPSA id i190-20020a6254c7000000b0052d4f2e2f6asm10696208pfb.119.2022.08.17.10.34.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 10:34:45 -0700 (PDT)
-Date: Wed, 17 Aug 2022 23:04:39 +0530
-From: Gautam Menghani <gautammenghani201@gmail.com>
-To: chenxiang66@hisilicon.com, shuah@kernel.org, liaoyu15@huawei.com
-Cc: song.bao.hua@hisilicon.com, tiantao6@hisilicon.com,
-	iommu@lists.linux.dev, linux-kselftest@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-kernel-mentees@lists.linuxfoundation.org
-Subject: Re: [PATCH] selftests/dma: Add a .gitignore file containing name of
- executable
-Message-ID: <Yv0mr+vGANGYcxio@biggie>
-References: <20220724145931.32556-1-gautammenghani201@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEE117463
+	for <iommu@lists.linux.dev>; Wed, 17 Aug 2022 21:17:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3D92C433C1;
+	Wed, 17 Aug 2022 21:17:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1660771066;
+	bh=vuBF7ADDDys2amXNJQY4RfW15B+ZTZQfk/0OWbwwenw=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=ofD9MlTRsM+ltsFAOYVSogg5ogb3x7ZW3QI7kj49uZBU91x2mfKtFMZ58BQsw3HnA
+	 sSFgdsPJvKSJ+x/Y3Rcg7Lw4lyqWaVbogfwRD+e0bkmwzbFbVKW+juv4QP/u6MPQgW
+	 MSd4J1iR0deRRgQvx3JScGxjaygZpvYmydy+qGScozCiWnMPbfvfrj0qeOo9imc9Xo
+	 +9+8F5Ezf90+utCQ3VFXzpNmtbrWgU+HHe7asljI2m47nf0MTq+/DqhC9AiPDAJeuL
+	 OlnQ84RqPSeS7SL8S0fqQjXiXDxihIP8JXGb8CXoPiPFOZ8+6L11JCTC6MECCEr1qR
+	 8tV+A/QFCL4wA==
+Date: Wed, 17 Aug 2022 16:17:43 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+	Christoph Hellwig <hch@infradead.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.com>,
+	Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
+	Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
+	Jacob jun Pan <jacob.jun.pan@intel.com>,
+	Zhangfei Gao <zhangfei.gao@linaro.org>,
+	Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v11 04/13] PCI: Allow PASID only when ACS enforced on
+ upstreaming path
+Message-ID: <20220817211743.GA2274788@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -55,32 +41,77 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220724145931.32556-1-gautammenghani201@gmail.com>
+In-Reply-To: <20220817012024.3251276-5-baolu.lu@linux.intel.com>
 
-On Sun, Jul 24, 2022 at 08:29:31PM +0530, Gautam Menghani wrote:
-> The dma tests in kselftests are missing a .gitignore file, which leads
-> to the dma_map_benchmark executable file showing up in "git status".
-> This patch adds a .gitignore file containing the executable name.
+On Wed, Aug 17, 2022 at 09:20:15AM +0800, Lu Baolu wrote:
+> Some configurations of the PCI fabric will route device originated TLP
+> packets based on the memory addresses.
+
+This makes it sound like a few unusual configurations will route TLPs
+based on memory addresses, but address routing is the default for all
+PCIe Memory Requests, and ACS provides a way to override that default.
+
+> These configurations are incompatible with PASID as the PASID
+> packets form a distinct address space.
+
+I would say "the Requester ID/PASID combination forms a distinct
+address space."
+
+> For instance, any configuration where switches are present
+> without ACS enabled is incompatible.
 > 
-> Signed-off-by: Gautam Menghani <gautammenghani201@gmail.com>
+> This enhances the pci_enable_pasid() interface by requiring the ACS to
+> support Source Validation, Request Redirection, Completer Redirection,
+> and Upstream Forwarding. This effectively means that devices cannot
+> spoof their requester ID, requests and completions cannot be redirected,
+> and all transactions are forwarded upstream, even as it passes through a
+> bridge where the target device is downstream.
+
+I think your patch actually requires all those features to be not just
+"supported" but actually *enabled* for the entire path leading to the
+device.
+
+To use the terms from the spec:
+
+  "P2P Request Redirect"
+  "P2P Completion Redirect"
+  "Requester ID, Requests, and Completions"
+
+and maybe something like:
+
+  ... even if the TLP looks like a P2P Request because its memory
+  address (ignoring the PASID) would fall in a bridge window and would
+  normally be routed downstream.
+
+Does the PCIe spec really allow TLPs with PASID to be routed anywhere
+except upstream?  It seems nonsensical to route them downstream, and
+hardware should be able to check that easily.  But I took a quick look
+through the spec and didn't see anything about PASID by itself
+influencing routing.
+
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Suggested-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > ---
->  tools/testing/selftests/dma/.gitignore | 1 +
->  1 file changed, 1 insertion(+)
->  create mode 100644 tools/testing/selftests/dma/.gitignore
+>  drivers/pci/ats.c | 5 +++++
+>  1 file changed, 5 insertions(+)
 > 
-> diff --git a/tools/testing/selftests/dma/.gitignore b/tools/testing/selftests/dma/.gitignore
-> new file mode 100644
-> index 000000000000..668e2f8be2f7
-> --- /dev/null
-> +++ b/tools/testing/selftests/dma/.gitignore
-> @@ -0,0 +1 @@
-> +dma_map_benchmark
+> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+> index c967ad6e2626..0715e48e7973 100644
+> --- a/drivers/pci/ats.c
+> +++ b/drivers/pci/ats.c
+> @@ -382,6 +382,11 @@ int pci_enable_pasid(struct pci_dev *pdev, int features)
+>  	if (!pasid)
+>  		return -EINVAL;
+>  
+> +	if (!pci_acs_path_enabled(pdev, NULL,
+> +				  PCI_ACS_SV | PCI_ACS_RR |
+> +				  PCI_ACS_CR | PCI_ACS_UF))
+> +		return -EINVAL;
+> +
+>  	pci_read_config_word(pdev, pasid + PCI_PASID_CAP, &supported);
+>  	supported &= PCI_PASID_CAP_EXEC | PCI_PASID_CAP_PRIV;
+>  
 > -- 
-> 2.34.1
+> 2.25.1
 > 
-Hi,
-
-Please review the above patch and let me know if any changes are required.
-
-Thanks,
-Gautam
