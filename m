@@ -1,140 +1,111 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B467187F
-	for <iommu@lists.linux.dev>; Wed, 17 Aug 2022 12:53:57 +0000 (UTC)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 0485237487;
-	Wed, 17 Aug 2022 12:53:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1660740828; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=+WuvfTK8c1FVF6/MpxQXRnNeGiouttEZs3FJd6uoXKY=;
-	b=gFPUUy9Uf8YZK27yj+fKIlj82Eps9LN++0QVPMK+RGcPs/pyrv3v2+CFZKvqnbQMcki88D
-	otW/laYQbJRVuL3WYQmS3yhNUXtwaaJ0flb3gj5HNnXo7LfyMPaWmJPBMFBZSWqfaKJh1k
-	mfmRE88do4O9bgafeOFTHpm2/Pb7ZOE=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id DA25B13428;
-	Wed, 17 Aug 2022 12:53:47 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-	by imap2.suse-dmz.suse.de with ESMTPSA
-	id W97vMtvk/GJsSgAAMHmgww
-	(envelope-from <mhocko@suse.com>); Wed, 17 Aug 2022 12:53:47 +0000
-Date: Wed, 17 Aug 2022 14:53:47 +0200
-From: Michal Hocko <mhocko@suse.com>
-To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	David Rientjes <rientjes@google.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] dma-pool: limit DMA and DMA32 zone size pools
-Message-ID: <Yvzk2wE7ta+zSZOQ@dhcp22.suse.cz>
-References: <20220817060647.1032426-1-hch@lst.de>
- <20220817060647.1032426-4-hch@lst.de>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 42ECB4404
+	for <iommu@lists.linux.dev>; Wed, 17 Aug 2022 13:43:52 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 59AC4113E;
+	Wed, 17 Aug 2022 06:43:52 -0700 (PDT)
+Received: from [10.57.13.141] (unknown [10.57.13.141])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A136F3F67D;
+	Wed, 17 Aug 2022 06:43:49 -0700 (PDT)
+Message-ID: <94888b3b-8f54-367d-c6b4-5ebfeeafe4c4@arm.com>
+Date: Wed, 17 Aug 2022 14:43:46 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220817060647.1032426-4-hch@lst.de>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] mmc: sdhci-xenon: Fix 2G limitation on AC5 SoC
+Content-Language: en-GB
+To: Vadym Kochan <vadym.kochan@plvision.eu>
+Cc: Adrian Hunter <adrian.hunter@intel.com>,
+ Christoph Hellwig <hch@infradead.org>,
+ Florian Fainelli <f.fainelli@gmail.com>, Hu Ziji <huziji@marvell.com>,
+ Ulf Hansson <ulf.hansson@linaro.org>, linux-mmc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Elad Nachman <enachman@marvell.com>,
+ iommu@lists.linux.dev
+References: <20220726170711.30324-1-vadym.kochan@plvision.eu>
+ <139317dc-15e2-ac63-0e04-295e715a7747@gmail.com>
+ <20220727164532.GA19351@plvision.eu> <20220801093044.GA22721@plvision.eu>
+ <9a248303-7a27-e90e-76b3-c01a00be4e3d@intel.com>
+ <20220808095237.GA15939@plvision.eu>
+ <6c94411c-4847-526c-d929-c9523aa65c11@intel.com>
+ <20220808122652.GA6599@plvision.eu>
+ <3f96b382-aede-1f52-33cb-5f95715bdf59@intel.com>
+ <3d16ebad-ea6c-555e-2481-ca5fb08a6c66@arm.com>
+ <20220816205129.GA6438@plvision.eu>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220816205129.GA6438@plvision.eu>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed 17-08-22 08:06:47, Christoph Hellwig wrote:
-> Limit the sizing of the atomic pools for allocations from
-> ZONE_DMA and ZONE_DMA32 based on the number of pages actually
-> present in those zones instead of the total memory.
+On 2022-08-16 21:51, Vadym Kochan wrote:
+[...]
+>> The one thing to watch out for is that SWIOTLB doesn't necessarily interact
+>> very well with DMA offsets. Given the intent of
+>> of_dma_get_max_cpu_address(), I think it ought to work out OK now for
+>> current kernels on DT systems if everything is described correctly, but
+>> otherwise it's likely that you end up with ZONE_DMA either being empty or
+>> containing all memory, so the SWIOTLB buffer ends up being allocated
+>> anywhere such that it might not actually work as expected.
+>>
+>> Robin.
 > 
-> Fixes: c84dc6e68a1d ("dma-pool: add additional coherent pools to map to gfp mask")
-> Reported-by: Michal Hocko <mhocko@suse.com>
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-
-Yes this is much more reasonable estimation. Especially for the DMA
-zone. I still believe some downscaling would make sense but as said
-earlier nothing to really insist on. Also you likely want to have
-pr_warn for non-poppulated DMA zone as pointed in other thread[1].
-
-Other than that looks good to me. FWIW
-Acked-by: Michal Hocko <mhocko@suse.com>
-
-[1] https://lore.kernel.org/all/YvyN/vI7+cTv0geS@dhcp22.suse.cz/?q=http%3A%2F%2Flkml.kernel.org%2Fr%2FYvyN%2FvI7%2BcTv0geS%40dhcp22.suse.cz
-
-> ---
->  kernel/dma/pool.c | 40 +++++++++++++++++++++++++++++-----------
->  1 file changed, 29 insertions(+), 11 deletions(-)
+> Hi Robin,
 > 
-> diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
-> index 5b07b0379a501..f629c6dfd8555 100644
-> --- a/kernel/dma/pool.c
-> +++ b/kernel/dma/pool.c
-> @@ -193,28 +193,46 @@ static unsigned long calculate_pool_size(unsigned long zone_pages)
->  	return max_t(unsigned long, nr_pages << PAGE_SHIFT, SZ_128K);
->  }
->  
-> +#if defined(CONFIG_ZONE_DMA) || defined(CONFIG_ZONE_DMA32)
-> +static unsigned long __init nr_managed_pages(int zone_idx)
-> +{
-> +	struct pglist_data *pgdat;
-> +	unsigned long nr_pages = 0;
-> +
-> +	for_each_online_pgdat(pgdat)
-> +		nr_pages += zone_managed_pages(&pgdat->node_zones[zone_idx]);
-> +	return nr_pages;
-> +}
-> +#endif /* CONFIG_ZONE_DMA || CONFIG_ZONE_DMA32 */
-> +
->  static int __init dma_atomic_pool_init(void)
->  {
-> +	unsigned long nr_zone_dma_pages, nr_zone_dma32_pages;
-> +
-> +#ifdef CONFIG_ZONE_DMA
-> +	nr_zone_dma_pages = nr_managed_pages(ZONE_DMA);
-> +	if (nr_zone_dma_pages)
-> +		atomic_pool_dma = __dma_atomic_pool_init(
-> +				calculate_pool_size(nr_zone_dma_pages),
-> +				GFP_DMA);
-> +#endif
-> +#ifdef CONFIG_ZONE_DMA32
-> +	nr_zone_dma32_pages = nr_managed_pages(ZONE_DMA32);
-> +	if (nr_zone_dma32_pages)
-> +		atomic_pool_dma32 = __dma_atomic_pool_init(
-> +				calculate_pool_size(nr_zone_dma32_pages),
-> +				GFP_DMA32);
-> +#endif
->  	/*
->  	 * If coherent_pool was not used on the command line, default the pool
->  	 * sizes to 128KB per 1GB of memory, min 128KB, max MAX_ORDER-1.
->  	 */
->  	if (!atomic_pool_size)
->  		atomic_pool_size = calculate_pool_size(totalram_pages());
-> -
-> -	INIT_WORK(&atomic_pool_work, atomic_pool_work_fn);
-> -
->  	atomic_pool_kernel = __dma_atomic_pool_init(atomic_pool_size,
->  						    GFP_KERNEL);
-> -	if (has_managed_dma()) {
-> -		atomic_pool_dma = __dma_atomic_pool_init(atomic_pool_size,
-> -						GFP_KERNEL | GFP_DMA);
-> -	}
-> -	if (IS_ENABLED(CONFIG_ZONE_DMA32)) {
-> -		atomic_pool_dma32 = __dma_atomic_pool_init(atomic_pool_size,
-> -						GFP_KERNEL | GFP_DMA32);
-> -	}
->  
-> +	INIT_WORK(&atomic_pool_work, atomic_pool_work_fn);
->  	dma_atomic_pool_debugfs_init();
->  	return 0;
->  }
-> -- 
-> 2.30.2
+> Thank you for the reply.
+> 
+> My understanding is that swiotlb is allocated (in case of arm64)
+> in the following cases:
+> 
+>     #1 when it is forced from the kernel cmdline
+> 
+>     #2 when max_pfn is greater than arm64_dma_phys_limit (and this is used
+>        as the end from which to allocate the swiotlb pool in the
+>        top-botom direction via memblock API).
+> 
+>     #3 using restricted dma-pool
+> 
+> Of course option #3 works fine because swiotlb is kind of forced to use
+> particulary this range of memory.
+> 
+> Both options #1 & #2 causes to use full memory mask even if to specify
+> dma-ranges in the DT:
+> 
+>      dma-ranges = <0x0 0x0 0x2 0x0 0x0 0x80000000>;
+> 
+> or if to specify the opposite:
+> 
+>      dma-ranges = <0x2 0x0 0x0 0x0 0x0 0x80000000>;
+> 
+>      just to make it lower than U32 to pass
+> 
+>          zone_dma_bits = min3(32U, dt_zone_dma_bits, acpi_zone_dma_bits)
+> 
+>      condition, but then it will be re-set in max_zone_phys() by:
+> 
+>       
+> 	if (phys_start > U32_MAX)
+> 		zone_mask = PHYS_ADDR_MAX;
+> 	else if (phys_start > zone_mask)
+> 		zone_mask = U32_MAX;
 
--- 
-Michal Hocko
-SUSE Labs
+Ah, indeed I missed that, sorry. It seems that that change to stop 
+assuming an offset kind of crossed over with the introduction of 
+*_dma_get_max_cpu_address(), but now that that firmware property parsing 
+*is* implemented, in principle it should be equally possible to evaluate 
+the actual offsets as well, and decide whether an offset ZONE_DMA is 
+appropriate or not. Either way, this is definitely the area which needs 
+work if we want to to able to support topologies like this properly.
+
+> So, currently I dont see how to pin swiotlb (I see it as a main problem) to some specific range of physical
+> memory (particulary to the first 2G of RAM).
+
+Indeed, if ZONE_DMA and/or ZONE_DMA32 can't be set appropriately, then 
+there's no way to guarantee correct allocation of any DMA buffers, short 
+of hacking it with explicitly placed reserved-memory carveouts.
+
+Thanks,
+Robin.
