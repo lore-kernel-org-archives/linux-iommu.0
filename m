@@ -1,32 +1,32 @@
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68B6B7C
-	for <iommu@lists.linux.dev>; Wed, 17 Aug 2022 07:21:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA93B1FA0
+	for <iommu@lists.linux.dev>; Wed, 17 Aug 2022 08:41:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660720861; x=1692256861;
+  t=1660725686; x=1692261686;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=rzGWskO+7SbZcBTwGa/L5Pm0RSFGECEGooXJW/tWynE=;
-  b=QckWkhXnpLsw6jDwS8aGRlozv3TeY5m1hEIFciDq9zlJmRNtO5AeIUk9
-   XDYpV53DpT+g29r/XEEIi0V1gEEk2bM9tPjChfbA4uq2Lu1cKgVSCgoU+
-   smvGilfe9UIZp0BHt55A89EoAipGR0LBa/tH7dDNMw0SGU+jYOOglXO+G
-   VvPTg0gJTUEKUkFMwftp/j3rHNncMSeMW1+236GLAH69CDj0yU59rQmfl
-   OawX87KuQq11vmtNJR83XslcN/d4eMRWqv+Bd40HqhT29kfmn4TaLImgt
-   2noZWwWInclaYx1F1YSWqnN4xfDgOdQ7RSeS9nwFvyWvA0JJ3UgPf+UJA
+  bh=9Qgw3dITpVYjWWXnFOxqjo9qejf+PqGbq4KN3YKnkoU=;
+  b=bpK7QEiHmhXdSm8IpQhJvLb6XhzFex3IQqB7rqzucbiZIaNcvPULDiLQ
+   T6zXRlEaRzi04HPGoV4ZALqqBh/ljGMliW+O5o++lKQt1nArd/qmhkGBl
+   NZlqxyqDr78gIVsvRkTCWe5lgSFLeowMK+WqTyvdIcYCfbFptbi7s3DeI
+   DoECf6q92hMzuzGlDi1+IDJY/mCwJHFUetQJU3m9xBoRV4M+IKF0j3GZs
+   CEITxkGdoAJYl3Cumixiemr10qLYUHjJ3wo7LgFp2a/nBYURTscW9D/Om
+   NDbwb7NIrX4L/U2YPNgkJcOyMGnTxb53CB6mD6LcWthWTlu2PS+DlCj5q
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="293700414"
+X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="272832862"
 X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="293700414"
+   d="scan'208";a="272832862"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 00:20:52 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 01:41:26 -0700
 X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="667487039"
+   d="scan'208";a="667514571"
 Received: from jzhan60-mobl1.ccr.corp.intel.com (HELO [10.254.209.228]) ([10.254.209.228])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 00:20:48 -0700
-Message-ID: <37ba5f53-079f-c04b-5c3e-678c87bbe0ff@linux.intel.com>
-Date: Wed, 17 Aug 2022 15:20:46 +0800
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 01:41:24 -0700
+Message-ID: <0030c6c6-7c35-916a-9663-8b71b4378ee7@linux.intel.com>
+Date: Wed, 17 Aug 2022 16:41:23 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,129 +35,188 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Cc: baolu.lu@linux.intel.com, Bart Van Assche <bvanassche@acm.org>,
- Sasha Levin <sashal@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
- Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- Christoph Hellwig <hch@infradead.org>, Jason Gunthorpe <jgg@nvidia.com>,
- Liu Yi L <yi.l.liu@intel.com>, Jacob jun Pan <jacob.jun.pan@intel.com>,
- linux-kernel@vger.kernel.org, Scarlett Gourley <scarlett@arista.com>,
- James Sewart <jamessewart@arista.com>, Jack O'Sullivan <jack@arista.com>
-Subject: Re: lockdep splat due to klist iteration from atomic context in Intel
- IOMMU driver
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 1/2] iommu: Retire iommu_capable()
 Content-Language: en-US
-To: Lennert Buytenhek <buytenh@wantstofly.org>
-References: <Yvo2dfpEh/WC+Wrr@wantstofly.org>
- <ab15191c-d79f-b5de-7568-d15b8f8a8aa8@acm.org>
- <YvpQ5M7//AlrpJGP@wantstofly.org>
- <94921c7a-778c-911d-4d72-d7815d95c46b@linux.intel.com>
- <YvyGNeIQTrM4w/fY@wantstofly.org>
+To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org
+References: <d8bd8777d06929ad8f49df7fc80e1b9af32a41b5.1660574547.git.robin.murphy@arm.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <YvyGNeIQTrM4w/fY@wantstofly.org>
+In-Reply-To: <d8bd8777d06929ad8f49df7fc80e1b9af32a41b5.1660574547.git.robin.murphy@arm.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2022/8/17 14:09, Lennert Buytenhek wrote:
-> On Wed, Aug 17, 2022 at 12:04:10PM +0800, Baolu Lu wrote:
+On 2022/8/15 23:26, Robin Murphy wrote:
+> With all callers now converted to the device-specific version, retire
+> the old bus-based interface, and give drivers the chance to indicate
+> accurate per-instance capabilities.
 > 
->>>>> On a build of 7ebfc85e2cd7 ("Merge tag 'net-6.0-rc1' of
->>>>> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net"), with
->>>>> CONFIG_INTEL_IOMMU_DEBUGFS enabled, I am seeing the lockdep splat
->>>>> below when an I/O page fault occurs on a machine with an Intel
->>>>> IOMMU in it.
->>>>>
->>>>> The issue seems to be the klist iterator functions using
->>>>> spin_*lock_irq*() but the klist insertion functions using
->>>>> spin_*lock(), combined with the Intel DMAR IOMMU driver iterating
->>>>> over klists from atomic (hardirq) context as of commit 8ac0b64b9735
->>>>> ("iommu/vt-d: Use pci_get_domain_bus_and_slot() in pgtable_walk()")
->>>>> when CONFIG_INTEL_IOMMU_DEBUGFS is enabled, where
->>>>> pci_get_domain_bus_and_slot() calls into bus_find_device() which
->>>>> iterates over klists.
->>>>>
->>>>> I found this commit from 2018:
->>>>>
->>>>> 	commit 624fa7790f80575a4ec28fbdb2034097dc18d051
->>>>> 	Author: Bart Van Assche<bvanassche@acm.org>
->>>>> 	Date:   Fri Jun 22 14:54:49 2018 -0700
->>>>>
->>>>> 	    scsi: klist: Make it safe to use klists in atomic context
->>>>>
->>>>> This commit switched lib/klist.c:klist_{prev,next} from
->>>>> spin_{,un}lock() to spin_{lock_irqsave,unlock_irqrestore}(), but left
->>>>> the spin_{,un}lock() calls in add_{head,tail}() untouched.
->>>>>
->>>>> The simplest fix for this would be to switch lib/klist.c:add_{head,tail}()
->>>>> over to use the IRQ-safe spinlock variants as well?
->>>> Another possibility would be to evaluate whether it is safe to revert commit
->>>> 624fa7790f80 ("scsi: klist: Make it safe to use klists in atomic context").
->>>> That commit is no longer needed by the SRP transport driver since the legacy
->>>> block layer has been removed from the kernel.
->>> And then to fix the 6.0-rc1 iommu/vt-d lockdep splat with
->>> CONFIG_INTEL_IOMMU_DEBUGFS enabled, we could convert the Intel DMAR
->>> IRQ handler to a threaded IRQ handler.  We (Arista) carry the patch
->>> below in our kernel tree, and the last two hunks of the patch do
->>> exactly that, for the same reason (having to call
->>> pci_get_domain_bus_and_slot() from the IRQ handler) but this is
->>> probably too big of a change for 6.0-rc.
->>>
->>>
->>>
->>> commit 90a8e7da0facf198692a641fcfe6f89c478608e0
->>> Author: Lennert Buytenhek<buytenh@wantstofly.org>
->>> Date:   Wed Jul 13 15:34:30 2022 +0300
->>>
->>>       iommu/vt-d: Use report_iommu_fault()
->>>       This patch makes iommu/vt-d call report_iommu_fault() when an I/O
->>>       page fault occurs, which has two effects:
->>>       1) It allows device drivers to register a callback to be notified
->>>          of I/O page faults, via the iommu_set_fault_handler() API.
->>>       2) It triggers the io_page_fault tracepoint in report_iommu_fault()
->>>          when an I/O page fault occurs.
->>>       The latter point is the main aim of this patch, as it allows
->>>       rasdaemon-like daemons to be notified of I/O page faults, and to
->>>       possibly initiate corrective action in response.
->>
->> The IOMMU subsystem already has a framework to handle I/O page faults:
->>
->>      commit fc36479db74e9 "iommu: Add a page fault handler"
->>
->> And below series,
->>
->> https://lore.kernel.org/linux-iommu/20220817012024.3251276-1-baolu.lu@linux.intel.com/
->>
->> is trying to make it more generic. It seems to be more suitable for your
->> case.
->>
->> The report_iommu_fault() probably will be replaced by
->> iommu_register_device_fault_handler() eventually. So I don't encourage
->> its usage in the VT-d driver.
-> 
-> We use the iommu/io_page_fault tracepoint from userspace to be notified
-> of (non-ATS) I/O page faults so that we can detect malfunctioning PCIe
-> devices, which in our systems are typically switch/router line cards,
-> and take corrective action, such as restarting the offending line card.
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
-Yes. Make sense.
-
-> 
-> Calling report_iommu_fault() causes the iommu/io_page_fault tracepoint
-> to be invoked, which is why we made the AMD and Intel IOMMU drivers use
-> report_iommu_fault() in our kernel tree.
-
-Can iommu_register_device_fault_handler() also serve your case?
-report_iommu_fault() is domain based, while the former is device based.
-
-> 
-> It seems that iommu_queue_iopf() is specific to the SVA use case, while
-> we are not using SVA, in which case it would not address our use case.
-> (We don't care about knowing about ATS translation faults, we just want
-> to know when a non-ATS PCI device is malfunctioning.)
-
-The iommu_queue_iopf() is for recoverable I/O page fault. Your case only
-cares about unrecoverable DMA faults. So it's not suitable for you.
-Sorry for the misunderstanding.
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
 Best regards,
 baolu
+
+> ---
+>   drivers/iommu/amd/iommu.c                   |  2 +-
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  2 +-
+>   drivers/iommu/arm/arm-smmu/arm-smmu.c       |  2 +-
+>   drivers/iommu/arm/arm-smmu/qcom_iommu.c     |  2 +-
+>   drivers/iommu/fsl_pamu_domain.c             |  2 +-
+>   drivers/iommu/intel/iommu.c                 |  2 +-
+>   drivers/iommu/iommu.c                       | 11 +----------
+>   drivers/iommu/s390-iommu.c                  |  2 +-
+>   include/linux/iommu.h                       |  8 +-------
+>   9 files changed, 9 insertions(+), 24 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index 65b8e4fd8217..94220eb5bff3 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -2251,7 +2251,7 @@ static phys_addr_t amd_iommu_iova_to_phys(struct iommu_domain *dom,
+>   	return ops->iova_to_phys(ops, iova);
+>   }
+>   
+> -static bool amd_iommu_capable(enum iommu_cap cap)
+> +static bool amd_iommu_capable(struct device *dev, enum iommu_cap cap)
+>   {
+>   	switch (cap) {
+>   	case IOMMU_CAP_CACHE_COHERENCY:
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index d32b02336411..ab919ec43c4d 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -1992,7 +1992,7 @@ static const struct iommu_flush_ops arm_smmu_flush_ops = {
+>   };
+>   
+>   /* IOMMU API */
+> -static bool arm_smmu_capable(enum iommu_cap cap)
+> +static bool arm_smmu_capable(struct device *dev, enum iommu_cap cap)
+>   {
+>   	switch (cap) {
+>   	case IOMMU_CAP_CACHE_COHERENCY:
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> index dfa82df00342..ce036a053fb8 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> @@ -1330,7 +1330,7 @@ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
+>   	return ops->iova_to_phys(ops, iova);
+>   }
+>   
+> -static bool arm_smmu_capable(enum iommu_cap cap)
+> +static bool arm_smmu_capable(struct device *dev, enum iommu_cap cap)
+>   {
+>   	switch (cap) {
+>   	case IOMMU_CAP_CACHE_COHERENCY:
+> diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+> index 17235116d3bb..66ca47f2e57f 100644
+> --- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+> +++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+> @@ -493,7 +493,7 @@ static phys_addr_t qcom_iommu_iova_to_phys(struct iommu_domain *domain,
+>   	return ret;
+>   }
+>   
+> -static bool qcom_iommu_capable(enum iommu_cap cap)
+> +static bool qcom_iommu_capable(struct device *dev, enum iommu_cap cap)
+>   {
+>   	switch (cap) {
+>   	case IOMMU_CAP_CACHE_COHERENCY:
+> diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+> index 011f9ab7f743..08fd9089e3ba 100644
+> --- a/drivers/iommu/fsl_pamu_domain.c
+> +++ b/drivers/iommu/fsl_pamu_domain.c
+> @@ -178,7 +178,7 @@ static phys_addr_t fsl_pamu_iova_to_phys(struct iommu_domain *domain,
+>   	return iova;
+>   }
+>   
+> -static bool fsl_pamu_capable(enum iommu_cap cap)
+> +static bool fsl_pamu_capable(struct device *dev, enum iommu_cap cap)
+>   {
+>   	return cap == IOMMU_CAP_CACHE_COHERENCY;
+>   }
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 7cca030a508e..da63b358ef4a 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -4429,7 +4429,7 @@ static bool intel_iommu_enforce_cache_coherency(struct iommu_domain *domain)
+>   	return true;
+>   }
+>   
+> -static bool intel_iommu_capable(enum iommu_cap cap)
+> +static bool intel_iommu_capable(struct device *dev, enum iommu_cap cap)
+>   {
+>   	if (cap == IOMMU_CAP_CACHE_COHERENCY)
+>   		return true;
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 780fb7071577..6283a8b4def4 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1869,19 +1869,10 @@ bool device_iommu_capable(struct device *dev, enum iommu_cap cap)
+>   	if (!ops->capable)
+>   		return false;
+>   
+> -	return ops->capable(cap);
+> +	return ops->capable(dev, cap);
+>   }
+>   EXPORT_SYMBOL_GPL(device_iommu_capable);
+>   
+> -bool iommu_capable(struct bus_type *bus, enum iommu_cap cap)
+> -{
+> -	if (!bus->iommu_ops || !bus->iommu_ops->capable)
+> -		return false;
+> -
+> -	return bus->iommu_ops->capable(cap);
+> -}
+> -EXPORT_SYMBOL_GPL(iommu_capable);
+> -
+>   /**
+>    * iommu_set_fault_handler() - set a fault handler for an iommu domain
+>    * @domain: iommu domain
+> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+> index c898bcbbce11..cd0ee89d63e0 100644
+> --- a/drivers/iommu/s390-iommu.c
+> +++ b/drivers/iommu/s390-iommu.c
+> @@ -39,7 +39,7 @@ static struct s390_domain *to_s390_domain(struct iommu_domain *dom)
+>   	return container_of(dom, struct s390_domain, domain);
+>   }
+>   
+> -static bool s390_iommu_capable(enum iommu_cap cap)
+> +static bool s390_iommu_capable(struct device *dev, enum iommu_cap cap)
+>   {
+>   	switch (cap) {
+>   	case IOMMU_CAP_CACHE_COHERENCY:
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index ea30f00dc145..e39372dfe8c4 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -227,7 +227,7 @@ struct iommu_iotlb_gather {
+>    * @owner: Driver module providing these ops
+>    */
+>   struct iommu_ops {
+> -	bool (*capable)(enum iommu_cap);
+> +	bool (*capable)(struct device *dev, enum iommu_cap);
+>   
+>   	/* Domain allocation and freeing by the iommu driver */
+>   	struct iommu_domain *(*domain_alloc)(unsigned iommu_domain_type);
+> @@ -420,7 +420,6 @@ extern int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops);
+>   extern int bus_iommu_probe(struct bus_type *bus);
+>   extern bool iommu_present(struct bus_type *bus);
+>   extern bool device_iommu_capable(struct device *dev, enum iommu_cap cap);
+> -extern bool iommu_capable(struct bus_type *bus, enum iommu_cap cap);
+>   extern struct iommu_domain *iommu_domain_alloc(struct bus_type *bus);
+>   extern struct iommu_group *iommu_group_get_by_id(int id);
+>   extern void iommu_domain_free(struct iommu_domain *domain);
+> @@ -697,11 +696,6 @@ static inline bool device_iommu_capable(struct device *dev, enum iommu_cap cap)
+>   	return false;
+>   }
+>   
+> -static inline bool iommu_capable(struct bus_type *bus, enum iommu_cap cap)
+> -{
+> -	return false;
+> -}
+> -
+>   static inline struct iommu_domain *iommu_domain_alloc(struct bus_type *bus)
+>   {
+>   	return NULL;
+
