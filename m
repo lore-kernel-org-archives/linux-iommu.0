@@ -1,163 +1,116 @@
-Received: from out199-7.us.a.mail.aliyun.com (out199-7.us.a.mail.aliyun.com [47.90.199.7])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2A607B
-	for <iommu@lists.linux.dev>; Wed, 17 Aug 2022 02:18:51 +0000 (UTC)
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=liusong@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VMT7Q2R_1660701783;
-Received: from 30.178.80.164(mailfrom:liusong@linux.alibaba.com fp:SMTPD_---0VMT7Q2R_1660701783)
-          by smtp.aliyun-inc.com;
-          Wed, 17 Aug 2022 10:03:04 +0800
-Message-ID: <40c60196-b30c-359f-e1a2-171a6be45296@linux.alibaba.com>
-Date: Wed, 17 Aug 2022 10:03:02 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B2591851
+	for <iommu@lists.linux.dev>; Wed, 17 Aug 2022 02:41:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660704078; x=1692240078;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=4n6G6Y+EHrQouzMLtdagC2MwEGhSMCP/0lx2rTV0IDs=;
+  b=XOCKOnp1cSDgPw4LJGuXoYgso40IrHQ7qwMXsnuY4ttFtLRhMlCExDLV
+   wCIGaA2UiRDan9TPayA0DmcRQ87jV4jUfYUU75RE1LG0r1zdE38c8uj8s
+   ShjrSgSOn9UzCltkrF6Hivy3Lh2qr+AQUcUebzX0ZkyfCGqs5njItWNuA
+   wMlqcqepE5Y0G3hTIivxXCtnHeqYRYa/+vVpHeyvclDlzuV60aRWZHJMM
+   k3HypYs/zXFulbGwG5Hy54bhTlxs+HQ4gxnLTmVV8O3FwzJZEihIzHAkZ
+   uxnatzfVvpJvAkKraX8JObmWOsa/hHo1512EEwUeuak/GjtwCbk2fw+rd
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="272152352"
+X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
+   d="scan'208";a="272152352"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 19:41:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
+   d="scan'208";a="603738830"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by orsmga007.jf.intel.com with ESMTP; 16 Aug 2022 19:41:14 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: iommu@lists.linux.dev
+Cc: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	raghunathan.srinivasan@intel.com,
+	yi.l.liu@intel.com,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	stable@vger.kernel.org
+Subject: [PATCH 1/1] iommu/vt-d: Correctly calculate sagaw value of IOMMU
+Date: Wed, 17 Aug 2022 10:35:58 +0800
+Message-Id: <20220817023558.3253263-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.0.3
-Subject: Re: [PATCH v2] mm/dmapool.c: avoid duplicate memset within
- dma_pool_alloc
-To: Robin Murphy <robin.murphy@arm.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>, akpm@linux-foundation.org,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>, Christoph Hellwig <hch@lst.de>
-Cc: linux-mm@kvack.org, linux-kernel@vger.kernel.org,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <1658125690-76930-1-git-send-email-liusong@linux.alibaba.com>
- <CGME20220816123958eucas1p1b03a5efa1f5804245a5c1a9b27529015@eucas1p1.samsung.com>
- <1dbe63ff-5575-745b-653a-a992ae53e1aa@samsung.com>
- <413d8666-7a82-efd7-6716-13658016ca10@arm.com>
-From: Liu Song <liusong@linux.alibaba.com>
-In-Reply-To: <413d8666-7a82-efd7-6716-13658016ca10@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-> On 2022-08-16 13:39, Marek Szyprowski wrote:
->> Hi,
->>
->> On 18.07.2022 08:28, Liu Song wrote:
->>> From: Liu Song <liusong@linux.alibaba.com>
->>>
->>> In "dma_alloc_from_dev_coherent" and "dma_direct_alloc",
->>> the allocated memory is explicitly set to 0.
->>>
->>> A helper function "use_dev_coherent_memory" is introduced here to
->>> determine whether the memory is allocated by 
->>> "dma_alloc_from_dev_coherent".
->>>
->>> And use "get_dma_ops" to determine whether the memory is allocated by
->>> "dma_direct_alloc".
->>>
->>> After this modification, memory allocated using "dma_pool_zalloc" 
->>> can avoid
->>> duplicate memset.
->>>
->>> Signed-off-by: Liu Song <liusong@linux.alibaba.com>
->>
->> This patch landed linux next-20220816. Unfortunately it causes serious
->> issues on ARM 32bit systems. I've observed it on ARM 32bit Samsung
->> Exynos 5422 based Odroid XU4 board with USB r8152 driver. After applying
->> this patch and loading r8152 driver I only the following endless
->> messages in the log:
->>
->> xhci-hcd xhci-hcd.9.auto: WARN Event TRB for slot 1 ep 0 with no TDs 
->> queued?
->> xhci-hcd xhci-hcd.9.auto: WARN Event TRB for slot 1 ep 0 with no TDs 
->> queued?
->> xhci-hcd xhci-hcd.9.auto: WARN Event TRB for slot 1 ep 0 with no TDs 
->> queued?
->>
->> It looks that there are drivers which rely on the fact that the dma
->> coherent buffers are always zeroed.
->
-> It's not even that, the change here is just obviously broken, since it 
-> ends up entirely ignoring want_init_on_alloc() for devices using 
-> dma-direct. Sure, the memory backing a dma_page is zeroed *once* by 
-> its initial dma-coherent allocation, but who says we're not not 
-> reallocating pool entries from an existing dma_page?
->
-> I'm not convinced it's worth trying to special-case this at all, since 
-> we can only do it reliably for the first pool entry allocated from a 
-> new dma_page, and that will only happen as the pool initially grows to 
-> a suitable size for its working set, after which no further new pages 
-> are likely to be allocated for the lifetime of the pool. Even if there 
-> is a case to be made for doing so, it would need to be based on the 
-> flow through dma_pool_alloc() itself, not some nonsense heuristic on 
-> the device.
+The Intel IOMMU driver possibly selects between the first-level and the
+second-level translation tables for DMA address translation. However,
+the levels of page-table walks for the 4KB base page size are calculated
+from the SAGAW field of the capability register, which is only valid for
+the second-level page table. This causes the IOMMU driver to stop working
+if the hardware (or the emulated IOMMU) advertises only first-level
+translation capability and reports the SAGAW field as 0.
 
-Hi，
+This solves the above problem by considering both the first level and the
+second level when calculating the supported page table levels.
 
-First of all, I am very sorry that there are missing branches that have 
-not been considered fully,
+Fixes: b802d070a52a1 ("iommu/vt-d: Use iova over first level")
+Cc: stable@vger.kernel.org
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/iommu.c | 28 +++++++++++++++++++++++++---
+ 1 file changed, 25 insertions(+), 3 deletions(-)
 
-but there is a possibility that the memset to 0 will be repeated whether 
-re-allocation from the
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 889ad2c9a7b9..2d0d2ef820d2 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -370,14 +370,36 @@ static inline int domain_pfn_supported(struct dmar_domain *domain,
+ 	return !(addr_width < BITS_PER_LONG && pfn >> addr_width);
+ }
+ 
++/*
++ * Calculate the Supported Adjusted Guest Address Widths of an IOMMU.
++ * Refer to 11.4.2 of the VT-d spec for the encoding of each bit of
++ * the returned SAGAW.
++ */
++static unsigned long __iommu_calculate_sagaw(struct intel_iommu *iommu)
++{
++	unsigned long fl_sagaw, sl_sagaw;
++
++	fl_sagaw = 0x6 | (cap_fl1gp_support(iommu->cap) ? BIT(3) : 0);
++	sl_sagaw = cap_sagaw(iommu->cap);
++
++	/* Second level only. */
++	if (!sm_supported(iommu) || !ecap_flts(iommu->ecap))
++		return sl_sagaw;
++
++	/* First level only. */
++	if (!ecap_slts(iommu->ecap))
++		return fl_sagaw;
++
++	return fl_sagaw & sl_sagaw;
++}
++
+ static int __iommu_calculate_agaw(struct intel_iommu *iommu, int max_gaw)
+ {
+ 	unsigned long sagaw;
+ 	int agaw;
+ 
+-	sagaw = cap_sagaw(iommu->cap);
+-	for (agaw = width_to_agaw(max_gaw);
+-	     agaw >= 0; agaw--) {
++	sagaw = __iommu_calculate_sagaw(iommu);
++	for (agaw = width_to_agaw(max_gaw); agaw >= 0; agaw--) {
+ 		if (test_bit(agaw, &sagaw))
+ 			break;
+ 	}
+-- 
+2.25.1
 
-dma pool, and this patch needs to be fixed.
-
-
-Thanks
-
-
->
-> Andrew, please drop this patch.
->
-> Thanks,
-> Robin.
->
->>> ---
->>>    include/linux/dma-map-ops.h | 5 +++++
->>>    mm/dmapool.c                | 5 ++++-
->>>    2 files changed, 9 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
->>> index 0d5b06b..c29948d 100644
->>> --- a/include/linux/dma-map-ops.h
->>> +++ b/include/linux/dma-map-ops.h
->>> @@ -171,6 +171,10 @@ int dma_alloc_from_dev_coherent(struct device 
->>> *dev, ssize_t size,
->>>    int dma_release_from_dev_coherent(struct device *dev, int order, 
->>> void *vaddr);
->>>    int dma_mmap_from_dev_coherent(struct device *dev, struct 
->>> vm_area_struct *vma,
->>>            void *cpu_addr, size_t size, int *ret);
->>> +static inline bool use_dev_coherent_memory(struct device *dev)
->>> +{
->>> +    return dev->dma_mem ? true : false;
->>> +}
->>>    #else
->>>    static inline int dma_declare_coherent_memory(struct device *dev,
->>>            phys_addr_t phys_addr, dma_addr_t device_addr, size_t size)
->>> @@ -180,6 +184,7 @@ static inline int 
->>> dma_declare_coherent_memory(struct device *dev,
->>>    #define dma_alloc_from_dev_coherent(dev, size, handle, ret) (0)
->>>    #define dma_release_from_dev_coherent(dev, order, vaddr) (0)
->>>    #define dma_mmap_from_dev_coherent(dev, vma, vaddr, order, ret) (0)
->>> +#define use_dev_coherent_memory(dev) (0)
->>>    #endif /* CONFIG_DMA_DECLARE_COHERENT */
->>>       #ifdef CONFIG_DMA_GLOBAL_POOL
->>> diff --git a/mm/dmapool.c b/mm/dmapool.c
->>> index a7eb5d0..6e03530 100644
->>> --- a/mm/dmapool.c
->>> +++ b/mm/dmapool.c
->>> @@ -21,6 +21,7 @@
->>>       #include <linux/device.h>
->>>    #include <linux/dma-mapping.h>
->>> +#include <linux/dma-map-ops.h>
->>>    #include <linux/dmapool.h>
->>>    #include <linux/kernel.h>
->>>    #include <linux/list.h>
->>> @@ -372,7 +373,9 @@ void *dma_pool_alloc(struct dma_pool *pool, 
->>> gfp_t mem_flags,
->>>    #endif
->>>        spin_unlock_irqrestore(&pool->lock, flags);
->>>    -    if (want_init_on_alloc(mem_flags))
->>> +    if (want_init_on_alloc(mem_flags) &&
->>> +        !use_dev_coherent_memory(pool->dev) &&
->>> +        get_dma_ops(pool->dev))
->>>            memset(retval, 0, pool->size);
->>>           return retval;
->>
->> Best regards
