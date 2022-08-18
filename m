@@ -1,133 +1,95 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5C72D7B
-	for <iommu@lists.linux.dev>; Thu, 18 Aug 2022 20:10:34 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C484D106F;
-	Thu, 18 Aug 2022 13:10:33 -0700 (PDT)
-Received: from [10.57.14.91] (unknown [10.57.14.91])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5B64C3F70D;
-	Thu, 18 Aug 2022 13:10:31 -0700 (PDT)
-Message-ID: <51efe220-9eb2-b52f-81e3-45949e51fb27@arm.com>
-Date: Thu, 18 Aug 2022 21:10:25 +0100
+Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A00DC4A07
+	for <iommu@lists.linux.dev>; Thu, 18 Aug 2022 21:34:34 +0000 (UTC)
+Received: by mail-lj1-f181.google.com with SMTP id v4so2931668ljg.0
+        for <iommu@lists.linux.dev>; Thu, 18 Aug 2022 14:34:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=57R1i97Exb7jiv3R+C+sLGgx2BChX5wJqOqueGuOy8o=;
+        b=BpRf1j8XsCn/7ww8tOLJtJpEEyVf9B0Nkp8dZSfI90CLV5ieBJ3CDZMbPVxru2yVXz
+         1l55Td1/RKqMyoMByybvH6bmTKczz2GHoaAtHV3VWUl3Y00PEJ8XFZO2YaqWKSmIgtUO
+         q0beRrI68dYUftzgYBU/HmlW5n9hFBxIYlEfcaydSVpzwzwllso/sppoPR7KJBMe+EZu
+         sd1gzVfaHnCD4gk5nvR/JfMkFXwk0yspHGUUoH7MJf/iiQzWqV+kFVBxVoPioup37F4u
+         +uk0PDEXhbotpzeLvczvh3m7KQm6I+UvCmXb5OPqZ20iZ6mmdKFkbICd257afSvtVG5c
+         3vyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=57R1i97Exb7jiv3R+C+sLGgx2BChX5wJqOqueGuOy8o=;
+        b=4XM0T0xudeQLHgWV3hu52i+Wvu9AlcgaFIjGwQMO2gb4gs2h9uPzTOAwVQLo0pg1yX
+         oObfyAFJo+Se6iZthtsBymB3qUhekTOcIY8tudBTz8h82LWA/tvubp36x3vGyvCHvZiP
+         VmBwBBQ0yt5Ua2LAH+ADLbMBXbBiF37O3EWwZzjBZHHmxtmoi7JdDHYYQ0lrpQQXlXW6
+         3llEgTJnPUPK5zKuaIAnoaFc/B4Pcp8To1gsWSrbmlADY7zIXX1/qjuw2v67i53Scmq1
+         IwXNBjTIl2Tv9aOAc9rwNf9t+IfTzRLS/iBWTYsaTNH1iHRfUtrVBEo+q1eOvR6FUeMk
+         Zn2A==
+X-Gm-Message-State: ACgBeo3rIcVga2AwTDvfTJOHhLpobB/mX+yjhrO1fqK0B4EiTXYZmxUg
+	gK4hDqUJ4LmM5DrwfgSfSVblsFJZfxTwtlUj7aSpxg==
+X-Google-Smtp-Source: AA6agR6GJXPp5/z0JTiP0q9mPDVCKJiO4ywyVq/9cFPr4MM0zelM0e/lZlpgvN0Odpiov3nkO1VEAYbE8La/yBkG2AA=
+X-Received: by 2002:a05:651c:1718:b0:261:8700:25f4 with SMTP id
+ be24-20020a05651c171800b00261870025f4mr1333316ljb.229.1660858472545; Thu, 18
+ Aug 2022 14:34:32 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v2] iommu/virtio: Fix interaction with VFIO
-Content-Language: en-GB
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>, joro@8bytes.org
-Cc: will@kernel.org, virtualization@lists.linux-foundation.org,
- iommu@lists.linux.dev
-References: <20220818163801.1011548-1-jean-philippe@linaro.org>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220818163801.1011548-1-jean-philippe@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220815100952.23795-1-a39.skl@gmail.com> <20220815100952.23795-4-a39.skl@gmail.com>
+In-Reply-To: <20220815100952.23795-4-a39.skl@gmail.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Date: Thu, 18 Aug 2022 23:33:56 +0200
+Message-ID: <CAPDyKFrc5aneqqC=uGKeQ0ROx69eMJhQ1pFA3GN8d5NpXHGEEQ@mail.gmail.com>
+Subject: Re: [PATCH 3/7] dt-bindings: mmc: sdhci-msm: Document the SM6115 compatible
+To: Adam Skladowski <a39.skl@gmail.com>
+Cc: phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht, 
+	Andy Gross <agross@kernel.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, 
+	Konrad Dybcio <konrad.dybcio@somainline.org>, Vinod Koul <vkoul@kernel.org>, 
+	Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+	"Rafael J. Wysocki" <rafael@kernel.org>, Viresh Kumar <viresh.kumar@linaro.org>, 
+	Sai Prakash Ranjan <quic_saipraka@quicinc.com>, Loic Poulain <loic.poulain@linaro.org>, 
+	Emma Anholt <emma@anholt.net>, Rob Clark <robdclark@chromium.org>, 
+	Bhupesh Sharma <bhupesh.sharma@linaro.org>, linux-arm-msm@vger.kernel.org, 
+	dmaengine@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	iommu@lists.linux.dev, linux-mmc@vger.kernel.org, linux-pm@vger.kernel.org, 
+	Stephen Boyd <swboyd@chromium.org>, Sibi Sankar <sibis@codeaurora.org>
+Content-Type: text/plain; charset="UTF-8"
 
-On 2022-08-18 17:38, Jean-Philippe Brucker wrote:
-> Commit e8ae0e140c05 ("vfio: Require that devices support DMA cache
-> coherence") requires IOMMU drivers to advertise
-> IOMMU_CAP_CACHE_COHERENCY, in order to be used by VFIO. Since VFIO does
-> not provide to userspace the ability to maintain coherency through cache
-> invalidations, it requires hardware coherency. Advertise the capability
-> in order to restore VFIO support.
-> 
-> The meaning of IOMMU_CAP_CACHE_COHERENCY also changed from "IOMMU can
-> enforce cache coherent DMA transactions" to "IOMMU_CACHE is supported".
-> While virtio-iommu cannot enforce coherency (of PCIe no-snoop
-> transactions), it does support IOMMU_CACHE.
-> 
-> Non-coherent accesses are not currently a concern for virtio-iommu
-> because host OSes only assign coherent devices,
+On Mon, 15 Aug 2022 at 12:12, Adam Skladowski <a39.skl@gmail.com> wrote:
+>
+> Document the compatible for SDHCI on SM6115.
+>
+> Signed-off-by: Adam Skladowski <a39.skl@gmail.com>
 
-Is that guaranteed though? I see nothing in VFIO checking *device* 
-coherency, only that the *IOMMU* can impose it via this capability, 
-which would form a very circular argument. We can no longer say that in 
-practice nobody has a VFIO-capable IOMMU in front of non-coherent PCI, 
-now that Rockchip RK3588 boards are about to start shipping (at best we 
-can only say that they still won't have the SMMUs in the DT until I've 
-finished ripping up the bus ops).
+Applied for next, thanks!
 
-> and the guest does not
-> enable PCIe no-snoop. Nevertheless, we can summarize here the possible
-> support for non-coherent DMA:
-> 
-> (1) When accesses from a hardware endpoint are not coherent. The host
->      would describe such a device using firmware methods ('dma-coherent'
->      in device-tree, '_CCA' in ACPI), since they are also needed without
->      a vIOMMU. In this case mappings are created without IOMMU_CACHE.
->      virtio-iommu doesn't need any additional support. It sends the same
->      requests as for coherent devices.
-> 
-> (2) When the physical IOMMU supports non-cacheable mappings. Supporting
->      those would require a new feature in virtio-iommu, new PROBE request
->      property and MAP flags. Device drivers would use a new API to
->      discover this since it depends on the architecture and the physical
->      IOMMU.
-> 
-> (3) When the hardware supports PCIe no-snoop. Some architecture do not
->      support this either (whether no-snoop is supported by an Arm system
->      is not discoverable by software). If Linux did enable no-snoop in
->      endpoints on x86, then virtio-iommu would need additional feature,
->      PROBE property, ATTACH and/or MAP flags to support enforcing snoop.
+Kind regards
+Uffe
 
-That's not an "if" - various Linux drivers *do* use no-snoop, which IIUC 
-is the main reason for VFIO wanting to enforce this in the first place. 
-For example, see the big fat comment in drm_arch_can_wc_memory() if 
-you've forgotten the fun we had with AMD GPUs in the TX2 boxes back in 
-the day ;)
 
-This is what I was getting at in reply to v1, it's really not a "this is 
-fine as things stand" kind of patch, it's a "this is the best we can do 
-to be less wrong for expected usage, but still definitely not right". 
-Admittedly I downplayed that a little in [2] by deliberately avoiding 
-all mention of no-snoop, but only because that's such a horrific 
-unsolvable mess it's hardly worth the pain of bringing up...
-
-Cheers,
-Robin.
-
-> Fixes: e8ae0e140c05 ("vfio: Require that devices support DMA cache coherence")
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 > ---
-> 
-> Since v1 [1], I added some details to the commit message. This fix is
-> still needed for v5.19 and v6.0.
-> 
-> I can improve the check once Robin's change [2] is merged:
-> capable(IOMMU_CAP_CACHE_COHERENCY) could return dev->dma_coherent for
-> case (1) above.
-> 
-> [1] https://lore.kernel.org/linux-iommu/20220714111059.708735-1-jean-philippe@linaro.org/
-> [2] https://lore.kernel.org/linux-iommu/d8bd8777d06929ad8f49df7fc80e1b9af32a41b5.1660574547.git.robin.murphy@arm.com/
-> ---
->   drivers/iommu/virtio-iommu.c | 11 +++++++++++
->   1 file changed, 11 insertions(+)
-> 
-> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-> index 08eeafc9529f..80151176ba12 100644
-> --- a/drivers/iommu/virtio-iommu.c
-> +++ b/drivers/iommu/virtio-iommu.c
-> @@ -1006,7 +1006,18 @@ static int viommu_of_xlate(struct device *dev, struct of_phandle_args *args)
->   	return iommu_fwspec_add_ids(dev, args->args, 1);
->   }
->   
-> +static bool viommu_capable(enum iommu_cap cap)
-> +{
-> +	switch (cap) {
-> +	case IOMMU_CAP_CACHE_COHERENCY:
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
->   static struct iommu_ops viommu_ops = {
-> +	.capable		= viommu_capable,
->   	.domain_alloc		= viommu_domain_alloc,
->   	.probe_device		= viommu_probe_device,
->   	.probe_finalize		= viommu_probe_finalize,
+>  Documentation/devicetree/bindings/mmc/sdhci-msm.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/Documentation/devicetree/bindings/mmc/sdhci-msm.yaml b/Documentation/devicetree/bindings/mmc/sdhci-msm.yaml
+> index fc0e81c2066c..a792fa5574a0 100644
+> --- a/Documentation/devicetree/bindings/mmc/sdhci-msm.yaml
+> +++ b/Documentation/devicetree/bindings/mmc/sdhci-msm.yaml
+> @@ -41,6 +41,7 @@ properties:
+>                - qcom,sdm845-sdhci
+>                - qcom,sdx55-sdhci
+>                - qcom,sdx65-sdhci
+> +              - qcom,sm6115-sdhci
+>                - qcom,sm6125-sdhci
+>                - qcom,sm6350-sdhci
+>                - qcom,sm8150-sdhci
+> --
+> 2.25.1
+>
