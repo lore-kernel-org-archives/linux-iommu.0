@@ -1,178 +1,136 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9F65440F
-	for <iommu@lists.linux.dev>; Thu, 18 Aug 2022 13:41:22 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hzA3q6cP6atJ564S1GvtIc6JT7IqFZbW6S5zKNMiW/KjDSzcKEHvhss3NNEZ9RlCMbXNJ0yG/p/4bZ9LtMliUpA4FtkYV7KzgfjHuMUhv5fHbQx5eu+ph+zYCSjaFDp5XGMdzHs0mLNICO6XPgxVq5IDTq7z5UoM7zhCtayBoJtCVCZj5gTDTE8CjqAHQlUCaEkjB41ZYB0wx37BUBVdBckVNx9KXiu76PrhDbvJC5ZvsRmnmmbVl7EY/hsiczk7WX5SsV0WHz0AEi4ax94RWBy3l8krTbmEGsoZaDGo0vewoqjppwgcIDLKu37LIjLMJoXi/gyWAvW/SRtT29CBNQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=G8kXoL7OOEWwOc2Zsh3QAJMp32FexBDm1yFhpdI4UXY=;
- b=Qipq9LaLUris1aYtMmghjSunv4BK1bDr6mH7f2ONdAJNvxqfsWSNEmstkOPoJk1NyxDXolhKLeeI217TJOvDlk9A+enQFELQwvGPy28l2Q+BLsZOTvBROBy28MGobhExRl3+SyXRWtkcjfV4gLUD9Vi/WCwmF7Wn+HliKwrGrAsKxxdyXrIumwlyN2DfDJzEYNZ6EizpXQdhzDPtOhaUO8ZH9D0O1buplDhKXyZPE2UV1vhpKY8qEKyt1pOoVbraeJeRQF9jnjzucohId794T8N8s0ZcZtoF12RKME8QsLQCSA76KBT4+yz354MCxbxnmShv1dkh0D2CEIASglQOHQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=G8kXoL7OOEWwOc2Zsh3QAJMp32FexBDm1yFhpdI4UXY=;
- b=A4aUfox8vOohycyOiZgkY0S0yk0ZajW5XgwR4ipxb4B6VEscD71QWuNgbfrOk1h4bF3i3BkIZ7+6wyKn1EHldekoXW2gHZRzKRcw7hgoG1C6mRgMDIeu0+EbC4Qgt0aL6+KKD85Y7k+EQ/fYM2AkzMekf4c6wyv1hf5b3cmIl+LxnZkq7mW8hGLfsGSXuzzCXeShkva808A+QM1gMXILUowYSF4aiDKQfh1XeaJHAw4EOlVucOG3eBwaAmW+pQSjLlE2eYcTVgySyo25GNlDkV3RphgRa/u6RrUMF4ZnNagBdp1KC9iAWLu/OCGb4GmvSPpanfe6xnrNKlSTcZOJQw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by MN2PR12MB4142.namprd12.prod.outlook.com (2603:10b6:208:1dd::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Thu, 18 Aug
- 2022 13:41:20 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::462:7fe:f04f:d0d5]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::462:7fe:f04f:d0d5%6]) with mapi id 15.20.5525.019; Thu, 18 Aug 2022
- 13:41:20 +0000
-Date: Thu, 18 Aug 2022 10:41:19 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@infradead.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>,
-	Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
-	Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
-	Jacob jun Pan <jacob.jun.pan@intel.com>,
-	Zhangfei Gao <zhangfei.gao@linaro.org>,
-	Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A61462F3D
+	for <iommu@lists.linux.dev>; Thu, 18 Aug 2022 16:41:24 +0000 (UTC)
+Received: by mail-wr1-f50.google.com with SMTP id k9so2396689wri.0
+        for <iommu@lists.linux.dev>; Thu, 18 Aug 2022 09:41:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=MXyQadycSW2ULYdTGoQf6CZwWJMvopdm7mnwbDqDU4k=;
+        b=b3NJ2nA6Hn9K6jVpwhUv7RrDifXBH7gCiRJZDFaYPq/D65aokMakF7oxNDYgUk6JW+
+         K95341oIrsUfIulL07viiix72Twogc/kq9yUocGflKsoG4pnMy2RqkFhcTe9lPLB3eX7
+         mgIJ4FlRLQZTB7zsVl4Rr2iYCtVIEH6szuBvWmBSXvSyDfoqrvTy24vnnzLyugVafui7
+         0QMGyE1Af1uHjKcmtSUBTjnAa2fxLUh1v4KirROKraFsxFDA4VQG8vh7sOQzDRPvIQUq
+         I+As7zvcQTaTJsxe7c0h48sMDsTZwI3vuL8iA9PfoH5EeFqPek9N9Jq7OP5mOjVL+D2F
+         Z6Lw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=MXyQadycSW2ULYdTGoQf6CZwWJMvopdm7mnwbDqDU4k=;
+        b=nVzhJIaPNI8tz6EzpBSd4eE2SmdQTgXUrMQEDSuu76rI/dAgO3D0G5zvJPO1d6yuy2
+         2OJ7T5Zdz/C/NdYmBwBo5Apy13xi20C1fkXfovu4MMntfsyuiQmBLsXnCC2zD+G46qEY
+         y3k45Z2hMdvobjCJVhx1nGT2oAVlGHgvgmfTEwJhWQfbVmnnN5dfotONC5zYRgo2RtO0
+         oJfdlaZVi9vlJZ+mkZKV1cXA6fxKHMguGWu2P0B+pbwVmRgu74RJPTOOF2qVE2NY6HPZ
+         r5dOIdynGx/ubL0chTZIgIAvxXMC7ZOIwzNPFjipG5GNvsVX+uCLyae6hUhmnvpF409V
+         /Xjw==
+X-Gm-Message-State: ACgBeo1Tw7cDr5PBP7KeiSRzIzLvNoKS6fv4roXNxsnfkg41NJ558NQR
+	1RPaTcxXb88ijTSlLe6K7ZM4iw==
+X-Google-Smtp-Source: AA6agR6od6rLFSL/zujQkbO88Lm0pedoWzhYujK4YUvLhNtmnryovQbA2GDR6qGmQsWd6MvdqOHWIg==
+X-Received: by 2002:a05:6000:a09:b0:220:638f:3b4a with SMTP id co9-20020a0560000a0900b00220638f3b4amr2117675wrb.626.1660840882893;
+        Thu, 18 Aug 2022 09:41:22 -0700 (PDT)
+Received: from localhost.localdomain (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
+        by smtp.gmail.com with ESMTPSA id g11-20020a05600c4ecb00b003a4c6e67f01sm7169598wmq.6.2022.08.18.09.41.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Aug 2022 09:41:22 -0700 (PDT)
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: joro@8bytes.org
+Cc: will@kernel.org,
+	robin.murphy@arm.com,
+	virtualization@lists.linux-foundation.org,
+	iommu@lists.linux.dev,
 	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v11 09/13] iommu/sva: Refactoring
- iommu_sva_bind/unbind_device()
-Message-ID: <Yv5Bf7+59po6K/1h@nvidia.com>
-References: <20220817012024.3251276-1-baolu.lu@linux.intel.com>
- <20220817012024.3251276-10-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220817012024.3251276-10-baolu.lu@linux.intel.com>
-X-ClientProxiedBy: BL1PR13CA0165.namprd13.prod.outlook.com
- (2603:10b6:208:2bd::20) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+Subject: [PATCH v2] iommu/virtio: Fix interaction with VFIO
+Date: Thu, 18 Aug 2022 17:38:04 +0100
+Message-Id: <20220818163801.1011548-1-jean-philippe@linaro.org>
+X-Mailer: git-send-email 2.37.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 12ea30b4-03a7-49af-eece-08da811f5570
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4142:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	CXclGwiqJO0rHQAsDV0wgzebjQY/5rbChBsXHBUzZ4xGIb5/9YyPrI+QHi+vX632iPxlmXJZhYdIU3H7wec6CPJefmr5V4SK3fQFcuMz8+syNcV1wunwuUQCdtR5MFeZwc/JUv7yFspfsknP73WXYKOoPkp7nJx97V2NenmQyI50HX5BCwvO7pNe97BFC+5v9TKgAln05QSEtwXRCVFAw3U7RktvGEmc4TDi1mXn0uARsLeVh3MozObBE7zeJ9bd8ToPDSHiFtQILQvOr0sbtM2rmncCKIAvL5rwan1sZ+NpahIG/RJdAD4mphKSmPLtr6IghmEUV5aPxVkqVhBsEsTixBwhbOrjGG/tKg5veDn+h8nV3OKeMP3BwKL/VN7ASSpvx6WrXW7W9xT4vgkLC4LT/gVDr8klNXKscYI7NKIABSsC6J6snZb9TXhWjWObPMjFpGIHy8vazJeC8GCDKnBWmnvo8Kj2CUkbwFdsVP2+oRLnToQbzONuVA8BYuR3AWQ0UW43t2diCS5yeIxUbkKdsVRLbn3GJod4It8a7r+CMNGpeQ/jXNlPBARb+6rLnqrpvUGg/5Rhx5CCmC/kf1iXWm/7+PbmaU2g9VwQmQmcdkD9mqQh2X6t9FeVrd/YtG808GvZqLJ6LP7QfnMKG+nLw1yu+tSHnIZkRPoL8aIKV7+SZdWe6Iwn6VToV9of7YurU/woBwTJxDr5N48pzA==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(376002)(396003)(39860400002)(366004)(136003)(83380400001)(186003)(38100700002)(66946007)(4326008)(66556008)(66476007)(316002)(5660300002)(6916009)(8676002)(8936002)(54906003)(6506007)(41300700001)(7416002)(26005)(6512007)(478600001)(6486002)(36756003)(86362001)(2906002)(2616005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?hIjX2JtwH29hfAfPrmuehLbFyskEWUzFElueTIFH2BV72J8Gn5vVekFnoNal?=
- =?us-ascii?Q?OKviJyl9Tpp5Mb+3OBLxhzrcLDiFlk9sEQPID+HAD5ZaxzAIirKLgOyc+9gS?=
- =?us-ascii?Q?nsHo1cf5Pu2aXFlx6dFO0dBM9zAUMCQ9SqDx7YnFSK5El65rQ+RBhF4BW/vS?=
- =?us-ascii?Q?sfx4njSc9LoViU/31DJhIOFbO3xIKmlZPHHqh76u07nMVqyvwJd8Qm/oXGw6?=
- =?us-ascii?Q?h3PT4H5BSq7gGW6CEcx3mNQUgg8nxHiNF83h2rGUOxi0HOIPKlVKtgUozIEL?=
- =?us-ascii?Q?2kkzY57n6BzvY147n6IAiJPjl6L4ffRfGoY5vvUobdBG+LrGQkjNMYhq7Idf?=
- =?us-ascii?Q?x8+bOCu/KKUN5ghFxgDeOJ39Q2GGV2V7+fv2TvOK068+utdC6uafF9300FRV?=
- =?us-ascii?Q?YGRiND/Cyu2mWLlAwi9z7lQNsTo2vypGVkt57FGZKFIu7xvM+RsilS84rGTs?=
- =?us-ascii?Q?HSYHkdN7BdtCvTx4mahpWsvXxtrbFwTtDcNP1Numl7/ylHPN2zCus1NJWxAq?=
- =?us-ascii?Q?WZh0EmiP/z7h8pJdaKEQkXGXIte+jxImf3Ja6sA+vl1Sjv4HlTlYssOQfhBw?=
- =?us-ascii?Q?XfJvdIwx/2nrUkWI1JxUfaZvijw9olcHjlmkSC/7k1Zwe3WejqxYeOV0Od4k?=
- =?us-ascii?Q?chcSZVwP61lyQ5v8DwcLk68pNlNsSI/wDiQs0hh5OP3Lc8h5sSVfGGiTQPxF?=
- =?us-ascii?Q?atv3ERDrDFvJDeFRANCrrH3XbEKsLDhIyVAjGv2blbsxO0D+Q/D6jt6bRYF8?=
- =?us-ascii?Q?AHcFUSHAW1KDZ6OWheH0kulSZ3vGt//o0BlP3ZQHMJNqgNXIbNqZ+2UNF6uA?=
- =?us-ascii?Q?R8li8KKJqTn5Ojm0JzrpnnxoSGFgJN2tHeMtMZ1kaJNgWG8ylhYt+g/vs+jl?=
- =?us-ascii?Q?aPxDZtLDvUJgP+TG5eQeSWodjgPKhr6GOKjbZoDBkfROCMPTUC6wlwfSRu9w?=
- =?us-ascii?Q?+9z4azKVN8AO3U8CyAIaoUy+BpzmcbWNibgeDyowe4lHucMn+RogE6/nQLon?=
- =?us-ascii?Q?UuUewk5/akOZnHccSFDt84IuurHilq05Wx0Pzfn8HDLi+PYiJJM8dwT/oha+?=
- =?us-ascii?Q?7E8Q8A4uVtH7N2LVlnzZ63TsCflx+yeGSEPwTktCITNGZIPGfI2wx080jjNu?=
- =?us-ascii?Q?K+GHwPRdCPZidPTdNsIc2zDbD3Y1Kngyh23YeA/Z0ZYumzednEWnVsW8ATUB?=
- =?us-ascii?Q?vgivFKuQYQTjrei9eSgj8xYns90u+9xG88AJ2flWqLDIRgBIoomvrFyvazsb?=
- =?us-ascii?Q?BMaoxqUul4vIh0LquZp3LYOFtzDWqc//CBjlpFY9nP4r6ERH9Pdz2V7ZtNZ+?=
- =?us-ascii?Q?Q2LpNwvH9NAztpJGbqbIhXTW3BFNcbgULCv9DlPwggHv6aYJaZc7CGeW0kEX?=
- =?us-ascii?Q?evXUf7PvAYJ86oN97FhXySjtwVjbJL3G8h+7MoXjVX7smLlMkvTWNW7uQFp8?=
- =?us-ascii?Q?LhvItDBS8ycCkBJXvmFG+aXEJvT/z6315o16R0gsE/ec595iSecpV6CLdD9t?=
- =?us-ascii?Q?4b5IvO7w3f6KlXEC/h21peTNOeDqjM8xFPULpBHcE/DEb7sadbUhAQeSF6/j?=
- =?us-ascii?Q?j2QLYovL9b06cWH1kee8N2bN3pHS/uFyMr+d93LX?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 12ea30b4-03a7-49af-eece-08da811f5570
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2022 13:41:20.4873
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hjPBc3cKTcdZqjq1AOlWd30ZZpIt8NdzD8lkwzFcf608bD0rUU3OJgPPHYKr0TnM
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4142
+Content-Transfer-Encoding: 8bit
 
-On Wed, Aug 17, 2022 at 09:20:20AM +0800, Lu Baolu wrote:
-> +
-> +/**
-> + * iommu_sva_bind_device() - Bind a process address space to a device
-> + * @dev: the device
-> + * @mm: the mm to bind, caller must hold a reference to mm_users
-> + *
-> + * Create a bond between device and address space, allowing the device to access
-> + * the mm using the returned PASID. If a bond already exists between @device and
-> + * @mm, it is returned and an additional reference is taken. Caller must call
-> + * iommu_sva_unbind_device() to release each reference.
-> + *
-> + * iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA) must be called first, to
-> + * initialize the required SVA features.
-> + *
-> + * On error, returns an ERR_PTR value.
-> + */
-> +struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
-> +{
-> +	struct iommu_domain *domain;
-> +	struct iommu_sva *bond;
+Commit e8ae0e140c05 ("vfio: Require that devices support DMA cache
+coherence") requires IOMMU drivers to advertise
+IOMMU_CAP_CACHE_COHERENCY, in order to be used by VFIO. Since VFIO does
+not provide to userspace the ability to maintain coherency through cache
+invalidations, it requires hardware coherency. Advertise the capability
+in order to restore VFIO support.
 
-This is called handle below, pick one name please
+The meaning of IOMMU_CAP_CACHE_COHERENCY also changed from "IOMMU can
+enforce cache coherent DMA transactions" to "IOMMU_CACHE is supported".
+While virtio-iommu cannot enforce coherency (of PCIe no-snoop
+transactions), it does support IOMMU_CACHE.
 
-> +	ioasid_t max_pasids;
-> +	int ret;
-> +
-> +	max_pasids = dev->iommu->max_pasids;
-> +	if (!max_pasids)
-> +		return ERR_PTR(-EOPNOTSUPP);
-> +
-> +	/* Allocate mm->pasid if necessary. */
-> +	ret = iommu_sva_alloc_pasid(mm, 1, max_pasids - 1);
-> +	if (ret)
-> +		return ERR_PTR(ret);
-> +
-> +	bond = kzalloc(sizeof(*bond), GFP_KERNEL);
-> +	if (!bond)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	mutex_lock(&iommu_sva_lock);
-> +	/* Search for an existing domain. */
-> +	domain = iommu_get_domain_for_dev_pasid(dev, mm->pasid);
-> +	if (domain) {
+Non-coherent accesses are not currently a concern for virtio-iommu
+because host OSes only assign coherent devices, and the guest does not
+enable PCIe no-snoop. Nevertheless, we can summarize here the possible
+support for non-coherent DMA:
 
-This isn't safe, or sane. A driver could have attached something to
-this PASID that is not a SVA domain and thus not protected by the
-iommu_sva_lock.
+(1) When accesses from a hardware endpoint are not coherent. The host
+    would describe such a device using firmware methods ('dma-coherent'
+    in device-tree, '_CCA' in ACPI), since they are also needed without
+    a vIOMMU. In this case mappings are created without IOMMU_CACHE.
+    virtio-iommu doesn't need any additional support. It sends the same
+    requests as for coherent devices.
 
-At a minimum you should add a type match to
-iommu_get_domain_for_dev_pasid(), eg to confirm it is a SVA domain and
-do that check under the xa_lock of the pasid xarray.
+(2) When the physical IOMMU supports non-cacheable mappings. Supporting
+    those would require a new feature in virtio-iommu, new PROBE request
+    property and MAP flags. Device drivers would use a new API to
+    discover this since it depends on the architecture and the physical
+    IOMMU.
 
-And then the general idea is that SVA domain attach/detach must hold
-this janky global lock. 
+(3) When the hardware supports PCIe no-snoop. Some architecture do not
+    support this either (whether no-snoop is supported by an Arm system
+    is not discoverable by software). If Linux did enable no-snoop in
+    endpoints on x86, then virtio-iommu would need additional feature,
+    PROBE property, ATTACH and/or MAP flags to support enforcing snoop.
 
-> +		refcount_inc(&domain->users);
+Fixes: e8ae0e140c05 ("vfio: Require that devices support DMA cache coherence")
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+---
 
-This atomic is always processed under the iommu_sva_lock, so it
-doesn't need to be an atomic anymore.
+Since v1 [1], I added some details to the commit message. This fix is
+still needed for v5.19 and v6.0.
 
-Otherwise this design looks OK to me too
+I can improve the check once Robin's change [2] is merged:
+capable(IOMMU_CAP_CACHE_COHERENCY) could return dev->dma_coherent for
+case (1) above.
 
-Jason
+[1] https://lore.kernel.org/linux-iommu/20220714111059.708735-1-jean-philippe@linaro.org/
+[2] https://lore.kernel.org/linux-iommu/d8bd8777d06929ad8f49df7fc80e1b9af32a41b5.1660574547.git.robin.murphy@arm.com/
+---
+ drivers/iommu/virtio-iommu.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 08eeafc9529f..80151176ba12 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -1006,7 +1006,18 @@ static int viommu_of_xlate(struct device *dev, struct of_phandle_args *args)
+ 	return iommu_fwspec_add_ids(dev, args->args, 1);
+ }
+ 
++static bool viommu_capable(enum iommu_cap cap)
++{
++	switch (cap) {
++	case IOMMU_CAP_CACHE_COHERENCY:
++		return true;
++	default:
++		return false;
++	}
++}
++
+ static struct iommu_ops viommu_ops = {
++	.capable		= viommu_capable,
+ 	.domain_alloc		= viommu_domain_alloc,
+ 	.probe_device		= viommu_probe_device,
+ 	.probe_finalize		= viommu_probe_finalize,
+-- 
+2.37.1
+
