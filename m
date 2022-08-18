@@ -1,99 +1,197 @@
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6ACAB23CD
-	for <iommu@lists.linux.dev>; Thu, 18 Aug 2022 08:12:35 +0000 (UTC)
-X-UUID: 82e79557642e4a93a944bd38bdbc42db-20220818
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=UQCUheVzm/zqzSXNU/VM4FxsV1aKEDMU6rPmjtjWEbg=;
-	b=XFN9faatxlGB06PgEiSrQrOFziMAM/zw/Uy85X7duhTB5udpr2luy11cB+rO6YHxaGtlIceZXs0sIilRnv/U3ALBxIXr3dgB6Kg6sE32kkr6fa3cMdFfQhsASqez9w5lwSEdRxu1iXr6Ts3+UF9MVXmX8kjyDdxJBk3w+aWLDos=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.10,REQID:607c6608-aee4-49ca-a810-f02d1e3740c1,OB:0,L
-	OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_
-	Ham,ACTION:release,TS:0
-X-CID-META: VersionHash:84eae18,CLOUDID:bbfe2daf-9535-44a6-aa9b-7f62b79b6ff6,C
-	OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-	,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 82e79557642e4a93a944bd38bdbc42db-20220818
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-	(envelope-from <chengci.xu@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-	with ESMTP id 126140676; Thu, 18 Aug 2022 16:12:30 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Thu, 18 Aug 2022 16:12:28 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n1.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
- Transport; Thu, 18 Aug 2022 16:12:28 +0800
-Message-ID: <ee54331a321fe256788a47d2ffd7d3b7124e23ee.camel@mediatek.com>
-Subject: Re: [PATCH 1/3] dt-bindings: mediatek: mt8188: Add binding for MM &
- INFRA IOMMU
-From: Chengci.Xu <chengci.xu@mediatek.com>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Yong Wu
-	<yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
-	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
-	<robh+dt@kernel.org>, Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>, Matthias Brugger
-	<matthias.bgg@gmail.com>
-CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date: Thu, 18 Aug 2022 16:12:27 +0800
-In-Reply-To: <5a916595-12ee-92e6-d380-84146dd75218@linaro.org>
-References: <20220804105834.626-1-chengci.xu@mediatek.com>
-	 <20220804105834.626-2-chengci.xu@mediatek.com>
-	 <ae06f644-b988-8fc3-fde8-258299f8f2ae@linaro.org>
-	 <f34db3a295b8c83e03bf79950cc25d39b6f81240.camel@mediatek.com>
-	 <5a916595-12ee-92e6-d380-84146dd75218@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB6A87C
+	for <iommu@lists.linux.dev>; Thu, 18 Aug 2022 08:32:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660811574; x=1692347574;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=7xhdMMDhdxU/9N4zScusa7V+Zj0/IEGC9dBmDwnnfeA=;
+  b=PJEnUgrHI0OgAaTZGRlN18WPDsE1VHbjiW99D3u1L5dwcRnXFiv8wask
+   vExK22zGU1AfNjDkz/6X6sERVWps90ffRr8MXeoThFhIaFZXfJg9ewwTn
+   rJ0W8LS8fEkECgKY00zs3YnY41cfHapdWiYdFIDBkBzrkmSva4AD6+8cx
+   xzP5sFoS0+e9zAvOnN18YY33bBgRXV1e29l4Iczec/0gjY3VyW/4Bcs5S
+   ERICGaxgAhgMe1X2HseZJtCq4QoApu7V9h91ui0No3v9D5oaYjLvLHbzM
+   k/yWzS3ApjPX3WbtI5cU+6la9l2J53aOLqJe1oXnN8h6xW4OX4lTGhZpf
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10442"; a="275751028"
+X-IronPort-AV: E=Sophos;i="5.93,246,1654585200"; 
+   d="scan'208";a="275751028"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 01:32:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,246,1654585200"; 
+   d="scan'208";a="668007979"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmsmga008.fm.intel.com with ESMTP; 18 Aug 2022 01:32:52 -0700
+Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Thu, 18 Aug 2022 01:32:51 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28 via Frontend Transport; Thu, 18 Aug 2022 01:32:51 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.100)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.28; Thu, 18 Aug 2022 01:32:51 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=S7PkmZ1aqK+h3690qaohylvhDHkOcv0vTDY8RiMRQeRvSC3BVy/akon9xAk7r0oZPPJnWgXQ4ZbBYEYrjPMtp/+H15eJUjVvUACAxW433XyDmsRdg1oQNfyLt9s+phzMOsjZ5FtiaKIgfy1Axio78jSHPcQ/9FShnF3m3mdHNvqKVo53ZjIm5WYLZJNFDxmwnaIwLWI8LKvGVhiUUp8r66ofTnTB3LmpIeAU16hOZCy2mvSzRuPI5YwVLJhV1V5FQS4tn86vPNdbu89MugWGze4QN6uZIoPfndiGplonSD9JAgHeJVP3kuTXYJOYWT5L1QZevY69108UICumNeILow==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Sp0g3ZCCv2LJvmR7JHIyVbzr+kn1FHHsbiD4NXjmA4o=;
+ b=EfKjSx9cmbTpvf64w/mJm5tPAqxPRVDTTKrr7eXqNKFyaEaT0KLdfA5JJd3SQ2fJ56YI7U6Sz1YTLAgAuwVW/QB9nJecFOg+0uWcvYaZED3WfxzwqAk34J95L5bETtCDKKT0HYo4SgHqCUpOIz911ljiU7nTiZcX66R2o/c/Ztimfxo2NU7lknb5DWHPzsMfMtBQD49qo8bcDF1ZcCcoPnOWaVF4jJH4osLdwGp3mzPcsBYYb87uJuFQN6EddmWjgdLqBFTtM5C/QlVwsBaoOAAxXZvuNmeiQfH3D8T+WNoFW+TWNMWGGoQk/mnCJ5HJPDIK0n100+uhgJraZg/6TQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by DM5PR11MB1612.namprd11.prod.outlook.com (2603:10b6:4:b::21) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5525.11; Thu, 18 Aug 2022 08:32:50 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::301a:151:bce8:29ac]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::301a:151:bce8:29ac%3]) with mapi id 15.20.5525.011; Thu, 18 Aug 2022
+ 08:32:50 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>
+CC: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, "Robin
+ Murphy" <robin.murphy@arm.com>, Jerry Snitselaar <jsnitsel@redhat.com>, "Jin,
+ Wen" <wen.jin@intel.com>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "stable@vger.kernel.org"
+	<stable@vger.kernel.org>
+Subject: RE: [PATCH v2 1/1] iommu/vt-d: Fix kdump kernels boot failure with
+ scalable mode
+Thread-Topic: [PATCH v2 1/1] iommu/vt-d: Fix kdump kernels boot failure with
+ scalable mode
+Thread-Index: AQHYsdbqBbnHsu3lH0ihB+4y7/1Txa20VRHg
+Date: Thu, 18 Aug 2022 08:32:50 +0000
+Message-ID: <BN9PR11MB5276364739832848F15932B68C6D9@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20220817011035.3250131-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20220817011035.3250131-1-baolu.lu@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8c42a760-4ac7-4d62-22de-08da80f43c97
+x-ms-traffictypediagnostic: DM5PR11MB1612:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: nt5N4DMI2WszZqBo81f0D79dujsrF7RN50AanQ6FjDSMalH4b15GF2SW0UUEGEF4L06+iY1BPdAPkpQoJmbTUh6syy9g/Om79rlENNR/ZCQAK1mFNqKLd9OEzEMm1aj2gLlejXl/BWKjjzGpI0eSHet1izdxoepI9PwmJAjYRCrY1ypY4tnVQxdmmvlvZJMAs9LJuOzZPc6OlnE6RNa0FBtlJbvUdD3K6NqDoE6fQDbNvLEYLO1FEWCr/uhkWz3HLtzY/dorlYMNtblXDC81woa1WzDdrBlquBX9P7VmG/3kOm4HRGPX6WD6Oaq69ssLHsYTWPerHdbR7BixRdH/hgvcutdyCylNkgX13OhatgChBhoHN/pL6YY/retI5+mF03jj1CceKRnf/ibrucWhTd+Sp35hzvDd+PNy2bxsB15uj/EGRkz78fTwqJHBQftUYpIohAnVV3vtNdkTr7wedZ3quStTyj4ch86BV6/DWsCSksfgm+VeOp/0OfUYmOlok5okTS1EjakXUazONWxZCHBT4Bx9zAb0r17Ls3YcjCksPCSh54iN3Q5GaWdvWfxd/JmdMcbbPgdonzD+3dkQwN4JDPqCeXY0EnyOU7VXo9+nI3OPpBW4qs1n/9mMbbH+XlbKlRBw7c76vA+yg+JrmpPKHnq1klmQDSPSD1sKOmJInEViESB2csR+bijSMb9P6lr8/yYbuyoNleIO1MFm8brfkxJZoyQt/d0L66sHNs6zzCot4LXQcRAAqe45No3QIVCOeRB5cEKoJE1kQhxtYXWsk2x/WqA6XmeLy2OgRCY=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(346002)(396003)(376002)(39860400002)(136003)(186003)(2906002)(6506007)(86362001)(41300700001)(33656002)(5660300002)(52536014)(38070700005)(122000001)(478600001)(7696005)(9686003)(26005)(82960400001)(38100700002)(110136005)(83380400001)(66446008)(55016003)(8676002)(8936002)(54906003)(66556008)(316002)(66476007)(71200400001)(64756008)(4326008)(66946007)(76116006)(309714004);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?/35GeQfhz5peds4Qz8YuCeTEl2YWFDMBV76y5niTinE87iNnkcG+jbXFM+DX?=
+ =?us-ascii?Q?lh2+L+z2dRkVIyjNYzrhjbLUcl/LRy+BwRIDbKuEb6t8kUm8n+ws3N8L6aKR?=
+ =?us-ascii?Q?faAYhz7ZW6/bAuWDrqVjyIyxL9s/gsylFdFa/HGMkXM5sKL2HgLY5N36WnuE?=
+ =?us-ascii?Q?nBM9pJ56mjku3wBjrDkB8tP97peAHU/H8iAr4aiZcryR4rpwoIvDmOHxAOVF?=
+ =?us-ascii?Q?WHg5asHRNOgtqWSp+X0AzNbxkRgV2a2+vv+lXTqAYkO9XNAi0fIEEZoR1J7J?=
+ =?us-ascii?Q?bvxYaFI0ovH8r1Acsq533FaPoXA2IXWdkBefRb0h0rx4aLOLX7hjDOuiX8w3?=
+ =?us-ascii?Q?g1Xhy/5MPam32S4cgRSyQKimb8+DFaNJ2iyY6pDhAkavduKng/TZlUTFjcwa?=
+ =?us-ascii?Q?OhnWWdEcVcjwSTZIE0whP1ex4H7qy9Jq7pY6ufGc5nlqRdHJkci0d5bUJAS9?=
+ =?us-ascii?Q?3v4oPWgMd2vqoI8kxcEhSAnXfq4L9QD3RlArdkZskFoWoRleU1Zrr37sUvCb?=
+ =?us-ascii?Q?de4QlpNJylv517kC3PoDeyHgs6++BLrnKdZgGbfJqzPaVbGpYr28qSdDS2qA?=
+ =?us-ascii?Q?iJAOf/5VVyFD61hkkTLfv5YqDYMUeeL6rPFW9H6IAAokaojWAq+/1cmx/kW9?=
+ =?us-ascii?Q?I2TNUvVTQ6SjXzoO8VuE616s3yJ+2IN7uRoMtw4NpBAvAzAVVVteflMq4Us0?=
+ =?us-ascii?Q?h7xsqmzFK4/FonaIWHIZKGx39qeAXb/7EWb7sXCVvieXVNW0olDLR9SQf7uf?=
+ =?us-ascii?Q?vJQL8cROXIvzgNynQ1kq+sTGtrgorP4ZHi46ckAf4BoeADpTlA1DBUU5CV1v?=
+ =?us-ascii?Q?hN7dNivwmMxpsF2kzFYhfaAbFqx0oDmcagt5qk88i11cMi6vDLdtJPfocBhe?=
+ =?us-ascii?Q?od8sWOOYXBsnQ6dJE8RPGifgeMbCxnFPFb58yzibkoyiJZwa2UO0uWG3pmHZ?=
+ =?us-ascii?Q?igVHAu0J9Y9DyaiYhhJhNfDtbYFIJvZwSV62UUA5igwPnBV3jxHjTY5a0sBe?=
+ =?us-ascii?Q?BqpF9AhxHkBUVPttGcA/gEEgPLW3CdCQfSYG1vp9POOi6r9t5o8LKIofg8DJ?=
+ =?us-ascii?Q?a413QGY5vo5b8UykjaPsL1bYdWGS0JWJm0tUaNPk6p/8TIHSaWssKg9jznwV?=
+ =?us-ascii?Q?8RmQyOTnfJFfc6ZyWNxp1CretTeox+NCEisNN5xpLHT5FouCR94acnO8Xt00?=
+ =?us-ascii?Q?lZUb8cYVRMZereoZC/U8EComsDJ9zKbBF0/tdaXCYWE5tGW517L1cQVD0WLm?=
+ =?us-ascii?Q?HIBboFDaklHTo2bEWs8UgyY1L9RdpCKxgz661GSzGzi39zxJ/fa0Q+0eVell?=
+ =?us-ascii?Q?LTrF9jrGm1pPUVgcSEbzJoOrGE5mbNlSCSZGn90yqxhgruLr7wkjAC5PDjUf?=
+ =?us-ascii?Q?luYRrM1jNO8bfjsIAgy2SJKjpxkmvn3rTLgQXRtaoBZ1Ubcw07+8uTDo42n7?=
+ =?us-ascii?Q?Y8WOXRrdUPciNvMEjl+6k642g4iCEcK4SJYnMOOp5tb1dHSIbSv8X+QJLuqg?=
+ =?us-ascii?Q?G9EWj6S/q7e2niH+qgGqtiTbPo43CmYx1A9jBY+AZ6fBZ8w/CzyAv9TYI2a1?=
+ =?us-ascii?Q?xHFbOgU7HW0wv8yZRZ1xV9pBCYG/H+mxf3qOrr7v?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8c42a760-4ac7-4d62-22de-08da80f43c97
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Aug 2022 08:32:50.3103
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 0BKmAD660/cnUTuOJ53Ld2ET5E8YqMVW+OfYmmMgQPDgRc8+dx1XdhWms93xB78K2QqBxoc1PRwMM/XAP5oO/w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR11MB1612
+X-OriginatorOrg: intel.com
 
-On Thu, 2022-08-18 at 10:48 +0300, Krzysztof Kozlowski wrote:
-> On 18/08/2022 10:26, Chengci.Xu wrote:
-> > On Thu, 2022-08-04 at 13:13 +0200, Krzysztof Kozlowski wrote:
-> > > On 04/08/2022 12:58, Chengci.Xu wrote:
-> > > > This patch adds descriptions for mt8188 IOMMU which also use
-> > > > ARM
-> > > > Short-Descriptor translation table format.
-> > > > 
-> > > 
-> > > 
-> > > Thank you for your patch. There is something to discuss/improve.
-> > 
-> > Tkanks for your review.
-> > 
-> 
-> BTW, none of your emails seem to reach devicetree mailing list:
-> 
-https://lore.kernel.org/linux-devicetree/20220804105834.626-1-chengci.xu@mediatek.com/
-> which means they won't pop-up in Rob's Patchwork and won't tested by
-> bot.
-> 
-https://patchwork.ozlabs.org/project/devicetree-bindings/list/?series=&submitter=84571&state=*&q=&archive=&delegate=
-> 
-> I wonder if this is the same issue as with other Mediatek emails
-> filtered by spam...
-> 
-> Anyway, you should sort it out, otherwise patches won't get to Rob
-> and I
-> won't apply them.
-> 
+> From: Lu Baolu <baolu.lu@linux.intel.com>
+> Sent: Wednesday, August 17, 2022 9:11 AM
+>=20
+> The translation table copying code for kdump kernels is currently based
+> on the extended root/context entry formats of ECS mode defined in older
+> VT-d v2.5, and doesn't handle the scalable mode formats. This causes
+> the kexec capture kernel boot failure with DMAR faults if the IOMMU was
+> enabled in scalable mode by the previous kernel.
+>=20
+> The ECS mode has already been deprecated by the VT-d spec since v3.0 and
+> Intel IOMMU driver doesn't support this mode as there's no real hardware
+> implementation. Hence this converts ECS checking in copying table code
+> into scalable mode.
+>=20
+> The existing copying code consumes a bit in the context entry as a mark
+> of copied entry. This marker needs to work for the old format as well as
+> for extended context entries. It's hard to find such a bit for both
 
-Thanks for the your reminder, I will try to find out and fix this when
-sending next version.
+The 2nd sentence "This marker..." is misleading. better removed.
 
-> Best regards,
-> Krzysztof
+> legacy and scalable mode context entries. This replaces it with a per-
+> IOMMU bitmap.
+>=20
+> Fixes: 7373a8cc38197 ("iommu/vt-d: Setup context and enable RID2PASID
+> support")
+> Cc: stable@vger.kernel.org
+> Reported-by: Jerry Snitselaar <jsnitsel@redhat.com>
+> Tested-by: Wen Jin <wen.jin@intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+...
+> @@ -2735,8 +2693,8 @@ static int copy_translation_tables(struct
+> intel_iommu *iommu)
+>  	bool new_ext, ext;
+>=20
+>  	rtaddr_reg =3D dmar_readq(iommu->reg + DMAR_RTADDR_REG);
+> -	ext        =3D !!(rtaddr_reg & DMA_RTADDR_RTT);
+> -	new_ext    =3D !!ecap_ecs(iommu->ecap);
+> +	ext        =3D !!(rtaddr_reg & DMA_RTADDR_SMT);
+> +	new_ext    =3D !!ecap_smts(iommu->ecap);
 
-Best regards,
-Chengci Xu
+should be !!sm_supported()
 
+>=20
+>  	/*
+>  	 * The RTT bit can only be changed when translation is disabled,
+> @@ -2747,6 +2705,10 @@ static int copy_translation_tables(struct
+> intel_iommu *iommu)
+>  	if (new_ext !=3D ext)
+>  		return -EINVAL;
+>=20
+> +	iommu->copied_tables =3D bitmap_zalloc(BIT_ULL(16), GFP_KERNEL);
+> +	if (!iommu->copied_tables)
+> +		return -ENOMEM;
+> +
+>  	old_rt_phys =3D rtaddr_reg & VTD_PAGE_MASK;
+>  	if (!old_rt_phys)
+>  		return -EINVAL;
+
+Out of curiosity. What is the rationale that we copy root table and
+context tables but not pasid tables?
