@@ -1,110 +1,79 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 870087B
-	for <iommu@lists.linux.dev>; Mon, 22 Aug 2022 13:53:04 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E704812FC;
-	Mon, 22 Aug 2022 06:53:06 -0700 (PDT)
-Received: from [10.57.15.77] (unknown [10.57.15.77])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E5E9A3F70D;
-	Mon, 22 Aug 2022 06:53:01 -0700 (PDT)
-Message-ID: <c8543ace-65cd-b8a8-499c-1b051867366b@arm.com>
-Date: Mon, 22 Aug 2022 14:52:55 +0100
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39A647B
+	for <iommu@lists.linux.dev>; Mon, 22 Aug 2022 14:21:28 +0000 (UTC)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 8AB801FD7A;
+	Mon, 22 Aug 2022 14:21:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1661178086; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=IEU+aYjqkWSSgkevWjw+jiompUJ5KbhBmDIvKBs70uA=;
+	b=rCtHS21fIAGgjvJ1XCdTgBAxGFqSPEXhiwaSjA0AzY2/HsVmKnevHXd8oq9dAT7rAZk+kV
+	jI6jkthjhAkJ9JHw0K14V9ME/I5dl4oI7zkWX/YBP9tlZEGN4KDs/ngRvVoQSp9pHAABa4
+	QAwZj3sG3Vis8gN4D51sKhQ2/GMc10w=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6C12713523;
+	Mon, 22 Aug 2022 14:21:26 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+	by imap2.suse-dmz.suse.de with ESMTPSA
+	id aAIRGOaQA2N6egAAMHmgww
+	(envelope-from <mhocko@suse.com>); Mon, 22 Aug 2022 14:21:26 +0000
+Date: Mon, 22 Aug 2022 16:21:25 +0200
+From: Michal Hocko <mhocko@suse.com>
+To: Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	David Rientjes <rientjes@google.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] dma-pool: limit DMA and DMA32 zone size pools
+Message-ID: <YwOQ5Q+aZRBB0xk+@dhcp22.suse.cz>
+References: <20220817060647.1032426-1-hch@lst.de>
+ <20220817060647.1032426-4-hch@lst.de>
+ <Yvzk2wE7ta+zSZOQ@dhcp22.suse.cz>
+ <20220821104416.GC30530@lst.de>
+ <YwNBHbYXpatJHD0K@dhcp22.suse.cz>
+ <20220822111447.GA8935@lst.de>
+ <YwNx6Q+FSwpKUOQ2@dhcp22.suse.cz>
+ <20220822122759.GA14932@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 4/5] drm/msm: Use separate ASID for each set of pgtables
-Content-Language: en-GB
-To: Rob Clark <robdclark@gmail.com>, dri-devel@lists.freedesktop.org
-Cc: Rob Clark <robdclark@chromium.org>, David Airlie <airlied@linux.ie>,
- linux-arm-msm@vger.kernel.org, Abhinav Kumar <quic_abhinavk@quicinc.com>,
- open list <linux-kernel@vger.kernel.org>, Sean Paul <sean@poorly.run>,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
- freedreno@lists.freedesktop.org, Will Deacon <will@kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <20220821181917.1188021-1-robdclark@gmail.com>
- <20220821181917.1188021-5-robdclark@gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220821181917.1188021-5-robdclark@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220822122759.GA14932@lst.de>
 
-On 2022-08-21 19:19, Rob Clark wrote:
-> From: Rob Clark <robdclark@chromium.org>
+On Mon 22-08-22 14:27:59, Christoph Hellwig wrote:
+> On Mon, Aug 22, 2022 at 02:09:13PM +0200, Michal Hocko wrote:
+> > OK, so you are worried about configurations that lack ZONE_DMA32 because
+> > that memory range is covered by ZONE_DMA? I thought though simply do not
+> > have CONFIG_ZONE_DMA32. Or am I wrong here?
 > 
-> Optimize TLB invalidation by using different ASID for each set of
-> pgtables.  There can be scenarios where multiple processes end up
-> with the same ASID (such as >256 processes using the GPU), but this
-> is harmless, it will only result in some over-invalidation (but
-> less over-invalidation compared to using ASID=0 for all processes)
+> Zones can disappear when they are empty.  Normally that affects
+> ZONE_NORMAL and ZONE_HIGHMEM, but it can also happen to ZONE_DMA32
+> when there is not enough memory.
 
-Um, if you're still relying on the GPU doing an invalidate-all-by-ASID 
-whenever it switches a TTBR, then there's only ever one ASID live in the 
-TLBs at once, so it really doesn't matter whether its value stays the 
-same or changes. This seems like a whole chunk of complexity to achieve 
-nothing :/
+Correct but that is essentially the same problem as ZONE_DMA becoming
+empty. Or maybe I am just completely missing what you are trying to
+say/ask?
 
-If you could actually use multiple ASIDs in a meaningful way to avoid 
-any invalidations, you'd need to do considerably more work to keep track 
-of reuse, and those races would probably be a lot less benign.
+My whole point was that if those zones are configured and you cannot
+pre-allocate the pool then this can be either a result of OOM on that
+zone or zone completely empty. In either case the pool would be empty
+and if that is something worth bothering^Wnotifying an admin about then
+better provide something useful rather than over messaging for one case
+and be silent about the other. See my point?
 
-Robin.
-
-.> Signed-off-by: Rob Clark <robdclark@chromium.org>
-> ---
->   drivers/gpu/drm/msm/msm_iommu.c | 15 ++++++++++-----
->   1 file changed, 10 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
-> index a54ed354578b..94c8c09980d1 100644
-> --- a/drivers/gpu/drm/msm/msm_iommu.c
-> +++ b/drivers/gpu/drm/msm/msm_iommu.c
-> @@ -33,6 +33,8 @@ static int msm_iommu_pagetable_unmap(struct msm_mmu *mmu, u64 iova,
->   		size_t size)
->   {
->   	struct msm_iommu_pagetable *pagetable = to_pagetable(mmu);
-> +	struct adreno_smmu_priv *adreno_smmu =
-> +		dev_get_drvdata(pagetable->parent->dev);
->   	struct io_pgtable_ops *ops = pagetable->pgtbl_ops;
->   	size_t unmapped = 0;
->   
-> @@ -43,7 +45,7 @@ static int msm_iommu_pagetable_unmap(struct msm_mmu *mmu, u64 iova,
->   		size -= 4096;
->   	}
->   
-> -	iommu_flush_iotlb_all(to_msm_iommu(pagetable->parent)->domain);
-> +	adreno_smmu->tlb_inv_by_id(adreno_smmu->cookie, pagetable->asid);
->   
->   	return (unmapped == size) ? 0 : -EINVAL;
->   }
-> @@ -147,6 +149,7 @@ static int msm_fault_handler(struct iommu_domain *domain, struct device *dev,
->   
->   struct msm_mmu *msm_iommu_pagetable_create(struct msm_mmu *parent)
->   {
-> +	static atomic_t asid = ATOMIC_INIT(1);
->   	struct adreno_smmu_priv *adreno_smmu = dev_get_drvdata(parent->dev);
->   	struct msm_iommu *iommu = to_msm_iommu(parent);
->   	struct msm_iommu_pagetable *pagetable;
-> @@ -210,12 +213,14 @@ struct msm_mmu *msm_iommu_pagetable_create(struct msm_mmu *parent)
->   	pagetable->ttbr = ttbr0_cfg.arm_lpae_s1_cfg.ttbr;
->   
->   	/*
-> -	 * TODO we would like each set of page tables to have a unique ASID
-> -	 * to optimize TLB invalidation.  But iommu_flush_iotlb_all() will
-> -	 * end up flushing the ASID used for TTBR1 pagetables, which is not
-> -	 * what we want.  So for now just use the same ASID as TTBR1.
-> +	 * ASID 0 is used for kernel mapped buffers in TTBR1, which we
-> +	 * do not need to invalidate when unmapping from TTBR0 pgtables.
-> +	 * The hw ASID is at *least* 8b, but can be 16b.  We just assume
-> +	 * the worst:
->   	 */
->   	pagetable->asid = 0;
-> +	while (!pagetable->asid)
-> +		pagetable->asid = atomic_inc_return(&asid) & 0xff;
->   
->   	return &pagetable->base;
->   }
+-- 
+Michal Hocko
+SUSE Labs
