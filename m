@@ -1,115 +1,69 @@
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A71437FA
-	for <iommu@lists.linux.dev>; Mon, 22 Aug 2022 11:55:19 +0000 (UTC)
-Received: by mail-lf1-f41.google.com with SMTP id bq23so5863716lfb.7
-        for <iommu@lists.linux.dev>; Mon, 22 Aug 2022 04:55:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=+w8P0+jPioBvyQX26soRJFaC6+SGfdkq8j/+0JNC+e0=;
-        b=AER/8rUkasnKGFksiHBr/K+aXL2clTOJNVuXg6OcUviHt2NDnY58m+ZqACS4ee9TRx
-         qEtl1ldAOea6CByntkGtXvhggmwgKKAWTAt7CeL9daZlpMX3n4WGfal3KgCXlRc0yXvu
-         3Ta9JCf3HOEFHhuwWQtHGEUfVTv0XXbFLGy5xhLzWgPps+pk69tl5cCpHYp+z8rLxTXO
-         mIb19Eg7N/Hx0A5uFABlQGgAeDfbWfyEHbZhO8CTQ6e9kObzERAOTyl5IhrGCzp7F/X5
-         6h7hUI9KtbUylHPJTxXY4ZG83ZhjjMAPw65m12NqeQhTQazdE/X7qf5gFyu64h6FWq6R
-         GpTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=+w8P0+jPioBvyQX26soRJFaC6+SGfdkq8j/+0JNC+e0=;
-        b=u/87WI+MBl2R5f+/EFaikZTmRnTKESijd3ryUFhp5C737SPt3XgSHjeu6117tqpm1Y
-         iFzCrS7pyJjcePFbYRQ5l2BdJhdX7IoaDCUFVoUAHvf18WSNw/q3mlCTT5X3+nF2u2lv
-         2oGpTBN1gwoZycBF0ops3R+M2hWD+4Yv5ZKoFebNMkTwGE21iU4AhMaOZj74isJXf2U7
-         q7wmmOiMct4F4Q7TGy8FoAyIuWJKfxlve7KelFJ6QdyvARoEDHFPn8rMnR0fyhLCSo5Y
-         sUfobtF5OtpowHtL4zw0+NScAauQIgl++nFPAQs24u+3NbbwJksE2u3BSokzrTj/kE9m
-         YiHA==
-X-Gm-Message-State: ACgBeo2AwkoaI+eVZJlvFsrvsyjIkQF1mYFm4cyRi1DHmcXr2ZhWtBRr
-	LFcnjN11+KHXB+hoAxeydB2YNKtKkrqM+WDFvxmDRw==
-X-Google-Smtp-Source: AA6agR4TgMFnxun6qmWiRUjIOb95MacJPMwE2CqoxsUC5JiAXN89Frr0O4gZNCNpcV8Qzc9RSnpV70qRhd8su2IRP6c=
-X-Received: by 2002:a05:6512:239f:b0:491:cd95:f67d with SMTP id
- c31-20020a056512239f00b00491cd95f67dmr6606005lfv.184.1661169317655; Mon, 22
- Aug 2022 04:55:17 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DB9B7FA
+	for <iommu@lists.linux.dev>; Mon, 22 Aug 2022 12:09:18 +0000 (UTC)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 5985C1FE82;
+	Mon, 22 Aug 2022 12:09:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1661170154; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=BQf11C2SztSHaAc1fCCEYoFCW50NZH5mzh9dLltQPVs=;
+	b=p4lTmBdyCOljd88Lou0ApPiNTcrg55ISrXyy2Z2lgw6d95MbM2hP18vHea0UGA5CSG1Fju
+	7wgNx7ZgREOAm0apcWAR9/w46u0ucAGD/W+pMXpik/faroXcSl+gpHFdH+Ac/ev+kpgFsw
+	IdmcniYJyPob4UtDLTruYq88xgtW5xk=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 36B9F13523;
+	Mon, 22 Aug 2022 12:09:14 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+	by imap2.suse-dmz.suse.de with ESMTPSA
+	id gm7eC+pxA2MlQQAAMHmgww
+	(envelope-from <mhocko@suse.com>); Mon, 22 Aug 2022 12:09:14 +0000
+Date: Mon, 22 Aug 2022 14:09:13 +0200
+From: Michal Hocko <mhocko@suse.com>
+To: Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	David Rientjes <rientjes@google.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] dma-pool: limit DMA and DMA32 zone size pools
+Message-ID: <YwNx6Q+FSwpKUOQ2@dhcp22.suse.cz>
+References: <20220817060647.1032426-1-hch@lst.de>
+ <20220817060647.1032426-4-hch@lst.de>
+ <Yvzk2wE7ta+zSZOQ@dhcp22.suse.cz>
+ <20220821104416.GC30530@lst.de>
+ <YwNBHbYXpatJHD0K@dhcp22.suse.cz>
+ <20220822111447.GA8935@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20220819221616.2107893-1-saravanak@google.com> <20220819221616.2107893-4-saravanak@google.com>
-In-Reply-To: <20220819221616.2107893-4-saravanak@google.com>
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Date: Mon, 22 Aug 2022 13:54:41 +0200
-Message-ID: <CAPDyKFqFKm4t=ccs82Mb8Qaa6N+KxyNabpceYHWF4W6n2D+jPg@mail.gmail.com>
-Subject: Re: [PATCH v2 3/4] Revert "PM: domains: Delete usage of driver_deferred_probe_check_state()"
-To: Saravana Kannan <saravanak@google.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
-	Kevin Hilman <khilman@kernel.org>, Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>, 
-	Russell King <linux@armlinux.org.uk>, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Peng Fan <peng.fan@nxp.com>, Luca Weiss <luca.weiss@fairphone.com>, 
-	Doug Anderson <dianders@chromium.org>, Colin Foster <colin.foster@in-advantage.com>, 
-	Tony Lindgren <tony@atomide.com>, Alexander Stein <alexander.stein@ew.tq-group.com>, 
-	Naresh Kamboju <naresh.kamboju@linaro.org>, Geert Uytterhoeven <geert@linux-m68k.org>, 
-	Jean-Philippe Brucker <jpb@kernel.org>, kernel-team@android.com, linux-kernel@vger.kernel.org, 
-	linux-pm@vger.kernel.org, iommu@lists.linux.dev, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220822111447.GA8935@lst.de>
 
-On Sat, 20 Aug 2022 at 00:16, Saravana Kannan <saravanak@google.com> wrote:
->
-> This reverts commit 5a46079a96451cfb15e4f5f01f73f7ba24ef851a.
->
-> Quite a few issues have been reported [1][2][3][4][5][6] on the original
-> commit. While about half of them have been fixed, I'll need to fix the rest
-> before driver_deferred_probe_check_state() can be deleted. So, revert the
-> deletion for now.
->
-> [1] - https://lore.kernel.org/all/DU0PR04MB941735271F45C716342D0410886B9@DU0PR04MB9417.eurprd04.prod.outlook.com/
-> [2] - https://lore.kernel.org/all/CM6REZS9Z8AC.2KCR9N3EFLNQR@otso/
-> [3] - https://lore.kernel.org/all/CAD=FV=XYVwaXZxqUKAuM5c7NiVjFz5C6m6gAHSJ7rBXBF94_Tg@mail.gmail.com/
-> [4] - https://lore.kernel.org/all/Yvpd2pwUJGp7R+YE@euler/
-> [5] - https://lore.kernel.org/lkml/20220601070707.3946847-2-saravanak@google.com/
-> [6] - https://lore.kernel.org/all/CA+G9fYt_cc5SiNv1Vbse=HYY_+uc+9OYPZuJ-x59bROSaLN6fw@mail.gmail.com/
->
-> Fixes: 5a46079a9645 ("PM: domains: Delete usage of driver_deferred_probe_check_state()")
-> Reported-by: Peng Fan <peng.fan@nxp.com>
-> Reported-by: Luca Weiss <luca.weiss@fairphone.com>
-> Reported-by: Doug Anderson <dianders@chromium.org>
-> Reported-by: Colin Foster <colin.foster@in-advantage.com>
-> Reported-by: Tony Lindgren <tony@atomide.com>
-> Reported-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-> Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-> Reviewed-by: Tony Lindgren <tony@atomide.com>
-> Tested-by: Tony Lindgren <tony@atomide.com>
-> Signed-off-by: Saravana Kannan <saravanak@google.com>
+On Mon 22-08-22 13:14:47, Christoph Hellwig wrote:
+> On Mon, Aug 22, 2022 at 10:41:01AM +0200, Michal Hocko wrote:
+> > ZONE_DMA existance is not runtime controlable (at least on x86).
+> 
+> This is more about ZONE_DMA32 that can disappear if all memory is
+> inside ZONE_DMA.  That is highly unusual (but still possible) with a
+> tiny x86-style ZONE_DMA, but can happen with a larger one other
+> architectures.
 
-Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
+OK, so you are worried about configurations that lack ZONE_DMA32 because
+that memory range is covered by ZONE_DMA? I thought though simply do not
+have CONFIG_ZONE_DMA32. Or am I wrong here?
 
-Kind regards
-Uffe
-
-> ---
->  drivers/base/power/domain.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
-> index 5a2e0232862e..55a10e6d4e2a 100644
-> --- a/drivers/base/power/domain.c
-> +++ b/drivers/base/power/domain.c
-> @@ -2733,7 +2733,7 @@ static int __genpd_dev_pm_attach(struct device *dev, struct device *base_dev,
->                 mutex_unlock(&gpd_list_lock);
->                 dev_dbg(dev, "%s() failed to find PM domain: %ld\n",
->                         __func__, PTR_ERR(pd));
-> -               return -ENODEV;
-> +               return driver_deferred_probe_check_state(base_dev);
->         }
->
->         dev_dbg(dev, "adding to PM domain %s\n", pd->name);
-> --
-> 2.37.1.595.g718a3a8f04-goog
->
+-- 
+Michal Hocko
+SUSE Labs
