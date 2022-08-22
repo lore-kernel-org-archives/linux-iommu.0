@@ -1,121 +1,74 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6162F657
-	for <iommu@lists.linux.dev>; Mon, 22 Aug 2022 14:38:10 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 11A3C12FC;
-	Mon, 22 Aug 2022 07:38:13 -0700 (PDT)
-Received: from [10.57.15.77] (unknown [10.57.15.77])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E017E3F70D;
-	Mon, 22 Aug 2022 07:38:07 -0700 (PDT)
-Message-ID: <4650e8ff-86e1-d65e-bf87-c785013f3e08@arm.com>
-Date: Mon, 22 Aug 2022 15:38:02 +0100
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 711DE4A32
+	for <iommu@lists.linux.dev>; Mon, 22 Aug 2022 20:09:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661198943; x=1692734943;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=FZlZNnLntdAc6dq6GYaLZUJ2/390X4kLPdz2Q4ZKkfg=;
+  b=XB86WlIBWGHuWgbjpj7Bg0KiJ/uRsLvxVfUNxqabNq5oe2O40k4Eg5VS
+   a1HOAL31VNqrm0LRP3bZibDiCFtk6io7jZn708C88wUF5s5sYm1YOAkPj
+   CtjvQeVv6QFMDALMACeb5vXwd4YpTsUw2qGl9tdv4aM8TkhfWFp8eDESQ
+   zjOvALXaWpCM4et/Fp0a2ngCgke8V0LNFwlHtOqjjyjhM6HGLLD+6R1Yx
+   lpS46NMRtYYt1C6M0ZDEwJ8q8FH1ZxiJxbv7hJloHjn+rD/8sRW9u6L0f
+   cytLtMz+Q7P/Dd7Ygz/U0NzjhPSgsk61FNkK/yKIbOZj6ppEP956hrsK8
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="319547405"
+X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
+   d="scan'208";a="319547405"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 13:09:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,255,1654585200"; 
+   d="scan'208";a="698414214"
+Received: from otc-wp-03.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.79])
+  by FMSMGA003.fm.intel.com with ESMTP; 22 Aug 2022 13:09:02 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: LKML <linux-kernel@vger.kernel.org>,
+	iommu@lists.linux.dev,
+	x86@kernel.org,
+	Joerg Roedel <joro@8bytes.org>,
+	"Lu Baolu" <baolu.lu@linux.intel.com>
+Cc: Raj Ashok <ashok.raj@intel.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Dave Hansen <dave.hansen@intel.com>,
+	"Borislav Petkov" <bp@alien8.de>,
+	"Ingo Molnar" <mingo@redhat.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	Yi Liu <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH 0/2] Use the correct page tables for SVA under PTI
+Date: Mon, 22 Aug 2022 13:12:11 -0700
+Message-Id: <20220822201213.352289-1-jacob.jun.pan@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 4/5] drm/msm: Use separate ASID for each set of pgtables
-Content-Language: en-GB
-From: Robin Murphy <robin.murphy@arm.com>
-To: Rob Clark <robdclark@gmail.com>, dri-devel@lists.freedesktop.org
-Cc: Rob Clark <robdclark@chromium.org>, freedreno@lists.freedesktop.org,
- Will Deacon <will@kernel.org>, David Airlie <airlied@linux.ie>,
- linux-arm-msm@vger.kernel.org, Abhinav Kumar <quic_abhinavk@quicinc.com>,
- open list <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>
-References: <20220821181917.1188021-1-robdclark@gmail.com>
- <20220821181917.1188021-5-robdclark@gmail.com>
- <c8543ace-65cd-b8a8-499c-1b051867366b@arm.com>
-In-Reply-To: <c8543ace-65cd-b8a8-499c-1b051867366b@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 2022-08-22 14:52, Robin Murphy wrote:
-> On 2022-08-21 19:19, Rob Clark wrote:
->> From: Rob Clark <robdclark@chromium.org>
->>
->> Optimize TLB invalidation by using different ASID for each set of
->> pgtables.  There can be scenarios where multiple processes end up
->> with the same ASID (such as >256 processes using the GPU), but this
->> is harmless, it will only result in some over-invalidation (but
->> less over-invalidation compared to using ASID=0 for all processes)
-> 
-> Um, if you're still relying on the GPU doing an invalidate-all-by-ASID 
-> whenever it switches a TTBR, then there's only ever one ASID live in the 
-> TLBs at once, so it really doesn't matter whether its value stays the 
-> same or changes. This seems like a whole chunk of complexity to achieve 
-> nothing :/
-> 
-> If you could actually use multiple ASIDs in a meaningful way to avoid 
-> any invalidations, you'd need to do considerably more work to keep track 
-> of reuse, and those races would probably be a lot less benign.
+Shared virtual addressing allows DMA to user virtual address, But the
+x86 IOMMU drivers are using the kernel copy of the process page tables
+when PTI is enabled. This patchset tightens the security intended by
+PTI by performing SVA binding with the appropriate process PGDs.
 
-Oh, and on top of that, if you did want to go down that route then 
-chances are you'd then also want to start looking at using global 
-mappings in TTBR1 to avoid increased TLB pressure from kernel buffers, 
-and then we'd run up against some pretty horrid MMU-500 errata which so 
-far I've been happy to ignore on the basis that Linux doesn't use global 
-mappings. Spoiler alert: unless you can additionally convert everything 
-to invalidate by VA, the workaround for #752357 most likely makes the 
-whole idea moot.
+I have tested on Intel platform only, would appreciate itif someone
+could help with testing SVA-KPTI on an AMD system.
 
-Robin.
+Jacob Pan (2):
+  x86: mm: Allow PTI helpers to be used outside x86/mm
+  iommu: Use the user PGD for SVA if PTI is enabled
 
->> Signed-off-by: Rob Clark <robdclark@chromium.org>
->> ---
->>   drivers/gpu/drm/msm/msm_iommu.c | 15 ++++++++++-----
->>   1 file changed, 10 insertions(+), 5 deletions(-)
->>
->> diff --git a/drivers/gpu/drm/msm/msm_iommu.c 
->> b/drivers/gpu/drm/msm/msm_iommu.c
->> index a54ed354578b..94c8c09980d1 100644
->> --- a/drivers/gpu/drm/msm/msm_iommu.c
->> +++ b/drivers/gpu/drm/msm/msm_iommu.c
->> @@ -33,6 +33,8 @@ static int msm_iommu_pagetable_unmap(struct msm_mmu 
->> *mmu, u64 iova,
->>           size_t size)
->>   {
->>       struct msm_iommu_pagetable *pagetable = to_pagetable(mmu);
->> +    struct adreno_smmu_priv *adreno_smmu =
->> +        dev_get_drvdata(pagetable->parent->dev);
->>       struct io_pgtable_ops *ops = pagetable->pgtbl_ops;
->>       size_t unmapped = 0;
->> @@ -43,7 +45,7 @@ static int msm_iommu_pagetable_unmap(struct msm_mmu 
->> *mmu, u64 iova,
->>           size -= 4096;
->>       }
->> -    iommu_flush_iotlb_all(to_msm_iommu(pagetable->parent)->domain);
->> +    adreno_smmu->tlb_inv_by_id(adreno_smmu->cookie, pagetable->asid);
->>       return (unmapped == size) ? 0 : -EINVAL;
->>   }
->> @@ -147,6 +149,7 @@ static int msm_fault_handler(struct iommu_domain 
->> *domain, struct device *dev,
->>   struct msm_mmu *msm_iommu_pagetable_create(struct msm_mmu *parent)
->>   {
->> +    static atomic_t asid = ATOMIC_INIT(1);
->>       struct adreno_smmu_priv *adreno_smmu = 
->> dev_get_drvdata(parent->dev);
->>       struct msm_iommu *iommu = to_msm_iommu(parent);
->>       struct msm_iommu_pagetable *pagetable;
->> @@ -210,12 +213,14 @@ struct msm_mmu 
->> *msm_iommu_pagetable_create(struct msm_mmu *parent)
->>       pagetable->ttbr = ttbr0_cfg.arm_lpae_s1_cfg.ttbr;
->>       /*
->> -     * TODO we would like each set of page tables to have a unique ASID
->> -     * to optimize TLB invalidation.  But iommu_flush_iotlb_all() will
->> -     * end up flushing the ASID used for TTBR1 pagetables, which is not
->> -     * what we want.  So for now just use the same ASID as TTBR1.
->> +     * ASID 0 is used for kernel mapped buffers in TTBR1, which we
->> +     * do not need to invalidate when unmapping from TTBR0 pgtables.
->> +     * The hw ASID is at *least* 8b, but can be 16b.  We just assume
->> +     * the worst:
->>        */
->>       pagetable->asid = 0;
->> +    while (!pagetable->asid)
->> +        pagetable->asid = atomic_inc_return(&asid) & 0xff;
->>       return &pagetable->base;
->>   }
+ arch/x86/include/asm/pgtable.h | 5 +++++
+ drivers/iommu/amd/iommu_v2.c   | 4 +++-
+ drivers/iommu/intel/svm.c      | 5 ++++-
+ 3 files changed, 12 insertions(+), 2 deletions(-)
+
+-- 
+2.25.1
+
