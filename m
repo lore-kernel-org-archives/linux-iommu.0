@@ -1,31 +1,31 @@
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2ED78A3D
-	for <iommu@lists.linux.dev>; Tue, 23 Aug 2022 06:21:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79F95A3D
+	for <iommu@lists.linux.dev>; Tue, 23 Aug 2022 06:21:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661235687; x=1692771687;
+  t=1661235689; x=1692771689;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=5JeMT2LgTqRuwYWaX9utgg7cy4yddjK8TPBkuYIVeIM=;
-  b=W+X+B3aBhHNeXrIzmbmmPs308BX1sYnSvclMWNRNmgHEVKEtkeqnnHU3
-   iJnDBv2v9/kpPcbeLgVLgxmPlDvHanSpLNIgfthfd/Q+otcTLTP2uL+5g
-   GxDzTU3Yj5WMwmdP2fxQX814VNkkr5B3DOuDhBE2cS++VJsKFJi09MVZW
-   mrpSA/keaVJRbYxCkgeW7Hq2ocLrNKsjVOYZ+VRrNJ/eiBjBnCYEsQpgJ
-   lqk04nBdkIEzDwlixIeYprShupQukHmfI6GL8PEtz/5x5biHHkOWhAnE6
-   V8CJvXbXEZEvS8G6q5hmTxii9XPIY7kR1iOgB/VpNHvnTbeo0WVSqOOf1
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="273356222"
+  bh=U+M8e4GJ4FBPoymF38Wkl0eJWfmafa9LGKnuwVCfQVg=;
+  b=kfwURYt+G3l8uDvoVPCNDlaNrxE4kQgad0vUVrMzBamUobMND8u6UFuF
+   RFKbj9lO/8wRaFJjviU0TnIWh4/pgh64fvoqBR8eOjQk9m5AJPlkIr4Jn
+   KmCQJEgQ90cwkdU1Z+XAMrTMm6i3igfCh8Y8ZyuDq9gazXZ59k73LAhx4
+   cV6C2kMO/hvAjNO7GTvseg81Bm+deq3EwDqxlntp2WnirOjRCdzmYGx34
+   HYIJ08xtFfP63ZtO4aBrhiVBx6ueXRN43ZEy8WwlROlpeK7ZAYut7LeFo
+   wXDUctaCKtwTrMMWNRqRpkekGbjlnuyv0f6yw4SuYngR28rmUVc7GB1Zp
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="273356228"
 X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
-   d="scan'208";a="273356222"
+   d="scan'208";a="273356228"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 23:21:26 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 23:21:29 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
-   d="scan'208";a="605553201"
+   d="scan'208";a="605553212"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga007.jf.intel.com with ESMTP; 22 Aug 2022 23:21:24 -0700
+  by orsmga007.jf.intel.com with ESMTP; 22 Aug 2022 23:21:27 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: Kevin Tian <kevin.tian@intel.com>,
@@ -35,9 +35,9 @@ Cc: Kevin Tian <kevin.tian@intel.com>,
 	Wen Jin <wen.jin@intel.com>,
 	iommu@lists.linux.dev,
 	iommu@lists.linux-foundation.org
-Subject: [PATCH 3/4] iommu/vt-d: Fix recursive lock issue in iommu_flush_dev_iotlb()
-Date: Tue, 23 Aug 2022 14:15:56 +0800
-Message-Id: <20220823061557.1631056-4-baolu.lu@linux.intel.com>
+Subject: [PATCH 4/4] iommu/vt-d: Fix lockdep splat due to klist iteration in atomic context
+Date: Tue, 23 Aug 2022 14:15:57 +0800
+Message-Id: <20220823061557.1631056-5-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220823061557.1631056-1-baolu.lu@linux.intel.com>
 References: <20220823061557.1631056-1-baolu.lu@linux.intel.com>
@@ -49,206 +49,144 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The per domain spinlock is acquired in iommu_flush_dev_iotlb(), which
-is possbile to be called in the interrupt context. For example, the
-drm-intel's CI system got completely blocked with below error:
+With CONFIG_INTEL_IOMMU_DEBUGFS enabled, below lockdep splat are seen
+when an I/O fault occurs on a machine with an Intel IOMMU in it.
 
+ DMAR: DRHD: handling fault status reg 3
+ DMAR: [DMA Write NO_PASID] Request device [00:1a.0] fault addr 0x0
+       [fault reason 0x05] PTE Write access is not set
+ DMAR: Dump dmar0 table entries for IOVA 0x0
+ DMAR: root entry: 0x0000000127f42001
+ DMAR: context entry: hi 0x0000000000001502, low 0x000000012d8ab001
+ ================================
  WARNING: inconsistent lock state
- 6.0.0-rc1-CI_DRM_11990-g6590d43d39b9+ #1 Not tainted
+ 5.20.0-0.rc0.20220812git7ebfc85e2cd7.10.fc38.x86_64 #1 Not tainted
  --------------------------------
- inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
- swapper/6/0 [HC0[0]:SC1[1]:HE1:SE0] takes:
- ffff88810440d678 (&domain->lock){+.?.}-{2:2}, at: iommu_flush_dev_iotlb.part.61+0x23/0x80
- {SOFTIRQ-ON-W} state was registered at:
-   lock_acquire+0xd3/0x310
-   _raw_spin_lock+0x2a/0x40
-   domain_update_iommu_cap+0x20b/0x2c0
-   intel_iommu_attach_device+0x5bd/0x860
-   __iommu_attach_device+0x18/0xe0
-   bus_iommu_probe+0x1f3/0x2d0
-   bus_set_iommu+0x82/0xd0
-   intel_iommu_init+0xe45/0x102a
-   pci_iommu_init+0x9/0x31
-   do_one_initcall+0x53/0x2f0
-   kernel_init_freeable+0x18f/0x1e1
-   kernel_init+0x11/0x120
+ inconsistent {HARDIRQ-ON-W} -> {IN-HARDIRQ-W} usage.
+ rngd/1006 [HC1[1]:SC0[0]:HE0:SE1] takes:
+ ff177021416f2d78 (&k->k_lock){?.+.}-{2:2}, at: klist_next+0x1b/0x160
+ {HARDIRQ-ON-W} state was registered at:
+   lock_acquire+0xce/0x2d0
+   _raw_spin_lock+0x33/0x80
+   klist_add_tail+0x46/0x80
+   bus_add_device+0xee/0x150
+   device_add+0x39d/0x9a0
+   add_memory_block+0x108/0x1d0
+   memory_dev_init+0xe1/0x117
+   driver_init+0x43/0x4d
+   kernel_init_freeable+0x1c2/0x2cc
+   kernel_init+0x16/0x140
    ret_from_fork+0x1f/0x30
- irq event stamp: 162354
- hardirqs last  enabled at (162354): [<ffffffff81b59274>] _raw_spin_unlock_irqrestore+0x54/0x70
- hardirqs last disabled at (162353): [<ffffffff81b5901b>] _raw_spin_lock_irqsave+0x4b/0x50
- softirqs last  enabled at (162338): [<ffffffff81e00323>] __do_softirq+0x323/0x48e
- softirqs last disabled at (162349): [<ffffffff810c1588>] irq_exit_rcu+0xb8/0xe0
- other info that might help us debug this:
-  Possible unsafe locking scenario:
-        CPU0
-        ----
-   lock(&domain->lock);
-   <Interrupt>
-     lock(&domain->lock);
-   *** DEADLOCK ***
- 1 lock held by swapper/6/0:
+ irq event stamp: 7812
+ hardirqs last  enabled at (7811): [<ffffffff85000e86>] asm_sysvec_apic_timer_interrupt+0x16/0x20
+ hardirqs last disabled at (7812): [<ffffffff84f16894>] irqentry_enter+0x54/0x60
+ softirqs last  enabled at (7794): [<ffffffff840ff669>] __irq_exit_rcu+0xf9/0x170
+ softirqs last disabled at (7787): [<ffffffff840ff669>] __irq_exit_rcu+0xf9/0x170
 
-This coverts the spin_lock/unlock() into the irq save/restore varieties
-to fix the recursive locking issues.
+The klist iterator functions using spin_*lock_irq*() but the klist
+insertion functions using spin_*lock(), combined with the Intel DMAR
+IOMMU driver iterating over klists from atomic (hardirq) context, where
+pci_get_domain_bus_and_slot() calls into bus_find_device() which iterates
+over klists.
 
-Fixes: ffd5869d93530 ("iommu/vt-d: Replace spin_lock_irqsave() with spin_lock()")
+As currently there's no plan to fix the klist to make it safe to use in
+atomic context, this fixes the lockdep splat by avoid calling
+pci_get_domain_bus_and_slot() in the hardirq context.
+
+Fixes: 8ac0b64b9735 ("iommu/vt-d: Use pci_get_domain_bus_and_slot() in pgtable_walk()")
+Reported-by: Lennert Buytenhek <buytenh@wantstofly.org>
+Link: https://lore.kernel.org/linux-iommu/Yvo2dfpEh%2FWC+Wrr@wantstofly.org/
+Link: https://lore.kernel.org/linux-iommu/YvyBdPwrTuHHbn5X@wantstofly.org/
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Acked-by: Lucas De Marchi <lucas.demarchi@intel.com>
-Link: https://lore.kernel.org/r/20220817025650.3253959-1-baolu.lu@linux.intel.com
+Link: https://lore.kernel.org/r/20220819015949.4795-1-baolu.lu@linux.intel.com
 ---
- drivers/iommu/intel/iommu.c | 39 ++++++++++++++++++++++---------------
- 1 file changed, 23 insertions(+), 16 deletions(-)
+ drivers/iommu/intel/iommu.c | 47 +++++++++++++++----------------------
+ 1 file changed, 19 insertions(+), 28 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index b155c7af7d15..e3fe1a148187 100644
+index e3fe1a148187..64d30895a4c8 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -515,8 +515,9 @@ static int domain_update_device_node(struct dmar_domain *domain)
- {
- 	struct device_domain_info *info;
- 	int nid = NUMA_NO_NODE;
-+	unsigned long flags;
- 
--	spin_lock(&domain->lock);
-+	spin_lock_irqsave(&domain->lock, flags);
- 	list_for_each_entry(info, &domain->devices, link) {
- 		/*
- 		 * There could possibly be multiple device numa nodes as devices
-@@ -528,7 +529,7 @@ static int domain_update_device_node(struct dmar_domain *domain)
- 		if (nid != NUMA_NO_NODE)
- 			break;
- 	}
--	spin_unlock(&domain->lock);
-+	spin_unlock_irqrestore(&domain->lock, flags);
- 
- 	return nid;
- }
-@@ -1362,19 +1363,20 @@ iommu_support_dev_iotlb(struct dmar_domain *domain, struct intel_iommu *iommu,
- 			u8 bus, u8 devfn)
- {
- 	struct device_domain_info *info;
-+	unsigned long flags;
- 
- 	if (!iommu->qi)
- 		return NULL;
- 
--	spin_lock(&domain->lock);
-+	spin_lock_irqsave(&domain->lock, flags);
- 	list_for_each_entry(info, &domain->devices, link) {
- 		if (info->iommu == iommu && info->bus == bus &&
- 		    info->devfn == devfn) {
--			spin_unlock(&domain->lock);
-+			spin_unlock_irqrestore(&domain->lock, flags);
- 			return info->ats_supported ? info : NULL;
- 		}
- 	}
--	spin_unlock(&domain->lock);
-+	spin_unlock_irqrestore(&domain->lock, flags);
- 
- 	return NULL;
- }
-@@ -1383,8 +1385,9 @@ static void domain_update_iotlb(struct dmar_domain *domain)
- {
- 	struct device_domain_info *info;
- 	bool has_iotlb_device = false;
-+	unsigned long flags;
- 
--	spin_lock(&domain->lock);
-+	spin_lock_irqsave(&domain->lock, flags);
- 	list_for_each_entry(info, &domain->devices, link) {
- 		if (info->ats_enabled) {
- 			has_iotlb_device = true;
-@@ -1392,7 +1395,7 @@ static void domain_update_iotlb(struct dmar_domain *domain)
- 		}
- 	}
- 	domain->has_iotlb_device = has_iotlb_device;
--	spin_unlock(&domain->lock);
-+	spin_unlock_irqrestore(&domain->lock, flags);
+@@ -813,32 +813,11 @@ static void free_context_table(struct intel_iommu *iommu)
  }
  
- static void iommu_enable_dev_iotlb(struct device_domain_info *info)
-@@ -1484,14 +1487,15 @@ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
- 				  u64 addr, unsigned mask)
+ #ifdef CONFIG_DMAR_DEBUG
+-static void pgtable_walk(struct intel_iommu *iommu, unsigned long pfn, u8 bus, u8 devfn)
++static void pgtable_walk(struct intel_iommu *iommu, unsigned long pfn,
++			 u8 bus, u8 devfn, struct dma_pte *parent, int level)
  {
- 	struct device_domain_info *info;
-+	unsigned long flags;
+-	struct device_domain_info *info;
+-	struct dma_pte *parent, *pte;
+-	struct dmar_domain *domain;
+-	struct pci_dev *pdev;
+-	int offset, level;
+-
+-	pdev = pci_get_domain_bus_and_slot(iommu->segment, bus, devfn);
+-	if (!pdev)
+-		return;
+-
+-	info = dev_iommu_priv_get(&pdev->dev);
+-	if (!info || !info->domain) {
+-		pr_info("device [%02x:%02x.%d] not probed\n",
+-			bus, PCI_SLOT(devfn), PCI_FUNC(devfn));
+-		return;
+-	}
+-
+-	domain = info->domain;
+-	level = agaw_to_level(domain->agaw);
+-	parent = domain->pgd;
+-	if (!parent) {
+-		pr_info("no page table setup\n");
+-		return;
+-	}
++	struct dma_pte *pte;
++	int offset;
  
- 	if (!domain->has_iotlb_device)
- 		return;
+ 	while (1) {
+ 		offset = pfn_level_offset(pfn, level);
+@@ -865,9 +844,10 @@ void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id,
+ 	struct pasid_entry *entries, *pte;
+ 	struct context_entry *ctx_entry;
+ 	struct root_entry *rt_entry;
++	int i, dir_index, index, level;
+ 	u8 devfn = source_id & 0xff;
+ 	u8 bus = source_id >> 8;
+-	int i, dir_index, index;
++	struct dma_pte *pgtable;
  
--	spin_lock(&domain->lock);
-+	spin_lock_irqsave(&domain->lock, flags);
- 	list_for_each_entry(info, &domain->devices, link)
- 		__iommu_flush_dev_iotlb(info, addr, mask);
--	spin_unlock(&domain->lock);
-+	spin_unlock_irqrestore(&domain->lock, flags);
+ 	pr_info("Dump %s table entries for IOVA 0x%llx\n", iommu->name, addr);
+ 
+@@ -895,8 +875,11 @@ void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id,
+ 		ctx_entry->hi, ctx_entry->lo);
+ 
+ 	/* legacy mode does not require PASID entries */
+-	if (!sm_supported(iommu))
++	if (!sm_supported(iommu)) {
++		level = agaw_to_level(ctx_entry->hi & 7);
++		pgtable = phys_to_virt(ctx_entry->lo & VTD_PAGE_MASK);
+ 		goto pgtable_walk;
++	}
+ 
+ 	/* get the pointer to pasid directory entry */
+ 	dir = phys_to_virt(ctx_entry->lo & VTD_PAGE_MASK);
+@@ -923,8 +906,16 @@ void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id,
+ 	for (i = 0; i < ARRAY_SIZE(pte->val); i++)
+ 		pr_info("pasid table entry[%d]: 0x%016llx\n", i, pte->val[i]);
+ 
++	if (pasid_pte_get_pgtt(pte) == PASID_ENTRY_PGTT_FL_ONLY) {
++		level = pte->val[2] & BIT_ULL(2) ? 5 : 4;
++		pgtable = phys_to_virt(pte->val[2] & VTD_PAGE_MASK);
++	} else {
++		level = agaw_to_level((pte->val[0] >> 2) & 0x7);
++		pgtable = phys_to_virt(pte->val[0] & VTD_PAGE_MASK);
++	}
++
+ pgtable_walk:
+-	pgtable_walk(iommu, addr >> VTD_PAGE_SHIFT, bus, devfn);
++	pgtable_walk(iommu, addr >> VTD_PAGE_SHIFT, bus, devfn, pgtable, level);
  }
+ #endif
  
- static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
-@@ -2453,6 +2457,7 @@ static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
- {
- 	struct device_domain_info *info = dev_iommu_priv_get(dev);
- 	struct intel_iommu *iommu;
-+	unsigned long flags;
- 	u8 bus, devfn;
- 	int ret;
- 
-@@ -2464,9 +2469,9 @@ static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
- 	if (ret)
- 		return ret;
- 	info->domain = domain;
--	spin_lock(&domain->lock);
-+	spin_lock_irqsave(&domain->lock, flags);
- 	list_add(&info->link, &domain->devices);
--	spin_unlock(&domain->lock);
-+	spin_unlock_irqrestore(&domain->lock, flags);
- 
- 	/* PASID table is mandatory for a PCI device in scalable mode. */
- 	if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev)) {
-@@ -4090,6 +4095,7 @@ static void dmar_remove_one_dev_info(struct device *dev)
- 	struct device_domain_info *info = dev_iommu_priv_get(dev);
- 	struct dmar_domain *domain = info->domain;
- 	struct intel_iommu *iommu = info->iommu;
-+	unsigned long flags;
- 
- 	if (!dev_is_real_dma_subdevice(info->dev)) {
- 		if (dev_is_pci(info->dev) && sm_supported(iommu))
-@@ -4101,9 +4107,9 @@ static void dmar_remove_one_dev_info(struct device *dev)
- 		intel_pasid_free_table(info->dev);
- 	}
- 
--	spin_lock(&domain->lock);
-+	spin_lock_irqsave(&domain->lock, flags);
- 	list_del(&info->link);
--	spin_unlock(&domain->lock);
-+	spin_unlock_irqrestore(&domain->lock, flags);
- 
- 	domain_detach_iommu(domain, iommu);
- 	info->domain = NULL;
-@@ -4422,19 +4428,20 @@ static void domain_set_force_snooping(struct dmar_domain *domain)
- static bool intel_iommu_enforce_cache_coherency(struct iommu_domain *domain)
- {
- 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+	unsigned long flags;
- 
- 	if (dmar_domain->force_snooping)
- 		return true;
- 
--	spin_lock(&dmar_domain->lock);
-+	spin_lock_irqsave(&dmar_domain->lock, flags);
- 	if (!domain_support_force_snooping(dmar_domain)) {
--		spin_unlock(&dmar_domain->lock);
-+		spin_unlock_irqrestore(&dmar_domain->lock, flags);
- 		return false;
- 	}
- 
- 	domain_set_force_snooping(dmar_domain);
- 	dmar_domain->force_snooping = true;
--	spin_unlock(&dmar_domain->lock);
-+	spin_unlock_irqrestore(&dmar_domain->lock, flags);
- 
- 	return true;
- }
 -- 
 2.25.1
 
