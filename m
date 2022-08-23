@@ -1,32 +1,32 @@
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A2D4EB8
-	for <iommu@lists.linux.dev>; Tue, 23 Aug 2022 07:30:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3045CA3B
+	for <iommu@lists.linux.dev>; Tue, 23 Aug 2022 07:33:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661239851; x=1692775851;
+  t=1661239991; x=1692775991;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=j51hMQhIOMj+pWMUO1f6irDGuNzX4i/XllUj8uvQjxw=;
-  b=J+aaFbYUgyZk3SN304mEVzUBpKbBJx03QDJhWlFhZ+8PtUOsO10YD6Q+
-   Clj8F9f+5i8SDEFz5XAin1JQDHFhj5YTh96nlkrCJzSpcn7HyEADG4BB1
-   abupMYzc2pQD10CWtFyOWg7YUh1LRyehgMEdU1n4j/RavpWvXMLBTyF0f
-   fuFuRvs++aNdrNQQWicqzGsWnMcPvXQ164qR7PN9bCKqVyAAaklkUD9+T
-   ysa6rrtzTRntWXJY1O/zaCGHaLkKqLZBJdhJqGzW+372pg+7lNJpgQKUQ
-   kSW61gut10lC8F+cOpX0zajNNR4T3JjxXaNRFZ3goqmHxIBte4TAT38ab
+  bh=nlUMuSoXu7uI2fet/FjE+vAKf53pL4Yjk/EYF4av+Jo=;
+  b=F9DqKPhgOdpgeUNCY+MAbQbTPqxl/VE5dE70xFZEQMQ3Ec1yC/iRnS0b
+   cLCed+yEAtBOz5O0bDe+SmI+1D3H2iXoRqvyenMWhV7x4FrFXUVSQAGgl
+   RSk9oHAsBbf+YPuFVckLVgCTC6r3ZzUCwxquSPrrTfCeYbEFDJg5peYtu
+   0dLxr0lMT0XvyhVOTw0lYa5iKkxKdOP+9to7FBG4LWnFjdOEy0zmHSzBu
+   ez09RGNl/SU7uNp8V9AHFxYzdqKsRZwfW0D5UuiGFYQSf3GaUtj9HDGdj
+   Uk2gHVUFpQruOWkQ64/syP6RbTeTh3qBUNz0K4ffN9laKWN+R8vy2BMpo
    Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="293614300"
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="379905958"
 X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
-   d="scan'208";a="293614300"
+   d="scan'208";a="379905958"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 00:30:31 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 00:33:10 -0700
 X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
-   d="scan'208";a="642344795"
+   d="scan'208";a="642345669"
 Received: from xujinlon-mobl.ccr.corp.intel.com (HELO [10.254.211.102]) ([10.254.211.102])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 00:30:23 -0700
-Message-ID: <d538aa77-ac9a-e436-5558-e97e9c68d222@linux.intel.com>
-Date: Tue, 23 Aug 2022 15:30:21 +0800
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 00:33:05 -0700
+Message-ID: <4e958e77-be17-4428-2fc3-48c1e66914fa@linux.intel.com>
+Date: Tue, 23 Aug 2022 15:33:04 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -45,118 +45,59 @@ Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
  Jacob jun Pan <jacob.jun.pan@intel.com>,
  Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony <tony.zhu@intel.com>,
  iommu@lists.linux.dev, linux-pci@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v11 05/13] iommu: Add attach/detach_dev_pasid iommu
- interface
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v11 07/13] iommu/vt-d: Add SVA domain support
 Content-Language: en-US
 To: Jason Gunthorpe <jgg@nvidia.com>
 References: <20220817012024.3251276-1-baolu.lu@linux.intel.com>
- <20220817012024.3251276-6-baolu.lu@linux.intel.com>
- <Yv4/s6lX6Nq+40tu@nvidia.com>
+ <20220817012024.3251276-8-baolu.lu@linux.intel.com>
+ <Yv5AQkcbhtaKFs1I@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Yv4/s6lX6Nq+40tu@nvidia.com>
+In-Reply-To: <Yv5AQkcbhtaKFs1I@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2022/8/18 21:33, Jason Gunthorpe wrote:
-> On Wed, Aug 17, 2022 at 09:20:16AM +0800, Lu Baolu wrote:
+On 2022/8/18 21:36, Jason Gunthorpe wrote:
+> On Wed, Aug 17, 2022 at 09:20:18AM +0800, Lu Baolu wrote:
 > 
->> +static int __iommu_set_group_pasid(struct iommu_domain *domain,
->> +				   struct iommu_group *group, ioasid_t pasid)
+>> +static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
+>> +				   struct device *dev, ioasid_t pasid)
 >> +{
->> +	struct iommu_domain *ops_domain;
->> +	struct group_device *device;
+>> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
+>> +	struct intel_iommu *iommu = info->iommu;
+>> +	struct iommu_sva *sva;
 >> +	int ret = 0;
 >> +
->> +	if (domain == group->blocking_domain)
->> +		ops_domain = xa_load(&group->pasid_array, pasid);
->> +	else
->> +		ops_domain = domain;
+>> +	mutex_lock(&pasid_mutex);
+>> +	/*
+>> +	 * Detach the domain if a blocking domain is set. Check the
+>> +	 * right domain type once the IOMMU driver supports a real
+>> +	 * blocking domain.
+>> +	 */
+>> +	if (!domain || domain->type == IOMMU_DOMAIN_UNMANAGED) {
+>> +		intel_svm_unbind_mm(dev, pasid);
 > 
-> This seems weird, why isn't this just always
+> See, I think this is exactly the wrong way to use the ops
 > 
-> domain->ops->set_dev_pasid()?
-
-Sure. I will fix this in the next version.
-
+> The blockin domain ops should have its own function that just
+> unconditionally calls intel_svm_unbind_mm()
 > 
->> +	if (curr) {
->> +		ret = xa_err(curr) ? : -EBUSY;
->> +		goto out_unlock;
->> +	}
+>> +	} else {
+>> +		struct mm_struct *mm = domain->mm;
 >> +
->> +	ret = __iommu_set_group_pasid(domain, group, pasid);
->> +	if (ret) {
->> +		__iommu_set_group_pasid(group->blocking_domain, group, pasid);
->> +		xa_erase(&group->pasid_array, pasid);
+>> +		sva = intel_svm_bind_mm(iommu, dev, mm);
+>> +		if (IS_ERR(sva))
+>> +			ret = PTR_ERR(sva);
 > 
-> I was looking at this trying to figure out why we are having
-> attach/detach semantics vs set and this error handling seems to be the
-> reason
+> And similarly the SVA domain should have its own op that does this SVM
+> call.
 > 
-> Lets add a comment because it is subtle thing:
-> 
->    Setting a PASID to a blocking domain cannot fail, so we can always
->    safely error unwind a failure to attach a domain back to the original
->    group configuration of the PASID being unused.
+> Muxing the ops with tests on the domain is an anti-pattern. In fact I
+> would say any time you see an op testing the domain->type it is very
+> suspicious.
 
-Updated.
-
-> 
->> +/*
->> + * iommu_detach_device_pasid() - Detach the domain from pasid of device
->> + * @domain: the iommu domain.
->> + * @dev: the attached device.
->> + * @pasid: the pasid of the device.
->> + *
->> + * The @domain must have been attached to @pasid of the @dev with
->> + * iommu_attach_device_pasid().
->> + */
->> +void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
->> +			       ioasid_t pasid)
-> 
-> Don't pass domain here?
-
-It is checked in the function to make sure that the detached domain is
-the same one as the previous attached one.
-
-> 
->> +/*
->> + * iommu_get_domain_for_dev_pasid() - Retrieve domain for @pasid of @dev
->> + * @dev: the queried device
->> + * @pasid: the pasid of the device
->> + *
->> + * This is a variant of iommu_get_domain_for_dev(). It returns the existing
->> + * domain attached to pasid of a device. It's only for internal use of the
->> + * IOMMU subsystem. The caller must take care to avoid any possible
->> + * use-after-free case.
-> 
-> How exactly does the caller manage that?
-
-"... the returned domain pointer could only be used before detaching
-from the device PASID."
-
-> 
->> + *
->> + * Return: attached domain on success, NULL otherwise.
->> + */
->> +struct iommu_domain *
->> +iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid)
->> +{
->> +	struct iommu_domain *domain;
->> +	struct iommu_group *group;
->> +
->> +	if (!pasid_valid(pasid))
->> +		return NULL;
-> 
-> Why bother? If the pasid is not valid then it definitely won't be in the xarray.
-
-Removed.
-
-> But otherwise this overall thing seems fine to me
-
-Thank you!
+Both agreed. Will fix them in the next version.
 
 Best regards,
 baolu
+
