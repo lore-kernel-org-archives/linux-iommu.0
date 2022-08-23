@@ -1,113 +1,162 @@
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA3B3A3B
-	for <iommu@lists.linux.dev>; Tue, 23 Aug 2022 07:10:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1661238652; x=1692774652;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=AHjGqzbn5AEN1DPa4fi7l7adOs/3lxb+lkmMBcf6O7Y=;
-  b=EM5szJ4T/D/6Rd96/K4w9Mr+XyPsNAeBs1WHewovviAW6V+6kJjpC7o8
-   E5n1c2LuNYzVeUhBZdHtDEzUIhQrbBovR0myGQwTlzQ9B7sC6jYb7d3nR
-   Lp1HCGWvf6Mr7Zi/kxB2IApZn3NZ41PbBYXqIJC+2JMLYkDFgWRpP8/eo
-   wttFIh4PRO5aBFdhji/FL589DgLsQxI8r3SRNXNvF3lAwMWzwIhSUA4dW
-   Vn4JokU+t9873lhkeXQjC2S6K6OD/82iiIVls41ivvFSy1Rj2zIdo69Dr
-   2xU1vomzyhxTQ7F0O87bbt2dO4O+DhUJ2fTlJTgb52s7be6s3cCVlYDRz
-   w==;
-X-IronPort-AV: E=Sophos;i="5.93,256,1654552800"; 
-   d="scan'208";a="25745654"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 23 Aug 2022 09:09:39 +0200
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Tue, 23 Aug 2022 09:09:39 +0200
-X-PGP-Universal: processed;
-	by tq-pgp-pr1.tq-net.de on Tue, 23 Aug 2022 09:09:39 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1661238579; x=1692774579;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=AHjGqzbn5AEN1DPa4fi7l7adOs/3lxb+lkmMBcf6O7Y=;
-  b=O89a04YFCt75bvQHupeYZgzQ5IYiSPHRv7/Fxvkika6jAVXwg8pHlMC/
-   GfY8tQiL/S9X6oBp+5oFeKnFmY+SmsnOZqAtL5AjTWnHQYxLkMoG6fBxW
-   /yF53dSYaqZ5vpsI+MstouunEiA3aSHDSofWZ5HXrtGbWVZpeKSJIK4WF
-   iCBr7UnZiFyAjSbnMNkJm/ECGZYEbFLS0pLLvnC5583ULKW0howNfU3PJ
-   CSQAgUGBO52Hz0//IRFg1bP4P7+wurLR9WK4hilmyPUK0MfOVsxY+RBKq
-   vOuObOQuDaklWU/x43onsnguZ9W+64b4fHdu8OAwR3RpFaKu/zVM4UJVS
-   g==;
-X-IronPort-AV: E=Sophos;i="5.93,256,1654552800"; 
-   d="scan'208";a="25745653"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 23 Aug 2022 09:09:39 +0200
-Received: from steina-w.localnet (unknown [10.123.49.11])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-	(No client certificate requested)
-	by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 16CBE280056;
-	Tue, 23 Aug 2022 09:09:39 +0200 (CEST)
-From: Alexander Stein <alexander.stein@ew.tq-group.com>
-To: Saravana Kannan <saravanak@google.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Kevin Hilman <khilman@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>, Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>, Russell King <linux@armlinux.org.uk>, "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Saravana Kannan <saravanak@google.com>, Peng Fan <peng.fan@nxp.com>, Luca Weiss <luca.weiss@fairphone.com>, Doug Anderson <dianders@chromium.org>, Colin Foster <colin.foster@in-advantage.com>, Tony Lindgren <tony@atomide.com>, Naresh Kamboju <naresh.kamboju@linaro.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Jean-Philippe Brucker <jpb@kernel.org>, kernel-team@android.com, linux-kernel@vger.kernel.org, linux-pm
- @vger.kernel.org, iommu@lists.linux.dev, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 0/4] Bring back driver_deferred_probe_check_state() for now
-Date: Tue, 23 Aug 2022 09:09:38 +0200
-Message-ID: <6787064.lOV4Wx5bFT@steina-w>
-Organization: TQ-Systems GmbH
-In-Reply-To: <20220819221616.2107893-1-saravanak@google.com>
-References: <20220819221616.2107893-1-saravanak@google.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A2D4EB8
+	for <iommu@lists.linux.dev>; Tue, 23 Aug 2022 07:30:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661239851; x=1692775851;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=j51hMQhIOMj+pWMUO1f6irDGuNzX4i/XllUj8uvQjxw=;
+  b=J+aaFbYUgyZk3SN304mEVzUBpKbBJx03QDJhWlFhZ+8PtUOsO10YD6Q+
+   Clj8F9f+5i8SDEFz5XAin1JQDHFhj5YTh96nlkrCJzSpcn7HyEADG4BB1
+   abupMYzc2pQD10CWtFyOWg7YUh1LRyehgMEdU1n4j/RavpWvXMLBTyF0f
+   fuFuRvs++aNdrNQQWicqzGsWnMcPvXQ164qR7PN9bCKqVyAAaklkUD9+T
+   ysa6rrtzTRntWXJY1O/zaCGHaLkKqLZBJdhJqGzW+372pg+7lNJpgQKUQ
+   kSW61gut10lC8F+cOpX0zajNNR4T3JjxXaNRFZ3goqmHxIBte4TAT38ab
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="293614300"
+X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
+   d="scan'208";a="293614300"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 00:30:31 -0700
+X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
+   d="scan'208";a="642344795"
+Received: from xujinlon-mobl.ccr.corp.intel.com (HELO [10.254.211.102]) ([10.254.211.102])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 00:30:23 -0700
+Message-ID: <d538aa77-ac9a-e436-5558-e97e9c68d222@linux.intel.com>
+Date: Tue, 23 Aug 2022 15:30:21 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Christoph Hellwig <hch@infradead.org>, Bjorn Helgaas <bhelgaas@google.com>,
+ Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
+ Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
+ Jacob jun Pan <jacob.jun.pan@intel.com>,
+ Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony <tony.zhu@intel.com>,
+ iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v11 05/13] iommu: Add attach/detach_dev_pasid iommu
+ interface
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <20220817012024.3251276-1-baolu.lu@linux.intel.com>
+ <20220817012024.3251276-6-baolu.lu@linux.intel.com>
+ <Yv4/s6lX6Nq+40tu@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <Yv4/s6lX6Nq+40tu@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hello Saravana,
-
-Am Samstag, 20. August 2022, 00:16:10 CEST schrieb Saravana Kannan:
-> A bunch of issues have been reported in the original series[1] that removed
-> driver_deferred_probe_check_state(). While most of the issues have been
-> fixed in a new series that improved fw_devlink [2], there are still a few
-> unresolved issues I need to address.
+On 2022/8/18 21:33, Jason Gunthorpe wrote:
+> On Wed, Aug 17, 2022 at 09:20:16AM +0800, Lu Baolu wrote:
 > 
-> So let's bring back driver_deferred_probe_check_state() until the other
-> issues are resolved.
+>> +static int __iommu_set_group_pasid(struct iommu_domain *domain,
+>> +				   struct iommu_group *group, ioasid_t pasid)
+>> +{
+>> +	struct iommu_domain *ops_domain;
+>> +	struct group_device *device;
+>> +	int ret = 0;
+>> +
+>> +	if (domain == group->blocking_domain)
+>> +		ops_domain = xa_load(&group->pasid_array, pasid);
+>> +	else
+>> +		ops_domain = domain;
 > 
-> Greg,
+> This seems weird, why isn't this just always
 > 
-> Can we get this into 6.0-rcX please?
+> domain->ops->set_dev_pasid()?
 
-On my TQMa8MQ + MBa8Mxon top of 072e51356cd5 ("Merge tag 'nfs-for-5.20-2' of 
-git://git.linux-nfs.org/projects/trondmy/linux-nfs"):
-Tested-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Sure. I will fix this in the next version.
 
-> [1] -
-> https://lore.kernel.org/lkml/20220601070707.3946847-1-saravanak@google.com/
-> [2] -
-> https://lore.kernel.org/lkml/20220810060040.321697-1-saravanak@google.com/
 > 
-> v1 -> v2:
-> - Added a revert of the iommu change too.
+>> +	if (curr) {
+>> +		ret = xa_err(curr) ? : -EBUSY;
+>> +		goto out_unlock;
+>> +	}
+>> +
+>> +	ret = __iommu_set_group_pasid(domain, group, pasid);
+>> +	if (ret) {
+>> +		__iommu_set_group_pasid(group->blocking_domain, group, pasid);
+>> +		xa_erase(&group->pasid_array, pasid);
 > 
-> Saravana Kannan (4):
->   Revert "driver core: Delete driver_deferred_probe_check_state()"
->   Revert "net: mdio: Delete usage of
->     driver_deferred_probe_check_state()"
->   Revert "PM: domains: Delete usage of
->     driver_deferred_probe_check_state()"
->   Revert "iommu/of: Delete usage of driver_deferred_probe_check_state()"
+> I was looking at this trying to figure out why we are having
+> attach/detach semantics vs set and this error handling seems to be the
+> reason
 > 
->  drivers/base/dd.c              | 30 ++++++++++++++++++++++++++++++
->  drivers/base/power/domain.c    |  2 +-
->  drivers/iommu/of_iommu.c       |  2 +-
->  drivers/net/mdio/fwnode_mdio.c |  4 +++-
->  include/linux/device/driver.h  |  1 +
->  5 files changed, 36 insertions(+), 3 deletions(-)
+> Lets add a comment because it is subtle thing:
+> 
+>    Setting a PASID to a blocking domain cannot fail, so we can always
+>    safely error unwind a failure to attach a domain back to the original
+>    group configuration of the PASID being unused.
 
+Updated.
 
+> 
+>> +/*
+>> + * iommu_detach_device_pasid() - Detach the domain from pasid of device
+>> + * @domain: the iommu domain.
+>> + * @dev: the attached device.
+>> + * @pasid: the pasid of the device.
+>> + *
+>> + * The @domain must have been attached to @pasid of the @dev with
+>> + * iommu_attach_device_pasid().
+>> + */
+>> +void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
+>> +			       ioasid_t pasid)
+> 
+> Don't pass domain here?
 
+It is checked in the function to make sure that the detached domain is
+the same one as the previous attached one.
 
+> 
+>> +/*
+>> + * iommu_get_domain_for_dev_pasid() - Retrieve domain for @pasid of @dev
+>> + * @dev: the queried device
+>> + * @pasid: the pasid of the device
+>> + *
+>> + * This is a variant of iommu_get_domain_for_dev(). It returns the existing
+>> + * domain attached to pasid of a device. It's only for internal use of the
+>> + * IOMMU subsystem. The caller must take care to avoid any possible
+>> + * use-after-free case.
+> 
+> How exactly does the caller manage that?
+
+"... the returned domain pointer could only be used before detaching
+from the device PASID."
+
+> 
+>> + *
+>> + * Return: attached domain on success, NULL otherwise.
+>> + */
+>> +struct iommu_domain *
+>> +iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid)
+>> +{
+>> +	struct iommu_domain *domain;
+>> +	struct iommu_group *group;
+>> +
+>> +	if (!pasid_valid(pasid))
+>> +		return NULL;
+> 
+> Why bother? If the pasid is not valid then it definitely won't be in the xarray.
+
+Removed.
+
+> But otherwise this overall thing seems fine to me
+
+Thank you!
+
+Best regards,
+baolu
