@@ -1,192 +1,82 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79F95A3D
-	for <iommu@lists.linux.dev>; Tue, 23 Aug 2022 06:21:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56ADBA3D
+	for <iommu@lists.linux.dev>; Tue, 23 Aug 2022 06:24:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661235689; x=1692771689;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=U+M8e4GJ4FBPoymF38Wkl0eJWfmafa9LGKnuwVCfQVg=;
-  b=kfwURYt+G3l8uDvoVPCNDlaNrxE4kQgad0vUVrMzBamUobMND8u6UFuF
-   RFKbj9lO/8wRaFJjviU0TnIWh4/pgh64fvoqBR8eOjQk9m5AJPlkIr4Jn
-   KmCQJEgQ90cwkdU1Z+XAMrTMm6i3igfCh8Y8ZyuDq9gazXZ59k73LAhx4
-   cV6C2kMO/hvAjNO7GTvseg81Bm+deq3EwDqxlntp2WnirOjRCdzmYGx34
-   HYIJ08xtFfP63ZtO4aBrhiVBx6ueXRN43ZEy8WwlROlpeK7ZAYut7LeFo
-   wXDUctaCKtwTrMMWNRqRpkekGbjlnuyv0f6yw4SuYngR28rmUVc7GB1Zp
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="273356228"
+  t=1661235845; x=1692771845;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=So4u55pm93jKnWf9wayBaxQcyua1SoUZ3g3nOT8rlsI=;
+  b=HCuaJouIDbUM6qTh9+n17EMYXX7N74jfjbWUtIwcOAhMlhCPJqK6y3No
+   q8VWrGXPj1W2N5ek53iaxyeIeG+drRZ1NSCZJzlLbFNaSsHMJ1QGU3flJ
+   woc2cM6Qrr6bsR/QpmaGqaIZfRMvlR9UEks1ej5VQRVMyJ3N5gahwnCoI
+   ffPd5x5Zs8z01npkYJ5VXUWOdOkfOBzSVx4sp5v73QijjBpiGMuCq1CNn
+   5wqwBqtXjTw3A3+YXQgT8NyVk1GqElvcjRbSptdhMWcdOAmLLhMEpDRmX
+   kASO/CNw57vD0ZKHruDeJ1pmHnvfBtg6U4de2en7SSZr9UKtO1MFbbfad
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="280576307"
 X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
-   d="scan'208";a="273356228"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 23:21:29 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="280576307"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 23:24:04 -0700
 X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
-   d="scan'208";a="605553212"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga007.jf.intel.com with ESMTP; 22 Aug 2022 23:21:27 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Kevin Tian <kevin.tian@intel.com>,
-	Lennert Buytenhek <buytenh@wantstofly.org>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Jerry Snitselaar <jsnitsel@redhat.com>,
-	Wen Jin <wen.jin@intel.com>,
-	iommu@lists.linux.dev,
-	iommu@lists.linux-foundation.org
-Subject: [PATCH 4/4] iommu/vt-d: Fix lockdep splat due to klist iteration in atomic context
-Date: Tue, 23 Aug 2022 14:15:57 +0800
-Message-Id: <20220823061557.1631056-5-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220823061557.1631056-1-baolu.lu@linux.intel.com>
-References: <20220823061557.1631056-1-baolu.lu@linux.intel.com>
+   d="scan'208";a="642323745"
+Received: from xujinlon-mobl.ccr.corp.intel.com (HELO [10.254.211.102]) ([10.254.211.102])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 23:24:01 -0700
+Message-ID: <8f1c7e64-efdc-eff5-8dea-470f4ada5f73@linux.intel.com>
+Date: Tue, 23 Aug 2022 14:23:58 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, Jerry Snitselaar <jsnitsel@redhat.com>,
+ Wen Jin <wen.jin@intel.com>, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+Subject: Re: [PATCH v2 1/1] iommu/vt-d: Fix kdump kernels boot failure with
+ scalable mode
+Content-Language: en-US
+To: iommu@lists.linux.dev
+References: <20220817011035.3250131-1-baolu.lu@linux.intel.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220817011035.3250131-1-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-With CONFIG_INTEL_IOMMU_DEBUGFS enabled, below lockdep splat are seen
-when an I/O fault occurs on a machine with an Intel IOMMU in it.
+On 2022/8/17 09:10, Lu Baolu wrote:
+> The translation table copying code for kdump kernels is currently based
+> on the extended root/context entry formats of ECS mode defined in older
+> VT-d v2.5, and doesn't handle the scalable mode formats. This causes
+> the kexec capture kernel boot failure with DMAR faults if the IOMMU was
+> enabled in scalable mode by the previous kernel.
+> 
+> The ECS mode has already been deprecated by the VT-d spec since v3.0 and
+> Intel IOMMU driver doesn't support this mode as there's no real hardware
+> implementation. Hence this converts ECS checking in copying table code
+> into scalable mode.
+> 
+> The existing copying code consumes a bit in the context entry as a mark
+> of copied entry. This marker needs to work for the old format as well as
+> for extended context entries. It's hard to find such a bit for both
+> legacy and scalable mode context entries. This replaces it with a per-
+> IOMMU bitmap.
+> 
+> Fixes: 7373a8cc38197 ("iommu/vt-d: Setup context and enable RID2PASID support")
+> Cc:stable@vger.kernel.org
+> Reported-by: Jerry Snitselaar<jsnitsel@redhat.com>
+> Tested-by: Wen Jin<wen.jin@intel.com>
+> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
 
- DMAR: DRHD: handling fault status reg 3
- DMAR: [DMA Write NO_PASID] Request device [00:1a.0] fault addr 0x0
-       [fault reason 0x05] PTE Write access is not set
- DMAR: Dump dmar0 table entries for IOVA 0x0
- DMAR: root entry: 0x0000000127f42001
- DMAR: context entry: hi 0x0000000000001502, low 0x000000012d8ab001
- ================================
- WARNING: inconsistent lock state
- 5.20.0-0.rc0.20220812git7ebfc85e2cd7.10.fc38.x86_64 #1 Not tainted
- --------------------------------
- inconsistent {HARDIRQ-ON-W} -> {IN-HARDIRQ-W} usage.
- rngd/1006 [HC1[1]:SC0[0]:HE0:SE1] takes:
- ff177021416f2d78 (&k->k_lock){?.+.}-{2:2}, at: klist_next+0x1b/0x160
- {HARDIRQ-ON-W} state was registered at:
-   lock_acquire+0xce/0x2d0
-   _raw_spin_lock+0x33/0x80
-   klist_add_tail+0x46/0x80
-   bus_add_device+0xee/0x150
-   device_add+0x39d/0x9a0
-   add_memory_block+0x108/0x1d0
-   memory_dev_init+0xe1/0x117
-   driver_init+0x43/0x4d
-   kernel_init_freeable+0x1c2/0x2cc
-   kernel_init+0x16/0x140
-   ret_from_fork+0x1f/0x30
- irq event stamp: 7812
- hardirqs last  enabled at (7811): [<ffffffff85000e86>] asm_sysvec_apic_timer_interrupt+0x16/0x20
- hardirqs last disabled at (7812): [<ffffffff84f16894>] irqentry_enter+0x54/0x60
- softirqs last  enabled at (7794): [<ffffffff840ff669>] __irq_exit_rcu+0xf9/0x170
- softirqs last disabled at (7787): [<ffffffff840ff669>] __irq_exit_rcu+0xf9/0x170
+This patch has been queued:
 
-The klist iterator functions using spin_*lock_irq*() but the klist
-insertion functions using spin_*lock(), combined with the Intel DMAR
-IOMMU driver iterating over klists from atomic (hardirq) context, where
-pci_get_domain_bus_and_slot() calls into bus_find_device() which iterates
-over klists.
+https://lore.kernel.org/linux-iommu/20220823061557.1631056-1-baolu.lu@linux.intel.com/
 
-As currently there's no plan to fix the klist to make it safe to use in
-atomic context, this fixes the lockdep splat by avoid calling
-pci_get_domain_bus_and_slot() in the hardirq context.
-
-Fixes: 8ac0b64b9735 ("iommu/vt-d: Use pci_get_domain_bus_and_slot() in pgtable_walk()")
-Reported-by: Lennert Buytenhek <buytenh@wantstofly.org>
-Link: https://lore.kernel.org/linux-iommu/Yvo2dfpEh%2FWC+Wrr@wantstofly.org/
-Link: https://lore.kernel.org/linux-iommu/YvyBdPwrTuHHbn5X@wantstofly.org/
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Link: https://lore.kernel.org/r/20220819015949.4795-1-baolu.lu@linux.intel.com
----
- drivers/iommu/intel/iommu.c | 47 +++++++++++++++----------------------
- 1 file changed, 19 insertions(+), 28 deletions(-)
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index e3fe1a148187..64d30895a4c8 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -813,32 +813,11 @@ static void free_context_table(struct intel_iommu *iommu)
- }
- 
- #ifdef CONFIG_DMAR_DEBUG
--static void pgtable_walk(struct intel_iommu *iommu, unsigned long pfn, u8 bus, u8 devfn)
-+static void pgtable_walk(struct intel_iommu *iommu, unsigned long pfn,
-+			 u8 bus, u8 devfn, struct dma_pte *parent, int level)
- {
--	struct device_domain_info *info;
--	struct dma_pte *parent, *pte;
--	struct dmar_domain *domain;
--	struct pci_dev *pdev;
--	int offset, level;
--
--	pdev = pci_get_domain_bus_and_slot(iommu->segment, bus, devfn);
--	if (!pdev)
--		return;
--
--	info = dev_iommu_priv_get(&pdev->dev);
--	if (!info || !info->domain) {
--		pr_info("device [%02x:%02x.%d] not probed\n",
--			bus, PCI_SLOT(devfn), PCI_FUNC(devfn));
--		return;
--	}
--
--	domain = info->domain;
--	level = agaw_to_level(domain->agaw);
--	parent = domain->pgd;
--	if (!parent) {
--		pr_info("no page table setup\n");
--		return;
--	}
-+	struct dma_pte *pte;
-+	int offset;
- 
- 	while (1) {
- 		offset = pfn_level_offset(pfn, level);
-@@ -865,9 +844,10 @@ void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id,
- 	struct pasid_entry *entries, *pte;
- 	struct context_entry *ctx_entry;
- 	struct root_entry *rt_entry;
-+	int i, dir_index, index, level;
- 	u8 devfn = source_id & 0xff;
- 	u8 bus = source_id >> 8;
--	int i, dir_index, index;
-+	struct dma_pte *pgtable;
- 
- 	pr_info("Dump %s table entries for IOVA 0x%llx\n", iommu->name, addr);
- 
-@@ -895,8 +875,11 @@ void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id,
- 		ctx_entry->hi, ctx_entry->lo);
- 
- 	/* legacy mode does not require PASID entries */
--	if (!sm_supported(iommu))
-+	if (!sm_supported(iommu)) {
-+		level = agaw_to_level(ctx_entry->hi & 7);
-+		pgtable = phys_to_virt(ctx_entry->lo & VTD_PAGE_MASK);
- 		goto pgtable_walk;
-+	}
- 
- 	/* get the pointer to pasid directory entry */
- 	dir = phys_to_virt(ctx_entry->lo & VTD_PAGE_MASK);
-@@ -923,8 +906,16 @@ void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id,
- 	for (i = 0; i < ARRAY_SIZE(pte->val); i++)
- 		pr_info("pasid table entry[%d]: 0x%016llx\n", i, pte->val[i]);
- 
-+	if (pasid_pte_get_pgtt(pte) == PASID_ENTRY_PGTT_FL_ONLY) {
-+		level = pte->val[2] & BIT_ULL(2) ? 5 : 4;
-+		pgtable = phys_to_virt(pte->val[2] & VTD_PAGE_MASK);
-+	} else {
-+		level = agaw_to_level((pte->val[0] >> 2) & 0x7);
-+		pgtable = phys_to_virt(pte->val[0] & VTD_PAGE_MASK);
-+	}
-+
- pgtable_walk:
--	pgtable_walk(iommu, addr >> VTD_PAGE_SHIFT, bus, devfn);
-+	pgtable_walk(iommu, addr >> VTD_PAGE_SHIFT, bus, devfn, pgtable, level);
- }
- #endif
- 
--- 
-2.25.1
-
+Best regards,
+baolu
