@@ -1,108 +1,113 @@
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE576A3B
-	for <iommu@lists.linux.dev>; Tue, 23 Aug 2022 07:10:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661238613; x=1692774613;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=s3CaB7J/QzCxWJHKyGoSrb3mqar/OfGRLx0AuZA3drA=;
-  b=eic8Vc52VkulvsAwGWVaZ28U+cMIc0BXnJBNpGVPkFoNVOZ1Yp6hoIcV
-   DPiPn5e34QBQgSKxJQ/PmqtVFVhFqpZXg5jlHgrjCnOk4ERbkawzI+B7N
-   KBWhO5Ymb4bgmPPQu/odnyAU/922S48LknBKbcZPOf9x61iQ3+g8sYT4/
-   Dlbv822FELN1WaBkVIGTIXksJUuz61TsG8C7I5yD3EQLOegVU1KAeFJsE
-   gkZYdi7ylWFnnzs3V6aj2MtTNrTrmRVUHW9urEJ4qSKNZVG23wbzn0L3p
-   aNTbPtCI6UVawG/ghH68kPEv4cyoxkERTY2z24Iux4XYvEPkgYT2LxCwt
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="294894535"
-X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
-   d="scan'208";a="294894535"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 00:10:13 -0700
-X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
-   d="scan'208";a="642337729"
-Received: from xujinlon-mobl.ccr.corp.intel.com (HELO [10.254.211.102]) ([10.254.211.102])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 00:10:02 -0700
-Message-ID: <2ac74c62-1e2a-3758-6da8-a59f452e7799@linux.intel.com>
-Date: Tue, 23 Aug 2022 15:10:00 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA3B3A3B
+	for <iommu@lists.linux.dev>; Tue, 23 Aug 2022 07:10:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1661238652; x=1692774652;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=AHjGqzbn5AEN1DPa4fi7l7adOs/3lxb+lkmMBcf6O7Y=;
+  b=EM5szJ4T/D/6Rd96/K4w9Mr+XyPsNAeBs1WHewovviAW6V+6kJjpC7o8
+   E5n1c2LuNYzVeUhBZdHtDEzUIhQrbBovR0myGQwTlzQ9B7sC6jYb7d3nR
+   Lp1HCGWvf6Mr7Zi/kxB2IApZn3NZ41PbBYXqIJC+2JMLYkDFgWRpP8/eo
+   wttFIh4PRO5aBFdhji/FL589DgLsQxI8r3SRNXNvF3lAwMWzwIhSUA4dW
+   Vn4JokU+t9873lhkeXQjC2S6K6OD/82iiIVls41ivvFSy1Rj2zIdo69Dr
+   2xU1vomzyhxTQ7F0O87bbt2dO4O+DhUJ2fTlJTgb52s7be6s3cCVlYDRz
+   w==;
+X-IronPort-AV: E=Sophos;i="5.93,256,1654552800"; 
+   d="scan'208";a="25745654"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 23 Aug 2022 09:09:39 +0200
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Tue, 23 Aug 2022 09:09:39 +0200
+X-PGP-Universal: processed;
+	by tq-pgp-pr1.tq-net.de on Tue, 23 Aug 2022 09:09:39 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1661238579; x=1692774579;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=AHjGqzbn5AEN1DPa4fi7l7adOs/3lxb+lkmMBcf6O7Y=;
+  b=O89a04YFCt75bvQHupeYZgzQ5IYiSPHRv7/Fxvkika6jAVXwg8pHlMC/
+   GfY8tQiL/S9X6oBp+5oFeKnFmY+SmsnOZqAtL5AjTWnHQYxLkMoG6fBxW
+   /yF53dSYaqZ5vpsI+MstouunEiA3aSHDSofWZ5HXrtGbWVZpeKSJIK4WF
+   iCBr7UnZiFyAjSbnMNkJm/ECGZYEbFLS0pLLvnC5583ULKW0howNfU3PJ
+   CSQAgUGBO52Hz0//IRFg1bP4P7+wurLR9WK4hilmyPUK0MfOVsxY+RBKq
+   vOuObOQuDaklWU/x43onsnguZ9W+64b4fHdu8OAwR3RpFaKu/zVM4UJVS
+   g==;
+X-IronPort-AV: E=Sophos;i="5.93,256,1654552800"; 
+   d="scan'208";a="25745653"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 23 Aug 2022 09:09:39 +0200
+Received: from steina-w.localnet (unknown [10.123.49.11])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+	(No client certificate requested)
+	by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 16CBE280056;
+	Tue, 23 Aug 2022 09:09:39 +0200 (CEST)
+From: Alexander Stein <alexander.stein@ew.tq-group.com>
+To: Saravana Kannan <saravanak@google.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Kevin Hilman <khilman@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>, Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit <hkallweit1@gmail.com>, Russell King <linux@armlinux.org.uk>, "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Saravana Kannan <saravanak@google.com>, Peng Fan <peng.fan@nxp.com>, Luca Weiss <luca.weiss@fairphone.com>, Doug Anderson <dianders@chromium.org>, Colin Foster <colin.foster@in-advantage.com>, Tony Lindgren <tony@atomide.com>, Naresh Kamboju <naresh.kamboju@linaro.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Jean-Philippe Brucker <jpb@kernel.org>, kernel-team@android.com, linux-kernel@vger.kernel.org, linux-pm
+ @vger.kernel.org, iommu@lists.linux.dev, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 0/4] Bring back driver_deferred_probe_check_state() for now
+Date: Tue, 23 Aug 2022 09:09:38 +0200
+Message-ID: <6787064.lOV4Wx5bFT@steina-w>
+Organization: TQ-Systems GmbH
+In-Reply-To: <20220819221616.2107893-1-saravanak@google.com>
+References: <20220819221616.2107893-1-saravanak@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Christoph Hellwig <hch@infradead.org>, Bjorn Helgaas <bhelgaas@google.com>,
- Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>,
- Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
- Jacob jun Pan <jacob.jun.pan@intel.com>,
- Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony <tony.zhu@intel.com>,
- iommu@lists.linux.dev, linux-pci@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v11 04/13] PCI: Allow PASID only when ACS enforced on
- upstreaming path
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <20220817012024.3251276-1-baolu.lu@linux.intel.com>
- <20220817012024.3251276-5-baolu.lu@linux.intel.com>
- <Yv440MU1UeD9u67g@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Yv440MU1UeD9u67g@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 
-On 2022/8/18 21:04, Jason Gunthorpe wrote:
-> On Wed, Aug 17, 2022 at 09:20:15AM +0800, Lu Baolu wrote:
->> Some configurations of the PCI fabric will route device originated TLP
->> packets based on the memory addresses. These configurations are
->> incompatible with PASID as the PASID packets form a distinct address
->> space. For instance, any configuration where switches are present
->> without ACS enabled is incompatible.
->>
->> This enhances the pci_enable_pasid() interface by requiring the ACS to
->> support Source Validation, Request Redirection, Completer Redirection,
->> and Upstream Forwarding. This effectively means that devices cannot
->> spoof their requester ID, requests and completions cannot be redirected,
->> and all transactions are forwarded upstream, even as it passes through a
->> bridge where the target device is downstream.
->>
->> Suggested-by: Jason Gunthorpe<jgg@nvidia.com>
->> Suggested-by: Kevin Tian<kevin.tian@intel.com>
->> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
->> ---
->>   drivers/pci/ats.c | 5 +++++
->>   1 file changed, 5 insertions(+)
->>
->> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
->> index c967ad6e2626..0715e48e7973 100644
->> --- a/drivers/pci/ats.c
->> +++ b/drivers/pci/ats.c
->> @@ -382,6 +382,11 @@ int pci_enable_pasid(struct pci_dev *pdev, int features)
->>   	if (!pasid)
->>   		return -EINVAL;
->>   
->> +	if (!pci_acs_path_enabled(pdev, NULL,
->> +				  PCI_ACS_SV | PCI_ACS_RR |
->> +				  PCI_ACS_CR | PCI_ACS_UF))
-> I think we only need RR and UF here?
-> 
-> Source Validation causes the switch to validate the requestor RID in
-> each TLP which has nothing to do with address based routing
-> 
-> Completion Redirect changes how RID routing works, and has nothing to
-> do with address based routing.
-> 
-> Yes, both of those are usually set for virtualization scenarios but we
-> shouldn't check it here as a basic requirement to enable PASID.
+Hello Saravana,
 
-Yes. Here only requires RR and UF.
+Am Samstag, 20. August 2022, 00:16:10 CEST schrieb Saravana Kannan:
+> A bunch of issues have been reported in the original series[1] that removed
+> driver_deferred_probe_check_state(). While most of the issues have been
+> fixed in a new series that improved fw_devlink [2], there are still a few
+> unresolved issues I need to address.
+> 
+> So let's bring back driver_deferred_probe_check_state() until the other
+> issues are resolved.
+> 
+> Greg,
+> 
+> Can we get this into 6.0-rcX please?
 
-Best regards,
-baolu
+On my TQMa8MQ + MBa8Mxon top of 072e51356cd5 ("Merge tag 'nfs-for-5.20-2' of 
+git://git.linux-nfs.org/projects/trondmy/linux-nfs"):
+Tested-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+
+> [1] -
+> https://lore.kernel.org/lkml/20220601070707.3946847-1-saravanak@google.com/
+> [2] -
+> https://lore.kernel.org/lkml/20220810060040.321697-1-saravanak@google.com/
+> 
+> v1 -> v2:
+> - Added a revert of the iommu change too.
+> 
+> Saravana Kannan (4):
+>   Revert "driver core: Delete driver_deferred_probe_check_state()"
+>   Revert "net: mdio: Delete usage of
+>     driver_deferred_probe_check_state()"
+>   Revert "PM: domains: Delete usage of
+>     driver_deferred_probe_check_state()"
+>   Revert "iommu/of: Delete usage of driver_deferred_probe_check_state()"
+> 
+>  drivers/base/dd.c              | 30 ++++++++++++++++++++++++++++++
+>  drivers/base/power/domain.c    |  2 +-
+>  drivers/iommu/of_iommu.c       |  2 +-
+>  drivers/net/mdio/fwnode_mdio.c |  4 +++-
+>  include/linux/device/driver.h  |  1 +
+>  5 files changed, 36 insertions(+), 3 deletions(-)
+
+
+
+
