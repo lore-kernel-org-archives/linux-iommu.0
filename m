@@ -1,121 +1,128 @@
-Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B4651FA7
-	for <iommu@lists.linux.dev>; Thu, 25 Aug 2022 07:08:44 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
-	by comms.puri.sm (Postfix) with ESMTP id 6170AE1171;
-	Wed, 24 Aug 2022 23:58:08 -0700 (PDT)
-Received: from comms.puri.sm ([127.0.0.1])
-	by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GMMjKO_RXaO4; Wed, 24 Aug 2022 23:58:07 -0700 (PDT)
-Message-ID: <2c609579d9fba41a6fcbd47788ccbcf1f4fa0f2a.camel@puri.sm>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puri.sm; s=comms;
-	t=1661410687; bh=UO5XV5GOXaJUp2qheZTnBxncOA0cWICbUUFp+tuLMbo=;
-	h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-	b=kTNNzvR2unUbjb/QrtWtKSeMmYzYcFAS16woPrlSBmRiA2zqPbeZXMFoteeotSVd2
-	 ppqFKvvx7uXdbF2CSEkzcahDUHlhTWo7t+mteq1axuIzsIzgr4rFpRL/tyktQzvTfr
-	 gdCD78kRakHzVg5aTF12FitR19ugqiI6DzKrT3B4BVV/yIbKklbOW3V8EPeTtL1d6O
-	 024kx31apwQCB3/AHVgZU7PI3qjCYI84z2hhvXGli0SKptH6FlIGVNaG6MAxzHoXvi
-	 0mCDg9w0r4DbdJKLAqAfDQz8fIDPXFwUpcfcrlniMnbs5Dl+nspO2khLZ8kY/Vmkfm
-	 gh0HTHw33Jzxw==
-Subject: Re: [PATCH v2 3/4] Revert "PM: domains: Delete usage of
- driver_deferred_probe_check_state()"
-From: Martin Kepplinger <martin.kepplinger@puri.sm>
-To: Saravana Kannan <saravanak@google.com>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
- Kevin Hilman <khilman@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>,
- Pavel Machek <pavel@ucw.cz>,  Len Brown <len.brown@intel.com>, Joerg Roedel
- <joro@8bytes.org>, Will Deacon <will@kernel.org>,  Robin Murphy
- <robin.murphy@arm.com>, Andrew Lunn <andrew@lunn.ch>, Heiner Kallweit
- <hkallweit1@gmail.com>,  Russell King <linux@armlinux.org.uk>, "David S.
- Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub
- Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
-Cc: Peng Fan <peng.fan@nxp.com>, Luca Weiss <luca.weiss@fairphone.com>, Doug
- Anderson <dianders@chromium.org>, Colin Foster
- <colin.foster@in-advantage.com>, Tony Lindgren <tony@atomide.com>,
- Alexander Stein <alexander.stein@ew.tq-group.com>,  Naresh Kamboju
- <naresh.kamboju@linaro.org>, Geert Uytterhoeven <geert@linux-m68k.org>,
- Jean-Philippe Brucker <jpb@kernel.org>, kernel-team@android.com,
- linux-kernel@vger.kernel.org,  linux-pm@vger.kernel.org,
- iommu@lists.linux.dev, netdev@vger.kernel.org
-Date: Thu, 25 Aug 2022 08:57:58 +0200
-In-Reply-To: <20220819221616.2107893-4-saravanak@google.com>
-References: <20220819221616.2107893-1-saravanak@google.com>
-	 <20220819221616.2107893-4-saravanak@google.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15FD71FA7
+	for <iommu@lists.linux.dev>; Thu, 25 Aug 2022 07:22:22 +0000 (UTC)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27P6w2Ac024302;
+	Thu, 25 Aug 2022 07:22:15 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ content-transfer-encoding : in-reply-to; s=pp1;
+ bh=YN9sy3cnWjVNQmJSTgZu94d+HQJtS+Apq8l2IFiHvbg=;
+ b=QiE7pQ2y6OkrJqpweilZmZrw6jXfSDXRhJDZb8+FYUdFNzKnAgQn6E+L/OurtIwdYdjX
+ 7dqEasntBf0YZ1gy7XspG4JxD9KX5goRL/cvFIJ1aRdVarl8YwjTOsw1m9ISMRu0EHNe
+ RUm2WA8Xv45eqV6S70WQP880ONz6r1W23tZXXBdD+cI1CsaEVRmKBo3/4P3as39PJEzp
+ Iqc677ILyXeVI22tKNRfU3oFFZa2/a6p5w6cuzAZSebZLlAWMy8+kGo+zaZHfSWtureI
+ 9ylftAAiOtlkuZDQmdfALawWeQk/RpWAksKOjTfu78guzZflBA99EulodxPsNl9LAD6j Gw== 
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j649ch4t9-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 25 Aug 2022 07:22:15 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+	by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27P7Li2r021968;
+	Thu, 25 Aug 2022 07:22:13 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+	by ppma06fra.de.ibm.com with ESMTP id 3j2pvjcf37-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 25 Aug 2022 07:22:13 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+	by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27P7MAoY33358088
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 25 Aug 2022 07:22:10 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 83600AE04D;
+	Thu, 25 Aug 2022 07:22:10 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id BE68DAE045;
+	Thu, 25 Aug 2022 07:22:09 +0000 (GMT)
+Received: from li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com (unknown [9.145.165.99])
+	by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+	Thu, 25 Aug 2022 07:22:09 +0000 (GMT)
+Date: Thu, 25 Aug 2022 09:22:08 +0200
+From: Alexander Gordeev <agordeev@linux.ibm.com>
+To: Matthew Rosato <mjrosato@linux.ibm.com>
+Cc: Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev,
+        linux-s390@vger.kernel.org, schnelle@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
+        will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/s390: Fix race with release_device ops
+Message-ID: <YwcjIPcT1b0uyyFn@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+References: <20220823203059.81919-1-mjrosato@linux.ibm.com>
+ <a6e42442-d9cb-0d63-bb71-da78a5669a51@linux.ibm.com>
+ <04644ee5-2386-1f3d-c1a3-fc4227570cf7@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <04644ee5-2386-1f3d-c1a3-fc4227570cf7@linux.ibm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: wEg2yD5fVaA665QzuLZhmfaYteAk9PA3
+X-Proofpoint-ORIG-GUID: wEg2yD5fVaA665QzuLZhmfaYteAk9PA3
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-25_03,2022-08-22_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ lowpriorityscore=0 clxscore=1011 impostorscore=0 phishscore=0 mlxscore=0
+ bulkscore=0 mlxlogscore=854 suspectscore=0 malwarescore=0 spamscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208250024
 
-Am Freitag, dem 19.08.2022 um 15:16 -0700 schrieb Saravana Kannan:
-> This reverts commit 5a46079a96451cfb15e4f5f01f73f7ba24ef851a.
+On Wed, Aug 24, 2022 at 04:25:19PM -0400, Matthew Rosato wrote:
+> >> @@ -90,15 +90,39 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
+> >>       struct zpci_dev *zdev = to_zpci_dev(dev);
+> >>       struct s390_domain_device *domain_device;
+> >>       unsigned long flags;
+> >> -    int cc, rc;
+> >> +    int cc, rc = 0;
+> >>         if (!zdev)
+> >>           return -ENODEV;
+> >>   +    /* First check compatibility */
+> >> +    spin_lock_irqsave(&s390_domain->list_lock, flags);
+> >> +    /* First device defines the DMA range limits */
+> >> +    if (list_empty(&s390_domain->devices)) {
+> >> +        domain->geometry.aperture_start = zdev->start_dma;
+> >> +        domain->geometry.aperture_end = zdev->end_dma;
+> >> +        domain->geometry.force_aperture = true;
+> >> +    /* Allow only devices with identical DMA range limits */
+> >> +    } else if (domain->geometry.aperture_start != zdev->start_dma ||
+> >> +           domain->geometry.aperture_end != zdev->end_dma) {
+> >> +        rc = -EINVAL;
+> >> +    }
+> >> +    spin_unlock_irqrestore(&s390_domain->list_lock, flags);
+> >> +    if (rc)
+> >> +        return rc;
+> >> +
+> >>       domain_device = kzalloc(sizeof(*domain_device), GFP_KERNEL);
+> >>       if (!domain_device)
+> >>           return -ENOMEM;
+> >>   +    /* Leave now if the device has already been released */
+> >> +    spin_lock_irqsave(&zdev->dma_domain_lock, flags);
+> >> +    if (!dev_iommu_priv_get(dev)) {
+> >> +        spin_unlock_irqrestore(&zdev->dma_domain_lock, flags);
+> >> +        kfree(domain_device);
+> >> +        return 0;
+> >> +    }
+> >> +
+> >>       if (zdev->dma_table && !zdev->s390_domain) {
+> >>           cc = zpci_dma_exit_device(zdev);
+> >>           if (cc) {
+> > 
+> > Am I wrong? It seems to me that zpci_dma_exit_device here is called with the spin_lock locked but this function zpci_dma_exit_device calls vfree which may sleep.
+> > 
 > 
-> Quite a few issues have been reported [1][2][3][4][5][6] on the
-> original
-> commit. While about half of them have been fixed, I'll need to fix
-> the rest
-> before driver_deferred_probe_check_state() can be deleted. So, revert
-> the
-> deletion for now.
+> Oh, good point, I just enabled lockdep to verify that.
 > 
-> [1] -
-> https://lore.kernel.org/all/DU0PR04MB941735271F45C716342D0410886B9@DU0PR04MB9417.eurprd04.prod.outlook.com/
-> [2] - https://lore.kernel.org/all/CM6REZS9Z8AC.2KCR9N3EFLNQR@otso/
-> [3] -
-> https://lore.kernel.org/all/CAD=FV=XYVwaXZxqUKAuM5c7NiVjFz5C6m6gAHSJ7rBXBF94_Tg@mail.gmail.com/
-> [4] - https://lore.kernel.org/all/Yvpd2pwUJGp7R+YE@euler/
-> [5] -
-> https://lore.kernel.org/lkml/20220601070707.3946847-2-saravanak@google.com/
-> [6] -
-> https://lore.kernel.org/all/CA+G9fYt_cc5SiNv1Vbse=HYY_+uc+9OYPZuJ-x59bROSaLN6fw@mail.gmail.com/
-> 
-> Fixes: 5a46079a9645 ("PM: domains: Delete usage of
-> driver_deferred_probe_check_state()")
-> Reported-by: Peng Fan <peng.fan@nxp.com>
-> Reported-by: Luca Weiss <luca.weiss@fairphone.com>
-> Reported-by: Doug Anderson <dianders@chromium.org>
-> Reported-by: Colin Foster <colin.foster@in-advantage.com>
-> Reported-by: Tony Lindgren <tony@atomide.com>
-> Reported-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-> Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-> Reviewed-by: Tony Lindgren <tony@atomide.com>
-> Tested-by: Tony Lindgren <tony@atomide.com>
-> Signed-off-by: Saravana Kannan <saravanak@google.com>
-> ---
-> Â drivers/base/power/domain.c | 2 +-
-> Â 1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/base/power/domain.c
-> b/drivers/base/power/domain.c
-> index 5a2e0232862e..55a10e6d4e2a 100644
-> --- a/drivers/base/power/domain.c
-> +++ b/drivers/base/power/domain.c
-> @@ -2733,7 +2733,7 @@ static int __genpd_dev_pm_attach(struct device
-> *dev, struct device *base_dev,
-> Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â mutex_unlock(&gpd_list_lock);
-> Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â dev_dbg(dev, "%s() failed to find PM domain: %ld\n",
-> Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â __func__, PTR_ERR(pd));
-> -Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â return -ENODEV;
-> +Â Â Â Â Â Â Â Â Â Â Â Â Â Â Â return driver_deferred_probe_check_state(base_dev);
-> Â Â Â Â Â Â Â Â }
-> Â 
-> Â Â Â Â Â Â Â Â dev_dbg(dev, "adding to PM domain %s\n", pd->name);
+> I think we could just replace this with a mutex instead, it's not a performance path.  I've been running tests successfully today with this patch modified to instead use a mutex for dma_domain_lock.
 
-Fixes imx8mq where ENODEV results in:
-[    1.048019] imx8m-blk-ctrl 38320000.blk-ctrl: error -ENODEV: failed
-to attach power domain "bus"
+But your original version uses irq-savvy spinlocks.
+Are there data that need to be protected against interrupts?
 
-
-Tested-by: Martin Kepplinger <martin.kepplinger@puri.sm>
-
-thanks for fixing this,
-
-                                martin
-
-
+Thanks!
