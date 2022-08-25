@@ -1,161 +1,147 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F4451841
-	for <iommu@lists.linux.dev>; Thu, 25 Aug 2022 14:52:48 +0000 (UTC)
-Received: by mail-wr1-f42.google.com with SMTP id bq11so18371978wrb.12
-        for <iommu@lists.linux.dev>; Thu, 25 Aug 2022 07:52:48 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0491033F3
+	for <iommu@lists.linux.dev>; Thu, 25 Aug 2022 15:53:03 +0000 (UTC)
+Received: by mail-wr1-f51.google.com with SMTP id e20so24662951wri.13
+        for <iommu@lists.linux.dev>; Thu, 25 Aug 2022 08:53:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=EuJPtoYgjjN5/e0jyvbLMFRYdN9rtOzOfHKRxWyYoBU=;
-        b=eg7BC7KjISFyUh8Fm26l56dTvHw7nfA0x7+7uYfoLZ4Dyk6v88U+OAMc9JIripiW4H
-         E8Rnc+Tq5whRFWEewjB8GSe+zjUlUbwJ49gkVu4T+6S35u+S2RoD+QFM4+XYL6b1ombc
-         PYGGjlcqmZrIxw8GD3Jj5qN3+60Su5jPaLNjZmE9BXRM+TGBTVNrPtQWiKLOam6OwaqB
-         bIiCXfHjH9O/kbBUrEYy0bwGcCBhz2UZ/IzCkG1RApHHhMhLUlX4cja/VgIyIMpdVE9Y
-         51S7IwNis/iWsX/XLc/uRkXUn2FPVITfB6IL1MaHfxJyu4Z9CNppmAQGj7a1isZqh4Or
-         vGGA==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=eKDDvB8U6aq+7oIdAo/nTh9Y2n5hFUfH10TaK5bJglk=;
+        b=f0zrJDDWE8ShnFKpgy/I8quIyXFiun0CkJ2ecWb//M/rWkjx4yYXXqkL5OdG3VL7DQ
+         vWzmt0aUpqVkhJHGedjNyVEpc3064D+LeI+UTULNeUljk9V5pVSvm2+QoV1IgOKIzWoj
+         +CJemXitxYgNnhGgNMH48eyLjfMrHUUfPBNEl9HWpxaMwLl9zQOozo5IkOinYQoKMvZO
+         xksFratOhr3Q/tCYwVGoGFL/2xdH4GetlKt9h4rjNiyka8q+OsRYoKDi4+mvqbzlU+B2
+         VL1tsqpizUxkknbkABQEKeh4QrqK6IWON5Cybr8ydwv5P2Rz9GClhpdo5AmO8mL2Ydhc
+         WP3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=EuJPtoYgjjN5/e0jyvbLMFRYdN9rtOzOfHKRxWyYoBU=;
-        b=I2GRdjXxnoU1RksX4QoAH/gCE0mEaYvuh1M4XSwMxcJHGPEA/H666laDkZNx00jmYO
-         QW5AP7F1ZLeUlxHByfJnLf7cDwUWv+U8ikCktn7rLi913IxK5BJm/N8CaV3uzZXtOS4+
-         KbeKjsFsXNAmIrLTGjRo5eh3+jFZ9wiYnasB6GsUxT0zDchhUm/g0hHTbXtGHIwFclrB
-         LcdmHvA3ookCDdG1/8Xncaz+gWXVAbMG11FL8yCHPem7FwU2YWjW8UwKlEWpW2rU9vmZ
-         H47gKL/tVRVfYuocJ0KIZ6ZgUgirWGwe50hVsS8o30jSqwzJociCzTUmIVbAn6BpScrh
-         CR4g==
-X-Gm-Message-State: ACgBeo1VzRHSNYDr5HProk19B3g9PTpnSeKQlwF3Q1UPwUw2dM60RQQZ
-	LCKPlIBX1wXht6AXD6+m2ig=
-X-Google-Smtp-Source: AA6agR5xjrDrbHwGtRMFWO2CBXbtGRrUyxMfRYWrcPVy4NZm6akviQOSxZVXcpH40iI9WsgKXmA9xQ==
-X-Received: by 2002:a05:6000:1d82:b0:220:5f9b:9a77 with SMTP id bk2-20020a0560001d8200b002205f9b9a77mr2511169wrb.622.1661439166564;
-        Thu, 25 Aug 2022 07:52:46 -0700 (PDT)
-Received: from [192.168.2.177] ([207.188.167.132])
-        by smtp.gmail.com with ESMTPSA id v7-20020a5d5907000000b00220592005edsm19918911wrd.85.2022.08.25.07.52.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 Aug 2022 07:52:45 -0700 (PDT)
-Message-ID: <e48c22e9-3fa6-2d26-4829-77b7fb737da5@gmail.com>
-Date: Thu, 25 Aug 2022 16:52:44 +0200
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=eKDDvB8U6aq+7oIdAo/nTh9Y2n5hFUfH10TaK5bJglk=;
+        b=nzWEjUL2DVhlFrh5ajE6+RyguZqnrN1FaGp20aLMqRQ8DKzAeRJCja+nq5I0IUxPkZ
+         iC4sBm1GwDmwCVKsKA5u2TQoJRrwqSma3YLcsQTjrhiS1O7vc6OaSXbnqeh2lL+BzcNh
+         NIZezWLHIqvLMHXIPwsBBaJWsJM3gteyvZMfl8eB6Yi+swV2o+mk8frbJhWG5r3+WUw+
+         3T0KQmuZnUIJYLteyHCYk5n7IPQCqbpZcG6JOmBSP5Awqjb2yh37cOuiysruaxkoj9P4
+         9LJ/vjRW038CZ4yvQ678j0Os3lIfnoYwwZWmcRQ3dJ3sLrXGxYIisXVMVgR23/r4yjh5
+         xt6w==
+X-Gm-Message-State: ACgBeo0dDTwM0zFKksRYmHNXcPm9824GkCcZsuibMDUN0V57G4HqOu9T
+	TRuZ/LaBWk23U7k92EyDO4IZQQ==
+X-Google-Smtp-Source: AA6agR42in6A0RntamYZB9W+J0IKrhmHNMnAh6YXLyKNSDAp4ArNW922cMcaEHF9fVi6uWHXyxPGaQ==
+X-Received: by 2002:a5d:6251:0:b0:222:cd3b:94bc with SMTP id m17-20020a5d6251000000b00222cd3b94bcmr2652113wrv.319.1661442782152;
+        Thu, 25 Aug 2022 08:53:02 -0700 (PDT)
+Received: from localhost.localdomain (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
+        by smtp.gmail.com with ESMTPSA id p20-20020a05600c419400b003a5ffec0b91sm5378284wmh.30.2022.08.25.08.52.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Aug 2022 08:53:01 -0700 (PDT)
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: joro@8bytes.org
+Cc: will@kernel.org,
+	robin.murphy@arm.com,
+	virtualization@lists.linux-foundation.org,
+	iommu@lists.linux.dev,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	stable@vger.kernel.org
+Subject: [PATCH v3] iommu/virtio: Fix interaction with VFIO
+Date: Thu, 25 Aug 2022 16:46:24 +0100
+Message-Id: <20220825154622.86759-1-jean-philippe@linaro.org>
+X-Mailer: git-send-email 2.37.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [PATCH v6 00/20] Add driver nodes for MT8195 SoC
-Content-Language: en-US
-To: Tinghan Shen <tinghan.shen@mediatek.com>, Yong Wu <yong.wu@mediatek.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Lee Jones <lee@kernel.org>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- MandyJH Liu <mandyjh.liu@mediatek.com>
-Cc: iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org,
- Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220811025813.21492-1-tinghan.shen@mediatek.com>
-From: Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220811025813.21492-1-tinghan.shen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
+Commit e8ae0e140c05 ("vfio: Require that devices support DMA cache
+coherence") requires IOMMU drivers to advertise
+IOMMU_CAP_CACHE_COHERENCY, in order to be used by VFIO. Since VFIO does
+not provide to userspace the ability to maintain coherency through cache
+invalidations, it requires hardware coherency. Advertise the capability
+in order to restore VFIO support.
 
+The meaning of IOMMU_CAP_CACHE_COHERENCY also changed from "IOMMU can
+enforce cache coherent DMA transactions" to "IOMMU_CACHE is supported".
+While virtio-iommu cannot enforce coherency (of PCIe no-snoop
+transactions), it does support IOMMU_CACHE.
 
-On 11/08/2022 04:57, Tinghan Shen wrote:
-> Add driver nodes for MT8195 SoC.
-> 
+We can distinguish different cases of non-coherent DMA:
 
-Applied 7-20 of this series.
-Patches 3-5 were taken from v4 by accident but AFAICS didn't change.
+(1) When accesses from a hardware endpoint are not coherent. The host
+    would describe such a device using firmware methods ('dma-coherent'
+    in device-tree, '_CCA' in ACPI), since they are also needed without
+    a vIOMMU. In this case mappings are created without IOMMU_CACHE.
+    virtio-iommu doesn't need any additional support. It sends the same
+    requests as for coherent devices.
 
-Thanks,
-Matthias
+(2) When the physical IOMMU supports non-cacheable mappings. Supporting
+    those would require a new feature in virtio-iommu, new PROBE request
+    property and MAP flags. Device drivers would use a new API to
+    discover this since it depends on the architecture and the physical
+    IOMMU.
 
-> ---
-> v5 -> v6:
->    - rebased on linux-next/next-20220809
->    - update the if/else condition comment in iommu.yaml
->    - some v5 patches are corrupted caused by extra line wrapping
-> 
-> v4 -> v5:
->    - rebased on linux-next/next-20220802
->    - fix indentation in scpsys.yaml
->    - rewrite if/else condition for infra iommu in iommu.yaml
->    - remove unused clock from infra iommu node
-> 
-> v3 -> v4:
->    - remove unit address of power-controller node name from v3 scpsys bindings
->    - v3 patchset 7 and v3 patchset 6 are combined as v4 patchset 6
->    - add more commit descriptions for updating mt81xx scpsys node
-> 
-> v2 -> v3:
->    - fix dsp node name
->    - add descriptions for iommu interrupts
->    - limit the levels of power domain nodes
->    - update maintainer list of power controller yaml
->    - support naming power controller node with unit address
->    - add SoC specific compatible string to scpsys yaml
-> 
-> v1 -> v2:
->    - add new dt-bindings: mfd/mediatek,scpsys.yaml
->      - update compatible string for mt81xx scpsys nodes
->    - apply comments for yaml files: iommu, smi-common, and power-controller
->    - apply comments for dts nodes: power domain, vdosys0.
->    - apply comments for commit message of watchdog, i2c, and smi-common.
->    - add review-by tags
-> 
-> ---
-> Jason-JH.Lin (2):
->    arm64: dts: mt8195: Add gce node
->    arm64: dts: mt8195: Add display node for vdosys0
-> 
-> Tinghan Shen (14):
->    dt-bindings: iommu: mediatek: Increase max interrupt number
->    dt-bindings: memory: mediatek: Update condition for mt8195 smi node
->    dt-bindings: power: mediatek: Refine multiple level power domain nodes
->    dt-bindings: power: mediatek: Support naming power controller node
->      with unit address
->    dt-bindings: power: mediatek: Update maintainer list
->    dt-bindings: power: mediatek: Add bindings for MediaTek SCPSYS
->    arm64: dts: mediatek: Update mt81xx scpsys node to align with
->      dt-bindings
->    arm64: dts: mt8195: Disable watchdog external reset signal
->    arm64: dts: mt8195: Add vdosys and vppsys clock nodes
->    arm64: dts: mt8195: Add power domains controller
->    arm64: dts: mt8195: Add spmi node
->    arm64: dts: mt8195: Add scp node
->    arm64: dts: mt8195: Add audio related nodes
->    arm64: dts: mt8195: Add iommu and smi nodes
-> 
-> Trevor Wu (1):
->    arm64: dts: mt8195: Specify audio reset controller
-> 
-> Tzung-Bi Shih (1):
->    arm64: dts: mt8195: Disable I2C0 node
-> 
-> YC Hung (1):
->    arm64: dts: mt8195: Add adsp node and adsp mailbox nodes
-> 
-> YT Lee (1):
->    arm64: dts: mt8195: Add cpufreq node
-> 
->   .../bindings/iommu/mediatek,iommu.yaml        |   29 +-
->   .../mediatek,smi-common.yaml                  |   11 +-
->   .../bindings/mfd/mediatek,mt8195-scpsys.yaml  |   67 ++
->   .../power/mediatek,power-controller.yaml      |  137 +--
->   arch/arm64/boot/dts/mediatek/mt8167.dtsi      |    3 +-
->   arch/arm64/boot/dts/mediatek/mt8173.dtsi      |    3 +-
->   arch/arm64/boot/dts/mediatek/mt8183.dtsi      |    3 +-
->   arch/arm64/boot/dts/mediatek/mt8192.dtsi      |    3 +-
->   arch/arm64/boot/dts/mediatek/mt8195.dtsi      | 1054 ++++++++++++++++-
->   9 files changed, 1176 insertions(+), 134 deletions(-)
->   create mode 100644 Documentation/devicetree/bindings/mfd/mediatek,mt8195-scpsys.yaml
-> 
+(3) When the hardware supports PCIe no-snoop. It is possible for
+    assigned PCIe devices to issue no-snoop transactions, and the
+    virtio-iommu specification is lacking any mention of this.
+
+    Arm platforms don't necessarily support no-snoop, and those that do
+    cannot enforce coherency of no-snoop transactions. Device drivers
+    must be careful about assuming that no-snoop transactions won't end
+    up cached; see commit e02f5c1bb228 ("drm: disable uncached DMA
+    optimization for ARM and arm64"). On x86 platforms, the host may or
+    may not enforce coherency of no-snoop transactions with the physical
+    IOMMU. But according to the above commit, on x86 a driver which
+    assumes that no-snoop DMA is compatible with uncached CPU mappings
+    will also work if the host enforces coherency.
+
+    Although these issues are not specific to virtio-iommu, it could be
+    used to facilitate discovery and configuration of no-snoop. This
+    would require a new feature bit, PROBE property and ATTACH/MAP
+    flags.
+
+Cc: stable@vger.kernel.org
+Fixes: e8ae0e140c05 ("vfio: Require that devices support DMA cache coherence")
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+---
+Since v2 [1], I tried to refine the commit message.
+This fix is needed for v5.19 and v6.0.
+
+I can improve the check once Robin's change [2] is merged:
+capable(IOMMU_CAP_CACHE_COHERENCY) could return dev->dma_coherent for
+case (1) above.
+
+[1] https://lore.kernel.org/linux-iommu/20220818163801.1011548-1-jean-philippe@linaro.org/
+[2] https://lore.kernel.org/linux-iommu/d8bd8777d06929ad8f49df7fc80e1b9af32a41b5.1660574547.git.robin.murphy@arm.com/
+---
+ drivers/iommu/virtio-iommu.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 08eeafc9529f..80151176ba12 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -1006,7 +1006,18 @@ static int viommu_of_xlate(struct device *dev, struct of_phandle_args *args)
+ 	return iommu_fwspec_add_ids(dev, args->args, 1);
+ }
+ 
++static bool viommu_capable(enum iommu_cap cap)
++{
++	switch (cap) {
++	case IOMMU_CAP_CACHE_COHERENCY:
++		return true;
++	default:
++		return false;
++	}
++}
++
+ static struct iommu_ops viommu_ops = {
++	.capable		= viommu_capable,
+ 	.domain_alloc		= viommu_domain_alloc,
+ 	.probe_device		= viommu_probe_device,
+ 	.probe_finalize		= viommu_probe_finalize,
+-- 
+2.37.1
+
