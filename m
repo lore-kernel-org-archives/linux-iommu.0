@@ -1,104 +1,93 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F22B42F28
-	for <iommu@lists.linux.dev>; Thu, 25 Aug 2022 11:26:47 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CD2F7D6E;
-	Thu, 25 Aug 2022 04:26:45 -0700 (PDT)
-Received: from [10.57.16.12] (unknown [10.57.16.12])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 09EDB3FAF5;
-	Thu, 25 Aug 2022 04:26:38 -0700 (PDT)
-Message-ID: <04bf5f9a-a170-55bd-10f0-fa3695b85347@arm.com>
-Date: Thu, 25 Aug 2022 12:26:33 +0100
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC23E2F57
+	for <iommu@lists.linux.dev>; Thu, 25 Aug 2022 13:34:56 +0000 (UTC)
+Received: by mail-wm1-f49.google.com with SMTP id n23-20020a7bc5d7000000b003a62f19b453so2709964wmk.3
+        for <iommu@lists.linux.dev>; Thu, 25 Aug 2022 06:34:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=16mUpezxm80YWlJHrT1/vR/sK7zihBb/9bIY1O88uf0=;
+        b=gZx8lYB9Id3gDBCjd8qFEkRWURnqOANH7rQGtZTj89Hy7ty6ajUb1in5wb4EUFylyK
+         bjdEA9O7JJVOdwj/mg2wPm0K8/CF/RFgjCL5vlGHiuDSp3rtOe8jDQ5wzAMySvz+PWrk
+         OYf3ICmgXmkkgFn1cw+8kUFs7710jpphO7H2ja7OjFywIzItHn8CHC2IEeSiDMKh+Zux
+         iUn/ZFs8V0wQWiqkpVTDQ1w0Fs2tN72nQ5suXHZCRymcg222syTNp9ode82zSeHjs8wT
+         22GrHi+qQ4Er/n9erGPOJpDZlS2G0y+HgecmU2fj1zY2Q35VcUqUk89mg1hHn7mmp4AA
+         1o4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=16mUpezxm80YWlJHrT1/vR/sK7zihBb/9bIY1O88uf0=;
+        b=WgR/bHIIiCupHFp37kc5QdcrWvJeFZcC7drMa9jF+HW8CziygbgBQHfqmFktDmj2vJ
+         vQ7z320l2FXF2+EvlcxiL9EhBvMoJgNT9wtjZOEfOByUHbth7KDOGbQ5N5SfnUUgFTHb
+         SX8nmX4o/gVxf6UaQh6krPG2Hc8zBsEdyKLpnemHb56Yw5uckxb6ILv3B456TI+qCucX
+         eUDTlQlyPnRBdH0EnwYkt+jdVYEbme7jBJKDk/RvKKcaxTjqRqOlwtnTfOTj1rHffjmm
+         Pk4O07MFu+FSLwEcgf+kAVmCQ6tehcfoMH/yj+hrCG8/iAhGup2PypRvEtPzOgdpdeLP
+         mH/g==
+X-Gm-Message-State: ACgBeo3UhmwPMwfV1LHIflblbHyeINBnbYa7JgYehgbS0Z3Zhb6MERdq
+	4LE31Ox0aLcw2dRHzou4luA=
+X-Google-Smtp-Source: AA6agR5gHErvZPlnKGEvLXNiDwqGaydgJbZyT1M6n8zJ+OwyS+zQQCpAfBNjhqu25JRp5UCiEWpxXA==
+X-Received: by 2002:a05:600c:3b0c:b0:3a6:aa0:5966 with SMTP id m12-20020a05600c3b0c00b003a60aa05966mr2367508wms.183.1661434494909;
+        Thu, 25 Aug 2022 06:34:54 -0700 (PDT)
+Received: from [192.168.2.177] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id j4-20020a5d6044000000b002254a7f4b9csm14356230wrt.48.2022.08.25.06.34.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Aug 2022 06:34:53 -0700 (PDT)
+Message-ID: <24116d0a-38ec-8868-8b9c-1adbe98250f6@gmail.com>
+Date: Thu, 25 Aug 2022 15:34:52 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH] iommu/s390: Fix race with release_device ops
-Content-Language: en-GB
-To: Niklas Schnelle <schnelle@linux.ibm.com>,
- Alexander Gordeev <agordeev@linux.ibm.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>
-Cc: Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev,
- linux-s390@vger.kernel.org, borntraeger@linux.ibm.com, hca@linux.ibm.com,
- gor@linux.ibm.com, gerald.schaefer@linux.ibm.com, svens@linux.ibm.com,
- joro@8bytes.org, will@kernel.org, jgg@nvidia.com,
- linux-kernel@vger.kernel.org
-References: <20220823203059.81919-1-mjrosato@linux.ibm.com>
- <a6e42442-d9cb-0d63-bb71-da78a5669a51@linux.ibm.com>
- <04644ee5-2386-1f3d-c1a3-fc4227570cf7@linux.ibm.com>
- <YwcjIPcT1b0uyyFn@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
- <69b7b496c3658b385f2404d6e3209970b3677c08.camel@linux.ibm.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <69b7b496c3658b385f2404d6e3209970b3677c08.camel@linux.ibm.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH v4 03/20] dt-bindings: power: mediatek: Refine multiple
+ level power domain nodes
+Content-Language: en-US
+To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Tinghan Shen <tinghan.shen@mediatek.com>, Yong Wu <yong.wu@mediatek.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Lee Jones <lee@kernel.org>, MandyJH Liu <mandyjh.liu@mediatek.com>
+Cc: iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220729063208.16799-1-tinghan.shen@mediatek.com>
+ <20220729063208.16799-4-tinghan.shen@mediatek.com>
+ <0bcc1575-2c43-8843-8edd-8b73ddc4d0fb@collabora.com>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <0bcc1575-2c43-8843-8edd-8b73ddc4d0fb@collabora.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2022-08-25 12:11, Niklas Schnelle wrote:
-> On Thu, 2022-08-25 at 09:22 +0200, Alexander Gordeev wrote:
->> On Wed, Aug 24, 2022 at 04:25:19PM -0400, Matthew Rosato wrote:
->>>>> @@ -90,15 +90,39 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
->>>>>        struct zpci_dev *zdev = to_zpci_dev(dev);
->>>>>        struct s390_domain_device *domain_device;
->>>>>        unsigned long flags;
->>>>> -    int cc, rc;
->>>>> +    int cc, rc = 0;
->>>>>          if (!zdev)
->>>>>            return -ENODEV;
->>>>>    +    /* First check compatibility */
->>>>> +    spin_lock_irqsave(&s390_domain->list_lock, flags);
->>>>> +    /* First device defines the DMA range limits */
->>>>> +    if (list_empty(&s390_domain->devices)) {
->>>>> +        domain->geometry.aperture_start = zdev->start_dma;
->>>>> +        domain->geometry.aperture_end = zdev->end_dma;
->>>>> +        domain->geometry.force_aperture = true;
->>>>> +    /* Allow only devices with identical DMA range limits */
->>>>> +    } else if (domain->geometry.aperture_start != zdev->start_dma ||
->>>>> +           domain->geometry.aperture_end != zdev->end_dma) {
->>>>> +        rc = -EINVAL;
->>>>> +    }
->>>>> +    spin_unlock_irqrestore(&s390_domain->list_lock, flags);
->>>>> +    if (rc)
->>>>> +        return rc;
->>>>> +
->>>>>        domain_device = kzalloc(sizeof(*domain_device), GFP_KERNEL);
->>>>>        if (!domain_device)
->>>>>            return -ENOMEM;
->>>>>    +    /* Leave now if the device has already been released */
->>>>> +    spin_lock_irqsave(&zdev->dma_domain_lock, flags);
->>>>> +    if (!dev_iommu_priv_get(dev)) {
->>>>> +        spin_unlock_irqrestore(&zdev->dma_domain_lock, flags);
->>>>> +        kfree(domain_device);
->>>>> +        return 0;
->>>>> +    }
->>>>> +
->>>>>        if (zdev->dma_table && !zdev->s390_domain) {
->>>>>            cc = zpci_dma_exit_device(zdev);
->>>>>            if (cc) {
->>>>
->>>> Am I wrong? It seems to me that zpci_dma_exit_device here is called with the spin_lock locked but this function zpci_dma_exit_device calls vfree which may sleep.
->>>>
->>>
->>> Oh, good point, I just enabled lockdep to verify that.
->>>
->>> I think we could just replace this with a mutex instead, it's not a performance path.  I've been running tests successfully today with this patch modified to instead use a mutex for dma_domain_lock.
+
+
+On 29/07/2022 10:06, AngeloGioacchino Del Regno wrote:
+> Il 29/07/22 08:31, Tinghan Shen ha scritto:
+>> Extract duplicated properties and support more levels of power
+>> domain nodes.
 >>
->> But your original version uses irq-savvy spinlocks.
->> Are there data that need to be protected against interrupts?
+>> This change fix following error when do dtbs_check,
+>>      arch/arm64/boot/dts/mediatek/mt8195-evb.dtb: power-controller: 
+>> power-domain@15:power-domain@16:power-domain@18: 'power-domain@19', 
+>> 'power-domain@20', 'power-domain@21' do not match any of the regexes: 
+>> 'pinctrl-[0-9]+'
+>>      From schema: 
+>> Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
 >>
->> Thanks!
+>> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+>> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > 
-> I think that was a carry over from my original attempt that used the
-> zdev->dma_domain_lock in some more places including in interrupt
-> context. I think these are gone now so I think Matt is right in his
-> version this can be a mutex.
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> 
 
-Yes, probe/release/attach/detach should absolutely not be happening from 
-atomic/IRQ context. At the very least, the IOMMU core itself needs to 
-take the group mutex in those paths.
-
-Cheers,
-Robin.
+Applied, thanks
