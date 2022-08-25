@@ -1,33 +1,33 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2040.outbound.protection.outlook.com [40.107.93.40])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2063.outbound.protection.outlook.com [40.107.93.63])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C06EE1C30
-	for <iommu@lists.linux.dev>; Thu, 25 Aug 2022 06:40:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32F971C30
+	for <iommu@lists.linux.dev>; Thu, 25 Aug 2022 06:40:46 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cnfSrMWnmt1GyvrGYNFGZqiOqonEVzu0LyLFG+pIPOSXbHmb4+2w/UTRWhp22HAO1wm1f+6ufoJ/dTpnRyM7IHK8G8pn+cumXxg/RV6m2r3Y/miEMSBKebzXpy41eve8qR7Q4U+qUBz2BRfeUjyYsEhPdBJVJpWxagO+Md60fyYd/UUCLgNPEDRXt2bFjVVpLpnCzlvDFagiZFAu2BJN3rvld9OZqHiTpk444q06Mj1mBNu1LQc4vcWGoAuXZduFC1IagFL7AJ75BIczwHgd5Yl5+EVF85LEuV9q9FsIOO5a+Nd25cEBRU4hJmrYjOHQ1d8+nbRXqS7VEoUJ4MNpeQ==
+ b=kNUZ2343kY5su8pNPa7+GnCSIR7hvw9IHUatHBbdvRiO6fCm3J9DEpq0ty2xhcq1DmJFeXKiZtTkc0uV8ceokY/kk6kYT0NJS1ifLM45VWKM7MHavhrTRzuvzCLdmiVCaL7sOOAeM8+P+tBkIjM+XoUMsQRgQdCCXO8hInKXslRLzB0UMVtYhdE334GoWuurpQfWTehPrzq0Ca3w8Zm067bJQUwF/qtxxfW0qQ34NWzPAHCtP+o3cMM+SUfJUAH8QcTYNB+v+fLRENDKCHeyh62GFODL6NN1Jbho7nDkAKI4j/4ABXnk+JtVnVB3CALbOq+IScofCjvSXgCW/F7cpA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8Cj5yTPdIUEwJoIEJub9XANz/puPnzSJ1ZLvQe9Qy4A=;
- b=im5FmN+RfPqC3mFpwvg2bIgCsPEuRcH0NISgwmzlJFat+z0QShRdl2vtMvZDygurjTZdNnAlKk7QUMNSY7J7MYt6tvc/WgOoGmM/qZCuwitfXn5yT7JAj17Y6KkdKvrb0VtCh0R88eV+cEsdp82bryqFSmkUGH9Wcj+BWpUpEE2L1Keuma6TNVtQHPCbv5hsB2w+glBJ8kQMkxhNQa1DaJJYDIteLKk5hpl6Tg8vL/6LpUcciJGyBAIH/hL+dpiPKHSRtJTqUvQhhJBkdiwqVetBrVBPFPvqQ9O9A5qS14h8K+guhrTb03gVOWmQ637vA96OKH57ijsjFoeH8bNQlg==
+ bh=80Pwk4KhTYrv30cIjc69KrNZeJ595gjC366CTNftJEA=;
+ b=cZXtsDKlEece7xlCjuDpq7DOS+P2NOkkHzmqUfa1z7O86AyMHw7lqBew5ykzvQ6cZWNVduzbG192Up0sdMgb0mrdXQpirmODQm9A4xvVV9VqaYx8Rd83feP+o4Qv/Cb4T0NFiOk6MqR+K279pp88vwG7NfXlZdpzjiBZpNGCYyy6SA+1AJGISqS2HqsgM0HhGoVHSI3svRLCWTeg3hBmskqL5Tf+PMsC1Ci/wPTBpHPTtit9NYUbEnfTKpL9GPnlsZKMhPJFe0PQvY6dm1wwrYBNStx2nIdo94TeaTcbglFnVsbN45jjDINBQ0/s05CPNRZ7TbzgibFxeFS9M+63xw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8Cj5yTPdIUEwJoIEJub9XANz/puPnzSJ1ZLvQe9Qy4A=;
- b=LcfYLhpbMEJpvWaV5DjC4T4BpLF2BI3BattBdHf6lkNGlMKRpjJ2g5/si1Hh/Tv2Lj1KIjvVLSTQDnoub2CwrTzfbra3LMxLJLxwUphAsTEkVhp3tt6k08WOaRmDzFx69b9Ee30FWupHTtVJo1+kupyegNEKyAwnKKlPaeTi3oA=
-Received: from MW4PR03CA0253.namprd03.prod.outlook.com (2603:10b6:303:b4::18)
- by SJ1PR12MB6193.namprd12.prod.outlook.com (2603:10b6:a03:459::21) with
+ bh=80Pwk4KhTYrv30cIjc69KrNZeJ595gjC366CTNftJEA=;
+ b=sPmRfwP4GXLCOXnYuwYfAZvJ1aDVSN9z8PO/R1szahG5HCbM/nWwVjdZeiHcRw4qosCplcC7saC8PwfbNYdds49VMMdhGAsq5Ey6dCBzPnNvzOZVibi8n/iGTXnq2pLm0eHZ+JPAbVTYMkX/FkIlMxVd6NoTDe/hXVSzTdsdb5s=
+Received: from MW4PR04CA0099.namprd04.prod.outlook.com (2603:10b6:303:83::14)
+ by LV2PR12MB5989.namprd12.prod.outlook.com (2603:10b6:408:171::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Thu, 25 Aug
- 2022 06:40:29 +0000
-Received: from CO1NAM11FT102.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:b4:cafe::a5) by MW4PR03CA0253.outlook.office365.com
- (2603:10b6:303:b4::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.22 via Frontend
- Transport; Thu, 25 Aug 2022 06:40:29 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.22; Thu, 25 Aug
+ 2022 06:40:42 +0000
+Received: from CO1NAM11FT068.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:83:cafe::15) by MW4PR04CA0099.outlook.office365.com
+ (2603:10b6:303:83::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.19 via Frontend
+ Transport; Thu, 25 Aug 2022 06:40:42 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -35,20 +35,22 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT102.mail.protection.outlook.com (10.13.175.87) with Microsoft SMTP
+ CO1NAM11FT068.mail.protection.outlook.com (10.13.175.142) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5566.15 via Frontend Transport; Thu, 25 Aug 2022 06:40:28 +0000
+ 15.20.5566.15 via Frontend Transport; Thu, 25 Aug 2022 06:40:41 +0000
 Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 25 Aug
- 2022 01:40:23 -0500
+ 2022 01:40:38 -0500
 From: Vasant Hegde <vasant.hegde@amd.com>
 To: <iommu@lists.linux.dev>, <joro@8bytes.org>, <robin.murphy@arm.com>
 CC: <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH v3 0/9] iommu/amd: Add Generic IO Page Table Framework Support for v2 Page Table
-Date: Thu, 25 Aug 2022 06:39:30 +0000
-Message-ID: <20220825063939.8360-1-vasant.hegde@amd.com>
+Subject: [PATCH v3 1/9] iommu/amd/io-pgtable: Implement map_pages io_pgtable_ops callback
+Date: Thu, 25 Aug 2022 06:39:31 +0000
+Message-ID: <20220825063939.8360-2-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220825063939.8360-1-vasant.hegde@amd.com>
+References: <20220825063939.8360-1-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -62,115 +64,131 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1616c110-2600-4104-355c-08da8664b372
-X-MS-TrafficTypeDiagnostic: SJ1PR12MB6193:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9d3e0845-e90a-4b32-739f-08da8664bb0d
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5989:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	heWqIrHAlbJT0nwu+5X6WfhDQvlSvBkAunExJSUwgHODSjRfHV9BenFPSfmnzzU+pX9z8DQg2nbq33fSR2M1y5aWiLMD2wVlx+b0v7501+jvtkp5KwBaYIqp2lF0/LWFThnP+lCvno4LTznA3aRvz08kbrX65E9+A95B6Ow3FSrdGO+IvdYKVASXBVwWPtTTQcEP0aWqc/zqsTr2+0l4XMXilrOQ7F874XB/G3NOvzj4u6v1jnyg0rlAZIm1p5n/uNKwte5yRCAX7lbud2yO222z9bed6GkheJA8pjqjZQx8RrINcmU7uyroFeMAUro2gdU4EUjOGrruQ6SYlJXoY3vKuO+CHbKo8heR1EG/C2d4QMYR5EzK1wxrhibjx7Reyo+qecNcGALSCoCqS+H+A8gNU/TxYIDFOwsf4kmKkwUA+Sdjb+K4WxjEJizydK1jil5OykSdMN3JH7JR0USperkrxzn2z8nmgnWJ/QZTNmzzDFLQ+Ib12LOXheFVgugXfqTogep8hJyvuNZgTO489wXWvMCVBZEfSNOjtLmd8GvrUAoVbgAYZsfQifIVhzH8BYmbArYQJ87S9pk3sas6zwhgJuTa0h5kRwoRjavGzUewYtsNK6ZGPvvf516/10LsWgGpq6WZcW6DlokxPXYgYQwUgKMQ48/WJRAy++PLLfk8Nj60g7MOOx2+CnAPepvSIeErd2PgLrvW1t6pHDFvJDRQl0/GtuzgCEmf7AQ+GMoGBOZwjEJhvktdFdbE3PW4WXyog6wNhOr+qI3e8V/6h8kJMXI1w9+zkjckVGk46zkCnu59b/sHx5Yy081wUDMMUWsCCdBD+9iZvAJ8WKJ2Yo6NoKXtg4YSAyrnfvuQQnRGuBn4q7JnnaU74/998vNPucVIEQC4Osogve4ZggbT8ukS0BtLDmceJCbYuiXO7UxCPiwCbR62sFs8P9DlQIvn
+	9fS5GkvmJFtTGhH4u+EE/9gPjfjs+OmZTq0q7hnpijkmgAhMpAlkmL8jBJDkBhJFCnTpkpZWMQiP7BTEN7KBB/lCm1l4q1FRbKBdZjFUpcePj59oLfxPiBDI/Tus4g67mZxI5driKQ7YYgMKIqYAURUi0DoZCduzNeNJzq6uZj5W/7G0CCnlhypbKkj0nRk/ZqF8MXIe0hAS550zFRynHuvSeF2iUlhK6LnOnBJbW3Kw0Z3R9o1TNxjRyNM+1mRP2sNGckdaapJEwISjdD2/nw1dN9rHRvI9DvGLHUze6jZgCSU59j0LUBmYy8rQ+IqJ2NGqP9yOsUo5TDPe63RHm3XyaL5CVQTXryrRVGdK6oKfxqi1r2Wkif8Bn9g62gDDk+Mv9l5KE4EzBhS3CCvAmPyR3WJFVGtadabqxoG5kqA64sBo54b5zJ2ieIqFWyHkR1Jw24L2JNV89bP2nxEIkexNp8Lil2zQbg4hETQY3dC+5vM/VF1iEBb1UVqdS16Rs2LYc56wWbHusk+fLOpNIKBXe9aTVzFpXqy67cLlkNUJFAu8fGoCTT7iT2I5Agm27a0zIiRP62HnBib7zaPzabTV7iVaAVAMUXslBhY6+c4Lqh7IqJi4VuV+m4hs5vyCVrrEZueo/6zywrMexqwCacOku4kzrFI7IssHjoYRsAuRtL6i5Ypq9ERZFmY+uXTB7nao0GCPbISaeaWo+fGT82LjNh69oiBaBuRqLLY1RP6p/iWEpirX0zl8KRoU6VOdovOA69hVYbMfNaMarDFl//QPsOEPk8woEafT03Ni3mghQBAHdN5BmcMHbnbHLJzp
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(346002)(376002)(136003)(46966006)(40470700004)(36840700001)(70206006)(70586007)(86362001)(6666004)(82740400003)(356005)(4326008)(54906003)(316002)(81166007)(7696005)(966005)(41300700001)(478600001)(8676002)(40480700001)(2616005)(36860700001)(1076003)(40460700003)(83380400001)(110136005)(336012)(16526019)(82310400005)(186003)(26005)(36756003)(5660300002)(426003)(44832011)(2906002)(47076005)(8936002)(71600200004)(41533002)(36900700001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(136003)(346002)(376002)(39860400002)(396003)(46966006)(40470700004)(36840700001)(426003)(6666004)(26005)(478600001)(7696005)(16526019)(47076005)(186003)(41300700001)(8936002)(2906002)(82310400005)(5660300002)(83380400001)(316002)(40460700003)(40480700001)(336012)(54906003)(110136005)(44832011)(8676002)(2616005)(4326008)(70206006)(86362001)(82740400003)(36860700001)(356005)(70586007)(81166007)(36756003)(1076003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2022 06:40:28.9929
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2022 06:40:41.7544
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1616c110-2600-4104-355c-08da8664b372
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9d3e0845-e90a-4b32-739f-08da8664bb0d
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT102.eop-nam11.prod.protection.outlook.com
+	CO1NAM11FT068.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6193
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5989
 
-This series introduces a new usage model for the v2 page table, where it
-can be used to implement support for DMA-API by adopting the generic
-IO page table framework.
+Implement the io_pgtable_ops->map_pages() callback for AMD driver.
+Also deprecate io_pgtable->map callback.
 
-One of the target usecases is to support nested IO page tables
-where the guest uses the guest IO page table (v2) for translating
-GVA to GPA, and the hypervisor uses the host I/O page table (v1) for
-translating GPA to SPA. This is a pre-requisite for supporting the new
-HW-assisted vIOMMU presented at the KVM Forum 2020.
+Suggested-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+---
+ drivers/iommu/amd/io_pgtable.c | 59 ++++++++++++++++++++--------------
+ 1 file changed, 34 insertions(+), 25 deletions(-)
 
-  https://static.sched.com/hosted_files/kvmforum2020/26/vIOMMU%20KVM%20Forum%202020.pdf
-
-The following components are introduced in this series:
-
-- Part 1 (patch 1-3)
-  Move AMD v1 page table to use [un]map_pages interfaces and minor fixes to unmap path.
-
-- Part 1 (patch 4-5 and 8)
-  Refactor the current IOMMU page table code to adopt the generic IO page
-  table framework, and add AMD IOMMU Guest (v2) page table management code.
-
-- Part 2 (patch 7)
-  Add support for the AMD IOMMU Guest IO Protection feature (GIOV)
-  where requests from the I/O device without a PASID are treated as
-  if they have PASID of 0.
-
-- Part 3 (patch 9)
-  Introduce new "amd_iommu_pgtable" command-line to allow users
-  to select the mode of operation (v1 or v2).
-
-See AMD I/O Virtualization Technology Specification for more detail.
-
-  http://www.amd.com/system/files/TechDocs/48882_IOMMU_3.05_PUB.pdf
-
-
-Thanks,
-Vasant
-
-Changes from v2 -> v3 :
-  - As Robin suggested added support to use [un]map_pages interface (Patch 1 - 3)
-  - Removed [un]map interface from AMD IOMMU driver
-  - Updated v2 page table to use [un]map_pages interface
-
-V2 patchset: https://lore.kernel.org/linux-iommu/20220713053034.12061-1-vasant.hegde@amd.com/
-
-Changes from v1 -> v2 :
-  - Allow v2 page table only when FEATURE_GT is enabled
-  - V2 page table doesn't support IOMMU passthrough mode. Hence added
-    check to fall back to v1 mode if system is booted with iommu=pt
-  - Overloaded amd_iommu command line option (removed amd_iommu_pgtable
-    option)
-  - Override supported page sizes dynamically instead of selecting at
-    boot time.
-
-V1 patchset : https://lore.kernel.org/linux-iommu/20220603112107.8603-1-vasant.hegde@amd.com/T/#t
-
-Changes from RFC -> v1:
-  - Addressed review comments from Joerg
-  - Reimplemented v2 page table
-
-RFC patchset : https://lore.kernel.org/linux-iommu/20210312090411.6030-1-suravee.suthikulpanit@amd.com/T/#t
-
-
-Suravee Suthikulpanit (4):
-  iommu/amd: Refactor amd_iommu_domain_enable_v2 to remove locking
-  iommu/amd: Update sanity check when enable PRI/ATS for IOMMU v1 table
-  iommu/amd: Add support for Guest IO protection
-  iommu/amd: Add support for using AMD IOMMU v2 page table for DMA-API
-
-Vasant Hegde (5):
-  iommu/amd/io-pgtable: Implement map_pages io_pgtable_ops callback
-  iommu/amd/io-pgtable: Implement unmap_pages io_pgtable_ops callback
-  iommu/amd: Add map/unmap_pages() iommu_domain_ops callback support
-  iommu/amd: Initial support for AMD IOMMU v2 page table
-  iommu/amd: Add command-line option to enable different page table
-
- .../admin-guide/kernel-parameters.txt         |   2 +
- drivers/iommu/amd/Makefile                    |   2 +-
- drivers/iommu/amd/amd_iommu_types.h           |   8 +-
- drivers/iommu/amd/init.c                      |  36 +-
- drivers/iommu/amd/io_pgtable.c                |  76 ++--
- drivers/iommu/amd/io_pgtable_v2.c             | 415 ++++++++++++++++++
- drivers/iommu/amd/iommu.c                     | 117 +++--
- drivers/iommu/io-pgtable.c                    |   1 +
- include/linux/io-pgtable.h                    |   2 +
- 9 files changed, 584 insertions(+), 75 deletions(-)
- create mode 100644 drivers/iommu/amd/io_pgtable_v2.c
-
+diff --git a/drivers/iommu/amd/io_pgtable.c b/drivers/iommu/amd/io_pgtable.c
+index 7d4b61e5db47..df7799317f66 100644
+--- a/drivers/iommu/amd/io_pgtable.c
++++ b/drivers/iommu/amd/io_pgtable.c
+@@ -360,8 +360,9 @@ static void free_clear_pte(u64 *pte, u64 pteval, struct list_head *freelist)
+  * supporting all features of AMD IOMMU page tables like level skipping
+  * and full 64 bit address spaces.
+  */
+-static int iommu_v1_map_page(struct io_pgtable_ops *ops, unsigned long iova,
+-			  phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
++static int iommu_v1_map_pages(struct io_pgtable_ops *ops, unsigned long iova,
++			      phys_addr_t paddr, size_t pgsize, size_t pgcount,
++			      int prot, gfp_t gfp, size_t *mapped)
+ {
+ 	struct protection_domain *dom = io_pgtable_ops_to_domain(ops);
+ 	LIST_HEAD(freelist);
+@@ -369,39 +370,47 @@ static int iommu_v1_map_page(struct io_pgtable_ops *ops, unsigned long iova,
+ 	u64 __pte, *pte;
+ 	int ret, i, count;
+ 
+-	BUG_ON(!IS_ALIGNED(iova, size));
+-	BUG_ON(!IS_ALIGNED(paddr, size));
++	BUG_ON(!IS_ALIGNED(iova, pgsize));
++	BUG_ON(!IS_ALIGNED(paddr, pgsize));
+ 
+ 	ret = -EINVAL;
+ 	if (!(prot & IOMMU_PROT_MASK))
+ 		goto out;
+ 
+-	count = PAGE_SIZE_PTE_COUNT(size);
+-	pte   = alloc_pte(dom, iova, size, NULL, gfp, &updated);
++	while (pgcount > 0) {
++		count = PAGE_SIZE_PTE_COUNT(pgsize);
++		pte   = alloc_pte(dom, iova, pgsize, NULL, gfp, &updated);
+ 
+-	ret = -ENOMEM;
+-	if (!pte)
+-		goto out;
++		ret = -ENOMEM;
++		if (!pte)
++			goto out;
+ 
+-	for (i = 0; i < count; ++i)
+-		free_clear_pte(&pte[i], pte[i], &freelist);
++		for (i = 0; i < count; ++i)
++			free_clear_pte(&pte[i], pte[i], &freelist);
+ 
+-	if (!list_empty(&freelist))
+-		updated = true;
++		if (!list_empty(&freelist))
++			updated = true;
+ 
+-	if (count > 1) {
+-		__pte = PAGE_SIZE_PTE(__sme_set(paddr), size);
+-		__pte |= PM_LEVEL_ENC(7) | IOMMU_PTE_PR | IOMMU_PTE_FC;
+-	} else
+-		__pte = __sme_set(paddr) | IOMMU_PTE_PR | IOMMU_PTE_FC;
++		if (count > 1) {
++			__pte = PAGE_SIZE_PTE(__sme_set(paddr), pgsize);
++			__pte |= PM_LEVEL_ENC(7) | IOMMU_PTE_PR | IOMMU_PTE_FC;
++		} else
++			__pte = __sme_set(paddr) | IOMMU_PTE_PR | IOMMU_PTE_FC;
+ 
+-	if (prot & IOMMU_PROT_IR)
+-		__pte |= IOMMU_PTE_IR;
+-	if (prot & IOMMU_PROT_IW)
+-		__pte |= IOMMU_PTE_IW;
++		if (prot & IOMMU_PROT_IR)
++			__pte |= IOMMU_PTE_IR;
++		if (prot & IOMMU_PROT_IW)
++			__pte |= IOMMU_PTE_IW;
+ 
+-	for (i = 0; i < count; ++i)
+-		pte[i] = __pte;
++		for (i = 0; i < count; ++i)
++			pte[i] = __pte;
++
++		iova  += pgsize;
++		paddr += pgsize;
++		pgcount--;
++		if (mapped)
++			*mapped += pgsize;
++	}
+ 
+ 	ret = 0;
+ 
+@@ -514,7 +523,7 @@ static struct io_pgtable *v1_alloc_pgtable(struct io_pgtable_cfg *cfg, void *coo
+ 	cfg->oas            = IOMMU_OUT_ADDR_BIT_SIZE,
+ 	cfg->tlb            = &v1_flush_ops;
+ 
+-	pgtable->iop.ops.map          = iommu_v1_map_page;
++	pgtable->iop.ops.map_pages    = iommu_v1_map_pages;
+ 	pgtable->iop.ops.unmap        = iommu_v1_unmap_page;
+ 	pgtable->iop.ops.iova_to_phys = iommu_v1_iova_to_phys;
+ 
 -- 
 2.31.1
 
