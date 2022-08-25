@@ -1,128 +1,211 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f180.google.com (mail-pg1-f180.google.com [209.85.215.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15FD71FA7
-	for <iommu@lists.linux.dev>; Thu, 25 Aug 2022 07:22:22 +0000 (UTC)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27P6w2Ac024302;
-	Thu, 25 Aug 2022 07:22:15 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- content-transfer-encoding : in-reply-to; s=pp1;
- bh=YN9sy3cnWjVNQmJSTgZu94d+HQJtS+Apq8l2IFiHvbg=;
- b=QiE7pQ2y6OkrJqpweilZmZrw6jXfSDXRhJDZb8+FYUdFNzKnAgQn6E+L/OurtIwdYdjX
- 7dqEasntBf0YZ1gy7XspG4JxD9KX5goRL/cvFIJ1aRdVarl8YwjTOsw1m9ISMRu0EHNe
- RUm2WA8Xv45eqV6S70WQP880ONz6r1W23tZXXBdD+cI1CsaEVRmKBo3/4P3as39PJEzp
- Iqc677ILyXeVI22tKNRfU3oFFZa2/a6p5w6cuzAZSebZLlAWMy8+kGo+zaZHfSWtureI
- 9ylftAAiOtlkuZDQmdfALawWeQk/RpWAksKOjTfu78guzZflBA99EulodxPsNl9LAD6j Gw== 
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j649ch4t9-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 25 Aug 2022 07:22:15 +0000
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-	by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27P7Li2r021968;
-	Thu, 25 Aug 2022 07:22:13 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-	by ppma06fra.de.ibm.com with ESMTP id 3j2pvjcf37-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 25 Aug 2022 07:22:13 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-	by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27P7MAoY33358088
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 25 Aug 2022 07:22:10 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 83600AE04D;
-	Thu, 25 Aug 2022 07:22:10 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id BE68DAE045;
-	Thu, 25 Aug 2022 07:22:09 +0000 (GMT)
-Received: from li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com (unknown [9.145.165.99])
-	by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-	Thu, 25 Aug 2022 07:22:09 +0000 (GMT)
-Date: Thu, 25 Aug 2022 09:22:08 +0200
-From: Alexander Gordeev <agordeev@linux.ibm.com>
-To: Matthew Rosato <mjrosato@linux.ibm.com>
-Cc: Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev,
-        linux-s390@vger.kernel.org, schnelle@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
-        will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/s390: Fix race with release_device ops
-Message-ID: <YwcjIPcT1b0uyyFn@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
-References: <20220823203059.81919-1-mjrosato@linux.ibm.com>
- <a6e42442-d9cb-0d63-bb71-da78a5669a51@linux.ibm.com>
- <04644ee5-2386-1f3d-c1a3-fc4227570cf7@linux.ibm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C15D1FA7
+	for <iommu@lists.linux.dev>; Thu, 25 Aug 2022 08:10:46 +0000 (UTC)
+Received: by mail-pg1-f180.google.com with SMTP id bh13so17232405pgb.4
+        for <iommu@lists.linux.dev>; Thu, 25 Aug 2022 01:10:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:from:to:cc;
+        bh=sHta+Xumm5TPzZXK7bJLVYQpxC1udJ2MrrQDJt5hubI=;
+        b=VJjltSXBNv1cG3m2viryIQXbG7/J1MrsSttkycy238/NZ4jJCywTrlus6h7szA4h86
+         7B6TAhti+CaMWd0c+L9qGbqNcutWEnU0geO83vRkQYTTNZEMp1j5WLnpiw7P29vl0bJT
+         0oXqNAH0S0vkTntdGtX0D5NvR6IUfZ6gckI8nz9ivfbjKR9vYlX+0yXkJktzReMyF7za
+         s/XQhakYzKQ0/Y4sOak7mCn3QDPQdD99P/RA+wGbVipEOYVnAmPqf/E0J8lKuLBq6U3F
+         OXq/jABLBCUBWg2muDeDBzIE/PMw71Uee0L0KNkuutlM7or0GXGhNaTVP2uc3HIhzgNl
+         J3fA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc;
+        bh=sHta+Xumm5TPzZXK7bJLVYQpxC1udJ2MrrQDJt5hubI=;
+        b=URO+IDAOVfC2ezEe+SiaKse99QKTBnJK4JYCPsjCTZ14x8vadPHK92bffuZHuCEHSD
+         U1RffDVlhxaeILdfV9b+or9ZRZhvjGPHOCT159jGIKkZErbg8+FMc1osDeHDIEtJs+ss
+         XS8wvSV3eTiToyfDj526AWyamnyZF6fcv0halMQHgaqLXr9fmFlTQdWnWbMGTwHvsnwj
+         RxcEATDDK1jIwoErBvpCQvnkL+30eAd1lE1sMluacSmNv2x3oeYLSnDqDreozK0jjfXG
+         LtXKSyw7hCTyC/vmRvKScpfZxDWjD0UqoC/gBQnxC/tgpl1qKn1YDyDVwTQJYgVTKBJQ
+         4XQQ==
+X-Gm-Message-State: ACgBeo3oTvn/I2JQFkElyyuB41Q3uUt1LgAYd4nliuJez3uVuMbK3Re1
+	i2L8zCkeVBcYajmwbY5G1mgsQg==
+X-Google-Smtp-Source: AA6agR50TRZnG7/8jbkzmctodD/hNb+AaPcz1zw7wLGGLDG3KNC0knVZScnQ9eUKXzLtVXset3YWpg==
+X-Received: by 2002:a05:6a00:2387:b0:52f:17a0:628c with SMTP id f7-20020a056a00238700b0052f17a0628cmr2709899pfc.17.1661415045659;
+        Thu, 25 Aug 2022 01:10:45 -0700 (PDT)
+Received: from [10.255.242.27] ([139.177.225.238])
+        by smtp.gmail.com with ESMTPSA id 88-20020a17090a09e100b001f94d25bfabsm2806912pjo.28.2022.08.25.01.10.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Aug 2022 01:10:45 -0700 (PDT)
+Message-ID: <486fcde8-e9f5-e40c-db5d-fd3ade59b267@bytedance.com>
+Date: Thu, 25 Aug 2022 16:10:40 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.1.0
+Subject: Re: [External] Re: [PATCH v2] iommu/iova: Optimize alloc_iova with
+ rbtree_augmented
+To: Ethan Zhao <haifeng.zhao@linux.intel.com>, joro@8bytes.org,
+ will@kernel.org
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, robin.murphy@arm.com
+References: <20220824095139.66477-1-zhangpeng.00@bytedance.com>
+ <06c215c6-cbae-d6b9-312c-6535e51a3128@linux.intel.com>
+From: Peng Zhang <zhangpeng.00@bytedance.com>
+In-Reply-To: <06c215c6-cbae-d6b9-312c-6535e51a3128@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <04644ee5-2386-1f3d-c1a3-fc4227570cf7@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: wEg2yD5fVaA665QzuLZhmfaYteAk9PA3
-X-Proofpoint-ORIG-GUID: wEg2yD5fVaA665QzuLZhmfaYteAk9PA3
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-25_03,2022-08-22_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- lowpriorityscore=0 clxscore=1011 impostorscore=0 phishscore=0 mlxscore=0
- bulkscore=0 mlxlogscore=854 suspectscore=0 malwarescore=0 spamscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208250024
 
-On Wed, Aug 24, 2022 at 04:25:19PM -0400, Matthew Rosato wrote:
-> >> @@ -90,15 +90,39 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
-> >>       struct zpci_dev *zdev = to_zpci_dev(dev);
-> >>       struct s390_domain_device *domain_device;
-> >>       unsigned long flags;
-> >> -    int cc, rc;
-> >> +    int cc, rc = 0;
-> >>         if (!zdev)
-> >>           return -ENODEV;
-> >>   +    /* First check compatibility */
-> >> +    spin_lock_irqsave(&s390_domain->list_lock, flags);
-> >> +    /* First device defines the DMA range limits */
-> >> +    if (list_empty(&s390_domain->devices)) {
-> >> +        domain->geometry.aperture_start = zdev->start_dma;
-> >> +        domain->geometry.aperture_end = zdev->end_dma;
-> >> +        domain->geometry.force_aperture = true;
-> >> +    /* Allow only devices with identical DMA range limits */
-> >> +    } else if (domain->geometry.aperture_start != zdev->start_dma ||
-> >> +           domain->geometry.aperture_end != zdev->end_dma) {
-> >> +        rc = -EINVAL;
-> >> +    }
-> >> +    spin_unlock_irqrestore(&s390_domain->list_lock, flags);
-> >> +    if (rc)
-> >> +        return rc;
-> >> +
-> >>       domain_device = kzalloc(sizeof(*domain_device), GFP_KERNEL);
-> >>       if (!domain_device)
-> >>           return -ENOMEM;
-> >>   +    /* Leave now if the device has already been released */
-> >> +    spin_lock_irqsave(&zdev->dma_domain_lock, flags);
-> >> +    if (!dev_iommu_priv_get(dev)) {
-> >> +        spin_unlock_irqrestore(&zdev->dma_domain_lock, flags);
-> >> +        kfree(domain_device);
-> >> +        return 0;
-> >> +    }
-> >> +
-> >>       if (zdev->dma_table && !zdev->s390_domain) {
-> >>           cc = zpci_dma_exit_device(zdev);
-> >>           if (cc) {
-> > 
-> > Am I wrong? It seems to me that zpci_dma_exit_device here is called with the spin_lock locked but this function zpci_dma_exit_device calls vfree which may sleep.
-> > 
+
+Hi,
+
+Here is a real example. The version of kernel is 5.4.56.
+Occurs when a lot of iova are not released for a long time.
+
+[Wed May 25 05:27:59 2022] watchdog: BUG: soft lockup - CPU#58 stuck for 
+23s! [ksoftirqd/58:302]
+[Wed May 25 05:27:59 2022] Call Trace:
+[Wed May 25 05:27:59 2022]  alloc_iova+0xf2/0x140
+[Wed May 25 05:27:59 2022]  alloc_iova_fast+0x56/0x251
+[Wed May 25 05:27:59 2022]  dma_ops_alloc_iova.isra.27+0x4b/0x70
+[Wed May 25 05:27:59 2022]  __map_single.isra.28+0x4a/0x1d0
+[Wed May 25 05:27:59 2022]  mlx5e_sq_xmit+0x98d/0x12b0 [mlx5_core]
+[Wed May 25 05:27:59 2022]  ? packet_rcv+0x43/0x460
+[Wed May 25 05:27:59 2022]  ? dev_hard_start_xmit+0x90/0x1e0
+[Wed May 25 05:27:59 2022]  ? sch_direct_xmit+0x111/0x320
+[Wed May 25 05:27:59 2022]  ? __qdisc_run+0x143/0x540
+[Wed May 25 05:27:59 2022]  ? __dev_queue_xmit+0x6c3/0x8e0
+[Wed May 25 05:27:59 2022]  ? ip_finish_output2+0x2d5/0x580
+[Wed May 25 05:27:59 2022]  ? __ip_finish_output+0xe9/0x1b0
+[Wed May 25 05:27:59 2022]  ? ip_output+0x6c/0xe0
+[Wed May 25 05:27:59 2022]  ? __ip_finish_output+0x1b0/0x1b0
+[Wed May 25 05:27:59 2022]  ? __ip_queue_xmit+0x15d/0x420
+[Wed May 25 05:27:59 2022]  ? __tcp_transmit_skb+0x405/0x600
+[Wed May 25 05:27:59 2022]  ? tcp_delack_timer_handler+0xb7/0x1b0
+[Wed May 25 05:27:59 2022]  ? tcp_delack_timer+0x8b/0xa0
+[Wed May 25 05:27:59 2022]  ? tcp_delack_timer_handler+0x1b0/0x1b0
+[Wed May 25 05:27:59 2022]  ? call_timer_fn+0x2b/0x120
+[Wed May 25 05:27:59 2022]  ? run_timer_softirq+0x1a6/0x420
+[Wed May 25 05:27:59 2022]  ? update_load_avg+0x7e/0x640
+[Wed May 25 05:27:59 2022]  ? update_curr+0xe1/0x1d0
+[Wed May 25 05:27:59 2022]  ? __switch_to+0x7a/0x3e0
+[Wed May 25 05:27:59 2022]  ? __do_softirq+0xda/0x2da
+[Wed May 25 05:27:59 2022]  ? sort_range+0x20/0x20
+[Wed May 25 05:27:59 2022]  ? run_ksoftirqd+0x26/0x40
+[Wed May 25 05:27:59 2022]  ? smpboot_thread_fn+0xb8/0x150
+[Wed May 25 05:27:59 2022]  ? kthread+0x110/0x130
+[Wed May 25 05:27:59 2022]  ? kthread_park+0x80/0x80
+[Wed May 25 05:27:59 2022]  ? ret_from_fork+0x1f/0x30
+
+I did some more tests.
+
+The test is single threaded.
+Granule is 4k, limit is 2^20.
+
+When the 1/4 address space is occupied by iova,
+Repeat the following two stepsï¼š
+
+1. Randomly releases an iova.
+2. Allocate an iova of size 1 within the allocation limit of 2^20.
+
+Before improvement:
+> Tracing 1 functions for "alloc_iova"... Hit Ctrl-C to end.
+> ^C
+>      nsecs               : count     distribution
+>          0 -> 1          : 0        |                                        |
+>          2 -> 3          : 0        |                                        |
+>          4 -> 7          : 0        |                                        |
+>          8 -> 15         : 0        |                                        |
+>         16 -> 31         : 0        |                                        |
+>         32 -> 63         : 0        |                                        |
+>         64 -> 127        : 0        |                                        |
+>        128 -> 255        : 0        |                                        |
+>        256 -> 511        : 352      |                                        |
+>        512 -> 1023       : 258078   |****************************************|
+>       1024 -> 2047       : 3612     |                                        |
+>       2048 -> 4095       : 426      |                                        |
+>       4096 -> 8191       : 183      |                                        |
+>       8192 -> 16383      : 6        |                                        |
+>      16384 -> 32767      : 5        |                                        |
+>      32768 -> 65535      : 9        |                                        |
+>      65536 -> 131071     : 18       |                                        |
+>     131072 -> 262143     : 28       |                                        |
+>     262144 -> 524287     : 74       |                                        |
+>     524288 -> 1048575    : 109      |                                        |
+>    1048576 -> 2097151    : 170      |                                        |
+>    2097152 -> 4194303    : 100      |                                        |
+>    4194304 -> 8388607    : 1        |                                        |
 > 
-> Oh, good point, I just enabled lockdep to verify that.
+> avg = 3110 nsecs, total: 818614399 nsecs, count: 263171
 > 
-> I think we could just replace this with a mutex instead, it's not a performance path.  I've been running tests successfully today with this patch modified to instead use a mutex for dma_domain_lock.
+> Tracing 1 functions for "remove_iova"... Hit Ctrl-C to end.
+> ^C
+>      nsecs               : count     distribution
+>          0 -> 1          : 0        |                                        |
+>          2 -> 3          : 0        |                                        |
+>          4 -> 7          : 0        |                                        |
+>          8 -> 15         : 0        |                                        |
+>         16 -> 31         : 0        |                                        |
+>         32 -> 63         : 0        |                                        |
+>         64 -> 127        : 0        |                                        |
+>        128 -> 255        : 0        |                                        |
+>        256 -> 511        : 250651   |****************************************|
+>        512 -> 1023       : 12405    |*                                       |
+>       1024 -> 2047       : 111      |                                        |
+>       2048 -> 4095       : 1        |                                        |
+> 
+> avg = 433 nsecs, total: 114136319 nsecs, count: 263168
 
-But your original version uses irq-savvy spinlocks.
-Are there data that need to be protected against interrupts?
+With improvement:
+> Tracing 1 functions for "alloc_iova"... Hit Ctrl-C to end.
+> ^C
+>      nsecs               : count     distribution
+>          0 -> 1          : 0        |                                        |
+>          2 -> 3          : 0        |                                        |
+>          4 -> 7          : 0        |                                        |
+>          8 -> 15         : 0        |                                        |
+>         16 -> 31         : 0        |                                        |
+>         32 -> 63         : 0        |                                        |
+>         64 -> 127        : 0        |                                        |
+>        128 -> 255        : 0        |                                        |
+>        256 -> 511        : 0        |                                        |
+>        512 -> 1023       : 258975   |****************************************|
+>       1024 -> 2047       : 3618     |                                        |
+>       2048 -> 4095       : 497      |                                        |
+>       4096 -> 8191       : 74       |                                        |
+>       8192 -> 16383      : 4        |                                        |
+>      16384 -> 32767      : 1        |                                        |
+> 
+> avg = 637 nsecs, total: 167854061 nsecs, count: 263169
+> 
+> Tracing 1 functions for "remove_iova"... Hit Ctrl-C to end.
+> ^C
+>      nsecs               : count     distribution
+>          0 -> 1          : 0        |                                        |
+>          2 -> 3          : 0        |                                        |
+>          4 -> 7          : 0        |                                        |
+>          8 -> 15         : 0        |                                        |
+>         16 -> 31         : 0        |                                        |
+>         32 -> 63         : 0        |                                        |
+>         64 -> 127        : 0        |                                        |
+>        128 -> 255        : 0        |                                        |
+>        256 -> 511        : 221560   |****************************************|
+>        512 -> 1023       : 41427    |*******                                 |
+>       1024 -> 2047       : 179      |                                        |
+>       2048 -> 4095       : 2        |                                        |
+> 
+> avg = 477 nsecs, total: 125540399 nsecs, count: 263168
 
-Thanks!
+
+> s/distbution/distribution ?
+Sorry, it's a typo.
+
+I don't have a test program for "alloc_iova_fast + free_iova_fast"
+right now.
+
+Thanks,
+
+Peng
