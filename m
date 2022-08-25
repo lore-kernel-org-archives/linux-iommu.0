@@ -1,175 +1,176 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2040.outbound.protection.outlook.com [40.107.93.40])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C136187E
-	for <iommu@lists.linux.dev>; Wed, 24 Aug 2022 20:25:31 +0000 (UTC)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27OJlaQi006584;
-	Wed, 24 Aug 2022 20:25:24 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=x+LyAortpu5TRNqNPw55nWkD8w2jYuet0vVJUp2hZBI=;
- b=CNRhwlfCznXGvlpKVMdbdslqPoQ3zmArcivgD1OJbbFm6mH+28gnLq1qkFKgAE0wrw+M
- 9SOhr/HmspNvon+Od2fsU/KwsJVCiSqgaXXfmp9ZvuqPKxPCb6sB8vNsZvzB6TMwik3/
- pIWHtt5UGW12AsKQj+yPbm0OTnqezXkO0SSBGkCJBp2c7h77a75IpewvD0ZSjGogB3ls
- EapBtUJ4NDIatsBXecmHNrxV2hPLkNeU2T78kN9uZSCgfuXaIAfvLc4eW+1TwsbOleCT
- v5morBSY3JFGr6jLdvzzjMWGi6R6qb5DTYoL5J1lunlyGnsZVVJ0sjq3E4mk/2D2kkTB mQ== 
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j5tf41078-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 24 Aug 2022 20:25:23 +0000
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-	by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27OKK0UO022273;
-	Wed, 24 Aug 2022 20:25:23 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-	by ppma03dal.us.ibm.com with ESMTP id 3j2q8a25wc-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 24 Aug 2022 20:25:23 +0000
-Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
-	by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27OKPLgj42533120
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 24 Aug 2022 20:25:21 GMT
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 710F66A04D;
-	Wed, 24 Aug 2022 20:25:21 +0000 (GMT)
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 277DB6A047;
-	Wed, 24 Aug 2022 20:25:20 +0000 (GMT)
-Received: from [9.211.112.122] (unknown [9.211.112.122])
-	by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
-	Wed, 24 Aug 2022 20:25:19 +0000 (GMT)
-Message-ID: <04644ee5-2386-1f3d-c1a3-fc4227570cf7@linux.ibm.com>
-Date: Wed, 24 Aug 2022 16:25:19 -0400
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C06EE1C30
+	for <iommu@lists.linux.dev>; Thu, 25 Aug 2022 06:40:31 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cnfSrMWnmt1GyvrGYNFGZqiOqonEVzu0LyLFG+pIPOSXbHmb4+2w/UTRWhp22HAO1wm1f+6ufoJ/dTpnRyM7IHK8G8pn+cumXxg/RV6m2r3Y/miEMSBKebzXpy41eve8qR7Q4U+qUBz2BRfeUjyYsEhPdBJVJpWxagO+Md60fyYd/UUCLgNPEDRXt2bFjVVpLpnCzlvDFagiZFAu2BJN3rvld9OZqHiTpk444q06Mj1mBNu1LQc4vcWGoAuXZduFC1IagFL7AJ75BIczwHgd5Yl5+EVF85LEuV9q9FsIOO5a+Nd25cEBRU4hJmrYjOHQ1d8+nbRXqS7VEoUJ4MNpeQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8Cj5yTPdIUEwJoIEJub9XANz/puPnzSJ1ZLvQe9Qy4A=;
+ b=im5FmN+RfPqC3mFpwvg2bIgCsPEuRcH0NISgwmzlJFat+z0QShRdl2vtMvZDygurjTZdNnAlKk7QUMNSY7J7MYt6tvc/WgOoGmM/qZCuwitfXn5yT7JAj17Y6KkdKvrb0VtCh0R88eV+cEsdp82bryqFSmkUGH9Wcj+BWpUpEE2L1Keuma6TNVtQHPCbv5hsB2w+glBJ8kQMkxhNQa1DaJJYDIteLKk5hpl6Tg8vL/6LpUcciJGyBAIH/hL+dpiPKHSRtJTqUvQhhJBkdiwqVetBrVBPFPvqQ9O9A5qS14h8K+guhrTb03gVOWmQ637vA96OKH57ijsjFoeH8bNQlg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8Cj5yTPdIUEwJoIEJub9XANz/puPnzSJ1ZLvQe9Qy4A=;
+ b=LcfYLhpbMEJpvWaV5DjC4T4BpLF2BI3BattBdHf6lkNGlMKRpjJ2g5/si1Hh/Tv2Lj1KIjvVLSTQDnoub2CwrTzfbra3LMxLJLxwUphAsTEkVhp3tt6k08WOaRmDzFx69b9Ee30FWupHTtVJo1+kupyegNEKyAwnKKlPaeTi3oA=
+Received: from MW4PR03CA0253.namprd03.prod.outlook.com (2603:10b6:303:b4::18)
+ by SJ1PR12MB6193.namprd12.prod.outlook.com (2603:10b6:a03:459::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Thu, 25 Aug
+ 2022 06:40:29 +0000
+Received: from CO1NAM11FT102.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b4:cafe::a5) by MW4PR03CA0253.outlook.office365.com
+ (2603:10b6:303:b4::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.22 via Frontend
+ Transport; Thu, 25 Aug 2022 06:40:29 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT102.mail.protection.outlook.com (10.13.175.87) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5566.15 via Frontend Transport; Thu, 25 Aug 2022 06:40:28 +0000
+Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Thu, 25 Aug
+ 2022 01:40:23 -0500
+From: Vasant Hegde <vasant.hegde@amd.com>
+To: <iommu@lists.linux.dev>, <joro@8bytes.org>, <robin.murphy@arm.com>
+CC: <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>
+Subject: [PATCH v3 0/9] iommu/amd: Add Generic IO Page Table Framework Support for v2 Page Table
+Date: Thu, 25 Aug 2022 06:39:30 +0000
+Message-ID: <20220825063939.8360-1-vasant.hegde@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH] iommu/s390: Fix race with release_device ops
-Content-Language: en-US
-To: Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev
-Cc: linux-s390@vger.kernel.org, schnelle@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, joro@8bytes.org, will@kernel.org,
-        robin.murphy@arm.com, jgg@nvidia.com, linux-kernel@vger.kernel.org
-References: <20220823203059.81919-1-mjrosato@linux.ibm.com>
- <a6e42442-d9cb-0d63-bb71-da78a5669a51@linux.ibm.com>
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <a6e42442-d9cb-0d63-bb71-da78a5669a51@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: r4qAPCH24FV5xKnEVuvKrWrpsZJM3HJf
-X-Proofpoint-ORIG-GUID: r4qAPCH24FV5xKnEVuvKrWrpsZJM3HJf
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-24_12,2022-08-22_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- impostorscore=0 phishscore=0 clxscore=1015 mlxscore=0 mlxlogscore=999
- priorityscore=1501 spamscore=0 lowpriorityscore=0 suspectscore=0
- bulkscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208240073
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1616c110-2600-4104-355c-08da8664b372
+X-MS-TrafficTypeDiagnostic: SJ1PR12MB6193:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	heWqIrHAlbJT0nwu+5X6WfhDQvlSvBkAunExJSUwgHODSjRfHV9BenFPSfmnzzU+pX9z8DQg2nbq33fSR2M1y5aWiLMD2wVlx+b0v7501+jvtkp5KwBaYIqp2lF0/LWFThnP+lCvno4LTznA3aRvz08kbrX65E9+A95B6Ow3FSrdGO+IvdYKVASXBVwWPtTTQcEP0aWqc/zqsTr2+0l4XMXilrOQ7F874XB/G3NOvzj4u6v1jnyg0rlAZIm1p5n/uNKwte5yRCAX7lbud2yO222z9bed6GkheJA8pjqjZQx8RrINcmU7uyroFeMAUro2gdU4EUjOGrruQ6SYlJXoY3vKuO+CHbKo8heR1EG/C2d4QMYR5EzK1wxrhibjx7Reyo+qecNcGALSCoCqS+H+A8gNU/TxYIDFOwsf4kmKkwUA+Sdjb+K4WxjEJizydK1jil5OykSdMN3JH7JR0USperkrxzn2z8nmgnWJ/QZTNmzzDFLQ+Ib12LOXheFVgugXfqTogep8hJyvuNZgTO489wXWvMCVBZEfSNOjtLmd8GvrUAoVbgAYZsfQifIVhzH8BYmbArYQJ87S9pk3sas6zwhgJuTa0h5kRwoRjavGzUewYtsNK6ZGPvvf516/10LsWgGpq6WZcW6DlokxPXYgYQwUgKMQ48/WJRAy++PLLfk8Nj60g7MOOx2+CnAPepvSIeErd2PgLrvW1t6pHDFvJDRQl0/GtuzgCEmf7AQ+GMoGBOZwjEJhvktdFdbE3PW4WXyog6wNhOr+qI3e8V/6h8kJMXI1w9+zkjckVGk46zkCnu59b/sHx5Yy081wUDMMUWsCCdBD+9iZvAJ8WKJ2Yo6NoKXtg4YSAyrnfvuQQnRGuBn4q7JnnaU74/998vNPucVIEQC4Osogve4ZggbT8ukS0BtLDmceJCbYuiXO7UxCPiwCbR62sFs8P9DlQIvn
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(346002)(376002)(136003)(46966006)(40470700004)(36840700001)(70206006)(70586007)(86362001)(6666004)(82740400003)(356005)(4326008)(54906003)(316002)(81166007)(7696005)(966005)(41300700001)(478600001)(8676002)(40480700001)(2616005)(36860700001)(1076003)(40460700003)(83380400001)(110136005)(336012)(16526019)(82310400005)(186003)(26005)(36756003)(5660300002)(426003)(44832011)(2906002)(47076005)(8936002)(71600200004)(41533002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2022 06:40:28.9929
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1616c110-2600-4104-355c-08da8664b372
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1NAM11FT102.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6193
 
-On 8/24/22 4:37 AM, Pierre Morel wrote:
-> 
-> 
-> On 8/23/22 22:30, Matthew Rosato wrote:
->> With commit fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev
->> calls") s390-iommu is supposed to handle dynamic switching between IOMMU
->> domains and the DMA API handling.  However, this commit does not
->> sufficiently handle the case where the device is released via a call
->> to the release_device op as it may occur at the same time as an opposing
->> attach_dev or detach_dev since the group mutex is not held over
->> release_device.  This was observed if the device is deconfigured during a
->> small window during vfio-pci initialization and can result in WARNs and
->> potential kernel panics.
->>
->> Handle this by tracking when the device is probed/released via
->> dev_iommu_priv_set/get().  Ensure that once the device is released only
->> release_device handles the re-init of the device DMA.
->>
->> Fixes: fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev calls")
->> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
->> ---
->>   arch/s390/include/asm/pci.h |  1 +
->>   arch/s390/pci/pci.c         |  1 +
->>   drivers/iommu/s390-iommu.c  | 68 ++++++++++++++++++++++++++++---------
->>   3 files changed, 54 insertions(+), 16 deletions(-)
->>
->> diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
->> index 7b4cdadbc023..1295b6900e4b 100644
->> --- a/arch/s390/include/asm/pci.h
->> +++ b/arch/s390/include/asm/pci.h
->> @@ -157,6 +157,7 @@ struct zpci_dev {
->>       /* DMA stuff */
->>       unsigned long    *dma_table;
->>       spinlock_t    dma_table_lock;
->> +    spinlock_t    dma_domain_lock;
->>       int        tlb_refresh;
->>         spinlock_t    iommu_bitmap_lock;
->> diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
->> index 73cdc5539384..61901c1be3cc 100644
->> --- a/arch/s390/pci/pci.c
->> +++ b/arch/s390/pci/pci.c
->> @@ -832,6 +832,7 @@ struct zpci_dev *zpci_create_device(u32 fid, u32 fh, enum zpci_state state)
->>       kref_init(&zdev->kref);
->>       mutex_init(&zdev->lock);
->>       mutex_init(&zdev->kzdev_lock);
->> +    spin_lock_init(&zdev->dma_domain_lock);
->>         rc = zpci_init_iommu(zdev);
->>       if (rc)
->> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
->> index c898bcbbce11..513a7ebd23b3 100644
->> --- a/drivers/iommu/s390-iommu.c
->> +++ b/drivers/iommu/s390-iommu.c
->> @@ -90,15 +90,39 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
->>       struct zpci_dev *zdev = to_zpci_dev(dev);
->>       struct s390_domain_device *domain_device;
->>       unsigned long flags;
->> -    int cc, rc;
->> +    int cc, rc = 0;
->>         if (!zdev)
->>           return -ENODEV;
->>   +    /* First check compatibility */
->> +    spin_lock_irqsave(&s390_domain->list_lock, flags);
->> +    /* First device defines the DMA range limits */
->> +    if (list_empty(&s390_domain->devices)) {
->> +        domain->geometry.aperture_start = zdev->start_dma;
->> +        domain->geometry.aperture_end = zdev->end_dma;
->> +        domain->geometry.force_aperture = true;
->> +    /* Allow only devices with identical DMA range limits */
->> +    } else if (domain->geometry.aperture_start != zdev->start_dma ||
->> +           domain->geometry.aperture_end != zdev->end_dma) {
->> +        rc = -EINVAL;
->> +    }
->> +    spin_unlock_irqrestore(&s390_domain->list_lock, flags);
->> +    if (rc)
->> +        return rc;
->> +
->>       domain_device = kzalloc(sizeof(*domain_device), GFP_KERNEL);
->>       if (!domain_device)
->>           return -ENOMEM;
->>   +    /* Leave now if the device has already been released */
->> +    spin_lock_irqsave(&zdev->dma_domain_lock, flags);
->> +    if (!dev_iommu_priv_get(dev)) {
->> +        spin_unlock_irqrestore(&zdev->dma_domain_lock, flags);
->> +        kfree(domain_device);
->> +        return 0;
->> +    }
->> +
->>       if (zdev->dma_table && !zdev->s390_domain) {
->>           cc = zpci_dma_exit_device(zdev);
->>           if (cc) {
-> 
-> Am I wrong? It seems to me that zpci_dma_exit_device here is called with the spin_lock locked but this function zpci_dma_exit_device calls vfree which may sleep.
-> 
+This series introduces a new usage model for the v2 page table, where it
+can be used to implement support for DMA-API by adopting the generic
+IO page table framework.
 
-Oh, good point, I just enabled lockdep to verify that.
+One of the target usecases is to support nested IO page tables
+where the guest uses the guest IO page table (v2) for translating
+GVA to GPA, and the hypervisor uses the host I/O page table (v1) for
+translating GPA to SPA. This is a pre-requisite for supporting the new
+HW-assisted vIOMMU presented at the KVM Forum 2020.
 
-I think we could just replace this with a mutex instead, it's not a performance path.  I've been running tests successfully today with this patch modified to instead use a mutex for dma_domain_lock.
+  https://static.sched.com/hosted_files/kvmforum2020/26/vIOMMU%20KVM%20Forum%202020.pdf
+
+The following components are introduced in this series:
+
+- Part 1 (patch 1-3)
+  Move AMD v1 page table to use [un]map_pages interfaces and minor fixes to unmap path.
+
+- Part 1 (patch 4-5 and 8)
+  Refactor the current IOMMU page table code to adopt the generic IO page
+  table framework, and add AMD IOMMU Guest (v2) page table management code.
+
+- Part 2 (patch 7)
+  Add support for the AMD IOMMU Guest IO Protection feature (GIOV)
+  where requests from the I/O device without a PASID are treated as
+  if they have PASID of 0.
+
+- Part 3 (patch 9)
+  Introduce new "amd_iommu_pgtable" command-line to allow users
+  to select the mode of operation (v1 or v2).
+
+See AMD I/O Virtualization Technology Specification for more detail.
+
+  http://www.amd.com/system/files/TechDocs/48882_IOMMU_3.05_PUB.pdf
+
+
+Thanks,
+Vasant
+
+Changes from v2 -> v3 :
+  - As Robin suggested added support to use [un]map_pages interface (Patch 1 - 3)
+  - Removed [un]map interface from AMD IOMMU driver
+  - Updated v2 page table to use [un]map_pages interface
+
+V2 patchset: https://lore.kernel.org/linux-iommu/20220713053034.12061-1-vasant.hegde@amd.com/
+
+Changes from v1 -> v2 :
+  - Allow v2 page table only when FEATURE_GT is enabled
+  - V2 page table doesn't support IOMMU passthrough mode. Hence added
+    check to fall back to v1 mode if system is booted with iommu=pt
+  - Overloaded amd_iommu command line option (removed amd_iommu_pgtable
+    option)
+  - Override supported page sizes dynamically instead of selecting at
+    boot time.
+
+V1 patchset : https://lore.kernel.org/linux-iommu/20220603112107.8603-1-vasant.hegde@amd.com/T/#t
+
+Changes from RFC -> v1:
+  - Addressed review comments from Joerg
+  - Reimplemented v2 page table
+
+RFC patchset : https://lore.kernel.org/linux-iommu/20210312090411.6030-1-suravee.suthikulpanit@amd.com/T/#t
+
+
+Suravee Suthikulpanit (4):
+  iommu/amd: Refactor amd_iommu_domain_enable_v2 to remove locking
+  iommu/amd: Update sanity check when enable PRI/ATS for IOMMU v1 table
+  iommu/amd: Add support for Guest IO protection
+  iommu/amd: Add support for using AMD IOMMU v2 page table for DMA-API
+
+Vasant Hegde (5):
+  iommu/amd/io-pgtable: Implement map_pages io_pgtable_ops callback
+  iommu/amd/io-pgtable: Implement unmap_pages io_pgtable_ops callback
+  iommu/amd: Add map/unmap_pages() iommu_domain_ops callback support
+  iommu/amd: Initial support for AMD IOMMU v2 page table
+  iommu/amd: Add command-line option to enable different page table
+
+ .../admin-guide/kernel-parameters.txt         |   2 +
+ drivers/iommu/amd/Makefile                    |   2 +-
+ drivers/iommu/amd/amd_iommu_types.h           |   8 +-
+ drivers/iommu/amd/init.c                      |  36 +-
+ drivers/iommu/amd/io_pgtable.c                |  76 ++--
+ drivers/iommu/amd/io_pgtable_v2.c             | 415 ++++++++++++++++++
+ drivers/iommu/amd/iommu.c                     | 117 +++--
+ drivers/iommu/io-pgtable.c                    |   1 +
+ include/linux/io-pgtable.h                    |   2 +
+ 9 files changed, 584 insertions(+), 75 deletions(-)
+ create mode 100644 drivers/iommu/amd/io_pgtable_v2.c
+
+-- 
+2.31.1
 
