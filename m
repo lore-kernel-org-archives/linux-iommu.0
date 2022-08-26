@@ -1,129 +1,57 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 288132F47
-	for <iommu@lists.linux.dev>; Thu, 25 Aug 2022 17:17:24 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EBE5DD6E;
-	Thu, 25 Aug 2022 10:17:27 -0700 (PDT)
-Received: from [10.57.16.12] (unknown [10.57.16.12])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 192883F93E;
-	Thu, 25 Aug 2022 10:17:21 -0700 (PDT)
-Message-ID: <34e10279-160f-f126-2402-6dd38b9c4f5a@arm.com>
-Date: Thu, 25 Aug 2022 18:17:16 +0100
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B84C1FCC
+	for <iommu@lists.linux.dev>; Fri, 26 Aug 2022 02:59:20 +0000 (UTC)
+Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.54])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MDPBv02WFzYcpM;
+	Fri, 26 Aug 2022 10:37:59 +0800 (CST)
+Received: from huawei.com (10.175.112.208) by dggpeml500024.china.huawei.com
+ (7.185.36.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 26 Aug
+ 2022 10:42:17 +0800
+From: Yuan Can <yuancan@huawei.com>
+To: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
+	<iommu@lists.linux.dev>
+CC: <linux-kernel@vger.kernel.org>, <yuancan@huawei.com>,
+	<baolu.lu@linux.intel.com>, <haifeng.zhao@linux.intel.com>
+Subject: [PATCH] iommu: use iommu_group_ref_get to hold group reference
+Date: Fri, 26 Aug 2022 02:40:24 +0000
+Message-ID: <20220826024024.101553-1-yuancan@huawei.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH v3] iommu/virtio: Fix interaction with VFIO
-Content-Language: en-GB
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>, joro@8bytes.org
-Cc: will@kernel.org, virtualization@lists.linux-foundation.org,
- iommu@lists.linux.dev, stable@vger.kernel.org
-References: <20220825154622.86759-1-jean-philippe@linaro.org>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220825154622.86759-1-jean-philippe@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500024.china.huawei.com (7.185.36.10)
+X-CFilter-Loop: Reflected
 
-On 2022-08-25 16:46, Jean-Philippe Brucker wrote:
-> Commit e8ae0e140c05 ("vfio: Require that devices support DMA cache
-> coherence") requires IOMMU drivers to advertise
-> IOMMU_CAP_CACHE_COHERENCY, in order to be used by VFIO. Since VFIO does
-> not provide to userspace the ability to maintain coherency through cache
-> invalidations, it requires hardware coherency. Advertise the capability
-> in order to restore VFIO support.
-> 
-> The meaning of IOMMU_CAP_CACHE_COHERENCY also changed from "IOMMU can
-> enforce cache coherent DMA transactions" to "IOMMU_CACHE is supported".
+Replace kobject_get with iommu_group_ref_get for better
+readability.
 
-Argh! Massive apologies, I've been totally overlooking that detail and 
-forgetting that we ended up splitting out the dedicated 
-enforce_cache_coherency op... I do need reminding sometimes :)
+Signed-off-by: Yuan Can <yuancan@huawei.com>
+---
+ drivers/iommu/iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> While virtio-iommu cannot enforce coherency (of PCIe no-snoop
-> transactions), it does support IOMMU_CACHE.
-> 
-> We can distinguish different cases of non-coherent DMA:
-> 
-> (1) When accesses from a hardware endpoint are not coherent. The host
->      would describe such a device using firmware methods ('dma-coherent'
->      in device-tree, '_CCA' in ACPI), since they are also needed without
->      a vIOMMU. In this case mappings are created without IOMMU_CACHE.
->      virtio-iommu doesn't need any additional support. It sends the same
->      requests as for coherent devices.
-> 
-> (2) When the physical IOMMU supports non-cacheable mappings. Supporting
->      those would require a new feature in virtio-iommu, new PROBE request
->      property and MAP flags. Device drivers would use a new API to
->      discover this since it depends on the architecture and the physical
->      IOMMU.
-> 
-> (3) When the hardware supports PCIe no-snoop. It is possible for
->      assigned PCIe devices to issue no-snoop transactions, and the
->      virtio-iommu specification is lacking any mention of this.
-> 
->      Arm platforms don't necessarily support no-snoop, and those that do
->      cannot enforce coherency of no-snoop transactions. Device drivers
->      must be careful about assuming that no-snoop transactions won't end
->      up cached; see commit e02f5c1bb228 ("drm: disable uncached DMA
->      optimization for ARM and arm64"). On x86 platforms, the host may or
->      may not enforce coherency of no-snoop transactions with the physical
->      IOMMU. But according to the above commit, on x86 a driver which
->      assumes that no-snoop DMA is compatible with uncached CPU mappings
->      will also work if the host enforces coherency.
-> 
->      Although these issues are not specific to virtio-iommu, it could be
->      used to facilitate discovery and configuration of no-snoop. This
->      would require a new feature bit, PROBE property and ATTACH/MAP
->      flags.
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 780fb7071577..8e7f30f7188c 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -903,7 +903,7 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+ 		goto err_free_name;
+ 	}
+ 
+-	kobject_get(group->devices_kobj);
++	iommu_group_ref_get(group);
+ 
+ 	dev->iommu_group = group;
+ 
+-- 
+2.17.1
 
-Interpreted in the *correct* context, I do think this is objectively 
-less wrong than before. We can't guarantee that the underlying 
-implementation will respect cacheable mappings, but it is true that we 
-can do everything in our power to ask for them.
-
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-
-> Cc: stable@vger.kernel.org
-> Fixes: e8ae0e140c05 ("vfio: Require that devices support DMA cache coherence")
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> ---
-> Since v2 [1], I tried to refine the commit message.
-> This fix is needed for v5.19 and v6.0.
-> 
-> I can improve the check once Robin's change [2] is merged:
-> capable(IOMMU_CAP_CACHE_COHERENCY) could return dev->dma_coherent for
-> case (1) above.
-> 
-> [1] https://lore.kernel.org/linux-iommu/20220818163801.1011548-1-jean-philippe@linaro.org/
-> [2] https://lore.kernel.org/linux-iommu/d8bd8777d06929ad8f49df7fc80e1b9af32a41b5.1660574547.git.robin.murphy@arm.com/
-> ---
->   drivers/iommu/virtio-iommu.c | 11 +++++++++++
->   1 file changed, 11 insertions(+)
-> 
-> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-> index 08eeafc9529f..80151176ba12 100644
-> --- a/drivers/iommu/virtio-iommu.c
-> +++ b/drivers/iommu/virtio-iommu.c
-> @@ -1006,7 +1006,18 @@ static int viommu_of_xlate(struct device *dev, struct of_phandle_args *args)
->   	return iommu_fwspec_add_ids(dev, args->args, 1);
->   }
->   
-> +static bool viommu_capable(enum iommu_cap cap)
-> +{
-> +	switch (cap) {
-> +	case IOMMU_CAP_CACHE_COHERENCY:
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
->   static struct iommu_ops viommu_ops = {
-> +	.capable		= viommu_capable,
->   	.domain_alloc		= viommu_domain_alloc,
->   	.probe_device		= viommu_probe_device,
->   	.probe_finalize		= viommu_probe_finalize,
