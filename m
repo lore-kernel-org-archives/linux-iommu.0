@@ -1,31 +1,31 @@
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 975A133E8
-	for <iommu@lists.linux.dev>; Fri, 26 Aug 2022 12:17:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 245BF33E8
+	for <iommu@lists.linux.dev>; Fri, 26 Aug 2022 12:17:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661516274; x=1693052274;
+  t=1661516279; x=1693052279;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=BlPDAsITnFdD30Pt137P5Fo8l26pHF5dP5Ti1dDDyHg=;
-  b=Q8Isbr8cFXq3GKBA8QYsn6pqpuYkf63g5FlDrMK2j4aErCY04z5HBpKU
-   H+uYfDgt+E2T4lf5RxcGbWhufupAS0cuVDZJWq4/ryucYikM7SBKTHfrH
-   rcvsQWMafDIYHd5LQIT2dQD0nmFpoManGc7VDP4q5omwpFmkq05jiYv1Q
-   LFsD/YTH3Q1egWxRTaYopJNzTNvlYfhySQH66FFVbucPWqFqXfxGRDnZg
-   Qg6MaQwJbN+eEFxE2EJc24/0B+eH8GSeHuIlNWI9uG7TfwJazDoFWb8w1
-   lHPMaHdev81NP9Q4+zfou7XzJEY6CPGb9EA6rfSX2wEl37irJKcrChqO9
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="320587310"
+  bh=p46IW5hB0frkoIsI5N8rinjwV0JyL0jp2/821fQMZm0=;
+  b=a5EG4pNNsWbLCiuLNl6xBrHyZ/0TS8xZWOMjsWsi2XFoYe7HZoMgZq99
+   hsyiHGNn2y5GEGtf+tcuwsZBjc9ypcP1/ANJjZ4l0Q0otzfiqiQDd4Qyw
+   WG86IYtFWiY1sqLPK09jx+NEEA2bbAhZEDArMI/zzS8RSu2KHgMereYZX
+   YzO54FJ/hT6OpWZ/icpdOaj62ldlrjRe3ktQwYOXZ1/PttcIJIbAqyD+L
+   jDgb4HgWDa9yEQgtHUilz5cmG6lcQQaqFhoLK11jV0Uwd5377x26JchT0
+   ot2b7cHaoAm80GiyaAZHyliuTKC6+6Sbb69BooJBXsYMkMzBzALHJDc2X
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="320587329"
 X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="320587310"
+   d="scan'208";a="320587329"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 05:17:54 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 05:17:58 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="606747653"
+   d="scan'208";a="606747682"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga007.jf.intel.com with ESMTP; 26 Aug 2022 05:17:49 -0700
+  by orsmga007.jf.intel.com with ESMTP; 26 Aug 2022 05:17:54 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Jason Gunthorpe <jgg@nvidia.com>,
@@ -48,9 +48,9 @@ Cc: Eric Auger <eric.auger@redhat.com>,
 	linux-pci@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v12 07/17] iommu: Try to allocate blocking domain when probing device
-Date: Fri, 26 Aug 2022 20:11:31 +0800
-Message-Id: <20220826121141.50743-8-baolu.lu@linux.intel.com>
+Subject: [PATCH v12 08/17] iommu: Make free of iommu_domain_ops optional
+Date: Fri, 26 Aug 2022 20:11:32 +0800
+Message-Id: <20220826121141.50743-9-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220826121141.50743-1-baolu.lu@linux.intel.com>
 References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
@@ -62,70 +62,31 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Allocate the blocking domain when probing devices if the driver supports
-blocking domain allocation. Otherwise, revert to the previous behavior,
-that is, use UNMANAGED domain instead when the blocking domain is needed.
+So that the drivers are able to implement static singleton instance for
+some special domains. The blocking domain is an example. The driver has
+no need to allocate different memory for each blocking domain allocation
+request. Hence, no need for a free callback.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
 Tested-by: Tony Zhu <tony.zhu@intel.com>
 ---
- drivers/iommu/iommu.c | 29 +++++++++++++++++------------
- 1 file changed, 17 insertions(+), 12 deletions(-)
+ drivers/iommu/iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 2c9488d966ab..e985f4d5895f 100644
+index e985f4d5895f..630e1b64ed89 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -318,6 +318,10 @@ int iommu_probe_device(struct device *dev)
- 	mutex_lock(&group->mutex);
- 	iommu_alloc_default_domain(group, dev);
- 
-+	/* Try to allocate a blocking domain */
-+	group->blocking_domain = __iommu_domain_alloc(dev->bus,
-+						      IOMMU_DOMAIN_BLOCKED);
-+
- 	/*
- 	 * If device joined an existing group which has been claimed, don't
- 	 * attach the default domain.
-@@ -1778,6 +1782,10 @@ int bus_iommu_probe(struct bus_type *bus)
- 		/* Try to allocate default domain */
- 		probe_alloc_default_domain(bus, group);
- 
-+		/* Try to allocate blocking domain */
-+		group->blocking_domain =
-+				__iommu_domain_alloc(bus, IOMMU_DOMAIN_BLOCKED);
-+
- 		if (!group->default_domain) {
- 			mutex_unlock(&group->mutex);
- 			continue;
-@@ -3165,18 +3173,15 @@ static int __iommu_group_alloc_blocking_domain(struct iommu_group *group)
- 	if (group->blocking_domain)
- 		return 0;
- 
--	group->blocking_domain =
--		__iommu_domain_alloc(dev->dev->bus, IOMMU_DOMAIN_BLOCKED);
--	if (!group->blocking_domain) {
--		/*
--		 * For drivers that do not yet understand IOMMU_DOMAIN_BLOCKED
--		 * create an empty domain instead.
--		 */
--		group->blocking_domain = __iommu_domain_alloc(
--			dev->dev->bus, IOMMU_DOMAIN_UNMANAGED);
--		if (!group->blocking_domain)
--			return -EINVAL;
--	}
-+	/*
-+	 * For drivers that do not yet understand IOMMU_DOMAIN_BLOCKED
-+	 * create an empty domain instead.
-+	 */
-+	group->blocking_domain = __iommu_domain_alloc(dev->dev->bus,
-+						      IOMMU_DOMAIN_UNMANAGED);
-+	if (!group->blocking_domain)
-+		return -EINVAL;
-+
- 	return 0;
+@@ -1972,7 +1972,8 @@ void iommu_domain_free(struct iommu_domain *domain)
+ 	if (domain->type == IOMMU_DOMAIN_SVA)
+ 		mmdrop(domain->mm);
+ 	iommu_put_dma_cookie(domain);
+-	domain->ops->free(domain);
++	if (domain->ops->free)
++		domain->ops->free(domain);
  }
+ EXPORT_SYMBOL_GPL(iommu_domain_free);
  
 -- 
 2.25.1
