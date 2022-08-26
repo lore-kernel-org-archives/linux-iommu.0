@@ -1,60 +1,50 @@
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 555273C37
-	for <iommu@lists.linux.dev>; Fri, 26 Aug 2022 12:18:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 905B623A5
+	for <iommu@lists.linux.dev>; Fri, 26 Aug 2022 12:35:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661516322; x=1693052322;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=cod6y9BV4MmE8AUriWIbGWZoeNxV9YeHCqFPn2OmOAQ=;
-  b=Vx/4ESCQP6NKbPSA0zXfLsaU3CAzqdBngr1KNE8xLUDYhG1GNLxbcHeF
-   pWnO+xX3SS0RjfnBzwv1hcFOwKHko0S2wx3v6BcPt2VFYgcLKsoMKnAGL
-   95+ivv+vIzMCALf7qS+qPsYmfFRsyCLoDNnloZTUAkRpW2jOl3jpRhmV0
-   PRxZh60yyq3VuO3lyVshR+ZPPuU6Hn+F4uJ4flAuTbMItemDsmgc24pP5
-   YMoQdJyTKdQq0/cYjEfu2xgHeheme7wbF7CjJcX1YxqeGQ9w6fRglK118
-   sPmeajZ15Sv33YCaeiJvMcrZ40oU1xDNpJbn/7kC4Q+9iPiiRtq4lyDoG
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="295765414"
+  t=1661517345; x=1693053345;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=nR3gxr2N4uNie5DvjwJIj1xPMYgHUtoK1ifCTVOf+bw=;
+  b=A7ip8/Rm/04nQHdvrL1rT5J4spCtZsyn/XrP7SztVn7PGVHD2SFZqhHI
+   nFmQVBKlFuKaB6Z99Cv+DngXr5Ioct1qg3tj5+73J0VjFDgb8CUii6Ct/
+   hnw4Yat+qqyEHBDLl2Y+sAx4Ge9v4EAjzdZAxCyp1V3z5bV4i16WSWjwD
+   CHElWwhbggtZqTtpKnzcfcTkijRBmxdI3mjMvpY7RSyGg/1b+pb2LaXCl
+   UqjPfCjVxSDdcwqdCNKzkj/WNuDUwlrZhVshccJsCX7rwAujPcEOmU5ma
+   O68gW+XuVDXMC/615IWV/QWPndsmP9Cz9K6+/bTtvJim2ncCN52sP7v23
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="292074510"
 X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="295765414"
+   d="scan'208";a="292074510"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 05:18:42 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 05:35:44 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="606747880"
+   d="scan'208";a="606751935"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga007.jf.intel.com with ESMTP; 26 Aug 2022 05:18:37 -0700
+  by orsmga007.jf.intel.com with ESMTP; 26 Aug 2022 05:35:41 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Jason Gunthorpe <jgg@nvidia.com>,
 	Christoph Hellwig <hch@infradead.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
 	Kevin Tian <kevin.tian@intel.com>,
 	Ashok Raj <ashok.raj@intel.com>,
 	Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>,
-	Dave Jiang <dave.jiang@intel.com>,
-	Fenghua Yu <fenghua.yu@intel.com>,
-	Vinod Koul <vkoul@kernel.org>
+	Jean-Philippe Brucker <jean-philippe@linaro.com>
 Cc: Eric Auger <eric.auger@redhat.com>,
 	Liu Yi L <yi.l.liu@intel.com>,
 	Jacob jun Pan <jacob.jun.pan@intel.com>,
-	Zhangfei Gao <zhangfei.gao@linaro.org>,
-	Zhu Tony <tony.zhu@intel.com>,
 	iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH v12 17/17] iommu: Rename iommu-sva-lib.{c,h}
-Date: Fri, 26 Aug 2022 20:11:41 +0800
-Message-Id: <20220826121141.50743-18-baolu.lu@linux.intel.com>
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v2 0/3] iommu: Retire detach_dev callback
+Date: Fri, 26 Aug 2022 20:30:11 +0800
+Message-Id: <20220826123014.52709-1-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220826121141.50743-1-baolu.lu@linux.intel.com>
-References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -63,159 +53,69 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Rename iommu-sva-lib.c[h] to iommu-sva.c[h] as it contains all code
-for SVA implementation in iommu core.
+Hi folks,
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
-Tested-by: Tony Zhu <tony.zhu@intel.com>
----
- drivers/iommu/{iommu-sva-lib.h => iommu-sva.h}  | 6 +++---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 2 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 2 +-
- drivers/iommu/intel/iommu.c                     | 2 +-
- drivers/iommu/intel/svm.c                       | 2 +-
- drivers/iommu/io-pgfault.c                      | 2 +-
- drivers/iommu/{iommu-sva-lib.c => iommu-sva.c}  | 2 +-
- drivers/iommu/iommu.c                           | 2 +-
- drivers/iommu/Makefile                          | 2 +-
- 9 files changed, 11 insertions(+), 11 deletions(-)
- rename drivers/iommu/{iommu-sva-lib.h => iommu-sva.h} (95%)
- rename drivers/iommu/{iommu-sva-lib.c => iommu-sva.c} (99%)
+This is a follow-up series after several discussions on blocking domain.
+The latest discussion could be found here.
 
-diff --git a/drivers/iommu/iommu-sva-lib.h b/drivers/iommu/iommu-sva.h
-similarity index 95%
-rename from drivers/iommu/iommu-sva-lib.h
-rename to drivers/iommu/iommu-sva.h
-index 1b3ace4b5863..7215a761b962 100644
---- a/drivers/iommu/iommu-sva-lib.h
-+++ b/drivers/iommu/iommu-sva.h
-@@ -2,8 +2,8 @@
- /*
-  * SVA library for IOMMU drivers
-  */
--#ifndef _IOMMU_SVA_LIB_H
--#define _IOMMU_SVA_LIB_H
-+#ifndef _IOMMU_SVA_H
-+#define _IOMMU_SVA_H
- 
- #include <linux/ioasid.h>
- #include <linux/mm_types.h>
-@@ -72,4 +72,4 @@ iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
- 	return IOMMU_PAGE_RESP_INVALID;
- }
- #endif /* CONFIG_IOMMU_SVA */
--#endif /* _IOMMU_SVA_LIB_H */
-+#endif /* _IOMMU_SVA_H */
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index e7473e879b3c..c5471fa0299c 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -10,7 +10,7 @@
- #include <linux/slab.h>
- 
- #include "arm-smmu-v3.h"
--#include "../../iommu-sva-lib.h"
-+#include "../../iommu-sva.h"
- #include "../../io-pgtable-arm.h"
- 
- struct arm_smmu_mmu_notifier {
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index f6e145973bc9..a3c5b1a1203b 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -31,7 +31,7 @@
- #include <linux/amba/bus.h>
- 
- #include "arm-smmu-v3.h"
--#include "../../iommu-sva-lib.h"
-+#include "../../iommu-sva.h"
- 
- static bool disable_bypass = true;
- module_param(disable_bypass, bool, 0444);
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index b8c0afc7f0ac..f5ae4f7f916d 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -27,7 +27,7 @@
- 
- #include "iommu.h"
- #include "../irq_remapping.h"
--#include "../iommu-sva-lib.h"
-+#include "../iommu-sva.h"
- #include "pasid.h"
- #include "cap_audit.h"
- 
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 3be41b0291e5..028ad54732c5 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -24,7 +24,7 @@
- #include "iommu.h"
- #include "pasid.h"
- #include "perf.h"
--#include "../iommu-sva-lib.h"
-+#include "../iommu-sva.h"
- #include "trace.h"
- 
- static irqreturn_t prq_event_thread(int irq, void *d);
-diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-index d046d89cec55..e5b8b9110c13 100644
---- a/drivers/iommu/io-pgfault.c
-+++ b/drivers/iommu/io-pgfault.c
-@@ -11,7 +11,7 @@
- #include <linux/slab.h>
- #include <linux/workqueue.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- /**
-  * struct iopf_queue - IO Page Fault queue
-diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva.c
-similarity index 99%
-rename from drivers/iommu/iommu-sva-lib.c
-rename to drivers/iommu/iommu-sva.c
-index 520ec0b4ed85..54b4a66583d4 100644
---- a/drivers/iommu/iommu-sva-lib.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -6,7 +6,7 @@
- #include <linux/sched/mm.h>
- #include <linux/iommu.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- static DEFINE_MUTEX(iommu_sva_lock);
- static DECLARE_IOASID_SET(iommu_sva_pasid);
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 4dbf9d5436de..9e84f58440dd 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -29,7 +29,7 @@
- #include <trace/events/iommu.h>
- #include <linux/sched/mm.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- static struct kset *iommu_group_kset;
- static DEFINE_IDA(iommu_group_ida);
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 44475a9b3eea..c1763476162b 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -27,6 +27,6 @@ obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
- obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
- obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
- obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
--obj-$(CONFIG_IOMMU_SVA) += iommu-sva-lib.o io-pgfault.o
-+obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o io-pgfault.o
- obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
- obj-$(CONFIG_APPLE_DART) += apple-dart.o
+https://lore.kernel.org/linux-iommu/20220510140238.GD49344@nvidia.com/
+
+As .detach_dev equals to setting the blocking domain to the device, this
+callback is not needed anymore. This replace .detach_dev callback in the
+IOMMU drivers with a static blocking domain and retires this callback.
+
+With .detach_dev retired, rename .attach_dev to .set_dev as it actually
+means setting an iommu domain to the device.
+
+This series depends on below series which includes blocking domain
+support for VT-d and SMMUv3 drivers.
+[1] https://lore.kernel.org/linux-iommu/20220826121141.50743-1-baolu.lu@linux.intel.com/
+
+This series is available on github:
+[2] https://github.com/LuBaolu/intel-iommu/commits/iommu-blocking_domain-v2
+
+Please review and suggest.
+
+Best regards,
+baolu
+
+Change log:
+v2:
+ - Replace .detach_dev callback with static block domain ops;
+ - Rename .attach_dev to .set_dev.
+
+v1:
+ - https://lore.kernel.org/linux-iommu/20220516015759.2952771-1-baolu.lu@linux.intel.com/
+
+Lu Baolu (3):
+  iommu: Replace detach_dev with real blocking domains
+  iommu: Retire detach_dev domain ops
+  iommu: Rename attach_dev to set_dev
+
+ include/linux/iommu.h                       |  6 ++--
+ drivers/iommu/amd/iommu.c                   | 24 ++++++++++++--
+ drivers/iommu/apple-dart.c                  | 26 ++++++++++++---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  4 +--
+ drivers/iommu/arm/arm-smmu/arm-smmu.c       |  2 +-
+ drivers/iommu/arm/arm-smmu/qcom_iommu.c     | 25 +++++++++++++--
+ drivers/iommu/exynos-iommu.c                | 25 +++++++++++++--
+ drivers/iommu/fsl_pamu_domain.c             | 24 ++++++++++++--
+ drivers/iommu/intel/iommu.c                 |  4 +--
+ drivers/iommu/iommu.c                       | 35 ++++-----------------
+ drivers/iommu/ipmmu-vmsa.c                  | 24 ++++++++++++--
+ drivers/iommu/msm_iommu.c                   | 25 +++++++++++++--
+ drivers/iommu/mtk_iommu.c                   | 24 ++++++++++++--
+ drivers/iommu/mtk_iommu_v1.c                | 24 ++++++++++++--
+ drivers/iommu/omap-iommu.c                  | 22 +++++++++++--
+ drivers/iommu/rockchip-iommu.c              | 22 +++++++++++--
+ drivers/iommu/s390-iommu.c                  | 27 ++++++++++++++--
+ drivers/iommu/sprd-iommu.c                  | 25 +++++++++++++--
+ drivers/iommu/sun50i-iommu.c                | 25 +++++++++++++--
+ drivers/iommu/tegra-gart.c                  | 22 +++++++++++--
+ drivers/iommu/tegra-smmu.c                  | 25 +++++++++++++--
+ drivers/iommu/virtio-iommu.c                |  2 +-
+ 22 files changed, 368 insertions(+), 74 deletions(-)
+
 -- 
 2.25.1
 
