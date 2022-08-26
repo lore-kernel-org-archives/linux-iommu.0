@@ -1,31 +1,31 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94EB533E8
-	for <iommu@lists.linux.dev>; Fri, 26 Aug 2022 12:17:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B4E133E8
+	for <iommu@lists.linux.dev>; Fri, 26 Aug 2022 12:17:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661516258; x=1693052258;
+  t=1661516260; x=1693052260;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Pkkvw5TrdL+mKzrXgkga3FZhkLTWvt5jlQ/qUj6gIfw=;
-  b=bF09uuQhffxPCv57AYiGlsEnAf1k2BVcs09UzPD7K4aZ8CMHaZf01AfT
-   UL0YD4EbJwtyoSgdTg06Ai0j7Vvd8fLlrYyCM9jEfXfgCx0MIUt02OIEy
-   3sB7MnmUF/Ur226fX/BX959DA1TjZXNhgR17LN1+vzZ+V7Znt9ILbUB/m
-   sHHh/TQslSeSKsf5PK678NYNSQdECZySOvBCHIXfdwgK8buZwPXq+uPtE
-   LfzJl++Ei/oacpH3scTuFYsqWqmsjBfD+OqKGZO9ygjPPSgMMvEnykX3P
-   1wPG+h5Od++7GKDibF1y7IArxmEOD1JrqBRzqhNiKMZ/h4Q5UR5MlEC9t
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="277504965"
+  bh=NYfZ7WyvsEWFSCcqG1ukcz7wBX70baQUiHICdtwmxwA=;
+  b=oKpBHkt8Mcfw2YWw/Rx+zuOfVyilYxMGsN/TGA3BmK/8Dx7LX2INiJVE
+   JTEq0gauUBUySWbmH+XrtuCdaWtWC9mXYJdD2vwS3k6fcXOtIdoehfZpM
+   6ANpd07s/kTXoCQGQlm33mPqb+q/yn3eyyN8WRnbzKtMifQbdxMRrTXjt
+   QvmOs1O0m7Tw0f4f0ixuHT+1IntRFScMveYqsre+ou6L26aDyzPqwAMbI
+   zwO1qCLhpRck4niVu6Z9D42V5uRyq2of99O9VTuwKrufKH4DlopKlcA9t
+   Iuaom+PcucpHogRLmS4WwtTqe30x7P4FH9/JsyCBdPX16w72Gmk8demhn
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="320587264"
 X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="277504965"
+   d="scan'208";a="320587264"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 05:17:28 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 05:17:40 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="606747480"
+   d="scan'208";a="606747576"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga007.jf.intel.com with ESMTP; 26 Aug 2022 05:17:23 -0700
+  by orsmga007.jf.intel.com with ESMTP; 26 Aug 2022 05:17:34 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Jason Gunthorpe <jgg@nvidia.com>,
@@ -48,9 +48,9 @@ Cc: Eric Auger <eric.auger@redhat.com>,
 	linux-pci@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v12 02/17] iommu: Add max_pasids field in struct dev_iommu
-Date: Fri, 26 Aug 2022 20:11:26 +0800
-Message-Id: <20220826121141.50743-3-baolu.lu@linux.intel.com>
+Subject: [PATCH v12 04/17] PCI: Enable PASID only when ACS RR & UF enabled on upstream path
+Date: Fri, 26 Aug 2022 20:11:28 +0800
+Message-Id: <20220826121141.50743-5-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220826121141.50743-1-baolu.lu@linux.intel.com>
 References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
@@ -62,87 +62,42 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Use this field to save the number of PASIDs that a device is able to
-consume. It is a generic attribute of a device and lifting it into the
-per-device dev_iommu struct could help to avoid the boilerplate code
-in various IOMMU drivers.
+The Requester ID/Process Address Space ID (PASID) combination
+identifies an address space distinct from the PCI bus address space,
+e.g., an address space defined by an IOMMU.
 
+But the PCIe fabric routes Memory Requests based on the TLP address,
+ignoring any PASID (PCIe r6.0, sec 2.2.10.4), so a TLP with PASID that
+SHOULD go upstream to the IOMMU may instead be routed as a P2P
+Request if its address falls in a bridge window.
+
+To ensure that all Memory Requests with PASID are routed upstream,
+only enable PASID if ACS P2P Request Redirect and Upstream Forwarding
+are enabled for the path leading to the device.
+
+Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+Suggested-by: Kevin Tian <kevin.tian@intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Yi Liu <yi.l.liu@intel.com>
-Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
 Tested-by: Tony Zhu <tony.zhu@intel.com>
 ---
- include/linux/iommu.h |  2 ++
- drivers/iommu/iommu.c | 20 ++++++++++++++++++++
- 2 files changed, 22 insertions(+)
+ drivers/pci/ats.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index ed172cbdabf2..0d9ce209a501 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -368,6 +368,7 @@ struct iommu_fault_param {
-  * @fwspec:	 IOMMU fwspec data
-  * @iommu_dev:	 IOMMU device this device is linked to
-  * @priv:	 IOMMU Driver private data
-+ * @max_pasids:  number of PASIDs this device can consume
-  *
-  * TODO: migrate other per device data pointers under iommu_dev_data, e.g.
-  *	struct iommu_group	*iommu_group;
-@@ -379,6 +380,7 @@ struct dev_iommu {
- 	struct iommu_fwspec		*fwspec;
- 	struct iommu_device		*iommu_dev;
- 	void				*priv;
-+	u32				max_pasids;
- };
+diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+index c967ad6e2626..f9cc2e10b676 100644
+--- a/drivers/pci/ats.c
++++ b/drivers/pci/ats.c
+@@ -382,6 +382,9 @@ int pci_enable_pasid(struct pci_dev *pdev, int features)
+ 	if (!pasid)
+ 		return -EINVAL;
  
- int iommu_device_register(struct iommu_device *iommu,
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 780fb7071577..e9f6a8d33b58 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -20,6 +20,7 @@
- #include <linux/idr.h>
- #include <linux/err.h>
- #include <linux/pci.h>
-+#include <linux/pci-ats.h>
- #include <linux/bitops.h>
- #include <linux/property.h>
- #include <linux/fsl/mc.h>
-@@ -218,6 +219,24 @@ static void dev_iommu_free(struct device *dev)
- 	kfree(param);
- }
- 
-+static u32 dev_iommu_get_max_pasids(struct device *dev)
-+{
-+	u32 max_pasids = 0, bits = 0;
-+	int ret;
++	if (!pci_acs_path_enabled(pdev, NULL, PCI_ACS_RR | PCI_ACS_UF))
++		return -EINVAL;
 +
-+	if (dev_is_pci(dev)) {
-+		ret = pci_max_pasids(to_pci_dev(dev));
-+		if (ret > 0)
-+			max_pasids = ret;
-+	} else {
-+		ret = device_property_read_u32(dev, "pasid-num-bits", &bits);
-+		if (!ret)
-+			max_pasids = 1UL << bits;
-+	}
-+
-+	return min_t(u32, max_pasids, dev->iommu->iommu_dev->max_pasids);
-+}
-+
- static int __iommu_probe_device(struct device *dev, struct list_head *group_list)
- {
- 	const struct iommu_ops *ops = dev->bus->iommu_ops;
-@@ -243,6 +262,7 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
- 	}
+ 	pci_read_config_word(pdev, pasid + PCI_PASID_CAP, &supported);
+ 	supported &= PCI_PASID_CAP_EXEC | PCI_PASID_CAP_PRIV;
  
- 	dev->iommu->iommu_dev = iommu_dev;
-+	dev->iommu->max_pasids = dev_iommu_get_max_pasids(dev);
- 
- 	group = iommu_group_get_for_dev(dev);
- 	if (IS_ERR(group)) {
 -- 
 2.25.1
 
