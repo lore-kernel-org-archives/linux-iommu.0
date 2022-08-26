@@ -1,31 +1,31 @@
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1D5A33E8
-	for <iommu@lists.linux.dev>; Fri, 26 Aug 2022 12:17:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 975A133E8
+	for <iommu@lists.linux.dev>; Fri, 26 Aug 2022 12:17:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661516269; x=1693052269;
+  t=1661516274; x=1693052274;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=DqP5UvRszp3RzVBtau5vxk1E5hu2velGhlvMUw+e0rs=;
-  b=bXPcNrXYCV6WOREKY3yLRu47595T7VgErHmhJW3mtvxBlAn0kjJvtQix
-   B49ye8JbPJRKwPfVE5NQrt0TZGbq9QF0xO69IFkslGhOKQpa2ZPQWaUN8
-   /bnQ7V4eqEOTRwcWEltTi7yC/9unvsaxIxQs1ZctS18HX4raGykdL/aVe
-   S+FcYnapchs+rB03YK+Dhk6oBOM8EfLdzHhQmVEbrOLngRBVI99WXrAcO
-   GMoZfKumMK2Pe0vwV9NxLnI6FLNQ47OHCZEHO5vlS45ZXOLvuduujQLuT
-   op3qw/RJuOB33IANy9fXFhHfCkQsalX57itKTm7rx1PmbcGQOcFwfkXpL
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="320587300"
+  bh=BlPDAsITnFdD30Pt137P5Fo8l26pHF5dP5Ti1dDDyHg=;
+  b=Q8Isbr8cFXq3GKBA8QYsn6pqpuYkf63g5FlDrMK2j4aErCY04z5HBpKU
+   H+uYfDgt+E2T4lf5RxcGbWhufupAS0cuVDZJWq4/ryucYikM7SBKTHfrH
+   rcvsQWMafDIYHd5LQIT2dQD0nmFpoManGc7VDP4q5omwpFmkq05jiYv1Q
+   LFsD/YTH3Q1egWxRTaYopJNzTNvlYfhySQH66FFVbucPWqFqXfxGRDnZg
+   Qg6MaQwJbN+eEFxE2EJc24/0B+eH8GSeHuIlNWI9uG7TfwJazDoFWb8w1
+   lHPMaHdev81NP9Q4+zfou7XzJEY6CPGb9EA6rfSX2wEl37irJKcrChqO9
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="320587310"
 X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="320587300"
+   d="scan'208";a="320587310"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 05:17:49 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 05:17:54 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="606747598"
+   d="scan'208";a="606747653"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga007.jf.intel.com with ESMTP; 26 Aug 2022 05:17:44 -0700
+  by orsmga007.jf.intel.com with ESMTP; 26 Aug 2022 05:17:49 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Jason Gunthorpe <jgg@nvidia.com>,
@@ -47,11 +47,10 @@ Cc: Eric Auger <eric.auger@redhat.com>,
 	iommu@lists.linux.dev,
 	linux-pci@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH v12 06/17] iommu: Add IOMMU SVA domain support
-Date: Fri, 26 Aug 2022 20:11:30 +0800
-Message-Id: <20220826121141.50743-7-baolu.lu@linux.intel.com>
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v12 07/17] iommu: Try to allocate blocking domain when probing device
+Date: Fri, 26 Aug 2022 20:11:31 +0800
+Message-Id: <20220826121141.50743-8-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220826121141.50743-1-baolu.lu@linux.intel.com>
 References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
@@ -63,147 +62,71 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The sva iommu_domain represents a hardware pagetable that the IOMMU
-hardware could use for SVA translation. This adds some infrastructure
-to support SVA domain in the iommu common layer. It includes:
+Allocate the blocking domain when probing devices if the driver supports
+blocking domain allocation. Otherwise, revert to the previous behavior,
+that is, use UNMANAGED domain instead when the blocking domain is needed.
 
-- Extend the iommu_domain to support a new IOMMU_DOMAIN_SVA domain
-  type. The IOMMU drivers that support allocation of the SVA domain
-  should provide its own sva domain specific iommu_domain_ops.
-- Add a helper to allocate an SVA domain. The iommu_domain_free()
-  is still used to free an SVA domain.
-
-The report_iommu_fault() should be replaced by the new
-iommu_report_device_fault(). Leave the existing fault handler with the
-existing users and the newly added SVA members excludes it.
-
-Suggested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Yi Liu <yi.l.liu@intel.com>
 Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
 Tested-by: Tony Zhu <tony.zhu@intel.com>
 ---
- include/linux/iommu.h | 25 +++++++++++++++++++++++--
- drivers/iommu/iommu.c | 20 ++++++++++++++++++++
- 2 files changed, 43 insertions(+), 2 deletions(-)
+ drivers/iommu/iommu.c | 29 +++++++++++++++++------------
+ 1 file changed, 17 insertions(+), 12 deletions(-)
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 5e9553a7de0d..836aa480961c 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -64,6 +64,8 @@ struct iommu_domain_geometry {
- #define __IOMMU_DOMAIN_PT	(1U << 2)  /* Domain is identity mapped   */
- #define __IOMMU_DOMAIN_DMA_FQ	(1U << 3)  /* DMA-API uses flush queue    */
- 
-+#define __IOMMU_DOMAIN_SVA	(1U << 4)  /* Shared process address space */
-+
- /*
-  * This are the possible domain-types
-  *
-@@ -77,6 +79,8 @@ struct iommu_domain_geometry {
-  *				  certain optimizations for these domains
-  *	IOMMU_DOMAIN_DMA_FQ	- As above, but definitely using batched TLB
-  *				  invalidation.
-+ *	IOMMU_DOMAIN_SVA	- DMA addresses are shared process addresses
-+ *				  represented by mm_struct's.
-  */
- #define IOMMU_DOMAIN_BLOCKED	(0U)
- #define IOMMU_DOMAIN_IDENTITY	(__IOMMU_DOMAIN_PT)
-@@ -86,15 +90,24 @@ struct iommu_domain_geometry {
- #define IOMMU_DOMAIN_DMA_FQ	(__IOMMU_DOMAIN_PAGING |	\
- 				 __IOMMU_DOMAIN_DMA_API |	\
- 				 __IOMMU_DOMAIN_DMA_FQ)
-+#define IOMMU_DOMAIN_SVA	(__IOMMU_DOMAIN_SVA)
- 
- struct iommu_domain {
- 	unsigned type;
- 	const struct iommu_domain_ops *ops;
- 	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
--	iommu_fault_handler_t handler;
--	void *handler_token;
- 	struct iommu_domain_geometry geometry;
- 	struct iommu_dma_cookie *iova_cookie;
-+	union {
-+		struct {
-+			iommu_fault_handler_t handler;
-+			void *handler_token;
-+		};
-+		struct {	/* IOMMU_DOMAIN_SVA */
-+			struct mm_struct *mm;
-+			int users;
-+		};
-+	};
- };
- 
- static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
-@@ -683,6 +696,8 @@ int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner);
- void iommu_group_release_dma_owner(struct iommu_group *group);
- bool iommu_group_dma_owner_claimed(struct iommu_group *group);
- 
-+struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
-+					    struct mm_struct *mm);
- int iommu_attach_device_pasid(struct iommu_domain *domain,
- 			      struct device *dev, ioasid_t pasid);
- void iommu_detach_device_pasid(struct iommu_domain *domain,
-@@ -1058,6 +1073,12 @@ static inline bool iommu_group_dma_owner_claimed(struct iommu_group *group)
- 	return false;
- }
- 
-+static inline struct iommu_domain *
-+iommu_sva_domain_alloc(struct device *dev, struct mm_struct *mm)
-+{
-+	return NULL;
-+}
-+
- static inline int iommu_attach_device_pasid(struct iommu_domain *domain,
- 					    struct device *dev, ioasid_t pasid)
- {
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 26aca46193c3..2c9488d966ab 100644
+index 2c9488d966ab..e985f4d5895f 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -27,6 +27,7 @@
- #include <linux/module.h>
- #include <linux/cc_platform.h>
- #include <trace/events/iommu.h>
-+#include <linux/sched/mm.h>
+@@ -318,6 +318,10 @@ int iommu_probe_device(struct device *dev)
+ 	mutex_lock(&group->mutex);
+ 	iommu_alloc_default_domain(group, dev);
  
- static struct kset *iommu_group_kset;
- static DEFINE_IDA(iommu_group_ida);
-@@ -1960,6 +1961,8 @@ EXPORT_SYMBOL_GPL(iommu_domain_alloc);
++	/* Try to allocate a blocking domain */
++	group->blocking_domain = __iommu_domain_alloc(dev->bus,
++						      IOMMU_DOMAIN_BLOCKED);
++
+ 	/*
+ 	 * If device joined an existing group which has been claimed, don't
+ 	 * attach the default domain.
+@@ -1778,6 +1782,10 @@ int bus_iommu_probe(struct bus_type *bus)
+ 		/* Try to allocate default domain */
+ 		probe_alloc_default_domain(bus, group);
  
- void iommu_domain_free(struct iommu_domain *domain)
- {
-+	if (domain->type == IOMMU_DOMAIN_SVA)
-+		mmdrop(domain->mm);
- 	iommu_put_dma_cookie(domain);
- 	domain->ops->free(domain);
++		/* Try to allocate blocking domain */
++		group->blocking_domain =
++				__iommu_domain_alloc(bus, IOMMU_DOMAIN_BLOCKED);
++
+ 		if (!group->default_domain) {
+ 			mutex_unlock(&group->mutex);
+ 			continue;
+@@ -3165,18 +3173,15 @@ static int __iommu_group_alloc_blocking_domain(struct iommu_group *group)
+ 	if (group->blocking_domain)
+ 		return 0;
+ 
+-	group->blocking_domain =
+-		__iommu_domain_alloc(dev->dev->bus, IOMMU_DOMAIN_BLOCKED);
+-	if (!group->blocking_domain) {
+-		/*
+-		 * For drivers that do not yet understand IOMMU_DOMAIN_BLOCKED
+-		 * create an empty domain instead.
+-		 */
+-		group->blocking_domain = __iommu_domain_alloc(
+-			dev->dev->bus, IOMMU_DOMAIN_UNMANAGED);
+-		if (!group->blocking_domain)
+-			return -EINVAL;
+-	}
++	/*
++	 * For drivers that do not yet understand IOMMU_DOMAIN_BLOCKED
++	 * create an empty domain instead.
++	 */
++	group->blocking_domain = __iommu_domain_alloc(dev->dev->bus,
++						      IOMMU_DOMAIN_UNMANAGED);
++	if (!group->blocking_domain)
++		return -EINVAL;
++
+ 	return 0;
  }
-@@ -3384,3 +3387,20 @@ struct iommu_domain *iommu_get_domain_for_dev_pasid(struct device *dev,
- 	return domain;
- }
- EXPORT_SYMBOL_GPL(iommu_get_domain_for_dev_pasid);
-+
-+struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
-+					    struct mm_struct *mm)
-+{
-+	const struct iommu_ops *ops = dev_iommu_ops(dev);
-+	struct iommu_domain *domain;
-+
-+	domain = ops->domain_alloc(IOMMU_DOMAIN_SVA);
-+	if (!domain)
-+		return NULL;
-+
-+	domain->type = IOMMU_DOMAIN_SVA;
-+	mmgrab(mm);
-+	domain->mm = mm;
-+
-+	return domain;
-+}
+ 
 -- 
 2.25.1
 
