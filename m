@@ -1,32 +1,32 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAAED290C
-	for <iommu@lists.linux.dev>; Sun, 28 Aug 2022 12:52:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52EA03214
+	for <iommu@lists.linux.dev>; Sun, 28 Aug 2022 12:56:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661691141; x=1693227141;
+  t=1661691361; x=1693227361;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=YaVpDFcSktopVayCz3BxH2mKjkt04+621MmiMmMBYRs=;
-  b=ZwihL/GjDyJSPfY3tExikPyaZN9uWjhW4iA9nCsqFYVQ5h8XxIRcvptA
-   cOu3fAmBnmuFZIVCvTZTrulPtBmGDZKGzjNLe2cGgQhAC46F+7/pVakHb
-   SzfNk0FZNyPfDb+QOGpXWURTyItaybwoGXTozidSEn31CRim4pHXcDoCm
-   4zURuiTPZtRojrVvTgVT6uTWcuJ9HOpxF0kCEpkLeaoTUMHP+vO6FfO7Z
-   ngYasWbiW35MRH5AHNk3mAlbj42gAlfQEpOT9T1ieKIvuVBh9ot/8euUF
-   CQe1cZc0hP7qHhAaaRwEPwSgsKpNYvcZjFxdeC3LcrPg801UmuSWzPDxT
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10453"; a="293481288"
+  bh=FLrVUspMTdiVkIGP7G50w5Lr795N0ps5SA1lUprfsoQ=;
+  b=LT9hMWA+0io21pjxHdJygiJy1wMw7eVTxRpVRpPjY4GQK3rfYJnqi5Vt
+   0ZXfTXZcEgisavTYTP+TiCz+j13MsHPVgG0ieVy4b1Gf94qN20S1/0nbM
+   Qw8XoMFiU66l1VOimXbAJcrYvgzfLrZY5N1LVo0aGd1+TVxmmFAzi3nBW
+   8MuWoAghLmF3EN2F9n90ohcmehCqj2aV5kYpeQ6XSwaNMj9Ey7aRIT+o0
+   Qu/zoEEVI4oIi/p5pSe3lo7JOgIKRYdk97w/BrD80ZnGWHDdvDkabCKW1
+   DVQq5hzB7vaVZnVELG9BwwfF/WplcnLMVmzb38G6FLCk4fq58j+uvXKL/
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10453"; a="381041303"
 X-IronPort-AV: E=Sophos;i="5.93,270,1654585200"; 
-   d="scan'208";a="293481288"
+   d="scan'208";a="381041303"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2022 05:52:20 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2022 05:56:00 -0700
 X-IronPort-AV: E=Sophos;i="5.93,270,1654585200"; 
-   d="scan'208";a="672051439"
+   d="scan'208";a="672052008"
 Received: from cyue-mobl1.ccr.corp.intel.com (HELO [10.254.209.98]) ([10.254.209.98])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2022 05:52:16 -0700
-Message-ID: <e56c8c79-4f09-3706-c66f-726e5c78b413@linux.intel.com>
-Date: Sun, 28 Aug 2022 20:52:14 +0800
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2022 05:55:56 -0700
+Message-ID: <18e43d40-577d-2878-5673-706defd699d5@linux.intel.com>
+Date: Sun, 28 Aug 2022 20:55:55 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -45,69 +45,37 @@ Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
  Liu Yi L <yi.l.liu@intel.com>, Jacob jun Pan <jacob.jun.pan@intel.com>,
  Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony <tony.zhu@intel.com>,
  iommu@lists.linux.dev, linux-pci@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v12 05/17] iommu: Add attach/detach_dev_pasid iommu
- interface
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v12 09/17] iommu/vt-d: Add blocking domain support
 Content-Language: en-US
 To: Jason Gunthorpe <jgg@nvidia.com>
 References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
- <20220826121141.50743-6-baolu.lu@linux.intel.com>
- <YwjauaF1sTP6l2j9@nvidia.com>
+ <20220826121141.50743-10-baolu.lu@linux.intel.com>
+ <YwjetO21TWkhN6KH@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <YwjauaF1sTP6l2j9@nvidia.com>
+In-Reply-To: <YwjetO21TWkhN6KH@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2022/8/26 22:37, Jason Gunthorpe wrote:
-> On Fri, Aug 26, 2022 at 08:11:29PM +0800, Lu Baolu wrote:
+On 2022/8/26 22:54, Jason Gunthorpe wrote:
+> On Fri, Aug 26, 2022 at 08:11:33PM +0800, Lu Baolu wrote:
+>> The Intel IOMMU hardwares support blocking DMA transactions by clearing
+>> the translation table entries. This implements a real blocking domain to
+>> avoid using an empty UNMANAGED domain. The detach_dev callback of the
+>> domain ops is not used in any path. Remove it to avoid dead code as well.
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> Tested-by: Tony Zhu <tony.zhu@intel.com>
+>> ---
+>>   drivers/iommu/intel/iommu.c | 25 ++++++++++++++++++-------
+>>   1 file changed, 18 insertions(+), 7 deletions(-)
 > 
->> + * iommu_get_domain_for_dev_pasid() - Retrieve domain for @pasid of @dev
->> + * @dev: the queried device
->> + * @pasid: the pasid of the device
->> + * @type: matched domain type, 0 for any match
->> + *
->> + * This is a variant of iommu_get_domain_for_dev(). It returns the existing
->> + * domain attached to pasid of a device. It's only for internal use of the
->> + * IOMMU subsystem.
+> At this point I'd suggest to make a little series that does all the
+> blocking domain stuff in one shot
 > 
-> If it is only for external use then why is it exported?
-> 
-> I would add something like:
-> 
->   Callers must hold a lock around this function, and both
->   iommu_attach/detach_dev_pasid() whenever a domain of type is being
->   manipulated. This API does not internally resolve races with
->   attach/detach.
+> The removal of detach_dev callbacks is pretty nice for clarity.
 
-Yes. Updated. This is what this API expected.
-
-> 
->> + * detaching from the device PASID.
->> + *
->> + * Return: attached domain on success, NULL otherwise.
->> + */
->> +struct iommu_domain *iommu_get_domain_for_dev_pasid(struct device *dev,
->> +						    ioasid_t pasid,
->> +						    unsigned int type)
->> +{
->> +	struct iommu_domain *domain;
->> +	struct iommu_group *group;
->> +
->> +	group = iommu_group_get(dev);
->> +	if (!group)
->> +		return NULL;
->> +	/*
->> +	 * The xarray protects its internal state with RCU. Hence the domain
->> +	 * obtained is either NULL or fully formed.
->> +	 */
-> 
-> This has nothing to do with RCU
-> 
-> xa_lock() is used to ensure that the domain pointer remains valid
-> while we check the type since it blocks concurrent xa_erase().
-
-With xa_lock() added, this comment is not needed anymore.
+Yes. As you saw, I have a separated series for above purpose.
 
 Best regards,
 baolu
