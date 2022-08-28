@@ -1,252 +1,113 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A6814C74
-	for <iommu@lists.linux.dev>; Fri, 26 Aug 2022 19:47:42 +0000 (UTC)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27QJPpHf023862;
-	Fri, 26 Aug 2022 19:47:28 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=XWWpcmmexor+kP1LyUKEiE8tPzMf0If+mB2YqxmWOAc=;
- b=kOzw/hV8wS8fi5Gny3i6Uc19WRws/5uvgin+9otL8sFehNuL2cCEwEneWuUtLYRC1O3c
- Fp12QmY4fyRQTC575Y54I4nwdyuCX2S5qCFLt40g2gADXF8TzniYESEtWtPuhPN8aRir
- NaMizeG0e7x5Yhc6rdj4cGfhWxsgk739LXuDVXWkDGUl4VY/Wm16VLdSZPWNgoIXXrrs
- CEKCqGs1S8V3CVmIbFIv7rhspGLAhlhcOzXCGTWmiDI0X95Z8KkYpiGDsbzZSLeB9cti
- xl6jfvJADlAEShLnWBncG4wcoAvpL/k63KNk8kofg2KxGM48NUbDA6HJu7husSt97eXt 0A== 
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j74ay16jf-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 26 Aug 2022 19:47:27 +0000
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-	by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27QJLSHH025979;
-	Fri, 26 Aug 2022 19:47:26 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-	by ppma03wdc.us.ibm.com with ESMTP id 3j2q8a057q-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 26 Aug 2022 19:47:26 +0000
-Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
-	by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27QJlPlD7602878
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 26 Aug 2022 19:47:25 GMT
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 1292178063;
-	Fri, 26 Aug 2022 19:49:32 +0000 (GMT)
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id AFE1178060;
-	Fri, 26 Aug 2022 19:49:30 +0000 (GMT)
-Received: from li-c92d2ccc-254b-11b2-a85c-a700b5bfb098.ibm.com.com (unknown [9.211.112.122])
-	by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
-	Fri, 26 Aug 2022 19:49:30 +0000 (GMT)
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-To: iommu@lists.linux.dev
-Cc: linux-s390@vger.kernel.org, schnelle@linux.ibm.com, pmorel@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, joro@8bytes.org, will@kernel.org,
-        robin.murphy@arm.com, jgg@nvidia.com, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] iommu/s390: Fix race with release_device ops
-Date: Fri, 26 Aug 2022 15:47:21 -0400
-Message-Id: <20220826194721.250123-1-mjrosato@linux.ibm.com>
-X-Mailer: git-send-email 2.31.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAAED290C
+	for <iommu@lists.linux.dev>; Sun, 28 Aug 2022 12:52:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661691141; x=1693227141;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=YaVpDFcSktopVayCz3BxH2mKjkt04+621MmiMmMBYRs=;
+  b=ZwihL/GjDyJSPfY3tExikPyaZN9uWjhW4iA9nCsqFYVQ5h8XxIRcvptA
+   cOu3fAmBnmuFZIVCvTZTrulPtBmGDZKGzjNLe2cGgQhAC46F+7/pVakHb
+   SzfNk0FZNyPfDb+QOGpXWURTyItaybwoGXTozidSEn31CRim4pHXcDoCm
+   4zURuiTPZtRojrVvTgVT6uTWcuJ9HOpxF0kCEpkLeaoTUMHP+vO6FfO7Z
+   ngYasWbiW35MRH5AHNk3mAlbj42gAlfQEpOT9T1ieKIvuVBh9ot/8euUF
+   CQe1cZc0hP7qHhAaaRwEPwSgsKpNYvcZjFxdeC3LcrPg801UmuSWzPDxT
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10453"; a="293481288"
+X-IronPort-AV: E=Sophos;i="5.93,270,1654585200"; 
+   d="scan'208";a="293481288"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2022 05:52:20 -0700
+X-IronPort-AV: E=Sophos;i="5.93,270,1654585200"; 
+   d="scan'208";a="672051439"
+Received: from cyue-mobl1.ccr.corp.intel.com (HELO [10.254.209.98]) ([10.254.209.98])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2022 05:52:16 -0700
+Message-ID: <e56c8c79-4f09-3706-c66f-726e5c78b413@linux.intel.com>
+Date: Sun, 28 Aug 2022 20:52:14 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: kChpx522SRjuVIueN2EMi32YJ8bDSme3
-X-Proofpoint-ORIG-GUID: kChpx522SRjuVIueN2EMi32YJ8bDSme3
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-26_10,2022-08-25_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 spamscore=0
- clxscore=1015 priorityscore=1501 suspectscore=0 phishscore=0 bulkscore=0
- adultscore=0 mlxlogscore=982 lowpriorityscore=0 mlxscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2208260078
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Christoph Hellwig <hch@infradead.org>, Bjorn Helgaas <bhelgaas@google.com>,
+ Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Dave Jiang <dave.jiang@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
+ Vinod Koul <vkoul@kernel.org>, Eric Auger <eric.auger@redhat.com>,
+ Liu Yi L <yi.l.liu@intel.com>, Jacob jun Pan <jacob.jun.pan@intel.com>,
+ Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony <tony.zhu@intel.com>,
+ iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v12 05/17] iommu: Add attach/detach_dev_pasid iommu
+ interface
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
+ <20220826121141.50743-6-baolu.lu@linux.intel.com>
+ <YwjauaF1sTP6l2j9@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <YwjauaF1sTP6l2j9@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-With commit fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev
-calls") s390-iommu is supposed to handle dynamic switching between IOMMU
-domains and the DMA API handling.  However, this commit does not
-sufficiently handle the case where the device is released via a call
-to the release_device op as it may occur at the same time as an opposing
-attach_dev or detach_dev since the group mutex is not held over
-release_device.  This was observed if the device is deconfigured during a
-small window during vfio-pci initialization and can result in WARNs and
-potential kernel panics.
+On 2022/8/26 22:37, Jason Gunthorpe wrote:
+> On Fri, Aug 26, 2022 at 08:11:29PM +0800, Lu Baolu wrote:
+> 
+>> + * iommu_get_domain_for_dev_pasid() - Retrieve domain for @pasid of @dev
+>> + * @dev: the queried device
+>> + * @pasid: the pasid of the device
+>> + * @type: matched domain type, 0 for any match
+>> + *
+>> + * This is a variant of iommu_get_domain_for_dev(). It returns the existing
+>> + * domain attached to pasid of a device. It's only for internal use of the
+>> + * IOMMU subsystem.
+> 
+> If it is only for external use then why is it exported?
+> 
+> I would add something like:
+> 
+>   Callers must hold a lock around this function, and both
+>   iommu_attach/detach_dev_pasid() whenever a domain of type is being
+>   manipulated. This API does not internally resolve races with
+>   attach/detach.
 
-Handle this by tracking when the device is probed/released via
-dev_iommu_priv_set/get().  Ensure that once the device is released only
-release_device handles the re-init of the device DMA.
+Yes. Updated. This is what this API expected.
 
-Fixes: fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev calls")
-Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
----
-Changes since v1:
-- Use mutex instead of spinlock due to potential sleep (Pierre)
----
- arch/s390/include/asm/pci.h |  1 +
- arch/s390/pci/pci.c         |  1 +
- drivers/iommu/s390-iommu.c  | 67 ++++++++++++++++++++++++++++---------
- 3 files changed, 53 insertions(+), 16 deletions(-)
+> 
+>> + * detaching from the device PASID.
+>> + *
+>> + * Return: attached domain on success, NULL otherwise.
+>> + */
+>> +struct iommu_domain *iommu_get_domain_for_dev_pasid(struct device *dev,
+>> +						    ioasid_t pasid,
+>> +						    unsigned int type)
+>> +{
+>> +	struct iommu_domain *domain;
+>> +	struct iommu_group *group;
+>> +
+>> +	group = iommu_group_get(dev);
+>> +	if (!group)
+>> +		return NULL;
+>> +	/*
+>> +	 * The xarray protects its internal state with RCU. Hence the domain
+>> +	 * obtained is either NULL or fully formed.
+>> +	 */
+> 
+> This has nothing to do with RCU
+> 
+> xa_lock() is used to ensure that the domain pointer remains valid
+> while we check the type since it blocks concurrent xa_erase().
 
-diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
-index 7b4cdadbc023..8f2041eea741 100644
---- a/arch/s390/include/asm/pci.h
-+++ b/arch/s390/include/asm/pci.h
-@@ -157,6 +157,7 @@ struct zpci_dev {
- 	/* DMA stuff */
- 	unsigned long	*dma_table;
- 	spinlock_t	dma_table_lock;
-+	struct mutex	dma_domain_lock;
- 	int		tlb_refresh;
- 
- 	spinlock_t	iommu_bitmap_lock;
-diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
-index 73cdc5539384..973edd32ecc9 100644
---- a/arch/s390/pci/pci.c
-+++ b/arch/s390/pci/pci.c
-@@ -832,6 +832,7 @@ struct zpci_dev *zpci_create_device(u32 fid, u32 fh, enum zpci_state state)
- 	kref_init(&zdev->kref);
- 	mutex_init(&zdev->lock);
- 	mutex_init(&zdev->kzdev_lock);
-+	mutex_init(&zdev->dma_domain_lock);
- 
- 	rc = zpci_init_iommu(zdev);
- 	if (rc)
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index c898bcbbce11..ffb4e3cee7f6 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -90,15 +90,39 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 	struct zpci_dev *zdev = to_zpci_dev(dev);
- 	struct s390_domain_device *domain_device;
- 	unsigned long flags;
--	int cc, rc;
-+	int cc, rc = 0;
- 
- 	if (!zdev)
- 		return -ENODEV;
- 
-+	/* First check compatibility */
-+	spin_lock_irqsave(&s390_domain->list_lock, flags);
-+	/* First device defines the DMA range limits */
-+	if (list_empty(&s390_domain->devices)) {
-+		domain->geometry.aperture_start = zdev->start_dma;
-+		domain->geometry.aperture_end = zdev->end_dma;
-+		domain->geometry.force_aperture = true;
-+	/* Allow only devices with identical DMA range limits */
-+	} else if (domain->geometry.aperture_start != zdev->start_dma ||
-+		   domain->geometry.aperture_end != zdev->end_dma) {
-+		rc = -EINVAL;
-+	}
-+	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
-+	if (rc)
-+		return rc;
-+
- 	domain_device = kzalloc(sizeof(*domain_device), GFP_KERNEL);
- 	if (!domain_device)
- 		return -ENOMEM;
- 
-+	/* Leave now if the device has already been released */
-+	mutex_lock(&zdev->dma_domain_lock);
-+	if (!dev_iommu_priv_get(dev)) {
-+		mutex_unlock(&zdev->dma_domain_lock);
-+		kfree(domain_device);
-+		return 0;
-+	}
-+
- 	if (zdev->dma_table && !zdev->s390_domain) {
- 		cc = zpci_dma_exit_device(zdev);
- 		if (cc) {
-@@ -117,22 +141,11 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 		rc = -EIO;
- 		goto out_restore;
- 	}
-+	zdev->s390_domain = s390_domain;
-+	mutex_unlock(&zdev->dma_domain_lock);
- 
- 	spin_lock_irqsave(&s390_domain->list_lock, flags);
--	/* First device defines the DMA range limits */
--	if (list_empty(&s390_domain->devices)) {
--		domain->geometry.aperture_start = zdev->start_dma;
--		domain->geometry.aperture_end = zdev->end_dma;
--		domain->geometry.force_aperture = true;
--	/* Allow only devices with identical DMA range limits */
--	} else if (domain->geometry.aperture_start != zdev->start_dma ||
--		   domain->geometry.aperture_end != zdev->end_dma) {
--		rc = -EINVAL;
--		spin_unlock_irqrestore(&s390_domain->list_lock, flags);
--		goto out_restore;
--	}
- 	domain_device->zdev = zdev;
--	zdev->s390_domain = s390_domain;
- 	list_add(&domain_device->list, &s390_domain->devices);
- 	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
- 
-@@ -147,6 +160,7 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 				   virt_to_phys(zdev->dma_table));
- 	}
- out_free:
-+	mutex_unlock(&zdev->dma_domain_lock);
- 	kfree(domain_device);
- 
- 	return rc;
-@@ -176,17 +190,22 @@ static void s390_iommu_detach_device(struct iommu_domain *domain,
- 	}
- 	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
- 
--	if (found && (zdev->s390_domain == s390_domain)) {
-+	mutex_lock(&zdev->dma_domain_lock);
-+	if (found && (zdev->s390_domain == s390_domain) &&
-+	    dev_iommu_priv_get(dev)) {
- 		zdev->s390_domain = NULL;
- 		zpci_unregister_ioat(zdev, 0);
- 		zpci_dma_init_device(zdev);
- 	}
-+	mutex_unlock(&zdev->dma_domain_lock);
- }
- 
- static struct iommu_device *s390_iommu_probe_device(struct device *dev)
- {
- 	struct zpci_dev *zdev = to_zpci_dev(dev);
- 
-+	dev_iommu_priv_set(dev, zdev);
-+
- 	return &zdev->iommu_dev;
- }
- 
-@@ -206,10 +225,26 @@ static void s390_iommu_release_device(struct device *dev)
- 	 *
- 	 * So let's call detach_dev from here if it hasn't been called before.
- 	 */
--	if (zdev && zdev->s390_domain) {
-+	if (zdev) {
-+		/*
-+		 * Clear priv to block further attaches for this device,
-+		 * ensure detaches don't init DMA
-+		 */
-+		mutex_lock(&zdev->dma_domain_lock);
-+		dev_iommu_priv_set(dev, NULL);
-+		mutex_unlock(&zdev->dma_domain_lock);
-+		/* Make sure this device is removed from the domain list */
- 		domain = iommu_get_domain_for_dev(dev);
- 		if (domain)
- 			s390_iommu_detach_device(domain, dev);
-+		/* Now ensure DMA is initialized from here */
-+		mutex_lock(&zdev->dma_domain_lock);
-+		if (zdev->s390_domain) {
-+			zdev->s390_domain = NULL;
-+			zpci_unregister_ioat(zdev, 0);
-+			zpci_dma_init_device(zdev);
-+		}
-+		mutex_unlock(&zdev->dma_domain_lock);
- 	}
- }
- 
--- 
-2.31.1
+With xa_lock() added, this comment is not needed anymore.
 
+Best regards,
+baolu
