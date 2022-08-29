@@ -1,32 +1,32 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 059143214
-	for <iommu@lists.linux.dev>; Sun, 28 Aug 2022 13:57:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E30B97C
+	for <iommu@lists.linux.dev>; Mon, 29 Aug 2022 03:40:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661695048; x=1693231048;
+  t=1661744433; x=1693280433;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=y4cNfjDDXR16p7aBOCe2GLlX4JBhY0BsBXSjUlii/Og=;
-  b=RlBichpN+zQhXtoA6F2lMHFyog/ULZw5Lul/UXMaNEkFclETsPS3jRCx
-   3F4Fc6/ZLedbQl83gPOBDjyW8k0B/EVB/TM1Ipq7H2taKC9mmn8dNqReL
-   aatRPLUcaqnSjk67s5ySd2mF9amEyFfO02zwPVUQB5OrxkEraJl3O4i0H
-   ebbu4/n0VnYNf0E04je6v3TJc903FgkLS8lrJzMjNWj18tEAZtjpxjVPI
-   zHcesrMfze3G4+KT7lAjI6hdpSRN471YlhOhPDAxHBPceGemLSRRDG34o
-   qEB6/jrRaLyGcxD99xMWE+sIzSFe1RMGxVUwsyKkvbs677I9W9Scpn40/
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10453"; a="381045872"
-X-IronPort-AV: E=Sophos;i="5.93,270,1654585200"; 
-   d="scan'208";a="381045872"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2022 06:57:27 -0700
-X-IronPort-AV: E=Sophos;i="5.93,270,1654585200"; 
-   d="scan'208";a="672065818"
-Received: from cyue-mobl1.ccr.corp.intel.com (HELO [10.254.209.98]) ([10.254.209.98])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2022 06:57:23 -0700
-Message-ID: <fe5c459e-9992-73b6-35b4-59ef815f1f9a@linux.intel.com>
-Date: Sun, 28 Aug 2022 21:57:21 +0800
+  bh=Oya5Hnsy4mm0/87tApeZ1XDEJ4Ant4xomrwmja1Ayxw=;
+  b=VdjVF7yhcBk3hqyenZ6nhj053pZW7bfYGX2AlpN/HlENNpzDNFtckDlh
+   UVbDT0zpTvnea2o2Edf/ZM1iW9WXmjniTOZMWSVAQLYBRI6YvweGq052v
+   t0gTSmiH0tafFJXaGmzG29Lxoae2ay7GN5Js0KeSdOPSIlB+zwXuASzFL
+   W4KJTN7riDxIClksP6eP2e1cgHx4CaxyArSfiH1PmYiG9OhNdYQ+nxzhI
+   LsifYw36GHop+QyVyve8qWfKCjgUjvP1khP86RvWJPhrVGRNgndLXu91v
+   JD1T2O+MfqGCzNi1kp/CXXuMYWvYcHBYeXV74x582I1GWKVh4EQi5PlRg
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10453"; a="296074143"
+X-IronPort-AV: E=Sophos;i="5.93,271,1654585200"; 
+   d="scan'208";a="296074143"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2022 20:40:33 -0700
+X-IronPort-AV: E=Sophos;i="5.93,271,1654585200"; 
+   d="scan'208";a="644276121"
+Received: from lizhipe2-mobl.ccr.corp.intel.com (HELO [10.254.210.26]) ([10.254.210.26])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2022 20:40:26 -0700
+Message-ID: <316f6575-59ea-08e3-aaaf-bc1e4f42a574@linux.intel.com>
+Date: Mon, 29 Aug 2022 11:40:24 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -45,37 +45,40 @@ Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
  Liu Yi L <yi.l.liu@intel.com>, Jacob jun Pan <jacob.jun.pan@intel.com>,
  Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony <tony.zhu@intel.com>,
  iommu@lists.linux.dev, linux-pci@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v12 12/17] arm-smmu-v3/sva: Add SVA domain support
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v12 07/17] iommu: Try to allocate blocking domain when
+ probing device
 Content-Language: en-US
 To: Jason Gunthorpe <jgg@nvidia.com>
 References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
- <20220826121141.50743-13-baolu.lu@linux.intel.com>
- <YwjfKsvKyXLdCJ/Z@nvidia.com>
+ <20220826121141.50743-8-baolu.lu@linux.intel.com>
+ <YwjeL2SVmdRpoWb6@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <YwjfKsvKyXLdCJ/Z@nvidia.com>
+In-Reply-To: <YwjeL2SVmdRpoWb6@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2022/8/26 22:56, Jason Gunthorpe wrote:
-> On Fri, Aug 26, 2022 at 08:11:36PM +0800, Lu Baolu wrote:
+On 2022/8/26 22:52, Jason Gunthorpe wrote:
+> On Fri, Aug 26, 2022 at 08:11:31PM +0800, Lu Baolu wrote:
+>> Allocate the blocking domain when probing devices if the driver supports
+>> blocking domain allocation. Otherwise, revert to the previous behavior,
+>> that is, use UNMANAGED domain instead when the blocking domain is needed.
+>>
+>> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+>> Tested-by: Zhangfei Gao<zhangfei.gao@linaro.org>
+>> Tested-by: Tony Zhu<tony.zhu@intel.com>
+>> ---
+>>   drivers/iommu/iommu.c | 29 +++++++++++++++++------------
+>>   1 file changed, 17 insertions(+), 12 deletions(-)
+> This seems like a lot of overhead to allocate these things for every
+> group?
 > 
->> +static const struct iommu_domain_ops arm_smmu_sva_domain_ops = {
->> +	.set_dev_pasid		= arm_smmu_sva_set_dev_pasid,
-> Do we want to permit drivers to not allow a SVA domain to be set on a
-> RID?
-> 
-> It seems like a weird restriction to me
+> Why not add a simple refcount on the blocking domain instead and
+> allocate the domain on the pasid attach like we do for ownership?
 
-Conceptually as long as the page table is compatible and user pages are
-pinned (or I/O page fault is supported), the device drivers are valid to
-set SVA domain to a RID. But I don't see a real use case as far as I can
-see.
-
-A reasonable use case is sharing EPT between KVM and IOMMU. That demands
-a new type of domain and implements its own .set_dev for page table
-attachment.
+I am working towards implementing static instance of blocking domain for
+each IOMMU driver, and then, there's no much overhead to allocate it in
+the probing device path.
 
 Best regards,
 baolu
