@@ -1,149 +1,97 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2054.outbound.protection.outlook.com [40.107.92.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 490E24699
-	for <iommu@lists.linux.dev>; Mon, 29 Aug 2022 17:29:17 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=V++QBO5/soMn5kDBaAbeb/NlTrEeQ/hLR/uT4b4VrwBTa8LikOOf9UNIG3shlctT8fwiW5C9tkw44ZM9wi//dqiHqWTMT1TIZmRzyEEIHyrnlIkPH/g6oR4ji5gm4Ti3IPh0R0DRXpWDsY+5i1XIQhwSZoN/pGmmAphWsVYvSuXBQCwP7iDyDfrYUUC/MS1Yi+6ZYe3DOdZvlSU2+mJRQ64zkthnxBsv6vh7LvmvJVmAfUT4DATzVv8swkypGLHwFrThf9Clo87URUktjT/HkDNbvP/uO5Edj02gunsptm1RC5+NMlXELvIekPP20XgUumTadzuDPz1Wsh3E3gvaXw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=M7y/CsujlvdgL19Mcl/0xjOOdLIMMaL0RwjVt2Ekn5U=;
- b=EhZxbzWU7uPUuqOvkOkASMTGI21g2Ckx7iqkNmuFvepp6ZCyeVWImCW3M1sBnrCtinW0G7KGHGF5sgu6lFC4Q4N0m0nOgZhb9HBG1i6u1QH6SaoK8MicDaJkMZkqftB0EaVDv8LpeBL8KGQ3A4JkLVygd6DhfUAlWUcQWkVNPpoaChfbNKLK4S7UbC7PDBQ9eeST0ZMO74B+q2jP/iq3p2/agQyMXdIb2TF5hgZVBoxReB8zFLm8D/tXx6o/HXoxJ+YomwY3JkirWCrrHJo+dxP7HBkWljp/BawoAgmAdbVQyfQwJ4SV58opxQHO9CWTFON94ftWt54JZ/ZIdiGbUg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=M7y/CsujlvdgL19Mcl/0xjOOdLIMMaL0RwjVt2Ekn5U=;
- b=ZaD/iGoNDNBFnlbQdSkPr90bfEklzZONZDKMNs2QcyDt7CPlpBr4haW7qnZ2Myg1D/y2hB+a2yGn2OOKBqkdNQrsyuBiSxBTsNrQ4iTF7u4/eeaim38UtVOgUZaf7n2IRorZBPJw5oDF5H3W48WDrv+NhYgEzp3uaBN1NY45acTFc/AqdjP4/vs3FGDwnDw73j4FtuNBlxRwSUZMGYwGzaTSKhLW8R3ZE9ioL8asv3fSF2o3Ow2az/pP199TWX3F4EcbBp0IlClQkMevSCYv0gfNkzzBWCGZaWRD+mORIZsGw9hYgYne8XEi0NHtH1sBjSfDv8iR1qzKBUMM9YeJ9A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by DS0PR12MB7653.namprd12.prod.outlook.com (2603:10b6:8:13e::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Mon, 29 Aug
- 2022 17:29:14 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::462:7fe:f04f:d0d5]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::462:7fe:f04f:d0d5%8]) with mapi id 15.20.5566.021; Mon, 29 Aug 2022
- 17:29:14 +0000
-Date: Mon, 29 Aug 2022 14:29:13 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@infradead.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>,
-	Dave Jiang <dave.jiang@intel.com>,
-	Fenghua Yu <fenghua.yu@intel.com>, Vinod Koul <vkoul@kernel.org>,
-	Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
-	Jacob jun Pan <jacob.jun.pan@intel.com>,
-	Zhangfei Gao <zhangfei.gao@linaro.org>,
-	Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v12 12/17] arm-smmu-v3/sva: Add SVA domain support
-Message-ID: <Ywz3aQ57PthSYycN@nvidia.com>
-References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
- <20220826121141.50743-13-baolu.lu@linux.intel.com>
- <YwjfKsvKyXLdCJ/Z@nvidia.com>
- <fe5c459e-9992-73b6-35b4-59ef815f1f9a@linux.intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fe5c459e-9992-73b6-35b4-59ef815f1f9a@linux.intel.com>
-X-ClientProxiedBy: BL1P222CA0007.NAMP222.PROD.OUTLOOK.COM
- (2603:10b6:208:2c7::12) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47F265CBB
+	for <iommu@lists.linux.dev>; Mon, 29 Aug 2022 23:29:38 +0000 (UTC)
+Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-340a4dcb403so129841107b3.22
+        for <iommu@lists.linux.dev>; Mon, 29 Aug 2022 16:29:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
+        bh=j0gZBmzE7Sfjkj3fK19vZEmRLHOzPYXYudfu9W22ef0=;
+        b=bPb1auIgPo3/2J+mfMaXDZh871410KrBXJQKMytf0FgAgs/F+ya3O96wKhX6DhLaSr
+         K1HrNyGRVh9mjnzpRRE0QVld7uhji6zvmw9kPtVcYWV0J1WLkwMUSgLgH/+idRKwDGMu
+         WVZfVhWawN5TNKG4FdwdLTMjqIh43NhSGiCImZigj7H6xUm5tTtcvOz4e1r729TrUHci
+         3PrqorGayOVeVtdIiLLIw0S+u17p+j3HreT1kmnW41h1WNTIfC4M/GAlP8teQTYTjhSC
+         OkOvFiXEpkzFQw5ZcjmylMDAet9+rTxXgAUVysqhl1c/mnzag/9955zWGc3jwpIPF6av
+         2BFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
+         :from:to:cc;
+        bh=j0gZBmzE7Sfjkj3fK19vZEmRLHOzPYXYudfu9W22ef0=;
+        b=TwzEC05DTsfZ8c2GYAeJw5oiTehgJ09fR3myMoKJukDADGA1vMP7AOmV5l9f2BetrI
+         2f+rSohzqpfUrfEGJhOGapT/f7KAlwmjRZyGrpKdOWUMHn2C1E8BZ2JKiBhGOaeRnF36
+         PaN35Kls1R15OL3/Uf4j9NwsN0/9ce44vPYSoKdqmEIkhTVMUpayqBm8AP6JoWJNm1H/
+         UzwatHAYRzA9ZuMBKz1gzy6Xo14s1l4xw/TorRRCdlf4mrn8NTrrFVV0FticxNAdXAQo
+         7CYudnlI17RR0JM0L50ZrQP+BtqJ8dQLKf9vscjL8keqAaicCzlZy/glHxmkl8fieOvs
+         iTeg==
+X-Gm-Message-State: ACgBeo1G495k6gNf8Ho5e+2CtG9hXG1E+NZJG5XNdLCG2G2YLTXmMSMY
+	bjESSLTaVOfSINQ/FnetYvt+JGfHpeA=
+X-Google-Smtp-Source: AA6agR57Qelr+wyNISYMYbU6D1FmO6PFtmVX7v1UCupeRr3ikw+DVEQhtxuiNuF/Y/wSno25spds6UFXDBk=
+X-Received: from yuzhao.bld.corp.google.com ([2620:15c:183:200:3049:2153:3017:38c9])
+ (user=yuzhao job=sendgmr) by 2002:a81:b04d:0:b0:340:b55c:9b1f with SMTP id
+ x13-20020a81b04d000000b00340b55c9b1fmr10198796ywk.212.1661815777286; Mon, 29
+ Aug 2022 16:29:37 -0700 (PDT)
+Date: Mon, 29 Aug 2022 17:29:34 -0600
+Message-Id: <20220829232934.3277747-1-yuzhao@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3aab0213-456d-42ca-7ed2-08da89e3fe63
-X-MS-TrafficTypeDiagnostic: DS0PR12MB7653:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	/sf0895wcKNUgwlyHLqfugY9gfjOp0jxOjsIzEXJV24kfVK6YEwIkSHH2nRnOYBw8loKZ57D0TB0FF6+y4gdOE1sMjzZ4tg8UcFAtq1VTppycdrcTT832b0BRILGiIYTEvWIQ8boMHgGln7OE36g6gzj/msvEL+iNbTAxY5RH0BLht06ziV7vOOfnE+aaNyiAARN/z/2qBVpvANjkcIqHoS2zia8V7PBHHw0MgL36+5a4QJoxA85v/GkwAjqiIJh63I7euylAbdIIhTyBvpfIiTJYfq0dAzCOd4CfYm3RylRKQv6hzRpfID31p93oKhz07yq0dTSX+0kq8RdguZW6DjKVqnULc+/F97pjDOGjJzqmTKFTtB2kIDSUvTTPg3xfEig0K4kHdflXQQQvLtUrbz1BnaqBIbl75JHlpyhOXb7t4kth5YCcWy0CjQ3BtyOxUy0ruEQhPZSpmuvxHT1HfmTja8d9YUB0Z4vbPEV7vghePFd4+8130MzBHkf0wFk0qctqyS1D0nJ4Y8Chzz2WONqNRpd9Ph9IDb7SRULTI+tbaBdPRDNhrAlAB2LYmXq4gybeNzmevskxk+N2ZdnVw7d7HvxgnuCzp/GjDs4PJH3Dv7Y0vcoITiNHkW4/vZEM5yIppDnoJH0XoIy959Jz0w0A7D9CAiOP9BgylON9ic3ZIZy0F8+sABCYIYdD2ZElfE09xcAhlXm2nX10DXprA==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(396003)(346002)(376002)(136003)(39860400002)(316002)(6916009)(54906003)(478600001)(36756003)(6486002)(66946007)(66556008)(38100700002)(4326008)(66476007)(8676002)(41300700001)(8936002)(7416002)(5660300002)(26005)(2906002)(53546011)(6506007)(186003)(2616005)(6512007)(86362001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?D4OlJqgms+Jo7SPlFHieoR6dT/X7OjZbB/AqaO4oETBapMfdfKB5XAnpXAX0?=
- =?us-ascii?Q?L5+/NavDf+4kKVF8HzcHQyJQ3j8Wbs4fUD12puuw8hmAGhCFvdaPoUT0cIUr?=
- =?us-ascii?Q?rji85GBSDXm1IgbsQ3A1LXcyZe+NwzLOom8uvVAd8luvG8FATLV9BrncJcTu?=
- =?us-ascii?Q?eStIbVfTJScFYyJZ7EfnuNkGlQVGfSTINUznPunN1tznKD4bOykAZUSlXjqV?=
- =?us-ascii?Q?Sog2JxOPlhqO2cNocPX5R3A9cdDRnowdX4oJhPZD0wCXxWqDWZAoE8BoNJ7d?=
- =?us-ascii?Q?VLLiwl6cqWNi3nPWTpKDQvCtsKy9kVUvUUXP8zFSCXikC4qyrKvHnNoou3uF?=
- =?us-ascii?Q?jNn4KkdRtF9jK7H648Wx1O7wFC+d6YwIEml5dDYb+q2gs0NdMvkeRzdem7vJ?=
- =?us-ascii?Q?1lcFDoTfEr5Xqrbbtifh5BlVv5Q55Omx6RBsSy+a3uPUBRVh3xY7SuM33m+s?=
- =?us-ascii?Q?GoPV76XwBkwohbWjD6GrUYhlFrosuqmwdwd3nGPstQ5d6bLCxj0OrNud8u8O?=
- =?us-ascii?Q?K/Fbpoi862RdgZ/XMPGc6J2UCiTR3h4ThKDMZeVDrXn30RrY4r6wHUoliHL7?=
- =?us-ascii?Q?nl4SCVojpaqCeE1G1QPwUpVKeKo5pwecXbgM3otKTPNruXh+prQkIC67f+v+?=
- =?us-ascii?Q?Bti/hIcTqeTLJZoMdlCUqOm7DHAlfg0WQ9sgSgnkYhjnZ3sl911tapsUCrS2?=
- =?us-ascii?Q?QCjB55RJCO/DoYEL3vNohaFlesjCdy2IgRNnom0SrIxfwwysttFTdOlkv1ot?=
- =?us-ascii?Q?JDpdDk7QFoSjmpW1S1ERz7wpZqnIP9WhyYmXMEqXPz1HsG3eWkUvZI0SucOt?=
- =?us-ascii?Q?F7sgDwxRM0+eyWohSsjG0dkN7+0FVdc15r3C9EhOF/6WtYlmyU1zUaAmTZ05?=
- =?us-ascii?Q?TKKlvdGpyvqaXhxbjyBwuPYaOFcvT14Db4mToJ6gbeFs2g5IiEFbDeUm9OL4?=
- =?us-ascii?Q?mxfff2JC3rpMHunjisM8qHVYOY+/dcJEdtoFl//R3L5xhc7eNIk/ACx0eNnb?=
- =?us-ascii?Q?IZ3r3Fd/e0/unuft2b7uG0HJ62aRH5+V5UK4JckVM04R9cYFV1/Tc5IqHAjb?=
- =?us-ascii?Q?U5MU2JbHCQn0BAhSbO4g0Y6q2hM4p5qi7+6z7ETiZEWDgzDmC95PvitIFiB9?=
- =?us-ascii?Q?H2kcw/+kJw0o4yUqu1CXVHVZOYcklMWEJS7XgBqofRGu1fvtpvDwvBhWh3CO?=
- =?us-ascii?Q?7XN5bpZd3gnNEBJU0jsPqKEnig1vQCv6U80sQIdzauB+252MZakv2Dld2pnR?=
- =?us-ascii?Q?QU6DX/W8d5P82JOL5YzWum6Baoe1toZVx/ulCiTDnovR2UajdbQw2OvEm/7x?=
- =?us-ascii?Q?oBzkbK03AJYEzOhRwHT5tj0JK08zZfcLkQOp+JTjwVTRzq9N5rWoUJKGOpQo?=
- =?us-ascii?Q?B5FiBU72xB9K9q9PAVhpEQCbARfu6rSpCEI9bqydt6ggfgDnN0eWVlVKvvpZ?=
- =?us-ascii?Q?y+xXh5HqJg8T29FuoZjtmDjrSomMTEMZzdCsaeFEoxTNZw9dBEqCrlqnAVno?=
- =?us-ascii?Q?5N5AlhEBCmGJFJ8MwR+GctRGXpN6tJ4zZkyKuZLOGhDumcJUom6AdFNG8qjD?=
- =?us-ascii?Q?c2KVtI3YGRwQizjZyjC7T1It4QA7oIIKJ3Ek8E8S?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3aab0213-456d-42ca-7ed2-08da89e3fe63
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Aug 2022 17:29:14.6423
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2BavCGO4+KXNt7o/QKp85YJXrgIioczlgCVNi82Qm243Ow7Ort4qx6K6JQAtL6bY
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7653
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
+Subject: [PATCH] Revert "swiotlb: panic if nslabs is too small"
+From: Yu Zhao <yuzhao@google.com>
+To: Christoph Hellwig <hch@infradead.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Dongli Zhang <dongli.zhang@oracle.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Yu Zhao <yuzhao@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Sun, Aug 28, 2022 at 09:57:21PM +0800, Baolu Lu wrote:
-> On 2022/8/26 22:56, Jason Gunthorpe wrote:
-> > On Fri, Aug 26, 2022 at 08:11:36PM +0800, Lu Baolu wrote:
-> > 
-> > > +static const struct iommu_domain_ops arm_smmu_sva_domain_ops = {
-> > > +	.set_dev_pasid		= arm_smmu_sva_set_dev_pasid,
-> > Do we want to permit drivers to not allow a SVA domain to be set on a
-> > RID?
-> > 
-> > It seems like a weird restriction to me
-> 
-> Conceptually as long as the page table is compatible and user pages are
-> pinned (or I/O page fault is supported), the device drivers are valid to
-> set SVA domain to a RID. But I don't see a real use case as far as I can
-> see.
+This reverts commit 0bf28fc40d89b1a3e00d1b79473bad4e9ca20ad1.
 
-It may be interesting for something like DPDK type applications where
-having the entire process address space mapped SVA to the device could
-be quite nice.
+Reasons:
+  1. new panic()s shouldn't be added [1].
+  2. It does no "cleanup" but breaks MIPS [2].
 
-You, currently, give up interrupts, but perhaps that is solvable in some
-way.
+[1]: https://lore.kernel.org/r/CAHk-=wit-DmhMfQErY29JSPjFgebx_Ld+pnerc4J2Ag990WwAA@mail.gmail.com/
+[2]: https://lore.kernel.org/r/20220820012031.1285979-1-yuzhao@google.com/
 
-So, IDK.. I wouldn't dismiss it entirely but I wouldn't do a bunch of
-work to support it either.
+Fixes: 0bf28fc40d89b ("swiotlb: panic if nslabs is too small")
+Signed-off-by: Yu Zhao <yuzhao@google.com>
+---
+ kernel/dma/swiotlb.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-> A reasonable use case is sharing EPT between KVM and IOMMU. That demands
-> a new type of domain and implements its own .set_dev for page table
-> attachment.
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index c5a9190b218f..b3ede72eba5d 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -325,10 +325,6 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
+ 	if (!default_nareas)
+ 		swiotlb_adjust_nareas(num_possible_cpus());
+ 
+-	nslabs = default_nslabs;
+-	if (nslabs < IO_TLB_MIN_SLABS)
+-		panic("%s: nslabs = %lu too small\n", __func__, nslabs);
+-
+ 	/*
+ 	 * By default allocate the bounce buffer memory from low memory, but
+ 	 * allow to pick a location everywhere for hypervisors with guest
+@@ -341,8 +337,7 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
+ 	else
+ 		tlb = memblock_alloc_low(bytes, PAGE_SIZE);
+ 	if (!tlb) {
+-		pr_warn("%s: Failed to allocate %zu bytes tlb structure\n",
+-			__func__, bytes);
++		pr_warn("%s: failed to allocate tlb structure\n", __func__);
+ 		return;
+ 	}
+ 
 
-Not everything is virtualization :)
+base-commit: c40e8341e3b3bb27e3a65b06b5b454626234c4f0
+-- 
+2.37.2.672.g94769d06f0-goog
 
-Jason
