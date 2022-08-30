@@ -1,217 +1,376 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70EED5C94
-	for <iommu@lists.linux.dev>; Tue, 30 Aug 2022 20:16:05 +0000 (UTC)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27UJRRgh030586;
-	Tue, 30 Aug 2022 20:15:51 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=hWncNBBXEg57C/dgyYJZl0wv0Sf+9IyEHPf5gDc/olc=;
- b=ej3UGaBdZ4RwDL+HeSgwefkU2XmbSRaF0ubh2XzCxxBkwhFczs76324VUEn8RAxbQkd8
- APQHecs6sMdK1t2yUHNZxxRcOjESnRMYgO9/pbCzjbVddK5CF6ASxAlpVfDxHUMDZ1hP
- h60q/R4U4CwrC/2VCxSfi7oRQxFd5ONcoinZMDfWUqGWVbrYacFju/5GjfaVtQvHT9MA
- fq9ZR44+gy/WWIlKqD/5bgvE6pa4KzGqRTfrMirGiJfaPvaui0FCDYt9D0E4zNh3LwYO
- ybRjFJD4Ogboov62RyVn8rgLTcg84T6w7QkDHt9qutZ4EwTLjIdO4dh3BmW8Nxh2FhzT UA== 
-Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j9rqdhcy4-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 30 Aug 2022 20:15:51 +0000
-Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
-	by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27UK65tf000322;
-	Tue, 30 Aug 2022 20:15:50 GMT
-Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
-	by ppma02dal.us.ibm.com with ESMTP id 3j7aw9kfjd-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 30 Aug 2022 20:15:50 +0000
-Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
-	by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27UKFnlL12583582
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 30 Aug 2022 20:15:49 GMT
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 7118B136051;
-	Tue, 30 Aug 2022 20:15:48 +0000 (GMT)
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 22EE513604F;
-	Tue, 30 Aug 2022 20:15:46 +0000 (GMT)
-Received: from li-2311da4c-2e09-11b2-a85c-c003041e9174.ibm.com.com (unknown [9.65.252.121])
-	by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
-	Tue, 30 Aug 2022 20:15:46 +0000 (GMT)
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-To: iommu@lists.linux.dev
-Cc: linux-s390@vger.kernel.org, schnelle@linux.ibm.com, pmorel@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, joro@8bytes.org, will@kernel.org,
-        robin.murphy@arm.com, jgg@nvidia.com, linux-kernel@vger.kernel.org
-Subject: [PATCH v3] iommu/s390: Fix race with release_device ops
-Date: Tue, 30 Aug 2022 16:15:46 -0400
-Message-Id: <20220830201546.18871-1-mjrosato@linux.ibm.com>
-X-Mailer: git-send-email 2.37.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F86D6108
+	for <iommu@lists.linux.dev>; Tue, 30 Aug 2022 21:49:25 +0000 (UTC)
+Received: by mail-yb1-f202.google.com with SMTP id h9-20020a256c09000000b0069671af62ecso713652ybc.4
+        for <iommu@lists.linux.dev>; Tue, 30 Aug 2022 14:49:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc;
+        bh=1lX3k8bH6+3ighIlH+rh55fF9o5O4fyOugMRXdd7M+o=;
+        b=TLaJItWbDQbvhKHzG038LNGm0CScYZSKmwQZZ5uimu3NF1cUdVRiMphTcTUfMFGxbA
+         5MXDa00pC4jx1dox6rXbqMWBtWC4G64n3rtvQ9WFmciJtHtJLVCWET5Kdb7EyuzkVYPX
+         i4J0Y6C4bz8XfJq1YpoTofkF51DS5zPKbupPaaT66wch8+NkTWL2E1S5s0ZkHIotLxVb
+         lHmExQmnrBRVXZ4L6czz/14NhyHQZKxDWFmpYXVuNp5UTUZUPBV0MZqwCFaN6+K53hjG
+         Et4iC4dnJNUgJmAGWozRlGh2FkpEq40YiSSTQfp1Q8IZTvSW9ersWg+tDXVZ8w+7HE/r
+         XOYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc;
+        bh=1lX3k8bH6+3ighIlH+rh55fF9o5O4fyOugMRXdd7M+o=;
+        b=QEB2U26ppP8DvWDpljsAGholIW8xNCpXE1ZvAGIVDxgHSARVWodNz+PQtD8APMJU4L
+         SihIdCe6wVTFsilrSR2k3PsMdim/T58GaT+yR/pnhX74uEXPoAAlg99h6P9InoAxny3L
+         WZJPXYfcq8jBCNFhsekRL2i4CsERfckeYQzNBTYMXtVhjkF8yLlj6H3aIbNRKwKoqrFk
+         3Lx12iPdoVEhoUFhuPHsI2sAFd6KRVyln7Gxb2iFlqOiJgT2FuNVd0pmh3zhnLaFwbfJ
+         5teJoNbJrRiMX6r61emQoGHbfkOeMjO2S8dIIjYA40clRXtXPF8ZRzZ5kkuNR9YqzkuU
+         P0jg==
+X-Gm-Message-State: ACgBeo1noYRXbDZthStawJrJUajvwXSvg0djto3/NKBiYfWe9vEDDqmz
+	jWi6xATZWj/OWcQ1ObTnzPqp1Efja1k=
+X-Google-Smtp-Source: AA6agR5j08Skk81v71QmaDi/WT6bCECv+zqPYuRoUXIcSYHRwqbk8VPDDLd37sGsnmTNsd8iQzIrOAzDMtY=
+X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:200:a005:55b3:6c26:b3e4])
+ (user=surenb job=sendgmr) by 2002:a81:7992:0:b0:336:8015:4889 with SMTP id
+ u140-20020a817992000000b0033680154889mr16036203ywc.80.1661896164558; Tue, 30
+ Aug 2022 14:49:24 -0700 (PDT)
+Date: Tue, 30 Aug 2022 14:48:49 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: K4heIS3r9LviJa3oN6_m1dKbopwgrCiy
-X-Proofpoint-ORIG-GUID: K4heIS3r9LviJa3oN6_m1dKbopwgrCiy
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-30_10,2022-08-30_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- impostorscore=0 mlxscore=0 phishscore=0 bulkscore=0 suspectscore=0
- spamscore=0 priorityscore=1501 clxscore=1015 adultscore=0 malwarescore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208300090
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
+Message-ID: <20220830214919.53220-1-surenb@google.com>
+Subject: [RFC PATCH 00/30] Code tagging framework and applications
+From: Suren Baghdasaryan <surenb@google.com>
+To: akpm@linux-foundation.org
+Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz, 
+	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
+	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
+	void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com, 
+	ldufour@linux.ibm.com, peterx@redhat.com, david@redhat.com, axboe@kernel.dk, 
+	mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org, 
+	changbin.du@intel.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
+	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
+	bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org, 
+	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
+	elver@google.com, dvyukov@google.com, shakeelb@google.com, 
+	songmuchun@bytedance.com, arnd@arndb.de, jbaron@akamai.com, 
+	rientjes@google.com, minchan@google.com, kaleshsingh@google.com, 
+	surenb@google.com, kernel-team@android.com, linux-mm@kvack.org, 
+	iommu@lists.linux.dev, kasan-dev@googlegroups.com, io-uring@vger.kernel.org, 
+	linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org, 
+	linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-With commit fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev
-calls") s390-iommu is supposed to handle dynamic switching between IOMMU
-domains and the DMA API handling.  However, this commit does not
-sufficiently handle the case where the device is released via a call
-to the release_device op as it may occur at the same time as an opposing
-attach_dev or detach_dev since the group mutex is not held over
-release_device.  This was observed if the device is deconfigured during a
-small window during vfio-pci initialization and can result in WARNs and
-potential kernel panics.
+===========================
+Code tagging framework
+===========================
+Code tag is a structure identifying a specific location in the source code
+which is generated at compile time and can be embedded in an application-
+specific structure. Several applications of code tagging are included in
+this RFC, such as memory allocation tracking, dynamic fault injection,
+latency tracking and improved error code reporting.
+Basically, it takes the old trick of "define a special elf section for
+objects of a given type so that we can iterate over them at runtime" and
+creates a proper library for it.
 
-Handle this by tracking when the device is probed/released via
-dev_iommu_priv_set/get().  Ensure that once the device is released only
-release_device handles the re-init of the device DMA.
+===========================
+Memory allocation tracking
+===========================
+The goal for using codetags for memory allocation tracking is to minimize
+performance and memory overhead. By recording only the call count and
+allocation size, the required operations are kept at the minimum while
+collecting statistics for every allocation in the codebase. With that
+information, if users are interested in mode detailed context for a
+specific allocation, they can enable more in-depth context tracking,
+which includes capturing the pid, tgid, task name, allocation size,
+timestamp and call stack for every allocation at the specified code
+location.
+Memory allocation tracking is implemented in two parts:
 
-Fixes: fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev calls")
-Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
----
-Changes since v2:
-- Relocate the list_empty and aperture chekcs in attach_dev to the
-  their original locations so they are all done under a single
-  acquisition of the spinlock (Heiko)
----
- arch/s390/include/asm/pci.h |  1 +
- arch/s390/pci/pci.c         |  1 +
- drivers/iommu/s390-iommu.c  | 39 ++++++++++++++++++++++++++++++++++---
- 3 files changed, 38 insertions(+), 3 deletions(-)
+part1: instruments page and slab allocators to record call count and total
+memory allocated at every allocation in the source code. Every time an
+allocation is performed by an instrumented allocator, the codetag at that
+location increments its call and size counters. Every time the memory is
+freed these counters are decremented. To decrement the counters upon free,
+allocated object needs a reference to its codetag. Page allocators use
+page_ext to record this reference while slab allocators use memcg_data of
+the slab page.
+The data is exposed to the user space via a read-only debugfs file called
+alloc_tags.
 
-diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
-index 7b4cdadbc023..080251e7b275 100644
---- a/arch/s390/include/asm/pci.h
-+++ b/arch/s390/include/asm/pci.h
-@@ -157,6 +157,7 @@ struct zpci_dev {
- 	/* DMA stuff */
- 	unsigned long	*dma_table;
- 	spinlock_t	dma_table_lock;
-+	struct mutex	dma_domain_lock; /* protects s390_domain value */
- 	int		tlb_refresh;
- 
- 	spinlock_t	iommu_bitmap_lock;
-diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
-index 73cdc5539384..973edd32ecc9 100644
---- a/arch/s390/pci/pci.c
-+++ b/arch/s390/pci/pci.c
-@@ -832,6 +832,7 @@ struct zpci_dev *zpci_create_device(u32 fid, u32 fh, enum zpci_state state)
- 	kref_init(&zdev->kref);
- 	mutex_init(&zdev->lock);
- 	mutex_init(&zdev->kzdev_lock);
-+	mutex_init(&zdev->dma_domain_lock);
- 
- 	rc = zpci_init_iommu(zdev);
- 	if (rc)
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index c898bcbbce11..1137d669e849 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -99,6 +99,14 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 	if (!domain_device)
- 		return -ENOMEM;
- 
-+	/* Leave now if the device has already been released */
-+	mutex_lock(&zdev->dma_domain_lock);
-+	if (!dev_iommu_priv_get(dev)) {
-+		mutex_unlock(&zdev->dma_domain_lock);
-+		kfree(domain_device);
-+		return 0;
-+	}
-+
- 	if (zdev->dma_table && !zdev->s390_domain) {
- 		cc = zpci_dma_exit_device(zdev);
- 		if (cc) {
-@@ -132,9 +140,10 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 		goto out_restore;
- 	}
- 	domain_device->zdev = zdev;
--	zdev->s390_domain = s390_domain;
- 	list_add(&domain_device->list, &s390_domain->devices);
- 	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
-+	zdev->s390_domain = s390_domain;
-+	mutex_unlock(&zdev->dma_domain_lock);
- 
- 	return 0;
- 
-@@ -147,6 +156,7 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 				   virt_to_phys(zdev->dma_table));
- 	}
- out_free:
-+	mutex_unlock(&zdev->dma_domain_lock);
- 	kfree(domain_device);
- 
- 	return rc;
-@@ -176,17 +186,22 @@ static void s390_iommu_detach_device(struct iommu_domain *domain,
- 	}
- 	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
- 
--	if (found && (zdev->s390_domain == s390_domain)) {
-+	mutex_lock(&zdev->dma_domain_lock);
-+	if (found && (zdev->s390_domain == s390_domain) &&
-+	    dev_iommu_priv_get(dev)) {
- 		zdev->s390_domain = NULL;
- 		zpci_unregister_ioat(zdev, 0);
- 		zpci_dma_init_device(zdev);
- 	}
-+	mutex_unlock(&zdev->dma_domain_lock);
- }
- 
- static struct iommu_device *s390_iommu_probe_device(struct device *dev)
- {
- 	struct zpci_dev *zdev = to_zpci_dev(dev);
- 
-+	dev_iommu_priv_set(dev, zdev);
-+
- 	return &zdev->iommu_dev;
- }
- 
-@@ -206,10 +221,28 @@ static void s390_iommu_release_device(struct device *dev)
- 	 *
- 	 * So let's call detach_dev from here if it hasn't been called before.
- 	 */
--	if (zdev && zdev->s390_domain) {
-+	if (zdev) {
-+		/*
-+		 * Clear priv to block further attaches for this device,
-+		 * ensure detaches don't init DMA.  Hold the domain lock
-+		 * to ensure that attach/detach get a consistent view of
-+		 * whether or not the device is released.
-+		 */
-+		mutex_lock(&zdev->dma_domain_lock);
-+		dev_iommu_priv_set(dev, NULL);
-+		mutex_unlock(&zdev->dma_domain_lock);
-+		/* Make sure this device is removed from the domain list */
- 		domain = iommu_get_domain_for_dev(dev);
- 		if (domain)
- 			s390_iommu_detach_device(domain, dev);
-+		/* Now ensure DMA is initialized from here */
-+		mutex_lock(&zdev->dma_domain_lock);
-+		if (zdev->s390_domain) {
-+			zdev->s390_domain = NULL;
-+			zpci_unregister_ioat(zdev, 0);
-+			zpci_dma_init_device(zdev);
-+		}
-+		mutex_unlock(&zdev->dma_domain_lock);
- 	}
- }
- 
+Usage example:
+
+$ sort -hr /sys/kernel/debug/alloc_tags|head
+  153MiB     8599 mm/slub.c:1826 module:slub func:alloc_slab_page
+ 6.08MiB      49 mm/slab_common.c:950 module:slab_common func:_kmalloc_order
+ 5.09MiB     6335 mm/memcontrol.c:2814 module:memcontrol func:alloc_slab_obj_exts
+ 4.54MiB      78 mm/page_alloc.c:5777 module:page_alloc func:alloc_pages_exact
+ 1.32MiB      338 include/asm-generic/pgalloc.h:63 module:pgtable func:__pte_alloc_one
+ 1.16MiB      603 fs/xfs/xfs_log_priv.h:700 module:xfs func:xlog_kvmalloc
+ 1.00MiB      256 mm/swap_cgroup.c:48 module:swap_cgroup func:swap_cgroup_prepare
+  734KiB     5380 fs/xfs/kmem.c:20 module:xfs func:kmem_alloc
+  640KiB      160 kernel/rcu/tree.c:3184 module:tree func:fill_page_cache_func
+  640KiB      160 drivers/char/virtio_console.c:452 module:virtio_console func:alloc_buf
+
+part2: adds support for the user to select a specific code location to capture
+allocation context. A new debugfs file called alloc_tags.ctx is used to select
+which code location should capture allocation context and to read captured
+context information.
+
+Usage example:
+
+$ cd /sys/kernel/debug/
+$ echo "file include/asm-generic/pgalloc.h line 63 enable" > alloc_tags.ctx
+$ cat alloc_tags.ctx
+  920KiB      230 include/asm-generic/pgalloc.h:63 module:pgtable func:__pte_alloc_one
+    size: 4096
+    pid: 1474
+    tgid: 1474
+    comm: bash
+    ts: 175332940994
+    call stack:
+         pte_alloc_one+0xfe/0x130
+         __pte_alloc+0x22/0xb0
+         copy_page_range+0x842/0x1640
+         dup_mm+0x42d/0x580
+         copy_process+0xfb1/0x1ac0
+         kernel_clone+0x92/0x3e0
+         __do_sys_clone+0x66/0x90
+         do_syscall_64+0x38/0x90
+         entry_SYSCALL_64_after_hwframe+0x63/0xcd
+...
+
+NOTE: slab allocation tracking is not yet stable and has a leak that
+shows up in long-running tests. We are working on fixing it and posting
+the RFC early to collect some feedback and to have a reference code in
+public before presenting the idea at LPC2022.
+
+===========================
+Dynamic fault injection
+===========================
+Dynamic fault injection lets you do fault injection with a single call
+to dynamic_fault(), with a debugfs interface similar to dynamic_debug.
+
+Calls to dynamic_fault are listed in debugfs and can be enabled at
+runtime (oneshot mode or a defined frequency are also available). This
+patch also uses the memory allocation wrapper macros introduced by the
+memory allocation tracking patches to add distinct fault injection
+points for every memory allocation in the kernel.
+
+Example fault injection points, after hooking memory allocation paths:
+
+  fs/xfs/libxfs/xfs_iext_tree.c:606 module:xfs func:xfs_iext_realloc_rootclass:memory disabled "
+  fs/xfs/libxfs/xfs_inode_fork.c:503 module:xfs func:xfs_idata_reallocclass:memory disabled "
+  fs/xfs/libxfs/xfs_inode_fork.c:399 module:xfs func:xfs_iroot_reallocclass:memory disabled "
+  fs/xfs/xfs_buf.c:373 module:xfs func:xfs_buf_alloc_pagesclass:memory disabled "
+  fs/xfs/xfs_iops.c:497 module:xfs func:xfs_vn_get_linkclass:memory disabled "
+  fs/xfs/xfs_mount.c:85 module:xfs func:xfs_uuid_mountclass:memory disabled "
+
+===========================
+Latency tracking
+===========================
+This lets you instrument code for measuring latency with just two calls
+to code_tag_time_stats_start() and code_tag_time_stats_finish(), and
+makes statistics available in debugfs on a per-callsite basis.
+
+Recorded statistics include total count, frequency/rate, average
+duration, max duration, and event duration quantiles.
+
+Additionally, this patch instruments prepare_to_wait() and finish_wait().
+
+Example output:
+
+  fs/xfs/xfs_extent_busy.c:589 module:xfs func:xfs_extent_busy_flush
+  count:          61
+  rate:           0/sec
+  frequency:    19 sec
+  avg duration:   632 us
+  max duration:   2 ms
+  quantiles (us): 274 288 288 296 296 296 296 336 336 336 336 336 336 336 336
+
+===========================
+Improved error codes
+===========================
+Ever waste hours trying to figure out which line of code from some
+obscure module is returning you -EINVAL and nothing else?
+
+What if we had... more error codes?
+
+This patch adds ERR(), which returns a unique error code that is related
+to the error code that passed to it: the original error code can be
+recovered with error_class(), and errname() (as well as %pE) returns an
+error string that includes the file and line number of the ERR() call.
+
+Example output:
+
+  VFS: Cannot open root device "sda" or unknown-block(8,0): error -EINVAL at fs/ext4/super.c:4387
+
+===========================
+Dynamic debug conversion to code tagging
+===========================
+There are several open coded implementations of the "define a special elf
+section for objects and iterate" technique that should be converted to
+code tagging. This series just converts dynamic debug; there are others
+(multiple in ftrace, in particular) that should also be converted.
+
+===========================
+
+The patchset applies cleanly over Linux 6.0-rc3
+The tree for testing is published at:
+https://github.com/surenbaghdasaryan/linux/tree/alloc_tags_rfc
+
+The structure of the patchset is:
+- code tagging framework (patches 1-6)
+- page allocation tracking (patches 7-10)
+- slab allocation tracking (patch 11-16)
+- allocation context capture (patch 17-21)
+- dynamic fault injection (patch 22)
+- latency tracking (patch 23-27)
+- improved error codes (patch 28)
+- dynamic debug conversion to code tagging (patch 29)
+- MAINTAINERS update (patch 30)
+
+Next steps:
+- track and fix slab allocator leak mentioned earlier;
+- instrument more allocators: vmalloc, per-cpu allocations, others?
+
+
+Kent Overstreet (14):
+  lib/string_helpers: Drop space in string_get_size's output
+  Lazy percpu counters
+  scripts/kallysms: Always include __start and __stop symbols
+  lib/string.c: strsep_no_empty()
+  codetag: add codetag query helper functions
+  Code tagging based fault injection
+  timekeeping: Add a missing include
+  wait: Clean up waitqueue_entry initialization
+  lib/time_stats: New library for statistics on events
+  bcache: Convert to lib/time_stats
+  Code tagging based latency tracking
+  Improved symbolic error names
+  dyndbg: Convert to code tagging
+  MAINTAINERS: Add entries for code tagging & related
+
+Suren Baghdasaryan (16):
+  kernel/module: move find_kallsyms_symbol_value declaration
+  lib: code tagging framework
+  lib: code tagging module support
+  lib: add support for allocation tagging
+  lib: introduce page allocation tagging
+  change alloc_pages name in dma_map_ops to avoid name conflicts
+  mm: enable page allocation tagging for __get_free_pages and
+    alloc_pages
+  mm: introduce slabobj_ext to support slab object extensions
+  mm: introduce __GFP_NO_OBJ_EXT flag to selectively prevent slabobj_ext
+    creation
+  mm/slab: introduce SLAB_NO_OBJ_EXT to avoid obj_ext creation
+  mm: prevent slabobj_ext allocations for slabobj_ext and kmem_cache
+    objects
+  lib: introduce slab allocation tagging
+  mm: enable slab allocation tagging for kmalloc and friends
+  move stack capture functionality into a separate function for reuse
+  lib: introduce support for storing code tag context
+  lib: implement context capture support for page and slab allocators
+
+ MAINTAINERS                         |  34 ++
+ arch/x86/kernel/amd_gart_64.c       |   2 +-
+ drivers/iommu/dma-iommu.c           |   2 +-
+ drivers/md/bcache/Kconfig           |   1 +
+ drivers/md/bcache/bcache.h          |   1 +
+ drivers/md/bcache/bset.c            |   8 +-
+ drivers/md/bcache/bset.h            |   1 +
+ drivers/md/bcache/btree.c           |  12 +-
+ drivers/md/bcache/super.c           |   3 +
+ drivers/md/bcache/sysfs.c           |  43 ++-
+ drivers/md/bcache/util.c            |  30 --
+ drivers/md/bcache/util.h            |  57 ---
+ drivers/xen/grant-dma-ops.c         |   2 +-
+ drivers/xen/swiotlb-xen.c           |   2 +-
+ include/asm-generic/codetag.lds.h   |  18 +
+ include/asm-generic/vmlinux.lds.h   |   8 +-
+ include/linux/alloc_tag.h           |  84 +++++
+ include/linux/codetag.h             | 159 +++++++++
+ include/linux/codetag_ctx.h         |  48 +++
+ include/linux/codetag_time_stats.h  |  54 +++
+ include/linux/dma-map-ops.h         |   2 +-
+ include/linux/dynamic_debug.h       |  11 +-
+ include/linux/dynamic_fault.h       |  79 +++++
+ include/linux/err.h                 |   2 +-
+ include/linux/errname.h             |  50 +++
+ include/linux/gfp.h                 |  10 +-
+ include/linux/gfp_types.h           |  12 +-
+ include/linux/io_uring_types.h      |   2 +-
+ include/linux/lazy-percpu-counter.h |  67 ++++
+ include/linux/memcontrol.h          |  23 +-
+ include/linux/module.h              |   1 +
+ include/linux/page_ext.h            |   3 +-
+ include/linux/pgalloc_tag.h         |  63 ++++
+ include/linux/sbitmap.h             |   6 +-
+ include/linux/sched.h               |   6 +-
+ include/linux/slab.h                | 136 +++++---
+ include/linux/slab_def.h            |   2 +-
+ include/linux/slub_def.h            |   4 +-
+ include/linux/stackdepot.h          |   3 +
+ include/linux/string.h              |   1 +
+ include/linux/time_stats.h          |  44 +++
+ include/linux/timekeeping.h         |   1 +
+ include/linux/wait.h                |  72 ++--
+ include/linux/wait_bit.h            |   7 +-
+ init/Kconfig                        |   5 +
+ kernel/dma/mapping.c                |   4 +-
+ kernel/module/internal.h            |   3 -
+ kernel/module/main.c                |  27 +-
+ kernel/sched/wait.c                 |  15 +-
+ lib/Kconfig                         |   6 +
+ lib/Kconfig.debug                   |  46 +++
+ lib/Makefile                        |  10 +
+ lib/alloc_tag.c                     | 391 +++++++++++++++++++++
+ lib/codetag.c                       | 519 ++++++++++++++++++++++++++++
+ lib/codetag_time_stats.c            | 143 ++++++++
+ lib/dynamic_debug.c                 | 452 +++++++++---------------
+ lib/dynamic_fault.c                 | 372 ++++++++++++++++++++
+ lib/errname.c                       | 103 ++++++
+ lib/lazy-percpu-counter.c           | 141 ++++++++
+ lib/pgalloc_tag.c                   |  22 ++
+ lib/stackdepot.c                    |  68 ++++
+ lib/string.c                        |  19 +
+ lib/string_helpers.c                |   3 +-
+ lib/time_stats.c                    | 236 +++++++++++++
+ mm/kfence/core.c                    |   2 +-
+ mm/memcontrol.c                     |  62 ++--
+ mm/mempolicy.c                      |   4 +-
+ mm/page_alloc.c                     |  13 +-
+ mm/page_ext.c                       |   6 +
+ mm/page_owner.c                     |  54 +--
+ mm/slab.c                           |   4 +-
+ mm/slab.h                           | 125 ++++---
+ mm/slab_common.c                    |  49 ++-
+ mm/slob.c                           |   2 +
+ mm/slub.c                           |   7 +-
+ scripts/kallsyms.c                  |  13 +
+ scripts/module.lds.S                |   7 +
+ 77 files changed, 3406 insertions(+), 703 deletions(-)
+ create mode 100644 include/asm-generic/codetag.lds.h
+ create mode 100644 include/linux/alloc_tag.h
+ create mode 100644 include/linux/codetag.h
+ create mode 100644 include/linux/codetag_ctx.h
+ create mode 100644 include/linux/codetag_time_stats.h
+ create mode 100644 include/linux/dynamic_fault.h
+ create mode 100644 include/linux/lazy-percpu-counter.h
+ create mode 100644 include/linux/pgalloc_tag.h
+ create mode 100644 include/linux/time_stats.h
+ create mode 100644 lib/alloc_tag.c
+ create mode 100644 lib/codetag.c
+ create mode 100644 lib/codetag_time_stats.c
+ create mode 100644 lib/dynamic_fault.c
+ create mode 100644 lib/lazy-percpu-counter.c
+ create mode 100644 lib/pgalloc_tag.c
+ create mode 100644 lib/time_stats.c
+
 -- 
-2.37.2
+2.37.2.672.g94769d06f0-goog
 
