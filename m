@@ -1,94 +1,71 @@
-Received: from cantor.telenet-ops.be (cantor.telenet-ops.be [195.130.132.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67535625
-	for <iommu@lists.linux.dev>; Tue, 30 Aug 2022 09:06:35 +0000 (UTC)
-Received: from michel.telenet-ops.be (michel.telenet-ops.be [IPv6:2a02:1800:110:4::f00:18])
-	by cantor.telenet-ops.be (Postfix) with ESMTPS id 4MH1dP4SC3z4x08X
-	for <iommu@lists.linux.dev>; Tue, 30 Aug 2022 11:06:33 +0200 (CEST)
-Received: from ramsan.of.borg ([84.195.186.194])
-	by michel.telenet-ops.be with bizsmtp
-	id Dl6N2800C4C55Sk06l6Nko; Tue, 30 Aug 2022 11:06:26 +0200
-Received: from rox.of.borg ([192.168.97.57])
-	by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.93)
-	(envelope-from <geert@linux-m68k.org>)
-	id 1oSxCP-003FId-PP; Tue, 30 Aug 2022 11:06:21 +0200
-Received: from geert by rox.of.borg with local (Exim 4.93)
-	(envelope-from <geert@linux-m68k.org>)
-	id 1oSxCO-001yk5-W0; Tue, 30 Aug 2022 11:06:21 +0200
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Joerg Roedel <jroedel@suse.de>,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>
-Subject: [PATCH v3] dt-bindings: iommu: renesas,ipmmu-vmsa: R-Car V3U is R-Car Gen4
-Date: Tue, 30 Aug 2022 11:06:19 +0200
-Message-ID: <36400fe2cc6b6dcc0d6984fb77338d4d163e84dc.1661849638.git.geert+renesas@glider.be>
-X-Mailer: git-send-email 2.25.1
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CBBC4625
+	for <iommu@lists.linux.dev>; Tue, 30 Aug 2022 09:24:03 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7BD991474;
+	Tue, 30 Aug 2022 02:24:03 -0700 (PDT)
+Received: from [10.57.13.45] (unknown [10.57.13.45])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7E28D3F766;
+	Tue, 30 Aug 2022 02:23:56 -0700 (PDT)
+Message-ID: <cd53526d-2564-996b-7b0d-d1fe9f114590@arm.com>
+Date: Tue, 30 Aug 2022 10:23:51 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Message-ID: <20220830090619.rhEKnRvRsYjufNFOl2QBQQ85TcPi2uMtaFvj3dNRbDc@z>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH] swiotlb: fix a typo
+Content-Language: en-GB
+To: Chao Gao <chao.gao@intel.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev
+Cc: hch@infradead.org, m.szyprowski@samsung.com
+References: <20220826095046.880626-1-chao.gao@intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220826095046.880626-1-chao.gao@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Despite the name, R-Car V3U is the first member of the R-Car Gen4
-family.  Hence move its compatible value to the R-Car Gen4 section.
+On 2022-08-26 10:50, Chao Gao wrote:
+> "overwirte" isn't a word. It should be "overwrite".
+> 
+> Signed-off-by: Chao Gao <chao.gao@intel.com>
+> ---
+> BTW, I am wondering if copying the original buffer to the tlb buffer
+> unconditionally will leak the original buffer to the VMM, especially
+> when VMM isn't trusted e.g., by confidential VMs. Would it be better
+> to zero the tlb buffer for dir == DMA_FROM_DEVICE?
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Acked-by: Joerg Roedel <jroedel@suse.de>
-Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Reviewed-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
----
-v3:
-  - Add Reviewed-by,
+No, at the point of dma_map(), the buffer contents are owned by the 
+caller, so if parts of that buffer are sensitive and shouldn't be 
+exposed to DMA, then don't map the whole buffer for DMA. There are more 
+DMA API implementations than SWIOTLB.
 
-v2:
-  - Add Acked-by, Reviewed-by,
-  - Add blank lines to improve readability.
----
- .../devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml       | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+The whole point of bouncing the original contents here is that doing 
+anything else effectively corrupts any part of the mapping that the 
+device may end up *not* writing to - see the whole sordid original 
+discussion (but don't be confused by the fact that the caller's original 
+data happened to be zeros in that particular case).
 
-diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-index 8854569ca3a6c949..26d0a5121f02a153 100644
---- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-+++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-@@ -29,6 +29,7 @@ properties:
-               - renesas,ipmmu-r8a7793  # R-Car M2-N
-               - renesas,ipmmu-r8a7794  # R-Car E2
-           - const: renesas,ipmmu-vmsa  # R-Mobile APE6 or R-Car Gen2 or RZ/G1
-+
-       - items:
-           - enum:
-               - renesas,ipmmu-r8a774a1 # RZ/G2M
-@@ -43,10 +44,11 @@ properties:
-               - renesas,ipmmu-r8a77980 # R-Car V3H
-               - renesas,ipmmu-r8a77990 # R-Car E3
-               - renesas,ipmmu-r8a77995 # R-Car D3
--              - renesas,ipmmu-r8a779a0 # R-Car V3U
-+
-       - items:
-           - enum:
--              - renesas,ipmmu-r8a779f0 # R-Car S4-8
-+              - renesas,ipmmu-r8a779a0           # R-Car V3U
-+              - renesas,ipmmu-r8a779f0           # R-Car S4-8
-           - const: renesas,rcar-gen4-ipmmu-vmsa  # R-Car Gen4
- 
-   reg:
--- 
-2.25.1
+Thanks,
+Robin.
 
+> 
+>   kernel/dma/swiotlb.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index c5a9190b218f..f67e5f50ee3c 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -765,7 +765,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+>   	/*
+>   	 * When dir == DMA_FROM_DEVICE we could omit the copy from the orig
+>   	 * to the tlb buffer, if we knew for sure the device will
+> -	 * overwirte the entire current content. But we don't. Thus
+> +	 * overwrite the entire current content. But we don't. Thus
+>   	 * unconditional bounce may prevent leaking swiotlb content (i.e.
+>   	 * kernel memory) to user-space.
+>   	 */
