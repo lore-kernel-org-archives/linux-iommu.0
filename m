@@ -1,32 +1,32 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E827E62E
-	for <iommu@lists.linux.dev>; Tue, 30 Aug 2022 07:45:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1271962E
+	for <iommu@lists.linux.dev>; Tue, 30 Aug 2022 07:47:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661845543; x=1693381543;
+  t=1661845622; x=1693381622;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=yi/c9wKZe1Xzm2RAJvy3wwK0+vYsU+x02Pu4wd0CR5k=;
-  b=gPXzMIGmBbHVeHgZAat/6iFvrjRPLW1nLBhlqNgvn4Bm3ZeNoeizyJoq
-   f/096pRs1xIeDkikrTi/rS7rbbUZ/XfjcSeoabp5biu+MSmJJwhPFzMoi
-   PRDJYgaHQbH3Jn1kgAWCoFi8s3SOg7YlnHONYRXlwFcrb1kAJvJrL/W8Q
-   GCnmcmqdXrfvsDPudz5H/rhL7eGCImtzRm48Ksw8il1oGOkUiAiUjs6Er
-   /CFXsKQiL/PNl2RsMHF+XILloBLf5lWR7GLK/5+41gc59ahCOREMkUBKd
-   5UF4UQgEcVOEulWnxLFXyQSAdLUOOcAYL+kzed5507VTRaduL17fH/bbs
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="321236211"
+  bh=yBpwSdK8tn25JNz7gtB+fP1W3XIksw4isildm6byryI=;
+  b=bHb38RJ/wFqeKiInEI08V8sOi6euV5FPLBSJdvRxTv7t6nw+sSzwJIm9
+   uY1DIlLR4PGOC1ByymM1/5qPfNS5CJyDETfuapa3aTr5+AuQywZj6lYT9
+   dBy56RkLbQP04ifCds5Oa114kIKRJqTjD0xo+rqwbJ2Q6Ia7qtIZtunr0
+   +36DG01z0f0VakuGE0g/JiOsw0U+Z1jHcQXCP3TgaY4Yt/xrtVWKGg/Su
+   jzixSAQ96UcRiQNBoSEQhJzpqrpsZ+jm2744KKHkC39No5zSmdJGaLXHu
+   Zr8mC52QZzOJSZGkRLXGNrHcKO/YfBRweqNAmBcploMEKsKlSxE8pbf5m
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="274857939"
 X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="321236211"
+   d="scan'208";a="274857939"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 00:45:43 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 00:47:01 -0700
 X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="672737036"
+   d="scan'208";a="672737784"
 Received: from hhuan14-mobl1.ccr.corp.intel.com (HELO [10.254.215.208]) ([10.254.215.208])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 00:45:37 -0700
-Message-ID: <96ac1693-d87f-250d-c897-c79f13ed4c0a@linux.intel.com>
-Date: Tue, 30 Aug 2022 15:45:35 +0800
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 00:46:56 -0700
+Message-ID: <d8741636-ea2e-4c5f-4dc1-9a5dec4dafa1@linux.intel.com>
+Date: Tue, 30 Aug 2022 15:46:55 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -55,26 +55,30 @@ To: Yuan Can <yuancan@huawei.com>, Joerg Roedel <joro@8bytes.org>,
 References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
  <20220826121141.50743-14-baolu.lu@linux.intel.com>
  <47879368-fb4e-79aa-35f9-018d871f013c@huawei.com>
+ <96ac1693-d87f-250d-c897-c79f13ed4c0a@linux.intel.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <47879368-fb4e-79aa-35f9-018d871f013c@huawei.com>
+In-Reply-To: <96ac1693-d87f-250d-c897-c79f13ed4c0a@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 2022/8/30 15:30, Yuan Can wrote:
-> 
-> 在 2022/8/26 20:11, Lu Baolu 写道:
->> The existing iommu SVA interfaces are implemented by calling the SVA
->> specific iommu ops provided by the IOMMU drivers. There's no need for
->> any SVA specific ops in iommu_ops vector anymore as we can achieve
->> this through the generic attach/detach_dev_pasid domain ops.
+On 2022/8/30 15:45, Baolu Lu wrote:
+> On 2022/8/30 15:30, Yuan Can wrote:
 >>
->> This refactors the IOMMU SVA interfaces implementation by using the
->> iommu_detach/detach_device_pasid interfaces and align them with the
+>> 在 2022/8/26 20:11, Lu Baolu 写道:
+>>> The existing iommu SVA interfaces are implemented by calling the SVA
+>>> specific iommu ops provided by the IOMMU drivers. There's no need for
+>>> any SVA specific ops in iommu_ops vector anymore as we can achieve
+>>> this through the generic attach/detach_dev_pasid domain ops.
+>>>
+>>> This refactors the IOMMU SVA interfaces implementation by using the
+>>> iommu_detach/detach_device_pasid interfaces and align them with the
+>>
+>> Did you mean using the iommu_attach/detach_device_pasid interfaces here?
 > 
-> Did you mean using the iommu_attach/detach_device_pasid interfaces here?
+> The device driver oriented SVA interfaces keep consistent as before.
+> Here we only refactor the IOMMU internal implementation.
 
-The device driver oriented SVA interfaces keep consistent as before.
-Here we only refactor the IOMMU internal implementation.
+Oh! A typo in the commit message, right? Thanks and I will fix it.
 
 Best regards,
 baolu
