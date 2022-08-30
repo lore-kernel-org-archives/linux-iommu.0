@@ -1,198 +1,136 @@
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2104.outbound.protection.outlook.com [40.107.113.104])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF9C67C
-	for <iommu@lists.linux.dev>; Tue, 30 Aug 2022 10:59:38 +0000 (UTC)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.56])
-	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MH4513GpTznTqy;
-	Tue, 30 Aug 2022 18:57:09 +0800 (CST)
-Received: from [10.67.102.169] (10.67.102.169) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 30 Aug 2022 18:59:34 +0800
-CC: <yangyicong@hisilicon.com>, <helgaas@kernel.org>,
-	<lorenzo.pieralisi@arm.com>, <suzuki.poulose@arm.com>, <joro@8bytes.org>,
-	<shameerali.kolothum.thodi@huawei.com>, <mingo@redhat.com>,
-	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-pci@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-	<iommu@lists.linux-foundation.org>, <iommu@lists.linux.dev>,
-	<linux-doc@vger.kernel.org>, <prime.zeng@huawei.com>, <liuqi115@huawei.com>,
-	<zhangshaokun@hisilicon.com>, <linuxarm@huawei.com>, <bagasdotme@gmail.com>,
-	<john.garry@huawei.com>, <jonathan.cameron@huawei.com>, <leo.yan@linaro.org>,
-	<james.clark@arm.com>, <robin.murphy@arm.com>, <will@kernel.org>,
-	<acme@kernel.org>, <mark.rutland@arm.com>
-Subject: Re: [PATCH v12 0/5] Add driver support for HiSilicon PCIe Tune and
- Trace device
-To: <mathieu.poirier@linaro.org>, <alexander.shishkin@linux.intel.com>,
-	<peterz@infradead.org>, <corbet@lwn.net>, <gregkh@linuxfoundation.org>
-References: <20220816114414.4092-1-yangyicong@huawei.com>
-From: Yicong Yang <yangyicong@huawei.com>
-Message-ID: <86bfaabc-43e3-bcfb-faf9-74a0d79ab2ec@huawei.com>
-Date: Tue, 30 Aug 2022 18:59:34 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 275A52119
+	for <iommu@lists.linux.dev>; Tue, 30 Aug 2022 11:24:32 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Xcg1R12VFyk+PjYusNU5rf03nJkrcz6ci41qskO/Bkjpt5vbMn7bfFzyxq6E9fPa5ktzJMcSfrNu5xIu4Uv13Dxq0NO1dMEGRmy5T2H0ixSVkmVFqz4l3dCbdG9qFWcLimbFEj23zOVHdEl9uS2scvCb2Dcyz/ts/2jhKX8kZcYRUHD7QWI5ujiA6QOJYQ6qitpothnzl+f8kd+HUK2lj/HKHBga9v/UhnaL2IcrPTrR/fXn0ZK2mciuym/dQ7vlLrwy01RP47itJGKLd8sQ8tEB95j1bTddAsE6KKUM2yJzGUbw8XMzN7fi4eabqQ/mYWLR/IfeQ+u6SDPx6F+ojQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=C5JCCzWNBy5ZrtfJ8QFEwr3aUezqJWiB5jY9Zh71Y7w=;
+ b=T8AxJ78nHQGTr4zllDW+UowqPzqZtYMVz8rWix/0qbNM8bTtRMPREUDCvbvsUrnOR7QbV+yj3fbhvRVKwwB12mB0A+UOG/efGhxkfbTWI+ythBD0h1u2hDKfmkUyVDHYDgaqyb6SA9hu1YYwC0VhfoirwQw2LhzRbIubHWFGSom9Rnaa76teFDlGkOSa/wc0DRuhRABjD6eJFhwX4WN+DpCqlt9QbwXrAjLGe7Hr76CKRMOLbrgyfGOpv0HyRQXlzdHkTR61OD4iWltSz4sEebpcOt5IwT1Xt8RHsbcn5upHDz6MqEo4OP12GjNy8r6vk3uukZ/fAR6oH8A4kDaS8g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=C5JCCzWNBy5ZrtfJ8QFEwr3aUezqJWiB5jY9Zh71Y7w=;
+ b=P1kQ7b/BaWsZa9fTPemV2AcNoUjTRaiWNu4qZTtdbaW4R0dM06xeoCLZcuiFPXgdpPAnMbVlth/4Jw3rB/E9v9K3+qGoVEAg0lXOR84BK2iZCY6ebBFuGcZjoxZPC/0DOl7BPAwpbH5uPlYa3Cd/HmGJCm8CBMYXHwl7lk72iKM=
+Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
+ (2603:1096:404:8028::13) by OS3PR01MB9675.jpnprd01.prod.outlook.com
+ (2603:1096:604:1e9::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Tue, 30 Aug
+ 2022 11:24:30 +0000
+Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
+ ([fe80::307d:7cc:2021:f45f]) by TYBPR01MB5341.jpnprd01.prod.outlook.com
+ ([fe80::307d:7cc:2021:f45f%9]) with mapi id 15.20.5566.021; Tue, 30 Aug 2022
+ 11:24:30 +0000
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To: Geert Uytterhoeven <geert+renesas@glider.be>, Joerg Roedel
+	<joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+	<robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>, Krzysztof Kozlowski
+	<krzysztof.kozlowski+dt@linaro.org>
+CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Joerg Roedel
+	<jroedel@suse.de>, Wolfram Sang <wsa+renesas@sang-engineering.com>
+Subject: RE: [PATCH v2 resend] dt-bindings: iommu: renesas,ipmmu-vmsa: R-Car
+ V3U is R-Car Gen4
+Thread-Topic: [PATCH v2 resend] dt-bindings: iommu: renesas,ipmmu-vmsa: R-Car
+ V3U is R-Car Gen4
+Thread-Index: AQHYvE6NHtyCo7L0q0WXIcgIO4LqLK3HTNzg
+Date: Tue, 30 Aug 2022 11:24:29 +0000
+Message-ID:
+ <TYBPR01MB53415E7C17DD3FEEF2650FB8D8799@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+References:
+ <36400fe2cc6b6dcc0d6984fb77338d4d163e84dc.1661849638.git.geert+renesas@glider.be>
+In-Reply-To:
+ <36400fe2cc6b6dcc0d6984fb77338d4d163e84dc.1661849638.git.geert+renesas@glider.be>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=renesas.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d924dfd0-4553-4f58-657a-08da8a7a34a3
+x-ms-traffictypediagnostic: OS3PR01MB9675:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ AvN+HXKImIJg+YTGehGSUzafoxkdxMY2J1MHSKqb5DUiWhrOVsxLQRI0Hs3Eban095YRJzUADYvvZ3WyGzPOGei44S9Nd7TVKrtp2SkKVOas1hcFAni6fbkB54gN2OmPCCqEY6o9e5BPM5YZ+gVKKArMG96xxkwwwBnzKp5aZAZ3QpTqgYxz2MlJn+jPWqzsaFgIcVv9tgYD/IN2vaz/EdgaAlRXpjEG+OAbppa6LpB2u1Y6p/5lkPWOWW58ozBeVj+KOqgKYK3w3haredszmmfkymhEakTkMOORBOtQ3pbe532ZejjAEMnwtASGTchr2Rej9UJvbrTeDeWUpxEk3RA1+00EmZDw/EJwsOmBECC16BuZqDXB/ybDMyyJpm3vrHns2lCIg+uKQxobhD8zX1jbiWSDhNwn7Mm6FkGj2XGdN8UAss5ZyItQChOaawJLreEnLULMg6TbilfW1dUYKhDRamQJxyYP+ZDNTd9Ng+zTdc3zRS8LilsHoOWz49sWuFryBL5+x062XX9jzN+sMtqNeOMrqS13c1KBfLzYWO36rcOsH2Dcrr3H/FnWA/UaNohANqdbcgkZKJxTIHgxJTUZYIGgERhdtikOUHkWSLKp2ncXuXmyqXjUMkKHDXB4jyFWetgrogn8wXuE9t4GcahkgQSEhVwsaNNJKFajHkLLvLqD3hqYXypHDyfvFJZxUIkY8DP7SCwp+qlEelRatNGi69dNvBNGa1gosuc1uJ2MRV0tceMPYV5cCtKxOIqvxxW/sVuirjmoyYMSUN/VpA==
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYBPR01MB5341.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(39860400002)(376002)(396003)(136003)(366004)(6506007)(71200400001)(122000001)(26005)(2906002)(55016003)(38100700002)(9686003)(316002)(54906003)(7696005)(7416002)(41300700001)(478600001)(4744005)(33656002)(5660300002)(8936002)(52536014)(186003)(66446008)(66476007)(66556008)(8676002)(4326008)(64756008)(86362001)(38070700005)(76116006)(66946007)(110136005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?wSY6vMxQ6RuVVvC8JFoQ4kpOkcdkJtQH2V5uCiyijzNoZksYf8f4LVkG9RaQ?=
+ =?us-ascii?Q?1E5F2I1OhajdRLIb+Tqt3lZ1cdRzxPm7dxAdB/rNZXCX4UDF8TdWInBOcyhU?=
+ =?us-ascii?Q?3asVIYQttHzCRdo3JByBxt/MP2ClIYIuTlRlgdgmLI5Mx0iezvjCchKLuRom?=
+ =?us-ascii?Q?Jc38gQe4y/eE8y7nMjVDllymfodcIZKv+9cSoUpb2cyRqUGYU9pX0vn1eWmZ?=
+ =?us-ascii?Q?LEbpf8DMntNkMBZhHgeYLjuv0xxaknTSbcMB5mWN8plUb8minW/TUYDLRfDR?=
+ =?us-ascii?Q?s8mYvOrCsABZfFQF66pWXbxlU9PSAmHLzohGxKOBO4dvTOIj+S7jO1IusZ3T?=
+ =?us-ascii?Q?OokG08JCN8ut+XzPWyA2NWDuW68Hf7erlGhTLnlNpxbqjRNAytzpfpsd2Evm?=
+ =?us-ascii?Q?BflksA7G3HjdMNpitzMX7s1aC3zBjoPsHsE4ET/iP+oAY3btvdB4ybdK18z2?=
+ =?us-ascii?Q?PZsrUmrobA9rYHtEGH0ZpbGDUMboFQp/F7wuXaAiOoxFV3CaLH6sQ/b87OTk?=
+ =?us-ascii?Q?4kv9rWZ90RevPAki7NYBtqoZ0tyD25T8g9a9Py3nRCthw6umY8I8gxjUfUOW?=
+ =?us-ascii?Q?nJdR/P1B35Eb6cxxLXSuRkEYoFYiRTkcLYIR9B/YEwKWYuC6NAYKv8G4MBMD?=
+ =?us-ascii?Q?fDmsb+JybcDp9T/57m1+7LvZFqb+RP85mJtUgv36CVGQjMG9zoaJqrkWpSQF?=
+ =?us-ascii?Q?wxwda+OWoyWrujzOgmUr6J52XM74ABTPFRWIZ7waa6BIAfGmwnBWgxz8pcRv?=
+ =?us-ascii?Q?M4wrgPS5XMbW2kI/dzt4/AeJEGiS/sbrv6xzU8+suQkAueFJUmt9Se2l9BxX?=
+ =?us-ascii?Q?MXGJNiGM7Qz1A1/kHVIOULjsZc5Kxjk+/alLDgQ5Qg2twnt/dA5zAbkc5ipZ?=
+ =?us-ascii?Q?EPweRzhxbvs//OMuSljGnSwgv2iAObu/VKUP9HUGqryywsBTwLijS51JHRWL?=
+ =?us-ascii?Q?1ch/EsydOFdXb48a1vJoNs+Y9inMqS0OXm28Y+rxxxUsznU2Rko0EKdG+8dZ?=
+ =?us-ascii?Q?lGO4K6glqC9mh95Ct63eynADBUxn80vk4y6VbsjkLcHqwC1OabsrhQcMeq8U?=
+ =?us-ascii?Q?5js1xmP6M3JVFsSt3ZMJVK4eiyHZa1Q+lS7V6sgvwtYakohROkK2jcitPjcV?=
+ =?us-ascii?Q?g6vGbJ3b4m/XIuyf8G+b28RMKNr3dG+bwEDVZhsAOhM0qbjwE9AjiMQMo6DG?=
+ =?us-ascii?Q?1AJagW1yMqRyXe+BCdsjUlSFFd2L78mKncAWNtYqCu05UJIJT8FpDbRbN+Qj?=
+ =?us-ascii?Q?CXhRZwfrRzURbRLlhQ+ZwoSho88Z0EAzABIwsVo7urHSTRQpU5yG0vKLc8l3?=
+ =?us-ascii?Q?IM8LK2K9vZtK2ZgLkOHTwZHtEsfUwXMG0IfA/qiKuzKfh3fZGRhpoVm82650?=
+ =?us-ascii?Q?SJbcD6xw5f19kbDd7dLAEbzUqavDxfVBhurEVZcZZkc4nWzAUkshPChhIuJT?=
+ =?us-ascii?Q?Em+BGJikjQVwhkX1R8JvKTop3pa+puMGRMltH/djreW3O4BIULknpdRWQ+ZD?=
+ =?us-ascii?Q?PDcqdwKbta5tD+5M0AZqjf0CQ9OgTMooDECUPUxbinZbOWqpQY/+UP8h2EIV?=
+ =?us-ascii?Q?B1uRPfGItbWRyHH/4938TQQWz37lDFtFF/Ok0yLlOgv8VrIMbltO0xH6KtlL?=
+ =?us-ascii?Q?oQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20220816114414.4092-1-yangyicong@huawei.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.102.169]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TYBPR01MB5341.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d924dfd0-4553-4f58-657a-08da8a7a34a3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Aug 2022 11:24:29.9800
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: iMyfss3B6SGPrzhZcjyDV5cBWn94zK6bjDJNqw/pF1gLpi1K3KSmF894Jl+PHKraPw+gno2/k/EhYG277hoKf0ZA+5+ZElvatTk8fLjPtk6NfkMbFN/SZN/7U+EVHy0b
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS3PR01MB9675
 
-A gentle ping for this...
+Hi Geert-san,
 
-Thanks.
+> From: Geert Uytterhoeven, Sent: Tuesday, August 30, 2022 5:57 PM
+>=20
+> Despite the name, R-Car V3U is the first member of the R-Car Gen4
+> family.  Hence move its compatible value to the R-Car Gen4 section.
+>=20
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Acked-by: Joerg Roedel <jroedel@suse.de>
+> Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-On 2022/8/16 19:44, Yicong Yang wrote:
-> From: Yicong Yang <yangyicong@hisilicon.com>
-> 
-> HiSilicon PCIe tune and trace device (PTT) is a PCIe Root Complex integrated
-> Endpoint (RCiEP) device, providing the capability to dynamically monitor and
-> tune the PCIe traffic (tune), and trace the TLP headers (trace).
-> 
-> PTT tune is designed for monitoring and adjusting PCIe link parameters. We provide
-> several parameters of the PCIe link. Through the driver, user can adjust the value
-> of certain parameter to affect the PCIe link for the purpose of enhancing the
-> performance in certian situation.
-> 
-> PTT trace is designed for dumping the TLP headers to the memory, which can be
-> used to analyze the transactions and usage condition of the PCIe Link. Users
-> can choose filters to trace headers, by either requester ID, or those downstream
-> of a set of Root Ports on the same core of the PTT device. It's also supported
-> to trace the headers of certain type and of certain direction.
-> 
-> The driver registers a PMU device for each PTT device. The trace can be used
-> through `perf record` and the traced headers can be decoded by `perf report`.
-> The tune can be used through the sysfs attributes of related PMU device. See
-> the documentation for the detailed usage.
-> 
-> This patchset adds an initial driver support for the PTT device. The userspace
-> perf tool support will be sent in a separate patchset.
-> 
-> Change since v11:
-> - Drop WARN_ON() for irq_set_affinity() failure per Greg
-> - Split out userspace perf support patches according to the comments
-> Link: https://lore.kernel.org/lkml/20220721130116.43366-1-yangyicong@huawei.com/
-> 
-> Change since v10:
-> - Use title case in the documentation
-> - Add RB from Bagas, thanks.
-> Link: https://lore.kernel.org/lkml/20220714092710.53486-1-yangyicong@hisilicon.com/
-> 
-> Change since v9:
-> - Add sysfs ABI description documentation
-> - Remove the controversial available_{root_port, requester}_filters sysfs file
-> - Shorten 2 tune sysfs attributes name and add some comments
-> - Move hisi_ptt_process_auxtrace_info() to Patch 6.
-> - Add RB from Leo and Ack-by from Mathieu, thanks!
-> Link: https://lore.kernel.org/lkml/20220606115555.41103-1-yangyicong@hisilicon.com/
-> 
-> Change since v8:
-> - Cleanups and one minor fix from Jonathan and John, thanks
-> Link: https://lore.kernel.org/lkml/20220516125223.32012-1-yangyicong@hisilicon.com/
-> 
-> Change since v7:
-> - Configure the DMA in probe rather than in runtime. Also use devres to manage
->   PMU device as we have no order problem now
-> - Refactor the config validation function per John and Leo
-> - Use a spinlock hisi_ptt::pmu_lock instead of mutex to serialize the perf process
->   in pmu::start as it's in atomic context
-> - Only commit the traced data when stop, per Leo and James
-> - Drop the filter dynamically updating patch from this series to simply the review
->   of the driver. That patch will be send separately.
-> - add a cpumask sysfs attribute and handle the cpu hotplug events, follow the
->   uncore PMU convention
-> - Other cleanups and fixes, both in driver and perf tool
-> Link: https://lore.kernel.org/lkml/20220407125841.3678-1-yangyicong@hisilicon.com/
-> 
-> Change since v6:
-> - Fix W=1 errors reported by lkp test, thanks
-> 
-> Change since v5:
-> - Squash the PMU patch into PATCH 2 suggested by John
-> - refine the commit message of PATCH 1 and some comments
-> Link: https://lore.kernel.org/lkml/20220308084930.5142-1-yangyicong@hisilicon.com/
-> 
-> Change since v4:
-> Address the comments from Jonathan, John and Ma Ca, thanks.
-> - Use devm* also for allocating the DMA buffers
-> - Remove the IRQ handler stub in Patch 2
-> - Make functions waiting for hardware state return boolean
-> - Manual remove the PMU device as it should be removed first
-> - Modifier the orders in probe and removal to make them matched well
-> - Make available {directions,type,format} array const and non-global
-> - Using the right filter list in filters show and well protect the
->   list with mutex
-> - Record the trace status with a boolean @started rather than enum
-> - Optimize the process of finding the PTT devices of the perf-tool
-> Link: https://lore.kernel.org/linux-pci/20220221084307.33712-1-yangyicong@hisilicon.com/
-> 
-> Change since v3:
-> Address the comments from Jonathan and John, thanks.
-> - drop members in the common struct which can be get on the fly
-> - reduce buffer struct and organize the buffers with array instead of list
-> - reduce the DMA reset wait time to avoid long time busy loop
-> - split the available_filters sysfs attribute into two files, for root port
->   and requester respectively. Update the documentation accordingly
-> - make IOMMU mapping check earlier in probe to avoid race condition. Also
->   make IOMMU quirk patch prior to driver in the series
-> - Cleanups and typos fixes from John and Jonathan
-> Link: https://lore.kernel.org/linux-pci/20220124131118.17887-1-yangyicong@hisilicon.com/
-> 
-> Change since v2:
-> - address the comments from Mathieu, thanks.
->   - rename the directory to ptt to match the function of the device
->   - spinoff the declarations to a separate header
->   - split the trace function to several patches
->   - some other comments.
-> - make default smmu domain type of PTT device to identity
->   Drop the RMR as it's not recommended and use an iommu_def_domain_type
->   quirk to passthrough the device DMA as suggested by Robin. 
-> Link: https://lore.kernel.org/linux-pci/20211116090625.53702-1-yangyicong@hisilicon.com/
-> 
-> Change since v1:
-> - switch the user interface of trace to perf from debugfs
-> - switch the user interface of tune to sysfs from debugfs
-> - add perf tool support to start trace and decode the trace data
-> - address the comments of documentation from Bjorn
-> - add RMR[1] support of the device as trace works in RMR mode or
->   direct DMA mode. RMR support is achieved by common APIs rather
->   than the APIs implemented in [1].
-> Link: https://lore.kernel.org/lkml/1618654631-42454-1-git-send-email-yangyicong@hisilicon.com/
-> [1] https://lore.kernel.org/linux-acpi/20210805080724.480-1-shameerali.kolothum.thodi@huawei.com/
-> 
-> Yicong Yang (5):
->   iommu/arm-smmu-v3: Make default domain type of HiSilicon PTT device to
->     identity
->   hwtracing: hisi_ptt: Add trace function support for HiSilicon PCIe
->     Tune and Trace device
->   hwtracing: hisi_ptt: Add tune function support for HiSilicon PCIe Tune
->     and Trace device
->   docs: trace: Add HiSilicon PTT device driver documentation
->   MAINTAINERS: Add maintainer for HiSilicon PTT driver
-> 
->  .../ABI/testing/sysfs-devices-hisi_ptt        |   61 +
->  Documentation/trace/hisi-ptt.rst              |  298 +++++
->  Documentation/trace/index.rst                 |    1 +
->  MAINTAINERS                                   |    8 +
->  drivers/Makefile                              |    1 +
->  drivers/hwtracing/Kconfig                     |    2 +
->  drivers/hwtracing/ptt/Kconfig                 |   12 +
->  drivers/hwtracing/ptt/Makefile                |    2 +
->  drivers/hwtracing/ptt/hisi_ptt.c              | 1047 +++++++++++++++++
->  drivers/hwtracing/ptt/hisi_ptt.h              |  200 ++++
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |   21 +
->  11 files changed, 1653 insertions(+)
->  create mode 100644 Documentation/ABI/testing/sysfs-devices-hisi_ptt
->  create mode 100644 Documentation/trace/hisi-ptt.rst
->  create mode 100644 drivers/hwtracing/ptt/Kconfig
->  create mode 100644 drivers/hwtracing/ptt/Makefile
->  create mode 100644 drivers/hwtracing/ptt/hisi_ptt.c
->  create mode 100644 drivers/hwtracing/ptt/hisi_ptt.h
-> 
+Thank you for resending the patch! I completely overlooked this...
+
+Reviewed-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+
+Best regards,
+Yoshihiro Shimoda
+
