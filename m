@@ -1,14 +1,14 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CBBC4625
-	for <iommu@lists.linux.dev>; Tue, 30 Aug 2022 09:24:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B1508625
+	for <iommu@lists.linux.dev>; Tue, 30 Aug 2022 09:32:30 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7BD991474;
-	Tue, 30 Aug 2022 02:24:03 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3B83223A;
+	Tue, 30 Aug 2022 02:32:36 -0700 (PDT)
 Received: from [10.57.13.45] (unknown [10.57.13.45])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7E28D3F766;
-	Tue, 30 Aug 2022 02:23:56 -0700 (PDT)
-Message-ID: <cd53526d-2564-996b-7b0d-d1fe9f114590@arm.com>
-Date: Tue, 30 Aug 2022 10:23:51 +0100
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E7DDA3F766;
+	Tue, 30 Aug 2022 02:32:28 -0700 (PDT)
+Message-ID: <5f47c5b7-534d-5714-1f91-04005ada8b8f@arm.com>
+Date: Tue, 30 Aug 2022 10:32:24 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -17,55 +17,46 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
  Thunderbird/102.2.0
-Subject: Re: [PATCH] swiotlb: fix a typo
+Subject: Re: [PATCH] iommu: use iommu_group_ref_get to hold group reference
 Content-Language: en-GB
-To: Chao Gao <chao.gao@intel.com>, linux-kernel@vger.kernel.org,
+To: Yuan Can <yuancan@huawei.com>, joro@8bytes.org, will@kernel.org,
  iommu@lists.linux.dev
-Cc: hch@infradead.org, m.szyprowski@samsung.com
-References: <20220826095046.880626-1-chao.gao@intel.com>
+Cc: linux-kernel@vger.kernel.org, baolu.lu@linux.intel.com,
+ haifeng.zhao@linux.intel.com
+References: <20220826024024.101553-1-yuancan@huawei.com>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220826095046.880626-1-chao.gao@intel.com>
+In-Reply-To: <20220826024024.101553-1-yuancan@huawei.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2022-08-26 10:50, Chao Gao wrote:
-> "overwirte" isn't a word. It should be "overwrite".
-> 
-> Signed-off-by: Chao Gao <chao.gao@intel.com>
-> ---
-> BTW, I am wondering if copying the original buffer to the tlb buffer
-> unconditionally will leak the original buffer to the VMM, especially
-> when VMM isn't trusted e.g., by confidential VMs. Would it be better
-> to zero the tlb buffer for dir == DMA_FROM_DEVICE?
+On 2022-08-26 03:40, Yuan Can wrote:
+> Replace kobject_get with iommu_group_ref_get for better
+> readability.
 
-No, at the point of dma_map(), the buffer contents are owned by the 
-caller, so if parts of that buffer are sensitive and shouldn't be 
-exposed to DMA, then don't map the whole buffer for DMA. There are more 
-DMA API implementations than SWIOTLB.
-
-The whole point of bouncing the original contents here is that doing 
-anything else effectively corrupts any part of the mapping that the 
-device may end up *not* writing to - see the whole sordid original 
-discussion (but don't be confused by the fact that the caller's original 
-data happened to be zeros in that particular case).
+I disagree, sorry. iommu_group_ref_get() is meant as a helper for 
+drivers, and the core code uses the raw kobject internally everywhere 
+else, including several other times within this function. Especially the 
+raw kobject_put() in the cleanup path - in terms of readability I'd say 
+it's actively harmful to obfuscate what that pairs with.
 
 Thanks,
 Robin.
 
-> 
->   kernel/dma/swiotlb.c | 2 +-
+> Signed-off-by: Yuan Can <yuancan@huawei.com>
+> ---
+>   drivers/iommu/iommu.c | 2 +-
 >   1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index c5a9190b218f..f67e5f50ee3c 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -765,7 +765,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
->   	/*
->   	 * When dir == DMA_FROM_DEVICE we could omit the copy from the orig
->   	 * to the tlb buffer, if we knew for sure the device will
-> -	 * overwirte the entire current content. But we don't. Thus
-> +	 * overwrite the entire current content. But we don't. Thus
->   	 * unconditional bounce may prevent leaking swiotlb content (i.e.
->   	 * kernel memory) to user-space.
->   	 */
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 780fb7071577..8e7f30f7188c 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -903,7 +903,7 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+>   		goto err_free_name;
+>   	}
+>   
+> -	kobject_get(group->devices_kobj);
+> +	iommu_group_ref_get(group);
+>   
+>   	dev->iommu_group = group;
+>   
