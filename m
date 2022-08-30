@@ -1,32 +1,27 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1271962E
-	for <iommu@lists.linux.dev>; Tue, 30 Aug 2022 07:47:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661845622; x=1693381622;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=yBpwSdK8tn25JNz7gtB+fP1W3XIksw4isildm6byryI=;
-  b=bHb38RJ/wFqeKiInEI08V8sOi6euV5FPLBSJdvRxTv7t6nw+sSzwJIm9
-   uY1DIlLR4PGOC1ByymM1/5qPfNS5CJyDETfuapa3aTr5+AuQywZj6lYT9
-   dBy56RkLbQP04ifCds5Oa114kIKRJqTjD0xo+rqwbJ2Q6Ia7qtIZtunr0
-   +36DG01z0f0VakuGE0g/JiOsw0U+Z1jHcQXCP3TgaY4Yt/xrtVWKGg/Su
-   jzixSAQ96UcRiQNBoSEQhJzpqrpsZ+jm2744KKHkC39No5zSmdJGaLXHu
-   Zr8mC52QZzOJSZGkRLXGNrHcKO/YfBRweqNAmBcploMEKsKlSxE8pbf5m
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="274857939"
-X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="274857939"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 00:47:01 -0700
-X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="672737784"
-Received: from hhuan14-mobl1.ccr.corp.intel.com (HELO [10.254.215.208]) ([10.254.215.208])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 00:46:56 -0700
-Message-ID: <d8741636-ea2e-4c5f-4dc1-9a5dec4dafa1@linux.intel.com>
-Date: Tue, 30 Aug 2022 15:46:55 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D50AD62E
+	for <iommu@lists.linux.dev>; Tue, 30 Aug 2022 08:14:54 +0000 (UTC)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
+	(No client certificate requested)
+	(Authenticated sender: kholk11)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id BB0FA6601E8E;
+	Tue, 30 Aug 2022 09:14:51 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1661847292;
+	bh=+3rbZqqmv73wMbeInDkzjcrs5wRlRORGTvNqVpAV+0I=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=PKsbGKjnzDW63fZqu8LsimuIi2gEpXHevnR6JOQMKXGeuVL1Ku7moeVX+5gvAJbVx
+	 B+fcVa6ZbShM6bl2bW6Q/smdTRXmIQmJDOrAlqn3G6wOyuwFNgJLwvm2jZy2b0RK+U
+	 Ooe+T551J4Of6uq3fT9QJ2T9TSMthdDRftUZ4Q0oMX+KKxemkc8i8iCaJX4cJZh0qu
+	 PGUPQ7+x8ccE5y8kXsXo9RSB58sq5Eg1JtZ0m/AL5imr+uzomNK2C5ZjyhU+VrN75x
+	 6yrAhUqPFJ8yhVC7a2VvIrlwAs+QwDmGQ1CRVjGpDFSRIcVrGW4cpQhRGODGPDEepT
+	 TNpOMaTdldV2A==
+Message-ID: <f0cc5ea8-9fd8-dc77-e595-33973e315d28@collabora.com>
+Date: Tue, 30 Aug 2022 10:14:49 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,50 +30,138 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Cc: baolu.lu@linux.intel.com, Eric Auger <eric.auger@redhat.com>,
- Liu Yi L <yi.l.liu@intel.com>, Jacob jun Pan <jacob.jun.pan@intel.com>,
- Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony <tony.zhu@intel.com>,
- iommu@lists.linux.dev, linux-pci@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v12 13/17] iommu/sva: Refactoring
- iommu_sva_bind/unbind_device()
+Subject: Re: [PATCH v4 3/6] iommu/mediatek: Add error path for loop of
+ mm_dts_parse
 Content-Language: en-US
-To: Yuan Can <yuancan@huawei.com>, Joerg Roedel <joro@8bytes.org>,
- Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- Bjorn Helgaas <bhelgaas@google.com>, Kevin Tian <kevin.tian@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Dave Jiang <dave.jiang@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
- Vinod Koul <vkoul@kernel.org>
-References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
- <20220826121141.50743-14-baolu.lu@linux.intel.com>
- <47879368-fb4e-79aa-35f9-018d871f013c@huawei.com>
- <96ac1693-d87f-250d-c897-c79f13ed4c0a@linux.intel.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <96ac1693-d87f-250d-c897-c79f13ed4c0a@linux.intel.com>
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+ iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ mingyuan.ma@mediatek.com, yf.wang@mediatek.com, libo.kang@mediatek.com,
+ chengci.xu@mediatek.com, youlin.pei@mediatek.com, anan.sun@mediatek.com,
+ xueqi.zhang@mediatek.com, Guenter Roeck <groeck@chromium.org>,
+ Dan Carpenter <dan.carpenter@oracle.com>
+References: <20220824064306.21495-1-yong.wu@mediatek.com>
+ <20220824064306.21495-4-yong.wu@mediatek.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220824064306.21495-4-yong.wu@mediatek.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 2022/8/30 15:45, Baolu Lu wrote:
-> On 2022/8/30 15:30, Yuan Can wrote:
->>
->> 在 2022/8/26 20:11, Lu Baolu 写道:
->>> The existing iommu SVA interfaces are implemented by calling the SVA
->>> specific iommu ops provided by the IOMMU drivers. There's no need for
->>> any SVA specific ops in iommu_ops vector anymore as we can achieve
->>> this through the generic attach/detach_dev_pasid domain ops.
->>>
->>> This refactors the IOMMU SVA interfaces implementation by using the
->>> iommu_detach/detach_device_pasid interfaces and align them with the
->>
->> Did you mean using the iommu_attach/detach_device_pasid interfaces here?
+Il 24/08/22 08:43, Yong Wu ha scritto:
+> The mtk_iommu_mm_dts_parse will parse the smi larbs nodes. if the i+1
+> larb is parsed fail, we should put_device for the 0..i larbs.
 > 
-> The device driver oriented SVA interfaces keep consistent as before.
-> Here we only refactor the IOMMU internal implementation.
+> There are two places need to comment:
+> 1) The larbid may be not linear mapping, we should loop whole
+>     the array in the error path.
+> 2) I move this line position: "data->larb_imu[id].dev = &plarbdev->dev;"
+>     That means set data->larb_imu[id].dev before the error path.
+>     then we don't need "platform_device_put(plarbdev)" again while
+>     probe_defer case. All depend on "put_device" in the error path in error
+>     cases.
+> 
+> Fixes: d2e9a1102cfc ("iommu/mediatek: Contain MM IOMMU flow with the MM TYPE")
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> ---
+>   drivers/iommu/mtk_iommu.c | 42 ++++++++++++++++++++++++++++-----------
+>   1 file changed, 30 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 9c5902207bef..f63d4210043d 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -1053,8 +1053,10 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
+>   		u32 id;
+>   
+>   		larbnode = of_parse_phandle(dev->of_node, "mediatek,larbs", i);
+> -		if (!larbnode)
+> -			return -EINVAL;
+> +		if (!larbnode) {
+> +			ret = -EINVAL;
+> +			goto err_larbdev_put;
+> +		}
+>   
+>   		if (!of_device_is_available(larbnode)) {
+>   			of_node_put(larbnode);
+> @@ -1067,14 +1069,16 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
+>   
+>   		plarbdev = of_find_device_by_node(larbnode);
+>   		of_node_put(larbnode);
+> -		if (!plarbdev)
+> -			return -ENODEV;
+> +		if (!plarbdev) {
+> +			ret = -ENODEV;
+> +			goto err_larbdev_put;
+> +		}
+> +		data->larb_imu[id].dev = &plarbdev->dev;
+>   
+>   		if (!plarbdev->dev.driver) {
+> -			platform_device_put(plarbdev);
+> -			return -EPROBE_DEFER;
+> +			ret = -EPROBE_DEFER;
+> +			goto err_larbdev_put;
+>   		}
+> -		data->larb_imu[id].dev = &plarbdev->dev;
+>   
+>   		component_match_add(dev, match, component_compare_dev, &plarbdev->dev);
+>   		platform_device_put(plarbdev);
+> @@ -1082,8 +1086,10 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
+>   
+>   	/* Get smi-(sub)-common dev from the last larb. */
+>   	smi_subcomm_node = of_parse_phandle(larbnode, "mediatek,smi", 0);
+> -	if (!smi_subcomm_node)
+> -		return -EINVAL;
+> +	if (!smi_subcomm_node) {
+> +		ret = -EINVAL;
+> +		goto err_larbdev_put;
+> +	}
+>   
+>   	/*
+>   	 * It may have two level smi-common. the node is smi-sub-common if it
+> @@ -1097,8 +1103,10 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
+>   
+>   	pcommdev = of_find_device_by_node(smicomm_node);
+>   	of_node_put(smicomm_node);
+> -	if (!pcommdev)
+> -		return -EINVAL;
+> +	if (!pcommdev) {
+> +		ret = -EINVAL;
+> +		goto err_larbdev_put;
+> +	}
+>   	data->smicomm_dev = &pcommdev->dev;
+>   
+>   	link = device_link_add(data->smicomm_dev, dev,
+> @@ -1106,9 +1114,19 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
+>   	platform_device_put(pcommdev);
+>   	if (!link) {
+>   		dev_err(dev, "Unable to link %s.\n", dev_name(data->smicomm_dev));
+> -		return -EINVAL;
+> +		ret = -EINVAL;
+> +		goto err_larbdev_put;
+>   	}
+>   	return 0;
+> +
+> +err_larbdev_put:
+> +	/* id may be not linear mapping, loop whole the array */
+> +	for (i = 0; i < MTK_LARB_NR_MAX; i++) {
 
-Oh! A typo in the commit message, right? Thanks and I will fix it.
+Since there may be a case in which the mapping is linear and we're doing teardown,
+I think it would be sensible to loop the other way around instead, from
+MTK_LARB_NR_MAX to 0.
 
-Best regards,
-baolu
+Everything else looks good to me.
+
+Cheers,
+Angelo
+
+> +		if (!data->larb_imu[i].dev)
+> +			continue;
+> +		put_device(data->larb_imu[i].dev);
+> +	}
+> +	return ret;
+>   }
+>   
+>   static int mtk_iommu_probe(struct platform_device *pdev)
+
