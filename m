@@ -1,51 +1,51 @@
-Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
+Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43E6A4A0D
-	for <iommu@lists.linux.dev>; Wed, 31 Aug 2022 15:55:36 +0000 (UTC)
-Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-333a4a5d495so310873927b3.10
-        for <iommu@lists.linux.dev>; Wed, 31 Aug 2022 08:55:36 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A60BD4A0D
+	for <iommu@lists.linux.dev>; Wed, 31 Aug 2022 15:56:22 +0000 (UTC)
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-33dc345ad78so311559457b3.3
+        for <iommu@lists.linux.dev>; Wed, 31 Aug 2022 08:56:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=sybFcqH1KKlLZJ30kAOhH4vwj7X3FRQlsLR8cFlMDYU=;
-        b=ONehLJlMia7mkVvk2Zcl9HnY/oTkc+1EwkoR6Jx3DnNxre4Sp/FSdNv9mcbGgEmDyx
-         hcwrMSJR7ZiQ1gQ0UYolLJ1KfSsEifqyTyCpB3HNLZA2KMDBC4nzkHtXo4jdW5MEBTL/
-         oeY/VF0jamX2X6EV+5N0Xd7mZ1j4MlgintI5pKX6sIFdlOA1BP37vU/laD/NgNYsqPs7
-         ry3YkegZ8oI5uWS54z5Ryp1YEZwXewCN8pUvCwKMKDNaZ0LFaWzFXYjHfSoj16inAquU
-         wnZgCdGNLRRqt1agsDuWNICevBAb1Fc4Vo2v2Ob02GeQiQO1vTHDvn4tcp5ikcEVDh90
-         MGRQ==
+        bh=cCRpuq5ugrZCMPNASqLzmnmQqSHwIbDaqesnsW6hpVY=;
+        b=dp7ag/s/XswteEOQhIlZJ0Nr9OSh2piBWOaxYRC3sJJA1h7P9YiBLyTj5ZbqtTA5s/
+         QVBATN/coisioHRuuIpGq3gJNfqJZeq14BoEa/ktEy7OjVkakgw2dN07PvsjfH2DKU0B
+         bxLma1WzIl4FKw+quVea/qjMwPtAOmq0TevZHzdNCNncQhM1PD4uyKVu4HWZvLI6BqTx
+         H7kaRy09fBu1xgcDeDqWrzFeKvin7yA3AAOKZ6MQsBsn3T/kb8YICvKVh7LgyXMq+5Bi
+         FLuEciavzkBG7ruhxzyjiDdwLtfbNolH0swGrGj9z+IyuUE/sK6RMxqKOGNWiAhwfBa3
+         5mXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=sybFcqH1KKlLZJ30kAOhH4vwj7X3FRQlsLR8cFlMDYU=;
-        b=qRYjCMwg4g6cmY6gonAV1oiweMpRyRzOT4v6KDebNH0f+SIBGx9b2kh7kssCnKD9gz
-         qaHM2n3zONxMjIrgBNfgCX9977LDsSErBZ+WjHwccD+kTj+fFTz0JfrQb1FOxfBvgIqE
-         +QY7ETpz4CzcLSbnrbN2J1LYByPTSB5wAFWXJzRfTP5oFzbcne95kPxk4g7V5GcxbeV3
-         t1HT4UwJ+jH8bAzXHzxBsXq/Ci7/ERTUo3ueRfrrxRln95VuUJLE4fqgYWGfDunUf4sG
-         qyx/fifhsoD2CCr/sZD40uAVbd4Hmo2NyuqpA1DFmdZ9mNQHFvyX0y+dBy39yTotaXlj
-         wemg==
-X-Gm-Message-State: ACgBeo11kWaPfBcmVhr+GuOnO0amBO9d11TBlQjD65M5ea1jDk2ZhzSI
-	mRQ6TBViFGPgh/EWlpDIyiAINr56AEfQGaXGiXXFAA==
-X-Google-Smtp-Source: AA6agR4NChdz7hhi2/Bkod2bRWHC00+BPJkQJe+enovUPIqOU12s621gnom9CkqxdAsQy2M3vDnXK/nOmkkUrisgkSc=
-X-Received: by 2002:a81:a186:0:b0:33d:bf97:5b14 with SMTP id
- y128-20020a81a186000000b0033dbf975b14mr18636737ywg.514.1661961335065; Wed, 31
- Aug 2022 08:55:35 -0700 (PDT)
+        bh=cCRpuq5ugrZCMPNASqLzmnmQqSHwIbDaqesnsW6hpVY=;
+        b=goQE4HsFE07hXdC9k6qr20xgUvDY0NXS/+EAnbvL94LfhVqrdopDuKJDPTSHrbiU3t
+         fFGpVcN+UuoHoO23ioP73T+ZFuhpF1uHqHIZ8h+s6wiFQBR8/Oa2JnO9gckco+U5uD2L
+         YlLoO/qclFLq2vg3ThtDY8L6vWHxq4FemUcQfQzM3TAbEC2jYG8LdwxtTL23Kfk8Wlnq
+         7I9bVhpWp97BuMz52VsBwqKD68owLxycqEhOy59WPbXccpQ4AuwQJUXtb99IG/uxU3BD
+         4SdlIJuCOrhiIv18azht4MtZK87ppvvFfvK2s0bpQtBAzAuu+GIeWHLwTGxXOKRGDQSA
+         52+g==
+X-Gm-Message-State: ACgBeo0sI/m7eADVD76GftWIRog+jqauEL+zqRzEJRgmeaasXAJhGFb/
+	VQXaKOBOy43nHsruhZV3PPzXn4w3KDFWLj9U8w8kow==
+X-Google-Smtp-Source: AA6agR7Lu6PK9CdXu23xIn3AG3MYNgxqZ4pzHv7Fy3xw9o0fL/gGGSH+N2uXtSf2ZsqL9IuP0dnF/6Y/gY//h7qjU0c=
+X-Received: by 2002:a81:85c3:0:b0:33d:a4d9:4599 with SMTP id
+ v186-20020a8185c3000000b0033da4d94599mr18562781ywf.237.1661961381492; Wed, 31
+ Aug 2022 08:56:21 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20220830214919.53220-1-surenb@google.com> <20220830214919.53220-28-surenb@google.com>
- <241c05a3-52a2-d49f-6962-3af5a94bc3fc@infradead.org>
-In-Reply-To: <241c05a3-52a2-d49f-6962-3af5a94bc3fc@infradead.org>
+References: <20220830214919.53220-1-surenb@google.com> <20220830214919.53220-23-surenb@google.com>
+ <b252a4e0-57a1-0f27-f4b0-598e851b47ea@infradead.org>
+In-Reply-To: <b252a4e0-57a1-0f27-f4b0-598e851b47ea@infradead.org>
 From: Suren Baghdasaryan <surenb@google.com>
-Date: Wed, 31 Aug 2022 08:55:24 -0700
-Message-ID: <CAJuCfpE2qrN7uXqZjJz6o20Rh4cQgcUBzAxzP4s+u=6XtmBnbg@mail.gmail.com>
-Subject: Re: [RFC PATCH 27/30] Code tagging based latency tracking
+Date: Wed, 31 Aug 2022 08:56:10 -0700
+Message-ID: <CAJuCfpFff1iVx50QeJWE7=sJUZ2enig34VTAOCz75u_SY2EXKw@mail.gmail.com>
+Subject: Re: [RFC PATCH 22/30] Code tagging based fault injection
 To: Randy Dunlap <rdunlap@infradead.org>
 Cc: Andrew Morton <akpm@linux-foundation.org>, Kent Overstreet <kent.overstreet@linux.dev>, 
 	Michal Hocko <mhocko@suse.com>, Vlastimil Babka <vbabka@suse.cz>, Johannes Weiner <hannes@cmpxchg.org>, 
@@ -71,31 +71,45 @@ Cc: Andrew Morton <akpm@linux-foundation.org>, Kent Overstreet <kent.overstreet@
 	linux-modules@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Aug 30, 2022 at 6:53 PM Randy Dunlap <rdunlap@infradead.org> wrote:
+On Tue, Aug 30, 2022 at 6:52 PM Randy Dunlap <rdunlap@infradead.org> wrote:
 >
 >
 >
 > On 8/30/22 14:49, Suren Baghdasaryan wrote:
-> > diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-> > index b7d03afbc808..b0f86643b8f0 100644
-> > --- a/lib/Kconfig.debug
-> > +++ b/lib/Kconfig.debug
-> > @@ -1728,6 +1728,14 @@ config LATENCYTOP
-> >         Enable this option if you want to use the LatencyTOP tool
-> >         to find out which userspace is blocking on what kernel operations.
+> > From: Kent Overstreet <kent.overstreet@linux.dev>
 > >
-> > +config CODETAG_TIME_STATS
-> > +     bool "Code tagging based latency measuring"
-> > +     depends on DEBUG_FS
-> > +     select TIME_STATS
-> > +     select CODE_TAGGING
-> > +     help
-> > +       Enabling this option makes latency statistics available in debugfs
+> > This adds a new fault injection capability, based on code tagging.
+> >
+> > To use, simply insert somewhere in your code
+> >
+> >   dynamic_fault("fault_class_name")
+> >
+> > and check whether it returns true - if so, inject the error.
+> > For example
+> >
+> >   if (dynamic_fault("init"))
+> >       return -EINVAL;
+> >
+> > There's no need to define faults elsewhere, as with
+> > include/linux/fault-injection.h. Faults show up in debugfs, under
+> > /sys/kernel/debug/dynamic_faults, and can be selected based on
+> > file/module/function/line number/class, and enabled permanently, or in
+> > oneshot mode, or with a specified frequency.
+> >
+> > Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
 >
-> Missing period at the end of the sentence.
+> Missing Signed-off-by: from Suren.
+> See Documentation/process/submitting-patches.rst:
+>
+> When to use Acked-by:, Cc:, and Co-developed-by:
+> ------------------------------------------------
+>
+> The Signed-off-by: tag indicates that the signer was involved in the
+> development of the patch, or that he/she was in the patch's delivery path.
 
-Ack.
+Thanks for the note! Will fix in the next respin.
 
+>
 >
 > --
 > ~Randy
