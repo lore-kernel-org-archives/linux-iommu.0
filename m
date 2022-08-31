@@ -1,138 +1,116 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A29AF4C6F
-	for <iommu@lists.linux.dev>; Wed, 31 Aug 2022 20:12:48 +0000 (UTC)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27VK03Cv009124;
-	Wed, 31 Aug 2022 20:12:42 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=8UaAcdsSep4uV8uaXMURFWomBBOpmEtS8j6S/xj9pgg=;
- b=Rb9GNk9RjeyndqN8mYbDn1X1uq0wCMKYgBjS4y1AZ1IqjYl+XS2W4fUrt+1YVYPERLi5
- xbsCxNtYdtsEiwDLSXniIssRD+0J19u0bjS09Y7YLI9+RkCX/cheWQWb+IMHptIZJ8U8
- 8s9DyjlEh3pfX6zXa5w4oo7lAieu2nZoREd+kB4wZl2FOZ7LV07J+OLczI/9H4JpQDv0
- AIrcT19C/xPii9HM6LW4pGrGqoiFYxqJamwd/zRySDmVynKPn7KLM58Hj/PQVuf3LiGx
- yR8fE/1Mh5gV70G+q4dwDiwPreZQBTVZLfMruBL3IKGjgSONY3VJxkFyCmEZgbmowGBq Dg== 
-Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jae9qgn6h-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 31 Aug 2022 20:12:41 +0000
-Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
-	by ppma05wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27VK65I2030788;
-	Wed, 31 Aug 2022 20:12:40 GMT
-Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
-	by ppma05wdc.us.ibm.com with ESMTP id 3j7aw9vkft-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 31 Aug 2022 20:12:40 +0000
-Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
-	by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27VKCdib39584230
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 31 Aug 2022 20:12:39 GMT
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id CC155AC059;
-	Wed, 31 Aug 2022 20:12:39 +0000 (GMT)
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 1333FAC05F;
-	Wed, 31 Aug 2022 20:12:39 +0000 (GMT)
-Received: from li-2311da4c-2e09-11b2-a85c-c003041e9174.ibm.com.com (unknown [9.160.77.30])
-	by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
-	Wed, 31 Aug 2022 20:12:38 +0000 (GMT)
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-To: iommu@lists.linux.dev
-Cc: linux-s390@vger.kernel.org, schnelle@linux.ibm.com, pmorel@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, joro@8bytes.org, will@kernel.org,
-        robin.murphy@arm.com, jgg@nvidia.com, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 2/2] iommu/s390: fix leak of s390_domain_device
-Date: Wed, 31 Aug 2022 16:12:36 -0400
-Message-Id: <20220831201236.77595-3-mjrosato@linux.ibm.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220831201236.77595-1-mjrosato@linux.ibm.com>
-References: <20220831201236.77595-1-mjrosato@linux.ibm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DACAF33EC
+	for <iommu@lists.linux.dev>; Wed, 31 Aug 2022 20:56:46 +0000 (UTC)
+Received: by mail-wr1-f44.google.com with SMTP id s7so4890053wro.2
+        for <iommu@lists.linux.dev>; Wed, 31 Aug 2022 13:56:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=Q+TlttOrTWNB3q3o6Zbb04N1wsFemMMzZbBDHk1hdbY=;
+        b=VyP3SbNsuyxc5blP2FoCVyjA1CBQu5fk1qPBiWwHnsN7KbhALhPVRs+hdxfauKkrjN
+         HjpFIvR9qflpc5b/NaZbUp4Qe+yoyJx8jmIG71feNwOicipxd4Z45zOK95SSSmFlFqg1
+         JlDxmSa+dos6d565oincRG6QsILc3r0lbpSqflqmVfv9TWNY+mQW2VINkINO6wGxloda
+         V9BbsnXdjx9TWnVhm9AxW/SNuwlNLiahxr1xh25VEX0zm/Rv6sxPCVqP3nUxZGj48fmq
+         8freUAXARJQoL1m1MzSBuxjvucYwjbHks6tBHAAViJ2OqT1E6YeDUp+dfTHOL3fNg2CJ
+         OS0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=Q+TlttOrTWNB3q3o6Zbb04N1wsFemMMzZbBDHk1hdbY=;
+        b=pITzylUecQK3Lg6bI9eTvnbNWzYXa1rvUv+KWRTvp9XjBB5yKzhj2Q5d9OkrM6sXZh
+         AHOt8ERWEwBAUNotcxk+hLAWRht4wX+5wJO00edfj+5izPiezXWhC9V4ix50AkKHlTR3
+         0fAARanE2gEnumoMjq8fYxtHZf76VaxEYwoYZVyxaggoPwmQLhD0AoQSJja8yr+sDnlq
+         hwC2nPze4W2/lktULRTK2Ix4laIXfyV6K3UwA6jb9OoeryZY92hPgS+0h/38Z3q3Hi6U
+         fB9aadSR2RUn2bBQwR/qyu8Vvqm3ouR6G4sdYLQRo4BmKKgAgX96CYC1Z7XbxReEL41X
+         10oA==
+X-Gm-Message-State: ACgBeo32NZvdNCtVGHUfdGh6Dmp/xF+ueK9HSQXzohj2wMUkO34IVtFf
+	vmLw0HPIHUW5ivck3RXRDBJWfAn2SZIqf8o2Bn65PA==
+X-Google-Smtp-Source: AA6agR7XK78VXHUjktIpBA+ayr5Wvv6QyZC54NZbTQlygRhYLtBkkgViGprvNovg9YVhzd6mrhctznnyhI9ADAmQ4D4=
+X-Received: by 2002:a05:6000:1188:b0:220:6c20:fbf6 with SMTP id
+ g8-20020a056000118800b002206c20fbf6mr13193874wrx.372.1661979404912; Wed, 31
+ Aug 2022 13:56:44 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: QHMWXiIgYlc2TrNwErWCpsynqGM0Hb-3
-X-Proofpoint-GUID: QHMWXiIgYlc2TrNwErWCpsynqGM0Hb-3
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-31_12,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- clxscore=1015 suspectscore=0 mlxlogscore=999 impostorscore=0 mlxscore=0
- priorityscore=1501 adultscore=0 spamscore=0 bulkscore=0 malwarescore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208310097
+References: <20220830214919.53220-1-surenb@google.com> <Yw8P8xZ4zqu121xL@hirez.programming.kicks-ass.net>
+ <20220831084230.3ti3vitrzhzsu3fs@moria.home.lan> <20220831101948.f3etturccmp5ovkl@suse.de>
+ <Yw88RFuBgc7yFYxA@dhcp22.suse.cz> <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
+In-Reply-To: <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
+From: Yosry Ahmed <yosryahmed@google.com>
+Date: Wed, 31 Aug 2022 13:56:08 -0700
+Message-ID: <CAJD7tkaev9B=UDYj2RL6pz-1454J8tv4gEr9y-2dnCksoLK0bw@mail.gmail.com>
+Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
+To: Kent Overstreet <kent.overstreet@linux.dev>
+Cc: Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@suse.de>, 
+	Peter Zijlstra <peterz@infradead.org>, Suren Baghdasaryan <surenb@google.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>, 
+	Johannes Weiner <hannes@cmpxchg.org>, Roman Gushchin <roman.gushchin@linux.dev>, dave@stgolabs.net, 
+	Matthew Wilcox <willy@infradead.org>, liam.howlett@oracle.com, void@manifault.com, 
+	juri.lelli@redhat.com, ldufour@linux.ibm.com, Peter Xu <peterx@redhat.com>, 
+	David Hildenbrand <david@redhat.com>, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
+	nathan@kernel.org, changbin.du@intel.com, ytcoode@gmail.com, 
+	vincent.guittot@linaro.org, dietmar.eggemann@arm.com, 
+	Steven Rostedt <rostedt@goodmis.org>, bsegall@google.com, bristot@redhat.com, 
+	vschneid@redhat.com, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, 
+	Joonsoo Kim <iamjoonsoo.kim@lge.com>, 42.hyeyoo@gmail.com, glider@google.com, 
+	elver@google.com, dvyukov@google.com, Shakeel Butt <shakeelb@google.com>, 
+	Muchun Song <songmuchun@bytedance.com>, arnd@arndb.de, jbaron@akamai.com, 
+	David Rientjes <rientjes@google.com>, minchan@google.com, kaleshsingh@google.com, 
+	kernel-team@android.com, Linux-MM <linux-mm@kvack.org>, iommu@lists.linux.dev, 
+	kasan-dev@googlegroups.com, io-uring@vger.kernel.org, 
+	linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org, 
+	linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org, 
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-Since allowing multiple domains to be attached via fa7e9ecc5e1c, it's now
-possible that a kfree of s390_domain_device is missed, either because a
-corresponding detach_dev was never called or because a repeat attach_dev
-was called for the same device and domain pair (resulting in unnecessary
-duplicates).  Check for duplicates during attach_dev and ensure the list
-of s390_domain_device structures is cleared up when the domain is freed.
+On Wed, Aug 31, 2022 at 12:02 PM Kent Overstreet
+<kent.overstreet@linux.dev> wrote:
+>
+> On Wed, Aug 31, 2022 at 12:47:32PM +0200, Michal Hocko wrote:
+> > On Wed 31-08-22 11:19:48, Mel Gorman wrote:
+> > > Whatever asking for an explanation as to why equivalent functionality
+> > > cannot not be created from ftrace/kprobe/eBPF/whatever is reasonable.
+> >
+> > Fully agreed and this is especially true for a change this size
+> > 77 files changed, 3406 insertions(+), 703 deletions(-)
+>
+> In the case of memory allocation accounting, you flat cannot do this with ftrace
+> - you could maybe do a janky version that isn't fully accurate, much slower,
+> more complicated for the developer to understand and debug and more complicated
+> for the end user.
+>
+> But please, I invite anyone who's actually been doing this with ftrace to
+> demonstrate otherwise.
+>
+> Ftrace just isn't the right tool for the job here - we're talking about adding
+> per callsite accounting to some of the fastest fast paths in the kernel.
+>
+> And the size of the changes for memory allocation accounting are much more
+> reasonable:
+>  33 files changed, 623 insertions(+), 99 deletions(-)
+>
+> The code tagging library should exist anyways, it's been open coded half a dozen
+> times in the kernel already.
+>
+> And once we've got that, the time stats code is _also_ far simpler than doing it
+> with ftrace would be. If anyone here has successfully debugged latency issues
+> with ftrace, I'd really like to hear it. Again, for debugging latency issues you
+> want something that can always be on, and that's not cheap with ftrace - and
+> never mind the hassle of correlating start and end wait trace events, builting
+> up histograms, etc. - that's all handled here.
+>
+> Cheap, simple, easy to use. What more could you want?
+>
 
-Fixes: fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev calls")
-Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
----
- drivers/iommu/s390-iommu.c | 23 +++++++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index 1137d669e849..db4dfbcf161b 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -78,7 +78,17 @@ static struct iommu_domain *s390_domain_alloc(unsigned domain_type)
- static void s390_domain_free(struct iommu_domain *domain)
- {
- 	struct s390_domain *s390_domain = to_s390_domain(domain);
-+	struct s390_domain_device *domain_device, *tmp;
-+	unsigned long flags;
- 
-+	/* Ensure all device entries are cleaned up */
-+	spin_lock_irqsave(&s390_domain->list_lock, flags);
-+	list_for_each_entry_safe(domain_device, tmp, &s390_domain->devices,
-+				 list) {
-+		list_del(&domain_device->list);
-+		kfree(domain_device);
-+	}
-+	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
- 	dma_cleanup_tables(s390_domain->dma_table);
- 	kfree(s390_domain);
- }
-@@ -88,7 +98,7 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- {
- 	struct s390_domain *s390_domain = to_s390_domain(domain);
- 	struct zpci_dev *zdev = to_zpci_dev(dev);
--	struct s390_domain_device *domain_device;
-+	struct s390_domain_device *domain_device, *ddev;
- 	unsigned long flags;
- 	int cc, rc;
- 
-@@ -140,7 +150,16 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 		goto out_restore;
- 	}
- 	domain_device->zdev = zdev;
--	list_add(&domain_device->list, &s390_domain->devices);
-+	/* If already attached don't add another instance */
-+	list_for_each_entry(ddev, &s390_domain->devices, list) {
-+		if (ddev->zdev == zdev) {
-+			kfree(domain_device);
-+			domain_device = NULL;
-+			break;
-+		}
-+	}
-+	if (domain_device)
-+		list_add(&domain_device->list, &s390_domain->devices);
- 	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
- 	zdev->s390_domain = s390_domain;
- 	mutex_unlock(&zdev->dma_domain_lock);
--- 
-2.37.2
-
+This is very interesting work! Do you have any data about the overhead
+this introduces, especially in a production environment? I am
+especially interested in memory allocations tracking and detecting
+leaks.
+(Sorry if you already posted this kind of data somewhere that I missed)
