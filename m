@@ -1,148 +1,73 @@
-Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD336610B
-	for <iommu@lists.linux.dev>; Tue, 30 Aug 2022 21:50:44 +0000 (UTC)
-Received: by mail-yb1-f202.google.com with SMTP id n16-20020a258d10000000b0068df1e297c0so721045ybl.15
-        for <iommu@lists.linux.dev>; Tue, 30 Aug 2022 14:50:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc;
-        bh=q3DJ62FdAkc75G5f5TC1WQpGOVt3l/MJJCNdx5cTnOk=;
-        b=C8JONxxXVlTpftHaAGAIlpLkK3JbLire6Nmp7rtyqKkA8STqUN7GtKHqgck9OnhnK6
-         JLmVEdOBtO4UgVT+rqGSVVb8el9/E2EzKFM8T34Szjzm3zJ0p5kFz3mCYcxw5G4J1WvF
-         QMb4GTQ/yzzPPSsO8n/bi291Hq8qngpZB5y0K7P/GbpAFTCQEKZCNPr9wH/IKiRw2v40
-         589a1BB4hctRlz5v1afevUX177R+LYQq/8EEHO7YXqeqRF8HSNYDOdN7xFassnCgRext
-         TnhJSTiUhrw0wYWDFlFWpRGy66tj1fz8fdmGodc46WuVd0A4xLZ7WpBC/QBvDzjQGrdA
-         SEig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=q3DJ62FdAkc75G5f5TC1WQpGOVt3l/MJJCNdx5cTnOk=;
-        b=joZ+jZWMVohlZrI8dlt2va7cnDhM9I9CM+PTzf3UlqLxqi3KEZt/Bd9KI4+FFV4+GT
-         NSHbL5ZARzvnSlHJOeMSnxl2EBY8zjClYSujryy8GxQVBmQUHqUg1yvJJc3eHnmVPjSi
-         OHjVEsu7lsyhj5qMCOveEtEdGfN9rkoYUEv+8qXKzy15MLfRP7M9G40R3d0chniqh8vh
-         yxq9FMk/G2tZ1kG6Oyi5VPZ3I29s283XDjr+uOUW8/Sx5hO1jkWzGLtQv9r++swsCZNT
-         af2qKgfLNpnx/OXWh93uSOdLrttF3sQytHE0FzZ+1LdAs+5+KdrbAhao2JruGxoMAxIB
-         c/dw==
-X-Gm-Message-State: ACgBeo1Va5fwwr5EvtnLt7/1foAFlzcCKcyQjDeycglLUIWl103gTAQP
-	L8ESs2GG8KkPnkh33BcBe9FvdzJUN+Y=
-X-Google-Smtp-Source: AA6agR6mRIYh/Ugh76Z9OGxiRjbQrZ+9wpxKxcSIOnClnh/ne0QVaaMxuz4y8WxW9UVOyJ1glmO9CKBYbzs=
-X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:200:a005:55b3:6c26:b3e4])
- (user=surenb job=sendgmr) by 2002:a25:8a85:0:b0:671:715e:a1b0 with SMTP id
- h5-20020a258a85000000b00671715ea1b0mr12680068ybl.98.1661896243785; Tue, 30
- Aug 2022 14:50:43 -0700 (PDT)
-Date: Tue, 30 Aug 2022 14:49:19 -0700
-In-Reply-To: <20220830214919.53220-1-surenb@google.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEB5B620
+	for <iommu@lists.linux.dev>; Wed, 31 Aug 2022 01:02:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661907758; x=1693443758;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=4g2unoSDN1ukBbO1EGZvQu17z9pHdUQ6vWbPZmoPISc=;
+  b=iwBJGqLhPWaxyrGXq6Ir/k7K/mTfwtD8Y6MCjHrxOljiFjT7SFfF43Si
+   ExWOkzmp0HZrF2XrdDL9B8uqAQ+FUcBg4O7SahlH6Tm+iCqrYztpBdgqk
+   pbQSAIKq7zhGKo3YBQBs2qq8nHCxUcSUyZwsGKdtm/ZXdZmR/Ei1Oid/y
+   zDqAqlpfjdHc1I1iXpIG7TRf6hWyRCleptcSdEJhyJ49Oao9g5urJ87nB
+   HBXmL69O0UgMveG0S7MSPTuxjwCydNGVvQimpWt/Yj9shTjZD2jY5S1pP
+   d+cMSrKdqbyMMlEh3En5O4m0wpUDEho6ubZHV4LGManIv2h7XryOlGz8n
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="275744293"
+X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
+   d="scan'208";a="275744293"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 18:02:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
+   d="scan'208";a="608040973"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
+  by orsmga007.jf.intel.com with ESMTP; 30 Aug 2022 18:02:35 -0700
+Message-ID: <3aa28716-9d91-321a-0e52-58ae425ac598@linux.intel.com>
+Date: Wed, 31 Aug 2022 08:57:05 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20220830214919.53220-1-surenb@google.com>
-X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220830214919.53220-31-surenb@google.com>
-Subject: [RFC PATCH 30/30] MAINTAINERS: Add entries for code tagging & related
-From: Suren Baghdasaryan <surenb@google.com>
-To: akpm@linux-foundation.org
-Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz, 
-	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
-	void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com, 
-	ldufour@linux.ibm.com, peterx@redhat.com, david@redhat.com, axboe@kernel.dk, 
-	mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org, 
-	changbin.du@intel.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
-	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
-	bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org, 
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
-	elver@google.com, dvyukov@google.com, shakeelb@google.com, 
-	songmuchun@bytedance.com, arnd@arndb.de, jbaron@akamai.com, 
-	rientjes@google.com, minchan@google.com, kaleshsingh@google.com, 
-	surenb@google.com, kernel-team@android.com, linux-mm@kvack.org, 
-	iommu@lists.linux.dev, kasan-dev@googlegroups.com, io-uring@vger.kernel.org, 
-	linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org, 
-	linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Cc: baolu.lu@linux.intel.com, Raj Ashok <ashok.raj@intel.com>,
+ Thomas Gleixner <tglx@linutronix.de>, Dave Hansen <dave.hansen@intel.com>,
+ Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>,
+ "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH 2/2] iommu: Use the user PGD for SVA if PTI is enabled
+Content-Language: en-US
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, x86@kernel.org,
+ Joerg Roedel <joro@8bytes.org>
+References: <20220822201213.352289-1-jacob.jun.pan@linux.intel.com>
+ <20220822201213.352289-3-jacob.jun.pan@linux.intel.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220822201213.352289-3-jacob.jun.pan@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Kent Overstreet <kent.overstreet@linux.dev>
+On 8/23/22 4:12 AM, Jacob Pan wrote:
+> With page table isolation, the kernel manages two sets of page tables
+> for each process: one for user one for kernel. When enabling SVA, the
+> current x86 IOMMU drivers bind device and PASID with the kernel copy
+> of the process page table.
+> 
+> While there is no known "Meltdown" type of DMA attack, exposing
+> kernel mapping to DMA intended for userspace makes the system vulnerable
+> unnecessarily. It also breaks the intention of PTI.
+> 
+> This patch replaces kernel page table PGD with the user counterpart,
+> thus fulfill the promise of PTI on the DMA side.
+> 
+> Signed-off-by: Jacob Pan<jacob.jun.pan@linux.intel.com>
 
-The new code & libraries added are being maintained - mark them as such.
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
----
- MAINTAINERS | 34 ++++++++++++++++++++++++++++++++++
- 1 file changed, 34 insertions(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 589517372408..902c96744bcb 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -5111,6 +5111,19 @@ S:	Supported
- F:	Documentation/process/code-of-conduct-interpretation.rst
- F:	Documentation/process/code-of-conduct.rst
- 
-+CODE TAGGING
-+M:	Suren Baghdasaryan <surenb@google.com>
-+M:	Kent Overstreet <kent.overstreet@linux.dev>
-+S:	Maintained
-+F:	lib/codetag.c
-+F:	include/linux/codetag.h
-+
-+CODE TAGGING TIME STATS
-+M:	Kent Overstreet <kent.overstreet@linux.dev>
-+S:	Maintained
-+F:	lib/codetag_time_stats.c
-+F:	include/linux/codetag_time_stats.h
-+
- COMEDI DRIVERS
- M:	Ian Abbott <abbotti@mev.co.uk>
- M:	H Hartley Sweeten <hsweeten@visionengravers.com>
-@@ -11405,6 +11418,12 @@ M:	John Hawley <warthog9@eaglescrag.net>
- S:	Maintained
- F:	tools/testing/ktest
- 
-+LAZY PERCPU COUNTERS
-+M:	Kent Overstreet <kent.overstreet@linux.dev>
-+S:	Maintained
-+F:	lib/lazy-percpu-counter.c
-+F:	include/linux/lazy-percpu-counter.h
-+
- L3MDEV
- M:	David Ahern <dsahern@kernel.org>
- L:	netdev@vger.kernel.org
-@@ -13124,6 +13143,15 @@ F:	include/linux/memblock.h
- F:	mm/memblock.c
- F:	tools/testing/memblock/
- 
-+MEMORY ALLOCATION TRACKING
-+M:	Suren Baghdasaryan <surenb@google.com>
-+M:	Kent Overstreet <kent.overstreet@linux.dev>
-+S:	Maintained
-+F:	lib/alloc_tag.c
-+F:	lib/pgalloc_tag.c
-+F:	include/linux/alloc_tag.h
-+F:	include/linux/codetag_ctx.h
-+
- MEMORY CONTROLLER DRIVERS
- M:	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
- L:	linux-kernel@vger.kernel.org
-@@ -20421,6 +20449,12 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/luca/wl12xx.git
- F:	drivers/net/wireless/ti/
- F:	include/linux/wl12xx.h
- 
-+TIME STATS
-+M:	Kent Overstreet <kent.overstreet@linux.dev>
-+S:	Maintained
-+F:	lib/time_stats.c
-+F:	include/linux/time_stats.h
-+
- TIMEKEEPING, CLOCKSOURCE CORE, NTP, ALARMTIMER
- M:	John Stultz <jstultz@google.com>
- M:	Thomas Gleixner <tglx@linutronix.de>
--- 
-2.37.2.672.g94769d06f0-goog
-
+Best regards,
+baolu
