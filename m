@@ -1,176 +1,164 @@
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 065DE620
-	for <iommu@lists.linux.dev>; Wed, 31 Aug 2022 01:55:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7589F635
+	for <iommu@lists.linux.dev>; Wed, 31 Aug 2022 04:22:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661910920; x=1693446920;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=l+v5nIzqNowIXrnsEe2OWOgaFIqkzsPW8wkup2CzvX4=;
-  b=ArSlX/1fGB/Ic94c5sZ73PxXA1jcnJ16nIuknjQOwF5+OOUiZ0kOUu5J
-   jvN74LBGQzBgxu8DvwetvZHzHBNtP7l1BaiAsSFJ5nUqo6MtG0ilgPubM
-   QaRNvJtTteWQ65Cfu7DAfN9F6ubVLnjwufPsiOH2y4sgpErkQWnIvWOq8
-   7oPiGo6yyUgQCnlfCxfQg8AHNmeOdu/xeiOm4rCabOcp0W4cxoaXcyT5F
-   COy7YSsaAfqezu91G5OLp+c1mKrUKA3llvglPGdeAcd9HVXj0tdmzxy6T
-   q1+nHR2bxlerGxu9M5jGIoWAh8ViMRFLDOZX1lnlzND2t5FFgOhipIVFf
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="282322399"
+  t=1661919774; x=1693455774;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=i65h1tDliA3+xye0o+BN5JUJBFbxoZVbV0uN2OpbmBY=;
+  b=fndPLLvMj9P1DgBQMrMZxdqs7xY+THJrDt2NjJZ2PtA8w4mdFTM+fJZe
+   L75x2DQPdWIug5XbvlGEmu2YxHch23iKVZ7vxIJUR+UuQ+BfBt8alIuMp
+   LphuJl7U6ixockrXkniEynWMGQF+gG+uV+dzNMSYtCML75fgXGeMefj9z
+   dGmUorqZy1tP4zrR9igPpE7smYAEKZgwAob5RbluJXfri5XZHxKt3KBD9
+   Ai4OlUt/yDXyGL/W/U8dPHNNiJuTjcIeyruKd7+urHSwpjvuyelubCS0p
+   CELDYm5v0jD9Z3vLDMfhN7p2PcTz9Iw5Z0Sbv9DPa2ovSXkzLxpW9SqQv
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="296648753"
 X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
-   d="scan'208";a="282322399"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 18:55:19 -0700
+   d="scan'208";a="296648753"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 21:22:54 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
-   d="scan'208";a="608049835"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by orsmga007.jf.intel.com with ESMTP; 30 Aug 2022 18:55:15 -0700
-Message-ID: <c46ec383-bd51-1d78-ff81-0bee064ce1cb@linux.intel.com>
-Date: Wed, 31 Aug 2022 09:49:44 +0800
+   d="scan'208";a="940300772"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by fmsmga005.fm.intel.com with ESMTP; 30 Aug 2022 21:22:53 -0700
+Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 30 Aug 2022 21:22:53 -0700
+Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
+ ORSMSX608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 30 Aug 2022 21:22:52 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Tue, 30 Aug 2022 21:22:52 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.173)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Tue, 30 Aug 2022 21:22:52 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Sxv2rqNkYZ0eLcZgPe37sgmpPo8IhthNX9UonfnWa3p07G+fNf1hZJYzuHmBNtSeF63peD6xBugiRDHguSS2xEODp+ylOnrlQwzOb5v4uwaG7k9du4WAQ0s4cbmvSTRz5FW4WvhMM4tF5knBlPxY1Q/2r5TAwlg0wET7GQpZLQLrlxeYevY8JXRLUIMvay7whx1Isc7j4vt+0m5UTcR8JqQeUTRV0Ow3QPhXLUaaAxsnRdKOd1Va4unWc6Af0nN5X7ELUqaU4OHhNPHu4GHuZ5bF9UUf8XtRFJu3NCwd9TZfRzYr4GLDi+Ks70HJccC373AF4PtHXBNdpTXCkDMUKg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QRPfTIltKjLcAYiPAVvb5Der9zgNhM92iPzz31SfVZs=;
+ b=R34NdD/cdgLe8KN4hiltSA7cvSm1hXetKadX0hgj1Rl17qeTN3f+NO6whf0eHEDqhJjs+u2X+FH6+xHJXCLwsM54uVeF8mt/oV7NBmDasnmEDAbHUY2SPABH3Ijet44eKS3rixmw/QJnp6JdYwnRJKsrcVsSOGNH4T/FvsXfuRRiRy1ebeVdG/Qjaf8aVd72MJG9HcRgiFvLe5VP2fWqhSCjuPYtJPYeixQ1tzkWjjwmUL0dI0t+VDCTidSWgeE5IAWA3j1NbejacFRaxCyT0HZLpEYl88szvy/qESM1cNCCJ9T5JrIh4S/25DScb7Bwfn3c0UTvvPMJaP+zxjF+rA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from MWHPR1101MB2221.namprd11.prod.outlook.com
+ (2603:10b6:301:53::18) by SJ1PR11MB6204.namprd11.prod.outlook.com
+ (2603:10b6:a03:459::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.21; Wed, 31 Aug
+ 2022 04:22:51 +0000
+Received: from MWHPR1101MB2221.namprd11.prod.outlook.com
+ ([fe80::e9a3:201:f95c:891e]) by MWHPR1101MB2221.namprd11.prod.outlook.com
+ ([fe80::e9a3:201:f95c:891e%7]) with mapi id 15.20.5566.021; Wed, 31 Aug 2022
+ 04:22:50 +0000
+Date: Wed, 31 Aug 2022 12:22:45 +0800
+From: Chao Gao <chao.gao@intel.com>
+To: Robin Murphy <robin.murphy@arm.com>
+CC: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<hch@infradead.org>, <m.szyprowski@samsung.com>
+Subject: Re: [PATCH] swiotlb: fix a typo
+Message-ID: <Yw7iFQGpStC6YodP@gao-cwp>
+References: <20220826095046.880626-1-chao.gao@intel.com>
+ <cd53526d-2564-996b-7b0d-d1fe9f114590@arm.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <cd53526d-2564-996b-7b0d-d1fe9f114590@arm.com>
+X-ClientProxiedBy: SG2PR01CA0126.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:40::30) To MWHPR1101MB2221.namprd11.prod.outlook.com
+ (2603:10b6:301:53::18)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Christoph Hellwig <hch@infradead.org>, Bjorn Helgaas <bhelgaas@google.com>,
- Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Dave Jiang <dave.jiang@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
- Vinod Koul <vkoul@kernel.org>, Eric Auger <eric.auger@redhat.com>,
- Liu Yi L <yi.l.liu@intel.com>, Jacob jun Pan <jacob.jun.pan@intel.com>,
- Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony <tony.zhu@intel.com>,
- iommu@lists.linux.dev, linux-pci@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v12 07/17] iommu: Try to allocate blocking domain when
- probing device
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
- <20220826121141.50743-8-baolu.lu@linux.intel.com>
- <YwjeL2SVmdRpoWb6@nvidia.com>
- <316f6575-59ea-08e3-aaaf-bc1e4f42a574@linux.intel.com>
- <Ywz3A3tHEzY+Sf7b@nvidia.com>
- <c7d71936-ea06-3a71-d13a-cedd108413b5@linux.intel.com>
- <Yw4Qzif8W53ykR6K@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Yw4Qzif8W53ykR6K@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: fbe31e7c-6445-4d12-51af-08da8b087778
+X-MS-TrafficTypeDiagnostic: SJ1PR11MB6204:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: bxF1TJQQvT11JMW+8ScVL2N724TJw0KeYgl7jODOzOh2ItWLjpH7L8cDevrTGDsozxmsV46lB/xv+VDJrBIwS2xsEyHPY56twvtu7LKc7nunM1i8tf9eIdREd4949yFhmfJHQYRCS35ALF5ymjPVb9LLBnsou2zOPCcfIoNbKWUh8QAI0TwAd9wiJBGi9INSOWzDuUHe3m2wjpuoy8ANoUum/hujdAi33GzP2LTz8LvoKFwHMmFehzBsJDDJHaiigrYqanDa7aTaYVwjWCcAB1IA3KUtLHkbFDNPud8MUluFH5P5c8V8j+QUIM1/75WvTQGs/sKeN3Pm8HrSBPoQpyQVaeFZ/kqzKfxrROstqPCL0UjfwaDWOxRNpo19iKoWZlbytsEI8rSIHzvrMGND8PurokNpmzWfq5418CnFNtk0vn618YWA00G4Mhikk7GAuHiDEh73ubYvSXoEU/76wZHf0GvT6R9v1mpwbcsTXG80ruSXCRCsq+tkVcwWPwulZmWzQ8cvP3LU0ovDTatmDr+UwQbimh0uCnosLHqucvSqNeK4iGbKSYw7AX9eq6SpOIvBefN+WPRqeGDjFNUNgNf5JNq9qmoWnBr4hRvXJOErbyGgXrPh7mvKAo/0Rpkttv2rz51B2ugG4D+gUNN627EKwGkmpu3J+Laho0m0Fh8zePg65ZgxIGWsNYha9NF+0qGH5W8aWdyP5OnsJHviuA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1101MB2221.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(346002)(136003)(39860400002)(376002)(396003)(366004)(5660300002)(8936002)(41300700001)(6666004)(186003)(9686003)(86362001)(26005)(44832011)(6506007)(6512007)(2906002)(316002)(6916009)(66946007)(478600001)(66476007)(38100700002)(4326008)(82960400001)(6486002)(8676002)(66556008)(33716001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Fcg0b6wmxfXkOGi17fVoeZxr22GdX7gS0cFnluYHdzsHBaqtRZDX32DKqw7G?=
+ =?us-ascii?Q?FnlKi8usNltuUuMh2OwwBvYaat7EwlG6mbNE2SyNrN7JHdEkBgFFRm6Fj1jd?=
+ =?us-ascii?Q?rwo/g9x9+0tUAQNgr8qVdicA7aSihh8gAGQEcOV6TX+c7qICD8oDAA50syx4?=
+ =?us-ascii?Q?ok0f3qiOjk8CO+Zeq3y38lE9gJvbkCS7glks9mwv0CwDfo3yvfuFldknlsY8?=
+ =?us-ascii?Q?KlW1lPmi7oH9wbMnuSJdSwLY0SkrjH4g8APbbPCF+o8VYkmW1/KC7eFY3Kor?=
+ =?us-ascii?Q?zTNGQ9T7KjVloW25OSsVLfkqQAfWgz4QV3fcnk35OxmO5SDTxjRNqUGUbNjK?=
+ =?us-ascii?Q?j6SLaBYHAXRXdbHsynOfv1nAAtIuWiff/SkK1En42LHBoQ7M3TPNmXdh67jY?=
+ =?us-ascii?Q?SCympYXaj94jV/UYervT1Rl92rAgGDHAXVBH2Ka12yEiKnkwqZfWl6eeVnkg?=
+ =?us-ascii?Q?TtxEPP5uITg211cJ3JNbU2EWVnywobGWr8reCpGoZPU8B2PF7yWPwdk62RIj?=
+ =?us-ascii?Q?x/jQqRA8eXKT5xEKoguND3BYyIYVMGu6IMpuunmKZJkOE4cjhk7ZgxlTKjGp?=
+ =?us-ascii?Q?bvXdbUfbwrvsP8SsItNfQc0El2+tbhDyBTx+mr/Yn4kIVkxJIB9ug6rCD5l/?=
+ =?us-ascii?Q?G4uKIN04lYzB+UES1oukgYq9UrcpVxEsCDEz080DXgGQaSGO5RxjchUobUez?=
+ =?us-ascii?Q?12z9DoYL2U9kOhvgWDgkqKrD9oxrbhSg2fucj/CXJcVydE7fPlpqz/kcK0GI?=
+ =?us-ascii?Q?/gVq0H2TCm+OmmgN075vzrmiAHcftzg9EPf7dQxRUV62JUqCUkPyoJQpjYGP?=
+ =?us-ascii?Q?PQQWpYcrSUEwFuPsCffU25uzJ2shAMjPTfMBfFo0bbmK2ZwQwsgd5/NHhz1w?=
+ =?us-ascii?Q?w/w4lZx5BXDQ+la6pCv4FkZC6f7L1nbrj75wjFYgzhZNXx1dWzb0D85nfzQF?=
+ =?us-ascii?Q?zr0BvLLZOAyKoCTJFM6I/a0EnCN9Y9OCTWcn5q8SXHmnwKrPoZ3uDEseYiuq?=
+ =?us-ascii?Q?++HFBueB7XFN9lPfcPiVv69Ty94z7ljFxgch8f9nxAmOjondel26X0c9EqIA?=
+ =?us-ascii?Q?N0AER4LvL6pmFsWm0u1SiYpopWrI2K6qRGXLTgacaulGX0O+VET68X3dT4sY?=
+ =?us-ascii?Q?B7jEvTZT97ebuElfhCRXcQja9l4+GCkWp/7i1Hwjx8tiiYc4hB9Oxg8dsjow?=
+ =?us-ascii?Q?2lk5kVHyvZx+ykh/ad9AcUO526aIYlB4/0kWlQWLcZk72jAjWuY277efKIFk?=
+ =?us-ascii?Q?XGznkoTe612hIu0QVU1UpEz4p4KQohprnQpt815wcfPaBefJz01TpojwUalF?=
+ =?us-ascii?Q?0iuUCvoGtj6ImXBilWbmvMo3IspmIehioL+9aoRsVv3I2w+G4K5fhUIj4zX1?=
+ =?us-ascii?Q?D3KZ0/bcOKNJGyZXxKYO27Q4cIZxpDbs6gv8RVaEszeFQeL5fGRGA9VtJ4Kn?=
+ =?us-ascii?Q?1+GBtzBCLfZjSyune4W4I5/aCC5ewytZOKk6a+eNr+Dke8OVW19dMTC4KdAa?=
+ =?us-ascii?Q?826rNPii/CzAqq2onQAroazhbxkWjyvLYOnP3vX4uD4DmJ0m4yjTnJylzbr9?=
+ =?us-ascii?Q?VDKXo3gQQoOYj7ENCuoXQ1NNd4r5vKFkwYOiE3TY?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: fbe31e7c-6445-4d12-51af-08da8b087778
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1101MB2221.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2022 04:22:50.7969
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ZDTiPWJtFLMdR91N2+qFrr5u4jXtjM4LL9OS3XuIOTsnoEuDpdVPPe6VjobRxYoJuBshqIaXBNqNUya95GnQKA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR11MB6204
+X-OriginatorOrg: intel.com
 
-On 8/30/22 9:29 PM, Jason Gunthorpe wrote:
-> On Tue, Aug 30, 2022 at 09:46:01AM +0800, Baolu Lu wrote:
->> On 2022/8/30 01:27, Jason Gunthorpe wrote:
->>> On Mon, Aug 29, 2022 at 11:40:24AM +0800, Baolu Lu wrote:
->>>> On 2022/8/26 22:52, Jason Gunthorpe wrote:
->>>>> On Fri, Aug 26, 2022 at 08:11:31PM +0800, Lu Baolu wrote:
->>>>>> Allocate the blocking domain when probing devices if the driver supports
->>>>>> blocking domain allocation. Otherwise, revert to the previous behavior,
->>>>>> that is, use UNMANAGED domain instead when the blocking domain is needed.
->>>>>>
->>>>>> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
->>>>>> Tested-by: Zhangfei Gao<zhangfei.gao@linaro.org>
->>>>>> Tested-by: Tony Zhu<tony.zhu@intel.com>
->>>>>> ---
->>>>>>     drivers/iommu/iommu.c | 29 +++++++++++++++++------------
->>>>>>     1 file changed, 17 insertions(+), 12 deletions(-)
->>>>> This seems like a lot of overhead to allocate these things for every
->>>>> group?
->>>>>
->>>>> Why not add a simple refcount on the blocking domain instead and
->>>>> allocate the domain on the pasid attach like we do for ownership?
->>>>
->>>> I am working towards implementing static instance of blocking domain for
->>>> each IOMMU driver, and then, there's no much overhead to allocate it in
->>>> the probing device path.
->>>
->>> Well, I thought about that and I don't think we can get
->>> there in a short order.
->>
->> Yes. Fair enough.
->>
->>> Would rather you progress this series without
->>> getting entangled in such a big adventure
->>
->> Agreed. I will drop this patch and add below code in the iommu
->> interface:
->>
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -3219,6 +3219,26 @@ int iommu_attach_device_pasid(struct iommu_domain
->> *domain,
->>                  return -ENODEV;
->>
->>          mutex_lock(&group->mutex);
->> +
->> +       /*
->> +        * The underlying IOMMU driver needs to support blocking domain
->> +        * allocation and the callback to block DMA transactions with a
->> +        * specific PASID.
->> +        */
->> +       if (!group->blocking_domain) {
->> +               group->blocking_domain = __iommu_domain_alloc(dev->bus,
->> +                               IOMMU_DOMAIN_BLOCKED);
->> +               if (!group->blocking_domain) {
->> +                       ret = -ENODEV;
->> +                       goto out_unlock;
->> +               }
->> +       }
->> +
->> +       if (!group->blocking_domain->ops->set_dev_pasid) {
->> +               ret = -EOPNOTSUPP;
->> +               goto out_unlock;
->> +       }
->> +
->>          curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain,
->> GFP_KERNEL);
->>          if (curr) {
->>                  ret = xa_err(curr) ? : -EBUSY;
->>
->> Currently both ARM SMMUv3 and VT-d drivers use static blocking domain.
->> Hence I didn't use a refcount for blocking domain release here.
-> 
-> I don't think that works in the general case, you can't just destroy
-> what is in group->blocking_domain..
+On Tue, Aug 30, 2022 at 10:23:51AM +0100, Robin Murphy wrote:
+>On 2022-08-26 10:50, Chao Gao wrote:
+>> "overwirte" isn't a word. It should be "overwrite".
+>> 
+>> Signed-off-by: Chao Gao <chao.gao@intel.com>
+>> ---
+>> BTW, I am wondering if copying the original buffer to the tlb buffer
+>> unconditionally will leak the original buffer to the VMM, especially
+>> when VMM isn't trusted e.g., by confidential VMs. Would it be better
+>> to zero the tlb buffer for dir == DMA_FROM_DEVICE?
+>
+>No, at the point of dma_map(), the buffer contents are owned by the caller,
+>so if parts of that buffer are sensitive and shouldn't be exposed to DMA,
+>then don't map the whole buffer for DMA. There are more DMA API
+>implementations than SWIOTLB.
+>
 
-If I understand you correctly, we can't just free the blocking domain
-and forget about whether this domain is still set on any device?
+I am not sure if all existing drivers ensure that all buffers allocated
+for DMA_FROM_DEVICE are zeroed/poisoned so that they don't have sensitive
+data before dma_map(). If that isn't the case, bouncing the original contents
+(left by the previous user of the buffer) effectively makes the contents
+visible to host/VMM. I am afraid it may be a concern for confidential VMs.
 
-> 
-> Maybe all of this is just the good reason to go to a simple
-> device->ops->remove_dev_pasid() callback and forget about blocking
-> domain here.
+>The whole point of bouncing the original contents here is that doing anything
+>else effectively corrupts any part of the mapping that the device may end up
+>*not* writing to - see the whole sordid original discussion (but don't be
+>confused by the fact that the caller's original data happened to be zeros in
+>that particular case).
 
-Do you mean rolling back to what we did in v10?
-
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -262,6 +262,8 @@ struct iommu_ops {
-   * struct iommu_domain_ops - domain specific operations
-   * @attach_dev: attach an iommu domain to a device
-   * @detach_dev: detach an iommu domain from a device
-+ * @set_dev_pasid: set an iommu domain to a pasid of device
-+ * @block_dev_pasid: block pasid of device from using iommu domain
-   * @map: map a physically contiguous memory region to an iommu domain
-   * @map_pages: map a physically contiguous set of pages of the same 
-size to
-   *             an iommu domain.
-@@ -282,6 +284,10 @@ struct iommu_ops {
-  struct iommu_domain_ops {
-         int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
-         void (*detach_dev)(struct iommu_domain *domain, struct device 
-*dev);
-+       int (*set_dev_pasid)(struct iommu_domain *domain, struct device 
-*dev,
-+                            ioasid_t pasid);
-+       void (*block_dev_pasid)(struct iommu_domain *domain, struct 
-device *dev,
-+                               ioasid_t pasid);
-
-Best regards,
-baolu
+Got it. Thanks for the explanation.
