@@ -1,79 +1,176 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72248620
-	for <iommu@lists.linux.dev>; Wed, 31 Aug 2022 01:53:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-	bh=RhkN3pjenFJ3Z4sU+BUfbopmS9x7erS/IYHXt0Yrgys=; b=QysnhHPVNUGamQ7lXkzW2eGveh
-	lrRg3+WUIjKPhlF4vYw9KekYa0WymOeuQ9HZPakLME5p5qV2twe7OuR2cUMRxXRUExVoM9Da2cXco
-	yxjaOKLwszB82khEd88lF0vcr9JboUUXxbv1iMGT6e8sXnviYouqPSuJ+bj2WkKHW8IkoHWJTYVAa
-	nyEihlkujx5tC79yFjtJBfsR8iMLwz25U0Q5QoAClOCZQUDuPmiYE4b2xfU5PgTlbLr8FZaKX/Pc6
-	90hO5RXPljYmishV1MXlptWBpBn7w9xcC6yjahtqPBxuBT6MCskGBWplJNcTqSA8jP2wkHctWyQFF
-	e1X2LPNQ==;
-Received: from [2601:1c0:6280:3f0::a6b3]
-	by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-	id 1oTCv3-0036yC-Ja; Wed, 31 Aug 2022 01:53:29 +0000
-Message-ID: <241c05a3-52a2-d49f-6962-3af5a94bc3fc@infradead.org>
-Date: Tue, 30 Aug 2022 18:53:26 -0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 065DE620
+	for <iommu@lists.linux.dev>; Wed, 31 Aug 2022 01:55:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661910920; x=1693446920;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=l+v5nIzqNowIXrnsEe2OWOgaFIqkzsPW8wkup2CzvX4=;
+  b=ArSlX/1fGB/Ic94c5sZ73PxXA1jcnJ16nIuknjQOwF5+OOUiZ0kOUu5J
+   jvN74LBGQzBgxu8DvwetvZHzHBNtP7l1BaiAsSFJ5nUqo6MtG0ilgPubM
+   QaRNvJtTteWQ65Cfu7DAfN9F6ubVLnjwufPsiOH2y4sgpErkQWnIvWOq8
+   7oPiGo6yyUgQCnlfCxfQg8AHNmeOdu/xeiOm4rCabOcp0W4cxoaXcyT5F
+   COy7YSsaAfqezu91G5OLp+c1mKrUKA3llvglPGdeAcd9HVXj0tdmzxy6T
+   q1+nHR2bxlerGxu9M5jGIoWAh8ViMRFLDOZX1lnlzND2t5FFgOhipIVFf
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="282322399"
+X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
+   d="scan'208";a="282322399"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 18:55:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
+   d="scan'208";a="608049835"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
+  by orsmga007.jf.intel.com with ESMTP; 30 Aug 2022 18:55:15 -0700
+Message-ID: <c46ec383-bd51-1d78-ff81-0bee064ce1cb@linux.intel.com>
+Date: Wed, 31 Aug 2022 09:49:44 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [RFC PATCH 27/30] Code tagging based latency tracking
-Content-Language: en-US
-To: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org
-Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz,
- hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de,
- dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
- void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com,
- ldufour@linux.ibm.com, peterx@redhat.com, david@redhat.com, axboe@kernel.dk,
- mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org,
- changbin.du@intel.com, ytcoode@gmail.com, vincent.guittot@linaro.org,
- dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
- bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
- iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
- elver@google.com, dvyukov@google.com, shakeelb@google.com,
- songmuchun@bytedance.com, arnd@arndb.de, jbaron@akamai.com,
- rientjes@google.com, minchan@google.com, kaleshsingh@google.com,
- kernel-team@android.com, linux-mm@kvack.org, iommu@lists.linux.dev,
- kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
- linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
- linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Christoph Hellwig <hch@infradead.org>, Bjorn Helgaas <bhelgaas@google.com>,
+ Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Dave Jiang <dave.jiang@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
+ Vinod Koul <vkoul@kernel.org>, Eric Auger <eric.auger@redhat.com>,
+ Liu Yi L <yi.l.liu@intel.com>, Jacob jun Pan <jacob.jun.pan@intel.com>,
+ Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony <tony.zhu@intel.com>,
+ iommu@lists.linux.dev, linux-pci@vger.kernel.org,
  linux-kernel@vger.kernel.org
-References: <20220830214919.53220-1-surenb@google.com>
- <20220830214919.53220-28-surenb@google.com>
-From: Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220830214919.53220-28-surenb@google.com>
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: [PATCH v12 07/17] iommu: Try to allocate blocking domain when
+ probing device
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
+ <20220826121141.50743-8-baolu.lu@linux.intel.com>
+ <YwjeL2SVmdRpoWb6@nvidia.com>
+ <316f6575-59ea-08e3-aaaf-bc1e4f42a574@linux.intel.com>
+ <Ywz3A3tHEzY+Sf7b@nvidia.com>
+ <c7d71936-ea06-3a71-d13a-cedd108413b5@linux.intel.com>
+ <Yw4Qzif8W53ykR6K@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <Yw4Qzif8W53ykR6K@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
+On 8/30/22 9:29 PM, Jason Gunthorpe wrote:
+> On Tue, Aug 30, 2022 at 09:46:01AM +0800, Baolu Lu wrote:
+>> On 2022/8/30 01:27, Jason Gunthorpe wrote:
+>>> On Mon, Aug 29, 2022 at 11:40:24AM +0800, Baolu Lu wrote:
+>>>> On 2022/8/26 22:52, Jason Gunthorpe wrote:
+>>>>> On Fri, Aug 26, 2022 at 08:11:31PM +0800, Lu Baolu wrote:
+>>>>>> Allocate the blocking domain when probing devices if the driver supports
+>>>>>> blocking domain allocation. Otherwise, revert to the previous behavior,
+>>>>>> that is, use UNMANAGED domain instead when the blocking domain is needed.
+>>>>>>
+>>>>>> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+>>>>>> Tested-by: Zhangfei Gao<zhangfei.gao@linaro.org>
+>>>>>> Tested-by: Tony Zhu<tony.zhu@intel.com>
+>>>>>> ---
+>>>>>>     drivers/iommu/iommu.c | 29 +++++++++++++++++------------
+>>>>>>     1 file changed, 17 insertions(+), 12 deletions(-)
+>>>>> This seems like a lot of overhead to allocate these things for every
+>>>>> group?
+>>>>>
+>>>>> Why not add a simple refcount on the blocking domain instead and
+>>>>> allocate the domain on the pasid attach like we do for ownership?
+>>>>
+>>>> I am working towards implementing static instance of blocking domain for
+>>>> each IOMMU driver, and then, there's no much overhead to allocate it in
+>>>> the probing device path.
+>>>
+>>> Well, I thought about that and I don't think we can get
+>>> there in a short order.
+>>
+>> Yes. Fair enough.
+>>
+>>> Would rather you progress this series without
+>>> getting entangled in such a big adventure
+>>
+>> Agreed. I will drop this patch and add below code in the iommu
+>> interface:
+>>
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -3219,6 +3219,26 @@ int iommu_attach_device_pasid(struct iommu_domain
+>> *domain,
+>>                  return -ENODEV;
+>>
+>>          mutex_lock(&group->mutex);
+>> +
+>> +       /*
+>> +        * The underlying IOMMU driver needs to support blocking domain
+>> +        * allocation and the callback to block DMA transactions with a
+>> +        * specific PASID.
+>> +        */
+>> +       if (!group->blocking_domain) {
+>> +               group->blocking_domain = __iommu_domain_alloc(dev->bus,
+>> +                               IOMMU_DOMAIN_BLOCKED);
+>> +               if (!group->blocking_domain) {
+>> +                       ret = -ENODEV;
+>> +                       goto out_unlock;
+>> +               }
+>> +       }
+>> +
+>> +       if (!group->blocking_domain->ops->set_dev_pasid) {
+>> +               ret = -EOPNOTSUPP;
+>> +               goto out_unlock;
+>> +       }
+>> +
+>>          curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain,
+>> GFP_KERNEL);
+>>          if (curr) {
+>>                  ret = xa_err(curr) ? : -EBUSY;
+>>
+>> Currently both ARM SMMUv3 and VT-d drivers use static blocking domain.
+>> Hence I didn't use a refcount for blocking domain release here.
+> 
+> I don't think that works in the general case, you can't just destroy
+> what is in group->blocking_domain..
 
+If I understand you correctly, we can't just free the blocking domain
+and forget about whether this domain is still set on any device?
 
-On 8/30/22 14:49, Suren Baghdasaryan wrote:
-> diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-> index b7d03afbc808..b0f86643b8f0 100644
-> --- a/lib/Kconfig.debug
-> +++ b/lib/Kconfig.debug
-> @@ -1728,6 +1728,14 @@ config LATENCYTOP
->  	  Enable this option if you want to use the LatencyTOP tool
->  	  to find out which userspace is blocking on what kernel operations.
->  
-> +config CODETAG_TIME_STATS
-> +	bool "Code tagging based latency measuring"
-> +	depends on DEBUG_FS
-> +	select TIME_STATS
-> +	select CODE_TAGGING
-> +	help
-> +	  Enabling this option makes latency statistics available in debugfs
+> 
+> Maybe all of this is just the good reason to go to a simple
+> device->ops->remove_dev_pasid() callback and forget about blocking
+> domain here.
 
-Missing period at the end of the sentence.
+Do you mean rolling back to what we did in v10?
 
--- 
-~Randy
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -262,6 +262,8 @@ struct iommu_ops {
+   * struct iommu_domain_ops - domain specific operations
+   * @attach_dev: attach an iommu domain to a device
+   * @detach_dev: detach an iommu domain from a device
++ * @set_dev_pasid: set an iommu domain to a pasid of device
++ * @block_dev_pasid: block pasid of device from using iommu domain
+   * @map: map a physically contiguous memory region to an iommu domain
+   * @map_pages: map a physically contiguous set of pages of the same 
+size to
+   *             an iommu domain.
+@@ -282,6 +284,10 @@ struct iommu_ops {
+  struct iommu_domain_ops {
+         int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
+         void (*detach_dev)(struct iommu_domain *domain, struct device 
+*dev);
++       int (*set_dev_pasid)(struct iommu_domain *domain, struct device 
+*dev,
++                            ioasid_t pasid);
++       void (*block_dev_pasid)(struct iommu_domain *domain, struct 
+device *dev,
++                               ioasid_t pasid);
+
+Best regards,
+baolu
