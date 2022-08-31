@@ -1,231 +1,169 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5608E2580
-	for <iommu@lists.linux.dev>; Wed, 31 Aug 2022 14:13:10 +0000 (UTC)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27VDBxmH009891;
-	Wed, 31 Aug 2022 14:13:02 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=sNHd6jhntllzDBxba7Kz1VGI6brQ9hDYb2vKPlf8D/0=;
- b=czOtca7IFwGlETU/QygFPprt33CKpQ0l25xMZ+ISm+Yd4x80x/ymOT+XVzj8RKgJhj7i
- eOP2P0ND2GWwWJAeWWtU3kkC+jv393JGliyZXhERp6z83tp9VyyST+dtAzf2pwuzSA4p
- Wo0ksFjCF0d+aLCgrX59m8p9G9bCUHZlDoIZ1IIFpzBc7j3EOAvICwGnlfd+g3qznyTA
- 2zoCQmvMexFU+TjmRzJYCUS6KfPaFFAd1mjRewzCm6385bTD+HMmq+D/resxwPKpAdGe
- 0ySEriIwyc5ZbPNQzHeD1tvO2gumKo6XkgAWvtlx8LBDzYSMYdtntzrTIIsP/+F0OZpJ Vw== 
-Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ja8agjjj7-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 31 Aug 2022 14:13:01 +0000
-Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
-	by ppma05wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27VEA1Ln010160;
-	Wed, 31 Aug 2022 14:12:59 GMT
-Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
-	by ppma05wdc.us.ibm.com with ESMTP id 3j7aw9tvhw-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 31 Aug 2022 14:12:59 +0000
-Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
-	by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27VECvVm25756000
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 31 Aug 2022 14:12:57 GMT
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id C748A136053;
-	Wed, 31 Aug 2022 14:12:57 +0000 (GMT)
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 4ADA7136055;
-	Wed, 31 Aug 2022 14:12:56 +0000 (GMT)
-Received: from [9.160.77.30] (unknown [9.160.77.30])
-	by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
-	Wed, 31 Aug 2022 14:12:56 +0000 (GMT)
-Message-ID: <89bd532b-33ac-5f9d-a06e-eb002168778b@linux.ibm.com>
-Date: Wed, 31 Aug 2022 10:12:55 -0400
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20C9446AC
+	for <iommu@lists.linux.dev>; Wed, 31 Aug 2022 15:28:52 +0000 (UTC)
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-3376851fe13so310819187b3.6
+        for <iommu@lists.linux.dev>; Wed, 31 Aug 2022 08:28:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=WG3L5AqBV6fri0E+FNG2tsbDp/uFyzzRTMikwR7NSY8=;
+        b=K4mZtzeFsKxJKOsvfz3u8buWcDbdHB0bPmoDat2amZVxf6i7fSAQFaeyCHfBhOW0gn
+         TYiPTPwinxH8yKQGmCabK7zsAg7t70798MwIPLUmtbWdWtkPoH8nkkd0L6+Cf/71NitT
+         pIpTm135oSjNuBnp7lYQC08Y98tRGNR+0DcT0LYO7fxV5Ng1p7CsbsO1uZH/I63XPhjj
+         LoKETIXPqOU+NyCB1s85tiwuh2e//ou8VKmFXVH3pOn419Mn7E1W55VRw4JlXGoTp7nX
+         lwPAdy+2tjWZHnwP0BxNNwETNl+fZjmT1bVCkdUM4qWebnjcYikmadptjs0201jXoXGN
+         /Wug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=WG3L5AqBV6fri0E+FNG2tsbDp/uFyzzRTMikwR7NSY8=;
+        b=NuSbCGtv02yMuBOiveVKGkbV5au3UlDSVPPqTTmz9QCQxRROXD1KDKhnF7RSSfhY6F
+         3nhpPkUdxkGCzzaE2Zvt0viyuDPijTohWDaBFr6PJT0QvkzRPa+ZTWJeuNEf/RoAoT3T
+         UGVneET5N1rrh3sxsij+i6SWDCpg6qeFD1yqFvkxJQcqM60pvi96/S22XeYNyQlmVg/p
+         kbYCwPEr++MBzqxsgjTtKoU4D1Mj1i/ICaa9F7jH6TPX3W3//4m5sm+t9IPCzJ/iU3ny
+         5kOM/beCVOLnoxtkytmOpAeabQopzzmAFb4aZEMQciKN2xsg79jbCuam/ztgmChIu/lZ
+         fMdQ==
+X-Gm-Message-State: ACgBeo2JUY7bKGU6ewffYG3nh1MVZVj1bZ04X6aime56AvBYjAQqH0AH
+	pO040XP0Soa/o8LQp1Z0usCf1MXcTSQfMM0WMtVMXQ==
+X-Google-Smtp-Source: AA6agR42WGqJyo3CQ/wsWtBH4QMjo2FwsKfgLb/Aa3jKv6m3xoE+xzdLy95JXttnzairFt+14Q8rzI0UFGuD4qoW950=
+X-Received: by 2002:a0d:d850:0:b0:340:d2c0:b022 with SMTP id
+ a77-20020a0dd850000000b00340d2c0b022mr16165795ywe.469.1661959731749; Wed, 31
+ Aug 2022 08:28:51 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH v3] iommu/s390: Fix race with release_device ops
-Content-Language: en-US
-To: Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev
-Cc: linux-s390@vger.kernel.org, schnelle@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, joro@8bytes.org, will@kernel.org,
-        robin.murphy@arm.com, jgg@nvidia.com, linux-kernel@vger.kernel.org
-References: <20220830201546.18871-1-mjrosato@linux.ibm.com>
- <12a49c8d-cb38-e22a-0040-88350b6210aa@linux.ibm.com>
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <12a49c8d-cb38-e22a-0040-88350b6210aa@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: xUAnEf01DPaPieg_HMj35h1tHBXVGKL8
-X-Proofpoint-ORIG-GUID: xUAnEf01DPaPieg_HMj35h1tHBXVGKL8
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-31_09,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 mlxlogscore=999
- bulkscore=0 priorityscore=1501 impostorscore=0 clxscore=1015 adultscore=0
- phishscore=0 malwarescore=0 suspectscore=0 spamscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2208310071
+References: <20220830214919.53220-1-surenb@google.com> <Yw8P8xZ4zqu121xL@hirez.programming.kicks-ass.net>
+ <20220831084230.3ti3vitrzhzsu3fs@moria.home.lan> <20220831101948.f3etturccmp5ovkl@suse.de>
+ <Yw88RFuBgc7yFYxA@dhcp22.suse.cz>
+In-Reply-To: <Yw88RFuBgc7yFYxA@dhcp22.suse.cz>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Wed, 31 Aug 2022 08:28:40 -0700
+Message-ID: <CAJuCfpGZ==v0HGWBzZzHTgbo4B_ZBe6V6U4T_788LVWj8HhCRQ@mail.gmail.com>
+Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
+To: Michal Hocko <mhocko@suse.com>
+Cc: Mel Gorman <mgorman@suse.de>, Kent Overstreet <kent.overstreet@linux.dev>, 
+	Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, 
+	Vlastimil Babka <vbabka@suse.cz>, Johannes Weiner <hannes@cmpxchg.org>, 
+	Roman Gushchin <roman.gushchin@linux.dev>, Davidlohr Bueso <dave@stgolabs.net>, 
+	Matthew Wilcox <willy@infradead.org>, "Liam R. Howlett" <liam.howlett@oracle.com>, 
+	David Vernet <void@manifault.com>, Juri Lelli <juri.lelli@redhat.com>, 
+	Laurent Dufour <ldufour@linux.ibm.com>, Peter Xu <peterx@redhat.com>, 
+	David Hildenbrand <david@redhat.com>, Jens Axboe <axboe@kernel.dk>, mcgrof@kernel.org, 
+	masahiroy@kernel.org, nathan@kernel.org, changbin.du@intel.com, 
+	ytcoode@gmail.com, Vincent Guittot <vincent.guittot@linaro.org>, 
+	Dietmar Eggemann <dietmar.eggemann@arm.com>, Steven Rostedt <rostedt@goodmis.org>, 
+	Benjamin Segall <bsegall@google.com>, Daniel Bristot de Oliveira <bristot@redhat.com>, 
+	Valentin Schneider <vschneid@redhat.com>, Christopher Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, 
+	Joonsoo Kim <iamjoonsoo.kim@lge.com>, 42.hyeyoo@gmail.com, 
+	Alexander Potapenko <glider@google.com>, Marco Elver <elver@google.com>, dvyukov@google.com, 
+	Shakeel Butt <shakeelb@google.com>, Muchun Song <songmuchun@bytedance.com>, arnd@arndb.de, 
+	jbaron@akamai.com, David Rientjes <rientjes@google.com>, Minchan Kim <minchan@google.com>, 
+	Kalesh Singh <kaleshsingh@google.com>, kernel-team <kernel-team@android.com>, 
+	linux-mm <linux-mm@kvack.org>, iommu@lists.linux.dev, kasan-dev@googlegroups.com, 
+	io-uring@vger.kernel.org, linux-arch@vger.kernel.org, 
+	xen-devel@lists.xenproject.org, linux-bcache@vger.kernel.org, 
+	linux-modules@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-On 8/31/22 5:05 AM, Pierre Morel wrote:
-> 
-> 
-> On 8/30/22 22:15, Matthew Rosato wrote:
->> With commit fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev
->> calls") s390-iommu is supposed to handle dynamic switching between IOMMU
->> domains and the DMA API handling.  However, this commit does not
->> sufficiently handle the case where the device is released via a call
->> to the release_device op as it may occur at the same time as an opposing
->> attach_dev or detach_dev since the group mutex is not held over
->> release_device.  This was observed if the device is deconfigured during a
->> small window during vfio-pci initialization and can result in WARNs and
->> potential kernel panics.
->>
->> Handle this by tracking when the device is probed/released via
->> dev_iommu_priv_set/get().  Ensure that once the device is released only
->> release_device handles the re-init of the device DMA.
->>
->> Fixes: fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev calls")
->> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
->> ---
->> Changes since v2:
->> - Relocate the list_empty and aperture chekcs in attach_dev to the
->>    their original locations so they are all done under a single
->>    acquisition of the spinlock (Heiko)
->> ---
->>   arch/s390/include/asm/pci.h |  1 +
->>   arch/s390/pci/pci.c         |  1 +
->>   drivers/iommu/s390-iommu.c  | 39 ++++++++++++++++++++++++++++++++++---
->>   3 files changed, 38 insertions(+), 3 deletions(-)
->>
->> diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
->> index 7b4cdadbc023..080251e7b275 100644
->> --- a/arch/s390/include/asm/pci.h
->> +++ b/arch/s390/include/asm/pci.h
->> @@ -157,6 +157,7 @@ struct zpci_dev {
->>       /* DMA stuff */
->>       unsigned long    *dma_table;
->>       spinlock_t    dma_table_lock;
->> +    struct mutex    dma_domain_lock; /* protects s390_domain value */
->>       int        tlb_refresh;
->>         spinlock_t    iommu_bitmap_lock;
->> diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
->> index 73cdc5539384..973edd32ecc9 100644
->> --- a/arch/s390/pci/pci.c
->> +++ b/arch/s390/pci/pci.c
->> @@ -832,6 +832,7 @@ struct zpci_dev *zpci_create_device(u32 fid, u32 fh, enum zpci_state state)
->>       kref_init(&zdev->kref);
->>       mutex_init(&zdev->lock);
->>       mutex_init(&zdev->kzdev_lock);
->> +    mutex_init(&zdev->dma_domain_lock);
->>         rc = zpci_init_iommu(zdev);
->>       if (rc)
->> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
->> index c898bcbbce11..1137d669e849 100644
->> --- a/drivers/iommu/s390-iommu.c
->> +++ b/drivers/iommu/s390-iommu.c
->> @@ -99,6 +99,14 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
->>       if (!domain_device)
->>           return -ENOMEM;
->>   +    /* Leave now if the device has already been released */
->> +    mutex_lock(&zdev->dma_domain_lock);
->> +    if (!dev_iommu_priv_get(dev)) {
->> +        mutex_unlock(&zdev->dma_domain_lock);
->> +        kfree(domain_device);
->> +        return 0;
->> +    }
->> +
->>       if (zdev->dma_table && !zdev->s390_domain) {
->>           cc = zpci_dma_exit_device(zdev);
->>           if (cc) {
->> @@ -132,9 +140,10 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
->>           goto out_restore;
->>       }
->>       domain_device->zdev = zdev;
->> -    zdev->s390_domain = s390_domain;
->>       list_add(&domain_device->list, &s390_domain->devices);
->>       spin_unlock_irqrestore(&s390_domain->list_lock, flags);
->> +    zdev->s390_domain = s390_domain;
->> +    mutex_unlock(&zdev->dma_domain_lock);
->>         return 0;
->>   @@ -147,6 +156,7 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
->>                      virt_to_phys(zdev->dma_table));
->>       }
->>   out_free:
->> +    mutex_unlock(&zdev->dma_domain_lock);
->>       kfree(domain_device);
->>         return rc;
->> @@ -176,17 +186,22 @@ static void s390_iommu_detach_device(struct iommu_domain *domain,
->>       }
->>       spin_unlock_irqrestore(&s390_domain->list_lock, flags);
->>   -    if (found && (zdev->s390_domain == s390_domain)) {
->> +    mutex_lock(&zdev->dma_domain_lock);
->> +    if (found && (zdev->s390_domain == s390_domain) &&
->> +        dev_iommu_priv_get(dev)) {
->>           zdev->s390_domain = NULL;
->>           zpci_unregister_ioat(zdev, 0);
->>           zpci_dma_init_device(zdev);
->>       }
->> +    mutex_unlock(&zdev->dma_domain_lock);
->>   }
->>     static struct iommu_device *s390_iommu_probe_device(struct device *dev)
->>   {
->>       struct zpci_dev *zdev = to_zpci_dev(dev);
->>   +    dev_iommu_priv_set(dev, zdev);
->> +
->>       return &zdev->iommu_dev;
->>   }
->>   @@ -206,10 +221,28 @@ static void s390_iommu_release_device(struct device *dev)
->>        *
->>        * So let's call detach_dev from here if it hasn't been called before.
->>        */
->> -    if (zdev && zdev->s390_domain) {
->> +    if (zdev) {
->> +        /*
->> +         * Clear priv to block further attaches for this device,
->> +         * ensure detaches don't init DMA.  Hold the domain lock
->> +         * to ensure that attach/detach get a consistent view of
->> +         * whether or not the device is released.
->> +         */
->> +        mutex_lock(&zdev->dma_domain_lock);
->> +        dev_iommu_priv_set(dev, NULL);
->> +        mutex_unlock(&zdev->dma_domain_lock);
->> +        /* Make sure this device is removed from the domain list */
->>           domain = iommu_get_domain_for_dev(dev);
-> 
-> 
-> Shouldn't you take the group_mutex before calling directly s390_iommu_detach_device from here?
-> 
+On Wed, Aug 31, 2022 at 3:47 AM Michal Hocko <mhocko@suse.com> wrote:
+>
+> On Wed 31-08-22 11:19:48, Mel Gorman wrote:
+> > On Wed, Aug 31, 2022 at 04:42:30AM -0400, Kent Overstreet wrote:
+> > > On Wed, Aug 31, 2022 at 09:38:27AM +0200, Peter Zijlstra wrote:
+> > > > On Tue, Aug 30, 2022 at 02:48:49PM -0700, Suren Baghdasaryan wrote:
+> > > > > ===========================
+> > > > > Code tagging framework
+> > > > > ===========================
+> > > > > Code tag is a structure identifying a specific location in the source code
+> > > > > which is generated at compile time and can be embedded in an application-
+> > > > > specific structure. Several applications of code tagging are included in
+> > > > > this RFC, such as memory allocation tracking, dynamic fault injection,
+> > > > > latency tracking and improved error code reporting.
+> > > > > Basically, it takes the old trick of "define a special elf section for
+> > > > > objects of a given type so that we can iterate over them at runtime" and
+> > > > > creates a proper library for it.
+> > > >
+> > > > I might be super dense this morning, but what!? I've skimmed through the
+> > > > set and I don't think I get it.
+> > > >
+> > > > What does this provide that ftrace/kprobes don't already allow?
+> > >
+> > > You're kidding, right?
+> >
+> > It's a valid question. From the description, it main addition that would
+> > be hard to do with ftrace or probes is catching where an error code is
+> > returned. A secondary addition would be catching all historical state and
+> > not just state since the tracing started.
+> >
+> > It's also unclear *who* would enable this. It looks like it would mostly
+> > have value during the development stage of an embedded platform to track
+> > kernel memory usage on a per-application basis in an environment where it
+> > may be difficult to setup tracing and tracking. Would it ever be enabled
+> > in production? Would a distribution ever enable this? If it's enabled, any
+> > overhead cannot be disabled/enabled at run or boot time so anyone enabling
+> > this would carry the cost without never necessarily consuming the data.
 
-Well, we can't do that directly as the group mutex is only accessible to the iommu core.  But perhaps the right answer is to call back into the core here by just replacing the existing call to s390_iommu_detach_device below with a call to iommu_detach_device (1 line change).  Then we still ensure DMA is initialized next after this point.  I've been running tests with such a change for the last few hours and this works well.
+Thank you for the question.
+For memory tracking my intent is to have a mechanism that can be enabled in
+the field testing (pre-production testing on a large population of
+internal users).
+The issue that we are often facing is when some memory leaks are happening
+in the field but very hard to reproduce locally. We get a bugreport
+from the user
+which indicates it but often has not enough information to track it. Note that
+quite often these leaks/issues happen in the drivers, so even simply finding out
+where they came from is a big help.
+The way I envision this mechanism to be used is to enable the basic memory
+tracking in the field tests and have a user space process collecting
+the allocation
+statistics periodically (say once an hour). Once it detects some counter growing
+infinitely or atypically (the definition of this is left to the user
+space) it can enable
+context capturing only for that specific location, still keeping the
+overhead to the
+minimum but getting more information about potential issues. Collected stats and
+contexts are then attached to the bugreport and we get more visibility
+into the issue
+when we receive it.
+The goal is to provide a mechanism with low enough overhead that it
+can be enabled
+all the time during these field tests without affecting the device's
+performance profiles.
+Tracing is very cheap when it's disabled but having it enabled all the
+time would
+introduce higher overhead than the counter manipulations.
+My apologies, I should have clarified all this in this cover letter
+from the beginning.
 
-But this also made me notice another subtle issue re: a mismatch between the number of kallocs and kfrees for s390_domain_device.  Need to investigate that further before a next version.
+As for other applications, maybe I'm not such an advanced user of
+tracing but I think only
+the latency tracking application might be done with tracing, assuming
+we have all the
+right tracepoints but I don't see how we would use tracing for fault
+injections and
+descriptive error codes. Again, I might be mistaken.
 
-> 
->>           if (domain)
->>               s390_iommu_detach_device(domain, dev);
-> 
-> 
-> 
-> 
->> +        /* Now ensure DMA is initialized from here */
->> +        mutex_lock(&zdev->dma_domain_lock);
->> +        if (zdev->s390_domain) {
->> +            zdev->s390_domain = NULL;
->> +            zpci_unregister_ioat(zdev, 0);
->> +            zpci_dma_init_device(zdev);
->> +        }
->> +        mutex_unlock(&zdev->dma_domain_lock);
->>       }
->>   }
->>  
-> 
+Thanks,
+Suren.
 
+> >
+> > It might be an ease-of-use thing. Gathering the information from traces
+> > is tricky and would need combining multiple different elements and that
+> > is development effort but not impossible.
+> >
+> > Whatever asking for an explanation as to why equivalent functionality
+> > cannot not be created from ftrace/kprobe/eBPF/whatever is reasonable.
+>
+> Fully agreed and this is especially true for a change this size
+> 77 files changed, 3406 insertions(+), 703 deletions(-)
+>
+> --
+> Michal Hocko
+> SUSE Labs
