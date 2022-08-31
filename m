@@ -1,83 +1,72 @@
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7589F635
-	for <iommu@lists.linux.dev>; Wed, 31 Aug 2022 04:22:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661919774; x=1693455774;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=i65h1tDliA3+xye0o+BN5JUJBFbxoZVbV0uN2OpbmBY=;
-  b=fndPLLvMj9P1DgBQMrMZxdqs7xY+THJrDt2NjJZ2PtA8w4mdFTM+fJZe
-   L75x2DQPdWIug5XbvlGEmu2YxHch23iKVZ7vxIJUR+UuQ+BfBt8alIuMp
-   LphuJl7U6ixockrXkniEynWMGQF+gG+uV+dzNMSYtCML75fgXGeMefj9z
-   dGmUorqZy1tP4zrR9igPpE7smYAEKZgwAob5RbluJXfri5XZHxKt3KBD9
-   Ai4OlUt/yDXyGL/W/U8dPHNNiJuTjcIeyruKd7+urHSwpjvuyelubCS0p
-   CELDYm5v0jD9Z3vLDMfhN7p2PcTz9Iw5Z0Sbv9DPa2ovSXkzLxpW9SqQv
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="296648753"
-X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
-   d="scan'208";a="296648753"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 21:22:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
-   d="scan'208";a="940300772"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by fmsmga005.fm.intel.com with ESMTP; 30 Aug 2022 21:22:53 -0700
-Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 30 Aug 2022 21:22:53 -0700
-Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
- ORSMSX608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 30 Aug 2022 21:22:52 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Tue, 30 Aug 2022 21:22:52 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.173)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Tue, 30 Aug 2022 21:22:52 -0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D3BD652
+	for <iommu@lists.linux.dev>; Wed, 31 Aug 2022 06:01:48 +0000 (UTC)
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27V4uAiB018723;
+	Wed, 31 Aug 2022 06:01:36 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : content-type : in-reply-to : mime-version;
+ s=corp-2022-7-12; bh=V366PT18K1qn5CQP1PbdMubfGxZvI18evXWD1fuZ3fg=;
+ b=QS985yLoDVDObvN2wpRhoqmoVMvk9ORPAYfKDE0KC6gCyfsB+jtFoSjCfzfCZKAUqu40
+ RROsauDrFe165F0g99DkNgXTGhzmmPXzCBJfK8UsBflHDSNlDInuD8kRbZyAupC+rjXs
+ N12PRe1XJBhcx9+rRONt94atmKtEGxaqnsijGb+HY4eAmaC45d6eK4pF6LEct62IJ8t9
+ hfmS54poVZzLsEy+gA7p1gDlVxDF8/A4YV+VoKYpw8Hk6qKoekzMMyMylmNqWcAnIeS2
+ 4nXAu8Bd/bxIvHbCy7YhMTLsRc7yG+U8ZiVZjC7rY1M3F/3ojIEpIPL6LThtO3NnXPIP fg== 
+Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3j7b5a04wq-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 31 Aug 2022 06:01:35 +0000
+Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 27V2Q61c038175;
+	Wed, 31 Aug 2022 06:01:35 GMT
+Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2172.outbound.protection.outlook.com [104.47.59.172])
+	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3j79q4r76f-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 31 Aug 2022 06:01:35 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Sxv2rqNkYZ0eLcZgPe37sgmpPo8IhthNX9UonfnWa3p07G+fNf1hZJYzuHmBNtSeF63peD6xBugiRDHguSS2xEODp+ylOnrlQwzOb5v4uwaG7k9du4WAQ0s4cbmvSTRz5FW4WvhMM4tF5knBlPxY1Q/2r5TAwlg0wET7GQpZLQLrlxeYevY8JXRLUIMvay7whx1Isc7j4vt+0m5UTcR8JqQeUTRV0Ow3QPhXLUaaAxsnRdKOd1Va4unWc6Af0nN5X7ELUqaU4OHhNPHu4GHuZ5bF9UUf8XtRFJu3NCwd9TZfRzYr4GLDi+Ks70HJccC373AF4PtHXBNdpTXCkDMUKg==
+ b=cqVlSHzASJarvTozwCzrJya9AcFJ3E53RZBAbU7HBta8vLpFsj9JPY80pNA2mTZt3rLq0yK9Ebiy+Q9W+vayrzkXbfdNMBTipDD+8cZSUOk2sUsRm798ebTxJILpY/WORTHdPkrYkfF9Raa0MLfTPILXU4epo7MkERnInmD9i91BPT2Hh+9fVjrKaBP/vekGDcyuuKcUDV81dfJU7A3nVKbbW4htD8+bVkda+d/WhWlHmdUiKYVLTxgQdSB/2/Eq3PlOPAgbdV+GsG97oGr19eNdOVsCVimmBVyPxbyDcy7QzdfWkJ4P3dgrpc/0jFxogZrx15h2iJLk+7R6Keq7uA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QRPfTIltKjLcAYiPAVvb5Der9zgNhM92iPzz31SfVZs=;
- b=R34NdD/cdgLe8KN4hiltSA7cvSm1hXetKadX0hgj1Rl17qeTN3f+NO6whf0eHEDqhJjs+u2X+FH6+xHJXCLwsM54uVeF8mt/oV7NBmDasnmEDAbHUY2SPABH3Ijet44eKS3rixmw/QJnp6JdYwnRJKsrcVsSOGNH4T/FvsXfuRRiRy1ebeVdG/Qjaf8aVd72MJG9HcRgiFvLe5VP2fWqhSCjuPYtJPYeixQ1tzkWjjwmUL0dI0t+VDCTidSWgeE5IAWA3j1NbejacFRaxCyT0HZLpEYl88szvy/qESM1cNCCJ9T5JrIh4S/25DScb7Bwfn3c0UTvvPMJaP+zxjF+rA==
+ bh=V366PT18K1qn5CQP1PbdMubfGxZvI18evXWD1fuZ3fg=;
+ b=I9FaXff1SdRRaNZfgGcGq3HrkLkVpBHfXEBaFTAGMAVonX9C/IqOr0nxdbNQU74/NEV74hvxtlMOeSeZiRLyHoZPvIeBawL9bg3O0gyPDZ4iO74sBfzzMcSjt48sABC773LzP0HMCveWNBAxfcZM6sXCE6gk7IXgtnDWMSFiLJ/4xQygdC1BW73aOODBqdmzzprqielXHIPNUKR8P23Ri3AFM8XQc/PxdGEkcsns0F+o+WnWpZ4L9EETXZU6Mj3vut90NKYSzhAFAMpZGqMuohoK3JRwxAFRWZvlHoxg/tSawXHnG3tZnTo9QEP608qdrmTFXuAkPJSvHS5DYYl5LQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from MWHPR1101MB2221.namprd11.prod.outlook.com
- (2603:10b6:301:53::18) by SJ1PR11MB6204.namprd11.prod.outlook.com
- (2603:10b6:a03:459::19) with Microsoft SMTP Server (version=TLS1_2,
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=V366PT18K1qn5CQP1PbdMubfGxZvI18evXWD1fuZ3fg=;
+ b=buDeGhcVI+QDC451REofDRJMELU268n+s4AzOOmp/PZk+Fxu1v/UT0N6pu7eKhnf4sLKe3gzyCHhAaPiqZptyybIrtM4qoRchxDA2h7FmTofi5wEcYUUbUvWBpIPjaDD6zR0SUvjTQCIEXBLFcEBkYsHY5SnSZr2RB1iQrdc9TQ=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by DS0PR10MB6175.namprd10.prod.outlook.com
+ (2603:10b6:8:c1::11) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.21; Wed, 31 Aug
- 2022 04:22:51 +0000
-Received: from MWHPR1101MB2221.namprd11.prod.outlook.com
- ([fe80::e9a3:201:f95c:891e]) by MWHPR1101MB2221.namprd11.prod.outlook.com
- ([fe80::e9a3:201:f95c:891e%7]) with mapi id 15.20.5566.021; Wed, 31 Aug 2022
- 04:22:50 +0000
-Date: Wed, 31 Aug 2022 12:22:45 +0800
-From: Chao Gao <chao.gao@intel.com>
-To: Robin Murphy <robin.murphy@arm.com>
-CC: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<hch@infradead.org>, <m.szyprowski@samsung.com>
-Subject: Re: [PATCH] swiotlb: fix a typo
-Message-ID: <Yw7iFQGpStC6YodP@gao-cwp>
-References: <20220826095046.880626-1-chao.gao@intel.com>
- <cd53526d-2564-996b-7b0d-d1fe9f114590@arm.com>
-Content-Type: text/plain; charset="us-ascii"
+ 2022 06:01:33 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::209e:de4d:68ea:c026]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::209e:de4d:68ea:c026%3]) with mapi id 15.20.5566.021; Wed, 31 Aug 2022
+ 06:01:32 +0000
+Date: Wed, 31 Aug 2022 09:01:20 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: kbuild@lists.01.org, Yu Zhao <yuzhao@google.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Dongli Zhang <dongli.zhang@oracle.com>
+Cc: lkp@intel.com, kbuild-all@lists.01.org, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, Yu Zhao <yuzhao@google.com>
+Subject: Re: [PATCH] Revert "swiotlb: panic if nslabs is too small"
+Message-ID: <202208310701.LKr1WDCh-lkp@intel.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cd53526d-2564-996b-7b0d-d1fe9f114590@arm.com>
-X-ClientProxiedBy: SG2PR01CA0126.apcprd01.prod.exchangelabs.com
- (2603:1096:4:40::30) To MWHPR1101MB2221.namprd11.prod.outlook.com
- (2603:10b6:301:53::18)
+In-Reply-To: <20220829232934.3277747-1-yuzhao@google.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: MRXP264CA0019.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:500:15::31) To MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -85,80 +74,156 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fbe31e7c-6445-4d12-51af-08da8b087778
-X-MS-TrafficTypeDiagnostic: SJ1PR11MB6204:EE_
+X-MS-Office365-Filtering-Correlation-Id: 44fecda5-e40a-4d43-60fd-08da8b1640a7
+X-MS-TrafficTypeDiagnostic: DS0PR10MB6175:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bxF1TJQQvT11JMW+8ScVL2N724TJw0KeYgl7jODOzOh2ItWLjpH7L8cDevrTGDsozxmsV46lB/xv+VDJrBIwS2xsEyHPY56twvtu7LKc7nunM1i8tf9eIdREd4949yFhmfJHQYRCS35ALF5ymjPVb9LLBnsou2zOPCcfIoNbKWUh8QAI0TwAd9wiJBGi9INSOWzDuUHe3m2wjpuoy8ANoUum/hujdAi33GzP2LTz8LvoKFwHMmFehzBsJDDJHaiigrYqanDa7aTaYVwjWCcAB1IA3KUtLHkbFDNPud8MUluFH5P5c8V8j+QUIM1/75WvTQGs/sKeN3Pm8HrSBPoQpyQVaeFZ/kqzKfxrROstqPCL0UjfwaDWOxRNpo19iKoWZlbytsEI8rSIHzvrMGND8PurokNpmzWfq5418CnFNtk0vn618YWA00G4Mhikk7GAuHiDEh73ubYvSXoEU/76wZHf0GvT6R9v1mpwbcsTXG80ruSXCRCsq+tkVcwWPwulZmWzQ8cvP3LU0ovDTatmDr+UwQbimh0uCnosLHqucvSqNeK4iGbKSYw7AX9eq6SpOIvBefN+WPRqeGDjFNUNgNf5JNq9qmoWnBr4hRvXJOErbyGgXrPh7mvKAo/0Rpkttv2rz51B2ugG4D+gUNN627EKwGkmpu3J+Laho0m0Fh8zePg65ZgxIGWsNYha9NF+0qGH5W8aWdyP5OnsJHviuA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1101MB2221.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(346002)(136003)(39860400002)(376002)(396003)(366004)(5660300002)(8936002)(41300700001)(6666004)(186003)(9686003)(86362001)(26005)(44832011)(6506007)(6512007)(2906002)(316002)(6916009)(66946007)(478600001)(66476007)(38100700002)(4326008)(82960400001)(6486002)(8676002)(66556008)(33716001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: 
+	+BHRsAuhoZG/667w+2CtGftkW+QLdOOwe8KkLLEV3n8VHf5VfQ8IJZ28EV93jB5e1UPFiLRGhT5JDTtsrfp/R9w9yw4Xw/gI5IACBfa9Oiw9KAhr4SHkBNvy2D7V01oEexPBiEQ7tlkWd9/1p+fiRleZ0jHZNE/wEvGEjj2lwPMUonhwqt9bV0PUh4/v0hDUEEKPVDFh1Ik6gMUTtVGAj8Zygm4sWAHPM2Sx/Xgi/5LTCGyQ2UZdBqmdmHmt02C4p/waSq730DTLhKnWmd3x8cp7O4CgxBCOCgTUWt9S2QjJsBBrVYP32o0IukdDa1bHThycHkv2nkALyZnkBAZWXDrJ61uo8vHhVHnom8FRL7VevmdSBxVUKOuFCkUMiFGdzIfKV6Wz2WuFVU3TG36symj00KiayR0rHzoa1Xj4sbVamp8vtqsxDA+OdJY1wx5ovSR86m1JjnKydRpxo5zx2JthSmS2Kt5cx0tQ1jJmtFKIBBvJdj7TX3PHDHGVIpkV63syvTZqE+cjl6Bjl653RlEWgii4d0iaqG4HFYFj4qnWVvrs3Sn6xuqKdVwXTbhOKyODUWh5BErStcDdbydXAo0Sjmv8i+Q2sRc7LY9Go11gWAHuEsmzZsFYMm7qk9tjw2ZkA508V9IhQUvzJ67oLABYmSd49b/hwzeTtidaxhGtIBW2W4AP9A97PLU4+6D7dD8CvHAg54y8uC81ZK8kQe8I0gIjPo67Md93oVRIh369q2/EglcR/EdskkfsmqxLJXQqJd3wuDDSzKkGzsMJ/0DWYmuYy7yXLKcfPu6V45HM7RW0O/6PY3Y7UJ4K86CxFdP6SKb5jsPpnKFn7HCITNNgEO2S3E05atcDDjbK3GTT122yKcKlOSExeq7TnPAv1Kc7YBr9AC7HAZELa5OH1Q==
+X-Forefront-Antispam-Report: 
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(396003)(346002)(366004)(39860400002)(136003)(66556008)(52116002)(478600001)(6666004)(44832011)(66946007)(8676002)(4326008)(66476007)(966005)(83380400001)(5660300002)(8936002)(6486002)(6506007)(86362001)(41300700001)(6512007)(1076003)(9686003)(26005)(186003)(2906002)(38100700002)(38350700002)(36756003)(316002)(6636002)(110136005)(160913001)(15963001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Fcg0b6wmxfXkOGi17fVoeZxr22GdX7gS0cFnluYHdzsHBaqtRZDX32DKqw7G?=
- =?us-ascii?Q?FnlKi8usNltuUuMh2OwwBvYaat7EwlG6mbNE2SyNrN7JHdEkBgFFRm6Fj1jd?=
- =?us-ascii?Q?rwo/g9x9+0tUAQNgr8qVdicA7aSihh8gAGQEcOV6TX+c7qICD8oDAA50syx4?=
- =?us-ascii?Q?ok0f3qiOjk8CO+Zeq3y38lE9gJvbkCS7glks9mwv0CwDfo3yvfuFldknlsY8?=
- =?us-ascii?Q?KlW1lPmi7oH9wbMnuSJdSwLY0SkrjH4g8APbbPCF+o8VYkmW1/KC7eFY3Kor?=
- =?us-ascii?Q?zTNGQ9T7KjVloW25OSsVLfkqQAfWgz4QV3fcnk35OxmO5SDTxjRNqUGUbNjK?=
- =?us-ascii?Q?j6SLaBYHAXRXdbHsynOfv1nAAtIuWiff/SkK1En42LHBoQ7M3TPNmXdh67jY?=
- =?us-ascii?Q?SCympYXaj94jV/UYervT1Rl92rAgGDHAXVBH2Ka12yEiKnkwqZfWl6eeVnkg?=
- =?us-ascii?Q?TtxEPP5uITg211cJ3JNbU2EWVnywobGWr8reCpGoZPU8B2PF7yWPwdk62RIj?=
- =?us-ascii?Q?x/jQqRA8eXKT5xEKoguND3BYyIYVMGu6IMpuunmKZJkOE4cjhk7ZgxlTKjGp?=
- =?us-ascii?Q?bvXdbUfbwrvsP8SsItNfQc0El2+tbhDyBTx+mr/Yn4kIVkxJIB9ug6rCD5l/?=
- =?us-ascii?Q?G4uKIN04lYzB+UES1oukgYq9UrcpVxEsCDEz080DXgGQaSGO5RxjchUobUez?=
- =?us-ascii?Q?12z9DoYL2U9kOhvgWDgkqKrD9oxrbhSg2fucj/CXJcVydE7fPlpqz/kcK0GI?=
- =?us-ascii?Q?/gVq0H2TCm+OmmgN075vzrmiAHcftzg9EPf7dQxRUV62JUqCUkPyoJQpjYGP?=
- =?us-ascii?Q?PQQWpYcrSUEwFuPsCffU25uzJ2shAMjPTfMBfFo0bbmK2ZwQwsgd5/NHhz1w?=
- =?us-ascii?Q?w/w4lZx5BXDQ+la6pCv4FkZC6f7L1nbrj75wjFYgzhZNXx1dWzb0D85nfzQF?=
- =?us-ascii?Q?zr0BvLLZOAyKoCTJFM6I/a0EnCN9Y9OCTWcn5q8SXHmnwKrPoZ3uDEseYiuq?=
- =?us-ascii?Q?++HFBueB7XFN9lPfcPiVv69Ty94z7ljFxgch8f9nxAmOjondel26X0c9EqIA?=
- =?us-ascii?Q?N0AER4LvL6pmFsWm0u1SiYpopWrI2K6qRGXLTgacaulGX0O+VET68X3dT4sY?=
- =?us-ascii?Q?B7jEvTZT97ebuElfhCRXcQja9l4+GCkWp/7i1Hwjx8tiiYc4hB9Oxg8dsjow?=
- =?us-ascii?Q?2lk5kVHyvZx+ykh/ad9AcUO526aIYlB4/0kWlQWLcZk72jAjWuY277efKIFk?=
- =?us-ascii?Q?XGznkoTe612hIu0QVU1UpEz4p4KQohprnQpt815wcfPaBefJz01TpojwUalF?=
- =?us-ascii?Q?0iuUCvoGtj6ImXBilWbmvMo3IspmIehioL+9aoRsVv3I2w+G4K5fhUIj4zX1?=
- =?us-ascii?Q?D3KZ0/bcOKNJGyZXxKYO27Q4cIZxpDbs6gv8RVaEszeFQeL5fGRGA9VtJ4Kn?=
- =?us-ascii?Q?1+GBtzBCLfZjSyune4W4I5/aCC5ewytZOKk6a+eNr+Dke8OVW19dMTC4KdAa?=
- =?us-ascii?Q?826rNPii/CzAqq2onQAroazhbxkWjyvLYOnP3vX4uD4DmJ0m4yjTnJylzbr9?=
- =?us-ascii?Q?VDKXo3gQQoOYj7ENCuoXQ1NNd4r5vKFkwYOiE3TY?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: fbe31e7c-6445-4d12-51af-08da8b087778
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1101MB2221.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: 
+	=?us-ascii?Q?owwUbhmokw+HUKaV/B4nwbDW2E0RKCB5S6je4swaNyKZ4XwDPdjUoW6i4Mbf?=
+ =?us-ascii?Q?kjQLb/UPwbP+axxgdQ0+uRvw+RXLMJ8z5jNcynZs1InnHaODBa7Yz6dPWA8U?=
+ =?us-ascii?Q?QwUvssKZmlUKhxzW3qtulwqQ8qNkmEoKd8jbE6CUEa6q7b6vHpZIdCAMHMeZ?=
+ =?us-ascii?Q?AD49JpHD0kxjOHBi8pholH0ZZ1XSqYANvgmrc8qM4/S+XLqCDsfoRHQV9ZlI?=
+ =?us-ascii?Q?/PmOHvT1BCPeVo8SqUVLgm8/2+3BLHz5IUj8amOaZA4L+hm+hu5AJiTtk7mH?=
+ =?us-ascii?Q?JDT0axio9ZZIaE8RA1AC+1LPuKzm2i2EoDRIN3AW5s8JtAUp7LN+FqWc6pJz?=
+ =?us-ascii?Q?IpHVJAGqDMM06wm1sd8/YTdmj3fkhku+tiTeog4nhrMEWxy6IcNF7QN62NKK?=
+ =?us-ascii?Q?pdISZ4otp12+8IFMQZT1L+CHK20VIuAY2CSfeHzaWcKGQX4XDL8/v17p6uD/?=
+ =?us-ascii?Q?NEyy4Re9LSmkXYaGPetd0eYdVVRqQFqkRWoJ9lRKAs/Iq9re+wcjAyoQ60qW?=
+ =?us-ascii?Q?wrj6O+ydILK9SfB1HG3DzDyN4a/VyxRq6WenWUZVMyIftuGDc2AC4ByHYypV?=
+ =?us-ascii?Q?wGzHAhBprgmO+rPmk4TjEODIMP1FRgKpp2OLR9eePo0KbWFkY2AI2X6eV4Ln?=
+ =?us-ascii?Q?UeZ7v9L74QMbn4xq18YYEJi2Hb5+XhgMuAZlZlg95Nq/pBwwwf0YcPliMtxW?=
+ =?us-ascii?Q?NDgqhHmFUvfcBFoYdkB+0LEoxJHy8aBGVCSdN4RbUVpVz3PpCTkWyHQuTavc?=
+ =?us-ascii?Q?iLNPe4sBju0w6EHtPjaHaCOlqaaKuGVgSNKsuTVgtOaQQerdT2V3T+ZE3nsd?=
+ =?us-ascii?Q?0Onwu1Io5WV1rIzdIWVW53idBdpQYv43Kzi6/5TViCpazRJ96tv4JurjJwbI?=
+ =?us-ascii?Q?UMznJ49tfePjLOvzxCzbepkrfv+12F83MjBwU1wf8YLwWRmPub9IGA0IlCrk?=
+ =?us-ascii?Q?8OKkzHgrLx6xl6RDYrX5vREJCI+TCUkzAGAEYoF0SQkMbM8MxVHtY/PKygF/?=
+ =?us-ascii?Q?Rm2i1HBe1RlMnl5VM7kxkZzjeev9KjrxqBq3RH21DamNDB0Rxl0bDFJELn7J?=
+ =?us-ascii?Q?ROqdBPnK+fJy6I3urcpt4MIRy4yI1ztR2Kr+zHPkaLivOZVktS9t7Y0f5o/Q?=
+ =?us-ascii?Q?J3TgFbNi7ZnmfcPl27NDvp7pf3lFjzuPf1T3/JVW7+2WEMbJlFsJm9+TicGT?=
+ =?us-ascii?Q?MmlQJM/1kw3YutXDK2ilMKddtc/5xplv1/n+mw4uqxdxnJot+YUxB6MR4WLx?=
+ =?us-ascii?Q?s6gBsN2hiIo4Cv2EH00t0GUDdYOhcit/fJzYJ5cXatF+cloIJmtJUDdYRLSP?=
+ =?us-ascii?Q?PoYzQLzCznK0SZvfDgJOUVUFn7zVB85K4RMHavqXkLPEh/L8+aOSyq3ENqhh?=
+ =?us-ascii?Q?DBAwra0yiR/7FZuIHQ+XS8cxIRO0o54MjetR59HKNy/VEC5Fi1cPsQ9gBhoU?=
+ =?us-ascii?Q?hR1u/pVO987FmdDOZf63c/fZbYzG/KtYU0Kgx79yPPo8SqjxxqKHNoIA6DCI?=
+ =?us-ascii?Q?zBcu0JVAQj3qZtAw5QVumj7gElQt8ho+1DDPQSrUzTeNDya8He2C5CzIwRGO?=
+ =?us-ascii?Q?cT9/s7iZWue2ceK/4wjcrbwhCMQxRYabSZP8iy5x1aHrRqEQi/DZpt+XlJ3T?=
+ =?us-ascii?Q?Iw=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 44fecda5-e40a-4d43-60fd-08da8b1640a7
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2022 04:22:50.7969
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2022 06:01:32.3004
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZDTiPWJtFLMdR91N2+qFrr5u4jXtjM4LL9OS3XuIOTsnoEuDpdVPPe6VjobRxYoJuBshqIaXBNqNUya95GnQKA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR11MB6204
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-UserPrincipalName: loPFunkC12eCGiuHQdcaHhWg5oAaBn5Nr3ajCNViF9jhtC4gPX30pKy4/B5yVlc4uw45zaeE2K8Z5gAm7KkoY14UVaE/u7xKiKuzmXLUAnA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR10MB6175
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-31_03,2022-08-31_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 suspectscore=0
+ mlxlogscore=999 adultscore=0 phishscore=0 spamscore=0 bulkscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208310028
+X-Proofpoint-ORIG-GUID: sbWDdPiE7L1CXFaIXz4Y8y86LV57Czyw
+X-Proofpoint-GUID: sbWDdPiE7L1CXFaIXz4Y8y86LV57Czyw
 
-On Tue, Aug 30, 2022 at 10:23:51AM +0100, Robin Murphy wrote:
->On 2022-08-26 10:50, Chao Gao wrote:
->> "overwirte" isn't a word. It should be "overwrite".
->> 
->> Signed-off-by: Chao Gao <chao.gao@intel.com>
->> ---
->> BTW, I am wondering if copying the original buffer to the tlb buffer
->> unconditionally will leak the original buffer to the VMM, especially
->> when VMM isn't trusted e.g., by confidential VMs. Would it be better
->> to zero the tlb buffer for dir == DMA_FROM_DEVICE?
->
->No, at the point of dma_map(), the buffer contents are owned by the caller,
->so if parts of that buffer are sensitive and shouldn't be exposed to DMA,
->then don't map the whole buffer for DMA. There are more DMA API
->implementations than SWIOTLB.
->
+Hi Yu,
 
-I am not sure if all existing drivers ensure that all buffers allocated
-for DMA_FROM_DEVICE are zeroed/poisoned so that they don't have sensitive
-data before dma_map(). If that isn't the case, bouncing the original contents
-(left by the previous user of the buffer) effectively makes the contents
-visible to host/VMM. I am afraid it may be a concern for confidential VMs.
+url:    https://github.com/intel-lab-lkp/linux/commits/Yu-Zhao/Revert-swiotlb-panic-if-nslabs-is-too-small/20220830-073123
+base:   c40e8341e3b3bb27e3a65b06b5b454626234c4f0
+config: x86_64-randconfig-m001 (https://download.01.org/0day-ci/archive/20220831/202208310701.LKr1WDCh-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
 
->The whole point of bouncing the original contents here is that doing anything
->else effectively corrupts any part of the mapping that the device may end up
->*not* writing to - see the whole sordid original discussion (but don't be
->confused by the fact that the caller's original data happened to be zeros in
->that particular case).
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-Got it. Thanks for the explanation.
+smatch warnings:
+kernel/dma/swiotlb.c:334 swiotlb_init_remap() error: uninitialized symbol 'nslabs'.
+
+vim +/nslabs +334 kernel/dma/swiotlb.c
+
+7374153d294eb5 kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-14  307  void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
+7374153d294eb5 kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-14  308  		int (*remap)(void *tlb, unsigned long nslabs))
+                                                                                                                              ^^^^^^
+
+abbceff7d7a884 lib/swiotlb.c           FUJITA Tomonori   2010-05-10  309  {
+6424e31b1c050a kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-15  310  	struct io_tlb_mem *mem = &io_tlb_default_mem;
+20347fca71a387 kernel/dma/swiotlb.c    Tianyu Lan        2022-07-08  311  	unsigned long nslabs;
+                                                                                              ^^^^^^
+Merge issue?  How does this compile?
+
+a5e891321a2196 kernel/dma/swiotlb.c    Christoph Hellwig 2022-05-11  312  	size_t alloc_size;
+7374153d294eb5 kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-14  313  	size_t bytes;
+2d29960af0bee8 kernel/dma/swiotlb.c    Christoph Hellwig 2021-03-18  314  	void *tlb;
+abbceff7d7a884 lib/swiotlb.c           FUJITA Tomonori   2010-05-10  315  
+c6af2aa9ffc976 kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-29  316  	if (!addressing_limit && !swiotlb_force_bounce)
+c6af2aa9ffc976 kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-29  317  		return;
+c6af2aa9ffc976 kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-29  318  	if (swiotlb_force_disable)
+2726bf3ff2520d kernel/dma/swiotlb.c    Florian Fainelli  2021-03-22  319  		return;
+2726bf3ff2520d kernel/dma/swiotlb.c    Florian Fainelli  2021-03-22  320  
+20347fca71a387 kernel/dma/swiotlb.c    Tianyu Lan        2022-07-08  321  	/*
+20347fca71a387 kernel/dma/swiotlb.c    Tianyu Lan        2022-07-08  322  	 * default_nslabs maybe changed when adjust area number.
+20347fca71a387 kernel/dma/swiotlb.c    Tianyu Lan        2022-07-08  323  	 * So allocate bounce buffer after adjusting area number.
+20347fca71a387 kernel/dma/swiotlb.c    Tianyu Lan        2022-07-08  324  	 */
+20347fca71a387 kernel/dma/swiotlb.c    Tianyu Lan        2022-07-08  325  	if (!default_nareas)
+20347fca71a387 kernel/dma/swiotlb.c    Tianyu Lan        2022-07-08  326  		swiotlb_adjust_nareas(num_possible_cpus());
+20347fca71a387 kernel/dma/swiotlb.c    Tianyu Lan        2022-07-08  327  
+8ba2ed1be90fc2 kernel/dma/swiotlb.c    Christoph Hellwig 2022-02-28  328  	/*
+8ba2ed1be90fc2 kernel/dma/swiotlb.c    Christoph Hellwig 2022-02-28  329  	 * By default allocate the bounce buffer memory from low memory, but
+8ba2ed1be90fc2 kernel/dma/swiotlb.c    Christoph Hellwig 2022-02-28  330  	 * allow to pick a location everywhere for hypervisors with guest
+8ba2ed1be90fc2 kernel/dma/swiotlb.c    Christoph Hellwig 2022-02-28  331  	 * memory encryption.
+8ba2ed1be90fc2 kernel/dma/swiotlb.c    Christoph Hellwig 2022-02-28  332  	 */
+7374153d294eb5 kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-14  333  retry:
+a5e891321a2196 kernel/dma/swiotlb.c    Christoph Hellwig 2022-05-11 @334  	bytes = PAGE_ALIGN(nslabs << IO_TLB_SHIFT);
+                                                                                                   ^^^^^^
+
+
+8ba2ed1be90fc2 kernel/dma/swiotlb.c    Christoph Hellwig 2022-02-28  335  	if (flags & SWIOTLB_ANY)
+8ba2ed1be90fc2 kernel/dma/swiotlb.c    Christoph Hellwig 2022-02-28  336  		tlb = memblock_alloc(bytes, PAGE_SIZE);
+8ba2ed1be90fc2 kernel/dma/swiotlb.c    Christoph Hellwig 2022-02-28  337  	else
+2d29960af0bee8 kernel/dma/swiotlb.c    Christoph Hellwig 2021-03-18  338  		tlb = memblock_alloc_low(bytes, PAGE_SIZE);
+1521c607cabe7c kernel/dma/swiotlb.c    Christoph Hellwig 2022-05-11  339  	if (!tlb) {
+b253fbc6b9640a kernel/dma/swiotlb.c    Yu Zhao           2022-08-29  340  		pr_warn("%s: failed to allocate tlb structure\n", __func__);
+1521c607cabe7c kernel/dma/swiotlb.c    Christoph Hellwig 2022-05-11  341  		return;
+1521c607cabe7c kernel/dma/swiotlb.c    Christoph Hellwig 2022-05-11  342  	}
+6424e31b1c050a kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-15  343  
+7374153d294eb5 kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-14  344  	if (remap && remap(tlb, nslabs) < 0) {
+7374153d294eb5 kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-14  345  		memblock_free(tlb, PAGE_ALIGN(bytes));
+7374153d294eb5 kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-14  346  
+7374153d294eb5 kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-14  347  		nslabs = ALIGN(nslabs >> 1, IO_TLB_SEGSIZE);
+7374153d294eb5 kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-14  348  		if (nslabs < IO_TLB_MIN_SLABS)
+7374153d294eb5 kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-14  349  			panic("%s: Failed to remap %zu bytes\n",
+7374153d294eb5 kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-14  350  			      __func__, bytes);
+7374153d294eb5 kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-14  351  		goto retry;
+7374153d294eb5 kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-14  352  	}
+abbceff7d7a884 lib/swiotlb.c           FUJITA Tomonori   2010-05-10  353  
+a5e891321a2196 kernel/dma/swiotlb.c    Christoph Hellwig 2022-05-11  354  	alloc_size = PAGE_ALIGN(array_size(sizeof(*mem->slots), nslabs));
+6424e31b1c050a kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-15  355  	mem->slots = memblock_alloc(alloc_size, PAGE_SIZE);
+6424e31b1c050a kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-15  356  	if (!mem->slots)
+6424e31b1c050a kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-15  357  		panic("%s: Failed to allocate %zu bytes align=0x%lx\n",
+6424e31b1c050a kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-15  358  		      __func__, alloc_size, PAGE_SIZE);
+6424e31b1c050a kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-15  359  
+72311809031217 kernel/dma/swiotlb.c    Tianyu Lan        2022-07-21  360  	mem->areas = memblock_alloc(array_size(sizeof(struct io_tlb_area),
+72311809031217 kernel/dma/swiotlb.c    Tianyu Lan        2022-07-21  361  		default_nareas), SMP_CACHE_BYTES);
+20347fca71a387 kernel/dma/swiotlb.c    Tianyu Lan        2022-07-08  362  	if (!mem->areas)
+20347fca71a387 kernel/dma/swiotlb.c    Tianyu Lan        2022-07-08  363  		panic("%s: Failed to allocate mem->areas.\n", __func__);
+20347fca71a387 kernel/dma/swiotlb.c    Tianyu Lan        2022-07-08  364  
+20347fca71a387 kernel/dma/swiotlb.c    Tianyu Lan        2022-07-08  365  	swiotlb_init_io_tlb_mem(mem, __pa(tlb), nslabs, flags, false,
+20347fca71a387 kernel/dma/swiotlb.c    Tianyu Lan        2022-07-08  366  				default_nareas);
+6424e31b1c050a kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-15  367  
+6424e31b1c050a kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-15  368  	if (flags & SWIOTLB_VERBOSE)
+6424e31b1c050a kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-15  369  		swiotlb_print_info();
+^1da177e4c3f41 arch/ia64/lib/swiotlb.c Linus Torvalds    2005-04-16  370  }
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
+
