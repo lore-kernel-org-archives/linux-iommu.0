@@ -1,91 +1,239 @@
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E17C34A3D
-	for <iommu@lists.linux.dev>; Wed, 31 Aug 2022 19:02:05 +0000 (UTC)
-Date: Wed, 31 Aug 2022 15:01:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1661972523;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=/S1Z12zwQROoKfTz1twMnESk8KqrSv9O32o/CoebBns=;
-	b=sF/L6ogajTfppllZKwsY3yAp/F+VbzSHnCHZx0MwHJq3wLBzznsc7Lb2ZsCP4rEQgcNT28
-	rLvWmn6gmqWCcSF6VIihZIZ70OK4+CXbASmvLSrwtHuf1uHUi1DngGVeWjfIGxIWF0Ihh2
-	Si0kCu7ZLzOp8dHrcYN8kmqyIqxg/Wk=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Kent Overstreet <kent.overstreet@linux.dev>
-To: Michal Hocko <mhocko@suse.com>
-Cc: Mel Gorman <mgorman@suse.de>, Peter Zijlstra <peterz@infradead.org>,
-	Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org,
-	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev,
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
-	void@manifault.com, juri.lelli@redhat.com, ldufour@linux.ibm.com,
-	peterx@redhat.com, david@redhat.com, axboe@kernel.dk,
-	mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org,
-	changbin.du@intel.com, ytcoode@gmail.com,
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
-	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
-	elver@google.com, dvyukov@google.com, shakeelb@google.com,
-	songmuchun@bytedance.com, arnd@arndb.de, jbaron@akamai.com,
-	rientjes@google.com, minchan@google.com, kaleshsingh@google.com,
-	kernel-team@android.com, linux-mm@kvack.org, iommu@lists.linux.dev,
-	kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
-	linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
-	linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
-Message-ID: <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
-References: <20220830214919.53220-1-surenb@google.com>
- <Yw8P8xZ4zqu121xL@hirez.programming.kicks-ass.net>
- <20220831084230.3ti3vitrzhzsu3fs@moria.home.lan>
- <20220831101948.f3etturccmp5ovkl@suse.de>
- <Yw88RFuBgc7yFYxA@dhcp22.suse.cz>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B0A24C61
+	for <iommu@lists.linux.dev>; Wed, 31 Aug 2022 20:10:50 +0000 (UTC)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27VJo2Cm021881;
+	Wed, 31 Aug 2022 20:10:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : from : to : cc : references : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=EoFDqYDmAmcHelb1TwaylGQ01tRux6eGAVVSEzEPYcE=;
+ b=jLV/OtEcDmD/m9cLTgrZWWgTN6SBlpsAcEe31da8vOg72D3D9X+/dXZDn5UYiCGuSmT3
+ W+9A3XBWKbk5gcAIAJQvtP1+DhzywpBAcfq8yngAs3/3bJeWNGwwPCGzMfhTtPE2+uGS
+ Z4DpmvaWrELG4iapG9RwTTxMh3WD/bzrxsftkiGtux3OCDio3CQ6Z1texMj0PbbRK13p
+ Qeo6o5FUH0WdQutAmkhneaBo+sogXZTTgj1b+fQwlfCriuJAfvOOCawBTK24ugw95cVm
+ ZmdjjWt6vBQTJ3d28IeNwmvUDwIeaS3Gb9qfH3X3w8C9a4OqvBqt2I8Yj74+OssLmtVx Hw== 
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jae518st2-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 31 Aug 2022 20:10:37 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+	by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27VK69hv020020;
+	Wed, 31 Aug 2022 20:10:36 GMT
+Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
+	by ppma02dal.us.ibm.com with ESMTP id 3j7aw9umwh-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 31 Aug 2022 20:10:36 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+	by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27VKAZkM10355314
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 31 Aug 2022 20:10:35 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 7D4BE112062;
+	Wed, 31 Aug 2022 20:10:35 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id ADA06112061;
+	Wed, 31 Aug 2022 20:10:34 +0000 (GMT)
+Received: from [9.160.77.30] (unknown [9.160.77.30])
+	by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+	Wed, 31 Aug 2022 20:10:34 +0000 (GMT)
+Message-ID: <ebe5fa1e-812b-d705-1dff-41fa390c8596@linux.ibm.com>
+Date: Wed, 31 Aug 2022 16:10:34 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yw88RFuBgc7yFYxA@dhcp22.suse.cz>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v3] iommu/s390: Fix race with release_device ops
+Content-Language: en-US
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+To: Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev
+Cc: linux-s390@vger.kernel.org, schnelle@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, joro@8bytes.org, will@kernel.org,
+        robin.murphy@arm.com, jgg@nvidia.com, linux-kernel@vger.kernel.org
+References: <20220830201546.18871-1-mjrosato@linux.ibm.com>
+ <12a49c8d-cb38-e22a-0040-88350b6210aa@linux.ibm.com>
+ <89bd532b-33ac-5f9d-a06e-eb002168778b@linux.ibm.com>
+In-Reply-To: <89bd532b-33ac-5f9d-a06e-eb002168778b@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: L1GGMTxseALPilKmrl6irVrGbXklrTe-
+X-Proofpoint-GUID: L1GGMTxseALPilKmrl6irVrGbXklrTe-
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-31_12,2022-08-31_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ lowpriorityscore=0 mlxscore=0 malwarescore=0 clxscore=1015 mlxlogscore=999
+ spamscore=0 phishscore=0 bulkscore=0 adultscore=0 suspectscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208310097
 
-On Wed, Aug 31, 2022 at 12:47:32PM +0200, Michal Hocko wrote:
-> On Wed 31-08-22 11:19:48, Mel Gorman wrote:
-> > Whatever asking for an explanation as to why equivalent functionality
-> > cannot not be created from ftrace/kprobe/eBPF/whatever is reasonable.
+On 8/31/22 10:12 AM, Matthew Rosato wrote:
+> On 8/31/22 5:05 AM, Pierre Morel wrote:
+>>
+>>
+>> On 8/30/22 22:15, Matthew Rosato wrote:
+>>> With commit fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev
+>>> calls") s390-iommu is supposed to handle dynamic switching between IOMMU
+>>> domains and the DMA API handling.  However, this commit does not
+>>> sufficiently handle the case where the device is released via a call
+>>> to the release_device op as it may occur at the same time as an opposing
+>>> attach_dev or detach_dev since the group mutex is not held over
+>>> release_device.  This was observed if the device is deconfigured during a
+>>> small window during vfio-pci initialization and can result in WARNs and
+>>> potential kernel panics.
+>>>
+>>> Handle this by tracking when the device is probed/released via
+>>> dev_iommu_priv_set/get().  Ensure that once the device is released only
+>>> release_device handles the re-init of the device DMA.
+>>>
+>>> Fixes: fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev calls")
+>>> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+>>> ---
+>>> Changes since v2:
+>>> - Relocate the list_empty and aperture chekcs in attach_dev to the
+>>>    their original locations so they are all done under a single
+>>>    acquisition of the spinlock (Heiko)
+>>> ---
+>>>   arch/s390/include/asm/pci.h |  1 +
+>>>   arch/s390/pci/pci.c         |  1 +
+>>>   drivers/iommu/s390-iommu.c  | 39 ++++++++++++++++++++++++++++++++++---
+>>>   3 files changed, 38 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
+>>> index 7b4cdadbc023..080251e7b275 100644
+>>> --- a/arch/s390/include/asm/pci.h
+>>> +++ b/arch/s390/include/asm/pci.h
+>>> @@ -157,6 +157,7 @@ struct zpci_dev {
+>>>       /* DMA stuff */
+>>>       unsigned long    *dma_table;
+>>>       spinlock_t    dma_table_lock;
+>>> +    struct mutex    dma_domain_lock; /* protects s390_domain value */
+>>>       int        tlb_refresh;
+>>>         spinlock_t    iommu_bitmap_lock;
+>>> diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
+>>> index 73cdc5539384..973edd32ecc9 100644
+>>> --- a/arch/s390/pci/pci.c
+>>> +++ b/arch/s390/pci/pci.c
+>>> @@ -832,6 +832,7 @@ struct zpci_dev *zpci_create_device(u32 fid, u32 fh, enum zpci_state state)
+>>>       kref_init(&zdev->kref);
+>>>       mutex_init(&zdev->lock);
+>>>       mutex_init(&zdev->kzdev_lock);
+>>> +    mutex_init(&zdev->dma_domain_lock);
+>>>         rc = zpci_init_iommu(zdev);
+>>>       if (rc)
+>>> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+>>> index c898bcbbce11..1137d669e849 100644
+>>> --- a/drivers/iommu/s390-iommu.c
+>>> +++ b/drivers/iommu/s390-iommu.c
+>>> @@ -99,6 +99,14 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
+>>>       if (!domain_device)
+>>>           return -ENOMEM;
+>>>   +    /* Leave now if the device has already been released */
+>>> +    mutex_lock(&zdev->dma_domain_lock);
+>>> +    if (!dev_iommu_priv_get(dev)) {
+>>> +        mutex_unlock(&zdev->dma_domain_lock);
+>>> +        kfree(domain_device);
+>>> +        return 0;
+>>> +    }
+>>> +
+>>>       if (zdev->dma_table && !zdev->s390_domain) {
+>>>           cc = zpci_dma_exit_device(zdev);
+>>>           if (cc) {
+>>> @@ -132,9 +140,10 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
+>>>           goto out_restore;
+>>>       }
+>>>       domain_device->zdev = zdev;
+>>> -    zdev->s390_domain = s390_domain;
+>>>       list_add(&domain_device->list, &s390_domain->devices);
+>>>       spin_unlock_irqrestore(&s390_domain->list_lock, flags);
+>>> +    zdev->s390_domain = s390_domain;
+>>> +    mutex_unlock(&zdev->dma_domain_lock);
+>>>         return 0;
+>>>   @@ -147,6 +156,7 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
+>>>                      virt_to_phys(zdev->dma_table));
+>>>       }
+>>>   out_free:
+>>> +    mutex_unlock(&zdev->dma_domain_lock);
+>>>       kfree(domain_device);
+>>>         return rc;
+>>> @@ -176,17 +186,22 @@ static void s390_iommu_detach_device(struct iommu_domain *domain,
+>>>       }
+>>>       spin_unlock_irqrestore(&s390_domain->list_lock, flags);
+>>>   -    if (found && (zdev->s390_domain == s390_domain)) {
+>>> +    mutex_lock(&zdev->dma_domain_lock);
+>>> +    if (found && (zdev->s390_domain == s390_domain) &&
+>>> +        dev_iommu_priv_get(dev)) {
+>>>           zdev->s390_domain = NULL;
+>>>           zpci_unregister_ioat(zdev, 0);
+>>>           zpci_dma_init_device(zdev);
+>>>       }
+>>> +    mutex_unlock(&zdev->dma_domain_lock);
+>>>   }
+>>>     static struct iommu_device *s390_iommu_probe_device(struct device *dev)
+>>>   {
+>>>       struct zpci_dev *zdev = to_zpci_dev(dev);
+>>>   +    dev_iommu_priv_set(dev, zdev);
+>>> +
+>>>       return &zdev->iommu_dev;
+>>>   }
+>>>   @@ -206,10 +221,28 @@ static void s390_iommu_release_device(struct device *dev)
+>>>        *
+>>>        * So let's call detach_dev from here if it hasn't been called before.
+>>>        */
+>>> -    if (zdev && zdev->s390_domain) {
+>>> +    if (zdev) {
+>>> +        /*
+>>> +         * Clear priv to block further attaches for this device,
+>>> +         * ensure detaches don't init DMA.  Hold the domain lock
+>>> +         * to ensure that attach/detach get a consistent view of
+>>> +         * whether or not the device is released.
+>>> +         */
+>>> +        mutex_lock(&zdev->dma_domain_lock);
+>>> +        dev_iommu_priv_set(dev, NULL);
+>>> +        mutex_unlock(&zdev->dma_domain_lock);
+>>> +        /* Make sure this device is removed from the domain list */
+>>>           domain = iommu_get_domain_for_dev(dev);
+>>
+>>
+>> Shouldn't you take the group_mutex before calling directly s390_iommu_detach_device from here?
+>>
 > 
-> Fully agreed and this is especially true for a change this size
-> 77 files changed, 3406 insertions(+), 703 deletions(-)
+> Well, we can't do that directly as the group mutex is only accessible to the iommu core.  But perhaps the right answer is to call back into the core here by just replacing the existing call to s390_iommu_detach_device below with a call to iommu_detach_device (1 line change).  Then we still ensure DMA is initialized next after this point.  I've been running tests with such a change for the last few hours and this works well.
+> 
 
-In the case of memory allocation accounting, you flat cannot do this with ftrace
-- you could maybe do a janky version that isn't fully accurate, much slower,
-more complicated for the developer to understand and debug and more complicated
-for the end user.
+Nope, looking closer that won't work -- There is a small window between calling iommu_get_domain_for_dev and then the subsequent call to iommu_detach_device() where the group->domain could still change, which would trigger a WARN_ON in iommu_detach_device (I managed to trigger this once). 
 
-But please, I invite anyone who's actually been doing this with ftrace to
-demonstrate otherwise.
+But really, I think just leaving this as a call to s390_iommu_detach_device without the group_mutex held at this point is OK, all the detach will do at this point (since priv has already been nullified) is get the list_lock and clear the entry for the domain that happened to be the group domain at the time release_device started - and any attempts at further attaches will just quietly return 0 because priv is null.  I guess technically we could also inline that list_del work into release_device and not even call s390_iommu_detach_device.  But the reality is by the time we've reached this point the device is going away and so it's going to have to be removed from all associated domains very soon, not just the one that happens to be active -- So this combined with my 2nd patch (sending shortly as a v4 series) would ensure the device gets removed from each domain, either from a detach_dev or a domain_free call.
 
-Ftrace just isn't the right tool for the job here - we're talking about adding
-per callsite accounting to some of the fastest fast paths in the kernel.
+> But this also made me notice another subtle issue re: a mismatch between the number of kallocs and kfrees for s390_domain_device.  Need to investigate that further before a next version.
+> 
+>>
+>>>           if (domain)
+>>>               s390_iommu_detach_device(domain, dev);
+>>
+>>
+>>
+>>
+>>> +        /* Now ensure DMA is initialized from here */
+>>> +        mutex_lock(&zdev->dma_domain_lock);
+>>> +        if (zdev->s390_domain) {
+>>> +            zdev->s390_domain = NULL;
+>>> +            zpci_unregister_ioat(zdev, 0);
+>>> +            zpci_dma_init_device(zdev);
+>>> +        }
+>>> +        mutex_unlock(&zdev->dma_domain_lock);
+>>>       }
+>>>   }
+>>>  
+>>
+> 
 
-And the size of the changes for memory allocation accounting are much more
-reasonable:
- 33 files changed, 623 insertions(+), 99 deletions(-)
-
-The code tagging library should exist anyways, it's been open coded half a dozen
-times in the kernel already.
-
-And once we've got that, the time stats code is _also_ far simpler than doing it
-with ftrace would be. If anyone here has successfully debugged latency issues
-with ftrace, I'd really like to hear it. Again, for debugging latency issues you
-want something that can always be on, and that's not cheap with ftrace - and
-never mind the hassle of correlating start and end wait trace events, builting
-up histograms, etc. - that's all handled here.
-
-Cheap, simple, easy to use. What more could you want?
