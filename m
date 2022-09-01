@@ -1,87 +1,92 @@
-Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from relay.hostedemail.com (smtprelay0012.hostedemail.com [216.40.44.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56EBD10E5
-	for <iommu@lists.linux.dev>; Fri,  2 Sep 2022 03:31:01 +0000 (UTC)
-Received: by mail-pl1-f179.google.com with SMTP id l3so607367plb.10
-        for <iommu@lists.linux.dev>; Thu, 01 Sep 2022 20:31:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date;
-        bh=shz1MJujjzqiNwugBIDcBsPwYPc3SVzREMOMkqsy7Mk=;
-        b=w8zTqe7jLtPspiEBjz+Fy4fnP6CRLP/1zB1TYddtfRvPRf6HmPkOhDjjui66WN2vsl
-         5IjdUYxKnnoMusvxY/mOH9TD6PkP0ZcdcNPwGreeU6bbLuIBySqYMjVzFdaEv0V86kHy
-         pRzBdIR3YkpGmIYlHpQDxZhmRZ72RRgFTm51BCNCOvy5ir+Mv2OIiiNBEEtYNav77mUF
-         mbHV4wPilqz1NqoKMoWYS9n2nLpkfXWHCOkA/MkS5si5zhMesHK7y5M6S0/swB5oGNJp
-         Vho54MFRdGsDtTej4LYmrHru82H6nWe9gB2JJQhofQYoZ/Tj2mO1Q5xsj0DzIRYpaQd7
-         /r3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date;
-        bh=shz1MJujjzqiNwugBIDcBsPwYPc3SVzREMOMkqsy7Mk=;
-        b=73Rj1t7Wrs1oNeSGjnlgmhvXqlHBq73gnNtNj5IYw7X813SK73B/BoEqyGHTqUWmxC
-         vaXoKC1g2vD+JnSLDktaPpp0XtaQzeDVEEu9nY10QIMa3tUlMKBSEcsVbCzegxgAtpdR
-         kLsahvpffqNmfs1ovPpf1aHfbgmB2f8YaOI7XJ4HQGA5KNleMdVh0EKvrOo703qRhZyR
-         UZTUIvycg4DI9Xfa/O2LIzl3R4GKYKgqqo62gI6Ry+wNkZB0VPVV+fF29w96di7BBQ9m
-         PrB8EGYnOu+J+EEamzqb2QbLuuT9Y1UeT7qhBE+4YkIHBpldn6hFhxUQ/aAlYbYhT6ck
-         DUog==
-X-Gm-Message-State: ACgBeo2hVMTXyLEJScJbvtzicgoP6cE2ZWc3o3ff+InMBmKWRPx1/wcP
-	avTagQZrdT+vbfUMM7DGeLxvpg==
-X-Google-Smtp-Source: AA6agR5WowK59aA98UXhJCFNoaxgGwDjHSg3E1dHsTvjRo7r8QRvQblDqSuZDdJ0+myL45NwJuKEsQ==
-X-Received: by 2002:a17:90a:4d8d:b0:1fa:9cc6:3408 with SMTP id m13-20020a17090a4d8d00b001fa9cc63408mr2434860pjh.245.1662089460803;
-        Thu, 01 Sep 2022 20:31:00 -0700 (PDT)
-Received: from [10.255.237.132] ([139.177.225.254])
-        by smtp.gmail.com with ESMTPSA id x13-20020a17090a1f8d00b001f510175984sm4090447pja.41.2022.09.01.20.30.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Sep 2022 20:31:00 -0700 (PDT)
-Message-ID: <4a62a93c-683a-0515-2033-26c59b3b6f20@bytedance.com>
-Date: Fri, 2 Sep 2022 11:30:53 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA05B10E5
+	for <iommu@lists.linux.dev>; Fri,  2 Sep 2022 04:06:18 +0000 (UTC)
+Received: from omf02.hostedemail.com (a10.router.float.18 [10.200.18.1])
+	by unirelay01.hostedemail.com (Postfix) with ESMTP id 1E25A1C6992;
+	Thu,  1 Sep 2022 23:19:58 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf02.hostedemail.com (Postfix) with ESMTPA id A9ECF8000E;
+	Thu,  1 Sep 2022 23:19:36 +0000 (UTC)
+Message-ID: <c3a6e2d86724efd3ac4b94ca1975e23ddb26cc6f.camel@perches.com>
+Subject: Re: [RFC PATCH 28/30] Improved symbolic error names
+From: Joe Perches <joe@perches.com>
+To: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org
+Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz, 
+ hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de,
+ dave@stgolabs.net,  willy@infradead.org, liam.howlett@oracle.com,
+ void@manifault.com,  peterz@infradead.org, juri.lelli@redhat.com,
+ ldufour@linux.ibm.com,  peterx@redhat.com, david@redhat.com,
+ axboe@kernel.dk, mcgrof@kernel.org,  masahiroy@kernel.org,
+ nathan@kernel.org, changbin.du@intel.com, ytcoode@gmail.com, 
+ vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org, 
+ bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com, 
+ penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com,
+ glider@google.com,  elver@google.com, dvyukov@google.com,
+ shakeelb@google.com,  songmuchun@bytedance.com, arnd@arndb.de,
+ jbaron@akamai.com, rientjes@google.com,  minchan@google.com,
+ kaleshsingh@google.com, kernel-team@android.com,  linux-mm@kvack.org,
+ iommu@lists.linux.dev, kasan-dev@googlegroups.com, 
+ io-uring@vger.kernel.org, linux-arch@vger.kernel.org, 
+ xen-devel@lists.xenproject.org, linux-bcache@vger.kernel.org, 
+ linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org
+Date: Thu, 01 Sep 2022 16:19:35 -0700
+In-Reply-To: <20220830214919.53220-29-surenb@google.com>
+References: <20220830214919.53220-1-surenb@google.com>
+	 <20220830214919.53220-29-surenb@google.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.2.0
-Subject: Re: [PATCH v2] iommu/iova: Optimize alloc_iova with rbtree_augmented
-To: John Garry <john.garry@huawei.com>, joro@8bytes.org, will@kernel.org
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- robin.murphy@arm.com, xieyongji@bytedance.com,
- Ethan Zhao <haifeng.zhao@linux.intel.com>
-References: <20220824095139.66477-1-zhangpeng.00@bytedance.com>
- <06c215c6-cbae-d6b9-312c-6535e51a3128@linux.intel.com>
- <486fcde8-e9f5-e40c-db5d-fd3ade59b267@bytedance.com>
- <a2479500-479a-22ef-3bd2-90606a26a35e@linux.intel.com>
- <4527c925-076b-a477-4ff8-697d75f16761@bytedance.com>
- <1351998d-4fd7-dffb-c1fa-a0b1ca759123@huawei.com>
-From: Peng Zhang <zhangpeng.00@bytedance.com>
-In-Reply-To: <1351998d-4fd7-dffb-c1fa-a0b1ca759123@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Rspamd-Server: rspamout03
+X-Rspamd-Queue-Id: A9ECF8000E
+X-Spam-Status: No, score=0.64
+X-Stat-Signature: iwqjhu65bfnp7s38he58qcgfcrx3mruu
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX18FfjZ7BuRv/DHsUMYX6e6vN/rFvSwIdRQ=
+X-HE-Tag: 1662074376-819350
 
+On Tue, 2022-08-30 at 14:49 -0700, Suren Baghdasaryan wrote:
+> From: Kent Overstreet <kent.overstreet@linux.dev>
+>=20
+> This patch adds per-error-site error codes, with error strings that
+> include their file and line number.
+>=20
+> To use, change code that returns an error, e.g.
+>     return -ENOMEM;
+> to
+>     return -ERR(ENOMEM);
+>=20
+> Then, errname() will return a string that includes the file and line
+> number of the ERR() call, for example
+>     printk("Got error %s!\n", errname(err));
+> will result in
+>     Got error ENOMEM at foo.c:1234
 
-> If you really have a performance issue with alloc_iova_fast() -> 
-> alloc_iova() then I suggest that you consider trying to use 
-> dma_opt_mapping_size() to teach the DMA engine driver to not create 
-> requests whose overall size exceeds to the rcache limit.
+Why? Something wrong with just using %pe ?
 
-Yes. But I don't think it essentially solves the problem.
-A library for users should run stably ant it shouldn't hold
-the spinlock for a long time in some cases. It can even be
-said to be a bug.
+	printk("Got error %pe at %s:%d!\n", ERR_PTR(err), __FILE__, __LINE__);
 
-Like this:
-[Wed May 25 05:27:59 2022] watchdog: BUG: soft lockup - CPU#58
-stuck for 23s!
-[Wed May 25 05:27:59 2022] Call Trace:
-[Wed May 25 05:27:59 2022]  alloc_iova+0xf2/0x140
-[Wed May 25 05:27:59 2022]  alloc_iova_fast+0x56/0x251
+Likely __FILE__ and __LINE__ aren't particularly useful.
 
-Now we avoid this problem with iommu=pt, but it didn't solve the problem.
+And using ERR would add rather a lot of bloat as each codetag_error_code
+struct would be unique.
 
-Thanks,
-Peng
++#define ERR(_err)							\
++({									\
++	static struct codetag_error_code				\
++	__used								\
++	__section("error_code_tags")					\
++	__aligned(8) e =3D {						\
++		.str	=3D #_err " at " __FILE__ ":" __stringify(__LINE__),\
++		.err	=3D _err,						\
++	};								\
++									\
++	e.err;								\
++})
+
