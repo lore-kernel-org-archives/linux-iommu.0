@@ -1,167 +1,133 @@
-Received: from mail-vs1-f46.google.com (mail-vs1-f46.google.com [209.85.217.46])
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com [209.85.219.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 481D67E2
-	for <iommu@lists.linux.dev>; Thu,  1 Sep 2022 00:25:21 +0000 (UTC)
-Received: by mail-vs1-f46.google.com with SMTP id o123so16219238vsc.3
-        for <iommu@lists.linux.dev>; Wed, 31 Aug 2022 17:25:21 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7C8A7FA
+	for <iommu@lists.linux.dev>; Thu,  1 Sep 2022 01:07:55 +0000 (UTC)
+Received: by mail-yb1-f169.google.com with SMTP id 123so6582463ybv.7
+        for <iommu@lists.linux.dev>; Wed, 31 Aug 2022 18:07:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=AGblqMJVeqiqTttXs8s6V0HV5agdHnP9p/xnbjr8B0c=;
-        b=rNNkzHg+zTKGXzIjelCj5tVA/SWTxmt6zMstgmkxQJ+y4DLTwa2FggUUdbK2nobN8q
-         Ah1N1gL1njUGKNEbP1VSpNIQRxMaL/xgz/o8u1HayqtpYrw+SICupqAXBUR7GU/dySkX
-         /QdcuAvybWi+ncwXwwz91j7mPRhsPh58Hajpr9QPup8pE5aAPalZQt+KO7x4zwhYjEwL
-         8druejYou1nVv4FmH0UGESWUwD4Bf/7M22uk6/pRiU+GG1MSSlU5SsrLw3d6c1yoOZxD
-         tZPb1fzq/8AY+T6ZQdu9Y1JJKVhUsDrEU0jBxMg3+H9yoxzjumBdtBgul0RM5Eo+Ohht
-         BBpA==
+         :mime-version:from:to:cc:subject:date;
+        bh=MRPzoJhQ6jRX3IlC8DX7IgvLpQbZlMnsgnvZKuuei8w=;
+        b=FN6oNUdWK/epLWx1TsL9yA3judc8GEWbPUlFBZx3N+obm1zvmXwKLTgA0C+din1hae
+         QL+aeoxudtTxFElhfOjbFrb5XsjBAilaB08Ldofl1XN7K/KLlXYDWHTq4s13vSXmuj5f
+         DKOIAo7JDYtLr+88kw7IWfUfQEtwzvbREYO0F51ITJHJcS5BlsMkaJFVMWN04WfbWge0
+         QaMLxE28PQcRoEcCdCRT5hYYcc5qJq1t6S50Lj3dBP+TXgyTlXN6pUj2nAiR7uqNJFnz
+         LBjn/+WoYkZm8EFAaPai3sk01dRp3NFnU9eS/Pc/JsqSX+SuHO7G2QXvivbbuPpvEXP7
+         8nRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=AGblqMJVeqiqTttXs8s6V0HV5agdHnP9p/xnbjr8B0c=;
-        b=KUNNhIFpWmrz1YET+zW5chtDrQLj+YLDpI+N6OIhzbE0yGl66qcjmkYv61jKTlkebe
-         kkKvSLae2fKewQ8MvSXWuwAq4Cagy8gHRj4Td0uVTBqcJ3v0xCgN32wkCmnHQNbofCs9
-         28YjdG/BuQqphtPs7Gx8csZCMmtb0KZHGzw8qOGIguqw5pGov2PYc/69LJhtdpsp2aKr
-         uwvJP3WA5djoHlyqTz0iVeOzyaL9SnWfgGTu9slIwxYkeXhofSP7VyYAM4xrDPdF9PTX
-         giDjq+rMg7KlzjUOpG0u5QmwhkMAdjZGnbO6/sODwYC4TsiV+aX8dkOqjJwCdHY16MHP
-         6SgA==
-X-Gm-Message-State: ACgBeo3pg2ZiCNnrYYQdGtIAF98SexOibv09TJD1aLBX9ahxNCkAufhn
-	k/sJYnpEEKmvLoZyP+cwEjSA0DXWgbW2IiBquxN5yA==
-X-Google-Smtp-Source: AA6agR6ZSxxR/lJdTS2J/z5wkfKlYaaaUZqO+2MkqmK4V55gn/u+LkXUcGZU2TnuvZhTvo5q1P4Ah77ta2+R39O0njM=
-X-Received: by 2002:a05:6102:5094:b0:388:6903:5f09 with SMTP id
- bl20-20020a056102509400b0038869035f09mr7218977vsb.46.1661991920124; Wed, 31
- Aug 2022 17:25:20 -0700 (PDT)
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=MRPzoJhQ6jRX3IlC8DX7IgvLpQbZlMnsgnvZKuuei8w=;
+        b=wgIcLuv/ZuVqrwyCB+Kni/0R7xD88tGJhtXdHfkoF2vmxSRT9MIVL5FuQ1DzhYMZHT
+         f/y2tRyPs9vhJdjB5KZ//8j/Mk2WSAo2IRvcdjEW9DRCG2jyYBW8S7cNXSTxYHBk9d72
+         wsua6m/P4VEd+BAe480l8EWA5bynVLS4q/UomaLBnjAR94yjV+Dzt9TlmeOnGnNdVBLL
+         QUeBMtaU3UrMPgNdRjQd26vTQGszVZcc0+duzq/+EiGbRJ8ejqS2vUl3UvETt/RAdSWz
+         g68celuvsbJAk4GnFIqbZZuH9Fh/YuWZUvauzUfoCyXAY/qiRkUp9jcKVvENihoI3/XL
+         35vg==
+X-Gm-Message-State: ACgBeo3974sMq7sN5ZQ3h5FcvkJ8ULST9Rrjjy4hy3l6tUZpL1qGFWij
+	Mq2L52YwyoYFz/OerTqBRNEWxM8yBPU4IvrLFqt4JA==
+X-Google-Smtp-Source: AA6agR7ANRZu1y3V5ec1pN1knn4GFpXcEWezad8yEa+jyRtwuxFDik/95LNfhWenWi2n9p8vw7Ebn9CJDR6Mcs4MSyE=
+X-Received: by 2002:a05:6902:4c7:b0:69a:9e36:debe with SMTP id
+ v7-20020a05690204c700b0069a9e36debemr14531815ybs.543.1661994474639; Wed, 31
+ Aug 2022 18:07:54 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20220829232934.3277747-1-yuzhao@google.com> <20220831063818.3902572-1-yuzhao@google.com>
- <747f76e1-a5ec-150c-311e-a60396f6f7ab@oracle.com>
-In-Reply-To: <747f76e1-a5ec-150c-311e-a60396f6f7ab@oracle.com>
-From: Yu Zhao <yuzhao@google.com>
-Date: Wed, 31 Aug 2022 18:24:43 -0600
-Message-ID: <CAOUHufYHh3B6A8_pAusnW5==r3VhPxy6bOoUHbxe0qvhNGovqA@mail.gmail.com>
-Subject: Re: [PATCH v2] Revert "swiotlb: panic if nslabs is too small"
-To: Dongli Zhang <dongli.zhang@oracle.com>
-Cc: Christoph Hellwig <hch@infradead.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev, 
-	linux-mips@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>, 
-	kernel test robot <lkp@intel.com>, Dan Carpenter <dan.carpenter@oracle.com>
+References: <20220830214919.53220-1-surenb@google.com> <20220830214919.53220-11-surenb@google.com>
+ <20220831101103.fj5hjgy3dbb44fit@suse.de> <20220831174629.zpa2pu6hpxmytqya@moria.home.lan>
+In-Reply-To: <20220831174629.zpa2pu6hpxmytqya@moria.home.lan>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Wed, 31 Aug 2022 18:07:43 -0700
+Message-ID: <CAJuCfpGxxzHT7X+q2zzu+WRrmyjLsT+RMJ7+LFOECtFuXvt3gA@mail.gmail.com>
+Subject: Re: [RFC PATCH 10/30] mm: enable page allocation tagging for
+ __get_free_pages and alloc_pages
+To: Kent Overstreet <kent.overstreet@linux.dev>
+Cc: Mel Gorman <mgorman@suse.de>, Andrew Morton <akpm@linux-foundation.org>, 
+	Michal Hocko <mhocko@suse.com>, Vlastimil Babka <vbabka@suse.cz>, Johannes Weiner <hannes@cmpxchg.org>, 
+	Roman Gushchin <roman.gushchin@linux.dev>, Davidlohr Bueso <dave@stgolabs.net>, 
+	Matthew Wilcox <willy@infradead.org>, "Liam R. Howlett" <liam.howlett@oracle.com>, 
+	David Vernet <void@manifault.com>, Peter Zijlstra <peterz@infradead.org>, 
+	Juri Lelli <juri.lelli@redhat.com>, Laurent Dufour <ldufour@linux.ibm.com>, 
+	Peter Xu <peterx@redhat.com>, David Hildenbrand <david@redhat.com>, Jens Axboe <axboe@kernel.dk>, 
+	mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org, 
+	changbin.du@intel.com, ytcoode@gmail.com, 
+	Vincent Guittot <vincent.guittot@linaro.org>, Dietmar Eggemann <dietmar.eggemann@arm.com>, 
+	Steven Rostedt <rostedt@goodmis.org>, Benjamin Segall <bsegall@google.com>, 
+	Daniel Bristot de Oliveira <bristot@redhat.com>, Valentin Schneider <vschneid@redhat.com>, 
+	Christopher Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, 
+	42.hyeyoo@gmail.com, Alexander Potapenko <glider@google.com>, Marco Elver <elver@google.com>, 
+	dvyukov@google.com, Shakeel Butt <shakeelb@google.com>, 
+	Muchun Song <songmuchun@bytedance.com>, arnd@arndb.de, jbaron@akamai.com, 
+	David Rientjes <rientjes@google.com>, Minchan Kim <minchan@google.com>, 
+	Kalesh Singh <kaleshsingh@google.com>, kernel-team <kernel-team@android.com>, 
+	linux-mm <linux-mm@kvack.org>, iommu@lists.linux.dev, kasan-dev@googlegroups.com, 
+	io-uring@vger.kernel.org, linux-arch@vger.kernel.org, 
+	xen-devel@lists.xenproject.org, linux-bcache@vger.kernel.org, 
+	linux-modules@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 
-On Wed, Aug 31, 2022 at 4:20 PM Dongli Zhang <dongli.zhang@oracle.com> wrote:
+On Wed, Aug 31, 2022 at 10:46 AM Kent Overstreet
+<kent.overstreet@linux.dev> wrote:
 >
-> Hi Yu,
+> On Wed, Aug 31, 2022 at 11:11:03AM +0100, Mel Gorman wrote:
+> > On Tue, Aug 30, 2022 at 02:48:59PM -0700, Suren Baghdasaryan wrote:
+> > > Redefine alloc_pages, __get_free_pages to record allocations done by
+> > > these functions. Instrument deallocation hooks to record object freeing.
+> > >
+> > > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> > > +#ifdef CONFIG_PAGE_ALLOC_TAGGING
+> > > +
+> > >  #include <linux/alloc_tag.h>
+> > >  #include <linux/page_ext.h>
+> > >
+> > > @@ -25,4 +27,37 @@ static inline void pgalloc_tag_dec(struct page *page, unsigned int order)
+> > >             alloc_tag_sub(get_page_tag_ref(page), PAGE_SIZE << order);
+> > >  }
+> > >
+> > > +/*
+> > > + * Redefinitions of the common page allocators/destructors
+> > > + */
+> > > +#define pgtag_alloc_pages(gfp, order)                                      \
+> > > +({                                                                 \
+> > > +   struct page *_page = _alloc_pages((gfp), (order));              \
+> > > +                                                                   \
+> > > +   if (_page)                                                      \
+> > > +           alloc_tag_add(get_page_tag_ref(_page), PAGE_SIZE << (order));\
+> > > +   _page;                                                          \
+> > > +})
+> > > +
+> >
+> > Instead of renaming alloc_pages, why is the tagging not done in
+> > __alloc_pages()? At least __alloc_pages_bulk() is also missed. The branch
+> > can be guarded with IS_ENABLED.
 >
-> As we discussed in the past, the swiotlb panic on purpose
+> It can't be in a function, it has to be in a wrapper macro.
 
-We should not panic() at all, especially on a platform that has been
-working well since at least 4.14.
+Ah, right. __FILE__, __LINE__ and others we use to record the call
+location would point to include/linux/gfp.h instead of the location
+allocation is performed at.
 
-Did you check out this link I previously shared with you?
-https://lore.kernel.org/r/CAHk-=wit-DmhMfQErY29JSPjFgebx_Ld+pnerc4J2Ag990WwAA@mail.gmail.com/
-
-> because the
-> mips/cavium-octeon/dma-octeon.c requests to allocate only PAGE_SIZE swiotlb
-> buffer.
-
-What's wrong with PAGE_SIZE swiotlb?
-
-> This is smaller than IO_TLB_MIN_SLABS.
-
-IO_TLB_MIN_SLABS is an arbitrary number, and it's inherited from IA64.
-So does the comment below. What exactly is the rationale behind it?
-
-> The below comments mentioned that IO_TLB_MIN_SLABS is the "Minimum IO TLB size
-> to bother booting with".
 >
-> 56 /*
-> 57  * Minimum IO TLB size to bother booting with.  Systems with mainly
-> 58  * 64bit capable cards will only lightly use the swiotlb.  If we can't
-> 59  * allocate a contiguous 1MB, we're probably in trouble anyway.
-> 60  */
-> 61 #define IO_TLB_MIN_SLABS ((1<<20) >> IO_TLB_SHIFT)
+> alloc_tag_add() is a macro that defines a static struct in a special elf
+> section. That struct holds the allocation counters, and putting it in a special
+> elf section is how the code to list it in debugfs finds it.
 >
+> Look at the dynamic debug code for prior precedence for this trick in the kernel
+> - that's how it makes pr_debug() calls dynamically controllable at runtime, from
+> debugfs. We're taking that method and turning it into a proper library.
 >
-> The arm may create swiotlb conditionally. That is, the swiotlb is not
-> initialized if (1) CONFIG_ARM_LPAE is not set (line 273), or (2) max_pfn <=
-> arm_dma_pfn_limit (line 274).
+> Because all the counters are statically allocated, without even a pointer deref
+> to get to them in the allocation path (one pointer deref to get to them in the
+> deallocate path), that makes this _much, much_ cheaper than anything that could
+> be done with tracing - cheap enough that I expect many users will want to enable
+> it in production.
 >
-> arch/arm/mm/init.c
+> --
+> To unsubscribe from this group and stop receiving emails from it, send an email to kernel-team+unsubscribe@android.com.
 >
-> 271 void __init mem_init(void)
-> 272 {
-> 273 #ifdef CONFIG_ARM_LPAE
-> 274         swiotlb_init(max_pfn > arm_dma_pfn_limit, SWIOTLB_VERBOSE);
-> 275 #endif
-> 276
-> 277         set_max_mapnr(pfn_to_page(max_pfn) - mem_map);
->
->
-> On x86, the swiotlb is not initialized if the memory is small (> MAX_DMA32_PFN,
-> at line 47), or the secure memory is not required.
->
-> 44 static void __init pci_swiotlb_detect(void)
-> 45 {
-> 46         /* don't initialize swiotlb if iommu=off (no_iommu=1) */
-> 47         if (!no_iommu && max_possible_pfn > MAX_DMA32_PFN)
-> 48                 x86_swiotlb_enable = true;
-> 49
-> 50         /*
-> 51          * Set swiotlb to 1 so that bounce buffers are allocated and used for
-> 52          * devices that can't support DMA to encrypted memory.
-> 53          */
-> 54         if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT))
-> 55                 x86_swiotlb_enable = true;
-> 56
-> 57         /*
-> 58          * Guest with guest memory encryption currently perform all DMA through
-> 59          * bounce buffers as the hypervisor can't access arbitrary VM memory
-> 60          * that is not explicitly shared with it.
-> 61          */
-> 62         if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT)) {
-> 63                 x86_swiotlb_enable = true;
-> 64                 x86_swiotlb_flags |= SWIOTLB_FORCE;
-> 65         }
-> 66 }
-
-Thanks for the code snippets. But I failed to see a point.
-
-> Regardless whether the current patch will be reverted, unless there is specific
-> reason (e.g., those PAGE_SIZE will be used), I do not think it is a good idea to
-> allocate <IO_TLB_MIN_SLABS swiotlb buffer.
-
-For what specific reason? My current understanding is that you want to
-be future/fool-proof. If so, then you got the priority wrong. We need
-to make sure currently working systems continue to work first, then
-future/fool-proof.
-
-> I will wait for the suggestion from
-> the swiotlb maintainer.
-
-Chris is on vacation. I sure can wait.
-
-But it sounds like you are unsure about what to do. If so, it's not
-what you claimed "we have already understood everything related to
-swiotlb" previously.
-
-> Since I do not have a mips environment, I am not able to test if the below makes
-> any trouble in your situation at arch/mips/cavium-octeon/dma-octeon.c.
->
-> @@ -234,6 +234,8 @@ void __init plat_swiotlb_setup(void)
->                 swiotlbsize = 64 * (1<<20);
->  #endif
->
-> -       swiotlb_adjust_size(swiotlbsize);
-> -       swiotlb_init(true, SWIOTLB_VERBOSE);
-> +       if (swiotlbsize != PAGE_SIZE) {
-> +               swiotlb_adjust_size(swiotlbsize);
-> +               swiotlb_init(true, SWIOTLB_VERBOSE);
-> +       }
->  }
-
-Please ask the MIPS/Octeon maintainers to check this first.
