@@ -1,137 +1,180 @@
-Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA903746C
-	for <iommu@lists.linux.dev>; Thu,  1 Sep 2022 20:15:12 +0000 (UTC)
-Date: Thu, 1 Sep 2022 16:15:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1662063310;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=x2NMOlEzDduOKU3OG0hkVY/eZ9DnomVtYyGkujvYMfQ=;
-	b=GZmX8EgKF+NWBO1K6a1hr+nxjuoF/PsDTSLqCo6JDft5Lp2ahwYTTK8b50dG3GDFiyI2oI
-	2rQSd84i51aF5SiQopFwaT3nCD3wYRAGWS4l2yVMm4bl7qQbXzOmzbG62OdE7XVziv2OfP
-	OhmtcTJVp1MskxwDjbZcipuL7iWFfaI=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Kent Overstreet <kent.overstreet@linux.dev>
-To: Suren Baghdasaryan <surenb@google.com>
-Cc: Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@suse.de>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Vlastimil Babka <vbabka@suse.cz>,
-	Johannes Weiner <hannes@cmpxchg.org>,
-	Roman Gushchin <roman.gushchin@linux.dev>,
-	Davidlohr Bueso <dave@stgolabs.net>,
-	Matthew Wilcox <willy@infradead.org>,
-	"Liam R. Howlett" <liam.howlett@oracle.com>,
-	David Vernet <void@manifault.com>,
-	Juri Lelli <juri.lelli@redhat.com>,
-	Laurent Dufour <ldufour@linux.ibm.com>,
-	Peter Xu <peterx@redhat.com>, David Hildenbrand <david@redhat.com>,
-	Jens Axboe <axboe@kernel.dk>, mcgrof@kernel.org,
-	masahiroy@kernel.org, nathan@kernel.org, changbin.du@intel.com,
-	ytcoode@gmail.com, Vincent Guittot <vincent.guittot@linaro.org>,
-	Dietmar Eggemann <dietmar.eggemann@arm.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Benjamin Segall <bsegall@google.com>,
-	Daniel Bristot de Oliveira <bristot@redhat.com>,
-	Valentin Schneider <vschneid@redhat.com>,
-	Christopher Lameter <cl@linux.com>,
-	Pekka Enberg <penberg@kernel.org>,
-	Joonsoo Kim <iamjoonsoo.kim@lge.com>, 42.hyeyoo@gmail.com,
-	Alexander Potapenko <glider@google.com>,
-	Marco Elver <elver@google.com>, Dmitry Vyukov <dvyukov@google.com>,
-	Shakeel Butt <shakeelb@google.com>,
-	Muchun Song <songmuchun@bytedance.com>, arnd@arndb.de,
-	jbaron@akamai.com, David Rientjes <rientjes@google.com>,
-	Minchan Kim <minchan@google.com>,
-	Kalesh Singh <kaleshsingh@google.com>,
-	kernel-team <kernel-team@android.com>,
-	linux-mm <linux-mm@kvack.org>, iommu@lists.linux.dev,
-	kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
-	linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
-	linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
-	LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
-Message-ID: <20220901201502.sn6223bayzwferxv@moria.home.lan>
-References: <20220830214919.53220-1-surenb@google.com>
- <Yw8P8xZ4zqu121xL@hirez.programming.kicks-ass.net>
- <20220831084230.3ti3vitrzhzsu3fs@moria.home.lan>
- <20220831101948.f3etturccmp5ovkl@suse.de>
- <Yw88RFuBgc7yFYxA@dhcp22.suse.cz>
- <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
- <YxBc1xuGbB36f8zC@dhcp22.suse.cz>
- <CAJuCfpGhwPFYdkOLjwwD4ra9JxPqq1T5d1jd41Jy3LJnVnhNdg@mail.gmail.com>
- <YxEE1vOwRPdzKxoq@dhcp22.suse.cz>
- <CAJuCfpHuzJGTA_-m0Jfawc7LgJLt4GztUUY4K9N9-7bFqJuXnw@mail.gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32DB8746C
+	for <iommu@lists.linux.dev>; Thu,  1 Sep 2022 20:29:19 +0000 (UTC)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+	by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 281KPq6e031018;
+	Thu, 1 Sep 2022 20:29:11 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=MaoUKT/PmWS2nrfEZabmkbBY3WUaGFyrBOhbFKksVaI=;
+ b=Kj/FxiY4ec5P8sG5nOeuzIWvfEQL7DRuIUaK9/iq2AbyRB6+ZiZcgL/SQxdTHY+mfJEa
+ JuH1/6zCGcAt7e0O0uup0MRn1USoKug15Y/OlRh0SQsiJST5TMfFDCy4qSzsz0NVBG9m
+ W1DTDoErJy5fJjAwX5Wkxe6GfaxI7IBALpjGODsY9/b+eYglznDEilkmG2+0CPkLKd9J
+ 0dnRC4K/4Fx4HGvHUBglbcj5h2e8Z0dWzRKdQrH5u1SwcrUTWxQIyjIbGtIHb8dXKW5H
+ 1e+DrwOfLWo+looWpgtjJKs7GtXX8nl8Yq3O+8jy5YFDz1nfuL8O6TXiIz7qZ66z8tAs iw== 
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
+	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3jb3rk81vk-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 01 Sep 2022 20:29:11 +0000
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+	by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 281K6H2a001959;
+	Thu, 1 Sep 2022 20:29:10 GMT
+Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
+	by ppma03dal.us.ibm.com with ESMTP id 3j7awbcg6c-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 01 Sep 2022 20:29:10 +0000
+Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
+	by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 281KT9DQ9437912
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 1 Sep 2022 20:29:09 GMT
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 190356E054;
+	Thu,  1 Sep 2022 20:29:09 +0000 (GMT)
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id BBFBC6E070;
+	Thu,  1 Sep 2022 20:29:07 +0000 (GMT)
+Received: from [9.160.86.252] (unknown [9.160.86.252])
+	by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
+	Thu,  1 Sep 2022 20:29:07 +0000 (GMT)
+Message-ID: <6be7b0ff-63d4-0352-a7de-e66a93411c2b@linux.ibm.com>
+Date: Thu, 1 Sep 2022 16:28:35 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJuCfpHuzJGTA_-m0Jfawc7LgJLt4GztUUY4K9N9-7bFqJuXnw@mail.gmail.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v4 1/2] iommu/s390: Fix race with release_device ops
+Content-Language: en-US
+To: Niklas Schnelle <schnelle@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev
+Cc: linux-s390@vger.kernel.org, borntraeger@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        agordeev@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
+        will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com,
+        linux-kernel@vger.kernel.org
+References: <20220831201236.77595-1-mjrosato@linux.ibm.com>
+ <20220831201236.77595-2-mjrosato@linux.ibm.com>
+ <9887e2f4-3f3d-137d-dad7-59dab5f98aab@linux.ibm.com>
+ <52d3fe0b86bdc04fdbf3aae095b2f71f4ea12d44.camel@linux.ibm.com>
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <52d3fe0b86bdc04fdbf3aae095b2f71f4ea12d44.camel@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 3G1ovyeNmRMDx_iHQNld8e02hC9irtkm
+X-Proofpoint-GUID: 3G1ovyeNmRMDx_iHQNld8e02hC9irtkm
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-09-01_12,2022-08-31_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 adultscore=0
+ phishscore=0 clxscore=1015 mlxscore=0 spamscore=0 suspectscore=0
+ lowpriorityscore=0 malwarescore=0 mlxlogscore=999 bulkscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2209010087
 
-On Thu, Sep 01, 2022 at 12:39:11PM -0700, Suren Baghdasaryan wrote:
-> kmemleak is known to be slow and it's even documented [1], so I hope I
-> can skip that part. For page_owner to provide the comparable
-> information we would have to capture the call stacks for all page
-> allocations unlike our proposal which allows to do that selectively
-> for specific call sites. I'll post the overhead numbers of call stack
-> capturing once I'm finished with profiling the latest code, hopefully
-> sometime tomorrow, in the worst case after the long weekend.
+On 9/1/22 5:37 AM, Niklas Schnelle wrote:
+> On Thu, 2022-09-01 at 09:56 +0200, Pierre Morel wrote:
+>>
+>> On 8/31/22 22:12, Matthew Rosato wrote:
+>>> With commit fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev
+>>> calls") s390-iommu is supposed to handle dynamic switching between IOMMU
+>>> domains and the DMA API handling.  However, this commit does not
+>>> sufficiently handle the case where the device is released via a call
+>>> to the release_device op as it may occur at the same time as an opposing
+>>> attach_dev or detach_dev since the group mutex is not held over
+>>> release_device.  This was observed if the device is deconfigured during a
+>>> small window during vfio-pci initialization and can result in WARNs and
+>>> potential kernel panics.
+>>>
+>>> Handle this by tracking when the device is probed/released via
+>>> dev_iommu_priv_set/get().  Ensure that once the device is released only
+>>> release_device handles the re-init of the device DMA.
+>>>
+>>> Fixes: fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev calls")
+>>> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+>>> ---
+>>>   arch/s390/include/asm/pci.h |  1 +
+>>>   arch/s390/pci/pci.c         |  1 +
+>>>   drivers/iommu/s390-iommu.c  | 39 ++++++++++++++++++++++++++++++++++---
+>>>   3 files changed, 38 insertions(+), 3 deletions(-)
+>>>
+>>>
+> ---8<---
+>>>   
+>>> @@ -206,10 +221,28 @@ static void s390_iommu_release_device(struct device *dev)
+>>>
+>>
+> ---8<---
+>>> +		/* Make sure this device is removed from the domain list */
+>>>   		domain = iommu_get_domain_for_dev(dev);
+>>>   		if (domain)
+>>>   			s390_iommu_detach_device(domain, dev);
+>>> +		/* Now ensure DMA is initialized from here */
+>>> +		mutex_lock(&zdev->dma_domain_lock);
+>>> +		if (zdev->s390_domain) {
+>>> +			zdev->s390_domain = NULL;
+>>> +			zpci_unregister_ioat(zdev, 0);
+>>> +			zpci_dma_init_device(zdev);
+>>
+>> Sorry if it is a stupid question, but two things looks strange to me:
+>>
+>> - having DMA initialized just after having unregistered the IOAT
+>> Is that really all we need to unregister before calling dma_init_device?
 
-To expand on this further: we're stashing a pointer to the alloc_tag, which is
-defined at the allocation callsite. That's how we're able to decrement the
-proper counter on free, and why this beats any tracing based approach - with
-tracing you'd instead have to correlate allocate/free events. Ouch.
+This is also how s390-iommu has been handling detach_dev (and still does)
 
-> > Yes, tracking back the call trace would be really needed. The question
-> > is whether this is really prohibitively expensive. How much overhead are
-> > we talking about? There is no free lunch here, really.  You either have
-> > the overhead during runtime when the feature is used or on the source
-> > code level for all the future development (with a maze of macros and
-> > wrappers).
+>>
+>> - having DMA initialized inside the release_device callback:
+>> Why isn't it done in the device_probe ?
+> 
+> As I understand it iommu_release_device() which calls this code is only
+> used when a device goes away. So, I think you're right in that it makes
+> little sense to re-initialize DMA at this point, it's going to be torn
+> down immediately after anyway. I do wonder if it would be an acceptably
+> small change to just set zdev->s390_domain = NULL here and leave DMA
+> uninitialized while making zpci_dma_exit_device() deal with that e.g.
+> by doing nothing if zdev->dma_table is NULL but I'm not sure.
 
-The full call stack is really not what you want in most applications - that's
-what people think they want at first, and why page_owner works the way it does,
-but it turns out that then combining all the different but related stack traces
-_sucks_ (so why were you saving them in the first place?), and then you have to
-do a separate memory allocate for each stack track, which destroys performance.
+Right -- since it's a fix, I was trying to keep the changes minimal and this behavior (re-init DMA even on release_device) was existing, it was just always done within s390_iommu_detach_device before.
+
+If you want, I could experiment with setting zdev->dma_table = NULL on the release path only (and checking it in zpci_dma_exit_device())
 
 > 
-> Will post the overhead numbers soon.
-> What I hear loud and clear is that we need a kernel command-line kill
-> switch that mitigates the overhead for having this feature. That seems
-> to be the main concern.
-> Thanks,
+> Either way I fear this mess really is just a symptom of our current
+> design oddity of driving the same IOMMU hardware through both our DMA
+> API implementation (arch/s390/pci_dma.c) and the IOMMU driver
+> (driver/iommu/s390-iommu.c) and trying to hand off between them
+> smoothly where common code instead just layers one atop the other when
+> using an IOMMU at all.
+> 
+> I think the correct medium term solution is to use the common DMA API
+> implementation (drivers/iommu/dma-iommu.c) like everyone else. But that
+> isn't the minimal fix we need now. 
 
-After looking at this more I don't think we should commit just yet - there's
-some tradeoffs to be evaluated, and maybe the thing to do first will be to see
-if we can cut down on the (huge!) number of allocation interfaces before adding
-more complexity.
+Agree
 
-The ideal approach, from a performance POV, would be to pass a pointer to the
-alloc tag to kmalloc() et. all, and then we'd have the actual accounting code in
-one place and use a jump label to skip over it when this feature is disabled.
+> 
+> I do have a working prototype of using the common implementation but
+> the big problem that I'm still searching a solution for is its
+> performance with a virtualized IOMMU where IOTLB flushes (RPCIT on
+> s390) are used for shadowing and are expensive and serialized. The
+> optimization we used so far for unmap, only doing one global IOTLB
+> flush once we run out of IOVA space, is just too much better in that
+> scenario to just ignore. As one data point, on an NVMe I get about
+> _twice_ the IOPS when using our existing scheme compared to strict
+> mode. Which makes sense as IOTLB flushes are known as the bottleneck
+> and optimizing unmap like that reduces them by almost half. Queued
+> flushing is still much worse likely due to serialization of the
+> shadowing, though again it works great on LPAR. To make sure it's not
+> due to some bug in the IOMMU driver I even tried converting our
+> existing DMA driver to layer on top of the IOMMU driver with the same
+> result.
+> 
+> 
 
-However, there are _many, many_ wrapper functions in our allocation code, and
-this approach is going to make the plumbing for the hooks quite a bit bigger
-than what we have now - and then, do we want to have this extra alloc_tag
-parameter that's not used when CONFIG_ALLOC_TAGGING=n? It's a tiny cost for an
-extra unused parameter, but it's a cost - or do we get rid of that with some
-extra macro hackery (eww, gross)?
-
-If we do the boot parameter before submission, I think we'll have something
-that's maybe not strictly ideal from a performance POV when
-CONFIG_ALLOC_TAGGING=y but boot parameter=n, but it'll introduce the minimum
-amount of macro insanity.
-
-What we should be able to do pretty easily is discard the alloc_tag structs when
-the boot parameter is disabled, because they're in special elf sections and we
-already do that (e.g. for .init).
