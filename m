@@ -1,136 +1,241 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7F8C1EDD
-	for <iommu@lists.linux.dev>; Thu,  1 Sep 2022 11:01:31 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 34134D6E;
-	Thu,  1 Sep 2022 04:01:37 -0700 (PDT)
-Received: from [10.57.18.92] (unknown [10.57.18.92])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BF7353F766;
-	Thu,  1 Sep 2022 04:01:28 -0700 (PDT)
-Message-ID: <e01e6ef2-ba45-7433-5fe4-a6806dac3af9@arm.com>
-Date: Thu, 1 Sep 2022 12:01:23 +0100
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1266328ED
+	for <iommu@lists.linux.dev>; Thu,  1 Sep 2022 11:05:19 +0000 (UTC)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+	by smtp-out1.suse.de (Postfix) with ESMTP id 0601C22679;
+	Thu,  1 Sep 2022 11:05:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1662030312; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=8Mq+Xr0OI+bfUf9L9MD4E1lYUlcZgNZF3vEeJl7iivY=;
+	b=qxrx6Job1q9NhDr8jWgNkmZI/DIOO/4e7B7RmUvgkYmx7g2HD/fgMwo5Yk3h0VlLoTt148
+	XYp7yip2SBIiuI+n/MfaQLawKmE1HR8l9pazuynzZByPC2unjCGeYASa4WYFvbNUExE7dA
+	7MiaajpJfHroyIAEi/eiNxfkWvr+0Tc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1662030312;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=8Mq+Xr0OI+bfUf9L9MD4E1lYUlcZgNZF3vEeJl7iivY=;
+	b=aI8rpCPzOEsCk4iUnJ8AJ2D/wDZBIW/Yuzt0mzTQGVVpTTlaSfJwPqq4wfJerDAgBO140w
+	J3d/FttUmGmZwoAQ==
+Received: from suse.de (unknown [10.163.43.106])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by relay2.suse.de (Postfix) with ESMTPS id 314B12C142;
+	Thu,  1 Sep 2022 11:05:08 +0000 (UTC)
+Date: Thu, 1 Sep 2022 12:05:01 +0100
+From: Mel Gorman <mgorman@suse.de>
+To: Kent Overstreet <kent.overstreet@linux.dev>
+Cc: Peter Zijlstra <peterz@infradead.org>,
+	Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org,
+	mhocko@suse.com, vbabka@suse.cz, hannes@cmpxchg.org,
+	roman.gushchin@linux.dev, dave@stgolabs.net, willy@infradead.org,
+	liam.howlett@oracle.com, void@manifault.com, juri.lelli@redhat.com,
+	ldufour@linux.ibm.com, peterx@redhat.com, david@redhat.com,
+	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
+	nathan@kernel.org, changbin.du@intel.com, ytcoode@gmail.com,
+	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+	elver@google.com, dvyukov@google.com, shakeelb@google.com,
+	songmuchun@bytedance.com, arnd@arndb.de, jbaron@akamai.com,
+	rientjes@google.com, minchan@google.com, kaleshsingh@google.com,
+	kernel-team@android.com, linux-mm@kvack.org, iommu@lists.linux.dev,
+	kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
+	linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
+	linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
+Message-ID: <20220901110501.o5rq5yzltomirxiw@suse.de>
+References: <20220830214919.53220-1-surenb@google.com>
+ <Yw8P8xZ4zqu121xL@hirez.programming.kicks-ass.net>
+ <20220831084230.3ti3vitrzhzsu3fs@moria.home.lan>
+ <20220831101948.f3etturccmp5ovkl@suse.de>
+ <20220831155941.q5umplytbx6offku@moria.home.lan>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH v4 1/2] iommu/s390: Fix race with release_device ops
-Content-Language: en-GB
-To: Niklas Schnelle <schnelle@linux.ibm.com>,
- Pierre Morel <pmorel@linux.ibm.com>, Matthew Rosato
- <mjrosato@linux.ibm.com>, iommu@lists.linux.dev
-Cc: linux-s390@vger.kernel.org, borntraeger@linux.ibm.com, hca@linux.ibm.com,
- gor@linux.ibm.com, gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
- svens@linux.ibm.com, joro@8bytes.org, will@kernel.org, jgg@nvidia.com,
- linux-kernel@vger.kernel.org
-References: <20220831201236.77595-1-mjrosato@linux.ibm.com>
- <20220831201236.77595-2-mjrosato@linux.ibm.com>
- <9887e2f4-3f3d-137d-dad7-59dab5f98aab@linux.ibm.com>
- <52d3fe0b86bdc04fdbf3aae095b2f71f4ea12d44.camel@linux.ibm.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <52d3fe0b86bdc04fdbf3aae095b2f71f4ea12d44.camel@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
+In-Reply-To: <20220831155941.q5umplytbx6offku@moria.home.lan>
 
-On 2022-09-01 10:37, Niklas Schnelle wrote:
-> On Thu, 2022-09-01 at 09:56 +0200, Pierre Morel wrote:
->>
->> On 8/31/22 22:12, Matthew Rosato wrote:
->>> With commit fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev
->>> calls") s390-iommu is supposed to handle dynamic switching between IOMMU
->>> domains and the DMA API handling.  However, this commit does not
->>> sufficiently handle the case where the device is released via a call
->>> to the release_device op as it may occur at the same time as an opposing
->>> attach_dev or detach_dev since the group mutex is not held over
->>> release_device.  This was observed if the device is deconfigured during a
->>> small window during vfio-pci initialization and can result in WARNs and
->>> potential kernel panics.
->>>
->>> Handle this by tracking when the device is probed/released via
->>> dev_iommu_priv_set/get().  Ensure that once the device is released only
->>> release_device handles the re-init of the device DMA.
->>>
->>> Fixes: fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev calls")
->>> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
->>> ---
->>>    arch/s390/include/asm/pci.h |  1 +
->>>    arch/s390/pci/pci.c         |  1 +
->>>    drivers/iommu/s390-iommu.c  | 39 ++++++++++++++++++++++++++++++++++---
->>>    3 files changed, 38 insertions(+), 3 deletions(-)
->>>
->>>
-> ---8<---
->>>    
->>> @@ -206,10 +221,28 @@ static void s390_iommu_release_device(struct device *dev)
->>>
->>
-> ---8<---
->>> +		/* Make sure this device is removed from the domain list */
->>>    		domain = iommu_get_domain_for_dev(dev);
->>>    		if (domain)
->>>    			s390_iommu_detach_device(domain, dev);
->>> +		/* Now ensure DMA is initialized from here */
->>> +		mutex_lock(&zdev->dma_domain_lock);
->>> +		if (zdev->s390_domain) {
->>> +			zdev->s390_domain = NULL;
->>> +			zpci_unregister_ioat(zdev, 0);
->>> +			zpci_dma_init_device(zdev);
->>
->> Sorry if it is a stupid question, but two things looks strange to me:
->>
->> - having DMA initialized just after having unregistered the IOAT
->> Is that really all we need to unregister before calling dma_init_device?
->>
->> - having DMA initialized inside the release_device callback:
->> Why isn't it done in the device_probe ?
+On Wed, Aug 31, 2022 at 11:59:41AM -0400, Kent Overstreet wrote:
+> On Wed, Aug 31, 2022 at 11:19:48AM +0100, Mel Gorman wrote:
+> > On Wed, Aug 31, 2022 at 04:42:30AM -0400, Kent Overstreet wrote:
+> > > On Wed, Aug 31, 2022 at 09:38:27AM +0200, Peter Zijlstra wrote:
+> > > > On Tue, Aug 30, 2022 at 02:48:49PM -0700, Suren Baghdasaryan wrote:
+> > > > > ===========================
+> > > > > Code tagging framework
+> > > > > ===========================
+> > > > > Code tag is a structure identifying a specific location in the source code
+> > > > > which is generated at compile time and can be embedded in an application-
+> > > > > specific structure. Several applications of code tagging are included in
+> > > > > this RFC, such as memory allocation tracking, dynamic fault injection,
+> > > > > latency tracking and improved error code reporting.
+> > > > > Basically, it takes the old trick of "define a special elf section for
+> > > > > objects of a given type so that we can iterate over them at runtime" and
+> > > > > creates a proper library for it.
+> > > > 
+> > > > I might be super dense this morning, but what!? I've skimmed through the
+> > > > set and I don't think I get it.
+> > > > 
+> > > > What does this provide that ftrace/kprobes don't already allow?
+> > > 
+> > > You're kidding, right?
+> > 
+> > It's a valid question. From the description, it main addition that would
+> > be hard to do with ftrace or probes is catching where an error code is
+> > returned. A secondary addition would be catching all historical state and
+> > not just state since the tracing started.
 > 
-> As I understand it iommu_release_device() which calls this code is only
-> used when a device goes away. So, I think you're right in that it makes
-> little sense to re-initialize DMA at this point, it's going to be torn
-> down immediately after anyway. I do wonder if it would be an acceptably
-> small change to just set zdev->s390_domain = NULL here and leave DMA
-> uninitialized while making zpci_dma_exit_device() deal with that e.g.
-> by doing nothing if zdev->dma_table is NULL but I'm not sure.
+> Catching all historical state is pretty important in the case of memory
+> allocation accounting, don't you think?
 > 
-> Either way I fear this mess really is just a symptom of our current
-> design oddity of driving the same IOMMU hardware through both our DMA
-> API implementation (arch/s390/pci_dma.c) and the IOMMU driver
-> (driver/iommu/s390-iommu.c) and trying to hand off between them
-> smoothly where common code instead just layers one atop the other when
-> using an IOMMU at all.
-> 
-> I think the correct medium term solution is to use the common DMA API
-> implementation (drivers/iommu/dma-iommu.c) like everyone else. But that
-> isn't the minimal fix we need now.
-> 
-> I do have a working prototype of using the common implementation but
-> the big problem that I'm still searching a solution for is its
-> performance with a virtualized IOMMU where IOTLB flushes (RPCIT on
-> s390) are used for shadowing and are expensive and serialized. The
-> optimization we used so far for unmap, only doing one global IOTLB
-> flush once we run out of IOVA space, is just too much better in that
-> scenario to just ignore. As one data point, on an NVMe I get about
-> _twice_ the IOPS when using our existing scheme compared to strict
-> mode. Which makes sense as IOTLB flushes are known as the bottleneck
-> and optimizing unmap like that reduces them by almost half. Queued
-> flushing is still much worse likely due to serialization of the
-> shadowing, though again it works great on LPAR. To make sure it's not
-> due to some bug in the IOMMU driver I even tried converting our
-> existing DMA driver to layer on top of the IOMMU driver with the same
-> result.
 
-FWIW, can you approximate the same behaviour by just making IOVA_FQ_SIZE 
-and IOVA_FQ_TIMEOUT really big, and deferring your zpci_refresh_trans() 
-hook from .unmap to .flush_iotlb_all when in non-strict mode?
+Not always. If the intent is to catch a memory leak that gets worse over
+time, early boot should be sufficient. Sure, there might be drivers that leak
+memory allocated at init but if it's not a growing leak, it doesn't matter.
 
-I'm not against the idea of trying to support this mode of operation 
-better in the common code, since it seems like it could potentially be 
-useful for *any* virtualised scenario where trapping to invalidate is 
-expensive and the user is happy to trade off the additional address 
-space/memory overhead (and even greater loss of memory protection) 
-against that.
+> Also, ftrace can drop events. Not really ideal if under system load your memory
+> accounting numbers start to drift.
+> 
 
-Robin.
+As pointed out elsewhere, attaching to the tracepoint and recording relevant
+state is an option other than trying to parse a raw ftrace feed. For memory
+leaks, there are already tracepoints for page allocation and free that could
+be used to track allocations that are not freed at a given point in time.
+There is also the kernel memory leak detector although I never had reason
+to use it (https://www.kernel.org/doc/html/v6.0-rc3/dev-tools/kmemleak.html)
+and it sounds like it would be expensive.
+
+> > It's also unclear *who* would enable this. It looks like it would mostly
+> > have value during the development stage of an embedded platform to track
+> > kernel memory usage on a per-application basis in an environment where it
+> > may be difficult to setup tracing and tracking. Would it ever be enabled
+> > in production? Would a distribution ever enable this? If it's enabled, any
+> > overhead cannot be disabled/enabled at run or boot time so anyone enabling
+> > this would carry the cost without never necessarily consuming the data.
+> 
+> The whole point of this is to be cheap enough to enable in production -
+> especially the latency tracing infrastructure. There's a lot of value to
+> always-on system visibility infrastructure, so that when a live machine starts
+> to do something wonky the data is already there.
+> 
+
+Sure, there is value but nothing stops the tracepoints being attached as
+a boot-time service where interested. For latencies, there is already
+bpf examples for tracing individual function latency over time e.g.
+https://github.com/iovisor/bcc/blob/master/tools/funclatency.py although
+I haven't used it recently.
+
+Live parsing of ftrace is possible, albeit expensive.
+https://github.com/gormanm/mmtests/blob/master/monitors/watch-highorder.pl
+tracks counts of high-order allocations and dumps a report on interrupt as
+an example of live parsing ftrace and only recording interesting state. It's
+not tracking state you are interested in but it demonstrates it is possible
+to rely on ftrace alone and monitor from userspace. It's bit-rotted but
+can be fixed with
+
+diff --git a/monitors/watch-highorder.pl b/monitors/watch-highorder.pl
+index 8c80ae79e556..fd0d477427df 100755
+--- a/monitors/watch-highorder.pl
++++ b/monitors/watch-highorder.pl
+@@ -52,7 +52,7 @@ my $regex_pagealloc;
+ 
+ # Static regex used. Specified like this for readability and for use with /o
+ #                      (process_pid)     (cpus      )   ( time  )   (tpoint    ) (details)
+-my $regex_traceevent = '\s*([a-zA-Z0-9-]*)\s*(\[[0-9]*\])\s*([0-9.]*):\s*([a-zA-Z_]*):\s*(.*)';
++my $regex_traceevent = '\s*([a-zA-Z0-9-]*)\s*(\[[0-9]*\])\s*([0-9. ]*):\s*([a-zA-Z_]*):\s*(.*)';
+ my $regex_statname = '[-0-9]*\s\((.*)\).*';
+ my $regex_statppid = '[-0-9]*\s\(.*\)\s[A-Za-z]\s([0-9]*).*';
+ 
+@@ -73,6 +73,7 @@ sub generate_traceevent_regex {
+ 				$regex =~ s/%p/\([0-9a-f]*\)/g;
+ 				$regex =~ s/%d/\([-0-9]*\)/g;
+ 				$regex =~ s/%lu/\([0-9]*\)/g;
++				$regex =~ s/%lx/\([0-9a-zA-Z]*\)/g;
+ 				$regex =~ s/%s/\([A-Z_|]*\)/g;
+ 				$regex =~ s/\(REC->gfp_flags\).*/REC->gfp_flags/;
+ 				$regex =~ s/\",.*//;
+
+Example output
+
+3 instances order=2 normal gfp_flags=GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_ZERO
+ => trace_event_raw_event_mm_page_alloc+0x7d/0xc0 <ffffffffb1caeccd>
+ => __alloc_pages+0x188/0x250 <ffffffffb1cee8a8>
+ => kmalloc_large_node+0x3f/0x80 <ffffffffb1d1cd3f>
+ => __kmalloc_node+0x321/0x420 <ffffffffb1d22351>
+ => kvmalloc_node+0x46/0xe0 <ffffffffb1ca4906>
+ => ttm_sg_tt_init+0x88/0xb0 [ttm] <ffffffffc03a02c8>
+ => amdgpu_ttm_tt_create+0x4f/0x80 [amdgpu] <ffffffffc04cff0f>
+ => ttm_tt_create+0x59/0x90 [ttm] <ffffffffc03a03b9>
+ => ttm_bo_handle_move_mem+0x7e/0x1c0 [ttm] <ffffffffc03a0d9e>
+ => ttm_bo_validate+0xc5/0x140 [ttm] <ffffffffc03a2095>
+ => ttm_bo_init_reserved+0x17b/0x200 [ttm] <ffffffffc03a228b>
+ => amdgpu_bo_create+0x1a3/0x470 [amdgpu] <ffffffffc04d36c3>
+ => amdgpu_bo_create_user+0x34/0x60 [amdgpu] <ffffffffc04d39c4>
+ => amdgpu_gem_create_ioctl+0x131/0x3a0 [amdgpu] <ffffffffc04d94f1>
+ => drm_ioctl_kernel+0xb5/0x140 <ffffffffb21652c5>
+ => drm_ioctl+0x224/0x3e0 <ffffffffb2165574>
+ => amdgpu_drm_ioctl+0x49/0x80 [amdgpu] <ffffffffc04bd2d9>
+ => __x64_sys_ioctl+0x8a/0xc0 <ffffffffb1d7c2da>
+ => do_syscall_64+0x5c/0x90 <ffffffffb253016c>
+ => entry_SYSCALL_64_after_hwframe+0x63/0xcd <ffffffffb260009b>
+
+3 instances order=1 normal gfp_flags=GFP_NOWAIT|__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_COMP|__GFP_ACCOUNT
+ => trace_event_raw_event_mm_page_alloc+0x7d/0xc0 <ffffffffb1caeccd>
+ => __alloc_pages+0x188/0x250 <ffffffffb1cee8a8>
+ => __folio_alloc+0x17/0x50 <ffffffffb1cef1a7>
+ => vma_alloc_folio+0x8f/0x350 <ffffffffb1d11e4f>
+ => __handle_mm_fault+0xa1e/0x1120 <ffffffffb1cc80ee>
+ => handle_mm_fault+0xb2/0x280 <ffffffffb1cc88a2>
+ => do_user_addr_fault+0x1b9/0x690 <ffffffffb1a89949>
+ => exc_page_fault+0x67/0x150 <ffffffffb2534627>
+ => asm_exc_page_fault+0x22/0x30 <ffffffffb2600b62>
+
+It's not tracking leaks because that is not what I was intrested in at
+the time but could using the same method and recording PFNs that were
+allocated, their call site but not freed. These days, this approach may
+be a bit unexpected but it was originally written 13 years ago. It could
+have been done with systemtap back then but my recollection was that it
+was difficult to keep systemtap working with rc kernels.
+
+> What we've built here this is _far_ cheaper than anything that could be done
+> with ftrace.
+> 
+> > It might be an ease-of-use thing. Gathering the information from traces
+> > is tricky and would need combining multiple different elements and that
+> > is development effort but not impossible.
+> > 
+> > Whatever asking for an explanation as to why equivalent functionality
+> > cannot not be created from ftrace/kprobe/eBPF/whatever is reasonable.
+> 
+> I think perhaps some of the expectation should be on the "ftrace for
+> everything!" people to explain a: how their alternative could be even built and
+> b: how it would compare in terms of performance and ease of use.
+> 
+
+The ease of use is a criticism as there is effort required to develop
+the state tracking of in-kernel event be it from live parsing ftrace,
+attaching to tracepoints with systemtap/bpf/whatever and the like. The
+main disadvantage with an in-kernel implementation is three-fold. First,
+it doesn't work with older kernels without backports. Second, if something
+slightly different it needed then it's a kernel rebuild.  Third, if the
+option is not enabled in the deployed kernel config then you are relying
+on the end user being willing to deploy a custom kernel.  The initial
+investment in doing memory leak tracking or latency tracking by attaching
+to tracepoints is significant but it works with older kernels up to a point
+and is less sensitive to the kernel config options selected as features
+like ftrace are often selected.
+
+-- 
+Mel Gorman
+SUSE Labs
