@@ -1,158 +1,165 @@
-Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12651A49
-	for <iommu@lists.linux.dev>; Thu,  1 Sep 2022 08:43:40 +0000 (UTC)
-Received: by mail-lj1-f171.google.com with SMTP id k22so17122170ljg.2
-        for <iommu@lists.linux.dev>; Thu, 01 Sep 2022 01:43:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=VH72CkJdWHRYjuIFqG3YYZtTrJw2Fhi5jnFxkucPCHY=;
-        b=q7AjWjhmnd64a4Ge80aSMXzM40DYISK3cXmW/EibDBVwJ+8k/kXbGydZOb9luK+PIZ
-         Ht/KjsMCWD5TF/twQCHm6itfvd6g64oIsvl5c5eKge4E9VhNnF7iOxqToHuyozIfoFb1
-         5I88bd1UfHObAquK0acXH+XbI6Py13HNPo09dD+NGiTxpVgIr43RQcU5305AlaqKPpll
-         qwKybw5Q2+9d/Onlv8u1vDEdJlLQ1JUMSCRevC4eAiHePyL2wzZzh3KSvr/OLrTmD05T
-         eLyu3SeubEOLjLKn16wG4v4TsahkBmU2CrHwp0/PiiByarcOmjtEcsv6KWve7EKHFu99
-         DiuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=VH72CkJdWHRYjuIFqG3YYZtTrJw2Fhi5jnFxkucPCHY=;
-        b=Bq1wNe6aX3qQ5xPOv7Cej3qwn5fDJkJN/m/CTRSnJOBWdgi6BKCsdOQ2q3mF15W4ot
-         RCfbUPNiRsrsunzHH2WbSglMPyJUQjhKaw4t8Y6Q1uHCTuEkWrYHvRWoXjFTbwiv5/sx
-         QZR0fLgo00WN3udhQudYny+LLJvyaltU7e5MMS0/V6Ij2wZRWroGZIGVsyxSVl2zDLc6
-         PnSd6G1lEaGDsIGZn2dGEzC8AQGPNaStG72vWtnrhYe0SBC/KmlF+L1it74FWCpB1lUc
-         H7j2kQn7BzS1neqqE5TO/wZGTj8v9VX78k49cxiyNKQJxGpt8306GIYTdSbHyXAOB3HC
-         4IHA==
-X-Gm-Message-State: ACgBeo2GjeOBDphFqlFcvO7qeyU0ZzomQx5TbCQ3J9CcLuDL4lStYbZE
-	GgQ+sfFYW3SZqioLKlx/qZ16I8YFcnGF6AsXmUEZVQ==
-X-Google-Smtp-Source: AA6agR4BjD3DwjS+CZ4CCVxEVQ6+miy/r1+fo/IQYDRJogJb7LowD/eAhVezdlkQzk6xOh63IrvI7g9qP1YqXlNutus=
-X-Received: by 2002:a2e:be88:0:b0:25f:e9a8:44b8 with SMTP id
- a8-20020a2ebe88000000b0025fe9a844b8mr8851946ljr.92.1662021818766; Thu, 01 Sep
- 2022 01:43:38 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9989EC8
+	for <iommu@lists.linux.dev>; Thu,  1 Sep 2022 09:38:18 +0000 (UTC)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2819MfEe014660;
+	Thu, 1 Sep 2022 09:38:04 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=vr+oN+0mzOLCldfGQK+zqMbMPm/uw1L7uTTyZtzZJqY=;
+ b=ryLniEjY6M/s01Qxf1TO2XOtzzDTTWMqvmkTUHVW7YTdd1us50MPue7Pa2iUfAqClOuk
+ NaJ+4PJlhu6+2KRofjPrw6BGCsQR9/crjjbuFATAkfJSffe2Z1S9QEBWu5mqJtV/Ty+P
+ O3HIzo0XfyWZXb0evHAIplv6ApeHgpSuTdlsBJ/BIFiPxuuGk3vhslC0ePErvH/JyJ2f
+ dwBiCZHsnQeywEzXFsFsHCLTFvQFmeZ+LcEiCtyMGCUPEYpr3YZwO+L75VuIOOOfTqX9
+ XDjW8F8jMJgmSaa1wZaDyRwnc2CoD3vVarFUP30IrbV/HhSNvBqqkYzJL9TeEoQI5VWT Pw== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jat26gfyb-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 01 Sep 2022 09:38:04 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+	by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2819a3dY024832;
+	Thu, 1 Sep 2022 09:38:02 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+	by ppma04ams.nl.ibm.com with ESMTP id 3j7aw8xhm9-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 01 Sep 2022 09:38:02 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+	by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2819bxaR39715308
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 1 Sep 2022 09:37:59 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id F060A42042;
+	Thu,  1 Sep 2022 09:37:58 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 7ACA142045;
+	Thu,  1 Sep 2022 09:37:58 +0000 (GMT)
+Received: from oc-nschnelle.boeblingen.de.ibm.com (unknown [9.155.199.46])
+	by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+	Thu,  1 Sep 2022 09:37:58 +0000 (GMT)
+Message-ID: <52d3fe0b86bdc04fdbf3aae095b2f71f4ea12d44.camel@linux.ibm.com>
+Subject: Re: [PATCH v4 1/2] iommu/s390: Fix race with release_device ops
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Pierre Morel <pmorel@linux.ibm.com>,
+        Matthew Rosato
+ <mjrosato@linux.ibm.com>, iommu@lists.linux.dev
+Cc: linux-s390@vger.kernel.org, borntraeger@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        agordeev@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
+        will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com,
+        linux-kernel@vger.kernel.org
+Date: Thu, 01 Sep 2022 11:37:58 +0200
+In-Reply-To: <9887e2f4-3f3d-137d-dad7-59dab5f98aab@linux.ibm.com>
+References: <20220831201236.77595-1-mjrosato@linux.ibm.com>
+	 <20220831201236.77595-2-mjrosato@linux.ibm.com>
+	 <9887e2f4-3f3d-137d-dad7-59dab5f98aab@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-References: <20220830214919.53220-1-surenb@google.com> <20220830214919.53220-23-surenb@google.com>
- <CACT4Y+ZX3U1=cAPXPhoOy6xrngSCfSmyFagXK-9fWtWWODfsew@mail.gmail.com> <20220831173010.wc5j3ycmfjx6ezfu@moria.home.lan>
-In-Reply-To: <20220831173010.wc5j3ycmfjx6ezfu@moria.home.lan>
-From: Dmitry Vyukov <dvyukov@google.com>
-Date: Thu, 1 Sep 2022 10:43:26 +0200
-Message-ID: <CACT4Y+bMeqvWQwqzG3nfcf0-VOjU7usxht5mKgUwMcOpWKRjxQ@mail.gmail.com>
-Subject: Re: [RFC PATCH 22/30] Code tagging based fault injection
-To: Kent Overstreet <kent.overstreet@linux.dev>
-Cc: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org, mhocko@suse.com, 
-	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
-	void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com, 
-	ldufour@linux.ibm.com, peterx@redhat.com, david@redhat.com, axboe@kernel.dk, 
-	mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org, 
-	changbin.du@intel.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
-	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
-	bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org, 
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
-	elver@google.com, shakeelb@google.com, songmuchun@bytedance.com, 
-	arnd@arndb.de, jbaron@akamai.com, rientjes@google.com, minchan@google.com, 
-	kaleshsingh@google.com, kernel-team@android.com, linux-mm@kvack.org, 
-	iommu@lists.linux.dev, kasan-dev@googlegroups.com, io-uring@vger.kernel.org, 
-	linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org, 
-	linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: a2V74qihax44fYjtJDFpFs83uiKv0LZY
+X-Proofpoint-ORIG-GUID: a2V74qihax44fYjtJDFpFs83uiKv0LZY
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-09-01_06,2022-08-31_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ lowpriorityscore=0 bulkscore=0 impostorscore=0 phishscore=0
+ mlxlogscore=999 adultscore=0 mlxscore=0 clxscore=1015 spamscore=0
+ priorityscore=1501 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2207270000 definitions=main-2209010042
 
- On Wed, 31 Aug 2022 at 19:30, Kent Overstreet
-<kent.overstreet@linux.dev> wrote:
-> > > From: Kent Overstreet <kent.overstreet@linux.dev>
-> > >
-> > > This adds a new fault injection capability, based on code tagging.
-> > >
-> > > To use, simply insert somewhere in your code
-> > >
-> > >   dynamic_fault("fault_class_name")
-> > >
-> > > and check whether it returns true - if so, inject the error.
-> > > For example
-> > >
-> > >   if (dynamic_fault("init"))
-> > >       return -EINVAL;
-> >
-> > Hi Suren,
-> >
-> > If this is going to be used by mainline kernel, it would be good to
-> > integrate this with fail_nth systematic fault injection:
-> > https://elixir.bootlin.com/linux/latest/source/lib/fault-inject.c#L109
-> >
-> > Otherwise these dynamic sites won't be tested by testing systems doing
-> > systematic fault injection testing.
->
-> That's a discussion we need to have, yeah. We don't want two distinct fault
-> injection frameworks, we'll have to have a discussion as to whether this is (or
-> can be) better enough to make a switch worthwhile, and whether a compatibility
-> interface is needed - or maybe there's enough distinct interesting bits in both
-> to make merging plausible?
->
-> The debugfs interface for this fault injection code is necessarily different
-> from our existing fault injection - this gives you a fault injection point _per
-> callsite_, which is huge - e.g. for filesystem testing what I need is to be able
-> to enable fault injection points within a given module. I can do that easily
-> with this, not with our current fault injection.
->
-> I think the per-callsite fault injection points would also be pretty valuable
-> for CONFIG_FAULT_INJECTION_USERCOPY, too.
->
-> OTOH, existing kernel fault injection can filter based on task - this fault
-> injection framework doesn't have that. Easy enough to add, though. Similar for
-> the interval/probability/ratelimit stuff.
->
-> fail_function is the odd one out, I'm not sure how that would fit into this
-> model. Everything else I've seen I think fits into this model.
->
-> Also, it sounds like you're more familiar with our existing fault injection than
-> I am, so if I've misunderstood anything about what it can do please do correct
-> me.
+On Thu, 2022-09-01 at 09:56 +0200, Pierre Morel wrote:
+> 
+> On 8/31/22 22:12, Matthew Rosato wrote:
+> > With commit fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev
+> > calls") s390-iommu is supposed to handle dynamic switching between IOMMU
+> > domains and the DMA API handling.  However, this commit does not
+> > sufficiently handle the case where the device is released via a call
+> > to the release_device op as it may occur at the same time as an opposing
+> > attach_dev or detach_dev since the group mutex is not held over
+> > release_device.  This was observed if the device is deconfigured during a
+> > small window during vfio-pci initialization and can result in WARNs and
+> > potential kernel panics.
+> > 
+> > Handle this by tracking when the device is probed/released via
+> > dev_iommu_priv_set/get().  Ensure that once the device is released only
+> > release_device handles the re-init of the device DMA.
+> > 
+> > Fixes: fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev calls")
+> > Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> > ---
+> >   arch/s390/include/asm/pci.h |  1 +
+> >   arch/s390/pci/pci.c         |  1 +
+> >   drivers/iommu/s390-iommu.c  | 39 ++++++++++++++++++++++++++++++++++---
+> >   3 files changed, 38 insertions(+), 3 deletions(-)
+> > 
+> > 
+---8<---
+> >   
+> > @@ -206,10 +221,28 @@ static void s390_iommu_release_device(struct device *dev)
+> > 
+> 
+---8<---
+> > +		/* Make sure this device is removed from the domain list */
+> >   		domain = iommu_get_domain_for_dev(dev);
+> >   		if (domain)
+> >   			s390_iommu_detach_device(domain, dev);
+> > +		/* Now ensure DMA is initialized from here */
+> > +		mutex_lock(&zdev->dma_domain_lock);
+> > +		if (zdev->s390_domain) {
+> > +			zdev->s390_domain = NULL;
+> > +			zpci_unregister_ioat(zdev, 0);
+> > +			zpci_dma_init_device(zdev);
+> 
+> Sorry if it is a stupid question, but two things looks strange to me:
+> 
+> - having DMA initialized just after having unregistered the IOAT
+> Is that really all we need to unregister before calling dma_init_device?
+> 
+> - having DMA initialized inside the release_device callback:
+> Why isn't it done in the device_probe ?
 
-What you are saying makes sense. But I can't say if we want to do a
-global switch or not. I don't know how many existing users there are
-(by users I mean automated testing b/c humans can switch for one-off
-manual testing).
+As I understand it iommu_release_device() which calls this code is only
+used when a device goes away. So, I think you're right in that it makes
+little sense to re-initialize DMA at this point, it's going to be torn
+down immediately after anyway. I do wonder if it would be an acceptably
+small change to just set zdev->s390_domain = NULL here and leave DMA
+uninitialized while making zpci_dma_exit_device() deal with that e.g.
+by doing nothing if zdev->dma_table is NULL but I'm not sure.
 
-However, fail_nth that I mentioned is orthogonal to this. It's a
-different mechanism to select the fault site that needs to be failed
-(similar to what you mentioned as "interval/probability/ratelimit
-stuff"). fail_nth allows to fail the specified n-th call site in the
-specified task. And that's the only mechanism we use in
-syzkaller/syzbot.
-And I think it can be supported relatively easily (copy a few lines to
-the "does this site needs to fail" check).
+Either way I fear this mess really is just a symptom of our current
+design oddity of driving the same IOMMU hardware through both our DMA
+API implementation (arch/s390/pci_dma.c) and the IOMMU driver
+(driver/iommu/s390-iommu.c) and trying to hand off between them
+smoothly where common code instead just layers one atop the other when
+using an IOMMU at all.
 
-I don't know how exactly you want to use this new mechanism, but I
-found fail_nth much better than any of the existing selection
-mechanisms, including what this will add for specific site failing.
+I think the correct medium term solution is to use the common DMA API
+implementation (drivers/iommu/dma-iommu.c) like everyone else. But that
+isn't the minimal fix we need now. 
 
-fail_nth allows to fail every site in a given test/syscall one-by-one
-systematically. E.g. we can even have strace-like utility that repeats
-the given test failing all sites in to systematically:
-$ fail_all ./a_unit_test
-This can be integrated into any CI system, e.g. running all LTP tests with this.
-
-For file:line-based selection, first, we need to get these file:line
-from somewhere; second, lines are changing over time so can't be
-hardcoded in tests; third, it still needs to be per-task, since
-unrelated processes can execute the same code.
-
-One downside of fail_nth, though, is that it does not cover background
-threads/async work. But we found that there are so many untested
-synchronous error paths, that moving to background threads is not
-necessary at this point.
+I do have a working prototype of using the common implementation but
+the big problem that I'm still searching a solution for is its
+performance with a virtualized IOMMU where IOTLB flushes (RPCIT on
+s390) are used for shadowing and are expensive and serialized. The
+optimization we used so far for unmap, only doing one global IOTLB
+flush once we run out of IOVA space, is just too much better in that
+scenario to just ignore. As one data point, on an NVMe I get about
+_twice_ the IOPS when using our existing scheme compared to strict
+mode. Which makes sense as IOTLB flushes are known as the bottleneck
+and optimizing unmap like that reduces them by almost half. Queued
+flushing is still much worse likely due to serialization of the
+shadowing, though again it works great on LPAR. To make sure it's not
+due to some bug in the IOMMU driver I even tried converting our
+existing DMA driver to layer on top of the IOMMU driver with the same
+result.
 
 
-
-> Interestingly: I just discovered from reading the code that
-> CONFIG_FAULT_INJECTION_STACKTRACE_FILTER is a thing (hadn't before because it
-> depends on !X86_64 - what?). That's cool, though.
