@@ -1,193 +1,68 @@
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A624CA23
-	for <iommu@lists.linux.dev>; Thu,  1 Sep 2022 10:44:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662029070; x=1693565070;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=z0nHhpyQNt/z52vG9scDUVjFGYLIq163jnyWrsCmkKM=;
-  b=E3arJ6qadWEYD0diCEPq6xV64YIKNgV2JiG1RU8ewLRtCzryM01OPcGg
-   MIZx52ld0q0dDOP5eLa5Op82Ejlnz1YL3ClRY9qfR0ECE++qEJ4vr9KlN
-   QkqgGUzdaupzBZm/q5HCYe+CtlQoFZNygLugkWt9xyjIePebV8Y4GTwKE
-   eUZYDLZGb53NPc2e3+jbpbvNAnb53jT0b9Xl3RmK5NQCaisRFPUxnyYWp
-   9YYFpwLscm/ZatzJMt8fs1JFG5Fuj9qZEAHpjqa1yqBykrHnEk5Tdz8x9
-   cPpGHVpZAQRVYJ3QRJS1vOYM/+csFDGX87PAgCXcU1JtbWgbF3wPu8lM9
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="293260434"
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="293260434"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 03:44:30 -0700
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="673795597"
-Received: from luli3-mobl.ccr.corp.intel.com (HELO [10.254.215.169]) ([10.254.215.169])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 03:44:25 -0700
-Message-ID: <53837119-9348-f9c9-1f49-cad639fc6ecd@linux.intel.com>
-Date: Thu, 1 Sep 2022 18:44:10 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5ADDEDD
+	for <iommu@lists.linux.dev>; Thu,  1 Sep 2022 10:46:07 +0000 (UTC)
+Received: from fraeml706-chm.china.huawei.com (unknown [172.18.147.206])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MJHkQ4j58z67Q1Y;
+	Thu,  1 Sep 2022 18:45:18 +0800 (CST)
+Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
+ fraeml706-chm.china.huawei.com (10.206.15.55) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.31; Thu, 1 Sep 2022 12:45:59 +0200
+Received: from [10.48.151.166] (10.48.151.166) by
+ lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 1 Sep 2022 11:45:59 +0100
+Message-ID: <1351998d-4fd7-dffb-c1fa-a0b1ca759123@huawei.com>
+Date: Thu, 1 Sep 2022 11:45:58 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Christoph Hellwig <hch@infradead.org>, Bjorn Helgaas <bhelgaas@google.com>,
- Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Dave Jiang <dave.jiang@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
- Vinod Koul <vkoul@kernel.org>, Eric Auger <eric.auger@redhat.com>,
- Liu Yi L <yi.l.liu@intel.com>, Jacob jun Pan <jacob.jun.pan@intel.com>,
- Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony <tony.zhu@intel.com>,
- iommu@lists.linux.dev, linux-pci@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v12 07/17] iommu: Try to allocate blocking domain when
- probing device
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
- <20220826121141.50743-8-baolu.lu@linux.intel.com>
- <YwjeL2SVmdRpoWb6@nvidia.com>
- <316f6575-59ea-08e3-aaaf-bc1e4f42a574@linux.intel.com>
- <Ywz3A3tHEzY+Sf7b@nvidia.com>
- <c7d71936-ea06-3a71-d13a-cedd108413b5@linux.intel.com>
- <Yw4Qzif8W53ykR6K@nvidia.com>
- <c46ec383-bd51-1d78-ff81-0bee064ce1cb@linux.intel.com>
- <Yw9rwktDY9Uca/cv@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Yw9rwktDY9Uca/cv@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+From: John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH v2] iommu/iova: Optimize alloc_iova with rbtree_augmented
+To: Peng Zhang <zhangpeng.00@bytedance.com>, Ethan Zhao
+	<haifeng.zhao@linux.intel.com>, <joro@8bytes.org>, <will@kernel.org>
+CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<robin.murphy@arm.com>
+References: <20220824095139.66477-1-zhangpeng.00@bytedance.com>
+ <06c215c6-cbae-d6b9-312c-6535e51a3128@linux.intel.com>
+ <486fcde8-e9f5-e40c-db5d-fd3ade59b267@bytedance.com>
+ <a2479500-479a-22ef-3bd2-90606a26a35e@linux.intel.com>
+ <4527c925-076b-a477-4ff8-697d75f16761@bytedance.com>
+In-Reply-To: <4527c925-076b-a477-4ff8-697d75f16761@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.48.151.166]
+X-ClientProxiedBy: lhrpeml500003.china.huawei.com (7.191.162.67) To
+ lhrpeml500003.china.huawei.com (7.191.162.67)
+X-CFilter-Loop: Reflected
 
-On 2022/8/31 22:10, Jason Gunthorpe wrote:
-> On Wed, Aug 31, 2022 at 09:49:44AM +0800, Baolu Lu wrote:
->>> Maybe all of this is just the good reason to go to a simple
->>> device->ops->remove_dev_pasid() callback and forget about blocking
->>> domain here.
+On 26/08/2022 11:28, Peng Zhang wrote:
+> 
+>> Though only 3-4 drivers use alloc_iova() directly, in my understanding
 >>
->> Do you mean rolling back to what we did in v10?
+>> your test has simulated the worst case, rcache doesn't work at all,
+>>
+>> "alloc_iova" +“remove_iova” number looks great for worst case.
 > 
-> Yeah, but it shouldn't be a domain_op, removing a pasid is a device op
+> There is another case, when the size to allocate greater to 2^5, even if 
+> alloc_iova_fast() is used, alloc_iova() will always be called because 
+> the maximum iova size that rcache supports to allocate is 32.
+> IOVA_RANGE_CACHE_MAX_SIZE specifies the maximum size.
 > 
-> Just
-> 
-> remove_dev_pasid(struct device *dev, ioasid_t pasid)
 
-It's clear now. Thanks!
 
-How about below iommu_attach/detach_device_pasid() code?
+If you really have a performance issue with alloc_iova_fast() -> 
+alloc_iova() then I suggest that you consider trying to use 
+dma_opt_mapping_size() to teach the DMA engine driver to not create 
+requests whose overall size exceeds to the rcache limit.
 
-By the way, how about naming it "block_dev_pasid(dev, pasid)"?
+Thanks,
+John
 
-+static int __iommu_set_group_pasid(struct iommu_domain *domain,
-+				   struct iommu_group *group, ioasid_t pasid)
-+{
-+	struct group_device *device;
-+	int ret = 0;
-+
-+	list_for_each_entry(device, &group->devices, list) {
-+		ret = domain->ops->set_dev_pasid(domain, device->dev, pasid);
-+		if (ret)
-+			break;
-+	}
-+
-+	return ret;
-+}
-+
-+static void __iommu_remove_group_pasid(struct iommu_group *group,
-+				       ioasid_t pasid)
-+{
-+	struct group_device *device;
-+	const struct iommu_ops *ops;
-+
-+	list_for_each_entry(device, &group->devices, list) {
-+		ops = dev_iommu_ops(device->dev);
-+		ops->remove_dev_pasid(device->dev, pasid);
-+	}
-+}
-+
-+/*
-+ * iommu_attach_device_pasid() - Attach a domain to pasid of device
-+ * @domain: the iommu domain.
-+ * @dev: the attached device.
-+ * @pasid: the pasid of the device.
-+ *
-+ * Return: 0 on success, or an error.
-+ */
-+int iommu_attach_device_pasid(struct iommu_domain *domain,
-+			      struct device *dev, ioasid_t pasid)
-+{
-+	struct iommu_group *group;
-+	void *curr;
-+	int ret;
-+
-+	if (!domain->ops->set_dev_pasid)
-+		return -EOPNOTSUPP;
-+
-+	group = iommu_group_get(dev);
-+	if (!group)
-+		return -ENODEV;
-+
-+	mutex_lock(&group->mutex);
-+	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, GFP_KERNEL);
-+	if (curr) {
-+		ret = xa_err(curr) ? : -EBUSY;
-+		goto out_unlock;
-+	}
-+
-+	ret = __iommu_set_group_pasid(domain, group, pasid);
-+	if (ret) {
-+		__iommu_remove_group_pasid(group, pasid);
-+		xa_erase(&group->pasid_array, pasid);
-+	}
-+out_unlock:
-+	mutex_unlock(&group->mutex);
-+	iommu_group_put(group);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_attach_device_pasid);
-+
-+/*
-+ * iommu_detach_device_pasid() - Detach the domain from pasid of device
-+ * @domain: the iommu domain.
-+ * @dev: the attached device.
-+ * @pasid: the pasid of the device.
-+ *
-+ * The @domain must have been attached to @pasid of the @dev with
-+ * iommu_attach_device_pasid().
-+ */
-+void iommu_detach_device_pasid(struct iommu_domain *domain, struct 
-device *dev,
-+			       ioasid_t pasid)
-+{
-+	struct iommu_group *group = iommu_group_get(dev);
-+
-+	mutex_lock(&group->mutex);
-+	__iommu_remove_group_pasid(group, pasid);
-+	WARN_ON(xa_erase(&group->pasid_array, pasid) != domain);
-+	mutex_unlock(&group->mutex);
-+
-+	iommu_group_put(group);
-+}
-+EXPORT_SYMBOL_GPL(iommu_detach_device_pasid);
-
-+ * @remove_dev_pasid: Remove any translation configurations of a specific
-+ *                    pasid, so that any DMA transactions with this pasid
-+ *                    will be blocked by the hardware.
-   * @pgsize_bitmap: bitmap of all possible supported page sizes
-   * @owner: Driver module providing these ops
-   */
-@@ -256,6 +259,7 @@ struct iommu_ops {
-  			     struct iommu_page_response *msg);
-
-  	int (*def_domain_type)(struct device *dev);
-+	void (*remove_dev_pasid)(struct device *dev, ioasid_t pasid);
-
-Best regards,
-baolu
