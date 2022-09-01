@@ -1,67 +1,70 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7F135C82
-	for <iommu@lists.linux.dev>; Thu,  1 Sep 2022 14:48:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DDEAC433D6;
-	Thu,  1 Sep 2022 14:48:08 +0000 (UTC)
-Date: Thu, 1 Sep 2022 10:48:39 -0400
-From: Steven Rostedt <rostedt@goodmis.org>
-To: Kent Overstreet <kent.overstreet@linux.dev>
-Cc: Peter Zijlstra <peterz@infradead.org>, Suren Baghdasaryan
- <surenb@google.com>, akpm@linux-foundation.org, mhocko@suse.com,
- vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev,
- mgorman@suse.de, dave@stgolabs.net, willy@infradead.org,
- liam.howlett@oracle.com, void@manifault.com, juri.lelli@redhat.com,
- ldufour@linux.ibm.com, peterx@redhat.com, david@redhat.com,
- axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
- nathan@kernel.org, changbin.du@intel.com, ytcoode@gmail.com,
- vincent.guittot@linaro.org, dietmar.eggemann@arm.com, bsegall@google.com,
- bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
- iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
- elver@google.com, dvyukov@google.com, shakeelb@google.com,
- songmuchun@bytedance.com, arnd@arndb.de, jbaron@akamai.com,
- rientjes@google.com, minchan@google.com, kaleshsingh@google.com,
- kernel-team@android.com, linux-mm@kvack.org, iommu@lists.linux.dev,
- kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
- linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
- linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 03/30] Lazy percpu counters
-Message-ID: <20220901104839.5691e1c9@gandalf.local.home>
-In-Reply-To: <20220901143219.n7jg7cbp47agqnwn@moria.home.lan>
-References: <20220830214919.53220-1-surenb@google.com>
-	<20220830214919.53220-4-surenb@google.com>
-	<YxBWczNCbZbj+reQ@hirez.programming.kicks-ass.net>
-	<20220901143219.n7jg7cbp47agqnwn@moria.home.lan>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DD6DB5C82
+	for <iommu@lists.linux.dev>; Thu,  1 Sep 2022 15:04:51 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4AF61D6E;
+	Thu,  1 Sep 2022 08:04:57 -0700 (PDT)
+Received: from [10.57.18.92] (unknown [10.57.18.92])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 10EE73F766;
+	Thu,  1 Sep 2022 08:04:08 -0700 (PDT)
+Message-ID: <58d14cfc-f8ba-777b-a975-371ff2b29e5a@arm.com>
+Date: Thu, 1 Sep 2022 16:03:36 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v4 1/2] iommu/s390: Fix race with release_device ops
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Niklas Schnelle <schnelle@linux.ibm.com>,
+ Pierre Morel <pmorel@linux.ibm.com>, Matthew Rosato
+ <mjrosato@linux.ibm.com>, iommu@lists.linux.dev, linux-s390@vger.kernel.org,
+ borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+ gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com, svens@linux.ibm.com,
+ joro@8bytes.org, will@kernel.org, linux-kernel@vger.kernel.org
+References: <20220831201236.77595-1-mjrosato@linux.ibm.com>
+ <20220831201236.77595-2-mjrosato@linux.ibm.com>
+ <9887e2f4-3f3d-137d-dad7-59dab5f98aab@linux.ibm.com>
+ <52d3fe0b86bdc04fdbf3aae095b2f71f4ea12d44.camel@linux.ibm.com>
+ <e01e6ef2-ba45-7433-5fe4-a6806dac3af9@arm.com>
+ <8b561ad3023fc146ba0779cbd8fff14d6409c6aa.camel@linux.ibm.com>
+ <3e402947-61f9-b7e8-1414-fde006257b6f@arm.com> <YxDDD2DF9KFDQ+Yk@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <YxDDD2DF9KFDQ+Yk@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On Thu, 1 Sep 2022 10:32:19 -0400
-Kent Overstreet <kent.overstreet@linux.dev> wrote:
-
-> On Thu, Sep 01, 2022 at 08:51:31AM +0200, Peter Zijlstra wrote:
-> > On Tue, Aug 30, 2022 at 02:48:52PM -0700, Suren Baghdasaryan wrote:  
-> > > +static void lazy_percpu_counter_switch_to_pcpu(struct raw_lazy_percpu_counter *c)
-> > > +{
-> > > +	u64 __percpu *pcpu_v = alloc_percpu_gfp(u64, GFP_ATOMIC|__GFP_NOWARN);  
-> > 
-> > Realize that this is incorrect when used under a raw_spinlock_t.  
+On 2022-09-01 15:34, Jason Gunthorpe wrote:
+> On Thu, Sep 01, 2022 at 03:29:16PM +0100, Robin Murphy wrote:
 > 
-> Can you elaborate?
+>> Right, the next step would be to bridge that gap to iommu-dma to dump the
+>> flush queue when IOVA allocation failure implies we've reached the
+>> "rollover" point, and perhaps not use the timer at all. By that point a
+>> dedicated domain type, or at least some definite internal flag, for this
+>> alternate behaviour seems like the logical way to go.
+> 
+> At least on this direction, I've been thinking it would be nice to
+> replace the domain type _FQ with a flag inside the domain, maybe the
+> ops, saying how the domain wants the common DMA API to operate. If it
+> wants FQ mode or other tuning parameters
 
-All allocations (including GFP_ATOMIC) grab normal spin_locks. When
-PREEMPT_RT is configured, normal spin_locks turn into a mutex, where as
-raw_spinlock's do not.
+Compare the not-necessarily-obvious matrix of "strict" and "passthrough" 
+command-line parameters with the nice understandable kconfig and sysfs 
+controls for a reminder of why I moved things *from* that paradigm in 
+the first place ;)
 
-Thus, if this is done within a raw_spinlock with PREEMPT_RT configured, it
-can cause a schedule while holding a spinlock.
+This idea still fits perfectly into the the "continuum of strictness" 
+notion underlying that domain type rework, since it potentially leaves a 
+lot more address space mapped for a much longer time than our current FQ 
+implementation. I would agree that exposing FQ tuneables in their own 
+right may well have some potential value, much like John's equivalent 
+idea for the IOVA cache layer, but I for one have no desire to bring 
+back DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE, much less any further mess of 
+disjoint properties at that level.
 
--- Steve
+Thanks,
+Robin.
