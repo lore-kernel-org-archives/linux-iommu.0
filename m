@@ -1,259 +1,219 @@
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF6CF6AD6
-	for <iommu@lists.linux.dev>; Thu,  1 Sep 2022 16:47:13 +0000 (UTC)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 281GgkYp023484;
-	Thu, 1 Sep 2022 16:47:04 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2022-7-12;
- bh=/qDXmWfBns6ZRpS203Hs32bXyAg6x0v+K8JT63xez/Q=;
- b=rlkvvBz+StarDzek2A6fqsxHg0EG3klizk8JjXjQAfaeU3sBW3UwPhwKw3T7ZHR6wG4Y
- YO1OLJAmxWEFcn/k5dzOK0c9IgIBv/qLXZrsjLyZMGuVHhRJi2UeJNd3oCUc/zgwDuF+
- rAAZoHXqGxCxykhAONf5oCXVAp9U7vjcLF10ZrV1SvHUcVXbsTsk8Q2pcVOipXEgjwNe
- RdaQMMHakhZRxli3qa+XqTPt063zwwscgRspDSRb6gCjKdyvkO8S4j9rwc+yOKv9nbVd
- F8IiHN9WAzzVK5Hb0jufqIQ07r7r+29NyK5vOybVtxADW4QRXZoPWqTnqQHFj+FFEyzR DA== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3j7b5a4nnr-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 01 Sep 2022 16:47:03 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 281GIPs7036667;
-	Thu, 1 Sep 2022 16:47:02 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2042.outbound.protection.outlook.com [104.47.66.42])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3jarpb93qr-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 01 Sep 2022 16:47:01 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YLIJ6FC5JRdWcmhDAwlAtw8GAKBkATjhdHi6Q4B/GK1ZrD+0364Zn0Qk/489z+r7jr7vtrxCMLHZur9WkAo2kV25kMXLzWnZBOFIdUDbjAF8G+tMArYc7CZet5M+wn+6l/Z/PCRndkkkmbzYnGiI/DImuTEnL1T69AytqV5ylmV1+LsqyxGyQcbGz/WG5Sc+uVb5ek8gdhA9d/sjun6Wk/EThGway75VIdYdjuSEvX0zf9g09vSSGXHgpkCfsZOqMbAVNMDEgAHChN1J0KYKDjNrxGrs22pbKRcXJ+24uGHt5tCSoZAFOOPGd4MSB2sEf0gNkaSv5OyjRWjOq6A2Iw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/qDXmWfBns6ZRpS203Hs32bXyAg6x0v+K8JT63xez/Q=;
- b=FkAcnZPMx87Q8yCHZw2glvDNXg7fG9KPpzVjvQOu3Gn5ASW41Jzplqq6sm3AvTewqGdwyeMi1xg9S+XeNLsJPNOU/knMjWkaUlZCjMc9amYIFLSCZqz9n1Fh5WDbSxxHB8obmw8AG4TfVLDwOsESK0Nd8H9cMkdd/tt7sxGW1LNsjc0B6dhd0xZceHt0nJfkq0PnuxX6j8OzCMhLaSv8EJCjM1wxEI00Ax86jpmZhoOdoV+RG91VAqrVc0gkys8bf7oBIE1HqnsNsUqDiP5u3i+K3IOVlbBuIiv1Xq8UY8D2Uer1bLDa8l0ySRl3quRU2uXHECog/iP4N0VKjuZrzA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C64D36AD6
+	for <iommu@lists.linux.dev>; Thu,  1 Sep 2022 16:53:42 +0000 (UTC)
+Received: by mail-ed1-f48.google.com with SMTP id t5so23363748edc.11
+        for <iommu@lists.linux.dev>; Thu, 01 Sep 2022 09:53:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/qDXmWfBns6ZRpS203Hs32bXyAg6x0v+K8JT63xez/Q=;
- b=mkUNV6pldKkht2Ne523XtiEAuKTj2QkGQYgtaCFGMbDTrxrbiDGFbdFiaCvJ7nOV0AnoWF8KzD6G0lAodnsnrns65DLPTGxSb3fd0jcClU5QEEV7QoLLeGad5keD3By+MzxiCD1/h2fyZ67Dkb7eC3F0bZb6Wu8exIL1dT2yUpk=
-Received: from BYAPR10MB2663.namprd10.prod.outlook.com (2603:10b6:a02:a9::20)
- by DS7PR10MB5088.namprd10.prod.outlook.com (2603:10b6:5:3a2::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.11; Thu, 1 Sep
- 2022 16:46:59 +0000
-Received: from BYAPR10MB2663.namprd10.prod.outlook.com
- ([fe80::95ab:eb8e:a0a7:3f0d]) by BYAPR10MB2663.namprd10.prod.outlook.com
- ([fe80::95ab:eb8e:a0a7:3f0d%5]) with mapi id 15.20.5588.010; Thu, 1 Sep 2022
- 16:46:58 +0000
-Subject: Re: [PATCH v2] Revert "swiotlb: panic if nslabs is too small"
-To: Robin Murphy <robin.murphy@arm.com>, Yu Zhao <yuzhao@google.com>
-Cc: Christoph Hellwig <hch@infradead.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
-        linux-mips@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-References: <20220829232934.3277747-1-yuzhao@google.com>
- <20220831063818.3902572-1-yuzhao@google.com>
- <747f76e1-a5ec-150c-311e-a60396f6f7ab@oracle.com>
- <CAOUHufYHh3B6A8_pAusnW5==r3VhPxy6bOoUHbxe0qvhNGovqA@mail.gmail.com>
- <982a4b95-0ab5-f18e-cbaf-1f503a35ada7@oracle.com>
- <ccacc117-0be8-2cd3-480b-dcbca5485d6f@arm.com>
-From: Dongli Zhang <dongli.zhang@oracle.com>
-Message-ID: <9e6d67c6-94f8-5065-3264-02dd6a82888e@oracle.com>
-Date: Thu, 1 Sep 2022 09:46:54 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
-In-Reply-To: <ccacc117-0be8-2cd3-480b-dcbca5485d6f@arm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: DS7PR03CA0119.namprd03.prod.outlook.com
- (2603:10b6:5:3b7::34) To BYAPR10MB2663.namprd10.prod.outlook.com
- (2603:10b6:a02:a9::20)
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=Utwb8GsJ5vvsHM/8ip4meWVPitKeqc5FGHGRSAfVV1w=;
+        b=uuVU7Qb42ctTfJWZO3i/M1EEOb/t50IiLitHlYcYPqXB7Gn3xj8XYN6XUsanpJg2x8
+         D0wcHWl2TQOkRbNEQO6vErb2UHK4FGfZP4FHbIKiAD0nZOpJG7laRyNm0j4PgcojrDKY
+         DiLLA7+KYZfpzxh3tcEHBxzNg1d3mIiPu+JAkvfg2rMHJ9BUjTgG+2hWxYYabAk26Jfp
+         DMniZkCg9c8JGKFQvZ83biVv0rZAO4ENk1r/8ZNAxYEry8r8RS04sk1bgdKXeO2zQS/x
+         Eg+Z+TgX4tK+nd2Q8+mFFFS6mkedtRxaxcCy22i1A8nFjOcWwX+gaPIzXBkdqUf5A38o
+         Gpjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=Utwb8GsJ5vvsHM/8ip4meWVPitKeqc5FGHGRSAfVV1w=;
+        b=IZIsKN56/oG6B0zxY71ZX+2/lesKyJOAj6FR58EeAjixK3nfLj3c9M3nze56ANrATG
+         NGjFV9MS3FDgGzj4yx2/zxOZdW6I9gtEV0FsQ6U2tOCEslm0I9HIEi4LZWTdRQj0iznO
+         c0GN6sNnP5xJ9D8REqU0lrgQ8vldke9Z0rdx8om8PnovFzPr+zLr60d6wRNdrx1CrDRs
+         qdxcGn8vE13lyy+5Hcobz8V5Bwor23lPeivMa0ViuRmJPg+wnKTc6TtGK2d3ca/A5Xpo
+         z7B1R8Ed4AXMiQhf+B0vytKCzzyTguEWzbTa6gat2RnNfV1GZVRWMrPbNyHFk6o7m8W/
+         7yTw==
+X-Gm-Message-State: ACgBeo1yRj+zIJcrJxSqtVcfs9i+ew0AzXLSrPuS3ADU4cLWR2+YykpC
+	xjOZp9FkL/oGYZfXxb624r3dfgJKks+sVlR9iu82vA==
+X-Google-Smtp-Source: AA6agR45bngCQB/O3nd8cwlu63JO4zrVqmKjTWp+JWEZlCfacAqcPmpOQjDaXmcnIvtxZi2/S+7XjXZbpQpcxHRwemY=
+X-Received: by 2002:a05:6402:538f:b0:444:c17b:1665 with SMTP id
+ ew15-20020a056402538f00b00444c17b1665mr29843511edb.98.1662051221046; Thu, 01
+ Sep 2022 09:53:41 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dbe2d6c7-afd9-4d65-1637-08da8c3995eb
-X-MS-TrafficTypeDiagnostic: DS7PR10MB5088:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 
-	ISbki37gqWVAAOZzAaksTxTp7S4DPQxiRm+Qs9SKUxklJbFwMI2Cd5PCyc9/VzZhp9cbObUnuuBuxvNp2tPxQ7QMXCCMRt0A9cRBz+V2X+FOHeIMfginndzxabV20wiVOyc5YyIcIUcq/FvRJIPczlHExM2wlczhYzKGFfi1LsxInoVHAyyA35H7p49XhWuza4s/YASLH32hprpiiQjHrCdEZMzffW3767blWWGnrT3ObQFovH/UafogLTV7d67dSS1FxVCH61ESdqmn4P1Sbce5KCc4Qqbc10OuYI7I2VU2hOwMmbnIi/jY/GOtWhVne30iPifRlx3+pR6pqXWYDhPfN7cX7GOGVAFPtafTpRxdGph80P3lYU8rBptd9tLmWaWLDFu+KzPoPXPA7zZ1PfPm3jrycNlbMCmbUlYzERxJJaBgpuw2b1TU4nzPK+Eg/hmNAEiMRcYEym+SPU3YvYfm8RmCyqJwcFrzdGBS0FunEnpEukt+FYjeTXVmR+KIJ4YeF1Vzd61tQcf7dKTIz7hunyIQ/4sxotyaT9VuijoF+81K3VU8buIBe7FA3Mbo1yTl6nQM31FPBt4kSUb6yYqncfR6OA0So7i6eAghLUJUmi6JbNdgbAG00EgjUt4vZDIYkJ4ecKMxu3hU7lOS6mQ2w1+My/hqIurDWsUjJAsmbpVrt1QC+uayfgVuYH7ZSomyJF/d3RKPTUK6zMWcps9atD5QqK66yfcnSnixctHm4g5hfONpy037RcWw9iS9YlhirvD2AtdnGR9NVw1P3iSByMO0kPcH4XWg4GZkkoScSf/lq08a24Pe20l4zYko8F8to7r3akVNdKHaM5fKHoVBqd6XU7lsCFevuyanyiCBT2tCv69akwZOwNjMUsYeoKALQmTZNnRthefc6BE6EzqJ/ofKmCBdaB5BJOg+oxw=
-X-Forefront-Antispam-Report: 
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR10MB2663.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(366004)(39860400002)(346002)(376002)(396003)(2616005)(31696002)(86362001)(186003)(6666004)(107886003)(8936002)(44832011)(5660300002)(41300700001)(6512007)(53546011)(2906002)(6506007)(38100700002)(83380400001)(54906003)(36756003)(478600001)(6486002)(31686004)(66946007)(66556008)(316002)(66476007)(966005)(8676002)(4326008)(110136005)(160913001)(15963001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: 
-	=?utf-8?B?MWQzQVZaeVpUUXFSS3phM3RYMzFOQVhJa2lyaVFOWFRSY1Z6T0FJY1RlbEpt?=
- =?utf-8?B?d0oyYUpldC8rV0NPRlNsN3UzVHArbUZZaVZFaGk1NXJDZGlXeFlLc0hYdGpx?=
- =?utf-8?B?dVlpVyt6NVhZZWpsRkxieVltcDM3VCtxM24wcERnWnRDZkFNbmdQWEkwd1NL?=
- =?utf-8?B?VmpPaVVaN0xrSkMrV2J0VmwxaE1yREFmK1pEcm1ZT1h0V2R4M2lnd0d4OW05?=
- =?utf-8?B?WFg0MVpyaHAxUUNTSzZUb0c3dHpzQWdKNDNaUW5kTllNU00rZERZV2FPZ0gy?=
- =?utf-8?B?SDhsMEE0dml5aUJlSldFNkJjb2RtQWpsT2R1bWZFdkhzSk5QemZDMFFNODYy?=
- =?utf-8?B?Y096ZGVpWnZ6NU55MG92a05sN3BJalRKVTFDQ3dYcDZTVzBqSEphWEFQUGhT?=
- =?utf-8?B?TVRldFdOWjJrZGdwNEZEU2dGeFV5MHZReG01WmRqZXpML2VHbUl3Wjd2cmJj?=
- =?utf-8?B?YkFVQmowV2xpYVpNTUtWVkZwTGxHRTJYVUZNaEozUUIwZGJ4UU54M2xhZERH?=
- =?utf-8?B?U0JFWVJ3eWEycFhZU21PaTYzSmttWmp4eXhYRlc1Ly9hb0VNb1BaZ1hCaUln?=
- =?utf-8?B?OU1BTldZOEcrQU1yeUg4MUQrSlBPUHlZdEJiZjJPaE1ZWVgzS1dXdWRPR013?=
- =?utf-8?B?bEpKYnVXVWd2S01vV29rVTNqUnZlbklYclZmVVZjOHFoN3JuMzlGWlJVWGZw?=
- =?utf-8?B?bjU0cGJ4K3lPNEIvRHFhaXlMRXF6Y2cvYUF3THlwZFFrMXM2TzJqN2xINXJS?=
- =?utf-8?B?SXNtZUo0cCtsMWxXUUdsNElKdmh4NWllLzR4Mnd3UDF3d3BVdFprWWZib3px?=
- =?utf-8?B?ZUhKUXFDTjgzOTRPYU9yMGhKS3drUlZYeDEwRlRVSWVaT29MWGFQVm9LazRm?=
- =?utf-8?B?bXdWV1hjdkN1a3Z3YVlrbHQveHN2QjltV0xmaGE5bWUvNG1Ic0RWa3Uzd2Q0?=
- =?utf-8?B?RUQ4ZmNIMWJIVS9uaEdVbWp1Qk9oa2VDK2J4OG9CM1NudGgzaVhnQ1NKbEFr?=
- =?utf-8?B?OTROKzNuRmVBdHFOUHN5ZkdXM3RrN2g3N0Z2K0h1Q3k5U1o3NFc3bG1vZlZC?=
- =?utf-8?B?R1RJMDZpcUlxY3Qxc1BZNHN3bGJ6WVFGKzRVKzZYOUNiUmcwVHlPSEhwenMr?=
- =?utf-8?B?YnErR0VxamxUdnFQZmIxaSt1MGUrN1JiZURaUFhRaG1kZXl2ZzhFYW10NERV?=
- =?utf-8?B?S1NkeUV5dmRRbXIxc3kvZTM4TlUzVHhJOTV4LzQ2ZmhiOE5oL21tZ3BmRW9a?=
- =?utf-8?B?b0d5bHVuNGJjTFE2Qys4MHcxZWJDRnZobjM5YjM0Y05JRDNyaUZoblRoalZU?=
- =?utf-8?B?MFdFMzZsWDhEU2VwYjFybHZ1czNBbnplQjB5dWl6SjA1OXRqeVZaSzlSQ3Fk?=
- =?utf-8?B?cENKWUdGaklOeHorZmw0cGdjOWJ1OUpaV01rankyTitBSU1IMVh5UHIwS3NQ?=
- =?utf-8?B?S3MrZzVFYXZIQk1yM0NKeU1JZHVOVk9PakhqWnl4V0FxNU55LzVYU3BVMXhX?=
- =?utf-8?B?cW55YzVoaTJib3pKcjk2RE9oZHg5Zng3TDZxN3laV2x0alFPNm9oc3pQVm5H?=
- =?utf-8?B?ZXBBK0RJdTdUMHpzY0w5cis5UU1pOS9mOWUxeVNjR3dYdlJ5TzIyb2d2QzZY?=
- =?utf-8?B?RHc1Y09nNmxqSURmTjg3TExva29STEtoM0FEdG0xNDdxUWJuR2FPM1B1Nldl?=
- =?utf-8?B?U2NnRFA2Sys4YWR1Znp2eXFTWjlxSy85ajJvRkNETllnb3pWUEdZcm4xRnRK?=
- =?utf-8?B?anh0cEFOOUIvRkZLemJYNWpEUG1IWWwvK1p5MWlHZ000WkRHbWJJRXBDOGJE?=
- =?utf-8?B?bjlqM25lVEtuc1ZRK2NxaGV5MzJNb0FjTmVLM05CSG1YSkc1ZlFMeVphcG9m?=
- =?utf-8?B?eUgvV0pqT1hFZENlWTIxRlY3bGJxSmliMlJPbFVOcktnL0ZndE82MU5zd3Qz?=
- =?utf-8?B?TGI1RzV1c1hQbDZXaGpBM1pSUktjaDdLaE1HWHBXZ2JmK0tjNGxtQ2JpK2JF?=
- =?utf-8?B?WnM2NmpoNWVrckZEb04xVCt0RFk4Q0c5OW9VeE42S2E4UXU0aXVsWldvU21L?=
- =?utf-8?B?eUZ1ODQxQlNCdCt5aklKZHhNZE5MOVIvYTF3UmF3NE91WEZVZW45K0RtTWYw?=
- =?utf-8?B?QUhOM0MvWjBFSG8zVURYNElLbkU5UVJaMzJEcXNzQUVmK2lLc0pncHVscHFX?=
- =?utf-8?Q?6Qmhmz1ejijh/M/GDK/k+KU=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dbe2d6c7-afd9-4d65-1637-08da8c3995eb
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR10MB2663.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2022 16:46:58.4301
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: WaZpLN8na1UzyLN6xqTwXSPgNulWi7Ra1j3NJXGXJ/IY6KhuRVzeP6LQDCaHAUzEbEisBC8yimsBGPCuYHhwHg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR10MB5088
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-09-01_10,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxscore=0 phishscore=0
- spamscore=0 adultscore=0 suspectscore=0 mlxlogscore=999 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2209010074
-X-Proofpoint-ORIG-GUID: hqbJiRMFNmbxPFDHcVunqgBNcIJZQt1R
-X-Proofpoint-GUID: hqbJiRMFNmbxPFDHcVunqgBNcIJZQt1R
+References: <20220816114414.4092-1-yangyicong@huawei.com> <86bfaabc-43e3-bcfb-faf9-74a0d79ab2ec@huawei.com>
+In-Reply-To: <86bfaabc-43e3-bcfb-faf9-74a0d79ab2ec@huawei.com>
+From: Mathieu Poirier <mathieu.poirier@linaro.org>
+Date: Thu, 1 Sep 2022 10:53:29 -0600
+Message-ID: <CANLsYkwqXQxBCYAHhd4Txv+AZVKgeX+C4kE0b1t3aytTthjNtQ@mail.gmail.com>
+Subject: Re: [PATCH v12 0/5] Add driver support for HiSilicon PCIe Tune and
+ Trace device
+To: Yicong Yang <yangyicong@huawei.com>
+Cc: alexander.shishkin@linux.intel.com, peterz@infradead.org, corbet@lwn.net, 
+	gregkh@linuxfoundation.org, yangyicong@hisilicon.com, helgaas@kernel.org, 
+	lorenzo.pieralisi@arm.com, suzuki.poulose@arm.com, joro@8bytes.org, 
+	shameerali.kolothum.thodi@huawei.com, mingo@redhat.com, 
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-pci@vger.kernel.org, linux-perf-users@vger.kernel.org, 
+	iommu@lists.linux-foundation.org, iommu@lists.linux.dev, 
+	linux-doc@vger.kernel.org, prime.zeng@huawei.com, liuqi115@huawei.com, 
+	zhangshaokun@hisilicon.com, linuxarm@huawei.com, bagasdotme@gmail.com, 
+	john.garry@huawei.com, jonathan.cameron@huawei.com, leo.yan@linaro.org, 
+	james.clark@arm.com, robin.murphy@arm.com, will@kernel.org, acme@kernel.org, 
+	mark.rutland@arm.com
+Content-Type: text/plain; charset="UTF-8"
 
-Hi Robin,
+On Tue, 30 Aug 2022 at 04:59, Yicong Yang <yangyicong@huawei.com> wrote:
+>
+> A gentle ping for this...
+>
 
-On 9/1/22 5:24 AM, Robin Murphy wrote:
-> On 2022-09-01 03:18, Dongli Zhang wrote:
->> Hi Yu,
->>
->> On 8/31/22 5:24 PM, Yu Zhao wrote:
->>> On Wed, Aug 31, 2022 at 4:20 PM Dongli Zhang <dongli.zhang@oracle.com> wrote:
->>>>
->>>> Hi Yu,
->>>>
->>>> As we discussed in the past, the swiotlb panic on purpose
->>>
->>> We should not panic() at all, especially on a platform that has been
->>> working well since at least 4.14.
->>>
->>> Did you check out this link I previously shared with you?
->>> https://urldefense.com/v3/__https://lore.kernel.org/r/CAHk-=wit-DmhMfQErY29JSPjFgebx_Ld*pnerc4J2Ag990WwAA@mail.gmail.com/__;Kw!!ACWV5N9M2RV99hQ!PXzSLurBv7VqxI1451TV4zO3_-BYj4grk-HYBsXzSnA6nZcXaBzdsQ-rF2DAqlICSRPMt-efYv_Uu2A2CQ$
->>>
->>
->> Thanks for sharing! I used to read that in the past. To be honest I am still
->> confused on when to use BUG/panic and when to not, as I still see many usage in
->> some patches.
->>
->> Just about swiotlb, it may panic in many cases during boot, e.g.,:
->>
->> https://urldefense.com/v3/__https://bugs.launchpad.net/ubuntu/*source/linux/*bug/1955655__;Kys!!ACWV5N9M2RV99hQ!MO4S9r0PisrW6Z-kZqUitAMbuGNMX6aceQd5VApqXllP6f1jaPCyL9x50um7chsn2uGL_pNqdBzTjZK5GebeKrI$ 
-> 
-> 
-> That's really a different thing, but frankly that panic is also bogus anyway -
-> there is no good reason to have different behaviour for failing to allocate a
-> buffer slot because the buffer is full vs. failing to allocate a buffer slot
-> because there is no buffer. If we can fail gracefully some of the time we should
-> fail gracefully all of the time. Yes, there's a slight difference in that one
+I will look at this set next week.
 
-Thank you very much for the feedback!
-
-Currently the swiotlb remap logic is more gracefully to handle failure, to
-re-try with smaller nslabs (line 352), but will still panic at the end if the
-value is reduced to smaller than IO_TLB_MIN_SLABS.
-
- 337 retry:
- 338         bytes = PAGE_ALIGN(nslabs << IO_TLB_SHIFT);
- 339         if (flags & SWIOTLB_ANY)
- 340                 tlb = memblock_alloc(bytes, PAGE_SIZE);
- 341         else
- 342                 tlb = memblock_alloc_low(bytes, PAGE_SIZE);
- 343         if (!tlb) {
- 344                 pr_warn("%s: Failed to allocate %zu bytes tlb structure\n",
- 345                         __func__, bytes);
- 346                 return;
- 347         }
- 348
- 349         if (remap && remap(tlb, nslabs) < 0) {
- 350                 memblock_free(tlb, PAGE_ALIGN(bytes));
- 351
- 352                 nslabs = ALIGN(nslabs >> 1, IO_TLB_SEGSIZE);
- 353                 if (nslabs < IO_TLB_MIN_SLABS)
- 354                         panic("%s: Failed to remap %zu bytes\n",
- 355                               __func__, bytes);
- 356                 goto retry;
- 357         }
-
-> case has a chance of succeeding if retried in future while the other definitely
-> doesn't, but it's not SWIOTLB's place to decide that the entire system is
-> terminally unusable just because some device can't make a DMA mapping.
-Currently the swiotlb panic at line 735 on purpose if swiotlb initialization is
-failed, but when any DMA requires a swiotlb mapped slot.
-
- 724 phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 725                 size_t mapping_size, size_t alloc_size,
- 726                 unsigned int alloc_align_mask, enum dma_data_direction dir,
- 727                 unsigned long attrs)
- 728 {
- 729         struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
- 730         unsigned int offset = swiotlb_align_offset(dev, orig_addr);
- 731         unsigned int i;
- 732         int index;
- 733         phys_addr_t tlb_addr;
- 734
- 735         if (!mem || !mem->nslabs)
- 736                 panic("Can not allocate SWIOTLB buffer earlier and can't
-now provide you with the DMA bounce buffer");
-
-I agree it is a very interesting point whether it is a good idea to leave the
-decision to swiotlb for a panic. One thing to take care is the driver should
-gracefully handle the error returned by swiotlb. Otherwise, there may be IO hang
-(e.g., hung_task) instead of an IO failure.
-
-> 
-> Similarly for the other panics at init time, which seem to have originated from
-> a mechanical refactoring of the memblock API with the expectation of preserving
-> the existing behaviour at the time. Those have then just been moved around
-> without anyone thinking to question why they're there, and if memblock *does*
-> now return usable error information, why don't we start handling that error
-> properly like we do in other init paths?
-> 
-> Really there is no reason to panic anywhere in SWIOTLB. This is old code, things
-> have moved on over the last 20 years, and we can and should do much better. I'll
-> add this to my list of things to look at for cleanup once I find a bit of free
-> time, unless anyone else fancies taking it on.
-
-Thank you very much for the feedback. Looking forward to how this can be improved!
-
-Dongli Zhang
+> Thanks.
+>
+> On 2022/8/16 19:44, Yicong Yang wrote:
+> > From: Yicong Yang <yangyicong@hisilicon.com>
+> >
+> > HiSilicon PCIe tune and trace device (PTT) is a PCIe Root Complex integrated
+> > Endpoint (RCiEP) device, providing the capability to dynamically monitor and
+> > tune the PCIe traffic (tune), and trace the TLP headers (trace).
+> >
+> > PTT tune is designed for monitoring and adjusting PCIe link parameters. We provide
+> > several parameters of the PCIe link. Through the driver, user can adjust the value
+> > of certain parameter to affect the PCIe link for the purpose of enhancing the
+> > performance in certian situation.
+> >
+> > PTT trace is designed for dumping the TLP headers to the memory, which can be
+> > used to analyze the transactions and usage condition of the PCIe Link. Users
+> > can choose filters to trace headers, by either requester ID, or those downstream
+> > of a set of Root Ports on the same core of the PTT device. It's also supported
+> > to trace the headers of certain type and of certain direction.
+> >
+> > The driver registers a PMU device for each PTT device. The trace can be used
+> > through `perf record` and the traced headers can be decoded by `perf report`.
+> > The tune can be used through the sysfs attributes of related PMU device. See
+> > the documentation for the detailed usage.
+> >
+> > This patchset adds an initial driver support for the PTT device. The userspace
+> > perf tool support will be sent in a separate patchset.
+> >
+> > Change since v11:
+> > - Drop WARN_ON() for irq_set_affinity() failure per Greg
+> > - Split out userspace perf support patches according to the comments
+> > Link: https://lore.kernel.org/lkml/20220721130116.43366-1-yangyicong@huawei.com/
+> >
+> > Change since v10:
+> > - Use title case in the documentation
+> > - Add RB from Bagas, thanks.
+> > Link: https://lore.kernel.org/lkml/20220714092710.53486-1-yangyicong@hisilicon.com/
+> >
+> > Change since v9:
+> > - Add sysfs ABI description documentation
+> > - Remove the controversial available_{root_port, requester}_filters sysfs file
+> > - Shorten 2 tune sysfs attributes name and add some comments
+> > - Move hisi_ptt_process_auxtrace_info() to Patch 6.
+> > - Add RB from Leo and Ack-by from Mathieu, thanks!
+> > Link: https://lore.kernel.org/lkml/20220606115555.41103-1-yangyicong@hisilicon.com/
+> >
+> > Change since v8:
+> > - Cleanups and one minor fix from Jonathan and John, thanks
+> > Link: https://lore.kernel.org/lkml/20220516125223.32012-1-yangyicong@hisilicon.com/
+> >
+> > Change since v7:
+> > - Configure the DMA in probe rather than in runtime. Also use devres to manage
+> >   PMU device as we have no order problem now
+> > - Refactor the config validation function per John and Leo
+> > - Use a spinlock hisi_ptt::pmu_lock instead of mutex to serialize the perf process
+> >   in pmu::start as it's in atomic context
+> > - Only commit the traced data when stop, per Leo and James
+> > - Drop the filter dynamically updating patch from this series to simply the review
+> >   of the driver. That patch will be send separately.
+> > - add a cpumask sysfs attribute and handle the cpu hotplug events, follow the
+> >   uncore PMU convention
+> > - Other cleanups and fixes, both in driver and perf tool
+> > Link: https://lore.kernel.org/lkml/20220407125841.3678-1-yangyicong@hisilicon.com/
+> >
+> > Change since v6:
+> > - Fix W=1 errors reported by lkp test, thanks
+> >
+> > Change since v5:
+> > - Squash the PMU patch into PATCH 2 suggested by John
+> > - refine the commit message of PATCH 1 and some comments
+> > Link: https://lore.kernel.org/lkml/20220308084930.5142-1-yangyicong@hisilicon.com/
+> >
+> > Change since v4:
+> > Address the comments from Jonathan, John and Ma Ca, thanks.
+> > - Use devm* also for allocating the DMA buffers
+> > - Remove the IRQ handler stub in Patch 2
+> > - Make functions waiting for hardware state return boolean
+> > - Manual remove the PMU device as it should be removed first
+> > - Modifier the orders in probe and removal to make them matched well
+> > - Make available {directions,type,format} array const and non-global
+> > - Using the right filter list in filters show and well protect the
+> >   list with mutex
+> > - Record the trace status with a boolean @started rather than enum
+> > - Optimize the process of finding the PTT devices of the perf-tool
+> > Link: https://lore.kernel.org/linux-pci/20220221084307.33712-1-yangyicong@hisilicon.com/
+> >
+> > Change since v3:
+> > Address the comments from Jonathan and John, thanks.
+> > - drop members in the common struct which can be get on the fly
+> > - reduce buffer struct and organize the buffers with array instead of list
+> > - reduce the DMA reset wait time to avoid long time busy loop
+> > - split the available_filters sysfs attribute into two files, for root port
+> >   and requester respectively. Update the documentation accordingly
+> > - make IOMMU mapping check earlier in probe to avoid race condition. Also
+> >   make IOMMU quirk patch prior to driver in the series
+> > - Cleanups and typos fixes from John and Jonathan
+> > Link: https://lore.kernel.org/linux-pci/20220124131118.17887-1-yangyicong@hisilicon.com/
+> >
+> > Change since v2:
+> > - address the comments from Mathieu, thanks.
+> >   - rename the directory to ptt to match the function of the device
+> >   - spinoff the declarations to a separate header
+> >   - split the trace function to several patches
+> >   - some other comments.
+> > - make default smmu domain type of PTT device to identity
+> >   Drop the RMR as it's not recommended and use an iommu_def_domain_type
+> >   quirk to passthrough the device DMA as suggested by Robin.
+> > Link: https://lore.kernel.org/linux-pci/20211116090625.53702-1-yangyicong@hisilicon.com/
+> >
+> > Change since v1:
+> > - switch the user interface of trace to perf from debugfs
+> > - switch the user interface of tune to sysfs from debugfs
+> > - add perf tool support to start trace and decode the trace data
+> > - address the comments of documentation from Bjorn
+> > - add RMR[1] support of the device as trace works in RMR mode or
+> >   direct DMA mode. RMR support is achieved by common APIs rather
+> >   than the APIs implemented in [1].
+> > Link: https://lore.kernel.org/lkml/1618654631-42454-1-git-send-email-yangyicong@hisilicon.com/
+> > [1] https://lore.kernel.org/linux-acpi/20210805080724.480-1-shameerali.kolothum.thodi@huawei.com/
+> >
+> > Yicong Yang (5):
+> >   iommu/arm-smmu-v3: Make default domain type of HiSilicon PTT device to
+> >     identity
+> >   hwtracing: hisi_ptt: Add trace function support for HiSilicon PCIe
+> >     Tune and Trace device
+> >   hwtracing: hisi_ptt: Add tune function support for HiSilicon PCIe Tune
+> >     and Trace device
+> >   docs: trace: Add HiSilicon PTT device driver documentation
+> >   MAINTAINERS: Add maintainer for HiSilicon PTT driver
+> >
+> >  .../ABI/testing/sysfs-devices-hisi_ptt        |   61 +
+> >  Documentation/trace/hisi-ptt.rst              |  298 +++++
+> >  Documentation/trace/index.rst                 |    1 +
+> >  MAINTAINERS                                   |    8 +
+> >  drivers/Makefile                              |    1 +
+> >  drivers/hwtracing/Kconfig                     |    2 +
+> >  drivers/hwtracing/ptt/Kconfig                 |   12 +
+> >  drivers/hwtracing/ptt/Makefile                |    2 +
+> >  drivers/hwtracing/ptt/hisi_ptt.c              | 1047 +++++++++++++++++
+> >  drivers/hwtracing/ptt/hisi_ptt.h              |  200 ++++
+> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |   21 +
+> >  11 files changed, 1653 insertions(+)
+> >  create mode 100644 Documentation/ABI/testing/sysfs-devices-hisi_ptt
+> >  create mode 100644 Documentation/trace/hisi-ptt.rst
+> >  create mode 100644 drivers/hwtracing/ptt/Kconfig
+> >  create mode 100644 drivers/hwtracing/ptt/Makefile
+> >  create mode 100644 drivers/hwtracing/ptt/hisi_ptt.c
+> >  create mode 100644 drivers/hwtracing/ptt/hisi_ptt.h
+> >
