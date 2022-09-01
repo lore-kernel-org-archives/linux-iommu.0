@@ -1,133 +1,102 @@
-Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com [209.85.219.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from soltyk.jannau.net (soltyk.jannau.net [144.76.91.90])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7C8A7FA
-	for <iommu@lists.linux.dev>; Thu,  1 Sep 2022 01:07:55 +0000 (UTC)
-Received: by mail-yb1-f169.google.com with SMTP id 123so6582463ybv.7
-        for <iommu@lists.linux.dev>; Wed, 31 Aug 2022 18:07:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=MRPzoJhQ6jRX3IlC8DX7IgvLpQbZlMnsgnvZKuuei8w=;
-        b=FN6oNUdWK/epLWx1TsL9yA3judc8GEWbPUlFBZx3N+obm1zvmXwKLTgA0C+din1hae
-         QL+aeoxudtTxFElhfOjbFrb5XsjBAilaB08Ldofl1XN7K/KLlXYDWHTq4s13vSXmuj5f
-         DKOIAo7JDYtLr+88kw7IWfUfQEtwzvbREYO0F51ITJHJcS5BlsMkaJFVMWN04WfbWge0
-         QaMLxE28PQcRoEcCdCRT5hYYcc5qJq1t6S50Lj3dBP+TXgyTlXN6pUj2nAiR7uqNJFnz
-         LBjn/+WoYkZm8EFAaPai3sk01dRp3NFnU9eS/Pc/JsqSX+SuHO7G2QXvivbbuPpvEXP7
-         8nRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=MRPzoJhQ6jRX3IlC8DX7IgvLpQbZlMnsgnvZKuuei8w=;
-        b=wgIcLuv/ZuVqrwyCB+Kni/0R7xD88tGJhtXdHfkoF2vmxSRT9MIVL5FuQ1DzhYMZHT
-         f/y2tRyPs9vhJdjB5KZ//8j/Mk2WSAo2IRvcdjEW9DRCG2jyYBW8S7cNXSTxYHBk9d72
-         wsua6m/P4VEd+BAe480l8EWA5bynVLS4q/UomaLBnjAR94yjV+Dzt9TlmeOnGnNdVBLL
-         QUeBMtaU3UrMPgNdRjQd26vTQGszVZcc0+duzq/+EiGbRJ8ejqS2vUl3UvETt/RAdSWz
-         g68celuvsbJAk4GnFIqbZZuH9Fh/YuWZUvauzUfoCyXAY/qiRkUp9jcKVvENihoI3/XL
-         35vg==
-X-Gm-Message-State: ACgBeo3974sMq7sN5ZQ3h5FcvkJ8ULST9Rrjjy4hy3l6tUZpL1qGFWij
-	Mq2L52YwyoYFz/OerTqBRNEWxM8yBPU4IvrLFqt4JA==
-X-Google-Smtp-Source: AA6agR7ANRZu1y3V5ec1pN1knn4GFpXcEWezad8yEa+jyRtwuxFDik/95LNfhWenWi2n9p8vw7Ebn9CJDR6Mcs4MSyE=
-X-Received: by 2002:a05:6902:4c7:b0:69a:9e36:debe with SMTP id
- v7-20020a05690204c700b0069a9e36debemr14531815ybs.543.1661994474639; Wed, 31
- Aug 2022 18:07:54 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2BF47FA;
+	Thu,  1 Sep 2022 01:25:22 +0000 (UTC)
+Received: from coburn.home.jannau.net (p54acc2ba.dip0.t-ipconnect.de [84.172.194.186])
+	by soltyk.jannau.net (Postfix) with ESMTPSA id 4A6BC26EF47;
+	Thu,  1 Sep 2022 03:25:20 +0200 (CEST)
+From: Janne Grunau <j@jannau.net>
+To: iommu@lists.linux.dev
+Cc: Konrad Dybcio <konrad.dybcio@somainline.org>,
+	asahi@lists.linux.dev,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	Hector Martin <marcan@marcan.st>,
+	Joerg Roedel <joro@8bytes.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Mark Kettenis <mark.kettenis@xs4all.nl>,
+	Rob Herring <robh+dt@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sven Peter <sven@svenpeter.dev>,
+	Will Deacon <will@kernel.org>,
+	devicetree@vger.kernel.org,
+	iommu@lists.linux-foundation.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v4 0/5] iommu: M1 Pro/Max DART support
+Date: Thu,  1 Sep 2022 03:25:14 +0200
+Message-Id: <20220901012519.7167-1-j@jannau.net>
+X-Mailer: git-send-email 2.35.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20220830214919.53220-1-surenb@google.com> <20220830214919.53220-11-surenb@google.com>
- <20220831101103.fj5hjgy3dbb44fit@suse.de> <20220831174629.zpa2pu6hpxmytqya@moria.home.lan>
-In-Reply-To: <20220831174629.zpa2pu6hpxmytqya@moria.home.lan>
-From: Suren Baghdasaryan <surenb@google.com>
-Date: Wed, 31 Aug 2022 18:07:43 -0700
-Message-ID: <CAJuCfpGxxzHT7X+q2zzu+WRrmyjLsT+RMJ7+LFOECtFuXvt3gA@mail.gmail.com>
-Subject: Re: [RFC PATCH 10/30] mm: enable page allocation tagging for
- __get_free_pages and alloc_pages
-To: Kent Overstreet <kent.overstreet@linux.dev>
-Cc: Mel Gorman <mgorman@suse.de>, Andrew Morton <akpm@linux-foundation.org>, 
-	Michal Hocko <mhocko@suse.com>, Vlastimil Babka <vbabka@suse.cz>, Johannes Weiner <hannes@cmpxchg.org>, 
-	Roman Gushchin <roman.gushchin@linux.dev>, Davidlohr Bueso <dave@stgolabs.net>, 
-	Matthew Wilcox <willy@infradead.org>, "Liam R. Howlett" <liam.howlett@oracle.com>, 
-	David Vernet <void@manifault.com>, Peter Zijlstra <peterz@infradead.org>, 
-	Juri Lelli <juri.lelli@redhat.com>, Laurent Dufour <ldufour@linux.ibm.com>, 
-	Peter Xu <peterx@redhat.com>, David Hildenbrand <david@redhat.com>, Jens Axboe <axboe@kernel.dk>, 
-	mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org, 
-	changbin.du@intel.com, ytcoode@gmail.com, 
-	Vincent Guittot <vincent.guittot@linaro.org>, Dietmar Eggemann <dietmar.eggemann@arm.com>, 
-	Steven Rostedt <rostedt@goodmis.org>, Benjamin Segall <bsegall@google.com>, 
-	Daniel Bristot de Oliveira <bristot@redhat.com>, Valentin Schneider <vschneid@redhat.com>, 
-	Christopher Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, 
-	42.hyeyoo@gmail.com, Alexander Potapenko <glider@google.com>, Marco Elver <elver@google.com>, 
-	dvyukov@google.com, Shakeel Butt <shakeelb@google.com>, 
-	Muchun Song <songmuchun@bytedance.com>, arnd@arndb.de, jbaron@akamai.com, 
-	David Rientjes <rientjes@google.com>, Minchan Kim <minchan@google.com>, 
-	Kalesh Singh <kaleshsingh@google.com>, kernel-team <kernel-team@android.com>, 
-	linux-mm <linux-mm@kvack.org>, iommu@lists.linux.dev, kasan-dev@googlegroups.com, 
-	io-uring@vger.kernel.org, linux-arch@vger.kernel.org, 
-	xen-devel@lists.xenproject.org, linux-bcache@vger.kernel.org, 
-	linux-modules@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-On Wed, Aug 31, 2022 at 10:46 AM Kent Overstreet
-<kent.overstreet@linux.dev> wrote:
->
-> On Wed, Aug 31, 2022 at 11:11:03AM +0100, Mel Gorman wrote:
-> > On Tue, Aug 30, 2022 at 02:48:59PM -0700, Suren Baghdasaryan wrote:
-> > > Redefine alloc_pages, __get_free_pages to record allocations done by
-> > > these functions. Instrument deallocation hooks to record object freeing.
-> > >
-> > > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> > > +#ifdef CONFIG_PAGE_ALLOC_TAGGING
-> > > +
-> > >  #include <linux/alloc_tag.h>
-> > >  #include <linux/page_ext.h>
-> > >
-> > > @@ -25,4 +27,37 @@ static inline void pgalloc_tag_dec(struct page *page, unsigned int order)
-> > >             alloc_tag_sub(get_page_tag_ref(page), PAGE_SIZE << order);
-> > >  }
-> > >
-> > > +/*
-> > > + * Redefinitions of the common page allocators/destructors
-> > > + */
-> > > +#define pgtag_alloc_pages(gfp, order)                                      \
-> > > +({                                                                 \
-> > > +   struct page *_page = _alloc_pages((gfp), (order));              \
-> > > +                                                                   \
-> > > +   if (_page)                                                      \
-> > > +           alloc_tag_add(get_page_tag_ref(_page), PAGE_SIZE << (order));\
-> > > +   _page;                                                          \
-> > > +})
-> > > +
-> >
-> > Instead of renaming alloc_pages, why is the tagging not done in
-> > __alloc_pages()? At least __alloc_pages_bulk() is also missed. The branch
-> > can be guarded with IS_ENABLED.
->
-> It can't be in a function, it has to be in a wrapper macro.
+Hej,
 
-Ah, right. __FILE__, __LINE__ and others we use to record the call
-location would point to include/linux/gfp.h instead of the location
-allocation is performed at.
+this is the next attempt adding support for the DART found in Apple's
+M1 Pro/Max/Ultra. This adds a separate io-pgtable implementation for
+DART. As already mentioned in v2 the pte format is not fully compatible
+with io-pgtable-arm. Especially the 2nd least significant bit is used
+and is not available to tag tables/pages.
+io-pgtable-dart.c is copied from io-pgtable-arm.c and support for
+unused features is removed. Support for 4k IO pages is left for A7 to
+A11 SoCs as there's work underway to run Linux on them.
 
->
-> alloc_tag_add() is a macro that defines a static struct in a special elf
-> section. That struct holds the allocation counters, and putting it in a special
-> elf section is how the code to list it in debugfs finds it.
->
-> Look at the dynamic debug code for prior precedence for this trick in the kernel
-> - that's how it makes pr_debug() calls dynamically controllable at runtime, from
-> debugfs. We're taking that method and turning it into a proper library.
->
-> Because all the counters are statically allocated, without even a pointer deref
-> to get to them in the allocation path (one pointer deref to get to them in the
-> deallocate path), that makes this _much, much_ cheaper than anything that could
-> be done with tracing - cheap enough that I expect many users will want to enable
-> it in production.
->
-> --
-> To unsubscribe from this group and stop receiving emails from it, send an email to kernel-team+unsubscribe@android.com.
->
+The incompatibilities between both Apple DART pte seems manageable in
+their own io-pgtable implementation. A short list of the known
+differences:
+
+ - the physical addresses are shifted left by 4 bits and and have 2 more
+   bits inside the PTE entries
+ - the read/write protection flags are at a different position
+ - the subpage protection feature is now mandatory. For Linux we can
+   just configure it to always allow access to the entire page.
+ - BIT(1) tags "uncached" mappings (used for the display controller)
+
+There is second type of DART (t8110) present on M1 Pro/Max SoCs which
+uses the same PTE format as t6000.
+
+Changes in v4:
+- split dart and io-pgtable-dart build to allow building dart as module
+- add missing "SELECT IOMMU_IO_PGTABLE"
+- made map/unmap_pages/iova_to_phys inon-recursive
+- replace pgd concatenation with multiple table handling
+- simplified config and page size checks
+- collected Robin's Ack
+
+Changes in v3:
+- move APPLE_DART to its own io-pgtable implementation, copied from
+  io-pgtable-arm and simplified
+
+Changes in v2:
+- added Rob's Acked-by:
+- add APPLE_DART2 io-pgtable format
+
+Janne Grunau (1):
+  iommu/io-pgtable: Move Apple DART support to its own file
+
+Sven Peter (4):
+  dt-bindings: iommu: dart: add t6000 compatible
+  iommu/io-pgtable: Add DART subpage protection support
+  iommu/io-pgtable-dart: Add DART PTE support for t6000
+  iommu: dart: Support t6000 variant
+
+ .../devicetree/bindings/iommu/apple,dart.yaml |   4 +-
+ MAINTAINERS                                   |   1 +
+ drivers/iommu/Kconfig                         |  13 +-
+ drivers/iommu/Makefile                        |   1 +
+ drivers/iommu/apple-dart.c                    |  24 +-
+ drivers/iommu/io-pgtable-arm.c                |  63 ---
+ drivers/iommu/io-pgtable-dart.c               | 471 ++++++++++++++++++
+ drivers/iommu/io-pgtable.c                    |   3 +
+ include/linux/io-pgtable.h                    |   1 +
+ 9 files changed, 513 insertions(+), 68 deletions(-)
+ create mode 100644 drivers/iommu/io-pgtable-dart.c
+
+-- 
+2.35.1
+
