@@ -1,148 +1,103 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1E3F46A9
-	for <iommu@lists.linux.dev>; Thu,  1 Sep 2022 14:17:29 +0000 (UTC)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 281EH8LT011720;
-	Thu, 1 Sep 2022 14:17:21 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=p7ZDu3mPXOlU/9s1CKVUVetagdXHlTMw09mAXBkZHNU=;
- b=TQD4B9YcXc520YJ0Mo2jPW7HtI6iNUDNqhDUTg8kY+j1rf9SLYvXHQ/KuToDz9a8BV1K
- IShROPMpP+ii48CtC/NXAKQjjSgM8Z3Ja5Yi6Kl1h7pLXO2p4CML1AWKGZaAnzkAhliP
- pDn5eXYUq1rs+01nwLAiEI6965O1aQ8T4wkx5uUonPGpuMJQkm/drZogy7N0ZAflEZAv
- t2cMLntfPH5B92oV8Vz1OX7zNHh1tXtD0bYBCm0Y6Xp1quGv80Qg+/9PSKumMQWoNd2A
- 3FKfpv+vjt5qxRkDuRBxlonI75X5SLLeZSQPbVqPB7ZyyhUVs9PzUGAMKxRqEYmFmHo5 8A== 
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jax9xgdyb-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 01 Sep 2022 14:17:20 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-	by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 281E5tsQ008824;
-	Thu, 1 Sep 2022 14:17:09 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-	by ppma06ams.nl.ibm.com with ESMTP id 3j7ahj6wtk-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 01 Sep 2022 14:17:09 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-	by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 281EDnfh41091538
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 1 Sep 2022 14:13:49 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id B21B74C044;
-	Thu,  1 Sep 2022 14:17:06 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 36EB04C040;
-	Thu,  1 Sep 2022 14:17:06 +0000 (GMT)
-Received: from oc-nschnelle.boeblingen.de.ibm.com (unknown [9.155.199.46])
-	by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-	Thu,  1 Sep 2022 14:17:06 +0000 (GMT)
-Message-ID: <ec7cbb9963f26c4462f58c25f2c17c99a45ad766.camel@linux.ibm.com>
-Subject: Re: [PATCH v4 1/2] iommu/s390: Fix race with release_device ops
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Robin Murphy <robin.murphy@arm.com>, Pierre Morel
- <pmorel@linux.ibm.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev
-Cc: linux-s390@vger.kernel.org, borntraeger@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        agordeev@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
-        will@kernel.org, jgg@nvidia.com, linux-kernel@vger.kernel.org
-Date: Thu, 01 Sep 2022 16:17:05 +0200
-In-Reply-To: <8b561ad3023fc146ba0779cbd8fff14d6409c6aa.camel@linux.ibm.com>
-References: <20220831201236.77595-1-mjrosato@linux.ibm.com>
-	 <20220831201236.77595-2-mjrosato@linux.ibm.com>
-	 <9887e2f4-3f3d-137d-dad7-59dab5f98aab@linux.ibm.com>
-	 <52d3fe0b86bdc04fdbf3aae095b2f71f4ea12d44.camel@linux.ibm.com>
-	 <e01e6ef2-ba45-7433-5fe4-a6806dac3af9@arm.com>
-	 <8b561ad3023fc146ba0779cbd8fff14d6409c6aa.camel@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 751374C63
+	for <iommu@lists.linux.dev>; Thu,  1 Sep 2022 14:24:01 +0000 (UTC)
+Date: Thu, 1 Sep 2022 10:23:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1662042233;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=JsB2G8WqLnYprEF0GcA9GFFIGkQht/MFH67dN0NC9t0=;
+	b=P+qdlVJWY093c1JvjMpoBsAhuM3mvnI3jUKrYjXhcXjA7JDkTxBBu4A2hC17CCO8ZZ5R3D
+	rLH5U4BLaxZ5HSxD5hP6U1jUXGFLfAJiihxtZ+Hfa0QaSzmc2WzHuvOvPKzjVyoQ9DuTBc
+	CcLrAriFlVtUQ4Ne/7Ga0hI19yi31Mw=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Kent Overstreet <kent.overstreet@linux.dev>
+To: David Hildenbrand <david@redhat.com>
+Cc: Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@suse.de>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org,
+	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev,
+	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
+	void@manifault.com, juri.lelli@redhat.com, ldufour@linux.ibm.com,
+	peterx@redhat.com, axboe@kernel.dk, mcgrof@kernel.org,
+	masahiroy@kernel.org, nathan@kernel.org, changbin.du@intel.com,
+	ytcoode@gmail.com, vincent.guittot@linaro.org,
+	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+	bristot@redhat.com, vschneid@redhat.com, cl@linux.com,
+	penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com,
+	glider@google.com, elver@google.com, dvyukov@google.com,
+	shakeelb@google.com, songmuchun@bytedance.com, arnd@arndb.de,
+	jbaron@akamai.com, rientjes@google.com, minchan@google.com,
+	kaleshsingh@google.com, kernel-team@android.com, linux-mm@kvack.org,
+	iommu@lists.linux.dev, kasan-dev@googlegroups.com,
+	io-uring@vger.kernel.org, linux-arch@vger.kernel.org,
+	xen-devel@lists.xenproject.org, linux-bcache@vger.kernel.org,
+	linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
+Message-ID: <20220901142345.agkfp2d5lijdp6pt@moria.home.lan>
+References: <20220830214919.53220-1-surenb@google.com>
+ <Yw8P8xZ4zqu121xL@hirez.programming.kicks-ass.net>
+ <20220831084230.3ti3vitrzhzsu3fs@moria.home.lan>
+ <20220831101948.f3etturccmp5ovkl@suse.de>
+ <Yw88RFuBgc7yFYxA@dhcp22.suse.cz>
+ <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
+ <404e947a-e1b2-0fae-8b4f-6f2e3ba6328d@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: sQFCEZB30ldWGh-98-6H9JCUfsEG-ni9
-X-Proofpoint-GUID: sQFCEZB30ldWGh-98-6H9JCUfsEG-ni9
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-09-01_10,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 suspectscore=0
- mlxlogscore=999 spamscore=0 clxscore=1015 priorityscore=1501 bulkscore=0
- mlxscore=0 impostorscore=0 adultscore=0 lowpriorityscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2209010063
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <404e947a-e1b2-0fae-8b4f-6f2e3ba6328d@redhat.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 
----8<---
-> > > 
-> > > I do have a working prototype of using the common implementation but
-> > > the big problem that I'm still searching a solution for is its
-> > > performance with a virtualized IOMMU where IOTLB flushes (RPCIT on
-> > > s390) are used for shadowing and are expensive and serialized. The
-> > > optimization we used so far for unmap, only doing one global IOTLB
-> > > flush once we run out of IOVA space, is just too much better in that
-> > > scenario to just ignore. As one data point, on an NVMe I get about
-> > > _twice_ the IOPS when using our existing scheme compared to strict
-> > > mode. Which makes sense as IOTLB flushes are known as the bottleneck
-> > > and optimizing unmap like that reduces them by almost half. Queued
-> > > flushing is still much worse likely due to serialization of the
-> > > shadowing, though again it works great on LPAR. To make sure it's not
-> > > due to some bug in the IOMMU driver I even tried converting our
-> > > existing DMA driver to layer on top of the IOMMU driver with the same
-> > > result.
+On Thu, Sep 01, 2022 at 10:05:03AM +0200, David Hildenbrand wrote:
+> On 31.08.22 21:01, Kent Overstreet wrote:
+> > On Wed, Aug 31, 2022 at 12:47:32PM +0200, Michal Hocko wrote:
+> >> On Wed 31-08-22 11:19:48, Mel Gorman wrote:
+> >>> Whatever asking for an explanation as to why equivalent functionality
+> >>> cannot not be created from ftrace/kprobe/eBPF/whatever is reasonable.
+> >>
+> >> Fully agreed and this is especially true for a change this size
+> >> 77 files changed, 3406 insertions(+), 703 deletions(-)
 > > 
-> > FWIW, can you approximate the same behaviour by just making IOVA_FQ_SIZE 
-> > and IOVA_FQ_TIMEOUT really big, and deferring your zpci_refresh_trans() 
-> > hook from .unmap to .flush_iotlb_all when in non-strict mode?
+> > In the case of memory allocation accounting, you flat cannot do this with ftrace
+> > - you could maybe do a janky version that isn't fully accurate, much slower,
+> > more complicated for the developer to understand and debug and more complicated
+> > for the end user.
 > > 
-> > I'm not against the idea of trying to support this mode of operation 
-> > better in the common code, since it seems like it could potentially be 
-> > useful for *any* virtualised scenario where trapping to invalidate is 
-> > expensive and the user is happy to trade off the additional address 
-> > space/memory overhead (and even greater loss of memory protection) 
-> > against that.
+> > But please, I invite anyone who's actually been doing this with ftrace to
+> > demonstrate otherwise.
 > > 
-> > Robin.
+> > Ftrace just isn't the right tool for the job here - we're talking about adding
+> > per callsite accounting to some of the fastest fast paths in the kernel.
+> > 
+> > And the size of the changes for memory allocation accounting are much more
+> > reasonable:
+> >  33 files changed, 623 insertions(+), 99 deletions(-)
+> > 
+> > The code tagging library should exist anyways, it's been open coded half a dozen
+> > times in the kernel already.
 > 
-> Ah thanks for reminding me. I had tried that earlier but quickly ran
-> into the size limit of per-CPU allocations. This time I turned the
-> "struct iova_fq_entry entries" member into a pointer and allocted that
-> with vmalloc(). Also thankfully the ops->flush_iotlb_all(), iommu_iotlb_sync(), and iommu_iotlb_sync_map() already perfectly match
-> our needs.
+> Hi Kent,
 > 
-> Okay, this is _very_ interesting. With the above cranking IOVA_FQ_SIZE
-> all the way to 32768 and IOVA_FQ_TIMEOUT to 4000 ms, I can get to about
-> 91% of the performance of our scheme (layered on the IOMMU API). That
-> also seems to be the limit. I guess there is also more overhead than
-> with our bitset IOVA allocation that doesn't need any bookkeeping
-> besides a "lazily unmapped" bit per page. With a more sane IOVA_FQ_SIZE
-> of 8192 and 100 ms timeout I still get about 76% of the performance.
-> 
-> Interestingly with the above changes but default values for
-> IOVA_FQ_SIZE/IOVA_FQ_TIMEOUT things are much worse than even strict
-> mode (~50%) and I get less than 8% the IOPS with this NVMe.
-> 
-> So yeah it seems you're right and one can largely emulate our scheme
-> with this. I do wonder if we could go further and do a "flush on
-> running out of IOVAs" domain type with acceptable changes. My rough
-> idea would be to collect lazily freed IOVAs in the same data structure
-> as the free IOVAs, then on running out of those one can simply do a
-> global IOTLB flush and the lazily freed IOVAs become the new free
-> IOVAs. With that the global reset would be even cheaper than with our
-> bitmaps. 
+> independent of the other discussions, if it's open coded already, does
+> it make sense to factor that already-open-coded part out independently
+> of the remainder of the full series here?
 
-Ok disregard the last part, that's obviously not how the IOVA
-allocation works. Will have to take an actual look.
+It's discussed in the cover letter, that is exactly how the patch series is
+structured.
+ 
+> [I didn't immediately spot if this series also attempts already to
+> replace that open-coded part]
 
-> For a generic case one would of course also need to track the
-> gather->freelist that we don't use in s390 but e.g. virtio-iommu
-> doesn't seem to use that either. What do you think?
-> 
+Uh huh.
 
-
-
+Honestly, some days it feels like lkml is just as bad as slashdot, with people
+wanting to get in their two cents without actually reading...
