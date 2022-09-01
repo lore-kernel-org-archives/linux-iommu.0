@@ -1,182 +1,193 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 333C3A23
-	for <iommu@lists.linux.dev>; Thu,  1 Sep 2022 10:33:49 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EEFC8D6E;
-	Thu,  1 Sep 2022 03:26:02 -0700 (PDT)
-Received: from [10.57.18.92] (unknown [10.57.18.92])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8D0D83F7B4;
-	Thu,  1 Sep 2022 03:25:54 -0700 (PDT)
-Message-ID: <3b065fb5-3ca7-8f48-bdf7-daf7604312df@arm.com>
-Date: Thu, 1 Sep 2022 11:25:49 +0100
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A624CA23
+	for <iommu@lists.linux.dev>; Thu,  1 Sep 2022 10:44:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662029070; x=1693565070;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=z0nHhpyQNt/z52vG9scDUVjFGYLIq163jnyWrsCmkKM=;
+  b=E3arJ6qadWEYD0diCEPq6xV64YIKNgV2JiG1RU8ewLRtCzryM01OPcGg
+   MIZx52ld0q0dDOP5eLa5Op82Ejlnz1YL3ClRY9qfR0ECE++qEJ4vr9KlN
+   QkqgGUzdaupzBZm/q5HCYe+CtlQoFZNygLugkWt9xyjIePebV8Y4GTwKE
+   eUZYDLZGb53NPc2e3+jbpbvNAnb53jT0b9Xl3RmK5NQCaisRFPUxnyYWp
+   9YYFpwLscm/ZatzJMt8fs1JFG5Fuj9qZEAHpjqa1yqBykrHnEk5Tdz8x9
+   cPpGHVpZAQRVYJ3QRJS1vOYM/+csFDGX87PAgCXcU1JtbWgbF3wPu8lM9
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="293260434"
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="293260434"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 03:44:30 -0700
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="673795597"
+Received: from luli3-mobl.ccr.corp.intel.com (HELO [10.254.215.169]) ([10.254.215.169])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 03:44:25 -0700
+Message-ID: <53837119-9348-f9c9-1f49-cad639fc6ecd@linux.intel.com>
+Date: Thu, 1 Sep 2022 18:44:10 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH v4 1/2] iommu/s390: Fix race with release_device ops
-Content-Language: en-GB
-To: Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev
-Cc: linux-s390@vger.kernel.org, schnelle@linux.ibm.com, pmorel@linux.ibm.com,
- borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
- gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com, svens@linux.ibm.com,
- joro@8bytes.org, will@kernel.org, jgg@nvidia.com,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Christoph Hellwig <hch@infradead.org>, Bjorn Helgaas <bhelgaas@google.com>,
+ Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Dave Jiang <dave.jiang@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
+ Vinod Koul <vkoul@kernel.org>, Eric Auger <eric.auger@redhat.com>,
+ Liu Yi L <yi.l.liu@intel.com>, Jacob jun Pan <jacob.jun.pan@intel.com>,
+ Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony <tony.zhu@intel.com>,
+ iommu@lists.linux.dev, linux-pci@vger.kernel.org,
  linux-kernel@vger.kernel.org
-References: <20220831201236.77595-1-mjrosato@linux.ibm.com>
- <20220831201236.77595-2-mjrosato@linux.ibm.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220831201236.77595-2-mjrosato@linux.ibm.com>
+Subject: Re: [PATCH v12 07/17] iommu: Try to allocate blocking domain when
+ probing device
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
+ <20220826121141.50743-8-baolu.lu@linux.intel.com>
+ <YwjeL2SVmdRpoWb6@nvidia.com>
+ <316f6575-59ea-08e3-aaaf-bc1e4f42a574@linux.intel.com>
+ <Ywz3A3tHEzY+Sf7b@nvidia.com>
+ <c7d71936-ea06-3a71-d13a-cedd108413b5@linux.intel.com>
+ <Yw4Qzif8W53ykR6K@nvidia.com>
+ <c46ec383-bd51-1d78-ff81-0bee064ce1cb@linux.intel.com>
+ <Yw9rwktDY9Uca/cv@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <Yw9rwktDY9Uca/cv@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2022-08-31 21:12, Matthew Rosato wrote:
-> With commit fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev
-> calls") s390-iommu is supposed to handle dynamic switching between IOMMU
-> domains and the DMA API handling.  However, this commit does not
-> sufficiently handle the case where the device is released via a call
-> to the release_device op as it may occur at the same time as an opposing
-> attach_dev or detach_dev since the group mutex is not held over
-> release_device.  This was observed if the device is deconfigured during a
-> small window during vfio-pci initialization and can result in WARNs and
-> potential kernel panics.
-
-Hmm, the more I think about it, something doesn't sit right about this 
-whole situation... release_device is called via the notifier from 
-device_del() after the device has been removed from its parent bus and 
-largely dismantled; it should definitely not still have a driver bound 
-by that point, so how is VFIO doing things that manage to race at all?
-
-Robin.
-
-> Handle this by tracking when the device is probed/released via
-> dev_iommu_priv_set/get().  Ensure that once the device is released only
-> release_device handles the re-init of the device DMA.
+On 2022/8/31 22:10, Jason Gunthorpe wrote:
+> On Wed, Aug 31, 2022 at 09:49:44AM +0800, Baolu Lu wrote:
+>>> Maybe all of this is just the good reason to go to a simple
+>>> device->ops->remove_dev_pasid() callback and forget about blocking
+>>> domain here.
+>>
+>> Do you mean rolling back to what we did in v10?
 > 
-> Fixes: fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev calls")
-> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
-> ---
->   arch/s390/include/asm/pci.h |  1 +
->   arch/s390/pci/pci.c         |  1 +
->   drivers/iommu/s390-iommu.c  | 39 ++++++++++++++++++++++++++++++++++---
->   3 files changed, 38 insertions(+), 3 deletions(-)
+> Yeah, but it shouldn't be a domain_op, removing a pasid is a device op
 > 
-> diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
-> index 7b4cdadbc023..080251e7b275 100644
-> --- a/arch/s390/include/asm/pci.h
-> +++ b/arch/s390/include/asm/pci.h
-> @@ -157,6 +157,7 @@ struct zpci_dev {
->   	/* DMA stuff */
->   	unsigned long	*dma_table;
->   	spinlock_t	dma_table_lock;
-> +	struct mutex	dma_domain_lock; /* protects s390_domain value */
->   	int		tlb_refresh;
->   
->   	spinlock_t	iommu_bitmap_lock;
-> diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
-> index 73cdc5539384..973edd32ecc9 100644
-> --- a/arch/s390/pci/pci.c
-> +++ b/arch/s390/pci/pci.c
-> @@ -832,6 +832,7 @@ struct zpci_dev *zpci_create_device(u32 fid, u32 fh, enum zpci_state state)
->   	kref_init(&zdev->kref);
->   	mutex_init(&zdev->lock);
->   	mutex_init(&zdev->kzdev_lock);
-> +	mutex_init(&zdev->dma_domain_lock);
->   
->   	rc = zpci_init_iommu(zdev);
->   	if (rc)
-> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-> index c898bcbbce11..1137d669e849 100644
-> --- a/drivers/iommu/s390-iommu.c
-> +++ b/drivers/iommu/s390-iommu.c
-> @@ -99,6 +99,14 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
->   	if (!domain_device)
->   		return -ENOMEM;
->   
-> +	/* Leave now if the device has already been released */
-> +	mutex_lock(&zdev->dma_domain_lock);
-> +	if (!dev_iommu_priv_get(dev)) {
-> +		mutex_unlock(&zdev->dma_domain_lock);
-> +		kfree(domain_device);
-> +		return 0;
-> +	}
-> +
->   	if (zdev->dma_table && !zdev->s390_domain) {
->   		cc = zpci_dma_exit_device(zdev);
->   		if (cc) {
-> @@ -132,9 +140,10 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
->   		goto out_restore;
->   	}
->   	domain_device->zdev = zdev;
-> -	zdev->s390_domain = s390_domain;
->   	list_add(&domain_device->list, &s390_domain->devices);
->   	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
-> +	zdev->s390_domain = s390_domain;
-> +	mutex_unlock(&zdev->dma_domain_lock);
->   
->   	return 0;
->   
-> @@ -147,6 +156,7 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
->   				   virt_to_phys(zdev->dma_table));
->   	}
->   out_free:
-> +	mutex_unlock(&zdev->dma_domain_lock);
->   	kfree(domain_device);
->   
->   	return rc;
-> @@ -176,17 +186,22 @@ static void s390_iommu_detach_device(struct iommu_domain *domain,
->   	}
->   	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
->   
-> -	if (found && (zdev->s390_domain == s390_domain)) {
-> +	mutex_lock(&zdev->dma_domain_lock);
-> +	if (found && (zdev->s390_domain == s390_domain) &&
-> +	    dev_iommu_priv_get(dev)) {
->   		zdev->s390_domain = NULL;
->   		zpci_unregister_ioat(zdev, 0);
->   		zpci_dma_init_device(zdev);
->   	}
-> +	mutex_unlock(&zdev->dma_domain_lock);
->   }
->   
->   static struct iommu_device *s390_iommu_probe_device(struct device *dev)
->   {
->   	struct zpci_dev *zdev = to_zpci_dev(dev);
->   
-> +	dev_iommu_priv_set(dev, zdev);
-> +
->   	return &zdev->iommu_dev;
->   }
->   
-> @@ -206,10 +221,28 @@ static void s390_iommu_release_device(struct device *dev)
->   	 *
->   	 * So let's call detach_dev from here if it hasn't been called before.
->   	 */
-> -	if (zdev && zdev->s390_domain) {
-> +	if (zdev) {
-> +		/*
-> +		 * Clear priv to block further attaches for this device,
-> +		 * ensure detaches don't init DMA.  Hold the domain lock
-> +		 * to ensure that attach/detach get a consistent view of
-> +		 * whether or not the device is released.
-> +		 */
-> +		mutex_lock(&zdev->dma_domain_lock);
-> +		dev_iommu_priv_set(dev, NULL);
-> +		mutex_unlock(&zdev->dma_domain_lock);
-> +		/* Make sure this device is removed from the domain list */
->   		domain = iommu_get_domain_for_dev(dev);
->   		if (domain)
->   			s390_iommu_detach_device(domain, dev);
-> +		/* Now ensure DMA is initialized from here */
-> +		mutex_lock(&zdev->dma_domain_lock);
-> +		if (zdev->s390_domain) {
-> +			zdev->s390_domain = NULL;
-> +			zpci_unregister_ioat(zdev, 0);
-> +			zpci_dma_init_device(zdev);
-> +		}
-> +		mutex_unlock(&zdev->dma_domain_lock);
->   	}
->   }
->   
+> Just
+> 
+> remove_dev_pasid(struct device *dev, ioasid_t pasid)
+
+It's clear now. Thanks!
+
+How about below iommu_attach/detach_device_pasid() code?
+
+By the way, how about naming it "block_dev_pasid(dev, pasid)"?
+
++static int __iommu_set_group_pasid(struct iommu_domain *domain,
++				   struct iommu_group *group, ioasid_t pasid)
++{
++	struct group_device *device;
++	int ret = 0;
++
++	list_for_each_entry(device, &group->devices, list) {
++		ret = domain->ops->set_dev_pasid(domain, device->dev, pasid);
++		if (ret)
++			break;
++	}
++
++	return ret;
++}
++
++static void __iommu_remove_group_pasid(struct iommu_group *group,
++				       ioasid_t pasid)
++{
++	struct group_device *device;
++	const struct iommu_ops *ops;
++
++	list_for_each_entry(device, &group->devices, list) {
++		ops = dev_iommu_ops(device->dev);
++		ops->remove_dev_pasid(device->dev, pasid);
++	}
++}
++
++/*
++ * iommu_attach_device_pasid() - Attach a domain to pasid of device
++ * @domain: the iommu domain.
++ * @dev: the attached device.
++ * @pasid: the pasid of the device.
++ *
++ * Return: 0 on success, or an error.
++ */
++int iommu_attach_device_pasid(struct iommu_domain *domain,
++			      struct device *dev, ioasid_t pasid)
++{
++	struct iommu_group *group;
++	void *curr;
++	int ret;
++
++	if (!domain->ops->set_dev_pasid)
++		return -EOPNOTSUPP;
++
++	group = iommu_group_get(dev);
++	if (!group)
++		return -ENODEV;
++
++	mutex_lock(&group->mutex);
++	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, GFP_KERNEL);
++	if (curr) {
++		ret = xa_err(curr) ? : -EBUSY;
++		goto out_unlock;
++	}
++
++	ret = __iommu_set_group_pasid(domain, group, pasid);
++	if (ret) {
++		__iommu_remove_group_pasid(group, pasid);
++		xa_erase(&group->pasid_array, pasid);
++	}
++out_unlock:
++	mutex_unlock(&group->mutex);
++	iommu_group_put(group);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(iommu_attach_device_pasid);
++
++/*
++ * iommu_detach_device_pasid() - Detach the domain from pasid of device
++ * @domain: the iommu domain.
++ * @dev: the attached device.
++ * @pasid: the pasid of the device.
++ *
++ * The @domain must have been attached to @pasid of the @dev with
++ * iommu_attach_device_pasid().
++ */
++void iommu_detach_device_pasid(struct iommu_domain *domain, struct 
+device *dev,
++			       ioasid_t pasid)
++{
++	struct iommu_group *group = iommu_group_get(dev);
++
++	mutex_lock(&group->mutex);
++	__iommu_remove_group_pasid(group, pasid);
++	WARN_ON(xa_erase(&group->pasid_array, pasid) != domain);
++	mutex_unlock(&group->mutex);
++
++	iommu_group_put(group);
++}
++EXPORT_SYMBOL_GPL(iommu_detach_device_pasid);
+
++ * @remove_dev_pasid: Remove any translation configurations of a specific
++ *                    pasid, so that any DMA transactions with this pasid
++ *                    will be blocked by the hardware.
+   * @pgsize_bitmap: bitmap of all possible supported page sizes
+   * @owner: Driver module providing these ops
+   */
+@@ -256,6 +259,7 @@ struct iommu_ops {
+  			     struct iommu_page_response *msg);
+
+  	int (*def_domain_type)(struct device *dev);
++	void (*remove_dev_pasid)(struct device *dev, ioasid_t pasid);
+
+Best regards,
+baolu
