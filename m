@@ -1,226 +1,169 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82A046AA9
-	for <iommu@lists.linux.dev>; Thu,  1 Sep 2022 16:14:36 +0000 (UTC)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 281FMhNg010252;
-	Thu, 1 Sep 2022 16:14:29 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=FxSD4RizfGmzEnvre6Dp8PWywNJnxm7IbTH2/I5183Q=;
- b=hJFF1/s+9d3rRXkuzlccwXxxSWN/my5TTc6fI/vygatl6wW5wF2dYCe20LOaFABUIvN/
- T9fkzetHqSOjHn3bsLqLBeer9VWy9NVHYHnmr3aAuft78mJyFQBFmqo2HKdfxC7AvXCY
- WhOjiF0C5XSqBFHv5zvkkTs/MUeGOPC2Z6NBi3PKjeVPVFGyXzOvykabIFbXQ1uwrk3X
- sXJLkk6wwHatiu/QWo8khBfpoSzPaxPyi+AvPQ2sG/0t0U0tCbm7PFOb6jPriy3xXU4y
- KrEQ34j1ER56A/K733gUtorX09+qrLMQSrdR3zdemx8iyEZCaE4Sxsde1nXZRDT45i7W eg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3jaxaana7g-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 01 Sep 2022 16:14:28 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 281FNYXF014346;
-	Thu, 1 Sep 2022 16:14:28 GMT
-Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
-	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3jaxaana78-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 01 Sep 2022 16:14:28 +0000
-Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
-	by ppma05wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 281Fo3rw007503;
-	Thu, 1 Sep 2022 16:14:27 GMT
-Received: from b03cxnp07027.gho.boulder.ibm.com (b03cxnp07027.gho.boulder.ibm.com [9.17.130.14])
-	by ppma05wdc.us.ibm.com with ESMTP id 3j7awa2c0c-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 01 Sep 2022 16:14:27 +0000
-Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
-	by b03cxnp07027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 281GEQLf5308952
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 1 Sep 2022 16:14:26 GMT
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 7CDC36E050;
-	Thu,  1 Sep 2022 16:14:26 +0000 (GMT)
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 9DFE16E04E;
-	Thu,  1 Sep 2022 16:14:24 +0000 (GMT)
-Received: from [9.160.86.252] (unknown [9.160.86.252])
-	by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
-	Thu,  1 Sep 2022 16:14:24 +0000 (GMT)
-Message-ID: <369ad331-8bdc-d385-a227-f674bd410599@linux.ibm.com>
-Date: Thu, 1 Sep 2022 12:14:24 -0400
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF5162FAF
+	for <iommu@lists.linux.dev>; Thu,  1 Sep 2022 16:32:10 +0000 (UTC)
+Date: Thu, 1 Sep 2022 12:31:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1662049922;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=lF0nzK0I3dkKY+VmvooE06KpjT5GF7za7apoY2ziCzA=;
+	b=b+mGQz7e+S8nXflcP/Umq6k8mCFjCcajhS+oAKrOSAu3dWGCTZFUhafPBFCwtky43SVO1A
+	9liE+TRIsb/HqXx3Llx9NtT4cCnU5G225wc5/aVXkK7HBe0kN/DeWe/oPRR6yMuknOrEyX
+	Th1UnEJvMcgJF/T8At8EC/TVB4d1otU=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Kent Overstreet <kent.overstreet@linux.dev>
+To: Mel Gorman <mgorman@suse.de>
+Cc: Peter Zijlstra <peterz@infradead.org>,
+	Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org,
+	mhocko@suse.com, vbabka@suse.cz, hannes@cmpxchg.org,
+	roman.gushchin@linux.dev, dave@stgolabs.net, willy@infradead.org,
+	liam.howlett@oracle.com, void@manifault.com, juri.lelli@redhat.com,
+	ldufour@linux.ibm.com, peterx@redhat.com, david@redhat.com,
+	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
+	nathan@kernel.org, changbin.du@intel.com, ytcoode@gmail.com,
+	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+	elver@google.com, dvyukov@google.com, shakeelb@google.com,
+	songmuchun@bytedance.com, arnd@arndb.de, jbaron@akamai.com,
+	rientjes@google.com, minchan@google.com, kaleshsingh@google.com,
+	kernel-team@android.com, linux-mm@kvack.org, iommu@lists.linux.dev,
+	kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
+	linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
+	linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
+Message-ID: <20220901163155.sz4dqtubicdvzmsw@moria.home.lan>
+References: <20220830214919.53220-1-surenb@google.com>
+ <Yw8P8xZ4zqu121xL@hirez.programming.kicks-ass.net>
+ <20220831084230.3ti3vitrzhzsu3fs@moria.home.lan>
+ <20220831101948.f3etturccmp5ovkl@suse.de>
+ <20220831155941.q5umplytbx6offku@moria.home.lan>
+ <20220901110501.o5rq5yzltomirxiw@suse.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH v4 1/2] iommu/s390: Fix race with release_device ops
-Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev, jgg@nvidia.com,
-        Alex Williamson <alex.williamson@redhat.com>
-Cc: linux-s390@vger.kernel.org, schnelle@linux.ibm.com, pmorel@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, joro@8bytes.org, will@kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220831201236.77595-1-mjrosato@linux.ibm.com>
- <20220831201236.77595-2-mjrosato@linux.ibm.com>
- <3b065fb5-3ca7-8f48-bdf7-daf7604312df@arm.com>
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <3b065fb5-3ca7-8f48-bdf7-daf7604312df@arm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: CKjMEFZWF1Ls_nsT4-BatYt49fWHTG52
-X-Proofpoint-GUID: Pb7i3VhrrS3SVOTguPEzPligCUqsWdMY
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-09-01_10,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- priorityscore=1501 mlxscore=0 clxscore=1015 mlxlogscore=999 adultscore=0
- spamscore=0 bulkscore=0 malwarescore=0 phishscore=0 suspectscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2209010071
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220901110501.o5rq5yzltomirxiw@suse.de>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 
-On 9/1/22 6:25 AM, Robin Murphy wrote:
-> On 2022-08-31 21:12, Matthew Rosato wrote:
->> With commit fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev
->> calls") s390-iommu is supposed to handle dynamic switching between IOMMU
->> domains and the DMA API handling.  However, this commit does not
->> sufficiently handle the case where the device is released via a call
->> to the release_device op as it may occur at the same time as an opposing
->> attach_dev or detach_dev since the group mutex is not held over
->> release_device.  This was observed if the device is deconfigured during a
->> small window during vfio-pci initialization and can result in WARNs and
->> potential kernel panics.
+On Thu, Sep 01, 2022 at 12:05:01PM +0100, Mel Gorman wrote:
+> As pointed out elsewhere, attaching to the tracepoint and recording relevant
+> state is an option other than trying to parse a raw ftrace feed. For memory
+> leaks, there are already tracepoints for page allocation and free that could
+> be used to track allocations that are not freed at a given point in time.
+
+Page allocation tracepoints are not sufficient for what we're trying to do here,
+and a substantial amount of effort in this patchset has gone into just getting
+the hooking locations right - our memory allocation interfaces are not trivial.
+
+That's something people should keep in mind when commenting on the size of this
+patchset, since that's effort that would have to be spent for /any/ complete
+solution, be in tracepoint based or no.
+
+Additionally, we need to be able to write assertions that verify that our hook
+locations are correct, that allocations or frees aren't getting double counted
+or missed - highly necessary given the maze of nested memory allocation
+interfaces we have (i.e. slab.h), and it's something a tracepoint based
+implementation would have to account for - otherwise, a tool isn't very useful
+if you can't trust the numbers it's giving you.
+
+And then you have to correlate the allocate and free events, so that you know
+which allocate callsite to decrement the amount freed from.
+
+How would you plan on doing that with tracepoints?
+
+> There is also the kernel memory leak detector although I never had reason
+> to use it (https://www.kernel.org/doc/html/v6.0-rc3/dev-tools/kmemleak.html)
+> and it sounds like it would be expensive.
+
+Kmemleak is indeed expensive, and in the past I've had issues with it not
+catching everything (I've noticed the kmemleak annotations growing, so maybe
+this is less of an issue than it was).
+
+And this is a more complete solution (though not something that could strictly
+replace kmemleak): strict memory leaks aren't the only issue, it's also drivers
+unexpectedly consuming more memory than expected.
+
+I'll bet you a beer that when people have had this awhile, we're going to have a
+bunch of bugs discovered and fixed along the lines of "oh hey, this driver
+wasn't supposed to be using this 1 MB of memory, I never noticed that before".
+
+> > > It's also unclear *who* would enable this. It looks like it would mostly
+> > > have value during the development stage of an embedded platform to track
+> > > kernel memory usage on a per-application basis in an environment where it
+> > > may be difficult to setup tracing and tracking. Would it ever be enabled
+> > > in production? Would a distribution ever enable this? If it's enabled, any
+> > > overhead cannot be disabled/enabled at run or boot time so anyone enabling
+> > > this would carry the cost without never necessarily consuming the data.
+> > 
+> > The whole point of this is to be cheap enough to enable in production -
+> > especially the latency tracing infrastructure. There's a lot of value to
+> > always-on system visibility infrastructure, so that when a live machine starts
+> > to do something wonky the data is already there.
+> > 
 > 
-> Hmm, the more I think about it, something doesn't sit right about this whole situation... release_device is called via the notifier from device_del() after the device has been removed from its parent bus and largely dismantled; it should definitely not still have a driver bound by that point, so how is VFIO doing things that manage to race at all?
-> 
-> Robin.
+> Sure, there is value but nothing stops the tracepoints being attached as
+> a boot-time service where interested. For latencies, there is already
+> bpf examples for tracing individual function latency over time e.g.
+> https://github.com/iovisor/bcc/blob/master/tools/funclatency.py although
+> I haven't used it recently.
 
-So, I generally have seen the issue manifest as one of the calls into the iommu core from __vfio_group_unset_container (e.g. iommu_deatch_group via vfio_type1_iommu) failing with a WARN.  This happens when the vfio group fd is released, which could be coming e.g. from a userspace ioctl VFIO_GROUP_UNSET_CONTAINER.  AFAICT there's nothing serializing the notion of calling into the iommu core here against a device that is simultaneously going through release_device (because we don't enter release_device with the group mutex held), resulting in unpredictable behavior between the dueling attach_dev/detach_dev and the release_device for s390-iommu at least.  
+So this is cool, I'll check it out today.
 
+Tracing of /function/ latency is definitely something you'd want tracing/kprobes
+for - that's way more practical than any code tagging-based approach. And if the
+output is reliable and useful I could definitely see myself using this, thank
+you.
 
-> 
->> Handle this by tracking when the device is probed/released via
->> dev_iommu_priv_set/get().  Ensure that once the device is released only
->> release_device handles the re-init of the device DMA.
->>
->> Fixes: fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev calls")
->> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
->> ---
->>   arch/s390/include/asm/pci.h |  1 +
->>   arch/s390/pci/pci.c         |  1 +
->>   drivers/iommu/s390-iommu.c  | 39 ++++++++++++++++++++++++++++++++++---
->>   3 files changed, 38 insertions(+), 3 deletions(-)
->>
->> diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
->> index 7b4cdadbc023..080251e7b275 100644
->> --- a/arch/s390/include/asm/pci.h
->> +++ b/arch/s390/include/asm/pci.h
->> @@ -157,6 +157,7 @@ struct zpci_dev {
->>       /* DMA stuff */
->>       unsigned long    *dma_table;
->>       spinlock_t    dma_table_lock;
->> +    struct mutex    dma_domain_lock; /* protects s390_domain value */
->>       int        tlb_refresh;
->>         spinlock_t    iommu_bitmap_lock;
->> diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
->> index 73cdc5539384..973edd32ecc9 100644
->> --- a/arch/s390/pci/pci.c
->> +++ b/arch/s390/pci/pci.c
->> @@ -832,6 +832,7 @@ struct zpci_dev *zpci_create_device(u32 fid, u32 fh, enum zpci_state state)
->>       kref_init(&zdev->kref);
->>       mutex_init(&zdev->lock);
->>       mutex_init(&zdev->kzdev_lock);
->> +    mutex_init(&zdev->dma_domain_lock);
->>         rc = zpci_init_iommu(zdev);
->>       if (rc)
->> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
->> index c898bcbbce11..1137d669e849 100644
->> --- a/drivers/iommu/s390-iommu.c
->> +++ b/drivers/iommu/s390-iommu.c
->> @@ -99,6 +99,14 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
->>       if (!domain_device)
->>           return -ENOMEM;
->>   +    /* Leave now if the device has already been released */
->> +    mutex_lock(&zdev->dma_domain_lock);
->> +    if (!dev_iommu_priv_get(dev)) {
->> +        mutex_unlock(&zdev->dma_domain_lock);
->> +        kfree(domain_device);
->> +        return 0;
->> +    }
->> +
->>       if (zdev->dma_table && !zdev->s390_domain) {
->>           cc = zpci_dma_exit_device(zdev);
->>           if (cc) {
->> @@ -132,9 +140,10 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
->>           goto out_restore;
->>       }
->>       domain_device->zdev = zdev;
->> -    zdev->s390_domain = s390_domain;
->>       list_add(&domain_device->list, &s390_domain->devices);
->>       spin_unlock_irqrestore(&s390_domain->list_lock, flags);
->> +    zdev->s390_domain = s390_domain;
->> +    mutex_unlock(&zdev->dma_domain_lock);
->>         return 0;
->>   @@ -147,6 +156,7 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
->>                      virt_to_phys(zdev->dma_table));
->>       }
->>   out_free:
->> +    mutex_unlock(&zdev->dma_domain_lock);
->>       kfree(domain_device);
->>         return rc;
->> @@ -176,17 +186,22 @@ static void s390_iommu_detach_device(struct iommu_domain *domain,
->>       }
->>       spin_unlock_irqrestore(&s390_domain->list_lock, flags);
->>   -    if (found && (zdev->s390_domain == s390_domain)) {
->> +    mutex_lock(&zdev->dma_domain_lock);
->> +    if (found && (zdev->s390_domain == s390_domain) &&
->> +        dev_iommu_priv_get(dev)) {
->>           zdev->s390_domain = NULL;
->>           zpci_unregister_ioat(zdev, 0);
->>           zpci_dma_init_device(zdev);
->>       }
->> +    mutex_unlock(&zdev->dma_domain_lock);
->>   }
->>     static struct iommu_device *s390_iommu_probe_device(struct device *dev)
->>   {
->>       struct zpci_dev *zdev = to_zpci_dev(dev);
->>   +    dev_iommu_priv_set(dev, zdev);
->> +
->>       return &zdev->iommu_dev;
->>   }
->>   @@ -206,10 +221,28 @@ static void s390_iommu_release_device(struct device *dev)
->>        *
->>        * So let's call detach_dev from here if it hasn't been called before.
->>        */
->> -    if (zdev && zdev->s390_domain) {
->> +    if (zdev) {
->> +        /*
->> +         * Clear priv to block further attaches for this device,
->> +         * ensure detaches don't init DMA.  Hold the domain lock
->> +         * to ensure that attach/detach get a consistent view of
->> +         * whether or not the device is released.
->> +         */
->> +        mutex_lock(&zdev->dma_domain_lock);
->> +        dev_iommu_priv_set(dev, NULL);
->> +        mutex_unlock(&zdev->dma_domain_lock);
->> +        /* Make sure this device is removed from the domain list */
->>           domain = iommu_get_domain_for_dev(dev);
->>           if (domain)
->>               s390_iommu_detach_device(domain, dev);
->> +        /* Now ensure DMA is initialized from here */
->> +        mutex_lock(&zdev->dma_domain_lock);
->> +        if (zdev->s390_domain) {
->> +            zdev->s390_domain = NULL;
->> +            zpci_unregister_ioat(zdev, 0);
->> +            zpci_dma_init_device(zdev);
->> +        }
->> +        mutex_unlock(&zdev->dma_domain_lock);
->>       }
->>   }
->>   
+But for data collection where it makes sense to annotate in the source code
+where the data collection points are, I see the code-tagging based approach as
+simpler - it cuts out a whole bunch of indirection. The diffstat on the code
+tagging time stats patch is
 
+ 8 files changed, 233 insertions(+), 6 deletions(-)
+
+And that includes hooking wait.h - this is really simple, easy stuff.
+
+The memory allocation tracking patches are more complicated because we've got a
+ton of memory allocation interfaces and we're aiming for strict correctness
+there - because that tool needs strict correctness in order to be useful.
+
+> Live parsing of ftrace is possible, albeit expensive.
+> https://github.com/gormanm/mmtests/blob/master/monitors/watch-highorder.pl
+> tracks counts of high-order allocations and dumps a report on interrupt as
+> an example of live parsing ftrace and only recording interesting state. It's
+> not tracking state you are interested in but it demonstrates it is possible
+> to rely on ftrace alone and monitor from userspace. It's bit-rotted but
+> can be fixed with
+
+Yeah, if this is as far as people have gotten with ftrace on memory allocations
+than I don't think tracing is credible here, sorry.
+
+> The ease of use is a criticism as there is effort required to develop
+> the state tracking of in-kernel event be it from live parsing ftrace,
+> attaching to tracepoints with systemtap/bpf/whatever and the like. The
+> main disadvantage with an in-kernel implementation is three-fold. First,
+> it doesn't work with older kernels without backports. Second, if something
+> slightly different it needed then it's a kernel rebuild.  Third, if the
+> option is not enabled in the deployed kernel config then you are relying
+> on the end user being willing to deploy a custom kernel.  The initial
+> investment in doing memory leak tracking or latency tracking by attaching
+> to tracepoints is significant but it works with older kernels up to a point
+> and is less sensitive to the kernel config options selected as features
+> like ftrace are often selected.
+
+The next version of this patch set is going to use the alternatives mechanism to
+add a boot parameter.
+
+I'm not interested in backporting to older kernels - eesh. People on old
+enterprise kernels don't always get all the new shiny things :)
