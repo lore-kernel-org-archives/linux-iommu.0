@@ -1,153 +1,121 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C68C7E
-	for <iommu@lists.linux.dev>; Fri,  2 Sep 2022 07:50:03 +0000 (UTC)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2827NTNa011108;
-	Fri, 2 Sep 2022 07:49:54 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=SqqHuYXP03vxJlXwvq1vxFZfU0Izyq/Wz+bacwTS40Q=;
- b=qeN5Jqg18jGfa2z0uF/+zNQLAQMlTN0QbAEluod4HiocBX4dy+/A57jdy1WSER2l3S4J
- 2gtkEav95IPczrlfpe/JZ5iOPaYv0nGeLo2ZjlilvF3lI4Wt0WUQjXEjswldx58o9QEw
- J8NX5r03hPW5QuaDAJT6JLAIOq8ZZcgrmriE5GW3AhmpNULF+jIvBx4PR81L4Kc4jf/9
- El4kEc4eO6pvM9EzgEFdAsCx3bpT4rrAQedQy1p/KwaNTkp52TDnm4Je/cj3jSdb2afh
- eUZd0za3OmwtQFYaaa1UCaHgP1/sfZi/HMFsfGfsBPDNlkCR9O69XuChWjClS+Ufx+/g bg== 
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jbddbgrs1-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 02 Sep 2022 07:49:53 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-	by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2827ZpIM031914;
-	Fri, 2 Sep 2022 07:49:51 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-	by ppma06ams.nl.ibm.com with ESMTP id 3j7ahj7v7e-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 02 Sep 2022 07:49:51 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-	by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2827nmCo37224800
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 2 Sep 2022 07:49:48 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 33CA942041;
-	Fri,  2 Sep 2022 07:49:48 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 7E1724203F;
-	Fri,  2 Sep 2022 07:49:47 +0000 (GMT)
-Received: from sig-9-145-10-94.uk.ibm.com (unknown [9.145.10.94])
-	by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-	Fri,  2 Sep 2022 07:49:47 +0000 (GMT)
-Message-ID: <aa4ce332b6e280ec741064935fdd3e6fbabd8dbe.camel@linux.ibm.com>
-Subject: Re: [PATCH v4 1/2] iommu/s390: Fix race with release_device ops
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Matthew Rosato <mjrosato@linux.ibm.com>,
-        Pierre Morel
- <pmorel@linux.ibm.com>, iommu@lists.linux.dev
-Cc: linux-s390@vger.kernel.org, borntraeger@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        agordeev@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
-        will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com,
-        linux-kernel@vger.kernel.org
-Date: Fri, 02 Sep 2022 09:49:45 +0200
-In-Reply-To: <6be7b0ff-63d4-0352-a7de-e66a93411c2b@linux.ibm.com>
-References: <20220831201236.77595-1-mjrosato@linux.ibm.com>
-	 <20220831201236.77595-2-mjrosato@linux.ibm.com>
-	 <9887e2f4-3f3d-137d-dad7-59dab5f98aab@linux.ibm.com>
-	 <52d3fe0b86bdc04fdbf3aae095b2f71f4ea12d44.camel@linux.ibm.com>
-	 <6be7b0ff-63d4-0352-a7de-e66a93411c2b@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFA73110D
+	for <iommu@lists.linux.dev>; Fri,  2 Sep 2022 09:00:56 +0000 (UTC)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: kholk11)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id BB0196601F04;
+	Fri,  2 Sep 2022 10:00:48 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1662109249;
+	bh=7sU033mGQqMgLZYu1qj1vLeGlrTQhMdIgyO5Z9XmQvc=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=btPA8d5oKPh+N3MfwdysLrom3fdzX4u65X9qfnk3UySmC4Rr6X36Ear26Wj7FapZi
+	 6u4cDtF0aNsgZWz6UU74e71kArJilGw1D4Tw4M8yPX6bDbQgU12EUjYA8Cl3oHgLCJ
+	 xF9xlD6AJ4y7aEX8OjRESLxjvhlAaVO4kC0XgW4cCVXb10lTkwJrgPTH2KosJMrzJA
+	 LwDKRV7AkWBwbvG/BD4JdtegLUe8Vy9K3eZ91qGsCBWOkPqbzsSPCFQsXHl2o0twv8
+	 3cjsb/g6tSFI2QYWhY6WRSByJm7lunT4Ix7ENhfLbGuWg5DIBTo8dli9LdQR7VOz3s
+	 W59oVfW64KNvg==
+Message-ID: <8e398e71-1283-b5d7-2b17-958a25563c25@collabora.com>
+Date: Fri, 2 Sep 2022 11:00:46 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v2 2/3] iommu/mediatek: Add enable IOMMU SMC command for
+ INFRA master
+To: "Chengci.Xu" <chengci.xu@mediatek.com>, Yong Wu <yong.wu@mediatek.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>
+Cc: iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220831125502.7818-1-chengci.xu@mediatek.com>
+ <20220831125502.7818-3-chengci.xu@mediatek.com>
+Content-Language: en-US
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220831125502.7818-3-chengci.xu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: UxnGRVFgp2eSAYyhQf-gbdjf2QB7Kb79
-X-Proofpoint-ORIG-GUID: UxnGRVFgp2eSAYyhQf-gbdjf2QB7Kb79
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-09-01_12,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxlogscore=999
- mlxscore=0 priorityscore=1501 bulkscore=0 suspectscore=0 impostorscore=0
- adultscore=0 lowpriorityscore=0 clxscore=1015 phishscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2209020034
 
-On Thu, 2022-09-01 at 16:28 -0400, Matthew Rosato wrote:
-> > 
+Il 31/08/22 14:55, Chengci.Xu ha scritto:
+> The register which can enable IOMMU for INFRA master should be setted
+> in secure world for security concerns. Therefore, we add a SMC command
+> for INFRA master to enable/disable INFRA IOMMU in ATF. This function is
+> prepared for MT8188.
+> 
+> Signed-off-by: Chengci.Xu <chengci.xu@mediatek.com>
+> ---
+>   drivers/iommu/mtk_iommu.c  | 34 ++++++++++++++++++++++++++--------
+>   include/soc/mediatek/smi.h |  1 +
+>   2 files changed, 27 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 7e363b1f24df..6fe780783ec8 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -3,6 +3,7 @@
+>    * Copyright (c) 2015-2016 MediaTek Inc.
+>    * Author: Yong Wu <yong.wu@mediatek.com>
+>    */
+> +#include <linux/arm-smccc.h>
+>   #include <linux/bitfield.h>
+>   #include <linux/bug.h>
+>   #include <linux/clk.h>
+> @@ -28,6 +29,7 @@
+>   #include <linux/slab.h>
+>   #include <linux/spinlock.h>
+>   #include <linux/soc/mediatek/infracfg.h>
+> +#include <linux/soc/mediatek/mtk_sip_svc.h>
+>   #include <asm/barrier.h>
+>   #include <soc/mediatek/smi.h>
+>   
+> @@ -138,6 +140,7 @@
+>   #define PM_CLK_AO			BIT(15)
+>   #define IFA_IOMMU_PCIE_SUPPORT		BIT(16)
+>   #define PGTABLE_PA_35_EN		BIT(17)
+> +#define CFG_IFA_MASTER_IN_ATF		BIT(18)
+>   
+>   #define MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, mask)	\
+>   				((((pdata)->flags) & (mask)) == (_x))
+> @@ -554,14 +557,29 @@ static int mtk_iommu_config(struct mtk_iommu_data *data, struct device *dev,
+>   			else
+>   				larb_mmu->mmu &= ~MTK_SMI_MMU_EN(portid);
+>   		} else if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_INFRA)) {
+> -			peri_mmuen_msk = BIT(portid);
+> -			/* PCI dev has only one output id, enable the next writing bit for PCIe */
+> -			if (dev_is_pci(dev))
+> -				peri_mmuen_msk |= BIT(portid + 1);
+> -
+> -			peri_mmuen = enable ? peri_mmuen_msk : 0;
+> -			ret = regmap_update_bits(data->pericfg, PERICFG_IOMMU_1,
+> -						 peri_mmuen_msk, peri_mmuen);
+> +			if (MTK_IOMMU_HAS_FLAG(data->plat_data, CFG_IFA_MASTER_IN_ATF)) {
+> +				struct arm_smccc_res res;
+> +
+> +				portid = MTK_M4U_TO_PORT(fwspec->ids[i]);
 
+This assignment is redundant, as portid is initialized to the same value
+just a few lines before. Please drop it.
 
-> On 9/1/22 5:37 AM, Niklas Schnelle wrote:
-> > On Thu, 2022-09-01 at 09:56 +0200, Pierre Morel wrote:
-> > > On 8/31/22 22:12, Matthew Rosato wrote:
-> > > > With commit fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev
-> > > > calls") s390-iommu is supposed to handle dynamic switching between IOMMU
-> > > > domains and the DMA API handling.  However, this commit does not
-> > > > sufficiently handle the case where the device is released via a call
-> > > > to the release_device op as it may occur at the same time as an opposing
-> > > > attach_dev or detach_dev since the group mutex is not held over
-> > > > release_device.  This was observed if the device is deconfigured during a
-> > > > small window during vfio-pci initialization and can result in WARNs and
-> > > > potential kernel panics.
-> > > > 
-> > > > Handle this by tracking when the device is probed/released via
-> > > > dev_iommu_priv_set/get().  Ensure that once the device is released only
-> > > > release_device handles the re-init of the device DMA.
-> > > > 
-> > > > Fixes: fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev calls")
-> > > > Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
-> > > > ---
-> > > >   arch/s390/include/asm/pci.h |  1 +
-> > > >   arch/s390/pci/pci.c         |  1 +
-> > > >   drivers/iommu/s390-iommu.c  | 39 ++++++++++++++++++++++++++++++++++---
-> > > >   3 files changed, 38 insertions(+), 3 deletions(-)
-> > > > 
-> > > > 
-> > ---8<---
-> > > >   
-> > > > @@ -206,10 +221,28 @@ static void s390_iommu_release_device(struct device *dev)
-> > > > 
-> > ---8<---
-> > > > +		/* Make sure this device is removed from the domain list */
-> > > >   		domain = iommu_get_domain_for_dev(dev);
-> > > >   		if (domain)
-> > > >   			s390_iommu_detach_device(domain, dev);
-> > > > +		/* Now ensure DMA is initialized from here */
-> > > > +		mutex_lock(&zdev->dma_domain_lock);
-> > > > +		if (zdev->s390_domain) {
-> > > > +			zdev->s390_domain = NULL;
-> > > > +			zpci_unregister_ioat(zdev, 0);
-> > > > +			zpci_dma_init_device(zdev);
-> > > 
-> > > Sorry if it is a stupid question, but two things looks strange to me:
-> > > 
-> > > - having DMA initialized just after having unregistered the IOAT
-> > > Is that really all we need to unregister before calling dma_init_device?
-> 
-> This is also how s390-iommu has been handling detach_dev (and still does)
-> 
-> > > - having DMA initialized inside the release_device callback:
-> > > Why isn't it done in the device_probe ?
-> > 
-> > As I understand it iommu_release_device() which calls this code is only
-> > used when a device goes away. So, I think you're right in that it makes
-> > little sense to re-initialize DMA at this point, it's going to be torn
-> > down immediately after anyway. I do wonder if it would be an acceptably
-> > small change to just set zdev->s390_domain = NULL here and leave DMA
-> > uninitialized while making zpci_dma_exit_device() deal with that e.g.
-> > by doing nothing if zdev->dma_table is NULL but I'm not sure.
-> 
-> Right -- since it's a fix, I was trying to keep the changes minimal and this behavior (re-init DMA even on release_device) was existing, it was just always done within s390_iommu_detach_device before.
-> 
-> If you want, I could experiment with setting zdev->dma_table = NULL on the release path only (and checking it in zpci_dma_exit_device())
-> 
+Everything else looks good.
 
-Your current approach is fine with me. After all this oddity of
-detaching on release and initializing DMA is existing behavior.
+Regards,
+Angelo
 
+> +				arm_smccc_smc(MTK_SIP_KERNEL_IOMMU_CONTROL,
+> +					      IOMMU_ATF_CMD_CONFIG_INFRA_IOMMU,
+> +					      portid, enable, 0, 0, 0, 0, &res);
+> +				ret = (int)res.a0;
 
