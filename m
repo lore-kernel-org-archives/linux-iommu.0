@@ -1,126 +1,58 @@
-Received: from mail-pg1-f180.google.com (mail-pg1-f180.google.com [209.85.215.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC09B66E3
-	for <iommu@lists.linux.dev>; Fri,  2 Sep 2022 12:02:18 +0000 (UTC)
-Received: by mail-pg1-f180.google.com with SMTP id b196so1773742pga.7
-        for <iommu@lists.linux.dev>; Fri, 02 Sep 2022 05:02:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=W8RjYI+n37ofAo9LBQEiCCEo6ndS1LkvyfXGybqsT9Q=;
-        b=KJAXAw3+eV100jVcXnx/LqY4g085qYcLfMEFb+CqK4NNPBI9F8q01WkRiTpC9xcqhF
-         /4FkKnilu36QUVvPSMq5xoJPqh+oM/ajx5O1Ooz3frF0it9D7UMt8os//kh3KVKuZVb/
-         DPPYiXpugkbyENhGTY+/WPxqKyt1jcv2zujzHIJxdB0ew1X0zrJZfMTGT15i+87M0po6
-         0/QMZTGU+ePDJ2R+Ec9/I+/IE6Qsct4tdfUfCSODRxCfpDSAWo9ais93dWCx9G+uqlln
-         0sE9qiRD9Lz9bZ0YZbv1M1UDvvLW735W+u2JopGKR2Y65g0jVSPYyBMRqlC2d3FYstWU
-         49Eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=W8RjYI+n37ofAo9LBQEiCCEo6ndS1LkvyfXGybqsT9Q=;
-        b=Ffx2cfORAA0YKcie91AM0RwX6RK7V0HnbTCCbFc491M8i2xEhrvA2B+dzcjo57eX0x
-         dvEmyUzEbcY7ax5QgvBEZjCvLifgKvsdMg5rPPmSQ95ujJt934f9BT0H3YEEPtUy6+MB
-         tcCkq+4XzTh8KH4EzyM9DyHfybLwVH/XniPCJtCt9nKynSgLgxFq7Qbvfss7DuemXTnp
-         gbxz0QNO64n+UvudtCaplcEK24DbtkZDFb2zfc1l6MbEhG9HwacGjZoHusPdLJ2yrK2k
-         +9gG/wfrKSWcQ6fAul6wguWZifW4lxs6oKaR2EyF84SWDcV8icnnpDbOaQHqfDGH9e8s
-         7HDg==
-X-Gm-Message-State: ACgBeo2B8W8GzcUQrtglWW8IYzofaGvR2SiB/wUhagyt3kqZe5VrbTxz
-	KTRZNkVNejXclmCBNmjdX5o4qg==
-X-Google-Smtp-Source: AA6agR6oz8BXj0U20tJpMgDuL2EJ/favK/h81yeCR3znK+DwDUa+f211F9QgLE7hKWaq2wOql0pxmg==
-X-Received: by 2002:aa7:92d8:0:b0:537:acbf:5e85 with SMTP id k24-20020aa792d8000000b00537acbf5e85mr35570681pfa.61.1662120138036;
-        Fri, 02 Sep 2022 05:02:18 -0700 (PDT)
-Received: from [192.168.1.136] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id v65-20020a622f44000000b00539aa7f0b53sm1557339pfv.104.2022.09.02.05.02.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Sep 2022 05:02:17 -0700 (PDT)
-Message-ID: <3a41b9fc-05f1-3f56-ecd0-70b9a2912a31@kernel.dk>
-Date: Fri, 2 Sep 2022 06:02:12 -0600
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA16166F3
+	for <iommu@lists.linux.dev>; Fri,  2 Sep 2022 12:18:41 +0000 (UTC)
+Received: from fraeml706-chm.china.huawei.com (unknown [172.18.147.226])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MJxkg4gLFz6J69C;
+	Fri,  2 Sep 2022 20:17:47 +0800 (CST)
+Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
+ fraeml706-chm.china.huawei.com (10.206.15.55) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.31; Fri, 2 Sep 2022 14:18:32 +0200
+Received: from [10.195.34.23] (10.195.34.23) by lhrpeml500003.china.huawei.com
+ (7.191.162.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 2 Sep
+ 2022 13:18:31 +0100
+Message-ID: <e8b232be-dfe9-0a67-c464-83fe5109070e@huawei.com>
+Date: Fri, 2 Sep 2022 13:18:29 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
-Content-Language: en-US
-To: Roman Gushchin <roman.gushchin@linux.dev>,
- Kent Overstreet <kent.overstreet@linux.dev>
-Cc: Yosry Ahmed <yosryahmed@google.com>, Michal Hocko <mhocko@suse.com>,
- Mel Gorman <mgorman@suse.de>, Peter Zijlstra <peterz@infradead.org>,
- Suren Baghdasaryan <surenb@google.com>,
- Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>,
- Johannes Weiner <hannes@cmpxchg.org>, dave@stgolabs.net,
- Matthew Wilcox <willy@infradead.org>, liam.howlett@oracle.com,
- void@manifault.com, juri.lelli@redhat.com, ldufour@linux.ibm.com,
- Peter Xu <peterx@redhat.com>, David Hildenbrand <david@redhat.com>,
- mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org,
- changbin.du@intel.com, ytcoode@gmail.com, vincent.guittot@linaro.org,
- dietmar.eggemann@arm.com, Steven Rostedt <rostedt@goodmis.org>,
- bsegall@google.com, bristot@redhat.com, vschneid@redhat.com,
- Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>,
- Joonsoo Kim <iamjoonsoo.kim@lge.com>, 42.hyeyoo@gmail.com,
- glider@google.com, elver@google.com, dvyukov@google.com,
- Shakeel Butt <shakeelb@google.com>, Muchun Song <songmuchun@bytedance.com>,
- arnd@arndb.de, jbaron@akamai.com, David Rientjes <rientjes@google.com>,
- minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
- Linux-MM <linux-mm@kvack.org>, iommu@lists.linux.dev,
- kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
- linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
- linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <Yw8P8xZ4zqu121xL@hirez.programming.kicks-ass.net>
- <20220831084230.3ti3vitrzhzsu3fs@moria.home.lan>
- <20220831101948.f3etturccmp5ovkl@suse.de> <Yw88RFuBgc7yFYxA@dhcp22.suse.cz>
- <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
- <CAJD7tkaev9B=UDYj2RL6pz-1454J8tv4gEr9y-2dnCksoLK0bw@mail.gmail.com>
- <YxExz+c1k3nbQMh4@P9FQF9L96D.corp.robot.car>
- <20220901223720.e4gudprscjtwltif@moria.home.lan>
- <YxE4BXw5i+BkxxD8@P9FQF9L96D.corp.robot.car>
- <20220902001747.qqsv2lzkuycffuqe@moria.home.lan>
- <YxFWrka+Wx0FfLXU@P9FQF9L96D.lan>
-From: Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <YxFWrka+Wx0FfLXU@P9FQF9L96D.lan>
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH 0/3] iova: Some misc changes
+From: John Garry <john.garry@huawei.com>
+To: <robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>
+CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+References: <1660730984-30333-1-git-send-email-john.garry@huawei.com>
+ <11d9f054-fe7b-7646-a8f4-7d45a22e2a96@huawei.com>
+In-Reply-To: <11d9f054-fe7b-7646-a8f4-7d45a22e2a96@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.195.34.23]
+X-ClientProxiedBy: lhrpeml100006.china.huawei.com (7.191.160.224) To
+ lhrpeml500003.china.huawei.com (7.191.162.67)
+X-CFilter-Loop: Reflected
 
-On 9/1/22 7:04 PM, Roman Gushchin wrote:
-> On Thu, Sep 01, 2022 at 08:17:47PM -0400, Kent Overstreet wrote:
->> On Thu, Sep 01, 2022 at 03:53:57PM -0700, Roman Gushchin wrote:
->>> I'd suggest to run something like iperf on a fast hardware. And maybe some
->>> io_uring stuff too. These are two places which were historically most sensitive
->>> to the (kernel) memory accounting speed.
->>
->> I'm getting wildly inconsistent results with iperf.
->>
->> io_uring-echo-server and rust_echo_bench gets me:
->> Benchmarking: 127.0.0.1:12345
->> 50 clients, running 512 bytes, 60 sec.
->>
->> Without alloc tagging:	120547 request/sec
->> With:			116748 request/sec
->>
->> https://github.com/frevib/io_uring-echo-server
->> https://github.com/haraldh/rust_echo_bench
->>
->> How's that look to you? Close enough? :)
+On 17/08/2022 11:24, John Garry wrote:
+> On 17/08/2022 11:09, John Garry wrote:
+>> This series includes:
+>> - remove checks in the code which are not required
+>> - the re-org, which I had originally posted separately
 > 
-> Yes, this looks good (a bit too good).
-> 
-> I'm not that familiar with io_uring, Jens and Pavel should have a better idea
-> what and how to run (I know they've workarounded the kernel memory accounting
-> because of the performance in the past, this is why I suspect it might be an
-> issue here as well).
+> BTW, Can we drop the !IOMMU_IOVA stubs in iova.h? I could not find a 
+> kernel config which actually exercises that code (so testing changes 
+> there is difficult).
 
-io_uring isn't alloc+free intensive on a per request basis anymore, it
-would not be a good benchmark if the goal is to check for regressions in
-that area.
+Any thoughts on this? Since I got no review of patch #3 I assume that it 
+is not keenly welcome either.
 
--- 
-Jens Axboe
+Now I think that I'll just post a new version with patches #1 and #2 so 
+that they don't get lost in limbo.
+
+Thanks,
+John
