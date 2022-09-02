@@ -1,34 +1,34 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2075.outbound.protection.outlook.com [40.107.102.75])
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04hn2201.outbound.protection.outlook.com [52.100.161.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 276B433CE
-	for <iommu@lists.linux.dev>; Fri,  2 Sep 2022 19:59:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A626C33D4
+	for <iommu@lists.linux.dev>; Fri,  2 Sep 2022 19:59:36 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BdHBEgIHw8hqMDFF5cEQImaj+kDnnMO39BufmNGGlOaSSFeoZ0NClwwNA+RHJt9ste82mtGPw/fH3M0KFYwwdagC8rl4RQBn7i8hyX2xxMKo530ugSH5kXd46bdr1b3thHi/FUhmggwgg1SX0TH2n+ovrnl3r4SSD8042dwbdnFSIHATW9KvVvAD6/UYaJyEeFSPw4O7ymVKVtrvZeo0IhKMCjt6mxpl7/zyoxqWIYgOU1fuUZHl3r06+ZRjwlzQgUw6j60wVX2wKX/RFEqlf08KHWl++3j2VtY9B1g78P0pP4F2K4vE5Q1VIuOk9AuQq1NLGmaK2UQeUM71GhsN7g==
+ b=njopD44fPEwHvUd0XsIg2fREJA/1bh4o+TlfVT+zv1p1ndw7ovvjjiphKj6XV42Gx4tw6l2Hum6242kSnm/01Q6cHvDNX5CBzr9nrMn0He3HoQkop60qTRCA9hh50xdt6ICJ1cqfD4I+mvGx3TIn3GgJZ9hIx8lm8rgMLVoH9H7wh8amfEaViAau/eP0R1P8wkn7qIhR4NQdrCPFvlnSDxM8JamPCSEksiXhahhjAyoPJrohNYaDyb8TdFO91LxnFdYJv6NBqoDD3zxSEK5DdLnPT+LpT0PW7J2zgUzCzejY5YDF0whJwVHdzaidCcEsleh60Z9qdw1/bortjw/0zw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Ah4x9TQMIvi/mZ+D6cxW/spPc0dNKjw067SgUPHj7ts=;
- b=fXK6YIesdGkK7XKJeFrWWTiYMFOTs7vMhTRJ/iuTBZ77otV9QIdGjeAMVcEY93t+iadprLj22u8g8KvvF0PCun4JKWk+mX+J+C45a5RKa7vejlLmm8p7scMh3ED7ZyALDL1RAgcCItuhQ4B0atTv4BKbzjtkOgY/slRdXZxNvMzHRtSck03r6/lpvlfSkacaiT8YHfYl+mbdthEc8GzD+hep4y6kpHF372k58t4uQqJ+HcmU0Y63s3GxQD/lIT2yJNhLrjJ+D00P/cilkX4/WhRvTlCGU3vyIQJ7GHLs5OUAtUH8T+AUX7FJBpW8YoZOU2j7YiofWHEz6UkAE/ofTw==
+ bh=bhzi9e3gCIZnw3iHu9dkJx5jaQ6Nl2UgbzDqhVOrc/g=;
+ b=BiN07MXIgjKaLifuiE3zexaHTlsJRrLEImNVcOWWxeeNB/DZp99U1D3GvEXcnsv4Sz7LDSy/QdduLYeGF6oBIyFCPfuOBP2nHAlLLvlCeC60ctLoFIMHGmjWiyBGgaMDGHquOjGBeQ7fR3YvynAF+BOrCT+ULlnaCIFyf0/0FmUtYSt9yI3CVXihrPhkYa44cI+gnAHZN9/iNVWxKBggXI7txaUr8Ux0rXfq+KaeB46ngnw4ECI2AKIRo3qJJIDXBTbI2V31i9+7BC+HIrI8Tzi39jWKadE7MXkYX2tunxZNCO86Pf2Hxs4A1l9G5UpDNPERyhhi6m/iJDfESXVT0g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ah4x9TQMIvi/mZ+D6cxW/spPc0dNKjw067SgUPHj7ts=;
- b=XXHdEg6CPyEfYhmmOoJIg9O8kstbf+1iflt6djEuUNwRHsX+vNZDg3m7x4jI4Fn+FawBYdZsBXg2pQmbz7/F1IIarx62xEXtJOqX0XDx3tpXPKtIHrzRxTDOx+7zvFTqhb1BX5QDay2KsgHyUtWbAL3v1I17IksGrku73rZqu7zb2TkTmSA5PI6v7KzTFN1WymsaVVWcDkgvKdE97qFkRa9dfQkUlaCTLtBuY3mUgvNFYcSwebwmHPBl71NGlOZhMhr8ZNB+JEVLE8lOqz7RhMYAcyaJ+q9rizRp7CfE77h9AvePFLamXdTEdhutZTwCI+FzgcQzCYPFzkhjuDlq0A==
+ bh=bhzi9e3gCIZnw3iHu9dkJx5jaQ6Nl2UgbzDqhVOrc/g=;
+ b=nsdOzGH5rp9xDaDLFedq0Qdg28AjUh/snUpI1OtZK0rPzcvcUbJMa3wsKBCTq7lcmDoyHbsvLFxWLznlIj2oGq7QTuVwvuGa9Mzxo4U2qGWRXjyhig749h568s+0iQorlOsivcQdFj+NeC2JfsDvqHJkpk0AQ9unnHs8Cu6aotLtLYOpz0L8+EF8UPjmCNTFo5xB/stjaZoGekq/Ih2MsP2VC34HVJ5RKv/o1C/YGA/yT3LnMWxPo1n5nsW94X9aEky5od0Zgq/MRwBMJcTX5CmlaSl4t7/49tc+hg2RlWLV6xHRH9OfGdH3eKcVOCn4u3FyA9QEpANop4d3su2YzQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
  by DM4PR12MB6566.namprd12.prod.outlook.com (2603:10b6:8:8d::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Fri, 2 Sep
- 2022 19:59:30 +0000
+ 2022 19:59:34 +0000
 Received: from MN2PR12MB4192.namprd12.prod.outlook.com
  ([fe80::462:7fe:f04f:d0d5]) by MN2PR12MB4192.namprd12.prod.outlook.com
  ([fe80::462:7fe:f04f:d0d5%7]) with mapi id 15.20.5588.016; Fri, 2 Sep 2022
- 19:59:30 +0000
+ 19:59:34 +0000
 From: Jason Gunthorpe <jgg@nvidia.com>
 To:
 Cc: Alex Williamson <alex.williamson@redhat.com>,
@@ -52,15 +52,13 @@ Cc: Alex Williamson <alex.williamson@redhat.com>,
 	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
 	Yi Liu <yi.l.liu@intel.com>,
 	Keqian Zhu <zhukeqian1@huawei.com>
-Subject: [PATCH RFC v2 03/13] iommufd: File descriptor, context, kconfig and makefiles
-Date: Fri,  2 Sep 2022 16:59:19 -0300
-Message-Id: <3-v2-f9436d0bde78+4bb-iommufd_jgg@nvidia.com>
-In-Reply-To: <0-v2-f9436d0bde78+4bb-iommufd_jgg@nvidia.com>
-References:
+Subject: [PATCH RFC v2 00/13] IOMMUFD Generic interface
+Date: Fri,  2 Sep 2022 16:59:16 -0300
+Message-Id: <0-v2-f9436d0bde78+4bb-iommufd_jgg@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: BL1PR13CA0189.namprd13.prod.outlook.com
- (2603:10b6:208:2be::14) To MN2PR12MB4192.namprd12.prod.outlook.com
+X-ClientProxiedBy: BLAPR03CA0100.namprd03.prod.outlook.com
+ (2603:10b6:208:32a::15) To MN2PR12MB4192.namprd12.prod.outlook.com
  (2603:10b6:208:1d5::15)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -69,746 +67,381 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1b631369-93c5-4419-aad4-08da8d1da5c3
+X-MS-Office365-Filtering-Correlation-Id: 5da3d41c-eabf-46ef-753c-08da8d1da657
 X-MS-TrafficTypeDiagnostic: DM4PR12MB6566:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	91d+R4yI56o0bbWVhkV1l0v3DbeHzefSyH5jOp6kJItuG2nEmGhgXJL7+6W7gPre3ZZA1/0UXFPdmK5ycth8XmmEGkOGHMfj5xQE00WUfbGn3LC9dOEoeela5t9p2cQ/ELvCqDorHjK9PR47GSjl7nqvC11VAST0epBnYVHt7WUxCnmUnSmnNfI9TZ/jzjyIowxbWYj5ye0Ub5ZNbnueHWhgv27I6J8ZztVp2Lcz0gEPBIu/uEzkVDeybPH9GUCPO7aC5ZdvwPBCON3w4Gh8pIYP3GiaxcBrxt0cYY0jR7O2/wg6zADOtBm+r5GOrmIkXACFPxYgLpg5cCDVhMH8zvqf3ERHjNyvjt9txWITEldeCxzCT+s3bImCFP4NHElyLs0Gu5ebMKtC7tfqGhzZw/oOFp9UL40vl/lMD9M8JpA+/D1jYT1FqeHdoxUKaTbWt6CteHqVTQRMTk4Itj5h8mPuRIT3UgguBmqoglj2MHjS3BVb/oJ8wpsiRtPJ5QFLSMdo3S4v+i+aUyYLEGrqcNTMkaEV9OSgPV8YwdJP6QKE2oz3+u8CeNcw+lbFF/yGTCF2tDJRyu4+kgkfkUfz2hPQhgN0ApEJmN3UJyerUurA5NLbSc8rsPgttRaF2dL4XzR2ncNBLOZLDT15UHs1/TGie9ss4zjyMfZ/XlPc4yVKYuNdlRmDLO27UMt6OoVya9GzQaXHoSzKrlAV/wm0yu+BisCx5v9lf4lBANa0UcqmvSXci5OHV6B0doLuRPdKbp1XsaqnaunzJdCbMCQCpw==
+	=?us-ascii?Q?AH6kwZ1SWEHokiHxk7zYUXcBExq4632N3cBdm2Ma7AVxWyu2PJq2+QYiz+VE?=
+ =?us-ascii?Q?lP0Hc24WBBmI6xUdSqfLImRjhW7OpCtH2v8p18ysD7Ph3bSofONdqgycchnz?=
+ =?us-ascii?Q?nlaBAFe0IICOxoDtq7zk9TnFluLh69utEBBgB0KS/wbdJD+tLrk98zjaZqOv?=
+ =?us-ascii?Q?2TbVbTObd++7S2CQQVR0ZuZIlSO+amIZqSp8T8PwII3JJSTSt3O3QrHTe7qT?=
+ =?us-ascii?Q?42PrmjGkOvROdFgZEHat8/FTw03MQL3UN8bvoFf83xAZQBD90T2M/3Y7kFIb?=
+ =?us-ascii?Q?Q+2C88h+tyl7JMJHTtTcqIdmMiuGULRva5TQfUhbiRlU7mw/TGk9u5RkhPpR?=
+ =?us-ascii?Q?GizThWofs4JMjijw790YUZta3Ub7LmD0RX+MKbneLdXhtcCsc1wvFarJoER3?=
+ =?us-ascii?Q?69mONBN2ndKkV3W3Je+dCFVbDff8cJM+BifjintBEQ+jQwf8BkGJ3UGdoWCo?=
+ =?us-ascii?Q?AclvkSSjCsWhKohNBVPIR2mIeQxd7xGM1L41xKCcp2tGTeHXnD7mrM/r0o37?=
+ =?us-ascii?Q?qndAiQxKIAonfaIB8Y7rTwBpmt8FsfMX7VqDTNxJQ5mkYfCOX9iQzTNeL4cM?=
+ =?us-ascii?Q?NKOxx2Hv0bo4ym/umK0iLT6EmIQewl+PGU0O+/UZUq9/JcA7ktFlJ2lyWdoI?=
+ =?us-ascii?Q?/Uxxdo8ywpqrSpuucgoAwqVXbg6Lz/bc5Az3VxnvhG/LwRm+tw791vEOGkk0?=
+ =?us-ascii?Q?8xDzJv4ewK2EoJl74/Co/hITtXme8FAZEpJBiPBfgheeeOU47Ezn2XjVJsu5?=
+ =?us-ascii?Q?tM6ja53v6ubYWaeoP+Zs7x/Nj0wy1TK7XP7JdWz05h9ddvrgWGP/ARhPFrGb?=
+ =?us-ascii?Q?rHrcSLpxa8+9xNyCveGj2MArbWpJQhuBF/pbb/oC2Fu6V7rdBW9AgepyMp/K?=
+ =?us-ascii?Q?xBYWeCjvQh4IDkpOyhQoEv0DK/VaTHNMfcgAEFIASyYJDl+8Dz4kHXXFTfXz?=
+ =?us-ascii?Q?oOg2UjHOmfOdGfGsqh1xfLW5Nt0C6PuJBXs4XtTG+FWKzHsHc/Hc5MSkeehD?=
+ =?us-ascii?Q?i3lAuoJ0GYsaISsP79C9CUachfbnMFeTomtrQMbvvEIsS7rLEpcKmlMYxwCk?=
+ =?us-ascii?Q?QWOzyQJGjfZbEeyIaB8NqBfoXFVRY6ALHIdyTyTHIitbNC4M6+jg58xYSsZy?=
+ =?us-ascii?Q?pnwpi8g276wGRQRb+xcSf2/1qxuW8QohBIBb0rkIVq/CWbRFC/pLb9OarUtW?=
+ =?us-ascii?Q?Dar34mmIYmjOx/P8P0QxYpaZVvjuHSjvyJwGxRC/CtIRLfCbvT/zNnSLtcof?=
+ =?us-ascii?Q?0Q8iQwWcZEta1KZm9xnhVdLs5SLXpgfxQv41/mn41OIhT6ZCISdvkcGg+b07?=
+ =?us-ascii?Q?jIKjerWo1n2NZ+t2uzd0qmWTv1GWZFdBbroCY8V3tTvQJ8wvG7LNoeAIgkoM?=
+ =?us-ascii?Q?mtNAjYetUEUCwut0JWP6JMEtZO5kN7OR90AeyWpgR2uZcWW24LP93wML9QSR?=
+ =?us-ascii?Q?dIqDSQq191sQejxhhnPhAC65V1UhTV2F0dcdaFYLBFdf1kTgy4lJ0VBJWN1X?=
+ =?us-ascii?Q?66/C+qLIlZJm9EOpU/ZLG9ZFAfWTUVcU51Ur?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(136003)(376002)(346002)(39860400002)(366004)(30864003)(5660300002)(109986005)(6506007)(36756003)(83380400001)(41300700001)(8936002)(6666004)(6486002)(478600001)(2906002)(38100700002)(66476007)(8676002)(66946007)(66556008)(4326008)(86362001)(54906003)(7416002)(26005)(6512007)(186003)(2616005)(316002)(4216001)(266003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:9;SRV:;IPV:NLI;SFV:SPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:OSPM;SFS:(13230016)(4636009)(396003)(136003)(376002)(346002)(39860400002)(366004)(30864003)(5660300002)(109986005)(6506007)(36756003)(966005)(83380400001)(41300700001)(8936002)(6666004)(6486002)(478600001)(2906002)(38100700002)(66476007)(8676002)(66946007)(66556008)(4326008)(86362001)(54906003)(7416002)(26005)(6512007)(186003)(2616005)(316002)(4216001)(266003)(41533002);DIR:OUT;SFP:1501;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?pJ0ouMkgolRXVEtJruQZHSGxfY1cWNIe+yreLQYCHWMM5WSPoJsCSjOHsWdv?=
- =?us-ascii?Q?4Cd1a4Zwv5yg/oRKua9uynUUolX3KeZaifQ3Z0di8H1axr/dGaT/6zKuFqr/?=
- =?us-ascii?Q?8lJJIkAe1j6RgVzXQIYmz/A41WmIszQi4ty1Jv6oQeWi0w1KxK4IrhFCpjpT?=
- =?us-ascii?Q?/WPk6jeF5pW+vHzrXO0xvmRwXYsXhz+/Oc8QbwWrXVETbqSgS/1JlIAd2obi?=
- =?us-ascii?Q?RdmA9EyJUktGw9PaS0bm/H1a0iVOVNzu/wArQkaHqzN1JEnHa8Qb3IyhisYd?=
- =?us-ascii?Q?3V3I7jaLHbEArgY1zpEVnF4ChAvTE6f9eiXS1InkG0f/edoGQrTuo01PJ1Ij?=
- =?us-ascii?Q?x4jYlnGnGQfOwFUJQyZMgJyvEQUKVQjtD4sJmEu1HYvv1LMma2Eo46AiQxmy?=
- =?us-ascii?Q?z27zc38hlQzeVTYBuDQqk1sWfvrPG7O8KIOOTbJ+5DbpO3+CtLvZWMmbRjTq?=
- =?us-ascii?Q?TQ4SZz7jJ8zMK7rZqd/9uiGdzDYgt8KZfqKfDRGT2sG9AaD5H9GN7N+oWKgy?=
- =?us-ascii?Q?zmLgOLIQEzTkmHFyntKQNGJQLb4mYI+s2cDeW6YZgBsgextoKz1BBjlsRvUn?=
- =?us-ascii?Q?BjJfzcQlDyBk0iXrJTt8XJ5R6IK2okON3eCdc+HfYMX09g0hzBDvKq/EJwJm?=
- =?us-ascii?Q?cBcYn+8HgK3M10hy1Vb4m9h501ghY+9qS920u8MdsmJD7n5xq1zuM9yPLzbO?=
- =?us-ascii?Q?vbuEHFBw8jwpx++/Wb7SWQ5h/cod4tZ323Vm1vVuJLNPDVi1bUHyuDrme/9k?=
- =?us-ascii?Q?P8rbPejRXogJmJLRDNngMaKc22d7NWEgcGIfoSuRRvTQ7dSQRfyYH6CE26Uj?=
- =?us-ascii?Q?b9NM3p4YwqPZ4nX7Pog18Cer+ttDVvOtMNDEAYTXNAuHbNPGZadMmgdG3MQn?=
- =?us-ascii?Q?OE2PoIAd5etP1GVgD6BQ1b+JOoPq8Q3RIN/Tqa/YdJGcXGczBuK2U9S2JPmB?=
- =?us-ascii?Q?4lTTZrNIO8VzkLcgXC4iEq7k2g3TnkrJ5H1YK+Uz/raIRkVg6558F4LB03as?=
- =?us-ascii?Q?o2LjVcFfhIV3cDWDohXbYT5AQ2Hhffz91mlL5zpgQ/+YLrUdycGsZ9Z3O4aC?=
- =?us-ascii?Q?7e9rVhwVOFY9olUJjaWGaS3En7nKYBR97bT7x/EvHjVD4SNidu9wre29AOr4?=
- =?us-ascii?Q?PbOCb5WL6CgQ3CfD0mZdxMJrmvuVzZRoYfv55KHonTtjR5PmPufIFD4DiYuY?=
- =?us-ascii?Q?KPrCUll5ie5MqzhTMarzuEzkVEP1Kh63+2IXD6OeGh31JlDbJCf7VCP1rocY?=
- =?us-ascii?Q?CmFdSUlJG+yDmBcFAUTUC+Jslrm7DSpWNE9bJK6Z9ViGz0BDrb0uJNTGt9bi?=
- =?us-ascii?Q?LY7Q1Lare9grhZaSHjf/KylpGfrE7wzcxf6Iy7cq8/hl1DdhHSGxZieVwmJq?=
- =?us-ascii?Q?HEY/uhSludEKiACrKapz+BhGPUIsqD2PiVpsw7AbVA0naNBbkUZ9qY4ZoOA+?=
- =?us-ascii?Q?yiQBvY1Q0BTzYmrfCblbXfq/6Y6xCDjzStDIg8fByH4WtkFWtuT5ZyEmaImZ?=
- =?us-ascii?Q?v3Wl5DhGdqYEl+K9lI6NdgBJDmLArc59zbdnNIWznh3hMPPL1hNexkxzNg8F?=
- =?us-ascii?Q?TslDwDxVJYdIzXn6iWGyZvLuUHSIAj6g0thRimix?=
+	=?us-ascii?Q?b8B1IbZ4zuJ13jJFXQDcwVwW+5/T9C8qej/XVKMZs7AF6H+KaEKl0WMI18+T?=
+ =?us-ascii?Q?RkFX+aw3V7RJHDI9oRFx4ZgCLR9nQFPJvEWKwzTib1had0klpY7gQP0Zf1N/?=
+ =?us-ascii?Q?vlFzklJ1QnrSrLuqX1HpYvYrUSjXJTin8jB+ZdBpaM8MIUwTQypqvtzKms0g?=
+ =?us-ascii?Q?jK0olKmoWw0ts9L+vRDgs/BK/Xyq2K1en8CITZUfFNCbJgxugkIxHAcKg/C5?=
+ =?us-ascii?Q?G2SIhcv6Bnq/HoV+ldhuhOwyC5yDPP0FQKpA0ifbLxX9UBcaeckGMH7FNKLl?=
+ =?us-ascii?Q?wEYi2gyMuExfSBTW0UXM4JKBmcFkpzT6bPa3aFb+7CThOpId5hOvTdypRx96?=
+ =?us-ascii?Q?QDV6wf5mh4xPZutpNuMgu6Ybzm8mKr14pXzL4HYviQDl08VzoH0ynIopPD0C?=
+ =?us-ascii?Q?PQ/3FDpOEd9ngwNSu8vAZMBd8sMf3EfOwUzbw2g1wxdoDdPG+q+xaSx+48DE?=
+ =?us-ascii?Q?L4+xO3akEMq+W0F/Jp7ElMqmlX1WmtP5tFOmOn3u4DXu8xrawsk14Thz5Hac?=
+ =?us-ascii?Q?KSFLVKZpFJk4sM238umuz8AzZYvIhCk8v3sAPlQzTRPLaBGGvUMwdj2o5jCD?=
+ =?us-ascii?Q?9cdCe0OFc+rl+x/nNGnvxs5SJmpL4IVZ1pJWuUfgY34N0xC7DTqSLovjYSnQ?=
+ =?us-ascii?Q?if91zFJrsCYkZupIwnYWkPjZlw1gzdSLUoaT2Q3pYzZnl7svx8HWM9yQhuyH?=
+ =?us-ascii?Q?ydJ7IAsrnUvHUrPMkoTaZr52RLCPyxeSvna9yc9Zw/MDm+DdzGjw64Ttu9gV?=
+ =?us-ascii?Q?2khlfqLv/z5FIV+B0ZjaUw5T33o9b+Qq5jm9kLhm2RlrlW3VDcxG3xb2S7mg?=
+ =?us-ascii?Q?LG8fNLPL0GzdJiqa9Vae1z4xkM+H8uMsOBYcXK/h4Qa0RQbfAjjWvmn+dn+0?=
+ =?us-ascii?Q?HUwh59O0tgUD2Zwvi5nbw+L6xCPSuJ6SEvcYye7n6K/K6oOJSi4nwOw1M0PT?=
+ =?us-ascii?Q?pfVNVjqZXmTjNclMdbOoYFltVe5taJRAopPE4/3lOosCZylKNdPG4NFtLCr9?=
+ =?us-ascii?Q?kwv9ADttCqisRZ7bA4NaCCnN9o+u0V272l/czToCX/4Fp5AVts6ZrDob4MM3?=
+ =?us-ascii?Q?DzTZ75eWCk5Np5WuzpytK2t+4MEvIlY9egOoJGpFGpsxxRtl5yx3HTYwbKzm?=
+ =?us-ascii?Q?eKwQY7Y6tafDPHv4pZlaY5Co282mxD65CbyoQsRs9b0aXC/noRCRmfWVB5O2?=
+ =?us-ascii?Q?pvMEkDXWEcMZtOgk980Tpg2qWqfcyMdTw/nSo84aZUi5wvaPYMLyAZ31dLHG?=
+ =?us-ascii?Q?8zVmD8pLLebNfW0wEPBs058xMFQH+BNGH349HtT8odqnMlyS9IQl0YCoQgu6?=
+ =?us-ascii?Q?YfcAlk+S22KsCV8ePaIdw5vkabM18+q6lckQS2k+VJhDZuHv6B35AR5QBo1t?=
+ =?us-ascii?Q?Sh/x4uQhwkJRcDmQtGU6HEdzRx21t4qvGsX3XGW/txsh6CdgsTUodjpaTq4j?=
+ =?us-ascii?Q?PHOt8SmMVKdDuHHy0gch8UmO7+g0fDDfTyujZpRMZzIWoSOSyx42lSHPaStJ?=
+ =?us-ascii?Q?voHn1tOJ8mJOp/Dl6vSTo5uSv4cbsb7WYoRuJkiOIBhxIAfRhvRI43ooRUE0?=
+ =?us-ascii?Q?l+7i3mVAM+jXEE7z4QQL7TWRkKp42gZl8oK8pRz2?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1b631369-93c5-4419-aad4-08da8d1da5c3
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5da3d41c-eabf-46ef-753c-08da8d1da657
 X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Sep 2022 19:59:30.3615
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Sep 2022 19:59:31.2226
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: t5ytry0g/EUJL0fFqGPr6BB9pLAWC8KRGZqQqwSz1B0XYnDnxtWckJSbqB2NSK4G
+X-MS-Exchange-CrossTenant-UserPrincipalName: bJAwZjLRNAn5Ktax5tBQtvwnGbfB+NjqE6FY5Ag0NsiFnXdHFhW0p40HYVMT7NSx
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6566
 
-This is the basic infrastructure of a new miscdevice to hold the iommufd
-IOCTL API.
+iommufd is the user API to control the IOMMU subsystem as it relates to
+managing IO page tables that point at user space memory.
 
-It provides:
- - A miscdevice to create file descriptors to run the IOCTL interface over
+It takes over from drivers/vfio/vfio_iommu_type1.c (aka the VFIO
+container) which is the VFIO specific interface for a similar idea.
 
- - A table based ioctl dispatch and centralized extendable pre-validation
-   step
+We see a broad need for extended features, some being highly IOMMU device
+specific:
+ - Binding iommu_domain's to PASID/SSID
+ - Userspace page tables, for ARM, x86 and S390
+ - Kernel bypass'd invalidation of user page tables
+ - Re-use of the KVM page table in the IOMMU
+ - Dirty page tracking in the IOMMU
+ - Runtime Increase/Decrease of IOPTE size
+ - PRI support with faults resolved in userspace
 
- - An xarray mapping user ID's to kernel objects. The design has multiple
-   inter-related objects held within in a single IOMMUFD fd
+As well as a need to access these features beyond just VFIO, from VDPA for
+instance. Other classes of accelerator HW are touching on these areas now
+too.
 
- - A simple usage count to build a graph of object relations and protect
-   against hostile userspace racing ioctls
+The pre-v1 series proposed re-using the VFIO type 1 data structure,
+however it was suggested that if we are doing this big update then we
+should also come with an improved data structure that solves the
+limitations that VFIO type1 has. Notably this addresses:
 
-The only IOCTL provided in this patch is the generic 'destroy any object
-by handle' operation.
+ - Multiple IOAS/'containers' and multiple domains inside a single FD
 
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+ - Single-pin operation no matter how many domains and containers use
+   a page
+
+ - A fine grained locking scheme supporting user managed concurrency for
+   multi-threaded map/unmap
+
+ - A pre-registration mechanism to optimize vIOMMU use cases by
+   pre-pinning pages
+
+ - Extended ioctl API that can manage these new objects and exposes
+   domains directly to user space
+
+ - domains are sharable between subsystems, eg VFIO and VDPA
+
+The bulk of this code is a new data structure design to track how the
+IOVAs are mapped to PFNs.
+
+iommufd intends to be general and consumable by any driver that wants to
+DMA to userspace. From a driver perspective it can largely be dropped in
+in-place of iommu_attach_device() and provides a uniform full feature set
+to all consumers.
+
+As this is a larger project this series is the first step. This series
+provides the iommfd "generic interface" which is designed to be suitable
+for applications like DPDK and VMM flows that are not optimized to
+specific HW scenarios. It is close to being a drop in replacement for the
+existing VFIO type 1.
+
+Several follow-on series are being prepared:
+
+- Patches integrating with qemu in native mode:
+  https://github.com/yiliu1765/qemu/commits/qemu-iommufd-6.0-rc2
+
+- A completed integration with VFIO now exists that covers "emulated" mdev
+  use cases now, and can pass testing with qemu/etc in compatability mode:
+  https://github.com/jgunthorpe/linux/commits/vfio_iommufd
+
+- A draft providing system iommu dirty tracking on top of iommufd,
+  including iommu driver implementations:
+  https://github.com/jpemartins/linux/commits/x86-iommufd
+
+  This pairs with patches for providing a similar API to support VFIO-device
+  tracking to give a complete vfio solution:
+  https://lore.kernel.org/kvm/20220901093853.60194-1-yishaih@nvidia.com/
+
+- Userspace page tables aka 'nested translation' for ARM and Intel iommu
+  drivers:
+  https://github.com/nicolinc/iommufd/commits/iommufd_nesting
+
+- "device centric" vfio series to expose the vfio_device FD directly as a
+  normal cdev, and provide an extended API allowing dynamically changing
+  the IOAS binding:
+  https://github.com/yiliu1765/iommufd/commits/iommufd-v6.0-rc2-nesting-0901
+
+- Drafts for PASID and PRI interfaces are included above as well
+
+Overall enough work is done now to show the merit of the new API design
+and at least draft solutions to many of the main problems.
+
+Several people have contributed directly to this work: Eric Auger, Joao
+Martins, Kevin Tian, Lu Baolu, Nicolin Chen, Yi L Liu. Many more have
+participated in the discussions that lead here, and provided ideas. Thanks
+to all!
+
+The v1 iommufd series has been used to guide a large amount of preparatory
+work that has now been merged. The general theme is to organize things in
+a way that makes injecting iommufd natural:
+
+ - VFIO live migration support with mlx5 and hisi_acc drivers.
+   These series need a dirty tracking solution to be really usable.
+   https://lore.kernel.org/kvm/20220224142024.147653-1-yishaih@nvidia.com/
+   https://lore.kernel.org/kvm/20220308184902.2242-1-shameerali.kolothum.thodi@huawei.com/
+
+ - Significantly rework the VFIO gvt mdev and remove struct
+   mdev_parent_ops
+   https://lore.kernel.org/lkml/20220411141403.86980-1-hch@lst.de/
+
+ - Rework how PCIe no-snoop blocking works
+   https://lore.kernel.org/kvm/0-v3-2cf356649677+a32-intel_no_snoop_jgg@nvidia.com/
+
+ - Consolidate dma ownership into the iommu core code
+   https://lore.kernel.org/linux-iommu/20220418005000.897664-1-baolu.lu@linux.intel.com/
+
+ - Make all vfio driver interfaces use struct vfio_device consistently
+   https://lore.kernel.org/kvm/0-v4-8045e76bf00b+13d-vfio_mdev_no_group_jgg@nvidia.com/
+
+ - Remove the vfio_group from the kvm/vfio interface
+   https://lore.kernel.org/kvm/0-v3-f7729924a7ea+25e33-vfio_kvm_no_group_jgg@nvidia.com/
+
+ - Simplify locking in vfio
+   https://lore.kernel.org/kvm/0-v2-d035a1842d81+1bf-vfio_group_locking_jgg@nvidia.com/
+
+ - Remove the vfio notifiter scheme that faces drivers
+   https://lore.kernel.org/kvm/0-v4-681e038e30fd+78-vfio_unmap_notif_jgg@nvidia.com/
+
+ - Improve the driver facing API for vfio pin/unpin pages to make the
+   presence of struct page clear
+   https://lore.kernel.org/kvm/20220723020256.30081-1-nicolinc@nvidia.com/
+
+ - Clean up in the Intel IOMMU driver
+   https://lore.kernel.org/linux-iommu/20220301020159.633356-1-baolu.lu@linux.intel.com/
+   https://lore.kernel.org/linux-iommu/20220510023407.2759143-1-baolu.lu@linux.intel.com/
+   https://lore.kernel.org/linux-iommu/20220514014322.2927339-1-baolu.lu@linux.intel.com/
+   https://lore.kernel.org/linux-iommu/20220706025524.2904370-1-baolu.lu@linux.intel.com/
+   https://lore.kernel.org/linux-iommu/20220702015610.2849494-1-baolu.lu@linux.intel.com/
+
+ - Rework s390 vfio drivers
+   https://lore.kernel.org/kvm/20220707135737.720765-1-farman@linux.ibm.com/
+
+ - Normalize vfio ioctl handling
+   https://lore.kernel.org/kvm/0-v2-0f9e632d54fb+d6-vfio_ioctl_split_jgg@nvidia.com/
+
+This is about 168 patches applied since March, thank you to everyone
+involved in all this work!
+
+Currently there are a number of supporting series still in progress:
+ - Simplify and consolidate iommu_domain/device compatability checking
+   https://lore.kernel.org/linux-iommu/20220815181437.28127-1-nicolinc@nvidia.com/
+
+ - Align iommu SVA support with the domain-centric model
+   https://lore.kernel.org/linux-iommu/20220826121141.50743-1-baolu.lu@linux.intel.com/
+
+ - VFIO API for dirty tracking (aka dma logging) managed inside a PCI
+   device, with mlx5 implementation
+   https://lore.kernel.org/kvm/20220901093853.60194-1-yishaih@nvidia.com
+
+ - Introduce a struct device sysfs presence for struct vfio_device
+   https://lore.kernel.org/kvm/20220901143747.32858-1-kevin.tian@intel.com/
+
+ - Complete restructuring the vfio mdev model
+   https://lore.kernel.org/kvm/20220822062208.152745-1-hch@lst.de/
+
+ - DMABUF exporter support for VFIO to allow PCI P2P with VFIO
+   https://lore.kernel.org/r/0-v2-472615b3877e+28f7-vfio_dma_buf_jgg@nvidia.com
+
+ - Isolate VFIO container code in preperation for iommufd to provide an
+   alternative implementation of it all
+   https://lore.kernel.org/kvm/0-v1-a805b607f1fb+17b-vfio_container_split_jgg@nvidia.com
+
+ - Start to provide iommu_domain ops for power
+   https://lore.kernel.org/all/20220714081822.3717693-1-aik@ozlabs.ru/
+
+Right now there is no more preperatory work sketched out, so this is the
+last of it.
+
+This series remains RFC as there are still several important FIXME's to
+deal with first, but things are on track for non-RFC in the near future.
+
+This is on github: https://github.com/jgunthorpe/linux/commits/iommufd
+
+v2:
+ - Rebase to v6.0-rc3
+ - Improve comments
+ - Change to an iterative destruction approach to avoid cycles
+ - Near rewrite of the vfio facing implementation, supported by a complete
+   implementation on the vfio side
+ - New IOMMU_IOAS_ALLOW_IOVAS API as discussed. Allows userspace to
+   assert that ranges of IOVA must always be mappable. To be used by a VMM
+   that has promised a guest a certain availability of IOVA. May help
+   guide PPC's multi-window implementation.
+ - Rework how unmap_iova works, user can unmap the whole ioas now
+ - The no-snoop / wbinvd support is implemented
+ - Bug fixes
+ - Test suite improvements
+ - Lots of smaller changes (the interdiff is 3k lines)
+v1: https://lore.kernel.org/r/0-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com
+
+# S390 in-kernel page table walker
+Cc: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>
+# AMD Dirty page tracking
+Cc: Joao Martins <joao.m.martins@oracle.com>
+# ARM SMMU Dirty page tracking
+Cc: Keqian Zhu <zhukeqian1@huawei.com>
+Cc: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+# ARM SMMU nesting
+Cc: Eric Auger <eric.auger@redhat.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+# Map/unmap performance
+Cc: Daniel Jordan <daniel.m.jordan@oracle.com>
+# VDPA
+Cc: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Jason Wang <jasowang@redhat.com>
+# Power
+Cc: David Gibson <david@gibson.dropbear.id.au>
+# vfio
+Cc: Alex Williamson <alex.williamson@redhat.com>
+Cc: Cornelia Huck <cohuck@redhat.com>
+Cc: kvm@vger.kernel.org
+# iommu
+Cc: iommu@lists.linux.dev
+# Collaborators
+Cc: "Chaitanya Kulkarni" <chaitanyak@nvidia.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>
+Cc: Yi Liu <yi.l.liu@intel.com>
+# s390
+Cc: Eric Farman <farman@linux.ibm.com>
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- .../userspace-api/ioctl/ioctl-number.rst      |   1 +
- MAINTAINERS                                   |  10 +
- drivers/iommu/Kconfig                         |   1 +
- drivers/iommu/Makefile                        |   2 +-
- drivers/iommu/iommufd/Kconfig                 |  13 +
- drivers/iommu/iommufd/Makefile                |   5 +
- drivers/iommu/iommufd/iommufd_private.h       | 110 ++++++
- drivers/iommu/iommufd/main.c                  | 345 ++++++++++++++++++
- include/linux/iommufd.h                       |  31 ++
- include/uapi/linux/iommufd.h                  |  55 +++
- 10 files changed, 572 insertions(+), 1 deletion(-)
+
+Jason Gunthorpe (12):
+  interval-tree: Add a utility to iterate over spans in an interval tree
+  iommufd: File descriptor, context, kconfig and makefiles
+  kernel/user: Allow user::locked_vm to be usable for iommufd
+  iommufd: PFN handling for iopt_pages
+  iommufd: Algorithms for PFN storage
+  iommufd: Data structure to provide IOVA to PFN mapping
+  iommufd: IOCTLs for the io_pagetable
+  iommufd: Add a HW pagetable object
+  iommufd: Add kAPI toward external drivers for physical devices
+  iommufd: Add kAPI toward external drivers for kernel access
+  iommufd: vfio container FD ioctl compatibility
+  iommufd: Add a selftest
+
+Kevin Tian (1):
+  iommufd: Overview documentation
+
+ .clang-format                                 |    1 +
+ Documentation/userspace-api/index.rst         |    1 +
+ .../userspace-api/ioctl/ioctl-number.rst      |    1 +
+ Documentation/userspace-api/iommufd.rst       |  224 +++
+ MAINTAINERS                                   |   10 +
+ drivers/iommu/Kconfig                         |    1 +
+ drivers/iommu/Makefile                        |    2 +-
+ drivers/iommu/iommufd/Kconfig                 |   22 +
+ drivers/iommu/iommufd/Makefile                |   13 +
+ drivers/iommu/iommufd/device.c                |  580 +++++++
+ drivers/iommu/iommufd/hw_pagetable.c          |   68 +
+ drivers/iommu/iommufd/io_pagetable.c          |  984 ++++++++++++
+ drivers/iommu/iommufd/io_pagetable.h          |  186 +++
+ drivers/iommu/iommufd/ioas.c                  |  338 ++++
+ drivers/iommu/iommufd/iommufd_private.h       |  266 ++++
+ drivers/iommu/iommufd/iommufd_test.h          |   74 +
+ drivers/iommu/iommufd/main.c                  |  392 +++++
+ drivers/iommu/iommufd/pages.c                 | 1301 +++++++++++++++
+ drivers/iommu/iommufd/selftest.c              |  626 ++++++++
+ drivers/iommu/iommufd/vfio_compat.c           |  423 +++++
+ include/linux/interval_tree.h                 |   47 +
+ include/linux/iommufd.h                       |  101 ++
+ include/linux/sched/user.h                    |    2 +-
+ include/uapi/linux/iommufd.h                  |  279 ++++
+ kernel/user.c                                 |    1 +
+ lib/interval_tree.c                           |   98 ++
+ tools/testing/selftests/Makefile              |    1 +
+ tools/testing/selftests/iommu/.gitignore      |    2 +
+ tools/testing/selftests/iommu/Makefile        |   11 +
+ tools/testing/selftests/iommu/config          |    2 +
+ tools/testing/selftests/iommu/iommufd.c       | 1396 +++++++++++++++++
+ 31 files changed, 7451 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/userspace-api/iommufd.rst
  create mode 100644 drivers/iommu/iommufd/Kconfig
  create mode 100644 drivers/iommu/iommufd/Makefile
+ create mode 100644 drivers/iommu/iommufd/device.c
+ create mode 100644 drivers/iommu/iommufd/hw_pagetable.c
+ create mode 100644 drivers/iommu/iommufd/io_pagetable.c
+ create mode 100644 drivers/iommu/iommufd/io_pagetable.h
+ create mode 100644 drivers/iommu/iommufd/ioas.c
  create mode 100644 drivers/iommu/iommufd/iommufd_private.h
+ create mode 100644 drivers/iommu/iommufd/iommufd_test.h
  create mode 100644 drivers/iommu/iommufd/main.c
+ create mode 100644 drivers/iommu/iommufd/pages.c
+ create mode 100644 drivers/iommu/iommufd/selftest.c
+ create mode 100644 drivers/iommu/iommufd/vfio_compat.c
  create mode 100644 include/linux/iommufd.h
  create mode 100644 include/uapi/linux/iommufd.h
+ create mode 100644 tools/testing/selftests/iommu/.gitignore
+ create mode 100644 tools/testing/selftests/iommu/Makefile
+ create mode 100644 tools/testing/selftests/iommu/config
+ create mode 100644 tools/testing/selftests/iommu/iommufd.c
 
-diff --git a/Documentation/userspace-api/ioctl/ioctl-number.rst b/Documentation/userspace-api/ioctl/ioctl-number.rst
-index 3b985b19f39d12..4387e787411ebe 100644
---- a/Documentation/userspace-api/ioctl/ioctl-number.rst
-+++ b/Documentation/userspace-api/ioctl/ioctl-number.rst
-@@ -105,6 +105,7 @@ Code  Seq#    Include File                                           Comments
- '8'   all                                                            SNP8023 advanced NIC card
-                                                                      <mailto:mcr@solidum.com>
- ';'   64-7F  linux/vfio.h
-+';'   80-FF  linux/iommufd.h
- '='   00-3f  uapi/linux/ptp_clock.h                                  <mailto:richardcochran@gmail.com>
- '@'   00-0F  linux/radeonfb.h                                        conflict!
- '@'   00-0F  drivers/video/aty/aty128fb.c                            conflict!
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 589517372408ca..abd041f5e00f4c 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -10609,6 +10609,16 @@ L:	linux-mips@vger.kernel.org
- S:	Maintained
- F:	drivers/net/ethernet/sgi/ioc3-eth.c
- 
-+IOMMU FD
-+M:	Jason Gunthorpe <jgg@nvidia.com>
-+M:	Kevin Tian <kevin.tian@intel.com>
-+L:	iommu@lists.linux-foundation.org
-+S:	Maintained
-+F:	Documentation/userspace-api/iommufd.rst
-+F:	drivers/iommu/iommufd/
-+F:	include/uapi/linux/iommufd.h
-+F:	include/linux/iommufd.h
-+
- IOMAP FILESYSTEM LIBRARY
- M:	Christoph Hellwig <hch@infradead.org>
- M:	Darrick J. Wong <djwong@kernel.org>
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 5c5cb5bee8b626..9ff3d2830f9559 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -177,6 +177,7 @@ config MSM_IOMMU
- 
- source "drivers/iommu/amd/Kconfig"
- source "drivers/iommu/intel/Kconfig"
-+source "drivers/iommu/iommufd/Kconfig"
- 
- config IRQ_REMAP
- 	bool "Support for Interrupt Remapping"
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 44475a9b3eeaf9..6d2bc288324704 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -1,5 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0
--obj-y += amd/ intel/ arm/
-+obj-y += amd/ intel/ arm/ iommufd/
- obj-$(CONFIG_IOMMU_API) += iommu.o
- obj-$(CONFIG_IOMMU_API) += iommu-traces.o
- obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
-diff --git a/drivers/iommu/iommufd/Kconfig b/drivers/iommu/iommufd/Kconfig
-new file mode 100644
-index 00000000000000..fddd453bb0e764
---- /dev/null
-+++ b/drivers/iommu/iommufd/Kconfig
-@@ -0,0 +1,13 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+config IOMMUFD
-+	tristate "IOMMU Userspace API"
-+	select INTERVAL_TREE
-+	select IOMMU_API
-+	default n
-+	help
-+	  Provides /dev/iommu the user API to control the IOMMU subsystem as
-+	  it relates to managing IO page tables that point at user space memory.
-+
-+	  This would commonly be used in combination with VFIO.
-+
-+	  If you don't know what to do here, say N.
-diff --git a/drivers/iommu/iommufd/Makefile b/drivers/iommu/iommufd/Makefile
-new file mode 100644
-index 00000000000000..a07a8cffe937c6
---- /dev/null
-+++ b/drivers/iommu/iommufd/Makefile
-@@ -0,0 +1,5 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+iommufd-y := \
-+	main.o
-+
-+obj-$(CONFIG_IOMMUFD) += iommufd.o
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-new file mode 100644
-index 00000000000000..a65208d6442be7
---- /dev/null
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -0,0 +1,110 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
-+ */
-+#ifndef __IOMMUFD_PRIVATE_H
-+#define __IOMMUFD_PRIVATE_H
-+
-+#include <linux/rwsem.h>
-+#include <linux/xarray.h>
-+#include <linux/refcount.h>
-+#include <linux/uaccess.h>
-+
-+struct iommufd_ctx {
-+	struct file *file;
-+	struct xarray objects;
-+};
-+
-+struct iommufd_ctx *iommufd_fget(int fd);
-+
-+struct iommufd_ucmd {
-+	struct iommufd_ctx *ictx;
-+	void __user *ubuffer;
-+	u32 user_size;
-+	void *cmd;
-+};
-+
-+/* Copy the response in ucmd->cmd back to userspace. */
-+static inline int iommufd_ucmd_respond(struct iommufd_ucmd *ucmd,
-+				       size_t cmd_len)
-+{
-+	if (copy_to_user(ucmd->ubuffer, ucmd->cmd,
-+			 min_t(size_t, ucmd->user_size, cmd_len)))
-+		return -EFAULT;
-+	return 0;
-+}
-+
-+enum iommufd_object_type {
-+	IOMMUFD_OBJ_NONE,
-+	IOMMUFD_OBJ_ANY = IOMMUFD_OBJ_NONE,
-+};
-+
-+/* Base struct for all objects with a userspace ID handle. */
-+struct iommufd_object {
-+	struct rw_semaphore destroy_rwsem;
-+	refcount_t users;
-+	enum iommufd_object_type type;
-+	unsigned int id;
-+};
-+
-+static inline bool iommufd_lock_obj(struct iommufd_object *obj)
-+{
-+	if (!down_read_trylock(&obj->destroy_rwsem))
-+		return false;
-+	if (!refcount_inc_not_zero(&obj->users)) {
-+		up_read(&obj->destroy_rwsem);
-+		return false;
-+	}
-+	return true;
-+}
-+
-+struct iommufd_object *iommufd_get_object(struct iommufd_ctx *ictx, u32 id,
-+					  enum iommufd_object_type type);
-+static inline void iommufd_put_object(struct iommufd_object *obj)
-+{
-+	refcount_dec(&obj->users);
-+	up_read(&obj->destroy_rwsem);
-+}
-+
-+/**
-+ * iommufd_put_object_keep_user() - Release part of the refcount on obj
-+ * @obj - Object to release
-+ *
-+ * Objects have two protections to ensure that userspace has a consistent
-+ * experience with destruction. Normally objects are locked so that destroy will
-+ * block while there are concurrent users, and wait for the object to be
-+ * unlocked.
-+ *
-+ * However, destroy can also be blocked by holding users reference counts on the
-+ * objects, in that case destroy will immediately return EBUSY and will not wait
-+ * for reference counts to go to zero.
-+ *
-+ * This function releases the destroy lock and destroy will return EBUSY.
-+ *
-+ * It should be used in places where the users will be held beyond a single
-+ * system call.
-+ */
-+static inline void iommufd_put_object_keep_user(struct iommufd_object *obj)
-+{
-+	up_read(&obj->destroy_rwsem);
-+}
-+void iommufd_object_abort(struct iommufd_ctx *ictx, struct iommufd_object *obj);
-+void iommufd_object_abort_and_destroy(struct iommufd_ctx *ictx,
-+				      struct iommufd_object *obj);
-+void iommufd_object_finalize(struct iommufd_ctx *ictx,
-+			     struct iommufd_object *obj);
-+bool iommufd_object_destroy_user(struct iommufd_ctx *ictx,
-+				 struct iommufd_object *obj);
-+struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
-+					     size_t size,
-+					     enum iommufd_object_type type);
-+
-+#define iommufd_object_alloc(ictx, ptr, type)                                  \
-+	container_of(_iommufd_object_alloc(                                    \
-+			     ictx,                                             \
-+			     sizeof(*(ptr)) + BUILD_BUG_ON_ZERO(               \
-+						      offsetof(typeof(*(ptr)), \
-+							       obj) != 0),     \
-+			     type),                                            \
-+		     typeof(*(ptr)), obj)
-+
-+#endif
-diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-new file mode 100644
-index 00000000000000..a5b1e2302ba59d
---- /dev/null
-+++ b/drivers/iommu/iommufd/main.c
-@@ -0,0 +1,345 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (C) 2021 Intel Corporation
-+ * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
-+ *
-+ * iommfd provides control over the IOMMU HW objects created by IOMMU kernel
-+ * drivers. IOMMU HW objects revolve around IO page tables that map incoming DMA
-+ * addresses (IOVA) to CPU addresses.
-+ *
-+ * The API is divided into a general portion that is intended to work with any
-+ * kernel IOMMU driver, and a device specific portion that  is intended to be
-+ * used with a userspace HW driver paired with the specific kernel driver. This
-+ * mechanism allows all the unique functionalities in individual IOMMUs to be
-+ * exposed to userspace control.
-+ */
-+#define pr_fmt(fmt) "iommufd: " fmt
-+
-+#include <linux/file.h>
-+#include <linux/fs.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/miscdevice.h>
-+#include <linux/mutex.h>
-+#include <linux/bug.h>
-+#include <uapi/linux/iommufd.h>
-+#include <linux/iommufd.h>
-+
-+#include "iommufd_private.h"
-+
-+struct iommufd_object_ops {
-+	void (*destroy)(struct iommufd_object *obj);
-+};
-+static struct iommufd_object_ops iommufd_object_ops[];
-+
-+struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
-+					     size_t size,
-+					     enum iommufd_object_type type)
-+{
-+	struct iommufd_object *obj;
-+	int rc;
-+
-+	obj = kzalloc(size, GFP_KERNEL_ACCOUNT);
-+	if (!obj)
-+		return ERR_PTR(-ENOMEM);
-+	obj->type = type;
-+	init_rwsem(&obj->destroy_rwsem);
-+	refcount_set(&obj->users, 1);
-+
-+	/*
-+	 * Reserve an ID in the xarray but do not publish the pointer yet since
-+	 * the caller hasn't initialized it yet. Once the pointer is published
-+	 * in the xarray and visible to other threads we can't reliably destroy
-+	 * it anymore, so the caller must complete all errorable operations
-+	 * before calling iommufd_object_finalize().
-+	 */
-+	rc = xa_alloc(&ictx->objects, &obj->id, XA_ZERO_ENTRY,
-+		      xa_limit_32b, GFP_KERNEL_ACCOUNT);
-+	if (rc)
-+		goto out_free;
-+	return obj;
-+out_free:
-+	kfree(obj);
-+	return ERR_PTR(rc);
-+}
-+
-+/*
-+ * Allow concurrent access to the object. This should only be done once the
-+ * system call that created the object is guaranteed to succeed.
-+ */
-+void iommufd_object_finalize(struct iommufd_ctx *ictx,
-+			     struct iommufd_object *obj)
-+{
-+	void *old;
-+
-+	old = xa_store(&ictx->objects, obj->id, obj, GFP_KERNEL);
-+	/* obj->id was returned from xa_alloc() so the xa_store() cannot fail */
-+	WARN_ON(old);
-+}
-+
-+/* Undo _iommufd_object_alloc() if iommufd_object_finalize() was not called */
-+void iommufd_object_abort(struct iommufd_ctx *ictx, struct iommufd_object *obj)
-+{
-+	void *old;
-+
-+	old = xa_erase(&ictx->objects, obj->id);
-+	WARN_ON(old);
-+	kfree(obj);
-+}
-+
-+/*
-+ * Abort an object that has been fully initialized and needs destroy, but has
-+ * not been finalized.
-+ */
-+void iommufd_object_abort_and_destroy(struct iommufd_ctx *ictx,
-+				      struct iommufd_object *obj)
-+{
-+	iommufd_object_ops[obj->type].destroy(obj);
-+	iommufd_object_abort(ictx, obj);
-+}
-+
-+struct iommufd_object *iommufd_get_object(struct iommufd_ctx *ictx, u32 id,
-+					  enum iommufd_object_type type)
-+{
-+	struct iommufd_object *obj;
-+
-+	xa_lock(&ictx->objects);
-+	obj = xa_load(&ictx->objects, id);
-+	if (!obj || (type != IOMMUFD_OBJ_ANY && obj->type != type) ||
-+	    !iommufd_lock_obj(obj))
-+		obj = ERR_PTR(-ENOENT);
-+	xa_unlock(&ictx->objects);
-+	return obj;
-+}
-+
-+/*
-+ * The caller holds a users refcount and wants to destroy the object. Returns
-+ * true if the object was destroyed. In all cases the caller no longer has a
-+ * reference on obj.
-+ */
-+bool iommufd_object_destroy_user(struct iommufd_ctx *ictx,
-+				 struct iommufd_object *obj)
-+{
-+	/*
-+	 * The purpose of the destroy_rwsem is to ensure deterministic
-+	 * destruction of objects used by external drivers and destroyed by this
-+	 * function. Any temporary increment of the refcount must hold the read
-+	 * side of this, such as during ioctl execution.
-+	 */
-+	down_write(&obj->destroy_rwsem);
-+	xa_lock(&ictx->objects);
-+	refcount_dec(&obj->users);
-+	if (!refcount_dec_if_one(&obj->users)) {
-+		xa_unlock(&ictx->objects);
-+		up_write(&obj->destroy_rwsem);
-+		return false;
-+	}
-+	__xa_erase(&ictx->objects, obj->id);
-+	xa_unlock(&ictx->objects);
-+	up_write(&obj->destroy_rwsem);
-+
-+	iommufd_object_ops[obj->type].destroy(obj);
-+	kfree(obj);
-+	return true;
-+}
-+
-+static int iommufd_destroy(struct iommufd_ucmd *ucmd)
-+{
-+	struct iommu_destroy *cmd = ucmd->cmd;
-+	struct iommufd_object *obj;
-+
-+	obj = iommufd_get_object(ucmd->ictx, cmd->id, IOMMUFD_OBJ_ANY);
-+	if (IS_ERR(obj))
-+		return PTR_ERR(obj);
-+	iommufd_put_object_keep_user(obj);
-+	if (!iommufd_object_destroy_user(ucmd->ictx, obj))
-+		return -EBUSY;
-+	return 0;
-+}
-+
-+static int iommufd_fops_open(struct inode *inode, struct file *filp)
-+{
-+	struct iommufd_ctx *ictx;
-+
-+	ictx = kzalloc(sizeof(*ictx), GFP_KERNEL_ACCOUNT);
-+	if (!ictx)
-+		return -ENOMEM;
-+
-+	xa_init_flags(&ictx->objects, XA_FLAGS_ALLOC1 | XA_FLAGS_ACCOUNT);
-+	ictx->file = filp;
-+	filp->private_data = ictx;
-+	return 0;
-+}
-+
-+static int iommufd_fops_release(struct inode *inode, struct file *filp)
-+{
-+	struct iommufd_ctx *ictx = filp->private_data;
-+	struct iommufd_object *obj;
-+
-+	/* Destroy the graph from depth first */
-+	while (!xa_empty(&ictx->objects)) {
-+		unsigned int destroyed = 0;
-+		unsigned long index;
-+
-+		xa_for_each (&ictx->objects, index, obj) {
-+			/*
-+			 * Since we are in release elevated users must come from
-+			 * other objects holding the users. We will eventually
-+			 * destroy the object that holds this one and the next
-+			 * pass will progress it.
-+			 */
-+			if (!refcount_dec_if_one(&obj->users))
-+				continue;
-+			destroyed++;
-+			xa_erase(&ictx->objects, index);
-+			iommufd_object_ops[obj->type].destroy(obj);
-+			kfree(obj);
-+		}
-+		/* Bug related to users refcount */
-+		if (WARN_ON(!destroyed))
-+			break;
-+	}
-+	kfree(ictx);
-+	return 0;
-+}
-+
-+union ucmd_buffer {
-+	struct iommu_destroy destroy;
-+};
-+
-+struct iommufd_ioctl_op {
-+	unsigned int size;
-+	unsigned int min_size;
-+	unsigned int ioctl_num;
-+	int (*execute)(struct iommufd_ucmd *ucmd);
-+};
-+
-+#define IOCTL_OP(_ioctl, _fn, _struct, _last)                                  \
-+	[_IOC_NR(_ioctl) - IOMMUFD_CMD_BASE] = {                               \
-+		.size = sizeof(_struct) +                                      \
-+			BUILD_BUG_ON_ZERO(sizeof(union ucmd_buffer) <          \
-+					  sizeof(_struct)),                    \
-+		.min_size = offsetofend(_struct, _last),                       \
-+		.ioctl_num = _ioctl,                                           \
-+		.execute = _fn,                                                \
-+	}
-+static struct iommufd_ioctl_op iommufd_ioctl_ops[] = {
-+	IOCTL_OP(IOMMU_DESTROY, iommufd_destroy, struct iommu_destroy, id),
-+};
-+
-+static long iommufd_fops_ioctl(struct file *filp, unsigned int cmd,
-+			       unsigned long arg)
-+{
-+	struct iommufd_ucmd ucmd = {};
-+	struct iommufd_ioctl_op *op;
-+	union ucmd_buffer buf;
-+	unsigned int nr;
-+	int ret;
-+
-+	ucmd.ictx = filp->private_data;
-+	ucmd.ubuffer = (void __user *)arg;
-+	ret = get_user(ucmd.user_size, (u32 __user *)ucmd.ubuffer);
-+	if (ret)
-+		return ret;
-+
-+	nr = _IOC_NR(cmd);
-+	if (nr < IOMMUFD_CMD_BASE ||
-+	    (nr - IOMMUFD_CMD_BASE) >= ARRAY_SIZE(iommufd_ioctl_ops))
-+		return -ENOIOCTLCMD;
-+	op = &iommufd_ioctl_ops[nr - IOMMUFD_CMD_BASE];
-+	if (op->ioctl_num != cmd)
-+		return -ENOIOCTLCMD;
-+	if (ucmd.user_size < op->min_size)
-+		return -EOPNOTSUPP;
-+
-+	ucmd.cmd = &buf;
-+	ret = copy_struct_from_user(ucmd.cmd, op->size, ucmd.ubuffer,
-+				    ucmd.user_size);
-+	if (ret)
-+		return ret;
-+	ret = op->execute(&ucmd);
-+	return ret;
-+}
-+
-+static const struct file_operations iommufd_fops = {
-+	.owner = THIS_MODULE,
-+	.open = iommufd_fops_open,
-+	.release = iommufd_fops_release,
-+	.unlocked_ioctl = iommufd_fops_ioctl,
-+};
-+
-+/**
-+ * iommufd_ctx_get - Get a context reference
-+ * @ictx - Context to get
-+ *
-+ * The caller must already hold a valid reference to ictx.
-+ */
-+void iommufd_ctx_get(struct iommufd_ctx *ictx)
-+{
-+	get_file(ictx->file);
-+}
-+EXPORT_SYMBOL_GPL(iommufd_ctx_get);
-+
-+/**
-+ * iommufd_ctx_from_file - Acquires a reference to the iommufd context
-+ * @file: File to obtain the reference from
-+ *
-+ * Returns a pointer to the iommufd_ctx, otherwise ERR_PTR. The struct file
-+ * remains owned by the caller and the caller must still do fput. On success
-+ * the caller is responsible to call iommufd_ctx_put().
-+ */
-+struct iommufd_ctx *iommufd_ctx_from_file(struct file *file)
-+{
-+	struct iommufd_ctx *ictx;
-+
-+	if (file->f_op != &iommufd_fops)
-+		return ERR_PTR(-EBADFD);
-+	ictx = file->private_data;
-+	iommufd_ctx_get(ictx);
-+	return ictx;
-+}
-+EXPORT_SYMBOL_GPL(iommufd_ctx_from_file);
-+
-+/**
-+ * iommufd_ctx_put - Put back a reference
-+ * @ictx - Context to put back
-+ */
-+void iommufd_ctx_put(struct iommufd_ctx *ictx)
-+{
-+	fput(ictx->file);
-+}
-+EXPORT_SYMBOL_GPL(iommufd_ctx_put);
-+
-+static struct iommufd_object_ops iommufd_object_ops[] = {
-+};
-+
-+static struct miscdevice iommu_misc_dev = {
-+	.minor = MISC_DYNAMIC_MINOR,
-+	.name = "iommu",
-+	.fops = &iommufd_fops,
-+	.nodename = "iommu",
-+	.mode = 0660,
-+};
-+
-+static int __init iommufd_init(void)
-+{
-+	int ret;
-+
-+	ret = misc_register(&iommu_misc_dev);
-+	if (ret) {
-+		pr_err("Failed to register misc device\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static void __exit iommufd_exit(void)
-+{
-+	misc_deregister(&iommu_misc_dev);
-+}
-+
-+module_init(iommufd_init);
-+module_exit(iommufd_exit);
-+
-+MODULE_DESCRIPTION("I/O Address Space Management for passthrough devices");
-+MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
-new file mode 100644
-index 00000000000000..c8bbed542e923c
---- /dev/null
-+++ b/include/linux/iommufd.h
-@@ -0,0 +1,31 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (C) 2021 Intel Corporation
-+ * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
-+ */
-+#ifndef __LINUX_IOMMUFD_H
-+#define __LINUX_IOMMUFD_H
-+
-+#include <linux/types.h>
-+#include <linux/errno.h>
-+#include <linux/err.h>
-+
-+struct iommufd_ctx;
-+struct file;
-+
-+void iommufd_ctx_get(struct iommufd_ctx *ictx);
-+
-+#if IS_ENABLED(CONFIG_IOMMUFD)
-+struct iommufd_ctx *iommufd_ctx_from_file(struct file *file);
-+void iommufd_ctx_put(struct iommufd_ctx *ictx);
-+#else /* !CONFIG_IOMMUFD */
-+static inline struct iommufd_ctx *iommufd_ctx_from_file(struct file *file)
-+{
-+       return ERR_PTR(-EOPNOTSUPP);
-+}
-+
-+static inline void iommufd_ctx_put(struct iommufd_ctx *ictx)
-+{
-+}
-+#endif /* CONFIG_IOMMUFD */
-+#endif
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-new file mode 100644
-index 00000000000000..2f7f76ec6db4cb
---- /dev/null
-+++ b/include/uapi/linux/iommufd.h
-@@ -0,0 +1,55 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+/* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES.
-+ */
-+#ifndef _UAPI_IOMMUFD_H
-+#define _UAPI_IOMMUFD_H
-+
-+#include <linux/types.h>
-+#include <linux/ioctl.h>
-+
-+#define IOMMUFD_TYPE (';')
-+
-+/**
-+ * DOC: General ioctl format
-+ *
-+ * The ioctl mechanims follows a general format to allow for extensibility. Each
-+ * ioctl is passed in a structure pointer as the argument providing the size of
-+ * the structure in the first u32. The kernel checks that any structure space
-+ * beyond what it understands is 0. This allows userspace to use the backward
-+ * compatible portion while consistently using the newer, larger, structures.
-+ *
-+ * ioctls use a standard meaning for common errnos:
-+ *
-+ *  - ENOTTY: The IOCTL number itself is not supported at all
-+ *  - E2BIG: The IOCTL number is supported, but the provided structure has
-+ *    non-zero in a part the kernel does not understand.
-+ *  - EOPNOTSUPP: The IOCTL number is supported, and the structure is
-+ *    understood, however a known field has a value the kernel does not
-+ *    understand or support.
-+ *  - EINVAL: Everything about the IOCTL was understood, but a field is not
-+ *    correct.
-+ *  - ENOENT: An ID or IOVA provided does not exist.
-+ *  - ENOMEM: Out of memory.
-+ *  - EOVERFLOW: Mathematics oveflowed.
-+ *
-+ * As well as additional errnos. within specific ioctls.
-+ */
-+enum {
-+	IOMMUFD_CMD_BASE = 0x80,
-+	IOMMUFD_CMD_DESTROY = IOMMUFD_CMD_BASE,
-+};
-+
-+/**
-+ * struct iommu_destroy - ioctl(IOMMU_DESTROY)
-+ * @size: sizeof(struct iommu_destroy)
-+ * @id: iommufd object ID to destroy. Can by any destroyable object type.
-+ *
-+ * Destroy any object held within iommufd.
-+ */
-+struct iommu_destroy {
-+	__u32 size;
-+	__u32 id;
-+};
-+#define IOMMU_DESTROY _IO(IOMMUFD_TYPE, IOMMUFD_CMD_DESTROY)
-+
-+#endif
+
+base-commit: b90cb1053190353cc30f0fef0ef1f378ccc063c5
 -- 
 2.37.3
 
