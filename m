@@ -1,50 +1,80 @@
-Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 682FC6AA9
-	for <iommu@lists.linux.dev>; Fri,  2 Sep 2022 20:06:11 +0000 (UTC)
-Date: Fri, 2 Sep 2022 16:05:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1662149163;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=SemCjjx9bqrqhFAABAkUIroCfCc94PYvIF1DVQSZFl4=;
-	b=DkqxrENv1HGZgJN2jzLkuenZfiCKRaXUD9WzQJ4Gyv/ayHL/Rtg7Xzr8AwspMWXlwZIUIL
-	u2b26PHc1vj3E0HNj7dQceY3+rADhcYIqCEweC9ErZkbq6yycckimIVL96EkhBo8Hg7QMq
-	Oask9xF1FPTxe7xFqrU4hLkV5BMu+ow=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Kent Overstreet <kent.overstreet@linux.dev>
-To: Jens Axboe <axboe@kernel.dk>
-Cc: Roman Gushchin <roman.gushchin@linux.dev>,
-	Yosry Ahmed <yosryahmed@google.com>, Michal Hocko <mhocko@suse.com>,
-	Mel Gorman <mgorman@suse.de>, Peter Zijlstra <peterz@infradead.org>,
-	Suren Baghdasaryan <surenb@google.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Vlastimil Babka <vbabka@suse.cz>,
-	Johannes Weiner <hannes@cmpxchg.org>, dave@stgolabs.net,
-	Matthew Wilcox <willy@infradead.org>, liam.howlett@oracle.com,
-	void@manifault.com, juri.lelli@redhat.com, ldufour@linux.ibm.com,
-	Peter Xu <peterx@redhat.com>, David Hildenbrand <david@redhat.com>,
-	mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org,
-	changbin.du@intel.com, ytcoode@gmail.com,
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-	Steven Rostedt <rostedt@goodmis.org>, bsegall@google.com,
-	bristot@redhat.com, vschneid@redhat.com,
-	Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>,
-	Joonsoo Kim <iamjoonsoo.kim@lge.com>, 42.hyeyoo@gmail.com,
-	glider@google.com, elver@google.com, dvyukov@google.com,
-	Shakeel Butt <shakeelb@google.com>,
-	Muchun Song <songmuchun@bytedance.com>, arnd@arndb.de,
-	jbaron@akamai.com, David Rientjes <rientjes@google.com>,
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
-	Linux-MM <linux-mm@kvack.org>, iommu@lists.linux.dev,
-	kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
-	linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
-	linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53AFC6AA9
+	for <iommu@lists.linux.dev>; Fri,  2 Sep 2022 20:23:41 +0000 (UTC)
+Received: by mail-pl1-f169.google.com with SMTP id j5so2925634plj.5
+        for <iommu@lists.linux.dev>; Fri, 02 Sep 2022 13:23:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=k6pQn9EMMlV6BZtQiNF0XvMyejT4MeXWM0SLMVDUfUA=;
+        b=atNBwFgIt7igHl+/QHLrFlJtFVTsSH/kJfYVSiBHiTvpkch9s3+zAthZGB6A5YDXlS
+         v71QG7O0GohvTTqFSZ7hQ4jR7KHFNnmgxFUC6YUXp3eVqkrlZqyPHMxKdRrsK3hC7WJ+
+         ratf09sB7a22OqVWFFXLzBVLXIay3MBLrlzBsi890YvKl53SP/bZRFwgW9WLVQrECS+k
+         e6/tO13lZyqAPIynEcJMUR9e2fBT2mJferk6/Xl8AJzVAjPmCX/MyAk+37HMrw2I7UDI
+         9l1WHpQ97YwZWMNi7XR5oEpipq812loh43BTSSYGw8QqCLvIufzr2WYkCLPG0vPEjTfE
+         HLbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=k6pQn9EMMlV6BZtQiNF0XvMyejT4MeXWM0SLMVDUfUA=;
+        b=Zi6nZ9GpELHTkxKkdUV4XR26G7G3D91QhuWiwal0eJ83vuFbpF6KjpjYRiiX2Ushqn
+         Nk/qwOVxZTW5xK7q3Iu2QXLrYq2GOkeXNgpsV2XePvaY1gQr/yDTQv0dE3iZLXBso4Sn
+         ROAw555myQBkQSVi5pQSA78FXYTi3GWOZVN3iU4aVMx/uzPn5K0CtyAB7LX3bhAfvm6Y
+         m/skz9OxYdrvFtojX6kguxVg7qsLLvCKc9deX3HNlWkcQM3LmgKVNlRaI6dr7cORgSgn
+         5n7y/PjEqxKtkz7i6y9Lo8DBLCWgXyZa76VA7kvto7j6wqPks9wvMjk39w79JRLvhpQI
+         Wpgg==
+X-Gm-Message-State: ACgBeo30VURK5gnP4Z7cmXFmL9fjXEtIac0IuBrZ5pMg2fb0JmCIO8N1
+	FUT/HZkCRXdkn9qkQ2+6/dUCvg==
+X-Google-Smtp-Source: AA6agR5AqhuPnCBKUHnmMMoOWG9kI43vIem/phxzSs6gDhTM24/CuEkLWk7/yQtSZJLhY720RHeSVw==
+X-Received: by 2002:a17:902:c94d:b0:16d:c10a:650e with SMTP id i13-20020a170902c94d00b0016dc10a650emr36139251pla.29.1662150220589;
+        Fri, 02 Sep 2022 13:23:40 -0700 (PDT)
+Received: from [192.168.1.136] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id z10-20020a62d10a000000b00535d094d6ecsm2197822pfg.108.2022.09.02.13.23.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Sep 2022 13:23:38 -0700 (PDT)
+Message-ID: <002ab1f2-078e-2bce-83a0-257a573b1f95@kernel.dk>
+Date: Fri, 2 Sep 2022 14:23:34 -0600
+Precedence: bulk
+X-Mailing-List: iommu@lists.linux.dev
+List-Id: <iommu.lists.linux.dev>
+List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
+List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
 Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
-Message-ID: <20220902200555.h5fyamst6lyamjnw@moria.home.lan>
+Content-Language: en-US
+To: Kent Overstreet <kent.overstreet@linux.dev>
+Cc: Roman Gushchin <roman.gushchin@linux.dev>,
+ Yosry Ahmed <yosryahmed@google.com>, Michal Hocko <mhocko@suse.com>,
+ Mel Gorman <mgorman@suse.de>, Peter Zijlstra <peterz@infradead.org>,
+ Suren Baghdasaryan <surenb@google.com>,
+ Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>,
+ Johannes Weiner <hannes@cmpxchg.org>, dave@stgolabs.net,
+ Matthew Wilcox <willy@infradead.org>, liam.howlett@oracle.com,
+ void@manifault.com, juri.lelli@redhat.com, ldufour@linux.ibm.com,
+ Peter Xu <peterx@redhat.com>, David Hildenbrand <david@redhat.com>,
+ mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org,
+ changbin.du@intel.com, ytcoode@gmail.com, vincent.guittot@linaro.org,
+ dietmar.eggemann@arm.com, Steven Rostedt <rostedt@goodmis.org>,
+ bsegall@google.com, bristot@redhat.com, vschneid@redhat.com,
+ Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>,
+ Joonsoo Kim <iamjoonsoo.kim@lge.com>, 42.hyeyoo@gmail.com,
+ glider@google.com, elver@google.com, dvyukov@google.com,
+ Shakeel Butt <shakeelb@google.com>, Muchun Song <songmuchun@bytedance.com>,
+ arnd@arndb.de, jbaron@akamai.com, David Rientjes <rientjes@google.com>,
+ minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
+ Linux-MM <linux-mm@kvack.org>, iommu@lists.linux.dev,
+ kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
+ linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
+ linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 References: <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
  <CAJD7tkaev9B=UDYj2RL6pz-1454J8tv4gEr9y-2dnCksoLK0bw@mail.gmail.com>
  <YxExz+c1k3nbQMh4@P9FQF9L96D.corp.robot.car>
@@ -55,26 +85,26 @@ References: <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
  <3a41b9fc-05f1-3f56-ecd0-70b9a2912a31@kernel.dk>
  <20220902194839.xqzgsoowous72jkz@moria.home.lan>
  <d5526090-0380-a586-40e1-7b3bb6fe6fb8@kernel.dk>
-Precedence: bulk
-X-Mailing-List: iommu@lists.linux.dev
-List-Id: <iommu.lists.linux.dev>
-List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
-List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d5526090-0380-a586-40e1-7b3bb6fe6fb8@kernel.dk>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+ <20220902200555.h5fyamst6lyamjnw@moria.home.lan>
+From: Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <20220902200555.h5fyamst6lyamjnw@moria.home.lan>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Fri, Sep 02, 2022 at 01:53:53PM -0600, Jens Axboe wrote:
-> I've complained about memcg accounting before, the slowness of it is why
-> io_uring works around it by caching. Anything we account we try NOT do
-> in the fast path because of it, the slowdown is considerable.
+On 9/2/22 2:05 PM, Kent Overstreet wrote:
+> On Fri, Sep 02, 2022 at 01:53:53PM -0600, Jens Axboe wrote:
+>> I've complained about memcg accounting before, the slowness of it is why
+>> io_uring works around it by caching. Anything we account we try NOT do
+>> in the fast path because of it, the slowdown is considerable.
+> 
+> I'm with you on that, it definitely raises an eyebrow.
+> 
+>> You care about efficiency now? I thought that was relegated to
+>> irrelevant 10M IOPS cases.
+> 
+> I always did, it's just not the only thing I care about.
 
-I'm with you on that, it definitely raises an eyebrow.
+It's not the only thing anyone cares about.
 
-> You care about efficiency now? I thought that was relegated to
-> irrelevant 10M IOPS cases.
-
-I always did, it's just not the only thing I care about.
+-- 
+Jens Axboe
