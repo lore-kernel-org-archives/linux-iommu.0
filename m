@@ -1,110 +1,115 @@
-Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
+Received: from sonic304-25.consmr.mail.ne1.yahoo.com (sonic304-25.consmr.mail.ne1.yahoo.com [66.163.191.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53AFC6AA9
-	for <iommu@lists.linux.dev>; Fri,  2 Sep 2022 20:23:41 +0000 (UTC)
-Received: by mail-pl1-f169.google.com with SMTP id j5so2925634plj.5
-        for <iommu@lists.linux.dev>; Fri, 02 Sep 2022 13:23:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=k6pQn9EMMlV6BZtQiNF0XvMyejT4MeXWM0SLMVDUfUA=;
-        b=atNBwFgIt7igHl+/QHLrFlJtFVTsSH/kJfYVSiBHiTvpkch9s3+zAthZGB6A5YDXlS
-         v71QG7O0GohvTTqFSZ7hQ4jR7KHFNnmgxFUC6YUXp3eVqkrlZqyPHMxKdRrsK3hC7WJ+
-         ratf09sB7a22OqVWFFXLzBVLXIay3MBLrlzBsi890YvKl53SP/bZRFwgW9WLVQrECS+k
-         e6/tO13lZyqAPIynEcJMUR9e2fBT2mJferk6/Xl8AJzVAjPmCX/MyAk+37HMrw2I7UDI
-         9l1WHpQ97YwZWMNi7XR5oEpipq812loh43BTSSYGw8QqCLvIufzr2WYkCLPG0vPEjTfE
-         HLbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=k6pQn9EMMlV6BZtQiNF0XvMyejT4MeXWM0SLMVDUfUA=;
-        b=Zi6nZ9GpELHTkxKkdUV4XR26G7G3D91QhuWiwal0eJ83vuFbpF6KjpjYRiiX2Ushqn
-         Nk/qwOVxZTW5xK7q3Iu2QXLrYq2GOkeXNgpsV2XePvaY1gQr/yDTQv0dE3iZLXBso4Sn
-         ROAw555myQBkQSVi5pQSA78FXYTi3GWOZVN3iU4aVMx/uzPn5K0CtyAB7LX3bhAfvm6Y
-         m/skz9OxYdrvFtojX6kguxVg7qsLLvCKc9deX3HNlWkcQM3LmgKVNlRaI6dr7cORgSgn
-         5n7y/PjEqxKtkz7i6y9Lo8DBLCWgXyZa76VA7kvto7j6wqPks9wvMjk39w79JRLvhpQI
-         Wpgg==
-X-Gm-Message-State: ACgBeo30VURK5gnP4Z7cmXFmL9fjXEtIac0IuBrZ5pMg2fb0JmCIO8N1
-	FUT/HZkCRXdkn9qkQ2+6/dUCvg==
-X-Google-Smtp-Source: AA6agR5AqhuPnCBKUHnmMMoOWG9kI43vIem/phxzSs6gDhTM24/CuEkLWk7/yQtSZJLhY720RHeSVw==
-X-Received: by 2002:a17:902:c94d:b0:16d:c10a:650e with SMTP id i13-20020a170902c94d00b0016dc10a650emr36139251pla.29.1662150220589;
-        Fri, 02 Sep 2022 13:23:40 -0700 (PDT)
-Received: from [192.168.1.136] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id z10-20020a62d10a000000b00535d094d6ecsm2197822pfg.108.2022.09.02.13.23.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Sep 2022 13:23:38 -0700 (PDT)
-Message-ID: <002ab1f2-078e-2bce-83a0-257a573b1f95@kernel.dk>
-Date: Fri, 2 Sep 2022 14:23:34 -0600
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0D34749E
+	for <iommu@lists.linux.dev>; Fri,  2 Sep 2022 22:59:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=att.net; s=s1024; t=1662159579; bh=nKSHGBjAyroFRynrG6UqfsUdY9Ao1irI3u5pc1BzlmY=; h=Date:From:Subject:To:Cc:References:From:Subject:Reply-To; b=vuuLLr6zqu7ngS2bg5yw4WU5jknWlLrVUMnYt3V8PqcAoIJTai330ANEhM3k3JsbW5ddYJndVBltt+RJqlX3UCyYQXl//Z+5q6K0RW2lQAoUpyLA+7O/pv20K3zZNk96u4bswZCjo0/OeNG2iVBiVgvVbesv8vFfU8snuabRnBc=
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1662159579; bh=dWs80AZ3RUeUoG1yhWIK+MMKEkL7aUH3g+dfl3KY7NR=; h=X-Sonic-MF:Date:From:Subject:To:From:Subject; b=ckUwk97Wm5gJd0yPEVgsv/5uiqzBmpWb76h0qFaoQG39OR3EeZMUgkAr88fz171ysbAImVlv4kbpKvFyIcRZuyebM+Bas5bCMudN21UxsGsjXVonMS4m+OEwG6ubH/dlTMdFmVkrHaSFNXyh3Ek+VQJKtLaTygfoMfmJUS3zBwlQOvTvt77qDQHwav3kThuLfqTFCZusArhoBfBDF7Po5+P7bbFQyqQqRazzlpPQmpFwDMx7Yt6wyk5KLJvrF5PpgJUIcvffsmc9l9v/XrthDKsNUK0We/kHXhvgyhqTuDBzt9NeVnWucUU140icq0RWe2z2wuWnRNtyciUC//fLJA==
+X-YMail-OSG: 3K2POysVM1m2_PZaAQOKnJH7oN7VnUqqU9bA3Gb1n10MklUYLoaXWdNfgcq8c9a
+ DwOQZtDYg8cwzVlW13fWPq_xpHQDPb.H3zls_5ijC5vzLIaofvw5I1_qYBT_8s5deOIEkPbim8qr
+ UVHz4D.IpPTe2HhtNIqhVPjp_mmM1xz_A8PRiAlrc73b5dZfOX5t8PA_Gd6b84CtLnhdDE.yk1rm
+ 66cSRWvX1M5aNFPt93mH5_v0wCzibTsbjtghOSUjKpjv9kyGrPtMQwe.2Kt7I2rEojeuFkw5M8.i
+ 0KNL3.43JJUIfpgopj4M81qGl5r6j2vAAJluMXSPK70nMI2406lFJ7_tCN_lDCUyOqlDtRsJcJKk
+ tUNt8C08gpR9flKsgVEuMuYwC.dFOK0hHn2EifN7_Of1Uc.kcj6EUGPsp.xQqiJBoT1Tmfmfs9jT
+ gL1ffK1j81WiOqd8DMff11hhTtFx3U6sAaElRN3hCU.bEKIxmJvGNvdvy.q1OtOAeELKUvOhUhZn
+ nnk6DMuShyaT9JpE6414Oe8NBuRMjll4gSRpDfzKszgxU9TuFdXYhw36rqKHrreM24ZNxATsWrD7
+ 65Bgyg2xw4f55XxbRYpDYliNINSm6nwvl74fwzGykX3RIOvMmCWcGb7cqe82mNsTR4GsVGp812mM
+ YH0Rk8p__FlPqjC5dE8uNSDRbAqmOX3C.ciF06PvLRWTSTrAty.7X9IpfYCXXyddRev3OHmR1BEP
+ A0gAhKkzv8il006wKtVkYt6DUFk3KODjKNfa8O3fTARoBS.lPVb6tv8AzinTGsV0SU6dKu8LAHNZ
+ 2qtYcF2uHBROm5A9NxYGHAIkUomi.UoOm6R4CGxZgAOST.vEjmBiPxATGnYbLM1uNGVpSM0zpMG6
+ R7EdQkZNS9AvLAFGwB3dkPrxKEzmsPAyTT63k7QZPqmWpCR1K4GuNKca9I8U6x2y5XDeGOyJegZQ
+ HmFvLGskiFPVGsbID6gqJG1P82J8MCdnSNQ7_LExq2hPcuss9wNpQLa3mWxbPDFA2g63kkS7QljY
+ mjLjvEvjDwRpirQQkw2Cce1wwjWBUJpLBoYEXQiVnEH_GNzlJNyoq202grUrtMxW4tDIpFkOy_Qc
+ H.Xmy18KVTfOXRWkQ7UfSgNgqDobsuUOkIQO3eEdtluhsNv5X8o68nnpwjffNWyaDKeDWZEICAkt
+ RHYbRvPWm.ZNyCzB715lNo6ghorNt4M4lcYCRQSmoJHZFrBetKz.m2qGYa51io8R.fZL3fWeWar9
+ UGb7CtQsE4cjnonwrgQx1OLejEbsz4KlFfjAZiPP9vs.fplx0RDCkq1kYazzPahFPNs77dKv5V8i
+ AIsgGo_VPUHECbdOGs4f59.0XdtMnGoCySyyqNyf2h0j.u_ZTVb37xvfZ6e8Smlgg20Vivpre6uF
+ lr8zsfp7ph0KqI7mRoIKmEsidoKsAjxpNIqQHdb8FLL9tkncXQjnlqMW3U9imwzDSjQs5ADyRmG3
+ Li7yePkhNX7wog_I1pPyP8xVNVop6bMxO3RVkP7F2vv3Vu_1PoVWRU_BSQfbL_iOxgt_gIik2OAQ
+ WFVqqmzvy2nz1eHIjQnXlbyhcnptaCwLZ39.Tnn9VQ.axuBL4FQfMSMIQkkEvGVl0GfqNkOiWanD
+ HPd73YIdVPpWxFPdVxFj_qUFOH2kiqF91E1Mjd2a7YrUetYNMsw8uvmb7oxoliMcR2IAKP60PkTF
+ fV5wc43ZMNh69LOptvL29a9qOcqpbv4GX4A785xplomPIJKHcnQP0d6Cvef0MCK1TywW68vn3csh
+ 1rTGZ2ovsaTmgmonDdhGq1hZhSH9TedM.T9A4dOQegS33_7Hy7mFHduAegAxF0DGVR8ybvA0B0q2
+ hqYm0IoJXRxB1Synh0rKG5gDTcTt5ZwLn31HnbZwydhr239z5L0rUwgD98VZGgOs6GCCCXBVocca
+ ln5x__V4Re5RAeJSXZKpYXABLkj8jPb0DKCPMd70eo80iCH06EfcGl.dqMsvJk8XM6sG1oYSEwj7
+ 0MIVvCSQlFSY70m.3TpnLQFu_k0fmncrnLXRTjJBg2S0uDIcfQXTwiUEm78L9fT8Nuc4LMiky6Yu
+ 2N0t1J0rhTQFeVvcz.uUSkwPO9GDPBPSENjEWCZEMWqY3N5I1svQBtK7giQTPurfPYw0prdXW.D5
+ nW.S9qN5ZlFcFZgbUvO6R_i0OOct1gXirXY7hTYupuES2CZ9KL.MLmE9uniKpHeX3PUEdl7yTBDo
+ VsEBtfoabwpAgMULwea7F
+X-Sonic-MF: <pheonix.sja@att.net>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic304.consmr.mail.ne1.yahoo.com with HTTP; Fri, 2 Sep 2022 22:59:39 +0000
+Received: by hermes--production-ne1-544744cc75-m5z2t (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 77a559a4d5ac38d1243fce6e938f8241;
+          Fri, 02 Sep 2022 22:59:36 +0000 (UTC)
+Date: Fri, 02 Sep 2022 18:59:30 -0400
+From: Steven J Abner <pheonix.sja@att.net>
+Subject: amd iommu configuration
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	iommu@lists.linux.dev
+Message-Id: <6JULHR.A756AJXX1SBV2@att.net>
+X-Mailer: geary/3.36.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
-Content-Language: en-US
-To: Kent Overstreet <kent.overstreet@linux.dev>
-Cc: Roman Gushchin <roman.gushchin@linux.dev>,
- Yosry Ahmed <yosryahmed@google.com>, Michal Hocko <mhocko@suse.com>,
- Mel Gorman <mgorman@suse.de>, Peter Zijlstra <peterz@infradead.org>,
- Suren Baghdasaryan <surenb@google.com>,
- Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>,
- Johannes Weiner <hannes@cmpxchg.org>, dave@stgolabs.net,
- Matthew Wilcox <willy@infradead.org>, liam.howlett@oracle.com,
- void@manifault.com, juri.lelli@redhat.com, ldufour@linux.ibm.com,
- Peter Xu <peterx@redhat.com>, David Hildenbrand <david@redhat.com>,
- mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org,
- changbin.du@intel.com, ytcoode@gmail.com, vincent.guittot@linaro.org,
- dietmar.eggemann@arm.com, Steven Rostedt <rostedt@goodmis.org>,
- bsegall@google.com, bristot@redhat.com, vschneid@redhat.com,
- Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>,
- Joonsoo Kim <iamjoonsoo.kim@lge.com>, 42.hyeyoo@gmail.com,
- glider@google.com, elver@google.com, dvyukov@google.com,
- Shakeel Butt <shakeelb@google.com>, Muchun Song <songmuchun@bytedance.com>,
- arnd@arndb.de, jbaron@akamai.com, David Rientjes <rientjes@google.com>,
- minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
- Linux-MM <linux-mm@kvack.org>, iommu@lists.linux.dev,
- kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
- linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
- linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
- <CAJD7tkaev9B=UDYj2RL6pz-1454J8tv4gEr9y-2dnCksoLK0bw@mail.gmail.com>
- <YxExz+c1k3nbQMh4@P9FQF9L96D.corp.robot.car>
- <20220901223720.e4gudprscjtwltif@moria.home.lan>
- <YxE4BXw5i+BkxxD8@P9FQF9L96D.corp.robot.car>
- <20220902001747.qqsv2lzkuycffuqe@moria.home.lan>
- <YxFWrka+Wx0FfLXU@P9FQF9L96D.lan>
- <3a41b9fc-05f1-3f56-ecd0-70b9a2912a31@kernel.dk>
- <20220902194839.xqzgsoowous72jkz@moria.home.lan>
- <d5526090-0380-a586-40e1-7b3bb6fe6fb8@kernel.dk>
- <20220902200555.h5fyamst6lyamjnw@moria.home.lan>
-From: Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <20220902200555.h5fyamst6lyamjnw@moria.home.lan>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+References: <6JULHR.A756AJXX1SBV2.ref@att.net>
 
-On 9/2/22 2:05 PM, Kent Overstreet wrote:
-> On Fri, Sep 02, 2022 at 01:53:53PM -0600, Jens Axboe wrote:
->> I've complained about memcg accounting before, the slowness of it is why
->> io_uring works around it by caching. Anything we account we try NOT do
->> in the fast path because of it, the slowdown is considerable.
-> 
-> I'm with you on that, it definitely raises an eyebrow.
-> 
->> You care about efficiency now? I thought that was relegated to
->> irrelevant 10M IOPS cases.
-> 
-> I always did, it's just not the only thing I care about.
+Hi
+I was referred to you from linux-kernel@vger.kernel.org about the 
+following issue.
+Here is as was written:
+On 9/1/22 11:36, Steven J Abner wrote:
+ Hi
+ Building a kernel tailored for AMD 2400g on ASRock B450 using 5.18.12 
+as base.
+ I stumbled across an odd situation and which lacked Kconfig info and 
+lead to oddity.
+ /drivers/iommu/amd/Kconfig states 'config AMD_IOMMU_V2' is 'tristate' 
+but unlike many
+ other tristate configures doesn't mention that module name is 
+'iommu_v2.ko' and loading should be done by adding to modules-load.d.
 
-It's not the only thing anyone cares about.
+ The oddity is that by loading as module is as follows (differences):
 
--- 
-Jens Axboe
+ builtin iommu_v2 version dmesg:
+ amdgpu: HMM registered 2048MB device memory
+ amdgpu: Topology: Add APU node [0x0:0x0]
+ amdgpu: Topology: Add APU node [0x15dd:0x1002]
+ AMD-Vi: AMD IOMMUv2 loaded and initialized
+ kfd kfd: amdgpu: added device 1002:15dd
+ kfd kfd: amdgpu: Allocated 3969056 bytes on gart
+ memmap_init_zone_device initialised 524288 pages in 0ms
+
+ module not loaded due to missing iommu.conf dmesg:
+ amdgpu: CRAT table disabled by module option
+ amdgpu: Topology: Add CPU node
+ amdgpu: Virtual CRAT table created for CPU
+ kfd kfd: amdgpu: GC IP 090100 not supported in kfd
+
+ module load through iommu.conf dmesg:
+ amdgpu: CRAT table disabled by module option
+ amdgpu: Topology: Add CPU node
+ amdgpu: Virtual CRAT table created for CPU
+ AMD-Vi: AMD IOMMUv2 loaded and initialized
+ kfd kfd: amdgpu: GC IP 090100 not supported in kfd
+
+ Note, only difference on witk/without iommu.conf is:
+ AMD-Vi: AMD IOMMUv2 loaded and initialized
+
+ So does this mean missing features by not having builtin?
+ If not, should Kconfig have hint about module and loading?
+
+ Steve
+
+ I wish to be personally CC'ed the answers/comments posted to the list
+ in response to my posting, please:) Not a list member.
+
+I hope you can assist linux people and myself. I assumed from dmesg that
+it must be builtin. But also wonder if it should be in amdgpu or tied 
+to it.
+Steve
+
+
