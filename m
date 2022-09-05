@@ -1,765 +1,491 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-io1-f41.google.com (mail-io1-f41.google.com [209.85.166.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F000823A9
-	for <iommu@lists.linux.dev>; Sun,  4 Sep 2022 08:19:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662279552; x=1693815552;
-  h=message-id:date:mime-version:cc:to:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=UpbzzkpnNGwmUEOL09TiD5tM8A03p04PBzBV6ZKTPx0=;
-  b=iV0uX0tNKh06X/C1KTG0axEPQECY0XaBNq1QjrbQyH7M4xgm9iCb84LA
-   fwWYF8EMhsdgpxyD5vQV8i9/f+lpEo6mX9fG3idE9AC6G/JB7s4oViXuY
-   IPPY08PaJek14aAUDwAk/lbFAWvqVPg0WQW+dIeCDZ7wRr2BjZKKcKPb5
-   AL1HsiQ29w1S5G/zeVVwZtE2LT+pueFrqM8E0fgM/PrS5JldX6s74cTvs
-   Nw9cTizmmez3mcWBWRjbjy3kjBEgk3jWHxl99hhXNquWX1x5ChsmZ8rqK
-   IHcCUmaDNNh09MAD6VM+1KG6gfP1IM2UmeBUSv3mpLX5NpCbt8sLTmm6o
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10459"; a="360176978"
-X-IronPort-AV: E=Sophos;i="5.93,288,1654585200"; 
-   d="scan'208";a="360176978"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2022 01:19:12 -0700
-X-IronPort-AV: E=Sophos;i="5.93,288,1654585200"; 
-   d="scan'208";a="590551607"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.214.77]) ([10.254.214.77])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2022 01:19:06 -0700
-Message-ID: <fa14cc8b-6038-1f4f-e1ac-1e28f913529a@linux.intel.com>
-Date: Sun, 4 Sep 2022 16:19:04 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5037615A7
+	for <iommu@lists.linux.dev>; Mon,  5 Sep 2022 01:33:11 +0000 (UTC)
+Received: by mail-io1-f41.google.com with SMTP id 62so5888882iov.5
+        for <iommu@lists.linux.dev>; Sun, 04 Sep 2022 18:33:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=2RluQjqzTIUHmUhPkFaAucreOiCVZIKJVjpKNDHkTVI=;
+        b=Q2SFjmrk55zpV9cBG3THFMLDJmuoc/8nrQ9p1qSD4f3cKratTElhXWpwlJpzLyLGdB
+         dUdJn77SvWYU1bP95CNfftS8y/vUZXmtUUk048r8ICfLieWVmDGDmUW5u9pFn0Wimb2+
+         fjqU5NekUrHLRJIhO6WL/TlQwCGPS6j156hXfsaJx7lHdSgwEnbb8DWRFk8q7xjioT1t
+         iG+0L8yNs39bpjd/CsZ4HREZ9tLgN3o/zOan5zEv/n3CDSIzOP4LnKLk4WpSk4BU0yEP
+         4AYwp1478Pf1dFxHmYXmnh+61qZlMLJPPjkGYHj5zdiNAcoW1tZU++xE8S7Db8in70AK
+         L7BQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=2RluQjqzTIUHmUhPkFaAucreOiCVZIKJVjpKNDHkTVI=;
+        b=O+g8ljF+RH27HwnFw5hnyFQ2IgjLqtVzixPQwran8TvqfgdFrO/iI1DEy6TVn3U0tf
+         dlohnsi+4EM2t4vtRk/eUqEVYc2dVi21qjStX07RZVMjlpK82KqDBJGRCGU5Zcm6clVQ
+         0BWhtbjClacOelMv8cR5SctKDThXTfHUG0pxAbQRR9wBCCru8ThxfntyT1Put1wkNJ1K
+         46Hqr9KU3m77LPhLOsi/fDhWqKfSARaMUm4VIXBxmYR+dgHf2BphlUDQS15eHmI5lCpA
+         QR91H9CLyl/n9SC2Ao4zwlPT2ahtVkGkTZHvhhAjFfANnpN2EV5UZY4mkfa9DJSLaXKv
+         3MEw==
+X-Gm-Message-State: ACgBeo2dwkfOSQ6DpEUVGBfafSk/BJaKCuRsmVcOskqOMttNP9Wo7hyb
+	0w/EWwXdhFuX028JNDScfY0kYQDE1rlFly/mNIfaJA==
+X-Google-Smtp-Source: AA6agR5tFRVsPv1w5HQVwvNXMwt9PQzl6OY2wrpjmNL5au6axj2vXUaHdVOAmgfDNm2JaHEXPkzVG4QoN+UeQErwqKQ=
+X-Received: by 2002:a02:7b19:0:b0:34a:74d:118 with SMTP id q25-20020a027b19000000b0034a074d0118mr23960434jac.62.1662341590010;
+ Sun, 04 Sep 2022 18:33:10 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Cc: baolu.lu@linux.intel.com, Alex Williamson <alex.williamson@redhat.com>,
- Chaitanya Kulkarni <chaitanyak@nvidia.com>, Cornelia Huck
- <cohuck@redhat.com>, Daniel Jordan <daniel.m.jordan@oracle.com>,
- David Gibson <david@gibson.dropbear.id.au>,
- Eric Auger <eric.auger@redhat.com>, Eric Farman <farman@linux.ibm.com>,
- iommu@lists.linux.dev, Jason Wang <jasowang@redhat.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Joao Martins <joao.m.martins@oracle.com>, Kevin Tian <kevin.tian@intel.com>,
- kvm@vger.kernel.org, Matthew Rosato <mjrosato@linux.ibm.com>,
- "Michael S. Tsirkin" <mst@redhat.com>, Nicolin Chen <nicolinc@nvidia.com>,
- Niklas Schnelle <schnelle@linux.ibm.com>,
- Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <3-v2-f9436d0bde78+4bb-iommufd_jgg@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH RFC v2 03/13] iommufd: File descriptor, context, kconfig
- and makefiles
-In-Reply-To: <3-v2-f9436d0bde78+4bb-iommufd_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220830214919.53220-1-surenb@google.com> <Yw8P8xZ4zqu121xL@hirez.programming.kicks-ass.net>
+ <20220831084230.3ti3vitrzhzsu3fs@moria.home.lan> <20220831101948.f3etturccmp5ovkl@suse.de>
+ <Yw88RFuBgc7yFYxA@dhcp22.suse.cz> <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
+ <YxBc1xuGbB36f8zC@dhcp22.suse.cz> <CAJuCfpGhwPFYdkOLjwwD4ra9JxPqq1T5d1jd41Jy3LJnVnhNdg@mail.gmail.com>
+ <YxEE1vOwRPdzKxoq@dhcp22.suse.cz>
+In-Reply-To: <YxEE1vOwRPdzKxoq@dhcp22.suse.cz>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Sun, 4 Sep 2022 18:32:58 -0700
+Message-ID: <CAJuCfpFrRwXXQ=wAvZ-oUNKXUJ=uUA=fiDrkhRu5VGXcM+=cuA@mail.gmail.com>
+Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
+To: Michal Hocko <mhocko@suse.com>
+Cc: Kent Overstreet <kent.overstreet@linux.dev>, Mel Gorman <mgorman@suse.de>, 
+	Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, 
+	Vlastimil Babka <vbabka@suse.cz>, Johannes Weiner <hannes@cmpxchg.org>, 
+	Roman Gushchin <roman.gushchin@linux.dev>, Davidlohr Bueso <dave@stgolabs.net>, 
+	Matthew Wilcox <willy@infradead.org>, "Liam R. Howlett" <liam.howlett@oracle.com>, 
+	David Vernet <void@manifault.com>, Juri Lelli <juri.lelli@redhat.com>, 
+	Laurent Dufour <ldufour@linux.ibm.com>, Peter Xu <peterx@redhat.com>, 
+	David Hildenbrand <david@redhat.com>, Jens Axboe <axboe@kernel.dk>, mcgrof@kernel.org, 
+	masahiroy@kernel.org, nathan@kernel.org, changbin.du@intel.com, 
+	ytcoode@gmail.com, Vincent Guittot <vincent.guittot@linaro.org>, 
+	Dietmar Eggemann <dietmar.eggemann@arm.com>, Steven Rostedt <rostedt@goodmis.org>, 
+	Benjamin Segall <bsegall@google.com>, Daniel Bristot de Oliveira <bristot@redhat.com>, 
+	Valentin Schneider <vschneid@redhat.com>, Christopher Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, 
+	Joonsoo Kim <iamjoonsoo.kim@lge.com>, 42.hyeyoo@gmail.com, 
+	Alexander Potapenko <glider@google.com>, Marco Elver <elver@google.com>, Dmitry Vyukov <dvyukov@google.com>, 
+	Shakeel Butt <shakeelb@google.com>, Muchun Song <songmuchun@bytedance.com>, arnd@arndb.de, 
+	jbaron@akamai.com, David Rientjes <rientjes@google.com>, Minchan Kim <minchan@google.com>, 
+	Kalesh Singh <kaleshsingh@google.com>, kernel-team <kernel-team@android.com>, 
+	linux-mm <linux-mm@kvack.org>, iommu@lists.linux.dev, kasan-dev@googlegroups.com, 
+	io-uring@vger.kernel.org, linux-arch@vger.kernel.org, 
+	xen-devel@lists.xenproject.org, linux-bcache@vger.kernel.org, 
+	linux-modules@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-On 2022/9/3 3:59, Jason Gunthorpe wrote:
-> This is the basic infrastructure of a new miscdevice to hold the iommufd
-> IOCTL API.
-> 
-> It provides:
->   - A miscdevice to create file descriptors to run the IOCTL interface over
-> 
->   - A table based ioctl dispatch and centralized extendable pre-validation
->     step.
-> 
->   - An xarray mapping user ID's to kernel objects. The design has multiple
->     inter-related objects held within in a single IOMMUFD fd
-> 
->   - A simple usage count to build a graph of object relations and protect
->     against hostile userspace racing ioctls
-> 
-> The only IOCTL provided in this patch is the generic 'destroy any object
-> by handle' operation.
-> 
-> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->   .../userspace-api/ioctl/ioctl-number.rst      |   1 +
->   MAINTAINERS                                   |  10 +
->   drivers/iommu/Kconfig                         |   1 +
->   drivers/iommu/Makefile                        |   2 +-
->   drivers/iommu/iommufd/Kconfig                 |  13 +
->   drivers/iommu/iommufd/Makefile                |   5 +
->   drivers/iommu/iommufd/iommufd_private.h       | 110 ++++++
->   drivers/iommu/iommufd/main.c                  | 345 ++++++++++++++++++
->   include/linux/iommufd.h                       |  31 ++
->   include/uapi/linux/iommufd.h                  |  55 +++
->   10 files changed, 572 insertions(+), 1 deletion(-)
->   create mode 100644 drivers/iommu/iommufd/Kconfig
->   create mode 100644 drivers/iommu/iommufd/Makefile
->   create mode 100644 drivers/iommu/iommufd/iommufd_private.h
->   create mode 100644 drivers/iommu/iommufd/main.c
->   create mode 100644 include/linux/iommufd.h
->   create mode 100644 include/uapi/linux/iommufd.h
-> 
-> diff --git a/Documentation/userspace-api/ioctl/ioctl-number.rst b/Documentation/userspace-api/ioctl/ioctl-number.rst
-> index 3b985b19f39d12..4387e787411ebe 100644
-> --- a/Documentation/userspace-api/ioctl/ioctl-number.rst
-> +++ b/Documentation/userspace-api/ioctl/ioctl-number.rst
-> @@ -105,6 +105,7 @@ Code  Seq#    Include File                                           Comments
->   '8'   all                                                            SNP8023 advanced NIC card
->                                                                        <mailto:mcr@solidum.com>
->   ';'   64-7F  linux/vfio.h
-> +';'   80-FF  linux/iommufd.h
->   '='   00-3f  uapi/linux/ptp_clock.h                                  <mailto:richardcochran@gmail.com>
->   '@'   00-0F  linux/radeonfb.h                                        conflict!
->   '@'   00-0F  drivers/video/aty/aty128fb.c                            conflict!
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 589517372408ca..abd041f5e00f4c 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -10609,6 +10609,16 @@ L:	linux-mips@vger.kernel.org
->   S:	Maintained
->   F:	drivers/net/ethernet/sgi/ioc3-eth.c
->   
-> +IOMMU FD
-> +M:	Jason Gunthorpe <jgg@nvidia.com>
-> +M:	Kevin Tian <kevin.tian@intel.com>
-> +L:	iommu@lists.linux-foundation.org
+On Thu, Sep 1, 2022 at 12:15 PM Michal Hocko <mhocko@suse.com> wrote:
+>
+> On Thu 01-09-22 08:33:19, Suren Baghdasaryan wrote:
+> > On Thu, Sep 1, 2022 at 12:18 AM Michal Hocko <mhocko@suse.com> wrote:
+> [...]
+> > > So I find Peter's question completely appropriate while your response to
+> > > that not so much! Maybe ftrace is not the right tool for the intented
+> > > job. Maybe there are other ways and it would be really great to show
+> > > that those have been evaluated and they are not suitable for a), b) and
+> > > c) reasons.
+> >
+> > That's fair.
+> > For memory tracking I looked into using kmemleak and page_owner which
+> > can't match the required functionality at an overhead acceptable for
+> > production and pre-production testing environments.
+>
+> Being more specific would be really helpful. Especially when your cover
+> letter suggests that you rely on page_owner/memcg metadata as well to
+> match allocation and their freeing parts.
+>
+> > traces + BPF I
+> > haven't evaluated myself but heard from other members of my team who
+> > tried using that in production environment with poor results. I'll try
+> > to get more specific information on that.
+>
+> That would be helpful as well.
+>
+> > > E.g. Oscar has been working on extending page_ext to track number of
+> > > allocations for specific calltrace[1]. Is this 1:1 replacement? No! But
+> > > it can help in environments where page_ext can be enabled and it is
+> > > completely non-intrusive to the MM code.
+> >
+> > Thanks for pointing out this work. I'll need to review and maybe
+> > profile it before making any claims.
+> >
+> > >
+> > > If the page_ext overhead is not desirable/acceptable then I am sure
+> > > there are other options. E.g. kprobes/LivePatching framework can hook
+> > > into functions and alter their behavior. So why not use that for data
+> > > collection? Has this been evaluated at all?
+> >
+> > I'm not sure how I can hook into say alloc_pages() to find out where
+> > it was called from without capturing the call stack (which would
+> > introduce an overhead at every allocation). Would love to discuss this
+> > or other alternatives if they can be done with low enough overhead.
+>
+> Yes, tracking back the call trace would be really needed. The question
+> is whether this is really prohibitively expensive. How much overhead are
+> we talking about? There is no free lunch here, really.  You either have
+> the overhead during runtime when the feature is used or on the source
+> code level for all the future development (with a maze of macros and
+> wrappers).
 
-This mailing list has already been replaced with iommu@lists.linux.dev.
+As promised, I profiled a simple code that repeatedly makes 10
+allocations/frees in a loop and measured overheads of code tagging,
+call stack capturing and tracing+BPF for page and slab allocations.
+Summary:
 
-> +S:	Maintained
-> +F:	Documentation/userspace-api/iommufd.rst
-> +F:	drivers/iommu/iommufd/
-> +F:	include/uapi/linux/iommufd.h
-> +F:	include/linux/iommufd.h
-> +
->   IOMAP FILESYSTEM LIBRARY
->   M:	Christoph Hellwig <hch@infradead.org>
->   M:	Darrick J. Wong <djwong@kernel.org>
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index 5c5cb5bee8b626..9ff3d2830f9559 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -177,6 +177,7 @@ config MSM_IOMMU
->   
->   source "drivers/iommu/amd/Kconfig"
->   source "drivers/iommu/intel/Kconfig"
-> +source "drivers/iommu/iommufd/Kconfig"
->   
->   config IRQ_REMAP
->   	bool "Support for Interrupt Remapping"
-> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-> index 44475a9b3eeaf9..6d2bc288324704 100644
-> --- a/drivers/iommu/Makefile
-> +++ b/drivers/iommu/Makefile
-> @@ -1,5 +1,5 @@
->   # SPDX-License-Identifier: GPL-2.0
-> -obj-y += amd/ intel/ arm/
-> +obj-y += amd/ intel/ arm/ iommufd/
->   obj-$(CONFIG_IOMMU_API) += iommu.o
->   obj-$(CONFIG_IOMMU_API) += iommu-traces.o
->   obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
-> diff --git a/drivers/iommu/iommufd/Kconfig b/drivers/iommu/iommufd/Kconfig
-> new file mode 100644
-> index 00000000000000..fddd453bb0e764
-> --- /dev/null
-> +++ b/drivers/iommu/iommufd/Kconfig
-> @@ -0,0 +1,13 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> +config IOMMUFD
-> +	tristate "IOMMU Userspace API"
-> +	select INTERVAL_TREE
-> +	select IOMMU_API
-> +	default n
-> +	help
-> +	  Provides /dev/iommu the user API to control the IOMMU subsystem as
-> +	  it relates to managing IO page tables that point at user space memory.
-> +
-> +	  This would commonly be used in combination with VFIO.
-> +
-> +	  If you don't know what to do here, say N.
-> diff --git a/drivers/iommu/iommufd/Makefile b/drivers/iommu/iommufd/Makefile
-> new file mode 100644
-> index 00000000000000..a07a8cffe937c6
-> --- /dev/null
-> +++ b/drivers/iommu/iommufd/Makefile
-> @@ -0,0 +1,5 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> +iommufd-y := \
-> +	main.o
-> +
-> +obj-$(CONFIG_IOMMUFD) += iommufd.o
-> diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-> new file mode 100644
-> index 00000000000000..a65208d6442be7
-> --- /dev/null
-> +++ b/drivers/iommu/iommufd/iommufd_private.h
-> @@ -0,0 +1,110 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
-> + */
-> +#ifndef __IOMMUFD_PRIVATE_H
-> +#define __IOMMUFD_PRIVATE_H
-> +
-> +#include <linux/rwsem.h>
-> +#include <linux/xarray.h>
-> +#include <linux/refcount.h>
-> +#include <linux/uaccess.h>
-> +
-> +struct iommufd_ctx {
-> +	struct file *file;
-> +	struct xarray objects;
-> +};
-> +
-> +struct iommufd_ctx *iommufd_fget(int fd);
-> +
-> +struct iommufd_ucmd {
-> +	struct iommufd_ctx *ictx;
-> +	void __user *ubuffer;
-> +	u32 user_size;
-> +	void *cmd;
-> +};
-> +
-> +/* Copy the response in ucmd->cmd back to userspace. */
-> +static inline int iommufd_ucmd_respond(struct iommufd_ucmd *ucmd,
-> +				       size_t cmd_len)
-> +{
-> +	if (copy_to_user(ucmd->ubuffer, ucmd->cmd,
-> +			 min_t(size_t, ucmd->user_size, cmd_len)))
-> +		return -EFAULT;
-> +	return 0;
-> +}
-> +
-> +enum iommufd_object_type {
-> +	IOMMUFD_OBJ_NONE,
-> +	IOMMUFD_OBJ_ANY = IOMMUFD_OBJ_NONE,
-> +};
-> +
-> +/* Base struct for all objects with a userspace ID handle. */
-> +struct iommufd_object {
-> +	struct rw_semaphore destroy_rwsem;
-> +	refcount_t users;
-> +	enum iommufd_object_type type;
-> +	unsigned int id;
-> +};
-> +
-> +static inline bool iommufd_lock_obj(struct iommufd_object *obj)
-> +{
-> +	if (!down_read_trylock(&obj->destroy_rwsem))
-> +		return false;
-> +	if (!refcount_inc_not_zero(&obj->users)) {
-> +		up_read(&obj->destroy_rwsem);
-> +		return false;
-> +	}
-> +	return true;
-> +}
-> +
-> +struct iommufd_object *iommufd_get_object(struct iommufd_ctx *ictx, u32 id,
-> +					  enum iommufd_object_type type);
-> +static inline void iommufd_put_object(struct iommufd_object *obj)
-> +{
-> +	refcount_dec(&obj->users);
-> +	up_read(&obj->destroy_rwsem);
-> +}
-> +
-> +/**
-> + * iommufd_put_object_keep_user() - Release part of the refcount on obj
-> + * @obj - Object to release
-> + *
-> + * Objects have two protections to ensure that userspace has a consistent
-> + * experience with destruction. Normally objects are locked so that destroy will
-> + * block while there are concurrent users, and wait for the object to be
-> + * unlocked.
-> + *
-> + * However, destroy can also be blocked by holding users reference counts on the
-> + * objects, in that case destroy will immediately return EBUSY and will not wait
-> + * for reference counts to go to zero.
-> + *
-> + * This function releases the destroy lock and destroy will return EBUSY.
+Page allocations (overheads are compared to get_free_pages() duration):
+6.8% Codetag counter manipulations (__lazy_percpu_counter_add + __alloc_tag_add)
+8.8% lookup_page_ext
+1237% call stack capture
+139% tracepoint with attached empty BPF program
 
-This reads odd. Does it release or acquire a destroy lock.
+Slab allocations (overheads are compared to __kmalloc() duration):
+With CONFIG_MEMCG_KMEM=y
+39% Codetag counter manipulations(__lazy_percpu_counter_add + __alloc_tag_add)
+55% get_slab_tag_ref
+3.9% __ksize
+3027% call stack capture
+397% tracepoint with attached empty BPF program
 
-> + *
-> + * It should be used in places where the users will be held beyond a single
-> + * system call.
-> + */
-> +static inline void iommufd_put_object_keep_user(struct iommufd_object *obj)
-> +{
-> +	up_read(&obj->destroy_rwsem);
-> +}
-> +void iommufd_object_abort(struct iommufd_ctx *ictx, struct iommufd_object *obj);
-> +void iommufd_object_abort_and_destroy(struct iommufd_ctx *ictx,
-> +				      struct iommufd_object *obj);
-> +void iommufd_object_finalize(struct iommufd_ctx *ictx,
-> +			     struct iommufd_object *obj);
-> +bool iommufd_object_destroy_user(struct iommufd_ctx *ictx,
-> +				 struct iommufd_object *obj);
-> +struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
-> +					     size_t size,
-> +					     enum iommufd_object_type type);
-> +
-> +#define iommufd_object_alloc(ictx, ptr, type)                                  \
-> +	container_of(_iommufd_object_alloc(                                    \
-> +			     ictx,                                             \
-> +			     sizeof(*(ptr)) + BUILD_BUG_ON_ZERO(               \
-> +						      offsetof(typeof(*(ptr)), \
-> +							       obj) != 0),     \
-> +			     type),                                            \
-> +		     typeof(*(ptr)), obj)
-> +
-> +#endif
-> diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-> new file mode 100644
-> index 00000000000000..a5b1e2302ba59d
-> --- /dev/null
-> +++ b/drivers/iommu/iommufd/main.c
-> @@ -0,0 +1,345 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/* Copyright (C) 2021 Intel Corporation
-> + * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
-> + *
-> + * iommfd provides control over the IOMMU HW objects created by IOMMU kernel
-       ^^^^^^ iommufd
+With CONFIG_MEMCG_KMEM=n
+26% Codetag counter manipulation(__lazy_percpu_counter_add + __alloc_tag_add)
+72% get_slab_tag_ref
+7.4% __ksize
+2789% call stack capture
+345% tracepoint with attached empty BPF program
 
-> + * drivers. IOMMU HW objects revolve around IO page tables that map incoming DMA
-> + * addresses (IOVA) to CPU addresses.
-> + *
-> + * The API is divided into a general portion that is intended to work with any
-> + * kernel IOMMU driver, and a device specific portion that  is intended to be
-> + * used with a userspace HW driver paired with the specific kernel driver. This
-> + * mechanism allows all the unique functionalities in individual IOMMUs to be
-> + * exposed to userspace control.
-> + */
-> +#define pr_fmt(fmt) "iommufd: " fmt
-> +
-> +#include <linux/file.h>
-> +#include <linux/fs.h>
-> +#include <linux/module.h>
-> +#include <linux/slab.h>
-> +#include <linux/miscdevice.h>
-> +#include <linux/mutex.h>
-> +#include <linux/bug.h>
-> +#include <uapi/linux/iommufd.h>
-> +#include <linux/iommufd.h>
-> +
-> +#include "iommufd_private.h"
-> +
-> +struct iommufd_object_ops {
-> +	void (*destroy)(struct iommufd_object *obj);
-> +};
-> +static struct iommufd_object_ops iommufd_object_ops[];
-> +
-> +struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
-> +					     size_t size,
-> +					     enum iommufd_object_type type)
-> +{
-> +	struct iommufd_object *obj;
-> +	int rc;
-> +
-> +	obj = kzalloc(size, GFP_KERNEL_ACCOUNT);
-> +	if (!obj)
-> +		return ERR_PTR(-ENOMEM);
-> +	obj->type = type;
-> +	init_rwsem(&obj->destroy_rwsem);
-> +	refcount_set(&obj->users, 1);
-> +
-> +	/*
-> +	 * Reserve an ID in the xarray but do not publish the pointer yet since
-> +	 * the caller hasn't initialized it yet. Once the pointer is published
-> +	 * in the xarray and visible to other threads we can't reliably destroy
-> +	 * it anymore, so the caller must complete all errorable operations
-> +	 * before calling iommufd_object_finalize().
-> +	 */
-> +	rc = xa_alloc(&ictx->objects, &obj->id, XA_ZERO_ENTRY,
-> +		      xa_limit_32b, GFP_KERNEL_ACCOUNT);
-> +	if (rc)
-> +		goto out_free;
-> +	return obj;
-> +out_free:
-> +	kfree(obj);
-> +	return ERR_PTR(rc);
-> +}
-> +
-> +/*
-> + * Allow concurrent access to the object. This should only be done once the
-> + * system call that created the object is guaranteed to succeed.
-> + */
-> +void iommufd_object_finalize(struct iommufd_ctx *ictx,
-> +			     struct iommufd_object *obj)
-> +{
-> +	void *old;
-> +
-> +	old = xa_store(&ictx->objects, obj->id, obj, GFP_KERNEL);
-> +	/* obj->id was returned from xa_alloc() so the xa_store() cannot fail */
-> +	WARN_ON(old);
-> +}
-> +
-> +/* Undo _iommufd_object_alloc() if iommufd_object_finalize() was not called */
-> +void iommufd_object_abort(struct iommufd_ctx *ictx, struct iommufd_object *obj)
-> +{
-> +	void *old;
-> +
-> +	old = xa_erase(&ictx->objects, obj->id);
-> +	WARN_ON(old);
-> +	kfree(obj);
-> +}
-> +
-> +/*
-> + * Abort an object that has been fully initialized and needs destroy, but has
-> + * not been finalized.
-> + */
-> +void iommufd_object_abort_and_destroy(struct iommufd_ctx *ictx,
-> +				      struct iommufd_object *obj)
-> +{
-> +	iommufd_object_ops[obj->type].destroy(obj);
-> +	iommufd_object_abort(ictx, obj);
-> +}
-> +
-> +struct iommufd_object *iommufd_get_object(struct iommufd_ctx *ictx, u32 id,
-> +					  enum iommufd_object_type type)
-> +{
-> +	struct iommufd_object *obj;
-> +
-> +	xa_lock(&ictx->objects);
-> +	obj = xa_load(&ictx->objects, id);
-> +	if (!obj || (type != IOMMUFD_OBJ_ANY && obj->type != type) ||
-> +	    !iommufd_lock_obj(obj))
-> +		obj = ERR_PTR(-ENOENT);
-> +	xa_unlock(&ictx->objects);
-> +	return obj;
-> +}
-> +
-> +/*
-> + * The caller holds a users refcount and wants to destroy the object. Returns
-> + * true if the object was destroyed. In all cases the caller no longer has a
-> + * reference on obj.
-> + */
-> +bool iommufd_object_destroy_user(struct iommufd_ctx *ictx,
-> +				 struct iommufd_object *obj)
-> +{
-> +	/*
-> +	 * The purpose of the destroy_rwsem is to ensure deterministic
-> +	 * destruction of objects used by external drivers and destroyed by this
-> +	 * function. Any temporary increment of the refcount must hold the read
-> +	 * side of this, such as during ioctl execution.
-> +	 */
-> +	down_write(&obj->destroy_rwsem);
-> +	xa_lock(&ictx->objects);
-> +	refcount_dec(&obj->users);
-> +	if (!refcount_dec_if_one(&obj->users)) {
-> +		xa_unlock(&ictx->objects);
-> +		up_write(&obj->destroy_rwsem);
-> +		return false;
-> +	}
-> +	__xa_erase(&ictx->objects, obj->id);
-> +	xa_unlock(&ictx->objects);
-> +	up_write(&obj->destroy_rwsem);
-> +
-> +	iommufd_object_ops[obj->type].destroy(obj);
-> +	kfree(obj);
-> +	return true;
-> +}
-> +
-> +static int iommufd_destroy(struct iommufd_ucmd *ucmd)
-> +{
-> +	struct iommu_destroy *cmd = ucmd->cmd;
-> +	struct iommufd_object *obj;
-> +
-> +	obj = iommufd_get_object(ucmd->ictx, cmd->id, IOMMUFD_OBJ_ANY);
-> +	if (IS_ERR(obj))
-> +		return PTR_ERR(obj);
-> +	iommufd_put_object_keep_user(obj);
-> +	if (!iommufd_object_destroy_user(ucmd->ictx, obj))
-> +		return -EBUSY;
-> +	return 0;
-> +}
-> +
-> +static int iommufd_fops_open(struct inode *inode, struct file *filp)
-> +{
-> +	struct iommufd_ctx *ictx;
-> +
-> +	ictx = kzalloc(sizeof(*ictx), GFP_KERNEL_ACCOUNT);
-> +	if (!ictx)
-> +		return -ENOMEM;
-> +
-> +	xa_init_flags(&ictx->objects, XA_FLAGS_ALLOC1 | XA_FLAGS_ACCOUNT);
-> +	ictx->file = filp;
-> +	filp->private_data = ictx;
-> +	return 0;
-> +}
-> +
-> +static int iommufd_fops_release(struct inode *inode, struct file *filp)
-> +{
-> +	struct iommufd_ctx *ictx = filp->private_data;
-> +	struct iommufd_object *obj;
-> +
-> +	/* Destroy the graph from depth first */
-> +	while (!xa_empty(&ictx->objects)) {
-> +		unsigned int destroyed = 0;
-> +		unsigned long index;
-> +
-> +		xa_for_each (&ictx->objects, index, obj) {
-> +			/*
-> +			 * Since we are in release elevated users must come from
-> +			 * other objects holding the users. We will eventually
-> +			 * destroy the object that holds this one and the next
-> +			 * pass will progress it.
-> +			 */
-> +			if (!refcount_dec_if_one(&obj->users))
-> +				continue;
-> +			destroyed++;
-> +			xa_erase(&ictx->objects, index);
-> +			iommufd_object_ops[obj->type].destroy(obj);
-> +			kfree(obj);
-> +		}
-> +		/* Bug related to users refcount */
-> +		if (WARN_ON(!destroyed))
-> +			break;
-> +	}
-> +	kfree(ictx);
-> +	return 0;
-> +}
-> +
-> +union ucmd_buffer {
-> +	struct iommu_destroy destroy;
-> +};
-> +
-> +struct iommufd_ioctl_op {
-> +	unsigned int size;
-> +	unsigned int min_size;
-> +	unsigned int ioctl_num;
-> +	int (*execute)(struct iommufd_ucmd *ucmd);
-> +};
-> +
-> +#define IOCTL_OP(_ioctl, _fn, _struct, _last)                                  \
-> +	[_IOC_NR(_ioctl) - IOMMUFD_CMD_BASE] = {                               \
-> +		.size = sizeof(_struct) +                                      \
-> +			BUILD_BUG_ON_ZERO(sizeof(union ucmd_buffer) <          \
-> +					  sizeof(_struct)),                    \
-> +		.min_size = offsetofend(_struct, _last),                       \
-> +		.ioctl_num = _ioctl,                                           \
-> +		.execute = _fn,                                                \
-> +	}
-> +static struct iommufd_ioctl_op iommufd_ioctl_ops[] = {
-> +	IOCTL_OP(IOMMU_DESTROY, iommufd_destroy, struct iommu_destroy, id),
-> +};
-> +
-> +static long iommufd_fops_ioctl(struct file *filp, unsigned int cmd,
-> +			       unsigned long arg)
-> +{
-> +	struct iommufd_ucmd ucmd = {};
-> +	struct iommufd_ioctl_op *op;
-> +	union ucmd_buffer buf;
-> +	unsigned int nr;
-> +	int ret;
-> +
-> +	ucmd.ictx = filp->private_data;
-> +	ucmd.ubuffer = (void __user *)arg;
-> +	ret = get_user(ucmd.user_size, (u32 __user *)ucmd.ubuffer);
-> +	if (ret)
-> +		return ret;
-> +
-> +	nr = _IOC_NR(cmd);
-> +	if (nr < IOMMUFD_CMD_BASE ||
-> +	    (nr - IOMMUFD_CMD_BASE) >= ARRAY_SIZE(iommufd_ioctl_ops))
-> +		return -ENOIOCTLCMD;
-> +	op = &iommufd_ioctl_ops[nr - IOMMUFD_CMD_BASE];
-> +	if (op->ioctl_num != cmd)
-> +		return -ENOIOCTLCMD;
-> +	if (ucmd.user_size < op->min_size)
-> +		return -EOPNOTSUPP;
-> +
-> +	ucmd.cmd = &buf;
-> +	ret = copy_struct_from_user(ucmd.cmd, op->size, ucmd.ubuffer,
-> +				    ucmd.user_size);
-> +	if (ret)
-> +		return ret;
-> +	ret = op->execute(&ucmd);
-> +	return ret;
-> +}
-> +
-> +static const struct file_operations iommufd_fops = {
-> +	.owner = THIS_MODULE,
-> +	.open = iommufd_fops_open,
-> +	.release = iommufd_fops_release,
-> +	.unlocked_ioctl = iommufd_fops_ioctl,
-> +};
-> +
-> +/**
-> + * iommufd_ctx_get - Get a context reference
-> + * @ictx - Context to get
-> + *
-> + * The caller must already hold a valid reference to ictx.
-> + */
-> +void iommufd_ctx_get(struct iommufd_ctx *ictx)
-> +{
-> +	get_file(ictx->file);
-> +}
-> +EXPORT_SYMBOL_GPL(iommufd_ctx_get);
-> +
-> +/**
-> + * iommufd_ctx_from_file - Acquires a reference to the iommufd context
-> + * @file: File to obtain the reference from
-> + *
-> + * Returns a pointer to the iommufd_ctx, otherwise ERR_PTR. The struct file
-> + * remains owned by the caller and the caller must still do fput. On success
-> + * the caller is responsible to call iommufd_ctx_put().
-> + */
-> +struct iommufd_ctx *iommufd_ctx_from_file(struct file *file)
-> +{
-> +	struct iommufd_ctx *ictx;
-> +
-> +	if (file->f_op != &iommufd_fops)
-> +		return ERR_PTR(-EBADFD);
-> +	ictx = file->private_data;
-> +	iommufd_ctx_get(ictx);
-> +	return ictx;
-> +}
-> +EXPORT_SYMBOL_GPL(iommufd_ctx_from_file);
-> +
-> +/**
-> + * iommufd_ctx_put - Put back a reference
-> + * @ictx - Context to put back
-> + */
-> +void iommufd_ctx_put(struct iommufd_ctx *ictx)
-> +{
-> +	fput(ictx->file);
-> +}
-> +EXPORT_SYMBOL_GPL(iommufd_ctx_put);
-> +
-> +static struct iommufd_object_ops iommufd_object_ops[] = {
-> +};
-> +
-> +static struct miscdevice iommu_misc_dev = {
-> +	.minor = MISC_DYNAMIC_MINOR,
-> +	.name = "iommu",
-> +	.fops = &iommufd_fops,
-> +	.nodename = "iommu",
-> +	.mode = 0660,
-> +};
-> +
-> +static int __init iommufd_init(void)
-> +{
-> +	int ret;
-> +
-> +	ret = misc_register(&iommu_misc_dev);
-> +	if (ret) {
-> +		pr_err("Failed to register misc device\n");
-> +		return ret;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static void __exit iommufd_exit(void)
-> +{
-> +	misc_deregister(&iommu_misc_dev);
-> +}
-> +
-> +module_init(iommufd_init);
-> +module_exit(iommufd_exit);
-> +
-> +MODULE_DESCRIPTION("I/O Address Space Management for passthrough devices");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
-> new file mode 100644
-> index 00000000000000..c8bbed542e923c
-> --- /dev/null
-> +++ b/include/linux/iommufd.h
-> @@ -0,0 +1,31 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * Copyright (C) 2021 Intel Corporation
-> + * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
-> + */
-> +#ifndef __LINUX_IOMMUFD_H
-> +#define __LINUX_IOMMUFD_H
-> +
-> +#include <linux/types.h>
-> +#include <linux/errno.h>
-> +#include <linux/err.h>
-> +
-> +struct iommufd_ctx;
-> +struct file;
-> +
-> +void iommufd_ctx_get(struct iommufd_ctx *ictx);
-> +
-> +#if IS_ENABLED(CONFIG_IOMMUFD)
-> +struct iommufd_ctx *iommufd_ctx_from_file(struct file *file);
-> +void iommufd_ctx_put(struct iommufd_ctx *ictx);
-> +#else /* !CONFIG_IOMMUFD */
-> +static inline struct iommufd_ctx *iommufd_ctx_from_file(struct file *file)
-> +{
-> +       return ERR_PTR(-EOPNOTSUPP);
-> +}
-> +
-> +static inline void iommufd_ctx_put(struct iommufd_ctx *ictx)
-> +{
-> +}
-> +#endif /* CONFIG_IOMMUFD */
-> +#endif
-> diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-> new file mode 100644
-> index 00000000000000..2f7f76ec6db4cb
-> --- /dev/null
-> +++ b/include/uapi/linux/iommufd.h
-> @@ -0,0 +1,55 @@
-> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-> +/* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES.
-> + */
-> +#ifndef _UAPI_IOMMUFD_H
-> +#define _UAPI_IOMMUFD_H
-> +
-> +#include <linux/types.h>
-> +#include <linux/ioctl.h>
-> +
-> +#define IOMMUFD_TYPE (';')
-> +
-> +/**
-> + * DOC: General ioctl format
-> + *
-> + * The ioctl mechanims follows a general format to allow for extensibility. Each
-> + * ioctl is passed in a structure pointer as the argument providing the size of
-> + * the structure in the first u32. The kernel checks that any structure space
-> + * beyond what it understands is 0. This allows userspace to use the backward
-> + * compatible portion while consistently using the newer, larger, structures.
-> + *
-> + * ioctls use a standard meaning for common errnos:
-> + *
-> + *  - ENOTTY: The IOCTL number itself is not supported at all
-> + *  - E2BIG: The IOCTL number is supported, but the provided structure has
-> + *    non-zero in a part the kernel does not understand.
-> + *  - EOPNOTSUPP: The IOCTL number is supported, and the structure is
-> + *    understood, however a known field has a value the kernel does not
-> + *    understand or support.
-> + *  - EINVAL: Everything about the IOCTL was understood, but a field is not
-> + *    correct.
-> + *  - ENOENT: An ID or IOVA provided does not exist.
-> + *  - ENOMEM: Out of memory.
-> + *  - EOVERFLOW: Mathematics oveflowed.
-> + *
-> + * As well as additional errnos. within specific ioctls.
-> + */
-> +enum {
-> +	IOMMUFD_CMD_BASE = 0x80,
-> +	IOMMUFD_CMD_DESTROY = IOMMUFD_CMD_BASE,
-> +};
-> +
-> +/**
-> + * struct iommu_destroy - ioctl(IOMMU_DESTROY)
-> + * @size: sizeof(struct iommu_destroy)
-> + * @id: iommufd object ID to destroy. Can by any destroyable object type.
+Details:
+_get_free_pages is used as page allocation duration baseline
+__kmalloc is used as slab allocation duration baseline
 
-                                              ^^be ?
+1. Profile with instrumented page allocator
+|--50.13%--my__get_free_page
+|          |
+|          |--38.99%--_get_free_pages
+|          |          |
+|          |          |--34.75%--__alloc_pages
+|          |          |          |
+|          |          |          |--27.59%--get_page_from_freelist
+|          |          |
+|          |           --3.98%--_alloc_pages
+|          |                     |
+|          |                      --0.53%--policy_node
+|          |
+|          |--3.45%--lookup_page_ext
+|          |
+|          |--1.59%--__lazy_percpu_counter_add
+|          |          |
+|          |           --0.80%--pcpu_alloc
+|          |                     memset_orig
+|          |
+|           --1.06%--__alloc_tag_add
+|                     |
+|                      --0.80%--__lazy_percpu_counter_add
+|
+|--35.28%--free_unref_page
+|          |
+|          |--23.08%--_raw_spin_unlock_irqrestore
+|          |
+|          |--2.39%--preempt_count_add
+|          |          |
+|          |           --0.80%--in_lock_functions
+|          |
+|          |--1.59%--free_pcp_prepare
+|          |
+|          |--1.33%--preempt_count_sub
+|          |
+|           --0.80%--check_preemption_disabled
+|
+|--4.24%--__free_pages
+|
+ --1.59%--free_pages
 
-> + *
-> + * Destroy any object held within iommufd.
-> + */
-> +struct iommu_destroy {
-> +	__u32 size;
-> +	__u32 id;
-> +};
-> +#define IOMMU_DESTROY _IO(IOMMUFD_TYPE, IOMMUFD_CMD_DESTROY)
-> +
-> +#endif
 
-Best regards,
-baolu
+2. Profile with non-instrumented page allocator and call stack capturing
+|--84.18%--my__get_free_page
+|          |
+|           --83.91%--stack_depot_capture_stack
+|                     |
+|                     |--77.99%--stack_trace_save
+|                     |          |
+|                     |           --77.53%--arch_stack_walk
+|                     |                     |
+|                     |                     |--37.17%--unwind_next_frame
+|                     |                     |          |
+|                     |                     |          |--8.44%--__orc_find
+|                     |                     |          |
+|                     |                     |--10.57%-stack_trace_consume_entry
+|                     |                     |
+|                     |                      --9.64%--unwind_get_return_address
+|                     |
+|                      --5.78%--__stack_depot_save
+|
+|--6.78%--__get_free_pages
+|          |
+|          |--5.85%--__alloc_pages
+|          |          |
+|          |           --3.86%--get_page_from_freelist
+|          |                     |
+|          |                      --1.33%--_raw_spin_unlock_irqrestore
+|          |
+|           --0.80%--alloc_pages
+|
+|--5.19%--free_unref_page
+|          |
+|          |--2.73%--_raw_spin_unlock_irqrestore
+|          |
+|           --0.60%--free_pcp_prepare
+|
+ --0.73%--__free_pages
+
+
+3. Profile with non-instrumented page allocator and BPF attached to tracepoint
+|--42.42%--my__get_free_page
+|          |
+|           --38.53%--perf_trace_kmem_alloc
+|                     |
+|                     |--25.76%--perf_trace_run_bpf_submit
+|                     |          |
+|                     |          |--21.86%--trace_call_bpf
+|                     |          |          |
+|                     |          |          |--4.76%--migrate_enable
+|                     |          |          |
+|                     |          |          |--4.55%--migrate_disable
+|                     |          |          |
+|                     |          |          |--3.03%--check_preemption_disabled
+|                     |          |          |
+|                     |          |          |--0.65%--__this_cpu_preempt_check
+|                     |          |          |
+|                     |          |           --0.65%--__rcu_read_unlock
+|                     |          |
+|                     |           --0.87%--check_preemption_disabled
+|                     |
+|                     |--8.01%--perf_trace_buf_alloc
+|                     |          |
+|                     |          |--3.68%--perf_swevent_get_recursion_context
+|                     |          |          |
+|                     |          |           --0.87%--check_preemption_disabled
+|                     |          |
+|                     |           --1.30%--check_preemption_disabled
+|                     |
+|                      --0.87%--check_preemption_disabled
+|
+|--27.71%--__get_free_pages
+|          |
+|          |--23.38%--__alloc_pages
+|          |          |
+|          |           --17.75%--get_page_from_freelist
+|          |                     |
+|          |                     |--8.66%--_raw_spin_unlock_irqrestore
+|          |                     |          |
+|          |                     |           --1.95%--preempt_count_sub
+|          |                     |
+|          |                      --1.08%--preempt_count_add
+|          |
+|           --4.33%--alloc_pages
+|                     |
+|                     |--0.87%--policy_node
+|                     |
+|                      --0.65%--policy_nodemask
+|
+|--15.37%--free_unref_page
+|          |
+|          |--6.71%--_raw_spin_unlock_irqrestore
+|          |
+|          |--1.52%--check_preemption_disabled
+|          |
+|          |--0.65%--free_pcp_prepare
+|          |
+|           --0.65%--preempt_count_add
+|--4.98%--__free_pages
+
+
+4. Profile with instrumented slab allocator CONFIG_MEMCG_KMEM=y
+|--51.28%--my__get_free_page
+|          |
+|          |--21.79%--__kmalloc
+|          |          |
+|          |          |--3.42%--memcg_slab_post_alloc_hook
+|          |          |
+|          |          |--1.71%--kmalloc_slab
+|          |          |
+|          |           --0.85%--should_failslab
+|          |
+|          |--11.97%--get_slab_tag_ref
+|          |
+|          |--5.56%--__alloc_tag_add
+|          |          |
+|          |           --2.56%--__lazy_percpu_counter_add
+|          |
+|          |--2.99%--__lazy_percpu_counter_add
+|          |
+|           --0.85%--__ksize
+|
+ --35.90%--kfree
+           |
+           |--13.68%--get_slab_tag_ref
+           |
+           |--6.41%--__alloc_tag_sub
+           |          |
+           |           --4.70%--__lazy_percpu_counter_add
+           |
+            --2.14%--__ksize
+
+
+5. Profile with non-instrumented slab allocator and call stack
+capturing CONFIG_MEMCG_KMEM=y
+|--91.50%--my__get_free_page
+|          |
+|           --91.13%--stack_depot_capture_stack
+|                     |
+|                     |--85.48%--stack_trace_save
+|                     |          |
+|                     |           --85.12%--arch_stack_walk
+|                     |                     |
+|                     |                     |--40.54%--unwind_next_frame
+|                     |                     |
+|                     |                     |--14.30%--__unwind_start
+|                     |                     |
+|                     |                     |--11.95%-unwind_get_return_address
+|                     |                     |
+|                     |                      --10.48%-stack_trace_consume_entry
+|                     |
+|                      --4.99%--__stack_depot_save
+|                                |
+|                                 --0.66%--filter_irq_stacks
+|
+|--3.01%--__kmalloc
+|
+|--2.05%--kfree
+
+6. Profile with non-instrumented slab allocator and BPF attached to a
+tracepoint CONFIG_MEMCG_KMEM=y
+|--72.39%--__kmalloc
+|          |
+|          |--57.84%--perf_trace_kmem_alloc
+|          |          |
+|          |          |--38.06%--perf_trace_run_bpf_submit
+|          |          |          |
+|          |          |           --33.96%--trace_call_bpf
+|          |          |                     |
+|          |          |                     |--10.07%--migrate_disable
+|          |          |                     |
+|          |          |                     |--4.85%--migrate_enable
+|          |          |                     |
+|          |          |                     |--4.10%--check_preemption_disabled
+|          |          |                     |
+|          |          |                     |--1.87%--__rcu_read_unlock
+|          |          |                     |
+|          |          |                      --0.75%--__rcu_read_lock
+|          |          |
+|          |           --9.70%--perf_trace_buf_alloc
+|          |                     |
+|          |                     |--2.99%--perf_swevent_get_recursion_context
+|          |                     |
+|          |                     |--1.12%--check_preemption_disabled
+|          |                     |
+|          |                      --0.75%--debug_smp_processor_id
+|          |
+|          |--2.24%--kmalloc_slab
+|          |
+|          |--1.49%--memcg_slab_post_alloc_hook
+|          |
+|           --1.12%--__cond_resched
+|
+|--7.84%--kfree
+
+
+7. Profile with instrumented slab allocator CONFIG_MEMCG_KMEM=n
+|--49.39%--my__get_free_page
+|          |
+|          |--22.04%--__kmalloc
+|          |          |
+|          |          |--3.27%--kmalloc_slab
+|          |          |
+|          |           --0.82%--asm_sysvec_apic_timer_interrupt
+|          |                     sysvec_apic_timer_interrupt
+|          |                     __irq_exit_rcu
+|          |                     __softirqentry_text_start
+|          |
+|          |--15.92%--get_slab_tag_ref
+|          |
+|          |--3.27%--__alloc_tag_add
+|          |          |
+|          |           --2.04%--__lazy_percpu_counter_add
+|          |
+|           --2.45%--__lazy_percpu_counter_add
+|
+|--35.51%--kfree
+|          |
+|          |--13.88%--get_slab_tag_ref
+|          |
+|          |--11.84%--__alloc_tag_sub
+|          |          |
+|          |           --5.31%--__lazy_percpu_counter_add
+|          |
+|           --1.63%--__ksize
+
+8. Profile with non-instrumented slab allocator and call stack
+capturing CONFIG_MEMCG_KMEM=n
+|--91.70%--my__get_free_page
+|          |
+|           --91.48%--stack_depot_capture_stack
+|                     |
+|                     |--85.29%--stack_trace_save
+|                     |          |
+|                     |           --85.07%--arch_stack_walk
+|                     |                     |
+|                     |                     |--45.23%--unwind_next_frame
+|                     |                     |
+|                     |                     |--12.89%--__unwind_start
+|                     |                     |
+|                     |                     |--10.20%-unwind_get_return_address
+|                     |                     |
+|                     |                      --10.12%-stack_trace_consume_entry
+|                     |
+|                      --5.75%--__stack_depot_save
+|                                |
+|                                 --0.87%--filter_irq_stacks
+|
+|--3.28%--__kmalloc
+|
+ --1.89%--kfree
+
+9. Profile with non-instrumented slab allocator and BPF attached to a
+tracepoint CONFIG_MEMCG_KMEM=n
+|--71.65%--__kmalloc
+|          |
+|          |--55.56%--perf_trace_kmem_alloc
+|          |          |
+|          |          |--38.31%--perf_trace_run_bpf_submit
+|          |          |          |
+|          |          |          |--31.80%--trace_call_bpf
+|          |          |          |          |
+|          |          |          |          |--9.96%--migrate_enable
+|          |          |          |          |
+|          |          |          |          |--4.98%--migrate_disable
+|          |          |          |          |
+|          |          |          |          |--1.92%--check_preemption_disabled
+|          |          |          |          |
+|          |          |          |          |--1.92%--__rcu_read_unlock
+|          |          |          |          |
+|          |          |          |           --1.15%--__rcu_read_lock
+|          |          |          |
+|          |          |           --0.77%--check_preemption_disabled
+|          |          |
+|          |           --11.11%--perf_trace_buf_alloc
+|          |                     |
+|          |                      --4.98%--perf_swevent_get_recursion_context
+|          |                                |
+|          |                                 --1.53%--check_preemption_disabled
+|          |
+|          |--2.68%--kmalloc_slab
+|          |
+|           --1.15%--__cond_resched
+|
+ --9.58%--kfree
+
+
+>
+> Thanks!
+> --
+> Michal Hocko
+> SUSE Labs
