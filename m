@@ -1,61 +1,165 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6BFAA4416
-	for <iommu@lists.linux.dev>; Mon,  5 Sep 2022 15:51:10 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1E6EC139F;
-	Mon,  5 Sep 2022 08:51:16 -0700 (PDT)
-Received: from [10.57.15.199] (unknown [10.57.15.199])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 131AD3F534;
-	Mon,  5 Sep 2022 08:51:08 -0700 (PDT)
-Message-ID: <318d9157-6f2b-4ae5-70fc-a54d5919496e@arm.com>
-Date: Mon, 5 Sep 2022 16:51:04 +0100
+Received: from mail-il1-f175.google.com (mail-il1-f175.google.com [209.85.166.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 810BF468E
+	for <iommu@lists.linux.dev>; Mon,  5 Sep 2022 18:03:47 +0000 (UTC)
+Received: by mail-il1-f175.google.com with SMTP id a9so4950751ilh.1
+        for <iommu@lists.linux.dev>; Mon, 05 Sep 2022 11:03:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=T67TRgbvL4Ai6kaNg3fck6vcoHVKT+0s4pwJ/NSZTGA=;
+        b=cPF8g7Tq5Xr7vWwWPXlAIGbvK841YSQ7JL9eISWcCc1GmuozWN4LmUfAHYFGsC3plp
+         xbkMUOOnQhpFxa0XIBosBwjnD4RAr2Kl5FqcTcUiqI63BnVfEWkAAfAMPK2+2D9jC4rI
+         SBcZs3gwdK8qGIp1MV9X/fGPGkKuR5qRQqaUNUEfXT08Tya/qRlmc89AlTJ5Ml7Xorrw
+         xo1/RpLc8BQEQ206qriFaMJIssLZDxhxOljYpigcvkdlTlPx06einaUW7/uPd1dNz5in
+         HXBRJcn7nXiV8BlMPqUAxSW6U9l+lE6gj/Oi85wJcyYJwIvqaZZYLOTvZP+kHnJ13k+5
+         7W5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=T67TRgbvL4Ai6kaNg3fck6vcoHVKT+0s4pwJ/NSZTGA=;
+        b=tqIPbvxOYe8yXunab6MzZiubZ62aodE6G1tGjYCWFNyOps6xe+gKAdVtFJGEO65Y73
+         KsPkll6OPwOe4CW0x8uYn04YDd8X1QyTl+ijd+HX5ie/UdEHhRfYu+BRtjSShYsXFUkx
+         U7U+iRK0JxY5Kn4Aq67bpFJqE8+yOkN98/TjXjnTEuI50QaFak9ztKNl6Ed1MBeGPi7V
+         TpBlzYHiKual0DTmmujOZOV0tAY+7SVgB3QlUUrix9gOTiA9BPNyzkVllYvCTC3R5Bgo
+         tNQDKQ4bq25OC+tMyqyMFwFTs0UKMS8u9lCbmAnyChYA0Zx/mGJGpCYtBzZzWy5POR+3
+         w4vg==
+X-Gm-Message-State: ACgBeo0A42jgXNnarMYKC/wH8L1N7asZt+RR+btYahza4gEVr5lNj0em
+	3sHfL2oqF8dqk2gTxhqMN4bGtHHfgQkaMNK1WAwhbQ==
+X-Google-Smtp-Source: AA6agR4B7x+HXZFIStbcPiXGjinnhf/x5VSF8+h0pcx1isIR3eJmYhiMXqo5jfQScJCtZZmLuVhzCMYw0KB/RJ8mvlI=
+X-Received: by 2002:a05:6e02:1ba8:b0:2eb:7d50:5fb8 with SMTP id
+ n8-20020a056e021ba800b002eb7d505fb8mr14014798ili.296.1662401026346; Mon, 05
+ Sep 2022 11:03:46 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH 0/3] iova: Some misc changes
-Content-Language: en-GB
-To: John Garry <john.garry@huawei.com>, joro@8bytes.org, will@kernel.org
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <1660730984-30333-1-git-send-email-john.garry@huawei.com>
- <11d9f054-fe7b-7646-a8f4-7d45a22e2a96@huawei.com>
- <e8b232be-dfe9-0a67-c464-83fe5109070e@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <e8b232be-dfe9-0a67-c464-83fe5109070e@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220830214919.53220-1-surenb@google.com> <Yw8P8xZ4zqu121xL@hirez.programming.kicks-ass.net>
+ <20220831084230.3ti3vitrzhzsu3fs@moria.home.lan> <20220831101948.f3etturccmp5ovkl@suse.de>
+ <Yw88RFuBgc7yFYxA@dhcp22.suse.cz> <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
+ <YxBc1xuGbB36f8zC@dhcp22.suse.cz> <CAJuCfpGhwPFYdkOLjwwD4ra9JxPqq1T5d1jd41Jy3LJnVnhNdg@mail.gmail.com>
+ <YxEE1vOwRPdzKxoq@dhcp22.suse.cz> <CAJuCfpFrRwXXQ=wAvZ-oUNKXUJ=uUA=fiDrkhRu5VGXcM+=cuA@mail.gmail.com>
+ <YxWvbMYLkPoJrQyr@dhcp22.suse.cz>
+In-Reply-To: <YxWvbMYLkPoJrQyr@dhcp22.suse.cz>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Mon, 5 Sep 2022 11:03:35 -0700
+Message-ID: <CAJuCfpHJsfe172YUQbOqkkpNEEF7B6pJZuWnMa2BsdZwwEGKmA@mail.gmail.com>
+Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
+To: Michal Hocko <mhocko@suse.com>
+Cc: Kent Overstreet <kent.overstreet@linux.dev>, Mel Gorman <mgorman@suse.de>, 
+	Peter Zijlstra <peterz@infradead.org>, Andrew Morton <akpm@linux-foundation.org>, 
+	Vlastimil Babka <vbabka@suse.cz>, Johannes Weiner <hannes@cmpxchg.org>, 
+	Roman Gushchin <roman.gushchin@linux.dev>, Davidlohr Bueso <dave@stgolabs.net>, 
+	Matthew Wilcox <willy@infradead.org>, "Liam R. Howlett" <liam.howlett@oracle.com>, 
+	David Vernet <void@manifault.com>, Juri Lelli <juri.lelli@redhat.com>, 
+	Laurent Dufour <ldufour@linux.ibm.com>, Peter Xu <peterx@redhat.com>, 
+	David Hildenbrand <david@redhat.com>, Jens Axboe <axboe@kernel.dk>, mcgrof@kernel.org, 
+	masahiroy@kernel.org, nathan@kernel.org, changbin.du@intel.com, 
+	ytcoode@gmail.com, Vincent Guittot <vincent.guittot@linaro.org>, 
+	Dietmar Eggemann <dietmar.eggemann@arm.com>, Steven Rostedt <rostedt@goodmis.org>, 
+	Benjamin Segall <bsegall@google.com>, Daniel Bristot de Oliveira <bristot@redhat.com>, 
+	Valentin Schneider <vschneid@redhat.com>, Christopher Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, 
+	Joonsoo Kim <iamjoonsoo.kim@lge.com>, 42.hyeyoo@gmail.com, 
+	Alexander Potapenko <glider@google.com>, Marco Elver <elver@google.com>, Dmitry Vyukov <dvyukov@google.com>, 
+	Shakeel Butt <shakeelb@google.com>, Muchun Song <songmuchun@bytedance.com>, arnd@arndb.de, 
+	jbaron@akamai.com, David Rientjes <rientjes@google.com>, Minchan Kim <minchan@google.com>, 
+	Kalesh Singh <kaleshsingh@google.com>, kernel-team <kernel-team@android.com>, 
+	linux-mm <linux-mm@kvack.org>, iommu@lists.linux.dev, kasan-dev@googlegroups.com, 
+	io-uring@vger.kernel.org, linux-arch@vger.kernel.org, 
+	xen-devel@lists.xenproject.org, linux-bcache@vger.kernel.org, 
+	linux-modules@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-On 2022-09-02 13:18, John Garry wrote:
-> On 17/08/2022 11:24, John Garry wrote:
->> On 17/08/2022 11:09, John Garry wrote:
->>> This series includes:
->>> - remove checks in the code which are not required
->>> - the re-org, which I had originally posted separately
->>
->> BTW, Can we drop the !IOMMU_IOVA stubs in iova.h? I could not find a 
->> kernel config which actually exercises that code (so testing changes 
->> there is difficult).
-> 
-> Any thoughts on this? Since I got no review of patch #3 I assume that it 
-> is not keenly welcome either.
+On Mon, Sep 5, 2022 at 1:12 AM Michal Hocko <mhocko@suse.com> wrote:
+>
+> On Sun 04-09-22 18:32:58, Suren Baghdasaryan wrote:
+> > On Thu, Sep 1, 2022 at 12:15 PM Michal Hocko <mhocko@suse.com> wrote:
+> [...]
+> > > Yes, tracking back the call trace would be really needed. The question
+> > > is whether this is really prohibitively expensive. How much overhead are
+> > > we talking about? There is no free lunch here, really.  You either have
+> > > the overhead during runtime when the feature is used or on the source
+> > > code level for all the future development (with a maze of macros and
+> > > wrappers).
+> >
+> > As promised, I profiled a simple code that repeatedly makes 10
+> > allocations/frees in a loop and measured overheads of code tagging,
+> > call stack capturing and tracing+BPF for page and slab allocations.
+> > Summary:
+> >
+> > Page allocations (overheads are compared to get_free_pages() duration):
+> > 6.8% Codetag counter manipulations (__lazy_percpu_counter_add + __alloc_tag_add)
+> > 8.8% lookup_page_ext
+> > 1237% call stack capture
+> > 139% tracepoint with attached empty BPF program
+>
+> Yes, I am not surprised that the call stack capturing is really
+> expensive comparing to the allocator fast path (which is really highly
+> optimized and I suspect that with 10 allocation/free loop you mostly get
+> your memory from the pcp lists). Is this overhead still _that_ visible
+> for somehow less microoptimized workloads which have to take slow paths
+> as well?
 
-Yeah, I applied patch #3 to have a look at the result, but couldn't 
-really convince myself either way - there are certainly a few functions 
-in weirdly incongruous places at the moment, but afterwards we end up 
-with certain other things in rather contrived order for the sake of 
-avoiding declarations, so overall it just didn't feel objectively better 
-to me. Plus the fact that rewriting nearly 2/3 of the file stands to 
-make backporting tweaks or fixes unnecessarily painful is hard to 
-overlook. Hence I guess I'm leaning towards "worth trying to see how it 
-looked, but let's not".
+Correct, it's a comparison with the allocation fast path, so in a
+sense represents the worst case scenario. However at the same time the
+measurements are fair because they measure the overheads against the
+same meaningful baseline, therefore can be used for comparison.
 
-As for the stubs, it seems that they're currently unused due to linkage 
-issues with IOMMU_IOVA=m - if we want better compile-test coverage, I 
-wonder if we couldn't replace the IS_ENABLED() with IS_REACHABLE() and 
-restore some of the previously-conditional selects?
+>
+> Also what kind of stack unwinder is configured (I guess ORC)? This is
+> not my area but from what I remember the unwinder overhead varies
+> between ORC and FP.
 
-Robin.
+I used whatever is default and didn't try other mechanisms. Don't
+think the difference would be orders of magnitude better though.
+
+>
+> And just to make it clear. I do realize that an overhead from the stack
+> unwinding is unavoidable. And code tagging would logically have lower
+> overhead as it performs much less work. But the main point is whether
+> our existing stack unwiding approach is really prohibitively expensive
+> to be used for debugging purposes on production systems. I might
+> misremember but I recall people having bigger concerns with page_owner
+> memory footprint than the actual stack unwinder overhead.
+
+That's one of those questions which are very difficult to answer (if
+even possible) because that would depend on the use scenario. If the
+workload allocates frequently then adding the overhead will likely
+affect it, otherwise might not be even noticeable. In general, in
+pre-production testing we try to minimize the difference in
+performance and memory profiles between the software we are testing
+and the production one. From that point of view, the smaller the
+overhead, the better. I know it's kinda obvious but unfortunately I
+have no better answer to that question.
+
+For the memory overhead, in my early internal proposal with assumption
+of 10000 instrumented allocation call sites, I've made some
+calculations for an 8GB 8-core system (quite typical for Android) and
+ended up with the following:
+
+                                    per-cpu counters      atomic counters
+page_ext references     16MB                      16MB
+slab object references   10.5MB                   10.5MB
+alloc_tags                      900KB                    312KB
+Total memory overhead 27.4MB                  26.8MB
+
+so, about 0.34% of the total memory. Our implementation has changed
+since then and the number might not be completely correct but it
+should be in the ballpark.
+I just checked the number of instrumented calls that we currently have
+in the 6.0-rc3 built with defconfig and it's 165 page allocation and
+2684 slab allocation sites. I readily accept that we are probably
+missing some allocations and additional modules can also contribute to
+these numbers but my guess it's still less than 10000 that I used in
+my calculations.
+I don't claim that 0.34% overhead is low enough to be always
+acceptable, just posting the numbers to provide some reference points.
+
+> --
+> Michal Hocko
+> SUSE Labs
