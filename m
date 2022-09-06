@@ -1,221 +1,154 @@
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2058.outbound.protection.outlook.com [40.107.93.58])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E620D4684
-	for <iommu@lists.linux.dev>; Tue,  6 Sep 2022 12:52:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662468721; x=1694004721;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=aRiuPJQGa4VDcCcM3wNAUjeRGrqhY6hXMwDxZaU2ESQ=;
-  b=dVXnPj8jzfaBcgRFxsDnmSj+a2CK3IlcWSAgwR+LMs9ZceJjIHwH1S8I
-   Z9UYsfsF49nuUVEuHuRfAed9CTH7MkPi26QL2kHmhN6rYRBSsFXAe/Zla
-   cU94AUQauJkMEKqRc9Dy7qQojp1XpkFQHRvIFsehKQ3eEX/06fQ8ajd+Q
-   13qDWRIGEABQE8lBgQ7Qvrwya8YHJekdB6vZwS1q2O45T5uiBKv4UkioQ
-   CjrfOp8VcjMIzzMqBPQSMRi97rkAHOFcYSdGdBcjBBEcOPpZYlH1LAu2l
-   tAuR+HiXnw+n1L4STGK0ibfecl6/v1ffDOG+AtGcyCUjeQnJmanc4wfYS
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10462"; a="297895492"
-X-IronPort-AV: E=Sophos;i="5.93,294,1654585200"; 
-   d="scan'208";a="297895492"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 05:52:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,294,1654585200"; 
-   d="scan'208";a="591253093"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga006.jf.intel.com with ESMTP; 06 Sep 2022 05:51:56 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Christoph Hellwig <hch@infradead.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Ashok Raj <ashok.raj@intel.com>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>,
-	Dave Jiang <dave.jiang@intel.com>,
-	Fenghua Yu <fenghua.yu@intel.com>,
-	Vinod Koul <vkoul@kernel.org>
-Cc: Eric Auger <eric.auger@redhat.com>,
-	Liu Yi L <yi.l.liu@intel.com>,
-	Jacob jun Pan <jacob.jun.pan@intel.com>,
-	Zhangfei Gao <zhangfei.gao@linaro.org>,
-	Zhu Tony <tony.zhu@intel.com>,
-	iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH v13 13/13] iommu: Rename iommu-sva-lib.{c,h}
-Date: Tue,  6 Sep 2022 20:44:58 +0800
-Message-Id: <20220906124458.46461-14-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220906124458.46461-1-baolu.lu@linux.intel.com>
-References: <20220906124458.46461-1-baolu.lu@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE2D14A24
+	for <iommu@lists.linux.dev>; Tue,  6 Sep 2022 13:36:05 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=n/+vl6EOAYN4zOEo5ho1Jid3O1jfBmKfJt8/r2rBfBni0rF5dhu1GLAxGi3tt0YKi3s7tofmjo//REAXm5s39BQn7NKQuKIvM9gNF7ZVt+3mvXwO7JUBZKgJ1OTpxgYsA/BZOqVBBVeaRxZH20nxgT74SADB6MavRoyGIOxLH/IdGgJOhsxqwcqPBF1+TJ7w6YgnfWxUUcdim6Us0j5c7Rx3QUwuoHW+BAF6ASP520GifhVKFgUBb+47r1Y45ek0qnzDC1zZpR8yzkaEB3R0GJsW0FOnMcntPcq52sD/vsk9cIdC+TEI4Ui+UvOipRYwDlW+LWglUU7i1vX/NiTQHQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=WCzWVssRSULZoWfektUvK9x7zXbZ13or+Q/SsoUxBBg=;
+ b=oYKFJBF9q9vd7qP4tOScGmIqv+kBzBx4oZyw9yWgcrHVAMNslGyoiMvSxcUWheEkTCGaRIfQGuDJqTpl++QcrOZ/qjx4Gg7WIBQC8Mv9KaMXG/7/jiViAsAm/Omq/31hb7zghl2XJ6cDrZ11yzeObOS3wqrq1gX2hczuObTwbC3iCpbQN93R9hXBlsL94gf2h6sURR5dOgUSSg0KzYXo8B5vX5sqAvarpM1XdgqaypAs1mrllvzADVani3j7jDC5tjjiKLQInjLGpQA2cpRbU1w38vHxz4NdP5fLqCz0kumDVT1+dRguc5klbl5ZzyM1kk3/Xmv0GCSYU4El59HK7g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WCzWVssRSULZoWfektUvK9x7zXbZ13or+Q/SsoUxBBg=;
+ b=CuLMycfwp3mCEwDqIo0Xjcg6xjVm/waDMYVqiBQ6q6BjXVDQryzMBAC3Lw3QgGiMcDNDE5YG+7LD97BXsKYdXeCBYvJKSVxogGnotWv67QIbSpixpjTdI9R+VNgXnVtdtTvQm9at3E7JYjAnhobIIqsuc79thnKEfzlCxFzx8+SpIi3itdtE60GnpDY05aUJ2/61azphuPV9Ks0Rjp05XeinMFafK1qEQ0KOq1eL54dxiRx0fU0XBMwhl4NIBFT8RJ+f77pBb4yF/yuiPmlz0/T9+UZmPjHwe99JDarv1cwy7J4bQWXzNOzZA9XgQGn/6l5odQ3FwDJi8aFFbfSTOQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by BL1PR12MB5361.namprd12.prod.outlook.com (2603:10b6:208:31f::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Tue, 6 Sep
+ 2022 13:36:03 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::462:7fe:f04f:d0d5]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::462:7fe:f04f:d0d5%7]) with mapi id 15.20.5588.018; Tue, 6 Sep 2022
+ 13:36:03 +0000
+Date: Tue, 6 Sep 2022 10:36:02 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev,
+	Alex Williamson <alex.williamson@redhat.com>,
+	linux-s390@vger.kernel.org, schnelle@linux.ibm.com,
+	pmorel@linux.ibm.com, borntraeger@linux.ibm.com, hca@linux.ibm.com,
+	gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+	agordeev@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
+	will@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 1/2] iommu/s390: Fix race with release_device ops
+Message-ID: <YxdMwoC+58NvydY3@nvidia.com>
+References: <20220831201236.77595-1-mjrosato@linux.ibm.com>
+ <20220831201236.77595-2-mjrosato@linux.ibm.com>
+ <3b065fb5-3ca7-8f48-bdf7-daf7604312df@arm.com>
+ <369ad331-8bdc-d385-a227-f674bd410599@linux.ibm.com>
+ <YxEYAcFK0EdahXzJ@nvidia.com>
+ <273fdd58-549c-30d4-39a9-85fe631162ba@linux.ibm.com>
+ <YxI7kzuchcJz8sRX@nvidia.com>
+ <ca1ba9d8-8d68-5869-9905-fce431ca14f8@arm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ca1ba9d8-8d68-5869-9905-fce431ca14f8@arm.com>
+X-ClientProxiedBy: BL0PR03CA0015.namprd03.prod.outlook.com
+ (2603:10b6:208:2d::28) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3e82b734-2236-4ce4-f63a-08da900cbe1f
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5361:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	o0t5V1fSrMjNK7PrvqgBe/W6N3IAN1hRZ/7r6PCQd+C4FgUUXALL5irTjPj5LdKOrXGB6EJi6J3x+voptsf7SM1hhYkdM60hNFbHdBEe1Zfeh1oHDYOgilhgyOcqXltf9hlZS6fyYay5vRtJljUEZiOsteLRvQFmFynqETxIGh8mfyfsA/pzdvzc3CIDy7oVZgPajwN0+PGryIYkIwVOasJDYf3Qn7iemtzQq/LxVCzEqC48ReHqZblXBl2z3fmXPm9z/cmoJMbwLBprexmqph0C2h9uASOKwj+VqdKkmZjPAjioZFp0iQ+zFjPHZPH7szowyCvkXvfwuOzI+e030PQjmjwv0TeEIxdjXlmvyTwOUVgTDxWFe/J4FsL7+myNdtjF4lg9drafJmQRsJgBp1kZpKwVy1hcPE+/cIgxMVXIg32YSHFg/X7pjndKvIqY+PpjEi0GPOpDv7KeftRMcQFgkcfKFsMT7pzGbvPppezmsc6ToJDa/hlGNWGyrozfAwipF2PgpsjQR9C5E2KGw9gPameZLA6j/oB9l7i/+etJFNUorIrb9u0XmGBB0Hij6Y5TbNjuypUVAH+u0nmHdN8mXnag2UWRLjJ9NwHqrpJMrOU415hN0HJK/AInRzSg9jtdJRrgtQ2SsSnRmPfIJu9lmsVWROWU9/a5gT9SoNMXbS4Sx6w4JXtQ3uGIQ0/n7kTwwF7EvZ33RreV/wSKeOd20fV54WIMeiDWq+nKsXjF7aZbTF6pZGo/ovLarKkV
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(376002)(136003)(346002)(396003)(39860400002)(8676002)(54906003)(83380400001)(66476007)(478600001)(66946007)(6916009)(36756003)(4326008)(316002)(66556008)(6486002)(41300700001)(2906002)(2616005)(6512007)(86362001)(6506007)(26005)(5660300002)(7416002)(186003)(8936002)(38100700002)(67856001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?uSupAg83MF7ITAdU2v3+nebn+/IMlB27jUKd2Lsi38kPw0mL1Iv4C28KDeu9?=
+ =?us-ascii?Q?T6NRr8VoTQxWi0xCyPY8r+ABmwGo5Ld6ox4dA4rB3KV8cmOU2d97Dq01J/7B?=
+ =?us-ascii?Q?sDaxbvydt16NQh9LYAjOaNPUNB151DMKgda531U98H+oyxItvr80sGJD/kci?=
+ =?us-ascii?Q?ddRynxxCJqdFrY4SSJ5ms0SMS/Sf6iHS/+VU9ZI/5a8TCeSIj77cq0jFJsGO?=
+ =?us-ascii?Q?eySKgIBDdKksuXVWAJ+QeR3BWwALFR6fp9pwosg36fTS/tPwW7pzajVxnXWa?=
+ =?us-ascii?Q?VMedgAeO80o4CnipFwDikp1lL58GANK5tt3EhXKcIsoHtRIqonuiQSlI3awT?=
+ =?us-ascii?Q?erIc+2onw0GGsZOPH+tNZC706i74g+7WKl31LmFClz9XjLaYUidi0wYEFs9g?=
+ =?us-ascii?Q?47IKjze7lNO8ecfbwsEuu33nZ34FtCWkGIhn4rAKiGv8qYfApENaFUYr3B1J?=
+ =?us-ascii?Q?epWTOlE51E1p1NohNc9zZL+m6UinrJTJgYfkw8P/6Vaudm1C7qht9QfOSdhU?=
+ =?us-ascii?Q?ZVuscQn50NugOjSdsrrJaJUCC6HTNmPPWJBhY1XkU2xqSZYvL5KizBLylqS3?=
+ =?us-ascii?Q?RmS51yDiXFlUhhBq212gdT8670cdNlSDDYY0TJZQrRlcMFxhT2H9FYscbSuZ?=
+ =?us-ascii?Q?4rHf13obDQuDx+UJwtSvxgAGkr8VNST+XPUKAcA7P3WQjOu/iCq1DM8F1zuO?=
+ =?us-ascii?Q?rE1DfuZPnsd1ErGzDcjiX6/byQANrYcp+XlXfGFjlQkY+bYERyQt+pr+rTMT?=
+ =?us-ascii?Q?wdscS/fCUnPhYBLJHSwuXoqMNexHtxig/T1c9Pyb5f++csYYCezkfX2wIJf9?=
+ =?us-ascii?Q?k0emKnCRCLEAYKfdlKEb5AqoHYw10IAV+feJPgeFNfPGukZGWicniAOgq//3?=
+ =?us-ascii?Q?88gFGHGROUx3nW2o3fXYXyJrdEAJO8Gu4Dzk5ckg0Ef0svzcmMeI9l55Buje?=
+ =?us-ascii?Q?lEIIWgIpEj8f82gTK9SKdcUnhkUWQCNZVAgmzdL808BCfbl3E0Co2A69kPAW?=
+ =?us-ascii?Q?7O49gEIH77TGAcDlYxY/DL55f/m12twEry1EDOjnicwhtxNcrz/8d/OkhH87?=
+ =?us-ascii?Q?/lK8asgMgGnqBBI+tT4iWhuHLN9Sd+HsiqfndKv4hGIgkRYF8tLDNGU1v1yG?=
+ =?us-ascii?Q?3+CAgpHqmM2sNQyaeXabPmtQ1sT2bsrmQzlpWswSeU4k06fwtc7EtBp17jjw?=
+ =?us-ascii?Q?1pn29FsjptQqf4WnhggYhjCLYfBMv75H0yZ7FQrRJdwBtMRiwa0bYKTF26C5?=
+ =?us-ascii?Q?Pnon28KOzxnO+7KQSetpS9uSv8dr1r9cGmdYhSs4JrX7NR+W5msGhVaPwq/k?=
+ =?us-ascii?Q?P/wEQJLLVTxp357J+ecuXZdATeDjkYEkqqM6I29HwXozqnJTrTpH4Hl5Ueqs?=
+ =?us-ascii?Q?xR0VlU3RksD/oAPXF14HzY/uGa6Cy+YlqEIe5H0At/3tbGgTnRpM6tIY7Nqs?=
+ =?us-ascii?Q?SJyMrLbvxLuyxJldiMZ4VBTjW4yQF9P4YKHz6bOTILpwFM/YwH4zuLlqLfJ/?=
+ =?us-ascii?Q?TiOZ7diGSdeKUuwSekdE4HGizAFiI2OqmIMF935PSCwXTVFnHLZyDOjalrRB?=
+ =?us-ascii?Q?QuPOVaxsUF3Ea0/tnfGmYzPdg4qZDcfGN1jhEjhS?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3e82b734-2236-4ce4-f63a-08da900cbe1f
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Sep 2022 13:36:03.3100
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: yQpuLiSBs3RdGjzguhSfxkfpfn5k9LSoQ6zfYtQevla/5yDNWbA3zzxc/ifOGJxj
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5361
 
-Rename iommu-sva-lib.c[h] to iommu-sva.c[h] as it contains all code
-for SVA implementation in iommu core.
+On Mon, Sep 05, 2022 at 10:46:44AM +0100, Robin Murphy wrote:
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
-Tested-by: Tony Zhu <tony.zhu@intel.com>
----
- drivers/iommu/{iommu-sva-lib.h => iommu-sva.h}  | 6 +++---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 2 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 2 +-
- drivers/iommu/intel/iommu.c                     | 2 +-
- drivers/iommu/intel/svm.c                       | 2 +-
- drivers/iommu/io-pgfault.c                      | 2 +-
- drivers/iommu/{iommu-sva-lib.c => iommu-sva.c}  | 2 +-
- drivers/iommu/iommu.c                           | 2 +-
- drivers/iommu/Makefile                          | 2 +-
- 9 files changed, 11 insertions(+), 11 deletions(-)
- rename drivers/iommu/{iommu-sva-lib.h => iommu-sva.h} (95%)
- rename drivers/iommu/{iommu-sva-lib.c => iommu-sva.c} (99%)
+> > I've been trying to understand Robin's latest remarks because maybe I
+> > don't really understand your situation right.
+> 
+> That was really just me thinking out loud to guess at how it must be
+> happening - I wasn't sure whether VFIO is actually intended to allow that or
+> not, so if not then by all means let's look at fixing that, but as I say I
+> think we're only seeing it provoke a problem at the driver level because of
+> 9ac8545199a1, and fixing VFIO doesn't fix that in general. And conversely if
+> we *can* fix that properly at the IOMMU API level then the current VFIO
+> behaviour should become benign again anyway.
 
-diff --git a/drivers/iommu/iommu-sva-lib.h b/drivers/iommu/iommu-sva.h
-similarity index 95%
-rename from drivers/iommu/iommu-sva-lib.h
-rename to drivers/iommu/iommu-sva.h
-index 1b3ace4b5863..7215a761b962 100644
---- a/drivers/iommu/iommu-sva-lib.h
-+++ b/drivers/iommu/iommu-sva.h
-@@ -2,8 +2,8 @@
- /*
-  * SVA library for IOMMU drivers
-  */
--#ifndef _IOMMU_SVA_LIB_H
--#define _IOMMU_SVA_LIB_H
-+#ifndef _IOMMU_SVA_H
-+#define _IOMMU_SVA_H
+Okay, so there are probably other problems here that highlighted
+this..
  
- #include <linux/ioasid.h>
- #include <linux/mm_types.h>
-@@ -72,4 +72,4 @@ iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
- 	return IOMMU_PAGE_RESP_INVALID;
- }
- #endif /* CONFIG_IOMMU_SVA */
--#endif /* _IOMMU_SVA_LIB_H */
-+#endif /* _IOMMU_SVA_H */
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index 640587f2321d..1710e7a5e13f 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -10,7 +10,7 @@
- #include <linux/slab.h>
- 
- #include "arm-smmu-v3.h"
--#include "../../iommu-sva-lib.h"
-+#include "../../iommu-sva.h"
- #include "../../io-pgtable-arm.h"
- 
- struct arm_smmu_mmu_notifier {
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index cb50f3d80405..8f907213414f 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -31,7 +31,7 @@
- #include <linux/amba/bus.h>
- 
- #include "arm-smmu-v3.h"
--#include "../../iommu-sva-lib.h"
-+#include "../../iommu-sva.h"
- 
- static bool disable_bypass = true;
- module_param(disable_bypass, bool, 0444);
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 1fa2aa598a4d..8d6aa57e1fbb 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -27,7 +27,7 @@
- 
- #include "iommu.h"
- #include "../irq_remapping.h"
--#include "../iommu-sva-lib.h"
-+#include "../iommu-sva.h"
- #include "pasid.h"
- #include "cap_audit.h"
- 
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 83bfc9cd84dd..b391e46e537e 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -24,7 +24,7 @@
- #include "iommu.h"
- #include "pasid.h"
- #include "perf.h"
--#include "../iommu-sva-lib.h"
-+#include "../iommu-sva.h"
- #include "trace.h"
- 
- static irqreturn_t prq_event_thread(int irq, void *d);
-diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-index d046d89cec55..e5b8b9110c13 100644
---- a/drivers/iommu/io-pgfault.c
-+++ b/drivers/iommu/io-pgfault.c
-@@ -11,7 +11,7 @@
- #include <linux/slab.h>
- #include <linux/workqueue.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- /**
-  * struct iopf_queue - IO Page Fault queue
-diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva.c
-similarity index 99%
-rename from drivers/iommu/iommu-sva-lib.c
-rename to drivers/iommu/iommu-sva.c
-index 520ec0b4ed85..54b4a66583d4 100644
---- a/drivers/iommu/iommu-sva-lib.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -6,7 +6,7 @@
- #include <linux/sched/mm.h>
- #include <linux/iommu.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- static DEFINE_MUTEX(iommu_sva_lock);
- static DECLARE_IOASID_SET(iommu_sva_pasid);
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index cbfde12dfae0..bf3861645048 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -29,7 +29,7 @@
- #include <trace/events/iommu.h>
- #include <linux/sched/mm.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- static struct kset *iommu_group_kset;
- static DEFINE_IDA(iommu_group_ida);
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 44475a9b3eea..c1763476162b 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -27,6 +27,6 @@ obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
- obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
- obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
- obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
--obj-$(CONFIG_IOMMU_SVA) += iommu-sva-lib.o io-pgfault.o
-+obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o io-pgfault.o
- obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
- obj-$(CONFIG_APPLE_DART) += apple-dart.o
--- 
-2.25.1
+> > IMHO this is definately a VFIO bug, because in a single-device group
+> > we must not allow the domain to remain attached past remove(). Or more
+> > broadly we shouldn't be holding ownership of a group without also
+> > having a driver attached.
+> 
+> FWIW I was assuming it might be fine for a VFIO user to hold the group open
+> if they expect the device to come back again and re-bind (for example,
+> perhaps over some reconfiguration that requires turning SR-IOV off and on
+> again?)
 
+Once all the devices in the group are removed then something like
+pci_device_group() will have no way to discover the group again. eg
+in the SRIOV case it will just fall right down to iommu_group_alloc(),
+and that gives a new struct iommu_group and new IDR allocation.
+
+So in the general case this doesn't happen, I don't think any VFIO
+userspace should attempt to rely on it.
+
+From an API perspective is a much saner API toward iommu using drivers
+like VFIO if those drivers only use the iommu api while they have a
+device driver attached.
+
+Regards,
+Jason
