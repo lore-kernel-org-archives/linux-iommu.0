@@ -1,154 +1,98 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2058.outbound.protection.outlook.com [40.107.93.58])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE2D14A24
-	for <iommu@lists.linux.dev>; Tue,  6 Sep 2022 13:36:05 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=n/+vl6EOAYN4zOEo5ho1Jid3O1jfBmKfJt8/r2rBfBni0rF5dhu1GLAxGi3tt0YKi3s7tofmjo//REAXm5s39BQn7NKQuKIvM9gNF7ZVt+3mvXwO7JUBZKgJ1OTpxgYsA/BZOqVBBVeaRxZH20nxgT74SADB6MavRoyGIOxLH/IdGgJOhsxqwcqPBF1+TJ7w6YgnfWxUUcdim6Us0j5c7Rx3QUwuoHW+BAF6ASP520GifhVKFgUBb+47r1Y45ek0qnzDC1zZpR8yzkaEB3R0GJsW0FOnMcntPcq52sD/vsk9cIdC+TEI4Ui+UvOipRYwDlW+LWglUU7i1vX/NiTQHQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WCzWVssRSULZoWfektUvK9x7zXbZ13or+Q/SsoUxBBg=;
- b=oYKFJBF9q9vd7qP4tOScGmIqv+kBzBx4oZyw9yWgcrHVAMNslGyoiMvSxcUWheEkTCGaRIfQGuDJqTpl++QcrOZ/qjx4Gg7WIBQC8Mv9KaMXG/7/jiViAsAm/Omq/31hb7zghl2XJ6cDrZ11yzeObOS3wqrq1gX2hczuObTwbC3iCpbQN93R9hXBlsL94gf2h6sURR5dOgUSSg0KzYXo8B5vX5sqAvarpM1XdgqaypAs1mrllvzADVani3j7jDC5tjjiKLQInjLGpQA2cpRbU1w38vHxz4NdP5fLqCz0kumDVT1+dRguc5klbl5ZzyM1kk3/Xmv0GCSYU4El59HK7g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WCzWVssRSULZoWfektUvK9x7zXbZ13or+Q/SsoUxBBg=;
- b=CuLMycfwp3mCEwDqIo0Xjcg6xjVm/waDMYVqiBQ6q6BjXVDQryzMBAC3Lw3QgGiMcDNDE5YG+7LD97BXsKYdXeCBYvJKSVxogGnotWv67QIbSpixpjTdI9R+VNgXnVtdtTvQm9at3E7JYjAnhobIIqsuc79thnKEfzlCxFzx8+SpIi3itdtE60GnpDY05aUJ2/61azphuPV9Ks0Rjp05XeinMFafK1qEQ0KOq1eL54dxiRx0fU0XBMwhl4NIBFT8RJ+f77pBb4yF/yuiPmlz0/T9+UZmPjHwe99JDarv1cwy7J4bQWXzNOzZA9XgQGn/6l5odQ3FwDJi8aFFbfSTOQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by BL1PR12MB5361.namprd12.prod.outlook.com (2603:10b6:208:31f::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Tue, 6 Sep
- 2022 13:36:03 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::462:7fe:f04f:d0d5]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::462:7fe:f04f:d0d5%7]) with mapi id 15.20.5588.018; Tue, 6 Sep 2022
- 13:36:03 +0000
-Date: Tue, 6 Sep 2022 10:36:02 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev,
-	Alex Williamson <alex.williamson@redhat.com>,
-	linux-s390@vger.kernel.org, schnelle@linux.ibm.com,
-	pmorel@linux.ibm.com, borntraeger@linux.ibm.com, hca@linux.ibm.com,
-	gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-	agordeev@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
-	will@kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/2] iommu/s390: Fix race with release_device ops
-Message-ID: <YxdMwoC+58NvydY3@nvidia.com>
-References: <20220831201236.77595-1-mjrosato@linux.ibm.com>
- <20220831201236.77595-2-mjrosato@linux.ibm.com>
- <3b065fb5-3ca7-8f48-bdf7-daf7604312df@arm.com>
- <369ad331-8bdc-d385-a227-f674bd410599@linux.ibm.com>
- <YxEYAcFK0EdahXzJ@nvidia.com>
- <273fdd58-549c-30d4-39a9-85fe631162ba@linux.ibm.com>
- <YxI7kzuchcJz8sRX@nvidia.com>
- <ca1ba9d8-8d68-5869-9905-fce431ca14f8@arm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ca1ba9d8-8d68-5869-9905-fce431ca14f8@arm.com>
-X-ClientProxiedBy: BL0PR03CA0015.namprd03.prod.outlook.com
- (2603:10b6:208:2d::28) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1AA5D4A24
+	for <iommu@lists.linux.dev>; Tue,  6 Sep 2022 13:37:30 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C88F3139F;
+	Tue,  6 Sep 2022 06:37:30 -0700 (PDT)
+Received: from [10.57.15.197] (unknown [10.57.15.197])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 437753F7B4;
+	Tue,  6 Sep 2022 06:37:23 -0700 (PDT)
+Message-ID: <555fa5aa-a575-d783-dc97-79f63dcf2f57@arm.com>
+Date: Tue, 6 Sep 2022 14:37:18 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3e82b734-2236-4ce4-f63a-08da900cbe1f
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5361:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	o0t5V1fSrMjNK7PrvqgBe/W6N3IAN1hRZ/7r6PCQd+C4FgUUXALL5irTjPj5LdKOrXGB6EJi6J3x+voptsf7SM1hhYkdM60hNFbHdBEe1Zfeh1oHDYOgilhgyOcqXltf9hlZS6fyYay5vRtJljUEZiOsteLRvQFmFynqETxIGh8mfyfsA/pzdvzc3CIDy7oVZgPajwN0+PGryIYkIwVOasJDYf3Qn7iemtzQq/LxVCzEqC48ReHqZblXBl2z3fmXPm9z/cmoJMbwLBprexmqph0C2h9uASOKwj+VqdKkmZjPAjioZFp0iQ+zFjPHZPH7szowyCvkXvfwuOzI+e030PQjmjwv0TeEIxdjXlmvyTwOUVgTDxWFe/J4FsL7+myNdtjF4lg9drafJmQRsJgBp1kZpKwVy1hcPE+/cIgxMVXIg32YSHFg/X7pjndKvIqY+PpjEi0GPOpDv7KeftRMcQFgkcfKFsMT7pzGbvPppezmsc6ToJDa/hlGNWGyrozfAwipF2PgpsjQR9C5E2KGw9gPameZLA6j/oB9l7i/+etJFNUorIrb9u0XmGBB0Hij6Y5TbNjuypUVAH+u0nmHdN8mXnag2UWRLjJ9NwHqrpJMrOU415hN0HJK/AInRzSg9jtdJRrgtQ2SsSnRmPfIJu9lmsVWROWU9/a5gT9SoNMXbS4Sx6w4JXtQ3uGIQ0/n7kTwwF7EvZ33RreV/wSKeOd20fV54WIMeiDWq+nKsXjF7aZbTF6pZGo/ovLarKkV
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(376002)(136003)(346002)(396003)(39860400002)(8676002)(54906003)(83380400001)(66476007)(478600001)(66946007)(6916009)(36756003)(4326008)(316002)(66556008)(6486002)(41300700001)(2906002)(2616005)(6512007)(86362001)(6506007)(26005)(5660300002)(7416002)(186003)(8936002)(38100700002)(67856001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?uSupAg83MF7ITAdU2v3+nebn+/IMlB27jUKd2Lsi38kPw0mL1Iv4C28KDeu9?=
- =?us-ascii?Q?T6NRr8VoTQxWi0xCyPY8r+ABmwGo5Ld6ox4dA4rB3KV8cmOU2d97Dq01J/7B?=
- =?us-ascii?Q?sDaxbvydt16NQh9LYAjOaNPUNB151DMKgda531U98H+oyxItvr80sGJD/kci?=
- =?us-ascii?Q?ddRynxxCJqdFrY4SSJ5ms0SMS/Sf6iHS/+VU9ZI/5a8TCeSIj77cq0jFJsGO?=
- =?us-ascii?Q?eySKgIBDdKksuXVWAJ+QeR3BWwALFR6fp9pwosg36fTS/tPwW7pzajVxnXWa?=
- =?us-ascii?Q?VMedgAeO80o4CnipFwDikp1lL58GANK5tt3EhXKcIsoHtRIqonuiQSlI3awT?=
- =?us-ascii?Q?erIc+2onw0GGsZOPH+tNZC706i74g+7WKl31LmFClz9XjLaYUidi0wYEFs9g?=
- =?us-ascii?Q?47IKjze7lNO8ecfbwsEuu33nZ34FtCWkGIhn4rAKiGv8qYfApENaFUYr3B1J?=
- =?us-ascii?Q?epWTOlE51E1p1NohNc9zZL+m6UinrJTJgYfkw8P/6Vaudm1C7qht9QfOSdhU?=
- =?us-ascii?Q?ZVuscQn50NugOjSdsrrJaJUCC6HTNmPPWJBhY1XkU2xqSZYvL5KizBLylqS3?=
- =?us-ascii?Q?RmS51yDiXFlUhhBq212gdT8670cdNlSDDYY0TJZQrRlcMFxhT2H9FYscbSuZ?=
- =?us-ascii?Q?4rHf13obDQuDx+UJwtSvxgAGkr8VNST+XPUKAcA7P3WQjOu/iCq1DM8F1zuO?=
- =?us-ascii?Q?rE1DfuZPnsd1ErGzDcjiX6/byQANrYcp+XlXfGFjlQkY+bYERyQt+pr+rTMT?=
- =?us-ascii?Q?wdscS/fCUnPhYBLJHSwuXoqMNexHtxig/T1c9Pyb5f++csYYCezkfX2wIJf9?=
- =?us-ascii?Q?k0emKnCRCLEAYKfdlKEb5AqoHYw10IAV+feJPgeFNfPGukZGWicniAOgq//3?=
- =?us-ascii?Q?88gFGHGROUx3nW2o3fXYXyJrdEAJO8Gu4Dzk5ckg0Ef0svzcmMeI9l55Buje?=
- =?us-ascii?Q?lEIIWgIpEj8f82gTK9SKdcUnhkUWQCNZVAgmzdL808BCfbl3E0Co2A69kPAW?=
- =?us-ascii?Q?7O49gEIH77TGAcDlYxY/DL55f/m12twEry1EDOjnicwhtxNcrz/8d/OkhH87?=
- =?us-ascii?Q?/lK8asgMgGnqBBI+tT4iWhuHLN9Sd+HsiqfndKv4hGIgkRYF8tLDNGU1v1yG?=
- =?us-ascii?Q?3+CAgpHqmM2sNQyaeXabPmtQ1sT2bsrmQzlpWswSeU4k06fwtc7EtBp17jjw?=
- =?us-ascii?Q?1pn29FsjptQqf4WnhggYhjCLYfBMv75H0yZ7FQrRJdwBtMRiwa0bYKTF26C5?=
- =?us-ascii?Q?Pnon28KOzxnO+7KQSetpS9uSv8dr1r9cGmdYhSs4JrX7NR+W5msGhVaPwq/k?=
- =?us-ascii?Q?P/wEQJLLVTxp357J+ecuXZdATeDjkYEkqqM6I29HwXozqnJTrTpH4Hl5Ueqs?=
- =?us-ascii?Q?xR0VlU3RksD/oAPXF14HzY/uGa6Cy+YlqEIe5H0At/3tbGgTnRpM6tIY7Nqs?=
- =?us-ascii?Q?SJyMrLbvxLuyxJldiMZ4VBTjW4yQF9P4YKHz6bOTILpwFM/YwH4zuLlqLfJ/?=
- =?us-ascii?Q?TiOZ7diGSdeKUuwSekdE4HGizAFiI2OqmIMF935PSCwXTVFnHLZyDOjalrRB?=
- =?us-ascii?Q?QuPOVaxsUF3Ea0/tnfGmYzPdg4qZDcfGN1jhEjhS?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3e82b734-2236-4ce4-f63a-08da900cbe1f
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Sep 2022 13:36:03.3100
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: yQpuLiSBs3RdGjzguhSfxkfpfn5k9LSoQ6zfYtQevla/5yDNWbA3zzxc/ifOGJxj
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5361
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Subject: Re: [PATCH v2 1/2] iova: Remove some magazine pointer NULL checks
+Content-Language: en-GB
+To: John Garry <john.garry@huawei.com>,
+ Ethan Zhao <haifeng.zhao@linux.intel.com>, joro@8bytes.org, will@kernel.org
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linuxarm@huawei.com
+References: <1662369083-238529-1-git-send-email-john.garry@huawei.com>
+ <1662369083-238529-2-git-send-email-john.garry@huawei.com>
+ <1d80f56c-bef7-6e5f-0bca-dad35f5e5a8e@linux.intel.com>
+ <3fa23318-6fa7-eba0-30b8-1fb71e6c327e@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <3fa23318-6fa7-eba0-30b8-1fb71e6c327e@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Mon, Sep 05, 2022 at 10:46:44AM +0100, Robin Murphy wrote:
-
-> > I've been trying to understand Robin's latest remarks because maybe I
-> > don't really understand your situation right.
+On 2022-09-06 11:50, John Garry wrote:
+> On 06/09/2022 10:28, Ethan Zhao wrote:
 > 
-> That was really just me thinking out loud to guess at how it must be
-> happening - I wasn't sure whether VFIO is actually intended to allow that or
-> not, so if not then by all means let's look at fixing that, but as I say I
-> think we're only seeing it provoke a problem at the driver level because of
-> 9ac8545199a1, and fixing VFIO doesn't fix that in general. And conversely if
-> we *can* fix that properly at the IOMMU API level then the current VFIO
-> behaviour should become benign again anyway.
-
-Okay, so there are probably other problems here that highlighted
-this..
- 
-> > IMHO this is definately a VFIO bug, because in a single-device group
-> > we must not allow the domain to remain attached past remove(). Or more
-> > broadly we shouldn't be holding ownership of a group without also
-> > having a driver attached.
+> Hi Ethan,
 > 
-> FWIW I was assuming it might be fine for a VFIO user to hold the group open
-> if they expect the device to come back again and re-bind (for example,
-> perhaps over some reconfiguration that requires turning SR-IOV off and on
-> again?)
+>>> Signed-off-by: John Garry <john.garry@huawei.com>
+>>> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+>>> ---
+>>>   drivers/iommu/iova.c | 7 ++-----
+>>>   1 file changed, 2 insertions(+), 5 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+>>> index 47d1983dfa2a..580fdf669922 100644
+>>> --- a/drivers/iommu/iova.c
+>>> +++ b/drivers/iommu/iova.c
+>>> @@ -661,9 +661,6 @@ iova_magazine_free_pfns(struct iova_magazine 
+>>> *mag, struct iova_domain *iovad)
+>>>       unsigned long flags;
+>>>       int i;
+>>> -    if (!mag)
+>>> -        return;
+>>> -
+>>
+>> iommu_probe_device
+>>    ops->probe_finalize(dev);
+>>      intel_iommu_probe_finalize
+>>         iommu_setup_dma_ops
+>>           iommu_dma_init_domain(domain, dma_base, dma_limit, dev)
+>>             iova_domain_init_rcaches
+>>               {
+>>               ...
+>>               cpu_rcache->loaded = iova_magazine_alloc(GFP_KERNEL);
+>>               cpu_rcache->prev = iova_magazine_alloc(GFP_KERNEL);
+>>             if (!cpu_rcache->loaded || !cpu_rcache->prev) {
+>>                  ret = -ENOMEM;
+>>                        goto out_err;
+>>
+>> Do you mean iova_magazine_alloc() is impossible to fail ?
+> 
+> No, iova_magazine_alloc() may fail and return NULL. But if it does then 
+> we set iovad rcache pointer = NULL in the error path and don't use the 
+> rcache.
+> 
+> However we have a !iovad->rcache check on the "fast" alloc but not 
+> "insert". I need to check why that is again.
 
-Once all the devices in the group are removed then something like
-pci_device_group() will have no way to discover the group again. eg
-in the SRIOV case it will just fall right down to iommu_group_alloc(),
-and that gives a new struct iommu_group and new IDR allocation.
+Right, if you find a good reason to respin the patch then perhaps also 
+tweaking the commit message to clarify that it's impossible to have a 
+NULL rcache *at any point where those checks are made* might avoid all 
+possible doubt, however I'd hope that it's clear enough that the 
+transient case while iova_domain_init_rcaches() is in the process of 
+failing really doesn't need consideration in its own right.
 
-So in the general case this doesn't happen, I don't think any VFIO
-userspace should attempt to rely on it.
+I guess the check in iova_rcache_get() was maybe with the intent of 
+allowing alloc_iova_fast() to seamlessly fall back to standard 
+allocation, so an API user can treat iova_domain_init_rcaches() failure 
+as non-fatal? That makes a fair amount of sense, but does mean that 
+we're missing the equivalent in iova_rcache_insert() for it to actually 
+work. Or we just remove it and tighten up the documentation to say 
+that's not valid - I would like a way to make rcaches optional in 
+iommu-dma for systems where they're a pointless waste of memory, but we 
+can always revisit this when we get there.
 
-From an API perspective is a much saner API toward iommu using drivers
-like VFIO if those drivers only use the iommu api while they have a
-device driver attached.
-
-Regards,
-Jason
+Cheers,
+Robin.
