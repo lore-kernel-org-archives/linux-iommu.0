@@ -1,31 +1,31 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFBDA4684
-	for <iommu@lists.linux.dev>; Tue,  6 Sep 2022 12:51:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D2154684
+	for <iommu@lists.linux.dev>; Tue,  6 Sep 2022 12:51:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662468668; x=1694004668;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=st8xPJ+GJfW2nI3VdwFkkX3RGDm5viKhftr2PLNgi6s=;
-  b=BYnw0BXkHOAnxo9uClAAMSXqa+6og0oCDenvPvUvKQUNCJGsVJiOuYs/
-   wq6WzEY/pAFZk6AJX+LrCGEGx0hKSY9V5LRVxw6NJIcZLNpFZMXf1+xva
-   g1pLg2gkQywNme979LBLILJ52ncn888k1kB8ZR/HfeTC0zXnUYF/q1DJU
-   U9W7YLQKtEviuOtWUcllrZZw5KYR9rwTlXe1ptBiCzxOi8kcGhluDgE2u
-   ZNrGyAK0WPG9DyjYz+OHhwZnMljYoTeY34JDHTtVgkclYimLcVvI/I7CT
-   CHZrMtRsSNmYrD0zSlbJ5J4tNbgYe3MN+iOb13Pv156AiwYsMVfqZnxbX
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10462"; a="382877841"
+  t=1662468671; x=1694004671;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=4DnaTGMjDicSEwfb5gwBL0U7Nbn3yD/17e66RIfx4d4=;
+  b=eEW81eCpENiut1TMywBh4MJivsCVX6v2wRMTft30SAxkefX/dSXwkN40
+   7zBp+hI5NSRRkQWLGDKxFrIG23sTiIsT571Q2dDkL6jXCCCuNOq824NZE
+   Kq8GLbfJjuYpiK6tvckaV/Jl/OUte1iGE12GBncxoUMUdqy1km+qRr2Tx
+   9TDAmT2jj8C0h5Vgq9lgQDhGa1DArHvrSBd+34ZU6q0f4WNaxSniw7Oh+
+   fOoDCgbyHsc7GWkvnPSmsi2oGyvvYkNqKRaqralLSObME9EwcZPwv/FuS
+   /rgiDJuos2XksSmGUDOm8kQul8LtnGQjt6xiMNce8LykkgvKtbJGDJI4t
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10462"; a="279596506"
 X-IronPort-AV: E=Sophos;i="5.93,294,1654585200"; 
-   d="scan'208";a="382877841"
+   d="scan'208";a="279596506"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 05:51:08 -0700
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 05:50:51 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,294,1654585200"; 
-   d="scan'208";a="591252876"
+   d="scan'208";a="591252806"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga006.jf.intel.com with ESMTP; 06 Sep 2022 05:51:02 -0700
+  by orsmga006.jf.intel.com with ESMTP; 06 Sep 2022 05:50:46 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Jason Gunthorpe <jgg@nvidia.com>,
@@ -47,406 +47,222 @@ Cc: Eric Auger <eric.auger@redhat.com>,
 	iommu@lists.linux.dev,
 	linux-pci@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH v13 03/13] iommu: Remove SVM_FLAG_SUPERVISOR_MODE support
-Date: Tue,  6 Sep 2022 20:44:48 +0800
-Message-Id: <20220906124458.46461-4-baolu.lu@linux.intel.com>
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v13 00/13] iommu: SVA and IOPF refactoring
+Date: Tue,  6 Sep 2022 20:44:45 +0800
+Message-Id: <20220906124458.46461-1-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220906124458.46461-1-baolu.lu@linux.intel.com>
-References: <20220906124458.46461-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-The current kernel DMA with PASID support is based on the SVA with a flag
-SVM_FLAG_SUPERVISOR_MODE. The IOMMU driver binds the kernel memory address
-space to a PASID of the device. The device driver programs the device with
-kernel virtual address (KVA) for DMA access. There have been security and
-functional issues with this approach:
+Hi folks,
 
-- The lack of IOTLB synchronization upon kernel page table updates.
-  (vmalloc, module/BPF loading, CONFIG_DEBUG_PAGEALLOC etc.)
-- Other than slight more protection, using kernel virtual address (KVA)
-  has little advantage over physical address. There are also no use
-  cases yet where DMA engines need kernel virtual addresses for in-kernel
-  DMA.
+The former part of this series introduces the IOMMU interfaces to attach
+or detach an iommu domain to/from a pasid of a device, and refactors the
+existing IOMMU SVA implementation by assigning an SVA type of iommu
+domain to a shared virtual address and replacing sva_bind/unbind iommu
+ops with set/remove_dev_pasid ops.
 
-This removes SVM_FLAG_SUPERVISOR_MODE support from the IOMMU interface.
-The device drivers are suggested to handle kernel DMA with PASID through
-the kernel DMA APIs.
+The latter part changes the existing I/O page fault handling framework
+from only serving SVA to a generic one. Any driver or component could
+handle the I/O page faults for its domain in its own way by installing
+an I/O page fault handler.
 
-The drvdata parameter in iommu_sva_bind_device() and all callbacks is not
-needed anymore. Cleanup them as well.
+This series has been functionally tested by Tony Zhu on Intel hardware
+and Zhangfei Gao on arm64 (Kunpeng920) hardware. Thanks a lot for the
+efforts. 
 
-Link: https://lore.kernel.org/linux-iommu/20210511194726.GP1002214@nvidia.com/
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Fenghua Yu <fenghua.yu@intel.com>
-Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
-Tested-by: Tony Zhu <tony.zhu@intel.com>
----
- include/linux/intel-svm.h                     | 13 -----
- include/linux/iommu.h                         |  8 +--
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  5 +-
- drivers/iommu/intel/iommu.h                   |  3 +-
- drivers/dma/idxd/cdev.c                       |  3 +-
- drivers/dma/idxd/init.c                       | 25 +-------
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  3 +-
- drivers/iommu/intel/svm.c                     | 57 +++++--------------
- drivers/iommu/iommu.c                         |  5 +-
- drivers/misc/uacce/uacce.c                    |  2 +-
- 10 files changed, 26 insertions(+), 98 deletions(-)
+This series is also available on github:
+https://github.com/LuBaolu/intel-iommu/commits/iommu-sva-refactoring-v13
 
-diff --git a/include/linux/intel-svm.h b/include/linux/intel-svm.h
-index 207ef06ba3e1..f9a0d44f6fdb 100644
---- a/include/linux/intel-svm.h
-+++ b/include/linux/intel-svm.h
-@@ -13,17 +13,4 @@
- #define PRQ_RING_MASK	((0x1000 << PRQ_ORDER) - 0x20)
- #define PRQ_DEPTH	((0x1000 << PRQ_ORDER) >> 5)
- 
--/*
-- * The SVM_FLAG_SUPERVISOR_MODE flag requests a PASID which can be used only
-- * for access to kernel addresses. No IOTLB flushes are automatically done
-- * for kernel mappings; it is valid only for access to the kernel's static
-- * 1:1 mapping of physical memory — not to vmalloc or even module mappings.
-- * A future API addition may permit the use of such ranges, by means of an
-- * explicit IOTLB flush call (akin to the DMA API's unmap method).
-- *
-- * It is unlikely that we will ever hook into flush_tlb_kernel_range() to
-- * do such IOTLB flushes automatically.
-- */
--#define SVM_FLAG_SUPERVISOR_MODE	BIT(0)
--
- #endif /* __INTEL_SVM_H__ */
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 0d9ce209a501..2f237c3cd680 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -247,8 +247,7 @@ struct iommu_ops {
- 	int (*dev_enable_feat)(struct device *dev, enum iommu_dev_features f);
- 	int (*dev_disable_feat)(struct device *dev, enum iommu_dev_features f);
- 
--	struct iommu_sva *(*sva_bind)(struct device *dev, struct mm_struct *mm,
--				      void *drvdata);
-+	struct iommu_sva *(*sva_bind)(struct device *dev, struct mm_struct *mm);
- 	void (*sva_unbind)(struct iommu_sva *handle);
- 	u32 (*sva_get_pasid)(struct iommu_sva *handle);
- 
-@@ -670,8 +669,7 @@ int iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features f);
- int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features f);
- 
- struct iommu_sva *iommu_sva_bind_device(struct device *dev,
--					struct mm_struct *mm,
--					void *drvdata);
-+					struct mm_struct *mm);
- void iommu_sva_unbind_device(struct iommu_sva *handle);
- u32 iommu_sva_get_pasid(struct iommu_sva *handle);
- 
-@@ -1007,7 +1005,7 @@ iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
- }
- 
- static inline struct iommu_sva *
--iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void *drvdata)
-+iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
- {
- 	return NULL;
- }
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index cd48590ada30..d2ba86470c42 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -754,8 +754,7 @@ bool arm_smmu_master_sva_enabled(struct arm_smmu_master *master);
- int arm_smmu_master_enable_sva(struct arm_smmu_master *master);
- int arm_smmu_master_disable_sva(struct arm_smmu_master *master);
- bool arm_smmu_master_iopf_supported(struct arm_smmu_master *master);
--struct iommu_sva *arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm,
--				    void *drvdata);
-+struct iommu_sva *arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm);
- void arm_smmu_sva_unbind(struct iommu_sva *handle);
- u32 arm_smmu_sva_get_pasid(struct iommu_sva *handle);
- void arm_smmu_sva_notifier_synchronize(void);
-@@ -791,7 +790,7 @@ static inline bool arm_smmu_master_iopf_supported(struct arm_smmu_master *master
- }
- 
- static inline struct iommu_sva *
--arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm, void *drvdata)
-+arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
- {
- 	return ERR_PTR(-ENODEV);
- }
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index c4831d2bee93..91312aabdd53 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -746,8 +746,7 @@ struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn);
- extern void intel_svm_check(struct intel_iommu *iommu);
- extern int intel_svm_enable_prq(struct intel_iommu *iommu);
- extern int intel_svm_finish_prq(struct intel_iommu *iommu);
--struct iommu_sva *intel_svm_bind(struct device *dev, struct mm_struct *mm,
--				 void *drvdata);
-+struct iommu_sva *intel_svm_bind(struct device *dev, struct mm_struct *mm);
- void intel_svm_unbind(struct iommu_sva *handle);
- u32 intel_svm_get_pasid(struct iommu_sva *handle);
- int intel_svm_page_response(struct device *dev, struct iommu_fault_event *evt,
-diff --git a/drivers/dma/idxd/cdev.c b/drivers/dma/idxd/cdev.c
-index c2808fd081d6..66720001ba1c 100644
---- a/drivers/dma/idxd/cdev.c
-+++ b/drivers/dma/idxd/cdev.c
-@@ -6,7 +6,6 @@
- #include <linux/pci.h>
- #include <linux/device.h>
- #include <linux/sched/task.h>
--#include <linux/intel-svm.h>
- #include <linux/io-64-nonatomic-lo-hi.h>
- #include <linux/cdev.h>
- #include <linux/fs.h>
-@@ -100,7 +99,7 @@ static int idxd_cdev_open(struct inode *inode, struct file *filp)
- 	filp->private_data = ctx;
- 
- 	if (device_user_pasid_enabled(idxd)) {
--		sva = iommu_sva_bind_device(dev, current->mm, NULL);
-+		sva = iommu_sva_bind_device(dev, current->mm);
- 		if (IS_ERR(sva)) {
- 			rc = PTR_ERR(sva);
- 			dev_err(dev, "pasid allocation failed: %d\n", rc);
-diff --git a/drivers/dma/idxd/init.c b/drivers/dma/idxd/init.c
-index aa3478257ddb..25ba73243c6f 100644
---- a/drivers/dma/idxd/init.c
-+++ b/drivers/dma/idxd/init.c
-@@ -14,7 +14,6 @@
- #include <linux/io-64-nonatomic-lo-hi.h>
- #include <linux/device.h>
- #include <linux/idr.h>
--#include <linux/intel-svm.h>
- #include <linux/iommu.h>
- #include <uapi/linux/idxd.h>
- #include <linux/dmaengine.h>
-@@ -466,29 +465,7 @@ static struct idxd_device *idxd_alloc(struct pci_dev *pdev, struct idxd_driver_d
- 
- static int idxd_enable_system_pasid(struct idxd_device *idxd)
- {
--	int flags;
--	unsigned int pasid;
--	struct iommu_sva *sva;
--
--	flags = SVM_FLAG_SUPERVISOR_MODE;
--
--	sva = iommu_sva_bind_device(&idxd->pdev->dev, NULL, &flags);
--	if (IS_ERR(sva)) {
--		dev_warn(&idxd->pdev->dev,
--			 "iommu sva bind failed: %ld\n", PTR_ERR(sva));
--		return PTR_ERR(sva);
--	}
--
--	pasid = iommu_sva_get_pasid(sva);
--	if (pasid == IOMMU_PASID_INVALID) {
--		iommu_sva_unbind_device(sva);
--		return -ENODEV;
--	}
--
--	idxd->sva = sva;
--	idxd->pasid = pasid;
--	dev_dbg(&idxd->pdev->dev, "system pasid: %u\n", pasid);
--	return 0;
-+	return -EOPNOTSUPP;
- }
- 
- static void idxd_disable_system_pasid(struct idxd_device *idxd)
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index 1ef7bbb4acf3..f155d406c5d5 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -367,8 +367,7 @@ __arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
- 	return ERR_PTR(ret);
- }
- 
--struct iommu_sva *
--arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm, void *drvdata)
-+struct iommu_sva *arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
- {
- 	struct iommu_sva *handle;
- 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 8bcfb93dda56..2420fa5c2360 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -313,8 +313,7 @@ static int pasid_to_svm_sdev(struct device *dev, unsigned int pasid,
- 	return 0;
- }
- 
--static int intel_svm_alloc_pasid(struct device *dev, struct mm_struct *mm,
--				 unsigned int flags)
-+static int intel_svm_alloc_pasid(struct device *dev, struct mm_struct *mm)
- {
- 	ioasid_t max_pasid = dev_is_pci(dev) ?
- 			pci_max_pasids(to_pci_dev(dev)) : intel_pasid_max_id;
-@@ -324,8 +323,7 @@ static int intel_svm_alloc_pasid(struct device *dev, struct mm_struct *mm,
- 
- static struct iommu_sva *intel_svm_bind_mm(struct intel_iommu *iommu,
- 					   struct device *dev,
--					   struct mm_struct *mm,
--					   unsigned int flags)
-+					   struct mm_struct *mm)
- {
- 	struct device_domain_info *info = dev_iommu_priv_get(dev);
- 	struct intel_svm_dev *sdev;
-@@ -341,22 +339,18 @@ static struct iommu_sva *intel_svm_bind_mm(struct intel_iommu *iommu,
- 
- 		svm->pasid = mm->pasid;
- 		svm->mm = mm;
--		svm->flags = flags;
- 		INIT_LIST_HEAD_RCU(&svm->devs);
- 
--		if (!(flags & SVM_FLAG_SUPERVISOR_MODE)) {
--			svm->notifier.ops = &intel_mmuops;
--			ret = mmu_notifier_register(&svm->notifier, mm);
--			if (ret) {
--				kfree(svm);
--				return ERR_PTR(ret);
--			}
-+		svm->notifier.ops = &intel_mmuops;
-+		ret = mmu_notifier_register(&svm->notifier, mm);
-+		if (ret) {
-+			kfree(svm);
-+			return ERR_PTR(ret);
- 		}
- 
- 		ret = pasid_private_add(svm->pasid, svm);
- 		if (ret) {
--			if (svm->notifier.ops)
--				mmu_notifier_unregister(&svm->notifier, mm);
-+			mmu_notifier_unregister(&svm->notifier, mm);
- 			kfree(svm);
- 			return ERR_PTR(ret);
- 		}
-@@ -391,9 +385,7 @@ static struct iommu_sva *intel_svm_bind_mm(struct intel_iommu *iommu,
- 	}
- 
- 	/* Setup the pasid table: */
--	sflags = (flags & SVM_FLAG_SUPERVISOR_MODE) ?
--			PASID_FLAG_SUPERVISOR_MODE : 0;
--	sflags |= cpu_feature_enabled(X86_FEATURE_LA57) ? PASID_FLAG_FL5LP : 0;
-+	sflags = cpu_feature_enabled(X86_FEATURE_LA57) ? PASID_FLAG_FL5LP : 0;
- 	ret = intel_pasid_setup_first_level(iommu, dev, mm->pgd, mm->pasid,
- 					    FLPT_DEFAULT_DID, sflags);
- 	if (ret)
-@@ -407,8 +399,7 @@ static struct iommu_sva *intel_svm_bind_mm(struct intel_iommu *iommu,
- 	kfree(sdev);
- free_svm:
- 	if (list_empty(&svm->devs)) {
--		if (svm->notifier.ops)
--			mmu_notifier_unregister(&svm->notifier, mm);
-+		mmu_notifier_unregister(&svm->notifier, mm);
- 		pasid_private_remove(mm->pasid);
- 		kfree(svm);
- 	}
-@@ -764,7 +755,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 			 * to unbind the mm while any page faults are outstanding.
- 			 */
- 			svm = pasid_private_find(req->pasid);
--			if (IS_ERR_OR_NULL(svm) || (svm->flags & SVM_FLAG_SUPERVISOR_MODE))
-+			if (IS_ERR_OR_NULL(svm))
- 				goto bad_req;
- 		}
- 
-@@ -815,40 +806,20 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 	return IRQ_RETVAL(handled);
- }
- 
--struct iommu_sva *intel_svm_bind(struct device *dev, struct mm_struct *mm, void *drvdata)
-+struct iommu_sva *intel_svm_bind(struct device *dev, struct mm_struct *mm)
- {
- 	struct intel_iommu *iommu = device_to_iommu(dev, NULL, NULL);
--	unsigned int flags = 0;
- 	struct iommu_sva *sva;
- 	int ret;
- 
--	if (drvdata)
--		flags = *(unsigned int *)drvdata;
--
--	if (flags & SVM_FLAG_SUPERVISOR_MODE) {
--		if (!ecap_srs(iommu->ecap)) {
--			dev_err(dev, "%s: Supervisor PASID not supported\n",
--				iommu->name);
--			return ERR_PTR(-EOPNOTSUPP);
--		}
--
--		if (mm) {
--			dev_err(dev, "%s: Supervisor PASID with user provided mm\n",
--				iommu->name);
--			return ERR_PTR(-EINVAL);
--		}
--
--		mm = &init_mm;
--	}
--
- 	mutex_lock(&pasid_mutex);
--	ret = intel_svm_alloc_pasid(dev, mm, flags);
-+	ret = intel_svm_alloc_pasid(dev, mm);
- 	if (ret) {
- 		mutex_unlock(&pasid_mutex);
- 		return ERR_PTR(ret);
- 	}
- 
--	sva = intel_svm_bind_mm(iommu, dev, mm, flags);
-+	sva = intel_svm_bind_mm(iommu, dev, mm);
- 	mutex_unlock(&pasid_mutex);
- 
- 	return sva;
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index e9f6a8d33b58..1d28a74a0511 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2775,7 +2775,6 @@ EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
-  * iommu_sva_bind_device() - Bind a process address space to a device
-  * @dev: the device
-  * @mm: the mm to bind, caller must hold a reference to it
-- * @drvdata: opaque data pointer to pass to bind callback
-  *
-  * Create a bond between device and address space, allowing the device to access
-  * the mm using the returned PASID. If a bond already exists between @device and
-@@ -2788,7 +2787,7 @@ EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
-  * On error, returns an ERR_PTR value.
-  */
- struct iommu_sva *
--iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void *drvdata)
-+iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
- {
- 	struct iommu_group *group;
- 	struct iommu_sva *handle = ERR_PTR(-EINVAL);
-@@ -2813,7 +2812,7 @@ iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void *drvdata)
- 	if (iommu_group_device_count(group) != 1)
- 		goto out_unlock;
- 
--	handle = ops->sva_bind(dev, mm, drvdata);
-+	handle = ops->sva_bind(dev, mm);
- 
- out_unlock:
- 	mutex_unlock(&group->mutex);
-diff --git a/drivers/misc/uacce/uacce.c b/drivers/misc/uacce/uacce.c
-index b70a013139c7..905eff1f840e 100644
---- a/drivers/misc/uacce/uacce.c
-+++ b/drivers/misc/uacce/uacce.c
-@@ -108,7 +108,7 @@ static int uacce_bind_queue(struct uacce_device *uacce, struct uacce_queue *q)
- 	if (!(uacce->flags & UACCE_DEV_SVA))
- 		return 0;
- 
--	handle = iommu_sva_bind_device(uacce->parent, current->mm, NULL);
-+	handle = iommu_sva_bind_device(uacce->parent, current->mm);
- 	if (IS_ERR(handle))
- 		return PTR_ERR(handle);
- 
+Please review and suggest.
+
+Best regards,
+baolu
+
+Change log:
+v13:
+ - Replace blocking domain with a remove_dev_pasid ops. The blocking
+   domain support in VT-d and ARM SMMUv3 drivers will be moved into
+   another series.
+ - Misc comment refinements.
+
+v12:
+ - https://lore.kernel.org/linux-iommu/20220826121141.50743-1-baolu.lu@linux.intel.com/
+ - Add blocking domain support in both vt-d and smmuv3 drivers and make
+   the set blocking domain through its own domain ops.
+ - Add a type parameter in iommu_get_domain_for_dev_pasid() to matach
+   the interested domain type.
+ - Only enforce ACS RR & UF in pci_enable_pasid() and refine the commit
+   messages according to Bjorn's suggestions.
+ - Misc code and comment refinement.
+
+v11:
+ - https://lore.kernel.org/linux-iommu/20220817012024.3251276-1-baolu.lu@linux.intel.com/
+ - [PATCH 04/13] PCI: Allow PASID only when ACS enforced on upstreaming path
+   - new patch
+ - [PATCH 05/13] iommu: Add attach/detach_dev_pasid iommu interface
+   - Remove block_dev_pasid domain ops and use setting group blocking
+     domain instead.
+   - Remove iommu_group_immutable_singleton(). Move the PCI/ACS
+     requirement into the pci_enable_pasid(). All devices in an iommu
+     group share a same iommu domain for each pasid.
+ - [PATCH 06/13] iommu: Add IOMMU SVA domain support
+   - Add a refcount for SVA multiple bindings.
+ - [PATCH 07/13] iommu/vt-d: Add SVA domain support
+   - Use set_dev_pasid for both domain attaching and detaching.
+ - [PATCH 08/13] arm-smmu-v3/sva: Add SVA domain support
+   - Use set_dev_pasid for both domain attaching and detaching.
+ - [PATCH 09/13] iommu/sva: Refactoring iommu_sva_bind/unbind_device()
+   - Remove the refcount of iommu_sva::users.
+   - Add iommu_sva::domain.
+ - [PATCH 11/13] iommu: Prepare IOMMU domain for IOPF
+   - Remove unnecessary check of IS_ERR_OR_NULL(mm).
+ - [Overall]
+   - Rebase to v6.0-rc1.
+   - Remove previous Test-by's as some APIs are changed.
+   - Polishing of various codes and comments.
+
+v10:
+ - https://lore.kernel.org/linux-iommu/20220705050710.2887204-1-baolu.lu@linux.intel.com/
+ - Rebase on next branch of iommu tree.
+ - Split attach/detach_device_pasid interfaces and SVA domain extensions
+   to different patches.
+ - Handle the return error of xa_cmpxchg() gracefully.
+ - Directly pass mm in as the SVA fault data.
+ - Rename iopf_handle_group() to iopf_handler().
+ - Some commit message and code comment refinement.
+ - Add Tested-by's from Zhangfei and Tony.
+
+v9:
+ - https://lore.kernel.org/linux-iommu/20220621144353.17547-1-baolu.lu@linux.intel.com/
+ - Some minor changes on comments and function names.
+ - Simplify dev_iommu_get_max_pasids().
+
+v8:
+ - https://lore.kernel.org/linux-iommu/20220607014942.3954894-1-baolu.lu@linux.intel.com/
+ - Add support for calculating the max pasids that a device could
+   consume.
+ - Replace container_of_safe() with container_of.
+ - Remove iommu_ops->sva_domain_ops and make sva support through the
+   generic domain_alloc/free() interfaces.
+ - [Robin] It would be logical to pass IOMMU_DOMAIN_SVA to the normal
+   domain_alloc call, so that driver-internal stuff like context
+   descriptors can be still be hung off the domain as usual (rather than
+   all drivers having to implement some extra internal lookup mechanism
+   to handle all the SVA domain ops).
+ - [Robin] I'd just stick the mm pointer in struct iommu_domain, in a
+   union with the fault handler stuff those are mutually exclusive with
+   SVA.
+ - https://lore.kernel.org/linux-iommu/f3170016-4d7f-e78e-db48-68305f683349@arm.com/
+
+v7:
+ - https://lore.kernel.org/linux-iommu/20220519072047.2996983-1-baolu.lu@linux.intel.com/
+ - Remove duplicate array for sva domain.
+ - Rename detach_dev_pasid to block_dev_pasid.
+ - Add raw device driver interfaces for iommufd.
+ - Other misc refinements and patch reorganization.
+ - Drop "dmaengine: idxd: Separate user and kernel pasid enabling" which
+   has been picked for dmaengine tree.
+
+v6:
+ - https://lore.kernel.org/linux-iommu/20220510061738.2761430-1-baolu.lu@linux.intel.com/
+ - Refine the SVA basic data structures.
+   Link: https://lore.kernel.org/linux-iommu/YnFv0ps0Ad8v+7uH@myrica/
+ - Refine arm smmuv3 sva domain allocation.
+ - Fix a possible lock issue.
+   Link: https://lore.kernel.org/linux-iommu/YnFydE8j8l7Q4m+b@myrica/
+
+v5:
+ - https://lore.kernel.org/linux-iommu/20220502014842.991097-1-baolu.lu@linux.intel.com/
+ - Address review comments from Jean-Philippe Brucker. Very appreciated!
+ - Remove redundant pci aliases check in
+   device_group_immutable_singleton().
+ - Treat all buses except PCI as static in immutable singleton check.
+ - As the sva_bind/unbind() have already guaranteed sva domain free only
+   after iopf_queue_flush_dev(), remove the unnecessary domain refcount.
+ - Move domain get() out of the list iteration in iopf_handle_group().
+
+v4:
+ - https://lore.kernel.org/linux-iommu/20220421052121.3464100-1-baolu.lu@linux.intel.com/
+ - Solve the overlap with another series and make this series
+   self-contained.
+ - No objection to the abstraction of data structure during v3 review.
+   Hence remove the RFC subject prefix.
+ - Refine the immutable singleton group code according to Kevin's
+   comments.
+
+v3:
+ - https://lore.kernel.org/linux-iommu/20220410102443.294128-1-baolu.lu@linux.intel.com/
+ - Rework iommu_group_singleton_lockdown() by adding a flag to the group
+   that positively indicates the group can never have more than one
+   member, even after hot plug.
+ - Abstract the data structs used for iommu sva in a separated patches to
+   make it easier for review.
+ - I still keep the RFC prefix in this series as above two significant
+   changes need at least another round review to be finalized.
+ - Several misc refinements.
+
+v2:
+ - https://lore.kernel.org/linux-iommu/20220329053800.3049561-1-baolu.lu@linux.intel.com/
+ - Add sva domain life cycle management to avoid race between unbind and
+   page fault handling.
+ - Use a single domain for each mm.
+ - Return a single sva handler for the same binding.
+ - Add a new helper to meet singleton group requirement.
+ - Rework the SVA domain allocation for arm smmu v3 driver and move the
+   pasid_bit initialization to device probe.
+ - Drop the patch "iommu: Handle IO page faults directly".
+ - Add mmget_not_zero(mm) in SVA page fault handler.
+
+v1:
+ - https://lore.kernel.org/linux-iommu/20220320064030.2936936-1-baolu.lu@linux.intel.com/
+ - Initial post.
+
+Lu Baolu (13):
+  iommu: Add max_pasids field in struct iommu_device
+  iommu: Add max_pasids field in struct dev_iommu
+  iommu: Remove SVM_FLAG_SUPERVISOR_MODE support
+  PCI: Enable PASID only when ACS RR & UF enabled on upstream path
+  iommu: Add attach/detach_dev_pasid iommu interfaces
+  iommu: Add IOMMU SVA domain support
+  iommu/vt-d: Add SVA domain support
+  arm-smmu-v3/sva: Add SVA domain support
+  iommu/sva: Refactoring iommu_sva_bind/unbind_device()
+  iommu: Remove SVA related callbacks from iommu ops
+  iommu: Prepare IOMMU domain for IOPF
+  iommu: Per-domain I/O page fault handling
+  iommu: Rename iommu-sva-lib.{c,h}
+
+ include/linux/intel-svm.h                     |  13 -
+ include/linux/iommu.h                         | 116 ++++++--
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  23 +-
+ drivers/iommu/intel/iommu.h                   |  18 +-
+ .../iommu/{iommu-sva-lib.h => iommu-sva.h}    |  14 +-
+ drivers/dma/idxd/cdev.c                       |   3 +-
+ drivers/dma/idxd/init.c                       |  25 +-
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 104 ++++---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  21 +-
+ drivers/iommu/intel/dmar.c                    |   7 +
+ drivers/iommu/intel/iommu.c                   |  30 +-
+ drivers/iommu/intel/svm.c                     | 147 ++++------
+ drivers/iommu/io-pgfault.c                    |  77 ++---
+ drivers/iommu/iommu-sva-lib.c                 |  71 -----
+ drivers/iommu/iommu-sva.c                     | 239 ++++++++++++++++
+ drivers/iommu/iommu.c                         | 266 ++++++++++++------
+ drivers/misc/uacce/uacce.c                    |   2 +-
+ drivers/pci/ats.c                             |   3 +
+ drivers/iommu/Makefile                        |   2 +-
+ 19 files changed, 725 insertions(+), 456 deletions(-)
+ rename drivers/iommu/{iommu-sva-lib.h => iommu-sva.h} (83%)
+ delete mode 100644 drivers/iommu/iommu-sva-lib.c
+ create mode 100644 drivers/iommu/iommu-sva.c
+
 -- 
 2.25.1
 
