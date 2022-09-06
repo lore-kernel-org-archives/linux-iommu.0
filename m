@@ -1,23 +1,37 @@
-Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C008C7E
-	for <iommu@lists.linux.dev>; Mon,  5 Sep 2022 23:51:18 +0000 (UTC)
-Date: Mon, 5 Sep 2022 19:50:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1662421870;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A7187E
+	for <iommu@lists.linux.dev>; Tue,  6 Sep 2022 07:23:35 +0000 (UTC)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 4F2371F964;
+	Tue,  6 Sep 2022 07:23:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1662449012; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=L/QtR7clKwa18sm3kCbVwFkkFjR319r9zDLdSKgBl/k=;
-	b=K0AUlJQwh12ArX3Ivo5AajZFTOnj8fptPh9b/mWIPD8nscGPgO8kw0SNz+Kn/2nIaB9e9i
-	7R3FAk1ULpUqZb/f26WREIzq78CmF0IzVffZPJjJ7RbMsrYAMZ8f5FwzvnmygEisggBmw5
-	5Icx4XHaZKC0M/ASUBy2hcvuJroZdmk=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Kent Overstreet <kent.overstreet@linux.dev>
-To: Steven Rostedt <rostedt@goodmis.org>
-Cc: Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>,
-	Mel Gorman <mgorman@suse.de>, Peter Zijlstra <peterz@infradead.org>,
+	bh=yWige9mo0MBBtPav5dIlbqrSvO7RJRBpbBUTOf+sq9M=;
+	b=WccstuGcN1E1smf3eeXr4m/9pomQg8ST93ACF2vvMP9mGzR6axKEmCztIjBdCY0kE1ePhF
+	qp1K5CsZswV66J5NVNekoHzxPlFalOoi6cZRPYDHsBj6ywB2YlS1u9Xkk+KAWE0r4Pl9uD
+	W0z/Db1D98aMVW/f++pbHZ2Vb4C25hg=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2160313A7A;
+	Tue,  6 Sep 2022 07:23:32 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+	by imap2.suse-dmz.suse.de with ESMTPSA
+	id f8r7BnT1FmOCNAAAMHmgww
+	(envelope-from <mhocko@suse.com>); Tue, 06 Sep 2022 07:23:32 +0000
+Date: Tue, 6 Sep 2022 09:23:31 +0200
+From: Michal Hocko <mhocko@suse.com>
+To: Kent Overstreet <kent.overstreet@linux.dev>
+Cc: Suren Baghdasaryan <surenb@google.com>, Mel Gorman <mgorman@suse.de>,
+	Peter Zijlstra <peterz@infradead.org>,
 	Andrew Morton <akpm@linux-foundation.org>,
 	Vlastimil Babka <vbabka@suse.cz>,
 	Johannes Weiner <hannes@cmpxchg.org>,
@@ -33,6 +47,7 @@ Cc: Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>,
 	masahiroy@kernel.org, nathan@kernel.org, changbin.du@intel.com,
 	ytcoode@gmail.com, Vincent Guittot <vincent.guittot@linaro.org>,
 	Dietmar Eggemann <dietmar.eggemann@arm.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
 	Benjamin Segall <bsegall@google.com>,
 	Daniel Bristot de Oliveira <bristot@redhat.com>,
 	Valentin Schneider <vschneid@redhat.com>,
@@ -53,17 +68,17 @@ Cc: Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>,
 	linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
 	LKML <linux-kernel@vger.kernel.org>
 Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
-Message-ID: <20220905235007.sc4uk6illlog62fl@kmo-framework>
-References: <Yw88RFuBgc7yFYxA@dhcp22.suse.cz>
+Message-ID: <Yxb1cxDSyte1Ut/F@dhcp22.suse.cz>
+References: <20220831101948.f3etturccmp5ovkl@suse.de>
+ <Yw88RFuBgc7yFYxA@dhcp22.suse.cz>
  <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
  <YxBc1xuGbB36f8zC@dhcp22.suse.cz>
  <CAJuCfpGhwPFYdkOLjwwD4ra9JxPqq1T5d1jd41Jy3LJnVnhNdg@mail.gmail.com>
  <YxEE1vOwRPdzKxoq@dhcp22.suse.cz>
- <CAJuCfpFrRwXXQ=wAvZ-oUNKXUJ=uUA=fiDrkhRu5VGXcM+=cuA@mail.gmail.com>
- <20220905110713.27304149@gandalf.local.home>
- <CAJuCfpF-O6Gz2o7YqCgFHV+KEFuzC-PTUoBHj25DNRkkSmhbUg@mail.gmail.com>
- <20220905204229.xqrqxmaax37n3ody@moria.home.lan>
- <20220905181650.71e9d02c@gandalf.local.home>
+ <CAJuCfpHuzJGTA_-m0Jfawc7LgJLt4GztUUY4K9N9-7bFqJuXnw@mail.gmail.com>
+ <20220901201502.sn6223bayzwferxv@moria.home.lan>
+ <YxW4Ig338d2vQAz3@dhcp22.suse.cz>
+ <20220905234649.525vorzx27ybypsn@kmo-framework>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -72,40 +87,58 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220905181650.71e9d02c@gandalf.local.home>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+In-Reply-To: <20220905234649.525vorzx27ybypsn@kmo-framework>
 
-On Mon, Sep 05, 2022 at 06:16:50PM -0400, Steven Rostedt wrote:
-> On Mon, 5 Sep 2022 16:42:29 -0400
-> Kent Overstreet <kent.overstreet@linux.dev> wrote:
+On Mon 05-09-22 19:46:49, Kent Overstreet wrote:
+> On Mon, Sep 05, 2022 at 10:49:38AM +0200, Michal Hocko wrote:
+> > This is really my main concern about this whole work. Not only it adds a
+> > considerable maintenance burden to the core MM because
 > 
-> > > Haven't tried that yet but will do. Thanks for the reference code!  
-> > 
-> > Is it really worth the effort of benchmarking tracing API overhead here?
-> > 
-> > The main cost of a tracing based approach is going to to be the data structure
-> > for remembering outstanding allocations so that free events can be matched to
-> > the appropriate callsite. Regardless of whether it's done with BFP or by
-> > attaching to the tracepoints directly, that's going to be the main overhead.
-> 
-> The point I was making here is that you do not need your own hooking
-> mechanism. You can get the information directly by attaching to the
-> tracepoint.
-> 
-> > > static void my_callback(void *data, unsigned long call_site,
-> > >                         const void *ptr, struct kmem_cache *s,
-> > >                         size_t bytes_req, size_t bytes_alloc,
-> > >                         gfp_t gfp_flags)
-> > > {
-> > >         struct my_data_struct *my_data = data;
-> > >
-> > >         { do whatever }
-> > > }
-> 
-> The "do whatever" is anything you want to do.
-> 
-> Or is the data structure you create with this approach going to be too much
-> overhead? How hard is it for a hash or binary search lookup?
+> [citation needed]
 
-If you don't think it's hard, go ahead and show us.
+I thought this was clear from the email content (the part you haven't
+quoted here). But let me be explicit one more time for you.
+
+I hope we can agree that in order for this kind of tracking to be useful
+you need to cover _callers_ of the allocator or in the ideal world
+the users/owner of the tracked memory (the later is sometimes much
+harder/impossible to track when the memory is handed over from one peer
+to another).
+
+It is not particularly useful IMO to see that a large portion of the
+memory has been allocated by say vmalloc or kvmalloc, right?  How
+much does it really tell you that a lot of memory has been allocated
+by kvmalloc or vmalloc? Yet, neither of the two is handled by the
+proposed tracking and it would require additional code to be added and
+_maintained_ to cover them. But that would be still far from complete,
+we have bulk allocator, mempools etc.
+
+If that was not enough some of those allocators are used by library code
+like seq_file, networking pools, module loader and whatnot. So this
+grows and effectively doubles the API space for many allocators as they
+need both normal API and the one which can pass the tracking context
+down the path to prevent double tracking. Right?
+
+This in my book is a considerable maintenance burden. And especially for
+the MM subsystem this means additional burden because we have a very
+rich allocators APIs.
+
+You are absolutely right that processing stack traces is PITA but that
+allows to see the actual callers irrespectively how many layers of
+indirection or library code it goes.
+
+> > it adds on top of
+> > our existing allocator layers complexity but it would need to spread beyond
+> > MM to be useful because it is usually outside of MM where leaks happen.
+> 
+> If you want the tracking to happen at a different level of the call stack, just
+> call _kmalloc() directly and call alloc_tag_add()/sub() yourself.
+
+As pointed above this just scales poorly and adds to the API space. Not
+to mention that direct use of alloc_tag_add can just confuse layers
+below which rely on the same thing.
+
+Hope this makes it clearer.
+-- 
+Michal Hocko
+SUSE Labs
