@@ -1,148 +1,116 @@
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2109.outbound.protection.outlook.com [40.107.20.109])
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 216312F2F
-	for <iommu@lists.linux.dev>; Tue,  6 Sep 2022 09:22:25 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=X7GsPD6YAeLDcvMAQQ21WRjokmY/oqaCpbnp52LxBbBT2/zP8PA88UHOqFaly5Y7m34CDr38kTGn+G4B/05jH6qgUlWYZlvUqwOAxq57p/XYLPGk5+52ZloQbZ64OwquzoT+lLNCZYfUwKY4YyglLhn1VCAkwI2n+dNyhQ9bSf7pjAXGQ9UCredLL1eDuCQuu1chTfH80viFHmnPBCINNA9LttApKseWFDTlNMuDsQ7uAMYugaFSt3LD+6rcy7TAJZucR6vBfYWmO4WFWnM2vyVPftC32GQ5Dlq2XtYK30nZ5tpKusipIP0gb0TwqKIEWM3taYYrwRfMbpSvBfymzg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2DjbLY5KyzSAJsnI13GEpruI8CM2jG+1/QrvtWwkQBE=;
- b=dGPVhagHk42SvMRoEyibXe0v+wKEFvgvqbCVFP8HotJf1ucZ/E/H3xd9wG3A0avvZfUsk/ezAoOPzuwClLKd+wWh7vc8Q2kYTTzu2g4n4HpGNYruvWVSytm9zY7dYQq2VI7JmrtYMvgzfiuJ7T1WAls912jVZxzhTN52DRndMvCSnlynjp16uuFvwAJjk9a9Ckx1WK17nr7tEcOgQhdaSHET6Qd+XIdcUlr91hIhh4asvP3XIvyX9aIuxoIas2qj6GkSpgy3r5KEyQCAC/iSxg7lRwQXrtVQseyyfww+/tXTXnFCzKBP5bzdJj5R25dfXZuK9OtSJ+25U/wLDzO4sw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2DjbLY5KyzSAJsnI13GEpruI8CM2jG+1/QrvtWwkQBE=;
- b=D6bpYdBkYHbNRgWJq20qNxcsemMj5+lDpA8z7PR+mFWV1L0OtG4nsZkPbT9wbR6tJlUmIJXuTtH8BbwEiWHvY68xwxxFXbe++xvFNhBbsSyNm7hJ3nczHW0Zwo3bEMrCauSL1H85sIsMg75ssIRWHkshF0P+AFJUnua5EoICbws=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=plvision.eu;
-Received: from DB6P190MB0310.EURP190.PROD.OUTLOOK.COM (2603:10a6:6:3e::13) by
- GV1P190MB1995.EURP190.PROD.OUTLOOK.COM (2603:10a6:150:5a::17) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5588.14; Tue, 6 Sep 2022 09:22:21 +0000
-Received: from DB6P190MB0310.EURP190.PROD.OUTLOOK.COM
- ([fe80::cc27:42a0:f08a:1015]) by DB6P190MB0310.EURP190.PROD.OUTLOOK.COM
- ([fe80::cc27:42a0:f08a:1015%7]) with mapi id 15.20.5588.010; Tue, 6 Sep 2022
- 09:22:20 +0000
-Date: Tue, 6 Sep 2022 12:22:16 +0300
-From: Vadym Kochan <vadym.kochan@plvision.eu>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Christoph Hellwig <hch@infradead.org>,
-	Adrian Hunter <adrian.hunter@intel.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Hu Ziji <huziji@marvell.com>, Ulf Hansson <ulf.hansson@linaro.org>,
-	linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Elad Nachman <enachman@marvell.com>, iommu@lists.linux.dev,
-	Mickey Rachamim <mickeyr@marvell.com>
-Subject: Re: [PATCH] mmc: sdhci-xenon: Fix 2G limitation on AC5 SoC
-Message-ID: <20220906092216.GA485@plvision.eu>
-References: <20220808122652.GA6599@plvision.eu>
- <3f96b382-aede-1f52-33cb-5f95715bdf59@intel.com>
- <3d16ebad-ea6c-555e-2481-ca5fb08a6c66@arm.com>
- <20220816205129.GA6438@plvision.eu>
- <94888b3b-8f54-367d-c6b4-5ebfeeafe4c4@arm.com>
- <20220817160730.GA17202@plvision.eu>
- <80d2538c-bac4-cc4f-85ae-352fcf86321d@arm.com>
- <20220818120740.GA21548@plvision.eu>
- <YwHOCHmKaf7yfgOD@infradead.org>
- <3b88438d-1bb0-e980-b4db-1f8663dc6042@arm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3b88438d-1bb0-e980-b4db-1f8663dc6042@arm.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: FR0P281CA0054.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:48::16) To DB6P190MB0310.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:6:3e::13)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2A902F2F
+	for <iommu@lists.linux.dev>; Tue,  6 Sep 2022 09:28:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662456514; x=1693992514;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=QqmXy2GZLHSohVU0zyxyHogpet/ueg+VsoCb0iGCfBE=;
+  b=NKeZAj434YxXUhGhckOSFVUoS3Cj2wQ8wjQoGZ93YXBABEpBv98ERH3f
+   fvQQP7fFyhWeT5mcugbAUXqOS+pMARQfdAHyrojzWK90T1gcpe60rclUm
+   M3CzzL94zS3DGD9Ez8x5a4jygwUMtTVTSQao8pH3Kmi7CPWlaw4BN0fyF
+   tcpKFoWBup5UHCpyr9IMyZ1JNa+bu0J7CdpEPpIciyaR+f3OaA2J7cHKv
+   AIbt6tYcf+j3rBhBawiCqzB56o1paNRaHH0Kmc9rizutIR17LoiC4KEJD
+   AJcs6grXXvzRN4oPy/sO51ieS3+pPGe11oLouPW6G0g+DCYnLo42fXb+q
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10461"; a="322721086"
+X-IronPort-AV: E=Sophos;i="5.93,293,1654585200"; 
+   d="scan'208";a="322721086"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 02:28:34 -0700
+X-IronPort-AV: E=Sophos;i="5.93,293,1654585200"; 
+   d="scan'208";a="644091572"
+Received: from zhaohaif-mobl1.ccr.corp.intel.com (HELO [10.254.214.249]) ([10.254.214.249])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 02:28:32 -0700
+Message-ID: <1d80f56c-bef7-6e5f-0bca-dad35f5e5a8e@linux.intel.com>
+Date: Tue, 6 Sep 2022 17:28:29 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d4f13cd4-d9ca-4761-8ebd-08da8fe94cba
-X-MS-TrafficTypeDiagnostic: GV1P190MB1995:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	lSKcgkoS7viG+Ra7znNJS2jreYG404m5NYqjx0TWetvdjd4BoaSNARu3dkrvs86Fb+JZWquVyR8jLCQccZ8slyE4gD1eWU8nGhcBvk9v6Cif00RDRFtvONuTnkP1ZijrSMCej07GOuZ6JZtftiWj6QJKcizpmhmvyEnx8GSbPFYkeEMpEcUNRXdyWOYWqGm4D7yLjRjsWArXXsArIMckfo8T4HCDB9hVWfip30slZTfZhNNL2vrYHYM7L3Jrpv1ewsMQCLNCDwGImk7VXoTWQ6UJN9rQyidlUrOvxSaH2HZf3vLmt5rimhIj9xSl58zsC2CNguuelqFjeptDIGFyaO6lc0AK0fSYVYjE4isvGoZAdpNtFLcZ95J8NMdmgbXwOYa5ka0kbVy/P9T9u4r8oW+fslY5jWCh+Iqsc1zUdxT4e//xjmyKthRq9SbwA2jFzvzGmtPdnHoipOsDAsh2abLGJybttvNaS+fnmsH+hVyfdB5S1cVClO0Uk74BeLVg/8h2pzpnI8byXBZQTp4ZVZE9gtx4pLj3XlS7brTC6CD/P7eY0z2xlT4Q0aV40dhdPGGNZV1YbWVXtYGEHzTxukxDPtLGEr0vN+bcWkR511pzbkIh/vmwLwKXBnI6wre9wyNmiS8iwpltVIqN0qGfQakNwB9aNXoHTCSKTFusbNH4cmvzQz6nqXhnzqVzoNnIIaCAwyb79dcHpB34FWBpJWRFBxTvlB17zC4rCrVMx7QPUkgATlgfH1tiHG2shJvw
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB6P190MB0310.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(34036004)(346002)(136003)(396003)(39830400003)(376002)(6512007)(38100700002)(8676002)(38350700002)(66946007)(316002)(66476007)(66556008)(4326008)(54906003)(6916009)(44832011)(8936002)(5660300002)(6506007)(7416002)(2616005)(1076003)(186003)(41300700001)(33656002)(508600001)(6486002)(36756003)(53546011)(26005)(52116002)(2906002)(41320700001)(6666004)(86362001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?I146paHRL58snbj6+KD+qZwAdKE+q6zfMAfs0k9geG/oqK9cP0MBpTNyhCTJ?=
- =?us-ascii?Q?UzwOuyiKa5NijKrWs7e290dp9RerSC+i/grzwsLSieX7xr63rEF6S8QXtw5e?=
- =?us-ascii?Q?anrUIMybU0QbpoIaeSvTTkAPIhY793WcYxxnkkWoACN4ErIAgmZB0RbABF6p?=
- =?us-ascii?Q?hmvBVSfM2pqtQWSjOcgdSZl12zVEaVUsGVli67rmsgKLN4rrMudiX5AhjKUv?=
- =?us-ascii?Q?U6eTWZriQdMjcqU2Q9zGtA0liozUaNGZZXq+gDeZtHXzrVAzUyMQyEIhbJmc?=
- =?us-ascii?Q?oTyy88BM3r6onlpyTtF96QFSPEil2/RsRW4Uio7NJfnzp8BLJoaa+7v6Y0n4?=
- =?us-ascii?Q?Th+CEvmYbcExKGPY9LAiRQXGswsSZsMij/CamYolP4bgYeMiFCUX1kASXlFz?=
- =?us-ascii?Q?ya7Yy4sjtrL7dLs2IltU9olk3gGFzi7z7gEgMLoJF7qkiFGyo7asUA2dVn1C?=
- =?us-ascii?Q?JyMtdBh+rIClOeBxlL1Q4TrLPDeroTXHqqVwg9CeM2hawfxBdB1YHSuDzc1T?=
- =?us-ascii?Q?JzUeq7fw2zRakJ6H2qG9J80CTMhuebgO3cvpDfvl4C4fyOcLtM06cEPZjDym?=
- =?us-ascii?Q?OPTSyXBkAt50J5Hc+MJuQT3H5+BevLEhvNHwq4TrIQwAz/sl2yUdUouwITtv?=
- =?us-ascii?Q?jlpt4N9+QC1ZWWE2HxgpLRL7ABcIxztd56IgZhKI0tR3vAYzxOXYzDStuLuz?=
- =?us-ascii?Q?zxLXHqU0x0FsSahldOmosI5EFftc/TSMIL2C19iuqEjhBGfymE5VpzhEd2uv?=
- =?us-ascii?Q?a9LIy/knNCgGYeyPnSc8GEJNN5rONwXxVBd94IgH0bUMOGVPasiM1c8DVdZ0?=
- =?us-ascii?Q?K2lJzQEKrOjclL+sX8YabLteiJ33fmtz7QTSJuUtWEhI74Ia672EH2OoTSee?=
- =?us-ascii?Q?kaKLYQvGgRx+blmyqL3GSaTwWtZ4gQrAT9QL8HMllMpkI7vPPj/GpmZQd/CJ?=
- =?us-ascii?Q?YSf6OfHk1I4ub+fGwOf7jkaJoCjnv9RVRtO5mmenT4wv+SGqvsR9qyAMQqFi?=
- =?us-ascii?Q?eNm359wOgc9QDI6mBs5YlKgQ0yFSQX5JDwEQ3GV1kQsXbCxjIemvRGjqIBZy?=
- =?us-ascii?Q?BrFTXbi6T6Beg4NJvp2Fz/Vvo+v6wNY5fHtl6BptEFHto9FeZ4W2CYuJsvaZ?=
- =?us-ascii?Q?ApOD5RCUOy2qXHFVOqoJasw/wllvIPrSCrFdTQOsTfq30jCoeqH1t6Q1ssA1?=
- =?us-ascii?Q?TQf0rum7U83U0uXT0qWgxmqyySJcSRDfRX5T7Y+aKlwl5qYn+E6aI94WF+Uu?=
- =?us-ascii?Q?6C2lh9/c8YAa43Y31h32qOIVNq7TclhMuIgykEgVejKEoPbyY33LCEmvSuYJ?=
- =?us-ascii?Q?LNJZm58WqMf58qXhBOM+Mxw4tWaSkzYumCTvBHfZml4nNaYfAzfVSjPAx1xW?=
- =?us-ascii?Q?bZR6qdKqLQqxMFnw0YccmYkuS4XpHhbQfgcChHrsMKq+FKzgPkojpLPQGqJm?=
- =?us-ascii?Q?YCFSWP7HeGVXfpeV+70CkdTGcGuEz4J7Gt0TcRsjMlIoSX4q03Aloynk/iJZ?=
- =?us-ascii?Q?GpbfnEjeD0TgmxdqPbvAFL2MkD8LVykSvd39OPcritPz260/GGYZ2rzH887M?=
- =?us-ascii?Q?mQaMDCwngjgoI0EOGram92TbAUiYUK6jF3fAJ09E9l0GAwLAtKCmXh+gReOF?=
- =?us-ascii?Q?IQ=3D=3D?=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: d4f13cd4-d9ca-4761-8ebd-08da8fe94cba
-X-MS-Exchange-CrossTenant-AuthSource: DB6P190MB0310.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Sep 2022 09:22:20.4886
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: mAGr1Ymx6S4gYofLAkbe2A9Er5A/rh76wylifhTqVbK+L8cCgyElQJyTNiZzZMo3qipXd0BPCY5SXw0e3C6/Rb+v1DA1ibpEIYgc6nFzT/8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1P190MB1995
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v2 1/2] iova: Remove some magazine pointer NULL checks
+To: John Garry <john.garry@huawei.com>, robin.murphy@arm.com,
+ joro@8bytes.org, will@kernel.org
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linuxarm@huawei.com
+References: <1662369083-238529-1-git-send-email-john.garry@huawei.com>
+ <1662369083-238529-2-git-send-email-john.garry@huawei.com>
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+In-Reply-To: <1662369083-238529-2-git-send-email-john.garry@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Hi Robin,
+John,
 
-On Mon, Aug 22, 2022 at 11:06:43AM +0100, Robin Murphy wrote:
-> On 2022-08-21 07:17, Christoph Hellwig wrote:
-> > On Thu, Aug 18, 2022 at 03:07:40PM +0300, Vadym Kochan wrote:
-> > > It works with the following changes:
-> > > 
-> > >      #1 dma-ranges = <0x0 0x0 0x2 0x0 0x0 0x80000000>;
-> > > 
-> > >      #3 swiotlb="force"
-> > > 
-> > > Is it OK to force the memory allocation from the start for the swiotlb ?
-> > 
-> > It should be ok, but isn't really optimal.
-> > 
-> > I wonder if we should just allow DT to specify the swiotlb buffer
-> > location.  Basically have yet another RESERVEDMEM_OF_DECLARE variant
-> > for it, which shouldn't be all that much work except for figuring
-> > out the interaction with the various kernel command line options.
-> 
-> We already have all the information we need in the DT (and ACPI), the arm64
-> init code just needs to do a better job of interpreting it properly. I'll
-> see what I can come up with once I've finished what I'm currently tied up
-> in.
-> 
-> Thanks,
-> Robin.
+在 2022/9/5 17:11, John Garry 写道:
+> Since commit 32e92d9f6f87 ("iommu/iova: Separate out rcache init") it
+> has not been possible to have NULL CPU rcache "loaded" or "prev" magazine
+> pointers. As such, the checks in iova_magazine_full(),
+> iova_magazine_empty(), and iova_magazine_free_pfns() may be dropped.
+>
+> Signed-off-by: John Garry <john.garry@huawei.com>
+> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+>   drivers/iommu/iova.c | 7 ++-----
+>   1 file changed, 2 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index 47d1983dfa2a..580fdf669922 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -661,9 +661,6 @@ iova_magazine_free_pfns(struct iova_magazine *mag, struct iova_domain *iovad)
+>   	unsigned long flags;
+>   	int i;
+>   
+> -	if (!mag)
+> -		return;
+> -
 
-Can I help you with something ?
+iommu_probe_device
+   ops->probe_finalize(dev);
+     intel_iommu_probe_finalize
+        iommu_setup_dma_ops
+          iommu_dma_init_domain(domain, dma_base, dma_limit, dev)
+            iova_domain_init_rcaches
+              {
+              ...
+              cpu_rcache->loaded = iova_magazine_alloc(GFP_KERNEL);
+              cpu_rcache->prev = iova_magazine_alloc(GFP_KERNEL);
+   	     if (!cpu_rcache->loaded || !cpu_rcache->prev) {
+			    ret = -ENOMEM;
+   		            goto out_err;
+
+Do you mean iova_magazine_alloc() is impossible to fail ?
 
 Thanks,
+
+Ethan
+
+>   	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
+>   
+>   	for (i = 0 ; i < mag->size; ++i) {
+> @@ -683,12 +680,12 @@ iova_magazine_free_pfns(struct iova_magazine *mag, struct iova_domain *iovad)
+>   
+>   static bool iova_magazine_full(struct iova_magazine *mag)
+>   {
+> -	return (mag && mag->size == IOVA_MAG_SIZE);
+> +	return mag->size == IOVA_MAG_SIZE;
+>   }
+>   
+>   static bool iova_magazine_empty(struct iova_magazine *mag)
+>   {
+> -	return (!mag || mag->size == 0);
+> +	return mag->size == 0;
+>   }
+>   
+>   static unsigned long iova_magazine_pop(struct iova_magazine *mag,
+
+-- 
+"firm, enduring, strong, and long-lived"
+
