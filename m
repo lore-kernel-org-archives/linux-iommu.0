@@ -1,151 +1,155 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BB3CA7E
-	for <iommu@lists.linux.dev>; Tue,  6 Sep 2022 16:35:20 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 34383139F;
-	Tue,  6 Sep 2022 09:35:26 -0700 (PDT)
-Received: from [10.57.15.197] (unknown [10.57.15.197])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B56913F7B4;
-	Tue,  6 Sep 2022 09:35:18 -0700 (PDT)
-Message-ID: <05f9784b-15b6-2a9b-2d9e-19e1430f74e2@arm.com>
-Date: Tue, 6 Sep 2022 17:35:13 +0100
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4770F7E
+	for <iommu@lists.linux.dev>; Tue,  6 Sep 2022 16:36:16 +0000 (UTC)
+Received: by mail-wr1-f44.google.com with SMTP id b17so2960592wrq.3
+        for <iommu@lists.linux.dev>; Tue, 06 Sep 2022 09:36:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=u9aosksAPdNjDd0bmpKVWgEojLBbOI+Pi5HIfNyLBhA=;
+        b=viV8ASe7i5je49B5m4Tc6eMD+h4fSi5v86IpkPQdT8vTn20Ob+X0CLIzxUxQRPbD0m
+         znLDsEJmhmjPHYJuFrOlsvSBPhi9dX7dYWU2bfVvFkdlF63b/bYiP9aswCtWqTiyV2+I
+         ghEt9I2FaI0YWWyi98dTvJ7iH5J31HH+sJn1Xl0A4GU1hHR7dPhClC0rbayb7j75aoEZ
+         FTliPeRmqWowBGmc4o8F37OI2aXh5EQUkVpmWlVL9Gs7dvsPgsbm95GvFM6w4aENIJkR
+         0B5+Yi5eqnBVKvSd63yQCaZx1dVLIkV2vaZ0eGqALNT7v41HgzW/LHyzjRoPmxEF+fyC
+         73Pw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=u9aosksAPdNjDd0bmpKVWgEojLBbOI+Pi5HIfNyLBhA=;
+        b=0bQYYDuBxewf6ZRUqtBhdEBQzTX4I437tesgUBJxwn94sFv6DULTvWzHR3Ybucx5Rc
+         QPe3wF3b5szoWdD84RFH1ytwouaqzxbzdIUnOd6lwcK6aiZ3Jqo7z5JUy7+BN5AxFqG5
+         k14ghUiB5XR325VjdU3vX/SzJF87e0IyYfNiucWJYz9gtdStLezAl1Ui5aN/fw7ebQ+A
+         nOdPk1UjEpvlK1EXsNTb6HfcPnvlPnDomYbjkvAA26q5UzMPSiNjTW/CeN64iZdrL1KC
+         U5ZXwSJebGW3+mPwqKQCUYWvJG6ckb8ZtJqlv8WnNEx+yzTUU4+NbNfO/Lz5+xLIREUz
+         b3Pw==
+X-Gm-Message-State: ACgBeo11SH/2nGpiL2iqS6yGQxcE7WL4eKBhQOFzwfMzIKTILWKksD3c
+	0u908ZMqDyBrEB9VO8iHpMlvuA==
+X-Google-Smtp-Source: AA6agR6rVNZtgyKoGht+YirSloUtiazD6tjUr777qQIeSXmbawEaMBEBIGDh8y7fMY4VMzSQgyschQ==
+X-Received: by 2002:a05:6000:184d:b0:220:8235:132 with SMTP id c13-20020a056000184d00b0022082350132mr28396554wri.178.1662482174493;
+        Tue, 06 Sep 2022 09:36:14 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
+        by smtp.gmail.com with ESMTPSA id q10-20020adff78a000000b0021e6277bc50sm16009172wrp.36.2022.09.06.09.36.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Sep 2022 09:36:13 -0700 (PDT)
+Date: Tue, 6 Sep 2022 17:36:09 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+	Christoph Hellwig <hch@infradead.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.com>,
+	Dave Jiang <dave.jiang@intel.com>,
+	Fenghua Yu <fenghua.yu@intel.com>, Vinod Koul <vkoul@kernel.org>,
+	Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
+	Jacob jun Pan <jacob.jun.pan@intel.com>,
+	Zhangfei Gao <zhangfei.gao@linaro.org>,
+	Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v13 09/13] iommu/sva: Refactoring
+ iommu_sva_bind/unbind_device()
+Message-ID: <Yxd2+d/VOjdOgrR2@myrica>
+References: <20220906124458.46461-1-baolu.lu@linux.intel.com>
+ <20220906124458.46461-10-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH v3 0/9] iommu/amd: Add Generic IO Page Table Framework
- Support for v2 Page Table
-Content-Language: en-GB
-To: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
- joro@8bytes.org
-Cc: suravee.suthikulpanit@amd.com, Jason Gunthorpe <jgg@nvidia.com>
-References: <20220825063939.8360-1-vasant.hegde@amd.com>
- <77d2ea43-9752-b5f3-78ef-8cdae944eee4@amd.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <77d2ea43-9752-b5f3-78ef-8cdae944eee4@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220906124458.46461-10-baolu.lu@linux.intel.com>
 
-On 2022-09-05 12:39, Vasant Hegde wrote:
-> Hi Joerg, Robin,
-> 
-> Ping. Did you get a chance to look into this series?
+On Tue, Sep 06, 2022 at 08:44:54PM +0800, Lu Baolu wrote:
+> +/**
+> + * iommu_sva_bind_device() - Bind a process address space to a device
+> + * @dev: the device
+> + * @mm: the mm to bind, caller must hold a reference to mm_users
+> + *
+> + * Create a bond between device and address space, allowing the device to access
+> + * the mm using the returned PASID. If a bond already exists between @device and
+> + * @mm, it is returned and an additional reference is taken. Caller must call
+> + * iommu_sva_unbind_device() to release each reference.
 
-The io-pgtable patches look OK to me at a glance (I'd be inclined to 
-squash #2 into #1, but it's your choice). One thing that's not so 
-obvious, though, is how this all interacts with 
-amd_iommu_def_domain_type() that currently tries to force identity 
-domains for IOMMUv2 devices - does that mean that this support won't 
-actually be used a lot of the time, and/or is that override still necessary?
+This isn't true anymore. How about storing handle in the domain?
 
-There's also a thread going on elsewhere that I suspect might tie in 
-here as well:
-
-https://lore.kernel.org/regressions/874jy4cqok.wl-tiwai@suse.de/
-
-Will this series also mean that the domain shenanigans in 
-amd_iommu_init_device() can be replaced by just making sure the GPU gets 
-the proper type of v2 default domain in the first place, so KFD can use 
-its PASIDs on top of that directly, and the audio driver problem goes 
-away naturally?
+(Maybe also drop my Reviewed-by tags since this has changed significantly,
+I tend to ignore patches that have them)
 
 Thanks,
-Robin.
+Jean
 
-> 
-> -Vasant
-> 
-> On 8/25/2022 12:09 PM, Vasant Hegde wrote:
->> This series introduces a new usage model for the v2 page table, where it
->> can be used to implement support for DMA-API by adopting the generic
->> IO page table framework.
->>
->> One of the target usecases is to support nested IO page tables
->> where the guest uses the guest IO page table (v2) for translating
->> GVA to GPA, and the hypervisor uses the host I/O page table (v1) for
->> translating GPA to SPA. This is a pre-requisite for supporting the new
->> HW-assisted vIOMMU presented at the KVM Forum 2020.
->>
->>    https://static.sched.com/hosted_files/kvmforum2020/26/vIOMMU%20KVM%20Forum%202020.pdf
->>
->> The following components are introduced in this series:
->>
->> - Part 1 (patch 1-3)
->>    Move AMD v1 page table to use [un]map_pages interfaces and minor fixes to unmap path.
->>
->> - Part 1 (patch 4-5 and 8)
->>    Refactor the current IOMMU page table code to adopt the generic IO page
->>    table framework, and add AMD IOMMU Guest (v2) page table management code.
->>
->> - Part 2 (patch 7)
->>    Add support for the AMD IOMMU Guest IO Protection feature (GIOV)
->>    where requests from the I/O device without a PASID are treated as
->>    if they have PASID of 0.
->>
->> - Part 3 (patch 9)
->>    Introduce new "amd_iommu_pgtable" command-line to allow users
->>    to select the mode of operation (v1 or v2).
->>
->> See AMD I/O Virtualization Technology Specification for more detail.
->>
->>    http://www.amd.com/system/files/TechDocs/48882_IOMMU_3.05_PUB.pdf
->>
->>
->> Thanks,
->> Vasant
->>
->> Changes from v2 -> v3 :
->>    - As Robin suggested added support to use [un]map_pages interface (Patch 1 - 3)
->>    - Removed [un]map interface from AMD IOMMU driver
->>    - Updated v2 page table to use [un]map_pages interface
->>
->> V2 patchset: https://lore.kernel.org/linux-iommu/20220713053034.12061-1-vasant.hegde@amd.com/
->>
->> Changes from v1 -> v2 :
->>    - Allow v2 page table only when FEATURE_GT is enabled
->>    - V2 page table doesn't support IOMMU passthrough mode. Hence added
->>      check to fall back to v1 mode if system is booted with iommu=pt
->>    - Overloaded amd_iommu command line option (removed amd_iommu_pgtable
->>      option)
->>    - Override supported page sizes dynamically instead of selecting at
->>      boot time.
->>
->> V1 patchset : https://lore.kernel.org/linux-iommu/20220603112107.8603-1-vasant.hegde@amd.com/T/#t
->>
->> Changes from RFC -> v1:
->>    - Addressed review comments from Joerg
->>    - Reimplemented v2 page table
->>
->> RFC patchset : https://lore.kernel.org/linux-iommu/20210312090411.6030-1-suravee.suthikulpanit@amd.com/T/#t
->>
->>
->> Suravee Suthikulpanit (4):
->>    iommu/amd: Refactor amd_iommu_domain_enable_v2 to remove locking
->>    iommu/amd: Update sanity check when enable PRI/ATS for IOMMU v1 table
->>    iommu/amd: Add support for Guest IO protection
->>    iommu/amd: Add support for using AMD IOMMU v2 page table for DMA-API
->>
->> Vasant Hegde (5):
->>    iommu/amd/io-pgtable: Implement map_pages io_pgtable_ops callback
->>    iommu/amd/io-pgtable: Implement unmap_pages io_pgtable_ops callback
->>    iommu/amd: Add map/unmap_pages() iommu_domain_ops callback support
->>    iommu/amd: Initial support for AMD IOMMU v2 page table
->>    iommu/amd: Add command-line option to enable different page table
->>
->>   .../admin-guide/kernel-parameters.txt         |   2 +
->>   drivers/iommu/amd/Makefile                    |   2 +-
->>   drivers/iommu/amd/amd_iommu_types.h           |   8 +-
->>   drivers/iommu/amd/init.c                      |  36 +-
->>   drivers/iommu/amd/io_pgtable.c                |  76 ++--
->>   drivers/iommu/amd/io_pgtable_v2.c             | 415 ++++++++++++++++++
->>   drivers/iommu/amd/iommu.c                     | 117 +++--
->>   drivers/iommu/io-pgtable.c                    |   1 +
->>   include/linux/io-pgtable.h                    |   2 +
->>   9 files changed, 584 insertions(+), 75 deletions(-)
->>   create mode 100644 drivers/iommu/amd/io_pgtable_v2.c
->>
-> 
+> + *
+> + * iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA) must be called first, to
+> + * initialize the required SVA features.
+> + *
+> + * On error, returns an ERR_PTR value.
+> + */
+> +struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
+> +{
+> +	struct iommu_domain *domain;
+> +	struct iommu_sva *handle;
+> +	ioasid_t max_pasids;
+> +	int ret;
+> +
+> +	max_pasids = dev->iommu->max_pasids;
+> +	if (!max_pasids)
+> +		return ERR_PTR(-EOPNOTSUPP);
+> +
+> +	/* Allocate mm->pasid if necessary. */
+> +	ret = iommu_sva_alloc_pasid(mm, 1, max_pasids - 1);
+> +	if (ret)
+> +		return ERR_PTR(ret);
+> +
+> +	handle = kzalloc(sizeof(*handle), GFP_KERNEL);
+> +	if (!handle)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	mutex_lock(&iommu_sva_lock);
+> +	/* Search for an existing domain. */
+> +	domain = iommu_get_domain_for_dev_pasid(dev, mm->pasid,
+> +						IOMMU_DOMAIN_SVA);
+> +	if (IS_ERR(domain)) {
+> +		ret = PTR_ERR(domain);
+> +		goto out_unlock;
+> +	}
+> +
+> +	if (domain) {
+> +		domain->users++;
+> +		goto out;
+> +	}
+> +
+> +	/* Allocate a new domain and set it on device pasid. */
+> +	domain = iommu_sva_domain_alloc(dev, mm);
+> +	if (!domain) {
+> +		ret = -ENOMEM;
+> +		goto out_unlock;
+> +	}
+> +
+> +	ret = iommu_attach_device_pasid(domain, dev, mm->pasid);
+> +	if (ret)
+> +		goto out_free_domain;
+> +	domain->users = 1;
+> +out:
+> +	mutex_unlock(&iommu_sva_lock);
+> +	handle->dev = dev;
+> +	handle->domain = domain;
+> +
+> +	return handle;
+> +
+> +out_free_domain:
+> +	iommu_domain_free(domain);
+> +out_unlock:
+> +	mutex_unlock(&iommu_sva_lock);
+> +	kfree(handle);
+> +
+> +	return ERR_PTR(ret);
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_sva_bind_device);
