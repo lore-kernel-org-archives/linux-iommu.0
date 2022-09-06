@@ -1,111 +1,117 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 772207E
-	for <iommu@lists.linux.dev>; Tue,  6 Sep 2022 17:37:03 +0000 (UTC)
-Received: from fraeml742-chm.china.huawei.com (unknown [172.18.147.207])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MMXXT5FVkz67yfJ;
-	Wed,  7 Sep 2022 01:32:57 +0800 (CST)
-Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
- fraeml742-chm.china.huawei.com (10.206.15.223) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 6 Sep 2022 19:36:59 +0200
-Received: from [10.126.175.248] (10.126.175.248) by
- lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 6 Sep 2022 18:36:58 +0100
-Message-ID: <cc950d77-2a97-ac75-4a1d-19aaf864a3be@huawei.com>
-Date: Tue, 6 Sep 2022 18:36:58 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC9917E
+	for <iommu@lists.linux.dev>; Tue,  6 Sep 2022 18:21:52 +0000 (UTC)
+Date: Tue, 6 Sep 2022 14:20:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1662488510;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=/bRlcVcrWdQKJLJipKk17c91ZfuMwNoEsJqygzANM10=;
+	b=e2VD/HcikFLJhe0V11ErS/Oin4ybn/TXkbGiMkiUOxLxKEWpdcoX4otQ2quaeh2xN9tkEz
+	gJSSZJlOcx5MH/FwRLBQM+nMzvd03D3L1jInmtTiFs1YUwF1FG/7tFAS2gRVdaASeb5tb9
+	7SVVXyTQbLTanYnVJHubYmXd6a/lpqA=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Kent Overstreet <kent.overstreet@linux.dev>
+To: Michal Hocko <mhocko@suse.com>
+Cc: Suren Baghdasaryan <surenb@google.com>, Mel Gorman <mgorman@suse.de>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Vlastimil Babka <vbabka@suse.cz>,
+	Johannes Weiner <hannes@cmpxchg.org>,
+	Roman Gushchin <roman.gushchin@linux.dev>,
+	Davidlohr Bueso <dave@stgolabs.net>,
+	Matthew Wilcox <willy@infradead.org>,
+	"Liam R. Howlett" <liam.howlett@oracle.com>,
+	David Vernet <void@manifault.com>,
+	Juri Lelli <juri.lelli@redhat.com>,
+	Laurent Dufour <ldufour@linux.ibm.com>,
+	Peter Xu <peterx@redhat.com>, David Hildenbrand <david@redhat.com>,
+	Jens Axboe <axboe@kernel.dk>, mcgrof@kernel.org,
+	masahiroy@kernel.org, nathan@kernel.org, changbin.du@intel.com,
+	ytcoode@gmail.com, Vincent Guittot <vincent.guittot@linaro.org>,
+	Dietmar Eggemann <dietmar.eggemann@arm.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Benjamin Segall <bsegall@google.com>,
+	Daniel Bristot de Oliveira <bristot@redhat.com>,
+	Valentin Schneider <vschneid@redhat.com>,
+	Christopher Lameter <cl@linux.com>,
+	Pekka Enberg <penberg@kernel.org>,
+	Joonsoo Kim <iamjoonsoo.kim@lge.com>, 42.hyeyoo@gmail.com,
+	Alexander Potapenko <glider@google.com>,
+	Marco Elver <elver@google.com>, Dmitry Vyukov <dvyukov@google.com>,
+	Shakeel Butt <shakeelb@google.com>,
+	Muchun Song <songmuchun@bytedance.com>, arnd@arndb.de,
+	jbaron@akamai.com, David Rientjes <rientjes@google.com>,
+	Minchan Kim <minchan@google.com>,
+	Kalesh Singh <kaleshsingh@google.com>,
+	kernel-team <kernel-team@android.com>,
+	linux-mm <linux-mm@kvack.org>, iommu@lists.linux.dev,
+	kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
+	linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
+	linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
+	LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
+Message-ID: <20220906182058.iijmpzu4rtxowy37@kmo-framework>
+References: <Yw88RFuBgc7yFYxA@dhcp22.suse.cz>
+ <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
+ <YxBc1xuGbB36f8zC@dhcp22.suse.cz>
+ <CAJuCfpGhwPFYdkOLjwwD4ra9JxPqq1T5d1jd41Jy3LJnVnhNdg@mail.gmail.com>
+ <YxEE1vOwRPdzKxoq@dhcp22.suse.cz>
+ <CAJuCfpHuzJGTA_-m0Jfawc7LgJLt4GztUUY4K9N9-7bFqJuXnw@mail.gmail.com>
+ <20220901201502.sn6223bayzwferxv@moria.home.lan>
+ <YxW4Ig338d2vQAz3@dhcp22.suse.cz>
+ <20220905234649.525vorzx27ybypsn@kmo-framework>
+ <Yxb1cxDSyte1Ut/F@dhcp22.suse.cz>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-From: John Garry <john.garry@huawei.com>
-Subject: Re: [PATCH v2 1/2] iova: Remove some magazine pointer NULL checks
-To: Robin Murphy <robin.murphy@arm.com>, Ethan Zhao
-	<haifeng.zhao@linux.intel.com>, <joro@8bytes.org>, <will@kernel.org>
-CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linuxarm@huawei.com>
-References: <1662369083-238529-1-git-send-email-john.garry@huawei.com>
- <1662369083-238529-2-git-send-email-john.garry@huawei.com>
- <1d80f56c-bef7-6e5f-0bca-dad35f5e5a8e@linux.intel.com>
- <3fa23318-6fa7-eba0-30b8-1fb71e6c327e@huawei.com>
- <555fa5aa-a575-d783-dc97-79f63dcf2f57@arm.com>
-In-Reply-To: <555fa5aa-a575-d783-dc97-79f63dcf2f57@arm.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.126.175.248]
-X-ClientProxiedBy: lhrpeml100002.china.huawei.com (7.191.160.241) To
- lhrpeml500003.china.huawei.com (7.191.162.67)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yxb1cxDSyte1Ut/F@dhcp22.suse.cz>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 
->>>
->>> iommu_probe_device
->>>    ops->probe_finalize(dev);
->>>      intel_iommu_probe_finalize
->>>         iommu_setup_dma_ops
->>>           iommu_dma_init_domain(domain, dma_base, dma_limit, dev)
->>>             iova_domain_init_rcaches
->>>               {
->>>               ...
->>>               cpu_rcache->loaded = iova_magazine_alloc(GFP_KERNEL);
->>>               cpu_rcache->prev = iova_magazine_alloc(GFP_KERNEL);
->>>             if (!cpu_rcache->loaded || !cpu_rcache->prev) {
->>>                  ret = -ENOMEM;
->>>                        goto out_err;
->>>
->>> Do you mean iova_magazine_alloc() is impossible to fail ?
->>
->> No, iova_magazine_alloc() may fail and return NULL. But if it does 
->> then we set iovad rcache pointer = NULL in the error path and don't 
->> use the rcache.
->>
->> However we have a !iovad->rcache check on the "fast" alloc but not 
->> "insert". I need to check why that is again.
+On Tue, Sep 06, 2022 at 09:23:31AM +0200, Michal Hocko wrote:
+> On Mon 05-09-22 19:46:49, Kent Overstreet wrote:
+> > On Mon, Sep 05, 2022 at 10:49:38AM +0200, Michal Hocko wrote:
+> > > This is really my main concern about this whole work. Not only it adds a
+> > > considerable maintenance burden to the core MM because
+> > 
+> > [citation needed]
 > 
-> Right, if you find a good reason to respin the patch then perhaps also 
-> tweaking the commit message to clarify that it's impossible to have a 
-> NULL rcache *at any point where those checks are made* might avoid all 
-> possible doubt, however I'd hope that it's clear enough that the 
-> transient case while iova_domain_init_rcaches() is in the process of 
-> failing really doesn't need consideration in its own right.
-
-Yeah, I would think so. But I still don't mind tweaking it to be extra 
-clear.
-
+> I thought this was clear from the email content (the part you haven't
+> quoted here). But let me be explicit one more time for you.
 > 
-> I guess the check in iova_rcache_get() was maybe with the intent of 
-> allowing alloc_iova_fast() to seamlessly fall back to standard 
-> allocation, so an API user can treat iova_domain_init_rcaches() failure 
-> as non-fatal?
-
-The 2x users treat iova_domain_init_rcaches() as fatal:
-- dma-iommu falls back to platform ops in iommu_setup_dma_ops()
-
-Caveat: on the chance that the IOVA domain init fails due to the rcache 
-init failing, then, if there were another device in the group which 
-probes later, its probe would be ok as the start_pfn is set. Not Good.
-
-- vdpa just fails to create the domain in vduse_domain_create()
-
-> That makes a fair amount of sense, but does mean that 
-> we're missing the equivalent in iova_rcache_insert() for it to actually 
-> work. Or we just remove it and tighten up the documentation to say 
-> that's not valid 
-
-I'd be more inclined to remove it. I would rather remove fathpath checks 
-as much as possible and have robust error handling in the domain init.
-
-Afterall I do have the "remove check" craze going.
-
-> - I would like a way to make rcaches optional in 
-> iommu-dma for systems where they're a pointless waste of memory, but we 
-> can always revisit this when we get there.
+> I hope we can agree that in order for this kind of tracking to be useful
+> you need to cover _callers_ of the allocator or in the ideal world
+> the users/owner of the tracked memory (the later is sometimes much
+> harder/impossible to track when the memory is handed over from one peer
+> to another).
 > 
+> It is not particularly useful IMO to see that a large portion of the
+> memory has been allocated by say vmalloc or kvmalloc, right?  How
+> much does it really tell you that a lot of memory has been allocated
+> by kvmalloc or vmalloc? Yet, neither of the two is handled by the
+> proposed tracking and it would require additional code to be added and
+> _maintained_ to cover them. But that would be still far from complete,
+> we have bulk allocator, mempools etc.
 
-thanks,
-John
+Of course - and even a light skimming of the patch set would see it does indeed
+address this. We still have to do vmalloc and percpu memory allocations, but
+slab is certainly handled and that's the big one.
+
+> As pointed above this just scales poorly and adds to the API space. Not
+> to mention that direct use of alloc_tag_add can just confuse layers
+> below which rely on the same thing.
+
+It might help you make your case if you'd say something about what you'd like
+better.
+
+Otherwise, saying "code has to be maintained" is a little bit like saying water
+is wet, and we're all engineers here, I think we know that :)
