@@ -1,109 +1,53 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D73C97E
-	for <iommu@lists.linux.dev>; Tue,  6 Sep 2022 18:26:17 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 080E41042;
-	Tue,  6 Sep 2022 11:26:23 -0700 (PDT)
-Received: from [10.57.15.197] (unknown [10.57.15.197])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 130353F534;
-	Tue,  6 Sep 2022 11:26:14 -0700 (PDT)
-Message-ID: <ad67a859-dc57-e30f-e422-3f9a0cb5239b@arm.com>
-Date: Tue, 6 Sep 2022 19:25:51 +0100
+Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E374717F5
+	for <iommu@lists.linux.dev>; Tue,  6 Sep 2022 18:44:03 +0000 (UTC)
+Received: from g550jk.arnhem.chello.nl (31-151-115-246.dynamic.upc.nl [31.151.115.246])
+	by mail.z3ntu.xyz (Postfix) with ESMTPSA id A58D8C7044;
+	Tue,  6 Sep 2022 18:35:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
+	t=1662489315; bh=sCt7XNGXeGMjmtAHtkSmYHqy8bJlFQumVe0mQA/VKns=;
+	h=From:To:Cc:Subject:Date;
+	b=oxGQ+UZVKsOFDXuMUiUHAN8PJ065thJuAa3kZhpkS2AmcpGB5eyP4HBxov54T+s9R
+	 S54/TG4Z/5jaR/HBCyEipKxsJkwsJ35mrZ4uHotqxSIxrpO7PwUzdc9t8+CcNfgyCP
+	 YHsvsTc4M9kxnuYHdpiylnpkrm5HNDnvXp2rxNKI=
+From: Luca Weiss <luca@z3ntu.xyz>
+To: linux-arm-msm@vger.kernel.org
+Cc: ~postmarketos/upstreaming@lists.sr.ht,
+	phone-devel@vger.kernel.org,
+	Luca Weiss <luca@z3ntu.xyz>,
+	Konrad Dybcio <konrad.dybcio@somainline.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	devicetree@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/3] MDSS support for MSM8953
+Date: Tue,  6 Sep 2022 20:33:31 +0200
+Message-Id: <20220906183334.203787-1-luca@z3ntu.xyz>
+X-Mailer: git-send-email 2.37.3
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH v2 1/2] iova: Remove some magazine pointer NULL checks
-Content-Language: en-GB
-To: John Garry <john.garry@huawei.com>,
- Ethan Zhao <haifeng.zhao@linux.intel.com>, joro@8bytes.org, will@kernel.org
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linuxarm@huawei.com
-References: <1662369083-238529-1-git-send-email-john.garry@huawei.com>
- <1662369083-238529-2-git-send-email-john.garry@huawei.com>
- <1d80f56c-bef7-6e5f-0bca-dad35f5e5a8e@linux.intel.com>
- <3fa23318-6fa7-eba0-30b8-1fb71e6c327e@huawei.com>
- <555fa5aa-a575-d783-dc97-79f63dcf2f57@arm.com>
- <cc950d77-2a97-ac75-4a1d-19aaf864a3be@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <cc950d77-2a97-ac75-4a1d-19aaf864a3be@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 2022-09-06 18:36, John Garry wrote:
->>>>
->>>> iommu_probe_device
->>>>    ops->probe_finalize(dev);
->>>>      intel_iommu_probe_finalize
->>>>         iommu_setup_dma_ops
->>>>           iommu_dma_init_domain(domain, dma_base, dma_limit, dev)
->>>>             iova_domain_init_rcaches
->>>>               {
->>>>               ...
->>>>               cpu_rcache->loaded = iova_magazine_alloc(GFP_KERNEL);
->>>>               cpu_rcache->prev = iova_magazine_alloc(GFP_KERNEL);
->>>>             if (!cpu_rcache->loaded || !cpu_rcache->prev) {
->>>>                  ret = -ENOMEM;
->>>>                        goto out_err;
->>>>
->>>> Do you mean iova_magazine_alloc() is impossible to fail ?
->>>
->>> No, iova_magazine_alloc() may fail and return NULL. But if it does 
->>> then we set iovad rcache pointer = NULL in the error path and don't 
->>> use the rcache.
->>>
->>> However we have a !iovad->rcache check on the "fast" alloc but not 
->>> "insert". I need to check why that is again.
->>
->> Right, if you find a good reason to respin the patch then perhaps also 
->> tweaking the commit message to clarify that it's impossible to have a 
->> NULL rcache *at any point where those checks are made* might avoid all 
->> possible doubt, however I'd hope that it's clear enough that the 
->> transient case while iova_domain_init_rcaches() is in the process of 
->> failing really doesn't need consideration in its own right.
-> 
-> Yeah, I would think so. But I still don't mind tweaking it to be extra 
-> clear.
-> 
->>
->> I guess the check in iova_rcache_get() was maybe with the intent of 
->> allowing alloc_iova_fast() to seamlessly fall back to standard 
->> allocation, so an API user can treat iova_domain_init_rcaches() 
->> failure as non-fatal?
-> 
-> The 2x users treat iova_domain_init_rcaches() as fatal:
-> - dma-iommu falls back to platform ops in iommu_setup_dma_ops()
-> 
-> Caveat: on the chance that the IOVA domain init fails due to the rcache 
-> init failing, then, if there were another device in the group which 
-> probes later, its probe would be ok as the start_pfn is set. Not Good.
+This series adds the APPS IOMMU and the MDSS block for display that is
+found on msm8953 SoCs.
 
-Yeah, there's a lot not to like about iommu_dma_init_domain() - I've 
-been banking on it all getting cleaned up when I get to refactoring that 
-area of probing (remember the issue you reported years ago with PCI 
-groups being built in the wrong order? All related...), but in fact 
-since the cookie management got pulled into core code, we can probably 
-tie the IOVA domain setup to that right now without much other 
-involvement. That could be a cheap win, so I'll give it a go soon.
+Luca Weiss (1):
+  dt-bindings: qcom-iommu: Add Qualcomm MSM8953 compatible
 
-> - vdpa just fails to create the domain in vduse_domain_create()
-> 
->> That makes a fair amount of sense, but does mean that we're missing 
->> the equivalent in iova_rcache_insert() for it to actually work. Or we 
->> just remove it and tighten up the documentation to say that's not valid 
-> 
-> I'd be more inclined to remove it. I would rather remove fathpath checks 
-> as much as possible and have robust error handling in the domain init.
-> 
-> Afterall I do have the "remove check" craze going.
+Vladimir Lypak (2):
+  arm64: dts: qcom: msm8953: add APPS IOMMU
+  arm64: dts: qcom: msm8953: add MDSS
 
-Sure, like I say I'm happy to be consistent either way. If I do end up 
-reinstating such a check I think I'd prefer to have it explicit in 
-{alloc,free}_iova_fast() anyway, rather than buried in internal 
-implementation details.
+ .../devicetree/bindings/iommu/qcom,iommu.txt  |   1 +
+ arch/arm64/boot/dts/qcom/msm8953.dtsi         | 246 ++++++++++++++++++
+ 2 files changed, 247 insertions(+)
 
-Cheers,
-Robin.
+-- 
+2.37.3
+
