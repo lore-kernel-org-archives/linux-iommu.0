@@ -1,88 +1,101 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D85225395
-	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 10:10:54 +0000 (UTC)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.206])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MMyg42hXcz67vlM;
-	Wed,  7 Sep 2022 18:10:08 +0800 (CST)
-Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.31; Wed, 7 Sep 2022 12:10:51 +0200
-Received: from [10.202.227.197] (10.202.227.197) by
- lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 7 Sep 2022 11:10:51 +0100
-Message-ID: <ba82816c-3d43-4256-17d7-bd3d358e942b@huawei.com>
-Date: Wed, 7 Sep 2022 11:10:50 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD452539F
+	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 11:00:11 +0000 (UTC)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 0A82C2033D;
+	Wed,  7 Sep 2022 11:00:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1662548410; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=HmaE7iOjn6DeLFkNOLr8ASPOm5MulkrwVeS3GjvYnFQ=;
+	b=XJuKUxE3K2H/o+zbOpLWLhtXEgxHdoiWAQxKGUR4cKIaV8UfyJO/UQK0u1N/Q0GiZv99Cx
+	kg8xGbUHizgdfJURCEVo7e1R7yjc93Oufl/51InNOknj8+BajqsA6lihzRcavskk7trfVf
+	XL6FEF6zeAMocGbRwpJqhrx4BFTASfU=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D477413486;
+	Wed,  7 Sep 2022 11:00:09 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+	by imap2.suse-dmz.suse.de with ESMTPSA
+	id +m1RM7l5GGMSVwAAMHmgww
+	(envelope-from <mhocko@suse.com>); Wed, 07 Sep 2022 11:00:09 +0000
+Date: Wed, 7 Sep 2022 13:00:09 +0200
+From: Michal Hocko <mhocko@suse.com>
+To: Kent Overstreet <kent.overstreet@linux.dev>
+Cc: Suren Baghdasaryan <surenb@google.com>, Mel Gorman <mgorman@suse.de>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Vlastimil Babka <vbabka@suse.cz>,
+	Johannes Weiner <hannes@cmpxchg.org>,
+	Roman Gushchin <roman.gushchin@linux.dev>,
+	Davidlohr Bueso <dave@stgolabs.net>,
+	Matthew Wilcox <willy@infradead.org>,
+	"Liam R. Howlett" <liam.howlett@oracle.com>,
+	David Vernet <void@manifault.com>,
+	Juri Lelli <juri.lelli@redhat.com>,
+	Laurent Dufour <ldufour@linux.ibm.com>,
+	Peter Xu <peterx@redhat.com>, David Hildenbrand <david@redhat.com>,
+	Jens Axboe <axboe@kernel.dk>, mcgrof@kernel.org,
+	masahiroy@kernel.org, nathan@kernel.org, changbin.du@intel.com,
+	ytcoode@gmail.com, Vincent Guittot <vincent.guittot@linaro.org>,
+	Dietmar Eggemann <dietmar.eggemann@arm.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Benjamin Segall <bsegall@google.com>,
+	Daniel Bristot de Oliveira <bristot@redhat.com>,
+	Valentin Schneider <vschneid@redhat.com>,
+	Christopher Lameter <cl@linux.com>,
+	Pekka Enberg <penberg@kernel.org>,
+	Joonsoo Kim <iamjoonsoo.kim@lge.com>, 42.hyeyoo@gmail.com,
+	Alexander Potapenko <glider@google.com>,
+	Marco Elver <elver@google.com>, Dmitry Vyukov <dvyukov@google.com>,
+	Shakeel Butt <shakeelb@google.com>,
+	Muchun Song <songmuchun@bytedance.com>, arnd@arndb.de,
+	jbaron@akamai.com, David Rientjes <rientjes@google.com>,
+	Minchan Kim <minchan@google.com>,
+	Kalesh Singh <kaleshsingh@google.com>,
+	kernel-team <kernel-team@android.com>,
+	linux-mm <linux-mm@kvack.org>, iommu@lists.linux.dev,
+	kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
+	linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
+	linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
+	LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
+Message-ID: <Yxh5ueDTAOcwEmCQ@dhcp22.suse.cz>
+References: <20220831190154.qdlsxfamans3ya5j@moria.home.lan>
+ <YxBc1xuGbB36f8zC@dhcp22.suse.cz>
+ <CAJuCfpGhwPFYdkOLjwwD4ra9JxPqq1T5d1jd41Jy3LJnVnhNdg@mail.gmail.com>
+ <YxEE1vOwRPdzKxoq@dhcp22.suse.cz>
+ <CAJuCfpHuzJGTA_-m0Jfawc7LgJLt4GztUUY4K9N9-7bFqJuXnw@mail.gmail.com>
+ <20220901201502.sn6223bayzwferxv@moria.home.lan>
+ <YxW4Ig338d2vQAz3@dhcp22.suse.cz>
+ <20220905234649.525vorzx27ybypsn@kmo-framework>
+ <Yxb1cxDSyte1Ut/F@dhcp22.suse.cz>
+ <20220906182058.iijmpzu4rtxowy37@kmo-framework>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v2 1/2] iova: Remove some magazine pointer NULL checks
-To: Ethan Zhao <haifeng.zhao@linux.intel.com>, Robin Murphy
-	<robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>
-CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linuxarm@huawei.com>
-References: <1662369083-238529-1-git-send-email-john.garry@huawei.com>
- <1662369083-238529-2-git-send-email-john.garry@huawei.com>
- <1d80f56c-bef7-6e5f-0bca-dad35f5e5a8e@linux.intel.com>
- <3fa23318-6fa7-eba0-30b8-1fb71e6c327e@huawei.com>
- <555fa5aa-a575-d783-dc97-79f63dcf2f57@arm.com>
- <cc950d77-2a97-ac75-4a1d-19aaf864a3be@huawei.com>
- <ad67a859-dc57-e30f-e422-3f9a0cb5239b@arm.com>
- <ef7622de-c1f3-c6cd-a50e-bbcbf8288b64@huawei.com>
- <a9f959ed-b528-681d-f941-d615360c0be3@linux.intel.com>
-From: John Garry <john.garry@huawei.com>
-In-Reply-To: <a9f959ed-b528-681d-f941-d615360c0be3@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.202.227.197]
-X-ClientProxiedBy: lhrpeml100003.china.huawei.com (7.191.160.210) To
- lhrpeml500003.china.huawei.com (7.191.162.67)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220906182058.iijmpzu4rtxowy37@kmo-framework>
 
-On 07/09/2022 10:58, Ethan Zhao wrote:
+On Tue 06-09-22 14:20:58, Kent Overstreet wrote:
+[...]
+> Otherwise, saying "code has to be maintained" is a little bit like saying water
+> is wet, and we're all engineers here, I think we know that :)
 
-Hi Ethan,
-
->> Or also add this:
->>
->> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->> index 0d6d8edf782d..e8f0b8f47f45 100644
->> --- a/drivers/iommu/dma-iommu.c
->> +++ b/drivers/iommu/dma-iommu.c
->> @@ -578,6 +578,12 @@ static int iommu_dma_init_domain(struct 
->> iommu_domain *domain, dma_addr_t base,
->>              goto done_unlock;
->>          }
->>
->> +        if (!iovad->rcaches) {
->> +            pr_warn("IOVA domain rcache not properly initialised\n");
->> +            ret = -EFAULT;
->> +            goto done_unlock;
->> +        }
->> +
->>          ret = 0;
->>          goto done_unlock;
->>
-> If the iovad->rcaches allocation failed, will skip iommu domain dma ops, 
-> so no need *any* iovad,->rcaches check, right ?
-> 
-> and there is already warning about the fallback.
-
-It's not as simple as that. We use the iovad->start_pfn member as a flag 
-for the IOVA domain being initialized. However that does not mean always 
-properly initialized. As above, the rcache init may fail, but in this 
-case we still set start_pfn.
-
-This comes into play when we have multiple devices in the same IOMMU 
-group, for example, as I mentioned yesterday.
-
-Thanks,
-John
+Hmm, it seems that further discussion doesn't really make much sense
+here. I know how to use my time better.
+-- 
+Michal Hocko
+SUSE Labs
