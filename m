@@ -1,33 +1,46 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D80B7539F
-	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 12:27:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 642E62904;
+	Wed,  7 Sep 2022 12:41:57 +0000 (UTC)
 Received: from 8bytes.org (p4ff2bb62.dip0.t-ipconnect.de [79.242.187.98])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id AD80324000A;
-	Wed,  7 Sep 2022 14:27:53 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 6FAA4240857;
+	Wed,  7 Sep 2022 14:41:55 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1662553673;
-	bh=0wl2Nk9Q0WFKXl/+RiiHcEiTn36WNoLwCfq691DbiTo=;
+	s=default; t=1662554516;
+	bh=JzhvE6AKnt05k9hUcUfcBmLyd7x5XDIZ52BK23fxpSg=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=eSE7PKfrDVe8icJKeddE6TPmkE9jmff1nD4d+WlM1hY3/Cw75Y+xwk9/93uFz6W15
-	 GR8e8OiIgZW8JR5IAhp0Uy5JXQphStqSTD6FmEOTqhIrf/+VFazqJYYFRBcQ2lV3cB
-	 s3eT/CoqR3bpcmPloFTMEsw2SmRaOp+3V1xrdixQU4wWiP6D2lXQdjNjBq5yfr99i9
-	 tOeHU659HmNsLiGg9WTIiDnu2ZRrG7kJlZ9UAV2HC4cBWSqsm9dasxoXWKThmZKn8+
-	 HZNmWiU7Nj+NTlbE2wjnfEg5CFSqNj6rmEe39f0YNDrJ55E4Ow+VvKi7qVnB7+sRZ3
-	 mhe21gvCnHSZQ==
-Date: Wed, 7 Sep 2022 14:27:52 +0200
+	b=60gm7iJb3a9EHDRBPPmkRhjnPxPdo8Gl8tCIOOIov74tc9nJYqxwRN3f9BaD/uBTh
+	 ZoV5WBylA/H+HpQRYy6dC/0WalBc7Xg2gQ/EGr7HOKkp3DB6I7K2VtL5rWe+yHaFHo
+	 3GC6YDahBrvwp1lTMhPP0vwiUslxcaImFmKevknjuQ++PrHb+32Kb+SwW1OGoiSniC
+	 j5WIwf2zsHXP7Dwv+Ps3tJybqv0ASdmzh/SRgK2OM7/c76yEAtXi01DBWO3CrfKkfR
+	 V7IV9Z/HY1tQSVYITH64oKsBfN+UYoyf/xQA2uGwpPthodTETsq7ja03Rs0zm47WBI
+	 eNx1oHFYz53Og==
+Date: Wed, 7 Sep 2022 14:41:54 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: will@kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, baolu.lu@linux.intel.com,
-	kevin.tian@intel.com, suravee.suthikulpanit@amd.com,
-	vasant.hegde@amd.com, mjrosato@linux.ibm.com,
-	schnelle@linux.ibm.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 00/16] iommu: retire bus_set_iommu()
-Message-ID: <YxiOSNz7gPuTzgY6@8bytes.org>
-References: <cover.1660572783.git.robin.murphy@arm.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: will@kernel.org, robin.murphy@arm.com, alex.williamson@redhat.com,
+	suravee.suthikulpanit@amd.com, marcan@marcan.st, sven@svenpeter.dev,
+	alyssa@rosenzweig.io, robdclark@gmail.com, dwmw2@infradead.org,
+	baolu.lu@linux.intel.com, mjrosato@linux.ibm.com,
+	gerald.schaefer@linux.ibm.com, orsonzhai@gmail.com,
+	baolin.wang@linux.alibaba.com, zhang.lyra@gmail.com,
+	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
+	jean-philippe@linaro.org, cohuck@redhat.com, jgg@nvidia.com,
+	tglx@linutronix.de, shameerali.kolothum.thodi@huawei.com,
+	thunder.leizhen@huawei.com, christophe.jaillet@wanadoo.fr,
+	yangyingliang@huawei.com, jon@solid-run.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, asahi@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+	linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
+	virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+	kevin.tian@intel.com
+Subject: Re: [PATCH v6 1/5] iommu: Return -EMEDIUMTYPE for incompatible
+ domain and device/group
+Message-ID: <YxiRkm7qgQ4k+PIG@8bytes.org>
+References: <20220815181437.28127-1-nicolinc@nvidia.com>
+ <20220815181437.28127-2-nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,27 +49,25 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1660572783.git.robin.murphy@arm.com>
+In-Reply-To: <20220815181437.28127-2-nicolinc@nvidia.com>
 
-On Mon, Aug 15, 2022 at 05:20:01PM +0100, Robin Murphy wrote:
-> Matthew Rosato (1):
->   iommu/s390: Fail probe for non-PCI devices
-> 
-> Robin Murphy (15):
->   iommu/vt-d: Handle race between registration and device probe
->   iommu/amd: Handle race between registration and device probe
->   iommu: Always register bus notifiers
->   iommu: Move bus setup to IOMMU device registration
->   iommu/amd: Clean up bus_set_iommu()
->   iommu/arm-smmu: Clean up bus_set_iommu()
->   iommu/arm-smmu-v3: Clean up bus_set_iommu()
->   iommu/dart: Clean up bus_set_iommu()
->   iommu/exynos: Clean up bus_set_iommu()
->   iommu/ipmmu-vmsa: Clean up bus_set_iommu()
->   iommu/mtk: Clean up bus_set_iommu()
->   iommu/omap: Clean up bus_set_iommu()
->   iommu/tegra-smmu: Clean up bus_set_iommu()
->   iommu/virtio: Clean up bus_set_iommu()
->   iommu: Clean up bus_set_iommu()
+On Mon, Aug 15, 2022 at 11:14:33AM -0700, Nicolin Chen wrote:
+> Provide a dedicated errno from the IOMMU driver during attach that the
+> reason attached failed is because of domain incompatability. EMEDIUMTYPE
+> is chosen because it is never used within the iommu subsystem today and
+> evokes a sense that the 'medium' aka the domain is incompatible.
 
-Applied, thanks Robin.
+I am not a fan of re-using EMEDIUMTYPE or any other special value. What
+is needed here in EINVAL, but with a way to tell the caller which of the
+function parameters is actually invalid.
+
+For that I prefer adding an additional pointer parameter to the attach
+functions in which the reason for the failure can be communicated up the
+chain.
+
+For the top-level iommu_attach_device() function I am okay with having a
+special version which has this additional paremter.
+
+Regards,
+
+	Joerg
