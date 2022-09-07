@@ -1,92 +1,124 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8534D2CA6
-	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 09:05:55 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 19831D6E;
-	Wed,  7 Sep 2022 02:06:01 -0700 (PDT)
-Received: from [10.57.15.197] (unknown [10.57.15.197])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B7C553F73D;
-	Wed,  7 Sep 2022 02:06:20 -0700 (PDT)
-Message-ID: <af4182e5-c162-3067-8461-0d31bf09aea2@arm.com>
-Date: Wed, 7 Sep 2022 10:05:48 +0100
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 637D22F4E
+	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 09:33:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662543191; x=1694079191;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=k5YPzoTF8zWkG4kDDBbQlRFazp3TFOTCHVAL/rlhWIw=;
+  b=i4gZRpFCRX+avRQcRfxwbKokWACTXxBppIEuumdoS/5R4h3ZpWe5D+cg
+   yoeyM0/U5+DhjZAC15EkgwUb6AfNkEBuEljOYfg+G9H9hZwaSQVk+8xYi
+   InsAB/bhe2KwcitFJRo7aQf/+PfZDsqA7RFnj4RDxBc6JK/qzH0QVWNxb
+   69s8TefJTegHxtrGbsOOcBGrm9paSmKt2OGnS9h1zo1RGVL6nR+godlzu
+   l3tGjYumk0J9qabQlQjPRnKH1pTW0IegcuqFAV7+mx7rFoD7L0OvMN/yh
+   0d5KHk8zUhStholhcT2zS4/elgsKE+3pImSvX1cu1X7S2k4M/6ToVoKXg
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10462"; a="296826025"
+X-IronPort-AV: E=Sophos;i="5.93,296,1654585200"; 
+   d="scan'208";a="296826025"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Sep 2022 02:33:10 -0700
+X-IronPort-AV: E=Sophos;i="5.93,296,1654585200"; 
+   d="scan'208";a="644545512"
+Received: from zhaohaif-mobl1.ccr.corp.intel.com (HELO [10.254.212.12]) ([10.254.212.12])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Sep 2022 02:33:05 -0700
+Message-ID: <7c4383ac-0b0b-dd43-9958-dbd4abeea63f@linux.intel.com>
+Date: Wed, 7 Sep 2022 17:33:03 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
 Subject: Re: [PATCH v2 1/2] iova: Remove some magazine pointer NULL checks
-Content-Language: en-GB
-To: John Garry <john.garry@huawei.com>,
- Ethan Zhao <haifeng.zhao@linux.intel.com>, joro@8bytes.org, will@kernel.org
+To: John Garry <john.garry@huawei.com>, robin.murphy@arm.com,
+ joro@8bytes.org, will@kernel.org
 Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linuxarm@huawei.com
 References: <1662369083-238529-1-git-send-email-john.garry@huawei.com>
  <1662369083-238529-2-git-send-email-john.garry@huawei.com>
  <1d80f56c-bef7-6e5f-0bca-dad35f5e5a8e@linux.intel.com>
  <3fa23318-6fa7-eba0-30b8-1fb71e6c327e@huawei.com>
- <555fa5aa-a575-d783-dc97-79f63dcf2f57@arm.com>
- <cc950d77-2a97-ac75-4a1d-19aaf864a3be@huawei.com>
- <ad67a859-dc57-e30f-e422-3f9a0cb5239b@arm.com>
- <ef7622de-c1f3-c6cd-a50e-bbcbf8288b64@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ef7622de-c1f3-c6cd-a50e-bbcbf8288b64@huawei.com>
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+In-Reply-To: <3fa23318-6fa7-eba0-30b8-1fb71e6c327e@huawei.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 2022-09-07 09:46, John Garry wrote:
-> On 06/09/2022 19:25, Robin Murphy wrote:
->>>
->>> Caveat: on the chance that the IOVA domain init fails due to the 
->>> rcache init failing, then, if there were another device in the group 
->>> which probes later, its probe would be ok as the start_pfn is set. 
->>> Not Good.
->>
->> Yeah, there's a lot not to like about iommu_dma_init_domain() - I've 
->> been banking on it all getting cleaned up when I get to refactoring 
->> that area of probing (remember the issue you reported years ago with 
->> PCI groups being built in the wrong order? All related...), but in 
->> fact since the cookie management got pulled into core code, we can 
->> probably tie the IOVA domain setup to that right now without much 
->> other involvement. That could be a cheap win, so I'll give it a go soon.
-> 
-> ok, great.
-> 
-> On a related topic, another thing to consider is that errors in IOVA 
-> domain init are not handled gracefully in terms of how we deal with the 
-> device probe and setting dma mapping ops, ref iommu_setup_dma_ops(). I 
-> assume you know all this.
-> 
->>
->>> - vdpa just fails to create the domain in vduse_domain_create()
->>>
->>>> That makes a fair amount of sense, but does mean that we're missing 
->>>> the equivalent in iova_rcache_insert() for it to actually work. Or 
->>>> we just remove it and tighten up the documentation to say that's not 
->>>> valid 
->>>
->>> I'd be more inclined to remove it. I would rather remove fathpath 
->>> checks as much as possible and have robust error handling in the 
->>> domain init.
->>>
->>> Afterall I do have the "remove check" craze going.
->>
->> Sure, like I say I'm happy to be consistent either way. If I do end up 
->> reinstating such a check I think I'd prefer to have it explicit in 
->> {alloc,free}_iova_fast() anyway, rather than buried in internal 
->> implementation details.
-> 
-> I'm not sure what you would like to see now, if anything.
-> 
-> I could just remove the iovad->rcache check in iova_rcache_get().  It's 
-> pretty useless (on its own) since we don't have the same check on the 
-> "insert" path.
+John,
 
-Yup, just remove it. Sorting iommu-dma is yet another issue, but let's 
-skip straight to fixing that properly by allocating the IOVA domain 
-up-front with the cookie (is this the last remnant of my 7-year-old 
-misunderstanding of dma_32bit_pfn? Let's hope so...)
+在 2022/9/6 18:50, John Garry 写道:
+> On 06/09/2022 10:28, Ethan Zhao wrote:
+>
+> Hi Ethan,
+>
+>>> Signed-off-by: John Garry <john.garry@huawei.com>
+>>> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+>>> ---
+>>>   drivers/iommu/iova.c | 7 ++-----
+>>>   1 file changed, 2 insertions(+), 5 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+>>> index 47d1983dfa2a..580fdf669922 100644
+>>> --- a/drivers/iommu/iova.c
+>>> +++ b/drivers/iommu/iova.c
+>>> @@ -661,9 +661,6 @@ iova_magazine_free_pfns(struct iova_magazine 
+>>> *mag, struct iova_domain *iovad)
+>>>       unsigned long flags;
+>>>       int i;
+>>> -    if (!mag)
+>>> -        return;
+>>> -
+>>
+>> iommu_probe_device
+>>    ops->probe_finalize(dev);
+>>      intel_iommu_probe_finalize
+>>         iommu_setup_dma_ops
+>>           iommu_dma_init_domain(domain, dma_base, dma_limit, dev)
+>>             iova_domain_init_rcaches
+>>               {
+>>               ...
+>>               cpu_rcache->loaded = iova_magazine_alloc(GFP_KERNEL);
+>>               cpu_rcache->prev = iova_magazine_alloc(GFP_KERNEL);
+>>             if (!cpu_rcache->loaded || !cpu_rcache->prev) {
+>>                  ret = -ENOMEM;
+>>                        goto out_err;
+>>
+>> Do you mean iova_magazine_alloc() is impossible to fail ?
+>
+> No, iova_magazine_alloc() may fail and return NULL. But if it does 
+> then we set iovad rcache pointer = NULL in the error path and don't 
+> use the rcache.
+
+Yup,  if iova_magazine_alloc() failed ,
+
+iovad->rcaches = NULL;
+
+was set by free_iova_rcaches()
+
+in error path of iova_domain_init_rcache().
+
+and checked in
+
+alloc_iova_fast()->iova_rcache_get().
+
+More comment in code would wipe off my curiosity.
+
 
 Thanks,
-Robin.
+
+Ethan
+
+>
+> However we have a !iovad->rcache check on the "fast" alloc but not 
+> "insert". I need to check why that is again.
+>
+> Thanks,
+> john
+
+-- 
+"firm, enduring, strong, and long-lived"
+
