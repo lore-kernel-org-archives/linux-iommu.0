@@ -1,47 +1,63 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 533D153B5
-	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 13:15:27 +0000 (UTC)
-Received: from 8bytes.org (p4ff2bb62.dip0.t-ipconnect.de [79.242.187.98])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 182AD40793;
-	Wed,  7 Sep 2022 15:15:25 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1662556526;
-	bh=AIfvvYnil4b62COaF5XYoCQGAUh2LfQZk3YCm2nfDgY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=YV3Ej0xEVxd+KYgvdbAluGke5WZqAQNYh6jfFfIL3dIlH1EcA6ee/t5/LCNnpSTnk
-	 NAjNaYR+vu7Qyt/FnJNWcv+6OO/1n/DoM9+JZP0AD7Co3x8yVOJGIy+0/gF2RPED7k
-	 G0c7Xm9c37cH9JOQON0w4sKIY9DYFCxeqgyUN8/aFQwwE7o8htRok5Fc+Z967n8hh4
-	 4z7aeoPBRITsmrVXMqKx9AP47Xsn2axmGKmrdD9aYmhtJAVrUSsQE1eTEqXyvx0X41
-	 eFo4SogU7vNCG3Gn4Zppg997MH9s/YDoOakCl44k9t8Q9uv2btTc5ZPvEus1FKZoRw
-	 p0bh61OVIDqLg==
-Date: Wed, 7 Sep 2022 15:15:24 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>,
-	Lennert Buytenhek <buytenh@wantstofly.org>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Jerry Snitselaar <jsnitsel@redhat.com>, Wen Jin <wen.jin@intel.com>,
-	iommu@lists.linux.dev, iommu@lists.linux-foundation.org
-Subject: Re: [PATCH 0/4] iommu/vt-d: Fixes for v6.0-rc3
-Message-ID: <YxiZbGucnalhwdlJ@8bytes.org>
-References: <20220823061557.1631056-1-baolu.lu@linux.intel.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 254DA5C81
+	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 13:22:14 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B32561042;
+	Wed,  7 Sep 2022 06:22:19 -0700 (PDT)
+Received: from [10.57.15.197] (unknown [10.57.15.197])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BB51C3F7B4;
+	Wed,  7 Sep 2022 06:22:10 -0700 (PDT)
+Message-ID: <342eeb04-f240-b4a7-2994-8f69d4ca4087@arm.com>
+Date: Wed, 7 Sep 2022 14:22:01 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220823061557.1631056-1-baolu.lu@linux.intel.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Subject: Re: [PATCH v3 3/3] iova: Remove iovad->rcaches check in
+ iova_rcache_get()
+Content-Language: en-GB
+To: John Garry <john.garry@huawei.com>, joro@8bytes.org, will@kernel.org
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linuxarm@huawei.com,
+ jsnitsel@redhat.com, haifeng.zhao@linux.intel.com
+References: <1662555754-142760-1-git-send-email-john.garry@huawei.com>
+ <1662555754-142760-4-git-send-email-john.garry@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <1662555754-142760-4-git-send-email-john.garry@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Aug 23, 2022 at 02:15:53PM +0800, Lu Baolu wrote:
-> - Boot kdump kernels with VT-d scalable mode on
-> - Calculate the right page table levels
-> - Fix a recursive lock issue
-> - Fix a lockdep splat issue
+On 2022-09-07 14:02, John Garry wrote:
+> The iovad->rcaches check in iova_rcache_get() is pretty much useless
+> without the same check in iova_rcache_insert().
+> 
+> Instead of adding this symmetric check to fathpath iova_rcache_insert(),
 
-Applied, thanks Baolu.
+Nit: "fastpath"
+
+> drop the check in iova_rcache_get() in favour of making the IOVA domain
+> rcache init more robust to failure in future.
+
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+
+> Signed-off-by: John Garry <john.garry@huawei.com>
+> ---
+>   drivers/iommu/iova.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index 8aece052ce72..a44ad92fc5eb 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -875,7 +875,7 @@ static unsigned long iova_rcache_get(struct iova_domain *iovad,
+>   {
+>   	unsigned int log_size = order_base_2(size);
+>   
+> -	if (log_size >= IOVA_RANGE_CACHE_MAX_SIZE || !iovad->rcaches)
+> +	if (log_size >= IOVA_RANGE_CACHE_MAX_SIZE)
+>   		return 0;
+>   
+>   	return __iova_rcache_get(&iovad->rcaches[log_size], limit_pfn - size);
