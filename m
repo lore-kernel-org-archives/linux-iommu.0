@@ -1,71 +1,120 @@
-Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E162786D9
-	for <iommu@lists.linux.dev>; Tue,  6 Sep 2022 18:44:03 +0000 (UTC)
-Received: from g550jk.arnhem.chello.nl (31-151-115-246.dynamic.upc.nl [31.151.115.246])
-	by mail.z3ntu.xyz (Postfix) with ESMTPSA id 4F638C761F;
-	Tue,  6 Sep 2022 18:35:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
-	t=1662489316; bh=8D02+hHtP3O+A5EfJrULu2835893cFwV9lamnSBN2kI=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=qmC8T6uTSfeYva6WHMV0gTAvdHS/OBauEjcOB1n58WRDfp14woU9do0OlHqNsaV3B
-	 L6I9MznFtU0JAVQTP8M66VF8vMT3+3f0z9Ml76JnLdX4IpdJgj4Zqbt/5cIrQ9pWTr
-	 6ucejJrdepQbff+BwVbixbo3FDyqgB4VBxeOsNRY=
-From: Luca Weiss <luca@z3ntu.xyz>
-To: linux-arm-msm@vger.kernel.org
-Cc: ~postmarketos/upstreaming@lists.sr.ht,
-	phone-devel@vger.kernel.org,
-	Luca Weiss <luca@z3ntu.xyz>,
-	Rob Herring <robh@kernel.org>,
-	Andy Gross <agross@kernel.org>,
-	Bjorn Andersson <bjorn.andersson@linaro.org>,
-	Konrad Dybcio <konrad.dybcio@somainline.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v3 1/3] dt-bindings: qcom-iommu: Add Qualcomm MSM8953 compatible
-Date: Tue,  6 Sep 2022 20:33:32 +0200
-Message-Id: <20220906183334.203787-2-luca@z3ntu.xyz>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220906183334.203787-1-luca@z3ntu.xyz>
-References: <20220906183334.203787-1-luca@z3ntu.xyz>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE1757E
+	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 01:27:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662514057; x=1694050057;
+  h=message-id:date:mime-version:cc:to:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=ZV1q+JgdPyql58iLRG4rBR7Tp9YEX2NHtfBPjMsBF2E=;
+  b=L63MPp2djWZEYLc6vLHlqHS3Oo5e8J0KLnkk6mrY9F6VVisRgDBU+Lpk
+   0h82RK8B7gEPoIopLUhKcXEoXEMi+mN4+bj6VqBPFLcUAPgCQWd7MWFLk
+   T1IX8mIjxQTUxb/11emAEPHXzf9Xawzo/2NqHyneGdE5HoKGQIWctl0cX
+   pH+rp17SBnZYQ2QrH8Y7EwacIqg5mmLY1GW/ktbkI+BQ5Pmh8Q/ZqpLMk
+   ciBs/W/P1Dir9hKCsIKy2Bax3L8UqP8TE+6a0CAFB7AWUx/b4xE/x5yZW
+   uTAAtgNwwWHLg9KWPofeFuqG+K6Dh4CsfGBt/E9DmX0uq9nTz/+wLakRK
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10462"; a="297536703"
+X-IronPort-AV: E=Sophos;i="5.93,295,1654585200"; 
+   d="scan'208";a="297536703"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 18:27:37 -0700
+X-IronPort-AV: E=Sophos;i="5.93,295,1654585200"; 
+   d="scan'208";a="591491033"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.214.40]) ([10.254.214.40])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Sep 2022 18:27:32 -0700
+Message-ID: <682d8922-200d-8c89-7142-83e7b3754b8d@linux.intel.com>
+Date: Wed, 7 Sep 2022 09:27:30 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, Kevin Tian <kevin.tian@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Dave Jiang <dave.jiang@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
+ Vinod Koul <vkoul@kernel.org>, Eric Auger <eric.auger@redhat.com>,
+ Liu Yi L <yi.l.liu@intel.com>, Jacob jun Pan <jacob.jun.pan@intel.com>,
+ Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony <tony.zhu@intel.com>,
+ iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+References: <20220906124458.46461-1-baolu.lu@linux.intel.com>
+ <20220906124458.46461-10-baolu.lu@linux.intel.com> <Yxd2+d/VOjdOgrR2@myrica>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v13 09/13] iommu/sva: Refactoring
+ iommu_sva_bind/unbind_device()
+In-Reply-To: <Yxd2+d/VOjdOgrR2@myrica>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Document the compatible used for IOMMU on the msm8953 SoC.
+Hi Jean,
 
-Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
-Acked-by: Rob Herring <robh@kernel.org>
----
-Changes since v2:
-- pick up tags
+On 2022/9/7 0:36, Jean-Philippe Brucker wrote:
+> On Tue, Sep 06, 2022 at 08:44:54PM +0800, Lu Baolu wrote:
+>> +/**
+>> + * iommu_sva_bind_device() - Bind a process address space to a device
+>> + * @dev: the device
+>> + * @mm: the mm to bind, caller must hold a reference to mm_users
+>> + *
+>> + * Create a bond between device and address space, allowing the device to access
+>> + * the mm using the returned PASID. If a bond already exists between @device and
+>> + * @mm, it is returned and an additional reference is taken. Caller must call
+>> + * iommu_sva_unbind_device() to release each reference.
+> This isn't true anymore. How about storing handle in the domain?
 
- Documentation/devicetree/bindings/iommu/qcom,iommu.txt | 1 +
- 1 file changed, 1 insertion(+)
+Yes, agreed. How about making the comments like this:
 
-diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-index 059139abce35..e6cecfd360eb 100644
---- a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-+++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-@@ -10,6 +10,7 @@ to non-secure vs secure interrupt line.
- - compatible       : Should be one of:
- 
-                         "qcom,msm8916-iommu"
-+                        "qcom,msm8953-iommu"
- 
-                      Followed by "qcom,msm-iommu-v1".
- 
--- 
-2.37.3
+/**
+  * iommu_sva_bind_device() - Bind a process address space to a device
+  * @dev: the device
+  * @mm: the mm to bind, caller must hold a reference to mm_users
+  *
+  * Create a bond between device and address space, allowing the device to
+  * access the mm using the pasid returned by iommu_sva_get_pasid(). If a
+  * bond already exists between @device and @mm, an additional internal
+  * reference is taken. The reference will be released when the caller calls
+  * iommu_sva_unbind_device().
 
+Storing the handle in the domain looks odd. Conceptually an iommu domain
+represents a hardware page table and the SVA handle represents a
+relationship between device and the page table for a consumer. It's
+better to make them separated.
+
+In a separated series, probably we can discuss the possibility of
+removing handle from the driver APIs. Just simply return the sva domain
+instead.
+
+struct iommu_domain *iommu_sva_bind_device(struct device *dev,
+                                            struct mm_struct *mm);
+void iommu_sva_unbind_device(struct device *dev,
+                              struct iommu_domain *domain);
+u32 iommu_sva_get_pasid(struct iommu_domain *domain);
+
+If you think it's appropriate, I can send out the code for discussion.
+
+> 
+> (Maybe also drop my Reviewed-by tags since this has changed significantly,
+> I tend to ignore patches that have them)
+
+I am sorry that after your review, the SVA domain and attach/detach
+device pasid interfaces have undergone some changes. They mainly exist
+in the following patches. Can you please help to take a look.
+
+iommu/sva: Refactoring iommu_sva_bind/unbind_device()
+arm-smmu-v3/sva: Add SVA domain support
+iommu: Add IOMMU SVA domain support
+iommu: Add attach/detach_dev_pasid iommu interfaces
+
+Best regards,
+baolu
