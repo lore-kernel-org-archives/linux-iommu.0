@@ -1,79 +1,81 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5236F5C81
-	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 13:41:30 +0000 (UTC)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.226])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MN3L33G1tz688nD;
-	Wed,  7 Sep 2022 21:40:43 +0800 (CST)
-Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.31; Wed, 7 Sep 2022 15:41:25 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 7 Sep 2022 14:41:23 +0100
-From: John Garry <john.garry@huawei.com>
-To: <robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>
-CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linuxarm@huawei.com>, <jsnitsel@redhat.com>, <haifeng.zhao@linux.intel.com>,
-	John Garry <john.garry@huawei.com>
-Subject: [PATCH v4 2/3] iova: Remove magazine BUG_ON() checks
-Date: Wed, 7 Sep 2022 21:34:40 +0800
-Message-ID: <1662557681-145906-3-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1662557681-145906-1-git-send-email-john.garry@huawei.com>
-References: <1662557681-145906-1-git-send-email-john.garry@huawei.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA49A5C81
+	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 13:44:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E8F1C433C1;
+	Wed,  7 Sep 2022 13:44:38 +0000 (UTC)
+Date: Wed, 7 Sep 2022 09:45:18 -0400
+From: Steven Rostedt <rostedt@goodmis.org>
+To: Kent Overstreet <kent.overstreet@linux.dev>
+Cc: Michal Hocko <mhocko@suse.com>, Suren Baghdasaryan <surenb@google.com>,
+ Mel Gorman <mgorman@suse.de>, Peter Zijlstra <peterz@infradead.org>, Andrew
+ Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>,
+ Johannes Weiner <hannes@cmpxchg.org>, Roman Gushchin
+ <roman.gushchin@linux.dev>, Davidlohr Bueso <dave@stgolabs.net>, Matthew
+ Wilcox <willy@infradead.org>, "Liam R. Howlett" <liam.howlett@oracle.com>,
+ David Vernet <void@manifault.com>, Juri Lelli <juri.lelli@redhat.com>,
+ Laurent Dufour <ldufour@linux.ibm.com>, Peter Xu <peterx@redhat.com>, David
+ Hildenbrand <david@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+ mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org,
+ changbin.du@intel.com, ytcoode@gmail.com, Vincent Guittot
+ <vincent.guittot@linaro.org>, Dietmar Eggemann <dietmar.eggemann@arm.com>,
+ Benjamin Segall <bsegall@google.com>, Daniel Bristot de Oliveira
+ <bristot@redhat.com>, Valentin Schneider <vschneid@redhat.com>, Christopher
+ Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, Joonsoo Kim
+ <iamjoonsoo.kim@lge.com>, 42.hyeyoo@gmail.com, Alexander Potapenko
+ <glider@google.com>, Marco Elver <elver@google.com>, Dmitry Vyukov
+ <dvyukov@google.com>, Shakeel Butt <shakeelb@google.com>, Muchun Song
+ <songmuchun@bytedance.com>, arnd@arndb.de, jbaron@akamai.com, David
+ Rientjes <rientjes@google.com>, Minchan Kim <minchan@google.com>, Kalesh
+ Singh <kaleshsingh@google.com>, kernel-team <kernel-team@android.com>,
+ linux-mm <linux-mm@kvack.org>, iommu@lists.linux.dev,
+ kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
+ linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
+ linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org, LKML
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
+Message-ID: <20220907094306.3383dac2@gandalf.local.home>
+In-Reply-To: <20220907130323.rwycrntnckc6h43n@kmo-framework>
+References: <YxBc1xuGbB36f8zC@dhcp22.suse.cz>
+	<CAJuCfpGhwPFYdkOLjwwD4ra9JxPqq1T5d1jd41Jy3LJnVnhNdg@mail.gmail.com>
+	<YxEE1vOwRPdzKxoq@dhcp22.suse.cz>
+	<CAJuCfpHuzJGTA_-m0Jfawc7LgJLt4GztUUY4K9N9-7bFqJuXnw@mail.gmail.com>
+	<20220901201502.sn6223bayzwferxv@moria.home.lan>
+	<YxW4Ig338d2vQAz3@dhcp22.suse.cz>
+	<20220905234649.525vorzx27ybypsn@kmo-framework>
+	<Yxb1cxDSyte1Ut/F@dhcp22.suse.cz>
+	<20220906182058.iijmpzu4rtxowy37@kmo-framework>
+	<Yxh5ueDTAOcwEmCQ@dhcp22.suse.cz>
+	<20220907130323.rwycrntnckc6h43n@kmo-framework>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- lhrpeml500003.china.huawei.com (7.191.162.67)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Two of the magazine helpers have BUG_ON() checks, as follows:
-- iova_magazine_pop() - here we ensure that the mag is not empty. However
-  we already ensure that in the only caller, __iova_rcache_get().
-- iova_magazine_push() - here we ensure that the mag is not full. However
-  we already ensure that in the only caller, __iova_rcache_insert().
+On Wed, 7 Sep 2022 09:04:28 -0400
+Kent Overstreet <kent.overstreet@linux.dev> wrote:
 
-As described, the two bug checks are pointless so drop them.
+> On Wed, Sep 07, 2022 at 01:00:09PM +0200, Michal Hocko wrote:
+> > Hmm, it seems that further discussion doesn't really make much sense
+> > here. I know how to use my time better.  
+> 
+> Just a thought, but I generally find it more productive to propose ideas than to
+> just be disparaging.
+> 
 
-Signed-off-by: John Garry <john.garry@huawei.com>
-Acked-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
----
- drivers/iommu/iova.c | 4 ----
- 1 file changed, 4 deletions(-)
+But it's not Michal's job to do so. He's just telling you that the given
+feature is not worth the burden. He's telling you the issues that he has
+with the patch set. It's the submitter's job to address those concerns and
+not the maintainer's to tell you how to make it better.
 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 580fdf669922..8aece052ce72 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -694,8 +694,6 @@ static unsigned long iova_magazine_pop(struct iova_magazine *mag,
- 	int i;
- 	unsigned long pfn;
- 
--	BUG_ON(iova_magazine_empty(mag));
--
- 	/* Only fall back to the rbtree if we have no suitable pfns at all */
- 	for (i = mag->size - 1; mag->pfns[i] > limit_pfn; i--)
- 		if (i == 0)
-@@ -710,8 +708,6 @@ static unsigned long iova_magazine_pop(struct iova_magazine *mag,
- 
- static void iova_magazine_push(struct iova_magazine *mag, unsigned long pfn)
- {
--	BUG_ON(iova_magazine_full(mag));
--
- 	mag->pfns[mag->size++] = pfn;
- }
- 
--- 
-2.25.1
+When Linus tells us that a submission is crap, we don't ask him how to make
+it less crap, we listen to why he called it crap, and then rewrite to be
+not so crappy. If we cannot figure it out, it doesn't get in.
 
+-- Steve
