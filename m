@@ -1,79 +1,47 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 533D153B5
+	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 13:15:27 +0000 (UTC)
+Received: from 8bytes.org (p4ff2bb62.dip0.t-ipconnect.de [79.242.187.98])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2C5953B5
-	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 13:09:30 +0000 (UTC)
-Received: from fraeml703-chm.china.huawei.com (unknown [172.18.147.207])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MN2d22qpyz6H728;
-	Wed,  7 Sep 2022 21:08:38 +0800 (CST)
-Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
- fraeml703-chm.china.huawei.com (10.206.15.52) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.31; Wed, 7 Sep 2022 15:09:22 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 7 Sep 2022 14:09:19 +0100
-From: John Garry <john.garry@huawei.com>
-To: <robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>
-CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linuxarm@huawei.com>, <jsnitsel@redhat.com>, <haifeng.zhao@linux.intel.com>,
-	John Garry <john.garry@huawei.com>
-Subject: [PATCH v3 2/3] iova: Remove magazine BUG_ON() checks
-Date: Wed, 7 Sep 2022 21:02:33 +0800
-Message-ID: <1662555754-142760-3-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1662555754-142760-1-git-send-email-john.garry@huawei.com>
-References: <1662555754-142760-1-git-send-email-john.garry@huawei.com>
+	by mail.8bytes.org (Postfix) with ESMTPSA id 182AD40793;
+	Wed,  7 Sep 2022 15:15:25 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1662556526;
+	bh=AIfvvYnil4b62COaF5XYoCQGAUh2LfQZk3YCm2nfDgY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=YV3Ej0xEVxd+KYgvdbAluGke5WZqAQNYh6jfFfIL3dIlH1EcA6ee/t5/LCNnpSTnk
+	 NAjNaYR+vu7Qyt/FnJNWcv+6OO/1n/DoM9+JZP0AD7Co3x8yVOJGIy+0/gF2RPED7k
+	 G0c7Xm9c37cH9JOQON0w4sKIY9DYFCxeqgyUN8/aFQwwE7o8htRok5Fc+Z967n8hh4
+	 4z7aeoPBRITsmrVXMqKx9AP47Xsn2axmGKmrdD9aYmhtJAVrUSsQE1eTEqXyvx0X41
+	 eFo4SogU7vNCG3Gn4Zppg997MH9s/YDoOakCl44k9t8Q9uv2btTc5ZPvEus1FKZoRw
+	 p0bh61OVIDqLg==
+Date: Wed, 7 Sep 2022 15:15:24 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>,
+	Lennert Buytenhek <buytenh@wantstofly.org>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Jerry Snitselaar <jsnitsel@redhat.com>, Wen Jin <wen.jin@intel.com>,
+	iommu@lists.linux.dev, iommu@lists.linux-foundation.org
+Subject: Re: [PATCH 0/4] iommu/vt-d: Fixes for v6.0-rc3
+Message-ID: <YxiZbGucnalhwdlJ@8bytes.org>
+References: <20220823061557.1631056-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- lhrpeml500003.china.huawei.com (7.191.162.67)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220823061557.1631056-1-baolu.lu@linux.intel.com>
 
-Two of the magazine helpers have BUG_ON() checks, as follows:
-- iova_magazine_pop() - here we ensure that the mag is not empty. However
-  we already ensure that in the only caller, __iova_rcache_get().
-- iova_magazine_push() - here we ensure that the mag is not full. However
-  we already ensure that in the only caller, __iova_rcache_insert().
+On Tue, Aug 23, 2022 at 02:15:53PM +0800, Lu Baolu wrote:
+> - Boot kdump kernels with VT-d scalable mode on
+> - Calculate the right page table levels
+> - Fix a recursive lock issue
+> - Fix a lockdep splat issue
 
-As described, the two bug checks are pointless so drop them.
-
-Signed-off-by: John Garry <john.garry@huawei.com>
-Acked-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
----
- drivers/iommu/iova.c | 4 ----
- 1 file changed, 4 deletions(-)
-
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 580fdf669922..8aece052ce72 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -694,8 +694,6 @@ static unsigned long iova_magazine_pop(struct iova_magazine *mag,
- 	int i;
- 	unsigned long pfn;
- 
--	BUG_ON(iova_magazine_empty(mag));
--
- 	/* Only fall back to the rbtree if we have no suitable pfns at all */
- 	for (i = mag->size - 1; mag->pfns[i] > limit_pfn; i--)
- 		if (i == 0)
-@@ -710,8 +708,6 @@ static unsigned long iova_magazine_pop(struct iova_magazine *mag,
- 
- static void iova_magazine_push(struct iova_magazine *mag, unsigned long pfn)
- {
--	BUG_ON(iova_magazine_full(mag));
--
- 	mag->pfns[mag->size++] = pfn;
- }
- 
--- 
-2.25.1
-
+Applied, thanks Baolu.
