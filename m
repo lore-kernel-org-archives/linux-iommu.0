@@ -1,120 +1,66 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CC2215C81
-	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 13:38:44 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5EAF31042;
-	Wed,  7 Sep 2022 06:38:44 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 34BD13F7B4;
-	Wed,  7 Sep 2022 06:38:37 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: hch@infradead.org
-Cc: m.szyprowski@samsung.com,
-	iommu@lists.linux.dev,
-	dongli.zhang@oracle.com,
-	yuzhao@google.com,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] swiotlb: Don't panic!
-Date: Wed,  7 Sep 2022 14:38:33 +0100
-Message-Id: <fe2bb33caac173c2b17c819503acef739f763ad1.1662557586.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.36.1.dirty
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7A585C81
+	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 13:41:23 +0000 (UTC)
+Received: from fraeml706-chm.china.huawei.com (unknown [172.18.147.201])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MN3Kw65bsz687hH;
+	Wed,  7 Sep 2022 21:40:36 +0800 (CST)
+Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
+ fraeml706-chm.china.huawei.com (10.206.15.55) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.31; Wed, 7 Sep 2022 15:41:20 +0200
+Received: from localhost.localdomain (10.69.192.58) by
+ lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 7 Sep 2022 14:41:18 +0100
+From: John Garry <john.garry@huawei.com>
+To: <robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>
+CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<linuxarm@huawei.com>, <jsnitsel@redhat.com>, <haifeng.zhao@linux.intel.com>,
+	John Garry <john.garry@huawei.com>
+Subject: [PATCH v4 0/3] iova: Some misc changes
+Date: Wed, 7 Sep 2022 21:34:38 +0800
+Message-ID: <1662557681-145906-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ lhrpeml500003.china.huawei.com (7.191.162.67)
+X-CFilter-Loop: Reflected
 
-The panics in swiotlb are relics of a bygone era, some of them
-inadvertently inherited from a memblock refactor, and all of them
-unnecessary since they are in places that may also fail gracefully
-anyway.
+This series removes some checks in the code which are not required or
+don't fulfil their purpose.
 
-Convert the panics in swiotlb_init_remap() into non-fatal warnings
-more consistent with the other bail-out paths there and in
-swiotlb_init_late() (but don't bother trying to roll anything back,
-since if anything does actually fail that early, the aim is merely to
-keep going as far as possible to get more diagnostic information out
-of the inevitably-dying kernel). It's not for SWIOTLB to decide that the
-system is terminally compromised just because there *might* turn out to
-be one or more 32-bit devices that might want to make streaming DMA
-mappings, especially since we already handle the no-buffer case later
-if it turns out someone did want it.
+Differences to v3:
+- fix typo
+- Add Robin's tag to 3/3 (thanks)
 
-Similarly though, downgrade that panic in swiotlb_tbl_map_single(),
-since even if we do get to that point it's an overly extreme reaction.
-It makes little difference to the DMA API caller whether a mapping fails
-because the buffer is full or because there is no buffer, and once again
-it's not for SWIOTLB to presume that any particular DMA mapping is so
-fundamental to the operation of the system that it must be terminal if
-it could never succeed. Even if the caller handles failure by futilely
-retrying forever, a single stuck thread is considerably less impactful
-to the user than a needless panic.
+Differences to v2:
+- Add more words in 1/3 commit log
+- Add Jerry's tags (thanks)
+- Add patch to drop iovad->rcaches check
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
+Differences to v1:
+- Drop re-org
+- Add RB/AB tags
 
-Based on dma/for-next with the revert already applied
+Based on v6.0-rc4
 
- kernel/dma/swiotlb.c | 30 +++++++++++++++++++-----------
- 1 file changed, 19 insertions(+), 11 deletions(-)
+John Garry (3):
+  iova: Remove some magazine pointer NULL checks
+  iova: Remove magazine BUG_ON() checks
+  iova: Remove iovad->rcaches check in iova_rcache_get()
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 0ef6b12f961d..11579a3be2b5 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -346,22 +346,27 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
- 		memblock_free(tlb, PAGE_ALIGN(bytes));
- 
- 		nslabs = ALIGN(nslabs >> 1, IO_TLB_SEGSIZE);
--		if (nslabs < IO_TLB_MIN_SLABS)
--			panic("%s: Failed to remap %zu bytes\n",
--			      __func__, bytes);
--		goto retry;
-+		if (nslabs >= IO_TLB_MIN_SLABS)
-+			goto retry;
-+
-+		pr_warn("%s: Failed to remap %zu bytes\n", __func__, bytes);
-+		return;
- 	}
- 
- 	alloc_size = PAGE_ALIGN(array_size(sizeof(*mem->slots), nslabs));
- 	mem->slots = memblock_alloc(alloc_size, PAGE_SIZE);
--	if (!mem->slots)
--		panic("%s: Failed to allocate %zu bytes align=0x%lx\n",
--		      __func__, alloc_size, PAGE_SIZE);
-+	if (!mem->slots) {
-+		pr_warn("%s: Failed to allocate %zu bytes align=0x%lx\n",
-+			__func__, alloc_size, PAGE_SIZE);
-+		return;
-+	}
- 
- 	mem->areas = memblock_alloc(array_size(sizeof(struct io_tlb_area),
- 		default_nareas), SMP_CACHE_BYTES);
--	if (!mem->areas)
--		panic("%s: Failed to allocate mem->areas.\n", __func__);
-+	if (!mem->areas) {
-+		pr_warn("%s: Failed to allocate mem->areas.\n", __func__);
-+		return;
-+	}
- 
- 	swiotlb_init_io_tlb_mem(mem, __pa(tlb), nslabs, flags, false,
- 				default_nareas);
-@@ -731,8 +736,11 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 	int index;
- 	phys_addr_t tlb_addr;
- 
--	if (!mem || !mem->nslabs)
--		panic("Can not allocate SWIOTLB buffer earlier and can't now provide you with the DMA bounce buffer");
-+	if (!mem || !mem->nslabs) {
-+		dev_warn_ratelimited(dev,
-+			"Can not allocate SWIOTLB buffer earlier and can't now provide you with the DMA bounce buffer");
-+		return (phys_addr_t)DMA_MAPPING_ERROR;
-+	}
- 
- 	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
- 		pr_warn_once("Memory encryption is active and system is using DMA bounce buffers\n");
+ drivers/iommu/iova.c | 13 +++----------
+ 1 file changed, 3 insertions(+), 10 deletions(-)
+
 -- 
-2.36.1.dirty
+2.25.1
 
