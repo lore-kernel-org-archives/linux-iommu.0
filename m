@@ -1,88 +1,62 @@
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D991A53B5
-	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 13:05:02 +0000 (UTC)
-Date: Wed, 7 Sep 2022 09:04:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1662555894;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=3UodEGmtAL0Z2fi75TPwE5UbXZRqdKXtyJj7vm5kpXk=;
-	b=er2MzJbTg47iAo/XMusErAaGYdN6LhjL9qJ7uEt4qEtP6HbsNa3eddpgjMgNqeDLP23aLT
-	Gwip6c5VZ7JEEH0cUPSDYRDY/kPSA/0lPyiKeXik8d/k2hQ2yrItfs4NovpVivoEk4ZzdX
-	atkHw1ns446d4aZFxAc03p1ps6wQ2SU=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Kent Overstreet <kent.overstreet@linux.dev>
-To: Michal Hocko <mhocko@suse.com>
-Cc: Suren Baghdasaryan <surenb@google.com>, Mel Gorman <mgorman@suse.de>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Vlastimil Babka <vbabka@suse.cz>,
-	Johannes Weiner <hannes@cmpxchg.org>,
-	Roman Gushchin <roman.gushchin@linux.dev>,
-	Davidlohr Bueso <dave@stgolabs.net>,
-	Matthew Wilcox <willy@infradead.org>,
-	"Liam R. Howlett" <liam.howlett@oracle.com>,
-	David Vernet <void@manifault.com>,
-	Juri Lelli <juri.lelli@redhat.com>,
-	Laurent Dufour <ldufour@linux.ibm.com>,
-	Peter Xu <peterx@redhat.com>, David Hildenbrand <david@redhat.com>,
-	Jens Axboe <axboe@kernel.dk>, mcgrof@kernel.org,
-	masahiroy@kernel.org, nathan@kernel.org, changbin.du@intel.com,
-	ytcoode@gmail.com, Vincent Guittot <vincent.guittot@linaro.org>,
-	Dietmar Eggemann <dietmar.eggemann@arm.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Benjamin Segall <bsegall@google.com>,
-	Daniel Bristot de Oliveira <bristot@redhat.com>,
-	Valentin Schneider <vschneid@redhat.com>,
-	Christopher Lameter <cl@linux.com>,
-	Pekka Enberg <penberg@kernel.org>,
-	Joonsoo Kim <iamjoonsoo.kim@lge.com>, 42.hyeyoo@gmail.com,
-	Alexander Potapenko <glider@google.com>,
-	Marco Elver <elver@google.com>, Dmitry Vyukov <dvyukov@google.com>,
-	Shakeel Butt <shakeelb@google.com>,
-	Muchun Song <songmuchun@bytedance.com>, arnd@arndb.de,
-	jbaron@akamai.com, David Rientjes <rientjes@google.com>,
-	Minchan Kim <minchan@google.com>,
-	Kalesh Singh <kaleshsingh@google.com>,
-	kernel-team <kernel-team@android.com>,
-	linux-mm <linux-mm@kvack.org>, iommu@lists.linux.dev,
-	kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
-	linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
-	linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
-	LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
-Message-ID: <20220907130323.rwycrntnckc6h43n@kmo-framework>
-References: <YxBc1xuGbB36f8zC@dhcp22.suse.cz>
- <CAJuCfpGhwPFYdkOLjwwD4ra9JxPqq1T5d1jd41Jy3LJnVnhNdg@mail.gmail.com>
- <YxEE1vOwRPdzKxoq@dhcp22.suse.cz>
- <CAJuCfpHuzJGTA_-m0Jfawc7LgJLt4GztUUY4K9N9-7bFqJuXnw@mail.gmail.com>
- <20220901201502.sn6223bayzwferxv@moria.home.lan>
- <YxW4Ig338d2vQAz3@dhcp22.suse.cz>
- <20220905234649.525vorzx27ybypsn@kmo-framework>
- <Yxb1cxDSyte1Ut/F@dhcp22.suse.cz>
- <20220906182058.iijmpzu4rtxowy37@kmo-framework>
- <Yxh5ueDTAOcwEmCQ@dhcp22.suse.cz>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27D2E53B5
+	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 13:09:26 +0000 (UTC)
+Received: from fraeml705-chm.china.huawei.com (unknown [172.18.147.201])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MN2Y52Kbhz6HHkk;
+	Wed,  7 Sep 2022 21:05:13 +0800 (CST)
+Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
+ fraeml705-chm.china.huawei.com (10.206.15.54) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.31; Wed, 7 Sep 2022 15:09:17 +0200
+Received: from localhost.localdomain (10.69.192.58) by
+ lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 7 Sep 2022 14:09:15 +0100
+From: John Garry <john.garry@huawei.com>
+To: <robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>
+CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<linuxarm@huawei.com>, <jsnitsel@redhat.com>, <haifeng.zhao@linux.intel.com>,
+	John Garry <john.garry@huawei.com>
+Subject: [PATCH v3 0/3] iova: Some misc changes
+Date: Wed, 7 Sep 2022 21:02:31 +0800
+Message-ID: <1662555754-142760-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yxh5ueDTAOcwEmCQ@dhcp22.suse.cz>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ lhrpeml500003.china.huawei.com (7.191.162.67)
+X-CFilter-Loop: Reflected
 
-On Wed, Sep 07, 2022 at 01:00:09PM +0200, Michal Hocko wrote:
-> Hmm, it seems that further discussion doesn't really make much sense
-> here. I know how to use my time better.
+This series removes some checks in the code which are not required or
+don't fulfil their purpose.
 
-Just a thought, but I generally find it more productive to propose ideas than to
-just be disparaging.
+Differences to v2:
+- Add more words in 1/3 commit log
+- Add Jerry's tags (thanks)
+- Add patch to drop iovad->rcaches check
 
-Cheers,
-Kent
+Differences to v1:
+- Drop re-org
+- Add RB/AB tags
+
+Based on v6.0-rc4
+
+John Garry (3):
+  iova: Remove some magazine pointer NULL checks
+  iova: Remove magazine BUG_ON() checks
+  iova: Remove iovad->rcaches check in iova_rcache_get()
+
+ drivers/iommu/iova.c | 13 +++----------
+ 1 file changed, 3 insertions(+), 10 deletions(-)
+
+-- 
+2.25.1
+
