@@ -1,49 +1,31 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5125F5C91;
-	Wed,  7 Sep 2022 14:06:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F3FA15C91
+	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 14:14:47 +0000 (UTC)
 Received: from 8bytes.org (p4ff2bb62.dip0.t-ipconnect.de [79.242.187.98])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 6118D2409A7;
-	Wed,  7 Sep 2022 16:06:30 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id F0A832409A7;
+	Wed,  7 Sep 2022 16:14:46 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1662559591;
-	bh=sD6ntPJavoL+O3jZjBfdlyQKhK42Ee+ATtCC5qSKLek=;
+	s=default; t=1662560087;
+	bh=tPPU2UGF0chqil0RpZeP5ui2+4Lg6Hg3kcq900TvvvI=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=rnWXPfkRqiJXCBikZk6JRGP2BockRbTgJPogFW6R24YrO/UYOBdbDIQPctDN3LGpI
-	 79/xXHT61Edm0n+vSGPYdlczsRRfdkacO6KmQgX/Kv6hNnOMuGvxYRlTiNeRqAdoGh
-	 5eisSJGFeEPl9sdwLcPf/+l2Yyy8DviLlelMTM4i/bTvjcSo5ebNKYoIEDQy0YTBKO
-	 jt0uBK0fCmoSFWyU5uIRYNcijnnozfeA7oB/uWHePVQatjmPma4sWvhtPveFHkv/Zd
-	 5qGfNEp1V9BqTtR+QMkc0IJeFW1j8U5UpZXX6b1OmgcnRAA8Xu95xNZgC6+l1xfUpO
-	 7YogNayXEccUQ==
-Date: Wed, 7 Sep 2022 16:06:29 +0200
+	b=0e1KvJMOMSlieCpKz7k9gDd5GjYJOwc5vrBoCzgix7hJEIdjFDRyb5i4HR0ALSleM
+	 jGkdRQhFCC0I1p1Gb+naTorwJklXYa15qQF/TY5wpWmrWMAVuX3fUmrJPaMxni6zP5
+	 B9KN0ltZ60R8gTZfYMjoWzt2GbQDarlnfANBAfitWW/wv6Kvaeoo5mikFAZ0aj0k/Y
+	 uCjl8l1V0NocqDCdpdrDXTqLLmf2xz8NvtzHVFTuS0YH7rumjwcxipaYNF1WBURgd+
+	 kcz81Fem9dlCpm7xLBq14c70J96LkAM0qLGM6ndDzKehd7A7Yc1JBVuE+MxpRlWXAn
+	 RCqLguzaLZrRg==
+Date: Wed, 7 Sep 2022 16:14:45 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
-	robin.murphy@arm.com, alex.williamson@redhat.com,
-	suravee.suthikulpanit@amd.com, marcan@marcan.st, sven@svenpeter.dev,
-	alyssa@rosenzweig.io, robdclark@gmail.com, dwmw2@infradead.org,
-	baolu.lu@linux.intel.com, mjrosato@linux.ibm.com,
-	gerald.schaefer@linux.ibm.com, orsonzhai@gmail.com,
-	baolin.wang@linux.alibaba.com, zhang.lyra@gmail.com,
-	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
-	jean-philippe@linaro.org, cohuck@redhat.com, tglx@linutronix.de,
-	shameerali.kolothum.thodi@huawei.com, thunder.leizhen@huawei.com,
-	christophe.jaillet@wanadoo.fr, yangyingliang@huawei.com,
-	jon@solid-run.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, asahi@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-	linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
-	virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-	kevin.tian@intel.com
-Subject: Re: [PATCH v6 1/5] iommu: Return -EMEDIUMTYPE for incompatible
- domain and device/group
-Message-ID: <YxilZbRL0WBR97oi@8bytes.org>
-References: <20220815181437.28127-1-nicolinc@nvidia.com>
- <20220815181437.28127-2-nicolinc@nvidia.com>
- <YxiRkm7qgQ4k+PIG@8bytes.org>
- <Yxig+zfA2Pr4vk6K@nvidia.com>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, robin.murphy@arm.com,
+	suravee.suthikulpanit@amd.com
+Subject: Re: [PATCH v3 0/9] iommu/amd: Add Generic IO Page Table Framework
+ Support for v2 Page Table
+Message-ID: <YxinVSaZV0ccQfnD@8bytes.org>
+References: <20220825063939.8360-1-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,23 +34,20 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yxig+zfA2Pr4vk6K@nvidia.com>
+In-Reply-To: <20220825063939.8360-1-vasant.hegde@amd.com>
 
-On Wed, Sep 07, 2022 at 10:47:39AM -0300, Jason Gunthorpe wrote:
-> Would you be happier if we wrote it like
+On Thu, Aug 25, 2022 at 06:39:30AM +0000, Vasant Hegde wrote:
+> Suravee Suthikulpanit (4):
+>   iommu/amd: Refactor amd_iommu_domain_enable_v2 to remove locking
+>   iommu/amd: Update sanity check when enable PRI/ATS for IOMMU v1 table
+>   iommu/amd: Add support for Guest IO protection
+>   iommu/amd: Add support for using AMD IOMMU v2 page table for DMA-API
 > 
->  #define IOMMU_EINCOMPATIBLE_DEVICE xx
-> 
-> Which tells "which of the function parameters is actually invalid" ?
+> Vasant Hegde (5):
+>   iommu/amd/io-pgtable: Implement map_pages io_pgtable_ops callback
+>   iommu/amd/io-pgtable: Implement unmap_pages io_pgtable_ops callback
+>   iommu/amd: Add map/unmap_pages() iommu_domain_ops callback support
+>   iommu/amd: Initial support for AMD IOMMU v2 page table
+>   iommu/amd: Add command-line option to enable different page table
 
-Having done some Rust hacking in the last months, I have to say I like
-to concept of error handling with Result<> there. Ideally we have a way
-to emulate that in our C code without having to change all callers.
-
-What I am proposing is a way this could be emulated here, but I am open
-to other suggestions. Still better than re-using random error codes for
-special purposes.
-
-Regards,
-
-	Joerg
+Applied, thanks.
