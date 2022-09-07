@@ -1,32 +1,31 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4E0F97E
-	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 08:42:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 88E697E
+	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 08:45:46 +0000 (UTC)
 Received: from 8bytes.org (p4ff2bb62.dip0.t-ipconnect.de [79.242.187.98])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 073E92409C6;
-	Wed,  7 Sep 2022 10:42:58 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 7C8B42405F1;
+	Wed,  7 Sep 2022 10:37:47 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1662540178;
-	bh=aeiwbQEgBpapvaY7ytdFXeTg25jW4Hho6BQgko/uSo0=;
+	s=default; t=1662539867;
+	bh=8IVdbekt/J76mnSaLtAMZgVjG1Z8HFBk+8tCH/hMZgA=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ybrvhuHH/0sg1fsiTj3xXvm7D6/3/FoRWzLfkVes9BH5BckhJWiA9sO2useBgL0F6
-	 D/km/dQBfJ9a1CcIiFJdkR+x8bGmVRDc67aqVciFVMaQ2pdxY28TB/kkh4u+qT4+qD
-	 Ymg8xe7mkW5IssYhgYkEGQQ2So35beEjUo8QoGQ1PB36+PFDZcuFL75SjaezUUJMkx
-	 iRSTPkUaSAVMC0EdY6vL85GweUbx+gKc21We8y300j1CILSqr8eOIKUVM00qDywKvW
-	 IysM5xiCcgOPnPjIfaBWIZZqxthWKe2lx9XesiYHjSv87Hp7lG6eIvXY9wy83NROUn
-	 Le27lTQGmj5qg==
-Date: Wed, 7 Sep 2022 10:42:56 +0200
+	b=3xo0tMnN+UbnHuyXz3bbgyPKTxFDnThHyxZ+zHV8YVIECtquvuHZvA7SEXRiXIoFI
+	 VGQQqPEmPH2tWYiZgonsbmT+8nC9xAR6zFCQ9YbWoGoyYa7dJr4ak1MQAzQ4Oj4ewT
+	 raMuaO4igCgGwxeUZbsfspKOLrwXykSSzlZRJSPcAAgYGVq0CJTy5PZu1jVvOxP+Fs
+	 7+UAAAEn/vrm4NDG8mr51cPiuw5lxj8qlMAut5+ym4YpmrdVQGGs3uX4nExaAtHBT7
+	 CIsBv/xgaQtW/sgXMjEtz/aHFKZUFKyeUKUnRUwNMDVLaLravWGUSsyKtCOGU7G49P
+	 fmKge2JVIHwPg==
+Date: Wed, 7 Sep 2022 10:37:46 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: Suman Anna <s-anna@ti.com>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-	iommu@lists.linux.dev, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] iommu/omap: fix buffer overflow in debugfs
-Message-ID: <YxhZkCUD4UbUKLOp@8bytes.org>
-References: <YuvYh1JbE3v+abd5@kili>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Joerg Roedel <jroedel@suse.de>, Lu Baolu <baolu.lu@linux.intel.com>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v1 1/1] iommu: Do not dereference fwnode in struct device
+Message-ID: <YxhYWlbHPNdI4n//@8bytes.org>
+References: <20220801164758.20664-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,10 +34,10 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YuvYh1JbE3v+abd5@kili>
+In-Reply-To: <20220801164758.20664-1-andriy.shevchenko@linux.intel.com>
 
-On Thu, Aug 04, 2022 at 05:32:39PM +0300, Dan Carpenter wrote:
->  drivers/iommu/omap-iommu-debug.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+On Mon, Aug 01, 2022 at 07:47:58PM +0300, Andy Shevchenko wrote:
+>  drivers/iommu/iommu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
 Applied, thanks.
