@@ -1,81 +1,48 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0759F5C81
+	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 13:45:29 +0000 (UTC)
+Received: from 8bytes.org (p4ff2bb62.dip0.t-ipconnect.de [79.242.187.98])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA49A5C81
-	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 13:44:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E8F1C433C1;
-	Wed,  7 Sep 2022 13:44:38 +0000 (UTC)
-Date: Wed, 7 Sep 2022 09:45:18 -0400
-From: Steven Rostedt <rostedt@goodmis.org>
-To: Kent Overstreet <kent.overstreet@linux.dev>
-Cc: Michal Hocko <mhocko@suse.com>, Suren Baghdasaryan <surenb@google.com>,
- Mel Gorman <mgorman@suse.de>, Peter Zijlstra <peterz@infradead.org>, Andrew
- Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>,
- Johannes Weiner <hannes@cmpxchg.org>, Roman Gushchin
- <roman.gushchin@linux.dev>, Davidlohr Bueso <dave@stgolabs.net>, Matthew
- Wilcox <willy@infradead.org>, "Liam R. Howlett" <liam.howlett@oracle.com>,
- David Vernet <void@manifault.com>, Juri Lelli <juri.lelli@redhat.com>,
- Laurent Dufour <ldufour@linux.ibm.com>, Peter Xu <peterx@redhat.com>, David
- Hildenbrand <david@redhat.com>, Jens Axboe <axboe@kernel.dk>,
- mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org,
- changbin.du@intel.com, ytcoode@gmail.com, Vincent Guittot
- <vincent.guittot@linaro.org>, Dietmar Eggemann <dietmar.eggemann@arm.com>,
- Benjamin Segall <bsegall@google.com>, Daniel Bristot de Oliveira
- <bristot@redhat.com>, Valentin Schneider <vschneid@redhat.com>, Christopher
- Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, Joonsoo Kim
- <iamjoonsoo.kim@lge.com>, 42.hyeyoo@gmail.com, Alexander Potapenko
- <glider@google.com>, Marco Elver <elver@google.com>, Dmitry Vyukov
- <dvyukov@google.com>, Shakeel Butt <shakeelb@google.com>, Muchun Song
- <songmuchun@bytedance.com>, arnd@arndb.de, jbaron@akamai.com, David
- Rientjes <rientjes@google.com>, Minchan Kim <minchan@google.com>, Kalesh
- Singh <kaleshsingh@google.com>, kernel-team <kernel-team@android.com>,
- linux-mm <linux-mm@kvack.org>, iommu@lists.linux.dev,
- kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
- linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
- linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org, LKML
- <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
-Message-ID: <20220907094306.3383dac2@gandalf.local.home>
-In-Reply-To: <20220907130323.rwycrntnckc6h43n@kmo-framework>
-References: <YxBc1xuGbB36f8zC@dhcp22.suse.cz>
-	<CAJuCfpGhwPFYdkOLjwwD4ra9JxPqq1T5d1jd41Jy3LJnVnhNdg@mail.gmail.com>
-	<YxEE1vOwRPdzKxoq@dhcp22.suse.cz>
-	<CAJuCfpHuzJGTA_-m0Jfawc7LgJLt4GztUUY4K9N9-7bFqJuXnw@mail.gmail.com>
-	<20220901201502.sn6223bayzwferxv@moria.home.lan>
-	<YxW4Ig338d2vQAz3@dhcp22.suse.cz>
-	<20220905234649.525vorzx27ybypsn@kmo-framework>
-	<Yxb1cxDSyte1Ut/F@dhcp22.suse.cz>
-	<20220906182058.iijmpzu4rtxowy37@kmo-framework>
-	<Yxh5ueDTAOcwEmCQ@dhcp22.suse.cz>
-	<20220907130323.rwycrntnckc6h43n@kmo-framework>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 9925F40793;
+	Wed,  7 Sep 2022 15:45:28 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1662558328;
+	bh=iFiaRZ7atn07KtTJA7EX1xTm4N7M+wbNCgbxCsXt6Ak=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=GiCtPyNdqHxtBjuEcikhA6TYHpIaQ8bPP05J5GUs6etfMDU5/fh+/tAQEiWCD3/FM
+	 W1C4r/FZ5AAo9bF/QzBv6+1Rhp3LdH3aE7kxnw/hcSIhnI99R6EcVy/cylBBHUXSC1
+	 mx/+c26Hu8aIG3aVAbc7es7hp3tYgRCWywpbZs3FoCuZHmGY0QFCgESio3LKtGdWc1
+	 YCheiFy5UAybYr2J5c1+XeS5JHBq27r9oIPjf5F6r6sKHWmJ9WXVUs0cSgqlWzRDI5
+	 RT5HFx7gNd7EkPFG/nM+y9aWj0GU55rXpE77WTcZarorEyMrZc4gMzwx4Jx9QtDOMK
+	 gPhl4x0trSGcw==
+Date: Wed, 7 Sep 2022 15:45:27 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc: will@kernel.org, robin.murphy@arm.com,
+	virtualization@lists.linux-foundation.org, iommu@lists.linux.dev,
+	stable@vger.kernel.org
+Subject: Re: [PATCH v3] iommu/virtio: Fix interaction with VFIO
+Message-ID: <Yxigd/hKLp8g6UfJ@8bytes.org>
+References: <20220825154622.86759-1-jean-philippe@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220825154622.86759-1-jean-philippe@linaro.org>
 
-On Wed, 7 Sep 2022 09:04:28 -0400
-Kent Overstreet <kent.overstreet@linux.dev> wrote:
+On Thu, Aug 25, 2022 at 04:46:24PM +0100, Jean-Philippe Brucker wrote:
+> Cc: stable@vger.kernel.org
+> Fixes: e8ae0e140c05 ("vfio: Require that devices support DMA cache coherence")
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> ---
+> Since v2 [1], I tried to refine the commit message.
+> This fix is needed for v5.19 and v6.0.
 
-> On Wed, Sep 07, 2022 at 01:00:09PM +0200, Michal Hocko wrote:
-> > Hmm, it seems that further discussion doesn't really make much sense
-> > here. I know how to use my time better.  
-> 
-> Just a thought, but I generally find it more productive to propose ideas than to
-> just be disparaging.
-> 
+Applied for 6.0, thanks.
 
-But it's not Michal's job to do so. He's just telling you that the given
-feature is not worth the burden. He's telling you the issues that he has
-with the patch set. It's the submitter's job to address those concerns and
-not the maintainer's to tell you how to make it better.
-
-When Linus tells us that a submission is crap, we don't ask him how to make
-it less crap, we listen to why he called it crap, and then rewrite to be
-not so crappy. If we cannot figure it out, it doesn't get in.
-
--- Steve
