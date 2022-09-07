@@ -1,14 +1,14 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1DC9389C3;
-	Wed,  7 Sep 2022 19:41:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 61EA42F42
+	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 20:27:22 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 913CA106F;
-	Wed,  7 Sep 2022 12:41:40 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A6DEF106F;
+	Wed,  7 Sep 2022 13:27:27 -0700 (PDT)
 Received: from [10.57.15.197] (unknown [10.57.15.197])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A19FF3F7B4;
-	Wed,  7 Sep 2022 12:41:20 -0700 (PDT)
-Message-ID: <0b466705-3a17-1bbc-7ef2-5adadc22d1ae@arm.com>
-Date: Wed, 7 Sep 2022 20:41:13 +0100
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 880233F7B4;
+	Wed,  7 Sep 2022 13:27:16 -0700 (PDT)
+Message-ID: <26f5d7b9-48bc-7268-16f7-53e7d48c99ee@arm.com>
+Date: Wed, 7 Sep 2022 21:27:08 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -17,140 +17,225 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
  Thunderbird/102.2.1
-Subject: Re: [PATCH v6 1/5] iommu: Return -EMEDIUMTYPE for incompatible domain
- and device/group
+Subject: Re: [PATCH v4 04/16] iommu: Always register bus notifiers
 Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Nicolin Chen <nicolinc@nvidia.com>,
- will@kernel.org, alex.williamson@redhat.com, suravee.suthikulpanit@amd.com,
- marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io,
- robdclark@gmail.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
- mjrosato@linux.ibm.com, gerald.schaefer@linux.ibm.com, orsonzhai@gmail.com,
- baolin.wang@linux.alibaba.com, zhang.lyra@gmail.com,
- thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
- jean-philippe@linaro.org, cohuck@redhat.com, tglx@linutronix.de,
- shameerali.kolothum.thodi@huawei.com, thunder.leizhen@huawei.com,
- christophe.jaillet@wanadoo.fr, yangyingliang@huawei.com, jon@solid-run.com,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, asahi@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
- linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
- virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
- kevin.tian@intel.com
-References: <20220815181437.28127-1-nicolinc@nvidia.com>
- <20220815181437.28127-2-nicolinc@nvidia.com> <YxiRkm7qgQ4k+PIG@8bytes.org>
- <Yxig+zfA2Pr4vk6K@nvidia.com> <9f91f187-2767-13f9-68a2-a5458b888f00@arm.com>
- <YxjOPo5FFqu2vE/g@nvidia.com>
+To: Saravana Kannan <saravanak@google.com>
+Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, baolu.lu@linux.intel.com,
+ kevin.tian@intel.com, suravee.suthikulpanit@amd.com, vasant.hegde@amd.com,
+ mjrosato@linux.ibm.com, schnelle@linux.ibm.com, linux-kernel@vger.kernel.org
+References: <cover.1660572783.git.robin.murphy@arm.com>
+ <7462347bf938bd6eedb629a3a318434f6516e712.1660572783.git.robin.murphy@arm.com>
+ <CAGETcx8fTP_wEq_5eo2xDb4pFY9X5t7naOdNnexPhrhZsQCVpQ@mail.gmail.com>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <YxjOPo5FFqu2vE/g@nvidia.com>
+In-Reply-To: <CAGETcx8fTP_wEq_5eo2xDb4pFY9X5t7naOdNnexPhrhZsQCVpQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2022-09-07 18:00, Jason Gunthorpe wrote:
-> On Wed, Sep 07, 2022 at 03:23:09PM +0100, Robin Murphy wrote:
->> On 2022-09-07 14:47, Jason Gunthorpe wrote:
->>> On Wed, Sep 07, 2022 at 02:41:54PM +0200, Joerg Roedel wrote:
->>>> On Mon, Aug 15, 2022 at 11:14:33AM -0700, Nicolin Chen wrote:
->>>>> Provide a dedicated errno from the IOMMU driver during attach that the
->>>>> reason attached failed is because of domain incompatability. EMEDIUMTYPE
->>>>> is chosen because it is never used within the iommu subsystem today and
->>>>> evokes a sense that the 'medium' aka the domain is incompatible.
->>>>
->>>> I am not a fan of re-using EMEDIUMTYPE or any other special value. What
->>>> is needed here in EINVAL, but with a way to tell the caller which of the
->>>> function parameters is actually invalid.
->>>
->>> Using errnos to indicate the nature of failure is a well established
->>> unix practice, it is why we have hundreds of error codes and don't
->>> just return -EINVAL for everything.
->>>
->>> What don't you like about it?
->>>
->>> Would you be happier if we wrote it like
->>>
->>>    #define IOMMU_EINCOMPATIBLE_DEVICE xx
->>>
->>> Which tells "which of the function parameters is actually invalid" ?
+On 2022-09-07 19:50, Saravana Kannan wrote:
+> On Mon, Aug 15, 2022 at 9:20 AM Robin Murphy <robin.murphy@arm.com> wrote:
 >>
->> FWIW, we're now very close to being able to validate dev->iommu against
->> where the domain came from in core code, and so short-circuit ->attach_dev
->> entirely if they don't match.
+>> The number of bus types that the IOMMU subsystem deals with is small and
+>> manageable, so pull that list into core code as a first step towards
+>> cleaning up all the boilerplate bus-awareness from drivers. Calling
+>> iommu_probe_device() before bus->iommu_ops is set will simply return
+>> -ENODEV and not break the notifier call chain, so there should be no
+>> harm in proactively registering all our bus notifiers at init time.
+>>
+>> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>> Tested-by: Matthew Rosato <mjrosato@linux.ibm.com> # s390
+>> Tested-by: Niklas Schnelle <schnelle@linux.ibm.com> # s390
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+>>
+>> v4: Squash iommu_bus_init() entirely, for maximum simplicity. Ignoring
+>>      the return from bus_register_notifier() is common, so hopefully it's
+>>      all pretty self-explanatory now.
+>>
+>>   drivers/iommu/iommu.c | 72 ++++++++++++++++++++++---------------------
+>>   1 file changed, 37 insertions(+), 35 deletions(-)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 780fb7071577..a8d14f2a1035 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -6,6 +6,7 @@
+>>
+>>   #define pr_fmt(fmt)    "iommu: " fmt
+>>
+>> +#include <linux/amba/bus.h>
+>>   #include <linux/device.h>
+>>   #include <linux/dma-iommu.h>
+>>   #include <linux/kernel.h>
+>> @@ -16,11 +17,13 @@
+>>   #include <linux/export.h>
+>>   #include <linux/slab.h>
+>>   #include <linux/errno.h>
+>> +#include <linux/host1x_context_bus.h>
+>>   #include <linux/iommu.h>
+>>   #include <linux/idr.h>
+>>   #include <linux/err.h>
+>>   #include <linux/pci.h>
+>>   #include <linux/bitops.h>
+>> +#include <linux/platform_device.h>
+>>   #include <linux/property.h>
+>>   #include <linux/fsl/mc.h>
+>>   #include <linux/module.h>
+>> @@ -75,6 +78,8 @@ static const char * const iommu_group_resv_type_string[] = {
+>>   #define IOMMU_CMD_LINE_DMA_API         BIT(0)
+>>   #define IOMMU_CMD_LINE_STRICT          BIT(1)
+>>
+>> +static int iommu_bus_notifier(struct notifier_block *nb,
+>> +                             unsigned long action, void *data);
+>>   static int iommu_alloc_default_domain(struct iommu_group *group,
+>>                                        struct device *dev);
+>>   static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
+>> @@ -103,6 +108,22 @@ struct iommu_group_attribute iommu_group_attr_##_name =            \
+>>   static LIST_HEAD(iommu_device_list);
+>>   static DEFINE_SPINLOCK(iommu_device_lock);
+>>
+>> +static struct bus_type * const iommu_buses[] = {
+>> +       &platform_bus_type,
+>> +#ifdef CONFIG_PCI
+>> +       &pci_bus_type,
+>> +#endif
+>> +#ifdef CONFIG_ARM_AMBA
+>> +       &amba_bustype,
+>> +#endif
+>> +#ifdef CONFIG_FSL_MC_BUS
+>> +       &fsl_mc_bus_type,
+>> +#endif
+>> +#ifdef CONFIG_TEGRA_HOST1X_CONTEXT_BUS
+>> +       &host1x_context_device_bus_type,
+>> +#endif
+>> +};
+>> +
+>>   /*
+>>    * Use a function instead of an array here because the domain-type is a
+>>    * bit-field, so an array would waste memory.
+>> @@ -126,6 +147,8 @@ static const char *iommu_domain_type_str(unsigned int t)
+>>
+>>   static int __init iommu_subsys_init(void)
+>>   {
+>> +       struct notifier_block *nb;
+>> +
+>>          if (!(iommu_cmd_line & IOMMU_CMD_LINE_DMA_API)) {
+>>                  if (IS_ENABLED(CONFIG_IOMMU_DEFAULT_PASSTHROUGH))
+>>                          iommu_set_default_passthrough(false);
+>> @@ -152,6 +175,15 @@ static int __init iommu_subsys_init(void)
+>>                          (iommu_cmd_line & IOMMU_CMD_LINE_STRICT) ?
+>>                                  "(set via kernel command line)" : "");
+>>
+>> +       nb = kcalloc(ARRAY_SIZE(iommu_buses), sizeof(*nb), GFP_KERNEL);
+>> +       if (!nb)
+>> +               return -ENOMEM;
+>> +
+>> +       for (int i = 0; i < ARRAY_SIZE(iommu_buses); i++) {
+>> +               nb[i].notifier_call = iommu_bus_notifier;
+>> +               bus_register_notifier(iommu_buses[i], &nb[i]);
+>> +       }
+>> +
 > 
-> I don't think this is a long term direction. We have systems now with
-> a number of SMMU blocks and we really are going to see a need that
-> they share the iommu_domains so we don't have unncessary overheads
-> from duplicated io page table memory.
-> 
-> So ultimately I'd expect to pass the iommu_domain to the driver and
-> the driver will decide if the page table memory it represents is
-> compatible or not. Restricting to only the same iommu instance isn't
-> good..
+> Carrying on the community's general disdain for notifiers, can we drop
+> the bus notifier and just call iommu_probe_device() directly from
+> device_add()? That way, you also won't need to keep an ifdef-ed array
+> of buses and it'll be easy to tell from driver core code that iommu
+> stuff is happening as devices are added. And I'd probably move that
+> call to be AFTER some of the fw_devlink stuff is done too.
 
-Who said IOMMU instance? As a reminder, the patch I currently have[1] is 
-matching the driver (via the device ops), which happens to be entirely 
-compatible with drivers supporting cross-instance domains. Mostly 
-because we already have drivers that support cross-instance domains and 
-callers that use them.
+Yup, we're working in that general direction, this is just big and moves 
+slow :)
 
->> At that point -EINVAL at the driver callback level could be assumed
->> to refer to the domain argument, while anything else could be taken
->> as something going unexpectedly wrong when the attach may otherwise
->> have worked. I've forgotten if we actually had a valid case anywhere
->> for "this is my device but even if you retry with a different domain
->> it's still never going to work", but I think we wouldn't actually
->> need that anyway - it should be clear enough to a caller that if
->> attaching to an existing domain fails, then allocating a fresh
->> domain and attaching also fails, that's the point to give up.
-> 
-> The point was to have clear error handling, we either have permenent
-> errors or 'this domain will never work with this device error'.
-> 
-> If we treat all error as temporary and just retry randomly it can
-> create a mess. For instance we might fail to attach to a perfectly
-> compatible domain due to ENOMEM or something and then go on to
-> successfully a create a new 2nd domain, just due to races.
-> 
-> We can certainly code the try everything then allocate scheme, it is
-> just much more fragile than having definitive error codes.
+One of the next steps after this is unpicking 
+{of,acpi}_iommu_configure() for iommu_probe_device() to take ownership 
+of firmware parsing, after which it should be sufficiently 
+self-contained that the notifier might indeed become the worst 
+impediment to further reasoning. We'll still want to limit things to the 
+small subset of buses where IOMMUs are at all relevant (one of the 
+reasons that I stopped short of trying to grovel the whole list of 
+registered buses out of the driver core here), but since there's a 
+bus-specific element involved in parsing the firmware bindings, I'm 
+expecting it to work out quite neatly in the end.
 
-Again, not what I was suggesting. In fact the nature of 
-iommu_attach_group() already rules out bogus devices getting this far, 
-so all a driver currently has to worry about is compatibility of a 
-device that it definitely probed with a domain that it definitely 
-allocated. Therefore, from a caller's point of view, if attaching to an 
-existing domain returns -EINVAL, try another domain; multiple different 
-existing domains can be tried, and may also return -EINVAL for the same 
-or different reasons; the final attempt is to allocate a fresh domain 
-and attach to that, which should always be nominally valid and *never* 
-return -EINVAL. If any attempt returns any other error, bail out down 
-the usual "this should have worked but something went wrong" path. Even 
-if any driver did have a nonsensical "nothing went wrong, I just can't 
-attach my device to any of my domains" case, I don't think it would 
-really need distinguishing from any other general error anyway.
+> Also, would it be possible to delay this until probe (sorry, don't
+> have enough of IOMMU details in my head) and call iommu_probe_device()
+> from really_probe() like we do to set up pinctrl, etc? That'd be
+> ideal.
 
-Once multiple drivers are in play, the only addition is that the 
-"gatekeeper" check inside iommu_attach_group() may also return -EINVAL 
-if the device is managed by a different driver, since that still fits 
-the same "try again with a different domain" message to the caller.
+No, that's not so good, and in fact the stuff that can currently happen 
+at driver probe time is already problematic and responsible for various 
+subtle breakage. There are things about the IOMMU topology that need to 
+be known regardless of whether drivers exist for all the devices, so now 
+that fw_devlink can take care of waiting for IOMMU drivers to load, the 
+rest of IOMMU setup (other than DMA ops) really does want to move back 
+to device_add() time.
 
-It's actually quite neat - basically the exact same thing we've tried to 
-do with -EMEDIUMTYPE here, but more self-explanatory, since the fact is 
-that a domain itself should never be invalid for attaching to via its 
-own ops, and a group should never be inherently invalid for attaching to 
-a suitable domain, it is only ever a particular combination of group (or 
-device at the internal level) and domain that may not be valid together. 
-Thus as long as we can maintain that basic guarantee that attaching a 
-group to a newly allocated domain can only ever fail for resource 
-allocation reasons and not some spurious "incompatibility", then we 
-don't need any obscure trickery, and a single, clear, error code is in 
-fact enough to say all that needs to be said.
-
-Whether iommu_attach_device() should also join the party and start 
-rejecting non-singleton-group devices with a different error, or 
-maintain its current behaviour since its legacy users already have their 
-expectations set, is another matter in its own right.
-
-Cheers,
+Thanks,
 Robin.
 
-[1] 
-https://gitlab.arm.com/linux-arm/linux-rm/-/commit/683cdff1b2d4ae11f56e38d93b37e66e8c939fc9
+> 
+> -Saravana
+> 
+> 
+>>          return 0;
+>>   }
+>>   subsys_initcall(iommu_subsys_init);
+>> @@ -1775,39 +1807,6 @@ int bus_iommu_probe(struct bus_type *bus)
+>>          return ret;
+>>   }
+>>
+>> -static int iommu_bus_init(struct bus_type *bus, const struct iommu_ops *ops)
+>> -{
+>> -       struct notifier_block *nb;
+>> -       int err;
+>> -
+>> -       nb = kzalloc(sizeof(struct notifier_block), GFP_KERNEL);
+>> -       if (!nb)
+>> -               return -ENOMEM;
+>> -
+>> -       nb->notifier_call = iommu_bus_notifier;
+>> -
+>> -       err = bus_register_notifier(bus, nb);
+>> -       if (err)
+>> -               goto out_free;
+>> -
+>> -       err = bus_iommu_probe(bus);
+>> -       if (err)
+>> -               goto out_err;
+>> -
+>> -
+>> -       return 0;
+>> -
+>> -out_err:
+>> -       /* Clean up */
+>> -       bus_for_each_dev(bus, NULL, NULL, remove_iommu_group);
+>> -       bus_unregister_notifier(bus, nb);
+>> -
+>> -out_free:
+>> -       kfree(nb);
+>> -
+>> -       return err;
+>> -}
+>> -
+>>   /**
+>>    * bus_set_iommu - set iommu-callbacks for the bus
+>>    * @bus: bus.
+>> @@ -1836,9 +1835,12 @@ int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops)
+>>          bus->iommu_ops = ops;
+>>
+>>          /* Do IOMMU specific setup for this bus-type */
+>> -       err = iommu_bus_init(bus, ops);
+>> -       if (err)
+>> +       err = bus_iommu_probe(bus);
+>> +       if (err) {
+>> +               /* Clean up */
+>> +               bus_for_each_dev(bus, NULL, NULL, remove_iommu_group);
+>>                  bus->iommu_ops = NULL;
+>> +       }
+>>
+>>          return err;
+>>   }
+>> --
+>> 2.36.1.dirty
+>>
+>>
