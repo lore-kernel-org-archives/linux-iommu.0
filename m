@@ -1,65 +1,234 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 192CC89AA
-	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 18:16:40 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BECE3106F;
-	Wed,  7 Sep 2022 11:16:46 -0700 (PDT)
-Received: from [10.57.15.197] (unknown [10.57.15.197])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8FC523F7B4;
-	Wed,  7 Sep 2022 11:16:38 -0700 (PDT)
-Message-ID: <252a02d3-3c62-f2ca-e2ed-f874a31b17e9@arm.com>
-Date: Wed, 7 Sep 2022 19:16:32 +0100
+Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com [209.85.219.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7537F89BC
+	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 18:51:10 +0000 (UTC)
+Received: by mail-yb1-f170.google.com with SMTP id a67so11237915ybb.3
+        for <iommu@lists.linux.dev>; Wed, 07 Sep 2022 11:51:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=3OvMVNdxc1Lr6xZwtK0p7ZbJJgvUUT7bh3TNLzVW9Ic=;
+        b=j2jWsXJ59nilQ4XJNzg7SjjuppLOXRS91QnE1qzWm0fp5mbF07WsPzBOLb4HgRCewr
+         Rr6C58AHRycj2GXncRRJt8W5mWrmW4noaEFy2mGbUz3x+YAZVRFbAdypfnlyx7SpPCUT
+         74EurW8jX+/oDM9BAzSWkb4bRh5rDr+nvGFkg607bF/Q6XVXl8vnV8/hmzWEca8p+vb3
+         cdX0kqyHNF89pxjFD3XJT4e4o5YOZ/Hhr1rQWF8nAVOABaNAPQNy5IY0y0jqnjUFFI39
+         5CHVR99BA9ZGv7mV4+7d5YWF2QYm5ziVs9YzQ5s1OS9x39qUUJHtKL4+EP4mriBRXl4M
+         hsVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=3OvMVNdxc1Lr6xZwtK0p7ZbJJgvUUT7bh3TNLzVW9Ic=;
+        b=6ZiZz2CLnlsrYevtKh7diNLUXnfub85uulaDG6folpmvJqZfCC41sp2k/+GkaSnZ3K
+         IOJEcobzEcr1Cx/xYaBWBPsQWR5Z/9jjCbvnQKdQUfmZul9r91C1ab4HJlx3DsjTI/He
+         jNV02JdAHGB9vzLbMLRTzU1fb8J0LxnMHGypJkwBkUV2DfTj59zU6qk/OIyuyR0pgjbO
+         qr8OKCqtHK+AGILkN+UmIaxlge0u8Yv4f3A8HhLWL4gXagPSaebDn3hurAehz+ClrniU
+         rcFcaykEM0MiwU0KO0vrE6chOcwWRB6npXAIfeWNqTNaktyV+aBnqEQKT0Vv+yp2Xd1M
+         U8TA==
+X-Gm-Message-State: ACgBeo1/g/1ppAaYxpibJfmfwSabIxsflL0YHr7g1autFMDG+q11DvIN
+	3em3utB7Y/u4R8okKq9Onf2o6E+uXcwkNbIhn9Uh7A==
+X-Google-Smtp-Source: AA6agR5xn7D0pJIAmORXSpr+dwaItRsj/1cuWja16B5o1WH6ER4gwVbakDcn+kSTW1GNdIIyT5jS+IkaaGDy1OG8jDs=
+X-Received: by 2002:a25:4683:0:b0:69d:cfad:660e with SMTP id
+ t125-20020a254683000000b0069dcfad660emr4005569yba.352.1662576669201; Wed, 07
+ Sep 2022 11:51:09 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH v3 0/9] iommu/amd: Add Generic IO Page Table Framework
- Support for v2 Page Table
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>
-Cc: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
- suravee.suthikulpanit@amd.com
-References: <20220825063939.8360-1-vasant.hegde@amd.com>
- <77d2ea43-9752-b5f3-78ef-8cdae944eee4@amd.com>
- <05f9784b-15b6-2a9b-2d9e-19e1430f74e2@arm.com> <YxintMDEmzSXJUl5@8bytes.org>
- <YxjMQpGYaHfsiuL+@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <YxjMQpGYaHfsiuL+@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <cover.1660572783.git.robin.murphy@arm.com> <7462347bf938bd6eedb629a3a318434f6516e712.1660572783.git.robin.murphy@arm.com>
+In-Reply-To: <7462347bf938bd6eedb629a3a318434f6516e712.1660572783.git.robin.murphy@arm.com>
+From: Saravana Kannan <saravanak@google.com>
+Date: Wed, 7 Sep 2022 11:50:33 -0700
+Message-ID: <CAGETcx8fTP_wEq_5eo2xDb4pFY9X5t7naOdNnexPhrhZsQCVpQ@mail.gmail.com>
+Subject: Re: [PATCH v4 04/16] iommu: Always register bus notifiers
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, baolu.lu@linux.intel.com, 
+	kevin.tian@intel.com, suravee.suthikulpanit@amd.com, vasant.hegde@amd.com, 
+	mjrosato@linux.ibm.com, schnelle@linux.ibm.com, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On 2022-09-07 17:52, Jason Gunthorpe wrote:
-> On Wed, Sep 07, 2022 at 04:16:20PM +0200, Joerg Roedel wrote:
->> On Tue, Sep 06, 2022 at 05:35:13PM +0100, Robin Murphy wrote:
->>> Will this series also mean that the domain shenanigans in
->>> amd_iommu_init_device() can be replaced by just making sure the GPU gets the
->>> proper type of v2 default domain in the first place, so KFD can use its
->>> PASIDs on top of that directly, and the audio driver problem goes away
->>> naturally?
->>
->> Yes, on IOMMUs supporting v2 page-tables and declaring a default PASID
->> this hack can go away. Unfortunately a lot of AMD IOMMUs in the field do
->> not, so the identity mapping hack needs to stay around.
-> 
-> Why can an identity map be attached to the RID in v2, but not a full
-> translation? It seems like a very strange design that entering PASID
-> mode completely breaks RID support..
+On Mon, Aug 15, 2022 at 9:20 AM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> The number of bus types that the IOMMU subsystem deals with is small and
+> manageable, so pull that list into core code as a first step towards
+> cleaning up all the boilerplate bus-awareness from drivers. Calling
+> iommu_probe_device() before bus->iommu_ops is set will simply return
+> -ENODEV and not break the notifier call chain, so there should be no
+> harm in proactively registering all our bus notifiers at init time.
+>
+> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Tested-by: Matthew Rosato <mjrosato@linux.ibm.com> # s390
+> Tested-by: Niklas Schnelle <schnelle@linux.ibm.com> # s390
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+>
+> v4: Squash iommu_bus_init() entirely, for maximum simplicity. Ignoring
+>     the return from bus_register_notifier() is common, so hopefully it's
+>     all pretty self-explanatory now.
+>
+>  drivers/iommu/iommu.c | 72 ++++++++++++++++++++++---------------------
+>  1 file changed, 37 insertions(+), 35 deletions(-)
+>
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 780fb7071577..a8d14f2a1035 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -6,6 +6,7 @@
+>
+>  #define pr_fmt(fmt)    "iommu: " fmt
+>
+> +#include <linux/amba/bus.h>
+>  #include <linux/device.h>
+>  #include <linux/dma-iommu.h>
+>  #include <linux/kernel.h>
+> @@ -16,11 +17,13 @@
+>  #include <linux/export.h>
+>  #include <linux/slab.h>
+>  #include <linux/errno.h>
+> +#include <linux/host1x_context_bus.h>
+>  #include <linux/iommu.h>
+>  #include <linux/idr.h>
+>  #include <linux/err.h>
+>  #include <linux/pci.h>
+>  #include <linux/bitops.h>
+> +#include <linux/platform_device.h>
+>  #include <linux/property.h>
+>  #include <linux/fsl/mc.h>
+>  #include <linux/module.h>
+> @@ -75,6 +78,8 @@ static const char * const iommu_group_resv_type_string[] = {
+>  #define IOMMU_CMD_LINE_DMA_API         BIT(0)
+>  #define IOMMU_CMD_LINE_STRICT          BIT(1)
+>
+> +static int iommu_bus_notifier(struct notifier_block *nb,
+> +                             unsigned long action, void *data);
+>  static int iommu_alloc_default_domain(struct iommu_group *group,
+>                                       struct device *dev);
+>  static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
+> @@ -103,6 +108,22 @@ struct iommu_group_attribute iommu_group_attr_##_name =            \
+>  static LIST_HEAD(iommu_device_list);
+>  static DEFINE_SPINLOCK(iommu_device_lock);
+>
+> +static struct bus_type * const iommu_buses[] = {
+> +       &platform_bus_type,
+> +#ifdef CONFIG_PCI
+> +       &pci_bus_type,
+> +#endif
+> +#ifdef CONFIG_ARM_AMBA
+> +       &amba_bustype,
+> +#endif
+> +#ifdef CONFIG_FSL_MC_BUS
+> +       &fsl_mc_bus_type,
+> +#endif
+> +#ifdef CONFIG_TEGRA_HOST1X_CONTEXT_BUS
+> +       &host1x_context_device_bus_type,
+> +#endif
+> +};
+> +
+>  /*
+>   * Use a function instead of an array here because the domain-type is a
+>   * bit-field, so an array would waste memory.
+> @@ -126,6 +147,8 @@ static const char *iommu_domain_type_str(unsigned int t)
+>
+>  static int __init iommu_subsys_init(void)
+>  {
+> +       struct notifier_block *nb;
+> +
+>         if (!(iommu_cmd_line & IOMMU_CMD_LINE_DMA_API)) {
+>                 if (IS_ENABLED(CONFIG_IOMMU_DEFAULT_PASSTHROUGH))
+>                         iommu_set_default_passthrough(false);
+> @@ -152,6 +175,15 @@ static int __init iommu_subsys_init(void)
+>                         (iommu_cmd_line & IOMMU_CMD_LINE_STRICT) ?
+>                                 "(set via kernel command line)" : "");
+>
+> +       nb = kcalloc(ARRAY_SIZE(iommu_buses), sizeof(*nb), GFP_KERNEL);
+> +       if (!nb)
+> +               return -ENOMEM;
+> +
+> +       for (int i = 0; i < ARRAY_SIZE(iommu_buses); i++) {
+> +               nb[i].notifier_call = iommu_bus_notifier;
+> +               bus_register_notifier(iommu_buses[i], &nb[i]);
+> +       }
+> +
 
-FWIW we have the opposite problem on SMMUv3 - if we're using PASIDs then 
-we can't bypass the RID, it *has* to map to a translation context (as 
-PASID 0). I can only guess that nobody's yet tried the combination of 
-SVA plus IOMMU_DEFAULT_PASSTHROUGH plus the device sending MSIs (and not 
-on the dodgy machine where MSIs bypass the SMMU in hardware)... :/
+Carrying on the community's general disdain for notifiers, can we drop
+the bus notifier and just call iommu_probe_device() directly from
+device_add()? That way, you also won't need to keep an ifdef-ed array
+of buses and it'll be easy to tell from driver core code that iommu
+stuff is happening as devices are added. And I'd probably move that
+call to be AFTER some of the fw_devlink stuff is done too.
 
-Anyway, fair enough if def_domain_type still has to force 
-IOMMU_DOMAIN_IDENTITY in some cases here, but presumably that still 
-wouldn't prevent us from enabling v2 on those from the outset and 
-avoiding the mysterious and problematic "concoct an identity domain to 
-replace the identity domain" dance?
+Also, would it be possible to delay this until probe (sorry, don't
+have enough of IOMMU details in my head) and call iommu_probe_device()
+from really_probe() like we do to set up pinctrl, etc? That'd be
+ideal.
 
-Thanks,
-Robin.
+-Saravana
+
+
+>         return 0;
+>  }
+>  subsys_initcall(iommu_subsys_init);
+> @@ -1775,39 +1807,6 @@ int bus_iommu_probe(struct bus_type *bus)
+>         return ret;
+>  }
+>
+> -static int iommu_bus_init(struct bus_type *bus, const struct iommu_ops *ops)
+> -{
+> -       struct notifier_block *nb;
+> -       int err;
+> -
+> -       nb = kzalloc(sizeof(struct notifier_block), GFP_KERNEL);
+> -       if (!nb)
+> -               return -ENOMEM;
+> -
+> -       nb->notifier_call = iommu_bus_notifier;
+> -
+> -       err = bus_register_notifier(bus, nb);
+> -       if (err)
+> -               goto out_free;
+> -
+> -       err = bus_iommu_probe(bus);
+> -       if (err)
+> -               goto out_err;
+> -
+> -
+> -       return 0;
+> -
+> -out_err:
+> -       /* Clean up */
+> -       bus_for_each_dev(bus, NULL, NULL, remove_iommu_group);
+> -       bus_unregister_notifier(bus, nb);
+> -
+> -out_free:
+> -       kfree(nb);
+> -
+> -       return err;
+> -}
+> -
+>  /**
+>   * bus_set_iommu - set iommu-callbacks for the bus
+>   * @bus: bus.
+> @@ -1836,9 +1835,12 @@ int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops)
+>         bus->iommu_ops = ops;
+>
+>         /* Do IOMMU specific setup for this bus-type */
+> -       err = iommu_bus_init(bus, ops);
+> -       if (err)
+> +       err = bus_iommu_probe(bus);
+> +       if (err) {
+> +               /* Clean up */
+> +               bus_for_each_dev(bus, NULL, NULL, remove_iommu_group);
+>                 bus->iommu_ops = NULL;
+> +       }
+>
+>         return err;
+>  }
+> --
+> 2.36.1.dirty
+>
+>
