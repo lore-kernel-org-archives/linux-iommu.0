@@ -1,174 +1,145 @@
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EAAC33C1
-	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 09:55:00 +0000 (UTC)
-Received: by mail-wr1-f47.google.com with SMTP id bq9so6593046wrb.4
-        for <iommu@lists.linux.dev>; Wed, 07 Sep 2022 02:55:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=D70XsnuK+JjOjhOUycDcv6x9oYap675Tz1NyjMuJJeQ=;
-        b=ArTVxjzl4jjkeDcDAykSqOnbsnE4RyYaNvtRv5H01nXkzeOrKwxou3NLe+9X5voQB9
-         k8vBvRNWJaoymUSrtwuowm9dD864p86/5v8QwkvKzkadebkZ6/ShoNbrlzL+l5SAiCCx
-         HQTor9/YFxw7z2jW2AaREh15/yMAIiW1zXxlnWXxMpFdE3L/pygM619gxQjyHSzp+hnE
-         2Qq1zVJxvO9Q2qCIF1/Remeygb1jzO3uN4hRTkbUa8jrz0U3QaC9bj0c9m7GHOJDX0jA
-         1nVB3DZ9RNPuUhyDOTG7FiAg6Ue4QvJ7H5bcqUQaTVKkpzkm902atXG64V9WZC6AEILx
-         8nqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=D70XsnuK+JjOjhOUycDcv6x9oYap675Tz1NyjMuJJeQ=;
-        b=q0JReTCiwLTvXkllnfb0sPaXPgTowKu1bdO761QP36jsLE4LtR5DsDHTRkySoqgL7l
-         /RKgmMCvOde4EB7j9ZTTm8GaWu+kGtUoXPqjABxERQCMDnLPO9m936g6A6Fyo01A/EET
-         fJehVuXECwl9Ib9h3zxjn1ar1EELOObWTnoDeMNwL5KUUSEnuRKZSV2ef1SjIm+D5VI+
-         a1Do+G/OA88z0JDj93U2p8409OrAHje2Zn16gUn5k45OQB3Gtp3lo6nAzHauoVmMHNqi
-         QJmNlXgVUWe0Eb6j1gAmXFmZo2R3c5OrfVugaqDBozAcOtWMPLjHK8fY9HjFP1fSO4Sv
-         OIUg==
-X-Gm-Message-State: ACgBeo2AwpPWrydzr+BFtXYywO/EkMyu0pPrjT0l0rGSDx72OBNILnqX
-	CTZGs1Fp9dsVpvE0pwnuYg6TYw==
-X-Google-Smtp-Source: AA6agR46d9IuqClGYsNh6ebHPg5a5F86IxP86Hlmd2vLbW53hk6vAwFPjS5L1FNJqf7fkT07+fz2rA==
-X-Received: by 2002:a5d:588d:0:b0:225:9818:668d with SMTP id n13-20020a5d588d000000b002259818668dmr1504825wrf.100.1662544498769;
-        Wed, 07 Sep 2022 02:54:58 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id bh5-20020a05600005c500b0021ee65426a2sm16037248wrb.65.2022.09.07.02.54.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Sep 2022 02:54:58 -0700 (PDT)
-Date: Wed, 7 Sep 2022 10:54:54 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
-	Christoph Hellwig <hch@infradead.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>,
-	Dave Jiang <dave.jiang@intel.com>,
-	Fenghua Yu <fenghua.yu@intel.com>, Vinod Koul <vkoul@kernel.org>,
-	Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
-	Jacob jun Pan <jacob.jun.pan@intel.com>,
-	Zhangfei Gao <zhangfei.gao@linaro.org>,
-	Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v13 09/13] iommu/sva: Refactoring
- iommu_sva_bind/unbind_device()
-Message-ID: <YxhqbhMmWLeFS512@myrica>
-References: <20220906124458.46461-1-baolu.lu@linux.intel.com>
- <20220906124458.46461-10-baolu.lu@linux.intel.com>
- <Yxd2+d/VOjdOgrR2@myrica>
- <682d8922-200d-8c89-7142-83e7b3754b8d@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38F6733D8
+	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 09:58:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662544738; x=1694080738;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=AmXRtUcPhtGSJn82WbSwjJEaSVshhgm7nZCuj/pPR/k=;
+  b=Hbct1vhv6Cs8PWe2o4OOJox73CPXVnuGq1K/lxv7QAL4ob7xxiNlXEQC
+   j+u/fMmOA8MaPWLpHqNwSCV1DiGkyoIgOVSZZtdv5GLjlR4KXBjz//FbK
+   Bwniv3Wb3fylC4F4JUqbNIFmHuWqP24ea1xdY7BJbAQidhLDBkh9n2hqT
+   ORKYxxrvjDqYz3EwMffY9jGeWIgRvrP+dwzglgu6fFG+m3cr6Exd+PUfr
+   ayJccyTIziiOCp+DAMEqc/1CTmS+hZzE1yG+dZsl6AICaeX8UJf0EQ1l8
+   CtSejV2rIxPDBW38mTHBZ+bsCc7nzVAJo/CBpziXHGblEDOvYfAbhde24
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10462"; a="295566404"
+X-IronPort-AV: E=Sophos;i="5.93,296,1654585200"; 
+   d="scan'208";a="295566404"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Sep 2022 02:58:57 -0700
+X-IronPort-AV: E=Sophos;i="5.93,296,1654585200"; 
+   d="scan'208";a="644553059"
+Received: from zhaohaif-mobl1.ccr.corp.intel.com (HELO [10.254.212.12]) ([10.254.212.12])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Sep 2022 02:58:55 -0700
+Message-ID: <a9f959ed-b528-681d-f941-d615360c0be3@linux.intel.com>
+Date: Wed, 7 Sep 2022 17:58:53 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <682d8922-200d-8c89-7142-83e7b3754b8d@linux.intel.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v2 1/2] iova: Remove some magazine pointer NULL checks
+To: John Garry <john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>,
+ joro@8bytes.org, will@kernel.org
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linuxarm@huawei.com
+References: <1662369083-238529-1-git-send-email-john.garry@huawei.com>
+ <1662369083-238529-2-git-send-email-john.garry@huawei.com>
+ <1d80f56c-bef7-6e5f-0bca-dad35f5e5a8e@linux.intel.com>
+ <3fa23318-6fa7-eba0-30b8-1fb71e6c327e@huawei.com>
+ <555fa5aa-a575-d783-dc97-79f63dcf2f57@arm.com>
+ <cc950d77-2a97-ac75-4a1d-19aaf864a3be@huawei.com>
+ <ad67a859-dc57-e30f-e422-3f9a0cb5239b@arm.com>
+ <ef7622de-c1f3-c6cd-a50e-bbcbf8288b64@huawei.com>
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+In-Reply-To: <ef7622de-c1f3-c6cd-a50e-bbcbf8288b64@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Hi Baolu,
+John,
 
-On Wed, Sep 07, 2022 at 09:27:30AM +0800, Baolu Lu wrote:
-> Hi Jean,
-> 
-> On 2022/9/7 0:36, Jean-Philippe Brucker wrote:
-> > On Tue, Sep 06, 2022 at 08:44:54PM +0800, Lu Baolu wrote:
-> > > +/**
-> > > + * iommu_sva_bind_device() - Bind a process address space to a device
-> > > + * @dev: the device
-> > > + * @mm: the mm to bind, caller must hold a reference to mm_users
-> > > + *
-> > > + * Create a bond between device and address space, allowing the device to access
-> > > + * the mm using the returned PASID. If a bond already exists between @device and
-> > > + * @mm, it is returned and an additional reference is taken. Caller must call
-> > > + * iommu_sva_unbind_device() to release each reference.
-> > This isn't true anymore. How about storing handle in the domain?
-> 
-> Yes, agreed. How about making the comments like this:
-> 
-> /**
->  * iommu_sva_bind_device() - Bind a process address space to a device
->  * @dev: the device
->  * @mm: the mm to bind, caller must hold a reference to mm_users
->  *
->  * Create a bond between device and address space, allowing the device to
->  * access the mm using the pasid returned by iommu_sva_get_pasid(). If a
->  * bond already exists between @device and @mm, an additional internal
->  * reference is taken. The reference will be released when the caller calls
->  * iommu_sva_unbind_device().
+在 2022/9/7 16:46, John Garry 写道:
+> On 06/09/2022 19:25, Robin Murphy wrote:
+>>>
+>>> Caveat: on the chance that the IOVA domain init fails due to the 
+>>> rcache init failing, then, if there were another device in the group 
+>>> which probes later, its probe would be ok as the start_pfn is set. 
+>>> Not Good.
+>>
+>> Yeah, there's a lot not to like about iommu_dma_init_domain() - I've 
+>> been banking on it all getting cleaned up when I get to refactoring 
+>> that area of probing (remember the issue you reported years ago with 
+>> PCI groups being built in the wrong order? All related...), but in 
+>> fact since the cookie management got pulled into core code, we can 
+>> probably tie the IOVA domain setup to that right now without much 
+>> other involvement. That could be a cheap win, so I'll give it a go soon.
+>
+> ok, great.
+>
+> On a related topic, another thing to consider is that errors in IOVA 
+> domain init are not handled gracefully in terms of how we deal with 
+> the device probe and setting dma mapping ops, ref 
+> iommu_setup_dma_ops(). I assume you know all this.
+>
+>>
+>>> - vdpa just fails to create the domain in vduse_domain_create()
+>>>
+>>>> That makes a fair amount of sense, but does mean that we're missing 
+>>>> the equivalent in iova_rcache_insert() for it to actually work. Or 
+>>>> we just remove it and tighten up the documentation to say that's 
+>>>> not valid 
+>>>
+>>> I'd be more inclined to remove it. I would rather remove fathpath 
+>>> checks as much as possible and have robust error handling in the 
+>>> domain init.
+>>>
+>>> Afterall I do have the "remove check" craze going.
+>>
+>> Sure, like I say I'm happy to be consistent either way. If I do end 
+>> up reinstating such a check I think I'd prefer to have it explicit in 
+>> {alloc,free}_iova_fast() anyway, rather than buried in internal 
+>> implementation details.
+>
+> I'm not sure what you would like to see now, if anything.
+>
+> I could just remove the iovad->rcache check in iova_rcache_get().  
+> It's pretty useless (on its own) since we don't have the same check on 
+> the "insert" path.
+>
+> Or also add this:
+>
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 0d6d8edf782d..e8f0b8f47f45 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -578,6 +578,12 @@ static int iommu_dma_init_domain(struct 
+> iommu_domain *domain, dma_addr_t base,
+>              goto done_unlock;
+>          }
+>
+> +        if (!iovad->rcaches) {
+> +            pr_warn("IOVA domain rcache not properly initialised\n");
+> +            ret = -EFAULT;
+> +            goto done_unlock;
+> +        }
+> +
+>          ret = 0;
+>          goto done_unlock;
+>
+If the iovad->rcaches allocation failed, will skip iommu domain dma ops, 
+so no need *any* iovad,->rcaches check, right ?
 
-Sure, that works. I'd keep "Caller must call iommu_sva_unbind_device()
-to release each reference"
-
-> 
-> Storing the handle in the domain looks odd. Conceptually an iommu domain
-> represents a hardware page table and the SVA handle represents a
-> relationship between device and the page table for a consumer. It's
-> better to make them separated.
-
-Right
-
-> 
-> In a separated series, probably we can discuss the possibility of
-> removing handle from the driver APIs. Just simply return the sva domain
-> instead.
-> 
-> struct iommu_domain *iommu_sva_bind_device(struct device *dev,
->                                            struct mm_struct *mm);
-> void iommu_sva_unbind_device(struct device *dev,
->                              struct iommu_domain *domain);
-> u32 iommu_sva_get_pasid(struct iommu_domain *domain);
-> 
-> If you think it's appropriate, I can send out the code for discussion.
-
-Yes, I don't see a reason to keep struct iommu_sva at the moment.
-I believe we needed to keep track of bonds themselves for sva_ops and
-driver data but those are gone now.
-
-Is iommu_domain still going to represent both a device context (whole
-PASID table) and individual address spaces, or are you planning to move
-away from that?  What happens when a driver does:
-
-  d1 = iommu_domain_alloc()
-  iommu_attach_device(d1)
-  d2 = iommu_sva_bind_device()
-  iommu_detach_device(d1)
-
-Does detach
-(a) only disable the non-PASID address space?
-(b) disable everything?
-(c) fail because the driver didn't unbind first?
-
-I'm asking because the SMMU driver is still using smmu_domain to represent
-all address spaces + the non-PASID one, and using the same type
-"iommu_domain" for the new object makes things unreadable. I think
-internally we'll want to use distinct variable names, something like
-"domain" and "address_space". If (a) is not the direction you're going,
-then it may be worth renaming the API as well.
-
-I'm also not sure why set_dev_pasid() is a domain_ops of the SVA domain,
-but acts on the parent domain which contains the PASID table. Shouldn't it
-be an IOMMU op like remove_dev_pasid(), or on the parent domain?
+and there is already warning about the fallback.
 
 Thanks,
-Jean
 
-> 
-> > 
-> > (Maybe also drop my Reviewed-by tags since this has changed significantly,
-> > I tend to ignore patches that have them)
-> 
-> I am sorry that after your review, the SVA domain and attach/detach
-> device pasid interfaces have undergone some changes. They mainly exist
-> in the following patches. Can you please help to take a look.
-> 
-> iommu/sva: Refactoring iommu_sva_bind/unbind_device()
-> arm-smmu-v3/sva: Add SVA domain support
-> iommu: Add IOMMU SVA domain support
-> iommu: Add attach/detach_dev_pasid iommu interfaces
-> 
-> Best regards,
-> baolu
+Ethan
+
+>
+> But I figure that you don't want more crud there now, considering the 
+> work you mention above.
+>
+> Thanks,
+> John
+>
+>
+>
+-- 
+"firm, enduring, strong, and long-lived"
+
