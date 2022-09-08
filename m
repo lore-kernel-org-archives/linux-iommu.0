@@ -1,159 +1,91 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 30E347C;
-	Thu,  8 Sep 2022 10:26:09 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 94A8D14BF;
-	Thu,  8 Sep 2022 03:26:14 -0700 (PDT)
-Received: from [10.57.15.197] (unknown [10.57.15.197])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D059C3F71A;
-	Thu,  8 Sep 2022 03:25:52 -0700 (PDT)
-Message-ID: <7ef259b2-121e-643e-49c2-0b65923d392d@arm.com>
-Date: Thu, 8 Sep 2022 11:25:46 +0100
+Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF72C7C
+	for <iommu@lists.linux.dev>; Thu,  8 Sep 2022 10:49:38 +0000 (UTC)
+Received: by mail-lj1-f179.google.com with SMTP id y18so4642991ljh.12
+        for <iommu@lists.linux.dev>; Thu, 08 Sep 2022 03:49:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=FO9BCtAdjl5PI944Vegw3TyVJtWAoaowtQm2TG38rZo=;
+        b=kVhIpvQcg33Vr8Tvlxq4JzJdu83HxShDz+VCPW+/zVSedQfV32YodjnRDz5Q0bEtF5
+         neQnsoY6HrEu7ovhqpmFBcWjyBOSh3eA9ga3BaGL6YCsiOM5noaZysSDaMmyJ5GVk9S2
+         3rt401hf15pvJVJLra4u8GQmIj4jDO66Ku51LZOiijwad16dJ8Mv0L0nNclGHIOpTfAT
+         NOHRfeqEGhDcb3vhWKM+oHnne/hIbesCLTmJYH4rLqsHkiBDymzob7NbKP00PDqBIN3z
+         D6HBruLXKqpOyA/6RV6DEV9fbJIDayrZc7aN3MQWxynlQATz8ooxPD8Uqj51JxLgPR8M
+         8WRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=FO9BCtAdjl5PI944Vegw3TyVJtWAoaowtQm2TG38rZo=;
+        b=xv2ZRYeDhiFb8Go/4K/aI3ZPOib7YUVvJV1sj0XAih6KVpEWU0ShLLkHQsMh98NVNS
+         FParVvgTCd2Nr7+ju0kSI817kNW4YjR5alb4XRkgPuBAP/Q9s/7JyMoK6J5oB9801tjV
+         cWj6uyFkAzDuImJBtFsqTs2zAbApK1v7Bi0K0dvXAvCyhInI549DoqRQocnwhNyMX7QN
+         NieXiR/ynqk9E8mj1HITEusqcRq5NBSltNBGm5NN2vZLIguoOntB1HuHmcXAsiTyN4OI
+         PJNsoUT78kIl3VTufntkJkpfqnabpSwKMUSsYa9xYGM0oS7TpRzgizvFfaKNouaodCLJ
+         4AyQ==
+X-Gm-Message-State: ACgBeo0PY3H0xkJ3egOw9AACBhJiW9IBFll0kDD6AodytQVHZluEDeWG
+	clChTqNd4fONVpMu6AQGst3hNQ==
+X-Google-Smtp-Source: AA6agR5enzuiL7nHDIxq2vO3krABgPwQHKwYJura+/kGgktQ0R6FajdwvACAYu1/LM8XDhJ33YwGsQ==
+X-Received: by 2002:a2e:be9b:0:b0:25f:e027:4999 with SMTP id a27-20020a2ebe9b000000b0025fe0274999mr2353474ljr.395.1662634176744;
+        Thu, 08 Sep 2022 03:49:36 -0700 (PDT)
+Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id q6-20020a056512210600b0048b0696d0b1sm2983866lfr.90.2022.09.08.03.49.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Sep 2022 03:49:36 -0700 (PDT)
+Message-ID: <2e575ed1-b82c-c7bd-3ddf-ccb6022b2461@linaro.org>
+Date: Thu, 8 Sep 2022 12:49:35 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH v6 1/5] iommu: Return -EMEDIUMTYPE for incompatible domain
- and device/group
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
- alex.williamson@redhat.com, suravee.suthikulpanit@amd.com, marcan@marcan.st,
- sven@svenpeter.dev, alyssa@rosenzweig.io, robdclark@gmail.com,
- dwmw2@infradead.org, baolu.lu@linux.intel.com, mjrosato@linux.ibm.com,
- gerald.schaefer@linux.ibm.com, orsonzhai@gmail.com,
- baolin.wang@linux.alibaba.com, zhang.lyra@gmail.com,
- thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
- jean-philippe@linaro.org, cohuck@redhat.com, tglx@linutronix.de,
- shameerali.kolothum.thodi@huawei.com, thunder.leizhen@huawei.com,
- christophe.jaillet@wanadoo.fr, yangyingliang@huawei.com, jon@solid-run.com,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, asahi@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
- linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
- virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
- kevin.tian@intel.com
-References: <20220815181437.28127-1-nicolinc@nvidia.com>
- <20220815181437.28127-2-nicolinc@nvidia.com> <YxiRkm7qgQ4k+PIG@8bytes.org>
- <Yxig+zfA2Pr4vk6K@nvidia.com> <9f91f187-2767-13f9-68a2-a5458b888f00@arm.com>
- <YxjOPo5FFqu2vE/g@nvidia.com> <0b466705-3a17-1bbc-7ef2-5adadc22d1ae@arm.com>
- <Yxk6sR4JiAAn3Jf5@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <Yxk6sR4JiAAn3Jf5@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v2 1/3] dt-bindings: mediatek: mt8188: Add binding for MM
+ & INFRA IOMMU
+Content-Language: en-US
+To: "Chengci.Xu" <chengci.xu@mediatek.com>, Yong Wu <yong.wu@mediatek.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>
+Cc: iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220831125502.7818-1-chengci.xu@mediatek.com>
+ <20220831125502.7818-2-chengci.xu@mediatek.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220831125502.7818-2-chengci.xu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 2022-09-08 01:43, Jason Gunthorpe wrote:
-> On Wed, Sep 07, 2022 at 08:41:13PM +0100, Robin Murphy wrote:
-> 
->>>> FWIW, we're now very close to being able to validate dev->iommu against
->>>> where the domain came from in core code, and so short-circuit ->attach_dev
->>>> entirely if they don't match.
->>>
->>> I don't think this is a long term direction. We have systems now with
->>> a number of SMMU blocks and we really are going to see a need that
->>> they share the iommu_domains so we don't have unncessary overheads
->>> from duplicated io page table memory.
->>>
->>> So ultimately I'd expect to pass the iommu_domain to the driver and
->>> the driver will decide if the page table memory it represents is
->>> compatible or not. Restricting to only the same iommu instance isn't
->>> good..
->>
->> Who said IOMMU instance?
-> 
-> Ah, I completely misunderstood what 'dev->iommu' was referring too, OK
-> I see.
-> 
->> Again, not what I was suggesting. In fact the nature of iommu_attach_group()
->> already rules out bogus devices getting this far, so all a driver currently
->> has to worry about is compatibility of a device that it definitely probed
->> with a domain that it definitely allocated. Therefore, from a caller's point
->> of view, if attaching to an existing domain returns -EINVAL, try another
->> domain; multiple different existing domains can be tried, and may also
->> return -EINVAL for the same or different reasons; the final attempt is to
->> allocate a fresh domain and attach to that, which should always be nominally
->> valid and *never* return -EINVAL. If any attempt returns any other error,
->> bail out down the usual "this should have worked but something went wrong"
->> path. Even if any driver did have a nonsensical "nothing went wrong, I just
->> can't attach my device to any of my domains" case, I don't think it would
->> really need distinguishing from any other general error anyway.
-> 
-> The algorithm you described is exactly what this series does, it just
-> used EMEDIUMTYPE instead of EINVAL. Changing it to EINVAL is not a
-> fundamental problem, just a bit more work.
-> 
-> Looking at Nicolin's series there is a bunch of existing errnos that
-> would still need converting, ie EXDEV, EBUSY, EOPNOTSUPP, EFAULT, and
-> ENXIO are all returned as codes for 'domain incompatible with device'
-> in various drivers. So the patch would still look much the same, just
-> changing them to EINVAL instead of EMEDIUMTYPE.
-> 
-> That leaves the question of the remaining EINVAL's that Nicolin did
-> not convert to EMEDIUMTYPE.
-> 
-> eg in the AMD driver:
-> 
-> 	if (!check_device(dev))
-> 		return -EINVAL;
-> 
-> 	iommu = rlookup_amd_iommu(dev);
-> 	if (!iommu)
-> 		return -EINVAL;
-> 
-> These are all cases of 'something is really wrong with the device or
-> iommu, everything will fail'. Other drivers are using ENODEV for this
-> already, so we'd probably have an additional patch changing various
-> places like that to ENODEV.
-> 
-> This mixture of error codes is the basic reason why a new code was
-> used, because none of the existing codes are used with any
-> consistency.
-> 
-> But OK, I'm on board, lets use more common errnos with specific
-> meaning, that can be documented in a comment someplace:
->   ENOMEM - out of memory
->   ENODEV - no domain can attach, device or iommu is messed up
->   EINVAL - the domain is incompatible with the device
->   <others> - Same behavior as ENODEV, use is discouraged.
-> 
-> I think achieving consistency of error codes is a generally desirable
-> goal, it makes the error code actually useful.
-> 
-> Joerg this is a good bit of work, will you be OK with it?
-> 
->> Thus as long as we can maintain that basic guarantee that attaching
->> a group to a newly allocated domain can only ever fail for resource
->> allocation reasons and not some spurious "incompatibility", then we
->> don't need any obscure trickery, and a single, clear, error code is
->> in fact enough to say all that needs to be said.
-> 
-> As above, this is not the case, drivers do seem to have error paths
-> that are unconditional on the domain. Perhaps they are just protective
-> assertions and never happen.
+On 31/08/2022 14:55, Chengci.Xu wrote:
+> This patch adds descriptions for mt8188 IOMMU which also use ARM
+> Short-Descriptor translation table format.
 
-Right, that's the gist of what I was getting at - I think it's worth 
-putting in the effort to audit and fix the drivers so that that *can* be 
-the case, then we can have a meaningful error API with standard codes 
-effectively for free, rather than just sighing at the existing mess and 
-building a slightly esoteric special case on top.
+Do not use "This commit/patch".
+https://elixir.bootlin.com/linux/v5.17.1/source/Documentation/process/submitting-patches.rst#L95
 
-Case in point, the AMD checks quoted above are pointless, since it 
-checks the same things in ->probe_device, and if that fails then the 
-device won't get a group so there's no way for it to even reach 
-->attach_dev any more. I'm sure there's a *lot* of cruft that can be 
-cleared out now that per-device and per-domain ops give us this kind of 
-inherent robustness.
+>  
+>      then:
+>        required:
+> diff --git a/include/dt-bindings/memory/mediatek,mt8188-memory-port.h b/include/dt-bindings/memory/mediatek,mt8188-memory-port.h
+> new file mode 100644
+> index 000000000000..9363e132c43a
+> --- /dev/null
+> +++ b/include/dt-bindings/memory/mediatek,mt8188-memory-port.h
+> @@ -0,0 +1,482 @@
+> +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
 
-Cheers,
-Robin.
+Why do you license it under BSD-3 clause?
 
-> Regardless, it doesn't matter. If they return ENODEV or EINVAL the
-> VFIO side algorithm will continue to work fine, it just does alot more
-> work if EINVAL is permanently returned.
-> 
-> Thanks,
-> Jason
+Best regards,
+Krzysztof
