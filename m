@@ -1,81 +1,86 @@
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4748933C6
-	for <iommu@lists.linux.dev>; Thu,  8 Sep 2022 14:17:54 +0000 (UTC)
-Received: by mail-lf1-f54.google.com with SMTP id bt10so27983136lfb.1
-        for <iommu@lists.linux.dev>; Thu, 08 Sep 2022 07:17:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=8/WneAIH4doGZWwalQYiIRIPWbn6dY3tzQchBDy6uq8=;
-        b=FW3NoVsk/D0Nf3JbkkTKy/wW5LGJUF6TucHDO5cDKLvBTnSC1Yi10PBSCfzXp5kIvj
-         VF/j/gCFY5s6lhqw4xknnQn92Z74hzDmuxlxblmy8IQyrUbpvjuM/VCZsHFnEogQWFPQ
-         h5yRCq3kYolxf8LMP759YSutYbxuix/6DjulZfkDB93YBSMqI3vg3S1QlTJtBEDW5Yh8
-         Xcb+KZRu70DtccNSnYn57w5eCiCEXMsgze0Nc7XcF6e/8W2d9Z0FiSKY6vhE6XUqTits
-         d1jQVqWO5WIwxAecj9clvgBRR6YS8BsnmRFEmFrfs1ALQC9Wdi/fs8MSC0eC9NE0tPvA
-         D7bQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=8/WneAIH4doGZWwalQYiIRIPWbn6dY3tzQchBDy6uq8=;
-        b=HM2krzDKYUDxrJ7uqGePzZC5r/oRhQ2VhVZFxBJmAV8vJuM53+GS7QclFq8pPTWmfi
-         5ZYLSagZtrQcsEZnhLvzO/7hrsF/tEH2GAsqoT68rdi4Bx6pr/EFyupGGKX5k0FVITOI
-         D9Ksv8vOpTw/tI3MfKQSBxe7pG2l7imMxcNKmrQOwbsj2DRxBdGvFncnP3P6Yh1k8tWZ
-         CEpO9weAKu5wrYq/FWtSGn0lrBz5JwKxc5YrwZwBI0pUvN1G0AMBzryqevjwJnep7Lnu
-         bAKyBF634xv1d2EkF2gJnKHrFqD7ISO3lPFkalScBNnwmYm8aWlesnCzcc2YUwZvMk2r
-         gR/Q==
-X-Gm-Message-State: ACgBeo2dg0RnwXBSYyra47S7wwtFDxCzJBYu0kJbvsVN5PWyaZfW4iAB
-	ag3qpg1wmqj7eu5snaHQlxX+lP4PfyUYzw==
-X-Google-Smtp-Source: AA6agR4mHUGqtjIx4fWu+AWyjmDlfv8bavpAUqYbTfxi3wJ8vaWjQj312qDOFEZGYwmEJx35Mt6jZQ==
-X-Received: by 2002:a05:6512:2201:b0:492:f874:39fa with SMTP id h1-20020a056512220100b00492f87439famr2713913lfu.365.1662646670821;
-        Thu, 08 Sep 2022 07:17:50 -0700 (PDT)
-Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id k5-20020ac257c5000000b00492e98c27ebsm3049186lfo.91.2022.09.08.07.17.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Sep 2022 07:17:50 -0700 (PDT)
-Message-ID: <83818ffc-bc38-0d3a-b225-d6671c6a1f3c@linaro.org>
-Date: Thu, 8 Sep 2022 16:17:49 +0200
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C7C1B3D65
+	for <iommu@lists.linux.dev>; Thu,  8 Sep 2022 15:23:16 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 492E514BF;
+	Thu,  8 Sep 2022 08:23:22 -0700 (PDT)
+Received: from [10.57.15.197] (unknown [10.57.15.197])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 53A8D3F7B4;
+	Thu,  8 Sep 2022 08:23:14 -0700 (PDT)
+Message-ID: <7b30a064-754e-0528-5142-8446ab5bdc95@arm.com>
+Date: Thu, 8 Sep 2022 16:23:08 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v2] dt-bindings: iommu: mediatek: mt8195: Fix max
- interrupts
-Content-Language: en-US
-To: matthias.bgg@kernel.org, Yong Wu <yong.wu@mediatek.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc: devicetree@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
- Matthias Brugger <matthias.bgg@gmail.com>,
- linux-arm-kernel@lists.infradead.org, Matthias Brugger <mbrugger@suse.com>
-References: <20220908141529.1478-1-matthias.bgg@kernel.org>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220908141529.1478-1-matthias.bgg@kernel.org>
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Subject: Re: [PATCH v3 0/9] iommu/amd: Add Generic IO Page Table Framework
+ Support for v2 Page Table
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Vasant Hegde <vasant.hegde@amd.com>,
+ iommu@lists.linux.dev, suravee.suthikulpanit@amd.com
+References: <20220825063939.8360-1-vasant.hegde@amd.com>
+ <77d2ea43-9752-b5f3-78ef-8cdae944eee4@amd.com>
+ <05f9784b-15b6-2a9b-2d9e-19e1430f74e2@arm.com> <YxintMDEmzSXJUl5@8bytes.org>
+ <YxjMQpGYaHfsiuL+@nvidia.com> <YxneJ2RqaatKmoYT@8bytes.org>
+ <c11bd109-65cd-39b3-6d7e-2b29208ca2ca@arm.com> <Yxnr1gBIGwdinIkr@nvidia.com>
+ <YxnuYTrkC5yoHH84@8bytes.org> <c48211fe-00b1-e679-21b8-00a85bba599a@arm.com>
+ <Yxn1IcWk+61ddiCn@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <Yxn1IcWk+61ddiCn@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 08/09/2022 16:15, matthias.bgg@kernel.org wrote:
-> From: Matthias Brugger <mbrugger@suse.com>
+On 2022-09-08 14:58, Jason Gunthorpe wrote:
+> On Thu, Sep 08, 2022 at 02:47:11PM +0100, Robin Murphy wrote:
+>> On 2022-09-08 14:30, Joerg Roedel wrote:
+>>> On Thu, Sep 08, 2022 at 10:19:18AM -0300, Jason Gunthorpe wrote:
+>>>> What is the use case for having PASID nested under another level of
+>>>> translation?
+>>>
+>>> Virtualization. Basically having a device access process address spaces
+>>> inside a virtual machine. That got never put into code, but it was the
+>>> rationale behind it.
+>>
+>> For SMMUv3 it did actually get as far as a prototype[1] before the iommufd
+>> work interjected. I believe there are cloud vendors using those patches in
+>> their deployments :O
 > 
-> The mt8195-iommu-infra has five banks and one interrupt for each.
-> Reflect that in the binding.
+> This is a bit different, this is just normal nested translation stuff.
 > 
-> Signed-off-by: Matthias Brugger <mbrugger@suse.com>
+> AMD decision has effectively nested the PASID under the RID, while
+> typically nested translation nests PASID and RID equally under a
+> parent table.
 
+As far as I can tell from a quick scan of the AMD spec, it seems 
+effectively identical to SMMUv3's S1DSS=1 mode, while the "Guest I/O 
+protection" feature is the same as S1DSS=2, treating the RID as PASID 0. 
+SMMU has just always had both options.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> I can't think of a use case for nesting the PASID under the RID, in
+> every scenario this seems to be problematic. Glad to see it is undone
+> with the new HW.
 
+I assume you mean you can't think of a use-case for having the RID 
+bypass stage 1/guest translation, since "nesting the PASID under the 
+RID" is basically just how PASIDs work. AMD phrases it as "An upstream 
+packet with a valid PASID in the PASID TLP prefix contains a canonical 
+GVA; an upstream packet without a valid PASID in the PASID TLP prefix or 
+with no PASID TLP prefix and an untranslated address contains a GPA". So 
+GVA->GPA is per-PASID, then GPA->PA is for the entire RID, which is 
+exactly how SMMU stage 1/2 work as well. As far as I'm aware that's 
+standard for Intel too, until SIOV where they can carry the PASID 
+through to the second level also.
 
-Best regards,
-Krzysztof
+The use-case is that you assume people care about performance, and thus 
+are only going to use translation *inside* a VM for PASID-based SVA 
+which can't be done any other way, and let guest-kernel-owned DMA 
+(without PASID) operate in GPA space to avoid the extra translation 
+latency, invalidation trap overheads, etc.
+
+Cheers,
+Robin.
