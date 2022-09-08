@@ -1,196 +1,159 @@
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7F807C
-	for <iommu@lists.linux.dev>; Thu,  8 Sep 2022 10:03:49 +0000 (UTC)
-X-UUID: dac446c9ccf6486b9131bc81e5cb6349-20220908
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=trAVb6VnzvU7/puWpO46KfN9AIa8AF7fJCjsxmjkW6g=;
-	b=mf3+go/05fzT4WWK8EE1e4cagu8Uu+pTyxFCh8sMmMNofYusgEU280b204QuS02RlISD+F72wQo6dsMoNoRFTMF9zDNRVYDtdH0rkmm5Og2MyBf7L9eoHRtspRn0VRQLAaPiU7i40pxs8P88WbtALV96qEoAO0asl8u2PPDMon8=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.10,REQID:754ec600-8c4f-433f-889e-0b7c2e5498e9,OB:0,L
-	OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_
-	Ham,ACTION:release,TS:0
-X-CID-META: VersionHash:84eae18,CLOUDID:f4ebc8f5-6e85-48d9-afd8-0504bbfe04cb,C
-	OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-	,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: dac446c9ccf6486b9131bc81e5cb6349-20220908
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-	(envelope-from <chengci.xu@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-	with ESMTP id 1002528682; Thu, 08 Sep 2022 18:03:46 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Thu, 8 Sep 2022 18:03:44 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
- Transport; Thu, 8 Sep 2022 18:03:43 +0800
-Message-ID: <1cf216299b1a061d16ba56956b0b9f8f51a836e9.camel@mediatek.com>
-Subject: Re: [PATCH v2 2/3] iommu/mediatek: Add enable IOMMU SMC command for
- INFRA master
-From: Chengci.Xu <chengci.xu@mediatek.com>
-To: Yong Wu <yong.wu@mediatek.com>
-CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<Project_Global_Chrome_Upstream_Group@mediatek.com>, Joerg Roedel
-	<joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>, "Krzysztof
- Kozlowski" <krzysztof.kozlowski+dt@linaro.org>, Matthias Brugger
-	<matthias.bgg@gmail.com>
-Date: Thu, 8 Sep 2022 18:03:43 +0800
-In-Reply-To: <9ceced14196f19c38867cc3a2ded979ac25079c8.camel@mediatek.com>
-References: <20220831125502.7818-1-chengci.xu@mediatek.com>
-	 <20220831125502.7818-3-chengci.xu@mediatek.com>
-	 <9ceced14196f19c38867cc3a2ded979ac25079c8.camel@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 30E347C;
+	Thu,  8 Sep 2022 10:26:09 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 94A8D14BF;
+	Thu,  8 Sep 2022 03:26:14 -0700 (PDT)
+Received: from [10.57.15.197] (unknown [10.57.15.197])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D059C3F71A;
+	Thu,  8 Sep 2022 03:25:52 -0700 (PDT)
+Message-ID: <7ef259b2-121e-643e-49c2-0b65923d392d@arm.com>
+Date: Thu, 8 Sep 2022 11:25:46 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Subject: Re: [PATCH v6 1/5] iommu: Return -EMEDIUMTYPE for incompatible domain
+ and device/group
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
+ alex.williamson@redhat.com, suravee.suthikulpanit@amd.com, marcan@marcan.st,
+ sven@svenpeter.dev, alyssa@rosenzweig.io, robdclark@gmail.com,
+ dwmw2@infradead.org, baolu.lu@linux.intel.com, mjrosato@linux.ibm.com,
+ gerald.schaefer@linux.ibm.com, orsonzhai@gmail.com,
+ baolin.wang@linux.alibaba.com, zhang.lyra@gmail.com,
+ thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
+ jean-philippe@linaro.org, cohuck@redhat.com, tglx@linutronix.de,
+ shameerali.kolothum.thodi@huawei.com, thunder.leizhen@huawei.com,
+ christophe.jaillet@wanadoo.fr, yangyingliang@huawei.com, jon@solid-run.com,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, asahi@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+ linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
+ virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+ kevin.tian@intel.com
+References: <20220815181437.28127-1-nicolinc@nvidia.com>
+ <20220815181437.28127-2-nicolinc@nvidia.com> <YxiRkm7qgQ4k+PIG@8bytes.org>
+ <Yxig+zfA2Pr4vk6K@nvidia.com> <9f91f187-2767-13f9-68a2-a5458b888f00@arm.com>
+ <YxjOPo5FFqu2vE/g@nvidia.com> <0b466705-3a17-1bbc-7ef2-5adadc22d1ae@arm.com>
+ <Yxk6sR4JiAAn3Jf5@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <Yxk6sR4JiAAn3Jf5@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On Wed, 2022-09-07 at 11:37 +0800, Yong Wu wrote:
-> On Wed, 2022-08-31 at 20:55 +0800, Chengci.Xu wrote:
-> > The register which can enable IOMMU for INFRA master should be
-> > setted
-> > in secure world for security concerns. Therefore, we add a SMC
-> > command
-> > for INFRA master to enable/disable INFRA IOMMU in ATF. This
-> > function
-> > is
-> > prepared for MT8188.
-> > 
-> > Signed-off-by: Chengci.Xu <chengci.xu@mediatek.com>
-> > ---
-> >  drivers/iommu/mtk_iommu.c  | 34 ++++++++++++++++++++++++++--------
-> >  include/soc/mediatek/smi.h |  1 +
-> >  2 files changed, 27 insertions(+), 8 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> > index 7e363b1f24df..6fe780783ec8 100644
-> > --- a/drivers/iommu/mtk_iommu.c
-> > +++ b/drivers/iommu/mtk_iommu.c
-> > @@ -3,6 +3,7 @@
-> >   * Copyright (c) 2015-2016 MediaTek Inc.
-> >   * Author: Yong Wu <yong.wu@mediatek.com>
-> >   */
-> > +#include <linux/arm-smccc.h>
-> >  #include <linux/bitfield.h>
-> >  #include <linux/bug.h>
-> >  #include <linux/clk.h>
-> > @@ -28,6 +29,7 @@
-> >  #include <linux/slab.h>
-> >  #include <linux/spinlock.h>
-> >  #include <linux/soc/mediatek/infracfg.h>
-> > +#include <linux/soc/mediatek/mtk_sip_svc.h>
-> >  #include <asm/barrier.h>
-> >  #include <soc/mediatek/smi.h>
-> >  
-> > @@ -138,6 +140,7 @@
-> >  #define PM_CLK_AO			BIT(15)
-> >  #define IFA_IOMMU_PCIE_SUPPORT		BIT(16)
-> >  #define PGTABLE_PA_35_EN		BIT(17)
-> > +#define CFG_IFA_MASTER_IN_ATF		BIT(18)
-> >  
-> >  #define MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, mask)	\
-> >  				((((pdata)->flags) & (mask)) == (_x))
-> > @@ -554,14 +557,29 @@ static int mtk_iommu_config(struct
-> > mtk_iommu_data *data, struct device *dev,
-> >  			else
-> >  				larb_mmu->mmu &=
-> > ~MTK_SMI_MMU_EN(portid);
-> >  		} else if (MTK_IOMMU_IS_TYPE(data->plat_data,
-> > MTK_IOMMU_TYPE_INFRA)) {
-> > -			peri_mmuen_msk = BIT(portid);
-> > -			/* PCI dev has only one output id, enable the
-> > next writing bit for PCIe */
-> > -			if (dev_is_pci(dev))
-> > -				peri_mmuen_msk |= BIT(portid + 1);
-> > -
-> > -			peri_mmuen = enable ? peri_mmuen_msk : 0;
-> > -			ret = regmap_update_bits(data->pericfg,
-> > PERICFG_IOMMU_1,
-> > -						 peri_mmuen_msk,
-> > peri_mmuen);
-> > +			if (MTK_IOMMU_HAS_FLAG(data->plat_data,
-> > CFG_IFA_MASTER_IN_ATF)) {
-> > +				struct arm_smccc_res res;
-> > +
-> > +				portid = MTK_M4U_TO_PORT(fwspec-
-> > > ids[i]);
-> > 
-> > +				arm_smccc_smc(MTK_SIP_KERNEL_IOMMU_CONT
-> > ROL,
-> > +					      IOMMU_ATF_CMD_CONFIG_INFR
-> > A_IOMMU,
-> > +					      portid, enable, 0, 0, 0,
-> > 0, &res);
-> > +				ret = (int)res.a0;
+On 2022-09-08 01:43, Jason Gunthorpe wrote:
+> On Wed, Sep 07, 2022 at 08:41:13PM +0100, Robin Murphy wrote:
 > 
-> Too many indentations. Please create a new interface or even just use
-> "if", like:
+>>>> FWIW, we're now very close to being able to validate dev->iommu against
+>>>> where the domain came from in core code, and so short-circuit ->attach_dev
+>>>> entirely if they don't match.
+>>>
+>>> I don't think this is a long term direction. We have systems now with
+>>> a number of SMMU blocks and we really are going to see a need that
+>>> they share the iommu_domains so we don't have unncessary overheads
+>>> from duplicated io page table memory.
+>>>
+>>> So ultimately I'd expect to pass the iommu_domain to the driver and
+>>> the driver will decide if the page table memory it represents is
+>>> compatible or not. Restricting to only the same iommu instance isn't
+>>> good..
+>>
+>> Who said IOMMU instance?
 > 
-> if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM)) {
->  xx
-> } else if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_INFRA &&
->            MTK_IOMMU_HAS_FLAG(data->plat_data,
-> CFG_IFA_MASTER_IN_ATF))
-> { /* Configure the mmu_en in the ATF for infra IOMMU */
->   xx
-> } else if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_INFRA) {
-> }
+> Ah, I completely misunderstood what 'dev->iommu' was referring too, OK
+> I see.
 > 
-
-Thanks for your review.
-
-We will use the second way to reduce indentations.
-
-Best regards,
-Chengci Xu
-
-> > +
-> > +			} else {
-> > +				peri_mmuen_msk = BIT(portid);
-> > +				/* PCI dev has only one output id,
-> > +				 * enable the next writing bit for PCIe
-> > +				 */
-> > +				if (dev_is_pci(dev))
-> > +					peri_mmuen_msk |= BIT(portid +
-> > 1);
-> > +
-> > +				peri_mmuen = enable ? peri_mmuen_msk :
-> > 0;
-> > +				ret = regmap_update_bits(data->pericfg,
-> > +							 PERICFG_IOMMU_
-> > 1,
-> > +							 peri_mmuen_msk
-> > ,
-> > +							 peri_mmuen);
-> > +			}
-> >  			if (ret)
-> >  				dev_err(dev, "%s iommu(%s) inframaster
-> > 0x%x fail(%d).\n",
-> >  					enable ? "enable" : "disable",
-> > diff --git a/include/soc/mediatek/smi.h
-> > b/include/soc/mediatek/smi.h
-> > index dfd8efca5e60..99f13b0e416d 100644
-> > --- a/include/soc/mediatek/smi.h
-> > +++ b/include/soc/mediatek/smi.h
-> > @@ -13,6 +13,7 @@
-> >  
-> >  enum iommu_atf_cmd {
-> >  	IOMMU_ATF_CMD_CONFIG_SMI_LARB,		/* For mm master to
-> > en/disable iommu */
-> > +	IOMMU_ATF_CMD_CONFIG_INFRA_IOMMU,	/* For infra master
-> > en/disable iommu */
-> >  	IOMMU_ATF_CMD_MAX,
-> >  };
-> >  
+>> Again, not what I was suggesting. In fact the nature of iommu_attach_group()
+>> already rules out bogus devices getting this far, so all a driver currently
+>> has to worry about is compatibility of a device that it definitely probed
+>> with a domain that it definitely allocated. Therefore, from a caller's point
+>> of view, if attaching to an existing domain returns -EINVAL, try another
+>> domain; multiple different existing domains can be tried, and may also
+>> return -EINVAL for the same or different reasons; the final attempt is to
+>> allocate a fresh domain and attach to that, which should always be nominally
+>> valid and *never* return -EINVAL. If any attempt returns any other error,
+>> bail out down the usual "this should have worked but something went wrong"
+>> path. Even if any driver did have a nonsensical "nothing went wrong, I just
+>> can't attach my device to any of my domains" case, I don't think it would
+>> really need distinguishing from any other general error anyway.
 > 
+> The algorithm you described is exactly what this series does, it just
+> used EMEDIUMTYPE instead of EINVAL. Changing it to EINVAL is not a
+> fundamental problem, just a bit more work.
 > 
+> Looking at Nicolin's series there is a bunch of existing errnos that
+> would still need converting, ie EXDEV, EBUSY, EOPNOTSUPP, EFAULT, and
+> ENXIO are all returned as codes for 'domain incompatible with device'
+> in various drivers. So the patch would still look much the same, just
+> changing them to EINVAL instead of EMEDIUMTYPE.
+> 
+> That leaves the question of the remaining EINVAL's that Nicolin did
+> not convert to EMEDIUMTYPE.
+> 
+> eg in the AMD driver:
+> 
+> 	if (!check_device(dev))
+> 		return -EINVAL;
+> 
+> 	iommu = rlookup_amd_iommu(dev);
+> 	if (!iommu)
+> 		return -EINVAL;
+> 
+> These are all cases of 'something is really wrong with the device or
+> iommu, everything will fail'. Other drivers are using ENODEV for this
+> already, so we'd probably have an additional patch changing various
+> places like that to ENODEV.
+> 
+> This mixture of error codes is the basic reason why a new code was
+> used, because none of the existing codes are used with any
+> consistency.
+> 
+> But OK, I'm on board, lets use more common errnos with specific
+> meaning, that can be documented in a comment someplace:
+>   ENOMEM - out of memory
+>   ENODEV - no domain can attach, device or iommu is messed up
+>   EINVAL - the domain is incompatible with the device
+>   <others> - Same behavior as ENODEV, use is discouraged.
+> 
+> I think achieving consistency of error codes is a generally desirable
+> goal, it makes the error code actually useful.
+> 
+> Joerg this is a good bit of work, will you be OK with it?
+> 
+>> Thus as long as we can maintain that basic guarantee that attaching
+>> a group to a newly allocated domain can only ever fail for resource
+>> allocation reasons and not some spurious "incompatibility", then we
+>> don't need any obscure trickery, and a single, clear, error code is
+>> in fact enough to say all that needs to be said.
+> 
+> As above, this is not the case, drivers do seem to have error paths
+> that are unconditional on the domain. Perhaps they are just protective
+> assertions and never happen.
 
+Right, that's the gist of what I was getting at - I think it's worth 
+putting in the effort to audit and fix the drivers so that that *can* be 
+the case, then we can have a meaningful error API with standard codes 
+effectively for free, rather than just sighing at the existing mess and 
+building a slightly esoteric special case on top.
+
+Case in point, the AMD checks quoted above are pointless, since it 
+checks the same things in ->probe_device, and if that fails then the 
+device won't get a group so there's no way for it to even reach 
+->attach_dev any more. I'm sure there's a *lot* of cruft that can be 
+cleared out now that per-device and per-domain ops give us this kind of 
+inherent robustness.
+
+Cheers,
+Robin.
+
+> Regardless, it doesn't matter. If they return ENODEV or EINVAL the
+> VFIO side algorithm will continue to work fine, it just does alot more
+> work if EINVAL is permanently returned.
+> 
+> Thanks,
+> Jason
