@@ -1,100 +1,153 @@
-Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 863FD7C
-	for <iommu@lists.linux.dev>; Thu,  8 Sep 2022 07:30:38 +0000 (UTC)
-Date: Thu, 8 Sep 2022 03:29:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1662622236;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=DqfWXb2eEuuOxMq6abU6PffruFzdNn4Aud1F5cFJAhI=;
-	b=Fw8tAVGZj5GyiSqYxRkRmSk4x1RT2ZwVJU0JDfghWsKBfIGHKaRr04lhoKOVAsK9mBuLF+
-	9iI0Zcp5Zlk1fasn3UZcG2E28IiTTnVsfmeKdAq1LMPY/5nchmAf+pI4zvkYYgOYnJoj7B
-	58GfzCiu+o2KhFlYF9EH5IZegrVCLG0=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Kent Overstreet <kent.overstreet@linux.dev>
-To: Michal Hocko <mhocko@suse.com>
-Cc: Steven Rostedt <rostedt@goodmis.org>,
-	Suren Baghdasaryan <surenb@google.com>,
-	Mel Gorman <mgorman@suse.de>, Peter Zijlstra <peterz@infradead.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Vlastimil Babka <vbabka@suse.cz>,
-	Johannes Weiner <hannes@cmpxchg.org>,
-	Roman Gushchin <roman.gushchin@linux.dev>,
-	Davidlohr Bueso <dave@stgolabs.net>,
-	Matthew Wilcox <willy@infradead.org>,
-	"Liam R. Howlett" <liam.howlett@oracle.com>,
-	David Vernet <void@manifault.com>,
-	Juri Lelli <juri.lelli@redhat.com>,
-	Laurent Dufour <ldufour@linux.ibm.com>,
-	Peter Xu <peterx@redhat.com>, David Hildenbrand <david@redhat.com>,
-	Jens Axboe <axboe@kernel.dk>, mcgrof@kernel.org,
-	masahiroy@kernel.org, nathan@kernel.org, changbin.du@intel.com,
-	ytcoode@gmail.com, Vincent Guittot <vincent.guittot@linaro.org>,
-	Dietmar Eggemann <dietmar.eggemann@arm.com>,
-	Benjamin Segall <bsegall@google.com>,
-	Daniel Bristot de Oliveira <bristot@redhat.com>,
-	Valentin Schneider <vschneid@redhat.com>,
-	Christopher Lameter <cl@linux.com>,
-	Pekka Enberg <penberg@kernel.org>,
-	Joonsoo Kim <iamjoonsoo.kim@lge.com>, 42.hyeyoo@gmail.com,
-	Alexander Potapenko <glider@google.com>,
-	Marco Elver <elver@google.com>, Dmitry Vyukov <dvyukov@google.com>,
-	Shakeel Butt <shakeelb@google.com>,
-	Muchun Song <songmuchun@bytedance.com>, arnd@arndb.de,
-	jbaron@akamai.com, David Rientjes <rientjes@google.com>,
-	Minchan Kim <minchan@google.com>,
-	Kalesh Singh <kaleshsingh@google.com>,
-	kernel-team <kernel-team@android.com>,
-	linux-mm <linux-mm@kvack.org>, iommu@lists.linux.dev,
-	kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
-	linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
-	linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
-	LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH 00/30] Code tagging framework and applications
-Message-ID: <20220908072950.yapakb5scocxezhy@kmo-framework>
-References: <20220901201502.sn6223bayzwferxv@moria.home.lan>
- <YxW4Ig338d2vQAz3@dhcp22.suse.cz>
- <20220905234649.525vorzx27ybypsn@kmo-framework>
- <Yxb1cxDSyte1Ut/F@dhcp22.suse.cz>
- <20220906182058.iijmpzu4rtxowy37@kmo-framework>
- <Yxh5ueDTAOcwEmCQ@dhcp22.suse.cz>
- <20220907130323.rwycrntnckc6h43n@kmo-framework>
- <20220907094306.3383dac2@gandalf.local.home>
- <20220908063548.u4lqkhquuvkwzvda@kmo-framework>
- <YxmV7a2pnj1Kldzi@dhcp22.suse.cz>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4468C7C
+	for <iommu@lists.linux.dev>; Thu,  8 Sep 2022 07:46:52 +0000 (UTC)
+X-UUID: d0105b1133364542a4a6b339dbf7faa3-20220908
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=AaJpxvMmSMlE6jPyK89++NPWnNSGr318dNb0wKR9KJw=;
+	b=kurggbp2OtR4MysjhV7fxiXxTSGoQJ6YHME9TudxJD+VkK0PDLg2T86rkdLravGh8kgWEGlPe5+tZuzP4iReX0P2Pihla6BHibZkekM8+Yuvh8etrcoRfPEz0N8O52x+hh6eHvESRk8ufR5r/HQZ1STZnvkLwz/judIdjbcmTsA=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.10,REQID:134b9682-f388-4cd1-afb6-9f84138c7df0,OB:0,L
+	OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_
+	Ham,ACTION:release,TS:0
+X-CID-META: VersionHash:84eae18,CLOUDID:0fc41fd1-20bd-4e5e-ace8-00692b7ab380,C
+	OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+	,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: d0105b1133364542a4a6b339dbf7faa3-20220908
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
+	(envelope-from <chengci.xu@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 2086186998; Thu, 08 Sep 2022 15:46:40 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Thu, 8 Sep 2022 15:46:39 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
+ Transport; Thu, 8 Sep 2022 15:46:39 +0800
+Message-ID: <0d3694ce8710128ec338fba4656a65859953bb6a.camel@mediatek.com>
+Subject: Re: [PATCH v2 2/3] iommu/mediatek: Add enable IOMMU SMC command for
+ INFRA master
+From: Chengci.Xu <chengci.xu@mediatek.com>
+To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Yong
+ Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
+	<robh+dt@kernel.org>, Krzysztof Kozlowski
+	<krzysztof.kozlowski+dt@linaro.org>, Matthias Brugger
+	<matthias.bgg@gmail.com>
+CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>,
+	<Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date: Thu, 8 Sep 2022 15:46:38 +0800
+In-Reply-To: <8e398e71-1283-b5d7-2b17-958a25563c25@collabora.com>
+References: <20220831125502.7818-1-chengci.xu@mediatek.com>
+	 <20220831125502.7818-3-chengci.xu@mediatek.com>
+	 <8e398e71-1283-b5d7-2b17-958a25563c25@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YxmV7a2pnj1Kldzi@dhcp22.suse.cz>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Transfer-Encoding: 7bit
 
-On Thu, Sep 08, 2022 at 09:12:45AM +0200, Michal Hocko wrote:
-> Then you have probably missed a huge part of my emails. Please
-> re-read. If those arguments are not clear, feel free to ask for
-> clarification. Reducing the whole my reasoning and objections to the
-> sentence above and calling that vapid and lazy is not only unfair but
-> also disrespectful.
+On Fri, 2022-09-02 at 11:00 +0200, AngeloGioacchino Del Regno wrote:
+> Il 31/08/22 14:55, Chengci.Xu ha scritto:
+> > The register which can enable IOMMU for INFRA master should be
+> > setted
+> > in secure world for security concerns. Therefore, we add a SMC
+> > command
+> > for INFRA master to enable/disable INFRA IOMMU in ATF. This
+> > function is
+> > prepared for MT8188.
+> > 
+> > Signed-off-by: Chengci.Xu <chengci.xu@mediatek.com>
+> > ---
+> >   drivers/iommu/mtk_iommu.c  | 34 ++++++++++++++++++++++++++-------
+> > -
+> >   include/soc/mediatek/smi.h |  1 +
+> >   2 files changed, 27 insertions(+), 8 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> > index 7e363b1f24df..6fe780783ec8 100644
+> > --- a/drivers/iommu/mtk_iommu.c
+> > +++ b/drivers/iommu/mtk_iommu.c
+> > @@ -3,6 +3,7 @@
+> >    * Copyright (c) 2015-2016 MediaTek Inc.
+> >    * Author: Yong Wu <yong.wu@mediatek.com>
+> >    */
+> > +#include <linux/arm-smccc.h>
+> >   #include <linux/bitfield.h>
+> >   #include <linux/bug.h>
+> >   #include <linux/clk.h>
+> > @@ -28,6 +29,7 @@
+> >   #include <linux/slab.h>
+> >   #include <linux/spinlock.h>
+> >   #include <linux/soc/mediatek/infracfg.h>
+> > +#include <linux/soc/mediatek/mtk_sip_svc.h>
+> >   #include <asm/barrier.h>
+> >   #include <soc/mediatek/smi.h>
+> >   
+> > @@ -138,6 +140,7 @@
+> >   #define PM_CLK_AO			BIT(15)
+> >   #define IFA_IOMMU_PCIE_SUPPORT		BIT(16)
+> >   #define PGTABLE_PA_35_EN		BIT(17)
+> > +#define CFG_IFA_MASTER_IN_ATF		BIT(18)
+> >   
+> >   #define MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, mask)	\
+> >   				((((pdata)->flags) & (mask)) == (_x))
+> > @@ -554,14 +557,29 @@ static int mtk_iommu_config(struct
+> > mtk_iommu_data *data, struct device *dev,
+> >   			else
+> >   				larb_mmu->mmu &=
+> > ~MTK_SMI_MMU_EN(portid);
+> >   		} else if (MTK_IOMMU_IS_TYPE(data->plat_data,
+> > MTK_IOMMU_TYPE_INFRA)) {
+> > -			peri_mmuen_msk = BIT(portid);
+> > -			/* PCI dev has only one output id, enable the
+> > next writing bit for PCIe */
+> > -			if (dev_is_pci(dev))
+> > -				peri_mmuen_msk |= BIT(portid + 1);
+> > -
+> > -			peri_mmuen = enable ? peri_mmuen_msk : 0;
+> > -			ret = regmap_update_bits(data->pericfg,
+> > PERICFG_IOMMU_1,
+> > -						 peri_mmuen_msk,
+> > peri_mmuen);
+> > +			if (MTK_IOMMU_HAS_FLAG(data->plat_data,
+> > CFG_IFA_MASTER_IN_ATF)) {
+> > +				struct arm_smccc_res res;
+> > +
+> > +				portid = MTK_M4U_TO_PORT(fwspec-
+> > >ids[i]);
+> 
+> This assignment is redundant, as portid is initialized to the same
+> value
+> just a few lines before. Please drop it.
+> 
+> Everything else looks good.
+> 
+> Regards,
+> Angelo
 
-What, where you complained about slab's page allocations showing up in the
-profile instead of slab, and I pointed out to you that actually each and every
-slab call is instrumented, and you're just seeing some double counting (that we
-will no doubt fix?)
+Thanks for your review. This assignment will be dropped in the next
+version.
 
-Or when you complained about allocation sites where it should actually be the
-caller that should be instrumented, and I pointed out that it'd be quite easy to
-simply change that code to use _kmalloc() and slab_tag_add() directly, if it
-becomes an issue.
+Best regards,
+Chengci Xu
 
-Of course, if we got that far, we'd have this code to thank for telling us where
-to look!
+> 
+> > +				arm_smccc_smc(MTK_SIP_KERNEL_IOMMU_CONT
+> > ROL,
+> > +					      IOMMU_ATF_CMD_CONFIG_INFR
+> > A_IOMMU,
+> > +					      portid, enable, 0, 0, 0,
+> > 0, &res);
+> > +				ret = (int)res.a0;
+> 
+> 
 
-Did I miss anything?
