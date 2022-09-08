@@ -1,51 +1,39 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9286D7C;
-	Thu,  8 Sep 2022 13:28:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DC1027C
+	for <iommu@lists.linux.dev>; Thu,  8 Sep 2022 13:30:11 +0000 (UTC)
 Received: from 8bytes.org (p4ff2bb62.dip0.t-ipconnect.de [79.242.187.98])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 6ACB624069C;
-	Thu,  8 Sep 2022 15:28:23 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id CAA83240A5A;
+	Thu,  8 Sep 2022 15:30:10 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1662643704;
-	bh=tDuhKm9wQfdx7sUd4hZrnBHJRGruWciJVuKdXgXOhg8=;
+	s=default; t=1662643810;
+	bh=Z4JVioXDDILyUGjWKgYVPIoqYq8euTPmyssisCH3Db8=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Nbzo8AaKCmLcJF6ywBTO/rjFGCww8jqPWoQ6WcBpBVILlVrrzm/ywTVSN6gtAJpvI
-	 A4WA5AxpHDg5Sd62NU3n5V/Vi1+huBSshzEAQAZS7xn++DhH0oznzPGAGwNcfBbTfq
-	 Twt1k1zJR6eHTY8BdmbO1Ww2bxQuZSP3YVyPip5R53rnIHglAbsB0bCYX0JzWlq5Om
-	 M3nAYqpIKCggsduzZcJAnKN/jYWRx4aw2vg7FWSxO/QqqKt7N7pAfFXxtOG8goJGLV
-	 xuiUyCTz0ghn5xX8vuVnC49wxhLLFEBrREVNPwdgKbdzr/ZwBoayTRYmgPniXvM4Pl
-	 wZdcX65MXNFqw==
-Date: Thu, 8 Sep 2022 15:28:22 +0200
+	b=YU14oQeFdR3h6d+G1dh3jJBJL5O8JRZekDuuPQPfD+L8m8fnnYI+eAFW30pCsjWcr
+	 oyVludzo3lH7BannwIXr+ZTK4Ox5WFPTp3P34uHC7MjXX8MHDGLo0m9gELygj6kx/Z
+	 /fjd88nANfAJ8OwiNQPqFoF7Yt936VeKwxkgPwCTw/FKtPt8ZhMnuz+1wJZCY8WiK+
+	 1jGLQwAI0tX1q80PPOeuvmJaqPm68DXkl4PNjEc4rH8k9I4eOmM5wzQkpKoXdE7kol
+	 03lV8t6Pk7klWAYSFbaGwJdolEV06asTt6uJv33FX1neeWxSkYNH/opx+A1uvqsT/H
+	 1H2etSjfBMVQw==
+Date: Thu, 8 Sep 2022 15:30:09 +0200
 From: Joerg Roedel <joro@8bytes.org>
 To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
-	robin.murphy@arm.com, alex.williamson@redhat.com,
-	suravee.suthikulpanit@amd.com, marcan@marcan.st, sven@svenpeter.dev,
-	alyssa@rosenzweig.io, robdclark@gmail.com, dwmw2@infradead.org,
-	baolu.lu@linux.intel.com, mjrosato@linux.ibm.com,
-	gerald.schaefer@linux.ibm.com, orsonzhai@gmail.com,
-	baolin.wang@linux.alibaba.com, zhang.lyra@gmail.com,
-	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
-	jean-philippe@linaro.org, cohuck@redhat.com, tglx@linutronix.de,
-	shameerali.kolothum.thodi@huawei.com, thunder.leizhen@huawei.com,
-	christophe.jaillet@wanadoo.fr, yangyingliang@huawei.com,
-	jon@solid-run.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, asahi@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-	linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
-	virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-	kevin.tian@intel.com
-Subject: Re: [PATCH v6 1/5] iommu: Return -EMEDIUMTYPE for incompatible
- domain and device/group
-Message-ID: <Yxnt9uQTmbqul5lf@8bytes.org>
-References: <20220815181437.28127-1-nicolinc@nvidia.com>
- <20220815181437.28127-2-nicolinc@nvidia.com>
- <YxiRkm7qgQ4k+PIG@8bytes.org>
- <Yxig+zfA2Pr4vk6K@nvidia.com>
- <YxilZbRL0WBR97oi@8bytes.org>
- <YxjQiVnpU0dr7SHC@nvidia.com>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
+	suravee.suthikulpanit@amd.com
+Subject: Re: [PATCH v3 0/9] iommu/amd: Add Generic IO Page Table Framework
+ Support for v2 Page Table
+Message-ID: <YxnuYTrkC5yoHH84@8bytes.org>
+References: <20220825063939.8360-1-vasant.hegde@amd.com>
+ <77d2ea43-9752-b5f3-78ef-8cdae944eee4@amd.com>
+ <05f9784b-15b6-2a9b-2d9e-19e1430f74e2@arm.com>
+ <YxintMDEmzSXJUl5@8bytes.org>
+ <YxjMQpGYaHfsiuL+@nvidia.com>
+ <YxneJ2RqaatKmoYT@8bytes.org>
+ <c11bd109-65cd-39b3-6d7e-2b29208ca2ca@arm.com>
+ <Yxnr1gBIGwdinIkr@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,46 +42,15 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YxjQiVnpU0dr7SHC@nvidia.com>
+In-Reply-To: <Yxnr1gBIGwdinIkr@nvidia.com>
 
-On Wed, Sep 07, 2022 at 02:10:33PM -0300, Jason Gunthorpe wrote:
-> Sure, rust has all sorts of nice things. But the kernel doesn't follow
-> rust idioms, and I don't think this is a great place to start
-> experimenting with them.
+On Thu, Sep 08, 2022 at 10:19:18AM -0300, Jason Gunthorpe wrote:
+> What is the use case for having PASID nested under another level of
+> translation?
 
-It is actually a great place to start experimenting. The IOMMU
-interfaces are rather domain specific and if we get something wrong the
-damage is limited to a few callers. There are APIs much more exposed in
-the kernel which would be worse for that.
-
-But anyway, I am not insisting on it.
-
-> It has been 3 months since EMEDIUMTYPE was first proposed and 6
-> iterations of the series, don't you think it is a bit late in the game
-> to try to experiment with rust error handling idioms?
-
-If I am not mistaken, I am the person who gets blamed when crappy IOMMU
-code is sent upstream. So it is also up to me to decide in which state
-and how close to merging a given patch series is an whether it is
-already 'late in the game'.
-
-> So, again, would you be happy with a simple 
-> 
->  #define IOMMU_EINCOMPATIBLE_DEVICE xx
-> 
-> to make it less "re-using random error codes"?
-
-I am wondering if this can be solved by better defining what the return
-codes mean and adjust the call-back functions to match the definition.
-Something like:
-
-	-ENODEV : Device not mapped my an IOMMU
-	-EBUSY  : Device attached and domain can not be changed
-	-EINVAL : Device and domain are incompatible
-	...
-
-That would be much more intuitive than using something obscure like
-EMEDIUMTYPE.
+Virtualization. Basically having a device access process address spaces
+inside a virtual machine. That got never put into code, but it was the
+rationale behind it.
 
 Regards,
 
