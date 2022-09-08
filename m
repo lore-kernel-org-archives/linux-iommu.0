@@ -1,104 +1,100 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9286D7C;
+	Thu,  8 Sep 2022 13:28:25 +0000 (UTC)
+Received: from 8bytes.org (p4ff2bb62.dip0.t-ipconnect.de [79.242.187.98])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05E0C7C
-	for <iommu@lists.linux.dev>; Thu,  8 Sep 2022 13:25:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10000C43470;
-	Thu,  8 Sep 2022 13:25:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1662643544;
-	bh=vKmdZnSEqQsgGYqX0IyUeu5ecemFZS/PREfqX8Z3614=;
-	h=From:To:Cc:Subject:Date:From;
-	b=QCBpWX3Yd+k88zciOQ5QXOLEW9QXWpWmKrfzwp+BYl1BmLURpPXKrBbUGuxum5r/u
-	 NmXJ/oBKrOy864Aj0w4szD96VRM82oc6fGsmNeaOL/qY57Rl+zNldk85SvsFKnqxkY
-	 QSLaBRdaBlfMGPTBJrcMZTGoB9/SBrR1B6a5nKQEx9YZ1zj+nLXxuZRDnGA9hdgh1V
-	 S5g/fRHMEorYRXxx4Sd5bnxorRW0o7wNDjJ3jfWc+71Z+oWYNZUcuSprSWsd8QeRRR
-	 D4WLSTXtkVyE52HU8DLgIkylxcX2lplcdWryOJj0tMpY+m3ZguGlnqnCPWojBKNRBe
-	 zcA5kvua4pqLg==
-From: matthias.bgg@kernel.org
-To: Yong Wu <yong.wu@mediatek.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>
-Cc: devicetree@vger.kernel.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	linux-kernel@vger.kernel.org,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	iommu@lists.linux.dev,
-	Rob Herring <robh+dt@kernel.org>,
-	linux-mediatek@lists.infradead.org,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	linux-arm-kernel@lists.infradead.org,
-	Matthias Brugger <mbrugger@suse.com>
-Subject: [PATCH v1] dt-bindings: iommu: mediatek: mt8195: Fix max interrupts
-Date: Thu,  8 Sep 2022 15:25:35 +0200
-Message-Id: <20220908132535.9350-1-matthias.bgg@kernel.org>
-X-Mailer: git-send-email 2.37.3
+	by mail.8bytes.org (Postfix) with ESMTPSA id 6ACB624069C;
+	Thu,  8 Sep 2022 15:28:23 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1662643704;
+	bh=tDuhKm9wQfdx7sUd4hZrnBHJRGruWciJVuKdXgXOhg8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Nbzo8AaKCmLcJF6ywBTO/rjFGCww8jqPWoQ6WcBpBVILlVrrzm/ywTVSN6gtAJpvI
+	 A4WA5AxpHDg5Sd62NU3n5V/Vi1+huBSshzEAQAZS7xn++DhH0oznzPGAGwNcfBbTfq
+	 Twt1k1zJR6eHTY8BdmbO1Ww2bxQuZSP3YVyPip5R53rnIHglAbsB0bCYX0JzWlq5Om
+	 M3nAYqpIKCggsduzZcJAnKN/jYWRx4aw2vg7FWSxO/QqqKt7N7pAfFXxtOG8goJGLV
+	 xuiUyCTz0ghn5xX8vuVnC49wxhLLFEBrREVNPwdgKbdzr/ZwBoayTRYmgPniXvM4Pl
+	 wZdcX65MXNFqw==
+Date: Thu, 8 Sep 2022 15:28:22 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
+	robin.murphy@arm.com, alex.williamson@redhat.com,
+	suravee.suthikulpanit@amd.com, marcan@marcan.st, sven@svenpeter.dev,
+	alyssa@rosenzweig.io, robdclark@gmail.com, dwmw2@infradead.org,
+	baolu.lu@linux.intel.com, mjrosato@linux.ibm.com,
+	gerald.schaefer@linux.ibm.com, orsonzhai@gmail.com,
+	baolin.wang@linux.alibaba.com, zhang.lyra@gmail.com,
+	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
+	jean-philippe@linaro.org, cohuck@redhat.com, tglx@linutronix.de,
+	shameerali.kolothum.thodi@huawei.com, thunder.leizhen@huawei.com,
+	christophe.jaillet@wanadoo.fr, yangyingliang@huawei.com,
+	jon@solid-run.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, asahi@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+	linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
+	virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+	kevin.tian@intel.com
+Subject: Re: [PATCH v6 1/5] iommu: Return -EMEDIUMTYPE for incompatible
+ domain and device/group
+Message-ID: <Yxnt9uQTmbqul5lf@8bytes.org>
+References: <20220815181437.28127-1-nicolinc@nvidia.com>
+ <20220815181437.28127-2-nicolinc@nvidia.com>
+ <YxiRkm7qgQ4k+PIG@8bytes.org>
+ <Yxig+zfA2Pr4vk6K@nvidia.com>
+ <YxilZbRL0WBR97oi@8bytes.org>
+ <YxjQiVnpU0dr7SHC@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YxjQiVnpU0dr7SHC@nvidia.com>
 
-From: Matthias Brugger <mbrugger@suse.com>
+On Wed, Sep 07, 2022 at 02:10:33PM -0300, Jason Gunthorpe wrote:
+> Sure, rust has all sorts of nice things. But the kernel doesn't follow
+> rust idioms, and I don't think this is a great place to start
+> experimenting with them.
 
-The mt8195-iommu-infra has five banks and one interrupt for each.
-Reflect that in the binding.
+It is actually a great place to start experimenting. The IOMMU
+interfaces are rather domain specific and if we get something wrong the
+damage is limited to a few callers. There are APIs much more exposed in
+the kernel which would be worse for that.
 
-Signed-off-by: Matthias Brugger <mbrugger@suse.com>
+But anyway, I am not insisting on it.
 
----
+> It has been 3 months since EMEDIUMTYPE was first proposed and 6
+> iterations of the series, don't you think it is a bit late in the game
+> to try to experiment with rust error handling idioms?
 
- .../bindings/iommu/mediatek,iommu.yaml        | 19 ++++++++++++++++++-
- 1 file changed, 18 insertions(+), 1 deletion(-)
+If I am not mistaken, I am the person who gets blamed when crappy IOMMU
+code is sent upstream. So it is also up to me to decide in which state
+and how close to merging a given patch series is an whether it is
+already 'late in the game'.
 
-diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-index fee0241b50988..621aca2adfb7f 100644
---- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-@@ -91,7 +91,7 @@ properties:
-     maxItems: 1
- 
-   interrupts:
--    maxItems: 1
-+    description: each bank has one dedicated interrupt
- 
-   clocks:
-     items:
-@@ -183,6 +183,19 @@ allOf:
-       required:
-         - mediatek,infracfg
- 
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: mediatek,mt8195-iommu-infra
-+
-+    then:
-+      properties:
-+        interrupts:
-+          maxItems: 5
-+      required:
-+        - interrupts
-+
-   - if: # The IOMMUs don't have larbs.
-       not:
-         properties:
-@@ -191,8 +204,12 @@ allOf:
-               const: mediatek,mt8195-iommu-infra
- 
-     then:
-+      properties:
-+        interrupts:
-+          maxItems: 1
-       required:
-         - mediatek,larbs
-+        - interrupts
- 
- additionalProperties: false
- 
--- 
-2.37.3
+> So, again, would you be happy with a simple 
+> 
+>  #define IOMMU_EINCOMPATIBLE_DEVICE xx
+> 
+> to make it less "re-using random error codes"?
 
+I am wondering if this can be solved by better defining what the return
+codes mean and adjust the call-back functions to match the definition.
+Something like:
+
+	-ENODEV : Device not mapped my an IOMMU
+	-EBUSY  : Device attached and domain can not be changed
+	-EINVAL : Device and domain are incompatible
+	...
+
+That would be much more intuitive than using something obscure like
+EMEDIUMTYPE.
+
+Regards,
+
+	Joerg
