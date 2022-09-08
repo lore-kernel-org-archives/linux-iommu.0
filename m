@@ -1,241 +1,149 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 61EA42F42
-	for <iommu@lists.linux.dev>; Wed,  7 Sep 2022 20:27:22 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A6DEF106F;
-	Wed,  7 Sep 2022 13:27:27 -0700 (PDT)
-Received: from [10.57.15.197] (unknown [10.57.15.197])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 880233F7B4;
-	Wed,  7 Sep 2022 13:27:16 -0700 (PDT)
-Message-ID: <26f5d7b9-48bc-7268-16f7-53e7d48c99ee@arm.com>
-Date: Wed, 7 Sep 2022 21:27:08 +0100
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C93A7C
+	for <iommu@lists.linux.dev>; Thu,  8 Sep 2022 00:12:23 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BcDsdMd+j6CnmPWOSNkugEpAAG0jb1Ustd415xkYIns9xJpzOR3ZmMH8HJVxxaPXOZej10XxU/xdnzDGbVen8VzCWuPUoDU6MlfwwMCcqdF1R6iRuNhkd6+u9BmDR00Vd6SUsLFYDOUAvUUzqu9uC1muUgg4SQZgIYAfjYPkcit7cuzbjaOpKZiXbrlw9AUY1EA6NLtU+qd4UvJe85Wcpn+ZrJ0poQg6F6uCaunm/txx9joeAfnZbmaTVfrAz4hOqip7wJTt4nPhZI/d+ib+rneL7X2adtZ0QOQ34SD1YUIa1v2waJTHhwvW43FMuUynzHXgtc7JO3T77S6UPjRMNA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=y88GUm8btg067Wc6+DCoc42umLyG6esYgUrhuxula1g=;
+ b=SQkAM9dMQZYa6+62HjdAnwQe0pun7WOFMzmstQFYK0u6zTtBAT9TTjIpw+Cl/ehkGT7u8YZeb4sBAeSCq3EiS9UrlWrhBPqvzrUvmS5xoVW+NsJpfh4U4QkpT1OG0Yv3rR0ujPXWWfM4zQOAtBuoqIONCaTlZeiOUDgtUXhZP2YB3o89W6XJzIbflwMI+cUgHt/ZnEzAtK4h7F4dQNw6ITxuPOE/wQyCJDP0VMXDaXgUKG9ER2tK5TK19z6Jg5bAlQjvnLzYhzFyzBJzDHX0VX/nOKf7fCoF5bcpr+TW8oWA/4bSWLpKsrR1+BEE5+m3z2ob87OcYIlWPMPRLnLEzQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=y88GUm8btg067Wc6+DCoc42umLyG6esYgUrhuxula1g=;
+ b=UedUU0FtQ6kE5SfI3oB2StFikSFZgVXC8svoH8veojkjmyBu7DkdU/Kc3J+kjWI9kmfmu+FApqcVB3/iZR+swCb1eiYaYwgE9Xvu0ezWkA0jQejRRPwuZ3ybdGE3AaV0w77+uZ/S51KmLwN90S3Q8VNcO/v4QiJXT4WWgH3L8mXwOknqMcZgDnokmvxuJdGoiSosFzvdQE5Xevkup9lPweUh+oWVnsp19JLCsCl8ocED6t32PgDgWQBZp6orTK6wvXHje/ccIpqkLOBfEJG4q6QpdewRK/5kPukh9PbWpw2e3rS4nyIDEC2/F6xJPyOvY+d7TZi4N2h64XWU3VWYVQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by BN9PR12MB5177.namprd12.prod.outlook.com (2603:10b6:408:11a::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.11; Thu, 8 Sep
+ 2022 00:12:20 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::462:7fe:f04f:d0d5]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::462:7fe:f04f:d0d5%7]) with mapi id 15.20.5588.018; Thu, 8 Sep 2022
+ 00:12:20 +0000
+Date: Wed, 7 Sep 2022 21:12:18 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Vasant Hegde <vasant.hegde@amd.com>,
+	iommu@lists.linux.dev, suravee.suthikulpanit@amd.com
+Subject: Re: [PATCH v3 0/9] iommu/amd: Add Generic IO Page Table Framework
+ Support for v2 Page Table
+Message-ID: <YxkzYpSq/MyFRQu1@nvidia.com>
+References: <20220825063939.8360-1-vasant.hegde@amd.com>
+ <77d2ea43-9752-b5f3-78ef-8cdae944eee4@amd.com>
+ <05f9784b-15b6-2a9b-2d9e-19e1430f74e2@arm.com>
+ <YxintMDEmzSXJUl5@8bytes.org>
+ <YxjMQpGYaHfsiuL+@nvidia.com>
+ <252a02d3-3c62-f2ca-e2ed-f874a31b17e9@arm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <252a02d3-3c62-f2ca-e2ed-f874a31b17e9@arm.com>
+X-ClientProxiedBy: BL0PR02CA0058.namprd02.prod.outlook.com
+ (2603:10b6:207:3d::35) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH v4 04/16] iommu: Always register bus notifiers
-Content-Language: en-GB
-To: Saravana Kannan <saravanak@google.com>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, baolu.lu@linux.intel.com,
- kevin.tian@intel.com, suravee.suthikulpanit@amd.com, vasant.hegde@amd.com,
- mjrosato@linux.ibm.com, schnelle@linux.ibm.com, linux-kernel@vger.kernel.org
-References: <cover.1660572783.git.robin.murphy@arm.com>
- <7462347bf938bd6eedb629a3a318434f6516e712.1660572783.git.robin.murphy@arm.com>
- <CAGETcx8fTP_wEq_5eo2xDb4pFY9X5t7naOdNnexPhrhZsQCVpQ@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <CAGETcx8fTP_wEq_5eo2xDb4pFY9X5t7naOdNnexPhrhZsQCVpQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5e3dab36-4102-49dd-8419-08da912ecb9d
+X-MS-TrafficTypeDiagnostic: BN9PR12MB5177:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	LtlElSSBLH4DffjHM6oLUyPlYdDcBMlHZQ8iGtOFCpVPdmUWcDh/KYCyJ15ZGr0JpDkbogUClD/Og3XtUcJ0zosgm2UsH8/wlwIsNI02SxD6apnHfFTyeXijWNSm6yxtF3Ny8HZwU7OywBKXcy04V0/wZtonjCOnpOiJU7DyCy7BDlY4ETDmm9+rKFqVjSi7tJ+VWssVl8X111UtIM306fVkn+5LioIM9U1wtb1RC5Z103i8sjJ5ZJ6eVLVZ8xPmMGhba+E2FMeD2Xmz5V/ZPF7hguOCYixeQTkhlwpgOQ8AXIRkWsKDAb3jghvCq5b31eEuVysnmSVzgFy9uYrMYWfD4cc9KE+fP0QKAmnfSTCjM7c+MdXE4WZZ0GD/EIJko8kJ/196GYJxF84Siv8pll19GMqaq0b1Ay8Mam9xLJViRDQchbDq0LGkKr1J7kSIZj3X2gqcnjdXAKzNhP/k0fWL+IqMDQUPU3H1LPh7+fn8venAhyNGPqyPyLG6Cx7JoWP8KzYNDjKvEUiHkGsDAWN4HHAOa/ZGCpw8Cv3Gl+/MjGeJRYQp4uWI8FKvRG4pxr27FE6ReLvyIdLK+DemLxPD//zBH/JoykjEMxUUToAcEfMOPhYr/ODHv5qCV7YuZeDKwmRCHVRNXff7lKdOCY/BrTkeFSRTOMb2ee9lCE41OXUd745uVCxb9s+nvR+1yJgHhN3NQWrgw+KOLkh0s0BZW6WKwsG7XCtzPGiWWEAatnsCeTBv68a0ry7UeH3V
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(346002)(366004)(396003)(136003)(86362001)(186003)(2616005)(6486002)(478600001)(41300700001)(26005)(6512007)(6506007)(38100700002)(53546011)(83380400001)(316002)(5660300002)(66556008)(8676002)(66946007)(2906002)(8936002)(54906003)(4326008)(36756003)(6916009)(66476007)(41533002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?ENVMxb4Bygg/JiPGEmYEWYEPGr1hvMOqJ/k3oJP47S8iGInNt/Jtgl74sL+U?=
+ =?us-ascii?Q?xcRnr3XW2rMFfwmP8NFYEeqzXtDT6aABzz8tYvHqEvMaq65lQ32yeGcJCED0?=
+ =?us-ascii?Q?oiC5OecbpmkJJ6fGsI0A7Z8MGGNJTFi+TIBkah0LQ5kQLM0YjoLRxEVXMwEd?=
+ =?us-ascii?Q?2NuO8JQ55sVmv2HlVCFFIoaOPac16nqc59mbcfMAfVD4C2MIPWo+jVLKsZp2?=
+ =?us-ascii?Q?mvdKbp/nhGCxM8nXf12Gzyox5NOTv+Pk6xDS+LoRgBn3w4z2havg8JkIiWWq?=
+ =?us-ascii?Q?U2ddvuPYiIwMIwcHY37/zps25Z6Hdjrv3OnnqTNVCAtau1MyZNdPxBUDRpJO?=
+ =?us-ascii?Q?M1SvQhnnFJws1hN7nLoIU0ZEl37IwxmeZ3mAk2yRb60ruH19jkZrlQ8lYZbg?=
+ =?us-ascii?Q?odr4+PIkDiCFMtwkfPxOg7Zzpd5E+GB/HfA+IJo3PfrfpCidQWgXtxSg7A6n?=
+ =?us-ascii?Q?6Yi/TRJUg4VdF0ZeXprEEY4cdTVUt7noBBQM0RsEzGIaG2R19u6XopF0xFF/?=
+ =?us-ascii?Q?0W0ByqdSayi6YS9kLqB/LcmRd3mcUCizsJZFdCSAc8PqMahC96Gb+RehuL3z?=
+ =?us-ascii?Q?Q8JpT2eDeEaHMnTqaK+1PTfsPeQL1Twh+GwZzrTofPF6HUPicnjcf63Zie3f?=
+ =?us-ascii?Q?EhBI25EcY8IZ7J579fSM6OZtMxIZSkzTK/WOr7NX8fm3AupHQCDTGczqC3ML?=
+ =?us-ascii?Q?xOiMPK3BL70r8bzhtXksybaP5ySIgDHx0XUIIryCyazXUFfG8h2452Kr09Rc?=
+ =?us-ascii?Q?ct9i0Xl9+OAtE0Ep/60QsIGVv7R/Qqwret8Y9mrsn+3Cly6GS0Ut0S6Km8MP?=
+ =?us-ascii?Q?tXRs1dPs4pqxzuZtwqdLT+6JosUZpd+4d2AucXC3EqVtoVcsj6wdNlrwm6AQ?=
+ =?us-ascii?Q?YxRi9d5D5NWw1iLd1YbjEmahioxz/K97DPulqc7ECkyK5K3pQREOzsYlMU/V?=
+ =?us-ascii?Q?9Pd4UDgJgITL3Ls+qHZnaaJ6oq2Y527VUr9EZv9FtWswiDIrJmmXfTAzBzUv?=
+ =?us-ascii?Q?jalOf+amXt9xAZ822VYelxI0X6Cf50MyHptrkAE/AROWTW4dOl3XXY/5X2SU?=
+ =?us-ascii?Q?gy/VTGvDN6nvFD1zRTKaZIzDf3bIffM2RL25B3AHFObk3pdo3251Zg5OYimM?=
+ =?us-ascii?Q?lf7GYV6JRk4dze1lMsJwO7Tn8MUYgyobn9t95AgVIc/K/GEKP+Nuap+1E7lb?=
+ =?us-ascii?Q?vuMqHiWlJI1Fkdp228GaMU9WWxCFODq38nqHH/6lc5dNByv8xkAvbDuuU8fL?=
+ =?us-ascii?Q?mW7dozinmVUi4jEquS2flQzl/NnY2CCDeV6BcGYYOTlfiQsB6p0hsEIzbv3C?=
+ =?us-ascii?Q?Jma/xLkB517gb13RTJJQedKJkGWGXyfZRrrT/8YI0fcj3jI+AbQAaOzLsHD2?=
+ =?us-ascii?Q?pIXgQY4abKT482hvinacFsAfr+v3a6gyEUBLFzq8A/xCuo+viqCsoZSneg11?=
+ =?us-ascii?Q?zd6HdLHfEy/SYLesAs1ThKNm9T6ic8gkslrxmUtQdlONUWnxAS+FtzzDCUJL?=
+ =?us-ascii?Q?rfp64zmHvz7Znp4AiA6IBtnsFs190s+gcbTKrz5Z+A4xdXRC7PnEbOc9W0tW?=
+ =?us-ascii?Q?HOnlLUTLxt1O6xq7TmcEBgv16NTPp/BUJry7e/d2?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5e3dab36-4102-49dd-8419-08da912ecb9d
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Sep 2022 00:12:20.1497
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: nMYCaQSqfsT7xTjD+jmyVI0eraJ6nrHb68F1OIaSV+23f/2Ml8WqEV9kHDGVN4mv
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5177
 
-On 2022-09-07 19:50, Saravana Kannan wrote:
-> On Mon, Aug 15, 2022 at 9:20 AM Robin Murphy <robin.murphy@arm.com> wrote:
->>
->> The number of bus types that the IOMMU subsystem deals with is small and
->> manageable, so pull that list into core code as a first step towards
->> cleaning up all the boilerplate bus-awareness from drivers. Calling
->> iommu_probe_device() before bus->iommu_ops is set will simply return
->> -ENODEV and not break the notifier call chain, so there should be no
->> harm in proactively registering all our bus notifiers at init time.
->>
->> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
->> Tested-by: Matthew Rosato <mjrosato@linux.ibm.com> # s390
->> Tested-by: Niklas Schnelle <schnelle@linux.ibm.com> # s390
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->> ---
->>
->> v4: Squash iommu_bus_init() entirely, for maximum simplicity. Ignoring
->>      the return from bus_register_notifier() is common, so hopefully it's
->>      all pretty self-explanatory now.
->>
->>   drivers/iommu/iommu.c | 72 ++++++++++++++++++++++---------------------
->>   1 file changed, 37 insertions(+), 35 deletions(-)
->>
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 780fb7071577..a8d14f2a1035 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -6,6 +6,7 @@
->>
->>   #define pr_fmt(fmt)    "iommu: " fmt
->>
->> +#include <linux/amba/bus.h>
->>   #include <linux/device.h>
->>   #include <linux/dma-iommu.h>
->>   #include <linux/kernel.h>
->> @@ -16,11 +17,13 @@
->>   #include <linux/export.h>
->>   #include <linux/slab.h>
->>   #include <linux/errno.h>
->> +#include <linux/host1x_context_bus.h>
->>   #include <linux/iommu.h>
->>   #include <linux/idr.h>
->>   #include <linux/err.h>
->>   #include <linux/pci.h>
->>   #include <linux/bitops.h>
->> +#include <linux/platform_device.h>
->>   #include <linux/property.h>
->>   #include <linux/fsl/mc.h>
->>   #include <linux/module.h>
->> @@ -75,6 +78,8 @@ static const char * const iommu_group_resv_type_string[] = {
->>   #define IOMMU_CMD_LINE_DMA_API         BIT(0)
->>   #define IOMMU_CMD_LINE_STRICT          BIT(1)
->>
->> +static int iommu_bus_notifier(struct notifier_block *nb,
->> +                             unsigned long action, void *data);
->>   static int iommu_alloc_default_domain(struct iommu_group *group,
->>                                        struct device *dev);
->>   static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
->> @@ -103,6 +108,22 @@ struct iommu_group_attribute iommu_group_attr_##_name =            \
->>   static LIST_HEAD(iommu_device_list);
->>   static DEFINE_SPINLOCK(iommu_device_lock);
->>
->> +static struct bus_type * const iommu_buses[] = {
->> +       &platform_bus_type,
->> +#ifdef CONFIG_PCI
->> +       &pci_bus_type,
->> +#endif
->> +#ifdef CONFIG_ARM_AMBA
->> +       &amba_bustype,
->> +#endif
->> +#ifdef CONFIG_FSL_MC_BUS
->> +       &fsl_mc_bus_type,
->> +#endif
->> +#ifdef CONFIG_TEGRA_HOST1X_CONTEXT_BUS
->> +       &host1x_context_device_bus_type,
->> +#endif
->> +};
->> +
->>   /*
->>    * Use a function instead of an array here because the domain-type is a
->>    * bit-field, so an array would waste memory.
->> @@ -126,6 +147,8 @@ static const char *iommu_domain_type_str(unsigned int t)
->>
->>   static int __init iommu_subsys_init(void)
->>   {
->> +       struct notifier_block *nb;
->> +
->>          if (!(iommu_cmd_line & IOMMU_CMD_LINE_DMA_API)) {
->>                  if (IS_ENABLED(CONFIG_IOMMU_DEFAULT_PASSTHROUGH))
->>                          iommu_set_default_passthrough(false);
->> @@ -152,6 +175,15 @@ static int __init iommu_subsys_init(void)
->>                          (iommu_cmd_line & IOMMU_CMD_LINE_STRICT) ?
->>                                  "(set via kernel command line)" : "");
->>
->> +       nb = kcalloc(ARRAY_SIZE(iommu_buses), sizeof(*nb), GFP_KERNEL);
->> +       if (!nb)
->> +               return -ENOMEM;
->> +
->> +       for (int i = 0; i < ARRAY_SIZE(iommu_buses); i++) {
->> +               nb[i].notifier_call = iommu_bus_notifier;
->> +               bus_register_notifier(iommu_buses[i], &nb[i]);
->> +       }
->> +
+On Wed, Sep 07, 2022 at 07:16:32PM +0100, Robin Murphy wrote:
+> On 2022-09-07 17:52, Jason Gunthorpe wrote:
+> > On Wed, Sep 07, 2022 at 04:16:20PM +0200, Joerg Roedel wrote:
+> > > On Tue, Sep 06, 2022 at 05:35:13PM +0100, Robin Murphy wrote:
+> > > > Will this series also mean that the domain shenanigans in
+> > > > amd_iommu_init_device() can be replaced by just making sure the GPU gets the
+> > > > proper type of v2 default domain in the first place, so KFD can use its
+> > > > PASIDs on top of that directly, and the audio driver problem goes away
+> > > > naturally?
+> > > 
+> > > Yes, on IOMMUs supporting v2 page-tables and declaring a default PASID
+> > > this hack can go away. Unfortunately a lot of AMD IOMMUs in the field do
+> > > not, so the identity mapping hack needs to stay around.
+> > 
+> > Why can an identity map be attached to the RID in v2, but not a full
+> > translation? It seems like a very strange design that entering PASID
+> > mode completely breaks RID support..
 > 
-> Carrying on the community's general disdain for notifiers, can we drop
-> the bus notifier and just call iommu_probe_device() directly from
-> device_add()? That way, you also won't need to keep an ifdef-ed array
-> of buses and it'll be easy to tell from driver core code that iommu
-> stuff is happening as devices are added. And I'd probably move that
-> call to be AFTER some of the fw_devlink stuff is done too.
+> FWIW we have the opposite problem on SMMUv3 - if we're using PASIDs then we
+> can't bypass the RID, it *has* to map to a translation context (as PASID 0).
+> I can only guess that nobody's yet tried the combination of SVA plus
+> IOMMU_DEFAULT_PASSTHROUGH plus the device sending MSIs (and not on the dodgy
+> machine where MSIs bypass the SMMU in hardware)... :/
 
-Yup, we're working in that general direction, this is just big and moves 
-slow :)
+This at least makes more sense to me, SW has the ability to apply a
+translation and if the requirement is an identity translation it can
+at least make one, at the cost of performance and memory..
 
-One of the next steps after this is unpicking 
-{of,acpi}_iommu_configure() for iommu_probe_device() to take ownership 
-of firmware parsing, after which it should be sufficiently 
-self-contained that the notifier might indeed become the worst 
-impediment to further reasoning. We'll still want to limit things to the 
-small subset of buses where IOMMUs are at all relevant (one of the 
-reasons that I stopped short of trying to grovel the whole list of 
-registered buses out of the driver core here), but since there's a 
-bus-specific element involved in parsing the firmware bindings, I'm 
-expecting it to work out quite neatly in the end.
+So, looking at bit at the smmuv3 code, if arm_smmu_write_strtab_ent()
+was called with stage == BYPASS on the RID then it sets a STE up for
+bypass operation and there is no s1contextptr, but then
+arm_smmu_write_ctx_desc() will come along later and try to access the
+cdtab?
 
-> Also, would it be possible to delay this until probe (sorry, don't
-> have enough of IOMMU details in my head) and call iommu_probe_device()
-> from really_probe() like we do to set up pinctrl, etc? That'd be
-> ideal.
+It seems like it needs to upgrade the STE to have an s1contextptr and
+point substream 0 at an iopte setting up an identity mapping?
 
-No, that's not so good, and in fact the stuff that can currently happen 
-at driver probe time is already problematic and responsible for various 
-subtle breakage. There are things about the IOMMU topology that need to 
-be known regardless of whether drivers exist for all the devices, so now 
-that fw_devlink can take care of waiting for IOMMU drivers to load, the 
-rest of IOMMU setup (other than DMA ops) really does want to move back 
-to device_add() time.
+But doesn't this mean that the SVA is the thing that doesn't work if
+the RID is set to identity?
 
-Thanks,
-Robin.
-
-> 
-> -Saravana
-> 
-> 
->>          return 0;
->>   }
->>   subsys_initcall(iommu_subsys_init);
->> @@ -1775,39 +1807,6 @@ int bus_iommu_probe(struct bus_type *bus)
->>          return ret;
->>   }
->>
->> -static int iommu_bus_init(struct bus_type *bus, const struct iommu_ops *ops)
->> -{
->> -       struct notifier_block *nb;
->> -       int err;
->> -
->> -       nb = kzalloc(sizeof(struct notifier_block), GFP_KERNEL);
->> -       if (!nb)
->> -               return -ENOMEM;
->> -
->> -       nb->notifier_call = iommu_bus_notifier;
->> -
->> -       err = bus_register_notifier(bus, nb);
->> -       if (err)
->> -               goto out_free;
->> -
->> -       err = bus_iommu_probe(bus);
->> -       if (err)
->> -               goto out_err;
->> -
->> -
->> -       return 0;
->> -
->> -out_err:
->> -       /* Clean up */
->> -       bus_for_each_dev(bus, NULL, NULL, remove_iommu_group);
->> -       bus_unregister_notifier(bus, nb);
->> -
->> -out_free:
->> -       kfree(nb);
->> -
->> -       return err;
->> -}
->> -
->>   /**
->>    * bus_set_iommu - set iommu-callbacks for the bus
->>    * @bus: bus.
->> @@ -1836,9 +1835,12 @@ int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops)
->>          bus->iommu_ops = ops;
->>
->>          /* Do IOMMU specific setup for this bus-type */
->> -       err = iommu_bus_init(bus, ops);
->> -       if (err)
->> +       err = bus_iommu_probe(bus);
->> +       if (err) {
->> +               /* Clean up */
->> +               bus_for_each_dev(bus, NULL, NULL, remove_iommu_group);
->>                  bus->iommu_ops = NULL;
->> +       }
->>
->>          return err;
->>   }
->> --
->> 2.36.1.dirty
->>
->>
+Jason
