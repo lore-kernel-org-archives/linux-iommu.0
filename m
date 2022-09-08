@@ -1,233 +1,164 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 36227610E
-	for <iommu@lists.linux.dev>; Thu,  8 Sep 2022 21:27:19 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9DC72153B;
-	Thu,  8 Sep 2022 14:27:24 -0700 (PDT)
-Received: from [10.57.15.197] (unknown [10.57.15.197])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 89D483F7B4;
-	Thu,  8 Sep 2022 14:27:12 -0700 (PDT)
-Message-ID: <ada74e00-77e1-770b-f0b7-a4c43a86c06f@arm.com>
-Date: Thu, 8 Sep 2022 22:27:06 +0100
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2051.outbound.protection.outlook.com [40.107.92.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B5F8610E
+	for <iommu@lists.linux.dev>; Thu,  8 Sep 2022 21:43:36 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fblgo8V/58ONn3y7HV88z6ceDH8RWGeUcPkS2NuRm+Y7P61X8h22gBeO9/hMy4cj2PMLt4kwO2qjSYTMd4GARdieF8UTJXZxVHobkmMjmcn5vBrRDiaFnhzlRS69pxgsnMff/PPbh/1VmpTQZ3H9WuqmupOoE8+g4ujOIeuMsY79q2E7FyKqZN4H00vjw9mDbNsdUB71DySQ8UJQSkvZri363Op1KWnLRnBcGTv+tbCoJ74yIEaMHSNFPQbNVeVChBNfT6tD1YKnj4HX4Tm+LMAvTlnbQkQK/soQ784l9u1jKI8Nw6vRrE6L//wjQnARkx9FXKb3gA/BG8QEUkJVlA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RhY8N7YhB/7en/7tlhAirRLUussIK0CrEw879KD0WrY=;
+ b=bOf25Ojeb77cFlMOmbPxO9G4wE6Xain4h3gBa3IyJIx+M7yz4EFqGb7gNnGncVy6sB+kCKULgDY0NAc5I8AHjl2SjnsMo404KQu28FQ7rwvRp8oQNljefCD4M3hUJYuTt6gDOPszlQmrMGWqEgwcLkBv7GhkZbX97gcxwGSHJ5XEDJI8OnluRpqC3YR4k9s0SG0Xwn4/NvO6CcZpC2VAS14YS/RR+ofIYZFFG7Cd4/BbLP5VA+Y4l7Hn4dIsaRJql6Esd+opWqGnBIukw4RVSSSzjRlUHNaTaPe+nVZrEVatB6bm9290WeN+JsioQTuN5HiNt7dldQxqa3/P2nQ4Ag==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RhY8N7YhB/7en/7tlhAirRLUussIK0CrEw879KD0WrY=;
+ b=qZIjCmnist6LIayWo7Wbd982tGpOzP4yAkjow7NeZHxsd1QPvqZIuGPtpKbE84NbmA4YrDI+v1hswj5bAeMmfgL+onN96NXTXuW1Gmj7zDlQb7zq6LRHnZZbG9ZGvYq69A4m1SUm65aDAM2O80xRyCJ6vmzF/x/XxuR9AlymDVBi0t7pTPWBUsYbpYM6Of9wsDYRWPcmSkAKnL8gy+n93i1w9PO2IasLt25hGIl9GN9QS4IYgmZUaWXawcgeKZLNCNxiLbWr12cfWWBcY7sYgAt4einHZLuyTF+MSIWDw5TrY3avTKYoVE5bU3MVeu3mXNaXDHosQ5XAKu5LRc2kVw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by SJ0PR12MB5674.namprd12.prod.outlook.com (2603:10b6:a03:42c::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.12; Thu, 8 Sep
+ 2022 21:43:33 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::462:7fe:f04f:d0d5]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::462:7fe:f04f:d0d5%7]) with mapi id 15.20.5612.019; Thu, 8 Sep 2022
+ 21:43:33 +0000
+Date: Thu, 8 Sep 2022 18:43:32 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+	Cornelia Huck <cohuck@redhat.com>, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+	Will Deacon <will@kernel.org>, Qian Cai <cai@lca.pw>,
+	Joerg Roedel <jroedel@suse.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Matthew Rosato <mjrosato@linux.ibm.com>
+Subject: Re: [PATCH 4/4] iommu: Fix ordering of iommu_release_device()
+Message-ID: <YxpiBEbGHECGGq5Q@nvidia.com>
+References: <4-v1-ef00ffecea52+2cb-iommu_group_lifetime_jgg@nvidia.com>
+ <87b7041e-bc8d-500c-7167-04190e3795a9@arm.com>
+ <ada74e00-77e1-770b-f0b7-a4c43a86c06f@arm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ada74e00-77e1-770b-f0b7-a4c43a86c06f@arm.com>
+X-ClientProxiedBy: BL0PR02CA0131.namprd02.prod.outlook.com
+ (2603:10b6:208:35::36) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH 4/4] iommu: Fix ordering of iommu_release_device()
-Content-Language: en-GB
-From: Robin Murphy <robin.murphy@arm.com>
-To: Jason Gunthorpe <jgg@nvidia.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Cornelia Huck <cohuck@redhat.com>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
- Will Deacon <will@kernel.org>
-Cc: Qian Cai <cai@lca.pw>, Joerg Roedel <jroedel@suse.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>
-References: <4-v1-ef00ffecea52+2cb-iommu_group_lifetime_jgg@nvidia.com>
- <87b7041e-bc8d-500c-7167-04190e3795a9@arm.com>
-In-Reply-To: <87b7041e-bc8d-500c-7167-04190e3795a9@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4192:EE_|SJ0PR12MB5674:EE_
+X-MS-Office365-Filtering-Correlation-Id: ce86b024-d7f8-45f2-6a74-08da91e32d9c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	qX4oh02XLH7PEvPxzi4X1VjlrpYQmXjJqfXqX/qq+s+Lejcu5bCdQ8sReztLC50Vw1xqDzQ43rovt38jZGMh4NlY83dgWAsbRgEuzDzwWyxv9lhVqz1aUZ4v9jGWHajZ3+rNnF4Yt0eWiL2FJnUTR3XTpESYjVCqvCuFcx0+ukNP88kztslLtIwAEPMf7MHCha+oEPxfWKXVLamcUsdwNfjdnjkFD+p8YQlUvQUlXkYDeX4j7Mh9SJh2XsMVrozouK010gFjqX/a7/r0HuJqzaSKYWxYEB9AQAAb+l/cVLJZrilWWTpsDsBUl3XMrlucCqEhCMl/bm3e4uJtBu1i/N030osBzyxp+XvVLl7bjoSl5gWeo2i+viHmtxHjaW4NZpV8IuVFmxz0IW3nGBv2Jm3Kj8IwoqbVYQpmKBNM7WyiL4Q44rt3N33uRRmsOJARrqXnM08XophUpZWVbNpghjQFQfslOvsqMh+ZKxZJDB5DcTMh+YKeb/WPZsDb3x1WlmxjTho6oc1Zmi15kr+EdB7glFGSqou3y4/NoH6W3pJIbm+8ePlgZWJ7fwrA9q1t16r5SKGZl3TGiABA08iAdlgPHIb4B8GLb/x13S3WJeJ6rVvgWHk5+RQHW4uDtOsq7T0yrXlGq/4e4jhyNnQSY4ksUtfxgUgJKTdyVwkqiqefSuads6OU56/T0Z/SgHKxPMCu0C4wLCrMhBjy+vOM3g==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(136003)(39860400002)(366004)(396003)(346002)(186003)(7416002)(2906002)(2616005)(6512007)(6506007)(6486002)(5660300002)(478600001)(86362001)(36756003)(83380400001)(8936002)(41300700001)(26005)(66946007)(4326008)(66556008)(66476007)(8676002)(316002)(54906003)(6916009)(38100700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?kKA9bE9UyvhZgm55vgrCR5GgbHNsFNHjQ2Ms20A8CiINjDEep0nURNcu4pn4?=
+ =?us-ascii?Q?nUg0NkD5K7xSN7Tux0GGhUiIldiPHs8UvhNtRKiV+n0i9bZrAWL2eRKPkHGE?=
+ =?us-ascii?Q?6NA1juczj4YBmKsFJfhY5uFIY15mvpwyH36yc4MUNtaWv0mm9cODZckBT0tv?=
+ =?us-ascii?Q?OXwLX6yMkcW8tJhwJVdfg8J/3uyC1Lvf4kJ9Wo0vq3zcUr+mFc7QF235FJO1?=
+ =?us-ascii?Q?JY+4epn8XpelVG4ECviZsivUdBSKXMUH8t4EqRQsK43d30CnRNbnaq/btoN6?=
+ =?us-ascii?Q?1LIKophwUUwXCb9E0I/U8BWYkFVBdJ+N7exV1tFaRTg4dC+4gNOwukqtogBU?=
+ =?us-ascii?Q?oJbengiCwDY5EfNI06hu1DjZFbFWsN3+24H/1nGrjKMYQ/FpXFxRb6A13vCo?=
+ =?us-ascii?Q?1T8iBgA5WMudC6m50tFI+v8yKnA9LAMA5xKXGdruBafBhicI2IX5LfatrQOg?=
+ =?us-ascii?Q?8RJUon0pCm/PKviBh+hRUxmU11Bl7uL20A8q9d0j1LyrLymEviBGkV66Shbh?=
+ =?us-ascii?Q?gKPGNz5iwXIaeXGla1KBvebW/oNbJTFNWOY2Cp+D9j7NqLoZo93L1q7qHsW1?=
+ =?us-ascii?Q?gSXq/Gz2LdhzZP8b6ucFWdHOy33hINfgR0pbFsNilCPXboRMVBLH/5WLqvb+?=
+ =?us-ascii?Q?31rP5M/ftFoo1nbM7jfJ7f4dasgjAwpi9lLtKkwcAyDRR+JNFiyc7bH829bp?=
+ =?us-ascii?Q?crsCXswEQPY+jmxG4sO+LnuqZ499TR5gqha1qh+epzJVDbSvxzumoEKMoKp7?=
+ =?us-ascii?Q?7mA02kRrMCFzeBYc9FmdjE2mCT2p4FAQzdeDxYCBkzF03+1IDuqnFRq9L8b2?=
+ =?us-ascii?Q?VtlgyagpIORxRTVr09onycPBvXjN4sBya/gCU/v1UAbvByDTEleTyfd2yIyJ?=
+ =?us-ascii?Q?4Xa8qWkQLymUwxFMKJxhSJIKSprb27PWiksUeaxHX4WcYM+76PHjOAF/pCGf?=
+ =?us-ascii?Q?0Esjmu255Nc35897fTwCu/K2vAb1x6qXDnELSWOIoO3Mgw51Nm0Euiv5AItn?=
+ =?us-ascii?Q?LkeZaPInGFmVNUQFVLKRH1Yc2fNHVLJ6q8o3WJ8+ySc9ILAHzfmS5QCay8V4?=
+ =?us-ascii?Q?vdT4kDPG6u4JmSbPJUc+YLoKeD7p2p4BfFCpo6wmVHUJlIGkNR/7Qk8K75Np?=
+ =?us-ascii?Q?zDENoBrrhNJDZ/aDj6KuapusEawtiKCeUcR5Pl1n1mnP9PvY4GaAKznb3SR0?=
+ =?us-ascii?Q?PboOijUxoUaOuBo5OcFKyh+oP5zKf1MYfazh4+Iwhp2xhUWogiuYmo4s8K6Z?=
+ =?us-ascii?Q?sDR2EsjRzmJit0H0OvuAxDsUrSgyaUrihXqdpYPXiSzaiFaGmQ/Gje0eEavM?=
+ =?us-ascii?Q?XHgDSCGp6DWL0vFf/Olbuy9qmCypOWsqmGpUgKGPOAjxbHJTYlugKCbl9aoY?=
+ =?us-ascii?Q?VTN/eHgUMGVGoZAaI5VEP2nIrgcjaAmXWnTR+hnMJxK+TXqXubiwaHpT8HpC?=
+ =?us-ascii?Q?ZrK3cdFf0BOoSOcy18xH6/pbSPFAKIeT7hz04qlanHB0idtk0ICtZICdY2WT?=
+ =?us-ascii?Q?EFgZjEG+zogop+VVmSRtAGtjVpnC9BAM0ePzyQa3/l2Z5YStvG8OsnvDhuVx?=
+ =?us-ascii?Q?a0z1UuDyg95DnULH3/ZHKfgKi89O1Wy79/+Vqsbf?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ce86b024-d7f8-45f2-6a74-08da91e32d9c
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Sep 2022 21:43:33.6269
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: y6zrLjAnhquFwiHIy3wcQustOEytfgj5qrRX+a0zVooudBWGvhaw1OoXlPO4sa9u
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB5674
 
-On 2022-09-08 22:05, Robin Murphy wrote:
-> On 2022-09-08 19:45, Jason Gunthorpe wrote:
->> default domains created a situation where the device is always connected
->> to a domain of some kind. When the device is idle it is connected to one
->> of the two pre-existing domains in the group, blocking_domain or
->> default_domain. In this way we have a continuous assertion of what state
->> the transation is in.
->>
->> When this is all destructed then we need to remove all the devices from
->> their domains via the ops->release_device() call before the domain can be
->> freed. This is the bug recognized in commit 9ac8545199a1 ("iommu: Fix
->> use-after-free in iommu_release_device").
->>
->> However, we must also stop any concurrent access to the iommu driver for
->> this device before we destroy it. This is done by:
->>
->>   1) Drivers only using the iommu API while they have a device driver
->>      attached to the device. This directly prevents release from 
->> happening.
->>
->>   2) Removing the device from the group list so any lingering group
->>      references no longer refer to the device. This is done by
->>      iommu_group_remove_device()
->>
->> Since iommu_group_remove_device() has been moved this breaks #2 and
->> triggers an WARN when VFIO races group activities with the release of the
->> device:
->>
->>     iommu driver failed to attach the default/blocking domain
->>     WARNING: CPU: 0 PID: 5082 at drivers/iommu/iommu.c:1961 
->> iommu_detach_group+0x6c/0x80
->>     Modules linked in: macvtap macvlan tap vfio_pci vfio_pci_core 
->> irqbypass vfio_virqfd kvm nft_fib_inet nft_fib_ipv4 nft_fib_ipv6>
->>     CPU: 0 PID: 5082 Comm: qemu-system-s39 Tainted: G        
->> W          6.0.0-rc3 #5
->>     Hardware name: IBM 3931 A01 782 (LPAR)
->>     Krnl PSW : 0704c00180000000 000000095bb10d28 
->> (iommu_detach_group+0x70/0x80)
->>           R:0 T:1 IO:1 EX:1 Key:0 M:1 W:0 P:0 AS:3 CC:0 PM:0 RI:0 EA:3
->>     Krnl GPRS: 0000000000000001 0000000900000027 0000000000000039 
->> 000000095c97ffe0
->>           00000000fffeffff 00000009fc290000 00000000af1fda50 
->> 00000000af590b58
->>           00000000af1fdaf0 0000000135c7a320 0000000135e52258 
->> 0000000135e52200
->>           00000000a29e8000 00000000af590b40 000000095bb10d24 
->> 0000038004b13c98
->>     Krnl Code: 000000095bb10d18: c020003d56fc        larl    
->> %r2,000000095c2bbb10
->>               000000095bb10d1e: c0e50019d901        brasl   
->> %r14,000000095be4bf20
->>              #000000095bb10d24: af000000            mc      0,0
->>              >000000095bb10d28: b904002a            lgr     %r2,%r10
->>               000000095bb10d2c: ebaff0a00004        lmg     
->> %r10,%r15,160(%r15)
->>               000000095bb10d32: c0f4001aa867        brcl    
->> 15,000000095be65e00
->>               000000095bb10d38: c004002168e0        brcl    
->> 0,000000095bf3def8
->>               000000095bb10d3e: eb6ff0480024        stmg    
->> %r6,%r15,72(%r15)
->>     Call Trace:
->>      [<000000095bb10d28>] iommu_detach_group+0x70/0x80
->>     ([<000000095bb10d24>] iommu_detach_group+0x6c/0x80)
->>      [<000003ff80243b0e>] vfio_iommu_type1_detach_group+0x136/0x6c8 
->> [vfio_iommu_type1]
->>      [<000003ff80137780>] __vfio_group_unset_container+0x58/0x158 [vfio]
->>      [<000003ff80138a16>] vfio_group_fops_unl_ioctl+0x1b6/0x210 [vfio]
->>     pci 0004:00:00.0: Removing from iommu group 4
->>      [<000000095b5b62e8>] __s390x_sys_ioctl+0xc0/0x100
->>      [<000000095be5d3b4>] __do_syscall+0x1d4/0x200
->>      [<000000095be6c072>] system_call+0x82/0xb0
->>     Last Breaking-Event-Address:
->>      [<000000095be4bf80>] __warn_printk+0x60/0x68
->>
->> So, put things in the right order:
->>   - Remove the device from the group's list
->>   - Release the device from the iommu driver to drop all domain 
->> references
->>   - Free the domains
->>
->> This is done by splitting out the kobject_put(), which triggers
->> iommu_group_release(), from the rest of iommu_group_remove_device() and
->> placing it after release is called.
-> 
-> So simple... now how did I fail to think of that? :)
+On Thu, Sep 08, 2022 at 10:27:06PM +0100, Robin Murphy wrote:
 
-Oh, because s390 is using iommu_get_domain_for_dev() in its 
-release_device callback, which needs to dereference the group to work, 
-and the current domain may also be a non-default one which we can't 
-prevent from disappearing racily, that was why :(
+> Oh, because s390 is using iommu_get_domain_for_dev() in its release_device
+> callback, which needs to dereference the group to work, and the current
+> domain may also be a non-default one which we can't prevent from
+> disappearing racily, that was why :(
 
-I think we may be back to looking at s390 having to keep track of 
-domains internally like SMMUv3 does, and both drivers synchronising 
-between their domain_free and release_device to to do their internal 
-detach from either place... unless possibly the core code starts 
-refcounting domains as well?
+Hum, the issue there is the use of device->iommu_group - but that just
+means I didn't split properly. How about this incremental:
 
-Robin.
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index c451bf715182ac..99ef799f3fe6b5 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -351,6 +351,7 @@ void iommu_release_device(struct device *dev)
+ 	 * them until the have been detached. release_device() is expected to
+ 	 * detach all domains connected to the dev.
+ 	 */
++	dev->iommu_group = NULL;
+ 	kobject_put(group->devices_kobj);
+ 
+ 	module_put(ops->owner);
+@@ -980,7 +981,6 @@ static void __iommu_group_remove_device(struct device *dev)
+ 
+ 	kfree(device->name);
+ 	kfree(device);
+-	dev->iommu_group = NULL;
+ }
+ 
+ /**
+@@ -995,6 +995,7 @@ void iommu_group_remove_device(struct device *dev)
+ 	struct iommu_group *group = dev->iommu_group;
+ 
+ 	__iommu_group_remove_device(dev);
++	dev->iommu_group = NULL;
+ 	kobject_put(group->devices_kobj);
+ }
+ EXPORT_SYMBOL_GPL(iommu_group_remove_device);
 
->> Fixes: 9ac8545199a1 ("iommu: Fix use-after-free in iommu_release_device")
->> Reported-by: Matthew Rosato <mjrosato@linux.ibm.com>
->> Cc: Robin Murphy <robin.murphy@arm.com>
->> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
->> ---
->>   drivers/iommu/iommu.c | 36 +++++++++++++++++++++++++++---------
->>   1 file changed, 27 insertions(+), 9 deletions(-)
->>
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 780fb70715770d..c451bf715182ac 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -90,6 +90,7 @@ static int 
->> iommu_create_device_direct_mappings(struct iommu_group *group,
->>   static struct iommu_group *iommu_group_get_for_dev(struct device *dev);
->>   static ssize_t iommu_group_store_type(struct iommu_group *group,
->>                         const char *buf, size_t count);
->> +static void __iommu_group_remove_device(struct device *dev);
->>   #define IOMMU_GROUP_ATTR(_name, _mode, _show, _store)        \
->>   struct iommu_group_attribute iommu_group_attr_##_name =        \
->> @@ -330,6 +331,7 @@ int iommu_probe_device(struct device *dev)
->>   void iommu_release_device(struct device *dev)
->>   {
->> +    struct iommu_group *group = dev->iommu_group;
->>       const struct iommu_ops *ops;
->>       if (!dev->iommu)
->> @@ -337,11 +339,20 @@ void iommu_release_device(struct device *dev)
->>       iommu_device_unlink(dev->iommu->iommu_dev, dev);
-> 
-> In fact, now that you've made it obvious, could we not simply do an 
-> extra kobject_get() here before calling regular 
-> iommu_group_remove_device(), and avoid having to split that up at all? 
-> That should delay any default domain teardown just as definitively as 
-> holding the original reference for longer, no?
-> 
-> Thanks,
-> Robin.
-> 
->> +    __iommu_group_remove_device(dev);
->>       ops = dev_iommu_ops(dev);
->>       if (ops->release_device)
->>           ops->release_device(dev);
->> -    iommu_group_remove_device(dev);
->> +    /*
->> +     * This will eventually call iommu_group_release() which will 
->> free the
->> +     * iommu_domains. Up until the release_device() above the 
->> iommu_domains
->> +     * may still have been associated with the device, and we cannot 
->> free
->> +     * them until the have been detached. release_device() is 
->> expected to
->> +     * detach all domains connected to the dev.
->> +     */
->> +    kobject_put(group->devices_kobj);
->> +
->>       module_put(ops->owner);
->>       dev_iommu_free(dev);
->>   }
->> @@ -939,14 +950,7 @@ int iommu_group_add_device(struct iommu_group 
->> *group, struct device *dev)
->>   }
->>   EXPORT_SYMBOL_GPL(iommu_group_add_device);
->> -/**
->> - * iommu_group_remove_device - remove a device from it's current group
->> - * @dev: device to be removed
->> - *
->> - * This function is called by an iommu driver to remove the device from
->> - * it's current group.  This decrements the iommu group reference count.
->> - */
->> -void iommu_group_remove_device(struct device *dev)
->> +static void __iommu_group_remove_device(struct device *dev)
->>   {
->>       struct iommu_group *group = dev->iommu_group;
->>       struct group_device *tmp_device, *device = NULL;
->> @@ -977,6 +981,20 @@ void iommu_group_remove_device(struct device *dev)
->>       kfree(device->name);
->>       kfree(device);
->>       dev->iommu_group = NULL;
->> +}
->> +
->> +/**
->> + * iommu_group_remove_device - remove a device from it's current group
->> + * @dev: device to be removed
->> + *
->> + * This function is called by an iommu driver to remove the device from
->> + * it's current group.  This decrements the iommu group reference count.
->> + */
->> +void iommu_group_remove_device(struct device *dev)
->> +{
->> +    struct iommu_group *group = dev->iommu_group;
->> +
->> +    __iommu_group_remove_device(dev);
->>       kobject_put(group->devices_kobj);
->>   }
->>   EXPORT_SYMBOL_GPL(iommu_group_remove_device);
-> 
+To me it makes sense that the driver should be able to continue to
+query the iommu_group during release anyhow..
+
+And to your other question, the reason I split the function is because
+I couldn't really say WTF iommu_group_remove_device() was supposed to
+do. The __ version make ssense as part of the remove_device, due to
+the sequencing with ops->release()
+
+But the other one doesn't have that. So I want to put in a:
+
+   WARN_ON(group->blocking_domain || group->default_domain);
+
+Because calling it after those domains are allocated looks broken to
+me.
+
+Jason
