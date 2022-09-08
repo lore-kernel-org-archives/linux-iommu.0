@@ -1,86 +1,158 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C7C1B3D65
-	for <iommu@lists.linux.dev>; Thu,  8 Sep 2022 15:23:16 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 492E514BF;
-	Thu,  8 Sep 2022 08:23:22 -0700 (PDT)
-Received: from [10.57.15.197] (unknown [10.57.15.197])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 53A8D3F7B4;
-	Thu,  8 Sep 2022 08:23:14 -0700 (PDT)
-Message-ID: <7b30a064-754e-0528-5142-8446ab5bdc95@arm.com>
-Date: Thu, 8 Sep 2022 16:23:08 +0100
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E13253D65;
+	Thu,  8 Sep 2022 16:14:46 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iRFufvCZUeUDOQJRnxng9G3ynBf9d5LmYDnyRj+4X3sbvRGlmFEA/WVx/vOEtUabvovxNpZooT57GrKK/yfD1oGI6Uhh2gSp3fvCMD+vriCHmHAPvre22nmfmFfCgH73sDw5W5ZkFgApnLFMTUgupwLbkzeinleOWsB+LBSjy1fnTNnk6p6nH7sP2XS6tWy8+8aVbPBcFU5LuMWJ54/vBx4W5lBBE/tAx0y3UURhZe08kVWrZy0aE0kaFUxNkq+64m/mBtcF9qwru7K/NtE/EYusxHzHLSRW9wiFmF7kucXrh7YTRpCRT8DKIlxiCcnS50ah1RMUyvgKHOAQLaXo3Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yJF2EmhiFTi6X5MwBd2ldmxkE6wrBxgYe+fji5XwIS0=;
+ b=FCgjNrN/jdCB6mexx2ALaQzVfwZoFxw0YQjIBc8fzAv0s+rRE7YvszcyQ10EfuUecMr86CWNid3v9zu9blDe8svRZoCVCF6Xy0KnD8LC69inrH7yHgV5+cY7mjPSg/mnLvaramLtTjz78nmQR5K7WWGIElmBe28KoVxB+tsG6nB0/gNu55h+KguY9gU82nx6Ji0SEZfICzifH+g+AJxRkx5jmw5D6s6V4SeF585V536uWESrmkDGGEKFA+pPDcYj9r9VmF+1YsUiZcU5oMevvbar9JT+KS5dD7/MHl+AqNQYefbVhEgmcd1FMAiufFLzBfrIwdTKhemGhtAeGiznKg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yJF2EmhiFTi6X5MwBd2ldmxkE6wrBxgYe+fji5XwIS0=;
+ b=Ssp9+comEwxraWD6+6lCCAOeHQ/xCw+7ezoEkPVzzAEVEHeWLnv/udJ7ebeUpeAmuNeTX3LizuGXnFT8DwR700vWRfB9gxfVmTEk/dUE9ZrIMsJd9LxnD0Lfatntz4Nh8GIP95rghxw+3HRTlnUK112RQWlwXtwZqdIDUZdVz4lL1N5MH45PkrPe4J6ZqTPqY37I5M7ScdqlFl9LthVb1npZQAAUlsL0VjYJZ+cpoodoi+jywsKv8Bk+Dvwpz4vkaMqHmXC4xuoqDxtEXnKUGxd6iYgebS2nn/tBFwWhR3/wXj0W8COYFYjr3W9wVlC+sWQPf9uNhf7m5FurmyP8Nw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by LV2PR12MB5943.namprd12.prod.outlook.com (2603:10b6:408:170::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.16; Thu, 8 Sep
+ 2022 16:14:43 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::462:7fe:f04f:d0d5]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::462:7fe:f04f:d0d5%7]) with mapi id 15.20.5612.019; Thu, 8 Sep 2022
+ 16:14:43 +0000
+Date: Thu, 8 Sep 2022 13:14:42 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
+	robin.murphy@arm.com, alex.williamson@redhat.com,
+	suravee.suthikulpanit@amd.com, marcan@marcan.st, sven@svenpeter.dev,
+	alyssa@rosenzweig.io, robdclark@gmail.com, dwmw2@infradead.org,
+	baolu.lu@linux.intel.com, mjrosato@linux.ibm.com,
+	gerald.schaefer@linux.ibm.com, orsonzhai@gmail.com,
+	baolin.wang@linux.alibaba.com, zhang.lyra@gmail.com,
+	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
+	jean-philippe@linaro.org, cohuck@redhat.com, tglx@linutronix.de,
+	shameerali.kolothum.thodi@huawei.com, thunder.leizhen@huawei.com,
+	christophe.jaillet@wanadoo.fr, yangyingliang@huawei.com,
+	jon@solid-run.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, asahi@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+	linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
+	virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+	kevin.tian@intel.com
+Subject: Re: [PATCH v6 1/5] iommu: Return -EMEDIUMTYPE for incompatible
+ domain and device/group
+Message-ID: <YxoU8lw+qIw9woRL@nvidia.com>
+References: <20220815181437.28127-1-nicolinc@nvidia.com>
+ <20220815181437.28127-2-nicolinc@nvidia.com>
+ <YxiRkm7qgQ4k+PIG@8bytes.org>
+ <Yxig+zfA2Pr4vk6K@nvidia.com>
+ <YxilZbRL0WBR97oi@8bytes.org>
+ <YxjQiVnpU0dr7SHC@nvidia.com>
+ <Yxnt9uQTmbqul5lf@8bytes.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yxnt9uQTmbqul5lf@8bytes.org>
+X-ClientProxiedBy: MN2PR04CA0014.namprd04.prod.outlook.com
+ (2603:10b6:208:d4::27) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH v3 0/9] iommu/amd: Add Generic IO Page Table Framework
- Support for v2 Page Table
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Vasant Hegde <vasant.hegde@amd.com>,
- iommu@lists.linux.dev, suravee.suthikulpanit@amd.com
-References: <20220825063939.8360-1-vasant.hegde@amd.com>
- <77d2ea43-9752-b5f3-78ef-8cdae944eee4@amd.com>
- <05f9784b-15b6-2a9b-2d9e-19e1430f74e2@arm.com> <YxintMDEmzSXJUl5@8bytes.org>
- <YxjMQpGYaHfsiuL+@nvidia.com> <YxneJ2RqaatKmoYT@8bytes.org>
- <c11bd109-65cd-39b3-6d7e-2b29208ca2ca@arm.com> <Yxnr1gBIGwdinIkr@nvidia.com>
- <YxnuYTrkC5yoHH84@8bytes.org> <c48211fe-00b1-e679-21b8-00a85bba599a@arm.com>
- <Yxn1IcWk+61ddiCn@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <Yxn1IcWk+61ddiCn@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4192:EE_|LV2PR12MB5943:EE_
+X-MS-Office365-Filtering-Correlation-Id: f4d7caab-751a-4bb2-77c3-08da91b53d6f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	/zD05OSIEdRUR4IkCWRwkgl8BMPaJIl9ErhfUPpSjqBDvEwzhxCgdSj6f2lOwdusVXu+zoF3GjjpcqVte5jsblUzqNk0ifCKFZUdniPgbYBD2pmAn8oniGMUXdCa+cwXdzilCT9ucfBS+AZctw2Pe/cb2E1uuUuFY0ZOMY/yg9Oe/RhoTsXa1s775ha0FIW9qWAi9Cd5Vic7TENvAdCXNI6VY9NgalCDXXvAzQ2aFw7PXGAcuXqDWHPk3iRDY1W5ecfYhVtfysT5g2NbxN8QZliV/5LG9LTFqoLrydrPA2izokmM7BrrEViGK2qosQc0js47O67HDwibk6Cin2T11HmWOoj07EB6Hmj/MraDzeZeMN9bPgFfK+XsvO8rqLtDGCBs2fkKE2GcnAQyNfp5T1aGeWVUd+3gNlFjhxu1H1ivokNJLU2ekj3ZEnkvgzlfRMfhPRyiWN7SRYHFgCHB+XoKmHSOT46JWrP/oOTEGUMQCHoIfVwlmS+fOaMSE+n5TPTItqXpRgGTD6qDKQ8q3PoOXuc7Kv2x8uO2fXrfUr/A7L158cPB8yFluK2qxv5QcMB+Iwbt8W2Vq2WcTdQLs+Qkd3A6sSZuCudbwuhPO35Ti2miXMoGim/dgLgY1/TwDlexmYHMoMfu/DcQKeajQcrR/5F8T67flC8dCB03p212flUQBFM526CcmVr6QECZQipZ/RjdjjoI1Uws+Q4VZVfccD/uK18R85xoRHCLqf3OTaIlObbK4TfawWsorZDt
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(136003)(39860400002)(346002)(366004)(396003)(86362001)(83380400001)(6506007)(6916009)(8676002)(316002)(478600001)(41300700001)(6486002)(186003)(2616005)(6512007)(26005)(7406005)(4326008)(7416002)(36756003)(5660300002)(2906002)(38100700002)(66476007)(66556008)(66946007)(8936002)(67856001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?rgHdQNvKytT8KAjagVLrkQzSXmc557KiaR+7oeg/yK6pqghbhQxw2c2txssU?=
+ =?us-ascii?Q?3+VLiAnjLtudsMQGahypFfA2gzFqNL5wvfknWF7g+oNS5SSgOQ+oGC2b0IFp?=
+ =?us-ascii?Q?JtKFhJVkDdNnlMG9ECrO036HYhtakKrHDx2Z/L86Doc8imhGv4ZXUFCZF1hd?=
+ =?us-ascii?Q?oZwmuLmivheuSjx1QFW3wb03Ns0KLUmLcpAHj/UXMyGON4ZwDarBdCBQjrB4?=
+ =?us-ascii?Q?OXHjbfub6x+KvTyaNymyVSU2HZF/Vw5tGV1s8s8CktIhDaufzCUl13aR9xnh?=
+ =?us-ascii?Q?1rFxO8zHaPlhKf6ZslxoVUoapVV8EGJAolCTTrVL+f0xzhAzXGgloiaFLz7U?=
+ =?us-ascii?Q?V+CbTfdEk3XIWecvhALALdA707ptW2aXgnJVvJZPU1dZ/JGA/QU67FhTgpY4?=
+ =?us-ascii?Q?Uy35aSaCbDDhLNaVASGPWdjV1dRCEiRSkHKcpievWmisHzF05mIbrAwZ9sGm?=
+ =?us-ascii?Q?bu30UTsMwdvMqFGUYO35hwPcpPRGqPRP6HUJqe6aE6gw7HQ2HhreroU49tjL?=
+ =?us-ascii?Q?HEssdJzeunJXRDRkOvM7UJ86WUELcu53T6XlCKyvj3ihNpD4lhFwzVktakSv?=
+ =?us-ascii?Q?i0uxjrw8nj0OAxe0bFiNDEMLEApw60FwWnXIa2of5t1gMHt1ik3uN4gJBIKj?=
+ =?us-ascii?Q?4mEaQa79VTlNqtapv3zM6374VdkvwDSptlai3txGLZB17DSBOoeYMT21zHr/?=
+ =?us-ascii?Q?fU/tAOLunEOzcV9crso6vbiVz/HVy5bnA7lnos15xRTqEaaXe6cMPK34vqrs?=
+ =?us-ascii?Q?tqPBBrQNwhwlMcA6LrRzIL1Tzgyg5mg8FbTU7uxCi1Xsi2/QwEz8ciVln3CK?=
+ =?us-ascii?Q?xwX4E1HpkovP73Wb7QqKBSC+ZVx0igzK9gkvIYI5CNy3ikt/DP5p5NTefwz9?=
+ =?us-ascii?Q?LmEy7MouknWYjkZ+jJCwxvzfUxpfTmr7zZNwXoydWwiGFOtqKJVHGX88I5Az?=
+ =?us-ascii?Q?VJX2Mlstn4GMALkVU7wpMwIG9CQTUc3iU0/IqN8ZCn+//Wn+OkTxgcwAzIen?=
+ =?us-ascii?Q?bQ6kk7L7CG815H80d0lz3yRn124PxVaVTGF22dM1qzIikO/IqlR7amJ6tWTf?=
+ =?us-ascii?Q?jahu7FKa2mJ1sULvdZHESpEvQQQcLjVwN/lI0ILfWdsagv7p79j+fzt+l6EF?=
+ =?us-ascii?Q?KkjjHffys/FGPjj3VY6/ypEpKh2HyHjVKbqnXW4CIuuZIuAeLnRP4sLOHlDr?=
+ =?us-ascii?Q?hUpIy/8LcFmaA4IC0kcRCu6IYBDJ0IDidtlyJMDu35dXUSdbCwdYyPbkdJ14?=
+ =?us-ascii?Q?bdFkXiYIm3/AMrzkHFOLrojoPkoSa4zOKdT7qPzKmtD+QHJk5XOTHpB0XPML?=
+ =?us-ascii?Q?+UHzUKhXS9bJjdusSti1GlY1JmF+S9Rg5MCDTowo6+TzQarcSmZO/+RCBadh?=
+ =?us-ascii?Q?EJuMQ11InmWSvEB2QyXbee4kgKeY/PbBrIVmKNMvj4stC3eSL7RozelVJoVo?=
+ =?us-ascii?Q?44XFIjdeEZnzdb09qPNGi/njjKZMs5NwMWb7/P9cYCbh5HE/YdByp81sZO4R?=
+ =?us-ascii?Q?XGP/SPYdsYe0NC1ckgCqwSjODinCei388QaHjjfPvUUuCCL1mti4yw3Oyxit?=
+ =?us-ascii?Q?05ioUHbQNV0+Gdtj0X7l0FouBL3t1B27UkTjPN6q?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f4d7caab-751a-4bb2-77c3-08da91b53d6f
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Sep 2022 16:14:43.4200
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: hov2lXuRoI9HiQ5O5iBgBzBu+ifG5c+sRk5XINO5fJejfnzolvke5urr8RtE47as
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5943
 
-On 2022-09-08 14:58, Jason Gunthorpe wrote:
-> On Thu, Sep 08, 2022 at 02:47:11PM +0100, Robin Murphy wrote:
->> On 2022-09-08 14:30, Joerg Roedel wrote:
->>> On Thu, Sep 08, 2022 at 10:19:18AM -0300, Jason Gunthorpe wrote:
->>>> What is the use case for having PASID nested under another level of
->>>> translation?
->>>
->>> Virtualization. Basically having a device access process address spaces
->>> inside a virtual machine. That got never put into code, but it was the
->>> rationale behind it.
->>
->> For SMMUv3 it did actually get as far as a prototype[1] before the iommufd
->> work interjected. I believe there are cloud vendors using those patches in
->> their deployments :O
+On Thu, Sep 08, 2022 at 03:28:22PM +0200, Joerg Roedel wrote:
+> > It has been 3 months since EMEDIUMTYPE was first proposed and 6
+> > iterations of the series, don't you think it is a bit late in the game
+> > to try to experiment with rust error handling idioms?
 > 
-> This is a bit different, this is just normal nested translation stuff.
+> If I am not mistaken, I am the person who gets blamed when crappy IOMMU
+> code is sent upstream. So it is also up to me to decide in which state
+> and how close to merging a given patch series is an whether it is
+> already 'late in the game'.
+
+I don't think the maintainer is the one who gets blamed. The community
+is responsible as a collective group for it's decisions. The
+maintainer is the leader of the community, responsible to foster it,
+and contributes their guidance, but doesn't bare an unlimited
+responsibility for what is merged.
+
+In a case like this I am the advocate, Nicolin wrote the patches,
+Kevin reviewed, Alex ack'd them - we as a group are ultimately
+responsible to repair, defend, or whatever is needed.
+
+> I am wondering if this can be solved by better defining what the return
+> codes mean and adjust the call-back functions to match the definition.
+> Something like:
 > 
-> AMD decision has effectively nested the PASID under the RID, while
-> typically nested translation nests PASID and RID equally under a
-> parent table.
+> 	-ENODEV : Device not mapped my an IOMMU
+> 	-EBUSY  : Device attached and domain can not be changed
+> 	-EINVAL : Device and domain are incompatible
+> 	...
 
-As far as I can tell from a quick scan of the AMD spec, it seems 
-effectively identical to SMMUv3's S1DSS=1 mode, while the "Guest I/O 
-protection" feature is the same as S1DSS=2, treating the RID as PASID 0. 
-SMMU has just always had both options.
+Yes, this was gone over in a side thread the pros/cons, so lets do
+it. Nicolin will come with something along these lines.
 
-> I can't think of a use case for nesting the PASID under the RID, in
-> every scenario this seems to be problematic. Glad to see it is undone
-> with the new HW.
-
-I assume you mean you can't think of a use-case for having the RID 
-bypass stage 1/guest translation, since "nesting the PASID under the 
-RID" is basically just how PASIDs work. AMD phrases it as "An upstream 
-packet with a valid PASID in the PASID TLP prefix contains a canonical 
-GVA; an upstream packet without a valid PASID in the PASID TLP prefix or 
-with no PASID TLP prefix and an untranslated address contains a GPA". So 
-GVA->GPA is per-PASID, then GPA->PA is for the entire RID, which is 
-exactly how SMMU stage 1/2 work as well. As far as I'm aware that's 
-standard for Intel too, until SIOV where they can carry the PASID 
-through to the second level also.
-
-The use-case is that you assume people care about performance, and thus 
-are only going to use translation *inside* a VM for PASID-based SVA 
-which can't be done any other way, and let guest-kernel-owned DMA 
-(without PASID) operate in GPA space to avoid the extra translation 
-latency, invalidation trap overheads, etc.
-
-Cheers,
-Robin.
+Thanks,
+Jason
