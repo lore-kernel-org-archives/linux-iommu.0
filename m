@@ -1,213 +1,108 @@
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA8A77C
-	for <iommu@lists.linux.dev>; Thu,  8 Sep 2022 02:41:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 716557C
+	for <iommu@lists.linux.dev>; Thu,  8 Sep 2022 06:13:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662604906; x=1694140906;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=27hkdOl8DwhNIfV+ukFLHPmMnApW8R146r5/5ZGJnLw=;
-  b=eV+3GXD83kds64EFpqtVMcycwZj1NvhEcQzfULDXzs3B1w6WawLH6zah
-   vaQbe5yhBZMljRSGBfSGu2kFNoZvuTFq0xkxOJWOVR3Z0cL0hhWOUtlAR
-   7yevgXSeFCQ3uN7zjoTzJmPAVSvX/0u7PVnYJA5FO9vLiePyTX3vxMujj
-   5Dx/s3RxZhDqKy4KHWogYqivZ8xFVVvXDzX44RMGsZK62Jkhyx+n7LpcU
-   rCtVxmY67ue/GLdWUPu+bZyjV7R/AfxtEP8/NuK1NDyhC7JKXdupwyA+d
-   x58+c7lOOzK2QNsuDXK1hZAkgioLfh0GCDhL1ps29t2vdt3FIgqCb2Q6x
+  t=1662617603; x=1694153603;
+  h=message-id:date:mime-version:cc:to:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=2IW4wWfVNHmVo/NiHYBGC//rjJKYPihI5USP8eEFU40=;
+  b=DITkfaPBeGqMDdiWajOtKxACAyw7PciopFvlL2HNHGJYGqiGxBwbxdkt
+   IYe1Hn/YQLofO09R5OlKIb+WFN3Z6S8GL0DuSEwKI1tHDabenon/14nZy
+   h2frb7EbXjssH5Z/fHe4jN7dBklekFd1iFAJCwH8krNdbLdlOoR7OFW5k
+   0a6Vu3e1A8Xhk1oEKlQIpA35vse6vcanNERTc04nhCoUSJMrKfkYeMp2O
+   Tnn/IRzIC/9H+nf1OnbYDNuU1gdJoPOlFuRI588NsZ9lwSFx0zVJYBhIe
+   l/owmIHiSv8kBCaW3UUOURBFz4MDEX4VCru8+1Cxbg+gVXRNB3Mcl5rrD
    w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10463"; a="277437699"
-X-IronPort-AV: E=Sophos;i="5.93,298,1654585200"; 
-   d="scan'208";a="277437699"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Sep 2022 19:41:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,298,1654585200"; 
-   d="scan'208";a="617307750"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga007.fm.intel.com with ESMTP; 07 Sep 2022 19:41:44 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: iommu@lists.linux.dev
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 1/1] iommu/vt-d: Make SVA and IOPF irrelevant
-Date: Thu,  8 Sep 2022 10:35:57 +0800
-Message-Id: <20220908023557.4582-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+X-IronPort-AV: E=McAfee;i="6500,9779,10463"; a="361041535"
+X-IronPort-AV: E=Sophos;i="5.93,299,1654585200"; 
+   d="scan'208";a="361041535"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Sep 2022 23:13:22 -0700
+X-IronPort-AV: E=Sophos;i="5.93,299,1654585200"; 
+   d="scan'208";a="943205673"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.209.62]) ([10.254.209.62])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Sep 2022 23:13:20 -0700
+Message-ID: <7f105bae-5def-e125-9391-c774d82ff455@linux.intel.com>
+Date: Thu, 8 Sep 2022 14:13:19 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: "Tian, Kevin" <kevin.tian@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+References: <20220718235325.3952426-1-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276287E75395A59865812978C919@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <8e970367-746e-0e74-ba39-e941fdbfdab7@linux.intel.com>
+ <BN9PR11MB52765FEEC0ED0EAB5D691FA38C959@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <c24bd222-9356-0564-414d-d54ca1e2b79b@linux.intel.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH 1/1] iommu/vt-d: Fix possible recursive locking in
+ intel_iommu_init()
+In-Reply-To: <c24bd222-9356-0564-414d-d54ca1e2b79b@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-The existing IOPF handling code relies on the per-PASID SVA data
-structures. It does not apply to scenarios other than SVA. This
-decouples the I/O page fault reporting and responding code from
-SVA related data structures so that the PRQ handling code could
-become generic.
+Hi Kevin,
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.h |  1 -
- drivers/iommu/intel/svm.c   | 65 +++++--------------------------------
- 2 files changed, 8 insertions(+), 58 deletions(-)
+On 2022/7/25 17:39, Baolu Lu wrote:
+> On 2022/7/25 15:40, Tian, Kevin wrote:
+>>> From: Baolu Lu <baolu.lu@linux.intel.com>
+>>> Sent: Sunday, July 24, 2022 11:00 AM
+>>>
+>>> Hi Kevin,
+>>>
+>>> On 2022/7/21 15:39, Tian, Kevin wrote:
+>>>>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>>>>> Sent: Tuesday, July 19, 2022 7:53 AM
+>>>>>
+>>>>> @@ -88,7 +89,8 @@ extern struct list_head dmar_drhd_units;
+>>>>>    static inline bool dmar_rcu_check(void)
+>>>>>    {
+>>>>>        return rwsem_is_locked(&dmar_global_lock) ||
+>>>>> -           system_state == SYSTEM_BOOTING;
+>>>>> +           system_state == SYSTEM_BOOTING ||
+>>>>> +           (IS_ENABLED(CONFIG_INTEL_IOMMU)
+>>>>> && !intel_iommu_enabled);
+>>>>>    }
+>>>>
+>>>> intel_iommu_enabled is 0 if CONFIG_INTEL_IOMMU is not set.
+>>>>
+>>>> same for other similar checks.
+>>>
+>>> Sorry that I didn't get your point. If CONFIG_INTEL_IOMMU is not set,
+>>> IS_ENABLED(CONFIG_INTEL_IOMMU) is 0. The adding check has no effect.
+>>> Did
+>>> I miss anything?
+>>>
+>>
+>> My point was that the check on CONFIG_INTEL_IOMMU is unnecessary.
+> 
+> Oh, if INTEL_IOMMU is not configured, the interrupt remapping could also
+> be supported, so we still need the rcu protection. We only relax the rcu
+> check when INTEL_IOMMU is configured, but not enabled yet.
 
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 08618d94fbac..175f5f559e86 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -757,7 +757,6 @@ struct intel_svm_dev {
- 	struct device *dev;
- 	struct intel_iommu *iommu;
- 	struct iommu_sva sva;
--	unsigned long prq_seq_number;
- 	u32 pasid;
- 	int users;
- 	u16 did;
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index b391e46e537e..23a62bead112 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -32,6 +32,7 @@ static void intel_svm_drain_prq(struct device *dev, u32 pasid);
- #define to_intel_svm_dev(handle) container_of(handle, struct intel_svm_dev, sva)
- 
- static DEFINE_XARRAY_ALLOC(pasid_private_array);
-+static unsigned long prq_seq_number;
- static int pasid_private_add(ioasid_t pasid, void *priv)
- {
- 	return xa_alloc(&pasid_private_array, &pasid, priv,
-@@ -48,23 +49,6 @@ static void *pasid_private_find(ioasid_t pasid)
- 	return xa_load(&pasid_private_array, pasid);
- }
- 
--static struct intel_svm_dev *
--svm_lookup_device_by_sid(struct intel_svm *svm, u16 sid)
--{
--	struct intel_svm_dev *sdev = NULL, *t;
--
--	rcu_read_lock();
--	list_for_each_entry_rcu(t, &svm->devs, list) {
--		if (t->sid == sid) {
--			sdev = t;
--			break;
--		}
--	}
--	rcu_read_unlock();
--
--	return sdev;
--}
--
- static struct intel_svm_dev *
- svm_lookup_device_by_dev(struct intel_svm *svm, struct device *dev)
- {
-@@ -689,11 +673,10 @@ static void handle_bad_prq_event(struct intel_iommu *iommu,
- 
- static irqreturn_t prq_event_thread(int irq, void *d)
- {
--	struct intel_svm_dev *sdev = NULL;
- 	struct intel_iommu *iommu = d;
--	struct intel_svm *svm = NULL;
- 	struct page_req_dsc *req;
- 	int head, tail, handled;
-+	struct pci_dev *pdev;
- 	u64 address;
- 
- 	/*
-@@ -713,8 +696,6 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 			pr_err("IOMMU: %s: Page request without PASID\n",
- 			       iommu->name);
- bad_req:
--			svm = NULL;
--			sdev = NULL;
- 			handle_bad_prq_event(iommu, req, QI_RESP_INVALID);
- 			goto prq_advance;
- 		}
-@@ -741,34 +722,15 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 		if (unlikely(req->lpig && !req->rd_req && !req->wr_req))
- 			goto prq_advance;
- 
--		if (!svm || svm->pasid != req->pasid) {
--			/*
--			 * It can't go away, because the driver is not permitted
--			 * to unbind the mm while any page faults are outstanding.
--			 */
--			svm = pasid_private_find(req->pasid);
--			if (IS_ERR_OR_NULL(svm))
--				goto bad_req;
--		}
--
--		if (!sdev || sdev->sid != req->rid) {
--			sdev = svm_lookup_device_by_sid(svm, req->rid);
--			if (!sdev)
--				goto bad_req;
--		}
--
--		sdev->prq_seq_number++;
--
--		/*
--		 * If prq is to be handled outside iommu driver via receiver of
--		 * the fault notifiers, we skip the page response here.
--		 */
--		if (intel_svm_prq_report(iommu, sdev->dev, req))
-+		pdev = pci_get_domain_bus_and_slot(iommu->segment,
-+						   PCI_BUS_NUM(req->rid),
-+						   req->rid & 0xff);
-+		if (!pdev || intel_svm_prq_report(iommu, &pdev->dev, req))
- 			handle_bad_prq_event(iommu, req, QI_RESP_INVALID);
- 
--		trace_prq_report(iommu, sdev->dev, req->qw_0, req->qw_1,
-+		trace_prq_report(iommu, &pdev->dev, req->qw_0, req->qw_1,
- 				 req->priv_data[0], req->priv_data[1],
--				 sdev->prq_seq_number);
-+				 prq_seq_number++);
- prq_advance:
- 		head = (head + sizeof(*req)) & PRQ_RING_MASK;
- 	}
-@@ -803,8 +765,6 @@ int intel_svm_page_response(struct device *dev,
- 			    struct iommu_page_response *msg)
- {
- 	struct iommu_fault_page_request *prm;
--	struct intel_svm_dev *sdev = NULL;
--	struct intel_svm *svm = NULL;
- 	struct intel_iommu *iommu;
- 	bool private_present;
- 	bool pasid_present;
-@@ -823,8 +783,6 @@ int intel_svm_page_response(struct device *dev,
- 	if (!msg || !evt)
- 		return -EINVAL;
- 
--	mutex_lock(&pasid_mutex);
--
- 	prm = &evt->fault.prm;
- 	sid = PCI_DEVID(bus, devfn);
- 	pasid_present = prm->flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
-@@ -841,12 +799,6 @@ int intel_svm_page_response(struct device *dev,
- 		goto out;
- 	}
- 
--	ret = pasid_to_svm_sdev(dev, prm->pasid, &svm, &sdev);
--	if (ret || !sdev) {
--		ret = -ENODEV;
--		goto out;
--	}
--
- 	/*
- 	 * Per VT-d spec. v3.0 ch7.7, system software must respond
- 	 * with page group response if private data is present (PDP)
-@@ -876,7 +828,6 @@ int intel_svm_page_response(struct device *dev,
- 		qi_submit_sync(iommu, &desc, 1, 0);
- 	}
- out:
--	mutex_unlock(&pasid_mutex);
- 	return ret;
- }
- 
--- 
-2.25.1
+The next stepping, we will tie INTEL_IOMMU and VT-d IRQ_REMAPPING
+together, that will make the VT-d software simpler.
 
+Joerg also proposed this in another discussion thread:
+
+https://lore.kernel.org/all/YrVPelnOi9nql%2F8C@8bytes.org/
+
+After that, we have no need to add above check anymore. As this is a
+quick fix for lockdep splat, we don't need to wait until that done.
+
+Does this work for you?
+
+Best regards,
+baolu
