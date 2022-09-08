@@ -1,206 +1,134 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B126B7C;
-	Thu,  8 Sep 2022 09:54:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662630864; x=1694166864;
-  h=from:to:cc:subject:date:message-id:references:
-   content-transfer-encoding:mime-version;
-  bh=tpSRmnERUU+bt5kNGshWiOS10AtbXQ84Q0iCOiE30GQ=;
-  b=MoMZx4hIm+zNXlmTCLv3zFLz0Bsdi7c9LQ24pq3RuDlBhoAthc+WvdYO
-   fHNcckiBykhv1aCKF7HVECOI2m/9leZlAhBsfgN3jRVYcBX21AhFu2Mul
-   OYlk+OTiT6zRMN7n7UmUPQs06zznP8isKrmb+3DO6cLXSjDm+ZdgJpltG
-   uxVEnglHQuKNWn2wgHvh6EoZxCD4r80VBlNWbIvgeMe9OmCr3gEHtt8ly
-   hVGVqi7zHZ+fHaQd/kwDPrsiph/NOSvOosi9rUj01FRyNBlfeEkTWEX+n
-   uJWeK0A3abqXqWlVIXQc4ZreSWR2vV23+fNn4UoePBehskrsBA/5Lo9X2
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10463"; a="383419956"
-X-IronPort-AV: E=Sophos;i="5.93,299,1654585200"; 
-   d="scan'208";a="383419956"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2022 02:54:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,299,1654585200"; 
-   d="scan'208";a="943278312"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmsmga005.fm.intel.com with ESMTP; 08 Sep 2022 02:54:21 -0700
-Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 8 Sep 2022 02:54:20 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 8 Sep 2022 02:54:20 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Thu, 8 Sep 2022 02:54:20 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.168)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B07A27C
+	for <iommu@lists.linux.dev>; Thu,  8 Sep 2022 09:57:32 +0000 (UTC)
+X-UUID: dfecda3f6a4f4f64a2c3ad5e0d3a3d58-20220908
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=8OtqXaIWZ6RVGIDA1jcSd7SZp685DXwkQtdgGcw5XKI=;
+	b=O1j+ChS6yh5Kuw+KbfWfNEtLF5sm7ahHdZA7wtTD79zcCH51TCexLP9EI0d0tRUK4eDptJd2fVfx4zOsHX+oKcKHIKCQkjcJ/jGlqaHYWCog6CghTYeSGw5As3H1Qy5GAHt81cXrCAsBWQWImoLlvhIDcCZm1OCnoMLBWzJSsLM=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.10,REQID:725512fc-0a6b-4524-8a93-396addfe392d,OB:0,L
+	OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,BULK:0,RULE:Release
+	_Ham,ACTION:release,TS:45
+X-CID-INFO: VERSION:1.1.10,REQID:725512fc-0a6b-4524-8a93-396addfe392d,OB:0,LOB
+	:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,BULK:0,RULE:Release_H
+	am,ACTION:release,TS:45
+X-CID-META: VersionHash:84eae18,CLOUDID:6990d0eb-2856-4fce-b125-09d4c7ebe045,C
+	OID:139ee92951a2,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+	RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: dfecda3f6a4f4f64a2c3ad5e0d3a3d58-20220908
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+	(envelope-from <chengci.xu@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 1198248949; Thu, 08 Sep 2022 17:57:20 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Thu, 8 Sep 2022 02:54:19 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JtK+Sa1H3L9MzabahBJm8JjkTUVVoVHJCjsTqglLO6vLpRiiEKGTo5CkJSP/tPuDa3ZKw/qno/35GwdO4jcIrooS2KVsVCbuEUj/jskoA9WPIgN0f5y1LUOuFY/cg5dyWV2i+e6DG1swbI5oTVGML433N6WLCQtTReNkPNCMBPWgLO6fKpST7hma9gMN3s7mgi4UQ26My6OJ7RFsWAMOrVYvWwN5F5JwLcwREfRAgSZEqKO6QZd4ohC+0Alqry9LCuMXfIeSz33uTM7H6vlLYrNXzIi4mVvyoyBjmEoJHp7f/lvgOxOjwh0VVXvYHd+f0btmzAO3wB36Jqo9pwCh6A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tjzgJJa1So+uPKxd1+fFSQQrE34WAQsAmphg7EiXR5o=;
- b=K+aQWyVzo4nWo7NA4qjzTwO39nnFYalMp40bykwU8VzKxsJxI9IuHZ3PGoVcWoEbu5zxI7ZZB/atk0ljAxO+M1FLgPKyulUbFcmZpjxjC/wmcYvsLFZDXL2OZ4wDgIS95d0K/cZRMtPm6ECH8KaOqAR+7mxj9Ny1sBVVr3DKbV53RuRRe69D5oy1yxTVjZX6kKQ3TRuehqS5Ndop/AB67ZiPrgdU+1ljL3GfWbrlQo5/oVllpEXQ1oAN4abMTaA0FTraJCbbx6fKG2WxAyqhyYq5l4E3zCAuIgyhMqSMdeRYjKAoGGzFUM6T04RaZQUwFbcFCZ7QuAYQwHKAJ4gW0g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by CH0PR11MB5362.namprd11.prod.outlook.com (2603:10b6:610:b9::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.12; Thu, 8 Sep
- 2022 09:54:18 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::a435:3eff:aa83:73d7]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::a435:3eff:aa83:73d7%5]) with mapi id 15.20.5612.014; Thu, 8 Sep 2022
- 09:54:18 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>
-CC: Nicolin Chen <nicolinc@nvidia.com>, "will@kernel.org" <will@kernel.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"marcan@marcan.st" <marcan@marcan.st>, "sven@svenpeter.dev"
-	<sven@svenpeter.dev>, "alyssa@rosenzweig.io" <alyssa@rosenzweig.io>,
-	"robdclark@gmail.com" <robdclark@gmail.com>, "dwmw2@infradead.org"
-	<dwmw2@infradead.org>, "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
-	"gerald.schaefer@linux.ibm.com" <gerald.schaefer@linux.ibm.com>,
-	"orsonzhai@gmail.com" <orsonzhai@gmail.com>, "baolin.wang@linux.alibaba.com"
-	<baolin.wang@linux.alibaba.com>, "zhang.lyra@gmail.com"
-	<zhang.lyra@gmail.com>, "thierry.reding@gmail.com"
-	<thierry.reding@gmail.com>, "vdumpa@nvidia.com" <vdumpa@nvidia.com>,
-	"jonathanh@nvidia.com" <jonathanh@nvidia.com>, "jean-philippe@linaro.org"
-	<jean-philippe@linaro.org>, "cohuck@redhat.com" <cohuck@redhat.com>,
-	"tglx@linutronix.de" <tglx@linutronix.de>,
-	"shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "thunder.leizhen@huawei.com"
-	<thunder.leizhen@huawei.com>, "christophe.jaillet@wanadoo.fr"
-	<christophe.jaillet@wanadoo.fr>, "yangyingliang@huawei.com"
-	<yangyingliang@huawei.com>, "jon@solid-run.com" <jon@solid-run.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"asahi@lists.linux.dev" <asahi@lists.linux.dev>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-arm-msm@vger.kernel.org"
-	<linux-arm-msm@vger.kernel.org>, "linux-s390@vger.kernel.org"
-	<linux-s390@vger.kernel.org>, "linux-tegra@vger.kernel.org"
-	<linux-tegra@vger.kernel.org>, "virtualization@lists.linux-foundation.org"
-	<virtualization@lists.linux-foundation.org>, "kvm@vger.kernel.org"
-	<kvm@vger.kernel.org>
-Subject: RE: [PATCH v6 1/5] iommu: Return -EMEDIUMTYPE for incompatible domain
- and device/group
-Thread-Topic: [PATCH v6 1/5] iommu: Return -EMEDIUMTYPE for incompatible
- domain and device/group
-Thread-Index: AQHYsNLwCXoHuSRk00qOEfaHbTrxlq3UDMUAgAASXoCAAAnsgIAALAkAgAAs1YCAAFRzgIAAh2pAgAARlrA=
-Date: Thu, 8 Sep 2022 09:54:18 +0000
-Message-ID: <BN9PR11MB5276F93044F557D1473D7FCF8C409@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20220815181437.28127-1-nicolinc@nvidia.com>
- <20220815181437.28127-2-nicolinc@nvidia.com> <YxiRkm7qgQ4k+PIG@8bytes.org>
- <Yxig+zfA2Pr4vk6K@nvidia.com> <9f91f187-2767-13f9-68a2-a5458b888f00@arm.com>
- <YxjOPo5FFqu2vE/g@nvidia.com> <0b466705-3a17-1bbc-7ef2-5adadc22d1ae@arm.com>
- <Yxk6sR4JiAAn3Jf5@nvidia.com> 
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|CH0PR11MB5362:EE_
-x-ms-office365-filtering-correlation-id: 3cbd2586-9ffe-410a-7c92-08da918018c6
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: mhgN23UQRMMUx7AKosSMMSYxCfWa+sFcRy6izuVFYe0si2Kvk/dgBSggDX3griPmCZ9UP9mln8/5uw08HzxL2jb9dsuWq9eTeyoqHVs2hYXKR5UHAxwhwJhlFYa8+TwpA9ew0GOq8f+y0FbGogXoRc3nOkk8lebGzXpIaN0olR76fgji9NlfNgv3c9BB42inRUUWV9+bTqtnTxcIlN5Guqn6iVAET0Ta2HOuRvQc7GuC0TebDWIc1LShfoMmkJ52VvL7MmAZOkevoLOBPPpy3eXGiEGTqcEr8OkB4Od8aQoaKvadT8SOsp5iy1ZklgHEzn5raXRNFyHIObdRRvVJ4TyRd6yQZfCZgEGPxPIqlXwShkDRaFRgz6stv562KoyfnjDncL9k1wOmlY37i1GI8ICczGFgqBq7nYQx7CkTeEojjA1gA0DbZkl2z9fWW/v+nM5J5GJpebnbB9d3CusC2BkBZQa1PTucqAv3OKgr6gR9DDrgxPNNICTvDaj0818jXScPd1IBElDQjLa9jtDM3ze3PCh2cC309KIFJWwqeFb6XXqM34Y6lPeMnDVP19Ec5rtb5HKyPUBmmfVPC8CDDrt5hQ3S6WDpD6AXgDdaxsE1ILYolHXeLDky/tHCmOvqW1fKIZWWyXxK246WUxn9esliF6MIIXfWb7E8373btiFMYxRX92GMcsxZNLOp21JvtcIJcmwjNwRYUxF5wavT7OQT7GO+adus8hbrD/XG5q5llOemsknmd/zpKY+Q6Jqdq1nYt6gLx5wRvcOWA9FGig==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(39860400002)(346002)(376002)(136003)(396003)(76116006)(33656002)(66446008)(316002)(5660300002)(66556008)(66946007)(66476007)(7416002)(7406005)(2906002)(64756008)(110136005)(8676002)(4326008)(8936002)(52536014)(54906003)(478600001)(41300700001)(9686003)(71200400001)(26005)(186003)(55016003)(86362001)(6506007)(82960400001)(7696005)(38100700002)(122000001)(38070700005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?vbUltzptcGoFvYsN2+2p2pRY/wXXOISp/08oj52GHKrVqN4MLUlufrzCaOWk?=
- =?us-ascii?Q?eSIsdBEaH3wBYs5WRb9MtFcMP9iFgvGmHogucJGy42DPwQj2of4WARcKfSAs?=
- =?us-ascii?Q?3N8YawqhYYHZlmiKTAqB/YBexwKJy9PO3Vif6c0tN82I6TsV3kiDIzrapnPe?=
- =?us-ascii?Q?y6R068M8TmegtEefs3/jTQy5QiGD3CHMaD32dPZAl2GKe9C48V30TuDmWr8f?=
- =?us-ascii?Q?ql2mcqqTyV1snmUn3P1xMv+mH1pnS8M0tdapt34iMzvd4jnlhLOjCBD+Bp0w?=
- =?us-ascii?Q?5eLWdXFNdy8ssnYOpBNNojHDRN8LYEDYYraO+aSUq+Tr4GaUi0vxFIGMuRtH?=
- =?us-ascii?Q?JKLmND5s37X+t4Ln/sw5QCx0po/3QA0xzqgqW3+NmOoBKX4cAeGGaTh5zOls?=
- =?us-ascii?Q?kSw3mo7X56FFgbEIWfZAxrjhJEwN2ZdL0gpTDCD+llPwafvmUzuSl/JSgPDL?=
- =?us-ascii?Q?i3tO1oaoU584DxVrhb6WvS8Sorj1zL6sYmuo0pBYt1RvTXcqvZwsc0f8YFgR?=
- =?us-ascii?Q?aApQ8a8W/VO7FNcgjzAwIZsvibSDfktm1tD5yq1oqv0puCGGhpQGlV1jj4xr?=
- =?us-ascii?Q?eImxI/p5v3XZd+lSNlmVnrIOkCTp7oIM+VQiJByIXgAdqmq6oTNAaMZmUz/T?=
- =?us-ascii?Q?H5FGbSUqNV6zyjsWDVfPMUVeMP7N/WhrcuEsvgmnJLfV1mOcAPq7747WuB6T?=
- =?us-ascii?Q?C1R4ZcwFoX9qC13rShZi4hD4S+q2KrlWptWyq4NfkzWrg7lRYhc2DLJcm6ZP?=
- =?us-ascii?Q?/wcW+LvcTx45z5r75R6iScv9V2DPl3gvf9vmvTJx/mnm6SO/Q/RUZikQwjbY?=
- =?us-ascii?Q?ijFdZEAo5DfeQAd3jPDkXiZOwAbQuytZbREf1+PqpwKH/G3Z2jsSabjk8Yu2?=
- =?us-ascii?Q?6vK0/LOZRhWeRW+jrAsMzwGsaa+AkA9kjK+r3BGArWPTXeJ+5i+iazClIK6o?=
- =?us-ascii?Q?yxokZzpMXxfaeQpvtvF1fLJnBwGZCy3NUWtNP7DixeFfi+wCPOZ7As/vmSdd?=
- =?us-ascii?Q?QAASyj8JerZY3FUbEz7R4iIL+yvALtyNRFETwSBR1dRst/5mPiAP1xvFNX9E?=
- =?us-ascii?Q?pPF9tmfU+mzpvDA1vHh4hA+W4bEGw2xmFPm6AHeGnZ4Y/9d6JLfF56jiYrES?=
- =?us-ascii?Q?Sdijucz803vcgvgg/yh3rB2Q7QGLbXFkPGJsvzZZKTclt6NPSgbAYapwCBTl?=
- =?us-ascii?Q?/x8GInI3m7m1tmuEeC/wSasNM/3dYschfNYkH+6bGUR/JlyRE7xCiISXKsZg?=
- =?us-ascii?Q?jxTpF7jA1gtChv3DNrT3olR92BUEFkdsxa6YxvJTQfpGh/L2Z4BbW3uQi5Ny?=
- =?us-ascii?Q?bldA04MXHZ46pPdcuVAZQIE94hQe4d5rZcUks5+iP3dgyZLvG+7PIeLezJBs?=
- =?us-ascii?Q?71HCeCNTLPbmbMopAnC7CedYKK5bEEVQndLWxBzrcydVygGPHZ+C9h1P2W3z?=
- =?us-ascii?Q?olF+kHsoEu98V8O6QLZfGuQuS31rtdYvo+c1lA9Zk1xBzH8xfrzjAJY1y7Yl?=
- =?us-ascii?Q?7C745igeTv7gFm/r5O+4QAj11wuOpljdmh1KCSXDrvkwwOi/12YqrTSmB0Qd?=
- =?us-ascii?Q?h7VhkhzHkTUJEnjJ3OgDCkUQ+A4WfsOtJQlVnaBI?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ 15.2.792.15; Thu, 8 Sep 2022 17:57:20 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
+ Transport; Thu, 8 Sep 2022 17:57:19 +0800
+Message-ID: <d3ed0ed813270285cfd1319368d8943668ba3c4b.camel@mediatek.com>
+Subject: Re: [PATCH v2 3/3] iommu/mediatek: Add MT8188 IOMMU Support
+From: Chengci.Xu <chengci.xu@mediatek.com>
+To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	"Yong Wu" <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
+	<robh+dt@kernel.org>, Krzysztof Kozlowski
+	<krzysztof.kozlowski+dt@linaro.org>, Matthias Brugger
+	<matthias.bgg@gmail.com>
+CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>,
+	<Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date: Thu, 8 Sep 2022 17:57:19 +0800
+In-Reply-To: <c6853021-e7ef-3078-9c9e-f0c6b56e566d@collabora.com>
+References: <20220831125502.7818-1-chengci.xu@mediatek.com>
+	 <20220831125502.7818-4-chengci.xu@mediatek.com>
+	 <c6853021-e7ef-3078-9c9e-f0c6b56e566d@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3cbd2586-9ffe-410a-7c92-08da918018c6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Sep 2022 09:54:18.3380
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: zTQxhXPWlrFP2/iuWcO0QW7T8BO/Xaca67FRuOEf60Awbp3zUCstUAfvreFxjpUxgl5et1YFq8zjrqgWzwqaJA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR11MB5362
-X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: 7bit
 
-> From: Tian, Kevin
-> Sent: Thursday, September 8, 2022 5:31 PM
-> > This mixture of error codes is the basic reason why a new code was
-> > used, because none of the existing codes are used with any
-> > consistency.
->=20
-> btw I saw the policy for -EBUSY is also not consistent in this series.
->=20
-> while it's correct to change -EBUSY to -EMEDIUMTYPE for omap, assuming
-> that retrying another fresh domain for the said device should work:
->=20
-> 	if (omap_domain->dev) {
-> -		dev_err(dev, "iommu domain is already attached\n");
-> -		ret =3D -EBUSY;
-> +		ret =3D -EMEDIUMTYPE;
->  		goto out;
->  	}
->=20
-> the change in tegra-gart doesn't sound correct:
->=20
-> 	if (gart->active_domain && gart->active_domain !=3D domain) {
-> -		ret =3D -EBUSY;
-> +		ret =3D -EMEDIUMTYPE;
->=20
-> one device cannot be attached to two domains. This fact doesn't change
-> no matter how many domains are tried. In concept this check is
-> redundant and should have been done by iommu core, but obviously we
-> didn't pay attention to what -EBUSY actually represents in this path.
->=20
+On Fri, 2022-09-02 at 11:04 +0200, AngeloGioacchino Del Regno wrote:
+> Il 31/08/22 14:55, Chengci.Xu ha scritto:
+> > MT8188 has 3 IOMMU, containing 2 MM IOMMUs, one is for vdo, the
+> > other
+> > is for vpp. and 1 INFRA IOMMU.
+> > 
+> > Signed-off-by: Chengci.Xu <chengci.xu@mediatek.com>
+> > ---
+> >   drivers/iommu/mtk_iommu.c | 48
+> > +++++++++++++++++++++++++++++++++++++++
+> >   1 file changed, 48 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> > index 6fe780783ec8..98c2eae5229e 100644
+> > --- a/drivers/iommu/mtk_iommu.c
+> > +++ b/drivers/iommu/mtk_iommu.c
+> > @@ -164,6 +164,7 @@ enum mtk_iommu_plat {
+> >   	M4U_MT8173,
+> >   	M4U_MT8183,
+> >   	M4U_MT8186,
+> > +	M4U_MT8188,
+> >   	M4U_MT8192,
+> >   	M4U_MT8195,
+> >   };
+> > @@ -1479,6 +1480,50 @@ static const struct mtk_iommu_plat_data
+> > mt8186_data_mm = {
+> >   	.iova_region_nr = ARRAY_SIZE(mt8192_multi_dom),
+> >   };
+> >   
+> > +static const struct mtk_iommu_plat_data mt8188_data_infra = {
+> > +	.m4u_plat	  = M4U_MT8188,
+> > +	.flags            = WR_THROT_EN | DCM_DISABLE | STD_AXI_MODE |
+> > PM_CLK_AO |
+> > +			    MTK_IOMMU_TYPE_INFRA |
+> > IFA_IOMMU_PCIE_SUPPORT |
+> > +			    CFG_IFA_MASTER_IN_ATF,
+> > +	.pericfg_comp_str = "mediatek,mt8188-pericfg_ao",
+> 
+> pericfg_comp_str is used only for IOMMU enable from Linux, but MT8188
+> enables it
+> with a SMC command, so this is unused.
+> 
+> Please drop it.
 
-oops. Above is actually a right retry condition. gart is iommu instead of
-device. So in concept retrying gart->active_domain for the device could
-work.
+Thanks for your review.
 
-So please ignore this comment.
+Yes. For MT8188, pericfg_comp_str is unused and should be dropped.
+But deleting it simply will lead to INFRA IOMMU probe fail because
+following code flow.
+
+	line 1236:
+		p = data->plat_data->pericfg_comp_str;
+		data->pericfg = syscon_regmap_lookup_by_compatible(p);
+		if (IS_ERR(data->pericfg)) {
+			ret = PTR_ERR(data->pericfg);
+			goto out_runtime_disable;
+		}
+
+So we will update probe flow(patch 2/3) and then drop it(patch 3/3) in
+the next version. 
+
+> 
+> > +	.inv_sel_reg      = REG_MMU_INV_SEL_GEN2,
+> > +	.banks_num	  = 1,
+> > +	.banks_enable     = {true},
+> > +	.iova_region      = single_domain,
+> > +	.iova_region_nr   = ARRAY_SIZE(single_domain),
+> > +};
+> > +
+> 
+> Regards,
+> Angelo
+> 
+> 
+
