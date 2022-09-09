@@ -1,201 +1,126 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2060.outbound.protection.outlook.com [40.107.220.60])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AF6C808;
-	Fri,  9 Sep 2022 12:07:36 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=B00nukpiaouWrESuHMzlTQWIt8LAnlN00myVRFiQ8tqe1MdMWvmym4Hc01v0B0+SUeRas1dusZam+/k4dpeKsSDGYRm3HvL4Q80i55J1ljljJpCSjWBtLfY+NW75xIDUYxs+h7pkzudUCS0KbTHb6mBRfaOtoVvSDjQI1qFTuei1ez1Efl7sb10eVVkw60G5ZT+wdO7igEWaviMFYr19ssXS5Zlg0tz7Eww+t5Qb8bTEP56+u+IDaYwUu4OYAQaatudrOKmXM5JecNcfFafpsbPUuJCtPR+Oyy7GtDUeK+zEjsJB6GAUduWRkB0COu0qk4SKFqikyo/v2RGqI3cTmA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TwZ+ncAsGDvDTUcaffwI8N5fKJsCdk1RcYxGsoIN4Io=;
- b=UBjnTngFuvO7+vy6Z3WB0x+Bt7j4hZ4CkB8pQRJPicp0T/uC7TvkTiT+CxOCINdXrpX6yRhM7v+HqnDoARs6SzvI0QzqUiZe61+s7lKObWx/L0MIaTD3Ipw9hDohiMQaVgwt9afupDG8FnMFjmLCbqQN6IcVZhQQ8t4tRAOzc2doA8/fy03mT7yx0w5SBOA58fi3WjB6VvGz3QgAOExOtx+S0a1R/Va6tq7tR8gzP7BR6hetKuzW6iGVJGvANnmzZXQPEIsLUocZwmt8DOLvMsnXWR8+hzMe4LgBqGrVrMTW4wcdDasjpGVQGNZ1jB7IaJkm/Rk4KDC5Om3GC4CXHg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TwZ+ncAsGDvDTUcaffwI8N5fKJsCdk1RcYxGsoIN4Io=;
- b=lyTusMJeJJYkY9WkkZBf+T0IyGq299DhhzkYbR31NtOpkO2BLgqYQwQ20cqBF5m1SuVTa4qDTnXUBLcf1DNGmNuwykzvHrQOwUqCkqytJH2E0tgDRLz76ijZJqJVnsON6EwcyoBRf82xapB5iq05fe3vt3T1DHzmZKVHVn9PGli5BrJN5GOAzstzC755yMcf2sG67QdAbOkuc9YkmAYu7h31kYMUU9ewl6zfX9BVNv+TR6q81eudhDXLP7VNsVlFH1ixzvabCB0BVPgoe7/4nWOI1ay9wog9P3sHfrF7px8W0t1dpgYYBcN8OTt/Ybrbe5vkZENd078MmqoZzm8Iug==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by SJ1PR12MB6243.namprd12.prod.outlook.com (2603:10b6:a03:456::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Fri, 9 Sep
- 2022 12:07:34 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::462:7fe:f04f:d0d5]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::462:7fe:f04f:d0d5%7]) with mapi id 15.20.5612.019; Fri, 9 Sep 2022
- 12:07:34 +0000
-Date: Fri, 9 Sep 2022 09:07:33 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
-	"will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"marcan@marcan.st" <marcan@marcan.st>,
-	"sven@svenpeter.dev" <sven@svenpeter.dev>,
-	"alyssa@rosenzweig.io" <alyssa@rosenzweig.io>,
-	"robdclark@gmail.com" <robdclark@gmail.com>,
-	"dwmw2@infradead.org" <dwmw2@infradead.org>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
-	"gerald.schaefer@linux.ibm.com" <gerald.schaefer@linux.ibm.com>,
-	"orsonzhai@gmail.com" <orsonzhai@gmail.com>,
-	"baolin.wang@linux.alibaba.com" <baolin.wang@linux.alibaba.com>,
-	"zhang.lyra@gmail.com" <zhang.lyra@gmail.com>,
-	"thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-	"vdumpa@nvidia.com" <vdumpa@nvidia.com>,
-	"jonathanh@nvidia.com" <jonathanh@nvidia.com>,
-	"jean-philippe@linaro.org" <jean-philippe@linaro.org>,
-	"cohuck@redhat.com" <cohuck@redhat.com>,
-	"tglx@linutronix.de" <tglx@linutronix.de>,
-	"shameerali.kolothum.thodi@huawei.com" <shameerali.kolothum.thodi@huawei.com>,
-	"thunder.leizhen@huawei.com" <thunder.leizhen@huawei.com>,
-	"christophe.jaillet@wanadoo.fr" <christophe.jaillet@wanadoo.fr>,
-	"yangyingliang@huawei.com" <yangyingliang@huawei.com>,
-	"jon@solid-run.com" <jon@solid-run.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"asahi@lists.linux.dev" <asahi@lists.linux.dev>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
-	"linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-	"virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>
-Subject: Re: [PATCH v6 1/5] iommu: Return -EMEDIUMTYPE for incompatible
- domain and device/group
-Message-ID: <YxsshXKlidq8WgT+@nvidia.com>
-References: <20220815181437.28127-1-nicolinc@nvidia.com>
- <20220815181437.28127-2-nicolinc@nvidia.com>
- <YxiRkm7qgQ4k+PIG@8bytes.org>
- <Yxig+zfA2Pr4vk6K@nvidia.com>
- <YxilZbRL0WBR97oi@8bytes.org>
- <YxjQiVnpU0dr7SHC@nvidia.com>
- <Yxnt9uQTmbqul5lf@8bytes.org>
- <YxoU8lw+qIw9woRL@nvidia.com>
- <YxqwQ+3OICPdEtk0@Asurada-Nvidia>
- <BN9PR11MB5276D4CDC551DEA5962F9A178C439@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276D4CDC551DEA5962F9A178C439@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: MN2PR06CA0005.namprd06.prod.outlook.com
- (2603:10b6:208:23d::10) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72927632
+	for <iommu@lists.linux.dev>; Fri,  9 Sep 2022 12:49:58 +0000 (UTC)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 289Cg6wb027443;
+	Fri, 9 Sep 2022 12:49:44 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=zjj65OqKhotopLjAkLfbs1w4hoRX5Zb4/pyBQbnUohw=;
+ b=MreDbMX7AB4ND1EBuzMJH5LHgQefur7xB/aLA0iZ1Sw+kCTrNizD9vbMLMdB40wcEKCS
+ rK7PfuoByQuR3YRMB8zVrBpxaLKBm0XTiYHL3wXcQ4wQJBfaM3ZFk9Hl49B9hGt3my83
+ VmI1VhKvSMdLEoerMdnTXWYuTY7A/z5JsC3+R7Ziv6M9aOGraU8s5qVbMWwkstnSIsbC
+ ij+bf8eqosAph3ideZ57j6mRjq08QgpT8+KwfraUGNhVdOqFrFfO0mQO0UIpDgKma4sw
+ h2wgC9IW7j54aG74U06uB8kY696YD5c0TwjP3J/XLex26mz0ZPm0r8Poybrb5MMHE8Wh Cg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jg5qcg839-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 09 Sep 2022 12:49:44 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 289Ch3ja001197;
+	Fri, 9 Sep 2022 12:49:44 GMT
+Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jg5qcg82f-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 09 Sep 2022 12:49:44 +0000
+Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
+	by ppma05wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 289CKRot029638;
+	Fri, 9 Sep 2022 12:49:42 GMT
+Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
+	by ppma05wdc.us.ibm.com with ESMTP id 3jbxjaevev-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 09 Sep 2022 12:49:42 +0000
+Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
+	by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 289Cnfvh42467596
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 9 Sep 2022 12:49:41 GMT
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id A873C6E056;
+	Fri,  9 Sep 2022 12:49:41 +0000 (GMT)
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 90CB56E04E;
+	Fri,  9 Sep 2022 12:49:40 +0000 (GMT)
+Received: from [9.160.125.58] (unknown [9.160.125.58])
+	by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
+	Fri,  9 Sep 2022 12:49:40 +0000 (GMT)
+Message-ID: <28f45073-0047-3f8a-c79f-6dd6cc1d4117@linux.ibm.com>
+Date: Fri, 9 Sep 2022 08:49:40 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Subject: Re: [PATCH 0/4] Fix splats releated to using the iommu_group after
+ destroying devices
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Cornelia Huck <cohuck@redhat.com>, iommu@lists.linux.dev,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        Will Deacon <will@kernel.org>
+Cc: Qian Cai <cai@lca.pw>, Joerg Roedel <jroedel@suse.de>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>
+References: <0-v1-ef00ffecea52+2cb-iommu_group_lifetime_jgg@nvidia.com>
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <0-v1-ef00ffecea52+2cb-iommu_group_lifetime_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: bsxPznhpLKbKUh_qqVtx_sOqa5xr7DpS
+X-Proofpoint-GUID: RKYwAk6a2-p0o09e7kIVDamCgg1sh1mV
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4192:EE_|SJ1PR12MB6243:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7ce2790d-faf5-4d2b-4687-08da925be108
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	hpGzPH5dsGB1NiFKb/pVoxkD188JQVUUexvePazbBaJAppZCylyIh9BPnTcdemv2Ea2zEfaFkAX6Wy0EH20kN3bvAsGd+PEm04atBgVQHiX7D0mBynvC59WUe8ZPqyPImaEnXEq31DjCjqEQBj/qJYw0CJmcfvNygnxpXXi2o676lmdIJdly6EBlkQ0p3he0RlNd9iadf4fkapTbgtuotj0nne5eTfyxrJ5qM6ke9rsojIUm0JEYrSAXax31wJeKvbqVCslOp/c9LjkLcXPX2i+ciUignKQEiAMkOq/CvRjRKKVBFTJdZbjN80u1E4l3F9/Mlj3P0xFW5GsXIWS1Oq32qY67LsAL/Kesqd1llYU4n44ktcgUMnckaVZiOcR6OhrtN772nLFhkQLeTFp1D+54FKo7t34vHYo1OllRShjjwcGhiZcSmP76xraZh++iZ+9laH9+AfdfDUePgDNAC2PAyOma/jMvc1wt7pdOk58w49Z746WtwDAY/Uo1k/wFoGhI8Nid+75pnDYAdffQcGGLzDTe3E2uPdTQB6TfYBlxzMDjU+RvvxR8xBbsUMrgLNWrRIbbC88QrJY/gh1GcZ8XcxgFoLxICm4+t37Hb5netBUPakFe/kBr+h6ptSyXYgQfA0nAlK/ZL4qukK+BhShQIyBNqsQrzx7GY5CwpnThS5NYWfWdKPGCGawvvc60bCoBVBF4p8zto6Qa0iFdqg==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(39860400002)(376002)(136003)(366004)(6916009)(54906003)(6506007)(316002)(41300700001)(478600001)(6486002)(38100700002)(26005)(86362001)(6512007)(186003)(36756003)(5660300002)(7416002)(8936002)(4326008)(2906002)(7406005)(66946007)(66476007)(66556008)(8676002)(2616005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?wswE3pIfxZbTKsUzF+6sst4J3x3rNGDr8FTpfVb9U/VmHOwNneoqbNxyru4t?=
- =?us-ascii?Q?3RLj4Vbom3kzX5HVGWHPcmV1zHaig/T4beLLfUqupXvO/0TIykYROZuOHBMg?=
- =?us-ascii?Q?GkGBmaG6HuwNGwhApYDf45zBQpUf00ukMHQHpX7XywZ/6gwkLW3/UYUolRp1?=
- =?us-ascii?Q?57bcqWFaAc3N6UpKc9orQ9PtyYuogOOM77aLjI/m1whWdJQr6/h9ANGpQ7gS?=
- =?us-ascii?Q?Ae8zO+7RK6uqZJwkTEHpiUzpvfD6VaXSVWlmBqx7w/dkJHIpDxQL9x6/Jek/?=
- =?us-ascii?Q?D3X3bikisoHhtVBoB9M44AvgZOi+EQO4KiE6QDlpldERqxrM4HXM+PWtoAxR?=
- =?us-ascii?Q?j+GIjfTOAokzjHUOKTIb9ue0m6YtQyoYwd+JcFX1+1jVCP8o+AzhacoOWt0c?=
- =?us-ascii?Q?xZ69iqoQWO7LaiIVwxJKrP5tBFNAd4xVsdw0Ym6UZWX3GliSKAgbV9S92LIT?=
- =?us-ascii?Q?ZKi3NJezfN6X898WCTyLv6+nz8MJWnStkz8m9hi5uM0QDzkx0YArCH61T5PV?=
- =?us-ascii?Q?nlLqMKeQ3s5ab8T+GIKMwHbtike8NNsb34zfeJU1vkJ8LnhxmCM7YU7Camsz?=
- =?us-ascii?Q?QUACud74qtLAkewM2nWXySkgsJR9utPOR6nLxHYn3HVznnr7pxPJQKrUu/CB?=
- =?us-ascii?Q?jLpdk0AmDx0se/0TSXvDyxsmllEAFEqpyr+3rAhgbUQgU/unnmq5do00tbL8?=
- =?us-ascii?Q?9sqLuOVCdnU+snB60z0alY8alKmYTrYU4nv2r+KVHOP7agF0VQMm/7FpmE8A?=
- =?us-ascii?Q?WAz69r6YHU36LTKZ4YfkyguvFmw+XsDHcJ6YWELfDuD/kfrpPN2GrhqOlIre?=
- =?us-ascii?Q?xLYhrpTTO1JS9BNriz1PIkuP1uG7dblzgHAd4EuHMwZzJb7QeRNhVPwHev4L?=
- =?us-ascii?Q?TeTvPnx9b0V1hVt6Zlz1zC8Bb1q5wn2oZLpqdHb1wLa1eblzGA3jrIOaYmZ9?=
- =?us-ascii?Q?tZD9fhJu1IEi4HuOCp+fS+R1fPdwZnsGOu/+XRdAJfMOVlBRC6zixeHf1QFg?=
- =?us-ascii?Q?IXJFolor94PRbws/Yy7bUDfcCbMHO3OEw+WdNcHseCh7xSYkaF/h5FB9+Kv6?=
- =?us-ascii?Q?uZJNQAusRqT+vaa0bdiCiB5LsfE2ILTeT9cZ0+GF5twGs91D8vdUiFcZ6DNx?=
- =?us-ascii?Q?ZhCbpu11Dzps9oUeSaL19LwtJtiHhUDn0lLHN6fq3A9z0OUfAoYxCYVYNMDZ?=
- =?us-ascii?Q?GrKnmQm/yIYKwmgEME5M56jMLK8gBS1sbdl7j1CBULUwJTBu3yztMdBt9/qB?=
- =?us-ascii?Q?wr7PU8wIC8Z//+Do0BnWNm2CmuManhc3aTFzEw8P95XigYws1aqOfhEv9FRs?=
- =?us-ascii?Q?m3WFcbca5DKwPz7cLTEiG4NyOUnEleIeZdrn65Sqr8b6Yo0tDa02p99m9yMF?=
- =?us-ascii?Q?SZCpX83HleE+jfrnfmIpppLuWX6NhrY/CMoP1XTjFv9ALq2Tc68v5RsmPcZh?=
- =?us-ascii?Q?LOfIVPn1N/ev1/rkRFDiLxdUFG+9thr7rzESK26K/KXWuo31iwRKgy7LrYsO?=
- =?us-ascii?Q?8QPyeqDpTlvqbqqIG9oLgU6rAUfXmDiB9CFQjAnAK8eftMNzNuib72e+Qnu+?=
- =?us-ascii?Q?HVyqWO0yzAmnkLnVA49Q6cyz3PFFlMl4c45qR1Ms?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7ce2790d-faf5-4d2b-4687-08da925be108
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Sep 2022 12:07:34.3953
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ejCYihcDn46SxiPdi4juY2L32J5j6+PYHbbkbIWsrp7LTbDa8hyspCKJZk2OgCl2
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6243
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-09-09_06,2022-09-09_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
+ suspectscore=0 phishscore=0 spamscore=0 clxscore=1011 lowpriorityscore=0
+ adultscore=0 malwarescore=0 mlxlogscore=999 priorityscore=1501 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
+ definitions=main-2209090043
 
-On Fri, Sep 09, 2022 at 05:00:16AM +0000, Tian, Kevin wrote:
-
-> > I have started this effort by combining this list and the one from
-> > the side thread:
-> > 
-> > @@ -266,6 +266,13 @@ struct iommu_ops {
-> >  /**
-> >   * struct iommu_domain_ops - domain specific operations
-> >   * @attach_dev: attach an iommu domain to a device
-> > + *              Rules of its return errno:
-> > + *               ENOMEM  - Out of memory
-> > + *               EINVAL  - Device and domain are incompatible
-> > + *               EBUSY   - Device is attached to a domain and cannot be changed
+On 9/8/22 2:44 PM, Jason Gunthorpe wrote:
+> The basic issue is that the iommu_group is being used by VFIO after all
+> the device drivers have been removed.
 > 
-> With this definition then probably @attach_dev should not return -EBUSY
-> at all given it's already checked in the start of __iommu_attach_group():
-
-I think the EBUSY would be only for non-conforming drivers. The API
-semantic is you can always attach a new domain and replace an existing
-domain.
-
-So things like AMD's "can't do anything but idenitity on RID when
-PASID enabled" would be -EBUSY.
-
-Seems right that it should be rare though.
-
-> > + *               ENODEV  - Device or domain is messed up: device is not mapped
-> > + *                         to an IOMMU, no domain can attach, and etc.
+> In part this is caused by bad logic inside the iommu core that doesn't
+> sequence removing the device from the group properly, and in another part
+> this is bad logic in VFIO continuing to use device->iommu_group after all
+> VFIO device drivers have been removed.
 > 
-> if domain is messed up then should return -EINVAL given using another domain
-> might just work. IMHO here -ENODEV should only cover device specific problems
-> preventing this device from being attached to by any domain.
-
-Agree
- 
-> > + *              <others> - Same behavior as ENODEV, use is discouraged
+> Fix both situations. Either fix alone should fix the bug reported, but
+> both together bring a nice robust design to this area.
 > 
-> didn't get the "Same behavior" part. Does it suggest all other errnos should
-> be converted to ENODEV?
+> This is a followup from this thread:
+> 
+> https://lore.kernel.org/kvm/20220831201236.77595-1-mjrosato@linux.ibm.com/
+> 
+> Matthew confirmed an earlier version of the series solved the issue, it
+> would be best if he would test this as well to confirm the various changes
+> are still OK.
 
-It says all other errnos should be treated as ENODEV by the caller but
-forwarded to userspace for further detail.
+FYI I've been running this series (+ the incremental to patch 4 you mentioned) against my original repro scenario in a loop overnight, looks good.
 
-> btw what about -ENOSPC? It's sane to allocate some resource in the attach
-> path while the resource might be not available, e.g.:
+> 
+> The iommu patch is independent of the other patches, it can go through the
+> iommu rc tree.
+> 
+> Jason Gunthorpe (4):
+>   vfio: Simplify vfio_create_group()
+>   vfio: Move the sanity check of the group to vfio_create_group()
+>   vfio: Follow a strict lifetime for struct iommu_group *
+>   iommu: Fix ordering of iommu_release_device()
+> 
+>  drivers/iommu/iommu.c    |  36 ++++++--
+>  drivers/vfio/vfio_main.c | 172 +++++++++++++++++++++------------------
+>  2 files changed, 120 insertions(+), 88 deletions(-)
+> 
+> 
+> base-commit: 245898eb9275ce31942cff95d0bdc7412ad3d589
 
-Seems resaonable that it is similar to ENOMEM
-
-> As discussed in a side thread a note might be added to exempt calling
-> kAPI outside of the iommu driver. 
-
-Sadly, not really.. The driver is responsible to santize this if it is
-relevant. It is the main downside of this approach.
-
-Jason
