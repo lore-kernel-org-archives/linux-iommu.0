@@ -1,154 +1,105 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2065.outbound.protection.outlook.com [40.107.93.65])
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7BF3622;
-	Fri,  9 Sep 2022 03:17:30 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YcVaHVn+DMuS+GQpcw0YEoKQnB/sJkf8kTrJ9ebXL2KNF1hLlRK1CkiJwBonfY6gAMG8HI+WffH5KxMbkWYLTdA8oo5QBbmV0YRm1kgW7kF5bSPyWwifsetin6xfyyAON7jVome8VjbM/hNfVzkhdIhTNp1NBNg/3bgJFSjGF0mhC4U8inHbbgre8WtpBk0wwDR3vQC0MP3GEhbKEbbPKLMspoZBGmGkrT6cqTtbUMKmtSkoEbbNEYEraB39ZDm2EEWoghi5wSfovVn/G8H6i+rucNL7PdX6F+SXrvfOD+fCVJaqJxgd/8wIxUJXnJLlPM8vqtSENupN0L2Pf7SW0w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cWi81IMdZwicw2LJEyRXdtA41SF9WN6zcwiHFsu0pD8=;
- b=Xmgo0zR1WbCVhvU4pgAA52g93AAvbuxK3Wr61VFF0wyAP9LriCrXCtuMYLDCl6++Lg5DLkV39U5X+m9kz3oD8EHJKcjTcwBz2vwh60+csf1x0QQwamJ+GKVrRGXfzNyTgH+QnEByzqbsjU6Mo0gsoWkf5TDK19YTKiwK6CUdtf/JssqpKyZrZXgrdprA8nrVPFzSw6io7J1lsmDw/xWTLFUvT0jY2DQsUuvNGs4QUduEHbLEh7meJ4sZqORa+9D9PP1eC57okFGx+G1TfJ57Yp6QZeifsRsBz7oQ+1zPfToZfXCWhAgc8SSdbcRJn3w7P5BLVCF5YsZRW0cPC+1TmA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=svenpeter.dev smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cWi81IMdZwicw2LJEyRXdtA41SF9WN6zcwiHFsu0pD8=;
- b=WGBGQ4+X6CBSSNxM4LEt46hpfdBPOnMr1IV/+HGwFUHY/uWJMNtRPYtmEuVWHuHo/xNhzUY5DiBASlibrIchBoj/jtKexYCpicpQjhHocIL35NFwwXIVpJVPCa1wxBLE9jtvVZpc+04BUd/pipKfU6wQtB/euUVBH0eGfOI+0WUs377ZPxhwxk9jK2C0miM7pkTlZRGS1JVBesDN/8PrAetkmsp7PP1fXPRpVtfSBWIc9Ck6Oec1yxMOOrv/3eSiYv/Be72ZsjzHdPC1SyR2gyUW2rPz+e1UDeMzg0QqMu1ADuGZm0rstzOqRwuvcO9xmrHSOMKYQcqYVLXVVolOCw==
-Received: from MW4PR03CA0032.namprd03.prod.outlook.com (2603:10b6:303:8e::7)
- by SJ1PR12MB6265.namprd12.prod.outlook.com (2603:10b6:a03:458::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.14; Fri, 9 Sep
- 2022 03:17:28 +0000
-Received: from CO1NAM11FT101.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8e:cafe::f9) by MW4PR03CA0032.outlook.office365.com
- (2603:10b6:303:8e::7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.14 via Frontend
- Transport; Fri, 9 Sep 2022 03:17:28 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.234) by
- CO1NAM11FT101.mail.protection.outlook.com (10.13.175.164) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5612.13 via Frontend Transport; Fri, 9 Sep 2022 03:17:28 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Fri, 9 Sep
- 2022 03:17:27 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Thu, 8 Sep 2022
- 20:17:27 -0700
-Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29 via Frontend
- Transport; Thu, 8 Sep 2022 20:17:24 -0700
-Date: Thu, 8 Sep 2022 20:17:23 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <alex.williamson@redhat.com>,
-	<suravee.suthikulpanit@amd.com>, <marcan@marcan.st>, <sven@svenpeter.dev>,
-	<alyssa@rosenzweig.io>, <robdclark@gmail.com>, <dwmw2@infradead.org>,
-	<baolu.lu@linux.intel.com>, <mjrosato@linux.ibm.com>,
-	<gerald.schaefer@linux.ibm.com>, <orsonzhai@gmail.com>,
-	<baolin.wang@linux.alibaba.com>, <zhang.lyra@gmail.com>,
-	<thierry.reding@gmail.com>, <vdumpa@nvidia.com>, <jonathanh@nvidia.com>,
-	<jean-philippe@linaro.org>, <cohuck@redhat.com>, <tglx@linutronix.de>,
-	<shameerali.kolothum.thodi@huawei.com>, <thunder.leizhen@huawei.com>,
-	<christophe.jaillet@wanadoo.fr>, <yangyingliang@huawei.com>,
-	<jon@solid-run.com>, <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<asahi@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-arm-msm@vger.kernel.org>, <linux-s390@vger.kernel.org>,
-	<linux-tegra@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
-	<kvm@vger.kernel.org>, <kevin.tian@intel.com>
-Subject: Re: [PATCH v6 1/5] iommu: Return -EMEDIUMTYPE for incompatible
- domain and device/group
-Message-ID: <YxqwQ+3OICPdEtk0@Asurada-Nvidia>
-References: <20220815181437.28127-1-nicolinc@nvidia.com>
- <20220815181437.28127-2-nicolinc@nvidia.com>
- <YxiRkm7qgQ4k+PIG@8bytes.org>
- <Yxig+zfA2Pr4vk6K@nvidia.com>
- <YxilZbRL0WBR97oi@8bytes.org>
- <YxjQiVnpU0dr7SHC@nvidia.com>
- <Yxnt9uQTmbqul5lf@8bytes.org>
- <YxoU8lw+qIw9woRL@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47274622
+	for <iommu@lists.linux.dev>; Fri,  9 Sep 2022 03:20:48 +0000 (UTC)
+X-UUID: a38da271cf1f4d4b93bd3de0470b8fb7-20220909
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=kFz/AHhlSDwM/COpK+mg6Dt0yGF/fk7aSJKUbMLw82g=;
+	b=LkQ/OFUHxZCTdxJ7H3u/BO6brxaV4j9CGG2aVjM/CD/4f5s3vblRv4fKCSYA2MWKHaqJ2P7Pii9Oh2zTPvyMLg4aNnRFInnaZvE7ybQ1fFzu4adAS/9UFllCZPn487vA+vQdjuZryHCjCAfW2QF0C05x77JT29HLmMmPobxcpww=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.10,REQID:7cc4cd5e-6f80-4fb0-b864-04c7018ab51f,OB:0,L
+	OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_
+	Ham,ACTION:release,TS:0
+X-CID-META: VersionHash:84eae18,CLOUDID:a87be0eb-2856-4fce-b125-09d4c7ebe045,C
+	OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+	,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: a38da271cf1f4d4b93bd3de0470b8fb7-20220909
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
+	(envelope-from <chengci.xu@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 263466077; Fri, 09 Sep 2022 11:20:40 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Fri, 9 Sep 2022 11:20:39 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 9 Sep 2022 11:20:33 +0800
+Message-ID: <c09f262422dd6cd0bf2147870a109bd2ede36d4f.camel@mediatek.com>
+Subject: Re: [PATCH v2 1/3] dt-bindings: mediatek: mt8188: Add binding for
+ MM & INFRA IOMMU
+From: Chengci.Xu <chengci.xu@mediatek.com>
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Yong Wu
+	<yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
+	<robh+dt@kernel.org>, Krzysztof Kozlowski
+	<krzysztof.kozlowski+dt@linaro.org>, Matthias Brugger
+	<matthias.bgg@gmail.com>
+CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>,
+	<Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date: Fri, 9 Sep 2022 11:20:32 +0800
+In-Reply-To: <2e575ed1-b82c-c7bd-3ddf-ccb6022b2461@linaro.org>
+References: <20220831125502.7818-1-chengci.xu@mediatek.com>
+	 <20220831125502.7818-2-chengci.xu@mediatek.com>
+	 <2e575ed1-b82c-c7bd-3ddf-ccb6022b2461@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <YxoU8lw+qIw9woRL@nvidia.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT101:EE_|SJ1PR12MB6265:EE_
-X-MS-Office365-Filtering-Correlation-Id: c011eca3-74e5-48d5-ea39-08da9211d333
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	sHXN/KKHM1XqDv2azSzqcajRY297pTWIwlt21Oi+lOQCQiDUPNdS563UqSg4J16qQzfA/PAU3YuWHfSFROcJdbqM8kkCdpJgNqu9tNKc2Kb+OBRYBujk94qzcEcpRxjYdjUPVXGnnlsA/6lj7TD9TjlOZd9bOjRYQ9yi5qsrL3pyFBe5YI/i+MKbIepvsyh7tXba7rkBcNJGfVmZlwIBDyv4n4MQmfBnAPLJuPL1a66AMQpMgS+T+pzkZhi9R1prURmGLTAjEue/mF9f4t3BWI4KapBTjNxE3l+7uoBwaWl5UQfJh6fFLi5b624ZK+darjRg4fEgKeB1tATIbunOVdlUqtfkG3RNSf3NGqEsiX8bBTXGjhkeE/6Hpgo2U4u6NSxeRR6A1UZUivPgO+iv9WEZaxwXDOELG552xAbOHhft+NEJxRq7jGnPJgebz6w5zRwHOLBc8rhjpARThNLBcsJQ1XKKp1TlxAIaqvp/1ClRNX/uKsKwGVgVyB0XvuVgfTSAfcepAYNcfcwdN5WGCs475qGVZxDs1wL+iG2IObD06i0WpTOopysA9GLo2Vb2HgED2D8kz5SDTFz0pIS7xFpbNnx3+gS8sQxm+Tj/9urE7dqQO1hoNI2M4iAcVn+c/xZ5JzyPUOtCkx7ribuE/f+tpYopVhEav2VP+IpFO/fCpvHuDGHRJJBYJ1KU1oVQlUfQg345Hh7zwLxITDtEd+zjOr0BwamW3f7yZWju4tBE470JvzWdHVIVbc7fZkz9x4KoCvEeTi7d5FwCSkHJb7kTxndx8obj0bcR9EXB1P28p/nS7QmIHNhro8tR20+9RtaSdOuvc0Bxy5S09Y8eCQ==
-X-Forefront-Antispam-Report:
-	CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(396003)(376002)(136003)(46966006)(40470700004)(36840700001)(40480700001)(336012)(81166007)(426003)(356005)(47076005)(26005)(8676002)(36860700001)(82310400005)(33716001)(478600001)(70586007)(82740400003)(40460700003)(70206006)(86362001)(55016003)(4326008)(41300700001)(6636002)(8936002)(110136005)(54906003)(316002)(5660300002)(186003)(7406005)(9686003)(2906002)(7416002)(67856001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Sep 2022 03:17:28.0590
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c011eca3-74e5-48d5-ea39-08da9211d333
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT101.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6265
+Content-Transfer-Encoding: 7bit
 
-On Thu, Sep 08, 2022 at 01:14:42PM -0300, Jason Gunthorpe wrote:
+On Thu, 2022-09-08 at 12:49 +0200, Krzysztof Kozlowski wrote:
 
-> > I am wondering if this can be solved by better defining what the return
-> > codes mean and adjust the call-back functions to match the definition.
-> > Something like:
-> > 
-> > 	-ENODEV : Device not mapped my an IOMMU
-> > 	-EBUSY  : Device attached and domain can not be changed
-> > 	-EINVAL : Device and domain are incompatible
-> > 	...
+Thanks for your review.
+
+> On 31/08/2022 14:55, Chengci.Xu wrote:
+> > This patch adds descriptions for mt8188 IOMMU which also use ARM
+> > Short-Descriptor translation table format.
 > 
-> Yes, this was gone over in a side thread the pros/cons, so lets do
-> it. Nicolin will come with something along these lines.
+> Do not use "This commit/patch".
+> 
+https://urldefense.com/v3/__https://elixir.bootlin.com/linux/v5.17.1/source/Documentation/process/submitting-patches.rst*L95__;Iw!!CTRNKA9wMg0ARbw!0FyEQYk5UrJwuW-kVc1X-l58KMwnooLeErNkSwisiEzNf88AvYvMrzE6iYFH0KFOdag$
+>  
 
-I have started this effort by combining this list and the one from
-the side thread:
+Thank you for sharing this, I will drop this words.
 
-@@ -266,6 +266,13 @@ struct iommu_ops {
- /**
-  * struct iommu_domain_ops - domain specific operations
-  * @attach_dev: attach an iommu domain to a device
-+ *              Rules of its return errno:
-+ *               ENOMEM  - Out of memory
-+ *               EINVAL  - Device and domain are incompatible
-+ *               EBUSY   - Device is attached to a domain and cannot be changed
-+ *               ENODEV  - Device or domain is messed up: device is not mapped
-+ *                         to an IOMMU, no domain can attach, and etc.
-+ *              <others> - Same behavior as ENODEV, use is discouraged
-  * @detach_dev: detach an iommu domain from a device
-  * @map: map a physically contiguous memory region to an iommu domain
-  * @map_pages: map a physically contiguous set of pages of the same size to
+> 
+> >  
+> >      then:
+> >        required:
+> > diff --git a/include/dt-bindings/memory/mediatek,mt8188-memory-
+> > port.h b/include/dt-bindings/memory/mediatek,mt8188-memory-port.h
+> > new file mode 100644
+> > index 000000000000..9363e132c43a
+> > --- /dev/null
+> > +++ b/include/dt-bindings/memory/mediatek,mt8188-memory-port.h
+> > @@ -0,0 +1,482 @@
+> > +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
+> 
+> Why do you license it under BSD-3 clause?
+> 
 
-I am now going through every single return value of ->attach_dev to
-make sure the list above applies. And I will also incorporate things
-like Robin's comments at the AMD IOMMU driver.
+A mediatek internal wiki suggest me use "BSD-3-Clause" without detial
+reason. May be it is not suitable for this file.
 
-And if the change occurs to be bigger, I guess that separating it to
-be an IOMMU series from this VFIO one might be better.
+If you don't approve of this, I can change this license to "GPL-2.0-
+only OR BSD-2-Clause", which is perferred by DT bindings file according
+to "submitting-patches.rst". 
 
-Thanks
-Nic
+Do you think "BSD-2-Clause" is OK? Or could you kindly share me another
+proper license?
+
+
+Best regards,
+Chengci Xu
+
+> Best regards,
+> Krzysztof
+
