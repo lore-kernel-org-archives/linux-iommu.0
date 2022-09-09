@@ -1,14 +1,14 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4AB1D612F
-	for <iommu@lists.linux.dev>; Fri,  9 Sep 2022 19:55:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 81F19612F
+	for <iommu@lists.linux.dev>; Fri,  9 Sep 2022 20:11:01 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A8691165C;
-	Fri,  9 Sep 2022 12:55:22 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 02317165C;
+	Fri,  9 Sep 2022 13:11:07 -0700 (PDT)
 Received: from [10.57.15.197] (unknown [10.57.15.197])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 761A23F93E;
-	Fri,  9 Sep 2022 12:55:13 -0700 (PDT)
-Message-ID: <b753aecb-ee2a-2cd0-1df2-0c3e977b4cb9@arm.com>
-Date: Fri, 9 Sep 2022 20:55:07 +0100
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BA2BE3F93E;
+	Fri,  9 Sep 2022 13:10:58 -0700 (PDT)
+Message-ID: <8e564675-4d65-86c7-0db7-2cce43f2341c@arm.com>
+Date: Fri, 9 Sep 2022 21:10:51 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -17,174 +17,127 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
  Thunderbird/102.2.2
-Subject: Re: [PATCH 4/4] iommu: Fix ordering of iommu_release_device()
+Subject: Re: [PATCH rc] iommu: Fix false ownership failure on AMD systems with
+ PASID activated
 Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>,
- Cornelia Huck <cohuck@redhat.com>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
- Will Deacon <will@kernel.org>, Qian Cai <cai@lca.pw>,
- Joerg Roedel <jroedel@suse.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>
-References: <4-v1-ef00ffecea52+2cb-iommu_group_lifetime_jgg@nvidia.com>
- <87b7041e-bc8d-500c-7167-04190e3795a9@arm.com>
- <ada74e00-77e1-770b-f0b7-a4c43a86c06f@arm.com> <YxpiBEbGHECGGq5Q@nvidia.com>
- <38bac59a-808d-5e91-227a-a3a06633c091@arm.com> <Yxs+1s+MPENLTUpG@nvidia.com>
- <e0ff6dc1-91b3-2e41-212c-c83a2bf2b3a8@arm.com> <YxuGQDCzDsvKV2W8@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Will Deacon <will@kernel.org>
+References: <0-v1-ea566e16b06b+811-amd_owner_jgg@nvidia.com>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <YxuGQDCzDsvKV2W8@nvidia.com>
+In-Reply-To: <0-v1-ea566e16b06b+811-amd_owner_jgg@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2022-09-09 19:30, Jason Gunthorpe wrote:
-> On Fri, Sep 09, 2022 at 06:57:59PM +0100, Robin Murphy wrote:
+On 2022-09-09 20:46, Jason Gunthorpe wrote:
+> The AMD IOMMU driver cannot activate PASID mode on a RID without the RID's
+> translation being set to IDENTITY. Further it requires changing the RID's
+> page table layout from the normal v1 IOMMU_DOMAIN_IDENTITY layout to a
+> different v2 layout.
 > 
->>>> That then only leaves the issue that that domain may still become
->>>> invalid at any point after the group mutex has been dropped.
->>>
->>> So that is this race:
->>>
->>>           CPU0                         CPU1
->>>      iommu_release_device(a)
->>>         __iommu_group_remove_device(a)
->>> 			         iommu_device_use_default_domain(b)
->>>                                    iommu_domain_free(domain)
->>>                                    iommu_release_device(b)
->>>                                         ops->release_device(b)
->>>         ops->release_device(a)
->>>           // Boom, a is still attached to domain :(
->>>
->>> I can't think of how to solve this other than holding the group mutex
->>> across release_device. See below.
->>
->> I see a few possibilities:
->>
->> - Backtrack slightly on its removal, and instead repurpose detach_dev
->> into a specialised domain cleanup callback, called before or during
->> iommu_group_remove_device(), with the group mutex held.
+> It does this by creating a new iommu_domain, configuring that domain for
+> v2 identity operation and then attaching it to the group, from within the
+> driver. This logic assumes the group is already set to the IDENTITY domain
+> and is being used by the DMA API.
 > 
-> See below for why that is somewhat troublesome..
+> However, since the ownership logic is based on the group's domain pointer
+> equaling the default domain to detect DMA API ownership, this causes it to
+> look like the group is not attached to the DMA API any more. This blocks
+> attaching drivers to any other devices in the group.
+> 
+> In a real system this manifests itself as the HD-audio devices on some AMD
+> platforms loosing their device drivers.
+> 
+> Work around this unique behavior of the AMD driver by checking for
+> equality of IDENTITY domains based on their type, not their pointer
+> value. This allows the AMD driver to have two IDENTITY domains for
+> internal purposes without breaking the check.
+> 
+> Have the AMD driver properly declare that the special domain it created is
+> actually an IDENTITY domain.
+
+I concur that this seems the least risky fix for now, and removing it 
+again in future with a more significant rework of 
+amd_iommu_init_device() is best off being its own thing.
+
+Modulo the "idenity" typo in the comment,
+
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: stable@vger.kernel.org
+> Fixes: 512881eacfa7 ("bus: platform,amba,fsl-mc,PCI: Add device DMA ownership management")
+> Reported-by: Takashi Iwai <tiwai@suse.de>
+> Tested-by: Takashi Iwai <tiwai@suse.de>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> --
+> 
+> Robin points out, and I agree, that this logic in the AMD driver is poorly
+> organized.
+> 
+> With the coming support for AMD's RID as PASID 0 it makes more sense to
+> eventually follow what the SMMU driver does and decouple the RID's
+> configuration from the iommu_domains. This flow would have the underlying
+> config to be upgraded from v1 to v2 and keep the same IDENTITY or
+> DMA/UNMANAGED domain attached unchanged.
+> 
+> ---
+>   drivers/iommu/amd/iommu_v2.c |  2 ++
+>   drivers/iommu/iommu.c        | 21 +++++++++++++++++++--
+>   2 files changed, 21 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd/iommu_v2.c b/drivers/iommu/amd/iommu_v2.c
+> index 696d5555be5794..6a1f02c62dffcc 100644
+> --- a/drivers/iommu/amd/iommu_v2.c
+> +++ b/drivers/iommu/amd/iommu_v2.c
+> @@ -777,6 +777,8 @@ int amd_iommu_init_device(struct pci_dev *pdev, int pasids)
+>   	if (dev_state->domain == NULL)
+>   		goto out_free_states;
 >   
->> - Drivers that hold any kind of internal per-device references to
->> domains - which is generally the root of this issue in the first place -
->> can implement proper reference counting, so even if a domain is "freed"
->> with a device still attached as above, it doesn't actually go away until
->> release_device(a) cleans up the final dangling reference. I suggested
->> the core doing this generically, but on reflection I think it's actually
->> a lot more straightforward as a driver-internal thing.
+> +	/* See iommu_is_default_domain() */
+> +	dev_state->domain->type = IOMMU_DOMAIN_IDENTITY;
+>   	amd_iommu_domain_direct_map(dev_state->domain);
+>   
+>   	ret = amd_iommu_domain_enable_v2(dev_state->domain, pasids);
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index cb83576b1877d5..21373cf6be748f 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -3137,6 +3137,24 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
+>   	return ret;
+>   }
+>   
+> +static bool iommu_is_default_domain(struct iommu_group *group)
+> +{
+> +	if (group->domain == group->default_domain)
+> +		return true;
+> +
+> +	/*
+> +	 * If the default domain was set to identity and it is still an identity
+> +	 * domain then we consider this a pass. This happens because of
+> +	 * amd_iommu_init_device() replacing the default idenity domain with an
+> +	 * identity domain that has a different configuration for AMDGPU.
+> +	 */
+> +	if (group->default_domain &&
+> +	    group->default_domain->type == IOMMU_DOMAIN_IDENTITY &&
+> +	    group->domain && group->domain->type == IOMMU_DOMAIN_IDENTITY)
+> +		return true;
+> +	return false;
+> +}
+> +
+>   /**
+>    * iommu_device_use_default_domain() - Device driver wants to handle device
+>    *                                     DMA through the kernel DMA API.
+> @@ -3155,8 +3173,7 @@ int iommu_device_use_default_domain(struct device *dev)
+>   
+>   	mutex_lock(&group->mutex);
+>   	if (group->owner_cnt) {
+> -		if (group->domain != group->default_domain ||
+> -		    group->owner) {
+> +		if (group->owner || !iommu_is_default_domain(group)) {
+>   			ret = -EBUSY;
+>   			goto unlock_out;
+>   		}
 > 
-> Isn't this every driver though? Like every single driver implementing
-> an UNMANAGED/DMA/DMA_FQ domain has a hidden reference to the
-> iommu_domain - minimally to point the HW to the IOPTEs it stores.
-
-Um, no? Domain ops get the domain passed in as an argument, which is far 
-from hidden, and if any driver implemented them to ignore that argument 
-and operate on something else it would be stupid and broken. Note I said 
-"per-device reference", meaning things like s390's zpci_dev->s390_domain 
-and SMMUv3's dev->iommu->priv->domain. It's only those references that 
-are reachable from release_device - outside the normal domain lifecycle 
-- which are problematic.
-
->> - Drivers that basically just keep a list of devices in the domain and
->> need to do a list_del() in release_device, can also list_del_init() any
->> still-attached devices in domain_free, with a simple per-instance or
->> global lock to serialise the two.
-> 
-> Compared to just locking ops->release_device() these all seem more
-> complicated?
-
-Well, yes, but they are still potentially-viable examples of the 
-alternative solutions you said you couldn't think of ;)
-
-> IMHO the core code should try to protect the driver from racing
-> release with anything else.
-> 
-> Do you know a reason not to hold the group mutex across
-> release_device? I think that is the most straightforward and
-> future proof.
-
-Yes, the ones documented in the code and already discussed here. The 
-current functional ones aren't particularly *good* reasons, but unless 
-and until they can all be cleaned up they are what they are.
-
-> Arguably all the device ops should be serialized under the group
-> mutex.
-
-Maybe once groups and default domains are used consistently everywhere. 
-And notwithstanding that half the ops have no association with a group, 
-are needed before or as part of obtaining a group, or were explicitly 
-intended to allow calling back into other APIs that might lock the 
-relevant group :P
-
->> @@ -1022,6 +1030,14 @@ void iommu_group_remove_device(struct device *dev)
->>   	dev_info(dev, "Removing from iommu group %d\n", group->id);
->>   	mutex_lock(&group->mutex);
->> +	if (WARN_ON(group->domain != group->default_domain &&
->> +		    group->domain != group->blocking_domain)) {
-> 
-> This will false trigger, if there are two VFIO devices then the group
-> will remained owned when we unplug one just of them, but the group's domain
-> will be a VFIO owned domain.
-
-As opposed to currently, where most drivers' release_device will blindly 
-detach/disable the RID in some fashion so the other device would 
-suddenly blow up anyway? A warning of the impending disaster might be 
-quite informative, I reckon.
-
-> It is why I put the list_empty() protection, as the test only works if
-> it is the last device.
-> 
->> +		if (group->default_domain)
->> +			__iommu_attach_device(group->default_domain, dev);
->> +		else
->> +			__iommu_detach_device(group->domain, dev);
->> +	}
-> 
-> This was very appealing, but I rejected it because it is too difficult
-> to support multi-device groups that share the RID.
-> 
-> In that case we expect that the first attach/detach of a device on the
-> shared RID will reconfigure the iommu and the attach/deatch of all the
-> other devices on the group with the same parameters will be a NOP.
-> 
-> So in a VFIO configuration where two drivers are bound to a single
-> group with shared RID and we unplug one device, this will rebind the
-> shared RID and thus the entire group to blocking/default and break the
-> still running VFIO on the second device.
-
-As above, I am supremely confident that nobody has ever done that 
-because it is already broken on everything that matters.
-
-(It *will* actually work on SMMUv2 because SMMUv2 comprehensively 
-handles StreamID-level aliasing beyond what pci_device_group() covers, 
-which I remain rather proud of)
-
-> The device centric interface only works if we always apply the
-> operation to every device in the group..
-> 
-> This is why I kept it as ops->release_device() with an implicit detach
-> of the current domain inside the driver. release_device() has that
-> special meaning of 'detach the domain but do not change a shared RID'
-
-If you want to rely on that notion, you'll need to tell all the major 
-drivers about it first, I'm afraid.
-
-> And it misses the logic to WARN_ON if a domain is set and an external
-> entity wrongly uses iommu_group_remove_device()..
-
-Huh? An external fake group couldn't have a default domain or blocking 
-domain, thus any non-NULL domain will not compare equal to either, so if 
-that could happen it will warn, and then most likely crash. I did think 
-briefly about trying to make it not crash, but then I remembered that 
-fake groups from external callers also aren't backed by IOMMU API 
-drivers so have no way to allocate or attach domains either, so in fact 
-it cannot happen at all under any circumstances that are worth reasoning 
-about.
-
-Yes, some nefarious driver could call iommu_group_remove_device() on 
-random devices. It could also call kfree(dev->iommu_group). Or 
-kfree(iommu_group_remove_device). Fundamentally-broken kernel code can 
-crash the kernel, whoop de do.
-
-Thanks,
-Robin.
+> base-commit: 848c62cb24a820066994d6cccc218dba58725ce9
