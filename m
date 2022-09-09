@@ -1,32 +1,32 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35869622
-	for <iommu@lists.linux.dev>; Fri,  9 Sep 2022 01:24:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9311F622
+	for <iommu@lists.linux.dev>; Fri,  9 Sep 2022 01:54:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662686647; x=1694222647;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=64BJSJ2yfINcX/nSs4j1hGHQg35SOOPoG0+S+Eesxf4=;
-  b=f7w17fWe3qNk12E3neweLl8dC6c8YVmnhKOm5iPXubA9fTXKpKyf2L1f
-   EeRnRpT0flxiAexPTQtFc0gmczT05Zols2o8PL/jOPQrql0WzVn9cA87B
-   cuqBRX4CKRuQO3KfEP6AJEzRjJfjsDBXKNX7FLsqjoq7GrKgPAs7UiZfZ
-   CkBfMfasVSnQul6Vr3Ph9eAHUEfcTEa5VGgYpntrf9ko0T67xFsn4s0Ti
-   U3++O0yyHYQClSRj8xA1gZkMKfFHZ3nAmCF5mOpfI89kq5nMgunQKJ7vS
-   jsivPl+GdGMYoE65htCZIlD/IZ3O1nXjTa0dtEX/SQRPXpicUBHZuX6Vb
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10464"; a="359095304"
+  t=1662688455; x=1694224455;
+  h=message-id:date:mime-version:cc:to:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=V8rWhGS1JBuyEKj5MooRa936Kyq13co5hPOuxZW39vo=;
+  b=jHfzaO81jgHc6/5uJglCGPcyTEIgqS2UZSXShlrEF7xfLvrO6RbFJk+P
+   IQTGVVDBZxbmPtWaLKElAEbkMwyQpVbt0xsi1qLJNHTwfuoB4vrwCjODf
+   xfoWYjubHKmRv4oShe0o5NwBXxGPZnGeoM3cDwI5FjxnEX4YALTPtXfUz
+   PwWP/A4LNItQuwt/PK5pS9aWoMQVArCFoEUdKmZi+6Bb+T6xKiN9XNssx
+   t4DDqG26b23yg+xAGDNUH8XyC+ftp/dFtHDU9hER6Dc+YRFEF+2TTabRS
+   B8zwLQ/iairKPZqWcddazd+9b01TC0uYCYD+pxqN+Tc+ZZVnmcor4napB
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10464"; a="298710794"
 X-IronPort-AV: E=Sophos;i="5.93,300,1654585200"; 
-   d="scan'208";a="359095304"
+   d="scan'208";a="298710794"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2022 18:24:06 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2022 18:54:15 -0700
 X-IronPort-AV: E=Sophos;i="5.93,300,1654585200"; 
-   d="scan'208";a="676955360"
+   d="scan'208";a="676961624"
 Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.214.159]) ([10.254.214.159])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2022 18:24:04 -0700
-Message-ID: <0d70e245-e360-ddc1-eb03-67ffbc6c1a47@linux.intel.com>
-Date: Fri, 9 Sep 2022 09:24:02 +0800
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2022 18:54:09 -0700
+Message-ID: <a4402d04-0920-59ff-5dd3-a374c84d64b0@linux.intel.com>
+Date: Fri, 9 Sep 2022 09:54:07 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,44 +36,61 @@ MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.2.1
 Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
- suravee.suthikulpanit@amd.com
-Subject: Re: [PATCH v3 0/9] iommu/amd: Add Generic IO Page Table Framework
- Support for v2 Page Table
+ Christoph Hellwig <hch@infradead.org>, Bjorn Helgaas <bhelgaas@google.com>,
+ Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Dave Jiang <dave.jiang@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
+ Vinod Koul <vkoul@kernel.org>, Eric Auger <eric.auger@redhat.com>,
+ Liu Yi L <yi.l.liu@intel.com>, Jacob jun Pan <jacob.jun.pan@intel.com>,
+ Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony <tony.zhu@intel.com>,
+ iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+ linux-kernel@vger.kernel.org
 Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>
-References: <20220825063939.8360-1-vasant.hegde@amd.com>
- <77d2ea43-9752-b5f3-78ef-8cdae944eee4@amd.com>
- <05f9784b-15b6-2a9b-2d9e-19e1430f74e2@arm.com> <YxintMDEmzSXJUl5@8bytes.org>
- <YxjMQpGYaHfsiuL+@nvidia.com> <YxneJ2RqaatKmoYT@8bytes.org>
- <c11bd109-65cd-39b3-6d7e-2b29208ca2ca@arm.com> <Yxnr1gBIGwdinIkr@nvidia.com>
- <YxnuYTrkC5yoHH84@8bytes.org> <c48211fe-00b1-e679-21b8-00a85bba599a@arm.com>
- <Yxn1IcWk+61ddiCn@nvidia.com> <7b30a064-754e-0528-5142-8446ab5bdc95@arm.com>
+To: Jason Gunthorpe <jgg@nvidia.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
+References: <20220906124458.46461-1-baolu.lu@linux.intel.com>
+ <20220906124458.46461-10-baolu.lu@linux.intel.com> <Yxd2+d/VOjdOgrR2@myrica>
+ <682d8922-200d-8c89-7142-83e7b3754b8d@linux.intel.com>
+ <YxhqbhMmWLeFS512@myrica> <YxjV1y/FF0nCI/WO@nvidia.com>
+ <YxoXfCQcD3yC5ppn@myrica> <YxobR/brG9VlxPvX@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <7b30a064-754e-0528-5142-8446ab5bdc95@arm.com>
+Subject: Re: [PATCH v13 09/13] iommu/sva: Refactoring
+ iommu_sva_bind/unbind_device()
+In-Reply-To: <YxobR/brG9VlxPvX@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2022/9/8 23:23, Robin Murphy wrote:
-> 
->> I can't think of a use case for nesting the PASID under the RID, in
->> every scenario this seems to be problematic. Glad to see it is undone
->> with the new HW.
-> 
-> I assume you mean you can't think of a use-case for having the RID 
-> bypass stage 1/guest translation, since "nesting the PASID under the 
-> RID" is basically just how PASIDs work. AMD phrases it as "An upstream 
-> packet with a valid PASID in the PASID TLP prefix contains a canonical 
-> GVA; an upstream packet without a valid PASID in the PASID TLP prefix or 
-> with no PASID TLP prefix and an untranslated address contains a GPA". So 
-> GVA->GPA is per-PASID, then GPA->PA is for the entire RID, which is 
-> exactly how SMMU stage 1/2 work as well. As far as I'm aware that's 
-> standard for Intel too, until SIOV where they can carry the PASID 
-> through to the second level also.
+On 2022/9/9 0:41, Jason Gunthorpe wrote:
+> On Thu, Sep 08, 2022 at 05:25:32PM +0100, Jean-Philippe Brucker wrote:
+>> On Wed, Sep 07, 2022 at 02:33:11PM -0300, Jason Gunthorpe wrote:
+>>> On Wed, Sep 07, 2022 at 10:54:54AM +0100, Jean-Philippe Brucker wrote:
+>>>
+>>>> Is iommu_domain still going to represent both a device context (whole
+>>>> PASID table) and individual address spaces, or are you planning to move
+>>>> away from that?  What happens when a driver does:
+>>>>
+>>>>    d1 = iommu_domain_alloc()
+>>>>    iommu_attach_device(d1)
+>>>>    d2 = iommu_sva_bind_device()
+>>>>    iommu_detach_device(d1)
+>>>>
+>>>> Does detach
+>>>> (a) only disable the non-PASID address space?
+>>>> (b) disable everything?
+>>>> (c) fail because the driver didn't unbind first?
+>>> I think it must be (a), considering how everything is defined and the
+>>> needs for vIOMMU emulation.
+>> Yes (a) is probably better. The SMMU driver currently implements (c) to
+>> ensure that you can't switch device driver without unbinding everything
+>> first, and we should keep that check somewhere
+> Yes, the owner stuff is a logical place to put that, when ownership
+> is all released the PASID table of the group must be empty. Lu?
 
-Yes. That's something called ECS mode in VT-d 2.x spec. Then Scalable
-Mode began to appear in 3.x and replaced the previous ECS. Intel has no
-real ECS hardware implementation in the shipping products.
+I agree. The ownership is about the whole device (more precisely,
+group), including the RID and PASIDs. When the ownership is converted,
+the pasid array must be empty. I will add code in this series to enforce
+this. Thanks for pointing out this.
 
 Best regards,
 baolu
