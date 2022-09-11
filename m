@@ -1,32 +1,29 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CFC257F
-	for <iommu@lists.linux.dev>; Sun, 11 Sep 2022 06:29:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D1B417F
+	for <iommu@lists.linux.dev>; Sun, 11 Sep 2022 07:31:03 +0000 (UTC)
 Received: from 8bytes.org (p549ad5ad.dip0.t-ipconnect.de [84.154.213.173])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 981B4401A0;
-	Sun, 11 Sep 2022 08:29:03 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 577DB221169;
+	Sun, 11 Sep 2022 09:31:02 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1662877743;
-	bh=GneY6Ecu3NUsu8ui/Ovw7m7RoUYEjwy3cLKx7pxMGK4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=C+MafS8mUkInV3HrSn/qLZ9z/DHphX4Jj7NAq6WB5p+61d6Z5JLKWRsezXBygU4h/
-	 abjQRQ7jTrVkrZZqYdy0nYcUL6ZxHfsDeYFZzyazHZQKJMDYjYg+R2bUG1JjWWq8/8
-	 GLNyPDdnZyRJt/MatVvpPVxG8qRQGNSWgFNBa8mh7YudlsPsduazQQ16NmlaO4gnnC
-	 PSCvHp0cYBo5UCQNYz5Nmwth+BzL6nq45yUkOROjB5tMgnSehXpRqwrbuhwr8vrpHJ
-	 l0hEjwPSvhigiPZ4DBCVJwdCYfwqYYrOkvaUFrK6y1FLyPrBWqmZFj1Ho6/U42Nnzc
-	 3NPv/MPDlc1fA==
-Date: Sun, 11 Sep 2022 08:29:01 +0200
+	s=default; t=1662881462;
+	bh=dpn0tsJQ0Z4NLTovO/Oi/8+2RqkOs+LGUNaqt/NRQb4=;
+	h=Date:From:To:Cc:Subject:From;
+	b=yYIY31f6klOoMmD5DkK4KNwYQZADj5lHsPaBpatpcAlgJ9ho26pl5pi1Gtg7PDxJo
+	 BTdYVhNrAytJPzkUM1onYpMJNReT+iaYccSyMpOUZuMShevgU//gE5JdTmCQwRz6n4
+	 0WmnjL4EYU9P+WmqHrRLA81nBPVdlSZ1zpit3FZqISg9OCbzb+IiV9aA5F3iZpwOxU
+	 qrhuRylX50at/K0TF96Sr92VCq2VSgZ3f/FDsO6ED25DHWnZdOnN0BK8mxxWVTVk72
+	 igsjr0mpUC2SjbCAEYv6dxzTi51CrHPTmXlXJHYw2hp6YzBZ25lSTuqUU26/AwPXRv
+	 hV8H2sek4ScwA==
+Date: Sun, 11 Sep 2022 09:31:01 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Will Deacon <will@kernel.org>
-Subject: Re: [PATCH rc] iommu: Fix false ownership failure on AMD systems
- with PASID activated
-Message-ID: <Yx2ALbxV6mwxwOZm@8bytes.org>
-References: <0-v1-ea566e16b06b+811-amd_owner_jgg@nvidia.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: [git pull] IOMMU Fixes for Linux v6.0-rc4
+Message-ID: <Yx2Otdo+oqAeDG6s@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,11 +32,75 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0-v1-ea566e16b06b+811-amd_owner_jgg@nvidia.com>
 
-On Fri, Sep 09, 2022 at 04:46:31PM -0300, Jason Gunthorpe wrote:
->  drivers/iommu/amd/iommu_v2.c |  2 ++
->  drivers/iommu/iommu.c        | 21 +++++++++++++++++++--
->  2 files changed, 21 insertions(+), 2 deletions(-)
+Hi Linus,
 
-Applied, thanks.
+The following changes since commit 7e18e42e4b280c85b76967a9106a13ca61c16179:
+
+  Linux 6.0-rc4 (2022-09-04 13:10:01 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.0-rc4
+
+for you to fetch changes up to 2380f1e8195ef612deea1dc7a3d611c5d2b9b56a:
+
+  iommu: Fix false ownership failure on AMD systems with PASID activated (2022-09-11 08:30:41 +0200)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v6.0-rc4
+
+Including:
+
+	- Intel VT-d fixes from Lu Baolu
+
+	  - Boot kdump kernels with VT-d scalable mode on
+
+	  - Calculate the right page table levels
+
+	  - Fix two recursive locking issues
+
+	  - Fix a lockdep splat issue
+
+	- AMD IOMMU fixes:
+
+	  - Fix for completion-wait command to use full 64 bits of data
+
+	  - Fix PASID related issue where GPU sound devices failed to
+	    initialize
+
+	- Fix for Virtio-IOMMU to report correct caching behavior, needed for
+	  use with VFIO
+
+----------------------------------------------------------------
+Jason Gunthorpe (1):
+      iommu: Fix false ownership failure on AMD systems with PASID activated
+
+Jean-Philippe Brucker (1):
+      iommu/virtio: Fix interaction with VFIO
+
+John Sperbeck (1):
+      iommu/amd: use full 64-bit value in build_completion_wait()
+
+Lu Baolu (5):
+      iommu/vt-d: Fix kdump kernels boot failure with scalable mode
+      iommu/vt-d: Correctly calculate sagaw value of IOMMU
+      iommu/vt-d: Fix recursive lock issue in iommu_flush_dev_iotlb()
+      iommu/vt-d: Fix lockdep splat due to klist iteration in atomic context
+      iommu/vt-d: Fix possible recursive locking in intel_iommu_init()
+
+ drivers/iommu/amd/iommu.c    |   3 +-
+ drivers/iommu/amd/iommu_v2.c |   2 +
+ drivers/iommu/intel/dmar.c   |   7 ++
+ drivers/iommu/intel/iommu.c  | 241 ++++++++++++++++++++-----------------------
+ drivers/iommu/intel/iommu.h  |   9 +-
+ drivers/iommu/iommu.c        |  21 +++-
+ drivers/iommu/virtio-iommu.c |  11 ++
+ include/linux/dmar.h         |   4 +-
+ 8 files changed, 163 insertions(+), 135 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
