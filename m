@@ -1,106 +1,53 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D1B417F
-	for <iommu@lists.linux.dev>; Sun, 11 Sep 2022 07:31:03 +0000 (UTC)
-Received: from 8bytes.org (p549ad5ad.dip0.t-ipconnect.de [84.154.213.173])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 577DB221169;
-	Sun, 11 Sep 2022 09:31:02 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1662881462;
-	bh=dpn0tsJQ0Z4NLTovO/Oi/8+2RqkOs+LGUNaqt/NRQb4=;
-	h=Date:From:To:Cc:Subject:From;
-	b=yYIY31f6klOoMmD5DkK4KNwYQZADj5lHsPaBpatpcAlgJ9ho26pl5pi1Gtg7PDxJo
-	 BTdYVhNrAytJPzkUM1onYpMJNReT+iaYccSyMpOUZuMShevgU//gE5JdTmCQwRz6n4
-	 0WmnjL4EYU9P+WmqHrRLA81nBPVdlSZ1zpit3FZqISg9OCbzb+IiV9aA5F3iZpwOxU
-	 qrhuRylX50at/K0TF96Sr92VCq2VSgZ3f/FDsO6ED25DHWnZdOnN0BK8mxxWVTVk72
-	 igsjr0mpUC2SjbCAEYv6dxzTi51CrHPTmXlXJHYw2hp6YzBZ25lSTuqUU26/AwPXRv
-	 hV8H2sek4ScwA==
-Date: Sun, 11 Sep 2022 09:31:01 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: [git pull] IOMMU Fixes for Linux v6.0-rc4
-Message-ID: <Yx2Otdo+oqAeDG6s@8bytes.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34E7D7F
+	for <iommu@lists.linux.dev>; Sun, 11 Sep 2022 19:36:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D8176C433D7;
+	Sun, 11 Sep 2022 19:36:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1662925018;
+	bh=eTos0eDJdtt2fJTQCA5fj9y11CKl1aqrN65B9927ehM=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=FFlSbb+gqV6yIy6yKM20Rw/wTB6kvtSSbXFp/VvLiZJpiO37yr4GZMmRiff1fs71r
+	 sibGpknM3MrYjzK/aov7BD7q2HLgnUrYCGl3PSd2pUN2+InwRkxPN0nPq4sii0UunY
+	 3ZqMKwGXcGeHrKCfsdn8Zozt8k3pbpjZE/+JYYSvDxQ8Gi5aWsW02AgoMcahNFtrAa
+	 cwqHhPWNZJTKf+KoSEFFfM/int3txTwqNRtt2Q0JzMA21pNqXgexfnbGAAWpM/40BV
+	 PpeN0pTFe8HrejAqgqm3+TifXKClSqijwXJB7HKM2ChlwrtFEjVetXx0nJ1dJQpUS8
+	 XM5NJYXukb1GQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BF677C73FF0;
+	Sun, 11 Sep 2022 19:36:58 +0000 (UTC)
+Subject: Re: [git pull] IOMMU Fixes for Linux v6.0-rc4
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <Yx2Otdo+oqAeDG6s@8bytes.org>
+References: <Yx2Otdo+oqAeDG6s@8bytes.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <Yx2Otdo+oqAeDG6s@8bytes.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.0-rc4
+X-PR-Tracked-Commit-Id: 2380f1e8195ef612deea1dc7a3d611c5d2b9b56a
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 2ccd4502f512e04b6cc01995da730e8754529cf9
+Message-Id: <166292501878.24843.5844761897401885517.pr-tracker-bot@kernel.org>
+Date: Sun, 11 Sep 2022 19:36:58 +0000
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 
-Hi Linus,
+The pull request you sent on Sun, 11 Sep 2022 09:31:01 +0200:
 
-The following changes since commit 7e18e42e4b280c85b76967a9106a13ca61c16179:
+> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.0-rc4
 
-  Linux 6.0-rc4 (2022-09-04 13:10:01 -0700)
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/2ccd4502f512e04b6cc01995da730e8754529cf9
 
-are available in the Git repository at:
+Thank you!
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.0-rc4
-
-for you to fetch changes up to 2380f1e8195ef612deea1dc7a3d611c5d2b9b56a:
-
-  iommu: Fix false ownership failure on AMD systems with PASID activated (2022-09-11 08:30:41 +0200)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v6.0-rc4
-
-Including:
-
-	- Intel VT-d fixes from Lu Baolu
-
-	  - Boot kdump kernels with VT-d scalable mode on
-
-	  - Calculate the right page table levels
-
-	  - Fix two recursive locking issues
-
-	  - Fix a lockdep splat issue
-
-	- AMD IOMMU fixes:
-
-	  - Fix for completion-wait command to use full 64 bits of data
-
-	  - Fix PASID related issue where GPU sound devices failed to
-	    initialize
-
-	- Fix for Virtio-IOMMU to report correct caching behavior, needed for
-	  use with VFIO
-
-----------------------------------------------------------------
-Jason Gunthorpe (1):
-      iommu: Fix false ownership failure on AMD systems with PASID activated
-
-Jean-Philippe Brucker (1):
-      iommu/virtio: Fix interaction with VFIO
-
-John Sperbeck (1):
-      iommu/amd: use full 64-bit value in build_completion_wait()
-
-Lu Baolu (5):
-      iommu/vt-d: Fix kdump kernels boot failure with scalable mode
-      iommu/vt-d: Correctly calculate sagaw value of IOMMU
-      iommu/vt-d: Fix recursive lock issue in iommu_flush_dev_iotlb()
-      iommu/vt-d: Fix lockdep splat due to klist iteration in atomic context
-      iommu/vt-d: Fix possible recursive locking in intel_iommu_init()
-
- drivers/iommu/amd/iommu.c    |   3 +-
- drivers/iommu/amd/iommu_v2.c |   2 +
- drivers/iommu/intel/dmar.c   |   7 ++
- drivers/iommu/intel/iommu.c  | 241 ++++++++++++++++++++-----------------------
- drivers/iommu/intel/iommu.h  |   9 +-
- drivers/iommu/iommu.c        |  21 +++-
- drivers/iommu/virtio-iommu.c |  11 ++
- include/linux/dmar.h         |   4 +-
- 8 files changed, 163 insertions(+), 135 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
