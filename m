@@ -1,184 +1,261 @@
-Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com [209.85.208.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79F417F
-	for <iommu@lists.linux.dev>; Mon, 12 Sep 2022 01:24:32 +0000 (UTC)
-Received: by mail-lj1-f170.google.com with SMTP id x10so8838271ljq.4
-        for <iommu@lists.linux.dev>; Sun, 11 Sep 2022 18:24:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=L5Fh/joIDcg5b/gOBOrGumLyR4iznWiysgnN0ur4ZW4=;
-        b=OhwiIHp3Pj4CBhTeepPdzWcnpYVUE9VwYka9xsxcd6UQFOec9/LVRHpU/VwK+ysElf
-         cp793Cqb+zS2QlSSitB5ypMCrps0VlxmNjxI9GYYXLEPBY5s2jNXgHluT2LExQx909mQ
-         mFn1FyzutjLxGwDBTtQ+spMTdZsXSzoPcWVzi1rOThK7jHqPrFyrI6lWmj0F2K1nRPHK
-         jvoGe0PJi71svLXKXFMAfzK57QzinJ4K0S+kvXH/Pq3A0PqoSARtI8ffpn7iK5U6PVWV
-         WSKFy7p3bNaW6hwJm38ibg+lVlSpjQfY0mAskWgeXr2jk6AOdWjXZCfJ19PlP2vF/BK5
-         Jo7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=L5Fh/joIDcg5b/gOBOrGumLyR4iznWiysgnN0ur4ZW4=;
-        b=5f6r59DPKjfuDbCoH0CYFTXoa2/ecmcA0buCZeUpUSB3cXXAIFPBRKZInEYGz693We
-         FwQtGxGa0A6ZADDAC3AmQsSeDhktiX5o5useVqAKp84bx0TkPSXWupuMyUSerukyPUMi
-         SvveDX1Kl7xwfykAu8FzmIepLO/ESQwYqORjhtjiuuogHVAuBBM8IZZI8LsEpWpNbLYV
-         6W/6Cd/yNVzyC/sdfu/4KyFPumvPnPOPxoAF4BOmqCmmfOqKKQrOVHXG35FRc5Ua1QoS
-         3E6s2Bn/NbA2Cob9nE6HIv3sZpeAK4TloesQkRwvhQM5fDYFgZ/ns8/NVQ34maJalTB+
-         nBnA==
-X-Gm-Message-State: ACgBeo03AOC1fbknLT5MLsQNFLS8pwFMDKAdipPBimpJdq6FdktvpaF7
-	evRUG8VncpiKhrAmwcf1aNU=
-X-Google-Smtp-Source: AA6agR7WYKXi5FrvrZwo9YjKCKKzszbzfSMrE9s+S7hamuNKbPSroMGiE23ADZ01XN7Sk92JaLfYwQ==
-X-Received: by 2002:a2e:808f:0:b0:26a:b498:2c87 with SMTP id i15-20020a2e808f000000b0026ab4982c87mr7265597ljg.279.1662945870385;
-        Sun, 11 Sep 2022 18:24:30 -0700 (PDT)
-Received: from mobilestation ([95.79.140.178])
-        by smtp.gmail.com with ESMTPSA id t2-20020ac243a2000000b00497a8f04905sm780384lfl.251.2022.09.11.18.24.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 Sep 2022 18:24:29 -0700 (PDT)
-Date: Mon, 12 Sep 2022 04:24:26 +0300
-From: Serge Semin <fancer.lancer@gmail.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-	Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-	Vinod Koul <vkoul@kernel.org>, Rob Herring <robh@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-	Jingoo Han <jingoohan1@gmail.com>, Frank Li <Frank.Li@nxp.com>,
-	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-	Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-	Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-	linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79E0C7F
+	for <iommu@lists.linux.dev>; Mon, 12 Sep 2022 02:54:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662951258; x=1694487258;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=o9A5RBW+HGfiJnZuEp4q1NvzXtY2izQmYjW0jhImg7A=;
+  b=kMjK9+r0dANAlO8a1kSL5DNw79jAdXW5397y15kQRiACnUosmTz9eOgu
+   aDmpiyqdffwlTuqL9vBJqTDrY6mjDi0abl42Z/LdvK3cRJOEmM1nnzKD4
+   8Q1CfPhIx8vYCAUneTUL7ub0D0/BDk1RQssYiNMtizvcwxI0oELBolDj8
+   p873uWm6Sd79SO3SkWfTmw1zHZBiJ84HMkJPTl5xW7yHm1qHvgzJN7Hp5
+   VFHYRYqd4eH024bUHlUjUaZFilb1dzKQsfh2DoTmCfx6pv5Ml7TEoZuGq
+   2risJSsuVUR0JZcpDlPYDl+BQSEjx1Q15K+RBCe401ZgqC4FNb11HAvxI
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10467"; a="280793125"
+X-IronPort-AV: E=Sophos;i="5.93,308,1654585200"; 
+   d="scan'208";a="280793125"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2022 19:54:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,308,1654585200"; 
+   d="scan'208";a="646278973"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by orsmga008.jf.intel.com with ESMTP; 11 Sep 2022 19:54:15 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: iommu@lists.linux.dev
+Cc: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
 	linux-kernel@vger.kernel.org,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [PATCH RESEND v5 22/24] dmaengine: dw-edma: Bypass dma-ranges
- mapping for the local setup
-Message-ID: <20220912012426.xcg4tu6wzogbirp6@mobilestation>
-References: <20220822185332.26149-1-Sergey.Semin@baikalelectronics.ru>
- <20220822185332.26149-23-Sergey.Semin@baikalelectronics.ru>
- <7a035b29-fca6-2650-c3c1-eedb3904c32d@arm.com>
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 1/1] iommu/vt-d: Enable PASID during iommu device probe
+Date: Mon, 12 Sep 2022 10:48:26 +0800
+Message-Id: <20220912024826.1684913-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7a035b29-fca6-2650-c3c1-eedb3904c32d@arm.com>
+Content-Transfer-Encoding: 8bit
 
-On Wed, Aug 31, 2022 at 10:17:30AM +0100, Robin Murphy wrote:
-> On 2022-08-22 19:53, Serge Semin wrote:
-> > DW eDMA doesn't perform any translation of the traffic generated on the
-> > CPU/Application side. It just generates read/write AXI-bus requests with
-> > the specified addresses. But in case if the dma-ranges DT-property is
-> > specified for a platform device node, Linux will use it to map the CPU
-> > memory regions into the DMAable bus ranges. This isn't what we want for
-> > the eDMA embedded into the locally accessed DW PCIe Root Port and
-> > End-point. In order to work that around let's set the chan_dma_dev flag
-> > for each DW eDMA channel thus forcing the client drivers to getting a
-> > custom dma-ranges-less parental device for the mappings.
-> > 
-> > Note it will only work for the client drivers using the
-> > dmaengine_get_dma_device() method to get the parental DMA device.
-> 
+Previously PASID supports on both IOMMU and PCI devices are enabled in the
+iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA) path. It's functionally
+correct as the SVA is the only feature that requires PASID setup. However,
+looking ahead, we will add more features that need to enable pasid (for
+example, kernel DMA with PASID, SIOV, VM guest SVA, etc.). It makes more
+sense to enable PASID during iommu probing device.
 
-> No, this is nonsense. If the DMA engine is on the host side of the bridge
-> then it should not have anything to do with the PCI device at all, it should
-> be associated with the platform device,
+This enables PASID during iommu probing device and deprecates the
+intel_iommu_enable_pasid() helper. This is safe because the IOMMU hardware
+will block any PCI TLP with a PASID prefix if there is no IOMMU domain
+attached to the PASID of the device.
 
-Well. The DMA-engine is embedded into the PCIe Root Port bus, is associated
-with the platform device it's embedded to, and it doesn't have
-anything to do with any particular PCI device.
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/iommu.h |  1 -
+ drivers/iommu/intel/iommu.c | 74 +++++++------------------------------
+ drivers/iommu/intel/Kconfig |  4 +-
+ 3 files changed, 16 insertions(+), 63 deletions(-)
 
-> and thus any range mapping on the bridge itself would be irrelevant anyway.
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index fae45bbb0c7f..ce5f343ca864 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -737,7 +737,6 @@ extern int dmar_ir_support(void);
+ void *alloc_pgtable_page(int node);
+ void free_pgtable_page(void *vaddr);
+ void iommu_flush_write_buffer(struct intel_iommu *iommu);
+-int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct device *dev);
+ struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn);
+ 
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 7cca030a508e..69357c7c8c39 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -231,6 +231,11 @@ static inline void context_set_domain_id(struct context_entry *context,
+ 	context->hi |= (value & ((1 << 16) - 1)) << 8;
+ }
+ 
++static inline void context_set_pasid(struct context_entry *context)
++{
++	context->lo |= CONTEXT_PASIDE;
++}
++
+ static inline int context_domain_id(struct context_entry *c)
+ {
+ 	return((c->hi >> 8) & 0xffff);
+@@ -1341,20 +1346,17 @@ static void __iommu_flush_iotlb(struct intel_iommu *iommu, u16 did,
+ }
+ 
+ static struct device_domain_info *
+-iommu_support_dev_iotlb(struct dmar_domain *domain, struct intel_iommu *iommu,
+-			u8 bus, u8 devfn)
++domain_lookup_dev_info(struct dmar_domain *domain,
++		       struct intel_iommu *iommu, u8 bus, u8 devfn)
+ {
+ 	struct device_domain_info *info;
+ 
+-	if (!iommu->qi)
+-		return NULL;
+-
+ 	spin_lock(&domain->lock);
+ 	list_for_each_entry(info, &domain->devices, link) {
+ 		if (info->iommu == iommu && info->bus == bus &&
+ 		    info->devfn == devfn) {
+ 			spin_unlock(&domain->lock);
+-			return info->ats_supported ? info : NULL;
++			return info;
+ 		}
+ 	}
+ 	spin_unlock(&domain->lock);
+@@ -1401,7 +1403,6 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
+ 		info->pfsid = pci_dev_id(pf_pdev);
+ 	}
+ 
+-#ifdef CONFIG_INTEL_IOMMU_SVM
+ 	/* The PCIe spec, in its wisdom, declares that the behaviour of
+ 	   the device if you enable PASID support after ATS support is
+ 	   undefined. So always enable PASID support on devices which
+@@ -1414,7 +1415,7 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
+ 	    (info->pasid_enabled ? pci_prg_resp_pasid_required(pdev) : 1)  &&
+ 	    !pci_reset_pri(pdev) && !pci_enable_pri(pdev, PRQ_DEPTH))
+ 		info->pri_enabled = 1;
+-#endif
++
+ 	if (info->ats_supported && pci_ats_page_aligned(pdev) &&
+ 	    !pci_enable_ats(pdev, VTD_PAGE_SHIFT)) {
+ 		info->ats_enabled = 1;
+@@ -1437,16 +1438,16 @@ static void iommu_disable_dev_iotlb(struct device_domain_info *info)
+ 		info->ats_enabled = 0;
+ 		domain_update_iotlb(info->domain);
+ 	}
+-#ifdef CONFIG_INTEL_IOMMU_SVM
++
+ 	if (info->pri_enabled) {
+ 		pci_disable_pri(pdev);
+ 		info->pri_enabled = 0;
+ 	}
++
+ 	if (info->pasid_enabled) {
+ 		pci_disable_pasid(pdev);
+ 		info->pasid_enabled = 0;
+ 	}
+-#endif
+ }
+ 
+ static void __iommu_flush_dev_iotlb(struct device_domain_info *info,
+@@ -1890,7 +1891,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
+ 				      u8 bus, u8 devfn)
+ {
+ 	struct device_domain_info *info =
+-			iommu_support_dev_iotlb(domain, iommu, bus, devfn);
++			domain_lookup_dev_info(domain, iommu, bus, devfn);
+ 	u16 did = domain_id_iommu(domain, iommu);
+ 	int translation = CONTEXT_TT_MULTI_LEVEL;
+ 	struct context_entry *context;
+@@ -1961,6 +1962,8 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
+ 			context_set_sm_dte(context);
+ 		if (info && info->pri_supported)
+ 			context_set_sm_pre(context);
++		if (info && info->pasid_supported)
++			context_set_pasid(context);
+ 	} else {
+ 		struct dma_pte *pgd = domain->pgd;
+ 		int agaw;
+@@ -4566,52 +4569,6 @@ static void intel_iommu_get_resv_regions(struct device *device,
+ 	list_add_tail(&reg->list, head);
+ }
+ 
+-int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct device *dev)
+-{
+-	struct device_domain_info *info = dev_iommu_priv_get(dev);
+-	struct context_entry *context;
+-	struct dmar_domain *domain;
+-	u64 ctx_lo;
+-	int ret;
+-
+-	domain = info->domain;
+-	if (!domain)
+-		return -EINVAL;
+-
+-	spin_lock(&iommu->lock);
+-	ret = -EINVAL;
+-	if (!info->pasid_supported)
+-		goto out;
+-
+-	context = iommu_context_addr(iommu, info->bus, info->devfn, 0);
+-	if (WARN_ON(!context))
+-		goto out;
+-
+-	ctx_lo = context[0].lo;
+-
+-	if (!(ctx_lo & CONTEXT_PASIDE)) {
+-		ctx_lo |= CONTEXT_PASIDE;
+-		context[0].lo = ctx_lo;
+-		wmb();
+-		iommu->flush.flush_context(iommu,
+-					   domain_id_iommu(domain, iommu),
+-					   PCI_DEVID(info->bus, info->devfn),
+-					   DMA_CCMD_MASK_NOBIT,
+-					   DMA_CCMD_DEVICE_INVL);
+-	}
+-
+-	/* Enable PASID support in the device, if it wasn't already */
+-	if (!info->pasid_enabled)
+-		iommu_enable_dev_iotlb(info);
+-
+-	ret = 0;
+-
+- out:
+-	spin_unlock(&iommu->lock);
+-
+-	return ret;
+-}
+-
+ static struct iommu_group *intel_iommu_device_group(struct device *dev)
+ {
+ 	if (dev_is_pci(dev))
+@@ -4635,9 +4592,6 @@ static int intel_iommu_enable_sva(struct device *dev)
+ 	if (!(iommu->flags & VTD_FLAG_SVM_CAPABLE))
+ 		return -ENODEV;
+ 
+-	if (intel_iommu_enable_pasid(iommu, dev))
+-		return -ENODEV;
+-
+ 	if (!info->pasid_enabled || !info->pri_enabled || !info->ats_enabled)
+ 		return -EINVAL;
+ 
+diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+index 39a06d245f12..b3f40375f214 100644
+--- a/drivers/iommu/intel/Kconfig
++++ b/drivers/iommu/intel/Kconfig
+@@ -21,6 +21,8 @@ config INTEL_IOMMU
+ 	select IOASID
+ 	select IOMMU_DMA
+ 	select PCI_ATS
++	select PCI_PRI
++	select PCI_PASID
+ 	help
+ 	  DMA remapping (DMAR) devices support enables independent address
+ 	  translations for Direct Memory Access (DMA) from devices.
+@@ -48,8 +50,6 @@ config INTEL_IOMMU_DEBUGFS
+ config INTEL_IOMMU_SVM
+ 	bool "Support for Shared Virtual Memory with Intel IOMMU"
+ 	depends on X86_64
+-	select PCI_PASID
+-	select PCI_PRI
+ 	select MMU_NOTIFIER
+ 	select IOASID
+ 	select IOMMU_SVA
+-- 
+2.25.1
 
-Really? I find it otherwise. Please see the way the "dma-ranges"
-property is parsed and works during the device-specific memory ranges
-mapping when it's applicable for the PCIe Root Ports.
-
-> 
-> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> > Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> > Acked-By: Vinod Koul <vkoul@kernel.org>
-> > 
-> > ---
-> > 
-> > Changelog v2:
-> > - Fix the comment a bit to being clearer. (@Manivannan)
-> > 
-> > Changelog v3:
-> > - Conditionally set dchan->dev->device.dma_coherent field since it can
-> >    be missing on some platforms. (@Manivannan)
-> > - Remove Manivannan' rb and tb tags since the patch content has been
-> >    changed.
-> > ---
-> >   drivers/dma/dw-edma/dw-edma-core.c | 20 ++++++++++++++++++++
-> >   1 file changed, 20 insertions(+)
-> > 
-> > diff --git a/drivers/dma/dw-edma/dw-edma-core.c b/drivers/dma/dw-edma/dw-edma-core.c
-> > index 6a8282eaebaf..4f56149dc8d8 100644
-> > --- a/drivers/dma/dw-edma/dw-edma-core.c
-> > +++ b/drivers/dma/dw-edma/dw-edma-core.c
-> > @@ -716,6 +716,26 @@ static int dw_edma_alloc_chan_resources(struct dma_chan *dchan)
-> >   	if (chan->status != EDMA_ST_IDLE)
-> >   		return -EBUSY;
-> > +	/* Bypass the dma-ranges based memory regions mapping for the eDMA
-> > +	 * controlled from the CPU/Application side since in that case
-> > +	 * the local memory address is left untranslated.
-> > +	 */
-> > +	if (chan->dw->chip->flags & DW_EDMA_CHIP_LOCAL) {
-> > +		dchan->dev->chan_dma_dev = true;
-> > +
-> > +#if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
-> > +    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
-> > +    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
-> > +		dchan->dev->device.dma_coherent = chan->dw->chip->dev->dma_coherent;
-> > +#endif
-> > +
-> > +		dma_coerce_mask_and_coherent(&dchan->dev->device,
-> > +					     dma_get_mask(chan->dw->chip->dev));
-> > +		dchan->dev->device.dma_parms = chan->dw->chip->dev->dma_parms;
-> > +	} else {
-> > +		dchan->dev->chan_dma_dev = false;
-> > +	}
-> 
-
-> NAK. Don't try to poke into DMA API internals and copy random partial pieces
-> between devices, it doesn't work properly (I can guess that your system
-> doesn't have an IOMMU...) and having to deal with ugly mess like this in
-> drivers just makes it harder for us to maintain the DMA API itself.
-
-Hold on with that angry tone. First of all I don't really see you
-fixing the drivers/dma/ti/k3-udma.c driver then. Second read more
-carefully the patch log. Judging by your comments you don't fully
-understand the problem.
-
-> 
-> Fair enough if you have good reason to create logical child devices to
-> represent individual DMA channels, but the correct way to handle that is to
-> keep the real parent device pointer around and use that for DMA API calls.
-
-That's what is in my patches. The problem is that the "dma-ranges"
-property specified for the parental PCIe Root Port device isn't
-applicable for the DMA-engine embedded into it. The "dma-ranges" is
-supposed to be used for the PCIe-bus peripheral devices since their
-MRw/MRd TLPs are translated by means of the Inbound iATU engine. The
-IO accesses generated by the PCIe controller itself aren't affected by
-iATU. So any mapping performed for the PCIe Root Port controller
-platform device mustn't take these DMA-ranges into account. That's why
-I need to enable the "chan_dma_dev" DMA-engine capability and just
-copy the main DMA-parts of the parental device except the
-"dma_range_map" data. If you have any better suggestion in mind
-please share, but what you've said so far definitely won't give us any
-explicit solution.
-
--Sergey
-
-> 
-> Robin.
-> 
-> > +
-> >   	pm_runtime_get(chan->dw->chip->dev);
-> >   	return 0;
