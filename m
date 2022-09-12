@@ -1,152 +1,210 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 06C392589
-	for <iommu@lists.linux.dev>; Mon, 12 Sep 2022 11:13:34 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 92C29113E;
-	Mon, 12 Sep 2022 04:13:40 -0700 (PDT)
-Received: from [10.57.15.197] (unknown [10.57.15.197])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 723523F71A;
-	Mon, 12 Sep 2022 04:13:30 -0700 (PDT)
-Message-ID: <2c66a30e-f96f-f11c-bb05-a5f4a756ab30@arm.com>
-Date: Mon, 12 Sep 2022 12:13:25 +0100
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2078.outbound.protection.outlook.com [40.107.21.78])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5E441C31
+	for <iommu@lists.linux.dev>; Mon, 12 Sep 2022 16:38:45 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dGNz15NQSDg0jt1tQAo8L9CurdJpMUqUpoP+zpS3Xt7D41vSIhvLJWm0EPIeVrwtbTRNN9X/VJRrTYz00XD3WG6mqr0SO4WAVnDwgH1/EkH5xngiI87HUarTVjacMKhW7qnoAd69/nuAKl6UnMiKhrjqZMfsDibeWkHVqKAzcLSn/QTbJXYTepmy9etY3vWehasqP9zEbAzNyZZ2Dg09PegNoWe7yiY7QEjC8cYC4KWcogHeOsAf5H+KzpceUIWJ5E9128eZQAinNm2gj2uHddRYGa/A3DCthZJ1ZpXg/R+oRdxmCbYPhsoPD3pEyeipdWtkGmAEeHSRe2lk85xzYA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RXuQkNBkxf4WOQyLZXJWRskOtVvkdZWa3oEaNVZQbU8=;
+ b=gfNsEWyZ2LKZ5y8LMte5KIJ9dIdJYkgLhVEOA2SKaVvOdhl9N4GGNjGJPvJ/JD+agEZiESMP5RKVX+r/sOx/tBBJab9WaQhFnwgiqJ2bX4rhfanPMlbbZNsZru1cdJ0iUUSjaWwfiOgZ4iw0uVaDgenXSY31ns5f9pq16l+DduMpNt1wMmK7KYTc6RXFzsuYGUCJ5pXJOBTvhFR+ED4BwYs1frTtSL649Ep+msqGFveFOj5X/+JDung1inR5tLGYvYqzvlyJc83KXkZB1m1rEF+cYpIKcuBYbuOtGyMAMd2VWxlUUoe1bxsmkx0wSSaxn4IMswg8efzboLasbqV5UA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=variscite.com; dmarc=pass action=none
+ header.from=variscite.com; dkim=pass header.d=variscite.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=variscite.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RXuQkNBkxf4WOQyLZXJWRskOtVvkdZWa3oEaNVZQbU8=;
+ b=QIyEvM+/NUBX+2ZDCqaRA/MYLSt2YhV772arFWAz1rpIhVK81LICUDxumRK9vtli7ubZ8szp0xPOWoneW8vzXTAFFtwJAm+u09rf0+s22zmgKaDxw8/R2SmIYN4/i1sOOB2vt286JUBGLWK76EFN5b7Gfd/uZHYBfmZTODLE3SpQgIa7sg/XQZpFbr6yzG+HstVa5TVLYXUw+/3M71HgjBMtMjgNFD6t4ZtoVjDwk9wTAkWNW67XLwP2UXtX/J2jarAzT3aF3IXTmowtO8WrB/tpjIqah5si9aPVQxdtbfYO3VUuPoFlidCjWLvm/dR6Y7rx4lxLzisF2IYJAtY0Ow==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=variscite.com;
+Received: from DB9PR08MB6825.eurprd08.prod.outlook.com (2603:10a6:10:2af::9)
+ by DBBPR08MB5977.eurprd08.prod.outlook.com (2603:10a6:10:209::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.15; Mon, 12 Sep
+ 2022 16:38:42 +0000
+Received: from DB9PR08MB6825.eurprd08.prod.outlook.com
+ ([fe80::a88a:b945:e903:42a8]) by DB9PR08MB6825.eurprd08.prod.outlook.com
+ ([fe80::a88a:b945:e903:42a8%9]) with mapi id 15.20.5612.022; Mon, 12 Sep 2022
+ 16:38:42 +0000
+From: Nate Drude <nate.d@variscite.com>
+To: iommu@lists.linux.dev
+Cc: Jonathan Corbet <corbet@lwn.net>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Borislav Petkov <bp@suse.de>,
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Muchun Song <songmuchun@bytedance.com>,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	eran.m@variscite.com,
+	Nate Drude <nate.d@variscite.com>
+Subject: [PATCH] dma-contiguous: add optional cma_name for cma= kernel parameter
+Date: Mon, 12 Sep 2022 11:38:05 -0500
+Message-Id: <20220912163805.4113238-1-nate.d@variscite.com>
+X-Mailer: git-send-email 2.37.3
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: CH2PR12CA0025.namprd12.prod.outlook.com
+ (2603:10b6:610:57::35) To DB9PR08MB6825.eurprd08.prod.outlook.com
+ (2603:10a6:10:2af::9)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH 4/4] iommu: Fix ordering of iommu_release_device()
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>,
- Cornelia Huck <cohuck@redhat.com>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
- Will Deacon <will@kernel.org>, Qian Cai <cai@lca.pw>,
- Joerg Roedel <jroedel@suse.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>
-References: <4-v1-ef00ffecea52+2cb-iommu_group_lifetime_jgg@nvidia.com>
- <87b7041e-bc8d-500c-7167-04190e3795a9@arm.com>
- <ada74e00-77e1-770b-f0b7-a4c43a86c06f@arm.com> <YxpiBEbGHECGGq5Q@nvidia.com>
- <38bac59a-808d-5e91-227a-a3a06633c091@arm.com> <Yxs+1s+MPENLTUpG@nvidia.com>
- <e0ff6dc1-91b3-2e41-212c-c83a2bf2b3a8@arm.com> <YxuGQDCzDsvKV2W8@nvidia.com>
- <b753aecb-ee2a-2cd0-1df2-0c3e977b4cb9@arm.com> <YxvQNTD1U4bs5TZD@nvidia.com>
-Content-Language: en-GB
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <YxvQNTD1U4bs5TZD@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DB9PR08MB6825:EE_|DBBPR08MB5977:EE_
+X-MS-Office365-Filtering-Correlation-Id: c1bfbd18-50cc-4b8f-f66f-08da94dd40c9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	+3mDuoeY/PRFn0Hl8mMTlLPmCzry+9fzgFcsWIafGCnByohLt9A1WIGZpFAbCYCY70RHum//Si17UIKbbYIhGNiSYoyoXuTFldYtMQRdTo6/DpYVB1D9H733/GW5sMPxkjnGgKeo/ZJIJa+TM1j+eSee4T6iNTXKpqoru8YD3Fe6gqgPz2ySbsuR/+53yUnZtlEfQ7qNtQNNWim2Duy8iJict7P451A5+F+D5vmJ4zwxksMlrG3ZyZsfcJ5PKrkPBg3L6ToxKF/KyKBLejFAQBkXLqkeeyb/yrsB/733u31mlbxYhPE2czOn3kSFZaAOmDATtdsTxK2LktVoFqjRIardUw19a3NL9zAGZsO6rG1+zB/XSCVyP2/SsOqoSsP8ggMbtyBf1wB/tszn+GVyz2kqHwMuwwBTNpUyx+gDsoqVFcZuBtlmNUez2tGD77mkVMbduNTkBHLMMq5fa/caD+vEvT4OuPcRULQ+RtdEVGOSG97wvDy1LliOmUFOMW2dcneK3t5cfH9RSdRdnwvnNB2LnIbj1/FdwwQJiWlT/ySeKbrPx0IqcYfVzyDkOx5cWEfoRmRhItn94zRzl25QJG1JoTNw9ul0A90htKsF/Ayoi7azlyjJr0z/vMMyRzvGW0q+yBHzSgn19GqVOgA3A+fwcqVR38BG0nNy6GI8un37P/siUG9D5QczzCVK+eBWnUCii9OE8xrB+b6H8jtJUvf/ToC4Nubj0EQ4Sb3y5ybC2rLoVb5tZeoxEqDheYbls2K2bqGrMTXjtymoUob0BA==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR08MB6825.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230017)(39850400004)(396003)(346002)(376002)(136003)(366004)(6666004)(41300700001)(8936002)(1076003)(186003)(2616005)(36756003)(6506007)(6512007)(26005)(2906002)(38100700002)(38350700002)(52116002)(86362001)(83380400001)(6486002)(478600001)(316002)(54906003)(6916009)(5660300002)(107886003)(7416002)(8676002)(4326008)(66476007)(66556008)(66946007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?0ycpVyeCO1dek1tfPsz5iNpiLf/j9/arQ7plskLqVwLug8K0pwTwqQMHDgP+?=
+ =?us-ascii?Q?/4RuSbelxclPKm9E82K5yTQG8tfy+50iuUPNAyeEMJpRoYXr/k90v0b2IZVl?=
+ =?us-ascii?Q?myq8vfxJSKanNoiSAO4W+T8FViDvJY8eEXCs8HWtiPi6HggmROL+Mjw4lH+e?=
+ =?us-ascii?Q?DQBajgt181DHybgzxH76PHp3ksP4iKQ9vvf446oYUOsI1IrttX1YFdMmZO6O?=
+ =?us-ascii?Q?hRGhB8ccxWy7LlfM+fw1+cWUcV1/GcCCaJd2AV4qt3U3KBDTrYWKrE/5huPk?=
+ =?us-ascii?Q?Ocb6iSnCF359yP2JFbWTdqnULwPEe+5w5335eKT/CE4XSG2tCJkvqBJM+wxw?=
+ =?us-ascii?Q?vdSmUTuf419tjFJhbVmdlozZdKWqUMBwwmEfh9SlaHNdH9+2qtWCGrp21OMM?=
+ =?us-ascii?Q?CPgVVtmBoGBSdHOB7xPCRB1HPxmUoJVWihvCRNE+M1vqafJMOxgyJCgGT3ob?=
+ =?us-ascii?Q?D7DV8dexEOR7h1GnUnAC6ivvYR4OlKr7PJxcOEsDGD5ngjr5kkyYbjhG7xeB?=
+ =?us-ascii?Q?FBJTDBtarKKmprm1w8PgYRzaSFv23Zx5exTYDQf8d68B0oyUuu9OYzPupfzH?=
+ =?us-ascii?Q?SaCxrc0bN9N4GeWT/e2tH9ETUpmHYNoF5jWGsAy6Xm8daZdCJoUzXzMGEM9x?=
+ =?us-ascii?Q?SJwqW3Koz0KUdQbs80CALEto2nLE0mu718d5kdmxwG0Pb1XzchocTkp0Mh8K?=
+ =?us-ascii?Q?LYMagIgH9zVTJmpp6k4dfwizBum0+auERsIqhOs1SfYjjyNcuum1Oh+yPbv0?=
+ =?us-ascii?Q?3tUDFW/aWO5Cul70KJv0CXtThq45EFGuItSP0sf+04+2QBvXyPM6dBcghIT1?=
+ =?us-ascii?Q?Z+V1QpMR5dIXtO/k96DLhvdbatiHEzewbEzuVtyYBjR1ZvyrqwC3DqXzRbmP?=
+ =?us-ascii?Q?zYDrU4Sd4LIcpLfLP58Q8sutMh3bIF3tzvC3tVv1P+xfeJA3lF9U8GNfK0v9?=
+ =?us-ascii?Q?2noK/jSF21QIWvq0aTc9GRMjKbDco2pGewQddfiZjaFaBly1XHdGImU9VGZB?=
+ =?us-ascii?Q?Sgm21WS1/gTz0SHg5/7R69eSj2UtQQOOCRZ8n9intJiOGf3bojUEg6GUNbDq?=
+ =?us-ascii?Q?ogjJThz5cKXAMOkb3ug07BZCzZgaKw7kYrAnasKf5Q2l8hMt7JoGyfssY4qa?=
+ =?us-ascii?Q?YnTFc3Ce8ZTPnrtkHMNcwW2xGYFG4ZTQojezT8KVsXO2MxUBUewHS+FYVjbe?=
+ =?us-ascii?Q?6R/++QX+/JYr51XpxVHyIIc5sReqOGXw1GQ+61ZaUzOnk77OsP7lF3XoR+Ls?=
+ =?us-ascii?Q?DwCoZhonwwlOL4oxSPii1C/M+50MWPW0eUs8pjEivFR7pfr0m59RbB3DnemJ?=
+ =?us-ascii?Q?sOOoH1l7QrcKuLU93XPBfrNMehIt048f0urro2wIzK2kTyZkKB4TRGudMjbE?=
+ =?us-ascii?Q?6BPLkknsQkxfHtxWd6jhq11ImSFfDowCwOupZsolcfKKYO1LmgdF8hZSQNXk?=
+ =?us-ascii?Q?wRl/vUW+oFvuAoz6lp7eupZAFYisPMj+3FEP3qJl/vlyXnjOVCsbjAQgdjJ8?=
+ =?us-ascii?Q?ik/Aie3Ahg3aj8o+CY4HLvcNNhEk1XUMS3cpDpg9XdtV5Fk3OFdMadMe+lOb?=
+ =?us-ascii?Q?MQEEczjeVJyonh5t4OlWrLdsTw484lGaoT8UgM+v?=
+X-OriginatorOrg: variscite.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c1bfbd18-50cc-4b8f-f66f-08da94dd40c9
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR08MB6825.eurprd08.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Sep 2022 16:38:42.2788
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 399ae6ac-38f4-4ef0-94a8-440b0ad581de
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4gtXK+IaDZDB28NZuGpm7re0fqWqIQBvpIfKkxyjEOaWxR/eI0cGoslOOftHUA7nrjYvkYoGe16QRrGXq2nTAQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR08MB5977
 
-On 2022-09-10 00:45, Jason Gunthorpe wrote:
-> On Fri, Sep 09, 2022 at 08:55:07PM +0100, Robin Murphy wrote:
-> 
->>> Isn't this every driver though? Like every single driver implementing
->>> an UNMANAGED/DMA/DMA_FQ domain has a hidden reference to the
->>> iommu_domain - minimally to point the HW to the IOPTEs it stores.
->>
->> Um, no? Domain ops get the domain passed in as an argument, which is far
->> from hidden, and if any driver implemented them to ignore that argument and
->> operate on something else it would be stupid and broken. Note I said
->> "per-device reference", meaning things like s390's zpci_dev->s390_domain and
->> SMMUv3's dev->iommu->priv->domain. It's only those references that are
->> reachable from release_device - outside the normal domain lifecycle - which
->> are problematic.
-> 
-> If the plan is to make the domain refcounted and then allow a 'put' on
-> it before we reach release_device() then it means every driver needs
-> to hold a 'get' on the domain while it is programmed into the HW.
-> 
-> Because the hw will still be touching memory that could be freed by an
-> iommu_domain_free(). By "hidden" reference I mean the HW walkers are
-> touching memory that would be freed - ie kasn won't see it.
+When cma is defined in the device tree, the device tree node
+name is used as the cma name. In the following example, the cma
+will be named 'linux,cma':
 
-As far as I'm concerned we're dealing purely with the case where 
-release_device races with attaching back to the default domain *and* the 
-driver has some reason for release_device to poke at what it thinks the 
-currently-attached domain is. Anyone who frees a domain while it's still 
-actually live deserves whatever they get; it would be thoroughly 
-impractical to attempt to mitigate for that kind of silliness.
+linux,cma {
+	compatible = "shared-dma-pool";
+	reusable;
+	size = <0 0x3c000000>;
+	alloc-ranges = <0 0x40000000 0 0xC0000000>;
+	linux,cma-default;
+};
 
->>> Do you know a reason not to hold the group mutex across
->>> release_device? I think that is the most straightforward and
->>> future proof.
->>
->> Yes, the ones documented in the code and already discussed here. The current
->> functional ones aren't particularly *good* reasons, but unless and until
->> they can all be cleaned up they are what they are.
-> 
-> Uh, I feel like I missed part of the conversation - I don't know what
-> this list is..
+And a device /dev/dma_heap/linux,cma is created.
 
-s390 (remember how we got here?) calls iommu_get_domain_for_dev(). 
-ipmmu-vmsa calls arm_iommu_detach_device() (mtk_v1 doesn't, but perhaps 
-technically should), to undo the corresponding attach from 
-probe_finalize - apologies for misremembering which way round the 
-comments were.
+However, when cma is provided by command line, a default
+name of 'reserved' is used, and the device path changes to
+/dev/dma_heap/reserved.
 
->>>> @@ -1022,6 +1030,14 @@ void iommu_group_remove_device(struct device *dev)
->>>>    	dev_info(dev, "Removing from iommu group %d\n", group->id);
->>>>    	mutex_lock(&group->mutex);
->>>> +	if (WARN_ON(group->domain != group->default_domain &&
->>>> +		    group->domain != group->blocking_domain)) {
->>>
->>> This will false trigger, if there are two VFIO devices then the group
->>> will remained owned when we unplug one just of them, but the group's domain
->>> will be a VFIO owned domain.
->>
->> As opposed to currently, where most drivers' release_device will blindly
->> detach/disable the RID in some fashion so the other device would suddenly
->> blow up anyway?
-> 
-> Er, I think it is OK today, in the non-shared case. If the RID isn't
-> shared then each device in the group is independent, so most drivers,
-> most of the time, should only effect the RID release_device() is
-> called on, while this warning will always trigger for any multi-device
-> group.
+This is problematic because some user space applications,
+like gstreamer plugins, are expecting /dev/dma_heap/linux,cma.
 
-Oh, apparently I managed to misinterpret this as the two *aliasing* 
-devices case, sorry. Indeed it is overly conservative for that. I think 
-the robust way to detect bad usage is actually not via the group at all, 
-but for iommu_device_{un}use_default_domain() to also maintain a 
-per-device ownership flag, then we warn if a device is released with 
-that still set.
+This parameter allows overriding the default 'reserved' name.
 
->> (It *will* actually work on SMMUv2 because SMMUv2 comprehensively handles
->> StreamID-level aliasing beyond what pci_device_group() covers, which I
->> remain rather proud of)
-> 
-> This is why I prefered not to explicitly change the domain, because at
-> least if someone did write a non-buggy driver it doesn't get wrecked -
-> and making a non-buggy driver is at least allowed by the API.
+Signed-off-by: Nate Drude <nate.d@variscite.com>
+---
+ .../admin-guide/kernel-parameters.txt         |  7 +++++++
+ kernel/dma/contiguous.c                       | 21 ++++++++++++++++++-
+ 2 files changed, 27 insertions(+), 1 deletion(-)
 
-Detaching back to the default domain still seems like it's *always* the 
-right thing to do at this point, even when it should not be warned about 
-as above. As I say it *does* work on non-buggy drivers, and making this 
-whole domain use-after-free race a fundamental non-issue is attractive.
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 51397a320f5e..975ec862d071 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -644,6 +644,13 @@
+ 			altogether. For more information, see
+ 			kernel/dma/contiguous.c
+ 
++	cma_name=	Override the cma heap name
++			Format: <string>
++			When passing the cma kernel parameter, the default
++			cma name is 'reserved'. This parameter allows it to
++			be overriden to align with the device tree name,
++			like 'linux,cma'.
++
+ 	cma_pernuma=nn[MG]
+ 			[ARM64,KNL,CMA]
+ 			Sets the size of kernel per-numa memory area for
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index 3d63d91cba5c..e89819ec183e 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -74,6 +74,7 @@ static const phys_addr_t size_bytes __initconst =
+ static phys_addr_t  size_cmdline __initdata = -1;
+ static phys_addr_t base_cmdline __initdata;
+ static phys_addr_t limit_cmdline __initdata;
++static char name_cmdline[CMA_MAX_NAME] = "reserved";
+ 
+ static int __init early_cma(char *p)
+ {
+@@ -96,6 +97,24 @@ static int __init early_cma(char *p)
+ }
+ early_param("cma", early_cma);
+ 
++static int __init early_cma_name(char *p)
++{
++	if (!p) {
++		pr_err("Config string not provided\n");
++		return -EINVAL;
++	}
++
++	if (!strlen(p)) {
++		pr_err("cma_name must have at least one character\n");
++		return -EINVAL;
++	}
++
++	snprintf(name_cmdline, CMA_MAX_NAME, p);
++
++	return 0;
++}
++early_param("cma_name", early_cma_name);
++
+ #ifdef CONFIG_DMA_PERNUMA_CMA
+ 
+ static struct cma *dma_contiguous_pernuma_area[MAX_NUMNODES];
+@@ -231,7 +250,7 @@ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
+ 	int ret;
+ 
+ 	ret = cma_declare_contiguous(base, size, limit, 0, 0, fixed,
+-					"reserved", res_cma);
++					name_cmdline, res_cma);
+ 	if (ret)
+ 		return ret;
+ 
+-- 
+2.37.3
 
->>> And it misses the logic to WARN_ON if a domain is set and an external
->>> entity wrongly uses iommu_group_remove_device()..
->>
->> Huh? An external fake group couldn't have a default domain or blocking
->> domain, thus any non-NULL domain will not compare equal to either, so if
->> that could happen it will warn, and then most likely crash. I did think
->> briefly about trying to make it not crash, but then I remembered that fake
->> groups from external callers also aren't backed by IOMMU API drivers so have
->> no way to allocate or attach domains either, so in fact it cannot happen at
->> all under any circumstances that are worth reasoning about.
-> 
-> I mean specificaly thing like FSL is doing where it is a real driver
-> calling this API and the test of 'group->domain == NULL' is the more
-> robust precondition.
-
-Having looked a bit closer, I think I get what PAMU is doing - kind of 
-impedance-matching between pci_device_group() and its own non-ACS form 
-of isolation, and possibly also a rather roundabout way of propagating 
-DT data from the PCI controller node up into the PCI hierarchy. Both 
-could quite likely be done in a more straightforward manner these days 
-(and TBH I'm not convinced it works at all since it doesn't appear to 
-match the actual DT binding), but either way I'm fairly confident we 
-needn't worry about it.
-
-Thanks,
-Robin.
