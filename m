@@ -1,53 +1,184 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com [209.85.208.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34E7D7F
-	for <iommu@lists.linux.dev>; Sun, 11 Sep 2022 19:36:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D8176C433D7;
-	Sun, 11 Sep 2022 19:36:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1662925018;
-	bh=eTos0eDJdtt2fJTQCA5fj9y11CKl1aqrN65B9927ehM=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=FFlSbb+gqV6yIy6yKM20Rw/wTB6kvtSSbXFp/VvLiZJpiO37yr4GZMmRiff1fs71r
-	 sibGpknM3MrYjzK/aov7BD7q2HLgnUrYCGl3PSd2pUN2+InwRkxPN0nPq4sii0UunY
-	 3ZqMKwGXcGeHrKCfsdn8Zozt8k3pbpjZE/+JYYSvDxQ8Gi5aWsW02AgoMcahNFtrAa
-	 cwqHhPWNZJTKf+KoSEFFfM/int3txTwqNRtt2Q0JzMA21pNqXgexfnbGAAWpM/40BV
-	 PpeN0pTFe8HrejAqgqm3+TifXKClSqijwXJB7HKM2ChlwrtFEjVetXx0nJ1dJQpUS8
-	 XM5NJYXukb1GQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BF677C73FF0;
-	Sun, 11 Sep 2022 19:36:58 +0000 (UTC)
-Subject: Re: [git pull] IOMMU Fixes for Linux v6.0-rc4
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <Yx2Otdo+oqAeDG6s@8bytes.org>
-References: <Yx2Otdo+oqAeDG6s@8bytes.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Yx2Otdo+oqAeDG6s@8bytes.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.0-rc4
-X-PR-Tracked-Commit-Id: 2380f1e8195ef612deea1dc7a3d611c5d2b9b56a
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 2ccd4502f512e04b6cc01995da730e8754529cf9
-Message-Id: <166292501878.24843.5844761897401885517.pr-tracker-bot@kernel.org>
-Date: Sun, 11 Sep 2022 19:36:58 +0000
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79F417F
+	for <iommu@lists.linux.dev>; Mon, 12 Sep 2022 01:24:32 +0000 (UTC)
+Received: by mail-lj1-f170.google.com with SMTP id x10so8838271ljq.4
+        for <iommu@lists.linux.dev>; Sun, 11 Sep 2022 18:24:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=L5Fh/joIDcg5b/gOBOrGumLyR4iznWiysgnN0ur4ZW4=;
+        b=OhwiIHp3Pj4CBhTeepPdzWcnpYVUE9VwYka9xsxcd6UQFOec9/LVRHpU/VwK+ysElf
+         cp793Cqb+zS2QlSSitB5ypMCrps0VlxmNjxI9GYYXLEPBY5s2jNXgHluT2LExQx909mQ
+         mFn1FyzutjLxGwDBTtQ+spMTdZsXSzoPcWVzi1rOThK7jHqPrFyrI6lWmj0F2K1nRPHK
+         jvoGe0PJi71svLXKXFMAfzK57QzinJ4K0S+kvXH/Pq3A0PqoSARtI8ffpn7iK5U6PVWV
+         WSKFy7p3bNaW6hwJm38ibg+lVlSpjQfY0mAskWgeXr2jk6AOdWjXZCfJ19PlP2vF/BK5
+         Jo7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=L5Fh/joIDcg5b/gOBOrGumLyR4iznWiysgnN0ur4ZW4=;
+        b=5f6r59DPKjfuDbCoH0CYFTXoa2/ecmcA0buCZeUpUSB3cXXAIFPBRKZInEYGz693We
+         FwQtGxGa0A6ZADDAC3AmQsSeDhktiX5o5useVqAKp84bx0TkPSXWupuMyUSerukyPUMi
+         SvveDX1Kl7xwfykAu8FzmIepLO/ESQwYqORjhtjiuuogHVAuBBM8IZZI8LsEpWpNbLYV
+         6W/6Cd/yNVzyC/sdfu/4KyFPumvPnPOPxoAF4BOmqCmmfOqKKQrOVHXG35FRc5Ua1QoS
+         3E6s2Bn/NbA2Cob9nE6HIv3sZpeAK4TloesQkRwvhQM5fDYFgZ/ns8/NVQ34maJalTB+
+         nBnA==
+X-Gm-Message-State: ACgBeo03AOC1fbknLT5MLsQNFLS8pwFMDKAdipPBimpJdq6FdktvpaF7
+	evRUG8VncpiKhrAmwcf1aNU=
+X-Google-Smtp-Source: AA6agR7WYKXi5FrvrZwo9YjKCKKzszbzfSMrE9s+S7hamuNKbPSroMGiE23ADZ01XN7Sk92JaLfYwQ==
+X-Received: by 2002:a2e:808f:0:b0:26a:b498:2c87 with SMTP id i15-20020a2e808f000000b0026ab4982c87mr7265597ljg.279.1662945870385;
+        Sun, 11 Sep 2022 18:24:30 -0700 (PDT)
+Received: from mobilestation ([95.79.140.178])
+        by smtp.gmail.com with ESMTPSA id t2-20020ac243a2000000b00497a8f04905sm780384lfl.251.2022.09.11.18.24.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 11 Sep 2022 18:24:29 -0700 (PDT)
+Date: Mon, 12 Sep 2022 04:24:26 +0300
+From: Serge Semin <fancer.lancer@gmail.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+	Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+	Vinod Koul <vkoul@kernel.org>, Rob Herring <robh@kernel.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+	Jingoo Han <jingoohan1@gmail.com>, Frank Li <Frank.Li@nxp.com>,
+	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+	Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+	Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+	linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: [PATCH RESEND v5 22/24] dmaengine: dw-edma: Bypass dma-ranges
+ mapping for the local setup
+Message-ID: <20220912012426.xcg4tu6wzogbirp6@mobilestation>
+References: <20220822185332.26149-1-Sergey.Semin@baikalelectronics.ru>
+ <20220822185332.26149-23-Sergey.Semin@baikalelectronics.ru>
+ <7a035b29-fca6-2650-c3c1-eedb3904c32d@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7a035b29-fca6-2650-c3c1-eedb3904c32d@arm.com>
 
-The pull request you sent on Sun, 11 Sep 2022 09:31:01 +0200:
+On Wed, Aug 31, 2022 at 10:17:30AM +0100, Robin Murphy wrote:
+> On 2022-08-22 19:53, Serge Semin wrote:
+> > DW eDMA doesn't perform any translation of the traffic generated on the
+> > CPU/Application side. It just generates read/write AXI-bus requests with
+> > the specified addresses. But in case if the dma-ranges DT-property is
+> > specified for a platform device node, Linux will use it to map the CPU
+> > memory regions into the DMAable bus ranges. This isn't what we want for
+> > the eDMA embedded into the locally accessed DW PCIe Root Port and
+> > End-point. In order to work that around let's set the chan_dma_dev flag
+> > for each DW eDMA channel thus forcing the client drivers to getting a
+> > custom dma-ranges-less parental device for the mappings.
+> > 
+> > Note it will only work for the client drivers using the
+> > dmaengine_get_dma_device() method to get the parental DMA device.
+> 
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.0-rc4
+> No, this is nonsense. If the DMA engine is on the host side of the bridge
+> then it should not have anything to do with the PCI device at all, it should
+> be associated with the platform device,
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/2ccd4502f512e04b6cc01995da730e8754529cf9
+Well. The DMA-engine is embedded into the PCIe Root Port bus, is associated
+with the platform device it's embedded to, and it doesn't have
+anything to do with any particular PCI device.
 
-Thank you!
+> and thus any range mapping on the bridge itself would be irrelevant anyway.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Really? I find it otherwise. Please see the way the "dma-ranges"
+property is parsed and works during the device-specific memory ranges
+mapping when it's applicable for the PCIe Root Ports.
+
+> 
+> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> > Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> > Acked-By: Vinod Koul <vkoul@kernel.org>
+> > 
+> > ---
+> > 
+> > Changelog v2:
+> > - Fix the comment a bit to being clearer. (@Manivannan)
+> > 
+> > Changelog v3:
+> > - Conditionally set dchan->dev->device.dma_coherent field since it can
+> >    be missing on some platforms. (@Manivannan)
+> > - Remove Manivannan' rb and tb tags since the patch content has been
+> >    changed.
+> > ---
+> >   drivers/dma/dw-edma/dw-edma-core.c | 20 ++++++++++++++++++++
+> >   1 file changed, 20 insertions(+)
+> > 
+> > diff --git a/drivers/dma/dw-edma/dw-edma-core.c b/drivers/dma/dw-edma/dw-edma-core.c
+> > index 6a8282eaebaf..4f56149dc8d8 100644
+> > --- a/drivers/dma/dw-edma/dw-edma-core.c
+> > +++ b/drivers/dma/dw-edma/dw-edma-core.c
+> > @@ -716,6 +716,26 @@ static int dw_edma_alloc_chan_resources(struct dma_chan *dchan)
+> >   	if (chan->status != EDMA_ST_IDLE)
+> >   		return -EBUSY;
+> > +	/* Bypass the dma-ranges based memory regions mapping for the eDMA
+> > +	 * controlled from the CPU/Application side since in that case
+> > +	 * the local memory address is left untranslated.
+> > +	 */
+> > +	if (chan->dw->chip->flags & DW_EDMA_CHIP_LOCAL) {
+> > +		dchan->dev->chan_dma_dev = true;
+> > +
+> > +#if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
+> > +    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
+> > +    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
+> > +		dchan->dev->device.dma_coherent = chan->dw->chip->dev->dma_coherent;
+> > +#endif
+> > +
+> > +		dma_coerce_mask_and_coherent(&dchan->dev->device,
+> > +					     dma_get_mask(chan->dw->chip->dev));
+> > +		dchan->dev->device.dma_parms = chan->dw->chip->dev->dma_parms;
+> > +	} else {
+> > +		dchan->dev->chan_dma_dev = false;
+> > +	}
+> 
+
+> NAK. Don't try to poke into DMA API internals and copy random partial pieces
+> between devices, it doesn't work properly (I can guess that your system
+> doesn't have an IOMMU...) and having to deal with ugly mess like this in
+> drivers just makes it harder for us to maintain the DMA API itself.
+
+Hold on with that angry tone. First of all I don't really see you
+fixing the drivers/dma/ti/k3-udma.c driver then. Second read more
+carefully the patch log. Judging by your comments you don't fully
+understand the problem.
+
+> 
+> Fair enough if you have good reason to create logical child devices to
+> represent individual DMA channels, but the correct way to handle that is to
+> keep the real parent device pointer around and use that for DMA API calls.
+
+That's what is in my patches. The problem is that the "dma-ranges"
+property specified for the parental PCIe Root Port device isn't
+applicable for the DMA-engine embedded into it. The "dma-ranges" is
+supposed to be used for the PCIe-bus peripheral devices since their
+MRw/MRd TLPs are translated by means of the Inbound iATU engine. The
+IO accesses generated by the PCIe controller itself aren't affected by
+iATU. So any mapping performed for the PCIe Root Port controller
+platform device mustn't take these DMA-ranges into account. That's why
+I need to enable the "chan_dma_dev" DMA-engine capability and just
+copy the main DMA-parts of the parental device except the
+"dma_range_map" data. If you have any better suggestion in mind
+please share, but what you've said so far definitely won't give us any
+explicit solution.
+
+-Sergey
+
+> 
+> Robin.
+> 
+> > +
+> >   	pm_runtime_get(chan->dw->chip->dev);
+> >   	return 0;
