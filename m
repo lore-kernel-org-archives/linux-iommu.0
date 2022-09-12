@@ -1,114 +1,144 @@
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78C777F
-	for <iommu@lists.linux.dev>; Mon, 12 Sep 2022 07:01:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662966111; x=1694502111;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=GNBHq8PNXi22DyUwvYix9geYyFDMruJSs97qqEumAZs=;
-  b=Vf/o+n6sfiz/3ZdKMfCS7hXzVkXtm4puwJzZUi6vEl05oA6eLZ0jyTUV
-   Epl/Hqo2V6RGA9RP2Xo/oawXJLCjaQOTtboUXzebjqVJjLptQgYMdNk38
-   QLQtuHPkEHOcs0V7Q3aIsvtUud9wmI8mVFknanrHx8ZTL/EVDZWG0R5Fz
-   6lFbNFw0FbW0D4KfUxOVmKy7g4Q1cdmy/QWR4uD8E29yahUccr4GDNA8S
-   nzBenfiHHhDQABtaKlka5s5Tg0uQ8pnzWlYt9KkYn255k+5KunzbiVFA2
-   EF6qF4cyx85KEVnKdQN1bv5O+MRZrEiLDDkkYto60MHiE22qkpbbmaO/1
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10467"; a="295383744"
-X-IronPort-AV: E=Sophos;i="5.93,308,1654585200"; 
-   d="scan'208";a="295383744"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2022 00:01:50 -0700
-X-IronPort-AV: E=Sophos;i="5.93,308,1654585200"; 
-   d="scan'208";a="646338248"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.208.195]) ([10.254.208.195])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2022 00:01:48 -0700
-Message-ID: <5a11d688-9245-9041-5183-3eb87914eb1f@linux.intel.com>
-Date: Mon, 12 Sep 2022 15:01:47 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7E411108
+	for <iommu@lists.linux.dev>; Mon, 12 Sep 2022 10:55:00 +0000 (UTC)
+Received: by gandalf.ozlabs.org (Postfix, from userid 1007)
+	id 4MR3QN3Yrxz4xZS; Mon, 12 Sep 2022 20:54:52 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=gibson.dropbear.id.au; s=201602; t=1662980092;
+	bh=Jqer9Lkx5kx3CTVFQbI1gse1o6FkM2vShOdKJKllDRs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=J1PHfLhprn9Dvc2eQQbdZzdKd8ggp3Imh3NAuTzQZyJ1gkQoegSgvwFJCCchMom+H
+	 cZzeVJ0FIbEdyktCH9a8Zfko9DJRMmCgA0IuKEwFRyofdPLNXy16+BgRgKHvB3ih2B
+	 zdjGiPfqzEOBAbB2KzS8Y1PtCzCl5T7dQ9cKcA58=
+Date: Mon, 12 Sep 2022 20:40:20 +1000
+From: David Gibson <david@gibson.dropbear.id.au>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+	Cornelia Huck <cohuck@redhat.com>,
+	Daniel Jordan <daniel.m.jordan@oracle.com>,
+	Eric Auger <eric.auger@redhat.com>,
+	Eric Farman <farman@linux.ibm.com>, iommu@lists.linux.dev,
+	Jason Wang <jasowang@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Joao Martins <joao.m.martins@oracle.com>,
+	Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+	Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
+Subject: Re: [PATCH RFC v2 02/13] iommufd: Overview documentation
+Message-ID: <Yx8MlOBPz1Zxig3V@yekko>
+References: <0-v2-f9436d0bde78+4bb-iommufd_jgg@nvidia.com>
+ <2-v2-f9436d0bde78+4bb-iommufd_jgg@nvidia.com>
+ <Yxf2Z+wVa8Os02Hp@yekko>
+ <YxuLaxIRNsQRmqI5@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Make SVA and IOPF irrelevant
-Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <20220908023557.4582-1-baolu.lu@linux.intel.com>
- <BN9PR11MB5276307EAF55B4EE8AB71E278C439@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276307EAF55B4EE8AB71E278C439@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="yTVklgu6xyo6tvgA"
+Content-Disposition: inline
+In-Reply-To: <YxuLaxIRNsQRmqI5@nvidia.com>
 
-On 2022/9/9 16:33, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Thursday, September 8, 2022 10:36 AM
->>
->> The existing IOPF handling code relies on the per-PASID SVA data
->> structures. It does not apply to scenarios other than SVA. This
->> decouples the I/O page fault reporting and responding code from
->> SVA related data structures so that the PRQ handling code could
->> become generic.
-> 
-> I think the point is that it's unnecessary to access those SVA data
-> in the fault path. otherwise 'decouple' reads like an alternative
-> implementation is added instead of just removing the code.
 
-Makes sense. I will rephrase the commit message like this:
+--yTVklgu6xyo6tvgA
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-iommu/vt-d: Remove unnecessary SVA data accesses in page fault path
+On Fri, Sep 09, 2022 at 03:52:27PM -0300, Jason Gunthorpe wrote:
+> On Wed, Sep 07, 2022 at 11:39:51AM +1000, David Gibson wrote:
+>=20
+> > > +expected to deprecate any proprietary IOMMU logic, if existing (e.g.
+> >=20
+> > I don't thing "propietary" is an accurate description.  Maybe
+> > "existing" or "bespoke?
+>=20
+> How about "internal"
 
-The existing I/O page fault handling code accesses the per-PASID SVA data
-structures. This is unnecessary and makes the fault handling code only
-suitable for SVA scenarios. This removes the SVA data accesses from the
-I/O page fault reporting and responding code, so that the fault handling
-code could be generic.
+>  These drivers are eventually expected to deprecate any internal IOMMU
+>  logic, if existing (e.g. vfio_iommu_type1.c).
 
-> 
-> Overall this is a nice cleanup, but a few nits here:
-> 
->> -		/*
->> -		 * If prq is to be handled outside iommu driver via receiver of
->> -		 * the fault notifiers, we skip the page response here.
->> -		 */
-> 
-> I didn't understand what this comment is trying to say. But just want
-> to confirm removing it is the desired thing given the original code below
-> it is still kept below...
+That works.
 
-I carelessly removed this comment. Yes. It still makes sense. I will add
-it back.
+> > > +All user-visible objects are destroyed via the IOMMU_DESTROY uAPI.
+> > > +
+> > > +Linkage between user-visible objects and external kernel datastructu=
+res are
+> > > +reflected by dotted line arrows below, with numbers referring to cer=
+tain
+> >=20
+> > I'm a little bit confused by the reference to "dotted line arrows": I
+> > only see one arrow style in the diagram.
+>=20
+> I think this means all the "dashed lines with arrows"
+>=20
+> How about "by the directed lines below"
 
-> 
->> -		if (intel_svm_prq_report(iommu, sdev->dev, req))
->> +		pdev = pci_get_domain_bus_and_slot(iommu->segment,
->> +						   PCI_BUS_NUM(req->rid),
->> +						   req->rid & 0xff);
->> +		if (!pdev || intel_svm_prq_report(iommu, &pdev->dev, req))
->>   			handle_bad_prq_event(iommu, req,
->> QI_RESP_INVALID);
->>
->> -		trace_prq_report(iommu, sdev->dev, req->qw_0, req->qw_1,
->> +		trace_prq_report(iommu, &pdev->dev, req->qw_0, req-
->>> qw_1,
->>   				 req->priv_data[0], req->priv_data[1],
->> -				 sdev->prq_seq_number);
->> +				 prq_seq_number++);
-> 
-> Previously this is counted per device but now becomes global. Could it
-> be stored elsewhere in a per-device structure?
+Or simply "reflected by arrows below".
 
-I think the per-IOMMU structure might be the right place to store it.
-Those faults share a page fault queue.
+> > > +The iopt_pages is the center of the storage and motion of PFNs. Each=
+ iopt_pages
+> > > +represents a logical linear array of full PFNs. PFNs are stored in a=
+ tiered
+> > > +scheme:
+> > > +
+> > > + 1) iopt_pages::pinned_pfns xarray
+> > > + 2) An iommu_domain
+> > > + 3) The origin of the PFNs, i.e. the userspace pointer
+> >=20
+> > I can't follow what this "tiered scheme" is describing.
+>=20
+> Hum, I'm not sure how to address this.
+>=20
+> Is this better?
+>=20
+>  1) PFNs that have been "software accessed" stored in theiopt_pages::pinn=
+ed_pfns
+>     xarray
+>  2) PFNs stored inside the IOPTEs accessed through an iommu_domain
+>  3) The origin of the PFNs, i.e. the userspace VA in a mm_struct
 
-Best regards,
-baolu
+Hmm.. only slightly.  What about:
+
+   Each opt_pages represents a logical linear array of full PFNs.  The
+   PFNs are ultimately derived from userspave VAs via an mm_struct.
+   They are cached in .. <describe the pined_pfns and iommu_domain
+   data structures>
+
+--=20
+David Gibson			| I'll have my music baroque, and my code
+david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
+				| _way_ _around_!
+http://www.ozlabs.org/~dgibson
+
+--yTVklgu6xyo6tvgA
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEoULxWu4/Ws0dB+XtgypY4gEwYSIFAmMfDI0ACgkQgypY4gEw
+YSJWyhAAyUb6FKzQMARiSUOon4QtVcnRZZ9t5d/Gcx6z9K4iUZByk2zbMBm4UCzp
+jbkAm5fVHdydwr5F65IphEcgpowqsy2Cz0STnWvoAGmWqSk6oel1OOXk4FggOUu4
+EJjP4S0VeMMbVdHQoE4SWOjnD1J5ILeFCIzeOK+40QIJuRmJMFWKczgkRz/vajLj
+yj8UWk/ccys8moSZyHIgZ977X1Y0J9l9G3Asg2AMchRLTzqGcemj+YV4Yfp4W9gA
+iQEQwRw62wkbgzC2V9dVIOF9Zli4GmmzQGikeRZnp/TZeWf9U5cQy9lqJG4H1n5r
+XkyNn1bjC0H/Yv6XRWDiYdLCqLurfXfcnwUK7rWbOkdjTaxTNOflLvj1WCC56+n5
+8B5AUcXVBsNgO16YGOb28btGBpLPVOFKnytv7QmE3AMam/y2Avfhv+wjIT80XIKK
+LvrFdOzjqTeDJohodefGtg+cavVGHjugl0C25dp/6HlznswgIUWNXC7cS06CI3B6
+YPrkN1IOgPfbObYS8Vyk/9DOMVqynZXSfozADHqNuBhx8W6PsGydBhTQIKGgukR4
++Iq4yzqdEB0uiuvUtIOGygyzpx8PVdqYLqJiGitbwuOYLMYnHNniNa0S8DtX5G1C
+83rN86teIVu9eJdv7Dn7ilAaCvdJUz66b3WxVf9KNtxJWZxhJHs=
+=lklv
+-----END PGP SIGNATURE-----
+
+--yTVklgu6xyo6tvgA--
