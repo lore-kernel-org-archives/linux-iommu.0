@@ -1,199 +1,172 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2056.outbound.protection.outlook.com [40.107.101.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4CEC7B
-	for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 08:01:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663056084; x=1694592084;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=47cIYHfjtPQIXo+O8YOFaechfYGhACzMtQkuKj4GC9E=;
-  b=FBGOp3uXCNfC3BnCGnbznestlD3zphLgOtf523pkK/azrq5HmdOAAT9g
-   5h7jsF8XoIsV+CJQ3FYTmWohpGGsMNUOVdgWFN3AjsSm8gLSgtXruNMij
-   OJZ4trn/ETdLf3whrr/V1s10RJoHJkIAmhkZI+EEuDqQXX3ICRr+rLMED
-   //bfwYfvQq5lhKK188cINyrb7FLki7Rx8yP2RL6GGtJfXZkj04ej2eJU6
-   DOnjGV5LL7N0yzcGLezjZRK2Tl6eGNl7g+GJkwlarrj1qsFaWMNcrFdtt
-   hkuiX1kPnqSDpzjvxQIuedpYyYYSUDM2voiqpGaQcmeZsaKozzyNrkqzZ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10468"; a="296809223"
-X-IronPort-AV: E=Sophos;i="5.93,312,1654585200"; 
-   d="scan'208";a="296809223"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2022 01:01:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,312,1654585200"; 
-   d="scan'208";a="944963788"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmsmga005.fm.intel.com with ESMTP; 13 Sep 2022 01:01:22 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 13 Sep 2022 01:01:22 -0700
-Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 13 Sep 2022 01:01:22 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Tue, 13 Sep 2022 01:01:22 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.171)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Tue, 13 Sep 2022 01:01:22 -0700
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB1497B
+	for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 08:24:57 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BMhplKhTVdlXJKGKHy6kw3Nsa2JWBvnUXNv4tBXjCJuGELk4zoJQBA0IMRxffX9H2O187bl6wE0YbBMwALOrT8TSh+uXBxjBUBjBA0KzNEnZI57fQRIb50EFuiXrOwC6um/8qatGWvAbj/6SD2t+KF/I0fUmEfMb/SNvlFMn2JIO025tx+LE83l/yceC94wLo8EIVYDzBcvohafc6DejI4OqnYPVdyHu+cgI3REL7O/X8+RweRnow0nkJiWunwVSBqtRmUMbdlbFc5YOEcqtUzfef0yG2kCQ9XSs2FEAg2Y8s7kB46hb2K9IYESFYcopo4GSU9ku97Pk4Gv3g5i1Eg==
+ b=NEofIU3dLllKzl+bxYGHo8YiIkZG91ibxL8XzNBGNvnaQOKyahYvigyImVYGJu7sYemGzDkFbofTvhtzp+ez2jObfWWW+EWr8I7Bu9qb/TgzPIlim7zlQ1lmEn3elH6PJ3w1VjVnfNVOhyVl3eg5TjxvNS922vSRSyQUy+bud7551iI1/MnBto+gp8SHHNGHWhAK/fFSlJCk3zS0194o7htCHtQsnAySYf8iBKa/LkW3I+9IRd+M3nr9YwwV5dyfVYXnPRCW8td+dNofc/wU3LucLu4rIFrgngstRhAl9UIv/VC1q/90l846qnPizzPIhrd4zsDj5Nm3eX+T0NZ7jg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=87pVy8fQEQhf6HMuyI2wVMLYO7V+XhST0UywDdJYf+w=;
- b=NfCpf2pFZJAfxekBKxyLkxQok5UEr5uqOaRPaKKO4vbB3qfwV22WZNq8RTgViC/bgRcGbwMQnUVmBZrFUrJonnu6/kDKxvGKVls6jpSBq2govluHyu874T33aZaTedg+hjiz4fSDAeY2PX+mQhTdlMtCrCQSYWwXOcLqocijxDqimd8WM8JD7FE6vZ5dv0vDzWRdTeaxc/pDoDDZlxt9AGTNiiLAhME8tNdfowQhSIvTTWft25/cojSjPtDyvQPpZGMsq8pknGZaAqPMe/Xb85DpHqJMkWI3916540VTTCTa8NsJb6+VIO6gCQbTTtvz/NXmepFvay7QEWHNb/hrVw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by BL1PR11MB5352.namprd11.prod.outlook.com (2603:10b6:208:311::6) with
+ bh=MQ4/fyZCnjIg7QgMmsopcMYiM+CksOqR8A6+qGvlwcs=;
+ b=Oqjo+WlGtKnuw5K0GMubqJJ0y6cFrpyMnFUJkduyYxRe3vQPUKpYRib27KL7AKHDsFHfjS9Bnl3Unguv6S+ZdYxZ+pDraVOKiNoLmIvS3cckerFv1+aMbqbF1mEDD36GFqu2T7Rca6ZAxkcyHJNtqQh3wuaBg+jZhkCKskMKNYFfe6TkczSaUC+0Ve2ikbCfFDDlcA/RzFTDs5iiUDCH3LzXvxcN7rb401uP5byGXDpWqutEJwwFHuD5NwLdJLJ7dJp2R1cQ+l3DjiM98RGYrseIMrCcvrFZ/Fv55t4WJ8QAOpwTxXayZ5EbWSqpSlkF5uoXX7t5oUQ5UAdvyTYCQw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MQ4/fyZCnjIg7QgMmsopcMYiM+CksOqR8A6+qGvlwcs=;
+ b=JOvm+yiLXV03MSvlCUXIrq7/3jWTMCprIWyHRcoS33ZYf0s3M/p37BOxTruJgSrSqKS72/volSOu1omSp2Q0FnGzfPJusM6IJxXWdvl9/gXo94e2UKhwZz0liABWpByETt+PIAW1OU+siRsVVDMEYNHMOhqW1XRZWIV6Sn+JyyrpoFnOiaw39zha5jU6XujhmnpKqDOBWm4BCqk0MsXn8xQ+dkKHyxLjoEEXA1Bqip36uWH3W5DqK6i+NbAQaRHi8B1Z69ZXH6kBPIX1KaJyQJKaNX35M+L7u0+01GnZJRF36ml83dL082IlKFoM/fRp3Mdi6D5fvUICM7Es6f8NzQ==
+Received: from BN1PR14CA0002.namprd14.prod.outlook.com (2603:10b6:408:e3::7)
+ by SN7PR12MB6861.namprd12.prod.outlook.com (2603:10b6:806:266::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.14; Tue, 13 Sep
- 2022 08:01:09 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::a435:3eff:aa83:73d7]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::a435:3eff:aa83:73d7%5]) with mapi id 15.20.5612.022; Tue, 13 Sep 2022
- 08:01:09 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>
-CC: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, "Robin
- Murphy" <robin.murphy@arm.com>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 1/1] iommu/vt-d: Enable PASID during iommu device probe
-Thread-Topic: [PATCH 1/1] iommu/vt-d: Enable PASID during iommu device probe
-Thread-Index: AQHYxlL15aXn1csO5EOwQ10Vd62MPq3c/4bw
-Date: Tue, 13 Sep 2022 08:01:09 +0000
-Message-ID: <BN9PR11MB52766A868879689D55AE9DC68C479@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20220912024826.1684913-1-baolu.lu@linux.intel.com>
-In-Reply-To: <20220912024826.1684913-1-baolu.lu@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|BL1PR11MB5352:EE_
-x-ms-office365-filtering-correlation-id: c53b2073-ef47-467a-ecf9-08da955e1e8a
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: dfethSoMJ2v4+tYpfuArCCePJQC9QLxmBkXzOileJIzArE1VPh1/+Yj4LicTEE5FiNc9vYSfIUGpgDuemodiRA8GiReHCckHZ0ZDlAb9khzpRmRYwYZ9f4Iwv8ZWjguYbAKtvn6OzWl935ztfiJK+VvjV6KJcD3c31YIAdBdHmSX7ef5KB5YwZW6M/18NhGGx7ZODXTShtLIor6JC+hiiZHVfjz3K0+Wtr08y/ZYSXL50JPngo1M/xJxbZZW3KfAQmXYBKoBY7SCEYWTzkFscfEknvv3eeibCAvE2Id5LlKz+phYO+Zn42AyWX8bzmKDEuKOafB4vtNZcwXaHQRS/whdoP5rZphHv9SSf8aTBZYVW1FVHdDpqkkEpy0dmEfUKH7H9EYdXfmCuswmXwufv5G7a3gjfaRBj9xiaUOAkJVbVl/M5NUJOoHbBuqVDvCxq/ibphECsZ9egvzaQctUyRo+1d3niJKL5G9t8ssAhzV47JnvgV+fABtxxFO5JCMNIOJGUvav9WoE8P+PBrGz0wNnFllBzexZS6iNYIEntdd76Wl0VGmDAs+F2CBuXui8DX/8CwJ6yv/mq5WmJmyLolLR0BMNO0bOTXyxuCEnTID0/AsFP3hlTnKmsQI+wSv1judMZKb9EjsRTcV3Fg55WNKDMsYoes3P93Ucuiu9CbMK5z3ECccvGMCOgtiKUyvFsKYuj8MAkSahSKwee52DBafmWwKKzgt6RIcpeP1WuGwA0G1Mik/EdffmSSKh5sBi
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(346002)(39860400002)(136003)(366004)(396003)(451199015)(66946007)(9686003)(55016003)(316002)(2906002)(76116006)(8676002)(66446008)(64756008)(110136005)(186003)(7696005)(38070700005)(26005)(478600001)(83380400001)(33656002)(41300700001)(54906003)(86362001)(38100700002)(71200400001)(66476007)(6506007)(66556008)(122000001)(82960400001)(4326008)(5660300002)(52536014)(8936002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?vfoMkff4QoCuJGVjmxGi9vcMxaHocjkpPuPLPFxb8yYicStZ7hjmowodRPES?=
- =?us-ascii?Q?e2UArBV8JQhVhChfyX1GCqXSUUvhbn9qbYfYr2ZwGWCURXC4k55xM9us+uML?=
- =?us-ascii?Q?cjvfU80s4LGAuhw9Lzy9ZVOLFR33+WyJiaoF4zdQ5XkQt45qA/tRq4NawdlY?=
- =?us-ascii?Q?NGL2NLpUg4iQNsxKGGiJcJjvSXXXgTF+bSi1INd+fWxnNOpTcgNsS8Iewr2X?=
- =?us-ascii?Q?QGJKIl6ynoiATu1mjYQ1HO9aqsnaSV5k/G0wKEf4FHKAYYWpUrKMGbamwJ7o?=
- =?us-ascii?Q?IOOumK6sTkF9v/B+j6jOy0ZoFWlewa2OtszcK7dge8/56Ckx4pWrnMe/AzqT?=
- =?us-ascii?Q?WxgmOXZzXgELG3zEp2nXilV2dyAqwaj/+XxpxD98sBlXSVW1op338yNGeJGo?=
- =?us-ascii?Q?exMYG2j+ZT+uWnegaDLN8PxJYwJOM+/KH5aU2xFJ2z72/Dn8QrkhzkQSszGQ?=
- =?us-ascii?Q?xbyhD/idlbr56Y8LI1SAd7cYcrhTKrgipMbzZ624et/pU+4lfbF8zkltSio6?=
- =?us-ascii?Q?pohEO+IYbhpYXBGpbXUh+yYGn0al0Dy/6qSE6wG9RG2G7BjMC4Fmb+bd/YZc?=
- =?us-ascii?Q?+TyQnargrJbfnI2CMr9TXaoNmbSVwGbRA/Pc203+zGmgGhhUB0XOcs2bRmFh?=
- =?us-ascii?Q?u+YZsfHDOwYfC2pU2WNqCpAfoGb99AoCuJy9xjKTdkWz2GfQc0Upfh/szXFK?=
- =?us-ascii?Q?zSIh9DlGdDI+TI4NxxpAlSAq9wpQ3SuUUYTSjjGgbfRX0wR7Iejr2VaHmARL?=
- =?us-ascii?Q?ZHfz0H2cx4QOhcYNnSmjSr32Y67PvPFBdXTpRscVHmbgXE2AjP5Yjc9L7QP0?=
- =?us-ascii?Q?ZvUuIG+5xzCVFPN+IaecuDZq+htOM9CYHEFgmFshsusS4HY2psTRInGifWfR?=
- =?us-ascii?Q?mAKDep7MXHMFzHAZBArNT2OJBu09429lLWwGQdoI1hID3U0ciLb+U/1d9PH8?=
- =?us-ascii?Q?cnIThMxm7alpz0fAUG7JJo/V6kJYIx+CaWCHh8UbH8aA7YnA1TLgopTbzHSI?=
- =?us-ascii?Q?F0i9wE/L+ldzFqF2Yt9qqcXMoytjzsHc9mNsLXxD4U7dX8mwfoHpRjVEHTmH?=
- =?us-ascii?Q?otTLsuTZqwE1Um5pMzIvHJ1o1LsCVL2WTLVP2zgcyyEhJdqiHWX3tgB6ANal?=
- =?us-ascii?Q?iLprWGedS/ystI4//1Q77AySOQpAXM8h2f+dKRX26H9CuhKe2LwxWYlpUFAe?=
- =?us-ascii?Q?ahXexnHEHYit5gFvLrjINivK76h2uknecS790p9EQ6BDjVoEY05/rCRDl8OR?=
- =?us-ascii?Q?d5ijosV+xh035WfkivjZjtPli/wSOGHoxheU/FbhW+dCLXiXYlxTIEu8hFbr?=
- =?us-ascii?Q?jNymD40ib5VMf/U07x6aNR6Ciaf/mKGa3DZ0Dg7oZYCAVE4N3EBn6gy0MKD4?=
- =?us-ascii?Q?bldsvMJaZFsgI0Nt3CddptSQR5fVY+ZsyvS1aNF7mu8iu49M3wOayO1FP61o?=
- =?us-ascii?Q?nj+ZLoRZVhoZZroSUeXcnUmLMyRjLSnkOgn+WFibaE1i3j2o7hIxt5gw7lXn?=
- =?us-ascii?Q?6tiOvz2b8rDLAU/sHsZTdiF6S/NxDk9N0dV5ZgelIxRdXh7wurHvlIVAfk2V?=
- =?us-ascii?Q?ayrgkY/Z9fUaWfnqvLQOVNyr0ysR8CoSvvxvdB/m?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.20; Tue, 13 Sep
+ 2022 08:24:55 +0000
+Received: from BN8NAM11FT068.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:e3:cafe::66) by BN1PR14CA0002.outlook.office365.com
+ (2603:10b6:408:e3::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.18 via Frontend
+ Transport; Tue, 13 Sep 2022 08:24:55 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.234) by
+ BN8NAM11FT068.mail.protection.outlook.com (10.13.177.69) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5612.13 via Frontend Transport; Tue, 13 Sep 2022 08:24:54 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ DRHQMAIL101.nvidia.com (10.27.9.10) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.38; Tue, 13 Sep 2022 08:24:54 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.29; Tue, 13 Sep 2022 01:24:54 -0700
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.11) by mail.nvidia.com
+ (10.126.190.181) with Microsoft SMTP Server id 15.2.986.29 via Frontend
+ Transport; Tue, 13 Sep 2022 01:24:52 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <will@kernel.org>,
+	<robin.murphy@arm.com>, <robdclark@gmail.com>, <dwmw2@infradead.org>,
+	<baolu.lu@linux.intel.com>, <agross@kernel.org>,
+	<bjorn.andersson@linaro.org>, <konrad.dybcio@somainline.org>,
+	<matthias.bgg@gmail.com>, <heiko@sntech.de>, <orsonzhai@gmail.com>,
+	<baolin.wang@linux.alibaba.com>, <zhang.lyra@gmail.com>,
+	<thierry.reding@gmail.com>, <jean-philippe@linaro.org>, <jgg@nvidia.com>,
+	<sricharan@codeaurora.org>
+CC: <yong.wu@mediatek.com>, <vdumpa@nvidia.com>, <jonathanh@nvidia.com>,
+	<tglx@linutronix.de>, <shameerali.kolothum.thodi@huawei.com>,
+	<thunder.leizhen@huawei.com>, <christophe.jaillet@wanadoo.fr>,
+	<yangyingliang@huawei.com>, <jon@solid-run.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-arm-msm@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
+	<linux-rockchip@lists.infradead.org>, <linux-tegra@vger.kernel.org>,
+	<virtualization@lists.linux-foundation.org>
+Subject: [PATCH 0/5] iommu: Define EINVAL as device/domain incompatibility
+Date: Tue, 13 Sep 2022 01:24:43 -0700
+Message-ID: <20220913082448.31120-1-nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c53b2073-ef47-467a-ecf9-08da955e1e8a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Sep 2022 08:01:09.7762
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT068:EE_|SN7PR12MB6861:EE_
+X-MS-Office365-Filtering-Correlation-Id: 25a05856-dc4e-4e42-ff64-08da95617009
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?y2AbQPrwctxHIY7UMKfGY8ElMlqnq0bOeMWoffIIMDk4wivNZ+F/VDf/ht47?=
+ =?us-ascii?Q?0M1h2i5OvYWlJEDrQdi0iA7wLVQbuOdiuPZfnbYNPp26/aVan14F7mFt4Siu?=
+ =?us-ascii?Q?CVLjV6I/z7gL4eFi8DDueFvqmMSXPEBwVkNWTfElTy3asA8kBBruV5tD7/9x?=
+ =?us-ascii?Q?kIZCkwFu9N+FKvrkyCbHo1ngqDcazl1mMstczgbh6OiPUmmbbJc++mM1mNFE?=
+ =?us-ascii?Q?2aJQMX7TRToEJ+/AHn79zShhD+GEan3VSABEn1CKQqGbta3XReLYgknxQbLN?=
+ =?us-ascii?Q?d5XCR2UTxbkXR3nXPkJXljNsah0YDi8Z+fnx0Bfk2yD7bBBke8brobhcGqrr?=
+ =?us-ascii?Q?yg7UFTaiNMZWTSN+exbE474s0JYSKDf6UVfo3iUYKZcWeweHRT8ysx2Tkz4Q?=
+ =?us-ascii?Q?EQP7W7VQ8IHwM52EICjvI0DZEyuUkhLig7pctQsMxi19bBFzb6tPIvGSM7GO?=
+ =?us-ascii?Q?Kr8nz6OPEOtS2M0UaSSLj1s19nV5VuxnRE+/hGKgrJKFbD3Gtj4S04VDpv9+?=
+ =?us-ascii?Q?kw/9E2rCB00lrOyzoYZsaohAskaz4iehSNs3HXe5K8+exjYCM9EWcllQ+n2p?=
+ =?us-ascii?Q?17ZG0BIhg5KlXc25PNGxjny3iM3CqOF5xZdDgH9mcc1vwz7AzN7v1xy5maw2?=
+ =?us-ascii?Q?Xza86eL6+1Jc+etndobVXOe1lqcqq6z10fVm/V3RvSPVVRGsmqRA4b2d4XN3?=
+ =?us-ascii?Q?wbvOddpLyV/b4ezgBYb5KsRNC53pUMIe51EwJFlzUOT7f5xa/e8MILVIdYBo?=
+ =?us-ascii?Q?QRUeMulL4wLR+P6/A1tGfHWF9sncOIkkS9M0nAcfb7L7RFhiCOvSU/PxrgyX?=
+ =?us-ascii?Q?GHxujHWNyt0XMVNS8M/W+TIvYBF8TxbvLMD737n6NLymYc+/j2GSSDHrBJsi?=
+ =?us-ascii?Q?rqebUlEVitBWgEUVyhWBMngNy+k3FEWz2GpDccEjkPod0HBcD54AIJ5ZRBqz?=
+ =?us-ascii?Q?9cuQsB57Be69RmeOH+kiBYVFzpqc8D1bkROd6vPkrOM=3D?=
+X-Forefront-Antispam-Report:
+	CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230022)(4636009)(376002)(39860400002)(396003)(136003)(346002)(451199015)(36840700001)(46966006)(40470700004)(1076003)(186003)(4326008)(26005)(82740400003)(54906003)(921005)(478600001)(82310400005)(36860700001)(2616005)(86362001)(356005)(7416002)(316002)(41300700001)(8676002)(7696005)(70586007)(110136005)(83380400001)(426003)(6666004)(966005)(36756003)(70206006)(81166007)(336012)(8936002)(47076005)(40460700003)(2906002)(7406005)(40480700001)(5660300002)(83996005)(2101003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Sep 2022 08:24:54.8696
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: xxZQ2CAQdBFas0TVIJx2EXU1FijKUw84E7lTuULyr1QAe/c8rEwyIbpdakiLa12GiVq+Qiqbrw9vdj2yELW/kw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5352
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 25a05856-dc4e-4e42-ff64-08da95617009
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN8NAM11FT068.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6861
 
-> From: Lu Baolu <baolu.lu@linux.intel.com>
-> Sent: Monday, September 12, 2022 10:48 AM
->
-> @@ -1401,7 +1403,6 @@ static void iommu_enable_dev_iotlb(struct
-> device_domain_info *info)
+This series is to replace the previous EMEDIUMTYPE patch in a VFIO series:
+https://lore.kernel.org/kvm/Yxnt9uQTmbqul5lf@8bytes.org/
 
-This is not the right name now as dev_iotlb is only related to ATS.
+The purpose is to regulate all existing ->attach_dev callback functions to
+use EINVAL exclusively for an incompatibility error between a device and a
+domain. This allows VFIO and IOMMUFD to detect such a soft error, and then
+try a different domain with the same device.
 
->  		info->pfsid =3D pci_dev_id(pf_pdev);
->  	}
->=20
-> -#ifdef CONFIG_INTEL_IOMMU_SVM
->  	/* The PCIe spec, in its wisdom, declares that the behaviour of
->  	   the device if you enable PASID support after ATS support is
->  	   undefined. So always enable PASID support on devices which
-> @@ -1414,7 +1415,7 @@ static void iommu_enable_dev_iotlb(struct
-> device_domain_info *info)
->  	    (info->pasid_enabled ? pci_prg_resp_pasid_required(pdev) : 1)
-> &&
->  	    !pci_reset_pri(pdev) && !pci_enable_pri(pdev, PRQ_DEPTH))
->  		info->pri_enabled =3D 1;
-> -#endif
-> +
->  	if (info->ats_supported && pci_ats_page_aligned(pdev) &&
->  	    !pci_enable_ats(pdev, VTD_PAGE_SHIFT)) {
->  		info->ats_enabled =3D 1;
+Among the five patches, the first two are preparatory changes. And then a
+patch to update kdocs and another two patches for the enforcement efforts.
 
-iommu_enable_dev_iotlb() is currently called both when the device is probed
-and when sva is enabled (which is actually useless). From this angle the co=
-mmit
-msg is inaccurate.=20
+Although it might be ideal to merge the previous VFIO series together with
+this series, given the number of new changes, the review in the IOMMU list
+might need a couple of rounds to finalize. Also, considering that v6.0 is
+at rc5 now, perhaps we could merge this IOMMU series and the VFIO one in
+different cycles to avoid merge conflicts. If there's less concern for it,
+I can respin the finalized version of this series with the previous VFIO
+one to merge together into the VFIO tree.
 
-> diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
-> index 39a06d245f12..b3f40375f214 100644
-> --- a/drivers/iommu/intel/Kconfig
-> +++ b/drivers/iommu/intel/Kconfig
-> @@ -21,6 +21,8 @@ config INTEL_IOMMU
->  	select IOASID
->  	select IOMMU_DMA
->  	select PCI_ATS
-> +	select PCI_PRI
-> +	select PCI_PASID
->  	help
->  	  DMA remapping (DMAR) devices support enables independent
-> address
->  	  translations for Direct Memory Access (DMA) from devices.
-> @@ -48,8 +50,6 @@ config INTEL_IOMMU_DEBUGFS
->  config INTEL_IOMMU_SVM
->  	bool "Support for Shared Virtual Memory with Intel IOMMU"
->  	depends on X86_64
-> -	select PCI_PASID
-> -	select PCI_PRI
->  	select MMU_NOTIFIER
->  	select IOASID
+This series is also available on Github:
+https://github.com/nicolinc/iommufd/commits/iommu_attach_dev
 
-this is already selected by CONFIG_INTEL_IOMMU
+Thanks!
 
->  	select IOMMU_SVA
-> --
-> 2.25.1
+Nicolin Chen (5):
+  iommu/msm: Add missing __disable_clocks calls
+  iommu/amd: Drop unnecessary checks in amd_iommu_attach_device()
+  iommu: Add return errno rules to ->attach_dev ops
+  iommu: Regulate errno in ->attach_dev callback functions
+  iommu: Use EINVAL for incompatible device/domain in ->attach_dev
+
+ drivers/iommu/amd/iommu.c                   | 12 ++----------
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 13 ++-----------
+ drivers/iommu/arm/arm-smmu/arm-smmu.c       |  7 ++-----
+ drivers/iommu/arm/arm-smmu/qcom_iommu.c     |  9 ++-------
+ drivers/iommu/fsl_pamu.c                    |  6 +++---
+ drivers/iommu/fsl_pamu_domain.c             |  4 ++--
+ drivers/iommu/intel/iommu.c                 | 10 +++-------
+ drivers/iommu/intel/pasid.c                 |  2 +-
+ drivers/iommu/ipmmu-vmsa.c                  |  4 +---
+ drivers/iommu/msm_iommu.c                   |  2 ++
+ drivers/iommu/mtk_iommu.c                   |  9 ++++++---
+ drivers/iommu/omap-iommu.c                  |  6 +++---
+ drivers/iommu/rockchip-iommu.c              |  4 +++-
+ drivers/iommu/sprd-iommu.c                  |  4 +---
+ drivers/iommu/tegra-gart.c                  |  2 +-
+ drivers/iommu/tegra-smmu.c                  |  2 +-
+ drivers/iommu/virtio-iommu.c                |  6 +++---
+ include/linux/iommu.h                       | 11 +++++++++++
+ 18 files changed, 49 insertions(+), 64 deletions(-)
+
+-- 
+2.17.1
 
