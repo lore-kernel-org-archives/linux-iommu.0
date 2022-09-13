@@ -1,144 +1,63 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9CCBE1867
-	for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 10:45:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5649D320D
+	for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 11:47:27 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 665341063;
-	Tue, 13 Sep 2022 03:45:31 -0700 (PDT)
-Received: from [10.57.15.170] (unknown [10.57.15.170])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CCBCC3F71A;
-	Tue, 13 Sep 2022 03:45:22 -0700 (PDT)
-Message-ID: <aa96eb55-4925-221f-1fb2-8226ea347c22@arm.com>
-Date: Tue, 13 Sep 2022 11:45:17 +0100
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CFAF51063;
+	Tue, 13 Sep 2022 04:47:32 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 83A163F71A;
+	Tue, 13 Sep 2022 04:47:25 -0700 (PDT)
+From: Robin Murphy <robin.murphy@arm.com>
+To: joro@8bytes.org
+Cc: will@kernel.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Thierry Reding <thierry.reding@gmail.com>,
+	John Garry <john.garry@huawei.com>
+Subject: [PATCH] iommu/iova: Fix module config properly
+Date: Tue, 13 Sep 2022 12:47:20 +0100
+Message-Id: <548c2f683ca379aface59639a8f0cccc3a1ac050.1663069227.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.36.1.dirty
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH] dma-contiguous: add optional cma_name for cma= kernel
- parameter
-To: Nate Drude <nate.d@variscite.com>, iommu@lists.linux.dev
-Cc: Jonathan Corbet <corbet@lwn.net>, Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Borislav Petkov <bp@suse.de>,
- "Paul E. McKenney" <paulmck@kernel.org>,
- Andrew Morton <akpm@linux-foundation.org>,
- Neeraj Upadhyay <quic_neeraju@quicinc.com>,
- Randy Dunlap <rdunlap@infradead.org>,
- Damien Le Moal <damien.lemoal@opensource.wdc.com>,
- Muchun Song <songmuchun@bytedance.com>, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, eran.m@variscite.com
-References: <20220912163805.4113238-1-nate.d@variscite.com>
-Content-Language: en-GB
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220912163805.4113238-1-nate.d@variscite.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2022-09-12 17:38, Nate Drude wrote:
-> When cma is defined in the device tree, the device tree node
-> name is used as the cma name. In the following example, the cma
-> will be named 'linux,cma':
-> 
-> linux,cma {
-> 	compatible = "shared-dma-pool";
-> 	reusable;
-> 	size = <0 0x3c000000>;
-> 	alloc-ranges = <0 0x40000000 0 0xC0000000>;
-> 	linux,cma-default;
-> };
-> 
-> And a device /dev/dma_heap/linux,cma is created.
-> 
-> However, when cma is provided by command line, a default
-> name of 'reserved' is used, and the device path changes to
-> /dev/dma_heap/reserved.
+IOMMU_IOVA is intended to be an optional library for users to select as
+and when they desire. Since it can be a module now, this means that
+built-in code which has chosen not to select it should not fail to link
+if it happens to have selected as a module by someone else. Replace
+IS_ENABLED() with IS_REACHABLE() to do the right thing.
 
-If userspace expects the CMA heap driver to expose a consistent name for 
-CMA heaps, shouldn't it be the CMA heap driver's responsibility to 
-expose a consistent name for CMA heaps? Tinkering with the core CMA code 
-doesn't feel like the right approach.
+CC: Thierry Reding <thierry.reding@gmail.com>
+Reported-by: John Garry <john.garry@huawei.com>
+Fixes: 15bbdec3931e ("iommu: Make the iova library a module")
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
 
-Furthermore, given that DT reserved-memory nodes carrying the 
-"linux-cma-default" property equally can (and do) have different names 
-as well, that or fixing userspace really are the only robust options.
+Phrased as a fix for the sake of complete honesty, but it seems
+everyone's been making do for years already so by now it's really
+just more of an enhancement.
 
-Thanks,
-Robin.
+ include/linux/iova.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> This is problematic because some user space applications,
-> like gstreamer plugins, are expecting /dev/dma_heap/linux,cma.
-> 
-> This parameter allows overriding the default 'reserved' name.
-> 
-> Signed-off-by: Nate Drude <nate.d@variscite.com>
-> ---
->   .../admin-guide/kernel-parameters.txt         |  7 +++++++
->   kernel/dma/contiguous.c                       | 21 ++++++++++++++++++-
->   2 files changed, 27 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index 51397a320f5e..975ec862d071 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -644,6 +644,13 @@
->   			altogether. For more information, see
->   			kernel/dma/contiguous.c
->   
-> +	cma_name=	Override the cma heap name
-> +			Format: <string>
-> +			When passing the cma kernel parameter, the default
-> +			cma name is 'reserved'. This parameter allows it to
-> +			be overriden to align with the device tree name,
-> +			like 'linux,cma'.
-> +
->   	cma_pernuma=nn[MG]
->   			[ARM64,KNL,CMA]
->   			Sets the size of kernel per-numa memory area for
-> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-> index 3d63d91cba5c..e89819ec183e 100644
-> --- a/kernel/dma/contiguous.c
-> +++ b/kernel/dma/contiguous.c
-> @@ -74,6 +74,7 @@ static const phys_addr_t size_bytes __initconst =
->   static phys_addr_t  size_cmdline __initdata = -1;
->   static phys_addr_t base_cmdline __initdata;
->   static phys_addr_t limit_cmdline __initdata;
-> +static char name_cmdline[CMA_MAX_NAME] = "reserved";
->   
->   static int __init early_cma(char *p)
->   {
-> @@ -96,6 +97,24 @@ static int __init early_cma(char *p)
->   }
->   early_param("cma", early_cma);
->   
-> +static int __init early_cma_name(char *p)
-> +{
-> +	if (!p) {
-> +		pr_err("Config string not provided\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (!strlen(p)) {
-> +		pr_err("cma_name must have at least one character\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	snprintf(name_cmdline, CMA_MAX_NAME, p);
-> +
-> +	return 0;
-> +}
-> +early_param("cma_name", early_cma_name);
-> +
->   #ifdef CONFIG_DMA_PERNUMA_CMA
->   
->   static struct cma *dma_contiguous_pernuma_area[MAX_NUMNODES];
-> @@ -231,7 +250,7 @@ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
->   	int ret;
->   
->   	ret = cma_declare_contiguous(base, size, limit, 0, 0, fixed,
-> -					"reserved", res_cma);
-> +					name_cmdline, res_cma);
->   	if (ret)
->   		return ret;
->   
+diff --git a/include/linux/iova.h b/include/linux/iova.h
+index 8f97a43be834..fe18c3e6a725 100644
+--- a/include/linux/iova.h
++++ b/include/linux/iova.h
+@@ -75,7 +75,7 @@ static inline unsigned long iova_pfn(struct iova_domain *iovad, dma_addr_t iova)
+ 	return iova >> iova_shift(iovad);
+ }
+ 
+-#if IS_ENABLED(CONFIG_IOMMU_IOVA)
++#if IS_REACHABLE(CONFIG_IOMMU_IOVA)
+ int iova_cache_get(void);
+ void iova_cache_put(void);
+ 
+-- 
+2.36.1.dirty
+
