@@ -1,32 +1,32 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 785B87F
-	for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 09:25:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3B287F
+	for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 09:30:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663061105; x=1694597105;
+  t=1663061444; x=1694597444;
   h=message-id:date:mime-version:cc:to:references:from:
    subject:in-reply-to:content-transfer-encoding;
-  bh=ez00WRCiSdwFGFwuR0Sn/KBDwI3PBPAvuJrBf1JZWn8=;
-  b=EovcdeKPYkhfksCWXsQtgeb4mBniHKcS/JD8O9QYbEKGNIX45hyswScy
-   Kcyi+R9Ti3ZEdo+RP7CNMh77FPtM2ri7MANliwqdPEaEgTaMVyvS572n1
-   XW0kpTZl0i1spNFvOJuJvg0XjhUbAPvQK1C5zzkgTemnb6VkkCdWS62eh
-   hXuZK9MP0V+prIag07sz/p3MVP64SZwoL6K0LsHKiqijVPugFrQ7usrLa
-   HHr+GtuK3eghfqMu26zXHDfYhXKz8alzYGFrMYRAK/UaHI2FcTP5+OwQE
-   q5xSHACjJyKDVgTZeWixxUkeq85chHfeQgZ05WCdBcL+wJ9oik+2WVKbJ
+  bh=E7t2UOdY9wHDMf0CP0CgwG8FAmDq7eQIjFUMP5nR1Hw=;
+  b=HDGTtLBioLylKmGx0vkVU/nUyHzRyEfkkPSVwuODfuLbAZFemRrYNv/U
+   omwuqjbkSxUlnc/p2vg6D5JkYqJRlRt2HS8HM9ZwBECAQ/dIKXLzg74s0
+   71odG6Xe/+TUiPFyrLqraPMCZbdsYqxFKGJEkLdvuCX++XuG8KX1JB6rl
+   Gd8Yz7MEBFS7Xr+OsA0Cth9f4QmXSKrb4lwjLxomE78wqFpttpAAF38IE
+   bg+O5fyuwdpKBeaaHQGp1SEnv61l73ql6HU0dxny6PJtk2Hfkml4fZzIM
+   qu9F7eRfAIRceh/5dzLCs9/XD3W5ECbGbrYGQ+c9s11zr9BTqExpT8j3R
    A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10468"; a="384387609"
+X-IronPort-AV: E=McAfee;i="6500,9779,10468"; a="298890121"
 X-IronPort-AV: E=Sophos;i="5.93,312,1654585200"; 
-   d="scan'208";a="384387609"
+   d="scan'208";a="298890121"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2022 02:25:04 -0700
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2022 02:30:44 -0700
 X-IronPort-AV: E=Sophos;i="5.93,312,1654585200"; 
-   d="scan'208";a="646854593"
+   d="scan'208";a="646855920"
 Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.213.188]) ([10.254.213.188])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2022 02:25:02 -0700
-Message-ID: <826a10fa-7dc3-887d-8a08-e03dcf1fa59c@linux.intel.com>
-Date: Tue, 13 Sep 2022 17:25:00 +0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2022 02:30:42 -0700
+Message-ID: <e0c43ca7-0ad3-a4d6-960b-9853bb815438@linux.intel.com>
+Date: Tue, 13 Sep 2022 17:30:40 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,98 +37,51 @@ User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.2.2
 Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+ Kevin Tian <kevin.tian@intel.com>, linux-kernel@vger.kernel.org
 Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+To: Ethan Zhao <haifeng.zhao@linux.intel.com>, iommu@lists.linux.dev
 References: <20220912024826.1684913-1-baolu.lu@linux.intel.com>
- <BN9PR11MB52766A868879689D55AE9DC68C479@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <046916aa-980c-c40d-1163-6ab839248201@linux.intel.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
 Subject: Re: [PATCH 1/1] iommu/vt-d: Enable PASID during iommu device probe
-In-Reply-To: <BN9PR11MB52766A868879689D55AE9DC68C479@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <046916aa-980c-c40d-1163-6ab839248201@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2022/9/13 16:01, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Monday, September 12, 2022 10:48 AM
+Hi Ethan,
+
+On 2022/9/13 15:46, Ethan Zhao wrote:
+> Baolu,
+> 
+> 在 2022/9/12 10:48, Lu Baolu 写道:
+>> Previously PASID supports on both IOMMU and PCI devices are enabled in 
+>> the
+>> iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA) path. It's functionally
+>> correct as the SVA is the only feature that requires PASID setup. 
+>> However,
+>> looking ahead, we will add more features that need to enable pasid (for
+>> example, kernel DMA with PASID, SIOV, VM guest SVA, etc.). It makes more
+>> sense to enable PASID during iommu probing device.
 >>
->> @@ -1401,7 +1403,6 @@ static void iommu_enable_dev_iotlb(struct
->> device_domain_info *info)
+>> This enables PASID during iommu probing device and deprecates the
+>> intel_iommu_enable_pasid() helper. This is safe because the IOMMU 
+>> hardware
+>> will block any PCI TLP with a PASID prefix if there is no IOMMU domain
+>> attached to the PASID of the device.
 > 
-> This is not the right name now as dev_iotlb is only related to ATS.
+> What the error path would be if this code runs on some old platforms don't
+> 
+> support PASID, would you print out "this platform doesn't suppor PASID" and
+> 
+> give users an interface function to query if the PASID cap of iommu is 
+> enabled
+> 
+> and if not why ?
 
-Yes. This name is confusing. Perhaps we can split it into some specific
-helpers,
-
-- intel_iommu_enable_pci_ats()
-- intel_iommu_enabel_pci_pri()
-- intel_iommu_enable_pci_pasid()
-?
-
-> 
->>   		info->pfsid = pci_dev_id(pf_pdev);
->>   	}
->>
->> -#ifdef CONFIG_INTEL_IOMMU_SVM
->>   	/* The PCIe spec, in its wisdom, declares that the behaviour of
->>   	   the device if you enable PASID support after ATS support is
->>   	   undefined. So always enable PASID support on devices which
->> @@ -1414,7 +1415,7 @@ static void iommu_enable_dev_iotlb(struct
->> device_domain_info *info)
->>   	    (info->pasid_enabled ? pci_prg_resp_pasid_required(pdev) : 1)
->> &&
->>   	    !pci_reset_pri(pdev) && !pci_enable_pri(pdev, PRQ_DEPTH))
->>   		info->pri_enabled = 1;
->> -#endif
->> +
->>   	if (info->ats_supported && pci_ats_page_aligned(pdev) &&
->>   	    !pci_enable_ats(pdev, VTD_PAGE_SHIFT)) {
->>   		info->ats_enabled = 1;
-> 
-> iommu_enable_dev_iotlb() is currently called both when the device is probed
-> and when sva is enabled (which is actually useless). From this angle the commit
-> msg is inaccurate.
-
-The logic is a bit tricky. iommu_support_dev_iotlb() only returns a
-devinfo pointer when ATS is supported on the device. So, you are right
-if device supports both ATS and PASID; otherwise PASID will not be
-enabled.
-
-> 
->> diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
->> index 39a06d245f12..b3f40375f214 100644
->> --- a/drivers/iommu/intel/Kconfig
->> +++ b/drivers/iommu/intel/Kconfig
->> @@ -21,6 +21,8 @@ config INTEL_IOMMU
->>   	select IOASID
->>   	select IOMMU_DMA
->>   	select PCI_ATS
->> +	select PCI_PRI
->> +	select PCI_PASID
->>   	help
->>   	  DMA remapping (DMAR) devices support enables independent
->> address
->>   	  translations for Direct Memory Access (DMA) from devices.
->> @@ -48,8 +50,6 @@ config INTEL_IOMMU_DEBUGFS
->>   config INTEL_IOMMU_SVM
->>   	bool "Support for Shared Virtual Memory with Intel IOMMU"
->>   	depends on X86_64
->> -	select PCI_PASID
->> -	select PCI_PRI
->>   	select MMU_NOTIFIER
->>   	select IOASID
-> 
-> this is already selected by CONFIG_INTEL_IOMMU
-
-Yes. Should be removed.
-
-> 
->>   	select IOMMU_SVA
->> --
->> 2.25.1
-> 
-> 
+It's not an error case if the IOMMU doesn't support PASID. But it's an
+error case if any device drivers call PASID related IOMMU interfaces
+(for example, iommu_domain_attach/detach_dev_pasid()). The corresponding
+error code will be returned to the drivers.
 
 Best regards,
 baolu
