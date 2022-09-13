@@ -1,157 +1,70 @@
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2050.outbound.protection.outlook.com [40.107.212.50])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC12C3C3F
-	for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 20:14:31 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=W0W9gcGtgouzkcYitQvelVnWUgXV+ergxt+r0hNgYqAaz5b9NV5wYHyZpBTT9JHyViMBwvCCa/eBul839emHv87ND1OAa9iQa6EDzKygyf6njrHAYv6KrLbi4DA8hsTSpddJ9uk0t5rhlmkOMZt+2oU/6Kjs0RGUXif7Rs410IiuUxn/W16gRMju7ZPhS5tE3vQLSM82AOpagiHeCAvzwXI+eI5x8doJL1+FOKAny65sm1wRY7+rrpGeuEkkGxX3HtF0l/GbBK+yHLYrXUJXqBW4N7T3R6bVW/G1C9UspVTQ3ZTJ/jtNjfgYaNqFuJ8gNIU7MnGyjRpGiJr/4yA3hA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CaTwuI0wJ8PsgDH78M0+Kd2G+N13tGAbF0jfExwcd9Q=;
- b=JTFF9CDzl1XNd27BamnFrZlBkpWi9DwK3xvwQQr+i9tK5HRACfqrAbkJ+xiL15njtxmFMtPlmLSGxqScNQpo3a1NmOJfTAAHt4bW1LZRbKd+yIS1iKzAHkApGptPMkOt7ud4fN7LIzXl0P6OFrVAam8UTfRy6uEDx3ykVp2Wkg2JcLPeyyIAtSCpBqPg5RyZ9pzU/m8d8AjF4oFHUXs4AsykkOOv06e6QP8k6TGUOsM3Ik0jEdNQe38ifjbWMLr+biNlQBRMtTNWZUNx1Mulu0jshqhEWdUYtpBALa0YqCI2/agscXRwP9CZpaY3EnARfnSdPGI9BHS6TelGPmJEYw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=linux.intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CaTwuI0wJ8PsgDH78M0+Kd2G+N13tGAbF0jfExwcd9Q=;
- b=N8v4UfDxdAxT9+evl/cLRcJtjFtXRiNIEt5Gw4RptWmafh/9ddMfzobTQnnQNvzn+9obf/KlCOORCYDBeT20IbcBQtDBxBJnby4YL6m8MKtM5msWtHyukMtSECL8k2DSz6AO0W4V8aFTsCLjGlhfvOFFPpAPLiYxAk4DpzMZXymKKhw2ytIIUfwD4o/U5LoSkva6kUXgx2CMztDuPXptn5s4fkJI94d0HwXLGS5cAOBh0sowG6STNgm9YsKXMfekPYdnJmHh0EzmmBR9TrS/jFe6edMdHIwfcv4p4GmHIocYc7ZRjzBDly1YRyyr01n1TwuN245Gpuc2IszkuTav4g==
-Received: from DM6PR06CA0063.namprd06.prod.outlook.com (2603:10b6:5:54::40) by
- BY5PR12MB4260.namprd12.prod.outlook.com (2603:10b6:a03:206::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.12; Tue, 13 Sep
- 2022 20:14:29 +0000
-Received: from DM6NAM11FT072.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:54:cafe::e6) by DM6PR06CA0063.outlook.office365.com
- (2603:10b6:5:54::40) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.12 via Frontend
- Transport; Tue, 13 Sep 2022 20:14:28 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.235) by
- DM6NAM11FT072.mail.protection.outlook.com (10.13.173.181) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5632.12 via Frontend Transport; Tue, 13 Sep 2022 20:14:28 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- DRHQMAIL107.nvidia.com (10.27.9.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.38; Tue, 13 Sep 2022 20:14:28 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Tue, 13 Sep 2022 13:14:27 -0700
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29 via Frontend
- Transport; Tue, 13 Sep 2022 13:14:26 -0700
-Date: Tue, 13 Sep 2022 13:14:24 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-CC: <joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <will@kernel.org>,
-	<robin.murphy@arm.com>, <robdclark@gmail.com>, <dwmw2@infradead.org>,
-	<baolu.lu@linux.intel.com>, <agross@kernel.org>,
-	<bjorn.andersson@linaro.org>, <konrad.dybcio@somainline.org>,
-	<matthias.bgg@gmail.com>, <heiko@sntech.de>, <orsonzhai@gmail.com>,
-	<baolin.wang@linux.alibaba.com>, <zhang.lyra@gmail.com>,
-	<thierry.reding@gmail.com>, <jgg@nvidia.com>, <sricharan@codeaurora.org>,
-	<yong.wu@mediatek.com>, <vdumpa@nvidia.com>, <jonathanh@nvidia.com>,
-	<tglx@linutronix.de>, <shameerali.kolothum.thodi@huawei.com>,
-	<thunder.leizhen@huawei.com>, <christophe.jaillet@wanadoo.fr>,
-	<yangyingliang@huawei.com>, <jon@solid-run.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-arm-msm@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
-	<linux-rockchip@lists.infradead.org>, <linux-tegra@vger.kernel.org>,
-	<virtualization@lists.linux-foundation.org>
-Subject: Re: [PATCH 4/5] iommu: Regulate errno in ->attach_dev callback
- functions
-Message-ID: <YyDkoIqWb8fy+vsi@Asurada-Nvidia>
-References: <20220913082448.31120-1-nicolinc@nvidia.com>
- <20220913082448.31120-5-nicolinc@nvidia.com>
- <YyB3F/o3RfymqiFW@myrica>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36764671B
+	for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 23:35:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=/9i0RT8xYnvhhYLydSNCy5w2V2bVU0zcdBS2b/Mx3KU=; b=t4p3qotLpiXBOK695FV6Av3c7P
+	V9ch6wXoz1ze/fCRWkrmnKtiyv6PaIrGIqra//NJzO/QtAuQ55T8o35R8QevMFZ/1RRuhOIdBe0Pb
+	avPTqmgXSgQ1OqwAURW4GVR+y4TIRhuAIq14QtDmIXoVDxzd3jv5vBBLC5789Wo00msxADOfYqo6d
+	IP7LviZekrBf8W8u1g4RbQ1Bpc1F0suAv1V7jHk0oBFLZ2XyQNjY80HoVM4apaNTL112jO+GQTaU6
+	lzWwjEfT/q37SX/2QQDb5Eon30dK0Xg8IzwevJjJleospvIdLzX/LFXnkA3JNVm5WeLcfH8+OuinY
+	ThNQ8k1A==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1oYFQ0-00HI4E-6B; Tue, 13 Sep 2022 23:34:16 +0000
+Date: Wed, 14 Sep 2022 00:34:16 +0100
+From: Matthew Wilcox <willy@infradead.org>
+To: Doug Berger <opendmb@gmail.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>,
+	Jonathan Corbet <corbet@lwn.net>, Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Mike Kravetz <mike.kravetz@oracle.com>,
+	Muchun Song <songmuchun@bytedance.com>,
+	Mike Rapoport <rppt@kernel.org>, Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, Borislav Petkov <bp@suse.de>,
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	David Hildenbrand <david@redhat.com>, Zi Yan <ziy@nvidia.com>,
+	Oscar Salvador <osalvador@suse.de>,
+	Hari Bathini <hbathini@linux.ibm.com>,
+	Kees Cook <keescook@chromium.org>,
+	- <devicetree-spec@vger.kernel.org>,
+	KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
+	Mel Gorman <mgorman@suse.de>, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-mm@kvack.org, iommu@lists.linux.dev
+Subject: Re: [PATCH 03/21] mm/hugetlb: correct demote page offset logic
+Message-ID: <YyETeBdbldnoRZ+x@casper.infradead.org>
+References: <20220913195508.3511038-1-opendmb@gmail.com>
+ <20220913195508.3511038-4-opendmb@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YyB3F/o3RfymqiFW@myrica>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT072:EE_|BY5PR12MB4260:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4703a67a-e720-4dfa-0d73-08da95c48ffc
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	6qCaUCdCcKwNBEVKug5omqqSzwtcs5qotqWAWOdPUsiUU+b5X9b9X9FApoisW60BKxnCtCKDG3VAXmlOv3COtXpax9VfS6ssZUxaTs3ZxnyewpwIxhr6ukJtNB8Sc4ACKc3qZMEaBEANkGSyH0yh8zX5sHjs/eFFoskc1Ojc3rQPB5TKD2Enp0faQ4JgggIQfqu7hmsdCnAE2RMokjfEbBcoWxaUwDcsNK/BOroFj1VsoWzMnrtu8g6z8fZTd9Fd8Wod2zHo51tbqo9r9qxJjC2KiJgPYDGXEkVcG0tZwfUWlMIvqG2Kw27eu1775NLfTHH5RE5tEl6y5HCOvElkgPMpd6gDpGjPurJVDhmHNTOXX1khrrCDZjMPbdRpCewO8jVA0ShHR0ce/3vMtrSCHnRqWGfBoQJaJaDWd5gGrYnL9WIW533AU+4R18xYzE87QOvrVgavwvONZbvOVpD/fm7X30EaUSWNFADA6xAlcVgextO0a0bZrj2dHxcxvuYZ9X02RJEJlb8jhOwFVVNmejAi+EN3d0qvzDWx5k29GpOVWHqXWScb1VXc2OTyBKquMWloNtc0Ecs4zeMGOpk+LnRmkeFZ8qYgqPS+GHPrj/IRzPEVm2pr2OieMTADt1JivSXw8HSXhEWTaCut0hnmO8oF3wvqj5sx6qM2x+eP/g9bF4GBWVzj9gQHAngVWn1wN6ryqIkE1qlvxE5b10IOHQphUYSqw94QcHpiwjWA4RSkKaQRercgekqWF7XNkfwhzDcSt85tmv3fBwtdjoVs3pA8WkXwc3k//rKXJ+aY4MQKx1a8i8H0+Xl5TgJojjbIt8n2kcl0y4cX+OlQzkJ/Yg==
-X-Forefront-Antispam-Report:
-	CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230022)(4636009)(376002)(136003)(39860400002)(346002)(396003)(451199015)(36840700001)(46966006)(40470700004)(356005)(186003)(26005)(83380400001)(426003)(336012)(8936002)(7406005)(36860700001)(81166007)(41300700001)(86362001)(55016003)(478600001)(40460700003)(8676002)(2906002)(47076005)(5660300002)(54906003)(316002)(9686003)(7416002)(82740400003)(6916009)(70586007)(4326008)(82310400005)(70206006)(33716001)(40480700001)(36900700001)(67856001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Sep 2022 20:14:28.7041
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4703a67a-e720-4dfa-0d73-08da95c48ffc
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT072.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4260
+In-Reply-To: <20220913195508.3511038-4-opendmb@gmail.com>
 
-Hi Jean,
+On Tue, Sep 13, 2022 at 12:54:50PM -0700, Doug Berger wrote:
+> With gigantic pages it may not be true that struct page structures
+> are contiguous across the entire gigantic page. The mem_map_offset
+> function is used here in place of direct pointer arithmetic to
+> correct for this.
 
-On Tue, Sep 13, 2022 at 01:27:03PM +0100, Jean-Philippe Brucker wrote:
-> External email: Use caution opening links or attachments
-> 
-> 
-> Hi Nicolin,
-> 
-> On Tue, Sep 13, 2022 at 01:24:47AM -0700, Nicolin Chen wrote:
-> > Following the new rules in include/linux/iommu.h kdocs, update all drivers
-> > ->attach_dev callback functions to return ENODEV error code for all device
-> > specific errors. It particularly excludes EINVAL from being used for such
-> > error cases. For the same purpose, also replace one EINVAL with ENOMEM in
-> > mtk_iommu driver.
-> >
-> > Note that the virtio-iommu does a viommu_domain_map_identity() call, which
-> > returns either 0 or ENOMEM at this moment. Change to "return ret" directly
-> > to allow it to pass an EINVAL in the future.
-> [...]
-> > diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-> > index 80151176ba12..874c01634d2b 100644
-> > --- a/drivers/iommu/virtio-iommu.c
-> > +++ b/drivers/iommu/virtio-iommu.c
-> > @@ -696,7 +696,7 @@ static int viommu_domain_finalise(struct viommu_endpoint *vdev,
-> >               if (ret) {
-> >                       ida_free(&viommu->domain_ids, vdomain->id);
-> >                       vdomain->viommu = NULL;
-> > -                     return -EOPNOTSUPP;
-> > +                     return ret;
-> 
-> I think in the future it will be too easy to forget about the constrained
-> return value of attach() while modifying some other part of the driver,
-> and let an external helper return EINVAL. So I'd rather not propagate ret
-> from outside of viommu_domain_attach() and finalise().
-> 
-> For the same reason I do prefer this solution over EMEDIUMTYPE, because
-> it's too tempting to use exotic errno when they seem appropriate instead
-> of boring ENODEV and EINVAL. The alternative would be adding a special
-> purpose code to linux/errno.h, similarly to EPROBE_DEFER, but that might
-> be excessive.
-> 
-> Since we can't guarantee that APIs like virtio or ida won't ever return
-> EINVAL, we should set all return values:
+We're just eliminating mem_map_offset().  Please use nth_page()
+instead.
 
-Thanks for the inputs. Assuming your attached patch isn't officially
-sent, I will group it into my next version.
-
-Similarly, I will also double check other drivers, to make sure all
-of them have explicit return values, other than "ret".
+>  	for (i = 0; i < pages_per_huge_page(h);
+>  				i += pages_per_huge_page(target_hstate)) {
+> +		subpage = mem_map_offset(page, i);
+>  		if (hstate_is_gigantic(target_hstate))
