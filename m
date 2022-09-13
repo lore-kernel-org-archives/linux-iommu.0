@@ -1,159 +1,160 @@
-Received: from mail-qv1-f43.google.com (mail-qv1-f43.google.com [209.85.219.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2069.outbound.protection.outlook.com [40.107.243.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3C8766E8
-	for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 19:59:12 +0000 (UTC)
-Received: by mail-qv1-f43.google.com with SMTP id y9so10099711qvo.4
-        for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 12:59:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=koBwJdR4HF2Mh9OkMa3nN+ZpGb/cJotv47IHPg3aLjM=;
-        b=H9fVlQTVY6EaU+njTimAq+ibJtvJjx2vWGkJikgtxKpK4lpRvh7Gs0dhq+SfYU7Y1l
-         ol227J1p7+D7fHpafEcMsArwK6zpQesHNLeCyw8pBBnlfTeZXRH0gTB01wVhDLo6ZqZ0
-         2mt9ehwJJq5f5bEntKn/0aquyhMi35hMoNg4MgcTAFw56eJYhoioxREYotQhcXVzv4ef
-         26N8v6sdGt7Ksl3t6WmZRbYcEffyv4LTbLh0c7Zn4Y23wzA2w1INQgl13/vOL+Z8k7Uy
-         rhOg4rC2RHnt2n62JjXnioNT4+kK415lG500sJWQkISGfWvSLQb972JndYtjJi8pBB0H
-         qioA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=koBwJdR4HF2Mh9OkMa3nN+ZpGb/cJotv47IHPg3aLjM=;
-        b=Ahdy4k3Vz0T8V6JE099zkmOw7uDIWgi0PnZ7O9rSA1VXZzjPTo/9rnvtuf6vgilBR9
-         YHnUWlsCCUtyFcstdJyJNe8qmYfV5/o84d4CXYMDk/R8G9tc/YgZm1uT/gA+x4MZP0Pz
-         g4FIu3LZNTM/hzKgORCUEH80HsXF5w4STtpQRf1c8zXKHhrqDmM+ZHQQRr9kGIOVMoil
-         Io0kF/BgD88QqpJ7quN5ZfqZmJpb9PSsSkRs4ttO5aX5+8O8Wlgl69hOwU2bfjvyLzql
-         pNj69mAubmnIKBkikfJtkSqHTAAjS8evwqEVb+vUJYS3BJ9eCK+YJCADWsEupgv046wx
-         sicQ==
-X-Gm-Message-State: ACgBeo2BUb4HbvrBoYaiIg6BKwE8UWYnoNz6nvzQhq3xoyPxzV9+y3Jm
-	NCUXKZuWTay6sA50v/Vn6JE=
-X-Google-Smtp-Source: AA6agR4KLeMksXEqgCvXkwrSYo6YaUFxsEGC4nazCYouj2Y6nxYnhGX19vjDfEjEBR3X6wdqMlktzg==
-X-Received: by 2002:a05:6214:1c0a:b0:49d:87ff:e77c with SMTP id u10-20020a0562141c0a00b0049d87ffe77cmr28164232qvc.54.1663099151805;
-        Tue, 13 Sep 2022 12:59:11 -0700 (PDT)
-Received: from stbirv-lnx-3.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id s11-20020a05620a29cb00b006b8e049cf08sm276305qkp.2.2022.09.13.12.59.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Sep 2022 12:59:11 -0700 (PDT)
-From: Doug Berger <opendmb@gmail.com>
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Jonathan Corbet <corbet@lwn.net>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Frank Rowand <frowand.list@gmail.com>,
-	Mike Kravetz <mike.kravetz@oracle.com>,
-	Muchun Song <songmuchun@bytedance.com>,
-	Mike Rapoport <rppt@kernel.org>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Borislav Petkov <bp@suse.de>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-	Doug Berger <opendmb@gmail.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	David Hildenbrand <david@redhat.com>,
-	Zi Yan <ziy@nvidia.com>,
-	Oscar Salvador <osalvador@suse.de>,
-	Hari Bathini <hbathini@linux.ibm.com>,
-	Kees Cook <keescook@chromium.org>,
-	- <devicetree-spec@vger.kernel.org>,
-	KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
-	Mel Gorman <mgorman@suse.de>,
-	linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-mm@kvack.org,
-	iommu@lists.linux.dev
-Subject: [PATCH 21/21] mm/hugetlb: introduce hugetlb_dmb
-Date: Tue, 13 Sep 2022 12:55:08 -0700
-Message-Id: <20220913195508.3511038-22-opendmb@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220913195508.3511038-1-opendmb@gmail.com>
-References: <20220913195508.3511038-1-opendmb@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0188866E8
+	for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 20:00:33 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IKl+kBKusRFW95Nnme1cfOx21ZWyCX8EvWRo0dfrPJ5uk8kXx3h9epnQH8pBEklOLUJ5qYm6ol8hRnEX2RgSFuHCG5qnCdzRl1Y9l1MrDqVZ6w3Q1dg8ZxsatHt7k5/PShoF77aR9fcSByTJlGXklIjKDIt7GMHHR/ZOqlTAJ2KsICtJcYKanaXKFKyd0zuhavg/6yy7QfFzXk5k/mZ5neqgcihIsvHQ8F5dNhN56mBomylMHvEZkrxDsotEJgVn1eQrbJCrCOsj7BvGjRsW0UsgoIrSeD9ITXmEJ7H+JQ6XPLnLJIkdyZYzNfsBsqIPkZCthhGrmqy+BcptSvrR/A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=IZfGFrNYfckX8y7d1ap8+ifboVX6qxI8DDXWoZjUUz4=;
+ b=gjwKV+fxfudWoeeAI1++r8CuvMoWjtxtBzwg/ZuQP6gX6W4yV9gmo8R2k+GDNu8+67uKNEPN6T7fNveR6gZRoDujtgX94jsjap5/PVxUxLx1GXTz1yHQd9yXDuCeQ9Y670Qq6iVbW3lxkjKyyu0e2E670qzzGB+lKzeCCM+85GaH9m30Php7thkk2nJrjqobpDZhYPVZgI/esQc4yJI4zBP1wUeRPOc0SwDZqpIkEKm0KHKFmjnFNk9xOP4UsdmhuQdpCca/zDyqZanQintMCHJFtkYwVd3KxNug9D9TE7YYMF71Izm0XREmsVMSw0SJe7qXSGh4JwAGvG9xvs16RA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.238) smtp.rcpttodomain=infradead.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IZfGFrNYfckX8y7d1ap8+ifboVX6qxI8DDXWoZjUUz4=;
+ b=e3tqAY7JPDkmFU0NBEaLIxvqvigQut/jhYfOWrHJOch/tdHLGbHnb++Cu5XQn6awt2CHq7GB4rBHxyz3ByZxSJPcK3kUGX6EyNphOg+V1SMZ4n7LbuuZVu2wPGY4WjFPzYHi0AbudFX85L64xYwcEaI2KJHzmjvzPg+ySiNBKj6jRDkD61zoTbAE3u2xCx7og3QRA/p1Rf+Fmdsp+ls09t6bRtM+ge01ZucuDDmGXYkfJ25vhkSYIzjKZTXVSpoq0+GaBRYuB83mIArpsf8Qz7aWVWE146Z51X0fQ0Uav66WncZGNrXSguvrSrXvMyON7PD7FQmc5KQp5xjyDKtInA==
+Received: from DM6PR08CA0045.namprd08.prod.outlook.com (2603:10b6:5:1e0::19)
+ by DM4PR12MB5167.namprd12.prod.outlook.com (2603:10b6:5:396::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.19; Tue, 13 Sep
+ 2022 20:00:31 +0000
+Received: from DM6NAM11FT040.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:1e0:cafe::ee) by DM6PR08CA0045.outlook.office365.com
+ (2603:10b6:5:1e0::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.12 via Frontend
+ Transport; Tue, 13 Sep 2022 20:00:31 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.238) by
+ DM6NAM11FT040.mail.protection.outlook.com (10.13.173.133) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5612.13 via Frontend Transport; Tue, 13 Sep 2022 20:00:31 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ DRHQMAIL105.nvidia.com (10.27.9.14) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.38; Tue, 13 Sep 2022 20:00:30 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.29; Tue, 13 Sep 2022 13:00:30 -0700
+Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29 via Frontend
+ Transport; Tue, 13 Sep 2022 13:00:28 -0700
+Date: Tue, 13 Sep 2022 13:00:27 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jeff Johnson <quic_jjohnson@quicinc.com>
+CC: <joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <will@kernel.org>,
+	<robin.murphy@arm.com>, <robdclark@gmail.com>, <dwmw2@infradead.org>,
+	<baolu.lu@linux.intel.com>, <agross@kernel.org>,
+	<bjorn.andersson@linaro.org>, <konrad.dybcio@somainline.org>,
+	<matthias.bgg@gmail.com>, <heiko@sntech.de>, <orsonzhai@gmail.com>,
+	<baolin.wang@linux.alibaba.com>, <zhang.lyra@gmail.com>,
+	<thierry.reding@gmail.com>, <jean-philippe@linaro.org>, <jgg@nvidia.com>,
+	<sricharan@codeaurora.org>, <yong.wu@mediatek.com>, <vdumpa@nvidia.com>,
+	<jonathanh@nvidia.com>, <tglx@linutronix.de>,
+	<shameerali.kolothum.thodi@huawei.com>, <thunder.leizhen@huawei.com>,
+	<christophe.jaillet@wanadoo.fr>, <yangyingliang@huawei.com>,
+	<jon@solid-run.com>, <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-arm-msm@vger.kernel.org>,
+	<linux-mediatek@lists.infradead.org>, <linux-rockchip@lists.infradead.org>,
+	<linux-tegra@vger.kernel.org>, <virtualization@lists.linux-foundation.org>
+Subject: Re: [PATCH 3/5] iommu: Add return errno rules to ->attach_dev ops
+Message-ID: <YyDhW/HJaKMygccm@Asurada-Nvidia>
+References: <20220913082448.31120-1-nicolinc@nvidia.com>
+ <20220913082448.31120-4-nicolinc@nvidia.com>
+ <cd92cfec-0a68-a42d-1fa4-a16e37e59d53@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <cd92cfec-0a68-a42d-1fa4-a16e37e59d53@quicinc.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT040:EE_|DM4PR12MB5167:EE_
+X-MS-Office365-Filtering-Correlation-Id: eb3b88e3-1aa6-47b3-b11a-08da95c29cc4
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	SDYPSxfbai2zCo+qcmdiJ9xYaB1OPrc6aYYh/UsRMNreDfAp9rdHFG2RyhT3wOkax7xznsaoXFUeZh7p4ymv3Mv1hBLegPWgFMtQICmXJvF7o0LSwUCgRBA/xkT2pC60scXt6jjRdGvs2la+NyWeOXbL2AKZjJMiiDZpy0cu2JJrENGcR1URIfxLV3dDLrBqbppQEb9eJQbJrOm3KQ4F6M29rYworgAye1JVsCjBXGLym8oF1JfTApfwxGQm86qilgzIiQN7drwX0SpmvS6/WPbhR3fsDqVwUeaO2hXQmeqHDLVcMQbVTlsLlHB9TruRqWX+oHOdpEjvdxJXXp+B3J/56l+VmbgRj5r7SX2jx6aHY6WAB42ZFyJ4QZcJDmOPD1jAHCDOftYTmrCmvCblwP3vdNuYtuNCFEEWygvu4cLMIVUbViOVZjFPcAemhbZYxJmYqkdltZv+e2rFTnqRMU1p+NRoWmLCNu2ASlxBi9+ofw+mDTBSkvCqQDiWEnjtM+fy/IaiOIXLkmyHGA8cRGSHOauPw0DhFFWsUswF14Qs14Pb8AhBBhUu4mHt2elsuc5j1Z1suV8fTPl7m6w1dXaJmoqQHp3maKJ8fAaFhEGjt9sS9KO7zvxOhTx4npAayyzyLaL2wA18cRkueLQ1LJfIszNK1f+SciFTHpIPnzk1eFVclewVU1ry8w6brYQkXiismmJz5C5Z1/PMANkDWvbet53iJkVJu5efTAvUxwMFpk1zXWc58Hp3YECKzixYhVsTTBTRd0xos4apFJlf3jytQOifTw7OhAJa1Pf3/nxfotASH36diEhNVliGai0aUBSsFxvm/xcxx3R2FR4dhiInmgxm3wU2S3luXeEwFiaiKhjFpQIVrknQBRj59/ZC
+X-Forefront-Antispam-Report:
+	CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(376002)(396003)(136003)(346002)(451199015)(46966006)(40470700004)(36840700001)(7416002)(47076005)(186003)(9686003)(40480700001)(356005)(82310400005)(86362001)(81166007)(41300700001)(316002)(40460700003)(7406005)(36860700001)(478600001)(33716001)(54906003)(82740400003)(8936002)(6916009)(70206006)(4326008)(70586007)(336012)(5660300002)(26005)(426003)(8676002)(55016003)(2906002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Sep 2022 20:00:31.1582
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: eb3b88e3-1aa6-47b3-b11a-08da95c29cc4
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DM6NAM11FT040.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5167
 
-If specified on the kernel command line the hugetlb_dmb parameter
-modifies the behavior of the hugetlb_cma parameter to use the
-Contiguous Memory Allocator within Designated Movable Blocks for
-gigantic page allocation.
+Hi Jeff,
 
-This allows the kernel page allocator to use the memory more
-agressively than traditional CMA memory pools at the cost of
-potentially increased allocation latency.
+On Tue, Sep 13, 2022 at 11:41:35AM -0700, Jeff Johnson wrote:
+> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > index ea30f00dc145..c5d7ec0187c7 100644
+> > --- a/include/linux/iommu.h
+> > +++ b/include/linux/iommu.h
+> > @@ -266,6 +266,17 @@ struct iommu_ops {
+> >   /**
+> >    * struct iommu_domain_ops - domain specific operations
+> >    * @attach_dev: attach an iommu domain to a device
+> > + *              Rules of its return errno:
+> > + *               EINVAL  - Exclusively, device and domain are incompatible. Must
+> > + *                         avoid kernel prints along with this errno. Any EINVAL
+> > + *                         returned from kAPIs must be converted to ENODEV if it
+> > + *                         is device-specific, or to some other reasonable errno
+> > + *                         being listed below
+> > + *               ENOMEM  - Out of memory
+> > + *               ENOSPC  - No space left on device
+> > + *               EBUSY   - Device is attached to a domain and cannot be changed
+> > + *               ENODEV  - Device specific errors, not able to be attached
+> > + *              <others> - Treated as ENODEV by the caller. Use is discouraged
+> 
+> It is my understanding that kernel-doc won't preserve your formatting
+> without extra directives. See the "Note" after
+> <https://www.kernel.org/doc/html/latest/doc-guide/kernel-doc.html#return-values>
 
-Signed-off-by: Doug Berger <opendmb@gmail.com>
----
- Documentation/admin-guide/kernel-parameters.txt |  3 +++
- mm/hugetlb.c                                    | 16 +++++++++++++---
- 2 files changed, 16 insertions(+), 3 deletions(-)
+Thanks for the review!
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 8141fac7c7cb..b29d1fa253d6 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -1732,6 +1732,9 @@
- 			hugepages using the CMA allocator. If enabled, the
- 			boot-time allocation of gigantic hugepages is skipped.
- 
-+	hugetlb_dmb	[HW,CMA] Causes hugetlb_cma to use Designated Movable
-+			Blocks for any CMA areas it reserves.
-+
- 	hugetlb_free_vmemmap=
- 			[KNL] Reguires CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
- 			enabled.
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index 2f354423f50f..d3fb8b1f443f 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -54,6 +54,7 @@ struct hstate hstates[HUGE_MAX_HSTATE];
- #ifdef CONFIG_CMA
- static struct cma *hugetlb_cma[MAX_NUMNODES];
- static unsigned long hugetlb_cma_size_in_node[MAX_NUMNODES] __initdata;
-+static bool hugetlb_dmb __initdata;
- static bool hugetlb_cma_page(struct page *page, unsigned int order)
- {
- 	return cma_pages_valid(hugetlb_cma[page_to_nid(page)], page,
-@@ -7321,6 +7322,14 @@ static int __init cmdline_parse_hugetlb_cma(char *p)
- 
- early_param("hugetlb_cma", cmdline_parse_hugetlb_cma);
- 
-+static int __init cmdline_parse_hugetlb_dmb(char *p)
-+{
-+	hugetlb_dmb = true;
-+	return 0;
-+}
-+
-+early_param("hugetlb_dmb", cmdline_parse_hugetlb_dmb);
-+
- void __init hugetlb_cma_reserve(int order)
- {
- 	unsigned long size, reserved, per_node;
-@@ -7396,10 +7405,11 @@ void __init hugetlb_cma_reserve(int order)
- 		 * may be returned to CMA allocator in the case of
- 		 * huge page demotion.
- 		 */
--		res = cma_declare_contiguous_nid(0, size, 0,
-+		res = __cma_declare_contiguous_nid(0, size, 0,
- 						PAGE_SIZE << HUGETLB_PAGE_ORDER,
--						 0, false, name,
--						 &hugetlb_cma[nid], nid);
-+						0, false, name,
-+						&hugetlb_cma[nid], nid,
-+						hugetlb_dmb);
- 		if (res) {
- 			pr_warn("hugetlb_cma: reservation failed: err %d, node %d",
- 				res, nid);
--- 
-2.25.1
+Perhaps the following one would work:
 
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index ea30f00dc145..14f078b58e17 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -266,6 +266,17 @@ struct iommu_ops {
+ /**
+  * struct iommu_domain_ops - domain specific operations
+  * @attach_dev: attach an iommu domain to a device
++ *  Return:
++ * * 0         - success
++ * * EINVAL    - Exclusively, device and domain are incompatible. Must avoid
++ *               kernel prints along with this errno. Any EINVAL returned from
++ *               a kAPI must be converted to ENODEV if it is device-specific,
++ *               or to some other reasonable errno being listed below
++ * * ENOMEM    - Out of memory
++ * * ENOSPC    - No space left on device
++ * * EBUSY     - Device is attached to a domain and cannot be changed
++ * * ENODEV    - Device specific errors, not able to be attached
++ * * <others>  - Treated as ENODEV by the caller. Use is discouraged
+  * @detach_dev: detach an iommu domain from a device
+  * @map: map a physically contiguous memory region to an iommu domain
+  * @map_pages: map a physically contiguous set of pages of the same size to
