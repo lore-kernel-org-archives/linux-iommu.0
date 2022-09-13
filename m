@@ -1,42 +1,42 @@
-Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com [209.85.222.179])
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1AFE66E8
-	for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 19:58:28 +0000 (UTC)
-Received: by mail-qk1-f179.google.com with SMTP id i3so4615408qkl.3
-        for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 12:58:28 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73DF866E8
+	for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 19:58:32 +0000 (UTC)
+Received: by mail-qt1-f177.google.com with SMTP id r20so8905932qtn.12
+        for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 12:58:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=kefl6D8eKpN1GxKRqpPd+2PbW8yMD7NaxrgEOy2EJKU=;
-        b=byR/eekYsW9DhH0NqLev2fS+tpkFMN+hxgB8j3wmXvKTocIMCm6zZesYvYgQ87wjhP
-         q+4AfKw8TXxcj2+vnpVcn5ECPh4qGk7Jtzj+zNbyb6YCFLIiwPOzRUIUuAqm/vme1CGD
-         HXFFRmWffOsc2lXoXpa+V0KHw2MwGlrFjaT+dLfIFP4Da4Lspw/3GTIWmZkSLzazc/cQ
-         hUYdezyBusY92UGvKeXjT7Rg0vsemlXyaK6ln+reN6yeiO3uNu7F3nGVR2B+OsucHch6
-         d5MKRdQDkKjHro2ts06Z/prjBlf3W1AQZuN3IrXE7aLh74QN4KD+aUTWaAkLm41rgl56
-         mOWw==
+        bh=bjPZ9urefAsJcftBbAgQB1diXayOj809VCbylW0WU+4=;
+        b=ElB8vGfwnTgMrOHPV8jOPMjX9e4dyOnpsA/daCy84nADITgBEDs0AWwUlYd7LmzJ4R
+         Fd+wihlwr+eHGiOYJevIadmukrrhPQQQbV14He/EgVL8UId/ZjEQspu78E84lCBkqAk3
+         9AGpDbnJvnF63g83iAedqf+9zINjZ62a64qbSfO2T1vB7Ckgl7brAPRPzZAIUuLk9YsF
+         YnnaDAUhOF2TFJBs1+hdGFIi2/6/xETSCDXaO1b95XuqZwbhceSd0bqWp4uVAOWzs4lk
+         zAxkAToGZXGzD1zml0W1YllS9/kHr+k5y9Z8yZENt9c1+33raLf8akoDdgYfGMOxfC4A
+         ITFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=kefl6D8eKpN1GxKRqpPd+2PbW8yMD7NaxrgEOy2EJKU=;
-        b=CgVBjB52vsbYkfu1CGzR48mlnKrzFHh/vECQ8ZvaOimxBUVPxUtDc3D/xYF7FHm91J
-         j/UyoviS+Vc69lQ+IIEDSNsmprB5Dt15zxVQoEwnWW1FJVVaolENY615aWuNWfOpDpMu
-         zHIc65WdzuWW0yLhInOL2eYensfffEe26FFpD7383YFQdN+BORN0VLay7a1Dug4Pr94V
-         Q7TW0ZJ4PL32zQFfpJ3VsYBLAChq92beWF+0vEhSsVVBH4bQChlyML3YhUUDwGzI2SSs
-         R7QY172v9z6XurBwVAvq3FDWIN7eu/mu/d0e5Tb/xVtjN7Tk94WSYr4gHEIPEKslPo+k
-         2CCQ==
-X-Gm-Message-State: ACgBeo2G3aA7frX9eztEDLxVvnuMW3p5ytCwywhcrlYlStHDwhOQyrzW
-	WLXqUlSrJsvnHkLrvPAab8w=
-X-Google-Smtp-Source: AA6agR4kCtYZpwUOe+kdoRL5XUeDY9Udr6YA+L+RrDdkM+ZkGSBIa8BGCY7yWmaW8ey8FgVIise+hw==
-X-Received: by 2002:a37:916:0:b0:6ce:5f1c:d5d9 with SMTP id 22-20020a370916000000b006ce5f1cd5d9mr5678519qkj.737.1663099107720;
-        Tue, 13 Sep 2022 12:58:27 -0700 (PDT)
+        bh=bjPZ9urefAsJcftBbAgQB1diXayOj809VCbylW0WU+4=;
+        b=RbnqelroCzJ1Lyde7fM6sUE0y3GC74ubcbW7ig1LoTTopHX13LR45OgHZZxKW8W3Q8
+         fH1/BrOwNCsWEn2yGqC/tflHnzbB0yvC+v0tFgGOMaku4DkjMUqEpiE7D2dUlAY0p3S0
+         lW41Dz2ZcTvKfKosPWDaDmw9lKML9iKLSuCijRGKKx2RTNcMJLAClwAwgv4nw7oiAH+N
+         ephyY0CVP8EYOM1pk7kpgVMMtsn7riEGE3RSgi52dkhxFYL3Lw+4vdwIv6iTy2Sr7X03
+         KzrSPVz4Wl29m49qZMCH9Cn2wxO6KguX6lbsUybq2UVB8K8X+DnmT3vviFvV5IHKDZX1
+         WM4A==
+X-Gm-Message-State: ACgBeo1+IzjWMO72NeYLQ3oI5GZwL2QB4wH+abDxZ3865C5SwGFd/aEn
+	mn6xvW0KVy8KW3h1WHdOpJw=
+X-Google-Smtp-Source: AA6agR4w6aZMPi6cpzcCwIclFPfEwGVo8/KdfU9B4JBAlrDz19GDQ32yg1HkC6aVwcDa1gVOoM50cA==
+X-Received: by 2002:a05:622a:174b:b0:343:1fc:14d8 with SMTP id l11-20020a05622a174b00b0034301fc14d8mr29317121qtk.579.1663099111308;
+        Tue, 13 Sep 2022 12:58:31 -0700 (PDT)
 Received: from stbirv-lnx-3.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id s11-20020a05620a29cb00b006b8e049cf08sm276305qkp.2.2022.09.13.12.58.24
+        by smtp.gmail.com with ESMTPSA id s11-20020a05620a29cb00b006b8e049cf08sm276305qkp.2.2022.09.13.12.58.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Sep 2022 12:58:27 -0700 (PDT)
+        Tue, 13 Sep 2022 12:58:30 -0700 (PDT)
 From: Doug Berger <opendmb@gmail.com>
 To: Andrew Morton <akpm@linux-foundation.org>
 Cc: Jonathan Corbet <corbet@lwn.net>,
@@ -69,9 +69,9 @@ Cc: Jonathan Corbet <corbet@lwn.net>,
 	devicetree@vger.kernel.org,
 	linux-mm@kvack.org,
 	iommu@lists.linux.dev
-Subject: [PATCH 09/21] mm/page_alloc: calculate node_spanned_pages from pfns
-Date: Tue, 13 Sep 2022 12:54:56 -0700
-Message-Id: <20220913195508.3511038-10-opendmb@gmail.com>
+Subject: [PATCH 10/21] mm/page_alloc.c: allow oversized movablecore
+Date: Tue, 13 Sep 2022 12:54:57 -0700
+Message-Id: <20220913195508.3511038-11-opendmb@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220913195508.3511038-1-opendmb@gmail.com>
 References: <20220913195508.3511038-1-opendmb@gmail.com>
@@ -83,45 +83,49 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Since the start and end pfns of the node are passed as arguments
-to calculate_node_totalpages() they might as well be used to
-specify the node_spanned_pages value for the node rather than
-accumulating the spans of member zones.
+Now that the error in computation of corepages has been corrected
+by commit 9fd745d450e7 ("mm: fix overflow in
+find_zone_movable_pfns_for_nodes()"), oversized specifications of
+movablecore will result in a zero value for required_kernelcore if
+it is not also specified.
 
-This prevents the need for additional adjustments if zones are
-allowed to overlap.
+It is unintuitive for such a request to lead to no ZONE_MOVABLE
+memory when the kernel parameters are clearly requesting some.
+
+The current behavior when requesting an oversized kernelcore is to
+classify all of the pages in movable_zone as kernelcore. The new
+behavior when requesting an oversized movablecore (when not also
+specifying kernelcore) is to similarly classify all of the pages
+in movable_zone as movablecore.
 
 Signed-off-by: Doug Berger <opendmb@gmail.com>
 ---
- mm/page_alloc.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ mm/page_alloc.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 6bf76bbc0308..b6074961fb59 100644
+index b6074961fb59..ad38a81203e5 100644
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
-@@ -7452,7 +7452,7 @@ static void __init calculate_node_totalpages(struct pglist_data *pgdat,
- 						unsigned long node_start_pfn,
- 						unsigned long node_end_pfn)
- {
--	unsigned long realtotalpages = 0, totalpages = 0;
-+	unsigned long realtotalpages = 0;
- 	enum zone_type i;
+@@ -8041,13 +8041,13 @@ static void __init find_zone_movable_pfns_for_nodes(void)
+ 		corepages = totalpages - required_movablecore;
  
- 	for (i = 0; i < MAX_NR_ZONES; i++) {
-@@ -7483,11 +7483,10 @@ static void __init calculate_node_totalpages(struct pglist_data *pgdat,
- 		zone->present_early_pages = real_size;
- #endif
- 
--		totalpages += size;
- 		realtotalpages += real_size;
+ 		required_kernelcore = max(required_kernelcore, corepages);
++	} else if (!required_kernelcore) {
++		/* If kernelcore was not specified, there is no ZONE_MOVABLE */
++		goto out;
  	}
  
--	pgdat->node_spanned_pages = totalpages;
-+	pgdat->node_spanned_pages = node_end_pfn - node_start_pfn;
- 	pgdat->node_present_pages = realtotalpages;
- 	pr_debug("On node %d totalpages: %lu\n", pgdat->node_id, realtotalpages);
- }
+-	/*
+-	 * If kernelcore was not specified or kernelcore size is larger
+-	 * than totalpages, there is no ZONE_MOVABLE.
+-	 */
+-	if (!required_kernelcore || required_kernelcore >= totalpages)
++	/* If kernelcore size exceeds totalpages, there is no ZONE_MOVABLE */
++	if (required_kernelcore >= totalpages)
+ 		goto out;
+ 
+ 	/* usable_startpfn is the lowest possible pfn ZONE_MOVABLE can be at */
 -- 
 2.25.1
 
