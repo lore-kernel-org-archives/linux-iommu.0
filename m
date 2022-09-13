@@ -1,42 +1,42 @@
-Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8D7E66E8
-	for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 19:58:50 +0000 (UTC)
-Received: by mail-qk1-f173.google.com with SMTP id d15so9308424qka.9
-        for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 12:58:50 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F95F66E8
+	for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 19:58:54 +0000 (UTC)
+Received: by mail-qk1-f174.google.com with SMTP id h28so9344055qka.0
+        for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 12:58:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=ed+iX/nv/XMEFygJ1SlfRX9x+uzs7Q6SqUw+PcSFA+Y=;
-        b=kTC2V8I0KbKQgYVpiMXWXobqHukHN5wc9G7pyTq0OXIlmxgzs1DdLdIuMurl376JOh
-         TI+sLZOsyYvKvgQV1mtsgOKDhgkCHY9vgTN75V+209rBR7AYRtArLxFXLQfDpntS8+77
-         1VJuC85XaAr9lDOJi4JPuZBYlxos4LmgTFUlBZzjlAHRPleIyKNPrsw1Q/TybKJ6LhLy
-         P7jZiatOzHC+C4lsh8jLuUsBJv4lBg9GwtABHfhEamUAOb2Eu3rURCtfJTb4hzSEiYzf
-         Mf68rOnlVxAV76vW2E0E1N4Dtdqb6V3ShGLPb0HbK61ur+zHBF+wQNqRrMeYo3aOEqsI
-         sQUw==
+        bh=0ytqVsMPjuVvTMmUHQDgw++YWpDMZOL8Z97lPlE2FVY=;
+        b=io9Nt4/RcZ2YZMphnT4cANVUYCQB6U7tpDHWWA0ymeRAMaiACQe59CDdxV3fKa+Hsn
+         xNls20lsFyfw6rNS33zM5vtcFodTEOrCxgBbNhbWX8T1mEeMX+VwfC33CIm+xfP758LM
+         zM7bYSmAZtJOGaBc2/pCs2H6YwEWsP5kO079m4wM+f6s/zfDbHxnmlkNGrxVR7sLq2J2
+         vi+KzltoxbcgQVb6NYjPdS8rs20FudQRcZ6AiEV/jd58a8RhxFomEIPJSEoUVrySG9CU
+         fGCpRyRxdV4msiy4sXSvtH2LCG/1JOnoJrLiDkFSx8Zr9e7tZ4S5+YfhjAOUxZaXHtxy
+         O3kw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=ed+iX/nv/XMEFygJ1SlfRX9x+uzs7Q6SqUw+PcSFA+Y=;
-        b=r0bP/qnmt0jrk8gBfyQmTnQ7GRtGRbqGRe0QHxYT4XJEC+ithQsxjDzvi61qnQ1zKh
-         ubOrLcmOdlvnPkBlntv4A3Aojs2K9E8WfQC3OmzLBxjbipiIlKP7cS7sZSQ+uiHCvQU3
-         A36JWls/9Lo879Ejey4qjgaVWUhFxVEgl6yjL/iCEBZfMZzbST5fp9edFlZJYIgpJId2
-         ciRtGS2nK8C/RbzPiANHVc/8XofXPyb6DZ91VENGWUE4ODMoajOA5qMpkCXkyGlhwtG3
-         nzVJUjL6G308wG03a+oRfXIRKabMJodl6Eqo3mFwxCAnr0DFNObHGA34kxsJeXkBJIbp
-         OE0Q==
-X-Gm-Message-State: ACgBeo2Pdht87FPIOlKs/C45F9+pmua8uDuHkgL4ZAYpBHr8UTjFPEAG
-	XHvlOsX0oa5HiqxdYxIqYu0=
-X-Google-Smtp-Source: AA6agR6oL/h20WlhqK4D/I9yr1owRo+hnv02mOT7OtmgSO2hWSXNGrz7MzYBNL87UH+0Ca4e8ZJtlg==
-X-Received: by 2002:a05:620a:2956:b0:6ce:60f5:d887 with SMTP id n22-20020a05620a295600b006ce60f5d887mr4614697qkp.303.1663099129650;
-        Tue, 13 Sep 2022 12:58:49 -0700 (PDT)
+        bh=0ytqVsMPjuVvTMmUHQDgw++YWpDMZOL8Z97lPlE2FVY=;
+        b=gaGXxwCOkR/BaPCMY9jN3M2JXjXhLfPLVF49oQV5/0NhuIeyF0y0Cyubm9SRV+YSMO
+         f44fPaCYx4eWKB+S6fd2BVxVTYHucTqfTnsCgKoQzh5Go1HEw0609BhpKuGDjTZjVqZI
+         lJDOE8i6suAx4HSw77z+SPivoG+oUqX8J0QBIPtaeRAitjPmBZE12fr8IzR2emRVDZOl
+         /RHZROm7pOcoshwQ4pjNIA/Q1/1WwBzDb2y/pp1BtYouHKR+SZR7HnUR+uvg/n+dtFGj
+         HUbvjoa0pT/SOvuD1fTDsdQEHeZC3D6RAQuOB9/AlAtN9t/hsGxLOYvCv8U5Gv55Innt
+         /6mQ==
+X-Gm-Message-State: ACgBeo1mIML8o3gKgkYcoE1ix9XQtUlXT3WluH/Z8cXZWWx9FV7AqRgs
+	HD3HSUYqglKEbZxVpqfpRT4=
+X-Google-Smtp-Source: AA6agR6d/FiwNOHoDQ8OKNxH916Sryp0qXJllILzqqegobMzkZRMGgPUcF2Qjw5zlXSo5I0Sdx+6eA==
+X-Received: by 2002:a05:620a:4407:b0:6cb:e111:32c2 with SMTP id v7-20020a05620a440700b006cbe11132c2mr18923399qkp.415.1663099133214;
+        Tue, 13 Sep 2022 12:58:53 -0700 (PDT)
 Received: from stbirv-lnx-3.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id s11-20020a05620a29cb00b006b8e049cf08sm276305qkp.2.2022.09.13.12.58.46
+        by smtp.gmail.com with ESMTPSA id s11-20020a05620a29cb00b006b8e049cf08sm276305qkp.2.2022.09.13.12.58.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Sep 2022 12:58:49 -0700 (PDT)
+        Tue, 13 Sep 2022 12:58:52 -0700 (PDT)
 From: Doug Berger <opendmb@gmail.com>
 To: Andrew Morton <akpm@linux-foundation.org>
 Cc: Jonathan Corbet <corbet@lwn.net>,
@@ -69,9 +69,9 @@ Cc: Jonathan Corbet <corbet@lwn.net>,
 	devicetree@vger.kernel.org,
 	linux-mm@kvack.org,
 	iommu@lists.linux.dev
-Subject: [PATCH 15/21] mm/page_alloc: allow base for movablecore
-Date: Tue, 13 Sep 2022 12:55:02 -0700
-Message-Id: <20220913195508.3511038-16-opendmb@gmail.com>
+Subject: [PATCH 16/21] dt-bindings: reserved-memory: introduce designated-movable-block
+Date: Tue, 13 Sep 2022 12:55:03 -0700
+Message-Id: <20220913195508.3511038-17-opendmb@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220913195508.3511038-1-opendmb@gmail.com>
 References: <20220913195508.3511038-1-opendmb@gmail.com>
@@ -83,119 +83,73 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-A Designated Movable Block can be created by including the base
-address of the block when specifying a movablecore range on the
-kernel command line.
+Introduce designated-movable-block.yaml to document the
+devicetree binding for Designated Movable Block children of the
+reserved-memory node.
 
 Signed-off-by: Doug Berger <opendmb@gmail.com>
 ---
- .../admin-guide/kernel-parameters.txt         | 14 ++++++-
- mm/page_alloc.c                               | 38 ++++++++++++++++---
- 2 files changed, 45 insertions(+), 7 deletions(-)
+ .../designated-movable-block.yaml             | 51 +++++++++++++++++++
+ 1 file changed, 51 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/reserved-memory/designated-movable-block.yaml
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 426fa892d311..8141fac7c7cb 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -3312,7 +3312,7 @@
- 			reporting absolute coordinates, such as tablets
- 
- 	movablecore=	[KNL,X86,IA-64,PPC]
--			Format: nn[KMGTPE] | nn%
-+			Format: nn[KMGTPE] | nn[KMGTPE]@ss[KMGTPE] | nn%
- 			This parameter is the complement to kernelcore=, it
- 			specifies the amount of memory used for migratable
- 			allocations.  If both kernelcore and movablecore is
-@@ -3322,6 +3322,18 @@
- 			that the amount of memory usable for all allocations
- 			is not too small.
- 
-+			If @ss[KMGTPE] is included, memory within the region
-+			from ss to ss+nn will be designated as a movable block
-+			and included in ZONE_MOVABLE. Designated Movable Blocks
-+			must be aligned to pageblock_order. Designated Movable
-+			Blocks take priority over values of kernelcore= and are
-+			considered part of any memory specified by more general
-+			movablecore= values.
-+			Multiple Designated Movable Blocks may be specified,
-+			comma delimited.
-+			Example:
-+				movablecore=100M@2G,100M@3G,1G@1024G
+diff --git a/Documentation/devicetree/bindings/reserved-memory/designated-movable-block.yaml b/Documentation/devicetree/bindings/reserved-memory/designated-movable-block.yaml
+new file mode 100644
+index 000000000000..42f846069a2e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/reserved-memory/designated-movable-block.yaml
+@@ -0,0 +1,51 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/reserved-memory/designated-movable-block.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- 	movable_node	[KNL] Boot-time switch to make hotplugable memory
- 			NUMA nodes to be movable. This means that the memory
- 			of such nodes will be usable only for movable
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 69753cc51e19..e38dd1b32771 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -8370,9 +8370,9 @@ void __init free_area_init(unsigned long *max_zone_pfn)
- }
- 
- static int __init cmdline_parse_core(char *p, unsigned long *core,
--				     unsigned long *percent)
-+				     unsigned long *percent, bool movable)
- {
--	unsigned long long coremem;
-+	unsigned long long coremem, address;
- 	char *endptr;
- 
- 	if (!p)
-@@ -8387,6 +8387,17 @@ static int __init cmdline_parse_core(char *p, unsigned long *core,
- 		*percent = coremem;
- 	} else {
- 		coremem = memparse(p, &p);
-+		if (movable && *p == '@') {
-+			address = memparse(++p, &p);
-+			if (*p != '\0' ||
-+			    !memblock_is_region_memory(address, coremem) ||
-+			    memblock_is_region_reserved(address, coremem))
-+				return -EINVAL;
-+			memblock_reserve(address, coremem);
-+			return dmb_reserve(address, coremem, NULL);
-+		} else if (*p != '\0') {
-+			return -EINVAL;
-+		}
- 		/* Paranoid check that UL is enough for the coremem value */
- 		WARN_ON((coremem >> PAGE_SHIFT) > ULONG_MAX);
- 
-@@ -8409,17 +8420,32 @@ static int __init cmdline_parse_kernelcore(char *p)
- 	}
- 
- 	return cmdline_parse_core(p, &required_kernelcore,
--				  &required_kernelcore_percent);
-+				  &required_kernelcore_percent, false);
- }
- 
- /*
-  * movablecore=size sets the amount of memory for use for allocations that
-- * can be reclaimed or migrated.
-+ * can be reclaimed or migrated. movablecore=size@base defines a Designated
-+ * Movable Block.
-  */
- static int __init cmdline_parse_movablecore(char *p)
- {
--	return cmdline_parse_core(p, &required_movablecore,
--				  &required_movablecore_percent);
-+	int ret = -EINVAL;
++title: /reserved-memory Designated Movable Block node binding
 +
-+	while (p) {
-+		char *k = strchr(p, ',');
++maintainers:
++  - devicetree-spec@vger.kernel.org
 +
-+		if (k)
-+			*k++ = 0;
++allOf:
++  - $ref: "reserved-memory.yaml"
 +
-+		ret = cmdline_parse_core(p, &required_movablecore,
-+					 &required_movablecore_percent, true);
-+		if (ret)
-+			break;
-+		p = k;
-+	}
++properties:
++  compatible:
++    const: designated-movable-block
++    description:
++      This indicates a region of memory meant to be placed into
++      ZONE_MOVABLE.
 +
-+	return ret;
- }
- 
- early_param("kernelcore", cmdline_parse_kernelcore);
++unevaluatedProperties: false
++
++required:
++  - compatible
++  - reusable
++
++examples:
++  - |
++      reserved-memory {
++          #address-cells = <0x2>;
++          #size-cells = <0x2>;
++
++          DMB0@10800000 {
++               compatible = "designated-movable-block";
++               reusable;
++               reg = <0x0 0x10800000 0x0 0x2d800000>;
++          };
++
++          DMB1@40000000 {
++               compatible = "designated-movable-block";
++               reusable;
++               reg = <0x0 0x40000000 0x0 0x30000000>;
++          };
++
++          DMB2@80000000 {
++               compatible = "designated-movable-block";
++               reusable;
++               reg = <0x0 0x80000000 0x0 0x2fc00000>;
++          };
++      };
 -- 
 2.25.1
 
