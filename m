@@ -1,87 +1,144 @@
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3B287F
-	for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 09:30:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663061444; x=1694597444;
-  h=message-id:date:mime-version:cc:to:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=E7t2UOdY9wHDMf0CP0CgwG8FAmDq7eQIjFUMP5nR1Hw=;
-  b=HDGTtLBioLylKmGx0vkVU/nUyHzRyEfkkPSVwuODfuLbAZFemRrYNv/U
-   omwuqjbkSxUlnc/p2vg6D5JkYqJRlRt2HS8HM9ZwBECAQ/dIKXLzg74s0
-   71odG6Xe/+TUiPFyrLqraPMCZbdsYqxFKGJEkLdvuCX++XuG8KX1JB6rl
-   Gd8Yz7MEBFS7Xr+OsA0Cth9f4QmXSKrb4lwjLxomE78wqFpttpAAF38IE
-   bg+O5fyuwdpKBeaaHQGp1SEnv61l73ql6HU0dxny6PJtk2Hfkml4fZzIM
-   qu9F7eRfAIRceh/5dzLCs9/XD3W5ECbGbrYGQ+c9s11zr9BTqExpT8j3R
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10468"; a="298890121"
-X-IronPort-AV: E=Sophos;i="5.93,312,1654585200"; 
-   d="scan'208";a="298890121"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2022 02:30:44 -0700
-X-IronPort-AV: E=Sophos;i="5.93,312,1654585200"; 
-   d="scan'208";a="646855920"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.213.188]) ([10.254.213.188])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2022 02:30:42 -0700
-Message-ID: <e0c43ca7-0ad3-a4d6-960b-9853bb815438@linux.intel.com>
-Date: Tue, 13 Sep 2022 17:30:40 +0800
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9CCBE1867
+	for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 10:45:31 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 665341063;
+	Tue, 13 Sep 2022 03:45:31 -0700 (PDT)
+Received: from [10.57.15.170] (unknown [10.57.15.170])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CCBCC3F71A;
+	Tue, 13 Sep 2022 03:45:22 -0700 (PDT)
+Message-ID: <aa96eb55-4925-221f-1fb2-8226ea347c22@arm.com>
+Date: Tue, 13 Sep 2022 11:45:17 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
  Thunderbird/102.2.2
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>, linux-kernel@vger.kernel.org
-Content-Language: en-US
-To: Ethan Zhao <haifeng.zhao@linux.intel.com>, iommu@lists.linux.dev
-References: <20220912024826.1684913-1-baolu.lu@linux.intel.com>
- <046916aa-980c-c40d-1163-6ab839248201@linux.intel.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Enable PASID during iommu device probe
-In-Reply-To: <046916aa-980c-c40d-1163-6ab839248201@linux.intel.com>
+Subject: Re: [PATCH] dma-contiguous: add optional cma_name for cma= kernel
+ parameter
+To: Nate Drude <nate.d@variscite.com>, iommu@lists.linux.dev
+Cc: Jonathan Corbet <corbet@lwn.net>, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Borislav Petkov <bp@suse.de>,
+ "Paul E. McKenney" <paulmck@kernel.org>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+ Randy Dunlap <rdunlap@infradead.org>,
+ Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+ Muchun Song <songmuchun@bytedance.com>, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, eran.m@variscite.com
+References: <20220912163805.4113238-1-nate.d@variscite.com>
+Content-Language: en-GB
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220912163805.4113238-1-nate.d@variscite.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-Hi Ethan,
+On 2022-09-12 17:38, Nate Drude wrote:
+> When cma is defined in the device tree, the device tree node
+> name is used as the cma name. In the following example, the cma
+> will be named 'linux,cma':
+> 
+> linux,cma {
+> 	compatible = "shared-dma-pool";
+> 	reusable;
+> 	size = <0 0x3c000000>;
+> 	alloc-ranges = <0 0x40000000 0 0xC0000000>;
+> 	linux,cma-default;
+> };
+> 
+> And a device /dev/dma_heap/linux,cma is created.
+> 
+> However, when cma is provided by command line, a default
+> name of 'reserved' is used, and the device path changes to
+> /dev/dma_heap/reserved.
 
-On 2022/9/13 15:46, Ethan Zhao wrote:
-> Baolu,
-> 
-> 在 2022/9/12 10:48, Lu Baolu 写道:
->> Previously PASID supports on both IOMMU and PCI devices are enabled in 
->> the
->> iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA) path. It's functionally
->> correct as the SVA is the only feature that requires PASID setup. 
->> However,
->> looking ahead, we will add more features that need to enable pasid (for
->> example, kernel DMA with PASID, SIOV, VM guest SVA, etc.). It makes more
->> sense to enable PASID during iommu probing device.
->>
->> This enables PASID during iommu probing device and deprecates the
->> intel_iommu_enable_pasid() helper. This is safe because the IOMMU 
->> hardware
->> will block any PCI TLP with a PASID prefix if there is no IOMMU domain
->> attached to the PASID of the device.
-> 
-> What the error path would be if this code runs on some old platforms don't
-> 
-> support PASID, would you print out "this platform doesn't suppor PASID" and
-> 
-> give users an interface function to query if the PASID cap of iommu is 
-> enabled
-> 
-> and if not why ?
+If userspace expects the CMA heap driver to expose a consistent name for 
+CMA heaps, shouldn't it be the CMA heap driver's responsibility to 
+expose a consistent name for CMA heaps? Tinkering with the core CMA code 
+doesn't feel like the right approach.
 
-It's not an error case if the IOMMU doesn't support PASID. But it's an
-error case if any device drivers call PASID related IOMMU interfaces
-(for example, iommu_domain_attach/detach_dev_pasid()). The corresponding
-error code will be returned to the drivers.
+Furthermore, given that DT reserved-memory nodes carrying the 
+"linux-cma-default" property equally can (and do) have different names 
+as well, that or fixing userspace really are the only robust options.
 
-Best regards,
-baolu
+Thanks,
+Robin.
+
+> This is problematic because some user space applications,
+> like gstreamer plugins, are expecting /dev/dma_heap/linux,cma.
+> 
+> This parameter allows overriding the default 'reserved' name.
+> 
+> Signed-off-by: Nate Drude <nate.d@variscite.com>
+> ---
+>   .../admin-guide/kernel-parameters.txt         |  7 +++++++
+>   kernel/dma/contiguous.c                       | 21 ++++++++++++++++++-
+>   2 files changed, 27 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index 51397a320f5e..975ec862d071 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -644,6 +644,13 @@
+>   			altogether. For more information, see
+>   			kernel/dma/contiguous.c
+>   
+> +	cma_name=	Override the cma heap name
+> +			Format: <string>
+> +			When passing the cma kernel parameter, the default
+> +			cma name is 'reserved'. This parameter allows it to
+> +			be overriden to align with the device tree name,
+> +			like 'linux,cma'.
+> +
+>   	cma_pernuma=nn[MG]
+>   			[ARM64,KNL,CMA]
+>   			Sets the size of kernel per-numa memory area for
+> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+> index 3d63d91cba5c..e89819ec183e 100644
+> --- a/kernel/dma/contiguous.c
+> +++ b/kernel/dma/contiguous.c
+> @@ -74,6 +74,7 @@ static const phys_addr_t size_bytes __initconst =
+>   static phys_addr_t  size_cmdline __initdata = -1;
+>   static phys_addr_t base_cmdline __initdata;
+>   static phys_addr_t limit_cmdline __initdata;
+> +static char name_cmdline[CMA_MAX_NAME] = "reserved";
+>   
+>   static int __init early_cma(char *p)
+>   {
+> @@ -96,6 +97,24 @@ static int __init early_cma(char *p)
+>   }
+>   early_param("cma", early_cma);
+>   
+> +static int __init early_cma_name(char *p)
+> +{
+> +	if (!p) {
+> +		pr_err("Config string not provided\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (!strlen(p)) {
+> +		pr_err("cma_name must have at least one character\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	snprintf(name_cmdline, CMA_MAX_NAME, p);
+> +
+> +	return 0;
+> +}
+> +early_param("cma_name", early_cma_name);
+> +
+>   #ifdef CONFIG_DMA_PERNUMA_CMA
+>   
+>   static struct cma *dma_contiguous_pernuma_area[MAX_NUMNODES];
+> @@ -231,7 +250,7 @@ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
+>   	int ret;
+>   
+>   	ret = cma_declare_contiguous(base, size, limit, 0, 0, fixed,
+> -					"reserved", res_cma);
+> +					name_cmdline, res_cma);
+>   	if (ret)
+>   		return ret;
+>   
