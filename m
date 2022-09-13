@@ -1,42 +1,42 @@
-Received: from mail-qv1-f43.google.com (mail-qv1-f43.google.com [209.85.219.43])
+Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E90766E8
-	for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 19:58:21 +0000 (UTC)
-Received: by mail-qv1-f43.google.com with SMTP id ml1so10116351qvb.1
-        for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 12:58:21 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3289266E8
+	for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 19:58:25 +0000 (UTC)
+Received: by mail-qv1-f54.google.com with SMTP id d1so10132054qvs.0
+        for <iommu@lists.linux.dev>; Tue, 13 Sep 2022 12:58:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=hB/8CHaP3epa66ZDI7eIxcYHinx9lai7E+SzdR8JK34=;
-        b=DH5wOpdpiHaFFXY8TAT3JRecX64XiPNxiR/CcG1LrVu07Readvn0PWViKgBmDA60Pb
-         UBITk9aWlYro2ikNI4WmLJPOCXwQOqtprdUB0CzoJZ72kknTQx9o/RitCRSffQDxQ5Q6
-         VTZyKVoIHd28mrFZHIQl9dz1uLmu560sdtEcQWDtP1q9dt0hIGQCuqCTjE9fttuhjONt
-         0HIT34gX8eS66xaVSIttBxYAN/YQSf5UtfsLj6aZ6r0xFgT3C7geS9uBf8xzXOro8Ch1
-         QuB8O5yFa+P3URJ5XpTXammfwNsUv1UpGQMU/vjO4KV44uIZqk+ZBhqofvaHP1BLFOQP
-         ilEQ==
+        bh=6/+RylwAUS1L6kGkdbzNevLkV7SCUovxqo9fjOaS6JU=;
+        b=IIvzQBml/wGri/ZBWsuig4iC5yLnXMtk1VHesQ1eh/9HzasiMgV8YxfdpWHpGIoYep
+         M/INFOPjeTVC3OEHHCjy2E1Hs8kTN4G53N8xRA/QBMd1ulJjTypxrYcp9Vasl1Q/eOJB
+         qHAj6LLFWCEJm7FVRIifJLn+g0xAhtpqiGJt/0Lazj8LpFDzEnyQtx4bqcugERvtsdZG
+         jeSnKtUCKGP4SXlnb3HB7CkPQRbT8a6KgjjUz3Q32zw4SQOfC5UckDKNJQGxML3W3hgv
+         kauff9Q/Ua47CAvmWSZZgrFSzvsXxKLS/PIpqLn25rigG7/KetjxEqCiT7a4LgLAH6NO
+         U6Ng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=hB/8CHaP3epa66ZDI7eIxcYHinx9lai7E+SzdR8JK34=;
-        b=XE/tZ+nLZnf1e11CgHwJiZz4rqP20VzNqirKZ/ztA2XrWkeVEd1jjgMOLq4MG/ppZc
-         I2XgYVqV/INo3gRdhlIhnAQ9WY8f1kVS8Jhx4F4RTNhbrZS9NV89w2qMv2why5L+pdTk
-         ChMBiuJcnr6AapOHeVS5CkBC3XPzAou8wpdBOe47hev/ID0dc1bJaE72MMqBURtMaojz
-         vWUab/xW6RArkdSDwxsn4AeCpdZwK+kqakl9ZQPCGF1jh5L7Vt63p6wEYBex2QEfq0lo
-         rxpRuIurFMnhlAfdM6rs5E+0AvjsXrwVgQQIG5NU/ByQcWiTJzysnFwk08wJ7kiDuOPK
-         FXrg==
-X-Gm-Message-State: ACgBeo3QEh7mvwUy+NJT9OMIKLls8BSzEydsG4/xNaVOq5o7TfM+DOY1
-	uygzjAJ8XS58SQVPh5D3tjA=
-X-Google-Smtp-Source: AA6agR4VzptNv0IdYnihlFGaNyhbElSt3SCLpuN9uI3qoIO24r77G7BDUS/ieSa0RDNa+EBnGiO84g==
-X-Received: by 2002:a0c:c98a:0:b0:4ac:9f4b:efed with SMTP id b10-20020a0cc98a000000b004ac9f4befedmr14045129qvk.35.1663099100395;
-        Tue, 13 Sep 2022 12:58:20 -0700 (PDT)
+        bh=6/+RylwAUS1L6kGkdbzNevLkV7SCUovxqo9fjOaS6JU=;
+        b=jZxfwDuOW3IUMcWRoZJA3xK9tRB17DgTTThsl8+QiADejoYl0wTPKlClSx0wi46m6J
+         1bowrSKnw5TwuECsUE2xJUoEkIlt2a1NS6O5JAjSc0xjGbZpgpNxomZTNRhVxwuy2T/h
+         vfhWngfGGTeXabYgEYKXUA8df8JM5WcK3rdH8E0wJKmn9TvsAurmH4c+tvHxQ4WV68Ib
+         5xyQm1s39nipH2PcwBZW1o4oun4YqHu+yAC0mXP58tgWqmhZ+D+P6ySOJDkXrBqXlAO1
+         P38leDQEqtRuwNBUP0QQjSVPV4j/7fSROzbfbHRXIVbfQOX9YF+ReldDf548BjJ8INr1
+         3C4Q==
+X-Gm-Message-State: ACgBeo1LbZuNgCo0Ta+9mxWV/LrrfWOMR9+0tYhEdGD/koYi6WUkyg1K
+	NfBJJBDHFgggedta5UCRzbA=
+X-Google-Smtp-Source: AA6agR7HhxHAKHSAet4vBy7WKGiBHiOPyi3Gu3lpC/Y1Ix8I/hDUvAWKeNeCYEL5N+Wcelu80g5S7w==
+X-Received: by 2002:a0c:d987:0:b0:4a5:192c:faff with SMTP id y7-20020a0cd987000000b004a5192cfaffmr29341373qvj.106.1663099104077;
+        Tue, 13 Sep 2022 12:58:24 -0700 (PDT)
 Received: from stbirv-lnx-3.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id s11-20020a05620a29cb00b006b8e049cf08sm276305qkp.2.2022.09.13.12.58.16
+        by smtp.gmail.com with ESMTPSA id s11-20020a05620a29cb00b006b8e049cf08sm276305qkp.2.2022.09.13.12.58.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Sep 2022 12:58:19 -0700 (PDT)
+        Tue, 13 Sep 2022 12:58:23 -0700 (PDT)
 From: Doug Berger <opendmb@gmail.com>
 To: Andrew Morton <akpm@linux-foundation.org>
 Cc: Jonathan Corbet <corbet@lwn.net>,
@@ -69,9 +69,9 @@ Cc: Jonathan Corbet <corbet@lwn.net>,
 	devicetree@vger.kernel.org,
 	linux-mm@kvack.org,
 	iommu@lists.linux.dev
-Subject: [PATCH 07/21] lib/show_mem.c: display MovableOnly
-Date: Tue, 13 Sep 2022 12:54:54 -0700
-Message-Id: <20220913195508.3511038-8-opendmb@gmail.com>
+Subject: [PATCH 08/21] mm/vmstat: show start_pfn when zone spans pages
+Date: Tue, 13 Sep 2022 12:54:55 -0700
+Message-Id: <20220913195508.3511038-9-opendmb@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220913195508.3511038-1-opendmb@gmail.com>
 References: <20220913195508.3511038-1-opendmb@gmail.com>
@@ -83,39 +83,30 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The comment for commit c78e93630d15 ("mm: do not walk all of
-system memory during show_mem") indicates it "also corrects the
-reporting of HighMem as HighMem/MovableOnly as ZONE_MOVABLE has
-similar problems to HighMem with respect to lowmem/highmem
-exhaustion."
+A zone that overlaps with another zone may span a range of pages
+that are not present. In this case, displaying the start_pfn of
+the zone allows the zone page range to be identified.
 
-Presuming the similar problems are with regard to the general
-exclusion of kernel allocations from either zone, I believe it
-makes sense to include all ZONE_MOVABLE memory even on systems
-without HighMem.
-
-To the extent that this was the intent of the original commit I
-have included a "Fixes" tag, but it seems unnecessary to submit
-to linux-stable.
-
-Fixes: c78e93630d15 ("mm: do not walk all of system memory during show_mem")
 Signed-off-by: Doug Berger <opendmb@gmail.com>
 ---
- lib/show_mem.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ mm/vmstat.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/lib/show_mem.c b/lib/show_mem.c
-index 1c26c14ffbb9..337c870a5e59 100644
---- a/lib/show_mem.c
-+++ b/lib/show_mem.c
-@@ -27,7 +27,7 @@ void show_mem(unsigned int filter, nodemask_t *nodemask)
- 			total += zone->present_pages;
- 			reserved += zone->present_pages - zone_managed_pages(zone);
+diff --git a/mm/vmstat.c b/mm/vmstat.c
+index 90af9a8572f5..e2f19f2b7615 100644
+--- a/mm/vmstat.c
++++ b/mm/vmstat.c
+@@ -1717,6 +1717,11 @@ static void zoneinfo_show_print(struct seq_file *m, pg_data_t *pgdat,
  
--			if (is_highmem_idx(zoneid))
-+			if (zoneid == ZONE_MOVABLE || is_highmem_idx(zoneid))
- 				highmem += zone->present_pages;
- 		}
+ 	/* If unpopulated, no other information is useful */
+ 	if (!populated_zone(zone)) {
++		/* Show start_pfn for empty overlapped zones */
++		if (zone->spanned_pages)
++			seq_printf(m,
++				   "\n  start_pfn:           %lu",
++				   zone->zone_start_pfn);
+ 		seq_putc(m, '\n');
+ 		return;
  	}
 -- 
 2.25.1
