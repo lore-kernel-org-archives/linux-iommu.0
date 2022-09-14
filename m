@@ -1,153 +1,96 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2084.outbound.protection.outlook.com [40.107.223.84])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0018B4403
-	for <iommu@lists.linux.dev>; Wed, 14 Sep 2022 17:58:56 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SmNdax0qEWkAxfcr/I8C+sjwFrnbTeqp9W7ighHJIcPx5YgsRq4NDXfU2IPw7uBwWRBI8Hno6xlKqiN7AtYnjJPZHMArUGExHdtqk6Xr4PiAFRMHqTY4hfOmUonYCvrvqFEx9zVf+KL83HEzxInjAD5FESyHR5wi9HSBpH1BJqDaSnXYaoxFjqBSvY6seootFu73v9eP/4rmo0J7NbAN+n2ikDMqSMVLr+t1/Os/p0o444MNu7ydpjLOkFg7sehO8BbohYNXBdjhDvPUZdBY4rYHSL/Q6SGeJRx9V9lkHcFq6HF9w2QIw3Cl9BSKAs4w9AvZoVBMiyCuyhWUP/QfFQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YhEDLnyAed1XbDWQZvuwYdpfPEqiEn+SuWCDdfZC7Bo=;
- b=RMIhmXJBcp3ZLtZ0AFePnCbKqQIX+LwS7XEomk/DRkSiYHQTwP4iztb8R1tiick2PgQVT+yx10JaEvRfIvzmEOkq8aBKKd+VgErhbQE2mV55Pxx/kRU3MEgrWD1Jo7gGErRf5lWlKhQBwaLk+WdisvOhpJj2EqKIivesQxAibLI7I04T49M0w2al0IKfATENpkBsu1RrrBj+z6lujC0qOIrb5Pyc2VpH53gmQuK3ulyBm5wH/epm/gP4FjH6E383tDaQYXacr143cUQa20ZvaU2c1GVQYdLr73+g18c5LXY8j3JwmNUGpIgIUxz6dsDdXtF5hYJEbRyZMKVHZa1OrQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=8bytes.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YhEDLnyAed1XbDWQZvuwYdpfPEqiEn+SuWCDdfZC7Bo=;
- b=knLEzMLNTbpBNjFGBsc9QdsMPC5wGfDv1f87L23XytJFf97rnOgQqrdOXayXg0omfUg4J6ryrE7qsRgjWCZp3zvpv0dBuMd1FwoEmYN1j9oMU0jcJ7Zj9ijrr+MEt2OenXEmm2A7csijTdhqyLGapC/gADK7imd/EQev9cKbuzvUiCkXrDWq1QxwrZ9WTWl/T/xwE92t4PPQMh/IT+mJ90kEk42raQ5n+EIaYiuUrCzzF1rYe9nQ93iARjXcY2jXgBNOysXdhRweCk7gpASjaruHZgtPOR+dnckaFGdRE07Q2cvVOhekXfRM/Y2abXYKLjN4+o2hkbtGh4KG0rCpfw==
-Received: from BN0PR04CA0048.namprd04.prod.outlook.com (2603:10b6:408:e8::23)
- by PH8PR12MB7349.namprd12.prod.outlook.com (2603:10b6:510:217::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.22; Wed, 14 Sep
- 2022 17:58:52 +0000
-Received: from BN8NAM11FT009.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:e8:cafe::76) by BN0PR04CA0048.outlook.office365.com
- (2603:10b6:408:e8::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.14 via Frontend
- Transport; Wed, 14 Sep 2022 17:58:52 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- BN8NAM11FT009.mail.protection.outlook.com (10.13.176.65) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5632.12 via Frontend Transport; Wed, 14 Sep 2022 17:58:50 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Wed, 14 Sep
- 2022 10:58:30 -0700
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- rnnvmail202.nvidia.com (10.129.68.7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Wed, 14 Sep 2022 10:58:30 -0700
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Wed, 14 Sep 2022 10:58:30 -0700
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29 via Frontend
- Transport; Wed, 14 Sep 2022 10:58:28 -0700
-Date: Wed, 14 Sep 2022 10:58:27 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>, Jean-Philippe Brucker
-	<jean-philippe@linaro.org>
-CC: <joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <will@kernel.org>,
-	<robin.murphy@arm.com>, <robdclark@gmail.com>, <dwmw2@infradead.org>,
-	<baolu.lu@linux.intel.com>, <agross@kernel.org>,
-	<bjorn.andersson@linaro.org>, <konrad.dybcio@somainline.org>,
-	<matthias.bgg@gmail.com>, <heiko@sntech.de>, <orsonzhai@gmail.com>,
-	<baolin.wang@linux.alibaba.com>, <zhang.lyra@gmail.com>,
-	<thierry.reding@gmail.com>, <sricharan@codeaurora.org>,
-	<yong.wu@mediatek.com>, <vdumpa@nvidia.com>, <jonathanh@nvidia.com>,
-	<tglx@linutronix.de>, <shameerali.kolothum.thodi@huawei.com>,
-	<thunder.leizhen@huawei.com>, <christophe.jaillet@wanadoo.fr>,
-	<yangyingliang@huawei.com>, <jon@solid-run.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-arm-msm@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
-	<linux-rockchip@lists.infradead.org>, <linux-tegra@vger.kernel.org>,
-	<virtualization@lists.linux-foundation.org>
-Subject: Re: [PATCH 4/5] iommu: Regulate errno in ->attach_dev callback
- functions
-Message-ID: <YyIWQ6rX6AR9KX5E@Asurada-Nvidia>
-References: <20220913082448.31120-1-nicolinc@nvidia.com>
- <20220913082448.31120-5-nicolinc@nvidia.com>
- <YyB3F/o3RfymqiFW@myrica>
- <YyGaqsXSDMn8R12R@nvidia.com>
- <YyGjtsB2Yq4fQICS@myrica>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9F7E4403
+	for <iommu@lists.linux.dev>; Wed, 14 Sep 2022 18:08:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4860C433D7
+	for <iommu@lists.linux.dev>; Wed, 14 Sep 2022 18:08:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1663178890;
+	bh=8QO6bezE+2K66FghJrVXTS5RtL94PMOZ3HUJaLfntwk=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=HvRsXWmq6FpQohKTe3x0HTx75w0Z2K2/hYkn31zaZFKXVbNArAElEjluuTPkl0wPt
+	 JbSJiCNZ+BAokm4c1VZcd0jX7tRiEFzQ2ulEjL25sGB62ghSfdjGzznrI63/plj+bo
+	 YBvmCM50ZeEO7uUNBMV+cc1IH4ZHQIOqeYcTeLz70l1xxWNai99ku+okbnj26L7aRE
+	 eZzOpQUn1lBU+p3XTJCgu+y0laGIIvdHIBHbKeSkXM26saQaLDgkWOlq9Q/+KbolsQ
+	 usV6MZ3w+F0KDvo9fcBpEvIj5Nv4z5r0VaYLFxKnzbccjiXnQNa+tPxVAMeV/MtsBP
+	 bGlnvFC7VewQQ==
+Received: by mail-qv1-f52.google.com with SMTP id o13so12352344qvw.12
+        for <iommu@lists.linux.dev>; Wed, 14 Sep 2022 11:08:10 -0700 (PDT)
+X-Gm-Message-State: ACgBeo3QCrIcO2gUHjDkDY8/A2tx/0sZbYLAsL4NrDD/YEFTqBigGaVA
+	JeUvfXyGxtWAgRJ/zoLmn8OBtyXC/hBvQ0Ykaw==
+X-Google-Smtp-Source: AA6agR5e7YhAc50wVpbeL+nwFLR7EEXrTzSrB3+SbLjm7qzwukA3T8qMv8Q9XbVsrcu5TfJXz1WuSkUl1XpmcLAHTDs=
+X-Received: by 2002:a1f:9e44:0:b0:39e:e4ff:1622 with SMTP id
+ h65-20020a1f9e44000000b0039ee4ff1622mr11413773vke.15.1663178878750; Wed, 14
+ Sep 2022 11:07:58 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <YyGjtsB2Yq4fQICS@myrica>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT009:EE_|PH8PR12MB7349:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4c649da3-c755-4818-22ab-08da967ac7ea
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	0u1Gd2VASnQoiNDd/j4N1JkMz4Zq6CkhssDo7b8L8D5IeSfUyoXVzPddWGghC1lw60liB1SahMCBP2NYAY6IiTP7ms18KbqH3lIqupnkM8Imgci5hw5ZYV2BNsOzRbERD9eTxU1IFNzwPPGpNPa2yYFPpMSLDBWS6tqDII00boRmhI3PIkgT0YRtpwwupHnXYQTmLDE+VBC9zOmO2RtrMGdE26o8JsFKJyFmbV8jxmI4xO7RCT19gs5Cpl3rihGdciF0uhj+hvprG4jT13L2Gj4UaoPC2rA7QCb19FOvpo9mMQDUAsw0tGHj8BCbOvcFP1Z9yvJeDEQtr3jwlCfvCEelrByiZ7iBw1VY/p2RcsmB99WS76mhNe0SRBSz2YBIc8XG2CokyVQ8JXSKcifr5+JEUMpWvO1k89Qt2lPZRgdDzoZ3Bb7lvqO/mxEjIa0izB+NEmy4uCsLwnfZdPcGAx+iPMBp3HV1Sa8b23xQbiBYfOC9Er4xd6C7UhKR+N6/s7PrrigMLR20ctYtJ+bOhk1RhddEoypJah1A4KMcIcutm4qfknJjIxMbu/kpO+FAa2ddAs8iGM45DV5WPIWorssHXgurO0us+jnzSkWMsdVClySorgIk2Hfa4TtHKmVY95359LRbNQwR3/Hl4XXWXfwE6jo4wSu2ZDEuYGB80y9MRP5VhN5cPq3JJhxr1JPp/kAWPdPV3OgRVMvYmFKc9nj6exkwNF32/TbXY5ZDwQKSwQn2t//3vEuonp0XKf8yrI64SnOb/CrZ3PMg2TWJig==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(396003)(376002)(136003)(346002)(39860400002)(451199015)(40470700004)(36840700001)(46966006)(82740400003)(54906003)(55016003)(7416002)(356005)(82310400005)(70206006)(7636003)(40480700001)(7406005)(8676002)(186003)(478600001)(5660300002)(47076005)(83380400001)(316002)(4326008)(9686003)(70586007)(8936002)(36860700001)(336012)(40460700003)(86362001)(110136005)(41300700001)(2906002)(26005)(33716001)(426003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Sep 2022 17:58:50.8502
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4c649da3-c755-4818-22ab-08da967ac7ea
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT009.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7349
+References: <20220913195508.3511038-1-opendmb@gmail.com> <CAL_JsqLmJcLHViPaBPvkBhR4xi+ZQuAJQpXoiJLVRW9EH4EX0Q@mail.gmail.com>
+ <1825234b-f17a-dea4-38f6-ba5881ab9a3d@gmail.com>
+In-Reply-To: <1825234b-f17a-dea4-38f6-ba5881ab9a3d@gmail.com>
+From: Rob Herring <robh+dt@kernel.org>
+Date: Wed, 14 Sep 2022 13:07:36 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqJ6+uYf=Pb82j3CWC3iD=-hbnf3nj_TsHoQAUcLK3mKbg@mail.gmail.com>
+Message-ID: <CAL_JsqJ6+uYf=Pb82j3CWC3iD=-hbnf3nj_TsHoQAUcLK3mKbg@mail.gmail.com>
+Subject: Re: [PATCH 00/21] mm: introduce Designated Movable Blocks
+To: Doug Berger <opendmb@gmail.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Jonathan Corbet <corbet@lwn.net>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Frank Rowand <frowand.list@gmail.com>, 
+	Mike Kravetz <mike.kravetz@oracle.com>, Muchun Song <songmuchun@bytedance.com>, 
+	Mike Rapoport <rppt@kernel.org>, Christoph Hellwig <hch@lst.de>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Borislav Petkov <bp@suse.de>, "Paul E. McKenney" <paulmck@kernel.org>, 
+	Neeraj Upadhyay <quic_neeraju@quicinc.com>, Randy Dunlap <rdunlap@infradead.org>, 
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>, Florian Fainelli <f.fainelli@gmail.com>, 
+	David Hildenbrand <david@redhat.com>, Zi Yan <ziy@nvidia.com>, Oscar Salvador <osalvador@suse.de>, 
+	Hari Bathini <hbathini@linux.ibm.com>, Kees Cook <keescook@chromium.org>, 
+	- <devicetree-spec@vger.kernel.org>, 
+	KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>, Mel Gorman <mgorman@suse.de>, 
+	Linux Doc Mailing List <linux-doc@vger.kernel.org>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, devicetree@vger.kernel.org, 
+	linux-mm <linux-mm@kvack.org>, iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, Sep 14, 2022 at 10:49:42AM +0100, Jean-Philippe Brucker wrote:
-> External email: Use caution opening links or attachments
-> 
-> 
-> On Wed, Sep 14, 2022 at 06:11:06AM -0300, Jason Gunthorpe wrote:
-> > On Tue, Sep 13, 2022 at 01:27:03PM +0100, Jean-Philippe Brucker wrote:
-> > > I think in the future it will be too easy to forget about the constrained
-> > > return value of attach() while modifying some other part of the driver,
-> > > and let an external helper return EINVAL. So I'd rather not propagate ret
-> > > from outside of viommu_domain_attach() and finalise().
+On Wed, Sep 14, 2022 at 11:57 AM Doug Berger <opendmb@gmail.com> wrote:
+>
+> On 9/14/2022 6:21 AM, Rob Herring wrote:
+> > On Tue, Sep 13, 2022 at 2:57 PM Doug Berger <opendmb@gmail.com> wrote:
+> >>
+> >> MOTIVATION:
+> >> Some Broadcom devices (e.g. 7445, 7278) contain multiple memory
+> >> controllers with each mapped in a different address range within
+> >> a Uniform Memory Architecture. Some users of these systems have
+> >> expressed the desire to locate ZONE_MOVABLE memory on each
+> >> memory controller to allow user space intensive processing to
+> >> make better use of the additional memory bandwidth.
+> >> Unfortunately, the historical monotonic layout of zones would
+> >> mean that if the lowest addressed memory controller contains
+> >> ZONE_MOVABLE memory then all of the memory available from
+> >> memory controllers at higher addresses must also be in the
+> >> ZONE_MOVABLE zone. This would force all kernel memory accesses
+> >> onto the lowest addressed memory controller and significantly
+> >> reduce the amount of memory available for non-movable
+> >> allocations.
 > >
-> > Fortunately, if -EINVAL is wrongly returned it only creates an
-> > inefficiency, not a functional problem. So we do not need to be
-> > precise here.
-> 
-> Ah fair. In that case the attach_dev() documentation should indicate that
-> EINVAL is a hint, so that callers don't rely on it (currently words "must"
-> and "exclusively" indicate that returning EINVAL for anything other than
-> device-domain incompatibility is unacceptable). The virtio-iommu
-> implementation may well return EINVAL from the virtio stack or from the
-> host response.
-
-How about this?
-
-+ * * EINVAL    - mainly, device and domain are incompatible, or something went
-+ *               wrong with the domain. It's suggested to avoid kernel prints
-+ *               along with this errno. And it's better to convert any EINVAL
-+ *               returned from kAPIs to ENODEV if it is device-specific, or to
-+ *               some other reasonable errno being listed below
-
-> > > Since we can't guarantee that APIs like virtio or ida won't ever return
-> > > EINVAL, we should set all return values:
+> > Why are you sending kernel patches to the Devicetree specification list?
 > >
-> > I dislike this alot, it squashes all return codes to try to optimize
-> > an obscure failure path :(
+> > Rob
+> My apologies if this is a problem. No offense was intended.
 
-Hmm...should I revert all the driver changes back to this version?
+None taken. Just trying to keep a low traffic list low traffic.
+
+> My process has been to run my patches through get_maintainers.pl to get
+> the list of addresses to copy on submissions and my
+> 0016-dt-bindings-reserved-memory-introduce-designated-mov.patch
+> solicited the
+> '- <devicetree-spec@vger.kernel.org>' address.
+
+Yeah, I see that now. That needs to be a person for a specific
+binding. The only bindings using the list should be targeting the
+dtschema repo. (And even those are a person ideally.)
+
+Rob
