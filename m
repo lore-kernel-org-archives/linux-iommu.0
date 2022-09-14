@@ -1,103 +1,77 @@
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44E737F
-	for <iommu@lists.linux.dev>; Wed, 14 Sep 2022 09:49:49 +0000 (UTC)
-Received: by mail-wr1-f47.google.com with SMTP id bq9so24820062wrb.4
-        for <iommu@lists.linux.dev>; Wed, 14 Sep 2022 02:49:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=bbq4/4T4JjPGUfth20drkaf18DSxlzxy1kFL2s5Skkk=;
-        b=ExcJVlbc0ZagiH+Rt7hA0bIVbTU/NxhHDjFnmOG97vfk7AfET8oP8YY+6s84+Q+Kob
-         AJ5rZVaCR4FSyyotJ+Um7fBWBWoMhnq6QmyyFF+rO62RqwDs2N4Cn46ksL+KGnpwh78j
-         S9EN8XhjlqB4zz8tP/9vhz/LY6UjBPfju8CSPIQ4BAqdnZkjw88ejZd09ya3aFzcPlFx
-         1+nPK7TEXW2EAEnjLYIuPT+P98eFpC+AhVnQvUCuPinG4F1UA1iUwSzMXBNZ6rOAIuA5
-         rt96dfG3b4g5SHEDUERGZ840y1RY/kPx0dSau+lT3vebZafJpjfn+RBOIRHaCUGx6/1o
-         JI8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=bbq4/4T4JjPGUfth20drkaf18DSxlzxy1kFL2s5Skkk=;
-        b=KrDUC+5DMyDRKD0epKa9OG8yW7SPbjOXhethXYirqtz5s1BIa6+MYOhekebyf9d5g5
-         XnFBPU2N3ssMoIf6LdQqJjXVGVCCn00ctyL49I9QcmnENqh7nV8Kdh7DNYi4YoUIsvpS
-         mhC5wHQFaDVnfLZ9ySI0YwVMb31m3IjpCDQCFnI746NQ67i7YUaxx9krZl/Uwwml8EMp
-         RJ1sqW5UsTO5ErliqOMgZm98ZsdLUPInBPcTggd1PGz/Ro+0hFC00AkWHbobHPNajLCj
-         DyuSY2KnSSxzksg0iLQF8MEzysp4JN1owPek/TnDztsQ53m2SjljtlanfLHQcT7vWa0R
-         ZdAg==
-X-Gm-Message-State: ACgBeo1aSuUbQJR5hl9n6GeFm1rPNVRe77rkMLrWQhGORTJ9KMeCd3fX
-	CWMuvb1R5wPHCTA3Ar3/LXTz/A==
-X-Google-Smtp-Source: AA6agR44NE7mkRWSZbkSxz7tUVdtOhV3Q3E9t0A41MbdOWdyWfvzOmpa8UdB3Zu6U/6tZw10e5zx/A==
-X-Received: by 2002:adf:e199:0:b0:228:60f6:f775 with SMTP id az25-20020adfe199000000b0022860f6f775mr20581130wrb.478.1663148987482;
-        Wed, 14 Sep 2022 02:49:47 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id v12-20020adfe4cc000000b00228c8ed21c8sm13192128wrm.17.2022.09.14.02.49.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Sep 2022 02:49:47 -0700 (PDT)
-Date: Wed, 14 Sep 2022 10:49:42 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, joro@8bytes.org,
-	suravee.suthikulpanit@amd.com, will@kernel.org,
-	robin.murphy@arm.com, robdclark@gmail.com, dwmw2@infradead.org,
-	baolu.lu@linux.intel.com, agross@kernel.org,
-	bjorn.andersson@linaro.org, konrad.dybcio@somainline.org,
-	matthias.bgg@gmail.com, heiko@sntech.de, orsonzhai@gmail.com,
-	baolin.wang@linux.alibaba.com, zhang.lyra@gmail.com,
-	thierry.reding@gmail.com, sricharan@codeaurora.org,
-	yong.wu@mediatek.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
-	tglx@linutronix.de, shameerali.kolothum.thodi@huawei.com,
-	thunder.leizhen@huawei.com, christophe.jaillet@wanadoo.fr,
-	yangyingliang@huawei.com, jon@solid-run.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-arm-msm@vger.kernel.org, linux-mediatek@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-tegra@vger.kernel.org,
-	virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH 4/5] iommu: Regulate errno in ->attach_dev callback
- functions
-Message-ID: <YyGjtsB2Yq4fQICS@myrica>
-References: <20220913082448.31120-1-nicolinc@nvidia.com>
- <20220913082448.31120-5-nicolinc@nvidia.com>
- <YyB3F/o3RfymqiFW@myrica>
- <YyGaqsXSDMn8R12R@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00DB83D7C
+	for <iommu@lists.linux.dev>; Wed, 14 Sep 2022 13:21:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6D28C433D7
+	for <iommu@lists.linux.dev>; Wed, 14 Sep 2022 13:21:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1663161708;
+	bh=5eg3+MDl9mj9XaKfqXdunaBWCFhVKFc0lhc1VADdGlQ=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=FWXEV8WnGTdRrLLaMtyLBrJtd4qiZxrpFQPRGUMUdRLW9kel7MPnkqY6MSMv+D7ob
+	 sfXvnnqutaViWOByzSqMJ1c1dMTydUKO1zli5VvYQbl5uBybwQLLF4o8aCgcTywTyb
+	 Kd47vNFcAzqE22tjmz+QtlCaVZDBKmWJmbhWXDY4MKSnabRTefKzsUtop//HEGo2aX
+	 wXNsyr5q1fbTmpB0DKu4ECvAENSU7K5jZP3Q3s+DuyB9g7tc5mStz62hzJSYEFb2r4
+	 W6uFAdchOqlMmycXoXc3nULcFaHPQLb35mwKzh76YZPAdjjSVY3zEvznG0DD1sIERF
+	 RD/6y26D7QT2A==
+Received: by mail-qv1-f47.google.com with SMTP id y9so11681631qvo.4
+        for <iommu@lists.linux.dev>; Wed, 14 Sep 2022 06:21:48 -0700 (PDT)
+X-Gm-Message-State: ACgBeo3G8NtM6CISLa+2FPr5CBgpOp9rDF/+rJnCRwgWpP2u4DTY8H9u
+	q63OooNpP9gnu9X3kKhO3XvKDPzlxW7FQwHbvQ==
+X-Google-Smtp-Source: AA6agR56jMVfRX3RtWINn1f1vrMILDJRHWk9UzHiBvWRHbJ6w8oCSCG8tGKMh7eB+FbUCGbrLkT5kxjkTYjpwJ7X9+I=
+X-Received: by 2002:a05:6102:3353:b0:38c:9170:a96b with SMTP id
+ j19-20020a056102335300b0038c9170a96bmr12924355vse.26.1663161697076; Wed, 14
+ Sep 2022 06:21:37 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YyGaqsXSDMn8R12R@nvidia.com>
+References: <20220913195508.3511038-1-opendmb@gmail.com>
+In-Reply-To: <20220913195508.3511038-1-opendmb@gmail.com>
+From: Rob Herring <robh+dt@kernel.org>
+Date: Wed, 14 Sep 2022 08:21:25 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqLmJcLHViPaBPvkBhR4xi+ZQuAJQpXoiJLVRW9EH4EX0Q@mail.gmail.com>
+Message-ID: <CAL_JsqLmJcLHViPaBPvkBhR4xi+ZQuAJQpXoiJLVRW9EH4EX0Q@mail.gmail.com>
+Subject: Re: [PATCH 00/21] mm: introduce Designated Movable Blocks
+To: Doug Berger <opendmb@gmail.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Jonathan Corbet <corbet@lwn.net>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Frank Rowand <frowand.list@gmail.com>, 
+	Mike Kravetz <mike.kravetz@oracle.com>, Muchun Song <songmuchun@bytedance.com>, 
+	Mike Rapoport <rppt@kernel.org>, Christoph Hellwig <hch@lst.de>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Borislav Petkov <bp@suse.de>, "Paul E. McKenney" <paulmck@kernel.org>, 
+	Neeraj Upadhyay <quic_neeraju@quicinc.com>, Randy Dunlap <rdunlap@infradead.org>, 
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>, Florian Fainelli <f.fainelli@gmail.com>, 
+	David Hildenbrand <david@redhat.com>, Zi Yan <ziy@nvidia.com>, Oscar Salvador <osalvador@suse.de>, 
+	Hari Bathini <hbathini@linux.ibm.com>, Kees Cook <keescook@chromium.org>, 
+	- <devicetree-spec@vger.kernel.org>, 
+	KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>, Mel Gorman <mgorman@suse.de>, 
+	Linux Doc Mailing List <linux-doc@vger.kernel.org>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, devicetree@vger.kernel.org, 
+	linux-mm <linux-mm@kvack.org>, iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, Sep 14, 2022 at 06:11:06AM -0300, Jason Gunthorpe wrote:
-> On Tue, Sep 13, 2022 at 01:27:03PM +0100, Jean-Philippe Brucker wrote:
-> > I think in the future it will be too easy to forget about the constrained
-> > return value of attach() while modifying some other part of the driver,
-> > and let an external helper return EINVAL. So I'd rather not propagate ret
-> > from outside of viommu_domain_attach() and finalise().
-> 
-> Fortunately, if -EINVAL is wrongly returned it only creates an
-> inefficiency, not a functional problem. So we do not need to be
-> precise here.
+On Tue, Sep 13, 2022 at 2:57 PM Doug Berger <opendmb@gmail.com> wrote:
+>
+> MOTIVATION:
+> Some Broadcom devices (e.g. 7445, 7278) contain multiple memory
+> controllers with each mapped in a different address range within
+> a Uniform Memory Architecture. Some users of these systems have
+> expressed the desire to locate ZONE_MOVABLE memory on each
+> memory controller to allow user space intensive processing to
+> make better use of the additional memory bandwidth.
+> Unfortunately, the historical monotonic layout of zones would
+> mean that if the lowest addressed memory controller contains
+> ZONE_MOVABLE memory then all of the memory available from
+> memory controllers at higher addresses must also be in the
+> ZONE_MOVABLE zone. This would force all kernel memory accesses
+> onto the lowest addressed memory controller and significantly
+> reduce the amount of memory available for non-movable
+> allocations.
 
-Ah fair. In that case the attach_dev() documentation should indicate that
-EINVAL is a hint, so that callers don't rely on it (currently words "must"
-and "exclusively" indicate that returning EINVAL for anything other than
-device-domain incompatibility is unacceptable). The virtio-iommu
-implementation may well return EINVAL from the virtio stack or from the
-host response.
+Why are you sending kernel patches to the Devicetree specification list?
 
-Thanks,
-Jean
-
-> 
-> > Since we can't guarantee that APIs like virtio or ida won't ever return
-> > EINVAL, we should set all return values:
-> 
-> I dislike this alot, it squashes all return codes to try to optimize
-> an obscure failure path :(
-> 
-> Jason
+Rob
