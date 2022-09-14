@@ -1,257 +1,129 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 332783FC2
-	for <iommu@lists.linux.dev>; Wed, 14 Sep 2022 15:54:45 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9791C1576;
-	Wed, 14 Sep 2022 08:54:51 -0700 (PDT)
-Received: from [10.57.18.118] (unknown [10.57.18.118])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 952273F73D;
-	Wed, 14 Sep 2022 08:54:43 -0700 (PDT)
-Message-ID: <c539a4fb-795b-0b33-2543-6a3e94164676@arm.com>
-Date: Wed, 14 Sep 2022 16:54:36 +0100
+Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 746D83FF9
+	for <iommu@lists.linux.dev>; Wed, 14 Sep 2022 16:57:41 +0000 (UTC)
+Received: by mail-qk1-f172.google.com with SMTP id c19so9435183qkm.7
+        for <iommu@lists.linux.dev>; Wed, 14 Sep 2022 09:57:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=UWYZ+LvZVhpAV6ZQBWEOlqo/TbgQPhE93gUN5h4Opa4=;
+        b=lBXUbs9pZpO+yTmR2jdfhmRm/kBSeGhEo/6IKheeNxrOaZ+SSStX4UyGbG7noCTZnL
+         lp4GNVPC+yuVX066hyg9SZyWVQUc+v0zWdguOY/nmscUyeDVvKy5jSWZaO+xzphOdvAQ
+         aTsC9QANMQ3cKIIiE6++nnjm/oB7778JyBSse4UwGosbGCTpuV7jvDE16vVWkNMCWqqr
+         paslr3euDOvfLPglAFtll6BbrIEH7G9dDqqDsbt8U2peyjwbTzpRL2hP2NTerae1SkXT
+         SVn4fudGRJTBSCtwGh1X5bX9nACK+SBbNtTAxaGYxsK9dZyA1/5h4e4DVMpUTdy67eBY
+         DA4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=UWYZ+LvZVhpAV6ZQBWEOlqo/TbgQPhE93gUN5h4Opa4=;
+        b=jA3/TdArQZNYBZdhipylohGQkdg+G01jeXaEyyhMpWG8R1EzOO38IS8qn4W7MPe4pr
+         jaGc6aagW00mHNUCDIrAIQXk2t3EyM4SnSwCy+z7QJ2HUp0nI102g04MfFPR5/sWeCXo
+         71x7a7XSNg8GiknnpN5y2jvMLDN+3IzFL1HZteOiea4Spl0YfAFVn2raTfjqyrTFiZ+f
+         Cn5q+nIpVKAOnKjmt1SQ6WtdbWsauXLVBCcAudJ78ELo/4A3iyxApBJXf9Mt7gcKurFz
+         p8kdD5se1c0o11A9KD+bgngJKUooQy3tY3BahAjzkG3lqoqvnCsRtTg/fTZDhnVD85qc
+         FrUQ==
+X-Gm-Message-State: ACgBeo3isLYGLlKPnBDHLQC4oCIBaq2KMHFAdcce8q1WEN1AxZx27Q+i
+	+2m/CnGqkw7+l0xWDD+dLOk=
+X-Google-Smtp-Source: AA6agR6Wu36k8hHB+/9VV1slDHLKSuMtkQx48tsI3xnwZirYVolN/T5Srax7wN9UvBnxLS0DXw6nUw==
+X-Received: by 2002:a05:620a:13ae:b0:6ce:5926:1511 with SMTP id m14-20020a05620a13ae00b006ce59261511mr9345627qki.431.1663174660232;
+        Wed, 14 Sep 2022 09:57:40 -0700 (PDT)
+Received: from [10.69.40.226] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id b3-20020a05620a118300b006b8f4ade2c9sm2051740qkk.19.2022.09.14.09.57.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 14 Sep 2022 09:57:38 -0700 (PDT)
+Message-ID: <1825234b-f17a-dea4-38f6-ba5881ab9a3d@gmail.com>
+Date: Wed, 14 Sep 2022 09:57:35 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [topic/core-for-CI] Revert "iommu/dma: Fix race condition during
- iova_domain initialization"
-Content-Language: en-GB
-To: Lucas De Marchi <lucas.demarchi@intel.com>,
- Karolina Drobnik <karolina.drobnik@intel.com>
-Cc: intel-gfx@lists.freedesktop.org,
- Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>,
- Yunfei Wang <yf.wang@mediatek.com>, Ning Li <ning.li@mediatek.com>,
- Miles Chen <miles.chen@mediatek.com>, Joerg Roedel <jroedel@suse.de>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20220914124045.903883-1-karolina.drobnik@intel.com>
- <20220914150121.y6ucj4mav65mt7we@ldmartin-desk2.lan>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220914150121.y6ucj4mav65mt7we@ldmartin-desk2.lan>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH 00/21] mm: introduce Designated Movable Blocks
+Content-Language: en-US
+To: Rob Herring <robh+dt@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>,
+ Jonathan Corbet <corbet@lwn.net>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Frank Rowand <frowand.list@gmail.com>, Mike Kravetz
+ <mike.kravetz@oracle.com>, Muchun Song <songmuchun@bytedance.com>,
+ Mike Rapoport <rppt@kernel.org>, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, Borislav Petkov <bp@suse.de>,
+ "Paul E. McKenney" <paulmck@kernel.org>,
+ Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+ Randy Dunlap <rdunlap@infradead.org>,
+ Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+ Florian Fainelli <f.fainelli@gmail.com>, David Hildenbrand
+ <david@redhat.com>, Zi Yan <ziy@nvidia.com>,
+ Oscar Salvador <osalvador@suse.de>, Hari Bathini <hbathini@linux.ibm.com>,
+ Kees Cook <keescook@chromium.org>, - <devicetree-spec@vger.kernel.org>,
+ KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
+ Mel Gorman <mgorman@suse.de>,
+ Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ devicetree@vger.kernel.org, linux-mm <linux-mm@kvack.org>,
+ iommu@lists.linux.dev
+References: <20220913195508.3511038-1-opendmb@gmail.com>
+ <CAL_JsqLmJcLHViPaBPvkBhR4xi+ZQuAJQpXoiJLVRW9EH4EX0Q@mail.gmail.com>
+From: Doug Berger <opendmb@gmail.com>
+In-Reply-To: <CAL_JsqLmJcLHViPaBPvkBhR4xi+ZQuAJQpXoiJLVRW9EH4EX0Q@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 2022-09-14 16:01, Lucas De Marchi wrote:
-> On Wed, Sep 14, 2022 at 02:40:45PM +0200, Karolina Drobnik wrote:
->> This reverts commit ac9a5d522bb80be50ea84965699e1c8257d745ce.
+On 9/14/2022 6:21 AM, Rob Herring wrote:
+> On Tue, Sep 13, 2022 at 2:57 PM Doug Berger <opendmb@gmail.com> wrote:
 >>
->> This change introduces a regression on Alder Lake that completely
->> blocks testing. To enable CI and avoid possible circular locking
->> warning, revert the patch.
+>> MOTIVATION:
+>> Some Broadcom devices (e.g. 7445, 7278) contain multiple memory
+>> controllers with each mapped in a different address range within
+>> a Uniform Memory Architecture. Some users of these systems have
+>> expressed the desire to locate ZONE_MOVABLE memory on each
+>> memory controller to allow user space intensive processing to
+>> make better use of the additional memory bandwidth.
+>> Unfortunately, the historical monotonic layout of zones would
+>> mean that if the lowest addressed memory controller contains
+>> ZONE_MOVABLE memory then all of the memory available from
+>> memory controllers at higher addresses must also be in the
+>> ZONE_MOVABLE zone. This would force all kernel memory accesses
+>> onto the lowest addressed memory controller and significantly
+>> reduce the amount of memory available for non-movable
+>> allocations.
 > 
-> We are already on rc5. Are iommu authors involved aware of this issue?
-> We could do this in our "for CI only" branch, but it's equally important
-> that this is fixed for 6.0
+> Why are you sending kernel patches to the Devicetree specification list?
 > 
-> Cc'ing them.
+> Rob
+My apologies if this is a problem. No offense was intended.
 
-The lockdep report doesn't make much sense to me - the deadlock cycle 
-it's reporting doesn't even involve the mutex added by that commit, and 
-otherwise the lock ordering between the IOMMU bus notifier(s) and 
-cpu_hotplug_lock has existed for ages. Has lockdep somehow got multiple 
-different and unrelated bus notifiers mixed up, maybe?
+My process has been to run my patches through get_maintainers.pl to get 
+the list of addresses to copy on submissions and my 
+0016-dt-bindings-reserved-memory-introduce-designated-mov.patch 
+solicited the
+'- <devicetree-spec@vger.kernel.org>' address.
 
-FWIW nobody else has reported anything, and that mutex addresses a 
-real-world concurrency issue, so I'm not convinced a revert is 
-appropriate without at least a much clearer justification.
+My preference when reviewing is to receive an entire patch set to 
+understand the context of an individual commit, but I can certainly 
+understand that others may have different preferences.
 
-Robin.
+It was my understanding that the Devicetree specification list was part 
+of the kernel (e.g. @vger.kernel.org) and would be willing to receive 
+patches that might be of relevance to it.
 
-> thanks
-> Lucas De Marchi
-> 
->>
->> kernel log:
->>
->> ======================================================
->> WARNING: possible circular locking dependency detected
->> 6.0.0-rc5-CI_DRM_12132-g6c93e979e542+ #1 Not tainted
->> ------------------------------------------------------
->> cpuhp/0/15 is trying to acquire lock:
->> ffff8881013df278 (&(&priv->bus_notifier)->rwsem){++++}-{3:3}, at: 
->> blocking_notifier_call_chain+0x20/0x50
->>              but task is already holding lock:
->> ffffffff826490c0 (cpuhp_state-up){+.+.}-{0:0}, at: 
->> cpuhp_thread_fun+0x48/0x1f0
->>              which lock already depends on the new loc
->>              the existing dependency chain (in reverse order) is:
->>              -> #3 (cpuhp_state-up){+.+.}-{0:0}:
->>       lock_acquire+0xd3/0x310
->>       cpuhp_thread_fun+0xa6/0x1f0
->>       smpboot_thread_fn+0x1b5/0x260
->>       kthread+0xed/0x120
->>       ret_from_fork+0x1f/0x30
->>              -> #2 (cpu_hotplug_lock){++++}-{0:0}:
->>       lock_acquire+0xd3/0x310
->>       __cpuhp_state_add_instance+0x43/0x1c0
->>       iova_domain_init_rcaches+0x199/0x1c0
->>       iommu_setup_dma_ops+0x130/0x440
->>       bus_iommu_probe+0x26a/0x2d0
->>       bus_set_iommu+0x82/0xd0
->>       intel_iommu_init+0xe33/0x1039
->>       pci_iommu_init+0x9/0x31
->>       do_one_initcall+0x53/0x2f0
->>       kernel_init_freeable+0x18f/0x1e1
->>       kernel_init+0x11/0x120
->>       ret_from_fork+0x1f/0x30
->>              -> #1 (&domain->iova_cookie->mutex){+.+.}-{3:3}:
->>       lock_acquire+0xd3/0x310
->>       __mutex_lock+0x97/0xf10
->>       iommu_setup_dma_ops+0xd7/0x440
->>       iommu_probe_device+0xa4/0x180
->>       iommu_bus_notifier+0x2d/0x40
->>       notifier_call_chain+0x31/0x90
->>       blocking_notifier_call_chain+0x3a/0x50
->>       device_add+0x3c1/0x900
->>       pci_device_add+0x255/0x580
->>       pci_scan_single_device+0xa6/0xd0
->>       pci_scan_slot+0x7a/0x1b0
->>       pci_scan_child_bus_extend+0x35/0x2a0
->>       vmd_probe+0x5cd/0x970
->>       pci_device_probe+0x95/0x110
->>       really_probe+0xd6/0x350
->>       __driver_probe_device+0x73/0x170
->>       driver_probe_device+0x1a/0x90
->>       __driver_attach+0xbc/0x190
->>       bus_for_each_dev+0x72/0xc0
->>       bus_add_driver+0x1bb/0x210
->>       driver_register+0x66/0xc0
->>       do_one_initcall+0x53/0x2f0
->>       kernel_init_freeable+0x18f/0x1e1
->>       kernel_init+0x11/0x120
->>       ret_from_fork+0x1f/0x30
->>              -> #0 (&(&priv->bus_notifier)->rwsem){++++}-{3:3}:
->>       validate_chain+0xb3f/0x2000
->>       __lock_acquire+0x5a4/0xb70
->>       lock_acquire+0xd3/0x310
->>       down_read+0x39/0x140
->>       blocking_notifier_call_chain+0x20/0x50
->>       device_add+0x3c1/0x900
->>       platform_device_add+0x108/0x240
->>       coretemp_cpu_online+0xe1/0x15e [coretemp]
->>       cpuhp_invoke_callback+0x181/0x8a0
->>       cpuhp_thread_fun+0x188/0x1f0
->>       smpboot_thread_fn+0x1b5/0x260
->>       kthread+0xed/0x120
->>       ret_from_fork+0x1f/0x30
->>              other info that might help us debug thi
->> Chain exists of                 &(&priv->bus_notifier)->rwsem --> 
->> cpu_hotplug_lock --> cpuhp_state-
->> Possible unsafe locking scenari
->>       CPU0                    CPU1
->>       ----                    ----
->>  lock(cpuhp_state-up);
->>                               lock(cpu_hotplug_lock);
->>                               lock(cpuhp_state-up);
->>  lock(&(&priv->bus_notifier)->rwsem);
->>               *** DEADLOCK *
->> 2 locks held by cpuhp/0/15:
->> #0: ffffffff82648f10 (cpu_hotplug_lock){++++}-{0:0}, at: 
->> cpuhp_thread_fun+0x48/0x1f0
->> #1: ffffffff826490c0 (cpuhp_state-up){+.+.}-{0:0}, at: 
->> cpuhp_thread_fun+0x48/0x1f0
->>              stack backtrace:
->> CPU: 0 PID: 15 Comm: cpuhp/0 Not tainted 
->> 6.0.0-rc5-CI_DRM_12132-g6c93e979e542+ #1
->> Hardware name: Intel Corporation Alder Lake Client 
->> Platform/AlderLake-P DDR4 RVP, BIOS ADLPFWI1.R00.3135.A00.2203251419 
->> 03/25/2022
->> Call Trace:
->> <TASK>
->> dump_stack_lvl+0x56/0x7f
->> check_noncircular+0x132/0x150
->> validate_chain+0xb3f/0x2000
->> __lock_acquire+0x5a4/0xb70
->> lock_acquire+0xd3/0x310
->> ? blocking_notifier_call_chain+0x20/0x50
->> down_read+0x39/0x140
->> ? blocking_notifier_call_chain+0x20/0x50
->> blocking_notifier_call_chain+0x20/0x50
->> device_add+0x3c1/0x900
->> ? dev_set_name+0x4e/0x70
->> platform_device_add+0x108/0x240
->> coretemp_cpu_online+0xe1/0x15e [coretemp]
->> ? create_core_data+0x550/0x550 [coretemp]
->> cpuhp_invoke_callback+0x181/0x8a0
->> cpuhp_thread_fun+0x188/0x1f0
->> ? smpboot_thread_fn+0x1e/0x260
->> smpboot_thread_fn+0x1b5/0x260
->> ? sort_range+0x20/0x20
->> kthread+0xed/0x120
->> ? kthread_complete_and_exit+0x20/0x20
->> ret_from_fork+0x1f/0x30
->> </TASK>
->>
->> Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/6641
->>
->> Signed-off-by: Karolina Drobnik <karolina.drobnik@intel.com>
->> Cc: Lucas De Marchi <lucas.demarchi@intel.com>
->> ---
->> drivers/iommu/dma-iommu.c | 17 ++++-------------
->> 1 file changed, 4 insertions(+), 13 deletions(-)
->>
->> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->> index 17dd683b2fce..9616b473e4c7 100644
->> --- a/drivers/iommu/dma-iommu.c
->> +++ b/drivers/iommu/dma-iommu.c
->> @@ -65,7 +65,6 @@ struct iommu_dma_cookie {
->>
->>     /* Domain for flush queue callback; NULL if flush queue not in use */
->>     struct iommu_domain        *fq_domain;
->> -    struct mutex            mutex;
->> };
->>
->> static DEFINE_STATIC_KEY_FALSE(iommu_deferred_attach_enabled);
->> @@ -312,7 +311,6 @@ int iommu_get_dma_cookie(struct iommu_domain *domain)
->>     if (!domain->iova_cookie)
->>         return -ENOMEM;
->>
->> -    mutex_init(&domain->iova_cookie->mutex);
->>     return 0;
->> }
->>
->> @@ -563,33 +561,26 @@ static int iommu_dma_init_domain(struct 
->> iommu_domain *domain, dma_addr_t base,
->>     }
->>
->>     /* start_pfn is always nonzero for an already-initialised domain */
->> -    mutex_lock(&cookie->mutex);
->>     if (iovad->start_pfn) {
->>         if (1UL << order != iovad->granule ||
->>             base_pfn != iovad->start_pfn) {
->>             pr_warn("Incompatible range for DMA domain\n");
->> -            ret = -EFAULT;
->> -            goto done_unlock;
->> +            return -EFAULT;
->>         }
->>
->> -        ret = 0;
->> -        goto done_unlock;
->> +        return 0;
->>     }
->>
->>     init_iova_domain(iovad, 1UL << order, base_pfn);
->>     ret = iova_domain_init_rcaches(iovad);
->>     if (ret)
->> -        goto done_unlock;
->> +        return ret;
->>
->>     /* If the FQ fails we can simply fall back to strict mode */
->>     if (domain->type == IOMMU_DOMAIN_DMA_FQ && iommu_dma_init_fq(domain))
->>         domain->type = IOMMU_DOMAIN_DMA;
->>
->> -    ret = iova_reserve_iommu_regions(dev, domain);
->> -
->> -done_unlock:
->> -    mutex_unlock(&cookie->mutex);
->> -    return ret;
->> +    return iova_reserve_iommu_regions(dev, domain);
->> }
->>
->> /**
->> -- 
->> 2.25.1
->>
+I am inexperienced with yaml and devicetree processes in general so I 
+have tried to lean on the examples of other reserved-memory node 
+bindings for help.
+
+There is much to learn and I am happy to modify my process to better 
+accommodate your needs.
+
+Regards,
+     Doug
