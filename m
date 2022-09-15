@@ -1,97 +1,99 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0B4D4403
-	for <iommu@lists.linux.dev>; Thu, 15 Sep 2022 11:45:54 +0000 (UTC)
-Received: from fraeml737-chm.china.huawei.com (unknown [172.18.147.226])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MSwNc6Ms8z68967;
-	Thu, 15 Sep 2022 19:44:48 +0800 (CST)
-Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
- fraeml737-chm.china.huawei.com (10.206.15.218) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 15 Sep 2022 13:45:44 +0200
-Received: from [10.126.175.63] (10.126.175.63) by
- lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 15 Sep 2022 12:45:43 +0100
-Message-ID: <bdb9abaf-2703-6d4c-9cab-f6e15e3e8b30@huawei.com>
-Date: Thu, 15 Sep 2022 12:45:43 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 942604431
+	for <iommu@lists.linux.dev>; Thu, 15 Sep 2022 15:14:16 +0000 (UTC)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28FEjBu1002201;
+	Thu, 15 Sep 2022 15:14:09 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=QfMAECJGk1+vZHFu4ayTDGu/XjSKf/ezgEIrW9CCQiI=;
+ b=iCgZstqYby6DtZ/GNWWf6IlNGUF2+WR8f3fi3vCflzwj0Iq5q+nISxvrk1b4kmkgTB3h
+ KENqocTSlFyf4xDut11giSIKPLhs3NBgoaaefEPi1DO3a3PU0qDTx//dLSHqZo13UghO
+ Fw2Ukw++97t4L4ZzpPNRKnYbI00k++4XFW1wks0q4taPo/OKkRFtBa4vTFk94Ozm22AX
+ 3BSLFynebgYkQdOsh+PgYQlChb53zZ0UV+J1UvixMi+FwozEWKg36A8y+LT+JwkM2IqD
+ lTL31qB38UwxQE7MdZ/gZIlP0CTLxhgQiJChG6HrNIHvMrBWDmpUOMpEnu7zqwlpEZmT 1A== 
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jm633187k-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 15 Sep 2022 15:14:09 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+	by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 28FF8SDG022443;
+	Thu, 15 Sep 2022 15:14:07 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+	by ppma02fra.de.ibm.com with ESMTP id 3jjyk6sx81-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 15 Sep 2022 15:14:06 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+	by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 28FFE3hM25362932
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 15 Sep 2022 15:14:03 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id B5B1D52051;
+	Thu, 15 Sep 2022 15:14:03 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+	by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 3BDCE52052;
+	Thu, 15 Sep 2022 15:14:03 +0000 (GMT)
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Matthew Rosato <mjrosato@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev
+Cc: linux-s390@vger.kernel.org, borntraeger@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        agordeev@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
+        will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 2/3] s390/pci: remove unused bus_next field from struct zpci_dev
+Date: Thu, 15 Sep 2022 17:14:01 +0200
+Message-Id: <20220915151402.121032-3-schnelle@linux.ibm.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220915151402.121032-1-schnelle@linux.ibm.com>
+References: <20220915151402.121032-1-schnelle@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH] iommu/iova: Fix module config properly
-To: Thierry Reding <thierry.reding@gmail.com>, Robin Murphy
-	<robin.murphy@arm.com>
-CC: <joro@8bytes.org>, <will@kernel.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>
-References: <548c2f683ca379aface59639a8f0cccc3a1ac050.1663069227.git.robin.murphy@arm.com>
- <4740744e-2e12-520d-8598-188b8d2ebd6b@huawei.com>
- <38988c89-ec61-faa1-6b15-2fd3aa51eede@arm.com> <YyGjPoM6ooNeJKhT@orome>
-From: John Garry <john.garry@huawei.com>
-In-Reply-To: <YyGjPoM6ooNeJKhT@orome>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.126.175.63]
-X-ClientProxiedBy: lhrpeml500001.china.huawei.com (7.191.163.213) To
- lhrpeml500003.china.huawei.com (7.191.162.67)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: K8kq3hYgb2njsNK_YDBtCalWzTCaC5X6
+X-Proofpoint-GUID: K8kq3hYgb2njsNK_YDBtCalWzTCaC5X6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-09-15_09,2022-09-14_04,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 phishscore=0
+ adultscore=0 malwarescore=0 bulkscore=0 mlxlogscore=944 spamscore=0
+ lowpriorityscore=0 priorityscore=1501 mlxscore=0 suspectscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2208220000 definitions=main-2209150085
 
-On 14/09/2022 10:47, Thierry Reding wrote:
-> On Tue, Sep 13, 2022 at 03:15:18PM +0100, Robin Murphy wrote:
->> On 2022-09-13 14:01, John Garry wrote:
->>> On 13/09/2022 12:47, Robin Murphy wrote:
->>>> IOMMU_IOVA is intended to be an optional library for users to select as
->>>> and when they desire. Since it can be a module now, this means that
->>>> built-in code which has chosen not to select it should not fail to link
->>>> if it happens to have selected as a module by someone else. Replace
->>>> IS_ENABLED() with IS_REACHABLE() to do the right thing.
->>>
->>> Hi Robin,
->>>
->>> Recently you mentioned "I wonder if we couldn't replace the IS_ENABLED()
->>> with IS_REACHABLE() and restore some of the previously-conditional
->>> selects", and pointed me to 84db889e6d82 as an example of when a
->>> conditional select was made unconditional.
->>>
->>> So will you also restore some previously-conditional selects next?
->>
->> I figured I'd leave that up to Thierry (and/or anyone else with a vested
->> interest), but having mulled it over since that previous thread, there's
->> really no excuse for the API itself not to do the right thing either way, so
->> I felt compelled to write up this much.
-> 
-> On Tegra specifically, as the commit message says, we don't really care
-> about the conditional selection because practically we always want IOMMU
-> support enabled. So instead of adding back the conditional select it
-> would make more sense to select IOMMU_API instead and then get rid of
-> the handful of #ifdef blocks we have for that.
+This field was added in commit 44510d6fa0c0 ("s390/pci: Handling
+multifunctions") but is an unused remnant of an earlier version where
+the the devices on the virtual bus were connected in a linked list
+instead of a fixed 256 entry array of pointers.
 
-Out of curiosity, does the same go to host1x, whose kconfig got the same 
-treatment as tegra with regards to selecting IOMMU_IOVA? I mean, will 
-you not go back to conditionally selecting IOMMU_IOVA, and instead 
-select IOMMU_API and IOMMU_IOVA always?
+It is also not used for the list of busses as that is threaded through
+struct zpci_bus not through struct zpci_dev.
 
-Thanks,
-John
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+---
+ arch/s390/include/asm/pci.h | 1 -
+ 1 file changed, 1 deletion(-)
 
-> 
-> On a side note: I'm looking at a subtle regression right now where some
-> corner case no longer works and that's primarily due to the fact that we
-> can have four different scenarios: non-IOMMU, IOMMU, DMA/IOMMU and IOMMU
-> but devices with no iommus property in their DT nodes. This has all
-> become very unwieldy and becomes increasingly difficult to test. So
-> anything that we can do to keep down the number of permutations is
-> welcome.
-> 
-> While that's not directly related to this issue, the lesson learned is
-> that, at least on the Tegra side, we have in the past made things
-> unnecessarily difficult for ourselves based on the misguided assumption
-> that maximum configurability is key.
-> 
-> Thierry
+diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
+index 7b4cdadbc023..108e732d7b14 100644
+--- a/arch/s390/include/asm/pci.h
++++ b/arch/s390/include/asm/pci.h
+@@ -117,7 +117,6 @@ struct zpci_bus {
+ struct zpci_dev {
+ 	struct zpci_bus *zbus;
+ 	struct list_head entry;		/* list of all zpci_devices, needed for hotplug, etc. */
+-	struct list_head bus_next;
+ 	struct kref kref;
+ 	struct hotplug_slot hotplug_slot;
+ 
+-- 
+2.34.1
 
