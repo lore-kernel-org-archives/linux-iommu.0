@@ -1,288 +1,157 @@
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 335CC2F2C
-	for <iommu@lists.linux.dev>; Thu, 15 Sep 2022 09:04:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3F733205
+	for <iommu@lists.linux.dev>; Thu, 15 Sep 2022 09:39:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663232648; x=1694768648;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=9M27XnR5jj/g8J/Y6Lm5NfNMQ64DQGoHMfvzYu/z+HI=;
-  b=inhn/WpeRBM815ld6db0bOihAVDU7jxZP3Y9lqr9/agCUCC+tJ396OwP
-   iA3OEP8Zx5FmE9s2yNlqcPOg/Wcj8BCRKlf3kN2gcR8BWkuPbKmoIZ5b7
-   FNv0wmSS525+ENEft+AVs28Z1MvhTsEXedb6Cq0dT0+hoJJkzlM6CG1St
-   s0ppT6BBqk9ul5EN/gwCS6MDu9ZIYQh4EA/OhjD0OKU9DmP3mgZXtDrVi
-   d3CH+iSAqz2L9TkEpvSnOw0KO3ddTvt1459vlDhI6zr4Fg569iHwI6318
-   xgonRIZiaz8I8oOwTJZIKofQ0uSXanWtHLWSl70qBP1UZG5zZTRyu7Y1A
+  t=1663234772; x=1694770772;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=5eEUOqbu5YA8ehjG6gRifgBdp9KTXMfktM1uKr8LunU=;
+  b=PblEkGM0HubLmLt3f77KBsa5YNkQvGXmmPbN1BTfag6/fA1ZgjDzBuL3
+   DMzOxjsJhJscb66z8mmwFRlOCId5DqRf/2QC4htYYEVmTBALvRom8yp8S
+   JczjcFwohgMwdXJMxSQSR6wxz0H4A6LFdADauCJeO+MLoE/x7OtQIEtCQ
+   ppDvq0R26YFzoU1BoClVDzRi/GYEpQAv8cRWv7/J2OXN2+NJA+M+LplTk
+   CQJLQkar/919ythqgu2c/CKKUEAzzW5hVA9RjCtifxmF6VWTtyYnemQco
+   HIt+FNzWndJQbIlxk2iZ0aUQ7paOfrIJ5UqCyMHkO8sEFjkWxqwjPkvg3
    w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10470"; a="298655358"
+X-IronPort-AV: E=McAfee;i="6500,9779,10470"; a="278394959"
 X-IronPort-AV: E=Sophos;i="5.93,317,1654585200"; 
-   d="scan'208";a="298655358"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2022 02:04:07 -0700
+   d="scan'208";a="278394959"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2022 02:39:32 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,317,1654585200"; 
-   d="scan'208";a="720914303"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga002.fm.intel.com with ESMTP; 15 Sep 2022 02:04:05 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: iommu@lists.linux.dev
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v2 1/1] iommu/vt-d: Decouple PASID & PRI enabling from SVA
-Date: Thu, 15 Sep 2022 16:58:14 +0800
-Message-Id: <20220915085814.2261409-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+   d="scan'208";a="650415432"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by orsmga001.jf.intel.com with ESMTP; 15 Sep 2022 02:39:32 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 15 Sep 2022 02:39:31 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 15 Sep 2022 02:39:31 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Thu, 15 Sep 2022 02:39:31 -0700
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.175)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Thu, 15 Sep 2022 02:39:31 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HWe4MEAfjVHZOGefwhMSzFwPXsNfY4uyCkyPjL8bg0wKHj+//bJJtJu5pfB6KQdtVYeAPZqX1VkD5RUXF8ic71TnGpt7O+WieIQzn4feO45tsBsbwTlqWnAFJCHJThx3qb8JaJgZMfWrTnp9n6wsb003iNADnUZfub+7GrG3YYDmJcXEkLbs2LGOIY+bmqUJRqJZgeOqfjyzeasb7recBwUm/g9kElhtJQuVBmoGzM/lbPTUay7uDPwcD7eU5wkZnCWzjn8PsB81D2ykrn14+yWA0EEYRouVsxFZyAtNNHuD0OvJvvMZF6RVBqkm/WJZABcLPGXnso31P2HmrK84ew==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5eEUOqbu5YA8ehjG6gRifgBdp9KTXMfktM1uKr8LunU=;
+ b=OTkFj77bZeDPskri4V7koeBt0NlQXX+D2ljxnGokfzs3akWKpD6k7qRdmY5NiDFe1R+xnCrScYx7XqBw0Yjbmypq7fRI2XmWOuFDcakyDlAKM0Xkj6ZTgGVvdhxVjj491pyP7akDHWfeZQUkwX5CCUpj61QrVjMDq8LMfh5FgilCninsPT7B/U0vIO97Y6H+AywDSL/YufKijBxIyJFpTPjY5tD8cI+LBZvYrQbir1zE5KMMScyTxxLmAXR8TqArh5WzTEcKIBHUBBRkkEzKQI4feUiK0hFjyoLmw2mXAHgvsHIh9/NvuR3TA7mEYq2fA0E8c1ecmJs4byWKak8RrA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by IA1PR11MB6268.namprd11.prod.outlook.com (2603:10b6:208:3e4::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.22; Thu, 15 Sep
+ 2022 09:39:30 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::a435:3eff:aa83:73d7]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::a435:3eff:aa83:73d7%6]) with mapi id 15.20.5632.015; Thu, 15 Sep 2022
+ 09:39:30 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>
+CC: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, "Robin
+ Murphy" <robin.murphy@arm.com>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v2 1/1] iommu/vt-d: Decouple PASID & PRI enabling from SVA
+Thread-Topic: [PATCH v2 1/1] iommu/vt-d: Decouple PASID & PRI enabling from
+ SVA
+Thread-Index: AQHYyOImkdkHJkZyCUaT+aboDcUua63gPD8Q
+Date: Thu, 15 Sep 2022 09:39:30 +0000
+Message-ID: <BN9PR11MB5276F03A090073F388B824488C499@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20220915085814.2261409-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20220915085814.2261409-1-baolu.lu@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|IA1PR11MB6268:EE_
+x-ms-office365-filtering-correlation-id: d393fb3e-f7d2-44e1-09e4-08da96fe3037
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: wcxrag5J/xttEYcJ+UDSBHYHhelk6yZunCkLuws1q79Cm9nYbPJ5z105i5FyOQlo1V5o618wp9xtUGE8b5RoFdT9VIl4Jv4xTRQpAuVcMkLqWIH6cQi0y1RNjKGUm+FeNArzVTzbA6HM7LV5+ki/B9NnrHmRGWIx/pBQsmYSfzVAVsfVaYh2ec7HmznDoA8bKe8TW2q+rhUowR6BpSChvpp8+0vDE/xANHN0pL6cUoce4lQq25Nz7rqOJNWeesXUMOvXsYReKgduhK5b3VwVnCTE4WMhV7BrOiBHvpqhA9e8imW/jEujBdQHLvos1CTpxmmRoJzRrTj0rBdV6TOEA+Zkjk1WvW94Mqq7H7xChNahyxjEd00D/TLqgqhLyEBB43pwLJCNBAk5AQmfaTlLMV1bqpDupWchlbBk9H0Hf2tke+s2y2Z7Bc1IgVVZeEtXEXpfwMSZAO+1oSti2ZJKeIFlMCytZnyy82OE5yHU7ETe5tgUFa7w87SDN+gMsYw27Rin8ptSK68eec0A1N6cXp5e55pff/h7xJz8eY9hjDrIttfhZhhNvVqPkgWbjQW+p69ajuZxHU6/49WXw9F/ZsFjU9ukSTQr9mnLzYP9KwbYALdlo08vFnqIOB76f2fBZV5oJ5n3S9zmvWUD2WamP+1B7kMKET8O3MAgbkBQvqpn1+zh+7qgIQwsYV3D4ooOQMT+HkgOmJkIudOdePllyn/8WChVTR/8AGcFdJBD2NwxJbu70xbDa5rQLq4gRD8xG507byYuA5tKIo8vvPBUjA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(346002)(366004)(396003)(39860400002)(376002)(136003)(451199015)(7696005)(2906002)(66556008)(66476007)(26005)(316002)(64756008)(66446008)(66946007)(4326008)(122000001)(8936002)(8676002)(52536014)(186003)(6506007)(9686003)(76116006)(38100700002)(82960400001)(41300700001)(110136005)(54906003)(4744005)(86362001)(33656002)(55016003)(71200400001)(38070700005)(478600001)(5660300002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?91RMOtuOyLnk82B+5HKQi5SEO4MyKeTtZF+WDedY38SdlX2vd7+Qnnr9MrH4?=
+ =?us-ascii?Q?7x3aWanWiLw5sEzr15N25uZ4Ya5t1BADwUVERgmaucKwTfib+ekiVrBhCels?=
+ =?us-ascii?Q?K859kIxc8CvPQC5k5vvLkgNiMnZzlvTpGNf8orqvKvP9j1HxfVtm2SuEldJT?=
+ =?us-ascii?Q?0LbAaNNdwFYntV4Aknn8eNhnhERF3VJp+uVk6txh/OqVcmG0qrpUf9LDKpXC?=
+ =?us-ascii?Q?Onnb66ZJ4hfkshzmGx/3JvqdW5ROQf+pt64qQjB4q0ShxsrgRPNoyG8TZAg7?=
+ =?us-ascii?Q?acKFcqeo8gBX2GZUEHE18GyxFlgQIBSKdUfQv+hCNYTM2A6Dp+fe71BizQWK?=
+ =?us-ascii?Q?yTQjD14fMTWrL2Tbo6Cmr2p9blhSUFgIKBQtvO+l/krObzc2lPGZolXdZxEB?=
+ =?us-ascii?Q?1J0WGrR37pyd189/QtocdU8JSBLlk3UW34hfiyNpJp6zZOp0W7+F7K7/+4Z4?=
+ =?us-ascii?Q?hZAcMPXM5BaATBukFRnoZQh9Ry/m9pEcKQcDwkpki/3r4QtSb9e59hJqNgM5?=
+ =?us-ascii?Q?QS4xOZ9WjaxJ7qeP7eDaD5qTsIuu3aaUnpDQVkzbPUkpRzH2zSUn+QzFJGYv?=
+ =?us-ascii?Q?sRMaBwpUsXrJe2i/RGZQCVgaKOrIX7II/iCO7U7+1WwM7JqN5R3IhZqvass6?=
+ =?us-ascii?Q?boh0S4+IUh78P4dcn7SQX2QUX1gwx9I7DpB1rwMaXNN8CrrthZz5oxjYj+kz?=
+ =?us-ascii?Q?NeTnAmjZNF++ln3yj6PHg4j56L7msByOZMqx6xV9Md8lL9LT4oyi3YPtSl5/?=
+ =?us-ascii?Q?vaEjZ32Se9BcDycqZRch9cIyrNf+NGKyFu4JTv6R+tWc1NSDjm0momt1R7+s?=
+ =?us-ascii?Q?D9rmL926Rp8jNd2xwWO0INRgitCOfYpdd75jBYfkvlF22iVywmIJohxf3lUc?=
+ =?us-ascii?Q?f/Yr7J/+FbmX0Oo2r6cWiiSvSbZ08UsPwgqMDkBzKrkKq2LnRW9sgkFbyeJY?=
+ =?us-ascii?Q?tuVeoK+1sAc0eRD1M+EsN0ULpFQCuVxSK8knyAR/83wui97g9MadDeyEnr8s?=
+ =?us-ascii?Q?aFXyqvcCIBIGT3Ft309RQC8VvOIptnl0bo4o7/IKWNCMxDD2bEfnQpv/Gf++?=
+ =?us-ascii?Q?eeUEqO+JnZr9cltD1rk4LPX3liK8Isehla9tFMAx1SPuo+Jp5TV8Li/lOMzj?=
+ =?us-ascii?Q?7YOJ+NAzXtbu4meOVKixcjVh2fUL6J6048qhXTekxODBz3d1+8jfJP0pXIk1?=
+ =?us-ascii?Q?1O+LMVRKwyYNA00W8Vz5P5S9V3svx32BrDZOAdstbTLr/fbV3NJh+/8GPnsF?=
+ =?us-ascii?Q?bzjSUFwoX5ErwvhTQxwU8QpIwugSwuOuIx5BC0IkgAk5nUknX9+I4/qZfR5F?=
+ =?us-ascii?Q?5EIOKmpbjSSnJgkIteNEiblKGB3jfBlxV/ZZHYFGiDyoflrL/yCtLkdU3gHe?=
+ =?us-ascii?Q?6Ywbe+oEC7aoUD6C5E30QYyGHcdXi5hII+lL7fHamxNXDn3HksyxMZ14QWFJ?=
+ =?us-ascii?Q?3ic7lkXMrORHp+a2vFdeTigutlpGI4oh8mtpJl9HFK7GWe9PRhbFQuQzPOEe?=
+ =?us-ascii?Q?GnxjoI/xXeRPyoo2gYW2xdyL7BWFmM50/U8ebH4IcTfWpg0YOoAoQIonKvHQ?=
+ =?us-ascii?Q?AfZSpyrFszVI0/WNRri8lciW/2GppxxW57Rt5owo?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d393fb3e-f7d2-44e1-09e4-08da96fe3037
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Sep 2022 09:39:30.0806
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: EhwM5AZ4VdNqUH/oWdvAAci7zGEbPrqTFoLiwBxVLXnBCrgp0dPMuw0Fewm0gGeYh8Xvket7YNc7j4lnmqqeCw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB6268
+X-OriginatorOrg: intel.com
 
-Previously the PCI PASID and PRI capabilities are enabled in the path of
-iommu device probe only if INTEL_IOMMU_SVM is configured and the device
-supports ATS. As we've already decoupled the I/O page fault handler from
-SVA, we could also decouple PASID and PRI enabling from it to make room
-for growth of new features like kernel DMA with PASID, SIOV and nested
-translation.
+> From: Lu Baolu <baolu.lu@linux.intel.com>
+> Sent: Thursday, September 15, 2022 4:58 PM
+>=20
+> Previously the PCI PASID and PRI capabilities are enabled in the path of
+> iommu device probe only if INTEL_IOMMU_SVM is configured and the device
+> supports ATS. As we've already decoupled the I/O page fault handler from
+> SVA, we could also decouple PASID and PRI enabling from it to make room
+> for growth of new features like kernel DMA with PASID, SIOV and nested
+> translation.
+>=20
+> At the same time, the iommu_enable_dev_iotlb() helper is also called in
+> iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA) path. It's
+> unnecessary
+> and duplicate. This cleanups this helper to make the code neat.
+>=20
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-At the same time, the iommu_enable_dev_iotlb() helper is also called in
-iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA) path. It's unnecessary
-and duplicate. This cleanups this helper to make the code neat.
-
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.h |  1 -
- drivers/iommu/intel/iommu.c | 78 ++++++++-----------------------------
- drivers/iommu/intel/Kconfig |  5 +--
- 3 files changed, 18 insertions(+), 66 deletions(-)
-
-Changelog:
-v2:
- - Rephrase the commit message to make it accurate.
- - Rename iommu_enable_dev_iotlb().
-
-v1: https://lore.kernel.org/linux-iommu/20220912024826.1684913-1-baolu.lu@linux.intel.com/
-
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 352f05e92f6f..b11069a71640 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -740,7 +740,6 @@ extern int dmar_ir_support(void);
- void *alloc_pgtable_page(int node);
- void free_pgtable_page(void *vaddr);
- void iommu_flush_write_buffer(struct intel_iommu *iommu);
--int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct device *dev);
- struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn);
- 
- #ifdef CONFIG_INTEL_IOMMU_SVM
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 18a75c74c38c..7fb91ab27311 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -199,6 +199,11 @@ static inline void context_set_domain_id(struct context_entry *context,
- 	context->hi |= (value & ((1 << 16) - 1)) << 8;
- }
- 
-+static inline void context_set_pasid(struct context_entry *context)
-+{
-+	context->lo |= CONTEXT_PASIDE;
-+}
-+
- static inline int context_domain_id(struct context_entry *c)
- {
- 	return((c->hi >> 8) & 0xffff);
-@@ -1350,21 +1355,18 @@ static void __iommu_flush_iotlb(struct intel_iommu *iommu, u16 did,
- }
- 
- static struct device_domain_info *
--iommu_support_dev_iotlb(struct dmar_domain *domain, struct intel_iommu *iommu,
--			u8 bus, u8 devfn)
-+domain_lookup_dev_info(struct dmar_domain *domain,
-+		       struct intel_iommu *iommu, u8 bus, u8 devfn)
- {
- 	struct device_domain_info *info;
- 	unsigned long flags;
- 
--	if (!iommu->qi)
--		return NULL;
--
- 	spin_lock_irqsave(&domain->lock, flags);
- 	list_for_each_entry(info, &domain->devices, link) {
- 		if (info->iommu == iommu && info->bus == bus &&
- 		    info->devfn == devfn) {
- 			spin_unlock_irqrestore(&domain->lock, flags);
--			return info->ats_supported ? info : NULL;
-+			return info;
- 		}
- 	}
- 	spin_unlock_irqrestore(&domain->lock, flags);
-@@ -1389,7 +1391,7 @@ static void domain_update_iotlb(struct dmar_domain *domain)
- 	spin_unlock_irqrestore(&domain->lock, flags);
- }
- 
--static void iommu_enable_dev_iotlb(struct device_domain_info *info)
-+static void iommu_enable_pci_caps(struct device_domain_info *info)
- {
- 	struct pci_dev *pdev;
- 
-@@ -1412,7 +1414,6 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
- 		info->pfsid = pci_dev_id(pf_pdev);
- 	}
- 
--#ifdef CONFIG_INTEL_IOMMU_SVM
- 	/* The PCIe spec, in its wisdom, declares that the behaviour of
- 	   the device if you enable PASID support after ATS support is
- 	   undefined. So always enable PASID support on devices which
-@@ -1425,7 +1426,7 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
- 	    (info->pasid_enabled ? pci_prg_resp_pasid_required(pdev) : 1)  &&
- 	    !pci_reset_pri(pdev) && !pci_enable_pri(pdev, PRQ_DEPTH))
- 		info->pri_enabled = 1;
--#endif
-+
- 	if (info->ats_supported && pci_ats_page_aligned(pdev) &&
- 	    !pci_enable_ats(pdev, VTD_PAGE_SHIFT)) {
- 		info->ats_enabled = 1;
-@@ -1448,16 +1449,16 @@ static void iommu_disable_dev_iotlb(struct device_domain_info *info)
- 		info->ats_enabled = 0;
- 		domain_update_iotlb(info->domain);
- 	}
--#ifdef CONFIG_INTEL_IOMMU_SVM
-+
- 	if (info->pri_enabled) {
- 		pci_disable_pri(pdev);
- 		info->pri_enabled = 0;
- 	}
-+
- 	if (info->pasid_enabled) {
- 		pci_disable_pasid(pdev);
- 		info->pasid_enabled = 0;
- 	}
--#endif
- }
- 
- static void __iommu_flush_dev_iotlb(struct device_domain_info *info,
-@@ -1907,7 +1908,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
- 				      u8 bus, u8 devfn)
- {
- 	struct device_domain_info *info =
--			iommu_support_dev_iotlb(domain, iommu, bus, devfn);
-+			domain_lookup_dev_info(domain, iommu, bus, devfn);
- 	u16 did = domain_id_iommu(domain, iommu);
- 	int translation = CONTEXT_TT_MULTI_LEVEL;
- 	struct context_entry *context;
-@@ -1980,6 +1981,8 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
- 			context_set_sm_dte(context);
- 		if (info && info->pri_supported)
- 			context_set_sm_pre(context);
-+		if (info && info->pasid_supported)
-+			context_set_pasid(context);
- 	} else {
- 		struct dma_pte *pgd = domain->pgd;
- 		int agaw;
-@@ -2037,7 +2040,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
- 	} else {
- 		iommu_flush_write_buffer(iommu);
- 	}
--	iommu_enable_dev_iotlb(info);
-+	iommu_enable_pci_caps(info);
- 
- 	ret = 0;
- 
-@@ -4551,52 +4554,6 @@ static void intel_iommu_get_resv_regions(struct device *device,
- 	list_add_tail(&reg->list, head);
- }
- 
--int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct device *dev)
--{
--	struct device_domain_info *info = dev_iommu_priv_get(dev);
--	struct context_entry *context;
--	struct dmar_domain *domain;
--	u64 ctx_lo;
--	int ret;
--
--	domain = info->domain;
--	if (!domain)
--		return -EINVAL;
--
--	spin_lock(&iommu->lock);
--	ret = -EINVAL;
--	if (!info->pasid_supported)
--		goto out;
--
--	context = iommu_context_addr(iommu, info->bus, info->devfn, 0);
--	if (WARN_ON(!context))
--		goto out;
--
--	ctx_lo = context[0].lo;
--
--	if (!(ctx_lo & CONTEXT_PASIDE)) {
--		ctx_lo |= CONTEXT_PASIDE;
--		context[0].lo = ctx_lo;
--		wmb();
--		iommu->flush.flush_context(iommu,
--					   domain_id_iommu(domain, iommu),
--					   PCI_DEVID(info->bus, info->devfn),
--					   DMA_CCMD_MASK_NOBIT,
--					   DMA_CCMD_DEVICE_INVL);
--	}
--
--	/* Enable PASID support in the device, if it wasn't already */
--	if (!info->pasid_enabled)
--		iommu_enable_dev_iotlb(info);
--
--	ret = 0;
--
-- out:
--	spin_unlock(&iommu->lock);
--
--	return ret;
--}
--
- static struct iommu_group *intel_iommu_device_group(struct device *dev)
- {
- 	if (dev_is_pci(dev))
-@@ -4620,9 +4577,6 @@ static int intel_iommu_enable_sva(struct device *dev)
- 	if (!(iommu->flags & VTD_FLAG_SVM_CAPABLE))
- 		return -ENODEV;
- 
--	if (intel_iommu_enable_pasid(iommu, dev))
--		return -ENODEV;
--
- 	if (!info->pasid_enabled || !info->pri_enabled || !info->ats_enabled)
- 		return -EINVAL;
- 
-diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
-index c48005147ac5..b7dff5092fd2 100644
---- a/drivers/iommu/intel/Kconfig
-+++ b/drivers/iommu/intel/Kconfig
-@@ -20,6 +20,8 @@ config INTEL_IOMMU
- 	select SWIOTLB
- 	select IOASID
- 	select PCI_ATS
-+	select PCI_PRI
-+	select PCI_PASID
- 	help
- 	  DMA remapping (DMAR) devices support enables independent address
- 	  translations for Direct Memory Access (DMA) from devices.
-@@ -47,10 +49,7 @@ config INTEL_IOMMU_DEBUGFS
- config INTEL_IOMMU_SVM
- 	bool "Support for Shared Virtual Memory with Intel IOMMU"
- 	depends on X86_64
--	select PCI_PASID
--	select PCI_PRI
- 	select MMU_NOTIFIER
--	select IOASID
- 	select IOMMU_SVA
- 	help
- 	  Shared Virtual Memory (SVM) provides a facility for devices
--- 
-2.34.1
-
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
