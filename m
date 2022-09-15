@@ -1,225 +1,115 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EA5A46B6
-	for <iommu@lists.linux.dev>; Thu, 15 Sep 2022 16:01:02 +0000 (UTC)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28FF2GHm018031;
-	Thu, 15 Sep 2022 15:14:08 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=9g9fTZ+qsfNqdsQyxDmdlflS+F/f6ED2oz+Ff2v70a4=;
- b=DtoGrrkk92pe91uSlNikrdkjjOnGiwFEicd0leW0XjaUN2AbQCq4+VINdT4X/33KQArd
- xGH25xLwX5o8hCQP9cjT7iEBEfBnuxrdoJzkTTVmcXtfvB5aFwLC9NZX981qBQADcdwF
- LAusByI5UoKUWDx9aa2UMvjkLkK3/ZP6gzTU6nDvvwO8wJFpYhoupm5aN2I8WK5xGOUn
- qaRlu2XCiwPnw7t3nCQwiGRM+J19JF3R96J1iv9zPCf2YJWUdtCYBhe1PdETCm6TqE7G
- EBP639euDAZrBuUpYDVbbfleVGcz5ET8rn9NTiQDlqI1AAiKecRTY+6evkEw8Tq7IxHf og== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jm6b9rjpe-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 15 Sep 2022 15:14:08 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-	by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 28FF7JoM004731;
-	Thu, 15 Sep 2022 15:14:06 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-	by ppma03ams.nl.ibm.com with ESMTP id 3jjy95tk18-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 15 Sep 2022 15:14:06 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-	by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 28FFE3cb39911928
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 15 Sep 2022 15:14:03 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 3A03F52050;
-	Thu, 15 Sep 2022 15:14:03 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-	by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id BD67452051;
-	Thu, 15 Sep 2022 15:14:02 +0000 (GMT)
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Matthew Rosato <mjrosato@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev
-Cc: linux-s390@vger.kernel.org, borntraeger@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        agordeev@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
-        will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/3] iommu/s390: Fix duplicate domain attachments
-Date: Thu, 15 Sep 2022 17:14:00 +0200
-Message-Id: <20220915151402.121032-2-schnelle@linux.ibm.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220915151402.121032-1-schnelle@linux.ibm.com>
-References: <20220915151402.121032-1-schnelle@linux.ibm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 650FD4C91
+	for <iommu@lists.linux.dev>; Thu, 15 Sep 2022 21:34:26 +0000 (UTC)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+	by mailout.west.internal (Postfix) with ESMTP id 2AC823200AD1;
+	Thu, 15 Sep 2022 17:34:25 -0400 (EDT)
+Received: from imap44 ([10.202.2.94])
+  by compute4.internal (MEProxy); Thu, 15 Sep 2022 17:34:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
+	cc:cc:content-transfer-encoding:content-type:date:date:from:from
+	:in-reply-to:in-reply-to:message-id:mime-version:references
+	:reply-to:sender:subject:subject:to:to; s=fm3; t=1663277664; x=
+	1663364064; bh=/eknyiWI+rvegyztt8Mdl0E4m3Bnu9X/oPwwi5PsQQw=; b=e
+	VypKgdBVzJ9gixTIDZIQpCVsMpIxart+PkBdJaVg6+iPZMVgzZ8rrYFbL1fPhhwF
+	ew3AdFFJEOZ3wxDrCJDp7Ljy8Uj+f7yZQVRJ/4m47oC0yw7bRK5GOeMB5zqrLbMd
+	/Bibrca5bDPTnSaADPSakygKPlLWw3vk/OMm+YMyGkc/68VRtfKOkOgHbSjugp32
+	UBotkWhNXOPjQJ/MheR3JH9eFS8ckeF9pWi06w94Bt6kTilZB8r/5jHHVNp7y0Ss
+	xD/6zV49Ld88fQwfuUAoSMYUf2iwZ77d627ZM5fRin3h4h4qUXYoVZt97mkm8htc
+	XApT2x7X/NTaW4TO+s3dA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:date:date:feedback-id:feedback-id:from:from
+	:in-reply-to:in-reply-to:message-id:mime-version:references
+	:reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1663277664; x=
+	1663364064; bh=/eknyiWI+rvegyztt8Mdl0E4m3Bnu9X/oPwwi5PsQQw=; b=A
+	o3xkaFJQl6eeSgi7vKKICLYp5eJ4wq3L6GD/lpSxI/yWT10ly6gonL/aoMz2x6/N
+	6RRZmAAVSpbwjh2ypsfjqnj2MdAzol5tmOd8eLGHlehboUkVdZqjxRglJS4hNb8s
+	F5xz11UaNSf88ux2HnUMblhKZBkmnP701ThBe4Q4gyKvDcRSDuDbJhdWDKlufgZf
+	EntowMYVyUPiMB6NJDs1ePDLrSWFv4igcAZYxtmru6n4YA75eAq4s1/Feb/hTIZz
+	HaVRpPbRQEw95FSrBwnpWiL1ef1Mvxs1I+4mASQhKSWeBMQbJ03JCbO2c2zTlsDe
+	o/we2FumaSeav/wfhgidA==
+X-ME-Sender: <xms:YJojY6WYT5AlssLNnDe9kVYMvUbS-kfdmHKfRyWZKHKXhZQ-jymUxA>
+    <xme:YJojY2lYGgtVGxSQKodwndm4vQOUdWcbLiMaVxXB367uBveenTf9UBY0muMCi2eKN
+    -wy2fABseNTX_fK-AM>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfeduledgtdduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefofgggkfgjfhffhffvvefutgfgse
+    htqhertderreejnecuhfhrohhmpedflfhirgiguhhnucgjrghnghdfuceojhhirgiguhhn
+    rdihrghnghesfhhlhihgohgrthdrtghomheqnecuggftrfgrthhtvghrnhepudefgeefte
+    dugeehffdtheefgfevffelfefghefhjeeugeevtefhudduvdeihefgnecuvehluhhsthgv
+    rhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepjhhirgiguhhnrdihrghngh
+    esfhhlhihgohgrthdrtghomh
+X-ME-Proxy: <xmx:YJojY-ZS0uujzEpchMQCE4HMisHnEnN8h_Xz9-TmAcIp1RHzKgaHcg>
+    <xmx:YJojYxVc84MbJkywROkNOcRA9wHXufzIGO6uIiOl8YiCr3afUCn2ZA>
+    <xmx:YJojY0nX-CiIKGcOjt_yHbYxYpX3_eMHToy2Lat12lft4N_clrNv9A>
+    <xmx:YJojY5wkIgeD4Z-HDf3jJ-ySxMfBPC5lzTY06syv8XzRVQ94YUV2Zg>
+Feedback-ID: ifd894703:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id 3E76C36A0073; Thu, 15 Sep 2022 17:34:24 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-935-ge4ccd4c47b-fm-20220914.001-ge4ccd4c4
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 13gusAirV4Hokwh3nn92iFuH2lqGk5bn
-X-Proofpoint-ORIG-GUID: 13gusAirV4Hokwh3nn92iFuH2lqGk5bn
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
- definitions=2022-09-15_09,2022-09-14_04,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
- adultscore=0 impostorscore=0 lowpriorityscore=0 malwarescore=0
- priorityscore=1501 mlxlogscore=980 clxscore=1011 spamscore=0 bulkscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2208220000 definitions=main-2209150085
+Mime-Version: 1.0
+Message-Id: <ec4a6ecf-f432-4dd0-abf6-61d7b587a61b@www.fastmail.com>
+In-Reply-To: <699535de25ac2d696cdf218bbb1f401bcd6048c1.camel@infradead.org>
+References: <9e1d3ba6-48ac-4a97-8b65-87e395898c2a@www.fastmail.com>
+ <699535de25ac2d696cdf218bbb1f401bcd6048c1.camel@infradead.org>
+Date: Thu, 15 Sep 2022 22:34:03 +0100
+From: "Jiaxun Yang" <jiaxun.yang@flygoat.com>
+To: "David Woodhouse" <dwmw2@infradead.org>, iommu@lists.linux.dev
+Cc: kvm@vger.kernel.org, ath11k@lists.infradead.org, kvalo@kernel.org
+Subject: Re: ath11k VFIO MSI issue with DMAR
+Content-Type: text/plain;charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Since commit fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev
-calls") we can end up with duplicates in the list of devices attached to
-a domain. This is inefficient and confusing since only one domain can
-actually be in control of the IOMMU translations for a device. Fix this
-by detaching the device from the previous domain, if any, on attach.
-This also makes the restore behavior analogous between IOMMU and DMA API
-control.
 
-Fixes: fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev calls")
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
----
- drivers/iommu/s390-iommu.c | 82 ++++++++++++++++++++++----------------
- 1 file changed, 47 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index c898bcbbce11..de8f76775240 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -83,14 +83,41 @@ static void s390_domain_free(struct iommu_domain *domain)
- 	kfree(s390_domain);
- }
- 
-+static bool __s390_iommu_detach_device(struct s390_domain *s390_domain,
-+				     struct zpci_dev *zdev)
-+{
-+	struct s390_domain_device *domain_device, *tmp;
-+	unsigned long flags;
-+	bool found = false;
-+
-+	spin_lock_irqsave(&s390_domain->list_lock, flags);
-+	list_for_each_entry_safe(domain_device, tmp, &s390_domain->devices,
-+				 list) {
-+		if (domain_device->zdev == zdev) {
-+			list_del(&domain_device->list);
-+			kfree(domain_device);
-+			found = true;
-+			break;
-+		}
-+	}
-+	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
-+
-+	if (found) {
-+		zdev->s390_domain = NULL;
-+		zpci_unregister_ioat(zdev, 0);
-+	}
-+	return found;
-+}
-+
- static int s390_iommu_attach_device(struct iommu_domain *domain,
- 				    struct device *dev)
- {
- 	struct s390_domain *s390_domain = to_s390_domain(domain);
- 	struct zpci_dev *zdev = to_zpci_dev(dev);
- 	struct s390_domain_device *domain_device;
-+	struct s390_domain *prev_domain = NULL;
- 	unsigned long flags;
--	int cc, rc;
-+	int cc, rc = 0;
- 
- 	if (!zdev)
- 		return -ENODEV;
-@@ -99,16 +126,16 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 	if (!domain_device)
- 		return -ENOMEM;
- 
--	if (zdev->dma_table && !zdev->s390_domain) {
--		cc = zpci_dma_exit_device(zdev);
--		if (cc) {
-+	if (zdev->s390_domain) {
-+		prev_domain = zdev->s390_domain;
-+		if (!__s390_iommu_detach_device(zdev->s390_domain, zdev))
-+			rc = -EIO;
-+	} else if (zdev->dma_table) {
-+		if (zpci_dma_exit_device(zdev))
- 			rc = -EIO;
--			goto out_free;
--		}
- 	}
--
--	if (zdev->s390_domain)
--		zpci_unregister_ioat(zdev, 0);
-+	if (rc)
-+		goto out_free;
- 
- 	zdev->dma_table = s390_domain->dma_table;
- 	cc = zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
-@@ -129,7 +156,7 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 		   domain->geometry.aperture_end != zdev->end_dma) {
- 		rc = -EINVAL;
- 		spin_unlock_irqrestore(&s390_domain->list_lock, flags);
--		goto out_restore;
-+		goto out_unregister_restore;
- 	}
- 	domain_device->zdev = zdev;
- 	zdev->s390_domain = s390_domain;
-@@ -138,14 +165,15 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 
- 	return 0;
- 
-+out_unregister_restore:
-+	zpci_unregister_ioat(zdev, 0);
- out_restore:
--	if (!zdev->s390_domain) {
-+	zdev->dma_table = NULL;
-+	if (prev_domain)
-+		s390_iommu_attach_device(&prev_domain->domain,
-+					 dev);
-+	else
- 		zpci_dma_init_device(zdev);
--	} else {
--		zdev->dma_table = zdev->s390_domain->dma_table;
--		zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
--				   virt_to_phys(zdev->dma_table));
--	}
- out_free:
- 	kfree(domain_device);
- 
-@@ -157,30 +185,14 @@ static void s390_iommu_detach_device(struct iommu_domain *domain,
- {
- 	struct s390_domain *s390_domain = to_s390_domain(domain);
- 	struct zpci_dev *zdev = to_zpci_dev(dev);
--	struct s390_domain_device *domain_device, *tmp;
--	unsigned long flags;
--	int found = 0;
-+	bool detached;
- 
- 	if (!zdev)
- 		return;
- 
--	spin_lock_irqsave(&s390_domain->list_lock, flags);
--	list_for_each_entry_safe(domain_device, tmp, &s390_domain->devices,
--				 list) {
--		if (domain_device->zdev == zdev) {
--			list_del(&domain_device->list);
--			kfree(domain_device);
--			found = 1;
--			break;
--		}
--	}
--	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
--
--	if (found && (zdev->s390_domain == s390_domain)) {
--		zdev->s390_domain = NULL;
--		zpci_unregister_ioat(zdev, 0);
-+	detached = __s390_iommu_detach_device(s390_domain, zdev);
-+	if (detached)
- 		zpci_dma_init_device(zdev);
--	}
- }
- 
- static struct iommu_device *s390_iommu_probe_device(struct device *dev)
--- 
-2.34.1
+=E5=9C=A82022=E5=B9=B49=E6=9C=8813=E6=97=A5=E4=B9=9D=E6=9C=88 =E4=B8=8B=E5=
+=8D=883:55=EF=BC=8CDavid Woodhouse=E5=86=99=E9=81=93=EF=BC=9A
+> On Tue, 2022-09-13 at 15:09 +0100, Jiaxun Yang wrote:
+[...]
+>
+> Your best bet is probably to have the hypervisor trap accesses to the
+> ath11k_ce_srng_msi_ring_params_setup and ath11k_dp_srng_msi_setup
+> registers and do the same trick of allocating a host IRQ route and
+> writing the converted MSI message.
+>
+> The alternative is to build some kind of enlightenment to let the guest
+> ask the hypervisor to tell it the correct remappable format message to
+> use... but that's going to get very horrid very quickly. If your
+> hardware allows you to read the MSI(X) table via some other indirect
+> route which isn't trapped by the hypervisor to give you back the
+> "original" thing you wrote, perhaps you could write to an unused MSI
+> and then read back what the hardware *actually* contains... then write
+> that to the special register? But that's kind of awful.
 
+Indeed both ideas sound awful...
+
+My current approach is raise a guest APIC interrupt when 0x25 fault happ=
+ens.
+Though I'm currently hardcoding guest APIC destination but I think it's =
+possible
+to check fault MSI address/data from fault event address/data registers =
+against
+DMAR interrupt mapping table to determine actual destination?
+
+It's bit of trap and emulation, think that will enable DMAR driver to ha=
+ndle such
+situtation.
+
+Thanks.
+
+>
+> =E9=99=84=E4=BB=B6:
+> * smime.p7s
+
+--=20
+- Jiaxun
