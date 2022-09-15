@@ -1,84 +1,96 @@
-Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 161C3194
-	for <iommu@lists.linux.dev>; Thu, 15 Sep 2022 01:40:48 +0000 (UTC)
-Content-Type: text/plain;
-	charset=utf-8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1663206046;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=aHrMqKnOhvrceoKDNwr4kJF7nEDwLaJAxZRfEElDacM=;
-	b=NOK9QL6c//UcrFx6c0l7e3u6T3ikeR3S7RiyaScZazN8wsGha6NRbAbuzX4Cfw2v+zq51Y
-	7CWGErYlPAkwbIO4kuO4+cMqn8M24j/UIslfY4vEJndq6Dr5HZHgWQgt5QZbpKCgE0E2+f
-	vqonwUNyZXx1RB2YKrAjmb9GjSVqg5M=
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C58DB15AA
+	for <iommu@lists.linux.dev>; Thu, 15 Sep 2022 03:06:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663211170; x=1694747170;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=WZZZSPl+QBxBcZfZhpMsL4YrZVmhzfuac91HSUV9DNc=;
+  b=lVNJmtmtKwtz87aNa3UVPDFODWEekkx6wwHtEkhtA1BGTxE4yYeoz07m
+   H4AQOSMkjHvrRBU+dt52x+yPtFt15C6xYQ4Qx5EurL9W+yKODOqMgelHg
+   FvNymlEPEjx7IfeQZeNclTjuPdCObj0/sZUCOX+1djM5huMhDlkzows1X
+   zeKkd74GI7AjyqiM9elILn3u5JaZOTKD1QYBET7zkCHI37y2KzNg1ynY2
+   WPNuUN46hinHNqk59lWgfjOPfnL5TvxCiMOdexBc6n6nH1ITPL4nCzNoU
+   q4i9e0FVDNzTshUDxI86EJB4VYCzLFkkDTMk1aqL3VGlzkkdnDCyUhXZu
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10470"; a="360337390"
+X-IronPort-AV: E=Sophos;i="5.93,316,1654585200"; 
+   d="scan'208";a="360337390"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2022 20:06:10 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,316,1654585200"; 
+   d="scan'208";a="759453213"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
+  by fmsmga001.fm.intel.com with ESMTP; 14 Sep 2022 20:06:08 -0700
+Message-ID: <5415d383-5442-a127-bdab-fce9e9b7a3b2@linux.intel.com>
+Date: Thu, 15 Sep 2022 11:00:21 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Subject: Re: [PATCH 03/21] mm/hugetlb: correct demote page offset logic
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Muchun Song <muchun.song@linux.dev>
-In-Reply-To: <20220913195508.3511038-4-opendmb@gmail.com>
-Date: Thu, 15 Sep 2022 09:40:34 +0800
-Cc: Andrew Morton <akpm@linux-foundation.org>,
- Jonathan Corbet <corbet@lwn.net>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Frank Rowand <frowand.list@gmail.com>,
- Mike Kravetz <mike.kravetz@oracle.com>,
- Muchun Song <songmuchun@bytedance.com>,
- Mike Rapoport <rppt@kernel.org>,
- Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>,
- Borislav Petkov <bp@suse.de>,
- "Paul E. McKenney" <paulmck@kernel.org>,
- Neeraj Upadhyay <quic_neeraju@quicinc.com>,
- Randy Dunlap <rdunlap@infradead.org>,
- Damien Le Moal <damien.lemoal@opensource.wdc.com>,
- Florian Fainelli <f.fainelli@gmail.com>,
- David Hildenbrand <david@redhat.com>,
- Zi Yan <ziy@nvidia.com>,
- Oscar Salvador <osalvador@suse.de>,
- Hari Bathini <hbathini@linux.ibm.com>,
- Kees Cook <keescook@chromium.org>,
- - <devicetree-spec@vger.kernel.org>,
- KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
- Mel Gorman <mgorman@suse.de>,
- Linux Doc Mailing List <linux-doc@vger.kernel.org>,
- linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org,
- Linux MM <linux-mm@kvack.org>,
- iommu@lists.linux.dev
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <1CA76834-D826-4799-A114-0E27A10D062F@linux.dev>
-References: <20220913195508.3511038-1-opendmb@gmail.com>
- <20220913195508.3511038-4-opendmb@gmail.com>
-To: Doug Berger <opendmb@gmail.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] iommu/vt-d: Enable PASID during iommu device probe
+Content-Language: en-US
+To: Ethan Zhao <haifeng.zhao@linux.intel.com>, iommu@lists.linux.dev
+References: <20220912024826.1684913-1-baolu.lu@linux.intel.com>
+ <046916aa-980c-c40d-1163-6ab839248201@linux.intel.com>
+ <e0c43ca7-0ad3-a4d6-960b-9853bb815438@linux.intel.com>
+ <e26efaee-d84a-3b60-8400-90d8e49a9b25@linux.intel.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <e26efaee-d84a-3b60-8400-90d8e49a9b25@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
 
 
-> On Sep 14, 2022, at 03:54, Doug Berger <opendmb@gmail.com> wrote:
->=20
-> With gigantic pages it may not be true that struct page structures
-> are contiguous across the entire gigantic page. The mem_map_offset
-> function is used here in place of direct pointer arithmetic to
-> correct for this.
->=20
-> Fixes: 8531fc6f52f5 ("hugetlb: add hugetlb demote page support")
-> Signed-off-by: Doug Berger <opendmb@gmail.com>
+On 9/14/22 4:59 PM, Ethan Zhao wrote:
+>>> What the error path would be if this code runs on some old platforms 
+>>> don't
+>>>
+>>> support PASID, would you print out "this platform doesn't suppor 
+>>> PASID" and
+>>>
+>>> give users an interface function to query if the PASID cap of iommu 
+>>> is enabled
+>>>
+>>> and if not why ?
+>>
+>> It's not an error case if the IOMMU doesn't support PASID. But it's an
+>> error case if any device drivers call PASID related IOMMU interfaces
+>> (for example, iommu_domain_attach/detach_dev_pasid()). The corresponding
+>> error code will be returned to the drivers.
+>>
+> So iommu driver withdraws the flexibility/rights from device driver 
+> about the
+> 
+> ability to enable PASID, looks much more *integrated* iommu works as 
+> relation
 
-With Matthew=E2=80=99s suggestion.
+No. This patch doesn't withdraw anything. It's just a code refactoring.
 
-Acked-by: Muchun Song <songmuchun@bytedance.com>
+> 
+> controller in device-iommu-domain by enabling PASID in iommu probe stage
+> 
+> by default -- iommu decides to enable PASID or not though device-iommu-
+> 
+> domain might not work ? or they should work because they are hard-wired
+> 
+> together (device - iommu) even device is hotpluged later.
+> 
 
-Thanks.
+I may not get you exactly. :-) Some IOMMU features reply on PASID
+capabilities on both IOMMU and device. The IOMMU drivers enumerate the
+capabilities and enable them if they are supported.
 
+Best regards,
+baolu
