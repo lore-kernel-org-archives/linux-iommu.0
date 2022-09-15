@@ -1,108 +1,194 @@
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85BF515AA
-	for <iommu@lists.linux.dev>; Thu, 15 Sep 2022 03:20:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D71015AA
+	for <iommu@lists.linux.dev>; Thu, 15 Sep 2022 03:22:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663212032; x=1694748032;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=EwSKJFPv60mlWUH12bVm0X6Akr50jkmKLrtEGm33TZw=;
-  b=DUKK2oVsr3yIBXOK0VZ51gMC9sifVzdfHCah7v5vRmWhiGy6y7FWFLDB
-   YzhzVfOBjfDAoS0nPTkjWkBdgj5LIVaRyss9jREWCNZ1W3MkLIH8e/oKO
-   u9T+XIl9Dc3DLe796yKt3ymnZm4ijMGZARqj5eGsBq7FyvqHiuzb07sUh
-   mRlKAIh5Pn4exBuVsr68W9qEBXC+RLn2d2A+8Cvirb61I5DAgj25vrSbW
-   X56NVUlwu/p1SSKmyTqNA9Jqk9q480kslk4GraNdrBUGvB47vWIgYsLJz
-   gXnveWpvct9MoXXUdoyXhJXnvPxt9Z4L3l6bY/NXZx2WWqfBJ7pPhI6P2
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10470"; a="278985159"
+  t=1663212178; x=1694748178;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=Z59bR4iqP3w7RQGUbg/X3DCoxCBnANuAcfXROmuhkdI=;
+  b=lqTfn7nW3JfiVPOCiA/Ze108oEpsixNYHjGuBsVDUsk9rDs4Sd+jrN0Y
+   s1gcxYk0fgN7jGRNOOZNjvVY/U5pM30T/pfBV9zJzNy11nMtbL0hWxZ0S
+   iQHnPy4O6uNH+SVmLMcwA5YFw9BgoikTXXmVzJQv+jdRYGVd5jRCOL3Fs
+   leH7xbw/bcgUWLQ6Mif4297/coTTHEZ+yh8z2EmHOnKGTfNPYDN9LkfxD
+   AB1CqWYuEId5ROwbf13E40J+sP7caAJvei2LVqoCZ3G20WnFXjcNKjmk5
+   P92HWHErYOXrxH/c6euH4FsBXF63w0N31i0NsLCwUTMQ6E5uN+haA4kl9
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10470"; a="299959841"
 X-IronPort-AV: E=Sophos;i="5.93,316,1654585200"; 
-   d="scan'208";a="278985159"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2022 20:20:31 -0700
+   d="scan'208";a="299959841"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2022 20:22:57 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,316,1654585200"; 
-   d="scan'208";a="759456411"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by fmsmga001.fm.intel.com with ESMTP; 14 Sep 2022 20:20:30 -0700
-Message-ID: <1a5195b4-eef2-00dd-1b16-806d662148ea@linux.intel.com>
-Date: Thu, 15 Sep 2022 11:14:43 +0800
+   d="scan'208";a="862168749"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmsmga006.fm.intel.com with ESMTP; 14 Sep 2022 20:22:57 -0700
+Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 14 Sep 2022 20:22:56 -0700
+Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
+ fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 14 Sep 2022 20:22:56 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Wed, 14 Sep 2022 20:22:56 -0700
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.43) by
+ edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Wed, 14 Sep 2022 20:22:56 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fD8KZcY2xdBfyEOVW4+roCglNTLqZTe3ORz2Jac4aPxe9K+PdlCWjLk24mM5CSjyQnmNRBClUFLQlG/VOiInPM3IQ7WF8coJx+M6cRcuqq3j6OJWIuAU//MuNKujNM24dz/g/1g1wjAZcGfQ/49Fob1jgl3OpbKftZjGM0IK2NbLa0/5/m3qEDpLX4rrWJW19OpsrwUARiaT1BbqnLNp6Vw/YKM00Klj6EsFA+s0/PpsVNHE2cRAFesrge+4rcxEobmRVpyD72G6fa2XDhqEMeNJHnH0sgPgMkaEgxtWdC3iYOVvXlQdSjMw4/XIUhZT1ccvfNETN8MrtE3441SCPg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Z59bR4iqP3w7RQGUbg/X3DCoxCBnANuAcfXROmuhkdI=;
+ b=QcEwLr/cAHqXM7IsIbzSRI0Ub9IJQw2sZiNIEHXykwQe+ilE/Okr8FdZu3eon6t1ffLSa3kNbbuq6v4IUWNSkQyHH1cCgSvw6wVn/n767nCDxaUDwmaaJvxnHm7X7BFG/9F1IFQlb95THA79WRCpLFQCtNv6uNg+VDCJ8AxYyvQwZze+/NTkBzHnBBFN4ZTE0ITF8F5LSosbn77ofpLEfZfNUenDOy6MkHgFSM+X7ei6enJppfCm09fOtPdqIDReWGzQkQGwhdgneFEik9MmgJ+9Z+Mqnme/IA2KYS/Ao1zanJevJZQ2piYtXaAFg3dc2XaOlapLVTeY2m+FzzUiqQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by MW4PR11MB7078.namprd11.prod.outlook.com (2603:10b6:303:219::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5612.22; Thu, 15 Sep
+ 2022 03:22:49 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::a435:3eff:aa83:73d7]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::a435:3eff:aa83:73d7%6]) with mapi id 15.20.5632.015; Thu, 15 Sep 2022
+ 03:22:49 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>
+CC: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, "Robin
+ Murphy" <robin.murphy@arm.com>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 1/1] iommu/vt-d: Enable PASID during iommu device probe
+Thread-Topic: [PATCH 1/1] iommu/vt-d: Enable PASID during iommu device probe
+Thread-Index: AQHYxlL15aXn1csO5EOwQ10Vd62MPq3c/4bwgAAZOACAAr0z8A==
+Date: Thu, 15 Sep 2022 03:22:49 +0000
+Message-ID: <BN9PR11MB527688C87CEA57CACD5324608C499@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20220912024826.1684913-1-baolu.lu@linux.intel.com>
+ <BN9PR11MB52766A868879689D55AE9DC68C479@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <826a10fa-7dc3-887d-8a08-e03dcf1fa59c@linux.intel.com>
+In-Reply-To: <826a10fa-7dc3-887d-8a08-e03dcf1fa59c@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|MW4PR11MB7078:EE_
+x-ms-office365-filtering-correlation-id: f3d28221-ee4e-443d-8a30-08da96c9913f
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: rqIBCTrCsvLJhvdLFsCsn2AyEBUHFzn04MW6pTbOUqNBynp/tX0ZvjDRAX2CMeMHMSWGLR3/saNeG5sVxyTtzqTVHVEW+JkVOEntmrkwotX+chTMZ4AOnnW+deWBPoq11V2SJr0Z+mvg/xU2T2JIddR40qawiSASnfyYJkF1gEiqX91Vl3udHEnY6T5wCkOdVDhtgqbSBybYmffDEcBaVAi6PgrXHMIXImJwUvPx1fOWJtYxZUqE0krKIEnTH/VYBkhls2ypDNyaXT95u68MXeoiyqb0G8JLqqUlgVXFYZwHvcOpKQo9elJxcY06x1qF6Cb7ZTK6N2aEG1nVR/m49dAccdLa3iP7cfSMiZddySNaQTILdIXk5H6DgeFyvsw80jZDFzzYsJJlp9oyl3AhEWDi7xAfmfYQINcy8jOE8MTDJ/q9efi1qYNzG877QgfZmmrPv7O/p6MjV79KGl4XSbOgAwxh8RWPnNQoX+Va8RONBozP3FdXsclkcWt7f7Dwgj/sYJ7EDA3ZNimn6jBMnVmvKSaoYb/qTFnTabDcLgEkrWCW/KGAzFOqhBm4NZPZYtKGwEqZ9gc//QZ7buPeiD4r9MeWPo8fjnXClJuKAWFxflV5fK+Rmq5nymbB1tZJZZ4mFOjy/2/wa5UJykrUlpHFtG3cuLGrcjTmRGXwjqmbVA9dm/pq5jvL5Ooc0wE+GIgkdPovP+Hp3IvQ/xPlqw+7A/FGyvxr6y8InfYKmsjuUNUDumk3m0PbgcGe7628Y95IBXFniJiF5RF0wR4C9g==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(39860400002)(366004)(346002)(396003)(136003)(376002)(451199015)(38070700005)(6506007)(9686003)(33656002)(66476007)(66556008)(122000001)(54906003)(53546011)(2906002)(4326008)(41300700001)(52536014)(82960400001)(38100700002)(478600001)(26005)(7696005)(64756008)(55016003)(86362001)(66446008)(76116006)(66946007)(71200400001)(8936002)(8676002)(5660300002)(83380400001)(110136005)(186003)(316002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?MDVBL2Zkb0o2UFdhT3M4QyttY2VET0JGMG1zSVdUTnpzaStMU3Z3RCtrVWxK?=
+ =?utf-8?B?Q1hPR0pMVFVKMUYveWdiZjh0R2tqaUZLT2o2TE4yMjRZcUlFUEYrSHF0QTZD?=
+ =?utf-8?B?aHpyanR0ekdRTVZ4TEpZT3hhSWJNTTJlUlF5b2FBMWx5b2MwVitNU1BpVHkx?=
+ =?utf-8?B?N2Q4RmdzdG5FSVEySzVWbXBSZkVNWVFaNEZRaHZtSHlOVGZwcjFQNTNTV1JL?=
+ =?utf-8?B?M2ZsbjFrUDVBZFQrLzRuUnlmSDdVYmZpRjFmNU5LTEdqYSt6anlPcTEwNG05?=
+ =?utf-8?B?U0g0bERab2JQcGhUYXdVNlIzb2hxcm9wVm53cGFwVHhIbytDb20vR3kyendi?=
+ =?utf-8?B?VkdadUlhUFUwYXM1djlvN2hhaTJaTXZKdVV2aXpVWHB1dUNrdVROSGl3bGlG?=
+ =?utf-8?B?enphQzdRdThCTm5PZ0d2ZkVSS1VoUFZuSVVhUUR6RFdiaHJWTnhyZTBFSitY?=
+ =?utf-8?B?UUMzb2ZJb3FBMDA1QVBOOXp5Z3NGdjhGd3Z3WmIrWGpUQjU3aVA5ajB0T01O?=
+ =?utf-8?B?enhEUFkxRmpxVGtKUSt2Q3N5dmVGSERkVG9yYXlRZkZMUm1RckIxNVdGOU9K?=
+ =?utf-8?B?UHFmVmF3Yis4N2pia3ZkbXNPTzBrRjhOeWM5am4xWDQ0RS8xWndXY1puakJO?=
+ =?utf-8?B?aDQwdUR4MTFuaVlmenlMU2x1UFcvZmhKemR0aGZ1bXk5aktEMm1iOHp5eDdn?=
+ =?utf-8?B?TFptR0cxd3kwSitSM0Q0V3VlZzkzaUQ5NE1RQU5zZVU0TTlKV21PRzlOTDdw?=
+ =?utf-8?B?RzNPdWVqbGtjSGRDMnd0WC9KdXhPbEVqWkEzZHk5YjFYRFh5WWtmeXFTaytT?=
+ =?utf-8?B?TkRPcEZSbU1pTmM3QzRyOVRlUmtuSHRYcVpWK0dQZ1lXMzZOQzVTOS8xY1R2?=
+ =?utf-8?B?Wlcrc1Z4YkJGVTA3R0hwNXFKL1g3VlNiWDdLbm90SDI5cVUwZW9qYjlmZFlK?=
+ =?utf-8?B?cVZvUVk3RGFrVTlNREIrSlk2bjFZZS80QzFNaGVVYXF2TzVaK0YvWkI5bzN5?=
+ =?utf-8?B?aENNb2RteDlvNzdBcVczenZTempKNGZxMHErZXNEcEZjZWVLUHlUcHVDOGpi?=
+ =?utf-8?B?dXowMlB5eUhjWW9kMnd2cmdQMDVRcUdPdVROTWxSeDRnMkliczl0QjVGRTdB?=
+ =?utf-8?B?dWh1TndiV01FbTdPbnhCcVd5cW9NUk1CWmJaN21sL2E5MVZYYnJjOE1ad3pQ?=
+ =?utf-8?B?R3pkSGF6R0xOc053OUsvaFc5Sk1UTUVEQVVvbC9sVWlQQ0ErQTN3NFpZU2lD?=
+ =?utf-8?B?SmdnYzNJMTVsTVhnMDQ0Nit0YmtPaXI2T0E0N0FzZjFqelNCaEVqdVNsUUNx?=
+ =?utf-8?B?ZzRiR2xuR1JzMTFGNUNoc1VNRWNyTUtnRG9kaVloUFU4VUtxVDlSdVFiK0gx?=
+ =?utf-8?B?dldSdkpuQS9YanA4T211WDZmaDI4blVFWEk3RmhldVYyL0l2UDVrNE9MRVFx?=
+ =?utf-8?B?cnREVEthOHdsSGo2QVFyckswTXBkd0N6ZnhnU1lOZGR4T2xUdWxTQnpFaUdl?=
+ =?utf-8?B?WGNXNk5ia3prOHVBQ3lQaUV6VUtBQWdWZVZWVG81ekVpeEY4VUEyOHQyU2pS?=
+ =?utf-8?B?d1h5b3dxUDBOSVQ4NnRtQjVPMWFZTS82U29mY2pCSEVTbjloY1NuQWVESVJ4?=
+ =?utf-8?B?VUJwOHkybkFEb24zY2VSSVRTdkoydkZsMU4zV2tNZ3gxY25GU3grOU1aWGRP?=
+ =?utf-8?B?UzhuMXVabXUwSGtOUGpjWWo0dmdybUdGVitvZFg0L1VIN0t0Y1BYVzBZazEv?=
+ =?utf-8?B?OTdwb3dmNThVS3pCY2NmNzhiYUs0a1FQaWdURjRiT1V5anVRWExwVE9xVzFn?=
+ =?utf-8?B?S1o4SndnRFNkWE0zZXVXa0hzZ1J5NnkwTGVZV2p2N0JFQk5FMmVpemEvalhy?=
+ =?utf-8?B?V3l3ajdTbmkybklsR3VJYmpTNEs0UldzeDh2Q1VEaTcvQTVOdW5VZGVoU1VW?=
+ =?utf-8?B?QkdvUElLeVkzNTJUblZCMEMydlRSdFlDcTFFc1ViQTRQbjlYU1ZXMFdVRURZ?=
+ =?utf-8?B?dTVIQ0lQN1RjQ1ViRjdXNVhDdFdaeXlzdTVUM3g3SDd5MENxc2l1VU95SVcv?=
+ =?utf-8?B?VFRnQ2RnL3VEOElQbzFZYXpkVzZVQmlOd0xnZWhWbHpaQ2xHMDdhYTNScVBP?=
+ =?utf-8?Q?XxZiSGN7RvnhYrJSjXAsSrHbJ?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Cc: baolu.lu@linux.intel.com, robin.murphy@arm.com,
- suravee.suthikulpanit@amd.com
-Subject: Re: [RFC PATCH] iommu: Handle domain allocation failure gracefully
-Content-Language: en-US
-To: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
- joro@8bytes.org
-References: <20220914144424.7356-1-vasant.hegde@amd.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220914144424.7356-1-vasant.hegde@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f3d28221-ee4e-443d-8a30-08da96c9913f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Sep 2022 03:22:49.5331
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: n4Tf7E8d9Ncx/EorFwYcKx1yFNYfcRnpkwCtyAi61Myw45rB4m2FWRHz4eh4kw/K0pa1SjuNwFO4rl5HOb/i4g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB7078
+X-OriginatorOrg: intel.com
 
-On 9/14/22 10:44 PM, Vasant Hegde wrote:
-> Current code does not validate domain allocation failures. This will
-> result in random failure at later stage. Hence handle domain allocation
-> failures.
-> 
-> Signed-off-by: Vasant Hegde<vasant.hegde@amd.com>
-> ---
-> Hi Joerg,
->    With current code whenever amd driver failes to allocate domain we hit
->    failure at late stage and it became difficult to debug. Hence I
->    thought of adding this fix.
-> 
->    I see that in commit 6e1aa2049154 you have intentionally didn't check
->    the return value. Looking into drivers/iommu/* it looks like all
->    drivers has domain_alloc() callback handler. But some drivers (like msm
->    - msm_iommu_domain_alloc()) allocates default domain for certain type
->    only. Hence I'm not sure whether its ok to handle domain allocation
->    failures or not. Hence I have marked this patch as RFC.
-> 
->    Let me know whether this patch is fine -OR- is there any other way we can
->    handle domain allocation failures?
-> 
-> -Vasant
-> 
->   drivers/iommu/iommu.c | 24 +++++++++++++-----------
->   1 file changed, 13 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 780fb7071577..e8a1e7fbffb9 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -289,18 +289,21 @@ int iommu_probe_device(struct device *dev)
->   
->   	/*
->   	 * Try to allocate a default domain - needs support from the
-> -	 * IOMMU driver. There are still some drivers which don't
-> -	 * support default domains, so the return value is not yet
-> -	 * checked.
-> +	 * IOMMU driver.
->   	 */
->   	mutex_lock(&group->mutex);
-> -	iommu_alloc_default_domain(group, dev);
-> +	ret = iommu_alloc_default_domain(group, dev);
-> +	if (ret) {
-> +		mutex_unlock(&group->mutex);
-> +		iommu_group_put(group);
-> +		goto err_release;
-> +	}
-
-Some IOMMU drivers (s390, gart, tegra...) don't support default domains.
-iommu_alloc_default_domain() returns a ENOMEM and the probe process
-continues.
-
-Above changes this behavior. The probe process will always fails with
-those IOMMU drivers.
-
-Best regards,
-baolu
+PiBGcm9tOiBCYW9sdSBMdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiBTZW50OiBUdWVz
+ZGF5LCBTZXB0ZW1iZXIgMTMsIDIwMjIgNToyNSBQTQ0KPiANCj4gT24gMjAyMi85LzEzIDE2OjAx
+LCBUaWFuLCBLZXZpbiB3cm90ZToNCj4gPj4gRnJvbTogTHUgQmFvbHUgPGJhb2x1Lmx1QGxpbnV4
+LmludGVsLmNvbT4NCj4gPj4gU2VudDogTW9uZGF5LCBTZXB0ZW1iZXIgMTIsIDIwMjIgMTA6NDgg
+QU0NCj4gPj4NCj4gPj4gQEAgLTE0MDEsNyArMTQwMyw2IEBAIHN0YXRpYyB2b2lkIGlvbW11X2Vu
+YWJsZV9kZXZfaW90bGIoc3RydWN0DQo+ID4+IGRldmljZV9kb21haW5faW5mbyAqaW5mbykNCj4g
+Pg0KPiA+IFRoaXMgaXMgbm90IHRoZSByaWdodCBuYW1lIG5vdyBhcyBkZXZfaW90bGIgaXMgb25s
+eSByZWxhdGVkIHRvIEFUUy4NCj4gDQo+IFllcy4gVGhpcyBuYW1lIGlzIGNvbmZ1c2luZy4gUGVy
+aGFwcyB3ZSBjYW4gc3BsaXQgaXQgaW50byBzb21lIHNwZWNpZmljDQo+IGhlbHBlcnMsDQo+IA0K
+PiAtIGludGVsX2lvbW11X2VuYWJsZV9wY2lfYXRzKCkNCj4gLSBpbnRlbF9pb21tdV9lbmFiZWxf
+cGNpX3ByaSgpDQo+IC0gaW50ZWxfaW9tbXVfZW5hYmxlX3BjaV9wYXNpZCgpDQo+ID8NCg0KUHJv
+YmFibHkgaW50ZWxfaW9tbXVfZW5hYmxlX3BjaV9jYXBzKCkNCg0KPiANCj4gPg0KPiA+PiAgIAkJ
+aW5mby0+cGZzaWQgPSBwY2lfZGV2X2lkKHBmX3BkZXYpOw0KPiA+PiAgIAl9DQo+ID4+DQo+ID4+
+IC0jaWZkZWYgQ09ORklHX0lOVEVMX0lPTU1VX1NWTQ0KPiA+PiAgIAkvKiBUaGUgUENJZSBzcGVj
+LCBpbiBpdHMgd2lzZG9tLCBkZWNsYXJlcyB0aGF0IHRoZSBiZWhhdmlvdXIgb2YNCj4gPj4gICAJ
+ICAgdGhlIGRldmljZSBpZiB5b3UgZW5hYmxlIFBBU0lEIHN1cHBvcnQgYWZ0ZXIgQVRTIHN1cHBv
+cnQgaXMNCj4gPj4gICAJICAgdW5kZWZpbmVkLiBTbyBhbHdheXMgZW5hYmxlIFBBU0lEIHN1cHBv
+cnQgb24gZGV2aWNlcyB3aGljaA0KPiA+PiBAQCAtMTQxNCw3ICsxNDE1LDcgQEAgc3RhdGljIHZv
+aWQgaW9tbXVfZW5hYmxlX2Rldl9pb3RsYihzdHJ1Y3QNCj4gPj4gZGV2aWNlX2RvbWFpbl9pbmZv
+ICppbmZvKQ0KPiA+PiAgIAkgICAgKGluZm8tPnBhc2lkX2VuYWJsZWQgPyBwY2lfcHJnX3Jlc3Bf
+cGFzaWRfcmVxdWlyZWQocGRldikgOiAxKQ0KPiA+PiAmJg0KPiA+PiAgIAkgICAgIXBjaV9yZXNl
+dF9wcmkocGRldikgJiYgIXBjaV9lbmFibGVfcHJpKHBkZXYsIFBSUV9ERVBUSCkpDQo+ID4+ICAg
+CQlpbmZvLT5wcmlfZW5hYmxlZCA9IDE7DQo+ID4+IC0jZW5kaWYNCj4gPj4gKw0KPiA+PiAgIAlp
+ZiAoaW5mby0+YXRzX3N1cHBvcnRlZCAmJiBwY2lfYXRzX3BhZ2VfYWxpZ25lZChwZGV2KSAmJg0K
+PiA+PiAgIAkgICAgIXBjaV9lbmFibGVfYXRzKHBkZXYsIFZURF9QQUdFX1NISUZUKSkgew0KPiA+
+PiAgIAkJaW5mby0+YXRzX2VuYWJsZWQgPSAxOw0KPiA+DQo+ID4gaW9tbXVfZW5hYmxlX2Rldl9p
+b3RsYigpIGlzIGN1cnJlbnRseSBjYWxsZWQgYm90aCB3aGVuIHRoZSBkZXZpY2UgaXMNCj4gcHJv
+YmVkDQo+ID4gYW5kIHdoZW4gc3ZhIGlzIGVuYWJsZWQgKHdoaWNoIGlzIGFjdHVhbGx5IHVzZWxl
+c3MpLiBGcm9tIHRoaXMgYW5nbGUgdGhlDQo+IGNvbW1pdA0KPiA+IG1zZyBpcyBpbmFjY3VyYXRl
+Lg0KPiANCj4gVGhlIGxvZ2ljIGlzIGEgYml0IHRyaWNreS4gaW9tbXVfc3VwcG9ydF9kZXZfaW90
+bGIoKSBvbmx5IHJldHVybnMgYQ0KPiBkZXZpbmZvIHBvaW50ZXIgd2hlbiBBVFMgaXMgc3VwcG9y
+dGVkIG9uIHRoZSBkZXZpY2UuIFNvLCB5b3UgYXJlIHJpZ2h0DQo+IGlmIGRldmljZSBzdXBwb3J0
+cyBib3RoIEFUUyBhbmQgUEFTSUQ7IG90aGVyd2lzZSBQQVNJRCB3aWxsIG5vdCBiZQ0KPiBlbmFi
+bGVkLg0KDQpZZXMsIHRoYXQgaXMgd2hhdCB0aGUgZmlyc3QgcGFydCBvZiB0aGlzIHBhdGNoIGZp
+eGVzLg0KDQpCdXQgbXkgcG9pbnQgaXMgYWJvdXQgdGhlIG1lc3NhZ2UgdGhhdCBwcmV2aW91c2x5
+IFBBU0lEIHdhcyBlbmFibGVkDQpvbmx5IHdoZW4gRkVBVF9TVkEgaXMgZW5hYmxlZCBhbmQgbm93
+IHRoZSBwYXRjaCBtb3ZlcyBpdCB0byB0aGUNCnByb2JlIHRpbWUuIA0KDQpNeSBwb2ludCBpcyB0
+aGF0IGV2ZW4gaW4gb2xkIHdheSBpb21tdV9lbmFibGVfZGV2X2lvdGxiKCkgd2FzIGNhbGxlZA0K
+dHdpY2U6IG9uZSBhdCBwcm9iZSB0aW1lIGFuZCB0aGUgb3RoZXIgYXQgRkVBVF9TVkEuIElmIEFU
+UyBleGlzdHMNCnRoZW4gUEFTSUQgaXMgZW5hYmxlZCBhdCBwcm9iZSB0aW1lIGFscmVhZHkuIElm
+IEFUUyBkb2Vzbid0IGV4aXN0IHRoZW4NClBBU0lEIGlzIGFsd2F5cyBkaXNhYmxlZC4NCg0KU28g
+dGhpcyBwYXRjaCBpcyByZWFsbHkgdG8gZGVjb3VwbGUgUEFTSUQgZW5hYmxpbmcgZnJvbSBBVFMg
+YW5kIHJlbW92ZQ0KdGhlIHVubmVjZXNzYXJ5L2R1cGxpY2F0ZWQgY2FsbCBvZiBpb21tdV9lbmFi
+bGVfZGV2X2lvdGxiKCkgaW4NCmludGVsX2lvbW11X2VuYWJsZV9zdmEoKS4NCg0KVGhhbmtzDQpL
+ZXZpbg0K
