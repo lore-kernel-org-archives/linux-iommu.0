@@ -1,55 +1,51 @@
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CC2D53A7
-	for <iommu@lists.linux.dev>; Fri, 16 Sep 2022 13:35:09 +0000 (UTC)
-Received: by mail-wr1-f41.google.com with SMTP id z6so3574605wrq.1
-        for <iommu@lists.linux.dev>; Fri, 16 Sep 2022 06:35:09 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB3B55C81
+	for <iommu@lists.linux.dev>; Fri, 16 Sep 2022 15:46:25 +0000 (UTC)
+Received: by mail-pl1-f170.google.com with SMTP id iw17so21851073plb.0
+        for <iommu@lists.linux.dev>; Fri, 16 Sep 2022 08:46:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date;
-        bh=Q+u3vJJCdtvHYMsR/8D/YKdbcNhhwJkcpVtrhevHRJU=;
-        b=KtkJ0zlYTHdr8w9ecZHSBEttL6X54XVJatBquYt8bhD+cN5z1tKgQvOCCy0ot1qAhc
-         OUzucDkFMxaOgUzCAwiDCfRvyDzRUq5n59d9hTqyvaOVVi+fiJBw2odpEiejgsiSrccA
-         vXsLjnRUGeZu6HBAKeA7+B1w0mH+Mpm4xiP5LeRrM5SbgZiS5M8EomOIRF1FTHBxKTOW
-         Kf2zcBc8IvmHOun+8eurgKCpeu4MzdYeSutDDAe5aTnCnS14aRtHi8Hc8KHDyK9m45+M
-         DWiZrsbVZ83ioeRVZMGQziTg9yoXbDhhPun79u8kH0f5UpPxL2SbgAo0ITQMdMFLN549
-         B2Lg==
+        bh=G2HnexRcqtcbOBLQqu2d6rHkLU0457VcAac9EnkFuRg=;
+        b=M6rOlqdPkmjiZfbtH4Gd3UfdvQxEoOOzexAHRinwE0agzpX/+31EOl53gQpONkQJFH
+         x7jlkmB8Ju/ZKykxHn2AlgBAWt4vDwEY4tQyFwyf7QDYxA0fYkOhIj635hfiu98COud6
+         63OM19tktlympYJuOgw4x+1h/bOhFlBLrsuGaF8D0rY6n1FlvYjhEpf2qTPaT7ibG12R
+         3toPY4CHO9xsw8F00OrviyYEZ5lFF7DtJ16vV/lgFSKRZvdEQ0rf4BNxKZXea5vtL9lg
+         SHt+MvscnWEcbguxdVrXdwCtaNSECnSs/+aeqmZzoZIPS/LJeqnNUuQCtYUi0dG7xhVq
+         j1jQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=Q+u3vJJCdtvHYMsR/8D/YKdbcNhhwJkcpVtrhevHRJU=;
-        b=kJuYKPDNYtdbz7w6nCbMSlT2cIU+yfFBozlTrel2X1TrX3HouWQW+FDGQ4G+yipI31
-         b1yZyS8dKOIuW6ncD2pqKAIgyIPyuLl56iQ1qkNQ7UJJksWgfZiTFrjs/4Dm53IZ02iI
-         l4bOApv8mxkabs+MARDnHzePTjo0Y6uali5MilVHWx7JnGbtSfCnvV9bp8iryUAVD+3W
-         I9FUXfsaMC2nrsRCj+82DHxSiLQcrA+tsG/5ll/xWSDwFzeePRhA8gCwDj5MCXU7zPON
-         RenJxZTq2+bHjm052cOsWLTgPRp+LhqcqWzKF3UIZraR1RLo2TiGZG7ZXi330/cWxye4
-         z8+g==
-X-Gm-Message-State: ACrzQf1rsX2N8hAKakr1syznQvXSH4yOgX4MPXT4nCeaMu919IXHum/t
-	JV9o0fH96NR1gW3Ir2KmW3A9EQ==
-X-Google-Smtp-Source: AMsMyM7FzbYnuTvTdt0o24rsae8ko+gcNRtsmr3OrO40odBVknBSvcP5n7hDqiGItcM3+baBZLBV+A==
-X-Received: by 2002:a5d:6784:0:b0:22a:e477:8fd4 with SMTP id v4-20020a5d6784000000b0022ae4778fd4mr463186wru.218.1663335307913;
-        Fri, 16 Sep 2022 06:35:07 -0700 (PDT)
-Received: from localhost.localdomain (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id fc9-20020a05600c524900b003a84375d0d1sm2369106wmb.44.2022.09.16.06.35.06
+        bh=G2HnexRcqtcbOBLQqu2d6rHkLU0457VcAac9EnkFuRg=;
+        b=yZ49vQZEbUyaPycrOcxxPIo6yMkLSSqZiqLf6v6hVMy29LhBYVYNgtCmIkzEWZtKkk
+         esfgWd7dnW6oUQEMj0dAsH+if6lPHm3r24H3h8MB9JBWsFO5bwO27f7U/tZGOJhFjIfn
+         A9jnIyu5TgPFQ3/3fdKVzYkirjLR+UA9+h68ZV3EQ1qAm7NAFiuz50LchtEac8jvVkIC
+         vUqbuO8Camr/krY06ZoWyuLFe3xqjFiH7vU0zDDXTw/TdriU7IAVJ/TYDOpzBIrn0e1N
+         2t5RXrplUfWk7r6G1gnC0+hMxS8iB/vHgpQ2CFPUmcdET/xdOElYQMTnvU87tCZOUEyv
+         rkjQ==
+X-Gm-Message-State: ACrzQf3Uv/Yhae/eyhpoezWzRTIO8/80pkOGPI8bLNGAaNUKmC0N0ugI
+	eq7QMBHb1GT764eB/C3OKV8=
+X-Google-Smtp-Source: AMsMyM74WBhD3XUDAHvFj//42Gz2/RsZagmBAM3VJg/YiTr8YOUTcYGdSFEE0oFwZtVxS1iY4yrBIw==
+X-Received: by 2002:a17:903:120e:b0:178:8650:274 with SMTP id l14-20020a170903120e00b0017886500274mr446319plh.55.1663343185296;
+        Fri, 16 Sep 2022 08:46:25 -0700 (PDT)
+Received: from localhost.localdomain ([137.220.236.138])
+        by smtp.gmail.com with ESMTPSA id p17-20020aa79e91000000b0053639773ad8sm14724489pfq.119.2022.09.16.08.46.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Sep 2022 06:35:07 -0700 (PDT)
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: will@kernel.org,
-	robin.murphy@arm.com
-Cc: robh+dt@kernel.org,
-	krzysztof.kozlowski+dt@linaro.org,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH] dt-bindings: iommu: arm,smmu-v3: Relax order of interrupt names
-Date: Fri, 16 Sep 2022 14:31:47 +0100
-Message-Id: <20220916133145.1910549-1-jean-philippe@linaro.org>
-X-Mailer: git-send-email 2.37.3
+        Fri, 16 Sep 2022 08:46:24 -0700 (PDT)
+From: "brookxu.cn" <brookxu.cn@gmail.com>
+To: robin.murphy@arm.com,
+	joro@8bytes.org,
+	will@kernel.org
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iommu/iova: using separate rcache for SAC and DAC
+Date: Fri, 16 Sep 2022 23:46:13 +0800
+Message-Id: <20220916154613.104965-1-brookxu.cn@gmail.com>
+X-Mailer: git-send-email 2.31.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -58,50 +54,119 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The QEMU devicetree uses a different order for SMMUv3 interrupt names,
-and there isn't a good reason for enforcing a specific order. Since all
-interrupt lines are optional, operating systems should not expect a
-fixed interrupt array layout; they should instead match each interrupt
-to its name individually. Besides, as a result of commit e4783856a2e8
-("dt-bindings: iommu: arm,smmu-v3: make PRI IRQ optional"), "cmdq-sync"
-and "priq" are already permutable. Relax the interrupt-names array
-entirely by allowing any permutation, incidentally making the schema
-more readable.
+From: Chunguang Xu <chunguang.xu@shopee.com>
 
-Note that dt-validate won't allow duplicate names here so we don't need
-to specify maxItems or add additional checks, it's quite neat.
+While iommu_dma_forcedac disable, for PCI device kernel
+try SAC first, if failed then try DAC. Since now rcache
+does not distinguish SAC and DAC, if all PFNs contained
+in cpu loaded cache is larger than SAC max PFN, but the
+SAC address space is sufficient, as cpu loaded cached is
+not empty, kernel will iova_alloc () to alloc IOVA. For
+PCI device, kernel alloc SAC most, loaded cache may
+invalid for SAC alloc for a long time, kernel will enter
+alloc_iova() slow path frequencely, as result performance
+is degrade. To circumvent this problem, SAC and DAC maybe
+better to use separate caches.
 
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Signed-off-by: Chunguang Xu <chunguang.xu@shopee.com>
 ---
- .../devicetree/bindings/iommu/arm,smmu-v3.yaml    | 15 +++++----------
- 1 file changed, 5 insertions(+), 10 deletions(-)
+ drivers/iommu/iova.c | 28 +++++++++++++++++++++-------
+ 1 file changed, 21 insertions(+), 7 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
-index c57a53d87e4e..75fcf4cb52d9 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
-@@ -39,16 +39,11 @@ properties:
-           any others.
-       - minItems: 1
-         items:
--          - enum:
--              - eventq     # Event Queue not empty
--              - gerror     # Global Error activated
--          - const: gerror
--          - enum:
--              - cmdq-sync  # CMD_SYNC complete
--              - priq       # PRI Queue not empty
--          - enum:
--              - cmdq-sync
--              - priq
-+          enum:
-+            - eventq      # Event Queue not empty
-+            - gerror      # Global Error activated
-+            - cmdq-sync   # CMD_SYNC complete
-+            - priq        # PRI Queue not empty
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 47d1983dfa2a..d5775719a143 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -16,6 +16,7 @@
+ #define IOVA_ANCHOR	~0UL
  
-   '#iommu-cells':
-     const: 1
+ #define IOVA_RANGE_CACHE_MAX_SIZE 6	/* log of max cached IOVA range size (in pages) */
++#define IOVA_RANGE_CACHE_ARRAY_SIZE (2 * IOVA_RANGE_CACHE_MAX_SIZE)
+ 
+ static bool iova_rcache_insert(struct iova_domain *iovad,
+ 			       unsigned long pfn,
+@@ -723,13 +724,13 @@ int iova_domain_init_rcaches(struct iova_domain *iovad)
+ 	unsigned int cpu;
+ 	int i, ret;
+ 
+-	iovad->rcaches = kcalloc(IOVA_RANGE_CACHE_MAX_SIZE,
++	iovad->rcaches = kcalloc(IOVA_RANGE_CACHE_ARRAY_SIZE,
+ 				 sizeof(struct iova_rcache),
+ 				 GFP_KERNEL);
+ 	if (!iovad->rcaches)
+ 		return -ENOMEM;
+ 
+-	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
++	for (i = 0; i < IOVA_RANGE_CACHE_ARRAY_SIZE; ++i) {
+ 		struct iova_cpu_rcache *cpu_rcache;
+ 		struct iova_rcache *rcache;
+ 
+@@ -825,11 +826,15 @@ static bool iova_rcache_insert(struct iova_domain *iovad, unsigned long pfn,
+ 			       unsigned long size)
+ {
+ 	unsigned int log_size = order_base_2(size);
++	unsigned int index;
+ 
+ 	if (log_size >= IOVA_RANGE_CACHE_MAX_SIZE)
+ 		return false;
+ 
+-	return __iova_rcache_insert(iovad, &iovad->rcaches[log_size], pfn);
++	if (pfn > DMA_BIT_MASK(32))
++		index = log_size + IOVA_RANGE_CACHE_MAX_SIZE;
++
++	return __iova_rcache_insert(iovad, &iovad->rcaches[index], pfn);
+ }
+ 
+ /*
+@@ -881,11 +886,20 @@ static unsigned long iova_rcache_get(struct iova_domain *iovad,
+ 				     unsigned long limit_pfn)
+ {
+ 	unsigned int log_size = order_base_2(size);
++	unsigned long iova_pfn;
++	unsigned int index;
+ 
+ 	if (log_size >= IOVA_RANGE_CACHE_MAX_SIZE || !iovad->rcaches)
+ 		return 0;
+ 
+-	return __iova_rcache_get(&iovad->rcaches[log_size], limit_pfn - size);
++	iova_pfn = __iova_rcache_get(&iovad->rcaches[log_size], limit_pfn - size);
++
++	if (!iova_pfn && limit_pfn > DMA_BIT_MASK(32)) {
++		index = log_size + IOVA_RANGE_CACHE_MAX_SIZE;
++		iova_pfn = __iova_rcache_get(&iovad->rcaches[index], limit_pfn - size);
++	}
++
++	return iova_pfn
+ }
+ 
+ /*
+@@ -898,7 +912,7 @@ static void free_iova_rcaches(struct iova_domain *iovad)
+ 	unsigned int cpu;
+ 	int i, j;
+ 
+-	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
++	for (i = 0; i < IOVA_RANGE_CACHE_ARRAY_SIZE; ++i) {
+ 		rcache = &iovad->rcaches[i];
+ 		if (!rcache->cpu_rcaches)
+ 			break;
+@@ -926,7 +940,7 @@ static void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad)
+ 	unsigned long flags;
+ 	int i;
+ 
+-	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
++	for (i = 0; i < IOVA_RANGE_CACHE_ARRAY_SIZE; ++i) {
+ 		rcache = &iovad->rcaches[i];
+ 		cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
+ 		spin_lock_irqsave(&cpu_rcache->lock, flags);
+@@ -945,7 +959,7 @@ static void free_global_cached_iovas(struct iova_domain *iovad)
+ 	unsigned long flags;
+ 	int i, j;
+ 
+-	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
++	for (i = 0; i < IOVA_RANGE_CACHE_ARRAY_SIZE; ++i) {
+ 		rcache = &iovad->rcaches[i];
+ 		spin_lock_irqsave(&rcache->lock, flags);
+ 		for (j = 0; j < rcache->depot_size; ++j) {
 -- 
-2.37.3
+2.31.1
 
