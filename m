@@ -1,134 +1,69 @@
-Received: from soltyk.jannau.net (soltyk.jannau.net [144.76.91.90])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8E0833CA;
-	Fri, 16 Sep 2022 09:42:04 +0000 (UTC)
-Received: from robin.home.jannau.net (unknown [91.200.110.112])
-	by soltyk.jannau.net (Postfix) with ESMTPSA id 534BF26F077;
-	Fri, 16 Sep 2022 11:41:56 +0200 (CEST)
-From: Janne Grunau <j@jannau.net>
-To: iommu@lists.linux.dev
-Cc: Konrad Dybcio <konrad.dybcio@somainline.org>,
-	asahi@lists.linux.dev,
-	Sven Peter <sven@svenpeter.dev>,
-	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-	Hector Martin <marcan@marcan.st>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	iommu@lists.linux-foundation.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v5 5/5] iommu: dart: Support t6000 variant
-Date: Fri, 16 Sep 2022 11:41:52 +0200
-Message-Id: <20220916094152.87137-6-j@jannau.net>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220916094152.87137-1-j@jannau.net>
-References: <20220916094152.87137-1-j@jannau.net>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E179C4C95;
+	Fri, 16 Sep 2022 11:57:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81E6AC43143;
+	Fri, 16 Sep 2022 11:57:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1663329458;
+	bh=4mAe95msSQk1H+17nLH8cwEk5y1qk5VEu4IIy8UaDa8=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=R6QPhiyg9IXbFuqFLDXgN+P1tpHp6w/wnaxSvuTy3k596sfMSPVyO5SIxdulHhQ6m
+	 lYtKfB/Cf5WDFmVsfOKhM8CcR9qNsz16L+9BxCvu4bOAGPgYhj+B3vQolsh58MhygI
+	 r1VBOyeDPwG9jbmPviGl0bPpu6ZKZvbpLI945/Um+8ZSU83ivWww5wmG4Se1x/SeqA
+	 TSZ6wtKQUBjN7ueYBxMqJdy2a/Hm2+EgY0J8X+CeTNqXlDc5Jt2cd8b6E3OqJB4fWa
+	 PPfWr5iLPngTKOgQ6mSPhN5Vj1ImY2vt3dPsD+p9brHvX6VGvexUUO/VECLn7ARPJm
+	 B3RIaFPKYhfEg==
+Received: by mail-vs1-f47.google.com with SMTP id q26so16958316vsr.7;
+        Fri, 16 Sep 2022 04:57:38 -0700 (PDT)
+X-Gm-Message-State: ACrzQf3poWTm6+atQ4FaxiPpcCYaGEiaBWJkIKImjaM9j/naNzZjibEo
+	xXrkYR+uRPGa1Gag6Dx3EMG8CAGxR0M0kKHKfQ==
+X-Google-Smtp-Source: AMsMyM5KW5eWL7Cqt5T0A2gzwu5JCELe579DpI/4acsgJ1Dh4ttemvDob7uKBCVevdtJkNDewsUUe9f+tsuuCBHwFRM=
+X-Received: by 2002:a67:c097:0:b0:390:d097:df91 with SMTP id
+ x23-20020a67c097000000b00390d097df91mr1767890vsi.85.1663329457398; Fri, 16
+ Sep 2022 04:57:37 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220916094152.87137-1-j@jannau.net> <20220916094152.87137-4-j@jannau.net>
+In-Reply-To: <20220916094152.87137-4-j@jannau.net>
+From: Rob Herring <robh@kernel.org>
+Date: Fri, 16 Sep 2022 06:57:26 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqKWaYV7uJeJbaJSuHM+ud6f_eZ0_Kq_WwGg3uLDodUV3Q@mail.gmail.com>
+Message-ID: <CAL_JsqKWaYV7uJeJbaJSuHM+ud6f_eZ0_Kq_WwGg3uLDodUV3Q@mail.gmail.com>
+Subject: Re: [PATCH v5 3/5] iommu/io-pgtable: Add DART subpage protection support
+To: Janne Grunau <j@jannau.net>
+Cc: iommu@lists.linux.dev, Konrad Dybcio <konrad.dybcio@somainline.org>, 
+	asahi@lists.linux.dev, Sven Peter <sven@svenpeter.dev>, 
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>, Hector Martin <marcan@marcan.st>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, 
+	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-From: Sven Peter <sven@svenpeter.dev>
+On Fri, Sep 16, 2022 at 4:43 AM Janne Grunau <j@jannau.net> wrote:
+>
+> From: Sven Peter <sven@svenpeter.dev>
+>
+> DART allows to only expose a subpage to the device. While this is an
+> optional feature on the M1 DARTs the new ones present on the Pro/Max
+> models require this field in every PTE.
+>
+> Signed-off-by: Sven Peter <sven@svenpeter.dev>
+> Signed-off-by: Janne Grunau <j@jannau.net>
+>
+> ---
+>
+> (no changes since v3)
+>
+> Changes in v3:
+> - apply change to io-pgtable-dart.c
+>
+>  drivers/iommu/io-pgtable-dart.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
 
-The M1 Pro/Max/Ultra SoCs come with a new variant of DART which
-supports a larger physical address space with a different PTE format.
-Pass through the correct paddr address space size and the PTE format
-to the io-pgtable code which will take care of the rest.
-
-Signed-off-by: Sven Peter <sven@svenpeter.dev>
-Co-developed-by: Janne Grunau <j@jannau.net>
-Signed-off-by: Janne Grunau <j@jannau.net>
-
----
-
-(no changes since v3)
-
-Changes in v3:
-- apply change to io-pgtable-dart.c
-
-Changes in v2:
-- use APPLE_DART2 PTE format for dart-t6000
-
- drivers/iommu/apple-dart.c | 24 +++++++++++++++++++++---
- 1 file changed, 21 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-index 8af0242a90d9..e5793c0d08b4 100644
---- a/drivers/iommu/apple-dart.c
-+++ b/drivers/iommu/apple-dart.c
-@@ -81,10 +81,16 @@
- #define DART_TTBR_VALID BIT(31)
- #define DART_TTBR_SHIFT 12
- 
-+struct apple_dart_hw {
-+	u32 oas;
-+	enum io_pgtable_fmt fmt;
-+};
-+
- /*
-  * Private structure associated with each DART device.
-  *
-  * @dev: device struct
-+ * @hw: SoC-specific hardware data
-  * @regs: mapped MMIO region
-  * @irq: interrupt number, can be shared with other DARTs
-  * @clks: clocks associated with this DART
-@@ -98,6 +104,7 @@
-  */
- struct apple_dart {
- 	struct device *dev;
-+	const struct apple_dart_hw *hw;
- 
- 	void __iomem *regs;
- 
-@@ -421,13 +428,13 @@ static int apple_dart_finalize_domain(struct iommu_domain *domain,
- 	pgtbl_cfg = (struct io_pgtable_cfg){
- 		.pgsize_bitmap = dart->pgsize,
- 		.ias = 32,
--		.oas = 36,
-+		.oas = dart->hw->oas,
- 		.coherent_walk = 1,
- 		.iommu_dev = dart->dev,
- 	};
- 
- 	dart_domain->pgtbl_ops =
--		alloc_io_pgtable_ops(APPLE_DART, &pgtbl_cfg, domain);
-+		alloc_io_pgtable_ops(dart->hw->fmt, &pgtbl_cfg, domain);
- 	if (!dart_domain->pgtbl_ops) {
- 		ret = -ENOMEM;
- 		goto done;
-@@ -858,6 +865,7 @@ static int apple_dart_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	dart->dev = dev;
-+	dart->hw = of_device_get_match_data(dev);
- 	spin_lock_init(&dart->lock);
- 
- 	dart->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
-@@ -946,8 +954,18 @@ static int apple_dart_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
-+static const struct apple_dart_hw apple_dart_hw_t8103 = {
-+	.oas = 36,
-+	.fmt = APPLE_DART,
-+};
-+static const struct apple_dart_hw apple_dart_hw_t6000 = {
-+	.oas = 42,
-+	.fmt = APPLE_DART2,
-+};
-+
- static const struct of_device_id apple_dart_of_match[] = {
--	{ .compatible = "apple,t8103-dart", .data = NULL },
-+	{ .compatible = "apple,t8103-dart", .data = &apple_dart_hw_t8103 },
-+	{ .compatible = "apple,t6000-dart", .data = &apple_dart_hw_t6000 },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, apple_dart_of_match);
--- 
-2.35.1
-
+Reviewed-by: Rob Herring <robh@kernel.org>
