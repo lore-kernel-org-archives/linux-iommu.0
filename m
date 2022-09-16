@@ -1,141 +1,107 @@
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from soltyk.jannau.net (soltyk.jannau.net [144.76.91.90])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D11E2F27
-	for <iommu@lists.linux.dev>; Fri, 16 Sep 2022 09:31:27 +0000 (UTC)
-Received: by mail-wr1-f50.google.com with SMTP id z6so2564579wrq.1
-        for <iommu@lists.linux.dev>; Fri, 16 Sep 2022 02:31:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=2UsYFpJOWZXEK9G6y9vWyigUYAlahTONvBFa8QXRcZw=;
-        b=jYr+5AUrb+MNBu1c9xVs+UvjhZZm4XOucnxp7gaFNJ4ryiowiN+sPuQf6gpR2VcWeI
-         /y0WcFWv/7jKlCYogIwkME2yqYdUVmenrDnsd9NDlTl66Xamje6mC3/RM/udqdlWvdZI
-         28rkmkfL7fpPsCyyH2pBFgUDQdm7eTkvJ/7wMnXmFT87LYAOnnw5zWq18LmOEedvJ657
-         hIxhAgxNg0CNLAy5qaIYkIgOWYwuOj3TCwaiUAkcdbO/UM8EtN74Q1u3Dr5DAW4Glwez
-         RZ7CwN/OoQxn42rJDsVeuauNArH7TMTBEIlHGibTdPX3BHjY1lQ5V7axqcwdiBdeKCXU
-         x21g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=2UsYFpJOWZXEK9G6y9vWyigUYAlahTONvBFa8QXRcZw=;
-        b=l6KGKkYOZ29WEU3Xj0P20Qg36Uo9DZhcdunxquTFGqanO7azZCyCIW3cSx8qgx1Vyi
-         av/L+KsEKJjKRLLFOaqF63jjVICNnf+H1kFjVYKhul9daEkC+PaPD823YyBY0Hmut7rF
-         utsNA7SpfjFAuBQ6MuzbHu5LjknSDMSpl3JYJAYPnKBncYy1F4O23vYyV7KuWBXw/FY5
-         JGISZfE6MjiGcAxlDXUDpOU3JK1MCClfHIOX28X+qAfQLBj6wWyObGZbBubn+63nmc06
-         cTd2TMFPju16yAjNhMnq9UH1oKAmO/4yh/okNDZuKXDKiRnzRbqPjvMqH7yTsoWj9Dm6
-         SVCQ==
-X-Gm-Message-State: ACrzQf2+xEzIBn0BybfnipwYDZYvZdIvCd039rq4zJECZzrlQXVcXcu6
-	OUnmsh2PjzGDocrO9qCa3pg=
-X-Google-Smtp-Source: AMsMyM6xCTQGP7Bn0tF4RA2V+Q0sOWKRWGSdZ56CmGtzWmj6kI9Wgif2reU1GETwWupGLkHMZk1Xmg==
-X-Received: by 2002:adf:d1ce:0:b0:22a:36d6:da05 with SMTP id b14-20020adfd1ce000000b0022a36d6da05mr2346489wrd.719.1663320685336;
-        Fri, 16 Sep 2022 02:31:25 -0700 (PDT)
-Received: from orome (p200300e41f12c800f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f12:c800:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id f9-20020a0560001b0900b0022917d58603sm4563801wrz.32.2022.09.16.02.31.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Sep 2022 02:31:23 -0700 (PDT)
-Date: Fri, 16 Sep 2022 11:31:22 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-To: John Garry <john.garry@huawei.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/iova: Fix module config properly
-Message-ID: <YyRCatyU+CWEcDkt@orome>
-References: <548c2f683ca379aface59639a8f0cccc3a1ac050.1663069227.git.robin.murphy@arm.com>
- <4740744e-2e12-520d-8598-188b8d2ebd6b@huawei.com>
- <38988c89-ec61-faa1-6b15-2fd3aa51eede@arm.com>
- <YyGjPoM6ooNeJKhT@orome>
- <bdb9abaf-2703-6d4c-9cab-f6e15e3e8b30@huawei.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07B5B2FAF;
+	Fri, 16 Sep 2022 09:42:00 +0000 (UTC)
+Received: from robin.home.jannau.net (unknown [91.200.110.112])
+	by soltyk.jannau.net (Postfix) with ESMTPSA id 5368A26F072;
+	Fri, 16 Sep 2022 11:41:53 +0200 (CEST)
+From: Janne Grunau <j@jannau.net>
+To: iommu@lists.linux.dev
+Cc: Konrad Dybcio <konrad.dybcio@somainline.org>,
+	asahi@lists.linux.dev,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	Hector Martin <marcan@marcan.st>,
+	Joerg Roedel <joro@8bytes.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Mark Kettenis <mark.kettenis@xs4all.nl>,
+	Rob Herring <robh+dt@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sven Peter <sven@svenpeter.dev>,
+	Will Deacon <will@kernel.org>,
+	devicetree@vger.kernel.org,
+	iommu@lists.linux-foundation.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v5 0/5] iommu: M1 Pro/Max DART support
+Date: Fri, 16 Sep 2022 11:41:47 +0200
+Message-Id: <20220916094152.87137-1-j@jannau.net>
+X-Mailer: git-send-email 2.35.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="EO05lQbmccPFJye3"
-Content-Disposition: inline
-In-Reply-To: <bdb9abaf-2703-6d4c-9cab-f6e15e3e8b30@huawei.com>
-User-Agent: Mutt/2.2.7 (2022-08-07)
+Content-Transfer-Encoding: 8bit
 
+Hej,
 
---EO05lQbmccPFJye3
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+this is the next attempt adding support for the DART found in Apple's
+M1 Pro/Max/Ultra. This adds a separate io-pgtable implementation for
+DART. As already mentioned in v2 the pte format is not fully compatible
+with io-pgtable-arm. Especially the 2nd least significant bit is used
+and is not available to tag tables/pages.
+io-pgtable-dart.c is copied from io-pgtable-arm.c and support for
+unused features is removed. Support for 4k IO pages is left for A7 to
+A11 SoCs as there's work underway to run Linux on them.
 
-On Thu, Sep 15, 2022 at 12:45:43PM +0100, John Garry wrote:
-> On 14/09/2022 10:47, Thierry Reding wrote:
-> > On Tue, Sep 13, 2022 at 03:15:18PM +0100, Robin Murphy wrote:
-> > > On 2022-09-13 14:01, John Garry wrote:
-> > > > On 13/09/2022 12:47, Robin Murphy wrote:
-> > > > > IOMMU_IOVA is intended to be an optional library for users to sel=
-ect as
-> > > > > and when they desire. Since it can be a module now, this means th=
-at
-> > > > > built-in code which has chosen not to select it should not fail t=
-o link
-> > > > > if it happens to have selected as a module by someone else. Repla=
-ce
-> > > > > IS_ENABLED() with IS_REACHABLE() to do the right thing.
-> > > >=20
-> > > > Hi Robin,
-> > > >=20
-> > > > Recently you mentioned "I wonder if we couldn't replace the IS_ENAB=
-LED()
-> > > > with IS_REACHABLE() and restore some of the previously-conditional
-> > > > selects", and pointed me to 84db889e6d82 as an example of when a
-> > > > conditional select was made unconditional.
-> > > >=20
-> > > > So will you also restore some previously-conditional selects next?
-> > >=20
-> > > I figured I'd leave that up to Thierry (and/or anyone else with a ves=
-ted
-> > > interest), but having mulled it over since that previous thread, ther=
-e's
-> > > really no excuse for the API itself not to do the right thing either =
-way, so
-> > > I felt compelled to write up this much.
-> >=20
-> > On Tegra specifically, as the commit message says, we don't really care
-> > about the conditional selection because practically we always want IOMMU
-> > support enabled. So instead of adding back the conditional select it
-> > would make more sense to select IOMMU_API instead and then get rid of
-> > the handful of #ifdef blocks we have for that.
->=20
-> Out of curiosity, does the same go to host1x, whose kconfig got the same
-> treatment as tegra with regards to selecting IOMMU_IOVA? I mean, will you
-> not go back to conditionally selecting IOMMU_IOVA, and instead select
-> IOMMU_API and IOMMU_IOVA always?
+The incompatibilities between both Apple DART pte seems manageable in
+their own io-pgtable implementation. A short list of the known
+differences:
 
-Yeah, I suspect that that will happen eventually. People would still
-have the option of disabling runtime IOMMU support by disabling the
-IOMMU via DT, for example, so if they really care about that last bit
-of performance, they do have that option.
+ - the physical addresses are shifted left by 4 bits and and have 2 more
+   bits inside the PTE entries
+ - the read/write protection flags are at a different position
+ - the subpage protection feature is now mandatory. For Linux we can
+   just configure it to always allow access to the entire page.
+ - BIT(1) tags "uncached" mappings (used for the display controller)
 
-Thierry
+There is second type of DART (t8110) present on M1 Pro/Max SoCs which
+uses the same PTE format as t6000.
 
---EO05lQbmccPFJye3
-Content-Type: application/pgp-signature; name="signature.asc"
+Changes in v5:
+- collected Sven's ack
+- minor fixes in "iommu/io-pgtable: Move Apple DART support to its own
+  file"
 
------BEGIN PGP SIGNATURE-----
+Changes in v4:
+- split dart and io-pgtable-dart build to allow building dart as module
+- add missing "SELECT IOMMU_IO_PGTABLE"
+- made map/unmap_pages/iova_to_phys inon-recursive
+- replace pgd concatenation with multiple table handling
+- simplified config and page size checks
+- collected Robin's Ack
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmMkQmcACgkQ3SOs138+
-s6F5OxAAtBgmV3UDyFIftISWXzLM7gbl1xMc+WHXnZyvPqLz+71GoLB7mWJb3Kfj
-jbzVh9zVaVQJKo8yczVfi2khmT/X07XU2c2vy7Juq/f2MnK5PH94nn5X+Iv4kAOr
-pwSsdHv2EbW/dyFrbrlJLlkawhOCf8AZkT/vYq7X0hi9dO0h0IG0dve8iDFKqYR9
-8W+6YKbb8lHnR49WMdO2h1KwYJmnv8cOVOD4+PNlgbq9DMt6wpLUPBMiWP0V1u5w
-KjLpFKljGbPe7TwfVn9x/6TmY3oSNnQyAyMsde8zfqwnJE7K4Ct0hHFBSPJtqO3E
-DMjM3JOugQeyQ8BzUgcMjthkM92VSZWYFdwgd43IcVqV3EI+7THK/AL/3Tb2FX11
-XSRMc4LVCXz7o7866ZUIRlNT5y7LaDuS/CiiDwfDtRX1r20kKGbLxnK9PF+YQR/M
-oj2fmYfAQeHc0I007Z6zqKDJMS6ixueiVEWM94anLyHtrYfuDhjkPl5nYdVKQyWJ
-lE5ycAei5jBBXS2APcbmg8kmicLcPnbiS5/zGa9THiHXfa6z6i7ycQGdo6XVQ/lZ
-Jw1SKTL0pbAtcTys1M2/9yFfsLFMF5gstO/A3AUKsetRl+l6TDTWWw0dV0ryNFy1
-wXstMeqRgx1Tz+rBlxxwgWCtymoUw3op4D7kpemFuTHC1memw8A=
-=qsBZ
------END PGP SIGNATURE-----
+Changes in v3:
+- move APPLE_DART to its own io-pgtable implementation, copied from
+  io-pgtable-arm and simplified
 
---EO05lQbmccPFJye3--
+Changes in v2:
+- added Rob's Acked-by:
+- add APPLE_DART2 io-pgtable format
+
+Janne Grunau (1):
+  iommu/io-pgtable: Move Apple DART support to its own file
+
+Sven Peter (4):
+  dt-bindings: iommu: dart: add t6000 compatible
+  iommu/io-pgtable: Add DART subpage protection support
+  iommu/io-pgtable-dart: Add DART PTE support for t6000
+  iommu: dart: Support t6000 variant
+
+ .../devicetree/bindings/iommu/apple,dart.yaml |   4 +-
+ MAINTAINERS                                   |   1 +
+ drivers/iommu/Kconfig                         |  13 +-
+ drivers/iommu/Makefile                        |   1 +
+ drivers/iommu/apple-dart.c                    |  24 +-
+ drivers/iommu/io-pgtable-arm.c                |  63 ---
+ drivers/iommu/io-pgtable-dart.c               | 470 ++++++++++++++++++
+ drivers/iommu/io-pgtable.c                    |   3 +
+ include/linux/io-pgtable.h                    |   1 +
+ 9 files changed, 512 insertions(+), 68 deletions(-)
+ create mode 100644 drivers/iommu/io-pgtable-dart.c
+
+-- 
+2.35.1
+
