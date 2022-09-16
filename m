@@ -1,41 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E179C4C95;
-	Fri, 16 Sep 2022 11:57:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81E6AC43143;
-	Fri, 16 Sep 2022 11:57:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B46C24C95;
+	Fri, 16 Sep 2022 12:04:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69580C43140;
+	Fri, 16 Sep 2022 12:04:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1663329458;
-	bh=4mAe95msSQk1H+17nLH8cwEk5y1qk5VEu4IIy8UaDa8=;
+	s=k20201202; t=1663329847;
+	bh=SDyVHic+g5Ln/swY+PozT5sqObg8/WxJ+rqngYuzFro=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=R6QPhiyg9IXbFuqFLDXgN+P1tpHp6w/wnaxSvuTy3k596sfMSPVyO5SIxdulHhQ6m
-	 lYtKfB/Cf5WDFmVsfOKhM8CcR9qNsz16L+9BxCvu4bOAGPgYhj+B3vQolsh58MhygI
-	 r1VBOyeDPwG9jbmPviGl0bPpu6ZKZvbpLI945/Um+8ZSU83ivWww5wmG4Se1x/SeqA
-	 TSZ6wtKQUBjN7ueYBxMqJdy2a/Hm2+EgY0J8X+CeTNqXlDc5Jt2cd8b6E3OqJB4fWa
-	 PPfWr5iLPngTKOgQ6mSPhN5Vj1ImY2vt3dPsD+p9brHvX6VGvexUUO/VECLn7ARPJm
-	 B3RIaFPKYhfEg==
-Received: by mail-vs1-f47.google.com with SMTP id q26so16958316vsr.7;
-        Fri, 16 Sep 2022 04:57:38 -0700 (PDT)
-X-Gm-Message-State: ACrzQf3poWTm6+atQ4FaxiPpcCYaGEiaBWJkIKImjaM9j/naNzZjibEo
-	xXrkYR+uRPGa1Gag6Dx3EMG8CAGxR0M0kKHKfQ==
-X-Google-Smtp-Source: AMsMyM5KW5eWL7Cqt5T0A2gzwu5JCELe579DpI/4acsgJ1Dh4ttemvDob7uKBCVevdtJkNDewsUUe9f+tsuuCBHwFRM=
-X-Received: by 2002:a67:c097:0:b0:390:d097:df91 with SMTP id
- x23-20020a67c097000000b00390d097df91mr1767890vsi.85.1663329457398; Fri, 16
- Sep 2022 04:57:37 -0700 (PDT)
+	b=DvQwyaMWXD82NwWUoeJrKeV4DUHsMIooQCYHcmXosyl/K7WeLRGRkRndoqJ3SrkK1
+	 LcvCsmmGFAY+MhYDrz7xpw3FxMi5d+PzQ0fW/asv+Cr0i1n49A0F1qWoS+FI3A47Xy
+	 4B/5WOw0w9/sSli5YXJHD7wXhQ4foTYIZj90a1gBp8ARlG4GJBQK3lyl2LSF6ogojF
+	 J6EfBXoXGGAmXN0TxKx6qWywOKVawa0f9COqJsXsBYSXOC1nyzun57z3AbI0LIna/s
+	 TwatmS31qbtoiZnWx2n5l9+Hob6BiCu2PxJc5cgSzrVV5jiJdbnLsOTt3755sFgYE1
+	 9aCKWkFxhJIoQ==
+Received: by mail-vk1-f179.google.com with SMTP id b81so10563354vkf.1;
+        Fri, 16 Sep 2022 05:04:07 -0700 (PDT)
+X-Gm-Message-State: ACrzQf1q5+slm5UOdqCwXTEXqBIjCD+Api0y9QhunZnl3ktCUD24Xo75
+	9M8/Y5OHB7TrZkHepjRi35itWxpgz4s+szZU7w==
+X-Google-Smtp-Source: AMsMyM7R+47aUUSWrJkPcclUE1JWWBatBMqC16j/7ya6IfwoPKPQZf1oKfsbs1hf02nYS8dtX20SyZppgT1c6KwVmjA=
+X-Received: by 2002:a1f:1d4d:0:b0:382:59cd:596c with SMTP id
+ d74-20020a1f1d4d000000b0038259cd596cmr1736330vkd.35.1663329846359; Fri, 16
+ Sep 2022 05:04:06 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20220916094152.87137-1-j@jannau.net> <20220916094152.87137-4-j@jannau.net>
-In-Reply-To: <20220916094152.87137-4-j@jannau.net>
+References: <20220916094152.87137-1-j@jannau.net> <20220916094152.87137-5-j@jannau.net>
+In-Reply-To: <20220916094152.87137-5-j@jannau.net>
 From: Rob Herring <robh@kernel.org>
-Date: Fri, 16 Sep 2022 06:57:26 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqKWaYV7uJeJbaJSuHM+ud6f_eZ0_Kq_WwGg3uLDodUV3Q@mail.gmail.com>
-Message-ID: <CAL_JsqKWaYV7uJeJbaJSuHM+ud6f_eZ0_Kq_WwGg3uLDodUV3Q@mail.gmail.com>
-Subject: Re: [PATCH v5 3/5] iommu/io-pgtable: Add DART subpage protection support
+Date: Fri, 16 Sep 2022 07:03:55 -0500
+X-Gmail-Original-Message-ID: <CAL_Jsq+u5ZjCNbxQd9FfgvHx6BM4AYjMS63qmm22k2zn5Xqtyg@mail.gmail.com>
+Message-ID: <CAL_Jsq+u5ZjCNbxQd9FfgvHx6BM4AYjMS63qmm22k2zn5Xqtyg@mail.gmail.com>
+Subject: Re: [PATCH v5 4/5] iommu/io-pgtable-dart: Add DART PTE support for t6000
 To: Janne Grunau <j@jannau.net>
 Cc: iommu@lists.linux.dev, Konrad Dybcio <konrad.dybcio@somainline.org>, 
 	asahi@lists.linux.dev, Sven Peter <sven@svenpeter.dev>, 
@@ -45,15 +45,20 @@ Cc: iommu@lists.linux.dev, Konrad Dybcio <konrad.dybcio@somainline.org>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 
-On Fri, Sep 16, 2022 at 4:43 AM Janne Grunau <j@jannau.net> wrote:
+On Fri, Sep 16, 2022 at 4:42 AM Janne Grunau <j@jannau.net> wrote:
 >
 > From: Sven Peter <sven@svenpeter.dev>
 >
-> DART allows to only expose a subpage to the device. While this is an
-> optional feature on the M1 DARTs the new ones present on the Pro/Max
-> models require this field in every PTE.
+> The DARTs present in the M1 Pro/Max/Ultra SoC use a diffent PTE format.
+> They support a 42bit physical address space by shifting the paddr and
+> extending its mask inside the PTE.
+> They also come with mandatory sub-page protection now which we just
+> configure to always allow access to the entire page. This feature is
+> already present but optional on the previous DARTs which allows to
+> unconditionally configure it.
 >
 > Signed-off-by: Sven Peter <sven@svenpeter.dev>
+> Co-developed-by: Janne Grunau <j@jannau.net>
 > Signed-off-by: Janne Grunau <j@jannau.net>
 >
 > ---
@@ -62,8 +67,15 @@ On Fri, Sep 16, 2022 at 4:43 AM Janne Grunau <j@jannau.net> wrote:
 >
 > Changes in v3:
 > - apply change to io-pgtable-dart.c
+> - handle pte <> paddr conversion based on the pte format instead of
+>   the output address size
 >
->  drivers/iommu/io-pgtable-dart.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
+> Changes in v2:
+> - add APPLE_DART2 PTE format
+>
+>  drivers/iommu/io-pgtable-dart.c | 49 ++++++++++++++++++++++++++++-----
+>  drivers/iommu/io-pgtable.c      |  1 +
+>  include/linux/io-pgtable.h      |  1 +
+>  3 files changed, 44 insertions(+), 7 deletions(-)
 
 Reviewed-by: Rob Herring <robh@kernel.org>
