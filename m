@@ -1,96 +1,104 @@
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55774A32
-	for <iommu@lists.linux.dev>; Mon, 19 Sep 2022 06:31:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7489A48
+	for <iommu@lists.linux.dev>; Mon, 19 Sep 2022 08:08:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663569086; x=1695105086;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=7NlLEGE69zbmyk7YL6ALP5s5qWGc0g73ZC68G4Db0N0=;
-  b=UeJX6EWsF49NHJfl3ZgestQopl1DbYISln9id2lHC1zfmPcJcOqohanj
-   1cZjh/wxJhWb4HXkK5FVFQnyp/2JE/x5X5Ba6IGS0zt8SO+WiSKxMP1Fv
-   jEVEKVxCyTX9Pit88bZ4SGFvefqnKsM0/D61qsByxbKyVSkdu+XXUeX7B
-   HLbV8AtnbmC7TZD0Oiuk4fiTwrxNUcC0H6JbNTfcPOicmFNVdjH8Kkfwu
-   xqoWAwdDthOuyMVTFIu2OjyIeigdsKGTZGY6QmlBNtSrwJzLsAvx+mqxG
-   MVbou7ItYtSyLy3S9dsWVbfTbqGyzgnExxMDzumdY/+4RUBco6Jv23O4e
+  t=1663574933; x=1695110933;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=tDOSsEbrRb5OYoWSZi9aQclk72rZ3RiZdyWJjVE2qQs=;
+  b=b3T1Res3E8LUoP4grTFHDi851jf5v/0BtGifpeAvcWaaD9OUAmVCJYBu
+   dtvoY39BDluqzpayqrBX/XTJPXrZCJpwTPgXNO8JFxNjJyTFksRBBRq9y
+   xbJXip1yYwN+pXUsS5KwuN1jIS4kI93WFZEBaC0vLUV/gdk1J0AU4zHUo
+   5prSp2pon7tWtAq6I4sabvMeZs/dpDEbgZQ+WDaB/5FtSL+O1CO1g4YGO
+   lwqVBg5LGxFIzo4XQTuqIOoyGpbludIehOb+ysn0GY/EC/eEbKJ9byERl
+   kdI4vL4LqY4oEkvv1qDmePfLKkC0hYRTvnP4SMYKyd5dL6wMXeojn4epl
    A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10474"; a="279699717"
+X-IronPort-AV: E=McAfee;i="6500,9779,10474"; a="279718879"
 X-IronPort-AV: E=Sophos;i="5.93,327,1654585200"; 
-   d="scan'208";a="279699717"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2022 23:31:26 -0700
+   d="scan'208";a="279718879"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2022 01:08:46 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,327,1654585200"; 
-   d="scan'208";a="680715168"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga008.fm.intel.com with ESMTP; 18 Sep 2022 23:31:24 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: iommu@lists.linux.dev
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 2/2] iommu/vt-d: Avoid unnecessary global DMA cache invalidation
-Date: Mon, 19 Sep 2022 14:25:23 +0800
-Message-Id: <20220919062523.3438951-3-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220919062523.3438951-1-baolu.lu@linux.intel.com>
-References: <20220919062523.3438951-1-baolu.lu@linux.intel.com>
+   d="scan'208";a="744019467"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga004.jf.intel.com with ESMTP; 19 Sep 2022 01:08:44 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1001)
+	id 2073C238; Mon, 19 Sep 2022 11:09:01 +0300 (EEST)
+Date: Mon, 19 Sep 2022 11:09:01 +0300
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: George Hilliard <thirtythreeforty@gmail.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux1394-devel@lists.sourceforge.net" <linux1394-devel@lists.sourceforge.net>,
+	Stefan Richter <stefanr@s5r6.in-berlin.de>
+Subject: Re: 5.19.9 regression: DMAR error on i7-8650U
+Message-ID: <YygjnTyX+wNzIt5k@black.fi.intel.com>
+References: <485A6EA5-6D58-42EA-B298-8571E97422DE@getmailspring.com>
+ <4379585e-42e4-53d9-8ca4-bf5b8ff3c95d@linux.intel.com>
+ <Yyf9uIzwbb6O2E7o@black.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yyf9uIzwbb6O2E7o@black.fi.intel.com>
 
-Some VT-d hardware implementations invalidate all DMA remapping hardware
-translation caches as part of SRTP flow. The VT-d spec adds a ESRTPS
-(Enhanced Set Root Table Pointer Support, section 11.4.2 in VT-d spec)
-capability bit to indicate this. With this bit set, software has no need
-to issue the global invalidation request.
+On Mon, Sep 19, 2022 at 08:27:20AM +0300, Mika Westerberg wrote:
+> Hi George,
+> 
+> On Mon, Sep 19, 2022 at 08:53:48AM +0800, Baolu Lu wrote:
+> > On 9/18/22 8:00 AM, George Hilliard wrote:
+> > > I'm experiencing a regression on 5.19.9 from 5.19.8. Not sure if you are
+> > > already aware of this, apologies if it's noise.  My hunch is that this
+> > > is an iommu problem since there were quite a few iommu changes in .9,
+> > > but I have also Cc'd Firewire maintainers on the chance that I'm wrong.
+> > > 
+> > > My Apple Thunderbolt to Firewire adapter has quit working on 5.19.9 on
+> > > my Thinkpad T480s (i7-8650U), with the following log message while
+> > > enumerating the device (reformatted for email):
+> > > 
+> > >      [  318.263546] thunderbolt 0-1: new device found, vendor=0x1 device=0x8004
+> > >      [  318.263559] thunderbolt 0-1: Apple, Inc. Thunderbolt to FireWire Adapter
+> > >      [  318.342416] pcieport 0000:05:01.0: pciehp: Slot(1): Card present
+> > >      [  318.342428] pcieport 0000:05:01.0: pciehp: Slot(1): Link Up
+> > >      (snip)
+> > >      [  318.503177] pcieport 0000:08:00.0: enabling device (0000 -> 0003)
+> > >      [  318.504976] firewire_ohci 0000:09:00.0: enabling device (0000 -> 0002)
+> > >      [  318.562000] firewire_ohci 0000:09:00.0: added OHCI v1.10 device
+> > >                     as card 4, 8 IR + 8 IT contexts, quirks 0x0, physUB
+> > >      [  318.562109] DMAR: DRHD: handling fault status reg 2
+> > >      [  318.562114] DMAR: [INTR-REMAP] Request device [09:00.0] fault
+> > >                     index 0x8080 [fault reason 0x25] Blocked a
+> > >                     compatibility format interrupt request
+> > > 
+> > > The last two lines are the new error.
+> > > 
+> > > Happy to provide more details or experiment; this happens nearly every time.
+> > > 
+> > > George
+> > > 
+> > 
+> > + Mika.
+> 
+> Since this is a regression, I wonder if you are able to bisect it to the
+> commit that caused the issue? As you say there are a couple of IOMMU
+> related changes between v5.19.8 and v5.19.9 so one option is to revert
+> them one by one and see if the problem goes away:
+> 
+> f7f13b8d49bf3eff2c98230532e0671195277216 swiotlb: avoid potential left shift overflow
+> 9516acba29e322202674d18f4dc383879f7813a5 iommu/vt-d: Fix possible recursive locking in intel_iommu_init()
+> 420d2045715588ad44cd7d806864a223b4fc05c9 iommu/vt-d: Correctly calculate sagaw value of IOMMU
+> 77a2d61334f715293c20f4fa30df035fd870fba4 iommu/virtio: Fix interaction with VFIO
+> 32e4b8dbc9119c07ea1888e72c8a5681b82e180c iommu: Fix false ownership failure on AMD systems with PASID activated
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.h | 1 +
- drivers/iommu/intel/iommu.c | 7 +++++++
- 2 files changed, 8 insertions(+)
+Here's bugzilla report that looks to have similar symptoms:
 
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 5407d82df4d1..251a609fdce3 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -146,6 +146,7 @@
- /*
-  * Decoding Capability Register
-  */
-+#define cap_esrtps(c)		(((c) >> 63) & 1)
- #define cap_esirtps(c)		(((c) >> 62) & 1)
- #define cap_fl5lp_support(c)	(((c) >> 60) & 1)
- #define cap_pi_support(c)	(((c) >> 59) & 1)
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 8e5d99197d39..c20f3e060bac 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -1239,6 +1239,13 @@ static void iommu_set_root_entry(struct intel_iommu *iommu)
- 
- 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
- 
-+	/*
-+	 * Hardware invalidates all DMA remapping hardware translation
-+	 * caches as part of SRTP flow.
-+	 */
-+	if (cap_esrtps(iommu->cap))
-+		return;
-+
- 	iommu->flush.flush_context(iommu, 0, 0, 0, DMA_CCMD_GLOBAL_INVL);
- 	if (sm_supported(iommu))
- 		qi_flush_pasid_cache(iommu, 0, QI_PC_GLOBAL, 0);
--- 
-2.34.1
-
+https://bugzilla.kernel.org/show_bug.cgi?id=216497
