@@ -1,111 +1,101 @@
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B87D7E9
-	for <iommu@lists.linux.dev>; Mon, 19 Sep 2022 08:31:33 +0000 (UTC)
-X-UUID: eb21de884d2a455eb1ebbf76c4bedeb9-20220919
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=wp5SQxfm+b3blG3OmYMtgGClRI9zJUSh+sm2WRQNPz4=;
-	b=P2gw2Q0tDuw482Ztlo0BLKJUHE71y6Kaw7RjcsB4n2VGFOh0Xz63um5yqusOkO/GFothAdNjWD9WzBApkTqArfSRA9w54Blzh1m9xiQY5P2+6Mps4Mrd8QTdTGQcVKaA7q1gQMb3ssBDUycEO+zz4uyiVr5OO85qtVd/q81SFEo=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.11,REQID:98a7d078-05ff-4b28-900c-5450447005b5,IP:0,U
-	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-	release,TS:0
-X-CID-META: VersionHash:39a5ff1,CLOUDID:04f5d818-0314-4ae7-b2d1-7295be49255e,B
-	ulkID:nil,BulkQuantity:0,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,U
-	RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: eb21de884d2a455eb1ebbf76c4bedeb9-20220919
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-	(envelope-from <chengci.xu@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-	with ESMTP id 553229958; Mon, 19 Sep 2022 16:26:19 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Mon, 19 Sep 2022 16:26:17 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
- Transport; Mon, 19 Sep 2022 16:26:16 +0800
-From: Chengci.Xu <chengci.xu@mediatek.com>
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, "Will
- Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
-	<robh+dt@kernel.org>, Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>, Matthias Brugger
-	<matthias.bgg@gmail.com>
-CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<Project_Global_Chrome_Upstream_Group@mediatek.com>, Chengci.Xu
-	<chengci.xu@mediatek.com>
-Subject: [PATCH v3 0/3] MT8188 IOMMU SUPPORT
-Date: Mon, 19 Sep 2022 16:26:08 +0800
-Message-ID: <20220919082611.19824-1-chengci.xu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D1FAA45;
+	Mon, 19 Sep 2022 08:31:56 +0000 (UTC)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+	id 1oaCC1-0003Xw-MT; Mon, 19 Sep 2022 10:31:53 +0200
+Message-ID: <332ef1c8-2d83-f0ec-74b6-d485f5b15c2e@leemhuis.info>
+Date: Mon, 19 Sep 2022 10:31:53 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Subject: Re: 5.19.9 regression: DMAR error on i7-8650U #forregzbot
+To: "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux1394-devel@lists.sourceforge.net"
+ <linux1394-devel@lists.sourceforge.net>
+References: <485A6EA5-6D58-42EA-B298-8571E97422DE@getmailspring.com>
+Content-Language: en-US, de-DE
+From: Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <485A6EA5-6D58-42EA-B298-8571E97422DE@getmailspring.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1663576317;f2016df4;
+X-HE-SMSGID: 1oaCC1-0003Xw-MT
 
-Adds MT8188 IOMMU support.
+TWIMC: this mail is primarily send for documentation purposes and for
+regzbot, my Linux kernel regression tracking bot. These mails usually
+contain '#forregzbot' in the subject, to make them easy to spot and filter.
 
-MT8188 have 3 IOMMU HWs. 2 IOMMU HW is for multimedia, and 1 IOMMU HW
-is for infra-master, like PCIe.
+[TLDR: I'm adding this regression report to the list of tracked
+regressions; all text from me you find below is based on a few templates
+paragraphs you might have encountered already already in similar form.]
 
-About the 2 MM IOMMU HW, the connection could be something like this:
+Hi, this is your Linux kernel regression tracker.
 
-        IOMMU(VDO)          IOMMU(VPP)
-           |                   |
-      SMI_COMMON(VDO)      SMI_COMMON(VPP)
-      ---------------     ----------------
-      |      |   ...      |      |     ...
-    larb0 larb2  ...    larb1 larb3    ...
+On 18.09.22 02:00, George Hilliard wrote:
+> I'm experiencing a regression on 5.19.9 from 5.19.8. Not sure if you are
+> already aware of this, apologies if it's noise.  My hunch is that this
+> is an iommu problem since there were quite a few iommu changes in .9,
+> but I have also Cc'd Firewire maintainers on the chance that I'm wrong.
+> 
+> My Apple Thunderbolt to Firewire adapter has quit working on 5.19.9 on
+> my Thinkpad T480s (i7-8650U), with the following log message while
+> enumerating the device (reformatted for email):
+> 
+>     [  318.263546] thunderbolt 0-1: new device found, vendor=0x1 device=0x8004
+>     [  318.263559] thunderbolt 0-1: Apple, Inc. Thunderbolt to FireWire Adapter
+>     [  318.342416] pcieport 0000:05:01.0: pciehp: Slot(1): Card present
+>     [  318.342428] pcieport 0000:05:01.0: pciehp: Slot(1): Link Up
+>     (snip)
+>     [  318.503177] pcieport 0000:08:00.0: enabling device (0000 -> 0003)
+>     [  318.504976] firewire_ohci 0000:09:00.0: enabling device (0000 -> 0002)
+>     [  318.562000] firewire_ohci 0000:09:00.0: added OHCI v1.10 device
+>                    as card 4, 8 IR + 8 IT contexts, quirks 0x0, physUB
+>     [  318.562109] DMAR: DRHD: handling fault status reg 2
+>     [  318.562114] DMAR: [INTR-REMAP] Request device [09:00.0] fault
+>                    index 0x8080 [fault reason 0x25] Blocked a
+>                    compatibility format interrupt request
+> 
+> The last two lines are the new error.
+> 
+> Happy to provide more details or experiment; this happens nearly every time.
 
-INFRA IOMMU does not have SMI, the master connects to IOMMU directly.
+CCing the regression mailing list, as it should be in the loop for all
+regressions, as explained here:
+https://www.kernel.org/doc/html/latest/admin-guide/reporting-issues.html
 
-Although multiple banks supported in MT8188, we only use one of them,
-which means PCIe is put in bank0 of INFRA IOMMU.
+Thanks for the report. To be sure below issue doesn't fall through the
+cracks unnoticed, I'm adding it to regzbot, my Linux kernel regression
+tracking bot:
 
-So we have two pgtable for MT8188, specifically, these two MM IOMMU HW
-share a pgtable while INFRA IOMMU HW use a independent pgtable.
+#regzbot introduced v5.19.8..v5.19.9 ^
+https://bugzilla.kernel.org/show_bug.cgi?id=216497
+#regzbot title iommu: DMAR errors
+#regzbot ignore-activity
 
-Another change is that we add some SMC command for INFRA master to 
-enable/disable INFRA IOMMU in ATF considering security concerns.
+This isn't a regression? This issue or a fix for it are already
+discussed somewhere else? It was fixed already? You want to clarify when
+the regression started to happen? Or point out I got the title or
+something else totally wrong? Then just reply -- ideally with also
+telling regzbot about it, as explained here:
+https://linux-regtracking.leemhuis.info/tracked-regression/
 
-changes since v2:
-  - base on tag: next-20220916.
-  - use license "GPL-2.0-only OR BSD-2-Clause" in bingings head file.
-  - drop redundant "portid" assignment when configure infra master.
-  - reduce indentation by using "else if" when config infra master.
-  - update probe flow about "pericfg" for CFG_IFA_MASTER_IN_ATF.
-  - drop unused "pericfg_comp_str" in mt8188_data_infra.
-  - drop words like "This commit/patch".
+Reminder for developers: When fixing the issue, add 'Link:' tags
+pointing to the report (the mail this one replies to), as explained for
+in the Linux kernel's documentation; above webpage explains why this is
+important for tracked regressions.
 
-changes since v2:
-  - base on tag: next-20220831.
-  - rename "mt8188-memory-port.h" to "mediatek,mt8188-memory-port.h".
-  - use dual-license in "mediatek,mt8188-memory-port.h"
-  - remove unnecessary "()" when define SMI_LARB_ID
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
 
-changes since v1:
-  - base on tag: next-20220803.
-  - adds MT8188 IOMMU support.
-
-Chengci.Xu (3):
-  dt-bindings: mediatek: mt8188: Add binding for MM & INFRA IOMMU
-  iommu/mediatek: Add enable IOMMU SMC command for INFRA master
-  iommu/mediatek: Add MT8188 IOMMU Support
-
- .../bindings/iommu/mediatek,iommu.yaml        |  12 +-
- drivers/iommu/mtk_iommu.c                     |  68 ++-
- .../memory/mediatek,mt8188-memory-port.h      | 482 ++++++++++++++++++
- include/soc/mediatek/smi.h                    |   1 +
- 4 files changed, 560 insertions(+), 3 deletions(-)
- create mode 100644 include/dt-bindings/memory/mediatek,mt8188-memory-port.h
-
--- 
-2.25.1
-
+P.S.: As the Linux kernel's regression tracker I deal with a lot of
+reports and sometimes miss something important when writing mails like
+this. If that's the case here, don't hesitate to tell me in a public
+reply, it's in everyone's interest to set the public record straight.
