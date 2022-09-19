@@ -1,75 +1,64 @@
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5919B6105
-	for <iommu@lists.linux.dev>; Mon, 19 Sep 2022 14:20:45 +0000 (UTC)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
-	(No client certificate requested)
-	(Authenticated sender: kholk11)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id A22876601D86;
-	Mon, 19 Sep 2022 15:20:37 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1663597238;
-	bh=jIZlUsaX0uvAy6EJmiw/8+y97dq2zwl8I5cLD0c39OI=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=SQ7VvYPduvIrRs6DMj9+FxF1aaVnxSv9+YE1wxv/WsMklK9qkdjwOKMirDr2A5/WT
-	 YwtqA/RlIZkghg+Xt0Xe4Kw7UpuzjlIKETw+MAWyu8w88x3SDE0msOz1OwCMkLm2pJ
-	 dw85a6RhdrmKx5zUYwgshU487wXKJi9dE2pljIATIz1/NAWwgDwoWIBZLxVtRE+0Ba
-	 Ze+NqiqFCrQZJXCfQWB4JiO71p9mY2L6PhOjfH1QbAGYq8vSVKBt1UaDip+Hjkahxn
-	 FdtqjTWWIqOhEsl26Lw3Kx1NyeCo/sZhZM1c0+0KvL0mS/+U2tM8j7JeoFFMUduVHH
-	 rG8JRMAXxqzOw==
-Message-ID: <276a4a37-a98d-c59b-a967-db9f5b220077@collabora.com>
-Date: Mon, 19 Sep 2022 16:20:35 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1584C7C
+	for <iommu@lists.linux.dev>; Mon, 19 Sep 2022 14:43:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663598630; x=1695134630;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=E4siBz6Id31VkpgPWyEtZoK8L5eH6fa5oS1U9xUtoxk=;
+  b=Sr9ygV7LB+fDA5brarUugMFSwPlwb+h0g5cCa2EOaSXsqCv07CKgFWLk
+   CiqmnRW2yA1b29yHsv4rfz76tQ0c0BPLwHurtOZfAKd247DqStgcs1JNm
+   sX7cumx0zEgMXrUBo9OWBvx2m54w1uygWiJPbDdYPrJlA9hp80eRQRf6m
+   80hD0paZL5k6SZtcYVDiV/gTuAaMRcfYIuPz01CNQ4Ee+Lq5R+iZHtxmB
+   F08Vkl0mdhiWRhf8wnX24KgvMy85A5A7+jMdEoJslG+3t+QDflEn5NbB5
+   0lmVeBtkTHMp/C1kCmBK16xc4CXOriiMsDBc3lmHQiY3s7ZI/k6yl+lZD
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10475"; a="385707120"
+X-IronPort-AV: E=Sophos;i="5.93,328,1654585200"; 
+   d="scan'208";a="385707120"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2022 07:43:49 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,328,1654585200"; 
+   d="scan'208";a="707589263"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by FMSMGA003.fm.intel.com with ESMTP; 19 Sep 2022 07:43:47 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1001)
+	id 12237363; Mon, 19 Sep 2022 17:44:04 +0300 (EEST)
+Date: Mon, 19 Sep 2022 17:44:04 +0300
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: George Hilliard <thirtythreeforty@gmail.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux1394-devel@lists.sourceforge.net" <linux1394-devel@lists.sourceforge.net>,
+	Stefan Richter <stefanr@s5r6.in-berlin.de>
+Subject: Re: 5.19.9 regression: DMAR error on i7-8650U
+Message-ID: <YyiANMVWGc4Bvpj9@black.fi.intel.com>
+References: <485A6EA5-6D58-42EA-B298-8571E97422DE@getmailspring.com>
+ <4379585e-42e4-53d9-8ca4-bf5b8ff3c95d@linux.intel.com>
+ <Yyf9uIzwbb6O2E7o@black.fi.intel.com>
+ <YygjnTyX+wNzIt5k@black.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH v5 3/6] iommu/mediatek: Add error path for loop of
- mm_dts_parse
-Content-Language: en-US
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
- Matthias Brugger <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
- linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, mingyuan.ma@mediatek.com,
- yf.wang@mediatek.com, libo.kang@mediatek.com, chengci.xu@mediatek.com,
- youlin.pei@mediatek.com, anan.sun@mediatek.com, xueqi.zhang@mediatek.com,
- Guenter Roeck <groeck@chromium.org>, Dan Carpenter <dan.carpenter@oracle.com>
-References: <20220919092405.8256-1-yong.wu@mediatek.com>
- <20220919092405.8256-4-yong.wu@mediatek.com>
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220919092405.8256-4-yong.wu@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YygjnTyX+wNzIt5k@black.fi.intel.com>
 
-Il 19/09/22 11:24, Yong Wu ha scritto:
-> The mtk_iommu_mm_dts_parse will parse the smi larbs nodes. if the i+1
-> larb is parsed fail, we should put_device for the 0..i larbs.
+Hi Baolu,
 
-If any v6 will be required... you forgot to update the commit description with
-"we should put_device for the i..0 larbs".
-
+On Mon, Sep 19, 2022 at 11:09:02AM +0300, Mika Westerberg wrote:
+> Here's bugzilla report that looks to have similar symptoms:
 > 
-> There are two places need to comment:
-> 1) The larbid may be not linear mapping, we should loop whole
->     the array in the error path.
-> 2) I move this line position: "data->larb_imu[id].dev = &plarbdev->dev;"
->     before "if (!plarbdev->dev.driver)", That means set
->     data->larb_imu[id].dev before the error path. then we don't need
->     "platform_device_put(plarbdev)" again in probe_defer case. All depend
->     on "put_device" of the error path in error cases.
-> 
-> Fixes: d2e9a1102cfc ("iommu/mediatek: Contain MM IOMMU flow with the MM TYPE")
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> https://bugzilla.kernel.org/show_bug.cgi?id=216497
 
-In any case....
+The reporters of the above bugzilla bisected this down to:
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-
-
+  https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?h=linux-5.19.y&id=9516acba29e322202674d18f4dc383879f7813a5
