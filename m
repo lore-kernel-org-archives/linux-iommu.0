@@ -1,81 +1,155 @@
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com [209.85.208.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BCD62103
-	for <iommu@lists.linux.dev>; Mon, 19 Sep 2022 09:25:00 +0000 (UTC)
-X-UUID: cdf5796b87a445cd86a32f8f311e7e8b-20220919
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=tYeUrDWmysoKnpRMd2tQy/Csgjdj3CcyZZOmwVF2Qmg=;
-	b=bVBRQVzlsdAr2dWp6i5DxhuQFl/Ux/gkSgTV8whCbw3c8QQy+KeCLtey/MEEj53te7MOoH6T8uk2mvyIUYkWUrm3sIQF5d16NUBB8tM5n04R75hNSxXMT8rqrB831Ypx6Tq0O6SQ2IpQHS6AU7q3k3Ptpoh6JqR1DrDppT/241M=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.11,REQID:c69e3470-6232-4723-9b12-407b821e4953,IP:0,U
-	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-	release,TS:0
-X-CID-META: VersionHash:39a5ff1,CLOUDID:e2d0e2f6-6e85-48d9-afd8-0504bbfe04cb,B
-	ulkID:nil,BulkQuantity:0,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,U
-	RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: cdf5796b87a445cd86a32f8f311e7e8b-20220919
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
-	(envelope-from <yong.wu@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 986780568; Mon, 19 Sep 2022 17:24:57 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Mon, 19 Sep 2022 17:24:56 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
- Transport; Mon, 19 Sep 2022 17:24:55 +0800
-From: Yong Wu <yong.wu@mediatek.com>
-To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>,
-	Will Deacon <will@kernel.org>
-CC: Robin Murphy <robin.murphy@arm.com>, <iommu@lists.linux.dev>,
-	<linux-mediatek@lists.infradead.org>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-kernel@vger.kernel.org>, Yong Wu <yong.wu@mediatek.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	<mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>, <libo.kang@mediatek.com>,
-	<chengci.xu@mediatek.com>, <youlin.pei@mediatek.com>,
-	<anan.sun@mediatek.com>, <xueqi.zhang@mediatek.com>, Guenter Roeck
-	<groeck@chromium.org>, Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH v5 6/6] iommu/mediatek: Remove unused "mapping" member from mtk_iommu_data
-Date: Mon, 19 Sep 2022 17:24:05 +0800
-Message-ID: <20220919092405.8256-7-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220919092405.8256-1-yong.wu@mediatek.com>
-References: <20220919092405.8256-1-yong.wu@mediatek.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 542304A1F
+	for <iommu@lists.linux.dev>; Mon, 19 Sep 2022 11:03:50 +0000 (UTC)
+Received: by mail-lj1-f180.google.com with SMTP id x29so1160203ljq.2
+        for <iommu@lists.linux.dev>; Mon, 19 Sep 2022 04:03:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=TcbEHO2M1Vn7869vpthKt1PADnZwIS+iJq0ZGvm2ISU=;
+        b=eCgAMNR0/oNYqUNLjWGvDumqw2QiynIm6mZWzzKGu8A6nUQFWlfAojCCn04+7s1PNP
+         kFrK/0r9SLLWN+D5XksTCe3ZX1uhmpZuNKZa7bwM2kNFWt5qS5PiZGcTlY1XhJreiw5P
+         SJJLfgaolJXDlxo2Fz2pOMASibdZJRfJG/8pI0uiUlmdXAboZigmyqe236MZC/Blduvn
+         v8j4HXPXFi2tea2082grXHIvE8p2hzHgYBEffBpWASuaD9gIuEORS8QeKe25TzYYL9A1
+         ut5w945Z/HWY+KpJdbSFHFK7cFwvpTKadENcsO68367MD0bQYhrS1FADSoVFVXiwv5Wa
+         FNLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=TcbEHO2M1Vn7869vpthKt1PADnZwIS+iJq0ZGvm2ISU=;
+        b=kZM6SAQHBX9QD1FKvSYLXGHkcL6q9NoYefTMyK+s7sMFbvE7dPBVf3Xm9zx9ohc0OT
+         G44Fcddqh9hWNY18EDKxKE1rSn42/w8kxW2kg9/5kN833ODxMydhk82zpBqp1B8q07J9
+         4m4X9cLGiBSFsFnBMMs2LS1T5WPmxnJ62wlo8upSdnFOxgtt7YTjt/b2YPVhxDGXufL8
+         2133RZ+H0r/hMVpMJ0/JptDavLYwBtoQeh3xNXIh0sYdYKCKHAfXw2fDRGpnxAylbgdQ
+         FpFO+TIOycK7wua84krK3PLwrRV73E4TbvkKg2YlfXoSQ6HxGdXl5C48TZTq4a92aJMH
+         e5fA==
+X-Gm-Message-State: ACrzQf1g+pAavqv2QmB9A38ablaZNUX7g88+VSWMRdCdlNzSBWA2Yblb
+	tvwdRW1Qk/SoIOSPIncLD4FLPw==
+X-Google-Smtp-Source: AMsMyM6ehRBDTKsqy6n6LtYJaToBW7Kz4lBTJZvNjeGA2Sv6mgDRd/UJeVtCu0piJ8hcO0aLPDOfew==
+X-Received: by 2002:a2e:9608:0:b0:26a:a73b:b8c1 with SMTP id v8-20020a2e9608000000b0026aa73bb8c1mr5203413ljh.328.1663585428366;
+        Mon, 19 Sep 2022 04:03:48 -0700 (PDT)
+Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id s2-20020a056512314200b0048b08e25979sm5132313lfi.199.2022.09.19.04.03.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 19 Sep 2022 04:03:47 -0700 (PDT)
+Message-ID: <e0e043aa-0f79-59a8-05ab-e48046860524@linaro.org>
+Date: Mon, 19 Sep 2022 13:03:46 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK: N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH 16/21] dt-bindings: reserved-memory: introduce
+ designated-movable-block
+Content-Language: en-US
+To: Doug Berger <opendmb@gmail.com>, Rob Herring <robh@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>,
+ Jonathan Corbet <corbet@lwn.net>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Frank Rowand <frowand.list@gmail.com>, Mike Kravetz
+ <mike.kravetz@oracle.com>, Muchun Song <songmuchun@bytedance.com>,
+ Mike Rapoport <rppt@kernel.org>, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, Borislav Petkov <bp@suse.de>,
+ "Paul E. McKenney" <paulmck@kernel.org>,
+ Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+ Randy Dunlap <rdunlap@infradead.org>,
+ Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+ Florian Fainelli <f.fainelli@gmail.com>, David Hildenbrand
+ <david@redhat.com>, Zi Yan <ziy@nvidia.com>,
+ Oscar Salvador <osalvador@suse.de>, Hari Bathini <hbathini@linux.ibm.com>,
+ Kees Cook <keescook@chromium.org>, - <devicetree-spec@vger.kernel.org>,
+ KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
+ Mel Gorman <mgorman@suse.de>, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-mm@kvack.org, iommu@lists.linux.dev
+References: <20220913195508.3511038-1-opendmb@gmail.com>
+ <20220913195508.3511038-17-opendmb@gmail.com>
+ <20220914145506.GA2149379-robh@kernel.org>
+ <57f19774-39a1-03a6-fe68-83d7e4b16521@gmail.com>
+ <07d87203-6fe1-c612-cb79-9080e1988454@linaro.org>
+ <b4b2b4c6-52b6-80f0-5db3-7f7b751989c3@gmail.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <b4b2b4c6-52b6-80f0-5db3-7f7b751989c3@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Just remove a unused variable that only is for mtk_iommu_v1.
+On 19/09/2022 01:12, Doug Berger wrote:
+> On 9/18/2022 3:31 AM, Krzysztof Kozlowski wrote:
+>> On 14/09/2022 18:13, Doug Berger wrote:
+>>> On 9/14/2022 7:55 AM, Rob Herring wrote:
+>>>> On Tue, Sep 13, 2022 at 12:55:03PM -0700, Doug Berger wrote:
+>>>>> Introduce designated-movable-block.yaml to document the
+>>>>> devicetree binding for Designated Movable Block children of the
+>>>>> reserved-memory node.
+>>>>
+>>>> What is a Designated Movable Block? This patch needs to stand on its
+>>>> own.
+>>> As noted in my reply to your [PATCH 00/21] comment, my intention in
+>>> submitting the entire patch set (and specifically PATCH 00/21]) was to
+>>> communicate this context. Now that I believe I understand that only this
+>>> patch should have been submitted to the devicetree-spec mailing list, I
+>>> will strive harder to make it more self contained.
+>>
+>> The submission of entire thread was ok. What is missing is the
+>> explanation in this commit. This commit must be self-explanatory (e.g.
+>> in explaining "Why are you doing it?"), not rely on other commits for
+>> such explanation.
+>>
+>>>
+>>>>
+>>>> Why does this belong or need to be in DT?
+>>> While my preferred method of declaring Designated Movable Blocks is
+>>> through the movablecore kernel parameter, I can conceive that others may
+>>> wish to take advantage of the reserved-memory DT nodes. In particular,
+>>> it has the advantage that a device can claim ownership of the
+>>> reserved-memory via device tree, which is something that has yet to be
+>>> implemented for DMBs defined with movablecore.
+>>
+>> Rephrasing the question: why OS memory layout and OS behavior is a
+>> property of hardware (DTS)?
+> I would say the premise is fundamentally the same as the existing 
+> reserved-memory child node.
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
----
- drivers/iommu/mtk_iommu.c | 3 ---
- 1 file changed, 3 deletions(-)
+I don't think it is fundamentally the same.
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index f92b8c0bb373..eb3ace99beff 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -221,10 +221,7 @@ struct mtk_iommu_data {
- 	struct device			*smicomm_dev;
- 
- 	struct mtk_iommu_bank_data	*bank;
--
--	struct dma_iommu_mapping	*mapping; /* For mtk_iommu_v1.c */
- 	struct regmap			*pericfg;
--
- 	struct mutex			mutex; /* Protect m4u_group/m4u_dom above */
- 
- 	/*
--- 
-2.18.0
+The existing reserved-memory node describes memory used by hardware - by
+other devices. The OS way of handling this memory - movable, reclaimable
+etc - is not part of it.
 
+So no, it is not the same.
+
+> 
+> I've been rethinking how this should be specified. I am now thinking 
+> that it may be better to introduce a new Reserved Memory property that 
+> serves as a modifier to the 'reusable' property. The 'reusable' property 
+> allows the OS to use memory that has been reserved for a device and 
+> therefore requires the device driver to reclaim the memory prior to its 
+> use. However, an OS may have multiple ways of implementing such reuse 
+> and reclamation.
+
+... and I repeat the question - why OS way of implementing reuse and
+reclamation is relevant to DT?
+
+> I am considering introducing the vendor specific 'linux,dmb' property 
+> that is dependent on the 'reusable' property to allow both the OS and 
+> the device driver to identify the method used by the Linux OS to support 
+> reuse and reclamation of the reserved-memory child node.
+
+Sure, but why? Why OS and Linux driver specific pieces should be in DT?
+> Such a property would remove any need for new compatible strings to the 
+> device tree. Does that approach seem reasonable to you?
+
+No, because you did not explain original question. At all.
+
+Best regards,
+Krzysztof
