@@ -1,103 +1,195 @@
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C788E7C
-	for <iommu@lists.linux.dev>; Tue, 20 Sep 2022 01:28:45 +0000 (UTC)
-X-UUID: 0f9a973517ba4ff1b1b0ce4a28b6e84d-20220920
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=4c9H0CEkJF1e+Pq5M1oIVVNJiztrvRboz8nACrNsVyc=;
-	b=XFBwqprXU45p260aSZmL+TvlQRcl5rCwSqwUKpNm1stsI0ubn5Z2xjtsXu0lPUxCpo9sb9yFNBsrAEnHey9SLxb68CfebJvBSKJ6C+D3M0Y3qnCJ0WoPBF1e+9uUNN0YiYKqOHFjzH5EmJa6JT/CR4EpmDAooy34zhV1iaJCoSY=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.11,REQID:600c4745-b9cf-420e-8d7a-1329eb78a62e,IP:0,U
-	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,BULK:0,RULE:Release_Ham,ACTION
-	:release,TS:45
-X-CID-INFO: VERSION:1.1.11,REQID:600c4745-b9cf-420e-8d7a-1329eb78a62e,IP:0,URL
-	:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,BULK:0,RULE:Release_Ham,ACTION:r
-	elease,TS:45
-X-CID-META: VersionHash:39a5ff1,CLOUDID:e10a335e-5ed4-4e28-8b00-66ed9f042fbd,B
-	ulkID:2209192220432V8FJ766,BulkQuantity:68,Recheck:0,SF:28|17|19|48|823|82
-	4,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil,Bulk:40,QS:nil,BEC:nil,COL
-	:0
-X-UUID: 0f9a973517ba4ff1b1b0ce4a28b6e84d-20220920
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-	(envelope-from <yong.wu@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 838320195; Tue, 20 Sep 2022 09:28:41 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Tue, 20 Sep 2022 09:28:40 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 20 Sep 2022 09:28:38 +0800
-Message-ID: <2111faa6541ad339d6b7ec07f63444a1fc512288.camel@mediatek.com>
-Subject: Re: [PATCH v5 3/6] iommu/mediatek: Add error path for loop of
- mm_dts_parse
-From: Yong Wu <yong.wu@mediatek.com>
-To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-CC: Robin Murphy <robin.murphy@arm.com>, <iommu@lists.linux.dev>,
-	<linux-mediatek@lists.infradead.org>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-kernel@vger.kernel.org>, <mingyuan.ma@mediatek.com>,
-	<yf.wang@mediatek.com>, <libo.kang@mediatek.com>, <chengci.xu@mediatek.com>,
-	<youlin.pei@mediatek.com>, <anan.sun@mediatek.com>,
-	<xueqi.zhang@mediatek.com>, Guenter Roeck <groeck@chromium.org>, "Dan
- Carpenter" <dan.carpenter@oracle.com>, Joerg Roedel <joro@8bytes.org>,
-	Matthias Brugger <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>
-Date: Tue, 20 Sep 2022 09:28:38 +0800
-In-Reply-To: <276a4a37-a98d-c59b-a967-db9f5b220077@collabora.com>
-References: <20220919092405.8256-1-yong.wu@mediatek.com>
-	 <20220919092405.8256-4-yong.wu@mediatek.com>
-	 <276a4a37-a98d-c59b-a967-db9f5b220077@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2269B10EB
+	for <iommu@lists.linux.dev>; Tue, 20 Sep 2022 06:15:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663654536; x=1695190536;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=TWP4wALRO+a9oqJvxi8INlLRqTbmeCqX3DpYoUqq9PE=;
+  b=TLNcLXI1YDNEOdQKlBStoTb/JsHRIltY8rm29nKrd8OLpxFxqkK0B0tk
+   Gdx7UFtqSAs1RJ6zIn9avpLlBvYpcJnPgSpLdI/wY0bLAvChBYLelkXie
+   77ywCv6zloGWr5/MWv2o8zadPWSRL85HrC/d8WqN6A3rFmdH72Bn6PMcC
+   TmaSy+xBktEtpsxQ1r+lQA1d2xMNtwzvux+WuLe61OpyFXLgqpm8HiPmV
+   VlWR0hlXk1PI+63KxzCHHPDnjV59ZEhJRde9X2DZFy+ZN2n6GqVfvdEzf
+   fIcCOekRYp5SC3HB6oigcliAW8q+lqrKYetwleAITHwMFXDtSpfrGe3b+
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10475"; a="325908832"
+X-IronPort-AV: E=Sophos;i="5.93,329,1654585200"; 
+   d="scan'208";a="325908832"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2022 23:15:24 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,329,1654585200"; 
+   d="scan'208";a="761175681"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga001.fm.intel.com with ESMTP; 19 Sep 2022 23:15:24 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 19 Sep 2022 23:15:23 -0700
+Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 19 Sep 2022 23:15:23 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Mon, 19 Sep 2022 23:15:23 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.172)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Mon, 19 Sep 2022 23:15:23 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cX9rqmLUYRQqk3mx7P14WMeYLxHHV92470uhH+nk/y8N3yH5ZTU8T2Qb7LVQeFFSzKpGzeXU3hvb5LYeqrFxFRl3frx+yV+p8zEZtBjxlSsj+uPrwmz6sRP9QGWo0VyGoJ7fwGGnkG1Upvv50QoZD1c39LPsdG7hwGMhA47Zus/iMNI0W7G8QSSm+xKk+JJUnkeVfNzdTgbFDV5M4VcGdFiQ8QH/C/wZHZtqotjbY96bKb0RtD/A1pFRmHlhMi+jcoxUmCtdU7CoepXKSY37uGM6BXG4LSqSGI+49UmB7o7GsU9hW3ed2OtDjfm6+Km6im8Sbrrx3FiQvOol6NPdVA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GMDK89mR9GtrlbMrrbET/3dMq3fBV/1ZnaQkS5qg3v0=;
+ b=WKzK6HTPS1euQ0tIyxATrUtr9pp6R5A+lWft1TEJFdhlC0C9rCoJbNo9L9n9P3IY5CiLcuL2gIwn9WDM4LRarvuxEmUEj8in7o1mnC2vbEZ655mzGiuySWgX5QmDSHLO+29ZP0K83VgSX7291YSt8X5Vae3XupxRgoCwbZuupnfBSegVKOZBAC+wyQehXkwVyzGSgKFRgpRrAu+PKz2wMy5SICRhanKOv8SI96NJ/Xk2HwNReRI4MBWuGgcjFLnAz9SNsHjjHNuoqghU7kaQqp9d9e5THPuorGkpfroh93hy5dIZjd4LoKZhPAEieMzfODHXGA+npmXQYBNxaI9QLw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by SJ0PR11MB5008.namprd11.prod.outlook.com (2603:10b6:a03:2d5::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5632.21; Tue, 20 Sep
+ 2022 06:15:21 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::a435:3eff:aa83:73d7]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::a435:3eff:aa83:73d7%6]) with mapi id 15.20.5632.019; Tue, 20 Sep 2022
+ 06:15:21 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Nicolin Chen <nicolinc@nvidia.com>, "agross@kernel.org"
+	<agross@kernel.org>, "bjorn.andersson@linaro.org"
+	<bjorn.andersson@linaro.org>, "konrad.dybcio@somainline.org"
+	<konrad.dybcio@somainline.org>, "joro@8bytes.org" <joro@8bytes.org>,
+	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "sricharan@codeaurora.org" <sricharan@codeaurora.org>
+CC: "jgg@nvidia.com" <jgg@nvidia.com>, "linux-arm-msm@vger.kernel.org"
+	<linux-arm-msm@vger.kernel.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v3 1/6] iommu/msm: Add missing __disable_clocks calls
+Thread-Topic: [PATCH v3 1/6] iommu/msm: Add missing __disable_clocks calls
+Thread-Index: AQHYyNituwz1+Ol9PE2n60Ec81TVG63n3XuQ
+Date: Tue, 20 Sep 2022 06:15:21 +0000
+Message-ID: <BN9PR11MB52769AEAFD33D2501B6571538C4C9@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <cover.1663227492.git.nicolinc@nvidia.com>
+ <031c4ec032025a299d72665118d58dd48aa936ac.1663227492.git.nicolinc@nvidia.com>
+In-Reply-To: <031c4ec032025a299d72665118d58dd48aa936ac.1663227492.git.nicolinc@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|SJ0PR11MB5008:EE_
+x-ms-office365-filtering-correlation-id: d6ad4aff-94d6-41d1-1554-08da9acf7f6b
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: q+KQapMUjYZCzMR2v8t4rUEA8Sn6m2TTY6Ro7xHdI2fRKg0WycA5jmO/gYyxq6zLUlUikedRjZN0UoCGxlm1mdZ4B4bCw1ZVHQH+Km37Cv7vWOdDNWQC+DJqgTVEdzxgEjb2UC3JJjD5TAZab+tVY7sAX6bc/5Yaj37TG2liVFyKngtCxAdOallBK5ly5jnl/f5jzGaAcMdlmvSPwBe2DzM8p48T4SXZCj25mXRzErNS/oyyhFmzp5W7R3QTJ2CZIbByRJeoEOloRHHyUn9ogD0SrIQB8TOWKNBG5O196kYwBu97dt4n0MQvvDdxbx5jiq9UEPCMMBs7FyixQRRUAMoG2l/5LmzNFRGNADLpmx3XplMIPqXUBQIKOQP1D3zAiiaDNRmWa+gE82uhLtwNIPVmzTpa7rhwHcsUZp4oz3FqFtIf/IbofHyj9fS/gcfXWuz/sy6gGT4yOc0bKH0nQM//AuxbjkEjxTtI8bFAKkWZN8qlnmDmOUkyUKVfrMI3G92MuZsB+PUJIoxysmPT+PyezpmZzaAfrKo68oNCZQ2ZEplGHyV9qdc4zZzwdhkSq7wkGrgHMF4Vw/CFO3dZ67P/iGQ/kKft1bCwElb0UPfwAXPJziET+O84gHt3eLL1YRpIBJmv3vGhwaopo9fEouXtG5pxMBATlNHuKvVucyQEn1rtJm0NOgEUzRJBCivm9ThnEa3aN71gfzbRgjbpQS9YP+gKMMH4sSAVvZFOeyy6K2tnahSmpm7SIsbSsxNcP79vkD9VkQp9Dd/jTAOqNw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(346002)(136003)(39860400002)(376002)(366004)(396003)(451199015)(66556008)(64756008)(76116006)(66946007)(5660300002)(66476007)(4326008)(7416002)(66446008)(110136005)(54906003)(86362001)(8936002)(33656002)(316002)(122000001)(82960400001)(38100700002)(8676002)(83380400001)(52536014)(71200400001)(6506007)(7696005)(41300700001)(478600001)(186003)(26005)(38070700005)(9686003)(55016003)(2906002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?rZGr2d5jBikEil+XQ56fPAhz3ewviQCVj5dc94xAm+K/tMXvXBcAuCmcVsmY?=
+ =?us-ascii?Q?/2DZOeQnPRWMz5bDS6geMCnbgmzTlfFSRSQuJ3oFbxVjWEdZ+mP/46X4I/b5?=
+ =?us-ascii?Q?91MQIcBg2zce9xFzFS7nvtsbpQ8AqUp4He43cuIpJp8w5cYDeUWO8YzLsdhm?=
+ =?us-ascii?Q?3w8PCOosvOKOQHhCDBq10dABkxRcL8yopVEi5ml68ZXMxiIlTJY7aq5qiaDy?=
+ =?us-ascii?Q?EGGccWVuF2i7XnfJb3YIrlB1KSFBQtta3mCCi5LVCyGTuVxTY3G/VgLnJnZf?=
+ =?us-ascii?Q?0HG9uI5yNcF12kggejzoG48DXb8Oe492+wlyGJwojIhfP8pvb8GeofSG7Ah4?=
+ =?us-ascii?Q?NaepXKdQVBWe1WPESQJPu16CoGmrpRQ38s4Weu08DHAlhh4outomA1eFMTQq?=
+ =?us-ascii?Q?aXkaCN/Lf1g2SM2S6Kdi8o62HjCzRuSSgpbAC6otHG51HgpwNVmQ5oOP/6Hs?=
+ =?us-ascii?Q?9EOTulbCQCdBhWmdqkzbjJhZwXUw1PkdJzzxEuUOSaSs1rGhlJJ5lNKN6WZL?=
+ =?us-ascii?Q?47Ufel4Ec4GFXpxv+Qa8WBUhuV0GgsTodeJfs2R6l8+VcLwnhKxNBpvXa4Oa?=
+ =?us-ascii?Q?P73BBylpMJNn9/r6SYpErjn4Uo2kQWNmXgLR2Okur/yK+X2lw4h12mbiV6KG?=
+ =?us-ascii?Q?xFRGNuEMQwd8wDr6Cjm6zqw1mc+ouICDpH1iOW+fp7ltby5tBdNNZNgYfOHC?=
+ =?us-ascii?Q?VCHAwLacXMYCLHlf058aaerIz3O0abu0bSjOwVtE7+C3wykoS4ZCxK4knwHI?=
+ =?us-ascii?Q?3X7l/wPCNvImncVweMvBDRFQ3DEVlPAUCzOh1PxWohf2hFuR46fZWlAo5Y3W?=
+ =?us-ascii?Q?UIyLsD4typCZwrcHWl4ata2+HwrSpLIRT0kukFYrzm0fwvMNrpS4eaHdg6qC?=
+ =?us-ascii?Q?2p/GgLwGK1TG4pcE/BJxFr8rauXVS/5bLZ+VwZ9X4iiah1eFLi7U95zVaWir?=
+ =?us-ascii?Q?B7+GfgmFc/r6fMIrdAJYuetmn8eUxMx+yBcgPilyCKZAYMdWm6Teau30jSPx?=
+ =?us-ascii?Q?7l8HzjZa41xWRif21q6zrDp9Nucsq29F6+Bv2dHLB9aIdDEmZU5Ji+ka4uxs?=
+ =?us-ascii?Q?8/peXUXfd6rYRd3zM9QVpmHRKj4eRyNMJ5kJ1Ssd58bk/U4J3v/7D1lW42xF?=
+ =?us-ascii?Q?XeMlQblMNSPRXsHG+n5iiVdEBlzTySOTFa0LINSSY5WqWjUtb4nNNMyUP+vw?=
+ =?us-ascii?Q?XWJsph+v9L1e7IKcl5F/dgPfItEeJyZBG73FOMSZ4nyXwz/seMostoN+sf6Z?=
+ =?us-ascii?Q?+pxyf+uUk/xoV60B2drJJNviVTPCaLwMy01Df8zrN6HVVtZfmR9+VOJSuoTu?=
+ =?us-ascii?Q?mKxUFMszg6VLVJaFv8b7MXg6mIh7FtjVmQe/47nQXw2AZy/FW37Ccgu5DuBT?=
+ =?us-ascii?Q?4ZL97z8AcrV4c1x1u41+lP2rymUBVlQpSEVEQ2lpas3Mw5HAOSjN832VNLa8?=
+ =?us-ascii?Q?/nX5NnnkwsbF9+VgsYuCBRN3salPGof/nnbATUhKmMTMjx18hjbkYjRNCktK?=
+ =?us-ascii?Q?WmQSbha/rY0+8SJHR+PHe2oXzj0T+LDfIEsAn8CW8VCKBd0cZBQ3Uu89kipd?=
+ =?us-ascii?Q?PeG6AYhRYfIi0DoEHvHtJNt7Or1wbacWxppdhoMc?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK: N
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d6ad4aff-94d6-41d1-1554-08da9acf7f6b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Sep 2022 06:15:21.2666
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 2UtGV/xMhZYvLnupr4RoLCTGA1XlufH+d090FsGSN6ZQm7qG9nDXLWiMB6PnIvIJKI8SnT8RV7UBKHRI6QGOYg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5008
+X-OriginatorOrg: intel.com
 
-On Mon, 2022-09-19 at 16:20 +0200, AngeloGioacchino Del Regno wrote:
-> Il 19/09/22 11:24, Yong Wu ha scritto:
-> > The mtk_iommu_mm_dts_parse will parse the smi larbs nodes. if the
-> > i+1
-> > larb is parsed fail, we should put_device for the 0..i larbs.
-> 
-> If any v6 will be required... you forgot to update the commit
-> description with
-> "we should put_device for the i..0 larbs".
+> From: Nicolin Chen <nicolinc@nvidia.com>
+> Sent: Thursday, September 15, 2022 3:56 PM
+>=20
+> The clock is not symmetrically disabled in the error-out routines.
+>=20
+> Fixes: 109bd48ea2e1 ("iommu/msm: Add DT adaptation")
+> Cc: stable@vger.kernel.org
+> Cc: Sricharan R <sricharan@codeaurora.org>
+> Cc: Andy Gross <agross@kernel.org>
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Konrad Dybcio <konrad.dybcio@somainline.org>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>  drivers/iommu/msm_iommu.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>=20
+> diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+> index 6a24aa804ea3..a7d41ba4a47b 100644
+> --- a/drivers/iommu/msm_iommu.c
+> +++ b/drivers/iommu/msm_iommu.c
+> @@ -418,6 +418,7 @@ static int msm_iommu_attach_dev(struct
+> iommu_domain *domain, struct device *dev)
+>  			list_for_each_entry(master, &iommu->ctx_list, list) {
+>  				if (master->num) {
+>  					dev_err(dev, "domain already
+> attached");
+> +					__disable_clocks(iommu);
+>  					ret =3D -EEXIST;
+>  					goto fail;
+>  				}
+> @@ -425,6 +426,7 @@ static int msm_iommu_attach_dev(struct
+> iommu_domain *domain, struct device *dev)
+>  					msm_iommu_alloc_ctx(iommu-
+> >context_map,
+>  							    0, iommu->ncb);
+>  				if (IS_ERR_VALUE(master->num)) {
+> +					__disable_clocks(iommu);
 
-oh. Thanks for reviewing so carefully. I will send a quick v6 to fix
-this.
+also need to free_ctx() for already walked nodes.
 
-> 
-> > 
-> > There are two places need to comment:
-> > 1) The larbid may be not linear mapping, we should loop whole
-> >     the array in the error path.
-> > 2) I move this line position: "data->larb_imu[id].dev = &plarbdev-
-> > >dev;"
-> >     before "if (!plarbdev->dev.driver)", That means set
-> >     data->larb_imu[id].dev before the error path. then we don't
-> > need
-> >     "platform_device_put(plarbdev)" again in probe_defer case. All
-> > depend
-> >     on "put_device" of the error path in error cases.
-> > 
-> > Fixes: d2e9a1102cfc ("iommu/mediatek: Contain MM IOMMU flow with
-> > the MM TYPE")
-> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> 
-> In any case....
-> 
-> Reviewed-by: AngeloGioacchino Del Regno <
-> angelogioacchino.delregno@collabora.com>
+btw it's a bit weird that although here is coded based on a list=20
+in reality there is at most one node per list. According to
+insert_iommu_master() a master object is allocated and inserted
+to the ctx_list only if the ctx_list is currently empty...
 
-Thanks very much:)
-
-> 
-> 
-> 
+>  					ret =3D -ENODEV;
+>  					goto fail;
+>  				}
+> --
+> 2.17.1
 
