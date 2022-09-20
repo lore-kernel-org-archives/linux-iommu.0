@@ -1,172 +1,161 @@
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2042.outbound.protection.outlook.com [40.107.212.42])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10FDF7C
-	for <iommu@lists.linux.dev>; Tue, 20 Sep 2022 19:27:36 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i3IJIPEqWTp0Ie+Sykac9lk46MtRSM1hTgO0Dr60R71nbHzjm/H28+1HD+gqPtMN4uzUpRFHUUflAJ0XPF7oN/rfAtNo0ZVkPHIpNJypWlmysL46rXjMAOm2lT8dSlzSfiNmZFilkcuyWgVu5YAQU2XtrzOI9/gbOuzRMRzoIu/hmIT+eR0UlOb9l20ArUD8BiXV8w1IRueRqr2UpG5gHLYnfXhf4u4yLScCNTIo3mxZCaNc3NyCjZqhzalq0YMIaZv9lixIHjD8mUTPMKlWNAAquuDXn2SYphkWSc6B5l8wEaCEJg4xr5OInz2KKozSaSNCRbZOQqXEo6UYv4jjww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IKvltysaOkCLhqhpp3fFnvUoK05/NX+HZYBwHJw+qTo=;
- b=FYkf9xuQa0pvFAKAY2thbWUMIr4qZ4AO2jWJKpaSAJAR8KmyaIS6XNjqdqJyK+Kh1677F/TY1CG43AO4JLDU1AJqfVgeZLdMSHX3InOaOEDzgv10WKuPAWkLBmy4tRAqlhsPEZKheEdh/sl2l8QORbLaNKwnnCFgZ16E9JBpmdSpRZNWG89wFNGiylH4SBSv0NY/UwzsE9IkV1Cb2KHDct1M/fRJDrK3MlQeBvWv7YM0zasrCaIAvwdOhBzRGH4Tpx7QNgjzwCJ4C/WaTYQkbp9pWMP1vXHlncGVSprcG3lS/IEK1Dt23wdQUnrxWvFxPgoQ0aqUJHo5lvtiFYPlmw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IKvltysaOkCLhqhpp3fFnvUoK05/NX+HZYBwHJw+qTo=;
- b=MYvRcPPdUMmNTMpHrg+VMuCouFqxOmnVce5s4qydslTmm5W8jWw33rmxyGQj+jiz/+Y8xT+w0niE5QtdDlt4Qxyqft/oJXJYj2sgbB1J4pDvpXQZR/deboSES2I8hArA4+5LOUp3x98iOHmN1dclrWkyvCsdiYwBGf9t9X7cGh8Yj4UFMFvGfhtdD4LJsCdcZzdwoLSFIx0ip3vQgmtdmJ4DZOG/ZZgu8C0jCVw0xEdURmRBxGX3ko5SCHHb78Lu1WWXXKVkRTuO7DRF4mPI6cSPn98rwh5CgtVlPcEjBksWA5UdhLye+4yZyQC488k72kkoOvDlPVyoIR+7z9fa5Q==
-Received: from BN9PR03CA0275.namprd03.prod.outlook.com (2603:10b6:408:f5::10)
- by DM4PR12MB5072.namprd12.prod.outlook.com (2603:10b6:5:38b::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.14; Tue, 20 Sep
- 2022 19:27:16 +0000
-Received: from BN8NAM11FT092.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:f5:cafe::3e) by BN9PR03CA0275.outlook.office365.com
- (2603:10b6:408:f5::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.14 via Frontend
- Transport; Tue, 20 Sep 2022 19:27:15 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- BN8NAM11FT092.mail.protection.outlook.com (10.13.176.180) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5654.14 via Frontend Transport; Tue, 20 Sep 2022 19:27:15 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Tue, 20 Sep
- 2022 12:26:55 -0700
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- rnnvmail205.nvidia.com (10.129.68.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Tue, 20 Sep 2022 12:26:55 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Tue, 20 Sep 2022 12:26:54 -0700
-Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29 via Frontend
- Transport; Tue, 20 Sep 2022 12:26:53 -0700
-Date: Tue, 20 Sep 2022 12:26:52 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-CC: "joro@8bytes.org" <joro@8bytes.org>, "suravee.suthikulpanit@amd.com"
-	<suravee.suthikulpanit@amd.com>, "will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "robdclark@gmail.com"
-	<robdclark@gmail.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "agross@kernel.org"
-	<agross@kernel.org>, "bjorn.andersson@linaro.org"
-	<bjorn.andersson@linaro.org>, "matthias.bgg@gmail.com"
-	<matthias.bgg@gmail.com>, "orsonzhai@gmail.com" <orsonzhai@gmail.com>,
-	"baolin.wang@linux.alibaba.com" <baolin.wang@linux.alibaba.com>,
-	"zhang.lyra@gmail.com" <zhang.lyra@gmail.com>, "jean-philippe@linaro.org"
-	<jean-philippe@linaro.org>, "sricharan@codeaurora.org"
-	<sricharan@codeaurora.org>, "jgg@nvidia.com" <jgg@nvidia.com>,
-	"konrad.dybcio@somainline.org" <konrad.dybcio@somainline.org>,
-	"yong.wu@mediatek.com" <yong.wu@mediatek.com>, "thierry.reding@gmail.com"
-	<thierry.reding@gmail.com>, "vdumpa@nvidia.com" <vdumpa@nvidia.com>,
-	"jonathanh@nvidia.com" <jonathanh@nvidia.com>, "tglx@linutronix.de"
-	<tglx@linutronix.de>, "shameerali.kolothum.thodi@huawei.com"
-	<shameerali.kolothum.thodi@huawei.com>, "christophe.jaillet@wanadoo.fr"
-	<christophe.jaillet@wanadoo.fr>, "thunder.leizhen@huawei.com"
-	<thunder.leizhen@huawei.com>, "quic_saipraka@quicinc.com"
-	<quic_saipraka@quicinc.com>, "jon@solid-run.com" <jon@solid-run.com>,
-	"yangyingliang@huawei.com" <yangyingliang@huawei.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-arm-msm@vger.kernel.org"
-	<linux-arm-msm@vger.kernel.org>, "linux-mediatek@lists.infradead.org"
-	<linux-mediatek@lists.infradead.org>, "linux-tegra@vger.kernel.org"
-	<linux-tegra@vger.kernel.org>, "virtualization@lists.linux-foundation.org"
-	<virtualization@lists.linux-foundation.org>
-Subject: Re: [PATCH v3 3/6] iommu: Add return value rules to attach_dev op
- and APIs
-Message-ID: <YyoT/M+mFVqI5Y1T@Asurada-Nvidia>
-References: <cover.1663227492.git.nicolinc@nvidia.com>
- <822a983febf7e259aa2aca70dddd382810b96117.1663227492.git.nicolinc@nvidia.com>
- <BN9PR11MB527658C31268EB4A8411EDE88C4C9@BN9PR11MB5276.namprd11.prod.outlook.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B2A77C
+	for <iommu@lists.linux.dev>; Tue, 20 Sep 2022 19:32:20 +0000 (UTC)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28KIj6N1001043;
+	Tue, 20 Sep 2022 19:32:11 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=nmT82v55Wya1AWjxX7w9AGfHtXArTlV2NXjiT22NBmE=;
+ b=aZwKHKAkXqUg88kO5C9B1T5AKT5/YtpUMiKBgmi2bIVVsEYkxI3gej0gp1f8xf6Y9MrI
+ MiLd9H/buK0MpCkqeECU9SmEarJKz8aeNK1cL1u/VguujIw4A0tdsHGfqmRVtV+AdnPE
+ krreeMzTnAEfuuW3CcbTmHcjRA+K3h9iWCckfsyEj8rsVq35GE1Ut/S1PdzyuHHx1DEv
+ iQALopM3rl8vRf530LVyOEafSZZvYxDVOGcRWTAXJ2ychQVWgM03uRINIS7EmbRTGO5y
+ aPYYkZZg2FbD/WMM8vfv/UBMp7Ak8MpKIte/nPJ9IvGJO12qcuopJrm5QZ3uWB9h4dy4 eg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jqk2j1gc1-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 20 Sep 2022 19:32:11 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 28KJGkYn032025;
+	Tue, 20 Sep 2022 19:32:10 GMT
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jqk2j1gbh-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 20 Sep 2022 19:32:10 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+	by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 28KJL36U001283;
+	Tue, 20 Sep 2022 19:32:09 GMT
+Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
+	by ppma02dal.us.ibm.com with ESMTP id 3jn5v9u2rj-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 20 Sep 2022 19:32:09 +0000
+Received: from smtpav05.dal12v.mail.ibm.com ([9.208.128.132])
+	by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 28KJW7qP29229696
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 20 Sep 2022 19:32:07 GMT
+Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 0FD8B5804C;
+	Tue, 20 Sep 2022 19:32:08 +0000 (GMT)
+Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 049B258056;
+	Tue, 20 Sep 2022 19:32:07 +0000 (GMT)
+Received: from [9.65.230.56] (unknown [9.65.230.56])
+	by smtpav05.dal12v.mail.ibm.com (Postfix) with ESMTP;
+	Tue, 20 Sep 2022 19:32:06 +0000 (GMT)
+Message-ID: <d15a08f6-fd0d-d28d-2b35-34c445d9b11e@linux.ibm.com>
+Date: Tue, 20 Sep 2022 15:32:06 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB527658C31268EB4A8411EDE88C4C9@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT092:EE_|DM4PR12MB5072:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1255a2f9-6ba5-480b-dcb5-08da9b3e1ff3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	CCZ+rSVHqItHhErAyo+crGBKBDipIo57d3MzGefy6NRiPLH50bQguOM3e4goWiQsEwbJutH+bkcq4ntEdhXgJMD2jZgQd53Kny71h19GVCSOAS77yapEQjWoxS+okvIsQSkMsHXbXdN2R1pRRKDlaP3OiMRu5IXY9zPhYWvrUh/UEKCOPD9T5+3X+i5zErZq9b6TqYAuyF/wYADGop5WxUBbxvofoRSUutIPZPkdu3f0zxgI3Ii0sJwFWF+3H2WscSc9ER3LlwX4c73uXsl0ESUWNlaJyZ2sH54AB+N5vWyUvz1lJf8P9rAf6NLm+HdR2JqcbKw5gTLgl6j+5/VM4OWmm57ljvEcafAtqlU0sq/rO1E6MFd+56wKza3I0Q3Lga2+8j/gpJEhQz6hhQGR3ZWidoUdvnGPZM2DrlNoXfK0gD462NSoh3DeLMqY+qdE4O7Zr993GXGPWjs0YvUpRdAtaXYtqPG2cmVYxIEvM0JZeY3GYiVkZ1m2cJD5/D9AH0k48sZN4nh0dMO1atwoDzbio/XvzM/3OQWC3hMkMel+a9eNFKgVjsTZ+bv+++qHlApxb7terdfUn9B6AyuAzjiAtlzoONp3egerOQuPMYYeiq4THuSCO5fyvshxosaBVexWbLAVAAIkjuwUtbs3NHjv/2GKIwbGTZLqxMN/+RPwABYZdnbGcBDCju/lHjSCw8BnyBIm51jCHnSX5pLTBhRwG4WIiZm3FG/2LqNPrGAvY5bNT2rtpimE2EL6X7lHshAZ9OmOtajI902iLrz3xg==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(396003)(346002)(136003)(376002)(39860400002)(451199015)(40470700004)(36840700001)(46966006)(86362001)(4326008)(8676002)(41300700001)(8936002)(356005)(82310400005)(7636003)(26005)(55016003)(478600001)(40460700003)(70206006)(70586007)(6916009)(54906003)(186003)(316002)(2906002)(426003)(47076005)(336012)(40480700001)(33716001)(7406005)(7416002)(9686003)(82740400003)(5660300002)(83380400001)(36860700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Sep 2022 19:27:15.0668
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1255a2f9-6ba5-480b-dcb5-08da9b3e1ff3
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT092.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5072
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Subject: Re: [PATCH 3/4] vfio: Follow a strict lifetime for struct iommu_group
+ *
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Cornelia Huck <cohuck@redhat.com>, iommu@lists.linux.dev,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        Will Deacon <will@kernel.org>
+Cc: Qian Cai <cai@lca.pw>, Joerg Roedel <jroedel@suse.de>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>
+References: <3-v1-ef00ffecea52+2cb-iommu_group_lifetime_jgg@nvidia.com>
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <3-v1-ef00ffecea52+2cb-iommu_group_lifetime_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: PcL0ftuCo28RlK_1qNzvsrp4gFBXz8p9
+X-Proofpoint-ORIG-GUID: vi5FdI6mB5_7JYBpGLR49MnaRvPFDWAo
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-09-20_09,2022-09-20_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 adultscore=0
+ impostorscore=0 bulkscore=0 priorityscore=1501 clxscore=1015
+ mlxlogscore=999 lowpriorityscore=0 malwarescore=0 mlxscore=0 phishscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2209200117
 
-On Tue, Sep 20, 2022 at 06:24:58AM +0000, Tian, Kevin wrote:
-> External email: Use caution opening links or attachments
+On 9/8/22 2:45 PM, Jason Gunthorpe wrote:
+> The iommu_group comes from the struct device that a driver has been bound
+> to and then created a struct vfio_device against. To keep the iommu layer
+> sane we want to have a simple rule that only an attached driver should be
+> using the iommu API. Particularly only an attached driver should hold
+> ownership.
 > 
+> In VFIO's case since it uses the group APIs and it shares between
+> different drivers it is a bit more complicated, but the principle still
+> holds.
 > 
-> > From: Nicolin Chen <nicolinc@nvidia.com>
-> > Sent: Thursday, September 15, 2022 3:54 PM
-> >
-> > +/**
-> > + * iommu_attach_device - Attach a device to an IOMMU domain
-> > + * @domain: IOMMU domain to attach
-> > + * @dev: Device that will be attached
-> > + *
-> > + * Returns 0 on success and error code on failure
-> > + *
-> > + * Note that EINVAL may be returned as a soft failure if the domain and
-> > device
-> > + * are incompatible: if the domain has already been used or configured in
-> > some
+> Solve this by waiting for all users of the vfio_group to stop before
+> allowing vfio_unregister_group_dev() to complete. This is done with a new
+> completion to know when the users go away and an additional refcount to
+> keep track of how many device drivers are sharing the vfio group. The last
+> driver to be unregistered will clean up the group.
 > 
-> I didn't get the meaning of the 'if' part.
-
-It means that the failure of attaching the device to the domain is
-due to the domain configuration.
-
-> > + * way, attaching the same device to a different domain may succeed.
-> > Otherwise,
-> > + * it may still represent some fundamental problem.
+> This solves crashes in the S390 iommu driver that come because VFIO ends
+> up racing releasing ownership (which attaches the default iommu_domain to
+> the device) with the removal of that same device from the iommu
+> driver. This is a side case that iommu drivers should not have to cope
+> with.
 > 
-> I'm not sure what the sentence after 'otherwise' actually adds to the
-> caller. There is no way to differentiate incompatibility vs. fundamental
-> problem, hence pointless for the caller to know this fact.
+>    iommu driver failed to attach the default/blocking domain
+>    WARNING: CPU: 0 PID: 5082 at drivers/iommu/iommu.c:1961 iommu_detach_group+0x6c/0x80
+>    Modules linked in: macvtap macvlan tap vfio_pci vfio_pci_core irqbypass vfio_virqfd kvm nft_fib_inet nft_fib_ipv4 nft_fib_ipv6 nft_fib nft_reject_inet nf_reject_ipv4 nf_reject_ipv6 nft_reject nft_ct nft_chain_nat nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 ip_set nf_tables nfnetlink mlx5_ib sunrpc ib_uverbs ism smc uvdevice ib_core s390_trng eadm_sch tape_3590 tape tape_class vfio_ccw mdev vfio_iommu_type1 vfio zcrypt_cex4 sch_fq_codel configfs ghash_s390 prng chacha_s390 libchacha aes_s390 mlx5_core des_s390 libdes sha3_512_s390 nvme sha3_256_s390 sha512_s390 sha256_s390 sha1_s390 sha_common nvme_core zfcp scsi_transport_fc pkey zcrypt rng_core autofs4
+>    CPU: 0 PID: 5082 Comm: qemu-system-s39 Tainted: G        W          6.0.0-rc3 #5
+>    Hardware name: IBM 3931 A01 782 (LPAR)
+>    Krnl PSW : 0704c00180000000 000000095bb10d28 (iommu_detach_group+0x70/0x80)
+>               R:0 T:1 IO:1 EX:1 Key:0 M:1 W:0 P:0 AS:3 CC:0 PM:0 RI:0 EA:3
+>    Krnl GPRS: 0000000000000001 0000000900000027 0000000000000039 000000095c97ffe0
+>               00000000fffeffff 00000009fc290000 00000000af1fda50 00000000af590b58
+>               00000000af1fdaf0 0000000135c7a320 0000000135e52258 0000000135e52200
+>               00000000a29e8000 00000000af590b40 000000095bb10d24 0000038004b13c98
+>    Krnl Code: 000000095bb10d18: c020003d56fc        larl    %r2,000000095c2bbb10
+>                           000000095bb10d1e: c0e50019d901        brasl   %r14,000000095be4bf20
+>                          #000000095bb10d24: af000000            mc      0,0
+>                          >000000095bb10d28: b904002a            lgr     %r2,%r10
+>                           000000095bb10d2c: ebaff0a00004        lmg     %r10,%r15,160(%r15)
+>                           000000095bb10d32: c0f4001aa867        brcl    15,000000095be65e00
+>                           000000095bb10d38: c004002168e0        brcl    0,000000095bf3def8
+>                           000000095bb10d3e: eb6ff0480024        stmg    %r6,%r15,72(%r15)
+>    Call Trace:
+>     [<000000095bb10d28>] iommu_detach_group+0x70/0x80
+>    ([<000000095bb10d24>] iommu_detach_group+0x6c/0x80)
+>     [<000003ff80243b0e>] vfio_iommu_type1_detach_group+0x136/0x6c8 [vfio_iommu_type1]
+>     [<000003ff80137780>] __vfio_group_unset_container+0x58/0x158 [vfio]
+>     [<000003ff80138a16>] vfio_group_fops_unl_ioctl+0x1b6/0x210 [vfio]
+>    pci 0004:00:00.0: Removing from iommu group 4
+>     [<000000095b5b62e8>] __s390x_sys_ioctl+0xc0/0x100
+>     [<000000095be5d3b4>] __do_syscall+0x1d4/0x200
+>     [<000000095be6c072>] system_call+0x82/0xb0
+>    Last Breaking-Event-Address:
+>     [<000000095be4bf80>] __warn_printk+0x60/0x68
 > 
-> IMHO just state that the caller can treat -EINVAL as soft failure indicating
-> incompatibility issue between domain and device.
+> It reflects that domain->ops->attach_dev() failed because the driver has
+> already passed the point of destructing the device.
+> 
+> Fixes: 9ac8545199a1 ("iommu: Fix use-after-free in iommu_release_device")
+> Reported-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 
-OK. I changed to:
-+ * Note that EINVAL may be returned as a soft failure if the domain and device
-+ * are incompatible due to some previous configuration of the domain, in which
-+ * case attaching the same device to a different domain may succeed.
+I've been running with only the first 3 patches in this series (the vfio changes) and can confirm that they resolve the reported issue for me.
 
-> Later for @attach_dev you can add that driver may return (but not
-> recommend) -EINVAL for some fundamental problems.
+Tested-by: Matthew Rosato <mjrosato@linux.ibm.com> # s390
 
-OK.
+...
+
+> +static void vfio_group_remove(struct vfio_group *group)
+> +{
+> +	/* Pairs with vfio_create_group() */
+
+Nit: vfio_create_group() no longer exists as of patch 1
+
+
