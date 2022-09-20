@@ -1,205 +1,76 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 583D510F9
-	for <iommu@lists.linux.dev>; Tue, 20 Sep 2022 07:55:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=H0mXB3qLzd6nyp4U82pUC+0jG9YRP9G0sb9CuKu7rQc=; b=YCkxzsVunikesQe2vmc4oMq2Hn
-	Jg33iFWFuD4QHdvq6fDWy8Z3gojgL0RTxp2wHVG11PD9SGiG94LnDwCfM0D5ZbFKC//BwQb83f5kt
-	KwsNLeOUgUUU3MHlb6KJoYbFbSJuTfGC5UEoEajTXpzQIwfGeW85tyLb7xxH/Ao7q2EwK2BNuzYWc
-	aNL14xoXbcw6ZY0YsF3QsrggrY8mOuwt3JZRUErGulwoWldPYHn9QdDr2suz3ZVXuunT+RoLnvWlg
-	xDYTJiVsEp/MPK7zZcEyW9nsCtWowlraCvfA3e1XhM3BAyuqxe7ilU6LfUtfHbB5iLnEj7CYeZdr3
-	XHziMGFA==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-	id 1oaY5v-001WMi-Uv; Tue, 20 Sep 2022 07:55:04 +0000
-Date: Tue, 20 Sep 2022 00:55:03 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: Dongli Zhang <dongli.zhang@oracle.com>
-Cc: iommu@lists.linux.dev, x86@kernel.org, xen-devel@lists.xenproject.org,
-	linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-	linux-kernel@vger.kernel.org, hch@infradead.org,
-	sstabellini@kernel.org, linux@armlinux.org.uk,
-	tsbogend@alpha.franken.de, jgross@suse.com,
-	boris.ostrovsky@oracle.com, tglx@linutronix.de, mingo@redhat.com,
-	bp@alien8.de, dave.hansen@linux.intel.com, m.szyprowski@samsung.com,
-	konrad.wilk@oracle.com, robin.murphy@arm.com, hpa@zytor.com,
-	oleksandr_tyshchenko@epam.com, joe.jin@oracle.com
-Subject: Re: [PATCH RFC v2 1/1] wiotlb: split buffer into 32-bit default and
- 64-bit extra zones
-Message-ID: <Yylx1xPdEbq3k4v1@infradead.org>
-References: <20220820074250.5460-1-dongli.zhang@oracle.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09B2010F9
+	for <iommu@lists.linux.dev>; Tue, 20 Sep 2022 08:16:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663661798; x=1695197798;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=oN0Y6PERKnuQ7F62YC4ctrGjC25b7kmf1Cl0cTZH9Ic=;
+  b=ks1JuiN4DjG2DC3ZyxcnLvcUOOmPvIYrUaH5hvhIlYwbcBkYRFZ0E6WH
+   /fFuL8N6dwEqrPRtpSfkRxTqcBZ3m/i0IR98ZAdla0jNm1aHQxnhXhSd2
+   ObU7UhyY9gx1N/XdApGBbGlLLAJavtBY61N17rwFUvNPRxH3383WP762s
+   JFkz+YLX8W2RcTKpPcQZ2PB4n1PUiOHCHRB9JgYgDaNTKKS767BrmMYCL
+   PD2+gD4AQuVnn5RWPfYUcCuIx1d5jRE6xTINM/0TEXSzTjqNi5CWtyBFQ
+   nhH11tdmzc3HE2a0/inw2ikRH2311WWhep4G4T0TWfJ2aGZeaO/OxprEj
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10475"; a="363590415"
+X-IronPort-AV: E=Sophos;i="5.93,330,1654585200"; 
+   d="scan'208";a="363590415"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Sep 2022 01:16:37 -0700
+X-IronPort-AV: E=Sophos;i="5.93,330,1654585200"; 
+   d="scan'208";a="621174648"
+Received: from litengx-mobl.ccr.corp.intel.com (HELO [10.254.208.130]) ([10.254.208.130])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Sep 2022 01:16:35 -0700
+Message-ID: <b003e86c-1cec-e6b1-1717-7c63372040ac@linux.intel.com>
+Date: Tue, 20 Sep 2022 16:16:33 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220820074250.5460-1-dongli.zhang@oracle.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>,
+ "linux1394-devel@lists.sourceforge.net"
+ <linux1394-devel@lists.sourceforge.net>,
+ Stefan Richter <stefanr@s5r6.in-berlin.de>
+Subject: Re: 5.19.9 regression: DMAR error on i7-8650U
+Content-Language: en-US
+To: George Hilliard <thirtythreeforty@gmail.com>,
+ Mika Westerberg <mika.westerberg@linux.intel.com>
+References: <485A6EA5-6D58-42EA-B298-8571E97422DE@getmailspring.com>
+ <4379585e-42e4-53d9-8ca4-bf5b8ff3c95d@linux.intel.com>
+ <Yyf9uIzwbb6O2E7o@black.fi.intel.com> <YygjnTyX+wNzIt5k@black.fi.intel.com>
+ <YyiANMVWGc4Bvpj9@black.fi.intel.com>
+ <CACmrr9joJi5v2DOu4AAX3tyWDxM5LV+bviRZHeesdp37b+8gRQ@mail.gmail.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <CACmrr9joJi5v2DOu4AAX3tyWDxM5LV+bviRZHeesdp37b+8gRQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Sat, Aug 20, 2022 at 12:42:50AM -0700, Dongli Zhang wrote:
-> Hello,
-> 
-> I used to send out RFC v1 to introduce an extra io_tlb_mem (created with
-> SWIOTLB_ANY) in addition to the default io_tlb_mem (32-bit).  The
-> dev->dma_io_tlb_mem is set to either default or the extra io_tlb_mem,
-> depending on dma mask. However, that is not good for setting
-> dev->dma_io_tlb_mem at swiotlb layer transparently as suggested by
-> Christoph Hellwig.
-> 
-> https://lore.kernel.org/all/20220609005553.30954-1-dongli.zhang@oracle.com/
-> 
-> Therefore, this is another RFC v2 implementation following a different
-> direction. The core ideas are:
-> 
-> 1. The swiotlb is splited into two zones, io_tlb_mem->zone[0] (32-bit) and
-> io_tlb_mem->zone[1] (64-bit).
-> 
-> struct io_tlb_mem {
-> 	struct io_tlb_zone zone[SWIOTLB_NR];
-> 	struct dentry *debugfs;
-> 	bool late_alloc;
-> 	bool force_bounce;
-> 	bool for_alloc;
-> 	bool has_extra;
-> };
-> 
-> struct io_tlb_zone {
-> 	phys_addr_t start;
-> 	phys_addr_t end;
-> 	void *vaddr;
-> 	unsigned long nslabs;
-> 	unsigned long used;
-> 	unsigned int nareas;
-> 	unsigned int area_nslabs;
-> 	struct io_tlb_area *areas;
-> 	struct io_tlb_slot *slots;
-> };
-> 
-> 2. By default, only io_tlb_mem->zone[0] is available. The
-> io_tlb_mem->zone[1] is allocated conditionally if:
-> 
-> - the "swiotlb=" is configured to allocate extra buffer, and
-> - the SWIOTLB_EXTRA is set in the flag (this is to make sure arch(s) other
->   than x86/sev/xen will not enable it until it is fully tested by each
->   arch, e.g., mips/powerpc). Currently it is enabled for x86 and xen.
-> 
-> 3. During swiotlb map, whether zone[0] (32-bit) or zone[1] (64-bit
-> SWIOTLB_ANY)
-> is used depends on min_not_zero(*dev->dma_mask, dev->bus_dma_limit).
-> 
-> To test the RFC v2, here is the QEMU command line.
-> 
-> qemu-system-x86_64 -smp 8 -m 32G -enable-kvm -vnc :5 -hda disk.img \
-> -kernel path-to-linux/arch/x86_64/boot/bzImage \
-> -append "root=/dev/sda1 init=/sbin/init text console=ttyS0 loglevel=7 swiotlb=32768,4194304,force" \
-> -net nic -net user,hostfwd=tcp::5025-:22 \
-> -device nvme,drive=nvme01,serial=helloworld -drive file=test.qcow2,if=none,id=nvme01 \
-> -serial stdio
-> 
-> There is below in syslog. The extra 8GB buffer is allocated.
-> 
-> [    0.152251] software IO TLB: area num 8.
-> ... ...
-> [    3.706088] PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
-> [    3.707334] software IO TLB: mapped default [mem 0x00000000bbfd7000-0x00000000bffd7000] (64MB)
-> [    3.708585] software IO TLB: mapped extra [mem 0x000000061cc00000-0x000000081cc00000] (8192MB)
-> 
-> After the FIO is triggered over NVMe, the 64-bit buffer is used.
-> 
-> $ cat /sys/kernel/debug/swiotlb/io_tlb_nslabs_extra
-> 4194304
-> $ cat /sys/kernel/debug/swiotlb/io_tlb_used_extra
-> 327552
-> 
-> Would you mind helping if this is the right direction to go?
-> 
-> Thank you very much!
-> 
-> Cc: Konrad Wilk <konrad.wilk@oracle.com>
-> Cc: Joe Jin <joe.jin@oracle.com>
-> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
-> ---
->  arch/arm/xen/mm.c                      |   2 +-
->  arch/mips/pci/pci-octeon.c             |   5 +-
->  arch/x86/include/asm/xen/swiotlb-xen.h |   2 +-
->  arch/x86/kernel/pci-dma.c              |   6 +-
->  drivers/xen/swiotlb-xen.c              |  18 +-
->  include/linux/swiotlb.h                |  73 +++--
+On 2022/9/20 3:05, George Hilliard wrote:
+> On Mon, Sep 19, 2022 at 9:43 AM Mika Westerberg
+> <mika.westerberg@linux.intel.com>  wrote:
+>> Hi Baolu,
+>>
+>> On Mon, Sep 19, 2022 at 11:09:02AM +0300, Mika Westerberg wrote:
+>>> Here's bugzilla report that looks to have similar symptoms:
+>>>
+>>> https://bugzilla.kernel.org/show_bug.cgi?id=216497
+>> The reporters of the above bugzilla bisected this down to:
+>>
+>>    https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?h=linux-5.19.y&id=9516acba29e322202674d18f4dc383879f7813a5
+> I can confirm that reverting 9516acba29e322202674d18f4dc383879f7813a5
+> fixes the problem for me as well.
 
-> diff --git a/arch/arm/xen/mm.c b/arch/arm/xen/mm.c
-> index 3d826c0..4edfa42 100644
-> --- a/arch/arm/xen/mm.c
-> +++ b/arch/arm/xen/mm.c
-> @@ -125,7 +125,7 @@ static int __init xen_mm_init(void)
->  		return 0;
->  
->  	/* we can work with the default swiotlb */
-> -	if (!io_tlb_default_mem.nslabs) {
-> +	if (!io_tlb_default_mem.zone[SWIOTLB_DF].nslabs) {
->  		rc = swiotlb_init_late(swiotlb_size_or_default(),
->  				       xen_swiotlb_gfp(), NULL);
->  		if (rc < 0)
+Thanks for doing this. I will post a patch to revert this commit.
 
-First thing we need before doing anything about multiple default
-pools is to get all the knowledge of details hidden inside swiotlb.c.
-
-For swiotlb_init_late that seems easy as we can just move the check
-into it.
-
-> diff --git a/arch/mips/pci/pci-octeon.c b/arch/mips/pci/pci-octeon.c
-> index e457a18..0bf0859 100644
-> --- a/arch/mips/pci/pci-octeon.c
-> +++ b/arch/mips/pci/pci-octeon.c
-> @@ -654,6 +654,9 @@ static int __init octeon_pci_setup(void)
->  		octeon_pci_mem_resource.end =
->  			octeon_pci_mem_resource.start + (1ul << 30);
->  	} else {
-> +		struct io_tlb_mem *mem = &io_tlb_default_mem;
-> +		struct io_tlb_zone *zone = &mem->zone[SWIOTLB_DF];
-> +
->  		/* Remap the Octeon BAR 0 to map 128MB-(128MB+4KB) */
->  		octeon_npi_write32(CVMX_NPI_PCI_CFG04, 128ul << 20);
->  		octeon_npi_write32(CVMX_NPI_PCI_CFG05, 0);
-> @@ -664,7 +667,7 @@ static int __init octeon_pci_setup(void)
->  
->  		/* BAR1 movable regions contiguous to cover the swiotlb */
->  		octeon_bar1_pci_phys =
-> -			io_tlb_default_mem.start & ~((1ull << 22) - 1);
-> +			zone->start & ~((1ull << 22) - 1);
-
-But we'll need to do something about this mess.  I'll need help from
-the octeon maintainer on it.
-
-> -	x86_swiotlb_flags |= SWIOTLB_ANY;
-> +	x86_swiotlb_flags |= SWIOTLB_ANY | SWIOTLB_EXTRA;
-
-I don't think this is how it is suppoed to be.  SWIOTLB_ANY already
-says give me a pool with no addressing constrains.  We don't need
-two pools without that.  EXTRA is also not exactly a very helpful
-name here.
-
->  #ifdef CONFIG_X86
-> -int xen_swiotlb_fixup(void *buf, unsigned long nslabs)
-> +int xen_swiotlb_fixup(void *buf, unsigned long nslabs, unsigned int flags)
->  {
->  	int rc;
->  	unsigned int order = get_order(IO_TLB_SEGSIZE << IO_TLB_SHIFT);
->  	unsigned int i, dma_bits = order + PAGE_SHIFT;
->  	dma_addr_t dma_handle;
->  	phys_addr_t p = virt_to_phys(buf);
-> +	unsigned int max_dma_bits = 32;
-
-I think live will be a lot simple if the addressing bits are passed to
-this function, and not some kind of flags.
-
-> +#define SWIOTLB_DF	0
-> +#define SWIOTLB_EX	1
-> +#define SWIOTLB_NR	2
-
-These names are not very descriptive.
+Best regards,
+baolu
