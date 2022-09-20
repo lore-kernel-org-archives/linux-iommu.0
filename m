@@ -1,205 +1,156 @@
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20A6810F9
-	for <iommu@lists.linux.dev>; Tue, 20 Sep 2022 08:23:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663662191; x=1695198191;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=0hn16l7nMEx48O7cldxyv7rJ1vx4l2VvipRjvsZXCdk=;
-  b=FdQXgwYUrV0Hr/XxZ4y1MZllf2IHBnRcJ+1w20cncgFD7dYIeptt13bd
-   c1WFymLpXcD6g7WcaYPYgMST3UAs54GvToCb+noy3vz34pxfCDzNS34pD
-   R1hph0djw08o/m7q+dDwNYkrMgZx2E6u02i2a+OIzk+F6K9R0C2B2VA7x
-   ycyDosPB5qYAbb6TcDSOTCdLK0lPcWGreEte5yOrLJsdAslV1bTNJ3b/N
-   El+kQ325L4zQEZF+EYUBEhgHQk1vBIsOWe8hynJDEdsqPfjUg6tgoQWd3
-   Ezs4UEmLgkZmJVPWOqaNfv4wEqw4XLd+g2HuYv3FbYKcw198s83+piQhs
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10475"; a="297225247"
-X-IronPort-AV: E=Sophos;i="5.93,330,1654585200"; 
-   d="scan'208";a="297225247"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Sep 2022 01:23:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,330,1654585200"; 
-   d="scan'208";a="649492435"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga008.jf.intel.com with ESMTP; 20 Sep 2022 01:22:58 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: iommu@lists.linux.dev
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Mika Westerberg <mika.westerberg@linux.intel.com>,
-	George Hilliard <thirtythreeforty@gmail.com>,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 1/1] Revert "iommu/vt-d: Fix possible recursive locking in intel_iommu_init()"
-Date: Tue, 20 Sep 2022 16:17:01 +0800
-Message-Id: <20220920081701.3453504-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEDCA7C
+	for <iommu@lists.linux.dev>; Tue, 20 Sep 2022 09:02:01 +0000 (UTC)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
+	(No client certificate requested)
+	(Authenticated sender: kholk11)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id EFF556601F65;
+	Tue, 20 Sep 2022 10:01:58 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1663664519;
+	bh=+3Eho6vznxN6lcZbJbVvkS5KJYsPvu5pctKzlZPKMUo=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=LJclHzWWXsCnozr4D6rWp6q57rPuakEPkNWPH4x5OppazabiA3wjTGmtPFWcgEgIj
+	 GR4sP0iuussi0aap1SwEamN3AIHInnQt4Y1crvC44KcN+0rKVSTNkt68tCFtcAFgHP
+	 HS3TRs3QGz4pde4u0r/jmuJIccKVgD1Y/4o3hls04T98y6fFdWjuThZAW7qN0rGcIc
+	 OkU750ey5Tj9vwjKlDYO//swC6zIN/iq6EUNiD3n5mCmT6OWvc4/WLatlhkVtbeK+s
+	 MqjnrDydHispgrfrj0N6PWPcfxJ5yGR6xzIIQIlFVoxfFGL1qS81oMdjy95Z24kSXU
+	 xwFUg1uwDjb7w==
+Message-ID: <3a0ac49f-2245-fb64-aa60-e3b1a1d4afcd@collabora.com>
+Date: Tue, 20 Sep 2022 11:01:56 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v3 2/3] iommu/mediatek: Add enable IOMMU SMC command for
+ INFRA master
+Content-Language: en-US
+To: "Chengci.Xu" <chengci.xu@mediatek.com>, Yong Wu <yong.wu@mediatek.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>
+Cc: iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220919082611.19824-1-chengci.xu@mediatek.com>
+ <20220919082611.19824-3-chengci.xu@mediatek.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220919082611.19824-3-chengci.xu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-This reverts commit 9cd4f1434479f1ac25c440c421fbf52069079914.
+Il 19/09/22 10:26, Chengci.Xu ha scritto:
+> The register which can enable IOMMU for INFRA master should be setted
+> in secure world for security concerns. Therefore, we add a SMC command
+> for INFRA master to enable/disable INFRA IOMMU in ATF. This function is
+> prepared for MT8188.
+> 
+> Signed-off-by: Chengci.Xu <chengci.xu@mediatek.com>
+> ---
+>   drivers/iommu/mtk_iommu.c  | 21 +++++++++++++++++++--
+>   include/soc/mediatek/smi.h |  1 +
+>   2 files changed, 20 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 552e4eb8c610..8b8a289bab2c 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -3,6 +3,7 @@
+>    * Copyright (c) 2015-2016 MediaTek Inc.
+>    * Author: Yong Wu <yong.wu@mediatek.com>
+>    */
+> +#include <linux/arm-smccc.h>
+>   #include <linux/bitfield.h>
+>   #include <linux/bug.h>
+>   #include <linux/clk.h>
+> @@ -28,6 +29,7 @@
+>   #include <linux/slab.h>
+>   #include <linux/spinlock.h>
+>   #include <linux/soc/mediatek/infracfg.h>
+> +#include <linux/soc/mediatek/mtk_sip_svc.h>
+>   #include <asm/barrier.h>
+>   #include <soc/mediatek/smi.h>
+>   
+> @@ -138,6 +140,7 @@
+>   #define PM_CLK_AO			BIT(15)
+>   #define IFA_IOMMU_PCIE_SUPPORT		BIT(16)
+>   #define PGTABLE_PA_35_EN		BIT(17)
+> +#define CFG_IFA_MASTER_IN_ATF		BIT(18)
+>   
+>   #define MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, mask)	\
+>   				((((pdata)->flags) & (mask)) == (_x))
+> @@ -553,7 +556,20 @@ static int mtk_iommu_config(struct mtk_iommu_data *data, struct device *dev,
+>   				larb_mmu->mmu |= MTK_SMI_MMU_EN(portid);
+>   			else
+>   				larb_mmu->mmu &= ~MTK_SMI_MMU_EN(portid);
+> -		} else if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_INFRA)) {
+> +		} else if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_INFRA) &&
+> +			   MTK_IOMMU_HAS_FLAG(data->plat_data, CFG_IFA_MASTER_IN_ATF)) {
+> +			struct arm_smccc_res res;
+> +
+> +			arm_smccc_smc(MTK_SIP_KERNEL_IOMMU_CONTROL,
+> +				      IOMMU_ATF_CMD_CONFIG_INFRA_IOMMU,
+> +				      portid, enable, 0, 0, 0, 0, &res);
+> +			if (res.a0 != 0) {
+> +				dev_err(dev, "%s iommu(%s) inframaster %d fail(%ld).\n",
+> +					enable ? "enable" : "disable",
+> +					dev_name(data->dev), portid, res.a0);
+> +				ret = -EINVAL;
+> +			}
+> +		} else {
 
-Some issues were reported on the original commit. Some thunderbolt devices
-don't work anymore due to the following DMA fault.
+This one is opening a big window for future mistakes.
 
-DMAR: DRHD: handling fault status reg 2
-DMAR: [INTR-REMAP] Request device [09:00.0] fault index 0x8080
-      [fault reason 0x25]
-      Blocked a compatibility format interrupt request
+I think that the only way that you have to do this is...
 
-Bring it back for now to avoid functional regression.
+	} else if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_INFRA)) {
+		if (MTK_IOMMU_HAS_FLAG(data->plat_data, CFG_IFA_MASTER_IN_ATF)) {
+			arm_smcc_smc ....
+		} else {
+			peri_mmuen_msk ....
+		}
+	}
 
-Fixes: 9cd4f1434479f ("iommu/vt-d: Fix possible recursive locking in intel_iommu_init()")
-Link: https://lore.kernel.org/linux-iommu/485A6EA5-6D58-42EA-B298-8571E97422DE@getmailspring.com/
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216497
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
-Reported-and-tested-by: George Hilliard <thirtythreeforty@gmail.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- include/linux/dmar.h        |  4 +---
- drivers/iommu/intel/dmar.c  |  7 -------
- drivers/iommu/intel/iommu.c | 27 +++++++++++++++++++++++++--
- 3 files changed, 26 insertions(+), 12 deletions(-)
+Otherwise, to reduce indentation, you'd have to do something like...
 
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index 8917a32173c4..d81a51978d01 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -65,7 +65,6 @@ struct dmar_pci_notify_info {
- 
- extern struct rw_semaphore dmar_global_lock;
- extern struct list_head dmar_drhd_units;
--extern int intel_iommu_enabled;
- 
- #define for_each_drhd_unit(drhd)					\
- 	list_for_each_entry_rcu(drhd, &dmar_drhd_units, list,		\
-@@ -89,8 +88,7 @@ extern int intel_iommu_enabled;
- static inline bool dmar_rcu_check(void)
- {
- 	return rwsem_is_locked(&dmar_global_lock) ||
--	       system_state == SYSTEM_BOOTING ||
--	       (IS_ENABLED(CONFIG_INTEL_IOMMU) && !intel_iommu_enabled);
-+	       system_state == SYSTEM_BOOTING;
- }
- 
- #define	dmar_rcu_dereference(p)	rcu_dereference_check((p), dmar_rcu_check())
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 04f7991734a9..3528058d253e 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -2356,13 +2356,6 @@ static int dmar_device_hotplug(acpi_handle handle, bool insert)
- 	if (!dmar_in_use())
- 		return 0;
- 
--	/*
--	 * It's unlikely that any I/O board is hot added before the IOMMU
--	 * subsystem is initialized.
--	 */
--	if (IS_ENABLED(CONFIG_INTEL_IOMMU) && !intel_iommu_enabled)
--		return -EOPNOTSUPP;
--
- 	if (dmar_detect_dsm(handle, DMAR_DSM_FUNC_DRHD)) {
- 		tmp = handle;
- 	} else {
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index c20f3e060bac..5bab71a05830 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -3029,7 +3029,13 @@ static int __init init_dmars(void)
- 
- #ifdef CONFIG_INTEL_IOMMU_SVM
- 		if (pasid_supported(iommu) && ecap_prs(iommu->ecap)) {
-+			/*
-+			 * Call dmar_alloc_hwirq() with dmar_global_lock held,
-+			 * could cause possible lock race condition.
-+			 */
-+			up_write(&dmar_global_lock);
- 			ret = intel_svm_enable_prq(iommu);
-+			down_write(&dmar_global_lock);
- 			if (ret)
- 				goto free_iommu;
- 		}
-@@ -3941,6 +3947,7 @@ int __init intel_iommu_init(void)
- 	force_on = (!intel_iommu_tboot_noforce && tboot_force_iommu()) ||
- 		    platform_optin_force_iommu();
- 
-+	down_write(&dmar_global_lock);
- 	if (dmar_table_init()) {
- 		if (force_on)
- 			panic("tboot: Failed to initialize DMAR table\n");
-@@ -3953,6 +3960,16 @@ int __init intel_iommu_init(void)
- 		goto out_free_dmar;
- 	}
- 
-+	up_write(&dmar_global_lock);
-+
-+	/*
-+	 * The bus notifier takes the dmar_global_lock, so lockdep will
-+	 * complain later when we register it under the lock.
-+	 */
-+	dmar_register_bus_notifier();
-+
-+	down_write(&dmar_global_lock);
-+
- 	if (!no_iommu)
- 		intel_iommu_debugfs_init();
- 
-@@ -3997,9 +4014,11 @@ int __init intel_iommu_init(void)
- 		pr_err("Initialization failed\n");
- 		goto out_free_dmar;
- 	}
-+	up_write(&dmar_global_lock);
- 
- 	init_iommu_pm_ops();
- 
-+	down_read(&dmar_global_lock);
- 	for_each_active_iommu(iommu, drhd) {
- 		/*
- 		 * The flush queue implementation does not perform
-@@ -4017,10 +4036,12 @@ int __init intel_iommu_init(void)
- 				       "%s", iommu->name);
- 		iommu_device_register(&iommu->iommu, &intel_iommu_ops, NULL);
- 	}
-+	up_read(&dmar_global_lock);
- 
- 	if (si_domain && !hw_pass_through)
- 		register_memory_notifier(&intel_iommu_memory_nb);
- 
-+	down_read(&dmar_global_lock);
- 	if (probe_acpi_namespace_devices())
- 		pr_warn("ACPI name space devices didn't probe correctly\n");
- 
-@@ -4031,15 +4052,17 @@ int __init intel_iommu_init(void)
- 
- 		iommu_disable_protect_mem_regions(iommu);
- 	}
-+	up_read(&dmar_global_lock);
- 
--	intel_iommu_enabled = 1;
--	dmar_register_bus_notifier();
- 	pr_info("Intel(R) Virtualization Technology for Directed I/O\n");
- 
-+	intel_iommu_enabled = 1;
-+
- 	return 0;
- 
- out_free_dmar:
- 	intel_iommu_free_dmars();
-+	up_write(&dmar_global_lock);
- 	return ret;
- }
- 
--- 
-2.34.1
+static int mtk_iommu_config_one(struct mtk_iommu_data *data, struct device *dev,
+				bool enable, u32 regionid, u32 larbid, u32 portid)
+{
+	struct mtk_smi_larb_iommu *larb_mmu;
+	............
+}
+
+static int mtk_iommu_config(struct .............)
+{
+	vars, etc....
+
+	for (i = 0; i < fwspec->num_ids; ++i)
+		mtk_iommu_config_one(data, dev, enable, regionid,
+				     MTK_M4U_TO_LARB(...), MTK_M4U_TO_PORT(...));
+}
+
+
+or....
+
+static int mtk_iommu_config_one_infra(struct ....)
+{
+	if (is atf) ....
+	else ....
+}
+
+Your choice.
+
+Regards,
+Angelo
+
 
