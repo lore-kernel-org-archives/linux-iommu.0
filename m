@@ -1,149 +1,145 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2058.outbound.protection.outlook.com [40.107.212.58])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F1147462
-	for <iommu@lists.linux.dev>; Tue, 20 Sep 2022 15:23:08 +0000 (UTC)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28KFBlFJ026120;
-	Tue, 20 Sep 2022 15:22:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=B4YxW+jAT3P/8goQQsCV3T+dXi8mRABjmmGoxH0/phg=;
- b=YZnLQvH0QGYJSHJKprHA5LoWkL9BucjMSzzlCaLu3GCvgczlVLnXeGvQ965eURGQ2omi
- SmHq6DwdcS1a6s7ESu6XHGghhR69I5pMySnCvvqhsFuEbywTaUb5drtS88AIHSa6EOjd
- PYJ82ZH/bS/dBFtGvKJPmZUi0s+XywQVCcLfArCCfOzYZb/2xrBYZUHWB8wvM9MrlhCt
- IRd0DQMMiiYOzsU3CzQ2hINfu2e1i+ap+ABdlVtdevsAa6o0uzEXX0VksT9cZvsjeRXJ
- C7hzYA0EDk7nZjvX2Gar8BzVnRf6qW4MhuRAn2K7HLvfWlmfu0mqkQVG/fEkmGUkxH6r rg== 
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jqfxpgdvd-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 20 Sep 2022 15:22:59 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-	by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 28KFL2UJ022166;
-	Tue, 20 Sep 2022 15:22:56 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-	by ppma01fra.de.ibm.com with ESMTP id 3jn5v8k0qk-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 20 Sep 2022 15:22:56 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-	by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 28KFMruE51052900
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 20 Sep 2022 15:22:53 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 6FF81AE051;
-	Tue, 20 Sep 2022 15:22:53 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id EC540AE04D;
-	Tue, 20 Sep 2022 15:22:52 +0000 (GMT)
-Received: from oc-nschnelle.boeblingen.de.ibm.com (unknown [9.155.199.46])
-	by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-	Tue, 20 Sep 2022 15:22:52 +0000 (GMT)
-Message-ID: <92e00af653b6c84bfbccd60651d106a73e54887b.camel@linux.ibm.com>
-Subject: Re: [PATCH 1/3] iommu/s390: Fix duplicate domain attachments
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Matthew Rosato <mjrosato@linux.ibm.com>,
-        Pierre Morel
- <pmorel@linux.ibm.com>, iommu@lists.linux.dev,
-        linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        agordeev@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
-        will@kernel.org, robin.murphy@arm.com, linux-kernel@vger.kernel.org
-Date: Tue, 20 Sep 2022 17:22:52 +0200
-In-Reply-To: <YynMUNCrGCzaFPjI@nvidia.com>
-References: <20220915151402.121032-1-schnelle@linux.ibm.com>
-	 <20220915151402.121032-2-schnelle@linux.ibm.com>
-	 <YynMUNCrGCzaFPjI@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 770137462
+	for <iommu@lists.linux.dev>; Tue, 20 Sep 2022 16:08:57 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kX8h5f8N30JIYUeqE+XMSVRWInHzdK08QCmk8sR9aBMHk8AinLy4Z+gF7jEoQYGLac+GAWZvMAtuaCWD7mvJcShDCvt43EHbaNosJYj4yaOceSP9XXiEPctz7UdI7F6Cpg+2AoKxrtzLF4aLZVpFBAV8g9A1KC/mLYjVxbL1J5Qj0jAkwdXbw52G4/CM7lIOIzp4omtQ0tCcjEOYTms39lOJ1ISWF9ss+307ea91sF1Ux4h22X4HVZnO+8myknQNFoSgXf0Sbtx8Ik4tViTC6LPAidd/o2Z1Ik9TRxYmZavfXjUxLoZwrEmLOzg4aGxh02XqKp9HDD++sgFUTDWJTQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XCJs0Ez8XRGvVxWXV0IiFWq6SxmnIM6tM2AiML/jJU4=;
+ b=P/5Fs7Hig/j7mR0KuXU05S8DHt7MDXJT2RDnL8M3h02l6WFYg4Ps4+qQhEXVEKEZy0b6DiJnqae0MfJ4wuHBYJe9YbSJ4GSF4GKl+dDRD/XUoxMK4QJWUMY/qv/p9cpKaebjBnQOfkHa1wZpqGb8FeZJu5wzuqtxH3p1UmCxUg+2nfVvS4sZrKae8I4ZZBowE7k6Qp0vc4DSmcv/uEV1jyF9vyfdvprrYk2Gqh9NW7re4iYEUSnFhCy/KDEgII8udd046GEB678NOMjMGoV9iGyzAVpe5KzDz2chPXb/8Qsm03t/Zpd+CTgy1ZwSgfE8MNnfchF0M8uVsFLHCmVpIA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XCJs0Ez8XRGvVxWXV0IiFWq6SxmnIM6tM2AiML/jJU4=;
+ b=poUJZ5SNFmFzD/y6/v+hMdH3xCCQ6477U8gTPkx88MOKiJDcM0dzbSZecY8VufvEfjstfp6HT/D0qMMMbawgoWL8iZXfvzPEKT71dQlA9jfFlBX5DP08Lrq6YuQCVDdltCuUKmNg4imnV1Vhh6r4UCBzGg0QhNaaUBsETlzETJG6829L1SOWg/vvAopa8q1QwJ+MCheMaCcD3RwAVpGTHETj+iIbhEktugrR3hHxy1Ws+vomIOyqxYAPwZtXQ63wXmsyDAE3eGiW0zZlasmuX+SW9MQLWmOJZCHsGATzLT4OlNmF+u8Xfeug7mcJwc3EJjzg+HpCrD4FTEKu7I7JsQ==
+Received: from BN0PR04CA0178.namprd04.prod.outlook.com (2603:10b6:408:eb::33)
+ by BL1PR12MB5255.namprd12.prod.outlook.com (2603:10b6:208:315::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5632.21; Tue, 20 Sep
+ 2022 16:08:53 +0000
+Received: from BN8NAM11FT048.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:eb:cafe::3c) by BN0PR04CA0178.outlook.office365.com
+ (2603:10b6:408:eb::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.14 via Frontend
+ Transport; Tue, 20 Sep 2022 16:08:53 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ BN8NAM11FT048.mail.protection.outlook.com (10.13.177.117) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5654.14 via Frontend Transport; Tue, 20 Sep 2022 16:08:53 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Tue, 20 Sep
+ 2022 09:08:38 -0700
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ rnnvmail204.nvidia.com (10.129.68.6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.29; Tue, 20 Sep 2022 09:08:37 -0700
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.29; Tue, 20 Sep 2022 09:08:36 -0700
+Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com
+ (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29 via Frontend
+ Transport; Tue, 20 Sep 2022 09:08:35 -0700
+Date: Tue, 20 Sep 2022 09:08:33 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+CC: "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "dwmw2@infradead.org"
+	<dwmw2@infradead.org>, "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"yong.wu@mediatek.com" <yong.wu@mediatek.com>, "matthias.bgg@gmail.com"
+	<matthias.bgg@gmail.com>, "jgg@nvidia.com" <jgg@nvidia.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH v3 4/6] iommu: Regulate EINVAL in ->attach_dev callback
+ functions
+Message-ID: <YynlgZgmv26dc3GB@Asurada-Nvidia>
+References: <cover.1663227492.git.nicolinc@nvidia.com>
+ <253f8098664f78f5b5a8a7deb816af8ad7d37122.1663227492.git.nicolinc@nvidia.com>
+ <BN9PR11MB52768A3239F75290F7842D0E8C4C9@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 3DpJK-EC_yVMF7IhipQBESqkR5E4RO33
-X-Proofpoint-ORIG-GUID: 3DpJK-EC_yVMF7IhipQBESqkR5E4RO33
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
- definitions=2022-09-20_06,2022-09-20_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
- lowpriorityscore=0 mlxlogscore=999 suspectscore=0 bulkscore=0 mlxscore=0
- adultscore=0 phishscore=0 impostorscore=0 malwarescore=0
- priorityscore=1501 clxscore=1015 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2209130000 definitions=main-2209200090
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB52768A3239F75290F7842D0E8C4C9@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT048:EE_|BL1PR12MB5255:EE_
+X-MS-Office365-Filtering-Correlation-Id: 07a532ae-2bf8-4f21-e6ef-08da9b2269e6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	2NsBA/oMzTtKlqYf/Igfb+KQC2SFR6h1VOFTAjMHv9D8p+gKCbbI6z6SZd8kSEmbIG/SOgvhZnqNFypTJLqlzlmoCMB234wTVPXQo2806FzxM5KcbvnHGjVCRCHRBny1gVV1KdygsLYUU+pKCS6KW6OicMhr6AtcySFHuXhiiMM2eob3ofxKhiaqxedR/0xzm5W8efWspXa35LHCYvh6bZtSlbG8tqcoEvPh/bleOY2PEHk9RIwnJk+EVrranb5eNWQbxnVxi9q6VPmNs/TYanCASk+P6YqVc7LQ56lxo9L9sQ2pSw8qWZXTzNXUbZ+J//oSBGn9kG378Jq97BzcoC2MG+AAYimgpqtKzU22UGTTekolJpnADYGVlB6xavocTLiGMX3lx3l2EvU/DY3So/+1EQRQuy+XYUJXR2Yj9gDNgsV2q0kQG7qyeh/f+DGKqXwk/rlUmoPsdzdA4Sryph4Wo4rjfpvzuaevVqtvU10e8WNwQ94Slvu19Glt3diiqn+6+JDv8Y3sEKWyE75tujyrILiS/ZXUHc6Oz7GVQZwNtXDAbq6RAy0Ob4OeWjcwqst5Q5YVfzi8IT84lh/G+whzcREJPILpJ+HOQ2W+zzZZgLPT0RPxv9DYBvqNo8Tbuj/2ZoOhn+qEzZegtFryLa1BcQaOWZcqEGC+z0C7yE5RmF5jieXxfr8m6n+lLbeHBoQfeZOyTjeLMyYK7uVIxWHBg8055OBXFdlzKx8o1natyOIk6VBkQFGk+20rr6QMZZkMM7G3t/cN0/d5zMw7oA==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(396003)(136003)(376002)(346002)(451199015)(46966006)(40470700004)(36840700001)(36860700001)(55016003)(86362001)(82740400003)(7636003)(6916009)(40480700001)(356005)(316002)(8676002)(54906003)(40460700003)(8936002)(2906002)(4326008)(7416002)(70206006)(5660300002)(41300700001)(70586007)(426003)(336012)(82310400005)(186003)(47076005)(478600001)(33716001)(9686003)(26005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Sep 2022 16:08:53.2092
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 07a532ae-2bf8-4f21-e6ef-08da9b2269e6
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN8NAM11FT048.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5255
 
-On Tue, 2022-09-20 at 11:21 -0300, Jason Gunthorpe wrote:
-> On Thu, Sep 15, 2022 at 05:14:00PM +0200, Niklas Schnelle wrote:
-> > Since commit fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev
-> > calls") we can end up with duplicates in the list of devices attached to
-> > a domain. This is inefficient and confusing since only one domain can
-> > actually be in control of the IOMMU translations for a device. Fix this
-> > by detaching the device from the previous domain, if any, on attach.
-> > This also makes the restore behavior analogous between IOMMU and DMA API
-> > control.
-> > 
-> > Fixes: fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev calls")
-> > Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> > ---
-> >  drivers/iommu/s390-iommu.c | 82 ++++++++++++++++++++++----------------
-> >  1 file changed, 47 insertions(+), 35 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-> > index c898bcbbce11..de8f76775240 100644
-> > --- a/drivers/iommu/s390-iommu.c
-> > +++ b/drivers/iommu/s390-iommu.c
-> > @@ -83,14 +83,41 @@ static void s390_domain_free(struct iommu_domain *domain)
-> >  	kfree(s390_domain);
-> >  }
-> >  
-> > +static bool __s390_iommu_detach_device(struct s390_domain *s390_domain,
-> > +				     struct zpci_dev *zdev)
-> > +{
-> > +	struct s390_domain_device *domain_device, *tmp;
-> > +	unsigned long flags;
-> > +	bool found = false;
-> > +
-> > +	spin_lock_irqsave(&s390_domain->list_lock, flags);
-> > +	list_for_each_entry_safe(domain_device, tmp, &s390_domain->devices,
-> > +				 list) {
-> > +		if (domain_device->zdev == zdev) {
+On Tue, Sep 20, 2022 at 06:29:28AM +0000, Tian, Kevin wrote:
+> External email: Use caution opening links or attachments
 > 
-> Why all this searching? The domain argument is only being provided to
-> help drivers find their data structures, in most cases I would expect
-> it to be mostly unused.
-
-Before patch 3 we have no other way besides searching in the list to
-get from the struct device to the struct s390_domain_device that we
-need to kfree(). But yeah as shown by patch 3 this whole
-s390_domain_device thing is not needed anyway.
-
 > 
-> After patch 3 the struct is gone, so isn't this just
+> > From: Nicolin Chen <nicolinc@nvidia.com>
+> > Sent: Thursday, September 15, 2022 3:59 PM
+> >
+> > diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+> > index c5e7e8b020a5..4cadbd744b7f 100644
+> > --- a/drivers/iommu/intel/pasid.c
+> > +++ b/drivers/iommu/intel/pasid.c
+> > @@ -101,8 +101,10 @@ int intel_pasid_alloc_table(struct device *dev)
+> >
+> >       might_sleep();
+> >       info = dev_iommu_priv_get(dev);
+> > -     if (WARN_ON(!info || !dev_is_pci(dev) || info->pasid_table))
+> > -             return -EINVAL;
+> > +     if (WARN_ON(!info || !dev_is_pci(dev)))
+> > +             return -ENODEV;
+> > +     if (WARN_ON(info->pasid_table))
+> > +             return -EBUSY;
 > 
->  spin_lock_irqsave(&s390_domain->list_lock, flags);
->  list_del_init(&zdev->iommu_list)
->  spin_unlock_irqsave(&s390_domain->list_lock, flags);
+> -EEXIST. It's not a busy condition which might change sometime after.
 > 
-> ?
+> btw below -EVINAL in viommu should be converted to -ENODEV too
+> since it's a check purely on device side:
+> 
+> viommu_domain_finalise()
+>         viommu_page_size = 1UL << __ffs(viommu->pgsize_bitmap);
+>         if (viommu_page_size > PAGE_SIZE) {
+>                 dev_err(vdev->dev,
+>                         "granule 0x%lx larger than system page size 0x%lx\n",
+>                         viommu_page_size, PAGE_SIZE);
+>                 return -EINVAL;
+>         }
 
-Yes with patch 3 I think you're right, the above should be enough to
-get it removed from the list and there really shouldn't be a call to
-detach from a domain if it wasn't attached to it, right? Just to be
-safe we could also do nothing if (zdev->s390_domain != s390_domain) or
-maybe better just BUG_ON()?
-
-One thing that is still a bit of a mismatch is that architecturally
-zpci_unregister_ioat() can fail but detach returns void. Now, one
-reason for that is a hot unplug of the device has occurred in the
-meantime in which case the device doesn't use the DMA translations
-anymore anyway.
-
-If anything else happens I don't know what we should do,
-zpci_dma_exit_device() in our DMA API implementation in these cases
-leaks the DMA tables such that any hardware still accessing them would
-get valid tables but I don't think I've ever seen this occurring.
+Fixed both places. Thanks!
 
