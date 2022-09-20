@@ -1,275 +1,262 @@
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 801D0A31
-	for <iommu@lists.linux.dev>; Mon, 19 Sep 2022 23:07:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663628845; x=1695164845;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=705WJOdue58NafhZ3jROr0GP9JgBUxIfi5dZH5hR6WA=;
-  b=AWbpcuzxL0uvn27TLIDdn9o5rAO05RZr+f5gXX6xiY41A7QIqCXyvihi
-   GamgraO8Mi3TrlehnX46yO1McGvXt/dRGind8usFh8NiZLiPsqyMYaR0Z
-   SCkGD7blH6zZoLJ9L80lCnAlrCuy6bjwYDlKvAzZbTz0J5aYXMk5kra4R
-   NVnnspPjcJP2VNKGfldhiV8GcpBoI0b92r4O0xiygNCg6e1ZgH55hDWF9
-   gQ7gPk82m5EW6hYfw6Xtk3Em1hSNpBZexj4GNqGBkfruO6LPwk3Swp5PS
-   vGgm9jQHxIqN1jhDi4XvE2YcYBa4X+tQcDFcx7BH1ZnW5cGdyOeDUykv0
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10475"; a="300921278"
-X-IronPort-AV: E=Sophos;i="5.93,329,1654585200"; 
-   d="scan'208";a="300921278"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Sep 2022 16:07:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,329,1654585200"; 
-   d="scan'208";a="569841395"
-Received: from lkp-server01.sh.intel.com (HELO c0a60f19fe7e) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 19 Sep 2022 16:07:22 -0700
-Received: from kbuild by c0a60f19fe7e with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1oaPrF-0002Hl-1e;
-	Mon, 19 Sep 2022 23:07:21 +0000
-Date: Tue, 20 Sep 2022 07:06:48 +0800
-From: kernel test robot <lkp@intel.com>
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-scsi@vger.kernel.org, linux-rockchip@lists.infradead.org,
- linux-parisc@vger.kernel.org, linux-mm@kvack.org,
- linux-btrfs@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, dri-devel@lists.freedesktop.org,
- Linux Memory Management List <linux-mm@kvack.org>
-Subject: [linux-next:master] BUILD REGRESSION
- 4c9ca5b1597e3222177ba2a94658f78fa5ef4f58
-Message-ID: <6328f608.UcWATT4z3JbSJozt%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2FED7C
+	for <iommu@lists.linux.dev>; Tue, 20 Sep 2022 01:04:07 +0000 (UTC)
+Received: by mail-qv1-f50.google.com with SMTP id d1so1068199qvs.0
+        for <iommu@lists.linux.dev>; Mon, 19 Sep 2022 18:04:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=SCxIzRVwRu2G1qyALIGV2kP/vMjMV5jdoi16PEYIOgE=;
+        b=JoKocIbQ9FpAgbTONCLFLTIJaW8RRKGOp3HkoVbpxgbjuiIG0KmoCvdr/PISnLUBIL
+         D5HplYeToAG7UGMlLxSjFBOr0nnbixjInlbsJXHhWabAEK5q/zzjS1ltr8DrAggMnjxt
+         Wkq765VWfEekiOlmSMMVNaeR62rllD8B0KiTGPpLzbDVwiDL/ESTDQ6tFndD49p4UYSi
+         ul7gjqGTFrXxDplF75+HNupiAl+oHE4b3yxKNgucKpnAGpqYqM2X8RPgpABpxHy2h8p1
+         d4wr77qc4KT7z9tXrL/FbZVvl8h/oD2SOuy3125A9bPk8yNolZR6EYSqJUe+EjP6nEvj
+         n+Dw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=SCxIzRVwRu2G1qyALIGV2kP/vMjMV5jdoi16PEYIOgE=;
+        b=D3XC6CLxUlWcVjnbSoXCCyEz57aWr35kJ1UK7/Y5EO7JJmLf6NIeFw8D41akgUAwz/
+         qPKJTYyg0H8eyeGNmNeg2Uyxy/jVajmqA3hTp3b0lBY1TkFoJ/KDTbFEdGEk0xEA9l7Q
+         olFicNIOfZfuhVVkvbsDdiTSdO46p8GEH6Rg0coDG18r9o53Vdaq5zE46bOgUTKZwvNA
+         tZz/cEhM9G2wmC6iyzpuLYk3Bd+w8l753aA8zXErhuZ/w35h+d+GPZk8DU9bei65Kymf
+         f1sqZwtt/s7jIlu/29ihU+HJ5VmIKumCHx0CQWFE3znJuoeK8xyYWEKMQSUjgehPFBRM
+         cPuw==
+X-Gm-Message-State: ACrzQf3e8/vd9/rGqnOrQ8b20Bn3Mj+0IcO3A+AmXdWaP5Xj5AlphZRF
+	M1W5Fjpq6yQahqubkHkylHI=
+X-Google-Smtp-Source: AMsMyM50pJeVVx5dO6o5XUepLsYJmU5Mask8xX7Jd1rp09hZn/Y6xrrnn0X1QhT/iaGEEk09kJllIg==
+X-Received: by 2002:a0c:a88a:0:b0:474:7f16:f272 with SMTP id x10-20020a0ca88a000000b004747f16f272mr17062550qva.4.1663635840016;
+        Mon, 19 Sep 2022 18:04:00 -0700 (PDT)
+Received: from [10.69.40.226] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id bs14-20020a05620a470e00b006b58d8f6181sm13648480qkb.72.2022.09.19.18.03.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 19 Sep 2022 18:03:59 -0700 (PDT)
+Message-ID: <02561695-df44-4df6-c486-1431bf152650@gmail.com>
+Date: Mon, 19 Sep 2022 18:03:55 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH 00/21] mm: introduce Designated Movable Blocks
+Content-Language: en-US
+To: David Hildenbrand <david@redhat.com>,
+ Andrew Morton <akpm@linux-foundation.org>
+Cc: Jonathan Corbet <corbet@lwn.net>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Frank Rowand <frowand.list@gmail.com>, Mike Kravetz
+ <mike.kravetz@oracle.com>, Muchun Song <songmuchun@bytedance.com>,
+ Mike Rapoport <rppt@kernel.org>, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, Borislav Petkov <bp@suse.de>,
+ "Paul E. McKenney" <paulmck@kernel.org>,
+ Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+ Randy Dunlap <rdunlap@infradead.org>,
+ Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+ Florian Fainelli <f.fainelli@gmail.com>, Zi Yan <ziy@nvidia.com>,
+ Oscar Salvador <osalvador@suse.de>, Hari Bathini <hbathini@linux.ibm.com>,
+ Kees Cook <keescook@chromium.org>, - <devicetree-spec@vger.kernel.org>,
+ KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
+ Mel Gorman <mgorman@suse.de>, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-mm@kvack.org, iommu@lists.linux.dev
+References: <20220913195508.3511038-1-opendmb@gmail.com>
+ <b610a7b3-d740-8d45-c270-4c638deb1cfa@redhat.com>
+From: Doug Berger <opendmb@gmail.com>
+In-Reply-To: <b610a7b3-d740-8d45-c270-4c638deb1cfa@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-branch HEAD: 4c9ca5b1597e3222177ba2a94658f78fa5ef4f58  Add linux-next specific files for 20220919
+On 9/19/2022 2:00 AM, David Hildenbrand wrote:
+> Hi Dough,
+> 
+> I have some high-level questions.
+Thanks for your interest. I will attempt to answer them.
 
-Error/Warning reports:
+> 
+>> MOTIVATION:
+>> Some Broadcom devices (e.g. 7445, 7278) contain multiple memory
+>> controllers with each mapped in a different address range within
+>> a Uniform Memory Architecture. Some users of these systems have
+> 
+> How large are these areas typically?
+> 
+> How large are they in comparison to other memory in the system?
+> 
+> How is this memory currently presented to the system?
+I'm not certain what is typical because these systems are highly 
+configurable and Broadcom's customers have different ideas about 
+application processing.
 
-https://lore.kernel.org/linux-doc/202209200314.tChS7q2Y-lkp@intel.com
-https://lore.kernel.org/linux-doc/202209200341.be18yIBM-lkp@intel.com
-https://lore.kernel.org/linux-mm/202209150141.WgbAKqmX-lkp@intel.com
-https://lore.kernel.org/linux-mm/202209200603.Hpvoa8Ii-lkp@intel.com
-https://lore.kernel.org/llvm/202209192243.d80zUWVW-lkp@intel.com
-https://lore.kernel.org/llvm/202209200834.EFwaTsIj-lkp@intel.com
+The 7278 device has four ARMv8 CPU cores in an SMP cluster and two 
+memory controllers (MEMCs). Each MEMC is capable of controlling up to 
+8GB of DRAM. An example 7278 system might have 1GB on each controller, 
+so an arm64 kernel might see 1GB on MEMC0 at 0x40000000-0x7FFFFFFF and 
+1GB on MEMC1 at 0x300000000-0x33FFFFFFF.
 
-Error/Warning: (recently discovered and may have been fixed)
+The Designated Movable Block concept introduced here has the potential 
+to offer useful services to different constituencies. I tried to 
+highlight this in my V1 patch set with the hope of attracting some 
+interest, but it can complicate the overall discussion, so I would like 
+to maybe narrow the discussion here. It may be good to keep them in mind 
+when assessing the overall value, but perhaps the "other opportunities" 
+can be covered as a follow on discussion.
 
-ERROR: modpost: "devm_ioremap_resource" [drivers/dma/fsl-edma.ko] undefined!
-ERROR: modpost: "devm_memremap" [drivers/misc/open-dice.ko] undefined!
-ERROR: modpost: "devm_memunmap" [drivers/misc/open-dice.ko] undefined!
-ERROR: modpost: "devm_platform_ioremap_resource" [drivers/char/xillybus/xillybus_of.ko] undefined!
-ERROR: modpost: "devm_platform_ioremap_resource" [drivers/clk/xilinx/clk-xlnx-clock-wizard.ko] undefined!
-ERROR: modpost: "ioremap" [drivers/tty/ipwireless/ipwireless.ko] undefined!
-ERROR: modpost: "iounmap" [drivers/net/ethernet/8390/pcnet_cs.ko] undefined!
-ERROR: modpost: "iounmap" [drivers/tty/ipwireless/ipwireless.ko] undefined!
-arch/parisc/lib/iomap.c:363:5: warning: no previous prototype for 'ioread64_lo_hi' [-Wmissing-prototypes]
-arch/parisc/lib/iomap.c:373:5: warning: no previous prototype for 'ioread64_hi_lo' [-Wmissing-prototypes]
-arch/parisc/lib/iomap.c:448:6: warning: no previous prototype for 'iowrite64_lo_hi' [-Wmissing-prototypes]
-arch/parisc/lib/iomap.c:454:6: warning: no previous prototype for 'iowrite64_hi_lo' [-Wmissing-prototypes]
-drivers/gpu/drm/drm_atomic_helper.c:802: warning: expecting prototype for drm_atomic_helper_check_wb_connector_state(). Prototype was for drm_atomic_helper_check_wb_encoder_state() instead
-drivers/iommu/ipmmu-vmsa.c:946:34: warning: unused variable 'ipmmu_of_ids' [-Wunused-const-variable]
-drivers/scsi/qla2xxx/qla_os.c:2854:23: warning: assignment to 'struct trace_array *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-drivers/scsi/qla2xxx/qla_os.c:2854:25: error: implicit declaration of function 'trace_array_get_by_name'; did you mean 'trace_array_set_clr_event'? [-Werror=implicit-function-declaration]
-drivers/scsi/qla2xxx/qla_os.c:2869:9: error: implicit declaration of function 'trace_array_put' [-Werror=implicit-function-declaration]
-fs/btrfs/extent-io-tree.c:165: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
-fs/btrfs/extent-io-tree.c:217: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
-mm/hugetlb.c:5565:14: warning: variable 'reserve_alloc' set but not used [-Wunused-but-set-variable]
+The base capability described in commits 7-15 of this V1 patch set is to 
+allow a 'movablecore' block to be created at a particular base address 
+rather than solely at the end of addressable memory.
 
-Unverified Error/Warning (likely false positive, please contact us if interested):
+> 
+>> expressed the desire to locate ZONE_MOVABLE memory on each
+>> memory controller to allow user space intensive processing to
+>> make better use of the additional memory bandwidth.
+> 
+> Can you share some more how exactly ZONE_MOVABLE would help here to make 
+> better use of the memory bandwidth?
+ZONE_MOVABLE memory is effectively unusable by the kernel. It can be 
+used by user space applications through both the page allocator and the 
+Hugetlbfs. If a large 'movablecore' allocation is defined and it can 
+only be located at the end of addressable memory then it will always be 
+located on MEMC1 of a 7278 system. This will create a tendency for user 
+space accesses to consume more bandwidth on the MEMC1 memory controller 
+and kernel space accesses to consume more bandwidth on MEMC0. A more 
+even distribution of ZONE_MOVABLE memory between the available memory 
+controllers in theory makes more memory bandwidth available to user 
+space intensive loads.
 
-ERROR: modpost: "__tsan_memcpy" [arch/s390/crypto/chacha_s390.ko] undefined!
-ERROR: modpost: "__tsan_memcpy" [arch/s390/crypto/ghash_s390.ko] undefined!
-ERROR: modpost: "__tsan_memcpy" [arch/s390/crypto/prng.ko] undefined!
-ERROR: modpost: "__tsan_memcpy" [arch/s390/crypto/sha3_512_s390.ko] undefined!
-ERROR: modpost: "__tsan_memset" [arch/s390/crypto/chacha_s390.ko] undefined!
-ERROR: modpost: "__tsan_memset" [arch/s390/crypto/ghash_s390.ko] undefined!
-ERROR: modpost: "__tsan_memset" [arch/s390/crypto/prng.ko] undefined!
-ERROR: modpost: "__tsan_memset" [arch/s390/crypto/sha3_512_s390.ko] undefined!
-ERROR: modpost: "__tsan_memset" [kernel/rcu/refscale.ko] undefined!
-ERROR: modpost: "__tsan_memset" [kernel/scftorture.ko] undefined!
+> 
+>> Unfortunately, the historical monotonic layout of zones would
+>> mean that if the lowest addressed memory controller contains
+>> ZONE_MOVABLE memory then all of the memory available from
+>> memory controllers at higher addresses must also be in the
+>> ZONE_MOVABLE zone. This would force all kernel memory accesses
+>> onto the lowest addressed memory controller and significantly
+>> reduce the amount of memory available for non-movable
+>> allocations.
+> 
+> We do have code that relies on zones during boot to not overlap within a 
+> single node.
+I believe my changes address all such reliance, but if you are aware of 
+something I missed please let me know.
 
-Error/Warning ids grouped by kconfigs:
+> 
+>>
+>> The main objective of this patch set is therefore to allow a
+>> block of memory to be designated as part of the ZONE_MOVABLE
+>> zone where it will always only be used by the kernel page
+>> allocator to satisfy requests for movable pages. The term
+>> Designated Movable Block is introduced here to represent such a
+>> block. The favored implementation allows modification of the
+> 
+> Sorry to say, but that term is rather suboptimal to describe what you 
+> are doing here. You simply have some system RAM you'd want to have 
+> managed by ZONE_MOVABLE, no?
+That may be true, but I found it superior to the 'sticky' movable 
+terminology put forth by Mel Gorman ;). I'm happy to entertain 
+alternatives, but they may not be as easy to find as you think.
 
-gcc_recent_errors
-|-- alpha-allyesconfig
-|   |-- drivers-gpu-drm-drm_atomic_helper.c:warning:expecting-prototype-for-drm_atomic_helper_check_wb_connector_state().-Prototype-was-for-drm_atomic_helper_check_wb_encoder_state()-instead
-|   |-- drivers-scsi-qla2xxx-qla_os.c:error:implicit-declaration-of-function-trace_array_get_by_name
-|   |-- drivers-scsi-qla2xxx-qla_os.c:error:implicit-declaration-of-function-trace_array_put
-|   `-- drivers-scsi-qla2xxx-qla_os.c:warning:assignment-to-struct-trace_array-from-int-makes-pointer-from-integer-without-a-cast
-|-- alpha-randconfig-r026-20220919
-|   `-- fs-btrfs-extent-io-tree.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
-|-- arc-allyesconfig
-|   `-- drivers-gpu-drm-drm_atomic_helper.c:warning:expecting-prototype-for-drm_atomic_helper_check_wb_connector_state().-Prototype-was-for-drm_atomic_helper_check_wb_encoder_state()-instead
-|-- arc-randconfig-r043-20220919
-|   `-- drivers-gpu-drm-drm_atomic_helper.c:warning:expecting-prototype-for-drm_atomic_helper_check_wb_connector_state().-Prototype-was-for-drm_atomic_helper_check_wb_encoder_state()-instead
-|-- arm-allyesconfig
-|   `-- drivers-gpu-drm-drm_atomic_helper.c:warning:expecting-prototype-for-drm_atomic_helper_check_wb_connector_state().-Prototype-was-for-drm_atomic_helper_check_wb_encoder_state()-instead
-|-- arm-defconfig
-|   `-- drivers-gpu-drm-drm_atomic_helper.c:warning:expecting-prototype-for-drm_atomic_helper_check_wb_connector_state().-Prototype-was-for-drm_atomic_helper_check_wb_encoder_state()-instead
-|-- arm64-allyesconfig
-|   `-- drivers-gpu-drm-drm_atomic_helper.c:warning:expecting-prototype-for-drm_atomic_helper_check_wb_connector_state().-Prototype-was-for-drm_atomic_helper_check_wb_encoder_state()-instead
-|-- i386-allyesconfig
-|   `-- drivers-gpu-drm-drm_atomic_helper.c:warning:expecting-prototype-for-drm_atomic_helper_check_wb_connector_state().-Prototype-was-for-drm_atomic_helper_check_wb_encoder_state()-instead
-|-- i386-defconfig
-|   |-- drivers-gpu-drm-drm_atomic_helper.c:warning:expecting-prototype-for-drm_atomic_helper_check_wb_connector_state().-Prototype-was-for-drm_atomic_helper_check_wb_encoder_state()-instead
-|   `-- mm-hugetlb.c:warning:variable-reserve_alloc-set-but-not-used
-|-- i386-randconfig-a011-20220919
-|   `-- drivers-gpu-drm-drm_atomic_helper.c:warning:expecting-prototype-for-drm_atomic_helper_check_wb_connector_state().-Prototype-was-for-drm_atomic_helper_check_wb_encoder_state()-instead
-|-- i386-randconfig-a012-20220919
-|   `-- drivers-gpu-drm-drm_atomic_helper.c:warning:expecting-prototype-for-drm_atomic_helper_check_wb_connector_state().-Prototype-was-for-drm_atomic_helper_check_wb_encoder_state()-instead
-|-- i386-randconfig-a015-20220919
-|   `-- drivers-gpu-drm-drm_atomic_helper.c:warning:expecting-prototype-for-drm_atomic_helper_check_wb_connector_state().-Prototype-was-for-drm_atomic_helper_check_wb_encoder_state()-instead
-|-- ia64-allmodconfig
-|   |-- drivers-scsi-qla2xxx-qla_os.c:error:implicit-declaration-of-function-trace_array_get_by_name
-|   |-- drivers-scsi-qla2xxx-qla_os.c:error:implicit-declaration-of-function-trace_array_put
-|   `-- drivers-scsi-qla2xxx-qla_os.c:warning:assignment-to-struct-trace_array-from-int-makes-pointer-from-integer-without-a-cast
-|-- loongarch-buildonly-randconfig-r004-20220919
-|   `-- drivers-gpu-drm-drm_atomic_helper.c:warning:expecting-prototype-for-drm_atomic_helper_check_wb_connector_state().-Prototype-was-for-drm_atomic_helper_check_wb_encoder_state()-instead
-|-- loongarch-randconfig-r015-20220919
-|   `-- drivers-gpu-drm-drm_atomic_helper.c:warning:expecting-prototype-for-drm_atomic_helper_check_wb_connector_state().-Prototype-was-for-drm_atomic_helper_check_wb_encoder_state()-instead
-|-- m68k-allmodconfig
-|   `-- drivers-gpu-drm-drm_atomic_helper.c:warning:expecting-prototype-for-drm_atomic_helper_check_wb_connector_state().-Prototype-was-for-drm_atomic_helper_check_wb_encoder_state()-instead
-|-- m68k-allyesconfig
-|   |-- drivers-gpu-drm-drm_atomic_helper.c:warning:expecting-prototype-for-drm_atomic_helper_check_wb_connector_state().-Prototype-was-for-drm_atomic_helper_check_wb_encoder_state()-instead
-|   `-- fs-btrfs-extent-io-tree.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
-|-- mips-allyesconfig
-|   `-- drivers-gpu-drm-drm_atomic_helper.c:warning:expecting-prototype-for-drm_atomic_helper_check_wb_connector_state().-Prototype-was-for-drm_atomic_helper_check_wb_encoder_state()-instead
-|-- nios2-randconfig-r025-20220919
-|   `-- drivers-gpu-drm-drm_atomic_helper.c:warning:expecting-prototype-for-drm_atomic_helper_check_wb_connector_state().-Prototype-was-for-drm_atomic_helper_check_wb_encoder_state()-instead
-|-- openrisc-randconfig-r003-20220919
-|   `-- drivers-gpu-drm-drm_atomic_helper.c:warning:expecting-prototype-for-drm_atomic_helper_check_wb_connector_state().-Prototype-was-for-drm_atomic_helper_check_wb_encoder_state()-instead
-|-- openrisc-randconfig-r004-20220919
-|   `-- drivers-gpu-drm-drm_atomic_helper.c:warning:expecting-prototype-for-drm_atomic_helper_check_wb_connector_state().-Prototype-was-for-drm_atomic_helper_check_wb_encoder_state()-instead
-|-- parisc-allyesconfig
-clang_recent_errors
-|-- arm-buildonly-randconfig-r001-20220919
-|   |-- drivers-extcon-extcon-usbc-tusb320.c:warning:expecting-prototype-for-drivers-extcon-extcon-tusb320c().-Prototype-was-for-TUSB320_REG8()-instead
-|   `-- drivers-gpu-drm-tests-drm_mm_test.c:warning:stack-frame-size-()-exceeds-limit-()-in-__drm_test_mm_reserve
-|-- arm-defconfig
-|   |-- drivers-clk-rockchip-clk-rv1126.c:warning:unused-variable-mux_aclk_pdispp_p
-|   |-- drivers-clk-rockchip-clk-rv1126.c:warning:unused-variable-mux_aclk_pdnpu_p
-|   |-- drivers-clk-rockchip-clk-rv1126.c:warning:unused-variable-mux_aclk_pdvi_p
-|   |-- drivers-clk-rockchip-clk-rv1126.c:warning:unused-variable-mux_cif_out2io_p
-|   |-- drivers-clk-rockchip-clk-rv1126.c:warning:unused-variable-mux_clk_isp_p
-|   |-- drivers-clk-rockchip-clk-rv1126.c:warning:unused-variable-mux_clk_ispp_p
-|   |-- drivers-clk-rockchip-clk-rv1126.c:warning:unused-variable-mux_clk_npu_p
-|   |-- drivers-clk-rockchip-clk-rv1126.c:warning:unused-variable-mux_cpll_gpll_hpll_p
-|   |-- drivers-clk-rockchip-clk-rv1126.c:warning:unused-variable-mux_cpll_hpll_gpll_p
-|   |-- drivers-clk-rockchip-clk-rv1126.c:warning:unused-variable-mux_dclk_vop_p
-|   |-- drivers-clk-rockchip-clk-rv1126.c:warning:unused-variable-mux_gpll_cpll_apll_hpll_p
-|   |-- drivers-clk-rockchip-clk-rv1126.c:warning:unused-variable-mux_gpll_cpll_hpll_p
-|   |-- drivers-clk-rockchip-clk-rv1126.c:warning:unused-variable-mux_gpll_usb480m_p
-|   `-- drivers-clk-rockchip-clk-rv1126.c:warning:unused-variable-mux_mipicsi_out2io_p
-|-- arm64-buildonly-randconfig-r005-20220919
-|   |-- arch-arm64-kernel-alternative.c:warning:no-previous-prototype-for-function-apply_alternatives_vdso
-|   `-- drivers-extcon-extcon-usbc-tusb320.c:warning:expecting-prototype-for-drivers-extcon-extcon-tusb320c().-Prototype-was-for-TUSB320_REG8()-instead
-|-- arm64-randconfig-r033-20220919
-|   `-- arch-arm64-kernel-alternative.c:warning:no-previous-prototype-for-function-apply_alternatives_vdso
-|-- hexagon-randconfig-r041-20220919
-|   `-- drivers-extcon-extcon-usbc-tusb320.c:warning:expecting-prototype-for-drivers-extcon-extcon-tusb320c().-Prototype-was-for-TUSB320_REG8()-instead
-|-- hexagon-randconfig-r045-20220919
-|   `-- drivers-extcon-extcon-usbc-tusb320.c:warning:expecting-prototype-for-drivers-extcon-extcon-tusb320c().-Prototype-was-for-TUSB320_REG8()-instead
-|-- i386-randconfig-a002-20220919
-|   `-- drivers-extcon-extcon-usbc-tusb320.c:warning:expecting-prototype-for-drivers-extcon-extcon-tusb320c().-Prototype-was-for-TUSB320_REG8()-instead
-|-- i386-randconfig-a005-20220919
-|   `-- drivers-extcon-extcon-usbc-tusb320.c:warning:expecting-prototype-for-drivers-extcon-extcon-tusb320c().-Prototype-was-for-TUSB320_REG8()-instead
-|-- i386-randconfig-a006-20220919
-|   `-- drivers-extcon-extcon-usbc-tusb320.c:warning:expecting-prototype-for-drivers-extcon-extcon-tusb320c().-Prototype-was-for-TUSB320_REG8()-instead
-|-- s390-randconfig-r005-20220919
-|   |-- ERROR:__tsan_memcpy-arch-s390-crypto-chacha_s390.ko-undefined
-|   |-- ERROR:__tsan_memcpy-arch-s390-crypto-ghash_s390.ko-undefined
-|   |-- ERROR:__tsan_memcpy-arch-s390-crypto-prng.ko-undefined
-|   |-- ERROR:__tsan_memcpy-arch-s390-crypto-sha3_512_s390.ko-undefined
-|   |-- ERROR:__tsan_memset-arch-s390-crypto-chacha_s390.ko-undefined
-|   |-- ERROR:__tsan_memset-arch-s390-crypto-ghash_s390.ko-undefined
-|   |-- ERROR:__tsan_memset-arch-s390-crypto-prng.ko-undefined
-|   |-- ERROR:__tsan_memset-arch-s390-crypto-sha3_512_s390.ko-undefined
-|   |-- ERROR:__tsan_memset-kernel-rcu-refscale.ko-undefined
-|   |-- ERROR:__tsan_memset-kernel-scftorture.ko-undefined
-|   `-- drivers-iommu-ipmmu-vmsa.c:warning:unused-variable-ipmmu_of_ids
-|-- x86_64-randconfig-a001-20220919
-|   `-- fs-btrfs-extent-io-tree.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
-|-- x86_64-randconfig-a003-20220919
-|   `-- drivers-extcon-extcon-usbc-tusb320.c:warning:expecting-prototype-for-drivers-extcon-extcon-tusb320c().-Prototype-was-for-TUSB320_REG8()-instead
-|-- x86_64-randconfig-a006-20220919
+> 
+>> 'movablecore' kernel parameter to allow specification of a base
+>> address and support for multiple blocks. The existing
+>> 'movablecore' mechanisms are retained. Other mechanisms based on
+>> device tree are also included in this set.
+>>
+>> BACKGROUND:
+>> NUMA architectures support distributing movablecore memory
+>> across each node, but it is undesirable to introduce the
+>> overhead and complexities of NUMA on systems that don't have a
+>> Non-Uniform Memory Architecture.
+> 
+> How exactly would that look like? I think I am missing something :)
+The notion would be to consider each memory controller as a separate 
+node, but as stated it is not desirable.
 
-elapsed time: 726m
+> 
+>>
+>> Commit 342332e6a925 ("mm/page_alloc.c: introduce kernelcore=mirror 
+>> option")
+>> also depends on zone overlap to support sytems with multiple
+>> mirrored ranges.
+> 
+> IIRC, zones will not overlap within a single node.
+I believe the implementation for kernelcore=mirror allows for the 
+possibility of multiple non-adjacent mirrored ranges in a single node 
+and accommodates the zone overlap.
 
-configs tested: 57
-configs skipped: 2
+> 
+>>
+>> Commit c6f03e2903c9 ("mm, memory_hotplug: remove zone restrictions")
+>> embraced overlapped zones for memory hotplug.
+> 
+> Yes, after boot.
+> 
+>>
+>> This commit set follows their lead to allow the ZONE_MOVABLE
+>> zone to overlap other zones while spanning the pages from the
+>> lowest Designated Movable Block to the end of the node.
+>> Designated Movable Blocks are made absent from overlapping zones
+>> and present within the ZONE_MOVABLE zone.
+>>
+>> I initially investigated an implementation using a Designated
+>> Movable migrate type in line with comments[1] made by Mel Gorman
+>> regarding a "sticky" MIGRATE_MOVABLE type to avoid using
+>> ZONE_MOVABLE. However, this approach was riskier since it was
+>> much more instrusive on the allocation paths. Ultimately, the
+>> progress made by the memory hotplug folks to expand the
+>> ZONE_MOVABLE functionality convinced me to follow this approach.
+>>
+>> OPPORTUNITIES:
+>> There have been many attempts to modify the behavior of the
+>> kernel page allocators use of CMA regions. This implementation
+>> of Designated Movable Blocks creates an opportunity to repurpose
+>> the CMA allocator to operate on ZONE_MOVABLE memory that the
+>> kernel page allocator can use more agressively, without
+>> affecting the existing CMA implementation. It is hoped that the
+>> "shared-dmb-pool" approach included here will be useful in cases
+>> where memory sharing is more important than allocation latency.
+>>
+>> CMA introduced a paradigm where multiple allocators could
+>> operate on the same region of memory, and that paradigm can be
+>> extended to Designated Movable Blocks as well. I was interested
+>> in using kernel resource management as a mechanism for exposing
+>> Designated Movable Block resources (e.g. /proc/iomem) that would
+>> be used by the kernel page allocator like any other ZONE_MOVABLE
+>> memory, but could be claimed by an alternative allocator (e.g.
+>> CMA). Unfortunately, this becomes complicated because the kernel
+>> resource implementation varies materially across different
+>> architectures and I do not require this capability so I have
+>> deferred that.
+> 
+> Why can't we simply designate these regions as CMA regions?
+We and others have encountered significant performance issues when large 
+CMA regions are used. There are significant restrictions on the page 
+allocator's use of MIGRATE_CMA pages and the memory subsystem works very 
+hard to keep about half of the memory in the CMA region free. There have 
+been attempts to patch the CMA implementation to alter this behavior 
+(for example the set I referenced Mel's response to in [1]), but there 
+are users that desire the current behavior.
 
-gcc tested configs:
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64               randconfig-a012-20220919
-x86_64                              defconfig
-x86_64               randconfig-a011-20220919
-x86_64               randconfig-a013-20220919
-x86_64                               rhel-8.3
-x86_64               randconfig-a014-20220919
-powerpc                           allnoconfig
-x86_64               randconfig-a015-20220919
-x86_64               randconfig-a016-20220919
-x86_64                           allyesconfig
-i386                                defconfig
-sh                               allmodconfig
-mips                             allyesconfig
-powerpc                          allmodconfig
-arm                                 defconfig
-x86_64                          rhel-8.3-func
-x86_64                         rhel-8.3-kunit
-riscv                randconfig-r042-20220919
-x86_64                           rhel-8.3-kvm
-arc                  randconfig-r043-20220919
-arm64                            allyesconfig
-i386                             allyesconfig
-s390                 randconfig-r044-20220919
-arm                              allyesconfig
-x86_64                    rhel-8.3-kselftests
-x86_64                           rhel-8.3-syz
-ia64                             allmodconfig
-alpha                            allyesconfig
-arc                              allyesconfig
-i386                 randconfig-a012-20220919
-i386                 randconfig-a011-20220919
-i386                 randconfig-a013-20220919
-i386                 randconfig-a014-20220919
-m68k                             allmodconfig
-i386                 randconfig-a015-20220919
-arc                                 defconfig
-alpha                               defconfig
-m68k                             allyesconfig
-s390                             allmodconfig
-s390                                defconfig
-s390                             allyesconfig
+> 
+> Why do we have to start using ZONE_MOVABLE for them?
+One of the "other opportunities" for Designated Movable Blocks is to 
+allow CMA to allocate from a DMB as an alternative. This would allow 
+current users to continue using CMA as they want, but would allow users 
+(e.g. hugetlb_cma) that are not sensitive to the allocation latency to 
+let the kernel page allocator make more complete use (i.e. waste less) 
+of the shared memory. ZONE_MOVABLE pageblocks are always MIGRATE_MOVABLE 
+so the restrictions placed on MIGRATE_CMA pageblocks are lifted within a 
+DMB.
 
-clang tested configs:
-x86_64               randconfig-a003-20220919
-x86_64               randconfig-a001-20220919
-x86_64               randconfig-a002-20220919
-i386                 randconfig-a001-20220919
-x86_64               randconfig-a004-20220919
-i386                 randconfig-a006-20220919
-i386                 randconfig-a002-20220919
-x86_64               randconfig-a006-20220919
-hexagon              randconfig-r041-20220919
-x86_64               randconfig-a005-20220919
-i386                 randconfig-a003-20220919
-hexagon              randconfig-r045-20220919
-i386                 randconfig-a004-20220919
-i386                 randconfig-a005-20220919
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> 
+Thanks for your consideration,
+Dough Baker ... I mean Doug Berger :).
