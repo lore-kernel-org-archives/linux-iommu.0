@@ -1,150 +1,205 @@
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A00EF10F9
-	for <iommu@lists.linux.dev>; Tue, 20 Sep 2022 07:51:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663660312; x=1695196312;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=/415FNVww0J6T6zwy84U7hMtUQkvnLB/1RnJeY1Aowc=;
-  b=aSVRrRU0q3XdfQmLJQcna4VOssnhpWKMoVk+j/Tkgwr4Nf8j7+kxfwlW
-   uK7XSEodnHxwcgVdkZwr0R8ZSwBjjL1Ht5ieSN9Wyjn2XQcnMhpjHDJMv
-   4qZtB8abkKnCrC05p8rNI2ERKKP15tMzzrKsKZYRAryvo8gq9bbBgixG1
-   qW7JuFhrkBLI/c+VM824LrPAprUo4kdBfzq3hGuzASpvtL+OObV+CiRRo
-   KzsPQLUBFFuQVbbFd1YeYy3kX34Tdb2NEIqfaIfhl5jyb9AShFHY/inUq
-   Dj5i8OLYIXPvHoZhHIT9+7krFR/C4SsSW1wWFo/xzbxnJBe3SMcrBcEhf
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10475"; a="301004024"
-X-IronPort-AV: E=Sophos;i="5.93,329,1654585200"; 
-   d="scan'208";a="301004024"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Sep 2022 00:51:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,329,1654585200"; 
-   d="scan'208";a="569981122"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orsmga003.jf.intel.com with ESMTP; 20 Sep 2022 00:51:52 -0700
-Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 20 Sep 2022 00:51:51 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Tue, 20 Sep 2022 00:51:51 -0700
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (104.47.56.47) by
- edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Tue, 20 Sep 2022 00:51:50 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Odq4xm62+8DiLby/LqXwFNw8eqOjIeKA8MYA1jgE0Dq81kwYkqRsz/L8onQdM9VwrFgYt/6A3xmFDZUBfroQ1r6DsQZ8NHMxaO+KSP7u5qQA2XQtZzePU3hsIGZuxxkr5UO149J0fNwiLdJfiRyFkl1Ue3oGDUR/ZDbmLIWLXsfccPl+9Ga+bfOhvcDxP83eecIzFk8jGsAnwRkDtt/J7APysAMAyF00MJzgkzkHth+/ZBzx5zuzleXJ5GPYmafOWM5tZC0uCVq8r6MnrkPDc4k12BPJ9G44ij2m4nIAbUxY4q3xrhcdsd79EyK+h1TEiMyVlWkop7NLOhZyUegSNw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/415FNVww0J6T6zwy84U7hMtUQkvnLB/1RnJeY1Aowc=;
- b=cNT023cGYa3z6rFEl4wLFjxN/4Cx5XMHY196ud06bIMfDFAB/mtS1gAAkEt+L5DpgK9EFPjF4GcX91DQ4BfUEVq5L6MYw13pLv2loT9xBljiAaDbZtsnbbbxeGSpbc8Ufv6BTk7FHVfInMv9rw5pq8v7QGOoS2qY1nfRlE6ChJEG1/yIIjeN38hhx4Bc0bYppy8zD9OKA8pZz9SWlhJzuprRCl/fdVukM/JFngPTDanw7tqEOROj6AYrh3aMXIeezffflZxWSDnv2Vz4CojsAOH0eF3p2D5CY/xuSiU9IvKtTMgPX6shW1eOXNeJAcraEja7OIrA1ybWti2EbV982w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by MW4PR11MB7101.namprd11.prod.outlook.com (2603:10b6:303:219::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.14; Tue, 20 Sep
- 2022 07:51:43 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::a435:3eff:aa83:73d7]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::a435:3eff:aa83:73d7%6]) with mapi id 15.20.5632.019; Tue, 20 Sep 2022
- 07:51:42 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>
-CC: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, "Robin
- Murphy" <robin.murphy@arm.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 2/2] iommu/vt-d: Avoid unnecessary global DMA cache
- invalidation
-Thread-Topic: [PATCH 2/2] iommu/vt-d: Avoid unnecessary global DMA cache
- invalidation
-Thread-Index: AQHYy/F3FbzI9Jv2yUCl15h8lfYKJ63n86+w
-Date: Tue, 20 Sep 2022 07:51:42 +0000
-Message-ID: <BN9PR11MB5276C0D13C6AED74242453F98C4C9@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20220919062523.3438951-1-baolu.lu@linux.intel.com>
- <20220919062523.3438951-3-baolu.lu@linux.intel.com>
-In-Reply-To: <20220919062523.3438951-3-baolu.lu@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|MW4PR11MB7101:EE_
-x-ms-office365-filtering-correlation-id: 794aba53-c567-4719-0ac4-08da9adcf581
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: kncg6TntnFIbFD5/b0n4kNbDh86oRZe8lkb7bQbYPDGhEGFtZIK0lEZa6vEyVNVDm0O4sKDLG1l6aYjC3z/7LF9uWgAhw9V9f/Dm0B7Bq9jccZYf8jJWJT2UOprOZGqT3NC2sVtSuA3cNvyDmU/r3xUmZhtvuzBkYjcSg+tYZxcD6pBtYrmZfaCSh8ecwqrIgPo1wYmJEYJDgAa4VvOfMIFifI0Eicr5OGZu9leCqM83Xn8iLzkSa4quW2gYzWHbiyuB7zYa1lbrHKbXXVQBf4HYs7pFveQLgF6FjcfwqRWj9T/J8P60XctLSeEGy6yZmMg7q8vIQAEQg9Ioz7Iabb2B/auEHlfUgmjXkXjhPN+0/DE/K0GPpdv5kn0UxlSETU66aqwrbz+75t3lREUwJ2aSzqcJUQlkl1TX3J2yBR6cOxV9uXmKVk0mXrwqzGsFoM+QnOipGo9ubuxKZecZoEjJlJNuztp/5OmUf0xRJw1nho/rPo5ciMu+XvHiolv5e0KtKL6k+XeHgNmzQDSkGEQ3Enm79P5Q4io6vPOLhvDoE5D4yRIsFFttdaJC80qof8IkLBVuJFNucVDk5HkQI0LFt7b14syVM4j3JOUeItKDZHLrz4uxlJ5R/FcZsFYPUEzsta1XR8dJOxQzAXYReFRW+WQY0FrHLv72rYetOpvj2AAt2A7t8vrWthKhssFQeP7xGEU9bUPIeC/0E/hoYPlM5xgMzEh5nOFfRgndwk8bmZCTN9SgW620WtlERUN4
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(136003)(366004)(346002)(396003)(39860400002)(451199015)(52536014)(316002)(83380400001)(4326008)(8676002)(76116006)(66946007)(64756008)(66446008)(66476007)(66556008)(38070700005)(86362001)(33656002)(2906002)(122000001)(38100700002)(4744005)(82960400001)(478600001)(71200400001)(55016003)(9686003)(26005)(54906003)(8936002)(186003)(5660300002)(110136005)(41300700001)(7696005)(6506007);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?a7bGRWmT6m+9LHBRMa3qTF4LIyH61KOSQRARZ5FhhS6g0lpzHUcelpdXVjgN?=
- =?us-ascii?Q?Oyi/YxhqCEfr3we8PJ0kTcq4wxxfCNULNfspOhRPK1Oa3HjbTTAmrEMwSUwo?=
- =?us-ascii?Q?fH/jMAxh0qnp/O9DgQRY5u8ZzUzgIcuZMkGoviHQhg6dfCY8V8GH4cuGoPKj?=
- =?us-ascii?Q?XPOj1nxmG/8pbzeRcMnFFuBch2Y1uyy1H+dk3M6hCfyjyyER0ZmLFYhMjWti?=
- =?us-ascii?Q?RUshzaygMjgWLWeY5vvhaPg/iolO5vxJceIBXt1S/taj/Jc5YJnhkLKeLSkF?=
- =?us-ascii?Q?/MtrdHoxKy6LYateUkNWLnrQ0FKsG/KzSJim22c5wI8X1ycD38X/KbWJzwPe?=
- =?us-ascii?Q?7RjttrvBI0M4f15F09+/DyXKQAUKXtgIAEX1NhsysCgTEML0vAOT50uj8xId?=
- =?us-ascii?Q?QUrCWrhY2e+sk9rsoqeeeSDwVItsmR5VmWSqB0mrnYl1FAGBeokEZiXdWWl4?=
- =?us-ascii?Q?qMnq/8Aq0vGt4ZOMTFRWyRjEi2qjBWilWxnvwKLCOsaCCmIa91f0ZrWGggLY?=
- =?us-ascii?Q?zJ8KiOtHWxp9Fai91F36npo3CeWEISs6/0pkiHjG7Ew5HCJwjvXWHJk65Skl?=
- =?us-ascii?Q?PTB6wsGUwd3ef6qp5uI8qtQw9bcDjQNlts3yKML4cgYOd5YMA9iDVmRJZq9+?=
- =?us-ascii?Q?lfSzPXyZNWUDgmBiAzDD2TtDVzxKpmsRXq5Z4jbhru0thylinTYJFuBCcwfQ?=
- =?us-ascii?Q?ZJr/sW2sxzfXxXRsQsLI1NN3GTm5k5l4jK/XrLgTV2ldB1uDMrOgCPQ3yF/L?=
- =?us-ascii?Q?UV0S7cUI/NLvYt9uS6d21k+H0vP562/omyTmrzyoaosG+5tFWXzA9TjUE+Dy?=
- =?us-ascii?Q?r5BrQhC+8RQVyCBHR+097KMl4jqJD2yu533B/R05QYKE9Jkae6ggVFYWq2eY?=
- =?us-ascii?Q?2cuHU8MsxIK54/8cOJGBpdx89Swc2hjYmUV+9oJAX/umZididyA8emwqBXOh?=
- =?us-ascii?Q?GWbK7MSYpmoT6sPrSe3oeRykAdMiopHVCpbAQknmmVcpLh62JoiypoAAZ3C/?=
- =?us-ascii?Q?9nAaQP1ACvEcoxtZfpNsavti2fJPUkL8oBV2z+tGWZzyaTEFiUexYkextD9N?=
- =?us-ascii?Q?kkWNXby8xnQGqj2rrs/SXWNQO2Y/Tp2nlW4GOV8hrowDDYsfpaxzsUNa0W2S?=
- =?us-ascii?Q?tY0zuB3KipxtXC1ht08O7xo1johyEENRbM6pSAi9UlUlsaK5PE37ArdO6s9c?=
- =?us-ascii?Q?znqahStFq980xPVnOIoZgOCY5IPjSzNDlpjC/Kamzc9x4wXPnfdsvZaq2c60?=
- =?us-ascii?Q?c1eJJ9Hl57uVFJACHxO0xN+ZVB+aUcGGcTR7LK16vaSsAXZaV0IaVgQ5/o3F?=
- =?us-ascii?Q?sIvMuhl3v6OZS4nVmDcI/jUcaApA3syr6A+CLO83rM/N8WXU6c5rGRaBkd7z?=
- =?us-ascii?Q?o9uptX2GyEDKi1S6U9zQhL4m9vh9St2Oi1P/UHi/6T/QCnlsAjiJ9FWUaypM?=
- =?us-ascii?Q?y2ymURKJtCd8KIjtKtjoyEzxLAy+j0p9VYn6zIYUK2GHESpRaYfqAkUBhViI?=
- =?us-ascii?Q?ge3SWwCSL6NYU1nkD8aJdA6zfT2Mg/QMeHVL97g1oQ8JlPNNhipHoEy8HDq7?=
- =?us-ascii?Q?NgYT/8CIRFx5UN9zU62+kX81qFvs7mqetWGO9H8x?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 583D510F9
+	for <iommu@lists.linux.dev>; Tue, 20 Sep 2022 07:55:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=H0mXB3qLzd6nyp4U82pUC+0jG9YRP9G0sb9CuKu7rQc=; b=YCkxzsVunikesQe2vmc4oMq2Hn
+	Jg33iFWFuD4QHdvq6fDWy8Z3gojgL0RTxp2wHVG11PD9SGiG94LnDwCfM0D5ZbFKC//BwQb83f5kt
+	KwsNLeOUgUUU3MHlb6KJoYbFbSJuTfGC5UEoEajTXpzQIwfGeW85tyLb7xxH/Ao7q2EwK2BNuzYWc
+	aNL14xoXbcw6ZY0YsF3QsrggrY8mOuwt3JZRUErGulwoWldPYHn9QdDr2suz3ZVXuunT+RoLnvWlg
+	xDYTJiVsEp/MPK7zZcEyW9nsCtWowlraCvfA3e1XhM3BAyuqxe7ilU6LfUtfHbB5iLnEj7CYeZdr3
+	XHziMGFA==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1oaY5v-001WMi-Uv; Tue, 20 Sep 2022 07:55:04 +0000
+Date: Tue, 20 Sep 2022 00:55:03 -0700
+From: Christoph Hellwig <hch@infradead.org>
+To: Dongli Zhang <dongli.zhang@oracle.com>
+Cc: iommu@lists.linux.dev, x86@kernel.org, xen-devel@lists.xenproject.org,
+	linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
+	linux-kernel@vger.kernel.org, hch@infradead.org,
+	sstabellini@kernel.org, linux@armlinux.org.uk,
+	tsbogend@alpha.franken.de, jgross@suse.com,
+	boris.ostrovsky@oracle.com, tglx@linutronix.de, mingo@redhat.com,
+	bp@alien8.de, dave.hansen@linux.intel.com, m.szyprowski@samsung.com,
+	konrad.wilk@oracle.com, robin.murphy@arm.com, hpa@zytor.com,
+	oleksandr_tyshchenko@epam.com, joe.jin@oracle.com
+Subject: Re: [PATCH RFC v2 1/1] wiotlb: split buffer into 32-bit default and
+ 64-bit extra zones
+Message-ID: <Yylx1xPdEbq3k4v1@infradead.org>
+References: <20220820074250.5460-1-dongli.zhang@oracle.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 794aba53-c567-4719-0ac4-08da9adcf581
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Sep 2022 07:51:42.8547
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: g0UFki4/ojsXiuPjN7ARsmOgs4YVpa3OgJYq6wCE1CykoAB8MMN7KO3VOmin4rKcnZo1WEmY8sKUqhbJ6Lo7Vg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB7101
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220820074250.5460-1-dongli.zhang@oracle.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-> From: Lu Baolu <baolu.lu@linux.intel.com>
-> Sent: Monday, September 19, 2022 2:25 PM
->=20
-> Some VT-d hardware implementations invalidate all DMA remapping
-> hardware
-> translation caches as part of SRTP flow. The VT-d spec adds a ESRTPS
-> (Enhanced Set Root Table Pointer Support, section 11.4.2 in VT-d spec)
-> capability bit to indicate this. With this bit set, software has no need
-> to issue the global invalidation request.
->=20
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+On Sat, Aug 20, 2022 at 12:42:50AM -0700, Dongli Zhang wrote:
+> Hello,
+> 
+> I used to send out RFC v1 to introduce an extra io_tlb_mem (created with
+> SWIOTLB_ANY) in addition to the default io_tlb_mem (32-bit).  The
+> dev->dma_io_tlb_mem is set to either default or the extra io_tlb_mem,
+> depending on dma mask. However, that is not good for setting
+> dev->dma_io_tlb_mem at swiotlb layer transparently as suggested by
+> Christoph Hellwig.
+> 
+> https://lore.kernel.org/all/20220609005553.30954-1-dongli.zhang@oracle.com/
+> 
+> Therefore, this is another RFC v2 implementation following a different
+> direction. The core ideas are:
+> 
+> 1. The swiotlb is splited into two zones, io_tlb_mem->zone[0] (32-bit) and
+> io_tlb_mem->zone[1] (64-bit).
+> 
+> struct io_tlb_mem {
+> 	struct io_tlb_zone zone[SWIOTLB_NR];
+> 	struct dentry *debugfs;
+> 	bool late_alloc;
+> 	bool force_bounce;
+> 	bool for_alloc;
+> 	bool has_extra;
+> };
+> 
+> struct io_tlb_zone {
+> 	phys_addr_t start;
+> 	phys_addr_t end;
+> 	void *vaddr;
+> 	unsigned long nslabs;
+> 	unsigned long used;
+> 	unsigned int nareas;
+> 	unsigned int area_nslabs;
+> 	struct io_tlb_area *areas;
+> 	struct io_tlb_slot *slots;
+> };
+> 
+> 2. By default, only io_tlb_mem->zone[0] is available. The
+> io_tlb_mem->zone[1] is allocated conditionally if:
+> 
+> - the "swiotlb=" is configured to allocate extra buffer, and
+> - the SWIOTLB_EXTRA is set in the flag (this is to make sure arch(s) other
+>   than x86/sev/xen will not enable it until it is fully tested by each
+>   arch, e.g., mips/powerpc). Currently it is enabled for x86 and xen.
+> 
+> 3. During swiotlb map, whether zone[0] (32-bit) or zone[1] (64-bit
+> SWIOTLB_ANY)
+> is used depends on min_not_zero(*dev->dma_mask, dev->bus_dma_limit).
+> 
+> To test the RFC v2, here is the QEMU command line.
+> 
+> qemu-system-x86_64 -smp 8 -m 32G -enable-kvm -vnc :5 -hda disk.img \
+> -kernel path-to-linux/arch/x86_64/boot/bzImage \
+> -append "root=/dev/sda1 init=/sbin/init text console=ttyS0 loglevel=7 swiotlb=32768,4194304,force" \
+> -net nic -net user,hostfwd=tcp::5025-:22 \
+> -device nvme,drive=nvme01,serial=helloworld -drive file=test.qcow2,if=none,id=nvme01 \
+> -serial stdio
+> 
+> There is below in syslog. The extra 8GB buffer is allocated.
+> 
+> [    0.152251] software IO TLB: area num 8.
+> ... ...
+> [    3.706088] PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
+> [    3.707334] software IO TLB: mapped default [mem 0x00000000bbfd7000-0x00000000bffd7000] (64MB)
+> [    3.708585] software IO TLB: mapped extra [mem 0x000000061cc00000-0x000000081cc00000] (8192MB)
+> 
+> After the FIO is triggered over NVMe, the 64-bit buffer is used.
+> 
+> $ cat /sys/kernel/debug/swiotlb/io_tlb_nslabs_extra
+> 4194304
+> $ cat /sys/kernel/debug/swiotlb/io_tlb_used_extra
+> 327552
+> 
+> Would you mind helping if this is the right direction to go?
+> 
+> Thank you very much!
+> 
+> Cc: Konrad Wilk <konrad.wilk@oracle.com>
+> Cc: Joe Jin <joe.jin@oracle.com>
+> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
+> ---
+>  arch/arm/xen/mm.c                      |   2 +-
+>  arch/mips/pci/pci-octeon.c             |   5 +-
+>  arch/x86/include/asm/xen/swiotlb-xen.h |   2 +-
+>  arch/x86/kernel/pci-dma.c              |   6 +-
+>  drivers/xen/swiotlb-xen.c              |  18 +-
+>  include/linux/swiotlb.h                |  73 +++--
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> diff --git a/arch/arm/xen/mm.c b/arch/arm/xen/mm.c
+> index 3d826c0..4edfa42 100644
+> --- a/arch/arm/xen/mm.c
+> +++ b/arch/arm/xen/mm.c
+> @@ -125,7 +125,7 @@ static int __init xen_mm_init(void)
+>  		return 0;
+>  
+>  	/* we can work with the default swiotlb */
+> -	if (!io_tlb_default_mem.nslabs) {
+> +	if (!io_tlb_default_mem.zone[SWIOTLB_DF].nslabs) {
+>  		rc = swiotlb_init_late(swiotlb_size_or_default(),
+>  				       xen_swiotlb_gfp(), NULL);
+>  		if (rc < 0)
+
+First thing we need before doing anything about multiple default
+pools is to get all the knowledge of details hidden inside swiotlb.c.
+
+For swiotlb_init_late that seems easy as we can just move the check
+into it.
+
+> diff --git a/arch/mips/pci/pci-octeon.c b/arch/mips/pci/pci-octeon.c
+> index e457a18..0bf0859 100644
+> --- a/arch/mips/pci/pci-octeon.c
+> +++ b/arch/mips/pci/pci-octeon.c
+> @@ -654,6 +654,9 @@ static int __init octeon_pci_setup(void)
+>  		octeon_pci_mem_resource.end =
+>  			octeon_pci_mem_resource.start + (1ul << 30);
+>  	} else {
+> +		struct io_tlb_mem *mem = &io_tlb_default_mem;
+> +		struct io_tlb_zone *zone = &mem->zone[SWIOTLB_DF];
+> +
+>  		/* Remap the Octeon BAR 0 to map 128MB-(128MB+4KB) */
+>  		octeon_npi_write32(CVMX_NPI_PCI_CFG04, 128ul << 20);
+>  		octeon_npi_write32(CVMX_NPI_PCI_CFG05, 0);
+> @@ -664,7 +667,7 @@ static int __init octeon_pci_setup(void)
+>  
+>  		/* BAR1 movable regions contiguous to cover the swiotlb */
+>  		octeon_bar1_pci_phys =
+> -			io_tlb_default_mem.start & ~((1ull << 22) - 1);
+> +			zone->start & ~((1ull << 22) - 1);
+
+But we'll need to do something about this mess.  I'll need help from
+the octeon maintainer on it.
+
+> -	x86_swiotlb_flags |= SWIOTLB_ANY;
+> +	x86_swiotlb_flags |= SWIOTLB_ANY | SWIOTLB_EXTRA;
+
+I don't think this is how it is suppoed to be.  SWIOTLB_ANY already
+says give me a pool with no addressing constrains.  We don't need
+two pools without that.  EXTRA is also not exactly a very helpful
+name here.
+
+>  #ifdef CONFIG_X86
+> -int xen_swiotlb_fixup(void *buf, unsigned long nslabs)
+> +int xen_swiotlb_fixup(void *buf, unsigned long nslabs, unsigned int flags)
+>  {
+>  	int rc;
+>  	unsigned int order = get_order(IO_TLB_SEGSIZE << IO_TLB_SHIFT);
+>  	unsigned int i, dma_bits = order + PAGE_SHIFT;
+>  	dma_addr_t dma_handle;
+>  	phys_addr_t p = virt_to_phys(buf);
+> +	unsigned int max_dma_bits = 32;
+
+I think live will be a lot simple if the addressing bits are passed to
+this function, and not some kind of flags.
+
+> +#define SWIOTLB_DF	0
+> +#define SWIOTLB_EX	1
+> +#define SWIOTLB_NR	2
+
+These names are not very descriptive.
