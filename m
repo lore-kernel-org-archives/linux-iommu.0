@@ -1,76 +1,78 @@
-Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com [209.85.215.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 555177C
-	for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 03:56:06 +0000 (UTC)
-Received: by mail-pg1-f171.google.com with SMTP id q9so4677816pgq.8
-        for <iommu@lists.linux.dev>; Tue, 20 Sep 2022 20:56:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date;
-        bh=GdtwTg+D4nT/COBO+AtXOA77edWo+Q4jHVx++0FwAms=;
-        b=FYfeDqRO1LSKwsqgAJWNsoPNtSEldUC0H6Ro/IRHBojFppptOvg700LJYDphc720Lu
-         AwGdP0+LbUMOsefRSU3lQgmM9wOLWZ3VYPaN3gqn9wBfS2ZD2cejdEOr4MeqxGvDf+Fu
-         MNaU0py2W+vFxOgPqL3L+zUlwaplUHzUk84JxSTKMOcPSeLhTt8sfTLtxmZgE4BdQV/r
-         4bwoXdNf2FR0aVg0biV43c1zCtfEUS7DPQXH6jAFr2c6gjmC6aq0EewQCFd47pN2R5d2
-         VbW+u542DJjTJpvQviZWm4k8nXoEQpQH2eeWBDjn6LBPHfAVdMGPP8F0Nd50vYNie5cD
-         IJyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date;
-        bh=GdtwTg+D4nT/COBO+AtXOA77edWo+Q4jHVx++0FwAms=;
-        b=jVQRPY6xPwqqKaDDstkqCNPx02AVa6gnszrBwZH4McXjDn8IyFbrOVsGQWKAzM/+lF
-         4L+sNK4ZuL+wOEziXSO7PVOtPayKDXJ8YAQqx7884hbHgCA8aIy747EaSc1BS0mpMQ93
-         +CrkXUtoNGSFKhIp2Tg4MOQn4Sfxw5lS2U79RXwx8hja0O5qAU5WOouqeijoLD/k5Oj2
-         tFX9CSK8SwWZ++sE5i/kTOsdghackDkJW+FlZDI/0PU4Fcl46/tK+3RaZ4xLzRPd9hgh
-         +cdvGt9MLWGVf05tYBNuTjFfzKEthMBKq6TGqWXUmLG7Isk6RkQC5KUFPmg2PY0156L6
-         FD8Q==
-X-Gm-Message-State: ACrzQf1UImo4QLn6HMbWrJRZ4wTIRndDE8JiF8RA9zw/b/Htn/Rz/ZCs
-	Zo8lNotvF26O5JXse00S8H/neg==
-X-Google-Smtp-Source: AMsMyM7jK+7f/QgumLk3HUuCmU3usUyavWCyyZrAZ2qV4NLFFk8ZX3rgB3gpYH/3bRun7nZ7Lvpqdw==
-X-Received: by 2002:a63:b64:0:b0:439:8143:c184 with SMTP id a36-20020a630b64000000b004398143c184mr22774576pgl.22.1663732565567;
-        Tue, 20 Sep 2022 20:56:05 -0700 (PDT)
-Received: from [10.255.231.119] ([139.177.225.235])
-        by smtp.gmail.com with ESMTPSA id z9-20020a62d109000000b0053e794e66fcsm773263pfg.107.2022.09.20.20.56.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 20 Sep 2022 20:56:05 -0700 (PDT)
-Message-ID: <bdcf9676-7846-1f14-1dd1-80cb9dcb0794@bytedance.com>
-Date: Wed, 21 Sep 2022 11:55:59 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 233B31876
+	for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 06:08:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663740527; x=1695276527;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=6EnqeurB9knvf7hjHnRGpP20ctHeBAKLCwcD/QCEq+s=;
+  b=D7e9ejLfCikRisaEjp478SYoTFkyGhYAtNUVfNPdnMx4QEZ7587aCGNW
+   8IsHpGjBf1YhNyOmKfxPfEL5AMJ0zzSbowGkMgMzvrIp0li3dc7wgj8lp
+   b3dazkQDLkx7UP/j3OeskULsk5nRigLP+ZxORexvkrQyXHBGXeC9FH24+
+   y+btHkTSiiQXboZYnrfO/4YpVHfn1bC+OlwsAywXx920KXVnM6upsGkxG
+   pb2ZTKPF5/lYHgu42qLToyB/xx+NYnnMZ56BsQcVDGhLN6o7vgw55wkfI
+   3G4eI7vJ6E0aYontOZR2fUToFQPEHr9MoRwFwSmpEi4DqvNiWmg4r+p0N
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10476"; a="299898087"
+X-IronPort-AV: E=Sophos;i="5.93,332,1654585200"; 
+   d="scan'208";a="299898087"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Sep 2022 23:08:46 -0700
+X-IronPort-AV: E=Sophos;i="5.93,332,1654585200"; 
+   d="scan'208";a="649914489"
+Received: from jzha151-mobl1.ccr.corp.intel.com (HELO [10.254.208.217]) ([10.254.208.217])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Sep 2022 23:08:44 -0700
+Message-ID: <de65f9ae-dd74-3f70-35c7-861832a1de7b@linux.intel.com>
+Date: Wed, 21 Sep 2022 14:08:42 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.2.1
-Subject: Re: [PATCH v2] iommu/iova: Optimize alloc_iova with rbtree_augmented
-To: "wangjie (L)" <wangjie125@huawei.com>, joro@8bytes.org, will@kernel.org
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- robin.murphy@arm.com, haifeng.zhao@linux.intel.com, john.garry@huawei.com
-References: <20220824095139.66477-1-zhangpeng.00@bytedance.com>
- <42909903-5b6c-efe8-9ed3-3ac012f1a421@huawei.com>
-From: Peng Zhang <zhangpeng.00@bytedance.com>
-In-Reply-To: <42909903-5b6c-efe8-9ed3-3ac012f1a421@huawei.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Cc: baolu.lu@linux.intel.com, kevin.tian@intel.com, baolu.lu@intel.com,
+ raghunathan.srinivasan@intel.com, iommu@lists.linux.dev, joro@8bytes.org,
+ will@kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH 1/2] iommu/vt-d: Check correct capability for sagaw
+ determination
+Content-Language: en-US
+To: Yi Liu <yi.l.liu@intel.com>
+References: <20220916071212.2223869-1-yi.l.liu@intel.com>
+ <20220916071212.2223869-2-yi.l.liu@intel.com>
+ <a5f2141a-d819-20de-1e6c-b9e93323998a@linux.intel.com>
+ <23d38de5-3aab-3fe7-2b17-cbf1ab8d6cab@intel.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <23d38de5-3aab-3fe7-2b17-cbf1ab8d6cab@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-> This patch seems to solve the performance issues i have.  Currently my 
-> nic's rx performance is unstable in large-capacity scenarios. I applied 
-> this patch to 5.19 rc4 and tested 8 times rx performance in these 
-> scenes. Here are test results, "before" row is the result of 5.19 rc4. 
-> "after" row means 5.19 rc4 with this patch, the unit is Mbits/s
+On 2022/9/21 11:35, Yi Liu wrote:
+> On 2022/9/21 10:44, Baolu Lu wrote:
+>> On 9/16/22 3:12 PM, Yi Liu wrote:
+>>> Check 5-level paging capability for 57 bits address width instead of
+>>> checking 1GB large page capability.
+>>>
+>>> Fixes: 53fc7ad6edf2 ("iommu/vt-d: Correctly calculate sagaw value of 
+>>> IOMMU")
+>>> Cc:stable@vger.kernel.org
+>>> Reported-by: Raghunathan Srinivasan<raghunathan.srinivasan@intel.com>
+>>> Signed-off-by: Yi Liu<yi.l.liu@intel.com>
+>>
+>> Queued for v6.0. Thank you very much!
+>>
+>> https://lore.kernel.org/linux-iommu/20220921024054.3570256-1-baolu.lu@linux.intel.com
 > 
->      1    2    3    4    5    6    7    8
-> before    55430    76701    84194    77560    88292    90106    87770    
-> 77273
-> after    92770    92767    92792    92764    92742    92696    92781    
-> 92756
+> grt. btw. how about below? not sure why it didn't show up in this 
+> series. 🙁
 > 
-> Obviously, after using this patch, the performance is stable.
+> https://lore.kernel.org/linux-iommu/BN9PR11MB5276F062B5C0C08F10EFB49F8C4C9@BN9PR11MB5276.namprd11.prod.outlook.com/
 
-Thank you for your test. Can you add a "Tested-by" token?
-I plan to update the commit message in the next version.
+This is not a fix. I will queue it for v6.1-rc1 later.
+
+Best regards,
+baolu
