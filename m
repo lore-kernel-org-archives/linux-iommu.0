@@ -1,53 +1,166 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34B093237;
-	Wed, 21 Sep 2022 16:46:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D6FBC433C1;
-	Wed, 21 Sep 2022 16:46:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1663778813;
-	bh=KO9/J/hUO8nnDy0M9Goj6pDfKn66gCx4G05aBn2ANZE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=RN2hmiXX6cjXziPtgx/iY5Bg3NETvDCbt4S2Wzy7zoVkAJdavITiNaLB1cvE496Bx
-	 CYgB99QgC/PxyHvdNBH+yBkuwQ0K1iAEfnh+XB0e4UWAsqKMkwAz75u0Qzoyz47vLz
-	 J3CiO5nwbNX1P3MO9yW0lSVSIDxsnJfC861Hw9iU=
-Date: Wed, 21 Sep 2022 18:46:51 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Thorsten Leemhuis <regressions@leemhuis.info>,
-	Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev,
-	"stable@vger.kernel.org" <stable@vger.kernel.org>,
-	"regressions@lists.linux.dev" <regressions@lists.linux.dev>,
-	LKML <linux-kernel@vger.kernel.org>,
-	Sasha Levin <sashal@kernel.org>
-Subject: Re: How to quickly resolve the IOMMU regression that currently
- plagues a lot of people in 5.19.y
-Message-ID: <Yys/+yXuINceZGbz@kroah.com>
-References: <1d1844f0-c773-6222-36c6-862e14f6020d@leemhuis.info>
- <fd672632-7935-14ff-e2be-0db8443b0907@leemhuis.info>
- <YyrI/qzx/EWapzck@8bytes.org>
- <CAHk-=wgU0PyYHut+8zV+kNCxOZiCXd5J29Eisiy8badzsk8Msw@mail.gmail.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 33D2B66E0
+	for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 17:00:59 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C621F13D5;
+	Wed, 21 Sep 2022 10:01:04 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 939AD3F5A1;
+	Wed, 21 Sep 2022 10:00:57 -0700 (PDT)
+Message-ID: <574fe371-033e-a316-4ace-8a3fd9b19329@arm.com>
+Date: Wed, 21 Sep 2022 18:00:52 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wgU0PyYHut+8zV+kNCxOZiCXd5J29Eisiy8badzsk8Msw@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2] iommu: Optimise PCI SAC address trick
+Content-Language: en-GB
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <2b0ca6254dd0102bf559b2a73e9b51da089afbe3.1663764627.git.robin.murphy@arm.com>
+ <CAHk-=whdwG2LaaktZTYab2JO2TkPYEmSc-sOJ=qL5wtOWpRpKA@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <CAHk-=whdwG2LaaktZTYab2JO2TkPYEmSc-sOJ=qL5wtOWpRpKA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Sep 21, 2022 at 09:15:12AM -0700, Linus Torvalds wrote:
-> On Wed, Sep 21, 2022 at 1:19 AM Joerg Roedel <joro@8bytes.org> wrote:
-> >
-> > Thanks for the noise :) I will queue the fix today and send it upstream.
+On 21/09/2022 5:24 pm, Linus Torvalds wrote:
+> On Wed, Sep 21, 2022 at 5:53 AM Robin Murphy <robin.murphy@arm.com> wrote:
+>>
+>> Per the reasoning in commit 4bf7fda4dce2 ("iommu/dma: Add config for
+>> PCI SAC address trick") and its subsequent revert, this mechanism no
+>> longer serves its original purpose, but now only works around broken
+>> hardware/drivers in a way that is unfortunately too impactful to remove.
 > 
-> .. and it's in my tree now.
+> I was going to test this, since the previous version failed for me.
+> But it's based on linux-next, and I didn't want to fight the conflicts
+> (including - but not limited to - the header file being moved) so I
+> dropped that plan.
+> 
+> If you think it's worth testing on the setup that used to fail, and
+> you send me a version that applies on my current tree, I can do so.
 
-And now added to the next 5.19-rc release that is out for review now.
+No great rush - in principle this one *should* be entirely safe, but I'm
+not suggesting we should hurry it into 6.0 or 6.1. I mostly just wanted
+to make sure you got first dibs on any objection to this new approach :)
 
-thanks for the quick response everyone,
+If you do want to have a play though, compile-tested cherry-pick below.
 
-greg k-h
+Thanks,
+Robin.
+
+----->8-----
+Per the reasoning in commit 4bf7fda4dce2 ("iommu/dma: Add config for
+PCI SAC address trick") and its subsequent revert, this mechanism no
+longer serves its original purpose, but now only works around broken
+hardware/drivers in a way that is unfortunately too impactful to remove.
+
+This does not, however prevent us from solving the performance impact
+which that workaround has on large-scale systems that don't need it.
+That kicks in once the 32-bit IOVA space fills up and we keep
+unsuccessfully trying to allocate from it. However, if we get to that
+point then in fact it's already the endgame. The nature of the allocator
+is such that the first IOVA we give to a device after the 32-bit space
+runs out will be the highest possible address for that device, ever.
+If that works, then great, we know we can optimise for speed by always
+allocating from the full range. And if it doesn't, then the worst has
+already happened and any brokenness is now showing, so there's no point
+continuing to try to hide it.
+
+To that end, implement a flag to refine this into a per-device policy
+that can automatically get itself out of the way if and when it stops
+being useful.
+
+CC: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+  drivers/iommu/dma-iommu.c | 5 ++++-
+  drivers/iommu/iommu.c     | 3 +++
+  include/linux/dma-iommu.h | 8 ++++++++
+  include/linux/iommu.h     | 2 ++
+  4 files changed, 17 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 17dd683b2fce..61c057aba3ad 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -642,9 +642,12 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
+  		dma_limit = min(dma_limit, (u64)domain->geometry.aperture_end);
+  
+  	/* Try to get PCI devices a SAC address */
+-	if (dma_limit > DMA_BIT_MASK(32) && !iommu_dma_forcedac && dev_is_pci(dev))
++	if (dma_limit > DMA_BIT_MASK(32) && dev->iommu->pci_workaround) {
+  		iova = alloc_iova_fast(iovad, iova_len,
+  				       DMA_BIT_MASK(32) >> shift, false);
++		if (!iova)
++			dev->iommu->pci_workaround = false;
++	}
+  
+  	if (!iova)
+  		iova = alloc_iova_fast(iovad, iova_len, dma_limit >> shift,
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 3a808146b50f..3348a67f603d 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -256,6 +256,9 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
+  
+  	iommu_device_link(iommu_dev, dev);
+  
++	if (dev_is_pci(dev))
++		iommu_dma_set_pci_workaround(dev);
++
+  	return 0;
+  
+  out_release:
+diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+index 24607dc3c2ac..f2968b8e9f7d 100644
+--- a/include/linux/dma-iommu.h
++++ b/include/linux/dma-iommu.h
+@@ -42,6 +42,10 @@ void iommu_dma_free_cpu_cached_iovas(unsigned int cpu,
+  		struct iommu_domain *domain);
+  
+  extern bool iommu_dma_forcedac;
++static inline void iommu_dma_set_pci_workaround(struct device *dev)
++{
++	dev->iommu->pci_workaround = !iommu_dma_forcedac;
++}
+  
+  #else /* CONFIG_IOMMU_DMA */
+  
+@@ -89,5 +93,9 @@ static inline void iommu_dma_get_resv_regions(struct device *dev, struct list_he
+  {
+  }
+  
++static inline void iommu_dma_set_pci_workaround(struct device *dev)
++{
++}
++
+  #endif	/* CONFIG_IOMMU_DMA */
+  #endif	/* __DMA_IOMMU_H */
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index ea30f00dc145..eff7a53850af 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -366,6 +366,7 @@ struct iommu_fault_param {
+   * @fwspec:	 IOMMU fwspec data
+   * @iommu_dev:	 IOMMU device this device is linked to
+   * @priv:	 IOMMU Driver private data
++ * @pci_workaround: Limit DMA allocations to 32-bit IOVAs
+   *
+   * TODO: migrate other per device data pointers under iommu_dev_data, e.g.
+   *	struct iommu_group	*iommu_group;
+@@ -377,6 +378,7 @@ struct dev_iommu {
+  	struct iommu_fwspec		*fwspec;
+  	struct iommu_device		*iommu_dev;
+  	void				*priv;
++	bool				pci_workaround;
+  };
+  
+  int iommu_device_register(struct iommu_device *iommu,
+-- 
+2.36.1.dirty
