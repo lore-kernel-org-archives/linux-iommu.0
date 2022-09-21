@@ -1,140 +1,113 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0A31B2F56
-	for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 12:53:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A0E9A2F56;
+	Wed, 21 Sep 2022 13:20:51 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2266A143D;
-	Wed, 21 Sep 2022 05:53:33 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id CB30E3F73B;
-	Wed, 21 Sep 2022 05:53:25 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org
-Cc: will@kernel.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH v2] iommu: Optimise PCI SAC address trick
-Date: Wed, 21 Sep 2022 13:53:19 +0100
-Message-Id: <2b0ca6254dd0102bf559b2a73e9b51da089afbe3.1663764627.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.36.1.dirty
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5ADA9143D;
+	Wed, 21 Sep 2022 06:20:57 -0700 (PDT)
+Received: from [10.1.32.30] (010265703453.arm.com [10.1.32.30])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1985A3F73B;
+	Wed, 21 Sep 2022 06:20:46 -0700 (PDT)
+Message-ID: <11708ed1-b74a-5d45-0ce3-e2649dac1e8a@arm.com>
+Date: Wed, 21 Sep 2022 14:20:40 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH v5 0/5] iommu: M1 Pro/Max DART support
+Content-Language: en-GB
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Konrad Dybcio <konrad.dybcio@somainline.org>, asahi@lists.linux.dev,
+ Alyssa Rosenzweig <alyssa@rosenzweig.io>, Hector Martin <marcan@marcan.st>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Mark Kettenis <mark.kettenis@xs4all.nl>, Rob Herring <robh+dt@kernel.org>,
+ Sven Peter <sven@svenpeter.dev>, Will Deacon <will@kernel.org>,
+ devicetree@vger.kernel.org, iommu@lists.linux-foundation.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, Janne Grunau <j@jannau.net>
+References: <20220916094152.87137-1-j@jannau.net>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220916094152.87137-1-j@jannau.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Per the reasoning in commit 4bf7fda4dce2 ("iommu/dma: Add config for
-PCI SAC address trick") and its subsequent revert, this mechanism no
-longer serves its original purpose, but now only works around broken
-hardware/drivers in a way that is unfortunately too impactful to remove.
+On 2022-09-16 10:41, Janne Grunau wrote:
+> Hej,
+> 
+> this is the next attempt adding support for the DART found in Apple's
+> M1 Pro/Max/Ultra. This adds a separate io-pgtable implementation for
+> DART. As already mentioned in v2 the pte format is not fully compatible
+> with io-pgtable-arm. Especially the 2nd least significant bit is used
+> and is not available to tag tables/pages.
+> io-pgtable-dart.c is copied from io-pgtable-arm.c and support for
+> unused features is removed. Support for 4k IO pages is left for A7 to
+> A11 SoCs as there's work underway to run Linux on them.
+> 
+> The incompatibilities between both Apple DART pte seems manageable in
+> their own io-pgtable implementation. A short list of the known
+> differences:
+> 
+>   - the physical addresses are shifted left by 4 bits and and have 2 more
+>     bits inside the PTE entries
+>   - the read/write protection flags are at a different position
+>   - the subpage protection feature is now mandatory. For Linux we can
+>     just configure it to always allow access to the entire page.
+>   - BIT(1) tags "uncached" mappings (used for the display controller)
+> 
+> There is second type of DART (t8110) present on M1 Pro/Max SoCs which
+> uses the same PTE format as t6000.
 
-This does not, however prevent us from solving the performance impact
-which that workaround has on large-scale systems that don't need it.
-That kicks in once the 32-bit IOVA space fills up and we keep
-unsuccessfully trying to allocate from it. However, if we get to that
-point then in fact it's already the endgame. The nature of the allocator
-is such that the first IOVA we give to a device after the 32-bit space
-runs out will be the highest possible address for that device, ever.
-If that works, then great, we know we can optimise for speed by always
-allocating from the full range. And if it doesn't, then the worst has
-already happened and any brokenness is now showing, so there's no point
-continuing to try to hide it.
+FWIW I think there's minimal risk in queueing this up as a late addition 
+for 6.1, lest it get forgotten again. I've not been following it since 
+I've been busy with other things and I largely trust that DART patches 
+are well-tested, but from a quick skim it all earns a solid "yeah, why 
+not" from me :)
 
-To that end, implement a flag to refine this into a per-device policy
-that can automatically get itself out of the way if and when it stops
-being useful.
+Cheers,
+Robin.
 
-CC: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
-
-v2: Refactor to avoid CONFIG_IOMMU_DMA=n breakage (oops)
-
- drivers/iommu/dma-iommu.c | 5 ++++-
- drivers/iommu/dma-iommu.h | 8 ++++++++
- drivers/iommu/iommu.c     | 3 +++
- include/linux/iommu.h     | 2 ++
- 4 files changed, 17 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 9297b741f5e8..1cebb16faa33 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -643,9 +643,12 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
- 		dma_limit = min(dma_limit, (u64)domain->geometry.aperture_end);
- 
- 	/* Try to get PCI devices a SAC address */
--	if (dma_limit > DMA_BIT_MASK(32) && !iommu_dma_forcedac && dev_is_pci(dev))
-+	if (dma_limit > DMA_BIT_MASK(32) && dev->iommu->pci_workaround) {
- 		iova = alloc_iova_fast(iovad, iova_len,
- 				       DMA_BIT_MASK(32) >> shift, false);
-+		if (!iova)
-+			dev->iommu->pci_workaround = false;
-+	}
- 
- 	if (!iova)
- 		iova = alloc_iova_fast(iovad, iova_len, dma_limit >> shift,
-diff --git a/drivers/iommu/dma-iommu.h b/drivers/iommu/dma-iommu.h
-index 942790009292..c7be42d4f0cf 100644
---- a/drivers/iommu/dma-iommu.h
-+++ b/drivers/iommu/dma-iommu.h
-@@ -17,6 +17,10 @@ int iommu_dma_init_fq(struct iommu_domain *domain);
- void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);
- 
- extern bool iommu_dma_forcedac;
-+static inline void iommu_dma_set_pci_workaround(struct device *dev)
-+{
-+	dev->iommu->pci_workaround = !iommu_dma_forcedac;
-+}
- 
- #else /* CONFIG_IOMMU_DMA */
- 
-@@ -38,5 +42,9 @@ static inline void iommu_dma_get_resv_regions(struct device *dev, struct list_he
- {
- }
- 
-+static inline void iommu_dma_set_pci_workaround(struct device *dev)
-+{
-+}
-+
- #endif	/* CONFIG_IOMMU_DMA */
- #endif	/* __DMA_IOMMU_H */
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index edc768bf8976..ba8afea63ef1 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -323,6 +323,9 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
- 
- 	iommu_device_link(iommu_dev, dev);
- 
-+	if (dev_is_pci(dev))
-+		iommu_dma_set_pci_workaround(dev);
-+
- 	return 0;
- 
- out_release:
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 79cb6eb560a8..0eb0f808109c 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -368,6 +368,7 @@ struct iommu_fault_param {
-  * @fwspec:	 IOMMU fwspec data
-  * @iommu_dev:	 IOMMU device this device is linked to
-  * @priv:	 IOMMU Driver private data
-+ * @pci_workaround: Limit DMA allocations to 32-bit IOVAs
-  *
-  * TODO: migrate other per device data pointers under iommu_dev_data, e.g.
-  *	struct iommu_group	*iommu_group;
-@@ -379,6 +380,7 @@ struct dev_iommu {
- 	struct iommu_fwspec		*fwspec;
- 	struct iommu_device		*iommu_dev;
- 	void				*priv;
-+	bool				pci_workaround;
- };
- 
- int iommu_device_register(struct iommu_device *iommu,
--- 
-2.36.1.dirty
-
+> Changes in v5:
+> - collected Sven's ack
+> - minor fixes in "iommu/io-pgtable: Move Apple DART support to its own
+>    file"
+> 
+> Changes in v4:
+> - split dart and io-pgtable-dart build to allow building dart as module
+> - add missing "SELECT IOMMU_IO_PGTABLE"
+> - made map/unmap_pages/iova_to_phys inon-recursive
+> - replace pgd concatenation with multiple table handling
+> - simplified config and page size checks
+> - collected Robin's Ack
+> 
+> Changes in v3:
+> - move APPLE_DART to its own io-pgtable implementation, copied from
+>    io-pgtable-arm and simplified
+> 
+> Changes in v2:
+> - added Rob's Acked-by:
+> - add APPLE_DART2 io-pgtable format
+> 
+> Janne Grunau (1):
+>    iommu/io-pgtable: Move Apple DART support to its own file
+> 
+> Sven Peter (4):
+>    dt-bindings: iommu: dart: add t6000 compatible
+>    iommu/io-pgtable: Add DART subpage protection support
+>    iommu/io-pgtable-dart: Add DART PTE support for t6000
+>    iommu: dart: Support t6000 variant
+> 
+>   .../devicetree/bindings/iommu/apple,dart.yaml |   4 +-
+>   MAINTAINERS                                   |   1 +
+>   drivers/iommu/Kconfig                         |  13 +-
+>   drivers/iommu/Makefile                        |   1 +
+>   drivers/iommu/apple-dart.c                    |  24 +-
+>   drivers/iommu/io-pgtable-arm.c                |  63 ---
+>   drivers/iommu/io-pgtable-dart.c               | 470 ++++++++++++++++++
+>   drivers/iommu/io-pgtable.c                    |   3 +
+>   include/linux/io-pgtable.h                    |   1 +
+>   9 files changed, 512 insertions(+), 68 deletions(-)
+>   create mode 100644 drivers/iommu/io-pgtable-dart.c
+> 
