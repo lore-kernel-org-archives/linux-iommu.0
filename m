@@ -1,106 +1,65 @@
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E94E47C
-	for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 08:55:08 +0000 (UTC)
-Received: by mail-wm1-f43.google.com with SMTP id l8so3941600wmi.2
-        for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 01:55:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=NMm6vbupuNg3e8G1erinu7XgiIOmdNdtykV6wWBx/V8=;
-        b=cs5Dvxfm7fd7aaUwKHNDAnKWcNrqMyWvSpCFhYmNjRwKQjf697cP12ef2JVhzS+nTr
-         rBiEPfFCAvK18V0b4TPU93sWl3nBICTtuO2MuXRVpLAsvrnPMrSMT8utfj6qRBivTxti
-         BXRo7n7yiwy1VFEU65sNSMFb9wbJX0Y01wSWLKT5xxq4/13Ub6Q0C+MSyK+vNliqzKv7
-         7DJIhCBeCbjUg+pZttjuEgYoPhQn5piUM0+uqu6ez9uuEzMnz+dnjzErRDjuyGOk/BYS
-         UkhbQnQFMY8EjTuZOsOAEbzscpTOQfKIqXeSfDZd9sFya7VbVqAP+h8BvB+DFZ+Idka/
-         wnnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=NMm6vbupuNg3e8G1erinu7XgiIOmdNdtykV6wWBx/V8=;
-        b=mM5bILZ9xwTza8vAY836ssYN6z55fZmtFiUJREL8OU3aPAG9pOp0C/oBaDbt+D2pS3
-         dg1WQN446gAwbVHVS3A5rpr/4ERg3WYH2GS4yNSwypw1L/tcBdXWbiTnRb4jt6XeqHGy
-         gKjho3zuxnT1l8ETybag5pKEPvyqk1YpfRzNBUV3K0r7rgcPTNvIq61iwXPgPxIlXjAI
-         5gZPtkiHyJtCk4bcDucKpzHheQLUVHbMMPNGSlSfmjbowdBROXGMYiF4j3PLUMv1b8Lo
-         kGpmPrkPOfRboQha1w3b0M1pmIiIDPt06p6UHhvnfK3XPlmID80vTK07o/4Wu7UBUX1K
-         riZQ==
-X-Gm-Message-State: ACrzQf0poAbEq7HkUvFUysJnm6lRRVBR3CC8VPrlqknwVoRA1gnH0XS7
-	sx4seY3VbFS/7UkFY2/63pITvA==
-X-Google-Smtp-Source: AMsMyM5v4ccQB/sVn2S/zJDFsH4keJ/VCqNp428gK8IV32RalM87u6d3xbyo/Rp+qs75y4SGFW5eBA==
-X-Received: by 2002:a1c:202:0:b0:3a8:4197:eec0 with SMTP id 2-20020a1c0202000000b003a84197eec0mr5125375wmc.83.1663750506995;
-        Wed, 21 Sep 2022 01:55:06 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id p14-20020a5d48ce000000b0022afbd02c69sm1949060wrs.56.2022.09.21.01.55.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Sep 2022 01:55:06 -0700 (PDT)
-Date: Wed, 21 Sep 2022 09:55:01 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: joro@8bytes.org, suravee.suthikulpanit@amd.com, will@kernel.org,
-	robin.murphy@arm.com, robdclark@gmail.com, dwmw2@infradead.org,
-	baolu.lu@linux.intel.com, agross@kernel.org,
-	bjorn.andersson@linaro.org, matthias.bgg@gmail.com,
-	orsonzhai@gmail.com, baolin.wang@linux.alibaba.com,
-	zhang.lyra@gmail.com, sricharan@codeaurora.org, jgg@nvidia.com,
-	kevin.tian@intel.com, konrad.dybcio@somainline.org,
-	yong.wu@mediatek.com, thierry.reding@gmail.com, vdumpa@nvidia.com,
-	jonathanh@nvidia.com, tglx@linutronix.de,
-	shameerali.kolothum.thodi@huawei.com, christophe.jaillet@wanadoo.fr,
-	thunder.leizhen@huawei.com, quic_saipraka@quicinc.com,
-	jon@solid-run.com, yangyingliang@huawei.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-arm-msm@vger.kernel.org, linux-mediatek@lists.infradead.org,
-	linux-tegra@vger.kernel.org,
-	virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH v4 0/6] Define EINVAL as device/domain incompatibility
-Message-ID: <YyrRZXVWWxBhW3ST@myrica>
-References: <cover.1663744983.git.nicolinc@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2AC21FCE
+	for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 10:54:06 +0000 (UTC)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MXZtl1XHMzmWL9;
+	Wed, 21 Sep 2022 18:50:07 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 21 Sep 2022 18:54:02 +0800
+Received: from [10.67.101.149] (10.67.101.149) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 21 Sep 2022 18:54:02 +0800
+Subject: Re: [PATCH v2] iommu/iova: Optimize alloc_iova with rbtree_augmented
+To: Peng Zhang <zhangpeng.00@bytedance.com>, <joro@8bytes.org>,
+	<will@kernel.org>
+References: <20220824095139.66477-1-zhangpeng.00@bytedance.com>
+ <42909903-5b6c-efe8-9ed3-3ac012f1a421@huawei.com>
+ <bdcf9676-7846-1f14-1dd1-80cb9dcb0794@bytedance.com>
+CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<robin.murphy@arm.com>, <haifeng.zhao@linux.intel.com>,
+	<john.garry@huawei.com>
+From: "wangjie (L)" <wangjie125@huawei.com>
+Message-ID: <36ce6959-a4ed-bf33-9e7c-f35a63bf9434@huawei.com>
+Date: Wed, 21 Sep 2022 18:54:01 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1663744983.git.nicolinc@nvidia.com>
+In-Reply-To: <bdcf9676-7846-1f14-1dd1-80cb9dcb0794@bytedance.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.101.149]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 
-On Wed, Sep 21, 2022 at 01:22:31AM -0700, Nicolin Chen wrote:
-> This series is to replace the previous EMEDIUMTYPE patch in a VFIO series:
-> https://lore.kernel.org/kvm/Yxnt9uQTmbqul5lf@8bytes.org/
-> 
-> The purpose is to regulate all existing ->attach_dev callback functions to
-> use EINVAL exclusively for an incompatibility error between a device and a
-> domain. This allows VFIO and IOMMUFD to detect such a soft error, and then
-> try a different domain with the same device.
-[...]
->  drivers/iommu/amd/iommu.c                   | 12 +----
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 11 +---
->  drivers/iommu/arm/arm-smmu/arm-smmu.c       |  3 --
->  drivers/iommu/arm/arm-smmu/qcom_iommu.c     |  7 +--
->  drivers/iommu/fsl_pamu.c                    |  2 +-
->  drivers/iommu/fsl_pamu_domain.c             |  4 +-
->  drivers/iommu/intel/iommu.c                 | 10 ++--
->  drivers/iommu/intel/pasid.c                 |  6 ++-
->  drivers/iommu/iommu.c                       | 22 ++++++++
->  drivers/iommu/ipmmu-vmsa.c                  |  2 -
->  drivers/iommu/msm_iommu.c                   | 59 +++++++++++----------
->  drivers/iommu/mtk_iommu.c                   |  4 +-
->  drivers/iommu/omap-iommu.c                  |  6 +--
->  drivers/iommu/sprd-iommu.c                  |  4 +-
->  drivers/iommu/tegra-gart.c                  |  2 +-
->  drivers/iommu/virtio-iommu.c                |  7 ++-
+Tested-by: Jie Wang <wangjie125@huawei.com>
 
-For virtio-iommu:
-
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-
->  include/linux/iommu.h                       | 12 +++++
->  17 files changed, 90 insertions(+), 83 deletions(-)
-> 
-> -- 
-> 2.17.1
-> 
+On 2022/9/21 11:55, Peng Zhang wrote:
+>> This patch seems to solve the performance issues i have.  Currently my
+>> nic's rx performance is unstable in large-capacity scenarios. I
+>> applied this patch to 5.19 rc4 and tested 8 times rx performance in
+>> these scenes. Here are test results, "before" row is the result of
+>> 5.19 rc4. "after" row means 5.19 rc4 with this patch, the unit is Mbits/s
+>>
+>>      1    2    3    4    5    6    7    8
+>> before    55430    76701    84194    77560    88292    90106
+>> 87770    77273
+>> after    92770    92767    92792    92764    92742    92696
+>> 92781    92756
+>>
+>> Obviously, after using this patch, the performance is stable.
+>
+> Thank you for your test. Can you add a "Tested-by" token?
+> I plan to update the commit message in the next version.
+> .
+>
