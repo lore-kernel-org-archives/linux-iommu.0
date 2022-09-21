@@ -1,16 +1,51 @@
-Received: from relay06.th.seeweb.it (relay06.th.seeweb.it [5.144.164.167])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBEFC7C
-	for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 21:14:59 +0000 (UTC)
-Received: from [192.168.1.101] (95.49.29.188.neoplus.adsl.tpnet.pl [95.49.29.188])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits))
-	(No client certificate requested)
-	by m-r2.th.seeweb.it (Postfix) with ESMTPSA id B097E3F651;
-	Wed, 21 Sep 2022 23:14:56 +0200 (CEST)
-Message-ID: <5f629a95-8ee4-7cf8-f471-0b50e311d3b7@somainline.org>
-Date: Wed, 21 Sep 2022 23:14:56 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F23F28F5
+	for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 22:36:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1663799791;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=pLSyYLHiY+VNwMQYaxWFu5v3xL7RsNBFdyNkMnW+s54=;
+	b=D+HtzeDPyH2GlaoZMR4CxyQZTZnS3mVV4Iyp3tbPMR+vQKpSwyF1JmjCFlwRNEeUtynsL/
+	qz6TmBU4NhPkhEw9rkd1HfGqy2lpXp0QDHtaFOeFYqwqW9v8HHS1Ys46oQfuN6hQe3GGUl
+	W5rD8rj4PNyZICMY/fk/psa23UiPoqc=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-266-heLBoiEhPqWzp5gutOjikQ-1; Wed, 21 Sep 2022 18:36:30 -0400
+X-MC-Unique: heLBoiEhPqWzp5gutOjikQ-1
+Received: by mail-qk1-f198.google.com with SMTP id i7-20020a05620a404700b006ced0d02b68so5318643qko.10
+        for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 15:36:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date;
+        bh=pLSyYLHiY+VNwMQYaxWFu5v3xL7RsNBFdyNkMnW+s54=;
+        b=GpTa+j0SgRvM3LzgqVX50QDKeaP7ke/9eO1JJypidLTlCvwt6qb3eP5NgNo6VMbSj+
+         AzwZVrNzjGK9IhmSyzn01c/vdwCnvfE7WPxN/7PAaV2RxQt62PMtHsvu46SP1cRH/w+9
+         0DfXy64FDH8UvwNBDTLt3qSpOpPvKjAqYVZpR4GXreok6uB95BzvbbPd8RvQTSZ8Xoba
+         CI1BainLGyxrI7vv96CkPEdNOCKn8ckFNv73bHinc5CGlGJ9+DbiyWT98WxTeP+HbWOA
+         7Y7wy30lhu61vY1JFQfSzX6Qr3iFSxLT/n2HMQFQtyKB8l9WPtQ/J3MC/R37dWmBioVs
+         rGTw==
+X-Gm-Message-State: ACrzQf1mYEuWt5+jZVB+Ux+A4dsOhM/KDblR1kGRcBhKY+ncwx62OcSb
+	66TcfFwD43cNFv0/1GHK/TqJOaTWsul/BvZQk38uXvxLnKfEtiDVR5pwBQTVTdNBHI+roNWTLGF
+	H/IGElLOlP+iGCV8=
+X-Received: by 2002:a05:622a:14d4:b0:35c:db96:8d71 with SMTP id u20-20020a05622a14d400b0035cdb968d71mr530183qtx.327.1663799789470;
+        Wed, 21 Sep 2022 15:36:29 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM7bXT2DDzhMBaBuiXz0t9E12+xhzSl9gqDWJ0OwwtO97MDY7PygY6XLt1S3rdo4OUToNYUKwg==
+X-Received: by 2002:a05:622a:14d4:b0:35c:db96:8d71 with SMTP id u20-20020a05622a14d400b0035cdb968d71mr530153qtx.327.1663799789162;
+        Wed, 21 Sep 2022 15:36:29 -0700 (PDT)
+Received: from ?IPV6:2600:8805:3a00:3:3b4f:6d3c:92c4:a5c7? ([2600:8805:3a00:3:3b4f:6d3c:92c4:a5c7])
+        by smtp.gmail.com with ESMTPSA id e7-20020ac80647000000b0035bb0cd479csm2249384qth.40.2022.09.21.15.36.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 21 Sep 2022 15:36:28 -0700 (PDT)
+Message-ID: <463d5e09-202f-ca2f-ffb0-c86c8f8b75c9@redhat.com>
+Date: Wed, 21 Sep 2022 18:36:27 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -18,94 +53,200 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH 2/2] iommu: arm-smmu-qcom: add sdm670 compatible
+ Thunderbird/102.2.1
+Subject: Re: [PATCH RFC v2 00/13] IOMMUFD Generic interface
+To: Alex Williamson <alex.williamson@redhat.com>,
+ Jason Gunthorpe <jgg@nvidia.com>
+Cc: Eric Auger <eric.auger@redhat.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+ "Rodel, Jorg" <jroedel@suse.de>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>, Cornelia Huck
+ <cohuck@redhat.com>, Daniel Jordan <daniel.m.jordan@oracle.com>,
+ David Gibson <david@gibson.dropbear.id.au>,
+ Eric Farman <farman@linux.ibm.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ Jason Wang <jasowang@redhat.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ "Martins, Joao" <joao.m.martins@oracle.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ Matthew Rosato <mjrosato@linux.ibm.com>, "Michael S. Tsirkin"
+ <mst@redhat.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ Niklas Schnelle <schnelle@linux.ibm.com>,
+ Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+ "Liu, Yi L" <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>,
+ Steve Sistare <steven.sistare@oracle.com>,
+ "libvir-list@redhat.com" <libvir-list@redhat.com>,
+ =?UTF-8?Q?Daniel_P=2e_Berrang=c3=a9?= <berrange@redhat.com>
+References: <0-v2-f9436d0bde78+4bb-iommufd_jgg@nvidia.com>
+ <BN9PR11MB52762909D64C1194F4FCB4528C479@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <d5e33ebb-29e6-029d-aef4-af5c4478185a@redhat.com>
+ <Yyoa+kAJi2+/YTYn@nvidia.com>
+ <20220921120649.5d2ff778.alex.williamson@redhat.com>
+From: Laine Stump <laine@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220921120649.5d2ff778.alex.williamson@redhat.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Content-Language: en-US
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Richard Acayan <mailingradian@gmail.com>, linux-arm-msm@vger.kernel.org
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Bjorn Andersson <andersson@kernel.org>,
- Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
- Rob Clark <robdclark@chromium.org>, Sibi Sankar <sibis@codeaurora.org>,
- Loic Poulain <loic.poulain@linaro.org>, Vinod Koul <vkoul@kernel.org>,
- iommu@lists.linux.dev, devicetree@vger.kernel.org
-References: <20220920223955.151507-1-mailingradian@gmail.com>
- <20220920223955.151507-3-mailingradian@gmail.com>
- <77b7d58f-ba85-86de-8635-6efbb1354a08@linaro.org>
- <5c25dc95-d7a4-0b15-5514-6fe3a48e899c@somainline.org>
- <f98ccf6b-34e7-d15f-63f9-928827b52eb8@somainline.org>
- <30980ac8-1386-d284-8452-fdc5b7da8343@linaro.org>
-From: Konrad Dybcio <konrad.dybcio@somainline.org>
-In-Reply-To: <30980ac8-1386-d284-8452-fdc5b7da8343@linaro.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-
-
-On 21.09.2022 21:05, Krzysztof Kozlowski wrote:
-> On 21/09/2022 20:48, Konrad Dybcio wrote:
->>
->>
->> On 21.09.2022 20:47, Konrad Dybcio wrote:
+On 9/21/22 2:06 PM, Alex Williamson wrote:
+> [Cc+ Steve, libvirt, Daniel, Laine]
+> 
+> On Tue, 20 Sep 2022 16:56:42 -0300
+> Jason Gunthorpe <jgg@nvidia.com> wrote:
+> 
+>> On Tue, Sep 13, 2022 at 09:28:18AM +0200, Eric Auger wrote:
+>>> Hi,
 >>>
->>>
->>> On 21.09.2022 09:31, Krzysztof Kozlowski wrote:
->>>> On 21/09/2022 00:39, Richard Acayan wrote:
->>>>> The Snapdragon 670 needs the IOMMU for GENI I2C. Add a compatible string to
->>>>> support it.
->>>>>
->>>>> Signed-off-by: Richard Acayan <mailingradian@gmail.com>
->>>>> ---
->>>>>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
->>>>>  1 file changed, 1 insertion(+)
->>>>>
->>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>>> index b2708de25ea3..bf9653b9eb89 100644
->>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>>> @@ -431,6 +431,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
->>>>>  	{ .compatible = "qcom,sc8180x-smmu-500" },
->>>>>  	{ .compatible = "qcom,sc8280xp-smmu-500" },
->>>>>  	{ .compatible = "qcom,sdm630-smmu-v2" },
->>>>> +	{ .compatible = "qcom,sdm670-smmu-500" },
+>>> On 9/13/22 03:55, Tian, Kevin wrote:
+>>>> We didn't close the open of how to get this merged in LPC due to the
+>>>> audio issue. Then let's use mails.
 >>>>
->>>> Why do we keep adding compatibles to the driver for apparently
->>>> compatible devices?
+>>>> Overall there are three options on the table:
+>>>>
+>>>> 1) Require vfio-compat to be 100% compatible with vfio-type1
+>>>>
+>>>>     Probably not a good choice given the amount of work to fix the remaining
+>>>>     gaps. And this will block support of new IOMMU features for a longer time.
+>>>>
+>>>> 2) Leave vfio-compat as what it is in this series
+>>>>
+>>>>     Treat it as a vehicle to validate the iommufd logic instead of immediately
+>>>>     replacing vfio-type1. Functionally most vfio applications can work w/o
+>>>>     change if putting aside the difference on locked mm accounting, p2p, etc.
+>>>>
+>>>>     Then work on new features and 100% vfio-type1 compat. in parallel.
+>>>>
+>>>> 3) Focus on iommufd native uAPI first
+>>>>
+>>>>     Require vfio_device cdev and adoption in Qemu. Only for new vfio app.
+>>>>
+>>>>     Then work on new features and vfio-compat in parallel.
+>>>>
+>>>> I'm fine with either 2) or 3). Per a quick chat with Alex he prefers to 3).
 >>>
->>> Because Linux has not funny run on bare Qualcomm hardware ever since at least msm8x60 times and
->> s/funny/fully
+>>> I am also inclined to pursue 3) as this was the initial Jason's guidance
+>>> and pre-requisite to integrate new features. In the past we concluded
+>>> vfio-compat would mostly be used for testing purpose. Our QEMU
+>>> integration fully is based on device based API.
 >>
->> unfortunate typo, this is not funny, quite the contrary..
+>> There are some poor chicken and egg problems here.
 >>
->> Konrad
->>> we are not interacting with real hardware, only with Qualcomm's flawed virtual implementation
->>> of it, that's abstracted to us through various generations of their saddening software stack. This
->>> is also the case for many more standard components, even as far as the GIC on recent boards..
+>> I had some assumptions:
+>>   a - the vfio cdev model is going to be iommufd only
+>>   b - any uAPI we add as we go along should be generally useful going
+>>       forward
+>>   c - we should try to minimize the 'minimally viable iommufd' series
+>>
+>> The compat as it stands now (eg #2) is threading this needle. Since it
+>> can exist without cdev it means (c) is made smaller, to two series.
+>>
+>> Since we add something useful to some use cases, eg DPDK is deployable
+>> that way, (b) is OK.
+>>
+>> If we focus on a strict path with 3, and avoid adding non-useful code,
+>> then we have to have two more (unwritten!) series beyond where we are
+>> now - vfio group compartmentalization, and cdev integration, and the
+>> initial (c) will increase.
+>>
+>> 3 also has us merging something that currently has no usable
+>> userspace, which I also do dislike alot.
+>>
+>> I still think the compat gaps are small. I've realized that
+>> VFIO_DMA_UNMAP_FLAG_VADDR has no implementation in qemu, and since it
+>> can deadlock the kernel I propose we purge it completely.
 > 
-> Unfortunately I don't get this explanation... you mean some other
-> firmware requires Linux drivers to use specific compatibles instead of
-> one fallback?
-No, perhaps I misunderstood you.
+> Steve won't be happy to hear that, QEMU support exists but isn't yet
+> merged.
+>   
+>> P2P is ongoing.
+>>
+>> That really just leaves the accounting, and I'm still not convinced at
+>> this must be a critical thing. Linus's latest remarks reported in lwn
+>> at the maintainer summit on tracepoints/BPF as ABI seem to support
+>> this. Let's see an actual deployed production configuration that would
+>> be impacted, and we won't find that unless we move forward.
+> 
+> I'll try to summarize the proposed change so that we can get better
+> advice from libvirt folks, or potentially anyone else managing locked
+> memory limits for device assignment VMs.
+> 
+> Background: when a DMA range, ex. guest RAM, is mapped to a vfio device,
+> we use the system IOMMU to provide GPA to HPA translation for assigned
+> devices. Unlike CPU page tables, we don't generally have a means to
+> demand fault these translations, therefore the memory target of the
+> translation is pinned to prevent that it cannot be swapped or
+> relocated, ie. to guarantee the translation is always valid.
+> 
+> The issue is where we account these pinned pages, where accounting is
+> necessary such that a user cannot lock an arbitrary number of pages
+> into RAM to generate a DoS attack.  Duplicate accounting should be
+> resolved by iommufd, but is outside the scope of this discussion.
+> 
+> Currently, vfio tests against the mm_struct.locked_vm relative to
+> rlimit(RLIMIT_MEMLOCK), which reads task->signal->rlim[limit].rlim_cur,
+> where task is the current process.  This is the same limit set via the
+> setrlimit syscall used by prlimit(1) and reported via 'ulimit -l'.
+> 
+> Note that in both cases above, we're dealing with a task, or process
+> limit and both prlimit and ulimit man pages describe them as such.
+> 
+> iommufd supposes instead, and references existing kernel
+> implementations, that despite the descriptions above these limits are
+> actually meant to be user limits and therefore instead charges pinned
+> pages against user_struct.locked_vm and also marks them in
+> mm_struct.pinned_vm.
+> 
+> The proposed algorithm is to read the _task_ locked memory limit, then
+> attempt to charge the _user_ locked_vm, such that user_struct.locked_vm
+> cannot exceed the task locked memory limit.
+> 
+> This obviously has implications.  AFAICT, any management tool that
+> doesn't instantiate assigned device VMs under separate users are
+> essentially untenable.  For example, if we launch VM1 under userA and
+> set a locked memory limit of 4GB via prlimit to account for an assigned
+> device, that works fine, until we launch VM2 from userA as well.  In
+> that case we can't simply set a 4GB limit on the VM2 task because
+> there's already 4GB charged against user_struct.locked_vm for VM1.  So
+> we'd need to set the VM2 task limit to 8GB to be able to launch VM2.
+> But not only that, we'd need to go back and also set VM1's task limit
+> to 8GB or else it will fail if a DMA mapped memory region is transient
+> and needs to be re-mapped.
+> 
+> Effectively any task under the same user and requiring pinned memory
+> needs to have a locked memory limit set, and updated, to account for
+> all tasks using pinned memory by that user.
+> 
+> How does this affect known current use cases of locked memory
+> management for assigned device VMs?
+> 
+> Does qemu://system by default sandbox into per VM uids or do they all
+> use the qemu user by default.
 
-> 
-> All of these do not have driver data, so they are essentially compatible
-> for Linux driver. Growing this list in the driver seems pointless. What
-> is the benefit of growing driver with same entries, except more patches?
-Compatible lists in smmu-impl files allow matching driver quirks for SMMUs themselves
-and consumer devices (such as MDSS). The situation is more complicated, because some
-qcom SMMUs also require more quirks than others (think 8974 vs 8994 vs 8996/pro&660&8998
-vs 845+ vs adreno smmu in various flavours), so all qcom SMMUs need to use
-`qcom_smmu_impl` and some others need even more quirks on top of that (that generally
-hurt performance or functionality, so we don't want them when they're unnecessary).
-If all generations of qcom SMMU implementation that bear the same name behaved anywhere
-near consistent, there would be no need for keeping this around, instead requiring only
-"qcom,broken-smmu" or something".
+Unless it is told otherwise in the XML for the VMs, each qemu process 
+uses the same uid (which is usually "qemu", but can be changed in 
+systemwide config).
 
-Konrad
+>  I imagine qemu://session mode is pretty
+> screwed by this, but I also don't know who/where locked limits are
+> lifted for such VMs.  Boxes, who I think now supports assigned device
+> VMs, could also be affected.
+
+because qemu:///session runs an unprivileged libvirt (i.e. unable to 
+raise the limits), boxes sets the limits elsewhere  beforehand (not sure 
+where, as I'm not familiar with boxes source).
+
+>   
+>> So, I still like 2 because it yields the smallest next step before we
+>> can bring all the parallel work onto the list, and it makes testing
+>> and converting non-qemu stuff easier even going forward.
 > 
-> Best regards,
-> Krzysztof
+> If a vfio compatible interface isn't transparently compatible, then I
+> have a hard time understanding its value.  Please correct my above
+> description and implications, but I suspect these are not just
+> theoretical ABI compat issues.  Thanks,
 > 
+> Alex
+> 
+
