@@ -1,53 +1,71 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F18D4C72
-	for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 16:15:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2499BC433B5;
-	Wed, 21 Sep 2022 16:15:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1663776931;
-	bh=JW+hViMKt1r6lWulLNKU+E16DgdeDjWXe+Jw1HYGLA0=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=mV+kd7T+f8L4bVzufECzLQEspc2/ZlGG6QwrN97Mf2hhw3BNFzv7x4YOSIMxfv3Ny
-	 P6MwA08HM47fARtsoQn4Cz8PzVERl8NI2dM8bGlfIvyP6Fc5wKfTybUlAqh55Hk7WJ
-	 tu4N3HEh5khtF6TCK8W2kwbrDO1irznoRHIkLlSs3ct7YRNiECqjaVq20Tw+pVVjJu
-	 oGecD1w/WKu+vfaEJoOW82tbm5Oi5wkGUlmy9TTpyxTpjvITwJ0IeaJngXzxCY8CVd
-	 ntWaneUTAUyPPfaoKyM7Fn72A2485OGUXadg3FzO0sq2pc/lew31ha5k7PfyUF507H
-	 HaiEVXWnvYu3Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 05291E4D03E;
-	Wed, 21 Sep 2022 16:15:31 +0000 (UTC)
-Subject: Re: [git pull] IOMMU Fixes for Linux v6.0-rc6
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <YysBOff9ZGM/EfQh@8bytes.org>
-References: <YysBOff9ZGM/EfQh@8bytes.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YysBOff9ZGM/EfQh@8bytes.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.0-rc6
-X-PR-Tracked-Commit-Id: 154897807050c1161cb2660e502fc0470d46b986
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 06f7db9499937c6496d697a765ac05cdcd37f381
-Message-Id: <166377693101.7162.6643161946869174835.pr-tracker-bot@kernel.org>
-Date: Wed, 21 Sep 2022 16:15:31 +0000
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD8E15A97
+	for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 16:15:33 +0000 (UTC)
+Received: by mail-ot1-f43.google.com with SMTP id r13-20020a056830418d00b0065601df69c0so4268266otu.7
+        for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 09:15:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=nho4Mx1okgWawVlTzUYe67i9YWynaM+oXQaK+2MMuvI=;
+        b=VwqCvKnPJ7HggbwxjUkIkIQa8H/b7PRW5aOthoIKPKSz1DK+gLZjQ6BW4nlT6EaaVo
+         FQTCFBHAgsK3r9PXjfda17cDQYAzny1+jxbYFIKGrPqDUy5vTb8wIgXRTWmeXA0g556q
+         rCYCPmFCWZOzbBCa0bTpi8Ecw8GT/IUH8FkWw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=nho4Mx1okgWawVlTzUYe67i9YWynaM+oXQaK+2MMuvI=;
+        b=T9zTO5bjfYor9wLR8gA2YAIB7kjAP5H3I2R0NTueXokb9EZK5c2Ujw/QWx+BXaz0i3
+         xY4BjoJvI4V8DQV/9T0p4VdL2T1JYaKKKSo5o8D0gzDrwZhfU3Tmt38he07UOyKlQ3FC
+         7bTVStnLaS9rBT+m5QmZ9TxBJiVT1sy525Y55hlhibXvK2ine6hVAfgB8q+9X9EKPbyf
+         gumcaZSDzFAwOQtUGgAc8T+vV+4EJcG8U+APm2qukVKpDlM0lA+vggbD1qOVvx6Ej3JE
+         n8XmsD/buaKYywFQhbAfJ/vwvtJRc25iEa1z6yNmDZXQLDzI+qamp4qnk1HfcotvY1KM
+         8vyA==
+X-Gm-Message-State: ACrzQf3BXC1ewOYoHJgQFjhfMvx6tnVNElw0ADWnWpaFsJMQaifIxEdy
+	7NDm5BHsKNRt5b1baB5PvtPZiVjGJ87Xrg==
+X-Google-Smtp-Source: AMsMyM5iqPXjRZsKd26eb2v9temtVurVFVqx3yciHvavB34Qe35WtkVAhvpchARyHJ6HFpwrp/DZkw==
+X-Received: by 2002:a9d:666:0:b0:655:d979:8a6 with SMTP id 93-20020a9d0666000000b00655d97908a6mr13314664otn.200.1663776932220;
+        Wed, 21 Sep 2022 09:15:32 -0700 (PDT)
+Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com. [209.85.167.179])
+        by smtp.gmail.com with ESMTPSA id s2-20020a056830148200b00655bbb53c55sm1510872otq.15.2022.09.21.09.15.29
+        for <iommu@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 21 Sep 2022 09:15:29 -0700 (PDT)
+Received: by mail-oi1-f179.google.com with SMTP id u131so8678975oie.5
+        for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 09:15:29 -0700 (PDT)
+X-Received: by 2002:a05:6808:11cf:b0:34b:8f4f:314b with SMTP id
+ p15-20020a05680811cf00b0034b8f4f314bmr4277924oiv.126.1663776928733; Wed, 21
+ Sep 2022 09:15:28 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+References: <1d1844f0-c773-6222-36c6-862e14f6020d@leemhuis.info>
+ <fd672632-7935-14ff-e2be-0db8443b0907@leemhuis.info> <YyrI/qzx/EWapzck@8bytes.org>
+In-Reply-To: <YyrI/qzx/EWapzck@8bytes.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Wed, 21 Sep 2022 09:15:12 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgU0PyYHut+8zV+kNCxOZiCXd5J29Eisiy8badzsk8Msw@mail.gmail.com>
+Message-ID: <CAHk-=wgU0PyYHut+8zV+kNCxOZiCXd5J29Eisiy8badzsk8Msw@mail.gmail.com>
+Subject: Re: How to quickly resolve the IOMMU regression that currently
+ plagues a lot of people in 5.19.y
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Thorsten Leemhuis <regressions@leemhuis.info>, Greg KH <gregkh@linuxfoundation.org>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev, 
+	"stable@vger.kernel.org" <stable@vger.kernel.org>, 
+	"regressions@lists.linux.dev" <regressions@lists.linux.dev>, LKML <linux-kernel@vger.kernel.org>, 
+	Sasha Levin <sashal@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-The pull request you sent on Wed, 21 Sep 2022 14:19:05 +0200:
+On Wed, Sep 21, 2022 at 1:19 AM Joerg Roedel <joro@8bytes.org> wrote:
+>
+> Thanks for the noise :) I will queue the fix today and send it upstream.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.0-rc6
+.. and it's in my tree now.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/06f7db9499937c6496d697a765ac05cdcd37f381
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+                  Linus
