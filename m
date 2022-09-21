@@ -1,23 +1,25 @@
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4F4A33D4
-	for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 13:28:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E355533D9
+	for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 13:28:36 +0000 (UTC)
 Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.53])
-	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MXfJ76bfQzMnvr;
-	Wed, 21 Sep 2022 21:23:51 +0800 (CST)
+	by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MXfM46ckKzHp5r;
+	Wed, 21 Sep 2022 21:26:24 +0800 (CST)
 Received: from huawei.com (10.175.112.208) by dggpeml500024.china.huawei.com
  (7.185.36.10) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Wed, 21 Sep
- 2022 21:28:33 +0800
+ 2022 21:28:34 +0800
 From: Yuan Can <yuancan@huawei.com>
 To: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
 	<iommu@lists.linux.dev>
 CC: <yuancan@huawei.com>
-Subject: [PATCH RESEND 1/3] iommu: return early when devices in a group require different domain type
-Date: Wed, 21 Sep 2022 13:26:05 +0000
-Message-ID: <20220921132607.43820-1-yuancan@huawei.com>
+Subject: [PATCH RESEND 3/3] iommu/ioasid: Add missing new line for info message
+Date: Wed, 21 Sep 2022 13:26:07 +0000
+Message-ID: <20220921132607.43820-3-yuancan@huawei.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220921132607.43820-1-yuancan@huawei.com>
+References: <20220921132607.43820-1-yuancan@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -30,33 +32,27 @@ X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
  dggpeml500024.china.huawei.com (7.185.36.10)
 X-CFilter-Loop: Reflected
 
-When alloc default domain for an iommu_group in
-probe_alloc_default_domain, the expected domain type
-of each device in the iommu_group is checked in a loop,
-if two devices require different types, the loop can
-be broken since the default domain will be set to
-iommu_def_domain_type.
-Return 1 when this happened to break the loop in
-__iommu_group_for_each_dev.
+A new line in the end of the log is expected, otherwise
+it will be mixed with later logs.
 
 Signed-off-by: Yuan Can <yuancan@huawei.com>
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/iommu.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/ioasid.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 4893c2429ca5..34c16f6f44b2 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1706,6 +1706,7 @@ static int probe_get_default_domain_type(struct device *dev, void *data)
- 				 dev_name(gtype->dev),
- 				 iommu_domain_type_str(gtype->type));
- 			gtype->type = 0;
-+			return 1; /* end the outer loop */
- 		}
- 
- 		if (!gtype->dev) {
+diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
+index a786c034907c..1af51ee10175 100644
+--- a/drivers/iommu/ioasid.c
++++ b/drivers/iommu/ioasid.c
+@@ -234,7 +234,7 @@ void ioasid_unregister_allocator(struct ioasid_allocator_ops *ops)
+ 				rcu_assign_pointer(active_allocator,
+ 						list_first_entry(&allocators_list,
+ 								struct ioasid_allocator_data, list));
+-				pr_info("IOASID allocator changed");
++				pr_info("IOASID allocator changed.\n");
+ 			}
+ 			kfree_rcu(pallocator, rcu);
+ 			break;
 -- 
 2.17.1
 
