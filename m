@@ -1,116 +1,82 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51AFC1C27
-	for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 07:03:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663743823; x=1695279823;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=VLf2RXUYKKOmZoPjWdX8Te/gPeu4nHe4ezJN9Uc4fRI=;
-  b=lZGj81ZvhRqwsi+TFPR/eo5IW6Ns24KLvlI0VkmysQrs9KIpN6JKXnDS
-   v83KYUbeL5Sl50GFIUvlamfC5KKU5jA2jf+AgnWfwD+PaTe1/vJVqjryj
-   SNHOP37eNVESsitg1apKGL5KdTNsXKVjNybvNr7Oj9U+aoEUlpcWBj6T3
-   YfYVm4Ku55BtDHUjNW7Yp5TSxT6EW4q4c9CJ44J3OyWOEO92yma2Apx8b
-   SfMQhnnWHZymSjFBRk9k2y3TtbaH1u5J2fuqVdoiGHJjJntz9UHeh/PjO
-   y1hbmvLpMxJirEFGAFF8z0BLVBXIpGlyTBVminKJlsT18oNEy5hvnRkmy
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10476"; a="363895854"
-X-IronPort-AV: E=Sophos;i="5.93,332,1654585200"; 
-   d="scan'208";a="363895854"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2022 00:03:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,332,1654585200"; 
-   d="scan'208";a="681648663"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga008.fm.intel.com with ESMTP; 21 Sep 2022 00:03:38 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: iommu@lists.linux.dev
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Jerry Snitselaar <jsnitsel@redhat.com>
-Subject: [PATCH v2 1/1] iommu/vt-d: Avoid unnecessary global IRTE cache invalidation
-Date: Wed, 21 Sep 2022 14:57:41 +0800
-Message-Id: <20220921065741.3572495-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9F691C27;
+	Wed, 21 Sep 2022 07:15:19 +0000 (UTC)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+	id 1oatwz-0000gU-He; Wed, 21 Sep 2022 09:15:17 +0200
+Message-ID: <fd672632-7935-14ff-e2be-0db8443b0907@leemhuis.info>
+Date: Wed, 21 Sep 2022 09:15:17 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Subject: How to quickly resolve the IOMMU regression that currently plagues a
+ lot of people in 5.19.y
+Content-Language: en-US, de-DE
+From: Thorsten Leemhuis <regressions@leemhuis.info>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+ iommu@lists.linux.dev, "stable@vger.kernel.org" <stable@vger.kernel.org>,
+ "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+ LKML <linux-kernel@vger.kernel.org>,
+ Linus Torvalds <torvalds@linux-foundation.org>,
+ Sasha Levin <sashal@kernel.org>
+References: <1d1844f0-c773-6222-36c6-862e14f6020d@leemhuis.info>
+In-Reply-To: <1d1844f0-c773-6222-36c6-862e14f6020d@leemhuis.info>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1663744520;0bf43731;
+X-HE-SMSGID: 1oatwz-0000gU-He
 
-Some VT-d hardware implementations invalidate all interrupt remapping
-hardware translation caches as part of SIRTP flow. The VT-d spec adds
-a ESIRTPS (Enhanced Set Interrupt Remap Table Pointer Support, section
-11.4.2 in VT-d spec) capability bit to indicate this.
+[resend with proper subject, sorry for the noise]
 
-The spec also states in 11.4.4 that hardware also performs global
-invalidation on all interrupt remapping caches as part of Interrupt
-Remapping Disable operation if ESIRTPS capability bit is set.
+[note to self: don't get distracted when writing the subject]
 
-This checks the ESIRTPS capability bit and skip software global cache
-invalidation if it's set.
-
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
----
- drivers/iommu/intel/iommu.h         | 1 +
- drivers/iommu/intel/irq_remapping.c | 6 ++++--
- 2 files changed, 5 insertions(+), 2 deletions(-)
-
-Change log:
-
-v2:
- - Add ESIRTPS check in iommu_disable_irq_remapping() path as well.
-
-v1: https://lore.kernel.org/r/20220919062523.3438951-2-baolu.lu@linux.intel.com
-
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 99cc75ecac63..bddf6c69587d 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -146,6 +146,7 @@
- /*
-  * Decoding Capability Register
-  */
-+#define cap_esirtps(c)		(((c) >> 62) & 1)
- #define cap_fl5lp_support(c)	(((c) >> 60) & 1)
- #define cap_pi_support(c)	(((c) >> 59) & 1)
- #define cap_fl1gp_support(c)	(((c) >> 56) & 1)
-diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
-index 2e9683e970f8..5962bb5027d0 100644
---- a/drivers/iommu/intel/irq_remapping.c
-+++ b/drivers/iommu/intel/irq_remapping.c
-@@ -494,7 +494,8 @@ static void iommu_set_irq_remapping(struct intel_iommu *iommu, int mode)
- 	 * Global invalidation of interrupt entry cache to make sure the
- 	 * hardware uses the new irq remapping table.
- 	 */
--	qi_global_iec(iommu);
-+	if (!cap_esirtps(iommu->cap))
-+		qi_global_iec(iommu);
- }
- 
- static void iommu_enable_irq_remapping(struct intel_iommu *iommu)
-@@ -680,7 +681,8 @@ static void iommu_disable_irq_remapping(struct intel_iommu *iommu)
- 	 * global invalidation of interrupt entry cache before disabling
- 	 * interrupt-remapping.
- 	 */
--	qi_global_iec(iommu);
-+	if (!cap_esirtps(iommu->cap))
-+		qi_global_iec(iommu);
- 
- 	raw_spin_lock_irqsave(&iommu->register_lock, flags);
- 
--- 
-2.34.1
-
+On 21.09.22 08:53, Thorsten Leemhuis wrote:
+> Hi Greg! As you likely heard already, 5.19.9 introduced a regression
+> that breaks Thunderbolt and USB-C docks (and apparently Wifi in some
+> cases as well) on quite a few (many?) modern systems. It's one of those
+> problems where I think "hey, we ideally should fix this in stable as
+> fast as possible" we briefly talked about last week on the LPC hallways.
+> That made me wonder how to actually archive that in this particular case
+> while keeping all involved parties happy and not skipping any CI testing
+> queues considered important.
+> 
+> FWIW, here are a few few reports about the issue (I assume there are
+> some for Arch Linux and openSUSE Tumbleweed as well, but didn't check).
+> 
+> https://lore.kernel.org/linux-iommu/485A6EA5-6D58-42EA-B298-8571E97422DE@getmailspring.com/
+> https://bugzilla.kernel.org/show_bug.cgi?id=216497
+> https://bugzilla.redhat.com/show_bug.cgi?id=2128458
+> https://bugzilla.redhat.com/show_bug.cgi?id=2127753
+> 
+> A revert of the culprit (9cd4f1434479f ("iommu/vt-d: Fix possible
+> recursive locking in intel_iommu_init()"); in 5.19.y it's 	9516acba29e3)
+> for mainline is here:
+> https://lore.kernel.org/lkml/20220920081701.3453504-1-baolu.lu@linux.intel.com/
+> 
+> A few hours ago the revert was queued to get send to Joerg:
+> https://lore.kernel.org/linux-iommu/20220921024054.3570256-1-baolu.lu@linux.intel.com/
+> 
+> I fear it could easily take another week to get this fixed in stable
+> depending on how fast the patch makes it to mainline and the timing of
+> the next 5.19.y release and its -rc phase. That to me sounds like way
+> too long for a problem like this that apparently plagues quite a few
+> people.
+> 
+> That made me wonder: would you in cases like this be willing to start
+> the -rc phase for a interim 5.19.y release with just that revert while
+> it's still heading towards mainline? Then the CI systems that test
+> stable -rcs could chew on things already; and the new stable release
+> could go out right after the revert landed in mainline (unless the
+> testing finds any problems, of course).
+> 
+> Ciao, Thorsten
+> 
+> 
