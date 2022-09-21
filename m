@@ -1,70 +1,232 @@
-Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C1D566E4
-	for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 17:28:06 +0000 (UTC)
-Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-127dca21a7dso10036911fac.12
-        for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 10:28:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=oIcVLFk7zmQbQSkhtXNMtiXqG0YYuFNHIOlQIXgkdXw=;
-        b=IpQtuPeAaqwDBdNxq8AGBqSy7sk3hE4//SgQa9KtcKybm3kBqzMfOZ87h/cWoGMili
-         5N9eOFmNgbGxtV7goomqVEG65TQXTTYoPpUfiGLeyvgCM6TRGFQeBQIi+/QJV8OAfvMh
-         BQYj9iFOz0rdCkPj9BVrIcyuTv/Lz+F3ZtvgY=
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF6598440
+	for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 18:06:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1663783615;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=I8WvJY2ZBojq4QA0ugwOQiu67YH7FFdEworZoVmg7u8=;
+	b=QgT/UI3yF14MiYK+9CuQ/zJcSzFuqTfVnnA5hlHFeUmQAMmwOBk58JbVFer7WLIWY3g+zq
+	UF+zhF54XhxWFW24/5Ccw1Wpo7PpILar98CGtRRoHl33K594IKY+FBg2sLNnQuaeQm++jo
+	bMH/vJuZtRuVWz4jFa9oGC4UR0nlnHc=
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
+ [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-436-ahczIxdtNYK2FZjbtPkWnw-1; Wed, 21 Sep 2022 14:06:53 -0400
+X-MC-Unique: ahczIxdtNYK2FZjbtPkWnw-1
+Received: by mail-io1-f72.google.com with SMTP id u9-20020a5edd49000000b006a0f03934e9so3469611iop.4
+        for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 11:06:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=oIcVLFk7zmQbQSkhtXNMtiXqG0YYuFNHIOlQIXgkdXw=;
-        b=nr2Duqlf2AgyYzYUzo9PZBNjD2rwUU8jnlQowwczpveigRR2DOcA9O8/ma5suLJ+kt
-         FZ9MAyG9nUMyGJyoOFjXYcjmNf12J6Xlz+SyAIw144EfXvpDzRwnwiUaPPmNROoGuOCW
-         bOr5fzSoXNXO1LaWG9VL9hiv9RXeyK9MhnHlyGu0uNv1MdyEgsIfExvA7ZNanvfQRsfQ
-         fodKtEAx+MCHwA82zzVULSwzjjQK3eunTER0jdpqjomdBsoWAI3uFz/6xZx9fxbG8PlJ
-         pD18ra+2fiU8zoXlzZlYCeSTKPjYmv174YlyIyC1ZlQmSzapBiOsuFOJlhNvynVdxbcc
-         69Yw==
-X-Gm-Message-State: ACrzQf05QDLKLUJ769JEb43nS1b8DuUA8SCK5AUPX6KRBstC9udEkl6m
-	yLFpcqM6jUCe6hqpf62G8gh+/kaLVuM0Vw==
-X-Google-Smtp-Source: AMsMyM5WbrBkrs05jvPRfE8h0kLdKSseAEYvsPDmmu1ThZKBnnzJtl648ctmJB/C4Mbw8M90miuTNA==
-X-Received: by 2002:a05:6870:c0c1:b0:10d:96:737f with SMTP id e1-20020a056870c0c100b0010d0096737fmr5788891oad.101.1663781284892;
-        Wed, 21 Sep 2022 10:28:04 -0700 (PDT)
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com. [209.85.167.178])
-        by smtp.gmail.com with ESMTPSA id f11-20020a4abb0b000000b00425806a20f5sm1242698oop.3.2022.09.21.10.28.03
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Sep 2022 10:28:04 -0700 (PDT)
-Received: by mail-oi1-f178.google.com with SMTP id t62so8906103oie.10
-        for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 10:28:03 -0700 (PDT)
-X-Received: by 2002:a05:6808:11cf:b0:34b:8f4f:314b with SMTP id
- p15-20020a05680811cf00b0034b8f4f314bmr4438561oiv.126.1663781283650; Wed, 21
- Sep 2022 10:28:03 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:organization:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=I8WvJY2ZBojq4QA0ugwOQiu67YH7FFdEworZoVmg7u8=;
+        b=wimaWS6NEqUR1Y5D57YzvTlmoWI9X/HH9y6soU7VTx0YcZ1QdxVHN0eNlZ/jVQfggZ
+         bBsvZctvXTy6njR1iCR5fiwV25ahl+qXvixRjXWRtOltyldlAhOb4VeiuZq6/mPC0gE6
+         RdgasUsAAFyhHNSxjmdY1qGs1YyQ9VaPLyFiXxbGEQhbWjHPIcU+MeS6DkypWnWRfsC+
+         ER+32TUb0mCqXKgPZP89Zfy1SPtDt1I9/1BX1INm3rkZsraXgnSCm3bLBefCqbfK8mE3
+         uXWWmQw768alFHktdFEb4/rdV741zyxDCTqrj/RE5TBaJSEE1iUf09uYZuXp/EDZCaMS
+         SihA==
+X-Gm-Message-State: ACrzQf0YqdzPSSYGGFEIWOzxDDj08e7T1pUQCKtlR9iwfCsDHvbjNLum
+	84Y12AiZPYFA9L6yDq6x+vUQ1t9JrZT9R7JIJAe4a+mp7aKM29h3TOAEWTx8kG7XJaH9avW4yxI
+	7qj1OPPjN1uuKgIg=
+X-Received: by 2002:a05:6638:3a7:b0:35a:7930:b717 with SMTP id z7-20020a05663803a700b0035a7930b717mr13070700jap.314.1663783612897;
+        Wed, 21 Sep 2022 11:06:52 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM6GN4sY4YRqxQ2Y2P+sl2u5wrGiL9+URKREehBKF6J3WGunlkDs/PQnOmlQ09Z5GWcGKWd0Yw==
+X-Received: by 2002:a05:6638:3a7:b0:35a:7930:b717 with SMTP id z7-20020a05663803a700b0035a7930b717mr13070675jap.314.1663783612566;
+        Wed, 21 Sep 2022 11:06:52 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id l5-20020a023905000000b00342cb39de68sm1249582jaa.130.2022.09.21.11.06.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Sep 2022 11:06:51 -0700 (PDT)
+Date: Wed, 21 Sep 2022 12:06:49 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Eric Auger <eric.auger@redhat.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, "Rodel, Jorg" <jroedel@suse.de>, Lu Baolu
+ <baolu.lu@linux.intel.com>, Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+ Cornelia Huck <cohuck@redhat.com>, Daniel Jordan
+ <daniel.m.jordan@oracle.com>, David Gibson <david@gibson.dropbear.id.au>,
+ Eric Farman <farman@linux.ibm.com>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Jason Wang <jasowang@redhat.com>, Jean-Philippe
+ Brucker <jean-philippe@linaro.org>, "Martins, Joao"
+ <joao.m.martins@oracle.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ Matthew Rosato <mjrosato@linux.ibm.com>, "Michael S. Tsirkin"
+ <mst@redhat.com>, Nicolin Chen <nicolinc@nvidia.com>, Niklas Schnelle
+ <schnelle@linux.ibm.com>, Shameerali Kolothum Thodi
+ <shameerali.kolothum.thodi@huawei.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+ Keqian Zhu <zhukeqian1@huawei.com>, Steve Sistare
+ <steven.sistare@oracle.com>, "libvir-list@redhat.com"
+ <libvir-list@redhat.com>, "Daniel P. =?UTF-8?B?QmVycmFuZ8Op?="
+ <berrange@redhat.com>, Laine Stump <laine@redhat.com>
+Subject: Re: [PATCH RFC v2 00/13] IOMMUFD Generic interface
+Message-ID: <20220921120649.5d2ff778.alex.williamson@redhat.com>
+In-Reply-To: <Yyoa+kAJi2+/YTYn@nvidia.com>
+References: <0-v2-f9436d0bde78+4bb-iommufd_jgg@nvidia.com>
+	<BN9PR11MB52762909D64C1194F4FCB4528C479@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<d5e33ebb-29e6-029d-aef4-af5c4478185a@redhat.com>
+	<Yyoa+kAJi2+/YTYn@nvidia.com>
+Organization: Red Hat
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <2b0ca6254dd0102bf559b2a73e9b51da089afbe3.1663764627.git.robin.murphy@arm.com>
- <CAHk-=whdwG2LaaktZTYab2JO2TkPYEmSc-sOJ=qL5wtOWpRpKA@mail.gmail.com> <574fe371-033e-a316-4ace-8a3fd9b19329@arm.com>
-In-Reply-To: <574fe371-033e-a316-4ace-8a3fd9b19329@arm.com>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Wed, 21 Sep 2022 10:27:47 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgMzxSF9=3MuUs_TcgDgkxDvWQzW9HG17wDLbDrYrXtBg@mail.gmail.com>
-Message-ID: <CAHk-=wgMzxSF9=3MuUs_TcgDgkxDvWQzW9HG17wDLbDrYrXtBg@mail.gmail.com>
-Subject: Re: [PATCH v2] iommu: Optimise PCI SAC address trick
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, Sep 21, 2022 at 10:01 AM Robin Murphy <robin.murphy@arm.com> wrote:
->
-> If you do want to have a play though, compile-tested cherry-pick below.
+[Cc+ Steve, libvirt, Daniel, Laine]
 
-Works for me.
+On Tue, 20 Sep 2022 16:56:42 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-Except for you having "format=flowed" and some whitespace damage. But
-I fixed that up manually.
+> On Tue, Sep 13, 2022 at 09:28:18AM +0200, Eric Auger wrote:
+> > Hi,
+> > 
+> > On 9/13/22 03:55, Tian, Kevin wrote:  
+> > > We didn't close the open of how to get this merged in LPC due to the
+> > > audio issue. Then let's use mails.
+> > >
+> > > Overall there are three options on the table:
+> > >
+> > > 1) Require vfio-compat to be 100% compatible with vfio-type1
+> > >
+> > >    Probably not a good choice given the amount of work to fix the remaining
+> > >    gaps. And this will block support of new IOMMU features for a longer time.
+> > >
+> > > 2) Leave vfio-compat as what it is in this series
+> > >
+> > >    Treat it as a vehicle to validate the iommufd logic instead of immediately
+> > >    replacing vfio-type1. Functionally most vfio applications can work w/o
+> > >    change if putting aside the difference on locked mm accounting, p2p, etc.
+> > >
+> > >    Then work on new features and 100% vfio-type1 compat. in parallel.
+> > >
+> > > 3) Focus on iommufd native uAPI first
+> > >
+> > >    Require vfio_device cdev and adoption in Qemu. Only for new vfio app.
+> > >
+> > >    Then work on new features and vfio-compat in parallel.
+> > >
+> > > I'm fine with either 2) or 3). Per a quick chat with Alex he prefers to 3).  
+> > 
+> > I am also inclined to pursue 3) as this was the initial Jason's guidance
+> > and pre-requisite to integrate new features. In the past we concluded
+> > vfio-compat would mostly be used for testing purpose. Our QEMU
+> > integration fully is based on device based API.  
+> 
+> There are some poor chicken and egg problems here.
+> 
+> I had some assumptions:
+>  a - the vfio cdev model is going to be iommufd only
+>  b - any uAPI we add as we go along should be generally useful going
+>      forward
+>  c - we should try to minimize the 'minimally viable iommufd' series
+> 
+> The compat as it stands now (eg #2) is threading this needle. Since it
+> can exist without cdev it means (c) is made smaller, to two series.
+> 
+> Since we add something useful to some use cases, eg DPDK is deployable
+> that way, (b) is OK.
+> 
+> If we focus on a strict path with 3, and avoid adding non-useful code,
+> then we have to have two more (unwritten!) series beyond where we are
+> now - vfio group compartmentalization, and cdev integration, and the
+> initial (c) will increase.
+> 
+> 3 also has us merging something that currently has no usable
+> userspace, which I also do dislike alot.
+> 
+> I still think the compat gaps are small. I've realized that
+> VFIO_DMA_UNMAP_FLAG_VADDR has no implementation in qemu, and since it
+> can deadlock the kernel I propose we purge it completely.
 
-                Linus
+Steve won't be happy to hear that, QEMU support exists but isn't yet
+merged.
+ 
+> P2P is ongoing.
+> 
+> That really just leaves the accounting, and I'm still not convinced at
+> this must be a critical thing. Linus's latest remarks reported in lwn
+> at the maintainer summit on tracepoints/BPF as ABI seem to support
+> this. Let's see an actual deployed production configuration that would
+> be impacted, and we won't find that unless we move forward.
+
+I'll try to summarize the proposed change so that we can get better
+advice from libvirt folks, or potentially anyone else managing locked
+memory limits for device assignment VMs.
+
+Background: when a DMA range, ex. guest RAM, is mapped to a vfio device,
+we use the system IOMMU to provide GPA to HPA translation for assigned
+devices. Unlike CPU page tables, we don't generally have a means to
+demand fault these translations, therefore the memory target of the
+translation is pinned to prevent that it cannot be swapped or
+relocated, ie. to guarantee the translation is always valid.
+
+The issue is where we account these pinned pages, where accounting is
+necessary such that a user cannot lock an arbitrary number of pages
+into RAM to generate a DoS attack.  Duplicate accounting should be
+resolved by iommufd, but is outside the scope of this discussion.
+
+Currently, vfio tests against the mm_struct.locked_vm relative to
+rlimit(RLIMIT_MEMLOCK), which reads task->signal->rlim[limit].rlim_cur,
+where task is the current process.  This is the same limit set via the
+setrlimit syscall used by prlimit(1) and reported via 'ulimit -l'.
+
+Note that in both cases above, we're dealing with a task, or process
+limit and both prlimit and ulimit man pages describe them as such.
+
+iommufd supposes instead, and references existing kernel
+implementations, that despite the descriptions above these limits are
+actually meant to be user limits and therefore instead charges pinned
+pages against user_struct.locked_vm and also marks them in
+mm_struct.pinned_vm.
+
+The proposed algorithm is to read the _task_ locked memory limit, then
+attempt to charge the _user_ locked_vm, such that user_struct.locked_vm
+cannot exceed the task locked memory limit.
+
+This obviously has implications.  AFAICT, any management tool that
+doesn't instantiate assigned device VMs under separate users are
+essentially untenable.  For example, if we launch VM1 under userA and
+set a locked memory limit of 4GB via prlimit to account for an assigned
+device, that works fine, until we launch VM2 from userA as well.  In
+that case we can't simply set a 4GB limit on the VM2 task because
+there's already 4GB charged against user_struct.locked_vm for VM1.  So
+we'd need to set the VM2 task limit to 8GB to be able to launch VM2.
+But not only that, we'd need to go back and also set VM1's task limit
+to 8GB or else it will fail if a DMA mapped memory region is transient
+and needs to be re-mapped.
+
+Effectively any task under the same user and requiring pinned memory
+needs to have a locked memory limit set, and updated, to account for
+all tasks using pinned memory by that user.
+
+How does this affect known current use cases of locked memory
+management for assigned device VMs?
+
+Does qemu://system by default sandbox into per VM uids or do they all
+use the qemu user by default.  I imagine qemu://session mode is pretty
+screwed by this, but I also don't know who/where locked limits are
+lifted for such VMs.  Boxes, who I think now supports assigned device
+VMs, could also be affected. 
+ 
+> So, I still like 2 because it yields the smallest next step before we
+> can bring all the parallel work onto the list, and it makes testing
+> and converting non-qemu stuff easier even going forward.
+
+If a vfio compatible interface isn't transparently compatible, then I
+have a hard time understanding its value.  Please correct my above
+description and implications, but I suspect these are not just
+theoretical ABI compat issues.  Thanks,
+
+Alex
+
