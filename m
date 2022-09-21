@@ -1,84 +1,79 @@
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 158397C
-	for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 02:46:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D29847C
+	for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 02:49:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663728415; x=1695264415;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=DBYj/rGUbvxJJj2sBf29c6K45mPiObuLJBUkxGqCPN4=;
-  b=ajvNc30WX2W338w3B1BjSHXkIBETZryXwunjHknJPw23v65GhmHxSMAd
-   5cCx5cMjC2GjsfMS2PqSfYeyXPpwduC/FlVgRTxN/c+y7PYjnIFNcBnTf
-   gpGWv9T/EimJdg+gIsAGZGwR3EwqSURmjmxpy5iLuS5l8uKdS6pOofpTA
-   ccI5z4H60P24nvlbVeVEYmmHDzXM+ck7/376RfoOBp00UfpdCNFOasgpC
-   DheJ44189JAW8NFQs19VEr25LNU79dDOzf3VzVCbW/Do0jfniyvyKojaR
-   ahH2BL/DcfCFqilf3TlEiRMbE+h1d+qLQ5H5YN4GKjux5Px73b4DqN+Ww
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10476"; a="301277923"
+  t=1663728577; x=1695264577;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=SpwZqyP/NsakNUiAYbXlk6VtCsQb6pxkSE0VYT9lA+E=;
+  b=M6vjKkqGEtY2JoQHpxY6JgrAIRfkXBYAxwxC1bXpS3FTXj0lp2UQpyhf
+   0qupQGmVcGQBCgFu/4jX5WLppafaYBtQIrGTkhE2vPVLINPCOGB7NrNJV
+   HQOJhHQazYTTZPx9N4SeZNvOO8SHLpBF+rzjnOjNvKXWtg00iFmVjtNg7
+   ikOjIUWNLmDk6RESRD+YRGmoYbc7Tcyt6DMeu/lxZhA8aXomL4j/bQJZd
+   5muzWOMsrzwxvJFnLYZrX36xwbo2mviX9AODhJtpK51qBtcgZm8+m/im9
+   gfOsCtIGdqIcWU6n109Mu9rJITrVzx2c8ravzN2ieQbZz38pmtTyxn1FH
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10476"; a="363856511"
 X-IronPort-AV: E=Sophos;i="5.93,332,1654585200"; 
-   d="scan'208";a="301277923"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Sep 2022 19:46:54 -0700
+   d="scan'208";a="363856511"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Sep 2022 19:49:37 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,332,1654585200"; 
-   d="scan'208";a="681573941"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga008.fm.intel.com with ESMTP; 20 Sep 2022 19:46:52 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Kevin Tian <kevin.tian@intel.com>,
-	Yi Liu <yi.l.liu@intel.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	George Hilliard <thirtythreeforty@gmail.com>,
-	iommu@lists.linux.dev,
-	iommu@lists.linux-foundation.org
-Subject: [PATCH 2/2] iommu/vt-d: Check correct capability for sagaw determination
-Date: Wed, 21 Sep 2022 10:40:54 +0800
-Message-Id: <20220921024054.3570256-3-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220921024054.3570256-1-baolu.lu@linux.intel.com>
-References: <20220921024054.3570256-1-baolu.lu@linux.intel.com>
+   d="scan'208";a="794500836"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
+  by orsmga005.jf.intel.com with ESMTP; 20 Sep 2022 19:49:35 -0700
+Message-ID: <4dc8f9a4-c2cb-261e-21e7-37b2d29c7332@linux.intel.com>
+Date: Wed, 21 Sep 2022 10:43:40 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>,
+ Mika Westerberg <mika.westerberg@linux.intel.com>,
+ George Hilliard <thirtythreeforty@gmail.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] Revert "iommu/vt-d: Fix possible recursive locking in
+ intel_iommu_init()"
+Content-Language: en-US
+To: iommu@lists.linux.dev
+References: <20220920081701.3453504-1-baolu.lu@linux.intel.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220920081701.3453504-1-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Yi Liu <yi.l.liu@intel.com>
+On 9/20/22 4:17 PM, Lu Baolu wrote:
+> This reverts commit 9cd4f1434479f1ac25c440c421fbf52069079914.
+> 
+> Some issues were reported on the original commit. Some thunderbolt devices
+> don't work anymore due to the following DMA fault.
+> 
+> DMAR: DRHD: handling fault status reg 2
+> DMAR: [INTR-REMAP] Request device [09:00.0] fault index 0x8080
+>        [fault reason 0x25]
+>        Blocked a compatibility format interrupt request
+> 
+> Bring it back for now to avoid functional regression.
+> 
+> Fixes: 9cd4f1434479f ("iommu/vt-d: Fix possible recursive locking in intel_iommu_init()")
+> Link:https://lore.kernel.org/linux-iommu/485A6EA5-6D58-42EA-B298-8571E97422DE@getmailspring.com/
+> Link:https://bugzilla.kernel.org/show_bug.cgi?id=216497
+> Cc: Mika Westerberg<mika.westerberg@linux.intel.com>
+> Reported-and-tested-by: George Hilliard<thirtythreeforty@gmail.com>
+> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
 
-Check 5-level paging capability for 57 bits address width instead of
-checking 1GB large page capability.
+Queued for v6.0.
 
-Fixes: 53fc7ad6edf2 ("iommu/vt-d: Correctly calculate sagaw value of IOMMU")
-Cc: stable@vger.kernel.org
-Reported-by: Raghunathan Srinivasan <raghunathan.srinivasan@intel.com>
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
-Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Raghunathan Srinivasan <raghunathan.srinivasan@intel.com>
-Link: https://lore.kernel.org/r/20220916071212.2223869-2-yi.l.liu@intel.com
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+https://lore.kernel.org/linux-iommu/20220921024054.3570256-1-baolu.lu@linux.intel.com
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 64d30895a4c8..31bc50e538a3 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -399,7 +399,7 @@ static unsigned long __iommu_calculate_sagaw(struct intel_iommu *iommu)
- {
- 	unsigned long fl_sagaw, sl_sagaw;
- 
--	fl_sagaw = BIT(2) | (cap_fl1gp_support(iommu->cap) ? BIT(3) : 0);
-+	fl_sagaw = BIT(2) | (cap_5lp_support(iommu->cap) ? BIT(3) : 0);
- 	sl_sagaw = cap_sagaw(iommu->cap);
- 
- 	/* Second level only. */
--- 
-2.34.1
-
+Best regards,
+baolu
