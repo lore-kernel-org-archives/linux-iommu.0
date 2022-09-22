@@ -1,103 +1,89 @@
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 663EC3207
-	for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 11:40:56 +0000 (UTC)
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=liusong@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VQSkvRx_1663845886;
-Received: from localhost(mailfrom:liusong@linux.alibaba.com fp:SMTPD_---0VQSkvRx_1663845886)
-          by smtp.aliyun-inc.com;
-          Thu, 22 Sep 2022 19:25:13 +0800
-From: Liu Song <liusong@linux.alibaba.com>
-To: jean-philippe@linaro.org,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com
-Cc: virtualization@lists.linux-foundation.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [RFC PATCH] iommu/virtio: __viommu_sync_req is no need to return a value
-Date: Thu, 22 Sep 2022 19:24:46 +0800
-Message-Id: <1663845886-11341-1-git-send-email-liusong@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 127AB3229;
+	Thu, 22 Sep 2022 12:05:42 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: marcan@marcan.st)
+	by mail.marcansoft.com (Postfix) with ESMTPSA id 1B1E541F72;
+	Thu, 22 Sep 2022 12:05:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
+	t=1663848335; bh=4C8tp/J+vzOZn+IcAaj/31/YtIQ4NN2UYPR9Bjo1AeE=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=CAfX13+M95AnsYhz9cVsQBzaOhx6+6ISasDwrrP3gj5STGV7rtNESHmOPgB6STuU8
+	 53JKtUGFgFNIhqcCLQiERuC0dMjF/H4ABwFXSH/EpI7eXvXaD552fso8yPliiBQiiu
+	 EHJ3gx6Lo8P3d29D28RCV8tI1FeUCBex2/WtcPuOCktjW/8Oz/dM+v+SFqvquCiQ93
+	 cZNu0p1QGz/ABUCpPUmqo0h5TloLjosCIcoIMacPHLvWcog/e4mf7evxb6tdnWDdj4
+	 6cXoMrfI5vS3WTvRsiFsJ72/pd3OZozBAeAqyGMzxaZiUTchpgFZQb5w7apCCN1Hki
+	 vPbqTLYOmSXQQ==
+Message-ID: <0f2a1930-9d43-60e8-5f6e-55779248bee5@marcan.st>
+Date: Thu, 22 Sep 2022 21:05:28 +0900
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v5 1/5] dt-bindings: iommu: dart: add t6000 compatible
+Content-Language: es-ES
+To: Janne Grunau <j@jannau.net>, iommu@lists.linux.dev
+Cc: Konrad Dybcio <konrad.dybcio@somainline.org>, asahi@lists.linux.dev,
+ Sven Peter <sven@svenpeter.dev>, Rob Herring <robh@kernel.org>,
+ Alyssa Rosenzweig <alyssa@rosenzweig.io>, Joerg Roedel <joro@8bytes.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Mark Kettenis <mark.kettenis@xs4all.nl>, Rob Herring <robh+dt@kernel.org>,
+ Will Deacon <will@kernel.org>, devicetree@vger.kernel.org,
+ iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org
+References: <20220916094152.87137-1-j@jannau.net>
+ <20220916094152.87137-2-j@jannau.net>
+From: Hector Martin <marcan@marcan.st>
+In-Reply-To: <20220916094152.87137-2-j@jannau.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-From: Liu Song <liusong@linux.alibaba.com>
+On 16/09/2022 18.41, Janne Grunau wrote:
+> From: Sven Peter <sven@svenpeter.dev>
+> 
+> The M1 Max/Pro SoCs come with a new DART variant that is incompatible with
+> the previous one. Add a new compatible for those.
+> 
+> Signed-off-by: Sven Peter <sven@svenpeter.dev>
+> Acked-by: Rob Herring <robh@kernel.org>
+> 
+> Signed-off-by: Janne Grunau <j@jannau.net>
+> ---
+> 
+> (no changes since v2)
+> 
+> Changes in v2:
+> - added Rob's Acked-by:
+> 
+>  Documentation/devicetree/bindings/iommu/apple,dart.yaml | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/apple,dart.yaml b/Documentation/devicetree/bindings/iommu/apple,dart.yaml
+> index 82ad669feef7..06af2bacbe97 100644
+> --- a/Documentation/devicetree/bindings/iommu/apple,dart.yaml
+> +++ b/Documentation/devicetree/bindings/iommu/apple,dart.yaml
+> @@ -22,7 +22,9 @@ description: |+
+>  
+>  properties:
+>    compatible:
+> -    const: apple,t8103-dart
+> +    enum:
+> +      - apple,t8103-dart
+> +      - apple,t6000-dart
+>  
+>    reg:
+>      maxItems: 1
 
-In "__viommu_sync_req", 0 is always returned as the only return value, no
-return value is needed for this case, and the processes and functions
-involved are adjusted accordingly.
+I'm taking this one via the Asahi-SoC tree, since it unblocks the t6000
+DT series and it is already reviewed and ready to go. Thanks!
 
-Signed-off-by: Liu Song <liusong@linux.alibaba.com>
----
- drivers/iommu/virtio-iommu.c | 23 ++++++-----------------
- 1 file changed, 6 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index b7c2280..fde5661 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -151,7 +151,7 @@ static off_t viommu_get_write_desc_offset(struct viommu_dev *viommu,
-  * Wait for all added requests to complete. When this function returns, all
-  * requests that were in-flight at the time of the call have completed.
-  */
--static int __viommu_sync_req(struct viommu_dev *viommu)
-+static void __viommu_sync_req(struct viommu_dev *viommu)
- {
- 	unsigned int len;
- 	size_t write_len;
-@@ -180,22 +180,15 @@ static int __viommu_sync_req(struct viommu_dev *viommu)
- 		list_del(&req->list);
- 		kfree(req);
- 	}
--
--	return 0;
- }
- 
--static int viommu_sync_req(struct viommu_dev *viommu)
-+static void viommu_sync_req(struct viommu_dev *viommu)
- {
--	int ret;
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&viommu->request_lock, flags);
--	ret = __viommu_sync_req(viommu);
--	if (ret)
--		dev_dbg(viommu->dev, "could not sync requests (%d)\n", ret);
-+	__viommu_sync_req(viommu);
- 	spin_unlock_irqrestore(&viommu->request_lock, flags);
--
--	return ret;
- }
- 
- /*
-@@ -247,8 +240,8 @@ static int __viommu_add_req(struct viommu_dev *viommu, void *buf, size_t len,
- 	ret = virtqueue_add_sgs(vq, sg, 1, 1, req, GFP_ATOMIC);
- 	if (ret == -ENOSPC) {
- 		/* If the queue is full, sync and retry */
--		if (!__viommu_sync_req(viommu))
--			ret = virtqueue_add_sgs(vq, sg, 1, 1, req, GFP_ATOMIC);
-+		__viommu_sync_req(viommu);
-+		ret = virtqueue_add_sgs(vq, sg, 1, 1, req, GFP_ATOMIC);
- 	}
- 	if (ret)
- 		goto err_free;
-@@ -293,11 +286,7 @@ static int viommu_send_req_sync(struct viommu_dev *viommu, void *buf,
- 		goto out_unlock;
- 	}
- 
--	ret = __viommu_sync_req(viommu);
--	if (ret) {
--		dev_dbg(viommu->dev, "could not sync requests (%d)\n", ret);
--		/* Fall-through (get the actual request status) */
--	}
-+	__viommu_sync_req(viommu);
- 
- 	ret = viommu_get_req_errno(buf, len);
- out_unlock:
--- 
-1.8.3.1
-
+- Hector
