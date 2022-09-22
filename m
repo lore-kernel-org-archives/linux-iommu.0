@@ -1,215 +1,125 @@
-Received: from mail-il1-f179.google.com (mail-il1-f179.google.com [209.85.166.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2067.outbound.protection.outlook.com [40.107.220.67])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B77B41FBA
-	for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 02:40:12 +0000 (UTC)
-Received: by mail-il1-f179.google.com with SMTP id a2so475862iln.13
-        for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 19:40:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=YS6Dg5osr6nCJxEVuPdfQt0cZfWWG2Q/unzoo9QoBKs=;
-        b=NvuA8N/8RKjR5vm0qEUfonZC98zcavJV+DuFgNw20rZCSD/VuKU62dLQB6ueutjXIG
-         O67UGfpetZwhGo4lnBM8NmgUwUydXvfhb9RY2vOOFu+WAVaU7bmloXZjVzcSDfNPgfVd
-         lWMi2HtqijFxQY7tVN23VRXoBGNNOj2WIDKwWLsO/9j9yCNyKARG+scxTcmTO/47YO+7
-         VQkhKBKBC6kNbOnmKqEgJvGlgX/aH7UWxS2Agr1ZY2zOBTKtmw+OUNfwBnFMhIni5QMp
-         VMg4cPR24eIe0RFgPCxS7asC8pDR9syuMxRJnj+V5yu1wq2yTJzh58m7FFq+zkqsmgyr
-         z1zQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=YS6Dg5osr6nCJxEVuPdfQt0cZfWWG2Q/unzoo9QoBKs=;
-        b=YRRi1UuXLmNGdeUUofGy1mQwTtylUjDhDrQsnJsntEFV58CIUHAKq1DA1ct+w1yzAC
-         zrkVENo9ruiFBABdFvdCGYkiQT3mn1gOyM9KknOJZiqWA+6O5XdreT7bfnPWW5ejt6ZP
-         slKo2FummPX6TLUk9qHhiKfiuKuJqEHULEaF8mIEl0lwAEfqofSBQo0XeK7fOF7839XY
-         Vf/cHEXvi7MUdHDrFjPbypEDvcOGt921tS7JSLgvq325tQqrCWYuKu3/2+25cqxX1qxM
-         sdq5hRoBxqJE2V3ZsBUOfbO2T0kltTybq8FOGNQ+RLkez4PMPliQe5e3Chl4nT5Nbp1M
-         1kUw==
-X-Gm-Message-State: ACrzQf2YFhbaVt0DhNtHy3NFKIVos07ZBVCvh4B0PkUPDay9j6UCrDIb
-	ct/gvEcq6UJ0faop2X8nK1I=
-X-Google-Smtp-Source: AMsMyM4T4LztPLLiQ3WiN86RqKrZQ/wMq1uMh/Em6rBkulzQwwvH/ilwkXrjUbkxmiIUWMk4gJ8LEA==
-X-Received: by 2002:a05:6e02:1d18:b0:2f6:65c9:91 with SMTP id i24-20020a056e021d1800b002f665c90091mr609072ila.164.1663814411729;
-        Wed, 21 Sep 2022 19:40:11 -0700 (PDT)
-Received: from localhost ([2607:fea8:a2e2:2d00::61a4])
-        by smtp.gmail.com with UTF8SMTPSA id b27-20020a026f5b000000b00349d4ee2a4asm1689487jae.91.2022.09.21.19.40.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Sep 2022 19:40:11 -0700 (PDT)
-From: Richard Acayan <mailingradian@gmail.com>
-To: Konrad Dybcio <konrad.dybcio@somainline.org>
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Richard Acayan <mailingradian@gmail.com>,
-	linux-arm-msm@vger.kernel.org,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Rob Clark <robdclark@chromium.org>,
-	Sibi Sankar <sibis@codeaurora.org>,
-	Loic Poulain <loic.poulain@linaro.org>,
-	Vinod Koul <vkoul@kernel.org>,
-	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH 2/2] iommu: arm-smmu-qcom: add sdm670 compatible
-Date: Wed, 21 Sep 2022 22:38:34 -0400
-Message-Id: <20220922023833.178076-1-mailingradian@gmail.com>
-X-Mailer: git-send-email 2.37.3
-In-Reply-To: <5f629a95-8ee4-7cf8-f471-0b50e311d3b7@somainline.org>
-References: <5f629a95-8ee4-7cf8-f471-0b50e311d3b7@somainline.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A90C51FD5
+	for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 05:09:21 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ex+dlabUwhamq52SBeSuYuzbSsVz3VteM/tj7W3vlln6af99FeqrWZv5vomGws8CVOx4f54i64vKbdUlD2UNKk6uVx0e8xm7jHwViiKJcwSzD/QL/espVuD6xwtWjhVq9mJxIlXj8S/qQp1GBe3hrd+tQhxwgCQ86eHGiqwvWFt7eIkO7nPFFrbncA8gpBwnxUPZkjjjVrbd5xKNEeLIkEIX8hp2Fyow/rd6RN7T5+QAGWUukakJus8FHhBeEVQDjKkfxON+LFSJ0o8oZUA0hZemBxFnONN/QxQ6w8hpoawyGYRfsuF//YptVTOtxZ7y0Vue8DzUhLMRxCX9AE30aQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Q/E2F+s4llk4R5foJ3S+CieZPXBn01PAOjAZ2oSgyIc=;
+ b=i4cMBzUIdc0rXsTOGn5Imqi7TDp0myUhl0HVn1V87MyqIAN/Nbd7X5Poryb0PbJz5g+YnHg4fi2KkrFlRhR+yDKh07ESPMBumzOk/rxq0ZJnOY9O+3Onc/beQuO33kpx+wFDRUMInEVOn1lfdlIGqYtkONzAvThQiuJyXhPir/XV5UGVjjTxybC1S6DgRsfkmhrimk7ZOmpf/u+gR3/dsXlKbT66TIcgziLftomOB5UryCjKkTf8ThlBVzco2WKmSnQ2M84cZZbrxWXmtG97KAhmmuTIB1+ALmGVLFT+nKwiELPEqQYvaezbUpzLh+oIiatYLjQ2U4lP9ic1zqAQBg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=linux.intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Q/E2F+s4llk4R5foJ3S+CieZPXBn01PAOjAZ2oSgyIc=;
+ b=jlV3ioyN1zHQAacDoxTk74B3BaHkJX+dQmNw07atLKb0Nt/Psg88/k/aKyxjlHvTxZ4C5DQZCiil71iL2fP1tZGtx0l7vPANXEO9M4z8scAz2aa0g5Zv41WSKM34xrxS8Mcs1vADrrpxh6549taTL9sKKR+o1Erhs0CtDy3fOIU8FmhAS6CxJdPjZ58JEMXqJtOvNcIQZ6kC58ws4+FPZ/Y/N3VrNIak4mA9Dd15MsipgPEZCu1pbueY06JBRYrdWDcc7ReltP5odo6RqN3cvLFyP27yIZB12ZkglyapLBBFtdlZnz+T38kDOh8P4h13zVaeAzMez6+m1pev/u8b3w==
+Received: from BN9P221CA0022.NAMP221.PROD.OUTLOOK.COM (2603:10b6:408:10a::14)
+ by SN7PR12MB7129.namprd12.prod.outlook.com (2603:10b6:806:2a1::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.14; Thu, 22 Sep
+ 2022 05:09:19 +0000
+Received: from BN8NAM11FT057.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:10a:cafe::11) by BN9P221CA0022.outlook.office365.com
+ (2603:10b6:408:10a::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.14 via Frontend
+ Transport; Thu, 22 Sep 2022 05:09:19 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ BN8NAM11FT057.mail.protection.outlook.com (10.13.177.49) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5654.14 via Frontend Transport; Thu, 22 Sep 2022 05:09:18 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Wed, 21 Sep
+ 2022 22:09:07 -0700
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ rnnvmail205.nvidia.com (10.129.68.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.29; Wed, 21 Sep 2022 22:09:06 -0700
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.29; Wed, 21 Sep 2022 22:09:06 -0700
+Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29 via Frontend
+ Transport; Wed, 21 Sep 2022 22:09:04 -0700
+Date: Wed, 21 Sep 2022 22:09:02 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+CC: <joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <will@kernel.org>,
+	<robin.murphy@arm.com>, <robdclark@gmail.com>, <dwmw2@infradead.org>,
+	<agross@kernel.org>, <bjorn.andersson@linaro.org>, <matthias.bgg@gmail.com>,
+	<orsonzhai@gmail.com>, <baolin.wang@linux.alibaba.com>,
+	<zhang.lyra@gmail.com>, <jean-philippe@linaro.org>,
+	<sricharan@codeaurora.org>, <jgg@nvidia.com>, <kevin.tian@intel.com>,
+	<konrad.dybcio@somainline.org>, <yong.wu@mediatek.com>,
+	<thierry.reding@gmail.com>, <vdumpa@nvidia.com>, <jonathanh@nvidia.com>,
+	<tglx@linutronix.de>, <shameerali.kolothum.thodi@huawei.com>,
+	<christophe.jaillet@wanadoo.fr>, <thunder.leizhen@huawei.com>,
+	<quic_saipraka@quicinc.com>, <jon@solid-run.com>, <yangyingliang@huawei.com>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-arm-msm@vger.kernel.org>,
+	<linux-mediatek@lists.infradead.org>, <linux-tegra@vger.kernel.org>,
+	<virtualization@lists.linux-foundation.org>
+Subject: Re: [PATCH v4 3/6] iommu: Add return value rules to attach_dev op
+ and APIs
+Message-ID: <Yyvt7kBng3iKl56l@Asurada-Nvidia>
+References: <cover.1663744983.git.nicolinc@nvidia.com>
+ <8c3dbf153b63a3002a46bab6e707c63fd8635bb8.1663744983.git.nicolinc@nvidia.com>
+ <73008702-87e1-688f-b194-c259c9c03caa@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <73008702-87e1-688f-b194-c259c9c03caa@linux.intel.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT057:EE_|SN7PR12MB7129:EE_
+X-MS-Office365-Filtering-Correlation-Id: be866fd3-fa31-4a7b-1049-08da9c589aa3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	aCs/FevZDzoabU9muvAYs0+8+1yzVMDmtAcqDXsi7G9eXDcaM8Aj/BhE7LcXYn3NeuTDZk02keQ6GPHj8HrNgsggqbZCEzWNaYPMP6yWsE3EvlC0F9dnaL8jaOQJlsdLGRDMkCJY4FWOn5Yzm1V6T0tMWeXtyYjRHgjriGFo1ZRBi9otkzEB4MFwA/0TbxCCj5+qj99+sCzC6uWV6z0vmAilloR6nEXR/jfh0Yhtu2FpP+nt4ygQG6ubsf2P8+u7xOquDxxulf2F7URH53lcog/NCeXl5j/+CwVnWh8EcYNeIAwmDgR0KVtat9oC5pxoXJxIEKmEnw02ZjcTfMX8QMHmJ/uVm5W6IL+ERZ9xhvtGnNIj5RpAKQR4L7mckl0015iQT7q1Ao/epxbdakRO6J3XXV89N/jL0ii+OG1fQa2Ud+odZsOEmqzDTM7yqFDVpXCyIRy47KdbIhBpyh0lQ1HfUvhXTM1zpSM8TrxJQBrxXVGGcDNsudG63O8XGC+CgKqwJVhR2AePysnWa9DtrAHLRDjn3Jmwvk1OSIkQads0Y0YhRo49KdyIsZ0Dm7LqF2OppmWCmo4nxjpX7f1QHnHklpE9Z+NMbWVC4JcbekwDqFE/ZyF+3tY35ZkIlRm5Bxwp1GoN+ONpnS8bLj1AcIgn/5uaaqicv+yioKoed2OnJAiKXV+zNj/nRMzCYQYGI/u64ZaSg/Y5jTO6pCurpvntwnlklAB4qiJ+tP2Bh+6wMnj+Y8HQYi6pKgQTSXFQhLO2wAFzNup6YoHhJM1XTQ==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(376002)(136003)(39860400002)(396003)(346002)(451199015)(36840700001)(40470700004)(46966006)(356005)(316002)(6916009)(54906003)(478600001)(26005)(40460700003)(36860700001)(426003)(86362001)(7636003)(40480700001)(55016003)(47076005)(186003)(336012)(82740400003)(9686003)(33716001)(4744005)(5660300002)(7406005)(8936002)(2906002)(7416002)(8676002)(4326008)(41300700001)(70206006)(70586007)(82310400005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Sep 2022 05:09:18.9748
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: be866fd3-fa31-4a7b-1049-08da9c589aa3
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN8NAM11FT057.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7129
 
->On 21.09.2022 21:05, Krzysztof Kozlowski wrote:
->> On 21/09/2022 20:48, Konrad Dybcio wrote:
->>>
->>>
->>> On 21.09.2022 20:47, Konrad Dybcio wrote:
->>>>
->>>>
->>>> On 21.09.2022 09:31, Krzysztof Kozlowski wrote:
->>>>> On 21/09/2022 00:39, Richard Acayan wrote:
->>>>>> The Snapdragon 670 needs the IOMMU for GENI I2C. Add a compatible string to
->>>>>> support it.
->>>>>>
->>>>>> Signed-off-by: Richard Acayan <mailingradian@gmail.com>
->>>>>> ---
->>>>>>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
->>>>>>  1 file changed, 1 insertion(+)
->>>>>>
->>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>>>> index b2708de25ea3..bf9653b9eb89 100644
->>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>>>> @@ -431,6 +431,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
->>>>>>  	{ .compatible = "qcom,sc8180x-smmu-500" },
->>>>>>  	{ .compatible = "qcom,sc8280xp-smmu-500" },
->>>>>>  	{ .compatible = "qcom,sdm630-smmu-v2" },
->>>>>> +	{ .compatible = "qcom,sdm670-smmu-500" },
->>>>>
->>>>> Why do we keep adding compatibles to the driver for apparently
->>>>> compatible devices?
->>>>
->>>> Because Linux has not funny run on bare Qualcomm hardware ever since at least msm8x60 times and
->>> s/funny/fully
->>>
->>> unfortunate typo, this is not funny, quite the contrary..
->>>
->>> Konrad
->>>> we are not interacting with real hardware, only with Qualcomm's flawed virtual implementation
->>>> of it, that's abstracted to us through various generations of their saddening software stack. This
->>>> is also the case for many more standard components, even as far as the GIC on recent boards..
->> 
->> Unfortunately I don't get this explanation... you mean some other
->> firmware requires Linux drivers to use specific compatibles instead of
->> one fallback?
-> No, perhaps I misunderstood you.
->
->> 
->> All of these do not have driver data, so they are essentially compatible
->> for Linux driver. Growing this list in the driver seems pointless. What
->> is the benefit of growing driver with same entries, except more patches?
-> Compatible lists in smmu-impl files allow matching driver quirks for SMMUs themselves
->and consumer devices (such as MDSS). The situation is more complicated, because some
->qcom SMMUs also require more quirks than others (think 8974 vs 8994 vs 8996/pro&660&8998
->vs 845+ vs adreno smmu in various flavours), so all qcom SMMUs need to use
-> `qcom_smmu_impl` and some others need even more quirks on top of that (that generally
->hurt performance or functionality, so we don't want them when they're unnecessary).
-> If all generations of qcom SMMU implementation that bear the same name behaved anywhere
->near consistent, there would be no need for keeping this around, instead requiring only
-> "qcom,broken-smmu" or something".
+On Thu, Sep 22, 2022 at 10:02:42AM +0800, Baolu Lu wrote:
+> > +/**
+> > + * iommu_attach_device - Attach a device to an IOMMU domain
+> 
+> Normally we say "attach an iommu domain to a device/group ...".
 
-Hi, just stopping by to share my own thoughts.
+OK. I can fix it in the next respin.
 
-First, I don't mind if this series doesn't get applied as-is. After seeing
-the eMMC driver in its current state:
+And I'll add your Reviewed-by in the other two patches too.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/mmc/host/sdhci-msm.c?h=v6.0-rc6#n2437
-
-I can understand that the devicetree maintainers don't want to see new SoCs
-touching drivers unnecessarily. Second, I don't see enough quirks to
-justify needing all compatible strings in the driver (2 quirky SoCs
-compared to 16 total not counting adreno iommu):
-
-    $ grep qcom, drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-    	if (of_device_is_compatible(np, "qcom,msm8996-smmu-v2"))
-    	* All targets that use the qcom,adreno-smmu compatible string *should*
-    	{ .compatible = "qcom,adreno" },
-    	{ .compatible = "qcom,mdp4" },
-    	{ .compatible = "qcom,mdss" },
-    	{ .compatible = "qcom,sc7180-mdss" },
-    	{ .compatible = "qcom,sc7180-mss-pil" },
-    	{ .compatible = "qcom,sc7280-mdss" },
-    	{ .compatible = "qcom,sc7280-mss-pil" },
-    	{ .compatible = "qcom,sc8180x-mdss" },
-    	{ .compatible = "qcom,sm8250-mdss" },
-    	{ .compatible = "qcom,sdm845-mdss" },
-    	{ .compatible = "qcom,sdm845-mss-pil" },
-    	if (of_device_is_compatible(np, "qcom,sdm845-smmu-500"))
-    	{ .compatible = "qcom,msm8998-smmu-v2" },
-    	{ .compatible = "qcom,qcm2290-smmu-500" },
-    	{ .compatible = "qcom,sc7180-smmu-500" },
-    	{ .compatible = "qcom,sc7280-smmu-500" },
-    	{ .compatible = "qcom,sc8180x-smmu-500" },
-    	{ .compatible = "qcom,sc8280xp-smmu-500" },
-    	{ .compatible = "qcom,sdm630-smmu-v2" },
-    	{ .compatible = "qcom,sdm670-smmu-500" },
-    	{ .compatible = "qcom,sdm845-smmu-500" },
-    	{ .compatible = "qcom,sm6125-smmu-500" },
-    	{ .compatible = "qcom,sm6350-smmu-500" },
-    	{ .compatible = "qcom,sm6375-smmu-500" },
-    	{ .compatible = "qcom,sm8150-smmu-500" },
-    	{ .compatible = "qcom,sm8250-smmu-500" },
-    	{ .compatible = "qcom,sm8350-smmu-500" },
-    	{ .compatible = "qcom,sm8450-smmu-500" },
-    	if (of_device_is_compatible(np, "qcom,adreno-smmu"))
-
-I don't know if it's better to get myself involved in fixing this, though.
-There is no fallback that encompasses qcom devices but not all arm devices.
-Either way, I'll have to add a new compatible string to the driver.
-
-If something like this is fine for now, I'll format it properly tomorrow:
-
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-@@ -48,6 +48,13 @@ properties:
-               - qcom,sm8350-smmu-500
-               - qcom,sm8450-smmu-500
-           - const: arm,mmu-500
-+
-+      - description: Qcom SoCs implementing "qcom,smmu-500"
-+        items:
-+          - enum:
-+              - qcom,sdm670-smmu-500
-+          - const: qcom,smmu-500
-+
-       - description: Qcom Adreno GPUs implementing "arm,smmu-v2"
-         items:
-           - enum:
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -424,6 +424,7 @@ static struct arm_smmu_device *qcom_smmu_create(struct arm_smmu_device *smmu,
- }
- 
- static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
-+       { .compatible = "qcom,smmu-500" },
-        { .compatible = "qcom,msm8998-smmu-v2" },
-        { .compatible = "qcom,qcm2290-smmu-500" },
-        { .compatible = "qcom,sc7180-smmu-500" },
-
->
-> Konrad
->> 
->> Best regards,
->> Krzysztof
->> 
+Thanks!
+Nic
