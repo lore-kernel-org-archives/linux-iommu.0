@@ -1,207 +1,62 @@
-Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F98023AD
-	for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 06:41:33 +0000 (UTC)
-Received: by mail-lj1-f173.google.com with SMTP id c7so9749512ljm.12
-        for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 23:41:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=q1Nhh8Y3ghMdNF14WF4h80cKWD9P+ZXE/kGU5cQMHuA=;
-        b=tUFf/NdqsJuEUshcz9IFGZdKlqgVJS4z8yBXdQRmy9HTThnjb+NarwLO8uIibSMFSB
-         5nB0DhBt2KcHM7HmMPv1OTJq+f0XltvwVuwdz7oXAWMhqhOUR4OWlLPMmEFqmnDcBfJa
-         OMEUgYqMDZp4FtVkkkTCDhkboCDKGFuKUFj7QOHglR3sxlIjCECEoRVglFLZsMG/kusy
-         q2w6zUnzMsYO+T8Os59N+eF2jxRM0H7MT2lyly0laED4Ap0humOj4nQ6FrjMOtqDzQTp
-         SZPAwBhHOkZjaQ6D9UEuv2uWbEVSizxcpP3HlG8bZWHpwROr3QhoE4QXxo3Ii/bRcENi
-         WyWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=q1Nhh8Y3ghMdNF14WF4h80cKWD9P+ZXE/kGU5cQMHuA=;
-        b=DiXqEQyJdN0VT3xTdDEdp4oGNnHqfQVu6E+xKT2I9r/3d+9datkXnNZL0tbhMhq933
-         C8Q5gp4tjpHXZAW6o9gE0qN551nF3EXq+p/c1DLbL3wz5lTu7+NKJpTgrj04Ootfbice
-         D1KceI3VKbt3enhHBS+6DGBVQmYBIrxIs1P/+FVnmlWgUP7XIyoudkVhLpYVKFJ5e8cZ
-         xKYA+EuOKbyjmaIGDSftoCIQCBWRlHAHc43kod0eV87BPJtzGbilatR3FkK6P9nq+Oan
-         npvr0aDhjxf1Z4sGIJOMZTOJMN03BhT1dcVV41y7yR2BdyXTcvn6kBmptuj1D4HC+oHi
-         /D5A==
-X-Gm-Message-State: ACrzQf1S4U0/taBI8vDdQJI4Fdldl8bz8CaVKrdO61kQJejK/8DPv+Op
-	3up688Dgm4g7DJ+mJttM45vn+w==
-X-Google-Smtp-Source: AMsMyM7B5jpo/w6nh6Z1jdivAu9XpSUBUtXUfUom8LtoKNl5aYbpR3MNKckhwp6RcCLYIBZVX/E+OQ==
-X-Received: by 2002:a2e:9202:0:b0:26b:df14:cd with SMTP id k2-20020a2e9202000000b0026bdf1400cdmr545193ljg.212.1663828891176;
-        Wed, 21 Sep 2022 23:41:31 -0700 (PDT)
-Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id p20-20020a05651212d400b00492b0d23d24sm774268lfg.247.2022.09.21.23.41.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Sep 2022 23:41:30 -0700 (PDT)
-Message-ID: <be7a2f12-d6bb-8193-2a56-c31e57f11ce6@linaro.org>
-Date: Thu, 22 Sep 2022 08:41:28 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1423823AD
+	for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 06:46:16 +0000 (UTC)
+Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.55])
+	by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MY5L60YzPz14S2x;
+	Thu, 22 Sep 2022 14:42:06 +0800 (CST)
+Received: from [10.174.178.41] (10.174.178.41) by
+ dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 22 Sep 2022 14:46:13 +0800
+Message-ID: <d5dcd648-ec56-fd4a-48a0-14ac7faedb10@huawei.com>
+Date: Thu, 22 Sep 2022 14:46:13 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH 2/2] iommu: arm-smmu-qcom: add sdm670 compatible
-Content-Language: en-US
-To: Richard Acayan <mailingradian@gmail.com>,
- Konrad Dybcio <konrad.dybcio@somainline.org>
-Cc: linux-arm-msm@vger.kernel.org, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Bjorn Andersson <andersson@kernel.org>,
- Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
- Rob Clark <robdclark@chromium.org>, Sibi Sankar <sibis@codeaurora.org>,
- Loic Poulain <loic.poulain@linaro.org>, Vinod Koul <vkoul@kernel.org>,
- iommu@lists.linux.dev, devicetree@vger.kernel.org
-References: <5f629a95-8ee4-7cf8-f471-0b50e311d3b7@somainline.org>
- <20220922023833.178076-1-mailingradian@gmail.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220922023833.178076-1-mailingradian@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH RESEND 1/3] iommu: return early when devices in a group
+ require different domain type
+To: Baolu Lu <baolu.lu@linux.intel.com>, <joro@8bytes.org>, <will@kernel.org>,
+	<robin.murphy@arm.com>, <iommu@lists.linux.dev>
+References: <20220921132607.43820-1-yuancan@huawei.com>
+ <99c17173-45af-6892-4cc7-b17bad7dc645@linux.intel.com>
+From: Yuan Can <yuancan@huawei.com>
+In-Reply-To: <99c17173-45af-6892-4cc7-b17bad7dc645@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.178.41]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpeml500024.china.huawei.com (7.185.36.10)
+X-CFilter-Loop: Reflected
 
-On 22/09/2022 04:38, Richard Acayan wrote:
->> On 21.09.2022 21:05, Krzysztof Kozlowski wrote:
->>> On 21/09/2022 20:48, Konrad Dybcio wrote:
->>>>
->>>>
->>>> On 21.09.2022 20:47, Konrad Dybcio wrote:
->>>>>
->>>>>
->>>>> On 21.09.2022 09:31, Krzysztof Kozlowski wrote:
->>>>>> On 21/09/2022 00:39, Richard Acayan wrote:
->>>>>>> The Snapdragon 670 needs the IOMMU for GENI I2C. Add a compatible string to
->>>>>>> support it.
->>>>>>>
->>>>>>> Signed-off-by: Richard Acayan <mailingradian@gmail.com>
->>>>>>> ---
->>>>>>>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
->>>>>>>  1 file changed, 1 insertion(+)
->>>>>>>
->>>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>>>>> index b2708de25ea3..bf9653b9eb89 100644
->>>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>>>>> @@ -431,6 +431,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
->>>>>>>  	{ .compatible = "qcom,sc8180x-smmu-500" },
->>>>>>>  	{ .compatible = "qcom,sc8280xp-smmu-500" },
->>>>>>>  	{ .compatible = "qcom,sdm630-smmu-v2" },
->>>>>>> +	{ .compatible = "qcom,sdm670-smmu-500" },
->>>>>>
->>>>>> Why do we keep adding compatibles to the driver for apparently
->>>>>> compatible devices?
->>>>>
->>>>> Because Linux has not funny run on bare Qualcomm hardware ever since at least msm8x60 times and
->>>> s/funny/fully
->>>>
->>>> unfortunate typo, this is not funny, quite the contrary..
->>>>
->>>> Konrad
->>>>> we are not interacting with real hardware, only with Qualcomm's flawed virtual implementation
->>>>> of it, that's abstracted to us through various generations of their saddening software stack. This
->>>>> is also the case for many more standard components, even as far as the GIC on recent boards..
->>>
->>> Unfortunately I don't get this explanation... you mean some other
->>> firmware requires Linux drivers to use specific compatibles instead of
->>> one fallback?
->> No, perhaps I misunderstood you.
->>
->>>
->>> All of these do not have driver data, so they are essentially compatible
->>> for Linux driver. Growing this list in the driver seems pointless. What
->>> is the benefit of growing driver with same entries, except more patches?
->> Compatible lists in smmu-impl files allow matching driver quirks for SMMUs themselves
->> and consumer devices (such as MDSS). The situation is more complicated, because some
->> qcom SMMUs also require more quirks than others (think 8974 vs 8994 vs 8996/pro&660&8998
->> vs 845+ vs adreno smmu in various flavours), so all qcom SMMUs need to use
->> `qcom_smmu_impl` and some others need even more quirks on top of that (that generally
->> hurt performance or functionality, so we don't want them when they're unnecessary).
->> If all generations of qcom SMMU implementation that bear the same name behaved anywhere
->> near consistent, there would be no need for keeping this around, instead requiring only
->> "qcom,broken-smmu" or something".
-> 
-> Hi, just stopping by to share my own thoughts.
-> 
-> First, I don't mind if this series doesn't get applied as-is. After seeing
-> the eMMC driver in its current state:
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/mmc/host/sdhci-msm.c?h=v6.0-rc6#n2437
-> 
-> I can understand that the devicetree maintainers don't want to see new SoCs
-> touching drivers unnecessarily. Second, I don't see enough quirks to
-> justify needing all compatible strings in the driver (2 quirky SoCs
-> compared to 16 total not counting adreno iommu):
-> 
->     $ grep qcom, drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->     	if (of_device_is_compatible(np, "qcom,msm8996-smmu-v2"))
->     	* All targets that use the qcom,adreno-smmu compatible string *should*
->     	{ .compatible = "qcom,adreno" },
->     	{ .compatible = "qcom,mdp4" },
->     	{ .compatible = "qcom,mdss" },
->     	{ .compatible = "qcom,sc7180-mdss" },
->     	{ .compatible = "qcom,sc7180-mss-pil" },
->     	{ .compatible = "qcom,sc7280-mdss" },
->     	{ .compatible = "qcom,sc7280-mss-pil" },
->     	{ .compatible = "qcom,sc8180x-mdss" },
->     	{ .compatible = "qcom,sm8250-mdss" },
->     	{ .compatible = "qcom,sdm845-mdss" },
->     	{ .compatible = "qcom,sdm845-mss-pil" },
->     	if (of_device_is_compatible(np, "qcom,sdm845-smmu-500"))
->     	{ .compatible = "qcom,msm8998-smmu-v2" },
->     	{ .compatible = "qcom,qcm2290-smmu-500" },
->     	{ .compatible = "qcom,sc7180-smmu-500" },
->     	{ .compatible = "qcom,sc7280-smmu-500" },
->     	{ .compatible = "qcom,sc8180x-smmu-500" },
->     	{ .compatible = "qcom,sc8280xp-smmu-500" },
->     	{ .compatible = "qcom,sdm630-smmu-v2" },
->     	{ .compatible = "qcom,sdm670-smmu-500" },
->     	{ .compatible = "qcom,sdm845-smmu-500" },
->     	{ .compatible = "qcom,sm6125-smmu-500" },
->     	{ .compatible = "qcom,sm6350-smmu-500" },
->     	{ .compatible = "qcom,sm6375-smmu-500" },
->     	{ .compatible = "qcom,sm8150-smmu-500" },
->     	{ .compatible = "qcom,sm8250-smmu-500" },
->     	{ .compatible = "qcom,sm8350-smmu-500" },
->     	{ .compatible = "qcom,sm8450-smmu-500" },
->     	if (of_device_is_compatible(np, "qcom,adreno-smmu"))
-> 
-> I don't know if it's better to get myself involved in fixing this, though.
-> There is no fallback that encompasses qcom devices but not all arm devices.
-> Either way, I'll have to add a new compatible string to the driver.
-> 
-> If something like this is fine for now, I'll format it properly tomorrow:
-
-Please wait till we reach some conclusion otherwise your work might be
-wasted.
-
-> 
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> @@ -48,6 +48,13 @@ properties:
->                - qcom,sm8350-smmu-500
->                - qcom,sm8450-smmu-500
->            - const: arm,mmu-500
-> +
-> +      - description: Qcom SoCs implementing "qcom,smmu-500"
-> +        items:
-> +          - enum:
-> +              - qcom,sdm670-smmu-500
-> +          - const: qcom,smmu-500
-> +
-
-Someone would have to confirm that smmu-500 is a real device
-spec/version. Otherwise this should be device-specific compatible (e.g.
-earliest in family).
+在 2022/9/22 10:23, Baolu Lu 写道:
+> On 9/21/22 9:26 PM, Yuan Can wrote:
+>> When alloc default domain for an iommu_group in
+>> probe_alloc_default_domain, the expected domain type
+>> of each device in the iommu_group is checked in a loop,
+>> if two devices require different types, the loop can
+>> be broken since the default domain will be set to
+>> iommu_def_domain_type.
+>> Return 1 when this happened to break the loop in
+>> __iommu_group_for_each_dev.
+>
+> As I commented here
+>
+> https://lore.kernel.org/linux-iommu/50b8489c-bd93-c8ae-cd92-af429ae762b0@linux.intel.com/ 
+>
+>
+> Please use up the allowed number of characters per line before wrapping.
+>
+OK, thanks for the notice.
 
 Best regards,
-Krzysztof
+
+Yuan Can
+
 
