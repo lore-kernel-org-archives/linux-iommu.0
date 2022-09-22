@@ -1,45 +1,45 @@
-Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
+Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F2A48447
-	for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 06:39:43 +0000 (UTC)
-Received: by mail-lj1-f172.google.com with SMTP id j24so9268685lja.4
-        for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 23:39:43 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F98023AD
+	for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 06:41:33 +0000 (UTC)
+Received: by mail-lj1-f173.google.com with SMTP id c7so9749512ljm.12
+        for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 23:41:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date;
-        bh=Y9it4dxu8zLENQhpiztD0qTlsy9XVvm5wGeuzw4ftH8=;
-        b=OQ9KVALrZqkz/x7hew6GkzX4KKF13X8o5JJaAiZQ20KoDNp8yTjux3FBvRSA4rpDvO
-         xtJYChGki+NkDKgUMnk82VBSC1HYqGcUXFcjHtMxge/PNa8pvDZjFyqgSpeJ/NWv5h/v
-         39U7x2LhsYePSL3BTkCO5YSl2I3hAab2kw17MDECHgdp/FilQ50ZdmuKDf1Z+lvuYfDM
-         9WgAHT9EMrJHexeKuosW9Tqvknp+Ss7MB9BXTC7EtJrkfmJrcqgsjPEXV26hsa8Zodhr
-         eE4lP7HaIJLQRZFoKK5tdRUsdvA2dNnDX+m/+Gkrv9GDxEPa36hwd+rL4M0xypU9iADl
-         51Vw==
+        bh=q1Nhh8Y3ghMdNF14WF4h80cKWD9P+ZXE/kGU5cQMHuA=;
+        b=tUFf/NdqsJuEUshcz9IFGZdKlqgVJS4z8yBXdQRmy9HTThnjb+NarwLO8uIibSMFSB
+         5nB0DhBt2KcHM7HmMPv1OTJq+f0XltvwVuwdz7oXAWMhqhOUR4OWlLPMmEFqmnDcBfJa
+         OMEUgYqMDZp4FtVkkkTCDhkboCDKGFuKUFj7QOHglR3sxlIjCECEoRVglFLZsMG/kusy
+         q2w6zUnzMsYO+T8Os59N+eF2jxRM0H7MT2lyly0laED4Ap0humOj4nQ6FrjMOtqDzQTp
+         SZPAwBhHOkZjaQ6D9UEuv2uWbEVSizxcpP3HlG8bZWHpwROr3QhoE4QXxo3Ii/bRcENi
+         WyWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date;
-        bh=Y9it4dxu8zLENQhpiztD0qTlsy9XVvm5wGeuzw4ftH8=;
-        b=r+r++bvllX33PAwnFDZY10yO161DCA+L6BsUHSjJgVX+Ll967TSmUWrtxOuCssIlZu
-         vj/dQ/71mSNN7+POmkcxjGNmvRTVx/mdiJezyxpovmeQKE9uykzMVi2AvCZhA2wnudQf
-         fT4JeJpn8zOD8kiahm2/YAgsqNWi8xkvaiqMsXiFkd9NUfeGVv9v7Rq73duNt+JtK5kJ
-         3hDLN/1ZOIBz6KbrGBtZRBFfC+tItRMl9/tokvhW4S7uJMl0KLHMDzHD0ci3n717COEV
-         IFk5dE5Leol+Fp1TnmF6Iin5fdvf/LwId0XMrRS9eHjHaksw+zhJBkaTKAeJ442fkCnB
-         w+2w==
-X-Gm-Message-State: ACrzQf1y3fuZ5nCgY9twz49Xlu6eXmr5rDcfDf72WK9M+5cyeX4Z0nad
-	81vbVFaEuKN5TYbRqEqNrghrbA==
-X-Google-Smtp-Source: AMsMyM4NcODEXdqj7wdcU9cj2VvWWAhTr0alCSdk3U0Cy+ArQQf1phMq6WHSoi06VLJ2WCKmFbVUug==
-X-Received: by 2002:a05:651c:239d:b0:26c:4eac:d64e with SMTP id bk29-20020a05651c239d00b0026c4eacd64emr610482ljb.167.1663828781456;
-        Wed, 21 Sep 2022 23:39:41 -0700 (PDT)
+        bh=q1Nhh8Y3ghMdNF14WF4h80cKWD9P+ZXE/kGU5cQMHuA=;
+        b=DiXqEQyJdN0VT3xTdDEdp4oGNnHqfQVu6E+xKT2I9r/3d+9datkXnNZL0tbhMhq933
+         C8Q5gp4tjpHXZAW6o9gE0qN551nF3EXq+p/c1DLbL3wz5lTu7+NKJpTgrj04Ootfbice
+         D1KceI3VKbt3enhHBS+6DGBVQmYBIrxIs1P/+FVnmlWgUP7XIyoudkVhLpYVKFJ5e8cZ
+         xKYA+EuOKbyjmaIGDSftoCIQCBWRlHAHc43kod0eV87BPJtzGbilatR3FkK6P9nq+Oan
+         npvr0aDhjxf1Z4sGIJOMZTOJMN03BhT1dcVV41y7yR2BdyXTcvn6kBmptuj1D4HC+oHi
+         /D5A==
+X-Gm-Message-State: ACrzQf1S4U0/taBI8vDdQJI4Fdldl8bz8CaVKrdO61kQJejK/8DPv+Op
+	3up688Dgm4g7DJ+mJttM45vn+w==
+X-Google-Smtp-Source: AMsMyM7B5jpo/w6nh6Z1jdivAu9XpSUBUtXUfUom8LtoKNl5aYbpR3MNKckhwp6RcCLYIBZVX/E+OQ==
+X-Received: by 2002:a2e:9202:0:b0:26b:df14:cd with SMTP id k2-20020a2e9202000000b0026bdf1400cdmr545193ljg.212.1663828891176;
+        Wed, 21 Sep 2022 23:41:31 -0700 (PDT)
 Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id t7-20020a05651c204700b0026acd11cd51sm749995ljo.59.2022.09.21.23.39.40
+        by smtp.gmail.com with ESMTPSA id p20-20020a05651212d400b00492b0d23d24sm774268lfg.247.2022.09.21.23.41.29
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Sep 2022 23:39:40 -0700 (PDT)
-Message-ID: <26271806-df86-393c-bddf-75c82d54fe53@linaro.org>
-Date: Thu, 22 Sep 2022 08:39:39 +0200
+        Wed, 21 Sep 2022 23:41:30 -0700 (PDT)
+Message-ID: <be7a2f12-d6bb-8193-2a56-c31e57f11ce6@linaro.org>
+Date: Thu, 22 Sep 2022 08:41:28 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -50,10 +50,11 @@ User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.2.2
 Subject: Re: [PATCH 2/2] iommu: arm-smmu-qcom: add sdm670 compatible
 Content-Language: en-US
-To: Konrad Dybcio <konrad.dybcio@somainline.org>,
- Richard Acayan <mailingradian@gmail.com>, linux-arm-msm@vger.kernel.org
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
+To: Richard Acayan <mailingradian@gmail.com>,
+ Konrad Dybcio <konrad.dybcio@somainline.org>
+Cc: linux-arm-msm@vger.kernel.org, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh+dt@kernel.org>,
  Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
  Bjorn Andersson <andersson@kernel.org>,
  Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
@@ -61,39 +62,145 @@ Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Rob Clark <robdclark@chromium.org>, Sibi Sankar <sibis@codeaurora.org>,
  Loic Poulain <loic.poulain@linaro.org>, Vinod Koul <vkoul@kernel.org>,
  iommu@lists.linux.dev, devicetree@vger.kernel.org
-References: <20220920223955.151507-1-mailingradian@gmail.com>
- <20220920223955.151507-3-mailingradian@gmail.com>
- <77b7d58f-ba85-86de-8635-6efbb1354a08@linaro.org>
- <5c25dc95-d7a4-0b15-5514-6fe3a48e899c@somainline.org>
- <f98ccf6b-34e7-d15f-63f9-928827b52eb8@somainline.org>
- <30980ac8-1386-d284-8452-fdc5b7da8343@linaro.org>
- <5f629a95-8ee4-7cf8-f471-0b50e311d3b7@somainline.org>
+References: <5f629a95-8ee4-7cf8-f471-0b50e311d3b7@somainline.org>
+ <20220922023833.178076-1-mailingradian@gmail.com>
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <5f629a95-8ee4-7cf8-f471-0b50e311d3b7@somainline.org>
+In-Reply-To: <20220922023833.178076-1-mailingradian@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 21/09/2022 23:14, Konrad Dybcio wrote:
->> Unfortunately I don't get this explanation... you mean some other
->> firmware requires Linux drivers to use specific compatibles instead of
->> one fallback?
-> No, perhaps I misunderstood you.
-> 
+On 22/09/2022 04:38, Richard Acayan wrote:
+>> On 21.09.2022 21:05, Krzysztof Kozlowski wrote:
+>>> On 21/09/2022 20:48, Konrad Dybcio wrote:
+>>>>
+>>>>
+>>>> On 21.09.2022 20:47, Konrad Dybcio wrote:
+>>>>>
+>>>>>
+>>>>> On 21.09.2022 09:31, Krzysztof Kozlowski wrote:
+>>>>>> On 21/09/2022 00:39, Richard Acayan wrote:
+>>>>>>> The Snapdragon 670 needs the IOMMU for GENI I2C. Add a compatible string to
+>>>>>>> support it.
+>>>>>>>
+>>>>>>> Signed-off-by: Richard Acayan <mailingradian@gmail.com>
+>>>>>>> ---
+>>>>>>>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
+>>>>>>>  1 file changed, 1 insertion(+)
+>>>>>>>
+>>>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>>> index b2708de25ea3..bf9653b9eb89 100644
+>>>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>>> @@ -431,6 +431,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
+>>>>>>>  	{ .compatible = "qcom,sc8180x-smmu-500" },
+>>>>>>>  	{ .compatible = "qcom,sc8280xp-smmu-500" },
+>>>>>>>  	{ .compatible = "qcom,sdm630-smmu-v2" },
+>>>>>>> +	{ .compatible = "qcom,sdm670-smmu-500" },
+>>>>>>
+>>>>>> Why do we keep adding compatibles to the driver for apparently
+>>>>>> compatible devices?
+>>>>>
+>>>>> Because Linux has not funny run on bare Qualcomm hardware ever since at least msm8x60 times and
+>>>> s/funny/fully
+>>>>
+>>>> unfortunate typo, this is not funny, quite the contrary..
+>>>>
+>>>> Konrad
+>>>>> we are not interacting with real hardware, only with Qualcomm's flawed virtual implementation
+>>>>> of it, that's abstracted to us through various generations of their saddening software stack. This
+>>>>> is also the case for many more standard components, even as far as the GIC on recent boards..
+>>>
+>>> Unfortunately I don't get this explanation... you mean some other
+>>> firmware requires Linux drivers to use specific compatibles instead of
+>>> one fallback?
+>> No, perhaps I misunderstood you.
 >>
->> All of these do not have driver data, so they are essentially compatible
->> for Linux driver. Growing this list in the driver seems pointless. What
->> is the benefit of growing driver with same entries, except more patches?
-> Compatible lists in smmu-impl files allow matching driver quirks for SMMUs themselves
-> and consumer devices (such as MDSS). The situation is more complicated, because some
-> qcom SMMUs also require more quirks than others (think 8974 vs 8994 vs 8996/pro&660&8998
-> vs 845+ vs adreno smmu in various flavours), so all qcom SMMUs need to use
-> `qcom_smmu_impl` and some others need even more quirks on top of that (that generally
-> hurt performance or functionality, so we don't want them when they're unnecessary).
-> If all generations of qcom SMMU implementation that bear the same name behaved anywhere
-> near consistent, there would be no need for keeping this around, instead requiring only
-> "qcom,broken-smmu" or something".
+>>>
+>>> All of these do not have driver data, so they are essentially compatible
+>>> for Linux driver. Growing this list in the driver seems pointless. What
+>>> is the benefit of growing driver with same entries, except more patches?
+>> Compatible lists in smmu-impl files allow matching driver quirks for SMMUs themselves
+>> and consumer devices (such as MDSS). The situation is more complicated, because some
+>> qcom SMMUs also require more quirks than others (think 8974 vs 8994 vs 8996/pro&660&8998
+>> vs 845+ vs adreno smmu in various flavours), so all qcom SMMUs need to use
+>> `qcom_smmu_impl` and some others need even more quirks on top of that (that generally
+>> hurt performance or functionality, so we don't want them when they're unnecessary).
+>> If all generations of qcom SMMU implementation that bear the same name behaved anywhere
+>> near consistent, there would be no need for keeping this around, instead requiring only
+>> "qcom,broken-smmu" or something".
+> 
+> Hi, just stopping by to share my own thoughts.
+> 
+> First, I don't mind if this series doesn't get applied as-is. After seeing
+> the eMMC driver in its current state:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/mmc/host/sdhci-msm.c?h=v6.0-rc6#n2437
+> 
+> I can understand that the devicetree maintainers don't want to see new SoCs
+> touching drivers unnecessarily. Second, I don't see enough quirks to
+> justify needing all compatible strings in the driver (2 quirky SoCs
+> compared to 16 total not counting adreno iommu):
+> 
+>     $ grep qcom, drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>     	if (of_device_is_compatible(np, "qcom,msm8996-smmu-v2"))
+>     	* All targets that use the qcom,adreno-smmu compatible string *should*
+>     	{ .compatible = "qcom,adreno" },
+>     	{ .compatible = "qcom,mdp4" },
+>     	{ .compatible = "qcom,mdss" },
+>     	{ .compatible = "qcom,sc7180-mdss" },
+>     	{ .compatible = "qcom,sc7180-mss-pil" },
+>     	{ .compatible = "qcom,sc7280-mdss" },
+>     	{ .compatible = "qcom,sc7280-mss-pil" },
+>     	{ .compatible = "qcom,sc8180x-mdss" },
+>     	{ .compatible = "qcom,sm8250-mdss" },
+>     	{ .compatible = "qcom,sdm845-mdss" },
+>     	{ .compatible = "qcom,sdm845-mss-pil" },
+>     	if (of_device_is_compatible(np, "qcom,sdm845-smmu-500"))
+>     	{ .compatible = "qcom,msm8998-smmu-v2" },
+>     	{ .compatible = "qcom,qcm2290-smmu-500" },
+>     	{ .compatible = "qcom,sc7180-smmu-500" },
+>     	{ .compatible = "qcom,sc7280-smmu-500" },
+>     	{ .compatible = "qcom,sc8180x-smmu-500" },
+>     	{ .compatible = "qcom,sc8280xp-smmu-500" },
+>     	{ .compatible = "qcom,sdm630-smmu-v2" },
+>     	{ .compatible = "qcom,sdm670-smmu-500" },
+>     	{ .compatible = "qcom,sdm845-smmu-500" },
+>     	{ .compatible = "qcom,sm6125-smmu-500" },
+>     	{ .compatible = "qcom,sm6350-smmu-500" },
+>     	{ .compatible = "qcom,sm6375-smmu-500" },
+>     	{ .compatible = "qcom,sm8150-smmu-500" },
+>     	{ .compatible = "qcom,sm8250-smmu-500" },
+>     	{ .compatible = "qcom,sm8350-smmu-500" },
+>     	{ .compatible = "qcom,sm8450-smmu-500" },
+>     	if (of_device_is_compatible(np, "qcom,adreno-smmu"))
+> 
+> I don't know if it's better to get myself involved in fixing this, though.
+> There is no fallback that encompasses qcom devices but not all arm devices.
+> Either way, I'll have to add a new compatible string to the driver.
+> 
+> If something like this is fine for now, I'll format it properly tomorrow:
 
-So where are the quirks? Again: driver data is empty.
+Please wait till we reach some conclusion otherwise your work might be
+wasted.
+
+> 
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> @@ -48,6 +48,13 @@ properties:
+>                - qcom,sm8350-smmu-500
+>                - qcom,sm8450-smmu-500
+>            - const: arm,mmu-500
+> +
+> +      - description: Qcom SoCs implementing "qcom,smmu-500"
+> +        items:
+> +          - enum:
+> +              - qcom,sdm670-smmu-500
+> +          - const: qcom,smmu-500
+> +
+
+Someone would have to confirm that smmu-500 is a real device
+spec/version. Otherwise this should be device-specific compatible (e.g.
+earliest in family).
 
 Best regards,
 Krzysztof
