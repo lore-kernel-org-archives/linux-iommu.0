@@ -1,125 +1,626 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2083.outbound.protection.outlook.com [40.107.220.83])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4FC07C
-	for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 17:51:23 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=M7fTtQWBrsB+Yak5nTeesGqMxj1KhEI5mmXQK3jUNclX9Y6m3aeZvRuQpOEX6R9zwaW4qs+3dpS8trf2ZXS0k+O7cbVLOCGsvJWGPWQaJRfrsdv+YDTJHCTa3TibP8nDi77jxS4z3oqyQme4K6/rXcGp2mdOl2nHTmL3I6h6ptrT6ml72tVwDyMydYnXUagX9Dz5qqbUY1zmikBcTiqXMikm0UK0okfgpN7tsTCEKBmxfHNdfAtr1bNudDrVOEMCfTCJ18FRY0Pgn3ZfzexxHg05HBbfCCPdvaCPhpDmhN+srpP8GOCcPFwCqZBFeu+ocEKinkS8YC7KLL/EukhDxA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+gc3/Dl9Zi/F2VuDvD7OEkQyvNFxK3kDdwEH9h2Bx3g=;
- b=GvqdYMpBGKdJO3q2cqIbLdhTkjKzbC6BCINurKEnhD8+wJygQ0MjxMPlsa94vGvv72FqZiF01mzW+uzYpUptFD7DrrbXyKzj1tBCBJ/55ClaAE9QdPpnWD/5TsPXay7I99oqu+ycue0S7WaDMIpHB2qjDbJWLePL9/GFVx2NUTOl44SZII4Kda04D2mI9mVjc9fDLBPP8YOYU9hFzOsWsUJROAeRKFuD0RN78dSLS8a5sz/DEL8gjg0QFHOrHXsGhCoYKAgUJNFPdWKe4WSDxDyJtDEw4EnmWMmC8h5APaTMeQjKWCEFkRnpnHMtufignGnNyQ5SW/Ym44VN1FXeqA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+gc3/Dl9Zi/F2VuDvD7OEkQyvNFxK3kDdwEH9h2Bx3g=;
- b=Lkx25gzasBvgV6Xmr0ihDlPb5MoSjd9j4kIlv9MLpPXOdaSwpf4s1lBU1QzWgHugbSy8GPtqRWYqxsA2xgDWgVSguQYwxeEK4OqUnmTJDgV3g2LzbyOajT7vfRdNOghT/r9o5rWKl6NeNLl45KQ1ZRa8SA5N0mcgwdxA1AgMz8GjIGM0SIzKaW5E9za2rtinvUMlKwEfyLHihXPoV/9LP2n2E4uLuPGaH1xX2+IIwECVhBWJ/DFW6xhbymxdfDFeitjy/9427ts3qN/9iGlX6aUmItmvQstbBQkW6nGLQDsDXCz/2unTsfvFl/cbXM3leLgv6t7q6TwrF+/E+D7UFw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by BN9PR12MB5034.namprd12.prod.outlook.com (2603:10b6:408:104::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.19; Thu, 22 Sep
- 2022 17:51:22 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::462:7fe:f04f:d0d5]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::462:7fe:f04f:d0d5%7]) with mapi id 15.20.5654.019; Thu, 22 Sep 2022
- 17:51:22 +0000
-Date: Thu, 22 Sep 2022 14:51:21 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: yong.wu@mediatek.com, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, matthias.bgg@gmail.com,
-	jean-philippe@linaro.org, kevin.tian@intel.com,
-	iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH v5 6/6] iommu: Propagate return value in ->attach_dev
- callback functions
-Message-ID: <YyygmTZfa9ZJJ4Mx@nvidia.com>
-References: <cover.1663836372.git.nicolinc@nvidia.com>
- <8040df414a1d4bc007a25553b8341acf37ead670.1663836372.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8040df414a1d4bc007a25553b8341acf37ead670.1663836372.git.nicolinc@nvidia.com>
-X-ClientProxiedBy: BL1PR13CA0214.namprd13.prod.outlook.com
- (2603:10b6:208:2bf::9) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E0667C
+	for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 18:06:42 +0000 (UTC)
+Received: by mail-pg1-f169.google.com with SMTP id c7so9896843pgt.11
+        for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 11:06:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=QCY+Ve0GmwSK4E8jgplpUYH3SP9D0/JevojggP7tHEs=;
+        b=mO+U0CII6xrhPF8tPAjfKanHtFCaP4drBZUkZNVg/2qXHNAkZIxjVJ6sikyNlJzHmu
+         i03nT1xqz6gf+2LHpQ0X8eu2AYGnVbcJJjnGXKIIBc+VSm33daH/UTeicV7+icKg26ZZ
+         zejOpIarljVYGnSrnvCRfN9OPafWa3cahCwn3QQaw4SdxCjOtStz6Y8QtZZeZh1+/UIB
+         KB/RCUGs6F1uL6v7QKOfCWtn7T1BfxTYaA8uWCWxLiYycfaok8Sso5O/tZADVLPcOXgj
+         BX1dXC+DMr/6LaVOBI1I5r1CyQKtK4XvcXJy2MuK8UcT/Gtr6bff1vKsxrU7Dv34EHr1
+         XDMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=QCY+Ve0GmwSK4E8jgplpUYH3SP9D0/JevojggP7tHEs=;
+        b=16zSvJyC7gyK0hmjEJILK6FpoXUrbrNTR6+xPNCLxXrFIz3YkybV5Vk26jdUOmD0cj
+         rOQRl0cmjsP1LVw0jFnW4QgK9JQW9HLznO8iwO9Bj2f0IRQXpObQiMcolbBveF2fPctj
+         Vw+dpLd7jaZFbzKQbVP+2/q7k9CxqPPZywS2x6SxQ8dfazGaAPBDM2Ll1V/xFc+sf10W
+         2GjSK1oFnHYuXZN62ffBr3+QbbUSIKsncj74tP3LAzmieo/Wm8pRH+8tYWScQqbPfN6x
+         ng91Ps5El/EyC9ROdw436LEPgnT6GyJckVQpDOcOySHYqXonUmgptXmDKR+w6N0+vf2A
+         Ohhw==
+X-Gm-Message-State: ACrzQf0gtjJ3rs32ZsfKpJ2lcKtGvpTJPoB9I5kpFtjUgzWfYEbxX4c9
+	ID0PMO507riUUD9hlsyIhq7D0w==
+X-Google-Smtp-Source: AMsMyM5J4/fYuy0NBTg08q063cwjMIfOJmfY0SAeVwKlGB2v95OJxfbObLCPRx0Mk8+Rb+gV3BLOoA==
+X-Received: by 2002:a63:6cc4:0:b0:41a:ff04:661f with SMTP id h187-20020a636cc4000000b0041aff04661fmr4026087pgc.600.1663870001669;
+        Thu, 22 Sep 2022 11:06:41 -0700 (PDT)
+Received: from localhost.localdomain ([139.177.225.251])
+        by smtp.gmail.com with ESMTPSA id i20-20020a63cd14000000b00434e1d3b2ecsm4031778pgg.79.2022.09.22.11.06.38
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Thu, 22 Sep 2022 11:06:41 -0700 (PDT)
+From: Peng Zhang <zhangpeng.00@bytedance.com>
+To: joro@8bytes.org,
+	will@kernel.org
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Peng Zhang <zhangpeng.00@bytedance.com>,
+	Ethan Zhao <haifeng.zhao@linux.intel.com>,
+	Jie Wang <wangjie125@huawei.com>
+Subject: [PATCH v3] iommu/iova: Optimize alloc_iova with rbtree_augmented
+Date: Fri, 23 Sep 2022 02:06:30 +0800
+Message-Id: <20220922180630.12837-1-zhangpeng.00@bytedance.com>
+X-Mailer: git-send-email 2.32.1 (Apple Git-133)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4192:EE_|BN9PR12MB5034:EE_
-X-MS-Office365-Filtering-Correlation-Id: b1d77cde-89ab-4929-edea-08da9cc30f84
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	FiwSxppvAszd1JDpo86xgT5DZPxRSmknVk6Zj3UZ3VS3sfvzEivY8j3OQ1sgUE16Ny9Lv9u2qOQfVHalW799GtjYkBj4hx0xgIqiUgxEC+tk1tI3dyBX8aiLOtOQudC1HGo/i0mg62reWiGNvqXi+GZeEtqTsm/jGR3tfqFUZdj0/52wZO+6aUe7DeQOpcakjCsUFafi8HyRzyrpAC+cLRLTak7Mrki22l7ELp6+Q9orQgA7DR0UAjCO8jytmrMDA1FH33mXReVPuV5rIxAZyNMAO4u2VcyQZwXS5kr0Qx629tcsaU6T1Z/didya9Mls+S2DUPbyvS9YJRCBCJN8Dbt/mtpmPN4Q9uoG709e753a7fa3kztm6KqWNkkok9+ITREFvfUJUznL2j2yIWuMPw0uCwY1YoJ2FTb3off7KxbL9i+vHUP28E/bt2igLitd1QpfkBjJ0ofCSqfsCjF9HQoGZYOVeJUyii1NtMyHyVkBEZmtvy1i4HgpOx5eyXO1sFoSHz4RjBI3I2e1iL+fVhE5crvNXA5g9IctK+NTWsq62rf21OOYwHyvUzSWeKFd4WMtrNipoua5Z2iojbgHaS/BBBXJjBck9YeU6dSN4rWPIjZYVKmCHdSqYMBWjIfcY6qinCFNke6QvIBdGYzswRv2mL5KfSHkgWHDIGIRtJjr4LI+y9KTeClmGxTTS1aFY0iTK3F+quyxxj/twLqwBw==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(346002)(136003)(376002)(396003)(39860400002)(451199015)(38100700002)(2906002)(478600001)(41300700001)(4326008)(6636002)(7416002)(86362001)(4744005)(6486002)(5660300002)(6506007)(66476007)(316002)(36756003)(6862004)(37006003)(8676002)(2616005)(66946007)(66556008)(83380400001)(6512007)(26005)(8936002)(186003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?ZewODiwpv5B7M/+fFWOiz3FglXf6NmmfxPpKKDIO05y+9spZ8WyPIuH1O8LE?=
- =?us-ascii?Q?RJL+n9KGIJIO8rc34NXQvNNjcFW5yAYedmItiK8wM2gPT7p1zeysPZ34HPGh?=
- =?us-ascii?Q?Zddw0ef32F3tueo6W5jAM4b9LAXXcR3kgMVBor2noylIFZxnmhqssma4T9HY?=
- =?us-ascii?Q?WyQXqIT2ewzUeQp2iH2Vb+AcsIf3qTyqWF8P4XsreKzVbNxbnRrPxRb/pn3N?=
- =?us-ascii?Q?Ml3uSklqHpvuRPRoRZvW21z8I23+RSadPjGwP2L6ODBDg7DykpkcU1j0w0d+?=
- =?us-ascii?Q?CGSdJVPW90srazMQM96nZ5VclNLdwN70eko5YNI60CFNJ9ggLqtbVVceqsyD?=
- =?us-ascii?Q?wULO8bBwuT39n3qwbOyfMVcWJfj4X6r7qEVhuoJekSSWixvfkQSR7luiNlj1?=
- =?us-ascii?Q?xZszN3OW04GLLCaxoIPb7ZyPoxPvijMcYNLunzxFby48j2GIAEVXVDivetzy?=
- =?us-ascii?Q?CIDZr5q/zl8o+sgC16lvUNk+GNPDclkbX3LXp9RvihKVKnMV18VkGBtuKuod?=
- =?us-ascii?Q?8l3ywyRZEhGsjI5cJ0rhkShHLZDue8MszVPdvr9IzkyusF3wySeXkJVnNFDX?=
- =?us-ascii?Q?IOtU0hIiefzdMVgxSvXChd7XgsnY/QnVTgcpJHiwddzhC6iFCpWAepDoNVI6?=
- =?us-ascii?Q?2wJ7bwOywXEgLEJSNw/4HmSuUdHJ0wqxJi72BMg9n+y6OJ0MhgzmVBfIL7dQ?=
- =?us-ascii?Q?FyDDVPqPYBDH7cNiJuBD6yV5nKf/VHCL8OwScyoCIeSdywSfbVfMCQ85NlxV?=
- =?us-ascii?Q?6vLbSnHX/22Rv18Zf9eKAMt69f+0niXmF1XWGUuq/5BvPqMMzMfbGlQ56bfe?=
- =?us-ascii?Q?QGwfeu/gmFj4YWMLiWDhL08Bn9FRKX/olI7/OxEc0XDNKTFJe0ewBEu0+y7X?=
- =?us-ascii?Q?oacTfWf7j9wZdU0qSI8MkFeAjbbfNev8DD00vSm6lIO3qDu+hepcV43FNRs5?=
- =?us-ascii?Q?7srRCrVeM3rsX+LJTxgBmnIjC5Tg2RioaDwJo0biqNTNNeO+B5eYiT9djIOw?=
- =?us-ascii?Q?eJyIVi1HU/ZjYVowbqKd3xP+3fM5l7tw1rP0hLDkzhhs3DtDdLEjfsERLv3M?=
- =?us-ascii?Q?9n6AFhXMJssqfpThs9PXSJ7eBWK5YAivBE1rQSdlESY7CdPMpQXedKTT5d8J?=
- =?us-ascii?Q?UV68GfnCTzBxDpW0cOU9djSLmvqHhJFWazOMynkr3KKcZZMYOh0O+XiNYIVN?=
- =?us-ascii?Q?H758qWqo+IVuqDk4ZJVoJCzMocZ0gQId+dAEy+mIMxWgZnmVRxzcDbydfU4e?=
- =?us-ascii?Q?5nDQ6axvYxN1IFZ9cQWEBD8vvYpzF4FRQfTFXNR/zG2sKY9HiasdGm4OC36m?=
- =?us-ascii?Q?aPpVW7A4zOVWrDQL5ddtfmX2XoVyalle+S2jBPbcQdV7UCSwTlAMdAq+03bI?=
- =?us-ascii?Q?KGQDXYua3gt0HQoO7cRWTNERUXLKVM14EIu3ufbOdk3j5pMkPSkSwwb4ZUMR?=
- =?us-ascii?Q?CyipyWQB5BJEVV47174nzh39HVyFxye+QPKZF6V0K1y8+t7xwvQo98XolkAs?=
- =?us-ascii?Q?KH3RKT97Slc8wAlleNVNviAn9kGdLe+euDc4683T5DPlH+PYr+7wQc4TzNdJ?=
- =?us-ascii?Q?BnxbXdX/zZYMR9OJFSPPHqMCopJrotRuFhcxsd6E?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b1d77cde-89ab-4929-edea-08da9cc30f84
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Sep 2022 17:51:22.0834
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: kZbHx5KEHGnVUi+mumBvc5t64pahvzK5c9quJruU6L9O8zUj4IFGC0BK8G636Cf1
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5034
+Content-Transfer-Encoding: 8bit
 
-On Thu, Sep 22, 2022 at 01:54:45AM -0700, Nicolin Chen wrote:
-> The mtk_iommu and virtio drivers have places in the ->attach_dev callback
-> functions that return hardcode errnos instead of the returned values, but
-> callers of these ->attach_dv callback functions may care. Propagate them
-> directly without the extra conversions.
-> 
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/iommu/mtk_iommu.c    | 2 +-
->  drivers/iommu/virtio-iommu.c | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
+The current algorithm of alloc_iova is to scan all iovas until it finds
+a gap that satisfies the condition to allocate. This can be very slow in
+some scenarios. We can optimize alloc_iova() from time complexity O(n)
+to O(log(n)).
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+In what scenarios will it be slow? Consider allocating some iova from a
+completely empty address space. These iova are being used and not
+released. The order of allocation is from high address to low address,
+and a whole segment of space is in use. The cached node points to the
+last allocated iova. An iova is released at this point, and the cached
+node will be updated to the next iova of the released iova. If an
+allocation is made at this time, it will be fast because there is a free
+space before the cached node. But doing a second allocation, it will
+probably be slow because finding a free space requires traversing the
+long in-use space.
 
-Jason
+Bugs that may be triggered in reality:
+The version of kernel is 5.4.56.
+[Wed May 25 05:27:59 2022] watchdog: BUG:
+soft lockup - CPU#58 stuck for 23s! [ksoftirqd/58:302]
+[Wed May 25 05:27:59 2022] Call Trace:
+[Wed May 25 05:27:59 2022]  alloc_iova+0xf2/0x140
+[Wed May 25 05:27:59 2022]  alloc_iova_fast+0x56/0x251
+[Wed May 25 05:27:59 2022]  dma_ops_alloc_iova.isra.27+0x4b/0x70
+[Wed May 25 05:27:59 2022]  __map_single.isra.28+0x4a/0x1d0
+[Wed May 25 05:27:59 2022]  mlx5e_sq_xmit+0x98d/0x12b0 [mlx5_core]
+
+A single-threaded test that calls alloc_iova() and remove_iova() directly:
+1. Initialize iova_domain with a 4k granule
+2. Allocate iova of size 1 300000 times (limit = 2^48 / 2^12 -1)
+Loop step 3,4 1000 times.
+3. Randomly free an allocated iova
+4. Allocate a new iova of size 1
+
+Before optimization:
+________________________________________________________________________
+Tracing 1 functions for "alloc_iova"...
+  nsecs               : count     distribution
+    256 -> 511        : 524      |                                     |
+    512 -> 1023       : 295065   |*************************************|
+   1024 -> 2047       : 4309     |                                     |
+   2048 -> 4095       : 368      |                                     |
+   4096 -> 8191       : 240      |                                     |
+   8192 -> 16383      : 0        |                                     |
+  16384 -> 32767      : 6        |                                     |
+  32768 -> 65535      : 6        |                                     |
+  65536 -> 131071     : 13       |                                     |
+ 131072 -> 262143     : 28       |                                     |
+ 262144 -> 524287     : 65       |                                     |
+ 524288 -> 1048575    : 77       |                                     |
+1048576 -> 2097151    : 144      |                                     |
+2097152 -> 4194303    : 149      |                                     |
+4194304 -> 8388607    : 6        |                                     |
+avg = 3164 nsecs, total: 952408420 nsecs, count: 301000
+
+Tracing 1 functions for "remove_iova"...
+nsecs             : count     distribution
+  256 -> 511      : 279402   |****************************************|
+  512 -> 1023     : 21468    |***                                     |
+ 1024 -> 2047     : 127      |                                        |
+ 2048 -> 4095     : 3        |                                        |
+avg = 433 nsecs, total: 130344721 nsecs, count: 301000
+________________________________________________________________________
+
+Optimized:
+________________________________________________________________________
+Tracing 1 functions for "alloc_iova"...
+ nsecs            : count     distribution
+   512 -> 1023    : 296014   |****************************************|
+  1024 -> 2047    : 4328     |                                        |
+  2048 -> 4095    : 517      |                                        |
+  4096 -> 8191    : 141      |                                        |
+avg = 661 nsecs, total: 198961817 nsecs, count: 301000
+
+Tracing 1 functions for "remove_iova"...
+ nsecs            : count     distribution
+   256 -> 511     : 252871   |****************************************|
+   512 -> 1023    : 47934    |*******                                 |
+  1024 -> 2047    : 193      |                                        |
+  2048 -> 4095    : 2        |                                        |
+avg = 469 nsecs, total: 141258450 nsecs, count: 301000
+________________________________________________________________________
+
+Test results from  Jie Wang <wangjie125@huawei.com>:
+________________________________________________________________________
+nic's rx performance in large-capacity scenarios:
+"before" row is the result of 5.19 rc4. "after" row means 5.19 rc4 with
+this patch, the unit is Mbits/s.
+	        1	    2	    3	    4	   5	    6	    7	    8
+before	55430	76701	84194	77560	88292	90106	87770	77273
+after	  92770	92767	92792	92764	92742	92696	92781	92756
+________________________________________________________________________
+
+Introduce the improved algorithm:
+
+------------------------------------------------------------------------
+| gap1  |iova1| gap2 |iova2| gap3 |iova3|   gap4  |iova4| gap5  |anchor|
+------------------------------------------------------------------------
+
+let A = allocatable_size
+let B = max_allocatable_size
+                    ____________
+                  /    iova2     \      B = max( left_child->B,
+                 |       A        |              right_child->B,
+                  \      B       /               A)
+                    ------------
+                   /            \
+                  /              \
+    ____________                    ____________
+  /    iova1     \                /    iova4     \
+ |       A        |              |       A        |
+  \      B       /                \      B        /
+    ------------                    ------------
+                                   /            \
+                                  /              \
+                    ____________                    ____________
+                  /    iova3     \                /    anchor    \
+                 |       A        |              |       A        |
+                  \      B       /                \      B        /
+                    ------------                    ------------
+
+Define the gap of a iova is the gap between the iova and it's previous
+iova. Such as the gap of iova3 is gap3.This gap can be used to allocate.
+
+Add three variables to struct iova.
+prev_iova:
+         point to the previous iova, sush as iova3->prev_iova point to
+         iova2.
+
+allocatable_size:
+         allocatable_size is the max size can be allocated from a gap.
+         It is not the length of a gap because the allocated address
+         may need to be aligned.
+
+max_allocatable_size:
+         max_allocatable_size is the max allocatable_size of all iova's
+         gap in the subtree.
+
+         max_allocatable_size = max( left_child->max_allocatable_size,
+                                     right_child->max_allocatable_size,
+                                     allocatable_size)
+
+We can use rbtree_augmented to maintain max_allocatable_size in time
+complexity O(log(n)).
+
+In the rbtree, with the max_allocatable_size and allocatable_size,
+searching the gap to allocate is fast and the time complexity is
+O(log(n)).
+
+Signed-off-by: Peng Zhang <zhangpeng.00@bytedance.com>
+Reviewed-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
+Tested-by: Jie Wang <wangjie125@huawei.com>
+---
+ drivers/iommu/iova.c | 277 +++++++++++++++++++++++++++++++++----------
+ include/linux/iova.h |  10 +-
+ 2 files changed, 221 insertions(+), 66 deletions(-)
+
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index db77aa675145..44f9deee9ef4 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -43,6 +43,60 @@ static struct iova *to_iova(struct rb_node *node)
+ 	return rb_entry(node, struct iova, node);
+ }
+ 
++/*
++ * We can't judge whether it can be allocated only by a given interval length
++ * because the address may be aligned.
++ * This function computes the max allocatable size for a given interval.
++ * The time complexity of this function is O(log(n)).
++ */
++static unsigned long __compute_allocatable_size(unsigned long lo,
++						unsigned long hi)
++{
++	unsigned long allocatable_size = 0;
++
++	if (lo == 0)
++		return hi;
++	while (lo < hi) {
++		/*
++		 * delta is the max size can be allocated from lo.
++		 * The address may be aligned so it isn't (hi - lo).
++		 */
++		unsigned long delta = 1UL << __ffs64(lo);
++
++		if (hi - lo <= delta) {
++			allocatable_size = max(allocatable_size, hi - lo);
++			break;
++		}
++		allocatable_size = max(allocatable_size, delta);
++		lo += delta;
++	}
++	return allocatable_size;
++}
++
++static inline unsigned long prev_iova_high(struct iova *iova)
++{
++	return iova->prev_iova ? iova->prev_iova->pfn_hi + 1 : 0;
++}
++
++static inline unsigned long iova_compute_allocatable_size(struct iova *iova)
++{
++	return __compute_allocatable_size(prev_iova_high(iova), iova->pfn_lo);
++}
++
++static inline unsigned long iova_get_allocatable_size(struct iova *iova)
++{
++	return iova->allocatable_size;
++}
++
++RB_DECLARE_CALLBACKS_MAX(static, iova_gap_callbacks, struct iova, node,
++			 unsigned long, max_allocatable_size,
++			 iova_get_allocatable_size)
++
++static inline void iova_max_allocatable_size_update(struct iova *iova)
++{
++	iova_gap_callbacks_propagate(&iova->node, NULL);
++}
++
+ void
+ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+ 	unsigned long start_pfn)
+@@ -63,8 +117,16 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+ 	iovad->dma_32bit_pfn = 1UL << (32 - iova_shift(iovad));
+ 	iovad->max32_alloc_size = iovad->dma_32bit_pfn;
+ 	iovad->anchor.pfn_lo = iovad->anchor.pfn_hi = IOVA_ANCHOR;
++	iovad->anchor.prev_iova = NULL;
++	iovad->anchor.allocatable_size =
++				__compute_allocatable_size(0, IOVA_ANCHOR);
++	iovad->anchor.max_allocatable_size  = iovad->anchor.allocatable_size;
++
+ 	rb_link_node(&iovad->anchor.node, NULL, &iovad->rbroot.rb_node);
+ 	rb_insert_color(&iovad->anchor.node, &iovad->rbroot);
++
++	if (start_pfn)
++		reserve_iova(iovad, 0, start_pfn - 1);
+ }
+ EXPORT_SYMBOL_GPL(init_iova_domain);
+ 
+@@ -87,7 +149,8 @@ __cached_rbnode_insert_update(struct iova_domain *iovad, struct iova *new)
+ }
+ 
+ static void
+-__cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
++__cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free,
++			      struct rb_node *next)
+ {
+ 	struct iova *cached_iova;
+ 
+@@ -95,51 +158,32 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
+ 	if (free == cached_iova ||
+ 	    (free->pfn_hi < iovad->dma_32bit_pfn &&
+ 	     free->pfn_lo >= cached_iova->pfn_lo))
+-		iovad->cached32_node = rb_next(&free->node);
++		iovad->cached32_node = next;
+ 
+ 	if (free->pfn_lo < iovad->dma_32bit_pfn)
+ 		iovad->max32_alloc_size = iovad->dma_32bit_pfn;
+ 
+ 	cached_iova = to_iova(iovad->cached_node);
+ 	if (free->pfn_lo >= cached_iova->pfn_lo)
+-		iovad->cached_node = rb_next(&free->node);
++		iovad->cached_node = next;
+ }
+ 
+-static struct rb_node *iova_find_limit(struct iova_domain *iovad, unsigned long limit_pfn)
++static struct rb_node *iova_find_limit(struct iova_domain *iovad,
++				       unsigned long limit_pfn)
+ {
+-	struct rb_node *node, *next;
+-	/*
+-	 * Ideally what we'd like to judge here is whether limit_pfn is close
+-	 * enough to the highest-allocated IOVA that starting the allocation
+-	 * walk from the anchor node will be quicker than this initial work to
+-	 * find an exact starting point (especially if that ends up being the
+-	 * anchor node anyway). This is an incredibly crude approximation which
+-	 * only really helps the most likely case, but is at least trivially easy.
+-	 */
+-	if (limit_pfn > iovad->dma_32bit_pfn)
+-		return &iovad->anchor.node;
+-
+-	node = iovad->rbroot.rb_node;
+-	while (to_iova(node)->pfn_hi < limit_pfn)
+-		node = node->rb_right;
+-
+-search_left:
+-	while (node->rb_left && to_iova(node->rb_left)->pfn_lo >= limit_pfn)
+-		node = node->rb_left;
+-
+-	if (!node->rb_left)
+-		return node;
+-
+-	next = node->rb_left;
+-	while (next->rb_right) {
+-		next = next->rb_right;
+-		if (to_iova(next)->pfn_lo >= limit_pfn) {
+-			node = next;
+-			goto search_left;
+-		}
+-	}
++	struct rb_node *curr = iovad->rbroot.rb_node;
++
++	while (curr) {
++		struct iova *iova = to_iova(curr);
+ 
+-	return node;
++		if (limit_pfn - 1 > iova->pfn_hi)
++			curr = curr->rb_right;
++		else if (limit_pfn <= prev_iova_high(iova))
++			curr = curr->rb_left;
++		else
++			break;
++	}
++	return curr;
+ }
+ 
+ /* Insert the iova into domain rbtree by holding writer lock */
+@@ -148,6 +192,7 @@ iova_insert_rbtree(struct rb_root *root, struct iova *iova,
+ 		   struct rb_node *start)
+ {
+ 	struct rb_node **new, *parent = NULL;
++	struct iova *next_iova;
+ 
+ 	new = (start) ? &start : &(root->rb_node);
+ 	/* Figure out where to put new node */
+@@ -166,61 +211,151 @@ iova_insert_rbtree(struct rb_root *root, struct iova *iova,
+ 		}
+ 	}
+ 	/* Add new node and rebalance tree. */
++
+ 	rb_link_node(&iova->node, parent, new);
+-	rb_insert_color(&iova->node, root);
++
++	next_iova = to_iova(rb_next(&iova->node));
++	iova->prev_iova = next_iova->prev_iova;
++	next_iova->prev_iova = iova;
++
++	iova->allocatable_size = iova_compute_allocatable_size(iova);
++	next_iova->allocatable_size = iova_compute_allocatable_size(next_iova);
++
++	/*
++	 * Do't swap the following two lines, because next_iova is the ancestor
++	 * of iova and updating iova first is faster.
++	 */
++	iova_max_allocatable_size_update(iova);
++	iova_max_allocatable_size_update(next_iova);
++
++	rb_insert_augmented(&iova->node, root, &iova_gap_callbacks);
++}
++
++static inline bool check_interval(unsigned long lo, unsigned long hi,
++				  unsigned long limit_pfn, unsigned long size,
++				  unsigned long align_mask)
++{
++	hi = min(hi, limit_pfn);
++	if (lo >= hi)
++		return false;
++	if (hi >= size && ((hi - size) & align_mask) >= lo)
++		return true;
++	return false;
+ }
+ 
+ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 		unsigned long size, unsigned long limit_pfn,
+ 			struct iova *new, bool size_aligned)
+ {
+-	struct rb_node *curr, *prev;
+-	struct iova *curr_iova;
+ 	unsigned long flags;
+-	unsigned long new_pfn, retry_pfn;
++	struct rb_node *curr;
++	struct rb_node *parent;
++	struct iova *curr_iova;
+ 	unsigned long align_mask = ~0UL;
+-	unsigned long high_pfn = limit_pfn, low_pfn = iovad->start_pfn;
++	bool ignore = false;
+ 
+ 	if (size_aligned)
+ 		align_mask <<= fls_long(size - 1);
+ 
+-	/* Walk the tree backwards */
+ 	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
++
+ 	if (limit_pfn <= iovad->dma_32bit_pfn &&
+ 			size >= iovad->max32_alloc_size)
+ 		goto iova32_full;
+ 
+ 	curr = __get_cached_rbnode(iovad, limit_pfn);
+ 	curr_iova = to_iova(curr);
+-	retry_pfn = curr_iova->pfn_hi + 1;
+ 
+-retry:
+-	do {
+-		high_pfn = min(high_pfn, curr_iova->pfn_lo);
+-		new_pfn = (high_pfn - size) & align_mask;
+-		prev = curr;
+-		curr = rb_prev(curr);
+-		curr_iova = to_iova(curr);
+-	} while (curr && new_pfn <= curr_iova->pfn_hi && new_pfn >= low_pfn);
+-
+-	if (high_pfn < size || new_pfn < low_pfn) {
+-		if (low_pfn == iovad->start_pfn && retry_pfn < limit_pfn) {
+-			high_pfn = limit_pfn;
+-			low_pfn = retry_pfn;
+-			curr = iova_find_limit(iovad, limit_pfn);
+-			curr_iova = to_iova(curr);
+-			goto retry;
++	if (check_interval(prev_iova_high(curr_iova),
++			   curr_iova->pfn_lo, limit_pfn,
++			   size, align_mask))
++		goto found;
++
++	/* If limit_pfn > dma_32bit_pfn, searching list could be faster? */
++	if (limit_pfn > iovad->dma_32bit_pfn) {
++		int count = 0;
++
++		curr_iova = to_iova(&iovad->anchor.node);
++		while (curr_iova) {
++			if (check_interval(prev_iova_high(curr_iova),
++					   curr_iova->pfn_lo, limit_pfn,
++					   size, align_mask))
++				goto found;
++			/* If try many times, break it. */
++			if (++count >= 32)
++				goto search_rbtree;
++			curr_iova = curr_iova->prev_iova;
+ 		}
+ 		iovad->max32_alloc_size = size;
+ 		goto iova32_full;
+ 	}
+ 
++search_rbtree:
++	curr = iova_find_limit(iovad, limit_pfn);
++	curr_iova = to_iova(curr);
++
++	if (check_interval(prev_iova_high(curr_iova),
++			   curr_iova->pfn_lo, limit_pfn,
++			   size, align_mask))
++		goto found;
++
++	while (true) {
++		/* Check left subtree */
++		if (!ignore && curr->rb_left) {
++			curr_iova = to_iova(curr->rb_left);
++			if (curr_iova->max_allocatable_size >= size)
++				goto check_subtree;
++		}
++
++		parent = rb_parent(curr);
++		if (parent == NULL)
++			break;
++		/*
++		 * If current node is the left child of it's parent,
++		 * the parent node and the parent's right sub_tree should not
++		 * to be checked because they exceed the limit_pfn.
++		 */
++		ignore = parent->rb_left == curr;
++		/* Goto parent */
++		curr = parent;
++
++		/* Check current node. */
++		if (!ignore) {
++			curr_iova = to_iova(curr);
++			if (curr_iova->allocatable_size >= size)
++				goto found;
++		}
++	}
++	if (limit_pfn >= iovad->dma_32bit_pfn)
++		iovad->max32_alloc_size = size;
++	goto iova32_full;
++
++check_subtree:
++	/* It should be must successfully found here */
++	while (true) {
++		if (curr_iova->allocatable_size >= size)
++			goto found;
++
++		curr = &curr_iova->node;
++		if (curr->rb_right &&
++			to_iova(curr->rb_right)->max_allocatable_size >= size) {
++			curr_iova = to_iova(curr->rb_right);
++			continue;
++		}
++		WARN_ON(curr->rb_left == NULL);
++		curr_iova = to_iova(curr->rb_left);
++	}
++
++found:
+ 	/* pfn_lo will point to size aligned address if size_aligned is set */
+-	new->pfn_lo = new_pfn;
++	new->pfn_lo = (min(curr_iova->pfn_lo, limit_pfn) - size) & align_mask;
+ 	new->pfn_hi = new->pfn_lo + size - 1;
+ 
+-	/* If we have 'prev', it's a valid place to start the insertion. */
+-	iova_insert_rbtree(&iovad->rbroot, new, prev);
++	/*
++	 * If we have 'prev' or 'next',
++	 * it's a valid place to start the insertion.
++	 */
++	iova_insert_rbtree(&iovad->rbroot, new, &curr_iova->node);
+ 	__cached_rbnode_insert_update(iovad, new);
+ 
+ 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+@@ -352,9 +487,18 @@ private_find_iova(struct iova_domain *iovad, unsigned long pfn)
+ 
+ static void remove_iova(struct iova_domain *iovad, struct iova *iova)
+ {
++	struct rb_node *next;
++	struct iova *next_iova;
+ 	assert_spin_locked(&iovad->iova_rbtree_lock);
+-	__cached_rbnode_delete_update(iovad, iova);
+-	rb_erase(&iova->node, &iovad->rbroot);
++
++	next = rb_next(&iova->node);
++	__cached_rbnode_delete_update(iovad, iova, next);
++
++	next_iova = to_iova(next);
++	next_iova->prev_iova = iova->prev_iova;
++	next_iova->allocatable_size = iova_compute_allocatable_size(next_iova);
++	iova_max_allocatable_size_update(next_iova);
++	rb_erase_augmented(&iova->node, &iovad->rbroot, &iova_gap_callbacks);
+ }
+ 
+ /**
+@@ -554,8 +698,11 @@ static void
+ __adjust_overlap_range(struct iova *iova,
+ 	unsigned long *pfn_lo, unsigned long *pfn_hi)
+ {
+-	if (*pfn_lo < iova->pfn_lo)
++	if (*pfn_lo < iova->pfn_lo) {
+ 		iova->pfn_lo = *pfn_lo;
++		iova->allocatable_size = iova_compute_allocatable_size(iova);
++		iova_max_allocatable_size_update(iova);
++	}
+ 	if (*pfn_hi > iova->pfn_hi)
+ 		*pfn_lo = iova->pfn_hi + 1;
+ }
+diff --git a/include/linux/iova.h b/include/linux/iova.h
+index 320a70e40233..8eb9ea339289 100644
+--- a/include/linux/iova.h
++++ b/include/linux/iova.h
+@@ -11,7 +11,7 @@
+ 
+ #include <linux/types.h>
+ #include <linux/kernel.h>
+-#include <linux/rbtree.h>
++#include <linux/rbtree_augmented.h>
+ #include <linux/dma-mapping.h>
+ 
+ /* iova structure */
+@@ -19,6 +19,14 @@ struct iova {
+ 	struct rb_node	node;
+ 	unsigned long	pfn_hi; /* Highest allocated pfn */
+ 	unsigned long	pfn_lo; /* Lowest allocated pfn */
++	struct iova	*prev_iova;
++	/*
++	 * The max size of iova can be allocated from a gap between this iova
++	 * and previous iova.
++	 */
++	unsigned long	allocatable_size;
++	/* The maximum value of all allocatable_size in the subtree. */
++	unsigned long	max_allocatable_size;
+ };
+ 
+ 
+-- 
+2.20.1
+
