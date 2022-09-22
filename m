@@ -1,216 +1,219 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from relay07.th.seeweb.it (relay07.th.seeweb.it [5.144.164.168])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C430E2F33
-	for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 11:06:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1663844804;
-	h=from:from:reply-to:reply-to:subject:subject:date:date:
-	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-	 content-type:content-type:in-reply-to:in-reply-to:  references:references;
-	bh=weTzGs+YH5eFOYqu10+XviMcq6i4aHFhLOVdDjBJzEc=;
-	b=Kbax5VozaW6EgBVj3S2efrDtw6rL533xjNDiC/iaMgnKSHKiM++aIXjEBsQDlpQuTqIPUd
-	vFi2mGbCgOWkbe14Gd8OH6DfkqorI0pPMyxVP+FdcPFHJ7obK+3eH/q1pbKApn3FxPXA/F
-	UEGergLxu0gSF/qSj8dI29vJGnkr2UE=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-610-gzxwWZryPyyAG_o4GzxKoA-1; Thu, 22 Sep 2022 07:06:41 -0400
-X-MC-Unique: gzxwWZryPyyAG_o4GzxKoA-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5169B2F33
+	for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 11:07:21 +0000 (UTC)
+Received: from [192.168.1.101] (95.49.29.188.neoplus.adsl.tpnet.pl [95.49.29.188])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits))
 	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8E6FF294EDEE;
-	Thu, 22 Sep 2022 11:06:40 +0000 (UTC)
-Received: from redhat.com (unknown [10.33.36.120])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id 6B3CD492CA5;
-	Thu, 22 Sep 2022 11:06:35 +0000 (UTC)
-Date: Thu, 22 Sep 2022 12:06:33 +0100
-From: Daniel =?utf-8?B?UC4gQmVycmFuZ8Op?= <berrange@redhat.com>
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Eric Auger <eric.auger@redhat.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>,
-	"Rodel, Jorg" <jroedel@suse.de>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
-	Cornelia Huck <cohuck@redhat.com>,
-	Daniel Jordan <daniel.m.jordan@oracle.com>,
-	David Gibson <david@gibson.dropbear.id.au>,
-	Eric Farman <farman@linux.ibm.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	Jason Wang <jasowang@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	"Martins, Joao" <joao.m.martins@oracle.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>,
-	Keqian Zhu <zhukeqian1@huawei.com>,
-	Steve Sistare <steven.sistare@oracle.com>,
-	"libvir-list@redhat.com" <libvir-list@redhat.com>,
-	Laine Stump <laine@redhat.com>
-Subject: Re: [PATCH RFC v2 00/13] IOMMUFD Generic interface
-Message-ID: <YyxBuQwIUdiqGoR3@redhat.com>
-Reply-To: Daniel =?utf-8?B?UC4gQmVycmFuZ8Op?= <berrange@redhat.com>
-References: <0-v2-f9436d0bde78+4bb-iommufd_jgg@nvidia.com>
- <BN9PR11MB52762909D64C1194F4FCB4528C479@BN9PR11MB5276.namprd11.prod.outlook.com>
- <d5e33ebb-29e6-029d-aef4-af5c4478185a@redhat.com>
- <Yyoa+kAJi2+/YTYn@nvidia.com>
- <20220921120649.5d2ff778.alex.williamson@redhat.com>
+	by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 3295A3F77C;
+	Thu, 22 Sep 2022 12:48:36 +0200 (CEST)
+Message-ID: <22acebd5-b900-9abd-67e6-522c351da342@somainline.org>
+Date: Thu, 22 Sep 2022 12:48:35 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220921120649.5d2ff778.alex.williamson@redhat.com>
-User-Agent: Mutt/2.2.6 (2022-06-05)
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.9
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH 2/2] iommu: arm-smmu-qcom: add sdm670 compatible
+Content-Language: en-US
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ Richard Acayan <mailingradian@gmail.com>
+Cc: linux-arm-msm@vger.kernel.org, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Bjorn Andersson <andersson@kernel.org>,
+ Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+ Rob Clark <robdclark@chromium.org>, Sibi Sankar <sibis@codeaurora.org>,
+ Loic Poulain <loic.poulain@linaro.org>, Vinod Koul <vkoul@kernel.org>,
+ iommu@lists.linux.dev, devicetree@vger.kernel.org
+References: <5f629a95-8ee4-7cf8-f471-0b50e311d3b7@somainline.org>
+ <20220922023833.178076-1-mailingradian@gmail.com>
+ <be7a2f12-d6bb-8193-2a56-c31e57f11ce6@linaro.org>
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
+In-Reply-To: <be7a2f12-d6bb-8193-2a56-c31e57f11ce6@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Wed, Sep 21, 2022 at 12:06:49PM -0600, Alex Williamson wrote:
-> [Cc+ Steve, libvirt, Daniel, Laine]
+
+
+On 22.09.2022 08:41, Krzysztof Kozlowski wrote:
+> On 22/09/2022 04:38, Richard Acayan wrote:
+>>> On 21.09.2022 21:05, Krzysztof Kozlowski wrote:
+>>>> On 21/09/2022 20:48, Konrad Dybcio wrote:
+>>>>>
+>>>>>
+>>>>> On 21.09.2022 20:47, Konrad Dybcio wrote:
+>>>>>>
+>>>>>>
+>>>>>> On 21.09.2022 09:31, Krzysztof Kozlowski wrote:
+>>>>>>> On 21/09/2022 00:39, Richard Acayan wrote:
+>>>>>>>> The Snapdragon 670 needs the IOMMU for GENI I2C. Add a compatible string to
+>>>>>>>> support it.
+>>>>>>>>
+>>>>>>>> Signed-off-by: Richard Acayan <mailingradian@gmail.com>
+>>>>>>>> ---
+>>>>>>>>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
+>>>>>>>>  1 file changed, 1 insertion(+)
+>>>>>>>>
+>>>>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>>>> index b2708de25ea3..bf9653b9eb89 100644
+>>>>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>>>> @@ -431,6 +431,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
+>>>>>>>>  	{ .compatible = "qcom,sc8180x-smmu-500" },
+>>>>>>>>  	{ .compatible = "qcom,sc8280xp-smmu-500" },
+>>>>>>>>  	{ .compatible = "qcom,sdm630-smmu-v2" },
+>>>>>>>> +	{ .compatible = "qcom,sdm670-smmu-500" },
+>>>>>>>
+>>>>>>> Why do we keep adding compatibles to the driver for apparently
+>>>>>>> compatible devices?
+>>>>>>
+>>>>>> Because Linux has not funny run on bare Qualcomm hardware ever since at least msm8x60 times and
+>>>>> s/funny/fully
+>>>>>
+>>>>> unfortunate typo, this is not funny, quite the contrary..
+>>>>>
+>>>>> Konrad
+>>>>>> we are not interacting with real hardware, only with Qualcomm's flawed virtual implementation
+>>>>>> of it, that's abstracted to us through various generations of their saddening software stack. This
+>>>>>> is also the case for many more standard components, even as far as the GIC on recent boards..
+>>>>
+>>>> Unfortunately I don't get this explanation... you mean some other
+>>>> firmware requires Linux drivers to use specific compatibles instead of
+>>>> one fallback?
+>>> No, perhaps I misunderstood you.
+>>>
+>>>>
+>>>> All of these do not have driver data, so they are essentially compatible
+>>>> for Linux driver. Growing this list in the driver seems pointless. What
+>>>> is the benefit of growing driver with same entries, except more patches?
+>>> Compatible lists in smmu-impl files allow matching driver quirks for SMMUs themselves
+>>> and consumer devices (such as MDSS). The situation is more complicated, because some
+>>> qcom SMMUs also require more quirks than others (think 8974 vs 8994 vs 8996/pro&660&8998
+>>> vs 845+ vs adreno smmu in various flavours), so all qcom SMMUs need to use
+>>> `qcom_smmu_impl` and some others need even more quirks on top of that (that generally
+>>> hurt performance or functionality, so we don't want them when they're unnecessary).
+>>> If all generations of qcom SMMU implementation that bear the same name behaved anywhere
+>>> near consistent, there would be no need for keeping this around, instead requiring only
+>>> "qcom,broken-smmu" or something".
+>>
+>> Hi, just stopping by to share my own thoughts.
+>>
+>> First, I don't mind if this series doesn't get applied as-is. After seeing
+>> the eMMC driver in its current state:
+>>
+>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/mmc/host/sdhci-msm.c?h=v6.0-rc6#n2437
+>>
+>> I can understand that the devicetree maintainers don't want to see new SoCs
+>> touching drivers unnecessarily. Second, I don't see enough quirks to
+>> justify needing all compatible strings in the driver (2 quirky SoCs
+>> compared to 16 total not counting adreno iommu):
+>>
+>>     $ grep qcom, drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>     	if (of_device_is_compatible(np, "qcom,msm8996-smmu-v2"))
+>>     	* All targets that use the qcom,adreno-smmu compatible string *should*
+>>     	{ .compatible = "qcom,adreno" },
+>>     	{ .compatible = "qcom,mdp4" },
+>>     	{ .compatible = "qcom,mdss" },
+>>     	{ .compatible = "qcom,sc7180-mdss" },
+>>     	{ .compatible = "qcom,sc7180-mss-pil" },
+>>     	{ .compatible = "qcom,sc7280-mdss" },
+>>     	{ .compatible = "qcom,sc7280-mss-pil" },
+>>     	{ .compatible = "qcom,sc8180x-mdss" },
+>>     	{ .compatible = "qcom,sm8250-mdss" },
+>>     	{ .compatible = "qcom,sdm845-mdss" },
+>>     	{ .compatible = "qcom,sdm845-mss-pil" },
+>>     	if (of_device_is_compatible(np, "qcom,sdm845-smmu-500"))
+>>     	{ .compatible = "qcom,msm8998-smmu-v2" },
+>>     	{ .compatible = "qcom,qcm2290-smmu-500" },
+>>     	{ .compatible = "qcom,sc7180-smmu-500" },
+>>     	{ .compatible = "qcom,sc7280-smmu-500" },
+>>     	{ .compatible = "qcom,sc8180x-smmu-500" },
+>>     	{ .compatible = "qcom,sc8280xp-smmu-500" },
+>>     	{ .compatible = "qcom,sdm630-smmu-v2" },
+>>     	{ .compatible = "qcom,sdm670-smmu-500" },
+>>     	{ .compatible = "qcom,sdm845-smmu-500" },
+>>     	{ .compatible = "qcom,sm6125-smmu-500" },
+>>     	{ .compatible = "qcom,sm6350-smmu-500" },
+>>     	{ .compatible = "qcom,sm6375-smmu-500" },
+>>     	{ .compatible = "qcom,sm8150-smmu-500" },
+>>     	{ .compatible = "qcom,sm8250-smmu-500" },
+>>     	{ .compatible = "qcom,sm8350-smmu-500" },
+>>     	{ .compatible = "qcom,sm8450-smmu-500" },
+>>     	if (of_device_is_compatible(np, "qcom,adreno-smmu"))
+>>
+>> I don't know if it's better to get myself involved in fixing this, though.
+>> There is no fallback that encompasses qcom devices but not all arm devices.
+>> Either way, I'll have to add a new compatible string to the driver.
+>>
+>> If something like this is fine for now, I'll format it properly tomorrow:
 > 
-> On Tue, 20 Sep 2022 16:56:42 -0300
-> Jason Gunthorpe <jgg@nvidia.com> wrote:
-> > That really just leaves the accounting, and I'm still not convinced at
-> > this must be a critical thing. Linus's latest remarks reported in lwn
-> > at the maintainer summit on tracepoints/BPF as ABI seem to support
-> > this. Let's see an actual deployed production configuration that would
-> > be impacted, and we won't find that unless we move forward.
+> Please wait till we reach some conclusion otherwise your work might be
+> wasted.
 > 
-> I'll try to summarize the proposed change so that we can get better
-> advice from libvirt folks, or potentially anyone else managing locked
-> memory limits for device assignment VMs.
+>>
+>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>> @@ -48,6 +48,13 @@ properties:
+>>                - qcom,sm8350-smmu-500
+>>                - qcom,sm8450-smmu-500
+>>            - const: arm,mmu-500
+>> +
+>> +      - description: Qcom SoCs implementing "qcom,smmu-500"
+>> +        items:
+>> +          - enum:
+>> +              - qcom,sdm670-smmu-500
+>> +          - const: qcom,smmu-500
+>> +
 > 
-> Background: when a DMA range, ex. guest RAM, is mapped to a vfio device,
-> we use the system IOMMU to provide GPA to HPA translation for assigned
-> devices. Unlike CPU page tables, we don't generally have a means to
-> demand fault these translations, therefore the memory target of the
-> translation is pinned to prevent that it cannot be swapped or
-> relocated, ie. to guarantee the translation is always valid.
+> Someone would have to confirm that smmu-500 is a real device
+> spec/version. Otherwise this should be device-specific compatible (e.g.
+> earliest in family).
+In my view it's hard to name it, downstream uses bool properties for enabling/disabling
+certain quirks and on different generations there are different combinations of that.
+Interestingly enough, I vaguely remember that the same quirk names can mean different
+things on different msm-X.Y versions.. Add to that, different msm-X.Y versions can have
+different assumptions on what's the default (aka without taking the bool properties into
+account) behaviour for a given compatible. So I suppose "first in the family" would be
+the best way to go for mainline, though there are still quite a few families:
+
+<earlier ones used qcom_iommu>
+- 8996 with quirks that are already accounted for (or one may also say it works by miracle,
+just like msm8916 - downstream adds more special handling, but looks like the fw is not as
+restrictive)
+
+- 8996pro + 660 + 8998 with serious unmerged ones [1]
+
+- 845 which seems to be aok
+
+- special case of chromebooks where they only have qcom TZ/XPUs and not the hypervisor to
+fight with, so ma-a-aybe (no downstream reference & I don't have the hw to confirm) they
+can get away with less things
+
+- 8[1234]50 which seem to be a mix-and-match of less serious (read: not accounting for them
+may hurt performance but will not make your device sepuku at SMMU probe) minor quirks
+[2][3][4][5] (big warning: these may be overriden somewhere in other device tree fragments,
+the surest option would be to take a compiled dtb and decompile it to be sure about it)
+
+- 4xxx/6xxx series that mostly align with "whatever was there on the flagship soc released
+a year before"
+
+
+Konrad
+
+[1] https://github.com/SoMainline/linux/commits/marijn/v5.19-ninges/drivers/iommu
+[2] https://github.com/TeamWin/android_kernel_samsung_d2q/blob/master/arch/arm64/boot/dts/qcom/msm-arm-smmu-sm8150-v2.dtsi
+[3] https://android.googlesource.com/kernel/msm-extra/devicetree/+/refs/tags/android-11.0.0_r0.56/qcom/msm-arm-smmu-kona.dtsi
+[4] https://github.com/sonyxperiadev/kernel-copyleft-dts/blob/61.0.A.11.xxx/qcom/msm-arm-smmu-lahaina.dtsi
+[5] https://github.com/sonyxperiadev/kernel-copyleft-dts/blob/64.0.A.2.xxx/devicetree/qcom/msm-arm-smmu-waipio.dtsi
 > 
-> The issue is where we account these pinned pages, where accounting is
-> necessary such that a user cannot lock an arbitrary number of pages
-> into RAM to generate a DoS attack.  Duplicate accounting should be
-> resolved by iommufd, but is outside the scope of this discussion.
+> Best regards,
+> Krzysztof
 > 
-> Currently, vfio tests against the mm_struct.locked_vm relative to
-> rlimit(RLIMIT_MEMLOCK), which reads task->signal->rlim[limit].rlim_cur,
-> where task is the current process.  This is the same limit set via the
-> setrlimit syscall used by prlimit(1) and reported via 'ulimit -l'.
-> 
-> Note that in both cases above, we're dealing with a task, or process
-> limit and both prlimit and ulimit man pages describe them as such.
-> 
-> iommufd supposes instead, and references existing kernel
-> implementations, that despite the descriptions above these limits are
-> actually meant to be user limits and therefore instead charges pinned
-> pages against user_struct.locked_vm and also marks them in
-> mm_struct.pinned_vm.
-> 
-> The proposed algorithm is to read the _task_ locked memory limit, then
-> attempt to charge the _user_ locked_vm, such that user_struct.locked_vm
-> cannot exceed the task locked memory limit.
-> 
-> This obviously has implications.  AFAICT, any management tool that
-> doesn't instantiate assigned device VMs under separate users are
-> essentially untenable.  For example, if we launch VM1 under userA and
-> set a locked memory limit of 4GB via prlimit to account for an assigned
-> device, that works fine, until we launch VM2 from userA as well.  In
-> that case we can't simply set a 4GB limit on the VM2 task because
-> there's already 4GB charged against user_struct.locked_vm for VM1.  So
-> we'd need to set the VM2 task limit to 8GB to be able to launch VM2.
-> But not only that, we'd need to go back and also set VM1's task limit
-> to 8GB or else it will fail if a DMA mapped memory region is transient
-> and needs to be re-mapped.
-> 
-> Effectively any task under the same user and requiring pinned memory
-> needs to have a locked memory limit set, and updated, to account for
-> all tasks using pinned memory by that user.
-
-That is pretty unpleasant. Having to update all existing VMs, when
-starting a new VM (or hotpluigging a VFIO device to an existing
-VM) is something we would never want todo.
-
-Charging this against the user weakens the DoS protection that
-we have today from the POV of individual VMs.
-
-Our primary risk is that a single QEMU is compromised and attempts
-to impact the host in some way. We want to limit the damage that
-an individual QEMU can cause.
-
-Consider 4 VMs each locked with 4 GB. Any single compromised VM
-is constrained to only use 4 GB of locked memory.
-
-With the per-user accounting, now any single compromised VM can
-use the cummulative 16 GB of locked memory, even though we only
-want that VM to be able to use 4 GB.
-
-For a cummulative memory limit, we would expect cgroups to be
-the enforcement mechanism. eg consider a machine has 64 GB of
-RAM, and we want to reserve 12 GB for host OS ensure, and all
-other RAM is for VM usage. A mgmt app wanting such protecton
-would set a limit on /machines.slice, at the 52 GB mark, to
-reserve the 12 GB for non-VM usage.
-
-Also, the mgmt app accounts for how many VMs it has started on
-a host and will not try to launch more VMs than there is RAM
-available to support them. Accounting at the user level instead
-of the task level, is effectively trying to protect against the
-bad mgmt app trying to overcommit the host. That is not really
-important, as the mgmt app is so privileged it is already
-assumed to be a trusted host component akin to a root acocunt.
-
-So per-user locked mem accounting looks like a regression in
-our VM isolation abilities compared to the per-task accounting.
-
-> How does this affect known current use cases of locked memory
-> management for assigned device VMs?
-
-It will affect every single application using libvirt today, with
-the possible exception of KubeVirt. KubeVirt puts each VM in a
-separate container, and if they have userns enabled, those will
-each get distinct UIDs for accounting purposes.
-
-I expect every other usage of libvrit to be affected, unless the
-mgmt app has gone out of its way to configure a dedicated UID for
-each QEMU - I'm not aware of any which do this.
-
-> Does qemu://system by default sandbox into per VM uids or do they all
-> use the qemu user by default.  I imagine qemu://session mode is pretty
-> screwed by this, but I also don't know who/where locked limits are
-> lifted for such VMs.  Boxes, who I think now supports assigned device
-> VMs, could also be affected.
-
-In a out of the box config qemu:///system will always run all VMs
-under the user:group pairing  qemu:qemu.
-
-Mgmt apps can requested a dedicated UID per VM in the XML config,
-but I'm not aware of any doing this. Someone might, but we should
-assume the majority will not.
-
-IOW, it affects essentially all libvirt usage of VFIO.
-
-> > So, I still like 2 because it yields the smallest next step before we
-> > can bring all the parallel work onto the list, and it makes testing
-> > and converting non-qemu stuff easier even going forward.
-> 
-> If a vfio compatible interface isn't transparently compatible, then I
-> have a hard time understanding its value.  Please correct my above
-> description and implications, but I suspect these are not just
-> theoretical ABI compat issues.  Thanks,
-
-
-
-With regards,
-Daniel
--- 
-|: https://berrange.com      -o-    https://www.flickr.com/photos/dberrange :|
-|: https://libvirt.org         -o-            https://fstop138.berrange.com :|
-|: https://entangle-photo.org    -o-    https://www.instagram.com/dberrange :|
-
