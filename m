@@ -1,125 +1,100 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2067.outbound.protection.outlook.com [40.107.220.67])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A90C51FD5
-	for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 05:09:21 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ex+dlabUwhamq52SBeSuYuzbSsVz3VteM/tj7W3vlln6af99FeqrWZv5vomGws8CVOx4f54i64vKbdUlD2UNKk6uVx0e8xm7jHwViiKJcwSzD/QL/espVuD6xwtWjhVq9mJxIlXj8S/qQp1GBe3hrd+tQhxwgCQ86eHGiqwvWFt7eIkO7nPFFrbncA8gpBwnxUPZkjjjVrbd5xKNEeLIkEIX8hp2Fyow/rd6RN7T5+QAGWUukakJus8FHhBeEVQDjKkfxON+LFSJ0o8oZUA0hZemBxFnONN/QxQ6w8hpoawyGYRfsuF//YptVTOtxZ7y0Vue8DzUhLMRxCX9AE30aQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Q/E2F+s4llk4R5foJ3S+CieZPXBn01PAOjAZ2oSgyIc=;
- b=i4cMBzUIdc0rXsTOGn5Imqi7TDp0myUhl0HVn1V87MyqIAN/Nbd7X5Poryb0PbJz5g+YnHg4fi2KkrFlRhR+yDKh07ESPMBumzOk/rxq0ZJnOY9O+3Onc/beQuO33kpx+wFDRUMInEVOn1lfdlIGqYtkONzAvThQiuJyXhPir/XV5UGVjjTxybC1S6DgRsfkmhrimk7ZOmpf/u+gR3/dsXlKbT66TIcgziLftomOB5UryCjKkTf8ThlBVzco2WKmSnQ2M84cZZbrxWXmtG97KAhmmuTIB1+ALmGVLFT+nKwiELPEqQYvaezbUpzLh+oIiatYLjQ2U4lP9ic1zqAQBg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=linux.intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Q/E2F+s4llk4R5foJ3S+CieZPXBn01PAOjAZ2oSgyIc=;
- b=jlV3ioyN1zHQAacDoxTk74B3BaHkJX+dQmNw07atLKb0Nt/Psg88/k/aKyxjlHvTxZ4C5DQZCiil71iL2fP1tZGtx0l7vPANXEO9M4z8scAz2aa0g5Zv41WSKM34xrxS8Mcs1vADrrpxh6549taTL9sKKR+o1Erhs0CtDy3fOIU8FmhAS6CxJdPjZ58JEMXqJtOvNcIQZ6kC58ws4+FPZ/Y/N3VrNIak4mA9Dd15MsipgPEZCu1pbueY06JBRYrdWDcc7ReltP5odo6RqN3cvLFyP27yIZB12ZkglyapLBBFtdlZnz+T38kDOh8P4h13zVaeAzMez6+m1pev/u8b3w==
-Received: from BN9P221CA0022.NAMP221.PROD.OUTLOOK.COM (2603:10b6:408:10a::14)
- by SN7PR12MB7129.namprd12.prod.outlook.com (2603:10b6:806:2a1::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.14; Thu, 22 Sep
- 2022 05:09:19 +0000
-Received: from BN8NAM11FT057.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:10a:cafe::11) by BN9P221CA0022.outlook.office365.com
- (2603:10b6:408:10a::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.14 via Frontend
- Transport; Thu, 22 Sep 2022 05:09:19 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- BN8NAM11FT057.mail.protection.outlook.com (10.13.177.49) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5654.14 via Frontend Transport; Thu, 22 Sep 2022 05:09:18 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Wed, 21 Sep
- 2022 22:09:07 -0700
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- rnnvmail205.nvidia.com (10.129.68.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Wed, 21 Sep 2022 22:09:06 -0700
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Wed, 21 Sep 2022 22:09:06 -0700
-Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com
- (10.126.190.182) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29 via Frontend
- Transport; Wed, 21 Sep 2022 22:09:04 -0700
-Date: Wed, 21 Sep 2022 22:09:02 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-CC: <joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <will@kernel.org>,
-	<robin.murphy@arm.com>, <robdclark@gmail.com>, <dwmw2@infradead.org>,
-	<agross@kernel.org>, <bjorn.andersson@linaro.org>, <matthias.bgg@gmail.com>,
-	<orsonzhai@gmail.com>, <baolin.wang@linux.alibaba.com>,
-	<zhang.lyra@gmail.com>, <jean-philippe@linaro.org>,
-	<sricharan@codeaurora.org>, <jgg@nvidia.com>, <kevin.tian@intel.com>,
-	<konrad.dybcio@somainline.org>, <yong.wu@mediatek.com>,
-	<thierry.reding@gmail.com>, <vdumpa@nvidia.com>, <jonathanh@nvidia.com>,
-	<tglx@linutronix.de>, <shameerali.kolothum.thodi@huawei.com>,
-	<christophe.jaillet@wanadoo.fr>, <thunder.leizhen@huawei.com>,
-	<quic_saipraka@quicinc.com>, <jon@solid-run.com>, <yangyingliang@huawei.com>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-arm-msm@vger.kernel.org>,
-	<linux-mediatek@lists.infradead.org>, <linux-tegra@vger.kernel.org>,
-	<virtualization@lists.linux-foundation.org>
-Subject: Re: [PATCH v4 3/6] iommu: Add return value rules to attach_dev op
- and APIs
-Message-ID: <Yyvt7kBng3iKl56l@Asurada-Nvidia>
-References: <cover.1663744983.git.nicolinc@nvidia.com>
- <8c3dbf153b63a3002a46bab6e707c63fd8635bb8.1663744983.git.nicolinc@nvidia.com>
- <73008702-87e1-688f-b194-c259c9c03caa@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F2A48447
+	for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 06:39:43 +0000 (UTC)
+Received: by mail-lj1-f172.google.com with SMTP id j24so9268685lja.4
+        for <iommu@lists.linux.dev>; Wed, 21 Sep 2022 23:39:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=Y9it4dxu8zLENQhpiztD0qTlsy9XVvm5wGeuzw4ftH8=;
+        b=OQ9KVALrZqkz/x7hew6GkzX4KKF13X8o5JJaAiZQ20KoDNp8yTjux3FBvRSA4rpDvO
+         xtJYChGki+NkDKgUMnk82VBSC1HYqGcUXFcjHtMxge/PNa8pvDZjFyqgSpeJ/NWv5h/v
+         39U7x2LhsYePSL3BTkCO5YSl2I3hAab2kw17MDECHgdp/FilQ50ZdmuKDf1Z+lvuYfDM
+         9WgAHT9EMrJHexeKuosW9Tqvknp+Ss7MB9BXTC7EtJrkfmJrcqgsjPEXV26hsa8Zodhr
+         eE4lP7HaIJLQRZFoKK5tdRUsdvA2dNnDX+m/+Gkrv9GDxEPa36hwd+rL4M0xypU9iADl
+         51Vw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=Y9it4dxu8zLENQhpiztD0qTlsy9XVvm5wGeuzw4ftH8=;
+        b=r+r++bvllX33PAwnFDZY10yO161DCA+L6BsUHSjJgVX+Ll967TSmUWrtxOuCssIlZu
+         vj/dQ/71mSNN7+POmkcxjGNmvRTVx/mdiJezyxpovmeQKE9uykzMVi2AvCZhA2wnudQf
+         fT4JeJpn8zOD8kiahm2/YAgsqNWi8xkvaiqMsXiFkd9NUfeGVv9v7Rq73duNt+JtK5kJ
+         3hDLN/1ZOIBz6KbrGBtZRBFfC+tItRMl9/tokvhW4S7uJMl0KLHMDzHD0ci3n717COEV
+         IFk5dE5Leol+Fp1TnmF6Iin5fdvf/LwId0XMrRS9eHjHaksw+zhJBkaTKAeJ442fkCnB
+         w+2w==
+X-Gm-Message-State: ACrzQf1y3fuZ5nCgY9twz49Xlu6eXmr5rDcfDf72WK9M+5cyeX4Z0nad
+	81vbVFaEuKN5TYbRqEqNrghrbA==
+X-Google-Smtp-Source: AMsMyM4NcODEXdqj7wdcU9cj2VvWWAhTr0alCSdk3U0Cy+ArQQf1phMq6WHSoi06VLJ2WCKmFbVUug==
+X-Received: by 2002:a05:651c:239d:b0:26c:4eac:d64e with SMTP id bk29-20020a05651c239d00b0026c4eacd64emr610482ljb.167.1663828781456;
+        Wed, 21 Sep 2022 23:39:41 -0700 (PDT)
+Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id t7-20020a05651c204700b0026acd11cd51sm749995ljo.59.2022.09.21.23.39.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 21 Sep 2022 23:39:40 -0700 (PDT)
+Message-ID: <26271806-df86-393c-bddf-75c82d54fe53@linaro.org>
+Date: Thu, 22 Sep 2022 08:39:39 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <73008702-87e1-688f-b194-c259c9c03caa@linux.intel.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT057:EE_|SN7PR12MB7129:EE_
-X-MS-Office365-Filtering-Correlation-Id: be866fd3-fa31-4a7b-1049-08da9c589aa3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	aCs/FevZDzoabU9muvAYs0+8+1yzVMDmtAcqDXsi7G9eXDcaM8Aj/BhE7LcXYn3NeuTDZk02keQ6GPHj8HrNgsggqbZCEzWNaYPMP6yWsE3EvlC0F9dnaL8jaOQJlsdLGRDMkCJY4FWOn5Yzm1V6T0tMWeXtyYjRHgjriGFo1ZRBi9otkzEB4MFwA/0TbxCCj5+qj99+sCzC6uWV6z0vmAilloR6nEXR/jfh0Yhtu2FpP+nt4ygQG6ubsf2P8+u7xOquDxxulf2F7URH53lcog/NCeXl5j/+CwVnWh8EcYNeIAwmDgR0KVtat9oC5pxoXJxIEKmEnw02ZjcTfMX8QMHmJ/uVm5W6IL+ERZ9xhvtGnNIj5RpAKQR4L7mckl0015iQT7q1Ao/epxbdakRO6J3XXV89N/jL0ii+OG1fQa2Ud+odZsOEmqzDTM7yqFDVpXCyIRy47KdbIhBpyh0lQ1HfUvhXTM1zpSM8TrxJQBrxXVGGcDNsudG63O8XGC+CgKqwJVhR2AePysnWa9DtrAHLRDjn3Jmwvk1OSIkQads0Y0YhRo49KdyIsZ0Dm7LqF2OppmWCmo4nxjpX7f1QHnHklpE9Z+NMbWVC4JcbekwDqFE/ZyF+3tY35ZkIlRm5Bxwp1GoN+ONpnS8bLj1AcIgn/5uaaqicv+yioKoed2OnJAiKXV+zNj/nRMzCYQYGI/u64ZaSg/Y5jTO6pCurpvntwnlklAB4qiJ+tP2Bh+6wMnj+Y8HQYi6pKgQTSXFQhLO2wAFzNup6YoHhJM1XTQ==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(376002)(136003)(39860400002)(396003)(346002)(451199015)(36840700001)(40470700004)(46966006)(356005)(316002)(6916009)(54906003)(478600001)(26005)(40460700003)(36860700001)(426003)(86362001)(7636003)(40480700001)(55016003)(47076005)(186003)(336012)(82740400003)(9686003)(33716001)(4744005)(5660300002)(7406005)(8936002)(2906002)(7416002)(8676002)(4326008)(41300700001)(70206006)(70586007)(82310400005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Sep 2022 05:09:18.9748
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: be866fd3-fa31-4a7b-1049-08da9c589aa3
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT057.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7129
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH 2/2] iommu: arm-smmu-qcom: add sdm670 compatible
+Content-Language: en-US
+To: Konrad Dybcio <konrad.dybcio@somainline.org>,
+ Richard Acayan <mailingradian@gmail.com>, linux-arm-msm@vger.kernel.org
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Bjorn Andersson <andersson@kernel.org>,
+ Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+ Rob Clark <robdclark@chromium.org>, Sibi Sankar <sibis@codeaurora.org>,
+ Loic Poulain <loic.poulain@linaro.org>, Vinod Koul <vkoul@kernel.org>,
+ iommu@lists.linux.dev, devicetree@vger.kernel.org
+References: <20220920223955.151507-1-mailingradian@gmail.com>
+ <20220920223955.151507-3-mailingradian@gmail.com>
+ <77b7d58f-ba85-86de-8635-6efbb1354a08@linaro.org>
+ <5c25dc95-d7a4-0b15-5514-6fe3a48e899c@somainline.org>
+ <f98ccf6b-34e7-d15f-63f9-928827b52eb8@somainline.org>
+ <30980ac8-1386-d284-8452-fdc5b7da8343@linaro.org>
+ <5f629a95-8ee4-7cf8-f471-0b50e311d3b7@somainline.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <5f629a95-8ee4-7cf8-f471-0b50e311d3b7@somainline.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Thu, Sep 22, 2022 at 10:02:42AM +0800, Baolu Lu wrote:
-> > +/**
-> > + * iommu_attach_device - Attach a device to an IOMMU domain
+On 21/09/2022 23:14, Konrad Dybcio wrote:
+>> Unfortunately I don't get this explanation... you mean some other
+>> firmware requires Linux drivers to use specific compatibles instead of
+>> one fallback?
+> No, perhaps I misunderstood you.
 > 
-> Normally we say "attach an iommu domain to a device/group ...".
+>>
+>> All of these do not have driver data, so they are essentially compatible
+>> for Linux driver. Growing this list in the driver seems pointless. What
+>> is the benefit of growing driver with same entries, except more patches?
+> Compatible lists in smmu-impl files allow matching driver quirks for SMMUs themselves
+> and consumer devices (such as MDSS). The situation is more complicated, because some
+> qcom SMMUs also require more quirks than others (think 8974 vs 8994 vs 8996/pro&660&8998
+> vs 845+ vs adreno smmu in various flavours), so all qcom SMMUs need to use
+> `qcom_smmu_impl` and some others need even more quirks on top of that (that generally
+> hurt performance or functionality, so we don't want them when they're unnecessary).
+> If all generations of qcom SMMU implementation that bear the same name behaved anywhere
+> near consistent, there would be no need for keeping this around, instead requiring only
+> "qcom,broken-smmu" or something".
 
-OK. I can fix it in the next respin.
+So where are the quirks? Again: driver data is empty.
 
-And I'll add your Reviewed-by in the other two patches too.
+Best regards,
+Krzysztof
 
-Thanks!
-Nic
