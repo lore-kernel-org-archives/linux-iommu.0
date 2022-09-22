@@ -1,33 +1,33 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 246891FA0
-	for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 02:08:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 782231FA0
+	for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 02:20:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663812527; x=1695348527;
+  t=1663813219; x=1695349219;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=1fDpa6Vp9wv2YOhKIYkfzYhHIef9thojyzjgWC31CW0=;
-  b=aLL3TzERhUsCeCycGJ6DUqxPx2pnpQ+ivEAKsTefw9H1r+Z1M03a3n5N
-   TGBB61YgOodl7L6EKv3ZBtYWuiFAxKZm6urq5wCbz1aGrVeXXlvrw4Lj2
-   qB652AQT53OpIdH8aENJZ81l4S/jBV8ZzkSa53fiOdCdgBFBzr3UGshg3
-   7Xi4RXk4QlQcFLtOMwajFmjRwBlplz2e7E2egzND2zVTMIHu25ixBSi0z
-   WXAxSepHz0m8SwBsD1ri/K0k58Asy2BgZLEm9QRHh7YjDxs5EKqV2Mmt/
-   Cwxu3LuV+KXHfjpXH9sq+ggKM5GFfCMbXVw9yY70s6XSYY5z7oU5N0ywb
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10477"; a="326492012"
+  bh=/ZCkZ9qbjMv6wNMGQi+YkA+SN2H5Rof2Wg8t+DjEiZA=;
+  b=jHBRcrKRwdJBZYytaRX6tDk/5Dv/+JKGneVBvzycOiB7AY0hYi7jAvKg
+   YRmlYtG9wGy87cYCqzGTKI5/1JB2shZMGPcStBwdnup18mBElwQflxgGZ
+   35dUPn8/fowThaxHsdZEGz2GeFW6t0H8Xvo6rzbLLLn1JzptqxjLTT3dF
+   BI5aI18/hPtACRar3ra9bAyJk459dO4NrB8s5y/cQmDsN7exncOk5b+Zn
+   wwXEQPF5JRw/WbASjcBBI4lfe8HEfLMg7hrOHEL7L9RL3GYSWHtNcPFxd
+   Fdz0jCpuHzATAdZFQqJXChDbGgyjP8cW2ta4y+kLRLtgB9VobF8DGkxqm
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10477"; a="386463793"
 X-IronPort-AV: E=Sophos;i="5.93,335,1654585200"; 
-   d="scan'208";a="326492012"
+   d="scan'208";a="386463793"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2022 19:08:46 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Sep 2022 19:20:18 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,335,1654585200"; 
-   d="scan'208";a="794907643"
+   d="scan'208";a="794910032"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by orsmga005.jf.intel.com with ESMTP; 21 Sep 2022 19:08:37 -0700
-Message-ID: <73008702-87e1-688f-b194-c259c9c03caa@linux.intel.com>
-Date: Thu, 22 Sep 2022 10:02:42 +0800
+  by orsmga005.jf.intel.com with ESMTP; 21 Sep 2022 19:20:15 -0700
+Message-ID: <01645bfa-a897-05cd-9934-a057e1d79fff@linux.intel.com>
+Date: Thu, 22 Sep 2022 10:14:19 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,67 +37,146 @@ MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
 Cc: baolu.lu@linux.intel.com, jgg@nvidia.com, kevin.tian@intel.com,
- konrad.dybcio@somainline.org, yong.wu@mediatek.com,
- thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
- tglx@linutronix.de, shameerali.kolothum.thodi@huawei.com,
- christophe.jaillet@wanadoo.fr, thunder.leizhen@huawei.com,
- quic_saipraka@quicinc.com, jon@solid-run.com, yangyingliang@huawei.com,
  iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
- linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org,
- virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH v4 3/6] iommu: Add return value rules to attach_dev op and
- APIs
+ linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v4 4/6] iommu: Regulate EINVAL in ->attach_dev callback
+ functions
 Content-Language: en-US
-To: Nicolin Chen <nicolinc@nvidia.com>, joro@8bytes.org,
- suravee.suthikulpanit@amd.com, will@kernel.org, robin.murphy@arm.com,
- robdclark@gmail.com, dwmw2@infradead.org, agross@kernel.org,
- bjorn.andersson@linaro.org, matthias.bgg@gmail.com, orsonzhai@gmail.com,
- baolin.wang@linux.alibaba.com, zhang.lyra@gmail.com,
- jean-philippe@linaro.org, sricharan@codeaurora.org
+To: Nicolin Chen <nicolinc@nvidia.com>, joro@8bytes.org, will@kernel.org,
+ robin.murphy@arm.com, dwmw2@infradead.org, yong.wu@mediatek.com,
+ matthias.bgg@gmail.com
 References: <cover.1663744983.git.nicolinc@nvidia.com>
- <8c3dbf153b63a3002a46bab6e707c63fd8635bb8.1663744983.git.nicolinc@nvidia.com>
+ <6c48822600154314778157ab7f72a7b55f5e2c65.1663744983.git.nicolinc@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <8c3dbf153b63a3002a46bab6e707c63fd8635bb8.1663744983.git.nicolinc@nvidia.com>
+In-Reply-To: <6c48822600154314778157ab7f72a7b55f5e2c65.1663744983.git.nicolinc@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 9/21/22 4:23 PM, Nicolin Chen wrote:
-> Cases like VFIO wish to attach a device to an existing domain that was
-> not allocated specifically from the device. This raises a condition
-> where the IOMMU driver can fail the domain attach because the domain and
-> device are incompatible with each other.
+> Following the new rules in include/linux/iommu.h kdocs, EINVAL now can be
+> used to indicate that domain and device are incompatible by a caller that
+> treats it as a soft failure and tries attaching to another domain.
 > 
-> This is a soft failure that can be resolved by using a different domain.
+> On the other hand, there are ->attach_dev callback functions returning it
+> for obvious device-specific errors. They will result in some inefficiency
+> in the caller handling routine.
 > 
-> Provide a dedicated errno EINVAL from the IOMMU driver during attach that
-> the reason why the attach failed is because of domain incompatibility.
+> Update these places to corresponding errnos following the new rules.
 > 
-> VFIO can use this to know that the attach is a soft failure and it should
-> continue searching. Otherwise, the attach will be a hard failure and VFIO
-> will return the code to userspace.
-> 
-> Update kdocs to add rules of return value to the attach_dev op and APIs.
-> 
-> Suggested-by: Jason Gunthorpe<jgg@nvidia.com>
-> Signed-off-by: Nicolin Chen<nicolinc@nvidia.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 > ---
->   drivers/iommu/iommu.c | 22 ++++++++++++++++++++++
->   include/linux/iommu.h | 12 ++++++++++++
->   2 files changed, 34 insertions(+)
+>   drivers/iommu/fsl_pamu.c        | 2 +-
+>   drivers/iommu/fsl_pamu_domain.c | 4 ++--
+>   drivers/iommu/intel/pasid.c     | 6 ++++--
+>   drivers/iommu/mtk_iommu.c       | 2 +-
+>   drivers/iommu/omap-iommu.c      | 4 ++--
+>   drivers/iommu/virtio-iommu.c    | 2 +-
+>   6 files changed, 11 insertions(+), 9 deletions(-)
 > 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 3a808146b50f..1d1e32aeaae6 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1975,6 +1975,17 @@ static int __iommu_attach_device(struct iommu_domain *domain,
->   	return ret;
->   }
+> diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
+> index 0d03f837a5d4..2eb3211c8167 100644
+> --- a/drivers/iommu/fsl_pamu.c
+> +++ b/drivers/iommu/fsl_pamu.c
+> @@ -211,7 +211,7 @@ int pamu_config_ppaace(int liodn, u32 omi, u32 stashid, int prot)
+>   		ppaace->op_encode.index_ot.omi = omi;
+>   	} else if (~omi != 0) {
+>   		pr_debug("bad operation mapping index: %d\n", omi);
+> -		return -EINVAL;
+> +		return -ENODEV;
+>   	}
 >   
-> +/**
-> + * iommu_attach_device - Attach a device to an IOMMU domain
+>   	/* configure stash id */
+> diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+> index 011f9ab7f743..b4a1c0f79c3e 100644
+> --- a/drivers/iommu/fsl_pamu_domain.c
+> +++ b/drivers/iommu/fsl_pamu_domain.c
+> @@ -258,7 +258,7 @@ static int fsl_pamu_attach_device(struct iommu_domain *domain,
+>   	liodn = of_get_property(dev->of_node, "fsl,liodn", &len);
+>   	if (!liodn) {
+>   		pr_debug("missing fsl,liodn property at %pOF\n", dev->of_node);
+> -		return -EINVAL;
+> +		return -ENODEV;
+>   	}
+>   
+>   	spin_lock_irqsave(&dma_domain->domain_lock, flags);
+> @@ -267,7 +267,7 @@ static int fsl_pamu_attach_device(struct iommu_domain *domain,
+>   		if (liodn[i] >= PAACE_NUMBER_ENTRIES) {
+>   			pr_debug("Invalid liodn %d, attach device failed for %pOF\n",
+>   				 liodn[i], dev->of_node);
+> -			ret = -EINVAL;
+> +			ret = -ENODEV;
+>   			break;
+>   		}
+>   
+> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+> index c5e7e8b020a5..aff1a9caa496 100644
+> --- a/drivers/iommu/intel/pasid.c
+> +++ b/drivers/iommu/intel/pasid.c
+> @@ -101,8 +101,10 @@ int intel_pasid_alloc_table(struct device *dev)
+>   
+>   	might_sleep();
+>   	info = dev_iommu_priv_get(dev);
+> -	if (WARN_ON(!info || !dev_is_pci(dev) || info->pasid_table))
+> -		return -EINVAL;
+> +	if (WARN_ON(!info || !dev_is_pci(dev)))
+> +		return -ENODEV;
+> +	if (WARN_ON(info->pasid_table))
+> +		return -EEXIST;
+>   
+>   	pasid_table = kzalloc(sizeof(*pasid_table), GFP_KERNEL);
+>   	if (!pasid_table)
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 7e363b1f24df..be1a7d1cc630 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -607,7 +607,7 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
+>   	dom->iop = alloc_io_pgtable_ops(ARM_V7S, &dom->cfg, data);
+>   	if (!dom->iop) {
+>   		dev_err(data->dev, "Failed to alloc io pgtable\n");
+> -		return -EINVAL;
+> +		return -ENOMEM;
+>   	}
+>   
+>   	/* Update our support page sizes bitmap */
+> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+> index d9cf2820c02e..447e40d55918 100644
+> --- a/drivers/iommu/omap-iommu.c
+> +++ b/drivers/iommu/omap-iommu.c
+> @@ -1414,7 +1414,7 @@ static int omap_iommu_attach_init(struct device *dev,
+>   
+>   	odomain->num_iommus = omap_iommu_count(dev);
+>   	if (!odomain->num_iommus)
+> -		return -EINVAL;
+> +		return -ENODEV;
+>   
+>   	odomain->iommus = kcalloc(odomain->num_iommus, sizeof(*iommu),
+>   				  GFP_ATOMIC);
+> @@ -1464,7 +1464,7 @@ omap_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>   
+>   	if (!arch_data || !arch_data->iommu_dev) {
+>   		dev_err(dev, "device doesn't have an associated iommu\n");
+> -		return -EINVAL;
+> +		return -ENODEV;
+>   	}
+>   
+>   	spin_lock(&omap_domain->lock);
+> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+> index 80151176ba12..4c652773fd6c 100644
+> --- a/drivers/iommu/virtio-iommu.c
+> +++ b/drivers/iommu/virtio-iommu.c
+> @@ -669,7 +669,7 @@ static int viommu_domain_finalise(struct viommu_endpoint *vdev,
+>   		dev_err(vdev->dev,
+>   			"granule 0x%lx larger than system page size 0x%lx\n",
+>   			viommu_page_size, PAGE_SIZE);
+> -		return -EINVAL;
+> +		return -ENODEV;
+>   	}
+>   
+>   	ret = ida_alloc_range(&viommu->domain_ids, viommu->first_domain,
 
-Normally we say "attach an iommu domain to a device/group ...".
+For iommu/vt-d changes:
+
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
 Best regards,
 baolu
