@@ -1,218 +1,132 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 512012902
-	for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 09:53:07 +0000 (UTC)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28M9l6rl004094;
-	Thu, 22 Sep 2022 09:52:48 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=iFPzyc+1zpfNBkQxlnUTKpOGKxYzWSgrTkAMFIFkP0M=;
- b=kXqoF+ylTtQKHUmiyTSfAD7BhHLNRXiHH74SETVPYLzop7Horzkku9llDA1Vvg6Ajo79
- c34nTb+j7yX+k9jidex3lTUWBKi/aqG95raZXuQfltZ96g4soBGadq/386RdD6cdcZR3
- pBi9kUIXfXU4CclFTIZ9y0v3IzROp8a/W8FauhA7vQb+A8X81qOOv3hpjx/Iy1gnEy6O
- d/3xn7QZR5YnoB22GO81MfNfFWa1FkL/AZP+tLaVNKq+2ecH49cerzYQgv84DcY0yDMR
- 1JoyWfa4tUL/eUg+Ei/jpXrsPbdp1xzuXTK2GlHqoZN7dpm7CgHPsjMjnPNvmy+P2zdD sA== 
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jrk3t4ejr-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 22 Sep 2022 09:52:47 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-	by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 28M9pICB031345;
-	Thu, 22 Sep 2022 09:52:45 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-	by ppma04fra.de.ibm.com with ESMTP id 3jn5v94u0b-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 22 Sep 2022 09:52:45 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-	by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 28M9mdx733620342
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 22 Sep 2022 09:48:39 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 311C44C04E;
-	Thu, 22 Sep 2022 09:52:42 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id B50D44C044;
-	Thu, 22 Sep 2022 09:52:41 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-	by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-	Thu, 22 Sep 2022 09:52:41 +0000 (GMT)
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Matthew Rosato <mjrosato@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev
-Cc: linux-s390@vger.kernel.org, borntraeger@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        agordeev@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
-        will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/3] iommu/s390: Get rid of s390_domain_device
-Date: Thu, 22 Sep 2022 11:52:39 +0200
-Message-Id: <20220922095239.2115309-4-schnelle@linux.ibm.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220922095239.2115309-1-schnelle@linux.ibm.com>
-References: <20220922095239.2115309-1-schnelle@linux.ibm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6EAC2902
+	for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 10:00:28 +0000 (UTC)
+Received: by mail-ej1-f45.google.com with SMTP id lc7so19991819ejb.0
+        for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 03:00:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=Hiz8j1ueWdpy1uTExZ+MoWZWMdqOcerL2IyS7vev/Lo=;
+        b=qve8F367vri9vq2lNgPzzRwLYLQxb4ZdSpnBQTTL3sibXPY22aLAjYVTCNNfQ0UIY6
+         UTyii6rVby5uvqqz48Leh7jQKfCazE0bn/1rSUdcfZClCza1CCIlbV6j0ejDjYqgduxx
+         1nLfxzcz3u+oKQu4jdJpqsF/k1rU3852PwU0YkGR+9VpeRSwO4dsAn+p18sJbtykzS5p
+         hryazIZMHBz//afiNf6gbWpi0lCSvAj4ZDKqTrmDNIPowqPOx1YvPHal1LlR/s2j0UjR
+         sjm0AO+9mS2J9ygnNNUNkqeuWnPN5xVinCG7U7Em3EbnhaI90WLm0++wtrqlvzhW2zRN
+         Mqdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=Hiz8j1ueWdpy1uTExZ+MoWZWMdqOcerL2IyS7vev/Lo=;
+        b=1kRuchEACPQwv1w5ot2AYt6wK6WA146krtLItTDxnIFbG3U0WYrhDloUhxZdhZ6Vz1
+         OwZI2Z+t74pWUnmfe05ZFRHotvRYYZ0AxCh4pQmn4rhH4Gf+ljzpJIL4Y0hACXkPLajA
+         NVazlqofp89+qH3EQ+7k62oGuRomj2metHkm0SQ5aaiVeJTZzxrBdQaEtHxbDFC44lvo
+         quU3Uy7oKIPnHdUmK2S2kpSF5Ma8HOWVsZzJCLbX6eFMIlhp+HrRVRpKC1a/uOGb4Iof
+         UX2lsl+PuybkQXoJLAqaXvj1XlRQhdDD1rpR1YJeaW2nv3N8zzC58NMHmdkRHKXxDnq7
+         j+8Q==
+X-Gm-Message-State: ACrzQf3pLNwpkM+sBDqjXySsi22Jw3tUzv90BDd3+P/wYeJ+hJcAKXuR
+	26Evao1JsignyoXGUwfNxfM=
+X-Google-Smtp-Source: AMsMyM6unBwC8/e3r0Rtx0/Sohl7J4lUQssMjBKp3vA8rOlQMATFFO0WHs0QwvNvk0svfi+Y3KP3/A==
+X-Received: by 2002:a17:907:b15:b0:782:f8:8695 with SMTP id h21-20020a1709070b1500b0078200f88695mr1966054ejl.693.1663840826832;
+        Thu, 22 Sep 2022 03:00:26 -0700 (PDT)
+Received: from felia.fritz.box (200116b826ee9d002d7918fb932a6deb.dip.versatel-1u1.de. [2001:16b8:26ee:9d00:2d79:18fb:932a:6deb])
+        by smtp.gmail.com with ESMTPSA id ez24-20020a1709070bd800b00741383c1c5bsm2344770ejc.196.2022.09.22.03.00.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Sep 2022 03:00:26 -0700 (PDT)
+From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To: Christoph Hellwig <hch@lst.de>,
+	iommu@lists.linux.dev
+Cc: Juergen Gross <jgross@suse.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	kernel-janitors@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH v3] MAINTAINERS: merge SWIOTLB SUBSYSTEM into DMA MAPPING HELPERS
+Date: Thu, 22 Sep 2022 12:00:01 +0200
+Message-Id: <20220922100001.12964-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: zVi65bFWdXyqlcOAKOFoh6E3zjfsOLzU
-X-Proofpoint-GUID: zVi65bFWdXyqlcOAKOFoh6E3zjfsOLzU
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
- definitions=2022-09-22_06,2022-09-20_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 bulkscore=0
- mlxscore=0 adultscore=0 phishscore=0 clxscore=1015 lowpriorityscore=0
- impostorscore=0 mlxlogscore=999 spamscore=0 priorityscore=1501
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2209220063
 
-When an s390_domain is freed without previously detaching all devices
-the corresponding s390_domain_device is leaked. Instead of fixing this
-leak by freeing the s390_domain_devices in s390_domain_free() do one
-better and just get rid of s390_domain_device entirely by threading the
-domain's device list through struct zpci_dev. This also gets rid of
-a level of indirection during operations but also the allocation of
-the s390_domain_device during attach thus making it more reliable under
-memory pressure.
+Commit 78013eaadf69 ("x86: remove the IOMMU table infrastructure")
+refactored the generic swiotlb/swiotlb-xen setup into pci-dma.c, but
+misses to adjust MAINTAINERS.
 
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about
+broken references.
+
+As only include/linux/swiotlb.h is unique to the SWIOTLB SUBSYSTEM section
+and Christoph is maintainer of DMA MAPPING HELPERS and SWIOTLB SUBSYSTEM,
+just merge those two sections.
+
+Leave the small architecture-dependent pieces to the arch maintainers.
+
+Further, update the XEN SWIOTLB SUBSYSTEM to include all swiotlb-xen
+headers and replace the pattern in drivers with the specific one file that
+matches this pattern.
+
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Acked-by: Juergen Gross <jgross@suse.com>
 ---
-Changes since v1:
-- No need to iterate the devices list on detach just delete with
-  the zpci_dev handle we have (Jason)
-- Don't remove list entries on s390_domain_free() instead warn on
-  non-empty list as part of patch 1
+v1: https://lore.kernel.org/lkml/20220601075613.28245-1-lukas.bulwahn@gmail.com/
+v1 -> v2: https://lore.kernel.org/lkml/20220919084744.3043-1-lukas.bulwahn@gmail.com/
+  addressed Christoph's comment, removed arch/*/kernel/pci-swiotlb.c
+  added Juergen's ack
+v2 -> v3: 
+  merged sections as requested by Christoph
 
- arch/s390/include/asm/pci.h |  1 +
- drivers/iommu/s390-iommu.c  | 33 ++++++---------------------------
- 2 files changed, 7 insertions(+), 27 deletions(-)
+Christoph, please pick this minor non-urgent clean-up patch for swiotlb.
 
-diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
-index 108e732d7b14..15f8714ca9b7 100644
---- a/arch/s390/include/asm/pci.h
-+++ b/arch/s390/include/asm/pci.h
-@@ -117,6 +117,7 @@ struct zpci_bus {
- struct zpci_dev {
- 	struct zpci_bus *zbus;
- 	struct list_head entry;		/* list of all zpci_devices, needed for hotplug, etc. */
-+	struct list_head iommu_list;
- 	struct kref kref;
- 	struct hotplug_slot hotplug_slot;
+ MAINTAINERS | 17 +++++------------
+ 1 file changed, 5 insertions(+), 12 deletions(-)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 0d06f0b2861a..52f31f11bb0b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -6166,6 +6166,7 @@ F:	include/asm-generic/dma-mapping.h
+ F:	include/linux/dma-direct.h
+ F:	include/linux/dma-mapping.h
+ F:	include/linux/dma-map-ops.h
++F:	include/linux/swiotlb.h
+ F:	kernel/dma/
  
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index 187d2c7ba9ff..e58b5d089418 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -29,11 +29,6 @@ struct s390_domain {
- 	spinlock_t		list_lock;
- };
+ DMA MAPPING BENCHMARK
+@@ -19739,16 +19740,6 @@ S:	Maintained
+ F:	Documentation/admin-guide/svga.rst
+ F:	arch/x86/boot/video*
  
--struct s390_domain_device {
--	struct list_head	list;
--	struct zpci_dev		*zdev;
--};
+-SWIOTLB SUBSYSTEM
+-M:	Christoph Hellwig <hch@infradead.org>
+-L:	iommu@lists.linux.dev
+-S:	Supported
+-W:	http://git.infradead.org/users/hch/dma-mapping.git
+-T:	git git://git.infradead.org/users/hch/dma-mapping.git
+-F:	arch/*/kernel/pci-swiotlb.c
+-F:	include/linux/swiotlb.h
+-F:	kernel/dma/swiotlb.c
 -
- static struct s390_domain *to_s390_domain(struct iommu_domain *dom)
- {
- 	return container_of(dom, struct s390_domain, domain);
-@@ -90,19 +85,11 @@ static void s390_domain_free(struct iommu_domain *domain)
- static int __s390_iommu_detach_device(struct s390_domain *s390_domain,
- 				      struct zpci_dev *zdev)
- {
--	struct s390_domain_device *domain_device, *tmp;
- 	unsigned long flags;
+ SWITCHDEV
+ M:	Jiri Pirko <jiri@resnulli.us>
+ M:	Ivan Vecera <ivecera@redhat.com>
+@@ -22457,8 +22448,10 @@ M:	Stefano Stabellini <sstabellini@kernel.org>
+ L:	xen-devel@lists.xenproject.org (moderated for non-subscribers)
+ L:	iommu@lists.linux.dev
+ S:	Supported
+-F:	arch/x86/xen/*swiotlb*
+-F:	drivers/xen/*swiotlb*
++F:	arch/*/include/asm/xen/swiotlb-xen.h
++F:	drivers/xen/swiotlb-xen.c
++F:	include/xen/arm/swiotlb-xen.h
++F:	include/xen/swiotlb-xen.h
  
- 	WARN_ON(zdev->s390_domain != s390_domain);
- 	spin_lock_irqsave(&s390_domain->list_lock, flags);
--	list_for_each_entry_safe(domain_device, tmp, &s390_domain->devices,
--				 list) {
--		if (domain_device->zdev == zdev) {
--			list_del(&domain_device->list);
--			kfree(domain_device);
--			break;
--		}
--	}
-+	list_del_init(&zdev->iommu_list);
- 	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
- 
- 	zpci_unregister_ioat(zdev, 0);
-@@ -116,7 +103,6 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- {
- 	struct s390_domain *s390_domain = to_s390_domain(domain);
- 	struct zpci_dev *zdev = to_zpci_dev(dev);
--	struct s390_domain_device *domain_device;
- 	struct s390_domain *prev_domain = NULL;
- 	unsigned long flags;
- 	int cc, rc = 0;
-@@ -124,10 +110,6 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 	if (!zdev)
- 		return -ENODEV;
- 
--	domain_device = kzalloc(sizeof(*domain_device), GFP_KERNEL);
--	if (!domain_device)
--		return -ENOMEM;
--
- 	if (zdev->s390_domain) {
- 		prev_domain = zdev->s390_domain;
- 		rc = __s390_iommu_detach_device(zdev->s390_domain, zdev);
-@@ -136,7 +118,7 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 			rc = -EIO;
- 	}
- 	if (rc)
--		goto out_free;
-+		return rc;
- 
- 	zdev->dma_table = s390_domain->dma_table;
- 	cc = zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
-@@ -159,9 +141,8 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 		spin_unlock_irqrestore(&s390_domain->list_lock, flags);
- 		goto out_unregister_restore;
- 	}
--	domain_device->zdev = zdev;
- 	zdev->s390_domain = s390_domain;
--	list_add(&domain_device->list, &s390_domain->devices);
-+	list_add(&zdev->iommu_list, &s390_domain->devices);
- 	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
- 
- 	return 0;
-@@ -175,8 +156,6 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 					 dev);
- 	else
- 		zpci_dma_init_device(zdev);
--out_free:
--	kfree(domain_device);
- 
- 	return rc;
- }
-@@ -228,10 +207,10 @@ static int s390_iommu_update_trans(struct s390_domain *s390_domain,
- 				   phys_addr_t pa, dma_addr_t dma_addr,
- 				   size_t size, int flags)
- {
--	struct s390_domain_device *domain_device;
- 	phys_addr_t page_addr = pa & PAGE_MASK;
- 	dma_addr_t start_dma_addr = dma_addr;
- 	unsigned long irq_flags, nr_pages, i;
-+	struct zpci_dev *zdev;
- 	unsigned long *entry;
- 	int rc = 0;
- 
-@@ -256,8 +235,8 @@ static int s390_iommu_update_trans(struct s390_domain *s390_domain,
- 	}
- 
- 	spin_lock(&s390_domain->list_lock);
--	list_for_each_entry(domain_device, &s390_domain->devices, list) {
--		rc = zpci_refresh_trans((u64) domain_device->zdev->fh << 32,
-+	list_for_each_entry(zdev, &s390_domain->devices, iommu_list) {
-+		rc = zpci_refresh_trans((u64)zdev->fh << 32,
- 					start_dma_addr, nr_pages * PAGE_SIZE);
- 		if (rc)
- 			break;
+ XFS FILESYSTEM
+ C:	irc://irc.oftc.net/xfs
 -- 
-2.34.1
+2.17.1
 
