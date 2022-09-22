@@ -1,45 +1,45 @@
-Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
+Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4225B3229
-	for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 12:18:19 +0000 (UTC)
-Received: by mail-lj1-f172.google.com with SMTP id j24so10245332lja.4
-        for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 05:18:19 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28F091854
+	for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 12:54:10 +0000 (UTC)
+Received: by mail-lj1-f181.google.com with SMTP id p5so10816541ljc.13
+        for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 05:54:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date;
-        bh=eFbO2zxPDG4cNkzA020Mk1PCKOXSgz/pWIlesT0voZs=;
-        b=tUOYDrhZGOXV/H+DbIBohG6mr1YyRa1Z09io4EdAHSz7pO6AR5ESVQtx4dYTXO68QI
-         Hc1+EXR2266vO26uVzkRG87kr0/4ZBdkFV6KEJHW+cpNqzDcM+lhrd8rh+WtbejHGcGj
-         nwUV+yhdKIIur+LiQICRPItTHVodZAGB5bDIEayBfHtfZDG3uuemnFbzW0yHbwam3Czl
-         mm2OCTsShxnjE6pSmo1KI9vJuQ+j0/LKy/Cwk01s1MWEWrEDkBoviHQDGcGNKu9zblFq
-         HgWDmDEOvwJoJxdtzCQwi+C52aaUJ5rnF58Z8Mqi72ZoBLJTcka2HskELbXviUnVA9rR
-         RB/Q==
+        bh=6iOm3ykiEYCxC1y7MhUHMQ31n65A3mybmY95lFp43lM=;
+        b=YMrrxM62da8qNRcPcsPM1f6j5pHpWSlnMRt/k9ArblV9TlykNySfRNF69BfT/CUnNS
+         d1IgmIX8cBoGeK/KzeQKLk9snEUd//Z8IiuFzwStqnPErEbT6CVnJFSzxdZtZfr7a1wo
+         ePKqfoJuLDVgA/ZdKIRApfAyd03xKvat/TKZDIeRdF9Lw65leabKONVnWVXEjKvleQ/I
+         nzsPkPsQA427uSydpgtnwZz9JVyC3GUlHDuPIOTWvjvM+7EN7Ag3dwrNpDgwfVWonYqA
+         GuhLJBaNq9DLDxKviqF9tAZ++Ad5NGIcGstVRhyOjY97y4VMRB7Mu0RBqSTLNiwVGcLX
+         Nj/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date;
-        bh=eFbO2zxPDG4cNkzA020Mk1PCKOXSgz/pWIlesT0voZs=;
-        b=A01Ce45SLjAFPb70r8dx+2MjiXHBYo9yt+t4m95N82QOutFdwT9REXHjcvG81xGRNM
-         cMnflSuxvZidqmme8JhvV1wpug8oEZJc5fVE9MUrkJuHtY/Oi1iPcjvNcayJWMEKN6yi
-         vYns7yunk9BwCWs5vNX0w9LoIeI2GFawe90VdWagLavMnIEAjpsFU4zlUMsnnl8/EThM
-         5FQR96ckm6M4n5n50UGf+TE611hHHk5sQbXZ26hOKK4/HVqHNNI4BOj5gCzitMxzF6z3
-         sI166xFO+VtcarbTCweG+fSCYei3yILEwbxWlcXNbD86kp23CWdV3do5kAvWamH9z4ts
-         Q8ag==
-X-Gm-Message-State: ACrzQf0keapoJE0/0CNErisB3RolR78/Oy3vOpVw0IigtZVipGbdqz8J
-	aYhPk7IWSfMCAh3ksu79SXDZwQ==
-X-Google-Smtp-Source: AMsMyM61BBGFAwoVC5hNjlU2rAJ0VFcAFtOiQnB6ZeGAhRTtDc6QpmVRtCdRShd4BYRkqE5oBMRp+g==
-X-Received: by 2002:a2e:bd0e:0:b0:267:fad4:7f72 with SMTP id n14-20020a2ebd0e000000b00267fad47f72mr1037194ljq.130.1663849097263;
-        Thu, 22 Sep 2022 05:18:17 -0700 (PDT)
+        bh=6iOm3ykiEYCxC1y7MhUHMQ31n65A3mybmY95lFp43lM=;
+        b=RnNbvFghWxgHiqlR97E/DSa8UqEv6+VRDzEVEvJOFF4dhAECx5N9fYPmc+rdquJn/t
+         RKB1kizxY+SLOCWcnp+zdCWyIdJkbBngbNVtXnJPzsUTzZYNXY92BejJvpDQf6b0wO2p
+         UpzB58JVZHuGv0pKm2lj/ltD/p4NuviybjDmkGLymmWeNaB4wKoHitgmCzIW8n3UvdbF
+         7savYrZgoxW0WUysdpjdWL9fCRUQuLEJrAox3pbRAK/dzm2vc9p1b9aUPr4e8YAHF7Wy
+         yWVlx2VFVz/Pbx8HDu2Ne9osqSn4B7jIGpE9S66xI3L9dN+5fowitMp1PLoV19ltTWtT
+         gedA==
+X-Gm-Message-State: ACrzQf0foz8xX7Tjb8OQ51bUOFeEaHpIRWAADkoa5mbjyyumdKB7THIj
+	bKBT60K304dmJJOu7idLatb5xA==
+X-Google-Smtp-Source: AMsMyM6o08fe7EJUEoL9IZbLm9HzdOug3LCgJEjROkmEOsMLYtujzse2VqJjxZ68Gea+MQekuYjXKQ==
+X-Received: by 2002:a2e:8496:0:b0:26b:f230:a55d with SMTP id b22-20020a2e8496000000b0026bf230a55dmr985734ljh.466.1663851248171;
+        Thu, 22 Sep 2022 05:54:08 -0700 (PDT)
 Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id u16-20020ac248b0000000b00498f871f33fsm916527lfg.86.2022.09.22.05.18.15
+        by smtp.gmail.com with ESMTPSA id u17-20020a05651220d100b0049ad2619becsm929038lfr.131.2022.09.22.05.54.07
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 22 Sep 2022 05:18:16 -0700 (PDT)
-Message-ID: <f6c8e1d4-54bd-811c-7322-375f755ad460@linaro.org>
-Date: Thu, 22 Sep 2022 14:18:15 +0200
+        Thu, 22 Sep 2022 05:54:07 -0700 (PDT)
+Message-ID: <3c0c6932-89fe-5962-d1c3-57ab6ef577df@linaro.org>
+Date: Thu, 22 Sep 2022 14:54:06 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,211 +48,37 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.2.2
-Subject: Re: [PATCH 2/2] iommu: arm-smmu-qcom: add sdm670 compatible
+Subject: Re: [PATCH] dt-bindings: iommu: arm,smmu-v3: Relax order of interrupt
+ names
 Content-Language: en-US
-To: Konrad Dybcio <konrad.dybcio@somainline.org>,
- Richard Acayan <mailingradian@gmail.com>
-Cc: linux-arm-msm@vger.kernel.org, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Bjorn Andersson <andersson@kernel.org>,
- Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
- Rob Clark <robdclark@chromium.org>, Sibi Sankar <sibis@codeaurora.org>,
- Loic Poulain <loic.poulain@linaro.org>, Vinod Koul <vkoul@kernel.org>,
- iommu@lists.linux.dev, devicetree@vger.kernel.org
-References: <5f629a95-8ee4-7cf8-f471-0b50e311d3b7@somainline.org>
- <20220922023833.178076-1-mailingradian@gmail.com>
- <be7a2f12-d6bb-8193-2a56-c31e57f11ce6@linaro.org>
- <22acebd5-b900-9abd-67e6-522c351da342@somainline.org>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>, will@kernel.org,
+ robin.murphy@arm.com
+Cc: robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220916133145.1910549-1-jean-philippe@linaro.org>
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <22acebd5-b900-9abd-67e6-522c351da342@somainline.org>
+In-Reply-To: <20220916133145.1910549-1-jean-philippe@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 22/09/2022 12:48, Konrad Dybcio wrote:
+On 16/09/2022 15:31, Jean-Philippe Brucker wrote:
+> The QEMU devicetree uses a different order for SMMUv3 interrupt names,
+> and there isn't a good reason for enforcing a specific order. Since all
+> interrupt lines are optional, operating systems should not expect a
+> fixed interrupt array layout; they should instead match each interrupt
+> to its name individually. Besides, as a result of commit e4783856a2e8
+> ("dt-bindings: iommu: arm,smmu-v3: make PRI IRQ optional"), "cmdq-sync"
+> and "priq" are already permutable. Relax the interrupt-names array
+> entirely by allowing any permutation, incidentally making the schema
+> more readable.
 > 
-> 
-> On 22.09.2022 08:41, Krzysztof Kozlowski wrote:
->> On 22/09/2022 04:38, Richard Acayan wrote:
->>>> On 21.09.2022 21:05, Krzysztof Kozlowski wrote:
->>>>> On 21/09/2022 20:48, Konrad Dybcio wrote:
->>>>>>
->>>>>>
->>>>>> On 21.09.2022 20:47, Konrad Dybcio wrote:
->>>>>>>
->>>>>>>
->>>>>>> On 21.09.2022 09:31, Krzysztof Kozlowski wrote:
->>>>>>>> On 21/09/2022 00:39, Richard Acayan wrote:
->>>>>>>>> The Snapdragon 670 needs the IOMMU for GENI I2C. Add a compatible string to
->>>>>>>>> support it.
->>>>>>>>>
->>>>>>>>> Signed-off-by: Richard Acayan <mailingradian@gmail.com>
->>>>>>>>> ---
->>>>>>>>>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
->>>>>>>>>  1 file changed, 1 insertion(+)
->>>>>>>>>
->>>>>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>>>>>>> index b2708de25ea3..bf9653b9eb89 100644
->>>>>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>>>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>>>>>>> @@ -431,6 +431,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
->>>>>>>>>  	{ .compatible = "qcom,sc8180x-smmu-500" },
->>>>>>>>>  	{ .compatible = "qcom,sc8280xp-smmu-500" },
->>>>>>>>>  	{ .compatible = "qcom,sdm630-smmu-v2" },
->>>>>>>>> +	{ .compatible = "qcom,sdm670-smmu-500" },
->>>>>>>>
->>>>>>>> Why do we keep adding compatibles to the driver for apparently
->>>>>>>> compatible devices?
->>>>>>>
->>>>>>> Because Linux has not funny run on bare Qualcomm hardware ever since at least msm8x60 times and
->>>>>> s/funny/fully
->>>>>>
->>>>>> unfortunate typo, this is not funny, quite the contrary..
->>>>>>
->>>>>> Konrad
->>>>>>> we are not interacting with real hardware, only with Qualcomm's flawed virtual implementation
->>>>>>> of it, that's abstracted to us through various generations of their saddening software stack. This
->>>>>>> is also the case for many more standard components, even as far as the GIC on recent boards..
->>>>>
->>>>> Unfortunately I don't get this explanation... you mean some other
->>>>> firmware requires Linux drivers to use specific compatibles instead of
->>>>> one fallback?
->>>> No, perhaps I misunderstood you.
->>>>
->>>>>
->>>>> All of these do not have driver data, so they are essentially compatible
->>>>> for Linux driver. Growing this list in the driver seems pointless. What
->>>>> is the benefit of growing driver with same entries, except more patches?
->>>> Compatible lists in smmu-impl files allow matching driver quirks for SMMUs themselves
->>>> and consumer devices (such as MDSS). The situation is more complicated, because some
->>>> qcom SMMUs also require more quirks than others (think 8974 vs 8994 vs 8996/pro&660&8998
->>>> vs 845+ vs adreno smmu in various flavours), so all qcom SMMUs need to use
->>>> `qcom_smmu_impl` and some others need even more quirks on top of that (that generally
->>>> hurt performance or functionality, so we don't want them when they're unnecessary).
->>>> If all generations of qcom SMMU implementation that bear the same name behaved anywhere
->>>> near consistent, there would be no need for keeping this around, instead requiring only
->>>> "qcom,broken-smmu" or something".
->>>
->>> Hi, just stopping by to share my own thoughts.
->>>
->>> First, I don't mind if this series doesn't get applied as-is. After seeing
->>> the eMMC driver in its current state:
->>>
->>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/mmc/host/sdhci-msm.c?h=v6.0-rc6#n2437
->>>
->>> I can understand that the devicetree maintainers don't want to see new SoCs
->>> touching drivers unnecessarily. Second, I don't see enough quirks to
->>> justify needing all compatible strings in the driver (2 quirky SoCs
->>> compared to 16 total not counting adreno iommu):
->>>
->>>     $ grep qcom, drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>     	if (of_device_is_compatible(np, "qcom,msm8996-smmu-v2"))
->>>     	* All targets that use the qcom,adreno-smmu compatible string *should*
->>>     	{ .compatible = "qcom,adreno" },
->>>     	{ .compatible = "qcom,mdp4" },
->>>     	{ .compatible = "qcom,mdss" },
->>>     	{ .compatible = "qcom,sc7180-mdss" },
->>>     	{ .compatible = "qcom,sc7180-mss-pil" },
->>>     	{ .compatible = "qcom,sc7280-mdss" },
->>>     	{ .compatible = "qcom,sc7280-mss-pil" },
->>>     	{ .compatible = "qcom,sc8180x-mdss" },
->>>     	{ .compatible = "qcom,sm8250-mdss" },
->>>     	{ .compatible = "qcom,sdm845-mdss" },
->>>     	{ .compatible = "qcom,sdm845-mss-pil" },
->>>     	if (of_device_is_compatible(np, "qcom,sdm845-smmu-500"))
->>>     	{ .compatible = "qcom,msm8998-smmu-v2" },
->>>     	{ .compatible = "qcom,qcm2290-smmu-500" },
->>>     	{ .compatible = "qcom,sc7180-smmu-500" },
->>>     	{ .compatible = "qcom,sc7280-smmu-500" },
->>>     	{ .compatible = "qcom,sc8180x-smmu-500" },
->>>     	{ .compatible = "qcom,sc8280xp-smmu-500" },
->>>     	{ .compatible = "qcom,sdm630-smmu-v2" },
->>>     	{ .compatible = "qcom,sdm670-smmu-500" },
->>>     	{ .compatible = "qcom,sdm845-smmu-500" },
->>>     	{ .compatible = "qcom,sm6125-smmu-500" },
->>>     	{ .compatible = "qcom,sm6350-smmu-500" },
->>>     	{ .compatible = "qcom,sm6375-smmu-500" },
->>>     	{ .compatible = "qcom,sm8150-smmu-500" },
->>>     	{ .compatible = "qcom,sm8250-smmu-500" },
->>>     	{ .compatible = "qcom,sm8350-smmu-500" },
->>>     	{ .compatible = "qcom,sm8450-smmu-500" },
->>>     	if (of_device_is_compatible(np, "qcom,adreno-smmu"))
->>>
->>> I don't know if it's better to get myself involved in fixing this, though.
->>> There is no fallback that encompasses qcom devices but not all arm devices.
->>> Either way, I'll have to add a new compatible string to the driver.
->>>
->>> If something like this is fine for now, I'll format it properly tomorrow:
->>
->> Please wait till we reach some conclusion otherwise your work might be
->> wasted.
->>
->>>
->>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>> @@ -48,6 +48,13 @@ properties:
->>>                - qcom,sm8350-smmu-500
->>>                - qcom,sm8450-smmu-500
->>>            - const: arm,mmu-500
->>> +
->>> +      - description: Qcom SoCs implementing "qcom,smmu-500"
->>> +        items:
->>> +          - enum:
->>> +              - qcom,sdm670-smmu-500
->>> +          - const: qcom,smmu-500
->>> +
->>
->> Someone would have to confirm that smmu-500 is a real device
->> spec/version. Otherwise this should be device-specific compatible (e.g.
->> earliest in family).
-> In my view it's hard to name it, downstream uses bool properties for enabling/disabling
-> certain quirks and on different generations there are different combinations of that.
-> Interestingly enough, I vaguely remember that the same quirk names can mean different
-> things on different msm-X.Y versions.. Add to that, different msm-X.Y versions can have
-> different assumptions on what's the default (aka without taking the bool properties into
-> account) behaviour for a given compatible. 
+> Note that dt-validate won't allow duplicate names here so we don't need
+> to specify maxItems or add additional checks, it's quite neat.
 
-Downstream does not care about ABI, coding style, reasonable approach,
-so it should not wonder that they code things inconsistent.
+Nice explanation, much appriecated!
 
-
-> So I suppose "first in the family" would be
-> the best way to go for mainline, though there are still quite a few families:
-> 
-> <earlier ones used qcom_iommu>
-> - 8996 with quirks that are already accounted for (or one may also say it works by miracle,
-> just like msm8916 - downstream adds more special handling, but looks like the fw is not as
-> restrictive)
-> 
-> - 8996pro + 660 + 8998 with serious unmerged ones [1]
-> 
-> - 845 which seems to be aok
-> 
-> - special case of chromebooks where they only have qcom TZ/XPUs and not the hypervisor to
-> fight with, so ma-a-aybe (no downstream reference & I don't have the hw to confirm) they
-> can get away with less things
-> 
-> - 8[1234]50 which seem to be a mix-and-match of less serious (read: not accounting for them
-> may hurt performance but will not make your device sepuku at SMMU probe) minor quirks
-> [2][3][4][5] (big warning: these may be overriden somewhere in other device tree fragments,
-> the surest option would be to take a compiled dtb and decompile it to be sure about it)
-> 
-> - 4xxx/6xxx series that mostly align with "whatever was there on the flagship soc released
-> a year before"
-
-If the devices are really different, even though it is not visible in
-Linux driver, then indeed there is no point for fake compatibility. I
-raised the question only because the driver does not customize the
-variants, but that might be not enough.
-
-Linked DTSI use different quirks (assuming quirks would have same
-meaning...), plus they have sometimes different amount of clocks, so in
-total maybe it is not reasonable to make them compatible. On the other
-hand, maybe the programming model is very, very similar thus Linux could
-bind to one fallback and few different bits would be customized with
-specific compatible.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 Best regards,
 Krzysztof
