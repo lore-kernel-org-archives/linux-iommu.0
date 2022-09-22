@@ -1,33 +1,33 @@
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35FFB845E
-	for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 14:47:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18A385A90
+	for <iommu@lists.linux.dev>; Thu, 22 Sep 2022 14:49:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1663858038;
+	s=mimecast20190719; t=1663858153;
 	h=from:from:reply-to:reply-to:subject:subject:date:date:
 	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
 	 content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=hzEQDHDkTMD8itCS1w4cOM4UkffChWXzmcJHVsFiWBw=;
-	b=FDrJuzj5iCqg+KbV/VGgYFIvynSPT3S/3Bsjm6iigLebnN0Xrppq/KCvDNVQHW8Mj6pEes
-	pI9oUqEOelhrs37Ge/6aDWuG61/rGWMPqN86jEJIWJHPhf4lZv4UDu8bkcQONBKUJ6Dwzi
-	avVLRRUnHudNiJP2O5i3QP+bq1u/taQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=+3KLRyHAdGwi8cYpp6Jq5hcEOwKHMI+iwRGU9p7YXP0=;
+	b=LlRc8EwCQPetxvxdNqKonvTgnJ4jkXW32dUHWsMNZWggVz+tzsE+m2EyB6XjQsdUiXGREc
+	nAzPC29tthlXE4own8/35e/jge1Ys9/kCrC6iuhXjUqD4AC6tEJ9MH7dyg49fMcOJolhKF
+	X/fCm5YHzJA3NYa3IciCN7hku17uc3E=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-12-Q_jfnz-YOTGGfgOMZw3YMg-1; Thu, 22 Sep 2022 10:47:14 -0400
-X-MC-Unique: Q_jfnz-YOTGGfgOMZw3YMg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+ us-mta-496-KV2SJTllOVmJ0b4UDpMoOA-1; Thu, 22 Sep 2022 10:49:10 -0400
+X-MC-Unique: KV2SJTllOVmJ0b4UDpMoOA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
 	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CA5E68A51C9;
-	Thu, 22 Sep 2022 14:46:52 +0000 (UTC)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8A7872932494;
+	Thu, 22 Sep 2022 14:49:09 +0000 (UTC)
 Received: from redhat.com (unknown [10.33.36.120])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id 0DC122166BA5;
-	Thu, 22 Sep 2022 14:46:41 +0000 (UTC)
-Date: Thu, 22 Sep 2022 15:46:39 +0100
+	by smtp.corp.redhat.com (Postfix) with ESMTPS id 0413F40C2064;
+	Thu, 22 Sep 2022 14:49:05 +0000 (UTC)
+Date: Thu, 22 Sep 2022 15:49:02 +0100
 From: Daniel =?utf-8?B?UC4gQmVycmFuZ8Op?= <berrange@redhat.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
 Cc: Alex Williamson <alex.williamson@redhat.com>,
@@ -56,15 +56,16 @@ Cc: Alex Williamson <alex.williamson@redhat.com>,
 	"libvir-list@redhat.com" <libvir-list@redhat.com>,
 	Laine Stump <laine@redhat.com>
 Subject: Re: [PATCH RFC v2 00/13] IOMMUFD Generic interface
-Message-ID: <Yyx1Tzi7KS8Xdg3V@redhat.com>
+Message-ID: <Yyx13kXCF4ovsxZg@redhat.com>
 Reply-To: Daniel =?utf-8?B?UC4gQmVycmFuZ8Op?= <berrange@redhat.com>
 References: <0-v2-f9436d0bde78+4bb-iommufd_jgg@nvidia.com>
  <BN9PR11MB52762909D64C1194F4FCB4528C479@BN9PR11MB5276.namprd11.prod.outlook.com>
  <d5e33ebb-29e6-029d-aef4-af5c4478185a@redhat.com>
  <Yyoa+kAJi2+/YTYn@nvidia.com>
  <20220921120649.5d2ff778.alex.williamson@redhat.com>
- <YyxBuQwIUdiqGoR3@redhat.com>
- <YyxtljfKFYQh9Y+H@nvidia.com>
+ <YytbiCx3CxCnP6fr@nvidia.com>
+ <YyxFEpAOC2V1SZwk@redhat.com>
+ <YyxsV5SH85YcwKum@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -74,24 +75,36 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YyxtljfKFYQh9Y+H@nvidia.com>
+In-Reply-To: <YyxsV5SH85YcwKum@nvidia.com>
 User-Agent: Mutt/2.2.6 (2022-06-05)
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
+X-Scanned-By: MIMEDefang 3.1 on 10.11.54.1
 
-On Thu, Sep 22, 2022 at 11:13:42AM -0300, Jason Gunthorpe wrote:
-> On Thu, Sep 22, 2022 at 12:06:33PM +0100, Daniel P. Berrangé wrote:
+On Thu, Sep 22, 2022 at 11:08:23AM -0300, Jason Gunthorpe wrote:
+> On Thu, Sep 22, 2022 at 12:20:50PM +0100, Daniel P. Berrangé wrote:
+> > On Wed, Sep 21, 2022 at 03:44:24PM -0300, Jason Gunthorpe wrote:
+> > > On Wed, Sep 21, 2022 at 12:06:49PM -0600, Alex Williamson wrote:
+> > > > The issue is where we account these pinned pages, where accounting is
+> > > > necessary such that a user cannot lock an arbitrary number of pages
+> > > > into RAM to generate a DoS attack.  
+> > > 
+> > > It is worth pointing out that preventing a DOS attack doesn't actually
+> > > work because a *task* limit is trivially bypassed by just spawning
+> > > more tasks. So, as a security feature, this is already very
+> > > questionable.
+> > 
+> > The malicious party on host VM hosts is generally the QEMU process.
+> > QEMU is normally prevented from spawning more tasks, both by SELinux
+> > controls and be the seccomp sandbox blocking clone() (except for
+> > thread creation).  We need to constrain what any individual QEMU can
+> > do to the host, and the per-task mem locking limits can do that.
 > 
-> > So per-user locked mem accounting looks like a regression in
-> > our VM isolation abilities compared to the per-task accounting.
-> 
-> For this kind of API the management app needs to put each VM in its
-> own user, which I'm a bit surprised it doesn't already do as a further
-> protection against cross-process concerns.
+> Even with syscall limits simple things like execve (enabled eg for
+> qemu self-upgrade) can corrupt the kernel task-based accounting to the
+> point that the limits don't work.
 
-Putting VMs in dedicated users is not practical to automatically do
-on a general purpose OS install, because there's no arbitrator of
-what UID ranges can be safely used without conflicting with other
-usage on the OS. 
+Note, execve is currently blocked by default too by the default
+seccomp sandbox used with libvirt, as well as by the SELinux
+policy again.  self-upgrade isn't a feature that exists (yet).
 
 With regards,
 Daniel
