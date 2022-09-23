@@ -1,38 +1,38 @@
 Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F01AB15B5
-	for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 00:48:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2355E15B0
+	for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 00:48:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663894086; x=1695430086;
+  t=1663894088; x=1695430088;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=3iw1ecNfInI/oSRdJT73dlyd1LoVh6H5rEOnX9MH0pA=;
-  b=nOly8+zekHgP/LCH4pKZIDeNDLeF+QF8D+DaIhoQw7aCH4rBhlzUaBzv
-   g+4l+C7hoX4xAJ9oWIsIkYRGglMYgwfTYgNK0zO4p7VofaVvmx+a0msPB
-   EC/I1UzLQNIlaUIIzbsU6/ufOys43rQkfuAR7QKYpjkIbcgLEE3IOVi5f
-   BvS3mWtQZmtipfSqaCm6eJCeIyBivhDKDk/CNZ/76my7C7N+ZM+Uz+rUp
-   mcmajVkbcrcEQ/f2LtTiGiinm8NyCPslI/VLuTecKf22W9F+vBwGWSpaO
-   Bl5nVG1Cnjruf0he/tkHnc9/pWwLqEzyF9T0ycywZj8Ui8vZDnFD+bde4
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10478"; a="362278853"
+  bh=MJXPMS/XhKv6zPYf3a2rF9C8OzRAinRWmgowCI7ErTw=;
+  b=dSoxmKkZxF5jmGOEe3SLVvtIz5jfBIP2EnlUs0dxMbUrx2ce0kfSj1fE
+   cpZnw7Ql5gLrUucMxgQ0ANw4Y2DlmCga+jhBAIkpcczgo6BcNaXRgjSEs
+   RrDiqZEw5/a5oSnpe5VKDMP28XkfegEiLg4xR6AliglRcE/bEkjh2As4H
+   BiEikbnzqKs8ZsprC1vTPRvDFENK2KAI1lBJ62bYTtthjuVnHKf/l/0++
+   AFwzN+/Rt4SQD+02mpvfwzsG+d7jlE0H36J5VvMkgal9Ai6ozNLARTET5
+   kC68moOPWPWCNH57WatV1G4fg2w8HsAO1SD3IneQQ4TRMBEpI3yWsgd0t
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10478"; a="362278860"
 X-IronPort-AV: E=Sophos;i="5.93,337,1654585200"; 
-   d="scan'208";a="362278853"
+   d="scan'208";a="362278860"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2022 17:48:06 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2022 17:48:08 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,337,1654585200"; 
-   d="scan'208";a="650759937"
+   d="scan'208";a="650759956"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga008.jf.intel.com with ESMTP; 22 Sep 2022 17:48:05 -0700
+  by orsmga008.jf.intel.com with ESMTP; 22 Sep 2022 17:48:06 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 2/6] iommu/vt-d: Decouple PASID & PRI enabling from SVA
-Date: Fri, 23 Sep 2022 08:42:02 +0800
-Message-Id: <20220923004206.3630441-3-baolu.lu@linux.intel.com>
+Subject: [PATCH 3/6] iommu/vt-d: Remove pasid_set_eafe()
+Date: Fri, 23 Sep 2022 08:42:03 +0800
+Message-Id: <20220923004206.3630441-4-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220923004206.3630441-1-baolu.lu@linux.intel.com>
 References: <20220923004206.3630441-1-baolu.lu@linux.intel.com>
@@ -44,238 +44,36 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Previously the PCI PASID and PRI capabilities are enabled in the path of
-iommu device probe only if INTEL_IOMMU_SVM is configured and the device
-supports ATS. As we've already decoupled the I/O page fault handler from
-SVA, we could also decouple PASID and PRI enabling from it to make room
-for growth of new features like kernel DMA with PASID, SIOV and nested
-translation.
-
-At the same time, the iommu_enable_dev_iotlb() helper is also called in
-iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA) path. It's unnecessary
-and duplicate. This cleanups this helper to make the code neat.
+It is not used anywhere in the tree. Remove it to avoid dead code.
+No functional change intended.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Link: https://lore.kernel.org/r/20220915085814.2261409-1-baolu.lu@linux.intel.com
+Link: https://lore.kernel.org/r/20220915081645.1834555-1-baolu.lu@linux.intel.com
 ---
- drivers/iommu/intel/iommu.h |  1 -
- drivers/iommu/intel/iommu.c | 78 ++++++++-----------------------------
- drivers/iommu/intel/Kconfig |  5 +--
- 3 files changed, 18 insertions(+), 66 deletions(-)
+ drivers/iommu/intel/pasid.c | 10 ----------
+ 1 file changed, 10 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index b5fb7706e97c..8f29a183467d 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -742,7 +742,6 @@ extern int dmar_ir_support(void);
- void *alloc_pgtable_page(int node);
- void free_pgtable_page(void *vaddr);
- void iommu_flush_write_buffer(struct intel_iommu *iommu);
--int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct device *dev);
- struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn);
- 
- #ifdef CONFIG_INTEL_IOMMU_SVM
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index e84039720e2b..6d04ee5ea3ab 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -199,6 +199,11 @@ static inline void context_set_domain_id(struct context_entry *context,
- 	context->hi |= (value & ((1 << 16) - 1)) << 8;
+diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+index c5e7e8b020a5..ccaf32949254 100644
+--- a/drivers/iommu/intel/pasid.c
++++ b/drivers/iommu/intel/pasid.c
+@@ -392,16 +392,6 @@ pasid_set_flpm(struct pasid_entry *pe, u64 value)
+ 	pasid_set_bits(&pe->val[2], GENMASK_ULL(3, 2), value << 2);
  }
  
-+static inline void context_set_pasid(struct context_entry *context)
-+{
-+	context->lo |= CONTEXT_PASIDE;
-+}
-+
- static inline int context_domain_id(struct context_entry *c)
- {
- 	return((c->hi >> 8) & 0xffff);
-@@ -1350,21 +1355,18 @@ static void __iommu_flush_iotlb(struct intel_iommu *iommu, u16 did,
- }
- 
- static struct device_domain_info *
--iommu_support_dev_iotlb(struct dmar_domain *domain, struct intel_iommu *iommu,
--			u8 bus, u8 devfn)
-+domain_lookup_dev_info(struct dmar_domain *domain,
-+		       struct intel_iommu *iommu, u8 bus, u8 devfn)
- {
- 	struct device_domain_info *info;
- 	unsigned long flags;
- 
--	if (!iommu->qi)
--		return NULL;
--
- 	spin_lock_irqsave(&domain->lock, flags);
- 	list_for_each_entry(info, &domain->devices, link) {
- 		if (info->iommu == iommu && info->bus == bus &&
- 		    info->devfn == devfn) {
- 			spin_unlock_irqrestore(&domain->lock, flags);
--			return info->ats_supported ? info : NULL;
-+			return info;
- 		}
- 	}
- 	spin_unlock_irqrestore(&domain->lock, flags);
-@@ -1389,7 +1391,7 @@ static void domain_update_iotlb(struct dmar_domain *domain)
- 	spin_unlock_irqrestore(&domain->lock, flags);
- }
- 
--static void iommu_enable_dev_iotlb(struct device_domain_info *info)
-+static void iommu_enable_pci_caps(struct device_domain_info *info)
- {
- 	struct pci_dev *pdev;
- 
-@@ -1412,7 +1414,6 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
- 		info->pfsid = pci_dev_id(pf_pdev);
- 	}
- 
--#ifdef CONFIG_INTEL_IOMMU_SVM
- 	/* The PCIe spec, in its wisdom, declares that the behaviour of
- 	   the device if you enable PASID support after ATS support is
- 	   undefined. So always enable PASID support on devices which
-@@ -1425,7 +1426,7 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
- 	    (info->pasid_enabled ? pci_prg_resp_pasid_required(pdev) : 1)  &&
- 	    !pci_reset_pri(pdev) && !pci_enable_pri(pdev, PRQ_DEPTH))
- 		info->pri_enabled = 1;
--#endif
-+
- 	if (info->ats_supported && pci_ats_page_aligned(pdev) &&
- 	    !pci_enable_ats(pdev, VTD_PAGE_SHIFT)) {
- 		info->ats_enabled = 1;
-@@ -1448,16 +1449,16 @@ static void iommu_disable_dev_iotlb(struct device_domain_info *info)
- 		info->ats_enabled = 0;
- 		domain_update_iotlb(info->domain);
- 	}
--#ifdef CONFIG_INTEL_IOMMU_SVM
-+
- 	if (info->pri_enabled) {
- 		pci_disable_pri(pdev);
- 		info->pri_enabled = 0;
- 	}
-+
- 	if (info->pasid_enabled) {
- 		pci_disable_pasid(pdev);
- 		info->pasid_enabled = 0;
- 	}
--#endif
- }
- 
- static void __iommu_flush_dev_iotlb(struct device_domain_info *info,
-@@ -1907,7 +1908,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
- 				      u8 bus, u8 devfn)
- {
- 	struct device_domain_info *info =
--			iommu_support_dev_iotlb(domain, iommu, bus, devfn);
-+			domain_lookup_dev_info(domain, iommu, bus, devfn);
- 	u16 did = domain_id_iommu(domain, iommu);
- 	int translation = CONTEXT_TT_MULTI_LEVEL;
- 	struct context_entry *context;
-@@ -1980,6 +1981,8 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
- 			context_set_sm_dte(context);
- 		if (info && info->pri_supported)
- 			context_set_sm_pre(context);
-+		if (info && info->pasid_supported)
-+			context_set_pasid(context);
- 	} else {
- 		struct dma_pte *pgd = domain->pgd;
- 		int agaw;
-@@ -2037,7 +2040,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
- 	} else {
- 		iommu_flush_write_buffer(iommu);
- 	}
--	iommu_enable_dev_iotlb(info);
-+	iommu_enable_pci_caps(info);
- 
- 	ret = 0;
- 
-@@ -4572,52 +4575,6 @@ static void intel_iommu_get_resv_regions(struct device *device,
- 	list_add_tail(&reg->list, head);
- }
- 
--int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct device *dev)
+-/*
+- * Setup the Extended Access Flag Enable (EAFE) field (Bit 135)
+- * of a scalable mode PASID entry.
+- */
+-static inline void
+-pasid_set_eafe(struct pasid_entry *pe)
 -{
--	struct device_domain_info *info = dev_iommu_priv_get(dev);
--	struct context_entry *context;
--	struct dmar_domain *domain;
--	u64 ctx_lo;
--	int ret;
--
--	domain = info->domain;
--	if (!domain)
--		return -EINVAL;
--
--	spin_lock(&iommu->lock);
--	ret = -EINVAL;
--	if (!info->pasid_supported)
--		goto out;
--
--	context = iommu_context_addr(iommu, info->bus, info->devfn, 0);
--	if (WARN_ON(!context))
--		goto out;
--
--	ctx_lo = context[0].lo;
--
--	if (!(ctx_lo & CONTEXT_PASIDE)) {
--		ctx_lo |= CONTEXT_PASIDE;
--		context[0].lo = ctx_lo;
--		wmb();
--		iommu->flush.flush_context(iommu,
--					   domain_id_iommu(domain, iommu),
--					   PCI_DEVID(info->bus, info->devfn),
--					   DMA_CCMD_MASK_NOBIT,
--					   DMA_CCMD_DEVICE_INVL);
--	}
--
--	/* Enable PASID support in the device, if it wasn't already */
--	if (!info->pasid_enabled)
--		iommu_enable_dev_iotlb(info);
--
--	ret = 0;
--
-- out:
--	spin_unlock(&iommu->lock);
--
--	return ret;
+-	pasid_set_bits(&pe->val[2], 1 << 7, 1 << 7);
 -}
 -
- static struct iommu_group *intel_iommu_device_group(struct device *dev)
- {
- 	if (dev_is_pci(dev))
-@@ -4641,9 +4598,6 @@ static int intel_iommu_enable_sva(struct device *dev)
- 	if (!(iommu->flags & VTD_FLAG_SVM_CAPABLE))
- 		return -ENODEV;
- 
--	if (intel_iommu_enable_pasid(iommu, dev))
--		return -ENODEV;
--
- 	if (!info->pasid_enabled || !info->pri_enabled || !info->ats_enabled)
- 		return -EINVAL;
- 
-diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
-index c48005147ac5..b7dff5092fd2 100644
---- a/drivers/iommu/intel/Kconfig
-+++ b/drivers/iommu/intel/Kconfig
-@@ -20,6 +20,8 @@ config INTEL_IOMMU
- 	select SWIOTLB
- 	select IOASID
- 	select PCI_ATS
-+	select PCI_PRI
-+	select PCI_PASID
- 	help
- 	  DMA remapping (DMAR) devices support enables independent address
- 	  translations for Direct Memory Access (DMA) from devices.
-@@ -47,10 +49,7 @@ config INTEL_IOMMU_DEBUGFS
- config INTEL_IOMMU_SVM
- 	bool "Support for Shared Virtual Memory with Intel IOMMU"
- 	depends on X86_64
--	select PCI_PASID
--	select PCI_PRI
- 	select MMU_NOTIFIER
--	select IOASID
- 	select IOMMU_SVA
- 	help
- 	  Shared Virtual Memory (SVM) provides a facility for devices
+ static void
+ pasid_cache_invalidation_with_pasid(struct intel_iommu *iommu,
+ 				    u16 did, u32 pasid)
 -- 
 2.34.1
 
