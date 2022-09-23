@@ -1,178 +1,91 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 097C33C05
-	for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 12:27:36 +0000 (UTC)
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20220923122004euoutp02fb8906882d8209059395d418b92d28a9~XfJ3eTkTZ1838918389euoutp02B
-	for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 12:20:04 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20220923122004euoutp02fb8906882d8209059395d418b92d28a9~XfJ3eTkTZ1838918389euoutp02B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1663935604;
-	bh=EpDM0Vb6lykgvos+Hn5hp44lw7kuaoVKi+4PEICbisw=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=lhVHQdJXcuO6eB9YTmtHlD1dx7VBWa5pIymBq/9SHLN+dZqiYcXtqPYriaOsqQDeY
-	 etKVkMh7vCgDrD6Qk4hM0pACsJlAf/wgmbVZtviob1tZYPfR9wslhRbcal9pKIKEta
-	 JZVTvRCwXrp5tVFTeep3y4gmfQaIOT9wpSllwqQg=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-	20220923122004eucas1p138bbdfbc053e74c2a547854d241f4bfd~XfJ25lfxU1978619786eucas1p1A;
-	Fri, 23 Sep 2022 12:20:04 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-	eusmges3new.samsung.com (EUCPMTA) with SMTP id 48.E6.19378.474AD236; Fri, 23
-	Sep 2022 13:20:04 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20220923122003eucas1p14d35921b7e6faf29f2b8605d0e20364a~XfJ2aHnsV1993019930eucas1p1r;
-	Fri, 23 Sep 2022 12:20:03 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-	20220923122003eusmtrp2a008f3b007d30b6c0bc431dce49aa3b0~XfJ2Y_lQC1853918539eusmtrp2c;
-	Fri, 23 Sep 2022 12:20:03 +0000 (GMT)
-X-AuditID: cbfec7f5-a4dff70000014bb2-52-632da4745866
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-	eusmgms2.samsung.com (EUCPMTA) with SMTP id B1.9D.10862.374AD236; Fri, 23
-	Sep 2022 13:20:03 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20220923122003eusmtip2b9e3f813cfc4040c4af23e26c3b44c74~XfJ1zfjlA0536705367eusmtip2S;
-	Fri, 23 Sep 2022 12:20:02 +0000 (GMT)
-Message-ID: <17123363-90ce-7047-3369-f260082011bd@samsung.com>
-Date: Fri, 23 Sep 2022 14:20:02 +0200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E854C3D63
+	for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 12:42:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663936926; x=1695472926;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=clNq8dpfrkH+SH9w6jXyZ7MWDXW18Peooue3eo5KpHE=;
+  b=Pv7IFWsTrQFdYeYgp7ur8nPKMFSnIAhRJF5Ok6PHhI2ODbUu9hYY+YNH
+   oHt5XXWZAGrRdY/odrNxfnpluRjwbel9DsNlfdpEbuAmeSm2K+iNVEyGq
+   1eihWtD8Q0RAS1HWUKKBery3SiTng1aZRPaeLfRhxjl5XlRv4VuiCjHGc
+   7kXHp+/1Y9b1RmEFmvUysQXHfNOM649rIajoWO7eCRVPlwjVMu57lEQ7p
+   stYFzHnX3JHZSN3U3+Nd5sgLfJ8XlcAgy0eX+bJd1M7yXyEWUX0DuYgdG
+   rqGcx/mx5odHcA9NG6x6KmlbHIJJ7kjP207CDIZE/kt2JLAxRzAihsW0s
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10479"; a="287698531"
+X-IronPort-AV: E=Sophos;i="5.93,339,1654585200"; 
+   d="scan'208";a="287698531"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2022 05:42:03 -0700
+X-IronPort-AV: E=Sophos;i="5.93,339,1654585200"; 
+   d="scan'208";a="653387301"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.214.140]) ([10.254.214.140])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2022 05:41:58 -0700
+Message-ID: <a0b43338-183b-3ece-c85a-e904bee27eef@linux.intel.com>
+Date: Fri, 23 Sep 2022 20:41:56 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0)
-	Gecko/20100101 Thunderbird/91.13.0
-Subject: Re: [PATCH] lib/sg_pool: change module_init(sg_pool_init) to
- subsys_initcall
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.0
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Christoph Hellwig <hch@infradead.org>, Bjorn Helgaas <bhelgaas@google.com>,
+ Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Dave Jiang <dave.jiang@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
+ Vinod Koul <vkoul@kernel.org>, Eric Auger <eric.auger@redhat.com>,
+ Liu Yi L <yi.l.liu@intel.com>, Jacob jun Pan <jacob.jun.pan@intel.com>,
+ Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony <tony.zhu@intel.com>,
+ iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v13 07/13] iommu/vt-d: Add SVA domain support
 Content-Language: en-US
-To: Masahiro Yamada <masahiroy@kernel.org>, linux-kernel@vger.kernel.org,
-	Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev
-Cc: Guenter Roeck <linux@roeck-us.net>, linux-kbuild@vger.kernel.org,
-	"Martin K. Petersen" <martin.petersen@oracle.com>, Ming Lin
-	<ming.l@ssi.samsung.com>, Sagi Grimberg <sagi@grimberg.me>
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20220923113835.21544-1-masahiroy@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <20220906124458.46461-1-baolu.lu@linux.intel.com>
+ <20220906124458.46461-8-baolu.lu@linux.intel.com>
+ <YyyECCbmfsaDpDgJ@nvidia.com>
+ <075278e0-77ce-2361-8ded-6cd6bb20216f@linux.intel.com>
+ <Yy2jbsaXuoxgR+fj@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <Yy2jbsaXuoxgR+fj@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrIKsWRmVeSWpSXmKPExsWy7djP87olS3STDXZ2cVisXH2UyeLXFwuL
-	P7t2MFlc3jWHzeLJwjNMFsuP/2OyePjgBqtFe28Hs8XBD09YLda9fs/iwOWxZt4aRo/z9zay
-	eGxa1cnm8WLzTEaP3Tcb2Dw+Pr3F4rHzewO7x9uXO1k9Pm+SC+CM4rJJSc3JLEst0rdL4MpY
-	P20lU8Ff4YrJc38yNjDuF+hi5OSQEDCR6D12hL2LkYtDSGAFo8TUlu+sEM4XRoltt/6zQTif
-	GSWmvF7CDtNyeOppJojEckaJf/OOsIEkhAQ+MkqcWMTVxcjBwStgJzHrXxpImEVAVWLjgQtg
-	vbwCghInZz5hAbFFBZIlZh07xghiCwuES3yd84AJxGYWEJe49WQ+2HwRkJNePulnAXGYBQ4w
-	SvzcPwFsEpuAoUTX2y6wxZwCVhIz775ih+iWl9j+dg4zSIOEwHROiXMzVzBDnO0ice71Myhb
-	WOLV8S1Q78hI/N8JsU5CoJ1RYsHv+1DOBEaJhue3GCGqrCXunPvFBvIbs4CmxPpd+hBhR4ld
-	Tw6AhSUE+CRuvBWEOIJPYtK26cwQYV6JjjYhiGo1iVnH18GtPXjhEvMERqVZSAEzCykAZiF5
-	ZxbC3gWMLKsYxVNLi3PTU4uN81LL9YoTc4tL89L1kvNzNzECU9npf8e/7mBc8eqj3iFGJg7G
-	Q4wSHMxKIryz72gmC/GmJFZWpRblxxeV5qQWH2KU5mBREudlm6GVLCSQnliSmp2aWpBaBJNl
-	4uCUamDKDlO+sUHGJelY9eMzi4tFnr9fcf7dL+OXCY+MFPTWZeo7LeNZNvXfLxXOo2bv3zBq
-	fi39ddmbRW/GnAkS96UWxwVkXT6oYStwvyH79lE2vruJb1hm/1qken5djUSZWMW12W9kX015
-	8//+eaHESmlFq8V18fqrD4StKwho2LtvWcrXYu+ru69t2aG+cpGHdJ/l4eJfE2JqBT5rcm4S
-	czh89ijvw52ynYc08l1LppxQ3/Lh1DalAwevR2Yudz2utmv/Z8sdP95kHjj/cMtNuR8h1zba
-	flRYaVKo9/P0SS2HyM1Jjht3/9xoW86gV/1oR+Knl2tVNd9+V674FRTI43mTTagk6MG20IMx
-	dVty9897+EOJpTgj0VCLuag4EQBOl9M51AMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrCIsWRmVeSWpSXmKPExsVy+t/xe7rFS3STDW6dVbRYufook8WvLxYW
-	f3btYLK4vGsOm8WThWeYLJYf/8dk8fDBDVaL9t4OZouDH56wWqx7/Z7Fgctjzbw1jB7n721k
-	8di0qpPN48XmmYweu282sHl8fHqLxWPn9wZ2j7cvd7J6fN4kF8AZpWdTlF9akqqQkV9cYqsU
-	bWhhpGdoaaFnZGKpZ2hsHmtlZKqkb2eTkpqTWZZapG+XoJexftpKpoK/whWT5/5kbGDcL9DF
-	yMkhIWAicXjqaaYuRi4OIYGljBInZ59lhEjISJyc1sAKYQtL/LnWxQZR9J5R4vKNk0AdHBy8
-	AnYSs/6lgdSwCKhKbDxwgR3E5hUQlDg58wkLiC0qkCyxpOE+2BxhgXCJr3MeMIHYzALiEree
-	zAdbLCKwglHiQfs2RhCHWeAAo8SUk5+YIbb1MkpM3LoZ7CQ2AUOJrrcgZ3BycApYScy8+4od
-	YpSZRNfWLkYIW15i+9s5zBMYhWYhuWQWko2zkLTMQtKygJFlFaNIamlxbnpusZFecWJucWle
-	ul5yfu4mRmD0bjv2c8sOxpWvPuodYmTiYDzEKMHBrCTCO/uOZrIQb0piZVVqUX58UWlOavEh
-	RlNgcExklhJNzgemj7ySeEMzA1NDEzNLA1NLM2MlcV7Pgo5EIYH0xJLU7NTUgtQimD4mDk6p
-	BqbZJ9+t+Zss++OZUEaIZXuPmPfqpzYxbx2Sy8+vsOwQFWnP72ie4Gs0i9/fe37dJ3GFd9Is
-	G3w3ePHN+3aw6UhXwg2Zz6nhLwvj/NX/zNcs3sJ93t0yeZG+7vMDwh8enwny+qJ2K0+/b0WH
-	7wJlGckVq/ZM1NqYVd/DJvVtYTN3S+PXClenPSfj3mm+mFH3+Nlra7nD6hGnzloaMXLfcThk
-	dFpEYzHbc960J4dOTp26iNVtRVzomt5+kc6n+a+e3o3c4BHcqHk0sP+Hz6R4H87NHgqNL3/o
-	L1hTe8WVIVgtOup7gIvOLkex2RkZ/3+YHZM4Oml2rXquz9yz555byLxXncd8NqU79onWjMOm
-	d5VYijMSDbWYi4oTAVJ9+3dnAwAA
-X-CMS-MailID: 20220923122003eucas1p14d35921b7e6faf29f2b8605d0e20364a
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20220923113941eucas1p2e5f7b9bc7316114e69ab6348d40d3b6d
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20220923113941eucas1p2e5f7b9bc7316114e69ab6348d40d3b6d
-References: <CGME20220923113941eucas1p2e5f7b9bc7316114e69ab6348d40d3b6d@eucas1p2.samsung.com>
-	<20220923113835.21544-1-masahiroy@kernel.org>
 
-On 23.09.2022 13:38, Masahiro Yamada wrote:
-> sg_alloc_table_chained() is called by several drivers, but if it is
-> called before sg_pool_init(), it results in a NULL pointer dereference
-> in sg_pool_alloc().
->
-> Since commit 9b1d6c895002 ("lib: scatterlist: move SG pool code from
-> SCSI driver to lib/sg_pool.c"), we rely on module_init(sg_pool_init)
-> is invoked before other module_init calls but this assumption is
-> fragile.
->
-> I slightly changed the link order while Kbuild refactoring Kbuild,
-> then uncovered this issue. I should keep the current link order, but
-> depending on a specific call order among module_init is so fragine.
->
-> We usually define the init order by specifying *_initcall correctly,
-> or delay the driver probing by returning -EPROBE_DEFER.
->
-> Change module_initcall() to subsys_initcall(), and also delete the
-> pointless module_exit() because lib/sg_pool.c is always compiled as
-> built-in. (CONFIG_SG_POOL is bool)
->
-> Link: https://lore.kernel.org/all/20220921043946.GA1355561@roeck-us.net/
-> Link: https://lore.kernel.org/all/8e70837d-d859-dfb2-bf7f-83f8b31467bc@samsung.com/
-> Fixes: 9b1d6c895002 ("lib: scatterlist: move SG pool code from SCSI driver to lib/sg_pool.c")
-> Reported-by: Guenter Roeck <linux@roeck-us.net>
-> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
->
-> I am sending this to DMA subsystem because I did not find
-> a corresponding one for lib/sg_pool.c
+On 2022/9/23 20:15, Jason Gunthorpe wrote:
+> On Fri, Sep 23, 2022 at 10:21:51AM +0800, Baolu Lu wrote:
+> 
+>> At the beginning of this project, I wanted to consolidate the mm
+>> notifications into the core. However, ARM SMMUv3 and Intel handle the mm
+>> notifications a little differently. Then I decided to do this work
+>> separately from the current series.
+> 
+> It doesn't look really different..
 
-Feel free to add:
+They are essentially the same, but slightly different. For example, arm
+smmuv3 provides .free_notifier, and I don't think it could be merged to
+the release callback.
 
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> 
+> The SVA iommu domain needs two new ops triggered by the notifier:
+> 
+>   - 'stop using the mm, subsitute a blocking domain' tied to release
+>   - Cache invalidate a range, maybe this is just iotlb_sync_map()
+> 
+> And we could even think about the first as the core code literally
+> attaching a dummy blocking domain and releasing the SVA domain. There
+> is no reason we need to have every driver do this tricky bit of
+> lifecycle management.
 
->   lib/sg_pool.c | 16 ++--------------
->   1 file changed, 2 insertions(+), 14 deletions(-)
->
-> diff --git a/lib/sg_pool.c b/lib/sg_pool.c
-> index a0b1a52cd6f7..9bfe60ca3f37 100644
-> --- a/lib/sg_pool.c
-> +++ b/lib/sg_pool.c
-> @@ -1,5 +1,5 @@
->   // SPDX-License-Identifier: GPL-2.0-only
-> -#include <linux/module.h>
-> +#include <linux/init.h>
->   #include <linux/scatterlist.h>
->   #include <linux/mempool.h>
->   #include <linux/slab.h>
-> @@ -177,16 +177,4 @@ static __init int sg_pool_init(void)
->   	return -ENOMEM;
->   }
->   
-> -static __exit void sg_pool_exit(void)
-> -{
-> -	int i;
-> -
-> -	for (i = 0; i < SG_MEMPOOL_NR; i++) {
-> -		struct sg_pool *sgp = sg_pools + i;
-> -		mempool_destroy(sgp->pool);
-> -		kmem_cache_destroy(sgp->slab);
-> -	}
-> -}
-> -
-> -module_init(sg_pool_init);
-> -module_exit(sg_pool_exit);
-> +subsys_initcall(sg_pool_init);
+Yes. I have similar ideas. We can further discuss it with the real code
+later.
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+Best regards,
+baolu
