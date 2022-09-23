@@ -1,124 +1,108 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from condef-04.nifty.com (condef-04.nifty.com [202.248.20.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6452833DC
-	for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 11:20:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15548C433D6;
-	Fri, 23 Sep 2022 11:19:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1663932008;
-	bh=lzkcfA8lwY431cGoFaoDpZ054pCCOOU4vMeBaieOALo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=CFFgso3bs6An9nGUhg/DG6R6EN9niEPLr2bcvNvSIZeH5Ca/4zD5HH3MAQwNJ5mc9
-	 +Hc567HPd6/20p6YaNX/Zvv6xT/ckjT9jLPQvD/WGz8mFXi9wWGc+5xCpFYC4T4XZw
-	 J2QCchDnSDhacfqP44aIabXsMgDbC1DrzUvn9pDZ1hvVgL7+QgzJhX1ywAwW83QAff
-	 5tr++tEQUnIFI/6oMtIWKFC+RtQAUJUrpM3ED/pvVcV6Y/GAKzQaMKcRFEC7DztYOH
-	 Au8CuF0rW5ZOStR6byQQubKH+EDX0QcQvObkvdsoCIqJ2ivv7nIVDarHsRqR3Li0Ww
-	 tr6LGpBwCOQ2w==
-Date: Fri, 23 Sep 2022 14:19:47 +0300
-From: Mike Rapoport <rppt@kernel.org>
-To: Doug Berger <opendmb@gmail.com>
-Cc: David Hildenbrand <david@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Jonathan Corbet <corbet@lwn.net>, Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Frank Rowand <frowand.list@gmail.com>,
-	Mike Kravetz <mike.kravetz@oracle.com>,
-	Muchun Song <songmuchun@bytedance.com>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>, Borislav Petkov <bp@suse.de>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-	Florian Fainelli <f.fainelli@gmail.com>, Zi Yan <ziy@nvidia.com>,
-	Oscar Salvador <osalvador@suse.de>,
-	Hari Bathini <hbathini@linux.ibm.com>,
-	Kees Cook <keescook@chromium.org>,
-	- <devicetree-spec@vger.kernel.org>,
-	KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
-	Mel Gorman <mgorman@suse.de>, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-mm@kvack.org, iommu@lists.linux.dev
-Subject: Re: [PATCH 00/21] mm: introduce Designated Movable Blocks
-Message-ID: <Yy2WUypD5qVmqB0k@kernel.org>
-References: <20220913195508.3511038-1-opendmb@gmail.com>
- <b610a7b3-d740-8d45-c270-4c638deb1cfa@redhat.com>
- <02561695-df44-4df6-c486-1431bf152650@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D38433DC
+	for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 11:45:00 +0000 (UTC)
+Received: from conuserg-11.nifty.com ([10.126.8.74])by condef-04.nifty.com with ESMTP id 28NBe5kk017336
+	for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 20:40:05 +0900
+Received: from zoe.. (133-32-182-133.west.xps.vectant.ne.jp [133.32.182.133]) (authenticated)
+	by conuserg-11.nifty.com with ESMTP id 28NBcwoP004226;
+	Fri, 23 Sep 2022 20:38:58 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-11.nifty.com 28NBcwoP004226
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+	s=dec2015msa; t=1663933139;
+	bh=Yt8Aby4ly36BVNEWPbk9WBI59IV85gBnORw+4W2rqVo=;
+	h=From:To:Cc:Subject:Date:From;
+	b=NcT6g9KTYqYPootKtKfWve+R8Z3Zqj2PRUIuKx45H0ocXWxpxLV7aBZ1DXVxZvbmU
+	 bXbRyfkaYFQ/ji2tAY0U8CN4jVhRN8mtxcEeLwB54QOLztoFLB3KpfMkobNWLc8K8+
+	 gAFKw9NIG4c2vwLL58CHXqPkXjikyZv8q0Zkl2zaVChlcG/WXLKoXn3jliVnrHYhES
+	 vW9SH+ubMZj/pSGRxmqCABoPnYn/vfT748gAGr15ae2QKO3YzDDsCBGHK3IwuOm/RM
+	 pBXK+mZv2STHaS5aNsFqW8bVv7n5FXkjfEb52hRdr9DnjR5v/lRXS0h72bFXrC5oH5
+	 oQBbbmfElbC4g==
+X-Nifty-SrcIP: [133.32.182.133]
+From: Masahiro Yamada <masahiroy@kernel.org>
+To: linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev
+Cc: Guenter Roeck <linux@roeck-us.net>, linux-kbuild@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Ming Lin <ming.l@ssi.samsung.com>, Sagi Grimberg <sagi@grimberg.me>
+Subject: [PATCH] lib/sg_pool: change module_init(sg_pool_init) to subsys_initcall
+Date: Fri, 23 Sep 2022 20:38:35 +0900
+Message-Id: <20220923113835.21544-1-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <02561695-df44-4df6-c486-1431bf152650@gmail.com>
+Content-Transfer-Encoding: 8bit
 
-Hi Doug,
+sg_alloc_table_chained() is called by several drivers, but if it is
+called before sg_pool_init(), it results in a NULL pointer dereference
+in sg_pool_alloc().
 
-I only had time to skim through the patches and before diving in I'd like
-to clarify a few things.
+Since commit 9b1d6c895002 ("lib: scatterlist: move SG pool code from
+SCSI driver to lib/sg_pool.c"), we rely on module_init(sg_pool_init)
+is invoked before other module_init calls but this assumption is
+fragile.
 
-On Mon, Sep 19, 2022 at 06:03:55PM -0700, Doug Berger wrote:
-> On 9/19/2022 2:00 AM, David Hildenbrand wrote:
-> > 
-> > How is this memory currently presented to the system?
->
-> The 7278 device has four ARMv8 CPU cores in an SMP cluster and two memory
-> controllers (MEMCs). Each MEMC is capable of controlling up to 8GB of DRAM.
-> An example 7278 system might have 1GB on each controller, so an arm64 kernel
-> might see 1GB on MEMC0 at 0x40000000-0x7FFFFFFF and 1GB on MEMC1 at
-> 0x300000000-0x33FFFFFFF.
-> 
-> The base capability described in commits 7-15 of this V1 patch set is to
-> allow a 'movablecore' block to be created at a particular base address
-> rather than solely at the end of addressable memory.
+I slightly changed the link order while Kbuild refactoring Kbuild,
+then uncovered this issue. I should keep the current link order, but
+depending on a specific call order among module_init is so fragine.
 
-I think this capability is only useful when there is non-uniform access to
-different memory ranges. Otherwise it wouldn't matter where the movable
-pages reside. The system you describe looks quite NUMA to me, with two
-memory controllers, each for accessing a partial range of the available
-memory.
+We usually define the init order by specifying *_initcall correctly,
+or delay the driver probing by returning -EPROBE_DEFER.
+
+Change module_initcall() to subsys_initcall(), and also delete the
+pointless module_exit() because lib/sg_pool.c is always compiled as
+built-in. (CONFIG_SG_POOL is bool)
+
+Link: https://lore.kernel.org/all/20220921043946.GA1355561@roeck-us.net/
+Link: https://lore.kernel.org/all/8e70837d-d859-dfb2-bf7f-83f8b31467bc@samsung.com/
+Fixes: 9b1d6c895002 ("lib: scatterlist: move SG pool code from SCSI driver to lib/sg_pool.c")
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
+
+I am sending this to DMA subsystem because I did not find
+a corresponding one for lib/sg_pool.c
+
+ lib/sg_pool.c | 16 ++--------------
+ 1 file changed, 2 insertions(+), 14 deletions(-)
+
+diff --git a/lib/sg_pool.c b/lib/sg_pool.c
+index a0b1a52cd6f7..9bfe60ca3f37 100644
+--- a/lib/sg_pool.c
++++ b/lib/sg_pool.c
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+-#include <linux/module.h>
++#include <linux/init.h>
+ #include <linux/scatterlist.h>
+ #include <linux/mempool.h>
+ #include <linux/slab.h>
+@@ -177,16 +177,4 @@ static __init int sg_pool_init(void)
+ 	return -ENOMEM;
+ }
  
-> > > expressed the desire to locate ZONE_MOVABLE memory on each
-> > > memory controller to allow user space intensive processing to
-> > > make better use of the additional memory bandwidth.
-> > 
-> > Can you share some more how exactly ZONE_MOVABLE would help here to make
-> > better use of the memory bandwidth?
->
-> ZONE_MOVABLE memory is effectively unusable by the kernel. It can be used by
-> user space applications through both the page allocator and the Hugetlbfs.
-> If a large 'movablecore' allocation is defined and it can only be located at
-> the end of addressable memory then it will always be located on MEMC1 of a
-> 7278 system. This will create a tendency for user space accesses to consume
-> more bandwidth on the MEMC1 memory controller and kernel space accesses to
-> consume more bandwidth on MEMC0. A more even distribution of ZONE_MOVABLE
-> memory between the available memory controllers in theory makes more memory
-> bandwidth available to user space intensive loads.
-
-The theory makes perfect sense, but is there any practical evidence of
-improvement?
-Some benchmark results that illustrate the difference would be nice.
-
-> > > BACKGROUND:
-> > > NUMA architectures support distributing movablecore memory
-> > > across each node, but it is undesirable to introduce the
-> > > overhead and complexities of NUMA on systems that don't have a
-> > > Non-Uniform Memory Architecture.
-> > 
-> > How exactly would that look like? I think I am missing something :)
->
-> The notion would be to consider each memory controller as a separate node,
-> but as stated it is not desirable.
-
-Why?
-
-> Thanks for your consideration,
-> Dough Baker ... I mean Doug Berger :).
-
+-static __exit void sg_pool_exit(void)
+-{
+-	int i;
+-
+-	for (i = 0; i < SG_MEMPOOL_NR; i++) {
+-		struct sg_pool *sgp = sg_pools + i;
+-		mempool_destroy(sgp->pool);
+-		kmem_cache_destroy(sgp->slab);
+-	}
+-}
+-
+-module_init(sg_pool_init);
+-module_exit(sg_pool_exit);
++subsys_initcall(sg_pool_init);
 -- 
-Sincerely yours,
-Mike.
+2.34.1
+
