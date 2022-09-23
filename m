@@ -1,32 +1,32 @@
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C062E15B0
-	for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 02:21:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06F7915A3
+	for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 02:31:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663899719; x=1695435719;
-  h=message-id:date:mime-version:cc:to:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=UwDG7pDg4q+ikiSIyDkSSay/EkxC20ZvQE0rFh71LXs=;
-  b=iSwyTWNSeLffzQzp5pTUMUGSvqDdVDcvuUdNhPYhKCrD4W3DTx9Z2tx8
-   EHVDDUPdrE9sTmwqPWPPecC2IKgZQ4BHNJhzcE9tSl7ybqCkjFjDM5TGx
-   RClO5kGjCoDuyN9eXWfD+kz+E0xvjVh2QvKmIIZAjJWURQ/cvOjJ26Bum
-   3IclQio2IIR5n0BfsQGnD5Pg58Ay6uSXSpA323hFX0Q0IMIm9l5TpnXed
-   OGcjvKJb/Qsy19mlSts+GzfhJ0cVNjPCqYksAjdAIDT4fSlJ88mcUWfWR
-   iTSqxwN1jeLk2tVcjj9PJBPvwC+jaB4CPNGRGx/CCVdua3J5zjrzRe1Vz
+  t=1663900301; x=1695436301;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=pYyYBUYMtYbcujhE22C27QXzCyOfAQYZ1tOZo9rAkuU=;
+  b=nhTOg2FKU1Q2Y5u5aWB4gePqi3KHv5H3+svJsgVaRfXAjTCq5x+Yqjbm
+   ooUDW/11I4sJjqo49nxVwUepz5KR6o11K2E2qmaPZ31Z0ApjGLF9OboTx
+   vxRjqdo0f8IQ+kXWHJnT/tVn7CrcBWZaToO2UUN/ivnSAGGCr3/sK6XK9
+   bU2ymhQjF7LhNEcueQAx5l5u9HLu7O7pCypeP0ibpzQOpawbB2o45yHxf
+   5LKGVdmed1h3Q2hUlqB31LQ6BXd6KHL2FWdU/qAb1Oj9T7dS6tG2kyvKK
+   WbEOKKBi6w+4ZU1Is0PkttWH4Csv3rhBlh/RktRZI6PJ48QYud35LZX3B
    w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10478"; a="298089183"
+X-IronPort-AV: E=McAfee;i="6500,9779,10478"; a="326819679"
 X-IronPort-AV: E=Sophos;i="5.93,337,1654585200"; 
-   d="scan'208";a="298089183"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2022 19:21:58 -0700
+   d="scan'208";a="326819679"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2022 19:31:40 -0700
 X-IronPort-AV: E=Sophos;i="5.93,337,1654585200"; 
-   d="scan'208";a="653238520"
+   d="scan'208";a="620051445"
 Received: from ningqu-mobl1.ccr.corp.intel.com (HELO [10.254.210.156]) ([10.254.210.156])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2022 19:21:53 -0700
-Message-ID: <075278e0-77ce-2361-8ded-6cd6bb20216f@linux.intel.com>
-Date: Fri, 23 Sep 2022 10:21:51 +0800
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2022 19:31:35 -0700
+Message-ID: <ca854564-f231-1010-92e3-69acabde2bd1@linux.intel.com>
+Date: Fri, 23 Sep 2022 10:31:32 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -45,76 +45,52 @@ Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
  Liu Yi L <yi.l.liu@intel.com>, Jacob jun Pan <jacob.jun.pan@intel.com>,
  Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony <tony.zhu@intel.com>,
  iommu@lists.linux.dev, linux-pci@vger.kernel.org,
- linux-kernel@vger.kernel.org
+ linux-kernel@vger.kernel.org,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v13 09/13] iommu/sva: Refactoring
+ iommu_sva_bind/unbind_device()
 Content-Language: en-US
 To: Jason Gunthorpe <jgg@nvidia.com>
 References: <20220906124458.46461-1-baolu.lu@linux.intel.com>
- <20220906124458.46461-8-baolu.lu@linux.intel.com>
- <YyyECCbmfsaDpDgJ@nvidia.com>
+ <20220906124458.46461-10-baolu.lu@linux.intel.com>
+ <YyyGqDP8AgjsFAkM@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v13 07/13] iommu/vt-d: Add SVA domain support
-In-Reply-To: <YyyECCbmfsaDpDgJ@nvidia.com>
+In-Reply-To: <YyyGqDP8AgjsFAkM@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2022/9/22 23:49, Jason Gunthorpe wrote:
-> On Tue, Sep 06, 2022 at 08:44:52PM +0800, Lu Baolu wrote:
->> +static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
->> +{
->> +	struct intel_iommu *iommu = device_to_iommu(dev, NULL, NULL);
->> +	struct iommu_domain *domain;
->> +
->> +	/* Domain type specific cleanup: */
->> +	domain = iommu_get_domain_for_dev_pasid(dev, pasid, 0);
->> +	if (domain) {
->> +		switch (domain->type) {
->> +		case IOMMU_DOMAIN_SVA:
->> +			intel_svm_remove_dev_pasid(dev, pasid);
->> +			break;
->> +		default:
->> +			/* should never reach here */
->> +			WARN_ON(1);
->> +			break;
+On 2022/9/23 0:00, Jason Gunthorpe wrote:
+> On Tue, Sep 06, 2022 at 08:44:54PM +0800, Lu Baolu wrote:
 > 
-> This is eventually going to need a lot more cleaning up to split out
-> the PASID from the SVM stuff.
+>> +/**
+>> + * iommu_sva_bind_device() - Bind a process address space to a device
+>> + * @dev: the device
+>> + * @mm: the mm to bind, caller must hold a reference to mm_users
+>> + *
+>> + * Create a bond between device and address space, allowing the device to access
+>> + * the mm using the returned PASID. If a bond already exists between @device and
+>> + * @mm, it is returned and an additional reference is taken. Caller must call
+>> + * iommu_sva_unbind_device() to release each reference.
+>> + *
+>> + * iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA) must be called first, to
+>> + * initialize the required SVA features.
+> Thsi is something else that needs cleaning up. IOMMU_DEV_FEAT_SVA
+> shouldn't exist.
 > 
-> SVA should *only* be a set of predefined handlers (in the core code!)
-> for the generic PRI mechanism, it shouldn't be entangled deeply into
-> PASID or the drivers like this.
+> We need to figure out an appropriate way to allow PRI. IMHO the domain
+> attach should do this, domains that require PRI should be distinct
+> from domains that don't. When a PRI domain is attached the HW should
+> be enabled to do PRI. The domain itself should carry the fault ops/etc
+> that the caller supplies to respond to the PRI.
 > 
-> When we get done with this, the flow should have the core code attach
-> a SVA domain to a PASID with PRI enabled and the core code should
-> supply a generic PRI implementation that does the mmu_notifier
-> stuff.
+> That is something to address in the PRI series though..
 
-Yes. Agreed.
-
-At the beginning of this project, I wanted to consolidate the mm
-notifications into the core. However, ARM SMMUv3 and Intel handle the mm
-notifications a little differently. Then I decided to do this work
-separately from the current series.
+ From Intel IOMMU driver's point of view, with above done,
+IOMMU_DEV_FEAT_SVA could be removed. However, it will take more time to
+consider other needs.
 
 > 
-> Also, stuff like this:
-> 
-> 				/* We mandate that no page faults may be outstanding
-> 				 * for the PASID when intel_svm_unbind_mm() is called.
-> 				 * If that is not obeyed, subtle errors will happen.
-> 				 * Let's make them less subtle... */
-> 
-> Are going to be problematic for VFIO as well. In a VFIO world the
-> entire RID and its entire PASID table has to be owned by VFIO and
-> never shared - so these sequencing issues should be solvable.
-> 
-> But this is all for further series..
-
-Yes. All these sound interesting future series.
-
-> 
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-
-I'm very appreciated for your time.
+> Reviewed-by: Jason Gunthorpe<jgg@nvidia.com>
 
 Best regards,
 baolu
