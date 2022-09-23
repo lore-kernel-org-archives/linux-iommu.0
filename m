@@ -1,74 +1,120 @@
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2914C15B0
-	for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 01:09:51 +0000 (UTC)
-X-UUID: e414e3a049aa4c8d88b8fee4b6b4a7bc-20220923
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=10Du0IWQFsHNUbZWCznPpkKBXDFn+p52pQMLrjF0b1M=;
-	b=IfAenQWbSOOpRCCRlf9IZvS5ZJbIkgDx9Q/ZHmKxeXjG5YzI9jNxHzpHtHCYTsjw9JOyGpIGASPAQXbpPmnqVbZFjRLXCQ3kBEERp48NmEY8Kel/lNQe8/lN4zY350uQhev5tiOijm2lKQ41YarxCkmzgEF9IYmVuj8gzBU6VZw=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.11,REQID:6e958d89-7ca8-4a67-9e3c-a8052dccd2b2,IP:0,U
-	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-	release,TS:0
-X-CID-META: VersionHash:39a5ff1,CLOUDID:faaac8a2-dc04-435c-b19b-71e131a5fc35,B
-	ulkID:nil,BulkQuantity:0,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,U
-	RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: e414e3a049aa4c8d88b8fee4b6b4a7bc-20220923
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-	(envelope-from <yong.wu@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-	with ESMTP id 59141201; Fri, 23 Sep 2022 09:09:40 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Fri, 23 Sep 2022 09:09:39 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
- Transport; Fri, 23 Sep 2022 09:09:38 +0800
-Message-ID: <b5e92bac499230a11868521771eaff6fcbc684d5.camel@mediatek.com>
-Subject: Re: [PATCH v5 6/6] iommu: Propagate return value in ->attach_dev
- callback functions
-From: Yong Wu <yong.wu@mediatek.com>
-To: Nicolin Chen <nicolinc@nvidia.com>, <joro@8bytes.org>, <will@kernel.org>,
-	<robin.murphy@arm.com>, <matthias.bgg@gmail.com>, <jean-philippe@linaro.org>
-CC: <jgg@nvidia.com>, <kevin.tian@intel.com>, <iommu@lists.linux.dev>,
-	<linux-mediatek@lists.infradead.org>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-kernel@vger.kernel.org>, <virtualization@lists.linux-foundation.org>
-Date: Fri, 23 Sep 2022 09:09:38 +0800
-In-Reply-To: <8040df414a1d4bc007a25553b8341acf37ead670.1663836372.git.nicolinc@nvidia.com>
-References: <cover.1663836372.git.nicolinc@nvidia.com>
-	 <8040df414a1d4bc007a25553b8341acf37ead670.1663836372.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C062E15B0
+	for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 02:21:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1663899719; x=1695435719;
+  h=message-id:date:mime-version:cc:to:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=UwDG7pDg4q+ikiSIyDkSSay/EkxC20ZvQE0rFh71LXs=;
+  b=iSwyTWNSeLffzQzp5pTUMUGSvqDdVDcvuUdNhPYhKCrD4W3DTx9Z2tx8
+   EHVDDUPdrE9sTmwqPWPPecC2IKgZQ4BHNJhzcE9tSl7ybqCkjFjDM5TGx
+   RClO5kGjCoDuyN9eXWfD+kz+E0xvjVh2QvKmIIZAjJWURQ/cvOjJ26Bum
+   3IclQio2IIR5n0BfsQGnD5Pg58Ay6uSXSpA323hFX0Q0IMIm9l5TpnXed
+   OGcjvKJb/Qsy19mlSts+GzfhJ0cVNjPCqYksAjdAIDT4fSlJ88mcUWfWR
+   iTSqxwN1jeLk2tVcjj9PJBPvwC+jaB4CPNGRGx/CCVdua3J5zjrzRe1Vz
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10478"; a="298089183"
+X-IronPort-AV: E=Sophos;i="5.93,337,1654585200"; 
+   d="scan'208";a="298089183"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2022 19:21:58 -0700
+X-IronPort-AV: E=Sophos;i="5.93,337,1654585200"; 
+   d="scan'208";a="653238520"
+Received: from ningqu-mobl1.ccr.corp.intel.com (HELO [10.254.210.156]) ([10.254.210.156])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2022 19:21:53 -0700
+Message-ID: <075278e0-77ce-2361-8ded-6cd6bb20216f@linux.intel.com>
+Date: Fri, 23 Sep 2022 10:21:51 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Christoph Hellwig <hch@infradead.org>, Bjorn Helgaas <bhelgaas@google.com>,
+ Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Dave Jiang <dave.jiang@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
+ Vinod Koul <vkoul@kernel.org>, Eric Auger <eric.auger@redhat.com>,
+ Liu Yi L <yi.l.liu@intel.com>, Jacob jun Pan <jacob.jun.pan@intel.com>,
+ Zhangfei Gao <zhangfei.gao@linaro.org>, Zhu Tony <tony.zhu@intel.com>,
+ iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <20220906124458.46461-1-baolu.lu@linux.intel.com>
+ <20220906124458.46461-8-baolu.lu@linux.intel.com>
+ <YyyECCbmfsaDpDgJ@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v13 07/13] iommu/vt-d: Add SVA domain support
+In-Reply-To: <YyyECCbmfsaDpDgJ@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-MTK: N
 
-On Thu, 2022-09-22 at 01:54 -0700, Nicolin Chen wrote:
-> The mtk_iommu and virtio drivers have places in the ->attach_dev
-> callback
-> functions that return hardcode errnos instead of the returned values,
-> but
-> callers of these ->attach_dv callback functions may care. Propagate
-> them
-> directly without the extra conversions.
+On 2022/9/22 23:49, Jason Gunthorpe wrote:
+> On Tue, Sep 06, 2022 at 08:44:52PM +0800, Lu Baolu wrote:
+>> +static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
+>> +{
+>> +	struct intel_iommu *iommu = device_to_iommu(dev, NULL, NULL);
+>> +	struct iommu_domain *domain;
+>> +
+>> +	/* Domain type specific cleanup: */
+>> +	domain = iommu_get_domain_for_dev_pasid(dev, pasid, 0);
+>> +	if (domain) {
+>> +		switch (domain->type) {
+>> +		case IOMMU_DOMAIN_SVA:
+>> +			intel_svm_remove_dev_pasid(dev, pasid);
+>> +			break;
+>> +		default:
+>> +			/* should never reach here */
+>> +			WARN_ON(1);
+>> +			break;
 > 
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/iommu/mtk_iommu.c    | 2 +-
->  drivers/iommu/virtio-iommu.c | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
+> This is eventually going to need a lot more cleaning up to split out
+> the PASID from the SVM stuff.
 > 
+> SVA should *only* be a set of predefined handlers (in the core code!)
+> for the generic PRI mechanism, it shouldn't be entangled deeply into
+> PASID or the drivers like this.
+> 
+> When we get done with this, the flow should have the core code attach
+> a SVA domain to a PASID with PRI enabled and the core code should
+> supply a generic PRI implementation that does the mmu_notifier
+> stuff.
 
-Reviewed-by: Yong Wu <yong.wu@mediatek.com> #For mtk_iommu.c
+Yes. Agreed.
 
-Thanks.
+At the beginning of this project, I wanted to consolidate the mm
+notifications into the core. However, ARM SMMUv3 and Intel handle the mm
+notifications a little differently. Then I decided to do this work
+separately from the current series.
 
+> 
+> Also, stuff like this:
+> 
+> 				/* We mandate that no page faults may be outstanding
+> 				 * for the PASID when intel_svm_unbind_mm() is called.
+> 				 * If that is not obeyed, subtle errors will happen.
+> 				 * Let's make them less subtle... */
+> 
+> Are going to be problematic for VFIO as well. In a VFIO world the
+> entire RID and its entire PASID table has to be owned by VFIO and
+> never shared - so these sequencing issues should be solvable.
+> 
+> But this is all for further series..
+
+Yes. All these sound interesting future series.
+
+> 
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+
+I'm very appreciated for your time.
+
+Best regards,
+baolu
