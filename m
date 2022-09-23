@@ -1,167 +1,223 @@
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2052.outbound.protection.outlook.com [40.107.95.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 171154409
-	for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 17:27:49 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=G0c3p6JybFR8ZgJ9lRoL1j5NQjSvNtiRx825bj38rKqeGQ+uUU3A2dtVk0QxlAHbCrwQU54lj6FBPb+SfhWILUYQqhgpXKo/MTlzwPFXq5tJn1E/hXc9Lx3npZXoY1PFORsUfs0H6ZA14P8Clg83ziitl9HKsxJQNjDkSbBUsqV2MlgXMNkun8jV3ABwirYthF42JOYt96F4xwUGXeHH36QJpWReVCwaY6B0YwpLtMkoVWVCCsUFFA4OgmHJCrVfVoDvVA/N1gVgu9bLwQT2BNfvKr/e/rlVLLvK1ttrRjNgSq3OC7+4d+ezo/UVC+s3lb54xQUcFdhCzKw6dhgpuQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=X0WzX4iCvIaXvAIJ94yg+fO9qcGBZ8978LeSk9QgGHY=;
- b=a1MfuUI3cWeqi5xHVYrSfzjxpiGHmw5u98GRqRgWRr2NASF2rV56ekvFi1w7AC7cTOWdolCkLPnCIQRRivA+2nePygSXQFie63asG7R7Qh6Ch+pRpNDShQ5TEPAwDLFOAY7YKt8B6+0txlXrSDiAR0EyoqmYBrX6MXMBQltbhqii+ildqSNSpnSw93wUyAT7jQAl2BJDoyRY2gay5JGI8konh/F2dkB7rX+/s7jep/UVcYbO55J3igs2v3gOcFujwb+I9jSebyzwYNGb8nRnPCyxSugv63a3TZKJG/sQowaGgTczLQokZV7qzF/JN3NpLDqGtPOsfVfvyhZsc6dlPA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=X0WzX4iCvIaXvAIJ94yg+fO9qcGBZ8978LeSk9QgGHY=;
- b=nGNAEsyBLOLD8Me/LKZbYaLVv1vO5lmhsyn31iO8HY/aCw4R9aTpAImgj2RCiLo41qcN29CUTbVoEpL4dTKVQ79ookjVuOL/bkRp2XXzpsatgpsMygY6yAKTa/tFR1cLfx7QknI2MKLg7R31C+nDCFSdFnMfpS4IDfek1zRo8aF/KAzv8GvHLttQ0z6e6zFa1AjO6ihCufKbXFDYHRq0hDMLwcXO1+zko9i+X4sV3fcZeGLYZo+uY/DKtoW4XrZVfTzb1B6RG0+CRa2Sn+kk9XyaWcZN6Pw5/J0OVU74H5GaK1SEl58mmn4E+xkIHBLFsawxuiTacPrGNLS5IYV0Aw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by BL3PR12MB6377.namprd12.prod.outlook.com (2603:10b6:208:3b0::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.18; Fri, 23 Sep
- 2022 17:27:46 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::462:7fe:f04f:d0d5]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::462:7fe:f04f:d0d5%7]) with mapi id 15.20.5654.020; Fri, 23 Sep 2022
- 17:27:46 +0000
-Date: Fri, 23 Sep 2022 14:27:45 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Jann Horn <jannh@google.com>
-Cc: Will Deacon <will@kernel.org>, Sean Christopherson <seanjc@google.com>,
-	Joerg Roedel <jroedel@suse.de>, jean-philippe.brucker@arm.com,
-	Linux-MM <linux-mm@kvack.org>,
-	kernel list <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev
-Subject: Re: some likely bugs in IOMMUv2 (in tlb_finish_mmu() nested flush
- and mremap())
-Message-ID: <Yy3skVk/DvwVnPXD@nvidia.com>
-References: <CAG48ez2NQKVbv=yG_fq_jtZjf8Q=+Wy54FxcFrK_OujFg5BwSQ@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAG48ez2NQKVbv=yG_fq_jtZjf8Q=+Wy54FxcFrK_OujFg5BwSQ@mail.gmail.com>
-X-ClientProxiedBy: MN2PR10CA0034.namprd10.prod.outlook.com
- (2603:10b6:208:120::47) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E85514687
+	for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 22:10:46 +0000 (UTC)
+Received: by mail-qk1-f180.google.com with SMTP id s9so981689qkg.4
+        for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 15:10:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=Konhfb7mLO3dA0pHkfbX9G7WZYTlrwd05Msn8eCZhsI=;
+        b=DDvg7k75uWgmVeFyrGBonH6mSsCY3m3x9tny22LtoPZP6dUqAXHS1mMKsG219opQwl
+         XaO0ZmS5LtDqG1UY+eUw9UMYKepHVeDgWd4c1Q5ECrzU/EFRkPnMDgv2R02eCuB4JtER
+         Rrw8uXflmfpBIj0E/q+G3U9mS6iJGd1QlKuTXp4iVT6mqmwufzp2vNnuhlCmSF03XK6j
+         GxKqp3YR6HgYXmXe2aIjKtF8cWWLXPoXcOYuFbQ/UwaVfJlVwMlT2VcpRxfuX6Ze/rFy
+         PTfyhyhReK5zeBUAdmSJxq8dg8gDKOKrgJAOoCKFiiM/gHjWpAuACW5EzYvfqwAN3wJ3
+         MY7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=Konhfb7mLO3dA0pHkfbX9G7WZYTlrwd05Msn8eCZhsI=;
+        b=q+FfCXvBUqnGaqz8Chk7fuXMeNw/BmVdHa3VDpn/EGm8TbaPEDaPLyZZoi5kbbaWTu
+         1XrYehLodWOk6FX1EGoNS52jvQA7y4Y6Sg5maWGxJDR+LoTD8hQ3jnbQQsOz16TuMPpV
+         ez3biZoCuS5Mwe3ZtGcXHI2Z/oPEgsUZY8X26T/8xhrHA1fl7oaxXhvkAm0igxw7b9/d
+         u+1T6HQVqWGpXX6u87xuvRItRVg1dTeBsqUr8IdmgicyuNXqTAgclRaybGzbM+ypxzGD
+         V1yGT9xUmosQLUMWJtx/MIASPA11gv4vlew/VSO2j+Z+sXUeb+NOy/P9TMBYiZyHMrgK
+         8dWg==
+X-Gm-Message-State: ACrzQf0xN0iDa1pTGavO2O73utv8XjyME7u8wmPYkSrl0o1VeH7bx1+p
+	X+nFXrVtW0b0wtDCaTQRfE4=
+X-Google-Smtp-Source: AMsMyM7FKlXyKVqSTdVI2DxXiaKG4fG/6+zKpBhWkLb1EYAiXtdb3lpAblOu5oCMtiZC9oP922BfcQ==
+X-Received: by 2002:a05:620a:2a0d:b0:6b6:6c75:f050 with SMTP id o13-20020a05620a2a0d00b006b66c75f050mr7195534qkp.199.1663971045712;
+        Fri, 23 Sep 2022 15:10:45 -0700 (PDT)
+Received: from [10.69.40.226] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id g19-20020ac87f53000000b0031ef0081d77sm6663771qtk.79.2022.09.23.15.10.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 23 Sep 2022 15:10:45 -0700 (PDT)
+Message-ID: <59ddaa5a-e47d-f542-f7a7-2c437e1c2808@gmail.com>
+Date: Fri, 23 Sep 2022 15:10:40 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4192:EE_|BL3PR12MB6377:EE_
-X-MS-Office365-Filtering-Correlation-Id: 21a62c6e-ade1-4454-aab3-08da9d88ee3d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	hh7ZoRD86N6b+yVe5TZ6kPebKimCNKDPBFWQYbckKIlgO0SnUMzxL9vztZTYYSG6iSJV1wMGs/J21ztvJreUKe8WO6SzjjjnrplyNhEYH3shZJX65DV6FD5ZhSYUxn2IBwiklDPZ72aaSvJ5Wqr4BxV3pXtQfGpFm38q9H8w1xipTiAfR5VKCoT38HLZGcX6+Xnaqd6ZkV31Po7mK/F8uH4uS3/gfNJaXVn3Xd/sFlj/f4XI7e390ddm7QJ0LMA9m9bnQs9ORmCSPvjHpp93MkAOvA4ZorMXr2UwRtGK04UFR0bY6QsLQmuD+Z0VXvRXT9fF7Phi6EN2h+c0o8eKAqk0srO2svuPM2uxyRy8Et9PmZxVh2NAYaKh07U2e7n2J5JkKfUEN0r7T1vxv47eFcehN+wi5VdOUITykAn4pROmbQZfxW/3Y4RCy/YYIIy+kIZwhJc/5rtr4KqVH8NjpZVKDtGhvNCCHT1cInfetBQwfqQevsTJYQ/xoBUeNOVD08B/DJjpfgglbKZzqf3hYW5rcK5jec0TCdAOHdAz1JYaJzNFBWAuTX/GaOvB2swvBC8stV2araryikT/2u/RyAQhbcATn6avWLdhcqwpzySoLxla/P3vvyq6sNuHpCzEkqeyRzN+1pBvSLvcZMg8dqSUGpj1xnv5fUkh+LvtYolugrhD4x0I1kXvkjJTvYt7N9uLESCgnfO6RZOLj21u3Xz270lBJ9/Tw1njwrJeKUP02kLYut8kxV+IObIxqhxXIUvB7RqaN8+BYkm1UNKfz51WZdrbib4dCWCzEAFDvx4=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(376002)(39860400002)(396003)(366004)(346002)(451199015)(6512007)(26005)(8676002)(36756003)(54906003)(6916009)(4326008)(316002)(41300700001)(66946007)(66556008)(66476007)(5660300002)(8936002)(6506007)(86362001)(186003)(38100700002)(83380400001)(6486002)(2616005)(478600001)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?A5JCPs7f0XQzq2chpbt0XzYuI40b2s4+FZmQRX9hS9vSThxkpXW4sMF38LWB?=
- =?us-ascii?Q?nCOft6JVh+3403Ml0I6F0Vr0Cue7PKs72YluZ2C+zrc8ZbNFiQQLz6Vm75gz?=
- =?us-ascii?Q?+Vu/BQtenRxW7EQ6NuT9PBGOjVv1pUBjfk5oh5ykSwdpYBBrDZlyFHII2ekk?=
- =?us-ascii?Q?7892P4j9Dp0Lo8AT/NiKMEjHSucwnSa6RpfkLln6w36aONth3RmJJlvuurAN?=
- =?us-ascii?Q?6psUy0S7k8XNXtNnP0yAM2FvJ604broi+EeXhvU2GEV6FA0wXV546IaPsQyN?=
- =?us-ascii?Q?KCnb5mA4oihC67TFp1ouGEtpn/y6Fdk/+0gdEfwkh/6XcaY2DQ4banKOVOLA?=
- =?us-ascii?Q?qw2rIszIGK0KoYNxG8BBRIHdwwoj1PgVhTeHrOoMaxr0nAVVH5BvvxnIG8uv?=
- =?us-ascii?Q?G3Xu7faF6jFaHkTEZLzlA4sDIPIIeyxoVkVhNPKBZkJY3L/9+0Cz2OBLwyO1?=
- =?us-ascii?Q?KFRUXfKswZiQotXgZITvUK5sDKvkQtmkmMbgJ/LLkSBT85M4renQExZmo80k?=
- =?us-ascii?Q?TNob+VQoUDKAB+6zjOkfgFL5XpqjanPlXLyPg9Vig75hxqJdDA/VA9FnUT8f?=
- =?us-ascii?Q?yOLt4SldvtIciyr7B/gAT21Xv8IU6VLaUKvEOfsy0+VaIdbR676buS9zVdgt?=
- =?us-ascii?Q?QPP4KwOdXVgsQ2AS8Vq7I+7BtTCWyckttwnWDM/upmHb8VqdNVpawno+UTMo?=
- =?us-ascii?Q?uiFOSmzOubAfQHxCVylA/WIY/v1XPaQBnE1365jbpKS6IxejQx0daJ/hqxtb?=
- =?us-ascii?Q?s+6korz6FCpAXuAulCuLxKIBZJ7ByaCDaqbe+tPps6Ta5mN7/T1a2zy8oP2a?=
- =?us-ascii?Q?wyDhWCzyVWewxyUpYSqZQ52l3kiCpOAUpKsjOB0l4X6mvF5cHDpGA1ziWj1Y?=
- =?us-ascii?Q?DYXsslUYgzs5qm0O9WPECiHaFnhMkMDl9GO6gOKEQmfZCr4csN8G/l/UYzHL?=
- =?us-ascii?Q?zoHFqf9bkNEqLvLwr958OaCzBPJbci3+BVAvR500ZV8n/kLG2gMLxI+NDRd1?=
- =?us-ascii?Q?v1LoL+iKrppks5POfJ29YHu042urjLpuWTEaleR6eOz6ZmYk3K22JHHjQf5/?=
- =?us-ascii?Q?TdbUowiJgib5lSZYcz4N5GCfEYNWDu1tDDEMDuLn1nDMpo/RNbjXw5ihWXx2?=
- =?us-ascii?Q?ny+st4AIdZ/0ns4CO/L8YMhEeuhbhpksDW6JR061z7+KR6KMA7BG0atsq9P2?=
- =?us-ascii?Q?sNxtHX7p3Hs9jH4qvr5jcuhTalMEUZFBJvt4b269KFv3mqzjhkk910yq1mWb?=
- =?us-ascii?Q?U/1JF4v+2x8GrlNmKZixmLAWUtXwiPAvh1n4F7UJuS2HzUEbvjoU+R5ubTFn?=
- =?us-ascii?Q?+qwa/67EBXC049a7S/DmhczpRVWXaMV3c+oMrm7+Gcm+s4knpX4Hd17sNMAX?=
- =?us-ascii?Q?ecEI96zPExr/M2SqIHadeEExH43n6JfmdqGyRoOB0N8vwbyFyUnzv0O3rmIA?=
- =?us-ascii?Q?MAh3h6bZzrXYzwx9ZWfz01RArQycMbBypjFkpk8tjBX7MeinsYFjch17ygEo?=
- =?us-ascii?Q?gX4f5W2ynJIkWKDmsiuH8OiaT8lORveL2wVBLnsg8J5/JqILdYn72uJUYMYk?=
- =?us-ascii?Q?leeBAMbPQfVwyoLHGUD74KIplRwAcPoUaRBydyjG?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 21a62c6e-ade1-4454-aab3-08da9d88ee3d
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2022 17:27:46.5571
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fsaiJf3nvntEek/mf31buHs4bmxWVtoBZqJGg1Ns36Fyt7RCwsh37itXhNMe2TMB
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR12MB6377
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH 00/21] mm: introduce Designated Movable Blocks
+To: Mike Rapoport <rppt@kernel.org>
+Cc: David Hildenbrand <david@redhat.com>,
+ Andrew Morton <akpm@linux-foundation.org>, Jonathan Corbet <corbet@lwn.net>,
+ Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Frank Rowand <frowand.list@gmail.com>, Mike Kravetz
+ <mike.kravetz@oracle.com>, Muchun Song <songmuchun@bytedance.com>,
+ Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, Borislav Petkov <bp@suse.de>,
+ "Paul E. McKenney" <paulmck@kernel.org>,
+ Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+ Randy Dunlap <rdunlap@infradead.org>,
+ Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+ Florian Fainelli <f.fainelli@gmail.com>, Zi Yan <ziy@nvidia.com>,
+ Oscar Salvador <osalvador@suse.de>, Hari Bathini <hbathini@linux.ibm.com>,
+ Kees Cook <keescook@chromium.org>, - <devicetree-spec@vger.kernel.org>,
+ KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
+ Mel Gorman <mgorman@suse.de>, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-mm@kvack.org, iommu@lists.linux.dev
+References: <20220913195508.3511038-1-opendmb@gmail.com>
+ <b610a7b3-d740-8d45-c270-4c638deb1cfa@redhat.com>
+ <02561695-df44-4df6-c486-1431bf152650@gmail.com>
+ <Yy2WUypD5qVmqB0k@kernel.org>
+Content-Language: en-US
+From: Doug Berger <opendmb@gmail.com>
+In-Reply-To: <Yy2WUypD5qVmqB0k@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Sep 23, 2022 at 05:38:12PM +0200, Jann Horn wrote:
-> Hi!
+On 9/23/2022 4:19 AM, Mike Rapoport wrote:
+> Hi Doug,
 > 
-> I looked through some of the code related to IOMMUv2 (the thing where
-> the IOMMU walks the normal userspace page tables and TLB shootdowns
-> are replicated to the IOMMU through
-> mmu_notifier_ops::invalidate_range).
+> I only had time to skim through the patches and before diving in I'd like
+> to clarify a few things.
+Thanks for taking the time. Any input is appreciated.
+
 > 
-> I think there's a bug in the interaction between tlb_finish_mmu() and
-> mmu_notifier_ops::invalidate_range: In the mm_tlb_flush_nested() case,
-> __tlb_reset_range() sets tlb->start and tlb->end *both* to ~0.
-> Afterwards, tlb_finish_mmu() calls
-> tlb_flush_mmu()->tlb_flush_mmu_tlbonly()->mmu_notifier_invalidate_range(),
-> which will pass those tlb->start and tlb->end values to
-> mmu_notifier_ops::invalidate_range callbacks. But those callbacks
-> don't know about this special case and then basically only flush
-> virtual address ~0, making the flush useless. 
+> On Mon, Sep 19, 2022 at 06:03:55PM -0700, Doug Berger wrote:
+>> On 9/19/2022 2:00 AM, David Hildenbrand wrote:
+>>>
+>>> How is this memory currently presented to the system?
+>>
+>> The 7278 device has four ARMv8 CPU cores in an SMP cluster and two memory
+>> controllers (MEMCs). Each MEMC is capable of controlling up to 8GB of DRAM.
+>> An example 7278 system might have 1GB on each controller, so an arm64 kernel
+>> might see 1GB on MEMC0 at 0x40000000-0x7FFFFFFF and 1GB on MEMC1 at
+>> 0x300000000-0x33FFFFFFF.
+>>
+>> The base capability described in commits 7-15 of this V1 patch set is to
+>> allow a 'movablecore' block to be created at a particular base address
+>> rather than solely at the end of addressable memory.
+> 
+> I think this capability is only useful when there is non-uniform access to
+> different memory ranges. Otherwise it wouldn't matter where the movable
+> pages reside.
+I think that is a fair assessment of the described capability. However, 
+the non-uniform access is a result of the current Linux architecture 
+rather than the hardware architecture.
 
-Yeah, that looks wrong to me, and it extends more than just the iommu
-drivers kvm_arch_mmu_notifier_invalidate_range() also does not handle
-this coding.
+> The system you describe looks quite NUMA to me, with two
+> memory controllers, each for accessing a partial range of the available
+> memory.
+NUMA was created to deal with non-uniformity in the hardware 
+architecture where a CPU and/or other hardware device can make more 
+efficient use of some nodes than other nodes. NUMA attempts to allocate 
+from "closer" nodes to improve the operational efficiency of the system.
 
-Most likely tlb_flush_mmu_tlbonly() need to change it back to 0 to ~0?
-I wonder why it uses such an odd coding in the first place?
+If we consider how an arm64 architecture Linux kernel will apply zones 
+to the above example system we find that Linux will place MEMC0 in 
+ZONE_DMA and MEMC1 in ZONE_NORMAL. This allows both kernel and user 
+space to compete for bandwidth on MEMC1, but largely excludes user space 
+from MEMC0. It is possible for user space to get memory from ZONE_DMA 
+through fallback when ZONE_NORMAL has been consumed, but there is a 
+pretty clear bias against user space use of MEMC0. This non-uniformity 
+doesn't come from the bus architecture since each CPU has equal costs to 
+access MEMC0 and MEMC1. They compete for bandwidth, but there is no 
+hardware bias for one node over another. Creating ZONE_MOVABLE memory on 
+MEMC0 can help correct for the Linux bias.
 
-Actually, maybe having mm_tlb_flush_nested() call __tlb_reset_range()
-to generate a 'flush all' request is just a bad idea, as we already
-had another bug in 7a30df49f63ad92 related to reset_range doing the
-wrong thing for a flush all action.
+>   
+>>>> expressed the desire to locate ZONE_MOVABLE memory on each
+>>>> memory controller to allow user space intensive processing to
+>>>> make better use of the additional memory bandwidth.
+>>>
+>>> Can you share some more how exactly ZONE_MOVABLE would help here to make
+>>> better use of the memory bandwidth?
+>>
+>> ZONE_MOVABLE memory is effectively unusable by the kernel. It can be used by
+>> user space applications through both the page allocator and the Hugetlbfs.
+>> If a large 'movablecore' allocation is defined and it can only be located at
+>> the end of addressable memory then it will always be located on MEMC1 of a
+>> 7278 system. This will create a tendency for user space accesses to consume
+>> more bandwidth on the MEMC1 memory controller and kernel space accesses to
+>> consume more bandwidth on MEMC0. A more even distribution of ZONE_MOVABLE
+>> memory between the available memory controllers in theory makes more memory
+>> bandwidth available to user space intensive loads.
+> 
+> The theory makes perfect sense, but is there any practical evidence of
+> improvement?
+> Some benchmark results that illustrate the difference would be nice.
+I agree that benchmark results would be nice. Unfortunately, I am not 
+part of the constituency that uses these Linux features so I have no 
+representative user space work loads to measure. I can only say that I 
+was asked to implement this capability, this is the approach I took, and 
+customers of Broadcom are making use of it. I am submitting it upstream 
+with the hope that: its/my sanity can be better reviewed, it will not 
+get broken by future changes in the kernel, and it will be useful to others.
 
-> (However, pretty much every place that calls tlb_finish_mmu() first
-> calls mmu_notifier_invalidate_range_end() even though the
-> appropriate thing would probably be
-> mmu_notifier_invalidate_range_only_end(); and I think those two
-> things probably cancel each other out?)
+This "narrow" capability may have limited value to others, but it should 
+not create issues for those that do not actively wish to use it. I would 
+hope that makes it easier to review and get accepted.
 
-That does sound like double flushing to me, though as you note below,
-the invalidate_range() triggered by range_end() after the TLB
-flush/page freeing is functionally incorrect, so we cannot rely on it.
+However, I believe "other opportunities" exist that may have broader 
+appeal so I have suggested some along with the "narrow" capability to 
+hopefully give others motivation to consider accepting the narrow 
+capability and to help shape how these "other capabilities" should be 
+implemented.
 
-> Also, from what I can tell, the mremap() code, in move_page_tables(),
-> only invokes mmu_notifier_ops::invalidate_range via the
-> mmu_notifier_invalidate_range_end() at the very end, long after TLB
-> flushes must have happened - sort of like the bug we had years ago
-> where mremap() was flushing the normal TLBs too late
-> (https://bugs.chromium.org/p/project-zero/issues/detail?id=1695).
+One "other opportunity" that I have realized may be more interesting 
+than I originally anticipated comes from the recognition that the 
+Devicetree Specification includes support for Reserved Memory regions 
+that can contain the 'reusable' property to allow the OS to make use of 
+the memory. Currently, Linux only takes advantage of that capability for 
+reserved memory nodes that are compatible with 'shared-dma-pool' where 
+CMA is used to allow the memory to be used by the OS and by device 
+drivers. CMA is a great concept, but we have observed shortcomings that 
+become more apparent as the size of the CMA region grows. Specifically, 
+the Linux memory management works very hard to keep half of the CMA 
+memory free. A number of submissions have been made over the years to 
+alter the CMA implementation to allow more aggressive use of the memory 
+by the OS, but there are users that desire the current behavior so the 
+submissions have been rejected.
 
-Based on the description of eb66ae03082960 I would say that yes the
-invalidate_range op is missing here for the same reasons the CPU flush
-was missing.
+No other types of reserved memory nodes can take advantage of sharing 
+the memory with the Linux operating system because there is insufficient 
+specification of how device drivers can reclaim the reserved memory when 
+it is needed. The introduction of Designated Movable Block support 
+provides a mechanism that would allow this capability to be realized. 
+Because DMBs are in ZONE_MOVABLE their pages are reclaimable, and 
+because they can be located anywhere they can satisfy DMA constraints of 
+owning devices. In the simplest case, device drivers can use the 
+dmb_intersects() function to determine whether their reserved memory 
+range is within a DMB and can use the alloc_contig_range() function to 
+reclaim the pages. This simple API could certainly be improved upon 
+(e.g. the CMA allocator seems like an obvious choice), but it doesn't 
+need to be defined by me so I would be happy to hear other people's ideas.
 
-AFAIK if we are flushing the CPU tlb then we really must also flush
-the CPU tlb that KVM controls, and that is primarily what
-invalidate_range() is used for.
+> 
+>>>> BACKGROUND:
+>>>> NUMA architectures support distributing movablecore memory
+>>>> across each node, but it is undesirable to introduce the
+>>>> overhead and complexities of NUMA on systems that don't have a
+>>>> Non-Uniform Memory Architecture.
+>>>
+>>> How exactly would that look like? I think I am missing something :)
+>>
+>> The notion would be to consider each memory controller as a separate node,
+>> but as stated it is not desirable.
+> 
+> Why?
+In my opinion this is an inappropriate application of NUMA because the 
+hardware does not impose any access non-uniformity to justify the 
+complexity and overhead associated with NUMA. It would only be 
+shoe-horned into the implementation to add some logical notion of memory 
+nodes being associated with memory controllers. I would expect such an 
+approach to receive a lot of push back from the Android Common Kernel 
+users which may not be relevant to everyone, but is to many.
 
-Which makes me wonder if the invalidate_range() hidden inside
-invalidate_end() is a bad idea in general - when is this need and
-would be correct? Isn't it better to put the invalidates near the TLB
-invalidates and leave start/end as purely a bracketing API, which by
-definition, cannot have an end that is 'too late'?
+Thanks for your consideration,
+-Doug
 
-Jason
