@@ -1,147 +1,124 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37B0A28FE
-	for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 08:55:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1663923301;
-	h=from:from:reply-to:reply-to:subject:subject:date:date:
-	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-	 content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=oPg9uzCzNmVV8r2XBpynge7CiHHyMGk8yDCw0a6Idgg=;
-	b=YotlhtQr4xKy45rjnP5WR18+nP8pMAQlqUxOdA82QaUFInCryCVK9hYSn8xEc9I/LUCZ9w
-	0/319zOSQJnVRU8JKoUM4lgDA6zWSRU0WTcaN1uDXw47L09donyfWUKlSdBSdX9qT5LGgv
-	m+uxSUXV2RxANaJhY+4rlWlm32sbM/c=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-6-CL72IekFNYmfv6iN96Bhog-1; Fri, 23 Sep 2022 04:54:57 -0400
-X-MC-Unique: CL72IekFNYmfv6iN96Bhog-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0C68C3801F51;
-	Fri, 23 Sep 2022 08:54:57 +0000 (UTC)
-Received: from redhat.com (unknown [10.33.36.67])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id 1E3E22166B30;
-	Fri, 23 Sep 2022 08:54:50 +0000 (UTC)
-Date: Fri, 23 Sep 2022 09:54:48 +0100
-From: Daniel =?utf-8?B?UC4gQmVycmFuZ8Op?= <berrange@redhat.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>,
-	Eric Auger <eric.auger@redhat.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>,
-	"Rodel, Jorg" <jroedel@suse.de>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
-	Cornelia Huck <cohuck@redhat.com>,
-	Daniel Jordan <daniel.m.jordan@oracle.com>,
-	David Gibson <david@gibson.dropbear.id.au>,
-	Eric Farman <farman@linux.ibm.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	Jason Wang <jasowang@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	"Martins, Joao" <joao.m.martins@oracle.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>,
-	Keqian Zhu <zhukeqian1@huawei.com>,
-	Steve Sistare <steven.sistare@oracle.com>,
-	"libvir-list@redhat.com" <libvir-list@redhat.com>,
-	Laine Stump <laine@redhat.com>
-Subject: Re: [PATCH RFC v2 00/13] IOMMUFD Generic interface
-Message-ID: <Yy10WIgQK3Q74nBm@redhat.com>
-Reply-To: Daniel =?utf-8?B?UC4gQmVycmFuZ8Op?= <berrange@redhat.com>
-References: <d5e33ebb-29e6-029d-aef4-af5c4478185a@redhat.com>
- <Yyoa+kAJi2+/YTYn@nvidia.com>
- <20220921120649.5d2ff778.alex.williamson@redhat.com>
- <YytbiCx3CxCnP6fr@nvidia.com>
- <YyxFEpAOC2V1SZwk@redhat.com>
- <YyxsV5SH85YcwKum@nvidia.com>
- <Yyx13kXCF4ovsxZg@redhat.com>
- <Yyx2ijVjKOkhcPQR@nvidia.com>
- <Yyx4cEU1n0l6sP7X@redhat.com>
- <Yyx/yDQ/nDVOTKSD@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6452833DC
+	for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 11:20:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15548C433D6;
+	Fri, 23 Sep 2022 11:19:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1663932008;
+	bh=lzkcfA8lwY431cGoFaoDpZ054pCCOOU4vMeBaieOALo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=CFFgso3bs6An9nGUhg/DG6R6EN9niEPLr2bcvNvSIZeH5Ca/4zD5HH3MAQwNJ5mc9
+	 +Hc567HPd6/20p6YaNX/Zvv6xT/ckjT9jLPQvD/WGz8mFXi9wWGc+5xCpFYC4T4XZw
+	 J2QCchDnSDhacfqP44aIabXsMgDbC1DrzUvn9pDZ1hvVgL7+QgzJhX1ywAwW83QAff
+	 5tr++tEQUnIFI/6oMtIWKFC+RtQAUJUrpM3ED/pvVcV6Y/GAKzQaMKcRFEC7DztYOH
+	 Au8CuF0rW5ZOStR6byQQubKH+EDX0QcQvObkvdsoCIqJ2ivv7nIVDarHsRqR3Li0Ww
+	 tr6LGpBwCOQ2w==
+Date: Fri, 23 Sep 2022 14:19:47 +0300
+From: Mike Rapoport <rppt@kernel.org>
+To: Doug Berger <opendmb@gmail.com>
+Cc: David Hildenbrand <david@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Jonathan Corbet <corbet@lwn.net>, Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Mike Kravetz <mike.kravetz@oracle.com>,
+	Muchun Song <songmuchun@bytedance.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, Borislav Petkov <bp@suse.de>,
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Florian Fainelli <f.fainelli@gmail.com>, Zi Yan <ziy@nvidia.com>,
+	Oscar Salvador <osalvador@suse.de>,
+	Hari Bathini <hbathini@linux.ibm.com>,
+	Kees Cook <keescook@chromium.org>,
+	- <devicetree-spec@vger.kernel.org>,
+	KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
+	Mel Gorman <mgorman@suse.de>, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-mm@kvack.org, iommu@lists.linux.dev
+Subject: Re: [PATCH 00/21] mm: introduce Designated Movable Blocks
+Message-ID: <Yy2WUypD5qVmqB0k@kernel.org>
+References: <20220913195508.3511038-1-opendmb@gmail.com>
+ <b610a7b3-d740-8d45-c270-4c638deb1cfa@redhat.com>
+ <02561695-df44-4df6-c486-1431bf152650@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Yyx/yDQ/nDVOTKSD@nvidia.com>
-User-Agent: Mutt/2.2.6 (2022-06-05)
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.6
+In-Reply-To: <02561695-df44-4df6-c486-1431bf152650@gmail.com>
 
-On Thu, Sep 22, 2022 at 12:31:20PM -0300, Jason Gunthorpe wrote:
-> On Thu, Sep 22, 2022 at 04:00:00PM +0100, Daniel P. Berrangé wrote:
-> > On Thu, Sep 22, 2022 at 11:51:54AM -0300, Jason Gunthorpe wrote:
-> > > On Thu, Sep 22, 2022 at 03:49:02PM +0100, Daniel P. Berrangé wrote:
-> > > > On Thu, Sep 22, 2022 at 11:08:23AM -0300, Jason Gunthorpe wrote:
-> > > > > On Thu, Sep 22, 2022 at 12:20:50PM +0100, Daniel P. Berrangé wrote:
-> > > > > > On Wed, Sep 21, 2022 at 03:44:24PM -0300, Jason Gunthorpe wrote:
-> > > > > > > On Wed, Sep 21, 2022 at 12:06:49PM -0600, Alex Williamson wrote:
-> > > > > > > > The issue is where we account these pinned pages, where accounting is
-> > > > > > > > necessary such that a user cannot lock an arbitrary number of pages
-> > > > > > > > into RAM to generate a DoS attack.  
-> > > > > > > 
-> > > > > > > It is worth pointing out that preventing a DOS attack doesn't actually
-> > > > > > > work because a *task* limit is trivially bypassed by just spawning
-> > > > > > > more tasks. So, as a security feature, this is already very
-> > > > > > > questionable.
-> > > > > > 
-> > > > > > The malicious party on host VM hosts is generally the QEMU process.
-> > > > > > QEMU is normally prevented from spawning more tasks, both by SELinux
-> > > > > > controls and be the seccomp sandbox blocking clone() (except for
-> > > > > > thread creation).  We need to constrain what any individual QEMU can
-> > > > > > do to the host, and the per-task mem locking limits can do that.
-> > > > > 
-> > > > > Even with syscall limits simple things like execve (enabled eg for
-> > > > > qemu self-upgrade) can corrupt the kernel task-based accounting to the
-> > > > > point that the limits don't work.
-> > > > 
-> > > > Note, execve is currently blocked by default too by the default
-> > > > seccomp sandbox used with libvirt, as well as by the SELinux
-> > > > policy again.  self-upgrade isn't a feature that exists (yet).
-> > > 
-> > > That userspace has disabled half the kernel isn't an excuse for the
-> > > kernel to be insecure by design :( This needs to be fixed to enable
-> > > features we know are coming so..
-> > > 
-> > > What would libvirt land like to see given task based tracking cannot
-> > > be fixed in the kernel?
+Hi Doug,
+
+I only had time to skim through the patches and before diving in I'd like
+to clarify a few things.
+
+On Mon, Sep 19, 2022 at 06:03:55PM -0700, Doug Berger wrote:
+> On 9/19/2022 2:00 AM, David Hildenbrand wrote:
 > > 
-> > There needs to be a mechanism to control individual VMs, whether by
-> > task or by cgroup. User based limits are not suited to what we need
-> > to achieve.
+> > How is this memory currently presented to the system?
+>
+> The 7278 device has four ARMv8 CPU cores in an SMP cluster and two memory
+> controllers (MEMCs). Each MEMC is capable of controlling up to 8GB of DRAM.
+> An example 7278 system might have 1GB on each controller, so an arm64 kernel
+> might see 1GB on MEMC0 at 0x40000000-0x7FFFFFFF and 1GB on MEMC1 at
+> 0x300000000-0x33FFFFFFF.
 > 
-> The kernel has already standardized on user based limits here for
-> other subsystems - libvirt and qemu cannot ignore that it exists. It
-> is only a matter of time before qemu starts using these other
-> subsystem features (eg io_uring) and has problems.
-> 
-> So, IMHO, the future must be that libvirt/etc sets an unlimited
-> rlimit, because the user approach is not going away in the kernel and
-> it sounds like libvirt cannot accommodate it at all.
-> 
-> This means we need to provide a new mechanism for future libvirt to
-> use. Are you happy with cgroups?
+> The base capability described in commits 7-15 of this V1 patch set is to
+> allow a 'movablecore' block to be created at a particular base address
+> rather than solely at the end of addressable memory.
 
-Yes, we use cgroups extensively already.
+I think this capability is only useful when there is non-uniform access to
+different memory ranges. Otherwise it wouldn't matter where the movable
+pages reside. The system you describe looks quite NUMA to me, with two
+memory controllers, each for accessing a partial range of the available
+memory.
+ 
+> > > expressed the desire to locate ZONE_MOVABLE memory on each
+> > > memory controller to allow user space intensive processing to
+> > > make better use of the additional memory bandwidth.
+> > 
+> > Can you share some more how exactly ZONE_MOVABLE would help here to make
+> > better use of the memory bandwidth?
+>
+> ZONE_MOVABLE memory is effectively unusable by the kernel. It can be used by
+> user space applications through both the page allocator and the Hugetlbfs.
+> If a large 'movablecore' allocation is defined and it can only be located at
+> the end of addressable memory then it will always be located on MEMC1 of a
+> 7278 system. This will create a tendency for user space accesses to consume
+> more bandwidth on the MEMC1 memory controller and kernel space accesses to
+> consume more bandwidth on MEMC0. A more even distribution of ZONE_MOVABLE
+> memory between the available memory controllers in theory makes more memory
+> bandwidth available to user space intensive loads.
 
+The theory makes perfect sense, but is there any practical evidence of
+improvement?
+Some benchmark results that illustrate the difference would be nice.
 
-With regards,
-Daniel
+> > > BACKGROUND:
+> > > NUMA architectures support distributing movablecore memory
+> > > across each node, but it is undesirable to introduce the
+> > > overhead and complexities of NUMA on systems that don't have a
+> > > Non-Uniform Memory Architecture.
+> > 
+> > How exactly would that look like? I think I am missing something :)
+>
+> The notion would be to consider each memory controller as a separate node,
+> but as stated it is not desirable.
+
+Why?
+
+> Thanks for your consideration,
+> Dough Baker ... I mean Doug Berger :).
+
 -- 
-|: https://berrange.com      -o-    https://www.flickr.com/photos/dberrange :|
-|: https://libvirt.org         -o-            https://fstop138.berrange.com :|
-|: https://entangle-photo.org    -o-    https://www.instagram.com/dberrange :|
-
+Sincerely yours,
+Mike.
