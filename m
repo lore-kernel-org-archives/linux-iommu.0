@@ -1,223 +1,260 @@
-Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
+Received: from mail-il1-f172.google.com (mail-il1-f172.google.com [209.85.166.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E85514687
-	for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 22:10:46 +0000 (UTC)
-Received: by mail-qk1-f180.google.com with SMTP id s9so981689qkg.4
-        for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 15:10:46 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D93884687
+	for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 22:24:44 +0000 (UTC)
+Received: by mail-il1-f172.google.com with SMTP id a4so847835ilj.8
+        for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 15:24:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=Konhfb7mLO3dA0pHkfbX9G7WZYTlrwd05Msn8eCZhsI=;
-        b=DDvg7k75uWgmVeFyrGBonH6mSsCY3m3x9tny22LtoPZP6dUqAXHS1mMKsG219opQwl
-         XaO0ZmS5LtDqG1UY+eUw9UMYKepHVeDgWd4c1Q5ECrzU/EFRkPnMDgv2R02eCuB4JtER
-         Rrw8uXflmfpBIj0E/q+G3U9mS6iJGd1QlKuTXp4iVT6mqmwufzp2vNnuhlCmSF03XK6j
-         GxKqp3YR6HgYXmXe2aIjKtF8cWWLXPoXcOYuFbQ/UwaVfJlVwMlT2VcpRxfuX6Ze/rFy
-         PTfyhyhReK5zeBUAdmSJxq8dg8gDKOKrgJAOoCKFiiM/gHjWpAuACW5EzYvfqwAN3wJ3
-         MY7A==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=sZegk7zG1/iwQ6jNiV8eKrKSA5CJhrOD6RblkDq3hTg=;
+        b=E4GfFcE7mti7p+9wlmaZJgBmlTcuMFnbLkh/+fg+cjgKn0e4fF+miDpmXjHDgchotG
+         G3Y/OY5ZI3Tb2FfSFdSz+E7/r5xZFftfuF19k2rJNtmrfmz4sFzonNJ7+St2iRbuldBF
+         MKLyA2kMOkDe1sbHvSER/4LUFcGIZr9zDzprILv2qbJyv93Xaf8EXE4u7I7f2KfEGkAb
+         JwbOaWxQHnzqHG/2qFj5FlsqqIH0V4mTwdUW9hOgqZ4NtPGkAjJkVSCsKUzXG5DWqOXk
+         1xiz/+i7hfHk62hQx9D+xw1ywmK7UrMhTizNBznKwP0DdgemdaO/few0APhvRdsD8CUc
+         T2sw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=Konhfb7mLO3dA0pHkfbX9G7WZYTlrwd05Msn8eCZhsI=;
-        b=q+FfCXvBUqnGaqz8Chk7fuXMeNw/BmVdHa3VDpn/EGm8TbaPEDaPLyZZoi5kbbaWTu
-         1XrYehLodWOk6FX1EGoNS52jvQA7y4Y6Sg5maWGxJDR+LoTD8hQ3jnbQQsOz16TuMPpV
-         ez3biZoCuS5Mwe3ZtGcXHI2Z/oPEgsUZY8X26T/8xhrHA1fl7oaxXhvkAm0igxw7b9/d
-         u+1T6HQVqWGpXX6u87xuvRItRVg1dTeBsqUr8IdmgicyuNXqTAgclRaybGzbM+ypxzGD
-         V1yGT9xUmosQLUMWJtx/MIASPA11gv4vlew/VSO2j+Z+sXUeb+NOy/P9TMBYiZyHMrgK
-         8dWg==
-X-Gm-Message-State: ACrzQf0xN0iDa1pTGavO2O73utv8XjyME7u8wmPYkSrl0o1VeH7bx1+p
-	X+nFXrVtW0b0wtDCaTQRfE4=
-X-Google-Smtp-Source: AMsMyM7FKlXyKVqSTdVI2DxXiaKG4fG/6+zKpBhWkLb1EYAiXtdb3lpAblOu5oCMtiZC9oP922BfcQ==
-X-Received: by 2002:a05:620a:2a0d:b0:6b6:6c75:f050 with SMTP id o13-20020a05620a2a0d00b006b66c75f050mr7195534qkp.199.1663971045712;
-        Fri, 23 Sep 2022 15:10:45 -0700 (PDT)
-Received: from [10.69.40.226] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id g19-20020ac87f53000000b0031ef0081d77sm6663771qtk.79.2022.09.23.15.10.42
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=sZegk7zG1/iwQ6jNiV8eKrKSA5CJhrOD6RblkDq3hTg=;
+        b=bFdlyskOF33Yra4zQExtxQuGnyOzXjHKTJBw3socExe7E6mva4kmIfG6M80K0UTR73
+         SNlSLy+ftvPClUe2e0QBIGch8FKgBEWeEzLCRRK0slRYxaRTmv6o8UglQCWh/gRcebSx
+         9wUaUwGozUB6IwcyWrcIOp+JcS97syX6a3xP0ylRR8ef+klUPFIQMRrnoBvS7WNjCh1S
+         tWHnfeUfC8sFzWcy+NNdOc89TEVFNbkQtOaTkmsJ5Eg+BgDOnkGDrQ14EcHBcYx0obaC
+         CsVKmPPbocj607ovawcMVh7RMcvAb6o8szyzMMnPzLX5NktbI292z7ePw+YkN23kN/3K
+         JB3w==
+X-Gm-Message-State: ACrzQf02XtlYCjbcx6SeFsuzVu3svVkU+3wZkBbq/Bt9hKvDTQ53jzZP
+	yNsxW8qXruQvNPiT1t8bf8M=
+X-Google-Smtp-Source: AMsMyM5saX5cU4V2YkE3B/16osply4mzT4L3u82IMrfy33R1ZkZJOKHmiWAQpRqXUl7R/EI+RFkSoA==
+X-Received: by 2002:a05:6e02:1a87:b0:2f1:dc7a:c512 with SMTP id k7-20020a056e021a8700b002f1dc7ac512mr5232787ilv.146.1663971883815;
+        Fri, 23 Sep 2022 15:24:43 -0700 (PDT)
+Received: from localhost ([2607:fea8:a2e2:2d00::1eda])
+        by smtp.gmail.com with UTF8SMTPSA id f4-20020a05660215c400b00688faad4741sm3989923iow.24.2022.09.23.15.24.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 23 Sep 2022 15:10:45 -0700 (PDT)
-Message-ID: <59ddaa5a-e47d-f542-f7a7-2c437e1c2808@gmail.com>
-Date: Fri, 23 Sep 2022 15:10:40 -0700
+        Fri, 23 Sep 2022 15:24:43 -0700 (PDT)
+From: Richard Acayan <mailingradian@gmail.com>
+To: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc: linux-arm-msm@vger.kernel.org,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Konrad Dybcio <konrad.dybcio@somainline.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+	Rob Clark <robdclark@chromium.org>,
+	Sibi Sankar <sibis@codeaurora.org>,
+	Loic Poulain <loic.poulain@linaro.org>,
+	Vinod Koul <vkoul@kernel.org>,
+	iommu@lists.linux.dev,
+	devicetree@vger.kernel.org,
+	Richard Acayan <mailingradian@gmail.com>
+Subject: Re: [PATCH 2/2] iommu: arm-smmu-qcom: add sdm670 compatible
+Date: Fri, 23 Sep 2022 18:24:41 -0400
+Message-Id: <20220923222441.285033-1-mailingradian@gmail.com>
+X-Mailer: git-send-email 2.37.3
+In-Reply-To: <f6c8e1d4-54bd-811c-7322-375f755ad460@linaro.org>
+References: <5f629a95-8ee4-7cf8-f471-0b50e311d3b7@somainline.org> <20220922023833.178076-1-mailingradian@gmail.com> <be7a2f12-d6bb-8193-2a56-c31e57f11ce6@linaro.org> <22acebd5-b900-9abd-67e6-522c351da342@somainline.org> <f6c8e1d4-54bd-811c-7322-375f755ad460@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [PATCH 00/21] mm: introduce Designated Movable Blocks
-To: Mike Rapoport <rppt@kernel.org>
-Cc: David Hildenbrand <david@redhat.com>,
- Andrew Morton <akpm@linux-foundation.org>, Jonathan Corbet <corbet@lwn.net>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Frank Rowand <frowand.list@gmail.com>, Mike Kravetz
- <mike.kravetz@oracle.com>, Muchun Song <songmuchun@bytedance.com>,
- Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, Borislav Petkov <bp@suse.de>,
- "Paul E. McKenney" <paulmck@kernel.org>,
- Neeraj Upadhyay <quic_neeraju@quicinc.com>,
- Randy Dunlap <rdunlap@infradead.org>,
- Damien Le Moal <damien.lemoal@opensource.wdc.com>,
- Florian Fainelli <f.fainelli@gmail.com>, Zi Yan <ziy@nvidia.com>,
- Oscar Salvador <osalvador@suse.de>, Hari Bathini <hbathini@linux.ibm.com>,
- Kees Cook <keescook@chromium.org>, - <devicetree-spec@vger.kernel.org>,
- KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
- Mel Gorman <mgorman@suse.de>, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
- linux-mm@kvack.org, iommu@lists.linux.dev
-References: <20220913195508.3511038-1-opendmb@gmail.com>
- <b610a7b3-d740-8d45-c270-4c638deb1cfa@redhat.com>
- <02561695-df44-4df6-c486-1431bf152650@gmail.com>
- <Yy2WUypD5qVmqB0k@kernel.org>
-Content-Language: en-US
-From: Doug Berger <opendmb@gmail.com>
-In-Reply-To: <Yy2WUypD5qVmqB0k@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 9/23/2022 4:19 AM, Mike Rapoport wrote:
-> Hi Doug,
-> 
-> I only had time to skim through the patches and before diving in I'd like
-> to clarify a few things.
-Thanks for taking the time. Any input is appreciated.
-
-> 
-> On Mon, Sep 19, 2022 at 06:03:55PM -0700, Doug Berger wrote:
->> On 9/19/2022 2:00 AM, David Hildenbrand wrote:
+> On 22/09/2022 12:48, Konrad Dybcio wrote:
+>> 
+>> 
+>> On 22.09.2022 08:41, Krzysztof Kozlowski wrote:
+>>> On 22/09/2022 04:38, Richard Acayan wrote:
+>>>>> On 21.09.2022 21:05, Krzysztof Kozlowski wrote:
+>>>>>> On 21/09/2022 20:48, Konrad Dybcio wrote:
+>>>>>>>
+>>>>>>>
+>>>>>>> On 21.09.2022 20:47, Konrad Dybcio wrote:
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> On 21.09.2022 09:31, Krzysztof Kozlowski wrote:
+>>>>>>>>> On 21/09/2022 00:39, Richard Acayan wrote:
+>>>>>>>>>> The Snapdragon 670 needs the IOMMU for GENI I2C. Add a compatible string to
+>>>>>>>>>> support it.
+>>>>>>>>>>
+>>>>>>>>>> Signed-off-by: Richard Acayan <mailingradian@gmail.com>
+>>>>>>>>>> ---
+>>>>>>>>>>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
+>>>>>>>>>>  1 file changed, 1 insertion(+)
+>>>>>>>>>>
+>>>>>>>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>>>>>> index b2708de25ea3..bf9653b9eb89 100644
+>>>>>>>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>>>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>>>>>>> @@ -431,6 +431,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
+>>>>>>>>>>  	{ .compatible = "qcom,sc8180x-smmu-500" },
+>>>>>>>>>>  	{ .compatible = "qcom,sc8280xp-smmu-500" },
+>>>>>>>>>>  	{ .compatible = "qcom,sdm630-smmu-v2" },
+>>>>>>>>>> +	{ .compatible = "qcom,sdm670-smmu-500" },
+>>>>>>>>>
+>>>>>>>>> Why do we keep adding compatibles to the driver for apparently
+>>>>>>>>> compatible devices?
+>>>>>>>>
+>>>>>>>> Because Linux has not funny run on bare Qualcomm hardware ever since at least msm8x60 times and
+>>>>>>> s/funny/fully
+>>>>>>>
+>>>>>>> unfortunate typo, this is not funny, quite the contrary..
+>>>>>>>
+>>>>>>> Konrad
+>>>>>>>> we are not interacting with real hardware, only with Qualcomm's flawed virtual implementation
+>>>>>>>> of it, that's abstracted to us through various generations of their saddening software stack. This
+>>>>>>>> is also the case for many more standard components, even as far as the GIC on recent boards..
+>>>>>>
+>>>>>> Unfortunately I don't get this explanation... you mean some other
+>>>>>> firmware requires Linux drivers to use specific compatibles instead of
+>>>>>> one fallback?
+>>>>> No, perhaps I misunderstood you.
+>>>>>
+>>>>>>
+>>>>>> All of these do not have driver data, so they are essentially compatible
+>>>>>> for Linux driver. Growing this list in the driver seems pointless. What
+>>>>>> is the benefit of growing driver with same entries, except more patches?
+>>>>> Compatible lists in smmu-impl files allow matching driver quirks for SMMUs themselves
+>>>>> and consumer devices (such as MDSS). The situation is more complicated, because some
+>>>>> qcom SMMUs also require more quirks than others (think 8974 vs 8994 vs 8996/pro&660&8998
+>>>>> vs 845+ vs adreno smmu in various flavours), so all qcom SMMUs need to use
+>>>>> `qcom_smmu_impl` and some others need even more quirks on top of that (that generally
+>>>>> hurt performance or functionality, so we don't want them when they're unnecessary).
+>>>>> If all generations of qcom SMMU implementation that bear the same name behaved anywhere
+>>>>> near consistent, there would be no need for keeping this around, instead requiring only
+>>>>> "qcom,broken-smmu" or something".
+>>>>
+>>>> Hi, just stopping by to share my own thoughts.
+>>>>
+>>>> First, I don't mind if this series doesn't get applied as-is. After seeing
+>>>> the eMMC driver in its current state:
+>>>>
+>>>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/mmc/host/sdhci-msm.c?h=v6.0-rc6#n2437
+>>>>
+>>>> I can understand that the devicetree maintainers don't want to see new SoCs
+>>>> touching drivers unnecessarily. Second, I don't see enough quirks to
+>>>> justify needing all compatible strings in the driver (2 quirky SoCs
+>>>> compared to 16 total not counting adreno iommu):
+>>>>
+>>>>     $ grep qcom, drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>>     	if (of_device_is_compatible(np, "qcom,msm8996-smmu-v2"))
+>>>>     	* All targets that use the qcom,adreno-smmu compatible string *should*
+>>>>     	{ .compatible = "qcom,adreno" },
+>>>>     	{ .compatible = "qcom,mdp4" },
+>>>>     	{ .compatible = "qcom,mdss" },
+>>>>     	{ .compatible = "qcom,sc7180-mdss" },
+>>>>     	{ .compatible = "qcom,sc7180-mss-pil" },
+>>>>     	{ .compatible = "qcom,sc7280-mdss" },
+>>>>     	{ .compatible = "qcom,sc7280-mss-pil" },
+>>>>     	{ .compatible = "qcom,sc8180x-mdss" },
+>>>>     	{ .compatible = "qcom,sm8250-mdss" },
+>>>>     	{ .compatible = "qcom,sdm845-mdss" },
+>>>>     	{ .compatible = "qcom,sdm845-mss-pil" },
+>>>>     	if (of_device_is_compatible(np, "qcom,sdm845-smmu-500"))
+>>>>     	{ .compatible = "qcom,msm8998-smmu-v2" },
+>>>>     	{ .compatible = "qcom,qcm2290-smmu-500" },
+>>>>     	{ .compatible = "qcom,sc7180-smmu-500" },
+>>>>     	{ .compatible = "qcom,sc7280-smmu-500" },
+>>>>     	{ .compatible = "qcom,sc8180x-smmu-500" },
+>>>>     	{ .compatible = "qcom,sc8280xp-smmu-500" },
+>>>>     	{ .compatible = "qcom,sdm630-smmu-v2" },
+>>>>     	{ .compatible = "qcom,sdm670-smmu-500" },
+>>>>     	{ .compatible = "qcom,sdm845-smmu-500" },
+>>>>     	{ .compatible = "qcom,sm6125-smmu-500" },
+>>>>     	{ .compatible = "qcom,sm6350-smmu-500" },
+>>>>     	{ .compatible = "qcom,sm6375-smmu-500" },
+>>>>     	{ .compatible = "qcom,sm8150-smmu-500" },
+>>>>     	{ .compatible = "qcom,sm8250-smmu-500" },
+>>>>     	{ .compatible = "qcom,sm8350-smmu-500" },
+>>>>     	{ .compatible = "qcom,sm8450-smmu-500" },
+>>>>     	if (of_device_is_compatible(np, "qcom,adreno-smmu"))
+>>>>
+>>>> I don't know if it's better to get myself involved in fixing this, though.
+>>>> There is no fallback that encompasses qcom devices but not all arm devices.
+>>>> Either way, I'll have to add a new compatible string to the driver.
+>>>>
+>>>> If something like this is fine for now, I'll format it properly tomorrow:
 >>>
->>> How is this memory currently presented to the system?
->>
->> The 7278 device has four ARMv8 CPU cores in an SMP cluster and two memory
->> controllers (MEMCs). Each MEMC is capable of controlling up to 8GB of DRAM.
->> An example 7278 system might have 1GB on each controller, so an arm64 kernel
->> might see 1GB on MEMC0 at 0x40000000-0x7FFFFFFF and 1GB on MEMC1 at
->> 0x300000000-0x33FFFFFFF.
->>
->> The base capability described in commits 7-15 of this V1 patch set is to
->> allow a 'movablecore' block to be created at a particular base address
->> rather than solely at the end of addressable memory.
-> 
-> I think this capability is only useful when there is non-uniform access to
-> different memory ranges. Otherwise it wouldn't matter where the movable
-> pages reside.
-I think that is a fair assessment of the described capability. However, 
-the non-uniform access is a result of the current Linux architecture 
-rather than the hardware architecture.
-
-> The system you describe looks quite NUMA to me, with two
-> memory controllers, each for accessing a partial range of the available
-> memory.
-NUMA was created to deal with non-uniformity in the hardware 
-architecture where a CPU and/or other hardware device can make more 
-efficient use of some nodes than other nodes. NUMA attempts to allocate 
-from "closer" nodes to improve the operational efficiency of the system.
-
-If we consider how an arm64 architecture Linux kernel will apply zones 
-to the above example system we find that Linux will place MEMC0 in 
-ZONE_DMA and MEMC1 in ZONE_NORMAL. This allows both kernel and user 
-space to compete for bandwidth on MEMC1, but largely excludes user space 
-from MEMC0. It is possible for user space to get memory from ZONE_DMA 
-through fallback when ZONE_NORMAL has been consumed, but there is a 
-pretty clear bias against user space use of MEMC0. This non-uniformity 
-doesn't come from the bus architecture since each CPU has equal costs to 
-access MEMC0 and MEMC1. They compete for bandwidth, but there is no 
-hardware bias for one node over another. Creating ZONE_MOVABLE memory on 
-MEMC0 can help correct for the Linux bias.
-
->   
->>>> expressed the desire to locate ZONE_MOVABLE memory on each
->>>> memory controller to allow user space intensive processing to
->>>> make better use of the additional memory bandwidth.
+>>> Please wait till we reach some conclusion otherwise your work might be
+>>> wasted.
 >>>
->>> Can you share some more how exactly ZONE_MOVABLE would help here to make
->>> better use of the memory bandwidth?
->>
->> ZONE_MOVABLE memory is effectively unusable by the kernel. It can be used by
->> user space applications through both the page allocator and the Hugetlbfs.
->> If a large 'movablecore' allocation is defined and it can only be located at
->> the end of addressable memory then it will always be located on MEMC1 of a
->> 7278 system. This will create a tendency for user space accesses to consume
->> more bandwidth on the MEMC1 memory controller and kernel space accesses to
->> consume more bandwidth on MEMC0. A more even distribution of ZONE_MOVABLE
->> memory between the available memory controllers in theory makes more memory
->> bandwidth available to user space intensive loads.
-> 
-> The theory makes perfect sense, but is there any practical evidence of
-> improvement?
-> Some benchmark results that illustrate the difference would be nice.
-I agree that benchmark results would be nice. Unfortunately, I am not 
-part of the constituency that uses these Linux features so I have no 
-representative user space work loads to measure. I can only say that I 
-was asked to implement this capability, this is the approach I took, and 
-customers of Broadcom are making use of it. I am submitting it upstream 
-with the hope that: its/my sanity can be better reviewed, it will not 
-get broken by future changes in the kernel, and it will be useful to others.
-
-This "narrow" capability may have limited value to others, but it should 
-not create issues for those that do not actively wish to use it. I would 
-hope that makes it easier to review and get accepted.
-
-However, I believe "other opportunities" exist that may have broader 
-appeal so I have suggested some along with the "narrow" capability to 
-hopefully give others motivation to consider accepting the narrow 
-capability and to help shape how these "other capabilities" should be 
-implemented.
-
-One "other opportunity" that I have realized may be more interesting 
-than I originally anticipated comes from the recognition that the 
-Devicetree Specification includes support for Reserved Memory regions 
-that can contain the 'reusable' property to allow the OS to make use of 
-the memory. Currently, Linux only takes advantage of that capability for 
-reserved memory nodes that are compatible with 'shared-dma-pool' where 
-CMA is used to allow the memory to be used by the OS and by device 
-drivers. CMA is a great concept, but we have observed shortcomings that 
-become more apparent as the size of the CMA region grows. Specifically, 
-the Linux memory management works very hard to keep half of the CMA 
-memory free. A number of submissions have been made over the years to 
-alter the CMA implementation to allow more aggressive use of the memory 
-by the OS, but there are users that desire the current behavior so the 
-submissions have been rejected.
-
-No other types of reserved memory nodes can take advantage of sharing 
-the memory with the Linux operating system because there is insufficient 
-specification of how device drivers can reclaim the reserved memory when 
-it is needed. The introduction of Designated Movable Block support 
-provides a mechanism that would allow this capability to be realized. 
-Because DMBs are in ZONE_MOVABLE their pages are reclaimable, and 
-because they can be located anywhere they can satisfy DMA constraints of 
-owning devices. In the simplest case, device drivers can use the 
-dmb_intersects() function to determine whether their reserved memory 
-range is within a DMB and can use the alloc_contig_range() function to 
-reclaim the pages. This simple API could certainly be improved upon 
-(e.g. the CMA allocator seems like an obvious choice), but it doesn't 
-need to be defined by me so I would be happy to hear other people's ideas.
-
-> 
->>>> BACKGROUND:
->>>> NUMA architectures support distributing movablecore memory
->>>> across each node, but it is undesirable to introduce the
->>>> overhead and complexities of NUMA on systems that don't have a
->>>> Non-Uniform Memory Architecture.
+>>>>
+>>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>>> @@ -48,6 +48,13 @@ properties:
+>>>>                - qcom,sm8350-smmu-500
+>>>>                - qcom,sm8450-smmu-500
+>>>>            - const: arm,mmu-500
+>>>> +
+>>>> +      - description: Qcom SoCs implementing "qcom,smmu-500"
+>>>> +        items:
+>>>> +          - enum:
+>>>> +              - qcom,sdm670-smmu-500
+>>>> +          - const: qcom,smmu-500
+>>>> +
 >>>
->>> How exactly would that look like? I think I am missing something :)
->>
->> The notion would be to consider each memory controller as a separate node,
->> but as stated it is not desirable.
-> 
-> Why?
-In my opinion this is an inappropriate application of NUMA because the 
-hardware does not impose any access non-uniformity to justify the 
-complexity and overhead associated with NUMA. It would only be 
-shoe-horned into the implementation to add some logical notion of memory 
-nodes being associated with memory controllers. I would expect such an 
-approach to receive a lot of push back from the Android Common Kernel 
-users which may not be relevant to everyone, but is to many.
+>>> Someone would have to confirm that smmu-500 is a real device
+>>> spec/version. Otherwise this should be device-specific compatible (e.g.
+>>> earliest in family).
+>> In my view it's hard to name it, downstream uses bool properties for enabling/disabling
+>> certain quirks and on different generations there are different combinations of that.
+>> Interestingly enough, I vaguely remember that the same quirk names can mean different
+>> things on different msm-X.Y versions.. Add to that, different msm-X.Y versions can have
+>> different assumptions on what's the default (aka without taking the bool properties into
+>> account) behaviour for a given compatible. 
+>
+> Downstream does not care about ABI, coding style, reasonable approach,
+> so it should not wonder that they code things inconsistent.
+>
+>
+>> So I suppose "first in the family" would be
+>> the best way to go for mainline, though there are still quite a few families:
+>> 
+>> <earlier ones used qcom_iommu>
+>> - 8996 with quirks that are already accounted for (or one may also say it works by miracle,
+>> just like msm8916 - downstream adds more special handling, but looks like the fw is not as
+>> restrictive)
+>> 
+>> - 8996pro + 660 + 8998 with serious unmerged ones [1]
+>> 
+>> - 845 which seems to be aok
+>> 
+>> - special case of chromebooks where they only have qcom TZ/XPUs and not the hypervisor to
+>> fight with, so ma-a-aybe (no downstream reference & I don't have the hw to confirm) they
+>> can get away with less things
+>> 
+>> - 8[1234]50 which seem to be a mix-and-match of less serious (read: not accounting for them
+>> may hurt performance but will not make your device sepuku at SMMU probe) minor quirks
+>> [2][3][4][5] (big warning: these may be overriden somewhere in other device tree fragments,
+>> the surest option would be to take a compiled dtb and decompile it to be sure about it)
+>> 
+>> - 4xxx/6xxx series that mostly align with "whatever was there on the flagship soc released
+>> a year before"
+>
+> If the devices are really different, even though it is not visible in
+> Linux driver, then indeed there is no point for fake compatibility. I
+> raised the question only because the driver does not customize the
+> variants, but that might be not enough.
 
-Thanks for your consideration,
--Doug
+If there are no problems with the original patch, could you please indicate
+that? I think this thread is getting a little lengthy for the other
+maintainers.
 
+> Linked DTSI use different quirks (assuming quirks would have same
+> meaning...), plus they have sometimes different amount of clocks, so in
+> total maybe it is not reasonable to make them compatible. On the other
+> hand, maybe the programming model is very, very similar thus Linux could
+> bind to one fallback and few different bits would be customized with
+> specific compatible.
+
+Not to rush you or anything. If you think this should be decided before the
+series goes in, it's not urgent.
