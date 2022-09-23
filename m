@@ -1,142 +1,167 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2052.outbound.protection.outlook.com [40.107.95.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 459423D90
-	for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 15:40:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1663947656;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Xp8n9BEf2cideoJzS91rRhX1GcOR1oLq3Ya8y4rm+XA=;
-	b=XXLyC9b7HS3f+adqEjUElOBBHE+mzkk6GbWFLb4SZZrOSJH9i8e1WAZpFgm5wVUcGYtkci
-	UsfnFhPxEExBb47dFHZ1IA4OissJDyajLVreptoZZrsU7hsHxOsLc3j3Hh9/VxkKPl1CGV
-	F4n3fHH4Qq7VCR4doHWKin3U2rWrboM=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-248-xfic0JQcNiylvBJvZe7b1Q-1; Fri, 23 Sep 2022 11:40:54 -0400
-X-MC-Unique: xfic0JQcNiylvBJvZe7b1Q-1
-Received: by mail-qt1-f200.google.com with SMTP id fy20-20020a05622a5a1400b0035bef08641dso190421qtb.18
-        for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 08:40:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date;
-        bh=Xp8n9BEf2cideoJzS91rRhX1GcOR1oLq3Ya8y4rm+XA=;
-        b=DVC55W0uZH0Qi7vIcNizk3B+dNvphwaxfZPDvzRZd0n3ZVCw7jIuU8fVN02Lga4NyG
-         oN8PZwzpsiiTKml+jlV8xunWT+WBiOHiymYrLlzHijwfG7jFUzd4HV7AEZefZxx2kNwE
-         AsJZ0OOTTrgKcsshPaPbsOZwPtsEclUSZlSU5Oi4OD3/r9Fvp8MUdjU/VHIZyvGmVLFQ
-         xNuUOoe3z6y2dfJ/sM4i1Q454sKb0oYx/tS/+etC3YyCXAUg/hiFu+1vo5fuz5trC+rW
-         wUmehgmC0M50dpQpK23+teGU0+4ne9/qH5labAkudovTrMDeokWLYhApYdJKc/beKm9i
-         NrMA==
-X-Gm-Message-State: ACrzQf0AFUa+BGafdWkIFfyBz+RZyHySfmHZfh4Z6DqluuXcBmllIxQP
-	yYZ0AUUetHuOQ0le2z3vWbLlCBukuRB7AMpOTw8ebPEgdZ3sXwxoNT+8V5hWgwEL9j/UqESy2mO
-	V2gLupPSTYUv1b3c=
-X-Received: by 2002:ac8:5dca:0:b0:35c:e21f:92c3 with SMTP id e10-20020ac85dca000000b0035ce21f92c3mr7680813qtx.473.1663947653743;
-        Fri, 23 Sep 2022 08:40:53 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM7McETnyWeZqSsJy9tBmfBBxJ6KYuvTm+i4mmh6h2wmwYz+cY/0Iu/IQgWKvi4pAWDbujCD5A==
-X-Received: by 2002:ac8:5dca:0:b0:35c:e21f:92c3 with SMTP id e10-20020ac85dca000000b0035ce21f92c3mr7680778qtx.473.1663947653514;
-        Fri, 23 Sep 2022 08:40:53 -0700 (PDT)
-Received: from ?IPV6:2600:8805:3a00:3:3b4f:6d3c:92c4:a5c7? ([2600:8805:3a00:3:3b4f:6d3c:92c4:a5c7])
-        by smtp.gmail.com with ESMTPSA id x15-20020a05620a448f00b006a5d2eb58b2sm6380921qkp.33.2022.09.23.08.40.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 23 Sep 2022 08:40:52 -0700 (PDT)
-Message-ID: <5ae777d2-f95c-d8bb-5405-192a89f16e90@redhat.com>
-Date: Fri, 23 Sep 2022 11:40:51 -0400
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 171154409
+	for <iommu@lists.linux.dev>; Fri, 23 Sep 2022 17:27:49 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=G0c3p6JybFR8ZgJ9lRoL1j5NQjSvNtiRx825bj38rKqeGQ+uUU3A2dtVk0QxlAHbCrwQU54lj6FBPb+SfhWILUYQqhgpXKo/MTlzwPFXq5tJn1E/hXc9Lx3npZXoY1PFORsUfs0H6ZA14P8Clg83ziitl9HKsxJQNjDkSbBUsqV2MlgXMNkun8jV3ABwirYthF42JOYt96F4xwUGXeHH36QJpWReVCwaY6B0YwpLtMkoVWVCCsUFFA4OgmHJCrVfVoDvVA/N1gVgu9bLwQT2BNfvKr/e/rlVLLvK1ttrRjNgSq3OC7+4d+ezo/UVC+s3lb54xQUcFdhCzKw6dhgpuQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=X0WzX4iCvIaXvAIJ94yg+fO9qcGBZ8978LeSk9QgGHY=;
+ b=a1MfuUI3cWeqi5xHVYrSfzjxpiGHmw5u98GRqRgWRr2NASF2rV56ekvFi1w7AC7cTOWdolCkLPnCIQRRivA+2nePygSXQFie63asG7R7Qh6Ch+pRpNDShQ5TEPAwDLFOAY7YKt8B6+0txlXrSDiAR0EyoqmYBrX6MXMBQltbhqii+ildqSNSpnSw93wUyAT7jQAl2BJDoyRY2gay5JGI8konh/F2dkB7rX+/s7jep/UVcYbO55J3igs2v3gOcFujwb+I9jSebyzwYNGb8nRnPCyxSugv63a3TZKJG/sQowaGgTczLQokZV7qzF/JN3NpLDqGtPOsfVfvyhZsc6dlPA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=X0WzX4iCvIaXvAIJ94yg+fO9qcGBZ8978LeSk9QgGHY=;
+ b=nGNAEsyBLOLD8Me/LKZbYaLVv1vO5lmhsyn31iO8HY/aCw4R9aTpAImgj2RCiLo41qcN29CUTbVoEpL4dTKVQ79ookjVuOL/bkRp2XXzpsatgpsMygY6yAKTa/tFR1cLfx7QknI2MKLg7R31C+nDCFSdFnMfpS4IDfek1zRo8aF/KAzv8GvHLttQ0z6e6zFa1AjO6ihCufKbXFDYHRq0hDMLwcXO1+zko9i+X4sV3fcZeGLYZo+uY/DKtoW4XrZVfTzb1B6RG0+CRa2Sn+kk9XyaWcZN6Pw5/J0OVU74H5GaK1SEl58mmn4E+xkIHBLFsawxuiTacPrGNLS5IYV0Aw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by BL3PR12MB6377.namprd12.prod.outlook.com (2603:10b6:208:3b0::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.18; Fri, 23 Sep
+ 2022 17:27:46 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::462:7fe:f04f:d0d5]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::462:7fe:f04f:d0d5%7]) with mapi id 15.20.5654.020; Fri, 23 Sep 2022
+ 17:27:46 +0000
+Date: Fri, 23 Sep 2022 14:27:45 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Jann Horn <jannh@google.com>
+Cc: Will Deacon <will@kernel.org>, Sean Christopherson <seanjc@google.com>,
+	Joerg Roedel <jroedel@suse.de>, jean-philippe.brucker@arm.com,
+	Linux-MM <linux-mm@kvack.org>,
+	kernel list <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev
+Subject: Re: some likely bugs in IOMMUv2 (in tlb_finish_mmu() nested flush
+ and mremap())
+Message-ID: <Yy3skVk/DvwVnPXD@nvidia.com>
+References: <CAG48ez2NQKVbv=yG_fq_jtZjf8Q=+Wy54FxcFrK_OujFg5BwSQ@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAG48ez2NQKVbv=yG_fq_jtZjf8Q=+Wy54FxcFrK_OujFg5BwSQ@mail.gmail.com>
+X-ClientProxiedBy: MN2PR10CA0034.namprd10.prod.outlook.com
+ (2603:10b6:208:120::47) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH RFC v2 00/13] IOMMUFD Generic interface
-To: =?UTF-8?Q?Daniel_P=2e_Berrang=c3=a9?= <berrange@redhat.com>,
- Jason Gunthorpe <jgg@nvidia.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>,
- Eric Auger <eric.auger@redhat.com>, "Tian, Kevin" <kevin.tian@intel.com>,
- "Rodel, Jorg" <jroedel@suse.de>, Lu Baolu <baolu.lu@linux.intel.com>,
- Chaitanya Kulkarni <chaitanyak@nvidia.com>, Cornelia Huck
- <cohuck@redhat.com>, Daniel Jordan <daniel.m.jordan@oracle.com>,
- David Gibson <david@gibson.dropbear.id.au>,
- Eric Farman <farman@linux.ibm.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- Jason Wang <jasowang@redhat.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- "Martins, Joao" <joao.m.martins@oracle.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- Matthew Rosato <mjrosato@linux.ibm.com>, "Michael S. Tsirkin"
- <mst@redhat.com>, Nicolin Chen <nicolinc@nvidia.com>,
- Niklas Schnelle <schnelle@linux.ibm.com>,
- Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- "Liu, Yi L" <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>,
- Steve Sistare <steven.sistare@oracle.com>,
- "libvir-list@redhat.com" <libvir-list@redhat.com>
-References: <YyxFEpAOC2V1SZwk@redhat.com> <YyxsV5SH85YcwKum@nvidia.com>
- <Yyx13kXCF4ovsxZg@redhat.com> <Yyx2ijVjKOkhcPQR@nvidia.com>
- <Yyx4cEU1n0l6sP7X@redhat.com> <Yyx/yDQ/nDVOTKSD@nvidia.com>
- <Yy10WIgQK3Q74nBm@redhat.com> <Yy20xURdYLzf0ikS@nvidia.com>
- <Yy22GFgrcyMyt3q1@redhat.com> <Yy24rX8NQkxR2KCV@nvidia.com>
- <Yy28FzEnoKo8UExU@redhat.com>
-From: Laine Stump <laine@redhat.com>
-Organization: Red Hat
-In-Reply-To: <Yy28FzEnoKo8UExU@redhat.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4192:EE_|BL3PR12MB6377:EE_
+X-MS-Office365-Filtering-Correlation-Id: 21a62c6e-ade1-4454-aab3-08da9d88ee3d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	hh7ZoRD86N6b+yVe5TZ6kPebKimCNKDPBFWQYbckKIlgO0SnUMzxL9vztZTYYSG6iSJV1wMGs/J21ztvJreUKe8WO6SzjjjnrplyNhEYH3shZJX65DV6FD5ZhSYUxn2IBwiklDPZ72aaSvJ5Wqr4BxV3pXtQfGpFm38q9H8w1xipTiAfR5VKCoT38HLZGcX6+Xnaqd6ZkV31Po7mK/F8uH4uS3/gfNJaXVn3Xd/sFlj/f4XI7e390ddm7QJ0LMA9m9bnQs9ORmCSPvjHpp93MkAOvA4ZorMXr2UwRtGK04UFR0bY6QsLQmuD+Z0VXvRXT9fF7Phi6EN2h+c0o8eKAqk0srO2svuPM2uxyRy8Et9PmZxVh2NAYaKh07U2e7n2J5JkKfUEN0r7T1vxv47eFcehN+wi5VdOUITykAn4pROmbQZfxW/3Y4RCy/YYIIy+kIZwhJc/5rtr4KqVH8NjpZVKDtGhvNCCHT1cInfetBQwfqQevsTJYQ/xoBUeNOVD08B/DJjpfgglbKZzqf3hYW5rcK5jec0TCdAOHdAz1JYaJzNFBWAuTX/GaOvB2swvBC8stV2araryikT/2u/RyAQhbcATn6avWLdhcqwpzySoLxla/P3vvyq6sNuHpCzEkqeyRzN+1pBvSLvcZMg8dqSUGpj1xnv5fUkh+LvtYolugrhD4x0I1kXvkjJTvYt7N9uLESCgnfO6RZOLj21u3Xz270lBJ9/Tw1njwrJeKUP02kLYut8kxV+IObIxqhxXIUvB7RqaN8+BYkm1UNKfz51WZdrbib4dCWCzEAFDvx4=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(376002)(39860400002)(396003)(366004)(346002)(451199015)(6512007)(26005)(8676002)(36756003)(54906003)(6916009)(4326008)(316002)(41300700001)(66946007)(66556008)(66476007)(5660300002)(8936002)(6506007)(86362001)(186003)(38100700002)(83380400001)(6486002)(2616005)(478600001)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?A5JCPs7f0XQzq2chpbt0XzYuI40b2s4+FZmQRX9hS9vSThxkpXW4sMF38LWB?=
+ =?us-ascii?Q?nCOft6JVh+3403Ml0I6F0Vr0Cue7PKs72YluZ2C+zrc8ZbNFiQQLz6Vm75gz?=
+ =?us-ascii?Q?+Vu/BQtenRxW7EQ6NuT9PBGOjVv1pUBjfk5oh5ykSwdpYBBrDZlyFHII2ekk?=
+ =?us-ascii?Q?7892P4j9Dp0Lo8AT/NiKMEjHSucwnSa6RpfkLln6w36aONth3RmJJlvuurAN?=
+ =?us-ascii?Q?6psUy0S7k8XNXtNnP0yAM2FvJ604broi+EeXhvU2GEV6FA0wXV546IaPsQyN?=
+ =?us-ascii?Q?KCnb5mA4oihC67TFp1ouGEtpn/y6Fdk/+0gdEfwkh/6XcaY2DQ4banKOVOLA?=
+ =?us-ascii?Q?qw2rIszIGK0KoYNxG8BBRIHdwwoj1PgVhTeHrOoMaxr0nAVVH5BvvxnIG8uv?=
+ =?us-ascii?Q?G3Xu7faF6jFaHkTEZLzlA4sDIPIIeyxoVkVhNPKBZkJY3L/9+0Cz2OBLwyO1?=
+ =?us-ascii?Q?KFRUXfKswZiQotXgZITvUK5sDKvkQtmkmMbgJ/LLkSBT85M4renQExZmo80k?=
+ =?us-ascii?Q?TNob+VQoUDKAB+6zjOkfgFL5XpqjanPlXLyPg9Vig75hxqJdDA/VA9FnUT8f?=
+ =?us-ascii?Q?yOLt4SldvtIciyr7B/gAT21Xv8IU6VLaUKvEOfsy0+VaIdbR676buS9zVdgt?=
+ =?us-ascii?Q?QPP4KwOdXVgsQ2AS8Vq7I+7BtTCWyckttwnWDM/upmHb8VqdNVpawno+UTMo?=
+ =?us-ascii?Q?uiFOSmzOubAfQHxCVylA/WIY/v1XPaQBnE1365jbpKS6IxejQx0daJ/hqxtb?=
+ =?us-ascii?Q?s+6korz6FCpAXuAulCuLxKIBZJ7ByaCDaqbe+tPps6Ta5mN7/T1a2zy8oP2a?=
+ =?us-ascii?Q?wyDhWCzyVWewxyUpYSqZQ52l3kiCpOAUpKsjOB0l4X6mvF5cHDpGA1ziWj1Y?=
+ =?us-ascii?Q?DYXsslUYgzs5qm0O9WPECiHaFnhMkMDl9GO6gOKEQmfZCr4csN8G/l/UYzHL?=
+ =?us-ascii?Q?zoHFqf9bkNEqLvLwr958OaCzBPJbci3+BVAvR500ZV8n/kLG2gMLxI+NDRd1?=
+ =?us-ascii?Q?v1LoL+iKrppks5POfJ29YHu042urjLpuWTEaleR6eOz6ZmYk3K22JHHjQf5/?=
+ =?us-ascii?Q?TdbUowiJgib5lSZYcz4N5GCfEYNWDu1tDDEMDuLn1nDMpo/RNbjXw5ihWXx2?=
+ =?us-ascii?Q?ny+st4AIdZ/0ns4CO/L8YMhEeuhbhpksDW6JR061z7+KR6KMA7BG0atsq9P2?=
+ =?us-ascii?Q?sNxtHX7p3Hs9jH4qvr5jcuhTalMEUZFBJvt4b269KFv3mqzjhkk910yq1mWb?=
+ =?us-ascii?Q?U/1JF4v+2x8GrlNmKZixmLAWUtXwiPAvh1n4F7UJuS2HzUEbvjoU+R5ubTFn?=
+ =?us-ascii?Q?+qwa/67EBXC049a7S/DmhczpRVWXaMV3c+oMrm7+Gcm+s4knpX4Hd17sNMAX?=
+ =?us-ascii?Q?ecEI96zPExr/M2SqIHadeEExH43n6JfmdqGyRoOB0N8vwbyFyUnzv0O3rmIA?=
+ =?us-ascii?Q?MAh3h6bZzrXYzwx9ZWfz01RArQycMbBypjFkpk8tjBX7MeinsYFjch17ygEo?=
+ =?us-ascii?Q?gX4f5W2ynJIkWKDmsiuH8OiaT8lORveL2wVBLnsg8J5/JqILdYn72uJUYMYk?=
+ =?us-ascii?Q?leeBAMbPQfVwyoLHGUD74KIplRwAcPoUaRBydyjG?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 21a62c6e-ade1-4454-aab3-08da9d88ee3d
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2022 17:27:46.5571
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: fsaiJf3nvntEek/mf31buHs4bmxWVtoBZqJGg1Ns36Fyt7RCwsh37itXhNMe2TMB
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR12MB6377
 
-On 9/23/22 10:00 AM, Daniel P. Berrangé wrote:
-> On Fri, Sep 23, 2022 at 10:46:21AM -0300, Jason Gunthorpe wrote:
->> On Fri, Sep 23, 2022 at 02:35:20PM +0100, Daniel P. Berrangé wrote:
->>> On Fri, Sep 23, 2022 at 10:29:41AM -0300, Jason Gunthorpe wrote:
->>>> On Fri, Sep 23, 2022 at 09:54:48AM +0100, Daniel P. Berrangé wrote:
->>>>
->>>>> Yes, we use cgroups extensively already.
->>>>
->>>> Ok, I will try to see about this
->>>>
->>>> Can you also tell me if the selinux/seccomp will prevent qemu from
->>>> opening more than one /dev/vfio/vfio ? I suppose the answer is no?
->>>
->>> I don't believe there's any restriction on the nubmer of open attempts,
->>> its just a case of allowed or denied globally for the VM.
->>
->> Ok
->>
->> For iommufd we plan to have qemu accept a single already opened FD of
->> /dev/iommu and so the selinux/etc would block all access to the
->> chardev.
+On Fri, Sep 23, 2022 at 05:38:12PM +0200, Jann Horn wrote:
+> Hi!
 > 
-> A selinux policy update would be needed to allow read()/write() for the
-> inherited FD, whle keeping open() blocked
+> I looked through some of the code related to IOMMUv2 (the thing where
+> the IOMMU walks the normal userspace page tables and TLB shootdowns
+> are replicated to the IOMMU through
+> mmu_notifier_ops::invalidate_range).
 > 
->> Can you tell me if the thing invoking qmeu that will open /dev/iommu
->> will have CAP_SYS_RESOURCE ? I assume yes if it is already touching
->> ulimits..
-> 
-> The privileged libvirtd runs with privs equiv to root, so all
-> capabilities are present.
-> 
-> The unprivileged libvirtd runs with same privs as your user account,
-> so no capabilities. I vaguely recall there was some way to enable
-> use of PCI passthrough for unpriv libvirtd, but needed a bunch of
-> admin setup steps ahead of time.
+> I think there's a bug in the interaction between tlb_finish_mmu() and
+> mmu_notifier_ops::invalidate_range: In the mm_tlb_flush_nested() case,
+> __tlb_reset_range() sets tlb->start and tlb->end *both* to ~0.
+> Afterwards, tlb_finish_mmu() calls
+> tlb_flush_mmu()->tlb_flush_mmu_tlbonly()->mmu_notifier_invalidate_range(),
+> which will pass those tlb->start and tlb->end values to
+> mmu_notifier_ops::invalidate_range callbacks. But those callbacks
+> don't know about this special case and then basically only flush
+> virtual address ~0, making the flush useless. 
 
-It's been a few years, but my recollection is that before starting a 
-libvirtd that will run a guest with a vfio device, a privileged process 
-needs to
+Yeah, that looks wrong to me, and it extends more than just the iommu
+drivers kvm_arch_mmu_notifier_invalidate_range() also does not handle
+this coding.
 
-1) increase the locked memory limit for the user that will be running 
-qemu (eg. by adding a file with the increased limit to 
-/etc/security/limits.d)
+Most likely tlb_flush_mmu_tlbonly() need to change it back to 0 to ~0?
+I wonder why it uses such an odd coding in the first place?
 
-2) bind the device to the vfio-pci driver, and
+Actually, maybe having mm_tlb_flush_nested() call __tlb_reset_range()
+to generate a 'flush all' request is just a bad idea, as we already
+had another bug in 7a30df49f63ad92 related to reset_range doing the
+wrong thing for a flush all action.
 
-3) chown /dev/vfio/$iommu_group to the user running qemu.
+> (However, pretty much every place that calls tlb_finish_mmu() first
+> calls mmu_notifier_invalidate_range_end() even though the
+> appropriate thing would probably be
+> mmu_notifier_invalidate_range_only_end(); and I think those two
+> things probably cancel each other out?)
 
+That does sound like double flushing to me, though as you note below,
+the invalidate_range() triggered by range_end() after the TLB
+flush/page freeing is functionally incorrect, so we cannot rely on it.
+
+> Also, from what I can tell, the mremap() code, in move_page_tables(),
+> only invokes mmu_notifier_ops::invalidate_range via the
+> mmu_notifier_invalidate_range_end() at the very end, long after TLB
+> flushes must have happened - sort of like the bug we had years ago
+> where mremap() was flushing the normal TLBs too late
+> (https://bugs.chromium.org/p/project-zero/issues/detail?id=1695).
+
+Based on the description of eb66ae03082960 I would say that yes the
+invalidate_range op is missing here for the same reasons the CPU flush
+was missing.
+
+AFAIK if we are flushing the CPU tlb then we really must also flush
+the CPU tlb that KVM controls, and that is primarily what
+invalidate_range() is used for.
+
+Which makes me wonder if the invalidate_range() hidden inside
+invalidate_end() is a bad idea in general - when is this need and
+would be correct? Isn't it better to put the invalidates near the TLB
+invalidates and leave start/end as purely a bracketing API, which by
+definition, cannot have an end that is 'too late'?
+
+Jason
