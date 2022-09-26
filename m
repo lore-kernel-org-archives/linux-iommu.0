@@ -1,151 +1,136 @@
-Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2084.outbound.protection.outlook.com [40.107.212.84])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EC48468D
-	for <iommu@lists.linux.dev>; Mon, 26 Sep 2022 20:13:05 +0000 (UTC)
-Received: by mail-pf1-f180.google.com with SMTP id d82so7758563pfd.10
-        for <iommu@lists.linux.dev>; Mon, 26 Sep 2022 13:13:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=YkdEJniatjR+ZtWbjW6dVhH3qCn68DZMiCuKOEEupvQ=;
-        b=TjUQiCgIuIHFLHFTEDiSnnBcTv7cL4/7Ynd5pRr0pMtG94KvYPOQIM8NEu3DEnk8Tv
-         ONS8XQof0kiA1Pd/x3nQ9jx1+374FmKe/wmdgLCbSMYU2iKAOMZxKSre+QyN2RfI4SMC
-         bL0s9/92lM6lZI31ixRDwpGl3wQ+8J6lT9sumFBJ7uNaeV2PhOzAELCEgSQxrtnTTyN1
-         75uGcV4s4BFGEfUf6gqPaA/q7ToCSuZFIvjx6YyKNkXWJbTG7fmYeGHpsUAnI+P+Yxho
-         LFL66BpE7qDSdN0nH2/a1sjlx9V/o8YitzLgxDkATDj+hbJPu1/my/irf4b5WA5cJ37z
-         hJ6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=YkdEJniatjR+ZtWbjW6dVhH3qCn68DZMiCuKOEEupvQ=;
-        b=OCQycj6XmkoHtjSdrmrAvbysq0F8PYZ1XJ290WJ/G5XyCQd3s8w9okgwbcg8mEDWwj
-         Y0VT6RsA1gCAq/yO8aJ+w07ZZ8G3lpK/p2fRZY8D5UUAM5NY/h/P9hIdCVOVaw1VhBDe
-         Birs4ikWpQEYLa+uyfFcMjXvvJkK1VR31+ZMknNo8EOYU8TPedeBxl3n1xzyOFCOA0W8
-         yjBjX76vCKHreas6iiXkoflSrCMCvm1lm8pOzynBke0zfGAoVGG4R+D95EowwRjG457O
-         iXmMg23kBadnieFyb0GB2ekp+/SdDsvUaPDjcZsvtmqhk+NJtNFCajHiOOyQHwgryjeP
-         qPFw==
-X-Gm-Message-State: ACrzQf1YHZNF2Ej6HRU+BYmjqK3TIvZLqukL6aQCmd98bQrVnxb294ka
-	frF4Ohsi70ca9EGQuKL9bk63Nw==
-X-Google-Smtp-Source: AMsMyM4KZsVpvOzN/Qv68U3ASF7rRbCJhaAIuqdahA2eXFU8qgl/Bcc4sOVeN/fs0qw0ds1z3HDxig==
-X-Received: by 2002:aa7:985e:0:b0:557:cc92:34ae with SMTP id n30-20020aa7985e000000b00557cc9234aemr12908648pfq.66.1664223184536;
-        Mon, 26 Sep 2022 13:13:04 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id x12-20020aa7956c000000b0054094544ae7sm12619883pfq.60.2022.09.26.13.13.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Sep 2022 13:13:03 -0700 (PDT)
-Date: Mon, 26 Sep 2022 20:13:00 +0000
-From: Sean Christopherson <seanjc@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Jann Horn <jannh@google.com>, Will Deacon <will@kernel.org>,
-	Joerg Roedel <jroedel@suse.de>, jean-philippe.brucker@arm.com,
-	Linux-MM <linux-mm@kvack.org>,
-	kernel list <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev
-Subject: Re: some likely bugs in IOMMUv2 (in tlb_finish_mmu() nested flush
- and mremap())
-Message-ID: <YzIHzIxknGNba6CC@google.com>
-References: <CAG48ez2NQKVbv=yG_fq_jtZjf8Q=+Wy54FxcFrK_OujFg5BwSQ@mail.gmail.com>
- <Yy3skVk/DvwVnPXD@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56717398
+	for <iommu@lists.linux.dev>; Mon, 26 Sep 2022 22:34:35 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=g1AiWTIHozduWTgnTyl0OQsAYPBqhv7JjzE/i13I1fF0oPUm3XsD1Su4XQIVAHsdh+EGRKG5zMACuyDSdB3F+bGEcpCWD7G6yXMhJG4qUG73BZgO/Zc1+cpqlPD+vphnUP6tRH0GH9IfFmpZWSiM5YDWwBVaHPXh5Khq5FvjIR4UoZGIsZbMxwusV1McOSww/7kmGX+fR4yNQ+Kp/Fl5Kz4YdiPfMM5A7u/+qazYqBkpeWsg4lYZzRd0FFAfdWp46PpimboJOy9XHaGWehJ2mJEiohTH5bLmugv9/VGOOIFPNBISwL9gowA3dy8it9o5au1XsFgBMMBclZ1kfVvlqg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7Dt5eDy1Vf+pnnjXuwjyNi5ezBxl2IO9s1ix0DcVWkI=;
+ b=oMEnSB+EKpGHnYO5dal138fAwifxZzIPVy+YZbqhF4AVZ62QwEe37k2OMvWEX8BLbTPdvo/DAsAaDpNMIDqE3dCExtdChm7JPs6yY/mxZjU9aPhrtSe+u2lIhJWSxE7GoHGSSmWjj9q3+XGlrVACd3wfGA949vl9hT333WrlirEGc5QFaalGUvl/55hID79VoBdTpu8cYppTQ84KjErabxHRKrEY1oU/QLtHsDpWL1dIKoAM7ebjHP6XGBjuEIAHuxRRKQXN4WBJyLAl7YZawLlwp344KO1qV6CdjJOara3iMfBJlEHXnvRAo1LYXybwyP+w5mqHvC6hrUFKxgyfew==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=8bytes.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7Dt5eDy1Vf+pnnjXuwjyNi5ezBxl2IO9s1ix0DcVWkI=;
+ b=ni+tJvLwqMfY3obfZncTN6pUsCEXICmZYCRWEt2lPKVmjlHWjAdzb8bjxn3O5aHkAj4XfwmQGnBzPV3ZAzGjqy+wFCYzZmm5VbUKY8frNTpmbeKAO4mXDh3+ng/eFSfYgiX9kaSAASjgpFDLAlRigEzS+JG5qTFHowwqpr88L+HBKrmkvGLLoJyBxWwQwvrocG8wE+BGqO7sH75H9eYzyuyW5UH10FVDxkpZfTNoKnZik4e5srxXBOJqXdcV/iC2O3vXNoEG40aGMDU7cWE5skFvFyoW4AZex+HE+svsXZEpBVgQWAKQhhKe2PCgDLUlz7c5X3yf98mAnZlgKQarKQ==
+Received: from MW4PR04CA0208.namprd04.prod.outlook.com (2603:10b6:303:86::33)
+ by IA1PR12MB6577.namprd12.prod.outlook.com (2603:10b6:208:3a3::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.20; Mon, 26 Sep
+ 2022 22:34:32 +0000
+Received: from CO1NAM11FT022.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:86:cafe::d6) by MW4PR04CA0208.outlook.office365.com
+ (2603:10b6:303:86::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.25 via Frontend
+ Transport; Mon, 26 Sep 2022 22:34:32 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ CO1NAM11FT022.mail.protection.outlook.com (10.13.175.199) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5654.14 via Frontend Transport; Mon, 26 Sep 2022 22:34:32 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Mon, 26 Sep
+ 2022 15:34:22 -0700
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.29; Mon, 26 Sep 2022 15:34:21 -0700
+Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29 via Frontend
+ Transport; Mon, 26 Sep 2022 15:34:20 -0700
+Date: Mon, 26 Sep 2022 15:34:19 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Joerg Roedel <joro@8bytes.org>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <jgg@nvidia.com>,
+	<kevin.tian@intel.com>, <quic_jjohnson@quicinc.com>,
+	<suravee.suthikulpanit@amd.com>, <robdclark@gmail.com>,
+	<dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <yong.wu@mediatek.com>,
+	<matthias.bgg@gmail.com>, <orsonzhai@gmail.com>,
+	<baolin.wang@linux.alibaba.com>, <zhang.lyra@gmail.com>,
+	<thierry.reding@gmail.com>, <vdumpa@nvidia.com>, <jonathanh@nvidia.com>,
+	<jean-philippe@linaro.org>, <shameerali.kolothum.thodi@huawei.com>,
+	<tglx@linutronix.de>, <christophe.jaillet@wanadoo.fr>,
+	<thunder.leizhen@huawei.com>, <yangyingliang@huawei.com>,
+	<quic_saipraka@quicinc.com>, <jon@solid-run.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-arm-msm@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
+	<linux-tegra@vger.kernel.org>, <virtualization@lists.linux-foundation.org>
+Subject: Re: [PATCH v6 0/5] Define EINVAL as device/domain incompatibility
+Message-ID: <YzIo67x8Ap6Eiruz@Asurada-Nvidia>
+References: <cover.1663899032.git.nicolinc@nvidia.com>
+ <YzGZqXCuw6yoXBla@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <Yy3skVk/DvwVnPXD@nvidia.com>
+In-Reply-To: <YzGZqXCuw6yoXBla@8bytes.org>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT022:EE_|IA1PR12MB6577:EE_
+X-MS-Office365-Filtering-Correlation-Id: b97de20c-8ccf-4db4-1433-08daa00f4829
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	jFN/Nzc9km+I0zwIlIYMcMx61lV9ByRELvkn0aSypBFeeQMlvSwcDLwWIY12oA7rz4S6tKf4MGIbpujtOZwTvpNlsu9f9oJel3KgmmatuAc8S/r1yxek9RfJofsMjus7Pwy5B3EgzkInNlnjDTLt4wKJRwxR9sWJ7Hp+Mbd0/FysY/wocDaQZJtZqJ3PxK90t3+HBeWs5Db9KTItuq7KdDTMnQ59MgJmfBq6pr25n6tzpt/u1GGbQb0U0tAGMrkMZHhKHyCO+mPHGzWmFU7IDTidwtScOamiVwO5fVvRBw0/6mh9y19Tp4nOF4ynFqWVO/zdlKW5jbEbGw9XLlDs2pVvaqsrh4HZuprvdgwyPjfzVe3D5+T/Pwx68SHErer3gpCBIxf2p5CRCX2Vgc2YSeoCxhJer9yEt8yUxdcZolXaEIjlaKkLRk+UA6vwC5/3w3TMI0kBu/xPldlUyuOA5Xv2h2bCpPKg7iUSuHvL/wAn7389/8ChqPKNfNnsYszoZgAXrsdR9+woyDZ0e1/VNU3qG/+FawPb6g4fC+GVh2BQVLdyFRcFEUxhE9a1h0DQYAAOXUNPOkIqXF7GOh8QVyiykX3u0xToMA0bgmIalkNDeBoE81V6cSILFUPH//kyyR4y6eF5t5FWQ501MiTiEp41hv1hVwoiM68qOIHinxzupFTyFrslWVtgAcaVYpO9zc6Or5Vb3YRfaIU833tnPunnHcpu6WbWu8iMMskELfa7aXNigrWCk2WBo8D7bRmUxJyE62X2ZvXpgfko0EeOPGn0AMmBgdFkfErgbBc1jJfKfU6dsmdldgz7S36/z//VWdOircmlZjCJ+mToyVFpk2YvKsTfl0zIBtC6Vv/wlGc=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(136003)(39860400002)(396003)(376002)(346002)(451199015)(36840700001)(46966006)(40470700004)(4326008)(40480700001)(70586007)(26005)(33716001)(70206006)(186003)(54906003)(47076005)(36860700001)(6916009)(426003)(336012)(82310400005)(8676002)(478600001)(316002)(5660300002)(55016003)(966005)(7406005)(7416002)(356005)(8936002)(82740400003)(2906002)(41300700001)(40460700003)(86362001)(9686003)(7636003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Sep 2022 22:34:32.0858
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b97de20c-8ccf-4db4-1433-08daa00f4829
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1NAM11FT022.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6577
 
-On Fri, Sep 23, 2022, Jason Gunthorpe wrote:
-> On Fri, Sep 23, 2022 at 05:38:12PM +0200, Jann Horn wrote:
-> > Hi!
-> > 
-> > I looked through some of the code related to IOMMUv2 (the thing where
-> > the IOMMU walks the normal userspace page tables and TLB shootdowns
-> > are replicated to the IOMMU through
-> > mmu_notifier_ops::invalidate_range).
-> > 
-> > I think there's a bug in the interaction between tlb_finish_mmu() and
-> > mmu_notifier_ops::invalidate_range: In the mm_tlb_flush_nested() case,
-> > __tlb_reset_range() sets tlb->start and tlb->end *both* to ~0.
-> > Afterwards, tlb_finish_mmu() calls
-> > tlb_flush_mmu()->tlb_flush_mmu_tlbonly()->mmu_notifier_invalidate_range(),
-> > which will pass those tlb->start and tlb->end values to
-> > mmu_notifier_ops::invalidate_range callbacks. But those callbacks
-> > don't know about this special case and then basically only flush
-> > virtual address ~0, making the flush useless. 
+On Mon, Sep 26, 2022 at 02:23:05PM +0200, Joerg Roedel wrote:
+> External email: Use caution opening links or attachments
 > 
-> Yeah, that looks wrong to me, and it extends more than just the iommu
-> drivers kvm_arch_mmu_notifier_invalidate_range() also does not handle
-> this coding.
-
-FWIW, the bug is likely benign for KVM.  KVM does almost all of its TLB flushing
-via invalidate_range_{start,end}(), the invalidate_range() hook is used only by
-x86/VMX to react to a specific KVM-allocated page being migrated (the page is only
-ever unmapped when the VM is dying).
-
-> Most likely tlb_flush_mmu_tlbonly() need to change it back to 0 to ~0?
-> I wonder why it uses such an odd coding in the first place?
 > 
-> Actually, maybe having mm_tlb_flush_nested() call __tlb_reset_range()
-> to generate a 'flush all' request is just a bad idea, as we already
-> had another bug in 7a30df49f63ad92 related to reset_range doing the
-> wrong thing for a flush all action.
+> Hi Nicolin,
 > 
-> > (However, pretty much every place that calls tlb_finish_mmu() first
-> > calls mmu_notifier_invalidate_range_end() even though the
-> > appropriate thing would probably be
-> > mmu_notifier_invalidate_range_only_end(); and I think those two
-> > things probably cancel each other out?)
+> On Fri, Sep 23, 2022 at 12:16:29AM -0700, Nicolin Chen wrote:
+> > This series is to replace the previous EMEDIUMTYPE patch in a VFIO series:
+> > https://lore.kernel.org/kvm/Yxnt9uQTmbqul5lf@8bytes.org/
 > 
-> That does sound like double flushing to me, though as you note below,
-> the invalidate_range() triggered by range_end() after the TLB
-> flush/page freeing is functionally incorrect, so we cannot rely on it.
+> \o/
 > 
-> > Also, from what I can tell, the mremap() code, in move_page_tables(),
-> > only invokes mmu_notifier_ops::invalidate_range via the
-> > mmu_notifier_invalidate_range_end() at the very end, long after TLB
-> > flushes must have happened - sort of like the bug we had years ago
-> > where mremap() was flushing the normal TLBs too late
-> > (https://bugs.chromium.org/p/project-zero/issues/detail?id=1695).
+> > Nicolin Chen (5):
+> >   iommu/amd: Drop unnecessary checks in amd_iommu_attach_device()
+> >   iommu: Add return value rules to attach_dev op and APIs
+> >   iommu: Regulate EINVAL in ->attach_dev callback functions
+> >   iommu: Use EINVAL for incompatible device/domain in ->attach_dev
+> >   iommu: Propagate return value in ->attach_dev callback functions
 > 
-> Based on the description of eb66ae03082960 I would say that yes the
-> invalidate_range op is missing here for the same reasons the CPU flush
-> was missing.
-> 
-> AFAIK if we are flushing the CPU tlb then we really must also flush
-> the CPU tlb that KVM controls, and that is primarily what
-> invalidate_range() is used for.
+> This looks good to me, but I'd like to have the SMMU people have a look
+> at patch 4. And I think it is too late for this to make it into 6.1, so
+> please re-send after 6.1-rc1 is out.
 
-As above, for its actual secondary MMU, KVM invalidates and flushes at
-invalidate_range_start(), and then prevents vCPUs from creating new entries for
-the range until invalidate_range_start_end().
+Robin has given review comments against the similar patch in the
+EMEDIUMTYPE series, though it'd be nicer to have a Reviewed-by.
 
-The VMX use case is for a physical address that is consumed by hardware without
-going through the secondary page tables; using the start/end hooks would be slightly
-annoying due to the need to stall the vCPU until end, and so KVM uses invalidate_range()
-for that one specific case.
+I will re-send them rebasing on v6.1rc1.
 
-> Which makes me wonder if the invalidate_range() hidden inside
-> invalidate_end() is a bad idea in general - when is this need and
-> would be correct? Isn't it better to put the invalidates near the TLB
-> invalidates and leave start/end as purely a bracketing API, which by
-> definition, cannot have an end that is 'too late'?
-
-Documentation/mm/mmu_notifier.rst explains this, although even that is quite subtle.
-The argument is that if the change is purely to downgrade protections, then
-deferring invalidate_range() is ok because the only requirement is that secondary
-MMUs invalidate before the "end" of the sequence.
-
-  When changing a pte to write protect or to point to a new write protected page  
-  with same content (KSM) it is fine to delay the mmu_notifier_invalidate_range   
-  call to mmu_notifier_invalidate_range_end() outside the page table lock. This   
-  is true even if the thread doing the page table update is preempted right after 
-  releasing page table lock but before call mmu_notifier_invalidate_range_end().
-
-That said, I also dislike hiding invalidate_range() inside end(), I constantly
-forget about that behavior.  To address that, what about renaming
-mmu_notifier_invalidate_range_end() to make it more explicit, e.g.
-mmu_notifier_invalidate_range_and_end().
+Thanks!
+Nic
