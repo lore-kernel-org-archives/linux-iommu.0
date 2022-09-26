@@ -1,49 +1,90 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A6CC73217
-	for <iommu@lists.linux.dev>; Mon, 26 Sep 2022 13:53:14 +0000 (UTC)
-Received: from 8bytes.org (p549ad5ad.dip0.t-ipconnect.de [84.154.213.173])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 561102227B5;
-	Mon, 26 Sep 2022 15:53:13 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1664200393;
-	bh=5PaDoyKNdKDJX2cMsX5qdadmFvQXzf7iGroKCZ22kGI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=LIaJMQZuZnjV8USISuWc3CvctvFHVU4mCJ+uaxRx6mSE0YdvCeBoGzszZ8p7nuIQD
-	 gykJWLIV26oCfMYZxE1Xd7UwTFn/TRRJieRDAfKeHvYqnatLVAsejDPiTcsdvN0/Bt
-	 jC4P4JQXeeobG6zBfI/7g/3BcCfN2EMgfumfp++JHZ77FcJs2ffRdUc67AANP8Zwdl
-	 BcmAIKoRWe5hMBXqr0jM5jv8vLLY9FzAsnNe/hvQmE3iDST87BmIBGWSbvTGqwVmqM
-	 OSTPMP2Gqdt3ebLCPxtrx4QJfyIAYXEPqU9AfKNIYm18tX5ncWpIwo1YCrckgq0/+i
-	 TDIxu2W5q5PJQ==
-Date: Mon, 26 Sep 2022 15:53:12 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [RESEND PATCH 0/6] [PULL REQUEST] Intel IOMMU updates for Linux
- v6.1
-Message-ID: <YzGuyA0vaNGDfTtZ@8bytes.org>
-References: <20220926131529.4045281-1-baolu.lu@linux.intel.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 318E533CF
+	for <iommu@lists.linux.dev>; Mon, 26 Sep 2022 14:08:10 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CB1BE1042;
+	Mon, 26 Sep 2022 07:08:15 -0700 (PDT)
+Received: from [10.57.65.170] (unknown [10.57.65.170])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B5E4B3F73B;
+	Mon, 26 Sep 2022 07:08:06 -0700 (PDT)
+Message-ID: <5569ad73-9699-e326-c1fb-e0753bbdde78@arm.com>
+Date: Mon, 26 Sep 2022 15:08:01 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220926131529.4045281-1-baolu.lu@linux.intel.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.0
+Subject: Re: [PATCH RESEND v5 22/24] dmaengine: dw-edma: Bypass dma-ranges
+ mapping for the local setup
+Content-Language: en-GB
+To: Serge Semin <fancer.lancer@gmail.com>
+Cc: Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+ Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+ Vinod Koul <vkoul@kernel.org>, Rob Herring <robh@kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>,
+ Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+ Jingoo Han <jingoohan1@gmail.com>, Frank Li <Frank.Li@nxp.com>,
+ Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+ Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+ Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+ =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+ linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
+ linux-kernel@vger.kernel.org, "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+References: <20220822185332.26149-1-Sergey.Semin@baikalelectronics.ru>
+ <20220822185332.26149-23-Sergey.Semin@baikalelectronics.ru>
+ <7a035b29-fca6-2650-c3c1-eedb3904c32d@arm.com>
+ <20220912012426.xcg4tu6wzogbirp6@mobilestation>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220912012426.xcg4tu6wzogbirp6@mobilestation>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Sep 26, 2022 at 09:15:23PM +0800, Lu Baolu wrote:
-> Lu Baolu (5):
->   iommu/vt-d: Remove unnecessary SVA data accesses in page fault path
->   iommu/vt-d: Decouple PASID & PRI enabling from SVA
->   iommu/vt-d: Remove pasid_set_eafe()
->   iommu/vt-d: Avoid unnecessary global IRTE cache invalidation
->   iommu/vt-d: Avoid unnecessary global DMA cache invalidation
+On 2022-09-12 02:24, Serge Semin wrote:
+> On Wed, Aug 31, 2022 at 10:17:30AM +0100, Robin Murphy wrote:
+>> On 2022-08-22 19:53, Serge Semin wrote:
+>>> DW eDMA doesn't perform any translation of the traffic generated on the
+>>> CPU/Application side. It just generates read/write AXI-bus requests with
+>>> the specified addresses. But in case if the dma-ranges DT-property is
+>>> specified for a platform device node, Linux will use it to map the CPU
+>>> memory regions into the DMAable bus ranges. This isn't what we want for
+>>> the eDMA embedded into the locally accessed DW PCIe Root Port and
+>>> End-point. In order to work that around let's set the chan_dma_dev flag
+>>> for each DW eDMA channel thus forcing the client drivers to getting a
+>>> custom dma-ranges-less parental device for the mappings.
+>>>
+>>> Note it will only work for the client drivers using the
+>>> dmaengine_get_dma_device() method to get the parental DMA device.
+>>
 > 
-> Yi Liu (1):
->   iommu/vt-d: Rename cap_5lp_support to cap_fl5lp_support
+>> No, this is nonsense. If the DMA engine is on the host side of the bridge
+>> then it should not have anything to do with the PCI device at all, it should
+>> be associated with the platform device,
+> 
+> Well. The DMA-engine is embedded into the PCIe Root Port bus, is associated
+> with the platform device it's embedded to, and it doesn't have
+> anything to do with any particular PCI device.
+> 
+>> and thus any range mapping on the bridge itself would be irrelevant anyway.
+> 
+> Really? I find it otherwise. Please see the way the "dma-ranges"
+> property is parsed and works during the device-specific memory ranges
+> mapping when it's applicable for the PCIe Root Ports.
 
-Applied, thanks Baolu.
+Sigh, that's a bug. Now I see where the confusion is coming from.
+
+Annoyingly it's basically the exact thing I called out in 951d48855d86 
+when making dma-ranges work for non-OF PCI devices in the first place, 
+but apparently neither I nor anyone else thought of this particular edge 
+case at the time. Sorry about that. I'll have a look at how best to fix it.
+
+Everything else still stands, though. If you can't use the original 
+platform device for DMA API calls, at least configure the child device 
+properly by calling of_dma_configure() with the parent's DT node in the 
+expected manner (and manually remove its dma_range_map if you need an 
+immediate workaround).
+
+Thanks,
+Robin.
