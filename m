@@ -1,221 +1,121 @@
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE3057F
-	for <iommu@lists.linux.dev>; Sat, 24 Sep 2022 00:19:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1663978752; x=1695514752;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=aK/xtpzxPzMJggK4u8ivVcN2nIQMto1jW/AsTx+nEk0=;
-  b=LOKWQJZWMocLLBJzR7fyg6l3gGB7Zf6A42JDflc7GzHGu4xetBi6ITRs
-   31KknImLC5clzU2+pJw4E3mUPYjWiA48y3ZHpe/YnzKi0tjy8EtYNR2q2
-   DhxJpj7S6Fuj4nudOlt1Q32pjW68r0jr5uVsHIs3OXWTvoehTa68berqN
-   RTm/1tEbVv/TlItxwSvGU2P3KHoVKE67dv4ANMMC0jP/PJEbbtPBoKc4a
-   7QvfLFupUK6HMJUJLw3y3Rfo0lrFVxD/gj5sOgF+OgWA3Myuz97t0s157
-   prIoZOk1VUbBxmBHIez5NdMtU1fLBzLmNsWBtNaO2QjLKXD+NlXtSCytw
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10479"; a="287848900"
-X-IronPort-AV: E=Sophos;i="5.93,340,1654585200"; 
-   d="scan'208";a="287848900"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2022 17:19:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,340,1654585200"; 
-   d="scan'208";a="682857101"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga008.fm.intel.com with ESMTP; 23 Sep 2022 17:19:07 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Christoph Hellwig <hch@infradead.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Ashok Raj <ashok.raj@intel.com>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>,
-	Dave Jiang <dave.jiang@intel.com>,
-	Fenghua Yu <fenghua.yu@intel.com>,
-	Vinod Koul <vkoul@kernel.org>
-Cc: Eric Auger <eric.auger@redhat.com>,
-	Liu Yi L <yi.l.liu@intel.com>,
-	Jacob jun Pan <jacob.jun.pan@intel.com>,
-	Zhangfei Gao <zhangfei.gao@linaro.org>,
-	Zhu Tony <tony.zhu@intel.com>,
-	iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D894365
+	for <iommu@lists.linux.dev>; Mon, 26 Sep 2022 07:23:26 +0000 (UTC)
+Received: by gandalf.ozlabs.org (Postfix, from userid 1007)
+	id 4MbZ3q3q6Qz4xFt; Mon, 26 Sep 2022 17:23:19 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=gibson.dropbear.id.au; s=201602; t=1664176999;
+	bh=WFfOHx1xIgXuGxU//nX9avMvGbK3JU8CynxOvSEkiOg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=f6i2RKZUUWclqNK/Kjpuhh7SgnUhWHBbdgq0/D9bvgyz7cFU4RfTq7LR3zjoCYRK8
+	 siAN5gfg34oNfQeA2tjwVqeIvjri3zFo56WhHYc88CHkGtT5sxZOQGwpLp3jaLZGiS
+	 Bz0DKWKo0Erov4aWAUbx7HRUVtVd1+A/Ait3ro3E=
+Date: Mon, 26 Sep 2022 16:34:01 +1000
+From: David Gibson <david@gibson.dropbear.id.au>
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>,
+	Daniel =?iso-8859-1?Q?P=2E_Berrang=E9?= <berrange@redhat.com>,
+	Eric Auger <eric.auger@redhat.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	"Rodel, Jorg" <jroedel@suse.de>,
 	Lu Baolu <baolu.lu@linux.intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH v14 13/13] iommu: Rename iommu-sva-lib.{c,h}
-Date: Sat, 24 Sep 2022 08:12:04 +0800
-Message-Id: <20220924001204.4005613-14-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220924001204.4005613-1-baolu.lu@linux.intel.com>
-References: <20220924001204.4005613-1-baolu.lu@linux.intel.com>
+	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+	Cornelia Huck <cohuck@redhat.com>,
+	Daniel Jordan <daniel.m.jordan@oracle.com>,
+	Eric Farman <farman@linux.ibm.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Jason Wang <jasowang@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	"Martins, Joao" <joao.m.martins@oracle.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+	"Liu, Yi L" <yi.l.liu@intel.com>,
+	Keqian Zhu <zhukeqian1@huawei.com>,
+	Steve Sistare <steven.sistare@oracle.com>,
+	"libvir-list@redhat.com" <libvir-list@redhat.com>,
+	Laine Stump <laine@redhat.com>
+Subject: Re: [PATCH RFC v2 00/13] IOMMUFD Generic interface
+Message-ID: <YzFH2bb1cguPpXuf@yekko>
+References: <YytbiCx3CxCnP6fr@nvidia.com>
+ <YyxFEpAOC2V1SZwk@redhat.com>
+ <YyxsV5SH85YcwKum@nvidia.com>
+ <Yyx13kXCF4ovsxZg@redhat.com>
+ <Yyx2ijVjKOkhcPQR@nvidia.com>
+ <Yyx4cEU1n0l6sP7X@redhat.com>
+ <Yyx/yDQ/nDVOTKSD@nvidia.com>
+ <Yy10WIgQK3Q74nBm@redhat.com>
+ <Yy20xURdYLzf0ikS@nvidia.com>
+ <20220923080307.1d9a6166.alex.williamson@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="zPSW0XCHJZCxFT/C"
+Content-Disposition: inline
+In-Reply-To: <20220923080307.1d9a6166.alex.williamson@redhat.com>
 
-Rename iommu-sva-lib.c[h] to iommu-sva.c[h] as it contains all code
-for SVA implementation in iommu core.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
-Tested-by: Tony Zhu <tony.zhu@intel.com>
----
- drivers/iommu/{iommu-sva-lib.h => iommu-sva.h}  | 6 +++---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 2 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 2 +-
- drivers/iommu/intel/iommu.c                     | 2 +-
- drivers/iommu/intel/svm.c                       | 2 +-
- drivers/iommu/io-pgfault.c                      | 2 +-
- drivers/iommu/{iommu-sva-lib.c => iommu-sva.c}  | 2 +-
- drivers/iommu/iommu.c                           | 2 +-
- drivers/iommu/Makefile                          | 2 +-
- 9 files changed, 11 insertions(+), 11 deletions(-)
- rename drivers/iommu/{iommu-sva-lib.h => iommu-sva.h} (95%)
- rename drivers/iommu/{iommu-sva-lib.c => iommu-sva.c} (99%)
+--zPSW0XCHJZCxFT/C
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/iommu/iommu-sva-lib.h b/drivers/iommu/iommu-sva.h
-similarity index 95%
-rename from drivers/iommu/iommu-sva-lib.h
-rename to drivers/iommu/iommu-sva.h
-index 1b3ace4b5863..7215a761b962 100644
---- a/drivers/iommu/iommu-sva-lib.h
-+++ b/drivers/iommu/iommu-sva.h
-@@ -2,8 +2,8 @@
- /*
-  * SVA library for IOMMU drivers
-  */
--#ifndef _IOMMU_SVA_LIB_H
--#define _IOMMU_SVA_LIB_H
-+#ifndef _IOMMU_SVA_H
-+#define _IOMMU_SVA_H
- 
- #include <linux/ioasid.h>
- #include <linux/mm_types.h>
-@@ -72,4 +72,4 @@ iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
- 	return IOMMU_PAGE_RESP_INVALID;
- }
- #endif /* CONFIG_IOMMU_SVA */
--#endif /* _IOMMU_SVA_LIB_H */
-+#endif /* _IOMMU_SVA_H */
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index 640587f2321d..1710e7a5e13f 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -10,7 +10,7 @@
- #include <linux/slab.h>
- 
- #include "arm-smmu-v3.h"
--#include "../../iommu-sva-lib.h"
-+#include "../../iommu-sva.h"
- #include "../../io-pgtable-arm.h"
- 
- struct arm_smmu_mmu_notifier {
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 0bc8b84b26a9..e8de63b49b10 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -29,7 +29,7 @@
- 
- #include "arm-smmu-v3.h"
- #include "../../dma-iommu.h"
--#include "../../iommu-sva-lib.h"
-+#include "../../iommu-sva.h"
- 
- static bool disable_bypass = true;
- module_param(disable_bypass, bool, 0444);
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 8eaa5379f34f..dd1a65f211c9 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -27,7 +27,7 @@
- #include "iommu.h"
- #include "../dma-iommu.h"
- #include "../irq_remapping.h"
--#include "../iommu-sva-lib.h"
-+#include "../iommu-sva.h"
- #include "pasid.h"
- #include "cap_audit.h"
- 
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index fceae9387018..f32de15da61a 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -24,7 +24,7 @@
- #include "iommu.h"
- #include "pasid.h"
- #include "perf.h"
--#include "../iommu-sva-lib.h"
-+#include "../iommu-sva.h"
- #include "trace.h"
- 
- static irqreturn_t prq_event_thread(int irq, void *d);
-diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-index d046d89cec55..e5b8b9110c13 100644
---- a/drivers/iommu/io-pgfault.c
-+++ b/drivers/iommu/io-pgfault.c
-@@ -11,7 +11,7 @@
- #include <linux/slab.h>
- #include <linux/workqueue.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- /**
-  * struct iopf_queue - IO Page Fault queue
-diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva.c
-similarity index 99%
-rename from drivers/iommu/iommu-sva-lib.c
-rename to drivers/iommu/iommu-sva.c
-index 089fd61ff453..24bf9b2b58aa 100644
---- a/drivers/iommu/iommu-sva-lib.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -6,7 +6,7 @@
- #include <linux/sched/mm.h>
- #include <linux/iommu.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- static DEFINE_MUTEX(iommu_sva_lock);
- static DECLARE_IOASID_SET(iommu_sva_pasid);
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 9e0fb18e1b34..c50f68b2b656 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -33,7 +33,7 @@
- 
- #include "dma-iommu.h"
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- static struct kset *iommu_group_kset;
- static DEFINE_IDA(iommu_group_ida);
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 44475a9b3eea..c1763476162b 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -27,6 +27,6 @@ obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
- obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
- obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
- obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
--obj-$(CONFIG_IOMMU_SVA) += iommu-sva-lib.o io-pgfault.o
-+obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o io-pgfault.o
- obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
- obj-$(CONFIG_APPLE_DART) += apple-dart.o
--- 
-2.34.1
+On Fri, Sep 23, 2022 at 08:03:07AM -0600, Alex Williamson wrote:
+> On Fri, 23 Sep 2022 10:29:41 -0300
+> Jason Gunthorpe <jgg@nvidia.com> wrote:
+>=20
+> > On Fri, Sep 23, 2022 at 09:54:48AM +0100, Daniel P. Berrang=E9 wrote:
+> >=20
+> > > Yes, we use cgroups extensively already. =20
+> >=20
+> > Ok, I will try to see about this
+> >=20
+> > Can you also tell me if the selinux/seccomp will prevent qemu from
+> > opening more than one /dev/vfio/vfio ? I suppose the answer is no?
+>=20
+> QEMU manages the container:group association with legacy vfio, so it
+> can't be restricted from creating multiple containers.  Thanks,
 
+=2E. and it absolutely will create multiple containers (i.e. open
+/dev/vfio/vfio multiple times) if there are multiple guest-side vIOMMU
+domains.
+
+It can, however, open each /dev/vfio/NN group file only once each,
+since they are exclusive access.
+
+--=20
+David Gibson			| I'll have my music baroque, and my code
+david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
+				| _way_ _around_!
+http://www.ozlabs.org/~dgibson
+
+--zPSW0XCHJZCxFT/C
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEoULxWu4/Ws0dB+XtgypY4gEwYSIFAmMxR9IACgkQgypY4gEw
+YSKy9RAA1bDcpJHuQR/pXfAqSSPYcwHCyJ6Lq/4h8Gvb5QsRxPT98D92uRP78SWJ
+DusKzRlI7OIAAj0iYzcTIm2tGj+4rEeOCwSGY5ubZyc5sR2RGatzw4RjOPtQg4Qo
+w8i14niXiEuchHYQIIu4R6N/kZrU4ijSve0y8TXHh5aMOqzD3uiV4/23MOwXImcR
+kpalF3u/w+maH3YSVxwycLBGGthmav6R9OE2N+dAXljhMnIbPHslU6VCj1jpZM10
+2wNhaBFUGfG+SOpl6ZyvmxYqZ4noR7NoiYtQgDnc0BFTqTowIH2Hg2s0IzWBntNS
+qMFknNnxtBWc6NbyTd+VszQb2eaA7G+/wbMCpOqWa9+m2dGceX8twwcQvS+pMG6S
+EtMEraGyDiz2jT2yieytmFnYtpjlCYp/GGOjjBXvSnv8GKacOZcKAb0+hl2dFJ68
+KNNmWyhzLtHoS2Ootv/Vp9ORM42Ow13IS5XN6wxvuLxyr7qo1f/6bGG80gGb7c06
+ZVFsXfnQYysTN8Gq8/99BJZmwr1EfrRJCWphyWv9/T9SvDtpICslJJIvq6js5uYI
+QCr6YhjsHOlZVGJ0vkPzvyvwfHGbnstKR0PWnksGf+38lf1f5raQWskWLYK9Q04t
+UKHcOf0splCwOZ6iE1P99CQ3JYaYp96rlfFPMLnjF+FLGkMWgmc=
+=72Yx
+-----END PGP SIGNATURE-----
+
+--zPSW0XCHJZCxFT/C--
