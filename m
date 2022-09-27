@@ -1,132 +1,134 @@
-Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30F3F33FE
-	for <iommu@lists.linux.dev>; Tue, 27 Sep 2022 15:56:00 +0000 (UTC)
-Received: by mail-qk1-f170.google.com with SMTP id s9so6290159qkg.4
-        for <iommu@lists.linux.dev>; Tue, 27 Sep 2022 08:55:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=6/fNwUZTk6ef7XasN0kmfa44jw+IlnUA/jmMgGdEMSE=;
-        b=qcBAh8Q3p2t9aLwBA+e2DTY2mgoZa5CwXdl+W+WkTrPGXafqKsw9bQgrC33a68FXZQ
-         +ZQUZ/Kc7mT6WD49p9h7RMhhY0rBV0qWvqBNu5apqlCdijAtYl3wucFzFswBMnCcmpTV
-         ZltqYWjCgqRtq771UYO2TbuliOl5CfjedPa0gKSzeUPxZ8Yr7w+l42WpzPHUihQyd3r9
-         yNOoBMrpY41uYpfyOmCqQLuQjLkVkbxQiGDUCmfsZMLAieYDUhmZx4jTe10nQJ9mZIkX
-         J47MGIgXcc9yhBE/gBoXmTrIW08++U3U5hQTVQdLpXrEtN+7cI3FEEDhuSze4XhC5D1t
-         7H4A==
-X-Gm-Message-State: ACrzQf2nckbt6J6J0f8PjrBc98l4myfqjUpaOP9Cu704pNqDZmdHUbpw
-	bhiqjbQjKSN2TDPFIErR+KMQ0Ip2YMpumQ==
-X-Google-Smtp-Source: AMsMyM4v7VhPp1rzP36h/Qg217HXhgMES+ME3n2ec9DAWof29iy0FenRLkm8vgUZga8GJAzafgkgrQ==
-X-Received: by 2002:a05:620a:14bb:b0:6ce:37fc:b808 with SMTP id x27-20020a05620a14bb00b006ce37fcb808mr18279275qkj.726.1664294158615;
-        Tue, 27 Sep 2022 08:55:58 -0700 (PDT)
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com. [209.85.128.180])
-        by smtp.gmail.com with ESMTPSA id z1-20020ac875c1000000b003434e47515csm1057903qtq.7.2022.09.27.08.55.58
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 27 Sep 2022 08:55:58 -0700 (PDT)
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-3487d84e477so104397677b3.6
-        for <iommu@lists.linux.dev>; Tue, 27 Sep 2022 08:55:58 -0700 (PDT)
-X-Received: by 2002:a81:1691:0:b0:345:17df:4fc6 with SMTP id
- 139-20020a811691000000b0034517df4fc6mr25239963yww.502.1664294157901; Tue, 27
- Sep 2022 08:55:57 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D38EE468E
+	for <iommu@lists.linux.dev>; Tue, 27 Sep 2022 16:25:14 +0000 (UTC)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+	by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28RG6b6E014364;
+	Tue, 27 Sep 2022 16:25:01 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=2Jf4cLHEJz6cP+3bclMk1SyEciUpTiMBLFI+t+FRu3A=;
+ b=BEMAdIn4CvdeIlQ51j9FFuykwhyrmpJNLumOU4/TQcUAAgZLCTAtw1waGXbedmNO8osy
+ 5AtQ4PMfhv7avp5cMc9yLyZUJe3gDskJkqvVA1H1DtiBs9z3u5Q1wnOFKO9nnCSwKMQ8
+ aaDQ90322yTA/N3E475qchI+6opcNvqMnecEF0p6nBWGJ5xh5oGNnzarH3XD3xlYZ/N9
+ PxQsCFZqmQ2Hd0z6GSPUrlHyEOKcdy3uIyZRT4ziXRT50NmWF9bRr31To3HgqsePmxgk
+ smJ1BoWSv7Nbc3olU52w+erOnYSGTUTIT5fB5vKS1wrsEzzVuQ7zc3PfJ2nx9ebi91G7 rQ== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3jv21567uh-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 27 Sep 2022 16:25:00 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+	by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 28RGJdHb022554;
+	Tue, 27 Sep 2022 16:24:59 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+	by ppma03ams.nl.ibm.com with ESMTP id 3jssh9c33p-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 27 Sep 2022 16:24:58 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+	by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 28RGOtZk34341520
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 27 Sep 2022 16:24:55 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id A69A34C044;
+	Tue, 27 Sep 2022 16:24:55 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 322964C046;
+	Tue, 27 Sep 2022 16:24:55 +0000 (GMT)
+Received: from oc-nschnelle.boeblingen.de.ibm.com (unknown [9.155.199.46])
+	by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+	Tue, 27 Sep 2022 16:24:55 +0000 (GMT)
+Message-ID: <07d5527984912ef4c9174fad038ae951a79fd4dc.camel@linux.ibm.com>
+Subject: Re: [PATCH v2 1/3] iommu/s390: Fix duplicate domain attachments
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>,
+        Pierre Morel
+ <pmorel@linux.ibm.com>, iommu@lists.linux.dev,
+        linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        agordeev@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
+        will@kernel.org, robin.murphy@arm.com, linux-kernel@vger.kernel.org
+Date: Tue, 27 Sep 2022 18:24:54 +0200
+In-Reply-To: <YzGuc7jVSvE2g91T@nvidia.com>
+References: <20220922095239.2115309-1-schnelle@linux.ibm.com>
+	 <20220922095239.2115309-2-schnelle@linux.ibm.com>
+	 <YyxyMtKXyvgHt3Kp@nvidia.com>
+	 <b581d4f575b834831f8c17054f73b5b92a891d25.camel@linux.ibm.com>
+	 <YzGuc7jVSvE2g91T@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-References: <b0981cb5a97452af73b9dd0dd0eb03c5002f7af4.1664285626.git.geert+renesas@glider.be>
- <fe2b1f48-e18a-b1d9-0c62-ddddf9e6515f@arm.com> <CAMuHMdVFAwqVtrRFf-_jSODWeJuGAzbpoyk65HDOqj9h6AUt2A@mail.gmail.com>
- <9db42ab0-da49-95fd-3fea-eb505af0867e@arm.com> <CAMuHMdW1KQ5TTftYuTT4_b6mmCT5Y+_jpSKau46-g8siDKWjGQ@mail.gmail.com>
- <76a84590-995a-f958-0135-a344762bffe1@arm.com>
-In-Reply-To: <76a84590-995a-f958-0135-a344762bffe1@arm.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 27 Sep 2022 17:55:46 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdV-MbjyoyVM4_aAYs18L4i+2XbeQvRoMChzvsapX+1TKQ@mail.gmail.com>
-Message-ID: <CAMuHMdV-MbjyoyVM4_aAYs18L4i+2XbeQvRoMChzvsapX+1TKQ@mail.gmail.com>
-Subject: Re: [PATCH] iommu/io-pgtable: Make IOMMU_IO_PGTABLE_DART invisible
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Sven Peter <sven@svenpeter.dev>, 
-	Janne Grunau <j@jannau.net>, Hector Martin <marcan@marcan.st>, iommu@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: TnNKiZA_UasRIyZnaoA8DYpMofmm0q0x
+X-Proofpoint-ORIG-GUID: TnNKiZA_UasRIyZnaoA8DYpMofmm0q0x
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-09-27_07,2022-09-27_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 impostorscore=0
+ mlxscore=0 mlxlogscore=999 malwarescore=0 spamscore=0 suspectscore=0
+ priorityscore=1501 adultscore=0 clxscore=1015 lowpriorityscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2209270099
 
-Hi Robin,
+On Mon, 2022-09-26 at 10:51 -0300, Jason Gunthorpe wrote:
+> On Mon, Sep 26, 2022 at 03:29:49PM +0200, Niklas Schnelle wrote:
+> > I did miss a problem in my initial answer. While zpci_register_ioat()
+> > is indeed the actual "attach" operation, it assumes that at that point
+> > no DMA address translations are registered. In that state DMA is
+> > blocked of course. With that zpci_register_ioat() needs to come after
+> > the zpci_unregister_ioat() that is part of __s390_iommu_detach_device()
+> > and zpci_dma_exit_device(). If we do call those though we fundamentally
+> > need to restore the previous domain / DMA API state on any subsequent
+> > failure. If we don't restore we would leave the device detached from
+> > any domain with DMA blocked. I wonder if this could be an acceptable
+> > failure state though? It's safe as no DMA is possible and we could get
+> > out of it with a successful attach.
+> 
+> Is this because of that FW call it does?
+> 
+> It seems like an FW API misdesign to not allow an unfailable change of
+> translation, if the FW forces an unregister first then there are
+> always error cases you can't correctly recover from.
+> 
+> IMHO if the FW fails an attach you are just busted, there is no reason
+> to think it would suddenly accept attaching the old domain just
+> because it has a different physical address, right?
 
-On Tue, Sep 27, 2022 at 5:50 PM Robin Murphy <robin.murphy@arm.com> wrote:
-> On 2022-09-27 16:29, Geert Uytterhoeven wrote:
-> > On Tue, Sep 27, 2022 at 5:09 PM Robin Murphy <robin.murphy@arm.com> wrote:
-> >> On 2022-09-27 15:48, Geert Uytterhoeven wrote:
-> >>> On Tue, Sep 27, 2022 at 4:15 PM Robin Murphy <robin.murphy@arm.com> wrote:
-> >>>> On 2022-09-27 14:36, Geert Uytterhoeven wrote:
-> >>>>> There is no point in asking the user about both "Apple DART Formats" and
-> >>>>> "Apple DART IOMMU Support", as the former is useless without the latter,
-> >>>>> and the latter auto-selects the former.
-> >>>>>
-> >>>>> Fixes: 745ef1092bcfcf3b ("iommu/io-pgtable: Move Apple DART support to its own file")
-> >>>>> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> >>>>> ---
-> >>>>> Should IOMMU_IO_PGTABLE_LPAE and IOMMU_IO_PGTABLE_ARMV7S be made
-> >>>>> invisible, too?
-> >>>>> Are there users that do not select them?
-> >>>>
-> >>>> The aim was for formats to be independently selectable for COMPILE_TEST
-> >>>> coverage. The Arm formats are manually selectable for the sake of their
-> >>>> runtime self-tests, which are self-contained, but since DART format
-> >>>> doesn't do anything by itself I'd agree there's no need to prompt when
-> >>>> !COMPILE_TEST here.
-> >>>
-> >>> IOMMU_IO_PGTABLE_LPAE and IOMMU_IO_PGTABLE_ARMV7S are
-> >>> selected by other symbols that can be enabled when compile-testing, so
-> >>> the tests can still be enabled in those cases, too
-> >>
-> >> Sure, but when you want to compile-test a thing, what would you rather
-> >> do: enable the thing, or go hunting to find some other thing that
-> >> happens to select the thing you actually want, then potentially have to
-> >> figure out *that* thing's dependencies, and so on?
-> >
-> > Agreed.
-> >
-> >> Coverage isn't solely about whether it's technically possible to ever
-> >> reach somewhere at all, it's just as much about how easily and/or often
-> >> you can get there in practice. I don't see who benefits from making
-> >> COMPILE_TEST harder to use :/
-> >
-> > So perhaps the visibility of IOMMU_IO_PGTABLE_LPAE and
-> > IOMMU_IO_PGTABLE_ARMV7S should depend on COMPILE_TEST?
-> > Normal users would still get it through select when needed.
->
-> As I say those still offer functionality beyond compile-testing, but now
-> you've got me suspecting that it's already suboptimal that one has to
-> enable the format to make the self-test option appear... Perhaps what we
+While I can't come up with a case where an immediate retry would
+actually help, there is at least one error case that one should be able
+to recover from. The attach can fail if a firmware driven PCI device
+recovery is in progress. Now if that happens during a switch between
+domains I think one will have to do the equivalent of 
 
-IMHO that's the only sensible thing to do: you want to have the option
-to enable (preferably modular) tests for the functionality you have
-enabled in your product, so you can run the tests when needed.
+   echo 0 > /sys/bus/pci/slots/<dev>/power; echo 1 > /.../power
 
-> want is a separate master option to enable io-pgtable self-tests in
-> general, then rejig the rest around that.
+That of course tears down the whole PCI device so we don't have to
+answer the question if the old or new domain is the active one.
 
-IMHO you do not want a master test option that suddenly enables
-lots of functionality you do not need in your product.
+So I think in the consequences you're still right, attempting to re-
+attach is a lot of hassle for little or no gain.
 
-> Of course the self-tests would be even more useful if the harness was at
-> the level of the core io-pgtable API so it could cover new formats
-> automatically as long as they provide the configuration parameters, but
-> that's a separate matter for someone with sufficient free time and
-> enthusiasm :)
+> 
+> So make it simple, leave it DMA blocked and throw a WARN_ON..
 
-OK, I will shut up ;-)
+To me a WARN_ON() isn't appropriate here, as stated above there is at
+least one error case that is recoverable and doesn't necessarily
+indicate a progamming bug. Also while not recoverable the device having
+been surprise unplugged is another case where the attach failing is not
+necessarily a bug. It would also thus cause false panics for e.g. CI
+systems with PANIC_ON_WARN.
 
-Gr{oetje,eeting}s,
+That said yes I think leaving DMA blocked and the device detached from
+any domain is reasonable. That way the above recover scenario will work
+and the device is in a defined and isolated state. Maybe in the future
+we could even make this explicit and attach to the blocking domain on
+failed attach, does that make sense?
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
