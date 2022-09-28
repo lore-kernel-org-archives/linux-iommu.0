@@ -1,140 +1,125 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2085.outbound.protection.outlook.com [40.107.243.85])
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B29C0A31
-	for <iommu@lists.linux.dev>; Wed, 28 Sep 2022 05:40:07 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QVcNoI4e0Ebo6hqW7Da4+jt4yXW8RofsnV1GJMoakxPoqWv8PgxaQoWKghlpIrGB9SS5koaAi0pxRTCG3ewZ3Q4G3adp0BN/K8gZAtLN8JCWQHwDC2WTAdoo2WC0ZR9OR7BOi6EWTWDu0jKv90oqAWhFy3sSiziaEFYFm/xcCvYt6bSA7VQw+39lGGjocMe0u3HVoOOs4YSH8BNvGU/9bVT7lUHAiqjZNRF0s1V+1NxDnmhBfoAflxGxlXrXT79GbSaR1ctyt1sqv4Ly+DEaqzyzTt/cnVQ7l9On7Ja5L97lhwXwDwSJUbTnCy7cj7Bb7clk3izAbelFbZBjgWi49Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PutjLaUsl8iRlcjn6EL/CHsoqYEmWcxJYaPQ30FoAXU=;
- b=UNEsoFP6RocJja+pKdVQuTkFblTZ3nv+vtjc+w3DM7iS3il/7ZgGjHWeCRmXNUoZ1Gb9LRHITzKun+2MePxWiekbk31E0kvN6e8jM8Wv6ZdyBncRXcmTeVLr12C3mNpkTYviOcBmrGdECpeiUXzcCCZelu9rT99xNpS879VEr5LkmI2379IpO3JTzTDULwbrsTnmM5KM7BZRbwX9ri80sISV+Kd6/ikQ3enLkVAQU1aGjss85AxVrUMZDX0IDQ6pCBBUk1sIZRIVfyd8xiwZyandM9a6OhZqPmfaS59cF2URRBrYFz4HFy6ab6EamuMq4Aws2CiqUiVso8PvQDah+g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PutjLaUsl8iRlcjn6EL/CHsoqYEmWcxJYaPQ30FoAXU=;
- b=hoWa0ODSWC90sxk1EqOMCx9s9XDo+R/NXu5+LlX9PEzhr7QttA0FF00wqbgPzK2gKOY0h1zwM4ikcNQT+DbhNozOanKasjaDvtyN7LGNg6/ijt5oGK5zqFhuwyz/jvmJNKt6aG6L7SgZqGipLax3o9oCTLt+OEdxWXbkB/DivJk=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- BL1PR12MB5078.namprd12.prod.outlook.com (2603:10b6:208:313::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.26; Wed, 28 Sep
- 2022 05:40:05 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::9491:5873:8c89:496e]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::9491:5873:8c89:496e%7]) with mapi id 15.20.5654.026; Wed, 28 Sep 2022
- 05:40:05 +0000
-Message-ID: <3f72a477-7913-39f6-40a7-152975c1a733@amd.com>
-Date: Wed, 28 Sep 2022 11:09:56 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 2/5] iommu/amd: Protect domain update with domain_lock
-Content-Language: en-US
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux.dev, robin.murphy@arm.com, suravee.suthikulpanit@amd.com
-References: <20220912063248.7909-1-vasant.hegde@amd.com>
- <20220912063248.7909-3-vasant.hegde@amd.com> <YzGLimZhwwt6qIVB@8bytes.org>
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <YzGLimZhwwt6qIVB@8bytes.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN3PR01CA0038.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:98::6) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08D78A51
+	for <iommu@lists.linux.dev>; Wed, 28 Sep 2022 08:58:41 +0000 (UTC)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+	by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28S811H4031360;
+	Wed, 28 Sep 2022 08:58:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=FsRgbWQXFcfgM8eZUdskc6+blLFC+RSC50HFPlyGQCI=;
+ b=PyJDtWr6n0YW3eGZr0tkN+oIV6fxMbKi+6Nzb1Kz3vWJgMCZcvS5uLQCdY8Hf0q0zdP7
+ NWwJAPV2bBbhpTFjr2IEEidqxFa6lWx6tSBD2kUudcdvWoUeUw8Ev2HLVEyIcFavKKXu
+ qdKK61X5m9lDEhp3cBRrbPgjvm9qfTCQVVntPIYqB1hgtMSupoLFeW1tSmIVIIXDyrJ/
+ yuhun3dTbQe7gaMK7GprtENLRlE+New7/Zj/X7+SXad6QWjXH6B00Tq+Bo8ka9dtiLiM
+ /pkxusSnnwDFTslUiVfbZvKSTYuJIV+3bDxGABpHuBVaglWL7oAzBVxRF6WgQ/f7N6C0 zQ== 
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3jvg35wmre-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 28 Sep 2022 08:58:28 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+	by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 28S8pXwX014398;
+	Wed, 28 Sep 2022 08:58:26 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+	by ppma06ams.nl.ibm.com with ESMTP id 3jss5j4ys9-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 28 Sep 2022 08:58:26 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+	by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 28S8wNqN39977534
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 28 Sep 2022 08:58:23 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 470E7AE051;
+	Wed, 28 Sep 2022 08:58:23 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 75D68AE04D;
+	Wed, 28 Sep 2022 08:58:22 +0000 (GMT)
+Received: from sig-9-145-173-198.de.ibm.com (unknown [9.145.173.198])
+	by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+	Wed, 28 Sep 2022 08:58:22 +0000 (GMT)
+Message-ID: <a4005a4ae804f852656ff2a6f2f994958b0b02e3.camel@linux.ibm.com>
+Subject: Re: [PATCH v2 1/3] iommu/s390: Fix duplicate domain attachments
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>,
+        Pierre Morel
+ <pmorel@linux.ibm.com>, iommu@lists.linux.dev,
+        linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        agordeev@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
+        will@kernel.org, robin.murphy@arm.com, linux-kernel@vger.kernel.org
+Date: Wed, 28 Sep 2022 10:58:22 +0200
+In-Reply-To: <YzMrSIGMPSgJ94sG@nvidia.com>
+References: <20220922095239.2115309-1-schnelle@linux.ibm.com>
+	 <20220922095239.2115309-2-schnelle@linux.ibm.com>
+	 <YyxyMtKXyvgHt3Kp@nvidia.com>
+	 <81463119aeadd55465cfac1f5bc6a8b79f0c9738.camel@linux.ibm.com>
+	 <YzGtQY+uw4ZzZoSH@nvidia.com>
+	 <1a10b5baedafb56335231ccbd585412bbb3a108c.camel@linux.ibm.com>
+	 <YzMrSIGMPSgJ94sG@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|BL1PR12MB5078:EE_
-X-MS-Office365-Filtering-Correlation-Id: 361f8065-27db-43c8-55d6-08daa113e52c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	CsuzhDBF1+5TwmFXqaHTYC2Rh15aYHtXW+rDKIzLCxXFzjo0J3W5zjSKebZgZ1vCSFjrEQbFQg6EyO1/cqZnMZ8NP8vUJIoN1J3o8MTMFk5ja/Oi74ywEJRYQCG1+j28wUzxh0ljWk+4166rHlYvKcULma373GmzFGWrmrX/CFCMQ+T8Ryn1usnguUgu5+ueZFGy63NIgZM6zdIZfN1qzlHyJ5aEBRmtU3a0CnfAb3E/e6KLNwCz1CwCrw7HgweFs5CoIlyEFsInpYmYVWfJyXU6oRbHvAVyj5Oe3fDlXl28SgDgqQC/+Nbs55m21P0pGle2xrcUWf7soCJIjtONNPbiCFIdb5rsYdsRsIPT5k2oQWA6fv9OSqgBiZDtITDvybzzFPPTd5WAImTaZupmVSlSl8TqKQdPchwmaRiOLy7KrMtK8qj9Kx61klcgNHoQ1wyKvIrNalwh2Pce+GqXBxhup7k9hRq8gJWDV3xVVSx0ua9iiCcZh85DqbCkoBZFV1tJ3VcgZ7HchA0ShN3Gk2d47AGXuCbNeRj3XzgR4ve8kE89qxkt2yU0Zxb92UtvM5DZDPwcLeeUua9ZAHs4u6Gg6IbZftfPoL3EOT+kMkG8gNVY3xOTRCr/14COKWnO81yWelgv43Mbdyy6VQlgSj2cJqX3nyQefasb4JIkqCV+eVOf4RM819MghTZOD2PXa9gSktpsrmvMfXxUbysGed/vEa93VqwE7q7eIuft1GZ1hG4FrpJe9rMsHw5NIxGBvmCdCpf+joe5KwP6X6Dtq5i19Fb2It2LnPRBXaJhsQw=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(136003)(376002)(39860400002)(366004)(346002)(451199015)(86362001)(8676002)(66476007)(66556008)(38100700002)(53546011)(6506007)(6486002)(478600001)(8936002)(66946007)(41300700001)(5660300002)(36756003)(44832011)(15650500001)(6916009)(83380400001)(316002)(31696002)(26005)(4744005)(6512007)(31686004)(186003)(2906002)(4326008)(6666004)(2616005)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?eUNsK1V1NnFVVTRMbm85Sk5PL1hPVFdjZmZQa3BJcUFHdm5xNXUva3hPMjkr?=
- =?utf-8?B?RXBacUZuYjk2YXN4RTV5U2NNV0NJQ2RMV00xM2xuWVdhek5nVmJuOUtRWXNO?=
- =?utf-8?B?b05WR080NDJabVlFbFMrbTNDb3lSV2xhLzBqZ0laY2xHdHd2d2tRRG1JMytG?=
- =?utf-8?B?a2kxeGFnc0tXVVJQMm44SGd6VXFwbmlYN3Nhb2w2VXlCVjE0cjRNSDNyRXJq?=
- =?utf-8?B?a2dOVFdONDBtL1pvcGx4bXVUUExwTVVLV2lWMHB6bmRKRjFnWGcrWHVmYlhH?=
- =?utf-8?B?bkJhYUlBdFQrU3pPRDFnVlNxQngrVk5Xb3VMRDQ2cTZTZG9UV3RqVWE0enBT?=
- =?utf-8?B?VDl4K3lLeUhoa0JiN1FOa0FwbHk4NXR0cGplaWFDTjI1bmFUS0NsZ2NJY0o2?=
- =?utf-8?B?WTJkeXhTOVdPUkdsQllvc0ZEaUg1L2ljaEJZNDBMQ0NmeGwrRWM4dlBJUEMw?=
- =?utf-8?B?dTNMR3NNQ2hiSXpNOS9KY0NlNU56bFRFbDBobDZWU3drUUJIaUNOVE53dkoy?=
- =?utf-8?B?NFI2Qm0zcGNJdWFEZEdHYWRGZ3JSN1RnZXIvQjJzZExQRjNtZGxmUGJGYURo?=
- =?utf-8?B?NXI0K3B1Y1d4ZEpxS3lYYmNyUkdOcklEamVnNFV2ektaYnRiL1ByVmJMTEVr?=
- =?utf-8?B?UzJkRTZCaVNkVm0xK2FUYmpKakptTTVGb3BjcmhodHF4ODdlL0tTU2llNDZ1?=
- =?utf-8?B?V0dJNkdGWE1lYmlUK3JIWEhoK3pLVzJyN3FjUlZnemRjWmhub1JvS1B4Wlgx?=
- =?utf-8?B?TnNPdGdTcExIVitSbDFyTlhacVduL1JEV0F3NnZBaW9GWjN5T096ZGVYb3dw?=
- =?utf-8?B?RGljV0U1WU9ab05zbzBjTjBaaWpLMHlFclhUWm50Y0tFNk82TjM2aDhucjAy?=
- =?utf-8?B?NjBiVHo1cXZjUXRrTWJHRjFnTmpoSlhYeUYvUGNORkpyOXlvSWtSS0dLV3NT?=
- =?utf-8?B?QWgvWnJNcko5L280aTBzM1FUalg2MHZYK2tuRnUrZ1dnRlVGa1dlVEZRR1Br?=
- =?utf-8?B?WGd4YVBHcWtidDZpSG5sVFQ0OTNjdzNOUkFuc0YrRExscmVWbTgxdFFLN25x?=
- =?utf-8?B?cE1nS0pULzBvT1NtbTFMbW15WjdMak94UXcrM0d3d3VoT3hpYmJ1bENIUHFK?=
- =?utf-8?B?YURuelZtNUhVYzlQQ2F0U3dCL2w0Tm9LWkJMK1drdkp2dGhqRG5tRk5KbzJI?=
- =?utf-8?B?YTFQeVl0Qlg1bFovZDd3VFlKWWIwVjdLeVg3L1l1alBNUlp2MVJ6Y2VicmdL?=
- =?utf-8?B?U2xhK294VUt0ZE1pVHArYmsrbWl4OVFFUG95dk5MVTV0LytVVWMrczR2bCtP?=
- =?utf-8?B?WXpYcVBHaCt6MVVybGUzZWZhdHk2dUZ3dmdCTzJWeHJmaHFzeU5wZHNVTW9F?=
- =?utf-8?B?RlF2WWJmL2FWdzBubGRaZFZJc0Q4UmtVdUY5MkRid01rcy9hOTIwTVFOaDJN?=
- =?utf-8?B?ejczWkZ5K0hEdnpCZVdURE1ubERnL01MMVpJRm9pVFRjcUd2K0xPdkZwOW5X?=
- =?utf-8?B?OFYrRDI2Z2JuZ2ZMYWxVdW1BWGVrNjdwOFlsQjd2cnBXSHU4QXZCeTdmSUVC?=
- =?utf-8?B?NkxZWVJPWDZydWRUMlFOV3BVRjFTdGRoSnBGemNRZkJEZitZdFRBM0gvUWdY?=
- =?utf-8?B?cnlDQ0ZRQ0FZOFlHM01vK3NyQWE3MHhLZmo2REN5eHBNWUoyRWJHZXl3Ri9R?=
- =?utf-8?B?WU15bFNxL1ZwTEdXWHQxakhTaTFncytmVFZRN2hMWnV4UVI0ditpRlBIZ1pL?=
- =?utf-8?B?OTFseUxJejdiMVBybEtGVHlJNlhPY09xYXZCVFFZWTRmMWc1eVVDdjF4Zmd3?=
- =?utf-8?B?d3V4TWY0a3REVENqZnhyMWtjclRHaUJ0UUh3cWdlV0N2Um90eVVSUHJBSVd5?=
- =?utf-8?B?Um9qblhPcm5QL1ZsWUc1dEUwbS9pU0dDWitVbk9ONmo2UkVtOUZvNDV5Vjh2?=
- =?utf-8?B?d0tTQ1UyR204ZThSdXR3UmNrd2REV3F6L2xrOS8zVnE2amdtOUZTUERKVDNC?=
- =?utf-8?B?SENJUDRqV1RtME5idStxclkvTHIzK2QrUlcwUzd2T1R4RDlWcWhtS0wrZlZO?=
- =?utf-8?B?RlNrK0lOSFMvVDJOdjlyVUd0NEFBakI4eEx0Skk3TndEV09HU1l3Uk45SEpa?=
- =?utf-8?Q?Yx8rwFiqKLUHlg0VXcrS9wn7L?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 361f8065-27db-43c8-55d6-08daa113e52c
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Sep 2022 05:40:05.1278
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tGWvuqUUOaFvkhLj4eBpAYY7DWUh49CcioBEr0QwzFMAdBrgUyYaAwSU+y6EZEKp2sOVWXfKQ8OLx7U2Z+pq9w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5078
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: lx9oSVER93bUljVWUuAzuQXOiWrkDvvN
+X-Proofpoint-ORIG-GUID: lx9oSVER93bUljVWUuAzuQXOiWrkDvvN
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-09-28_03,2022-09-27_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 bulkscore=0
+ malwarescore=0 clxscore=1015 mlxlogscore=675 lowpriorityscore=0 mlxscore=0
+ impostorscore=0 priorityscore=1501 spamscore=0 adultscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2209130000
+ definitions=main-2209280051
 
-Hello Joerg,
-
-
-On 9/26/2022 4:52 PM, Joerg Roedel wrote:
-> Hi Vasant,
+On Tue, 2022-09-27 at 13:56 -0300, Jason Gunthorpe wrote:
+> On Tue, Sep 27, 2022 at 06:33:48PM +0200, Niklas Schnelle wrote:
+>  
+> > Not sure what the non-MSI reservation is for? It does seem like x86_64
+> > also uses this for quite large ranges.
 > 
-> On Mon, Sep 12, 2022 at 06:32:45AM +0000, Vasant Hegde wrote:
->> In protection_domain_free() path it calls amd_iommu_domain_update() to
->> update IOMMU.
->>   protection_domain_free -> free_io_pgtable_ops ->
->>     v1_free_pgtable -> amd_iommu_domain_update
->>
->> Make sure its protected using domain->lock.
+> There are lots of things that are unsuitable for DMA on x86 platforms,
+> unfortunately.. But yeah, I'm not sure either.
 > 
-> A concurrent access to the domain at this point would be a bug in
-> itself, and the locking wouldn't help here either because the domain
-> including the lock is freed right after release.
+> > This is because I'm getting a map request for an IOVA in the reserved
+> > region.
 > 
-> Do you see and concurrent accesses to the domain at this point?
+> How come? iova_reserve_iommu_regions() reads the reserved regions and
+> loads them as reserved into the iovad which should cause
+> iommu_dma_alloc_iova() and alloc_iova_fast() to not return values in
+> those ranges.
+> 
+> It all looks like it is supposed to work
+> 
+> Did something go wrong in the initialization order perhaps?
+> 
+> Jason
 
-I didn't see any concurrent access. I was going through code and
-thought lock is required here.
+It was of course a classic off-by-one, the table size is a number of
+entries but geometry.aperture_end seems to be the largest allowed IOVA.
+So we need:
 
-What you said is makes sense. We can drop this patch.
+s390_domain->domain.geometry.force_aperture = true;
+s390_domain->domain.geometry.aperture_start = 0;
+s390_domain->domain.geometry.aperture_end = ZPCI_TABLE_SIZE_RT - 1;
 
--Vasant
+Otherwise the first IOVA allocated is ZPCI_TABLE_SIZE_RT itself.
+Similarly we need the second reserved region if (zdev->end_dma <
+ZPCI_TABLE_SIZE_RT - 1). In your patch I think you had the
+MAX_DMA_TABLE_ADDR name right but would have also calculated the number
+of entries.
+
+On the other hand with the dma-iommu.c conversion it no longer makes
+sense to lower zdev->end_dma artificially, so at least on current
+machine LPARs we would end up with just a lower reserved region
+0x0000000000000000 to 0x00000000ffffffff and can use IOVAs up to
+aperture_end.
 
