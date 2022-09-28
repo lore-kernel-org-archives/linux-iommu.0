@@ -1,58 +1,55 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2068.outbound.protection.outlook.com [40.107.92.68])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2060.outbound.protection.outlook.com [40.107.223.60])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D41EED5
-	for <iommu@lists.linux.dev>; Wed, 28 Sep 2022 13:32:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45E4F4A11
+	for <iommu@lists.linux.dev>; Wed, 28 Sep 2022 18:12:16 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UAE0UHgE7wdfKzofRYZeQq8qF4O3kstnxvhpGDQtrHycsutXJWVp9SO6Ty+no/6C4V+r+yzqo46sHtIsNdUK+pNvcbYIn5XbNXXePRdo2ZF4/YUzFEiIPev/wa2135oyMCx+GpXXSLV9RjJOa1NxGrZIiBqxSk0/a9uoXpzWRre1yZMVKj/j5BtIy+tfF/Ig6j2srfxEgWbFxvaN3QP/FYlSDNau199r4NcCEUpSyFF0weKX2muOypiLRd4Nthf+ngrYNXGV/7jcVEJzm7XHb2hN9LDiohndthLOV8m/6hE9KCt5M348K4tyya+90C4tVjZdtD1BHUOtMT+KUNeHiQ==
+ b=WkDqnv6PgbA09bYbZX8128S8TmDo73pvZeMma603lZ3/M5e8ftPTkX801Q1t3quZEEiJ9YOPvOeXEQqZMbb+X7uWZO/judBrj8BSc/SuUE8gel0AYDd+C5kvAcQyDvFV41CAAdEy8um5FO75qTBjhRRHLl3KGYxPxiAi5EVTShsoTuodulOTjxqGpvjOV/czFWsCjYQrUzVeCly8+wsyztgpA03rqesXgMJM3bP97EQlbHZu4mw2sfX7dHP2IyqQsq9O9ckp5Wo8YF/k2OV7t9cAX4OxVH4Dv9H4oKEDcQW3hvyJ4iM+rhlvW//18mU8uQHAhNJtadPy3+PSX5BAhA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jbn++JLI/IaVbjTpfEpNv3vg5hAJTZtAmwdsfWj6W8g=;
- b=Wo8XjMq6IyP4Oixx94poUNKdtpFwCb/zxwiyEX8Qpu/T/PHKc1JH8fLxF5gIBszysWUab+GJET3ucJi4Onb5gmpLhXXccdUkYdYgqrS16iv7DBEzKKWTp7Jn9hMts+pfSRfp/bkSz8Gm2WNqbStGg7PBkEvBrKK+bGQfGn/tJUyIloQhKlXSXI5ZL/bH4PjeBrOmhQAttHW4CNQdJGBaSbDR5hkcPPKVljonUbZzV4tUR3ToFeFwEcaYuYPLEjIaa2bB/t4Q0ac5rCdsddKNUXXCxAvPStcRjznkPI2HFU1gJvKCUawURtURTLLnJ8QD4fHYeFaqsMsaHZHXmuAX4Q==
+ bh=T6UVk8D2+aBhRkw/CMFmdD4iwl03+DuvZei0WsiI960=;
+ b=k/W0J8solZ85Bb5npsM+tHGOwFew82ipMjgSdPwag9IgERBsX+BZy2IPc6ZLo9d98YJ2mJHJ9/MlmaclcSl3O7PVxzKGP90v+UUbge5CtWXafXbc57oTtnAfS48T2R0S1ZoVoQtvhLKkIm1FAFBXjdWUtOG8TKl0AJ0vD7wDdYWLDQRCfhGuedfvOcp9AbGNxdrrRY697gPFb3mKMvfLbaEe9G081Yh6FS6IGsMZbVzonlE/BIYFWkdyeNuU4QyQO3J0qNkuYxhkeNpt4CERBT6EKGoj4/vJVF5vRpUPROpyldI+lm65K3W56JRUtEwRQRtF9MimmiBwBsHciPGg1Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jbn++JLI/IaVbjTpfEpNv3vg5hAJTZtAmwdsfWj6W8g=;
- b=k8zwVZfhBALghIT7wpUKUDH2j5yyrLGmUde5f1V3fCeIQnA2BghBz3a0AqJg9AJ/0FMcjRLhAojlC+Jyc8K1rAFFS23yTnZ5naVoXD5R3s2c/5MRaAaE1k8YZbED7mSAPWCmR6l5QWMEZ+/hvTNzkKAslxHXvrDDCU378//14NogFoejEVALAuSpLsf6338Iy7elwlvvP6HTJEGVRk8Z7ImGFR8Fzs5Ap4EefWKThuJcZO9opw48zeocFc5waxdvr3r6VDDYCdRw3caj/kH6Kp+vEqUatr8rjxZLTaaRgLRSESvojpAadtEa6lCHZE/FUFABM3olXgXbjCDAIQCggA==
+ bh=T6UVk8D2+aBhRkw/CMFmdD4iwl03+DuvZei0WsiI960=;
+ b=YKeXlMjfn4iPqxojV6CY7Wk1g/QPSeuUPbuoGmS1KwBhy3xS0EjLMtxTAzaY+FRUVQvYOj+c7Ben0gK5gt0qej+VsSlUV8n38F+12kq3s12sJaO0d9ndwJAHniL7NmZDrhCfxERLRwhDX5J+3s0aHqZADESasCWg/wTLdqX1J08Br5kwtwMMJjAeAWlP+bol4hiLqsj3EzJ0MZ9sWGtT6+aKn4LnoAbvbUxDx2UmuHVKIrhtTSXBlrtoz3DmYFFzwz+ZzZQpJe/f6DvlVBqBC5IIKlRNvmTNZ+cOSFA2Yd5DS78/PSHjgbxP28u5eKHyBwk0nPzDirX5yxV9ivazxg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by CH0PR12MB5106.namprd12.prod.outlook.com (2603:10b6:610:bd::10) with
+ by BL1PR12MB5317.namprd12.prod.outlook.com (2603:10b6:208:31f::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5676.17; Wed, 28 Sep
- 2022 13:32:22 +0000
+ 2022 18:12:13 +0000
 Received: from MN2PR12MB4192.namprd12.prod.outlook.com
  ([fe80::f0c0:3a28:55e9:e99c]) by MN2PR12MB4192.namprd12.prod.outlook.com
  ([fe80::f0c0:3a28:55e9:e99c%5]) with mapi id 15.20.5676.018; Wed, 28 Sep 2022
- 13:32:21 +0000
-Date: Wed, 28 Sep 2022 10:32:20 -0300
+ 18:12:13 +0000
+Date: Wed, 28 Sep 2022 15:12:12 -0300
 From: Jason Gunthorpe <jgg@nvidia.com>
-To: Niklas Schnelle <schnelle@linux.ibm.com>
-Cc: Matthew Rosato <mjrosato@linux.ibm.com>,
-	Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev,
-	linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
-	hca@linux.ibm.com, gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-	agordeev@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
-	will@kernel.org, robin.murphy@arm.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/3] iommu/s390: Fix duplicate domain attachments
-Message-ID: <YzRM5HG0t36KUAVC@nvidia.com>
-References: <20220922095239.2115309-1-schnelle@linux.ibm.com>
- <20220922095239.2115309-2-schnelle@linux.ibm.com>
- <YyxyMtKXyvgHt3Kp@nvidia.com>
- <81463119aeadd55465cfac1f5bc6a8b79f0c9738.camel@linux.ibm.com>
- <YzGtQY+uw4ZzZoSH@nvidia.com>
- <1a10b5baedafb56335231ccbd585412bbb3a108c.camel@linux.ibm.com>
- <YzMrSIGMPSgJ94sG@nvidia.com>
- <a4005a4ae804f852656ff2a6f2f994958b0b02e3.camel@linux.ibm.com>
+To: Sean Christopherson <seanjc@google.com>,
+	David Hildenbrand <david@redhat.com>
+Cc: Jann Horn <jannh@google.com>, Will Deacon <will@kernel.org>,
+	Joerg Roedel <jroedel@suse.de>, jean-philippe.brucker@arm.com,
+	Linux-MM <linux-mm@kvack.org>,
+	kernel list <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev
+Subject: Re: some likely bugs in IOMMUv2 (in tlb_finish_mmu() nested flush
+ and mremap())
+Message-ID: <YzSOfHUMGjjQiSNZ@nvidia.com>
+References: <CAG48ez2NQKVbv=yG_fq_jtZjf8Q=+Wy54FxcFrK_OujFg5BwSQ@mail.gmail.com>
+ <Yy3skVk/DvwVnPXD@nvidia.com>
+ <YzIHzIxknGNba6CC@google.com>
+ <YzI2jzvc8D9lYU6G@nvidia.com>
+ <YzJCyTD4kBSt3VlU@google.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a4005a4ae804f852656ff2a6f2f994958b0b02e3.camel@linux.ibm.com>
-X-ClientProxiedBy: BL1PR13CA0251.namprd13.prod.outlook.com
- (2603:10b6:208:2ba::16) To MN2PR12MB4192.namprd12.prod.outlook.com
+In-Reply-To: <YzJCyTD4kBSt3VlU@google.com>
+X-ClientProxiedBy: MN2PR19CA0029.namprd19.prod.outlook.com
+ (2603:10b6:208:178::42) To MN2PR12MB4192.namprd12.prod.outlook.com
  (2603:10b6:208:1d5::15)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -61,107 +58,165 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4192:EE_|CH0PR12MB5106:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9c854ce0-2506-4d29-c9fd-08daa155df41
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4192:EE_|BL1PR12MB5317:EE_
+X-MS-Office365-Filtering-Correlation-Id: b4715394-a244-4a48-8cb8-08daa17cf7ed
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	zYYRsj5JCN8lZd0njVTVAy0KXzD+TAgRgXt8gRfpExaZOAGqKxpUNArGSct1JxLr/vOdN2dO5BRMh9NMKRfNhmui//Lnf6v24tdiYoaUUxhJOgiUtd5+734WemqzH2TYLhi6+CNwvkK99OjcW2Ex6JdD0BYbYh8TePA07oda3jXpYNHTkcYWyYd0BcJnfoUd23/wW7u5u6PwmS09C92aLO8pVMmYjURpG7Zfx02LTmNpkHaKdH2uFwAoZjogI5NP33joxqQijOJWlVdYN3TTKgDvXAvf71w9I5a4SU+mHDjZ0FGrCHsdViErtH/RVr71fPfqDSZp/e2I4Pm7KZfe+o75nj6Gn1o3JvPIUthQg6UcPaj+HNhqsXBiavgGFEN4YPqRq0SyGjWTzCMs0gjZpNtYajaC/cUlsNu6YcL3aYCPc2jEpYSN1EaOvR9cHoiPFmNK1YwVkbT64TWOk9O+Qe4zv4vxuEunEWiB/fNPsGL1e4vNXkQzi/aa9vOfMgG04qIZcvzH6Q75oYMeTXymOP8EeY9KGxGt2LoCMJ+p1B+nx/eslVEi4kXb5kSpuKzLbU+ev2JpFvkNPWggPnFNDvH7hZ8LrRYEHU8aU4/d+A0DtAC50cVr9qbtnOVmjbMxnvm3rWz3kIjbCFqTyjHNRSKcsqTvD4NiUwiFQhvGAZDxxQWDCNtJaWj2RIFR8YebKojTaB1wCcEoiv/j5uyz+g==
+	DEK9RpUvqcoUW60ynLoF+FbsGD97HmLcIxXSAQZX9jKbU6Vb+Vce7guGlfjxLtITjEGajR9zeXaOFRN3/Hta8IVab8ofnoI/4c8aOILtOZcTXPyJGiKvSnyj5IHkN5ZboGuYSEQCByQ5b9he3NaY4xb8GKJ7pgz3GbnuO4Ji4f2vebhH18N1qWL+fw/64q6Oy6rYpNEAF7jU2kuz42rh4K0iJckxDihXcCoalfhZPADFYXb4VqNaIdGBM8jUboG69JXpBJS5dZHdbulYFrvJgzIWTngF1Fgs5mL8TAoapSiiD7jkwHz68Ko4TkIhXFdEKLtI1lh8k3AvxE1bJwTLKeSIq9h/9f2CeDkqhh9hU9iKJAzMYNA0tG0e9/L5V9Rrq+PqcHgDji8OQajUiVizEhk8xx+D8ulxmSgLRpsC0yvtjjBDFqQDYG7p/s4ORA7Bjd5HHqTtslgXstplHwbce0WjfGaKgUfOtWLNgsTTi34QNAr1+vKZiebF3Oy2CIkIDek9vT9ez/KBdLTihB3x1xaSYjkXzC3O6eqYeVfctfB2qVIDI6lwGcN3IvbLmFPHifUUpBZfvvLytEh7wpSSWmK3ZnW8ds3Vl0A2mi0zl8nQ9XxdHbCtFoY0KPpnlB9e/2VmfsVEWaeoCpOQF/A4epEs7+53gGXqDOe0Vqs9yBn63HR1zqOkZLJItaS3gJZVS5OTKRs+uTtLe+GArf7kSA==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(136003)(366004)(346002)(39860400002)(396003)(451199015)(83380400001)(2616005)(186003)(38100700002)(7416002)(41300700001)(8936002)(5660300002)(2906002)(478600001)(6486002)(26005)(6512007)(6506007)(8676002)(66476007)(4326008)(66556008)(66946007)(316002)(6916009)(54906003)(36756003)(86362001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(376002)(39860400002)(396003)(346002)(366004)(451199015)(2616005)(83380400001)(38100700002)(5660300002)(6512007)(2906002)(41300700001)(8936002)(186003)(66946007)(478600001)(6486002)(26005)(6506007)(66476007)(4326008)(8676002)(66556008)(316002)(54906003)(110136005)(36756003)(86362001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?cK5b+ILuD3qg/fC5TqphxJy5uJg7sl6HwupvwS9nu/IIT0SUYk57yJFqZOUs?=
- =?us-ascii?Q?6jRRQVOBT5q6fTYLTNWx6erQi4E54+Vqq3kMOKgcnNgA8RfpDncsm1LlXUz/?=
- =?us-ascii?Q?KdoyFHDdr6E+s97s2kKQnGNdRG8P8/wfxK4FQEQzgtrLesjl1ad1HPYJ9U2m?=
- =?us-ascii?Q?VgWhoae76GjES4lTMyEi1lDNqYm1ChYm/C2CTbQsC9+AmQVN6U3CZ0DPp4EB?=
- =?us-ascii?Q?SiqjPZ6DEUFiWajLvDgvVRuZ80pWdjzOYXZJOog69CzxqTaEnX7td4lZPfKp?=
- =?us-ascii?Q?c3DTEIVs8iAvu/XTCUG8xWFrtoOI293lRIB0A7wleDheKq/+NWDfDI9/8Auw?=
- =?us-ascii?Q?2nV34d/jXAhNYAIdNw1BXbXgCQ3D2IZJgbevr4PGs1AhvlXeMQLKaZXo7sXt?=
- =?us-ascii?Q?7uAKZ9LraEkYxaZ+g+uP55e/ifThsAvMqGqPbELySg5IWLZcdZwTzmJsxltt?=
- =?us-ascii?Q?1KDpE5dW0NJN0HE8usEj+XnOOG++Z2QCMNVwjlnG1sYGfDyHjEX3rCBdbXzH?=
- =?us-ascii?Q?3epNM5/mB9aWC/2lygPdA1LQl0n/HgRUS+0SncAkB58jGsvPMiaFPNrCI1iI?=
- =?us-ascii?Q?I24s/lrYjKQNJhVdWW6UgksYj+t7EOr4uybK6qHZXdz3G9hloEeJN7oW2Cy9?=
- =?us-ascii?Q?nv9/Ps/z0bZMTI3N2e5w+wDYnZ+d9bv5Q2wHU7svRPlgVNwEvnreUeKJ59TR?=
- =?us-ascii?Q?LBPiUiauxnDBfPD+I7fefiXdvNg2CC7HNZEGKM+SiHbXqJFs/cmapG21wXMM?=
- =?us-ascii?Q?WxwtfWB5BcY5VOoFco0wJolUMVC90s9AZJGYkqCJCX7yACUjicMfL7Q+ojAp?=
- =?us-ascii?Q?qAkq1SHw5IsId6j4DNmBROrs8YXlxPtJdskkepqCs6krPbEw2gl9F1UGsAH5?=
- =?us-ascii?Q?ZVjF7aLckh4+XmGdwCPpKxztfQTxdw5RiBhG0ipEShRVeLdFnHCNON557un3?=
- =?us-ascii?Q?QTiwNqpwyu5ckduhTY1EkKfgO2VKsdrjCaY4lw2brGLTdj+UYpHJw76tfQP0?=
- =?us-ascii?Q?glAQMSH9OJVG5CViVhI/tu2DDCkga+DCje0q07O4wq+qrYkWlFbwl8by3XXl?=
- =?us-ascii?Q?8ERFFV0xoexZnxB6Bp7LpRNY4jpSRDR/v+4LUl+9wHqPJCeysd1GoLmb9A7x?=
- =?us-ascii?Q?rESosBR8Mnajs1Wdc/0+BhysVHfKBzfRBI+bu8I9YjeAJBfS13J/zVeDH8Li?=
- =?us-ascii?Q?mpD9dtkdKIsI0+jpmGGKftMKzxvt3/qEiuN2ShC6Xs2w4qp1yCsV01yRmN2D?=
- =?us-ascii?Q?PElvSTGSxB/rTy6NR5GCs2m8yDSnky3+eGXhKlb3ZA9ab9YPptX40J7+i4BN?=
- =?us-ascii?Q?xJGKEZk5Knk0vBAvpwAltg3RSllTjS19tBWIW8YLyOGrXdl933s/knoTkDnj?=
- =?us-ascii?Q?GTfOPPswhq+p/dQ/OZIyKWDZCZ6sXUGGThUeqv0U00fzrjZWD8pv8Lg4xKSc?=
- =?us-ascii?Q?QshwCMYsvELewdPPEcH7DHFgbC7kYoJVHPoU396tU07t81GFcefbxNh2Jbdr?=
- =?us-ascii?Q?ZV2pUzhnTS12JGHvCa30w0tqqM/9zemTF97gk39wqVPVvSnwsyuRkVDmE3Ru?=
- =?us-ascii?Q?itR060j0DziybQ7KWlo=3D?=
+	=?us-ascii?Q?hvT+QM1YDgfX7zDxbWfjeEgYhxZQMaGJuyVfOq7j2R2Ga8m3x9SdMAxYUMjR?=
+ =?us-ascii?Q?m+Lwz/6NIiePzfAyqJ5EXGvI31RYXpatP71dLSP9qSUCxGNLzZpXhQK1svQO?=
+ =?us-ascii?Q?QYzNsBhLNeslTyxbjIlGdUh2wRxaWiI9kfOLXiJ6N5OAJUHiiDYLgJRd/dSb?=
+ =?us-ascii?Q?aN/e5rhvkFuMauHpzDvs1nt99FCsVGciSSSmD5wqHXVgEk8tVKbXyzjTSDL2?=
+ =?us-ascii?Q?PR3tO7Ik83IHxSJwPs01vRyOX2g1/SXZEWuVYD73PV3O8V/rqvZsCbGg+MuD?=
+ =?us-ascii?Q?DRGhJSfcQlcW7MlfP9yQKEkbZtjbblKW8H9y8y7dyyOe3ZyNYY/kydlPCfSj?=
+ =?us-ascii?Q?aQzIAAdCe4Wrh62tUL/zmo+plDg0HpyysEW6vYHFbhRech/U0cEe3/taywmL?=
+ =?us-ascii?Q?CyzI2ifouy+BFwAusGLlb04lirMOd12GusNMCdVmun0mcXUOAaL+KDzbrS1h?=
+ =?us-ascii?Q?un1G1otAqEQ0hqQknqhQk8Su/PhRB0F9xZ8oaohscMZjfY/tOVsku9tZFCrb?=
+ =?us-ascii?Q?o6r5ZAVfqPH6StBbZ2r+RSlxXIa/zhSpdYfWvlHca0bJ6syI/nacV1wQBE/L?=
+ =?us-ascii?Q?+QJdx6zYfufhaHlzp5iE5TNgGmfYxun78kA9hMkaaXCe27+oLy7zFdOmgA3T?=
+ =?us-ascii?Q?2SXlG3kFtO+tfCC7+H/IDNVYC/1AXRpr0iUeGp+8S8sycUNZT8fDHXrUrxuV?=
+ =?us-ascii?Q?XrTmzC7NPLaltWYPAPxTUvk0oiUojzsD+UiFqa3BWfkWXLK6XbEND4tPzPT9?=
+ =?us-ascii?Q?dtUjT1DHakkrog+fZeYnMhm8xLXXjBxRsQfTOWmo5AyUnwDOlDssqiTRTWqh?=
+ =?us-ascii?Q?3qBBNpPhIRsSG/uKeDLwSiYzuxGTbQoVdsZmYXztSDttSqum6CUT3ku6fu7I?=
+ =?us-ascii?Q?wkiTwlrDXdaLF2KMXWJhYs+pCUid6Yf+mJ969YIM+UKS5mt85rCX7OLuyARk?=
+ =?us-ascii?Q?b2a1N98UvKvRjLKrdZ9OENxGT5jUeTARIlVgqty7hyIAIW5LNl3ClFnwYcva?=
+ =?us-ascii?Q?qzWuL/JoIom6zorGLrGjaMcTN9y6eHS5TnriBtG5haRUVuKiep0/bIw1n5qA?=
+ =?us-ascii?Q?BQyZcMk3IIOjG2F9NewivqVrl0Ab3V7IdcNYVOAV/wWTNNBuCwKlmu+q3210?=
+ =?us-ascii?Q?wBVtwjaDC5OkMxZhVSif0jw/U3O3iYh6l9bQDoXEZ1vJX8RCReolw58DMwd4?=
+ =?us-ascii?Q?LDv1dmfsUM675mZmmazV8ZPIwc+mHkg5kDKP6h9DWGstbuZBSg4MyhzkMIHS?=
+ =?us-ascii?Q?qs4rSs7KURNCqf+1tHt9LXFSHFgzWNGTS8nJ1XmfTv+bW0L9AfWBOE0aQnY4?=
+ =?us-ascii?Q?zi0O8ClWjiv0D0YwKekN/MrFPLJqfptL5Qj63MNf7JySe2xCbtl/TGOPgjmP?=
+ =?us-ascii?Q?WE1vFfQbD1HWFdvlRAVWD5WfGXb2dQBbyByU8K3OZZlu3+wLoqDbBl2G9/Te?=
+ =?us-ascii?Q?8eKVcrA5u6CoDKiK9LA+o+6p+Uq9ZftudmCkzsokccMQ4xjO6vqZsNcU5DgA?=
+ =?us-ascii?Q?V8vSlCVamqbLixjhK/4zs/MQZtqKyQfVw9JhxVxDFCus+mA6Z+wAxfhedxlp?=
+ =?us-ascii?Q?/ZUV34rR7rvseMnBFug=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9c854ce0-2506-4d29-c9fd-08daa155df41
+X-MS-Exchange-CrossTenant-Network-Message-Id: b4715394-a244-4a48-8cb8-08daa17cf7ed
 X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Sep 2022 13:32:21.8456
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Sep 2022 18:12:13.5621
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tcDxeN6j7ddcnbXL1lRBx0xxdkG4i08YW/YBrNn+SY+IDsvV0kHqDtRJa5duFWQM
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5106
+X-MS-Exchange-CrossTenant-UserPrincipalName: sNuTDdWAThA7vrHSvw9Rd4u9Xj/vJBmu92kMiAuKLll/wxDIyNtmkuJ3KhVyKUR9
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5317
 
-On Wed, Sep 28, 2022 at 10:58:22AM +0200, Niklas Schnelle wrote:
-> On Tue, 2022-09-27 at 13:56 -0300, Jason Gunthorpe wrote:
-> > On Tue, Sep 27, 2022 at 06:33:48PM +0200, Niklas Schnelle wrote:
-> >  
-> > > Not sure what the non-MSI reservation is for? It does seem like x86_64
-> > > also uses this for quite large ranges.
+On Tue, Sep 27, 2022 at 12:24:41AM +0000, Sean Christopherson wrote:
+> On Mon, Sep 26, 2022, Jason Gunthorpe wrote:
+> > On Mon, Sep 26, 2022 at 08:13:00PM +0000, Sean Christopherson wrote:
 > > 
-> > There are lots of things that are unsuitable for DMA on x86 platforms,
-> > unfortunately.. But yeah, I'm not sure either.
+> > > > AFAIK if we are flushing the CPU tlb then we really must also flush
+> > > > the CPU tlb that KVM controls, and that is primarily what
+> > > > invalidate_range() is used for.
+> > > 
+> > > As above, for its actual secondary MMU, KVM invalidates and flushes at
+> > > invalidate_range_start(), and then prevents vCPUs from creating new entries for
+> > > the range until invalidate_range_start_end().
 > > 
-> > > This is because I'm getting a map request for an IOVA in the reserved
-> > > region.
-> > 
-> > How come? iova_reserve_iommu_regions() reads the reserved regions and
-> > loads them as reserved into the iovad which should cause
-> > iommu_dma_alloc_iova() and alloc_iova_fast() to not return values in
-> > those ranges.
-> > 
-> > It all looks like it is supposed to work
-> > 
-> > Did something go wrong in the initialization order perhaps?
-> > 
-> > Jason
+> > Was it always like this? Why did we add this invalidate_range thing if
+> > nothing really needed it?
 > 
-> It was of course a classic off-by-one, the table size is a number of
-> entries but geometry.aperture_end seems to be the largest allowed IOVA.
-> So we need:
+> No, the invalidate_range() hook was added by commit 1897bdc4d331 ("mmu_notifier:
+> add mmu_notifier_invalidate_range()") for IOMMUs. 
 
-Right, I dislike this naming usually 'end' means "start + length" and
-'last' means "start + length - 1"
+Ah, right OK. This is specifically because the iommu is sharing the
+*exact* page table of the CPU so the trick KVM/etc uses where 'start'
+makes the shadow PTE non-present and then delays the fault until end
+completes cannot work here.
 
-> Otherwise the first IOVA allocated is ZPCI_TABLE_SIZE_RT itself.
-> Similarly we need the second reserved region if (zdev->end_dma <
-> ZPCI_TABLE_SIZE_RT - 1). In your patch I think you had the
-> MAX_DMA_TABLE_ADDR name right but would have also calculated the number
-> of entries.
+>     The page-fault handler in the AMD IOMMUv2 driver doesn't handle the fault
+>     if an invalidate_range_start/end pair is active, it just reports back
+>     SUCCESS to the device and let it refault the page.  
 
-Make sense..
+Yah, this algorithm just doesn't really work, IMHO.. So it makes sense
+we have invalidate_range as Joerg originally created it. Though the
+GPU is still busted IMHO, there is no guarantee of forward progress
+after some number of iterations, it is just much more likely if the
+non-present is as narrow as possible.
 
-> On the other hand with the dma-iommu.c conversion it no longer makes
-> sense to lower zdev->end_dma artificially, so at least on current
-> machine LPARs we would end up with just a lower reserved region
-> 0x0000000000000000 to 0x00000000ffffffff and can use IOVAs up to
-> aperture_end.
+So, then we can see where the end_only thing came from, commit
+0f10851ea475 ("mm/mmu_notifier: avoid double notification when it is
+useless") and that long winded message explains why some of the cases
+must be ordered in the same place as the CPU flush, but doesn't
+explain very much why it is OK to push it after beyond saying "ksm is
+OK"
 
-So zdev->end_dma == MAX_DMA_TABLE_ADDR?
+Looking at some of the places where 0f10851ea475 removed the notifies
+they seem pretty pointless.
 
-(and is zdev->end_dma and 'end' or 'last' ?)
+- fs/dax.c
+  This never needed notify in the first place, it is populating a
+  non-present PTE because it just faulted.
 
-Can you include this patch once you are happy with it, it nicely
-tidies this series?
+- __split_huge_zero_page_pmd()
+  Sure, maybe, but who cares? The real fix here was changing
+  __split_huge_pmd() to use only_end() because all paths already
+  call invalidate_range
 
-Thanks,
-Jason 
+- copy_hugetlb_page_range()
+  Sure, there is no CPU tlb flush.
+
+  The CPU tlb flush on this path is in flush_tlb_mm() called by
+  dup_mmap().
+
+  The right thing to do is to ensure flush_tlb_mm() calls
+  invalidate_range and skip it here. But the reasoning is not some
+  "we are downgrading protections blah blah", the logic is that the
+  CPU TLB flush can be delayed/consolidated so we can delay the
+  shadow TLB flush too.
+
+  (And why does copy_hugetlb_page_range use MMU_NOTIFY_CLEAR but 
+   copy_p4d_range is bounded by MMU_NOTIFY_PROTECTION_PAGE ??)
+
+- hugetlb_change_protection()
+  Again I feel like the sensible thing here is to trigger the shadow
+  flush in flush_hugetlb_tlb_range() always and use end_only
+
+.. and so on ..
+
+So, IMHO, we need to rewrite what 0f10851ea475 was trying to do in
+order to fix the bug Jann noticed :\  That is bigger than I can knock
+off while I write this email though ..
+
+> > That means iommu is really the only place using it as a proper
+> > synchronous shadow TLB flush.
+> 
+> More or less. There's also an "OpenCAPI coherent accelerator
+> support" driver, drivers/misc/ocxl, that appears use
+> invalidate_range() the same way the IOMMU does.  No idea how
+> relevant that is these days.
+
+Yeah, OpenCAPI is the same stuff as the IOMMU. Just PPC got away with
+building all their IOMMU layer in its own arch specific subsystem :|
+
+> I much prefer KVM's (and the old IOMMU's) approach of re-faulting in hardware until
+> the entire sequence completes.   It _might_ be less performant, but I find it so
+> much easier to reason about.  I actually had typed out a "can we just kill off
+> mmu_notifier_invalidate_range() and force users to refault hardware" question
+> before seeing the above changelog.
+
+The key thing this requires is the ability to put the hardware into
+fault mode (non-present), for the range under invalidation. If you
+can't do that, then you can't use it.
+
+> I don't know.  I found the series that introduced the behavior[*], but there are
+> no numbers provided and I haven't been able to dredge up why this was even looked
+> into in the first place.  From the cover letter:
+
+It looks like a 'by inspection' project..
+
+> If I had a vote to cast, I would vote to always do invalidate_range() at the same
+> time the primary TLBs are flushed.  That seems completely logical and much harder
+> to screw up.  I might be a little biased though since KVM doesn't benefit from the
+> current shenanigans :-)
+
+Me too.
+
+Jason
