@@ -1,85 +1,57 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17CB91C13
-	for <iommu@lists.linux.dev>; Thu, 29 Sep 2022 13:51:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1664459495;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=IieW/qrMKIIc8eu7bzdu8OnHs0kBWGnniYBMz77goME=;
-	b=L+Sc0YdblPBLSTCqEwmgcKx6BUTEW3yHCNifyqk+Yfv6ZfhdDVY2bX8vGcpuEg6gFlXdAh
-	65ScYiX2wipnbPy6xS1FoXJ0F2NkxkFtmEg/wwl/0Xe3pShMvuwA1IP7NXVuMKRMbdFm3Z
-	24IzXs2IFf+8+uFttFl4lvya4hhmKfE=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-408-Sv9vj2gMO3igF7tEefujqg-1; Thu, 29 Sep 2022 09:51:34 -0400
-X-MC-Unique: Sv9vj2gMO3igF7tEefujqg-1
-Received: by mail-wm1-f72.google.com with SMTP id l15-20020a05600c4f0f00b003b4bec80edbso681556wmq.9
-        for <iommu@lists.linux.dev>; Thu, 29 Sep 2022 06:51:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=IieW/qrMKIIc8eu7bzdu8OnHs0kBWGnniYBMz77goME=;
-        b=lE8Z/c4/RCq83OuuUDHkIpeMzodb2qdMrloXdHHPL8Z9b9qCMu8Vi09/IBWo+M8Tlo
-         hTnAuRcijmiIcLGNTpzd1jZZprDimGuOIXHUXMcfhqcPW3/UpYyb/hxSyLLUrJtpuJqQ
-         HVXVitPvveUp5G+2iiGLp+gnVwQpPSzDHoc21/f/jDRx6XmKM+CNSRq3ZUqUpM84vStR
-         ibmRpwAkDz3N14rSSvy+jZQ9t0e+UGOAWjrQJCqSfUOMVHvciaYv4PX9zvp+XH7Qa4Hw
-         vLZ5Axhk7/+54sFryPf4ao8UyIYHiYHJdKb+KRwZvrD+ReYOsMVExMnC9cY8+OLQ14Kt
-         rfYw==
-X-Gm-Message-State: ACrzQf2KrswDPzUsFVgKhzrCKgk4jEwl5Ex1uM6XXKScm1QkZHinJi1I
-	D2aKsUQ/fJeJcGarqyXL6pDlQ75dblwdam3ek0WCDhbvp3G6YTSM24oC7vjOsGtG1RGVMu2Obes
-	zWizSilg3Nry8mw==
-X-Received: by 2002:a7b:ca46:0:b0:3b4:7ff2:1ca8 with SMTP id m6-20020a7bca46000000b003b47ff21ca8mr2470540wml.11.1664459493472;
-        Thu, 29 Sep 2022 06:51:33 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM6BYA3SexgjmIbaHkskwniQiLaOlIBd8lGcGdjTQL2j/REfB/Qz243X0n7EN+MLVyG0I9pdOA==
-X-Received: by 2002:a7b:ca46:0:b0:3b4:7ff2:1ca8 with SMTP id m6-20020a7bca46000000b003b47ff21ca8mr2470525wml.11.1664459493312;
-        Thu, 29 Sep 2022 06:51:33 -0700 (PDT)
-Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id h18-20020adfaa92000000b00228dd80d78asm4662657wrc.86.2022.09.29.06.51.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Sep 2022 06:51:32 -0700 (PDT)
-Date: Thu, 29 Sep 2022 14:51:32 +0100
-From: Aaron Tomlin <atomlin@redhat.com>
-To: tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-	dave.hansen@linux.intel.com, joro@8bytes.org, will@kernel.org,
-	dwmw2@infradead.org, baolu.lu@linux.intel.com, hpa@zytor.com
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	atomlin@atomlin.com, robin.murphy@arm.com, charlotte@extrahop.com
-Subject: Re: [RFC PATCH 1/3] x86/boot/e820: Make __e820__mapped_all() external
-Message-ID: <20220929135132.6qpit2dspyhs54vg@ava.usersys.com>
-X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
-X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
-References: <20220611204859.234975-1-atomlin@redhat.com>
- <20220929082551.2zrsayd2v3xhot7m@ava.usersys.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD707A47
+	for <iommu@lists.linux.dev>; Thu, 29 Sep 2022 14:32:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F5FBC433D6;
+	Thu, 29 Sep 2022 14:32:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1664461929;
+	bh=+CMzqfKQBFDlTPBluCEbkfHV9J5CITs8KfGeq6Svh0U=;
+	h=From:To:Cc:Subject:Date:From;
+	b=r1GVqZuHnBHPflK7bfh++hH6TdU0WxVd/vXT7zjr7kDdH6LQBw1yROjrgUnm+4lna
+	 rFlbxCyDpRbBdqGxe0tPGq5C3MwE+n8MQGI4HxfzHEYL2IFds9vITX4nJiHkeTOyyf
+	 7vXgK8swzz4AgbzXtQrPFcnIrv73yD3D2RO+lrhyYnuQU2Sgqwcufv6X1a93c46H7C
+	 m4NTbwMfe0EYnp4IrfPTKPjUlHQN6amjuZLFc9kcyJBkfe1OTXoeVdArU4W2jpcA5M
+	 SAnhgdtDxrYL66Afb3WDDdwgWHyEfvtCAu1nQ9s/6z/lKyD8KHYywFBAgoeNCjHmuc
+	 l5hW+ZBnahCbQ==
+From: broonie@kernel.org
+To: Marc Zyngier <maz@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <jroedel@suse.de>,
+	Frank Li <Frank.Li@nxp.com>,
+	Will Deacon <will@kernel.org>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	Linux Next Mailing List <linux-next@vger.kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev
+Subject: linux-next: build failure after merge of the irqchip tree
+Date: Thu, 29 Sep 2022 15:31:48 +0100
+Message-Id: <20220929143149.126145-1-broonie@kernel.org>
+X-Mailer: git-send-email 2.30.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20220929082551.2zrsayd2v3xhot7m@ava.usersys.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
-On Thu 2022-09-29 09:25 +0100, Aaron Tomlin wrote:
-> On Sat 2022-06-11 21:48 +0100, Aaron Tomlin wrote:
-> > No functional change.
-> > 
-> > This patch allows __e820__mapped_all() to be available for
-> > external use, in preparation to enhance the error message
-> > generated by arch_rmrr_sanity_check().
-> > 
-> 
-> Any more feedback?
+Hi all,
 
-[Adding iommu@lists.linux.dev and charlotte@extrahop.com on Cc]
+After merging the irqchip tree, today's linux-next build (arm64
+defconfig) failed like this:
 
--- 
-Aaron Tomlin
+/tmp/next/build/drivers/irqchip/irq-imx-mu-msi.c:14:10: fatal error: linux/dma-iommu.h: No such file or directory
+   14 | #include <linux/dma-iommu.h>
+      |          ^~~~~~~~~~~~~~~~~~~
 
+Caused by commit
+
+  841e6e9f2bc95baff ("irqchip: Add IMX MU MSI controller driver")
+
+interacting with
+
+  f2042ed21da7f8886 ("iommu/dma: Make header private")
+
+I have reverted the driver for today.
