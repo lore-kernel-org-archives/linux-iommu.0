@@ -1,142 +1,227 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 929FC10F7
-	for <iommu@lists.linux.dev>; Thu, 29 Sep 2022 07:53:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1664438033;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=DUWL2B4Cv64UQClT17QT1666XT/UjjPhkgsubEPyl8Q=;
-	b=A8/yxBM3Xs3G2V6D2rYFFQh4ez+sKrCbcuj+BK6bi/lTcDXj5FvOocgRTUvD7kyJFrD4Nx
-	viPfet6zLCSllK+Rz185baLU0mDGcdw1uSjh+P1/4YTZpCZyDTPHytbTPwxorccP50hZ5E
-	75JoQV1Mj+QI2R3mJsIROdFKsg8nUU4=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-538-dHeBIPnFNwyZWNTJSilYeg-1; Thu, 29 Sep 2022 03:53:51 -0400
-X-MC-Unique: dHeBIPnFNwyZWNTJSilYeg-1
-Received: by mail-wm1-f72.google.com with SMTP id v130-20020a1cac88000000b003b56eabdf04so1536279wme.7
-        for <iommu@lists.linux.dev>; Thu, 29 Sep 2022 00:53:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=DUWL2B4Cv64UQClT17QT1666XT/UjjPhkgsubEPyl8Q=;
-        b=k7S7Inq+QnLmb+Q3ACpR0XM2EtChqwkHqg+Mmc6htqg5Xzqmeqduc9DZocuykJHRsD
-         wjT6Wx9fJy/MdPCj13PSKiIAWeMaxOL+rLfHUvn5iEulZ8VacsO9eNdUcy0w/6XcNK+l
-         Gkp2kltDppaLTAykVjKpLNGMHeWFS0Q/hpowO9w9k6EVmPurG1L7Tef5IEfRQigjsL46
-         lbtKxftXlDBCao5gWF+BJamHzoRbpKrIBjn4SadKAi+6zISj2c8nPP+PynieE3knLQhc
-         1rU0gGq5hq0YaTA0kStsO2eHY0D6Ql+CDV2XZg0FWITKb+ixBn0bNbtpsSrcp2FD4TcX
-         XJLw==
-X-Gm-Message-State: ACrzQf0nW0ALd1fqQsT7ZHNcJ8nJMK2u4GlxlOdU3aVH7AelP5BGM7al
-	nMWlSChT3+itv1KkzPSweuSpfUe2PNxzaHBQRChc56r2hcz//bKn9JtVEN7j31NursSY//u4bFt
-	PrUPwauoqrgV7WQ==
-X-Received: by 2002:a05:600c:5114:b0:3b5:428:cf67 with SMTP id o20-20020a05600c511400b003b50428cf67mr9863099wms.80.1664438030892;
-        Thu, 29 Sep 2022 00:53:50 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM5S1RWv/BCBQRSJ1Re9xzrIq5uOUDVP4bGN8v8lMUdjsConOrCCFZfxndbYRYsSTtgFj2v7NA==
-X-Received: by 2002:a05:600c:5114:b0:3b5:428:cf67 with SMTP id o20-20020a05600c511400b003b50428cf67mr9863091wms.80.1664438030690;
-        Thu, 29 Sep 2022 00:53:50 -0700 (PDT)
-Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id fc15-20020a05600c524f00b003a319b67f64sm1988470wmb.0.2022.09.29.00.53.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Sep 2022 00:53:50 -0700 (PDT)
-Date: Thu, 29 Sep 2022 08:53:49 +0100
-From: Aaron Tomlin <atomlin@redhat.com>
-To: Charlotte Tan <charlotte@extrahop.com>
-Cc: iommu@lists.linux.dev, yian.chen@intel.com, dwmw2@infradead.org,
-	baolu.lu@linux.intel.com, joro@8bytes.org, junichi.nomura@nec.com,
-	Will Mortensen <will@extrahop.com>
-Subject: Re: [PATCH] iommu/vt-d: allow NVS regions in arch_rmrr_sanity_check()
-Message-ID: <20220929075349.nz2avvokkg7wm3gg@ava.usersys.com>
-X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
-X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
-References: <20220929044449.32515-1-charlotte@extrahop.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A659C1103
+	for <iommu@lists.linux.dev>; Thu, 29 Sep 2022 08:37:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1664440673; x=1695976673;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Y0T8lpxJFurjnxxDGFDdmqLbfP82UgdNhHjDFAAckvo=;
+  b=Irs/3/U01UKBl9OoXK9xXeToq1n6JdPwpvmuYzI5r+6ofxsCTatrK8x+
+   7aUlBw0lT30NfoVW+tOK4di8AbGFpOGI1y0fFEQ/LDtkCtRxgKyL7ArcD
+   tx/9tOHCR2Q9D/g60RpPvIjxnNSW0yP0n+6CaIT+2A5lNBHPQchhRUIO3
+   NiNfStRbFrhvQhfKkThfzHlCTHhD6esEq5c5XJUqkDfHrUUk65UoNvsU8
+   OKAf+CGw92KrmSzcHVlPeh9Z9yVkAZIMrmSc2+2GYMD2hvVB3wb3aShb+
+   bDi0/X5eAm/rKh/v/qx7vKTCNIc2K2fF2w6hByn09k8MbMgMSsJ6x5cZS
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10484"; a="388114878"
+X-IronPort-AV: E=Sophos;i="5.93,354,1654585200"; 
+   d="scan'208";a="388114878"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Sep 2022 01:37:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10484"; a="797473230"
+X-IronPort-AV: E=Sophos;i="5.93,354,1654585200"; 
+   d="scan'208";a="797473230"
+Received: from lkp-server01.sh.intel.com (HELO 6126f2790925) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 29 Sep 2022 01:37:19 -0700
+Received: from kbuild by 6126f2790925 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1odp2k-0000uK-2Y;
+	Thu, 29 Sep 2022 08:37:18 +0000
+Date: Thu, 29 Sep 2022 16:36:47 +0800
+From: kernel test robot <lkp@intel.com>
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Mark Brown <broonie@kernel.org>, linux-arm-msm@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ freedreno@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+ apparmor@lists.ubuntu.com, amd-gfx@lists.freedesktop.org,
+ Linux Memory Management List <linux-mm@kvack.org>
+Subject: [linux-next:master] BUILD REGRESSION
+ de90d455a35e474a184c898e66a6a108c3a99434
+Message-ID: <6335591f.BHWTYTiAbxJo9pPx%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20220929044449.32515-1-charlotte@extrahop.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 
-On Wed 2022-09-28 21:44 -0700, Charlotte Tan wrote:
-> arch_rmrr_sanity_check() warns if the RMRR is not covered by an ACPI Reserved
-> region, but it seems like it should accept an NVS region as well. The ACPI spec
-> https://uefi.org/specs/ACPI/6.5/15_System_Address_Map_Interfaces.html
-> uses similar wording for "Reserved" and "NVS" region types; for NVS regions it
-> says "This range of addresses is in use or reserved by the system and must
-> not be used by the operating system."
-> 
-> There is an old comment on this mailing list that also suggests NVS regions should
-> pass the arch_rmrr_sanity_check() test:
-> 
-> > The warnings come from arch_rmrr_sanity_check() since it checks whether the
-> > region is E820_TYPE_RESERVED.  However, if the purpose of the check is to
-> > detect RMRR has regions that may be used by OS as free memory, isn't
-> > E820_TYPE_NVS safe, too?
-> 
-> https://lore.kernel.org/linux-iommu/64a5843d-850d-e58c-4fc2-0a0eeeb656dc@nec.com/
-> 
-> This patch overlaps with another proposed patch that would add the region
-> type to the log since sometimes the bug reporter sees this log on the console
-> but doesn't know to include the kernel log:
-> 
-> https://lore.kernel.org/lkml/20220611204859.234975-3-atomlin@redhat.com/
-> 
-> Here's an example of the "Firmware Bug" apparent false positive:
-> 
-> > DMAR: [Firmware Bug]: No firmware reserved region can cover this RMRR [0x000000006f760000-0x000000006f762fff], contact BIOS vendor for fixes
-> > DMAR: [Firmware Bug]: Your BIOS is broken; bad RMRR [0x000000006f760000-0x000000006f762fff]
-> 
-> This is the snippet from the e820 table:
-> 
-> > BIOS-e820: [mem 0x0000000068bff000-0x000000006ebfefff] reserved
-> > BIOS-e820: [mem 0x000000006ebff000-0x000000006f9fefff] ACPI NVS
-> > BIOS-e820: [mem 0x000000006f9ff000-0x000000006fffefff] ACPI data
-> 
-> There are more details at https://bugzilla.kernel.org/show_bug.cgi?id=216443
-> 
-> Fixes: f036c7fa0ab6 ("iommu/vt-d: Check VT-d RMRR region in BIOS is reported as reserved")
-> Cc: Will Mortensen <will@extrahop.com>
-> Link: https://lore.kernel.org/linux-iommu/64a5843d-850d-e58c-4fc2-0a0eeeb656dc@nec.com/
-> Link: https://bugzilla.kernel.org/show_bug.cgi?id=216443
-> Signed-off-by: Charlotte Tan <charlotte@extrahop.com>
-> ---
->  arch/x86/include/asm/iommu.h | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/include/asm/iommu.h b/arch/x86/include/asm/iommu.h
-> index 0bef44d30a27..0e99cc1aec08 100644
-> --- a/arch/x86/include/asm/iommu.h
-> +++ b/arch/x86/include/asm/iommu.h
-> @@ -25,8 +25,10 @@ arch_rmrr_sanity_check(struct acpi_dmar_reserved_memory *rmrr)
->  {
->  	u64 start = rmrr->base_address;
->  	u64 end = rmrr->end_address + 1;
-> +	int entry_type;
->  
-> -	if (e820__mapped_all(start, end, E820_TYPE_RESERVED))
-> +	entry_type = e820__get_entry_type(start, end);
-> +	if ((entry_type == E820_TYPE_RESERVED) || (entry_type == E820_TYPE_NVS))
->  		return 0;
->  
->  	pr_err(FW_BUG "No firmware reserved region can cover this RMRR [%#018Lx-%#018Lx], contact BIOS vendor for fixes\n",
-> -- 
-> 2.17.1
-> 
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+branch HEAD: de90d455a35e474a184c898e66a6a108c3a99434  Add linux-next specific files for 20220928
 
-Hi Charlotte,
+Error/Warning reports:
 
-Looks good to me!
+https://lore.kernel.org/linux-mm/202209150141.WgbAKqmX-lkp@intel.com
+https://lore.kernel.org/llvm/202209220019.Yr2VuXhg-lkp@intel.com
 
-Reviewed-by: Aaron Tomlin <atomlin@redhat.com>
+Error/Warning: (recently discovered and may have been fixed)
+
+ERROR: modpost: "devm_iio_channel_get_all" [drivers/power/supply/mt6370-charger.ko] undefined!
+ERROR: modpost: "devm_ioremap_resource" [drivers/dma/fsl-edma.ko] undefined!
+ERROR: modpost: "devm_ioremap_resource" [drivers/dma/idma64.ko] undefined!
+ERROR: modpost: "devm_ioremap_resource" [drivers/dma/qcom/hdma.ko] undefined!
+ERROR: modpost: "devm_memremap" [drivers/misc/open-dice.ko] undefined!
+ERROR: modpost: "devm_memunmap" [drivers/misc/open-dice.ko] undefined!
+ERROR: modpost: "devm_platform_ioremap_resource" [drivers/char/xillybus/xillybus_of.ko] undefined!
+ERROR: modpost: "devm_platform_ioremap_resource" [drivers/clk/xilinx/clk-xlnx-clock-wizard.ko] undefined!
+ERROR: modpost: "iio_read_channel_processed" [drivers/power/supply/mt6370-charger.ko] undefined!
+ERROR: modpost: "ioremap" [drivers/tty/ipwireless/ipwireless.ko] undefined!
+ERROR: modpost: "iounmap" [drivers/net/ethernet/8390/pcnet_cs.ko] undefined!
+ERROR: modpost: "iounmap" [drivers/tty/ipwireless/ipwireless.ko] undefined!
+aarch64-linux-ld: security/apparmor/lsm.c:1545: undefined reference to `zstd_max_clevel'
+arch/arm64/kernel/alternative.c:199:6: warning: no previous prototype for 'apply_alternatives_vdso' [-Wmissing-prototypes]
+arch/arm64/kernel/alternative.c:295:14: warning: no previous prototype for 'alt_cb_patch_nops' [-Wmissing-prototypes]
+depmod: ERROR: Cycle detected: nf_conntrack -> nf_nat -> nf_conntrack
+depmod: ERROR: Found 2 modules in dependency cycles!
+drivers/gpu/drm/msm/msm_gem_shrinker.c:29:28: error: '__GFP_ATOMIC' undeclared (first use in this function); did you mean 'GFP_ATOMIC'?
+drivers/gpu/drm/tests/drm_format_helper_test.c:381:31: warning: use of NULL 'buf' where non-null expected [CWE-476] [-Wanalyzer-null-argument]
+drivers/iommu/ipmmu-vmsa.c:946:34: warning: 'ipmmu_of_ids' defined but not used [-Wunused-const-variable=]
+include/linux/compiler_types.h:352:45: error: call to '__compiletime_assert_243' declared with attribute error: FIELD_PREP: mask is not constant
+include/linux/compiler_types.h:352:45: error: call to '__compiletime_assert_256' declared with attribute error: FIELD_PREP: mask is not constant
+include/linux/compiler_types.h:352:45: error: call to '__compiletime_assert_265' declared with attribute error: FIELD_PREP: mask is not constant
+include/linux/compiler_types.h:352:45: error: call to '__compiletime_assert_284' declared with attribute error: FIELD_PREP: mask is not constant
+include/linux/compiler_types.h:352:45: error: call to '__compiletime_assert_290' declared with attribute error: FIELD_PREP: mask is not constant
+include/linux/compiler_types.h:352:45: error: call to '__compiletime_assert_408' declared with attribute error: FIELD_PREP: mask is not constant
+security/apparmor/apparmorfs.c:1204: undefined reference to `zstd_min_clevel'
+security/apparmor/apparmorfs.c:1210: undefined reference to `zstd_max_clevel'
+security/apparmor/lsm.c:1545: undefined reference to `zstd_min_clevel'
+
+Error/Warning ids grouped by kconfigs:
+
+gcc_recent_errors
+|-- arc-randconfig-r043-20220926
+|   |-- drivers-gpu-drm-msm-msm_gem_shrinker.c:error:__GFP_ATOMIC-undeclared-(first-use-in-this-function)
+|   `-- include-linux-compiler_types.h:error:call-to-__compiletime_assert_NNN-declared-with-attribute-error:FIELD_PREP:mask-is-not-constant
+|-- arm-buildonly-randconfig-r001-20220926
+|   `-- include-linux-compiler_types.h:error:call-to-__compiletime_assert_NNN-declared-with-attribute-error:FIELD_PREP:mask-is-not-constant
+|-- arm-randconfig-c002-20220925
+|   `-- drivers-gpu-drm-tests-drm_format_helper_test.c:warning:use-of-NULL-buf-where-non-null-expected-CWE
+|-- arm64-allyesconfig
+|   |-- arch-arm64-kernel-alternative.c:warning:no-previous-prototype-for-alt_cb_patch_nops
+|   `-- arch-arm64-kernel-alternative.c:warning:no-previous-prototype-for-apply_alternatives_vdso
+|-- arm64-buildonly-randconfig-r006-20220926
+|   |-- aarch64-linux-ld:security-apparmor-lsm.c:undefined-reference-to-zstd_max_clevel
+|   |-- arch-arm64-kernel-alternative.c:warning:no-previous-prototype-for-alt_cb_patch_nops
+|   |-- arch-arm64-kernel-alternative.c:warning:no-previous-prototype-for-apply_alternatives_vdso
+|   |-- security-apparmor-apparmorfs.c:undefined-reference-to-zstd_max_clevel
+|   |-- security-apparmor-apparmorfs.c:undefined-reference-to-zstd_min_clevel
+|   `-- security-apparmor-lsm.c:undefined-reference-to-zstd_min_clevel
+|-- arm64-randconfig-r035-20220926
+|   |-- arch-arm64-kernel-alternative.c:warning:no-previous-prototype-for-alt_cb_patch_nops
+|   |-- arch-arm64-kernel-alternative.c:warning:no-previous-prototype-for-apply_alternatives_vdso
+|   `-- include-linux-compiler_types.h:error:call-to-__compiletime_assert_NNN-declared-with-attribute-error:FIELD_PREP:mask-is-not-constant
+|-- i386-buildonly-randconfig-r003-20220926
+|   `-- drivers-iommu-ipmmu-vmsa.c:warning:ipmmu_of_ids-defined-but-not-used
+|-- ia64-allmodconfig
+|   `-- drivers-gpu-drm-msm-msm_gem_shrinker.c:error:__GFP_ATOMIC-undeclared-(first-use-in-this-function)
+|-- nios2-buildonly-randconfig-r005-20220925
+|   `-- include-linux-compiler_types.h:error:call-to-__compiletime_assert_NNN-declared-with-attribute-error:FIELD_PREP:mask-is-not-constant
+|-- openrisc-randconfig-r015-20220925
+|   |-- ERROR:devm_iio_channel_get_all-drivers-power-supply-mt6370-charger.ko-undefined
+|   `-- ERROR:iio_read_channel_processed-drivers-power-supply-mt6370-charger.ko-undefined
+|-- powerpc-buildonly-randconfig-r003-20220925
+|   `-- include-linux-compiler_types.h:error:call-to-__compiletime_assert_NNN-declared-with-attribute-error:FIELD_PREP:mask-is-not-constant
+|-- s390-allmodconfig
+|   |-- ERROR:devm_ioremap_resource-drivers-dma-fsl-edma.ko-undefined
+|   |-- ERROR:devm_ioremap_resource-drivers-dma-idma64.ko-undefined
+|   |-- ERROR:devm_ioremap_resource-drivers-dma-qcom-hdma.ko-undefined
+|   |-- ERROR:devm_memremap-drivers-misc-open-dice.ko-undefined
+|   |-- ERROR:devm_memunmap-drivers-misc-open-dice.ko-undefined
+|   |-- ERROR:devm_platform_ioremap_resource-drivers-char-xillybus-xillybus_of.ko-undefined
+|   |-- ERROR:devm_platform_ioremap_resource-drivers-clk-xilinx-clk-xlnx-clock-wizard.ko-undefined
+|   |-- ERROR:ioremap-drivers-tty-ipwireless-ipwireless.ko-undefined
+|   |-- ERROR:iounmap-drivers-net-ethernet-pcnet_cs.ko-undefined
+|   `-- ERROR:iounmap-drivers-tty-ipwireless-ipwireless.ko-undefined
+|-- sparc-allyesconfig
+|   `-- drivers-gpu-drm-msm-msm_gem_shrinker.c:error:__GFP_ATOMIC-undeclared-(first-use-in-this-function)
+|-- sparc-randconfig-r036-20220926
+|   `-- include-linux-compiler_types.h:error:call-to-__compiletime_assert_NNN-declared-with-attribute-error:FIELD_PREP:mask-is-not-constant
+`-- x86_64-rhel-8.3-kselftests
+    |-- depmod:ERROR:Cycle-detected:nf_conntrack-nf_nat-nf_conntrack
+    `-- depmod:ERROR:Found-modules-in-dependency-cycles
+clang_recent_errors
+`-- s390-randconfig-r044-20220926
+    `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-virtual-virtual_link_hwss.c:warning:no-previous-prototype-for-function-virtual_disable_link_output
+
+elapsed time: 729m
+
+configs tested: 64
+configs skipped: 2
+
+gcc tested configs:
+arc                                 defconfig
+um                             i386_defconfig
+um                           x86_64_defconfig
+alpha                               defconfig
+x86_64                          rhel-8.3-func
+s390                             allmodconfig
+x86_64                           rhel-8.3-syz
+x86_64                    rhel-8.3-kselftests
+x86_64                         rhel-8.3-kunit
+x86_64                           rhel-8.3-kvm
+s390                                defconfig
+s390                             allyesconfig
+x86_64                              defconfig
+arm                                 defconfig
+x86_64               randconfig-a002-20220926
+x86_64               randconfig-a004-20220926
+x86_64                               rhel-8.3
+x86_64               randconfig-a001-20220926
+powerpc                           allnoconfig
+i386                          randconfig-a001
+i386                                defconfig
+i386                          randconfig-a003
+x86_64               randconfig-a003-20220926
+x86_64               randconfig-a005-20220926
+i386                          randconfig-a005
+x86_64               randconfig-a006-20220926
+x86_64                           allyesconfig
+i386                             allyesconfig
+mips                             allyesconfig
+powerpc                          allmodconfig
+sh                               allmodconfig
+arm                              allyesconfig
+arc                  randconfig-r043-20220925
+arm64                            allyesconfig
+riscv                randconfig-r042-20220925
+alpha                            allyesconfig
+arc                  randconfig-r043-20220926
+arc                              allyesconfig
+s390                 randconfig-r044-20220925
+m68k                             allmodconfig
+m68k                             allyesconfig
+ia64                             allmodconfig
+
+clang tested configs:
+i386                          randconfig-a002
+i386                 randconfig-a012-20220926
+i386                 randconfig-a011-20220926
+i386                          randconfig-a006
+i386                 randconfig-a015-20220926
+i386                          randconfig-a004
+i386                 randconfig-a014-20220926
+i386                 randconfig-a013-20220926
+x86_64               randconfig-a012-20220926
+i386                 randconfig-a016-20220926
+x86_64               randconfig-a014-20220926
+x86_64               randconfig-a016-20220926
+x86_64               randconfig-a013-20220926
+hexagon              randconfig-r045-20220925
+x86_64               randconfig-a011-20220926
+hexagon              randconfig-r041-20220926
+x86_64               randconfig-a015-20220926
+hexagon              randconfig-r045-20220926
+hexagon              randconfig-r041-20220925
+riscv                randconfig-r042-20220926
+s390                 randconfig-r044-20220926
+x86_64                          rhel-8.3-rust
 
 -- 
-Aaron Tomlin
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
