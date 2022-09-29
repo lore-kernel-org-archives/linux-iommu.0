@@ -1,40 +1,40 @@
 Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D0955397
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 304E85399
 	for <iommu@lists.linux.dev>; Thu, 29 Sep 2022 15:33:24 +0000 (UTC)
 Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28TEvdoH008198;
-	Thu, 29 Sep 2022 15:33:10 GMT
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28TEvcfC008162;
+	Thu, 29 Sep 2022 15:33:11 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=fM1WyJtdobqmzqolG/DJUsfEKi4rUOObmaLTip65IDw=;
- b=F1TbQbBveuFVyxYcpzJnNTpjZBAPpf+hKGddshnt9AE9vVXkysnTmyXdCTSl+j11ZXky
- kOFcxDq3gDz6gXkEFXN9d/yHkKdd8y23QhzQSttTwxMprBUcZI+t28cL+FDK/eQp3a/Y
- tiTAX7CuLsyCU1lSQ7jntaeGXtrCxvC4QC9X0fpg31mdc8PVIg+nwiFho6lJ2ogPSW0k
- icl13WHiuxTcy57esXq2zjSxMu8fvrsOvBclshZqM8EYUtLeLIqqa4x/ZdNALoPleLk9
- aLzpSm+9B4WhJn9f4IPTCFHUEaRWg9U/OHtt0PjH6bFmJ6fkzsj2HWm5TEwimsMcEX7c EA== 
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jwdk7s73u-1
+ bh=xk5CQYiPUCgfb0w4bU+J/2CgQXI4nA1kZBJMbRE4FdE=;
+ b=RGDxFrm4WTEsnAC4IiHDVfhS8RauNeu2bcYVwQ4LXpth6woy0OeGqQ7/kEkbmjqLNNIl
+ k63Vut69RJfCRANcsfNFAByPGaokDOPMRML0vfevSKq3K7KXouaXZ8BcduUV1Ry1VcV8
+ GEikEGQ1MGM0IYZV/p6G8MybwNsndoZ+W1NWd7ufhQtIGi+d1QxUMOkMbIn2L8xlXMDU
+ 3fJ2u+gxO3snbkflfPDnyqVECOf4qme5+Nu2LdqMuBCBHimYjswFq+invWKG4pkZE4tN
+ 5ZLsLA12GWaQRUwGT6R8XOkdJvE0lF4XPL90rwo2xGgDKHfb1uwLIQg5n/KLQwIyqt+h yQ== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jwdk7s745-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 29 Sep 2022 15:33:10 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-	by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 28TFMVRk010753;
+	Thu, 29 Sep 2022 15:33:11 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+	by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 28TFKRbI010485;
 	Thu, 29 Sep 2022 15:33:08 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-	by ppma04fra.de.ibm.com with ESMTP id 3jssh956f9-1
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+	by ppma03ams.nl.ibm.com with ESMTP id 3jssh9ew00-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 29 Sep 2022 15:33:07 +0000
+	Thu, 29 Sep 2022 15:33:08 +0000
 Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-	by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 28TFX4qL3211964
+	by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 28TFX5d96685226
 	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 29 Sep 2022 15:33:04 GMT
+	Thu, 29 Sep 2022 15:33:05 GMT
 Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id B103CAE045;
-	Thu, 29 Sep 2022 15:33:04 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id 36366AE045;
+	Thu, 29 Sep 2022 15:33:05 +0000 (GMT)
 Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 39E7EAE04D;
+	by IMSVA (Postfix) with ESMTP id BD693AE051;
 	Thu, 29 Sep 2022 15:33:04 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
 	by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
@@ -47,9 +47,9 @@ Cc: linux-s390@vger.kernel.org, borntraeger@linux.ibm.com, hca@linux.ibm.com,
         agordeev@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
         will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 4/5] iommu/s390: Fix incorrect aperture check
-Date: Thu, 29 Sep 2022 17:33:01 +0200
-Message-Id: <20220929153302.3195115-5-schnelle@linux.ibm.com>
+Subject: [PATCH v3 5/5] iommu/s390: Fix incorrect pgsize_bitmap
+Date: Thu, 29 Sep 2022 17:33:02 +0200
+Message-Id: <20220929153302.3195115-6-schnelle@linux.ibm.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220929153302.3195115-1-schnelle@linux.ibm.com>
 References: <20220929153302.3195115-1-schnelle@linux.ibm.com>
@@ -61,8 +61,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: PsmaGx3EvoSt29E2oexuOyKAsO6WyT_-
-X-Proofpoint-ORIG-GUID: PsmaGx3EvoSt29E2oexuOyKAsO6WyT_-
+X-Proofpoint-GUID: ExiAPhnI2I5y6R3nQCQ6Nhhaf6Al0Mse
+X-Proofpoint-ORIG-GUID: ExiAPhnI2I5y6R3nQCQ6Nhhaf6Al0Mse
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
  definitions=2022-09-29_08,2022-09-29_03,2022-06-22_01
@@ -72,29 +72,43 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspect
  adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2209130000 definitions=main-2209290097
 
-The domain->geometry.aperture_end specifies the last valid address treat
-it as such when checking if a DMA address is valid.
+The .pgsize_bitmap property of struct iommu_ops is not a page mask but
+rather has a bit set for each size of pages the IOMMU supports. As the
+comment correctly pointed out at this moment the code only support 4K
+pages so simply use SZ_4K here.
 
-Reviewed-by: Pierre Morel <pmorel@linux.ibm.com>
-Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
 Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 ---
- drivers/iommu/s390-iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/s390-iommu.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
 diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index ed0e64f478cf..6d4a9c7db32c 100644
+index 6d4a9c7db32c..2bad24d6cfef 100644
 --- a/drivers/iommu/s390-iommu.c
 +++ b/drivers/iommu/s390-iommu.c
-@@ -210,7 +210,7 @@ static int s390_iommu_update_trans(struct s390_domain *s390_domain,
- 	int rc = 0;
+@@ -12,13 +12,6 @@
+ #include <linux/sizes.h>
+ #include <asm/pci_dma.h>
  
- 	if (dma_addr < s390_domain->domain.geometry.aperture_start ||
--	    dma_addr + size > s390_domain->domain.geometry.aperture_end)
-+	    dma_addr + size > s390_domain->domain.geometry.aperture_end + 1)
- 		return -EINVAL;
+-/*
+- * Physically contiguous memory regions can be mapped with 4 KiB alignment,
+- * we allow all page sizes that are an order of 4KiB (no special large page
+- * support so far).
+- */
+-#define S390_IOMMU_PGSIZES	(~0xFFFUL)
+-
+ static const struct iommu_ops s390_iommu_ops;
  
- 	nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
+ struct s390_domain {
+@@ -360,7 +353,7 @@ static const struct iommu_ops s390_iommu_ops = {
+ 	.probe_device = s390_iommu_probe_device,
+ 	.release_device = s390_iommu_release_device,
+ 	.device_group = generic_device_group,
+-	.pgsize_bitmap = S390_IOMMU_PGSIZES,
++	.pgsize_bitmap = SZ_4K,
+ 	.get_resv_regions = s390_iommu_get_resv_regions,
+ 	.default_domain_ops = &(const struct iommu_domain_ops) {
+ 		.attach_dev	= s390_iommu_attach_device,
 -- 
 2.34.1
 
