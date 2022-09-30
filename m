@@ -1,82 +1,118 @@
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 575147B
-	for <iommu@lists.linux.dev>; Fri, 30 Sep 2022 07:53:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1664524386; x=1696060386;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=vhsp8GlSHDd8/AmhSlTSi78LT62QfZBL8pEfN0JGc3E=;
-  b=VtXGmxzVw/DlQISZf5UskqwP6iL1oFCbtzLuPSswpG2dE2MfpHT6HpxI
-   W1T4+rrCRXKd0kGbVKNfpStp14Mm9rELrwhf/bkh0Aa2/ushXll8XNgA0
-   /MsSupRUBLi+JtJyNosHTDcAC8/3pJVJ0TnRIwXXJ6UqiBdNy6XVWlMc6
-   17J7kUJGmwfOKrXtebGAurm70KBnKCXl/MmRyA97CyJPKPFs066+7htLQ
-   AHuxx6TG1TtRwvjDHahTVVLf1kFKAmnFxdypjXVn55jsE2bOYgFcbCGew
-   kj7L1oKUyZl0XRr/FnPQiKQ1DNgvxbFe4LXLisG8qfUCt0Al+17EQt2jl
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10485"; a="303043825"
-X-IronPort-AV: E=Sophos;i="5.93,357,1654585200"; 
-   d="scan'208";a="303043825"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Sep 2022 00:53:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10485"; a="765046044"
-X-IronPort-AV: E=Sophos;i="5.93,357,1654585200"; 
-   d="scan'208";a="765046044"
-Received: from skxmcp01.bj.intel.com ([10.240.193.86])
-  by fmsmga001.fm.intel.com with ESMTP; 30 Sep 2022 00:49:55 -0700
-From: Yu Zhang <yu.c.zhang@linux.intel.com>
-To: joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iommu: remove useless parameter in iommu_bus_init().
-Date: Fri, 30 Sep 2022 15:02:02 +0800
-Message-Id: <20220930070202.105663-1-yu.c.zhang@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E80C77B
+	for <iommu@lists.linux.dev>; Fri, 30 Sep 2022 08:01:39 +0000 (UTC)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 28U7H2ef021657;
+	Fri, 30 Sep 2022 08:01:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=XvKkvCtRGCWdox4k9XJ4eNOaUFUePFB4u7AUf7aqW1M=;
+ b=jdj7RmO9krwtDkkxucrkhgmpZrCO9Z+jlAuUU0cLCu1enx6vSqyr3wotCGaaziO6Iz7F
+ PgCOH410qRsfYQ/dSvNVMl9CBvimSvsRDkbIQQpH0Uth8ScBrX/NJVcrQrhhAz0roGU0
+ sBrDyNs+dKb6G/uFf1lNtV2Ymbfic9R+1xWRbYkHm+sOAd9f+sz/s9BNdp0MXZVogpet
+ dHChVBqrT4qKq6NcdEKRVxd6fBy2fzIQ5KDlimNB/AODtwRTi9KLOgfe5ayN33SFrQtc
+ MVqQOj15bWikjMDbKELingwCmmp65A2O52MLQpZzMGax9+W8FGy2xaYXaLIhm8v3ZdMc yw== 
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jwuxas74a-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 30 Sep 2022 08:01:25 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+	by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 28U7pasV023077;
+	Fri, 30 Sep 2022 08:01:24 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+	by ppma01fra.de.ibm.com with ESMTP id 3jssh8wty0-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 30 Sep 2022 08:01:24 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+	by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 28U81KPN4915950
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 30 Sep 2022 08:01:21 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id D9F3652051;
+	Fri, 30 Sep 2022 08:01:20 +0000 (GMT)
+Received: from sig-9-145-158-199.de.ibm.com (unknown [9.145.158.199])
+	by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 230575204E;
+	Fri, 30 Sep 2022 08:01:20 +0000 (GMT)
+Message-ID: <094e77fd96696ada25eb1a620b46ef21c0cf6cc0.camel@linux.ibm.com>
+Subject: Re: [PATCH v3 4/5] iommu/s390: Fix incorrect aperture check
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>,
+        Pierre Morel
+ <pmorel@linux.ibm.com>, iommu@lists.linux.dev,
+        linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        agordeev@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
+        will@kernel.org, robin.murphy@arm.com, linux-kernel@vger.kernel.org
+Date: Fri, 30 Sep 2022 10:01:19 +0200
+In-Reply-To: <YzXArysnUGFhywQT@nvidia.com>
+References: <20220929153302.3195115-1-schnelle@linux.ibm.com>
+	 <20220929153302.3195115-5-schnelle@linux.ibm.com>
+	 <YzXArysnUGFhywQT@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Zdh27Ld83o7w6gxwY6OSW1TZKLG0UZMz
+X-Proofpoint-ORIG-GUID: Zdh27Ld83o7w6gxwY6OSW1TZKLG0UZMz
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-09-30_04,2022-09-29_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ priorityscore=1501 bulkscore=0 malwarescore=0 clxscore=1015 phishscore=0
+ mlxlogscore=913 suspectscore=0 impostorscore=0 adultscore=0 mlxscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2209300045
 
-Parameter 'ops' is no longer used by iommu_bus_init(), after
-commit 8cec63e52966 ("iommu: Remove iommu_callback_data").
+On Thu, 2022-09-29 at 12:58 -0300, Jason Gunthorpe wrote:
+> On Thu, Sep 29, 2022 at 05:33:01PM +0200, Niklas Schnelle wrote:
+> > The domain->geometry.aperture_end specifies the last valid address treat
+> > it as such when checking if a DMA address is valid.
+> > 
+> > Reviewed-by: Pierre Morel <pmorel@linux.ibm.com>
+> > Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> > Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> > ---
+> >  drivers/iommu/s390-iommu.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+> > index ed0e64f478cf..6d4a9c7db32c 100644
+> > --- a/drivers/iommu/s390-iommu.c
+> > +++ b/drivers/iommu/s390-iommu.c
+> > @@ -210,7 +210,7 @@ static int s390_iommu_update_trans(struct s390_domain *s390_domain,
+> >  	int rc = 0;
+> >  
+> >  	if (dma_addr < s390_domain->domain.geometry.aperture_start ||
+> > -	    dma_addr + size > s390_domain->domain.geometry.aperture_end)
+> > +	    dma_addr + size > s390_domain->domain.geometry.aperture_end + 1)
+> 
+> The reason the iommu layer uses 'last' (= start + size - 1) not 'end'
+> is to allow for the very last byte of the range to be used.
+> 
+> Meaning (start + size) == 0 in some cases due to the overflow.
+> 
+> Generally when working with lasts's I prefer people write code in a
+> way that doesn't trigger the overflow, because there are some
+> complicated C rules about integer promotion that can mean the desired
+> overflow silently doesn't happen in obscure cases - especially if
+> unsigned long != u64
+> 
+> So, I'd write this as:
+> 
+>   (dma_addr + size - 1) > s390_domain->domain.geometry.aperture_end
+> 
+> Jason
 
-So just remove it.
+Makes sense. Thanks.
 
-Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
----
- drivers/iommu/iommu.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 3a808146b50f..bedda1e0f016 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1775,7 +1775,7 @@ int bus_iommu_probe(struct bus_type *bus)
- 	return ret;
- }
- 
--static int iommu_bus_init(struct bus_type *bus, const struct iommu_ops *ops)
-+static int iommu_bus_init(struct bus_type *bus)
- {
- 	struct notifier_block *nb;
- 	int err;
-@@ -1836,7 +1836,7 @@ int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops)
- 	bus->iommu_ops = ops;
- 
- 	/* Do IOMMU specific setup for this bus-type */
--	err = iommu_bus_init(bus, ops);
-+	err = iommu_bus_init(bus);
- 	if (err)
- 		bus->iommu_ops = NULL;
- 
--- 
-2.25.1
 
