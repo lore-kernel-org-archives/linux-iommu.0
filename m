@@ -1,228 +1,102 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BC6E3D8A
-	for <iommu@lists.linux.dev>; Tue,  4 Oct 2022 16:20:59 +0000 (UTC)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 294FaFJK027601;
-	Tue, 4 Oct 2022 16:20:52 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F70B4419
+	for <iommu@lists.linux.dev>; Tue,  4 Oct 2022 20:01:52 +0000 (UTC)
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 294JsAxX030412;
+	Tue, 4 Oct 2022 20:01:32 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
  mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=ld05Yh9O6nRCRRVnFyZ6YMI1JBs5AmR0FP+RYbJGIDU=;
- b=dDve3KROT2nSQCdDtKVfjbU4y/bYfo50/njyk+kGDd2OvF80kiWhW35W+SyK7zkvi+yU
- ppNa+4ZUXgv/Hy9GXyBbCYxnHSDSaSY00SL/hb6BNlyJJkYLxygxdZnRv+cCs72tcKoN
- 6fZ0LtNLMOTwMOleJ4vQDgo3tZ+LkDUuyvo0qBWA5PGP3MWyz7zvxHfqpOOThOT6j5fW
- Aih61peb86j8Kn7ZhxT0YCrWPD77TgWk9jHprohW4gSn4Zi7O3G8BrZfBVaRkB4cwnVS
- WOpEQ0d2/MZgh79+0uSn5pMvNLgDHmyNALph5ilopzFwYpeu8kQsO4uMqhB3BM8wEsBP fw== 
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3k0fcah6wf-1
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=XGa92zz/DaeiQ6YRhnRH8R2eq1OnzKH5IeRMwTcroTg=;
+ b=Oq7EUIhEUQUcfSIW4eJdfAjbJZzViiZTBXZt0ukiszP6/T4sFVqMs+8BwkF6YddAmjYy
+ SUV9PydB3/U7k4fpPL4Jga+o2qhVYVtGNP+qEeoF6qxwg3HM+28VvrF668UpyBMjB4sz
+ Yopi5v7x1AxDfPUQvSEqaFEfs/araZlgzZ3IG/cWB1BkHVneCSR0JJe+WbPGPye4istA
+ 40ILHX/8H6Nl5lITy8KJPirMjROcvvPEyL5LYo4Y2ESeS1nxexbqcIGR0lRVmDJbCIJI
+ cuTWyNp0J53dZn5n0Df8goTFpMBftBCfQdd0lLWIgyofLPwH6jPc7AMOAgCGT3RpzPYc 6Q== 
+Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3k0escsqxu-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 04 Oct 2022 16:20:52 +0000
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-	by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 294G58WD009433;
-	Tue, 4 Oct 2022 16:20:51 GMT
-Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
-	by ppma03wdc.us.ibm.com with ESMTP id 3jxd69dya2-1
+	Tue, 04 Oct 2022 20:01:32 +0000
+Received: from nasanex01b.na.qualcomm.com (corens_vlan604_snip.qualcomm.com [10.53.140.1])
+	by NASANPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 294K1VoM010547
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 04 Oct 2022 16:20:51 +0000
-Received: from smtpav04.wdc07v.mail.ibm.com ([9.208.128.116])
-	by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 294GKoex27263282
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 4 Oct 2022 16:20:50 GMT
-Received: from smtpav04.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id E8E3358050;
-	Tue,  4 Oct 2022 16:20:49 +0000 (GMT)
-Received: from smtpav04.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 2A9E258061;
-	Tue,  4 Oct 2022 16:20:48 +0000 (GMT)
-Received: from [9.77.144.104] (unknown [9.77.144.104])
-	by smtpav04.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Tue,  4 Oct 2022 16:20:48 +0000 (GMT)
-Message-ID: <95df349e-3b8d-57b4-6e07-ba80f685d4f1@linux.ibm.com>
-Date: Tue, 4 Oct 2022 12:20:47 -0400
+	Tue, 4 Oct 2022 20:01:31 GMT
+Received: from [10.110.73.50] (10.80.80.8) by nasanex01b.na.qualcomm.com
+ (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Tue, 4 Oct 2022
+ 13:01:30 -0700
+Message-ID: <af44f9a2-a677-6c07-a0a7-74b6bbbab89b@quicinc.com>
+Date: Tue, 4 Oct 2022 15:01:29 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: [PATCH v4 2/5] iommu/s390: Get rid of s390_domain_device
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH 1/2] dt-bindings: arm-smmu: Add compatible bindings for
+ QDU1000 and QRU1000
 Content-Language: en-US
-To: Niklas Schnelle <schnelle@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev
-Cc: linux-s390@vger.kernel.org, borntraeger@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        agordeev@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
-        will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com,
-        linux-kernel@vger.kernel.org
-References: <20221004120706.2957492-1-schnelle@linux.ibm.com>
- <20221004120706.2957492-3-schnelle@linux.ibm.com>
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <20221004120706.2957492-3-schnelle@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Will Deacon
+	<will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+        Rob Herring
+	<robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+CC: Robin Murphy <robin.murphy@arm.com>,
+        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20221001030615.29135-1-quic_molvera@quicinc.com>
+ <20221001030615.29135-2-quic_molvera@quicinc.com>
+ <8e63f6a7-a133-1f20-403a-5b0965cee107@linaro.org>
+From: Melody Olvera <quic_molvera@quicinc.com>
+In-Reply-To: <8e63f6a7-a133-1f20-403a-5b0965cee107@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 1-Rtll0XEWR7M0mOES8GL13ZsOMb3hKR
-X-Proofpoint-ORIG-GUID: 1-Rtll0XEWR7M0mOES8GL13ZsOMb3hKR
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: IDz103nZHmL9s510BoQu1PM4jZ5soZjJ
+X-Proofpoint-ORIG-GUID: IDz103nZHmL9s510BoQu1PM4jZ5soZjJ
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
- definitions=2022-10-04_06,2022-09-29_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxscore=0
- clxscore=1015 malwarescore=0 impostorscore=0 bulkscore=0 phishscore=0
- priorityscore=1501 adultscore=0 mlxlogscore=999 suspectscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2210040104
+ definitions=2022-10-04_09,2022-09-29_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 mlxscore=0
+ lowpriorityscore=0 malwarescore=0 adultscore=0 mlxlogscore=894
+ phishscore=0 bulkscore=0 clxscore=1015 impostorscore=0 priorityscore=1501
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2210040130
 
-On 10/4/22 8:07 AM, Niklas Schnelle wrote:
-> The struct s390_domain_device serves the sole purpose as list entry for
-> the devices list of a struct s390_domain. As it contains no additional
-> information besides a list_head and a pointer to the struct zpci_dev we
-> can simplify things and just thread the device list through struct
-> zpci_dev directly. This removes the need to allocate during domain
-> attach and gets rid of one level of indirection during mapping
-> operations.
-> 
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 
-Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
 
-> ---
->  arch/s390/include/asm/pci.h |  1 +
->  drivers/iommu/s390-iommu.c  | 45 ++++++++-----------------------------
->  2 files changed, 10 insertions(+), 36 deletions(-)
-> 
-> diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
-> index 108e732d7b14..15f8714ca9b7 100644
-> --- a/arch/s390/include/asm/pci.h
-> +++ b/arch/s390/include/asm/pci.h
-> @@ -117,6 +117,7 @@ struct zpci_bus {
->  struct zpci_dev {
->  	struct zpci_bus *zbus;
->  	struct list_head entry;		/* list of all zpci_devices, needed for hotplug, etc. */
-> +	struct list_head iommu_list;
->  	struct kref kref;
->  	struct hotplug_slot hotplug_slot;
->  
-> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-> index 0f58e897bc95..6f87dd4b85af 100644
-> --- a/drivers/iommu/s390-iommu.c
-> +++ b/drivers/iommu/s390-iommu.c
-> @@ -29,11 +29,6 @@ struct s390_domain {
->  	spinlock_t		list_lock;
->  };
->  
-> -struct s390_domain_device {
-> -	struct list_head	list;
-> -	struct zpci_dev		*zdev;
-> -};
-> -
->  static struct s390_domain *to_s390_domain(struct iommu_domain *dom)
->  {
->  	return container_of(dom, struct s390_domain, domain);
-> @@ -87,21 +82,13 @@ static void s390_domain_free(struct iommu_domain *domain)
->  static void __s390_iommu_detach_device(struct zpci_dev *zdev)
->  {
->  	struct s390_domain *s390_domain = zdev->s390_domain;
-> -	struct s390_domain_device *domain_device, *tmp;
->  	unsigned long flags;
->  
->  	if (!s390_domain)
->  		return;
->  
->  	spin_lock_irqsave(&s390_domain->list_lock, flags);
-> -	list_for_each_entry_safe(domain_device, tmp, &s390_domain->devices,
-> -				 list) {
-> -		if (domain_device->zdev == zdev) {
-> -			list_del(&domain_device->list);
-> -			kfree(domain_device);
-> -			break;
-> -		}
-> -	}
-> +	list_del_init(&zdev->iommu_list);
->  	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
->  
->  	zpci_unregister_ioat(zdev, 0);
-> @@ -114,17 +101,12 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
->  {
->  	struct s390_domain *s390_domain = to_s390_domain(domain);
->  	struct zpci_dev *zdev = to_zpci_dev(dev);
-> -	struct s390_domain_device *domain_device;
->  	unsigned long flags;
-> -	int cc, rc = 0;
-> +	int cc;
->  
->  	if (!zdev)
->  		return -ENODEV;
->  
-> -	domain_device = kzalloc(sizeof(*domain_device), GFP_KERNEL);
-> -	if (!domain_device)
-> -		return -ENOMEM;
-> -
->  	if (zdev->s390_domain)
->  		__s390_iommu_detach_device(zdev);
->  	else if (zdev->dma_table)
-> @@ -133,10 +115,8 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
->  	zdev->dma_table = s390_domain->dma_table;
->  	cc = zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
->  				virt_to_phys(zdev->dma_table));
-> -	if (cc) {
-> -		rc = -EIO;
-> -		goto out_free;
-> -	}
-> +	if (cc)
-> +		return -EIO;
->  
->  	spin_lock_irqsave(&s390_domain->list_lock, flags);
->  	/* First device defines the DMA range limits */
-> @@ -147,21 +127,14 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
->  	/* Allow only devices with identical DMA range limits */
->  	} else if (domain->geometry.aperture_start != zdev->start_dma ||
->  		   domain->geometry.aperture_end != zdev->end_dma) {
-> -		rc = -EINVAL;
->  		spin_unlock_irqrestore(&s390_domain->list_lock, flags);
-> -		goto out_free;
-> +		return -EINVAL;
->  	}
-> -	domain_device->zdev = zdev;
->  	zdev->s390_domain = s390_domain;
-> -	list_add(&domain_device->list, &s390_domain->devices);
-> +	list_add(&zdev->iommu_list, &s390_domain->devices);
->  	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
->  
->  	return 0;
-> -
-> -out_free:
-> -	kfree(domain_device);
-> -
-> -	return rc;
->  }
->  
->  static void s390_iommu_detach_device(struct iommu_domain *domain,
-> @@ -198,10 +171,10 @@ static int s390_iommu_update_trans(struct s390_domain *s390_domain,
->  				   phys_addr_t pa, dma_addr_t dma_addr,
->  				   size_t size, int flags)
->  {
-> -	struct s390_domain_device *domain_device;
->  	phys_addr_t page_addr = pa & PAGE_MASK;
->  	dma_addr_t start_dma_addr = dma_addr;
->  	unsigned long irq_flags, nr_pages, i;
-> +	struct zpci_dev *zdev;
->  	unsigned long *entry;
->  	int rc = 0;
->  
-> @@ -226,8 +199,8 @@ static int s390_iommu_update_trans(struct s390_domain *s390_domain,
->  	}
->  
->  	spin_lock(&s390_domain->list_lock);
-> -	list_for_each_entry(domain_device, &s390_domain->devices, list) {
-> -		rc = zpci_refresh_trans((u64) domain_device->zdev->fh << 32,
-> +	list_for_each_entry(zdev, &s390_domain->devices, iommu_list) {
-> +		rc = zpci_refresh_trans((u64)zdev->fh << 32,
->  					start_dma_addr, nr_pages * PAGE_SIZE);
->  		if (rc)
->  			break;
-
+On 10/1/2022 4:31 AM, Krzysztof Kozlowski wrote:
+> On 01/10/2022 05:06, Melody Olvera wrote:
+>> Add compatible bindings for Qualcomm QDU1000 and QRU1000 platforms.
+>>
+>> Signed-off-by: Melody Olvera <quic_molvera@quicinc.com>
+>> ---
+>>  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 2 ++
+>>  1 file changed, 2 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>> index 9066e6df1ba1..681035b6e991 100644
+>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>> @@ -47,6 +47,8 @@ properties:
+>>                - qcom,sm8250-smmu-500
+>>                - qcom,sm8350-smmu-500
+>>                - qcom,sm8450-smmu-500
+>> +              - qcom,qdu1000-smmu-500
+>> +              - qcom,qru1000-smmu-500
+> Wrong order.
+Will fix.
+>
+> Best regards,
+> Krzysztof
+Thanks,
+Melody
