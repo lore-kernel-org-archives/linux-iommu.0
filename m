@@ -1,94 +1,132 @@
-Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A063723AA
-	for <iommu@lists.linux.dev>; Sun,  2 Oct 2022 08:17:30 +0000 (UTC)
-Received: by mail-lf1-f45.google.com with SMTP id g1so12662902lfu.12
-        for <iommu@lists.linux.dev>; Sun, 02 Oct 2022 01:17:30 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3215723B8
+	for <iommu@lists.linux.dev>; Tue,  4 Oct 2022 10:01:50 +0000 (UTC)
+Received: by mail-wm1-f41.google.com with SMTP id ay7-20020a05600c1e0700b003b49861bf48so619467wmb.0
+        for <iommu@lists.linux.dev>; Tue, 04 Oct 2022 03:01:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=u5vwi2mv0cJCBaFXR16xTWh3Sv0rQv1R6ZlbVcZs2s0=;
-        b=Z25NH7UkqHJjPxoqbM8K0rUlPMCJlDJ8Rbzfk70/LuafFxXPRW8pq7GC9+7+PGDNcx
-         ggOMYooosvzSkdDInDFtudXttiEGnDIDBybUm7hVQp895bEvpLH98MPepdY00j3DWusE
-         00wVD/fraShm7516tBo6eF37sGuQHWHX492O0GUM9nja+x0OKJACldSfziOCFZcltNLx
-         +V2y+YSr4ZLzK8SGenBTAO5xvHJdTed4EEeR0M9KsotzlbgGoIqUCr5D2raU5E65pNKY
-         5XcO1aksk97dgT9iwAdRdfrxI7zwfRFKhxrN9W1dfxTRX2kxr/HcAd9X2Hk4ddD+Gwr7
-         eIaA==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:message-id:date:from:content-transfer-encoding:mime-version
+         :subject:from:to:cc:subject:date;
+        bh=tKU7evcDNmKM2NyEmOubND8UgSxdHh2PbRRWmqzSe2w=;
+        b=xN+rfGtVX8AJ5IvHIYXHWrWp2qqPVbtRtxDUEN8FTd05ln1AEhTbpYy5Qz0bwzFmy0
+         XbHP4GvJPlKn5PD4LAUHqjvjY0Da9bNpNxyF7qxaqg8dQ/bMOlBsaWdqBi/9qOJ8W0Jb
+         K5Yb8hYTpqvE3ZI/ATNZl1/Cx4x6AbEoHfan9X6bOJLsNDB4qFlvET9NjoIo1BLGn578
+         BtzIA0AOLiSKROSQxsiT2DBhI9fyUBer1Wpqf9v80Xe4vHTSl3qfr3+SerzGD59seRDV
+         0R5YE48e+ePI/tM4QtV4sxzg1L6L2bswfHJhxFOQS1bF4/P7xHjAm5lER40hto3L6jXu
+         dQng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=u5vwi2mv0cJCBaFXR16xTWh3Sv0rQv1R6ZlbVcZs2s0=;
-        b=3bWrJQw7KMW4pNkoGddzkEAzyzE0O6/XlwoCy6zMW33mXbxJB4VVsc+4ID4SO5dnlo
-         6zs8q83yxGFnHlS/JcHddOAAWRjO7NXgTSOE55DbiQTziMccHjtPBPs81rgyHTGQAGrW
-         sgX5IaxlDzezDaoF/M73uszZUuvPZVuRDr9gHLPjd7+k2Y5WQdk0MXThIdXSCWgC21wz
-         vDpYpswVIMfJeA6YSJSM8PgZ14WjJaDocMQdScQP5XeZmdp8H79qcbMkEPpvZGRyZrHy
-         KZRPhU2fB/M8LEc61zbG1hlU8JMxFQejteBQTXsnsgCAScYCvgcpy18OtEwpA6InrNPn
-         9DAw==
-X-Gm-Message-State: ACrzQf2+pD2lXRnyYyblgbs4FAT+tWLQut21U1hqGOtmEMpWcyYUHb+k
-	Iu3LBHEPmwm/iX0i7CsLfXPBVQ==
-X-Google-Smtp-Source: AMsMyM7MPiVwZCk7siZV+RrnjBIXnhITNfmFjP1d0jPnDwzyRQpqWoWoaW4cduej8hxjsM3h643Jxg==
-X-Received: by 2002:a19:4358:0:b0:49e:e545:3cbe with SMTP id m24-20020a194358000000b0049ee5453cbemr6278473lfj.551.1664698648739;
-        Sun, 02 Oct 2022 01:17:28 -0700 (PDT)
-Received: from [192.168.0.21] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id n5-20020a0565120ac500b0048a9e899693sm1014899lfu.16.2022.10.02.01.17.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 02 Oct 2022 01:17:28 -0700 (PDT)
-Message-ID: <1f077808-9e04-3098-e78e-f9435bc954a9@linaro.org>
-Date: Sun, 2 Oct 2022 10:17:27 +0200
+        h=cc:to:message-id:date:from:content-transfer-encoding:mime-version
+         :subject:x-gm-message-state:from:to:cc:subject:date;
+        bh=tKU7evcDNmKM2NyEmOubND8UgSxdHh2PbRRWmqzSe2w=;
+        b=zAWwdViqmC9bj9si149f8KmbYqIfV5QjgBeP/F/mZVPyN24S/vPDGdCo3OT8oj9Ski
+         80xeDrnd83H/AndexVF1zSG3yCh1QVHlvjjLAehFtXikB4llxGbJrcyU6MOdQRUiVFwK
+         nA/BDNuf7aqy9ifN8noPpiwnyaerRGHqok2LQ+Lal2zVX4533tV0h4+CvnENtXFWK7Pk
+         hrszWJZcUNDRPlReQnrTCrNxrEnGp/P8vjUNz16ZnBah/MYtfVzNQRYTXvzWimcujri9
+         I92IW3gWM1/vIqC0zF48AwVxVaZQxKEDH3dPDDyx4dKQ+kYBwByzG76PVvH65FRIgKbO
+         4dww==
+X-Gm-Message-State: ACrzQf2BoK61b66DiNzRUd/WGoItKgbJsVLvwujGnNCAF2zUNwODQ5fb
+	EeSAy0Y/F0TPDrkpOBOG9odJKA==
+X-Google-Smtp-Source: AMsMyM4QADSoQD6BI5POivnrAYpJaFBXo2k6iMLIzBD4ZHLZ1LRVhikrMgIoctpBYEGWa2+MaybjWQ==
+X-Received: by 2002:a05:600c:1c1f:b0:3b4:8330:5a46 with SMTP id j31-20020a05600c1c1f00b003b483305a46mr9745590wms.45.1664877709319;
+        Tue, 04 Oct 2022 03:01:49 -0700 (PDT)
+Received: from [127.0.1.1] (158.22.5.93.rev.sfr.net. [93.5.22.158])
+        by smtp.googlemail.com with ESMTPSA id d3-20020a5d6dc3000000b0022e3cba367fsm5473645wrz.100.2022.10.04.03.01.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Oct 2022 03:01:48 -0700 (PDT)
+Subject: [PATCH v2 0/3] iommu/mediatek: Add mt8365 iommu support
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: [PATCH 1/1] dt-bindings: iommu: arm-smmu: Add binding for sm6125
-Content-Language: en-US
-To: Martin Botka <martin.botka@somainline.org>, martin.botka1@gmail.com
-Cc: ~postmarketos/upstreaming@lists.sr.ht,
- Konrad Dybcio <konrad.dybcio@somainline.org>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>,
- Marijn Suijten <marijn.suijten@somainline.org>,
- Jami Kettunen <jamipkettunen@somainline.org>,
- Paul Bouchara <paul.bouchara@somainline.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20221001185715.495477-1-martin.botka@somainline.org>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20221001185715.495477-1-martin.botka@somainline.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-b4-tracking: H4sIAIIEPGMC/33NQQqDMBAF0KuUrJsSxxhrV71H6cKJYw1oIokKIt69Q5eldTX8D//NJhJFR0ncTp
+ uItLjkgucA55OwXe1fJF3DWYACyJTKpAvDMMs0j2OIk2y1qmxJqtJkBG+wTiQx1t52vPJz33PZuTSF
+ uH5+LMDn8Y9bQCppKsSyMY1SUNyxXnuHkS42DOLJ2JIfAjkD9pojtWQBqPkB6ENAM0DWYEuFJizwC9 j3/Q2nvszFNAEAAA==
+From: Alexandre Mergnat <amergnat@baylibre.com>
+Date: Tue, 04 Oct 2022 12:01:38 +0200
+Message-Id: <20221001-iommu-support-v2-0-dbfef2eeebc9@baylibre.com>
+To: Rob Herring <robh+dt@kernel.org>, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>,
+ Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc: Alexandre Mergnat <amergnat@baylibre.com>, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org, Fabien Parent <fparent@baylibre.com>,
+ Markus Schneider-Pargmann <msp@baylibre.com>, Amjad Ouled-Ameur <aouledameur@baylibre.com>, devicetree@vger.kernel.org,
+ iommu@lists.linux.dev
+X-Mailer: b4 0.10.1
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1907; i=amergnat@baylibre.com;
+ h=from:subject:message-id; bh=wkZ+3sWJG6Ki+/rHRdrbUO5DYzvEVkUDbNJFrbYO/CY=;
+ b=owEBbQKS/ZANAwAKAStGSZ1+MdRFAcsmYgBjPASLaqK95in0T9QMfwgqhBOMZ9LhaECkSxMbAXJE
+ POQrg9GJAjMEAAEKAB0WIQQjG17X8+qqcA5g/osrRkmdfjHURQUCYzwEiwAKCRArRkmdfjHURVC4D/
+ 49eK87NwJmmnFfBn2wOKHykIRQFWX56rejL3Z2zFx5pcOhzOuUP2qsm9xlwqUWiyMk03I9oUyqlzcD
+ 6cniug/vPaB89Yijho9Vb+nBvLfAaK5qBHa46FJjUeRb7EE2S5g5Ex7d1vNL1xSh7ZVJEw5gkUPzu+
+ N+GpG8ix0crSZ4+nOAsYb+wLhburt/1sqgLUtVYKKmnBDqtiLUMeUm4KZOx5k4ELdwPgdKb6dOEwH2
+ IR+mAh8ZGjSY+mw07bIcoE3pnlg35r1jxb7AMwC31AB1OQc+XABPOHmDyVN6ePQ0nZgtSi5cdN2ENG
+ mvPbCV/N1G/+F2kdv0YJECduDpT/btoV/3fOeTSfUQSgI8c8Z5oXfIXQGGPnyqdVYclzUQvyxU0erd
+ jPc03HWIr85fuW4Z+Nx5DoE8F8sYeDQsaxMI40pS/93ZJNxyRvdpsz1l9htySAlxPAQpMh8+LPoBnP
+ g2Qc8ia78dfVgs+IGqZq8J7RWfvapJ4H4T6YPBkfEiPVZOSqsQmIAIKmlfbsq37aKKrXg6IWI8DMJM
+ zpHXslLrR4jr5D9WuCgqV+iVJhkeEPjmtiUNFP2MBQWGi/DRQKJX5oxslKDnqcK3luoKRwY+LL4jFg
+ VANpg2cS3J3tKJAFa2mj5FhHATKUUo9WE0wJYfWxdsWqMm1aN14d6Hd1ZjSg==
+X-Developer-Key: i=amergnat@baylibre.com; a=openpgp;
+ fpr=231B5ED7F3EAAA700E60FE8B2B46499D7E31D445
 
-On 01/10/2022 20:57, Martin Botka wrote:
-> This patch adds binding for sm6125 SoC
+Hi,
 
-Do not use "This commit/patch".
-https://elixir.bootlin.com/linux/v5.17.1/source/Documentation/process/submitting-patches.rst#L95
+This series contains patches related to the support of mt8365 iommu.
+Thanks for your feedback so far.
 
-Fix it in all your patches, please. It is just "Add binding for SM6125 SoC".
+Regards,
+Alex
 
-In the same time, your commit subject has redundant binding - first in
-prefix, second (redundant) in "Add binding for". So just:
-dt-bindings: iommu: arm-smmu: Add SM6125
+Changes in v2:
+- Rebase.
+- Change M4U_PORT_APU_READ & M4U_PORT_APU_WRITE port to avoid display
+  conflict in larb0. These definitions are used for vpu0 device node.
+- Add dual license.
+- Retitle commit.
+- Rename to int_id_port_width for more detail.
+- Fix typo.
+- Set banks_enable and banks_num in mt8365_data to fix kernel panic at boot.
 
-Please fix both in all your patches.
+Previous versions:
+v1 - https://lore.kernel.org/lkml/20220530180328.845692-1-fparent@baylibre.com/
 
-> 
-> Signed-off-by: Martin Botka <martin.botka@somainline.org>
+To: Yong Wu <yong.wu@mediatek.com>
+To: Joerg Roedel <joro@8bytes.org>
+To: Will Deacon <will@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+To: Rob Herring <robh+dt@kernel.org>
+To: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+To: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: iommu@lists.linux.dev
+Cc: linux-mediatek@lists.infradead.org
+Cc: devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: Fabien Parent <fparent@baylibre.com>
+Cc: Markus Schneider-Pargmann <msp@baylibre.com>
+Cc: Amjad Ouled-Ameur <aouledameur@baylibre.com>
+Signed-off-by: Alexandre Mergnat <amergnat@baylibre.com>
 
-With subject and commit msg fixes:
+---
+Fabien Parent (3):
+      dt-bindings: iommu: mediatek: add binding documentation for MT8365 SoC
+      iommu/mediatek: add support for 6-bit encoded port IDs
+      iommu/mediatek: add support for MT8365 SoC
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+ .../devicetree/bindings/iommu/mediatek,iommu.yaml  |  2 +
+ drivers/iommu/mtk_iommu.c                          | 38 ++++++++-
+ include/dt-bindings/memory/mt8365-larb-port.h      | 90 ++++++++++++++++++++++
+ 3 files changed, 126 insertions(+), 4 deletions(-)
+---
+base-commit: 11082343e3bf2953a937509f0316cabf69dbf908
+change-id: 20221001-iommu-support-f409c7e094e6
 
 Best regards,
-Krzysztof
-
+-- 
+Alexandre Mergnat <amergnat@baylibre.com>
