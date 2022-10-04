@@ -1,199 +1,86 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f178.google.com (mail-il1-f178.google.com [209.85.166.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89491442A
-	for <iommu@lists.linux.dev>; Tue,  4 Oct 2022 21:12:44 +0000 (UTC)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 294J1fm1029319;
-	Tue, 4 Oct 2022 21:12:36 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=ybPiVCLipzMS22kFfV5SbC1HhChZcTgMTg/hzzxXb1o=;
- b=VoAXbhBcQbsUrno7SAZkzvjokE/IbAlbjwcNiBD0jcvBOrudBFo5rLNEdQnIRs+o1r5D
- 7phD84kWaVXVTHKSBRrucHr/QhobUT9KtrB2RWFg8GEWcsmr7FmCuUVUT1N7xMuhpRx+
- WiLpdxtm8sx/8x6UNSM5fyPSq0VGZ4JV3xUM//08Pmo+uvTZnYhWvT1tcEL69h8vhJ1P
- Ha8/w1TnuiU5nsvVlP8PXNotYceKr/tm4tftAhYBypoJlESuRG5NYHsR3Ecl0LtSYKiH
- 0EHjMkaWDVyjBbgxLmb8IKDBTA7rbjE7fbQNWPPszvHSQMY8jXZEeOQOhJJ/vwdKmS9v Ng== 
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3k0gpq5g39-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 04 Oct 2022 21:12:36 +0000
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-	by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 294L5jrt003102;
-	Tue, 4 Oct 2022 21:12:35 GMT
-Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
-	by ppma03dal.us.ibm.com with ESMTP id 3jxd69w31t-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 04 Oct 2022 21:12:34 +0000
-Received: from smtpav04.wdc07v.mail.ibm.com ([9.208.128.116])
-	by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 294LCXR69110134
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 4 Oct 2022 21:12:33 GMT
-Received: from smtpav04.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 0651058050;
-	Tue,  4 Oct 2022 21:12:33 +0000 (GMT)
-Received: from smtpav04.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 06C8858045;
-	Tue,  4 Oct 2022 21:12:31 +0000 (GMT)
-Received: from [9.77.144.104] (unknown [9.77.144.104])
-	by smtpav04.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Tue,  4 Oct 2022 21:12:30 +0000 (GMT)
-Message-ID: <c76d2534-3318-32f0-f115-0c44fac53dc9@linux.ibm.com>
-Date: Tue, 4 Oct 2022 17:12:30 -0400
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A258C4437
+	for <iommu@lists.linux.dev>; Tue,  4 Oct 2022 22:46:25 +0000 (UTC)
+Received: by mail-il1-f178.google.com with SMTP id i9so7302129ilv.9
+        for <iommu@lists.linux.dev>; Tue, 04 Oct 2022 15:46:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=lUGmLAO+UyEHxzHYsfZWHoOtdpAGmxoVd+nS8TzFDs8=;
+        b=gJfmBcDplWY2FG/9+rfAMBZHoTO2kXKcaA5sPW9YwMR0SXbfNFLp4XQqQCoewAoUBr
+         EP9cpMbshZsXLOtqgZaCa0VY8r1aH0jni7544oRGrXKvSAnYei5/GOxSTe8pLDiq9luh
+         DQnQnwIjcP7vZcRYCX+UL+M8fzNkDTsYHfQIWkptcqulCslQvWNUgjKINOSts56JXzAE
+         Dj8W9zn+3ofri5+eMoAAZcFSpmEOlIaV/XI0y2VFbjyOCsHitD7CNpQO/snwMuZMLv1c
+         NFcf58OxrFGhm+cOcmyMENA87e8BfZSrp6iYI1yxlRSaOVL6iqV3ztpH/zedypfXfoga
+         ZA3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=lUGmLAO+UyEHxzHYsfZWHoOtdpAGmxoVd+nS8TzFDs8=;
+        b=SWhzxGF6/mmKxRnlVqNIjfDUf5+l3zpJlDHDyI0NIimXBZ9KENQpgWWSjaVb70JiJj
+         44/PUsIdP9qKt9G28crqdEArgZNTe4Uj7bZh5tVrS1u7rr5s8NBUeZpPYNcABz7EaYJ9
+         O40z4zwMsRNeXWDoy/nVWXcPm2IO8C6TfgDI1y6LDeNPoBqLfnkoAS7n+zdKyWUBk6Va
+         cGCJqz0iDJqOCFJvkvAGGK9xMqxkTL3exbPULMS7MoGUa2ReawUHp/ruSSsc/8T4QjbT
+         B+cRvKy6UIclaXrTEluoFexb5mi1ms0YpMNePiYsNQcLIUN/4IhfY9qJ/JOEAJ1gN8ga
+         hcuw==
+X-Gm-Message-State: ACrzQf1tBCRe9pmoUrYeTRUdzXfw8Pr+zrGHtJi/CRA8Xc7+/LKhCQ0G
+	66PrqBMayBx5hi4CYRQH0XGHYHYpAEjvUQ==
+X-Google-Smtp-Source: AMsMyM6qIacxLqY4+a9KJy019fK0S8GgSzgU51V8iBUspoS8E0XjiUyC/yJPSvQhQWq4h7PgWqNJng==
+X-Received: by 2002:a05:6e02:1bc9:b0:2f1:9ee8:246d with SMTP id x9-20020a056e021bc900b002f19ee8246dmr12835017ilv.246.1664923584568;
+        Tue, 04 Oct 2022 15:46:24 -0700 (PDT)
+Received: from localhost ([2607:fea8:a2e2:2d00::1eda])
+        by smtp.gmail.com with UTF8SMTPSA id i9-20020a5e8509000000b006a1f242b529sm6075823ioj.13.2022.10.04.15.46.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 04 Oct 2022 15:46:24 -0700 (PDT)
+From: Richard Acayan <mailingradian@gmail.com>
+To: iommu@lists.linux.dev
+Cc: Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Konrad Dybcio <konrad.dybcio@somainline.org>,
+	Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Richard Acayan <mailingradian@gmail.com>,
+	Emma Anholt <emma@anholt.net>,
+	Sibi Sankar <quic_sibis@quicinc.com>,
+	Rob Clark <robdclark@chromium.org>,
+	linux-arm-kernel@lists.infradead.org,
+	devicetree@vger.kernel.org
+Subject: [PATCH v2 0/2] iommu: SMMU for SDM670
+Date: Tue,  4 Oct 2022 18:46:17 -0400
+Message-Id: <20221004224619.16406-1-mailingradian@gmail.com>
+X-Mailer: git-send-email 2.38.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: [PATCH v4 3/5] iommu/s390: Fix potential s390_domain aperture
- shrinking
-Content-Language: en-US
-To: Niklas Schnelle <schnelle@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev
-Cc: linux-s390@vger.kernel.org, borntraeger@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        agordeev@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
-        will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com,
-        linux-kernel@vger.kernel.org
-References: <20221004120706.2957492-1-schnelle@linux.ibm.com>
- <20221004120706.2957492-4-schnelle@linux.ibm.com>
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <20221004120706.2957492-4-schnelle@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: yKQ5wHsc7Y0LxX5owqJxKQG2PHNVo0Yj
-X-Proofpoint-ORIG-GUID: yKQ5wHsc7Y0LxX5owqJxKQG2PHNVo0Yj
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
- definitions=2022-10-04_09,2022-09-29_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
- impostorscore=0 suspectscore=0 bulkscore=0 adultscore=0 priorityscore=1501
- clxscore=1015 spamscore=0 mlxlogscore=999 malwarescore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2210040136
+Content-Transfer-Encoding: 8bit
 
-On 10/4/22 8:07 AM, Niklas Schnelle wrote:
-> The s390 IOMMU driver currently sets the IOMMU domain's aperture to
-> match the device specific DMA address range of the device that is first
-> attached. This is not ideal. For one if the domain has no device
-> attached in the meantime the aperture could be shrunk allowing
-> translations outside the aperture to exist in the translation tables.
-> Also this is a bit of a misuse of the aperture which really should
-> describe what addresses can be translated and not some device specific
-> limitations.
-> 
-> Instead of misusing the aperture like this we can instead create
-> reserved ranges for the ranges inaccessible to the attached devices
-> allowing devices with overlapping ranges to still share an IOMMU domain.
-> This also significantly simplifies s390_iommu_attach_device() allowing
-> us to move the aperture check to the beginning of the function and
-> removing the need to hold the device list's lock to check the aperture.
-> 
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+Changes since v1 (no emails related to this series since last week):
+ - accumulate tags (both were added because it seems like the discussion
+   ended in agreement to keep adding compatible strings to the driver)
 
-Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+This adds the compatible string for the Qualcomm Snapdragon 670's SMMU. The
+SMMU is necessary for GENI I2C, included in initial bringup because it
+doesn't need non-trivial patches except for patches conventionally added
+before the initial device tree (global clock controller and pinctrl).
 
-> ---
->  drivers/iommu/s390-iommu.c | 50 +++++++++++++++++++++++++++-----------
->  1 file changed, 36 insertions(+), 14 deletions(-)
-> 
-> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-> index 6f87dd4b85af..762dc55aea1e 100644
-> --- a/drivers/iommu/s390-iommu.c
-> +++ b/drivers/iommu/s390-iommu.c
-> @@ -62,6 +62,9 @@ static struct iommu_domain *s390_domain_alloc(unsigned domain_type)
->  		kfree(s390_domain);
->  		return NULL;
->  	}
-> +	s390_domain->domain.geometry.force_aperture = true;
-> +	s390_domain->domain.geometry.aperture_start = 0;
-> +	s390_domain->domain.geometry.aperture_end = ZPCI_TABLE_SIZE_RT - 1;
->  
->  	spin_lock_init(&s390_domain->dma_table_lock);
->  	spin_lock_init(&s390_domain->list_lock);
-> @@ -107,30 +110,24 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
->  	if (!zdev)
->  		return -ENODEV;
->  
-> +	if (domain->geometry.aperture_start > zdev->end_dma ||
-> +	    domain->geometry.aperture_end < zdev->start_dma)
-> +		return -EINVAL;
-> +
->  	if (zdev->s390_domain)
->  		__s390_iommu_detach_device(zdev);
->  	else if (zdev->dma_table)
->  		zpci_dma_exit_device(zdev);
->  
-> -	zdev->dma_table = s390_domain->dma_table;
->  	cc = zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
-> -				virt_to_phys(zdev->dma_table));
-> +				virt_to_phys(s390_domain->dma_table));
->  	if (cc)
->  		return -EIO;
->  
-> -	spin_lock_irqsave(&s390_domain->list_lock, flags);
-> -	/* First device defines the DMA range limits */
-> -	if (list_empty(&s390_domain->devices)) {
-> -		domain->geometry.aperture_start = zdev->start_dma;
-> -		domain->geometry.aperture_end = zdev->end_dma;
-> -		domain->geometry.force_aperture = true;
-> -	/* Allow only devices with identical DMA range limits */
-> -	} else if (domain->geometry.aperture_start != zdev->start_dma ||
-> -		   domain->geometry.aperture_end != zdev->end_dma) {
-> -		spin_unlock_irqrestore(&s390_domain->list_lock, flags);
-> -		return -EINVAL;
-> -	}
-> +	zdev->dma_table = s390_domain->dma_table;
->  	zdev->s390_domain = s390_domain;
-> +
-> +	spin_lock_irqsave(&s390_domain->list_lock, flags);
->  	list_add(&zdev->iommu_list, &s390_domain->devices);
->  	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
->  
-> @@ -148,6 +145,30 @@ static void s390_iommu_detach_device(struct iommu_domain *domain,
->  	zpci_dma_init_device(zdev);
->  }
->  
-> +static void s390_iommu_get_resv_regions(struct device *dev,
-> +					struct list_head *list)
-> +{
-> +	struct zpci_dev *zdev = to_zpci_dev(dev);
-> +	struct iommu_resv_region *region;
-> +
-> +	if (zdev->start_dma) {
-> +		region = iommu_alloc_resv_region(0, zdev->start_dma, 0,
-> +						 IOMMU_RESV_RESERVED);
-> +		if (!region)
-> +			return;
-> +		list_add_tail(&region->list, list);
-> +	}
-> +
-> +	if (zdev->end_dma < ZPCI_TABLE_SIZE_RT - 1) {
-> +		region = iommu_alloc_resv_region(zdev->end_dma + 1,
-> +						 ZPCI_TABLE_SIZE_RT - zdev->end_dma - 1,
-> +						 0, IOMMU_RESV_RESERVED);
-> +		if (!region)
-> +			return;
-> +		list_add_tail(&region->list, list);
-> +	}
-> +}
-> +
->  static struct iommu_device *s390_iommu_probe_device(struct device *dev)
->  {
->  	struct zpci_dev *zdev = to_zpci_dev(dev);
-> @@ -330,6 +351,7 @@ static const struct iommu_ops s390_iommu_ops = {
->  	.release_device = s390_iommu_release_device,
->  	.device_group = generic_device_group,
->  	.pgsize_bitmap = S390_IOMMU_PGSIZES,
-> +	.get_resv_regions = s390_iommu_get_resv_regions,
->  	.default_domain_ops = &(const struct iommu_domain_ops) {
->  		.attach_dev	= s390_iommu_attach_device,
->  		.detach_dev	= s390_iommu_detach_device,
+Richard Acayan (2):
+  dt-bindings: iommu: arm-smmu: add sdm670 compatible
+  iommu: arm-smmu-qcom: add sdm670 compatible
+
+ Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c            | 1 +
+ 2 files changed, 2 insertions(+)
+
+-- 
+2.38.0
 
