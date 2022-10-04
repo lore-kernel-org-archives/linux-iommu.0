@@ -1,93 +1,221 @@
-Received: from mail-il1-f173.google.com (mail-il1-f173.google.com [209.85.166.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9538F4438
-	for <iommu@lists.linux.dev>; Tue,  4 Oct 2022 22:46:29 +0000 (UTC)
-Received: by mail-il1-f173.google.com with SMTP id h18so7559017ilh.3
-        for <iommu@lists.linux.dev>; Tue, 04 Oct 2022 15:46:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=b1/DJ1QD/JmVXkFdZ5L+JX8R7wgIJKqU2QhO7hDCqBU=;
-        b=dXfTb3vBc5uoPNDpIpcDsZt1UpSfMZN+v/0ldTh9iT7WQh/HJ6sYqk0EoDFNRft87Q
-         lWWRay+xQbsQHEx1Z60h5ogkZfb7HLowoR5wtCDEo1AArJ5XMBvdfAkV/jh8N+ZJ2Bg8
-         B8CNQX+C/kqqQtJK1+r72PK85/zrnHsaaMFxXV6b7DLt5VFkYgTVs3esHGOIeP1oJ6Rn
-         N9vXJkSmUI6tDvh5Wjz1cpVJJGXIoTO8iRqe5f37Biydg3uClu6OmSyUD6WkTS8oWZXZ
-         adpjepQ3VUiMfE6lGkqLSYJZjPEQ1hxvFkomj37+WMwuO9PjLsoGa0Wc9OIcUTMVQ0Eb
-         7FEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=b1/DJ1QD/JmVXkFdZ5L+JX8R7wgIJKqU2QhO7hDCqBU=;
-        b=QLrfXgzWl/GrMTBqpkPZRx3Wc/nhY3jPSLXtCPz59PoJimk4EGrZK5cAKS+7eZ9vBF
-         TSP5yjiHnaw8tzY9dFlpp6rgzzSt+8TSvQHTb8/PWMJS3rrXqiykx958zOzkUHXHmXxG
-         iXZxWZVjbb/QoXgzJNJuLfE0HO8Sva9Z1poSRazfPdmGQvNy4n0V1kHvdEmrb5L5UTNm
-         5y6Dkuf9o0brP9B6WbEMXoVtKx5oHCREDavLJU7dFUjfb+SPzsG4iovBuCe+v/u1Lp0x
-         WZWEKM6LL/TXpt1Fi1Hqa1JBqvEDr3jaKUZO3gZd4fw89X3dp/mNZD4ITV+QoVOModYS
-         MoPQ==
-X-Gm-Message-State: ACrzQf3rRCbClVVjISqKM4hBnZ5UoyBfGcyfIcSZBOg5cl4dW+WuS2j4
-	M2ysU6EmlAecO7+8D15mQdGcbvHsq41Spw==
-X-Google-Smtp-Source: AMsMyM5KzZ3NXRYY06S6R6jvXab2MwrtyIsmkdT+2tZ7lq9UUVY5F76Cn95KQSWOav1DFENP0n4k5g==
-X-Received: by 2002:a05:6e02:18c6:b0:2fa:5726:e869 with SMTP id s6-20020a056e0218c600b002fa5726e869mr81119ilu.250.1664923588559;
-        Tue, 04 Oct 2022 15:46:28 -0700 (PDT)
-Received: from localhost ([2607:fea8:a2e2:2d00::1eda])
-        by smtp.gmail.com with UTF8SMTPSA id j15-20020a056638148f00b00349e1922573sm5702033jak.170.2022.10.04.15.46.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 04 Oct 2022 15:46:28 -0700 (PDT)
-From: Richard Acayan <mailingradian@gmail.com>
-To: iommu@lists.linux.dev
-Cc: Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Konrad Dybcio <konrad.dybcio@somainline.org>,
-	Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Richard Acayan <mailingradian@gmail.com>,
-	Emma Anholt <emma@anholt.net>,
-	Sibi Sankar <quic_sibis@quicinc.com>,
-	Rob Clark <robdclark@chromium.org>,
-	linux-arm-kernel@lists.infradead.org,
-	devicetree@vger.kernel.org
-Subject: [PATCH v2 2/2] iommu: arm-smmu-qcom: add sdm670 compatible
-Date: Tue,  4 Oct 2022 18:46:19 -0400
-Message-Id: <20221004224619.16406-3-mailingradian@gmail.com>
-X-Mailer: git-send-email 2.38.0
-In-Reply-To: <20221004224619.16406-1-mailingradian@gmail.com>
-References: <20221004224619.16406-1-mailingradian@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2CA04685;
+	Tue,  4 Oct 2022 23:51:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1664927507; x=1696463507;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=j5j93ep56qWM4Aggptg3rLl2Drpk5XL00qe9ecX3sk8=;
+  b=eWpD/MyhgO0bkOfyMjRS8Eega2+KEu8YAAP7cT/YoNfkqSTJg/8FB+XC
+   tVKyR0Iy8xBR4epOBAoJauXL5SfYh20NPK7NCAdJ3POB7gsRfdhpRw19u
+   k/wuuIeRB//iP6HDZQMfD1aLqS0HnTNIHkVtbgCXI3FbT8DwoXaFulOFh
+   KYABXaBEZVUMoKUx8pggkqyNTPRu+Vb3AxaP+rCGAJTvxMEIJG/5pnegH
+   uWK17q1p5UsdAg2iWvkAm6nPK0P3H9Ci8cvPIg5Ek7C3ZP0IAgmVjAPdD
+   qgT5OeoXoM74K8MmG//iluq206GPAp8nJgKhDvKKK9AtJsaJW8fjMZ7nG
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10490"; a="304037328"
+X-IronPort-AV: E=Sophos;i="5.95,159,1661842800"; 
+   d="scan'208";a="304037328"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Oct 2022 16:51:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10490"; a="713229064"
+X-IronPort-AV: E=Sophos;i="5.95,159,1661842800"; 
+   d="scan'208";a="713229064"
+Received: from lkp-server01.sh.intel.com (HELO d4f44333118a) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 04 Oct 2022 16:51:42 -0700
+Received: from kbuild by d4f44333118a with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1ofrhN-0000ft-1y;
+	Tue, 04 Oct 2022 23:51:41 +0000
+Date: Wed, 05 Oct 2022 07:51:12 +0800
+From: kernel test robot <lkp@intel.com>
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: netdev@vger.kernel.org, loongarch@lists.linux.dev,
+ linux-spi@vger.kernel.org, linux-mediatek@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ bpf@vger.kernel.org, amd-gfx@lists.freedesktop.org,
+ Linux Memory Management List <linux-mm@kvack.org>
+Subject: [linux-next:master] BUILD REGRESSION
+ 4d80748d16c82a9c2c4ea5feea96e476de3cd876
+Message-ID: <633cc6f0.nUuOxmXokJvNe3YF%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 
-The Snapdragon 670 needs the IOMMU for GENI I2C. Add a compatible string to
-support it.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+branch HEAD: 4d80748d16c82a9c2c4ea5feea96e476de3cd876  Add linux-next specific files for 20221004
 
-Signed-off-by: Richard Acayan <mailingradian@gmail.com>
-Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
----
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
- 1 file changed, 1 insertion(+)
+Error/Warning reports:
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index b2708de25ea3..bf9653b9eb89 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -431,6 +431,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
- 	{ .compatible = "qcom,sc8180x-smmu-500" },
- 	{ .compatible = "qcom,sc8280xp-smmu-500" },
- 	{ .compatible = "qcom,sdm630-smmu-v2" },
-+	{ .compatible = "qcom,sdm670-smmu-500" },
- 	{ .compatible = "qcom,sdm845-smmu-500" },
- 	{ .compatible = "qcom,sm6125-smmu-500" },
- 	{ .compatible = "qcom,sm6350-smmu-500" },
+https://lore.kernel.org/linux-mm/202209150141.WgbAKqmX-lkp@intel.com
+https://lore.kernel.org/linux-mm/202209251400.1TMn7RdE-lkp@intel.com
+https://lore.kernel.org/linux-mm/202210010718.2kaVANGb-lkp@intel.com
+https://lore.kernel.org/llvm/202209200834.EFwaTsIj-lkp@intel.com
+https://lore.kernel.org/llvm/202209220019.Yr2VuXhg-lkp@intel.com
+
+Error/Warning: (recently discovered and may have been fixed)
+
+ERROR: modpost: "devm_ioremap_resource" [drivers/dma/fsl-edma.ko] undefined!
+ERROR: modpost: "devm_ioremap_resource" [drivers/dma/idma64.ko] undefined!
+ERROR: modpost: "devm_ioremap_resource" [drivers/dma/qcom/hdma.ko] undefined!
+ERROR: modpost: "devm_memremap" [drivers/misc/open-dice.ko] undefined!
+ERROR: modpost: "devm_memunmap" [drivers/misc/open-dice.ko] undefined!
+ERROR: modpost: "devm_platform_ioremap_resource" [drivers/char/xillybus/xillybus_of.ko] undefined!
+ERROR: modpost: "devm_platform_ioremap_resource" [drivers/clk/xilinx/clk-xlnx-clock-wizard.ko] undefined!
+ERROR: modpost: "ioremap" [drivers/tty/ipwireless/ipwireless.ko] undefined!
+ERROR: modpost: "iounmap" [drivers/net/ethernet/8390/pcnet_cs.ko] undefined!
+ERROR: modpost: "iounmap" [drivers/tty/ipwireless/ipwireless.ko] undefined!
+arch/arm64/kernel/alternative.c:199:6: warning: no previous prototype for 'apply_alternatives_vdso' [-Wmissing-prototypes]
+arch/arm64/kernel/alternative.c:295:14: warning: no previous prototype for 'alt_cb_patch_nops' [-Wmissing-prototypes]
+arch/loongarch/kernel/traps.c:250 die() warn: variable dereferenced before check 'regs' (see line 244)
+arch/loongarch/mm/init.c:166:24: warning: variable 'new' set but not used [-Wunused-but-set-variable]
+drivers/platform/loongarch/loongson-laptop.c:377 loongson_laptop_get_brightness() warn: impossible condition '(level < 0) => (0-255 < 0)'
+drivers/spi/spi.c:4215:33: warning: use of uninitialized value '((int *)_38 = PHI <&x(2), _91(3)>)[11]' [CWE-457] [-Wanalyzer-use-of-uninitialized-value]
+include/linux/compiler_types.h:357:45: error: call to '__compiletime_assert_417' declared with attribute error: FIELD_GET: mask is not constant
+kernel/bpf/memalloc.c:500 bpf_mem_alloc_destroy() error: potentially dereferencing uninitialized 'c'.
+net/dsa/port.c:1684 dsa_port_phylink_create() warn: passing zero to 'PTR_ERR'
+pahole: .tmp_vmlinux.btf: No such file or directory
+
+Error/Warning ids grouped by kconfigs:
+
+gcc_recent_errors
+|-- arm-randconfig-c002-20221002
+|   `-- drivers-spi-spi.c:warning:use-of-uninitialized-value-((int-)_38-PHI-x()-_91()-)-CWE
+|-- arm64-allyesconfig
+|   |-- arch-arm64-kernel-alternative.c:warning:no-previous-prototype-for-alt_cb_patch_nops
+|   `-- arch-arm64-kernel-alternative.c:warning:no-previous-prototype-for-apply_alternatives_vdso
+|-- arm64-randconfig-r004-20221002
+|   |-- arch-arm64-kernel-alternative.c:warning:no-previous-prototype-for-alt_cb_patch_nops
+|   `-- arch-arm64-kernel-alternative.c:warning:no-previous-prototype-for-apply_alternatives_vdso
+|-- arm64-randconfig-r016-20221003
+|   |-- arch-arm64-kernel-alternative.c:warning:no-previous-prototype-for-alt_cb_patch_nops
+|   `-- arch-arm64-kernel-alternative.c:warning:no-previous-prototype-for-apply_alternatives_vdso
+|-- i386-randconfig-m021-20221003
+|   `-- net-dsa-port.c-dsa_port_phylink_create()-warn:passing-zero-to-PTR_ERR
+|-- loongarch-buildonly-randconfig-r006-20221003
+|   `-- arch-loongarch-mm-init.c:warning:variable-new-set-but-not-used
+|-- loongarch-randconfig-m031-20221002
+|   `-- arch-loongarch-mm-init.c:warning:variable-new-set-but-not-used
+|-- loongarch-randconfig-m041-20221002
+|   |-- arch-loongarch-kernel-traps.c-die()-warn:variable-dereferenced-before-check-regs-(see-line-)
+|   |-- arch-loongarch-mm-init.c:warning:variable-new-set-but-not-used
+|   |-- drivers-platform-loongarch-loongson-laptop.c-loongson_laptop_get_brightness()-warn:impossible-condition-(level-)-(-)
+|   `-- kernel-bpf-memalloc.c-bpf_mem_alloc_destroy()-error:potentially-dereferencing-uninitialized-c-.
+|-- loongarch-randconfig-r001-20221002
+|   `-- arch-loongarch-mm-init.c:warning:variable-new-set-but-not-used
+|-- m68k-randconfig-r004-20221003
+|   `-- pahole:.tmp_vmlinux.btf:No-such-file-or-directory
+|-- s390-allmodconfig
+|   |-- ERROR:devm_ioremap_resource-drivers-dma-fsl-edma.ko-undefined
+|   |-- ERROR:devm_ioremap_resource-drivers-dma-idma64.ko-undefined
+|   |-- ERROR:devm_ioremap_resource-drivers-dma-qcom-hdma.ko-undefined
+|   |-- ERROR:devm_memremap-drivers-misc-open-dice.ko-undefined
+|   |-- ERROR:devm_memunmap-drivers-misc-open-dice.ko-undefined
+|   |-- ERROR:devm_platform_ioremap_resource-drivers-char-xillybus-xillybus_of.ko-undefined
+|   |-- ERROR:devm_platform_ioremap_resource-drivers-clk-xilinx-clk-xlnx-clock-wizard.ko-undefined
+|   |-- ERROR:ioremap-drivers-tty-ipwireless-ipwireless.ko-undefined
+|   |-- ERROR:iounmap-drivers-net-ethernet-pcnet_cs.ko-undefined
+|   `-- ERROR:iounmap-drivers-tty-ipwireless-ipwireless.ko-undefined
+`-- x86_64-randconfig-a012-20221003
+    `-- include-linux-compiler_types.h:error:call-to-__compiletime_assert_NNN-declared-with-attribute-error:FIELD_GET:mask-is-not-constant
+clang_recent_errors
+|-- arm-randconfig-r022-20221003
+|   |-- drivers-phy-mediatek-phy-mtk-hdmi-mt2701.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:(uns
+|   |-- drivers-phy-mediatek-phy-mtk-hdmi-mt8173.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:(uns
+|   |-- drivers-phy-mediatek-phy-mtk-mipi-dsi-mt8173.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:
+|   `-- drivers-phy-mediatek-phy-mtk-mipi-dsi-mt8183.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:
+|-- mips-randconfig-r003-20221002
+|   |-- drivers-phy-mediatek-phy-mtk-hdmi-mt2701.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:(uns
+|   `-- drivers-phy-mediatek-phy-mtk-hdmi-mt8173.c:warning:result-of-comparison-of-constant-with-expression-of-type-typeof-(_Generic((mask_)-char:(unsigned-char)-unsigned-char:(unsigned-char)-signed-char:(uns
+|-- s390-randconfig-r021-20221002
+|   |-- manage.c:(.text):undefined-reference-to-__tsan_memcpy
+|   |-- s39-linux-ld:setup.c:(.init.text):undefined-reference-to-__tsan_memcpy
+|   |-- s39-linux-ld:trace.c:(.init.text):undefined-reference-to-__tsan_memcpy
+|   |-- trace.c:(.init.text):undefined-reference-to-__tsan_memcpy
+|   `-- workqueue.c:(.init.text):undefined-reference-to-__tsan_memcpy
+|-- s390-randconfig-r026-20221002
+|   `-- ERROR:devm_ioremap_resource-drivers-dma-idma64.ko-undefined
+`-- x86_64-buildonly-randconfig-r005-20221003
+    |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-virtual-virtual_link_hwss.c:warning:no-previous-prototype-for-function-virtual_disable_link_output
+    `-- drivers-iommu-ipmmu-vmsa.c:warning:unused-variable-ipmmu_of_ids
+
+elapsed time: 726m
+
+configs tested: 58
+configs skipped: 3
+
+gcc tested configs:
+powerpc                           allnoconfig
+arc                                 defconfig
+alpha                               defconfig
+um                             i386_defconfig
+um                           x86_64_defconfig
+x86_64                          rhel-8.3-func
+x86_64                              defconfig
+x86_64                    rhel-8.3-kselftests
+sh                               allmodconfig
+s390                                defconfig
+s390                             allmodconfig
+riscv                randconfig-r042-20221003
+arc                  randconfig-r043-20221003
+x86_64                               rhel-8.3
+arc                              allyesconfig
+i386                                defconfig
+arm                                 defconfig
+alpha                            allyesconfig
+i386                 randconfig-a011-20221003
+x86_64                           rhel-8.3-syz
+i386                 randconfig-a012-20221003
+s390                 randconfig-r044-20221003
+mips                             allyesconfig
+s390                             allyesconfig
+m68k                             allmodconfig
+x86_64                         rhel-8.3-kunit
+powerpc                          allmodconfig
+i386                 randconfig-a013-20221003
+m68k                             allyesconfig
+i386                 randconfig-a015-20221003
+x86_64                           rhel-8.3-kvm
+i386                 randconfig-a014-20221003
+x86_64                           allyesconfig
+ia64                             allmodconfig
+x86_64               randconfig-a011-20221003
+arm                              allyesconfig
+x86_64               randconfig-a012-20221003
+arm64                            allyesconfig
+x86_64               randconfig-a013-20221003
+x86_64               randconfig-a015-20221003
+x86_64               randconfig-a014-20221003
+x86_64               randconfig-a016-20221003
+i386                             allyesconfig
+
+clang tested configs:
+hexagon              randconfig-r045-20221003
+i386                 randconfig-a004-20221003
+hexagon              randconfig-r041-20221003
+i386                 randconfig-a003-20221003
+i386                 randconfig-a002-20221003
+i386                 randconfig-a001-20221003
+i386                 randconfig-a006-20221003
+i386                 randconfig-a005-20221003
+x86_64               randconfig-a002-20221003
+x86_64               randconfig-a001-20221003
+x86_64               randconfig-a004-20221003
+x86_64               randconfig-a006-20221003
+x86_64               randconfig-a003-20221003
+x86_64               randconfig-a005-20221003
+x86_64                          rhel-8.3-rust
+
 -- 
-2.38.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
