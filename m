@@ -1,207 +1,403 @@
-Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B59443D6B;
-	Wed,  5 Oct 2022 17:11:35 +0000 (UTC)
-Received: by mail-pl1-f169.google.com with SMTP id l4so515875plb.8;
-        Wed, 05 Oct 2022 10:11:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc:subject:date;
-        bh=8OoqcTjHvpDh7UImDu8JviJ+QMlDrz/TgMfEYGIJzHc=;
-        b=FiIzdM4taxv76ttGrgcTmLiT9N5hi1FUQCFg0SW63GYQrvjgIXi5SWUOULSHOKVlcF
-         VD8FZ5b3bHxXL/BmfMocub/2HcksZLZSq3PzcSGaohFF/+nOZHevhV8CWqmE491GmyEh
-         aZhC2YKaE1S0efCEFXv5+1OHGnXVwYtADQsdwJB+1HNbL0hP6gVyFHE398JznNwdrOAX
-         ErH1canqjntGkN9AKU0t6JzLDNkFQrFNN21v1Q+Py7Wx40E2tcbwzGoxm3PZS5THRhKu
-         N8tr82t5g5qizwOccYXNsFLmLiGbJYK8Kv2RFSFEUF0b6v3+DAl8wG9ri0sCmQSrqrAr
-         ExGQ==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89CF72F2F
+	for <iommu@lists.linux.dev>; Wed,  5 Oct 2022 18:39:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1664995193;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=3LWrr+mzLl+loyhMbjqGtBTsS99v10H6F/JTraBsXlM=;
+	b=iL8QgOCba+2KpwnyfUwpQeD16x4yFeagSjGLaXhdX/22s2cMH4f5E9ulJIvK//ApA8ctJR
+	4Zuuq/PcZI7uikwj2BEiAz0QyjRn3An7KQ9dIg9HLEEXPsPQIfx4wybcAQ7L5IuMyiHbjJ
+	Eyqia2BzhcKUoaealW6UslX7IVMFRa4=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-252-9YKeu8vLNsquqTYGzQ1_nw-1; Wed, 05 Oct 2022 14:39:52 -0400
+X-MC-Unique: 9YKeu8vLNsquqTYGzQ1_nw-1
+Received: by mail-wm1-f69.google.com with SMTP id i82-20020a1c3b55000000b003bf635eac31so1092946wma.4
+        for <iommu@lists.linux.dev>; Wed, 05 Oct 2022 11:39:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=8OoqcTjHvpDh7UImDu8JviJ+QMlDrz/TgMfEYGIJzHc=;
-        b=0ZdkbaVD7vEBbuDEK6sefr1NWuzS3tbnCdTGzSHfPa34S0U5Cb+UW64rx0099/ZWph
-         oPPnElGA8T2UoO4hKGKr9b0tvZO2zZ6olTci0aeG9c8zEmqSy8YWK8wMwR25rvtZdSs0
-         IVncLRKvuFuA3wCRfJxIcw92jkSoRU9UwM4cA9ylfJ2NqnK3mP2xTR3UOSA+xhqom9D8
-         oy6OHybh5OR1VwViu+DIBaUwOa/MFumIk33tbrl7euYo7F1xXn86mL5sTaRieFPXnrRk
-         9W6CRJp7ga4aoXpaROoZI1rAfCQpPHBYtbDTKtuCBgHRfZQWcOMCdedUS1H5FPA9yAEs
-         f1CA==
-X-Gm-Message-State: ACrzQf3G4mLj5gVufkr4J89jftX2MpcSwXI5UvqtehztgwJ7u8ZT0Edb
-	3C3JwUlu+Xki5mSIziMxYWGLsOl2Ck3QCg==
-X-Google-Smtp-Source: AMsMyM5n7k13Mpk/urTfjW9daIc4Kw2lwyFWI19Nmzr7LuG4cCnOryG+J8dZRkhE0hBE6dCu2a+xZg==
-X-Received: by 2002:a17:90b:1d01:b0:203:2bda:abb1 with SMTP id on1-20020a17090b1d0100b002032bdaabb1mr5984963pjb.204.1664989895176;
-        Wed, 05 Oct 2022 10:11:35 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id m7-20020a170902bb8700b0017bdfbfcf8dsm10700718pls.63.2022.10.05.10.11.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Oct 2022 10:11:34 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date: Wed, 5 Oct 2022 10:11:32 -0700
-From: Guenter Roeck <linux@roeck-us.net>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Thorsten Leemhuis <regressions@leemhuis.info>,
-	Fenghua Yu <fenghua.yu@intel.com>, intel-gfx@lists.freedesktop.org,
-	Chris Wilson <chris@chris-wilson.co.uk>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	regressions@lists.linux.dev,
-	Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	linux-hwmon@vger.kernel.org
-Subject: Re: [core-for-CI][PATCH] iommu: Remove iova cpu hotplugging flushing
-Message-ID: <20221005171132.GA519999@roeck-us.net>
-References: <20220922101036.87457-1-janusz.krzysztofik@linux.intel.com>
- <1f4899d2-52ed-ae94-f681-3953c82b4799@arm.com>
- <3185079.N7aMVyhfb1@jkrzyszt-mobl1.ger.corp.intel.com>
- <93eb2474-077f-2714-ccfb-77ff1a29a926@leemhuis.info>
- <20221005152537.GA2228081@roeck-us.net>
- <f4de969e-69a9-34dd-5637-50685d32738a@arm.com>
+        h=content-transfer-encoding:in-reply-to:subject:organization:from
+         :references:cc:to:content-language:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date;
+        bh=3LWrr+mzLl+loyhMbjqGtBTsS99v10H6F/JTraBsXlM=;
+        b=vMWEBmjpGp/CnGtzfnBW5ORK0YTtOQ1GyFnY60m4JhmSgeyv7nZaxXQYwmaR1JurDb
+         CwzhTW8SCEnM7QAhXAejm8sVv3EDvtSBUwU9IMrKb11ORkz55XRgzQmoHnbmlUGP9Zcq
+         6q1BxGXAosytWOxbmU8A5ntXmFdr/A/FKdw4woN0GGVNjKniTKv/QFnI0W3aJngZAcJK
+         nrXfH0aVXONt7qMwY2qJTJXDsOExjbvkE6HNVkGZf2Kt3OkpOi0zqyBbqWRH9PfL1ekF
+         5ONrIfWnV6uY+GiURLDCAyd6wyKMs0rJiEbc8iqyHX5KXIQA7sf/f3hb41JIOtUnYkOR
+         SdLA==
+X-Gm-Message-State: ACrzQf3LreYcdPGL4OS6xXNxHf5DpcTLMeU05O6xFtEVD/Upr78YAi6p
+	MloJZ2yH7YTwJ09kyVcK3hQ9fKXfEb3gt7KeWOPfjTsVYTi6Ay/7vozUFM3vn9rKi8ZZGu0R2aU
+	B1SVZyoYUhxhCaxs=
+X-Received: by 2002:a5d:5552:0:b0:22e:6941:81f8 with SMTP id g18-20020a5d5552000000b0022e694181f8mr430588wrw.521.1664995189472;
+        Wed, 05 Oct 2022 11:39:49 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM7KOHX+c5fT4yvas7PB46G0drnxid10BmAo3PVPcJtv5AKCfxdItdjQLE2ZqvXfl1Mdkuxtzw==
+X-Received: by 2002:a5d:5552:0:b0:22e:6941:81f8 with SMTP id g18-20020a5d5552000000b0022e694181f8mr430551wrw.521.1664995189012;
+        Wed, 05 Oct 2022 11:39:49 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c702:5a00:b732:1c9:3697:fccf? (p200300cbc7025a00b73201c93697fccf.dip0.t-ipconnect.de. [2003:cb:c702:5a00:b732:1c9:3697:fccf])
+        by smtp.gmail.com with ESMTPSA id m13-20020adfe94d000000b0021e43b4edf0sm15571718wrn.20.2022.10.05.11.39.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 05 Oct 2022 11:39:48 -0700 (PDT)
+Message-ID: <106669a6-fe89-f736-19ad-39de44f9a774@redhat.com>
+Date: Wed, 5 Oct 2022 20:39:46 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f4de969e-69a9-34dd-5637-50685d32738a@arm.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.0
+To: Doug Berger <opendmb@gmail.com>, Andrew Morton <akpm@linux-foundation.org>
+Cc: Jonathan Corbet <corbet@lwn.net>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Frank Rowand <frowand.list@gmail.com>, Mike Kravetz
+ <mike.kravetz@oracle.com>, Muchun Song <songmuchun@bytedance.com>,
+ Mike Rapoport <rppt@kernel.org>, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, Borislav Petkov <bp@suse.de>,
+ "Paul E. McKenney" <paulmck@kernel.org>,
+ Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+ Randy Dunlap <rdunlap@infradead.org>,
+ Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+ Florian Fainelli <f.fainelli@gmail.com>, Zi Yan <ziy@nvidia.com>,
+ Oscar Salvador <osalvador@suse.de>, Hari Bathini <hbathini@linux.ibm.com>,
+ Kees Cook <keescook@chromium.org>,
+ KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
+ Mel Gorman <mgorman@suse.de>, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-mm@kvack.org, iommu@lists.linux.dev
+References: <20220913195508.3511038-1-opendmb@gmail.com>
+ <b610a7b3-d740-8d45-c270-4c638deb1cfa@redhat.com>
+ <02561695-df44-4df6-c486-1431bf152650@gmail.com>
+ <64c3aea2-331b-e482-bbb0-7fac2340163c@redhat.com>
+ <3af1da5f-6b95-1aab-60f0-d17f141782b4@gmail.com>
+From: David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH 00/21] mm: introduce Designated Movable Blocks
+In-Reply-To: <3af1da5f-6b95-1aab-60f0-d17f141782b4@gmail.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Oct 05, 2022 at 05:15:49PM +0100, Robin Murphy wrote:
-> On 2022-10-05 16:25, Guenter Roeck wrote:
-> > On Wed, Oct 05, 2022 at 04:26:28PM +0200, Thorsten Leemhuis wrote:
-> > > [adding the coretemp maintainer (Fenghua Yu) and the appropriate mailing
-> > > list to the list of recipients, as there apparently is a coretemp bug
-> > > that results in a iommu change causing a regression]
-> > > 
-> > > On 30.09.22 18:57, Janusz Krzysztofik wrote:
-> > > > I think this issue can hit any user with a platform that loads iommu and
-> > > > coretemp drivers.  Adding regressions@lists.linux.dev to the loop.
-> > > 
-> > > f598a497bc7d was merged for 5.13-rc1, which is quite a while ago, so at
-> > > least a quick revert is out of question as it might do more harm than
-> > > good. The authors of the commit are kinda responsible for fixing
-> > > situations like this; but well, did anybody ask the developers of the
-> > > coretemp driver kindly if they are aware of the problem and maybe even
-> > > willing to fix it? Doesn't look like it from here from search lore (hope
-> > > I didn't miss anything), so let's give it a try.
-> > > 
-> > > Ciao, Thorsten
-> > > 
-> > > > On Thursday, 22 September 2022 14:09:35 CEST Robin Murphy wrote:
-> > > > > On 22/09/2022 11:10 am, Janusz Krzysztofik wrote:
-> > > > > > From: Chris Wilson <chris@chris-wilson.co.uk>
-> > > > > > 
-> > > > > > Manual revert of commit f598a497bc7d ("iova: Add CPU hotplug handler to
-> > > > > > flush rcaches").  It is trying to instantiate a cpuhp notifier from inside
-> > > > > > a cpuhp callback.  That code replaced intel_iommu implementation of
-> > > > > > flushing per-IOVA domain CPU rcaches which used a single instance of cpuhp
-> > > > > > held for the module lifetime.
-> > > > > 
-> > > > > OK, *now* I see what's going on. It doesn't seem unreasonable to me for
-> > > > > bus notifiers to touch CPU hotplug - what seems more unexpected is the
-> > > > > coretemp driver creating and adding a platform device from inside a
-> > > > > hotplug callback.
-> > 
-> > It is only unexpected if it is documented that creating a platform driver
-> > from a hotplug callback is off limits.
-> > 
-> > > > > 
-> > > > > Once we start trying to revert multiple unrelated bits of important
-> > > > > functionality from other subsystems because one driver is doing a weird
-> > > > > thing, maybe it's time to instead question whether that driver should be
-> > > > > doing a weird thing?
-> > 
-> > That isn't the point. This _used_ to work, after all. Maybe the functionality
-> > introduced with f598a497bc7d is important, but there is still a regression
-> > introduced by f598a497bc7d. Sure, maybe the coretemp driver is doing
-> > "a weird thing", but if some generic code is changed causing something to fail
-> > that previously worked, it is still a regression and the reponsibility of the
-> > person or team making the generic code change to fix the problems caused by
-> > that change.
-> 
-> Note that AFAICS I don't think anything's actually broken, and this is
-> merely a lockdep false-positive. The coretemp device itself will not be
-> associated with the IOMMU, so the IOMMU notifier will never get as far as
-> taking any further locks in that particular instance.
-> 
-> Of course I *can* try writing the patch to fix things properly if I have to,
-> but fair warning; I'm not familiar with this driver or the relevant hardware
-> or the subsystem, and from a brief look it will involve some significant
-> redesign that I have every chance of getting wrong. Plus I'm not sure I can
-> test the hotplug stuff at all since the x86 box I have to hand only seems to
-> have a single coretemp device.
-> 
-> The fact is, the wacky thing it's doing with platform_device_add() doesn't
-> actually work *all* that well anyway:
-> 
 
-Hah, yes, that is obviously a bug. Unfortunately I don't have any systems
-with Intel CPU left, so I can not test myself. FWIW, on v5.18.x (which is
-what Google laptops use for whatever reason), I don't see the crash, but
-"modprobe -r coretemp" followed by "modprobe coretemp" doesn't work -
-the driver loads, but does not register with the hwmon subsystem.
-There has been no relevant change to the driver since v5.13, so all
-I can conclude at this point is that the driver is very likely still
-broken in the mainline kernel.
+>> So whatever we do, this should in general not be the kernel sole
+>> decision to make this memory any special and let ZONE_MOVABLE manage it.
+> I believe you are stating that Designated Movable Blocks should only be
+> created as a result of special configuration (e.g. kernel parameters,
+> devicetree, ...). I would agree with that. Is that what you intended by
+> this statement, or am I missing something?
 
-Guenter
+Essentially, that it should mostly be the decision of an educated admin.
 
-> $ sudo rmmod coretemp
-> $ echo 0 | sudo tee /sys/bus/platform/drivers_autoprobe
-> 0
-> $ sudo modprobe coretemp
+...
+
+>>
+>>> only be located at the end of addressable memory then it will always be
+>>> located on MEMC1 of a 7278 system. This will create a tendency for user
+>>> space accesses to consume more bandwidth on the MEMC1 memory controller
+>>> and kernel space accesses to consume more bandwidth on MEMC0. A more
+>>> even distribution of ZONE_MOVABLE memory between the available memory
+>>> controllers in theory makes more memory bandwidth available to user
+>>> space intensive loads.
+>>>
+>>
+>> Sorry to be dense, is this also about different memory access latency or
+>> just memory bandwidth?
+> Broadcom memory controllers do support configurable real-time scheduling
+> with bandwidth guarantees for different memory clients so I suppose this
+> is a fair question. However, the expectation here is that the CPUs would
+> have equivalent access latencies, so it is really just about memory
+> bandwidth for the CPUs.
+
+Okay, thanks for clarifying.
+
+...
+
+>>>>
+>>>>> Unfortunately, the historical monotonic layout of zones would
+>>>>> mean that if the lowest addressed memory controller contains
+>>>>> ZONE_MOVABLE memory then all of the memory available from
+>>>>> memory controllers at higher addresses must also be in the
+>>>>> ZONE_MOVABLE zone. This would force all kernel memory accesses
+>>>>> onto the lowest addressed memory controller and significantly
+>>>>> reduce the amount of memory available for non-movable
+>>>>> allocations.
+>>>>
+>>>> We do have code that relies on zones during boot to not overlap within a
+>>>> single node.
+>>> I believe my changes address all such reliance, but if you are aware of
+>>> something I missed please let me know.
+>>>
+>>
+>> One example I'm aware of is drivers/base/memory.c:memory_block_add_nid()
+>> / early_node_zone_for_memory_block().
+>>
+>> If we get it wrong, or actually have memory blocks that span multiple
+>> zones, we can no longer offline these memory blocks. We really wanted to
+>> avoid scanning the memmap for now and it seems to get the job done in
+>> environments we care about.
+> To the extent that this implementation only supports creating Designated
+> Movable Blocks in boot memory and boot memory does not generally support
+> offlining, I wouldn't expect this to be an issue. However, if for some
+
+Sad truth is, that boot memory sometimes is supposed to support 
+offlining -- or people expect it to work to some degree. For example, 
+with special memblock hacks you can get them into ZONE_MOVABLE to be 
+able to hotunplug some NUMA nodes even after a reboot (movable_node 
+kernel parameter).
+
+There are use cases where you want to offline boot memory to save energy 
+by disabling complete memory banks -- best effort when not using 
+ZONE_MOVABLE.
+
+Having that said, I agree that it's a corner case use case.
+
+> reason offlining boot memory becomes desirable then we should use
+> dmb_intersects() along with zone_intersects() to take the appropriate
+> action. Based on the current usage of zone_intersects() I'm not entirely
+> sure what the correct action should be.
 > 
-> [7169271.187103] BUG: kernel NULL pointer dereference, address:
-> 0000000000000418
-> [7169271.187127] #PF: supervisor write access in kernel mode
-> [7169271.187131] #PF: error_code(0x0002) - not-present page
-> [7169271.187134] PGD 0 P4D 0
-> [7169271.187139] Oops: 0002 [#1] SMP PTI
-> [7169271.187144] CPU: 0 PID: 16 Comm: cpuhp/0 Not tainted 5.13.0-52-generic
-> #59~20.04.1-Ubuntu
-> [7169271.187150] Hardware name: LENOVO 30B6S08J03/1030, BIOS S01KT29A
-> 06/20/2016
-> [7169271.187152] RIP: 0010:create_core_data+0x3cb/0x510 [coretemp]
-> [7169271.187163] Code: 44 89 e7 e8 67 99 7f c8 85 c0 75 17 0f b6 45 b9 41 83
-> 46 24 01 69 c0 18 fc ff ff 41 03 46 08 41 89 46 04 48 8b 45 b0 4c 63 fb <4e>
-> 89 b4 f8 10 04 00 00 48 8b 00 41 8b 56 24 48 89 45 a0 85 d2 7e
-> [7169271.187167] RSP: 0018:ffffa5ddc015fd98 EFLAGS: 00010203
-> [7169271.187172] RAX: 0000000000000000 RBX: 0000000000000001 RCX:
-> 0000000000000002
-> [7169271.187175] RDX: 0000000000000000 RSI: ffffffff89207b30 RDI:
-> ffffa5ddc015fd40
-> [7169271.187178] RBP: ffffa5ddc015fe00 R08: 0000000000000000 R09:
-> ffff8e049c04c800
-> [7169271.187181] R10: 0000000000019460 R11: 0000000000000000 R12:
-> 0000000000000000
-> [7169271.187184] R13: 000000000000005f R14: ffff8e049c04c800 R15:
-> 0000000000000001
-> [7169271.187187] FS:  0000000000000000(0000) GS:ffff8e0b5f600000(0000)
-> knlGS:0000000000000000
-> [7169271.187191] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [7169271.187194] CR2: 0000000000000418 CR3: 0000000190672002 CR4:
-> 00000000003706f0
-> [7169271.187198] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
-> 0000000000000000
-> [7169271.187200] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
-> 0000000000000400
-> [7169271.187203] Call Trace:
-> [7169271.187206]  <TASK>
-> [7169271.187212]  coretemp_cpu_online+0x14f/0x180 [coretemp]
-> [7169271.187220]  ? create_core_data+0x510/0x510 [coretemp]
-> [7169271.187226]  cpuhp_invoke_callback+0x10b/0x430
-> [7169271.187237]  cpuhp_thread_fun+0x92/0x150
-> [7169271.187244]  smpboot_thread_fn+0xd0/0x170
-> [7169271.187253]  ? sort_range+0x30/0x30
-> [7169271.187260]  kthread+0x12b/0x150
-> [7169271.187264]  ? set_kthread_struct+0x40/0x40
-> [7169271.187269]  ret_from_fork+0x22/0x30
-> [7169271.187280]  </TASK>
+>>
+>>>>
+>>>>>
+>>>>> The main objective of this patch set is therefore to allow a
+>>>>> block of memory to be designated as part of the ZONE_MOVABLE
+>>>>> zone where it will always only be used by the kernel page
+>>>>> allocator to satisfy requests for movable pages. The term
+>>>>> Designated Movable Block is introduced here to represent such a
+>>>>> block. The favored implementation allows modification of the
+>>>>
+>>>> Sorry to say, but that term is rather suboptimal to describe what you
+>>>> are doing here. You simply have some system RAM you'd want to have
+>>>> managed by ZONE_MOVABLE, no?
+>>> That may be true, but I found it superior to the 'sticky' movable
+>>> terminology put forth by Mel Gorman ;). I'm happy to entertain
+>>> alternatives, but they may not be as easy to find as you think.
+>>
+>> Especially the "blocks" part is confusing. Movable pageblocks? Movable
+>> Linux memory blocks?
+>>
+>> Note that the sticky movable *pageblocks* were a completely different
+>> concept than simply reusing ZONE_MOVABLE for some memory ranges.
+> I would say that is open for debate. The implementations would be
+> "completely different" but the objectives could be quite similar.
+> There appear to be a number of people that are interested in the concept
+> of memory that can only contain data that tolerates relocation for
+> various potentially non-competing reasons.
 > 
-> Consider that a bug report, unless of course it's documented somewhere that
-> users aren't allowed to turn off autoprobe ;)
+> Fundamentally, the concept of MIGRATE_MOVABLE memory is useful to allow
+> competing user space processes to share limited physical memory supplied
+> by the kernel. The data in that memory can be relocated elsewhere by the
+> kernel when the process that owns it is not executing. This movement is
+> typically not observable to the owning process which has its own address
+> space.
 > 
-> Thanks,
-> Robin.
+> The kernel uses MIGRATE_UNMOVABLE memory to protect the integrity of its
+> address space, but of course what the kernel considers unmovable could
+> in fact be moved by a hypervisor in a way that is analogous to what the
+> kernel does for user space.
+> 
+> For maximum flexibility the Linux memory management allows for
+> converting the migratetype of free memory to help satisfy requests to
+> allocate pages of memory through a mechanism I will call "fallback". The
+> concepts of sticky movable pageblocks and ZONE_MOVABLE have the common
+> objective of preventing the migratetype of pageblocks from getting
+> converted to anything other than MIGRATE_MOVABLE, and this is what makes
+> the memory special.
+
+Yes, good summary.
+
+> 
+> I agree with Mel Gorman that zones are meant to be about address induced
+> limitations, so using a zone for the purpose of breaking the fallback
+> mechanism of the page allocator is a misuse of the concept. A new
+> migratetype would be more appropriate for representing this change in
+> how fallback should apply to the pageblock because the desired behavior
+> has nothing to do with the address at which the memory is located. It is
+> entirely reasonable to desire "sticky" movable behavior for memory in
+> any zone. Such a solution would be directly applicable to our multiple
+> memory controller use case, and is really how Designated Movable Blocks
+> should be imagined.
+
+I usually agree with Mel, but not necessarily on that point that it's a 
+misuse of a concept. It's an extension of an existing concept, that 
+doesn't imply it's a misuse. Traditionally, it was about address 
+limitations, yes. Now it's also about allocation types. Sure, there 
+might be other ways to get it done as well.
+
+I'd compare it to the current use of NUMA nodes: traditionally, it 
+really used to be actual NUMA nodes. Nowadays, it's a mechanism, for 
+example, to expose performance-differented memory, let applications use 
+it via mbind() or have the page allocator dynamically migrate hot/cold 
+pages back and forth according to memory tiering strategies.
+
+> 
+> However, I also recognize the efficiency benefits of using a
+> ZONE_MOVABLE zone to manage the pages that have this "sticky" movable
+> behavior. Introducing a new sticky MIGRATE_MOVABLE migratetype adds a
+> new free_list to every free_area which increases the search space and
+> associated work when trying to allocate a page for all callers.
+> Introducing ZONE_MOVABLE reduces the search space by providing an early
+> separation between searches for movable and non-movable allocations. The
+> classic zone restrictions weren't a good fit for multiple memory
+> controllers, but those restrictions were lifted to overcome similar
+> issues with memory_hotplug. It is not that Designated Movable Blocks
+> want to be in ZONE_MOVABLE, but rather that ZONE_MOVABLE provides a
+> convenience for managing the page allocators use of "sticky" movable
+> memory just like it does for memory hotplug. Dumping the memory in
+> Designated Movable Blocks into the ZONE_MOVABLE zone allows an existing
+> mechanism to be reused, reducing the risk of negatively impacting the
+> page allocator behavior.
+> 
+> There are some subtle distinctions between Designated Movable Blocks and
+> the existing ZONE_MOVABLE zone. Because Designated Movable Blocks are
+> reserved when created they are protected against any early boot time
+> kernel reservations that might place unmovable allocations in them. The
+> implementation continues to track the zone_movable_pfn as the start of
+> the "classic" ZONE_MOVABLE zone on each node. A Designated Movable Block
+> can overlap any other zone including the "classic" ZONE_MOVABLE zone.
+
+What exactly to you mean with "overlay" -- I assume you mean that zone 
+span will overlay but it really "belongs" to ZONE_MOVABLE, as indicated 
+by it's struct page metadata.
+
+>>
+>> Doing it the DAX/CXL way would be to expose these memory ranges as
+>> daxdev instead, and letting the admin decide how to online these memory
+>> ranges when adding them to the buddy via the dax/kmem kernel module.
+>>
+>> That could mean that your booting with memory on MC0 only, and expose
+>> memory of MC1 via a daxdev, giving the admin the possibility do decide
+>> to which zone the memory should be onlined too.
+>>
+>> That would avoid most kernel code changes.
+> I wasn't familiar with these kernel mechanisms and did enjoy reading
+> about the somewhat oxymoronic "volatile-use of persistent memory" that
+> is dax/kmem, but this isn't performance differentiated RAM. It really is
+> just System RAM so this degree of complexity seems unwarranted.
+
+It's an existing mechanism that will get heavily used by CXL -- for all 
+kinds of memory. I feel like it could solve your use case eventually.
+
+Excluded memory cannot be allocated by the early allocator and you can 
+online it to ZONE_MOVABLE. It at least seems to roughly do something you 
+want to achieve. I'd be curious what you can't achieve or what we might 
+need to make
+
+>>>
+>>>>
+>>>> Why do we have to start using ZONE_MOVABLE for them?
+>>> One of the "other opportunities" for Designated Movable Blocks is to
+>>> allow CMA to allocate from a DMB as an alternative. This would allow
+>>> current users to continue using CMA as they want, but would allow users
+>>> (e.g. hugetlb_cma) that are not sensitive to the allocation latency to
+>>> let the kernel page allocator make more complete use (i.e. waste less)
+>>> of the shared memory. ZONE_MOVABLE pageblocks are always MIGRATE_MOVABLE
+>>> so the restrictions placed on MIGRATE_CMA pageblocks are lifted within a
+>>> DMB.
+>>
+>> The whole purpose of ZONE_MOVABLE is that *no* unmovable allocations end
+>> up on it. The biggest difference to CMA is that the CMA *owner* is able
+>> to place unmovable allocations on it.
+> I'm not sure that is a wholly fair characterization (or maybe I just
+> hope that's the case :). I would agree that the Linux page allocator
+> can't place any unmovable allocations on it. I expect that people locate
+> memory in ZONE_MOVABLE for different purposes. For example, the memory
+> hotplug users ostensibly place memory their so that any data on the hot
+> plugged memory can be moved off of the memory prior to it being hot
+> unplugged. Unplugging the memory removes the memory from the
+> ZONE_MOVABLE zone, but it is not materially different from allocating
+> the memory for a different purpose (perhaps in a different machine).
+
+Well, memory offlining is the one operation that evacuates memory) and 
+makes sure it cannot be allocated anymore (possibly with the intention 
+of removing that memory from the system). Sure, you can call it a fake 
+allocation, but there is a more fundamental difference compared to 
+random subsystems placing unmovable allocations there.
+
+> 
+> Conceptually, allowing a CMA allocator to operate on a Designated
+> Movable Block of memory that it *owns* is also removing that memory from
+> the ZONE_MOVABLE zone. Issues of ownership should be addressed which is
+> why these "other opportunities" are being deferred for now, but I do not
+> believe such use is unreasonable. Again, Designated Movable Blocks are
+> only allowed in boot memory so there shouldn't be a conflict with memory
+> hotplug. I believe the same would apply for hugetlb_cma.
+>>
+>> Using ZONE_MOVABLE for unmovable allocations (hugetlb_cma) is not
+>> acceptable as is.
+>>
+>> Using ZONE_MOVABLE in different context and calling it DMB is very
+>> confusing TBH.
+> Perhaps it is more helpful to think of a Designated Movable Block as a
+> block of memory whose migratetype is not allowed to be changed from
+> MIGRATE_MOVABLE (i.e. "sticky" migrate movable). The fact that
+
+I think that such a description might make the feature easier to grasp. 
+Although I am not sure yet if DMB as proposed is rather a hack to avoid 
+introducing real sticky movable blocks (sorry, I'm just trying to 
+connect the dots and there is a lot of complexity involved) or actually 
+a clean design. Messing with zones and memblock always implies complexity :)
+
+> ZONE_MOVABLE is being used to achieve that is an implementation detail
+> for this commit set. In the same way that memory hotplug is the concept
+> of adding System RAM during run time, but placing it in ZONE_MOVABLE is
+> an implementation detail to make it easier to unplug.
+
+Right, but there we don't play any tricks: it's just ZONE_MOVABLE 
+without any other metadata pointing out ownership. Maybe that's what you 
+are trying to describe here: A DMB inside ZONE_MOVABLE implies that 
+there is another owner and that even memory offlining should fail.
+
+> 
+>>
+>> Just a note that I described the idea of a "PREFER_MOVABLE" zone in the
+>> past. In contrast to ZONE_MOVABLE, we cannot run into weird OOM
+>> situations in a ZONE misconfiguration, and we'd end up placing only
+>> movable allocations on it as long as we can. However, especially
+>> gigantic pages could be allocated from it. It sounds kind-of more like
+>> what you want -- and maybe in combination of daxctl to let the user
+>> decide how to online memory ranges.
+> Best not let Mel hear you suggesting another zone;).
+
+He most probably read it already. ;) I can understand all theoretical 
+complains about ZONE_MOVABLE, but in the end it has been getting the job 
+done for years.
+
+> 
+>>
+>>
+>> And just to make it clear again: depending on ZONE_MOVABLE == only user
+>> space allocations is not future proof.
+> Understood.
+
+May I ask what the main purpose/use case of DMB is?
+
+Would it be sufficient, to specify that hugetlb are allocated from a 
+specific memory area, possible managed by CMA? And then simply providing 
+the application that cares these hugetlb pages? Would you need something 
+that is *not* hugetlb?
+
+But even then, how would an application be able to specify that exactly 
+it's allocation will get served from that part of ZONE_MOVABLE? Sure, if 
+you don't reserve any other hugetlb pages, it's easy.
+
+
+I'd like to note that if you'd go with (fake) NUMA nodes like PMEM or 
+CXL you could easily let your application mbind() to that memory and 
+have it configured.
+
+-- 
+Thanks,
+
+David / dhildenb
+
