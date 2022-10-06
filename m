@@ -1,116 +1,88 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A20352582
-	for <iommu@lists.linux.dev>; Thu,  6 Oct 2022 15:22:10 +0000 (UTC)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 296FFOXJ028174;
-	Thu, 6 Oct 2022 15:22:04 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=fdvKRZW+6B4bc/tizp2EF3gOSKbpufdFOY0utqO1Gp8=;
- b=cY587duxvs+hNdora+fHf1J8osepd9fY+jG152jJtfcmYBSh8q2ROB9JZi99vzoMWI1G
- M4IpJwLws43mO/hJYGNK+NxWH3wv9/SED5RnGvDFiuN895NV1vK0mWK+QXlh+g2wNcIn
- ulSrGj//84zJk3aKXVy4wGodWY5ba3eBvM7G9P/cpto3TllswUVx36SaEWAEarj8ac6t
- lvX+q9z3znc3N4bF5PvHA1Z3+EK+wq7pop6QoZY25keOGWkkBYnIhxV9a6XAUxCxnr/M
- KFXtsCJ3V5L+EEKBmJOllsPqyAvGmj3t5nadLu1qjP+4l6nSkxfRuo7MrK5BSc2WIBA+ Ig== 
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3k20p8247n-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 06 Oct 2022 15:22:03 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-	by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 296FB84c017152;
-	Thu, 6 Oct 2022 15:22:01 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-	by ppma05fra.de.ibm.com with ESMTP id 3jxd68wcfm-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 06 Oct 2022 15:22:01 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-	by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 296FLvr28127070
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 6 Oct 2022 15:21:58 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id DFFA052051;
-	Thu,  6 Oct 2022 15:21:57 +0000 (GMT)
-Received: from sig-9-145-19-232.uk.ibm.com (unknown [9.145.19.232])
-	by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 275545204F;
-	Thu,  6 Oct 2022 15:21:57 +0000 (GMT)
-Message-ID: <ed96bbb5b2af7cbf8e41f5aa36d31d3f5aae50d5.camel@linux.ibm.com>
-Subject: Re: [PATCH v5 3/6] iommu/s390: Fix potential s390_domain aperture
- shrinking
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Matthew Rosato <mjrosato@linux.ibm.com>,
-        Pierre Morel
- <pmorel@linux.ibm.com>, iommu@lists.linux.dev
-Cc: linux-s390@vger.kernel.org, borntraeger@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        agordeev@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
-        will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com,
-        linux-kernel@vger.kernel.org
-Date: Thu, 06 Oct 2022 17:21:56 +0200
-In-Reply-To: <20221006144700.3380098-4-schnelle@linux.ibm.com>
-References: <20221006144700.3380098-1-schnelle@linux.ibm.com>
-	 <20221006144700.3380098-4-schnelle@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 82EFE2582
+	for <iommu@lists.linux.dev>; Thu,  6 Oct 2022 15:27:46 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 28A00106F;
+	Thu,  6 Oct 2022 08:27:52 -0700 (PDT)
+Received: from [10.57.65.170] (unknown [10.57.65.170])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CC4623F67D;
+	Thu,  6 Oct 2022 08:27:43 -0700 (PDT)
+Message-ID: <583c4689-844d-2ae2-79fb-4750b21c4304@arm.com>
+Date: Thu, 6 Oct 2022 16:27:39 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: iZCr9ndK0jR3uH7V9SvHBl0MnjzGGL4P
-X-Proofpoint-ORIG-GUID: iZCr9ndK0jR3uH7V9SvHBl0MnjzGGL4P
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
- definitions=2022-10-06_02,2022-10-06_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- adultscore=0 clxscore=1015 priorityscore=1501 bulkscore=0 phishscore=0
- suspectscore=0 malwarescore=0 mlxlogscore=999 impostorscore=0 mlxscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2210060087
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.1
+Subject: Re: [PATCH v4 05/16] iommu: Move bus setup to IOMMU device
+ registration
+Content-Language: en-GB
+To: Jon Hunter <jonathanh@nvidia.com>, joro@8bytes.org
+Cc: will@kernel.org, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, baolu.lu@linux.intel.com,
+ kevin.tian@intel.com, suravee.suthikulpanit@amd.com, vasant.hegde@amd.com,
+ mjrosato@linux.ibm.com, schnelle@linux.ibm.com,
+ linux-kernel@vger.kernel.org,
+ "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+ Thierry Reding <treding@nvidia.com>
+References: <cover.1660572783.git.robin.murphy@arm.com>
+ <d342b6f27efb5ef3e93aacaa3012d25386d74866.1660572783.git.robin.murphy@arm.com>
+ <89d873fc-9f0a-156e-dcf2-48a2b9f93dcc@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <89d873fc-9f0a-156e-dcf2-48a2b9f93dcc@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Thu, 2022-10-06 at 16:46 +0200, Niklas Schnelle wrote:
-> The s390 IOMMU driver currently sets the IOMMU domain's aperture to
-> match the device specific DMA address range of the device that is first
-> attached. This is not ideal. For one if the domain has no device
-> attached in the meantime the aperture could be shrunk allowing
-> translations outside the aperture to exist in the translation tables.
-> Also this is a bit of a misuse of the aperture which really should
-> describe what addresses can be translated and not some device specific
-> limitations.
+On 2022-10-06 15:01, Jon Hunter wrote:
+> Hi Robin,
 > 
-> Instead of misusing the aperture like this we can instead create
-> reserved ranges for the ranges inaccessible to the attached devices
-> allowing devices with overlapping ranges to still share an IOMMU domain.
-> This also significantly simplifies s390_iommu_attach_device() allowing
-> us to move the aperture check to the beginning of the function and
-> removing the need to hold the device list's lock to check the aperture.
+> On 15/08/2022 17:20, Robin Murphy wrote:
+>> Move the bus setup to iommu_device_register(). This should allow
+>> bus_iommu_probe() to be correctly replayed for multiple IOMMU instances,
+>> and leaves bus_set_iommu() as a glorified no-op to be cleaned up next.
+>>
+>> At this point we can also handle cleanup better than just rolling back
+>> the most-recently-touched bus upon failure - which may release devices
+>> owned by other already-registered instances, and still leave devices on
+>> other buses with dangling pointers to the failed instance. Now it's easy
+>> to clean up the exact footprint of a given instance, no more, no less.
 > 
-> As we then use the same aperture for all domains and it only depends on
-> the table properties we can already check zdev->start_dma/end_dma at
-> probe time and turn the check on attach into a WARN_ON().
 > 
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> Since this change, I have noticed that the DRM driver on Tegra20 is 
+> failing to probe and I am seeing ...
+> 
+>   tegra-gr2d 54140000.gr2d: failed to attach to domain: -19
+>   drm drm: failed to initialize 54140000.gr2d: -19
+> 
+> Bisect points to this change and reverting it fixes it. Let me know if 
+> you have any thoughts.
 
-@Matt, @Jason I did drop the R-b's here because the change Jason
-suggested of changing the aperture check on attach to a WARN_ON() and
-checking zdev->start_dma/end_dma on probe is a behavioral change.
+Oh, apparently what's happened is that I've inadvertently enabled the 
+tegra-gart driver, since it seems that *wasn't* calling bus_set_iommu() 
+before. Looking at the history, it appears to have been that way since 
+c7e3ca515e78 ("iommu/tegra: gart: Do not register with bus"), so 
+essentially that driver has been broken and useless for close to 8 years 
+now :(
 
-> ---
-> v4->v5:
-> - Make aperture check in attach a WARN_ON() and fail in probe if
->   zdev->start_dma/end_dma doesn't git in aperture  (Jason)
-> 
->  drivers/iommu/s390-iommu.c | 65 +++++++++++++++++++++++++-------------
->  1 file changed, 43 insertions(+), 22 deletions(-)
-> 
-> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-> index 9b3ae4b14636..1f6c9bee9a80 100644
-> --- a/drivers/iommu/s390-iommu.c
----8<---
+Given that, I'd be inclined to "fix" it as below, or just give up and 
+delete the whole thing.
 
+Thanks,
+Robin.
+
+----->8-----
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 5c5cb5bee8b6..7b3f7fd6e527 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -230,6 +230,7 @@ config TEGRA_IOMMU_GART
+  	bool "Tegra GART IOMMU Support"
+  	depends on ARCH_TEGRA_2x_SOC
+  	depends on TEGRA_MC
++	depends on BROKEN
+  	select IOMMU_API
+  	help
+  	  Enables support for remapping discontiguous physical memory
