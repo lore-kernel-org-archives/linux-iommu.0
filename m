@@ -1,27 +1,46 @@
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6477C33CF
-	for <iommu@lists.linux.dev>; Thu,  6 Oct 2022 18:43:21 +0000 (UTC)
-Received: from [192.168.2.145] (unknown [109.252.119.114])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: dmitry.osipenko)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id E2FF36602317;
-	Thu,  6 Oct 2022 19:43:11 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1665081793;
-	bh=oVnRbcXpeCezNiePIdjs0ptusalb1mzn0j7o+NCDyqY=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=lqyvy3UuuLu7WMAVOwGNM1acmShffdbrckjT2Q+W5W++cJqN3JOCQMTZyX7EcMX0E
-	 LXVniCHb/O0SA/c5bjQH5bPcfLYhHV0TXb5F0MbJsnGooEdRWL8nEw2vVqssZRF3Ju
-	 jxZZPFHR2IgFqUXD2KVN4UKOydowEmVjUlnMWV52yYNpEKIMe0bbfnHYdoUalwzFnz
-	 xhQ5YsirPRUE6k8b0rHX9XSyq18dJcElxej8+WQO2NWPOYBs5VxndBK05ISadJrWc+
-	 XrVN4lmPmrCH9Z2koaA5/X0EetwSx/lKsk2jm7Pgh4OujOcuZkm1UnVyXJ4B3bBqAn
-	 74JEqF855DhyQ==
-Message-ID: <eeeb8199-e315-422b-4567-6139b9b27fde@collabora.com>
-Date: Thu, 6 Oct 2022 21:43:09 +0300
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F06333F1
+	for <iommu@lists.linux.dev>; Thu,  6 Oct 2022 21:02:53 +0000 (UTC)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 296JVWXS032290;
+	Thu, 6 Oct 2022 21:02:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=FQvx4KJiujxSSVTb3MfTVA0S62D6kbyVVZvcbfU4GYU=;
+ b=J2anyoBc4/eSqV0PjqbcpY4CUwAYXZqL7ivivwZuw046lvcy/reYxw3ptkS48r3mwZxU
+ z+Wf539/fkhWxesH+DRZFNpC3lrVpDw5+PmDYuHjXsgB06yw09Ux5AN35XyKCnMPc0M4
+ W6Jl/z2ksJx//xtLC5EsJ7xyGyzrm+Sw8zLNtuFJh2ZBfwXPiWiBni8teUyqDPrY7GZP
+ m7PzQIOUop1zgqkmNnuVaVVwLgwUeoe/4szYPNxeQiMmgmBIsPXBNK0HWmjj5e3NyapL
+ dxBA746Io1fgKtx4BAzY34IoHpUMaIg090xLbwMgcEujk498TgmMo0OUaOxN1z0wJCLj SQ== 
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3k258mjj7w-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 06 Oct 2022 21:02:44 +0000
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+	by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 296KpOBE010949;
+	Thu, 6 Oct 2022 21:02:43 GMT
+Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
+	by ppma01dal.us.ibm.com with ESMTP id 3jxd6ady68-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 06 Oct 2022 21:02:43 +0000
+Received: from smtpav01.wdc07v.mail.ibm.com ([9.208.128.113])
+	by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 296L2guC1049324
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 6 Oct 2022 21:02:42 GMT
+Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id BEB4758066;
+	Thu,  6 Oct 2022 21:02:41 +0000 (GMT)
+Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id E2D105806D;
+	Thu,  6 Oct 2022 21:02:39 +0000 (GMT)
+Received: from [9.65.202.26] (unknown [9.65.202.26])
+	by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Thu,  6 Oct 2022 21:02:39 +0000 (GMT)
+Message-ID: <acbc56b3-41b4-f71a-01d7-63c34348e079@linux.ibm.com>
+Date: Thu, 6 Oct 2022 17:02:39 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -29,101 +48,186 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.1
-Subject: Re: [PATCH v4 05/16] iommu: Move bus setup to IOMMU device
- registration
-To: Thierry Reding <treding@nvidia.com>, Robin Murphy <robin.murphy@arm.com>,
- Dmitry Osipenko <digetx@gmail.com>
-Cc: Jon Hunter <jonathanh@nvidia.com>, joro@8bytes.org, will@kernel.org,
- iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- baolu.lu@linux.intel.com, kevin.tian@intel.com,
- suravee.suthikulpanit@amd.com, vasant.hegde@amd.com, mjrosato@linux.ibm.com,
- schnelle@linux.ibm.com, linux-kernel@vger.kernel.org,
- "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
-References: <cover.1660572783.git.robin.murphy@arm.com>
- <d342b6f27efb5ef3e93aacaa3012d25386d74866.1660572783.git.robin.murphy@arm.com>
- <89d873fc-9f0a-156e-dcf2-48a2b9f93dcc@nvidia.com>
- <583c4689-844d-2ae2-79fb-4750b21c4304@arm.com> <Yz8Mabz/SL7gG9VA@orome>
+ Thunderbird/102.3.0
+Subject: Re: [PATCH v5 3/6] iommu/s390: Fix potential s390_domain aperture
+ shrinking
 Content-Language: en-US
-From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-In-Reply-To: <Yz8Mabz/SL7gG9VA@orome>
+To: Niklas Schnelle <schnelle@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev
+Cc: linux-s390@vger.kernel.org, borntraeger@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        agordeev@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
+        will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com,
+        linux-kernel@vger.kernel.org
+References: <20221006144700.3380098-1-schnelle@linux.ibm.com>
+ <20221006144700.3380098-4-schnelle@linux.ibm.com>
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <20221006144700.3380098-4-schnelle@linux.ibm.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: QSmO1E6YNkr_Gu6ynuFjhElmAGURD42w
+X-Proofpoint-ORIG-GUID: QSmO1E6YNkr_Gu6ynuFjhElmAGURD42w
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-10-06_04,2022-10-06_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 spamscore=0
+ mlxlogscore=999 adultscore=0 malwarescore=0 suspectscore=0 clxscore=1015
+ mlxscore=0 impostorscore=0 lowpriorityscore=0 priorityscore=1501
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2210060124
 
-On 10/6/22 20:12, Thierry Reding wrote:
-> On Thu, Oct 06, 2022 at 04:27:39PM +0100, Robin Murphy wrote:
->> On 2022-10-06 15:01, Jon Hunter wrote:
->>> Hi Robin,
->>>
->>> On 15/08/2022 17:20, Robin Murphy wrote:
->>>> Move the bus setup to iommu_device_register(). This should allow
->>>> bus_iommu_probe() to be correctly replayed for multiple IOMMU instances,
->>>> and leaves bus_set_iommu() as a glorified no-op to be cleaned up next.
->>>>
->>>> At this point we can also handle cleanup better than just rolling back
->>>> the most-recently-touched bus upon failure - which may release devices
->>>> owned by other already-registered instances, and still leave devices on
->>>> other buses with dangling pointers to the failed instance. Now it's easy
->>>> to clean up the exact footprint of a given instance, no more, no less.
->>>
->>>
->>> Since this change, I have noticed that the DRM driver on Tegra20 is
->>> failing to probe and I am seeing ...
->>>
->>>   tegra-gr2d 54140000.gr2d: failed to attach to domain: -19
->>>   drm drm: failed to initialize 54140000.gr2d: -19
-
-The upstream Tegra20 device-tree doesn't have IOMMU phandle for
-54140000.gr2d. In this case IOMMU domain shouldn't be available for the
-DRM driver [1]. Sounds like IOMMU core has a bug.
-
-[1]
-https://elixir.bootlin.com/linux/latest/source/drivers/iommu/tegra-gart.c#L243
-
->>> Bisect points to this change and reverting it fixes it. Let me know if
->>> you have any thoughts.
->>
->> Oh, apparently what's happened is that I've inadvertently enabled the
->> tegra-gart driver, since it seems that *wasn't* calling bus_set_iommu()
->> before. Looking at the history, it appears to have been that way since
->> c7e3ca515e78 ("iommu/tegra: gart: Do not register with bus"), so essentially
->> that driver has been broken and useless for close to 8 years now :(
->>
->> Given that, I'd be inclined to "fix" it as below, or just give up and delete
->> the whole thing.
+On 10/6/22 10:46 AM, Niklas Schnelle wrote:
+> The s390 IOMMU driver currently sets the IOMMU domain's aperture to
+> match the device specific DMA address range of the device that is first
+> attached. This is not ideal. For one if the domain has no device
+> attached in the meantime the aperture could be shrunk allowing
+> translations outside the aperture to exist in the translation tables.
+> Also this is a bit of a misuse of the aperture which really should
+> describe what addresses can be translated and not some device specific
+> limitations.
 > 
-> I'm inclined to agree. GART is severely limited: it provides a single
-> IOMMU domain with an aperture of 32 MiB. It's close to useless for
-> anything we would want to do and my understanding is that people have
-> been falling back to CMA for any graphics/display stuff that the GART
-> would've been useful for.
+> Instead of misusing the aperture like this we can instead create
+> reserved ranges for the ranges inaccessible to the attached devices
+> allowing devices with overlapping ranges to still share an IOMMU domain.
+> This also significantly simplifies s390_iommu_attach_device() allowing
+> us to move the aperture check to the beginning of the function and
+> removing the need to hold the device list's lock to check the aperture.
 > 
-> Given that nobody's felt the urge to fix this for the past 8 years, I
-> don't think there's enough interest in this to keep it going.
+> As we then use the same aperture for all domains and it only depends on
+> the table properties we can already check zdev->start_dma/end_dma at
+> probe time and turn the check on attach into a WARN_ON().
 > 
-> Dmitry, any thoughts?
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 
-This GART driver is used by a community kernel fork that has alternative
-DRM driver supporting IOMMU/GART on Tegra20. The fork is periodically
-synced with the latest upstream, it's used by postmarketOS. Hence it
-wasn't a completely dead driver.
+Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
 
-The 32M aperture works well for 2d/3d engines because it fits multiple
-textures at once. Tegra DRM driver needs to remap buffers dynamically,
-but this is easy to implement because DRM core has nice helpers for
-that. We haven't got to the point where upstream DRM driver is ready to
-support this feature.
-
-CMA is hard to use for anything other than display framebuffers. It's
-slow and fails to allocate memory if CMA area is "shared" due to
-fragmentation and pinned pages. Reserved CMA isn't an option for GPU
-because then there is no memory for the rest of system.
-
-I don't see any problems with removing GART driver. It's not going to be
-used soon in upstream and only adds maintenance burden. We can always
-re-add it in the future.
-
--- 
-Best regards,
-Dmitry
+> ---
+> v4->v5:
+> - Make aperture check in attach a WARN_ON() and fail in probe if
+>   zdev->start_dma/end_dma doesn't git in aperture  (Jason)
+> 
+>  drivers/iommu/s390-iommu.c | 65 +++++++++++++++++++++++++-------------
+>  1 file changed, 43 insertions(+), 22 deletions(-)
+> 
+> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+> index 9b3ae4b14636..1f6c9bee9a80 100644
+> --- a/drivers/iommu/s390-iommu.c
+> +++ b/drivers/iommu/s390-iommu.c
+> @@ -62,6 +62,9 @@ static struct iommu_domain *s390_domain_alloc(unsigned domain_type)
+>  		kfree(s390_domain);
+>  		return NULL;
+>  	}
+> +	s390_domain->domain.geometry.force_aperture = true;
+> +	s390_domain->domain.geometry.aperture_start = 0;
+> +	s390_domain->domain.geometry.aperture_end = ZPCI_TABLE_SIZE_RT - 1;
+>  
+>  	spin_lock_init(&s390_domain->dma_table_lock);
+>  	spin_lock_init(&s390_domain->list_lock);
+> @@ -102,46 +105,32 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
+>  	struct s390_domain *s390_domain = to_s390_domain(domain);
+>  	struct zpci_dev *zdev = to_zpci_dev(dev);
+>  	unsigned long flags;
+> -	int cc, rc = 0;
+> +	int cc;
+>  
+>  	if (!zdev)
+>  		return -ENODEV;
+>  
+> +	WARN_ON(domain->geometry.aperture_start > zdev->end_dma ||
+> +		domain->geometry.aperture_end < zdev->start_dma);
+> +
+>  	if (zdev->s390_domain)
+>  		__s390_iommu_detach_device(zdev);
+>  	else if (zdev->dma_table)
+>  		zpci_dma_exit_device(zdev);
+>  
+> -	zdev->dma_table = s390_domain->dma_table;
+>  	cc = zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
+> -				virt_to_phys(zdev->dma_table));
+> +				virt_to_phys(s390_domain->dma_table));
+>  	if (cc)
+>  		return -EIO;
+>  
+> -	spin_lock_irqsave(&s390_domain->list_lock, flags);
+> -	/* First device defines the DMA range limits */
+> -	if (list_empty(&s390_domain->devices)) {
+> -		domain->geometry.aperture_start = zdev->start_dma;
+> -		domain->geometry.aperture_end = zdev->end_dma;
+> -		domain->geometry.force_aperture = true;
+> -	/* Allow only devices with identical DMA range limits */
+> -	} else if (domain->geometry.aperture_start != zdev->start_dma ||
+> -		   domain->geometry.aperture_end != zdev->end_dma) {
+> -		spin_unlock_irqrestore(&s390_domain->list_lock, flags);
+> -		rc = -EINVAL;
+> -		goto out_unregister;
+> -	}
+> +	zdev->dma_table = s390_domain->dma_table;
+>  	zdev->s390_domain = s390_domain;
+> +
+> +	spin_lock_irqsave(&s390_domain->list_lock, flags);
+>  	list_add(&zdev->iommu_list, &s390_domain->devices);
+>  	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
+>  
+>  	return 0;
+> -
+> -out_unregister:
+> -	zpci_unregister_ioat(zdev, 0);
+> -	zdev->dma_table = NULL;
+> -
+> -	return rc;
+>  }
+>  
+>  static void s390_iommu_detach_device(struct iommu_domain *domain,
+> @@ -155,10 +144,41 @@ static void s390_iommu_detach_device(struct iommu_domain *domain,
+>  	zpci_dma_init_device(zdev);
+>  }
+>  
+> +static void s390_iommu_get_resv_regions(struct device *dev,
+> +					struct list_head *list)
+> +{
+> +	struct zpci_dev *zdev = to_zpci_dev(dev);
+> +	struct iommu_resv_region *region;
+> +
+> +	if (zdev->start_dma) {
+> +		region = iommu_alloc_resv_region(0, zdev->start_dma, 0,
+> +						 IOMMU_RESV_RESERVED);
+> +		if (!region)
+> +			return;
+> +		list_add_tail(&region->list, list);
+> +	}
+> +
+> +	if (zdev->end_dma < ZPCI_TABLE_SIZE_RT - 1) {
+> +		region = iommu_alloc_resv_region(zdev->end_dma + 1,
+> +						 ZPCI_TABLE_SIZE_RT - zdev->end_dma - 1,
+> +						 0, IOMMU_RESV_RESERVED);
+> +		if (!region)
+> +			return;
+> +		list_add_tail(&region->list, list);
+> +	}
+> +}
+> +
+>  static struct iommu_device *s390_iommu_probe_device(struct device *dev)
+>  {
+>  	struct zpci_dev *zdev = to_zpci_dev(dev);
+>  
+> +	if (zdev->start_dma > zdev->end_dma ||
+> +	    zdev->start_dma > ZPCI_TABLE_SIZE_RT - 1)
+> +		return ERR_PTR(-EINVAL);
+> +
+> +	if (zdev->end_dma > ZPCI_TABLE_SIZE_RT - 1)
+> +		zdev->end_dma = ZPCI_TABLE_SIZE_RT - 1;
+> +
+>  	return &zdev->iommu_dev;
+>  }
+>  
+> @@ -337,6 +357,7 @@ static const struct iommu_ops s390_iommu_ops = {
+>  	.release_device = s390_iommu_release_device,
+>  	.device_group = generic_device_group,
+>  	.pgsize_bitmap = S390_IOMMU_PGSIZES,
+> +	.get_resv_regions = s390_iommu_get_resv_regions,
+>  	.default_domain_ops = &(const struct iommu_domain_ops) {
+>  		.attach_dev	= s390_iommu_attach_device,
+>  		.detach_dev	= s390_iommu_detach_device,
 
