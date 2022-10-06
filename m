@@ -1,90 +1,45 @@
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9A5D64C
-	for <iommu@lists.linux.dev>; Thu,  6 Oct 2022 05:50:12 +0000 (UTC)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-	by localhost (Postfix) with ESMTP id 4Mjfy04fXtz9srK;
-	Thu,  6 Oct 2022 07:24:24 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-	by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JFDVKqW9pMLK; Thu,  6 Oct 2022 07:24:24 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-	by pegase2.c-s.fr (Postfix) with ESMTP id 4Mjfy03kv3z9scJ;
-	Thu,  6 Oct 2022 07:24:24 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by messagerie.si.c-s.fr (Postfix) with ESMTP id 6BCFE8B765;
-	Thu,  6 Oct 2022 07:24:24 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-	by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-	with ESMTP id qxpcNt9sdWlA; Thu,  6 Oct 2022 07:24:24 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.232.234])
-	by messagerie.si.c-s.fr (Postfix) with ESMTP id 4895F8B763;
-	Thu,  6 Oct 2022 07:24:24 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-	by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 2965O9aq211188
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Thu, 6 Oct 2022 07:24:09 +0200
-Received: (from chleroy@localhost)
-	by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 2965O8OA211185;
-	Thu, 6 Oct 2022 07:24:08 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>
-Cc: Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: [PATCH] iommu: fsl_pamu: Replace NO_IRQ by 0
-Date: Thu,  6 Oct 2022 07:24:03 +0200
-Message-Id: <2a2570a8d12c80a7d36837b6c586daa708ca09d7.1665033732.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.37.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBF13654
+	for <iommu@lists.linux.dev>; Thu,  6 Oct 2022 07:48:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+	Content-ID:Content-Description:In-Reply-To:References;
+	bh=qFJULb+WSRPTZkC19zGZkZ8HigzeVEI8kRHkmY9EyoI=; b=GlGxCbuP+yqCHef+u84g4LHpMb
+	fWr0WXsPq7gpI5zoCUMFLxoMqPGshllOa/13KQXeU+aGcI8+68NqwyRSITMQSsvUEouvkW3bPEqW7
+	GfKQ2k8Ebb5XKGRz7XeFoRtcEgtzuoCTFIi0xzboMYP7jr/pBcYWaj1SytS9GxDaKUkRtnPrPl7XL
+	vENLgwhNEFMixJHxe+uKGasSjxyc09oeSNE8Mx09URSTzXYcP0rsvpiTLnRbmmkoiMSEu7ALBUUTH
+	mGSptI4IdcDlVChoXSe9tmnn5O7/kdUFD9qDmblhfbG0qa6GrXzHYayG12CitG1DM7SsjdokSk2tR
+	IVuWSVhA==;
+Received: from [2001:4bb8:180:b914:9f51:af7e:d950:bc8d] (helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1ogLcJ-000UQx-6S; Thu, 06 Oct 2022 07:48:27 +0000
+From: Christoph Hellwig <hch@lst.de>
+To: Russell King <linux@armlinux.org.uk>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	=?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: mvebu DMA fix
+Date: Thu,  6 Oct 2022 09:48:22 +0200
+Message-Id: <20221006074824.521457-1-hch@lst.de>
+X-Mailer: git-send-email 2.30.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1665033842; l=1066; s=20211009; h=from:subject:message-id; bh=WVcxtNkdP75Xbucx/zgnBIsm6p0wTWlU5q6S1YFhBNo=; b=SaE4BxoXgGNkBEuhgX2OV8RyZh6I7OEIu2MewWz3a4QCsIWqiBhiJx+UF+r4gbfgHQlgC9/LO1BI HKYnTZX+CAdUQZ4xQjfVFsxL/M7lXwgz44SpMlCGlAw/UT2rhSc2
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-NO_IRQ is used to check the return of irq_of_parse_and_map().
+Hi Russell,
 
-On some architecture NO_IRQ is 0, on other architectures it is -1.
+the first patch fixes the regression that overwrites ->dma_coherent after
+the mvebu notifier set it, and the second one removes a now unused field
+in the arm arch_devdata.
 
-irq_of_parse_and_map() returns 0 on error, independent of NO_IRQ.
-
-So use 0 instead of using NO_IRQ.
-
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- drivers/iommu/fsl_pamu.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/fsl_pamu.c b/drivers/iommu/fsl_pamu.c
-index 0d03f837a5d4..1b53d2da2c19 100644
---- a/drivers/iommu/fsl_pamu.c
-+++ b/drivers/iommu/fsl_pamu.c
-@@ -779,7 +779,7 @@ static int fsl_pamu_probe(struct platform_device *pdev)
- 	of_get_address(dev->of_node, 0, &size, NULL);
- 
- 	irq = irq_of_parse_and_map(dev->of_node, 0);
--	if (irq == NO_IRQ) {
-+	if (!irq) {
- 		dev_warn(dev, "no interrupts listed in PAMU node\n");
- 		goto error;
- 	}
-@@ -903,7 +903,7 @@ static int fsl_pamu_probe(struct platform_device *pdev)
- 	return 0;
- 
- error:
--	if (irq != NO_IRQ)
-+	if (irq)
- 		free_irq(irq, data);
- 
- 	kfree_sensitive(data);
--- 
-2.37.1
-
+Let me know if you want to take these, or if I should route them through
+the dma-mapping tree that introduced this problem.
