@@ -1,148 +1,170 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2075.outbound.protection.outlook.com [40.107.237.75])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65B2320E0
-	for <iommu@lists.linux.dev>; Thu,  6 Oct 2022 14:01:23 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=J4HdQnysHKdwQgNLxwfWnTdqWCckW4ffbp7xTezP6rYemTFPnKfHpsykJJq0I1axkTs4Ijdk5TIqqaR0QeiClcpzUFkqAsgufTpxvGrlCpbIwabENKJcUFdF/92k/WqQaCOfrlQKvV39e7mB1Kmx27MCXhE6hT+nxLoAmqh9PzdhN7+2EXJx239V48HhZqYdwel1ntKjH4Aza6KnYPGnf2Qs8//V7M9nMYouWs7Q6LhSXwCCE9Y4ECenpWMP5hRUG3ujCMUXaoPmoyMRDqc5OAfzBOED2ghqnT/O1cfE3XZsKB6M3V0mFmywpEs/unFT2sdwWL/THSSVcqz9G9vaRQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LrwOGSEH5Xoc0h9yVW5Nnrj60gAxTwm9FxHQeAHBwfE=;
- b=YM3+hHkilF88R2elga7nnREc9ml6VERTIQFQyho/3z0sShl5tFaMiydBHiKBpMn7xRUxd7Q7H6sOe9AbEFhyO1FTr6PkPIcWb86+myg7UTzrk99DZHz9+2OJpNm3fLuHWOF0gu85R5hgKpvvmWcboVWtO1pZnA6c4n7jalBDsyRgyI0ar8bKYOJaDQMTdRh0iy+j8z4CVX6Cj5oML+Rv5MzHM2uxM5MefYoMGh4eUYRms/W0hfp00nkpKlqmk28eD8o9PRWoQK7e+PAxOg3Yw6Q7rAcnFLACpU3L3/+Il13ARJCYEEh7lWsnM2Qvit4NNe+ABkxmfnoUbwI5wgS9xg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LrwOGSEH5Xoc0h9yVW5Nnrj60gAxTwm9FxHQeAHBwfE=;
- b=f0NjUQtyzRV9iZ9tU2/18e6DVRWyZh+Z7ZqrI6f7bb4EPFdvduJOLqr35pqfwQWNSjNjbtTmHp0XvBUPGiyS+TDgOPwFFPwD2K/c8L4SqXecwfsfIDgUAWZgIXUBrdEsD2eYw1o8XpTiB6IvgX6IkfsVUUpUzC3mHf6knHwxnRjJ5KGxCV3dNp19Z6Vg0YaUTMiMNUcyLZV6pirnR6ZuidWYgMUb9A0nJwpcZ717n8D/FjYv6g22fBGEk+AHuM/YAXTdpRWgo2kF5VqceILzYG4D4eH1bSS7pp2LVDUNhWHKY2dqCY26P0SFBuZCqnIJ+5YL+qwmci4wVSevxYxNHQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CO6PR12MB5444.namprd12.prod.outlook.com (2603:10b6:5:35e::8) by
- SJ0PR12MB6735.namprd12.prod.outlook.com (2603:10b6:a03:479::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5676.28; Thu, 6 Oct 2022 14:01:21 +0000
-Received: from CO6PR12MB5444.namprd12.prod.outlook.com
- ([fe80::b07f:53b1:426e:a29d]) by CO6PR12MB5444.namprd12.prod.outlook.com
- ([fe80::b07f:53b1:426e:a29d%5]) with mapi id 15.20.5676.036; Thu, 6 Oct 2022
- 14:01:21 +0000
-Message-ID: <89d873fc-9f0a-156e-dcf2-48a2b9f93dcc@nvidia.com>
-Date: Thu, 6 Oct 2022 15:01:14 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v4 05/16] iommu: Move bus setup to IOMMU device
- registration
-Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org
-Cc: will@kernel.org, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, baolu.lu@linux.intel.com,
- kevin.tian@intel.com, suravee.suthikulpanit@amd.com, vasant.hegde@amd.com,
- mjrosato@linux.ibm.com, schnelle@linux.ibm.com,
- linux-kernel@vger.kernel.org,
- "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
- Thierry Reding <treding@nvidia.com>
-References: <cover.1660572783.git.robin.murphy@arm.com>
- <d342b6f27efb5ef3e93aacaa3012d25386d74866.1660572783.git.robin.murphy@arm.com>
-From: Jon Hunter <jonathanh@nvidia.com>
-In-Reply-To: <d342b6f27efb5ef3e93aacaa3012d25386d74866.1660572783.git.robin.murphy@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P265CA0055.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:2af::11) To CO6PR12MB5444.namprd12.prod.outlook.com
- (2603:10b6:5:35e::8)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7B03210C
+	for <iommu@lists.linux.dev>; Thu,  6 Oct 2022 14:47:15 +0000 (UTC)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 296EAQc8031130;
+	Thu, 6 Oct 2022 14:47:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=+/0pG+udMeKW2EMYqbZEMBLeC9BKAzpaWAWiIKWvvJc=;
+ b=WBpaIeBdhRbYs5k2kmfk9d1I1BXSIE/lk30UYRjQebNAZV1TEaetrak2ppslW/JY4jy2
+ zCD441i/NoU2qOt8yatkuiS87Tfhq2RctAjI1QreeulicOBYD/h/TkByGHEj4JsLqypu
+ yZLwBUfNE04sNA1JVl4ZLZvLtE0Y9kFM0iSJR1dpTK3gu95WljROlj7myFFL7l4W8Ra2
+ SFW15zf+ccasrEWn0IUY0Kukw11Sg0d1VgZAuXY5D/48DgDVQLXUvpRnkWigNBQESad2
+ u6DQU+WlyOzuMlZZj23FiDg/cNKaQkw8gI/xsxVPRlhBwnedC8Rrq4trOdRBaRNVqwMI Vg== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3k1y14met3-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 06 Oct 2022 14:47:07 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+	by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 296EaEHg010135;
+	Thu, 6 Oct 2022 14:47:04 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+	by ppma04ams.nl.ibm.com with ESMTP id 3jxd6978dj-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 06 Oct 2022 14:47:04 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+	by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 296El11D3736164
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 6 Oct 2022 14:47:01 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 8BDD9A4051;
+	Thu,  6 Oct 2022 14:47:01 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 1B7FEA404D;
+	Thu,  6 Oct 2022 14:47:01 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+	by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+	Thu,  6 Oct 2022 14:47:01 +0000 (GMT)
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Matthew Rosato <mjrosato@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev
+Cc: linux-s390@vger.kernel.org, borntraeger@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        agordeev@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
+        will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v5 0/6] iommu/s390: Fixes related to attach and aperture handling
+Date: Thu,  6 Oct 2022 16:46:54 +0200
+Message-Id: <20221006144700.3380098-1-schnelle@linux.ibm.com>
+X-Mailer: git-send-email 2.34.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: udQcGw2uTYCiTbt37zij0xCKy34e4Suf
+X-Proofpoint-GUID: udQcGw2uTYCiTbt37zij0xCKy34e4Suf
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO6PR12MB5444:EE_|SJ0PR12MB6735:EE_
-X-MS-Office365-Filtering-Correlation-Id: 67537dcc-7be3-4d96-adaa-08daa7a33f30
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	ejpwd05NjFcehR2mmTX1oBtvG/01vPsfKp+CkTeVJDuLttZ24FL4OlLQwHdJwEJKQuQX3GA9qKkyyaFMhHMOLSmE1Byyol/e+aaWuS8vqWat1or/o4uBLwdtFHof8KJvMSM4S0xdpKqlKYqGfG5BScpdTT9+aKdu/x4anPrf6Hq4dX6rWa14K5M5NKi27hONKfsZNL+YVXENQv03e82hZNxg0dp03OwLwxGBLAn+VN8ikoha3+HQyN1qAdi8+CgyqPxmX9pITMYFK0VvWvZolCk84dnhLJOcml2HhD06kNEKflsOJP4+B5MjJbX99MYbcOQX7cBmFAmM9W0jvoNyLSrI9NqxiPlcibtqn9DvRWgDgR6gfXsFFZUEIaqjXwOYSiwuD0L6UYmY2azKhs4+oIpO0x6+H7q7oBTMn/HxZN8+ujhqZEBlJe4Ro+L5009dabEC5b3RtHaQosP832LfTo6n/YoQBI8KtTd3aXaoQE7LUgniO3rksH/vfdlqR2uVetYST4A7OE342ez20UbmG79AOjgq7g/kzrBfb1Yz0L9jaOv/X2cGyb9TAFfP+fB6mA70WCa4Y9H8vxRY749QiVZD3qYEjQ6mLf1kRWL7OpRT+vUWFFh+Fj11XTawgH5UvIsNd0b6EpK7J23ErTUpYyfCJl9rvY0XAMSKhqR3V8OGfD9ruj/a3Wd/pRuOel9yB4G4WorAeAGlcbPQlibjxeWDtPrixHOitBznuO7o4v31DpMFGjRG1onL83H/SMWBf/i1ClY/1IF4igD6SVtcDx926XriDzaLTSAJDp1hmzE=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR12MB5444.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(136003)(376002)(346002)(396003)(366004)(451199015)(31696002)(107886003)(6666004)(4326008)(41300700001)(38100700002)(66556008)(186003)(66476007)(66946007)(8676002)(2906002)(26005)(83380400001)(7416002)(6512007)(6506007)(55236004)(53546011)(4744005)(5660300002)(36756003)(8936002)(86362001)(31686004)(2616005)(54906003)(316002)(478600001)(6486002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?MVdWSnZscWx3c3pYdDExMG5OYXBTazNtbHl3NjdQQ3BnUUZvMXFYTU1WZEQz?=
- =?utf-8?B?cWVlN0Y4MlMvdXdVN2NKSnJ3d0NlUkhtVFgrLzJTRFJBbUNXNjVHcWV5SW04?=
- =?utf-8?B?ZHIwU0x4L0xtQ05BNmJDTXk4V2hVcGZUZHBlMlY3UGhtaHB6VVpnNTdLTkhr?=
- =?utf-8?B?djRZRWI3Uk85Tlk0SWdkSXZEVHFkaU1qTW1UVFBveVBUK1RtS0RxWGcwd21u?=
- =?utf-8?B?WGV1UUZweFlpcEZMREdSdEM1M29KS2FYR2NkRlpXVm1PVU1SN1FXaU03MTlG?=
- =?utf-8?B?ajYzU1l1S3pQZklnVkhCbk50RWpQalMxQmk3TURCeGcxRDB3bmZObDdjam5T?=
- =?utf-8?B?Z2ZuZ0hQcDZEdWhuRzJzRDJTN2N1NFFWQzBSTC9MRVVZT0J0QzY1MkE4N1Y5?=
- =?utf-8?B?RGR3T0drejdCdktIR2Vpbm5leldYc3Y3TXQ5NzNHWUhlMG90czlyVExGQW5Q?=
- =?utf-8?B?TDg2NWkxcmRhb3NTcVFOY1hxdzZNbW82ZFQzOXY4S3VkVmh2TVFnUHJTNkRQ?=
- =?utf-8?B?MHltNWtsVzY5TWtpRForWllHaTJYSmpYSVJuTTNFZlJBQUpvSVBqSEZScnM5?=
- =?utf-8?B?ZjBZYVRIZjVLaWxkNTRCb0dNdll5MWdTT1RhYjVPbHpSSSswM2F6enpKRHZX?=
- =?utf-8?B?RWN3d3pwcDJYaDRud2ZNckR6Q1pFWndtamwwb2JmNitPUXdGMFRaaWx3KytI?=
- =?utf-8?B?NmF3bldjZW1YbXlDZSt2YXg0aDg1eU9yNVlHaHpBTGcvL0IyVnZPcnlGN2tj?=
- =?utf-8?B?MnR0SHV6T1ZDdDBnN1ZvOGVmemdYVklJeHE2d0dSZVhSTTJrZi9TNC9iZE1B?=
- =?utf-8?B?T1MzWUsxWFdIa29iY0hYazY5ZXNDMU45TVpwMWpKOXgxWHdwMjJWWGJvcW9w?=
- =?utf-8?B?djR3K1NqeWRiZDhLeHhkY0kwQUhHZThDNjlGMlZkUnJIWStYWTJ4cGwveG12?=
- =?utf-8?B?SUQ0em5GY1lWcWxjdStlZ0MwOXZ1K0FjUERnS0E0QzI5bnZwZmZIcVJXbnkx?=
- =?utf-8?B?MkVWZFIxTXVwWDJBZ3IzRFlTenNGa2lTUkN3UU5qTGJsTnJXR3hRMTVnRUJq?=
- =?utf-8?B?Ni9ZWnJiTEtnRVFMMDEvRU85WU56VjdFNXdLWnpLL3dndUE1ZkM1NXhsZ0l2?=
- =?utf-8?B?Zll1Y1EvR3h3NXhPNHdJL0lZVVZFSjhyTmRJRVJ0dlNRckpkdkNlVXNQSFhs?=
- =?utf-8?B?am8yZk1FMjJ2N3NBdzZoNEFESERrSDB4c0M5Ykpxb1AyTHE4bE1tdGUrdWJz?=
- =?utf-8?B?QS9Xc0dvQmxGTFY2SWFCZkxYbklBSXFMU1RteUVzdmlXM2VZSTVDN1hMRytz?=
- =?utf-8?B?Y2IzSDVDWEl0Vk45MkNBbklONzcvU0l0TUZRdjJYbmp0OE54MldwWEY4ZjBa?=
- =?utf-8?B?VnNwY0pHc0ZhR3hGbk1VcXBUbHU4SGw4VlRSOWl1a21xMnF1bi90ZURydHVH?=
- =?utf-8?B?N1prSXJkTzdVM2YvWXV0NUJIRWlhSEdvVnJkR2JjMFVxTnBaZDEyb3gyNjRM?=
- =?utf-8?B?anBkZk9oa3VTbjdTQVZpY05mSkRibCtHUmhJRGthSVUwZC9TbjM5TEV6QjY4?=
- =?utf-8?B?b0JnK1ozU1JvZk5GdTE4VFNkOFZLdjQ2N2ZucXUxWjh5aVorb3NxR2VoY0Zl?=
- =?utf-8?B?dlJzR0NHNk5qbExTYldRdnEraTRzb1JEQVd0YnE3ejBMMVdmZ2R0dmdPd2J1?=
- =?utf-8?B?Z1l0VklpTEZFNjhGYnVYVzdQUVRockF1NFNKdldHNnh2ZjJGZlJUUlBCSTNK?=
- =?utf-8?B?YnFBa0laY3VpbnphSjJkL2VHS0puRHJsd1o2dDdOVHpHMUIzR0c3dDZ1UEhp?=
- =?utf-8?B?anB3OWM4TS9QajVGOXBjWGdzaUs1SDJQZWtjOHF1UkZHUTNPSXNEc3Z4VDl0?=
- =?utf-8?B?MHRWUmlEN1VSSldHeUxlZUNZTldzWHVtSTlFQnFZZVdRcGVVOTJiN1lyam5I?=
- =?utf-8?B?RVg5TGZZV3RBYmxYeEgxTVhzdGd0Qm5PZUh0UkphLzJlZGZwV1JPUGNvTDZx?=
- =?utf-8?B?ZkplSG1BZEdCMXRsUUYzQmN1L2MvY0QycW5EWkZ6Y3VLbHExSU0wUHlFaWZ3?=
- =?utf-8?B?aThmOUROczdGeHh2d1U1Mng2dnJxakhUNUtpRnRPaHJySTFIU3FqSjlHby9j?=
- =?utf-8?Q?/oPpToPhQBx7L0DAR/nkoWSP4?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 67537dcc-7be3-4d96-adaa-08daa7a33f30
-X-MS-Exchange-CrossTenant-AuthSource: CO6PR12MB5444.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Oct 2022 14:01:21.1289
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: TYmmQ+E9hxmLCHYARmYwntCyoMp2WQYUs5fD0xaObWg0UZbXHtb8FaYb6l7Jui8AGPNIMRvFQzwIxgS2VWxiEg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB6735
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
+ definitions=2022-10-06_02,2022-10-06_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 bulkscore=0
+ impostorscore=0 mlxscore=0 spamscore=0 suspectscore=0 malwarescore=0
+ priorityscore=1501 adultscore=0 phishscore=0 clxscore=1015
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2210060085
 
-Hi Robin,
+Hi All,
 
-On 15/08/2022 17:20, Robin Murphy wrote:
-> Move the bus setup to iommu_device_register(). This should allow
-> bus_iommu_probe() to be correctly replayed for multiple IOMMU instances,
-> and leaves bus_set_iommu() as a glorified no-op to be cleaned up next.
-> 
-> At this point we can also handle cleanup better than just rolling back
-> the most-recently-touched bus upon failure - which may release devices
-> owned by other already-registered instances, and still leave devices on
-> other buses with dangling pointers to the failed instance. Now it's easy
-> to clean up the exact footprint of a given instance, no more, no less.
+This is v5 of a follow up to Matt's recent series[0] where he tackled
+a race that turned out to be outside of the s390 IOMMU driver itself as
+well as duplicate device attachments. After an internal discussion we came
+up with what I believe is a cleaner fix. Instead of actively checking for
+duplicates we instead detach from any previous domain on attach. From my
+cursory reading of the code this seems to be what the Intel IOMMU driver is
+doing as well.
 
+Moreover we drop the attempt to re-attach the device to its previous IOMMU
+domain on failure. This was fragile, unlikely to help and unexpected for
+calling code. Thanks Jason for the suggestion.
 
-Since this change, I have noticed that the DRM driver on Tegra20 is 
-failing to probe and I am seeing ...
+We can also get rid of struct s390_domain_device entirely if we instead
+thread the list through the attached struct zpci_devs. This saves us from
+having to allocate during attach and gets rid of one level of indirection
+during IOMMU operations.
 
-  tegra-gr2d 54140000.gr2d: failed to attach to domain: -19
-  drm drm: failed to initialize 54140000.gr2d: -19
+Additionally 3 more fixes have been added in v3 that weren't in v2 of this
+series. One is for a potential situation where the aperture of a domain
+could shrink and leave invalid translations. The next one fixes an off by
+one in checking validity of an IOVA and the last one fixes a wrong value
+for pgsize_bitmap.
 
-Bisect points to this change and reverting it fixes it. Let me know if 
-you have any thoughts.
+In v4 we also add a patch changing to the map_pages()/unmap_pages()
+interface in order to prevent a performance regression due to the
+pgsize_bitmap change.
 
-Cheers
-Jon
+*Note*:
+This series is against the s390 features branch[1] which already contains
+the bus_next field removal that was part of v2.
+
+It is also available as a branch with the GPG signed tag
+s390_iommu_fixes_v5 on my niks/linux.git on git.kernel.org[2].
+
+*Open Question*:
+Which tree should this go via?
+
+Best regards,
+Niklas
+
+Changes since v4:
+- Add patch to change to the map_pages()/unmap_pages() API to prevent
+  a performance regression from the pgsize_bitmap change (Robin)
+- In patch 1 unregister IOAT on error (Matt)
+- Turn the aperture check in attach into a WARN_ON() in patch 3 (Jason)
+
+Changes since v3:
+- Drop s390_domain from __s390_iommu_detach_device() (Jason)
+- WARN_ON() mismatched domain in s390_iommu_detach_device() (Jason)
+- Use __s390_iommu_detach_device() in s390_iommu_release_device() (Jason)
+- Make aperture check resistant against overflow (Jason)
+
+Changes since v2:
+- The patch removing the unused bus_next field has been spun out and
+  already made it into the s390 feature branch on git.kernel.org
+- Make __s390_iommu_detach_device() return void (Jason)
+- Remove the re-attach on failure dance as it is unlikely to help
+  and complicates debug and recovery (Jason)
+- Ignore attempts to detach from domain that is not the active one
+- Add patch to fix potential shrinking of the aperture and use
+  reserved ranges per device instead of the aperture to respect
+  IOVA range restrictions (Jason)
+- Add a fix for an off by one error on checking an IOVA against
+  the aperture
+- Add a fix for wrong pgsize_bitmap
+
+Changes since v1:
+- After patch 3 we don't have to search in the devices list on detach as
+  we alreadz have hold of the zpci_dev (Jason)
+- Add a WARN_ON() if somehow ended up detaching a device from a domain that
+  isn't the device's current domain.
+- Removed the iteration and list delete from s390_domain_free() instead
+  just WARN_ON() when we're freeing without having detached
+- The last two points should help catching sequencing errors much more
+  quickly in the future.
+
+[0] https://lore.kernel.org/linux-iommu/20220831201236.77595-1-mjrosato@linux.ibm.com/
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/s390/linux.git/
+[2] https://git.kernel.org/pub/scm/linux/kernel/git/niks/linux.git
+
+Niklas Schnelle (6):
+  iommu/s390: Fix duplicate domain attachments
+  iommu/s390: Get rid of s390_domain_device
+  iommu/s390: Fix potential s390_domain aperture shrinking
+  iommu/s390: Fix incorrect aperture check
+  iommu/s390: Fix incorrect pgsize_bitmap
+  iommu/s390: Implement map_pages()/unmap_pages() instead of
+    map()/unmap()
+
+ arch/s390/include/asm/pci.h |   1 +
+ drivers/iommu/s390-iommu.c  | 221 +++++++++++++++++-------------------
+ 2 files changed, 107 insertions(+), 115 deletions(-)
 
 -- 
-nvpublic
+2.34.1
+
