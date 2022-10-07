@@ -1,44 +1,44 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6845EA5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3814DEA3
 	for <iommu@lists.linux.dev>; Fri,  7 Oct 2022 09:50:20 +0000 (UTC)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2979IcK5006691;
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2979nodW039002;
 	Fri, 7 Oct 2022 09:50:13 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=k+I5WhOS16FY7irvxpfSnfTvyCVCLvAaTyU/MnPz2/Y=;
- b=iAs/gUAwVK/BUwf4DfzSV29WP+nfJbsu7d+GIH3703iZ8ORUoZDLmUf3sXkFDUD5hmDe
- dAv8b+MgvVJpjA1EivolbYwqczeFGdI4xBlAzvNvkGmKZhGs7Ww2vunGREPx3Zln9ft9
- DgP4f/fW2hqR5LFGct3I5Vthwxg2tFvzJTn4czZvvVK2wbylOBnKnJ3MAG57PgbMUnC/
- R8KJ2YL1isYpbsVz7xRnc7hobs0N0So09PddwZEsZJYs6XpdA76N6DI2RC2h7iUP3m8j
- bL1IxOAPQJpktZzvx3KzWd2N0rmOel/qB7AXmjbG5ZoxwAMetHEMOwK5pqFHpO9lqVMo yQ== 
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3k2hc2gsbd-1
+ bh=eiv4fa9LQYx/DHFqzsQokv7TRRJkGniPK07zniwRYrU=;
+ b=W2/T7OW2S92uGX/WyiLm/3dULAY38BX5+F8ncJNChD8LXUiQ+9lklqy4HZWuPlvMg2GD
+ c/yJtDYEBgm5QEj3Z6S8OQnihzqP/FcYB9qFxr9DesNS5CNyLQ51xeYPnTnKERDAShYB
+ YUcU+aCq6CE5h21GzphX2EHWY+09lD3NnSsP9jNb7emdaPOoh3oCpG3lbIkxwy9PG/1I
+ VgCNQbR1woEiblGhDLt4zXVMVRZ8MQVzr+Vb0D+0ZDumcEP/dks15w50hXrUmrMNIyPs
+ WTju04mN3LpRd3J8CbwgLEPT7eRrymZmiITdYrHtHWuRUcJxFlgqXkdF4+ZtUcHjSq0P 3A== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3k2hty80bj-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 07 Oct 2022 09:50:13 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-	by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2979ZqIO012610;
+	Fri, 07 Oct 2022 09:50:12 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+	by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2979aUof006710;
 	Fri, 7 Oct 2022 09:50:11 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-	by ppma01fra.de.ibm.com with ESMTP id 3jxd68x6gm-1
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+	by ppma04ams.nl.ibm.com with ESMTP id 3jxd698dqn-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 07 Oct 2022 09:50:11 +0000
+	Fri, 07 Oct 2022 09:50:10 +0000
 Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-	by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2979o8WE3473978
+	by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2979o71p918132
 	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 7 Oct 2022 09:50:08 GMT
+	Fri, 7 Oct 2022 09:50:07 GMT
 Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 5EDB2A4055;
-	Fri,  7 Oct 2022 09:50:08 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id DBA43A4051;
+	by IMSVA (Postfix) with ESMTP id 53D99A4040;
 	Fri,  7 Oct 2022 09:50:07 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id D83ECA4051;
+	Fri,  7 Oct 2022 09:50:06 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
 	by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-	Fri,  7 Oct 2022 09:50:07 +0000 (GMT)
+	Fri,  7 Oct 2022 09:50:06 +0000 (GMT)
 From: Niklas Schnelle <schnelle@linux.ibm.com>
 To: Matthew Rosato <mjrosato@linux.ibm.com>,
         Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev
@@ -47,9 +47,9 @@ Cc: linux-s390@vger.kernel.org, borntraeger@linux.ibm.com, hca@linux.ibm.com,
         agordeev@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
         will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v6 4/6] iommu/s390: Fix incorrect aperture check
-Date: Fri,  7 Oct 2022 11:50:03 +0200
-Message-Id: <20221007095005.2017126-5-schnelle@linux.ibm.com>
+Subject: [PATCH v6 2/6] iommu/s390: Get rid of s390_domain_device
+Date: Fri,  7 Oct 2022 11:50:01 +0200
+Message-Id: <20221007095005.2017126-3-schnelle@linux.ibm.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221007095005.2017126-1-schnelle@linux.ibm.com>
 References: <20221007095005.2017126-1-schnelle@linux.ibm.com>
@@ -61,40 +61,161 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: IUk6XtExZIj4tAYOXSjRIt3c33xd6Cyg
-X-Proofpoint-ORIG-GUID: IUk6XtExZIj4tAYOXSjRIt3c33xd6Cyg
+X-Proofpoint-GUID: O1AxhZpoAGfNlHVOh7MDM_Dntdoht2AA
+X-Proofpoint-ORIG-GUID: O1AxhZpoAGfNlHVOh7MDM_Dntdoht2AA
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
  definitions=2022-10-06_05,2022-10-06_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxlogscore=999
- phishscore=0 malwarescore=0 impostorscore=0 suspectscore=0 mlxscore=0
- spamscore=0 bulkscore=0 adultscore=0 lowpriorityscore=0 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2209130000
- definitions=main-2210070058
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 bulkscore=0
+ suspectscore=0 clxscore=1015 spamscore=0 impostorscore=0 adultscore=0
+ phishscore=0 lowpriorityscore=0 mlxlogscore=999 malwarescore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2210070058
 
-The domain->geometry.aperture_end specifies the last valid address treat
-it as such when checking if a DMA address is valid.
+The struct s390_domain_device serves the sole purpose as list entry for
+the devices list of a struct s390_domain. As it contains no additional
+information besides a list_head and a pointer to the struct zpci_dev we
+can simplify things and just thread the device list through struct
+zpci_dev directly. This removes the need to allocate during domain
+attach and gets rid of one level of indirection during mapping
+operations.
 
-Reviewed-by: Pierre Morel <pmorel@linux.ibm.com>
 Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
 Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 ---
- drivers/iommu/s390-iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+v5->v6:
+- Drop Jason's R-b as he didn't explicitly extend it for
+  the rollback change
 
+ arch/s390/include/asm/pci.h |  1 +
+ drivers/iommu/s390-iommu.c  | 37 +++++++------------------------------
+ 2 files changed, 8 insertions(+), 30 deletions(-)
+
+diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
+index 108e732d7b14..15f8714ca9b7 100644
+--- a/arch/s390/include/asm/pci.h
++++ b/arch/s390/include/asm/pci.h
+@@ -117,6 +117,7 @@ struct zpci_bus {
+ struct zpci_dev {
+ 	struct zpci_bus *zbus;
+ 	struct list_head entry;		/* list of all zpci_devices, needed for hotplug, etc. */
++	struct list_head iommu_list;
+ 	struct kref kref;
+ 	struct hotplug_slot hotplug_slot;
+ 
 diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index 65835a5ca328..a4c6a1a63fef 100644
+index 96173cfee324..399c31b97f65 100644
 --- a/drivers/iommu/s390-iommu.c
 +++ b/drivers/iommu/s390-iommu.c
-@@ -208,7 +208,7 @@ static int s390_iommu_update_trans(struct s390_domain *s390_domain,
+@@ -29,11 +29,6 @@ struct s390_domain {
+ 	spinlock_t		list_lock;
+ };
+ 
+-struct s390_domain_device {
+-	struct list_head	list;
+-	struct zpci_dev		*zdev;
+-};
+-
+ static struct s390_domain *to_s390_domain(struct iommu_domain *dom)
+ {
+ 	return container_of(dom, struct s390_domain, domain);
+@@ -87,21 +82,13 @@ static void s390_domain_free(struct iommu_domain *domain)
+ static void __s390_iommu_detach_device(struct zpci_dev *zdev)
+ {
+ 	struct s390_domain *s390_domain = zdev->s390_domain;
+-	struct s390_domain_device *domain_device, *tmp;
+ 	unsigned long flags;
+ 
+ 	if (!s390_domain)
+ 		return;
+ 
+ 	spin_lock_irqsave(&s390_domain->list_lock, flags);
+-	list_for_each_entry_safe(domain_device, tmp, &s390_domain->devices,
+-				 list) {
+-		if (domain_device->zdev == zdev) {
+-			list_del(&domain_device->list);
+-			kfree(domain_device);
+-			break;
+-		}
+-	}
++	list_del_init(&zdev->iommu_list);
+ 	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
+ 
+ 	zpci_unregister_ioat(zdev, 0);
+@@ -114,17 +101,12 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
+ {
+ 	struct s390_domain *s390_domain = to_s390_domain(domain);
+ 	struct zpci_dev *zdev = to_zpci_dev(dev);
+-	struct s390_domain_device *domain_device;
+ 	unsigned long flags;
+ 	int cc, rc = 0;
+ 
+ 	if (!zdev)
+ 		return -ENODEV;
+ 
+-	domain_device = kzalloc(sizeof(*domain_device), GFP_KERNEL);
+-	if (!domain_device)
+-		return -ENOMEM;
+-
+ 	if (zdev->s390_domain)
+ 		__s390_iommu_detach_device(zdev);
+ 	else if (zdev->dma_table)
+@@ -132,10 +114,8 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
+ 
+ 	cc = zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
+ 				virt_to_phys(s390_domain->dma_table));
+-	if (cc) {
+-		rc = -EIO;
+-		goto out_free;
+-	}
++	if (cc)
++		return -EIO;
+ 	zdev->dma_table = s390_domain->dma_table;
+ 
+ 	spin_lock_irqsave(&s390_domain->list_lock, flags);
+@@ -151,9 +131,8 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
+ 		rc = -EINVAL;
+ 		goto out_unregister;
+ 	}
+-	domain_device->zdev = zdev;
+ 	zdev->s390_domain = s390_domain;
+-	list_add(&domain_device->list, &s390_domain->devices);
++	list_add(&zdev->iommu_list, &s390_domain->devices);
+ 	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
+ 
+ 	return 0;
+@@ -161,8 +140,6 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
+ out_unregister:
+ 	zpci_unregister_ioat(zdev, 0);
+ 	zdev->dma_table = NULL;
+-out_free:
+-	kfree(domain_device);
+ 
+ 	return rc;
+ }
+@@ -201,10 +178,10 @@ static int s390_iommu_update_trans(struct s390_domain *s390_domain,
+ 				   phys_addr_t pa, dma_addr_t dma_addr,
+ 				   size_t size, int flags)
+ {
+-	struct s390_domain_device *domain_device;
+ 	phys_addr_t page_addr = pa & PAGE_MASK;
+ 	dma_addr_t start_dma_addr = dma_addr;
+ 	unsigned long irq_flags, nr_pages, i;
++	struct zpci_dev *zdev;
+ 	unsigned long *entry;
  	int rc = 0;
  
- 	if (dma_addr < s390_domain->domain.geometry.aperture_start ||
--	    dma_addr + size > s390_domain->domain.geometry.aperture_end)
-+	    (dma_addr + size - 1) > s390_domain->domain.geometry.aperture_end)
- 		return -EINVAL;
+@@ -229,8 +206,8 @@ static int s390_iommu_update_trans(struct s390_domain *s390_domain,
+ 	}
  
- 	nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
+ 	spin_lock(&s390_domain->list_lock);
+-	list_for_each_entry(domain_device, &s390_domain->devices, list) {
+-		rc = zpci_refresh_trans((u64) domain_device->zdev->fh << 32,
++	list_for_each_entry(zdev, &s390_domain->devices, iommu_list) {
++		rc = zpci_refresh_trans((u64)zdev->fh << 32,
+ 					start_dma_addr, nr_pages * PAGE_SIZE);
+ 		if (rc)
+ 			break;
 -- 
 2.34.1
 
