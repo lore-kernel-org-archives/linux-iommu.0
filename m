@@ -1,134 +1,114 @@
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 033E02903
-	for <iommu@lists.linux.dev>; Mon, 10 Oct 2022 12:54:21 +0000 (UTC)
-Received: by mail-wr1-f50.google.com with SMTP id bk15so16863267wrb.13
-        for <iommu@lists.linux.dev>; Mon, 10 Oct 2022 05:54:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=vZ4L3eGmqKYAclKSwyEel3UxVWUej6QJpYaCconox5E=;
-        b=rgdAIwlkpvnub0RaiX4fefvk5wCulG8vp0BP+WcJrCUzbBspaWp2GtmBMF2ij7UeLB
-         Vp5SkCMp1ZSqvsLBcT4POcX4auHkHhOq7FB0ywft1Pa/l7hKPZ+xAzRMLY6gPjWTVmA8
-         xg6qQ+G78hQntai3/+GlX8xjMlTDLggQNzZLhq/MikBC1eNglLYCGniTx9YWcfTmpEMI
-         BnWGwWk0ysejp7Jm80d3IzfhR6Sa65sJSw+Ed18KeOvxIf+WX0CQS4j0RsvYxNFruZXH
-         IrLWWQz5qw+moFKHLqvUzIyQ636wdqjcZ/l4qvx0+BS5yg6A1E/UbL96D6wQaMYh7aSC
-         CN8A==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81A422903
+	for <iommu@lists.linux.dev>; Mon, 10 Oct 2022 13:28:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1665408527;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Tu/9/xvN5zRnM6x1NCxFnRYbnKf1X6xX6Lbr0GDsjhU=;
+	b=BqQcd6xTDOAn3EsBBWw6ZNMF7D/IO4RBljI2sfAka5pwlQTAvUufxrLc+ECNsrJx+vDv20
+	yovDn9LRfHSyz/D6shdOl0j9vqhIH2pXdKtOD2Les7Gqc4Ar8RRLf5SfYzdwehb75DLLKE
+	KbjZ75HjJ64vvqiJb52+URIX2OVRRjw=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-399-rDLL4-w0N3ugB0e49pW0gw-1; Mon, 10 Oct 2022 09:28:46 -0400
+X-MC-Unique: rDLL4-w0N3ugB0e49pW0gw-1
+Received: by mail-wr1-f69.google.com with SMTP id s5-20020adf9785000000b0022e1af0e7e8so2780322wrb.11
+        for <iommu@lists.linux.dev>; Mon, 10 Oct 2022 06:28:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=vZ4L3eGmqKYAclKSwyEel3UxVWUej6QJpYaCconox5E=;
-        b=5Id+HOTj8Uyg35xLkvq902mwulb4Kk7C16qYLjzvXX91gT1AXlwpZv8jcMw0qrkJUV
-         0vWksAqOOifiDUrzi4pvtlV9lpI7cBXwJtII0qLEX2j1F9YLNjOv0xVRURox3UkcWN0I
-         cVXe942hQuGuVaSMOzZSo/A0LTsHY29o8rPQ3xLcgePpESS2Kpc6xXrY78665+i0oScb
-         hnPazChdmPf4iyz1aS8ZL+QrPejOojfwCSToQ3L7NxM/v0ZW0v4gts74Yl8jOYN7cWjM
-         uk7+CriaOiyOriqkt/bxGoC9hYqxIUxm4A9PcTv97HuZDbOIJ957bORhLtblFv5Eoao2
-         jrlQ==
-X-Gm-Message-State: ACrzQf0Ro3ytpGH+s9TflronUh51RXy7Ai5FDjVNAZpOXptxsGgwHuDB
-	2mPc60pzhn1osZ0rmuAfRZaDDF7NGR/xA17C
-X-Google-Smtp-Source: AMsMyM6jeFIQqxlWum39mAdlhTnkevmmnxlbs7XGdKPUqz8uSEIoAoVBL7h0xE0OUAXWWR6OqM8iUQ==
-X-Received: by 2002:a5d:674f:0:b0:22e:3d59:cf0f with SMTP id l15-20020a5d674f000000b0022e3d59cf0fmr11451686wrw.304.1665406459794;
-        Mon, 10 Oct 2022 05:54:19 -0700 (PDT)
-Received: from [127.0.1.1] (158.22.5.93.rev.sfr.net. [93.5.22.158])
-        by smtp.googlemail.com with ESMTPSA id v24-20020a1cf718000000b003a6125562e1sm9767020wmh.46.2022.10.10.05.54.18
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Tu/9/xvN5zRnM6x1NCxFnRYbnKf1X6xX6Lbr0GDsjhU=;
+        b=cLAFPctizt2ORFdMYFPaZVmBioCC1g+gCD0Nj84CHyeUTZpJYXP2ErG860y6ZA0geF
+         JNJKqlNJeQg0Ny8pzNE3/s0a3KF3BIli1DzRxmLgRDAQSrsDzKBmUs2AAoLaexJM2yOr
+         tqEcWe6ls+4tMjWN/n30ey1GgtTrIMzSId/fll47ur23mmgbRs88dth39CvqHbhHD5Mb
+         FsqyKUPpVm188Xx+/E34esAKm1MYHRFLvBRhc09ljo0Kexym+WIrPHdvsBPshV0NIIgQ
+         vhKa+wK+T1WCBZG77uPsuv9Kv6VwBm7XHMz3TYYYI7HmaKtDXAEDIlgDTODW7T3rNnz3
+         7GEA==
+X-Gm-Message-State: ACrzQf2wTGfoat/rtqZjg/4xBqOI7zd9mo4T79VDalRz2Q6HlK510IPL
+	6XXSvgn2zEEDuaEDh1u4PR8eLkaooGKuJ/ertJC6uxUqcKDiBonvvWKRUfO/k+Zn8z4fziSHm24
+	q6ScWz99ZflyU6g==
+X-Received: by 2002:adf:e381:0:b0:22e:335b:7c60 with SMTP id e1-20020adfe381000000b0022e335b7c60mr11821899wrm.332.1665408524200;
+        Mon, 10 Oct 2022 06:28:44 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM7/0LP8Qs6PMr/jzDn3tJOHR0DMWRXW3hH/hyz8Ex9y1dVUZ6i62nxkXiyQj6c+5P4Fw6gmfQ==
+X-Received: by 2002:adf:e381:0:b0:22e:335b:7c60 with SMTP id e1-20020adfe381000000b0022e335b7c60mr11821886wrm.332.1665408524030;
+        Mon, 10 Oct 2022 06:28:44 -0700 (PDT)
+Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
+        by smtp.gmail.com with ESMTPSA id c8-20020a05600c0a4800b003b4fdbb6319sm17848852wmq.21.2022.10.10.06.28.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Oct 2022 05:54:19 -0700 (PDT)
-From: Alexandre Mergnat <amergnat@baylibre.com>
-Date: Mon, 10 Oct 2022 14:54:09 +0200
-Subject: [PATCH v3 3/3] iommu/mediatek: add support for MT8365 SoC
+        Mon, 10 Oct 2022 06:28:43 -0700 (PDT)
+Date: Mon, 10 Oct 2022 14:28:42 +0100
+From: Aaron Tomlin <atomlin@redhat.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Charlotte Tan <charlotte@extrahop.com>, iommu@lists.linux.dev,
+	yian.chen@intel.com, dwmw2@infradead.org, joro@8bytes.org,
+	junichi.nomura@nec.com, Will Mortensen <will@extrahop.com>
+Subject: Re: [PATCH] iommu/vt-d: allow NVS regions in arch_rmrr_sanity_check()
+Message-ID: <20221010132842.7ptjknebkvhsiqyf@ava.usersys.com>
+X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
+X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
+References: <20220929044449.32515-1-charlotte@extrahop.com>
+ <b03d2ce8-739a-ad53-9cb2-ff09c4ce6f2d@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20221001-iommu-support-v3-3-c7b3059b0d16@baylibre.com>
-References: <20221001-iommu-support-v3-0-c7b3059b0d16@baylibre.com>
-In-Reply-To: <20221001-iommu-support-v3-0-c7b3059b0d16@baylibre.com>
-To: Matthias Brugger <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
- Rob Herring <robh+dt@kernel.org>, Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc: iommu@lists.linux.dev, AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- Fabien Parent <fparent@baylibre.com>, Alexandre Mergnat <amergnat@baylibre.com>,
- Markus Schneider-Pargmann <msp@baylibre.com>, Amjad Ouled-Ameur <aouledameur@baylibre.com>,
- linux-mediatek@lists.infradead.org
-X-Mailer: b4 0.10.1
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1965; i=amergnat@baylibre.com;
- h=from:subject:message-id; bh=cCyHI5RY2bhm2xuqZZiDh/1knZLz2wwqAtcDhxPnQwM=;
- b=owEBbQKS/ZANAwAKAStGSZ1+MdRFAcsmYgBjRBX2YK800J3vnj2EsuGIXwS9BVe1DVrvkohAErig
- dhZktjuJAjMEAAEKAB0WIQQjG17X8+qqcA5g/osrRkmdfjHURQUCY0QV9gAKCRArRkmdfjHURe/sEA
- CqnQVlGZAtTO0mYLapEecmZMAnuNd/teKEJA8sNJsOZRnbBG0YUkf6TAt8LhIl+iuHeAM2CKth1FHx
- CJ1Zq4fdOAHjzYHc4z2qtkH0lhTGqqFv5xqz6NLWf8w8/MzplFOiyTlSAPJY7Ombcs6ZCoZiF4fSOh
- 7NfKlgQbESF62kYa1+JVBHZCnFljcMVtJpDL+BrtJd+ec9G+tU0sg1O/ojEyr1NgmJI3c41HVBIm06
- MG6HmMXV0m2uCkj+bxbbhN4qrAaX/ZkmC5YKk349IxlG9/Rp2F4jpl0FD3HRC7WUCH2lhvFSKNLROj
- 7uVkGx5NeZv2/xjKLaoJzUfy4ylMkNxaJDSXI5TLFwl0R/DbY6JAyluQ+/SAp88dLQpnTLVcv2CL1S
- ov1LgNIq5KsSfhhSj9CknfVJ1PS5X5xNtwtEvPc0E8LvvUDmOuY5I/q6TMOYEi/kA4j6cBJ5eYbRNX
- 6JowXJLr7o9SRuqEgWmMacKQnsNwpE40pJqfNLJFhYESCIrvQwZ9TwCLXLgkSFJqW7YFYqiwXyael9
- FZ9jPNXcb090aJKlNKujeQw2Y0jBzRRMcBjLpuq4NzAVJCHnY14IJ/EGK2O1drZr2k7KavWCBOC2VQ
- s4I8rbJJE4AmsYYN8WMAOJKWU+x7cSujgWPZs0VBausgpWGQrlaoQkCjRawg==
-X-Developer-Key: i=amergnat@baylibre.com; a=openpgp;
- fpr=231B5ED7F3EAAA700E60FE8B2B46499D7E31D445
+In-Reply-To: <b03d2ce8-739a-ad53-9cb2-ff09c4ce6f2d@linux.intel.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 
-From: Fabien Parent <fparent@baylibre.com>
+On Mon 2022-10-10 20:03 +0800, Baolu Lu wrote:
+> On 2022/9/29 12:44, Charlotte Tan wrote:
+> > diff --git a/arch/x86/include/asm/iommu.h b/arch/x86/include/asm/iommu.h
+> > index 0bef44d30a27..0e99cc1aec08 100644
+> > --- a/arch/x86/include/asm/iommu.h
+> > +++ b/arch/x86/include/asm/iommu.h
+> > @@ -25,8 +25,10 @@ arch_rmrr_sanity_check(struct acpi_dmar_reserved_memory *rmrr)
+> >   {
+> >   	u64 start = rmrr->base_address;
+> >   	u64 end = rmrr->end_address + 1;
+> > +	int entry_type;
+> > -	if (e820__mapped_all(start, end, E820_TYPE_RESERVED))
+> > +	entry_type = e820__get_entry_type(start, end);
+> > +	if ((entry_type == E820_TYPE_RESERVED) || (entry_type == E820_TYPE_NVS))
 
-Add IOMMU support for MT8365 SoC.
+Hi Baolu,
 
-Signed-off-by: Fabien Parent <fparent@baylibre.com>
-Reviewed-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
-Tested-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
-Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Signed-off-by: Alexandre Mergnat <amergnat@baylibre.com>
----
- drivers/iommu/mtk_iommu.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+> Thank you for the patch.
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 35e9731c3441..50ee1f833c2b 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -170,6 +170,7 @@ enum mtk_iommu_plat {
- 	M4U_MT8186,
- 	M4U_MT8192,
- 	M4U_MT8195,
-+	M4U_MT8365,
- };
- 
- struct mtk_iommu_iova_region {
-@@ -1528,6 +1529,17 @@ static const struct mtk_iommu_plat_data mt8195_data_vpp = {
- 			   {4, MTK_INVALID_LARBID, MTK_INVALID_LARBID, MTK_INVALID_LARBID, 6}},
- };
- 
-+static const struct mtk_iommu_plat_data mt8365_data = {
-+	.m4u_plat	= M4U_MT8365,
-+	.flags		= RESET_AXI | HAS_INT_ID_PORT_WIDTH_6,
-+	.inv_sel_reg	= REG_MMU_INV_SEL_GEN1,
-+	.banks_num	= 1,
-+	.banks_enable	= {true},
-+	.iova_region	= single_domain,
-+	.iova_region_nr	= ARRAY_SIZE(single_domain),
-+	.larbid_remap	= {{0}, {1}, {2}, {3}, {4}, {5}}, /* Linear mapping. */
-+};
-+
- static const struct of_device_id mtk_iommu_of_ids[] = {
- 	{ .compatible = "mediatek,mt2712-m4u", .data = &mt2712_data},
- 	{ .compatible = "mediatek,mt6779-m4u", .data = &mt6779_data},
-@@ -1540,6 +1552,7 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
- 	{ .compatible = "mediatek,mt8195-iommu-infra", .data = &mt8195_data_infra},
- 	{ .compatible = "mediatek,mt8195-iommu-vdo",   .data = &mt8195_data_vdo},
- 	{ .compatible = "mediatek,mt8195-iommu-vpp",   .data = &mt8195_data_vpp},
-+	{ .compatible = "mediatek,mt8365-m4u", .data = &mt8365_data},
- 	{}
- };
- 
+Thank you for the review.
 
+> scripts/checkpatch.pl complains:
+> 
+> CHECK: Unnecessary parentheses around 'entry_type == E820_TYPE_RESERVED'
+> #71: FILE: arch/x86/include/asm/iommu.h:31:
+> +	if ((entry_type == E820_TYPE_RESERVED) || (entry_type == E820_TYPE_NVS))
+> 
+> CHECK: Unnecessary parentheses around 'entry_type == E820_TYPE_NVS'
+> #71: FILE: arch/x86/include/asm/iommu.h:31:
+> +	if ((entry_type == E820_TYPE_RESERVED) || (entry_type == E820_TYPE_NVS))
+> 
+> No need to send a new version. I will remove the unnecessary parentheses
+> (if you agree).
+
+Yes please.
+
+> I will also refine the commit message to avoid long lines.
+
+Much appreciated!
+
+
+Kind regards,
 -- 
-b4 0.10.1
+Aaron Tomlin
+
