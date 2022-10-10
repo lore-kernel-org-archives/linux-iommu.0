@@ -1,268 +1,138 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4E5D928F4
-	for <iommu@lists.linux.dev>; Mon, 10 Oct 2022 12:19:17 +0000 (UTC)
-Received: from 8bytes.org (p549ad5ad.dip0.t-ipconnect.de [84.154.213.173])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id EAC8C220973;
-	Mon, 10 Oct 2022 14:12:44 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1665403965;
-	bh=iEvih1XIJJdDiOuca7zdNJ+qZN0iXc03t2fguOP/Trw=;
-	h=Date:From:To:Cc:Subject:From;
-	b=vApuTtYOOiCkvwRm1dSQEA0s9+xziQrP+Us7HPNB25imA9GmRH2k+yPPaNtLAtpnp
-	 eYe9mpH1f3kz//wXMAph914+2pp5819oFMDEGA/9mRcGtFXaQULiwZN+/nz6ekjVkw
-	 Tj+9hSNwkESTY3gs49rPBuPVbdQoRz/GesbqavDzyXSTEMd6fYx4Pp1FwgQ7bnylCW
-	 QISkVU8FL3Bna8bLOHex0P/64GzKTUwXofGu4mfkpOXyGTqpLIVb7k1aDq0aE8FXET
-	 oVYa74UnmVcl2ZOGcEYpFqvb23JgVR69zEUgDssgdtQHba/qkS6n7aIOE1dFwGpeP9
-	 Ko3TMRrsLrDyw==
-Date: Mon, 10 Oct 2022 14:12:43 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: [git pull] IOMMU Updates for Linux v6.1
-Message-ID: <Y0QMOy7g2nADghrJ@8bytes.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63DF428FC
+	for <iommu@lists.linux.dev>; Mon, 10 Oct 2022 12:54:18 +0000 (UTC)
+Received: by mail-wr1-f52.google.com with SMTP id u10so16917917wrq.2
+        for <iommu@lists.linux.dev>; Mon, 10 Oct 2022 05:54:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:message-id:date:from:content-transfer-encoding:mime-version
+         :subject:from:to:cc:subject:date:message-id:reply-to;
+        bh=Lojkaj6JUR8NyKzpyCgf7aYSFB/ui7IP7hjT3HzGmaA=;
+        b=2ZVTfASKsVZRl4/2uxi09rzItvsxEmUaSC6u4Utu/B/bHQB90LPh3Wdj1roBQdV2us
+         dfWvNaLI16Bg1Djx1qzyPkXWIMN8XwBCChGgnBFQ8xFfaZDIxoIT122x5mtJcDziLXLs
+         U3DP2l/8XvMF+FDqz93DqxmgpIE2edQNVidX0P6X04cyEcX5FXPAWYHFUkXDr0EUoqkj
+         VbVHTe2/W5VVWC2LaodYp78M5UdITPrFhbCy7cKOAGaPuXNGLpjpewKfM0ns2Dt5xco2
+         tF/XwTI4VbqPcXTBOHThczPRDzcW1gh+6BCBeTEwmofEBo/RA22GhQ/Ler4YtUBnJ8Jv
+         hIoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:message-id:date:from:content-transfer-encoding:mime-version
+         :subject:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Lojkaj6JUR8NyKzpyCgf7aYSFB/ui7IP7hjT3HzGmaA=;
+        b=VMdG6/F0YWcsrWM64K6h4qEvsvV78V+TLZB1gPzDCsLihVb+TcZqH0KxXita6IdmrF
+         sHn/l/tWahdzzGcjKe1sxVIXZA817m8z7KY592GNXZ0mFjO/9aRino3o6WAphBtNYLhV
+         S5VPEA9icpp/ZEloCngWQdq3lCUrjHybYnfAjCXuQuE25quZQGRYzG2M1XLkPni3Bevh
+         TAvlafY4F8rJiAVgXy3I3otXc1DyAbuuAHXlWpSRlaubUi2MyN4vIptmxgBntK32nxgs
+         j49MTBkkbxnuUQMdJhR4gOOGu0B1Alg6/a2BVLsBpvP6REUuKJ2oHsIYcxEqSFU7Pr2Z
+         3kig==
+X-Gm-Message-State: ACrzQf2WNJGGrFKOOvSX5poLZE3hAyEJO8zKyOHhOQ4fwIwxuzL1iH58
+	mnrKPLS5SbsmZoG2pP4nAW6g1EacOVpABw==
+X-Google-Smtp-Source: AMsMyM4XniwUCqXkT/kyXAQIx7tOlQsLDaDX9ILnMkLAe9rrtg3Kg5KL/zu92SdukYFKEL6OAoBQCg==
+X-Received: by 2002:a05:6000:1087:b0:22e:3731:e6d with SMTP id y7-20020a056000108700b0022e37310e6dmr12059977wrw.614.1665406455931;
+        Mon, 10 Oct 2022 05:54:15 -0700 (PDT)
+Received: from [127.0.1.1] (158.22.5.93.rev.sfr.net. [93.5.22.158])
+        by smtp.googlemail.com with ESMTPSA id v24-20020a1cf718000000b003a6125562e1sm9767020wmh.46.2022.10.10.05.54.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Oct 2022 05:54:15 -0700 (PDT)
+Subject: [PATCH v3 0/3] iommu/mediatek: Add mt8365 iommu support
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="Xq+2gmiaDifvryq8"
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-b4-tracking: H4sIAO4VRGMC/32OwarCMBBFf0WyNhKnabWu/A9x0UlubaBtJLEFkf67897uPbSr4V44585LZaSArE
+ 6bl0qYQw5xlFBsN8p1zXiDDl6yIkO0N2avQxyGSefpfo/poVtraneAqS0qJQw3GZpTM7pOqHHqeym7
+ kB8xPX83ZpJz+aabSRtd1cwHX3ljqDxz8+wDJ+xcHH4G1kDPLVoCwK7+C16FnIvV5UIE7lgwWjgi+A 8CuyqwIoCr5IfSgkv+J1iW5Q3CS3zibQEAAA==
+From: Alexandre Mergnat <amergnat@baylibre.com>
+Date: Mon, 10 Oct 2022 14:54:06 +0200
+Message-Id: <20221001-iommu-support-v3-0-c7b3059b0d16@baylibre.com>
+To: Matthias Brugger <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+ Rob Herring <robh+dt@kernel.org>, Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc: iommu@lists.linux.dev, AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ Fabien Parent <fparent@baylibre.com>, Alexandre Mergnat <amergnat@baylibre.com>,
+ Markus Schneider-Pargmann <msp@baylibre.com>, Amjad Ouled-Ameur <aouledameur@baylibre.com>,
+ linux-mediatek@lists.infradead.org
+X-Mailer: b4 0.10.1
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2223; i=amergnat@baylibre.com;
+ h=from:subject:message-id; bh=XUk8/lOWPvVlbar9Sj5jb7E2IzZ+DCs5b4DX9AOqtU8=;
+ b=owEBbQKS/ZANAwAKAStGSZ1+MdRFAcsmYgBjRBX2CvJiV0u11Odk4wfnnsc0QlUSNAIRzMiBf9FW
+ lPHO9ESJAjMEAAEKAB0WIQQjG17X8+qqcA5g/osrRkmdfjHURQUCY0QV9gAKCRArRkmdfjHURc8kEA
+ CmDE5S4KSKuL571DM65xTKRR7BeNwAxstvQDxxvLvkU3wxrntz5KQSdxjrxvnsLywQmGQswkytyGg1
+ TDK+cLya1B+U+Dui/pRnIEryMbPPmyMkaQ/6M16zOjQqP70m82NS/SXJ90k7aoG7p/hGRbVdqwLLpB
+ GA7T8yaiLZ+6ph6fgWRDyeqvQoFKtW80qznkbGXubfEM2V2pCB14v3tX6Q9mnH31aRJgSvEXemi32v
+ bkbemnbBnEAELnqJqddn3f/pRh0eoVbO9+ft6kJDOGMUnGKWmmUDCEesf+DrpCUVt23zF7lH15tEsx
+ RecUB8GI+1SBeEW7D7JurBJAn7P96WHbtdI8QGS0xQ4VV6cWg8iF5G7x9tcTMkKlg3jQevEnUqUB/w
+ NrGP/81wNRc6bTv4Q/7KrzhtD+qNHJbdYkHNn5Aa6hgYFNyyiB+35PmpOECbEvLBJdJpt5o6D8weKC
+ EngaDSNXu5UNwvncvRBP8Mv/SWvn/rRE69gDGjUp7nPUuB79kfBOawwQCflozcTNAW8NKaEIfi+6BS
+ 6sy+b9wk4eB1meYPcEbrqzXNLeXvviaJQPYqdWh8prbW8sGg11bsHWYNgi5BisDRUaPHoVlO3iWLkd
+ 2qhYVeRhp6uqQ0PDtcq2Pm76E9pddyliIq3p2PgWWsStwSzt6OuXxNPzv1xg==
+X-Developer-Key: i=amergnat@baylibre.com; a=openpgp;
+ fpr=231B5ED7F3EAAA700E60FE8B2B46499D7E31D445
 
+Hi,
 
---Xq+2gmiaDifvryq8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+This series contains patches related to the support of mt8365 iommu.
+Thanks for your feedback so far.
 
-Hi Linus,
+Regards,
+Alex
 
-The following changes since commit f76349cf41451c5c42a99f18a9163377e4b364ff:
+Changes in v3:
+- Rename "mt8365-larb-port.h" to "mediatek,mt8365-larb-port.h"
+- Rework the macros which retrieve larb/port ID to improve human readability
+- Link to v2: https://lore.kernel.org/r/20221001-iommu-support-v2-0-dbfef2eeebc9@baylibre.com
 
-  Linux 6.0-rc7 (2022-09-25 14:01:02 -0700)
+Changes in v2:
+- Rebase.
+- Change M4U_PORT_APU_READ & M4U_PORT_APU_WRITE port to avoid display
+  conflict in larb0. These definitions are used for vpu0 device node.
+- Add dual license.
+- Retitle commit.
+- Rename to int_id_port_width for more detail.
+- Fix typo.
+- Set banks_enable and banks_num in mt8365_data to fix kernel panic at boot.
+- Link to v1 - https://lore.kernel.org/lkml/20220530180328.845692-1-fparent@baylibre.com/
 
-are available in the Git repository at:
+To: Yong Wu <yong.wu@mediatek.com>
+To: Joerg Roedel <joro@8bytes.org>
+To: Will Deacon <will@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+To: Rob Herring <robh+dt@kernel.org>
+To: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+To: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: iommu@lists.linux.dev
+Cc: linux-mediatek@lists.infradead.org
+Cc: devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: Fabien Parent <fparent@baylibre.com>
+Cc: Markus Schneider-Pargmann <msp@baylibre.com>
+Cc: Amjad Ouled-Ameur <aouledameur@baylibre.com>
+Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Alexandre Mergnat <amergnat@baylibre.com>
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v6.1
+---
+Fabien Parent (3):
+      dt-bindings: iommu: mediatek: add binding documentation for MT8365 SoC
+      iommu/mediatek: add support for 6-bit encoded port IDs
+      iommu/mediatek: add support for MT8365 SoC
 
-for you to fetch changes up to 38713c6028a3172c4c256512c3fbcfc799fe2d43:
+ .../devicetree/bindings/iommu/mediatek,iommu.yaml  |  2 +
+ drivers/iommu/mtk_iommu.c                          | 30 +++++++-
+ .../dt-bindings/memory/mediatek,mt8365-larb-port.h | 90 ++++++++++++++++++++++
+ 3 files changed, 120 insertions(+), 2 deletions(-)
+---
+base-commit: 11082343e3bf2953a937509f0316cabf69dbf908
+change-id: 20221001-iommu-support-f409c7e094e6
 
-  Merge branches 'apple/dart', 'arm/mediatek', 'arm/omap', 'arm/smmu', 'virtio', 'x86/vt-d', 'x86/amd' and 'core' into next (2022-09-26 15:52:31 +0200)
-
-----------------------------------------------------------------
-IOMMU Updates for Linux v6.1:
-
-Including:
-
-	- Removal of the bus_set_iommu() interface which became
-	  unnecesary because of IOMMU per-device probing
-
-	- Make the dma-iommu.h header private
-
-	- Intel VT-d changes from Lu Baolu:
-	  - Decouple PASID and PRI from SVA
-	  - Add ESRTPS & ESIRTPS capability check
-	  - Cleanups
-
-	- Apple DART support for the M1 Pro/MAX SOCs
-
-	- Support for AMD IOMMUv2 page-tables for the DMA-API layer. The
-	  v2 page-tables are compatible with the x86 CPU page-tables.
-	  Using them for DMA-API prepares support for hardware-assisted
-	  IOMMU virtualization
-
-	- Support for MT6795 Helio X10 M4Us in the Mediatek IOMMU driver
-
-	- Some smaller fixes and cleanups
-
-----------------------------------------------------------------
-Andy Shevchenko (2):
-      iommu: Do not dereference fwnode in struct device
-      iommu/virtio: Do not dereference fwnode in struct device
-
-AngeloGioacchino Del Regno (3):
-      dt-bindings: mediatek: Add bindings for MT6795 M4U
-      iommu/mediatek: Introduce new flag TF_PORT_TO_ADDR_MT8173
-      iommu/mediatek: Add support for MT6795 Helio X10 M4Us
-
-Dan Carpenter (1):
-      iommu/omap: Fix buffer overflow in debugfs
-
-Janne Grunau (1):
-      iommu/io-pgtable: Move Apple DART support to its own file
-
-Jean-Philippe Brucker (1):
-      dt-bindings: iommu: arm,smmu-v3: Relax order of interrupt names
-
-Joerg Roedel (3):
-      Merge branch 'iommu/fixes' into core
-      iommu/virtio: Fix compile error with viommu_capable()
-      Merge branches 'apple/dart', 'arm/mediatek', 'arm/omap', 'arm/smmu', 'virtio', 'x86/vt-d', 'x86/amd' and 'core' into next
-
-John Garry (3):
-      iova: Remove some magazine pointer NULL checks
-      iova: Remove magazine BUG_ON() checks
-      iova: Remove iovad->rcaches check in iova_rcache_get()
-
-Lu Baolu (5):
-      iommu/vt-d: Remove unnecessary SVA data accesses in page fault path
-      iommu/vt-d: Decouple PASID & PRI enabling from SVA
-      iommu/vt-d: Remove pasid_set_eafe()
-      iommu/vt-d: Avoid unnecessary global IRTE cache invalidation
-      iommu/vt-d: Avoid unnecessary global DMA cache invalidation
-
-Matthew Rosato (1):
-      iommu/s390: Fail probe for non-PCI devices
-
-Robin Murphy (22):
-      iommu: Retire iommu_capable()
-      iommu/arm-smmu: Report IOMMU_CAP_CACHE_COHERENCY better
-      iommu/io-pgtable-arm: Remove iommu_dev==NULL special case
-      iommu/vt-d: Handle race between registration and device probe
-      iommu/amd: Handle race between registration and device probe
-      iommu: Always register bus notifiers
-      iommu: Move bus setup to IOMMU device registration
-      iommu/amd: Clean up bus_set_iommu()
-      iommu/arm-smmu: Clean up bus_set_iommu()
-      iommu/arm-smmu-v3: Clean up bus_set_iommu()
-      iommu/dart: Clean up bus_set_iommu()
-      iommu/exynos: Clean up bus_set_iommu()
-      iommu/ipmmu-vmsa: Clean up bus_set_iommu()
-      iommu/mtk: Clean up bus_set_iommu()
-      iommu/omap: Clean up bus_set_iommu()
-      iommu/tegra-smmu: Clean up bus_set_iommu()
-      iommu/virtio: Clean up bus_set_iommu()
-      iommu: Clean up bus_set_iommu()
-      iommu/dma: Clean up Kconfig
-      iommu/dma: Move public interfaces to linux/iommu.h
-      iommu/dma: Make header private
-      iommu/iova: Fix module config properly
-
-Suravee Suthikulpanit (4):
-      iommu/amd: Refactor amd_iommu_domain_enable_v2 to remove locking
-      iommu/amd: Update sanity check when enable PRI/ATS for IOMMU v1 table
-      iommu/amd: Add support for Guest IO protection
-      iommu/amd: Add support for using AMD IOMMU v2 page table for DMA-API
-
-Sven Peter (3):
-      iommu/io-pgtable: Add DART subpage protection support
-      iommu/io-pgtable-dart: Add DART PTE support for t6000
-      iommu: dart: Support t6000 variant
-
-Vasant Hegde (9):
-      iommu/amd/io-pgtable: Implement map_pages io_pgtable_ops callback
-      iommu/amd/io-pgtable: Implement unmap_pages io_pgtable_ops callback
-      iommu/amd: Add map/unmap_pages() iommu_domain_ops callback support
-      iommu/amd: Initial support for AMD IOMMU v2 page table
-      iommu/amd: Add command-line option to enable different page table
-      iommu/amd: Free domain id in error path
-      iommu/amd: Free domain ID after domain_flush_pages
-      iommu/amd: Remove outdated comment
-      iommu/amd: Fix sparse warning
-
-Yi Liu (1):
-      iommu/vt-d: Rename cap_5lp_support to cap_fl5lp_support
-
-Yuan Can (2):
-      iommu: Remove comment of dev_has_feat in struct doc
-      iommu: Remove duplicate ida_free in iommu_group_alloc
-
- Documentation/admin-guide/kernel-parameters.txt    |   2 +
- .../devicetree/bindings/iommu/arm,smmu-v3.yaml     |  15 +-
- .../devicetree/bindings/iommu/mediatek,iommu.yaml  |   4 +
- MAINTAINERS                                        |   3 +-
- arch/arm64/Kconfig                                 |   1 -
- arch/arm64/mm/dma-mapping.c                        |   2 +-
- drivers/acpi/viot.c                                |   1 -
- drivers/gpu/drm/exynos/exynos_drm_dma.c            |   1 -
- drivers/iommu/Kconfig                              |  16 +-
- drivers/iommu/Makefile                             |   1 +
- drivers/iommu/amd/Kconfig                          |   1 -
- drivers/iommu/amd/Makefile                         |   2 +-
- drivers/iommu/amd/amd_iommu.h                      |   1 -
- drivers/iommu/amd/amd_iommu_types.h                |  10 +-
- drivers/iommu/amd/init.c                           |  47 ++-
- drivers/iommu/amd/io_pgtable.c                     |  76 ++--
- drivers/iommu/amd/io_pgtable_v2.c                  | 415 ++++++++++++++++++
- drivers/iommu/amd/iommu.c                          | 164 ++++---
- drivers/iommu/apple-dart.c                         |  57 ++-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        |  62 +--
- drivers/iommu/arm/arm-smmu/arm-smmu.c              |  97 +----
- drivers/iommu/arm/arm-smmu/qcom_iommu.c            |   6 +-
- drivers/iommu/dma-iommu.c                          |  18 +-
- drivers/iommu/dma-iommu.h                          |  42 ++
- drivers/iommu/exynos-iommu.c                       |   9 -
- drivers/iommu/fsl_pamu_domain.c                    |   6 +-
- drivers/iommu/intel/Kconfig                        |   6 +-
- drivers/iommu/intel/cap_audit.c                    |   4 +-
- drivers/iommu/intel/iommu.c                        |  95 ++---
- drivers/iommu/intel/iommu.h                        |   7 +-
- drivers/iommu/intel/irq_remapping.c                |   6 +-
- drivers/iommu/intel/pasid.c                        |  12 +-
- drivers/iommu/intel/svm.c                          |  62 +--
- drivers/iommu/io-pgtable-arm.c                     |  71 +---
- drivers/iommu/io-pgtable-dart.c                    | 469 +++++++++++++++++++++
- drivers/iommu/io-pgtable.c                         |   4 +
- drivers/iommu/iommu.c                              | 154 +++----
- drivers/iommu/iova.c                               |  13 +-
- drivers/iommu/ipmmu-vmsa.c                         |  35 +-
- drivers/iommu/msm_iommu.c                          |   2 -
- drivers/iommu/mtk_iommu.c                          |  45 +-
- drivers/iommu/mtk_iommu_v1.c                       |  13 +-
- drivers/iommu/omap-iommu-debug.c                   |   6 +-
- drivers/iommu/omap-iommu.c                         |   6 -
- drivers/iommu/rockchip-iommu.c                     |   2 -
- drivers/iommu/s390-iommu.c                         |  15 +-
- drivers/iommu/sprd-iommu.c                         |   5 -
- drivers/iommu/sun50i-iommu.c                       |   2 -
- drivers/iommu/tegra-smmu.c                         |  29 +-
- drivers/iommu/virtio-iommu.c                       |  32 +-
- drivers/irqchip/irq-gic-v2m.c                      |   2 +-
- drivers/irqchip/irq-gic-v3-its.c                   |   2 +-
- drivers/irqchip/irq-gic-v3-mbi.c                   |   2 +-
- drivers/irqchip/irq-ls-scfg-msi.c                  |   2 +-
- drivers/vfio/vfio_iommu_type1.c                    |   1 -
- include/dt-bindings/memory/mt6795-larb-port.h      |  95 +++++
- include/linux/dma-iommu.h                          |  93 ----
- include/linux/io-pgtable.h                         |   3 +
- include/linux/iommu.h                              |  47 ++-
- include/linux/iova.h                               |   2 +-
- 60 files changed, 1501 insertions(+), 902 deletions(-)
- create mode 100644 drivers/iommu/amd/io_pgtable_v2.c
- create mode 100644 drivers/iommu/dma-iommu.h
- create mode 100644 drivers/iommu/io-pgtable-dart.c
- create mode 100644 include/dt-bindings/memory/mt6795-larb-port.h
- delete mode 100644 include/linux/dma-iommu.h
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
---Xq+2gmiaDifvryq8
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmNEDDsACgkQK/BELZcB
-GuMiAg/+LAsK9z9382/5CXy3gEcTqNs/OV6Rq0XGNVj7VBdFX1BzIajGwgeExMCt
-lDBUEC3aNQ5sJG/n1ZF5i+7B2GedxUAkD4tsQG+7gF9rv00msoSuhM9UQH20MyGo
-XWjOSRW6hF0tNeJGUjZ9X6/llbYGcEG7+EUAOrNWRP+a29K9C1WEFaEAEj3uP5W2
-OT3W4bvNkYBDwtgMkfIRV3sHC70dsMgzhOVzP4HvGRW/EMTtF/uoBwjI7buFMh0S
-gQsAJxeP5Mb3j3e0D7JJoKPACMOb0J30XCxp/i3SM2sn9WHM4pjAcxugCTBKWf+w
-LqXlwmJ0h/JirVanLJLoBUUOa+KcZjR7CoitWl2gdPpf4Ffpi3pPASgU/wVKWTeI
-b1Jv5/PKimQbQ0ulK/AjUnDn1SJY9NOYPfH6tLL6pBGuPYQlNj/oB7X0/9opqKw0
-8HQ2m3HPQm1W5mRciowSGxIOsOndUUyjaaoY7UbRpciJluwMr5KpKsv9+B2Y51L0
-QQY0HuZB5gmizHmSBNll9UySkN/X8XEWqpy2lqjxNBGj0p6uUdxfL1nP5wut512e
-dl4uLjW0l7tC9mSjX2SFAnXNMtjBjySGxNf/W3K7vOxd5lp1Zi1iYTwzFZOb23ft
-Gn9z0w1y9IUjoi9EB1Rlhx/vvipTMaSiI0SXgLkZsk4jjxsN2VE=
-=2zZl
------END PGP SIGNATURE-----
-
---Xq+2gmiaDifvryq8--
+Best regards,
+-- 
+Alexandre Mergnat <amergnat@baylibre.com>
