@@ -1,130 +1,90 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00E461FD1
-	for <iommu@lists.linux.dev>; Mon, 10 Oct 2022 14:54:21 +0000 (UTC)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29AEdjPo031877;
-	Mon, 10 Oct 2022 14:54:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=L7vbpjL0TMLWywl16FAWOBgRkWnzBIh7e3GJcuFmRn8=;
- b=T9N6pCRMuobg2WQBxUXWEBUhsp0LilMAJ7OQeV4nNEqSXaTEJzCOeo+aIuQfS37TxGIb
- Ag8q36ZcNDmklebYbABr4qcV6ym+ssmCcNpz3lSh+Rat4Jef49XiNrYWFULhPejJkHx9
- Hjuwq2WcO1nL+i5q6f7iRlC43W5Q0doWuadiIGVMSoQvu9iBtSXPvHn7VVdTxEjC7PPM
- IWL6WLgzXCx8bvtQeSelrsDHsJUrdX9NMVC+EKeDioaBP583DwINYknGttZd7qIsA2xD
- jM94sg+9BGCgMOYIOuZo7i/1fYweJUyjgm9E5cHqowZ3KN6DrxzcHYcuZrI82UPpobms 9g== 
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3k3k7vg5bw-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 10 Oct 2022 14:54:13 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-	by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29AEoU25006762;
-	Mon, 10 Oct 2022 14:54:12 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-	by ppma04ams.nl.ibm.com with ESMTP id 3k30u9ay09-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 10 Oct 2022 14:54:11 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-	by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29AEsdAM26345970
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 10 Oct 2022 14:54:39 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id B570811C04C;
-	Mon, 10 Oct 2022 14:54:08 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id D83FD11C04A;
-	Mon, 10 Oct 2022 14:54:07 +0000 (GMT)
-Received: from sig-9-145-29-39.uk.ibm.com (unknown [9.145.29.39])
-	by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-	Mon, 10 Oct 2022 14:54:07 +0000 (GMT)
-Message-ID: <838e7df1128e52ac5229307dde6690c2e26b830c.camel@linux.ibm.com>
-Subject: Re: [PATCH v6 0/6] iommu/s390: Fixes related to attach and aperture
- handling
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Matthew Rosato <mjrosato@linux.ibm.com>,
-        Pierre Morel
- <pmorel@linux.ibm.com>, iommu@lists.linux.dev
-Cc: linux-s390@vger.kernel.org, borntraeger@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        agordeev@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
-        will@kernel.org, Robin Murphy <robin.murphy@arm.com>,
-        linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>
-Date: Mon, 10 Oct 2022 16:54:07 +0200
-In-Reply-To: <20221007095005.2017126-1-schnelle@linux.ibm.com>
-References: <20221007095005.2017126-1-schnelle@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF5602F47
+	for <iommu@lists.linux.dev>; Mon, 10 Oct 2022 14:55:41 +0000 (UTC)
+Received: by mail-qt1-f179.google.com with SMTP id ay9so6632509qtb.0
+        for <iommu@lists.linux.dev>; Mon, 10 Oct 2022 07:55:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=UwsU1fn/1SfZtcqL1Zfll3O9hBAK2GV/zHS0qbctt9A=;
+        b=vFfv1QykuX1R6T4Pv3s7wuWLMBDo5sYCAxir3KGVHEjCi0mdzbZew2vk7h7L4rix3k
+         Rf9SYZNWSKxwJzDt0MinCCWk2PmF6aLaMXl9clOTRhhkSAK0KWc7C0aO7U54037TBtBp
+         4WFqQ2HLFcob6z8Ev57+FwoAg7h4Bm28VhWB77XX8IRaKjbKaqyq77FLWnJ0q2FteKKn
+         psQcN8rXlsCo7oPYfisgs70YCbhs13QHkG2xCSvUGtoeOKERdZN72m1KwwMTeyBq5B82
+         tCIPlwoZiF7YhC9lP40IqRPJAuxZrd15FL1yLQZqZtt6u0BAhCS62zqGejhDSUBQCqv9
+         rcIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=UwsU1fn/1SfZtcqL1Zfll3O9hBAK2GV/zHS0qbctt9A=;
+        b=3dSHa7mVp3JSjlYskCqx9qCaaxW819wwwViCCeL5vWXOEgtEEQCdaCUoB6pHFA5/At
+         /VG8pHUL7JjvnfaOSoO6kwZUoI98ktrjKB4VrkvaoMhCMWduHkEjNWTKQoS3S+GxnJzM
+         zczup/8SsE8nEVJ0ZZyMk1KAHec0MD8yNRtLT70UgziEjmcCFoq3vkoDER8RZMdM8WTC
+         wd/2rxr4e1+85FAS0ufcWXR+FudC6x3l8W0GlAi0QCRrR+pcK8lo40S7F6Xu/rXhPeY3
+         WGy0I5FbMBvOAmZtCx4y3Vusub4mxnoAYFYcB5/5Xr6lgUKDzmu1WRWgngYzn8/dkvEz
+         Lw5g==
+X-Gm-Message-State: ACrzQf1r5KmOilvx4/6ojN8BOvrKoxV1jXCCZoQ/OB977VtYKQalRFWt
+	WhJcBL5LFiO65rg6MW5dV8mJ/g==
+X-Google-Smtp-Source: AMsMyM4wUdL69r1gqbyekIM8UU8nT+Iwy6V3/bmUUZzogalJHEIVc9ztR+cgKUf3W7pIPUCmGyr9vg==
+X-Received: by 2002:a05:622a:13c6:b0:39b:e62:cfc3 with SMTP id p6-20020a05622a13c600b0039b0e62cfc3mr2150730qtk.687.1665413740678;
+        Mon, 10 Oct 2022 07:55:40 -0700 (PDT)
+Received: from [192.168.1.57] (cpe-72-225-192-120.nyc.res.rr.com. [72.225.192.120])
+        by smtp.gmail.com with ESMTPSA id fp3-20020a05622a508300b0039b26d92989sm1083673qtb.86.2022.10.10.07.55.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 Oct 2022 07:55:39 -0700 (PDT)
+Message-ID: <1c10a474-7014-b56e-d2e1-3e422ae82401@linaro.org>
+Date: Mon, 10 Oct 2022 10:55:37 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.2
+Subject: Re: [PATCH v3 1/3] dt-bindings: iommu: mediatek: add binding
+ documentation for MT8365 SoC
+Content-Language: en-US
+To: Alexandre Mergnat <amergnat@baylibre.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>,
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>,
+ Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc: iommu@lists.linux.dev,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, Fabien Parent <fparent@baylibre.com>,
+ Markus Schneider-Pargmann <msp@baylibre.com>,
+ Amjad Ouled-Ameur <aouledameur@baylibre.com>,
+ linux-mediatek@lists.infradead.org
+References: <20221001-iommu-support-v3-0-c7b3059b0d16@baylibre.com>
+ <20221001-iommu-support-v3-1-c7b3059b0d16@baylibre.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221001-iommu-support-v3-1-c7b3059b0d16@baylibre.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: ynFaxQ0lwP8Ij8EpCgTLJPNZqCLUVEoP
-X-Proofpoint-GUID: ynFaxQ0lwP8Ij8EpCgTLJPNZqCLUVEoP
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.528,FMLib:17.11.122.1
- definitions=2022-10-10_08,2022-10-10_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
- lowpriorityscore=0 phishscore=0 adultscore=0 bulkscore=0 mlxlogscore=871
- mlxscore=0 priorityscore=1501 suspectscore=0 impostorscore=0 clxscore=1015
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2210100086
 
-On Fri, 2022-10-07 at 11:49 +0200, Niklas Schnelle wrote:
-> Hi All,
+On 10/10/2022 08:54, Alexandre Mergnat wrote:
+> From: Fabien Parent <fparent@baylibre.com>
 > 
-> This is v5 of a follow up to Matt's recent series[0] where he tackled
-> a race that turned out to be outside of the s390 IOMMU driver itself as
-> well as duplicate device attachments. After an internal discussion we came
-> up with what I believe is a cleaner fix. Instead of actively checking for
-> duplicates we instead detach from any previous domain on attach. From my
-> cursory reading of the code this seems to be what the Intel IOMMU driver is
-> doing as well.
+> Add IOMMU binding documentation for the MT8365 SoC.
 > 
-> Moreover we drop the attempt to re-attach the device to its previous IOMMU
-> domain on failure. This was fragile, unlikely to help and unexpected for
-> calling code. Thanks Jason for the suggestion.
-> 
-> We can also get rid of struct s390_domain_device entirely if we instead
-> thread the list through the attached struct zpci_devs. This saves us from
-> having to allocate during attach and gets rid of one level of indirection
-> during IOMMU operations.
-> 
-> Additionally 3 more fixes have been added in v3 that weren't in v2 of this
-> series. One is for a potential situation where the aperture of a domain
-> could shrink and leave invalid translations. The next one fixes an off by
-> one in checking validity of an IOVA and the last one fixes a wrong value
-> for pgsize_bitmap.
-> 
-> In v4 we also add a patch changing to the map_pages()/unmap_pages()
-> interface in order to prevent a performance regression due to the
-> pgsize_bitmap change.
-> 
-> *Note*:
-> This series is against the s390 features branch[1] which already contains
-> the bus_next field removal that was part of v2.
-> 
-> It is also available as branch iommu_fixes_v6 with the GPG signed tag
-> s390_iommu_fixes_v5 on my niks/linux.git on git.kernel.org[2].
-> 
-> *Open Question*:
-> Which tree should this go via?
+> Signed-off-by: Fabien Parent <fparent@baylibre.com>
+> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> Signed-off-by: Alexandre Mergnat <amergnat@baylibre.com>
+> ---
 
-The conflicting commit that removed the bus_next field from struct
-zpci_dev has now made it into Linus' tree via the s390 pull. So this
-series now applies cleanly on mainline master. Still not sure though
-which tree this would best go into.
 
-> 
-> Best regards,
-> Niklas
-> 
-> 
----8<---
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
+(for DT bindings and memory-controllers)
+
+Best regards,
+Krzysztof
 
