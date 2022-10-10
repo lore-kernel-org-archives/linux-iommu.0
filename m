@@ -1,50 +1,50 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 026E35CAE
-	for <iommu@lists.linux.dev>; Mon, 10 Oct 2022 20:56:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A8060C4347C;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C4D75CB0
+	for <iommu@lists.linux.dev>; Mon, 10 Oct 2022 20:56:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D0862C433D7;
 	Mon, 10 Oct 2022 20:56:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1665435397;
-	bh=G7z+dCtaDjBzuWQSokVn3ODByWmdzT4WQo+I5GOC2DY=;
+	bh=pNF7gHCSe+kJUfSTxqJFJYPIheJegj87NjCPCeAO4gU=;
 	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=bAnEuqBjUb2GtYW2C8cdshfztacHlyXq78dhErAcS4acPx5SlUiIDqJq6UUf6RnP2
-	 tEOEEJg6kcfMq0m3GQ9b4w499bL8xrVHukB/Hb+YP1FpjsJhW/e80aPI8AdxfUxs6I
-	 SlXDN/est5S2CYA3MPhbRVeBs9iYAL+E3P2rK0csxlCI76sNAf88Cqpb1I5MgCfqwk
-	 EAX1Lj0DbSM7/gzO72L7oS6QBk3NyGrIpA1lo7IdrlM5hMHi05wzo4ksUXpimiVT6D
-	 nOKMQ+uJ3JMnacpginrjJqFFTp3j6909CkmsIZ2BzSty3L7okiHU/KN6QZV61sE+ep
-	 ZomNr/+YgqzUA==
+	b=g90bj1KgAVR/7kX1L82GNcSE4Dwys6MZm0xkR+hNfLs47sK4SBsWMvRveEWtbZU++
+	 pF0xjxFAMbycxXG1qqFM5PsTOlEf701wwfaow7T4PBmtS0c0/49L2tQ+raA6wFm0Hz
+	 8tKE2y1P+iJAYKn6YF4OSLI50mx4GZgnoxXW88gJ/JGazpCP2Q60JgW07unRrK8ugd
+	 q4f67Pyf1MopOM1lWICMFasBeTH7c2rZnllPgV0YvXeZFEgHKtcb3SFwkQRWeVNkbK
+	 /eV9WHq3scQsog1c/aB8ExCl3iZ00jSrBOo+bgaIvxFzvzxABoBwkCskkDwCpmU9wz
+	 6EiXC7Q4LPJzw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 982D2E2A05F;
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B9AA7E4D00E;
 	Mon, 10 Oct 2022 20:56:37 +0000 (UTC)
-Subject: Re: [git pull] IOMMU Updates for Linux v6.1
+Subject: Re: [GIT PULL] dma-mapping updates for Linux 6.1
 From: pr-tracker-bot@kernel.org
-In-Reply-To: <Y0QMOy7g2nADghrJ@8bytes.org>
-References: <Y0QMOy7g2nADghrJ@8bytes.org>
+In-Reply-To: <Y0Qx8pLF+vCjItiu@infradead.org>
+References: <Y0Qx8pLF+vCjItiu@infradead.org>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Y0QMOy7g2nADghrJ@8bytes.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v6.1
-X-PR-Tracked-Commit-Id: 38713c6028a3172c4c256512c3fbcfc799fe2d43
+X-PR-Tracked-Message-Id: <Y0Qx8pLF+vCjItiu@infradead.org>
+X-PR-Tracked-Remote: git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.1-2022-10-10
+X-PR-Tracked-Commit-Id: c9cb01369b926a074004714ab9f9b65f75bf3c60
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: f23cdfcd04f7c044ee47dac04484b8d289088776
-Message-Id: <166543539761.11766.7130453309101940100.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: 10b22b533ee2c9621f8ab74cf9df1021b5731dbc
+Message-Id: <166543539775.11766.10643892919315566054.pr-tracker-bot@kernel.org>
 Date: Mon, 10 Oct 2022 20:56:37 +0000
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 
-The pull request you sent on Mon, 10 Oct 2022 14:12:43 +0200:
+The pull request you sent on Mon, 10 Oct 2022 16:53:38 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v6.1
+> git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.1-2022-10-10
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/f23cdfcd04f7c044ee47dac04484b8d289088776
+https://git.kernel.org/torvalds/c/10b22b533ee2c9621f8ab74cf9df1021b5731dbc
 
 Thank you!
 
