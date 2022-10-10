@@ -1,94 +1,79 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC5481FD1
-	for <iommu@lists.linux.dev>; Mon, 10 Oct 2022 14:48:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1665413332;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=tJZd3UB6IhHIssxO7zFtx8iIa2A93YDht882wbaSn9M=;
-	b=ZmR1hHAfaKiVldROk3TFtxUqjhNR+anEWpjoM8+MhSWuM7921CDO8jC+NdbzKnjYSkaVeZ
-	GG16+lejUIJvMOC8oF2g4BdhP72mS3lW0SVoTaskQLHYbINnBUJEr4UxxRwjt6G1xA1Pnr
-	riQGDqBKOzgKHW7xdUwu5Hag2WBXEE4=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-74-eX_a1Le3MxWdSHUyYQIZHA-1; Mon, 10 Oct 2022 10:48:47 -0400
-X-MC-Unique: eX_a1Le3MxWdSHUyYQIZHA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E0460101245C;
-	Mon, 10 Oct 2022 14:48:46 +0000 (UTC)
-Received: from cantor.redhat.com (unknown [10.2.16.57])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id DB323145F94F;
-	Mon, 10 Oct 2022 14:48:45 +0000 (UTC)
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Cc: Lu Baolu <baolu.lu@linux.intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v2] iommu/vt-d: Clean up si_domain in the init_dmars() error path
-Date: Mon, 10 Oct 2022 07:48:42 -0700
-Message-Id: <20221010144842.308890-1-jsnitsel@redhat.com>
-In-Reply-To: <20221010065608.281860-1-jsnitsel@redhat.com>
-References: <20221010065608.281860-1-jsnitsel@redhat.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48D721FD1
+	for <iommu@lists.linux.dev>; Mon, 10 Oct 2022 14:53:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:MIME-Version:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-ID:Content-Description:In-Reply-To:References;
+	bh=OEunLaBEUuho03X0xTAoQPLgk7Xo56Zod+CuZdHS1VQ=; b=DIZyq3bgWGuH4vMaly7/H+lHd4
+	QJ/XHrzu1DPeTAvE+JcjlpyVIqDQIli+5YxiF3YvpIvmYCRfmbKqtVCghJ4Gw8umpWS4ZWrqUDgwO
+	b4ofhCEnuAbmKvCEmMnBVORi0N1JHdipWGXp04io35Isel+qRm8xZq3RzFcoPYfi3o3Fvb1v8gRM5
+	0+qPSteRGBsSIWmNRXVW5xKkDRZejNRE9x4NghMlxIhSMokp70sygGr5F7hgiaLU2ZkgkWOMy2oeu
+	2MYgb+3SU+TKJvnwZETSxWOKBvxVKr8fmKlj1ymZwqaqlXOHF0r1aIHXq1ar5yQREhUQ5eTH97DrW
+	GaZk9M0Q==;
+Received: from [2001:4bb8:18a:723b:fb35:3fe:67e:4563] (helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1ohuA0-001GZn-Qs; Mon, 10 Oct 2022 14:53:41 +0000
+Date: Mon, 10 Oct 2022 16:53:38 +0200
+From: Christoph Hellwig <hch@infradead.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Subject: [GIT PULL] dma-mapping updates for Linux 6.1
+Message-ID: <Y0Qx8pLF+vCjItiu@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.1 on 10.11.54.7
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-A splat from kmem_cache_destroy() was seen with a kernel prior to
-commit ee2653bbe89d ("iommu/vt-d: Remove domain and devinfo mempool")
-when there was a failure in init_dmars(), because the iommu_domain
-cache still had objects. While the mempool code is now gone, there
-still is a leak of the si_domain memory if init_dmars() fails. So
-clean up si_domain in the init_dmars() error path.
+The following changes since commit 521a547ced6477c54b4b0cc206000406c221b4d6:
 
-Cc: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Fixes: 86080ccc223a ("iommu/vt-d: Allocate si_domain in init_dmars()")
-Signed-off-by: Jerry Snitselaar <jsnitsel@redhat.com>
----
-v2: Set si_domain to NULL after the memory it points to has been freed.
+  Linux 6.0-rc6 (2022-09-18 13:44:14 -0700)
 
- drivers/iommu/intel/iommu.c | 5 +++++
- 1 file changed, 5 insertions(+)
+are available in the Git repository at:
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 31bc50e538a3..ecc0b05b2796 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -2400,6 +2400,7 @@ static int __init si_domain_init(int hw)
- 
- 	if (md_domain_init(si_domain, DEFAULT_DOMAIN_ADDRESS_WIDTH)) {
- 		domain_exit(si_domain);
-+		si_domain = NULL;
- 		return -EFAULT;
- 	}
- 
-@@ -3042,6 +3043,10 @@ static int __init init_dmars(void)
- 		disable_dmar_iommu(iommu);
- 		free_dmar_iommu(iommu);
- 	}
-+	if (si_domain) {
-+		domain_exit(si_domain);
-+		si_domain = NULL;
-+	}
- 
- 	return ret;
- }
--- 
-2.37.2
+  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.1-2022-10-10
 
+for you to fetch changes up to c9cb01369b926a074004714ab9f9b65f75bf3c60:
+
+  ARM/dma-mapping: remove the dma_coherent member of struct dev_archdata (2022-10-06 14:31:08 +0200)
+
+----------------------------------------------------------------
+dma-mapping updates for Linux 6.1
+
+ - fix a regression in the ARM dma-direct conversion (Christoph Hellwig)
+ - use memcpy_{from,to}_page (Fabio M. De Francesco)
+ - cleanup the swiotlb MAINTAINERS entry (Lukas Bulwahn)
+ - make SG table pool allocation less fragile (Masahiro Yamada)
+ - don't panic on swiotlb initialization failure (Robin Murphy)
+
+----------------------------------------------------------------
+Christoph Hellwig (2):
+      ARM/dma-mappіng: don't override ->dma_coherent when set from a bus notifier
+      ARM/dma-mapping: remove the dma_coherent member of struct dev_archdata
+
+Fabio M. De Francesco (1):
+      swiotlb: replace kmap_atomic() with memcpy_{from,to}_page()
+
+Lukas Bulwahn (1):
+      MAINTAINERS: merge SWIOTLB SUBSYSTEM into DMA MAPPING HELPERS
+
+Masahiro Yamada (1):
+      lib/sg_pool: change module_init(sg_pool_init) to subsys_initcall
+
+Robin Murphy (1):
+      swiotlb: don't panic!
+
+ MAINTAINERS                   | 17 +++++------------
+ arch/arm/include/asm/device.h |  1 -
+ arch/arm/mm/dma-mapping.c     | 10 ++++++++--
+ kernel/dma/swiotlb.c          | 40 +++++++++++++++++++++++-----------------
+ lib/sg_pool.c                 | 16 ++--------------
+ 5 files changed, 38 insertions(+), 46 deletions(-)
