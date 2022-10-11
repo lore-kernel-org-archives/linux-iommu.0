@@ -1,76 +1,189 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BF26A3207
-	for <iommu@lists.linux.dev>; Tue, 11 Oct 2022 12:16:16 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 19E821042;
-	Tue, 11 Oct 2022 05:16:16 -0700 (PDT)
-Received: from [10.57.4.42] (unknown [10.57.4.42])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0DC093F766;
-	Tue, 11 Oct 2022 05:16:08 -0700 (PDT)
-Message-ID: <9df969a8-08b1-2b5a-3a86-9a1918f1949b@arm.com>
-Date: Tue, 11 Oct 2022 13:15:57 +0100
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2073.outbound.protection.outlook.com [40.107.102.73])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7135915A9
+	for <iommu@lists.linux.dev>; Tue, 11 Oct 2022 12:30:47 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RuC+wVxtCnbV3vT6gpJxIY3pTKliGiabbMEC6GI1Yujvh4+WZTvhyog7jEZEM+0WZ2f4eUemXT6iyERjVVplIpqe0Ggv6KtYQ9z2Qv7XjBKO07BBK1UtW6JG/xtkczVXRuBWKEnRVOnue7oNe2kSQtarCu8HI/P7R8OY1hzs80zMtR2a7yUWKEWZz/BbxuIJbb3i6EIdXt55oJpmewRn1yXjHxGO1VfjfeDnmIXqJAmMdcxhnbQS10P/Qy43cBKDr3/viRl1Iwh6gDGMAO2Vo0kLw97iu7uAj3T1St4wkfJEZiBSweghLL3tl/3Ky2NZHlfT3kNz75P5JDS9OQ/u5A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bIwTs5h6AqURjF8SCmPjybogRLgo1DKC621vzzeasa4=;
+ b=lmmjFsdcqI09GSvwXqlIKcdGpwPRKq5w/4aAijcIUFDUhmvbSC6ixT/mI4UAKmZVzBEPgDUfiqGR4L22lXjt4wOjSkKPL7Wr80xpr5+jgji8SAC+F5Uh28Gz+/zFoWoudrIzz21yq869upNq7oNqIEo9+fUTSEAHreB21GOJ1B4mh/X6AyXtxjvezjyfvBrcS/LylMkZhWRigSxQkY6B3QAItKKbMpw+cC3PDgUdL4CubjnoIUWoQXPh6MowbWdlBen3EamgmOtYklmgFltM8TygOkCBo4wKAZBXsAllZB4rMkbB9qJ1lYxUV7d70UAkS+Vr88cKrtAWwmFeNCWLwA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bIwTs5h6AqURjF8SCmPjybogRLgo1DKC621vzzeasa4=;
+ b=m8cUFw9h4NUeRFswvPS76Lqrka0SGEoy/POSwoEiBaqAi4gJcJ0NklX5wjYXC4i4Ohz0sRB/AMSW/kPmXQVOpDMVRMe/zIYft4u6Mrol2Bd/NpH+jiR+EAusuyIHqvOpyCJQlJLuNbEusPraAVmHNgtsjIQrcW+up48RWgEQE+PA8Uph9Z1OY7pJaKm+j1DkEDJN1B6jGWp4SXGWoHMOP13HGBDlf31mWXGQ6vrX/CbSuZOKUBIbxXgCptGLoNprqT51ZW+9KBlDsvCp+WoRvoTUcz/qTCyybbNqjkAcmY4WQaVbo9vHT4KHjKFBIf5B3F//prFJuGi9LxKRRnxghQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DS0PR12MB7557.namprd12.prod.outlook.com (2603:10b6:8:133::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5654.35; Tue, 11 Oct
+ 2022 12:30:45 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::7a81:a4e4:bb9c:d1de]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::7a81:a4e4:bb9c:d1de%5]) with mapi id 15.20.5676.032; Tue, 11 Oct 2022
+ 12:30:45 +0000
+Date: Tue, 11 Oct 2022 09:30:43 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Steven Sistare <steven.sistare@oracle.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+	Eric Auger <eric.auger@redhat.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	"Rodel, Jorg" <jroedel@suse.de>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+	Cornelia Huck <cohuck@redhat.com>,
+	Daniel Jordan <daniel.m.jordan@oracle.com>,
+	David Gibson <david@gibson.dropbear.id.au>,
+	Eric Farman <farman@linux.ibm.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Jason Wang <jasowang@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	"Martins, Joao" <joao.m.martins@oracle.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+	"Liu, Yi L" <yi.l.liu@intel.com>,
+	Keqian Zhu <zhukeqian1@huawei.com>,
+	"libvir-list@redhat.com" <libvir-list@redhat.com>,
+	Daniel =?utf-8?B?UC4gQmVycmFuZ8Op?= <berrange@redhat.com>,
+	Laine Stump <laine@redhat.com>
+Subject: Re: [PATCH RFC v2 00/13] IOMMUFD Generic interface
+Message-ID: <Y0Vh868qUQPazQlr@nvidia.com>
+References: <0-v2-f9436d0bde78+4bb-iommufd_jgg@nvidia.com>
+ <BN9PR11MB52762909D64C1194F4FCB4528C479@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <d5e33ebb-29e6-029d-aef4-af5c4478185a@redhat.com>
+ <Yyoa+kAJi2+/YTYn@nvidia.com>
+ <20220921120649.5d2ff778.alex.williamson@redhat.com>
+ <YytbiCx3CxCnP6fr@nvidia.com>
+ <2be93527-d71f-9370-2a68-fac0215d4cd4@oracle.com>
+ <YyuZwnksf70lj84L@nvidia.com>
+ <Yz777bJZjTyLrHEQ@nvidia.com>
+ <0745238e-a006-0f9c-a7f2-f120e4df3530@oracle.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0745238e-a006-0f9c-a7f2-f120e4df3530@oracle.com>
+X-ClientProxiedBy: MN2PR07CA0020.namprd07.prod.outlook.com
+ (2603:10b6:208:1a0::30) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.3.2
-Subject: Re: Issue seen since commit f5ff79fddf0e ("dma-mapping: remove
- CONFIG_DMA_REMAP")
-To: Jerry Snitselaar <jsnitsel@redhat.com>, Christoph Hellwig <hch@lst.de>
-Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20221010185739.vgw27m7fpmftly3q@cantor>
-Content-Language: en-GB
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20221010185739.vgw27m7fpmftly3q@cantor>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DS0PR12MB7557:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7ff303b8-c79b-4a43-37a7-08daab846b0d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	aK5xloj3wWg7Lj61NNe/suKyle2pnbgjhzWXBSwuRbZ/03394Jp92TJrNtTcgWlAMghqTfFnjCOvnRWUJNVs5j132TTo+inh+u8jlgYEYfbzhliPCAxP2elInefSaf7AWJByayNcSSKDxc4BB1g4igDFXd1I9JMuW0fdOBee1T/dWybV0R/mr/JrVYWOeSYv5p2b9O4jUACoq1FyK2E8UomsJlHICWjCB91Oxdzyg5Pj4eE8P1yO6OTmLOC/GOeco4B2lUJaXZsf+pXJClM2lPSH9hgZcF2LA0xfoR7LZzPtQazigauBw8dEctRJjnJfuOgFWclrfvURqIo57TheobrVDp6MLcPSrWWYmaNw9/BAcypppkYp8cgbqCotvw3C4VSULvo3nE2DZGqVHqEQnZc/EuVt3gsMmzFEb7lnm1BwChTlbYa2epJAF7ZF0+c24E0PiiMUG/IIVHvPlfSs1rcOpG0aw6c5KgGzgYzRYnNqJ/yphQriU8MTOpIhQH59JJiqE34xXaw2iRysMS4W0wggrOp83W3pHuaYPUbUF0CLvk4yNgprScYWvRW08pc01/ZqPd2GTphW+j8b3fp2dJXWTR2PuFXQYYE190ex2o4+4v7/g8pHlY+Kxdmxu5+dPgAQVcituPYr3Lq1xEz/GuD43VBdyG+N3YVdZGaA1/dn0toeinoCmYfwfzwXo4d9VkbwoA7+1UMwg3Y0uRoa7nQdAn1VKZ9kXcStCpWnLVfJ2f4iEypsQyWZcfOI7tym
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(366004)(136003)(346002)(39860400002)(396003)(451199015)(86362001)(38100700002)(316002)(6916009)(478600001)(36756003)(54906003)(6486002)(8936002)(7416002)(5660300002)(66476007)(66946007)(66556008)(4326008)(2906002)(41300700001)(8676002)(83380400001)(6506007)(2616005)(6512007)(26005)(186003)(41533002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?aMfF0nIaVoUWFoIteL+Q2Bius+311z3Cz/cluPVkZKPJj7t6IQbnfffPT2lP?=
+ =?us-ascii?Q?JjUljI5qmWIe7hp4GTg++davk6Id1/yh7YWZtRvm1GvMzJCD7MzZNG+0pQHA?=
+ =?us-ascii?Q?R69gqRNib3IDCyde736CTBVRVxOk82HwLeRt0oJyq0cjfct3TS+ECqIjFiuF?=
+ =?us-ascii?Q?e6SBxE/tEvPu4Ve9i1IfsM5twNexzCicbD7BEbR5d7prJfcFgoXjWIrdmeUU?=
+ =?us-ascii?Q?fGkVnG0LV2lo+ivhGA9Tt75+O+cKFITVCXKyIfiwGsTEM//W5ywaj5SMn3cm?=
+ =?us-ascii?Q?G+U13jkpImPyITHLNu8/ST9Ydl3tFLYHBZ32D5YFtJrW1C9NlchXP9oUFslB?=
+ =?us-ascii?Q?Hp3UESaW1sHcxiyvGNLenNyMP0pwhqzbcSOdTdUv9ZCMo41zT0aOKZ5lyBLo?=
+ =?us-ascii?Q?dnl8J3KY3PxIZIquBT0DK+hZrPz0OwM4kT1ytbb3bwhvve0cOCvx5QXIm/OW?=
+ =?us-ascii?Q?Y92/gw9TMi8w6VBJho/5WIX08nV0yQZJsa/GMAee9fvQ98IAOguVPWCRAGHm?=
+ =?us-ascii?Q?k54ZD2LobXZTgYxV74vflqBTVRCgYUgiSetoDSl/AvhPimIgcuH6s+squsXl?=
+ =?us-ascii?Q?sUk+Cr6kBCYElq5OSSCqJU30ex4iZdwtdXNwleNXYR3vo1tCDdHrG5Ekd/w4?=
+ =?us-ascii?Q?L8ocv5WF7+EJ7ujm7KKB/fZQCG6EMXhAimIde6aMVSUBg4FOmi7L6emxadwu?=
+ =?us-ascii?Q?/Q/Y6+EEBFICtqWFaGs6mpcX4zGCfbnqVLvzTm0fbU57VS4skcibqzVq3l02?=
+ =?us-ascii?Q?+SlOwO0eYQE3LkVh768L28ma+/yDoBVW5BLwydlfn59+vfGPwUP59E5iDGB3?=
+ =?us-ascii?Q?2+wogzhOZpAUiF138NNcPxxn9Mz3oGUmfGAp19lvVykSs2dKpn4hDLxFbFo5?=
+ =?us-ascii?Q?N7BGZNiskmABu4OZDGyePincYRJTptxn1jgcaE7N8hXdOG72OwD1bc73evoy?=
+ =?us-ascii?Q?ePdB8dgWtApENpuD1DTPS2fK5IF+fWEd07Sw+X3QT7IRUWygXEKJ1rcrYBF6?=
+ =?us-ascii?Q?9nd8mA1aGURi9RRgrnvUafNOinQNR1kuj3TkDvEgD8ejEl2bHC4vFN/xLCEC?=
+ =?us-ascii?Q?KXX0vPa8UR693P40dmDd7mJfdTzEXrKSur1pGGz7cXIZw9eVvf+FFt89OY3H?=
+ =?us-ascii?Q?L5jBfxzfx1/Z8GmeTXc3piIk8JNanfY/K7iBn4wJv8cy5f1rwWB1v1RBW8Su?=
+ =?us-ascii?Q?6vyOPM4g4ZOfIM4m5KN6SwjKis3UrwWAbAjmBXPbSGznPkF/K/0uZAGDAsYp?=
+ =?us-ascii?Q?1vd5Ven0PR5Nh6QPu0LO49WGXTXkA1vwJ2LFlkw+8/w1nEH/7MqlfFyb1EP/?=
+ =?us-ascii?Q?yUEDlkkkERs89EsikjDdlUMXt9sWmZa1/Io1c0opBOUQ1i+wDC4yVFWn9wYS?=
+ =?us-ascii?Q?jTMa5OE1MchGAQp2JU0gGvKTv4xVsZR2GJYWxkDYpx9RQx0xCguv3dlT9hsv?=
+ =?us-ascii?Q?8J9hxR63aIa7p6iz/t46msWUayryx6b9fcRmtR7CLIlVRHDVZzYHr/Iyg1ZC?=
+ =?us-ascii?Q?dW8T55VkPjs+sNU3OmWPekcu2vb4cyD8NyKK+IPWvVElykHC9iVtcpOYRDga?=
+ =?us-ascii?Q?52f0gi6qQB6tGWLlRUs=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7ff303b8-c79b-4a43-37a7-08daab846b0d
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Oct 2022 12:30:44.9063
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dKApZ/bS1BiZ7NQSF9eoLHSXbarDXYg0JgnGrSTKr3Y+vYtt8Txa4vW7GtalqdCe
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7557
 
-On 2022-10-10 19:57, Jerry Snitselaar wrote:
-> I've been looking at an odd issue that shows up with commit
-> f5ff79fddf0e ("dma-mapping: remove CONFIG_DMA_REMAP").  What is being
-> seen is the bnx2fc driver calling dma_free_coherent(), and eventually
-> hits the BUG_ON() in vunmap().  bnx2fc_free_session_resc() does a
-> spin_lock_bh() around the dma_free_coherent() calls, and looking at
-> preempt.h that will trigger in_interrupt() to return positive, so that
-> makes sense. The really odd part is this only happens with the
-> shutdown of the kernel after a system install. Reboots after that do not
-> hit the BUG_ON() in vunmap().
-
-Most likely a difference in IOMMU config/parameters between the 
-installer and the installed kernel - if the latter is defaulting to 
-passthrough then it won't be remapping (assuming the device is coherent).
-
-> I still need to grab a system and try to see what it is doing on the
-> subsequent shutdowns, because it seems to me that any time
-> bnx2fc_free_session_resc() is called it will end up there, unless the
-> allocs are not coming from vmalloc() in the later boots. Between the
-> comments in dma_free_attrs(), and preempt.h, dma_free_coherent()
-> shouldn't be called under a spin_lock_bh(), yes? I think the comments
-> in dma_free_attrs() might be out of date with commit f5ff79fddf0e
-> ("dma-mapping: remove CONFIG_DMA_REMAP") in place since now it is more
-> general that you can land in vunmap(). Also, should that WARN_ON() in
-> dma_free_attrs() trigger as well for the BH disabled case?
+On Mon, Oct 10, 2022 at 04:54:50PM -0400, Steven Sistare wrote:
+> > Do we have a solution to this?
+> > 
+> > If not I would like to make a patch removing VFIO_DMA_UNMAP_FLAG_VADDR
+> > 
+> > Aside from the approach to use the FD, another idea is to just use
+> > fork.
+> > 
+> > qemu would do something like
+> > 
+> >  .. stop all container ioctl activity ..
+> >  fork()
+> >     ioctl(CHANGE_MM) // switch all maps to this mm
+> >     .. signal parent.. 
+> >     .. wait parent..
+> >     exit(0)
+> >  .. wait child ..
+> >  exec()
+> >  ioctl(CHANGE_MM) // switch all maps to this mm
+> >  ..signal child..
+> >  waitpid(childpid)
+> > 
+> > This way the kernel is never left without a page provider for the
+> > maps, the dummy mm_struct belonging to the fork will serve that role
+> > for the gap.
+> > 
+> > And the above is only required if we have mdevs, so we could imagine
+> > userspace optimizing it away for, eg vfio-pci only cases.
+> > 
+> > It is not as efficient as using a FD backing, but this is super easy
+> > to implement in the kernel.
 > 
-> It was also reproduced with a 6.0-rc5 kernel build[1].
+> I propose to avoid deadlock for mediated devices as follows.  Currently, an
+> mdev calling vfio_pin_pages blocks in vfio_wait while VFIO_DMA_UNMAP_FLAG_VADDR
+> is asserted.
+> 
+>   * In vfio_wait, I will maintain a list of waiters, each list element
+>     consisting of (task, mdev, close_flag=false).
+> 
+>   * When the vfio device descriptor is closed, vfio_device_fops_release
+>     will notify the vfio_iommu driver, which will find the mdev on the waiters
+>     list, set elem->close_flag=true, and call wake_up_process for the task.
 
-Looking at the history of that comment I guess I was just trying to 
-capture the most common case to explain the original motivation for 
-having the WARN_ON(). It was never meant to imply that that's the *only* 
-reason, especially since iommu-dma was already well established by that 
-point. That warning has been present on x86 in one form or another for 
-15 years, so I guess the real issue at hand is the difference between 
-irqs_disabled() and in_interrupt()?
+This alone is not sufficient, the mdev driver can continue to
+establish new mappings until it's close_device function
+returns. Killing only existing mappings is racy.
 
-As far as that particular driver goes it looks rather questionable 
-anyway - it seems like a terrible design flaw if a race between 
-consuming things and freeing them can exist at all, but then it looks 
-like bnx2fc_arm_cq() might actually program the hardware to *reuse* a CQ 
-which may already be waiting to be freed as soon as the lock is 
-dropped... that can't be good :/
+I think you are focusing on the one issue I pointed at, as I said, I'm
+sure there are more ways than just close to abuse this functionality
+to deadlock the kernel.
 
-Thanks,
-Robin.
+I continue to prefer we remove it completely and do something more
+robust. I suggested two options.
+
+Jason
