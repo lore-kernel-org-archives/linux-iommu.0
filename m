@@ -1,153 +1,76 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5212A2CA2
-	for <iommu@lists.linux.dev>; Tue, 11 Oct 2022 11:03:46 +0000 (UTC)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29BAvusI009461;
-	Tue, 11 Oct 2022 11:03:33 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=hDAVq3DyAX2CiZcYvnqC7pQdQLMzQ4OcNhupPzYwZVI=;
- b=VFzh7EM0QdwKBgO8G17fTNAZKj7x0wrssbLG7j9qIYfJqM+K4gVHHfykE+5O5zBQsYCY
- VHLSDaVStGAZWRLhu180FTu8F88OJcgQwk5wvtSrxU0tWPbpUszZbtIfLGYYqFwGFXXK
- dCt/YJQ/qGDjsTpb/ESoZvh7/M5oHRj5nwhh/IdQ13m0nTnOgXGCl/FIz4hYPJe8C+67
- PvK47PzJj2Hp8jQULCfRycKQphXolEKcCYZdlnkjqeK4nei9KtFwwH9QI7gsls78t+HG
- L0T5ObaAIes1ZBl9R4/CO3MoDJoJc8SqfqpcInGLuRXeCwyPl7g1JNM973tchacZb5Fm yw== 
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3k576v04x6-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 11 Oct 2022 11:03:32 +0000
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-	by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29BAxYlj021732;
-	Tue, 11 Oct 2022 11:03:31 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-	by ppma06fra.de.ibm.com with ESMTP id 3k30fj34b2-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 11 Oct 2022 11:03:31 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-	by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29BB3R1n3932756
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 11 Oct 2022 11:03:27 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id C94DF11C05C;
-	Tue, 11 Oct 2022 11:03:27 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 5E83711C04A;
-	Tue, 11 Oct 2022 11:03:27 +0000 (GMT)
-Received: from oc-nschnelle.boeblingen.de.ibm.com (unknown [9.155.199.46])
-	by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-	Tue, 11 Oct 2022 11:03:27 +0000 (GMT)
-Message-ID: <fa42d70524225e37bd221f13276d8e75d4d711c5.camel@linux.ibm.com>
-Subject: Re: [PATCH v6 0/6] iommu/s390: Fixes related to attach and aperture
- handling
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Matthew Rosato <mjrosato@linux.ibm.com>,
-        Pierre Morel
- <pmorel@linux.ibm.com>, iommu@lists.linux.dev,
-        linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        agordeev@linux.ibm.com, svens@linux.ibm.com, joro@8bytes.org,
-        will@kernel.org, Robin Murphy
- <robin.murphy@arm.com>,
-        linux-kernel@vger.kernel.org
-Date: Tue, 11 Oct 2022 13:03:27 +0200
-In-Reply-To: <Y0RoXXclqRiMzN9T@nvidia.com>
-References: <20221007095005.2017126-1-schnelle@linux.ibm.com>
-	 <838e7df1128e52ac5229307dde6690c2e26b830c.camel@linux.ibm.com>
-	 <Y0RoXXclqRiMzN9T@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BF26A3207
+	for <iommu@lists.linux.dev>; Tue, 11 Oct 2022 12:16:16 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 19E821042;
+	Tue, 11 Oct 2022 05:16:16 -0700 (PDT)
+Received: from [10.57.4.42] (unknown [10.57.4.42])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0DC093F766;
+	Tue, 11 Oct 2022 05:16:08 -0700 (PDT)
+Message-ID: <9df969a8-08b1-2b5a-3a86-9a1918f1949b@arm.com>
+Date: Tue, 11 Oct 2022 13:15:57 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.2
+Subject: Re: Issue seen since commit f5ff79fddf0e ("dma-mapping: remove
+ CONFIG_DMA_REMAP")
+To: Jerry Snitselaar <jsnitsel@redhat.com>, Christoph Hellwig <hch@lst.de>
+Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20221010185739.vgw27m7fpmftly3q@cantor>
+Content-Language: en-GB
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20221010185739.vgw27m7fpmftly3q@cantor>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: kzmMuTmDm40wcihcNVp-gc5-ZfHH0cB5
-X-Proofpoint-ORIG-GUID: kzmMuTmDm40wcihcNVp-gc5-ZfHH0cB5
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-10-11_07,2022-10-11_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- malwarescore=0 bulkscore=0 suspectscore=0 adultscore=0 mlxlogscore=826
- phishscore=0 mlxscore=0 priorityscore=1501 lowpriorityscore=0
- clxscore=1015 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2210110062
 
-On Mon, 2022-10-10 at 15:45 -0300, Jason Gunthorpe wrote:
-> On Mon, Oct 10, 2022 at 04:54:07PM +0200, Niklas Schnelle wrote:
-> > On Fri, 2022-10-07 at 11:49 +0200, Niklas Schnelle wrote:
-> > > Hi All,
-> > > 
-> > > This is v5 of a follow up to Matt's recent series[0] where he tackled
-> > > a race that turned out to be outside of the s390 IOMMU driver itself as
-> > > well as duplicate device attachments. After an internal discussion we came
-> > > up with what I believe is a cleaner fix. Instead of actively checking for
-> > > duplicates we instead detach from any previous domain on attach. From my
-> > > cursory reading of the code this seems to be what the Intel IOMMU driver is
-> > > doing as well.
-> > > 
-> > > Moreover we drop the attempt to re-attach the device to its previous IOMMU
-> > > domain on failure. This was fragile, unlikely to help and unexpected for
-> > > calling code. Thanks Jason for the suggestion.
-> > > 
-> > > We can also get rid of struct s390_domain_device entirely if we instead
-> > > thread the list through the attached struct zpci_devs. This saves us from
-> > > having to allocate during attach and gets rid of one level of indirection
-> > > during IOMMU operations.
-> > > 
-> > > Additionally 3 more fixes have been added in v3 that weren't in v2 of this
-> > > series. One is for a potential situation where the aperture of a domain
-> > > could shrink and leave invalid translations. The next one fixes an off by
-> > > one in checking validity of an IOVA and the last one fixes a wrong value
-> > > for pgsize_bitmap.
-> > > 
-> > > In v4 we also add a patch changing to the map_pages()/unmap_pages()
-> > > interface in order to prevent a performance regression due to the
-> > > pgsize_bitmap change.
-> > > 
-> > > *Note*:
-> > > This series is against the s390 features branch[1] which already contains
-> > > the bus_next field removal that was part of v2.
-> > > 
-> > > It is also available as branch iommu_fixes_v6 with the GPG signed tag
-> > > s390_iommu_fixes_v5 on my niks/linux.git on git.kernel.org[2].
-> > > 
-> > > *Open Question*:
-> > > Which tree should this go via?
-> > 
-> > The conflicting commit that removed the bus_next field from struct
-> > zpci_dev has now made it into Linus' tree via the s390 pull. So this
-> > series now applies cleanly on mainline master. Still not sure though
-> > which tree this would best go into.
+On 2022-10-10 19:57, Jerry Snitselaar wrote:
+> I've been looking at an odd issue that shows up with commit
+> f5ff79fddf0e ("dma-mapping: remove CONFIG_DMA_REMAP").  What is being
+> seen is the bnx2fc driver calling dma_free_coherent(), and eventually
+> hits the BUG_ON() in vunmap().  bnx2fc_free_session_resc() does a
+> spin_lock_bh() around the dma_free_coherent() calls, and looking at
+> preempt.h that will trigger in_interrupt() to return positive, so that
+> makes sense. The really odd part is this only happens with the
+> shutdown of the kernel after a system install. Reboots after that do not
+> hit the BUG_ON() in vunmap().
+
+Most likely a difference in IOMMU config/parameters between the 
+installer and the installed kernel - if the latter is defaulting to 
+passthrough then it won't be remapping (assuming the device is coherent).
+
+> I still need to grab a system and try to see what it is doing on the
+> subsequent shutdowns, because it seems to me that any time
+> bnx2fc_free_session_resc() is called it will end up there, unless the
+> allocs are not coming from vmalloc() in the later boots. Between the
+> comments in dma_free_attrs(), and preempt.h, dma_free_coherent()
+> shouldn't be called under a spin_lock_bh(), yes? I think the comments
+> in dma_free_attrs() might be out of date with commit f5ff79fddf0e
+> ("dma-mapping: remove CONFIG_DMA_REMAP") in place since now it is more
+> general that you can land in vunmap(). Also, should that WARN_ON() in
+> dma_free_attrs() trigger as well for the BH disabled case?
 > 
-> Arguably it should go through Joerg's iommu tree since it is only in
-> the iommu driver..
-> 
-> If you need it on a branch to share with the s390 tree then send Joerg
-> a PR.
-> 
-> Jason
+> It was also reproduced with a 6.0-rc5 kernel build[1].
 
-Ok makes sense, I don't think I need it on an extra branch and whatever
-is easiest for Joerg is fine. I hope that since all but patch 6 are
-fixes and that one is quite simple that this could maybe still go into
-v6.1.
+Looking at the history of that comment I guess I was just trying to 
+capture the most common case to explain the original motivation for 
+having the WARN_ON(). It was never meant to imply that that's the *only* 
+reason, especially since iommu-dma was already well established by that 
+point. That warning has been present on x86 in one form or another for 
+15 years, so I guess the real issue at hand is the difference between 
+irqs_disabled() and in_interrupt()?
 
-Not sure if Joerg is still waiting on some Acks or R-bs though. I did
-remove yours on patches 1, 2,  and 3 as there were some changes since
-you gave it. I don't think you gave one for patch 4 and patch 6 is new.
-
-I plan on sending further IOMMU improvements and the DMA conversion
-based on this but will just reference it and provide private branches
-on git.kernel.org. I think those will target the next merge window at
-the earliest so that should be fine.
+As far as that particular driver goes it looks rather questionable 
+anyway - it seems like a terrible design flaw if a race between 
+consuming things and freeing them can exist at all, but then it looks 
+like bnx2fc_arm_cq() might actually program the hardware to *reuse* a CQ 
+which may already be waiting to be freed as soon as the lock is 
+dropped... that can't be good :/
 
 Thanks,
-Niklas
-
+Robin.
