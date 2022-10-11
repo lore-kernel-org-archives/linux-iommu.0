@@ -1,53 +1,90 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72AC91FCC
-	for <iommu@lists.linux.dev>; Tue, 11 Oct 2022 06:40:16 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id EC98A67373; Tue, 11 Oct 2022 08:40:10 +0200 (CEST)
-Date: Tue, 11 Oct 2022 08:40:10 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Jerry Snitselaar <jsnitsel@redhat.com>
-Cc: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: Issue seen since commit f5ff79fddf0e ("dma-mapping: remove
- CONFIG_DMA_REMAP")
-Message-ID: <20221011064010.GA3646@lst.de>
-References: <20221010185739.vgw27m7fpmftly3q@cantor>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D773E2564
+	for <iommu@lists.linux.dev>; Tue, 11 Oct 2022 09:55:14 +0000 (UTC)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
+	(No client certificate requested)
+	(Authenticated sender: kholk11)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id C395E6602356;
+	Tue, 11 Oct 2022 10:55:05 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1665482106;
+	bh=zzsgbQRjWMGmMw0Zwxx8nmOt4OzG96FB3zeBCswPAU4=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=k9zNn0cDHZf9/3U+Osh0Wvyqrhe8wq3LHEF3HdzAY7N9+4zdFxmEGc1vmnlERpLdf
+	 g8x9lJlZ4yVJcvwx4Fgu1D66k5OWszccrggKryMmRQM2Fy881D1W9kjjF0SWfVaN5l
+	 b3v+66UkaoYsfjPUA8SMyqcg42ciZsz4psVPIE+LdLIaCq1Q1rYNAqfafZpmnCAppl
+	 gfNFppESg0v303wVuW3pCSN2oPkeXJ1kbX7344XWajKv5um+sNacVl1dKoylCcbQHE
+	 gOxFWrtXQtH79STLYUc3x81qx3wXz89fxc/AiUUwEFr2AeXjtxD2URCtn7jYRgTsFP
+	 POsLfOvUJ5eew==
+Message-ID: <54d3b706-6f5b-d5ec-82ca-45b9f4995d13@collabora.com>
+Date: Tue, 11 Oct 2022 11:55:03 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221010185739.vgw27m7fpmftly3q@cantor>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v3 2/3] iommu/mediatek: add support for 6-bit encoded port
+ IDs
+Content-Language: en-US
+To: Alexandre Mergnat <amergnat@baylibre.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>,
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>,
+ Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ Fabien Parent <fparent@baylibre.com>,
+ Markus Schneider-Pargmann <msp@baylibre.com>,
+ Amjad Ouled-Ameur <aouledameur@baylibre.com>,
+ linux-mediatek@lists.infradead.org
+References: <20221001-iommu-support-v3-0-c7b3059b0d16@baylibre.com>
+ <20221001-iommu-support-v3-2-c7b3059b0d16@baylibre.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20221001-iommu-support-v3-2-c7b3059b0d16@baylibre.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Oct 10, 2022 at 11:57:39AM -0700, Jerry Snitselaar wrote:
-> I still need to grab a system and try to see what it is doing on the
-> subsequent shutdowns, because it seems to me that any time
-> bnx2fc_free_session_resc() is called it will end up there, unless the
-> allocs are not coming from vmalloc() in the later boots. Between the
-> comments in dma_free_attrs(), and preempt.h, dma_free_coherent()
-> shouldn't be called under a spin_lock_bh(), yes?
+Il 10/10/22 14:54, Alexandre Mergnat ha scritto:
+> From: Fabien Parent <fparent@baylibre.com>
+> 
+> Until now the port ID was always encoded as a 5-bit data. On MT8365,
+> the port ID is encoded as a 6-bit data. This requires to add extra
+> macro F_MMU_INT_ID_LARB_ID_EXT, and F_MMU_INT_ID_PORT_ID_EXT in order
+> to support 6-bit encoded port IDs.
+> 
+> Signed-off-by: Fabien Parent <fparent@baylibre.com>
+> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> Signed-off-by: Alexandre Mergnat <amergnat@baylibre.com>
+> ---
+>   drivers/iommu/mtk_iommu.c | 17 +++++++++++++++--
+>   1 file changed, 15 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 5a4e00e4bbbc..35e9731c3441 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -108,8 +108,12 @@
+>   #define F_MMU_INT_ID_SUB_COMM_ID(a)		(((a) >> 7) & 0x3)
+>   #define F_MMU_INT_ID_COMM_ID_EXT(a)		(((a) >> 10) & 0x7)
+>   #define F_MMU_INT_ID_SUB_COMM_ID_EXT(a)		(((a) >> 7) & 0x7)
+> +/* Macro for 5 bits lenght port ID field (default) */
 
-It shouldn't.  And you would have seen the same BUG_ON on many non-x86
-architectures even beforethe commit..
+Typo: s/lenght/length/g
 
-> I think the comments
-> in dma_free_attrs() might be out of date with commit f5ff79fddf0e
-> ("dma-mapping: remove CONFIG_DMA_REMAP") in place since now it is more
-> general that you can land in vunmap().
+>   #define F_MMU_INT_ID_LARB_ID(a)			(((a) >> 7) & 0x7)
+>   #define F_MMU_INT_ID_PORT_ID(a)			(((a) >> 2) & 0x1f)
+> +/* Macro for 6 bits lenght port ID field */
 
-Yes, the comment has always been a bit too specific, and is even more
-so now.
+Same here.
 
-> Also, should that WARN_ON() in
-> dma_free_attrs() trigger as well for the BH disabled case?
+After fixing that:
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-Probably.  And we should probably early return in that case to "just"
-leak the memory instead of crashing the kernel when called from a buggy
-driver.
+
