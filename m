@@ -1,276 +1,208 @@
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A8BE17ED
-	for <iommu@lists.linux.dev>; Wed, 12 Oct 2022 15:29:12 +0000 (UTC)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29CCxJNs031413;
-	Wed, 12 Oct 2022 13:51:04 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2022-7-12;
- bh=EvElvepobACD9OVP98WAthnKcWYkXB+qj31M/mE8YyI=;
- b=QmDP7GEPpVBMzPE9XLxET0Xr4WQV5f32w4h45leyf9EAz2ZK/7KCo6ZesVJDcCKelun5
- y8KfCEq8Yt0Y78ZZj3luXxly8JErdla6023Vo00oX8YeTjqNoi8Z8IVNTKjR9b33ecJq
- M8VyCwZz40KTuG7HgC08zlJ2enVD0bGf2G+/wnU4D+t4GtH3Q1msBi+HgoL+2QyQCmp+
- BNGfsZzsSgY1E+zUtMClf4t8fLZVkKv9s8XN432iGkTetn3BPyRltu6FgftoiMthlbjq
- +1E13EE65/bT8PlYAbh96O960pHou6+ndNjR9Df8s62H1VhkaqjaF+HdTiQDitHYw2OS 6A== 
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3k313a1u7d-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 12 Oct 2022 13:51:03 +0000
-Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 29CDjXUT008639;
-	Wed, 12 Oct 2022 13:51:03 GMT
-Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2108.outbound.protection.outlook.com [104.47.58.108])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3k2yn4ve69-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 12 Oct 2022 13:51:02 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oVTeKvZkZgpp9iynGlwpcbJ6W52um7E/jRT3kFX5Nvzb5IbCkby7zBOxGywFC+xdfWjMBF9L0k+9pnbeXoAtdV6FcjWdu42OFNP3cHNAsCGAmt5+STgBo99RPwz03MZXBMD/1np/kTUE92cC+oCbgbpPv7mRrxWZ/tydCk0p2faN6NmxDTgyOwn9eukoA2/AH1sXbOs4pVQOS7XO14ugi9vQiPBdMAAVY1tkyjTBBYNUISuFwTcDX15X4T4Ifb9C0L5cdCw70p9h1jwL40W4ZX/1RlvSCIk0wrF81xiA4+pkEos1HHGhI3fgdhYuloociILw0J0Ub0Kowf/BuSYbmQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EvElvepobACD9OVP98WAthnKcWYkXB+qj31M/mE8YyI=;
- b=aZx9eeRNv56etJIRRVrXm+SgPCx7Wfy7pJaJffeAzjNA2q7m48+vWUkBFqsfCYAtUKYJ6cScpf4VsQeD4J8L2tSx6VUdgb37kf1zkL9nQnF++ShvPkkq2wkX5AQgqpkwHuneD6Mz5vrFC6kQjOGnrzFuxc7UbjaucJfix1hxicZE9llrG5UWnpCWN+VlYWYIrF4UOZvlm/xLi/3rHoDojdkYbrtFIeEgJylNT4XTJYD8YzV/NO99qvKj33c1TotoSzNrssSb5liVO/zOCdR7N0CGXWx5yRoqhNyB0jl0xaKtZvstIshEQHDTeZz7tLsdeZj+42M4WsOCCKHjhRNtdQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EvElvepobACD9OVP98WAthnKcWYkXB+qj31M/mE8YyI=;
- b=E9rN1bZfMBQ7/7iVSLpV0SVh4+k79oa0qew7s5EyeZOksyJU0TVX9lQPw3whynHr6Gr+6+hu6BDC7nmq/6sQT6YZZ6pt9IDGIIfTyuQtavu88yDOoAAFy4cHjhN3e2h1xh0tZsDs8QcKDG5RxnBGRSL/5GdY09kYSyKMO6aZiCs=
-Received: from BYAPR10MB3240.namprd10.prod.outlook.com (2603:10b6:a03:155::17)
- by PH0PR10MB5730.namprd10.prod.outlook.com (2603:10b6:510:148::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5709.15; Wed, 12 Oct
- 2022 13:50:58 +0000
-Received: from BYAPR10MB3240.namprd10.prod.outlook.com
- ([fe80::8cbc:1639:7698:1528]) by BYAPR10MB3240.namprd10.prod.outlook.com
- ([fe80::8cbc:1639:7698:1528%4]) with mapi id 15.20.5709.015; Wed, 12 Oct 2022
- 13:50:58 +0000
-Message-ID: <f9e6ea0b-ebd9-151e-4cf6-6b208476f863@oracle.com>
-Date: Wed, 12 Oct 2022 09:50:53 -0400
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.2
-Subject: Re: [PATCH RFC v2 00/13] IOMMUFD Generic interface
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        "Tian, Kevin" <kevin.tian@intel.com>, "Rodel, Jorg" <jroedel@suse.de>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Chaitanya Kulkarni <chaitanyak@nvidia.com>,
-        Cornelia Huck
- <cohuck@redhat.com>,
-        Daniel Jordan <daniel.m.jordan@oracle.com>,
-        David Gibson <david@gibson.dropbear.id.au>,
-        Eric Farman <farman@linux.ibm.com>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-        Jason Wang <jasowang@redhat.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        "Martins, Joao" <joao.m.martins@oracle.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        "Michael S. Tsirkin"
- <mst@redhat.com>,
-        Nicolin Chen <nicolinc@nvidia.com>,
-        Niklas Schnelle <schnelle@linux.ibm.com>,
-        Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-        "Liu, Yi L" <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>,
-        "libvir-list@redhat.com" <libvir-list@redhat.com>,
-        =?UTF-8?Q?Daniel_P=2e_Berrang=c3=a9?= <berrange@redhat.com>,
-        Laine Stump <laine@redhat.com>
-References: <d5e33ebb-29e6-029d-aef4-af5c4478185a@redhat.com>
- <Yyoa+kAJi2+/YTYn@nvidia.com>
- <20220921120649.5d2ff778.alex.williamson@redhat.com>
- <YytbiCx3CxCnP6fr@nvidia.com>
- <2be93527-d71f-9370-2a68-fac0215d4cd4@oracle.com>
- <YyuZwnksf70lj84L@nvidia.com> <Yz777bJZjTyLrHEQ@nvidia.com>
- <0745238e-a006-0f9c-a7f2-f120e4df3530@oracle.com>
- <Y0Vh868qUQPazQlr@nvidia.com>
- <634a8f2f-a025-6c74-7e5f-f3d99448dd4a@oracle.com>
- <Y0az8pNrA9jOA79k@nvidia.com>
-From: Steven Sistare <steven.sistare@oracle.com>
-Organization: Oracle Corporation
-In-Reply-To: <Y0az8pNrA9jOA79k@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: DS7PR03CA0171.namprd03.prod.outlook.com
- (2603:10b6:5:3b2::26) To BYAPR10MB3240.namprd10.prod.outlook.com
- (2603:10b6:a03:155::17)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE66D256E
+	for <iommu@lists.linux.dev>; Wed, 12 Oct 2022 16:28:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1665592126;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=p+gbkIPpJZETILryGR8Fofeq2YGGM03Y+tNouTLa6jI=;
+	b=f4vts79pN8JEilTSabQEtdRCvok7qHdhnkpqo13ej3BUyOW7F/o2uodHccok3MJggkw/vL
+	i7GKs3zEjo2OrSaDlTBI4Voq+kJ09EANZ6+Q1gK4rl9nh2zbC+sNPWKobF09/f6pWvY9kn
+	0nxeT0LxJSPIsP65XDIXrZMQOpXPfXY=
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
+ [209.85.166.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-530-epB_nhoCOyeRjUhxhZYY0g-1; Wed, 12 Oct 2022 12:28:45 -0400
+X-MC-Unique: epB_nhoCOyeRjUhxhZYY0g-1
+Received: by mail-io1-f69.google.com with SMTP id q12-20020a5d834c000000b006bc2cb1994aso5792174ior.15
+        for <iommu@lists.linux.dev>; Wed, 12 Oct 2022 09:28:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=p+gbkIPpJZETILryGR8Fofeq2YGGM03Y+tNouTLa6jI=;
+        b=3y6I/s7oO01j4j3O9ubdUE2DTtVR1wOOqkcl2TtRITQoppYNomTErmcFbftdbWfkua
+         +IRnO77klZd6ahvskXRmDYuIvoICyDPVoK7fBazQoko8FQyOg+A8R6u/suzybBWkq//c
+         sZ95mC+BzoOp8d3ceYTAYsK3Ao11+PARgaItj2EipGLfZmf1C+7Q4C25RSEocgLPP9sm
+         /nesdBR8AvziFAwQmE3PXlbsE0Ensrk1YMWNRlGdzqKG5FyTMZv0WOn4toz16ciqRGWD
+         LTWYU4b07TVCrFoF75PPMDroSbNrLUp4nUoYIbgme/4Ml7vi3dGSXR3xceFhTg0Q8U5U
+         YGTQ==
+X-Gm-Message-State: ACrzQf1bjCUJ+bXD9LbxwE8CVgosbMhDu+pYqPKLSwoh0NlEnehvZku/
+	ZMtIuXa2G7RJMx7+iScE6wlyVbeAvMhwExUEoOwQQQyMTsy+jCJ4X5mVwYMEo8e6FJQFErE7qxu
+	NL+UKtNvI5ciYDIQ=
+X-Received: by 2002:a05:6e02:1a6d:b0:2fa:cb68:b9f with SMTP id w13-20020a056e021a6d00b002facb680b9fmr14236262ilv.303.1665592124424;
+        Wed, 12 Oct 2022 09:28:44 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM6iQ0fe5mXyZ0PV6pwrme1wNd48yPmhXptxw1AqtsZDol6VCQ6eqXOpR51/yFoCHwecB2ykvg==
+X-Received: by 2002:a05:6e02:1a6d:b0:2fa:cb68:b9f with SMTP id w13-20020a056e021a6d00b002facb680b9fmr14236240ilv.303.1665592124189;
+        Wed, 12 Oct 2022 09:28:44 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id q22-20020a02b056000000b00356744215f6sm6593901jah.47.2022.10.12.09.28.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Oct 2022 09:28:43 -0700 (PDT)
+Date: Wed, 12 Oct 2022 10:28:41 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, baolu.lu@linux.intel.com,
+ kevin.tian@intel.com, suravee.suthikulpanit@amd.com, vasant.hegde@amd.com,
+ mjrosato@linux.ibm.com, schnelle@linux.ibm.com,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 05/16] iommu: Move bus setup to IOMMU device
+ registration
+Message-ID: <20221012102841.478c2b3b.alex.williamson@redhat.com>
+In-Reply-To: <d342b6f27efb5ef3e93aacaa3012d25386d74866.1660572783.git.robin.murphy@arm.com>
+References: <cover.1660572783.git.robin.murphy@arm.com>
+	<d342b6f27efb5ef3e93aacaa3012d25386d74866.1660572783.git.robin.murphy@arm.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BYAPR10MB3240:EE_|PH0PR10MB5730:EE_
-X-MS-Office365-Filtering-Correlation-Id: 21163f6d-f3f2-4d4f-ea45-08daac58ca5b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 
-	TUrmlweLTA9svj36TKsgfbsDmlIm3ukXYBmar4pZvbx9SuhVD7BT07iUzBpEcxwNgYpTu0abFsd+v+hyBY0R6yiXCidLnJek3HWi+Sb/OEt/BaciEbtp6yPfG2zp6dAeqN6z3e6zWtF9buurly1hPG/cwgdkrYxwg3WU5szIEWrxnPKtR1sBWwDMHkwVqlq06gdIow+lEUbeSlOhir4yfbCZgAC4daLZnOm8NiyM7mOggkyyCC3vTl5Mc1/cD1aDutfFCRSmyZtBGmc+xeYHlPJDF2UeuLmCOsRBTu20S3/Z57NgvP5PRZRmrCC6Gcjl0I3z9d/h3H7SNguUCYOLJgtqQwxjNyRJ+67zhwpZtmKzFPhdNpCev8RUxZoQRpnDTcINbblKSfUn0SApdsBf8jyyHgdEZs1lgf9J/2RTFz3RdM0nzw2iY8sAttB1qpQkUU7Q0mZMc7MdquhDyXULXWrvurn29vONr/qAOKFHcOnLevmRhUdSsyg64JSeT2F+9k6Ur1H/KlC2evDpyh8sqB5F50mWXR4O9xerupV002e6+oPRArYzrW2cHEYZ1a7CYq2f0CAITrPc41dZNSsEVJP5GoCpyZfBhZk7vgOVs636pEfW/hEXYB1DPquFmW3FBWrG6iANnBxNMG3SAqV5Qm0qtc0aeUWNim491t1RJPhlZsY1vwTBrrbwS1WKEU74f/YpdfYtH6cqqBdLzNGS7OZhmt6hsNRtqHOK0m9WpQNjKL+vPaFB55p5JDjIgNyz2A6im2M6f1VnTW0IRqPpfwmjl5WEyZXipe51GXZQhl5ENaL3utK8asFh93suaOIp
-X-Forefront-Antispam-Report: 
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR10MB3240.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(366004)(136003)(346002)(39860400002)(376002)(451199015)(36916002)(478600001)(31686004)(53546011)(6486002)(6512007)(2906002)(6666004)(83380400001)(26005)(44832011)(36756003)(316002)(86362001)(2616005)(66946007)(66476007)(5660300002)(186003)(7416002)(31696002)(38100700002)(8676002)(66556008)(4326008)(54906003)(6916009)(8936002)(6506007)(41300700001)(41533002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: 
-	=?utf-8?B?cnRJT3lNeHFIYXFxQ3lzUWFYcUVNaW1RZ2I2c3h0RzBqSzFFYkRGaDQybUdn?=
- =?utf-8?B?SjBxU25MZm13RDJvdldNY2JVV2dCZFJ3OFpUR1RUYUhhYVpDT0RPVUt5YnBI?=
- =?utf-8?B?bmRDT0paeUlTZTZGTXZuM3M1cTRZdERtMFovc2JDenhrNzVyK0pab3dGVFkz?=
- =?utf-8?B?dnJ6aGZVOGovc2E3cExQNnZOR0FBeG4xM3VXeGZPd0JpcmZnaXlxVVZHYU5l?=
- =?utf-8?B?SDhkLzg1aGNjNDU0NWI4d2pNdGw2MTRNWnhkV2dJQ1RlclJqVzVNNW03d3RC?=
- =?utf-8?B?QlBkVTVVWFMyQWdkYzlUVlJRL3FobmwvQkZEa0pGRnBGU2JlRXd4Q0Rub3hz?=
- =?utf-8?B?a0VlazNHemZyZ0pjY3Vaa1pQaGtuMFpXN3hCbEQ3dkpYaUQ2ZHk3OXZXaUhv?=
- =?utf-8?B?ZnNONk9Nb0FRNmJRV3ZWclBKMUFrMXJCQlNJQ2IyeWR6TktxM29pZjhFSkxQ?=
- =?utf-8?B?M3NWcXdFWVpMS05LNW5UZDFYTGgzek5oWUxvb2pQSFpWL0lLTjNpNERYNnJi?=
- =?utf-8?B?Q3loZDhWcDlMK0xzYit3U2FqaFJGalVqdWV2bE9aZEFWU0txM1UyaEYveHhY?=
- =?utf-8?B?RDNqYXB0aG00a2Flb1pHYmMyK0R5d29NZ2ovWjdjNVhuaVVCc3FVeVQ4Z0Rt?=
- =?utf-8?B?OUM3cU1rd3ZkandYN3dZWHB4NVdxcnNZTmxDemwzeHpmZm5uYWg3Tm1obk85?=
- =?utf-8?B?RUJyeTFqdFFTRzRxZG9ndEUvMFRUL3Z0T2x4d0xkNGNLSmFiOXg0N1d2R0Q3?=
- =?utf-8?B?ZGhpWDM0S1huczlMTFJKWHpuT3dCOFVYbWtNbEdBWnpLODgwY29wWEVnbDlr?=
- =?utf-8?B?SnVhRTBoV3VleU0zS0tvakdqeUpCdjZQUy8rS3NqL1h3T05Ja0JVaXNvRGI1?=
- =?utf-8?B?S21LTFBjaStKYXh2ZDB4RXQyTUMzejJ2Vmc3VGlCd3RONE1BY1dDRU1SUEIw?=
- =?utf-8?B?eldWZkJ1bTd3VDJHZzQ1T011Nzh0L2MvMVMxcGdIMzE0eWVBc3RxbDhJejJX?=
- =?utf-8?B?OFI4cTVkMzFMejJqOFRFWnYxdVV6anRucHAvSUFxcXVia21taWpEcTRUZkRW?=
- =?utf-8?B?MXNscXUxUTAycEJUbHQrTlFIcEIxdXBwRXArdGdzd0Q3TzBEWGhjeXZ1aFFC?=
- =?utf-8?B?Z1Ywcy9VVkxnVENVNDdCVEhXbkg3UVpnTkl0Sml1UjI5Rzd5S2IxTlNkRWdL?=
- =?utf-8?B?VUQvdU8xakk4VnJEMm92bVJGUzZIOHdXdlRrdlpHR2YrK2w4a20rUWUzQm9Y?=
- =?utf-8?B?Sk02S1JJZmZSTkhHSDYvWDJkNzVYTVhyWUgvNnpISVRneTlLa1R1c1V6WFR3?=
- =?utf-8?B?VTNxSnltMTRwcXFFd1liS21TRGVGaEg2bmt3UmdPaDdCYTcyVTRvZ1B2eW9z?=
- =?utf-8?B?Q0VaU05oV1FyUTBDUThRM2VlaWYvSWdhSFo4UEpJdVpMNDRpd2R4ckE1UkVq?=
- =?utf-8?B?UmRPUldiQkdvMmRNbHdGaGVOWUM5RldxWHNnbEZoZGY3Y0k2b3Myam5GUElI?=
- =?utf-8?B?NFhRN2lKd1RKNkp4MWxmZmtCTlFBMmZtUHlrTEJVRWFhVjRERjlYWnhLMU1E?=
- =?utf-8?B?eHRpdWprdjFaMTlyUHJFUGU5ZW9aa1RESjRXTFdXSk80ZXErRFJDdjNxRXBq?=
- =?utf-8?B?YmxnTWFmck9wNnpVYTUvK29PaHprNElEMVQ0QmNoRDdlWTFMa3ByVmNBYlRW?=
- =?utf-8?B?eHRhTDB2cXVvbVJZYzJBQ2JSd3U3bERSVjB3ZDMyOFBUVHNoeklGZ0FxbHBZ?=
- =?utf-8?B?SU9kaGphelhJTjN0NkFsWkplNUNlOTNCWWs4ZFNuc1NuVGlkemRjUWUxUEJC?=
- =?utf-8?B?d3R2SldVRFFpVWtTcFRZN0tPTTk4ODl0QUVvYWd5TVdubWFOZklmbE9NTlY3?=
- =?utf-8?B?R2o2NGhySmxidzc5Sm5vWmE2SWwwRWxITFpqL1cvbDUxWENTYWdhQ1pKZ0xG?=
- =?utf-8?B?L3dmaGJrcVVQVDVLb3krWnVyTFd6eHErMDc1eGJVWWlhSllucmMvY1JJL25t?=
- =?utf-8?B?a1Z3bUpWY3hVUHhRclhBTGtKVzUzd29ldjdNTExIYWpRK0tXRWZIQkc3VDhH?=
- =?utf-8?B?dXhvZzVZeHF2WU9wRk0wQkdpODU0eldiK1FQMmZxWWNPV0VaMFFqYzFacEx6?=
- =?utf-8?B?UExZNGRiWnJSVm9Icjg1WitFVkJINU5KUVBkdTZUcjVaL0E5WjIwdHFCdVFE?=
- =?utf-8?B?c1E9PQ==?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 21163f6d-f3f2-4d4f-ea45-08daac58ca5b
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR10MB3240.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Oct 2022 13:50:58.1279
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: JuV5eopdtKl8a1OCA/xCuk30DQK4+PVWFXtRJAcaSpJhY7VljsLWq2+XAE/N3GwxUNQ/74BjhYMFxD3zZbAssBXAl11/agpv32xD1sUPwOM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR10MB5730
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-10-12_06,2022-10-12_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 bulkscore=0 phishscore=0
- mlxlogscore=999 mlxscore=0 spamscore=0 adultscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2209130000
- definitions=main-2210120091
-X-Proofpoint-GUID: e4q0MCS0ZEsl6otCLZQd80tUATL3TKhs
-X-Proofpoint-ORIG-GUID: e4q0MCS0ZEsl6otCLZQd80tUATL3TKhs
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 10/12/2022 8:32 AM, Jason Gunthorpe wrote:
-> On Tue, Oct 11, 2022 at 04:30:58PM -0400, Steven Sistare wrote:
->> On 10/11/2022 8:30 AM, Jason Gunthorpe wrote:
->>> On Mon, Oct 10, 2022 at 04:54:50PM -0400, Steven Sistare wrote:
->>>>> Do we have a solution to this?
->>>>>
->>>>> If not I would like to make a patch removing VFIO_DMA_UNMAP_FLAG_VADDR
->>>>>
->>>>> Aside from the approach to use the FD, another idea is to just use
->>>>> fork.
->>>>>
->>>>> qemu would do something like
->>>>>
->>>>>  .. stop all container ioctl activity ..
->>>>>  fork()
->>>>>     ioctl(CHANGE_MM) // switch all maps to this mm
->>>>>     .. signal parent.. 
->>>>>     .. wait parent..
->>>>>     exit(0)
->>>>>  .. wait child ..
->>>>>  exec()
->>>>>  ioctl(CHANGE_MM) // switch all maps to this mm
->>>>>  ..signal child..
->>>>>  waitpid(childpid)
->>>>>
->>>>> This way the kernel is never left without a page provider for the
->>>>> maps, the dummy mm_struct belonging to the fork will serve that role
->>>>> for the gap.
->>>>>
->>>>> And the above is only required if we have mdevs, so we could imagine
->>>>> userspace optimizing it away for, eg vfio-pci only cases.
->>>>>
->>>>> It is not as efficient as using a FD backing, but this is super easy
->>>>> to implement in the kernel.
->>>>
->>>> I propose to avoid deadlock for mediated devices as follows.  Currently, an
->>>> mdev calling vfio_pin_pages blocks in vfio_wait while VFIO_DMA_UNMAP_FLAG_VADDR
->>>> is asserted.
->>>>
->>>>   * In vfio_wait, I will maintain a list of waiters, each list element
->>>>     consisting of (task, mdev, close_flag=false).
->>>>
->>>>   * When the vfio device descriptor is closed, vfio_device_fops_release
->>>>     will notify the vfio_iommu driver, which will find the mdev on the waiters
->>>>     list, set elem->close_flag=true, and call wake_up_process for the task.
->>>
->>> This alone is not sufficient, the mdev driver can continue to
->>> establish new mappings until it's close_device function
->>> returns. Killing only existing mappings is racy.
->>>
->>> I think you are focusing on the one issue I pointed at, as I said, I'm
->>> sure there are more ways than just close to abuse this functionality
->>> to deadlock the kernel.
->>>
->>> I continue to prefer we remove it completely and do something more
->>> robust. I suggested two options.
->>
->> It's not racy.  New pin requests also land in vfio_wait if any vaddr's have
->> been invalidated in any vfio_dma in the iommu.  See
->>   vfio_iommu_type1_pin_pages()
->>     if (iommu->vaddr_invalid_count)
->>       vfio_find_dma_valid()
->>         vfio_wait()
-> 
-> I mean you can't do a one shot wakeup of only existing waiters, and
-> you can't corrupt the container to wake up waiters for other devices,
-> so I don't see how this can be made to work safely...
-> 
-> It also doesn't solve any flow that doesn't trigger file close, like a
-> process thread being stuck on the wait in the kernel. eg because a
-> trapped mmio triggered an access or something.
-> 
-> So it doesn't seem like a workable direction to me.
-> 
->> However, I will investigate saving a reference to the file object in
->> the vfio_dma (for mappings backed by a file) and using that to
->> translate IOVA's.
-> 
-> It is certainly the best flow, but it may be difficult. Eg the memfd
-> work for KVM to do something similar is quite involved.
-> 
->> I think that will be easier to use than fork/CHANGE_MM/exec, and may
->> even be easier to use than VFIO_DMA_UNMAP_FLAG_VADDR.  To be
->> continued.
-> 
-> Yes, certainly easier to use, I suggested CHANGE_MM because the kernel
-> implementation is very easy, I could send you something to test w/
-> iommufd in a few hours effort probably.
-> 
-> Anyhow, I think this conversation has convinced me there is no way to
-> fix VFIO_DMA_UNMAP_FLAG_VADDR. I'll send a patch reverting it due to
-> it being a security bug, basically.
+On Mon, 15 Aug 2022 17:20:06 +0100
+Robin Murphy <robin.murphy@arm.com> wrote:
 
-Please do not.  Please give me the courtesy of time to develop a replacement 
-before we delete it. Surely you can make progress on other opens areas of iommufd
-without needing to delete this immediately.
+> Move the bus setup to iommu_device_register(). This should allow
+> bus_iommu_probe() to be correctly replayed for multiple IOMMU instances,
+> and leaves bus_set_iommu() as a glorified no-op to be cleaned up next.
+> 
+> At this point we can also handle cleanup better than just rolling back
+> the most-recently-touched bus upon failure - which may release devices
+> owned by other already-registered instances, and still leave devices on
+> other buses with dangling pointers to the failed instance. Now it's easy
+> to clean up the exact footprint of a given instance, no more, no less.
+> 
+> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Reviewed-By: Krishna Reddy <vdumpa@nvidia.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Tested-by: Matthew Rosato <mjrosato@linux.ibm.com> # s390
+> Tested-by: Niklas Schnelle <schnelle@linux.ibm.com> # s390
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+> 
+> v4: Factor out the ops check in iommu_device_register() to keep the loop
+> even simpler, and comment the nominal change in behaviour
+> 
+>  drivers/iommu/iommu.c | 55 +++++++++++++++++++++++--------------------
+>  1 file changed, 30 insertions(+), 25 deletions(-)
 
-- Steve
+This introduces the below lockdep spat regression, bisected to commit:
+
+57365a04c921 ("iommu: Move bus setup to IOMMU device registration")
+
+This can be reproduced with simple vfio-pci device assignment to a VM
+on x86_64 with VT-d.  Thanks,
+
+Alex
+
+======================================================
+WARNING: possible circular locking dependency detected
+6.0.0-rc4+ #127 Tainted: G            E     
+------------------------------------------------------
+qemu-system-x86/1726 is trying to acquire lock:
+ffffffffacf8a7d0 (dmar_global_lock){++++}-{3:3}, at: intel_iommu_get_resv_regions+0x21/0x2a0
+
+but task is already holding lock:
+ffff981240efb0c0 (&group->mutex){+.+.}-{3:3}, at: iommu_get_group_resv_regions+0x2c/0x3b0
+
+which lock already depends on the new lock.
+
+
+the existing dependency chain (in reverse order) is:
+
+-> #1 (&group->mutex){+.+.}-{3:3}:
+       __mutex_lock+0x6d/0x8c0
+       iommu_group_add_device+0xfb/0x330
+       __iommu_probe_device+0x150/0x270
+       probe_iommu_group+0x31/0x50
+       bus_for_each_dev+0x67/0xa0
+       bus_iommu_probe+0x38/0x2a0
+       iommu_device_register+0xc1/0x130
+       intel_iommu_init+0xfd9/0x120d
+       pci_iommu_init+0xe/0x36
+       do_one_initcall+0x5b/0x310
+       kernel_init_freeable+0x275/0x2c1
+       kernel_init+0x16/0x140
+       ret_from_fork+0x22/0x30
+
+-> #0 (dmar_global_lock){++++}-{3:3}:
+       __lock_acquire+0x10dc/0x1da0
+       lock_acquire+0xc2/0x2d0
+       down_read+0x2d/0x40
+       intel_iommu_get_resv_regions+0x21/0x2a0
+       iommu_get_group_resv_regions+0x88/0x3b0
+       vfio_iommu_type1_attach_group+0x19d/0xce1 [vfio_iommu_type1]
+       vfio_fops_unl_ioctl+0x19d/0x270 [vfio]
+       __x64_sys_ioctl+0x8b/0xc0
+       do_syscall_64+0x3b/0x90
+       entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+other info that might help us debug this:
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(&group->mutex);
+                               lock(dmar_global_lock);
+                               lock(&group->mutex);
+  lock(dmar_global_lock);
+
+ *** DEADLOCK ***
+
+4 locks held by qemu-system-x86/1726:
+ #0: ffff9811b5546c88 (&container->group_lock){++++}-{3:3}, at: vfio_fops_unl_ioctl+0xbb/0x270 [vfio]
+ #1: ffffffffc058c720 (&vfio.iommu_drivers_lock){+.+.}-{3:3}, at: vfio_fops_unl_ioctl+0xeb/0x270 [vfio]
+ #2: ffff9811d865ba88 (&iommu->lock#2){+.+.}-{3:3}, at: vfio_iommu_type1_attach_group+0x51/0xce1 [vfio_iommu_type1]
+ #3: ffff981240efb0c0 (&group->mutex){+.+.}-{3:3}, at: iommu_get_group_resv_regions+0x2c/0x3b0
+
+stack backtrace:
+CPU: 0 PID: 1726 Comm: qemu-system-x86 Tainted: G            E      6.0.0-rc4+ #127
+Hardware name: System manufacturer System Product Name/P8H67-M PRO, BIOS 3904 04/27/2013
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x56/0x73
+ check_noncircular+0xd6/0x100
+ ? __lock_acquire+0x374/0x1da0
+ __lock_acquire+0x10dc/0x1da0
+ lock_acquire+0xc2/0x2d0
+ ? intel_iommu_get_resv_regions+0x21/0x2a0
+ ? trace_contention_end+0x2d/0xd0
+ ? __mutex_lock+0xdf/0x8c0
+ ? iommu_get_group_resv_regions+0x2c/0x3b0
+ ? lock_is_held_type+0xe2/0x140
+ down_read+0x2d/0x40
+ ? intel_iommu_get_resv_regions+0x21/0x2a0
+ intel_iommu_get_resv_regions+0x21/0x2a0
+ iommu_get_group_resv_regions+0x88/0x3b0
+ ? iommu_attach_group+0x76/0xa0
+ vfio_iommu_type1_attach_group+0x19d/0xce1 [vfio_iommu_type1]
+ ? rcu_read_lock_sched_held+0x43/0x70
+ ? __module_address.part.0+0x2b/0xa0
+ ? is_module_address+0x43/0x70
+ ? __init_waitqueue_head+0x4a/0x60
+ vfio_fops_unl_ioctl+0x19d/0x270 [vfio]
+ __x64_sys_ioctl+0x8b/0xc0
+ do_syscall_64+0x3b/0x90
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f803853a17b
+Code: 0f 1e fa 48 8b 05 1d ad 0c 00 64 c7 00 26 00 00 00 48 c7 c0 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa b8 10 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d ed ac 0c 00 f7 d8 64 89 01 48
+RSP: 002b:00007ffd8128c2e8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 0000000000000020 RCX: 00007f803853a17b
+RDX: 0000000000000003 RSI: 0000000000003b66 RDI: 000000000000001c
+RBP: 00007ffd8128c320 R08: 000055f59d8ff8d0 R09: 00007f8038605a40
+R10: 0000000000000008 R11: 0000000000000246 R12: 000055f599aed1d0
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
+
