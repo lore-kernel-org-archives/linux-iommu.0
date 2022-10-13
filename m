@@ -1,20 +1,20 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8473C7B
-	for <iommu@lists.linux.dev>; Thu, 13 Oct 2022 00:16:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CFDCC433C1;
-	Thu, 13 Oct 2022 00:16:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 032AB7B
+	for <iommu@lists.linux.dev>; Thu, 13 Oct 2022 00:19:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35890C433D6;
+	Thu, 13 Oct 2022 00:19:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1665620185;
-	bh=XBFpSNBpsvsC+odxjmIBVDNq5cxpXJDA1q+v7F0LK8s=;
+	s=k20201202; t=1665620355;
+	bh=aZVzA0Fqpt2J+xf2p0wOtv5uyqkIk7yWq6pL5/lVCu8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=YP811IJMfpACJUm2/ycjY4Jz0ADqpLUp5zLyl9eNbMoWOMibzhKQnfnhKPvRnEVlK
-	 Am7qJcrs+/TgpRbNaDyP4C8Xdc5wRXjXtcYKrsdGl7En2dCrVqGgNayrMKx05di6Tb
-	 nA416BSfdLmESBlw2pa4L407NYZWNxlHJYjLfel3M3XF7fnsG5TkaF5fMR/BCb14OH
-	 xKleUPc3jEIw7jKYn0npB9lIqUlFf/v0u9jYFuPYDhH5qVORMw0uhpHuPuYIbcTU0z
-	 hgvvo3G7TxlcYojtgsGTODc2YyX9WZzsvd4KqtmEOiaTYsNL92VDduq2RV5ff0FW+/
-	 9ciQQMrZKWbYQ==
+	b=Pgd77Yc81eRuHEuv0XQ5Yo3nTY0ApHP5olaxZcK5Y/S4PZJrMYL/jnPdF5eJRueYq
+	 6P7r7pSJdADBZtdY01llRprSgJxI1Q7kHvdvQ7Cn8yE9fO+9k3Rco2PJcosm/sXp74
+	 IKhE3af6oGK3apeuBUxd6FAfOEYZ4C6JShBVgWc1Gl+vRhUKg8zOD52g2zlrMykmCD
+	 bdaa0DN+vyY/hxw5mBz86BsRnFcseFZ8UG5Blbkjs2TPkAtK3tpIUH6hEUS73N2/cD
+	 QzgzDlRwdmckXZjWLJPXkpn9e1W9b2cW1sx8HbQitJEFwkT/KQcisBh27ufrWFvMc8
+	 buuNgFQDMtOpA==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -32,12 +32,12 @@ Cc: Yicong Yang <yangyicong@hisilicon.com>,
 	christophe.jaillet@wanadoo.fr,
 	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.0 13/67] iommu/arm-smmu-v3: Make default domain type of HiSilicon PTT device to identity
-Date: Wed, 12 Oct 2022 20:14:54 -0400
-Message-Id: <20221013001554.1892206-13-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.19 13/63] iommu/arm-smmu-v3: Make default domain type of HiSilicon PTT device to identity
+Date: Wed, 12 Oct 2022 20:17:47 -0400
+Message-Id: <20221013001842.1893243-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221013001554.1892206-1-sashal@kernel.org>
-References: <20221013001554.1892206-1-sashal@kernel.org>
+In-Reply-To: <20221013001842.1893243-1-sashal@kernel.org>
+References: <20221013001842.1893243-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -67,10 +67,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 21 insertions(+)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index d32b02336411..71f7edded9cf 100644
+index 88817a3376ef..e119ff8396c9 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2817,6 +2817,26 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
+@@ -2839,6 +2839,26 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
  	}
  }
  
@@ -97,7 +97,7 @@ index d32b02336411..71f7edded9cf 100644
  static struct iommu_ops arm_smmu_ops = {
  	.capable		= arm_smmu_capable,
  	.domain_alloc		= arm_smmu_domain_alloc,
-@@ -2831,6 +2851,7 @@ static struct iommu_ops arm_smmu_ops = {
+@@ -2856,6 +2876,7 @@ static struct iommu_ops arm_smmu_ops = {
  	.sva_unbind		= arm_smmu_sva_unbind,
  	.sva_get_pasid		= arm_smmu_sva_get_pasid,
  	.page_response		= arm_smmu_page_response,
