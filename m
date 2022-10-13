@@ -1,43 +1,43 @@
-Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4698A4402;
-	Thu, 13 Oct 2022 18:12:52 +0000 (UTC)
-Received: by mail-ej1-f48.google.com with SMTP id b2so5664564eja.6;
-        Thu, 13 Oct 2022 11:12:52 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56AAE3D9C;
+	Thu, 13 Oct 2022 18:12:53 +0000 (UTC)
+Received: by mail-ed1-f44.google.com with SMTP id r14so3756233edc.7;
+        Thu, 13 Oct 2022 11:12:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=G/wqfyJKTZ7wwUwifWDTzmNazpZHMfc05QXeSM6TUXI=;
-        b=HaWB05RUzvGfW6+QiMaqb8b0VOKKAaUqAEvziPp0WVrpvdqnF7t9V7XIW/Kdd2CgTV
-         MWJQpXnB4lJPuCjoPHK4oXZ2a5OmmlJ6mMvRxsbnC+3saJfPtSps5BwSki8CFQMHRPjc
-         aDGbMFxIME7O4mmOfGRwjI3kPeu7DB/u64DMUqpxcNLaMBT+EAwQGRC0ySMbeNQ02CKT
-         0slQHRidRJ/khi3Tf4mcKVVW7Fdct7kH+myaom2zNvNGPDxIlJv7Xnh/kM8OaXTlNcHJ
-         avaPrzAqSGIvo/rdV72eaY6xHH/dvt2g8Slr/UEBbbSwTOQqUJKa7BoJeS5+rc2+i9by
-         vLYw==
+        bh=JZtnjkPggA5SjkwbihxQWAD96AH19hj8hGJnqIV/2as=;
+        b=h/9B8PjhRL0AdEzegsu1cN+YgPWzL8Yt8OtB9q1nNDhqtQ9BxH7ACySjVV/VeBVhsK
+         YEPbewQmKHs4dq4cGsFmL1U83j8NROHxO5ExqKlrc0mBdk5uNoQOogiwnXYdFWZXGn6c
+         VQi1BLth7T8fVggZGGh+vH4wQaH8B0d/qIZt/+yGzuhR+W3Vms4FimKOwuByoVAtmLoi
+         WcCXELLiL+pB/sgBkYIYeROPfjjLJLAv/mucTGxPWSek5Xn25URUgyr0sCkeFkN3Xoyf
+         M7gh6EM9INVsfa2wZbUPd/44s6y6wfRp4U1R5/9tuin5dtIrxDiuSioG+I8OaTONeVJM
+         BTCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=G/wqfyJKTZ7wwUwifWDTzmNazpZHMfc05QXeSM6TUXI=;
-        b=tqTQmIDv70cz1ZdlfL8Wn/OczHFRnPHumqAlouxcPZkcE9AuKiYPPrYMKPJJPrHUDM
-         7lkSv2s+hoDm2m13qq9VJNkrUYt+m3QbsWcbW1enbMvdt2DVAKL3j6VJelWncfUo5+ly
-         4fxal4VkDLQ9ULWVzzZ/G82cmAChPl4HnZH2BWAOdZdgKs7f39oybAywtJ39u2n7tqHE
-         QnQUT+Kqy2hN8soUulxXT7m9TbSoVP6oEs65uhJLrHNJyx2ZLJAmVNoeTRNy75UYsj8C
-         g4vgbP+ftR+OkFGRQ3PjIZhtAPN1T9dJoh4XM530mOI7vbmO8cAiW27mfqirjls2kuaw
-         3h2w==
-X-Gm-Message-State: ACrzQf2OgB3Gg3v+mQlT5AUG5ND0kbsHgZLTXt03y0MW9JsdEFO5Svvh
-	Bm6MvfIu/nM4r0DfrUEiaaw=
-X-Google-Smtp-Source: AMsMyM4e5Qp7lIwnRmj6eEtIo1d/yAMzeBAPyESkz/ITsT3lYxT+Mt/6bwUGY7gp+tSLkj/QxDDqXw==
-X-Received: by 2002:a17:907:75ed:b0:78d:97ed:2894 with SMTP id jz13-20020a17090775ed00b0078d97ed2894mr698352ejc.739.1665684770605;
-        Thu, 13 Oct 2022 11:12:50 -0700 (PDT)
+        bh=JZtnjkPggA5SjkwbihxQWAD96AH19hj8hGJnqIV/2as=;
+        b=P8nIAtoX7pBGPLLweq0J3ZfLUpFv/yjjkggNUrFuaq2Q4TduEYg9fO5Dlc08XjEUO4
+         3JRudoSGan+vOG4gGWLYYFF2DCBOKWBpg9Aq2C6x+FzJxn9KwmT7j/5GUKR+TbxBIttg
+         d3pN+sItCj/VcLQ6YSOJv17uzLjKdbvZq6OMxObGHgC831LiaIeXJYrqH53lr05LLFjn
+         5QxuvSmgG2dtqcUxK8UUcBSnLBUJ3iIknoPklJIkB2fAouW3gZWhtWoA+XftupFKiP7E
+         Z9bloXX2qamoRvuloy2WRSr34yS8BYSJsspgnPD3cSmRUtGD3yyOxBkI2fGI/pEZea1h
+         aPAg==
+X-Gm-Message-State: ACrzQf3Hrl6iMxSvJ9HkiNKvXHqA8IDyKVjQ509GffH/bHaf+JAskgg7
+	wWCxWZyf6fTCmPysdB4lV7M=
+X-Google-Smtp-Source: AMsMyM4nF065eBM9sudXyKpRFJ4LcfEKfLKhmQ5xJQh+63T0xHhPiB6dBG8cwR7SmZC8OKOCNNlJIA==
+X-Received: by 2002:a05:6402:254f:b0:45a:1799:d8fc with SMTP id l15-20020a056402254f00b0045a1799d8fcmr859345edb.237.1665684771705;
+        Thu, 13 Oct 2022 11:12:51 -0700 (PDT)
 Received: from kista.localdomain (82-149-19-102.dynamic.telemach.net. [82.149.19.102])
-        by smtp.gmail.com with ESMTPSA id ku15-20020a170907788f00b0078b551d2fa3sm211109ejc.103.2022.10.13.11.12.49
+        by smtp.gmail.com with ESMTPSA id ku15-20020a170907788f00b0078b551d2fa3sm211109ejc.103.2022.10.13.11.12.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Oct 2022 11:12:50 -0700 (PDT)
+        Thu, 13 Oct 2022 11:12:51 -0700 (PDT)
 From: Jernej Skrabec <jernej.skrabec@gmail.com>
 To: maxime@cerno.tech,
 	joro@8bytes.org,
@@ -50,9 +50,9 @@ Cc: iommu@lists.linux.dev,
 	linux-sunxi@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Jernej Skrabec <jernej.skrabec@gmail.com>
-Subject: [PATCH 5/5] iommu/sun50i: Invalidate iova at map and unmap
-Date: Thu, 13 Oct 2022 20:12:20 +0200
-Message-Id: <20221013181221.3247429-6-jernej.skrabec@gmail.com>
+Subject: [PATCH 5/5] iommu/sun50i: Invalidate iova in map and unmap callback
+Date: Thu, 13 Oct 2022 20:12:21 +0200
+Message-Id: <20221013181221.3247429-7-jernej.skrabec@gmail.com>
 X-Mailer: git-send-email 2.38.0
 In-Reply-To: <20221013181221.3247429-1-jernej.skrabec@gmail.com>
 References: <20221013181221.3247429-1-jernej.skrabec@gmail.com>
@@ -65,7 +65,7 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
 Mapped and unmapped iova addresses needs to be invalidated immediately
-or otherwise they might or might not work when used by master device.
+or otherwise they might or might not work when used by master or CPU.
 
 This was discovered when running video decoder conformity test with
 Cedrus. Some videos were now and then decoded incorrectly and generated
