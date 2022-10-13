@@ -1,43 +1,43 @@
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E16524402;
-	Thu, 13 Oct 2022 18:12:47 +0000 (UTC)
-Received: by mail-ed1-f48.google.com with SMTP id g27so3724791edf.11;
-        Thu, 13 Oct 2022 11:12:47 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18DF73D9C;
+	Thu, 13 Oct 2022 18:12:48 +0000 (UTC)
+Received: by mail-ej1-f47.google.com with SMTP id w18so5624549ejq.11;
+        Thu, 13 Oct 2022 11:12:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=wy++TP4MEmK9+IncYVXW5dpqxIdw3c9kXrFdre+ha14=;
-        b=CQ9TnzAPgu0twXcz51eJtm0MYyiV+U12yy5ia/sBn3YqCfoEQNZbJox/YeWnpaIBoE
-         TYEM9Hw0EGjn2tXKlAWjrkaORyfaKwcar28Ec7NSFIeLYAllGCqNh2pU2PYx3LxsqxFG
-         6z6XuuKosJtWm6yPV0CdYsnYS7GdnBmUj7R82Ws3yOFTwaIxD32pVpcKhNvW/hq4azh/
-         pyxMhT+TJGWjw77Bz/d7ZlNR59kXaW9mCpfOPX3rRypwf8LOMd1e3Oc7h8YH1pyz08E5
-         rppEhw2WHhCkDKW3evmIBSWV1bQ5vA0vM4LjoFtItLlNwt+gYHNoOtSigZItkYpjUT00
-         NUTw==
+        bh=oow4Z/54Ywu9hc74bLjW+CtYs8QrvcOSZ9QuyKFYcEc=;
+        b=ED9AlBSj+HB3AoaKj7DQ6M9wpZ6f6w4GodqNMB1xfK/zk6oF6HLxanhqwuG7Fd6R3S
+         Na43xZWDhuMEVhpRgGli0KufczMvg+iDIQia5e4MkKK7NnuzBjYr9uWV/zTXJ2FFJ9mQ
+         CDyD4aWS4JrSGufnnIK1XfXmJDZocqpnWKg50JoUJhnQJlrDPJUjqGK+uFLhPwnvQaLm
+         DgG4sQ4tmE0ckxaWchNtaudUhH51Q6d4aBK2QPPGJznLm1RAeOMbO6udAqa5gRk6vBbw
+         nvOjXEF3+QAHeLVvYUsrPzaVR7kXWBH6YABlCbDTIH1fcLYhwp2wbMHea3TwU0W1rPJk
+         mbyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=wy++TP4MEmK9+IncYVXW5dpqxIdw3c9kXrFdre+ha14=;
-        b=ivhmWynwLVnp8veJzvPHPloZY+CLksc91HSBl/JwemG6PQh95lBy4fq9H6SQd1FgHD
-         clvQzL5qz6h54t7iRy4WnDWTApg1dLAxlFsY21yl35xVKqKifsy0473gGNQITsjUdIDu
-         r49p6HmTsAOTqeTkVxfNEDBozbwoFGKxMDMN3CCMqhlqHaz+TTazSLyXjf2dY84hMzs/
-         w0FDxI4uiZnWJxwcjN7yAYjOQFzrQl7/BtHBsVRC8ig3Z3HARcEw+R162PNIqO//1H2h
-         2hyIxWVLaBRka/NIkHNVmFC6OWzIdMmIYgXMXWWZoF04FDJ0rNeKkEOg9T+Xhx8Sx2ZZ
-         7ELA==
-X-Gm-Message-State: ACrzQf1z6XjFE0Q6/IwgzRqeR0im8jajKaNhiiFNQdt9jeM5TY2/TZp/
-	TWdTVVToh5cbs3NtZDRvavk=
-X-Google-Smtp-Source: AMsMyM4ICzUCjoigsNUFgWVeKqBHqBJ1tuJkf0WbPLqftDEHH2D+3WKsfapHPDp486t6zWZt35VE2A==
-X-Received: by 2002:a05:6402:1944:b0:457:fed7:5c30 with SMTP id f4-20020a056402194400b00457fed75c30mr873109edz.278.1665684766034;
-        Thu, 13 Oct 2022 11:12:46 -0700 (PDT)
+        bh=oow4Z/54Ywu9hc74bLjW+CtYs8QrvcOSZ9QuyKFYcEc=;
+        b=nRQX1KibSqR6rKejiWoKpbUwabOS99rZmTUO4ng47R0zNRMZ8U2PCE2PETGwoTjaiV
+         gr4ilZeD+UMVxnVeUPAOEHku1h9I7gqto/1Zy9Eww/XLXN3Z3j///YjiURsbojfX65t2
+         L8bBMzBQRBetdz0eROxxvIXwUdTQXjC3NCi4z06kxZ4QkOwJ6sBK8iqYwi3XnSuKw6QU
+         sFpWxNFSAvA3yzLpFo42klPQdbyypISW3Q5vtuhvgl6oMtG6WZ6w5bWYsR124KVfnT4P
+         Afi1/m9sIOnVHVNRIs7AAquh68VUFoWn5/ryn5C3JBL7W61BNB3pKy4OssyHSg7ZCk7n
+         cRHw==
+X-Gm-Message-State: ACrzQf3HaRxu3n/S1hN9r59TOpnWWQvBfVm10+SoFoa/DbNYKdgd7aEW
+	LIo8AYMItIkGKma+yMiG/Dc=
+X-Google-Smtp-Source: AMsMyM7zbaKTyyrnltI3FlR5A/IP6LXwZcu3J1BPdc+HmT8j7TiQ8hkdI+Pf+LW56SPwakrGxverFA==
+X-Received: by 2002:a17:906:3fd2:b0:78d:b793:5ef9 with SMTP id k18-20020a1709063fd200b0078db7935ef9mr730855ejj.496.1665684767259;
+        Thu, 13 Oct 2022 11:12:47 -0700 (PDT)
 Received: from kista.localdomain (82-149-19-102.dynamic.telemach.net. [82.149.19.102])
-        by smtp.gmail.com with ESMTPSA id ku15-20020a170907788f00b0078b551d2fa3sm211109ejc.103.2022.10.13.11.12.44
+        by smtp.gmail.com with ESMTPSA id ku15-20020a170907788f00b0078b551d2fa3sm211109ejc.103.2022.10.13.11.12.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Oct 2022 11:12:45 -0700 (PDT)
+        Thu, 13 Oct 2022 11:12:46 -0700 (PDT)
 From: Jernej Skrabec <jernej.skrabec@gmail.com>
 To: maxime@cerno.tech,
 	joro@8bytes.org,
@@ -50,9 +50,9 @@ Cc: iommu@lists.linux.dev,
 	linux-sunxi@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Jernej Skrabec <jernej.skrabec@gmail.com>
-Subject: [PATCH 1/5] iommu/sun50i: Fix reset release
-Date: Thu, 13 Oct 2022 20:12:16 +0200
-Message-Id: <20221013181221.3247429-2-jernej.skrabec@gmail.com>
+Subject: [PATCH 2/5] iommu/sun50i: Consider all fault sources for reset
+Date: Thu, 13 Oct 2022 20:12:17 +0200
+Message-Id: <20221013181221.3247429-3-jernej.skrabec@gmail.com>
 X-Mailer: git-send-email 2.38.0
 In-Reply-To: <20221013181221.3247429-1-jernej.skrabec@gmail.com>
 References: <20221013181221.3247429-1-jernej.skrabec@gmail.com>
@@ -64,45 +64,51 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Reset signal is asserted by writing 0 to the corresponding locations of
-masters we want to reset. So in order to deassert all reset signals, we
-should write 1's to all locations.
-
-Current code writes 1's to locations of masters which were just reset
-which is good. However, at the same time it also writes 0's to other
-locations and thus asserts reset signals of remaining masters. Fix code
-by writing all 1's when we want to deassert all reset signals.
-
-This bug was discovered when working with Cedrus (video decoder). When
-it faulted, display went blank due to reset signal assertion.
+We have to reset masters for all faults - permissions, L1 fault or L2
+fault. Currently it's done only for permissions. If other type of fault
+happens, master is in locked up state. Fix that by really considering
+all fault sources.
 
 Fixes: 4100b8c229b3 ("iommu: Add Allwinner H6 IOMMU driver")
 Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 ---
- drivers/iommu/sun50i-iommu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iommu/sun50i-iommu.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
-index a84c63518773..c777882d0ec2 100644
+index c777882d0ec2..38d1069cf383 100644
 --- a/drivers/iommu/sun50i-iommu.c
 +++ b/drivers/iommu/sun50i-iommu.c
-@@ -27,6 +27,7 @@
- #include <linux/types.h>
+@@ -869,8 +869,8 @@ static phys_addr_t sun50i_iommu_handle_perm_irq(struct sun50i_iommu *iommu)
  
- #define IOMMU_RESET_REG			0x010
-+#define IOMMU_RESET_RELEASE_ALL			0xffffffff
- #define IOMMU_ENABLE_REG		0x020
- #define IOMMU_ENABLE_ENABLE			BIT(0)
+ static irqreturn_t sun50i_iommu_irq(int irq, void *dev_id)
+ {
++	u32 status, l1_status, l2_status, resets;
+ 	struct sun50i_iommu *iommu = dev_id;
+-	u32 status;
  
-@@ -893,7 +894,7 @@ static irqreturn_t sun50i_iommu_irq(int irq, void *dev_id)
+ 	spin_lock(&iommu->iommu_lock);
+ 
+@@ -880,6 +880,9 @@ static irqreturn_t sun50i_iommu_irq(int irq, void *dev_id)
+ 		return IRQ_NONE;
+ 	}
+ 
++	l1_status = iommu_read(iommu, IOMMU_L1PG_INT_REG);
++	l2_status = iommu_read(iommu, IOMMU_L2PG_INT_REG);
++
+ 	if (status & IOMMU_INT_INVALID_L2PG)
+ 		sun50i_iommu_handle_pt_irq(iommu,
+ 					    IOMMU_INT_ERR_ADDR_L2_REG,
+@@ -893,7 +896,8 @@ static irqreturn_t sun50i_iommu_irq(int irq, void *dev_id)
+ 
  	iommu_write(iommu, IOMMU_INT_CLR_REG, status);
  
- 	iommu_write(iommu, IOMMU_RESET_REG, ~status);
--	iommu_write(iommu, IOMMU_RESET_REG, status);
-+	iommu_write(iommu, IOMMU_RESET_REG, IOMMU_RESET_RELEASE_ALL);
+-	iommu_write(iommu, IOMMU_RESET_REG, ~status);
++	resets = (status | l1_status | l2_status) & IOMMU_INT_MASTER_MASK;
++	iommu_write(iommu, IOMMU_RESET_REG, ~resets);
+ 	iommu_write(iommu, IOMMU_RESET_REG, IOMMU_RESET_RELEASE_ALL);
  
  	spin_unlock(&iommu->iommu_lock);
- 
 -- 
 2.38.0
 
