@@ -1,110 +1,99 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F37677B
-	for <iommu@lists.linux.dev>; Thu, 13 Oct 2022 00:21:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44A20C433C1;
-	Thu, 13 Oct 2022 00:21:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1665620516;
-	bh=xqu7Y1D0nbdqkEbtGEB1friyJ8u0gdnTjIHUhQCEvsU=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=T5buMJnLqyMXEGM9S2xcX0b/F+3X1lbK8YIlt0VVPl3Ykac3/aVVaLNpQ+KN3PB4Y
-	 b4SxJv4h9Zd1/WnNZJWqJOp+NFWVUfIO44NV8qI21KMFAkloTTzCuvf8G12g1I1kcf
-	 0JmLoY/lQto7aCPdG8TAKG1Or+DOXOftd5OOU6TU5ZW8gOV1R4qfcUfsSGUs5e/w+p
-	 9YnLqQ42HuFzPSq3malQ5LuiVAInE3rf9bS+FokWJQiWbEf8gOMcgNjR0m09C8vfsF
-	 47Jovy4UhRE+vz1BYBkpEI/NrDpx2I76wDj72t0Wvp28kRDUZhG7AW7QqydlYKL25K
-	 egZf0lQqw3ktw==
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Cc: Yicong Yang <yangyicong@hisilicon.com>,
-	Will Deacon <will@kernel.org>,
-	John Garry <john.garry@huawei.com>,
-	Mathieu Poirier <mathieu.poirier@linaro.org>,
-	Sasha Levin <sashal@kernel.org>,
-	joro@8bytes.org,
-	robin.murphy@arm.com,
-	baolu.lu@linux.intel.com,
-	jgg@ziepe.ca,
-	tglx@linutronix.de,
-	shameerali.kolothum.thodi@huawei.com,
-	christophe.jaillet@wanadoo.fr,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.15 10/47] iommu/arm-smmu-v3: Make default domain type of HiSilicon PTT device to identity
-Date: Wed, 12 Oct 2022 20:20:45 -0400
-Message-Id: <20221013002124.1894077-10-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221013002124.1894077-1-sashal@kernel.org>
-References: <20221013002124.1894077-1-sashal@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABE9417C9
+	for <iommu@lists.linux.dev>; Thu, 13 Oct 2022 01:08:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1665623291; x=1697159291;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=sI7uA/BF8g87pdoZDXo20zv0ZMkz5SEoNiAKN8ktSaI=;
+  b=F/OiR5XLYqB+3ktlZSdEYXr2LsGtqPcV0IVnH/vxJUawsGIAw+9SjjA4
+   DdLzI7TDsrARNjgOEKjuXnicvyU3QVPAJqE8y1SkXEHpYo2c+HrZtkMzO
+   G83DWnkVaVUrTn8Ola5TwFLEp12dW2CGJSp4K5vi5N4qxSwKwQiDSWnsX
+   UPGvjb8JdAJ0D33uP1G470vgKl6XnlWBC1XX+p1qSkHAn48k9pJFYfOri
+   JUJ/1UFOefQyvjN5rOhPEJ55JX1XkUU2NYDItn3Z2/vaPAnRS5GNqDLlv
+   UKlv0OKFqbnxmbYfA08rDxgM4fsYZ7RSiy59RtbmBxGKXtYJP2JgyRJ7u
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10498"; a="366948992"
+X-IronPort-AV: E=Sophos;i="5.95,180,1661842800"; 
+   d="scan'208";a="366948992"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2022 18:08:11 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10498"; a="621972685"
+X-IronPort-AV: E=Sophos;i="5.95,180,1661842800"; 
+   d="scan'208";a="621972685"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.210.100]) ([10.254.210.100])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2022 18:08:07 -0700
+Message-ID: <9f3acdbc-26a5-46a1-bdbf-0a66bb7b43dd@linux.intel.com>
+Date: Thu, 13 Oct 2022 09:08:05 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.2
+Cc: baolu.lu@linux.intel.com, joro@8bytes.org, will@kernel.org,
+ iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ kevin.tian@intel.com, suravee.suthikulpanit@amd.com, vasant.hegde@amd.com,
+ mjrosato@linux.ibm.com, schnelle@linux.ibm.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 05/16] iommu: Move bus setup to IOMMU device
+ registration
+To: Alex Williamson <alex.williamson@redhat.com>,
+ Robin Murphy <robin.murphy@arm.com>
+References: <cover.1660572783.git.robin.murphy@arm.com>
+ <d342b6f27efb5ef3e93aacaa3012d25386d74866.1660572783.git.robin.murphy@arm.com>
+ <20221012102841.478c2b3b.alex.williamson@redhat.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20221012102841.478c2b3b.alex.williamson@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Yicong Yang <yangyicong@hisilicon.com>
+Hi Alex,
 
-[ Upstream commit 24b6c7798a0122012ca848ea0d25e973334266b0 ]
+On 2022/10/13 0:28, Alex Williamson wrote:
+> On Mon, 15 Aug 2022 17:20:06 +0100
+> Robin Murphy<robin.murphy@arm.com>  wrote:
+> 
+>> Move the bus setup to iommu_device_register(). This should allow
+>> bus_iommu_probe() to be correctly replayed for multiple IOMMU instances,
+>> and leaves bus_set_iommu() as a glorified no-op to be cleaned up next.
+>>
+>> At this point we can also handle cleanup better than just rolling back
+>> the most-recently-touched bus upon failure - which may release devices
+>> owned by other already-registered instances, and still leave devices on
+>> other buses with dangling pointers to the failed instance. Now it's easy
+>> to clean up the exact footprint of a given instance, no more, no less.
+>>
+>> Tested-by: Marek Szyprowski<m.szyprowski@samsung.com>
+>> Reviewed-By: Krishna Reddy<vdumpa@nvidia.com>
+>> Reviewed-by: Kevin Tian<kevin.tian@intel.com>
+>> Tested-by: Matthew Rosato<mjrosato@linux.ibm.com>  # s390
+>> Tested-by: Niklas Schnelle<schnelle@linux.ibm.com>  # s390
+>> Signed-off-by: Robin Murphy<robin.murphy@arm.com>
+>> ---
+>>
+>> v4: Factor out the ops check in iommu_device_register() to keep the loop
+>> even simpler, and comment the nominal change in behaviour
+>>
+>>   drivers/iommu/iommu.c | 55 +++++++++++++++++++++++--------------------
+>>   1 file changed, 30 insertions(+), 25 deletions(-)
+> This introduces the below lockdep spat regression, bisected to commit:
+> 
+> 57365a04c921 ("iommu: Move bus setup to IOMMU device registration")
+> 
+> This can be reproduced with simple vfio-pci device assignment to a VM
+> on x86_64 with VT-d.  Thanks,
 
-The DMA operations of HiSilicon PTT device can only work properly with
-identical mappings. So add a quirk for the device to force the domain
-as passthrough.
+Thank you for reporting this. I have proposed below fix:
 
-Acked-by: Will Deacon <will@kernel.org>
-Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-Reviewed-by: John Garry <john.garry@huawei.com>
-Link: https://lore.kernel.org/r/20220816114414.4092-2-yangyicong@huawei.com
-Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+https://lore.kernel.org/all/20220927053109.4053662-1-baolu.lu@linux.intel.com/
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 79edfdca6607..e7da4a47ce52 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2832,6 +2832,26 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
- 	}
- }
- 
-+/*
-+ * HiSilicon PCIe tune and trace device can be used to trace TLP headers on the
-+ * PCIe link and save the data to memory by DMA. The hardware is restricted to
-+ * use identity mapping only.
-+ */
-+#define IS_HISI_PTT_DEVICE(pdev)	((pdev)->vendor == PCI_VENDOR_ID_HUAWEI && \
-+					 (pdev)->device == 0xa12e)
-+
-+static int arm_smmu_def_domain_type(struct device *dev)
-+{
-+	if (dev_is_pci(dev)) {
-+		struct pci_dev *pdev = to_pci_dev(dev);
-+
-+		if (IS_HISI_PTT_DEVICE(pdev))
-+			return IOMMU_DOMAIN_IDENTITY;
-+	}
-+
-+	return 0;
-+}
-+
- static struct iommu_ops arm_smmu_ops = {
- 	.capable		= arm_smmu_capable,
- 	.domain_alloc		= arm_smmu_domain_alloc,
-@@ -2857,6 +2877,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.sva_unbind		= arm_smmu_sva_unbind,
- 	.sva_get_pasid		= arm_smmu_sva_get_pasid,
- 	.page_response		= arm_smmu_page_response,
-+	.def_domain_type	= arm_smmu_def_domain_type,
- 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
- 	.owner			= THIS_MODULE,
- };
--- 
-2.35.1
+Does it work for you?
 
+Best regards,
+baolu
