@@ -1,49 +1,49 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DD8D33C5
-	for <iommu@lists.linux.dev>; Thu, 13 Oct 2022 15:37:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDD3820F9
+	for <iommu@lists.linux.dev>; Thu, 13 Oct 2022 16:33:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1665675453;
+	s=mimecast20190719; t=1665678802;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=ZC8ZhODybW3HN+Dzjja+AX4is7YURzcPSRS/gTWg/mU=;
-	b=XRQ9eg8YGwvmIOjLbbdoV+JSzEedsPiRB/jbdIbJaMtuo0Fz21DIKxxVDNE+hiQ0F94Xgf
-	1Y1CZbXhy+pmWsf8hKfbPMrl/i3bXDR2a4WdPfjmPuMmN4w9q737FN3GMx/OdpSaJuWYda
-	W2L5IaG8e3H6OHptH1zZVF/wPJu/uts=
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com
- [209.85.161.72]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=258B5dvfB770baVruwTSi3C+iVLJewGHOe6aI0MzdOY=;
+	b=WS58EZaSxnAXquVaZA8pRMd/MPFIQbZ60CBn7dqQnd/ectqDi4KWa/9spGWLpKZFg3V0vV
+	vQC2sf9kPq2m5/wN6U6DXRZ5znrg6SzOmcK7Oyi46/Qi3h0unoopXib7py6u9CyEt/mjFY
+	LVfd0PgAAzcGOKFbu5yMJPbJNeeg/e0=
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com
+ [209.85.167.200]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-672-LMOYoQ8jO7al9QqZIIngeA-1; Thu, 13 Oct 2022 11:37:33 -0400
-X-MC-Unique: LMOYoQ8jO7al9QqZIIngeA-1
-Received: by mail-oo1-f72.google.com with SMTP id a11-20020a4a80cb000000b004805cba57f1so1131701oog.11
-        for <iommu@lists.linux.dev>; Thu, 13 Oct 2022 08:37:32 -0700 (PDT)
+ us-mta-339-CCJWqPyBN5CdSVTulEp0Tw-1; Thu, 13 Oct 2022 12:33:21 -0400
+X-MC-Unique: CCJWqPyBN5CdSVTulEp0Tw-1
+Received: by mail-oi1-f200.google.com with SMTP id v73-20020acaac4c000000b00354b0d77a16so964605oie.0
+        for <iommu@lists.linux.dev>; Thu, 13 Oct 2022 09:33:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ZC8ZhODybW3HN+Dzjja+AX4is7YURzcPSRS/gTWg/mU=;
-        b=fk/M1pF1fPe+nYOxVXRv7ZEum2jN2qqSDbr2eGEsIYag25u885Pgveu/YBslAcrhGA
-         1dz8Ph6BBEJ25dCjIZ9iwRxzbORhDLWfwtFggKa6duf/BAgfa+1EQSP0p+MqZCKs967W
-         p3ZDVDL0U8oWUuDuk8zTJn0JDsTxrae/SmJYJPM0mAWLsPk2fwOqQ70hD2HBK8NNv2yG
-         p8bMlVPXtCZTbTiBalBP4p+Mnm2Lg0b9rYURr7NYkUO2LuBGYSIIWOuhNRNmy1wIubEz
-         NmokhfRc44D5Yw0/Jx8lQBUqPkKUxBj281u4bOXGg29D36FlR/uelmXczn3nMjj+opr0
-         3yUQ==
-X-Gm-Message-State: ACrzQf0tvaNbKtHCe8FxwPbjaJMb5hrvCj3H3j/Op2VUCzSg7eQa6YtK
-	b4KawSu6EsWk15GebpIx50xNhpXPAgWE7ALdEWixZmGa3drL37GBCHHaNUXS+J/OwCN+KNNczdy
-	egnrCLhiO0qRFoMsMNvKlOqcmpGGTBSJO4LL9xwb3rPni9bZXd7QuRza7t/7jKZwo+xY=
-X-Received: by 2002:a05:6808:1b12:b0:354:a089:1998 with SMTP id bx18-20020a0568081b1200b00354a0891998mr150719oib.9.1665675452126;
-        Thu, 13 Oct 2022 08:37:32 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM6yjHx5WKkTxDmnf9BkOTj1JV+8H3boJ42+MTYhu1d27xRvNYYoqWqfZtJP/7wopOxXoTlmHw==
-X-Received: by 2002:a05:6808:1b12:b0:354:a089:1998 with SMTP id bx18-20020a0568081b1200b00354a0891998mr150697oib.9.1665675451855;
-        Thu, 13 Oct 2022 08:37:31 -0700 (PDT)
+        bh=258B5dvfB770baVruwTSi3C+iVLJewGHOe6aI0MzdOY=;
+        b=i7+ZU0w+2cG5sOClfuuenx5erw2hbB2oZp7tGVWO3keq3fdBeKxMMQrCoUcF4Z+u5h
+         Mv63jXFXQ+w3F7EjnNI3oobYy6n+Qqe8hvmm6rM7pykbgS2x1G1FwGohKZ6nhPV1a7kr
+         YlNfaOLGoR/L89k+jq0cwKFuTitpUd89WJOn2jEA1p2UI2dacm4MxN+iNtCZ1wA9Fn9+
+         cvibt4jEq/lKrqHLZXtiSLs4PVu2AnPHfuAynkCyQB1jQ7vSca0/a456hlF/dbwaNiE2
+         hIBY5Zjn5853mnRI8uR8/ovC1YH2NUcLVXKn7hJlJM3+NXos9N9r1IE1t868Kh+rs5i+
+         09mw==
+X-Gm-Message-State: ACrzQf1WlqBwjhWhlYhXyKEX9TuTAYFKIgAzU1lYIP9B3nTsTIXIBpyI
+	HK8Y3jgAc2d/t+F6A/z583qafqnd+GPp5wQ8l19DWE5DfrGhFZ2aK4Q45XJF3xAzSdb4MxSYJCu
+	c0qfrVMXDxHNc6FvzGV13sDrmfUHItvmdh4DewSGFFiaUDdgaq9BVJIGAgW3cTAG0Ssk=
+X-Received: by 2002:a05:6808:ab3:b0:354:939b:2cee with SMTP id r19-20020a0568080ab300b00354939b2ceemr5076849oij.184.1665678799659;
+        Thu, 13 Oct 2022 09:33:19 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM6JuHSuXN3NCTH9AZ16U7Xkb+Q97H7KlKMUyPGSFXHsGClZ2sPSt5OAXujOmppNyLfSSaSpfg==
+X-Received: by 2002:a05:6808:ab3:b0:354:939b:2cee with SMTP id r19-20020a0568080ab300b00354939b2ceemr5076832oij.184.1665678799358;
+        Thu, 13 Oct 2022 09:33:19 -0700 (PDT)
 Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id r2-20020a4a83c2000000b004809c78083asm872774oog.25.2022.10.13.08.37.31
+        by smtp.gmail.com with ESMTPSA id s20-20020a056808209400b0035179b87ba5sm16723oiw.20.2022.10.13.09.33.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Oct 2022 08:37:31 -0700 (PDT)
-Date: Thu, 13 Oct 2022 08:37:30 -0700
+        Thu, 13 Oct 2022 09:33:18 -0700 (PDT)
+Date: Thu, 13 Oct 2022 09:33:17 -0700
 From: Jerry Snitselaar <jsnitsel@redhat.com>
 To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
@@ -51,7 +51,7 @@ Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	Lu Baolu <baolu.lu@linux.intel.com>
 Subject: Re: [RFC PATCH] iommu/vt-d: Add sanity check to
  iommu_sva_bind_device()
-Message-ID: <20221013153730.rwtukjgpdgwgfodv@cantor>
+Message-ID: <20221013163317.pgcsvmktotdtkduf@cantor>
 References: <20221013153355.2365865-1-jsnitsel@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -64,6 +64,9 @@ X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+
+And I apparently had vt-d on the brain, which should be dropped
+from the summary.
 
 On Thu, Oct 13, 2022 at 08:33:55AM -0700, Jerry Snitselaar wrote:
 > iommu_sva_bind_device() should only be called if
@@ -79,15 +82,6 @@ On Thu, Oct 13, 2022 at 08:33:55AM -0700, Jerry Snitselaar wrote:
 > Cc: Lu Baolu <baolu.lu@linux.intel.com>
 > Signed-off-by: Jerry Snitselaar <jsnitsel@redhat.com>
 > ---
-
-I don't know how many other drivers there will be in the future,
-so quite possibly a non-issue. It did happen with the idxd driver
-though, and I was thinking about that this morning so thought I
-would send a patch to avoid it in the future.
-
-Regards,
-Jerry
-
 > drivers/iommu/iommu.c | 10 +++++++++-
 >  1 file changed, 9 insertions(+), 1 deletion(-)
 > 
