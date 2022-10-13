@@ -1,74 +1,87 @@
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCAE24405;
-	Thu, 13 Oct 2022 18:17:39 +0000 (UTC)
-Received: by mail-ed1-f42.google.com with SMTP id l22so3775213edj.5;
-        Thu, 13 Oct 2022 11:17:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=f7qwPUEZ1ZhfA+wANlCjEKHD1jlsyDHPilB/I6xGaZA=;
-        b=OwfkBRBgr2PFFLhPYms8BwxXSG4Fc/fK8EqoqLMWxXrxwEZH0zChQpuSzaJVWYum/F
-         EWYmiYq6Hh1IlFL04YmRQRLZ8SCSU3l9AlL5NDc5LzM9kvEGaYBXnhegk5/Q0E1OUZko
-         MnphSpSgbFutzcpwWwyxMmJjA9d9m+d/zCpfxzmvEZzce+tVvPdGp7fcdyZq1dM33ry6
-         Ur1QrDlMMv6P/i17YtvM+PtLl/wjMlPc5OmIsMoUpbnE/TiXYxrpIIpb9j8JBLWyXOVC
-         ZpI6fmspp6+uOtN6tYPSkl3/Vt/ztk3Z8LpFlx43HtrhhTudENtKQjlBd8yE7z43pn6D
-         4JsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=f7qwPUEZ1ZhfA+wANlCjEKHD1jlsyDHPilB/I6xGaZA=;
-        b=GKUHy3UErjfLnf9XHV5g8BxQRDbZ0TlAINSSgYykSjRRwty55Q71YZHllrhWDBtnVM
-         IjO0I7lmQzRXgpQX4r/MxTfwcW8qLSiZrDXD+Xj8cUVN4NIBqZdTijWVDnkNzoj0DNu6
-         G+BAX0EMS44VuExs2MMhEHpjorHozmJaEoh0KowVUUlQugjgUamQRsFm4ac5Xg80TxOp
-         MIL0TyUNauVwEbKARDV2qqtdGKb4pHCpqv0dZqqxnQQ5tq85ykWyUCVoWWNFOIhmwph/
-         WQnTYWFNDkGP7W6227xLo4m1DRhaSQmOmrLzGSl1Ayo90hh8MZeJR8/GFtgdWn5zqFsL
-         6cRQ==
-X-Gm-Message-State: ACrzQf1SuGeJ/tFzI24avN2CzS9tfmIYNnuzltEwNQkpEMci1YWUs6Qu
-	61N+8lXzdC2g0klDSNM6n14=
-X-Google-Smtp-Source: AMsMyM4tW50WsdxGOymGeUSqnL5oRfzwxkZiFV1zFdsjDVrLwel/HsNrBGerF0BdB9iwstFH+FQueA==
-X-Received: by 2002:a05:6402:5252:b0:45d:d1a:fe7d with SMTP id t18-20020a056402525200b0045d0d1afe7dmr815908edd.323.1665685058029;
-        Thu, 13 Oct 2022 11:17:38 -0700 (PDT)
-Received: from kista.localnet (82-149-19-102.dynamic.telemach.net. [82.149.19.102])
-        by smtp.gmail.com with ESMTPSA id v25-20020aa7dbd9000000b00456c6b4b777sm222778edt.69.2022.10.13.11.17.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Oct 2022 11:17:37 -0700 (PDT)
-From: Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To: maxime@cerno.tech, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, wens@csie.org, samuel@sholland.org
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5/5] iommu/sun50i: Invalidate iova at map and unmap
-Date: Thu, 13 Oct 2022 20:17:36 +0200
-Message-ID: <3161965.AJdgDx1Vlc@kista>
-In-Reply-To: <20221013181221.3247429-6-jernej.skrabec@gmail.com>
-References: <20221013181221.3247429-1-jernej.skrabec@gmail.com> <20221013181221.3247429-6-jernej.skrabec@gmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64317323E
+	for <iommu@lists.linux.dev>; Thu, 13 Oct 2022 22:54:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3B3DC433D6;
+	Thu, 13 Oct 2022 22:54:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1665701687;
+	bh=wY5aP2fq2o1Ri1eqe3JUjMm0lwpYU44WlaPlKlU03BM=;
+	h=From:To:Cc:Subject:Date:From;
+	b=aLOPDkrIBZygrHleN4/P+l/SirzmF+Vu7b7D+uGGVT0rc6M9o38pUOl0goEX871FM
+	 byrxvc8Is0qWR6yQpd7sgzOe740c3PvzlpUhwJeErE9r1BpH1G+2nRQSFw+9nduiBX
+	 kKB7k2GQMlT5EuGi4RrxGApu4gbXZiiDV6KnKAy+btBgO6hFysPYCXLeSklKQo4hgb
+	 aPkyDY/HKrYmN2+S5yp8nnpTjPXHpuQP45dt1oHn5ScIprJbtSLw/N8LKWQNxj3zTq
+	 gXbcUL54ybkRjQRVO0U1DUILqPlofbohnc4XD5PDotalYAX3U9qukOU1yg0QOyppmG
+	 Eo1xieoxRARuA==
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	iommu@lists.linux.dev,
+	linux-pci@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH] PCI: Rename PCI_DEVICE_ID_RD890_IOMMU to PCI_DEVICE_ID_ATI_RD890_IOMMU
+Date: Thu, 13 Oct 2022 17:54:40 -0500
+Message-Id: <20221013225440.3336168-1-helgaas@kernel.org>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-Dne =C4=8Detrtek, 13. oktober 2022 ob 20:12:20 CEST je Jernej Skrabec napis=
-al(a):
-> Mapped and unmapped iova addresses needs to be invalidated immediately
-> or otherwise they might or might not work when used by master device.
->=20
-> This was discovered when running video decoder conformity test with
-> Cedrus. Some videos were now and then decoded incorrectly and generated
-> page faults.
->=20
-> Fixes: 4100b8c229b3 ("iommu: Add Allwinner H6 IOMMU driver")
-> Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+From: Bjorn Helgaas <bhelgaas@google.com>
 
-Please ignore this patch. It's same as next one, with slightly different co=
-mmit=20
-message.
+PCI_DEVICE_ID_RD890_IOMMU is a device ID in the ATI vendor ID namespace.
+Rename it accordingly and move it to the list of ATI device IDs.  No
+functional change intended.
 
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+---
+ drivers/iommu/amd/amd_iommu.h | 2 +-
+ include/linux/pci_ids.h       | 5 ++---
+ 2 files changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+index c160a332ce33..61749d52ba05 100644
+--- a/drivers/iommu/amd/amd_iommu.h
++++ b/drivers/iommu/amd/amd_iommu.h
+@@ -82,7 +82,7 @@ extern int amd_iommu_complete_ppr(struct pci_dev *pdev, u32 pasid,
+ static inline bool is_rd890_iommu(struct pci_dev *pdev)
+ {
+ 	return (pdev->vendor == PCI_VENDOR_ID_ATI) &&
+-	       (pdev->device == PCI_DEVICE_ID_RD890_IOMMU);
++	       (pdev->device == PCI_DEVICE_ID_ATI_RD890_IOMMU);
+ }
+ 
+ static inline bool iommu_feature(struct amd_iommu *iommu, u64 mask)
+diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
+index b362d90eb9b0..be2910028e27 100644
+--- a/include/linux/pci_ids.h
++++ b/include/linux/pci_ids.h
+@@ -382,6 +382,8 @@
+ #define PCI_DEVICE_ID_ATI_RS350_133     0x7831
+ #define PCI_DEVICE_ID_ATI_RS350_166     0x7832
+ #define PCI_DEVICE_ID_ATI_RS350_200     0x7833
++/* AMD RD890 Chipset */
++#define PCI_DEVICE_ID_ATI_RD890_IOMMU	0x5a23
+ #define PCI_DEVICE_ID_ATI_RS400_100     0x5a30
+ #define PCI_DEVICE_ID_ATI_RS400_133     0x5a31
+ #define PCI_DEVICE_ID_ATI_RS400_166     0x5a32
+@@ -416,9 +418,6 @@
+ #define PCI_DEVICE_ID_VLSI_82C147	0x0105
+ #define PCI_DEVICE_ID_VLSI_VAS96011	0x0702
+ 
+-/* AMD RD890 Chipset */
+-#define PCI_DEVICE_ID_RD890_IOMMU	0x5a23
+-
+ #define PCI_VENDOR_ID_ADL		0x1005
+ #define PCI_DEVICE_ID_ADL_2301		0x2301
+ 
+-- 
+2.25.1
 
