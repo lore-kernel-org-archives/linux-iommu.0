@@ -1,182 +1,145 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A5307B
-	for <iommu@lists.linux.dev>; Fri, 14 Oct 2022 06:53:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1665730385;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=bg6+iPwRJNBmQ/gourxOyjQutuo/8BXNZAqpSt/I6YI=;
-	b=LPRJ9IZRDW/X5GuV3gUz6215j5S0iTjz4e9rvWycViPqX/NIAdavSPitYtONBX9iS40gMT
-	/AjalUU2SSyTf8f7wzWs0/uI9PuytldQAoTHfsr9BirXtq6LLStCrRTmTStyL+7cZuiFpL
-	xLppbO7AIEjcUv7Dk4Ikvcwn3PsRZZc=
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com
- [209.85.167.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-640-O6R_tNTDOtWY_sVy-9er2A-1; Fri, 14 Oct 2022 02:53:02 -0400
-X-MC-Unique: O6R_tNTDOtWY_sVy-9er2A-1
-Received: by mail-oi1-f197.google.com with SMTP id l8-20020aca1908000000b003545ede8b31so1775139oii.7
-        for <iommu@lists.linux.dev>; Thu, 13 Oct 2022 23:53:02 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9F1A36C
+	for <iommu@lists.linux.dev>; Fri, 14 Oct 2022 08:45:34 +0000 (UTC)
+Received: by mail-wr1-f45.google.com with SMTP id r13so6459593wrj.11
+        for <iommu@lists.linux.dev>; Fri, 14 Oct 2022 01:45:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:message-id:date:from:content-transfer-encoding:mime-version
+         :subject:from:to:cc:subject:date:message-id:reply-to;
+        bh=qU3b+QKkmvNWqoyQI19aCkTzRWNRWtrZ1TP3yM6JHaQ=;
+        b=LxOLiS+9XkXnvyiz3FPAV9/DUW1oiPeZWzV2ys6vXleGK/CTdiIv6OBTVbdw+SPufZ
+         IDURv6tFMsQ3X8Uh7Ee31whNzJrCbVoFHAjnPNZB2ETyHGNUMVL29x7dpQS3PK685WXs
+         i6sVjtzBPi8gCdcxImWIwDvq1psvp731ZVeq25+gPXCkBMssv4nkjpATIt//pkOnWPR8
+         MpUjhrxUDRU9xCa90/SEg/dZ58CkFmpMJMKDCX/PE9eX7iOlAGkW+IRi4p/dKHpYlleN
+         hnxnY2pktAOcDpt1dC/ZIb2AML7AMEEiaSOAdB3BT0eZICWJi6eSUVqdqEd1Z64fbPe3
+         KlyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=bg6+iPwRJNBmQ/gourxOyjQutuo/8BXNZAqpSt/I6YI=;
-        b=AgNJO3tDRnfaFA2I1EZPHjGfhIV8FcgWbEILjdK9OtG8eyNMV1dl6h6DFxUusx7Fcj
-         NSsq8eL8OUT7Kulwn8TwCFC3a4KUwCB1o32Fcc1orM9NLwyeWY8RW5zo1g5ijJjiLKBY
-         +4L2rLEFY66HE1XdhT319vXBugGtwAdGZHPK54VnXfgk+2VGxDotVEKTJfIBTGEFak6Y
-         XMiNp3NL+bfOxgf5IUDSWY4GvkW5rT5LhgVi+nuwrw/hwo9vWHVMnD7RBe/Fr+WwDHR4
-         596nC6KQicrrUJ7eheSf/SUy/Ezt0zwEvjTCBjhSX93wshCIlpOM1iAm1L36mrb0qh/R
-         TapQ==
-X-Gm-Message-State: ACrzQf3yZXXqqnnmiQlpTnmjXvOK6j21q4NbZiDg224xL1Xx0lCHGaMg
-	JWCWGZs5sZWWjg+t9ugnBf8EASyJHM+yXgsM9NrT6OO5Tw9qWQU/dOUgxznRTMgcC76UCAJSOI6
-	SZy90OENawYra79w=
-X-Received: by 2002:a05:6870:c182:b0:12a:e54e:c6e8 with SMTP id h2-20020a056870c18200b0012ae54ec6e8mr7541525oad.207.1665730381482;
-        Thu, 13 Oct 2022 23:53:01 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM77dda9I2lRb+09JsGoPMiyD9sl6LXVXCKo7W/YqMF5KMfsjOnVEgEE3JkvMt5pYnkQe0UoNg==
-X-Received: by 2002:a05:6870:c182:b0:12a:e54e:c6e8 with SMTP id h2-20020a056870c18200b0012ae54ec6e8mr7541519oad.207.1665730381175;
-        Thu, 13 Oct 2022 23:53:01 -0700 (PDT)
-Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id e18-20020a056808149200b003549397fde4sm738630oiw.54.2022.10.13.23.53.00
+        h=cc:to:message-id:date:from:content-transfer-encoding:mime-version
+         :subject:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=qU3b+QKkmvNWqoyQI19aCkTzRWNRWtrZ1TP3yM6JHaQ=;
+        b=hJyH6FgnZhYpLm1XMycPX98VfEKVKFpcd5zvPLBX6a0sPa81MMDxvCcep5SVpRA+Fp
+         feTY7MEAaEyXtPlaadv8f2m3rsbZdsYaQnYSZYJSrNa+W+HYMPuzwkXUahpSkea5W8D5
+         a3V82zd0l+ioNwBaTO6QzCPa2LaZHx+cRrB5F8g07WvzNVqbyml5kKLiqAVOpoIMwkXV
+         85bn5dnapVeo8fj1MXjpjV2/ZjaS3r+jzEL0uVBfIlFoTs9EjjAxi0+E7Zq556YyISif
+         LDvahd8jHcR8V/RPKtLimPnoe2DVgCE4qRjAYU3KVFz7t/jTcmG9D+n6zoKtYbYFR4xt
+         4fog==
+X-Gm-Message-State: ACrzQf2wGJMqJ2vzjQq+Ic7osZsZm8Z5lrWb0TZCDFrshvGdvlbgczBa
+	swmRItSr5XWvcbXhNIni79WqUQ==
+X-Google-Smtp-Source: AMsMyM75SKwHKMzfLNtH31ZbKh9ImYHULUMQJz9S5W+AWudLj646M9oBHODI6iDOvgHfBXv67ejXUw==
+X-Received: by 2002:a05:6000:1d94:b0:22c:c4d1:3622 with SMTP id bk20-20020a0560001d9400b0022cc4d13622mr2494179wrb.63.1665737132719;
+        Fri, 14 Oct 2022 01:45:32 -0700 (PDT)
+Received: from [127.0.1.1] (158.22.5.93.rev.sfr.net. [93.5.22.158])
+        by smtp.googlemail.com with ESMTPSA id m6-20020a1c2606000000b003c452678025sm6684633wmm.4.2022.10.14.01.45.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Oct 2022 23:53:00 -0700 (PDT)
-Date: Thu, 13 Oct 2022 23:52:59 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	"Jiang, Dave" <dave.jiang@intel.com>,
-	"Yu, Fenghua" <fenghua.yu@intel.com>
-Subject: Re: [RFC PATCH] iommu/vt-d: Add sanity check to
- iommu_sva_bind_device()
-Message-ID: <20221014065259.5koqcoxiuegg6kzj@cantor>
-References: <20221013153355.2365865-1-jsnitsel@redhat.com>
- <89029bfb-bdf6-43e3-b24c-09c266277f0e@linux.intel.com>
- <20221014021043.4rpzufoleeg7z5gx@cantor>
- <ea7ea775-5b87-82d6-c30a-8e60f1462476@linux.intel.com>
+        Fri, 14 Oct 2022 01:45:32 -0700 (PDT)
+Subject: [PATCH v4 0/3] iommu/mediatek: Add mt8365 iommu support
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <ea7ea775-5b87-82d6-c30a-8e60f1462476@linux.intel.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-b4-tracking: H4sIAKghSWMC/42OwWrDMAxAf6X4XA9FcZy6p/3H2CGylcWQxMVuAqXk36f1ttGGnYQE7z3dVeEcua
+ jz4a4yr7HENMtijgflh27+Yh2D7AoBsQKodEzTtOiyXC4pX3VvwPmWwRm2ShjqCmvK3ewHoeZlHOU4
+ xHJN+fZorCjj45VuRQ3aOqI22ACAzTt1tzFS5jefpp/AHhio5x6Zmbz7DX4Kuda75VoE/lQT9+wROf
+ y7/ABbqqFxBKGyT8pmt2xEwN7K841hauiPYNu2b8Sb7KSmAQAA
+From: Alexandre Mergnat <amergnat@baylibre.com>
+Date: Fri, 14 Oct 2022 10:45:28 +0200
+Message-Id: <20221001-iommu-support-v4-0-f1e13438dfd2@baylibre.com>
+To: Rob Herring <robh+dt@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
+Cc: linux-kernel@vger.kernel.org, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ linux-mediatek@lists.infradead.org, Markus Schneider-Pargmann <msp@baylibre.com>,
+ Amjad Ouled-Ameur <aouledameur@baylibre.com>, Fabien Parent <fparent@baylibre.com>, devicetree@vger.kernel.org,
+ Alexandre Mergnat <amergnat@baylibre.com>, iommu@lists.linux.dev,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, linux-arm-kernel@lists.infradead.org
+X-Mailer: b4 0.10.1
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2412; i=amergnat@baylibre.com;
+ h=from:subject:message-id; bh=awStn1Bgi9IVLZZwAhDl6q1K64EBotws/kG7Aa33kjg=;
+ b=owEBbQKS/ZANAwAKAStGSZ1+MdRFAcsmYgBjSSGrfHPrOmp5a9BnpRr7fsC63XP6OroMz8PGyKw0
+ lNvZgLSJAjMEAAEKAB0WIQQjG17X8+qqcA5g/osrRkmdfjHURQUCY0khqwAKCRArRkmdfjHURe+oD/
+ 9A0itZcbHB5SXR7mNfM9dA3I6xlZzVIwR1SXL4FHIQiXIEDPCkvVN8ZtY05jb0RffkPt7sRn8VewKx
+ eJytkKLfeoEQql93FNrk3H4IiyHlvjtk+7xGnOp/PeyfdTgB6q0TSljtAo8B5Qp0HHcjhXBPQ/IUHI
+ g/x2nS1yZACBZUoPaSUc3jM6gXJkAa59St03ydauyZtAjGpjV218xhabSyzmMAO+CQ13GaVCNwVKaC
+ gTQbVmwZMhn+MFxgrsnvu+u1xF071ibjssV84sF6ggioFIEd9KDLQ5UTN6yF0hKJTDXqzFkqKnnYCA
+ OaTg/Ktm0HeWkGRIn4L+98dmKn3LDxd+czQJC9GqGkOqhanXSu0+m3tmQUX2hBElL1qbslXXOIwK8x
+ vleS16lvW1qBeBppFUAOaZuxRWbIzmRntbhascwZA3MPKW14rRoC+UDXHf8wLRLixELArMhK7S+Tfk
+ F4IBDiWTXZB4o3uL8lWsVCRNBl5DgI0nnd6Z4uhEEb0WtcgLVCvXhg+fGNv7qOVQFHgd4IfSizxt0y
+ 1KWnLlkKx5c9vBw+dyGkzIpuT9pO6kP0yyAJWhN0lK4qUjO36z1ekBgbPe4jtUTcb8oDdr5jiQB9dc
+ FlNGmisi9xrFAJoNO6Cf+wP2JMwwZiOgVvKW9w+KR7q89izHWSVj5w7husHw==
+X-Developer-Key: i=amergnat@baylibre.com; a=openpgp;
+ fpr=231B5ED7F3EAAA700E60FE8B2B46499D7E31D445
 
-On Fri, Oct 14, 2022 at 10:22:21AM +0800, Baolu Lu wrote:
-> On 2022/10/14 10:10, Jerry Snitselaar wrote:
-> > On Fri, Oct 14, 2022 at 09:52:44AM +0800, Baolu Lu wrote:
-> > > On 2022/10/13 23:33, Jerry Snitselaar wrote:
-> > > > iommu_sva_bind_device() should only be called if
-> > > > iommu_dev_enable_feature() succeeded. There has been one case already
-> > > > where that hasn't been the case, which resulted in a null pointer
-> > > > deref in dev_iommu_ops(). To avoid that happening in the future if
-> > > > another driver makes that mistake, sanity check dev->iommu and
-> > > > dev->iommu->iommu_dev prior to calling dev_iommu_ops().
-> > > > 
-> > > > Cc: Joerg Roedel<joro@8bytes.org>
-> > > > Cc: Will Deacon<will@kernel.org>
-> > > > Cc: Robin Murphy<robin.murphy@arm.com>
-> > > > Cc: Lu Baolu<baolu.lu@linux.intel.com>
-> > > > Signed-off-by: Jerry Snitselaar<jsnitsel@redhat.com>
-> > > > ---
-> > > > drivers/iommu/iommu.c | 10 +++++++++-
-> > > >    1 file changed, 9 insertions(+), 1 deletion(-)
-> > > > 
-> > > > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > > > index 4893c2429ca5..20ec75667529 100644
-> > > > --- a/drivers/iommu/iommu.c
-> > > > +++ b/drivers/iommu/iommu.c
-> > > > @@ -2746,7 +2746,15 @@ iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void *drvdata)
-> > > >    {
-> > > >    	struct iommu_group *group;
-> > > >    	struct iommu_sva *handle = ERR_PTR(-EINVAL);
-> > > > -	const struct iommu_ops *ops = dev_iommu_ops(dev);
-> > > > +	const struct iommu_ops *ops;
-> > > > +
-> > > > +	if (!dev->iommu || !dev->iommu->iommu_dev) {
-> > > > +		dev_warn(dev, "%s called without checking succes of iommu_dev_enable_feature?\n",
-> > > > +			__func__);
-> > > > +		return ERR_PTR(-ENODEV);
-> > > > +	}
-> > > If that's the case, dev_iommu_ops() will warn a NULL pointer reference.
-> > > This kind of error will be discovered at the first place.
-> > > 
-> > > Best regards,
-> > > baolu
-> > > 
-> > It will warn this by crashing the system (example from back when idxd had the problem):
-> > 
-> >      [   21.423729] BUG: kernel NULL pointer dereference, address: 0000000000000038
-> >      [   21.445108] #PF: supervisor read access in kernel mode
-> >      [   21.450912] #PF: error_code(0x0000) - not-present page
-> >      [   21.456706] PGD 0
-> >      [   21.459047] Oops: 0000 [#1] PREEMPT SMP NOPTI
-> >      [   21.464004] CPU: 0 PID: 1420 Comm: kworker/0:3 Not tainted 5.19.0-0.rc3.27.eln120.x86_64 #1
-> >      [   21.464011] Hardware name: Intel Corporation EAGLESTREAM/EAGLESTREAM, BIOS EGSDCRB1.SYS.0067.D12.2110190954 10/19/2021
-> >      [   21.464015] Workqueue: events work_for_cpu_fn
-> >      [   21.464030] RIP: 0010:iommu_sva_bind_device+0x1d/0xe0
-> >      [   21.464046] Code: c3 cc 66 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 41 57 41 56 49 89 d6 41 55 41 54 55 53 48 83 ec 08 48 8b 87 d8 02 00 00 <48> 8b 40 38 48 8b 50 10 48 83 7a 70 00 48 89 14 24 0f 84 91 00 00
-> >      [   21.464050] RSP: 0018:ff7245d9096b7db8 EFLAGS: 00010296
-> >      [   21.464054] RAX: 0000000000000000 RBX: ff1eadeec8a51000 RCX: 0000000000000000
-> >      [   21.464058] RDX: ff7245d9096b7e24 RSI: 0000000000000000 RDI: ff1eadeec8a510d0
-> >      [   21.464060] RBP: ff1eadeec8a51000 R08: ffffffffb1a12300 R09: ff1eadffbfce25b4
-> >      [   21.464062] R10: ffffffffffffffff R11: 0000000000000038 R12: ffffffffc09f8000
-> >      [   21.464065] R13: ff1eadeec8a510d0 R14: ff7245d9096b7e24 R15: ff1eaddf54429000
-> >      [   21.464067] FS:  0000000000000000(0000) GS:ff1eadee7f600000(0000) knlGS:0000000000000000
-> >      [   21.464070] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> >      [   21.464072] CR2: 0000000000000038 CR3: 00000008c0e10006 CR4: 0000000000771ef0
-> >      [   21.464074] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> >      [   21.464076] DR3: 0000000000000000 DR6: 00000000fffe07f0 DR7: 0000000000000400
-> >      [   21.464078] PKRU: 55555554
-> >      [   21.464079] Call Trace:
-> >      [   21.464083]  <TASK>
-> >      [   21.464092]  idxd_pci_probe+0x259/0x1070 [idxd]
-> >      [   21.464121]  local_pci_probe+0x3e/0x80
-> >      [   21.464132]  work_for_cpu_fn+0x13/0x20
-> >      [   21.464136]  process_one_work+0x1c4/0x380
-> >      [   21.464143]  worker_thread+0x1ab/0x380
-> >      [   21.464147]  ? _raw_spin_lock_irqsave+0x23/0x50
-> >      [   21.464158]  ? process_one_work+0x380/0x380
-> >      [   21.464161]  kthread+0xe6/0x110
-> >      [   21.464168]  ? kthread_complete_and_exit+0x20/0x20
-> >      [   21.464172]  ret_from_fork+0x1f/0x30
-> > 
-> > 
-> > It was doing that to SPR systems that didn't boot with
-> > intel_iommu=on. They had to either enable the iommu, or blacklist the
-> > idxd driver until the idxd driver had a fix. The idea here is to
-> > avoid taking the system down, and just have the driver get an error back.
-> 
-> If IOMMU is disabled, the iommu_dev_enable_feat(SVA) will return an
-> error, the idxd driver should not call the sva_bind() interfaces
-> anymore. If the driver doesn't do like this, why not fixing it in the
-> driver itself?
-> 
-> Best regards,
-> baolu
+Hi,
 
-The idxd case was found, and fixed by me back in June. I just was
-showing the stack trace to show that it crashes the system, not just
-puts out a warning.
-
-Why would this stop someone fixing the problem in a driver that is
-calling sva_bind() interface incorrectly?
-
-Nothing else in the system cares that some driver forgot to call
-iommu_dev_enable_feat(), or forgot to check the return value. Nothing
-else would be impacted by it, except that the system is being allowed
-to crash. If the idea is to get noticed more quickly, couldn't a
-WARN_ON() + returning an error solve that without resorting to
-crashing the system?
+This series contains patches related to the support of mt8365 iommu.
+Thanks for your feedback so far.
 
 Regards,
-Jerry
+Alex
 
+Changes in v4:
+- Typo
+- Rebase
+- Link to v3: https://lore.kernel.org/r/20221001-iommu-support-v3-0-c7b3059b0d16@baylibre.com
+
+Changes in v3:
+- Rename "mt8365-larb-port.h" to "mediatek,mt8365-larb-port.h"
+- Rework the macros which retrieve larb/port ID to improve human readability
+- Link to v2: https://lore.kernel.org/r/20221001-iommu-support-v2-0-dbfef2eeebc9@baylibre.com
+
+Changes in v2:
+- Rebase.
+- Change M4U_PORT_APU_READ & M4U_PORT_APU_WRITE port to avoid display
+  conflict in larb0. These definitions are used for vpu0 device node.
+- Add dual license.
+- Retitle commit.
+- Rename to int_id_port_width for more detail.
+- Fix typo.
+- Set banks_enable and banks_num in mt8365_data to fix kernel panic at boot.
+- Link to v1 - https://lore.kernel.org/lkml/20220530180328.845692-1-fparent@baylibre.com/
+
+To: Yong Wu <yong.wu@mediatek.com>
+To: Joerg Roedel <joro@8bytes.org>
+To: Will Deacon <will@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+To: Rob Herring <robh+dt@kernel.org>
+To: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+To: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: iommu@lists.linux.dev
+Cc: linux-mediatek@lists.infradead.org
+Cc: devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: Fabien Parent <fparent@baylibre.com>
+Cc: Markus Schneider-Pargmann <msp@baylibre.com>
+Cc: Amjad Ouled-Ameur <aouledameur@baylibre.com>
+Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Alexandre Mergnat <amergnat@baylibre.com>
+
+---
+Fabien Parent (3):
+      dt-bindings: iommu: mediatek: add binding documentation for MT8365 SoC
+      iommu/mediatek: add support for 6-bit encoded port IDs
+      iommu/mediatek: add support for MT8365 SoC
+
+ .../devicetree/bindings/iommu/mediatek,iommu.yaml  |  2 +
+ drivers/iommu/mtk_iommu.c                          | 30 +++++++-
+ .../dt-bindings/memory/mediatek,mt8365-larb-port.h | 90 ++++++++++++++++++++++
+ 3 files changed, 120 insertions(+), 2 deletions(-)
+---
+base-commit: 11082343e3bf2953a937509f0316cabf69dbf908
+change-id: 20221001-iommu-support-f409c7e094e6
+
+Best regards,
+-- 
+Alexandre Mergnat <amergnat@baylibre.com>
