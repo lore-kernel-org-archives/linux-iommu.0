@@ -1,169 +1,209 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3FE2A137D
-	for <iommu@lists.linux.dev>; Fri, 14 Oct 2022 11:01:29 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 026D113D5;
-	Fri, 14 Oct 2022 04:01:35 -0700 (PDT)
-Received: from [10.57.5.134] (unknown [10.57.5.134])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 02ED13F792;
-	Fri, 14 Oct 2022 04:01:26 -0700 (PDT)
-Message-ID: <c2fff623-a9e2-dd36-b420-5ebb9e9a0d01@arm.com>
-Date: Fri, 14 Oct 2022 12:01:21 +0100
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 935F828FA;
+	Fri, 14 Oct 2022 15:03:57 +0000 (UTC)
+Received: by mail-ed1-f47.google.com with SMTP id a67so7181106edf.12;
+        Fri, 14 Oct 2022 08:03:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0C0t3Bzybkn9+4XGQd/N9gYxMLzphWP8zpFWqf6WcLc=;
+        b=ejq8RgwKb8KXuNH8oE5Rz95tCZ1s90ZkUzJ9IiwIBQMC0bjIxfbYWsOJp5pCY+zj86
+         CRn+83E/dXCvxOoijOk7P9CPrHooIaJrMcmWcIBTjCbNwsKJ93N0kjnJNWSmVGriPnjS
+         2wKEHjQ280dXJ6FiN79dE2LEARuam1uVFQRvRkFvq17W+q6WBSNX8KBPmP29tqfV+CQg
+         bZvTdwKDgyJ3rqK4K06sZhskjrtalXa+MyqIgeiPTKI06uC9xjBdM+PRHIDhj3E8u4Oy
+         IJEcZ7WsJ3NsXB4bNv43F8wEEYBXiDTOvliUouBKFBSu025JpFGm/j/oBqlW4PwLXwja
+         p8gQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=0C0t3Bzybkn9+4XGQd/N9gYxMLzphWP8zpFWqf6WcLc=;
+        b=RtKtvNVB7eeJEqClX3FiR055ndgHIxaldu/4wC1zQrpZ/sI/C0Yy4ba14GJLjbaIDs
+         tT9JOmdmyKE9am4PrQfgY20X6CU+jbSmFB3qShf3AsVm//0Iwf7cFV7DqIE2JuvSFOkU
+         dj5F/IniArlA+fhOpORMUE0w7euNzm+KbVF7ARJa5V69HfpNDtPl6ihO1UIPD5FiU2rq
+         +x8C5vD/kxm2i4JqyyKhoDluGWV9qdii0Wgpkb1TL/em1I/DVD+6bR+mZ2TDFbDMXdBw
+         OIwg5UhbiPmraLhYTXv83b8lW74aa8LK9SFJDf87U4BkECZ2JYHtKDDZ0IIYdlMKZWn1
+         EVpg==
+X-Gm-Message-State: ACrzQf3UhGBKYSxKJKukf0aOpoNZB3saeQ+sqItDwYO6u5c8UXZ1cYlW
+	Y8CKIZgkCayJjWFQHZfNW7Q=
+X-Google-Smtp-Source: AMsMyM6n5TYixxzjKVJkR42cOB6Z7A9WsXklnbiisDz4tMmNnp55xREYU6ERXMG91w4OE9PPLNty0A==
+X-Received: by 2002:a05:6402:1a4d:b0:459:319f:ff80 with SMTP id bf13-20020a0564021a4d00b00459319fff80mr4681904edb.144.1665759835585;
+        Fri, 14 Oct 2022 08:03:55 -0700 (PDT)
+Received: from kista.localnet (82-149-19-102.dynamic.telemach.net. [82.149.19.102])
+        by smtp.gmail.com with ESMTPSA id kz12-20020a17090777cc00b00741a251d9e8sm1668219ejc.171.2022.10.14.08.03.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Oct 2022 08:03:55 -0700 (PDT)
+From: Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To: maxime@cerno.tech, joro@8bytes.org, will@kernel.org, wens@csie.org, samuel@sholland.org, Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: Re: [PATCH 5/5] iommu/sun50i: Invalidate iova in map and unmap callback
+Date: Fri, 14 Oct 2022 17:03:54 +0200
+Message-ID: <1866625.IobQ9Gjlxr@kista>
+In-Reply-To: <71fb875f-5884-cbc6-534f-6ba72167bf6a@arm.com>
+References: <20221013181221.3247429-1-jernej.skrabec@gmail.com> <20221013181221.3247429-7-jernej.skrabec@gmail.com> <71fb875f-5884-cbc6-534f-6ba72167bf6a@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.3.3
-Subject: Re: [RFC PATCH] iommu/vt-d: Add sanity check to
- iommu_sva_bind_device()
-To: Jerry Snitselaar <jsnitsel@redhat.com>,
- Baolu Lu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- "Jiang, Dave" <dave.jiang@intel.com>, "Yu, Fenghua" <fenghua.yu@intel.com>
-References: <20221013153355.2365865-1-jsnitsel@redhat.com>
- <89029bfb-bdf6-43e3-b24c-09c266277f0e@linux.intel.com>
- <20221014021043.4rpzufoleeg7z5gx@cantor>
- <ea7ea775-5b87-82d6-c30a-8e60f1462476@linux.intel.com>
- <20221014065259.5koqcoxiuegg6kzj@cantor>
-Content-Language: en-GB
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20221014065259.5koqcoxiuegg6kzj@cantor>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 
-On 2022-10-14 07:52, Jerry Snitselaar wrote:
-> On Fri, Oct 14, 2022 at 10:22:21AM +0800, Baolu Lu wrote:
->> On 2022/10/14 10:10, Jerry Snitselaar wrote:
->>> On Fri, Oct 14, 2022 at 09:52:44AM +0800, Baolu Lu wrote:
->>>> On 2022/10/13 23:33, Jerry Snitselaar wrote:
->>>>> iommu_sva_bind_device() should only be called if
->>>>> iommu_dev_enable_feature() succeeded. There has been one case already
->>>>> where that hasn't been the case, which resulted in a null pointer
->>>>> deref in dev_iommu_ops(). To avoid that happening in the future if
->>>>> another driver makes that mistake, sanity check dev->iommu and
->>>>> dev->iommu->iommu_dev prior to calling dev_iommu_ops().
->>>>>
->>>>> Cc: Joerg Roedel<joro@8bytes.org>
->>>>> Cc: Will Deacon<will@kernel.org>
->>>>> Cc: Robin Murphy<robin.murphy@arm.com>
->>>>> Cc: Lu Baolu<baolu.lu@linux.intel.com>
->>>>> Signed-off-by: Jerry Snitselaar<jsnitsel@redhat.com>
->>>>> ---
->>>>> drivers/iommu/iommu.c | 10 +++++++++-
->>>>>     1 file changed, 9 insertions(+), 1 deletion(-)
->>>>>
->>>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>>>> index 4893c2429ca5..20ec75667529 100644
->>>>> --- a/drivers/iommu/iommu.c
->>>>> +++ b/drivers/iommu/iommu.c
->>>>> @@ -2746,7 +2746,15 @@ iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void *drvdata)
->>>>>     {
->>>>>     	struct iommu_group *group;
->>>>>     	struct iommu_sva *handle = ERR_PTR(-EINVAL);
->>>>> -	const struct iommu_ops *ops = dev_iommu_ops(dev);
->>>>> +	const struct iommu_ops *ops;
->>>>> +
->>>>> +	if (!dev->iommu || !dev->iommu->iommu_dev) {
->>>>> +		dev_warn(dev, "%s called without checking succes of iommu_dev_enable_feature?\n",
->>>>> +			__func__);
->>>>> +		return ERR_PTR(-ENODEV);
->>>>> +	}
->>>> If that's the case, dev_iommu_ops() will warn a NULL pointer reference.
->>>> This kind of error will be discovered at the first place.
->>>>
->>>> Best regards,
->>>> baolu
->>>>
->>> It will warn this by crashing the system (example from back when idxd had the problem):
->>>
->>>       [   21.423729] BUG: kernel NULL pointer dereference, address: 0000000000000038
->>>       [   21.445108] #PF: supervisor read access in kernel mode
->>>       [   21.450912] #PF: error_code(0x0000) - not-present page
->>>       [   21.456706] PGD 0
->>>       [   21.459047] Oops: 0000 [#1] PREEMPT SMP NOPTI
->>>       [   21.464004] CPU: 0 PID: 1420 Comm: kworker/0:3 Not tainted 5.19.0-0.rc3.27.eln120.x86_64 #1
->>>       [   21.464011] Hardware name: Intel Corporation EAGLESTREAM/EAGLESTREAM, BIOS EGSDCRB1.SYS.0067.D12.2110190954 10/19/2021
->>>       [   21.464015] Workqueue: events work_for_cpu_fn
->>>       [   21.464030] RIP: 0010:iommu_sva_bind_device+0x1d/0xe0
->>>       [   21.464046] Code: c3 cc 66 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 41 57 41 56 49 89 d6 41 55 41 54 55 53 48 83 ec 08 48 8b 87 d8 02 00 00 <48> 8b 40 38 48 8b 50 10 48 83 7a 70 00 48 89 14 24 0f 84 91 00 00
->>>       [   21.464050] RSP: 0018:ff7245d9096b7db8 EFLAGS: 00010296
->>>       [   21.464054] RAX: 0000000000000000 RBX: ff1eadeec8a51000 RCX: 0000000000000000
->>>       [   21.464058] RDX: ff7245d9096b7e24 RSI: 0000000000000000 RDI: ff1eadeec8a510d0
->>>       [   21.464060] RBP: ff1eadeec8a51000 R08: ffffffffb1a12300 R09: ff1eadffbfce25b4
->>>       [   21.464062] R10: ffffffffffffffff R11: 0000000000000038 R12: ffffffffc09f8000
->>>       [   21.464065] R13: ff1eadeec8a510d0 R14: ff7245d9096b7e24 R15: ff1eaddf54429000
->>>       [   21.464067] FS:  0000000000000000(0000) GS:ff1eadee7f600000(0000) knlGS:0000000000000000
->>>       [   21.464070] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->>>       [   21.464072] CR2: 0000000000000038 CR3: 00000008c0e10006 CR4: 0000000000771ef0
->>>       [   21.464074] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->>>       [   21.464076] DR3: 0000000000000000 DR6: 00000000fffe07f0 DR7: 0000000000000400
->>>       [   21.464078] PKRU: 55555554
->>>       [   21.464079] Call Trace:
->>>       [   21.464083]  <TASK>
->>>       [   21.464092]  idxd_pci_probe+0x259/0x1070 [idxd]
->>>       [   21.464121]  local_pci_probe+0x3e/0x80
->>>       [   21.464132]  work_for_cpu_fn+0x13/0x20
->>>       [   21.464136]  process_one_work+0x1c4/0x380
->>>       [   21.464143]  worker_thread+0x1ab/0x380
->>>       [   21.464147]  ? _raw_spin_lock_irqsave+0x23/0x50
->>>       [   21.464158]  ? process_one_work+0x380/0x380
->>>       [   21.464161]  kthread+0xe6/0x110
->>>       [   21.464168]  ? kthread_complete_and_exit+0x20/0x20
->>>       [   21.464172]  ret_from_fork+0x1f/0x30
->>>
->>>
->>> It was doing that to SPR systems that didn't boot with
->>> intel_iommu=on. They had to either enable the iommu, or blacklist the
->>> idxd driver until the idxd driver had a fix. The idea here is to
->>> avoid taking the system down, and just have the driver get an error back.
->>
->> If IOMMU is disabled, the iommu_dev_enable_feat(SVA) will return an
->> error, the idxd driver should not call the sva_bind() interfaces
->> anymore. If the driver doesn't do like this, why not fixing it in the
->> driver itself?
->>
->> Best regards,
->> baolu
+Dne petek, 14. oktober 2022 ob 12:23:25 CEST je Robin Murphy napisal(a):
+> On 2022-10-13 19:12, Jernej Skrabec wrote:
+> > Mapped and unmapped iova addresses needs to be invalidated immediately
+> > or otherwise they might or might not work when used by master or CPU.
+> > 
+> > This was discovered when running video decoder conformity test with
+> > Cedrus. Some videos were now and then decoded incorrectly and generated
+> > page faults.
+> > 
+> > Fixes: 4100b8c229b3 ("iommu: Add Allwinner H6 IOMMU driver")
+> > Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+> > ---
+> > 
+> >   drivers/iommu/sun50i-iommu.c | 51 ++++++++++++++++++++++++++++++++++++
+> >   1 file changed, 51 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
+> > index 7c3b2ac552da..21e47ce6946a 100644
+> > --- a/drivers/iommu/sun50i-iommu.c
+> > +++ b/drivers/iommu/sun50i-iommu.c
+> > @@ -518,6 +518,53 @@ static u32 *sun50i_dte_get_page_table(struct
+> > sun50i_iommu_domain *sun50i_domain,> 
+> >   	return page_table;
+> >   
+> >   }
+> > 
+> > +static void sun50i_iommu_zap_iova(struct sun50i_iommu *iommu, unsigned
+> > long iova) +{
+> > +	unsigned long flags;
+> > +	u32 reg;
+> > +	int ret;
+> > +
+> > +	spin_lock_irqsave(&iommu->iommu_lock, flags);
+> > +
+> > +	iommu_write(iommu, IOMMU_AUTO_GATING_REG, 0);
+> > +
+> > +	iommu_write(iommu, IOMMU_TLB_IVLD_ADDR_REG, iova);
+> > +	iommu_write(iommu, IOMMU_TLB_IVLD_ADDR_MASK_REG, GENMASK(11, 0));
+> > +	iommu_write(iommu, IOMMU_TLB_IVLD_ENABLE_REG,
+> > IOMMU_TLB_IVLD_ENABLE_ENABLE); +
+> > +	ret = readl_poll_timeout_atomic(iommu->base + 
+IOMMU_TLB_IVLD_ENABLE_REG,
+> > +					reg, !reg, 1, 2000);
+> > +	if (ret)
+> > +		dev_warn(iommu->dev, "TLB invalidation timed out!\n");
+> > +
+> > +	iommu_write(iommu, IOMMU_AUTO_GATING_REG, 
+IOMMU_AUTO_GATING_ENABLE);
+> > +
+> > +	spin_unlock_irqrestore(&iommu->iommu_lock, flags);
+> > +}
+> > +
+> > +static void sun50i_iommu_zap_ptw_cache(struct sun50i_iommu *iommu,
+> > unsigned long iova) +{
+> > +	unsigned long flags;
+> > +	u32 reg;
+> > +	int ret;
+> > +
+> > +	spin_lock_irqsave(&iommu->iommu_lock, flags);
+> > +
+> > +	iommu_write(iommu, IOMMU_AUTO_GATING_REG, 0);
+> > +
+> > +	iommu_write(iommu, IOMMU_PC_IVLD_ADDR_REG, iova);
+> > +	iommu_write(iommu, IOMMU_PC_IVLD_ENABLE_REG,
+> > IOMMU_PC_IVLD_ENABLE_ENABLE); +
+> > +	ret = readl_poll_timeout_atomic(iommu->base + 
+IOMMU_PC_IVLD_ENABLE_REG,
+> > +					reg, !reg, 1, 2000);
+> > +	if (ret)
+> > +		dev_warn(iommu->dev, "PTW cache invalidation timed out!
+\n");
+> > +
+> > +	iommu_write(iommu, IOMMU_AUTO_GATING_REG, 
+IOMMU_AUTO_GATING_ENABLE);
+> > +
+> > +	spin_unlock_irqrestore(&iommu->iommu_lock, flags);
+> > +}
+> > +
+> > 
+> >   static int sun50i_iommu_map(struct iommu_domain *domain, unsigned long
+> >   iova,>   
+> >   			    phys_addr_t paddr, size_t size, int 
+prot, gfp_t gfp)
+> >   
+> >   {
+> > 
+> > @@ -546,6 +593,8 @@ static int sun50i_iommu_map(struct iommu_domain
+> > *domain, unsigned long iova,> 
+> >   	*pte_addr = sun50i_mk_pte(paddr, prot);
+> >   	sun50i_table_flush(sun50i_domain, pte_addr, 1);
+> > 
+> > +	sun50i_iommu_zap_iova(iommu, iova);
+> > +	sun50i_iommu_zap_ptw_cache(iommu, iova);
 > 
-> The idxd case was found, and fixed by me back in June. I just was
-> showing the stack trace to show that it crashes the system, not just
-> puts out a warning.
+> Consider hooking up .sync_map if you need that behaviour. I'd guess the
+> address/mask combination allows invalidating multiple pages at once,
+> which would be a heck of a lot more efficient.
 > 
-> Why would this stop someone fixing the problem in a driver that is
-> calling sva_bind() interface incorrectly?
+> In principle we probably shouldn't need walk cache maintenance for just
+> changing leaf entries, so that could perhaps be pushed further down into
+> sun50i_dte_get_page_table().
+
+Note that this is my first foray into iommu and sun50i-iommu documentation is 
+confusing to say the least (it has english words in it, but their combination 
+often doesn't make sense.) 
+
+I'll try that, thanks. Without this invalidation, handing buffer between two 
+iommu supported peripherals works, but CPU access often doesn't. PTW cache can 
+be invalidated only one by one. It's TLB invalidation that has mask.
+
 > 
-> Nothing else in the system cares that some driver forgot to call
-> iommu_dev_enable_feat(), or forgot to check the return value. Nothing
-> else would be impacted by it, except that the system is being allowed
-> to crash. If the idea is to get noticed more quickly, couldn't a
-> WARN_ON() + returning an error solve that without resorting to
-> crashing the system?
+> >   out:
+> >   	return ret;
+> > 
+> > @@ -571,6 +620,8 @@ static size_t sun50i_iommu_unmap(struct iommu_domain
+> > *domain, unsigned long iova> 
+> >   	memset(pte_addr, 0, sizeof(*pte_addr));
+> >   	sun50i_table_flush(sun50i_domain, pte_addr, 1);
+> > 
+> > +	sun50i_iommu_zap_iova(sun50i_domain->iommu, iova);
+> > +	sun50i_iommu_zap_ptw_cache(sun50i_domain->iommu, iova);
+> 
+> Hmm, we already have .iotlb_sync hooked up for this, so at best adding
+> more maintenance here is simply redundant, but at worst it would be
+> papering over some bug in sun50i_iommu_iotlb_sync() - if unmaps really
+> aren't working properly then that wants fixing instead. Of course it
+> could also be enhanced to use the gather mechanism to perform more
+> selective invalidations, but that's another patch in its own right.
 
-The point is really that this is the kind of obvious bug that should be 
-found during development; it's not the IOMMU API's responsibility if 
-some driver patch gets merged and gets as far as a distro release 
-without ever being fully tested. If someone doesn't use an API properly 
-it can go wrong in any number of ways, so the value of maintaining code 
-to mitigate just one of those ways is questionable. In this case, 
-consider if a driver *is* present but failed iommu_dev_enable_feat() for 
-some other reason, then its ->sva_bind goes and dereferences some 
-internal data that it expects the previous ->dev_enable_feat to have 
-allocated. Boom, it just crashes somewhere else instead.
+.iotlb_sync assumes that flush operation will to the same thing as invalidation 
+of each entry separately. It obviously doesn't, as my testing shows. I'll 
+rewrite .iotlb_sync to do invalidation instead of flush and check if that 
+works.
 
-If you really think it's worth the effort to maintain code that only 
-serves to give lazy developers a free pass (and I freely admit to being 
-a lazy developer most of the time) then a robust approach would be some 
-generic tracking in dev->iommu for which features have been successfully 
-enabled. Certainly I'm not convinced this patch as-is is worthwhile.
+I have two questions:
+1. documentation says it's mandatory to do TLB and PTW invalidation in 
+interrupt handler when page fault occurs. Do you see a reason for that?
+2. vendor driver and other iommu drivers have spin lock guards across whole 
+.iova_to_phys, .map and .unmap functions. Should I add them here too?
 
-However, if a bad driver isn't handling the return from 
-iommu_dev_enable_feature(), who's to say it's actually handling the 
-return from iommu_sva_bind_device() either, and wouldn't still end up 
-crashing some other way? Ultimately it's a game you can't win.
+Best regards,
+Jernej
 
-Thanks,
-Robin.
+> 
+> Thanks,
+> Robin.
+> 
+> >   	return SZ_4K;
+> >   
+> >   }
+
+
