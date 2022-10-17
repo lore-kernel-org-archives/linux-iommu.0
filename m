@@ -1,40 +1,59 @@
-Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61C5023BE
-	for <iommu@lists.linux.dev>; Sun, 16 Oct 2022 16:23:53 +0000 (UTC)
-Received: from g550jk.arnhem.chello.nl (31-151-115-246.dynamic.upc.nl [31.151.115.246])
-	by mail.z3ntu.xyz (Postfix) with ESMTPSA id 005BFC9CFA;
-	Sun, 16 Oct 2022 16:16:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
-	t=1665936964; bh=WWnMVLsQ16tzIdinutsamMLE27RcGg5gLBVDOG/S19g=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=GMkvuz6d/pvx0C/xQMH9xqlrXmHVDh2i7p7ZkCphjpcVLF83qTxORGPhGDzr/iR21
-	 +NzBHn+cKAmoON3GfztzKxhSOmFNSakCOQNL3opMdRmKAwOC8Mc6l3ExsLAZJezyrC
-	 JdZE/eJE9ZTrIJj832cQ8/sBKE1jb58vZwo4eesg=
-From: Luca Weiss <luca@z3ntu.xyz>
-To: linux-arm-msm@vger.kernel.org
-Cc: ~postmarketos/upstreaming@lists.sr.ht,
-	phone-devel@vger.kernel.org,
-	Luca Weiss <luca@z3ntu.xyz>,
-	Rob Herring <robh@kernel.org>,
-	Andy Gross <agross@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@somainline.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v4 1/3] dt-bindings: qcom-iommu: Add Qualcomm MSM8953 compatible
-Date: Sun, 16 Oct 2022 18:15:51 +0200
-Message-Id: <20221016161554.673006-2-luca@z3ntu.xyz>
-X-Mailer: git-send-email 2.38.0
-In-Reply-To: <20221016161554.673006-1-luca@z3ntu.xyz>
-References: <20221016161554.673006-1-luca@z3ntu.xyz>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B381111C
+	for <iommu@lists.linux.dev>; Mon, 17 Oct 2022 12:46:14 +0000 (UTC)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29HCflLU026992;
+	Mon, 17 Oct 2022 12:46:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=+Oxeb8UCfzjuNEnaMhEJFdLbzN16OMVcI7by7StU43g=;
+ b=jWLlaJXmb5vLAlovyq8CIXKQ+trgrA4BhHFbQtVIdFts3K+6VXHEoQNcbUGyoo6u3o4b
+ vZh8nUwdtBUBRVKPiRWZtxU75ajUAEZdR/o6srnXcB6I8ZI2Ql2s2q4gfQY/aX0mpiSe
+ EW5mjJFhW1BMJrOm4XsmrVFeqgzhPCPsM524+pJmrrSOp+2YZl0R5qUmMTpYf61DbYcp
+ XyZlfchdkyCdQPA1Z7tC9PChZr0F7nWuWWM+99iWw513dvcf5MQuA3h3vrYOtFwFIBLE
+ yfvsSSfZgkosEMHGAAZrOrBIskuMkeunHvI3ASsEp09gvXiOQ4qsQ9+iGtbWMD0g5xMy +w== 
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3k86sjs8e4-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 17 Oct 2022 12:46:07 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+	by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29HCa9tO028076;
+	Mon, 17 Oct 2022 12:46:04 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+	by ppma02fra.de.ibm.com with ESMTP id 3k7mg92954-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 17 Oct 2022 12:46:04 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+	by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29HCk1174981284
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 17 Oct 2022 12:46:01 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 7D49B11C050;
+	Mon, 17 Oct 2022 12:46:01 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 03D3311C04C;
+	Mon, 17 Oct 2022 12:46:01 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+	by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+	Mon, 17 Oct 2022 12:46:00 +0000 (GMT)
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>, Gerd Bayer <gbayer@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, linux-kernel@vger.kernel.org
+Subject: [PATCH v7 4/6] iommu/s390: Fix incorrect aperture check
+Date: Mon, 17 Oct 2022 14:45:56 +0200
+Message-Id: <20221017124558.1386337-5-schnelle@linux.ibm.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20221017124558.1386337-1-schnelle@linux.ibm.com>
+References: <20221017124558.1386337-1-schnelle@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,30 +61,44 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 7wq5gA-XyXjMWuBa76emWmQ1L2cg_xe8
+X-Proofpoint-GUID: 7wq5gA-XyXjMWuBa76emWmQ1L2cg_xe8
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-10-17_09,2022-10-17_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 adultscore=0
+ priorityscore=1501 phishscore=0 impostorscore=0 lowpriorityscore=0
+ malwarescore=0 mlxscore=0 spamscore=0 clxscore=1015 suspectscore=0
+ mlxlogscore=848 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2210170072
 
-Document the compatible used for IOMMU on the msm8953 SoC.
+The domain->geometry.aperture_end specifies the last valid address treat
+it as such when checking if a DMA address is valid.
 
-Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
-Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Pierre Morel <pmorel@linux.ibm.com>
+Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 ---
-Changes since v3:
-- no changes
+v3->v4:
+- Make check robust against overflow (Jason)
 
- Documentation/devicetree/bindings/iommu/qcom,iommu.txt | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/s390-iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-index 059139abce35..e6cecfd360eb 100644
---- a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-+++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-@@ -10,6 +10,7 @@ to non-secure vs secure interrupt line.
- - compatible       : Should be one of:
+diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+index c4203a37faa4..fa8cb97bfc88 100644
+--- a/drivers/iommu/s390-iommu.c
++++ b/drivers/iommu/s390-iommu.c
+@@ -213,7 +213,7 @@ static int s390_iommu_update_trans(struct s390_domain *s390_domain,
+ 	int rc = 0;
  
-                         "qcom,msm8916-iommu"
-+                        "qcom,msm8953-iommu"
+ 	if (dma_addr < s390_domain->domain.geometry.aperture_start ||
+-	    dma_addr + size > s390_domain->domain.geometry.aperture_end)
++	    (dma_addr + size - 1) > s390_domain->domain.geometry.aperture_end)
+ 		return -EINVAL;
  
-                      Followed by "qcom,msm-iommu-v1".
- 
+ 	nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
 -- 
-2.38.0
+2.34.1
 
