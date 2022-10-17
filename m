@@ -1,277 +1,186 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2083.outbound.protection.outlook.com [40.107.244.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CB57137C
-	for <iommu@lists.linux.dev>; Mon, 17 Oct 2022 13:44:02 +0000 (UTC)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29HB5qo3029181;
-	Mon, 17 Oct 2022 12:46:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=fFOIzoJ3LaWmpMnXwnNfpLLraq/5CxuOkCXCe2n9UbU=;
- b=JTNIZMl079ByoHrayHdr/PoozGWgYW0mHuSFteNU2vKRGMAdm9dlHJUsPDNTNVIPRXB/
- cG4loKYwPunTnutRqEpna51cFQxcA0NV1Ve0Li2/q78Wmr+v+E6kBjnwm9HhWpaDp98m
- 2s4cz3EDzlTeWpod9ILkerwwheJpOTavCXbX3RGJxwCc2pL9rGk333p1lrQ1YYrTeJWS
- xF8/fQSnUImFAg2fnZzn99FSvcsGWXdmTEYDomR2Rw996dhSvlxrVPw1q3v24YbM1UmA
- 61GIXvub83/j6hR2LcgNY3QPCF/dG/sn+ATxnBxHgR+aeO78o/0JLyqgoE8yydL9Oee6 CA== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3k86g60x08-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 17 Oct 2022 12:46:05 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-	by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29HCZ6Z5024648;
-	Mon, 17 Oct 2022 12:46:03 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-	by ppma03ams.nl.ibm.com with ESMTP id 3k7mg930m3-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 17 Oct 2022 12:46:03 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-	by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29HCk081262826
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 17 Oct 2022 12:46:00 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id E573911C04A;
-	Mon, 17 Oct 2022 12:45:59 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 745C311C058;
-	Mon, 17 Oct 2022 12:45:59 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-	by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-	Mon, 17 Oct 2022 12:45:59 +0000 (GMT)
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc: Matthew Rosato <mjrosato@linux.ibm.com>, Gerd Bayer <gbayer@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, linux-kernel@vger.kernel.org
-Subject: [PATCH v7 1/6] iommu/s390: Fix duplicate domain attachments
-Date: Mon, 17 Oct 2022 14:45:53 +0200
-Message-Id: <20221017124558.1386337-2-schnelle@linux.ibm.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221017124558.1386337-1-schnelle@linux.ibm.com>
-References: <20221017124558.1386337-1-schnelle@linux.ibm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6622F4A13
+	for <iommu@lists.linux.dev>; Mon, 17 Oct 2022 23:00:58 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kkjfrfln+0ocpdCiXnpfXxJ9LmEVLrxZx+NDzGduHBD14cca/MoRVZ1BCsy/6XigttJkjCJeLk29EOBvteU2Crkj8/IZChrvbg/Yle3n1AO99bm7yYdZOMTkMYjxqNF53zqYPuYGe+R6rEmlVG5WNU1xzYlbu8enVArU+Re8z5H22R5lo7Tx0+cfMiOi1USxniGfhf1IgtA1XQppDS4MU7Kk5nRvj0IEn7YL0ZG/a+D2YcVZFazOxbP2Tu/98y+5VX1pVTRB96lqzlcBGaa2rAkRU0i/v0f1qS2F6bYhkSw48DRCBhUxl/IF4nxHbMO70IQya53zKMXnXwVqpE4fBg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=BxnLI95/4sqZIsYYsWz2cdPfygxHCfe3e9GeHAaMKA0=;
+ b=JZ0rVbFFNjx9866QYTmzoYMaQrJZqokoNqtZBCaty5OuFUOyG3UjEkxNpOVg+jdXyLx1RL43r5o/fGHsUKWKKxoEE865ZCcXeLK5UhWdmhwMRNRZiVde7NVIy98dW29PJATSHbFKO8NFGA/z4jCVtmxSWhRFJdVdflVSP/AF3qCMCKIwqB+F+8laGuh4qhKIeKxGBgtbvlCUflZgLLRA5PVOu8c2/cnEzw/MuqJVEQ8suB8OMMXJtZH+b962cDSPMtNP9SFv3FIQ+nru+spxS1bfoUc4f2sPF8LTMzakUCWsJWKYOzSavj0PGAbLCpAozPCEU2E7R8E/zV57dI7xGw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=8bytes.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BxnLI95/4sqZIsYYsWz2cdPfygxHCfe3e9GeHAaMKA0=;
+ b=fcr8h6DxMuznREjkHUXvv9eCnwLIf9voJ5mx8uyhgNXskmWfHb6e6FWgwwy4m/Lfohss3eM/LgnpnK+UszlVxRkEhBb8mB/6/LsuHeRA+NHqmaKrhEhVIbpTLn1MALYdJIk+5vHRHfPNtBVXnX/ZT7A2r/ynWVjeAiOhf6mcIdkRgpormjK+zHr+NV8/4elJIBR2vw2OreciMasvuUHD0Fi7zC2oijwiE8ZjRVLCs6+8Nsm+YII886hqJWr+gSVc+pSHIZ1K1wb9JkGBXWobNYA4rUksJ1+LNB6SN5KhOKykFwEcNCTdgSvay/35OXLoaAUkJvFj3reFf/fAIJH5aw==
+Received: from MW4PR03CA0046.namprd03.prod.outlook.com (2603:10b6:303:8e::21)
+ by SA0PR12MB4366.namprd12.prod.outlook.com (2603:10b6:806:72::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.32; Mon, 17 Oct
+ 2022 23:00:55 +0000
+Received: from CO1NAM11FT038.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:8e:cafe::be) by MW4PR03CA0046.outlook.office365.com
+ (2603:10b6:303:8e::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.30 via Frontend
+ Transport; Mon, 17 Oct 2022 23:00:54 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ CO1NAM11FT038.mail.protection.outlook.com (10.13.174.231) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5723.20 via Frontend Transport; Mon, 17 Oct 2022 23:00:54 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Mon, 17 Oct
+ 2022 16:00:38 -0700
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.29; Mon, 17 Oct 2022 16:00:38 -0700
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.14) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server id 15.2.986.29 via Frontend
+ Transport; Mon, 17 Oct 2022 16:00:36 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>
+CC: <jgg@nvidia.com>, <kevin.tian@intel.com>, <quic_jjohnson@quicinc.com>,
+	<suravee.suthikulpanit@amd.com>, <robdclark@gmail.com>,
+	<dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <yong.wu@mediatek.com>,
+	<matthias.bgg@gmail.com>, <orsonzhai@gmail.com>,
+	<baolin.wang@linux.alibaba.com>, <zhang.lyra@gmail.com>,
+	<thierry.reding@gmail.com>, <vdumpa@nvidia.com>, <jonathanh@nvidia.com>,
+	<jean-philippe@linaro.org>, <tglx@linutronix.de>,
+	<shameerali.kolothum.thodi@huawei.com>, <christophe.jaillet@wanadoo.fr>,
+	<yangyicong@hisilicon.com>, <yangyingliang@huawei.com>,
+	<quic_saipraka@quicinc.com>, <jon@solid-run.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-arm-msm@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
+	<linux-tegra@vger.kernel.org>, <virtualization@lists.linux-foundation.org>
+Subject: [PATCH v7 0/5] Define EINVAL as device/domain incompatibility
+Date: Mon, 17 Oct 2022 16:00:29 -0700
+Message-ID: <cover.1666042872.git.nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: oZHmcjLCyp1UmvKL3uRkmVFckIUTDAuK
-X-Proofpoint-ORIG-GUID: oZHmcjLCyp1UmvKL3uRkmVFckIUTDAuK
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-10-17_09,2022-10-17_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- spamscore=0 lowpriorityscore=0 suspectscore=0 malwarescore=0 clxscore=1015
- mlxlogscore=999 bulkscore=0 impostorscore=0 phishscore=0 mlxscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2210170072
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT038:EE_|SA0PR12MB4366:EE_
+X-MS-Office365-Filtering-Correlation-Id: f6db7ab7-1102-4752-fedb-08dab0937223
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	yElfNDeM6HQnph5cqV538mrn7N3uxXVx6wuSoR/n074cJzNGgiqftW5fH+5bWPvno3Sds9BqpCqAVORs68hW3rxOdpVuMi0QOtRH7npSWuEQCqCM6XjxDTYPT1HUwpbfPrzpqNUSbRWnFUT06UNWhMNUF1akmVy+zwDgRP7boeSOWDq22ZKfJGh6qUQ0rsV/c+GWSgncZvL9XbHzqqDZfe3LpRjuzi6we7dJaR2YL+dov6yK1f3JqKksRVH7Tnq5Imr+srcAp3M6dOAgErbB9yotXLIVt0RLX+U/niwIO3lJleeKNjdn1PkhKqCognObbfJBHnG6Uy3jIhhlWIbuhROKVRo8fqk620PppPMG1BmuNDUaqt6wrvlX2kY3ctE4QsYqSzjW+X603p69XhyBFZLm9Ube6SekSPnjN20TPruic+yBZ704dLm2tOla9WLjlO3pZJQqSO3PwiPuCx+BIykLIMRE2FiLCicoOTukCQIe4iraJ5AeZ15e3MdLI/9h+ZeGPBVJRoE3tbGxKMpFqr6dg0rjnzqIlg/sNYgdCZFsQ78LCJIca/r7RJioQVmftyC0H9+4bzxgZkg6VjdYqrrSP0jo4W+lIOhYY/Gu4F9nXAZP5FOGsy+TvKFlytNnSMC+jR2oyYjol/0Ph5iT1b9hK8Fn9kA/GSZcf+lKg7O4BA03q3vcHfYPDFoP0GKdVBj28YHUzjIDdi3ZZw4FFRLuOWicCbPxQnetnoYg34Z21xA22u+Pby946VRKf0hlJhfvSMkDPla5dr6+CjvzBXcmh2YlpfYV4cY8LDT8Ns8U4XyEey1+/LYhbG+X5GXTSdxIauy2rER9RPkpKSTYAdu1xzmRv/cfPTFLDspcTHHXJVn+CviUJ3cIM4zROIEnXmXAybtHXDAXUPI+1kQAtQ==
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(376002)(346002)(396003)(136003)(39860400002)(451199015)(36840700001)(46966006)(40470700004)(47076005)(83380400001)(426003)(336012)(82310400005)(82740400003)(7636003)(356005)(36756003)(40460700003)(86362001)(40480700001)(36860700001)(316002)(6666004)(478600001)(966005)(54906003)(110136005)(66899015)(41300700001)(7416002)(7696005)(7406005)(26005)(2616005)(5660300002)(8676002)(4326008)(70586007)(70206006)(8936002)(2906002)(186003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Oct 2022 23:00:54.6895
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f6db7ab7-1102-4752-fedb-08dab0937223
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1NAM11FT038.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4366
 
-Since commit fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev
-calls") we can end up with duplicates in the list of devices attached to
-a domain. This is inefficient and confusing since only one domain can
-actually be in control of the IOMMU translations for a device. Fix this
-by detaching the device from the previous domain, if any, on attach.
-Add a WARN_ON() in case we still have attached devices on freeing the
-domain. While here remove the re-attach on failure dance as it was
-determined to be unlikely to help and may confuse debug and recovery.
+This series is to replace the previous EMEDIUMTYPE patch in a VFIO series:
+https://lore.kernel.org/kvm/Yxnt9uQTmbqul5lf@8bytes.org/
 
-Fixes: fa7e9ecc5e1c ("iommu/s390: Tolerate repeat attach_dev calls")
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
----
-v6->v7:
-- Added Matt's R-b
-v5->v6:
-- Only set zdev->dma_table once zpci_register_ioat() succeeded (Matt)
-v4->v5:
-- Unregister IOAT and set zdev->dma_table on error (Matt)
+The purpose is to regulate all existing ->attach_dev callback functions to
+use EINVAL exclusively for an incompatibility error between a device and a
+domain. This allows VFIO and IOMMUFD to detect such a soft error, and then
+try a different domain with the same device.
 
- drivers/iommu/s390-iommu.c | 106 ++++++++++++++++---------------------
- 1 file changed, 45 insertions(+), 61 deletions(-)
+Among all the patches, the first two are preparatory changes. And then one
+patch to update kdocs and another three patches for the enforcement effort.
 
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index 3c071782f6f1..c2e5e81d609e 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -79,10 +79,36 @@ static void s390_domain_free(struct iommu_domain *domain)
- {
- 	struct s390_domain *s390_domain = to_s390_domain(domain);
- 
-+	WARN_ON(!list_empty(&s390_domain->devices));
- 	dma_cleanup_tables(s390_domain->dma_table);
- 	kfree(s390_domain);
- }
- 
-+static void __s390_iommu_detach_device(struct zpci_dev *zdev)
-+{
-+	struct s390_domain *s390_domain = zdev->s390_domain;
-+	struct s390_domain_device *domain_device, *tmp;
-+	unsigned long flags;
-+
-+	if (!s390_domain)
-+		return;
-+
-+	spin_lock_irqsave(&s390_domain->list_lock, flags);
-+	list_for_each_entry_safe(domain_device, tmp, &s390_domain->devices,
-+				 list) {
-+		if (domain_device->zdev == zdev) {
-+			list_del(&domain_device->list);
-+			kfree(domain_device);
-+			break;
-+		}
-+	}
-+	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
-+
-+	zpci_unregister_ioat(zdev, 0);
-+	zdev->s390_domain = NULL;
-+	zdev->dma_table = NULL;
-+}
-+
- static int s390_iommu_attach_device(struct iommu_domain *domain,
- 				    struct device *dev)
- {
-@@ -90,7 +116,7 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 	struct zpci_dev *zdev = to_zpci_dev(dev);
- 	struct s390_domain_device *domain_device;
- 	unsigned long flags;
--	int cc, rc;
-+	int cc, rc = 0;
- 
- 	if (!zdev)
- 		return -ENODEV;
-@@ -99,24 +125,18 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 	if (!domain_device)
- 		return -ENOMEM;
- 
--	if (zdev->dma_table && !zdev->s390_domain) {
--		cc = zpci_dma_exit_device(zdev);
--		if (cc) {
--			rc = -EIO;
--			goto out_free;
--		}
--	}
--
- 	if (zdev->s390_domain)
--		zpci_unregister_ioat(zdev, 0);
-+		__s390_iommu_detach_device(zdev);
-+	else if (zdev->dma_table)
-+		zpci_dma_exit_device(zdev);
- 
--	zdev->dma_table = s390_domain->dma_table;
- 	cc = zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
--				virt_to_phys(zdev->dma_table));
-+				virt_to_phys(s390_domain->dma_table));
- 	if (cc) {
- 		rc = -EIO;
--		goto out_restore;
-+		goto out_free;
- 	}
-+	zdev->dma_table = s390_domain->dma_table;
- 
- 	spin_lock_irqsave(&s390_domain->list_lock, flags);
- 	/* First device defines the DMA range limits */
-@@ -127,9 +147,9 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 	/* Allow only devices with identical DMA range limits */
- 	} else if (domain->geometry.aperture_start != zdev->start_dma ||
- 		   domain->geometry.aperture_end != zdev->end_dma) {
--		rc = -EINVAL;
- 		spin_unlock_irqrestore(&s390_domain->list_lock, flags);
--		goto out_restore;
-+		rc = -EINVAL;
-+		goto out_unregister;
- 	}
- 	domain_device->zdev = zdev;
- 	zdev->s390_domain = s390_domain;
-@@ -138,14 +158,9 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 
- 	return 0;
- 
--out_restore:
--	if (!zdev->s390_domain) {
--		zpci_dma_init_device(zdev);
--	} else {
--		zdev->dma_table = zdev->s390_domain->dma_table;
--		zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
--				   virt_to_phys(zdev->dma_table));
--	}
-+out_unregister:
-+	zpci_unregister_ioat(zdev, 0);
-+	zdev->dma_table = NULL;
- out_free:
- 	kfree(domain_device);
- 
-@@ -155,32 +170,12 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- static void s390_iommu_detach_device(struct iommu_domain *domain,
- 				     struct device *dev)
- {
--	struct s390_domain *s390_domain = to_s390_domain(domain);
- 	struct zpci_dev *zdev = to_zpci_dev(dev);
--	struct s390_domain_device *domain_device, *tmp;
--	unsigned long flags;
--	int found = 0;
- 
--	if (!zdev)
--		return;
-+	WARN_ON(zdev->s390_domain != to_s390_domain(domain));
- 
--	spin_lock_irqsave(&s390_domain->list_lock, flags);
--	list_for_each_entry_safe(domain_device, tmp, &s390_domain->devices,
--				 list) {
--		if (domain_device->zdev == zdev) {
--			list_del(&domain_device->list);
--			kfree(domain_device);
--			found = 1;
--			break;
--		}
--	}
--	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
--
--	if (found && (zdev->s390_domain == s390_domain)) {
--		zdev->s390_domain = NULL;
--		zpci_unregister_ioat(zdev, 0);
--		zpci_dma_init_device(zdev);
--	}
-+	__s390_iommu_detach_device(zdev);
-+	zpci_dma_init_device(zdev);
- }
- 
- static struct iommu_device *s390_iommu_probe_device(struct device *dev)
-@@ -198,24 +193,13 @@ static struct iommu_device *s390_iommu_probe_device(struct device *dev)
- static void s390_iommu_release_device(struct device *dev)
- {
- 	struct zpci_dev *zdev = to_zpci_dev(dev);
--	struct iommu_domain *domain;
- 
- 	/*
--	 * This is a workaround for a scenario where the IOMMU API common code
--	 * "forgets" to call the detach_dev callback: After binding a device
--	 * to vfio-pci and completing the VFIO_SET_IOMMU ioctl (which triggers
--	 * the attach_dev), removing the device via
--	 * "echo 1 > /sys/bus/pci/devices/.../remove" won't trigger detach_dev,
--	 * only release_device will be called via the BUS_NOTIFY_REMOVED_DEVICE
--	 * notifier.
--	 *
--	 * So let's call detach_dev from here if it hasn't been called before.
-+	 * release_device is expected to detach any domain currently attached
-+	 * to the device, but keep it attached to other devices in the group.
- 	 */
--	if (zdev && zdev->s390_domain) {
--		domain = iommu_get_domain_for_dev(dev);
--		if (domain)
--			s390_iommu_detach_device(domain, dev);
--	}
-+	if (zdev)
-+		__s390_iommu_detach_device(zdev);
- }
- 
- static int s390_iommu_update_trans(struct s390_domain *s390_domain,
+Although it might be ideal to merge the previous VFIO series together with
+this series, given the number of new changes, the review in the IOMMU list
+might need a couple of rounds to finalize. Also, considering that v6.0 is
+at rc5 now, perhaps we could merge this IOMMU series and the VFIO one in
+different cycles to avoid merge conflicts. If there's less concern for it,
+I can respin the finalized version of this series with the previous VFIO
+one to merge together into the VFIO tree.
+
+This series is also available on Github:
+https://github.com/nicolinc/iommufd/commits/iommu_attach_dev-v7
+
+Changelog
+v7/resend:
+ * Rebased on v6.1-rc1
+v6: https://lore.kernel.org/linux-iommu/cover.1663899032.git.nicolinc@nvidia.com/
+ * Added "Reviewed-by" from Jason to all the changes
+ * Added "Reviewed-by" from Yong to the mtk_iommu change
+ * Dropped the msm patch as it needs a bigger change to fix
+v5: https://lore.kernel.org/linux-iommu/cover.1663836372.git.nicolinc@nvidia.com/
+ * Updated kdocs to correct "attach" narratives
+ * Updated kdocs to be more concise and accurate
+ * Added "Reviewed-by" from Kevin to most of changes
+ * Added "Reviewed-by" from Baolu to the intel_iommu changes
+ * Added "Reviewed-by" from Jean to the virtio-iommu changes
+v4: https://lore.kernel.org/linux-iommu/cover.1663744983.git.nicolinc@nvidia.com/
+ * Refined kdocs with Kevin's input
+ * Fixed an EINVAL conversion in the intel_iommu driver
+ * Added missing error-out routines in the msm_iommu driver
+ * Added a missing EINVAL conversion in the virtio-iommu driver
+ * Updated commit message and added "Reviewed-by" from Kevin to the last patch
+v3: https://lore.kernel.org/linux-iommu/cover.1663227492.git.nicolinc@nvidia.com/
+ * Added "Reviewed-by" from Vasant to the AMD patch
+ * Dropped all unnecessary errno enforcement patches
+ * Updated kdocs and brought back the kdocs for the helpers
+ * Added a separate patch to propagate "ret" for potential EINVALs
+ * Converted to ENODEV those existing EINVAL places that are device-specific
+v2: https://lore.kernel.org/linux-iommu/20220914051234.10006-1-nicolinc@nvidia.com/
+ * Fixed kdocs format
+ * Grouped with the virtio patch from Jean (with a small change)
+ * Separated previous ENODEV and EINVAL changes to per-driver ones
+ * Redone some of the changes to have explicit return values in the
+   ->attach_dev() callback functions or their direct sub-functions.
+v1: https://lore.kernel.org/linux-iommu/20220913082448.31120-1-nicolinc@nvidia.com/
+
+Thanks!
+
+Nicolin Chen (5):
+  iommu/amd: Drop unnecessary checks in amd_iommu_attach_device()
+  iommu: Add return value rules to attach_dev op and APIs
+  iommu: Regulate EINVAL in ->attach_dev callback functions
+  iommu: Use EINVAL for incompatible device/domain in ->attach_dev
+  iommu: Propagate return value in ->attach_dev callback functions
+
+ drivers/iommu/amd/iommu.c                   | 12 ++---------
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 11 +---------
+ drivers/iommu/arm/arm-smmu/arm-smmu.c       |  3 ---
+ drivers/iommu/arm/arm-smmu/qcom_iommu.c     |  7 +-----
+ drivers/iommu/fsl_pamu.c                    |  2 +-
+ drivers/iommu/fsl_pamu_domain.c             |  4 ++--
+ drivers/iommu/intel/iommu.c                 | 10 +++------
+ drivers/iommu/intel/pasid.c                 |  6 ++++--
+ drivers/iommu/iommu.c                       | 24 +++++++++++++++++++++
+ drivers/iommu/ipmmu-vmsa.c                  |  2 --
+ drivers/iommu/mtk_iommu.c                   |  4 ++--
+ drivers/iommu/omap-iommu.c                  |  6 +++---
+ drivers/iommu/sprd-iommu.c                  |  4 +---
+ drivers/iommu/tegra-gart.c                  |  2 +-
+ drivers/iommu/virtio-iommu.c                |  7 +++---
+ include/linux/iommu.h                       | 12 +++++++++++
+ 16 files changed, 60 insertions(+), 56 deletions(-)
+
 -- 
-2.34.1
+2.17.1
 
