@@ -1,44 +1,44 @@
 Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9AAA137C
-	for <iommu@lists.linux.dev>; Mon, 17 Oct 2022 12:46:15 +0000 (UTC)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29HC57pw020059;
-	Mon, 17 Oct 2022 12:46:07 GMT
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABF54137C
+	for <iommu@lists.linux.dev>; Mon, 17 Oct 2022 12:46:18 +0000 (UTC)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29HBvuLp030938;
+	Mon, 17 Oct 2022 12:46:09 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=NDfNIs/V5yOsnPnb7a+DInix+OEPhJc88G9erUaDEOU=;
- b=UwPJ5Qa9PFSwYmVbHGvvZ7y2Cm2rHAK/wj3/onW4uw+9ndlVwebdw2aB44FrKCyAfb2K
- XZzGVAWoT8fvkTY8V10dgzxpX1iLpifdu24BFRxNQU3wdeJgmjK4Eqto2kZ4fjOJjhQZ
- yUrDZmZfWDi01huNDDCs51El/35zjODh8haHTEU+IDZp4NYds+HLACTjtBVhYUN4Zcdq
- k4tFx5HENi8mBM+vIoHT4q+iGYNjgoZ2TTawfQpzmLHCtgXHicm51Ud7/+Q1nEOxD0LK
- 3PGXsZQd/pzFIeXm/AUOH9XzX0Jkt1bSny20BK88hhyHod4hIuK+1HCow19dD7Ka8CCd 2w== 
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3k944bp15q-1
+ bh=1AodIQs5ECY1Bb78ho7XRkJc2DJzcyVFag1dTLCovlg=;
+ b=lE+joaHxh8gS7IydGn6dewlyvS42ihBCjCF8L5No8Hyxdf1QXVSNf2+6/BTt0xmbnwOG
+ GtM96uVlxj38e3ZZGKHdtw2kyKlx3RDX7n+3FcLyBILvDhzBM6hQ/XUU99JCm9Ub+XYO
+ NCd0v8GNRKRMh5Z/Ib9BQ0IJv4CVZKSMq/Bxf5iuh/76Vkh1dEZaY2dFGOBUTb6TCR1U
+ MWVkDqqogy3PGwx3C3nzikLQwwbouOf6gJ5RHnTIBzXaX7g4KRh3Fjfos5RK717DAon5
+ v1Sk0SV+1HzxGfMdW9IADlR6tObBZh7521kL1Wm4UO4cvOXUhaUxHp4viouyOz47Mj+3 Zw== 
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3k865w1d8u-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 17 Oct 2022 12:46:06 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-	by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29HCZIVA023377;
-	Mon, 17 Oct 2022 12:46:03 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-	by ppma04ams.nl.ibm.com with ESMTP id 3k7mg92yrv-1
+	Mon, 17 Oct 2022 12:46:08 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+	by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29HCZq8L026959;
+	Mon, 17 Oct 2022 12:46:05 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+	by ppma06fra.de.ibm.com with ESMTP id 3k7m4jaad6-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 17 Oct 2022 12:46:03 +0000
+	Mon, 17 Oct 2022 12:46:05 +0000
 Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-	by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29HCk0lV262832
+	by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29HCk2Ud4260548
 	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 17 Oct 2022 12:46:00 GMT
+	Mon, 17 Oct 2022 12:46:02 GMT
 Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 6F18F11C05C;
-	Mon, 17 Oct 2022 12:46:00 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id 81EC711C04A;
+	Mon, 17 Oct 2022 12:46:02 +0000 (GMT)
 Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id F197E11C050;
-	Mon, 17 Oct 2022 12:45:59 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id 1057111C04C;
+	Mon, 17 Oct 2022 12:46:02 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
 	by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-	Mon, 17 Oct 2022 12:45:59 +0000 (GMT)
+	Mon, 17 Oct 2022 12:46:02 +0000 (GMT)
 From: Niklas Schnelle <schnelle@linux.ibm.com>
 To: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
         Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
@@ -48,9 +48,9 @@ Cc: Matthew Rosato <mjrosato@linux.ibm.com>, Gerd Bayer <gbayer@linux.ibm.com>,
         borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
         gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
         svens@linux.ibm.com, linux-kernel@vger.kernel.org
-Subject: [PATCH v7 2/6] iommu/s390: Get rid of s390_domain_device
-Date: Mon, 17 Oct 2022 14:45:54 +0200
-Message-Id: <20221017124558.1386337-3-schnelle@linux.ibm.com>
+Subject: [PATCH v7 6/6] iommu/s390: Implement map_pages()/unmap_pages() instead of map()/unmap()
+Date: Mon, 17 Oct 2022 14:45:58 +0200
+Message-Id: <20221017124558.1386337-7-schnelle@linux.ibm.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221017124558.1386337-1-schnelle@linux.ibm.com>
 References: <20221017124558.1386337-1-schnelle@linux.ibm.com>
@@ -62,162 +62,139 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Z50lVSmMMxT5wGbXnOMrGlKvmqtpRcTI
-X-Proofpoint-ORIG-GUID: Z50lVSmMMxT5wGbXnOMrGlKvmqtpRcTI
+X-Proofpoint-GUID: Inrw7REhI73EcOI5lRzP6CGQQ6p7RgJ2
+X-Proofpoint-ORIG-GUID: Inrw7REhI73EcOI5lRzP6CGQQ6p7RgJ2
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
  definitions=2022-10-17_09,2022-10-17_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 bulkscore=0
- impostorscore=0 malwarescore=0 lowpriorityscore=0 mlxlogscore=999
- spamscore=0 mlxscore=0 clxscore=1015 adultscore=0 phishscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=913
+ malwarescore=0 spamscore=0 suspectscore=0 clxscore=1015 impostorscore=0
+ mlxscore=0 priorityscore=1501 bulkscore=0 adultscore=0 phishscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2209130000 definitions=main-2210170072
 
-The struct s390_domain_device serves the sole purpose as list entry for
-the devices list of a struct s390_domain. As it contains no additional
-information besides a list_head and a pointer to the struct zpci_dev we
-can simplify things and just thread the device list through struct
-zpci_dev directly. This removes the need to allocate during domain
-attach and gets rid of one level of indirection during mapping
-operations.
+While s390-iommu currently implements the map_page()/unmap_page()
+operations which only map/unmap a single page at a time the internal
+s390_iommu_update_trans() API already supports mapping/unmapping a range
+of pages at once. Take advantage of this by implementing the
+map_pages()/unmap_pages() operations instead thus allowing users of the
+IOMMU drivers to map multiple pages in a single call followed by
+a single I/O TLB flush if needed.
 
 Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
 Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 ---
-v5->v6:
-- On attach failure make sure the IOAT is not registered
-  and zdev->dma_table == NULL
-- Dropped Jason's R-b
+ drivers/iommu/s390-iommu.c | 48 +++++++++++++++++++++++++-------------
+ 1 file changed, 32 insertions(+), 16 deletions(-)
 
- arch/s390/include/asm/pci.h |  1 +
- drivers/iommu/s390-iommu.c  | 37 +++++++------------------------------
- 2 files changed, 8 insertions(+), 30 deletions(-)
-
-diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
-index 108e732d7b14..15f8714ca9b7 100644
---- a/arch/s390/include/asm/pci.h
-+++ b/arch/s390/include/asm/pci.h
-@@ -117,6 +117,7 @@ struct zpci_bus {
- struct zpci_dev {
- 	struct zpci_bus *zbus;
- 	struct list_head entry;		/* list of all zpci_devices, needed for hotplug, etc. */
-+	struct list_head iommu_list;
- 	struct kref kref;
- 	struct hotplug_slot hotplug_slot;
- 
 diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index c2e5e81d609e..af83ccde16a4 100644
+index 748e2e1b188a..6c407b61b25a 100644
 --- a/drivers/iommu/s390-iommu.c
 +++ b/drivers/iommu/s390-iommu.c
-@@ -29,11 +29,6 @@ struct s390_domain {
- 	spinlock_t		list_lock;
- };
+@@ -196,20 +196,15 @@ static void s390_iommu_release_device(struct device *dev)
  
--struct s390_domain_device {
--	struct list_head	list;
--	struct zpci_dev		*zdev;
--};
--
- static struct s390_domain *to_s390_domain(struct iommu_domain *dom)
- {
- 	return container_of(dom, struct s390_domain, domain);
-@@ -87,21 +82,13 @@ static void s390_domain_free(struct iommu_domain *domain)
- static void __s390_iommu_detach_device(struct zpci_dev *zdev)
- {
- 	struct s390_domain *s390_domain = zdev->s390_domain;
--	struct s390_domain_device *domain_device, *tmp;
- 	unsigned long flags;
- 
- 	if (!s390_domain)
- 		return;
- 
- 	spin_lock_irqsave(&s390_domain->list_lock, flags);
--	list_for_each_entry_safe(domain_device, tmp, &s390_domain->devices,
--				 list) {
--		if (domain_device->zdev == zdev) {
--			list_del(&domain_device->list);
--			kfree(domain_device);
--			break;
--		}
--	}
-+	list_del_init(&zdev->iommu_list);
- 	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
- 
- 	zpci_unregister_ioat(zdev, 0);
-@@ -114,17 +101,12 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- {
- 	struct s390_domain *s390_domain = to_s390_domain(domain);
- 	struct zpci_dev *zdev = to_zpci_dev(dev);
--	struct s390_domain_device *domain_device;
- 	unsigned long flags;
- 	int cc, rc = 0;
- 
- 	if (!zdev)
- 		return -ENODEV;
- 
--	domain_device = kzalloc(sizeof(*domain_device), GFP_KERNEL);
--	if (!domain_device)
--		return -ENOMEM;
--
- 	if (zdev->s390_domain)
- 		__s390_iommu_detach_device(zdev);
- 	else if (zdev->dma_table)
-@@ -132,10 +114,8 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 
- 	cc = zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
- 				virt_to_phys(s390_domain->dma_table));
--	if (cc) {
--		rc = -EIO;
--		goto out_free;
--	}
-+	if (cc)
-+		return -EIO;
- 	zdev->dma_table = s390_domain->dma_table;
- 
- 	spin_lock_irqsave(&s390_domain->list_lock, flags);
-@@ -151,9 +131,8 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 		rc = -EINVAL;
- 		goto out_unregister;
- 	}
--	domain_device->zdev = zdev;
- 	zdev->s390_domain = s390_domain;
--	list_add(&domain_device->list, &s390_domain->devices);
-+	list_add(&zdev->iommu_list, &s390_domain->devices);
- 	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
- 
- 	return 0;
-@@ -161,8 +140,6 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- out_unregister:
- 	zpci_unregister_ioat(zdev, 0);
- 	zdev->dma_table = NULL;
--out_free:
--	kfree(domain_device);
- 
- 	return rc;
- }
-@@ -206,10 +183,10 @@ static int s390_iommu_update_trans(struct s390_domain *s390_domain,
+ static int s390_iommu_update_trans(struct s390_domain *s390_domain,
  				   phys_addr_t pa, dma_addr_t dma_addr,
- 				   size_t size, int flags)
+-				   size_t size, int flags)
++				   unsigned long nr_pages, int flags)
  {
--	struct s390_domain_device *domain_device;
  	phys_addr_t page_addr = pa & PAGE_MASK;
  	dma_addr_t start_dma_addr = dma_addr;
- 	unsigned long irq_flags, nr_pages, i;
-+	struct zpci_dev *zdev;
+-	unsigned long irq_flags, nr_pages, i;
++	unsigned long irq_flags, i;
+ 	struct zpci_dev *zdev;
  	unsigned long *entry;
  	int rc = 0;
  
-@@ -234,8 +211,8 @@ static int s390_iommu_update_trans(struct s390_domain *s390_domain,
- 	}
+-	if (dma_addr < s390_domain->domain.geometry.aperture_start ||
+-	    (dma_addr + size - 1) > s390_domain->domain.geometry.aperture_end)
+-		return -EINVAL;
+-
+-	nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
+ 	if (!nr_pages)
+ 		return 0;
  
- 	spin_lock(&s390_domain->list_lock);
--	list_for_each_entry(domain_device, &s390_domain->devices, list) {
--		rc = zpci_refresh_trans((u64) domain_device->zdev->fh << 32,
-+	list_for_each_entry(zdev, &s390_domain->devices, iommu_list) {
-+		rc = zpci_refresh_trans((u64)zdev->fh << 32,
- 					start_dma_addr, nr_pages * PAGE_SIZE);
- 		if (rc)
- 			break;
+@@ -252,11 +247,24 @@ static int s390_iommu_update_trans(struct s390_domain *s390_domain,
+ 	return rc;
+ }
+ 
+-static int s390_iommu_map(struct iommu_domain *domain, unsigned long iova,
+-			  phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
++static int s390_iommu_map_pages(struct iommu_domain *domain,
++				unsigned long iova, phys_addr_t paddr,
++				size_t pgsize, size_t pgcount,
++				int prot, gfp_t gfp, size_t *mapped)
+ {
+ 	struct s390_domain *s390_domain = to_s390_domain(domain);
+ 	int flags = ZPCI_PTE_VALID, rc = 0;
++	size_t size = pgcount << __ffs(pgsize);
++
++	if (pgsize != SZ_4K)
++		return -EINVAL;
++
++	if (iova < s390_domain->domain.geometry.aperture_start ||
++	    (iova + size - 1) > s390_domain->domain.geometry.aperture_end)
++		return -EINVAL;
++
++	if (!IS_ALIGNED(iova | paddr, pgsize))
++		return -EINVAL;
+ 
+ 	if (!(prot & IOMMU_READ))
+ 		return -EINVAL;
+@@ -265,7 +273,9 @@ static int s390_iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 		flags |= ZPCI_TABLE_PROTECTED;
+ 
+ 	rc = s390_iommu_update_trans(s390_domain, paddr, iova,
+-				     size, flags);
++				     pgcount, flags);
++	if (!rc)
++		*mapped = size;
+ 
+ 	return rc;
+ }
+@@ -301,21 +311,27 @@ static phys_addr_t s390_iommu_iova_to_phys(struct iommu_domain *domain,
+ 	return phys;
+ }
+ 
+-static size_t s390_iommu_unmap(struct iommu_domain *domain,
+-			       unsigned long iova, size_t size,
+-			       struct iommu_iotlb_gather *gather)
++static size_t s390_iommu_unmap_pages(struct iommu_domain *domain,
++				     unsigned long iova,
++				     size_t pgsize, size_t pgcount,
++				     struct iommu_iotlb_gather *gather)
+ {
+ 	struct s390_domain *s390_domain = to_s390_domain(domain);
++	size_t size = pgcount << __ffs(pgsize);
+ 	int flags = ZPCI_PTE_INVALID;
+ 	phys_addr_t paddr;
+ 	int rc;
+ 
++	if (WARN_ON(iova < s390_domain->domain.geometry.aperture_start ||
++	    (iova + size - 1) > s390_domain->domain.geometry.aperture_end))
++		return 0;
++
+ 	paddr = s390_iommu_iova_to_phys(domain, iova);
+ 	if (!paddr)
+ 		return 0;
+ 
+ 	rc = s390_iommu_update_trans(s390_domain, paddr, iova,
+-				     size, flags);
++				     pgcount, flags);
+ 	if (rc)
+ 		return 0;
+ 
+@@ -361,8 +377,8 @@ static const struct iommu_ops s390_iommu_ops = {
+ 	.default_domain_ops = &(const struct iommu_domain_ops) {
+ 		.attach_dev	= s390_iommu_attach_device,
+ 		.detach_dev	= s390_iommu_detach_device,
+-		.map		= s390_iommu_map,
+-		.unmap		= s390_iommu_unmap,
++		.map_pages	= s390_iommu_map_pages,
++		.unmap_pages	= s390_iommu_unmap_pages,
+ 		.iova_to_phys	= s390_iommu_iova_to_phys,
+ 		.free		= s390_domain_free,
+ 	}
 -- 
 2.34.1
 
