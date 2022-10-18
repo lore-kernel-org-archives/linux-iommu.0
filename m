@@ -1,89 +1,87 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f178.google.com (mail-il1-f178.google.com [209.85.166.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D223010E5
-	for <iommu@lists.linux.dev>; Tue, 18 Oct 2022 00:08:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F727C433D7;
-	Tue, 18 Oct 2022 00:08:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1666051734;
-	bh=MYsXPCCZudwVdMZHgFFQW2l401Y+tXJbW6caoYc4ohE=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=D+2BYc6fywgJi/EV4UJ6395U56JGi6Gc7TGgvnNRluriwwEub6emL2YjYTEyttUuu
-	 b+e3jbwpX9W7WOlk0BvHIOFv8OObdhX5h9HkPv9piggo1r5mBznnK1u2M6zKtuzK9Q
-	 PdzwjAAKQICVCiTkC1Gy2n0MQR5tBPETUNxRWDhi9HHeYzkV1o13KW2+LgXUJzzqOs
-	 AYDfmrGgPQBDnlEuqC6w//dEzUqGqoRgQKHcrh3+itYFHrczzMM4LuaWNhDBxv9dzi
-	 CKFWmGpTxxkiOQvNFAqAkwxqBJ74rnb1fswkEaQX2p3Gs/Xf255DfsTFTY3gWBjjir
-	 rjAKbdDzs1+Gg==
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <jroedel@suse.de>,
-	Sasha Levin <sashal@kernel.org>,
-	dwmw2@infradead.org,
-	baolu.lu@linux.intel.com,
-	joro@8bytes.org,
-	will@kernel.org,
-	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.19 07/29] iommu/vt-d: Handle race between registration and device probe
-Date: Mon, 17 Oct 2022 20:08:16 -0400
-Message-Id: <20221018000839.2730954-7-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221018000839.2730954-1-sashal@kernel.org>
-References: <20221018000839.2730954-1-sashal@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 912057B
+	for <iommu@lists.linux.dev>; Tue, 18 Oct 2022 01:11:05 +0000 (UTC)
+Received: by mail-il1-f178.google.com with SMTP id d14so6752569ilf.2
+        for <iommu@lists.linux.dev>; Mon, 17 Oct 2022 18:11:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=lUGmLAO+UyEHxzHYsfZWHoOtdpAGmxoVd+nS8TzFDs8=;
+        b=qiCS1CYVNm2hhnp0GB1inFD/WgFm91+6EQ/i2Q6MEqZ2w4Hf7VZc7QgYL/OsHtH6g+
+         eX4vgHBLBMhCP0btXHSSOWsPQ0+HEyP88/M3R8sfToGKM+os0iAI+DFnUCggCyrr33pD
+         khZhonkn8A0m+4UUGUOlTzZkd3WzPMk70Yvqsh3H2RggatREM7lu7z1xxEC49f35M+vL
+         zM08xOUgi75DAXdGlhVr3SEm/K0q7z/7gHCcNRsSjKfpIOZJ1akPVp6PhjeISYLU8Mkp
+         n9x9P53hi0Y+6xGHa0S5ryLoDkCC9a634nqkrePHmQeKXQtO8mSxdWohECc6DGmRNY/K
+         kbOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=lUGmLAO+UyEHxzHYsfZWHoOtdpAGmxoVd+nS8TzFDs8=;
+        b=qgvPVbdTxl0U+EVs+EfTopm0zsmVgmIcjT2WNr9zlo+lFuQ8UoMYH7DKBj7cA5jaAX
+         9JjcATnLf0L4zTWK6RH3qZxDSg6KJUWStB/3mz8JcS64329gn66E/JzxERXr3eNfcBh4
+         /XkBkW1dgHAjXMy691BzEibImlpUYtkwnSp4TbxqQ5yEfOTlPplNpVrvN247rYcqKYBT
+         hULPADyFtlTcebo+97m3FMkQh/ogDvrrNaNmB8DM16uuiFOkzpUBbZcqkYnjK+TUDV+8
+         dIys+bLNs5MkVkhLdgrTZVoYE78QguDQhSHfJTPZIEbuF9xW2biGpJxYE6ABM0LbAwdW
+         IEPg==
+X-Gm-Message-State: ACrzQf1xq8z7KJ+I+u69tYU54ChxGibMhDL4LeWUoEuv8oIJhxhZJC2L
+	dcaAL5EC84toUWQbWDVfpl2/ZXJmnX68XQ==
+X-Google-Smtp-Source: AMsMyM6IB6dhw+gIryWO6kHLBntXwikUmUVZu9vEkx3nSgFpNYvp6/Q+aN+jppnMktaHfdUcrF4txQ==
+X-Received: by 2002:a05:6e02:1c02:b0:2fa:1594:b7aa with SMTP id l2-20020a056e021c0200b002fa1594b7aamr528586ilh.263.1666055464387;
+        Mon, 17 Oct 2022 18:11:04 -0700 (PDT)
+Received: from localhost ([2607:fea8:a2e2:2d00::4a89])
+        by smtp.gmail.com with UTF8SMTPSA id g19-20020a05660203d300b0069e1bcbddaesm499939iov.16.2022.10.17.18.11.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Oct 2022 18:11:03 -0700 (PDT)
+From: Richard Acayan <mailingradian@gmail.com>
+To: iommu@lists.linux.dev
+Cc: Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Konrad Dybcio <konrad.dybcio@somainline.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+	Richard Acayan <mailingradian@gmail.com>,
+	Vinod Koul <vkoul@kernel.org>,
+	Rob Clark <robdclark@chromium.org>,
+	Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+	linux-arm-kernel@lists.infradead.org,
+	devicetree@vger.kernel.org
+Subject: [RESEND PATCH v2 0/2] iommu: SMMU for SDM670
+Date: Mon, 17 Oct 2022 21:10:46 -0400
+Message-Id: <20221018011048.25371-1-mailingradian@gmail.com>
+X-Mailer: git-send-email 2.38.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 
-From: Robin Murphy <robin.murphy@arm.com>
+Changes since v1 (no emails related to this series since last week):
+ - accumulate tags (both were added because it seems like the discussion
+   ended in agreement to keep adding compatible strings to the driver)
 
-[ Upstream commit c919739ce4721ecf7b96b99253b032df30fcf19b ]
+This adds the compatible string for the Qualcomm Snapdragon 670's SMMU. The
+SMMU is necessary for GENI I2C, included in initial bringup because it
+doesn't need non-trivial patches except for patches conventionally added
+before the initial device tree (global clock controller and pinctrl).
 
-Currently we rely on registering all our instances before initially
-allowing any .probe_device calls via bus_set_iommu(). In preparation for
-phasing out the latter, make sure we won't inadvertently return success
-for a device associated with a known but not yet registered instance,
-otherwise we'll run straight into iommu_group_get_for_dev() trying to
-use NULL ops.
+Richard Acayan (2):
+  dt-bindings: iommu: arm-smmu: add sdm670 compatible
+  iommu: arm-smmu-qcom: add sdm670 compatible
 
-That also highlights an issue with intel_iommu_get_resv_regions() taking
-dmar_global_lock from within a section where intel_iommu_init() already
-holds it, which already exists via probe_acpi_namespace_devices() when
-an ANDD device is probed, but gets more obvious with the upcoming change
-to iommu_device_register(). Since they are both read locks it manages
-not to deadlock in practice, and a more in-depth rework of this locking
-is underway, so no attempt is made to address it here.
+ Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c            | 1 +
+ 2 files changed, 2 insertions(+)
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/579f2692291bcbfc3ac64f7456fcff0d629af131.1660572783.git.robin.murphy@arm.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iommu/intel/iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 3ed15e8ca677..690fad0d37f8 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4586,7 +4586,7 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
- 	u8 bus, devfn;
- 
- 	iommu = device_to_iommu(dev, &bus, &devfn);
--	if (!iommu)
-+	if (!iommu || !iommu->iommu.ops)
- 		return ERR_PTR(-ENODEV);
- 
- 	info = kzalloc(sizeof(*info), GFP_KERNEL);
 -- 
-2.35.1
+2.38.0
 
