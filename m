@@ -1,34 +1,37 @@
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CA3F1C3D
-	for <iommu@lists.linux.dev>; Tue, 18 Oct 2022 06:43:41 +0000 (UTC)
-X-UUID: ba8d7a85b29f4733a1097e542a264ac8-20221018
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA2C51C3D
+	for <iommu@lists.linux.dev>; Tue, 18 Oct 2022 06:43:55 +0000 (UTC)
+X-UUID: 7aa6dbe3e3d246a5a3294088c07eb8b3-20221018
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=XLjpNmmzQfrCx04W/9OkBGz4SSpfbEEzwXgH5RbWvZE=;
-	b=HVANC9E8n9qc17SU71a1dbE/sbaEtg1kvBJg1XCMXVUibve+2uopbpJEIJlmMtUq4CWq2prkVtjsUB12Cb9bEWLIPOhda1uIybD2niMc6oc2AVpvwNjhiT2pWNevJjGw4If23SGj1Ef2uzs1Ok8n8kY/lOx4DYVDyAiIP877nZU=;
+	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=vcwkq/GNAzOHjAXBozQ7dRU3k73TboNxx7qU7Vk6ohE=;
+	b=dtK70E2AXS+cIDxQxX6oihGPpUySZZWc42ho7qboNlfrJ8lHBYUecdnp48tHU10gh8FivylUuN2kXrcLCSDSDmQ+uSbyE1X1YkLJ8kl/Bulxevr/IHOJ7Oao8Y7xVT32o2xn+/oOGNpjiS4cQ7dtbr3b374YnGCOR7wxlSB53xI=;
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.11,REQID:456cbf24-4098-45c8-9e76-4c9049b920df,IP:0,U
-	RL:0,TC:0,Content:-25,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTIO
-	N:release,TS:-25
-X-CID-META: VersionHash:39a5ff1,CLOUDID:e43b21a4-ebb2-41a8-a87c-97702aaf2e20,B
-	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
-	RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: ba8d7a85b29f4733a1097e542a264ac8-20221018
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+X-CID-O-INFO: VERSION:1.1.11,REQID:9304b4dd-99fe-44b5-8063-83f5dc9a04b0,IP:0,U
+	RL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Release_Ham,ACTIO
+	N:release,TS:90
+X-CID-INFO: VERSION:1.1.11,REQID:9304b4dd-99fe-44b5-8063-83f5dc9a04b0,IP:0,URL
+	:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Spam_GS981B3D,ACTIO
+	N:quarantine,TS:90
+X-CID-META: VersionHash:39a5ff1,CLOUDID:522320a3-73e4-48dd-a911-57b5d5484f14,B
+	ulkID:221018144352ZONNYS3V,BulkQuantity:0,Recheck:0,SF:38|28|17|19|48,TC:n
+	il,Content:0,EDM:-3,IP:nil,URL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 7aa6dbe3e3d246a5a3294088c07eb8b3-20221018
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
 	(envelope-from <chengci.xu@mediatek.com>)
 	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-	with ESMTP id 130291350; Tue, 18 Oct 2022 14:43:37 +0800
+	with ESMTP id 1498364546; Tue, 18 Oct 2022 14:43:50 +0800
 Received: from mtkmbs13n1.mediatek.inc (172.21.101.193) by
- mtkmbs13n1.mediatek.inc (172.21.101.193) with Microsoft SMTP Server
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Tue, 18 Oct 2022 14:43:35 +0800
+ 15.2.792.15; Tue, 18 Oct 2022 14:43:49 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkmbs13n1.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
- Transport; Tue, 18 Oct 2022 14:43:35 +0800
+ Transport; Tue, 18 Oct 2022 14:43:48 +0800
 From: Chengci.Xu <chengci.xu@mediatek.com>
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will
- Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, "Will
+ Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
 	<robh+dt@kernel.org>, Krzysztof Kozlowski
 	<krzysztof.kozlowski+dt@linaro.org>, Matthias Brugger
 	<matthias.bgg@gmail.com>
@@ -36,10 +39,11 @@ CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
 	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
 	<linux-arm-kernel@lists.infradead.org>,
 	<Project_Global_Chrome_Upstream_Group@mediatek.com>, Chengci.Xu
-	<chengci.xu@mediatek.com>
-Subject: [PATCH v4 3/4] iommu/mediatek: Add enable IOMMU SMC command for INFRA master
-Date: Tue, 18 Oct 2022 14:42:38 +0800
-Message-ID: <20221018064239.13391-4-chengci.xu@mediatek.com>
+	<chengci.xu@mediatek.com>, AngeloGioacchino Del Regno
+	<angelogioacchino.delregno@collabora.com>
+Subject: [PATCH v4 4/4] iommu/mediatek: Add MT8188 IOMMU Support
+Date: Tue, 18 Oct 2022 14:42:39 +0800
+Message-ID: <20221018064239.13391-5-chengci.xu@mediatek.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20221018064239.13391-1-chengci.xu@mediatek.com>
 References: <20221018064239.13391-1-chengci.xu@mediatek.com>
@@ -52,109 +56,87 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 
-The register which can enable IOMMU for INFRA master should be setted
-in secure world for security concerns. Therefore, we add a SMC command
-for INFRA master to enable/disable INFRA IOMMU in ATF. This function is
-prepared for MT8188.
+MT8188 has 3 IOMMU, containing 2 MM IOMMUs, one is for vdo, the other
+is for vpp. and 1 INFRA IOMMU.
 
 Signed-off-by: Chengci.Xu <chengci.xu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- drivers/iommu/mtk_iommu.c  | 32 ++++++++++++++++++++++----------
- include/soc/mediatek/smi.h |  1 +
- 2 files changed, 23 insertions(+), 10 deletions(-)
+ drivers/iommu/mtk_iommu.c | 47 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 47 insertions(+)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index fbaf401f34e0..cb62cb89a2f4 100644
+index cb62cb89a2f4..3de8bb5d8404 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -3,6 +3,7 @@
-  * Copyright (c) 2015-2016 MediaTek Inc.
-  * Author: Yong Wu <yong.wu@mediatek.com>
-  */
-+#include <linux/arm-smccc.h>
- #include <linux/bitfield.h>
- #include <linux/bug.h>
- #include <linux/clk.h>
-@@ -28,6 +29,7 @@
- #include <linux/slab.h>
- #include <linux/spinlock.h>
- #include <linux/soc/mediatek/infracfg.h>
-+#include <linux/soc/mediatek/mtk_sip_svc.h>
- #include <asm/barrier.h>
- #include <soc/mediatek/smi.h>
- 
-@@ -139,6 +141,7 @@
- #define IFA_IOMMU_PCIE_SUPPORT		BIT(16)
- #define PGTABLE_PA_35_EN		BIT(17)
- #define TF_PORT_TO_ADDR_MT8173		BIT(18)
-+#define CFG_IFA_MASTER_IN_ATF		BIT(19)
- 
- #define MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, mask)	\
- 				((((pdata)->flags) & (mask)) == (_x))
-@@ -535,6 +538,7 @@ static int mtk_iommu_config(struct mtk_iommu_data *data, struct device *dev,
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	const struct mtk_iommu_iova_region *region;
- 	unsigned long portid_msk_ext;
-+	struct arm_smccc_res res;
- 	u32 portid_msk = 0;
- 	int i, ret = 0;
- 
-@@ -562,17 +566,24 @@ static int mtk_iommu_config(struct mtk_iommu_data *data, struct device *dev,
- 		else
- 			larb_mmu->mmu &= ~portid_msk;
- 	} else if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_INFRA)) {
--		/* PCI dev has only one output id, enable the next writing bit for PCIe */
--		if (dev_is_pci(dev)) {
--			if (fwspec->num_ids != 1) {
--				dev_err(dev, "PCI dev can only have one port.\n");
--				return -ENODEV;
-+		if (MTK_IOMMU_HAS_FLAG(data->plat_data, CFG_IFA_MASTER_IN_ATF)) {
-+			arm_smccc_smc(MTK_SIP_KERNEL_IOMMU_CONTROL,
-+				      IOMMU_ATF_CMD_CONFIG_INFRA_IOMMU,
-+				      portid_msk, enable, 0, 0, 0, 0, &res);
-+			ret = res.a0;
-+		} else {
-+			/* PCI dev has only one output id, enable the next writing bit for PCIe */
-+			if (dev_is_pci(dev)) {
-+				if (fwspec->num_ids != 1) {
-+					dev_err(dev, "PCI dev can only have one port.\n");
-+					return -ENODEV;
-+				}
-+				portid_msk |= BIT(portid + 1);
- 			}
--			portid_msk |= BIT(portid + 1);
--		}
- 
--		ret = regmap_update_bits(data->pericfg, PERICFG_IOMMU_1,
--					 portid_msk, enable ? portid_msk : 0);
-+			ret = regmap_update_bits(data->pericfg, PERICFG_IOMMU_1,
-+						 portid_msk, enable ? portid_msk : 0);
-+		}
- 		if (ret)
- 			dev_err(dev, "%s iommu(%s) inframaster 0x%x fail(%d).\n",
- 				enable ? "enable" : "disable",
-@@ -1223,7 +1234,8 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 			dev_err_probe(dev, ret, "mm dts parse fail\n");
- 			goto out_runtime_disable;
- 		}
--	} else if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_INFRA)) {
-+	} else if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_INFRA) &&
-+		   !MTK_IOMMU_HAS_FLAG(data->plat_data, CFG_IFA_MASTER_IN_ATF)) {
- 		p = data->plat_data->pericfg_comp_str;
- 		data->pericfg = syscon_regmap_lookup_by_compatible(p);
- 		if (IS_ERR(data->pericfg)) {
-diff --git a/include/soc/mediatek/smi.h b/include/soc/mediatek/smi.h
-index dfd8efca5e60..000eb1cf68b7 100644
---- a/include/soc/mediatek/smi.h
-+++ b/include/soc/mediatek/smi.h
-@@ -13,6 +13,7 @@
- 
- enum iommu_atf_cmd {
- 	IOMMU_ATF_CMD_CONFIG_SMI_LARB,		/* For mm master to en/disable iommu */
-+	IOMMU_ATF_CMD_CONFIG_INFRA_IOMMU,	/* For infra master to enable iommu */
- 	IOMMU_ATF_CMD_MAX,
+@@ -166,6 +166,7 @@ enum mtk_iommu_plat {
+ 	M4U_MT8173,
+ 	M4U_MT8183,
+ 	M4U_MT8186,
++	M4U_MT8188,
+ 	M4U_MT8192,
+ 	M4U_MT8195,
+ };
+@@ -1475,6 +1476,49 @@ static const struct mtk_iommu_plat_data mt8186_data_mm = {
+ 	.iova_region_nr = ARRAY_SIZE(mt8192_multi_dom),
  };
  
++static const struct mtk_iommu_plat_data mt8188_data_infra = {
++	.m4u_plat	  = M4U_MT8188,
++	.flags            = WR_THROT_EN | DCM_DISABLE | STD_AXI_MODE | PM_CLK_AO |
++			    MTK_IOMMU_TYPE_INFRA | IFA_IOMMU_PCIE_SUPPORT |
++			    CFG_IFA_MASTER_IN_ATF,
++	.inv_sel_reg      = REG_MMU_INV_SEL_GEN2,
++	.banks_num	  = 1,
++	.banks_enable     = {true},
++	.iova_region      = single_domain,
++	.iova_region_nr   = ARRAY_SIZE(single_domain),
++};
++
++static const struct mtk_iommu_plat_data mt8188_data_vdo = {
++	.m4u_plat	= M4U_MT8188,
++	.flags          = HAS_BCLK | HAS_SUB_COMM_3BITS | OUT_ORDER_WR_EN |
++			  WR_THROT_EN | IOVA_34_EN | SHARE_PGTABLE | MTK_IOMMU_TYPE_MM,
++	.hw_list        = &m4ulist,
++	.inv_sel_reg    = REG_MMU_INV_SEL_GEN2,
++	.banks_num      = 1,
++	.banks_enable   = {true},
++	.iova_region	= mt8192_multi_dom,
++	.iova_region_nr	= ARRAY_SIZE(mt8192_multi_dom),
++	.larbid_remap   = {{2}, {0}, {21}, {0}, {19}, {9, 10,
++			   11 /* 11a */, 25 /* 11c */},
++			   {13, 0, 29 /* 16b */, 30 /* 17b */, 0}, {5}},
++};
++
++static const struct mtk_iommu_plat_data mt8188_data_vpp = {
++	.m4u_plat	= M4U_MT8188,
++	.flags          = HAS_BCLK | HAS_SUB_COMM_3BITS | OUT_ORDER_WR_EN |
++			  WR_THROT_EN | IOVA_34_EN | SHARE_PGTABLE | MTK_IOMMU_TYPE_MM,
++	.hw_list        = &m4ulist,
++	.inv_sel_reg    = REG_MMU_INV_SEL_GEN2,
++	.banks_num      = 1,
++	.banks_enable   = {true},
++	.iova_region	= mt8192_multi_dom,
++	.iova_region_nr	= ARRAY_SIZE(mt8192_multi_dom),
++	.larbid_remap   = {{1}, {3}, {23}, {7}, {MTK_INVALID_LARBID},
++			   {12, 15, 24 /* 11b */}, {14, MTK_INVALID_LARBID,
++			   16 /* 16a */, 17 /* 17a */, MTK_INVALID_LARBID,
++			   27, 28 /* ccu0 */, MTK_INVALID_LARBID}, {4, 6}},
++};
++
+ static const struct mtk_iommu_plat_data mt8192_data = {
+ 	.m4u_plat       = M4U_MT8192,
+ 	.flags          = HAS_BCLK | HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN |
+@@ -1543,6 +1587,9 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
+ 	{ .compatible = "mediatek,mt8173-m4u", .data = &mt8173_data},
+ 	{ .compatible = "mediatek,mt8183-m4u", .data = &mt8183_data},
+ 	{ .compatible = "mediatek,mt8186-iommu-mm",    .data = &mt8186_data_mm}, /* mm: m4u */
++	{ .compatible = "mediatek,mt8188-iommu-infra", .data = &mt8188_data_infra},
++	{ .compatible = "mediatek,mt8188-iommu-vdo",   .data = &mt8188_data_vdo},
++	{ .compatible = "mediatek,mt8188-iommu-vpp",   .data = &mt8188_data_vpp},
+ 	{ .compatible = "mediatek,mt8192-m4u", .data = &mt8192_data},
+ 	{ .compatible = "mediatek,mt8195-iommu-infra", .data = &mt8195_data_infra},
+ 	{ .compatible = "mediatek,mt8195-iommu-vdo",   .data = &mt8195_data_vdo},
 -- 
 2.25.1
 
