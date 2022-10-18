@@ -1,160 +1,159 @@
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2046.outbound.protection.outlook.com [40.107.21.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FEC14A24;
-	Tue, 18 Oct 2022 12:02:06 +0000 (UTC)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-	by mailout.nyi.internal (Postfix) with ESMTP id 85AC25C00C0;
-	Tue, 18 Oct 2022 08:02:05 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Tue, 18 Oct 2022 08:02:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	invisiblethingslab.com; h=cc:cc:content-type:date:date:from:from
-	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:sender:subject:subject:to:to; s=fm3; t=1666094525; x=
-	1666180925; bh=O2/dMz8NgpCHX1Sqp3OOccZ2LMUa8ynU7I6zNQmgh+0=; b=l
-	70icwUpCYe/Aui9OGIpsAdTKFMrKO8qR1ZA95p2xUAPSBHbPaMwalL10N/XoI6DI
-	6ZYD77TVYc7dvLvHSH9+Tr/quqSR4pVkgTMPy6WR2nxZYP8Ut0Xs2poaa5xessjT
-	f0uFfDB2lp/qV5dIt1ZKRPcKvLNGIttJ1uOfymbM7q1E9tAMAED2VMWUfz6gcSyo
-	Wcp2tBrYDTJF65c5gzf+BZ4ngpAAkq+049NxQB81884loVMp1TgjNwX7uArKJEl2
-	C/HyOxcqSPNVw/zW1CAw+i1jfgB2OavopVZZbsW7XAPX+zrRKPdZYK8ma4BcaHMQ
-	SW4Rm1QIAxLvBFC3lharw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-	:feedback-id:from:from:in-reply-to:in-reply-to:message-id
-	:mime-version:references:reply-to:sender:subject:subject:to:to
-	:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-	fm3; t=1666094525; x=1666180925; bh=O2/dMz8NgpCHX1Sqp3OOccZ2LMUa
-	8ynU7I6zNQmgh+0=; b=lTeAcC/icUBb+IlQWBzbTLHVrTH5ajyoSWtpcUiVRIhz
-	vpZWIAP57iGUXKR6d58fDi2y3UqU8itb1kn3YjiiFZOvPy+j7aYBERpYoK9iqBMh
-	1UIMYouGb6GVcaCyVQX6Em8XqnJBn8pc9MMZi6ywh29NsYiCcex7oCd0U4cA4fdc
-	gylkVnvf+4YTZ76l0YOgdwz141C5gCEpOlLAxXJ5dAgdKN9JDhwJASxIy2B0G2A1
-	wC8aGjGA72X596R6bBAIa3FbrSZf9r5AdvQ+1QZBGCV1i/qHoK6zfObK7og/p6pk
-	D6BG0fCj8MS3pwqPUBVc4Vv1uqAz5/2WqnGnINd9JQ==
-X-ME-Sender: <xms:u5VOY82j9ZJWwLuBuO62e6RXoISFTb8cxq7dqTz-s--dzOK8BUwnnw>
-    <xme:u5VOY3EIs1KXrYXtuQ5BdB3VBwQXNeh9aE_uc-OFAT0zFkZH19lwuE3xP_pf0zFCK
-    FpyTsYcCZi0cA>
-X-ME-Received: <xmr:u5VOY052XM0GJlQstg7vCbpdciJsx8nAwC6pumYrNNN2YzoguXHE7OGHCe_vupzRSf6TVmW6AMZYC1TuSy1AuEk31VG9IbD5nOKu>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrfeelvddgudekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesghdtreertddtjeenucfhrhhomhepofgrrhgv
-    khcuofgrrhgtiiihkhhofihskhhiqdfikphrvggtkhhiuceomhgrrhhmrghrvghksehinh
-    hvihhsihgslhgvthhhihhnghhslhgrsgdrtghomheqnecuggftrfgrthhtvghrnhepgfdu
-    leetfeevhfefheeiteeliefhjefhleduveetteekveettddvgeeuteefjedunecuvehluh
-    hsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrrhhmrghrvghk
-    sehinhhvihhsihgslhgvthhhihhnghhslhgrsgdrtghomh
-X-ME-Proxy: <xmx:u5VOY13fc3uSr8JORwaxyD9b04YDru3oXdU9H8TxTJO-awSdPee5lA>
-    <xmx:u5VOY_FsA3dQ_fLjy8D0865wmQ8NIDpv03MspxTHb5UhN5uSwOVAOA>
-    <xmx:u5VOY--EaK2gNw3aY4jYloONLw6zwutGCRWDL3v6e6wst1ar8abn-A>
-    <xmx:vZVOY8e5fR4nP3eZQFZ9S5n_lu5ZLNMZn3VC4iVGv_lu0b1PN0C6fw>
-Feedback-ID: i1568416f:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 18 Oct 2022 08:02:01 -0400 (EDT)
-Date: Tue, 18 Oct 2022 14:01:40 +0200
-From: Marek =?utf-8?Q?Marczykowski-G=C3=B3recki?= <marmarek@invisiblethingslab.com>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-	Anshuman Khandual <anshuman.khandual@arm.com>,
-	Juergen Gross <jgross@suse.com>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-	regressions@lists.linux.dev, xen-devel@lists.xenproject.org,
-	iommu@lists.linux.dev, Robert Beckett <bob.beckett@collabora.com>,
-	Jani Nikula <jani.nikula@linux.intel.com>,
-	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-	Matthew Auld <matthew.auld@intel.com>,
-	intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 899574C64;
+	Tue, 18 Oct 2022 14:21:49 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cZLCghwoaweAK6AiSWMlV1PYyKvXEvTfF/A9GBOG7NgM74RmQHspej6JaSusrPoGU99LX11K/e8JYCr6A0GRBMJu6sRAj36d1ZEx46NozLM2DD9AM1YhI7RHiN6T1lTMVea7O7dyejAShEsWeUOI2cot84kRg7VsH5XQq8tkt/mhQG9uKyIZ4Z2MME4kxBuIVkDji3it9q2nV2tAHz6UnfBEb+9LJZlEIWB4PeagICTwempdxZb1BEx/KcXxOrw8HoKbE8VJbDikFdd3KL/h9Xl+EMSHyZagQpqAAzBctvsHgNlKQgW0USA7mE9iZPTgYRE8OB1BoQtM6ZUUz2GtLw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2K642ghudLTIsyxgMMLATLhX4zB9IF3MWcLYfmF8A8E=;
+ b=Vo5Pyj5rNTm6RE99y92aUc1HNCk7nSbjsBURg0bYp5jWV0EkCv+cuppAghr6VVXBRpw7Vi16pjOyVsfp2iC2Z5RMRPP5Fm1MQvWpDf7Enz/XPq9LwkhJHX5pTwOyx3GbyFtc5/KJcyUew2hqRk+WdNDBUTkFCj74hw38EkoHh+AGOAKxzlfx8HoDwUJgft1gZdD+yecwk+n3bplhehsqr8xphtQ4SPT1559wd2aUILGy6qpV4IzaG0+qtlc6J3kG9E5ne9JYA0vxfYfIytmYyWTkrQLbHyYTDCTdwVvhA2e1DgTjL0lVzgbV0tUfYHpQI0CIxn22n3s/X3Zjar+lCA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2K642ghudLTIsyxgMMLATLhX4zB9IF3MWcLYfmF8A8E=;
+ b=UOEt5knMgkO2jWfNwUuXG81gW4S5BNB/EoGJDndKIzSf+v+1el3wCcLydBggBwrs6v1hk4kU066uGZFwInhtEY3bG8tMQ9nH8dDS3FqE2jysqpGwicvp0UeJxQboJnRyKRoYbl0GOYMUlWJz+aCKo0YRAUoNF9EY9+OaPhD4LfwsnaaA/PYJKPoDVPLe1DUPbVlf+TJLMBgwyo7PybuVb2HR0TY3XUpJ/m6cHfqgDXct8bbTO0dTDa5XxFOW11KEab84XcmLOHwD0TEDbQhonhpbvv1jQBL559Zs+3/MDrqCRJX3MYd5Zkk7uM4WAl3fGDahWYlwOLgroTAnpzZg9g==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=suse.com;
+Received: from VE1PR04MB6560.eurprd04.prod.outlook.com (2603:10a6:803:122::25)
+ by PAXPR04MB8766.eurprd04.prod.outlook.com (2603:10a6:102:20d::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.30; Tue, 18 Oct
+ 2022 14:21:46 +0000
+Received: from VE1PR04MB6560.eurprd04.prod.outlook.com
+ ([fe80::2459:15ae:e6cb:218a]) by VE1PR04MB6560.eurprd04.prod.outlook.com
+ ([fe80::2459:15ae:e6cb:218a%7]) with mapi id 15.20.5723.033; Tue, 18 Oct 2022
+ 14:21:45 +0000
+Message-ID: <d67ceabb-b31a-59e6-fc77-8d6c48b277f2@suse.com>
+Date: Tue, 18 Oct 2022 16:21:43 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.3
 Subject: Re: i915 "GPU HANG", bisected to a2daa27c0c61 "swiotlb: simplify
  swiotlb_max_segment"
-Message-ID: <Y06VthUrV6PjOcJH@mail-itl>
-References: <Y04i8V7xamTkuqNA@mail-itl>
- <20221018082413.GA25785@lst.de>
+Content-Language: en-US
+To: Christoph Hellwig <hch@lst.de>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ Anshuman Khandual <anshuman.khandual@arm.com>,
+ Juergen Gross <jgross@suse.com>, Stefano Stabellini
+ <sstabellini@kernel.org>,
+ Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+ regressions@lists.linux.dev, xen-devel@lists.xenproject.org,
+ iommu@lists.linux.dev, Robert Beckett <bob.beckett@collabora.com>,
+ Jani Nikula <jani.nikula@linux.intel.com>,
+ Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+ Rodrigo Vivi <rodrigo.vivi@intel.com>,
+ Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+ Matthew Auld <matthew.auld@intel.com>, intel-gfx@lists.freedesktop.org,
+ dri-devel@lists.freedesktop.org,
+ =?UTF-8?Q?Marek_Marczykowski-G=c3=b3recki?= <marmarek@invisiblethingslab.com>
+References: <20221018082413.GA25785@lst.de>
+ <a5966644-72d7-4b25-83d1-9765d0593e44@suse.com>
+ <20221018110243.GA4655@lst.de>
+From: Jan Beulich <jbeulich@suse.com>
+In-Reply-To: <20221018110243.GA4655@lst.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AS9PR06CA0267.eurprd06.prod.outlook.com
+ (2603:10a6:20b:45f::33) To VE1PR04MB6560.eurprd04.prod.outlook.com
+ (2603:10a6:803:122::25)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="qtGIkQp0BUuCxgCT"
-Content-Disposition: inline
-In-Reply-To: <20221018082413.GA25785@lst.de>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VE1PR04MB6560:EE_|PAXPR04MB8766:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7d1f1b3e-e816-454f-bd6e-08dab1141640
+X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	unmDrL5qpfGQ7k1nYSMAelNn3VH1U1IrlamfrNq066vYzyEJTYLVHgmFfmj5vNozi2T+7PgQ6TMP9czFIm5xe6VjZIdKWyE4xLHiTOcexOcx9KUwihpOwPxJAzbxMagytdqJ/A9l1zDeJfsKw0W70mUGb2VYzESxrr638pRIu9dfATl+XOy698gfa1OyCjS9d65PKdKGhkCbbA68UohnTIssvh9fLdU07ug1MoILJ1/ksZyeY7dogEWJYeBZWYsThFutGrDc4E8cnksJTOZTAJCZ8ORJM1FCrHFpN1n2YB3FaGlao/aTTb7Mv0Gq4DRnsbUfjYDQwjcS38yF7YWPS98d/7B+P/wJPGk7zid4bAE2YyfyU6odexY9DWmUVCPJrfpyIheQuGZn8bZKQL7twwe76UCHiwwqu3vV2gkDWY3ka7YLjOak+fjZFVlb/02B/48q5aacPt6MP8cgXgXHcK2BJA+oj1TQx1M1+lx3kDdHGfLt//dzLg9gQH1/Paz7CjGPd8vvIBGZGDABvU5l57lLPibJ5Izp9G4iWrwEt0Ck3T2GhLX+ohDBN2h4/C1rYLss4x1F05bimvAqapGvjzNRORvtHVfX2SHUF/dDSjOFRRDNVPAxCWQv3Vagcz0YsadAUMB9IwSxHG2NQXX3mDvhlbng92HJS3/12DN4hoClpwS/PpgZ4EVbQ8Cr8LtetqveH2o/JSLkr/10c4LEOct1eyc57xhrSM7wqooKnNPFvGKWAbhnluks84rIil3BBifDYDV/iLWSVTMjGkzuLVITFqEaF/YiMQTgpjJxb54=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6560.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(366004)(376002)(136003)(346002)(39860400002)(451199015)(38100700002)(31686004)(478600001)(6486002)(186003)(2616005)(36756003)(6506007)(4326008)(54906003)(6916009)(316002)(66946007)(66556008)(5660300002)(8676002)(66476007)(6512007)(53546011)(2906002)(26005)(8936002)(86362001)(31696002)(41300700001)(7416002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?c05BYmM0emt2a3ZsM09rZllhdWFQT3JEVURNaFhjU3g1Zmt6azQ2bzkzNTJi?=
+ =?utf-8?B?dE9iN1RaWU9Kdm02QWtLZEdYdUdIckpIUkxjaWFKdmE0d0xJNk44Mkd5anBM?=
+ =?utf-8?B?UE10Z2NNZjE4a2k4VlcwdG11bU9qcHZtSzYvRElvVnlQWVhPcWY2aDlYMHFn?=
+ =?utf-8?B?WmxqajBsSlNLSWlNL1V0MTlFZjgrWGhpSkpLL0pXUkUweitlU21mTmhNV0Rh?=
+ =?utf-8?B?SW41RzdxRThWY0ovWDd5U1Z0TVNoakgzeWlTdEpIdUJudXI4bVJScUlkUy85?=
+ =?utf-8?B?UENNL1hjM3VQTFBMeGhsNXhpU2tYbWZaUU5LOEMxaGl5OVNxQnJ5SW1NRmpM?=
+ =?utf-8?B?WEdBaDdRd3MzSkZUNFdHV3hEUmo4K3NhYWNURGNKblBSTnR6cXk1WDM4THBj?=
+ =?utf-8?B?N0NJL3lValF2aXpIc1Q5MWhoc0h5TE9MT2xocmtIVk9WeTA4YUUwOThVYVZQ?=
+ =?utf-8?B?aFZCYTZOL1JFVmhhVzF3UDV5QWd0QnJTOHZYRjkyUEZwbnlBQXgzUG83aXdF?=
+ =?utf-8?B?dWJucGFybVBRUXhFNmxEeWxXWEgvY2xxV3NldGgrUUk5Z1VWeDNuV3ZWSUpI?=
+ =?utf-8?B?cHhIL3FOYThZbm5BaGh4ampGcHY2MytGU2JwNjdIUUFkVjNoRUZIL1A5QUdm?=
+ =?utf-8?B?NjA3bzI3d2ZoelFCRDVmSzMwT2JQRm1xWUlGcm9Ka3M4dDM0RWljZitwZHRq?=
+ =?utf-8?B?N3N2UDJrcTI0WXc1NHEvNlQzTnBXNHh2UUxDL1ZXaFVDcHNhQzBVRVowU0I5?=
+ =?utf-8?B?SXpabU41S0x5MGVHeEJJb2dsYnExYzVMKzVXSUNTL1BFMU16QUkwMFFaZUtR?=
+ =?utf-8?B?enh4SlZEUUVGV25OREM5ZlA0R1R4TkJLSFhLdjRiVllMNyt1UDRoTDBXUzQx?=
+ =?utf-8?B?empCWnJ4TEFsdHMyNVRQT2tzM3JUUldHRHRxN1RkWUFCNndrMVpOY3hLTHdJ?=
+ =?utf-8?B?Z1RPMFdGOG02WmxlMUlNSXpYS0tFL3VqeklWcGJaaXhVbUhwcEtYK1ZQMWda?=
+ =?utf-8?B?ekc1VWpMZGhRV09uNzVsKzRqRG0vMjBnUjdLdXFoSFNMNDhPM0k3Z2hsTHJs?=
+ =?utf-8?B?dWs1SXozNGpGOXBoZXJYWjBCT2dPZVFnaEV0ektMNzJWVXIvTlg1cXdTeWVV?=
+ =?utf-8?B?Qzl1a2J5a2lITVdVTDFLUmhDYmtFS2FCclQ3akZMWFZlelZObWpSSytzZ0wr?=
+ =?utf-8?B?VHhMWTh5VEdBblVVb2t4bUFuUFZJNnVuRngxV2VYd0pCQ1V4YlFKTVoxcXcz?=
+ =?utf-8?B?bXBUNDlOT2E1YTFPYURxZkdZK3pUalJFTXBvZVRBdzdFUXFWZnZRM1Axbjhz?=
+ =?utf-8?B?Vk81VW9zU2FDWWZrMHp5OHdIL1VIT3ptSjFLaEZYMlVQUFp2U3g5UCswVmNC?=
+ =?utf-8?B?KzV5eWZZYmwxYnVjdlZxbXVoY1hDS3kyZGgvanhoTUUyeldTREV4QkRGa2Z4?=
+ =?utf-8?B?UG9zOXhhRVFEOVZnQ3o3Y0hCdDZsQytJbXVna1AvbmJZNWI3WmZ4Qk5kTWNz?=
+ =?utf-8?B?OFFRSFpxN3ZLd0l2RzVrRU5JNk1Nbnd5Q0owZzl6U1A5Tzg0a2VSRTliaGhX?=
+ =?utf-8?B?LzVuaWVZZVY2VXBDYjhyMXhDM2ppV0UwUGVPbjBRYlQ3Sm5wMnhSek1ITTN4?=
+ =?utf-8?B?S3dmR2htMWdoWWpJMnlPdSs4T0pTU1lKK1JFZGxDTWFCZlFKclYyWFN2dWtO?=
+ =?utf-8?B?ZVFpRS9vVEEyMm56ZVZhWnBTNkd5T3VzT2JmOXNlWjRNNkJ6dEhiNHdXVUVU?=
+ =?utf-8?B?WndHRlUvM3VrMUpueldIOTc5djZLQUhkZVZNaC9IU05yM1ByWWNkTSs1Vzd3?=
+ =?utf-8?B?NnZkcmdhSFRuZ0QvQnNwUElUdlVqL3E5TnZxSld2bkpHTHczYjFBRTZyVkNP?=
+ =?utf-8?B?ME9IUjA5YjAxc201NXlsL28wMGZrNjVHV0VLU0pEazFyeDc4MGNnWUIxUEZ6?=
+ =?utf-8?B?UGdnbUYvcU5HbGNKMVM5dGlKV1NvZjA0R1ZtSXdOeHNKaUZSYWJoTnFqZEc0?=
+ =?utf-8?B?VDRsdGxUODIvRXVCQ2x2N096VHZseVJpVnBJRHowTE9zVHNobGtQT3luenAw?=
+ =?utf-8?B?M0grTGtCVjhFU1JHUUdNaWxFVGhOME5Mb1ptVHNqb2ExUGVYdFFsZXNvekRY?=
+ =?utf-8?Q?38sq0lqwKw0nx1z1/+AxME4KX?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7d1f1b3e-e816-454f-bd6e-08dab1141640
+X-MS-Exchange-CrossTenant-AuthSource: VE1PR04MB6560.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Oct 2022 14:21:45.8712
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dQDXCbjgngb8SmPtVWGMTkn3COXtlu5GoVnxU4JsFR6YaRz/rbOaaN2KcRuHncuFSzrH9CzDbk9X6/FG020e1Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8766
 
+On 18.10.2022 13:02, Christoph Hellwig wrote:
+> On Tue, Oct 18, 2022 at 10:57:37AM +0200, Jan Beulich wrote:
+>> Shouldn't this then be xen_pv_domain() that you use here, and - if you
+>> really want IS_ENABLED() in addition - CONFIG_XEN_PV?
+> 
+> I'll need help from people that understand Xen better than me what
+> the exact conditions (and maybe also comments are).
 
---qtGIkQp0BUuCxgCT
-Content-Type: text/plain; protected-headers=v1; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 18 Oct 2022 14:01:40 +0200
-From: Marek =?utf-8?Q?Marczykowski-G=C3=B3recki?= <marmarek@invisiblethingslab.com>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-	Anshuman Khandual <anshuman.khandual@arm.com>,
-	Juergen Gross <jgross@suse.com>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-	regressions@lists.linux.dev, xen-devel@lists.xenproject.org,
-	iommu@lists.linux.dev, Robert Beckett <bob.beckett@collabora.com>,
-	Jani Nikula <jani.nikula@linux.intel.com>,
-	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-	Matthew Auld <matthew.auld@intel.com>,
-	intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: Re: i915 "GPU HANG", bisected to a2daa27c0c61 "swiotlb: simplify
- swiotlb_max_segment"
+Leaving the "i915 abuses" part aside (because I can't tell what exactly the
+abuse is), but assuming that "can't cope with bounce buffering" means they
+don't actually use the allocated buffers, I'd suggest this:
 
-On Tue, Oct 18, 2022 at 10:24:13AM +0200, Christoph Hellwig wrote:
-> On Tue, Oct 18, 2022 at 05:52:16AM +0200, Marek Marczykowski-G=C3=B3recki=
- wrote:
-> > not only) when using IGD in Xen PV dom0. After not very long time Xorg
-> > crashes, and dmesg contain messages like this:
-> >=20
-> >     i915 0000:00:02.0: [drm] GPU HANG: ecode 7:1:01fffbfe, in Xorg [533=
-7]
-> >     i915 0000:00:02.0: [drm] Resetting rcs0 for stopped heartbeat on rc=
-s0
-> >     i915 0000:00:02.0: [drm] Xorg[5337] context reset due to GPU hang
->=20
-> <snip>
->=20
-> > I tried reverting just this commit on top of 6.0.x, but the context
-> > changed significantly in subsequent commits, so after trying reverting
-> > it together with 3 or 4 more commits I gave up.
-> >=20
-> > What may be an important detail, the system heavily uses cross-VM shared
-> > memory (gntdev) to map window contents from VMs. This is Qubes OS, and
-> > it uses Xen 4.14.
->=20
-> Can you try the patch below?
+	/*
+	 * For Xen PV guests pages aren't contiguous in DMA (machine) address
+	 * space.  The DMA API takes care of that both in dma_alloc_* (by
+	 * calling into the hypervisor to make the pages contiguous) and in
+	 * dma_map_* (by bounce buffering).  But i915 abuses ignores the
+	 * coherency aspects of the DMA API and thus can't cope with bounce
+	 * buffering actually happening, so add a hack here to force small
+	 * allocations and mappings when running in PV mode on Xen.
+	 */
+	if (IS_ENABLED(CONFIG_XEN_PV) && xen_pv_domain())
+		max = PAGE_SIZE;
 
-Yes, this seems to help.
+I've dropped the TDX related remark because I don't think it's meaningful
+for PV guests. Otoh I've left the "abuses ignores" word sequence as is, no
+matter that it reads odd to me. Plus, as hinted at before, I'm not
+convinced the IS_ENABLED() use is actually necessary or warranted here.
 
-And since this is a PV domain, with Jan proposed change it should work
-too. Intuitively this indeed should be PV-only thing (as was forcing
-swiotlb before).
-
---=20
-Best Regards,
-Marek Marczykowski-G=C3=B3recki
-Invisible Things Lab
-
---qtGIkQp0BUuCxgCT
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhrpukzGPukRmQqkK24/THMrX1ywFAmNOlbUACgkQ24/THMrX
-1ywetwf8DTYa8ZbhMb5HDzxNAzyTnFvsCY1DX+0u7OmcBugMCEX5sJViL7uuwVZJ
-ZlJiCsAuFZ/FrBKchCzCND/GQ7rrAwRi/0QOjiOi6rf2dk8KMvGtY6GbcEf3cpqC
-Oh9OZGCirz84We8EBSRTo+MwwnM5EVbtjnhdXahTBk01ZGSQVbBct59sqpbJNamu
-oj/qXqFUuwVzn/5PuTUxifnWdj8nJbMFWwm5gyPEwJoqpG2e/31UmkJwGNifSvOy
-ohr3oSYiv0UuPKctnCsjr9WjLCPZVynL674H6TiUBdH0ySEupEKrKdossTByT4+7
-u7PQT2fMcvycjOi+XITjfwZ5p5d0Qg==
-=ebS7
------END PGP SIGNATURE-----
-
---qtGIkQp0BUuCxgCT--
+Jan
