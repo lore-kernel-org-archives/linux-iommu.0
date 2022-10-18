@@ -1,64 +1,112 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 301C27F;
-	Tue, 18 Oct 2022 14:33:26 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id A17A968C7B; Tue, 18 Oct 2022 16:33:20 +0200 (CEST)
-Date: Tue, 18 Oct 2022 16:33:20 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Jan Beulich <jbeulich@suse.com>
-Cc: Christoph Hellwig <hch@lst.de>,
-	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-	Anshuman Khandual <anshuman.khandual@arm.com>,
-	Juergen Gross <jgross@suse.com>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-	regressions@lists.linux.dev, xen-devel@lists.xenproject.org,
-	iommu@lists.linux.dev, Robert Beckett <bob.beckett@collabora.com>,
-	Jani Nikula <jani.nikula@linux.intel.com>,
-	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-	Matthew Auld <matthew.auld@intel.com>,
-	intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-	Marek =?iso-8859-1?Q?Marczykowski-G=F3recki?= <marmarek@invisiblethingslab.com>
-Subject: Re: i915 "GPU HANG", bisected to a2daa27c0c61 "swiotlb: simplify
- swiotlb_max_segment"
-Message-ID: <20221018143320.GA19106@lst.de>
-References: <20221018082413.GA25785@lst.de> <a5966644-72d7-4b25-83d1-9765d0593e44@suse.com> <20221018110243.GA4655@lst.de> <d67ceabb-b31a-59e6-fc77-8d6c48b277f2@suse.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAEA97F
+	for <iommu@lists.linux.dev>; Tue, 18 Oct 2022 14:51:52 +0000 (UTC)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29IEkpSN021027;
+	Tue, 18 Oct 2022 14:51:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=8HZIWFsyMYRnuxJWz3yxtN85ktBDufyzEaa6Pm6pmFU=;
+ b=e8rmeAN6nWKVINjRfkZPzVYggT3M0EY8/rsEXogEihXWu8bwGfLO3GLjlxXfGC0phdIl
+ YrQxeJ9Mpg7oaobLXZrEvVaUgWOGfpWqcpGLKTOU35U+wDl2EQjIdkq//GuTuQTO0on0
+ pkblxUA6/AMV4onaeqESkje0VNL3jjncZyQwZtbdfpAZQJ6pEG9WCPw4VrCeZP2OKiJH
+ 9PXKByYvu/bbrAARdVNcwm9ByZs9fPt12DYE/nVcyMxDWcY/qLeKkWPktH3yQGJhe2vW
+ qXkORnwmd5BA6ve/DyL2/DtVVW7ZKT2BF4z3kit4Vx3vUkQ4+dCV5elOebgmpuKul0+N lA== 
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3k9vt03n7g-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 18 Oct 2022 14:51:38 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+	by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29IEpaWp002081;
+	Tue, 18 Oct 2022 14:51:36 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+	by ppma05fra.de.ibm.com with ESMTP id 3k7mg8v48y-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 18 Oct 2022 14:51:36 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+	by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29IEpWdh10223900
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 18 Oct 2022 14:51:32 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id C2E8052050;
+	Tue, 18 Oct 2022 14:51:32 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+	by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 4962B5204E;
+	Tue, 18 Oct 2022 14:51:32 +0000 (GMT)
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>
+Cc: Gerd Bayer <gbayer@linux.ibm.com>, Pierre Morel <pmorel@linux.ibm.com>,
+        linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        agordeev@linux.ibm.com, svens@linux.ibm.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/5] iommu/s390: Further improvements
+Date: Tue, 18 Oct 2022 16:51:27 +0200
+Message-Id: <20221018145132.998866-1-schnelle@linux.ibm.com>
+X-Mailer: git-send-email 2.34.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: AhKd-wIQ79dJdqEtxY4FiafhjEIzM05N
+X-Proofpoint-ORIG-GUID: AhKd-wIQ79dJdqEtxY4FiafhjEIzM05N
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d67ceabb-b31a-59e6-fc77-8d6c48b277f2@suse.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-10-18_04,2022-10-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 spamscore=0
+ priorityscore=1501 mlxlogscore=299 lowpriorityscore=0 clxscore=1015
+ mlxscore=0 impostorscore=0 adultscore=0 suspectscore=0 phishscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2210180083
 
-On Tue, Oct 18, 2022 at 04:21:43PM +0200, Jan Beulich wrote:
-> Leaving the "i915 abuses" part aside (because I can't tell what exactly the
-> abuse is), but assuming that "can't cope with bounce buffering" means they
-> don't actually use the allocated buffers, I'd suggest this:
+Hi All,
 
-Except for one odd place i915 never uses dma_alloc_* but always allocates
-memory itself and then maps it, but then treats it as if it was a
-dma_alloc_coherent allocations, that is never does ownership changes.
+This series of patches improves the s390 IOMMU driver. These improvements help
+existing IOMMU users, mainly vfio-pci, but at the same time are also in
+preparation of converting s390 to use the common DMA API implementation in
+drivers/iommu/dma-iommu.c instead of its platform specific DMA API in
+arch/s390/pci/pci_dma.c that sidesteps the IOMMU driver to control the same
+hardware interface directly.
 
-> I've dropped the TDX related remark because I don't think it's meaningful
-> for PV guests.
+Among the included changes patch 1 improves the robustness of switching IOMMU
+domains and patch 2 adds the I/O TLB operations necessary for the DMA API
+conversion. Patches 3, 4, and 5 aim to improve performance with patch 5 being
+the most intrusive by removing the I/O translation table lock and using atomic
+updates instead.
 
-This remark is for TDX in general, not Xen related.  With TDX and other
-confidentatial computing schemes, all DMA must be bounce buffered, and
-all drivers skipping dma_sync* calls are broken.
+This series goes on top of v7 of my previous series of IOMMU fixes[0] and
+similarly is available for easy testing in the iommu_improve_v1 branch with
+signed tag s390_iommu_improve_v1 of my git.kernel.org tree[1].
 
-> Otoh I've left the "abuses ignores" word sequence as is, no
-> matter that it reads odd to me. Plus, as hinted at before, I'm not
-> convinced the IS_ENABLED() use is actually necessary or warranted here.
+Best regards,
+Niklas Schnelle
 
-If we don't need the IS_ENABLED is not needed I'm all for dropping it.
-But unless I misread the code, on arm/arm64 even PV guests are 1:1
-mapped so that all Linux physically contigous memory also is Xen
-contigous, so we don't need the hack.
+[0] https://lore.kernel.org/linux-iommu/20221017124558.1386337-1-schnelle@linux.ibm.com/
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/niks/linux.git/
+
+Niklas Schnelle (5):
+  iommu/s390: Make attach succeed even if the device is in error state
+  iommu/s390: Add I/O TLB ops
+  iommu/s390: Use RCU to allow concurrent domain_list iteration
+  iommu/s390: Optimize IOMMU table walking
+  s390/pci: use lock-free I/O translation updates
+
+ arch/s390/include/asm/pci.h |   4 +-
+ arch/s390/kvm/pci.c         |   6 +-
+ arch/s390/pci/pci.c         |  13 +--
+ arch/s390/pci/pci_dma.c     |  77 +++++++++------
+ drivers/iommu/s390-iommu.c  | 180 ++++++++++++++++++++++++------------
+ 5 files changed, 183 insertions(+), 97 deletions(-)
+
+-- 
+2.34.1
+
