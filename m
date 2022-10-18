@@ -1,126 +1,140 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2057.outbound.protection.outlook.com [40.107.93.57])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 152E04C7C
-	for <iommu@lists.linux.dev>; Tue, 18 Oct 2022 15:18:41 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jZLLjYLFHCwDB0xA9zy0n1nbAb0lTPmA6SjXNau5GIaKHd09nzHl69c/q8VLoO7HOfkweGBwC1q8h2x0SbFzeka9ed+gTzS8pP3AuVMlxRnRHPjVVqMXZ/b0jHHo9AN+F46cvbIir5qYnBk+T9JCu17rB5mPhGPlk6/aHsbT2SHM51BOqu3NQqqQt0ug+q6JvzoYLdVuGynf5dnQPsOP7g6sJDe/7napQ8z1vzeFm5wNHom0PdlZN29J1A06IzoqqYsg3XC3ZF+SWBMese7S5FAUV6DwPXsfwvOwsGoh/N7eLWf92FQDuu+CRN7p5YkIchH5oa9tyDKDiRMtQ6oMmg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=M079KbIgMtwzk1lUKCMI+cVMRFG+OCn42gfH97QNhhY=;
- b=E1Q3LI7heEqIFrz44/EA5SHh2dSRYN6f7/wgRUDQQSiz7PR6g7iH+tobbRtfEeaLio5H/tcpUdPNuVvT3dEYrFLRBAm0jPuX20HYRQUGb88TA5PvF5Rb6oo8oY6Kdn0T6lQ/VNCHjOacsLs7wLrSUJAqnjF6IuOnpoPCz+a9OxnUzfbCTPO4ZkkrfHF5WfQh0rFNdezbl0PkhhmGxIocNlwyaT3Tzfxd7vQhPx6fElHjbCu3u4PFVgbevPogEH39Q/7YmGG76JNGldvRL5L44/4TMGK9GZZMimL/PAcdIole5IavrsjL6L5BFrD33aqdj1H9zw25SUvT3aRUdrxA9g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=M079KbIgMtwzk1lUKCMI+cVMRFG+OCn42gfH97QNhhY=;
- b=EVBXML2x/PKZGUHF2CuemWp+W3KeiLYTW8XokjrDmJ017D3CNLaMdkPo2VDLVNd3IgzlMG5Ysx0LcbO2bdEbHLRwZLEOPbgGbK5BjFd+A5n8+BXCx4mOhj6eww/J6GdTG5MA4t6di2shrJ4DL49GiLJFbMzlOaQr1QRj65vtpuIm9z5vA6wI5F4Qf2DovouBNZUEuNkeH4rYLQaS1N+ikw/dBXsw78uVGfBMrziwr6MfssltCxqPclVYxStz2hYxgAbqhGco03ZJ/igOach300sgiQzkM+IcLp4A+BeIsPJpNzTRAMOkPULrOqbZ7OBblmiZeTrW3k8Tf03dObNlbg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by MN0PR12MB5906.namprd12.prod.outlook.com (2603:10b6:208:37a::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.30; Tue, 18 Oct
- 2022 15:18:40 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::7a81:a4e4:bb9c:d1de]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::7a81:a4e4:bb9c:d1de%6]) with mapi id 15.20.5723.033; Tue, 18 Oct 2022
- 15:18:40 +0000
-Date: Tue, 18 Oct 2022 12:18:39 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Niklas Schnelle <schnelle@linux.ibm.com>
-Cc: Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Gerd Bayer <gbayer@linux.ibm.com>,
-	Pierre Morel <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
-	borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-	gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-	svens@linux.ibm.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/5] iommu/s390: Use RCU to allow concurrent domain_list
- iteration
-Message-ID: <Y07Dz/NROAMI0Hku@nvidia.com>
-References: <20221018145132.998866-1-schnelle@linux.ibm.com>
- <20221018145132.998866-4-schnelle@linux.ibm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221018145132.998866-4-schnelle@linux.ibm.com>
-X-ClientProxiedBy: BL0PR02CA0101.namprd02.prod.outlook.com
- (2603:10b6:208:51::42) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 366225386
+	for <iommu@lists.linux.dev>; Tue, 18 Oct 2022 21:13:03 +0000 (UTC)
+Received: by mail-lf1-f41.google.com with SMTP id bp15so24821947lfb.13
+        for <iommu@lists.linux.dev>; Tue, 18 Oct 2022 14:13:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=PcTgztvz01i1AUaYLJIqCVOYn5kiAMuKCqT5W3AEJoc=;
+        b=T01XTyoUWE3zKGhM5BukE0c6AKGTmT47D55TxG5MXFdgzGTAtGpp7GY+eXzqQqEyEO
+         +Ieo+MvqJkO3XpnyD0PaWiJ08qcvHucWUIJsVKaDGvBOcrjbDYJAPykOYu5/nxjJe27r
+         3CMWB4NRxPpCsxZIuQKLtO5BjzGGx6VfDUQf1N5LfbQMkHj3KjYkjQSDD77BUCWBFcSy
+         5vJbb/ot+lATv8RUkKowyiCoR0oOg5y+0mPADA/6vtm5PCrIaufzaQd7jEGLjg/iLZgE
+         4klR561pSitwWtDhCph02lXEz7+8ZBy4KbRtef0NvtbYmyz63MnHO465MlX6vTCZI0aX
+         fnSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=PcTgztvz01i1AUaYLJIqCVOYn5kiAMuKCqT5W3AEJoc=;
+        b=D3cHh7gOCgIfVuFR+81AY88ty/mYJTXd+fP2wzj2S4Ut7ChnVRd7tmRl9BoyBQPRKl
+         TJlaFut5cm/na2i4tJWVZg0hgAxyg2+zZlpq2HsZTapPjTJbMw8dOBKmzZUqz9jB2rNf
+         o1lnL1k5hBMs5JzO30HJLf6JmzNP7LeIa4Yd6W2rwldTobKKPUWPP1EM0icW3GMi2Z5G
+         UNBtHULnTs/95L9qg1h3gPodgzfkm+g+9q6LmKJLDn5wFEpnN5fOnZs4N8hWh1Hl9Pg9
+         r1PQEvHX4T1h4dP9LghiL5gmXZrx6ByKNOGcgLbSamRP0uKzST5bgGyHkYP2MLr5t7Rg
+         U2KQ==
+X-Gm-Message-State: ACrzQf0SABF803hXQsibKjOrsN9okGidlY+uXsg+k8m5YbKjTJTtsqEO
+	PB3wlB0uJvGt+kqGy817tek=
+X-Google-Smtp-Source: AMsMyM5ntKDQNkrDBnb7blafjSZLYV3kqVmVdDiuWmlMEgdeMqPYBer81Mcg2MdQmkhbSRNzWJd5yw==
+X-Received: by 2002:a05:6512:a8c:b0:4a2:10f1:6e06 with SMTP id m12-20020a0565120a8c00b004a210f16e06mr1546297lfu.415.1666127581163;
+        Tue, 18 Oct 2022 14:13:01 -0700 (PDT)
+Received: from [192.168.2.145] ([109.252.119.114])
+        by smtp.googlemail.com with ESMTPSA id bf12-20020a056512258c00b004a478c2f4desm1068357lfb.163.2022.10.18.14.12.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 18 Oct 2022 14:13:00 -0700 (PDT)
+Message-ID: <712c9e51-f589-b566-6194-259393180e43@gmail.com>
+Date: Wed, 19 Oct 2022 00:12:58 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MN0PR12MB5906:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0af3f5f0-9c4e-4120-7326-08dab11c096c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	Y5cCjubmecIi61OeJ0/ZwRaKhhTsl2jHLHF5q7DkTgpXh/xAV+EjouVciZkdigXbqSMfVmal9LQLurdEIZpNkRuVs9z6F9Y3bcad9+Y9//k9YAh9UNQ2LDFBfK1yP0cvApMX3g8ZkRhboK3URmhWMEBtH8toTM60SZkbsri2/iJsOXWu7Sgy5iDkSznYk4Y0HOo3QTHL0Gwq7vsq7TteCp2fRYXJaQL6s/xlHvQugGKNBA8FGOIiyP4ocua3ymQgKVf7JLK2AuRueJdjSA9Oo3SPdqVKtio4xgLjav2XSTZLmkeqdV0U7VCIhWwiauuCbxTjnCJqQjXU/ulAQ4iFVVmK0Sk6WKWRzexAHlN2fzf9BTgOCK2DWAlWO3SJTPG81FoDhsXthDHJQA2WslQhA3z/xO2uNZZMoclzXhaiuJIxBT1ZNNNf8CbFpZXWcA16fAW3G283QUXkobGO89F81xrJdvOutXy9c2NdVnkrKo8nUARFISHWwG4eWhBB51TUz5hiy6BvFA049I8A7tJyMcCgit5m5nCzij5EjHYAxBvnMPli2ARup42Wubkg5FIuPrMRfltQgUVRvHrzZcXk+yE1ayu3D+RT5GY6+RCpr5xfHseix0Q6yX9kBlDCjFjw1hIoi+nuMOkB3mX19jZSdORrSyjQipFjD8CyK2RKwPYROBDbPrE9QFz5T3eLBMgs1FH2ckepagTNe29+M2SW2A==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(396003)(366004)(136003)(346002)(39860400002)(451199015)(38100700002)(6486002)(478600001)(186003)(2906002)(41300700001)(36756003)(2616005)(6506007)(316002)(54906003)(6916009)(66946007)(66556008)(66476007)(86362001)(4326008)(8676002)(83380400001)(7416002)(5660300002)(8936002)(6512007)(26005)(4744005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?aECK12L+c5f14O4Jm7A6fRn9ZdOZnn81RUD+0VbnSGOCFLH1SyBG/BSv0HGV?=
- =?us-ascii?Q?vzwn94xCyKgu7hekwQNSWITOk47rY7Ixgri6asOe6WWOkBb2oqEK7o8lNxA8?=
- =?us-ascii?Q?Lb0ceWMnZIw00V3O9LjHkBTKo1tIar3cV5Vdnj6foYN3wp10uFoDheGdbqe4?=
- =?us-ascii?Q?DgQ9ysphQddeSmkYA+faDy3Z4Q2ophfhLzcGQz7Jxvnd1X3RBE7/q9/lvVYm?=
- =?us-ascii?Q?+Xz0N07AvwRvlSAgG9nlOe/Z7MQaEnneO1F63Q2XkByblq0ahbR4c79y794B?=
- =?us-ascii?Q?mQoQhRCgnLMwQ1Q0tGXijMB1T0DVwGTn/bQuMqaCMN0h1SFtVfo2VDvmmVio?=
- =?us-ascii?Q?wG7XZEQJSekSiWUOd8k/M8gHc2TzVD+kSsOYpZYX8VO7zoJ56bkdXbmXmhVB?=
- =?us-ascii?Q?TZ+cjV2yFporLFUm0IRnBl6ye7hnJlkeDA+l0KMwjvcpANYJk1C/0Ukdhb7J?=
- =?us-ascii?Q?neFJjly0kdTQsdLDf3XdmxEvW9KL6MOMwzGfUBpdLZwSksirF5kSnfzTeWof?=
- =?us-ascii?Q?UP3yqfJTAg4s5Mz4Kl8sImXMB9Cjn0lMiDVP6UCcExWCVZFy6zGp75iwmexU?=
- =?us-ascii?Q?ctIjuHsZdCUcSOnHgVirpGwg/TXkK010N/XBOFm57s/nSnVtwpnzjXdggZHC?=
- =?us-ascii?Q?NTSw72GIYiDVjFG69/u9TmRFX6MV3sSXKrRmdssZqdNdGVqPk4pdsSwq40tL?=
- =?us-ascii?Q?VpAiiuzsSW8vIA98vU6KN70YeYoc81vt+coH1/C9sE1/kF6AwcUGnWWGoZYK?=
- =?us-ascii?Q?WiUtnKqE6uUtXPvX1NXR8Jg1ElIZXtjL09rYR36lVeYStyLNUoG4zG28LOtX?=
- =?us-ascii?Q?D8vPvLMdkO+3t84hrEaQPDQ4GgwQTT7OoUjCNJaKDDbjpu0bFRs/rFWezAup?=
- =?us-ascii?Q?Ifpu5/3t56BSH7okOaGI5IN5Tj7LMKxYpaRAMAIlUt04D2j/2Grq73bq1e8y?=
- =?us-ascii?Q?9YmFSkaBGwuXxGu1IS+/oIYmo3Tcpfr11zJ92FmZaAxyoK8lxZVmAAnH0DMZ?=
- =?us-ascii?Q?i7d2GFMWmdGZ32kK6XV3rM1jKyEp+guwBb4obLLF3j6KDhv5pAvix+FBDkya?=
- =?us-ascii?Q?UKCIyfkFDQ30DOBz4huY+vt/z6Bp8SXK+PUu/x/1eSJOV8v0w/l0ObunatOC?=
- =?us-ascii?Q?SDqmqgAO0t8GZcvVJlx7iRNQDaIhCsHpgwI9R40X32mVwxP4aTiXZFGegIe9?=
- =?us-ascii?Q?bABBWHozNCfcjgsnFfk54xnlAry/cVxwxVtXqQbLhjpD2511lU9wnMUFr21h?=
- =?us-ascii?Q?BSl2Q6rxgI1hsqRu0Xlgj1XY2D16gnX1ZjYYq98SK4/uMrfH5kCehAmaHPbK?=
- =?us-ascii?Q?ulmJ0jVuASa+ylicKxrv3qTBm+FmuzeBrnM2wzoJKQ+P5Xui7VIC6Fb1FLYp?=
- =?us-ascii?Q?soz8RR/9Ob487wAntq1ZoFWBc/7SKtXcu2oRxK6UISZanzzB1BL1LYLMPqtN?=
- =?us-ascii?Q?qzuQlpi6e6q0E4jcVnXABLCtHDjBo6tX0lvQn16Q8Q6iJwFdu3Pcn42bR3sm?=
- =?us-ascii?Q?AnnMNNbeiWxZXT6U/wGgfWlsPUyzJKwq5FuiEPO3tJNnjENgHmRHgyixpSas?=
- =?us-ascii?Q?VHBzlLJTIqqFQrKbHSg=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0af3f5f0-9c4e-4120-7326-08dab11c096c
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Oct 2022 15:18:40.2274
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2X5uDXBL2hxUM54/8cNoYXpEEonqJmHvIaFDT8UI5wqq72tJAbui8gHXlRED5DlL
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5906
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v4 05/16] iommu: Move bus setup to IOMMU device
+ registration
+Content-Language: en-US
+To: Jon Hunter <jonathanh@nvidia.com>, Robin Murphy <robin.murphy@arm.com>,
+ joro@8bytes.org, Thierry Reding <treding@nvidia.com>
+Cc: will@kernel.org, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, baolu.lu@linux.intel.com,
+ kevin.tian@intel.com, suravee.suthikulpanit@amd.com, vasant.hegde@amd.com,
+ mjrosato@linux.ibm.com, schnelle@linux.ibm.com,
+ linux-kernel@vger.kernel.org,
+ "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+References: <cover.1660572783.git.robin.murphy@arm.com>
+ <d342b6f27efb5ef3e93aacaa3012d25386d74866.1660572783.git.robin.murphy@arm.com>
+ <89d873fc-9f0a-156e-dcf2-48a2b9f93dcc@nvidia.com>
+ <583c4689-844d-2ae2-79fb-4750b21c4304@arm.com>
+ <41293685-54aa-6fa3-ca41-189fdbb7e8b0@nvidia.com>
+From: Dmitry Osipenko <digetx@gmail.com>
+In-Reply-To: <41293685-54aa-6fa3-ca41-189fdbb7e8b0@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Tue, Oct 18, 2022 at 04:51:30PM +0200, Niklas Schnelle wrote:
+18.10.2022 09:13, Jon Hunter пишет:
+> 
+> On 06/10/2022 16:27, Robin Murphy wrote:
+>> On 2022-10-06 15:01, Jon Hunter wrote:
+>>> Hi Robin,
+>>>
+>>> On 15/08/2022 17:20, Robin Murphy wrote:
+>>>> Move the bus setup to iommu_device_register(). This should allow
+>>>> bus_iommu_probe() to be correctly replayed for multiple IOMMU
+>>>> instances,
+>>>> and leaves bus_set_iommu() as a glorified no-op to be cleaned up next.
+>>>>
+>>>> At this point we can also handle cleanup better than just rolling back
+>>>> the most-recently-touched bus upon failure - which may release devices
+>>>> owned by other already-registered instances, and still leave devices on
+>>>> other buses with dangling pointers to the failed instance. Now it's
+>>>> easy
+>>>> to clean up the exact footprint of a given instance, no more, no less.
+>>>
+>>>
+>>> Since this change, I have noticed that the DRM driver on Tegra20 is
+>>> failing to probe and I am seeing ...
+>>>
+>>>   tegra-gr2d 54140000.gr2d: failed to attach to domain: -19
+>>>   drm drm: failed to initialize 54140000.gr2d: -19
+>>>
+>>> Bisect points to this change and reverting it fixes it. Let me know
+>>> if you have any thoughts.
+>>
+>> Oh, apparently what's happened is that I've inadvertently enabled the
+>> tegra-gart driver, since it seems that *wasn't* calling
+>> bus_set_iommu() before. Looking at the history, it appears to have
+>> been that way since c7e3ca515e78 ("iommu/tegra: gart: Do not register
+>> with bus"), so essentially that driver has been broken and useless for
+>> close to 8 years now :(
+>>
+>> Given that, I'd be inclined to "fix" it as below, or just give up and
+>> delete the whole thing.
+>>
+>> Thanks,
+>> Robin.
+>>
+>> ----->8-----
+>> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+>> index 5c5cb5bee8b6..7b3f7fd6e527 100644
+>> --- a/drivers/iommu/Kconfig
+>> +++ b/drivers/iommu/Kconfig
+>> @@ -230,6 +230,7 @@ config TEGRA_IOMMU_GART
+>>       bool "Tegra GART IOMMU Support"
+>>       depends on ARCH_TEGRA_2x_SOC
+>>       depends on TEGRA_MC
+>> +    depends on BROKEN
+>>       select IOMMU_API
+>>       help
+>>         Enables support for remapping discontiguous physical memory
+> 
+> 
+> Thanks Robin. This works for me.
+> 
+> Thierry, Dmitry, we need a fix for v6.1 and so OK with the above?
 
-> @@ -84,7 +88,7 @@ static void __s390_iommu_detach_device(struct zpci_dev *zdev)
->  		return;
->  
->  	spin_lock_irqsave(&s390_domain->list_lock, flags);
-> -	list_del_init(&zdev->iommu_list);
-> +	list_del_rcu(&zdev->iommu_list);
->  	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
+To me it is more a problem of the DRM driver that it doesn't support
+GART. GART will require a special handling from the DRM driver anyways [1].
 
-This doesn't seem obviously OK, the next steps remove the translation
-while we can still have concurrent RCU protected flushes going on.
+[1]
+https://github.com/grate-driver/linux/blob/master/drivers/gpu/drm/grate/drm.c#L460
 
-Is it OK to call the flushes when after the zpci_dma_exit_device()/etc?
-
-Jason
+The GART driver itself isn't broken, it's working perfectly fine. It's
+the DRM driver that should start caring about the GART presence, IMO.
