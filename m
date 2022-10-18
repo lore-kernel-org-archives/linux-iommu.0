@@ -1,234 +1,208 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BC5A4C7D
-	for <iommu@lists.linux.dev>; Tue, 18 Oct 2022 14:51:54 +0000 (UTC)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29IEb502020402;
-	Tue, 18 Oct 2022 14:51:40 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=PdqIZHpAB6x58Yr67htvefM7oXxERTQQ63QZKd9bejA=;
- b=Ffyx+inSRtFOBesEPMzR1n7pYWuAmr+zdTWg4+D8xgIdYQLtmyzWWU6O7chENsCUYvgs
- riV3WZop2YnfjSjv1yE5C3b3gX9Ep0Oe/ZuwHxxMJNt5Duh6mp/W0yIJHr73nODZ8dIY
- hpotqq5qoxu1yw8bEubhwsZ36c5RPC9YGZYxjjJqtN+6XQ31eed81zSpr+HMSfsVb05I
- XIsY7A4Ifzp7Apqoomi/L9Fd9J8xTNCIvh8UnPyUIqZlQ+2DmCL5nqeKVbr1+4mEd/IH
- OZ3AHYI01NOksDyDgoy0p4OpFTYNDT39qxkxH48D7EngZA5T6Zyq6ARPUSXFWAJUv3Hs eg== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3k9vt03n83-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 18 Oct 2022 14:51:40 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-	by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29IEpEQC001544;
-	Tue, 18 Oct 2022 14:51:37 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-	by ppma03ams.nl.ibm.com with ESMTP id 3k7mg95fc8-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 18 Oct 2022 14:51:37 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-	by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29IEq7S250200846
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 18 Oct 2022 14:52:07 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 2F33E52051;
-	Tue, 18 Oct 2022 14:51:34 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-	by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id B42E152054;
-	Tue, 18 Oct 2022 14:51:33 +0000 (GMT)
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: Gerd Bayer <gbayer@linux.ibm.com>, Pierre Morel <pmorel@linux.ibm.com>,
-        linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        agordeev@linux.ibm.com, svens@linux.ibm.com,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 3/5] iommu/s390: Use RCU to allow concurrent domain_list iteration
-Date: Tue, 18 Oct 2022 16:51:30 +0200
-Message-Id: <20221018145132.998866-4-schnelle@linux.ibm.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221018145132.998866-1-schnelle@linux.ibm.com>
-References: <20221018145132.998866-1-schnelle@linux.ibm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AC964C7C;
+	Tue, 18 Oct 2022 14:53:53 +0000 (UTC)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 6762521883;
+	Tue, 18 Oct 2022 14:53:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1666104831; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=bF3DrP31+GvB7zHSheslhxfSA2LjZWK4h34WoFWlWag=;
+	b=uhEmpL+LqowFZpMis7rdL+XyM6ZyRWbZkXDYzYHWmF2taWuaLa2ZLBJo3GVuQiN6nQgV+b
+	gd2k8uQWaCXYnJnPs19QlmYM7s+Qd53ecAQ5kSiVCAhSmoYvEh1yx8wuzMGdyGn2ZHwnQp
+	3farCF8MEbGro7jEb0RxubTSemck+zo=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E093713480;
+	Tue, 18 Oct 2022 14:53:50 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+	by imap2.suse-dmz.suse.de with ESMTPSA
+	id mDKRNf69TmMFUAAAMHmgww
+	(envelope-from <jgross@suse.com>); Tue, 18 Oct 2022 14:53:50 +0000
+Message-ID: <e0448dac-a35e-cfd0-c087-411558512b5e@suse.com>
+Date: Tue, 18 Oct 2022 16:53:50 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 7hRy3bXDF6ctmnw4xCQcCRPUXE74SKq9
-X-Proofpoint-ORIG-GUID: 7hRy3bXDF6ctmnw4xCQcCRPUXE74SKq9
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-10-18_04,2022-10-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 spamscore=0
- priorityscore=1501 mlxlogscore=999 lowpriorityscore=0 clxscore=1015
- mlxscore=0 impostorscore=0 adultscore=0 suspectscore=0 phishscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2210180083
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: i915 "GPU HANG", bisected to a2daa27c0c61 "swiotlb: simplify
+ swiotlb_max_segment"
+To: Christoph Hellwig <hch@lst.de>, Jan Beulich <jbeulich@suse.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ Anshuman Khandual <anshuman.khandual@arm.com>,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+ regressions@lists.linux.dev, xen-devel@lists.xenproject.org,
+ iommu@lists.linux.dev, Robert Beckett <bob.beckett@collabora.com>,
+ Jani Nikula <jani.nikula@linux.intel.com>,
+ Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+ Rodrigo Vivi <rodrigo.vivi@intel.com>,
+ Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+ Matthew Auld <matthew.auld@intel.com>, intel-gfx@lists.freedesktop.org,
+ dri-devel@lists.freedesktop.org,
+ =?UTF-8?Q?Marek_Marczykowski-G=c3=b3recki?= <marmarek@invisiblethingslab.com>
+References: <20221018082413.GA25785@lst.de>
+ <a5966644-72d7-4b25-83d1-9765d0593e44@suse.com>
+ <20221018110243.GA4655@lst.de>
+ <d67ceabb-b31a-59e6-fc77-8d6c48b277f2@suse.com>
+ <20221018143320.GA19106@lst.de>
+Content-Language: en-US
+From: Juergen Gross <jgross@suse.com>
+In-Reply-To: <20221018143320.GA19106@lst.de>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------dc3TknTbH6vDjCxs96kqh3VL"
 
-The s390_domain->devices list is only added to when new devices are
-attached but is iterated through in read-only fashion for every mapping
-operation as well as for I/O TLB flushes and thus in performance
-critical code causing contention on the s390_domain->list_lock.
-Fortunately such a read-mostly linked list is a standard use case for
-RCU. This change closely follows the example fpr RCU protected list
-given in Documentation/RCU/listRCU.rst.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------dc3TknTbH6vDjCxs96kqh3VL
+Content-Type: multipart/mixed; boundary="------------Kgg0bGLcOQl0evOUdHqCwYPG";
+ protected-headers="v1"
+From: Juergen Gross <jgross@suse.com>
+To: Christoph Hellwig <hch@lst.de>, Jan Beulich <jbeulich@suse.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ Anshuman Khandual <anshuman.khandual@arm.com>,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+ regressions@lists.linux.dev, xen-devel@lists.xenproject.org,
+ iommu@lists.linux.dev, Robert Beckett <bob.beckett@collabora.com>,
+ Jani Nikula <jani.nikula@linux.intel.com>,
+ Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+ Rodrigo Vivi <rodrigo.vivi@intel.com>,
+ Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+ Matthew Auld <matthew.auld@intel.com>, intel-gfx@lists.freedesktop.org,
+ dri-devel@lists.freedesktop.org,
+ =?UTF-8?Q?Marek_Marczykowski-G=c3=b3recki?= <marmarek@invisiblethingslab.com>
+Message-ID: <e0448dac-a35e-cfd0-c087-411558512b5e@suse.com>
+Subject: Re: i915 "GPU HANG", bisected to a2daa27c0c61 "swiotlb: simplify
+ swiotlb_max_segment"
+References: <20221018082413.GA25785@lst.de>
+ <a5966644-72d7-4b25-83d1-9765d0593e44@suse.com>
+ <20221018110243.GA4655@lst.de>
+ <d67ceabb-b31a-59e6-fc77-8d6c48b277f2@suse.com>
+ <20221018143320.GA19106@lst.de>
+In-Reply-To: <20221018143320.GA19106@lst.de>
 
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
----
- arch/s390/include/asm/pci.h |  1 +
- arch/s390/pci/pci.c         |  2 +-
- drivers/iommu/s390-iommu.c  | 31 ++++++++++++++++---------------
- 3 files changed, 18 insertions(+), 16 deletions(-)
+--------------Kgg0bGLcOQl0evOUdHqCwYPG
+Content-Type: multipart/mixed; boundary="------------HP4PX2rd4ybSjA8vplorqVEm"
 
-diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
-index 07361e2fd8c5..e4c3e4e04d30 100644
---- a/arch/s390/include/asm/pci.h
-+++ b/arch/s390/include/asm/pci.h
-@@ -119,6 +119,7 @@ struct zpci_dev {
- 	struct list_head entry;		/* list of all zpci_devices, needed for hotplug, etc. */
- 	struct list_head iommu_list;
- 	struct kref kref;
-+	struct rcu_head rcu;
- 	struct hotplug_slot hotplug_slot;
- 
- 	enum zpci_state state;
-diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
-index a703dcd94a68..ef38b1514c77 100644
---- a/arch/s390/pci/pci.c
-+++ b/arch/s390/pci/pci.c
-@@ -996,7 +996,7 @@ void zpci_release_device(struct kref *kref)
- 		break;
- 	}
- 	zpci_dbg(3, "rem fid:%x\n", zdev->fid);
--	kfree(zdev);
-+	kfree_rcu(zdev, rcu);
- }
- 
- int zpci_report_error(struct pci_dev *pdev,
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index a4c2e9bc6d83..4e90987be387 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -10,6 +10,8 @@
- #include <linux/iommu.h>
- #include <linux/iommu-helper.h>
- #include <linux/sizes.h>
-+#include <linux/rculist.h>
-+#include <linux/rcupdate.h>
- #include <asm/pci_dma.h>
- 
- static const struct iommu_ops s390_iommu_ops;
-@@ -61,7 +63,7 @@ static struct iommu_domain *s390_domain_alloc(unsigned domain_type)
- 
- 	spin_lock_init(&s390_domain->dma_table_lock);
- 	spin_lock_init(&s390_domain->list_lock);
--	INIT_LIST_HEAD(&s390_domain->devices);
-+	INIT_LIST_HEAD_RCU(&s390_domain->devices);
- 
- 	return &s390_domain->domain;
- }
-@@ -70,7 +72,9 @@ static void s390_domain_free(struct iommu_domain *domain)
- {
- 	struct s390_domain *s390_domain = to_s390_domain(domain);
- 
-+	rcu_read_lock();
- 	WARN_ON(!list_empty(&s390_domain->devices));
-+	rcu_read_unlock();
- 	dma_cleanup_tables(s390_domain->dma_table);
- 	kfree(s390_domain);
- }
-@@ -84,7 +88,7 @@ static void __s390_iommu_detach_device(struct zpci_dev *zdev)
- 		return;
- 
- 	spin_lock_irqsave(&s390_domain->list_lock, flags);
--	list_del_init(&zdev->iommu_list);
-+	list_del_rcu(&zdev->iommu_list);
- 	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
- 
- 	zpci_unregister_ioat(zdev, 0);
-@@ -127,7 +131,7 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 	zdev->s390_domain = s390_domain;
- 
- 	spin_lock_irqsave(&s390_domain->list_lock, flags);
--	list_add(&zdev->iommu_list, &s390_domain->devices);
-+	list_add_rcu(&zdev->iommu_list, &s390_domain->devices);
- 	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
- 
- 	return 0;
-@@ -203,17 +207,16 @@ static void s390_iommu_flush_iotlb_all(struct iommu_domain *domain)
- {
- 	struct s390_domain *s390_domain = to_s390_domain(domain);
- 	struct zpci_dev *zdev;
--	unsigned long flags;
- 	int rc;
- 
--	spin_lock_irqsave(&s390_domain->list_lock, flags);
--	list_for_each_entry(zdev, &s390_domain->devices, iommu_list) {
-+	rcu_read_lock();
-+	list_for_each_entry_rcu(zdev, &s390_domain->devices, iommu_list) {
- 		rc = zpci_refresh_trans((u64)zdev->fh << 32, zdev->start_dma,
- 					zdev->end_dma - zdev->start_dma + 1);
- 		if (rc)
- 			break;
- 	}
--	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
-+	rcu_read_unlock();
- }
- 
- static void s390_iommu_iotlb_sync(struct iommu_domain *domain,
-@@ -222,21 +225,20 @@ static void s390_iommu_iotlb_sync(struct iommu_domain *domain,
- 	struct s390_domain *s390_domain = to_s390_domain(domain);
- 	size_t size = gather->end - gather->start + 1;
- 	struct zpci_dev *zdev;
--	unsigned long flags;
- 	int rc;
- 
- 	/* If gather was never added to there is nothing to flush */
- 	if (gather->start == ULONG_MAX)
- 		return;
- 
--	spin_lock_irqsave(&s390_domain->list_lock, flags);
--	list_for_each_entry(zdev, &s390_domain->devices, iommu_list) {
-+	rcu_read_lock();
-+	list_for_each_entry_rcu(zdev, &s390_domain->devices, iommu_list) {
- 		rc = zpci_refresh_trans((u64)zdev->fh << 32, gather->start,
- 					size);
- 		if (rc)
- 			break;
- 	}
--	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
-+	rcu_read_unlock();
- }
- 
- static void s390_iommu_iotlb_sync_map(struct iommu_domain *domain,
-@@ -244,11 +246,10 @@ static void s390_iommu_iotlb_sync_map(struct iommu_domain *domain,
- {
- 	struct s390_domain *s390_domain = to_s390_domain(domain);
- 	struct zpci_dev *zdev;
--	unsigned long flags;
- 	int rc;
- 
--	spin_lock_irqsave(&s390_domain->list_lock, flags);
--	list_for_each_entry(zdev, &s390_domain->devices, iommu_list) {
-+	rcu_read_lock();
-+	list_for_each_entry_rcu(zdev, &s390_domain->devices, iommu_list) {
- 		if (!zdev->tlb_refresh)
- 			continue;
- 		rc = zpci_refresh_trans((u64)zdev->fh << 32,
-@@ -256,7 +257,7 @@ static void s390_iommu_iotlb_sync_map(struct iommu_domain *domain,
- 		if (rc)
- 			break;
- 	}
--	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
-+	rcu_read_unlock();
- }
- 
- static int s390_iommu_update_trans(struct s390_domain *s390_domain,
--- 
-2.34.1
+--------------HP4PX2rd4ybSjA8vplorqVEm
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
+T24gMTguMTAuMjIgMTY6MzMsIENocmlzdG9waCBIZWxsd2lnIHdyb3RlOg0KPiBPbiBUdWUs
+IE9jdCAxOCwgMjAyMiBhdCAwNDoyMTo0M1BNICswMjAwLCBKYW4gQmV1bGljaCB3cm90ZToN
+Cj4+IExlYXZpbmcgdGhlICJpOTE1IGFidXNlcyIgcGFydCBhc2lkZSAoYmVjYXVzZSBJIGNh
+bid0IHRlbGwgd2hhdCBleGFjdGx5IHRoZQ0KPj4gYWJ1c2UgaXMpLCBidXQgYXNzdW1pbmcg
+dGhhdCAiY2FuJ3QgY29wZSB3aXRoIGJvdW5jZSBidWZmZXJpbmciIG1lYW5zIHRoZXkNCj4+
+IGRvbid0IGFjdHVhbGx5IHVzZSB0aGUgYWxsb2NhdGVkIGJ1ZmZlcnMsIEknZCBzdWdnZXN0
+IHRoaXM6DQo+IA0KPiBFeGNlcHQgZm9yIG9uZSBvZGQgcGxhY2UgaTkxNSBuZXZlciB1c2Vz
+IGRtYV9hbGxvY18qIGJ1dCBhbHdheXMgYWxsb2NhdGVzDQo+IG1lbW9yeSBpdHNlbGYgYW5k
+IHRoZW4gbWFwcyBpdCwgYnV0IHRoZW4gdHJlYXRzIGl0IGFzIGlmIGl0IHdhcyBhDQo+IGRt
+YV9hbGxvY19jb2hlcmVudCBhbGxvY2F0aW9ucywgdGhhdCBpcyBuZXZlciBkb2VzIG93bmVy
+c2hpcCBjaGFuZ2VzLg0KPiANCj4+IEkndmUgZHJvcHBlZCB0aGUgVERYIHJlbGF0ZWQgcmVt
+YXJrIGJlY2F1c2UgSSBkb24ndCB0aGluayBpdCdzIG1lYW5pbmdmdWwNCj4+IGZvciBQViBn
+dWVzdHMuDQo+IA0KPiBUaGlzIHJlbWFyayBpcyBmb3IgVERYIGluIGdlbmVyYWwsIG5vdCBY
+ZW4gcmVsYXRlZC4gIFdpdGggVERYIGFuZCBvdGhlcg0KPiBjb25maWRlbnRhdGlhbCBjb21w
+dXRpbmcgc2NoZW1lcywgYWxsIERNQSBtdXN0IGJlIGJvdW5jZSBidWZmZXJlZCwgYW5kDQo+
+IGFsbCBkcml2ZXJzIHNraXBwaW5nIGRtYV9zeW5jKiBjYWxscyBhcmUgYnJva2VuLg0KPiAN
+Cj4+IE90b2ggSSd2ZSBsZWZ0IHRoZSAiYWJ1c2VzIGlnbm9yZXMiIHdvcmQgc2VxdWVuY2Ug
+YXMgaXMsIG5vDQo+PiBtYXR0ZXIgdGhhdCBpdCByZWFkcyBvZGQgdG8gbWUuIFBsdXMsIGFz
+IGhpbnRlZCBhdCBiZWZvcmUsIEknbSBub3QNCj4+IGNvbnZpbmNlZCB0aGUgSVNfRU5BQkxF
+RCgpIHVzZSBpcyBhY3R1YWxseSBuZWNlc3Nhcnkgb3Igd2FycmFudGVkIGhlcmUuDQo+IA0K
+PiBJZiB3ZSBkb24ndCBuZWVkIHRoZSBJU19FTkFCTEVEIGlzIG5vdCBuZWVkZWQgSSdtIGFs
+bCBmb3IgZHJvcHBpbmcgaXQuDQo+IEJ1dCB1bmxlc3MgSSBtaXNyZWFkIHRoZSBjb2RlLCBv
+biBhcm0vYXJtNjQgZXZlbiBQViBndWVzdHMgYXJlIDE6MQ0KPiBtYXBwZWQgc28gdGhhdCBh
+bGwgTGludXggcGh5c2ljYWxseSBjb250aWdvdXMgbWVtb3J5IGFsc28gaXMgWGVuDQo+IGNv
+bnRpZ291cywgc28gd2UgZG9uJ3QgbmVlZCB0aGUgaGFjay4NCg0KVGhlcmUgYXJlIG5vIFBW
+IGd1ZXN0cyBvbiBhcm0vYXJtNjQuDQoNCg0KSnVlcmdlbg0K
+--------------HP4PX2rd4ybSjA8vplorqVEm
+Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Description: OpenPGP public key
+Content-Transfer-Encoding: quoted-printable
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+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
+jR/i1DG86lem3iBDXzXsZDn8R38=3D
+=3D2wuH
+-----END PGP PUBLIC KEY BLOCK-----
+
+--------------HP4PX2rd4ybSjA8vplorqVEm--
+
+--------------Kgg0bGLcOQl0evOUdHqCwYPG--
+
+--------------dc3TknTbH6vDjCxs96kqh3VL
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmNOvf4FAwAAAAAACgkQsN6d1ii/Ey+9
+8Qf+JxxMZEdEGyEjsJpPt47ZJcyUfuvyHf4WDR8qZjfA5REOBj3vzoCPls41mnZKRxb+Q3Hm+aZp
+UG0JJKo8XA9PiqrI87WOza8ogApFg0Cfizhyuw7V5a/HJGuGmGbsgRhphQLhpVXi7HODv1qc2iPL
+NIxi93tZAYo3lI2mCp2H8FV/okYkz8gtiaOtaP9KciQJV7ccttWIVVVD5PCkBgqRyu0Ko/L6F24C
+AD/db7b/Dv8oc/pbAf/0vfUa/zaoFLzOt442UfIcKgYB3TtX3yGTRdJbWGL4OSo91oTlKzCBR+oM
+bMJYClYr1+UbHfeGeGkLHwb9KBuOs65u79bb1Uudkg==
+=qg+p
+-----END PGP SIGNATURE-----
+
+--------------dc3TknTbH6vDjCxs96kqh3VL--
