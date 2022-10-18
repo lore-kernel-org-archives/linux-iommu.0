@@ -1,35 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F8B710E5
-	for <iommu@lists.linux.dev>; Tue, 18 Oct 2022 00:07:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30DB4C43150;
-	Tue, 18 Oct 2022 00:07:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA9BA10E5
+	for <iommu@lists.linux.dev>; Tue, 18 Oct 2022 00:07:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6918C43470;
+	Tue, 18 Oct 2022 00:07:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1666051666;
-	bh=Wz6/W8ffwyEXEVYVufTDi1EST1b5dNnFzBabgt1Ya6I=;
+	s=k20201202; t=1666051676;
+	bh=IkUKTLzmiWeykYfzYr94/tt4piAiaTK/4HefW8JHtoI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=JLOcfX3i4etGzwairs9wxsmA9p0A2AlVTJd+gt4RXlZfZEMrfE1FxY2QGyOFgffCG
-	 xkHBPLlMA8pD7NBNF9d148mmbspF0xcEOPlVHxUhIw53b5hTKcZFaiIQrOK7AWBjvA
-	 TAf2/sUl+yQqBbF8z+DSyE2pQsjkmf6VHMAJRBiqQr8xsu0gGuZaJvELpF/oc9f4Ly
-	 4xJXXRrwNtelVluBfZz8CeInqmiBzuQlXhWDh5omdfWQRTqmzK/YMNsnMQx2hCwR/H
-	 uog8cF+Jaa5UXsxpkdFFx9Dil4YDUoSYfm7nDhjP4cye0ffuq6lZmVbn/3WkMvhBlW
-	 eFtV5p48BYJHA==
+	b=CnAFyau+EDmYE5dWlJVsa+z8s8/HIyVBjt2RbdYp4L4IyIm5a5jL6/FwUrxARR/vP
+	 xRBJhuoocoptlNNBH+G7c5jHGD5XWxKZfimnDo6xYX95c8nEVoPtiCseKjUjT2ElZ3
+	 Zv8sz23A1nccnr5GDATjnVkdXVmur6Mu1c6Fhisc/6h0W8xWxrb8SsRKIt4J9o3Q8E
+	 l4uBl4DQkWGXl6b9DzSEWdLIrxGT+psBWZ3bUU1lM5LvOK0dhkDpAcX5fP5VhodEyf
+	 IFoPoMK/L+XOEBTIJSPMc87tPbl4odYf4p9kRYfPvo6+QIBfTanBzx7N9O2dTdh22o
+	 mtneSqardWLYA==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
 Cc: Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <jroedel@suse.de>,
+	Christoph Hellwig <hch@lst.de>,
 	Sasha Levin <sashal@kernel.org>,
-	dwmw2@infradead.org,
-	baolu.lu@linux.intel.com,
-	joro@8bytes.org,
-	will@kernel.org,
+	hch@infradead.org,
+	m.szyprowski@samsung.com,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.0 07/32] iommu/vt-d: Handle race between registration and device probe
-Date: Mon, 17 Oct 2022 20:07:04 -0400
-Message-Id: <20221018000729.2730519-7-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.0 12/32] swiotlb: don't panic!
+Date: Mon, 17 Oct 2022 20:07:09 -0400
+Message-Id: <20221018000729.2730519-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221018000729.2730519-1-sashal@kernel.org>
 References: <20221018000729.2730519-1-sashal@kernel.org>
@@ -45,45 +42,96 @@ Content-Transfer-Encoding: 8bit
 
 From: Robin Murphy <robin.murphy@arm.com>
 
-[ Upstream commit c919739ce4721ecf7b96b99253b032df30fcf19b ]
+[ Upstream commit 639205ed206f98fcfa826933946f0844615784ea ]
 
-Currently we rely on registering all our instances before initially
-allowing any .probe_device calls via bus_set_iommu(). In preparation for
-phasing out the latter, make sure we won't inadvertently return success
-for a device associated with a known but not yet registered instance,
-otherwise we'll run straight into iommu_group_get_for_dev() trying to
-use NULL ops.
+The panics in swiotlb are relics of a bygone era, some of them
+inadvertently inherited from a memblock refactor, and all of them
+unnecessary since they are in places that may also fail gracefully
+anyway.
 
-That also highlights an issue with intel_iommu_get_resv_regions() taking
-dmar_global_lock from within a section where intel_iommu_init() already
-holds it, which already exists via probe_acpi_namespace_devices() when
-an ANDD device is probed, but gets more obvious with the upcoming change
-to iommu_device_register(). Since they are both read locks it manages
-not to deadlock in practice, and a more in-depth rework of this locking
-is underway, so no attempt is made to address it here.
+Convert the panics in swiotlb_init_remap() into non-fatal warnings
+more consistent with the other bail-out paths there and in
+swiotlb_init_late() (but don't bother trying to roll anything back,
+since if anything does actually fail that early, the aim is merely to
+keep going as far as possible to get more diagnostic information out
+of the inevitably-dying kernel). It's not for SWIOTLB to decide that the
+system is terminally compromised just because there *might* turn out to
+be one or more 32-bit devices that might want to make streaming DMA
+mappings, especially since we already handle the no-buffer case later
+if it turns out someone did want it.
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Similarly though, downgrade that panic in swiotlb_tbl_map_single(),
+since even if we do get to that point it's an overly extreme reaction.
+It makes little difference to the DMA API caller whether a mapping fails
+because the buffer is full or because there is no buffer, and once again
+it's not for SWIOTLB to presume that any particular DMA mapping is so
+fundamental to the operation of the system that it must be terminal if
+it could never succeed. Even if the caller handles failure by futilely
+retrying forever, a single stuck thread is considerably less impactful
+to the user than a needless panic.
+
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/579f2692291bcbfc3ac64f7456fcff0d629af131.1660572783.git.robin.murphy@arm.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/intel/iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/dma/swiotlb.c | 30 +++++++++++++++++++-----------
+ 1 file changed, 19 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 31bc50e538a3..ed63386b9b60 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4457,7 +4457,7 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
- 	u8 bus, devfn;
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 0ef6b12f961d..11579a3be2b5 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -346,22 +346,27 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
+ 		memblock_free(tlb, PAGE_ALIGN(bytes));
  
- 	iommu = device_to_iommu(dev, &bus, &devfn);
--	if (!iommu)
-+	if (!iommu || !iommu->iommu.ops)
- 		return ERR_PTR(-ENODEV);
+ 		nslabs = ALIGN(nslabs >> 1, IO_TLB_SEGSIZE);
+-		if (nslabs < IO_TLB_MIN_SLABS)
+-			panic("%s: Failed to remap %zu bytes\n",
+-			      __func__, bytes);
+-		goto retry;
++		if (nslabs >= IO_TLB_MIN_SLABS)
++			goto retry;
++
++		pr_warn("%s: Failed to remap %zu bytes\n", __func__, bytes);
++		return;
+ 	}
  
- 	info = kzalloc(sizeof(*info), GFP_KERNEL);
+ 	alloc_size = PAGE_ALIGN(array_size(sizeof(*mem->slots), nslabs));
+ 	mem->slots = memblock_alloc(alloc_size, PAGE_SIZE);
+-	if (!mem->slots)
+-		panic("%s: Failed to allocate %zu bytes align=0x%lx\n",
+-		      __func__, alloc_size, PAGE_SIZE);
++	if (!mem->slots) {
++		pr_warn("%s: Failed to allocate %zu bytes align=0x%lx\n",
++			__func__, alloc_size, PAGE_SIZE);
++		return;
++	}
+ 
+ 	mem->areas = memblock_alloc(array_size(sizeof(struct io_tlb_area),
+ 		default_nareas), SMP_CACHE_BYTES);
+-	if (!mem->areas)
+-		panic("%s: Failed to allocate mem->areas.\n", __func__);
++	if (!mem->areas) {
++		pr_warn("%s: Failed to allocate mem->areas.\n", __func__);
++		return;
++	}
+ 
+ 	swiotlb_init_io_tlb_mem(mem, __pa(tlb), nslabs, flags, false,
+ 				default_nareas);
+@@ -731,8 +736,11 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 	int index;
+ 	phys_addr_t tlb_addr;
+ 
+-	if (!mem || !mem->nslabs)
+-		panic("Can not allocate SWIOTLB buffer earlier and can't now provide you with the DMA bounce buffer");
++	if (!mem || !mem->nslabs) {
++		dev_warn_ratelimited(dev,
++			"Can not allocate SWIOTLB buffer earlier and can't now provide you with the DMA bounce buffer");
++		return (phys_addr_t)DMA_MAPPING_ERROR;
++	}
+ 
+ 	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
+ 		pr_warn_once("Memory encryption is active and system is using DMA bounce buffers\n");
 -- 
 2.35.1
 
