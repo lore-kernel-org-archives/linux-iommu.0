@@ -1,158 +1,105 @@
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB8117B
-	for <iommu@lists.linux.dev>; Tue, 18 Oct 2022 01:21:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666056062; x=1697592062;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=su5zkI72C0sQs7FAa4bTuhB/QJ0TTUO44k56XMq6UHE=;
-  b=k44ZMY7j2nykHe93Nnkox6z+NI6hlmnTWmuRkU11Bqn0oU2oLMzBpSI4
-   pVfe+/dz9o5PmABrWa7ekOhgUy+C0geVpjReeEdKgDF3NoiJ+0TBefC/9
-   uPvR9Ke0PuuSpfpEJ+pyRJAVtWqJ+1qPwxBo6KoRqqhc8FyP4lSNaUMnc
-   Ev9BVPagLLSSTq3dgCnG27/1yZqxnnEuB+MQ9nXkE9wFoR+vpo0YP1oLe
-   4MI3b5YCpHfeYIvqtH30ONV5pPdUwgNpN0nEjRcmA5hnvx70/vcA7QTqR
-   FceuzhrD9XU7EIXBJQ8o+3YaR/Y1be8wWMwq86ZIOfH5qgeXWbOWnd3TW
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10503"; a="307625970"
-X-IronPort-AV: E=Sophos;i="5.95,192,1661842800"; 
-   d="scan'208";a="307625970"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2022 18:21:02 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10503"; a="659576177"
-X-IronPort-AV: E=Sophos;i="5.95,192,1661842800"; 
-   d="scan'208";a="659576177"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.211.49]) ([10.254.211.49])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2022 18:20:54 -0700
-Message-ID: <a7c55d04-2523-e6d5-8715-0f8a6d3e3233@linux.intel.com>
-Date: Tue, 18 Oct 2022 09:20:52 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51BF1EA2
+	for <iommu@lists.linux.dev>; Tue, 18 Oct 2022 02:43:19 +0000 (UTC)
+X-UUID: eb32c49467a845c88e54da13fe5e0a01-20221018
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Type:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=xOtiT/NwCRsCp5EbTW4+Y+cH+1/rZPndZCH6CUJOv6Y=;
+	b=Dq7CRYx7Yyksd+oOf6wGZqTdNY7BE36nQMkOWZ9IgCx/k3oQOtV2pIjzv9QEAelgyatqqpbELhfxg3/flMWPaFXiyIFWqY8AA5RGpykSd4/mOBJ/uYlDIbIj9HLaWinHZytRjYrZb92dc53JcM6zCX5Z62pdtK5mkwUKSUkqtic=;
+X-CID-P-RULE: Spam_GS6885AD
+X-CID-O-INFO: VERSION:1.1.11,REQID:1a1a8510-989a-434e-aebd-9aa11e59a66f,IP:0,U
+	RL:0,TC:0,Content:100,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Spam_GS6885AD,AC
+	TION:quarantine,TS:195
+X-CID-INFO: VERSION:1.1.11,REQID:1a1a8510-989a-434e-aebd-9aa11e59a66f,IP:0,URL
+	:0,TC:0,Content:100,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Spam_US65DF41,ACTI
+	ON:quarantine,TS:195
+X-CID-META: VersionHash:39a5ff1,CLOUDID:0fe518a4-ebb2-41a8-a87c-97702aaf2e20,B
+	ulkID:221018104308KMNIPY0V,BulkQuantity:0,Recheck:0,SF:38|28|17|19|48|801,
+	TC:nil,Content:3,EDM:-3,IP:nil,URL:1,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:
+	0
+X-UUID: eb32c49467a845c88e54da13fe5e0a01-20221018
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+	(envelope-from <yong.wu@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 673028676; Tue, 18 Oct 2022 10:43:06 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs13n2.mediatek.inc (172.21.101.108) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Tue, 18 Oct 2022 10:43:05 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
+ Transport; Tue, 18 Oct 2022 10:43:04 +0800
+From: Yong Wu <yong.wu@mediatek.com>
+To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+	Will Deacon <will@kernel.org>
+CC: Robin Murphy <robin.murphy@arm.com>, <iommu@lists.linux.dev>,
+	<linux-mediatek@lists.infradead.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	<mingyuan.ma@mediatek.com>, <yf.wang@mediatek.com>, <libo.kang@mediatek.com>,
+	<chengci.xu@mediatek.com>, <youlin.pei@mediatek.com>,
+	<anan.sun@mediatek.com>, <xueqi.zhang@mediatek.com>, Guenter Roeck
+	<groeck@chromium.org>, Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [PATCH v7 0/6] iommu/mediatek: Improve safety from invalid dts input
+Date: Tue, 18 Oct 2022 10:42:52 +0800
+Message-ID: <20221018024258.19073-1-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.3
-Cc: baolu.lu@linux.intel.com, jgg@nvidia.com, kevin.tian@intel.com,
- quic_jjohnson@quicinc.com, suravee.suthikulpanit@amd.com,
- robdclark@gmail.com, dwmw2@infradead.org, yong.wu@mediatek.com,
- matthias.bgg@gmail.com, orsonzhai@gmail.com, baolin.wang@linux.alibaba.com,
- zhang.lyra@gmail.com, thierry.reding@gmail.com, vdumpa@nvidia.com,
- jonathanh@nvidia.com, jean-philippe@linaro.org, tglx@linutronix.de,
- shameerali.kolothum.thodi@huawei.com, christophe.jaillet@wanadoo.fr,
- yangyicong@hisilicon.com, yangyingliang@huawei.com,
- quic_saipraka@quicinc.com, jon@solid-run.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-arm-msm@vger.kernel.org, linux-mediatek@lists.infradead.org,
- linux-tegra@vger.kernel.org, virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH v7 2/5] iommu: Add return value rules to attach_dev op and
- APIs
-To: Nicolin Chen <nicolinc@nvidia.com>, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com
-References: <cover.1666042872.git.nicolinc@nvidia.com>
- <bd56d93c18621104a0fa1b0de31e9b760b81b769.1666042872.git.nicolinc@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <bd56d93c18621104a0fa1b0de31e9b760b81b769.1666042872.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK: N
 
-On 2022/10/18 7:01, Nicolin Chen wrote:
-> Cases like VFIO wish to attach a device to an existing domain that was
-> not allocated specifically from the device. This raises a condition
-> where the IOMMU driver can fail the domain attach because the domain and
-> device are incompatible with each other.
-> 
-> This is a soft failure that can be resolved by using a different domain.
-> 
-> Provide a dedicated errno EINVAL from the IOMMU driver during attach that
-> the reason why the attach failed is because of domain incompatibility.
-> 
-> VFIO can use this to know that the attach is a soft failure and it should
-> continue searching. Otherwise, the attach will be a hard failure and VFIO
-> will return the code to userspace.
-> 
-> Update kdocs to add rules of return value to the attach_dev op and APIs.
-> 
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->   drivers/iommu/iommu.c | 24 ++++++++++++++++++++++++
->   include/linux/iommu.h | 12 ++++++++++++
->   2 files changed, 36 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 4893c2429ca5..3c0c5d64bb50 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1949,6 +1949,18 @@ static int __iommu_attach_device(struct iommu_domain *domain,
->   	return ret;
->   }
->   
-> +/**
-> + * iommu_attach_device - Attach an IOMMU domain to a device
-> + * @domain: IOMMU domain to attach
-> + * @dev: Device that will be attached
-> + *
-> + * Returns 0 on success and error code on failure
-> + *
-> + * Note that EINVAL can be treated as a soft failure, indicating
-> + * that certain configuration of the domain is incompatible with
-> + * the device. In this case attaching a different domain to the
-> + * device may succeed.
-> + */
->   int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
->   {
->   	struct iommu_group *group;
-> @@ -2075,6 +2087,18 @@ static int __iommu_attach_group(struct iommu_domain *domain,
->   	return ret;
->   }
->   
-> +/**
-> + * iommu_attach_group - Attach an IOMMU domain to an IOMMU group
-> + * @domain: IOMMU domain to attach
-> + * @group: IOMMU group that will be attached
-> + *
-> + * Returns 0 on success and error code on failure
-> + *
-> + * Note that EINVAL can be treated as a soft failure, indicating
-> + * that certain configuration of the domain is incompatible with
-> + * the group. In this case attaching a different domain to the
-> + * group may succeed.
-> + */
->   int iommu_attach_group(struct iommu_domain *domain, struct iommu_group *group)
->   {
->   	int ret;
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index a325532aeab5..6f3569340e8a 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -266,6 +266,18 @@ struct iommu_ops {
->   /**
->    * struct iommu_domain_ops - domain specific operations
->    * @attach_dev: attach an iommu domain to a device
-> + *  Return:
-> + * * 0		- success
-> + * * EINVAL	- can indicate that device and domain are incompatible due to
-> + *		  some previous configuration of the domain, in which case the
-> + *		  driver shouldn't log an error, since it is legitimate for a
-> + *		  caller to test reuse of existing domains. Otherwise, it may
-> + *		  still represent some other fundamental problem
-> + * * ENOMEM	- out of memory
-> + * * ENOSPC	- non-ENOMEM type of resource allocation failures
-> + * * EBUSY	- device is attached to a domain and cannot be changed
-> + * * ENODEV	- device specific errors, not able to be attached
-> + * * <others>	- treated as ENODEV by the caller. Use is discouraged
->    * @detach_dev: detach an iommu domain from a device
->    * @map: map a physically contiguous memory region to an iommu domain
->    * @map_pages: map a physically contiguous set of pages of the same size to
+This patchset contains misc improve patches. Mainly to improve safety from 
+invalid dts input.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Change notes:
+v7: Rebase on v6.1-rc1. Change nothing.
 
-Best regards,
-baolu
+v6: https://lore.kernel.org/linux-mediatek/20220920063733.21770-1-yong.wu@mediatek.com/
+    No change code. just reword the commit message in [3/6] from Angelo.
+
+v5: https://lore.kernel.org/linux-mediatek/20220919092405.8256-1-yong.wu@mediatek.com/
+    a) Loop from MTK_LARB_NR_MAX in the error path from Angelo.
+    b) Fix the redundant put_device for the error patch outside the loop from dan.
+ 
+v4: https://lore.kernel.org/linux-mediatek/20220824064306.21495-1-yong.wu@mediatek.com/
+    a) Just remove the first patch about dev_err_probe since it was merged.
+    b) Rebase v6.0-rc1
+
+v3: https://lore.kernel.org/linux-mediatek/20220701053942.3266-1-yong.wu@mediatek.com/
+    a) Add platform_device_put from Robin.
+    b) Use component_match_add instead component_match_add_release suggested from Robin.
+
+v2: https://lore.kernel.org/linux-mediatek/20220616054203.11365-1-yong.wu@mediatek.com/
+    a) Rebase on v5.19-rc1.
+    b) Add a New patch [5/5] just remove a variable that only is for v1.
+
+v1: https://lore.kernel.org/linux-mediatek/20220511064920.18455-1-yong.wu@mediatek.com/
+    Base on linux-next-20220510.
+    the improve safety from dts is base on:
+    https://lore.kernel.org/linux-mediatek/20211210205704.1664928-1-linux@roeck-us.net/
+
+Guenter Roeck (1):
+  iommu/mediatek: Validate number of phandles associated with
+    "mediatek,larbs"
+
+Yong Wu (5):
+  iommu/mediatek: Add platform_device_put for recovering the device
+    refcnt
+  iommu/mediatek: Use component_match_add
+  iommu/mediatek: Add error path for loop of mm_dts_parse
+  iommu/mediatek: Improve safety for mediatek,smi property in larb nodes
+  iommu/mediatek: Remove unused "mapping" member from mtk_iommu_data
+
+ drivers/iommu/mtk_iommu.c | 106 +++++++++++++++++++++++++++-----------
+ 1 file changed, 76 insertions(+), 30 deletions(-)
+
+-- 
+2.18.0
+
+
