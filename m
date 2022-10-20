@@ -1,146 +1,141 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BC297E
-	for <iommu@lists.linux.dev>; Thu, 20 Oct 2022 08:51:24 +0000 (UTC)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29K8hIaY010866;
-	Thu, 20 Oct 2022 08:51:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=rOo0Rw7hdoHqY3knTVoyqP0bdVcOO8+ZPUEIoL/qJt4=;
- b=EZV2LjwT6BPmwEIW4TFD+1ZOF2sCHdGiZY2pqseyP7gGMTJIIh9ZhcIT3IwJarDBZqnD
- Rx1UjXKLdZkKgkv+lEWzYkmB7ycZhjBeBNQbq5zFJp2npMnfb7cL9IAxq3TBJPMyzMYo
- n7BrbOsp3ZaHtHo36WQzwe1kIp3zAnMo/KrxfoFoJUDF4B93nJ11NSODKAQ5QeRhfQl8
- KiiM6OKWOnU+E6XozBtfm6kNZhsTfHnCnFz6eOKWb9rljzj5erTlTAXq/Ysup1twhEUx
- jbjVmrIBhPXqDtBEJZJF2FmB7QWYgJrHSySD78Xz4t+5TfjZHSJdLS6JF2MD7TAWR0wE jA== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3kb32hr6jm-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 20 Oct 2022 08:51:16 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-	by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29K8pEuk005033;
-	Thu, 20 Oct 2022 08:51:14 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-	by ppma03ams.nl.ibm.com with ESMTP id 3k7mg98m0u-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 20 Oct 2022 08:51:14 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-	by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29K8pBnD42402256
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 20 Oct 2022 08:51:11 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 5699242045;
-	Thu, 20 Oct 2022 08:51:11 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id D461442041;
-	Thu, 20 Oct 2022 08:51:10 +0000 (GMT)
-Received: from oc-nschnelle.boeblingen.de.ibm.com (unknown [9.155.199.46])
-	by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-	Thu, 20 Oct 2022 08:51:10 +0000 (GMT)
-Message-ID: <f3551bb461b3ef3cfc1a0c644093816be1835b3f.camel@linux.ibm.com>
-Subject: Re: [PATCH 3/5] iommu/s390: Use RCU to allow concurrent domain_list
- iteration
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev,
-        Joerg
- Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy
- <robin.murphy@arm.com>,
-        Gerd Bayer <gbayer@linux.ibm.com>,
-        Pierre Morel
- <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, linux-kernel@vger.kernel.org
-Date: Thu, 20 Oct 2022 10:51:10 +0200
-In-Reply-To: <Y0/lMCQ8oeXJ2HTg@nvidia.com>
-References: <20221018145132.998866-1-schnelle@linux.ibm.com>
-	 <20221018145132.998866-4-schnelle@linux.ibm.com>
-	 <Y07Dz/NROAMI0Hku@nvidia.com>
-	 <8e268ab5e0dadf86be5fd7ffaa9debb76cea67f3.camel@linux.ibm.com>
-	 <Y0/lMCQ8oeXJ2HTg@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CE0047E
+	for <iommu@lists.linux.dev>; Thu, 20 Oct 2022 10:02:34 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 075DCED1;
+	Thu, 20 Oct 2022 03:02:39 -0700 (PDT)
+Received: from [10.57.5.187] (unknown [10.57.5.187])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 60FF93F792;
+	Thu, 20 Oct 2022 03:02:30 -0700 (PDT)
+Message-ID: <5933d917-a026-7150-2e05-2cb283a73174@arm.com>
+Date: Thu, 20 Oct 2022 11:02:23 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.3
+Subject: Re: 6.1-rc1 regression: bisected to 57365a04c921 iommu: Move bus
+ setup to IOMMU device registration
+Content-Language: en-GB
+To: Brian Norris <briannorris@chromium.org>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+ Krishna Reddy <vdumpa@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+ Matthew Rosato <mjrosato@linux.ibm.com>,
+ Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <jroedel@suse.de>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <Y1CHh2oM5wyHs06J@google.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <Y1CHh2oM5wyHs06J@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 8wWJRvvydOu6sIg9_UYBhgDAfptnNEhD
-X-Proofpoint-ORIG-GUID: 8wWJRvvydOu6sIg9_UYBhgDAfptnNEhD
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-10-20_02,2022-10-19_04,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 spamscore=0
- priorityscore=1501 mlxscore=0 lowpriorityscore=0 bulkscore=0
- impostorscore=0 adultscore=0 phishscore=0 clxscore=1015 mlxlogscore=999
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2210200049
 
-On Wed, 2022-10-19 at 08:53 -0300, Jason Gunthorpe wrote:
-> On Wed, Oct 19, 2022 at 10:31:21AM +0200, Niklas Schnelle wrote:
-> > On Tue, 2022-10-18 at 12:18 -0300, Jason Gunthorpe wrote:
-> > > On Tue, Oct 18, 2022 at 04:51:30PM +0200, Niklas Schnelle wrote:
-> > > 
-> > > > @@ -84,7 +88,7 @@ static void __s390_iommu_detach_device(struct zpci_dev *zdev)
-> > > >  		return;
-> > > >  
-> > > >  	spin_lock_irqsave(&s390_domain->list_lock, flags);
-> > > > -	list_del_init(&zdev->iommu_list);
-> > > > +	list_del_rcu(&zdev->iommu_list);
-> > > >  	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
-> > > 
-> > > This doesn't seem obviously OK, the next steps remove the translation
-> > > while we can still have concurrent RCU protected flushes going on.
-> > > 
-> > > Is it OK to call the flushes when after the zpci_dma_exit_device()/etc?
-> > > 
-> > > Jason
-> > 
-> > Interesting point. So for the flushes themselves this should be fine,
-> > once the zpci_unregister_ioat() is executed all subsequent and ongoing
-> > IOTLB flushes should return an error code without further adverse
-> > effects. Though I think we do still have an issue in the IOTLB ops for
-> > this case as that error would skip the IOTLB flushes of other attached
-> > devices.
+On 2022-10-20 00:25, Brian Norris wrote:
+> Hi all,
 > 
-> That sounds bad
+> I'm testing out asynchronous probe (that's, kernel cmdline
+> 'driver_async_probe=*' or similar), and I've identified a regression in
+> v6.1-rc1 due to this:
+> 
+> commit 57365a04c92126525a58bf7a1599ddfa832415e9
+> Author: Robin Murphy <robin.murphy@arm.com>
+> Date:   Mon Aug 15 17:20:06 2022 +0100
+> 
+>      iommu: Move bus setup to IOMMU device registration
+> 
+> In particular, I'm testing a Rockchip RK3399 system with
+> 'driver_async_probe=rk_iommu', and finding I crash like this:
+> 
+> [    0.180480] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000030
+> ...
+> [    0.180583] CPU: 2 PID: 49 Comm: kworker/u12:1 Not tainted 6.1.0-rc1 #57
+> [    0.180593] Hardware name: Google Scarlet (DT)
+> [    0.180602] Workqueue: events_unbound async_run_entry_fn
+> [    0.180622] pstate: 20000005 (nzCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> [    0.180632] pc : dev_iommu_free+0x24/0x54
+> [    0.180644] lr : __iommu_probe_device+0x110/0x180
+> ...
+> [    0.180785] Call trace:
+> [    0.180791]  dev_iommu_free+0x24/0x54
+> [    0.180800]  __iommu_probe_device+0x110/0x180
+> [    0.180807]  probe_iommu_group+0x40/0x58
+> [    0.180816]  bus_for_each_dev+0x8c/0xd8
+> [    0.180829]  bus_iommu_probe+0x5c/0x2d0
+> [    0.180840]  iommu_device_register+0xbc/0x104
+> [    0.180851]  rk_iommu_probe+0x260/0x354
+> [    0.180861]  platform_probe+0xb4/0xd4
+> [    0.180872]  really_probe+0xfc/0x284
+> [    0.180884]  __driver_probe_device+0xc0/0xec
+> [    0.180894]  driver_probe_device+0x4c/0xd4
+> [    0.180905]  __driver_attach_async_helper+0x3c/0x60
+> [    0.180915]  async_run_entry_fn+0x34/0xd4
+> [    0.180926]  process_one_work+0x1e0/0x3b4
+> [    0.180936]  worker_thread+0x120/0x404
+> [    0.180942] [drm] Initialized vgem 1.0.0 20120112 for vgem on minor 0
+> [    0.180944]  kthread+0xf4/0x14c
+> [    0.180953]  ret_from_fork+0x10/0x20
+> [    0.180968] Code: f9000bf3 910003fd f9416c13 f9016c1f (f9401a68)
+> [    0.180981] ---[ end trace 0000000000000000 ]---
 
-Thankfully it's very easy to fix since our IOTLB flushes are per PCI
-function, I just need to continue the loop in the IOTLB ops on error
-instead of breaking out of it and skipping the other devices. Makes no
-sense anyway to skip  devices just because there is an error on another
-device.
+Hmm, on the face of it that callstack doesn't even make much sense -
+dev_iommu_free+0x24 presumably has to be the dereference of
+param->fwspec, but __iommu_probe_device can only hit that failure path
+after a successful dev_iommu_get(), so dev->iommu should not be NULL.
 
+> I find if I revert the above commit (and 29e932295bfa ("iommu: Clean up
+> bus_set_iommu()"), to keep the reverts clean), things start working again.
 > 
-> 
-> > The bigger question and that seems independent from RCU is how/if
-> > detach is supposed to work if there are still DMAs ongoing. Once we do
-> > the zpci_unregister_ioat() any DMA request coming from the PCI device
-> > will be blocked and will lead to the PCI device being isolated (put
-> > into an error state) for attempting an invalid DMA. So I had expected
-> > that calls of detach/attach would happen without expected ongoing DMAs
-> > and thus IOTLB flushes? 
-> 
-> "ongoing DMA" from this device shouuld be stopped, it doesn't mean
-> that the other devices attached to the same domain are not also still
-> operating and also still having flushes. So now that it is RCU a flush
-> triggered by a different device will continue to see this now disabled
-> device and try to flush it until the grace period.
-> 
-> Jason
+> I haven't worked out exactly what's going wrong, but the patch looks like it
+> isn't async safe at all, due to the way each device is poking (without locking)
+> at the global iommu_buses[].
 
-Ok that makes sense thanks for the explanation. So yes my assessment is
-still that in this situation the IOTLB flush is architected to return
-an error that we can ignore. Not the most elegant I admit but at least
-it's simple. Alternatively I guess we could use call_rcu() to do the
-zpci_unregister_ioat() but I'm not sure how to then make sure that a
-subsequent zpci_register_ioat() only happens after that without adding
-too much more logic.
+We shouldn't really need locking for iommu_buses itself, but I guess to
+support async probe we would need per-device locking in
+iommu_probe_device() to prevent multiple threads trying to probe the
+same device at once, which must be what's happening in your case to
+cause a double-dev_iommu_free(). I'll see what I can do ASAP, since I
+think that's worthwhile. In the meantime, as to why you're hitting the
+failure path at all, I think that's another subtle oversight on my part,
+does something like the diff below help?
 
+Thanks,
+Robin.
+
+----->8-----
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 4f2039789897..00fc57c86ea4 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -1163,6 +1163,14 @@ static struct iommu_group *rk_iommu_device_group(struct device *dev)
+  
+  	iommu = rk_iommu_from_dev(dev);
+  
++	/*
++	 * Use the first registered IOMMU device for domain to use with DMA
++	 * API, since a domain might not physically correspond to a single
++	 * IOMMU device..
++	 */
++	if (!dma_dev)
++		dma_dev = iommu->dev;
++
+  	return iommu_group_ref_get(iommu->group);
+  }
+  
+@@ -1293,14 +1301,6 @@ static int rk_iommu_probe(struct platform_device *pdev)
+  	if (err)
+  		goto err_remove_sysfs;
+  
+-	/*
+-	 * Use the first registered IOMMU device for domain to use with DMA
+-	 * API, since a domain might not physically correspond to a single
+-	 * IOMMU device..
+-	 */
+-	if (!dma_dev)
+-		dma_dev = &pdev->dev;
+-
+  	pm_runtime_enable(dev);
+  
+  	for (i = 0; i < iommu->num_irq; i++) {
