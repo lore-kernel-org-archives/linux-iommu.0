@@ -1,160 +1,100 @@
-Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90F967B
-	for <iommu@lists.linux.dev>; Thu, 20 Oct 2022 11:33:18 +0000 (UTC)
-Received: by mail-pg1-f169.google.com with SMTP id f193so18985753pgc.0
-        for <iommu@lists.linux.dev>; Thu, 20 Oct 2022 04:33:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=tYdfoIPqY+T234/NdafPtOqHMoflIkl5egaJuABTq4w=;
-        b=HtmcYdKiTzYM/L6QSAXCk8GBNXg9RCotQXIaq0FXQWN3I53f/salEcpH1a5O6lPzW1
-         W7e60lHutJpOqv2sZt9QwhKetUufuFicL4eT+nnL3ygQIh08JasTRNXb2ap+escpk/m4
-         RQSFlAAzIWjcyH37Ui/cSJgrs1q/eohLE3mZonCbeyALD2Z3s07LWh9S9L+QE55lFeqn
-         GSFd/kaU3Qa1Lyufjz4KjraC1UIf/OcrA+I27+PzXwEb8YPL5oVuft7ZboaY/Tq5QZ5R
-         b8m9tRYmn7GnX+rRE5dRurhoeNtyPK9+0KFXdegorAC8NTFtczzOEhkLxAOIADgWZbgT
-         TVDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=tYdfoIPqY+T234/NdafPtOqHMoflIkl5egaJuABTq4w=;
-        b=t+bVqg0tJBo9cFt0oDzwE6qsDjCyjRVQpzPgpdRTtPot4ZrSQ236q5/9Ml25ZyEGJa
-         UPZ/5YyyrysEocsuE0c0XXOQPZouihgInOlB4miZWX49ST9nCSgCgfNpYdYr0DLlyBY7
-         nct59RvIXXbwJEeSm3nePh9Z2HupUQVV56/ypss8mzjD/4UF6q+658oudljh2ByL0szG
-         uf+anBCWqRmJvLRupjkv5LZzhjdyVfeCImv9IgCxt6W84zf2Rgwy6u+hMHzTd14fVJXk
-         MwHA1LMhlZRct6LZ1XPsSdQ+d17jCzf4gKc/B/3oj5tPb6O/Oq/I1OD9ya/uAJ5ZvRaP
-         0Eyg==
-X-Gm-Message-State: ACrzQf0m54r20JSvY1qagMaPA3um29Y3u2z9ExmVsrr7yPYUdH/polrl
-	AmKovJ4xjhbwrY4ey5+JjlB0JRdDg3ys/RRKlXynQw==
-X-Google-Smtp-Source: AMsMyM5MIHc0qsAb61gidhpKGvqVl1pHORPz4Rzt+toUefYZ4KkBzzJf1VnnId2YIqlBwsFGypdatSc41rTgXK/D4CA=
-X-Received: by 2002:a05:6a00:181c:b0:563:2c6c:2a7a with SMTP id
- y28-20020a056a00181c00b005632c6c2a7amr13553427pfa.28.1666265597933; Thu, 20
- Oct 2022 04:33:17 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 460577B
+	for <iommu@lists.linux.dev>; Thu, 20 Oct 2022 12:16:43 +0000 (UTC)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29KBq7pB013776;
+	Thu, 20 Oct 2022 12:16:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=G5pEjTb2W11m3oZ9DMfyFhpHsGdJyRTiA4oZDkkj9Cw=;
+ b=CwPOBYyTLm7oVP4xk4lE0ah2Pdx4w863AONmTmNKW50RUeprZaKbe/Nj8TwGkRQ3DMMt
+ tPKLQea2r5imGSj0Zsxd2BKwjTkT0KSyZdO4ZAPrLIhnelHTEOoom3pmnWunX264LlTa
+ g8hIm/LxYWhKfMB6z0otha3ZnJRHhkXuulnDEfJa4b22YHOSrG56n2AGAKLE7VmCSXwV
+ Ps2uGf0ES8AlturxmbaGXFhIH2uNNwbYJe8cLnVw891Tb3fkG7sMw+3zSTMrZ0PNJHef
+ QvilAivxJG31q+ocL8mIM5AlUSoH0MfZhXYNlOKs3G3y5Am6eqYmAGGEqtomOLelCv3U rQ== 
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3kb5u8s0ce-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 20 Oct 2022 12:16:28 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+	by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29KC5hZT030950;
+	Thu, 20 Oct 2022 12:16:27 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+	by ppma06fra.de.ibm.com with ESMTP id 3k7m4jeq0s-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 20 Oct 2022 12:16:26 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+	by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29KCBLPx36372762
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 20 Oct 2022 12:11:21 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id CAF8EAE051;
+	Thu, 20 Oct 2022 12:16:23 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 3D7FAAE045;
+	Thu, 20 Oct 2022 12:16:23 +0000 (GMT)
+Received: from oc-nschnelle.boeblingen.de.ibm.com (unknown [9.155.199.46])
+	by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+	Thu, 20 Oct 2022 12:16:23 +0000 (GMT)
+Message-ID: <ca76170852152cb9fef207a16b39b67035e5bd28.camel@linux.ibm.com>
+Subject: Re: [RFC 1/6] s390/ism: Set DMA coherent mask
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev,
+        Joerg
+ Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy
+ <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
+        Gerd Bayer
+ <gbayer@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, linux-kernel@vger.kernel.org,
+        Wenjia Zhang
+ <wenjia@linux.ibm.com>,
+        Julian Ruess <julianr@linux.ibm.com>
+Date: Thu, 20 Oct 2022 14:16:23 +0200
+In-Reply-To: <Y1EB1pvWkoHXQh+a@infradead.org>
+References: <20221019144435.369902-1-schnelle@linux.ibm.com>
+	 <20221019144435.369902-2-schnelle@linux.ibm.com>
+	 <Y1EB1pvWkoHXQh+a@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-References: <20221018105149.820062-1-thierry.reding@gmail.com>
-In-Reply-To: <20221018105149.820062-1-thierry.reding@gmail.com>
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Date: Thu, 20 Oct 2022 13:32:41 +0200
-Message-ID: <CAPDyKFopppohLJ7ptnQxpBHzMLh2SZObarQRC0bJyTwE=nky4w@mail.gmail.com>
-Subject: Re: [PATCH] iommu: Always define struct iommu_fwspec
-To: Joerg Roedel <joro@8bytes.org>, Thierry Reding <thierry.reding@gmail.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev, 
-	linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: YL3H8FkwAFmflvy2fXNpq3J6HPheuH9n
+X-Proofpoint-ORIG-GUID: YL3H8FkwAFmflvy2fXNpq3J6HPheuH9n
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-10-20_03,2022-10-20_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 adultscore=0
+ priorityscore=1501 phishscore=0 malwarescore=0 spamscore=0 mlxlogscore=761
+ impostorscore=0 mlxscore=0 suspectscore=0 clxscore=1015 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2209130000
+ definitions=main-2210200072
 
-On Tue, 18 Oct 2022 at 12:51, Thierry Reding <thierry.reding@gmail.com> wrote:
->
-> From: Thierry Reding <treding@nvidia.com>
->
-> In order to fully make use of the !IOMMU_API stub functions, make the
-> struct iommu_fwspec always available so that users of the stubs can keep
-> using the structure's internals without causing compile failures.
->
-> Signed-off-by: Thierry Reding <treding@nvidia.com>
+On Thu, 2022-10-20 at 01:07 -0700, Christoph Hellwig wrote:
+> On Wed, Oct 19, 2022 at 04:44:30PM +0200, Niklas Schnelle wrote:
+> >  	if (ret)
+> >  		goto err_resource;
+> >  
+> > +	ret = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64));
+> 
+> Nit:  but you could also just replace the call to dma_set_mask abobe with
+> a call to dma_set_mask_and_coherent.
 
-Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+That makes sense, thanks. Will be added for v2. Also obviously this
+change is only a prerequisite and could be applied separately, the
+changed coherent mask won't affect use with the existing DMA
+implementation.
 
-> ---
-> Hi Joerg,
->
-> this is a rebased patch extracted from an ancient series that never
-> ended up getting applied:
->
->         https://lore.kernel.org/all/20191209120005.2254786-3-thierry.reding@gmail.com/
->
-> You had already acked this particular patch, so maybe you can pick this
-> up. I've seen at least two discussions where this was brought up again,
-> so I figured it'd be worth sending this out again because it can help
-> remove a number of #ifdef blocks throughout the kernel.
-
-Yes, this would certainly help to improve the code. To me, it looks
-like the current stub functions, like dev_iommu_fwspec_get() for
-example, aren't really useful without $subject patch.
-
-Note that, I have a pending patch for mmc that would benefit from
-this. To prevent me from delaying that, an easy way forward, assuming
-there are no objections of course, would be to send this for 6.1-rc.
-
->
->  include/linux/iommu.h | 39 +++++++++++++++++++--------------------
->  1 file changed, 19 insertions(+), 20 deletions(-)
->
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index a325532aeab5..e3295c45d18f 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -173,6 +173,25 @@ enum iommu_dev_features {
->
->  #define IOMMU_PASID_INVALID    (-1U)
->
-> +/**
-> + * struct iommu_fwspec - per-device IOMMU instance data
-> + * @ops: ops for this device's IOMMU
-> + * @iommu_fwnode: firmware handle for this device's IOMMU
-> + * @flags: IOMMU_FWSPEC_* flags
-> + * @num_ids: number of associated device IDs
-> + * @ids: IDs which this device may present to the IOMMU
-> + */
-> +struct iommu_fwspec {
-> +       const struct iommu_ops  *ops;
-> +       struct fwnode_handle    *iommu_fwnode;
-> +       u32                     flags;
-> +       unsigned int            num_ids;
-> +       u32                     ids[];
-> +};
-> +
-> +/* ATS is supported */
-> +#define IOMMU_FWSPEC_PCI_RC_ATS                        (1 << 0)
-> +
->  #ifdef CONFIG_IOMMU_API
->
->  /**
-> @@ -598,25 +617,6 @@ extern struct iommu_group *generic_device_group(struct device *dev);
->  /* FSL-MC device grouping function */
->  struct iommu_group *fsl_mc_device_group(struct device *dev);
->
-> -/**
-> - * struct iommu_fwspec - per-device IOMMU instance data
-> - * @ops: ops for this device's IOMMU
-> - * @iommu_fwnode: firmware handle for this device's IOMMU
-> - * @flags: IOMMU_FWSPEC_* flags
-> - * @num_ids: number of associated device IDs
-> - * @ids: IDs which this device may present to the IOMMU
-> - */
-> -struct iommu_fwspec {
-> -       const struct iommu_ops  *ops;
-> -       struct fwnode_handle    *iommu_fwnode;
-> -       u32                     flags;
-> -       unsigned int            num_ids;
-> -       u32                     ids[];
-> -};
-> -
-> -/* ATS is supported */
-> -#define IOMMU_FWSPEC_PCI_RC_ATS                        (1 << 0)
-> -
->  /**
->   * struct iommu_sva - handle to a device-mm bond
->   */
-> @@ -680,7 +680,6 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group);
->
->  struct iommu_ops {};
->  struct iommu_group {};
-> -struct iommu_fwspec {};
->  struct iommu_device {};
->  struct iommu_fault_param {};
->  struct iommu_iotlb_gather {};
-> --
-> 2.37.3
->
-
-Kind regards
-Uffe
