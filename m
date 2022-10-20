@@ -1,100 +1,158 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2084.outbound.protection.outlook.com [40.107.94.84])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 460577B
-	for <iommu@lists.linux.dev>; Thu, 20 Oct 2022 12:16:43 +0000 (UTC)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29KBq7pB013776;
-	Thu, 20 Oct 2022 12:16:29 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=G5pEjTb2W11m3oZ9DMfyFhpHsGdJyRTiA4oZDkkj9Cw=;
- b=CwPOBYyTLm7oVP4xk4lE0ah2Pdx4w863AONmTmNKW50RUeprZaKbe/Nj8TwGkRQ3DMMt
- tPKLQea2r5imGSj0Zsxd2BKwjTkT0KSyZdO4ZAPrLIhnelHTEOoom3pmnWunX264LlTa
- g8hIm/LxYWhKfMB6z0otha3ZnJRHhkXuulnDEfJa4b22YHOSrG56n2AGAKLE7VmCSXwV
- Ps2uGf0ES8AlturxmbaGXFhIH2uNNwbYJe8cLnVw891Tb3fkG7sMw+3zSTMrZ0PNJHef
- QvilAivxJG31q+ocL8mIM5AlUSoH0MfZhXYNlOKs3G3y5Am6eqYmAGGEqtomOLelCv3U rQ== 
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3kb5u8s0ce-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 20 Oct 2022 12:16:28 +0000
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-	by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29KC5hZT030950;
-	Thu, 20 Oct 2022 12:16:27 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-	by ppma06fra.de.ibm.com with ESMTP id 3k7m4jeq0s-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 20 Oct 2022 12:16:26 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-	by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29KCBLPx36372762
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 20 Oct 2022 12:11:21 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id CAF8EAE051;
-	Thu, 20 Oct 2022 12:16:23 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 3D7FAAE045;
-	Thu, 20 Oct 2022 12:16:23 +0000 (GMT)
-Received: from oc-nschnelle.boeblingen.de.ibm.com (unknown [9.155.199.46])
-	by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-	Thu, 20 Oct 2022 12:16:23 +0000 (GMT)
-Message-ID: <ca76170852152cb9fef207a16b39b67035e5bd28.camel@linux.ibm.com>
-Subject: Re: [RFC 1/6] s390/ism: Set DMA coherent mask
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev,
-        Joerg
- Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy
- <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
-        Gerd Bayer
- <gbayer@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, linux-kernel@vger.kernel.org,
-        Wenjia Zhang
- <wenjia@linux.ibm.com>,
-        Julian Ruess <julianr@linux.ibm.com>
-Date: Thu, 20 Oct 2022 14:16:23 +0200
-In-Reply-To: <Y1EB1pvWkoHXQh+a@infradead.org>
-References: <20221019144435.369902-1-schnelle@linux.ibm.com>
-	 <20221019144435.369902-2-schnelle@linux.ibm.com>
-	 <Y1EB1pvWkoHXQh+a@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74CCE7B
+	for <iommu@lists.linux.dev>; Thu, 20 Oct 2022 12:25:37 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZCPPHSaXMA5Bjk1XDzDsfkoGxJyQVMNLGACS3NHvKl0QJqmAtA7iOILUlTEb4JRPXP7zaKdT0iCIj78HIPr4yhSmZt1UlN7rw7qv3fx+oY5/ZY1FZvhOJ/qK7ejgBYzyfvq4lekGMcHrPcF1CIOo5RkcjIzeou4LirnBbztjH3Leco+lYZlKzmo/ZeqGPn2FIIf16251FsiMr6X4MD4gKnC04ybXGex76NIEzN1dOnuNkHCOXoW3JX0g93jR0+ykLKsJRS674uVX+NlYZB9S4Bnczea0jJAICxtMxg8iZxEQa1gVVAuxYd4RZm931IJh5p8RXdkenyeo1hLzL3ojQg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=npBryycEAPw6Nhr74MvynXOB6aFpahDpgdMKcKyHBcY=;
+ b=FsHJKziteV6spLZyH98/oT6aN8AxjPs/6UAOOrIIu1zrJyaORj7nfRMKyZDWftyhKrYgFeFwlWL97sMmCjE7mn0MsvtJ0nYquTwWYCBO1kYzpSIG1Bda9lYWXpJs5WYRb81zttPvILg60mHkD97qVh8GJeELcYSfRK9TG2AQB4cTkygeIWOhzPAcaKgUfHggP/MB5Ezemtt3nSS3yc0ESTHIU4iaRx3kIE8BEvya69G7r3isBdKVYWKrQq8rhzyWW00QiLMmu7k4QoOSaMj5DVkcPzf3XOoVBRzgtxp3JR/S/+ZJ4gIfNnjGLeqxTlpoUXT83Mop4Rx5mrB11lgg7Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=npBryycEAPw6Nhr74MvynXOB6aFpahDpgdMKcKyHBcY=;
+ b=rTgbVIkwzDIgOFuX+1Mm+AS9ommeQCRJ1Qn1xoTHXNT2fPsVePpr/Fo8qY0E9xG9JFxBJ2Dnd+BQkJVrVJrEyVFo3drGWE/gOt75+7mZLCfzuMYpTjQGr+nz7FW7sC1A3XI50c/5iaXG60cSgH3FOOEX4vlWh24ab/fgvlN3WFRi1dVmBv2PjnSUtWbah7lx+QhEYRZj4p6FP3bPbaGjGX5qoQGZMEjM5K97ci1+e+cZTFkVwA5t44tY5sa31OOajmRKVliE7reFhxrgvzMwx/sAPLSFbsgXjjcq8unXsn5XBogbAPN3iOffK7RAJk2f9OCS2jKKbxubtflC64Ak/Q==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CO6PR12MB5444.namprd12.prod.outlook.com (2603:10b6:5:35e::8) by
+ BY5PR12MB4129.namprd12.prod.outlook.com (2603:10b6:a03:213::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5723.34; Thu, 20 Oct 2022 12:25:33 +0000
+Received: from CO6PR12MB5444.namprd12.prod.outlook.com
+ ([fe80::c0e5:f111:3e59:7c66]) by CO6PR12MB5444.namprd12.prod.outlook.com
+ ([fe80::c0e5:f111:3e59:7c66%5]) with mapi id 15.20.5723.033; Thu, 20 Oct 2022
+ 12:25:33 +0000
+Message-ID: <9b79d517-f242-6619-5f13-eee65f01c57a@nvidia.com>
+Date: Thu, 20 Oct 2022 13:25:27 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH] gpu: host1x: Avoid trying to use GART on Tegra20
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>, thierry.reding@gmail.com
+Cc: dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.or,
+ iommu@lists.linux.dev, Dmitry Osipenko <digetx@gmail.com>
+References: <ee0278cae0443d4ff407d6db38f4d9b33d477e8f.1666200021.git.robin.murphy@arm.com>
+From: Jon Hunter <jonathanh@nvidia.com>
+In-Reply-To: <ee0278cae0443d4ff407d6db38f4d9b33d477e8f.1666200021.git.robin.murphy@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LO4P123CA0557.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:33b::13) To CO6PR12MB5444.namprd12.prod.outlook.com
+ (2603:10b6:5:35e::8)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: YL3H8FkwAFmflvy2fXNpq3J6HPheuH9n
-X-Proofpoint-ORIG-GUID: YL3H8FkwAFmflvy2fXNpq3J6HPheuH9n
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-10-20_03,2022-10-20_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 adultscore=0
- priorityscore=1501 phishscore=0 malwarescore=0 spamscore=0 mlxlogscore=761
- impostorscore=0 mlxscore=0 suspectscore=0 clxscore=1015 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2209130000
- definitions=main-2210200072
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO6PR12MB5444:EE_|BY5PR12MB4129:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7efab9cd-971d-49a0-4d8d-08dab2962eda
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	ALn6AVaAPDqB/JwrwrsSRJBaS68VUGUPIe+FaHFTTS/fzEPJkitBDGZEIJV9MWwtA/ww2lXRsQFlB2Pewa22lujKUMRBM5ojXsk6YIQ+vvErl16HtRlkLgVz26b5UwTtsTPjZm5gfDV52aIJHJA3Pwm3XI1f5NWeccTGyviHeqFlTB8y9CYrRP4yW28RZGwBxa+0ZHt+oLbC0gDWKtK96y+v+dAkBI+5lL6bI0SudDDT3xzN2c39nQMpbMOoRcxE3sWgzkvEEkbVgE1h6HlIuFp8DKIaqdH5rHfozj91+LSgVxbX9VHU2HRorCZW/eIh2BOvz3YAi6Nufj3i6ZS7ich0SGiYn3UlNbA97Yu9LFxOIw98rlto//mppBQEdySaePeEY34u0fAK+jWBgVGNYZM6tBg5XMozFoVClrqZhO4Kb8gQC89KtjV8cBR7E+xjMTml+G6t9H5eIUrQ9HGgUm22tBjq2Cqs7JCRqyma+ryruWXRxf9kQY0TWLKhmIDBBRzNJXaC9a43qxk1Xbxa7/Ksl/h7Nrva6Tf01Lczss18NP4nOj0/wSR+A09akkyiZ2fy62O6J6a+Q6eUcWMTLQ5us5TL63f4WxzlIhSGU1ByaEolZGl2WHZfM1SZPsXoYmjTeMY8fnzosG4nBaq3Z9DPr2UCj9IiqxifCFrxFd82affVYFXqJKAhJ5GPqot3A+NM8lR78MdKQh83+CNr67xNJEDNFeo9DWHe7lzff3nlwrRgP6qPxziHcVuJVyHylZn8ooicMTHsv5BTxHHibWWtt1lYi+v2ckKf9pXMwQimIsOva6EqrPBt8UaspOb301O4vJd5ZnWkuYrsmYKmCTwY1EK+86/aIOY8/q30Cps=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR12MB5444.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(136003)(396003)(39860400002)(346002)(366004)(451199015)(31686004)(478600001)(83380400001)(86362001)(31696002)(6486002)(6512007)(53546011)(26005)(66476007)(66556008)(6666004)(55236004)(8676002)(6506007)(316002)(41300700001)(8936002)(4326008)(36756003)(186003)(2616005)(2906002)(66946007)(5660300002)(38100700002)(32563001)(45980500001)(43740500002)(357404004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?WGNaMkYvSjNaWFJYQkx6NElqemdCRFl3Q2dNaUhnMHRMTHFOSFpKT3ZrcVhS?=
+ =?utf-8?B?T21hYmx4NHpGeXh4MFVMTWErWTJIZmtBYzVjOFJTa3FJVzZpU2lWcUJpUnZK?=
+ =?utf-8?B?KzZNNnhCMlRWSHBxelRvU1lTdkNtT1JkVDdGVHVmU2dzL0IveUJvZjZ6czI5?=
+ =?utf-8?B?Vm0yZGx6cWRrL0xzM0RPOFVIWFQ1T0lvRzBuU1BKejBVU1ZZYUpRWnVJd28v?=
+ =?utf-8?B?MmFLekZHNkpKdW82NG1ncnhlTktBS051bEY1ek1UVXgrdmxUNUMzUU5rQzFJ?=
+ =?utf-8?B?WE9Rajh1SHNxYkgyejhZd0tBclo2dEJHV3EzQU5nNE94UVlXejExSmlEYktq?=
+ =?utf-8?B?Z0pkcUdtT1BMYmRDc0VYSTFkRm1Jakg2YUVDZjlZa2FiM0R4N2VOMnNLMGJZ?=
+ =?utf-8?B?TXRKaTEwWGlCY0tZM0ZqZHIxMWlpUEEwclBqWnRtZ3d1MTdubVVGUXBTVURQ?=
+ =?utf-8?B?ZitGL1c1RGVWU0JNbVFJT0RGVE14R0FkKzR2dnVIOUxjY3ZpbUcxc2pvQVYr?=
+ =?utf-8?B?YmNIUG9aVjRyQmE2OThyeWRKa2VuTEJJb1hZQS9namZOVThKNEU4a1pDZDZp?=
+ =?utf-8?B?a2xHcW5vc1RqMnc1WHZoTXFZd3FrVCs2QkphTlYwck80QTZUQytWelFtWTh5?=
+ =?utf-8?B?dlV2Zk1NTkNVbWQycG1PMW1KSXJmNkZlZlhEN1ZDMlVMMnR6bjNRb2MyUFls?=
+ =?utf-8?B?MTg0aXpBbkZsZFovd1lOL3RmMG41cE1zYW50UzJON2xYQ3kwakJDL3lyRlVz?=
+ =?utf-8?B?aEd0a0VCejd3TCtld09ud3VvUTR6SXlzdlZSMnpZTm5PTlJ1b1VnYUlMdSt4?=
+ =?utf-8?B?a0ZwL2ZrNDZKcXJUMDdwMTU3NW1UZFZaUUpOdHRibWNaS2JlK3l3Wlo4S0lh?=
+ =?utf-8?B?aG5tQnpFWUxaWjYrK1AyTFJ5anRwdU53d0JZNVpQczN5UmRnZ29yOTdBa3NG?=
+ =?utf-8?B?ZGtoQzlac25KUmpHK0MvVTh3Rm1URUUybjd6YzdPdHVIYWxMRGxFZHpHeDBT?=
+ =?utf-8?B?T0QvNEovL1k4UjhSNXVLWnlCT3ZFbVlTbHA1UVl4Y2hvMmw0d29yd2oyYzkz?=
+ =?utf-8?B?ZDAxak55dnY4UGwwNERQWDJNOXM3TVlpUlpjSlVBR2tOMXJnQXUzeUEraG0w?=
+ =?utf-8?B?aHhRRWZQMW1vdkFtenZxWVFaT0wwaXNqNjMwN1FtcTl5eU13cVBhNUFGditP?=
+ =?utf-8?B?dGZiRVkxODFoejU4RkdBM3I3THRtL21TOXU4S0VTT1VkOVBGdzg3QjhDdmRX?=
+ =?utf-8?B?NVd3OHY3MGpxOEVLNm1KaExENVZSeTNZUHV0cnl6eXR6TzA5b1Y3Qk1XYkw3?=
+ =?utf-8?B?VWRLRGdwdkRhSXFHSXhkZE9pL2JzaGZYN3A0N3JJUFRyQU9ndFJyL2dsOTVz?=
+ =?utf-8?B?ckthQm1DRnQ3Y3ZXS3lZbERKc1Mvby9qejdxa1JrbzZxUnpsUW5LUG1HZXpp?=
+ =?utf-8?B?WTRhVkZpbjNMK09rMHNXblFKMEYwU2RCenBpSVF2cnZKRVZFZjQyUkYrUm5D?=
+ =?utf-8?B?Qzg2SjFaOGE3YmRISGdKYTdBV2VYNDZ4RTJCZVRRdXEydGtZNDM2ZmQ2U0lT?=
+ =?utf-8?B?K0l6OWM5eEVjUVlXSUZVUE9uVFI1RDR5Q2hCSkFCL2pYTDNaTFdscnVTZUtT?=
+ =?utf-8?B?TDBqU3NVNExOUmxZMVRvSk5YbC9TWTFIQWUyZXdlQzV4cmcrWVcvMWVpRVJw?=
+ =?utf-8?B?L2ZLM3BYOTVLeGd0RTdHNGE4ZDIwMmF6TjA5OVNFRUhpNGVvb0NNL3Y1RENq?=
+ =?utf-8?B?ZndVckVwTmNLRHJBdzhjVXMwWnFLK0xSWm8wek5Yb3ZlSW9wS3ZEQldsbjEz?=
+ =?utf-8?B?blJtT1UrL0M0cEFyVWxwQ055RTNHVVVOT2cxdHo0SmxoMGZITDIyTlVybGJ6?=
+ =?utf-8?B?MEZvb2ZHWkdkWUl3WHQ3dXJObWo3THYrVUo5NWtLMkUvSm9IRVJHcmZSRzAy?=
+ =?utf-8?B?ZHBQcXduaVNUVUpjek0xMWovWlF0RGI1aUxuemhRQlJpWC9kSHNVQjFzZFU1?=
+ =?utf-8?B?SkpmWTYyeEpoV0ZwMGNkWjZiNlQrSVJqYlE5dllxR1pIZmpBUFp6UTBxREpQ?=
+ =?utf-8?B?dk0zZERZZFQ1eklGZTJwZjB5M2ZselVtS0QwSWt3VlZvV1lsOTZLdjE2YUVq?=
+ =?utf-8?Q?NgyXJ8PnqjZI/FwvMHehgazxw?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7efab9cd-971d-49a0-4d8d-08dab2962eda
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR12MB5444.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Oct 2022 12:25:33.0211
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Xfq60HV1kMGs440DucfRqUHLYD6HeyXZfqM0W+3xu2H7OuPgfcVGQmWksUr5bZlzXKc//tikeQ529SHbVb2Xbg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4129
 
-On Thu, 2022-10-20 at 01:07 -0700, Christoph Hellwig wrote:
-> On Wed, Oct 19, 2022 at 04:44:30PM +0200, Niklas Schnelle wrote:
-> >  	if (ret)
-> >  		goto err_resource;
-> >  
-> > +	ret = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64));
+Hi Robin,
+
+On 19/10/2022 18:23, Robin Murphy wrote:
+> Since commit c7e3ca515e78 ("iommu/tegra: gart: Do not register with
+> bus") quite some time ago, the GART driver has effectively disabled
+> itself to avoid issues with the GPU driver expecting it to work in ways
+> that it doesn't. As of commit 57365a04c921 ("iommu: Move bus setup to
+> IOMMU device registration") that bodge no longer works, but really the
+> GPU driver should be responsible for its own behaviour anyway. Make the
+> workaround explicit.
 > 
-> Nit:  but you could also just replace the call to dma_set_mask abobe with
-> a call to dma_set_mask_and_coherent.
+> Reported-by: Jon Hunter <jonathanh@nvidia.com>
+> Suggested-by: Dmitry Osipenko <digetx@gmail.com>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+>   drivers/gpu/host1x/dev.c | 4 ++++
+>   1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/gpu/host1x/dev.c b/drivers/gpu/host1x/dev.c
+> index a13fd9441edc..1cae8eea92cf 100644
+> --- a/drivers/gpu/host1x/dev.c
+> +++ b/drivers/gpu/host1x/dev.c
+> @@ -352,6 +352,10 @@ static struct iommu_domain *host1x_iommu_attach(struct host1x *host)
+>   	if (!host1x_wants_iommu(host) || domain)
+>   		return domain;
+>   
+> +	/* Our IOMMU usage policy doesn't currently play well with GART */
+> +	if (of_machine_is_compatible("nvidia,tegra20"))
+> +		return NULL;
+> +
+>   	host->group = iommu_group_get(host->dev);
+>   	if (host->group) {
+>   		struct iommu_domain_geometry *geometry;
 
-That makes sense, thanks. Will be added for v2. Also obviously this
-change is only a prerequisite and could be applied separately, the
-changed coherent mask won't affect use with the existing DMA
-implementation.
 
+Thanks for sending. I gave this a quick test, but I still see ...
+
+[    2.901739] tegra-gr2d 54140000.gr2d: failed to attach to domain: -19
+[    2.908373] drm drm: failed to initialize 54140000.gr2d: -19
+
+Cheers
+Jon
+
+-- 
+nvpublic
