@@ -1,218 +1,128 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2079.outbound.protection.outlook.com [40.107.243.79])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FBDB7B
-	for <iommu@lists.linux.dev>; Thu, 20 Oct 2022 11:03:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	Content-Type:MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-	Content-ID:Content-Description:In-Reply-To:References;
-	bh=vzIIWL4qI+c7mLkQ6mO5LnCAvr9Io4h5i2791g9WkoA=; b=MZ/G2NjTrIeSSb0P5Eq4IPEecE
-	ZMFKfZxJ1PDCqEAe6f2+qLVPQ5N/Me2uQxi2vNqoiCQ62z4iYcvq7o3MUZQG1gaGuoalGlU7FYpw+
-	QqiiJUBOTP/BWNWS2WhP3VgjHQp9LpfiJkCYpxTiot+DcrKM59G4dyRsXw6WddgD7prW9xx+5lzEK
-	YhyPAAHlk7eh36u+IJ/cz/k0FUtYT3iaZcvorkz7d0Y0gv3l58Y8GYGnd+NJbTqV7S6aSRczV1dDn
-	cnwGMJXZla76IO4bR/Idi9So0lOh6wp/EQojVmOHSjmI3jQ1MWMcd0Sw0EtvYakpUN8VC63ija8Q2
-	TjlBIdBw==;
-Received: from [88.128.92.117] (helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-	id 1olTKU-00DsxZ-8E; Thu, 20 Oct 2022 11:03:14 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: jani.nikula@linux.intel.com,
-	joonas.lahtinen@linux.intel.com,
-	rodrigo.vivi@intel.com,
-	tvrtko.ursulin@linux.intel.com
-Cc: airlied@gmail.com,
-	daniel@ffwll.ch,
-	intel-gfx@lists.freedesktop.org,
-	dri-devel@lists.freedesktop.org,
-	iommu@lists.linux.dev,
-	oleksandr_tyshchenko@epam.com,
-	marmarek@invisiblethingslab.com,
-	Robert Beckett <bob.beckett@collabora.com>
-Subject: [PATCH] drm/i915: stop abusing swiotlb_max_segment
-Date: Thu, 20 Oct 2022 13:03:08 +0200
-Message-Id: <20221020110308.1582518-1-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D95797B
+	for <iommu@lists.linux.dev>; Thu, 20 Oct 2022 11:05:23 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SXBnQm0RqhE5ltyfcRc/rbev96AYJkx6aWQ7WP1O/mXwgHDtaRCiSJy16t3fzreM4haqqKyTiBabYD/FjQ6SuxJT4X/kG4+BFFlsIMsJ+pww4qCiCoHMM3tLb6umCAWqjjsIUetQd0Op6w9ZAfyuFwAL7ru/Klyynk2WPqlON6rxZ2RAcbhTlpn7zZEQz0oE2hNEOFhgb3BH9F27+CnQS2MymLsqPxyPKA3l1kt6DrDXm1oE8EKLWTA/4CTuf2KO4NJ+65cjLuzsAiyitxzad/q3r2R9D+3SHIQ3HrxE1OmNIs37PmFZczl8YrNCL/Xu4UxYCVE6LsAskiEyHWDJhw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RJadNk4dQ25WPPBB+hjLuQllRIhVQV3CQkzNDMF/naQ=;
+ b=hMpIovCAEtym2hKDQQ1MZIeDrLlW2/Bj9wLcptjgL4O93rtC6ApqnI7F7+Gd/r46mYVTGOuPQXD3NQnJbBMRVcUIlTVSh1hThEkBTlvUmbQXAyGZmMvWZzJpp1uGHapuG1Y6wZ6mS8WCBYaslzx5o5xtC3/lU0jANJMxib2zFxTRWaoHKulMFo7HVvYdZR1tgiXxGGwKimRV/EY/Yn/LiI1K+r6jSh7deHNnXdZr09OZDfMYy0nGFNW0KanFPW0x2AtCZB9BU1RmxjsLKqceVRZSu8q/qZVN0kNUZ8U8DKj9H+ZNdf+2Xy4RO6OCkDajNcvF8gRJSwGO99KjSRvYWg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RJadNk4dQ25WPPBB+hjLuQllRIhVQV3CQkzNDMF/naQ=;
+ b=k11+4A/aWu8KSS1T7ndH4Ftu+Acuc4+lDwUcxbcSp9N8nQ04TJGCFmmomtwjIKWBT7IyFUk214s5n/Ng3ecgmr3jRkA18o8JGmSdr0uwy1tjoyHksa8CJwhQ6AlxRBDDhuUKntOnf958L36P+NoAeJ/UzqQXx+On+ntOXTBTt/r5xA7MygYYTWipx+HO0CqbiC0F7e3lS1dH+Lbs7JAl0tGfYzpyIxMwhihWbQtAAHqlR7RHLHXPCJTDUKJANPO82B9vJcgfdKeLkcKO/MkorrkNjZ3FQCpEy6bATv/49gpnYVkaiLmhVDkWNfJvTrY89Dcug3nJBmFMe60C0bl2aA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by CY8PR12MB7561.namprd12.prod.outlook.com (2603:10b6:930:94::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.35; Thu, 20 Oct
+ 2022 11:05:21 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::7a81:a4e4:bb9c:d1de]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::7a81:a4e4:bb9c:d1de%6]) with mapi id 15.20.5723.033; Thu, 20 Oct 2022
+ 11:05:21 +0000
+Date: Thu, 20 Oct 2022 08:05:20 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Gerd Bayer <gbayer@linux.ibm.com>,
+	Pierre Morel <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
+	borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+	gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+	svens@linux.ibm.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/5] iommu/s390: Use RCU to allow concurrent domain_list
+ iteration
+Message-ID: <Y1ErcEe82yjJI+ET@nvidia.com>
+References: <20221018145132.998866-1-schnelle@linux.ibm.com>
+ <20221018145132.998866-4-schnelle@linux.ibm.com>
+ <Y07Dz/NROAMI0Hku@nvidia.com>
+ <8e268ab5e0dadf86be5fd7ffaa9debb76cea67f3.camel@linux.ibm.com>
+ <Y0/lMCQ8oeXJ2HTg@nvidia.com>
+ <f3551bb461b3ef3cfc1a0c644093816be1835b3f.camel@linux.ibm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f3551bb461b3ef3cfc1a0c644093816be1835b3f.camel@linux.ibm.com>
+X-ClientProxiedBy: BL1P223CA0022.NAMP223.PROD.OUTLOOK.COM
+ (2603:10b6:208:2c4::27) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CY8PR12MB7561:EE_
+X-MS-Office365-Filtering-Correlation-Id: d814c4e6-1e77-4901-82ea-08dab28afb19
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	anM4sGgxkwZV0uUFR9K9gVmad26xO9dT6OwIwFLW3SmoWclBBDSzi/ncSYVv6G4TN8+OpcNnqiJXa7VrZqyChNpCUfHTRJEAgQjT1nCnw4zKvJgncz3mtVlJtTrCxHjblzeRM94ftlowsW4wmkPm/msHa1a6BEpBl9+fus3/869QdC4JIU3PdrLwDzVZr9cTyqMkLv49lZ5gKxeoK3Pvz2ZfMcntXJw5UaevXEVlS8zue9pmoSsTqlRxPjJkiFjDiKpR1hauPuJpgwRJR6kfQnYUUpyXuAy1FyRi/5Ovmahh5o06IaV7TzgGlepkL93i7xryzbLRoN5bRVOPsyesO25YHhvgLQ3KQpxCC5tHZ1FyLuMhbAwvIg/HZEB3wy5FLHOiuSfOJfSabNfwrUkEe5EPF46eKF/2ybbdYJp+LQnCkKo/a/WsTA4MV0nfl5/iYDT09kueGuVaomTwrmqbiSBo6AGbXvQIvf84I2Vr98/By2du4dW7aDJPvLQj8V8z+iQXmNkB3jOi2uuGm85cIb4R7AgGK1WtHkrSovUWM6d6hPJ5cGOLqca0vWFXCbtqrl7X9f+2Y22+iGKUC7EewlY5Ni26T2zRSQHDpKXzDD1kRVmBTPPLBsfWOgq4n5W0ut1bpmC60JAgEk81dwmoeZLsjM8pdYvaibCI6wkxmBwokQ44oOWc8PSonEP1tyIYMxqwhaOF3AlCkgTD8UR4ZuV84LlZv16hu5UmBsqbUCF/S0zcmxlDlk0kWiiSKhWo
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(376002)(366004)(396003)(346002)(39860400002)(451199015)(6486002)(186003)(2906002)(2616005)(38100700002)(478600001)(8936002)(4744005)(8676002)(7416002)(5660300002)(54906003)(36756003)(66946007)(66476007)(26005)(6916009)(316002)(41300700001)(6512007)(86362001)(66556008)(4326008)(6506007)(67856001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?RVCC+Y5DsYv9ZZAJJIWSIZHyi+inK8+2T7Srm3l5bPVO4UiGUSrUqkgEPMA6?=
+ =?us-ascii?Q?U1gymKWghX0YLcDkpqMeEUPzXxn0MQIAejEpVxs9dsbA5B7MfMj8nBlMyykz?=
+ =?us-ascii?Q?EnD2grKSazY2OHYS0AYTvolbmmwhm/de5TYvdhrJNTLJFkD+4boAYojxnm6G?=
+ =?us-ascii?Q?IDD8LuOmXWYYT6QxF2psBzP7bP1zwBkcnKsWhnKPEqyyeKvzipiHd+U4dR66?=
+ =?us-ascii?Q?G3OxBenTPlptoyFWinLAu2EbQsGBSykBNxMquhkMUrzLwjNsWrvNa49upuiI?=
+ =?us-ascii?Q?EfFxr+3ZcZu8CI+2k+0g9tGS88ZGdtgRCMcwzCRLVC7UBgpaQnBb/5h37cqB?=
+ =?us-ascii?Q?WaL/3jHCPt4vhRpsBMlIiHMki5wuJwUFGeDhELKq/bnTlpVQxPyK/R5uGiya?=
+ =?us-ascii?Q?Qzbx0grSq9lkE8lDtA0EYmlV0QPV5SWaGT6XjmQs/hl2Xpt/W/KGJo3s0aSc?=
+ =?us-ascii?Q?65xlTnRC0CC8TkwOJTQ1gjux/nKfeE5y3rMwS0T6KqJJVph62P/7LEGLT+s5?=
+ =?us-ascii?Q?W4kHnN2VduiaaezJAvYO1kUkRMQttq2TFcIE/Lny/m4fQGh87eVRYfUQ0HdI?=
+ =?us-ascii?Q?/p6lF42aL9f5t6jyF0DhjBtw94JKrd5ofio8Y/1C13hd29h9cu2q7G97kFbo?=
+ =?us-ascii?Q?qnnQ3C/+MYjotk/GPu705xMfX6JpNO7EaXjlDIIbr+dnHtyvLEJKoI2bgEGJ?=
+ =?us-ascii?Q?6p726VMSjHXVAjNATdMu8lKowOYvl774ef7S/J4UBLVNkkLS5JpCvGMEH3Xg?=
+ =?us-ascii?Q?STA6WZFuIyXhplq57cB+5GiJfd/6E9UdoNyOcqLRqiDp25OIgrRnco4rBfFA?=
+ =?us-ascii?Q?aPaZlFTEYfyC1AUvAAyN+LPElB3Ug6SYYOvXzxK63hRtMwfWJWq2ab6JuN6x?=
+ =?us-ascii?Q?iftLfKhC+dF4rorYkUA55tAdb+YBr81lmTYBueNF+G7F/gYnjECBFyzgj0i/?=
+ =?us-ascii?Q?sHyd7WDE8N74U53tW0gnecmiTrAKpEu9AEJS8u3qsoKZAnVgVm+LzKCxEcmH?=
+ =?us-ascii?Q?GLbhgzdPwGu5ibWt8tjqf3QkcXYsn9EP9LkacPuYKkjF0o+rX2INJHEKFa8/?=
+ =?us-ascii?Q?FjjCxy1FuehLsNSir0glgy/WO6pa5uhU4RJQot1hHbU+ssdPhbDx41pjsuDU?=
+ =?us-ascii?Q?Nu/4C3+F/JR5F8X+SG3ezMx0FeAezISfX8hvchZEm9kqRrKHPy5ahaNU1G7r?=
+ =?us-ascii?Q?gc68e8iVEpavHkeOa1U7rhaHoo7m6BiulHxqWbWU0uVhyuwz1ztfhaosnTgr?=
+ =?us-ascii?Q?rgLn/PBZeQYKW1OXfuD2gadTkdXWWAK3IIq2NhRIYZyhfJ2U7VEJpLv/3lIW?=
+ =?us-ascii?Q?HJwfsphr0BCdgY2tg68qgH+XdX2M8XKb1zmI9Hpe8IB/uIJvN64tE6h8U4L8?=
+ =?us-ascii?Q?3iZ813ZbAdKCQ5LIMAtQ9MppHWpQfqtATqGShOw7f2QGfQ5Omig6Zw1kM8Kl?=
+ =?us-ascii?Q?LouBQSgIbzgiZug6f/BIrXmMgkhvIKPWVzaJy/Gaf+yc8jaCG0+T2UfvQHGT?=
+ =?us-ascii?Q?P3kgl5uVRZ3cYaBr/QUu5jIBsZroy+WTbfvIFJVlFmpyxu1rQH4CJhOk+DZ+?=
+ =?us-ascii?Q?XfKJdG8thp4Sc9Ez8EQ=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d814c4e6-1e77-4901-82ea-08dab28afb19
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Oct 2022 11:05:21.5736
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8r5UZ7g8+jAPWsrvTZf0pvDC0kUcRZsfHc7YlZ0e1lRIyBWud59qSim1XFcDnY47
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7561
 
-From: Robert Beckett <bob.beckett@collabora.com>
+On Thu, Oct 20, 2022 at 10:51:10AM +0200, Niklas Schnelle wrote:
 
-swiotlb_max_segment used to return either the maximum size that swiotlb
-could bounce, or for Xen PV PAGE_SIZE even if swiotlb could bounce buffer
-larger mappings.  This made i915 on Xen PV work as it bypasses the
-coherency aspect of the DMA API and can't cope with bounce buffering
-and this avoided bounce buffering for the Xen/PV case.
+> Ok that makes sense thanks for the explanation. So yes my assessment is
+> still that in this situation the IOTLB flush is architected to return
+> an error that we can ignore. Not the most elegant I admit but at least
+> it's simple. Alternatively I guess we could use call_rcu() to do the
+> zpci_unregister_ioat() but I'm not sure how to then make sure that a
+> subsequent zpci_register_ioat() only happens after that without adding
+> too much more logic.
 
-So instead of adding this hack back, check for Xen/PV directly in i915
-for the Xen case and otherwise use the proper DMA API helper to query
-the maximum mapping size.
+This won't work either as the domain could have been freed before the
+call_rcu() happens, the domain needs to be detached synchronously
 
-Replace swiotlb_max_segment() calls with dma_max_mapping_size().
-In i915_gem_object_get_pages_internal() no longer consider max_segment
-only if CONFIG_SWIOTLB is enabled. There can be other (iommu related)
-causes of specific max segment sizes.
-
-Fixes: a2daa27c0c61 ("swiotlb: simplify swiotlb_max_segment")
-Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-[hch: added the Xen hack, rewrote the changelog]
----
- drivers/gpu/drm/i915/gem/i915_gem_internal.c | 19 +++--------
- drivers/gpu/drm/i915/gem/i915_gem_shmem.c    |  2 +-
- drivers/gpu/drm/i915/gem/i915_gem_ttm.c      |  4 +--
- drivers/gpu/drm/i915/gem/i915_gem_userptr.c  |  2 +-
- drivers/gpu/drm/i915/i915_scatterlist.h      | 34 ++++++++++++--------
- 5 files changed, 29 insertions(+), 32 deletions(-)
-
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_internal.c b/drivers/gpu/drm/i915/gem/i915_gem_internal.c
-index c698f95af15fe..629acb403a2c9 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_internal.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_internal.c
-@@ -6,7 +6,6 @@
- 
- #include <linux/scatterlist.h>
- #include <linux/slab.h>
--#include <linux/swiotlb.h>
- 
- #include "i915_drv.h"
- #include "i915_gem.h"
-@@ -38,22 +37,12 @@ static int i915_gem_object_get_pages_internal(struct drm_i915_gem_object *obj)
- 	struct scatterlist *sg;
- 	unsigned int sg_page_sizes;
- 	unsigned int npages;
--	int max_order;
-+	int max_order = MAX_ORDER;
-+	unsigned int max_segment;
- 	gfp_t gfp;
- 
--	max_order = MAX_ORDER;
--#ifdef CONFIG_SWIOTLB
--	if (is_swiotlb_active(obj->base.dev->dev)) {
--		unsigned int max_segment;
--
--		max_segment = swiotlb_max_segment();
--		if (max_segment) {
--			max_segment = max_t(unsigned int, max_segment,
--					    PAGE_SIZE) >> PAGE_SHIFT;
--			max_order = min(max_order, ilog2(max_segment));
--		}
--	}
--#endif
-+	max_segment = i915_sg_segment_size(i915->drm.dev) >> PAGE_SHIFT;
-+	max_order = min(max_order, get_order(max_segment));
- 
- 	gfp = GFP_KERNEL | __GFP_HIGHMEM | __GFP_RECLAIMABLE;
- 	if (IS_I965GM(i915) || IS_I965G(i915)) {
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-index f42ca1179f373..11125c32dd35d 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-@@ -194,7 +194,7 @@ static int shmem_get_pages(struct drm_i915_gem_object *obj)
- 	struct intel_memory_region *mem = obj->mm.region;
- 	struct address_space *mapping = obj->base.filp->f_mapping;
- 	const unsigned long page_count = obj->base.size / PAGE_SIZE;
--	unsigned int max_segment = i915_sg_segment_size();
-+	unsigned int max_segment = i915_sg_segment_size(i915->drm.dev);
- 	struct sg_table *st;
- 	struct sgt_iter sgt_iter;
- 	struct page *page;
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-index 4f861782c3e85..a4aa9500fa179 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-@@ -189,7 +189,7 @@ static int i915_ttm_tt_shmem_populate(struct ttm_device *bdev,
- 	struct drm_i915_private *i915 = container_of(bdev, typeof(*i915), bdev);
- 	struct intel_memory_region *mr = i915->mm.regions[INTEL_MEMORY_SYSTEM];
- 	struct i915_ttm_tt *i915_tt = container_of(ttm, typeof(*i915_tt), ttm);
--	const unsigned int max_segment = i915_sg_segment_size();
-+	const unsigned int max_segment = i915_sg_segment_size(i915->drm.dev);
- 	const size_t size = (size_t)ttm->num_pages << PAGE_SHIFT;
- 	struct file *filp = i915_tt->filp;
- 	struct sgt_iter sgt_iter;
-@@ -538,7 +538,7 @@ static struct i915_refct_sgt *i915_ttm_tt_get_st(struct ttm_tt *ttm)
- 	ret = sg_alloc_table_from_pages_segment(st,
- 			ttm->pages, ttm->num_pages,
- 			0, (unsigned long)ttm->num_pages << PAGE_SHIFT,
--			i915_sg_segment_size(), GFP_KERNEL);
-+			i915_sg_segment_size(i915_tt->dev), GFP_KERNEL);
- 	if (ret) {
- 		st->sgl = NULL;
- 		return ERR_PTR(ret);
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_userptr.c b/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
-index d4398948f0162..f34e01a7fefb9 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
-@@ -129,7 +129,7 @@ static void i915_gem_object_userptr_drop_ref(struct drm_i915_gem_object *obj)
- static int i915_gem_userptr_get_pages(struct drm_i915_gem_object *obj)
- {
- 	const unsigned long num_pages = obj->base.size >> PAGE_SHIFT;
--	unsigned int max_segment = i915_sg_segment_size();
-+	unsigned int max_segment = i915_sg_segment_size(obj->base.dev->dev);
- 	struct sg_table *st;
- 	unsigned int sg_page_sizes;
- 	struct page **pvec;
-diff --git a/drivers/gpu/drm/i915/i915_scatterlist.h b/drivers/gpu/drm/i915/i915_scatterlist.h
-index 9ddb3e743a3e5..b0a1db44f8950 100644
---- a/drivers/gpu/drm/i915/i915_scatterlist.h
-+++ b/drivers/gpu/drm/i915/i915_scatterlist.h
-@@ -9,7 +9,8 @@
- 
- #include <linux/pfn.h>
- #include <linux/scatterlist.h>
--#include <linux/swiotlb.h>
-+#include <linux/dma-mapping.h>
-+#include <xen/xen.h>
- 
- #include "i915_gem.h"
- 
-@@ -127,19 +128,26 @@ static inline unsigned int i915_sg_dma_sizes(struct scatterlist *sg)
- 	return page_sizes;
- }
- 
--static inline unsigned int i915_sg_segment_size(void)
-+static inline unsigned int i915_sg_segment_size(struct device *dev)
- {
--	unsigned int size = swiotlb_max_segment();
--
--	if (size == 0)
--		size = UINT_MAX;
--
--	size = rounddown(size, PAGE_SIZE);
--	/* swiotlb_max_segment_size can return 1 byte when it means one page. */
--	if (size < PAGE_SIZE)
--		size = PAGE_SIZE;
--
--	return size;
-+	size_t max = min_t(size_t, UINT_MAX, dma_max_mapping_size(dev));
-+
-+	/*
-+	 * For Xen PV guests pages aren't contiguous in DMA (machine) address
-+	 * space.  The DMA API takes care of that both in dma_alloc_* (by
-+	 * calling into the hypervisor to make the pages contiguous) and in
-+	 * dma_map_* (by bounce buffering).  But i915 abuses ignores the
-+	 * coherency aspects of the DMA API and thus can't cope with bounce
-+	 * buffering actually happening, so add a hack here to force small
-+	 * allocations and mappings when running in PV mode on Xen.
-+	 *
-+	 * Note this will still break if bounce buffering is required for other
-+	 * reasons, like confidential computing hypervisors or PCIe root ports
-+	 * with addressing limitations.
-+	 */
-+	if (xen_pv_domain())
-+		max = PAGE_SIZE;
-+	return round_down(max, PAGE_SIZE);
- }
- 
- bool i915_sg_trim(struct sg_table *orig_st);
--- 
-2.30.2
-
+Jason
