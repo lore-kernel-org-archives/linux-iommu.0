@@ -1,141 +1,218 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CE0047E
-	for <iommu@lists.linux.dev>; Thu, 20 Oct 2022 10:02:34 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 075DCED1;
-	Thu, 20 Oct 2022 03:02:39 -0700 (PDT)
-Received: from [10.57.5.187] (unknown [10.57.5.187])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 60FF93F792;
-	Thu, 20 Oct 2022 03:02:30 -0700 (PDT)
-Message-ID: <5933d917-a026-7150-2e05-2cb283a73174@arm.com>
-Date: Thu, 20 Oct 2022 11:02:23 +0100
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FBDB7B
+	for <iommu@lists.linux.dev>; Thu, 20 Oct 2022 11:03:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+	Content-ID:Content-Description:In-Reply-To:References;
+	bh=vzIIWL4qI+c7mLkQ6mO5LnCAvr9Io4h5i2791g9WkoA=; b=MZ/G2NjTrIeSSb0P5Eq4IPEecE
+	ZMFKfZxJ1PDCqEAe6f2+qLVPQ5N/Me2uQxi2vNqoiCQ62z4iYcvq7o3MUZQG1gaGuoalGlU7FYpw+
+	QqiiJUBOTP/BWNWS2WhP3VgjHQp9LpfiJkCYpxTiot+DcrKM59G4dyRsXw6WddgD7prW9xx+5lzEK
+	YhyPAAHlk7eh36u+IJ/cz/k0FUtYT3iaZcvorkz7d0Y0gv3l58Y8GYGnd+NJbTqV7S6aSRczV1dDn
+	cnwGMJXZla76IO4bR/Idi9So0lOh6wp/EQojVmOHSjmI3jQ1MWMcd0Sw0EtvYakpUN8VC63ija8Q2
+	TjlBIdBw==;
+Received: from [88.128.92.117] (helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1olTKU-00DsxZ-8E; Thu, 20 Oct 2022 11:03:14 +0000
+From: Christoph Hellwig <hch@lst.de>
+To: jani.nikula@linux.intel.com,
+	joonas.lahtinen@linux.intel.com,
+	rodrigo.vivi@intel.com,
+	tvrtko.ursulin@linux.intel.com
+Cc: airlied@gmail.com,
+	daniel@ffwll.ch,
+	intel-gfx@lists.freedesktop.org,
+	dri-devel@lists.freedesktop.org,
+	iommu@lists.linux.dev,
+	oleksandr_tyshchenko@epam.com,
+	marmarek@invisiblethingslab.com,
+	Robert Beckett <bob.beckett@collabora.com>
+Subject: [PATCH] drm/i915: stop abusing swiotlb_max_segment
+Date: Thu, 20 Oct 2022 13:03:08 +0200
+Message-Id: <20221020110308.1582518-1-hch@lst.de>
+X-Mailer: git-send-email 2.30.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.3.3
-Subject: Re: 6.1-rc1 regression: bisected to 57365a04c921 iommu: Move bus
- setup to IOMMU device registration
-Content-Language: en-GB
-To: Brian Norris <briannorris@chromium.org>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
- Krishna Reddy <vdumpa@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>,
- Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <jroedel@suse.de>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <Y1CHh2oM5wyHs06J@google.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <Y1CHh2oM5wyHs06J@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-On 2022-10-20 00:25, Brian Norris wrote:
-> Hi all,
-> 
-> I'm testing out asynchronous probe (that's, kernel cmdline
-> 'driver_async_probe=*' or similar), and I've identified a regression in
-> v6.1-rc1 due to this:
-> 
-> commit 57365a04c92126525a58bf7a1599ddfa832415e9
-> Author: Robin Murphy <robin.murphy@arm.com>
-> Date:   Mon Aug 15 17:20:06 2022 +0100
-> 
->      iommu: Move bus setup to IOMMU device registration
-> 
-> In particular, I'm testing a Rockchip RK3399 system with
-> 'driver_async_probe=rk_iommu', and finding I crash like this:
-> 
-> [    0.180480] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000030
-> ...
-> [    0.180583] CPU: 2 PID: 49 Comm: kworker/u12:1 Not tainted 6.1.0-rc1 #57
-> [    0.180593] Hardware name: Google Scarlet (DT)
-> [    0.180602] Workqueue: events_unbound async_run_entry_fn
-> [    0.180622] pstate: 20000005 (nzCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> [    0.180632] pc : dev_iommu_free+0x24/0x54
-> [    0.180644] lr : __iommu_probe_device+0x110/0x180
-> ...
-> [    0.180785] Call trace:
-> [    0.180791]  dev_iommu_free+0x24/0x54
-> [    0.180800]  __iommu_probe_device+0x110/0x180
-> [    0.180807]  probe_iommu_group+0x40/0x58
-> [    0.180816]  bus_for_each_dev+0x8c/0xd8
-> [    0.180829]  bus_iommu_probe+0x5c/0x2d0
-> [    0.180840]  iommu_device_register+0xbc/0x104
-> [    0.180851]  rk_iommu_probe+0x260/0x354
-> [    0.180861]  platform_probe+0xb4/0xd4
-> [    0.180872]  really_probe+0xfc/0x284
-> [    0.180884]  __driver_probe_device+0xc0/0xec
-> [    0.180894]  driver_probe_device+0x4c/0xd4
-> [    0.180905]  __driver_attach_async_helper+0x3c/0x60
-> [    0.180915]  async_run_entry_fn+0x34/0xd4
-> [    0.180926]  process_one_work+0x1e0/0x3b4
-> [    0.180936]  worker_thread+0x120/0x404
-> [    0.180942] [drm] Initialized vgem 1.0.0 20120112 for vgem on minor 0
-> [    0.180944]  kthread+0xf4/0x14c
-> [    0.180953]  ret_from_fork+0x10/0x20
-> [    0.180968] Code: f9000bf3 910003fd f9416c13 f9016c1f (f9401a68)
-> [    0.180981] ---[ end trace 0000000000000000 ]---
+From: Robert Beckett <bob.beckett@collabora.com>
 
-Hmm, on the face of it that callstack doesn't even make much sense -
-dev_iommu_free+0x24 presumably has to be the dereference of
-param->fwspec, but __iommu_probe_device can only hit that failure path
-after a successful dev_iommu_get(), so dev->iommu should not be NULL.
+swiotlb_max_segment used to return either the maximum size that swiotlb
+could bounce, or for Xen PV PAGE_SIZE even if swiotlb could bounce buffer
+larger mappings.  This made i915 on Xen PV work as it bypasses the
+coherency aspect of the DMA API and can't cope with bounce buffering
+and this avoided bounce buffering for the Xen/PV case.
 
-> I find if I revert the above commit (and 29e932295bfa ("iommu: Clean up
-> bus_set_iommu()"), to keep the reverts clean), things start working again.
-> 
-> I haven't worked out exactly what's going wrong, but the patch looks like it
-> isn't async safe at all, due to the way each device is poking (without locking)
-> at the global iommu_buses[].
+So instead of adding this hack back, check for Xen/PV directly in i915
+for the Xen case and otherwise use the proper DMA API helper to query
+the maximum mapping size.
 
-We shouldn't really need locking for iommu_buses itself, but I guess to
-support async probe we would need per-device locking in
-iommu_probe_device() to prevent multiple threads trying to probe the
-same device at once, which must be what's happening in your case to
-cause a double-dev_iommu_free(). I'll see what I can do ASAP, since I
-think that's worthwhile. In the meantime, as to why you're hitting the
-failure path at all, I think that's another subtle oversight on my part,
-does something like the diff below help?
+Replace swiotlb_max_segment() calls with dma_max_mapping_size().
+In i915_gem_object_get_pages_internal() no longer consider max_segment
+only if CONFIG_SWIOTLB is enabled. There can be other (iommu related)
+causes of specific max segment sizes.
 
-Thanks,
-Robin.
+Fixes: a2daa27c0c61 ("swiotlb: simplify swiotlb_max_segment")
+Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+[hch: added the Xen hack, rewrote the changelog]
+---
+ drivers/gpu/drm/i915/gem/i915_gem_internal.c | 19 +++--------
+ drivers/gpu/drm/i915/gem/i915_gem_shmem.c    |  2 +-
+ drivers/gpu/drm/i915/gem/i915_gem_ttm.c      |  4 +--
+ drivers/gpu/drm/i915/gem/i915_gem_userptr.c  |  2 +-
+ drivers/gpu/drm/i915/i915_scatterlist.h      | 34 ++++++++++++--------
+ 5 files changed, 29 insertions(+), 32 deletions(-)
 
------>8-----
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 4f2039789897..00fc57c86ea4 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -1163,6 +1163,14 @@ static struct iommu_group *rk_iommu_device_group(struct device *dev)
-  
-  	iommu = rk_iommu_from_dev(dev);
-  
-+	/*
-+	 * Use the first registered IOMMU device for domain to use with DMA
-+	 * API, since a domain might not physically correspond to a single
-+	 * IOMMU device..
-+	 */
-+	if (!dma_dev)
-+		dma_dev = iommu->dev;
-+
-  	return iommu_group_ref_get(iommu->group);
-  }
-  
-@@ -1293,14 +1301,6 @@ static int rk_iommu_probe(struct platform_device *pdev)
-  	if (err)
-  		goto err_remove_sysfs;
-  
--	/*
--	 * Use the first registered IOMMU device for domain to use with DMA
--	 * API, since a domain might not physically correspond to a single
--	 * IOMMU device..
--	 */
--	if (!dma_dev)
--		dma_dev = &pdev->dev;
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_internal.c b/drivers/gpu/drm/i915/gem/i915_gem_internal.c
+index c698f95af15fe..629acb403a2c9 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_internal.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_internal.c
+@@ -6,7 +6,6 @@
+ 
+ #include <linux/scatterlist.h>
+ #include <linux/slab.h>
+-#include <linux/swiotlb.h>
+ 
+ #include "i915_drv.h"
+ #include "i915_gem.h"
+@@ -38,22 +37,12 @@ static int i915_gem_object_get_pages_internal(struct drm_i915_gem_object *obj)
+ 	struct scatterlist *sg;
+ 	unsigned int sg_page_sizes;
+ 	unsigned int npages;
+-	int max_order;
++	int max_order = MAX_ORDER;
++	unsigned int max_segment;
+ 	gfp_t gfp;
+ 
+-	max_order = MAX_ORDER;
+-#ifdef CONFIG_SWIOTLB
+-	if (is_swiotlb_active(obj->base.dev->dev)) {
+-		unsigned int max_segment;
 -
-  	pm_runtime_enable(dev);
-  
-  	for (i = 0; i < iommu->num_irq; i++) {
+-		max_segment = swiotlb_max_segment();
+-		if (max_segment) {
+-			max_segment = max_t(unsigned int, max_segment,
+-					    PAGE_SIZE) >> PAGE_SHIFT;
+-			max_order = min(max_order, ilog2(max_segment));
+-		}
+-	}
+-#endif
++	max_segment = i915_sg_segment_size(i915->drm.dev) >> PAGE_SHIFT;
++	max_order = min(max_order, get_order(max_segment));
+ 
+ 	gfp = GFP_KERNEL | __GFP_HIGHMEM | __GFP_RECLAIMABLE;
+ 	if (IS_I965GM(i915) || IS_I965G(i915)) {
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
+index f42ca1179f373..11125c32dd35d 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
+@@ -194,7 +194,7 @@ static int shmem_get_pages(struct drm_i915_gem_object *obj)
+ 	struct intel_memory_region *mem = obj->mm.region;
+ 	struct address_space *mapping = obj->base.filp->f_mapping;
+ 	const unsigned long page_count = obj->base.size / PAGE_SIZE;
+-	unsigned int max_segment = i915_sg_segment_size();
++	unsigned int max_segment = i915_sg_segment_size(i915->drm.dev);
+ 	struct sg_table *st;
+ 	struct sgt_iter sgt_iter;
+ 	struct page *page;
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+index 4f861782c3e85..a4aa9500fa179 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+@@ -189,7 +189,7 @@ static int i915_ttm_tt_shmem_populate(struct ttm_device *bdev,
+ 	struct drm_i915_private *i915 = container_of(bdev, typeof(*i915), bdev);
+ 	struct intel_memory_region *mr = i915->mm.regions[INTEL_MEMORY_SYSTEM];
+ 	struct i915_ttm_tt *i915_tt = container_of(ttm, typeof(*i915_tt), ttm);
+-	const unsigned int max_segment = i915_sg_segment_size();
++	const unsigned int max_segment = i915_sg_segment_size(i915->drm.dev);
+ 	const size_t size = (size_t)ttm->num_pages << PAGE_SHIFT;
+ 	struct file *filp = i915_tt->filp;
+ 	struct sgt_iter sgt_iter;
+@@ -538,7 +538,7 @@ static struct i915_refct_sgt *i915_ttm_tt_get_st(struct ttm_tt *ttm)
+ 	ret = sg_alloc_table_from_pages_segment(st,
+ 			ttm->pages, ttm->num_pages,
+ 			0, (unsigned long)ttm->num_pages << PAGE_SHIFT,
+-			i915_sg_segment_size(), GFP_KERNEL);
++			i915_sg_segment_size(i915_tt->dev), GFP_KERNEL);
+ 	if (ret) {
+ 		st->sgl = NULL;
+ 		return ERR_PTR(ret);
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_userptr.c b/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
+index d4398948f0162..f34e01a7fefb9 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
+@@ -129,7 +129,7 @@ static void i915_gem_object_userptr_drop_ref(struct drm_i915_gem_object *obj)
+ static int i915_gem_userptr_get_pages(struct drm_i915_gem_object *obj)
+ {
+ 	const unsigned long num_pages = obj->base.size >> PAGE_SHIFT;
+-	unsigned int max_segment = i915_sg_segment_size();
++	unsigned int max_segment = i915_sg_segment_size(obj->base.dev->dev);
+ 	struct sg_table *st;
+ 	unsigned int sg_page_sizes;
+ 	struct page **pvec;
+diff --git a/drivers/gpu/drm/i915/i915_scatterlist.h b/drivers/gpu/drm/i915/i915_scatterlist.h
+index 9ddb3e743a3e5..b0a1db44f8950 100644
+--- a/drivers/gpu/drm/i915/i915_scatterlist.h
++++ b/drivers/gpu/drm/i915/i915_scatterlist.h
+@@ -9,7 +9,8 @@
+ 
+ #include <linux/pfn.h>
+ #include <linux/scatterlist.h>
+-#include <linux/swiotlb.h>
++#include <linux/dma-mapping.h>
++#include <xen/xen.h>
+ 
+ #include "i915_gem.h"
+ 
+@@ -127,19 +128,26 @@ static inline unsigned int i915_sg_dma_sizes(struct scatterlist *sg)
+ 	return page_sizes;
+ }
+ 
+-static inline unsigned int i915_sg_segment_size(void)
++static inline unsigned int i915_sg_segment_size(struct device *dev)
+ {
+-	unsigned int size = swiotlb_max_segment();
+-
+-	if (size == 0)
+-		size = UINT_MAX;
+-
+-	size = rounddown(size, PAGE_SIZE);
+-	/* swiotlb_max_segment_size can return 1 byte when it means one page. */
+-	if (size < PAGE_SIZE)
+-		size = PAGE_SIZE;
+-
+-	return size;
++	size_t max = min_t(size_t, UINT_MAX, dma_max_mapping_size(dev));
++
++	/*
++	 * For Xen PV guests pages aren't contiguous in DMA (machine) address
++	 * space.  The DMA API takes care of that both in dma_alloc_* (by
++	 * calling into the hypervisor to make the pages contiguous) and in
++	 * dma_map_* (by bounce buffering).  But i915 abuses ignores the
++	 * coherency aspects of the DMA API and thus can't cope with bounce
++	 * buffering actually happening, so add a hack here to force small
++	 * allocations and mappings when running in PV mode on Xen.
++	 *
++	 * Note this will still break if bounce buffering is required for other
++	 * reasons, like confidential computing hypervisors or PCIe root ports
++	 * with addressing limitations.
++	 */
++	if (xen_pv_domain())
++		max = PAGE_SIZE;
++	return round_down(max, PAGE_SIZE);
+ }
+ 
+ bool i915_sg_trim(struct sg_table *orig_st);
+-- 
+2.30.2
+
