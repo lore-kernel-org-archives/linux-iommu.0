@@ -1,53 +1,107 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2C6377E
-	for <iommu@lists.linux.dev>; Fri, 21 Oct 2022 08:55:36 +0000 (UTC)
-Received: from 8bytes.org (p5b00664c.dip0.t-ipconnect.de [91.0.102.76])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id D0178242598;
-	Fri, 21 Oct 2022 10:50:00 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1666342201;
-	bh=cfUwgLtB39hN+mxHSysvq+yWIatvClQidnX8Cm/4Wl8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Fi6NSOqWAegHInoG7ee0kItylfJTR1WSMcJuy+C2Xu3d4q9h4yCOsoITPPuOipl50
-	 Eh/gRKzhiljtdQLQdUj7LxsljH1TpeTwPFK4w1tAhdV4wqqrzvwylvvle8M3kI7GvX
-	 zPhYKhJ+oTohpMUfokdMHRq7EQc+Dw9h14r8pygFH7nNh4n0T0Eyu7fT/9uFUUaWRc
-	 HZrwCWXsKGQuU2HYd+GHv/9BMVAtcaVpUCUyvFAxFCm4x8uYRo+4rX0Pj12s6jz1UL
-	 WU/D4+XWV0pcejhYt7rO3iscv9kygmrsNgZoPnHP3hmnwr2xmXhGaAIDWrIapIHkC8
-	 3j/y8Fl+FFaEw==
-Date: Fri, 21 Oct 2022 10:49:59 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Jerry Snitselaar <jsnitsel@redhat.com>,
-	Charlotte Tan <charlotte@extrahop.com>,
-	Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/4] [PULL REQUEST] iommu/vt-d: Fixes for v6.1-rc2
-Message-ID: <Y1JdN+UchhONn0Eh@8bytes.org>
-References: <20221019004447.4563-1-baolu.lu@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 310837B
+	for <iommu@lists.linux.dev>; Fri, 21 Oct 2022 12:09:07 +0000 (UTC)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+	by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29LBhP7Z020693;
+	Fri, 21 Oct 2022 12:08:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=Ix1uBobI9o+Hwx9mkxSgwrjZvrcNBw5GmPYnoSmZC0g=;
+ b=P1LKqhyU3TpGsKuM06Gy0Z0lzgC6pwAGAdNNfCkg9SmFoeUHab7+pLaI6WFyLv6yKBg9
+ EZ9dyhn1VLPwHykJWwTCk0qmxDeuB+ZQ1bzACK1eqALwXX/Ee3JTwa8eVFdfAW1KOR6I
+ 6IfcfGVe0LwytkEzn33l8PUx3K1Xli0KjsT9wzX9YxPiQ31/OcWOlNrwObRUtvVIlAjx
+ NpC7Ug2OpqZma7HlxrxWdDfMOvJdQeFXhRGdRjuVe+m8UNXX35DSDVAKfUAmjJQYGjV6
+ VLmrZFvVvm4eck1RBc/XugjJgj/u23Bb9QxStJvUCea0ULL98OTWPxS6YrwvHmbNdUcM qA== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3kbtsx0u61-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 21 Oct 2022 12:08:54 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+	by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29LC5MVa022822;
+	Fri, 21 Oct 2022 12:08:06 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+	by ppma03ams.nl.ibm.com with ESMTP id 3k7mg9ahwa-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 21 Oct 2022 12:08:06 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+	by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29LC8bXV26673600
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 21 Oct 2022 12:08:37 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 8FB6BAE045;
+	Fri, 21 Oct 2022 12:08:03 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 9EE4AAE04D;
+	Fri, 21 Oct 2022 12:08:02 +0000 (GMT)
+Received: from sig-9-145-0-12.uk.ibm.com (unknown [9.145.0.12])
+	by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+	Fri, 21 Oct 2022 12:08:02 +0000 (GMT)
+Message-ID: <68d91d7a5aadbd46dc34470eccd6b86a84c9e47b.camel@linux.ibm.com>
+Subject: Re: [PATCH 3/5] iommu/s390: Use RCU to allow concurrent domain_list
+ iteration
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev,
+        Joerg
+ Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy
+ <robin.murphy@arm.com>,
+        Gerd Bayer <gbayer@linux.ibm.com>,
+        Pierre Morel
+ <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, linux-kernel@vger.kernel.org
+Date: Fri, 21 Oct 2022 14:08:02 +0200
+In-Reply-To: <Y1ErcEe82yjJI+ET@nvidia.com>
+References: <20221018145132.998866-1-schnelle@linux.ibm.com>
+	 <20221018145132.998866-4-schnelle@linux.ibm.com>
+	 <Y07Dz/NROAMI0Hku@nvidia.com>
+	 <8e268ab5e0dadf86be5fd7ffaa9debb76cea67f3.camel@linux.ibm.com>
+	 <Y0/lMCQ8oeXJ2HTg@nvidia.com>
+	 <f3551bb461b3ef3cfc1a0c644093816be1835b3f.camel@linux.ibm.com>
+	 <Y1ErcEe82yjJI+ET@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221019004447.4563-1-baolu.lu@linux.intel.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: klfKJ7beKJOkBDRPKCrx-JPXjTSQ4Qiz
+X-Proofpoint-ORIG-GUID: klfKJ7beKJOkBDRPKCrx-JPXjTSQ4Qiz
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-10-21_04,2022-10-21_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 phishscore=0
+ spamscore=0 clxscore=1015 impostorscore=0 mlxscore=0 mlxlogscore=952
+ priorityscore=1501 lowpriorityscore=0 bulkscore=0 adultscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2210210071
 
-On Wed, Oct 19, 2022 at 08:44:43AM +0800, Lu Baolu wrote:
-> Hi Joerg,
+On Thu, 2022-10-20 at 08:05 -0300, Jason Gunthorpe wrote:
+> On Thu, Oct 20, 2022 at 10:51:10AM +0200, Niklas Schnelle wrote:
 > 
-> Below fixes are queued for v6.1. They aim to fix:
+> > Ok that makes sense thanks for the explanation. So yes my assessment is
+> > still that in this situation the IOTLB flush is architected to return
+> > an error that we can ignore. Not the most elegant I admit but at least
+> > it's simple. Alternatively I guess we could use call_rcu() to do the
+> > zpci_unregister_ioat() but I'm not sure how to then make sure that a
+> > subsequent zpci_register_ioat() only happens after that without adding
+> > too much more logic.
 > 
-> - A lockdep splat issue in intel_iommu_init().
-> - Allow NVS regions to pass RMRR check.
-> - Domain cleanup in error path.
+> This won't work either as the domain could have been freed before the
+> call_rcu() happens, the domain needs to be detached synchronously
 > 
-> This series is also available at github.
-> https://github.com/LuBaolu/intel-iommu/commits/vtd-fix-for-v6.1-rc2
+> Jason
 
-Applied, thanks Baolu.
+Yeah right, that is basically the same issue I was thinking of for a
+subsequent zpci_register_ioat(). What about the obvious one. Just call
+synchronize_rcu() before zpci_unregister_ioat()?
 
