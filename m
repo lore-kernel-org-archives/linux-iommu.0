@@ -1,93 +1,70 @@
-Received: from gauss.telenet-ops.be (gauss.telenet-ops.be [195.130.132.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9BED20E1
-	for <iommu@lists.linux.dev>; Fri, 21 Oct 2022 14:13:23 +0000 (UTC)
-Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
-	by gauss.telenet-ops.be (Postfix) with ESMTPS id 4Mv5qD3Bw6z4x0Zt
-	for <iommu@lists.linux.dev>; Fri, 21 Oct 2022 16:06:16 +0200 (CEST)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed10:8c7:6dd8:b0ce:eea6])
-	by laurent.telenet-ops.be with bizsmtp
-	id ae652800b5BCT2h01e65J9; Fri, 21 Oct 2022 16:06:09 +0200
-Received: from rox.of.borg ([192.168.97.57])
-	by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.93)
-	(envelope-from <geert@linux-m68k.org>)
-	id 1olsey-000etQ-Nv; Fri, 21 Oct 2022 16:06:04 +0200
-Received: from geert by rox.of.borg with local (Exim 4.93)
-	(envelope-from <geert@linux-m68k.org>)
-	id 1olsey-001L2g-7S; Fri, 21 Oct 2022 16:06:04 +0200
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Joerg Roedel <jroedel@suse.de>,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>
-Subject: [PATCH v3 resend] dt-bindings: iommu: renesas,ipmmu-vmsa: R-Car V3U is R-Car Gen4
-Date: Fri, 21 Oct 2022 16:06:02 +0200
-Message-Id: <c1fb71448a8400986fd30d51a1bb2704376c0306.1666361055.git.geert+renesas@glider.be>
-X-Mailer: git-send-email 2.25.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A69B02561
+	for <iommu@lists.linux.dev>; Fri, 21 Oct 2022 14:50:09 +0000 (UTC)
+Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-13af2d12469so3767834fac.13
+        for <iommu@lists.linux.dev>; Fri, 21 Oct 2022 07:50:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Wnm8CTZGfD6ls1hnKruN6hj9x0O7kfsoToo4nL1JtNg=;
+        b=svfInJ+tp/7vMmdiPZtKyNr4RDHVMLRPlJR5TwFj49sZ//YhsSZUYJESEriB8NU8Xv
+         B7wzKG9ejpi3oHeC5wDKYlIk1TPfJE24wMoHEUaAHEYOu/nBiLJvW8lfAh/1Bw8RXpMJ
+         iFK38CG0nxIP6d27f9kMgC6rRuU6+GxyoSzwAAuhZBa0dlQNlVl9ZfURMvVSfFFKKW6E
+         g/pgiK36W40VRo8ZymO16kIiE18LrvTaLOV6YieujiSp5WSp3G0JrzxZ51DdC/3EYtXd
+         xs3o/I1tY0XuFnD+RjLpn8brbIxGvyuR6wHr/75scAtlW76VJKjNfvJehHbtCoEKh4Bv
+         QjnQ==
+X-Gm-Message-State: ACrzQf3fYeDfAG63fZ0NadzTBHugwEqwsMeVym21CtodI2MIEG18WBl6
+	an3KFWRcvLDeSJDgrq+rMA==
+X-Google-Smtp-Source: AMsMyM6bXQm2nnbvgzyu5lgBTRIgIReCxfP3ps0Jhw/HDJ+XOqUmns6D6PYXY8dJYipwV1+ojjA7oA==
+X-Received: by 2002:a05:6870:c092:b0:132:a01f:7c31 with SMTP id c18-20020a056870c09200b00132a01f7c31mr12925185oad.56.1666363808748;
+        Fri, 21 Oct 2022 07:50:08 -0700 (PDT)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id t21-20020a05683014d500b00661946468c6sm1172952otq.31.2022.10.21.07.50.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Oct 2022 07:50:08 -0700 (PDT)
+Received: (nullmailer pid 3719169 invoked by uid 1000);
+	Fri, 21 Oct 2022 14:50:09 -0000
+Date: Fri, 21 Oct 2022 09:50:09 -0500
+From: Rob Herring <robh@kernel.org>
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Rob Herring <robh+dt@kernel.org>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, iommu@lists.linux.dev, devicetree@vger.kernel.org, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Wolfram Sang <wsa+renesas@sang-engineering.com>, linux-renesas-soc@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v3 resend] dt-bindings: iommu: renesas,ipmmu-vmsa: R-Car
+ V3U is R-Car Gen4
+Message-ID: <166636380847.3719105.11808204724147299494.robh@kernel.org>
+References: <c1fb71448a8400986fd30d51a1bb2704376c0306.1666361055.git.geert+renesas@glider.be>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c1fb71448a8400986fd30d51a1bb2704376c0306.1666361055.git.geert+renesas@glider.be>
 
-Despite the name, R-Car V3U is the first member of the R-Car Gen4
-family.  Hence move its compatible value to the R-Car Gen4 section.
+On Fri, 21 Oct 2022 16:06:02 +0200, Geert Uytterhoeven wrote:
+> Despite the name, R-Car V3U is the first member of the R-Car Gen4
+> family.  Hence move its compatible value to the R-Car Gen4 section.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Acked-by: Joerg Roedel <jroedel@suse.de>
+> Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> Reviewed-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> ---
+> v3:
+> - Add Reviewed-by,
+> 
+> v2:
+>   - Add Acked-by, Reviewed-by,
+>   - Add blank lines to improve readability.
+> ---
+>  .../devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml       | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Acked-by: Joerg Roedel <jroedel@suse.de>
-Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Reviewed-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
----
-v3:
-- Add Reviewed-by,
-
-v2:
-  - Add Acked-by, Reviewed-by,
-  - Add blank lines to improve readability.
----
- .../devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml       | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-index 8854569ca3a6c949..26d0a5121f02a153 100644
---- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-+++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-@@ -29,6 +29,7 @@ properties:
-               - renesas,ipmmu-r8a7793  # R-Car M2-N
-               - renesas,ipmmu-r8a7794  # R-Car E2
-           - const: renesas,ipmmu-vmsa  # R-Mobile APE6 or R-Car Gen2 or RZ/G1
-+
-       - items:
-           - enum:
-               - renesas,ipmmu-r8a774a1 # RZ/G2M
-@@ -43,10 +44,11 @@ properties:
-               - renesas,ipmmu-r8a77980 # R-Car V3H
-               - renesas,ipmmu-r8a77990 # R-Car E3
-               - renesas,ipmmu-r8a77995 # R-Car D3
--              - renesas,ipmmu-r8a779a0 # R-Car V3U
-+
-       - items:
-           - enum:
--              - renesas,ipmmu-r8a779f0 # R-Car S4-8
-+              - renesas,ipmmu-r8a779a0           # R-Car V3U
-+              - renesas,ipmmu-r8a779f0           # R-Car S4-8
-           - const: renesas,rcar-gen4-ipmmu-vmsa  # R-Car Gen4
- 
-   reg:
--- 
-2.25.1
-
+Applied, thanks!
