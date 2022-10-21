@@ -1,144 +1,151 @@
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2061.outbound.protection.outlook.com [40.107.96.61])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 649B88F75
-	for <iommu@lists.linux.dev>; Fri, 21 Oct 2022 13:36:34 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FIJMnbaDZCUZGxcVm2CIRQBwi0Oa20OuTTrk4YAcMBykL2FViJHezcn3RbPGAaKr4930kxpGRunKSx9iJ3TCjsCO6a2wncO8C8aYd3vN2tgFRjL/eO+0r9WsgVGPebwFGDIk+kTF9qNM0WkEa6tP2TOPFw2BxYb330rWvmY/T8Qyv0egHQzvDpnJkH+tPVcNdnz32Wrdr57uvYGkidp8tJq4rgTMkTx0VI5mYKXkIbzH8kgev8HNHq/vH1npV1Mwly/zuXRpw1AvmZe3hbKdLBjdKwJTl7+teadV01GuCDnQuu2Q2dsvBbrfPMO7WJsiJmku3uaffccGLjmlSc8lFA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gYqm7KoNpdK8njbyICbUEU76LV8nkPwothhHjF5uuoM=;
- b=dTp/qtygZl+7rMBe5jedlIRBHzFgNlz0+E3GIiFUHbRfB4IajgenTRt6xbI706y/FK6YftguHhI36jVC4WL/lHUbaoKUt6iwdF7WvkhlA3OvcSQPg2D2F91mKEz+tArp82e7jbhzNu56xO6zCCBCCivAzm8lsEh5VI7AxCTg1SunrIxlARCJxfNy8cjetgvAb59vh+ZDNKvdPry9OSkKcU4s29xilB+qBISQSv64KDvFxvpbHBPsfNYzD00RV8iZHL0+3n+cCqj45xEce8wnuiPd4ED2Jm9UojXw1Mbnzf9g31g4f3BfsbgugyLkTvJwmjwKtxbdHqjWPU5YeaNIDg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gYqm7KoNpdK8njbyICbUEU76LV8nkPwothhHjF5uuoM=;
- b=K9LTQVB8xnOfU7thVkL5LD8/RhmvDhoFoFOHKesDF/3sbBZny3bnzQ7piOgc7aRvCGr56yv+AzXIuV9A52r+Zf58g8ZNkD1lIYGnD2bfIh7Uqtm7f1ZUaxJOuu240lOszLfHnC9JwCmWT6taBzKlXTvVydgPLSPdDlGUKTqmzMy19XKSmUvSg6suIkZ4cz340oZB95T4vdOulSXnQkjLQUiXZSz3QQxefQavv8B1Gqhahuq/dukX90woZW6nH/ikG2p4H0LAhNO3xmydGT6P33du2kkTpzI9CQzE+ERxuQAZ4iXXY6dO2qOH7mYugeejUkl/fz5yVN5hdzXieKOBxA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by BL0PR12MB5507.namprd12.prod.outlook.com (2603:10b6:208:1c4::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.35; Fri, 21 Oct
- 2022 13:36:32 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::7a81:a4e4:bb9c:d1de]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::7a81:a4e4:bb9c:d1de%6]) with mapi id 15.20.5723.033; Fri, 21 Oct 2022
- 13:36:32 +0000
-Date: Fri, 21 Oct 2022 10:36:31 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Niklas Schnelle <schnelle@linux.ibm.com>
-Cc: Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Gerd Bayer <gbayer@linux.ibm.com>,
-	Pierre Morel <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
-	borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-	gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-	svens@linux.ibm.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/5] iommu/s390: Use RCU to allow concurrent domain_list
- iteration
-Message-ID: <Y1KgX8EwH8T+FgWC@nvidia.com>
-References: <20221018145132.998866-1-schnelle@linux.ibm.com>
- <20221018145132.998866-4-schnelle@linux.ibm.com>
- <Y07Dz/NROAMI0Hku@nvidia.com>
- <8e268ab5e0dadf86be5fd7ffaa9debb76cea67f3.camel@linux.ibm.com>
- <Y0/lMCQ8oeXJ2HTg@nvidia.com>
- <f3551bb461b3ef3cfc1a0c644093816be1835b3f.camel@linux.ibm.com>
- <Y1ErcEe82yjJI+ET@nvidia.com>
- <68d91d7a5aadbd46dc34470eccd6b86a84c9e47b.camel@linux.ibm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <68d91d7a5aadbd46dc34470eccd6b86a84c9e47b.camel@linux.ibm.com>
-X-ClientProxiedBy: MN2PR08CA0009.namprd08.prod.outlook.com
- (2603:10b6:208:239::14) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE5ED8F78
+	for <iommu@lists.linux.dev>; Fri, 21 Oct 2022 13:42:21 +0000 (UTC)
+Received: by mail-wm1-f54.google.com with SMTP id az22-20020a05600c601600b003c6b72797fdso1982937wmb.5
+        for <iommu@lists.linux.dev>; Fri, 21 Oct 2022 06:42:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:message-id:date:from:content-transfer-encoding:mime-version
+         :subject:from:to:cc:subject:date:message-id:reply-to;
+        bh=Sk+4CRLnY52KPUGRKGWjJ5/58hHkL1tlde3uv6PpSFg=;
+        b=K8I4x9WV+Z6ikECFtAN/koKw2xY7h7vWva7sD5RJssnFoPfsPtEJTx5gIU7bCqvXG3
+         QP9SMZDeb2AxqTYJqBsUuUTq/vMqs1jRvRtQBaAVFM5PKLG/0sIbsxIabVVRuNu3Ri7t
+         UnfBphPnNdY0aT7ucL/ECNVG/NlcjObYA9xEoixQdH9DdYj48Pu9nabY4O14aLzyQiIA
+         AVvjBN++iWTtRMpRQ0NMgk4VWt4Nj62i4ecmh4jOuVZhlouO7StBjBxYI9WW0LtpH0nK
+         YcLcP77RKcNHNnppX0SBsWPUNFwLYqSYRx+YNuZ/FJvjtXWoO2Hom8hbnWhVten5hyy+
+         t5/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:message-id:date:from:content-transfer-encoding:mime-version
+         :subject:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Sk+4CRLnY52KPUGRKGWjJ5/58hHkL1tlde3uv6PpSFg=;
+        b=cUjmbyMi4rZOb/Gb9sHN2HhxxTu/ZxwT3li57ewmMdFPZUUJ6GbfkFJicwVuqRKyhx
+         zWSFQ6lOkuoSsB8eSHtghs37To0Y1NnLYgvc67huzAj01c3XaBe15Qo3ORATDqOeRLZ+
+         +z7HUpsOlxwtiy6v/RbGVUaMfFiL+xZ1q5/w0e+8BaB0aLQG6uoIS0wc8AHVyW2ZGN/2
+         Glc6j2UnwhEQ8QzY7G1H50OYhkGH89TNeqGhw5MdOSLZaowkQ9mxhH6yR/y1E5hWep70
+         YQTzVdIrngwyEZ6Dxet5USCh9g1bZZmhMkw9U2PIMiDvgUhrdmZe4UHtoAc/b/6hZwGh
+         Kv0Q==
+X-Gm-Message-State: ACrzQf2cdz7lGMdHqS1u5CALOw9CMM7zENB0sGt8ay2UpEzrp5O6yduV
+	D5jZWp/VQ6RCsUREsKv11//aQQ==
+X-Google-Smtp-Source: AMsMyM6ld97fr+ZDx3wlPqihADksR2PpPwfly3EB/X/eLp9QsZWQC8Kx74LehY9uI/xB5x0dN8Jzww==
+X-Received: by 2002:a7b:c341:0:b0:3c4:552d:2ea7 with SMTP id l1-20020a7bc341000000b003c4552d2ea7mr13447402wmj.82.1666359740179;
+        Fri, 21 Oct 2022 06:42:20 -0700 (PDT)
+Received: from [127.0.1.1] (158.22.5.93.rev.sfr.net. [93.5.22.158])
+        by smtp.googlemail.com with ESMTPSA id h5-20020adfe985000000b002322bff5b3bsm22966355wrm.54.2022.10.21.06.42.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Oct 2022 06:42:19 -0700 (PDT)
+Subject: [PATCH v5 0/3] iommu/mediatek: Add mt8365 iommu support
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BL0PR12MB5507:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8f64f4b1-61e5-4dab-d04e-08dab369440b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	+JxjmD3nDBvk592/kesTsTtONwAvzIZ8ovWG8KBMwQua9m4Vq4xL/BKpdDwi7aPN+sxqCmxd0myuJIZH6+Bb/wKxcGBD2yKZnm/GA7Q+h6tHOEys6cKUwgofqORuFM9U1SO7dLUS/icVCSnl3bwi89c6ceIKQAYEbGkXjmoZvCSHdbYlTW2CAKPhM6zbl15XkwRRlroZJkx8gzjRKuUvgUtvdhco+pwPUGbq7d7lGENO378cZED3LDUzdGr4WxGejd9FIcNottSVe/0QA5lm+jpkJTAtc0Mi+KBN+hNHnj0gmbmTyLnelPXccG7RZDSjFTEyXItw7VgqAFnSYvK+k1WUAspvjCM0Keo/Yewv8xVFK6UAn0unb30VrDDPmJxvy/PbLBtjAyfaHyuJK8fNC5souO6Hl6D8AgFSQNj8m6BDKIgWxv4TqaY28z6JJQl8k7PaXmORFLNCKkCqJJc6onUWf7UYGWl7hccyHYXbcOLRIJqtOYUmcGp8CifFuemur7EXlYAfD0s33ov3HH5R/pkLefp9Km0j/Ap5Cvmlr+h2qADkdWWrVdenQSwi2Fr+YaOHorQ9y6xXkfmBM5mjBuyfTDKAXp3dUWCt1py6BlLtleItC1+iOKOf4tDa8ueRNE8fFtmY2pRj8xDVIyzV5kaeBvN6kvC2HBwJbY1ePTSVj4FW2Yp/O/XQ49+uppDoEJNkwh1AQxVaY0s/61FJzRsnqt1xxO8FMLqqxzNhla955yeUQMYXQVtErjf0nyiz
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(366004)(376002)(346002)(136003)(396003)(451199015)(38100700002)(36756003)(7416002)(5660300002)(66946007)(8936002)(2616005)(6506007)(86362001)(66476007)(4001150100001)(8676002)(66556008)(4326008)(6512007)(41300700001)(26005)(186003)(2906002)(478600001)(54906003)(66899015)(6486002)(83380400001)(6916009)(316002)(67856001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?phgGFgHXAikTxmYVSV5qH+OvHTn8iDSt1Rfnn6Z6usTfngadE1xyI/HGD0cm?=
- =?us-ascii?Q?0zgB0da3TxLzr4A2yURAbdxc41fnZ1dFdMmXt1rRtlGM/4YuqSybeDPKUJFd?=
- =?us-ascii?Q?DXWJfwLSSeMYxBTNuLHl+746wipq6TzeOi32RMdjL/pXtfx/AfyxAvR9hTKG?=
- =?us-ascii?Q?C8zib9fcfyfhbCJnCk1cglnUIps2MwL1fMrBZ5Gsx6SgZSFGyGYij6ox1FA2?=
- =?us-ascii?Q?/+Ln7s1yWBBo5dYaMHy48PHpTiZG4ZyJ3i+fMdazFAZNL5Lea4oa7blrdHt6?=
- =?us-ascii?Q?RvODbuO3sqtnAzi6uFdmmYV10bcePFHRQnVGTLuXKDyiympD2IK3lKRWvmrV?=
- =?us-ascii?Q?iqGU/i4LoOSihAjiWEOsOt2ol4kaaomBcCQWNf0erulbnLnr6JjgW/6QUIIB?=
- =?us-ascii?Q?RrVWHcuBz432dq1tmbYi+oeIR4HPi1VeQeySKm0NiWnoOT1unvsfVk4v4byk?=
- =?us-ascii?Q?b+3oEZlH0Z0bsPj9Ad0JcBXyK6dXlAKFVC1JVSvwNN3olvhYACsEVVluk2Z8?=
- =?us-ascii?Q?mwvARGHp7pdwlJ1kV1VmG6U3PoiiK+r/X1uoW5W7LpbXiTm4dngmuY1AQsSf?=
- =?us-ascii?Q?35vUWN7QymmCMXve7Gix+yz0REb5Xso4FNYET/0fXLP+6H4p6wzaj3wk/jIe?=
- =?us-ascii?Q?ULLWmpPWUWxx0mqqXknLk49cmU9R7mr9YahMxo4YqBLh4im1IZsLydRDe/QU?=
- =?us-ascii?Q?fBIhmXLCzItKmVNy7psRbkdjTP6bfY7OSQeXLeULYWqJODDLrIuZmdfI0gEs?=
- =?us-ascii?Q?LvSuwcJZenChyxbutwKeMutjR8M16hGUbK8vifJfj5Yt4nSDw4BM9ERhVgH9?=
- =?us-ascii?Q?GaQ32PjOHWFp9lm7/rjVyQgf/fGz6lXX9DpoFP/TMph2WJR+Z0D5Gt5VhSbF?=
- =?us-ascii?Q?+594qrBSknBS7Vb9palA0RnRr0ueG7zBPKLEnzotb56CoWcWm/6oVhdXLB+6?=
- =?us-ascii?Q?VW60mO6l08/Z/0Q3pCjeibYJQu9NQjux/wl/xApmCSIgSCeM2fde8hs8YqkE?=
- =?us-ascii?Q?Wzc1rLeCgqBidtEDD7BpFhOQnsqDfgQA7/43mZ2OH2iCmTBqwtlaMLn4pS6H?=
- =?us-ascii?Q?jZYkhYTNZaF290Jmkca1fNeMuQ/iuqucipoQHGqnYpnY51S6/AUThekGfk9G?=
- =?us-ascii?Q?ImPVwPXzxLz0YXjqh/EAXZW6YQAI6s0XTf/I1tOL98ex+XPENK4Nh1c6TQxY?=
- =?us-ascii?Q?3axiB+80ndCxvbGd1ibhiUMtHfm1CO7b9F6TR1fVsCGnmfXQeScwlZO8wsg4?=
- =?us-ascii?Q?UMb6YfjaVLzPk3LT2fRi1+FlXhL2p7h4LD4Uq55RszJNNcy+gdNJfC7py+DE?=
- =?us-ascii?Q?/I9QyC30CpIlly+BGVrRbWdn0dRmZNah/hP6o3ABDkEe10MEm4juEGH+Hhr5?=
- =?us-ascii?Q?s9oWch/f7ZhpxeQJNY2KdM1K2AZzf37o457Jcvie1D9P40UbdivI5hqRelIu?=
- =?us-ascii?Q?ZqWtygGtT66TkRXG3TE4TxYGlqZXQkGvPRmYHVJ9sccI9n6UNctCItKhCuZW?=
- =?us-ascii?Q?9+va3HsENPV+AkeLZ1CEvoTyRiombFmQ6cKSPE3RXkmHXbrpJkcdYCDd9Xcm?=
- =?us-ascii?Q?Pju4R5iVm5Xchhb7gCs=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8f64f4b1-61e5-4dab-d04e-08dab369440b
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Oct 2022 13:36:32.2471
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: w2TVtWNjPrBmvb6Lk9OUBMb4BgKHvF4NOvvaB02Yit0I3IB7vwpm3qJjWXD7c88y
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB5507
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-b4-tracking: H4sIALehUmMC/42Oy2rDMBBFfyVoXRW9HXXV/yhdeKRRLbCtIMWGEPzvmWSX0pqshnvh3DNX1rBmbO
+ zjcGUV19xymSnYtwMLQz//IM+RMlNCKSmE5LlM08LbcjqVeubJCB86FN6gY8RA35BD7ecwEDUv40jl
+ kNu51MvDsSo6X//NrYoL7jxAF10UQtlP6C9jhorvoUx3wR4YIWFSiAjBP4PfRK5616xpIBw1YMKgFM
+ aXzQ+wAy2sBxGl+8Nsds2GBjA4et4aBAsvm+9gkii10ceYovpl3rbtBk4i+1zfAQAA
+From: Alexandre Mergnat <amergnat@baylibre.com>
+Date: Fri, 21 Oct 2022 15:42:15 +0200
+Message-Id: <20221001-iommu-support-v5-0-92cdbb83bbb8@baylibre.com>
+To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Yong Wu <yong.wu@mediatek.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Will Deacon <will@kernel.org>,
+ Rob Herring <robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Alexandre Mergnat <amergnat@baylibre.com>, linux-kernel@vger.kernel.org,
+ Amjad Ouled-Ameur <aouledameur@baylibre.com>, devicetree@vger.kernel.org, Fabien Parent <fparent@baylibre.com>,
+ linux-arm-kernel@lists.infradead.org, Markus Schneider-Pargmann <msp@baylibre.com>, linux-mediatek@lists.infradead.org,
+ iommu@lists.linux.dev, AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+X-Mailer: b4 0.10.1
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2834; i=amergnat@baylibre.com;
+ h=from:subject:message-id; bh=do/0/vPsV/SjDW7dDqa9PaE+RECnKFbeYkbnSOtyvbI=;
+ b=owEBbQKS/ZANAwAKAStGSZ1+MdRFAcsmYgBjUqG7BYbmn23u5OcjMqm8K1Tyhfs7IsGF2BWwOB0K
+ FkFu5wiJAjMEAAEKAB0WIQQjG17X8+qqcA5g/osrRkmdfjHURQUCY1KhuwAKCRArRkmdfjHURVt4EA
+ Cw1dByIEJwxTQpmYdEWqWHhWJ7E6NWrIkI4cpCchUYIxxkfAiSJvB1ydTEMCDE9AJ+PpfY/4fsbFMr
+ t/zy+aOKe95CDTXyXZa21ap58ig4aKEH1yN0U95aPkIA7NSD+7cG9vyTqyCL+ROreBKX9tZ+y1gcvV
+ hRksKFcWwNSEAJfLK57OBcX7uSrqAzO5Mokl5iBYNwkhpoOyuYhQ5mr5xZSmAD+eX1nszPA0bM88Jr
+ zCLIBKYBC+uzw/QNzXvz7/PVfecPu5W5a7IXeCRoXJw6iioVaOpuZWYTDwZbyHt+O2IbJlIBIgsWfr
+ EhfoN/G5WuTUgWo0qFWZ2MtMj1GgGYM3qPU8y+YB1BVzDattO1FvOi/aux2n/jarpJGQnH74WNLXJx
+ nATjdzoh7P+GLLwHNr37uCL59s5qsXgb6TyqYaFJTjKxGmIzL7uVubIHB1rFXoS9s3NOhhfnmjqklO
+ 1U+7FfSXmAZi5HlPZOZ8a8pipCtSCbX03tg14Nb9WZUBNtLS4m4HxWe8C8mrBCSCiTTIigpG9jp06M
+ nwEFdTYY2AH3QwuTle1kYoivm+7z5OAQIecaqaG5A6eoBrwFZ4+zyh7wl05myAnkT8B810xzIZT4+j
+ 1pLo0DUZTDBXyMrdpMpNc0m/7JtNB2Eg9lsZo4kIMKFTIVnRxxBQiCdylKFA==
+X-Developer-Key: i=amergnat@baylibre.com; a=openpgp;
+ fpr=231B5ED7F3EAAA700E60FE8B2B46499D7E31D445
 
-On Fri, Oct 21, 2022 at 02:08:02PM +0200, Niklas Schnelle wrote:
-> On Thu, 2022-10-20 at 08:05 -0300, Jason Gunthorpe wrote:
-> > On Thu, Oct 20, 2022 at 10:51:10AM +0200, Niklas Schnelle wrote:
-> > 
-> > > Ok that makes sense thanks for the explanation. So yes my assessment is
-> > > still that in this situation the IOTLB flush is architected to return
-> > > an error that we can ignore. Not the most elegant I admit but at least
-> > > it's simple. Alternatively I guess we could use call_rcu() to do the
-> > > zpci_unregister_ioat() but I'm not sure how to then make sure that a
-> > > subsequent zpci_register_ioat() only happens after that without adding
-> > > too much more logic.
-> > 
-> > This won't work either as the domain could have been freed before the
-> > call_rcu() happens, the domain needs to be detached synchronously
-> > 
-> > Jason
-> 
-> Yeah right, that is basically the same issue I was thinking of for a
-> subsequent zpci_register_ioat(). What about the obvious one. Just call
-> synchronize_rcu() before zpci_unregister_ioat()?
+Hi,
 
-Ah, it can be done, but be prepared to wait >> 1s for synchronize_rcu
-to complete in some cases.
+This series contains patches related to the support of mt8365 iommu.
+Thanks for your feedback so far.
 
-What you have seems like it could be OK, just deal with the ugly racy
-failure
+Regards,
+Alex
 
-Jason
+Changes in v5:                                                                  
+- Fix name file in mediatek,iommu.yaml                                          
+- Rename defines to be more consistent                                          
+- Rework INT_ID_PORT_WIDTH_6 check                                              
+- Link to v4: https://lore.kernel.org/r/20221001-iommu-support-v4-0-f1e13438dfd2@baylibre.com
+
+Changes in v4:
+- Typo
+- Rebase
+- Link to v3: https://lore.kernel.org/r/20221001-iommu-support-v3-0-c7b3059b0d16@baylibre.com
+
+Changes in v3:
+- Rename "mt8365-larb-port.h" to "mediatek,mt8365-larb-port.h"
+- Rework the macros which retrieve larb/port ID to improve human readability
+- Link to v2: https://lore.kernel.org/r/20221001-iommu-support-v2-0-dbfef2eeebc9@baylibre.com
+
+Changes in v2:
+- Rebase.
+- Change M4U_PORT_APU_READ & M4U_PORT_APU_WRITE port to avoid display
+  conflict in larb0. These definitions are used for vpu0 device node.
+- Add dual license.
+- Retitle commit.
+- Rename to int_id_port_width for more detail.
+- Fix typo.
+- Set banks_enable and banks_num in mt8365_data to fix kernel panic at boot.
+- Link to v1 - https://lore.kernel.org/lkml/20220530180328.845692-1-fparent@baylibre.com/
+
+To: Yong Wu <yong.wu@mediatek.com>
+To: Joerg Roedel <joro@8bytes.org>
+To: Will Deacon <will@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+To: Rob Herring <robh+dt@kernel.org>
+To: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+To: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: iommu@lists.linux.dev
+Cc: linux-mediatek@lists.infradead.org
+Cc: devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: Fabien Parent <fparent@baylibre.com>
+Cc: Markus Schneider-Pargmann <msp@baylibre.com>
+Cc: Amjad Ouled-Ameur <aouledameur@baylibre.com>
+Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Alexandre Mergnat <amergnat@baylibre.com>
+
+---
+Fabien Parent (3):
+      dt-bindings: iommu: mediatek: add binding documentation for MT8365 SoC
+      iommu/mediatek: add support for 6-bit encoded port IDs
+      iommu/mediatek: add support for MT8365 SoC
+
+ .../devicetree/bindings/iommu/mediatek,iommu.yaml  |  2 +
+ drivers/iommu/mtk_iommu.c                          | 25 +++++-
+ .../dt-bindings/memory/mediatek,mt8365-larb-port.h | 90 ++++++++++++++++++++++
+ 3 files changed, 116 insertions(+), 1 deletion(-)
+---
+base-commit: 11082343e3bf2953a937509f0316cabf69dbf908
+change-id: 20221001-iommu-support-f409c7e094e6
+
+Best regards,
+-- 
+Alexandre Mergnat <amergnat@baylibre.com>
