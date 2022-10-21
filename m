@@ -1,138 +1,117 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CBDF22561
+	for <iommu@lists.linux.dev>; Fri, 21 Oct 2022 15:25:31 +0000 (UTC)
+Received: from 8bytes.org (p5b00664c.dip0.t-ipconnect.de [91.0.102.76])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8796D2561
-	for <iommu@lists.linux.dev>; Fri, 21 Oct 2022 15:05:46 +0000 (UTC)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29LELGVk005189;
-	Fri, 21 Oct 2022 15:05:33 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=eGQwYACBBdlJ+of5gf59HBFhtuCIWESCDUNLT6K+7Z0=;
- b=JHkmNhaTbzKLozsDnMaoAb+KTb6yNHMyBBt8EbxR4eolTFuZJ4P+hSw1ve/qcTFc6A8A
- ELhFWkl5zX2sE5/2ln6zmIfTaOJOQ/XbhtSMevoez5w0TxdLwLvCvQUBfjEYTT+iVUpr
- d7owqRoxHbJqeexU/sNak9pkXzDJv2/77F+6IjbZmS6GqpMyXIQ/MBocKmN+h8aiSL8z
- 0VgMsVkf2qvMJ2jS2yGaKPBb/pprkyLjuvzUONm21Kg7Rqt1TwUOKq0QNUXOjsB8kCMB
- GdNEYr0nMFCOH+d4F9qXXzL6MY3NcMMb8qHneWaq5Pf7BjfNj4GKkvXSRFeVouJCJsb4 lA== 
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3kbw421g1c-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 21 Oct 2022 15:05:32 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-	by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29LEoUw3022806;
-	Fri, 21 Oct 2022 15:05:22 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-	by ppma02fra.de.ibm.com with ESMTP id 3k7mg982q6-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 21 Oct 2022 15:05:22 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-	by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29LF5Jit51184016
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 21 Oct 2022 15:05:19 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 0017EA404D;
-	Fri, 21 Oct 2022 15:05:18 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 2CB3CA4040;
-	Fri, 21 Oct 2022 15:05:18 +0000 (GMT)
-Received: from sig-9-145-0-12.uk.ibm.com (unknown [9.145.0.12])
-	by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-	Fri, 21 Oct 2022 15:05:18 +0000 (GMT)
-Message-ID: <12366a6d2a367de0e2a6f26ac9485e50a32aa7e6.camel@linux.ibm.com>
-Subject: Re: [PATCH 3/5] iommu/s390: Use RCU to allow concurrent domain_list
- iteration
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev,
-        Joerg
- Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy
- <robin.murphy@arm.com>,
-        Gerd Bayer <gbayer@linux.ibm.com>,
-        Pierre Morel
- <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, linux-kernel@vger.kernel.org
-Date: Fri, 21 Oct 2022 17:05:17 +0200
-In-Reply-To: <89a748fb5caee8be5d91806aa5dfd131e92d5d82.camel@linux.ibm.com>
-References: <20221018145132.998866-1-schnelle@linux.ibm.com>
-	 <20221018145132.998866-4-schnelle@linux.ibm.com>
-	 <Y07Dz/NROAMI0Hku@nvidia.com>
-	 <8e268ab5e0dadf86be5fd7ffaa9debb76cea67f3.camel@linux.ibm.com>
-	 <Y0/lMCQ8oeXJ2HTg@nvidia.com>
-	 <f3551bb461b3ef3cfc1a0c644093816be1835b3f.camel@linux.ibm.com>
-	 <Y1ErcEe82yjJI+ET@nvidia.com>
-	 <68d91d7a5aadbd46dc34470eccd6b86a84c9e47b.camel@linux.ibm.com>
-	 <Y1KgX8EwH8T+FgWC@nvidia.com>
-	 <89a748fb5caee8be5d91806aa5dfd131e92d5d82.camel@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+	by mail.8bytes.org (Postfix) with ESMTPSA id 6A3DE2427DF;
+	Fri, 21 Oct 2022 17:25:30 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1666365930;
+	bh=UbaaFnYo+HTXmhcj8WOVnQZ9fo/iLoY+tAwf/skw/Wk=;
+	h=Date:From:To:Cc:Subject:From;
+	b=Gd057/c9r1s2m22unQTK1xRSfS1qFHyz5czbGSlDccMlZ2MBZ2SkBdWN85MXp3GY3
+	 luLV5YH94RbQaUjE7rprdMV+/ILw9/xmXYo5hQ+PzUBBvcuk1mYvcv5By+0N3lf2vz
+	 L7OZpj6qmBeMZJSW/RFRbsfT+rA3d3Yr1kaPg4mk2GBzJkrLn6KfZjCv5r4gNFh9Ts
+	 XuPjLp9zcR89tuGBp9fh3gK3bN9xVHhptfbALLEc1va7Jkce+xAozF/vszpIbrvsyv
+	 W6MavO1fTTycyArVTweRn5QKJwL4zScKoekc4gj7ITBlT1d91yfwgsLQhPhbLZY/N+
+	 AGM4pKghjyQ5g==
+Date: Fri, 21 Oct 2022 17:25:29 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: [git pull] IOMMU Fixes for Linux v6.1-rc1
+Message-ID: <Y1K56ThNRTpLRA2X@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: yfa1-ZMbUzI6pGAXEC7wUTFJQGwfy7Ag
-X-Proofpoint-ORIG-GUID: yfa1-ZMbUzI6pGAXEC7wUTFJQGwfy7Ag
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-10-21_04,2022-10-21_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- adultscore=0 malwarescore=0 impostorscore=0 clxscore=1015 phishscore=0
- mlxscore=0 bulkscore=0 spamscore=0 mlxlogscore=848 suspectscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2210210090
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="oKHxqs63Pe8+DD1/"
+Content-Disposition: inline
 
-On Fri, 2022-10-21 at 17:01 +0200, Niklas Schnelle wrote:
-> On Fri, 2022-10-21 at 10:36 -0300, Jason Gunthorpe wrote:
-> > On Fri, Oct 21, 2022 at 02:08:02PM +0200, Niklas Schnelle wrote:
-> > > On Thu, 2022-10-20 at 08:05 -0300, Jason Gunthorpe wrote:
-> > > > On Thu, Oct 20, 2022 at 10:51:10AM +0200, Niklas Schnelle wrote:
-> > > > 
-> > > > > Ok that makes sense thanks for the explanation. So yes my assessment is
-> > > > > still that in this situation the IOTLB flush is architected to return
-> > > > > an error that we can ignore. Not the most elegant I admit but at least
-> > > > > it's simple. Alternatively I guess we could use call_rcu() to do the
-> > > > > zpci_unregister_ioat() but I'm not sure how to then make sure that a
-> > > > > subsequent zpci_register_ioat() only happens after that without adding
-> > > > > too much more logic.
-> > > > 
-> > > > This won't work either as the domain could have been freed before the
-> > > > call_rcu() happens, the domain needs to be detached synchronously
-> > > > 
-> > > > Jason
-> > > 
-> > > Yeah right, that is basically the same issue I was thinking of for a
-> > > subsequent zpci_register_ioat(). What about the obvious one. Just call
-> > > synchronize_rcu() before zpci_unregister_ioat()?
-> > 
-> > Ah, it can be done, but be prepared to wait >> 1s for synchronize_rcu
-> > to complete in some cases.
-> > 
-> > What you have seems like it could be OK, just deal with the ugly racy
-> > failure
-> > 
-> > Jason
-> 
-> I'd tend to go with synchronize_rcu(). It won't leave us with spurious
-> error logs for the failed IOTLB flushes and as you said one expects
-> detach to be synchronous. I don't think waiting in it will be a
-> problem. But this is definitely something you're more of an expert on
-> so I'll trust your judgement. Looking at other callers of
-> synchronize_rcu() quite a few of them look to be in similar
-> detach/release kind of situations though not sure how frequent and
-> performance critical IOMMU domain detaching is in comparison.
-> 
-> Thanks,
-> Niklas
-> 
 
-Addendum, of course independently of whether to use synchronize_rcu()
-I'll change the error handling in the IOTLB ops to not skip over the
-other devices.
+--oKHxqs63Pe8+DD1/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
+Hi Linus,
+
+The following changes since commit 9abf2313adc1ca1b6180c508c25f22f9395cc780:
+
+  Linux 6.1-rc1 (2022-10-16 15:36:24 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.1-rc1
+
+for you to fetch changes up to 620bf9f981365c18cc2766c53d92bf8131c63f32:
+
+  iommu/vt-d: Clean up si_domain in the init_dmars() error path (2022-10-21 10:49:35 +0200)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v6.1-rc1:
+
+Including:
+
+	- Intel VT-d fixes from Lu Baolu:
+	  - Fix a lockdep splat issue in intel_iommu_init().
+	  - Allow NVS regions to pass RMRR check.
+	  - Domain cleanup in error path.
+
+----------------------------------------------------------------
+Charlotte Tan (1):
+      iommu/vt-d: Allow NVS regions in arch_rmrr_sanity_check()
+
+Jerry Snitselaar (1):
+      iommu/vt-d: Clean up si_domain in the init_dmars() error path
+
+Lu Baolu (2):
+      iommu: Add gfp parameter to iommu_alloc_resv_region
+      iommu/vt-d: Use rcu_lock in get_resv_regions
+
+ arch/x86/include/asm/iommu.h                |  4 +++-
+ drivers/acpi/arm64/iort.c                   |  3 ++-
+ drivers/iommu/amd/iommu.c                   |  7 ++++---
+ drivers/iommu/apple-dart.c                  |  2 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  2 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu.c       |  2 +-
+ drivers/iommu/intel/iommu.c                 | 17 ++++++++++++-----
+ drivers/iommu/iommu.c                       |  7 ++++---
+ drivers/iommu/mtk_iommu.c                   |  3 ++-
+ drivers/iommu/virtio-iommu.c                |  9 ++++++---
+ include/linux/iommu.h                       |  2 +-
+ 11 files changed, 37 insertions(+), 21 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--oKHxqs63Pe8+DD1/
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmNSuekACgkQK/BELZcB
+GuNtQA/8CgW461/OeYTerU80IZVLVJPUHVcUTCCzQ5QVY8AH2rvAn0CJyTrc4MI2
+golyz3hv4WWRmjW8djSiS+OKC+ffgDPhugIQXiVQTKTAVK7BakhysGEMFwOSY/y9
+7+JZt+CDSA1DyOnL09f6g85E4b41+FIsCj6DkP5iYjHr7eX0qz2HXYL4Swpej7Pr
+sNsMR/jfLJEXTqDWywkbguHyRJa5R7gd40FtzEyxWxRT+gs988lpMtvzigyWz8hq
+FrpO27T0qkkuKL1vUZqCTV6Xilxc+uOQOJdEZCMZsMMXAXTxKFiZfAKfX6yPtZD4
+NWRqpG64joeBYj2ALY4XYlE8fEBreR/rJrgH0rpGIykiTo2edMbhN5ZVUygqhNiy
+PBnUxcWxhYxiJgrlCDshHzlZrPXryyD4NsIYteg0P6gUddtyC/cNrHZ4GkpwmPaj
++roYzUFUNHTXjDdF/r201iE19rjEe4BhfKe/6dMNvQ8wUCzEDLyMPFn4NqleyAPS
+jilw+oIL57KkiWaYOlCdAdXnM4iTspCcWcTUr8D5tWuJibWuptp2c0cl6n1+oixo
+5yBg+pMw68Y48vQObpLG6frOIuasm3nl0hvr611vVrWPjIYu77vJ2zdesYNBzmCC
+JWGcoPUKuoGcTZ0z7Thfi8Ey94OjyDEKMDtHvo1EOYAY78RHt3E=
+=5DZQ
+-----END PGP SIGNATURE-----
+
+--oKHxqs63Pe8+DD1/--
