@@ -1,117 +1,98 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CBDF22561
-	for <iommu@lists.linux.dev>; Fri, 21 Oct 2022 15:25:31 +0000 (UTC)
-Received: from 8bytes.org (p5b00664c.dip0.t-ipconnect.de [91.0.102.76])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 6A3DE2427DF;
-	Fri, 21 Oct 2022 17:25:30 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1666365930;
-	bh=UbaaFnYo+HTXmhcj8WOVnQZ9fo/iLoY+tAwf/skw/Wk=;
-	h=Date:From:To:Cc:Subject:From;
-	b=Gd057/c9r1s2m22unQTK1xRSfS1qFHyz5czbGSlDccMlZ2MBZ2SkBdWN85MXp3GY3
-	 luLV5YH94RbQaUjE7rprdMV+/ILw9/xmXYo5hQ+PzUBBvcuk1mYvcv5By+0N3lf2vz
-	 L7OZpj6qmBeMZJSW/RFRbsfT+rA3d3Yr1kaPg4mk2GBzJkrLn6KfZjCv5r4gNFh9Ts
-	 XuPjLp9zcR89tuGBp9fh3gK3bN9xVHhptfbALLEc1va7Jkce+xAozF/vszpIbrvsyv
-	 W6MavO1fTTycyArVTweRn5QKJwL4zScKoekc4gj7ITBlT1d91yfwgsLQhPhbLZY/N+
-	 AGM4pKghjyQ5g==
-Date: Fri, 21 Oct 2022 17:25:29 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: [git pull] IOMMU Fixes for Linux v6.1-rc1
-Message-ID: <Y1K56ThNRTpLRA2X@8bytes.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B7097E
+	for <iommu@lists.linux.dev>; Fri, 21 Oct 2022 16:55:37 +0000 (UTC)
+Received: by mail-lj1-f171.google.com with SMTP id h8so4490030lja.11
+        for <iommu@lists.linux.dev>; Fri, 21 Oct 2022 09:55:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=jk8daWEyD5nu4Dd9fT1JL7p/naJGRuTZBUyhSyQw5GE=;
+        b=i8qJUKu+ohbPuGZ3ueGYE532rsFQy0UvpF20vJ6x1ZcP4pljpUHVtDFJS8hErlkA8U
+         n3cdWOFrbm+n/YSuJs7gXXw2uHwIGW09bzCssinCok/Zk656b9FmS5potj5R89kIY1L1
+         6RP4Vu3V0q76AgDeBUd2Om9uur8+mg7UDKTyJHJKzRlDdG3yuVaDr69UEHe9KJpz4Y8b
+         IgKGLQppn0cQL670sR7MBgbwilVHmqf67eBDtERYZKOqvZOWbbf+wL9jXQwCaa7BZd5N
+         S55w4lPBJBfzFaVIvVk5u9IyJ8anTtFyctncDHDRk5hBXIKfgTCn8s+RgAe+ZCMDIYu0
+         iubg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=jk8daWEyD5nu4Dd9fT1JL7p/naJGRuTZBUyhSyQw5GE=;
+        b=fSEdI9xO2NG8kQ4D6Jlk+5AiBaZf8JJqdEMxT2tdOfxCGfj1gXrtulxI+0UtcKk4s3
+         OYaKr21DnBqZsMKFDl7YKihuvw4cRjxNmNa2JWh6WBW1+HcXxDw/x2hxianftd4dDp/G
+         YDduX3tg3kxcNsHpfkPjwZMdhpSObqJ/+iS5bw7KCAJHugf7Q9YQtFRyUfKdzoyMngKZ
+         CAfcspasNYslcS/tuqjaGzPSkw1HylGF+c5LYUAySs7TnNo6/UFvOUuzWTgGU8bfw4Re
+         RxMdeCo0JNNB7CbqVclUNNDl+TP1cZgkks8NnLS9q20JXpKxtSgH7pER9buh7udYlsAn
+         XV7Q==
+X-Gm-Message-State: ACrzQf1QQ/3uIeGiuIvDZIbGruBXv2J8ud1vGImau2M10OAWQXc5sTDr
+	DDMXVj8it7Ay4gvXfqSSGCrh1Q==
+X-Google-Smtp-Source: AMsMyM5gzvmuycKPtMppRahs7qk58l2tQH694Ohve9uvydGuI/CeRQIFtvebGCbuMpptI85NC+R9zQ==
+X-Received: by 2002:a2e:8347:0:b0:26d:e2be:b6e3 with SMTP id l7-20020a2e8347000000b0026de2beb6e3mr7227612ljh.247.1666371335374;
+        Fri, 21 Oct 2022 09:55:35 -0700 (PDT)
+Received: from eriador.unikie.fi ([192.130.178.91])
+        by smtp.gmail.com with ESMTPSA id x4-20020a056512078400b004946e72711bsm3218532lfr.76.2022.10.21.09.55.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Oct 2022 09:55:35 -0700 (PDT)
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+To: Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konrad.dybcio@somainline.org>,
+	Rob Clark <robdclark@gmail.com>
+Cc: Vinod Koul <vkoul@kernel.org>,
+	Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-arm-msm@vger.kernel.org,
+	iommu@lists.linux.dev,
+	devicetree@vger.kernel.org,
+	freedreno@lists.freedesktop.org
+Subject: [RFC PATCH 0/9] iommy/arm-smmu-qcom: Rework Qualcomm SMMU bindings and implementation
+Date: Fri, 21 Oct 2022 19:55:25 +0300
+Message-Id: <20221021165534.2334329-1-dmitry.baryshkov@linaro.org>
+X-Mailer: git-send-email 2.35.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="oKHxqs63Pe8+DD1/"
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
+The main goal of this patchset is to define a generic qcom,smmu-500
+binding to be used by newer Qualcomm platforms instead of defining each
+and every SoC line with no actual differences between the compats.
 
---oKHxqs63Pe8+DD1/
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+While preparing this change it was required to cleanup the existing
+bindings and to rework the way the arm-smmu-qcom implementation handles
+binding to IOMMU devices.
 
-Hi Linus,
+Dmitry Baryshkov (9):
+  dt-bindings: arm-smmu: Add missing Qualcomm SMMU compatibles
+  dt-bindings: arm-smmu: fix clocks/clock-names schema
+  dt-bindings: arm-smmu: Add generic qcom,smmu-500 bindings
+  iommu/arm-smmu-qcom: Move implementation data into match data
+  iommu/arm-smmu-qcom: Move the qcom,adreno-smmu check into
+    qcom_smmu_create
+  iommu/arm-smmu-qcom: provide separate implementation for
+    SDM845-smmu-500
+  iommu/arm-smmu-qcom: Merge table from arm-smmu-qcom-debug into match
+    data
+  iommu/arm-smmu-qcom: Stop using mmu500 reset for v2 MMUs
+  iommu/arm-smmu-qcom: Add generic qcom,smmu-500 match entry
 
-The following changes since commit 9abf2313adc1ca1b6180c508c25f22f9395cc780:
+ .../devicetree/bindings/iommu/arm,smmu.yaml   | 168 +++++++++++++++++-
+ .../iommu/arm/arm-smmu/arm-smmu-qcom-debug.c  |  91 ----------
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c    | 156 +++++++++++-----
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h    |  21 ++-
+ 4 files changed, 288 insertions(+), 148 deletions(-)
 
-  Linux 6.1-rc1 (2022-10-16 15:36:24 -0700)
+-- 
+2.35.1
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.1-rc1
-
-for you to fetch changes up to 620bf9f981365c18cc2766c53d92bf8131c63f32:
-
-  iommu/vt-d: Clean up si_domain in the init_dmars() error path (2022-10-21 10:49:35 +0200)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v6.1-rc1:
-
-Including:
-
-	- Intel VT-d fixes from Lu Baolu:
-	  - Fix a lockdep splat issue in intel_iommu_init().
-	  - Allow NVS regions to pass RMRR check.
-	  - Domain cleanup in error path.
-
-----------------------------------------------------------------
-Charlotte Tan (1):
-      iommu/vt-d: Allow NVS regions in arch_rmrr_sanity_check()
-
-Jerry Snitselaar (1):
-      iommu/vt-d: Clean up si_domain in the init_dmars() error path
-
-Lu Baolu (2):
-      iommu: Add gfp parameter to iommu_alloc_resv_region
-      iommu/vt-d: Use rcu_lock in get_resv_regions
-
- arch/x86/include/asm/iommu.h                |  4 +++-
- drivers/acpi/arm64/iort.c                   |  3 ++-
- drivers/iommu/amd/iommu.c                   |  7 ++++---
- drivers/iommu/apple-dart.c                  |  2 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  2 +-
- drivers/iommu/arm/arm-smmu/arm-smmu.c       |  2 +-
- drivers/iommu/intel/iommu.c                 | 17 ++++++++++++-----
- drivers/iommu/iommu.c                       |  7 ++++---
- drivers/iommu/mtk_iommu.c                   |  3 ++-
- drivers/iommu/virtio-iommu.c                |  9 ++++++---
- include/linux/iommu.h                       |  2 +-
- 11 files changed, 37 insertions(+), 21 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
---oKHxqs63Pe8+DD1/
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmNSuekACgkQK/BELZcB
-GuNtQA/8CgW461/OeYTerU80IZVLVJPUHVcUTCCzQ5QVY8AH2rvAn0CJyTrc4MI2
-golyz3hv4WWRmjW8djSiS+OKC+ffgDPhugIQXiVQTKTAVK7BakhysGEMFwOSY/y9
-7+JZt+CDSA1DyOnL09f6g85E4b41+FIsCj6DkP5iYjHr7eX0qz2HXYL4Swpej7Pr
-sNsMR/jfLJEXTqDWywkbguHyRJa5R7gd40FtzEyxWxRT+gs988lpMtvzigyWz8hq
-FrpO27T0qkkuKL1vUZqCTV6Xilxc+uOQOJdEZCMZsMMXAXTxKFiZfAKfX6yPtZD4
-NWRqpG64joeBYj2ALY4XYlE8fEBreR/rJrgH0rpGIykiTo2edMbhN5ZVUygqhNiy
-PBnUxcWxhYxiJgrlCDshHzlZrPXryyD4NsIYteg0P6gUddtyC/cNrHZ4GkpwmPaj
-+roYzUFUNHTXjDdF/r201iE19rjEe4BhfKe/6dMNvQ8wUCzEDLyMPFn4NqleyAPS
-jilw+oIL57KkiWaYOlCdAdXnM4iTspCcWcTUr8D5tWuJibWuptp2c0cl6n1+oixo
-5yBg+pMw68Y48vQObpLG6frOIuasm3nl0hvr611vVrWPjIYu77vJ2zdesYNBzmCC
-JWGcoPUKuoGcTZ0z7Thfi8Ey94OjyDEKMDtHvo1EOYAY78RHt3E=
-=5DZQ
------END PGP SIGNATURE-----
-
---oKHxqs63Pe8+DD1/--
