@@ -1,192 +1,187 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f50.google.com (mail-oa1-f50.google.com [209.85.160.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39B853C05
-	for <iommu@lists.linux.dev>; Sat, 22 Oct 2022 15:00:52 +0000 (UTC)
-Received: from frapeml100001.china.huawei.com (unknown [172.18.147.226])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MvkyC0pJ0z6HJS8;
-	Sat, 22 Oct 2022 22:59:31 +0800 (CST)
-Received: from lhrpeml500003.china.huawei.com (7.191.162.67) by
- frapeml100001.china.huawei.com (7.182.85.63) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Sat, 22 Oct 2022 17:00:44 +0200
-Received: from [10.48.154.192] (10.48.154.192) by
- lhrpeml500003.china.huawei.com (7.191.162.67) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Sat, 22 Oct 2022 16:00:43 +0100
-Message-ID: <b8c14576-4754-8fce-00cc-b3279bda36f2@huawei.com>
-Date: Sat, 22 Oct 2022 16:00:45 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD1453C05
+	for <iommu@lists.linux.dev>; Sat, 22 Oct 2022 15:42:52 +0000 (UTC)
+Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-1322d768ba7so7147847fac.5
+        for <iommu@lists.linux.dev>; Sat, 22 Oct 2022 08:42:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ODjrPiqkc2NevEsjSmm0YWaYClNrBblCeUYkT3+0Dik=;
+        b=CmTSIh1KkQeYMj5Vs2t3cRhCGp+LgmZz/67bweawjb08p541cjT1FqgDebHTsC/Ga+
+         t1Viw9HjIToJMSAwb5fo3h+vqP9SRjiHn7MYQuq5Zrq1yXUECeXnz8KHmZ8BB4JQnqGr
+         9FjWSmVDtLmnRWEofEg+v/TR5SP3BlV6TDsbPpRz+llrgsyI2kbxvloIYwtZ+POJ8TkG
+         RAiywPcrmgIXfrhiSpazoq0l7PDFETZ7b0Cx1IgR/BjL+SHnBt65r2bolBMkQksEH4PN
+         ouIfqCY8669wwA2wx0kkgrtoaRP/tBcrP12CAglJUvGVyM+0mTxdueliqLxFjBXtcIgs
+         agyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ODjrPiqkc2NevEsjSmm0YWaYClNrBblCeUYkT3+0Dik=;
+        b=PLdsXNCIU28rk7pEh1X2gGpzToA177KyuoAaow5okGS3Yia7r8dXb6KG7IkLQ57Dxf
+         lD5uszq3HYm9RKMszftYvAkzQ36RzgoayXhPFLqwFoCrAno/kp6WelEDzEC/fYyFY9xt
+         aJ/cqPidt+tWJRLk4IPTIhL/xux7/qiRUQG+20dH+y/edpXQT+loxXab5Wbsb8bIi0UD
+         O/ObU1trB8orqHhF7pY32oyBUmBwISzdJrjid1xiPv5g8xIyIl6CLZxVFipHaARTiFYb
+         N3t6kUPGBPmNB2N8gJb9wYPLDxMbwm+dY9YVpO8uaAiSLF2woTuxXueWIVEYgZuLRsta
+         s7Uw==
+X-Gm-Message-State: ACrzQf3PqNjwqVSH/wMgYtLYllMLksOd690Uzj2dxXBNWjhFdMBAQx1M
+	8ZAcLRQi5SOhGqtT9q0BjecQKQ==
+X-Google-Smtp-Source: AMsMyM7IssC7AwXaNPbBMPy2YiZrWgkm3vbVzBHOsug9EmiifFNdhlM2LdpVhAK/3Bp31GT5B9EavA==
+X-Received: by 2002:a05:6870:338a:b0:13b:6032:ea71 with SMTP id w10-20020a056870338a00b0013b6032ea71mr1864204oae.291.1666453371838;
+        Sat, 22 Oct 2022 08:42:51 -0700 (PDT)
+Received: from [10.203.8.70] ([205.153.95.177])
+        by smtp.gmail.com with ESMTPSA id l9-20020a0568301d6900b00661b9421daesm2327121oti.69.2022.10.22.08.42.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 22 Oct 2022 08:42:51 -0700 (PDT)
+Message-ID: <c86e5263-50b3-cdff-0bc5-2c2a578d5ada@linaro.org>
+Date: Sat, 22 Oct 2022 11:42:46 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-From: John Garry <john.garry@huawei.com>
-Subject: ehci DMA mapping warn
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Christoph Hellwig
-	<hch@lst.de>, <iommu@lists.linux.dev>, Robin Murphy <robin.murphy@arm.com>,
-	<m.szyprowski@samsung.com>, <linux-usb@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [RFC PATCH 1/9] dt-bindings: arm-smmu: Add missing Qualcomm SMMU
+ compatibles
+Content-Language: en-US
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konrad.dybcio@somainline.org>, Rob Clark <robdclark@gmail.com>
+Cc: Vinod Koul <vkoul@kernel.org>,
+ Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+ linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+ iommu@lists.linux.dev, devicetree@vger.kernel.org,
+ freedreno@lists.freedesktop.org
+References: <20221021165534.2334329-1-dmitry.baryshkov@linaro.org>
+ <20221021165534.2334329-2-dmitry.baryshkov@linaro.org>
+ <a36ca97e-5e64-54a8-a571-e9b7f6da76e5@linaro.org>
+ <48e13203-2588-618b-4fde-3004b2472783@linaro.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <48e13203-2588-618b-4fde-3004b2472783@linaro.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.48.154.192]
-X-ClientProxiedBy: lhrpeml500006.china.huawei.com (7.191.161.198) To
- lhrpeml500003.china.huawei.com (7.191.162.67)
-X-CFilter-Loop: Reflected
 
-Hi guys,
+On 22/10/2022 05:17, Dmitry Baryshkov wrote:
+> On 22/10/2022 03:59, Krzysztof Kozlowski wrote:
+>> On 21/10/2022 12:55, Dmitry Baryshkov wrote:
+>>> Add missing compatibles used for Adreno SMMU on sc7280 and sm8450
+>>> platforms and for the Qualcomm v2 SMMU used on SDM630 platform.
+>>>
+>>> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+>>> ---
+>>>   Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 11 +++++++++++
+>>>   1 file changed, 11 insertions(+)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>> index 9066e6df1ba1..34ee33a62ba5 100644
+>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>> @@ -28,6 +28,7 @@ properties:
+>>>             - enum:
+>>>                 - qcom,msm8996-smmu-v2
+>>>                 - qcom,msm8998-smmu-v2
+>>> +              - qcom,sdm630-smmu-v2
+>>
+>> So qcom,adreno-smmu is not compatible with Adreno? See below.
+>>
+>>>             - const: qcom,smmu-v2
+>>>   
+>>>         - description: Qcom SoCs implementing "arm,mmu-500"
+>>> @@ -48,10 +49,20 @@ properties:
+>>>                 - qcom,sm8350-smmu-500
+>>>                 - qcom,sm8450-smmu-500
+>>>             - const: arm,mmu-500
+>>> +
+>>> +      - description: Qcom Adreno GPUs implementing "arm,smmu-500"
+>>> +        items:
+>>> +          - enum:
+>>> +              - qcom,sc7280-smmu-500
+>>> +              - qcom,sm8250-smmu-500
+>>> +          - const: qcom,adreno-smmu
+>>> +          - const: arm,mmu-500
+>>>         - description: Qcom Adreno GPUs implementing "arm,smmu-v2"
+>>>           items:
+>>>             - enum:
+>>> +              - qcom,msm8996-smmu-v2
+>>>                 - qcom,sc7180-smmu-v2
+>>> +              - qcom,sdm630-smmu-v2
+>>
+>> This does not look correct. The same compatible should not be present in
+>> two different setups.
+>>
+>> If qcom,msm8996-smmu-v2 is compatible with qcom,adreno-smmu, then your
+>> first hunk is not correct.
+> 
+> Currently the qcom,adreno-smmu compat string is used as a flag, telling 
+> the kernel that this SMMU instance needs some special setup to work with 
+> Adreno GPU driver
 
-JFYI, I noticed this warn on a v6.1-rc1-based kernel on my arm64 
-machine. I haven't checked the issue yet.
+Indeed, I see the usage in DTS,
 
-[   46.054389] ehci-pci 0000:7a:01.0: applying Synopsys HC workaround
-[   46.067427] ------------[ cut here ]------------
-[   46.077148] WARNING: CPU: 0 PID: 661 at kernel/dma/mapping.c:499 
-dma_alloc_attrs+0x11c/0x160
-[   46.094931] Modules linked in:
-[   46.101355] CPU: 0 PID: 661 Comm: kworker/0:2 Not tainted 
-6.1.0-rc1-219582-gbb4d3aca99c0 #41
-[   46.119110] Hardware name: Huawei TaiShan 200 (Model 2280)/BC82AMDD, 
-BIOS 2280-V2 CS V3.B220.01 03/19/2020
-[   46.139415] Workqueue: events work_for_cpu_fn
-[   46.148580] pstate: 60400009 (nZCv daif +PAN -UAO -TCO -DIT -SSBS 
-BTYPE=--)
-[   46.163223] pc : dma_alloc_attrs+0x11c/0x160
-[   46.172199] lr : dma_alloc_attrs+0xa0/0x160
-[   46.180996] sp : ffff8000088277f0
-[   46.187963] x29: ffff8000088277f0 x28: ffff0020e39ab3c0 x27: 
-ffff0020e39ab390
-[   46.202980] x26: 0000000000000000 x25: ffffc32da194f640 x24: 
-ffff0020e5049e18
-[   46.217995] x23: 0000000000001000 x22: 0000000000000cc0 x21: 
-ffffc32da2025f78
-[   46.233009] x20: 1ffff00001104f0a x19: ffff202008c320d0 x18: 
-ffffc32da19d6e60
-[   46.248027] x17: ffffc32da09230b8 x16: ffffc32da09b1c00 x15: 
-ffffc32da09b1a7c
-[   46.263048] x14: ffffc32da0942200 x13: ffffc32da09230b8 x12: 
-ffff7865b49313f1
-[   46.278066] x11: 1ffff865b49313f0 x10: ffff7865b49313f0 x9 : 
-0000000041b58ab3
-[   46.293082] x8 : ffff700001104f0a x7 : dfff800000000000 x6 : 
-00000000f1f1f1f1
-[   46.308096] x5 : ffffc32d9fa47d38 x4 : dfff800000000000 x3 : 
-ffffc32d9fa47dd8
-[   46.323111] x2 : 0000000000000007 x1 : ffff202008c32318 x0 : 
-0000000000000000
-[   46.338126] Call trace:
-[   46.343264]  dma_alloc_attrs+0x11c/0x160
-[   46.351510]  dma_pool_alloc+0x158/0x350
-[   46.359578]  ehci_qh_alloc+0xd8/0x1e8
-[   46.367276]  ehci_setup+0x2a4/0x670
-[   46.374610]  ehci_pci_setup+0x168/0x900
-[   46.382677]  usb_add_hcd+0x430/0x8c0
-[   46.390198]  usb_hcd_pci_probe+0x378/0x4f0
-[   46.398810]  ehci_pci_probe+0x3c/0x58
-[   46.406508]  local_pci_probe+0x78/0xf8
-[   46.414394]  work_for_cpu_fn+0x30/0x50
-[   46.422276]  process_one_work+0x3f8/0x660
-[   46.422276]  process_one_work+0x3f8/0x660
-[   46.430706]  worker_thread+0x430/0x700
-[   46.438589]  kthread+0x1a4/0x1b8
-[   46.445372]  ret_from_fork+0x10/0x20
-[   46.452888] ---[ end trace 0000000000000000 ]---
-[   46.463725] ehci-pci 0000:7a:01.0: can't setup: -12
-[   46.474016] ehci-pci 0000:7a:01.0: USB bus 1 deregistered
-[   46.485525] ehci-pci 0000:7a:01.0: init 0000:7a:01.0 fail, -12
-[   46.497831] ehci-pci: probe of 0000:7a:01.0 failed with error -12
-[   46.510782] 
-==================================================================
-[   46.525989] BUG: KASAN: invalid-free in kfree+0x5c/0xa8
-[   46.537001] Free of addr ffff202031f67420 by task swapper/0/1
-[   46.549097]
-[   46.552231] CPU: 92 PID: 1 Comm: swapper/0 Tainted: G        W 
-6.1.0-rc1-219582-gbb4d3aca99c0 #41
-[   46.572561] Hardware name: Huawei TaiShan 200 (Model 2280)/BC82AMDD, 
-BIOS 2280-V2 CS V3.B220.01 03/19/2020
-[   46.592891] Call trace:
-[   46.592891] Call trace:
-[   46.598034]  dump_backtrace+0x110/0x120
-[   46.606113]  show_stack+0x18/0x40
-[   46.613089]  dump_stack_lvl+0x68/0x84
-[   46.620800]  print_report+0x18c/0x4d8
-[   46.628509]  kasan_report_invalid_free+0x80/0xa0
-[   46.638234]  __kasan_slab_free+0x170/0x188
-[   46.646857]  __kmem_cache_free+0x138/0x2f0
-[   46.655479]  kfree+0x5c/0xa8
-[   46.661541]  device_unbind_cleanup+0x34/0xa8
-[   46.670535]  really_probe+0x268/0x3a8
-[   46.678242]  __driver_probe_device+0xb8/0x130
-[   46.687412]  driver_probe_device+0x5c/0x150
-[   46.696218]  __driver_attach+0x9c/0x1a0
-[   46.704292]  bus_for_each_dev+0xec/0x160
-[   46.712549]  driver_attach+0x34/0x48
-[   46.720074]  bus_add_driver+0x1e8/0x300
-[   46.728147]  driver_register+0xc0/0x1e0
-[   46.736221]  __pci_register_driver+0xcc/0xe8
-[   46.745213]  ehci_pci_init+0x5c/0x74
-[   46.752744]  do_one_initcall+0xd4/0x280
-[   46.760818]  kernel_init_freeable+0x2c8/0x334
-[   46.769993]  kernel_init+0x24/0x148
-[   46.777334]  ret_from_fork+0x10/0x20
-[   46.784860]
-[   46.787990] Allocated by task 1:
-[   46.794781]  kasan_save_stack+0x2c/0x58
-[   46.802854]  kasan_set_track+0x2c/0x40
-[   46.810743]  kasan_save_alloc_info+0x24/0x38
-[   46.819732]  __kasan_kmalloc+0xa0/0xb8
-[   46.827620]  __kmalloc+0x68/0xa0
-[   46.834413]  acpi_dma_get_range+0x190/0x2f8
-[   46.843219]  acpi_arch_dma_setup+0xf8/0x278
-[   46.852027]  acpi_dma_configure_id+0x54/0x170
-[   46.861196]  pci_dma_configure+0x11c/0x128
-[   46.869816]  really_probe+0x9c/0x3a8
-[   46.877340]  __driver_probe_device+0xb8/0x130
-[   46.886509]  driver_probe_device+0x5c/0x150
-[   46.895313]  __driver_attach+0x9c/0x1a0
-[   46.903385]  bus_for_each_dev+0xec/0x160
-[   46.911640]  driver_attach+0x34/0x48
-[   46.919163]  bus_add_driver+0x1e8/0x300
-[   46.927235]  driver_register+0xc0/0x1e0
-[   46.935307]  __pci_register_driver+0xcc/0xe8
-[   46.944294]  ehci_pci_init+0x5c/0x74
-[   46.951819]  do_one_initcall+0xd4/0x280
-[   46.959890]  kernel_init_freeable+0x2c8/0x334
-[   46.969059]  kernel_init+0x24/0x148
-[   46.976399]  ret_from_fork+0x10/0x20
-[   46.983922]
-[   46.987052] The buggy address belongs to the object at ffff202031f67400
-[   46.987052]  which belongs to the cache kmalloc-128 of size 128
-[   47.013417] The buggy address is located 32 bytes inside of
-[   47.013417]  128-byte region [ffff202031f67400, ffff202031f67480)
-[   47.037953]
-[   47.041083] The buggy address belongs to the physical page:
-[   47.052813] page:0000000002dceb95 refcount:1 mapcount:0 
-mapping:0000000000000000 index:0x0 pfn:0x202031f64
-[   47.073143] head:0000000002dceb95 order:2 compound_mapcount:0 
-compound_pincount:0
-[   47.088897] flags: 
-0x3bfffc0000010200(slab|head|node=3|zone=2|lastcpupid=0xffff)
-[   47.104479] raw: 3bfffc0000010200 0000000000000000 dead000000000122 
-ffff002080010180
-[   47.120782] raw: 0000000000000000 0000000000400040 00000001ffffffff 
-0000000000000000
-[   47.137081] page dumped because: kasan: bad access detected
-[   47.148810]
-[   47.151939] Memory state around the buggy address:
-[   47.162023]  ffff202031f67300: fa fb fb fb fb fb fb fb fb fb fb fb fb 
-fb fb fb
-[   47.177228]  ffff202031f67380: fc fc fc fc fc fc fc fc fc fc fc fc fc 
-fc fc fc
-[   47.192432] >ffff202031f67400: 00 00 00 00 00 00 00 00 fc fc fc fc fc 
-fc fc fc
-[   47.207635]                                ^
-[   47.216622]  ffff202031f67480: fc fc fc fc fc fc fc fc fc fc fc fc fc 
-fc fc fc
-[   47.231827]  ffff202031f67500: 00 00 00 00 00 00 00 00 00 fc fc fc fc 
-fc fc fc
-[   47.247029] 
-==================================================================
-[   47.262257] Disabling lock debugging due to kernel taint
+> 
+> For example, we have the following compat lists in the existing DT files:
+> - "qcom,msm8996-smmu-v2", "qcom,adreno-smmu", "qcom,smmu-v2"
+> - "qcom,msm8996-smmu-v2", "qcom,smmu-v2" // not handled by arm-qcom-smmu
+> 
+> - "qcom,sdm630-smmu-v2", "qcom,adreno-smmu", "qcom,smmu-v2"
+> - "qcom,sdm630-smmu-v2", "qcom,smmu-v2"
+> 
+> - "qcom,sdm845-smmu-v2", "qcom,adreno-smmu", "qcom,smmu-v2"
+> - "qcom,sdm845-smmu-500", "arm,mmu-500"
+> - "qcom,sdm845-smmu-v2", "qcom,smmu-v2" // special setup used on Cheza
+> 
+> - "qcom,sm8250-smmu-500", "qcom,adreno-smmu", "arm,mmu-500"
+> - "qcom,sm8250-smmu-500", "arm,mmu-500"
+> 
+> 
+> As we are trying to refactor the IOMMU bindings, what would be your 
+> recommendation?
+> 
+> To introduce minimal changes, I wanted to have the following lists:
+> - "qcom,SOC-smmu-500", "qcom,adreno-smmu", "qcom,smmu-500", "arm,mmu-500"
+> 
+> - "qcom,SOC-smmu-500", "qcom,smmu-500", "arm,mmu-500"
+> 
+> However maybe you would prefer the following model:
+> 
+> - "qcom,SOC-adreno-smmu-500", "qcom,adreno-smmu-500", "arm,mmu-500"
+> - "qcom,SOC-smmu-500", "qcom,smmu-500", "arm,mmu-500"
+
+If we started from scratch, I would prefer this one, however as DTSes
+are already using your previous method, It's fine.
+
+It's a bit confusing to have most specific compatible followed by
+different fallbacks, but we already have few cases for this (e.g.
+Renesas boards), so I guess it is fine here as well. At the end entire
+compatible list uniquely describes the hardware.
+
+> 
+> 
+> Or:
+> - "qcom,SOC-smmu-500", "qcom,smmu-500", "arm,mmu-500" + 
+> 'qcom,adreno-smmu' flag/property?
+> 
+> 
+>>
+>>>                 - qcom,sdm845-smmu-v2
+>>>             - const: qcom,adreno-smmu
+>>>             - const: qcom,smmu-v2
+>>
+>> Best regards,
+>> Krzysztof
+>>
+> 
+
+Best regards,
+Krzysztof
+
