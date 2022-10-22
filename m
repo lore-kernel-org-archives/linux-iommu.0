@@ -1,53 +1,69 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BA868F65
-	for <iommu@lists.linux.dev>; Sat, 22 Oct 2022 01:28:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CF041C433D6;
-	Sat, 22 Oct 2022 01:28:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1666402117;
-	bh=2NH6m2nyWWNkCu6dKhRmmjC+7R05DApm9d7S2WAVw2Y=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=FlPPlqAsrdsucR/fd2goMAvag8TJ4q8LwVldb/4cY94UUnfzRhdfHhWX5ADT0dy6m
-	 l34kz4onFBUVpziORV/CYK+gI3PXxWj/P0VByCvvy0arw4eoXu0xs9G4brZMxcvbrP
-	 X2WZYMRWahgJMl1NYJRNeuevXGrHFlJyV8fdrJZMTO+2FeRNzj5An+3+HbPLcYmARi
-	 ic40E9hFVZikDbNBqpJ+mJxT4fFhdhtHNHWUc1pjHMp4IIGSPAImwGK6o2JE/OH6jF
-	 EFV6TUcNorFHougYPtJ4ReNZX3vh2FeOaObAj9DEmiPn+PfLQBuKa3ug9QnXLWs++6
-	 Q2WmzSVXBSn1w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B7B7EE270E2;
-	Sat, 22 Oct 2022 01:28:37 +0000 (UTC)
-Subject: Re: [git pull] IOMMU Fixes for Linux v6.1-rc1
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <Y1K56ThNRTpLRA2X@8bytes.org>
-References: <Y1K56ThNRTpLRA2X@8bytes.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Y1K56ThNRTpLRA2X@8bytes.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.1-rc1
-X-PR-Tracked-Commit-Id: 620bf9f981365c18cc2766c53d92bf8131c63f32
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: e97eace635a42da4644290179aea496178e64988
-Message-Id: <166640211774.11783.8745653046282981940.pr-tracker-bot@kernel.org>
-Date: Sat, 22 Oct 2022 01:28:37 +0000
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Received: from m12-12.163.com (m12-12.163.com [220.181.12.12])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CC60D7B
+	for <iommu@lists.linux.dev>; Sat, 22 Oct 2022 03:02:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Oydpo
+	FCe9+Y0CII8gxzK+nMqaPhZXIic+yLDuWv+Suo=; b=ZsXsb73/Wl75+dVhKfVxN
+	P3yF3IdJsm+Wn9rMJJiWhILq4h8/tilw7W5L8cPqOc6dUrW8CWrTLeoKgt5hXF8y
+	Pr9aKYDoNV97ZMuV3jRlExhvswaypfsvazj/b3L3Em5hCvTNc2q7VD/9A/NjpjEf
+	Ah071ZEfJkJ+11aZtY9qfQ=
+Received: from localhost.localdomain (unknown [171.221.146.106])
+	by smtp8 (Coremail) with SMTP id DMCowAAHqiRpWVNjXpmhjQ--.55403S4;
+	Sat, 22 Oct 2022 10:46:19 +0800 (CST)
+From: Chen Lin <chen45464546@163.com>
+To: will@kernel.org
+Cc: robin.murphy@arm.com,
+	joro@8bytes.org,
+	treding@nvidia.com,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Chen Lin <chen.lin5@zte.com.cn>
+Subject: [PATCH] iommu/arm-smmu: Warn once when the perfetcher errata patch fails to allpy
+Date: Sat, 22 Oct 2022 10:45:59 +0800
+Message-Id: <20221022024559.4913-1-chen45464546@163.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:DMCowAAHqiRpWVNjXpmhjQ--.55403S4
+X-Coremail-Antispam: 1Uf129KBjvdXoWrtw45XF4fKr43WF17tF4fZrb_yoWktFcEv3
+	WrZrnrA34rArW7Ww1YqFySy3sYkr47ZrZ7Wr4Sv3s3Jr9rXFyrAanFqFn5Kw4xGFy0vFy7
+	tF1YqayxJry7WjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU8nZ23UUUUU==
+X-Originating-IP: [171.221.146.106]
+X-CM-SenderInfo: hfkh0kqvuwkkiuw6il2tof0z/1tbiGhuinlaEDNVZLQAAsC
 
-The pull request you sent on Fri, 21 Oct 2022 17:25:29 +0200:
+From: Chen Lin <chen.lin5@zte.com.cn>
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.1-rc1
+Default reset value of secure banked register SMMU_sACR.cache_lock is 1.
+If it is not been set to 0 by secure software(eg: atf), the non-secure 
+linux cannot clear ARM_MMU500_ACTLR_CPRE bit. In this situation,
+the prefetcher errata is not applied successfully, warn once.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/e97eace635a42da4644290179aea496178e64988
+Signed-off-by: Chen Lin <chen.lin5@zte.com.cn>
+---
+ drivers/iommu/arm/arm-smmu/arm-smmu-impl.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Thank you!
-
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+index 658f3cc83278..2d2252b3e518 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+@@ -136,6 +136,9 @@ int arm_mmu500_reset(struct arm_smmu_device *smmu)
+ 		reg = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
+ 		reg &= ~ARM_MMU500_ACTLR_CPRE;
+ 		arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_ACTLR, reg);
++		reg = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
++		if (reg & ARM_MMU500_ACTLR_CPRE)
++			dev_warn_once(smmu->dev, "Failed to alpply prefetcher errata patch, check SMMU_sACR.cache_lock\n");
+ 	}
+ 
+ 	return 0;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.25.1
+
