@@ -1,85 +1,127 @@
-Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com [209.85.210.41])
+Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AF1F7B
-	for <iommu@lists.linux.dev>; Fri, 21 Oct 2022 21:00:29 +0000 (UTC)
-Received: by mail-ot1-f41.google.com with SMTP id r8-20020a056830120800b00661a0a236efso2551198otp.4
-        for <iommu@lists.linux.dev>; Fri, 21 Oct 2022 14:00:29 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1C808F5D
+	for <iommu@lists.linux.dev>; Sat, 22 Oct 2022 00:59:54 +0000 (UTC)
+Received: by mail-qk1-f169.google.com with SMTP id m6so3120269qkm.4
+        for <iommu@lists.linux.dev>; Fri, 21 Oct 2022 17:59:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=zLWMEaldl7mwAfibkMQ7f9QF8cCYwWsptPAXuW24IaM=;
+        b=GQWsjBoGJUcqsoAAKfGshd5eISh/AnwduwW5D8aypRX7KEwXJ3w0D6o0OgT+l0RRXr
+         GAAgtG5CUkJGI8fPQTQJiXbSO5cvaYoHOB+pshLdvXMezLl4y2enQTFHnGTAywwHljKj
+         OjDsBu1AxLK1MUqf77CFy0sXBrlK8oRg11+QpsDkXshX+NBYr8M8Rodc3RNeeQexSBKN
+         SPKAwpNgsl9Z0k9aaWLtpH/1H88dGThafvAGPC76HOpA6F7wQnazqxMti59Z2E1W+uDB
+         0pl8XwQj8qtiHEu5mTxYuuyUgok5l4D1JvlxVzuXlkjIhSLp4pa2Tuq2XCwK+/n/+Spi
+         eG3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=date:subject:message-id:references:in-reply-to:cc:to:from
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Jp5O+v/VR9Uxc6a9bxAqi2fjatkKvL4KNFA/YE6ATM4=;
-        b=3P4s/Mg7qedgs4Z2eojXUvNpkbeanrBfPYSlGQC2hg1t/qUxMVDqfkqm7+HDn1ADgv
-         LrUCVuk8TEVj3Eb4ZdDLKhf8sV10dEmLQJXvrWkyYYohrr3VXXOtMoU4H4t0OHynTr4O
-         yr/a+z5Pkr9C0yMA333opQUefS/YfvYn303dBHqNSJ4p/QS3fDl0wnnFro+dd43G5buk
-         IpfcWYkfOY+t+3PF3XCFOnZHSoJF97mfX3o5tlWRvuO+XxJXnUM4KNtm8ZihXUhG+K/D
-         I8vxU1XlxuufGVeE3edP4LqueLtpU1Vpy3yZpQjIB5w4DV0ib6fPBoIic5jX65DCIcZi
-         /D7g==
-X-Gm-Message-State: ACrzQf1rS+fjkBlU8X18WF4OhEYU2iM5mmEFazUuszwt9Aw4uMTUXQc+
-	N8L/LPQIp2PJny/p6mcDhw==
-X-Google-Smtp-Source: AMsMyM7d4LB4l4q8le8x1CWXfY+uasId0M+kGCbSwVnvSjOkI5HsMNG3Eu8V1sORN0mJObk7QNOP2g==
-X-Received: by 2002:a05:6830:440c:b0:661:e2ad:c599 with SMTP id q12-20020a056830440c00b00661e2adc599mr10066800otv.103.1666386028428;
-        Fri, 21 Oct 2022 14:00:28 -0700 (PDT)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id e18-20020a056830201200b00661ad8741b4sm1579722otp.24.2022.10.21.14.00.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Oct 2022 14:00:27 -0700 (PDT)
-Received: (nullmailer pid 314789 invoked by uid 1000);
-	Fri, 21 Oct 2022 21:00:25 -0000
-From: Rob Herring <robh@kernel.org>
-To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc: Will Deacon <will@kernel.org>, linux-arm-msm@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, Rob Clark <robdclark@gmail.com>, Rob Herring <robh+dt@kernel.org>, Sai Prakash Ranjan <quic_saipraka@quicinc.com>, freedreno@lists.freedesktop.org, Vinod Koul <vkoul@kernel.org>, devicetree@vger.kernel.org, Bjorn Andersson <andersson@kernel.org>, linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, iommu@lists.linux.dev, Konrad Dybcio <konrad.dybcio@somainline.org>
-In-Reply-To: <20221021165534.2334329-3-dmitry.baryshkov@linaro.org>
-References: <20221021165534.2334329-1-dmitry.baryshkov@linaro.org> <20221021165534.2334329-3-dmitry.baryshkov@linaro.org>
-Message-Id: <166638584258.307638.14223403470296832950.robh@kernel.org>
-Subject: Re: [RFC PATCH 2/9] dt-bindings: arm-smmu: fix clocks/clock-names schema
-Date: Fri, 21 Oct 2022 16:00:25 -0500
+        bh=zLWMEaldl7mwAfibkMQ7f9QF8cCYwWsptPAXuW24IaM=;
+        b=IqRU7OHJ4f2jhRNZirrMAoZf/blTn3WogXrT8HRG/GYfE6L4mcY6flejcvFw98rdTh
+         1b3L9d6QrnL6IAgWG33Bf2PlTNBLd17hgciJpPTF7ErbTPb9h79CgXGYzG3yAjISvnWr
+         uayZGFmkgVBRIe9uR24vLKdVNrsV2Lpf2455H61ZEa2QlqtBqDx2B51VLmT/K0OnnKrR
+         iIvrFq5F0tsAfcdY/rq1TFglF4eZN3gNy0O8WmkRLKD6XAcMZ1JS7pImL1Ciw05Tar16
+         aEDaF+FAM23LBKcqeL5/zGHmR2BI6g30n9vCIuI4SoxQZRq8hzR09lcT/ZoNNxoKoS0b
+         jHPg==
+X-Gm-Message-State: ACrzQf2JjlQysSyi7P73NcQrLhU33WfYKJ0OA6npyY0xs10tIu3AJwXh
+	DSgt6LEeejN0o43W5nqGqFn7Sw==
+X-Google-Smtp-Source: AMsMyM5ePAEqT1CxZUNaI9lUZ9Iw9tWpO3mKZVYrsZfLArowIXhAP+1rILHZiBcFibxg3mzf8FbaaA==
+X-Received: by 2002:a37:b86:0:b0:6ea:3ec9:7994 with SMTP id 128-20020a370b86000000b006ea3ec97994mr15758286qkl.199.1666400393864;
+        Fri, 21 Oct 2022 17:59:53 -0700 (PDT)
+Received: from [192.168.10.124] (pool-72-83-177-149.washdc.east.verizon.net. [72.83.177.149])
+        by smtp.gmail.com with ESMTPSA id l20-20020a05620a28d400b006b8e8c657ccsm10801547qkp.117.2022.10.21.17.59.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 21 Oct 2022 17:59:53 -0700 (PDT)
+Message-ID: <a36ca97e-5e64-54a8-a571-e9b7f6da76e5@linaro.org>
+Date: Fri, 21 Oct 2022 20:59:50 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [RFC PATCH 1/9] dt-bindings: arm-smmu: Add missing Qualcomm SMMU
+ compatibles
+Content-Language: en-US
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konrad.dybcio@somainline.org>, Rob Clark <robdclark@gmail.com>
+Cc: Vinod Koul <vkoul@kernel.org>,
+ Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+ linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+ iommu@lists.linux.dev, devicetree@vger.kernel.org,
+ freedreno@lists.freedesktop.org
+References: <20221021165534.2334329-1-dmitry.baryshkov@linaro.org>
+ <20221021165534.2334329-2-dmitry.baryshkov@linaro.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221021165534.2334329-2-dmitry.baryshkov@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Fri, 21 Oct 2022 19:55:27 +0300, Dmitry Baryshkov wrote:
-> Rework clocks/clock-names properties schema to property describe
-> possible usage cases.
+On 21/10/2022 12:55, Dmitry Baryshkov wrote:
+> Add missing compatibles used for Adreno SMMU on sc7280 and sm8450
+> platforms and for the Qualcomm v2 SMMU used on SDM630 platform.
 > 
 > Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 > ---
->  .../devicetree/bindings/iommu/arm,smmu.yaml   | 129 ++++++++++++++++--
->  1 file changed, 121 insertions(+), 8 deletions(-)
+>  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
 > 
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> index 9066e6df1ba1..34ee33a62ba5 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> @@ -28,6 +28,7 @@ properties:
+>            - enum:
+>                - qcom,msm8996-smmu-v2
+>                - qcom,msm8998-smmu-v2
+> +              - qcom,sdm630-smmu-v2
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+So qcom,adreno-smmu is not compatible with Adreno? See below.
 
-yamllint warnings/errors:
+>            - const: qcom,smmu-v2
+>  
+>        - description: Qcom SoCs implementing "arm,mmu-500"
+> @@ -48,10 +49,20 @@ properties:
+>                - qcom,sm8350-smmu-500
+>                - qcom,sm8450-smmu-500
+>            - const: arm,mmu-500
+> +
+> +      - description: Qcom Adreno GPUs implementing "arm,smmu-500"
+> +        items:
+> +          - enum:
+> +              - qcom,sc7280-smmu-500
+> +              - qcom,sm8250-smmu-500
+> +          - const: qcom,adreno-smmu
+> +          - const: arm,mmu-500
+>        - description: Qcom Adreno GPUs implementing "arm,smmu-v2"
+>          items:
+>            - enum:
+> +              - qcom,msm8996-smmu-v2
+>                - qcom,sc7180-smmu-v2
+> +              - qcom,sdm630-smmu-v2
 
-dtschema/dtc warnings/errors:
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iommu/arm,smmu.example.dtb: iommu@d00000: 'anyOf' conditional failed, one must be fixed:
-	['bus', 'iface'] is too long
-	['bus', 'iface'] is too short
-	'iface' was expected
-	'iface-mm' was expected
-	'mem' was expected
-	'iface-smmu' was expected
-	[[4294967295, 123], [4294967295, 124]] is too long
-	[[4294967295, 123], [4294967295, 124]] is too short
-	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+This does not look correct. The same compatible should not be present in
+two different setups.
 
-doc reference errors (make refcheckdocs):
+If qcom,msm8996-smmu-v2 is compatible with qcom,adreno-smmu, then your
+first hunk is not correct.
 
-See https://patchwork.ozlabs.org/patch/
+>                - qcom,sdm845-smmu-v2
+>            - const: qcom,adreno-smmu
+>            - const: qcom,smmu-v2
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+Best regards,
+Krzysztof
 
