@@ -1,150 +1,66 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83C233D6B
-	for <iommu@lists.linux.dev>; Mon, 24 Oct 2022 15:22:38 +0000 (UTC)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29OEil0V002495;
-	Mon, 24 Oct 2022 15:22:31 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=ywjlx7En7hrOI9jtp8swXThSGQ7BEBtIXpHsTRDCUho=;
- b=bYAj6xGM4ZHkEhI8eVYt/TRNlnXGJgs1ptRDMugHjtDxNZkllU8IPkeZHzVtFYUSHeRW
- jCQWnUc5jGSnehWKEQG1SgmoBXf2vdt2apTvb7n+b8Ul48CQ1gKFSNVg7NencYYzT3+P
- PDNjA1eocGFRf9eMhiuy18Q16ZiC/PgtcpJMa7qPaO3MlRju/mYQNBiPwyTxRjAMGeXg
- OEZvikTcxNlhdCLPzQtEmweaePyyaaHlRuW1Mr7CFaoWAoCjz56tz4rkJiqwxg/dT4Uj
- DaEQkBcMhInz28tEJDQ9u40zIjZzJhcwXychRaRfK8zsUwygnlNVzh6JayNWglwBdNbp ng== 
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3kdvqy1n3f-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 24 Oct 2022 15:22:31 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-	by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29OFK0JD017125;
-	Mon, 24 Oct 2022 15:22:29 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-	by ppma05fra.de.ibm.com with ESMTP id 3kc8592ng1-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 24 Oct 2022 15:22:29 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-	by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29OFMPa53932822
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 24 Oct 2022 15:22:25 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id B8675A4040;
-	Mon, 24 Oct 2022 15:22:25 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id E339DA404D;
-	Mon, 24 Oct 2022 15:22:24 +0000 (GMT)
-Received: from sig-9-145-54-55.uk.ibm.com (unknown [9.145.54.55])
-	by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-	Mon, 24 Oct 2022 15:22:24 +0000 (GMT)
-Message-ID: <cef734b9f9b33380c1bbff40b56bb67b3de29341.camel@linux.ibm.com>
-Subject: Re: [PATCH 3/5] iommu/s390: Use RCU to allow concurrent domain_list
- iteration
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev,
-        Joerg
- Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy
- <robin.murphy@arm.com>,
-        Gerd Bayer <gbayer@linux.ibm.com>,
-        Pierre Morel
- <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, linux-kernel@vger.kernel.org
-Date: Mon, 24 Oct 2022 17:22:24 +0200
-In-Reply-To: <Y1K1AqVWEyY0/Uqy@nvidia.com>
-References: <20221018145132.998866-1-schnelle@linux.ibm.com>
-	 <20221018145132.998866-4-schnelle@linux.ibm.com>
-	 <Y07Dz/NROAMI0Hku@nvidia.com>
-	 <8e268ab5e0dadf86be5fd7ffaa9debb76cea67f3.camel@linux.ibm.com>
-	 <Y0/lMCQ8oeXJ2HTg@nvidia.com>
-	 <f3551bb461b3ef3cfc1a0c644093816be1835b3f.camel@linux.ibm.com>
-	 <Y1ErcEe82yjJI+ET@nvidia.com>
-	 <68d91d7a5aadbd46dc34470eccd6b86a84c9e47b.camel@linux.ibm.com>
-	 <Y1KgX8EwH8T+FgWC@nvidia.com>
-	 <89a748fb5caee8be5d91806aa5dfd131e92d5d82.camel@linux.ibm.com>
-	 <Y1K1AqVWEyY0/Uqy@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C89633D6B
+	for <iommu@lists.linux.dev>; Mon, 24 Oct 2022 15:37:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=smrlip5a13obHQefsrQCDEQn5FVgi9wQ3jfaysBd41A=; b=NsKy3KADUVtTLDLcow8PjYW4Wo
+	u6xSIAOYezInwqNo4+VT4wXNh9YuZGynjlYH9HyRLsxjXAu7kOE3YYpM5vo2KK5Pd+utDaLWiQbYC
+	HRXXEhnWxE4UH/sbLmRBRQr0Xt9ABDoMTGEbbr4YxdTsO1AI5D+O2/MoLsnrLCzvQ/823wQayvkRq
+	FhklZ7JXqNnbcsXc9bH5iJMN03RBwLg5kZ7KeA8EJBlppNQ3vcpgBt2Jj3NjIoakO14Nx+KJKtJ9m
+	GrXYA5oVoFe3jLO7ovLun05d0vuXmlnCFUL7TNGWThrId8XaRc6F1+Ve1ZxMF/YkvUsUQ3HPSO1r2
+	lA9+dfiQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1omzUq-0026gk-I2; Mon, 24 Oct 2022 15:36:12 +0000
+Date: Mon, 24 Oct 2022 08:36:12 -0700
+From: Christoph Hellwig <hch@infradead.org>
+To: Michael Kelley <mikelley@microsoft.com>
+Cc: hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
+	sthemmin@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
+	luto@kernel.org, peterz@infradead.org, davem@davemloft.net,
+	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+	lpieralisi@kernel.org, robh@kernel.org, kw@linux.com,
+	bhelgaas@google.com, arnd@arndb.de, hch@infradead.org,
+	m.szyprowski@samsung.com, robin.murphy@arm.com,
+	thomas.lendacky@amd.com, brijesh.singh@amd.com, tglx@linutronix.de,
+	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+	Tianyu.Lan@microsoft.com, kirill.shutemov@linux.intel.com,
+	sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
+	isaku.yamahata@intel.com, dan.j.williams@intel.com,
+	jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com,
+	x86@kernel.org, linux-kernel@vger.kernel.org,
+	linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: Re: [PATCH 06/12] swiotlb: Remove bounce buffer remapping for Hyper-V
+Message-ID: <Y1aw7L5IdpjFpQvw@infradead.org>
+References: <1666288635-72591-1-git-send-email-mikelley@microsoft.com>
+ <1666288635-72591-7-git-send-email-mikelley@microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: Lw1Hu8Aw0zgdGtMDBxJc8w4O9v6C398v
-X-Proofpoint-GUID: Lw1Hu8Aw0zgdGtMDBxJc8w4O9v6C398v
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-10-24_04,2022-10-21_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- mlxlogscore=943 clxscore=1015 phishscore=0 mlxscore=0 impostorscore=0
- priorityscore=1501 malwarescore=0 adultscore=0 spamscore=0 bulkscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2209130000 definitions=main-2210240092
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1666288635-72591-7-git-send-email-mikelley@microsoft.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-On Fri, 2022-10-21 at 12:04 -0300, Jason Gunthorpe wrote:
-> On Fri, Oct 21, 2022 at 05:01:32PM +0200, Niklas Schnelle wrote:
-> > On Fri, 2022-10-21 at 10:36 -0300, Jason Gunthorpe wrote:
-> > > On Fri, Oct 21, 2022 at 02:08:02PM +0200, Niklas Schnelle wrote:
-> > > > On Thu, 2022-10-20 at 08:05 -0300, Jason Gunthorpe wrote:
-> > > > > On Thu, Oct 20, 2022 at 10:51:10AM +0200, Niklas Schnelle wrote:
-> > > > > 
-> > > > > > Ok that makes sense thanks for the explanation. So yes my assessment is
-> > > > > > still that in this situation the IOTLB flush is architected to return
-> > > > > > an error that we can ignore. Not the most elegant I admit but at least
-> > > > > > it's simple. Alternatively I guess we could use call_rcu() to do the
-> > > > > > zpci_unregister_ioat() but I'm not sure how to then make sure that a
-> > > > > > subsequent zpci_register_ioat() only happens after that without adding
-> > > > > > too much more logic.
-> > > > > 
-> > > > > This won't work either as the domain could have been freed before the
-> > > > > call_rcu() happens, the domain needs to be detached synchronously
-> > > > > 
-> > > > > Jason
-> > > > 
-> > > > Yeah right, that is basically the same issue I was thinking of for a
-> > > > subsequent zpci_register_ioat(). What about the obvious one. Just call
-> > > > synchronize_rcu() before zpci_unregister_ioat()?
-> > > 
-> > > Ah, it can be done, but be prepared to wait >> 1s for synchronize_rcu
-> > > to complete in some cases.
-> > > 
-> > > What you have seems like it could be OK, just deal with the ugly racy
-> > > failure
-> > > 
-> > > Jason
-> > 
-> > I'd tend to go with synchronize_rcu(). It won't leave us with spurious
-> > error logs for the failed IOTLB flushes and as you said one expects
-> > detach to be synchronous. I don't think waiting in it will be a
-> > problem. But this is definitely something you're more of an expert on
-> > so I'll trust your judgement. Looking at other callers of
-> > synchronize_rcu() quite a few of them look to be in similar
-> > detach/release kind of situations though not sure how frequent and
-> > performance critical IOMMU domain detaching is in comparison.
+On Thu, Oct 20, 2022 at 10:57:09AM -0700, Michael Kelley wrote:
+> With changes to how Hyper-V guest VMs flip memory between private
+> (encrypted) and shared (decrypted), creating a second kernel virtual
+> mapping for shared memory is no longer necessary. Everything needed
+> for the transition to shared is handled by set_memory_decrypted().
 > 
-> I would not do it on domain detaching, that is something triggered by
-> userspace through VFIO and it could theoritically happen alot, eg in
-> vIOMMU scenarios.
+> As such, remove swiotlb_unencrypted_base and the associated
+> code.
 > 
-> Jason
+> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
 
-Thanks for the explanation, still would like to grok this a bit more if
-you don't mind. If I do read things correctly synchronize_rcu() should
-run in the conext of the VFIO ioctl in this case and shouldn't block
-anything else in the kernel, correct? At least that's how I understand
-the synchronize_rcu() comments and the fact that e.g.
-net/vmw_vsock/virtio_transport.c:virtio_vsock_remove() also does a
-synchronize_rcu() and can be triggered from user-space too.
+I'm more than glad that we can kill this code:
 
-So we're
-more worried about user-space getting slowed down rather than a Denial-
-of-Service against other kernel tasks.
-
+Acked-by: Christoph Hellwig <hch@lst.de>
