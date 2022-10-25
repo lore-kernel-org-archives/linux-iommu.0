@@ -1,83 +1,121 @@
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+Received: from mail.wantstofly.org (hmm.wantstofly.org [213.239.204.108])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 313FBA23
-	for <iommu@lists.linux.dev>; Tue, 25 Oct 2022 06:39:14 +0000 (UTC)
-X-UUID: 3cdc034a11d34d0193bbaedc53a61c63-20221025
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=tQobf7xDtt3s0PCmRp7MPfET49Bi1DCJ8ajNsUuFyIs=;
-	b=kj3Mq+CiCePf6Xqb1xJG+BIJ7YMsxNAYxlpyQslxZEcpLMeZUz71bRTWqwyw6kw5GOCalTMGcpM95t0aJbaHS1e79AKLMkNsEm/Wif60JMo3MQfnBOBu/pv6HaeGe/GoUMWcc0P/xqcFLmZLO7NO0tqsXVIu+Iw3o387GrMun7o=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.12,REQID:9a903fc1-5aa1-429f-98fd-044b19337204,IP:0,U
-	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-	release,TS:0
-X-CID-META: VersionHash:62cd327,CLOUDID:1117026d-89d3-4bfa-baad-dc632a24bca3,B
-	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
-	RL:1,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 3cdc034a11d34d0193bbaedc53a61c63-20221025
-Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw02.mediatek.com
-	(envelope-from <yong.wu@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 1452619724; Tue, 25 Oct 2022 14:39:02 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Tue, 25 Oct 2022 14:39:01 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n1.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
- Transport; Tue, 25 Oct 2022 14:39:00 +0800
-Message-ID: <514697c381172b4baa011cc68ae8093c7517e0b2.camel@mediatek.com>
-Subject: Re: [PATCH v5 0/3] iommu/mediatek: Add mt8365 iommu support
-From: Yong Wu <yong.wu@mediatek.com>
-To: Alexandre Mergnat <amergnat@baylibre.com>, Robin Murphy
-	<robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>, Will Deacon <will@kernel.org>, "Rob
- Herring" <robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>
-CC: <linux-kernel@vger.kernel.org>, Amjad Ouled-Ameur
-	<aouledameur@baylibre.com>, <devicetree@vger.kernel.org>, Fabien Parent
-	<fparent@baylibre.com>, <linux-arm-kernel@lists.infradead.org>, "Markus
- Schneider-Pargmann" <msp@baylibre.com>, <linux-mediatek@lists.infradead.org>,
-	<iommu@lists.linux.dev>, AngeloGioacchino Del Regno
-	<angelogioacchino.delregno@collabora.com>, Krzysztof Kozlowski
-	<krzysztof.kozlowski@linaro.org>, <mingyuan.ma@mediatek.com>,
-	<yf.wang@mediatek.com>, <libo.kang@mediatek.com>, <anan.sun@mediatek.com>
-Date: Tue, 25 Oct 2022 14:39:00 +0800
-In-Reply-To: <20221001-iommu-support-v5-0-92cdbb83bbb8@baylibre.com>
-References: <20221001-iommu-support-v5-0-92cdbb83bbb8@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A167D7B
+	for <iommu@lists.linux.dev>; Tue, 25 Oct 2022 08:16:57 +0000 (UTC)
+Received: by mail.wantstofly.org (Postfix, from userid 1000)
+	id A83C97F527; Tue, 25 Oct 2022 11:08:13 +0300 (EEST)
+Date: Tue, 25 Oct 2022 11:08:13 +0300
+From: Lennert Buytenhek <buytenh@wantstofly.org>
+To: David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH,RFC] iommu/vt-d: Convert dmar_fault IRQ to a threaded IRQ
+Message-ID: <Y1eZbXKdJDoS8loC@wantstofly.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK: N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On Fri, 2022-10-21 at 15:42 +0200, Alexandre Mergnat wrote:
-> Hi,
-> 
-> This series contains patches related to the support of mt8365 iommu.
-> Thanks for your feedback so far.
-> 
-> Regards,
-> Alex
-> 
-> Changes in
-> v5:                                                                  
-> - Fix name file in
-> mediatek,iommu.yaml                                          
-> - Rename defines to be more
-> consistent                                          
-> - Rework INT_ID_PORT_WIDTH_6
-> check                                              
-> - Link to v4: 
-> https://lore.kernel.org/r/20221001-iommu-support-v4-0-f1e13438dfd2@baylibre.com
+Under a high enough I/O page fault load, the dmar_fault hardirq handler
+can end up starving other tasks that wanted to run on the CPU that the
+IRQ is being routed to.  On an i7-6700 CPU this seems to happen at
+around 2.5 million I/O page faults per second, and at a fraction of
+that rate on some of the lower-end CPUs that we use.
 
+An I/O page fault rate of 2.5 million per second may seem like a very
+high number, but when we get an I/O page fault for every cache line
+touched by a DMA operation, this I/O page fault rate can be the result
+of a confused PCIe device DMAing to RAM at 2.5 * 64 = 160 MB/sec, which
+is not an unlikely rate to be DMAing things to RAM at.  And, in fact,
+when we do see PCIe devices getting confused like this, this sort of
+I/O page fault rate is not uncommon.
 
-For this series,
+A peripheral device continuously DMAing to RAM at 160 MB/s is
+inarguably a bug, either in the kernel driver for the device or in the
+firmware for the device, and should be fixed there, but it's the sort
+of bug that iommu/vt-d could be handling better than it currently does,
+and there is a fairly simple way to achieve that.
 
-Reviewed-by: Yong Wu <yong.wu@mediatek.com>
+This patch changes the dmar_fault IRQ handler to be a threaded IRQ
+handler.  This is a pretty minimal code change, and comes with the
+advantage that Intel IOMMU I/O page fault handling work is now subject
+to RT throttling, which allows it to be kept under control using the
+sched_rt_period_us / sched_rt_runtime_us parameters.
 
+iommu/amd already uses a threaded IRQ handler for its I/O page fault
+reporting, and so it already has this advantage.
 
+When IRQ remapping is enabled, iommu/vt-d will try to set up its
+dmar_fault IRQ handler from start_kernel() -> x86_late_time_init()
+-> apic_intr_mode_init() -> apic_bsp_setup() ->
+irq_remap_enable_fault_handling() -> enable_drhd_fault_handling(),
+which happens before kthreadd is started, and trying to set up a
+threaded IRQ handler this early on will oops.  However, there
+doesn't seem to be a reason why iommu/vt-d needs to set up its fault
+reporting IRQ handler this early, and if we remove the IRQ setup code
+from enable_drhd_fault_handling(), the IRQ will be registered instead
+from pci_iommu_init() -> intel_iommu_init() -> init_dmars(), which
+seems to work just fine.
+
+Suggested-by: Scarlett Gourley <scarlett@arista.com>
+Suggested-by: James Sewart <jamessewart@arista.com>
+Suggested-by: Jack O'Sullivan <jack@arista.com>
+Signed-off-by: Lennert Buytenhek <buytenh@arista.com>
+---
+ drivers/iommu/intel/dmar.c | 27 ++-------------------------
+ 1 file changed, 2 insertions(+), 25 deletions(-)
+
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index 5a8f780e7ffd..d0871fe9d04d 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -2043,7 +2043,8 @@ int dmar_set_interrupt(struct intel_iommu *iommu)
+ 		return -EINVAL;
+ 	}
+ 
+-	ret = request_irq(irq, dmar_fault, IRQF_NO_THREAD, iommu->name, iommu);
++	ret = request_threaded_irq(irq, NULL, dmar_fault, IRQF_ONESHOT,
++				   iommu->name, iommu);
+ 	if (ret)
+ 		pr_err("Can't request irq\n");
+ 	return ret;
+@@ -2051,30 +2052,6 @@ int dmar_set_interrupt(struct intel_iommu *iommu)
+ 
+ int __init enable_drhd_fault_handling(void)
+ {
+-	struct dmar_drhd_unit *drhd;
+-	struct intel_iommu *iommu;
+-
+-	/*
+-	 * Enable fault control interrupt.
+-	 */
+-	for_each_iommu(iommu, drhd) {
+-		u32 fault_status;
+-		int ret = dmar_set_interrupt(iommu);
+-
+-		if (ret) {
+-			pr_err("DRHD %Lx: failed to enable fault, interrupt, ret %d\n",
+-			       (unsigned long long)drhd->reg_base_addr, ret);
+-			return -1;
+-		}
+-
+-		/*
+-		 * Clear any previous faults.
+-		 */
+-		dmar_fault(iommu->irq, iommu);
+-		fault_status = readl(iommu->reg + DMAR_FSTS_REG);
+-		writel(fault_status, iommu->reg + DMAR_FSTS_REG);
+-	}
+-
+ 	return 0;
+ }
+ 
+-- 
+2.37.3
