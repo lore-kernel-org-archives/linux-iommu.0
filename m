@@ -1,121 +1,125 @@
-Received: from mail.wantstofly.org (hmm.wantstofly.org [213.239.204.108])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2049.outbound.protection.outlook.com [40.107.93.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A167D7B
-	for <iommu@lists.linux.dev>; Tue, 25 Oct 2022 08:16:57 +0000 (UTC)
-Received: by mail.wantstofly.org (Postfix, from userid 1000)
-	id A83C97F527; Tue, 25 Oct 2022 11:08:13 +0300 (EEST)
-Date: Tue, 25 Oct 2022 11:08:13 +0300
-From: Lennert Buytenhek <buytenh@wantstofly.org>
-To: David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH,RFC] iommu/vt-d: Convert dmar_fault IRQ to a threaded IRQ
-Message-ID: <Y1eZbXKdJDoS8loC@wantstofly.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A607EBE
+	for <iommu@lists.linux.dev>; Tue, 25 Oct 2022 10:57:02 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ldSiCOhBb4ysVQQypNorkVmYy0ECdSq6OAwtKuyRkswgD8j0iEJdPyliQI1C2RztnJaDsFS7sbpmwBHzjsCmHnjF0zQ3Kox+5MkW0o7jDZYpfcLHH83Y/OH7UyzZuMbuzUbygzJf1ugJyWj1Gt8TFBZUfbi0KzGLiUD41dBy36Nf6i9AvPIMCacsnITt2CIxKriNcGc2zDeid9q/TRjfAz6CsAgfflAi5zh6j9guP3kSQF5ObU+PlT6+fPbPOM4jTZEKGCMJoF+G9mP3ja4CTkd7Kw7dl4XxMg7bv3CtCl2YcLi3H5jsiS5YvdwqUCp9tLTyj5pRYZ0V1UGX2NR97Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=k2HoZJ95f79/Ti7l/IRjiWScnRcOovQ7e7ZQ4jCNxuo=;
+ b=E2CRr7G4AiK0d3PoFHN7+PbrsfxLg3c8NOC24T+glLSDtQOW4hecWe6oXxe1oDwp2Tsmq4vzDS4gN+czrExfGEFZ8Y308lZs3b7hhCnZkB41o/cYzU692VxRoXJkAvbmXvpvgNkdUti+Fc50Z6HEwj5WRBpjLjZM1+AvW5gED8bwUmCNX5mdpM3gjCe4NFbb+kAR8Wx9kc579rXqcm0SP7aA6w2QT8PvgLogj70vgYe/a8j+8ja0mYmaP69oIdG8CiNRv2/eInk/5hiTKzB5WfYgDTuDOJuSDyVol7CL/e5f/d/1zIv9D3+h4cHlKQ2rg3+cJx1Nz8JEeJTIB6bFtg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=k2HoZJ95f79/Ti7l/IRjiWScnRcOovQ7e7ZQ4jCNxuo=;
+ b=haxdK2frd6v2gcxAqW/AaVbyxXEaHOaOJ98Pxu/VlMJ9JYyGK4d3xFPBS1pUs8vvCzPvtOU7ZwOkrEId5AoOhoOfsLvnj26fE048BdRv8zEa6zIwcAwzXtXEv7D0lcGPimDdImaacUKeF03MQ8RMUoRujgO9hkkPksrb+yqwiFg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ CY5PR12MB6346.namprd12.prod.outlook.com (2603:10b6:930:21::12) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5746.23; Tue, 25 Oct 2022 10:56:59 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::580c:51f2:b715:17cf]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::580c:51f2:b715:17cf%5]) with mapi id 15.20.5723.034; Tue, 25 Oct 2022
+ 10:56:59 +0000
+Message-ID: <ca0e6dcd-7853-06a9-11b7-0deeb21e42e6@amd.com>
+Date: Tue, 25 Oct 2022 16:26:47 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH] iommu: remove variable cnt
+Content-Language: en-US
+To: Colin Ian King <colin.i.king@gmail.com>, Joerg Roedel <joro@8bytes.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ iommu@lists.linux.dev
+Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20221024134301.2158939-1-colin.i.king@gmail.com>
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <20221024134301.2158939-1-colin.i.king@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN0PR01CA0017.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:4f::22) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|CY5PR12MB6346:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0f13fce6-4496-4d6f-8e1c-08dab677a38b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	oNn6ma24OWdyYN8vM3xu+4tZl1CExXsNXAf+terGBTvuu1hDtTgRKgeGHcx+mnKUTOU61O3ruKaP350fceD+JGab50uadulSIULHN/oocWCEYXwR+sb4HEF+6fmPwO/DenCjq/dOorj7UqUlxRvu0Rzd3pgOJjBU+XrH8L2yBqBm8OT2cy/EqbK46EGBiDjm/pcFrfTsq0ppKDwedpBsF47ceMaPVXXTuuUhlopM9tBq/os8tUPg4tVYlr5jTn7udaFUET2sLK4gRPFHfW3puo5hjvHoRYXR5oEQk7q7LiVSU2yFFxTrtoWXVyBYsfCB+6Q82wNFAtzD5ERC8CEELl9oXZwKYb/2A5cIkGPJPFAFCLzYJpDZBQxwo/CMRAc61sleIV6jE+VySndbi8CKjLU5mLWWcf/bD30ayL8a2eZh7PoTG8iwf8S+1suWxHYJu50/KOG6CDI5Fu8pvN/MGxjRxHI2XDh6bPEZE2wNGkGlWBw95cJcKcWDwltqdQryEJHWTVMDLO9PBbt77gbe4GOdSFUM26a68j7xTa+BYmH1R8vaL/qHKPFpwkbMOBk7NjMljh6amzfwZjsvXaTUsknXmUkXKcbKAHKsW9TjlmW01qdY2TRbbiYXKlsQv1Ttj3BJhhGTUFlPvL0WRt/B8PE4HdYFnaRJmczXr8rWcVd5bm7ND5+7WN35+oGIHzigcqz4FpazK996LDs4dgsKZdQaZyio2Xht/jNZeovym4krngxiWVm66lTACRpqEZxJJo0RD/ZSoChC6mNykjMdXbjcrZ99x8WnNIdRiroLuiY=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(136003)(396003)(366004)(376002)(346002)(451199015)(36756003)(558084003)(31686004)(38100700002)(86362001)(44832011)(2906002)(31696002)(2616005)(186003)(53546011)(6666004)(316002)(5660300002)(6506007)(6512007)(8676002)(26005)(110136005)(8936002)(66476007)(66946007)(66556008)(4326008)(41300700001)(6486002)(478600001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?SlpHTWs2UkdjVnFwOEVhZWE3TjByNHNxVGFDQjkrUjlydnF2enIvRlptc3lV?=
+ =?utf-8?B?Yi9SSjRVVTFIeG43YXkxd3UzOGVUdUtMTk1VMm95Rm1CTjFscnpmenlTd3ZO?=
+ =?utf-8?B?V1V2SDZtMTZDUGpxVFQyZGV5YkVmdWgxZFY1ZkhyOE8xeW5jUFlhME0wNzBu?=
+ =?utf-8?B?ZndnQXZHaVplUnY1VXgzOTlFZDVMbjdwU3FlR2VFdUMyRVN3SzJhS3hyRlZK?=
+ =?utf-8?B?WG1vOTRWM1pSY0lVdCtHWkV6YmcvSTh2YmViMTFwYmJncnV3RTBEdW4zUUt4?=
+ =?utf-8?B?NktXWFpTamRlWFNTR0JSWWM3bTJPQ0N5NkVzdmR6Z3F0aVczc0pZS0lZRjdL?=
+ =?utf-8?B?K1gzQVU5ZkhrTVhYQnZ6MVJDb2gxVkhhOGN0dnFPZ0RLa0FUSkpaRVpGZU12?=
+ =?utf-8?B?dDNoaEF4RmN0bndpSG5iSHpMdGoyTlBUajNjWmlwZDJUK1BMNGFseVZCbDIw?=
+ =?utf-8?B?dkxwaEJtNWlrY1I5U1VlZjh4NVRCVWJiZktBekRiL2hhSHNPNzJvclh5UWxN?=
+ =?utf-8?B?Ym1EcTZkZktPVTJxNE14ZXZ2M0t6VUplTDlWSTB1N1k2V2hLYkIxb3lKYW5S?=
+ =?utf-8?B?N0tvUnZHalJGcittTUZSVWNtTXBhblVSU2lmeWRVbFR2Y3l3ckxEenZkUlN6?=
+ =?utf-8?B?U2V1UzAybXIwQTA2azJUaTk2NkJnN3phaVRJOEFkVE5ac0FhK1VWYmdyKyt2?=
+ =?utf-8?B?MmZ2YTZSRms4d0pBdnlKZUI2OFRFRkRGZWpZUGd5VlZJVEZ1em43dUUyZG93?=
+ =?utf-8?B?VDJGcjV4ZklWdTRSZG5aSzlwSHpCekRKWGl2V281WWI1dzY1ay82NGpybTNG?=
+ =?utf-8?B?RWZybXhITnpZd0kzNzVYVjhmNFlZUitkUSt3eERmZHRBaWdSNVVxVGpaWDll?=
+ =?utf-8?B?TiswZHA2Y1JhbnRycGxPd2JEWEtrQ3dvdG5UUTkyRXQrRGo1UVVoS0dSQWty?=
+ =?utf-8?B?b1o1UVpDam1XUlJ2bXU4ZU1BOUY1T2hwRjhVZWNRVWZGMnNMdGRTTDlkWWxC?=
+ =?utf-8?B?UmMvOUhhUW1nZDJJd1p4N2RTMm9oemFwY1ZtN2VtZFVqdWFDQmNoRVVSNVM2?=
+ =?utf-8?B?RVIyb0djOVNhUUNUL3lhdGE2djJtNUxIZjVhekhBcjNsTjRvcjRZWHB6SFR4?=
+ =?utf-8?B?dU9zVGVCM1JFaVl6TEtJYmcyTU5oQzh6SHJwYWl4WUxScWVjajJYSWtEUnEz?=
+ =?utf-8?B?elZvMW1WUGZaVXZkTGpqVHUrNEVYRzR0TW9HUmgxaTNIUnNXT3Y5WG1LdStM?=
+ =?utf-8?B?T2I2Q3gybVFiQTlwSXc2aVZ3YmJnMWhoc3JZQmp6eGZ3a1laM3ljR1N0QjJC?=
+ =?utf-8?B?eTg4NHdrbHEya0YyQWxSMUlFL2k5ZENUK0ZsVkE3ZzRqRlhBaUNYM2FLQXJs?=
+ =?utf-8?B?OU5mTVk0dDh2K0w0OGlEYkl2ODlSTHpLMDZHRmpqOWd3VVZjcWp6a242ZHEy?=
+ =?utf-8?B?MVlLQSsvM3NMSE5JZUVsTko3QXpiSTRxMC90YVdRVmNMazc4aFg5dHVSVEhN?=
+ =?utf-8?B?Nll2UlB3aFhiRWJWaE0zRlZJeVJFV3FwS0dSVUR2Tmx2VWg1ZHNpNWhHWFNL?=
+ =?utf-8?B?WnNHWG5hQzJlUUFzdmRKek9SRVNWTmtxa0tjUWJScjVpREFGTXEzR0tDVzBh?=
+ =?utf-8?B?bVNaeDdJMkpWamJZU21kM2hCcWZCY2tqemNRelFRNUJPaFU0UjZNeXdtVmw0?=
+ =?utf-8?B?SVZ3enZHTTJVanAycHo0M0s2OUdGcFd4TkJhQ1ZlaHF3MUwreWNSWGtnRjNN?=
+ =?utf-8?B?Yi9DeVNSekI1NU02TGc4UHVQeXBMam5SakhVcUdsUWwwc29pWGNpNERUd05X?=
+ =?utf-8?B?TDBveXFpRXVrbEsrQW1vaXByMVExL0JGSkFNY090L003Y0hxYitDY2pUMWwz?=
+ =?utf-8?B?VjU5T0crdWcyY3N6Z3dzWnVoSkV2YkI3ZjRmN005VmFKUndFK1lPaHkza2M3?=
+ =?utf-8?B?bTJQaUlBeTc1NTk3blRpZG5JcjhzUTZVVmdEOEU4bUFrWlJJSE8yWkFrSGVI?=
+ =?utf-8?B?bnkzZFZ4cy9aeFQ0VWM2b0p4Y3MwazRaQUJacllpeHEzbkNLdjg1OXcwYkto?=
+ =?utf-8?B?dXMxd01mWDZheEk4MjlkZHFPRkZJNVc5bTF3ZjFKbnJRV2RVeHkzNk50Z0pj?=
+ =?utf-8?Q?9imwATxtMFYqvv/VbyPieNGE+?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0f13fce6-4496-4d6f-8e1c-08dab677a38b
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Oct 2022 10:56:59.1447
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NmJVCPV7b7FxTA5feiB77bmC/AZBwArmZK2tV/+rXJhHIwiqtCKruSc61/83kPiSoKUgOlck1EAsh2BCR0plJA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6346
 
-Under a high enough I/O page fault load, the dmar_fault hardirq handler
-can end up starving other tasks that wanted to run on the CPU that the
-IRQ is being routed to.  On an i7-6700 CPU this seems to happen at
-around 2.5 million I/O page faults per second, and at a fraction of
-that rate on some of the lower-end CPUs that we use.
+On 10/24/2022 7:13 PM, Colin Ian King wrote:
+> Variable cnt is just being incremented and it's never used
+> anywhere else. The variable and the increment are redundant so
+> remove it.
+> 
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 
-An I/O page fault rate of 2.5 million per second may seem like a very
-high number, but when we get an I/O page fault for every cache line
-touched by a DMA operation, this I/O page fault rate can be the result
-of a confused PCIe device DMAing to RAM at 2.5 * 64 = 160 MB/sec, which
-is not an unlikely rate to be DMAing things to RAM at.  And, in fact,
-when we do see PCIe devices getting confused like this, this sort of
-I/O page fault rate is not uncommon.
+Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
 
-A peripheral device continuously DMAing to RAM at 160 MB/s is
-inarguably a bug, either in the kernel driver for the device or in the
-firmware for the device, and should be fixed there, but it's the sort
-of bug that iommu/vt-d could be handling better than it currently does,
-and there is a fairly simple way to achieve that.
+-Vasant
 
-This patch changes the dmar_fault IRQ handler to be a threaded IRQ
-handler.  This is a pretty minimal code change, and comes with the
-advantage that Intel IOMMU I/O page fault handling work is now subject
-to RT throttling, which allows it to be kept under control using the
-sched_rt_period_us / sched_rt_runtime_us parameters.
-
-iommu/amd already uses a threaded IRQ handler for its I/O page fault
-reporting, and so it already has this advantage.
-
-When IRQ remapping is enabled, iommu/vt-d will try to set up its
-dmar_fault IRQ handler from start_kernel() -> x86_late_time_init()
--> apic_intr_mode_init() -> apic_bsp_setup() ->
-irq_remap_enable_fault_handling() -> enable_drhd_fault_handling(),
-which happens before kthreadd is started, and trying to set up a
-threaded IRQ handler this early on will oops.  However, there
-doesn't seem to be a reason why iommu/vt-d needs to set up its fault
-reporting IRQ handler this early, and if we remove the IRQ setup code
-from enable_drhd_fault_handling(), the IRQ will be registered instead
-from pci_iommu_init() -> intel_iommu_init() -> init_dmars(), which
-seems to work just fine.
-
-Suggested-by: Scarlett Gourley <scarlett@arista.com>
-Suggested-by: James Sewart <jamessewart@arista.com>
-Suggested-by: Jack O'Sullivan <jack@arista.com>
-Signed-off-by: Lennert Buytenhek <buytenh@arista.com>
----
- drivers/iommu/intel/dmar.c | 27 ++-------------------------
- 1 file changed, 2 insertions(+), 25 deletions(-)
-
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 5a8f780e7ffd..d0871fe9d04d 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -2043,7 +2043,8 @@ int dmar_set_interrupt(struct intel_iommu *iommu)
- 		return -EINVAL;
- 	}
- 
--	ret = request_irq(irq, dmar_fault, IRQF_NO_THREAD, iommu->name, iommu);
-+	ret = request_threaded_irq(irq, NULL, dmar_fault, IRQF_ONESHOT,
-+				   iommu->name, iommu);
- 	if (ret)
- 		pr_err("Can't request irq\n");
- 	return ret;
-@@ -2051,30 +2052,6 @@ int dmar_set_interrupt(struct intel_iommu *iommu)
- 
- int __init enable_drhd_fault_handling(void)
- {
--	struct dmar_drhd_unit *drhd;
--	struct intel_iommu *iommu;
--
--	/*
--	 * Enable fault control interrupt.
--	 */
--	for_each_iommu(iommu, drhd) {
--		u32 fault_status;
--		int ret = dmar_set_interrupt(iommu);
--
--		if (ret) {
--			pr_err("DRHD %Lx: failed to enable fault, interrupt, ret %d\n",
--			       (unsigned long long)drhd->reg_base_addr, ret);
--			return -1;
--		}
--
--		/*
--		 * Clear any previous faults.
--		 */
--		dmar_fault(iommu->irq, iommu);
--		fault_status = readl(iommu->reg + DMAR_FSTS_REG);
--		writel(fault_status, iommu->reg + DMAR_FSTS_REG);
--	}
--
- 	return 0;
- }
- 
--- 
-2.37.3
