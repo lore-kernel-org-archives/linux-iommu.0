@@ -1,125 +1,227 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2049.outbound.protection.outlook.com [40.107.93.49])
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A607EBE
-	for <iommu@lists.linux.dev>; Tue, 25 Oct 2022 10:57:02 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ldSiCOhBb4ysVQQypNorkVmYy0ECdSq6OAwtKuyRkswgD8j0iEJdPyliQI1C2RztnJaDsFS7sbpmwBHzjsCmHnjF0zQ3Kox+5MkW0o7jDZYpfcLHH83Y/OH7UyzZuMbuzUbygzJf1ugJyWj1Gt8TFBZUfbi0KzGLiUD41dBy36Nf6i9AvPIMCacsnITt2CIxKriNcGc2zDeid9q/TRjfAz6CsAgfflAi5zh6j9guP3kSQF5ObU+PlT6+fPbPOM4jTZEKGCMJoF+G9mP3ja4CTkd7Kw7dl4XxMg7bv3CtCl2YcLi3H5jsiS5YvdwqUCp9tLTyj5pRYZ0V1UGX2NR97Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=k2HoZJ95f79/Ti7l/IRjiWScnRcOovQ7e7ZQ4jCNxuo=;
- b=E2CRr7G4AiK0d3PoFHN7+PbrsfxLg3c8NOC24T+glLSDtQOW4hecWe6oXxe1oDwp2Tsmq4vzDS4gN+czrExfGEFZ8Y308lZs3b7hhCnZkB41o/cYzU692VxRoXJkAvbmXvpvgNkdUti+Fc50Z6HEwj5WRBpjLjZM1+AvW5gED8bwUmCNX5mdpM3gjCe4NFbb+kAR8Wx9kc579rXqcm0SP7aA6w2QT8PvgLogj70vgYe/a8j+8ja0mYmaP69oIdG8CiNRv2/eInk/5hiTKzB5WfYgDTuDOJuSDyVol7CL/e5f/d/1zIv9D3+h4cHlKQ2rg3+cJx1Nz8JEeJTIB6bFtg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=k2HoZJ95f79/Ti7l/IRjiWScnRcOovQ7e7ZQ4jCNxuo=;
- b=haxdK2frd6v2gcxAqW/AaVbyxXEaHOaOJ98Pxu/VlMJ9JYyGK4d3xFPBS1pUs8vvCzPvtOU7ZwOkrEId5AoOhoOfsLvnj26fE048BdRv8zEa6zIwcAwzXtXEv7D0lcGPimDdImaacUKeF03MQ8RMUoRujgO9hkkPksrb+yqwiFg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- CY5PR12MB6346.namprd12.prod.outlook.com (2603:10b6:930:21::12) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5746.23; Tue, 25 Oct 2022 10:56:59 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::580c:51f2:b715:17cf]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::580c:51f2:b715:17cf%5]) with mapi id 15.20.5723.034; Tue, 25 Oct 2022
- 10:56:59 +0000
-Message-ID: <ca0e6dcd-7853-06a9-11b7-0deeb21e42e6@amd.com>
-Date: Tue, 25 Oct 2022 16:26:47 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] iommu: remove variable cnt
-Content-Language: en-US
-To: Colin Ian King <colin.i.king@gmail.com>, Joerg Roedel <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- iommu@lists.linux.dev
-Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20221024134301.2158939-1-colin.i.king@gmail.com>
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20221024134301.2158939-1-colin.i.king@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN0PR01CA0017.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:4f::22) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28AB5EBE
+	for <iommu@lists.linux.dev>; Tue, 25 Oct 2022 11:57:17 +0000 (UTC)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+	by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29PB8TXn028314;
+	Tue, 25 Oct 2022 11:57:05 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=jEtGL4nz9h6k8vWHYH1QsuvVwxByWhonDU33AgEq7Us=;
+ b=UGRplly7E9Y6U4jMgy23H+vH3T1PPAuqe3W4qTBhbZhXjqpcreTHgGmyefyGTV/blX85
+ LCgATJseaWYkljAacEIFfNpeEOI2P13riCItyhyVF/TwNprk2sejYBxZE+/1S4pIYfEk
+ sN2/ozZAm4+kzdlIyze0gljbUT8qb2sB4iGm4Z+Fg8l6XI/L/hcjJeQT2fhRSGqAPOw1
+ 0nB3c2Q0QC4P5GVHKlIeUT1ZdHEqBdZDDZo5p7H056g4C8o5sn99+Izf7IzvdWEwM2CF
+ ZkCNGA8adjsMQZpxT7KwsXDtav7wZknyG17+y4cIDwBqjL0mJKGO+GAryBRMRZVxO5yF EA== 
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3kebjt8p5x-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 25 Oct 2022 11:57:04 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+	by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29PBnkuP008081;
+	Tue, 25 Oct 2022 11:57:02 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+	by ppma04fra.de.ibm.com with ESMTP id 3kc859me87-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 25 Oct 2022 11:57:02 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+	by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29PBuxql2491070
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 25 Oct 2022 11:56:59 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 132D54203F;
+	Tue, 25 Oct 2022 11:56:59 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 8531142042;
+	Tue, 25 Oct 2022 11:56:58 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+	by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+	Tue, 25 Oct 2022 11:56:58 +0000 (GMT)
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>
+Cc: Gerd Bayer <gbayer@linux.ibm.com>, Pierre Morel <pmorel@linux.ibm.com>,
+        linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        agordeev@linux.ibm.com, svens@linux.ibm.com,
+        linux-kernel@vger.kernel.org, Wenjia Zhang <wenjia@linux.ibm.com>,
+        Julian Ruess <julianr@linux.ibm.com>
+Subject: [PATCH v8 2/6] iommu/s390: Get rid of s390_domain_device
+Date: Tue, 25 Oct 2022 13:56:53 +0200
+Message-Id: <20221025115657.1666860-3-schnelle@linux.ibm.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20221025115657.1666860-1-schnelle@linux.ibm.com>
+References: <20221025115657.1666860-1-schnelle@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|CY5PR12MB6346:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0f13fce6-4496-4d6f-8e1c-08dab677a38b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	oNn6ma24OWdyYN8vM3xu+4tZl1CExXsNXAf+terGBTvuu1hDtTgRKgeGHcx+mnKUTOU61O3ruKaP350fceD+JGab50uadulSIULHN/oocWCEYXwR+sb4HEF+6fmPwO/DenCjq/dOorj7UqUlxRvu0Rzd3pgOJjBU+XrH8L2yBqBm8OT2cy/EqbK46EGBiDjm/pcFrfTsq0ppKDwedpBsF47ceMaPVXXTuuUhlopM9tBq/os8tUPg4tVYlr5jTn7udaFUET2sLK4gRPFHfW3puo5hjvHoRYXR5oEQk7q7LiVSU2yFFxTrtoWXVyBYsfCB+6Q82wNFAtzD5ERC8CEELl9oXZwKYb/2A5cIkGPJPFAFCLzYJpDZBQxwo/CMRAc61sleIV6jE+VySndbi8CKjLU5mLWWcf/bD30ayL8a2eZh7PoTG8iwf8S+1suWxHYJu50/KOG6CDI5Fu8pvN/MGxjRxHI2XDh6bPEZE2wNGkGlWBw95cJcKcWDwltqdQryEJHWTVMDLO9PBbt77gbe4GOdSFUM26a68j7xTa+BYmH1R8vaL/qHKPFpwkbMOBk7NjMljh6amzfwZjsvXaTUsknXmUkXKcbKAHKsW9TjlmW01qdY2TRbbiYXKlsQv1Ttj3BJhhGTUFlPvL0WRt/B8PE4HdYFnaRJmczXr8rWcVd5bm7ND5+7WN35+oGIHzigcqz4FpazK996LDs4dgsKZdQaZyio2Xht/jNZeovym4krngxiWVm66lTACRpqEZxJJo0RD/ZSoChC6mNykjMdXbjcrZ99x8WnNIdRiroLuiY=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(136003)(396003)(366004)(376002)(346002)(451199015)(36756003)(558084003)(31686004)(38100700002)(86362001)(44832011)(2906002)(31696002)(2616005)(186003)(53546011)(6666004)(316002)(5660300002)(6506007)(6512007)(8676002)(26005)(110136005)(8936002)(66476007)(66946007)(66556008)(4326008)(41300700001)(6486002)(478600001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?SlpHTWs2UkdjVnFwOEVhZWE3TjByNHNxVGFDQjkrUjlydnF2enIvRlptc3lV?=
- =?utf-8?B?Yi9SSjRVVTFIeG43YXkxd3UzOGVUdUtMTk1VMm95Rm1CTjFscnpmenlTd3ZO?=
- =?utf-8?B?V1V2SDZtMTZDUGpxVFQyZGV5YkVmdWgxZFY1ZkhyOE8xeW5jUFlhME0wNzBu?=
- =?utf-8?B?ZndnQXZHaVplUnY1VXgzOTlFZDVMbjdwU3FlR2VFdUMyRVN3SzJhS3hyRlZK?=
- =?utf-8?B?WG1vOTRWM1pSY0lVdCtHWkV6YmcvSTh2YmViMTFwYmJncnV3RTBEdW4zUUt4?=
- =?utf-8?B?NktXWFpTamRlWFNTR0JSWWM3bTJPQ0N5NkVzdmR6Z3F0aVczc0pZS0lZRjdL?=
- =?utf-8?B?K1gzQVU5ZkhrTVhYQnZ6MVJDb2gxVkhhOGN0dnFPZ0RLa0FUSkpaRVpGZU12?=
- =?utf-8?B?dDNoaEF4RmN0bndpSG5iSHpMdGoyTlBUajNjWmlwZDJUK1BMNGFseVZCbDIw?=
- =?utf-8?B?dkxwaEJtNWlrY1I5U1VlZjh4NVRCVWJiZktBekRiL2hhSHNPNzJvclh5UWxN?=
- =?utf-8?B?Ym1EcTZkZktPVTJxNE14ZXZ2M0t6VUplTDlWSTB1N1k2V2hLYkIxb3lKYW5S?=
- =?utf-8?B?N0tvUnZHalJGcittTUZSVWNtTXBhblVSU2lmeWRVbFR2Y3l3ckxEenZkUlN6?=
- =?utf-8?B?U2V1UzAybXIwQTA2azJUaTk2NkJnN3phaVRJOEFkVE5ac0FhK1VWYmdyKyt2?=
- =?utf-8?B?MmZ2YTZSRms4d0pBdnlKZUI2OFRFRkRGZWpZUGd5VlZJVEZ1em43dUUyZG93?=
- =?utf-8?B?VDJGcjV4ZklWdTRSZG5aSzlwSHpCekRKWGl2V281WWI1dzY1ay82NGpybTNG?=
- =?utf-8?B?RWZybXhITnpZd0kzNzVYVjhmNFlZUitkUSt3eERmZHRBaWdSNVVxVGpaWDll?=
- =?utf-8?B?TiswZHA2Y1JhbnRycGxPd2JEWEtrQ3dvdG5UUTkyRXQrRGo1UVVoS0dSQWty?=
- =?utf-8?B?b1o1UVpDam1XUlJ2bXU4ZU1BOUY1T2hwRjhVZWNRVWZGMnNMdGRTTDlkWWxC?=
- =?utf-8?B?UmMvOUhhUW1nZDJJd1p4N2RTMm9oemFwY1ZtN2VtZFVqdWFDQmNoRVVSNVM2?=
- =?utf-8?B?RVIyb0djOVNhUUNUL3lhdGE2djJtNUxIZjVhekhBcjNsTjRvcjRZWHB6SFR4?=
- =?utf-8?B?dU9zVGVCM1JFaVl6TEtJYmcyTU5oQzh6SHJwYWl4WUxScWVjajJYSWtEUnEz?=
- =?utf-8?B?elZvMW1WUGZaVXZkTGpqVHUrNEVYRzR0TW9HUmgxaTNIUnNXT3Y5WG1LdStM?=
- =?utf-8?B?T2I2Q3gybVFiQTlwSXc2aVZ3YmJnMWhoc3JZQmp6eGZ3a1laM3ljR1N0QjJC?=
- =?utf-8?B?eTg4NHdrbHEya0YyQWxSMUlFL2k5ZENUK0ZsVkE3ZzRqRlhBaUNYM2FLQXJs?=
- =?utf-8?B?OU5mTVk0dDh2K0w0OGlEYkl2ODlSTHpLMDZHRmpqOWd3VVZjcWp6a242ZHEy?=
- =?utf-8?B?MVlLQSsvM3NMSE5JZUVsTko3QXpiSTRxMC90YVdRVmNMazc4aFg5dHVSVEhN?=
- =?utf-8?B?Nll2UlB3aFhiRWJWaE0zRlZJeVJFV3FwS0dSVUR2Tmx2VWg1ZHNpNWhHWFNL?=
- =?utf-8?B?WnNHWG5hQzJlUUFzdmRKek9SRVNWTmtxa0tjUWJScjVpREFGTXEzR0tDVzBh?=
- =?utf-8?B?bVNaeDdJMkpWamJZU21kM2hCcWZCY2tqemNRelFRNUJPaFU0UjZNeXdtVmw0?=
- =?utf-8?B?SVZ3enZHTTJVanAycHo0M0s2OUdGcFd4TkJhQ1ZlaHF3MUwreWNSWGtnRjNN?=
- =?utf-8?B?Yi9DeVNSekI1NU02TGc4UHVQeXBMam5SakhVcUdsUWwwc29pWGNpNERUd05X?=
- =?utf-8?B?TDBveXFpRXVrbEsrQW1vaXByMVExL0JGSkFNY090L003Y0hxYitDY2pUMWwz?=
- =?utf-8?B?VjU5T0crdWcyY3N6Z3dzWnVoSkV2YkI3ZjRmN005VmFKUndFK1lPaHkza2M3?=
- =?utf-8?B?bTJQaUlBeTc1NTk3blRpZG5JcjhzUTZVVmdEOEU4bUFrWlJJSE8yWkFrSGVI?=
- =?utf-8?B?bnkzZFZ4cy9aeFQ0VWM2b0p4Y3MwazRaQUJacllpeHEzbkNLdjg1OXcwYkto?=
- =?utf-8?B?dXMxd01mWDZheEk4MjlkZHFPRkZJNVc5bTF3ZjFKbnJRV2RVeHkzNk50Z0pj?=
- =?utf-8?Q?9imwATxtMFYqvv/VbyPieNGE+?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0f13fce6-4496-4d6f-8e1c-08dab677a38b
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Oct 2022 10:56:59.1447
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NmJVCPV7b7FxTA5feiB77bmC/AZBwArmZK2tV/+rXJhHIwiqtCKruSc61/83kPiSoKUgOlck1EAsh2BCR0plJA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6346
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: tHyzi7oE8qPRvfbLQX7hLY2fuNhLyt8K
+X-Proofpoint-ORIG-GUID: tHyzi7oE8qPRvfbLQX7hLY2fuNhLyt8K
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-10-25_05,2022-10-25_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 malwarescore=0
+ suspectscore=0 spamscore=0 clxscore=1015 mlxscore=0 adultscore=0
+ lowpriorityscore=0 mlxlogscore=999 priorityscore=1501 impostorscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2209130000 definitions=main-2210250067
 
-On 10/24/2022 7:13 PM, Colin Ian King wrote:
-> Variable cnt is just being incremented and it's never used
-> anywhere else. The variable and the increment are redundant so
-> remove it.
-> 
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+The struct s390_domain_device serves the sole purpose as list entry for
+the devices list of a struct s390_domain. As it contains no additional
+information besides a list_head and a pointer to the struct zpci_dev we
+can simplify things and just thread the device list through struct
+zpci_dev directly. This removes the need to allocate during domain
+attach and gets rid of one level of indirection during mapping
+operations.
 
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+---
+v7->v8:
+- Added Jason's R-b
+v5->v6:
+- On attach failure make sure the IOAT is not registered
+  and zdev->dma_table == NULL
+- Dropped Jason's R-b
 
--Vasant
+ arch/s390/include/asm/pci.h |  1 +
+ drivers/iommu/s390-iommu.c  | 37 +++++++------------------------------
+ 2 files changed, 8 insertions(+), 30 deletions(-)
+
+diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
+index 108e732d7b14..15f8714ca9b7 100644
+--- a/arch/s390/include/asm/pci.h
++++ b/arch/s390/include/asm/pci.h
+@@ -117,6 +117,7 @@ struct zpci_bus {
+ struct zpci_dev {
+ 	struct zpci_bus *zbus;
+ 	struct list_head entry;		/* list of all zpci_devices, needed for hotplug, etc. */
++	struct list_head iommu_list;
+ 	struct kref kref;
+ 	struct hotplug_slot hotplug_slot;
+ 
+diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+index c2e5e81d609e..af83ccde16a4 100644
+--- a/drivers/iommu/s390-iommu.c
++++ b/drivers/iommu/s390-iommu.c
+@@ -29,11 +29,6 @@ struct s390_domain {
+ 	spinlock_t		list_lock;
+ };
+ 
+-struct s390_domain_device {
+-	struct list_head	list;
+-	struct zpci_dev		*zdev;
+-};
+-
+ static struct s390_domain *to_s390_domain(struct iommu_domain *dom)
+ {
+ 	return container_of(dom, struct s390_domain, domain);
+@@ -87,21 +82,13 @@ static void s390_domain_free(struct iommu_domain *domain)
+ static void __s390_iommu_detach_device(struct zpci_dev *zdev)
+ {
+ 	struct s390_domain *s390_domain = zdev->s390_domain;
+-	struct s390_domain_device *domain_device, *tmp;
+ 	unsigned long flags;
+ 
+ 	if (!s390_domain)
+ 		return;
+ 
+ 	spin_lock_irqsave(&s390_domain->list_lock, flags);
+-	list_for_each_entry_safe(domain_device, tmp, &s390_domain->devices,
+-				 list) {
+-		if (domain_device->zdev == zdev) {
+-			list_del(&domain_device->list);
+-			kfree(domain_device);
+-			break;
+-		}
+-	}
++	list_del_init(&zdev->iommu_list);
+ 	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
+ 
+ 	zpci_unregister_ioat(zdev, 0);
+@@ -114,17 +101,12 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
+ {
+ 	struct s390_domain *s390_domain = to_s390_domain(domain);
+ 	struct zpci_dev *zdev = to_zpci_dev(dev);
+-	struct s390_domain_device *domain_device;
+ 	unsigned long flags;
+ 	int cc, rc = 0;
+ 
+ 	if (!zdev)
+ 		return -ENODEV;
+ 
+-	domain_device = kzalloc(sizeof(*domain_device), GFP_KERNEL);
+-	if (!domain_device)
+-		return -ENOMEM;
+-
+ 	if (zdev->s390_domain)
+ 		__s390_iommu_detach_device(zdev);
+ 	else if (zdev->dma_table)
+@@ -132,10 +114,8 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
+ 
+ 	cc = zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
+ 				virt_to_phys(s390_domain->dma_table));
+-	if (cc) {
+-		rc = -EIO;
+-		goto out_free;
+-	}
++	if (cc)
++		return -EIO;
+ 	zdev->dma_table = s390_domain->dma_table;
+ 
+ 	spin_lock_irqsave(&s390_domain->list_lock, flags);
+@@ -151,9 +131,8 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
+ 		rc = -EINVAL;
+ 		goto out_unregister;
+ 	}
+-	domain_device->zdev = zdev;
+ 	zdev->s390_domain = s390_domain;
+-	list_add(&domain_device->list, &s390_domain->devices);
++	list_add(&zdev->iommu_list, &s390_domain->devices);
+ 	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
+ 
+ 	return 0;
+@@ -161,8 +140,6 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
+ out_unregister:
+ 	zpci_unregister_ioat(zdev, 0);
+ 	zdev->dma_table = NULL;
+-out_free:
+-	kfree(domain_device);
+ 
+ 	return rc;
+ }
+@@ -206,10 +183,10 @@ static int s390_iommu_update_trans(struct s390_domain *s390_domain,
+ 				   phys_addr_t pa, dma_addr_t dma_addr,
+ 				   size_t size, int flags)
+ {
+-	struct s390_domain_device *domain_device;
+ 	phys_addr_t page_addr = pa & PAGE_MASK;
+ 	dma_addr_t start_dma_addr = dma_addr;
+ 	unsigned long irq_flags, nr_pages, i;
++	struct zpci_dev *zdev;
+ 	unsigned long *entry;
+ 	int rc = 0;
+ 
+@@ -234,8 +211,8 @@ static int s390_iommu_update_trans(struct s390_domain *s390_domain,
+ 	}
+ 
+ 	spin_lock(&s390_domain->list_lock);
+-	list_for_each_entry(domain_device, &s390_domain->devices, list) {
+-		rc = zpci_refresh_trans((u64) domain_device->zdev->fh << 32,
++	list_for_each_entry(zdev, &s390_domain->devices, iommu_list) {
++		rc = zpci_refresh_trans((u64)zdev->fh << 32,
+ 					start_dma_addr, nr_pages * PAGE_SIZE);
+ 		if (rc)
+ 			break;
+-- 
+2.34.1
 
