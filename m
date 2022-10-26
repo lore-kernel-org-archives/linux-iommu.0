@@ -1,521 +1,180 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2046.outbound.protection.outlook.com [40.107.237.46])
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40A6B2578
-	for <iommu@lists.linux.dev>; Tue, 25 Oct 2022 18:50:56 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Q9/jME7YWC/8ByV2DvTWl1RmBYzPlWw6kXKqUZmrgHyVdu/NAEgFPWsUK+gMZP6fV/8WgPJap8gOJkS/5+JvIOEMp/Pp+FqlbAscnIg8Kskz6DqkLhNoyLpB5h0x/ixpW4a0kows9JZ5LzuzuTGFduKWyakVsa4k7oPRnA+vpydep01ZHzToPNUcTecifEI2luZdsTwnfCS4Wc509JJG6NiWwqQNhJpEp5JI9REypCTrgvp8LlYSEe7tZodkZr9GN2vNEYj2lbSyvibZX+QBAKEJh4H1U/OJdfPt7aBnFITnubODiaSyKqiIllh8q1OS2UV+1iJHDYUZlsRRQNvk/A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kdcA1vQ1MJCR5FjZwLhJ/UvwRjM002fRXHTZP4sXRYA=;
- b=L6XALIss6588NE/xJEMjY2jP1gefKTEPT85qZjmKf/4T5h5fssSAqrkCQ95G7NHeILwretLk4nmazjzbkFs6bmUURBtChw2ym8t+4EB3xjT6fAx9agnqfARA9chWJeMIeGoMuqKBtuPdWIFBA9+UcTMtjHZNGpeZ4DQa1NVxbLmGCqVzYeHvcA88qKYl1xEnSfiddo9u+lnHaHCiqonpc+QWF8BRi37m7Q+7FSDa7Do1KvCjNmUPTRXiUKgTUmP4Fext7cQW7NiPjuH5rh+M/i9d44lVAUXxmK9zX+TiWXvmkv2U6H4Ml52dQcWvxDm57aRkKL58WvRIP/eouLgpJg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kdcA1vQ1MJCR5FjZwLhJ/UvwRjM002fRXHTZP4sXRYA=;
- b=TL+wGHneIB/vajrakZ85/QpfAgyNx1OcJ0MTqQ3Cq97wlAYNsHOF3gNmr0FQtbfUeFL/bT8QhPLn3sdWAKT/88zi6eCiUn2xC8ul21Ro8SOquC1jQX17sH07FsXMT3mTtPKo4jl+HosiAXjIYzZPXBzFTI+w3KUtxSm1ceARfqJUa1/undrmwXBw1WQ74Uh87n/pAHYHJbpAPoDRD7c8Rmk2oMxU3zbuibkWSaYa0ckD9wC8Q02pUUKieNQhqRUgJR2h2AVf11tCVMnKq1AGdfZLsEYgEsZt8uma1d/wzEN/xPOa78U+ADN7FY4OTi5eJXGEGovpMOSP99e7Qo4g3w==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by PH8PR12MB6938.namprd12.prod.outlook.com (2603:10b6:510:1bd::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.26; Tue, 25 Oct
- 2022 18:50:48 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::7a81:a4e4:bb9c:d1de]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::7a81:a4e4:bb9c:d1de%6]) with mapi id 15.20.5746.021; Tue, 25 Oct 2022
- 18:50:48 +0000
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Alexander Gordeev <agordeev@linux.ibm.com>,
-	David Airlie <airlied@gmail.com>,
-	Tony Krowiak <akrowiak@linux.ibm.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Cornelia Huck <cohuck@redhat.com>,
-	Daniel Vetter <daniel@ffwll.ch>,
-	Diana Craciun <diana.craciun@oss.nxp.com>,
-	dri-devel@lists.freedesktop.org,
-	Eric Auger <eric.auger@redhat.com>,
-	Eric Farman <farman@linux.ibm.com>,
-	Harald Freudenberger <freude@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	intel-gfx@lists.freedesktop.org,
-	intel-gvt-dev@lists.freedesktop.org,
-	iommu@lists.linux.dev,
-	Jani Nikula <jani.nikula@linux.intel.com>,
-	Jason Herne <jjherne@linux.ibm.com>,
-	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	kvm@vger.kernel.org,
-	linux-s390@vger.kernel.org,
-	Longfang Liu <liulongfang@huawei.com>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Peter Oberparleiter <oberpar@linux.ibm.com>,
-	Halil Pasic <pasic@linux.ibm.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-	Vineeth Vijayan <vneethv@linux.ibm.com>,
-	Will Deacon <will@kernel.org>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Zhenyu Wang <zhenyuw@linux.intel.com>,
-	Zhi Wang <zhi.a.wang@intel.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Yi Liu <yi.l.liu@intel.com>
-Subject: [PATCH 07/10] vfio-iommufd: Support iommufd for physical VFIO devices
-Date: Tue, 25 Oct 2022 15:50:42 -0300
-Message-Id: <7-v1-4991695894d8+211-vfio_iommufd_jgg@nvidia.com>
-In-Reply-To: <0-v1-4991695894d8+211-vfio_iommufd_jgg@nvidia.com>
-References:
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BL1PR13CA0273.namprd13.prod.outlook.com
- (2603:10b6:208:2bc::8) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01AABEA0
+	for <iommu@lists.linux.dev>; Wed, 26 Oct 2022 02:17:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1666750627; x=1698286627;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=q5vZaUQzObbh+klypbyZ+vnkhYrchFqnLIGSsqPK6sk=;
+  b=PmsGtjhbaXnmOHB2N2ip8vR1qW1OXAWEUhSniX4CSXQyO2YGCkgi4uOa
+   UUPIWXmlrWo9FMN5nCeVohrMeFBy/BU4B5DhBQ95tJkthPEq3uvtykz03
+   HcjkSnjL5yxdkSuGfoTIm04mx5J0iCvBqQ/tyDDmfYV49OT4qTZinkk3h
+   yQPabtp0ajm++mnQknisrNp+gPUcW0ZzdUYiGm8xgr6Q5VQTMPZx04j1I
+   Qcz6LTvqQKRpRKOb+fBVQFnNVe0+R1Af6DfHpPOc/X7nBkTS7LkN0tzbJ
+   /YZxCBSIboKo5UxL3wWg7PtMhIkO2/2WG5Wox4gIbMzWuZsjOPJuunQsT
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10511"; a="308933849"
+X-IronPort-AV: E=Sophos;i="5.95,213,1661842800"; 
+   d="scan'208";a="308933849"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2022 19:17:06 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10511"; a="695189722"
+X-IronPort-AV: E=Sophos;i="5.95,213,1661842800"; 
+   d="scan'208";a="695189722"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
+  by fmsmga008.fm.intel.com with ESMTP; 25 Oct 2022 19:17:04 -0700
+Message-ID: <028e2c63-939b-af31-88b9-b479b41ce67c@linux.intel.com>
+Date: Wed, 26 Oct 2022 10:10:29 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|PH8PR12MB6938:EE_
-X-MS-Office365-Filtering-Correlation-Id: 16b20791-6b18-491f-6b3b-08dab6b9d3fb
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	306yLp6SWtuRt7/LbWduWclMYF+FKXkJdoBKBuiBcocG6VdvNjN3oiJ9dgtAjfxqS60m8UzoIuiajZ18XoRhEUuk+SCuhDOJwNhs9OSb0mFRxALBEq0PtJkSZetcSSpyPpVZGmTlK0Hr8qQyioeWYZUAS6TWigLxupRBCRnCeC5qVYdfzamxu2C6gX+EQXIvustfsNlL+Kf+WMyxby9cn9qWYq0RpK3mGoN8g0hCycQ9WVCVnC39wXW6NUi48T7IEk9VOxGSB0TKefvaaAitcFABakmfL/icA95c4SDVgv4aaPZSMosCPkJ04ePCJaYZ3F2JKCPId9jLetl0XuLkw0yhzZYJoqGpITiCbZ7m8a+ccQWOmPKBRdOiCO04+Z09zztyKA3m658fG8NIC4GX0oNwvDA6Hc8Z96A+lRyKS0JxkYmnuDtGssVmZjQajHu9cN7mSZ5hCz2hDEzCc3GCc1eTSdMUwrA48DmNlRoN83mvphvX1JXN0L/XZHfdA+qtKbsbf9zSYmgly+IMpLEFoHGG7p2rGIP/hljjtkKS/99QGDKEcONkEeSRdh7jHNvjncVtzWcW3D/PYz5xprk8x3Cjwhi+I8vMwyniMLIXJLr9VjyLBeW2krSuO7FurLp7q+xUPwVy3tWdm7lRtRPa95cdIkeEOlNQl3M0AwdLC0EoJb5Nztx5+zN1DvATDUe5LAJKnApwm9Ny2WlLWSbZSsPoB7PVgX0tBmSRJZl02SKTHkaeZuSZU41Bh9cgewr84SutAW6i4au2H2DH5quhmA==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(366004)(39860400002)(136003)(346002)(396003)(451199015)(86362001)(38100700002)(921005)(30864003)(6486002)(8936002)(7406005)(7416002)(5660300002)(2906002)(478600001)(6666004)(316002)(4326008)(8676002)(66946007)(66476007)(66556008)(110136005)(54906003)(41300700001)(83380400001)(26005)(6512007)(6506007)(2616005)(186003)(36756003)(4216001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?pNiOlXsAk6q85gsUeiEJ/WVyTx3XYHAzh5Fm9ZTmyTisj4PDb3PVWO2CjlMo?=
- =?us-ascii?Q?sb42tvA/aft9ypcEwZ6StR2N6R6emqTpkWr6DyWhC++KF3s4tqof8f3Sfs2a?=
- =?us-ascii?Q?8ONgV3EYdiSJ5Jq1AlqagpfhMDfCoxFf2gYAaAee2WeR2MnbIrHRZtF0TLwC?=
- =?us-ascii?Q?KmZoN6LFhURt+XkA6nbDWkiLqGsPnTe7ozmFNZCL8YU7fxBL1iZqutyl3joi?=
- =?us-ascii?Q?m62FHzBSGQMazSnq5O8T7lDar9jre5K2aPtOvFupKaCVai9HTBlw5oeDJc0L?=
- =?us-ascii?Q?m8B3la1Esh7Q5t8/R+TKW6BQ/NtjOS3ARNk0duw0fMecYYmLiDta5k5FpSOP?=
- =?us-ascii?Q?2LmU+fkzJO/hfLMARfMjAbOf2J7oyQVBXk94ypYc9qcAVgowpbMwUHmFVl5I?=
- =?us-ascii?Q?jmGMhcwrC3C4CQXiZPkTcGbAX4fpJPWIxy0Tnu5JUOUODrKKL8Gw/kEYVdAx?=
- =?us-ascii?Q?7IJbJFyCDenCTT0LH0Ue2jL8Nk+GfnOY47GfFGydyvuso0m55gSjz+x1PpFM?=
- =?us-ascii?Q?2NtM2tY7ph55cxldlpNp1GLnhBOm7wC/gIY5hj1qsFu5YHIXAsaW2aF4JUua?=
- =?us-ascii?Q?srG0ykRPUOukuvPzFY6x3Tn930OKwDoYDgsdtjPDBaBahW7Qt6b7XOi6BBOI?=
- =?us-ascii?Q?npJzSODlU8u8hA6CqJgWl7nBM/dSiqISSTvlUFzChYxaIQ7WFoGLsfhggKOj?=
- =?us-ascii?Q?N55BO0/uChD/7mguGU0Bx0Zj4GSLWRPUJ7uFJOkV1BDQQxUPFCtXZZGU2ZVZ?=
- =?us-ascii?Q?A/zKhXEWRwhMRf1aRHsiLLjNBgn/1LnXkuQEWm8inDA+doSkH1Hlsi7N91Vh?=
- =?us-ascii?Q?rvNraSxizK2cUNfkkhP5GKpnxl70hmXr0zYmoifdUbW7xfw+I2lP1qAzQF2W?=
- =?us-ascii?Q?ZyCNanN+WHCmQA8IOtVvJaDa7k2euSFxNeShl3uoaMSPJMzgReQ4s1Rk9qNr?=
- =?us-ascii?Q?4p9mVvQuLH8EtXXL3XxSilTFefLTkzbX8c20Wcb1hsIQo8pwNO10+lMKdKEH?=
- =?us-ascii?Q?vKab1dSfyn8b+vDi+uhlTaVmMFzsMQRbJ/UDUFVP1FMaGaJeUt6hZjmxVlOR?=
- =?us-ascii?Q?jRWgelSJXGeiJdDPbfexcgdRuSls6sNiIPS+jEGpVe3Mt2gIowvYWa7MIPIY?=
- =?us-ascii?Q?csJw4LiMUZBKkOLCuSXO5Q1FCozHYgnz1IkMtHlofk/EBCShXMw4LRuPrVrt?=
- =?us-ascii?Q?BMbia0xiRIUO62XkF4uH9+GsoHzSwKehWLu8a3+DL8jJRVDhpIKL/gm/3ecg?=
- =?us-ascii?Q?xuUYGutLOKAfhwVQRzetGUhMnYMvMY3bhPyUsBS7NUxEW2hOKyTjyzBMARVY?=
- =?us-ascii?Q?z7wvY+NQ6tw/NspN0A8kDKzJMx1dKnqLfz83xXf8xGm3hz3FjBpwwutl9n0I?=
- =?us-ascii?Q?7QrWo+lOlmpjkT4nJnDeI70cIFusuTPz5JNJc9cKJLCehhXLZkU7KaGIQzTF?=
- =?us-ascii?Q?+wVJ/QnDwUWXIKZ52MecZ5AiCFbvRcMewChtvEWKiJk/zXNEXkx1FsLEsCJY?=
- =?us-ascii?Q?eCkJyXYou06OUrr0stb+qltHbvGpgz1Uh6G0DzXiyqURorimJ+Xp32NHlAal?=
- =?us-ascii?Q?WHJW5/XYUruUd6tRHPk=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 16b20791-6b18-491f-6b3b-08dab6b9d3fb
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Oct 2022 18:50:47.5050
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MgxmCpW9pLR58vcHns2z0jsc1kcIpmAqx+W69I8Q7lPgh8Je+38+EigLwgf0sVO7
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB6938
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH,RFC] iommu/vt-d: Convert dmar_fault IRQ to a threaded IRQ
+Content-Language: en-US
+To: Lennert Buytenhek <buytenh@wantstofly.org>,
+ David Woodhouse <dwmw2@infradead.org>
+References: <Y1eZbXKdJDoS8loC@wantstofly.org>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <Y1eZbXKdJDoS8loC@wantstofly.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-This creates the iommufd_device for the physical VFIO drivers. These are
-all the drivers that are calling vfio_register_group_dev() and expect the
-type1 code to setup a real iommu_domain against their parent struct
-device.
+On 10/25/22 4:08 PM, Lennert Buytenhek wrote:
+> Under a high enough I/O page fault load, the dmar_fault hardirq handler
+> can end up starving other tasks that wanted to run on the CPU that the
+> IRQ is being routed to.  On an i7-6700 CPU this seems to happen at
+> around 2.5 million I/O page faults per second, and at a fraction of
+> that rate on some of the lower-end CPUs that we use.
+> 
+> An I/O page fault rate of 2.5 million per second may seem like a very
+> high number, but when we get an I/O page fault for every cache line
+> touched by a DMA operation, this I/O page fault rate can be the result
+> of a confused PCIe device DMAing to RAM at 2.5 * 64 = 160 MB/sec, which
+> is not an unlikely rate to be DMAing things to RAM at.  And, in fact,
+> when we do see PCIe devices getting confused like this, this sort of
+> I/O page fault rate is not uncommon.
+> 
+> A peripheral device continuously DMAing to RAM at 160 MB/s is
+> inarguably a bug, either in the kernel driver for the device or in the
+> firmware for the device, and should be fixed there, but it's the sort
+> of bug that iommu/vt-d could be handling better than it currently does,
+> and there is a fairly simple way to achieve that.
+> 
+> This patch changes the dmar_fault IRQ handler to be a threaded IRQ
+> handler.  This is a pretty minimal code change, and comes with the
+> advantage that Intel IOMMU I/O page fault handling work is now subject
+> to RT throttling, which allows it to be kept under control using the
+> sched_rt_period_us / sched_rt_runtime_us parameters.
 
-The design gives the driver a choice in how it gets connected to iommufd
-by providing bind_iommufd/unbind_iommufd/attach_ioas callbacks to
-implement as required. The core code provides three default callbacks for
-physical mode using a real iommu_domain. This is suitable for drivers
-using vfio_register_group_dev()
+Thanks for the patch! I like it, but also have some concerns.
 
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/vfio/Makefile                         |   1 +
- drivers/vfio/fsl-mc/vfio_fsl_mc.c             |   3 +
- drivers/vfio/iommufd.c                        | 104 ++++++++++++++++++
- .../vfio/pci/hisilicon/hisi_acc_vfio_pci.c    |   6 +
- drivers/vfio/pci/mlx5/main.c                  |   3 +
- drivers/vfio/pci/vfio_pci.c                   |   3 +
- drivers/vfio/platform/vfio_amba.c             |   3 +
- drivers/vfio/platform/vfio_platform.c         |   3 +
- drivers/vfio/vfio.h                           |  15 +++
- drivers/vfio/vfio_main.c                      |  13 ++-
- include/linux/vfio.h                          |  25 +++++
- 11 files changed, 177 insertions(+), 2 deletions(-)
- create mode 100644 drivers/vfio/iommufd.c
+If you look at the commit history, you will find that the opposite
+change took place 10+ years ago.
 
-diff --git a/drivers/vfio/Makefile b/drivers/vfio/Makefile
-index b693a1169286f8..3863922529ef20 100644
---- a/drivers/vfio/Makefile
-+++ b/drivers/vfio/Makefile
-@@ -6,6 +6,7 @@ obj-$(CONFIG_VFIO) += vfio.o
- vfio-y += vfio_main.o \
- 	  iova_bitmap.o \
- 	  container.o
-+vfio-$(CONFIG_IOMMUFD) += iommufd.o
- 
- obj-$(CONFIG_VFIO_VIRQFD) += vfio_virqfd.o
- obj-$(CONFIG_VFIO_IOMMU_TYPE1) += vfio_iommu_type1.o
-diff --git a/drivers/vfio/fsl-mc/vfio_fsl_mc.c b/drivers/vfio/fsl-mc/vfio_fsl_mc.c
-index b16874e913e4f5..5cd4bb47644039 100644
---- a/drivers/vfio/fsl-mc/vfio_fsl_mc.c
-+++ b/drivers/vfio/fsl-mc/vfio_fsl_mc.c
-@@ -592,6 +592,9 @@ static const struct vfio_device_ops vfio_fsl_mc_ops = {
- 	.read		= vfio_fsl_mc_read,
- 	.write		= vfio_fsl_mc_write,
- 	.mmap		= vfio_fsl_mc_mmap,
-+	.bind_iommufd	= vfio_iommufd_physical_bind,
-+	.unbind_iommufd	= vfio_iommufd_physical_unbind,
-+	.attach_ioas	= vfio_iommufd_physical_attach_ioas,
- };
- 
- static struct fsl_mc_driver vfio_fsl_mc_driver = {
-diff --git a/drivers/vfio/iommufd.c b/drivers/vfio/iommufd.c
-new file mode 100644
-index 00000000000000..8280bb32ee677c
---- /dev/null
-+++ b/drivers/vfio/iommufd.c
-@@ -0,0 +1,104 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
-+ */
-+#include <linux/vfio.h>
-+#include <linux/iommufd.h>
-+
-+#include "vfio.h"
-+
-+MODULE_IMPORT_NS(IOMMUFD);
-+MODULE_IMPORT_NS(IOMMUFD_VFIO);
-+
-+int vfio_iommufd_bind(struct vfio_device *vdev, struct iommufd_ctx *ictx)
-+{
-+	u32 ioas_id;
-+	u32 device_id;
-+	int ret;
-+
-+	lockdep_assert_held(&vdev->dev_set->lock);
-+
-+	/*
-+	 * If the driver doesn't provide this op then it means the device does
-+	 * not do DMA at all. So nothing to do.
-+	 */
-+	if (!vdev->ops->bind_iommufd)
-+		return 0;
-+
-+	ret = vdev->ops->bind_iommufd(vdev, ictx, &device_id);
-+	if (ret)
-+		return ret;
-+
-+	if (vdev->ops->attach_ioas) {
-+		ret = iommufd_vfio_compat_ioas_id(ictx, &ioas_id);
-+		if (ret)
-+			goto err_unbind;
-+		ret = vdev->ops->attach_ioas(vdev, &ioas_id);
-+		if (ret)
-+			goto err_unbind;
-+		vdev->iommufd_attached = true;
-+	}
-+
-+	/*
-+	 * The legacy path has no way to return the device id or the selected
-+	 * pt_id
-+	 */
-+	return 0;
-+
-+err_unbind:
-+	if (vdev->ops->unbind_iommufd)
-+		vdev->ops->unbind_iommufd(vdev);
-+	return ret;
-+}
-+
-+void vfio_iommufd_unbind(struct vfio_device *vdev)
-+{
-+	lockdep_assert_held(&vdev->dev_set->lock);
-+
-+	if (!vdev->iommufd_device)
-+		return;
-+
-+	if (vdev->ops->unbind_iommufd)
-+		vdev->ops->unbind_iommufd(vdev);
-+}
-+
-+/*
-+ * The physical standard ops mean that the iommufd_device is bound to the
-+ * physical device vdev->dev that was provided to vfio_init_group_dev(). Drivers
-+ * using this ops set should call vfio_register_group_dev()
-+ */
-+int vfio_iommufd_physical_bind(struct vfio_device *vdev,
-+			       struct iommufd_ctx *ictx, u32 *out_device_id)
-+{
-+	struct iommufd_device *idev;
-+
-+	idev = iommufd_device_bind(ictx, vdev->dev, out_device_id);
-+	if (IS_ERR(idev))
-+		return PTR_ERR(idev);
-+	vdev->iommufd_device = idev;
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(vfio_iommufd_physical_bind);
-+
-+void vfio_iommufd_physical_unbind(struct vfio_device *vdev)
-+{
-+	lockdep_assert_held(&vdev->dev_set->lock);
-+
-+	if (vdev->iommufd_attached) {
-+		iommufd_device_detach(vdev->iommufd_device);
-+		vdev->iommufd_attached = false;
-+	}
-+	iommufd_device_unbind(vdev->iommufd_device);
-+	vdev->iommufd_device = NULL;
-+}
-+EXPORT_SYMBOL_GPL(vfio_iommufd_physical_unbind);
-+
-+int vfio_iommufd_physical_attach_ioas(struct vfio_device *vdev, u32 *pt_id)
-+{
-+	unsigned int flags = 0;
-+
-+	if (vfio_allow_unsafe_interrupts)
-+		flags |= IOMMUFD_ATTACH_FLAGS_ALLOW_UNSAFE_INTERRUPT;
-+	return iommufd_device_attach(vdev->iommufd_device, pt_id, flags);
-+}
-+EXPORT_SYMBOL_GPL(vfio_iommufd_physical_attach_ioas);
-diff --git a/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c b/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c
-index 39eeca18a0f7c8..40019b11c5a969 100644
---- a/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c
-+++ b/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c
-@@ -1246,6 +1246,9 @@ static const struct vfio_device_ops hisi_acc_vfio_pci_migrn_ops = {
- 	.mmap = hisi_acc_vfio_pci_mmap,
- 	.request = vfio_pci_core_request,
- 	.match = vfio_pci_core_match,
-+	.bind_iommufd = vfio_iommufd_physical_bind,
-+	.unbind_iommufd = vfio_iommufd_physical_unbind,
-+	.attach_ioas = vfio_iommufd_physical_attach_ioas,
- };
- 
- static const struct vfio_device_ops hisi_acc_vfio_pci_ops = {
-@@ -1261,6 +1264,9 @@ static const struct vfio_device_ops hisi_acc_vfio_pci_ops = {
- 	.mmap = vfio_pci_core_mmap,
- 	.request = vfio_pci_core_request,
- 	.match = vfio_pci_core_match,
-+	.bind_iommufd = vfio_iommufd_physical_bind,
-+	.unbind_iommufd = vfio_iommufd_physical_unbind,
-+	.attach_ioas = vfio_iommufd_physical_attach_ioas,
- };
- 
- static int hisi_acc_vfio_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-diff --git a/drivers/vfio/pci/mlx5/main.c b/drivers/vfio/pci/mlx5/main.c
-index fd6ccb8454a24a..32d1f38d351e7e 100644
---- a/drivers/vfio/pci/mlx5/main.c
-+++ b/drivers/vfio/pci/mlx5/main.c
-@@ -623,6 +623,9 @@ static const struct vfio_device_ops mlx5vf_pci_ops = {
- 	.mmap = vfio_pci_core_mmap,
- 	.request = vfio_pci_core_request,
- 	.match = vfio_pci_core_match,
-+	.bind_iommufd = vfio_iommufd_physical_bind,
-+	.unbind_iommufd = vfio_iommufd_physical_unbind,
-+	.attach_ioas = vfio_iommufd_physical_attach_ioas,
- };
- 
- static int mlx5vf_pci_probe(struct pci_dev *pdev,
-diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
-index 1d4919edfbde48..29091ee2e9849b 100644
---- a/drivers/vfio/pci/vfio_pci.c
-+++ b/drivers/vfio/pci/vfio_pci.c
-@@ -138,6 +138,9 @@ static const struct vfio_device_ops vfio_pci_ops = {
- 	.mmap		= vfio_pci_core_mmap,
- 	.request	= vfio_pci_core_request,
- 	.match		= vfio_pci_core_match,
-+	.bind_iommufd	= vfio_iommufd_physical_bind,
-+	.unbind_iommufd	= vfio_iommufd_physical_unbind,
-+	.attach_ioas	= vfio_iommufd_physical_attach_ioas,
- };
- 
- static int vfio_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-diff --git a/drivers/vfio/platform/vfio_amba.c b/drivers/vfio/platform/vfio_amba.c
-index eaea63e5294c58..5a046098d0bdf4 100644
---- a/drivers/vfio/platform/vfio_amba.c
-+++ b/drivers/vfio/platform/vfio_amba.c
-@@ -117,6 +117,9 @@ static const struct vfio_device_ops vfio_amba_ops = {
- 	.read		= vfio_platform_read,
- 	.write		= vfio_platform_write,
- 	.mmap		= vfio_platform_mmap,
-+	.bind_iommufd	= vfio_iommufd_physical_bind,
-+	.unbind_iommufd	= vfio_iommufd_physical_unbind,
-+	.attach_ioas	= vfio_iommufd_physical_attach_ioas,
- };
- 
- static const struct amba_id pl330_ids[] = {
-diff --git a/drivers/vfio/platform/vfio_platform.c b/drivers/vfio/platform/vfio_platform.c
-index 82cedcebfd9022..b87c3b70878341 100644
---- a/drivers/vfio/platform/vfio_platform.c
-+++ b/drivers/vfio/platform/vfio_platform.c
-@@ -106,6 +106,9 @@ static const struct vfio_device_ops vfio_platform_ops = {
- 	.read		= vfio_platform_read,
- 	.write		= vfio_platform_write,
- 	.mmap		= vfio_platform_mmap,
-+	.bind_iommufd	= vfio_iommufd_physical_bind,
-+	.unbind_iommufd	= vfio_iommufd_physical_unbind,
-+	.attach_ioas	= vfio_iommufd_physical_attach_ioas,
- };
- 
- static struct platform_driver vfio_platform_driver = {
-diff --git a/drivers/vfio/vfio.h b/drivers/vfio/vfio.h
-index 985e13d52989ca..809f2e8523968e 100644
---- a/drivers/vfio/vfio.h
-+++ b/drivers/vfio/vfio.h
-@@ -124,6 +124,21 @@ void vfio_device_container_unregister(struct vfio_device *device);
- int __init vfio_container_init(void);
- void vfio_container_cleanup(void);
- 
-+#if IS_ENABLED(CONFIG_IOMMUFD)
-+int vfio_iommufd_bind(struct vfio_device *device, struct iommufd_ctx *ictx);
-+void vfio_iommufd_unbind(struct vfio_device *device);
-+#else
-+static inline int vfio_iommufd_bind(struct vfio_device *device,
-+				    struct iommufd_ctx *ictx)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static inline void vfio_iommufd_unbind(struct vfio_device *device)
-+{
-+}
-+#endif
-+
- #ifdef CONFIG_VFIO_NOIOMMU
- extern bool vfio_noiommu __read_mostly;
- #else
-diff --git a/drivers/vfio/vfio_main.c b/drivers/vfio/vfio_main.c
-index cf0ea744de931e..bfbda04af1ffda 100644
---- a/drivers/vfio/vfio_main.c
-+++ b/drivers/vfio/vfio_main.c
-@@ -528,6 +528,11 @@ static int __vfio_register_dev(struct vfio_device *device,
- 	if (IS_ERR(group))
- 		return PTR_ERR(group);
- 
-+	if (WARN_ON(device->ops->bind_iommufd &&
-+		    (!device->ops->unbind_iommufd ||
-+		     !device->ops->attach_ioas)))
-+		return -EINVAL;
-+
- 	/*
- 	 * If the driver doesn't specify a set then the device is added to a
- 	 * singleton set just for itself.
-@@ -790,6 +795,10 @@ static int vfio_device_first_open(struct vfio_device *device)
- 		ret = vfio_group_use_container(device->group);
- 		if (ret)
- 			goto err_module_put;
-+	} else if (device->group->iommufd) {
-+		ret = vfio_iommufd_bind(device, device->group->iommufd);
-+		if (ret)
-+			goto err_module_put;
- 	}
- 
- 	device->kvm = device->group->kvm;
-@@ -806,6 +815,7 @@ static int vfio_device_first_open(struct vfio_device *device)
- err_container:
- 	if (device->group->container)
- 		vfio_group_unuse_container(device->group);
-+	vfio_iommufd_unbind(device);
- 	device->kvm = NULL;
- err_module_put:
- 	mutex_unlock(&device->group->group_lock);
-@@ -825,6 +835,7 @@ static void vfio_device_last_close(struct vfio_device *device)
- 	device->kvm = NULL;
- 	if (device->group->container)
- 		vfio_group_unuse_container(device->group);
-+	vfio_iommufd_unbind(device);
- 	mutex_unlock(&device->group->group_lock);
- 	module_put(device->dev->driver->owner);
- }
-@@ -1923,8 +1934,6 @@ static void __exit vfio_cleanup(void)
- module_init(vfio_init);
- module_exit(vfio_cleanup);
- 
--MODULE_IMPORT_NS(IOMMUFD);
--MODULE_IMPORT_NS(IOMMUFD_VFIO);
- MODULE_VERSION(DRIVER_VERSION);
- MODULE_LICENSE("GPL v2");
- MODULE_AUTHOR(DRIVER_AUTHOR);
-diff --git a/include/linux/vfio.h b/include/linux/vfio.h
-index e7cebeb875dd1a..a7fc4d747dc226 100644
---- a/include/linux/vfio.h
-+++ b/include/linux/vfio.h
-@@ -17,6 +17,8 @@
- #include <linux/iova_bitmap.h>
- 
- struct kvm;
-+struct iommufd_ctx;
-+struct iommufd_device;
- 
- /*
-  * VFIO devices can be placed in a set, this allows all devices to share this
-@@ -54,6 +56,10 @@ struct vfio_device {
- 	struct completion comp;
- 	struct list_head group_next;
- 	struct list_head iommu_entry;
-+#if IS_ENABLED(CONFIG_IOMMUFD)
-+	struct iommufd_device *iommufd_device;
-+	bool iommufd_attached;
-+#endif
- };
- 
- /**
-@@ -80,6 +86,10 @@ struct vfio_device_ops {
- 	char	*name;
- 	int	(*init)(struct vfio_device *vdev);
- 	void	(*release)(struct vfio_device *vdev);
-+	int	(*bind_iommufd)(struct vfio_device *vdev,
-+				struct iommufd_ctx *ictx, u32 *out_device_id);
-+	void	(*unbind_iommufd)(struct vfio_device *vdev);
-+	int	(*attach_ioas)(struct vfio_device *vdev, u32 *pt_id);
- 	int	(*open_device)(struct vfio_device *vdev);
- 	void	(*close_device)(struct vfio_device *vdev);
- 	ssize_t	(*read)(struct vfio_device *vdev, char __user *buf,
-@@ -96,6 +106,21 @@ struct vfio_device_ops {
- 				  void __user *arg, size_t argsz);
- };
- 
-+#if IS_ENABLED(CONFIG_IOMMUFD)
-+int vfio_iommufd_physical_bind(struct vfio_device *vdev,
-+			       struct iommufd_ctx *ictx, u32 *out_device_id);
-+void vfio_iommufd_physical_unbind(struct vfio_device *vdev);
-+int vfio_iommufd_physical_attach_ioas(struct vfio_device *vdev, u32 *pt_id);
-+#else
-+#define vfio_iommufd_physical_bind                                      \
-+	((int (*)(struct vfio_device *vdev, struct iommufd_ctx *ictx,   \
-+		  u32 *out_device_id)) NULL)
-+#define vfio_iommufd_physical_unbind \
-+	((void (*)(struct vfio_device *vdev)) NULL)
-+#define vfio_iommufd_physical_attach_ioas \
-+	((int (*)(struct vfio_device *vdev, u32 *pt_id)) NULL)
-+#endif
-+
- /**
-  * @migration_set_state: Optional callback to change the migration state for
-  *         devices that support migration. It's mandatory for
--- 
-2.38.0
+commit 477694e71113fd0694b6bb0bcc2d006b8ac62691
+Author: Thomas Gleixner <tglx@linutronix.de>
+Date:   Tue Jul 19 16:25:42 2011 +0200
 
+     x86, iommu: Mark DMAR IRQ as non-threaded
+
+     Mark this lowlevel IRQ handler as non-threaded. This prevents a boot
+     crash when "threadirqs" is on the kernel commandline. Also the
+     interrupt handler is handling hardware critical events which should
+     not be delayed into a thread.
+
+     Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+     Cc: stable@kernel.org
+     Signed-off-by: Ingo Molnar <mingo@kernel.org>
+
+I am not sure whether the "boot crash" mentioned above is due to that
+"trying to setup a threaded IRQ handler before kthreadd is started".
+
+> 
+> iommu/amd already uses a threaded IRQ handler for its I/O page fault
+> reporting, and so it already has this advantage.
+> 
+> When IRQ remapping is enabled, iommu/vt-d will try to set up its
+> dmar_fault IRQ handler from start_kernel() -> x86_late_time_init()
+> -> apic_intr_mode_init() -> apic_bsp_setup() ->
+> irq_remap_enable_fault_handling() -> enable_drhd_fault_handling(),
+> which happens before kthreadd is started, and trying to set up a
+> threaded IRQ handler this early on will oops.  However, there
+> doesn't seem to be a reason why iommu/vt-d needs to set up its fault
+> reporting IRQ handler this early, and if we remove the IRQ setup code
+> from enable_drhd_fault_handling(), the IRQ will be registered instead
+> from pci_iommu_init() -> intel_iommu_init() -> init_dmars(), which
+> seems to work just fine.
+
+At present, we cannot do so. Because the VT-d interrupt remapping and
+DMA remapping can be independently enabled. In another words, it's a
+possible case where interrupt remapping is enabled while DMA remapping
+is not.
+
+> 
+> Suggested-by: Scarlett Gourley <scarlett@arista.com>
+> Suggested-by: James Sewart <jamessewart@arista.com>
+> Suggested-by: Jack O'Sullivan <jack@arista.com>
+> Signed-off-by: Lennert Buytenhek <buytenh@arista.com>
+> ---
+>   drivers/iommu/intel/dmar.c | 27 ++-------------------------
+>   1 file changed, 2 insertions(+), 25 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+> index 5a8f780e7ffd..d0871fe9d04d 100644
+> --- a/drivers/iommu/intel/dmar.c
+> +++ b/drivers/iommu/intel/dmar.c
+> @@ -2043,7 +2043,8 @@ int dmar_set_interrupt(struct intel_iommu *iommu)
+>   		return -EINVAL;
+>   	}
+>   
+> -	ret = request_irq(irq, dmar_fault, IRQF_NO_THREAD, iommu->name, iommu);
+> +	ret = request_threaded_irq(irq, NULL, dmar_fault, IRQF_ONESHOT,
+> +				   iommu->name, iommu);
+>   	if (ret)
+>   		pr_err("Can't request irq\n");
+>   	return ret;
+> @@ -2051,30 +2052,6 @@ int dmar_set_interrupt(struct intel_iommu *iommu)
+>   
+>   int __init enable_drhd_fault_handling(void)
+>   {
+> -	struct dmar_drhd_unit *drhd;
+> -	struct intel_iommu *iommu;
+> -
+> -	/*
+> -	 * Enable fault control interrupt.
+> -	 */
+> -	for_each_iommu(iommu, drhd) {
+> -		u32 fault_status;
+> -		int ret = dmar_set_interrupt(iommu);
+> -
+> -		if (ret) {
+> -			pr_err("DRHD %Lx: failed to enable fault, interrupt, ret %d\n",
+> -			       (unsigned long long)drhd->reg_base_addr, ret);
+> -			return -1;
+> -		}
+> -
+> -		/*
+> -		 * Clear any previous faults.
+> -		 */
+> -		dmar_fault(iommu->irq, iommu);
+> -		fault_status = readl(iommu->reg + DMAR_FSTS_REG);
+> -		writel(fault_status, iommu->reg + DMAR_FSTS_REG);
+> -	}
+> -
+>   	return 0;
+>   }
+>   
+
+Best regards,
+baolu
