@@ -1,297 +1,158 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D0A11374;
-	Wed, 26 Oct 2022 12:58:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666789114; x=1698325114;
-  h=message-id:date:mime-version:cc:to:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=/IWbRFH6kjjYn7+cTo0TyKj63A0ZKGpnYCe92d1aOOI=;
-  b=fDVEvJkfmeJ29i5xj+WYDuVHbgjth2gGuqU5Sz1pR18rLyHvq1giXsKJ
-   AqZSqlo+m2HhAzI7gawjlzMUAZvmSUrzDMVdFOsGPis7vl/E7euB58R+z
-   bM+w3F9/593WQmY6QIdEfwcIaVOXaH+hD2TrlSC5uWMYuiQd6sOWEiM92
-   QjG8MNA2QSdVzjZ02dVXc2D4hlyP2vjzyc9gRimuQnryxH5b7M7pmEaOw
-   vrCHf3TyGzVW/49cMZscWdCUJa+yZux4JFP1mwQSyfLT+iFpuJ43C+0/C
-   4sNbEsNf+du4RlaKFeHYYiSS/L1TGNrA5YIkQLnzTkXtz1IulcrPCapmA
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="394249227"
-X-IronPort-AV: E=Sophos;i="5.95,214,1661842800"; 
-   d="scan'208";a="394249227"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2022 05:58:33 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="695352917"
-X-IronPort-AV: E=Sophos;i="5.95,214,1661842800"; 
-   d="scan'208";a="695352917"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.213.188]) ([10.254.213.188])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2022 05:58:25 -0700
-Message-ID: <9a837538-6333-0973-c6f4-229064026330@linux.intel.com>
-Date: Wed, 26 Oct 2022 20:58:23 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AB58848A;
+	Wed, 26 Oct 2022 17:01:56 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dFKdECJe+d06k4+Y9HIZXACOQcpDXVwr85rqW8Z3M63uLef11Muh3zMsHpDrdygqRzOwo2IjwMf9ZDj0F1LqLzCo7mpyxO/5s2+krEJPgwwaZTzSFuzT/GeB4f3thjgMlZzJNIZLPDmVTL54yHGu2R0TlmFuRXH937sgNhuMqgVjGLef4JfzVlxHTzd/dqKfGleOCu5/sn52y0/LWtJceb2GOFchmoBsTWxJfCDKRBAarHurKdb8PwmDQYn6GWWUxDFD4P89mgJu19bnqraPw2TPqZm6JIjI5kt+0dAHcKw1XIqNhpsS7gnZbIBchzryBs2k2NVDTHUolQQmG961Lg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uxxmhU46x+zNn2PlhEreZ1x7TY2qU5BKofHXmTFywok=;
+ b=CctnNN0qCdGxaUllTC8VDjNDJI05FA4JNdwpVATuAE/SrzW884hFfM6+n6FdKmW4nSuvS+GUBJzTegZeYNBt8bT+ARXWAbDG78JCGJfQ9KN497+49cT2kNRzMHdB3qo0PkB+vUuwgQuf1YhB60Tsvd1HQB/RQYSdnxT6y1YGY+wwH05cVwn1wiqEfanok6GfDFxHbgQrdIwThBmRm7dnno98MJDDfBYv9knVP7pnQLQ/4vi+OGLjWj5vzkxYOlEQEQtfCfeTMEjs0DaslmmaKPz8qKDgA59boZAjB2SflEe4FSv1bBZ6MbyWHCjQnWYHLEdFHfthrnvo6BQ/3FS7TA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uxxmhU46x+zNn2PlhEreZ1x7TY2qU5BKofHXmTFywok=;
+ b=LU0PT/ozAHd3e4uoD0cobRH8Zh/RKQGFnc6VNWUqIVcNrTCV6hLBLZz+QncTYze6sh6F8N57H283R5bT16JyOBqKrkjClAmaNtKWciNp7+kW8SIB4bkQG8TZwtMjUrYIgHWzZt5qtmB4r2V8OkUuqv+TTWfUJwuyi6PLjbEjH60z75LSf5NdAClgJC3u1GiTTpNxg/D0uHYWrLtSawlD/j/YNnwR+/U/NTHMK6ttc0k8mOOvw5J1pP6bRtRUHYSLNoTAnoLJv+miLRg71EMmRGiKOcawCyF/Rm5wqP8s2QENYfgdwN6LcnsUybKr6oZ0KArhM8Arx3GEqUVP6x+8fg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by SA1PR12MB7295.namprd12.prod.outlook.com (2603:10b6:806:2b6::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5723.34; Wed, 26 Oct
+ 2022 17:01:54 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::7a81:a4e4:bb9c:d1de]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::7a81:a4e4:bb9c:d1de%6]) with mapi id 15.20.5746.021; Wed, 26 Oct 2022
+ 17:01:53 +0000
+Date: Wed, 26 Oct 2022 14:01:52 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, bpf@vger.kernel.org,
+	Jonathan Corbet <corbet@lwn.net>,
+	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+	linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <ndesaulniers@google.com>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+	Cornelia Huck <cohuck@redhat.com>,
+	Daniel Jordan <daniel.m.jordan@oracle.com>,
+	David Gibson <david@gibson.dropbear.id.au>,
+	Eric Auger <eric.auger@redhat.com>,
+	Eric Farman <farman@linux.ibm.com>,
+	Jason Wang <jasowang@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Joao Martins <joao.m.martins@oracle.com>, kvm@vger.kernel.org,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+	Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
+Subject: Re: [PATCH v3 10/15] iommufd: IOCTLs for the io_pagetable
+Message-ID: <Y1loABCH2VDy1bry@nvidia.com>
+References: <0-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
+ <10-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <10-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
+X-ClientProxiedBy: BL1PR13CA0323.namprd13.prod.outlook.com
+ (2603:10b6:208:2c1::28) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Cc: baolu.lu@linux.intel.com, Alex Williamson <alex.williamson@redhat.com>,
- Chaitanya Kulkarni <chaitanyak@nvidia.com>, Cornelia Huck
- <cohuck@redhat.com>, Daniel Jordan <daniel.m.jordan@oracle.com>,
- David Gibson <david@gibson.dropbear.id.au>,
- Eric Auger <eric.auger@redhat.com>, Eric Farman <farman@linux.ibm.com>,
- Jason Wang <jasowang@redhat.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Joao Martins <joao.m.martins@oracle.com>, kvm@vger.kernel.org,
- Matthew Rosato <mjrosato@linux.ibm.com>, "Michael S. Tsirkin"
- <mst@redhat.com>, Nicolin Chen <nicolinc@nvidia.com>,
- Niklas Schnelle <schnelle@linux.ibm.com>,
- Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, bpf@vger.kernel.org,
- Jonathan Corbet <corbet@lwn.net>, David Woodhouse <dwmw2@infradead.org>,
- iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- Kevin Tian <kevin.tian@intel.com>, linux-doc@vger.kernel.org,
- linux-kselftest@vger.kernel.org, llvm@lists.linux.dev,
- Nathan Chancellor <nathan@kernel.org>,
- Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>
-References: <5-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v3 05/15] iommufd: File descriptor, context, kconfig and
- makefiles
-In-Reply-To: <5-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SA1PR12MB7295:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5c676962-4e14-4fd4-bf17-08dab773c841
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	WOVmOjFiCX8JDINa6EyTHMhFecWEhIGZID+FGlLKO5AJs32YfkTfYsaGLqad2toyNM4dd+XZ12SZ9rJrtuKzo3+QNgsjB8/eLVIlB0/YTHX3uHHc/qIyjtkCLdsGfMqFavMEdhbQDTsvZ33nMUbPlAvzGf1P0BkSdcDxYTM9VnCrXITnxMh499KwOgO5dom56tZWskFQ8jSXUQ6xbXUSu3sjUC82yNw8cvOeIQ+YhqF0gkxZDbDxZ9s+FoohTtTIs4wp2Od+7xtJhLrgtxmefEpsF+FcmEL7uUhvt0edASRy93QuF4i/3npX70C5shrDFqmACRef+IYWeHWiMGWNRCg6BAyEO4r4yfF4apC+971yga1T/2bTbr/2xI9o3eKuCtrUPMTP9yFG2rObejclkjhQfQvptDBisbr9OkSLewhKERcaQ3d7GK0WYrfnuwVSR2teXqLTChIcigwwBJf5ksII+ThzgqclEFBHZkXNOzCXXoJ7gPfrsspaZ0PXeGaky6694VezDnVRCBCHSjbPeelnZE7AAhB3exg8pOZwTOutKnBKRY7NQ34/hOdOSQAZjEdff2QKoIj47k2bopmPXNxtgV1qyQgVjr8Tnip525D9Heuf3/di49tCEbIY7o8tSW+dTivsonz/euSiZA25DJ0axr6ujsdcv/GIG9uXI58eBlrofKMCRSnMrKTz6q2YEi5Mzq7lid1SJLjM3zgZRKmTyev78fazfkN/pCwxpYv+O8n05Zm7C9Z+IM6ZqpRZ8rpcd8iuvHAF6x2QkpiJaSdrppmE+zolRQ7aDSjuags=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(396003)(366004)(136003)(346002)(39860400002)(451199015)(54906003)(26005)(921005)(8936002)(5660300002)(66476007)(7416002)(6506007)(316002)(110136005)(36756003)(7406005)(4326008)(66946007)(2906002)(41300700001)(4744005)(8676002)(186003)(478600001)(2616005)(66556008)(38100700002)(6486002)(6512007)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?RXiiBnNsSyegJjqaTFbwueeobgcBFM+ghJ+ZHORqz3ZMLgXOE5ouhahmCZXJ?=
+ =?us-ascii?Q?m7+m+utRvTuj1PicUAqDdfBg2Ibee+FLuKsavSH2bMtliQtka43A88kl/xEY?=
+ =?us-ascii?Q?HO8irLGS+3tJ62QYRfcdciyv6b3Rsaf+cKvw3Oszg2av5PiPa8/C5yGLTfJ0?=
+ =?us-ascii?Q?hgXq8l9Przq17mnVPFQfxlA3V+j5eHTSeC67L/bIikiQn7ps+wtUzaCHyzOn?=
+ =?us-ascii?Q?iLHSE/LLZGnXmQQVCZ9sqWg6A2ZkV9wyrCTvbrVKQ/73TQLfDgRjXKeB3jPK?=
+ =?us-ascii?Q?D0sgqmdgtA+euEILpbj6ZZzK505N2YY+eyBMlIBVXnCiBe/w0lYyu3sb2Ljx?=
+ =?us-ascii?Q?nKb58M9fOw8hiHCL9Bi1eyXAXApooOF7hOseLI/9aXBbKcpbnPqqM1wyBbU0?=
+ =?us-ascii?Q?ObqslR6GukMZClah4ZKdgDCGCpLsmXD12WiBeznIbdzpZfokPZ7wj9fmk/mg?=
+ =?us-ascii?Q?owK9wTzMC7j1R0y0VuJwDPAtyhhFm2YZR1K0+LodtrXpq8Xee+s/2bbswqyw?=
+ =?us-ascii?Q?O2+lwp9IR/V4JPZB7+x3JbIFF5Pab40vvvEH5m0GTSc6DexEAKu1lUdXXX8D?=
+ =?us-ascii?Q?29RJbOVayu4cc5pGzkwqQs0Nruc7gHfzTORSbHdYkDP0FBTgn86PZ3bTf/uK?=
+ =?us-ascii?Q?GOmpz7Vc6ESE55m1+L+V/o5zhCvUFEhO9kXGqwXV3EHeiCCl4o29CQ3BZIha?=
+ =?us-ascii?Q?kRPOoQHZbShwyIN6J7G3L75SL9pwgzID/txAGnGrPeKI2XiNv14dDKqxIgSQ?=
+ =?us-ascii?Q?89cOkcd+5/KaJK17PZcamXAZDGHZlkB8gsVWQpesSoQhI4f1mez2r2kSAmPb?=
+ =?us-ascii?Q?6Ha9NrHDElbsCElOqsOmBHtLmudAwakdTLHugHSDDaBTE9PB7NQvgvHy8ddG?=
+ =?us-ascii?Q?QQndefaR9SA44AgZ4SgtEpkmZuMEPoqNUsUV11rVkvi1a9UdUQutIFqCGMRM?=
+ =?us-ascii?Q?orvVdySSu/b44Z1MW0Ih/EPdPi6VMVFv39S/h2CKk0/lQWU5YD3YL/WC56J3?=
+ =?us-ascii?Q?uNYLnk2XrFfy2haaPq1MTQen7zVscQDkXgdJm4KEk8g8ClbTpNlQJfnQwJmj?=
+ =?us-ascii?Q?0qp8zSzuvmw3ibQ6MhJ+mprTcH5R2s0N2hnAt4EKyg027pLbwA7MsrQPqAeb?=
+ =?us-ascii?Q?nQlbOTm8c026C9m7SWQA3dJ1MgthSUhe0xal5fsyMwZQTGeS8+ryYIAVAQNb?=
+ =?us-ascii?Q?E0FN6MJ+Vg+5VkrOkW5Tdzr4iQWS6tr1G4959Lgs2EzWdCigS/Gay/uz3t8c?=
+ =?us-ascii?Q?/mpl1+pgCfBxZD1Ax29rYljzHyNtLUaQ5oY7ZR1ySYlp4YqatbfBUM56yCyA?=
+ =?us-ascii?Q?c0pAOQd/7VtrJNAdLvQkpWmuVM5VqlKf+IFw1vQTs2Lft72RTfDIdJMoYzQK?=
+ =?us-ascii?Q?Lay5ICB1o8GldPHg3CEZMeVJ/WWZnxmRUizlGHQVPGKWBj7xRk/tr1hX/Sc0?=
+ =?us-ascii?Q?GmW8aADpX6DZhyIn5Irw7CiCVc/dH370A/7JopojT4IeLA4ZSOV1Z90XkS6n?=
+ =?us-ascii?Q?Z9R4HMqFWoj0/JOhvH1KiYMLl2b587hboBv6ZouODVGtX0ef+jpiEUy9snR9?=
+ =?us-ascii?Q?qbrpCTNSgFprrilSCHk=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c676962-4e14-4fd4-bf17-08dab773c841
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Oct 2022 17:01:53.6938
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: M08RxEDcGGw3KqozZZLnTeIKBtVO0WkJVIkiP7ASpFli+z3ILjSJgnVtbNXR4YsW
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7295
 
-Hi Jason,
-
-Some nits below.
-
-On 2022/10/26 2:12, Jason Gunthorpe wrote:
-> This is the basic infrastructure of a new miscdevice to hold the iommufd
-> IOCTL API.
-> 
-> It provides:
->   - A miscdevice to create file descriptors to run the IOCTL interface over
-> 
->   - A table based ioctl dispatch and centralized extendable pre-validation
->     step
-> 
->   - An xarray mapping userspace ID's to kernel objects. The design has
->     multiple inter-related objects held within in a single IOMMUFD fd
-> 
->   - A simple usage count to build a graph of object relations and protect
->     against hostile userspace racing ioctls
-> 
-> The only IOCTL provided in this patch is the generic 'destroy any object
-> by handle' operation.
-> 
-> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
-
-[---8<---]
-
-> +
-> +struct iommufd_ioctl_op {
-> +	unsigned int size;
-> +	unsigned int min_size;
-> +	unsigned int ioctl_num;
-> +	int (*execute)(struct iommufd_ucmd *ucmd);
-> +};
-> +
-> +#define IOCTL_OP(_ioctl, _fn, _struct, _last)                                  \
-> +	[_IOC_NR(_ioctl) - IOMMUFD_CMD_BASE] = {                               \
-> +		.size = sizeof(_struct) +                                      \
-> +			BUILD_BUG_ON_ZERO(sizeof(union ucmd_buffer) <          \
-> +					  sizeof(_struct)),                    \
-> +		.min_size = offsetofend(_struct, _last),                       \
-> +		.ioctl_num = _ioctl,                                           \
-> +		.execute = _fn,                                                \
-> +	}
-> +static struct iommufd_ioctl_op iommufd_ioctl_ops[] = {
-
-How about making the ops "static const"?
-
-> +	IOCTL_OP(IOMMU_DESTROY, iommufd_destroy, struct iommu_destroy, id),
-> +};
-> +
-> +static long iommufd_fops_ioctl(struct file *filp, unsigned int cmd,
-> +			       unsigned long arg)
+On Tue, Oct 25, 2022 at 03:12:19PM -0300, Jason Gunthorpe wrote:
+> +int iommufd_ioas_alloc_ioctl(struct iommufd_ucmd *ucmd)
 > +{
-> +	struct iommufd_ucmd ucmd = {};
-> +	struct iommufd_ioctl_op *op;
-> +	union ucmd_buffer buf;
-> +	unsigned int nr;
-> +	int ret;
+> +	struct iommu_ioas_alloc *cmd = ucmd->cmd;
+> +	struct iommufd_ioas *ioas;
+> +	int rc;
 > +
-> +	ucmd.ictx = filp->private_data;
-> +	ucmd.ubuffer = (void __user *)arg;
-> +	ret = get_user(ucmd.user_size, (u32 __user *)ucmd.ubuffer);
-> +	if (ret)
-> +		return ret;
-> +
-> +	nr = _IOC_NR(cmd);
-> +	if (nr < IOMMUFD_CMD_BASE ||
-> +	    (nr - IOMMUFD_CMD_BASE) >= ARRAY_SIZE(iommufd_ioctl_ops))
-> +		return -ENOIOCTLCMD;
-> +	op = &iommufd_ioctl_ops[nr - IOMMUFD_CMD_BASE];
-> +	if (op->ioctl_num != cmd)
-> +		return -ENOIOCTLCMD;
-> +	if (ucmd.user_size < op->min_size)
+> +	if (cmd->flags)
 > +		return -EOPNOTSUPP;
 > +
-> +	ucmd.cmd = &buf;
-> +	ret = copy_struct_from_user(ucmd.cmd, op->size, ucmd.ubuffer,
-> +				    ucmd.user_size);
-> +	if (ret)
-> +		return ret;
-> +	ret = op->execute(&ucmd);
-> +	return ret;
-> +}
+> +	ioas = iommufd_ioas_alloc(ucmd->ictx);
+> +	if (IS_ERR(ioas))
+> +		return PTR_ERR(ioas);
 > +
-> +static const struct file_operations iommufd_fops = {
-> +	.owner = THIS_MODULE,
-> +	.open = iommufd_fops_open,
-> +	.release = iommufd_fops_release,
-> +	.unlocked_ioctl = iommufd_fops_ioctl,
-> +};
-> +
-
-[---8<---]
-
-> +
-> +static int __init iommufd_init(void)
-> +{
-> +	int ret;
-> +
-> +	ret = misc_register(&iommu_misc_dev);
-> +	if (ret) {
-> +		pr_err("Failed to register misc device\n");
-> +		return ret;
-> +	}
-> +
+> +	cmd->out_ioas_id = ioas->obj.id;
+> +	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
+> +	if (rc)
+> +		goto out_table;
+> +	iommufd_object_finalize(ucmd->ictx, &ioas->obj);
 > +	return 0;
-> +}
 > +
-> +static void __exit iommufd_exit(void)
-> +{
-> +	misc_deregister(&iommu_misc_dev);
-> +}
-> +
-> +module_init(iommufd_init);
-> +module_exit(iommufd_exit);
-> +
-> +MODULE_DESCRIPTION("I/O Address Space Management for passthrough devices");
-> +MODULE_LICENSE("GPL");
+> +out_table:
+> +	iommufd_ioas_destroy(&ioas->obj);
+> +	return rc;
 
-Could above be "GPL v2"?
+syzkaller says this should be:
 
-> diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
-> new file mode 100644
-> index 00000000000000..d1817472c27373
-> --- /dev/null
-> +++ b/include/linux/iommufd.h
-> @@ -0,0 +1,31 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * Copyright (C) 2021 Intel Corporation
-> + * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
-> + */
-> +#ifndef __LINUX_IOMMUFD_H
-> +#define __LINUX_IOMMUFD_H
-> +
-> +#include <linux/types.h>
-> +#include <linux/errno.h>
-> +#include <linux/err.h>
-> +
-> +struct iommufd_ctx;
-> +struct file;
-> +
-> +void iommufd_ctx_get(struct iommufd_ctx *ictx);
-> +
-> +#if IS_ENABLED(CONFIG_IOMMUFD)
-> +struct iommufd_ctx *iommufd_ctx_from_file(struct file *file);
-> +void iommufd_ctx_put(struct iommufd_ctx *ictx);
-> +#else /* !CONFIG_IOMMUFD */
-> +static inline struct iommufd_ctx *iommufd_ctx_from_file(struct file *file)
-> +{
-> +	return ERR_PTR(-EOPNOTSUPP);
-> +}
-> +
-> +static inline void iommufd_ctx_put(struct iommufd_ctx *ictx)
-> +{
-> +}
-> +#endif /* CONFIG_IOMMUFD */
-> +#endif
-> diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-> new file mode 100644
-> index 00000000000000..b77b7eb0aeb13c
-> --- /dev/null
-> +++ b/include/uapi/linux/iommufd.h
-> @@ -0,0 +1,55 @@
-> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-> +/* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES.
-> + */
-> +#ifndef _UAPI_IOMMUFD_H
-> +#define _UAPI_IOMMUFD_H
-> +
-> +#include <linux/types.h>
-> +#include <linux/ioctl.h>
-> +
-> +#define IOMMUFD_TYPE (';')
-> +
-> +/**
-> + * DOC: General ioctl format
-> + *
-> + * The ioctl mechanims follows a general format to allow for extensibility. Each
-                 ^^^^^^^^^ mechanism?
+out_table:
+	iommufd_object_abort_and_destroy(ucmd->ictx, &ioas->obj);
 
-> + * ioctl is passed in a structure pointer as the argument providing the size of
-> + * the structure in the first u32. The kernel checks that any structure space
-> + * beyond what it understands is 0. This allows userspace to use the backward
-> + * compatible portion while consistently using the newer, larger, structures.
-> + *
-> + * ioctls use a standard meaning for common errnos:
-> + *
-> + *  - ENOTTY: The IOCTL number itself is not supported at all
-> + *  - E2BIG: The IOCTL number is supported, but the provided structure has
-> + *    non-zero in a part the kernel does not understand.
-> + *  - EOPNOTSUPP: The IOCTL number is supported, and the structure is
-> + *    understood, however a known field has a value the kernel does not
-> + *    understand or support.
-> + *  - EINVAL: Everything about the IOCTL was understood, but a field is not
-> + *    correct.
-> + *  - ENOENT: An ID or IOVA provided does not exist.
-> + *  - ENOMEM: Out of memory.
-> + *  - EOVERFLOW: Mathematics oveflowed.
-> + *
-> + * As well as additional errnos, within specific ioctls.
-> + */
-> +enum {
-> +	IOMMUFD_CMD_BASE = 0x80,
-> +	IOMMUFD_CMD_DESTROY = IOMMUFD_CMD_BASE,
-> +};
-> +
-> +/**
-> + * struct iommu_destroy - ioctl(IOMMU_DESTROY)
-> + * @size: sizeof(struct iommu_destroy)
-> + * @id: iommufd object ID to destroy. Can by any destroyable object type.
-> + *
-> + * Destroy any object held within iommufd.
-> + */
-> +struct iommu_destroy {
-> +	__u32 size;
-> +	__u32 id;
-> +};
-> +#define IOMMU_DESTROY _IO(IOMMUFD_TYPE, IOMMUFD_CMD_DESTROY)
-> +
-> +#endif
-
-Best regards,
-baolu
+Jason
