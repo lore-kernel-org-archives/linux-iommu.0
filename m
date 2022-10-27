@@ -1,183 +1,123 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B1E01C13
-	for <iommu@lists.linux.dev>; Thu, 27 Oct 2022 12:08:28 +0000 (UTC)
-Received: by mail-pl1-f171.google.com with SMTP id f23so1232717plr.6
-        for <iommu@lists.linux.dev>; Thu, 27 Oct 2022 05:08:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=IRokpQrD/Xpoqhga6/IEwT5hyf0pX7PAPi9ZKJUnr7Q=;
-        b=JMScpzWl6emAup2u57Oz+x3Eu9xexeIgrXPigRBphDYLS17++q/iVRPSo68AKI+7HU
-         EfgGCjwU2Ux3cCL9UySpAo/NxqVFWjixbOmUZjZRvpAG8PUsbi26QqIcLHUvm3Dc+7Mu
-         tokABmH2890D/GOamLjXSHM6MQEKCFUb9JrhYTFPoO508RlLtXbGQkazNjCbw+V1FAaz
-         jm7qwXWgp9XoEvQ1BhPMwaBoBCc0GoDPc/Y4bzrIJIjKIRBFDj1aODTZM6Wohggdbqva
-         fsDS+dbhf8nPvt9M108QYnZr1E89+0CPxGqxOM6YJu8w8tq4K30L3TMD36h5vh2ysifk
-         ET6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=IRokpQrD/Xpoqhga6/IEwT5hyf0pX7PAPi9ZKJUnr7Q=;
-        b=ZXXuYr/6UZgbtLPm2CaolI1sPyuKZ2JD+I8AKNwvRmtQNfJgIEcSsqcqsr1RCFkvQn
-         Vo3/ItKvQxjGn5h79NJtusQiEuD/tYq0078Y/viziRnWlerEdYimMQJ1Bn3HlPmfxPVl
-         T1mtpC+BT7cSWO0J87REJa9/SMcoXwepvAfaroKUpOlnneLbsANGOalKWDHils+ryvEs
-         Go4lKFcoLgK6GCsY7ZxAHnVjUD5qbgsG0a8Zan2AOsWWNU0wwJG+YCItyw6OLQnIzjYM
-         F8STHgAJfl1ErZkOzS7Fi8+JhvA+WV2fieLNvOyZxof9SHoQUbMZfHh2V/TdiYiVxL9E
-         7l1g==
-X-Gm-Message-State: ACrzQf1NFMZ0n1VReTL1eIIiR1F8eRbsFQdAlLHLfDtiqKBtG5PlyY1a
-	u18Axs/VmoZVrwxXgHYhUj3a+Tqz0RajCfiLUFOZFw==
-X-Google-Smtp-Source: AMsMyM4mFDjwKvJtTg/Yzz8RozT/UYy+3pElSAq7TFuq1ZEqDR1s26iqwELHXdK9Q2XTTM+wOKNPMi+xbxQi+xSTdnA=
-X-Received: by 2002:a17:902:70c7:b0:183:3e66:fe48 with SMTP id
- l7-20020a17090270c700b001833e66fe48mr47299112plt.165.1666872508418; Thu, 27
- Oct 2022 05:08:28 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 437347B
+	for <iommu@lists.linux.dev>; Thu, 27 Oct 2022 12:46:29 +0000 (UTC)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29RCDoRa023214;
+	Thu, 27 Oct 2022 12:46:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=WQPbTRa5gR7LLgmH0RftI5Axrg8xfJRdRF9MXAxmgGU=;
+ b=ap1ZYwhsfzvTTkTyhnWPSn1Th2kSPOY6xvlTn3dqDU6ov4PCfuCPua4XYpr7qevJ/7j8
+ U9vuNt8AnSSnCzEnMM/u9CQKlvItMOW6Ros3h4IdC4t4cTkZLbx0iBMHq01l8cdP6whx
+ 0ScL8LyIo4NHVIj6afAi6FLSoSlwlKd0ZUDsA5g/WPri49QAJS1PhE0+/FhcWwgY7/D/
+ kRCRX/HIsuN+VmQjm+0TxqzbyJVWwNolmNullSnZSoP2hi3g2QKw9uCOp7GqhqQaSu7X
+ 7JzaqYJ+G+2ZQjajs53UDpgW9xss7eXw6OWCWa5i/oTAAzTqsRe207LoE1kjGCZXsYOE cA== 
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3kfst7h5jq-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 27 Oct 2022 12:46:09 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+	by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29RCZ9bO014321;
+	Thu, 27 Oct 2022 12:46:08 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+	by ppma06ams.nl.ibm.com with ESMTP id 3kfahu21ts-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 27 Oct 2022 12:46:08 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+	by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29RCjP3c51118418
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 27 Oct 2022 12:45:25 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 5B32142042;
+	Thu, 27 Oct 2022 12:44:50 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id CEC2B4203F;
+	Thu, 27 Oct 2022 12:44:49 +0000 (GMT)
+Received: from oc-nschnelle.boeblingen.de.ibm.com (unknown [9.155.199.46])
+	by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+	Thu, 27 Oct 2022 12:44:49 +0000 (GMT)
+Message-ID: <3c2249fc7abf481b15d4988c2bd6456c48154c44.camel@linux.ibm.com>
+Subject: Re: [PATCH 3/5] iommu/s390: Use RCU to allow concurrent domain_list
+ iteration
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev,
+        Joerg
+ Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy
+ <robin.murphy@arm.com>,
+        Gerd Bayer <gbayer@linux.ibm.com>,
+        Pierre Morel
+ <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, linux-kernel@vger.kernel.org
+Date: Thu, 27 Oct 2022 14:44:49 +0200
+In-Reply-To: <Y1a8qM4c2ZAM9glJ@nvidia.com>
+References: <Y07Dz/NROAMI0Hku@nvidia.com>
+	 <8e268ab5e0dadf86be5fd7ffaa9debb76cea67f3.camel@linux.ibm.com>
+	 <Y0/lMCQ8oeXJ2HTg@nvidia.com>
+	 <f3551bb461b3ef3cfc1a0c644093816be1835b3f.camel@linux.ibm.com>
+	 <Y1ErcEe82yjJI+ET@nvidia.com>
+	 <68d91d7a5aadbd46dc34470eccd6b86a84c9e47b.camel@linux.ibm.com>
+	 <Y1KgX8EwH8T+FgWC@nvidia.com>
+	 <89a748fb5caee8be5d91806aa5dfd131e92d5d82.camel@linux.ibm.com>
+	 <Y1K1AqVWEyY0/Uqy@nvidia.com>
+	 <cef734b9f9b33380c1bbff40b56bb67b3de29341.camel@linux.ibm.com>
+	 <Y1a8qM4c2ZAM9glJ@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-References: <20221018105149.820062-1-thierry.reding@gmail.com>
- <CAPDyKFopppohLJ7ptnQxpBHzMLh2SZObarQRC0bJyTwE=nky4w@mail.gmail.com> <Y1pLPHER+Pq+cRvc@orome>
-In-Reply-To: <Y1pLPHER+Pq+cRvc@orome>
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Date: Thu, 27 Oct 2022 14:07:51 +0200
-Message-ID: <CAPDyKFpG9ZjVTiK3HEqioDN8ksGpRYiXL_SLSmOfm9fjJfcrsw@mail.gmail.com>
-Subject: Re: [PATCH] iommu: Always define struct iommu_fwspec
-To: Thierry Reding <thierry.reding@gmail.com>, Prathamesh Shete <pshete@nvidia.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev, linux-mmc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: xgWQR3wne0PFPnrUNrg5-106MvEv69Ws
+X-Proofpoint-ORIG-GUID: xgWQR3wne0PFPnrUNrg5-106MvEv69Ws
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-10-27_05,2022-10-27_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
+ suspectscore=0 mlxlogscore=998 clxscore=1015 impostorscore=0 bulkscore=0
+ phishscore=0 priorityscore=1501 spamscore=0 adultscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2210170000 definitions=main-2210270068
 
-On Thu, 27 Oct 2022 at 11:11, Thierry Reding <thierry.reding@gmail.com> wrote:
->
-> On Thu, Oct 20, 2022 at 01:32:41PM +0200, Ulf Hansson wrote:
-> > On Tue, 18 Oct 2022 at 12:51, Thierry Reding <thierry.reding@gmail.com> wrote:
-> > >
-> > > From: Thierry Reding <treding@nvidia.com>
-> > >
-> > > In order to fully make use of the !IOMMU_API stub functions, make the
-> > > struct iommu_fwspec always available so that users of the stubs can keep
-> > > using the structure's internals without causing compile failures.
-> > >
-> > > Signed-off-by: Thierry Reding <treding@nvidia.com>
-> >
-> > Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
-> >
-> > > ---
-> > > Hi Joerg,
-> > >
-> > > this is a rebased patch extracted from an ancient series that never
-> > > ended up getting applied:
-> > >
-> > >         https://lore.kernel.org/all/20191209120005.2254786-3-thierry.reding@gmail.com/
-> > >
-> > > You had already acked this particular patch, so maybe you can pick this
-> > > up. I've seen at least two discussions where this was brought up again,
-> > > so I figured it'd be worth sending this out again because it can help
-> > > remove a number of #ifdef blocks throughout the kernel.
-> >
-> > Yes, this would certainly help to improve the code. To me, it looks
-> > like the current stub functions, like dev_iommu_fwspec_get() for
-> > example, aren't really useful without $subject patch.
-> >
-> > Note that, I have a pending patch for mmc that would benefit from
-> > this. To prevent me from delaying that, an easy way forward, assuming
-> > there are no objections of course, would be to send this for 6.1-rc.
->
-> Adding Prathamesh for visibility. Another alternative would be to
-> prepend this to Prathamesh's series with an Acked-by from Joerg.
+On Mon, 2022-10-24 at 13:26 -0300, Jason Gunthorpe wrote:
+> On Mon, Oct 24, 2022 at 05:22:24PM +0200, Niklas Schnelle wrote:
+> 
+> > Thanks for the explanation, still would like to grok this a bit more if
+> > you don't mind. If I do read things correctly synchronize_rcu() should
+> > run in the conext of the VFIO ioctl in this case and shouldn't block
+> > anything else in the kernel, correct? At least that's how I understand
+> > the synchronize_rcu() comments and the fact that e.g.
+> > net/vmw_vsock/virtio_transport.c:virtio_vsock_remove() also does a
+> > synchronize_rcu() and can be triggered from user-space too.
+> 
+> Yes, but I wouldn't look in the kernel to understand if things are OK
+>  
+> > So we're
+> > more worried about user-space getting slowed down rather than a Denial-
+> > of-Service against other kernel tasks.
+> 
+> Yes, functionally it is OK, but for something like vfio with vIOMMU
+> you could be looking at several domains that have to be detached
+> sequentially and with grace periods > 1s you can reach multiple
+> seconds to complete something like a close() system call. Generally it
+> should be weighed carefully
+> 
+> Jason
 
-Good idea!
+Thanks for the detailed explanation. Then let's not put a
+synchronize_rcu() in detach, as I said as long as the I/O translation
+tables are there an IOTLB flush after zpci_unregister_ioat() should
+result in an ignorable error. That said, I think if we don't have the
+synchronize_rcu() in detach we need it in s390_domain_free() before
+freeing the I/O translation tables.
 
-I will then be awaiting a new version from Prathamesh's series, that
-includes $subject patch too.
-
->
-> Joerg, any preference on how to move forward with this?
->
-> Thierry
->
-
-Kind regards
-Uffe
-
-> >
-> > >
-> > >  include/linux/iommu.h | 39 +++++++++++++++++++--------------------
-> > >  1 file changed, 19 insertions(+), 20 deletions(-)
-> > >
-> > > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> > > index a325532aeab5..e3295c45d18f 100644
-> > > --- a/include/linux/iommu.h
-> > > +++ b/include/linux/iommu.h
-> > > @@ -173,6 +173,25 @@ enum iommu_dev_features {
-> > >
-> > >  #define IOMMU_PASID_INVALID    (-1U)
-> > >
-> > > +/**
-> > > + * struct iommu_fwspec - per-device IOMMU instance data
-> > > + * @ops: ops for this device's IOMMU
-> > > + * @iommu_fwnode: firmware handle for this device's IOMMU
-> > > + * @flags: IOMMU_FWSPEC_* flags
-> > > + * @num_ids: number of associated device IDs
-> > > + * @ids: IDs which this device may present to the IOMMU
-> > > + */
-> > > +struct iommu_fwspec {
-> > > +       const struct iommu_ops  *ops;
-> > > +       struct fwnode_handle    *iommu_fwnode;
-> > > +       u32                     flags;
-> > > +       unsigned int            num_ids;
-> > > +       u32                     ids[];
-> > > +};
-> > > +
-> > > +/* ATS is supported */
-> > > +#define IOMMU_FWSPEC_PCI_RC_ATS                        (1 << 0)
-> > > +
-> > >  #ifdef CONFIG_IOMMU_API
-> > >
-> > >  /**
-> > > @@ -598,25 +617,6 @@ extern struct iommu_group *generic_device_group(struct device *dev);
-> > >  /* FSL-MC device grouping function */
-> > >  struct iommu_group *fsl_mc_device_group(struct device *dev);
-> > >
-> > > -/**
-> > > - * struct iommu_fwspec - per-device IOMMU instance data
-> > > - * @ops: ops for this device's IOMMU
-> > > - * @iommu_fwnode: firmware handle for this device's IOMMU
-> > > - * @flags: IOMMU_FWSPEC_* flags
-> > > - * @num_ids: number of associated device IDs
-> > > - * @ids: IDs which this device may present to the IOMMU
-> > > - */
-> > > -struct iommu_fwspec {
-> > > -       const struct iommu_ops  *ops;
-> > > -       struct fwnode_handle    *iommu_fwnode;
-> > > -       u32                     flags;
-> > > -       unsigned int            num_ids;
-> > > -       u32                     ids[];
-> > > -};
-> > > -
-> > > -/* ATS is supported */
-> > > -#define IOMMU_FWSPEC_PCI_RC_ATS                        (1 << 0)
-> > > -
-> > >  /**
-> > >   * struct iommu_sva - handle to a device-mm bond
-> > >   */
-> > > @@ -680,7 +680,6 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group);
-> > >
-> > >  struct iommu_ops {};
-> > >  struct iommu_group {};
-> > > -struct iommu_fwspec {};
-> > >  struct iommu_device {};
-> > >  struct iommu_fault_param {};
-> > >  struct iommu_iotlb_gather {};
-> > > --
-> > > 2.37.3
-> > >
-> >
-> > Kind regards
-> > Uffe
