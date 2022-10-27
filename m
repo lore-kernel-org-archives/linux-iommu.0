@@ -1,188 +1,136 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2054.outbound.protection.outlook.com [40.107.237.54])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B2727B;
-	Thu, 27 Oct 2022 13:35:38 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UoGMDcMD9Q4WEhMrmvVgALbZtyc4zfj4oEdUffG8bWs5+IiG71S6p9fhi/M7fyxNlZMCHE9vxYifmTvX1LmSfSn29Wf3UwB8s97bkqjvNYL5KIm7T930b2dnForUOxUv/YxOIsK3pPGtyN6JGjhGaS6Yzxolz1iKRyqDkv32/SMVFddmNeVYEQr+qAkdv1f+W5VASQVkrKpTlx4vCbHT+M5Mk7UH72GRLF2+aLTfmPNFudUDfyeZ+bDbeIVu2X6LyuKTRiCw3rjGwG6CUxvGXGDFKKvYTTP4Qkj6ETKzVx+seKSO/dQPCoo/Tsgc9D6cybjTM6SgIVltCw5fVCNbVQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=RuPZOxaREtENcc7j2lYu2AH6WvPf9YKiP9SRSe7OK7M=;
- b=BT9usZkjwGm+XSZHW+duHJj5wQxZoUvDDu6C++iU0lGN+v68UsEcsUl7AuEer6wjER1vtNJvy12jGbwGJleCud8oYb7FoyMQ+YMshMHTp6xSVK6FL6+5gcuV2C37vO+MPCvZYd6GKGEjkNhu8t+KmlXV/Iq8nwdTfwrDB8pD9A4EomRjWv+ojz5rZAUWtD2RJn0Ug7E8Axazjzp6fW8XP7bnARbJ8/RFx6q+kNS/H3kiKwFoF7en4PeLdscnr5dp+UcmUuFeLbAlyvCxTyq07LAyVjXNUW/KkiV/2P+uTFMAq2yTyQ4+WfIU+TlmjPk+N3C+0QYwtcW5rSefPwrOtw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RuPZOxaREtENcc7j2lYu2AH6WvPf9YKiP9SRSe7OK7M=;
- b=a1zMlsTTucpE5CC9EUEj3FNXSTwAOmu4ufw37aZCuZk3bcdoixqmHJ88Qm+1TsTmvfdctT30UY42xcILt3vV791xMcH4ZBaGQKancfncTi94wFtSxYP2RXYRI6xLS7GcYUmUUpIjBmuRs4uUeckXr7NY4jyhG0b7tyfdBMMp1M9KOCaj2J8AR/hO0of+RiBMwoLX78fVh+5bFXYEhKUng86er8wwEhxmKbPf2rMupBYwtWmu3HJjIpAdHVZ4NhiNMKcMWoPEv8gFwkanTTB07GsV6eDJpIldwkVlklZmv6Ai62Coe8Le1zyNsKUbgLTisUdzdbCGfSdUm9Q4lPQYfg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by BN9PR12MB5084.namprd12.prod.outlook.com (2603:10b6:408:135::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.14; Thu, 27 Oct
- 2022 13:35:34 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::7a81:a4e4:bb9c:d1de]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::7a81:a4e4:bb9c:d1de%6]) with mapi id 15.20.5746.021; Thu, 27 Oct 2022
- 13:35:34 +0000
-Date: Thu, 27 Oct 2022 10:35:32 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>, bpf@vger.kernel.org,
-	Jonathan Corbet <corbet@lwn.net>,
-	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-	linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
-	Nick Desaulniers <ndesaulniers@google.com>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>
-Cc: Alex Williamson <alex.williamson@redhat.com>,
-	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
-	Cornelia Huck <cohuck@redhat.com>,
-	Daniel Jordan <daniel.m.jordan@oracle.com>,
-	David Gibson <david@gibson.dropbear.id.au>,
-	Eric Auger <eric.auger@redhat.com>,
-	Eric Farman <farman@linux.ibm.com>,
-	Jason Wang <jasowang@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Joao Martins <joao.m.martins@oracle.com>, kvm@vger.kernel.org,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-	Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
-Subject: Re: [PATCH v3 9/15] iommufd: Data structure to provide IOVA to PFN
- mapping
-Message-ID: <Y1qJJKnf2TTqznzc@nvidia.com>
-References: <0-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
- <9-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
-X-ClientProxiedBy: MN2PR01CA0054.prod.exchangelabs.com (2603:10b6:208:23f::23)
- To LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA2FB7B
+	for <iommu@lists.linux.dev>; Thu, 27 Oct 2022 13:37:44 +0000 (UTC)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29RDKUSF027366;
+	Thu, 27 Oct 2022 13:37:38 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=Ejl5T5rkkQKY1oA+EH7MPZdTTOrGhLrVrHhBB8NLPaA=;
+ b=PglINzJXYiVe4F0ZW5eltGBfoTy1FGILlDJT/TPmADIpuFVzFG9ory5HMOoQG4G+lflc
+ J03o+a2kpPaZ8vmdVokQTiVepwiUU8efaorgPUSHJkFuekCiaLXJFfAh4m3v65er1x7m
+ uiwTvURLb8LRpkqVdmeMfK+xST4jgxrc3cqWG0F6jfU4zp/3jxST60KysftUHjrsc1SD
+ RufzTTiCAx1EM9NcbPz/TBqjuxzx2iTLR7jUzN6GrlwvGHpJmm6PtbM5kjKqpgz8ULad
+ xdR5cxJ+gpaDSxTWo7G2LPzl3L/q6xOyb7VzYFefogUtE3KwpoBUsbHNmUzOhFOAnukx 3A== 
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3kftspgj1w-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 27 Oct 2022 13:37:33 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+	by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29RDKJAa015026;
+	Thu, 27 Oct 2022 13:36:01 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+	by ppma05fra.de.ibm.com with ESMTP id 3kfahd1dcw-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 27 Oct 2022 13:36:01 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+	by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29RDZwEV64094482
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 27 Oct 2022 13:35:58 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 18F0E11C04A;
+	Thu, 27 Oct 2022 13:35:58 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 9E06911C050;
+	Thu, 27 Oct 2022 13:35:57 +0000 (GMT)
+Received: from oc-nschnelle.boeblingen.de.ibm.com (unknown [9.155.199.46])
+	by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+	Thu, 27 Oct 2022 13:35:57 +0000 (GMT)
+Message-ID: <c98fa11d4efa86ca676a9d164893db8af8ab3693.camel@linux.ibm.com>
+Subject: Re: [PATCH 3/5] iommu/s390: Use RCU to allow concurrent domain_list
+ iteration
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev,
+        Joerg
+ Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy
+ <robin.murphy@arm.com>,
+        Gerd Bayer <gbayer@linux.ibm.com>,
+        Pierre Morel
+ <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, linux-kernel@vger.kernel.org
+Date: Thu, 27 Oct 2022 15:35:57 +0200
+In-Reply-To: <Y1p/7YS338ghykGz@nvidia.com>
+References: <Y0/lMCQ8oeXJ2HTg@nvidia.com>
+	 <f3551bb461b3ef3cfc1a0c644093816be1835b3f.camel@linux.ibm.com>
+	 <Y1ErcEe82yjJI+ET@nvidia.com>
+	 <68d91d7a5aadbd46dc34470eccd6b86a84c9e47b.camel@linux.ibm.com>
+	 <Y1KgX8EwH8T+FgWC@nvidia.com>
+	 <89a748fb5caee8be5d91806aa5dfd131e92d5d82.camel@linux.ibm.com>
+	 <Y1K1AqVWEyY0/Uqy@nvidia.com>
+	 <cef734b9f9b33380c1bbff40b56bb67b3de29341.camel@linux.ibm.com>
+	 <Y1a8qM4c2ZAM9glJ@nvidia.com>
+	 <3c2249fc7abf481b15d4988c2bd6456c48154c44.camel@linux.ibm.com>
+	 <Y1p/7YS338ghykGz@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BN9PR12MB5084:EE_
-X-MS-Office365-Filtering-Correlation-Id: 62bb2367-a2b1-44c5-3b9f-08dab8201fdc
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	U8SDirlRm7mXv/e6TQgUV7cjnCRF5A5JXdEsN4k3LCyk5KQ7/4oHp3j1LEpAJF4JO9so+Bnj10FT//qPhY259044mZZEdfErPS2GXcdePXMrFP/4658Xt94WBsUVVX6UX1K6pIqCjlB88+Rbho2RbfcFJCh1DQH8aLjudI1aZ0D01Lm9uTTobz0UtXdCvFTm7MaNzHINdaR5y0c+QKH5a/MW2toOpYIU+ryhlpp4oPy87tfi+egPq7ql0mooO7Y6Jqf/iPVNAB8pPdtt/zYTjpX1WKYWXvnJ0HzUGB8n4UeMaIc6D0fQPqU7UA7sHs7irafyJFWpS/RFWBsrXeXCdMMSVynQ0kMKNckZJlAngeVGxPLaOXtULxJatswgyVMNtyHq/G/GUWyhIWt47f21YN4mCHK8LS1OCrj7SoklXnj+piv8l+rH6EPZF/P9fkMCYJRrGIwPlg38zIytVbz+J1kKAVfHGdOxp703RVP6GInL6+KUF5X+a4l5WycOo1jHnnKDsCZL7fW1UXKYtaI4s0cKBjrDz6AOs7jQTlgN6ZjAevl/i4dj8V9UZzf9Px+0dfAYiXTWRRneKvAEPanoD59Ppbv/zRn+91iVWmYX0LOXnyH9Z3hnsP9YG24NyBegDY+9b/6NVXlUVWxp894IPrwVsYMT6gZ226YcHID+a88sYcHCwrYNmr2C8y0c6VvKgmBiK/fI793EqXKO7p/j0ZcQNucBDXEoDTDTxAqjK+DLL6631JhKzkt0QrmbvwR8
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(366004)(396003)(39860400002)(136003)(451199015)(38100700002)(921005)(478600001)(6486002)(54906003)(316002)(66476007)(110136005)(6512007)(26005)(8676002)(66556008)(41300700001)(83380400001)(2906002)(4326008)(8936002)(2616005)(5660300002)(66946007)(6506007)(36756003)(7406005)(7416002)(86362001)(186003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?TOuRjgwpEi1MYzqDdcSWU2BHhOrfvEAxzM9li5Q7bzktKIF5OrY9Ny0LKFx9?=
- =?us-ascii?Q?7fU0vUzVD7GndSV9XkEZGZSeapOfENAwsUaQSNypJYfcd3N4/U/UrEq7N4Kr?=
- =?us-ascii?Q?JncojlXxnVdBx9WduY8cvX1S48QylwFuLumXmhR82rc1C4sX/ajGvmB3phs4?=
- =?us-ascii?Q?HKTA/RkK4B68JkatBzDA+7fEfdz6nGZrm61lW45p+r/ML9jeC2RVv0bymfjN?=
- =?us-ascii?Q?ezDm2jy9DqG3JcUvQ3SN0Iy0DeGEXGvjvs3ebGv01Z1WcBGnlXJXxbdUoTf+?=
- =?us-ascii?Q?RLkTsL/0zugXjP79L9jhEg90twkUJXCuQv894YEoMEUXJtbimkztKK/Nf65W?=
- =?us-ascii?Q?vLg4Ae05ChrIKRt8WBBv90T8g2nlrhueDYqXeggNCW5pNv+fQ/IwtD+T1OjU?=
- =?us-ascii?Q?hBWM0lQXej3LBVI9maCkBwkIaRhobAxVqFWqZt4W2P1hCtCppLj2x9kTYe5Y?=
- =?us-ascii?Q?t2hFBYnTeE83p8KmrWLQ2Ivlrpj5igdqoJyPvgyEmBoQ1zE4g9ByKlOvlMbs?=
- =?us-ascii?Q?ZRf3Nn2qjHktDYWp8GR/eQwQUjQLGxRMTVKJ036VD/g2TDdx4/shLxt2tjVJ?=
- =?us-ascii?Q?Yn6y7T386YDnXhAViRPMiQp5lw7FjxS3y7Si3Y3S/E2xTMZzErvvMk95qxs6?=
- =?us-ascii?Q?xGk5fhHoSwCyUVH+H+6Ldq5JqdYMT1+BIy7IbsW3MxFNQv1Cs8uSyq+pDKbY?=
- =?us-ascii?Q?XCKPoAGk+xWyZ+6jH2j1dFsmHLfqox3cx7pGwDsUEfRmGd7NX8b3FmbW3x0L?=
- =?us-ascii?Q?8xgsXfnj8IxP25W8KkvwpPz9w1yhW6xLW4+u7P9jewe8lNf+PL6xCVKtM7De?=
- =?us-ascii?Q?q7tvtdmwoinxfs1jJf/W0uic3ShIRCpj80QeSmDLMpquBY9NCD3+oM/hBZzb?=
- =?us-ascii?Q?3S4elHb1g9GZak9/UGY07dnVdyQ1t+ywfAP/cP8nzIfsvA4E0lKkHN7gFZNI?=
- =?us-ascii?Q?2/fZE9eWYf23Io0wFM93Hg2N9153Ix9hiCSBeRaRuQnd9qeiw/Z+yx5gR6wF?=
- =?us-ascii?Q?NWDuzqOMaumYg1wDEalJHLZJ56+/cUI9QiW2VedLyX7A0dIdrskJco8MYic+?=
- =?us-ascii?Q?tdxBWZfVi4VsmZcsRz8fWk9oF+RQPAhNyg39ufeztV+X+xvp90/+kD2z4sqX?=
- =?us-ascii?Q?VhzYDu/ZU7v4PPw5oxpIdEaS06BduDjsJO0dCaTkcSws/OG0dpOr/ojE1zww?=
- =?us-ascii?Q?yKyEtqKpNDXBQaeKLVWRuVYCJTzuD+mOmFgrwlCnCHcbwLA7/KEOd77H92Jr?=
- =?us-ascii?Q?3DRtyjbmwxP9gMy7xQFQ6BXeErie2qAzFx73rZHLzHEeyf7Ofpvqy8NtPCZb?=
- =?us-ascii?Q?JqLY1KrVkFJvOHTHEUw1mzuPTdtV5rXpe5HxAMe1PwGmlqtJmFHLQYDTTD5I?=
- =?us-ascii?Q?evVx/fOZkenQR0BMljqSQ76NtgUwrCxGMuw0AMGPu5fPwQ6fKlH36dUX65PR?=
- =?us-ascii?Q?qVs5HprlMza17wn1MbTAfQJkwQK/19YvcgBNvZ0JsTMdDc2Q8w3dvCnVqH8g?=
- =?us-ascii?Q?hZED5bKl/OYK0NCeq9G6dDoxp/RFoNDg62x9qCrcEa4hxxbE19+nAeKKD0oO?=
- =?us-ascii?Q?TC9D6+EQ+m0wHynq5BU=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 62bb2367-a2b1-44c5-3b9f-08dab8201fdc
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Oct 2022 13:35:34.1056
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Q5DEy6UNROy9ohH5n1ZgYvy3LLxh3FILCeKBit9ugcb+fl5jfvSyvjlRBzfH8F1h
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5084
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 4UEH8TwDmXoB9rlck4hFIklWCJOZ7Bvu
+X-Proofpoint-GUID: 4UEH8TwDmXoB9rlck4hFIklWCJOZ7Bvu
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-10-27_07,2022-10-27_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
+ mlxscore=0 bulkscore=0 priorityscore=1501 spamscore=0 phishscore=0
+ adultscore=0 impostorscore=0 mlxlogscore=999 suspectscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2210170000 definitions=main-2210270073
 
-On Tue, Oct 25, 2022 at 03:12:18PM -0300, Jason Gunthorpe wrote:
+On Thu, 2022-10-27 at 09:56 -0300, Jason Gunthorpe wrote:
+> On Thu, Oct 27, 2022 at 02:44:49PM +0200, Niklas Schnelle wrote:
+> > On Mon, 2022-10-24 at 13:26 -0300, Jason Gunthorpe wrote:
+> > > On Mon, Oct 24, 2022 at 05:22:24PM +0200, Niklas Schnelle wrote:
+> > > 
+> > > > Thanks for the explanation, still would like to grok this a bit more if
+> > > > you don't mind. If I do read things correctly synchronize_rcu() should
+> > > > run in the conext of the VFIO ioctl in this case and shouldn't block
+> > > > anything else in the kernel, correct? At least that's how I understand
+> > > > the synchronize_rcu() comments and the fact that e.g.
+> > > > net/vmw_vsock/virtio_transport.c:virtio_vsock_remove() also does a
+> > > > synchronize_rcu() and can be triggered from user-space too.
+> > > 
+> > > Yes, but I wouldn't look in the kernel to understand if things are OK
+> > >  
+> > > > So we're
+> > > > more worried about user-space getting slowed down rather than a Denial-
+> > > > of-Service against other kernel tasks.
+> > > 
+> > > Yes, functionally it is OK, but for something like vfio with vIOMMU
+> > > you could be looking at several domains that have to be detached
+> > > sequentially and with grace periods > 1s you can reach multiple
+> > > seconds to complete something like a close() system call. Generally it
+> > > should be weighed carefully
+> > > 
+> > > Jason
+> > 
+> > Thanks for the detailed explanation. Then let's not put a
+> > synchronize_rcu() in detach, as I said as long as the I/O translation
+> > tables are there an IOTLB flush after zpci_unregister_ioat() should
+> > result in an ignorable error. That said, I think if we don't have the
+> > synchronize_rcu() in detach we need it in s390_domain_free() before
+> > freeing the I/O translation tables.
+> 
+> Yes, it would be appropriate to free those using one of the rcu
+> free'rs, (eg kfree_rcu) not synchronize_rcu()
+> 
+> Jason
 
-> +/* All existing area's conform to an increased page size */
-> +static int iopt_check_iova_alignment(struct io_pagetable *iopt,
-> +				     unsigned long new_iova_alignment)
-> +{
-> +	struct iopt_area *area;
-> +
-> +	lockdep_assert_held(&iopt->iova_rwsem);
-> +
-> +	for (area = iopt_area_iter_first(iopt, 0, ULONG_MAX); area;
-> +	     area = iopt_area_iter_next(area, 0, ULONG_MAX))
-> +		if ((iopt_area_iova(area) % new_iova_alignment) ||
-> +		    (iopt_area_length(area) % new_iova_alignment))
-> +			return -EADDRINUSE;
+They are allocated via kmem_cache_alloc() from caches shared by all
+IOMMU's so can't use kfree_rcu() directly. Also we're only freeing the
+entire I/O translation table of one IOMMU at once after it is not used
+anymore. Before that it is only grown. So I think synchronize_rcu() is
+the obvious and simple choice since we only need one grace period.
 
-While working on the last syzkaller bug I noticed this doesn't reject
-bad user VAs when doing an alignment upgrade, and the return code got
-botched during some refactoring:
-
-@@ -801,14 +801,16 @@ static int iopt_fill_domain(struct io_pagetable *iopt,
- static int iopt_check_iova_alignment(struct io_pagetable *iopt,
-                                     unsigned long new_iova_alignment)
- {
-+       unsigned long align_mask = new_iova_alignment - 1;
-        struct iopt_area *area;
- 
-        lockdep_assert_held(&iopt->iova_rwsem);
- 
-        for (area = iopt_area_iter_first(iopt, 0, ULONG_MAX); area;
-             area = iopt_area_iter_next(area, 0, ULONG_MAX))
--               if ((iopt_area_iova(area) % new_iova_alignment) ||
--                   (iopt_area_length(area) % new_iova_alignment))
-+               if ((iopt_area_iova(area) & align_mask) ||
-+                   (iopt_area_length(area) & align_mask) ||
-+                   (area->page_offset & align_mask))
-                        return -EADDRINUSE;
-        return 0;
- }
-@@ -891,7 +893,7 @@ int iopt_table_add_domain(struct io_pagetable *iopt,
-        return rc;
- }
- 
--static bool iopt_calculate_iova_alignment(struct io_pagetable *iopt)
-+static int iopt_calculate_iova_alignment(struct io_pagetable *iopt)
- {
-        unsigned long new_iova_alignment;
-        struct iommu_domain *domain;
-@@ -913,7 +915,7 @@ static bool iopt_calculate_iova_alignment(struct io_pagetable *iopt)
- 
-                rc = iopt_check_iova_alignment(iopt, new_iova_alignment);
-                if (rc)
--                       return -EADDRINUSE;
-+                       return rc;
-        }
-        iopt->iova_alignment = new_iova_alignment;
-        return 0;
-
-And added a test to cover.
-
-Jason
