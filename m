@@ -1,158 +1,181 @@
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2078.outbound.protection.outlook.com [40.107.96.78])
+Received: from mail.wantstofly.org (hmm.wantstofly.org [213.239.204.108])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D4787B
-	for <iommu@lists.linux.dev>; Thu, 27 Oct 2022 05:27:13 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZJ9srAZ6ORKkm1vI7P4Oy3A2fXOXJlm+Mz8e4YHfYnBhwyitMVo5Pfydyq0I3s3Oqu2X6CXeW05A7H7m7H3xY7Gl/5T/LNal/bXj+88+po9g2HlOm4PEZIzjXMlTNZBRZw8z3pgSgpcGxucp1MIQxlEQWH32VoI6Eak76UjIkPDlRRK4cQv+EHn6AI8GML6aK5k3SQ0rxW+dtPHqn5kK2OXX8kfCo6Att1HtyQr3nt56YS1nvrzVapqJTIN+5roUktQovfrmC4RFKYFE7M1a4lIX3znXWVdR2hAjgSelNJaMJbonhMXw2KV+GqQUt8s1TkX7/jGa5HhKB/O29szaDQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WxpVqRrbQX2vXuNsDMd262iijiw3r66biyRCkfVIHyk=;
- b=N1FJdUhZFy7LE4dXP6vP3vVs8nB1JMbP4+y1hbuYc4/wjSoTG0B0dvXP/ebq+Iet6IGesRvmakmkVmEH7zuH2vq1YY+uG0RMoJ0OkaeLRuaAqZ6UewGs04F0fb6eHDgQlPjW74v9fKYbFvIDDp8dhtwVnv0nr1fDwu8eRX6YGoe3MORqBneaSnpfXoDOVyNrnauMlsim7qmQVGkecwFITLvcvpC58LrYDnTgUPzokJ3ZJTN/A7cREvJXxuLDUnPC4JHfnExy9v1JJ0+iwWGmR4Vni0axCOmqJEVQi2ube/1nY6JPEKfRUZjFrvS52H2WdC1kucZp1CeACNxJBjrspw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WxpVqRrbQX2vXuNsDMd262iijiw3r66biyRCkfVIHyk=;
- b=sDlD4i3rpiPmFToP/FUJBg2MAGHMeY+AZo3pRjSNYysu6opZPMWqSD05snyj7bQbwh9XRKdqsDuqhrfnkMXE2zL4prAbBMXlJTbPKS3Ch6AMdSvf3R+TNV2RgXWZWAYiMgYguoELyKrhLDX498wipmbQYRAe4gcqbfAAVjeTmwc=
-Received: from BN7PR02CA0030.namprd02.prod.outlook.com (2603:10b6:408:20::43)
- by SN7PR12MB6768.namprd12.prod.outlook.com (2603:10b6:806:268::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.25; Thu, 27 Oct
- 2022 05:27:11 +0000
-Received: from BN8NAM11FT115.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:20:cafe::e7) by BN7PR02CA0030.outlook.office365.com
- (2603:10b6:408:20::43) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5746.29 via Frontend
- Transport; Thu, 27 Oct 2022 05:27:11 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT115.mail.protection.outlook.com (10.13.177.151) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5746.16 via Frontend Transport; Thu, 27 Oct 2022 05:27:11 +0000
-Received: from aiemdee.1.ozlabs.ru (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Thu, 27 Oct
- 2022 00:26:57 -0500
-From: Alexey Kardashevskiy <aik@amd.com>
-To: <kvm@vger.kernel.org>
-CC: Alexey Kardashevskiy <aik@amd.com>, <linux-kernel@vger.kernel.org>,
-	<iommu@lists.linux.dev>, Ashish Kalra <ashish.kalra@amd.com>, Pankaj Gupta
-	<pankaj.gupta@amd.com>, Tom Lendacky <thomas.lendacky@amd.com>, Robin Murphy
-	<robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>,
-	Christoph Hellwig <hch@lst.de>
-Subject: [PATCH kernel] x86/swiotlb/amd: Half the size if allocation failed
-Date: Thu, 27 Oct 2022 16:26:07 +1100
-Message-ID: <20221027052607.260234-1-aik@amd.com>
-X-Mailer: git-send-email 2.37.3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEA58BA4A
+	for <iommu@lists.linux.dev>; Thu, 27 Oct 2022 08:19:38 +0000 (UTC)
+Received: by mail.wantstofly.org (Postfix, from userid 1000)
+	id 5D2EF7F527; Thu, 27 Oct 2022 11:19:30 +0300 (EEST)
+Date: Thu, 27 Oct 2022 11:19:30 +0300
+From: Lennert Buytenhek <buytenh@wantstofly.org>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	Scarlett Gourley <scarlett@arista.com>,
+	James Sewart <jamessewart@arista.com>,
+	Jack O'Sullivan <jack@arista.com>
+Subject: Re: [PATCH,RFC] iommu/vt-d: Convert dmar_fault IRQ to a threaded IRQ
+Message-ID: <Y1o/EhV+XLgA9s2r@wantstofly.org>
+References: <Y1eZbXKdJDoS8loC@wantstofly.org>
+ <028e2c63-939b-af31-88b9-b479b41ce67c@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8NAM11FT115:EE_|SN7PR12MB6768:EE_
-X-MS-Office365-Filtering-Correlation-Id: a41ba58c-7a8d-409c-4d8c-08dab7dbe639
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	Xi5uS5xgtzxV7Voi1Js4DS1E2fKZd6buCbl/GW8IyIxep5zzGLTdX+PMnabfofFG6fOdqFY9lp4Gdu/oHYFggMe0Cg16fDrUwdxCLdBVKyW8B12Xe7OTClBUHYkE1hs6sCgycVgxgRAoqP1tpPzIdR/rRo+tKIWgpEX4FI3o/DA8xh7hJGu4rhjUjP/LzSwmSUHNRta6i0MdYNuQhBR4wA/dR9tb54KPzu/M3TFPNkP2KXsZ4UqxkSfYM1sO8IF3oE0yOznRo4YUCtQf8Y59Zbfd4XE+K96Ulm5BKvCqEyqfACkFLj69x5knfJAgCfRTqDyz6Y+iPmnjfyhfL929+/C3flb0dsCwlMCMFWF/nYZus1HIlUWUQsIrQ4CGqivC8Edj0ti77tf3TM2FJoLhuH3rmI3thmS1ee1CMGH9PlNOeQ9GC233me9R+IBZDqd2J/ExiN1cy3HxL8/iTLv5VwmjxuIqTbE9QSsvG2u7nSSdCqHL4SlPOdeZ9ghSxHEXKOHPvSmwoloE+JA/ufezINKnis8s5DCUHOmiX1+gCimQLBeWu62KqHhYLeG7IXzXe7wmTbJs93SxkSdLLO8dDivyba5QN/qi2hLW2dZ0fcsw+VAt7OZjLDThswMeDIQkBJH7A6DP5n8yG3pKpY+SwdkbGanfq+PmZXzbT+Vx6f4xfnpfscDaJlF6eQ04V/ehmxB3eXSgyvUlY08vku4glvp9fJZFDFK/D4do6fthmg/yTK3RsWdW0dD2hmKd4lwY77grnDX3q2dgPoFerCLGv6zBR50WiPZR9NTZh9UssscMHjRcDLJxfB6n6qmd3AWL
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(376002)(136003)(346002)(396003)(451199015)(46966006)(40470700004)(36840700001)(2906002)(82740400003)(54906003)(47076005)(81166007)(5660300002)(41300700001)(8936002)(8676002)(70206006)(316002)(70586007)(4326008)(6916009)(336012)(40460700003)(83380400001)(426003)(1076003)(186003)(2616005)(36756003)(478600001)(82310400005)(40480700001)(36860700001)(26005)(356005)(6666004)(16526019)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Oct 2022 05:27:11.4113
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a41ba58c-7a8d-409c-4d8c-08dab7dbe639
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN8NAM11FT115.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6768
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <028e2c63-939b-af31-88b9-b479b41ce67c@linux.intel.com>
 
-At the moment the AMD encrypted platform reserves 6% of RAM for SWIOTLB
-or 1GB, whichever is less. However it is possible that there is no block
-big enough in the low memory which make SWIOTLB allocation fail and
-the kernel continues without DMA. In such case a VM hangs on DMA.
+On Wed, Oct 26, 2022 at 10:10:29AM +0800, Baolu Lu wrote:
 
-This divides the size in half and tries again reusing the existing
-remapping logic.
+> > Under a high enough I/O page fault load, the dmar_fault hardirq handler
+> > can end up starving other tasks that wanted to run on the CPU that the
+> > IRQ is being routed to.  On an i7-6700 CPU this seems to happen at
+> > around 2.5 million I/O page faults per second, and at a fraction of
+> > that rate on some of the lower-end CPUs that we use.
+> > 
+> > An I/O page fault rate of 2.5 million per second may seem like a very
+> > high number, but when we get an I/O page fault for every cache line
+> > touched by a DMA operation, this I/O page fault rate can be the result
+> > of a confused PCIe device DMAing to RAM at 2.5 * 64 = 160 MB/sec, which
+> > is not an unlikely rate to be DMAing things to RAM at.  And, in fact,
+> > when we do see PCIe devices getting confused like this, this sort of
+> > I/O page fault rate is not uncommon.
+> > 
+> > A peripheral device continuously DMAing to RAM at 160 MB/s is
+> > inarguably a bug, either in the kernel driver for the device or in the
+> > firmware for the device, and should be fixed there, but it's the sort
+> > of bug that iommu/vt-d could be handling better than it currently does,
+> > and there is a fairly simple way to achieve that.
+> > 
+> > This patch changes the dmar_fault IRQ handler to be a threaded IRQ
+> > handler.  This is a pretty minimal code change, and comes with the
+> > advantage that Intel IOMMU I/O page fault handling work is now subject
+> > to RT throttling, which allows it to be kept under control using the
+> > sched_rt_period_us / sched_rt_runtime_us parameters.
+> 
+> Thanks for the patch! I like it, but also have some concerns.
 
-This updates default_nslabs on successful allocation which looks like
-an oversight as not doing so should have broken callers of
-swiotlb_size_or_default().
+Thanks for having a look!
 
-Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
---
 
-I hit the problem with
-QEMU's "-m 16819M" where SWIOTLB was adjusted to
-0x7e200 == 1,058,013,184 (slightly less than 1GB) while
-0x7e180 still worked.
+> If you look at the commit history, you will find that the opposite
+> change took place 10+ years ago.
+> 
+> commit 477694e71113fd0694b6bb0bcc2d006b8ac62691
+> Author: Thomas Gleixner <tglx@linutronix.de>
+> Date:   Tue Jul 19 16:25:42 2011 +0200
+> 
+>     x86, iommu: Mark DMAR IRQ as non-threaded
+> 
+>     Mark this lowlevel IRQ handler as non-threaded. This prevents a boot
+>     crash when "threadirqs" is on the kernel commandline. Also the
+>     interrupt handler is handling hardware critical events which should
+>     not be delayed into a thread.
+> 
+>     Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+>     Cc: stable@kernel.org
+>     Signed-off-by: Ingo Molnar <mingo@kernel.org>
+> 
+> I am not sure whether the "boot crash" mentioned above is due to that
+> "trying to setup a threaded IRQ handler before kthreadd is started".
 
-With guest errors enabled, there are many unassigned accesses from
-virtio.
+On v6.1-rc you also get a boot crash if you force the dmar_fault IRQ
+to be a threaded IRQ without moving the IRQ registration out of the
+start_kernel() -> x86_late_time_init() -> apic_intr_mode_init() ->
+apic_bsp_setup() -> irq_remap_enable_fault_handling() ->
+enable_drhd_fault_handling() path.  The crash seen on v3.0 when forcing
+the dmar_fault IRQ to be a threaded IRQ may have been due to the same
+reason, but I'm not sure how this may have worked in 2011. :-)
 
----
- kernel/dma/swiotlb.c | 20 +++++++++++++-------
- 1 file changed, 13 insertions(+), 7 deletions(-)
+I'm not sure I agree with the "the interrupt handler is handling
+hardware critical events which should not be delayed into a thread"
+part of this commit message.  All that dmar_fault does is log
+translation faults to the console, and I don't think that anything
+will break if that gets delayed for a while.
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 339a990554e7..d28c294320fd 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -338,21 +338,27 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
- 	else
- 		tlb = memblock_alloc_low(bytes, PAGE_SIZE);
- 	if (!tlb) {
--		pr_warn("%s: failed to allocate tlb structure\n", __func__);
--		return;
--	}
--
--	if (remap && remap(tlb, nslabs) < 0) {
-+		pr_warn("%s: Failed to allocate %zu bytes tlb structure\n",
-+			__func__, bytes);
-+	} else if (remap && remap(tlb, nslabs) < 0) {
- 		memblock_free(tlb, PAGE_ALIGN(bytes));
-+		tlb = NULL;
-+		pr_warn("%s: Failed to remap %zu bytes\n", __func__, bytes);
-+	}
- 
-+	if (!tlb) {
- 		nslabs = ALIGN(nslabs >> 1, IO_TLB_SEGSIZE);
- 		if (nslabs >= IO_TLB_MIN_SLABS)
- 			goto retry;
--
--		pr_warn("%s: Failed to remap %zu bytes\n", __func__, bytes);
- 		return;
- 	}
- 
-+	if (default_nslabs != nslabs) {
-+		pr_info("SWIOTLB bounce buffer size adjusted %lu -> %lu slabs",
-+			default_nslabs, nslabs);
-+		default_nslabs = nslabs;
-+	}
-+
- 	alloc_size = PAGE_ALIGN(array_size(sizeof(*mem->slots), nslabs));
- 	mem->slots = memblock_alloc(alloc_size, PAGE_SIZE);
- 	if (!mem->slots) {
--- 
-2.37.3
 
+> > iommu/amd already uses a threaded IRQ handler for its I/O page fault
+> > reporting, and so it already has this advantage.
+> > 
+> > When IRQ remapping is enabled, iommu/vt-d will try to set up its
+> > dmar_fault IRQ handler from start_kernel() -> x86_late_time_init()
+> > -> apic_intr_mode_init() -> apic_bsp_setup() ->
+> > irq_remap_enable_fault_handling() -> enable_drhd_fault_handling(),
+> > which happens before kthreadd is started, and trying to set up a
+> > threaded IRQ handler this early on will oops.  However, there
+> > doesn't seem to be a reason why iommu/vt-d needs to set up its fault
+> > reporting IRQ handler this early, and if we remove the IRQ setup code
+> > from enable_drhd_fault_handling(), the IRQ will be registered instead
+> > from pci_iommu_init() -> intel_iommu_init() -> init_dmars(), which
+> > seems to work just fine.
+> 
+> At present, we cannot do so. Because the VT-d interrupt remapping and
+> DMA remapping can be independently enabled. In another words, it's a
+> possible case where interrupt remapping is enabled while DMA remapping
+> is not.
+
+Is there a way I can test this easily?
+
+I think we should be able to handle the "interrupt remapping enabled
+but DMA remapping disabled" case in the same way, by registering the
+dmar_fault IRQ sometime after kthreadd has been started.  I don't think
+the dmar_fault handler performs any function that is critical for the
+operation of the IOMMU, and I think that we can defer setting it up
+until whenever is convenient.
+
+Thank you!
+
+
+> > Suggested-by: Scarlett Gourley <scarlett@arista.com>
+> > Suggested-by: James Sewart <jamessewart@arista.com>
+> > Suggested-by: Jack O'Sullivan <jack@arista.com>
+> > Signed-off-by: Lennert Buytenhek <buytenh@arista.com>
+> > ---
+> >   drivers/iommu/intel/dmar.c | 27 ++-------------------------
+> >   1 file changed, 2 insertions(+), 25 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+> > index 5a8f780e7ffd..d0871fe9d04d 100644
+> > --- a/drivers/iommu/intel/dmar.c
+> > +++ b/drivers/iommu/intel/dmar.c
+> > @@ -2043,7 +2043,8 @@ int dmar_set_interrupt(struct intel_iommu *iommu)
+> >   		return -EINVAL;
+> >   	}
+> > -	ret = request_irq(irq, dmar_fault, IRQF_NO_THREAD, iommu->name, iommu);
+> > +	ret = request_threaded_irq(irq, NULL, dmar_fault, IRQF_ONESHOT,
+> > +				   iommu->name, iommu);
+> >   	if (ret)
+> >   		pr_err("Can't request irq\n");
+> >   	return ret;
+> > @@ -2051,30 +2052,6 @@ int dmar_set_interrupt(struct intel_iommu *iommu)
+> >   int __init enable_drhd_fault_handling(void)
+> >   {
+> > -	struct dmar_drhd_unit *drhd;
+> > -	struct intel_iommu *iommu;
+> > -
+> > -	/*
+> > -	 * Enable fault control interrupt.
+> > -	 */
+> > -	for_each_iommu(iommu, drhd) {
+> > -		u32 fault_status;
+> > -		int ret = dmar_set_interrupt(iommu);
+> > -
+> > -		if (ret) {
+> > -			pr_err("DRHD %Lx: failed to enable fault, interrupt, ret %d\n",
+> > -			       (unsigned long long)drhd->reg_base_addr, ret);
+> > -			return -1;
+> > -		}
+> > -
+> > -		/*
+> > -		 * Clear any previous faults.
+> > -		 */
+> > -		dmar_fault(iommu->irq, iommu);
+> > -		fault_status = readl(iommu->reg + DMAR_FSTS_REG);
+> > -		writel(fault_status, iommu->reg + DMAR_FSTS_REG);
+> > -	}
+> > -
+> >   	return 0;
+> >   }
