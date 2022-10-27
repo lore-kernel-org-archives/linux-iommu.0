@@ -1,234 +1,210 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5CCD1865
-	for <iommu@lists.linux.dev>; Thu, 27 Oct 2022 09:07:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1666861641; x=1698397641;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=ad9M3i9h/5Kfy1CALxKF2HSFy/sxmTX7+Z0mhlS5eGA=;
-  b=ny/RxVCRrsmw6ILOclo7M8LekPWbpYy43thuRgmP2iJdIor5/a2pX+wt
-   XYbbigKqQwtP3yLRqcqFmAzr/WMXr5dxTGoSgAtkQnuradP9B5ekuwrOH
-   QDrShYzq21fgMbSbaE+45LHmpyamEpiV+5hfwwNQvmMUOUjDDshYoHScW
-   St2P6TgdIO4ufHCLH6Mq8lUWrse+7gvTYg7KIVmZ+7JEqlA+7WccoG3um
-   LNvtBVVXT2C7hzW9LyC8z+AzaJLJaf33Estm7zsx6h2Bu/IkwIg5w+NMe
-   2j0zWkR4uBsvng7cq2KY7oYYnxVmTdtfpCpJIBtYBRzFZeuRHk8ZqrzGT
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="291474723"
-X-IronPort-AV: E=Sophos;i="5.95,217,1661842800"; 
-   d="scan'208";a="291474723"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 02:07:21 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="701271733"
-X-IronPort-AV: E=Sophos;i="5.95,217,1661842800"; 
-   d="scan'208";a="701271733"
-Received: from rgrilak-mobl.ger.corp.intel.com (HELO [10.213.238.72]) ([10.213.238.72])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 02:07:18 -0700
-Message-ID: <6621c4d6-c306-c1f9-eefe-818b4ff4469b@linux.intel.com>
-Date: Thu, 27 Oct 2022 10:07:16 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDB13BA50
+	for <iommu@lists.linux.dev>; Thu, 27 Oct 2022 09:11:29 +0000 (UTC)
+Received: by mail-ed1-f41.google.com with SMTP id r14so1594637edc.7
+        for <iommu@lists.linux.dev>; Thu, 27 Oct 2022 02:11:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+xthR7hB3kKLruuTcFbR1YysN8z3ovY1NUbF6DHK+Xg=;
+        b=ISeBsdRWo/8o3QohdUiKOGMoe1FxmOsFK/eTCX4gD4oKKE1zwSYGIYz+vhx4BDGBam
+         LdOGGaJChSY63d6aKLzivrpa6Sab2BSyaDpLcZU2qchUUNV9djhPkulZMPGDWSQsxdbq
+         1xmOQd97TBVP80cMTF76gzIXmJxQvEbXjefOeNxbZow2wcq1ZzeNYQklsg9verCdfqsI
+         vxmImTyL9cgjV51et0faljDJlni9cQyYP38slG3WdBTSeWw4Srn2duILUuavJ3S1CG4m
+         MOPBBZcQLwbSp0hADrCb82z1gZlV7w5jTX/1laZEKe24lcnCd8B1JFKkxLmk54u8YPa4
+         mqkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=+xthR7hB3kKLruuTcFbR1YysN8z3ovY1NUbF6DHK+Xg=;
+        b=oerIZcjS2AIjclZ4887Dh2+lIjymQ7loBqeq1zifHX3z9q9/Cyh5jsc55qb8n3YNEQ
+         vuJoUImavjv9M9G1RdtMAlNdT0063mxtPbv/D84I5+97qZIf1yeoBHotZKCxXyhoAnZs
+         UUthC6Gpx3R5j3+X8OqRZTt8J/Lr9UYF0EiIt+ia4PrnG4SnQxWhVgX1aYs/u/yrrXsK
+         2UtVcaYrYew/aYbnR2piq5ODu5DRViTlXrzdGYSzpwUqo127ZAVrOzVjfyLFMooTkKtE
+         pPI6wLwFMyAsl1VBn+Mvn5qzu8li26upjBjeyMF64+E8jAbIo/3IvVt4eMTbjFckPw+k
+         CKwQ==
+X-Gm-Message-State: ACrzQf04ZDJHw8Yr8W7qt8D8nMvjYpoPEAkeyXgy0cL5stoaHey+PCj+
+	Lq0qGfH818OOMcu/o2yFE/s=
+X-Google-Smtp-Source: AMsMyM5F0ir2W9XAtcxtdFqezqdYd1sOksNsF8XVQQkaDMgCmjnZy4WvQICVtLKo3tA7l+1TPjudAA==
+X-Received: by 2002:aa7:c054:0:b0:453:98c6:f6c4 with SMTP id k20-20020aa7c054000000b0045398c6f6c4mr44381847edo.2.1666861888005;
+        Thu, 27 Oct 2022 02:11:28 -0700 (PDT)
+Received: from orome (p200300e41f201d00f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f20:1d00:f22f:74ff:fe1f:3a53])
+        by smtp.gmail.com with ESMTPSA id o12-20020a50c90c000000b0044bfdbd8a33sm617276edh.88.2022.10.27.02.11.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Oct 2022 02:11:26 -0700 (PDT)
+Date: Thu, 27 Oct 2022 11:11:24 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Ulf Hansson <ulf.hansson@linaro.org>, Joerg Roedel <joro@8bytes.org>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Prathamesh Shete <pshete@nvidia.com>, iommu@lists.linux.dev,
+	linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu: Always define struct iommu_fwspec
+Message-ID: <Y1pLPHER+Pq+cRvc@orome>
+References: <20221018105149.820062-1-thierry.reding@gmail.com>
+ <CAPDyKFopppohLJ7ptnQxpBHzMLh2SZObarQRC0bJyTwE=nky4w@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.3
-Subject: Re: [PATCH] drm/i915: stop abusing swiotlb_max_segment
-Content-Language: en-US
-To: Christoph Hellwig <hch@lst.de>, jani.nikula@linux.intel.com,
- joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com
-Cc: airlied@gmail.com, daniel@ffwll.ch, intel-gfx@lists.freedesktop.org,
- dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
- oleksandr_tyshchenko@epam.com, marmarek@invisiblethingslab.com,
- Robert Beckett <bob.beckett@collabora.com>
-References: <20221020110308.1582518-1-hch@lst.de>
-From: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Organization: Intel Corporation UK Plc
-In-Reply-To: <20221020110308.1582518-1-hch@lst.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="e3c57vVo3DT2FWCa"
+Content-Disposition: inline
+In-Reply-To: <CAPDyKFopppohLJ7ptnQxpBHzMLh2SZObarQRC0bJyTwE=nky4w@mail.gmail.com>
+User-Agent: Mutt/2.2.7 (2022-08-07)
 
 
-On 20/10/2022 12:03, Christoph Hellwig wrote:
-> From: Robert Beckett <bob.beckett@collabora.com>
-> 
-> swiotlb_max_segment used to return either the maximum size that swiotlb
-> could bounce, or for Xen PV PAGE_SIZE even if swiotlb could bounce buffer
-> larger mappings.  This made i915 on Xen PV work as it bypasses the
-> coherency aspect of the DMA API and can't cope with bounce buffering
-> and this avoided bounce buffering for the Xen/PV case.
-> 
-> So instead of adding this hack back, check for Xen/PV directly in i915
-> for the Xen case and otherwise use the proper DMA API helper to query
-> the maximum mapping size.
-> 
-> Replace swiotlb_max_segment() calls with dma_max_mapping_size().
-> In i915_gem_object_get_pages_internal() no longer consider max_segment
-> only if CONFIG_SWIOTLB is enabled. There can be other (iommu related)
-> causes of specific max segment sizes.
-> 
-> Fixes: a2daa27c0c61 ("swiotlb: simplify swiotlb_max_segment")
-> Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-> Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> [hch: added the Xen hack, rewrote the changelog]
+--e3c57vVo3DT2FWCa
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Reviewed-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+On Thu, Oct 20, 2022 at 01:32:41PM +0200, Ulf Hansson wrote:
+> On Tue, 18 Oct 2022 at 12:51, Thierry Reding <thierry.reding@gmail.com> w=
+rote:
+> >
+> > From: Thierry Reding <treding@nvidia.com>
+> >
+> > In order to fully make use of the !IOMMU_API stub functions, make the
+> > struct iommu_fwspec always available so that users of the stubs can keep
+> > using the structure's internals without causing compile failures.
+> >
+> > Signed-off-by: Thierry Reding <treding@nvidia.com>
+>=20
+> Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+>=20
+> > ---
+> > Hi Joerg,
+> >
+> > this is a rebased patch extracted from an ancient series that never
+> > ended up getting applied:
+> >
+> >         https://lore.kernel.org/all/20191209120005.2254786-3-thierry.re=
+ding@gmail.com/
+> >
+> > You had already acked this particular patch, so maybe you can pick this
+> > up. I've seen at least two discussions where this was brought up again,
+> > so I figured it'd be worth sending this out again because it can help
+> > remove a number of #ifdef blocks throughout the kernel.
+>=20
+> Yes, this would certainly help to improve the code. To me, it looks
+> like the current stub functions, like dev_iommu_fwspec_get() for
+> example, aren't really useful without $subject patch.
+>=20
+> Note that, I have a pending patch for mmc that would benefit from
+> this. To prevent me from delaying that, an easy way forward, assuming
+> there are no objections of course, would be to send this for 6.1-rc.
 
-I'll merge this in a minute - thanks again for the cleanup!
+Adding Prathamesh for visibility. Another alternative would be to
+prepend this to Prathamesh's series with an Acked-by from Joerg.
 
-Regards,
+Joerg, any preference on how to move forward with this?
 
-Tvrtko
+Thierry
 
-> ---
->   drivers/gpu/drm/i915/gem/i915_gem_internal.c | 19 +++--------
->   drivers/gpu/drm/i915/gem/i915_gem_shmem.c    |  2 +-
->   drivers/gpu/drm/i915/gem/i915_gem_ttm.c      |  4 +--
->   drivers/gpu/drm/i915/gem/i915_gem_userptr.c  |  2 +-
->   drivers/gpu/drm/i915/i915_scatterlist.h      | 34 ++++++++++++--------
->   5 files changed, 29 insertions(+), 32 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/i915/gem/i915_gem_internal.c b/drivers/gpu/drm/i915/gem/i915_gem_internal.c
-> index c698f95af15fe..629acb403a2c9 100644
-> --- a/drivers/gpu/drm/i915/gem/i915_gem_internal.c
-> +++ b/drivers/gpu/drm/i915/gem/i915_gem_internal.c
-> @@ -6,7 +6,6 @@
->   
->   #include <linux/scatterlist.h>
->   #include <linux/slab.h>
-> -#include <linux/swiotlb.h>
->   
->   #include "i915_drv.h"
->   #include "i915_gem.h"
-> @@ -38,22 +37,12 @@ static int i915_gem_object_get_pages_internal(struct drm_i915_gem_object *obj)
->   	struct scatterlist *sg;
->   	unsigned int sg_page_sizes;
->   	unsigned int npages;
-> -	int max_order;
-> +	int max_order = MAX_ORDER;
-> +	unsigned int max_segment;
->   	gfp_t gfp;
->   
-> -	max_order = MAX_ORDER;
-> -#ifdef CONFIG_SWIOTLB
-> -	if (is_swiotlb_active(obj->base.dev->dev)) {
-> -		unsigned int max_segment;
-> -
-> -		max_segment = swiotlb_max_segment();
-> -		if (max_segment) {
-> -			max_segment = max_t(unsigned int, max_segment,
-> -					    PAGE_SIZE) >> PAGE_SHIFT;
-> -			max_order = min(max_order, ilog2(max_segment));
-> -		}
-> -	}
-> -#endif
-> +	max_segment = i915_sg_segment_size(i915->drm.dev) >> PAGE_SHIFT;
-> +	max_order = min(max_order, get_order(max_segment));
->   
->   	gfp = GFP_KERNEL | __GFP_HIGHMEM | __GFP_RECLAIMABLE;
->   	if (IS_I965GM(i915) || IS_I965G(i915)) {
-> diff --git a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-> index f42ca1179f373..11125c32dd35d 100644
-> --- a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-> +++ b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-> @@ -194,7 +194,7 @@ static int shmem_get_pages(struct drm_i915_gem_object *obj)
->   	struct intel_memory_region *mem = obj->mm.region;
->   	struct address_space *mapping = obj->base.filp->f_mapping;
->   	const unsigned long page_count = obj->base.size / PAGE_SIZE;
-> -	unsigned int max_segment = i915_sg_segment_size();
-> +	unsigned int max_segment = i915_sg_segment_size(i915->drm.dev);
->   	struct sg_table *st;
->   	struct sgt_iter sgt_iter;
->   	struct page *page;
-> diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-> index 4f861782c3e85..a4aa9500fa179 100644
-> --- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-> +++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-> @@ -189,7 +189,7 @@ static int i915_ttm_tt_shmem_populate(struct ttm_device *bdev,
->   	struct drm_i915_private *i915 = container_of(bdev, typeof(*i915), bdev);
->   	struct intel_memory_region *mr = i915->mm.regions[INTEL_MEMORY_SYSTEM];
->   	struct i915_ttm_tt *i915_tt = container_of(ttm, typeof(*i915_tt), ttm);
-> -	const unsigned int max_segment = i915_sg_segment_size();
-> +	const unsigned int max_segment = i915_sg_segment_size(i915->drm.dev);
->   	const size_t size = (size_t)ttm->num_pages << PAGE_SHIFT;
->   	struct file *filp = i915_tt->filp;
->   	struct sgt_iter sgt_iter;
-> @@ -538,7 +538,7 @@ static struct i915_refct_sgt *i915_ttm_tt_get_st(struct ttm_tt *ttm)
->   	ret = sg_alloc_table_from_pages_segment(st,
->   			ttm->pages, ttm->num_pages,
->   			0, (unsigned long)ttm->num_pages << PAGE_SHIFT,
-> -			i915_sg_segment_size(), GFP_KERNEL);
-> +			i915_sg_segment_size(i915_tt->dev), GFP_KERNEL);
->   	if (ret) {
->   		st->sgl = NULL;
->   		return ERR_PTR(ret);
-> diff --git a/drivers/gpu/drm/i915/gem/i915_gem_userptr.c b/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
-> index d4398948f0162..f34e01a7fefb9 100644
-> --- a/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
-> +++ b/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
-> @@ -129,7 +129,7 @@ static void i915_gem_object_userptr_drop_ref(struct drm_i915_gem_object *obj)
->   static int i915_gem_userptr_get_pages(struct drm_i915_gem_object *obj)
->   {
->   	const unsigned long num_pages = obj->base.size >> PAGE_SHIFT;
-> -	unsigned int max_segment = i915_sg_segment_size();
-> +	unsigned int max_segment = i915_sg_segment_size(obj->base.dev->dev);
->   	struct sg_table *st;
->   	unsigned int sg_page_sizes;
->   	struct page **pvec;
-> diff --git a/drivers/gpu/drm/i915/i915_scatterlist.h b/drivers/gpu/drm/i915/i915_scatterlist.h
-> index 9ddb3e743a3e5..b0a1db44f8950 100644
-> --- a/drivers/gpu/drm/i915/i915_scatterlist.h
-> +++ b/drivers/gpu/drm/i915/i915_scatterlist.h
-> @@ -9,7 +9,8 @@
->   
->   #include <linux/pfn.h>
->   #include <linux/scatterlist.h>
-> -#include <linux/swiotlb.h>
-> +#include <linux/dma-mapping.h>
-> +#include <xen/xen.h>
->   
->   #include "i915_gem.h"
->   
-> @@ -127,19 +128,26 @@ static inline unsigned int i915_sg_dma_sizes(struct scatterlist *sg)
->   	return page_sizes;
->   }
->   
-> -static inline unsigned int i915_sg_segment_size(void)
-> +static inline unsigned int i915_sg_segment_size(struct device *dev)
->   {
-> -	unsigned int size = swiotlb_max_segment();
-> -
-> -	if (size == 0)
-> -		size = UINT_MAX;
-> -
-> -	size = rounddown(size, PAGE_SIZE);
-> -	/* swiotlb_max_segment_size can return 1 byte when it means one page. */
-> -	if (size < PAGE_SIZE)
-> -		size = PAGE_SIZE;
-> -
-> -	return size;
-> +	size_t max = min_t(size_t, UINT_MAX, dma_max_mapping_size(dev));
-> +
-> +	/*
-> +	 * For Xen PV guests pages aren't contiguous in DMA (machine) address
-> +	 * space.  The DMA API takes care of that both in dma_alloc_* (by
-> +	 * calling into the hypervisor to make the pages contiguous) and in
-> +	 * dma_map_* (by bounce buffering).  But i915 abuses ignores the
-> +	 * coherency aspects of the DMA API and thus can't cope with bounce
-> +	 * buffering actually happening, so add a hack here to force small
-> +	 * allocations and mappings when running in PV mode on Xen.
-> +	 *
-> +	 * Note this will still break if bounce buffering is required for other
-> +	 * reasons, like confidential computing hypervisors or PCIe root ports
-> +	 * with addressing limitations.
-> +	 */
-> +	if (xen_pv_domain())
-> +		max = PAGE_SIZE;
-> +	return round_down(max, PAGE_SIZE);
->   }
->   
->   bool i915_sg_trim(struct sg_table *orig_st);
+>=20
+> >
+> >  include/linux/iommu.h | 39 +++++++++++++++++++--------------------
+> >  1 file changed, 19 insertions(+), 20 deletions(-)
+> >
+> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > index a325532aeab5..e3295c45d18f 100644
+> > --- a/include/linux/iommu.h
+> > +++ b/include/linux/iommu.h
+> > @@ -173,6 +173,25 @@ enum iommu_dev_features {
+> >
+> >  #define IOMMU_PASID_INVALID    (-1U)
+> >
+> > +/**
+> > + * struct iommu_fwspec - per-device IOMMU instance data
+> > + * @ops: ops for this device's IOMMU
+> > + * @iommu_fwnode: firmware handle for this device's IOMMU
+> > + * @flags: IOMMU_FWSPEC_* flags
+> > + * @num_ids: number of associated device IDs
+> > + * @ids: IDs which this device may present to the IOMMU
+> > + */
+> > +struct iommu_fwspec {
+> > +       const struct iommu_ops  *ops;
+> > +       struct fwnode_handle    *iommu_fwnode;
+> > +       u32                     flags;
+> > +       unsigned int            num_ids;
+> > +       u32                     ids[];
+> > +};
+> > +
+> > +/* ATS is supported */
+> > +#define IOMMU_FWSPEC_PCI_RC_ATS                        (1 << 0)
+> > +
+> >  #ifdef CONFIG_IOMMU_API
+> >
+> >  /**
+> > @@ -598,25 +617,6 @@ extern struct iommu_group *generic_device_group(st=
+ruct device *dev);
+> >  /* FSL-MC device grouping function */
+> >  struct iommu_group *fsl_mc_device_group(struct device *dev);
+> >
+> > -/**
+> > - * struct iommu_fwspec - per-device IOMMU instance data
+> > - * @ops: ops for this device's IOMMU
+> > - * @iommu_fwnode: firmware handle for this device's IOMMU
+> > - * @flags: IOMMU_FWSPEC_* flags
+> > - * @num_ids: number of associated device IDs
+> > - * @ids: IDs which this device may present to the IOMMU
+> > - */
+> > -struct iommu_fwspec {
+> > -       const struct iommu_ops  *ops;
+> > -       struct fwnode_handle    *iommu_fwnode;
+> > -       u32                     flags;
+> > -       unsigned int            num_ids;
+> > -       u32                     ids[];
+> > -};
+> > -
+> > -/* ATS is supported */
+> > -#define IOMMU_FWSPEC_PCI_RC_ATS                        (1 << 0)
+> > -
+> >  /**
+> >   * struct iommu_sva - handle to a device-mm bond
+> >   */
+> > @@ -680,7 +680,6 @@ bool iommu_group_dma_owner_claimed(struct iommu_gro=
+up *group);
+> >
+> >  struct iommu_ops {};
+> >  struct iommu_group {};
+> > -struct iommu_fwspec {};
+> >  struct iommu_device {};
+> >  struct iommu_fault_param {};
+> >  struct iommu_iotlb_gather {};
+> > --
+> > 2.37.3
+> >
+>=20
+> Kind regards
+> Uffe
+
+--e3c57vVo3DT2FWCa
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmNaSzkACgkQ3SOs138+
+s6FOpg/+J4Dp7U85QdWkE9egyBiaNU6fizWwIQM/Zivy6ZrcPCcr6hqi4k7kSz+4
+7pmMS4BxAi/cVxvHKhVYptnK15+9fDJsp5Y5STE7idEjOCWENvUFi4/DlwtZ0Q/e
+Uq6oU8t5LpvXoM7jg/PIJ0s/sBjzHMEhLNutCkq4stC7aj28k5OqX4c+/t6j+kbx
+TUFuu2g4ypjKzhxNxsnWC3iRPXNovrjfoS0dLo4hAwgpZWsiutEaEim9DxWtSELe
+ASf8Z02vSxbvn9ikgu6hMAUvL1KW5P1j6Kklji2ZkYqX3a3sTYATnXsHEe+BFvhw
+biBuzYLJ07fDsMqMdwGZEgbqeaKGUw9S9YzxAXtvK3yfSgTk+zS0u1hz6hmsYIiQ
+8cIaYciPVvEKbMgCQzMoPYymf49+8fASPJBnw59NT5SDlq+j6o+e5Bji7VgsOqDl
+4Mrwb/VPJguFYFozt0KQQDXtp2fHSZCYjkPJxvRy01NUMbaIVNB+eRX5lBcyeFqy
+w5PPZrJZjFN0znMpwSOTjCinwFxlrFFL9k0CMk6xgPihsxbDnGUKimL/cKFAWeXG
+FvpSqRRyV/QaI9rKKB4wvN4DOUqFQbEKy7/P70h5T2nxYIUhktqxWKsZKQ/hTvps
+yEF8pEPDbEilgNkz4RKy0b3lUhA+d+KptH6nv4HdgnrBzsG7smA=
+=rRso
+-----END PGP SIGNATURE-----
+
+--e3c57vVo3DT2FWCa--
