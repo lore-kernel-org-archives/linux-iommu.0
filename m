@@ -1,181 +1,234 @@
-Received: from mail.wantstofly.org (hmm.wantstofly.org [213.239.204.108])
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEA58BA4A
-	for <iommu@lists.linux.dev>; Thu, 27 Oct 2022 08:19:38 +0000 (UTC)
-Received: by mail.wantstofly.org (Postfix, from userid 1000)
-	id 5D2EF7F527; Thu, 27 Oct 2022 11:19:30 +0300 (EEST)
-Date: Thu, 27 Oct 2022 11:19:30 +0300
-From: Lennert Buytenhek <buytenh@wantstofly.org>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	Scarlett Gourley <scarlett@arista.com>,
-	James Sewart <jamessewart@arista.com>,
-	Jack O'Sullivan <jack@arista.com>
-Subject: Re: [PATCH,RFC] iommu/vt-d: Convert dmar_fault IRQ to a threaded IRQ
-Message-ID: <Y1o/EhV+XLgA9s2r@wantstofly.org>
-References: <Y1eZbXKdJDoS8loC@wantstofly.org>
- <028e2c63-939b-af31-88b9-b479b41ce67c@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5CCD1865
+	for <iommu@lists.linux.dev>; Thu, 27 Oct 2022 09:07:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1666861641; x=1698397641;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ad9M3i9h/5Kfy1CALxKF2HSFy/sxmTX7+Z0mhlS5eGA=;
+  b=ny/RxVCRrsmw6ILOclo7M8LekPWbpYy43thuRgmP2iJdIor5/a2pX+wt
+   XYbbigKqQwtP3yLRqcqFmAzr/WMXr5dxTGoSgAtkQnuradP9B5ekuwrOH
+   QDrShYzq21fgMbSbaE+45LHmpyamEpiV+5hfwwNQvmMUOUjDDshYoHScW
+   St2P6TgdIO4ufHCLH6Mq8lUWrse+7gvTYg7KIVmZ+7JEqlA+7WccoG3um
+   LNvtBVVXT2C7hzW9LyC8z+AzaJLJaf33Estm7zsx6h2Bu/IkwIg5w+NMe
+   2j0zWkR4uBsvng7cq2KY7oYYnxVmTdtfpCpJIBtYBRzFZeuRHk8ZqrzGT
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="291474723"
+X-IronPort-AV: E=Sophos;i="5.95,217,1661842800"; 
+   d="scan'208";a="291474723"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 02:07:21 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10512"; a="701271733"
+X-IronPort-AV: E=Sophos;i="5.95,217,1661842800"; 
+   d="scan'208";a="701271733"
+Received: from rgrilak-mobl.ger.corp.intel.com (HELO [10.213.238.72]) ([10.213.238.72])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2022 02:07:18 -0700
+Message-ID: <6621c4d6-c306-c1f9-eefe-818b4ff4469b@linux.intel.com>
+Date: Thu, 27 Oct 2022 10:07:16 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <028e2c63-939b-af31-88b9-b479b41ce67c@linux.intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.3
+Subject: Re: [PATCH] drm/i915: stop abusing swiotlb_max_segment
+Content-Language: en-US
+To: Christoph Hellwig <hch@lst.de>, jani.nikula@linux.intel.com,
+ joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com
+Cc: airlied@gmail.com, daniel@ffwll.ch, intel-gfx@lists.freedesktop.org,
+ dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+ oleksandr_tyshchenko@epam.com, marmarek@invisiblethingslab.com,
+ Robert Beckett <bob.beckett@collabora.com>
+References: <20221020110308.1582518-1-hch@lst.de>
+From: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Organization: Intel Corporation UK Plc
+In-Reply-To: <20221020110308.1582518-1-hch@lst.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Wed, Oct 26, 2022 at 10:10:29AM +0800, Baolu Lu wrote:
 
-> > Under a high enough I/O page fault load, the dmar_fault hardirq handler
-> > can end up starving other tasks that wanted to run on the CPU that the
-> > IRQ is being routed to.  On an i7-6700 CPU this seems to happen at
-> > around 2.5 million I/O page faults per second, and at a fraction of
-> > that rate on some of the lower-end CPUs that we use.
-> > 
-> > An I/O page fault rate of 2.5 million per second may seem like a very
-> > high number, but when we get an I/O page fault for every cache line
-> > touched by a DMA operation, this I/O page fault rate can be the result
-> > of a confused PCIe device DMAing to RAM at 2.5 * 64 = 160 MB/sec, which
-> > is not an unlikely rate to be DMAing things to RAM at.  And, in fact,
-> > when we do see PCIe devices getting confused like this, this sort of
-> > I/O page fault rate is not uncommon.
-> > 
-> > A peripheral device continuously DMAing to RAM at 160 MB/s is
-> > inarguably a bug, either in the kernel driver for the device or in the
-> > firmware for the device, and should be fixed there, but it's the sort
-> > of bug that iommu/vt-d could be handling better than it currently does,
-> > and there is a fairly simple way to achieve that.
-> > 
-> > This patch changes the dmar_fault IRQ handler to be a threaded IRQ
-> > handler.  This is a pretty minimal code change, and comes with the
-> > advantage that Intel IOMMU I/O page fault handling work is now subject
-> > to RT throttling, which allows it to be kept under control using the
-> > sched_rt_period_us / sched_rt_runtime_us parameters.
+On 20/10/2022 12:03, Christoph Hellwig wrote:
+> From: Robert Beckett <bob.beckett@collabora.com>
 > 
-> Thanks for the patch! I like it, but also have some concerns.
-
-Thanks for having a look!
-
-
-> If you look at the commit history, you will find that the opposite
-> change took place 10+ years ago.
+> swiotlb_max_segment used to return either the maximum size that swiotlb
+> could bounce, or for Xen PV PAGE_SIZE even if swiotlb could bounce buffer
+> larger mappings.  This made i915 on Xen PV work as it bypasses the
+> coherency aspect of the DMA API and can't cope with bounce buffering
+> and this avoided bounce buffering for the Xen/PV case.
 > 
-> commit 477694e71113fd0694b6bb0bcc2d006b8ac62691
-> Author: Thomas Gleixner <tglx@linutronix.de>
-> Date:   Tue Jul 19 16:25:42 2011 +0200
+> So instead of adding this hack back, check for Xen/PV directly in i915
+> for the Xen case and otherwise use the proper DMA API helper to query
+> the maximum mapping size.
 > 
->     x86, iommu: Mark DMAR IRQ as non-threaded
+> Replace swiotlb_max_segment() calls with dma_max_mapping_size().
+> In i915_gem_object_get_pages_internal() no longer consider max_segment
+> only if CONFIG_SWIOTLB is enabled. There can be other (iommu related)
+> causes of specific max segment sizes.
 > 
->     Mark this lowlevel IRQ handler as non-threaded. This prevents a boot
->     crash when "threadirqs" is on the kernel commandline. Also the
->     interrupt handler is handling hardware critical events which should
->     not be delayed into a thread.
+> Fixes: a2daa27c0c61 ("swiotlb: simplify swiotlb_max_segment")
+> Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+> Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> [hch: added the Xen hack, rewrote the changelog]
+
+Reviewed-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+
+I'll merge this in a minute - thanks again for the cleanup!
+
+Regards,
+
+Tvrtko
+
+> ---
+>   drivers/gpu/drm/i915/gem/i915_gem_internal.c | 19 +++--------
+>   drivers/gpu/drm/i915/gem/i915_gem_shmem.c    |  2 +-
+>   drivers/gpu/drm/i915/gem/i915_gem_ttm.c      |  4 +--
+>   drivers/gpu/drm/i915/gem/i915_gem_userptr.c  |  2 +-
+>   drivers/gpu/drm/i915/i915_scatterlist.h      | 34 ++++++++++++--------
+>   5 files changed, 29 insertions(+), 32 deletions(-)
 > 
->     Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
->     Cc: stable@kernel.org
->     Signed-off-by: Ingo Molnar <mingo@kernel.org>
-> 
-> I am not sure whether the "boot crash" mentioned above is due to that
-> "trying to setup a threaded IRQ handler before kthreadd is started".
-
-On v6.1-rc you also get a boot crash if you force the dmar_fault IRQ
-to be a threaded IRQ without moving the IRQ registration out of the
-start_kernel() -> x86_late_time_init() -> apic_intr_mode_init() ->
-apic_bsp_setup() -> irq_remap_enable_fault_handling() ->
-enable_drhd_fault_handling() path.  The crash seen on v3.0 when forcing
-the dmar_fault IRQ to be a threaded IRQ may have been due to the same
-reason, but I'm not sure how this may have worked in 2011. :-)
-
-I'm not sure I agree with the "the interrupt handler is handling
-hardware critical events which should not be delayed into a thread"
-part of this commit message.  All that dmar_fault does is log
-translation faults to the console, and I don't think that anything
-will break if that gets delayed for a while.
-
-
-> > iommu/amd already uses a threaded IRQ handler for its I/O page fault
-> > reporting, and so it already has this advantage.
-> > 
-> > When IRQ remapping is enabled, iommu/vt-d will try to set up its
-> > dmar_fault IRQ handler from start_kernel() -> x86_late_time_init()
-> > -> apic_intr_mode_init() -> apic_bsp_setup() ->
-> > irq_remap_enable_fault_handling() -> enable_drhd_fault_handling(),
-> > which happens before kthreadd is started, and trying to set up a
-> > threaded IRQ handler this early on will oops.  However, there
-> > doesn't seem to be a reason why iommu/vt-d needs to set up its fault
-> > reporting IRQ handler this early, and if we remove the IRQ setup code
-> > from enable_drhd_fault_handling(), the IRQ will be registered instead
-> > from pci_iommu_init() -> intel_iommu_init() -> init_dmars(), which
-> > seems to work just fine.
-> 
-> At present, we cannot do so. Because the VT-d interrupt remapping and
-> DMA remapping can be independently enabled. In another words, it's a
-> possible case where interrupt remapping is enabled while DMA remapping
-> is not.
-
-Is there a way I can test this easily?
-
-I think we should be able to handle the "interrupt remapping enabled
-but DMA remapping disabled" case in the same way, by registering the
-dmar_fault IRQ sometime after kthreadd has been started.  I don't think
-the dmar_fault handler performs any function that is critical for the
-operation of the IOMMU, and I think that we can defer setting it up
-until whenever is convenient.
-
-Thank you!
-
-
-> > Suggested-by: Scarlett Gourley <scarlett@arista.com>
-> > Suggested-by: James Sewart <jamessewart@arista.com>
-> > Suggested-by: Jack O'Sullivan <jack@arista.com>
-> > Signed-off-by: Lennert Buytenhek <buytenh@arista.com>
-> > ---
-> >   drivers/iommu/intel/dmar.c | 27 ++-------------------------
-> >   1 file changed, 2 insertions(+), 25 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-> > index 5a8f780e7ffd..d0871fe9d04d 100644
-> > --- a/drivers/iommu/intel/dmar.c
-> > +++ b/drivers/iommu/intel/dmar.c
-> > @@ -2043,7 +2043,8 @@ int dmar_set_interrupt(struct intel_iommu *iommu)
-> >   		return -EINVAL;
-> >   	}
-> > -	ret = request_irq(irq, dmar_fault, IRQF_NO_THREAD, iommu->name, iommu);
-> > +	ret = request_threaded_irq(irq, NULL, dmar_fault, IRQF_ONESHOT,
-> > +				   iommu->name, iommu);
-> >   	if (ret)
-> >   		pr_err("Can't request irq\n");
-> >   	return ret;
-> > @@ -2051,30 +2052,6 @@ int dmar_set_interrupt(struct intel_iommu *iommu)
-> >   int __init enable_drhd_fault_handling(void)
-> >   {
-> > -	struct dmar_drhd_unit *drhd;
-> > -	struct intel_iommu *iommu;
-> > -
-> > -	/*
-> > -	 * Enable fault control interrupt.
-> > -	 */
-> > -	for_each_iommu(iommu, drhd) {
-> > -		u32 fault_status;
-> > -		int ret = dmar_set_interrupt(iommu);
-> > -
-> > -		if (ret) {
-> > -			pr_err("DRHD %Lx: failed to enable fault, interrupt, ret %d\n",
-> > -			       (unsigned long long)drhd->reg_base_addr, ret);
-> > -			return -1;
-> > -		}
-> > -
-> > -		/*
-> > -		 * Clear any previous faults.
-> > -		 */
-> > -		dmar_fault(iommu->irq, iommu);
-> > -		fault_status = readl(iommu->reg + DMAR_FSTS_REG);
-> > -		writel(fault_status, iommu->reg + DMAR_FSTS_REG);
-> > -	}
-> > -
-> >   	return 0;
-> >   }
+> diff --git a/drivers/gpu/drm/i915/gem/i915_gem_internal.c b/drivers/gpu/drm/i915/gem/i915_gem_internal.c
+> index c698f95af15fe..629acb403a2c9 100644
+> --- a/drivers/gpu/drm/i915/gem/i915_gem_internal.c
+> +++ b/drivers/gpu/drm/i915/gem/i915_gem_internal.c
+> @@ -6,7 +6,6 @@
+>   
+>   #include <linux/scatterlist.h>
+>   #include <linux/slab.h>
+> -#include <linux/swiotlb.h>
+>   
+>   #include "i915_drv.h"
+>   #include "i915_gem.h"
+> @@ -38,22 +37,12 @@ static int i915_gem_object_get_pages_internal(struct drm_i915_gem_object *obj)
+>   	struct scatterlist *sg;
+>   	unsigned int sg_page_sizes;
+>   	unsigned int npages;
+> -	int max_order;
+> +	int max_order = MAX_ORDER;
+> +	unsigned int max_segment;
+>   	gfp_t gfp;
+>   
+> -	max_order = MAX_ORDER;
+> -#ifdef CONFIG_SWIOTLB
+> -	if (is_swiotlb_active(obj->base.dev->dev)) {
+> -		unsigned int max_segment;
+> -
+> -		max_segment = swiotlb_max_segment();
+> -		if (max_segment) {
+> -			max_segment = max_t(unsigned int, max_segment,
+> -					    PAGE_SIZE) >> PAGE_SHIFT;
+> -			max_order = min(max_order, ilog2(max_segment));
+> -		}
+> -	}
+> -#endif
+> +	max_segment = i915_sg_segment_size(i915->drm.dev) >> PAGE_SHIFT;
+> +	max_order = min(max_order, get_order(max_segment));
+>   
+>   	gfp = GFP_KERNEL | __GFP_HIGHMEM | __GFP_RECLAIMABLE;
+>   	if (IS_I965GM(i915) || IS_I965G(i915)) {
+> diff --git a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
+> index f42ca1179f373..11125c32dd35d 100644
+> --- a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
+> +++ b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
+> @@ -194,7 +194,7 @@ static int shmem_get_pages(struct drm_i915_gem_object *obj)
+>   	struct intel_memory_region *mem = obj->mm.region;
+>   	struct address_space *mapping = obj->base.filp->f_mapping;
+>   	const unsigned long page_count = obj->base.size / PAGE_SIZE;
+> -	unsigned int max_segment = i915_sg_segment_size();
+> +	unsigned int max_segment = i915_sg_segment_size(i915->drm.dev);
+>   	struct sg_table *st;
+>   	struct sgt_iter sgt_iter;
+>   	struct page *page;
+> diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+> index 4f861782c3e85..a4aa9500fa179 100644
+> --- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+> +++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+> @@ -189,7 +189,7 @@ static int i915_ttm_tt_shmem_populate(struct ttm_device *bdev,
+>   	struct drm_i915_private *i915 = container_of(bdev, typeof(*i915), bdev);
+>   	struct intel_memory_region *mr = i915->mm.regions[INTEL_MEMORY_SYSTEM];
+>   	struct i915_ttm_tt *i915_tt = container_of(ttm, typeof(*i915_tt), ttm);
+> -	const unsigned int max_segment = i915_sg_segment_size();
+> +	const unsigned int max_segment = i915_sg_segment_size(i915->drm.dev);
+>   	const size_t size = (size_t)ttm->num_pages << PAGE_SHIFT;
+>   	struct file *filp = i915_tt->filp;
+>   	struct sgt_iter sgt_iter;
+> @@ -538,7 +538,7 @@ static struct i915_refct_sgt *i915_ttm_tt_get_st(struct ttm_tt *ttm)
+>   	ret = sg_alloc_table_from_pages_segment(st,
+>   			ttm->pages, ttm->num_pages,
+>   			0, (unsigned long)ttm->num_pages << PAGE_SHIFT,
+> -			i915_sg_segment_size(), GFP_KERNEL);
+> +			i915_sg_segment_size(i915_tt->dev), GFP_KERNEL);
+>   	if (ret) {
+>   		st->sgl = NULL;
+>   		return ERR_PTR(ret);
+> diff --git a/drivers/gpu/drm/i915/gem/i915_gem_userptr.c b/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
+> index d4398948f0162..f34e01a7fefb9 100644
+> --- a/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
+> +++ b/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
+> @@ -129,7 +129,7 @@ static void i915_gem_object_userptr_drop_ref(struct drm_i915_gem_object *obj)
+>   static int i915_gem_userptr_get_pages(struct drm_i915_gem_object *obj)
+>   {
+>   	const unsigned long num_pages = obj->base.size >> PAGE_SHIFT;
+> -	unsigned int max_segment = i915_sg_segment_size();
+> +	unsigned int max_segment = i915_sg_segment_size(obj->base.dev->dev);
+>   	struct sg_table *st;
+>   	unsigned int sg_page_sizes;
+>   	struct page **pvec;
+> diff --git a/drivers/gpu/drm/i915/i915_scatterlist.h b/drivers/gpu/drm/i915/i915_scatterlist.h
+> index 9ddb3e743a3e5..b0a1db44f8950 100644
+> --- a/drivers/gpu/drm/i915/i915_scatterlist.h
+> +++ b/drivers/gpu/drm/i915/i915_scatterlist.h
+> @@ -9,7 +9,8 @@
+>   
+>   #include <linux/pfn.h>
+>   #include <linux/scatterlist.h>
+> -#include <linux/swiotlb.h>
+> +#include <linux/dma-mapping.h>
+> +#include <xen/xen.h>
+>   
+>   #include "i915_gem.h"
+>   
+> @@ -127,19 +128,26 @@ static inline unsigned int i915_sg_dma_sizes(struct scatterlist *sg)
+>   	return page_sizes;
+>   }
+>   
+> -static inline unsigned int i915_sg_segment_size(void)
+> +static inline unsigned int i915_sg_segment_size(struct device *dev)
+>   {
+> -	unsigned int size = swiotlb_max_segment();
+> -
+> -	if (size == 0)
+> -		size = UINT_MAX;
+> -
+> -	size = rounddown(size, PAGE_SIZE);
+> -	/* swiotlb_max_segment_size can return 1 byte when it means one page. */
+> -	if (size < PAGE_SIZE)
+> -		size = PAGE_SIZE;
+> -
+> -	return size;
+> +	size_t max = min_t(size_t, UINT_MAX, dma_max_mapping_size(dev));
+> +
+> +	/*
+> +	 * For Xen PV guests pages aren't contiguous in DMA (machine) address
+> +	 * space.  The DMA API takes care of that both in dma_alloc_* (by
+> +	 * calling into the hypervisor to make the pages contiguous) and in
+> +	 * dma_map_* (by bounce buffering).  But i915 abuses ignores the
+> +	 * coherency aspects of the DMA API and thus can't cope with bounce
+> +	 * buffering actually happening, so add a hack here to force small
+> +	 * allocations and mappings when running in PV mode on Xen.
+> +	 *
+> +	 * Note this will still break if bounce buffering is required for other
+> +	 * reasons, like confidential computing hypervisors or PCIe root ports
+> +	 * with addressing limitations.
+> +	 */
+> +	if (xen_pv_domain())
+> +		max = PAGE_SIZE;
+> +	return round_down(max, PAGE_SIZE);
+>   }
+>   
+>   bool i915_sg_trim(struct sg_table *orig_st);
