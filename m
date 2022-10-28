@@ -1,220 +1,176 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2068.outbound.protection.outlook.com [40.107.96.68])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBE542CA4
-	for <iommu@lists.linux.dev>; Fri, 28 Oct 2022 17:01:15 +0000 (UTC)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29SFghvG001128;
-	Fri, 28 Oct 2022 16:04:10 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=/UxvKL5Ig6VFiXv94NOVkSIIHUnbRiag6SyoU1kkxDQ=;
- b=ZDpzPYOWZnRhwJyBrluQinwHPkAyvwoYXQL7GwhkV01/Ki7oLyLKjWaKabJep44JoJ66
- DXpoupF1MeryeUgPgI8KnH2wCnKLfvFabcYN/UTUuX7e6X37IAP+qZ7MP/jo5CAlJEzX
- HD9A9tYdtj6F2rSV5cCb1kKauXTXw0eJx0TUJd+AJT7biqMkHXEo/fzjp7oRTdWuJDRK
- /R2bH/wzUGgIn2h3oLivd5RuPpeQUXN3k+fgXgk68tT5virDOmlcwgVx5pOzlFffDafa
- KATS5Z9li4nA7cSCMRVx+J2RavOCPoTExn5LSO+v6B+XwjxJBjV3ixfTKlO11u6+px1u Hw== 
-Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3kghy8grxe-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 28 Oct 2022 16:04:00 +0000
-Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
-	by ppma04wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29SFpr6a024714;
-	Fri, 28 Oct 2022 16:03:55 GMT
-Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
-	by ppma04wdc.us.ibm.com with ESMTP id 3kfah7verr-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 28 Oct 2022 16:03:55 +0000
-Received: from smtpav03.wdc07v.mail.ibm.com ([9.208.128.112])
-	by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29SG3smV2491026
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 28 Oct 2022 16:03:54 GMT
-Received: from smtpav03.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id A2CA958073;
-	Fri, 28 Oct 2022 16:03:53 +0000 (GMT)
-Received: from smtpav03.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id AD76A5805F;
-	Fri, 28 Oct 2022 16:03:51 +0000 (GMT)
-Received: from [9.160.93.208] (unknown [9.160.93.208])
-	by smtpav03.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Fri, 28 Oct 2022 16:03:51 +0000 (GMT)
-Message-ID: <7da1ab0b-e78a-2ed1-0263-e9174c3af256@linux.ibm.com>
-Date: Fri, 28 Oct 2022 12:03:51 -0400
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89813D50E
+	for <iommu@lists.linux.dev>; Fri, 28 Oct 2022 18:40:13 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RwEPPVCw9qPgTTzznYcr9ApbUWsmcQ9rg8JiApoB9MD/CJMb4xH7QQkcytAbtyT0q0yn/r6ukYirYBsP1M+mYTha+onaMexlWLVylhgrb/ctu13PRHEVP4SQLfRQ7h8qizEux0XPU/8SB7RwSpuNh/QjrEYCaovZUoRCTkOfM1RgVxmvGDEwqCKT781Eb45C+KtCeamO0fw5Yqlfd8Y5RtsdDhzJqrwXeDgRww+mydqXu3Cqe7WA7E+BbLwkP6Pz8c8Ob1LkHexzd0mVNzVhtjCaYXTVwlldcPiKQUaruyfNo92fJqJNAOgX24oKy1YU0WSAObOOThJ4jrYm4rpgoA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=htcZIqepCP6hsVb4IF2PQt1e4QeaSDSrXJLOFoA3PkM=;
+ b=cE1PZeS79RJlDHgzAx+mFx2ePTB7eVF9eQUxmgMX+mdqe3lls6lmkXne7QpvqEALxx32PzjUILI9MjWqnIKsJQPm0mJ7+DFd7V7mAgt1SBY+8CeWAaQyNeul4x7mB6xBBhS3h8A53x4M1m/YvjiP4S6iug1ZbnVY4lQXUZhvPEU7m5OSRDY9TIEePzDz2xsDgeK4UBaw+tW2kODAg4+INu39uzWoR3G6ZP+OdqFMWLMTzFnZ1T0+YXDetdfUT48VhiY5eVxZe5Co8EnKITBFxhDZV4iyuWzrinjBuLRdGGwh897JiYKTXOHtU1PddrJhj5O1jrka6SdRiB2D5o1PoQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=htcZIqepCP6hsVb4IF2PQt1e4QeaSDSrXJLOFoA3PkM=;
+ b=rPOooY+pWsI2tMY0DrlARW1dRGAwJwBOJwN+EPvNCy/wQJliSKaathR4QvlBcql75sXBDPlKevWlCzsHm+I+W0o3OWFH7sdGSlV4tQYjdbCdLlt9FMMowevFJREqy8gAoy8dwbzXyiUEuSlJMdySEJ/yJ7sSouyKv+z6+iyfhYxaezAKpPlRvu/krAPRSlEPUojimMweVpnm488V81ZFiQzkAJ0PPL1TsJG4aP7JI2ultUU57pQLYll3Vt3HmlCEaCaxZkDsGlo3saNxI+rW5biIdka0JhopFNnd4UzU9e52uRJaB6Qw+Scuq00nUiH/kLjGs6DCQmKls1uO7O6cCg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by BL1PR12MB5803.namprd12.prod.outlook.com (2603:10b6:208:393::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.15; Fri, 28 Oct
+ 2022 18:40:10 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::7a81:a4e4:bb9c:d1de]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::7a81:a4e4:bb9c:d1de%6]) with mapi id 15.20.5769.015; Fri, 28 Oct 2022
+ 18:40:10 +0000
+Date: Fri, 28 Oct 2022 15:40:09 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: Alexander Gordeev <agordeev@linux.ibm.com>,
+	David Airlie <airlied@gmail.com>,
+	Tony Krowiak <akrowiak@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Cornelia Huck <cohuck@redhat.com>, Daniel Vetter <daniel@ffwll.ch>,
+	Diana Craciun <diana.craciun@oss.nxp.com>,
+	dri-devel@lists.freedesktop.org, Eric Auger <eric.auger@redhat.com>,
+	Eric Farman <farman@linux.ibm.com>,
+	Harald Freudenberger <freude@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>, intel-gfx@lists.freedesktop.org,
+	intel-gvt-dev@lists.freedesktop.org, iommu@lists.linux.dev,
+	Jani Nikula <jani.nikula@linux.intel.com>,
+	Jason Herne <jjherne@linux.ibm.com>,
+	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+	kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+	Longfang Liu <liulongfang@huawei.com>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Peter Oberparleiter <oberpar@linux.ibm.com>,
+	Halil Pasic <pasic@linux.ibm.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+	Vineeth Vijayan <vneethv@linux.ibm.com>,
+	Will Deacon <will@kernel.org>, Yishai Hadas <yishaih@nvidia.com>,
+	Zhenyu Wang <zhenyuw@linux.intel.com>,
+	Zhi Wang <zhi.a.wang@intel.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH 04/10] vfio: Move storage of allow_unsafe_interrupts to
+ vfio_main.c
+Message-ID: <Y1wiCc33Jh5QY+1f@nvidia.com>
+References: <0-v1-4991695894d8+211-vfio_iommufd_jgg@nvidia.com>
+ <4-v1-4991695894d8+211-vfio_iommufd_jgg@nvidia.com>
+ <20221026152442.4855c5de.alex.williamson@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221026152442.4855c5de.alex.williamson@redhat.com>
+X-ClientProxiedBy: MN2PR01CA0049.prod.exchangelabs.com (2603:10b6:208:23f::18)
+ To LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: [PATCH 2/5] iommu/s390: Add I/O TLB ops
-Content-Language: en-US
-To: Niklas Schnelle <schnelle@linux.ibm.com>, iommu@lists.linux.dev,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: Gerd Bayer <gbayer@linux.ibm.com>, Pierre Morel <pmorel@linux.ibm.com>,
-        linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        agordeev@linux.ibm.com, svens@linux.ibm.com,
-        linux-kernel@vger.kernel.org
-References: <20221018145132.998866-1-schnelle@linux.ibm.com>
- <20221018145132.998866-3-schnelle@linux.ibm.com>
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <20221018145132.998866-3-schnelle@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 8HAKoJX2PLUmZbLnwHR0HMxnCbyoJzpN
-X-Proofpoint-GUID: 8HAKoJX2PLUmZbLnwHR0HMxnCbyoJzpN
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-10-28_07,2022-10-27_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
- priorityscore=1501 clxscore=1015 impostorscore=0 malwarescore=0
- lowpriorityscore=0 suspectscore=0 spamscore=0 phishscore=0 mlxscore=0
- adultscore=0 mlxlogscore=999 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2210170000 definitions=main-2210280100
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BL1PR12MB5803:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1735e01d-c6a0-42e5-9a48-08dab913d7e0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	2B2/Gl1XVGcTdsvsBaXbvdyHdcUuhuxMszLsbqyo3UUfxKiuPJl4zam8IFRmNvPCSnbD0eo4IQtGU3U5HeI5+feFN98yGX/7Fv1yeWwys65jNHGl9AK1M8btuvPoiOFcA2DFjt2NOlGU8ATeQsrVl+zZqHMnLq+Eija7ALfZ9XRZgjB0xqiTjTRUIaUHBLzCYdTbMwNvlmxURrE+UXwAb/2NyIqrtQ8nHi8tWMLIzuom9N3djzL2aEpR9ahks0syxKdOJzNRU9rETBOpZtEDnwUGLY/r9dRDgNyuuj+OIaTobN/vjmk9/quAwjqEHat2hAhBXwtMTWlWC5u2fLnCP+iW3nXZAqvJmoQl7ZlvOpkRZINHVMAzhIC1aJLcl5APvwWBd6hDxV5jAdldOyVCq8XhrgO01Phu59NGLkVctdUhnzts4HWULueJKyb+G+SLFrbWDeOpChinWc/PdRzTGiBSHe7udoWQESEbsUTCfniTEcTa8D0yU2gHSlxtY1oIWAeEx8v89PWhTuoA4wYWNbPplLcoiZVoJthkTroCKA3GKSGbE0nfyAIG1wIxetZaJtDCMjkVqwkwkcVuJW4kOhfOuSJ1p0o9/x+8410+U2Kcnufy5xe3dP5YB0zANdijySX1OYXl0x1O1wxrB308+KC/wzkIHjjkDUpv6XAzDaF1QJs0iBjGdVpLEwZCDPgumyvicGgxKNPJ1HXP2i/niQTYqWDnfFpJA59iQFZIcdwFSWXElrH3d0yJJ/XQUvYD
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(366004)(39860400002)(376002)(136003)(346002)(451199015)(86362001)(36756003)(38100700002)(6916009)(83380400001)(7406005)(7416002)(2906002)(26005)(6512007)(2616005)(186003)(6506007)(66946007)(6486002)(478600001)(5660300002)(54906003)(8936002)(8676002)(316002)(4326008)(66476007)(66556008)(41300700001)(67856001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?ykAtMpZ1+tW7tE0VcOCwqTfsH44Iy0iFw04E86pYqkHDHBEmFtEuJJzyH4iF?=
+ =?us-ascii?Q?RGL4Lgy9UEGAIWhCOBIlBFka6dxL9UKrfrxB1djqIaA9j2yVTKZGwR9TSl2I?=
+ =?us-ascii?Q?2RXoWlhgqXhhE7HHV5zRITfc8YljyOWDWkJW0b3NI3sOdUhto1f5tpfNsM/1?=
+ =?us-ascii?Q?gb6v10F5C7u5L5fLmKVD4DhZwmPhB74bxCzJjNSte29MBH5NnfanmdF/Cj8j?=
+ =?us-ascii?Q?U25c7g1K7sqDQGvTWJRdunT+/30GhHURUUpuSjEMBMHbvvKdAQUgOEnvO2g1?=
+ =?us-ascii?Q?mJQRzjfOe7ORyMo3Wq/ZfK7pfDHMj33aSLcCesGKwuj5xnvc1qUXONajrDTi?=
+ =?us-ascii?Q?WfJ4LxS+A8bP2JEFjRL3Fw/eOjdPhKq0Pdp8beeDy0jX/VI2SSjtISxw3ClT?=
+ =?us-ascii?Q?UPvnmiYSzKh/jXiAdweHO1G2kjrYC2I8V4vgUorh++Wd70A+/9q4KqciXwiv?=
+ =?us-ascii?Q?5aXJlB/fJOwG8j+ueWqmE8vDdmLT+FCzhwLAw15dB4OgEOkKGuhJrPtemaQZ?=
+ =?us-ascii?Q?dkFEZVMZerGQx3GimHs7GQEK4LhWkakszC1GiFHSEcFZyCZtr+kPgJ0F7QBc?=
+ =?us-ascii?Q?Yq0K9beM2ojLdHyUvpTRdisX/zx4JvykRHhG1UGo+yVQjHXEL1WgDpJ/Nwrq?=
+ =?us-ascii?Q?EtOE0Afyo7yPQEh9Xbtos2isTfA7LkZU1hhV+cS8JKyEs+ULP9JCdCB7zmMz?=
+ =?us-ascii?Q?wX6a/WWOxqY8lok5Rrdb/XxtGYghaPpPimyy+9AylN7cx3PT7lOCl9yfrY5s?=
+ =?us-ascii?Q?RV5cUttNiftTN3soSoh/fBLEwVcmaHk2rQCOQr1g91NCNtX381ym2K9zmt+W?=
+ =?us-ascii?Q?T85cVRXf+Mt9cvr9CF212Unos3M0fWqMwff2d0OcXo7c2ZJ5vIaBeJFdLdBv?=
+ =?us-ascii?Q?PI0iaBdeD6dmALTQ9UiC0zX8bnsXdJWFNbl4icSYaIUdkJ3d6oy/PDcO5faT?=
+ =?us-ascii?Q?HSE95i1g4Lnrb/Rr77VbLtGnjcVVNOj4I5QoN+sEDpLVIK2lVkXEdFHN23Ea?=
+ =?us-ascii?Q?B8UJCD1jDCyTKnE3GgxhemKOCVFqw8tOSjsSaMrymt/3XViCmzsGW/THFS9q?=
+ =?us-ascii?Q?h/pp6QyTxZ5pyTah1w4LZvKP/rib4im4gcLe+2MxKIP8tpUHM+IquJJWgbEk?=
+ =?us-ascii?Q?Ha2yjEP+eXsn3btqpfgDGZkgkM7E0s1i+O1Qj7FyTC3ViuGZZkl5areUcdYa?=
+ =?us-ascii?Q?XSAc+L1izQGYsY5e7qhX/8qYuss78wQCDBhm4U94J44Kmj1Erg1VBuLMhcro?=
+ =?us-ascii?Q?i9Fb0/i3WCzgSUaBDXuJAySUqJTWzDnUI6wS9EA3+eAwdPnkKfwtAcG3FGu9?=
+ =?us-ascii?Q?kJdTtAWCfkwKVOIz3SXC3SqTCMKAcOWWH3ttHt9014TtPs6byeQ5OHId11F1?=
+ =?us-ascii?Q?Mk/PzipL1NRneXu21Yx0kohNbmVBUgmsjkkqrpaz0z4mxLQ2y7ySeYvJkwFm?=
+ =?us-ascii?Q?hfNiSXlca09NgokrradO9wUd1st9QYRjBmaHSqpzkE1/nTmFAQHcYFw918cc?=
+ =?us-ascii?Q?xj7UI93Sys749pi5gMjUA/GSX97IeROga1jZJiwRuu+Y7HpRD5Oe1UbOhZQd?=
+ =?us-ascii?Q?bXk/bpGryTypXY4f+LU=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1735e01d-c6a0-42e5-9a48-08dab913d7e0
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Oct 2022 18:40:10.6196
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1BPcD6yXZbeioRHkziyRdz2pdqwxBxB3zpdMCH3Q3Ymoag27MsZ3nsxHeztTfKHM
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5803
 
-On 10/18/22 10:51 AM, Niklas Schnelle wrote:
-> Currently s390-iommu does an I/O TLB flush (RPCIT) for every update of
-> the I/O translation table explicitly. For one this is wasteful since
-> RPCIT can be skipped after a mapping operation if zdev->tlb_refresh is
-> unset. Moreover we can do a single RPCIT for a range of pages including
-> whne doing lazy unmapping.
+On Wed, Oct 26, 2022 at 03:24:42PM -0600, Alex Williamson wrote:
+> On Tue, 25 Oct 2022 15:17:10 -0300
+> Jason Gunthorpe <jgg@nvidia.com> wrote:
 > 
-> Thankfully both of these optimizations can be achieved by implementing
-> the IOMMU operations common code provides for the different types of I/O
-> tlb flushes:
+> > This legacy module knob has become uAPI, when set on the vfio_iommu_type1
+> > it disables some security protections in the iommu drivers. Move the
+> > storage for this knob to vfio_main.c so that iommufd can access it too.
 > 
->  * flush_iotlb_all: Flushes the I/O TLB for the entire IOVA space
->  * iotlb_sync:  Flushes the I/O TLB for a range of pages that can be
->    gathered up, for example to implement lazy unmapping.
->  * iotlb_sync_map: Flushes the I/O TLB after a mapping operation
-> 
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> ---
->  drivers/iommu/s390-iommu.c | 76 ++++++++++++++++++++++++++++++++------
->  1 file changed, 65 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-> index ee88e717254b..a4c2e9bc6d83 100644
-> --- a/drivers/iommu/s390-iommu.c
-> +++ b/drivers/iommu/s390-iommu.c
-> @@ -199,14 +199,72 @@ static void s390_iommu_release_device(struct device *dev)
->  		__s390_iommu_detach_device(zdev);
->  }
->  
-> +static void s390_iommu_flush_iotlb_all(struct iommu_domain *domain)
-> +{
-> +	struct s390_domain *s390_domain = to_s390_domain(domain);
-> +	struct zpci_dev *zdev;
-> +	unsigned long flags;
-> +	int rc;
-> +
-> +	spin_lock_irqsave(&s390_domain->list_lock, flags);
-> +	list_for_each_entry(zdev, &s390_domain->devices, iommu_list) {
-> +		rc = zpci_refresh_trans((u64)zdev->fh << 32, zdev->start_dma,
-> +					zdev->end_dma - zdev->start_dma + 1);
-> +		if (rc)
-> +			break;
-> +	}
-> +	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
-> +}
-> +
-> +static void s390_iommu_iotlb_sync(struct iommu_domain *domain,
-> +				  struct iommu_iotlb_gather *gather)
-> +{
-> +	struct s390_domain *s390_domain = to_s390_domain(domain);
-> +	size_t size = gather->end - gather->start + 1;
-> +	struct zpci_dev *zdev;
-> +	unsigned long flags;
-> +	int rc;
-> +
-> +	/* If gather was never added to there is nothing to flush */
-> +	if (gather->start == ULONG_MAX)
-> +		return;
+> I don't really understand this, we're changing the behavior of the
+> iommufd_device_attach() operation based on the modules options of
+> vfio_iommu_type1, 
 
-Hmm, this seems a little awkward in that it depends on the init value in iommu_iotlb_gather_init never changing.  I don't see any other iommu drivers doing this -- Is there no other way to tell there's nothing to flush?
+The specific reason it was done is that we had a misconfigured test VM
+in the farm that needed it, and that VM has since been fixed. But it
+did highlight we should try to preserve this in some way.
 
-If we really need to do this, maybe some shared #define in iommu.h that is used in iommu_iotlb_gather_init and here?
+> which may not be loaded or even compiled into the
+> kernel.  Our compatibility story falls apart when VFIO_CONTAINER is not
+> set, iommufd sneaks in to usurp /dev/vfio/vfio, and the user's module
+> options for type1 go unprocessed.
 
-> +
-> +	spin_lock_irqsave(&s390_domain->list_lock, flags);
-> +	list_for_each_entry(zdev, &s390_domain->devices, iommu_list) {
-> +		rc = zpci_refresh_trans((u64)zdev->fh << 32, gather->start,
-> +					size);
-> +		if (rc)
-> +			break;
-> +	}
-> +	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
-> +}
-> +
-> +static void s390_iommu_iotlb_sync_map(struct iommu_domain *domain,
-> +				      unsigned long iova, size_t size)
-> +{
-> +	struct s390_domain *s390_domain = to_s390_domain(domain);
-> +	struct zpci_dev *zdev;
-> +	unsigned long flags;
-> +	int rc;
-> +
-> +	spin_lock_irqsave(&s390_domain->list_lock, flags);
-> +	list_for_each_entry(zdev, &s390_domain->devices, iommu_list) {
-> +		if (!zdev->tlb_refresh)
-> +			continue;
-> +		rc = zpci_refresh_trans((u64)zdev->fh << 32,
-> +					iova, size);
-> +		if (rc)
-> +			break;
-> +	}
-> +	spin_unlock_irqrestore(&s390_domain->list_lock, flags);
-> +}
-> +
->  static int s390_iommu_update_trans(struct s390_domain *s390_domain,
->  				   phys_addr_t pa, dma_addr_t dma_addr,
->  				   unsigned long nr_pages, int flags)
->  {
->  	phys_addr_t page_addr = pa & PAGE_MASK;
-> -	dma_addr_t start_dma_addr = dma_addr;
->  	unsigned long irq_flags, i;
-> -	struct zpci_dev *zdev;
->  	unsigned long *entry;
->  	int rc = 0;
->  
-> @@ -225,15 +283,6 @@ static int s390_iommu_update_trans(struct s390_domain *s390_domain,
->  		dma_addr += PAGE_SIZE;
->  	}
->  
-> -	spin_lock(&s390_domain->list_lock);
-> -	list_for_each_entry(zdev, &s390_domain->devices, iommu_list) {
-> -		rc = zpci_refresh_trans((u64)zdev->fh << 32,
-> -					start_dma_addr, nr_pages * PAGE_SIZE);
-> -		if (rc)
-> -			break;
-> -	}
-> -	spin_unlock(&s390_domain->list_lock);
-> -
->  undo_cpu_trans:
->  	if (rc && ((flags & ZPCI_PTE_VALID_MASK) == ZPCI_PTE_VALID)) {
->  		flags = ZPCI_PTE_INVALID;
-> @@ -340,6 +389,8 @@ static size_t s390_iommu_unmap_pages(struct iommu_domain *domain,
->  	if (rc)
->  		return 0;
->  
-> +	iommu_iotlb_gather_add_range(gather, iova, size);
-> +
->  	return size;
->  }
->  
-> @@ -384,6 +435,9 @@ static const struct iommu_ops s390_iommu_ops = {
->  		.detach_dev	= s390_iommu_detach_device,
->  		.map_pages	= s390_iommu_map_pages,
->  		.unmap_pages	= s390_iommu_unmap_pages,
-> +		.flush_iotlb_all = s390_iommu_flush_iotlb_all,
-> +		.iotlb_sync      = s390_iommu_iotlb_sync,
-> +		.iotlb_sync_map  = s390_iommu_iotlb_sync_map,
->  		.iova_to_phys	= s390_iommu_iova_to_phys,
->  		.free		= s390_domain_free,
->  	}
+There are two aspects here, trying to preseve the
+allow_unsafe_interrupts knob as it is already as some ABI in the best
+way we can.
 
+And the second is how do we make this work in the new world where
+there may be no type 1 module at all. This patch is not trying to
+address that topic. I am expecting a range of small adjustments before
+VFIO_CONTAINER=n becomes really fully viable.
+
+> I hate to suggest that type1 becomes a module that does nothing more
+> than maintain consistency of this variable when the full type1 isn't
+> available, but is that what we need to do?
+
+It is one idea, it depends how literal you want to be on "module
+parameters are ABI". IMHO it is a weak form of ABI and the need of
+this paramter in particular is not that common in modern times, AFAIK.
+
+So perhaps we just also expose it through vfio.ko and expect people to
+migrate. That would give a window were both options are available.
+
+Jason
