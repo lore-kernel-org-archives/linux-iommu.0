@@ -1,43 +1,43 @@
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
+Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A205912287
-	for <iommu@lists.linux.dev>; Fri, 28 Oct 2022 19:12:49 +0000 (UTC)
-Received: by mail-ej1-f54.google.com with SMTP id q9so15276728ejd.0
-        for <iommu@lists.linux.dev>; Fri, 28 Oct 2022 12:12:49 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4AE212286
+	for <iommu@lists.linux.dev>; Fri, 28 Oct 2022 19:12:51 +0000 (UTC)
+Received: by mail-ed1-f42.google.com with SMTP id 21so9244923edv.3
+        for <iommu@lists.linux.dev>; Fri, 28 Oct 2022 12:12:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=KPukQ/yCudN3mqPZzaxRUNn/wYyZYIm9PajEvh4bGro=;
-        b=lFTIh99owmh/k1Uys/CzuTK6ZozjQkmrkSRPYw/izZPPV1+ekj/xUZq+xdZIuzBSEi
-         Hu2MNhvE7/5GWe4M8T1ALVbA94OsV/nyapNTmItil0ZsWAVMW/J1VoNCQ0ecUo62zGVe
-         bVJb/7j6Y2x7lIr0mbOeB1HEYozSsBjYy+TsN12tYb4CciaQgrovy2v1b9ko7ngZ78Us
-         D5Be1E/jXuXPzcUlN8p2PDqXjp7m0sHYU7zrIWZX/sEk0LA1PBInO9VeUD7dojL8YN4x
-         WzeLw1IDjKaLdGPuqIh9RcDlMiPGdtrqOCfLZ5N4sPFu2Ky0NG7BCx3gq/ENFOtgAuy4
-         /cYQ==
+        bh=qUVwjtsAbEyzghccJECNwNsjlSoqmLTE2vHEiHldKUM=;
+        b=CkF81J/bLhvEkbgXDZGNJrKhZjbpw+En5vy4szWyGlma2xmTKHj5xj9sZzF5Q8OWsc
+         X/636m+maiTax3O8F/vnzePPJ+ep/UPQtYyXQRhxy6oRL6BaETpoXRxf1ljWNYZh6CFK
+         2wAcy6JjIS5d4JaN4blaIfzXY3ksGwPhPrE44iAXEbyBqBdiN7EXrHJE2AoMGpw++KaB
+         ATi151tirBbCWy7f+OYD6hoPFbYlqeZBf02NlIlvuyWBxXIZXdrJzn/df1+qIyPZGP8+
+         pgMCUhO/un3a41nf6CmoyGdHEpDTI6gAQY9WE+vGWvxYZs1bZScdTCWZPL4EIgdetta/
+         kW3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=KPukQ/yCudN3mqPZzaxRUNn/wYyZYIm9PajEvh4bGro=;
-        b=z5PsXy86R6ZJ3NPX1asuocBPIwGNEvRo5eZrHvz+RTIlUMl1Lko+gK/Bx8BYMTeJNS
-         JgOd7wbaL9WwVrlchOcjZFsMAqaRxrTIehruEfD0QIkdhxXglUJThkiopHNF6tSY4pJB
-         g6E4sFaJTU0fJfA79zfxA/Ueraur0qDm3obrmHEPpQDZy67/jG/2QmVOzhQVNisVkeFo
-         6yAMIudB0/GVjdyTAHXho5a96DBvRbvHGid9prRHyMavTrXKGoZ0NVV2ZbgBQr1ACL63
-         kzyzKiZ49ln6fSdChgL5nVGSYhaDiGMwYgRmo3kIJZfW+eYu6YRWGOvDmuq63R9hqfUP
-         Dpsg==
-X-Gm-Message-State: ACrzQf0ZV5N/5Jk4fpgTNuWBOS1QoJura3VQto9qR5u4R4eLMMTD6YVU
-	6DlAXsX2Jonp2pvzcg7sPukZjQ==
-X-Google-Smtp-Source: AMsMyM735bMRdxnT5KlbKqNEMak3CVb6j1Wqf6v5Pqc4XjxitPVec2Unz2ViivjTEjrkRWNu2Tgclw==
-X-Received: by 2002:a17:907:7fac:b0:7a1:cace:1352 with SMTP id qk44-20020a1709077fac00b007a1cace1352mr804100ejc.6.1666984367966;
-        Fri, 28 Oct 2022 12:12:47 -0700 (PDT)
+        bh=qUVwjtsAbEyzghccJECNwNsjlSoqmLTE2vHEiHldKUM=;
+        b=7j0jMia05m54RjrbUAInvT2T3kt1L61SmhNpqMB81z84OpIFBk8gdoD9rF9YhWRDF3
+         aJVxS0cRe/JWhqM1v8CbjsMeD4hMV2OwNlKHpKXxqqwQu7OiWMlulQykOXlj4DPfHBnJ
+         7A475aYFs3zvHrG2bDxpWtiw+7QsVptEHtF75w96hl4Nj9GdqLkZz/kpI3Ol7May1Ndy
+         XMLMdRoi4yKi/jR/2rMnxFx/Qqw4BI2yzU6hdt+ZiMAJq6R9bfzh9cYKL9ktsQ0UKteY
+         J3QKTYIeHqXitEJdsp+0LiBICn9BurHEBzxdTXhUUioQU0p2ITbWdaJhKD4nnSfSHQX7
+         zd8Q==
+X-Gm-Message-State: ACrzQf2PDdKWYE0dcTKVg9kVGaeouNSB/S7eW33TJisQFPiuj3/9bK7P
+	eZxDE840pcU5pC1Z+z2sK79uVw==
+X-Google-Smtp-Source: AMsMyM73CJQV9riRlOH59LzJeHaMT4ntFQfG7aPZVrY8/uEhUdNtkiyoiLeQF8sy6jwfL8NE7PaAfg==
+X-Received: by 2002:a05:6402:847:b0:453:943b:bf4 with SMTP id b7-20020a056402084700b00453943b0bf4mr886550edz.301.1666984369908;
+        Fri, 28 Oct 2022 12:12:49 -0700 (PDT)
 Received: from localhost (cgw.msart-bajzova4.ke.cust.o2bs.sk. [90.176.4.227])
-        by smtp.gmail.com with ESMTPSA id f1-20020a05640214c100b004623028c594sm3105183edx.49.2022.10.28.12.12.46
+        by smtp.gmail.com with ESMTPSA id ky20-20020a170907779400b00770812e2394sm2512302ejc.160.2022.10.28.12.12.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Oct 2022 12:12:47 -0700 (PDT)
+        Fri, 28 Oct 2022 12:12:49 -0700 (PDT)
 From: Sam Protsenko <semen.protsenko@linaro.org>
 To: Marek Szyprowski <m.szyprowski@samsung.com>,
 	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
@@ -54,9 +54,9 @@ Cc: Joerg Roedel <joro@8bytes.org>,
 	linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-samsung-soc@vger.kernel.org
-Subject: [PATCH 1/4] iommu: Export iommu_group_default_domain() API
-Date: Fri, 28 Oct 2022 21:12:40 +0200
-Message-Id: <20221028191243.31721-2-semen.protsenko@linaro.org>
+Subject: [PATCH 2/4] iommu/exynos: Fix retval on getting clocks in probe
+Date: Fri, 28 Oct 2022 21:12:41 +0200
+Message-Id: <20221028191243.31721-3-semen.protsenko@linaro.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221028191243.31721-1-semen.protsenko@linaro.org>
 References: <20221028191243.31721-1-semen.protsenko@linaro.org>
@@ -68,27 +68,31 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-iommu_group_default_domain() may be needed for module users. E.g.
-exynos-iommu driver is using it right now, and it's going to be
-converted to a module soon.
+checkpatch reports next warning for clock getting code in probe
+function:
+
+    WARNING: ENOSYS means 'invalid syscall nr' and nothing else
+
+Replace it with -ENOINT to make checkpatch happy.
 
 Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
 ---
- drivers/iommu/iommu.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/exynos-iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 65a3b3d886dc..257143116185 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1650,6 +1650,7 @@ struct iommu_domain *iommu_group_default_domain(struct iommu_group *group)
- {
- 	return group->default_domain;
- }
-+EXPORT_SYMBOL_GPL(iommu_group_default_domain);
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 45fd4850bacb..0d150b383d04 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -689,7 +689,7 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
  
- static int probe_iommu_group(struct device *dev, void *data)
- {
+ 	if (!data->clk && (!data->aclk || !data->pclk)) {
+ 		dev_err(dev, "Failed to get device clock(s)!\n");
+-		return -ENOSYS;
++		return -ENOENT;
+ 	}
+ 
+ 	data->clk_master = devm_clk_get(dev, "master");
 -- 
 2.35.1
 
