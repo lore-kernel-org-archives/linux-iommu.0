@@ -1,206 +1,187 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2048.outbound.protection.outlook.com [40.107.94.48])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDDBDE815
-	for <iommu@lists.linux.dev>; Fri, 28 Oct 2022 01:14:39 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GjMMEUivKnVTARASLBIh3aJDvbLSc805NEyei5qLd50vzdN/94sWY0AzXwjF1YfiX0w+kWg7vNu+fZ2csbBIcG6VSFaBZiOo+OrzFpxS9xDbFfo3g3FUW7gskc7IUQWoI4jbT07Vv/jsRgk8g5TNMyuUim0IdDAUWAV5U9Xy+7OoRzRp21oHOUwidApDHz471HZZ5gWzu/xsudeX6TqA7PxuqWj0yAIQ9REFoCeBQUOMwt0+fbuWB0M6oReZ2YZXBqdctGrs/6XMIzOA1t2Hux9uCZkZyB/sy41DMxVyucDY/sQ7Eqqgc2/j/91ROodJAk+1dK/gSsYDRGdyM+s0Vg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=icABoU7XIQOHobpB8jDu+bivCMoHhoknOX54e6d91Sk=;
- b=g3C30XPTUZfAH6Of/P/slPKa3ehJ46Q2EJyLU4iSaS1QkLADDHGnRvX94bedcCPbbmVnEh6aZcEDeebJ0CyvNzmnjb+z7gHYGRKg2EigeqhplRhNFKPlhxrIhcCcEbxmGZ2jh7zxroaGCr/uqq0lpu3q76ld2w2ZNHxvodSBXGZTA13R9VjHLJkdCyMwhewtT22WecXF4x6znGIBdGrTYLrx+vs2fpbryw/GJKJ7z3ZPDUXk99QHEWg78Zgro6SMhYkyZYmjWvdFFwHRriOi81vMCqznJTTqOOP0XwD6KqZG65CIjJjxiePXE5EBLHmfZ2qkBASwMdIRKq41L1orAw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=icABoU7XIQOHobpB8jDu+bivCMoHhoknOX54e6d91Sk=;
- b=meOXy/cKYBLw7jRxR/j3SjKJzQ7vQslFU2txCFew+efkNNXRSSdOuf3xP3FQNfmn9qhNYttp0uiVWM/hvYUtKuM1fpaB/Xhp5wkr99aWnKWqvn0B6rtnd62Z9KBIuB1mn90TD4v2bvQjETradzHYt0f1UnLRXu2nBKHqlTW68+M=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM6PR12MB2843.namprd12.prod.outlook.com (2603:10b6:5:48::24) by
- DM6PR12MB4909.namprd12.prod.outlook.com (2603:10b6:5:1ba::23) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5769.15; Fri, 28 Oct 2022 01:14:37 +0000
-Received: from DM6PR12MB2843.namprd12.prod.outlook.com
- ([fe80::4fa1:e98d:1cb5:e63e]) by DM6PR12MB2843.namprd12.prod.outlook.com
- ([fe80::4fa1:e98d:1cb5:e63e%3]) with mapi id 15.20.5746.028; Fri, 28 Oct 2022
- 01:14:36 +0000
-Message-ID: <05f04218-7ebd-1ce3-9e0c-8bc65e5e937a@amd.com>
-Date: Fri, 28 Oct 2022 12:14:27 +1100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH kernel] x86/swiotlb/amd: Half the size if allocation
- failed
-Content-Language: en-US
-To: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Cc: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- Ashish Kalra <ashish.kalra@amd.com>, Pankaj Gupta <pankaj.gupta@amd.com>,
- Tom Lendacky <thomas.lendacky@amd.com>, Robin Murphy <robin.murphy@arm.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Christoph Hellwig <hch@lst.de>
-References: <20221027052607.260234-1-aik@amd.com>
- <Y1q16MQvzP8LobHx@quatroqueijos.cascardo.eti.br>
-From: Alexey Kardashevskiy <aik@amd.com>
-In-Reply-To: <Y1q16MQvzP8LobHx@quatroqueijos.cascardo.eti.br>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SY5PR01CA0069.ausprd01.prod.outlook.com
- (2603:10c6:10:1f4::20) To DM6PR12MB2843.namprd12.prod.outlook.com
- (2603:10b6:5:48::24)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 807D71FAE
+	for <iommu@lists.linux.dev>; Fri, 28 Oct 2022 09:29:15 +0000 (UTC)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29S9D9dM004186;
+	Fri, 28 Oct 2022 09:29:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=uLFhNBsoYwHR3Eq8nBH5VOZ2zu8ZTme63QKaYCM+QLY=;
+ b=liY+pHKioyatRCYaB1bxSdbP2syCd81k/L/dGl2aYSjz4vWsW7xHclgjSum/Cx9naeVT
+ LGR0GCAK/9Ia/bYjWkGGuzL7siylXX8y8PRm2SgCIAWwe23qTB5yT/gVS1HdKF6gRJNP
+ CCN8l7d0qrm0l4WRGOKDDTXyWkHc5ALUJm/6I/wRTVfm/tnHrlDEIwlmZGyMBKuALngk
+ p/7bXC2N6/qkbfgJg5ym+cw+byjram8HZN6Jr0nANlsdZ0M60pACJ2XisX3AHDgMyKOo
+ hYlLjcv27qICpwu2llGA9P8d+CH0Gx02jWMgCUmrfe0zC0o1fiUWbIqennt7LWVxXPue Rw== 
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3kgc8p8gkv-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 28 Oct 2022 09:29:06 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+	by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29S9KYKM023857;
+	Fri, 28 Oct 2022 09:29:04 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+	by ppma05fra.de.ibm.com with ESMTP id 3kfahd2fb2-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 28 Oct 2022 09:29:04 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+	by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29S9T1Sp30933362
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 28 Oct 2022 09:29:01 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 663D74C04E;
+	Fri, 28 Oct 2022 09:29:01 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 868C24C046;
+	Fri, 28 Oct 2022 09:29:00 +0000 (GMT)
+Received: from sig-9-145-187-50.de.ibm.com (unknown [9.145.187.50])
+	by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+	Fri, 28 Oct 2022 09:29:00 +0000 (GMT)
+Message-ID: <1e10c0605e65f43acf6d2b5e71c7c74d6ff980b5.camel@linux.ibm.com>
+Subject: Re: [PATCH 3/5] iommu/s390: Use RCU to allow concurrent domain_list
+ iteration
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev,
+        Joerg
+ Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy
+ <robin.murphy@arm.com>,
+        Gerd Bayer <gbayer@linux.ibm.com>,
+        Pierre Morel
+ <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, linux-kernel@vger.kernel.org
+Date: Fri, 28 Oct 2022 11:29:00 +0200
+In-Reply-To: <Y1qPvg+g6EEaayF6@nvidia.com>
+References: <Y1ErcEe82yjJI+ET@nvidia.com>
+	 <68d91d7a5aadbd46dc34470eccd6b86a84c9e47b.camel@linux.ibm.com>
+	 <Y1KgX8EwH8T+FgWC@nvidia.com>
+	 <89a748fb5caee8be5d91806aa5dfd131e92d5d82.camel@linux.ibm.com>
+	 <Y1K1AqVWEyY0/Uqy@nvidia.com>
+	 <cef734b9f9b33380c1bbff40b56bb67b3de29341.camel@linux.ibm.com>
+	 <Y1a8qM4c2ZAM9glJ@nvidia.com>
+	 <3c2249fc7abf481b15d4988c2bd6456c48154c44.camel@linux.ibm.com>
+	 <Y1p/7YS338ghykGz@nvidia.com>
+	 <c98fa11d4efa86ca676a9d164893db8af8ab3693.camel@linux.ibm.com>
+	 <Y1qPvg+g6EEaayF6@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB2843:EE_|DM6PR12MB4909:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2151ce55-d34d-48fc-0d5a-08dab881c728
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	7zY8etEzAo/FkMWpwHwLFmSJXLnfo+i8+40DXAaUWz35r17NswTuQONOkLsV9OjHn6BJy0JCBQ+vFn4d6a0/OsiS0SNC+/l7sCLq2gL3rBB3neLWPE/ZW4HHcHKEAi4Cm7faoFHR3HTowWRse/PF0+bVIKNbHpf/oiUG3U8LfKB9pd35GS3lIa0I9SQKnlyXRQ4ZzJRP71JXP8j58OAcUrbhDGXAFwI+Xl7VzCWg/IOngEkV0y4spLZBpCP9YZN4qab9wK7vHaEw45l8nvXyVBYjilrd1Vr2FChIM9nm53EfIwoB+KXe6jI1r8esRYNE5B9mbTUNg0AoQS/0WfjcjCYwr7aOxAb2rzR2zU7Dj8FoVUYEFetMr/yfymPAa92c2tP+vspnuoN7rZSwNQL2PxU2vHHun5KrfRgqJiULjP71nXbk6ZUsvaqEDCTpLnI6AnlGO1qoSFAKy2wLBMOSBG18rd1O57Yc8758FbYiyMucbaZhx5cSbd7+cmdIe31sYUC+dgCqK/AEXBzYX2s/PDPuq9595j0cZmTSzNafn1sNmMl5FTtLRww/wpc7rzqSuM9Ap78skUQdZR0ve7iUSV7M5vdIo3xFzwtB07aeiEg3cb4djUrOClJ2ZJbul0GSH90dAaFdn9zeg8ZTmxf56toMRvYRBDUfDFG/O+6jWvWyUiYxQ9Rhjy3ql/mg6sfOWMTL5Qk63D57GF2eNAN3B7/gT6vVaxK2VMMelCjmisjP15mkRYArftO83s9Aol7CftTAjc0ySkv6NBfIl9nfiyMq5bg8/iEXJEa9g2zUGoo=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB2843.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(396003)(39860400002)(366004)(376002)(346002)(451199015)(6666004)(316002)(6916009)(186003)(54906003)(8936002)(66946007)(2616005)(5660300002)(2906002)(66556008)(6506007)(53546011)(36756003)(8676002)(4326008)(6512007)(26005)(83380400001)(66476007)(31696002)(41300700001)(478600001)(38100700002)(6486002)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?alpENXpCTlJWc2R0WXFHODd0dHgxRGkyYzJZZ0pQTXhSUWU2SnJVdzVlQ1E0?=
- =?utf-8?B?U3V4YlZkZHpqdy9EMWtiTjJuKzBtRzdWRUFCNExlUDF5K3cxMVdscFhVVGlD?=
- =?utf-8?B?VTBjbXdFNEM5QmR6QVc3MnZ1ZU9hUG9DRTlSdXJveDJZYXFJOWw0NjNJWkVl?=
- =?utf-8?B?WVQvOTFoUXB3WHNHZFBxaDhDSTdieGNvZ21GdldCREZROWMvbmpQbUJGbENP?=
- =?utf-8?B?SDl2M1I3MVFZN3gxRjZXdDBmSUg2TWdFZTl3WXVyaURhdG1mSi9WVTRSS1hr?=
- =?utf-8?B?eVlMVHlDalJLdFM3YXUrR29qTkk3SXF1OTY1Q3hoWTVkVDhNWUdjR1N5WU5M?=
- =?utf-8?B?L1hmWkp1cCtRZjM0VjBsaFV4KzE2T1pEVVNEViswZEpZQVo5ZUJCVmNXTU5B?=
- =?utf-8?B?VDZPcDJWVmgzMmJOaFdNTVpuaHNwQnNZaVpCZ0VHcTlmQUkwRHp5VG0rdXlG?=
- =?utf-8?B?WnhuZEJ4c3UrYkNOYXBZaDVWOStHOXBlaGJFZmU0STlPRzQyTGFaQWp2aFVL?=
- =?utf-8?B?YWFJV0x3WGNSZ1hsSThvM0pYTVpQajNmNTNOU0JqdjROdlI5dUFuamxvTlhZ?=
- =?utf-8?B?TlduWkZXZmlGQWlhQlVLbG5wYXA5SlZ0RmxjVjBzdis3WXhWaERuY1lUcTlt?=
- =?utf-8?B?b3l6bG44cStINkthY2dQREFYd0xpTkNkZm8zbG8wNnROTjVlNnc2dS9zN3NQ?=
- =?utf-8?B?U3BvYUNhQ3o0L2dnRnRIbzVvNk14eGlBd09lUEE4UHJXOHYrajZXbVF5UzZm?=
- =?utf-8?B?dUk3WXhVVmRCbXdhZVh1WnM5bDdMOTZRSStJNURFT2Q4eWQxd3BEWXNPODYw?=
- =?utf-8?B?czVBRU1LVzA4ZnFNRmEyeVVURXNQNGRyWDFXWVBybXh0MWVrOGpUUno2K1pq?=
- =?utf-8?B?UDhDVXl5VTFJOTRPNkpoR2haN1RveTh2L2h1c1B1dmFZeGNSekZTMG5Hdmxt?=
- =?utf-8?B?dU1qTStRVjBGa3FmbXo5ZmJ5cEFESms5aUNaZWUxTEc0b2xHcWo0Yk8xNVZV?=
- =?utf-8?B?OW44RWlIMkhVMVdoVi9SMWt3ejZZMWtKbzFTSEZDSFBlaXl2bUt4eStoVVBF?=
- =?utf-8?B?RjV5WUVlTEtmMndqUEJtTHBYMEZDNWQ3cFJzL0prRG5wbGp1RUZsUWtOSVNi?=
- =?utf-8?B?WnM1TVE4UVJNa3ZLblczRDBNbnQvZnpSa0E2anp2aUdnNzVtampOMjdidk52?=
- =?utf-8?B?Qk9lRWRFWDVQbVJOODhwTVo5aGJ3U1FUMCtmVkd6TGZNa0M0cnlvQ2VONnN4?=
- =?utf-8?B?dS8zUFJWZ0VTcXEzaXpVYzA0OXdrVlpUL0RTYk82U1lBR2lWNkc1a3VUcXpp?=
- =?utf-8?B?b1ljQ3RFejlXTElFbStVMDF0V202RmdtcWFhL2lvbG5oUVNaemFad2ZwaU5E?=
- =?utf-8?B?cXhjUzJ2RTVFb2VURlVwMGxMRGhWU0pFbDhxMUZjUFhFd2ovbnNyOXkvdVdu?=
- =?utf-8?B?ZURCSGE0RUxERTV3OGVQSlhhYWhaZmNaRkJHdGJXaXhEeERNSU1OeDBBekIy?=
- =?utf-8?B?TWprL0hScjNETEY1VFlCZDJGUFR3MnZac24zNmZFWThoQnR3M05IUUFIRWd1?=
- =?utf-8?B?MGFYRFZieFNvSThscFYyMG91WlUvZXhnQ0ttbnVTOFlQcEZ5ME10Y2pGRHk4?=
- =?utf-8?B?ZU5NR2d3Y20yamVpMUlxSlBkQ2RVRmppenowekJWNDhiMXV5S2hEWjFXcFFn?=
- =?utf-8?B?YnB1QjhKZWVaZ01wWUZZMDBqaUc4MWZhc2gwZGx0eCtaSWhxbllHeHVvdWRK?=
- =?utf-8?B?aFM1ZDRDSkREL21xN0xRc2YrbXBrWUhyaDhGWGlBTmQxOEhUZG92SDFoM0NY?=
- =?utf-8?B?QktJeUFRNFo0aE9iZ0dLUzBEZ0RnQm40eUxSZzJlSzlXb2NNWmVIbGJXUzhk?=
- =?utf-8?B?aTdhZlRySWtXK3ZKdXk5Y2hKdk1hdk9IQXUvMVNwSndJd2ZGMUdJUTFxSyt3?=
- =?utf-8?B?QzA5NHpYWFdOSzZjM01MY1J5UDBVZDFycUNEc2YvZHhhSWE1QTBLWWNOWHlq?=
- =?utf-8?B?VHZjK3ArQU8rVnBTVUNuVzZlSDNCNXlTcFZEWkh1WjYxb0hva1FCV3dadVZZ?=
- =?utf-8?B?aWxjdjJPVUQrYSt6a0ZmTWMrUEM4dFRqTmJIUUFVZnFxeFM5NjlKM09mYjNQ?=
- =?utf-8?Q?xXdkGDlJ8w8km/FHt4tY6C5ri?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2151ce55-d34d-48fc-0d5a-08dab881c728
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB2843.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Oct 2022 01:14:36.1054
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1nx0uDy+8712SDVALrz78RxSDRJnhO6vjHqoJWazQwUljNLqddHvDH2KmzWhL+dCjICaIcWWPtIl/iMYsU2Ifg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4909
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: c5DXM0sJle-tqorYLEZmLXgC8wtcrONS
+X-Proofpoint-ORIG-GUID: c5DXM0sJle-tqorYLEZmLXgC8wtcrONS
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-10-28_04,2022-10-27_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
+ phishscore=0 spamscore=0 priorityscore=1501 impostorscore=0
+ mlxlogscore=999 lowpriorityscore=0 adultscore=0 clxscore=1015 bulkscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2210170000 definitions=main-2210280057
 
-
-
-On 28/10/22 03:46, Thadeu Lima de Souza Cascardo wrote:
-> On Thu, Oct 27, 2022 at 04:26:07PM +1100, Alexey Kardashevskiy wrote:
->> At the moment the AMD encrypted platform reserves 6% of RAM for SWIOTLB
->> or 1GB, whichever is less. However it is possible that there is no block
->> big enough in the low memory which make SWIOTLB allocation fail and
->> the kernel continues without DMA. In such case a VM hangs on DMA.
->>
->> This divides the size in half and tries again reusing the existing
->> remapping logic.
->>
->> This updates default_nslabs on successful allocation which looks like
->> an oversight as not doing so should have broken callers of
->> swiotlb_size_or_default().
->>
->> Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
+On Thu, 2022-10-27 at 11:03 -0300, Jason Gunthorpe wrote:
+> On Thu, Oct 27, 2022 at 03:35:57PM +0200, Niklas Schnelle wrote:
+> > On Thu, 2022-10-27 at 09:56 -0300, Jason Gunthorpe wrote:
+> > > On Thu, Oct 27, 2022 at 02:44:49PM +0200, Niklas Schnelle wrote:
+> > > > On Mon, 2022-10-24 at 13:26 -0300, Jason Gunthorpe wrote:
+> > > > > On Mon, Oct 24, 2022 at 05:22:24PM +0200, Niklas Schnelle wrote:
+> > > > > 
+> > > > > > Thanks for the explanation, still would like to grok this a bit more if
+> > > > > > you don't mind. If I do read things correctly synchronize_rcu() should
+> > > > > > run in the conext of the VFIO ioctl in this case and shouldn't block
+> > > > > > anything else in the kernel, correct? At least that's how I understand
+> > > > > > the synchronize_rcu() comments and the fact that e.g.
+> > > > > > net/vmw_vsock/virtio_transport.c:virtio_vsock_remove() also does a
+> > > > > > synchronize_rcu() and can be triggered from user-space too.
+> > > > > 
+> > > > > Yes, but I wouldn't look in the kernel to understand if things are OK
+> > > > >  
+> > > > > > So we're
+> > > > > > more worried about user-space getting slowed down rather than a Denial-
+> > > > > > of-Service against other kernel tasks.
+> > > > > 
+> > > > > Yes, functionally it is OK, but for something like vfio with vIOMMU
+> > > > > you could be looking at several domains that have to be detached
+> > > > > sequentially and with grace periods > 1s you can reach multiple
+> > > > > seconds to complete something like a close() system call. Generally it
+> > > > > should be weighed carefully
+> > > > > 
+> > > > > Jason
+> > > > 
+> > > > Thanks for the detailed explanation. Then let's not put a
+> > > > synchronize_rcu() in detach, as I said as long as the I/O translation
+> > > > tables are there an IOTLB flush after zpci_unregister_ioat() should
+> > > > result in an ignorable error. That said, I think if we don't have the
+> > > > synchronize_rcu() in detach we need it in s390_domain_free() before
+> > > > freeing the I/O translation tables.
+> > > 
+> > > Yes, it would be appropriate to free those using one of the rcu
+> > > free'rs, (eg kfree_rcu) not synchronize_rcu()
+> > > 
+> > > Jason
+> > 
+> > They are allocated via kmem_cache_alloc() from caches shared by all
+> > IOMMU's so can't use kfree_rcu() directly. Also we're only freeing the
+> > entire I/O translation table of one IOMMU at once after it is not used
+> > anymore. Before that it is only grown. So I think synchronize_rcu() is
+> > the obvious and simple choice since we only need one grace period.
 > 
-> Should this have a
-> Fixes: e998879d4fb7 ("x86,swiotlb: Adjust SWIOTLB bounce buffer size for SEV guests")
-> ?
+> It has the same issue as doing it for the other reason, adding
+> synchronize_rcu() to the domain free path is undesirable.
+> 
+> The best thing is to do as kfree_rcu() does now, basically:
+> 
+> rcu_head = kzalloc(rcu_head, GFP_NOWAIT, GFP_NOWARN)
+> if (!rcu_head)
+>    synchronize_rcu()
+> else
+>    call_rcu(rcu_head)
+> 
+> And then call kmem_cache_free() from the rcu callback
 
+Hmm, maybe a stupid question but why can't I just put the rcu_head in
+struct s390_domain and then do a call_rcu() on that with a callback
+that does:
 
-Well, the problem was there before that patch, the allocation failure 
-was not handled while remap failure was. e998879d4fb7 just made it 
-easier to see. But still worth mentioning I guess... Thanks,
+	dma_cleanup_tables(s390_domain->dma_table);
+	kfree(s390_domain);
 
+I.e. the rest of the current s390_domain_free().
+Then I don't have to worry about failing to allocate the rcu_head and
+it's simple enough. Basically just do the actual freeing of the
+s390_domain via call_rcu().
 
 > 
-> Cascardo.
+> But this is getting very complicated, you might be better to refcount
+> the domain itself and acquire the refcount under RCU. This turns the
+> locking problem into a per-domain-object lock instead of a global lock
+> which is usually good enough and simpler to understand.
 > 
->> --
->>
->> I hit the problem with
->> QEMU's "-m 16819M" where SWIOTLB was adjusted to
->> 0x7e200 == 1,058,013,184 (slightly less than 1GB) while
->> 0x7e180 still worked.
->>
->> With guest errors enabled, there are many unassigned accesses from
->> virtio.
->>
->> ---
->>   kernel/dma/swiotlb.c | 20 +++++++++++++-------
->>   1 file changed, 13 insertions(+), 7 deletions(-)
->>
->> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
->> index 339a990554e7..d28c294320fd 100644
->> --- a/kernel/dma/swiotlb.c
->> +++ b/kernel/dma/swiotlb.c
->> @@ -338,21 +338,27 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
->>   	else
->>   		tlb = memblock_alloc_low(bytes, PAGE_SIZE);
->>   	if (!tlb) {
->> -		pr_warn("%s: failed to allocate tlb structure\n", __func__);
->> -		return;
->> -	}
->> -
->> -	if (remap && remap(tlb, nslabs) < 0) {
->> +		pr_warn("%s: Failed to allocate %zu bytes tlb structure\n",
->> +			__func__, bytes);
->> +	} else if (remap && remap(tlb, nslabs) < 0) {
->>   		memblock_free(tlb, PAGE_ALIGN(bytes));
->> +		tlb = NULL;
->> +		pr_warn("%s: Failed to remap %zu bytes\n", __func__, bytes);
->> +	}
->>   
->> +	if (!tlb) {
->>   		nslabs = ALIGN(nslabs >> 1, IO_TLB_SEGSIZE);
->>   		if (nslabs >= IO_TLB_MIN_SLABS)
->>   			goto retry;
->> -
->> -		pr_warn("%s: Failed to remap %zu bytes\n", __func__, bytes);
->>   		return;
->>   	}
->>   
->> +	if (default_nslabs != nslabs) {
->> +		pr_info("SWIOTLB bounce buffer size adjusted %lu -> %lu slabs",
->> +			default_nslabs, nslabs);
->> +		default_nslabs = nslabs;
->> +	}
->> +
->>   	alloc_size = PAGE_ALIGN(array_size(sizeof(*mem->slots), nslabs));
->>   	mem->slots = memblock_alloc(alloc_size, PAGE_SIZE);
->>   	if (!mem->slots) {
->> -- 
->> 2.37.3
->>
+> Jason
 
--- 
-Alexey
+Sorry I might be a bit slow as I'm new to RCU but I don't understand
+this yet, especially the last part. Before this patch we do have a per-
+domain lock but I'm sure that's not the kind of "per-domain-object
+lock" you're talking about or else we wouldn't need RCU at all. Is this
+maybe a different way of expressing the above idea using the analogy
+with reference counting from whatisRCU.rst? Meaning we treat the fact
+that there may still be RCU readers as "there are still references to
+s390_domain"? 
+
+Or do you mean to use a kref that is taken by RCU readers together with
+rcu_read_lock() and dropped at rcu_read_unlock() such that during the
+RCU read critical sections the refcount can't fall below 1 and the
+domain is actually freed once we have a) put the initial reference
+during s390_domain_free() and b) put all temporary references on
+exiting the RCU read critical sections?
+
