@@ -1,186 +1,261 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E29AA2563
-	for <iommu@lists.linux.dev>; Fri, 28 Oct 2022 14:13:48 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BUi2yjlmGTgQCm95NLjdIsEN21BHhJiLLdEq/T2I82/dNZvr0KpihAQL1ur83HMUFoDPVuWOKuxUdkXVMRAo+mK+WOzm+RcroRixquoPWqtlAaqWnTmi7OJoOZ5qQFDwLgduhSIxhNxtcadFxn8aOVaI9Lm9COlVT7dkyru1nHah4tldVkA9rlhWCXxcQmZGLHxSaXIF8zVOhaHySDwgdyUpF1jbKiPsDxwt7LleX9MQKtJkM88BLFyBv0KUqIOgAUFTED2aHA/VyTUiRNx8lEEXZk9ku04zbaYeWCc1QtTDVl7lCz3zyzYodO5ma/x+Kbso96EOV+RJaMkmSz7Lxg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=u1UwKxq4hYG6BeNz2fXbSY4D1klYb2ojwrJZJvRn1FU=;
- b=CgctuT8L69fbkMXkQnDk9PHTl1Hf42q4FCsu2pOhVqjFKyJDejmKTj+nTra9ZK+er4EyWxObvu1qbuoKYfzsc1k1GopCKv1wjqPdHMPXFEt66+v37ZC3jmyYjVYAohqXxq3wAMvVv1zt//GzXnQhsRe7UFb+Xq2PHiyNoSt42pfbmIkGTfSszdlEVtw/alzyuj41cG1Rf2Fz9tfimj4Gk5eVFM7wd/1omKOMxTDLDOMrraIHhy7VLlU77DipZlTxoyBKOx5MVrK2DNMwPx5tCtQAab7MC45tiEyezNx/9p2jXKMZksYG5EooWxoBlnQ2T8m1hqOElm6ZIWRK1RMzIA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=u1UwKxq4hYG6BeNz2fXbSY4D1klYb2ojwrJZJvRn1FU=;
- b=GVpXTGtzzql+3PrEmrpPeMtVzTYo1tFHhBbGw74n26rl5ZBDRJZ7a02Rq0SOHZe85Bp2pIKsjfByoMuOrFEGkX80V9bdxYWj7RTUdL7CuihJK0SLQMtL5l/cc9+z3FHv9fFcpSnjU/reFc+W9M8K9EUke55QqldrkIiVUMfssfI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
- by PH8PR12MB7374.namprd12.prod.outlook.com (2603:10b6:510:216::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.15; Fri, 28 Oct
- 2022 14:13:44 +0000
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::4da8:e3eb:20eb:f00]) by DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::4da8:e3eb:20eb:f00%2]) with mapi id 15.20.5769.015; Fri, 28 Oct 2022
- 14:13:43 +0000
-Message-ID: <d1410850-56f9-f085-8889-8e5a12d5ed63@amd.com>
-Date: Fri, 28 Oct 2022 09:13:42 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.2
-Subject: Re: [PATCH kernel] x86/swiotlb/amd: Half the size if allocation
- failed
-Content-Language: en-US
-To: Alexey Kardashevskiy <aik@amd.com>, kvm@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- Ashish Kalra <ashish.kalra@amd.com>, Pankaj Gupta <pankaj.gupta@amd.com>,
- Robin Murphy <robin.murphy@arm.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Christoph Hellwig <hch@lst.de>
-References: <20221027052607.260234-1-aik@amd.com>
-From: Tom Lendacky <thomas.lendacky@amd.com>
-In-Reply-To: <20221027052607.260234-1-aik@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: DM6PR03CA0027.namprd03.prod.outlook.com
- (2603:10b6:5:40::40) To DM4PR12MB5229.namprd12.prod.outlook.com
- (2603:10b6:5:398::12)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7ACE28E8
+	for <iommu@lists.linux.dev>; Fri, 28 Oct 2022 15:55:34 +0000 (UTC)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 29SFi8n7021281;
+	Fri, 28 Oct 2022 15:55:16 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=VqsgxdMwkIPa9+iWKlPgBX7Z8ySLveUSiVZa0Y47KpI=;
+ b=hgm+Xc1DmxQoEw2ghrdiGuriAPFGfbW+vR+KCmTIKvLEIYeIgnVqqrwl+s1x86pWVgCS
+ xXOa8957el3hSLXX9kf2vbu+frCibM5SD2za64enDSCVg1d+O1p/G3dKzN+sS1YhxtPz
+ mH6EVyQerGsRd+hh6w2pX/PU7hQdBhHhx0Ryc7v4jqmGYsIJgHLNGPkPPJGRuTOKsnIq
+ Rj3JMRQZV+hg6GI7hxJ06hxinxAkgi0vkQ3qD+lqoFyqwZdFwIeH0SwTrFnEYqDff5qe
+ SK0ohZXIchbN9W6uG6l+tv3Ad3snFYw+s8fQPK+4/O3uIzAYhAU32WwRMwl8VoIHbdaU QQ== 
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3kghyxrcjt-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 28 Oct 2022 15:55:15 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+	by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 29SFoZLN030211;
+	Fri, 28 Oct 2022 15:55:15 GMT
+Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
+	by ppma02dal.us.ibm.com with ESMTP id 3kfahhqje2-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 28 Oct 2022 15:55:15 +0000
+Received: from smtpav03.wdc07v.mail.ibm.com ([9.208.128.112])
+	by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 29SFtDer3080782
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 28 Oct 2022 15:55:13 GMT
+Received: from smtpav03.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 1A0445805F;
+	Fri, 28 Oct 2022 15:55:13 +0000 (GMT)
+Received: from smtpav03.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 4405158062;
+	Fri, 28 Oct 2022 15:55:11 +0000 (GMT)
+Received: from [9.160.93.208] (unknown [9.160.93.208])
+	by smtpav03.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Fri, 28 Oct 2022 15:55:11 +0000 (GMT)
+Message-ID: <d057e158-b6c1-884a-3002-e1292a317779@linux.ibm.com>
+Date: Fri, 28 Oct 2022 11:55:10 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5229:EE_|PH8PR12MB7374:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0bd76b8a-1684-4f2b-c500-08dab8ee9f1e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	AozXu4aTQ7URlkiI7JjH0vD25lhyDFASwg7L6WzgOFDaP6bPg5ogvG0WclydjBURuvxmxLe/PNW3VUESjn+kDo9MH3vcsVNvkqFUoO5GbtPu+c7SyEotzJSibOCJYT8PWw7cw+pHJrqfovnaBvPo/ZDkBHQkYYXqsrBYyV2ASGTNZE9jEwPp7rT7AO3GlGjUJj42iItn9uxt8RAV5L92cOjpJF0bGyf+4moPFxauNMpkqHMzGLtMO1u+fDjzTusS04JLnc5tuVUgEBwFqOPgP8pYPhJyjdlwFxV9DStVgsMoBljoKlvK0ztedULMJxLJnZT/FDYKDg3N6cg7zVoB42dxEFLRU8q4by9CWoIP25JC+R1WOJmU+Pzz1WIq7M6Qe7/KSuSun4/s9HwGDuBKmrCnLXpxiqrdKYwyNMjfBUyIXVX81fabRCENkkacGe45DLdTHl2avnua0RBZ2Ba+hwiRIYvm6FJTgzyuQGPWMb2nP3+wg74NO5dsLADdl/ftgRegSJAgJJroQTEdCZR9rsHSwwcC1OavzoX3d1No62OHvdlcgrxRB+aQUST1OfN+bLIodsudwWh/gHUjOxH24N3dAaH8uiCH63XiSU9XpVOOphSbJS/yqJUxoAhihgHY0DVY4HlrCEHuzp2a5bq5+qqz3B5I7xF1mURwEL3A7RmDrY1wryg+QrLv3O4eOPYjd2Vj87dmsSuwkFGJfnhlp8Z5exMLLHzFHEfNHkYz8ggqzZqrVC9KQlPdxDafwdQLPo8nbrpVSLpdMN0PI6SG3tTVn98n9AHxJArn2APcP38=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(396003)(366004)(346002)(376002)(136003)(451199015)(36756003)(31696002)(86362001)(31686004)(38100700002)(2906002)(83380400001)(478600001)(6506007)(6512007)(26005)(53546011)(2616005)(186003)(6486002)(54906003)(316002)(66946007)(66556008)(66476007)(8676002)(4326008)(5660300002)(41300700001)(8936002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?UmtGb1VGUVRZdkNlQkQzK08zQzZtTXY3Y0IwUVVGNjBwdU1kUXFIaklJOEpC?=
- =?utf-8?B?MFJTQUc4S0tLU1RQa1R0QkFxTmNTc3pjY20vZHdMSG1DNVF3dTY5S1lMWldx?=
- =?utf-8?B?UFAvYWtWWEhOYmRNdEoxVGxueHQzRnh5Unk2VjU1UDlIb1huTEltMVp0am9p?=
- =?utf-8?B?dWQzL0dvT2JqVlhKOWNUTWNMTm5YLzlWQm82UHZRcmtIMU5IQ3NvNXVYU0Fh?=
- =?utf-8?B?UmFwRC9wQk9oaG9sOGZaZzZ5OWc3MUNNZ3pNZVdtYWVtVXdDbndTcDBzSERL?=
- =?utf-8?B?MDh0VFJndmdwOUVPOUFQQ1g0L1AvN3J4VHFEVFZWZ0ljUlhTVDJiN1hxemxh?=
- =?utf-8?B?bng0S0Z0alJ1Qis1SUVBSklyUFI2a2YvNTluQTkrREhTTUlCMWJWejRxaXlk?=
- =?utf-8?B?bC9rbUxNMyt4a3lrT0c5cmlhR3dTcHB5RVFzcHEvY0ltNXNEcDFtS0NWSDRr?=
- =?utf-8?B?NUdyQmo4SEc0cC9rRnhWRkxZeTZ0WjBuMHJvLy9adGNxcEhUM1R3UGxObWl2?=
- =?utf-8?B?bUdiRm5WNWRuMWNScHBURzdtMjg4b0Z0QXJvbjdLNjA5MXZTM0ZQaW5zNjU5?=
- =?utf-8?B?OTBFWlFaV2VGOS9zV3NsSENaV2tXYW9ZU3NrQnlpY3ZCWWlIVi95ekRzOHZH?=
- =?utf-8?B?MGFUOWpFSjNscStydXhwRWJoZzJ4SVdZbGE2TTN3dkNCd2RTellkZlZSaFhG?=
- =?utf-8?B?SEtMVktlaE5UN21tWWc2SHV2dkNmR0ZCYlp3dlVtTTVQcFpuejIyRVB4RmJZ?=
- =?utf-8?B?NFN4d3dWSHpZR1czNDRHN01oejk4VTA3eDJQTU1vYzkwZzJJOGtnaHBiWVBJ?=
- =?utf-8?B?Vmw0eUgvM0xyQ29GTythMGdlU2w0aTlLSFYreTVnbG1iK3ltNnRUL2xuQ256?=
- =?utf-8?B?dGJ6U0FmdXRBbHIwZFVJSUlYLzhGM2dTV3dJNEljM0M1dmVVYW82STVJdExs?=
- =?utf-8?B?MWFVc05GN0dNTDUzZTJ3ZThCZEJoV29ZZmxZZkc2WEkvZk5sSTlBT25QUzlF?=
- =?utf-8?B?SUVLOE5HT0ZvVWN6cktHa3daazNqWXBacmR2OVU3L3o3L1RLS2ZxNndNd1FD?=
- =?utf-8?B?YXh2dForQjNNaThiTzdLMHNRYmRMZjR4TE1RU0FJeldyNGhWdzhZUU5WdFow?=
- =?utf-8?B?SXBYSHlsZ0NIbGtmRW9BNmJFdy9oUDJlL05YUUFHODhiYjBrTzhHZWx4c0Jq?=
- =?utf-8?B?cWhieEpwTEJ6Wjd1TG0vSmtaVFl0blVuNGk3cytFclpqZnZ3eEVrWFVmQkZP?=
- =?utf-8?B?cVZsOTl1K2VJeWVkZW1ETmtJdE8vNnFQYmtnbUgxbWZpNjROQTZsQmh5bjlS?=
- =?utf-8?B?SnBmVUd2eWtwRTlqQURKbWhacFNLZnJDZjZEZFlPR2RVRDRxelVFc0Vpbm1S?=
- =?utf-8?B?TXB4SHpaQVE5RUd3WStoOXlYWFFUSXdWRzAwSG9GVjg0Y3ZyQm8xcG9sWWZ1?=
- =?utf-8?B?VzFKeDFVUUtVRmJmbFUzeGZjWUFJN1hMMzcyR3RtK0RaaGp6RDBZdXhQTS9x?=
- =?utf-8?B?NFpiSFlzSVhNemRLM1VUd29QM0ZYUHpxNDF0Z0kyN09hV1BjWkJuSnhGRGxE?=
- =?utf-8?B?MklrUzZjdjJCOWZ4aW9EZTRCN0w5ZHVYdm55K0ttTUY5aHpjZmh2MkIrZXFs?=
- =?utf-8?B?TFArWGFEOGhkSEh3dTNlWldLMXJlZ3VhWHk5ZzY1Q1cySk11d0NRZ0pLY0g0?=
- =?utf-8?B?dXNJdHEvVms5elRMeVUvdEF3YnVCK1JtY0NxTGkxaHBtVFl5K1BzMnlJT2w0?=
- =?utf-8?B?SUl0RG55SGNmM2xaMXB2dnRmREdGQ0FzZGNIQnJpdldZSGVCSXZGOWMwZ1pM?=
- =?utf-8?B?MDVuNERFUE5wYXRNa0Z0ZTQzOFhISjdOeFVRYWtya2drNDd3SGMwRk1zd3ZW?=
- =?utf-8?B?UENpbDJTRFFQWW1BdnlyQzlldThFRThEd3U2Ujg2QVNkejZkdm1OakswTSs3?=
- =?utf-8?B?azBHRjJQSzFKT1IyenE2K2tKZzlscS9XMU5QMUxoaGlCcnE0WWQ0M3o3YmJM?=
- =?utf-8?B?U3FrRkVDRjA3Wm10Wnp2TXZjTHRaMlhyaUJ3RFQ0aUxhdk5FZitjaWQwTEdq?=
- =?utf-8?B?eTUvK0VESml0VlhCTytXbElKTDNSNE9Cam9lcmtBMFlvNkdUTitCU2hURU9P?=
- =?utf-8?Q?eIHUPfJAYDWtQ6M+BW2VV+Clh?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0bd76b8a-1684-4f2b-c500-08dab8ee9f1e
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Oct 2022 14:13:43.8917
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MqNOheUiGUa39WkRCFV+jy+rZUU4LBso19koATOFALYCuC562774FgnW6AZEyw4Sy9i/89cXj9Z3p7q3/DLnhA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7374
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: [PATCH 1/5] iommu/s390: Make attach succeed even if the device is
+ in error state
+Content-Language: en-US
+To: Niklas Schnelle <schnelle@linux.ibm.com>, iommu@lists.linux.dev,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>
+Cc: Gerd Bayer <gbayer@linux.ibm.com>, Pierre Morel <pmorel@linux.ibm.com>,
+        linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        agordeev@linux.ibm.com, svens@linux.ibm.com,
+        linux-kernel@vger.kernel.org
+References: <20221018145132.998866-1-schnelle@linux.ibm.com>
+ <20221018145132.998866-2-schnelle@linux.ibm.com>
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <20221018145132.998866-2-schnelle@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: m_629yHpJwRp4WCbiwrFYxPvmWSVJiSJ
+X-Proofpoint-ORIG-GUID: m_629yHpJwRp4WCbiwrFYxPvmWSVJiSJ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-10-28_07,2022-10-27_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1011
+ phishscore=0 mlxscore=0 malwarescore=0 impostorscore=0 spamscore=0
+ lowpriorityscore=0 priorityscore=1501 adultscore=0 mlxlogscore=999
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2210170000 definitions=main-2210280097
 
-On 10/27/22 00:26, Alexey Kardashevskiy wrote:
-> At the moment the AMD encrypted platform reserves 6% of RAM for SWIOTLB
-> or 1GB, whichever is less. However it is possible that there is no block
-> big enough in the low memory which make SWIOTLB allocation fail and
-> the kernel continues without DMA. In such case a VM hangs on DMA.
+On 10/18/22 10:51 AM, Niklas Schnelle wrote:
+> If a zPCI device is in the error state while switching IOMMU domains
+> zpci_register_ioat() will fail and we would end up with the device not
+> attached to any domain. In this state since zdev->dma_table == NULL
+> a reset via zpci_hot_reset_device() would wrongfully re-initialize the
+> device for DMA API usage using zpci_dma_init_device(). As automatic
+> recovery is currently disabled while attached to an IOMMU domain this
+> only affects slot resets triggered through other means but will affect
+> automatic recovery once we switch to using dma-iommu.
 > 
-> This divides the size in half and tries again reusing the existing
-> remapping logic.
+> Additionally with that switch common code expects attaching to the
+> default domain to always work so zpci_register_ioat() should only fail
+> if there is no chance to recover anyway, e.g. if the device has been
+> unplugged.
 > 
-> This updates default_nslabs on successful allocation which looks like
-> an oversight as not doing so should have broken callers of
-> swiotlb_size_or_default().
+> Improve the robustness of attach by specifically looking at the status
+> returned by zpci_mod_fc() to determine if the device is unavailable and
+> in this case simply ignore the error. Once the device is reset
+> zpci_hot_reset_device() will then correctly set the domain's DMA
+> translation tables.
 > 
-> Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 
-Reviewed-by: Tom Lendacky <thomas.lendacky@amd.com>
+Seems reasonable to me.
 
-> --
-> 
-> I hit the problem with
-> QEMU's "-m 16819M" where SWIOTLB was adjusted to
-> 0x7e200 == 1,058,013,184 (slightly less than 1GB) while
-> 0x7e180 still worked.
-> 
-> With guest errors enabled, there are many unassigned accesses from
-> virtio.
-> 
+Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+
 > ---
->   kernel/dma/swiotlb.c | 20 +++++++++++++-------
->   1 file changed, 13 insertions(+), 7 deletions(-)
+>  arch/s390/include/asm/pci.h |  2 +-
+>  arch/s390/kvm/pci.c         |  6 ++++--
+>  arch/s390/pci/pci.c         | 11 ++++++-----
+>  arch/s390/pci/pci_dma.c     |  3 ++-
+>  drivers/iommu/s390-iommu.c  |  9 +++++++--
+>  5 files changed, 20 insertions(+), 11 deletions(-)
 > 
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 339a990554e7..d28c294320fd 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -338,21 +338,27 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
->   	else
->   		tlb = memblock_alloc_low(bytes, PAGE_SIZE);
->   	if (!tlb) {
-> -		pr_warn("%s: failed to allocate tlb structure\n", __func__);
-> -		return;
-> -	}
-> -
-> -	if (remap && remap(tlb, nslabs) < 0) {
-> +		pr_warn("%s: Failed to allocate %zu bytes tlb structure\n",
-> +			__func__, bytes);
-> +	} else if (remap && remap(tlb, nslabs) < 0) {
->   		memblock_free(tlb, PAGE_ALIGN(bytes));
-> +		tlb = NULL;
-> +		pr_warn("%s: Failed to remap %zu bytes\n", __func__, bytes);
-> +	}
->   
-> +	if (!tlb) {
->   		nslabs = ALIGN(nslabs >> 1, IO_TLB_SEGSIZE);
->   		if (nslabs >= IO_TLB_MIN_SLABS)
->   			goto retry;
-> -
-> -		pr_warn("%s: Failed to remap %zu bytes\n", __func__, bytes);
->   		return;
->   	}
->   
-> +	if (default_nslabs != nslabs) {
-> +		pr_info("SWIOTLB bounce buffer size adjusted %lu -> %lu slabs",
-> +			default_nslabs, nslabs);
-> +		default_nslabs = nslabs;
-> +	}
-> +
->   	alloc_size = PAGE_ALIGN(array_size(sizeof(*mem->slots), nslabs));
->   	mem->slots = memblock_alloc(alloc_size, PAGE_SIZE);
->   	if (!mem->slots) {
+> diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
+> index 15f8714ca9b7..07361e2fd8c5 100644
+> --- a/arch/s390/include/asm/pci.h
+> +++ b/arch/s390/include/asm/pci.h
+> @@ -221,7 +221,7 @@ void zpci_device_reserved(struct zpci_dev *zdev);
+>  bool zpci_is_device_configured(struct zpci_dev *zdev);
+>  
+>  int zpci_hot_reset_device(struct zpci_dev *zdev);
+> -int zpci_register_ioat(struct zpci_dev *, u8, u64, u64, u64);
+> +int zpci_register_ioat(struct zpci_dev *, u8, u64, u64, u64, u8 *);
+>  int zpci_unregister_ioat(struct zpci_dev *, u8);
+>  void zpci_remove_reserved_devices(void);
+>  void zpci_update_fh(struct zpci_dev *zdev, u32 fh);
+> diff --git a/arch/s390/kvm/pci.c b/arch/s390/kvm/pci.c
+> index c50c1645c0ae..03964c0e1fdf 100644
+> --- a/arch/s390/kvm/pci.c
+> +++ b/arch/s390/kvm/pci.c
+> @@ -434,6 +434,7 @@ static void kvm_s390_pci_dev_release(struct zpci_dev *zdev)
+>  static int kvm_s390_pci_register_kvm(void *opaque, struct kvm *kvm)
+>  {
+>  	struct zpci_dev *zdev = opaque;
+> +	u8 status;
+>  	int rc;
+>  
+>  	if (!zdev)
+> @@ -486,7 +487,7 @@ static int kvm_s390_pci_register_kvm(void *opaque, struct kvm *kvm)
+>  
+>  	/* Re-register the IOMMU that was already created */
+>  	rc = zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
+> -				virt_to_phys(zdev->dma_table));
+> +				virt_to_phys(zdev->dma_table), &status);
+>  	if (rc)
+>  		goto clear_gisa;
+>  
+> @@ -516,6 +517,7 @@ static void kvm_s390_pci_unregister_kvm(void *opaque)
+>  {
+>  	struct zpci_dev *zdev = opaque;
+>  	struct kvm *kvm;
+> +	u8 status;
+>  
+>  	if (!zdev)
+>  		return;
+> @@ -554,7 +556,7 @@ static void kvm_s390_pci_unregister_kvm(void *opaque)
+>  
+>  	/* Re-register the IOMMU that was already created */
+>  	zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
+> -			   virt_to_phys(zdev->dma_table));
+> +			   virt_to_phys(zdev->dma_table), &status);
+>  
+>  out:
+>  	spin_lock(&kvm->arch.kzdev_list_lock);
+> diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
+> index 73cdc5539384..a703dcd94a68 100644
+> --- a/arch/s390/pci/pci.c
+> +++ b/arch/s390/pci/pci.c
+> @@ -116,20 +116,20 @@ EXPORT_SYMBOL_GPL(pci_proc_domain);
+>  
+>  /* Modify PCI: Register I/O address translation parameters */
+>  int zpci_register_ioat(struct zpci_dev *zdev, u8 dmaas,
+> -		       u64 base, u64 limit, u64 iota)
+> +		       u64 base, u64 limit, u64 iota, u8 *status)
+>  {
+>  	u64 req = ZPCI_CREATE_REQ(zdev->fh, dmaas, ZPCI_MOD_FC_REG_IOAT);
+>  	struct zpci_fib fib = {0};
+> -	u8 cc, status;
+> +	u8 cc;
+>  
+>  	WARN_ON_ONCE(iota & 0x3fff);
+>  	fib.pba = base;
+>  	fib.pal = limit;
+>  	fib.iota = iota | ZPCI_IOTA_RTTO_FLAG;
+>  	fib.gd = zdev->gisa;
+> -	cc = zpci_mod_fc(req, &fib, &status);
+> +	cc = zpci_mod_fc(req, &fib, status);
+>  	if (cc)
+> -		zpci_dbg(3, "reg ioat fid:%x, cc:%d, status:%d\n", zdev->fid, cc, status);
+> +		zpci_dbg(3, "reg ioat fid:%x, cc:%d, status:%d\n", zdev->fid, cc, *status);
+>  	return cc;
+>  }
+>  EXPORT_SYMBOL_GPL(zpci_register_ioat);
+> @@ -764,6 +764,7 @@ EXPORT_SYMBOL_GPL(zpci_disable_device);
+>   */
+>  int zpci_hot_reset_device(struct zpci_dev *zdev)
+>  {
+> +	u8 status;
+>  	int rc;
+>  
+>  	zpci_dbg(3, "rst fid:%x, fh:%x\n", zdev->fid, zdev->fh);
+> @@ -787,7 +788,7 @@ int zpci_hot_reset_device(struct zpci_dev *zdev)
+>  
+>  	if (zdev->dma_table)
+>  		rc = zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
+> -					virt_to_phys(zdev->dma_table));
+> +					virt_to_phys(zdev->dma_table), &status);
+>  	else
+>  		rc = zpci_dma_init_device(zdev);
+>  	if (rc) {
+> diff --git a/arch/s390/pci/pci_dma.c b/arch/s390/pci/pci_dma.c
+> index 227cf0a62800..dee825ee7305 100644
+> --- a/arch/s390/pci/pci_dma.c
+> +++ b/arch/s390/pci/pci_dma.c
+> @@ -547,6 +547,7 @@ static void s390_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
+>  	
+>  int zpci_dma_init_device(struct zpci_dev *zdev)
+>  {
+> +	u8 status;
+>  	int rc;
+>  
+>  	/*
+> @@ -598,7 +599,7 @@ int zpci_dma_init_device(struct zpci_dev *zdev)
+>  
+>  	}
+>  	if (zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
+> -			       virt_to_phys(zdev->dma_table))) {
+> +			       virt_to_phys(zdev->dma_table), &status)) {
+>  		rc = -EIO;
+>  		goto free_bitmap;
+>  	}
+> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+> index 6c407b61b25a..ee88e717254b 100644
+> --- a/drivers/iommu/s390-iommu.c
+> +++ b/drivers/iommu/s390-iommu.c
+> @@ -98,6 +98,7 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
+>  	struct s390_domain *s390_domain = to_s390_domain(domain);
+>  	struct zpci_dev *zdev = to_zpci_dev(dev);
+>  	unsigned long flags;
+> +	u8 status;
+>  	int cc;
+>  
+>  	if (!zdev)
+> @@ -113,8 +114,12 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
+>  		zpci_dma_exit_device(zdev);
+>  
+>  	cc = zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
+> -				virt_to_phys(s390_domain->dma_table));
+> -	if (cc)
+> +				virt_to_phys(s390_domain->dma_table), &status);
+> +	/*
+> +	 * If the device is undergoing error recovery the reset code
+> +	 * will re-establish the new domain.
+> +	 */
+> +	if (cc && status != ZPCI_PCI_ST_FUNC_NOT_AVAIL)
+>  		return -EIO;
+>  	zdev->dma_table = s390_domain->dma_table;
+>  
+
