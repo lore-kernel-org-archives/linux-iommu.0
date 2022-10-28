@@ -1,162 +1,186 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2077.outbound.protection.outlook.com [40.107.237.77])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8C2923D1
-	for <iommu@lists.linux.dev>; Fri, 28 Oct 2022 13:03:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E29AA2563
+	for <iommu@lists.linux.dev>; Fri, 28 Oct 2022 14:13:48 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Fhms5AgFOkWQTsjWWiiCA8moQ02wNae2mbR7hQZPQNCuNMW1JvsrxpkR7Ux1Dbz5FVngS43uO8+oVjOwUh4qHPzwe4It1ql488UTKIbikZW7DQcO5lDWJC8FTSmPlvHR09QosvYflF6uqYaADlUbSMYPyvcwWKqGdRxQILY14yI7jIL2QGgukhnMdDHGLptlsw6ATsZu/9ks+a8axBxcCnmIdJdD+m5HJGtG4qJ+oXeuL9IWOfo91wPm+J6Vtg3JDEYEHxCDWDf8AqCNN35w89/hgUAxEJHnYmEFginROjbpIqm+ulkI96fa3HpDEilzBimLtKoIOY03kHUF+6VL1g==
+ b=BUi2yjlmGTgQCm95NLjdIsEN21BHhJiLLdEq/T2I82/dNZvr0KpihAQL1ur83HMUFoDPVuWOKuxUdkXVMRAo+mK+WOzm+RcroRixquoPWqtlAaqWnTmi7OJoOZ5qQFDwLgduhSIxhNxtcadFxn8aOVaI9Lm9COlVT7dkyru1nHah4tldVkA9rlhWCXxcQmZGLHxSaXIF8zVOhaHySDwgdyUpF1jbKiPsDxwt7LleX9MQKtJkM88BLFyBv0KUqIOgAUFTED2aHA/VyTUiRNx8lEEXZk9ku04zbaYeWCc1QtTDVl7lCz3zyzYodO5ma/x+Kbso96EOV+RJaMkmSz7Lxg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=F4RZIQ1Di7dneZqytQHdUTk6Ta6ap9bGCfe5EgqxPxI=;
- b=FzbJDFBhlfarPyfjhaISBCcDAuw0j9sVjsoouZut73Ilh52DEcLsP1HjO22hg4X7SA4Pj4A0juQEWZ8A/+qwn4U7dIpQIxndFzYRP5FCCLHnzpXXmR1Dxl7NSNQV1pwM8lATClcu5ylo1TNXeiPIg+mtnbpkMtoqCiuLfflS1isdrP7YDPxm+mc+qjJr1mwgl6kGCNXNL/LS4uMemAsvbUp7ug9c7ed4tc+I/dmkf7pIgAn+2qDlMYCHdkUmcRZEPIo0cUZqVoG+Pa+5+UNzVVFRtO/Wq0FZ3geyCXdC+YUbgEAP5SkTPyfh27Q9hvOk4U7RKckQNI5A4qbq3Qixlw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=8bytes.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=u1UwKxq4hYG6BeNz2fXbSY4D1klYb2ojwrJZJvRn1FU=;
+ b=CgctuT8L69fbkMXkQnDk9PHTl1Hf42q4FCsu2pOhVqjFKyJDejmKTj+nTra9ZK+er4EyWxObvu1qbuoKYfzsc1k1GopCKv1wjqPdHMPXFEt66+v37ZC3jmyYjVYAohqXxq3wAMvVv1zt//GzXnQhsRe7UFb+Xq2PHiyNoSt42pfbmIkGTfSszdlEVtw/alzyuj41cG1Rf2Fz9tfimj4Gk5eVFM7wd/1omKOMxTDLDOMrraIHhy7VLlU77DipZlTxoyBKOx5MVrK2DNMwPx5tCtQAab7MC45tiEyezNx/9p2jXKMZksYG5EooWxoBlnQ2T8m1hqOElm6ZIWRK1RMzIA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=F4RZIQ1Di7dneZqytQHdUTk6Ta6ap9bGCfe5EgqxPxI=;
- b=osQPjwfFKFoZolKFtuIVCktYUIjJVpgd+iSEt+pLnZ4ywMXHuswBsztPYKTjqTIQoWKWKAiptnWseBvF6lwWE4KeGajLghcJgBoDu5oMlTtXtIZsFMyBTS4aptINZPNWE99WL929suNj99f8MBGyBIcLKyS3PSNkeUEBPJxgM+5ELS7KHDZ4RIyp6gzF1AdqEHVTzICbuM7Cg5XJXgbpz9wMTxAFs9AesIwSAKMT93MEhxeVMuC9UBtZDqFEAMY/s0Ho3IhdY8wnzXQbcREZsuMpz6z3czDVvgVtipN90B4Nc9lKD7DX/8r+wDV6C7iZ8z3CBFLeaD5+Wzi8s6dIhA==
-Received: from DM6PR02CA0077.namprd02.prod.outlook.com (2603:10b6:5:1f4::18)
- by DM6PR12MB4386.namprd12.prod.outlook.com (2603:10b6:5:28f::21) with
+ bh=u1UwKxq4hYG6BeNz2fXbSY4D1klYb2ojwrJZJvRn1FU=;
+ b=GVpXTGtzzql+3PrEmrpPeMtVzTYo1tFHhBbGw74n26rl5ZBDRJZ7a02Rq0SOHZe85Bp2pIKsjfByoMuOrFEGkX80V9bdxYWj7RTUdL7CuihJK0SLQMtL5l/cc9+z3FHv9fFcpSnjU/reFc+W9M8K9EUke55QqldrkIiVUMfssfI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
+ by PH8PR12MB7374.namprd12.prod.outlook.com (2603:10b6:510:216::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.14; Fri, 28 Oct
- 2022 13:03:14 +0000
-Received: from DM6NAM11FT074.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:1f4:cafe::af) by DM6PR02CA0077.outlook.office365.com
- (2603:10b6:5:1f4::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.15 via Frontend
- Transport; Fri, 28 Oct 2022 13:03:14 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- DM6NAM11FT074.mail.protection.outlook.com (10.13.173.203) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5769.14 via Frontend Transport; Fri, 28 Oct 2022 13:03:14 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Fri, 28 Oct
- 2022 06:03:06 -0700
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Fri, 28 Oct 2022 06:03:06 -0700
-Received: from pshete-ubuntu.nvidia.com (10.127.8.14) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server id 15.2.986.29 via Frontend
- Transport; Fri, 28 Oct 2022 06:03:01 -0700
-From: Prathamesh Shete <pshete@nvidia.com>
-To: <joro@8bytes.org>, <adrian.hunter@intel.com>, <ulf.hansson@linaro.org>,
-	<thierry.reding@gmail.com>, <jonathanh@nvidia.com>, <p.zabel@pengutronix.de>,
-	<linux-mmc@vger.kernel.org>, <linux-tegra@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>
-CC: <will@kernel.org>, <iommu@lists.linux.dev>, <robin.murphy@arm.com>,
-	<anrao@nvidia.com>, <smangipudi@nvidia.com>, <pshete@nvidia.com>,
-	<kyarlagadda@nvidia.com>
-Subject: [PATCH v9 4/4] mmc: sdhci-tegra: Issue CMD and DAT resets together
-Date: Fri, 28 Oct 2022 18:32:42 +0530
-Message-ID: <20221028130242.20900-4-pshete@nvidia.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20221028130242.20900-1-pshete@nvidia.com>
-References: <CAPDyKFpG9ZjVTiK3HEqioDN8ksGpRYiXL_SLSmOfm9fjJfcrsw@mail.gmail.com>
- <20221028130242.20900-1-pshete@nvidia.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.15; Fri, 28 Oct
+ 2022 14:13:44 +0000
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::4da8:e3eb:20eb:f00]) by DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::4da8:e3eb:20eb:f00%2]) with mapi id 15.20.5769.015; Fri, 28 Oct 2022
+ 14:13:43 +0000
+Message-ID: <d1410850-56f9-f085-8889-8e5a12d5ed63@amd.com>
+Date: Fri, 28 Oct 2022 09:13:42 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH kernel] x86/swiotlb/amd: Half the size if allocation
+ failed
+Content-Language: en-US
+To: Alexey Kardashevskiy <aik@amd.com>, kvm@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ Ashish Kalra <ashish.kalra@amd.com>, Pankaj Gupta <pankaj.gupta@amd.com>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Christoph Hellwig <hch@lst.de>
+References: <20221027052607.260234-1-aik@amd.com>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+In-Reply-To: <20221027052607.260234-1-aik@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: DM6PR03CA0027.namprd03.prod.outlook.com
+ (2603:10b6:5:40::40) To DM4PR12MB5229.namprd12.prod.outlook.com
+ (2603:10b6:5:398::12)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT074:EE_|DM6PR12MB4386:EE_
-X-MS-Office365-Filtering-Correlation-Id: 964bf9d0-5233-47a3-3d4e-08dab8e4c632
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5229:EE_|PH8PR12MB7374:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0bd76b8a-1684-4f2b-c500-08dab8ee9f1e
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	C7YycH6GmwjPCQGKsc0vBJktHOSHvEqJprHh+Y5DJR4l4xe34R1exz2rbXNmrgRzXUFL9JVLNbpM0xFWurNqWXcId7sVUHOlSehjLGwuXR7DJsqoWEqykGfvarQvBDVoekXkCdXlOm1+XtFVWe1HmvhQ6YaTeWfWW720dT4rRpfSqdbxVcJ4huEa9/KeY/l5iRoAUoqGvkjmrNM16e3CPTiH5oXV9bxKWxiSwWrWDLEyP4Lt1AMjazLdOmKOM/gc7zbZ3hKn61RrWYUWp0tMBXN/h6m1kJc3ZU32xSXu210SOizaG2syXO08aXbjoaqAzWcKlyZZG8YHi38SaKjjK8lBg/lp4cLwI5tZVplOuPkQP56sYmUvY7xJ4sllD73Ir3gd9vkTj7JSsC9xFpyEX+JWUNX8sa4KHEObvtUlOUdKhqUnYfTldurmDZ1+jhFKlcTqN3gGIkuXP4VMrxwsJlMj22bt3CmQFG7LqWy0JGqJl0glEK4PJ3kIA4wUSEZm3cJXkmgAolTZYv9zFirqpSMNpYVPaqoppN4XCW6epEZACJnIK5Ohg5R1lrQO1a9x6g/lheaLFy/I6+WcVbKMMpcwQw4Ow2oH3+ds/YTkiKhr4XA/2VAOD3zHKKqOg3Zsp8iEI0jC0ZHnNKwjLD7diirZ8NssnNTMP6EUYlZxvhQZ3bzitBZzee96UAOqc4AoihThqK0WRjETatRN5TMpfXHqTPigNIXzRGRkiSjHkz4A1CH2TnR/oAMD0ziqB22lY3sliOFe9R0LqnzDBEUDQQ==
+	AozXu4aTQ7URlkiI7JjH0vD25lhyDFASwg7L6WzgOFDaP6bPg5ogvG0WclydjBURuvxmxLe/PNW3VUESjn+kDo9MH3vcsVNvkqFUoO5GbtPu+c7SyEotzJSibOCJYT8PWw7cw+pHJrqfovnaBvPo/ZDkBHQkYYXqsrBYyV2ASGTNZE9jEwPp7rT7AO3GlGjUJj42iItn9uxt8RAV5L92cOjpJF0bGyf+4moPFxauNMpkqHMzGLtMO1u+fDjzTusS04JLnc5tuVUgEBwFqOPgP8pYPhJyjdlwFxV9DStVgsMoBljoKlvK0ztedULMJxLJnZT/FDYKDg3N6cg7zVoB42dxEFLRU8q4by9CWoIP25JC+R1WOJmU+Pzz1WIq7M6Qe7/KSuSun4/s9HwGDuBKmrCnLXpxiqrdKYwyNMjfBUyIXVX81fabRCENkkacGe45DLdTHl2avnua0RBZ2Ba+hwiRIYvm6FJTgzyuQGPWMb2nP3+wg74NO5dsLADdl/ftgRegSJAgJJroQTEdCZR9rsHSwwcC1OavzoX3d1No62OHvdlcgrxRB+aQUST1OfN+bLIodsudwWh/gHUjOxH24N3dAaH8uiCH63XiSU9XpVOOphSbJS/yqJUxoAhihgHY0DVY4HlrCEHuzp2a5bq5+qqz3B5I7xF1mURwEL3A7RmDrY1wryg+QrLv3O4eOPYjd2Vj87dmsSuwkFGJfnhlp8Z5exMLLHzFHEfNHkYz8ggqzZqrVC9KQlPdxDafwdQLPo8nbrpVSLpdMN0PI6SG3tTVn98n9AHxJArn2APcP38=
 X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(396003)(136003)(346002)(376002)(451199015)(36840700001)(46966006)(40470700004)(107886003)(6666004)(316002)(110136005)(36860700001)(336012)(47076005)(40480700001)(426003)(54906003)(86362001)(2906002)(40460700003)(7416002)(186003)(4326008)(8936002)(36756003)(70206006)(5660300002)(2616005)(70586007)(83380400001)(7696005)(8676002)(26005)(1076003)(41300700001)(478600001)(82740400003)(7636003)(356005)(82310400005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Oct 2022 13:03:14.2019
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(396003)(366004)(346002)(376002)(136003)(451199015)(36756003)(31696002)(86362001)(31686004)(38100700002)(2906002)(83380400001)(478600001)(6506007)(6512007)(26005)(53546011)(2616005)(186003)(6486002)(54906003)(316002)(66946007)(66556008)(66476007)(8676002)(4326008)(5660300002)(41300700001)(8936002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?UmtGb1VGUVRZdkNlQkQzK08zQzZtTXY3Y0IwUVVGNjBwdU1kUXFIaklJOEpC?=
+ =?utf-8?B?MFJTQUc4S0tLU1RQa1R0QkFxTmNTc3pjY20vZHdMSG1DNVF3dTY5S1lMWldx?=
+ =?utf-8?B?UFAvYWtWWEhOYmRNdEoxVGxueHQzRnh5Unk2VjU1UDlIb1huTEltMVp0am9p?=
+ =?utf-8?B?dWQzL0dvT2JqVlhKOWNUTWNMTm5YLzlWQm82UHZRcmtIMU5IQ3NvNXVYU0Fh?=
+ =?utf-8?B?UmFwRC9wQk9oaG9sOGZaZzZ5OWc3MUNNZ3pNZVdtYWVtVXdDbndTcDBzSERL?=
+ =?utf-8?B?MDh0VFJndmdwOUVPOUFQQ1g0L1AvN3J4VHFEVFZWZ0ljUlhTVDJiN1hxemxh?=
+ =?utf-8?B?bng0S0Z0alJ1Qis1SUVBSklyUFI2a2YvNTluQTkrREhTTUlCMWJWejRxaXlk?=
+ =?utf-8?B?bC9rbUxNMyt4a3lrT0c5cmlhR3dTcHB5RVFzcHEvY0ltNXNEcDFtS0NWSDRr?=
+ =?utf-8?B?NUdyQmo4SEc0cC9rRnhWRkxZeTZ0WjBuMHJvLy9adGNxcEhUM1R3UGxObWl2?=
+ =?utf-8?B?bUdiRm5WNWRuMWNScHBURzdtMjg4b0Z0QXJvbjdLNjA5MXZTM0ZQaW5zNjU5?=
+ =?utf-8?B?OTBFWlFaV2VGOS9zV3NsSENaV2tXYW9ZU3NrQnlpY3ZCWWlIVi95ekRzOHZH?=
+ =?utf-8?B?MGFUOWpFSjNscStydXhwRWJoZzJ4SVdZbGE2TTN3dkNCd2RTellkZlZSaFhG?=
+ =?utf-8?B?SEtMVktlaE5UN21tWWc2SHV2dkNmR0ZCYlp3dlVtTTVQcFpuejIyRVB4RmJZ?=
+ =?utf-8?B?NFN4d3dWSHpZR1czNDRHN01oejk4VTA3eDJQTU1vYzkwZzJJOGtnaHBiWVBJ?=
+ =?utf-8?B?Vmw0eUgvM0xyQ29GTythMGdlU2w0aTlLSFYreTVnbG1iK3ltNnRUL2xuQ256?=
+ =?utf-8?B?dGJ6U0FmdXRBbHIwZFVJSUlYLzhGM2dTV3dJNEljM0M1dmVVYW82STVJdExs?=
+ =?utf-8?B?MWFVc05GN0dNTDUzZTJ3ZThCZEJoV29ZZmxZZkc2WEkvZk5sSTlBT25QUzlF?=
+ =?utf-8?B?SUVLOE5HT0ZvVWN6cktHa3daazNqWXBacmR2OVU3L3o3L1RLS2ZxNndNd1FD?=
+ =?utf-8?B?YXh2dForQjNNaThiTzdLMHNRYmRMZjR4TE1RU0FJeldyNGhWdzhZUU5WdFow?=
+ =?utf-8?B?SXBYSHlsZ0NIbGtmRW9BNmJFdy9oUDJlL05YUUFHODhiYjBrTzhHZWx4c0Jq?=
+ =?utf-8?B?cWhieEpwTEJ6Wjd1TG0vSmtaVFl0blVuNGk3cytFclpqZnZ3eEVrWFVmQkZP?=
+ =?utf-8?B?cVZsOTl1K2VJeWVkZW1ETmtJdE8vNnFQYmtnbUgxbWZpNjROQTZsQmh5bjlS?=
+ =?utf-8?B?SnBmVUd2eWtwRTlqQURKbWhacFNLZnJDZjZEZFlPR2RVRDRxelVFc0Vpbm1S?=
+ =?utf-8?B?TXB4SHpaQVE5RUd3WStoOXlYWFFUSXdWRzAwSG9GVjg0Y3ZyQm8xcG9sWWZ1?=
+ =?utf-8?B?VzFKeDFVUUtVRmJmbFUzeGZjWUFJN1hMMzcyR3RtK0RaaGp6RDBZdXhQTS9x?=
+ =?utf-8?B?NFpiSFlzSVhNemRLM1VUd29QM0ZYUHpxNDF0Z0kyN09hV1BjWkJuSnhGRGxE?=
+ =?utf-8?B?MklrUzZjdjJCOWZ4aW9EZTRCN0w5ZHVYdm55K0ttTUY5aHpjZmh2MkIrZXFs?=
+ =?utf-8?B?TFArWGFEOGhkSEh3dTNlWldLMXJlZ3VhWHk5ZzY1Q1cySk11d0NRZ0pLY0g0?=
+ =?utf-8?B?dXNJdHEvVms5elRMeVUvdEF3YnVCK1JtY0NxTGkxaHBtVFl5K1BzMnlJT2w0?=
+ =?utf-8?B?SUl0RG55SGNmM2xaMXB2dnRmREdGQ0FzZGNIQnJpdldZSGVCSXZGOWMwZ1pM?=
+ =?utf-8?B?MDVuNERFUE5wYXRNa0Z0ZTQzOFhISjdOeFVRYWtya2drNDd3SGMwRk1zd3ZW?=
+ =?utf-8?B?UENpbDJTRFFQWW1BdnlyQzlldThFRThEd3U2Ujg2QVNkejZkdm1OakswTSs3?=
+ =?utf-8?B?azBHRjJQSzFKT1IyenE2K2tKZzlscS9XMU5QMUxoaGlCcnE0WWQ0M3o3YmJM?=
+ =?utf-8?B?U3FrRkVDRjA3Wm10Wnp2TXZjTHRaMlhyaUJ3RFQ0aUxhdk5FZitjaWQwTEdq?=
+ =?utf-8?B?eTUvK0VESml0VlhCTytXbElKTDNSNE9Cam9lcmtBMFlvNkdUTitCU2hURU9P?=
+ =?utf-8?Q?eIHUPfJAYDWtQ6M+BW2VV+Clh?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0bd76b8a-1684-4f2b-c500-08dab8ee9f1e
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Oct 2022 14:13:43.8917
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 964bf9d0-5233-47a3-3d4e-08dab8e4c632
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT074.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4386
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: MqNOheUiGUa39WkRCFV+jy+rZUU4LBso19koATOFALYCuC562774FgnW6AZEyw4Sy9i/89cXj9Z3p7q3/DLnhA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7374
 
-In case of error condition to avoid system crash
-Tegra SDMMC controller requires CMD and DAT resets
-issued together. SDHCI controller FSM goes into
-bad state due to rapid SD card hot-plug event.
-Issuing reset on the CMD FSM before DATA FSM results
-in kernel panic, hence add support to issue CMD and
-DAT resets together.
-This is applicable to Tegra186 and later chips.
+On 10/27/22 00:26, Alexey Kardashevskiy wrote:
+> At the moment the AMD encrypted platform reserves 6% of RAM for SWIOTLB
+> or 1GB, whichever is less. However it is possible that there is no block
+> big enough in the low memory which make SWIOTLB allocation fail and
+> the kernel continues without DMA. In such case a VM hangs on DMA.
+> 
+> This divides the size in half and tries again reusing the existing
+> remapping logic.
+> 
+> This updates default_nslabs on successful allocation which looks like
+> an oversight as not doing so should have broken callers of
+> swiotlb_size_or_default().
+> 
+> Signed-off-by: Alexey Kardashevskiy <aik@amd.com>
 
-Signed-off-by: Aniruddha TVS Rao <anrao@nvidia.com>
-Signed-off-by: Prathamesh Shete <pshete@nvidia.com>
-Acked-by: Adrian Hunter <adrian.hunter@intel.com>
-Acked-by: Thierry Reding <treding@nvidia.com>
----
- drivers/mmc/host/sdhci-tegra.c | 3 ++-
- drivers/mmc/host/sdhci.c       | 5 +++++
- drivers/mmc/host/sdhci.h       | 2 ++
- 3 files changed, 9 insertions(+), 1 deletion(-)
+Reviewed-by: Tom Lendacky <thomas.lendacky@amd.com>
 
-diff --git a/drivers/mmc/host/sdhci-tegra.c b/drivers/mmc/host/sdhci-tegra.c
-index e44060cceb68..7cb3bf34a176 100644
---- a/drivers/mmc/host/sdhci-tegra.c
-+++ b/drivers/mmc/host/sdhci-tegra.c
-@@ -1531,7 +1531,8 @@ static const struct sdhci_pltfm_data sdhci_tegra186_pdata = {
- 		  SDHCI_QUIRK_NO_HISPD_BIT |
- 		  SDHCI_QUIRK_BROKEN_ADMA_ZEROLEN_DESC |
- 		  SDHCI_QUIRK_CAP_CLOCK_BASE_BROKEN,
--	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN,
-+	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN |
-+		   SDHCI_QUIRK2_ISSUE_CMD_DAT_RESET_TOGETHER,
- 	.ops  = &tegra186_sdhci_ops,
- };
- 
-diff --git a/drivers/mmc/host/sdhci.c b/drivers/mmc/host/sdhci.c
-index 2b5dda521b0e..8512a69f1aae 100644
---- a/drivers/mmc/host/sdhci.c
-+++ b/drivers/mmc/host/sdhci.c
-@@ -270,6 +270,11 @@ enum sdhci_reset_reason {
- 
- static void sdhci_reset_for_reason(struct sdhci_host *host, enum sdhci_reset_reason reason)
- {
-+	if (host->quirks2 &
-+		SDHCI_QUIRK2_ISSUE_CMD_DAT_RESET_TOGETHER) {
-+		sdhci_do_reset(host, SDHCI_RESET_CMD | SDHCI_RESET_DATA);
-+		return;
-+	}
- 	switch (reason) {
- 	case SDHCI_RESET_FOR_INIT:
- 		sdhci_do_reset(host, SDHCI_RESET_CMD | SDHCI_RESET_DATA);
-diff --git a/drivers/mmc/host/sdhci.h b/drivers/mmc/host/sdhci.h
-index d750c464bd1e..6a5766774b05 100644
---- a/drivers/mmc/host/sdhci.h
-+++ b/drivers/mmc/host/sdhci.h
-@@ -478,6 +478,8 @@ struct sdhci_host {
-  * block count.
-  */
- #define SDHCI_QUIRK2_USE_32BIT_BLK_CNT			(1<<18)
-+/* Issue CMD and DATA reset together */
-+#define SDHCI_QUIRK2_ISSUE_CMD_DAT_RESET_TOGETHER	(1<<19)
- 
- 	int irq;		/* Device IRQ */
- 	void __iomem *ioaddr;	/* Mapped address */
--- 
-2.17.1
-
+> --
+> 
+> I hit the problem with
+> QEMU's "-m 16819M" where SWIOTLB was adjusted to
+> 0x7e200 == 1,058,013,184 (slightly less than 1GB) while
+> 0x7e180 still worked.
+> 
+> With guest errors enabled, there are many unassigned accesses from
+> virtio.
+> 
+> ---
+>   kernel/dma/swiotlb.c | 20 +++++++++++++-------
+>   1 file changed, 13 insertions(+), 7 deletions(-)
+> 
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 339a990554e7..d28c294320fd 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -338,21 +338,27 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
+>   	else
+>   		tlb = memblock_alloc_low(bytes, PAGE_SIZE);
+>   	if (!tlb) {
+> -		pr_warn("%s: failed to allocate tlb structure\n", __func__);
+> -		return;
+> -	}
+> -
+> -	if (remap && remap(tlb, nslabs) < 0) {
+> +		pr_warn("%s: Failed to allocate %zu bytes tlb structure\n",
+> +			__func__, bytes);
+> +	} else if (remap && remap(tlb, nslabs) < 0) {
+>   		memblock_free(tlb, PAGE_ALIGN(bytes));
+> +		tlb = NULL;
+> +		pr_warn("%s: Failed to remap %zu bytes\n", __func__, bytes);
+> +	}
+>   
+> +	if (!tlb) {
+>   		nslabs = ALIGN(nslabs >> 1, IO_TLB_SEGSIZE);
+>   		if (nslabs >= IO_TLB_MIN_SLABS)
+>   			goto retry;
+> -
+> -		pr_warn("%s: Failed to remap %zu bytes\n", __func__, bytes);
+>   		return;
+>   	}
+>   
+> +	if (default_nslabs != nslabs) {
+> +		pr_info("SWIOTLB bounce buffer size adjusted %lu -> %lu slabs",
+> +			default_nslabs, nslabs);
+> +		default_nslabs = nslabs;
+> +	}
+> +
+>   	alloc_size = PAGE_ALIGN(array_size(sizeof(*mem->slots), nslabs));
+>   	mem->slots = memblock_alloc(alloc_size, PAGE_SIZE);
+>   	if (!mem->slots) {
