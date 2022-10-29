@@ -1,33 +1,33 @@
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47A6A15CA1
-	for <iommu@lists.linux.dev>; Sat, 29 Oct 2022 08:12:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34A2B23C0
+	for <iommu@lists.linux.dev>; Sat, 29 Oct 2022 08:22:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667031129; x=1698567129;
-  h=message-id:date:mime-version:cc:to:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=0l8conNN1TjxcoCVVzLHCVgHjFaZt6Qyb2532sp6hBU=;
-  b=aaavpMVJvBJAyntBjbba0VWwyKf8IZ8fURbwF+L+wLN6IeHoZ313qqiK
-   TgPkSISxYDCwZ8YpIHnH/dJCCSlG9jckfmsto3kx9SnrwC1Gwq0wIjFW6
-   f3q8qsfn5vNwZQSVPaZuBs2NLeF/806AYuXSYZk3z/MQslH/d39dA/sLY
-   N6HV05xIj1nfFjM36Wx9F/7Jj2MFNiQzqtu/6nM8NWEycdDiYvzaywE19
-   V0F68zfj2A9PS3s0JdXNU2RP6gP2Av5sN/DHHcrYB6o6LmQD/i8P6XoZU
-   QGg7No0mFNZqSSYAriDqzp4/HTK1S0VZ0+SUPtfThfDGHvz0nC3DjGlm1
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10514"; a="296057517"
+  t=1667031756; x=1698567756;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ddN3j5eSW1Xdce1saH1Cy6ffr0QD86C5Yi/d3U3zqik=;
+  b=i88qjE+eqnScTad4cNKmUqrxUZ8DcHuR7KoLfleDJVRoESKoQ9zK02lB
+   In4Tdq8KAVbeyhxRUCZlZS9oZ3xQckGwEVD9+OFw1q2To5c29Lh4Eb/VK
+   xWe+0wFAowrVQ/JmyZnbB24sm8Z3PbTqh2BY0kQuqaCoUXdbBL+rS1//R
+   CQrrOvItK04vJcexBp88CruT8H0oWq/XNlEybMDARYmI2rMS7gCKPT3Qn
+   24hfQQC8I2TtpABwOrOF7ZGn8ZW2xbhcpQYTiwVmmIhlNlYn1y+SIC7UY
+   AukDGz1Wmd0COlccrsZEPalv7thBW4u8hPOASbXTsbve9b9H3aipISITk
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10514"; a="308648692"
 X-IronPort-AV: E=Sophos;i="5.95,223,1661842800"; 
-   d="scan'208";a="296057517"
+   d="scan'208";a="308648692"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2022 01:12:08 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10514"; a="878230034"
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2022 01:22:35 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10514"; a="878231477"
 X-IronPort-AV: E=Sophos;i="5.95,223,1661842800"; 
-   d="scan'208";a="878230034"
+   d="scan'208";a="878231477"
 Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.215.211]) ([10.254.215.211])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2022 01:12:06 -0700
-Message-ID: <1ea0d41c-906a-38a0-adb8-60a7b63ad65b@linux.intel.com>
-Date: Sat, 29 Oct 2022 16:12:04 +0800
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2022 01:22:34 -0700
+Message-ID: <cd727ea9-32f8-cc6a-a070-74e039b725f5@linux.intel.com>
+Date: Sat, 29 Oct 2022 16:22:32 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,57 +36,31 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.4.0
-Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, Scarlett Gourley <scarlett@arista.com>,
- James Sewart <jamessewart@arista.com>, Jack O'Sullivan <jack@arista.com>
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev
+Subject: Re: lockdep splat with intel iommu
 Content-Language: en-US
-To: Lennert Buytenhek <buytenh@wantstofly.org>
-References: <Y1eZbXKdJDoS8loC@wantstofly.org>
- <028e2c63-939b-af31-88b9-b479b41ce67c@linux.intel.com>
- <Y1o/EhV+XLgA9s2r@wantstofly.org>
+To: Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Kevin Tian <kevin.tian@intel.com>, Robin Murphy <robin.murphy@arm.com>
+References: <Y1qOqBXgll9qa7Hm@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH,RFC] iommu/vt-d: Convert dmar_fault IRQ to a threaded IRQ
-In-Reply-To: <Y1o/EhV+XLgA9s2r@wantstofly.org>
+In-Reply-To: <Y1qOqBXgll9qa7Hm@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2022/10/27 16:19, Lennert Buytenhek wrote:
->>> iommu/amd already uses a threaded IRQ handler for its I/O page fault
->>> reporting, and so it already has this advantage.
->>>
->>> When IRQ remapping is enabled, iommu/vt-d will try to set up its
->>> dmar_fault IRQ handler from start_kernel() -> x86_late_time_init()
->>> -> apic_intr_mode_init() -> apic_bsp_setup() ->
->>> irq_remap_enable_fault_handling() -> enable_drhd_fault_handling(),
->>> which happens before kthreadd is started, and trying to set up a
->>> threaded IRQ handler this early on will oops.  However, there
->>> doesn't seem to be a reason why iommu/vt-d needs to set up its fault
->>> reporting IRQ handler this early, and if we remove the IRQ setup code
->>> from enable_drhd_fault_handling(), the IRQ will be registered instead
->>> from pci_iommu_init() -> intel_iommu_init() -> init_dmars(), which
->>> seems to work just fine.
->> At present, we cannot do so. Because the VT-d interrupt remapping and
->> DMA remapping can be independently enabled. In another words, it's a
->> possible case where interrupt remapping is enabled while DMA remapping
->> is not.
-> Is there a way I can test this easily?
+On 2022/10/27 21:59, Jason Gunthorpe wrote:
+> I'm seeing this at every boot, on v6.1-rc2
 > 
-> I think we should be able to handle the "interrupt remapping enabled
-> but DMA remapping disabled" case in the same way, by registering the
-> dmar_fault IRQ sometime after kthreadd has been started.  I don't think
-> the dmar_fault handler performs any function that is critical for the
-> operation of the IOMMU, and I think that we can defer setting it up
-> until whenever is convenient.
+> I've just realized it means lockdep is turned off for the actual
+> testing I want to do. Very annoying
+> 
+> Lu, is there a solution yet? I saw some patches for a different
+> lockdep splat but not this one.
 
-Another possible way is not to split VT-d DMA remapping and interrupt
-remapping. The possible case of "intr remapping enabled but DMA
-remapping not" that I can imagine is that the guest VM doesn't want DMA
-translation because of poor efficiency. If so, the overhead impacted by
-DMA translation can be eliminated through "iommu=pt" or kernel build
-configuration. Of course, there may also be some special needs that I
-did not think of.
+Hi Jason,
+
+Possibly the same issue as this one?
+
+https://lore.kernel.org/linux-iommu/20220922101036.87457-1-janusz.krzysztofik@linux.intel.com/
 
 Best regards,
 baolu
