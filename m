@@ -1,33 +1,33 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85AE423C0;
-	Sat, 29 Oct 2022 07:25:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47A6A15CA1
+	for <iommu@lists.linux.dev>; Sat, 29 Oct 2022 08:12:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667028320; x=1698564320;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=pdSuXJp1XhtaXabpFFjunuzlj4sN7bGhSfVL9lBLAP4=;
-  b=oF8VWvSnGAGQC/HTNdQcC1SiTBiYPVP+Z1RhqXKEQYVQgb7L6BxTVTXD
-   6XS0xbv1M+eOD6FhiRdmWel5g/Dmfzagpax1986WQNIomWKxTrS+mVtpp
-   PsZaRmA34fXAgwTTaMLPRQ4nLJhieIm5IWdximgpMj3TEGQtJJFE0rVtJ
-   z79fyQy99pwIHG3yl6cPJ6kMoKr5PRyTQ5v4eSEBcXp190Guj9Rbic35o
-   zbZobVJ2r1mfG/W2UuYp6A3VZ6kkFUDQx9SPOd1GkAXKpip69X74eC4ts
-   /3cmlMCbxGyHCYXRjGBIzf3wgoYTbgqirNSyhRWt3FlZ2QwdNeKQCqA0h
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10514"; a="372856516"
+  t=1667031129; x=1698567129;
+  h=message-id:date:mime-version:cc:to:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=0l8conNN1TjxcoCVVzLHCVgHjFaZt6Qyb2532sp6hBU=;
+  b=aaavpMVJvBJAyntBjbba0VWwyKf8IZ8fURbwF+L+wLN6IeHoZ313qqiK
+   TgPkSISxYDCwZ8YpIHnH/dJCCSlG9jckfmsto3kx9SnrwC1Gwq0wIjFW6
+   f3q8qsfn5vNwZQSVPaZuBs2NLeF/806AYuXSYZk3z/MQslH/d39dA/sLY
+   N6HV05xIj1nfFjM36Wx9F/7Jj2MFNiQzqtu/6nM8NWEycdDiYvzaywE19
+   V0F68zfj2A9PS3s0JdXNU2RP6gP2Av5sN/DHHcrYB6o6LmQD/i8P6XoZU
+   QGg7No0mFNZqSSYAriDqzp4/HTK1S0VZ0+SUPtfThfDGHvz0nC3DjGlm1
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10514"; a="296057517"
 X-IronPort-AV: E=Sophos;i="5.95,223,1661842800"; 
-   d="scan'208";a="372856516"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2022 00:25:19 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10514"; a="635552771"
+   d="scan'208";a="296057517"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2022 01:12:08 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10514"; a="878230034"
 X-IronPort-AV: E=Sophos;i="5.95,223,1661842800"; 
-   d="scan'208";a="635552771"
+   d="scan'208";a="878230034"
 Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.215.211]) ([10.254.215.211])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2022 00:25:02 -0700
-Message-ID: <32d495bc-2dc7-1cc3-9c63-31f8172bb394@linux.intel.com>
-Date: Sat, 29 Oct 2022 15:25:00 +0800
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2022 01:12:06 -0700
+Message-ID: <1ea0d41c-906a-38a0-adb8-60a7b63ad65b@linux.intel.com>
+Date: Sat, 29 Oct 2022 16:12:04 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,108 +36,57 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.4.0
-Cc: baolu.lu@linux.intel.com, Alex Williamson <alex.williamson@redhat.com>,
- Chaitanya Kulkarni <chaitanyak@nvidia.com>, Cornelia Huck
- <cohuck@redhat.com>, Daniel Jordan <daniel.m.jordan@oracle.com>,
- David Gibson <david@gibson.dropbear.id.au>,
- Eric Auger <eric.auger@redhat.com>, Eric Farman <farman@linux.ibm.com>,
- Jason Wang <jasowang@redhat.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Joao Martins <joao.m.martins@oracle.com>, kvm@vger.kernel.org,
- Matthew Rosato <mjrosato@linux.ibm.com>, "Michael S. Tsirkin"
- <mst@redhat.com>, Nicolin Chen <nicolinc@nvidia.com>,
- Niklas Schnelle <schnelle@linux.ibm.com>,
- Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
-Subject: Re: [PATCH v3 10/15] iommufd: IOCTLs for the io_pagetable
+Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, Scarlett Gourley <scarlett@arista.com>,
+ James Sewart <jamessewart@arista.com>, Jack O'Sullivan <jack@arista.com>
 Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, bpf@vger.kernel.org,
- Jonathan Corbet <corbet@lwn.net>, David Woodhouse <dwmw2@infradead.org>,
- iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- Kevin Tian <kevin.tian@intel.com>, linux-doc@vger.kernel.org,
- linux-kselftest@vger.kernel.org, llvm@lists.linux.dev,
- Nathan Chancellor <nathan@kernel.org>,
- Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>
-References: <10-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
+To: Lennert Buytenhek <buytenh@wantstofly.org>
+References: <Y1eZbXKdJDoS8loC@wantstofly.org>
+ <028e2c63-939b-af31-88b9-b479b41ce67c@linux.intel.com>
+ <Y1o/EhV+XLgA9s2r@wantstofly.org>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <10-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
+Subject: Re: [PATCH,RFC] iommu/vt-d: Convert dmar_fault IRQ to a threaded IRQ
+In-Reply-To: <Y1o/EhV+XLgA9s2r@wantstofly.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2022/10/26 2:12, Jason Gunthorpe wrote:
-> +/**
-> + * struct iommu_ioas_iova_ranges - ioctl(IOMMU_IOAS_IOVA_RANGES)
-> + * @size: sizeof(struct iommu_ioas_iova_ranges)
-> + * @ioas_id: IOAS ID to read ranges from
-> + * @num_iovas: Input/Output total number of ranges in the IOAS
-> + * @__reserved: Must be 0
-> + * @allowed_iovas: Pointer to the output array of struct iommu_iova_range
-> + * @out_iova_alignment: Minimum alignment required for mapping IOVA
-> + *
-> + * Query an IOAS for ranges of allowed IOVAs. Mapping IOVA outside these ranges
-> + * is not allowed. out_num_iovas will be set to the total number of iovas and
-> + * the out_valid_iovas[] will be filled in as space permits.
+On 2022/10/27 16:19, Lennert Buytenhek wrote:
+>>> iommu/amd already uses a threaded IRQ handler for its I/O page fault
+>>> reporting, and so it already has this advantage.
+>>>
+>>> When IRQ remapping is enabled, iommu/vt-d will try to set up its
+>>> dmar_fault IRQ handler from start_kernel() -> x86_late_time_init()
+>>> -> apic_intr_mode_init() -> apic_bsp_setup() ->
+>>> irq_remap_enable_fault_handling() -> enable_drhd_fault_handling(),
+>>> which happens before kthreadd is started, and trying to set up a
+>>> threaded IRQ handler this early on will oops.  However, there
+>>> doesn't seem to be a reason why iommu/vt-d needs to set up its fault
+>>> reporting IRQ handler this early, and if we remove the IRQ setup code
+>>> from enable_drhd_fault_handling(), the IRQ will be registered instead
+>>> from pci_iommu_init() -> intel_iommu_init() -> init_dmars(), which
+>>> seems to work just fine.
+>> At present, we cannot do so. Because the VT-d interrupt remapping and
+>> DMA remapping can be independently enabled. In another words, it's a
+>> possible case where interrupt remapping is enabled while DMA remapping
+>> is not.
+> Is there a way I can test this easily?
+> 
+> I think we should be able to handle the "interrupt remapping enabled
+> but DMA remapping disabled" case in the same way, by registering the
+> dmar_fault IRQ sometime after kthreadd has been started.  I don't think
+> the dmar_fault handler performs any function that is critical for the
+> operation of the IOMMU, and I think that we can defer setting it up
+> until whenever is convenient.
 
-"out_num_iovas" and "out_valid_iovas[]" are outdated.
-
-> + *
-> + * The allowed ranges are dependent on the HW path the DMA operation takes, and
-> + * can change during the lifetime of the IOAS. A fresh empty IOAS will have a
-> + * full range, and each attached device will narrow the ranges based on that
-> + * devices HW restrictions. Detatching a device can widen the ranges. Userspace
-> + * should query ranges after every attach/detatch to know what IOVAs are valid
-> + * for mapping.
-> + *
-> + * On input num_iovas is the length of the allowed_iovas array. On output it is
-> + * the total number of iovas filled in. The ioctl will return -EMSGSIZE and set
-> + * num_iovas to the required value if num_iovas is too small. In this case the
-> + * caller should allocate a larger output array and re-issue the ioctl.
-> + */
-> +struct iommu_ioas_iova_ranges {
-> +	__u32 size;
-> +	__u32 ioas_id;
-> +	__u32 num_iovas;
-> +	__u32 __reserved;
-> +	__aligned_u64 allowed_iovas;
-> +	__aligned_u64 out_iova_alignment;
-> +};
-> +#define IOMMU_IOAS_IOVA_RANGES _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_IOVA_RANGES)
-> +
-> +/**
-> + * struct iommu_ioas_allow_iovas - ioctl(IOMMU_IOAS_ALLOW_IOVAS)
-> + * @size: sizeof(struct iommu_ioas_allow_iovas)
-> + * @ioas_id: IOAS ID to allow IOVAs from
-
-@num_iovas: The number of elements in @allowed_iovas array
-
-> + * @allowed_iovas: Pointer to array of struct iommu_iova_range
-> + *
-> + * Ensure a range of IOVAs are always available for allocation. If this call
-> + * succeeds then IOMMU_IOAS_IOVA_RANGES will never return a list of IOVA ranges
-> + * that are narrower than the ranges provided here. This call will fail if
-> + * IOMMU_IOAS_IOVA_RANGES is currently narrower than the given ranges.
-> + *
-> + * When an IOAS is first created the IOVA_RANGES will be maximally sized, and as
-> + * devices are attached the IOVA will narrow based on the device restrictions.
-> + * When an allowed range is specified any narrowing will be refused, ie device
-> + * attachment can fail if the device requires limiting within the allowed range.
-> + *
-> + * Automatic IOVA allocation is also impacted by this call. MAP will only
-> + * allocate within the allowed IOVAs if they are present.
-> + *
-> + * This call replaces the entire allowed list with the given list.
-> + */
-> +struct iommu_ioas_allow_iovas {
-> +	__u32 size;
-> +	__u32 ioas_id;
-> +	__u32 num_iovas;
-> +	__u32 __reserved;
-> +	__aligned_u64 allowed_iovas;
-> +};
-> +#define IOMMU_IOAS_ALLOW_IOVAS _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_ALLOW_IOVAS)
+Another possible way is not to split VT-d DMA remapping and interrupt
+remapping. The possible case of "intr remapping enabled but DMA
+remapping not" that I can imagine is that the guest VM doesn't want DMA
+translation because of poor efficiency. If so, the overhead impacted by
+DMA translation can be eliminated through "iommu=pt" or kernel build
+configuration. Of course, there may also be some special needs that I
+did not think of.
 
 Best regards,
 baolu
