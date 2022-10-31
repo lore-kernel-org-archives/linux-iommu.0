@@ -1,69 +1,45 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E78123CD
-	for <iommu@lists.linux.dev>; Sun, 30 Oct 2022 09:43:20 +0000 (UTC)
-Received: by mail-wm1-f52.google.com with SMTP id l16-20020a05600c4f1000b003c6c0d2a445so6386498wmq.4
-        for <iommu@lists.linux.dev>; Sun, 30 Oct 2022 02:43:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=g/VLR/q0mJpm1g0Mv+FaKiNU++ksU9JCwtcy+gU033k=;
-        b=kz4BtlExlvZie5t39yqkV7DvNLu31S3E9vbQEZv+uNOaMKpiL2NugTxhtRkjmiGeM3
-         OuYEV2diE//sUBC3GBZfdoqqK78he3cFaVvmre4Ix30d6hS6pA+lEuuL1d9JdtnjqehU
-         T2AiKY3akNxn24eTwzG5ZUPux2VDa0ys5+BFI0lIa3FIbtTDBhHYdg5HRCEC1ZAy3SKx
-         Z2O092dnZVg9V0SFPb1iNSeBFnkVDoIGRFSIhk4CCB7wASYlw4UX4ekjiMlxHwGAx5LJ
-         0XD/iqoA0duiD7fPbmgv8mwM4F1RElzKm5V+/4YFxQRQX8sQ6k7eZfCEgReRKz1uRmeX
-         /k8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=g/VLR/q0mJpm1g0Mv+FaKiNU++ksU9JCwtcy+gU033k=;
-        b=r2VVeLRtQJxCfwr6adJ2X4p+as/Fj2+OFCFKWexv3t7cZzavgPLOHSFfQE5to8GskW
-         3cH9IIbS/1OFfkT91Z/9U8a+28zenMHXgD7UszBKpnSM4m/EY/AF/2KJ7HOv+zm4SDb6
-         2kqtBr3gRtLpp1zv/SLR7ZrLbpZrCNv42IdNIeFXjs5Oi6eEEbHOtdlXPFx1R5X0k3ie
-         6Uew+yp1ZiNW/UpjF1FliNFLr3eUA7Grydtx3l8OC4KypyLciEEXsA4bD1VMJzQpOftV
-         uWoHL8Z8EZbCTK2QO0fTBznnOR2fgMZ2F3FatKVf0wZIPHdjxzOKjqzDmmGr2j57KVmG
-         PC9w==
-X-Gm-Message-State: ACrzQf0EqvmklwHYfPTiduKiL0Uap6vkwF3JwJGUlmZeUqC8iTwsmDLU
-	Jek/rdckMQ6jJ2u1Om6zkIs=
-X-Google-Smtp-Source: AMsMyM5WjDIC4d7iLHlIggwJ4nnImN8lrJOG27Gx0B7OH+u8AcgoXXAis/9grLtUtsFZpfKiKvhTHg==
-X-Received: by 2002:a05:600c:4252:b0:3cf:678a:d189 with SMTP id r18-20020a05600c425200b003cf678ad189mr3572561wmm.51.1667122998733;
-        Sun, 30 Oct 2022 02:43:18 -0700 (PDT)
-Received: from localhost ([77.78.20.135])
-        by smtp.gmail.com with ESMTPSA id a17-20020a05600c349100b003b47ff307e1sm3925965wmq.31.2022.10.30.02.43.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 30 Oct 2022 02:43:17 -0700 (PDT)
-From: Iskren Chernev <iskren.chernev@gmail.com>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>
-Cc: phone-devel@vger.kernel.org,
-	~postmarketos/upstreaming@lists.sr.ht,
-	linux-arm-msm@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	Adam Skladowski <a39.skl@gmail.com>,
-	Iskren Chernev <iskren.chernev@gmail.com>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBC3F7E
+	for <iommu@lists.linux.dev>; Mon, 31 Oct 2022 01:05:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1667178359; x=1698714359;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=1X73YfmmQUgPVTkMfmgPhQcDPYrWQJ589ttQkEztbCE=;
+  b=DwxChNKOpXLmnYru/VD1uP2+/DQpXRHuQvPAWLhhqNnl56kgCor4hb49
+   c1tNCJInODzYV884dvqVCEOXz6J7ByewDmC9i7BNYRMnazsIq1uUfm1Ga
+   XZyBM2MAn90MOg5qc2OD7xXtKhfcBz/PhVYy/I43yc31WVvkB+i1WKXMX
+   9G7hJLRk+2KXMPE4uY+IweyNBm0V4/7I+f3hgW36IxHM7wZk5WaFnkK9A
+   /6RmjKQw3P2JyFEsVCOmdgDNzpxqaGeLX1lf4OoiVKK7F+WGKX0apyPW4
+   yXFySEXOx73uK+0GM4Uv0c3j+E+phkpSl+CHlulOgoBNdCUJ8bwpUbeNm
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10516"; a="335447094"
+X-IronPort-AV: E=Sophos;i="5.95,227,1661842800"; 
+   d="scan'208";a="335447094"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2022 18:05:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10516"; a="584496108"
+X-IronPort-AV: E=Sophos;i="5.95,227,1661842800"; 
+   d="scan'208";a="584496108"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by orsmga003.jf.intel.com with ESMTP; 30 Oct 2022 18:05:56 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Jason Gunthorpe <jgg@nvidia.com>,
+	Kevin Tian <kevin.tian@intel.com>,
 	Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Konrad Dybcio <konrad.dybcio@somainline.org>,
-	Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
-	Emma Anholt <emma@anholt.net>,
-	Rob Clark <robdclark@chromium.org>,
-	linux-arm-kernel@lists.infradead.org,
+	Jean-Philippe Brucker <jean-philippe@linaro.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v5 5/8] iommu/arm-smmu-qcom: Add SM6115 support
-Date: Sun, 30 Oct 2022 11:42:55 +0200
-Message-Id: <20221030094258.486428-6-iskren.chernev@gmail.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221030094258.486428-1-iskren.chernev@gmail.com>
-References: <20221030094258.486428-1-iskren.chernev@gmail.com>
+Subject: [RESEND PATCH v14 00/13] iommu: SVA and IOPF refactoring
+Date: Mon, 31 Oct 2022 08:59:04 +0800
+Message-Id: <20221031005917.45690-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -72,29 +48,65 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Adam Skladowski <a39.skl@gmail.com>
+Hi Joerg,
 
-Add the Qualcomm SM6115 platform to the list of compatible,
-this target uses MMU500 for both APSS and GPU.
+This is a resent version of v14 which was posted here:
+https://lore.kernel.org/linux-iommu/20220924001204.4005613-1-baolu.lu@linux.intel.com/
 
-Signed-off-by: Adam Skladowski <a39.skl@gmail.com>
-Signed-off-by: Iskren Chernev <iskren.chernev@gmail.com>
----
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
- 1 file changed, 1 insertion(+)
+No further comments since the last post. So I rebased it on the top of
+v6.1-rc3 so that you can easily take it for v6.2 if you have interest.
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index b2708de25ea3..526fec79b4fe 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -432,6 +432,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
- 	{ .compatible = "qcom,sc8280xp-smmu-500" },
- 	{ .compatible = "qcom,sdm630-smmu-v2" },
- 	{ .compatible = "qcom,sdm845-smmu-500" },
-+	{ .compatible = "qcom,sm6115-smmu-500" },
- 	{ .compatible = "qcom,sm6125-smmu-500" },
- 	{ .compatible = "qcom,sm6350-smmu-500" },
- 	{ .compatible = "qcom,sm6375-smmu-500" },
+It's purely a rebased version, no functional change. Please refer to
+the original post for series description and change history.
+
+This series is also available on github:
+
+https://github.com/LuBaolu/intel-iommu/commits/iommu-sva-refactoring-v14-resend
+
+Please consider it for your iommu tree.
+
+Best regards,
+baolu
+
+Lu Baolu (13):
+  iommu: Add max_pasids field in struct iommu_device
+  iommu: Add max_pasids field in struct dev_iommu
+  iommu: Remove SVM_FLAG_SUPERVISOR_MODE support
+  PCI: Enable PASID only when ACS RR & UF enabled on upstream path
+  iommu: Add attach/detach_dev_pasid iommu interfaces
+  iommu: Add IOMMU SVA domain support
+  iommu/vt-d: Add SVA domain support
+  arm-smmu-v3/sva: Add SVA domain support
+  iommu/sva: Refactoring iommu_sva_bind/unbind_device()
+  iommu: Remove SVA related callbacks from iommu ops
+  iommu: Prepare IOMMU domain for IOPF
+  iommu: Per-domain I/O page fault handling
+  iommu: Rename iommu-sva-lib.{c,h}
+
+ include/linux/intel-svm.h                     |  13 -
+ include/linux/iommu.h                         | 116 ++++++--
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  23 +-
+ drivers/iommu/intel/iommu.h                   |  18 +-
+ .../iommu/{iommu-sva-lib.h => iommu-sva.h}    |  14 +-
+ drivers/dma/idxd/cdev.c                       |   3 +-
+ drivers/dma/idxd/init.c                       |  25 +-
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 104 ++++---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  21 +-
+ drivers/iommu/intel/dmar.c                    |   7 +
+ drivers/iommu/intel/iommu.c                   |  30 +-
+ drivers/iommu/intel/svm.c                     | 145 ++++-----
+ drivers/iommu/io-pgfault.c                    |  77 ++---
+ drivers/iommu/iommu-sva-lib.c                 |  71 -----
+ drivers/iommu/iommu-sva.c                     | 240 +++++++++++++++
+ drivers/iommu/iommu.c                         | 277 ++++++++++++------
+ drivers/misc/uacce/uacce.c                    |   2 +-
+ drivers/pci/ats.c                             |   3 +
+ drivers/iommu/Makefile                        |   2 +-
+ 19 files changed, 732 insertions(+), 459 deletions(-)
+ rename drivers/iommu/{iommu-sva-lib.h => iommu-sva.h} (83%)
+ delete mode 100644 drivers/iommu/iommu-sva-lib.c
+ create mode 100644 drivers/iommu/iommu-sva.c
+
 -- 
-2.38.1
+2.34.1
 
