@@ -1,154 +1,169 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE94F6D17
-	for <iommu@lists.linux.dev>; Wed,  2 Nov 2022 15:28:01 +0000 (UTC)
-Received: by mail-pl1-f174.google.com with SMTP id c2so16888503plz.11
-        for <iommu@lists.linux.dev>; Wed, 02 Nov 2022 08:28:01 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A47E41EA01
+	for <iommu@lists.linux.dev>; Wed,  2 Nov 2022 17:29:09 +0000 (UTC)
+Received: by mail-pj1-f53.google.com with SMTP id f5-20020a17090a4a8500b002131bb59d61so3765695pjh.1
+        for <iommu@lists.linux.dev>; Wed, 02 Nov 2022 10:29:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=wP12hBLI/UjYflAvChPOlEUP0Fe9bcRv3GNq3jXeE+o=;
-        b=oPg7EAxfhFVgkL5qNGfY4856C1CuYDrQT15DtL6CAfeFLX8YI4d839KNXQ4S+gqr3a
-         jl0GyG/hjPYCfH8CFQOTECwjEjyDtxI5jMIWrIYga5TRq0kXfOXd9WDHC1Z//WkJKr9M
-         Ad+DCW+vZTRC+nxDpNFkhVnFxaBoD0sK2hhdLLaaFhIVjXBbWRZtsm8j4QbOW5urUEsh
-         QUwujKODHa/k883wtb2V2C6ovbNxfQKuOLJapf96fLqGvubzOHHsh3bsNDZTFiesw3Fj
-         JKrcUe8+Fk9VgsGaOAMngyH68+2DM3jdLTjfELiAs3+3Jh7pfmiTrYtJePw+hvcxFtNv
-         JbAg==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=XngaLyoddCmH4VlYM2PfyFy1z8QIlSHJsQqMTNSL+fY=;
+        b=LFmDcNdVJo4K4/FarOGyy+iYSahg3fpZVoW20EDjy0GMIKfgTNw8fvtAhQ15msH1Qk
+         VHt/frVwIRzA+95aTCRBawF42Gjwv69pcfAiYAtFa+IxWw2c0L81a72SzNLI/zhYVV0t
+         K0ZHQnNrJhHrs41sUlChWL8od2BcBx7+xb65Sk1Jcosp5Emqdq+E1yeRQzcf4I9RGVys
+         8ZCwtkteD0c7nGMW6HOZLCT7XbRkNkFFlndsU3/uIegcdYqiHKLssHEw65pubDMfcOz6
+         H3vQiqJ9dW6NCjeFtTBEAmTHFWCogGMbqctU+cPtFHx9OfivrJ2DvIF1PBdYIYi7VXf1
+         hMPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=wP12hBLI/UjYflAvChPOlEUP0Fe9bcRv3GNq3jXeE+o=;
-        b=NK6svR93Eonsa6j3RXF2nMerx6721RpHwaSp+N6c1OsDecxv5yWEtYXA0H2DTvuXTn
-         M+UwdGXfoN3vqNDVd2MsH7G0Vs/7SHyeCY14VHMlBQcrXMhxr/HKkfUMt3yJi4pXeJbz
-         bp7Hrx3jb8/3+NkwlKGkKfHIbi2fEP1EjapfiI6iQ/OOXrORm1aSClMU7pMn1nLa/JBi
-         gN1WSa6L5blw504mv+1kCGfejjA7wynUANcycchGnq5UjfnKYvRo5wmdml4pSRROtcLv
-         nvTueBeYqhrYfd2AJF8gUQxwArqpARq4kmY7OdrvMrUYBsHotdLaGI7INArlfbMVV0jR
-         Smcw==
-X-Gm-Message-State: ACrzQf08HehpJuX/hwGT9XRyqdpLRR3ztxP8AZ3Nh9Wa3LOGG+rJN4cu
-	Zddv6IJuFXTgzG+4kpyQ5klLmZGqpJI54filgHIQ1Q==
-X-Google-Smtp-Source: AMsMyM6A7lrylJay1xhevhaxJCaktaXQTaOKnMRfNs50tK6THAHyXvK0B1iPkGpZmNSeU8H+Mxp5/cQp8C9UHnx/UTU=
-X-Received: by 2002:a17:902:b78b:b0:187:1623:827f with SMTP id
- e11-20020a170902b78b00b001871623827fmr18869518pls.165.1667402881129; Wed, 02
- Nov 2022 08:28:01 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=XngaLyoddCmH4VlYM2PfyFy1z8QIlSHJsQqMTNSL+fY=;
+        b=YcDVCrHGuAWnGI9DHk9cRHcxs79q4dFMOuNyoq0jgRLp+sR3WzhfIjd9Lj8Pqjx2bt
+         Vdl2QEn5bZX+RrmhUgnMtBaEIEON+yNEDmKse1rVEgKbQTR+XwBiRl5GRh6Ll+9h4mih
+         ZAADCmfRdFVGQxmpF6p0+ynj6P5l+mG1fjlknLnYJbe2aC3PyDAmezD3eZbLNd+uWlht
+         CW8StPOPyt3CuvVz1CyeAy7vI7HPZRsZDG8gU+alprZ4LgP9VK7nie6gH2X7AG7hyvdg
+         9CvDd480Bs11JQFFo3Ixu69n9aVq9x07RBQe8NWm+UdQ94DumLcTfIKncUWFeixGVCam
+         k3UQ==
+X-Gm-Message-State: ACrzQf22BDbcQeuwFZVbVfBliC8axqS1vsNc/eztIat2NeBNSMJWyrEs
+	Kz0Ggna92MhnPjHio35HecY=
+X-Google-Smtp-Source: AMsMyM468ueCiGPw9Rp6pG6tj4yCN+Kg/96HSi3gaDaAY7Jy/SDnxCyzS2YodJhnzcubFb/rCwO4cw==
+X-Received: by 2002:a17:902:ab89:b0:186:7cfc:cde8 with SMTP id f9-20020a170902ab8900b001867cfccde8mr26293355plr.9.1667410149118;
+        Wed, 02 Nov 2022 10:29:09 -0700 (PDT)
+Received: from ?IPV6:2404:f801:0:5:8000::75b? ([2404:f801:9000:1a:efea::75b])
+        by smtp.gmail.com with ESMTPSA id d6-20020a170903230600b0016f196209c9sm8651878plh.123.2022.11.02.10.28.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Nov 2022 10:29:08 -0700 (PDT)
+Message-ID: <b0aa0d72-d3f3-93a9-1fa9-553c1c0351ee@gmail.com>
+Date: Thu, 3 Nov 2022 01:28:54 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAPDyKFpG9ZjVTiK3HEqioDN8ksGpRYiXL_SLSmOfm9fjJfcrsw@mail.gmail.com>
- <20221028130242.20900-1-pshete@nvidia.com>
-In-Reply-To: <20221028130242.20900-1-pshete@nvidia.com>
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Date: Wed, 2 Nov 2022 16:27:24 +0100
-Message-ID: <CAPDyKFqJdiCDkAfrONfnBVKw1v8=jZ+hEJiKGK70EQ4o7BSxaQ@mail.gmail.com>
-Subject: Re: [PATCH v9 1/4] iommu: Add dummy dev_iommu_fwspec_get() helper
-To: Prathamesh Shete <pshete@nvidia.com>
-Cc: joro@8bytes.org, adrian.hunter@intel.com, thierry.reding@gmail.com, 
-	jonathanh@nvidia.com, p.zabel@pengutronix.de, linux-mmc@vger.kernel.org, 
-	linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, will@kernel.org, 
-	iommu@lists.linux.dev, robin.murphy@arm.com, anrao@nvidia.com, 
-	smangipudi@nvidia.com, kyarlagadda@nvidia.com, 
-	Thierry Reding <treding@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.1
+Subject: Re: [PATCH 03/12] x86/hyperv: Reorder code in prep for subsequent
+ patch
+Content-Language: en-US
+To: Michael Kelley <mikelley@microsoft.com>, hpa@zytor.com,
+ kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+ wei.liu@kernel.org, decui@microsoft.com, luto@kernel.org,
+ peterz@infradead.org, davem@davemloft.net, edumazet@google.com,
+ kuba@kernel.org, pabeni@redhat.com, lpieralisi@kernel.org, robh@kernel.org,
+ kw@linux.com, bhelgaas@google.com, arnd@arndb.de, hch@infradead.org,
+ m.szyprowski@samsung.com, robin.murphy@arm.com, thomas.lendacky@amd.com,
+ brijesh.singh@amd.com, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, Tianyu.Lan@microsoft.com,
+ kirill.shutemov@linux.intel.com, sathyanarayanan.kuppuswamy@linux.intel.com,
+ ak@linux.intel.com, isaku.yamahata@intel.com, dan.j.williams@intel.com,
+ jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com, x86@kernel.org,
+ linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ netdev@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-arch@vger.kernel.org, iommu@lists.linux.dev
+References: <1666288635-72591-1-git-send-email-mikelley@microsoft.com>
+ <1666288635-72591-4-git-send-email-mikelley@microsoft.com>
+From: Tianyu Lan <ltykernel@gmail.com>
+In-Reply-To: <1666288635-72591-4-git-send-email-mikelley@microsoft.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, 28 Oct 2022 at 15:02, Prathamesh Shete <pshete@nvidia.com> wrote:
->
-> This dummy implementation is useful to avoid a dependency on the
-> IOMMU_API Kconfig symbol in drivers that can optionally use the IOMMU
-> API.
->
-> In order to fully use this, also move the struct iommu_fwspec definition
-> out of the IOMMU_API protected region.
->
-> Signed-off-by: Thierry Reding <treding@nvidia.com>
-> Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+On 10/21/2022 1:57 AM, Michael Kelley wrote:
+> Reorder some code as preparation for a subsequent patch.  No
+> functional change.
+> 
+> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
 
-It seems like you claimed authorship of the patch [1], that was
-authored by Thierry and updated the commit message header.
-
-Can you please restore the patch to its original that was posted by Thierry?
-
-Kind regards
-Uffe
-
-[1]
-https://lore.kernel.org/linux-mmc/20221018105149.820062-1-thierry.reding@gmail.com/
-
-
-
+Reviewed-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
 > ---
->  include/linux/iommu.h | 39 +++++++++++++++++++--------------------
->  1 file changed, 19 insertions(+), 20 deletions(-)
->
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index ea30f00dc145..afa829bc4356 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -173,6 +173,25 @@ enum iommu_dev_features {
->
->  #define IOMMU_PASID_INVALID    (-1U)
->
-> +/**
-> + * struct iommu_fwspec - per-device IOMMU instance data
-> + * @ops: ops for this device's IOMMU
-> + * @iommu_fwnode: firmware handle for this device's IOMMU
-> + * @flags: IOMMU_FWSPEC_* flags
-> + * @num_ids: number of associated device IDs
-> + * @ids: IDs which this device may present to the IOMMU
-> + */
-> +struct iommu_fwspec {
-> +       const struct iommu_ops  *ops;
-> +       struct fwnode_handle    *iommu_fwnode;
-> +       u32                     flags;
-> +       unsigned int            num_ids;
-> +       u32                     ids[];
-> +};
-> +
-> +/* ATS is supported */
-> +#define IOMMU_FWSPEC_PCI_RC_ATS                        (1 << 0)
-> +
->  #ifdef CONFIG_IOMMU_API
->
->  /**
-> @@ -600,25 +619,6 @@ extern struct iommu_group *generic_device_group(struct device *dev);
->  /* FSL-MC device grouping function */
->  struct iommu_group *fsl_mc_device_group(struct device *dev);
->
-> -/**
-> - * struct iommu_fwspec - per-device IOMMU instance data
-> - * @ops: ops for this device's IOMMU
-> - * @iommu_fwnode: firmware handle for this device's IOMMU
-> - * @flags: IOMMU_FWSPEC_* flags
-> - * @num_ids: number of associated device IDs
-> - * @ids: IDs which this device may present to the IOMMU
+>   arch/x86/hyperv/ivm.c | 68 +++++++++++++++++++++++++--------------------------
+>   1 file changed, 34 insertions(+), 34 deletions(-)
+> 
+> diff --git a/arch/x86/hyperv/ivm.c b/arch/x86/hyperv/ivm.c
+> index 1dbcbd9..f33c67e 100644
+> --- a/arch/x86/hyperv/ivm.c
+> +++ b/arch/x86/hyperv/ivm.c
+> @@ -235,40 +235,6 @@ void hv_ghcb_msr_read(u64 msr, u64 *value)
+>   EXPORT_SYMBOL_GPL(hv_ghcb_msr_read);
+>   #endif
+>   
+> -enum hv_isolation_type hv_get_isolation_type(void)
+> -{
+> -	if (!(ms_hyperv.priv_high & HV_ISOLATION))
+> -		return HV_ISOLATION_TYPE_NONE;
+> -	return FIELD_GET(HV_ISOLATION_TYPE, ms_hyperv.isolation_config_b);
+> -}
+> -EXPORT_SYMBOL_GPL(hv_get_isolation_type);
+> -
+> -/*
+> - * hv_is_isolation_supported - Check system runs in the Hyper-V
+> - * isolation VM.
 > - */
-> -struct iommu_fwspec {
-> -       const struct iommu_ops  *ops;
-> -       struct fwnode_handle    *iommu_fwnode;
-> -       u32                     flags;
-> -       unsigned int            num_ids;
-> -       u32                     ids[];
-> -};
+> -bool hv_is_isolation_supported(void)
+> -{
+> -	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))
+> -		return false;
 > -
-> -/* ATS is supported */
-> -#define IOMMU_FWSPEC_PCI_RC_ATS                        (1 << 0)
+> -	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV))
+> -		return false;
 > -
->  /**
->   * struct iommu_sva - handle to a device-mm bond
->   */
-> @@ -682,7 +682,6 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group);
->
->  struct iommu_ops {};
->  struct iommu_group {};
-> -struct iommu_fwspec {};
->  struct iommu_device {};
->  struct iommu_fault_param {};
->  struct iommu_iotlb_gather {};
-> --
-> 2.17.1
->
+> -	return hv_get_isolation_type() != HV_ISOLATION_TYPE_NONE;
+> -}
+> -
+> -DEFINE_STATIC_KEY_FALSE(isolation_type_snp);
+> -
+> -/*
+> - * hv_isolation_type_snp - Check system runs in the AMD SEV-SNP based
+> - * isolation VM.
+> - */
+> -bool hv_isolation_type_snp(void)
+> -{
+> -	return static_branch_unlikely(&isolation_type_snp);
+> -}
+> -
+>   /*
+>    * hv_mark_gpa_visibility - Set pages visible to host via hvcall.
+>    *
+> @@ -387,3 +353,37 @@ void hv_unmap_memory(void *addr)
+>   {
+>   	vunmap(addr);
+>   }
+> +
+> +enum hv_isolation_type hv_get_isolation_type(void)
+> +{
+> +	if (!(ms_hyperv.priv_high & HV_ISOLATION))
+> +		return HV_ISOLATION_TYPE_NONE;
+> +	return FIELD_GET(HV_ISOLATION_TYPE, ms_hyperv.isolation_config_b);
+> +}
+> +EXPORT_SYMBOL_GPL(hv_get_isolation_type);
+> +
+> +/*
+> + * hv_is_isolation_supported - Check system runs in the Hyper-V
+> + * isolation VM.
+> + */
+> +bool hv_is_isolation_supported(void)
+> +{
+> +	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))
+> +		return false;
+> +
+> +	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV))
+> +		return false;
+> +
+> +	return hv_get_isolation_type() != HV_ISOLATION_TYPE_NONE;
+> +}
+> +
+> +DEFINE_STATIC_KEY_FALSE(isolation_type_snp);
+> +
+> +/*
+> + * hv_isolation_type_snp - Check system runs in the AMD SEV-SNP based
+> + * isolation VM.
+> + */
+> +bool hv_isolation_type_snp(void)
+> +{
+> +	return static_branch_unlikely(&isolation_type_snp);
+> +}
