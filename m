@@ -1,45 +1,45 @@
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
+Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8652127708
-	for <iommu@lists.linux.dev>; Wed,  2 Nov 2022 20:56:28 +0000 (UTC)
-Received: by mail-qk1-f172.google.com with SMTP id k2so7062873qkk.7
-        for <iommu@lists.linux.dev>; Wed, 02 Nov 2022 13:56:28 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3E4527708
+	for <iommu@lists.linux.dev>; Wed,  2 Nov 2022 20:56:45 +0000 (UTC)
+Received: by mail-qt1-f174.google.com with SMTP id l2so82132qtq.11
+        for <iommu@lists.linux.dev>; Wed, 02 Nov 2022 13:56:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=lXaTqQMSB6hK8loYpSwRgRTmm6tfLwGGmxbJhSSNS3s=;
-        b=ytNqlRVySr85I+Qa8Irt/BNZJn01KmpooRo/NhrlHmSE/MhvYBO4rP7rpephRc1Jb+
-         p6qO8uE6T36mpmpqeObh+iJHjiDk6ikhpnaWr1epir/jK2f07wCMdE9T5LtNbbFNzN0U
-         FUQ3iU9PnugYigl7cT5FlpmjYHCTJv93vgQBTPdC5niTdo94POoWp7GEypDSNe3xBK1O
-         AY0X5c8BqOirGBefRxcprArFwcsmw7yZ66Qg/no/KaEC1ptM5xcT8GgPEXAXU7ljsO0B
-         5d59eSdaeh5b0ymolqTW2jxgUJlasM9W1ocwzBZXprq7AakMd9eRkKwGM5Zxpatud0rj
-         EWgQ==
+        bh=LezinHxIM/g7YL8z+NENWzds4O5w/AflVPEU1lWlKZY=;
+        b=w9sx/pbHGUwWv9Z5UN0K5mv+FPBhXCKp7XOFTxC5GlkYuFPFOCSrH0lJbaRoyR9ds5
+         M3nbjBZEtjaRofkiSNe/W7PL5B8sWHc4kWPU9YXp6fZd97IdyYxx8FouUzj+O58QTvGR
+         WPj0JndkI4Ty3o0PI7uadzji0qC28abbkqucbhcRD0ZPO1wOn//rvRp4QN7ZtKAI3rsM
+         qOLNI+KX7gbB2QpFvZKbtLYVUquIRk+26bG3dhreckluMrWktPV50KH2ljtCnFC2L8ua
+         QxXi4bCDiS29bnp5oboD1IgwopNzGREkyYEYppmZPMX1uWGdZCcxXxVj8jOs440KdtzM
+         XbTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=lXaTqQMSB6hK8loYpSwRgRTmm6tfLwGGmxbJhSSNS3s=;
-        b=gs+L+Xs2rXxKWjtR4fWqBPxEcAqjIQq45/KdzzMaZzj08ne8NgsMXRvWFQDT5q8UM7
-         DwjY0vPxjCX0o1QCWG44TZXaXvUANhd1ng5DAiNKPk5EtoUFMj1+0ikUS0SGIAJl9meF
-         7ePmlpOLX37P9ZS7OcxY4n0taITf2UN9/PilwlAhlSzSDmq8D5GH4ao/jbvSQEXb+dHp
-         DnnQakVvDsRxnCbGNi+QXNfUYDriAX/IK3n8dGtsTn1SgAJGwB+bW7zXe0PYAzxH/oYr
-         BHLtF6vmFKst+sDox0PY8KIA+JGX3xO9ldqLFD3yKhcGeNi/5ReSMH4w5PrRSPdBGZDZ
-         zUNQ==
-X-Gm-Message-State: ACrzQf1U3Ds3JC+iGD8w7CRtcYPc51t/2z6kBo9NzSm2yMzCcOK8knog
-	EhguqPx47ZrFI4Em0ECU+jlutw==
-X-Google-Smtp-Source: AMsMyM4EeLR1tI8FzAkA5+DmybB7IVuiMLaqywlHHsJRS6oTbfaHD6FMDYMNB50p8rJ7c2S3wbHwVA==
-X-Received: by 2002:a05:620a:d55:b0:6f9:fadd:4762 with SMTP id o21-20020a05620a0d5500b006f9fadd4762mr19429978qkl.335.1667422587543;
-        Wed, 02 Nov 2022 13:56:27 -0700 (PDT)
+        bh=LezinHxIM/g7YL8z+NENWzds4O5w/AflVPEU1lWlKZY=;
+        b=4fvgfsSvo+aibiFr9Vg/0O2pdYOxBcjN3v6goiq2JhF81AA/eyPKj59a/e0GD0cEIl
+         osikKIR4bT+7IQL5wALl4J2R+HijBo0j2l5kSnvEtFEJ/AAo/yx+/Vx8jqOV2z6tqgEK
+         qVjE80OVUZa4sXF9T7pDfis4JVqQf9ixtI/obwjc5f0SKeSi91EeztfMo/Pijcwx9aL5
+         p2EDJP2UHUFoxD8b3h7IZBJRJoB0Uy1s992a2qiVRerJ5GSlVn+p+JiolOA0bRPZVp7N
+         kxYiqjJi6ZyXt3lu931SSJohVrFfPoCRSGZ3mHO+DyHHSPrV5huyHHS8h7rlaPdzm5o1
+         Ustw==
+X-Gm-Message-State: ACrzQf00gnY3BBku2tNX5PZ2ePvC98Zy3toHzvL3MEWfjD32cWS+hjRB
+	qjjqOpxcvF9YEI8oaXWY18H3Tg==
+X-Google-Smtp-Source: AMsMyM7PHSjcA525xUqb2mRTdLe6Qynf1IGw15HV4W1FUp7u3d2iYKbm1jQAdW6TjKmvePalyJm/UA==
+X-Received: by 2002:a05:622a:608:b0:398:959b:b758 with SMTP id z8-20020a05622a060800b00398959bb758mr21736567qta.553.1667422604968;
+        Wed, 02 Nov 2022 13:56:44 -0700 (PDT)
 Received: from ?IPV6:2601:586:5000:570:28d9:4790:bc16:cc93? ([2601:586:5000:570:28d9:4790:bc16:cc93])
-        by smtp.gmail.com with ESMTPSA id l2-20020a37f902000000b006cea2984c9bsm9138468qkj.100.2022.11.02.13.56.26
+        by smtp.gmail.com with ESMTPSA id u12-20020a05620a454c00b006ea7f9d8644sm9362363qkp.96.2022.11.02.13.56.43
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Nov 2022 13:56:27 -0700 (PDT)
-Message-ID: <1a3a1080-9bae-3912-d815-47b221a99e82@linaro.org>
-Date: Wed, 2 Nov 2022 16:56:25 -0400
+        Wed, 02 Nov 2022 13:56:44 -0700 (PDT)
+Message-ID: <38755e52-626d-ed01-72b5-d199af646c48@linaro.org>
+Date: Wed, 2 Nov 2022 16:56:43 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -71,11 +71,11 @@ Content-Transfer-Encoding: 7bit
 
 On 02/11/2022 14:44, Dmitry Baryshkov wrote:
 > Rework clocks/clock-names properties schema to property describe
-> possible usage cases.
-> 
-> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> ---
 
+
+s/property/properly/
+
+with that:
 
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
