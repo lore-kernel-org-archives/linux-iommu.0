@@ -1,43 +1,43 @@
-Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
+Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D38729A0
-	for <iommu@lists.linux.dev>; Wed,  2 Nov 2022 18:44:30 +0000 (UTC)
-Received: by mail-lj1-f177.google.com with SMTP id z24so26204717ljn.4
-        for <iommu@lists.linux.dev>; Wed, 02 Nov 2022 11:44:30 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 237A324F48
+	for <iommu@lists.linux.dev>; Wed,  2 Nov 2022 18:44:32 +0000 (UTC)
+Received: by mail-lj1-f169.google.com with SMTP id s24so26176470ljs.11
+        for <iommu@lists.linux.dev>; Wed, 02 Nov 2022 11:44:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=eS5/1V/GAZTj0wx1nC8lVRnmAA2hcBoZzSa5GaT0bcg=;
-        b=mkzeI0++KNp/kYlwIEfDTUXnlsOVxNwO5PNKyBQRYh0q9OiEItamhw12rQktbfrzH9
-         /Q1F9hyN6AtFyjc4REcS5WbUE/KQYxT47mW9071CbUWsk/t05LEuoJkWzJeCNEx/1A9Y
-         70qrrCDqgAQS2kjRGugq21WSTmO8akUjZ34L+bv+LUNsSJ4llOthS+etmF7ZXjDFauxl
-         +ks5o3lDNEf49dHEUQ14d7yfAn9HWRFII5FwPZnAKQcDbvOzBbpA/2V3F0stNvA7QsJs
-         R0X1UkotQlEdliRhvTTYje3XtaOB8XuSbzjCAqtf+/WLqgUO3OVPrV0KMMJ5iDW9qcZL
-         fIOg==
+        bh=Yehdn7gwZYYtQmdw5gvSKZrzS358tipn1+pOWTvWz3g=;
+        b=eo2JUGq/uE90Rl3eR+ppoQE1tYMLFhWmT7FezYI2xZxsvK9YV5L8KsNZ+OcdAb9uqb
+         dhOdxa4Uwh2/uHNzv/3h5jaP11y6Vlr/IYJp2eneceuPf1j5QvsXs9ieHGbxCYex+10j
+         Nv60FWrCjAlHANqhtP8iufqAF8/syzAvv1nsipbh+V4BLZXqQvVHcPXHof2u8GISnnq8
+         vYjAZkHsdXkJFMdV+3qkrCBgT5MmSFktXfz0okp7bcQuypavNgz3sRQN/DDT+2tHDmYJ
+         NpsbYYqjdpZBFdrac5efF2DNkuEXpcss/YIde/jgl+JviWn6vZ/YUSLTPPs1B4G+bq8m
+         0YVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=eS5/1V/GAZTj0wx1nC8lVRnmAA2hcBoZzSa5GaT0bcg=;
-        b=H33otW3s34/Lee8ebKdLUxsIyj4CvkBx3wjuaDTksU81FRikSAVcqOwFlUf0RPVitQ
-         Fh9TcHP0LSrnceRscL2B15C+rtqCzq/EreAQH9S8szVAHzmV/C8bBMOi1ogMmI4bNHzO
-         BJKF3cgd3/Vb62tGTtGaco5J9FifQ97cwXAyw33CJMusx+a8E1nbSnbgRQxZQD6CPI8Y
-         9z4ZJ3e42CLF/D61WGpigZ6Pl1MUapPWr84DrqltcqvDJ0IzKuP1zYXYbBiuP6DWwQVt
-         PObAoVFdvxfp77+D+4mehwXnJGnDIKGCed2oxDjwaTy6cQ07bxsaMEXU1rxLG0kB7abg
-         xwLw==
-X-Gm-Message-State: ACrzQf1CmjxWARuU7fDpKfeIQwPmCBB6zUuttqM5jtxSGBP+pfBssBSn
-	vVRGAiI3afko3y4XYVfn6GhB0w==
-X-Google-Smtp-Source: AMsMyM6MjWgyZxZZlO7LmlheCpAMxtnjPNQyni1i/taASUiYWrlD/JIpbXnJx+RmY3f5Kf8xwaPjiA==
-X-Received: by 2002:a2e:9208:0:b0:277:46da:16d2 with SMTP id k8-20020a2e9208000000b0027746da16d2mr8754366ljg.161.1667414668645;
-        Wed, 02 Nov 2022 11:44:28 -0700 (PDT)
+        bh=Yehdn7gwZYYtQmdw5gvSKZrzS358tipn1+pOWTvWz3g=;
+        b=55GKAx3bOcNqjJaG71NKs3tG4clezfN5JrobktGe8ZP3xf+xmn7VrZ+DmhBosHGb/j
+         bnRTNV7VRHf/ARPE9Sxcb7617pKvKWWIFaWk201YOxJso+wizzTBNaekYvOhVK71GOO6
+         ixmUyDH/ZmzM428wekLQHdQkqmJBOFiBwg465lsmbzALxhLc3ysVZnw4Z78BQRnm1pEx
+         uoutvJ+Vw8ee5qFgsqiP69n7JaOI/kZ3jAP9a3248A8/3KCbDTZHoJ6k5qpxwNC0BUms
+         kvcDLFUXJTAppSogKfTfQExuA/6J3COKfpZMrnTw4M//tRW/aA5R9tYMYW7sKWl9s0Gu
+         EB/A==
+X-Gm-Message-State: ACrzQf2gkM4Zxs7txM57UdVfB8jB0hppvAsGowX2RxT6fhOBRHYuqbAy
+	d3jwIEBu/vyp7lCHQ1Q1VL67LQ==
+X-Google-Smtp-Source: AMsMyM7mizVF0KTOys/pbmBZMouRiYVx/gmHUF6UI8HRmU7ngsANk4dEuPMrUp5gdpO6trffqfQdmg==
+X-Received: by 2002:a2e:a887:0:b0:26a:871b:a16d with SMTP id m7-20020a2ea887000000b0026a871ba16dmr10577873ljq.482.1667414670299;
+        Wed, 02 Nov 2022 11:44:30 -0700 (PDT)
 Received: from eriador.unikie.fi ([192.130.178.91])
-        by smtp.gmail.com with ESMTPSA id t8-20020a05651c204800b00277092c03e7sm2277540ljo.33.2022.11.02.11.44.27
+        by smtp.gmail.com with ESMTPSA id t8-20020a05651c204800b00277092c03e7sm2277540ljo.33.2022.11.02.11.44.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Nov 2022 11:44:28 -0700 (PDT)
+        Wed, 02 Nov 2022 11:44:30 -0700 (PDT)
 From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 To: Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
@@ -54,9 +54,9 @@ Cc: Vinod Koul <vkoul@kernel.org>,
 	iommu@lists.linux.dev,
 	devicetree@vger.kernel.org,
 	freedreno@lists.freedesktop.org
-Subject: [RFC PATCH v2 09/11] iommu/arm-smmu-qcom: Merge table from arm-smmu-qcom-debug into match data
-Date: Wed,  2 Nov 2022 21:44:18 +0300
-Message-Id: <20221102184420.534094-10-dmitry.baryshkov@linaro.org>
+Subject: [RFC PATCH v2 11/11] iommu/arm-smmu-qcom: Add generic qcom,smmu-500 match entry
+Date: Wed,  2 Nov 2022 21:44:20 +0300
+Message-Id: <20221102184420.534094-12-dmitry.baryshkov@linaro.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20221102184420.534094-1-dmitry.baryshkov@linaro.org>
 References: <20221102184420.534094-1-dmitry.baryshkov@linaro.org>
@@ -68,247 +68,39 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-There is little point in having a separate match table in
-arm-smmu-qcom-debug.c. Merge it into the main match data table in
-arm-smmu-qcom.c
-
-Note, this also enables debug support for sm6375 and ACPI-based sc8180x
-systems, since these SoCs are expected to support tlb_sync debug.
+Add generic qcom,smmu-500 compatibility string. Newer platforms should
+use this generic entry rather than declaring per-SoC entries.
 
 Reviewed-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
 Tested-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
 Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 ---
- .../iommu/arm/arm-smmu/arm-smmu-qcom-debug.c  | 91 -------------------
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c    | 46 +++++++---
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h    | 16 +++-
- 3 files changed, 43 insertions(+), 110 deletions(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
-index 6eed8e67a0ca..74e9ef2fd580 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
-@@ -10,16 +10,6 @@
- #include "arm-smmu.h"
- #include "arm-smmu-qcom.h"
- 
--enum qcom_smmu_impl_reg_offset {
--	QCOM_SMMU_TBU_PWR_STATUS,
--	QCOM_SMMU_STATS_SYNC_INV_TBU_ACK,
--	QCOM_SMMU_MMU2QSS_AND_SAFE_WAIT_CNTR,
--};
--
--struct qcom_smmu_config {
--	const u32 *reg_offset;
--};
--
- void qcom_smmu_tlb_sync_debug(struct arm_smmu_device *smmu)
- {
- 	int ret;
-@@ -59,84 +49,3 @@ void qcom_smmu_tlb_sync_debug(struct arm_smmu_device *smmu)
- 			tbu_pwr_status, sync_inv_ack, sync_inv_progress);
- 	}
- }
--
--/* Implementation Defined Register Space 0 register offsets */
--static const u32 qcom_smmu_impl0_reg_offset[] = {
--	[QCOM_SMMU_TBU_PWR_STATUS]		= 0x2204,
--	[QCOM_SMMU_STATS_SYNC_INV_TBU_ACK]	= 0x25dc,
--	[QCOM_SMMU_MMU2QSS_AND_SAFE_WAIT_CNTR]	= 0x2670,
--};
--
--static const struct qcom_smmu_config qcm2290_smmu_cfg = {
--	.reg_offset = qcom_smmu_impl0_reg_offset,
--};
--
--static const struct qcom_smmu_config sc7180_smmu_cfg = {
--	.reg_offset = qcom_smmu_impl0_reg_offset,
--};
--
--static const struct qcom_smmu_config sc7280_smmu_cfg = {
--	.reg_offset = qcom_smmu_impl0_reg_offset,
--};
--
--static const struct qcom_smmu_config sc8180x_smmu_cfg = {
--	.reg_offset = qcom_smmu_impl0_reg_offset,
--};
--
--static const struct qcom_smmu_config sc8280xp_smmu_cfg = {
--	.reg_offset = qcom_smmu_impl0_reg_offset,
--};
--
--static const struct qcom_smmu_config sm6125_smmu_cfg = {
--	.reg_offset = qcom_smmu_impl0_reg_offset,
--};
--
--static const struct qcom_smmu_config sm6350_smmu_cfg = {
--	.reg_offset = qcom_smmu_impl0_reg_offset,
--};
--
--static const struct qcom_smmu_config sm8150_smmu_cfg = {
--	.reg_offset = qcom_smmu_impl0_reg_offset,
--};
--
--static const struct qcom_smmu_config sm8250_smmu_cfg = {
--	.reg_offset = qcom_smmu_impl0_reg_offset,
--};
--
--static const struct qcom_smmu_config sm8350_smmu_cfg = {
--	.reg_offset = qcom_smmu_impl0_reg_offset,
--};
--
--static const struct qcom_smmu_config sm8450_smmu_cfg = {
--	.reg_offset = qcom_smmu_impl0_reg_offset,
--};
--
--static const struct of_device_id __maybe_unused qcom_smmu_impl_debug_match[] = {
--	{ .compatible = "qcom,msm8998-smmu-v2" },
--	{ .compatible = "qcom,qcm2290-smmu-500", .data = &qcm2290_smmu_cfg },
--	{ .compatible = "qcom,sc7180-smmu-500", .data = &sc7180_smmu_cfg },
--	{ .compatible = "qcom,sc7280-smmu-500", .data = &sc7280_smmu_cfg},
--	{ .compatible = "qcom,sc8180x-smmu-500", .data = &sc8180x_smmu_cfg },
--	{ .compatible = "qcom,sc8280xp-smmu-500", .data = &sc8280xp_smmu_cfg },
--	{ .compatible = "qcom,sdm630-smmu-v2" },
--	{ .compatible = "qcom,sdm845-smmu-500" },
--	{ .compatible = "qcom,sm6125-smmu-500", .data = &sm6125_smmu_cfg},
--	{ .compatible = "qcom,sm6350-smmu-500", .data = &sm6350_smmu_cfg},
--	{ .compatible = "qcom,sm8150-smmu-500", .data = &sm8150_smmu_cfg },
--	{ .compatible = "qcom,sm8250-smmu-500", .data = &sm8250_smmu_cfg },
--	{ .compatible = "qcom,sm8350-smmu-500", .data = &sm8350_smmu_cfg },
--	{ .compatible = "qcom,sm8450-smmu-500", .data = &sm8450_smmu_cfg },
--	{ }
--};
--
--const void *qcom_smmu_impl_data(struct arm_smmu_device *smmu)
--{
--	const struct of_device_id *match;
--	const struct device_node *np = smmu->dev->of_node;
--
--	match = of_match_node(qcom_smmu_impl_debug_match, np);
--	if (!match)
--		return NULL;
--
--	return match->data;
--}
 diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index 75bc770ccf8c..20cbb39cb670 100644
+index 9abc40c00f3e..3be81338a25b 100644
 --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
 +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -430,11 +430,22 @@ static struct arm_smmu_device *qcom_smmu_create(struct arm_smmu_device *smmu,
- 		return ERR_PTR(-ENOMEM);
- 
- 	qsmmu->smmu.impl = impl;
--	qsmmu->cfg = qcom_smmu_impl_data(smmu);
-+	qsmmu->cfg = data->cfg;
- 
- 	return &qsmmu->smmu;
- }
- 
-+/* Implementation Defined Register Space 0 register offsets */
-+static const u32 qcom_smmu_impl0_reg_offset[] = {
-+	[QCOM_SMMU_TBU_PWR_STATUS]		= 0x2204,
-+	[QCOM_SMMU_STATS_SYNC_INV_TBU_ACK]	= 0x25dc,
-+	[QCOM_SMMU_MMU2QSS_AND_SAFE_WAIT_CNTR]	= 0x2670,
-+};
-+
-+static const struct qcom_smmu_config qcom_smmu_impl0_cfg = {
-+	.reg_offset = qcom_smmu_impl0_reg_offset,
-+};
-+
- /*
-  * It is not yet possible to use MDP SMMU with the bypass quirk on the msm8996,
-  * there are not enough context banks.
-@@ -452,26 +463,33 @@ static const struct qcom_smmu_match_data qcom_smmu_data = {
- static const struct qcom_smmu_match_data sdm845_smmu_500_data = {
- 	.impl = &sdm845_smmu_500_impl,
- 	/* No adreno impl, on sdm845 it is handled by separete sdm845-smmu-v2. */
-+	/* No debug configuration */
-+};
-+
-+static const struct qcom_smmu_match_data qcom_smmu_500_impl0_data = {
-+	.impl = &qcom_smmu_impl,
-+	.adreno_impl = &qcom_adreno_smmu_impl,
-+	.cfg = &qcom_smmu_impl0_cfg,
+@@ -493,6 +493,10 @@ static const struct qcom_smmu_match_data qcom_smmu_500_impl0_data = {
+ 	.cfg = &qcom_smmu_impl0_cfg,
  };
  
++/*
++ * Do not add any more qcom,SOC-smmu-500 entries to this list, unless they need
++ * special handling and can not be covered by the qcom,smmu-500 entry.
++ */
  static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
  	{ .compatible = "qcom,msm8996-smmu-v2", .data = &msm8996_smmu_data },
- 	{ .compatible = "qcom,msm8998-smmu-v2", .data = &qcom_smmu_data },
--	{ .compatible = "qcom,qcm2290-smmu-500", .data = &qcom_smmu_data },
--	{ .compatible = "qcom,sc7180-smmu-500", .data = &qcom_smmu_data },
--	{ .compatible = "qcom,sc7280-smmu-500", .data = &qcom_smmu_data },
--	{ .compatible = "qcom,sc8180x-smmu-500", .data = &qcom_smmu_data },
--	{ .compatible = "qcom,sc8280xp-smmu-500", .data = &qcom_smmu_data },
-+	{ .compatible = "qcom,qcm2290-smmu-500", .data = &qcom_smmu_500_impl0_data },
-+	{ .compatible = "qcom,sc7180-smmu-500", .data = &qcom_smmu_500_impl0_data },
-+	{ .compatible = "qcom,sc7280-smmu-500", .data = &qcom_smmu_500_impl0_data },
-+	{ .compatible = "qcom,sc8180x-smmu-500", .data = &qcom_smmu_500_impl0_data },
-+	{ .compatible = "qcom,sc8280xp-smmu-500", .data = &qcom_smmu_500_impl0_data },
- 	{ .compatible = "qcom,sdm630-smmu-v2", .data = &qcom_smmu_data },
- 	{ .compatible = "qcom,sdm845-smmu-v2", .data = &qcom_smmu_data },
- 	{ .compatible = "qcom,sdm845-smmu-500", .data = &sdm845_smmu_500_data },
--	{ .compatible = "qcom,sm6125-smmu-500", .data = &qcom_smmu_data },
--	{ .compatible = "qcom,sm6350-smmu-500", .data = &qcom_smmu_data },
--	{ .compatible = "qcom,sm6375-smmu-500", .data = &qcom_smmu_data },
--	{ .compatible = "qcom,sm8150-smmu-500", .data = &qcom_smmu_data },
--	{ .compatible = "qcom,sm8250-smmu-500", .data = &qcom_smmu_data },
--	{ .compatible = "qcom,sm8350-smmu-500", .data = &qcom_smmu_data },
--	{ .compatible = "qcom,sm8450-smmu-500", .data = &qcom_smmu_data },
-+	{ .compatible = "qcom,sm6125-smmu-500", .data = &qcom_smmu_500_impl0_data },
-+	{ .compatible = "qcom,sm6350-smmu-500", .data = &qcom_smmu_500_impl0_data },
-+	{ .compatible = "qcom,sm6375-smmu-500", .data = &qcom_smmu_500_impl0_data },
-+	{ .compatible = "qcom,sm8150-smmu-500", .data = &qcom_smmu_500_impl0_data },
-+	{ .compatible = "qcom,sm8250-smmu-500", .data = &qcom_smmu_500_impl0_data },
-+	{ .compatible = "qcom,sm8350-smmu-500", .data = &qcom_smmu_500_impl0_data },
-+	{ .compatible = "qcom,sm8450-smmu-500", .data = &qcom_smmu_500_impl0_data },
+ 	{ .compatible = "qcom,msm8998-smmu-v2", .data = &qcom_smmu_v2_data },
+@@ -511,6 +515,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
+ 	{ .compatible = "qcom,sm8250-smmu-500", .data = &qcom_smmu_500_impl0_data },
+ 	{ .compatible = "qcom,sm8350-smmu-500", .data = &qcom_smmu_500_impl0_data },
+ 	{ .compatible = "qcom,sm8450-smmu-500", .data = &qcom_smmu_500_impl0_data },
++	{ .compatible = "qcom,smmu-500", .data = &qcom_smmu_500_impl0_data },
  	{ }
  };
  
-@@ -492,7 +510,7 @@ struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu)
- 	if (np == NULL) {
- 		/* Match platform for ACPI boot */
- 		if (acpi_match_platform_list(qcom_acpi_platlist) >= 0)
--			return qcom_smmu_create(smmu, &qcom_smmu_data);
-+			return qcom_smmu_create(smmu, &qcom_smmu_500_impl0_data);
- 	}
- #endif
- 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
-index 424d8d342ce0..593910567b88 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
-@@ -14,20 +14,26 @@ struct qcom_smmu {
- 	u32 stall_enabled;
- };
- 
-+enum qcom_smmu_impl_reg_offset {
-+	QCOM_SMMU_TBU_PWR_STATUS,
-+	QCOM_SMMU_STATS_SYNC_INV_TBU_ACK,
-+	QCOM_SMMU_MMU2QSS_AND_SAFE_WAIT_CNTR,
-+};
-+
-+struct qcom_smmu_config {
-+	const u32 *reg_offset;
-+};
-+
- struct qcom_smmu_match_data {
-+	const struct qcom_smmu_config *cfg;
- 	const struct arm_smmu_impl *impl;
- 	const struct arm_smmu_impl *adreno_impl;
- };
- 
- #ifdef CONFIG_ARM_SMMU_QCOM_DEBUG
- void qcom_smmu_tlb_sync_debug(struct arm_smmu_device *smmu);
--const void *qcom_smmu_impl_data(struct arm_smmu_device *smmu);
- #else
- static inline void qcom_smmu_tlb_sync_debug(struct arm_smmu_device *smmu) { }
--static inline const void *qcom_smmu_impl_data(struct arm_smmu_device *smmu)
--{
--	return NULL;
--}
- #endif
- 
- #endif /* _ARM_SMMU_QCOM_H */
 -- 
 2.35.1
 
