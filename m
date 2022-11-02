@@ -1,97 +1,72 @@
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5658D7B
-	for <iommu@lists.linux.dev>; Tue,  1 Nov 2022 21:57:36 +0000 (UTC)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.ozlabs.org (Postfix) with ESMTPSA id 4N23cQ6yTMz4xG6;
-	Wed,  2 Nov 2022 08:51:02 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-	s=201702; t=1667339463;
-	bh=XsmISU6iyvIQtW7XEorFckANs8h/uXjylMsjSpUamTU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=CbHvflimntBICJbgdR8EzYFhcEhEHTXaax/pkv47pI+bUMoyuzjKKlzLt3zhHf/Qk
-	 LJl87BzyPHzqsNSwG8DqT8gry5HMzMulOisjnqsJ2BNoUNODkHayn668txI9i2ChY/
-	 NtUe/X6zw5kq5eHUX7ie8f4pUjFaqE7/Ku1lEiGNY+9iyYqCR18lY+uv0GojcT/Inn
-	 M6Xvt6KxKctAj+H1aTFiesjNLxK3GLZ2NI3ntRGVv+WLKhO7ahMA9lTs5PJeHjJctd
-	 Cez7/WSET4LPl0XLpKSDsYfX1TZB46o5Pzgo86jUbv68X0fuObQpZ+n9hoKCZ65wgr
-	 sIQ3/LY/wSlwQ==
-Date: Wed, 2 Nov 2022 08:51:01 +1100
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: kvm@vger.kernel.org, iommu@lists.linux.dev
-Subject: Re: iommufd branch into linux-next
-Message-ID: <20221102085101.21efbd6b@canb.auug.org.au>
-In-Reply-To: <Y2BpD9OuPOmUu6GJ@nvidia.com>
-References: <Y2BpD9OuPOmUu6GJ@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE47536F
+	for <iommu@lists.linux.dev>; Wed,  2 Nov 2022 01:36:48 +0000 (UTC)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4N28cV1FgPzHvXq;
+	Wed,  2 Nov 2022 09:36:26 +0800 (CST)
+Received: from kwepemm600005.china.huawei.com (7.193.23.191) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 2 Nov 2022 09:36:44 +0800
+Received: from [10.67.103.158] (10.67.103.158) by
+ kwepemm600005.china.huawei.com (7.193.23.191) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 2 Nov 2022 09:36:44 +0800
+Subject: Re: [PATCH 1/2] iommu: fix memory leak of iopf
+To: <will@kernel.org>, <robin.murphy@arm.com>
+CC: <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>
+References: <20221021035147.15292-1-liulongfang@huawei.com>
+ <20221021035147.15292-2-liulongfang@huawei.com>
+From: liulongfang <liulongfang@huawei.com>
+Message-ID: <d4f9a31e-41cb-16a0-b071-976dacacc07c@huawei.com>
+Date: Wed, 2 Nov 2022 09:36:43 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/lZzlkd=Ghn_Dzb5Bf3RUyHN";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <20221021035147.15292-2-liulongfang@huawei.com>
+Content-Type: text/plain; charset="gbk"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.103.158]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600005.china.huawei.com (7.193.23.191)
+X-CFilter-Loop: Reflected
 
---Sig_/lZzlkd=Ghn_Dzb5Bf3RUyHN
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-
-Hi Jason,
-
-On Mon, 31 Oct 2022 21:32:15 -0300 Jason Gunthorpe <jgg@nvidia.com> wrote:
->
-> Can you include the new iommufd tree into linux-next please?
->=20
-> git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git
->=20
-> Branches 'for-next' and 'for-rc'
->=20
-> You can read about what it is here:
->=20
-> https://lore.kernel.org/all/0-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com/
-
-Added from today.
-
-Thanks for adding your subsystem tree as a participant of linux-next.  As
-you may know, this is not a judgement of your code.  The purpose of
-linux-next is for integration testing and to lower the impact of
-conflicts between subsystems in the next merge window.=20
-
-You will need to ensure that the patches/commits in your tree/series have
-been:
-     * submitted under GPL v2 (or later) and include the Contributor's
-        Signed-off-by,
-     * posted to the relevant mailing list,
-     * reviewed by you (or another maintainer of your subsystem tree),
-     * successfully unit tested, and=20
-     * destined for the current or next Linux merge window.
-
-Basically, this should be just what you would send to Linus (or ask him
-to fetch).  It is allowed to be rebased if you deem it necessary.
-
---=20
-Cheers,
-Stephen Rothwell=20
-sfr@canb.auug.org.au
-
---Sig_/lZzlkd=Ghn_Dzb5Bf3RUyHN
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmNhlMUACgkQAVBC80lX
-0Gy8+Af+PAvG352aKlG9/FMuGS9U4PVytWO2qZ1ACEUO/QnMwo54uxib0b79em54
-OevS8nT+jKhWSNn9qtVkdvUC5FS5jJGsvOGgz/8mGiGGmO26THKcHp9XJslbQr+s
-Hi4+/pYttlFhLo3Y3aRy3cb136jFWrgTDbKvSw7jqpFKINbWhKaiD7y1M+e4YLEH
-eXx40gIBRGH64Wvv/XYKTfRVkk7+5YVehr/SAtUIQfOX9AJke3ldmzMHulgobFzO
-mbuBT8q6N6jEKt5MDrftWrKRbhTs9Vv+97eVE6zmqEleLxn0A/nTyLNrFtQdzWak
-8ap7Ma7mwWgMKNsoYrmc2f5ZqB4NiQ==
-=Ei9o
------END PGP SIGNATURE-----
-
---Sig_/lZzlkd=Ghn_Dzb5Bf3RUyHN--
+kindly ping!
+On 2022/10/21 11:51, Longfang Liu wrote:
+> In arm_smmu_init_queues(), if ARM_SMMU_FEAT_SVA and ARM_SMMU_FEAT_STALLS
+> are enabled, iopf will be allocated a queue memory, and after
+> arm_smmu_init_one_queue() processing fails, this part of iopf
+> memory is not released, and there is a memory leak problem.
+> 
+> Signed-off-by: Longfang Liu <liulongfang@huawei.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index b788a38d8fdf..a1db07bed6a9 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2939,9 +2939,13 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
+>  	if (!(smmu->features & ARM_SMMU_FEAT_PRI))
+>  		return 0;
+>  
+> -	return arm_smmu_init_one_queue(smmu, &smmu->priq.q, smmu->page1,
+> +	ret = arm_smmu_init_one_queue(smmu, &smmu->priq.q, smmu->page1,
+>  				       ARM_SMMU_PRIQ_PROD, ARM_SMMU_PRIQ_CONS,
+>  				       PRIQ_ENT_DWORDS, "priq");
+> +	if (ret)
+> +		iopf_queue_free(smmu->evtq.iopf);
+> +
+> +	return ret;
+>  }
+>  
+>  static int arm_smmu_init_l1_strtab(struct arm_smmu_device *smmu)
+> 
