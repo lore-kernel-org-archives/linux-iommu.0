@@ -1,187 +1,83 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f48.google.com (mail-qv1-f48.google.com [209.85.219.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B8A22F36;
-	Wed,  2 Nov 2022 18:49:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBFD8C433C1;
-	Wed,  2 Nov 2022 18:49:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1667414991;
-	bh=A9V26abd3ofhCXzboqJszcQ8NMZJoEJqgoBj4Pi/PF8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=n/eYUT5c1MXDySctcF4yD+cGNE9uiEyE8Yln6G6O7ESxBGrWOkD0qXBrIxP5D09tx
-	 rPet5rrxRJHAfe8hioWKZQ1iJusfCXAckHA7RwECS67arZyVDWKd/Y/QhKsTgKxco9
-	 fJcyq7ZBTJR3e2zg94+sL6bxDLT6dxqk7tFIHafdkuomMQJqTXrd+OVXW5rvQKWImI
-	 oxU70L8e/VzYhVf1rQFGdJuJdbFi82J56nqiMSJYPtdM3hZaUOdzHcN2Pl/6O88y+J
-	 /4ZlWQygHNWO8kJXUc+bgLLUB14i597HfGfy0iLluCcZoSYl5LjAUwo2LEgEWCJGVl
-	 WZQUaqh5TxuQw==
-Date: Wed, 2 Nov 2022 11:49:48 -0700
-From: Nathan Chancellor <nathan@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>,
-	bpf@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-	linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	llvm@lists.linux.dev, Nick Desaulniers <ndesaulniers@google.com>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
-	Cornelia Huck <cohuck@redhat.com>,
-	Daniel Jordan <daniel.m.jordan@oracle.com>,
-	David Gibson <david@gibson.dropbear.id.au>,
-	Eric Auger <eric.auger@redhat.com>,
-	Eric Farman <farman@linux.ibm.com>,
-	Jason Wang <jasowang@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Joao Martins <joao.m.martins@oracle.com>, kvm@vger.kernel.org,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-	Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
-Subject: Re: [PATCH v3 15/15] iommufd: Add a selftest
-Message-ID: <Y2K7zMvzrHmQJ1hk@dev-arch.thelio-3990X>
-References: <0-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
- <15-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
- <Y2GCV97lxEGwAuo6@Asurada-Nvidia>
- <Y2Jt+WxNUwROJ8fN@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAB6527708
+	for <iommu@lists.linux.dev>; Wed,  2 Nov 2022 20:55:05 +0000 (UTC)
+Received: by mail-qv1-f48.google.com with SMTP id u7so13301581qvn.13
+        for <iommu@lists.linux.dev>; Wed, 02 Nov 2022 13:55:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=OXUvCOmLRFj9V68bWV7FWt2GZPLPNIKne6rJYA5H4CU=;
+        b=D1CQ9NtJXqPYE+vCPKr8iASAXv0p5iWoGL9eZG4QDqTyTmWqwJVNEiW5+qYfkXIug/
+         uRYLmM+HHhEKiy+JI4h9xhHI5G+pPndloIVCl5zf8Zwp8ApcFy43qMjZY+8bkYoHHrm2
+         8090vMlfGQbJ1ivIbwh641L4kkj3x3MTfHHuVEdRnurml6Wz1CSAPfqheOjqDjJ2HhV9
+         Vxb8pMk/NhjW/KJChu7uDe8HkHsHG1Vb94KUnX1C2WzeslOB++L0imyHYV6mvKbyi0tk
+         Tlv9rCGXBpAOIJ0jQOKiRN3EYsFMBNAiNj+cPWxv7EuCC98qp0Ch/SyScpW8xRzjmojQ
+         OCog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=OXUvCOmLRFj9V68bWV7FWt2GZPLPNIKne6rJYA5H4CU=;
+        b=HlfCHzTKgeDR0iI/wOTeSZRpKrY1iI8ttwwqXrWMCXpjA7cIh/S8nLDcLOT+Xq3flf
+         pMBbJguzzqFwfoEZ8JH2ccTji6cvpyTObU7X7Paktswi4aXLD960liwJueobgIUYdRE5
+         WDKUYoFRJgGRefxiIgaM9zipvuM37A0PVVSEjGYH5kf6fbETnv5J/ESawG6HfCrRl0yQ
+         aZFFNOIurdQzyoe00ncgnYF3gucWAnhr9A3GZXErRpw++E/GhSTizpAmUGwA2ll/iz4i
+         uNZUdnWFrXzI9VjYsmiP2D1VHfDCEH0jQs8STmyw58KmC06DI13CTIjY77ScOEG/EHW4
+         2eDQ==
+X-Gm-Message-State: ACrzQf0y09UePnjiAm2hnugrbRojrMw9ZWDIwp6cXslI/rbJsM8khDRT
+	StNaM4z06i6AW9gcGRu8jUJSaA==
+X-Google-Smtp-Source: AMsMyM7+29i6Elah2pR6EE8TlOoJQ4k6UjG6XeeZiHQ3jSqRDTJWquBOM9BrGIlRXeploqkyfUUhpg==
+X-Received: by 2002:a05:6214:5182:b0:4bb:a323:4ca5 with SMTP id kl2-20020a056214518200b004bba3234ca5mr23147068qvb.121.1667422504780;
+        Wed, 02 Nov 2022 13:55:04 -0700 (PDT)
+Received: from ?IPV6:2601:586:5000:570:28d9:4790:bc16:cc93? ([2601:586:5000:570:28d9:4790:bc16:cc93])
+        by smtp.gmail.com with ESMTPSA id u7-20020a05620a430700b006eed75805a2sm9176959qko.126.2022.11.02.13.55.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Nov 2022 13:55:04 -0700 (PDT)
+Message-ID: <1af9189f-2a59-7c4d-6582-ee222051ee8c@linaro.org>
+Date: Wed, 2 Nov 2022 16:55:02 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y2Jt+WxNUwROJ8fN@nvidia.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [RFC PATCH v2 01/11] arm64: dts: qcom: msm8996: change order of
+ SMMU clocks on this platform
+Content-Language: en-US
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konrad.dybcio@somainline.org>, Rob Clark <robdclark@gmail.com>
+Cc: Vinod Koul <vkoul@kernel.org>,
+ Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+ linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+ iommu@lists.linux.dev, devicetree@vger.kernel.org,
+ freedreno@lists.freedesktop.org
+References: <20221102184420.534094-1-dmitry.baryshkov@linaro.org>
+ <20221102184420.534094-2-dmitry.baryshkov@linaro.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221102184420.534094-2-dmitry.baryshkov@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Wed, Nov 02, 2022 at 10:17:45AM -0300, Jason Gunthorpe wrote:
-> On Tue, Nov 01, 2022 at 01:32:23PM -0700, Nicolin Chen wrote:
-> > On Tue, Oct 25, 2022 at 03:12:24PM -0300, Jason Gunthorpe wrote:
-> >  
-> > > diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-> > 
-> > > +static inline struct iommufd_hw_pagetable *
-> > > +get_md_pagetable(struct iommufd_ucmd *ucmd, u32 mockpt_id,
-> > > +		 struct mock_iommu_domain **mock)
-> > > +{
-> > > +	struct iommufd_hw_pagetable *hwpt;
-> > > +	struct iommufd_object *obj;
-> > > +
-> > > +	obj = iommufd_get_object(ucmd->ictx, mockpt_id,
-> > > +				 IOMMUFD_OBJ_HW_PAGETABLE);
-> > > +	if (IS_ERR(obj))
-> > > +		return ERR_CAST(obj);
-> > > +	hwpt = container_of(obj, struct iommufd_hw_pagetable, obj);
-> > > +	if (hwpt->domain->ops != mock_ops.default_domain_ops) {
-> > > +		return ERR_PTR(-EINVAL);
-> > > +		iommufd_put_object(&hwpt->obj);
-> > 
-> > Coverity reports that return is placed before iommufd_put_object.
+On 02/11/2022 14:44, Dmitry Baryshkov wrote:
+> Change order of SMMU clocks to match the schema.
 > 
-> I'm surprised no compiler warned about this!
+> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> ---
 
-clang does have -Wunreachable-code-return to try and flag issues like
-this but it is not on by default nor included in -Wall:
 
-https://clang.llvm.org/docs/DiagnosticsReference.html#wunreachable-code-return
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-The fact it is included in -Wunreachable-code-aggressive makes me think
-that this might generate a lot of false positives around constructs such
-as
+Best regards,
+Krzysztof
 
-    if (IS_ENABLED(CONFIG_...))
-        return ...;
-
-    return ...;
-
-but I have not actually tested it.
-
-> > > +static int iommufd_test_access_pages(struct iommufd_ucmd *ucmd,
-> > > +				     unsigned int access_id, unsigned long iova,
-> > > +				     size_t length, void __user *uptr,
-> > > +				     u32 flags)
-> > > +{
-> > > +	struct iommu_test_cmd *cmd = ucmd->cmd;
-> > > +	struct selftest_access_item *item;
-> > > +	struct selftest_access *staccess;
-> > > +	struct page **pages;
-> > > +	size_t npages;
-> > > +	int rc;
-> > > +
-> > > +	if (flags & ~MOCK_FLAGS_ACCESS_WRITE)
-> > > +		return -EOPNOTSUPP;
-> > > +
-> > > +	staccess = iommufd_access_get(access_id);
-> > > +	if (IS_ERR(staccess))
-> > > +		return PTR_ERR(staccess);
-> > > +
-> > > +	npages = (ALIGN(iova + length, PAGE_SIZE) -
-> > > +		  ALIGN_DOWN(iova, PAGE_SIZE)) /
-> > > +		 PAGE_SIZE;
-> > > +	pages = kvcalloc(npages, sizeof(*pages), GFP_KERNEL_ACCOUNT);
-> > > +	if (!pages) {
-> > > +		rc = -ENOMEM;
-> > > +		goto out_put;
-> > > +	}
-> > > +
-> > > +	rc = iommufd_access_pin_pages(staccess->access, iova, length, pages,
-> > > +				      flags & MOCK_FLAGS_ACCESS_WRITE);
-> > > +	if (rc)
-> > > +		goto out_free_pages;
-> > > +
-> > > +	rc = iommufd_test_check_pages(
-> > > +		uptr - (iova - ALIGN_DOWN(iova, PAGE_SIZE)), pages, npages);
-> > > +	if (rc)
-> > > +		goto out_unaccess;
-> > > +
-> > > +	item = kzalloc(sizeof(*item), GFP_KERNEL_ACCOUNT);
-> > > +	if (!item) {
-> > > +		rc = -ENOMEM;
-> > > +		goto out_unaccess;
-> > > +	}
-> > > +
-> > > +	item->iova = iova;
-> > > +	item->length = length;
-> > > +	spin_lock(&staccess->lock);
-> > > +	item->id = staccess->next_id++;
-> > > +	list_add_tail(&item->items_elm, &staccess->items);
-> > > +	spin_unlock(&staccess->lock);
-> > > +
-> > > +	cmd->access_pages.out_access_item_id = item->id;
-> > > +	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
-> > > +	if (rc)
-> > > +		goto out_free_item;
-> > > +	goto out_free_pages;
-> > > +
-> > > +out_free_item:
-> > > +	spin_lock(&staccess->lock);
-> > > +	list_del(&item->items_elm);
-> > > +	spin_unlock(&staccess->lock);
-> > > +	kfree(item);
-> > > +out_unaccess:
-> > > +	iommufd_access_unpin_pages(staccess->access, iova, length);
-> > > +out_free_pages:
-> > > +	kvfree(pages);
-> > 
-> > Coverity reports a double free here, call trace:
-> > 
-> > [jumped from] rc = iommufd_access_pin_pages(..., pages, ...);
-> > 	[in which] iopt_pages_add_access(..., out_pages, ...);
-> > 		[then] iopt_pages_fill_xarray(..., out_pages);
-> > 			[then] iopt_pages_fill_from_mm(..., out_pages);
-> > 				[then] user->upages = out_pages + ...;
-> > 				       pfn_reader_user_pin(user, ...);
-> > 					[then] kfree(user->upages);
-> > 					       return -EFAULT;
-> > 
-> > Should be the same potential issue in the other email.
-> 
-> Yes, looks like
-> 
-> Thanks,
-> Jason
