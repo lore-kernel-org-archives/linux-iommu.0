@@ -1,125 +1,151 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 288912108
-	for <iommu@lists.linux.dev>; Wed,  2 Nov 2022 13:03:51 +0000 (UTC)
-Received: by mail-wm1-f47.google.com with SMTP id l16-20020a05600c4f1000b003c6c0d2a445so1222757wmq.4
-        for <iommu@lists.linux.dev>; Wed, 02 Nov 2022 06:03:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=J7wkCq3JYYjQNWqmOzs/TGkUKvgq+3hRmudTaSmEqPs=;
-        b=sfwdM++2PNG+Qz2r0p69XX4LtLNrUk8xnU98whhwj5i1OBFpI42ZI0TjdnrmSsQl7B
-         MB/tDuw9h/ATgJQlIIRSljB+/C7YcVa6Be18iQpCUDY3fomEid2FTMBRthLxuM1275C0
-         KxjA4mGppPgmLPFwchK8rTnoD4jSHYvX6k232NOJgUShEu74mqVXQ7zNp9bUenEWF0ps
-         WU2PZUc/c1UKlFvywE5UJl1T6wYQRh6RnUuueG6XPt9L119vQzge4/hFDkz6RYxY74jf
-         hHVM26LS+3eS30X+7ZQISI7IGZsqLMrKHMKHet16eGf1LzitMWeM+LX0zHqNH9UJqdae
-         4jvg==
-X-Gm-Message-State: ACrzQf2aaE0BVdobNLaA4BLWZwj5Ubvjop5PSHV6eHoTurkXzo8pr2Nb
-	Z+4nw7+3se4rOuv4Dk2O8lU=
-X-Google-Smtp-Source: AMsMyM5urS48hBL/wzVvS7zFzNQklaqqSmOGIMX6FChyURbZf69XiCWLf0csz6XJ5vyEJ9FlJC3Q7A==
-X-Received: by 2002:a1c:4b0f:0:b0:3cf:7bdd:e00b with SMTP id y15-20020a1c4b0f000000b003cf7bdde00bmr7064625wma.110.1667394229311;
-        Wed, 02 Nov 2022 06:03:49 -0700 (PDT)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id q9-20020adfdfc9000000b002366d1cc198sm13262890wrn.41.2022.11.02.06.03.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Nov 2022 06:03:48 -0700 (PDT)
-Date: Wed, 2 Nov 2022 13:03:42 +0000
-From: Wei Liu <wei.liu@kernel.org>
-To: Michael Kelley <mikelley@microsoft.com>
-Cc: hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
-	sthemmin@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
-	luto@kernel.org, peterz@infradead.org, davem@davemloft.net,
-	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-	lpieralisi@kernel.org, robh@kernel.org, kw@linux.com,
-	bhelgaas@google.com, arnd@arndb.de, hch@infradead.org,
-	m.szyprowski@samsung.com, robin.murphy@arm.com,
-	thomas.lendacky@amd.com, brijesh.singh@amd.com, tglx@linutronix.de,
-	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-	Tianyu.Lan@microsoft.com, kirill.shutemov@linux.intel.com,
-	sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
-	isaku.yamahata@intel.com, dan.j.williams@intel.com,
-	jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com,
-	x86@kernel.org, linux-kernel@vger.kernel.org,
-	linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH 02/12] x86/ioapic: Gate decrypted mapping on
- cc_platform_has() attribute
-Message-ID: <Y2Jqrr54LfKqHu1n@liuwe-devbox-debian-v2>
-References: <1666288635-72591-1-git-send-email-mikelley@microsoft.com>
- <1666288635-72591-3-git-send-email-mikelley@microsoft.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0432221D50;
+	Wed,  2 Nov 2022 13:11:42 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fVyANxOsiX3ThsgesZJIbRYu85VNFltjm67b0xeCKOoEbL/iCqMWIJ/4RM9GDDEILeq/3sETaZTsk6Nvemh26Opq402bdTBgDrIa7Pl7vRv+XIwKW5L/i8JnL9KZRhnDsIgKz1gLDRnT5fsj4YiHXjuwXZRaBPDp4kvb5B1UKAzCT46drnO1PaJXl5EoweorntXPEaRUstGBmEWnetCdQImnm9kgKhOalAkqKRynlAjK8KFrjBSGQai2sXSh5ImLbA7JyHKSy/qK8APQ9nTzopUYRiJN14ibvd0tkF3IZ8re6yanCWgdJyHApcvW2bde1+/Mj5fCYjf8wHF5NSY4jw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=l8gTSa0heS+v5cxbJUQkQQH7pT4L+hSFNBL7CBsJjOA=;
+ b=UomicQ8YoGoCkQ9FY9VZjUDX7iY88X0Bz1Tv3w1SylLhdYukz9pQ4+ByJvJwnAijlGFFOzL8wY5MHzC5CgRNNjRmkqVg0FGv5j3drMbyzWMxRtcYQSAe8340YyyduK/LzJNOOzHxf3cggRKcCMJdjWKAnlsoq41Cq18nVOPSrBzfVWzd99yAzMSagb6dgGuAsvZI/9huEA5qHjuXVaLc4gcfL6PXe28XH+a8M4frN16wSEfxvJhXTm7pS07n5P5JwDHOfVQNzkgjLdtlFn8lwPPaPU50CMhdMhgM3Xeqfl1J6MdFsLYFbxasGjDbMqileWFbVZro5lV2kIQwBcP3tg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=l8gTSa0heS+v5cxbJUQkQQH7pT4L+hSFNBL7CBsJjOA=;
+ b=tS6VAuN0urTnTd7biX3ihcAb2y7UiTDzMsb0EagTWmMwS1+9NoH4DFXhp5IBy6NV9+sGmgtr+vKmRZR+dlOnv4lza9rrJqyyixGue8k7J5sKXVV2QW+ay1Se2MjPZykvSYXAHPGIGbeCjocdyUAxztYuhaEEQDjFSpfsyGAZd8INEuwShSdfJAmqvEkXcbmEEB+gvx/l+/CH0y70PZiCHZQ8Yoy+j/IDVy6Oeqv1yIvKT9Zz3OLrGWHk2V0KOYdwAf2oFzJLthYoMmzEmgOWlRss6YYaSVMDGkRgWMLXkMYUk+L5o/2GQbkjNS6MLqHq7B9v32kejvUuBosepEEvgA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DM4PR12MB5294.namprd12.prod.outlook.com (2603:10b6:5:39e::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.19; Wed, 2 Nov
+ 2022 13:11:40 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::7a81:a4e4:bb9c:d1de]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::7a81:a4e4:bb9c:d1de%6]) with mapi id 15.20.5769.015; Wed, 2 Nov 2022
+ 13:11:34 +0000
+Date: Wed, 2 Nov 2022 10:11:33 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, bpf@vger.kernel.org,
+	Jonathan Corbet <corbet@lwn.net>,
+	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+	linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <ndesaulniers@google.com>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+	Cornelia Huck <cohuck@redhat.com>,
+	Daniel Jordan <daniel.m.jordan@oracle.com>,
+	David Gibson <david@gibson.dropbear.id.au>,
+	Eric Auger <eric.auger@redhat.com>,
+	Eric Farman <farman@linux.ibm.com>,
+	Jason Wang <jasowang@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Joao Martins <joao.m.martins@oracle.com>, kvm@vger.kernel.org,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+	Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
+Subject: Re: [PATCH v3 09/15] iommufd: Data structure to provide IOVA to PFN
+ mapping
+Message-ID: <Y2JshUrDXYxMwUbK@nvidia.com>
+References: <0-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
+ <9-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
+ <Y2FwydZzhcQ2vpdU@Asurada-Nvidia>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y2FwydZzhcQ2vpdU@Asurada-Nvidia>
+X-ClientProxiedBy: BL0PR02CA0133.namprd02.prod.outlook.com
+ (2603:10b6:208:35::38) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1666288635-72591-3-git-send-email-mikelley@microsoft.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB5294:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5fb2a762-087f-465b-2b45-08dabcd3c459
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	wIUAWNsKrc/Z9Tw3wUlHNQfQLzllaRWicaR5IXFvlO4B+BeT4POrdSVTiDDf2EwuCqR1XDAsPEik7YXP/dOTZGm4zzjG4PHh/SAZXWCbb+Y0fWwcP8Ol+YhafYHxVfgXJMgomjuDqVcwxpNobXTTvlkvz2GzQWnQWyAys5GgGnMaGH6wSKur0An8/DNPMXX2wa7YCL8jCmrJleyc0PsfkTsqG2s2667dgWUleneWS1Q9HDvTIpsyI/EM4KUeCFZcK8Qb18seTEFVZKfWsg3R56PBZWzNgTYgLcrPqYLwiFP2c5mj8Qs844meL77HNgu+71AQJkdhY+7SfuvOoNsSK5bWPpLWAH02SJcg/9ffNU7+dX5pl6Lh9YuBDlnE59p+972BXdDqmnphdGZw0t8e5D7mItjfsQ5ZdfBjsdL/Uo7s96bfivfZTB0z2IUoVkvsDpyf9YbBbYIM2lrC7R/cqievZn7+wBSNfU49Ld13dxQs3RJ/AUoS4QJ3V/wokLkwN3yGgrG8siPvJeusO2C1oNdxeH6PPJ6sCeavzZ4hDF0xaPCpjo+RLal6rYcLfDVeJ8eF7cjqySRPdBFQmgVcaurKTuZCKiC61KPMftZy0JGkO3ifOjeUvpQQXQHBnhUlEDR9YzVn+0X+HWbHFSc9hSjJG8v30dbtCqnHwmzPUy0gzMysXYUTMWAzIa8HP/bL+nDOcPiyNgK+E8m4tBE/Uw==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(39860400002)(376002)(396003)(346002)(136003)(451199015)(2906002)(66556008)(6506007)(186003)(4744005)(2616005)(316002)(26005)(41300700001)(6862004)(8936002)(86362001)(36756003)(6512007)(8676002)(5660300002)(7416002)(7406005)(4326008)(66946007)(6486002)(478600001)(6636002)(54906003)(38100700002)(66476007)(37006003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?6DRElkTamxs25Waq7P2vJwffUWEsb3kuhNccGjt5HSq5WMhBBE3rknR/jEVX?=
+ =?us-ascii?Q?R7J0hotHAYyLV0++AKwFOI9oA13EKydSu+vqr+W+nNv3fpVnttipmAmUDBss?=
+ =?us-ascii?Q?4NqSsuvS6q5jfOY9z3CzkmctmIHG8GeMpFk03lTdpBktxXE1tOhwueGfgYb2?=
+ =?us-ascii?Q?/BlWcHODeoCDU4g02qOlyGuYRtFa7KOhpdrhQ8MwkVSka+3vxUperRtzgWIC?=
+ =?us-ascii?Q?ud4MhHwlWH62zQuVgG018JRxwrTDF5To30qND4B1qGRzHzq1A1dHhSOxgD6i?=
+ =?us-ascii?Q?AtK61glA5g1XWlvXFlO3Cyxye4c0wABTMc4DqzkPNaquFdm7hBAcbhla4xB/?=
+ =?us-ascii?Q?Fo7mWFFbZeXax/EtkmdGUKCwm/IU437Kp7yQtBpAl9tZAxDG6zTTiglPLwWd?=
+ =?us-ascii?Q?ZI9+jkRI66d9WWWBTtWa4CQC/RVtfCATCw9tXwie9Yau2GqJNwZVF3s7dZPk?=
+ =?us-ascii?Q?5/yucF7kehE7dysg1MRjblqf9crVrBdcKJY8XGmdv+Pgd1ENbGh4TPV8nLVI?=
+ =?us-ascii?Q?No0O3WaJfXgL+dvhhMYh/sTIwo/PP/hBktXv0hWLEDt3nYiNuA1hGpsuCfLO?=
+ =?us-ascii?Q?T6D7wOGq8j1F+OU+zqGnqpuMhuxU1McvABfPJ/vCxBLOD8RMH0GU0SusT/jW?=
+ =?us-ascii?Q?QTodkEQx5pWndTvL6Gg5UBqUqrZZ2DY14ZoB2IQ8oP5mMbOp1bBtL/4Jukt4?=
+ =?us-ascii?Q?2RweB4xW/sOIMDPGz7TNla2JCUBIkF/b0g4MMPg0dYnI3N1/kesEiNFxCjw4?=
+ =?us-ascii?Q?rAmrN8bAdvwXzqfoBbPx3enZXIKshC6I7oonH/hEaFX6mqH+lQyWj2Zmi9BG?=
+ =?us-ascii?Q?7HkvdY9w7xYb3SzjNo/715hzajlupsMHLaMoOOHI1F/+h8tiv/ldM2FSDErf?=
+ =?us-ascii?Q?50JChmT5H1a3+x6wtTxlgYP8MKC734EZ0v+tIDOYOn8uaiIs6fuzdc4uBW8R?=
+ =?us-ascii?Q?eoKuHldCUihbQyL+fjJjM5GA1+QHwDVaFcsXB+XBdQAEtCrrCCtu3RcrdgBn?=
+ =?us-ascii?Q?f+qKUNDdpl++Qm/BdgyZQHkpHj1+SqdMXZrNaLL8lTaX6gSJjlqOpZziG+mK?=
+ =?us-ascii?Q?HvLuz8NmjIlXQJ2X7HOQ966q/3HUnZBUMzmiH++D5vtwYY81uzi6oDkF/Gb+?=
+ =?us-ascii?Q?D6fZ2Pckm9gKYViFwyU1Fk7axnVghFcGsr5GczV/C1wX+6Kw6Yv5a1zgltw3?=
+ =?us-ascii?Q?he1IE3Sz4vtXiXxgDKUOgeQtvbTqYIIIyBVHj8a6ipGkOuzpyHx9KFY5rPPJ?=
+ =?us-ascii?Q?31qMf/ABYyYnAeLa8DM6v8/GQsoSGkc1jHNh1vO+0QroqJovNjM/eJdWd9AX?=
+ =?us-ascii?Q?quw0xP+qyd8W9iBmyTT+wyujsCXd3C0N26/9FinRM9GJCiz2SYgdBYhMzfnV?=
+ =?us-ascii?Q?UNMP8rHUpv1h/O0keiXboF/x+IM8nObRjxDu+3+9wf1RNOLUPawe7BFrvMHG?=
+ =?us-ascii?Q?jJM9EVpBjsjOmnBh8bOUTYA04iTD6zBAgQJ0wzvzls7d/pyXG3L2gJ0ln4q4?=
+ =?us-ascii?Q?trieu4teYIklPF6wa/T6Gi8JnhmGU6bmg0M840zPoTzSpFuO5NJtZ+JKz2VZ?=
+ =?us-ascii?Q?9+5CgkaGPhTIZf2KjRU=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5fb2a762-087f-465b-2b45-08dabcd3c459
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Nov 2022 13:11:34.6520
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gNFD3BiS87BF7Mv1Z6jCoBXx+zzu0CFSJe48EsqwEYBC0zAcLd2I0op4PplxXzBA
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5294
 
-On Thu, Oct 20, 2022 at 10:57:05AM -0700, Michael Kelley wrote:
-> Current code always maps the IOAPIC as shared (decrypted) in a
-> confidential VM. But Hyper-V guest VMs on AMD SEV-SNP with vTOM
-> enabled use a paravisor running in VMPL0 to emulate the IOAPIC.
-> In such a case, the IOAPIC must be accessed as private (encrypted).
+On Tue, Nov 01, 2022 at 12:17:29PM -0700, Nicolin Chen wrote:
+> On Tue, Oct 25, 2022 at 03:12:18PM -0300, Jason Gunthorpe wrote:
 > 
-> Fix this by gating the IOAPIC decrypted mapping on a new
-> cc_platform_has() attribute that a subsequent patch in the series
-> will set only for Hyper-V guests. The new attribute is named
-> somewhat generically because similar paravisor emulation cases
-> may arise in the future.
+> > diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd/io_pagetable.c
+> > new file mode 100644
+> > index 00000000000000..27cbb652ee33cd
+> > --- /dev/null
+> > +++ b/drivers/iommu/iommufd/io_pagetable.c
 > 
-> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+> > +void iopt_enable_large_pages(struct io_pagetable *iopt)
+> > +{
+> > +	down_write(&iopt->domains_rwsem);
+> > +	down_write(&iopt->iova_rwsem);
+> > +	WRITE_ONCE(iopt->disable_large_pages, false);
+> > +	iopt_calculate_iova_alignment(iopt);
+> 
+> Coverity reports unchecked return value, perhaps WARN_ON()?
 
-Reviewed-by: Wei Liu <wei.liu@kernel.org>
+It really can't fail since the new alignment cannot increase, but OK,
+just in case.
 
-> ---
->  arch/x86/kernel/apic/io_apic.c |  3 ++-
->  include/linux/cc_platform.h    | 13 +++++++++++++
->  2 files changed, 15 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-> index a868b76..d2c1bf7 100644
-> --- a/arch/x86/kernel/apic/io_apic.c
-> +++ b/arch/x86/kernel/apic/io_apic.c
-> @@ -2686,7 +2686,8 @@ static void io_apic_set_fixmap(enum fixed_addresses idx, phys_addr_t phys)
->  	 * Ensure fixmaps for IOAPIC MMIO respect memory encryption pgprot
->  	 * bits, just like normal ioremap():
->  	 */
-> -	flags = pgprot_decrypted(flags);
-> +	if (!cc_platform_has(CC_ATTR_HAS_PARAVISOR))
-> +		flags = pgprot_decrypted(flags);
->  
->  	__set_fixmap(idx, phys, flags);
->  }
-> diff --git a/include/linux/cc_platform.h b/include/linux/cc_platform.h
-> index cb0d6cd..b6c4a79 100644
-> --- a/include/linux/cc_platform.h
-> +++ b/include/linux/cc_platform.h
-> @@ -90,6 +90,19 @@ enum cc_attr {
->  	 * Examples include TDX Guest.
->  	 */
->  	CC_ATTR_HOTPLUG_DISABLED,
-> +
-> +	/**
-> +	 * @CC_ATTR_HAS_PARAVISOR: Guest VM is running with a paravisor
-> +	 *
-> +	 * The platform/OS is running as a guest/virtual machine with
-> +	 * a paravisor in VMPL0. Having a paravisor affects things
-> +	 * like whether the I/O APIC is emulated and operates in the
-> +	 * encrypted or decrypted portion of the guest physical address
-> +	 * space.
-> +	 *
-> +	 * Examples include Hyper-V SEV-SNP guests using vTOM.
-> +	 */
-> +	CC_ATTR_HAS_PARAVISOR,
->  };
->  
->  #ifdef CONFIG_ARCH_HAS_CC_PLATFORM
-> -- 
-> 1.8.3.1
-> 
+Jason
