@@ -1,135 +1,154 @@
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F3242C9D
-	for <iommu@lists.linux.dev>; Wed,  2 Nov 2022 15:18:16 +0000 (UTC)
-Received: by mail-wr1-f54.google.com with SMTP id g12so25020285wrs.10
-        for <iommu@lists.linux.dev>; Wed, 02 Nov 2022 08:18:16 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE94F6D17
+	for <iommu@lists.linux.dev>; Wed,  2 Nov 2022 15:28:01 +0000 (UTC)
+Received: by mail-pl1-f174.google.com with SMTP id c2so16888503plz.11
+        for <iommu@lists.linux.dev>; Wed, 02 Nov 2022 08:28:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=T9e18AuOzDnWHjh6xr+jQAEK5xQcjVqynS6u486cJkU=;
-        b=vVrjNop7hjPDib3wv1ot+HsH3VyGY3cb14mf3za4DKjEZmUbSC2uxLrZbr9QnoCHIu
-         H5/e2OqFLFx7fZkBeLMA/uQdUWoNIURrEKKCt52vEpTGslev/6AHfGyDdH6Xw00LZfAg
-         xm48kYROY6HxVm/Z8NRksM6sxlqr1ajMCnMD9W/j/StqwddMDD1fomQALLVGYcL5Y5jG
-         S0FCj+Aiqu+7h2ZpCXDkrzX6H1bLjZwnOcSwHRODkxDKNvivnbIhWku2tiTBb1p4VZg8
-         0noIDWAH+red8jcQl3qJxEQ1NLTvQBBtk0t431y/RiB7OiE3vYU4m+zt5DQK8o2lu0W7
-         G9mQ==
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=wP12hBLI/UjYflAvChPOlEUP0Fe9bcRv3GNq3jXeE+o=;
+        b=oPg7EAxfhFVgkL5qNGfY4856C1CuYDrQT15DtL6CAfeFLX8YI4d839KNXQ4S+gqr3a
+         jl0GyG/hjPYCfH8CFQOTECwjEjyDtxI5jMIWrIYga5TRq0kXfOXd9WDHC1Z//WkJKr9M
+         Ad+DCW+vZTRC+nxDpNFkhVnFxaBoD0sK2hhdLLaaFhIVjXBbWRZtsm8j4QbOW5urUEsh
+         QUwujKODHa/k883wtb2V2C6ovbNxfQKuOLJapf96fLqGvubzOHHsh3bsNDZTFiesw3Fj
+         JKrcUe8+Fk9VgsGaOAMngyH68+2DM3jdLTjfELiAs3+3Jh7pfmiTrYtJePw+hvcxFtNv
+         JbAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=T9e18AuOzDnWHjh6xr+jQAEK5xQcjVqynS6u486cJkU=;
-        b=k0QItrDKhIAXT383a5vNV1uOvJJoRXPRBAwXSV6hC9+7Nu3tBi39FQH6uH3wQ67tXE
-         lcY7IhjDnheP8/hbJjgvx1UamxOpzHeCP/VguQOwCDxf3vul5Dg/rH1TdJ9P/4hslyHg
-         eatKDmlWNMy/H1NNe8gnAcU7a857s8NEYgvXlujOX9+/6MoyqFXj3DwkT6/w4s+8F4C0
-         4+qWIBSZgdxwdT31ZHtgX2KVRVAbNzL3YXee+LI8A2JHEZrbhekhV8i1XrTrpZ422Evb
-         8tFtTAzUZFFyrIcn29xpFLlS5fiJCuZbe2nMEuu0ukykPkvkWt0IHqKEwn37TkrXpngU
-         WHcg==
-X-Gm-Message-State: ACrzQf25rT/AWUbHMtEBiTVJxfLSubimJDLsM1/86uKiJhxTbpV3BLXc
-	lD9jd2S3Z6FT74R8HaBUr1ITqw==
-X-Google-Smtp-Source: AMsMyM6o4omJsNxu8orKzfd9naeNFZCxwtIS7R+A+z31p3n+znaJYmIV7aHiK1qWp4qPwRtqSSxMKQ==
-X-Received: by 2002:a5d:5967:0:b0:236:bd27:f1b8 with SMTP id e39-20020a5d5967000000b00236bd27f1b8mr13149257wri.390.1667402294756;
-        Wed, 02 Nov 2022 08:18:14 -0700 (PDT)
-Received: from [127.0.1.1] (158.22.5.93.rev.sfr.net. [93.5.22.158])
-        by smtp.googlemail.com with ESMTPSA id bq13-20020a5d5a0d000000b002365921c9aesm13332818wrb.77.2022.11.02.08.18.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Nov 2022 08:18:14 -0700 (PDT)
-From: Alexandre Mergnat <amergnat@baylibre.com>
-Date: Wed, 02 Nov 2022 16:18:09 +0100
-Subject: [PATCH v6 3/3] iommu/mediatek: add support for MT8365 SoC
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=wP12hBLI/UjYflAvChPOlEUP0Fe9bcRv3GNq3jXeE+o=;
+        b=NK6svR93Eonsa6j3RXF2nMerx6721RpHwaSp+N6c1OsDecxv5yWEtYXA0H2DTvuXTn
+         M+UwdGXfoN3vqNDVd2MsH7G0Vs/7SHyeCY14VHMlBQcrXMhxr/HKkfUMt3yJi4pXeJbz
+         bp7Hrx3jb8/3+NkwlKGkKfHIbi2fEP1EjapfiI6iQ/OOXrORm1aSClMU7pMn1nLa/JBi
+         gN1WSa6L5blw504mv+1kCGfejjA7wynUANcycchGnq5UjfnKYvRo5wmdml4pSRROtcLv
+         nvTueBeYqhrYfd2AJF8gUQxwArqpARq4kmY7OdrvMrUYBsHotdLaGI7INArlfbMVV0jR
+         Smcw==
+X-Gm-Message-State: ACrzQf08HehpJuX/hwGT9XRyqdpLRR3ztxP8AZ3Nh9Wa3LOGG+rJN4cu
+	Zddv6IJuFXTgzG+4kpyQ5klLmZGqpJI54filgHIQ1Q==
+X-Google-Smtp-Source: AMsMyM6A7lrylJay1xhevhaxJCaktaXQTaOKnMRfNs50tK6THAHyXvK0B1iPkGpZmNSeU8H+Mxp5/cQp8C9UHnx/UTU=
+X-Received: by 2002:a17:902:b78b:b0:187:1623:827f with SMTP id
+ e11-20020a170902b78b00b001871623827fmr18869518pls.165.1667402881129; Wed, 02
+ Nov 2022 08:28:01 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20221001-iommu-support-v6-3-be4fe8da254b@baylibre.com>
-References: <20221001-iommu-support-v6-0-be4fe8da254b@baylibre.com>
-In-Reply-To: <20221001-iommu-support-v6-0-be4fe8da254b@baylibre.com>
-To: Matthias Brugger <matthias.bgg@gmail.com>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>
-Cc: linux-kernel@vger.kernel.org, Alexandre Mergnat <amergnat@baylibre.com>, iommu@lists.linux.dev,
- linux-mediatek@lists.infradead.org, Amjad Ouled-Ameur <aouledameur@baylibre.com>,
- Markus Schneider-Pargmann <msp@baylibre.com>, linux-arm-kernel@lists.infradead.org,
- Fabien Parent <fparent@baylibre.com>, AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- devicetree@vger.kernel.org, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-X-Mailer: b4 0.10.1
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2006; i=amergnat@baylibre.com;
- h=from:subject:message-id; bh=Q4NYYQifFh9zAugrVsdD24zlf7qYZx8w4pW2A66Dgc4=;
- b=owEBbQKS/ZANAwAKAStGSZ1+MdRFAcsmYgBjYooyAnt/3uDKzQTl89xfXRYOhl4D1bU+Q7od77hw
- ErFRlkKJAjMEAAEKAB0WIQQjG17X8+qqcA5g/osrRkmdfjHURQUCY2KKMgAKCRArRkmdfjHURUUFD/
- 93Y7hT8/4BU2SdrJ0KdhJzQYPpku8B/wTpGm45+uiAJV6r77tTcgbr7cZSyBAy+xZY+qRMrPGUBVqU
- Ajk7HHfEUF/WzcXIHzB6KHGSf9c+3D+rNDm6yBs9CXUg0xfe0jkc81bUSf/+aC6XtdBECiWrNn70Xv
- z5QtntaQBOINOB63LBBI96uXqH0grV99uYxelModQWaNKjnnyBzEdHxp8ey/RqZ0oQfTDV7oFTgjA7
- otXN+ux0mGGPdZ8oBe/GvEX7L5kok0LuiJZcKejE4YliRSfIv38O7OauoXtk1LSHQs91f/ddL+dRQ/
- D/6p8qf/2vv/21M10jkcf8Vk4zfQDIEnzYEFFVeBl9/nvHmPrT2oszCCkzDs0hPP+zvuvmkZIgY4CI
- OmxgXt/hKzfsvct9x2WMTlzCxfeeVIxdCJA2d085AYXb6LA6Y71MFI4I9mcLrMqxo1v4+vhdbJPpOQ
- nY62Wdcvc1qqNbkJy+SJeKRq5wGQNEItSFfJ6+zZgY8aXAKh/1KIkUZhzpAHk7yY9THS1T/eoTjH/z
- 5M0Trb/g65/NJvhAz1Qyl8HK/QEaIFN/SNGss5FWTgsbx0b8C8HXFFpcQFm9qXM2DGFncyqqxx1QCp
- 5n+o0IQHkJLe15tSnQyvryaHLrSaEv3uepvuEH7vMOAwwx+nTTeoRryGDb0g==
-X-Developer-Key: i=amergnat@baylibre.com; a=openpgp;
- fpr=231B5ED7F3EAAA700E60FE8B2B46499D7E31D445
+References: <CAPDyKFpG9ZjVTiK3HEqioDN8ksGpRYiXL_SLSmOfm9fjJfcrsw@mail.gmail.com>
+ <20221028130242.20900-1-pshete@nvidia.com>
+In-Reply-To: <20221028130242.20900-1-pshete@nvidia.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Date: Wed, 2 Nov 2022 16:27:24 +0100
+Message-ID: <CAPDyKFqJdiCDkAfrONfnBVKw1v8=jZ+hEJiKGK70EQ4o7BSxaQ@mail.gmail.com>
+Subject: Re: [PATCH v9 1/4] iommu: Add dummy dev_iommu_fwspec_get() helper
+To: Prathamesh Shete <pshete@nvidia.com>
+Cc: joro@8bytes.org, adrian.hunter@intel.com, thierry.reding@gmail.com, 
+	jonathanh@nvidia.com, p.zabel@pengutronix.de, linux-mmc@vger.kernel.org, 
+	linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, will@kernel.org, 
+	iommu@lists.linux.dev, robin.murphy@arm.com, anrao@nvidia.com, 
+	smangipudi@nvidia.com, kyarlagadda@nvidia.com, 
+	Thierry Reding <treding@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 
-From: Fabien Parent <fparent@baylibre.com>
+On Fri, 28 Oct 2022 at 15:02, Prathamesh Shete <pshete@nvidia.com> wrote:
+>
+> This dummy implementation is useful to avoid a dependency on the
+> IOMMU_API Kconfig symbol in drivers that can optionally use the IOMMU
+> API.
+>
+> In order to fully use this, also move the struct iommu_fwspec definition
+> out of the IOMMU_API protected region.
+>
+> Signed-off-by: Thierry Reding <treding@nvidia.com>
+> Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
 
-Add IOMMU support for MT8365 SoC.
+It seems like you claimed authorship of the patch [1], that was
+authored by Thierry and updated the commit message header.
 
-Signed-off-by: Fabien Parent <fparent@baylibre.com>
-Reviewed-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
-Tested-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
-Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Yong Wu <yong.wu@mediatek.com>
-Signed-off-by: Alexandre Mergnat <amergnat@baylibre.com>
----
- drivers/iommu/mtk_iommu.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+Can you please restore the patch to its original that was posted by Thierry?
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 563e3c54a0e2..aff7a9190749 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -170,6 +170,7 @@ enum mtk_iommu_plat {
- 	M4U_MT8186,
- 	M4U_MT8192,
- 	M4U_MT8195,
-+	M4U_MT8365,
- };
- 
- struct mtk_iommu_iova_region {
-@@ -1525,6 +1526,17 @@ static const struct mtk_iommu_plat_data mt8195_data_vpp = {
- 			   {4, MTK_INVALID_LARBID, MTK_INVALID_LARBID, MTK_INVALID_LARBID, 6}},
- };
- 
-+static const struct mtk_iommu_plat_data mt8365_data = {
-+	.m4u_plat	= M4U_MT8365,
-+	.flags		= RESET_AXI | INT_ID_PORT_WIDTH_6,
-+	.inv_sel_reg	= REG_MMU_INV_SEL_GEN1,
-+	.banks_num	= 1,
-+	.banks_enable	= {true},
-+	.iova_region	= single_domain,
-+	.iova_region_nr	= ARRAY_SIZE(single_domain),
-+	.larbid_remap	= {{0}, {1}, {2}, {3}, {4}, {5}}, /* Linear mapping. */
-+};
-+
- static const struct of_device_id mtk_iommu_of_ids[] = {
- 	{ .compatible = "mediatek,mt2712-m4u", .data = &mt2712_data},
- 	{ .compatible = "mediatek,mt6779-m4u", .data = &mt6779_data},
-@@ -1537,6 +1549,7 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
- 	{ .compatible = "mediatek,mt8195-iommu-infra", .data = &mt8195_data_infra},
- 	{ .compatible = "mediatek,mt8195-iommu-vdo",   .data = &mt8195_data_vdo},
- 	{ .compatible = "mediatek,mt8195-iommu-vpp",   .data = &mt8195_data_vpp},
-+	{ .compatible = "mediatek,mt8365-m4u", .data = &mt8365_data},
- 	{}
- };
- 
+Kind regards
+Uffe
 
--- 
-b4 0.10.1
+[1]
+https://lore.kernel.org/linux-mmc/20221018105149.820062-1-thierry.reding@gmail.com/
+
+
+
+> ---
+>  include/linux/iommu.h | 39 +++++++++++++++++++--------------------
+>  1 file changed, 19 insertions(+), 20 deletions(-)
+>
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index ea30f00dc145..afa829bc4356 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -173,6 +173,25 @@ enum iommu_dev_features {
+>
+>  #define IOMMU_PASID_INVALID    (-1U)
+>
+> +/**
+> + * struct iommu_fwspec - per-device IOMMU instance data
+> + * @ops: ops for this device's IOMMU
+> + * @iommu_fwnode: firmware handle for this device's IOMMU
+> + * @flags: IOMMU_FWSPEC_* flags
+> + * @num_ids: number of associated device IDs
+> + * @ids: IDs which this device may present to the IOMMU
+> + */
+> +struct iommu_fwspec {
+> +       const struct iommu_ops  *ops;
+> +       struct fwnode_handle    *iommu_fwnode;
+> +       u32                     flags;
+> +       unsigned int            num_ids;
+> +       u32                     ids[];
+> +};
+> +
+> +/* ATS is supported */
+> +#define IOMMU_FWSPEC_PCI_RC_ATS                        (1 << 0)
+> +
+>  #ifdef CONFIG_IOMMU_API
+>
+>  /**
+> @@ -600,25 +619,6 @@ extern struct iommu_group *generic_device_group(struct device *dev);
+>  /* FSL-MC device grouping function */
+>  struct iommu_group *fsl_mc_device_group(struct device *dev);
+>
+> -/**
+> - * struct iommu_fwspec - per-device IOMMU instance data
+> - * @ops: ops for this device's IOMMU
+> - * @iommu_fwnode: firmware handle for this device's IOMMU
+> - * @flags: IOMMU_FWSPEC_* flags
+> - * @num_ids: number of associated device IDs
+> - * @ids: IDs which this device may present to the IOMMU
+> - */
+> -struct iommu_fwspec {
+> -       const struct iommu_ops  *ops;
+> -       struct fwnode_handle    *iommu_fwnode;
+> -       u32                     flags;
+> -       unsigned int            num_ids;
+> -       u32                     ids[];
+> -};
+> -
+> -/* ATS is supported */
+> -#define IOMMU_FWSPEC_PCI_RC_ATS                        (1 << 0)
+> -
+>  /**
+>   * struct iommu_sva - handle to a device-mm bond
+>   */
+> @@ -682,7 +682,6 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group);
+>
+>  struct iommu_ops {};
+>  struct iommu_group {};
+> -struct iommu_fwspec {};
+>  struct iommu_device {};
+>  struct iommu_fault_param {};
+>  struct iommu_iotlb_gather {};
+> --
+> 2.17.1
+>
