@@ -1,169 +1,107 @@
-Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
+Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A47E41EA01
-	for <iommu@lists.linux.dev>; Wed,  2 Nov 2022 17:29:09 +0000 (UTC)
-Received: by mail-pj1-f53.google.com with SMTP id f5-20020a17090a4a8500b002131bb59d61so3765695pjh.1
-        for <iommu@lists.linux.dev>; Wed, 02 Nov 2022 10:29:09 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A779229A0
+	for <iommu@lists.linux.dev>; Wed,  2 Nov 2022 18:44:23 +0000 (UTC)
+Received: by mail-lf1-f43.google.com with SMTP id g12so29708778lfh.3
+        for <iommu@lists.linux.dev>; Wed, 02 Nov 2022 11:44:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=XngaLyoddCmH4VlYM2PfyFy1z8QIlSHJsQqMTNSL+fY=;
-        b=LFmDcNdVJo4K4/FarOGyy+iYSahg3fpZVoW20EDjy0GMIKfgTNw8fvtAhQ15msH1Qk
-         VHt/frVwIRzA+95aTCRBawF42Gjwv69pcfAiYAtFa+IxWw2c0L81a72SzNLI/zhYVV0t
-         K0ZHQnNrJhHrs41sUlChWL8od2BcBx7+xb65Sk1Jcosp5Emqdq+E1yeRQzcf4I9RGVys
-         8ZCwtkteD0c7nGMW6HOZLCT7XbRkNkFFlndsU3/uIegcdYqiHKLssHEw65pubDMfcOz6
-         H3vQiqJ9dW6NCjeFtTBEAmTHFWCogGMbqctU+cPtFHx9OfivrJ2DvIF1PBdYIYi7VXf1
-         hMPw==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=t9I1z4AXsJK+25P06vSnuu3hIZEjku7ef8TqnyD4Aqg=;
+        b=kTDv3XtmSj8ZzEhElD+tS6kV/E5rjqnEgwJn+7OtiDgaoylq7zpGu0O8MsV6YUggqZ
+         tpoR7YynzbGW8BD0B0/UuAIE45M6gqQ/QoVDCinax2fD7nl54xrTH6lMwTC9ZlxNIYUr
+         +/gLjkbwGIac99WXTE1xsNir/QYRDCCahPRSLYhR2Q1fYoksslmTLMH+ImFxUYv5e1x7
+         uA4RKNM482d0SL/u3Sakay2t8ryF0pezayc0lb/ZgxbkAyz3TvYU3X0yEI6tWgpNQZ7H
+         uQdFIYxdSZL4Bfy60szDSIzNerJ7fz/TUlwQN46zBj/z2yK5gbEXKEKdNj0Ag3Fw8LyB
+         u9SA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=XngaLyoddCmH4VlYM2PfyFy1z8QIlSHJsQqMTNSL+fY=;
-        b=YcDVCrHGuAWnGI9DHk9cRHcxs79q4dFMOuNyoq0jgRLp+sR3WzhfIjd9Lj8Pqjx2bt
-         Vdl2QEn5bZX+RrmhUgnMtBaEIEON+yNEDmKse1rVEgKbQTR+XwBiRl5GRh6Ll+9h4mih
-         ZAADCmfRdFVGQxmpF6p0+ynj6P5l+mG1fjlknLnYJbe2aC3PyDAmezD3eZbLNd+uWlht
-         CW8StPOPyt3CuvVz1CyeAy7vI7HPZRsZDG8gU+alprZ4LgP9VK7nie6gH2X7AG7hyvdg
-         9CvDd480Bs11JQFFo3Ixu69n9aVq9x07RBQe8NWm+UdQ94DumLcTfIKncUWFeixGVCam
-         k3UQ==
-X-Gm-Message-State: ACrzQf22BDbcQeuwFZVbVfBliC8axqS1vsNc/eztIat2NeBNSMJWyrEs
-	Kz0Ggna92MhnPjHio35HecY=
-X-Google-Smtp-Source: AMsMyM468ueCiGPw9Rp6pG6tj4yCN+Kg/96HSi3gaDaAY7Jy/SDnxCyzS2YodJhnzcubFb/rCwO4cw==
-X-Received: by 2002:a17:902:ab89:b0:186:7cfc:cde8 with SMTP id f9-20020a170902ab8900b001867cfccde8mr26293355plr.9.1667410149118;
-        Wed, 02 Nov 2022 10:29:09 -0700 (PDT)
-Received: from ?IPV6:2404:f801:0:5:8000::75b? ([2404:f801:9000:1a:efea::75b])
-        by smtp.gmail.com with ESMTPSA id d6-20020a170903230600b0016f196209c9sm8651878plh.123.2022.11.02.10.28.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Nov 2022 10:29:08 -0700 (PDT)
-Message-ID: <b0aa0d72-d3f3-93a9-1fa9-553c1c0351ee@gmail.com>
-Date: Thu, 3 Nov 2022 01:28:54 +0800
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=t9I1z4AXsJK+25P06vSnuu3hIZEjku7ef8TqnyD4Aqg=;
+        b=FDnHUC9SjFhLLMMzRPfrV1BvL6RbYKCixUgpvprtgcKh7V37K5bH/6IloOLi54C+st
+         TIe0z3E4DtapBy7yutiuHiTHIb//OkTK5Ageq/T7XTd7hoFe1sgNIF9Igi2F988DTGYV
+         f/QGK2SUTv92DsdpgIJm3+pdgRB4r8MpRJ9uFSR4w7HZ3YIgXpSNDsZF+bsdy1v8/HOM
+         RPbxy5Jgbea0QRHhjfhRfNArDQirh6MN+Yaapj5ILLCn6IVwmwCvAd2AwdJxN226mZXQ
+         JIpYgWFrn+d5zpcSauMt39q7M6HsHRisNhSw9v8HPBo8xX0k5pwIvb50PD3smaErLcqo
+         4OLQ==
+X-Gm-Message-State: ACrzQf1J7DRfpoJ0rOWwlKjP+M8rqp/mU2Hqh3+eHLNDOm4uDH5ZC8Sy
+	UOwN4Q5xd4FMXkiwBSruWX6XnQ==
+X-Google-Smtp-Source: AMsMyM5KhE+waYR30gx/0w7uAuJpT6jJfFha4iriDSYOuqxv78t3C1EPaBfdCNkuA9y8K6jwgl3ddQ==
+X-Received: by 2002:ac2:4d2e:0:b0:4a4:7ed0:76c0 with SMTP id h14-20020ac24d2e000000b004a47ed076c0mr9309861lfk.240.1667414661707;
+        Wed, 02 Nov 2022 11:44:21 -0700 (PDT)
+Received: from eriador.unikie.fi ([192.130.178.91])
+        by smtp.gmail.com with ESMTPSA id t8-20020a05651c204800b00277092c03e7sm2277540ljo.33.2022.11.02.11.44.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Nov 2022 11:44:21 -0700 (PDT)
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+To: Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konrad.dybcio@somainline.org>,
+	Rob Clark <robdclark@gmail.com>
+Cc: Vinod Koul <vkoul@kernel.org>,
+	Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-arm-msm@vger.kernel.org,
+	iommu@lists.linux.dev,
+	devicetree@vger.kernel.org,
+	freedreno@lists.freedesktop.org
+Subject: [RFC PATCH v2 00/11] iommu/arm-smmu-qcom: Rework Qualcomm SMMU bindings and implementation
+Date: Wed,  2 Nov 2022 21:44:09 +0300
+Message-Id: <20221102184420.534094-1-dmitry.baryshkov@linaro.org>
+X-Mailer: git-send-email 2.35.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.1
-Subject: Re: [PATCH 03/12] x86/hyperv: Reorder code in prep for subsequent
- patch
-Content-Language: en-US
-To: Michael Kelley <mikelley@microsoft.com>, hpa@zytor.com,
- kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
- wei.liu@kernel.org, decui@microsoft.com, luto@kernel.org,
- peterz@infradead.org, davem@davemloft.net, edumazet@google.com,
- kuba@kernel.org, pabeni@redhat.com, lpieralisi@kernel.org, robh@kernel.org,
- kw@linux.com, bhelgaas@google.com, arnd@arndb.de, hch@infradead.org,
- m.szyprowski@samsung.com, robin.murphy@arm.com, thomas.lendacky@amd.com,
- brijesh.singh@amd.com, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
- dave.hansen@linux.intel.com, Tianyu.Lan@microsoft.com,
- kirill.shutemov@linux.intel.com, sathyanarayanan.kuppuswamy@linux.intel.com,
- ak@linux.intel.com, isaku.yamahata@intel.com, dan.j.williams@intel.com,
- jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com, x86@kernel.org,
- linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
- netdev@vger.kernel.org, linux-pci@vger.kernel.org,
- linux-arch@vger.kernel.org, iommu@lists.linux.dev
-References: <1666288635-72591-1-git-send-email-mikelley@microsoft.com>
- <1666288635-72591-4-git-send-email-mikelley@microsoft.com>
-From: Tianyu Lan <ltykernel@gmail.com>
-In-Reply-To: <1666288635-72591-4-git-send-email-mikelley@microsoft.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 10/21/2022 1:57 AM, Michael Kelley wrote:
-> Reorder some code as preparation for a subsequent patch.  No
-> functional change.
-> 
-> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+The main goal of this patchset is to define a generic qcom,smmu-500
+binding to be used by newer Qualcomm platforms instead of defining each
+and every SoC line with no actual differences between the compats.
 
-Reviewed-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
-> ---
->   arch/x86/hyperv/ivm.c | 68 +++++++++++++++++++++++++--------------------------
->   1 file changed, 34 insertions(+), 34 deletions(-)
-> 
-> diff --git a/arch/x86/hyperv/ivm.c b/arch/x86/hyperv/ivm.c
-> index 1dbcbd9..f33c67e 100644
-> --- a/arch/x86/hyperv/ivm.c
-> +++ b/arch/x86/hyperv/ivm.c
-> @@ -235,40 +235,6 @@ void hv_ghcb_msr_read(u64 msr, u64 *value)
->   EXPORT_SYMBOL_GPL(hv_ghcb_msr_read);
->   #endif
->   
-> -enum hv_isolation_type hv_get_isolation_type(void)
-> -{
-> -	if (!(ms_hyperv.priv_high & HV_ISOLATION))
-> -		return HV_ISOLATION_TYPE_NONE;
-> -	return FIELD_GET(HV_ISOLATION_TYPE, ms_hyperv.isolation_config_b);
-> -}
-> -EXPORT_SYMBOL_GPL(hv_get_isolation_type);
-> -
-> -/*
-> - * hv_is_isolation_supported - Check system runs in the Hyper-V
-> - * isolation VM.
-> - */
-> -bool hv_is_isolation_supported(void)
-> -{
-> -	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))
-> -		return false;
-> -
-> -	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV))
-> -		return false;
-> -
-> -	return hv_get_isolation_type() != HV_ISOLATION_TYPE_NONE;
-> -}
-> -
-> -DEFINE_STATIC_KEY_FALSE(isolation_type_snp);
-> -
-> -/*
-> - * hv_isolation_type_snp - Check system runs in the AMD SEV-SNP based
-> - * isolation VM.
-> - */
-> -bool hv_isolation_type_snp(void)
-> -{
-> -	return static_branch_unlikely(&isolation_type_snp);
-> -}
-> -
->   /*
->    * hv_mark_gpa_visibility - Set pages visible to host via hvcall.
->    *
-> @@ -387,3 +353,37 @@ void hv_unmap_memory(void *addr)
->   {
->   	vunmap(addr);
->   }
-> +
-> +enum hv_isolation_type hv_get_isolation_type(void)
-> +{
-> +	if (!(ms_hyperv.priv_high & HV_ISOLATION))
-> +		return HV_ISOLATION_TYPE_NONE;
-> +	return FIELD_GET(HV_ISOLATION_TYPE, ms_hyperv.isolation_config_b);
-> +}
-> +EXPORT_SYMBOL_GPL(hv_get_isolation_type);
-> +
-> +/*
-> + * hv_is_isolation_supported - Check system runs in the Hyper-V
-> + * isolation VM.
-> + */
-> +bool hv_is_isolation_supported(void)
-> +{
-> +	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))
-> +		return false;
-> +
-> +	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV))
-> +		return false;
-> +
-> +	return hv_get_isolation_type() != HV_ISOLATION_TYPE_NONE;
-> +}
-> +
-> +DEFINE_STATIC_KEY_FALSE(isolation_type_snp);
-> +
-> +/*
-> + * hv_isolation_type_snp - Check system runs in the AMD SEV-SNP based
-> + * isolation VM.
-> + */
-> +bool hv_isolation_type_snp(void)
-> +{
-> +	return static_branch_unlikely(&isolation_type_snp);
-> +}
+While preparing this change it was required to cleanup the existing
+bindings and to rework the way the arm-smmu-qcom implementation handles
+binding to IOMMU devices.
+
+Changes since RFC v1:
+ - Added the dts patch fixing order of clocks in msm8996.dtsi
+ - Fixed the DT bot errors
+ - Added separate clause for Google Cheza devices
+
+Dmitry Baryshkov (11):
+  arm64: dts: qcom: msm8996: change order of SMMU clocks on this
+    platform
+  dt-bindings: arm-smmu: Add missing Qualcomm SMMU compatibles
+  dt-bindings: arm-smmu: fix clocks/clock-names schema
+  dt-bindings: arm-smmu: add special case for Google Cheza platform
+  dt-bindings: arm-smmu: Add generic qcom,smmu-500 bindings
+  iommu/arm-smmu-qcom: Move implementation data into match data
+  iommu/arm-smmu-qcom: Move the qcom,adreno-smmu check into
+    qcom_smmu_create
+  iommu/arm-smmu-qcom: provide separate implementation for
+    SDM845-smmu-500
+  iommu/arm-smmu-qcom: Merge table from arm-smmu-qcom-debug into match
+    data
+  iommu/arm-smmu-qcom: Stop using mmu500 reset for v2 MMUs
+  iommu/arm-smmu-qcom: Add generic qcom,smmu-500 match entry
+
+ .../devicetree/bindings/iommu/arm,smmu.yaml   | 172 +++++++++++++++++-
+ arch/arm64/boot/dts/qcom/msm8996.dtsi         |  31 ++--
+ .../iommu/arm/arm-smmu/arm-smmu-qcom-debug.c  |  91 ---------
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c    | 156 +++++++++++-----
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h    |  21 ++-
+ 5 files changed, 307 insertions(+), 164 deletions(-)
+
+-- 
+2.35.1
+
