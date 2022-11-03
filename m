@@ -1,32 +1,32 @@
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FDF981F
-	for <iommu@lists.linux.dev>; Thu,  3 Nov 2022 06:00:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49BADA2A
+	for <iommu@lists.linux.dev>; Thu,  3 Nov 2022 06:00:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667455216; x=1698991216;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=41UGF6hDUeNPtHtZtPwjudFO4XGRlRdnfr3EiAL7P6c=;
-  b=Dn8O6sczAnzCm0pq4qKvBEZnTmW8qqVATAFOAUniudlKnAy8sh66xAqe
-   m+KMRn2IJKWywpt1tJ5gKFBI5SOXktk78aSGu/F3kDoFrj1Kx4EswtWXM
-   gFVgZ8e8rAAfmss0hIaE2ugjFopD2qiKBjwB8t5zQ4KQ4ft9AFCUWXlkk
-   Kot6XQSKuG33bPfqvJp1svAYNmCht7NYEAxB3Xpd0WoSmLBlxltDskllq
-   wJ0DSm2iXiv4DeZtkdUm3GjhYUqV26bGZVe2aur/4PoFHqUz+GcmitKoC
-   gTQGxMXa0aurrJi6bGDfm15QTxt12cwdqxnw0jJYP6HIKxdlRSMXSnGxS
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10519"; a="311322479"
+  t=1667455218; x=1698991218;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=JboFRltoczbXP4x/urgFAYiKbX2mR+qR0k/5T6o9tzA=;
+  b=icdIz2XuAtpL2Rj1cR+rBLAJtS/desmlTYNnrFeAAoYD1ousUOUnp4Mm
+   aD6YpZuiyUsYhznHMpTxLePu2Wt/j/IpmxH17kjj8m/09EAPFlhSfKlMT
+   JC4iiIdGW9gYEH9Z1hLC2mNhi7cTZc1pxXpf8G6OM5KrTIT8W4eRWQkB0
+   aCzFxyNTahPODYBY61FIoFb4/FOg2orOQ/dOA6Yc9hTUqK/Uk28GLEnHu
+   x/ZZlX4Bd/9+VcUqWJqizGUAaqdfYJtzCqjCebb4nwm8sPfWzP9WGeVwQ
+   7sdnCWxyl8OSno+PK/bcGS88D0zuhXS7rlpSgZxbQkqm/0dq9Qq5JA2bV
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10519"; a="311322482"
 X-IronPort-AV: E=Sophos;i="5.95,235,1661842800"; 
-   d="scan'208";a="311322479"
+   d="scan'208";a="311322482"
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2022 23:00:15 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2022 23:00:17 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10519"; a="723819276"
+X-IronPort-AV: E=McAfee;i="6500,9779,10519"; a="723819282"
 X-IronPort-AV: E=Sophos;i="5.95,235,1661842800"; 
-   d="scan'208";a="723819276"
+   d="scan'208";a="723819282"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by FMSMGA003.fm.intel.com with ESMTP; 02 Nov 2022 23:00:13 -0700
+  by FMSMGA003.fm.intel.com with ESMTP; 02 Nov 2022 23:00:15 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: iommu@lists.linux.dev
 Cc: Joerg Roedel <joro@8bytes.org>,
@@ -37,10 +37,12 @@ Cc: Joerg Roedel <joro@8bytes.org>,
 	Jacob jun Pan <jacob.jun.pan@intel.com>,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 0/7] iommu/vt-d: Some cleanups
-Date: Thu,  3 Nov 2022 13:53:22 +0800
-Message-Id: <20221103055329.633052-1-baolu.lu@linux.intel.com>
+Subject: [PATCH 1/7] iommu/vt-d: Allocate pasid table in device probe path
+Date: Thu,  3 Nov 2022 13:53:23 +0800
+Message-Id: <20221103055329.633052-2-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20221103055329.633052-1-baolu.lu@linux.intel.com>
+References: <20221103055329.633052-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,30 +51,75 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi,
+Whether or not a domain is attached to the device, the pasid table should
+always be valid as long as it has been probed. This moves the pasid table
+allocation from the domain attaching device path to device probe path and
+frees it in the device release path.
 
-This series includes some cleanups in the Intel IOMMU implementation
-after the IOMMU core implemented the blocking domain. The cleanup work
-is mainly in the attach_dev/device_probe/device_release paths.
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/iommu.c | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
-Please help to review.
-
-Best regards,
-baolu
-
-Lu Baolu (7):
-  iommu/vt-d: Allocate pasid table in device probe path
-  iommu/vt-d: Add blocking domain support
-  iommu/vt-d: Use device_block_translation() in dev_attach error path
-  iommu/vt-d: Fold dmar_remove_one_dev_info() into its caller
-  iommu/vt-d: Rename domain_add_dev_info()
-  iommu/vt-d: Remove unnecessary domain_context_mapped()
-  iommu/vt-d: Use real field for indication of first level
-
- drivers/iommu/intel/iommu.h |  15 +--
- drivers/iommu/intel/iommu.c | 190 ++++++++++++++++--------------------
- 2 files changed, 89 insertions(+), 116 deletions(-)
-
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index a934a46bb9e6..e28faba1095f 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -2477,13 +2477,6 @@ static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
+ 
+ 	/* PASID table is mandatory for a PCI device in scalable mode. */
+ 	if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev)) {
+-		ret = intel_pasid_alloc_table(dev);
+-		if (ret) {
+-			dev_err(dev, "PASID table allocation failed\n");
+-			dmar_remove_one_dev_info(dev);
+-			return ret;
+-		}
+-
+ 		/* Setup the PASID entry for requests without PASID: */
+ 		if (hw_pass_through && domain_type_is_si(domain))
+ 			ret = intel_pasid_setup_pass_through(iommu, domain,
+@@ -4108,7 +4101,6 @@ static void dmar_remove_one_dev_info(struct device *dev)
+ 
+ 		iommu_disable_dev_iotlb(info);
+ 		domain_context_clear(info);
+-		intel_pasid_free_table(info->dev);
+ 	}
+ 
+ 	spin_lock_irqsave(&domain->lock, flags);
+@@ -4470,6 +4462,7 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+ 	struct device_domain_info *info;
+ 	struct intel_iommu *iommu;
+ 	u8 bus, devfn;
++	int ret;
+ 
+ 	iommu = device_to_iommu(dev, &bus, &devfn);
+ 	if (!iommu || !iommu->iommu.ops)
+@@ -4513,6 +4506,16 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+ 
+ 	dev_iommu_priv_set(dev, info);
+ 
++	if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev)) {
++		ret = intel_pasid_alloc_table(dev);
++		if (ret) {
++			dev_err(dev, "PASID table allocation failed\n");
++			dev_iommu_priv_set(dev, NULL);
++			kfree(info);
++			return ERR_PTR(ret);
++		}
++	}
++
+ 	return &iommu->iommu;
+ }
+ 
+@@ -4521,6 +4524,7 @@ static void intel_iommu_release_device(struct device *dev)
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 
+ 	dmar_remove_one_dev_info(dev);
++	intel_pasid_free_table(dev);
+ 	dev_iommu_priv_set(dev, NULL);
+ 	kfree(info);
+ 	set_dma_ops(dev, NULL);
 -- 
 2.34.1
 
