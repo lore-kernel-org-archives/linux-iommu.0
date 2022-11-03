@@ -1,112 +1,147 @@
-Received: from mail-pg1-f181.google.com (mail-pg1-f181.google.com [209.85.215.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BCD9A4A
-	for <iommu@lists.linux.dev>; Thu,  3 Nov 2022 16:37:26 +0000 (UTC)
-Received: by mail-pg1-f181.google.com with SMTP id v3so2136430pgh.4
-        for <iommu@lists.linux.dev>; Thu, 03 Nov 2022 09:37:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=uRUgy37EWsW5q3ZYSeelIBVgNxGGsV1P48H49SnRSYg=;
-        b=mmzSGdm7jx01/1GoeL3dt0cYDfdnZ3FULAVVkbCHHq539FGuok1VuBlP6QXQPXEOzy
-         buxL70KCnvS4UxFw0YNACLpRpnqmUjq1SKg/FcRB4nW1d4+qlJ+6r3zf/iG8yVh7vs85
-         5sKVA2yy0aMYYLqrD+qmeiu72sBL33C+YQdKuOlVEDeSlXK0wJGjdfATsg25d3g56m7k
-         Fl1wtdWQYdIekqAmKl+SeQ5sqk0H49aFNRYpjTqW8Ntnnw13yoc8O2V7Y+qwsNyGpTcR
-         KvFGS1BIeiQwXprX0ml1uZbkCMYz5jdz7hxt1H58TV4UIqLvBBxDuonF4y4NEwqvOk02
-         FdZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=uRUgy37EWsW5q3ZYSeelIBVgNxGGsV1P48H49SnRSYg=;
-        b=xVdPgm5KIW2MKm40NXXoMAkpMZ41vdxcQKgbzcaXia+7ksTF6XngUorZhjVN5wucwq
-         RtD7YGuMuSXx/3NLfa8Ff56yCwVFltnOJAnWKd/Drb4Ub0cPGrxC24DrAxxj37teaLiv
-         Q1aKYQ3JUs3qANy+Jqsagcw00HZ48jJW4YkJBYaC86MJe9csZj7c9eI9x2arBqynuZhD
-         G7QqVGGAJpL0EjHXcrZcPPxvvXVoyauaehyUr+EOL0MCyGakj6r2JOivwr9kN4fqIoGq
-         rrMM4mnzvIr0zcT4skm+KJy4pvEBnAUVT98Hb8xD5LaOy9mHKiwYCE/EZnWoPUW8pglp
-         tn5g==
-X-Gm-Message-State: ACrzQf0YAuXWoBwA7aQdvoFuDQDmV6MRmp7aJk8nID1gIkABqq6RrlgC
-	lEpu3BV6nefBDqcJvCpVNU1BAXXPZKNEC6sHTl26Mg==
-X-Google-Smtp-Source: AMsMyM7kBQ/J6kBydIrXn7gqcYmvQnUgIueI3rpt5MoW49NHzwJmaLNQ1iOJyufpZcq7S8pqEq6SzlOpo2hgLApqz5M=
-X-Received: by 2002:a05:6a00:2386:b0:56c:b791:40f2 with SMTP id
- f6-20020a056a00238600b0056cb79140f2mr31474948pfc.4.1667493445669; Thu, 03 Nov
- 2022 09:37:25 -0700 (PDT)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B65C763A0
+	for <iommu@lists.linux.dev>; Thu,  3 Nov 2022 17:35:29 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4CEAB1FB;
+	Thu,  3 Nov 2022 10:35:35 -0700 (PDT)
+Received: from [10.57.36.87] (unknown [10.57.36.87])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B14143F5A1;
+	Thu,  3 Nov 2022 10:35:26 -0700 (PDT)
+Message-ID: <4cae5c8d-d6e9-79dc-670d-22ec9fda10a2@arm.com>
+Date: Thu, 3 Nov 2022 17:35:19 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20221028191243.31721-1-semen.protsenko@linaro.org>
- <CGME20221028191256eucas1p1a4fd95cbcc44959fa968956a92738f03@eucas1p1.samsung.com>
- <20221028191243.31721-4-semen.protsenko@linaro.org> <7ed8c884-cee1-7cb0-f2ce-f7ec156cd841@samsung.com>
- <CAPLW+4nrns9BovWCTOsi3F7=2FWLi2sK0+Cid4Cva2Vs2ZWdqQ@mail.gmail.com>
-In-Reply-To: <CAPLW+4nrns9BovWCTOsi3F7=2FWLi2sK0+Cid4Cva2Vs2ZWdqQ@mail.gmail.com>
-From: Sam Protsenko <semen.protsenko@linaro.org>
-Date: Thu, 3 Nov 2022 17:37:13 +0100
-Message-ID: <CAPLW+4niCmJKs9W9kDkU14fXDFbrywZvOZZkShkdQfBs55KbWg@mail.gmail.com>
-Subject: Re: [PATCH 3/4] iommu/exynos: Modularize the driver
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, Alim Akhtar <alim.akhtar@samsung.com>, 
-	Janghyuck Kim <janghyuck.kim@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, 
-	Daniel Mentz <danielmentz@google.com>, David Virag <virag.david003@gmail.com>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-samsung-soc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH v10 1/4] iommu: Always define struct iommu_fwspec
+Content-Language: en-GB
+To: Ulf Hansson <ulf.hansson@linaro.org>,
+ Thierry Reding <thierry.reding@gmail.com>
+Cc: Prathamesh Shete <pshete@nvidia.com>, joro@8bytes.org,
+ adrian.hunter@intel.com, jonathanh@nvidia.com, p.zabel@pengutronix.de,
+ linux-mmc@vger.kernel.org, linux-tegra@vger.kernel.org,
+ linux-kernel@vger.kernel.org, will@kernel.org, iommu@lists.linux.dev,
+ anrao@nvidia.com, smangipudi@nvidia.com, kyarlagadda@nvidia.com,
+ Thierry Reding <treding@nvidia.com>
+References: <CAPDyKFqJdiCDkAfrONfnBVKw1v8=jZ+hEJiKGK70EQ4o7BSxaQ@mail.gmail.com>
+ <20221103043852.24718-1-pshete@nvidia.com>
+ <6be39bae-f325-12e0-374b-a27c9ee2ef2b@arm.com> <Y2PJq27wkVwPg6rp@orome>
+ <CAPDyKFq8szzryFBNkw20wFoPTbAa8YDy0wJnb57yckZ-HFTAMw@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <CAPDyKFq8szzryFBNkw20wFoPTbAa8YDy0wJnb57yckZ-HFTAMw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, 3 Nov 2022 at 14:03, Sam Protsenko <semen.protsenko@linaro.org> wrote:
->
-> Hi Marek,
->
-> [snip]
->
-> > MODULE_DEVICE_TABLE(of, sysmmu_of_match); is missing, so the driver
-> > won't be automatically loaded, what breaks its operation if compiled as
-> > module.
-> >
->
-> Right, didn't think about hot-plug case. Will add
-> MODULE_DEVICE_TABLE() along with MODULE_ALIAS() in v2, thanks.
->
-> > Also Exynos DRM and S5P-MFC drivers rely on the Exynos IOMMU being
-> > built-in, so they need to be adjusted for modularized builds too imho,
-> > at least in the Kconfig dependency.
-> >
->
+On 2022-11-03 14:55, Ulf Hansson wrote:
+> On Thu, 3 Nov 2022 at 15:01, Thierry Reding <thierry.reding@gmail.com> wrote:
+>>
+>> On Thu, Nov 03, 2022 at 12:23:20PM +0000, Robin Murphy wrote:
+>>> On 2022-11-03 04:38, Prathamesh Shete wrote:
+>>>> In order to fully make use of the !IOMMU_API stub functions, make the
+>>>> struct iommu_fwspec always available so that users of the stubs can keep
+>>>> using the structure's internals without causing compile failures.
+>>>
+>>> I'm really in two minds about this... fwspecs are an internal detail of the
+>>> IOMMU API that are meant to be private between individual drivers and
+>>> firmware code, so anything poking at them arguably does and should depend on
+>>> CONFIG_IOMMU_API. It looks like the stub for dev_iommu_fwspec_get() was only
+>>> added for the sake of one driver that was misusing it where it really wanted
+>>> device_iommu_mapped(), and has since been fixed, so if anything my
+>>> preference would be to remove that stub :/
+>>
+>> Tegra has been using this type of weak dependency on IOMMU_API mainly in
+>> order to allow building without the IOMMU support on some old platforms
+>> where people may actually care about the kernel size (Tegra20 systems
+>> were sometimes severely constrained and don't have anything that we'd
+>> call an IOMMU today).
+>>
+>> We have similar stubs in place for most other major subsystems in order
+>> to allow code to simply compile out if the subsystem is disabled, which
+>> is quite convenient for sharing code between platforms that may want a
+>> given feature and other platforms that may not want it, without causing
+>> too much of a hassle with compile-testing.
+> 
+> I agree with the above.
+> 
+> Moreover, the stubs make the code more portable/scalable and so it
+> becomes easier to maintain.
 
-Did some research on that question:
-  - both DRM_EXYNOS and S5P_MFC drivers are designed to work fine even
-when EXYNOS_IOMMU is disabled: they just take another code path in
-that case
-  - DRM_EXYNOS already uses IS_ENABLE() macro, which covers EXYNOS_IOMMU=m case
-  - I'll provide a fix for S5P_MFC in v2 to do the same, as right now
-it does the check with #ifdef CONFIG_EXYNOS_IOMMU, which only covers
-=y case
-  - both DRM_EXYNOS and S5P_MFC don't use EXYNOS_IOMMU driver symbols,
-as the latter doesn't export any
-  - the correct probe order (EXYNOS_IOMMU first, then its users) is
-already ensured in device tree, by referencing sysmmu phandles in
-"iommus = <&...>" properties
+Are you suggesting that having the same thing open-coded slightly 
+differently (with bugs) in 8 different places is somehow more 
+maintainable than abstracting it into a single centralised implementation?
 
-So I'm not sure if it makes sense to make those drivers depend on
-EXYNOS_IOMMU in Kconfig? AFAIR, there could've been some issues if
-those used some exported symbols from EXYNOS_IOMMU, but it's not the
-case.
+Is it "easier to maintain" when already seemingly every thing I try to 
+clean up or refactor in the IOMMU API at the moment is stymied by 
+finding Tegra drivers doing unexpected (and often questionable) things? 
+Is it "more scalable" to make it even easier for people to copy 
+questionable code without a second thought, leaving API maintainers to 
+play an ever-expanding game of whack-a-mole to clean it up? No. No it 
+chuffing well isn't :(
 
-Please let me know if I'm missing something.
+>>> I don't technically have much objection to this patch in isolation, but what
+>>> I don't like is the direction of travel it implies. I see the anti-pattern
+>>> is only spread across Tegra drivers, making Tegra-specific assumptions, so
+>>> in my view the best answer would be to abstract that fwpsec dependency into
+>>> a single Tegra-specific helper, which would better represent the nature of
+>>> what's really going on here.
+>>
+>> I don't see how this is an anti-pattern. It might not be common for
+>> drivers to need to reach into iommu_fwspec, so that might indeed be
+>> specific to Tegra (for whatever reason our IP seems to want extra
+>> flexibility), but the general pattern of using stubs is wide-spread,
+>> so I don't see why IOMMU_API would need to be special.
+> 
+> Again, I agree.
 
-> Sure, I'll check all Kconfigs and defconfigs before sending out v2.
->
-> Btw, can you please also check my most recent reply [1] for the
-> "[PATCH 1/2] iommu/exynos: Abstract getting the fault info"?
->
-> [1] https://lore.kernel.org/lkml/CAPLW+4n-Lf6je61rxdJ9nJnX9h9F8F-y+qikG7eFF0avQpMV9Q@mail.gmail.com/
->
-> Thanks!
->
-> [snip]
+The anti-pattern is reaching into some other driver's private data 
+assuming a particular format, with zero indication of the huge degree of 
+assumption involved, and half the time not even checking that what's 
+being dereferenced is valid.
+
+> Moreover, a "git grep CONFIG_IOMMU_API" indicates that the problem
+> isn't specific to Tegra. The "#ifdef CONFIG_IOMMU_API" seems to be
+> sprinkled across the kernel. I think it would be nice if we could
+> improve the situation. So far, using stubs along with what the
+> $subject patch proposes, seems to me to be the best approach.
+
+Yes, there is plenty of code through the tree that is only relevant to 
+the IOMMU API and would be a complete waste of space without it, that is 
+not the point in question here. Grep for dev_iommu_fwspec_get; outside 
+drivers/iommu, the only users are IOMMU-API-specific parts of ACPI code, 
+as intended, plus 8 random Tegra drivers.
+
+Now, there does happen to be a tacit contract between the ACPI IORT code 
+and the Arm SMMU drivers for how SMMU StreamIDs are encoded in their 
+respective fwspecs, but it was never intended for wider consumption. If 
+Tegra drivers want to have a special relationship with arm-smmu then 
+fair enough, but they can do the same as MSM and formalise it somewhere 
+that the SMMU driver maintainers are at least aware of, rather than 
+holding the whole generic IOMMU API hostage.
+
+Since apparently it wasn't clear, what I was proposing is a driver 
+helper at least something like this:
+
+int tegra_arm_smmu_streamid(struct device *dev)
+{
+#ifdef CONFIG_IOMMU_API
+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev)
+
+	if (fwspec && fwspec->num_ids == 1)
+		return fwspec->ids[0] & 0xffff;
+#endif
+	return -EINVAL;
+}
+
+Now THAT is scalable and maintainable; any number of random drivers can 
+call it without any preconditions, it's a lot clearer what's going on, 
+and I won't have to swear profusely while herding patches through half a 
+dozen different trees if, when my ops rework gets to the point of 
+refactoring iommu_fwspec with dev_iommu, it ends up changing anything 
+significant.
+
+Thanks,
+Robin.
