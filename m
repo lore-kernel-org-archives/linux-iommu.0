@@ -1,42 +1,43 @@
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1C2763D3
-	for <iommu@lists.linux.dev>; Thu,  3 Nov 2022 19:51:57 +0000 (UTC)
-Received: by mail-ej1-f49.google.com with SMTP id ud5so8203176ejc.4
-        for <iommu@lists.linux.dev>; Thu, 03 Nov 2022 12:51:57 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4848329A8
+	for <iommu@lists.linux.dev>; Thu,  3 Nov 2022 19:51:59 +0000 (UTC)
+Received: by mail-ed1-f48.google.com with SMTP id x2so4711758edd.2
+        for <iommu@lists.linux.dev>; Thu, 03 Nov 2022 12:51:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=dSoY1RFfLiYGbG6PVIWaPMns1WQq6G1mUH0o4v3ezJs=;
-        b=jXb0goUM1eMoI1vo0YE498npOwxh/JsIH3dtk03GixxejFSVByMt5Dl6Oj9UpEy2W9
-         Pf8lK5SE9nKJLqX7fqqHjAKN4x8cTWoBC/ZO7NmVESWXWlgiku667ugCRTUlki6fNW62
-         4aJsr84+PNy515JKoqpLImWu/5xN8FtmAHgQKjqLtggAsm39S7frbEXGlFG59qD144CR
-         7+lrhEeKGAsBbKo5uOUH426MhT6SnUzT2vBvRxhCUrKOJtrcUrJovRbrtKy0VNuT5kOS
-         Jfw13SRy0c7DWpiQN9LurfnyRJQXmhFBacMlSISHuC7N78xKzzX9rDrxxcNd6dhhmr1g
-         DxIA==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=h+MC8kK4zWQiBOS9TmUZzl813e7Kce9jFI4colJBhao=;
+        b=qA13inhD1EP6l24EPFrU95U+zViK6UVln1wnFLBXMzU3guuv5XL87mQ657GGlBJDv5
+         Ynobk1ef/cexQULn5sXQz2W0DyjHLeN7af3yGWh1e+lEc2Ci2EuKhObBAOHiQw202pbb
+         R0A9SrGxiRDi2/BfD0GbOpeSesGZlhz1/w/9u3MExoFW2+fBs9XPOktTxlaIj5vZ3DA9
+         wAsSWuQhV1ShmHc74HtGrM/RnLpTzmFNT3bIBaR/+Ty0SC55iaEr0ywSRpT1ZiP9Lele
+         IsDff9Xm4w6mcr2mzhB53onaIFRvURcJExNk1TF372aT5uZ6RbcwgSWVohvYMIrkep41
+         GRNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=dSoY1RFfLiYGbG6PVIWaPMns1WQq6G1mUH0o4v3ezJs=;
-        b=j+3Pw6g9o9yGLdbFwvS3QTWqCPAf07TYWrb3raYaIIAfU10FZrOfG9+dnZlKO6FFFK
-         pUq7HvY0ULacngSdE6tzXHph9d3XNgcYzkC05JC3aHIA1lnIK+F1sQVMCsgKE1LYPbtR
-         LO4h1NUIwQBcO+3QsISPhmDRNKmrutMpyfgVsv5pueB4lS6qBjfs+tiBCeqkhfjTLbPq
-         +jpNeeipZjTTJ0VfqxaWBYfYHiisObQU7wzQvmKWl9DhAVy+eP09+n1ctSjbxBbNTeN6
-         Fllh8iJuN/vQkv+y2C939gGPDjfHFYJv7YUi8qhCxZxMP2aHxiUnlkGr0LaK0U5ZB3sX
-         jMeQ==
-X-Gm-Message-State: ACrzQf3DvMMphbkUsy/HxyNagAz8Y8/m1Zz9TNX1TGaTOEciRi3UPdTC
-	Fl3s6yYP71dTbrjykF6fKYKF1Q==
-X-Google-Smtp-Source: AMsMyM7oHxP/WKbsDall/gZqsAjIooBN50fjNtXMSu/4PKkO5F+CS5IHBjfjNr2w+TaIs3Ggwoj52g==
-X-Received: by 2002:a17:906:730d:b0:78e:9ca5:3269 with SMTP id di13-20020a170906730d00b0078e9ca53269mr31172648ejc.366.1667505115999;
-        Thu, 03 Nov 2022 12:51:55 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=h+MC8kK4zWQiBOS9TmUZzl813e7Kce9jFI4colJBhao=;
+        b=2j4/cDVsFrKlI3o8bUkPU20wQ6EoRtKC2GHqPnI7wS2hIgB7LMDSnbRZGrlUJOWaxm
+         jOB8iM3HxDedm9FDZHnrwIU7swRpL1iJrNaQK7qoxWsh83NOertuXbDMZdXQISl7an97
+         4GTacKZTvqhEoJUiTe0OShg3VA12lvM4JX53yFON0M7VNZbIY3L9R3Ekgaa+tv3xACIO
+         B8H/S+i6YEsVXJnTUhLxgCc7pe6++2hskQAl7iD+8wXVuSd3G3/hsdofDWuDHZA+zJBV
+         oDfLe0kWYDjjsdBCDfTAnGfcns9j42RxSPNk9fn8evsvLyhJzD6l391eDBNdrl1X1PxX
+         eIEQ==
+X-Gm-Message-State: ACrzQf3e2Mw37U77qmz2lZUmSIaVRdD88w0Ewx2EIGxIaicsa4fJsQAt
+	DvYAz+Z/TNwZHV3BZKfMa0jNoQ==
+X-Google-Smtp-Source: AMsMyM4XDFAXZNyMtBoTJ07WXs5ANJcqdCknrHoZzRGrPrQdaq9x5LBRX5LsVLVT4RaHWxBqe5ZMeA==
+X-Received: by 2002:aa7:c1d9:0:b0:463:aeaf:3383 with SMTP id d25-20020aa7c1d9000000b00463aeaf3383mr16737337edp.253.1667505117553;
+        Thu, 03 Nov 2022 12:51:57 -0700 (PDT)
 Received: from localhost (cgw.msart-bajzova4.ke.cust.o2bs.sk. [90.176.4.227])
-        by smtp.gmail.com with ESMTPSA id j14-20020a1709062a0e00b007415f8ffcbbsm870386eje.98.2022.11.03.12.51.54
+        by smtp.gmail.com with ESMTPSA id j1-20020a17090623e100b007030c97ae62sm847433ejg.191.2022.11.03.12.51.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Nov 2022 12:51:55 -0700 (PDT)
+        Thu, 03 Nov 2022 12:51:57 -0700 (PDT)
 From: Sam Protsenko <semen.protsenko@linaro.org>
 To: Marek Szyprowski <m.szyprowski@samsung.com>,
 	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
@@ -53,10 +54,12 @@ Cc: Joerg Roedel <joro@8bytes.org>,
 	linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-samsung-soc@vger.kernel.org
-Subject: [PATCH v2 0/6] iommu/exynos: Convert to a module
-Date: Thu,  3 Nov 2022 20:51:48 +0100
-Message-Id: <20221103195154.21495-1-semen.protsenko@linaro.org>
+Subject: [PATCH v2 1/6] iommu: Export iommu_group_default_domain() API
+Date: Thu,  3 Nov 2022 20:51:49 +0100
+Message-Id: <20221103195154.21495-2-semen.protsenko@linaro.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20221103195154.21495-1-semen.protsenko@linaro.org>
+References: <20221103195154.21495-1-semen.protsenko@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -65,39 +68,30 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-As exynos-iommu driver is not a critical platform driver, it can be
-converted to a loadable module to avoid loading it on non-Exynos
-platforms in order to improve the RAM footprint. This patch series
-converts it to a module and does some related cleanups. IOMMU/DMA
-specifics were taken into the account, so remove/exit methods weren't
-added.
+iommu_group_default_domain() may be needed for module users. E.g.
+exynos-iommu driver is using it right now, and it's going to be
+converted to a module soon.
 
-There are two drivers using CONFIG_EXYNOS_IOMMU in their code:
-DRM_EXYNOS and S5P_MFC. Both were checked, and only a slight change was
-needed for S5P_MFC driver (patch #6).
-
+Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+---
 Changes in v2:
-  - Extracted the "shutdown" method addition into a separate patch
-  - Added MODULE_DEVICE_TABLE(of, ...) to support hot-plug loading
-  - Added MODULE_ALIAS("platform:exynos-sysmmu")
-  - Added fix for S5P_MFC driver to work correctly with EXYNOS_IOMMU=m
-  - Fixed checkpatch coding style suggestion with "--strict" flag
-  - Rebased on top of most recent joro/iommu.git:next
+  - (none)
 
-Sam Protsenko (6):
-  iommu: Export iommu_group_default_domain() API
-  iommu/exynos: Fix retval on getting clocks in probe
-  iommu/exynos: Modularize the driver
-  iommu/exynos: Implement shutdown driver method
-  iommu/exynos: Rearrange the platform driver code
-  media: platform: Use IS_ENABLED() to check EXYNOS_IOMMU in s5p_mfc
+ drivers/iommu/iommu.c | 1 +
+ 1 file changed, 1 insertion(+)
 
- drivers/iommu/Kconfig                         |   2 +-
- drivers/iommu/exynos-iommu.c                  | 355 +++++++++---------
- drivers/iommu/iommu.c                         |   1 +
- .../platform/samsung/s5p-mfc/s5p_mfc_iommu.h  |   4 +-
- 4 files changed, 191 insertions(+), 171 deletions(-)
-
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 6ca377f4fbf9..006a65411a28 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1675,6 +1675,7 @@ struct iommu_domain *iommu_group_default_domain(struct iommu_group *group)
+ {
+ 	return group->default_domain;
+ }
++EXPORT_SYMBOL_GPL(iommu_group_default_domain);
+ 
+ static int probe_iommu_group(struct device *dev, void *data)
+ {
 -- 
 2.35.1
 
