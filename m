@@ -1,14 +1,14 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 789BB6FAE
-	for <iommu@lists.linux.dev>; Thu,  3 Nov 2022 11:40:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 08DAF6FAE
+	for <iommu@lists.linux.dev>; Thu,  3 Nov 2022 12:23:27 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 50D7B1FB;
-	Thu,  3 Nov 2022 04:31:10 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 60E501FB;
+	Thu,  3 Nov 2022 05:23:33 -0700 (PDT)
 Received: from [10.57.37.13] (unknown [10.57.37.13])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 795133F5A1;
-	Thu,  3 Nov 2022 04:31:00 -0700 (PDT)
-Message-ID: <43093374-6b18-6e3b-dd80-008e1c2b245e@arm.com>
-Date: Thu, 3 Nov 2022 11:30:55 +0000
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5742A3F703;
+	Thu,  3 Nov 2022 05:23:24 -0700 (PDT)
+Message-ID: <6be39bae-f325-12e0-374b-a27c9ee2ef2b@arm.com>
+Date: Thu, 3 Nov 2022 12:23:20 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -17,139 +17,113 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
  Thunderbird/102.4.1
-Subject: Re: [PATCH v10 3/4] mmc: sdhci-tegra: Add support to program MC
- stream ID
+Subject: Re: [PATCH v10 1/4] iommu: Always define struct iommu_fwspec
 Content-Language: en-GB
 To: Prathamesh Shete <pshete@nvidia.com>, joro@8bytes.org,
  adrian.hunter@intel.com, ulf.hansson@linaro.org, thierry.reding@gmail.com,
  jonathanh@nvidia.com, p.zabel@pengutronix.de, linux-mmc@vger.kernel.org,
  linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc: will@kernel.org, iommu@lists.linux.dev, anrao@nvidia.com,
- smangipudi@nvidia.com, kyarlagadda@nvidia.com
+ smangipudi@nvidia.com, kyarlagadda@nvidia.com,
+ Thierry Reding <treding@nvidia.com>
 References: <CAPDyKFqJdiCDkAfrONfnBVKw1v8=jZ+hEJiKGK70EQ4o7BSxaQ@mail.gmail.com>
  <20221103043852.24718-1-pshete@nvidia.com>
- <20221103043852.24718-3-pshete@nvidia.com>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20221103043852.24718-3-pshete@nvidia.com>
+In-Reply-To: <20221103043852.24718-1-pshete@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 2022-11-03 04:38, Prathamesh Shete wrote:
-> SMMU clients are supposed to program stream ID from
-> their respective address spaces instead of MC override.
-> Define NVQUIRK_PROGRAM_STREAMID and use it to program
-> SMMU stream ID from the SDMMC client address space.
-> 
-> Signed-off-by: Aniruddha TVS Rao <anrao@nvidia.com>
-> Signed-off-by: Prathamesh Shete <pshete@nvidia.com>
-> Acked-by: Adrian Hunter <adrian.hunter@intel.com>
-> Acked-by: Thierry Reding <treding@nvidia.com>
-> ---
->   drivers/mmc/host/sdhci-tegra.c | 34 ++++++++++++++++++++++++++++++++++
->   1 file changed, 34 insertions(+)
-> 
-> diff --git a/drivers/mmc/host/sdhci-tegra.c b/drivers/mmc/host/sdhci-tegra.c
-> index a6c5bbae77b4..e44060cceb68 100644
-> --- a/drivers/mmc/host/sdhci-tegra.c
-> +++ b/drivers/mmc/host/sdhci-tegra.c
-> @@ -25,6 +25,8 @@
->   #include <linux/mmc/slot-gpio.h>
->   #include <linux/gpio/consumer.h>
->   #include <linux/ktime.h>
-> +#include <linux/iommu.h>
-> +#include <linux/bitops.h>
->   
->   #include <soc/tegra/common.h>
->   
-> @@ -94,6 +96,8 @@
->   #define SDHCI_TEGRA_AUTO_CAL_STATUS			0x1ec
->   #define SDHCI_TEGRA_AUTO_CAL_ACTIVE			BIT(31)
->   
-> +#define SDHCI_TEGRA_CIF2AXI_CTRL_0			0x1fc
-> +
->   #define NVQUIRK_FORCE_SDHCI_SPEC_200			BIT(0)
->   #define NVQUIRK_ENABLE_BLOCK_GAP_DET			BIT(1)
->   #define NVQUIRK_ENABLE_SDHCI_SPEC_300			BIT(2)
-> @@ -121,6 +125,7 @@
->   #define NVQUIRK_HAS_TMCLK				BIT(10)
->   
->   #define NVQUIRK_HAS_ANDROID_GPT_SECTOR			BIT(11)
-> +#define NVQUIRK_PROGRAM_STREAMID			BIT(12)
->   
->   /* SDMMC CQE Base Address for Tegra Host Ver 4.1 and Higher */
->   #define SDHCI_TEGRA_CQE_BASE_ADDR			0xF000
-> @@ -177,6 +182,7 @@ struct sdhci_tegra {
->   	bool enable_hwcq;
->   	unsigned long curr_clk_rate;
->   	u8 tuned_tap_delay;
-> +	u32 streamid;
->   };
->   
->   static u16 tegra_sdhci_readw(struct sdhci_host *host, int reg)
-> @@ -1564,6 +1570,7 @@ static const struct sdhci_tegra_soc_data soc_data_tegra234 = {
->   		    NVQUIRK_DIS_CARD_CLK_CONFIG_TAP |
->   		    NVQUIRK_ENABLE_SDR50 |
->   		    NVQUIRK_ENABLE_SDR104 |
-> +		    NVQUIRK_PROGRAM_STREAMID |
->   		    NVQUIRK_HAS_TMCLK,
->   	.min_tap_delay = 95,
->   	.max_tap_delay = 111,
-> @@ -1630,6 +1637,29 @@ static int sdhci_tegra_add_host(struct sdhci_host *host)
->   	return ret;
->   }
->   
-> +/* Program MC streamID for DMA transfers */
-> +static void program_stream_id(struct device *dev)
-> +{
-> +	struct sdhci_host *host = dev_get_drvdata(dev);
-> +	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
-> +	struct sdhci_tegra *tegra_host = sdhci_pltfm_priv(pltfm_host);
-> +	struct iommu_fwspec *fwspec;
-> +
-> +	if (tegra_host->soc_data->nvquirks & NVQUIRK_PROGRAM_STREAMID) {
-> +		fwspec = dev_iommu_fwspec_get(dev);
-> +		if (!fwspec) {
-> +			dev_warn(mmc_dev(host->mmc),
-> +				"iommu fwspec is NULL, continue without stream ID\n");
+> In order to fully make use of the !IOMMU_API stub functions, make the
+> struct iommu_fwspec always available so that users of the stubs can keep
+> using the structure's internals without causing compile failures.
 
-Not sure that really warrants a warning - if there's no IOMMU driver 
-present then StreamIDs are going to be irrelevant anyway. And repeating 
-the same warning on every PM resume seems even less useful.
+I'm really in two minds about this... fwspecs are an internal detail of 
+the IOMMU API that are meant to be private between individual drivers 
+and firmware code, so anything poking at them arguably does and should 
+depend on CONFIG_IOMMU_API. It looks like the stub for 
+dev_iommu_fwspec_get() was only added for the sake of one driver that 
+was misusing it where it really wanted device_iommu_mapped(), and has 
+since been fixed, so if anything my preference would be to remove that 
+stub :/
 
-> +		} else {
-> +			tegra_host->streamid = fwspec->ids[0] & 0xff;
-> +			tegra_sdhci_writel(host, tegra_host->streamid |
+I don't technically have much objection to this patch in isolation, but 
+what I don't like is the direction of travel it implies. I see the 
+anti-pattern is only spread across Tegra drivers, making Tegra-specific 
+assumptions, so in my view the best answer would be to abstract that 
+fwpsec dependency into a single Tegra-specific helper, which would 
+better represent the nature of what's really going on here.
 
-Why bother storing streamid in tegra_host if it's never consumed from 
-anywhere other than the same place it's assigned?
-
+Thanks,
 Robin.
 
-> +						FIELD_PREP(GENMASK(15, 8),
-> +						tegra_host->streamid),
-> +						SDHCI_TEGRA_CIF2AXI_CTRL_0);
-> +		}
-> +	}
-> +}
-> +
->   static int sdhci_tegra_probe(struct platform_device *pdev)
->   {
->   	const struct sdhci_tegra_soc_data *soc_data;
-> @@ -1775,6 +1805,8 @@ static int sdhci_tegra_probe(struct platform_device *pdev)
->   	if (rc)
->   		goto err_add_host;
+> Signed-off-by: Thierry Reding <treding@nvidia.com>
+> Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+> ---
+>   include/linux/iommu.h | 39 +++++++++++++++++++--------------------
+>   1 file changed, 19 insertions(+), 20 deletions(-)
+> 
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index ea30f00dc145..afa829bc4356 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -173,6 +173,25 @@ enum iommu_dev_features {
 >   
-> +	program_stream_id(&pdev->dev);
-> +
->   	return 0;
+>   #define IOMMU_PASID_INVALID	(-1U)
 >   
->   err_add_host:
-> @@ -1871,6 +1903,8 @@ static int sdhci_tegra_resume(struct device *dev)
->   	if (ret)
->   		return ret;
->   
-> +	program_stream_id(dev);
+> +/**
+> + * struct iommu_fwspec - per-device IOMMU instance data
+> + * @ops: ops for this device's IOMMU
+> + * @iommu_fwnode: firmware handle for this device's IOMMU
+> + * @flags: IOMMU_FWSPEC_* flags
+> + * @num_ids: number of associated device IDs
+> + * @ids: IDs which this device may present to the IOMMU
+> + */
+> +struct iommu_fwspec {
+> +	const struct iommu_ops	*ops;
+> +	struct fwnode_handle	*iommu_fwnode;
+> +	u32			flags;
+> +	unsigned int		num_ids;
+> +	u32			ids[];
+> +};
 > +
->   	ret = sdhci_resume_host(host);
->   	if (ret)
->   		goto disable_clk;
+> +/* ATS is supported */
+> +#define IOMMU_FWSPEC_PCI_RC_ATS			(1 << 0)
+> +
+>   #ifdef CONFIG_IOMMU_API
+>   
+>   /**
+> @@ -600,25 +619,6 @@ extern struct iommu_group *generic_device_group(struct device *dev);
+>   /* FSL-MC device grouping function */
+>   struct iommu_group *fsl_mc_device_group(struct device *dev);
+>   
+> -/**
+> - * struct iommu_fwspec - per-device IOMMU instance data
+> - * @ops: ops for this device's IOMMU
+> - * @iommu_fwnode: firmware handle for this device's IOMMU
+> - * @flags: IOMMU_FWSPEC_* flags
+> - * @num_ids: number of associated device IDs
+> - * @ids: IDs which this device may present to the IOMMU
+> - */
+> -struct iommu_fwspec {
+> -	const struct iommu_ops	*ops;
+> -	struct fwnode_handle	*iommu_fwnode;
+> -	u32			flags;
+> -	unsigned int		num_ids;
+> -	u32			ids[];
+> -};
+> -
+> -/* ATS is supported */
+> -#define IOMMU_FWSPEC_PCI_RC_ATS			(1 << 0)
+> -
+>   /**
+>    * struct iommu_sva - handle to a device-mm bond
+>    */
+> @@ -682,7 +682,6 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group);
+>   
+>   struct iommu_ops {};
+>   struct iommu_group {};
+> -struct iommu_fwspec {};
+>   struct iommu_device {};
+>   struct iommu_fault_param {};
+>   struct iommu_iotlb_gather {};
