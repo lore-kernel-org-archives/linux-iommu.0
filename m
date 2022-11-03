@@ -1,178 +1,143 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69346A31;
-	Thu,  3 Nov 2022 07:24:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667460288; x=1698996288;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=pa4Tl8vIMPTpDJ/9rvnKDGM/xFbQvPW3wp4ufS0vlc4=;
-  b=ezazsBQXPVMNfFmGMPvswlWPh///6OSoEcRa45dmThGuUGCL12BFuOSi
-   0rkobCIQkj/bXHxDJdI6lNru1QxXszLXObsdIaOx5f1rQ3N2teUtjIpxt
-   ss9T7qfJcff7kQt5dF8h16//vUl7NpKmThIcahxkvb+dXROLK2EyBp+IZ
-   Xt5bRNPSYT7pcOYahGhAO1Q45irCG0fAeGWszZ/0zdd/ituc6ml1JDA1O
-   HXMmUJacUjxvUM9HmWXINzJP4P5b7ZkeP+cRP0fDiOBxaiJ6HXbHFtICP
-   Ip2M73fZc6UDIO5tesfJ7r7IFLISDO5E9uolWIGFXGxZHcmb0hCYC6SNI
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10519"; a="373837166"
-X-IronPort-AV: E=Sophos;i="5.95,235,1661842800"; 
-   d="scan'208";a="373837166"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2022 00:24:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10519"; a="777198978"
-X-IronPort-AV: E=Sophos;i="5.95,235,1661842800"; 
-   d="scan'208";a="777198978"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmsmga001.fm.intel.com with ESMTP; 03 Nov 2022 00:24:46 -0700
-Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 3 Nov 2022 00:24:45 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Thu, 3 Nov 2022 00:24:45 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.47) by
- edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Thu, 3 Nov 2022 00:24:29 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gW2tmqDAZE8nh3NwPGJrZqjpkmtVoNWSCYx3M5grWMAaVTsYJopoRvX172BnlnfTagRJ98wYrQRbfT0/YQ+OtyY8yd6Lo4A2ajs3GgKDf/mMl1OFDfkSYpGwr05Qz3Iu+qn55Jp7g/HU4DIURySNiookeaI+QjTvvew/lfr2tSfTkCvClRnOIKDraObmk6efMPsWRRKF16ilaoNx1U7fcfTDi6ARgIrTD2qRGLHjJi+Vf9t3qGtrMgpkYuXlc1dPGCtdyVDNUO82DRfbOwIyDDAf+92/f0GGiRDrWnt12uJe7R2Uzxe3NWCYhx+xzJmZFjPRkFIvhE/btFgHnfANCA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pa4Tl8vIMPTpDJ/9rvnKDGM/xFbQvPW3wp4ufS0vlc4=;
- b=Gs2QiGoYXe+2dcm4DBQkSEM/T6fpRRldllVg3iC/RKVMuHmcD7jBFrynjVjW+P2Sw1/hISelDG2u6sOtxtYfDPu5GCFh6SbYdLdVXG2YQZIrPZNLHIrbfevfTQHACLMjuc0RgTNDUVAF7Nj0cdNq9NRx4rvDHplk4J/SLZyljNOuW8gUH+HuLSvm2Wr7X6zETNuHg/jNqxXFtiQ/1yDNDAVeagb9P9jqvrvSaV6g6M2P3a70HQB+nEpDa+BgNraM/mJILEfDWIlrrOIqhO0QPKNEsE6smNV3hyk4bVYAunn6TR8+I2qquPORzFbRyQ51yqxrQ/k4pdBySBYHTNgJLQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by PH7PR11MB5861.namprd11.prod.outlook.com (2603:10b6:510:133::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.20; Thu, 3 Nov
- 2022 07:23:57 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::737e:211a:bb53:4cd7]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::737e:211a:bb53:4cd7%5]) with mapi id 15.20.5791.022; Thu, 3 Nov 2022
- 07:23:57 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>,
-	"bpf@vger.kernel.org" <bpf@vger.kernel.org>, Jonathan Corbet
-	<corbet@lwn.net>, David Woodhouse <dwmw2@infradead.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, Joerg Roedel
-	<joro@8bytes.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	"llvm@lists.linux.dev" <llvm@lists.linux.dev>, Nathan Chancellor
-	<nathan@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda
-	<ojeda@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Shuah Khan
-	<shuah@kernel.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>
-CC: Alex Williamson <alex.williamson@redhat.com>, Chaitanya Kulkarni
-	<chaitanyak@nvidia.com>, Cornelia Huck <cohuck@redhat.com>, Daniel Jordan
-	<daniel.m.jordan@oracle.com>, David Gibson <david@gibson.dropbear.id.au>,
-	Eric Auger <eric.auger@redhat.com>, Eric Farman <farman@linux.ibm.com>, Jason
- Wang <jasowang@redhat.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	"Martins, Joao" <joao.m.martins@oracle.com>, "kvm@vger.kernel.org"
-	<kvm@vger.kernel.org>, Matthew Rosato <mjrosato@linux.ibm.com>, "Michael S.
- Tsirkin" <mst@redhat.com>, Nicolin Chen <nicolinc@nvidia.com>, Niklas
- Schnelle <schnelle@linux.ibm.com>, "Shameerali Kolothum Thodi"
-	<shameerali.kolothum.thodi@huawei.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
-	Keqian Zhu <zhukeqian1@huawei.com>
-Subject: RE: [PATCH v3 06/15] kernel/user: Allow user::locked_vm to be usable
- for iommufd
-Thread-Topic: [PATCH v3 06/15] kernel/user: Allow user::locked_vm to be usable
- for iommufd
-Thread-Index: AQHY6J1oCrPbP04ZE0StrYmKUQ2d/q4s2SbQ
-Date: Thu, 3 Nov 2022 07:23:57 +0000
-Message-ID: <BN9PR11MB5276CEF0379EAB0B7EFA31228C389@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <0-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
- <6-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
-In-Reply-To: <6-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|PH7PR11MB5861:EE_
-x-ms-office365-filtering-correlation-id: 387f4266-94a3-4a36-1cf2-08dabd6c5f1b
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: SaOW49sdO2xCbkh8ah+892FNFPWk4kWDPPoxP6f5Y1s247rngGiS6InxKVSlAYf8754bYGzgmnNyQY+RY5T/9epg+iUuH6dX3jR0pFF/awBgkxuOud4XAuxZLy0su4jj2E08ptGGX8W/VyPtUqIzC9W4WsoUbZVHPXjSyQZ/w8v+OGk99uUo4/YVKnOZljqurliQuPHOnkHCkU1aiNlm71tKklq+xH2bNZjMv+e8HEUYxVQtgThgf118ow/TbSnCeTpitzAyhR0DIpOuoy4tg2n0PDTU+VioZAfAU7dJOlZh+a3PzabhfnsL26PzfmUDktug2bBkXs9o4RTjUBZkCm1S6RJ/hU+/W1TglbaBU0AGQPQWT/yDA4WfNlBzL9RMemu10Q5SJglr0pw7xnjUKLP0iPOI9NATRnc+ojmGIcRS6O1K/KRNdISzG1jrB7x+upqrG0M8pQzt8MmWX9gzEn0ITHZuOF9rkSx1pZZggE6CzGP6rpiSBAWOsNfkXOHrIXv2TLFnlxwN++USC97fx3lpGbnUXQc1wSIqsIXmv0apbHPjG02ggPevd2A0qKoOWbZA/XJ2A82tMZjKL9ZQ0a2ybprvMD6T2JyJXMSoBsmftr08ft3smx6R6MZr+en3GyxADiKWJDZdBpo0SaJawE7zaZv4r2P+PZm83a2EccB+9Hp2ZRK46LpJtcF8ZkUMoeglNePlr6E3IY1sf6qtfRjyXRFDVzsuueWlAbFHJISyT0+lAiU3q+dW3TY8ZYtbyPNDbJr2pINw7IxizO+jjz7Qcu4K/wxKpFp1/OLbiDw=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(39860400002)(376002)(136003)(396003)(346002)(366004)(451199015)(110136005)(478600001)(54906003)(8936002)(66446008)(9686003)(66946007)(7696005)(76116006)(7406005)(66556008)(52536014)(26005)(8676002)(41300700001)(66476007)(4326008)(7416002)(5660300002)(4744005)(186003)(83380400001)(64756008)(38070700005)(2906002)(55016003)(86362001)(71200400001)(6506007)(316002)(82960400001)(33656002)(38100700002)(921005)(122000001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?2dd7q3XceR7NZC3EZva+YaKD8yI8PMaKNrCyEEPR7UZ+dr/fmE/K98T+TTIR?=
- =?us-ascii?Q?mHStUpqL14O8GJ9sI9rHYEnE1DMH53zlHXWszP+32B4i96wzvkgtfVodWOP+?=
- =?us-ascii?Q?aS0DM5Kb/y520CO0xYLjS8Rnz47OHGmAlTNX6hedNl3PKSXuyFFxyxu0aAPs?=
- =?us-ascii?Q?gk8f89zmBVddoHBayXxhUD2JmF/BDm3ScWn1IcjBFHqDDxRexPo2NEiCUETk?=
- =?us-ascii?Q?AgFzSgmkxRKnDRppEFOucTmFg4FRlkLmI65K2iJdUwU99zVQi06r7Hkhd4Xh?=
- =?us-ascii?Q?gehdJlWCG68Sj5TBp0tFNNAmWZnouWN6+3fmJYJOsmdjw1U4VIH9Fhq+ddNv?=
- =?us-ascii?Q?zqUbG8Z8kOxGl5xl0NaDqKnNOmil30Q1ofd9mfdkgnDSlJn18sPuQ/T5YQgS?=
- =?us-ascii?Q?za3fnaKsw6mDegzkdeVnwgCFbIfD/bX9tlfEDI2oolqbXp4z7ti2A1jv7fnA?=
- =?us-ascii?Q?JCLaoK6n5E741mASkeRqRcjeZBST4KeQNM/hoeLJBsJXnWYVBeFG+NGbqa2X?=
- =?us-ascii?Q?x1v6TUIbeDcwd0NEKEJFS68F3r2A7toGQqQ7X1Wt0FVQJ0meE2t/SncplPRw?=
- =?us-ascii?Q?F1CGtB3qI2n94IfKufYWt2j+M+8M0k5K2a7i0xklQWADkH3SrnIX7ToRqGrN?=
- =?us-ascii?Q?597yt5/bRf8CFlRdla6SFuW/+f7pDsv3q63hPrZPMoOq5BePm2hVc7WfOJ3C?=
- =?us-ascii?Q?AhyDEoXTQSMbJPZ8iB8wkKKGSDSh9B+uCoJUmnDFquzYxbZ6PsQ+sPBhRycE?=
- =?us-ascii?Q?nN9Pigo9I4/LO8Azzel0VmymFBrtJWDdVbHk8A4LxJoVseE2ZU82qZk9k9oq?=
- =?us-ascii?Q?rF9HGB1bXIjYbtCZRiPxi6g+e1akRtPHp1enWOI5PjVtfi+hgyRqB2Ukwd8M?=
- =?us-ascii?Q?dRCiaMxBnYVx7f1GwTdGPiT5svVjh9TLr0fya89GQQgtFDpnC1hufW4AAqD+?=
- =?us-ascii?Q?cxQV6uh06KgrAysc8z04Op/yUuPUH6an2btBMZHP2JIpQjmbgjly2fTDwIJh?=
- =?us-ascii?Q?NWYt7EHDxIlF6emLwcDPB/jp8eVTMND2VqUqUEDmM9y1LNOsfZ9RfLxizfNh?=
- =?us-ascii?Q?zzTIZKEZdXjhLgSUCND5LcG7dXEXJ14V0l8Km+6AIrOgEgeHgu/kNLy5u89i?=
- =?us-ascii?Q?prjWikpTGn1GZkjSIbzO6r2YF2GnDEs6BbAnXJpAqqxEBF2HmIAiI0hc7B8R?=
- =?us-ascii?Q?Z53S/mFnVSyriMdJyWkdwX3zibf3ygxcluB8ScBndtP6lZuETbxLr88u9Fqd?=
- =?us-ascii?Q?/nFja9gWvUNk4IM8lPGKS4pjbm9s5/966bXdF3/7zq/KT8OyaGPkIJcy0XXu?=
- =?us-ascii?Q?BvJ7mnjflQ5nF4KJnDWUYqsp5dpCFtAWPJG1SF8obT2kxMA1xEUieWUDY/jt?=
- =?us-ascii?Q?OUnhvkowVL29kjfBl3Ou2ssn8l4qyKXPlDEghH3ifbtaQsHMMGKmSOHLFi+n?=
- =?us-ascii?Q?1kf6Kt1xmynBPFLs2M6bWYYgx51bYuLUUsx4e9rTi9YTFBXwS4a8eF+TcAYa?=
- =?us-ascii?Q?leeebL8hVCDFxg3/tc3zxF5AkYe9DPj/l9X5TyNojqlp5/7j9WSs0zj+rq8i?=
- =?us-ascii?Q?d0RamUqatMvtsiGWdGdWj+ZNGes8oTe3iacs46Lw?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 166112F21
+	for <iommu@lists.linux.dev>; Thu,  3 Nov 2022 10:59:50 +0000 (UTC)
+Received: by mail-pf1-f182.google.com with SMTP id k22so1255421pfd.3
+        for <iommu@lists.linux.dev>; Thu, 03 Nov 2022 03:59:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=tl6gvrKJpq1c2SMRIQkixJ9RHyBaATDZDYadUE36ADo=;
+        b=bGNCz6BI/X3dSE94R0ba6QyEEWxSsYixsiRVc3eqYT+xOJrJYnFPcQEuOt5Xcx7/C+
+         mXoyvj4knRHD2V8e2AhNKO2ehdnVWW5DGzf0i7GLopJLbJCzB1IOa4LxKlE03jL31aeP
+         lGYxws+DjOh22jTEPQ1PPK7ijJbVvZDFRuR+IbRcPPfawZ/duXNrnhtdNbPKvaos5Qmh
+         wQi/gL+CWGshJzmVyNXzucywYJE5kYvkx1+pPAlfVcHHLbDLMBZyyoIx7ygkZNIYkdet
+         w6fnn1JgkShaj3tpsQZ/7Pje2xXci6FBs1QMXDnlHvJFRON8KWk4jFt2OTNdAkO1eGRW
+         AqIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=tl6gvrKJpq1c2SMRIQkixJ9RHyBaATDZDYadUE36ADo=;
+        b=nic7tocO/wkOGetfd27mT6gKcjQ8Gmu7iLCBufmZ+QN+ulk5YgVGqJ2r5i6dXnOYJ/
+         SnDr7qg8SrF0Ss2yGp9CEnlgXgqBVe2iW1AsNKLS7btxgqIKfB6fkigff6AXZDzw+/0f
+         xSKpZCAfJzCcV+1tDwyqxk4OyNfuKIW24mlK09eFkUiU/bZg4a7T9zZGEMaqKZD8BSlI
+         c7dn7yXuEGgz986rEW8ZznZWSqvYvMZvFbXzhkbRuEdBzMthk8G0p1oBDE1kqkPC+dfq
+         y3X8zChjDU6QgWPTEk1A6PSUDLe6Zkr5/zTgZ7c5Gk6JR0mnBHpQKxGQdS/Br1clJkO5
+         jw4g==
+X-Gm-Message-State: ACrzQf06yXGhAbmkXNCITMEGkBwu20iHWEOuArITEX25/b3SM5fdG1lZ
+	CQqTafAZo0vVsZogT194kvjnQH8ZY4WB4sR/o/efQw==
+X-Google-Smtp-Source: AMsMyM5mH9Kbc/UTomJNMiJt8u9MMUAkTK5EumQHhGigQ8uemLyjJRlEChWmswJsa5eXfWYYXRrGMuDgD1V0RHHk1iM=
+X-Received: by 2002:a63:9049:0:b0:46f:59b9:1645 with SMTP id
+ a70-20020a639049000000b0046f59b91645mr25122160pge.541.1667473189454; Thu, 03
+ Nov 2022 03:59:49 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 387f4266-94a3-4a36-1cf2-08dabd6c5f1b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Nov 2022 07:23:57.5764
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: OrjXu0kFgNiUg8iZUpc/8RRINym9wcwJz42nASLByzO8v7BltaPJtfoUvz4IELZzLbUC/5mKWSeXE4VfSN4shQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB5861
-X-OriginatorOrg: intel.com
+References: <CAPDyKFqJdiCDkAfrONfnBVKw1v8=jZ+hEJiKGK70EQ4o7BSxaQ@mail.gmail.com>
+ <20221103043852.24718-1-pshete@nvidia.com>
+In-Reply-To: <20221103043852.24718-1-pshete@nvidia.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Date: Thu, 3 Nov 2022 11:59:12 +0100
+Message-ID: <CAPDyKFrT46SXxiHw5=q8HwK5PMJCsp+iE8Wm4CsEqfBf6EWicA@mail.gmail.com>
+Subject: Re: [PATCH v10 1/4] iommu: Always define struct iommu_fwspec
+To: joro@8bytes.org, robin.murphy@arm.com, will@kernel.org
+Cc: Prathamesh Shete <pshete@nvidia.com>, adrian.hunter@intel.com, thierry.reding@gmail.com, 
+	jonathanh@nvidia.com, p.zabel@pengutronix.de, linux-mmc@vger.kernel.org, 
+	linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	iommu@lists.linux.dev, anrao@nvidia.com, smangipudi@nvidia.com, 
+	kyarlagadda@nvidia.com, Thierry Reding <treding@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Wednesday, October 26, 2022 2:12 AM
->=20
-> Following the pattern of io_uring, perf, skb, and bpf iommfd will use
-> user->locked_vm for accounting pinned pages. Ensure the value is included
-> in the struct and export free_uid() as iommufd is modular.
->=20
-> user->locked_vm is the good accounting to use for ulimit because it is
-> per-user, and the security sandboxing of locked pages is not supposed to
-> be per-process. Other places (vfio, vdpa and infiniband) have used
-> mm->pinned_vm and/or mm->locked_vm for accounting pinned pages, but
-> this
-> is only per-process and inconsistent with the new FOLL_LONGTERM users in
-> the kernel.
->=20
-> Concurrent work is underway to try to put this in a cgroup, so everything
-> can be consistent and the kernel can provide a FOLL_LONGTERM limit that
-> actually provides security.
->=20
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+On Thu, 3 Nov 2022 at 05:39, Prathamesh Shete <pshete@nvidia.com> wrote:
+>
+> In order to fully make use of the !IOMMU_API stub functions, make the
+> struct iommu_fwspec always available so that users of the stubs can keep
+> using the structure's internals without causing compile failures.
+>
+> Signed-off-by: Thierry Reding <treding@nvidia.com>
+> Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Joerg, Will, Robin - may I have an ack from some of you for $subject
+patch, so I can funnel it via my mmc tree for v6.2?
+
+Kind regards
+Uffe
+
+> ---
+>  include/linux/iommu.h | 39 +++++++++++++++++++--------------------
+>  1 file changed, 19 insertions(+), 20 deletions(-)
+>
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index ea30f00dc145..afa829bc4356 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -173,6 +173,25 @@ enum iommu_dev_features {
+>
+>  #define IOMMU_PASID_INVALID    (-1U)
+>
+> +/**
+> + * struct iommu_fwspec - per-device IOMMU instance data
+> + * @ops: ops for this device's IOMMU
+> + * @iommu_fwnode: firmware handle for this device's IOMMU
+> + * @flags: IOMMU_FWSPEC_* flags
+> + * @num_ids: number of associated device IDs
+> + * @ids: IDs which this device may present to the IOMMU
+> + */
+> +struct iommu_fwspec {
+> +       const struct iommu_ops  *ops;
+> +       struct fwnode_handle    *iommu_fwnode;
+> +       u32                     flags;
+> +       unsigned int            num_ids;
+> +       u32                     ids[];
+> +};
+> +
+> +/* ATS is supported */
+> +#define IOMMU_FWSPEC_PCI_RC_ATS                        (1 << 0)
+> +
+>  #ifdef CONFIG_IOMMU_API
+>
+>  /**
+> @@ -600,25 +619,6 @@ extern struct iommu_group *generic_device_group(struct device *dev);
+>  /* FSL-MC device grouping function */
+>  struct iommu_group *fsl_mc_device_group(struct device *dev);
+>
+> -/**
+> - * struct iommu_fwspec - per-device IOMMU instance data
+> - * @ops: ops for this device's IOMMU
+> - * @iommu_fwnode: firmware handle for this device's IOMMU
+> - * @flags: IOMMU_FWSPEC_* flags
+> - * @num_ids: number of associated device IDs
+> - * @ids: IDs which this device may present to the IOMMU
+> - */
+> -struct iommu_fwspec {
+> -       const struct iommu_ops  *ops;
+> -       struct fwnode_handle    *iommu_fwnode;
+> -       u32                     flags;
+> -       unsigned int            num_ids;
+> -       u32                     ids[];
+> -};
+> -
+> -/* ATS is supported */
+> -#define IOMMU_FWSPEC_PCI_RC_ATS                        (1 << 0)
+> -
+>  /**
+>   * struct iommu_sva - handle to a device-mm bond
+>   */
+> @@ -682,7 +682,6 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group);
+>
+>  struct iommu_ops {};
+>  struct iommu_group {};
+> -struct iommu_fwspec {};
+>  struct iommu_device {};
+>  struct iommu_fault_param {};
+>  struct iommu_iotlb_gather {};
+> --
+> 2.17.1
+>
