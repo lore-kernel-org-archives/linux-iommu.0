@@ -1,220 +1,179 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 866D227722
-	for <iommu@lists.linux.dev>; Wed,  2 Nov 2022 22:16:25 +0000 (UTC)
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20221102220716euoutp010777625dede100471c07b742916ffa11~j49_e2dY21864418644euoutp01h
-	for <iommu@lists.linux.dev>; Wed,  2 Nov 2022 22:07:16 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20221102220716euoutp010777625dede100471c07b742916ffa11~j49_e2dY21864418644euoutp01h
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1667426836;
-	bh=MvIcE5aybyqzRDniRRwm7mnKOS8q8sys3BpNeOUXi5c=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=HeaJhcbRChb1EACfgOLw3tfCoUKJYv6EfeKgm9c0a+w+UtrHmuyYANpExaJykzRgj
-	 E5x5Vo5/gCbvxAo5dm9ofNo/w6Hwze/zUoSmjKpMiCHlRrIQZ7+2UPs2/NpNRriphN
-	 ktEZ+mpQOzaqNzIdH3y7qivbSwuFX8PR1d3GNSUc=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-	20221102220715eucas1p1a665278d4147fc3bbd951e58783a4589~j499y8iEq0205302053eucas1p1x;
-	Wed,  2 Nov 2022 22:07:15 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-	eusmges1new.samsung.com (EUCPMTA) with SMTP id F6.55.29727.31AE2636; Wed,  2
-	Nov 2022 22:07:15 +0000 (GMT)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20221102220715eucas1p287aa4a65c499b9a54351fc5fa6fd961c~j499X1s1N2723527235eucas1p2O;
-	Wed,  2 Nov 2022 22:07:15 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-	20221102220715eusmtrp2f49f58fcdb004c1871b7608a35f19d8b~j499XBPTb0674406744eusmtrp2J;
-	Wed,  2 Nov 2022 22:07:15 +0000 (GMT)
-X-AuditID: cbfec7f2-21dff7000001741f-7f-6362ea1314e1
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-	eusmgms1.samsung.com (EUCPMTA) with SMTP id A3.54.07473.31AE2636; Wed,  2
-	Nov 2022 22:07:15 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20221102220714eusmtip1e75f1ff28c61d5e97e7b6362cc298455~j498msBaE0597605976eusmtip1B;
-	Wed,  2 Nov 2022 22:07:14 +0000 (GMT)
-Message-ID: <7ed8c884-cee1-7cb0-f2ce-f7ec156cd841@samsung.com>
-Date: Wed, 2 Nov 2022 23:07:15 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 598CD7E2
+	for <iommu@lists.linux.dev>; Thu,  3 Nov 2022 04:38:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1667450302; x=1698986302;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=I3TirN9EDeLGgrmJL6cYy22CqgViJEMnsNWM2xU2wHg=;
+  b=iKY5EQBEwVoOfZNAoTd1sSwa9fkuJPCs4J5f0dZbKmXTmaienARNKDFs
+   T8JCwllre9FnBIVQPmnIwgPl36bXZk3yeEnXNBta4Nt3Yvscmp6gmFmhR
+   EjVaEWyUSd5DNL2dGb+I4U3Cn/04+usmhMKl3TZK3RHylBq9duYboR6Hx
+   gyPzQW94JCvY0yczVmiyVnEuWT0p9V2NqOzIC4dRavzzFez1xeA53xWTL
+   I7LCSd9sTit43ynn31U78JYNAjb50CT9zMRL4y/HUIEjOMOcX4uB1I5Js
+   u79+Tuw+xNTEhAcx8tITYf7GoLpQ5UtHefuHiVn8culWF6x0SaKe+T6sL
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10519"; a="289297187"
+X-IronPort-AV: E=Sophos;i="5.95,235,1661842800"; 
+   d="scan'208";a="289297187"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Nov 2022 21:38:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10519"; a="634525110"
+X-IronPort-AV: E=Sophos;i="5.95,235,1661842800"; 
+   d="scan'208";a="634525110"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga002.jf.intel.com with ESMTP; 02 Nov 2022 21:38:19 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 2 Nov 2022 21:38:19 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 2 Nov 2022 21:38:18 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Wed, 2 Nov 2022 21:38:18 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.107)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Wed, 2 Nov 2022 21:38:18 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZZoYRh+GPeNjQfRQa/jLFsWH9LY0d+JVOcsOqbxceQFm+U/2gWynL+b/QIw+j50wjXI9sUUY1TcFo6/LF87vROzxHpsKT+M4dYKAyBj+4DRoXypk6nDFcrRh2uN+2wf0I+fQ24yjJokLiwe3aXboTSWzTpg5L4KDR4gz/n0JeBr9iry5oY4B8yEokN+1i6BPuDWdjaOIT1p1E4VOx0jqmSr982Fng4V/EItliKqtpZ8mvyJMVL4mSunx1L1XTeAoF7QvY3kiVc8oGjKdcR0nYBMi0864UmxjXbCCXs6RznQnyZYNFHSy/3OL6SAOzzeEH46pSeCBSe305ztWVyfJRA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4QsD6JVCmLhC7kHAtWxM7I5YJ7dU3Hn/RgmaQcUYnnE=;
+ b=XYagpwyEJwJ8j9rSg7GzMBbowO1tF1BqU+VZroZ2wz46UN0F1cF7qbMRj6JOQqAC398J4hlNave7HuF/9eAhH74jZOu680yaHpacIiQtS6EDzedAFDEaY7B1yZiN5k+vJurRAWZxP+yMQ+U5eRiqFAQnMHQTF7nyvl6EV48Vk8bnLEfKMxUG6OLh/Fd7YIVtHYTRC3LvwnetvrQvH0YSnQeruJMk96980H5zGn/z8udf8q1NVDmsrXpFtv3Np/dEIIMQwfgi3ruMy5BEbKNYM3NP97AIacHxhArke4rR1yw1ebTrx4rttYWqTWfdvu3pmCuHK6H00TNkOJeKnOOJ3g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by SN7PR11MB7539.namprd11.prod.outlook.com (2603:10b6:806:343::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.16; Thu, 3 Nov
+ 2022 04:38:17 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::737e:211a:bb53:4cd7]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::737e:211a:bb53:4cd7%5]) with mapi id 15.20.5791.022; Thu, 3 Nov 2022
+ 04:38:17 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Alexander Gordeev <agordeev@linux.ibm.com>, David Airlie
+	<airlied@gmail.com>, Tony Krowiak <akrowiak@linux.ibm.com>, Alex Williamson
+	<alex.williamson@redhat.com>, Christian Borntraeger
+	<borntraeger@linux.ibm.com>, Cornelia Huck <cohuck@redhat.com>, Daniel Vetter
+	<daniel@ffwll.ch>, Diana Craciun <diana.craciun@oss.nxp.com>,
+	"dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, "Eric
+ Auger" <eric.auger@redhat.com>, Eric Farman <farman@linux.ibm.com>, "Harald
+ Freudenberger" <freude@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>, "intel-gfx@lists.freedesktop.org"
+	<intel-gfx@lists.freedesktop.org>, "intel-gvt-dev@lists.freedesktop.org"
+	<intel-gvt-dev@lists.freedesktop.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, Jani Nikula <jani.nikula@linux.intel.com>, "Jason
+ Herne" <jjherne@linux.ibm.com>, Joonas Lahtinen
+	<joonas.lahtinen@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-s390@vger.kernel.org"
+	<linux-s390@vger.kernel.org>, Longfang Liu <liulongfang@huawei.com>, "Matthew
+ Rosato" <mjrosato@linux.ibm.com>, Peter Oberparleiter
+	<oberpar@linux.ibm.com>, Halil Pasic <pasic@linux.ibm.com>, Robin Murphy
+	<robin.murphy@arm.com>, "Vivi, Rodrigo" <rodrigo.vivi@intel.com>, "Shameer
+ Kolothum" <shameerali.kolothum.thodi@huawei.com>, Sven Schnelle
+	<svens@linux.ibm.com>, Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+	Vineeth Vijayan <vneethv@linux.ibm.com>, Will Deacon <will@kernel.org>,
+	Yishai Hadas <yishaih@nvidia.com>, Zhenyu Wang <zhenyuw@linux.intel.com>,
+	"Wang, Zhi A" <zhi.a.wang@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>
+Subject: RE: [PATCH 05/10] vfio: Use IOMMU_CAP_ENFORCE_CACHE_COHERENCY for
+ vfio_file_enforced_coherent()
+Thread-Topic: [PATCH 05/10] vfio: Use IOMMU_CAP_ENFORCE_CACHE_COHERENCY for
+ vfio_file_enforced_coherent()
+Thread-Index: AQHY6J4OIe2WwX1TpkuArkGmC4dhx64pufEQgABPIYCAAqG6kA==
+Date: Thu, 3 Nov 2022 04:38:16 +0000
+Message-ID: <BN9PR11MB5276BC7EA64C4D4441DE9CB08C389@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <0-v1-4991695894d8+211-vfio_iommufd_jgg@nvidia.com>
+ <5-v1-4991695894d8+211-vfio_iommufd_jgg@nvidia.com>
+ <BN9PR11MB52766FB4EFCFB2197ACDC1F98C369@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <Y2EQb6mSTKOvASlp@nvidia.com>
+In-Reply-To: <Y2EQb6mSTKOvASlp@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|SN7PR11MB7539:EE_
+x-ms-office365-filtering-correlation-id: cf305eb5-f3cc-4d03-21d8-08dabd5539ec
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ijjbrMuAWo3bK5PLYIdf08Vl8S7v+2JUYXEcMhbovIs7/p8ktp9IOJRdw885vFnelTIWfOTLWSBZJlUKcELAtZeuxe2wYcRlWaBfrC1C8Ypzsm0CIz5JXFJt5mjLHtBEHjk6ejfs1E4bAs9G0a5wQHrlIX/fxGvV2wrskVlqBiYlYSzfTrWEH7YrmLAtzg3V6pzm43IdX8jusb6Ag+544+1R9+9oWSQMxrPdGmZ/izgAED9R2KbehXfllEytDBhxHT01yVig8heJ7di20yg+FrWTeTuSJeo3cBFG1QVQy2XSty3prsaAv6hl2dPHwiAd57lasg0DOOHdLUSzIs49rEveskX9QVoSdmZfaqydZEP5j9pe6Sz99kqDW9+oaAh7TYlxP8mq2JKXerJJBj2YpvcBWZlFcPlTS5YrEmXY1VQd+LmGoQlPkGhb1OL972KJ7pgiIcHrXBmIX/rq2XgNISvZzC3Sb4sgzwoA0oIDUaBlcV6dudwMoU0gezcTFeo4IslhP42nOi+v690AwiDl/X2F2/Z+blT+ezE3nr/4nMLSWlmPToqrcksVIQ2yBKStin54oeGCa2BcR9hFQtBeWi5uHh1IYDXHGFMcYwr3mN3F/BnTUGL4x+MaGu5bDTHx5hsVgmpYwRrgYaS9dQfpXmxD7SMdQBtZFQYuGM+2v/GFY+wgJhBzGaYpglztC9BPrRDMT4h5eRO5pgm+Y1Jy/IGeM4h3maHloeNG/S4n9CufLwIMHuB/qWA5LvP790PKWKX7Ikfvis7oqp/pNYilLw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(366004)(39860400002)(136003)(346002)(376002)(451199015)(33656002)(66946007)(186003)(6916009)(54906003)(4326008)(66476007)(316002)(7696005)(8676002)(66556008)(6506007)(64756008)(66446008)(2906002)(76116006)(5660300002)(38100700002)(7406005)(52536014)(9686003)(7416002)(41300700001)(478600001)(8936002)(86362001)(4744005)(71200400001)(82960400001)(122000001)(55016003)(38070700005)(26005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ZjkrWMuX3KVPASp2dk90Tu4tnOxh5WV5dI0M2/e9FxGIFZjROqoe0q0Ghyis?=
+ =?us-ascii?Q?cII+VH6vbhOHh+EzGIyj4yzLIX+ZAc9ePBouFtf970J8ifXfwQ5LNNN5oIFF?=
+ =?us-ascii?Q?wBfbUwgf+8IPWkHfpwUF9GoKY9fu/HpXQjKmlu2SPVRhtwYj7JM8sslzpBQC?=
+ =?us-ascii?Q?knyEss6zBlIlk7UKTWdExxW4xBQfRxNIzarFWAQarJgZc5pOG/pjm18Nw4Lj?=
+ =?us-ascii?Q?34ICTB81lx/AhQICs+LvFLJg4AgDZ8caGUq07aYDCfvwzaRriTYItSJed3NH?=
+ =?us-ascii?Q?qwX/Nr+cN9E+4/YQCHM4uBeG9UjqGV+bUapROS/A6tydAnJsFBHS8SJjoTrQ?=
+ =?us-ascii?Q?kqueSfSYlLtLpiAsgot/N/GaZB/0IklSjmRxOAVVeOIZE89gsfXYauI1QBZJ?=
+ =?us-ascii?Q?V5AvlNyGWUJJr0I4aaQcobQX1J8ogwQBGy/cztwVTisqQ1WZwBzn2M9WzP3l?=
+ =?us-ascii?Q?h/hJx9H7AKbPN5v/FU8uJV7FhZvkYmGCEPTa9AF5Nm1HNLPCbVtP3rDfvQMn?=
+ =?us-ascii?Q?bHBAs9mroknfAWxlAuY/NBxaNU3/e4Umo9AKIzB8vzB1nfPBrzYrS+9k8k4x?=
+ =?us-ascii?Q?Et+HN0gbesBOXwC2KVmky+cTKYRUq8mniPvyIiOCLDAs1UwaQYKxvPLJjhwy?=
+ =?us-ascii?Q?1YXUty5RPGOAAFWMK/bulyw+zhIuW6iWzzA8fAJdoZwzibBdOuEc1G73lSMb?=
+ =?us-ascii?Q?UFsd2eW+theodrvL7ipkyfz5nupCH26er1PjF0yfYMcJoYaYa77xoKPzsWEA?=
+ =?us-ascii?Q?xG+WnpAUvqWPKc5ZagIZ85BVmNkTUEAMhxUmOCZIR75dQU+EI/icuINHj1E5?=
+ =?us-ascii?Q?ELEVMEr6y/Fzf4Zl3cWaQfPJ+HilS6sMVzcanvbmNj98dY+5itkBL74KvH0D?=
+ =?us-ascii?Q?8nDLsItmRq/UdeJAL/Ayoqn5qfFMVRwPZB3FTnONXkxc5/PwIP2Kv1/cQ472?=
+ =?us-ascii?Q?E8u1CgXA1/lgFt160xg9JLR7ftcfJP+AEKjmfU4k71RQVZbhfOGC74CYjOYW?=
+ =?us-ascii?Q?h93b1fF6gBnhYGj80FQ9aqKL4k1rzBvLuy2ZOsT5BlPdxxLaFP66/v+Mx840?=
+ =?us-ascii?Q?xch1chyirK8iyuwt7bRUyF0S4prGce7Ct5H1zXQAPaNXdxHl1QK0sSyEKJs2?=
+ =?us-ascii?Q?dXmD8plJw3iQveYKXKmjHzmhmy7a74npsEvQ3f5mW6fiUyrO8H6X32opjxYl?=
+ =?us-ascii?Q?hXFILiDKwYIBGiRSxaZxQNnD66YE2V3eWw2xjojH3ZeonkfJ0d3jDfZjkY0n?=
+ =?us-ascii?Q?YI3xC3xSQOTGaHHqyhQMqEEZahzpqlC8AroQ/zFHyD+AdQ4MhSln3oZQWeqt?=
+ =?us-ascii?Q?uTCbMtc4d1UtbHSx7ZwdLA6OqQgpHVvYGUPDQTdAbji6oVdvRj3Yyzd3YHSP?=
+ =?us-ascii?Q?B1oQ5fW89yDUQUvN4/YXpaAjieNDCG8yoy6WG1OJNWVerZ8FAoSk7npH0XQ1?=
+ =?us-ascii?Q?Tl6hVpD8kk1cnYKPAYQBThVporVcUaB5dN5pb4MX/MWLrK744CKSbfIiynDI?=
+ =?us-ascii?Q?ZNU/tKQc5hl9s4zHfoYI8CVxoGpOi7ocu/0COs1tEH6+tMZnPwZquL2qixec?=
+ =?us-ascii?Q?I2uO/sdO80Nd/2W3KEK7yygDXoqxDh6Uw3jthO9j?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0)
-	Gecko/20100101 Thunderbird/102.4.1
-Subject: Re: [PATCH 3/4] iommu/exynos: Modularize the driver
-Content-Language: en-US
-To: Sam Protsenko <semen.protsenko@linaro.org>, Krzysztof Kozlowski
-	<krzysztof.kozlowski@linaro.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin
-	Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>, Alim
-	Akhtar <alim.akhtar@samsung.com>, Janghyuck Kim <janghyuck.kim@samsung.com>,
-	Cho KyongHo <pullip.cho@samsung.com>, Daniel Mentz <danielmentz@google.com>,
-	David Virag <virag.david003@gmail.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20221028191243.31721-4-semen.protsenko@linaro.org>
-Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrNKsWRmVeSWpSXmKPExsWy7djP87rCr5KSDRrn6Vs8mLeNzWJCRyuT
-	xa8vFhab5xRbdM7ewG6x9/VWdotNj6+xWlzeNYfNYsb5fUwW/3oPMloc/PCE1eJ5H5B76u5n
-	dovj7x8zWrTcMXXg93hycB6Tx5p5axg9ds66y+6xYFOpx6ZVnWwed67tYfPYvKTe48XmmYwe
-	fVtWMXp83iQXwBXFZZOSmpNZllqkb5fAlfGwZTFzwUzFipWt55kaGF9KdTFyckgImEhMXXGC
-	vYuRi0NIYAWjxP6LW1ghnC+MEi+/fWCBcD4zShy+uIypi5EDrGXhHUGI+HJGiX0Te9kgnI+M
-	Evc332ADmcsrYCdxZMsLMJtFQEWi5elPRoi4oMTJmU9YQGxRgRSJ3d3bwGxhARuJ01t6WEFs
-	ZgFxiVtP5jOB2CICaRJX/90HO4lZ4D6zxPqnk9hBEmwChhJdb7vAFnAKOEgcm3ITqlleYvvb
-	OcwgDRIC6zklzh84xwTxqYvE/wXdrBC2sMSr41vYIWwZif87QbaBNLQzSiz4fR/KmcAo0fD8
-	FiNElbXEnXO/2EABwCygKbF+lz5E2FFiV3cjKyRc+CRuvBWEOIJPYtK26cwQYV6JjjYhiGo1
-	iVnH18GtPXjhEvMERqVZSOEyC8n/s5C8Mwth7wJGllWM4qmlxbnpqcWGeanlesWJucWleel6
-	yfm5mxiB6e/0v+OfdjDOffVR7xAjEwfjIUYJDmYlEd76s9HJQrwpiZVVqUX58UWlOanFhxil
-	OViUxHnZZmglCwmkJ5akZqemFqQWwWSZODilGpjkjxe2sD7WFWnTKyx9sqX8a8H+fr/8jZxP
-	OVgYu+KfqqR9vrvPc8pS49WiRy5JmH3KnrOvpHrW3sbJm21k1mtuK1i35oL6973M79OncZw3
-	ir/z46hhtHacX9ajuybC5oxzW4oU4oyY1i11Ona9RK/oksqHq9VWX78zXv9c4PuzZ9kZfZu/
-	F4p9+eUvvw/5ZPXpQoFD3oHXiosZKopnM71XPqwVz+sZWHVhk4vAbfMPV3kOGf56HzyPdbno
-	lBCHVZ8+rnOaGh//Wdn7R3x3bo7VtbKtNty10y9v1WcRCtm7V5LJfpXGm+4c82k7f91/PNNd
-	9/HPv2wBMqd4GtwYfuwN+fFg7pta5/wDi/9tPX9YiaU4I9FQi7moOBEA3PoNJe4DAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrNIsWRmVeSWpSXmKPExsVy+t/xu7rCr5KSDe4cErZ4MG8bm8WEjlYm
-	i19fLCw2zym26Jy9gd1i7+ut7BabHl9jtbi8aw6bxYzz+5gs/vUeZLQ4+OEJq8XzPiD31N3P
-	7BbH3z9mtGi5Y+rA7/Hk4DwmjzXz1jB67Jx1l91jwaZSj02rOtk87lzbw+axeUm9x4vNMxk9
-	+rasYvT4vEkugCtKz6Yov7QkVSEjv7jEVina0MJIz9DSQs/IxFLP0Ng81srIVEnfziYlNSez
-	LLVI3y5BL+Nhy2LmgpmKFStbzzM1ML6U6mLk4JAQMJFYeEewi5GLQ0hgKaPErI4pzF2MnEBx
-	GYmT0xpYIWxhiT/Xutggit4zSmw+uBqsiFfATuLIlhdsIDaLgIpEy9OfjBBxQYmTM5+wgCwQ
-	FUiR+HauDiQsLGAjcXpLD9hMZgFxiVtP5jOB2CICaRL7Jr1mhIg/ZJaYsVYBYtdJRolHU6+C
-	7WITMJToetsFtotTwEHi2JSbUIPMJLq2dkE1y0tsfzuHeQKj0CwkZ8xCsm8WkpZZSFoWMLKs
-	YhRJLS3OTc8tNtQrTswtLs1L10vOz93ECIz1bcd+bt7BOO/VR71DjEwcjIcYJTiYlUR4689G
-	JwvxpiRWVqUW5ccXleakFh9iNAWGxURmKdHkfGCyySuJNzQzMDU0MbM0MLU0M1YS5/Us6EgU
-	EkhPLEnNTk0tSC2C6WPi4JRqYLIwlOiNX3QrKnd2tN/n7z1dmYUJ77dNfGpkUreCtWvP4qMu
-	Fqv8pI5bnp33Sarn+ZGmpHnT82Z8NPvZc2TyQi0TOYW7Gt7Kipfvex6t23YkdE+9WGT01PYp
-	P5MOzipxXclz9MpeE9dXSpzrrCe9MzkZanrj+p5+nfqPaYdlN/64pe7Wu3jTQe+FRUdNz2qX
-	BJfvLFeRdUxfEHTBotj55iO7Rn7GB88WfVRbfO3Dk5fhrClOrf0d2x9NMi5TtWCeHGlzI3hD
-	pbXx8oXPvmtejNI7/1hzuX3oBQGDhZN+pwtHOiedAwa2a6rnuQnOi4RP6so5/Z+i41Y3O3fu
-	G7mOCG3xdr8Uj++zdWfFPOvarcRSnJFoqMVcVJwIABVyN45+AwAA
-X-CMS-MailID: 20221102220715eucas1p287aa4a65c499b9a54351fc5fa6fd961c
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20221028191256eucas1p1a4fd95cbcc44959fa968956a92738f03
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20221028191256eucas1p1a4fd95cbcc44959fa968956a92738f03
-References: <20221028191243.31721-1-semen.protsenko@linaro.org>
-	<CGME20221028191256eucas1p1a4fd95cbcc44959fa968956a92738f03@eucas1p1.samsung.com>
-	<20221028191243.31721-4-semen.protsenko@linaro.org>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cf305eb5-f3cc-4d03-21d8-08dabd5539ec
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Nov 2022 04:38:16.7367
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: LGY+C3Z09B6Hnxgn2LBhC0VuhTnyzHtDhCSN9+WUnDd3aj4CkUoKzm5xXpvywV/6WM2vfMvrCDA4gIHU9yTA0Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB7539
+X-OriginatorOrg: intel.com
 
-Hi Sam,
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Tuesday, November 1, 2022 8:26 PM
+> And this:
+>=20
+> 	/*
+> 	 * If the device does not have
+> IOMMU_CAP_ENFORCE_CACHE_COHERENCY then
+> 	 * any domain later attached to it will also not support it. If the cap
+> 	 * is set then the iommu_domain eventually attached to the
+> device/group
+> 	 * must must use a domain with enforce_cache_coherency().
+> 	 */
 
-On 28.10.2022 21:12, Sam Protsenko wrote:
-> Rework the driver so it can be built as a loadable module. That can be
-> useful as not all ARM64 platforms need it. And that's ok for it to be a
-> module because it's not a critical driver (platform can work when it's
-> disabled).
->
-> Also add the shutdown driver method, while at it. That was inspired by
-> other IOMMU drivers, and can be useful e.g. for performing a kexec. See
-> commit 1a4e90f25b2c ("iommu/rockchip: Perform a reset on shutdown") for
-> example.
->
-> Remove method and module exit function are not implemented, as the
-> removal of IOMMUs cannot be done reliably. As Robin Murphy mentioned in
-> [1]:
->
->      ...it's better not to even pretend that removing an IOMMU's driver
->      while other drivers are using it (usually via DMA ops without even
->      realising) is going to have anything other than catastrophic
->      results.
->
-> [1] https://lore.kernel.org/lkml/20220702213724.3949-2-semen.protsenko@linaro.org/T/#md7e1e3f5b2c9e7fa5bc28fe33e818b6aa4a7237c
->
-> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
-
-MODULE_DEVICE_TABLE(of, sysmmu_of_match); is missing, so the driver 
-won't be automatically loaded, what breaks its operation if compiled as 
-module.
-
-Also Exynos DRM and S5P-MFC drivers rely on the Exynos IOMMU being 
-built-in, so they need to be adjusted for modularized builds too imho, 
-at least in the Kconfig dependency.
-
-> ---
->   drivers/iommu/Kconfig        |  2 +-
->   drivers/iommu/exynos-iommu.c | 18 +++++++++++++++++-
->   2 files changed, 18 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index dc5f7a156ff5..6f7055606679 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -259,7 +259,7 @@ config TEGRA_IOMMU_SMMU
->   	  SoCs (Tegra30 up to Tegra210).
->   
->   config EXYNOS_IOMMU
-> -	bool "Exynos IOMMU Support"
-> +	tristate "Exynos IOMMU Support"
->   	depends on ARCH_EXYNOS || COMPILE_TEST
->   	depends on !CPU_BIG_ENDIAN # revisit driver if we can enable big-endian ptes
->   	select IOMMU_API
-> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index 0d150b383d04..57492db877e2 100644
-> --- a/drivers/iommu/exynos-iommu.c
-> +++ b/drivers/iommu/exynos-iommu.c
-> @@ -16,6 +16,7 @@
->   #include <linux/interrupt.h>
->   #include <linux/kmemleak.h>
->   #include <linux/list.h>
-> +#include <linux/module.h>
->   #include <linux/of.h>
->   #include <linux/of_platform.h>
->   #include <linux/platform_device.h>
-> @@ -752,6 +753,16 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
->   	return ret;
->   }
->   
-> +static void exynos_sysmmu_shutdown(struct platform_device *pdev)
-> +{
-> +	struct sysmmu_drvdata *data = platform_get_drvdata(pdev);
-> +	struct device *dev = &pdev->dev;
-> +	int irq = platform_get_irq(pdev, 0);
-> +
-> +	devm_free_irq(dev, irq, data);
-> +	pm_runtime_force_suspend(dev);
-> +}
-> +
->   static int __maybe_unused exynos_sysmmu_suspend(struct device *dev)
->   {
->   	struct sysmmu_drvdata *data = dev_get_drvdata(dev);
-> @@ -799,8 +810,9 @@ static const struct of_device_id sysmmu_of_match[] = {
->   	{ },
->   };
->   
-> -static struct platform_driver exynos_sysmmu_driver __refdata = {
-> +static struct platform_driver exynos_sysmmu_driver = {
->   	.probe	= exynos_sysmmu_probe,
-> +	.shutdown = exynos_sysmmu_shutdown,
->   	.driver	= {
->   		.name		= "exynos-sysmmu",
->   		.of_match_table	= sysmmu_of_match,
-> @@ -1404,6 +1416,7 @@ static const struct iommu_ops exynos_iommu_ops = {
->   	.release_device = exynos_iommu_release_device,
->   	.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
->   	.of_xlate = exynos_iommu_of_xlate,
-> +	.owner = THIS_MODULE,
->   	.default_domain_ops = &(const struct iommu_domain_ops) {
->   		.attach_dev	= exynos_iommu_attach_device,
->   		.detach_dev	= exynos_iommu_detach_device,
-> @@ -1454,3 +1467,6 @@ static int __init exynos_iommu_init(void)
->   	return ret;
->   }
->   core_initcall(exynos_iommu_init);
-> +
-> +MODULE_DESCRIPTION("IOMMU driver for Exynos SoCs");
-> +MODULE_LICENSE("GPL");
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+duplicated 'must'
