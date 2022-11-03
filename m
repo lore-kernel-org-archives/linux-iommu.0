@@ -1,47 +1,89 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 385957488
-	for <iommu@lists.linux.dev>; Thu,  3 Nov 2022 14:59:28 +0000 (UTC)
-Received: from 8bytes.org (p5b00664c.dip0.t-ipconnect.de [91.0.102.76])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com [209.85.215.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id D14EA260033;
-	Thu,  3 Nov 2022 15:59:26 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1667487567;
-	bh=HTUsTy233yIiWp1C/zye7Xevk8uy5uBNvs5YyKtRlG8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=vgU5PXg7bRQqqMVptuQYq7DSJ2v4CNm2bjBLUi2vPE1EtDSFc5eSR5BsvYGnr233D
-	 T1ajeSHHA/rZGPXI0lEh0RiQ3uyNETgw7obyVgskGbrk2lPkU4XIp7xx/TkPyD9PLt
-	 c2AeARe2Cj8iJNdaXae4dTfOXEc16b6ND03m7xEdWWQ60EGaF1NHEihnu1nFLJ+lVG
-	 Uxqp9laxJUJ5YIApjFc1l55WhdkqaHqfUUqwQN8L1jSplQWmBbrW7U5jxD6Wulkfh6
-	 7dSEBqrq+szAgQDbURXddZIh2t7i7MpVcYOIMpg0Wr6yGV1S/SMCOuaRDVG4xy5tW7
-	 EnQBWG71lZTKQ==
-Date: Thu, 3 Nov 2022 15:59:25 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Michael Riesch <michael.riesch@wolfvision.net>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Heiko Stuebner <heiko@sntech.de>,
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-	Simon Xue <xxm@rock-chips.com>
-Subject: Re: [PATCH] iommu/rockchip: fix permission bits in page table
- entries v2
-Message-ID: <Y2PXTfk4Et7r5/QD@8bytes.org>
-References: <20221102063553.2464161-1-michael.riesch@wolfvision.net>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D55E57488
+	for <iommu@lists.linux.dev>; Thu,  3 Nov 2022 15:07:46 +0000 (UTC)
+Received: by mail-pg1-f171.google.com with SMTP id 64so1913211pgc.5
+        for <iommu@lists.linux.dev>; Thu, 03 Nov 2022 08:07:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=w2z6fO+MbyvEiP5JpeiVd1gSvr6rs1hB7YCmNmUxll4=;
+        b=gHTFxAQAhXrKKmhv7RuDgqKnsGsxCqlqugARUQMfSbZRJUyGGl3mL8wkQSmtx1yM0k
+         rWAXPxKYKEmKaR06qaWeVuQv+zd78X+kjfMmieFmqP0YltSfhp8sGGWQQEsfT/puNDOq
+         iGw8EefwxKFixX+hoGi1CiYBQp+RX63QyMGoeVW2KwhYfwJ055FVmGQXQ8av3FmL62zq
+         B/13wxMSpgGo5/XcRvsbgI5ffvGI4BWlUQI0jz0DMvA8gjXVcQ8BgeliRdhw+5lJOzoJ
+         5L3Yt+biFkv3NnET5xb0mzInjQ+qeLoV+u5gsS8hS3Ojr9W8YmLeUJHtr/quFyYC8F1i
+         We9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=w2z6fO+MbyvEiP5JpeiVd1gSvr6rs1hB7YCmNmUxll4=;
+        b=5w2Lhlh0F6zb7bF4EwWEBpL24SFjF5vRWwiXUPtJ4eHRdeeL3TqLyK5/LJs8dYEX5p
+         1bBS+5kzLxwY3QyX3WMihFjxOuiZSv6glTLh0yRv+Vn9CaUTIGHoHl+OouPlzDN/J/kU
+         H6DqP9zhwRA1DLbVj92AYpNr11TlvqvSUlKFfITrV2PcB6zy1QvCRUbSlh/POCAFJD5E
+         8l7UxLAgx4v4NTntdDiOf/CYxhT0m4Evr4ijCfzMgFrevrSDMijbj4MriNMNHrND7Y/C
+         GRGbn2YGBTyHXyYzHUs/zzDoFEuLB9oMCHGO2KpZs02lVtD2WFe9NevpFTJv/Gsl4WfV
+         J2eg==
+X-Gm-Message-State: ACrzQf0mP7uu1217tUMA5xfPxtRvGxnKzfQoHBfBL7ZMQtRMHgEkzrv0
+	ZYxR2BlAZx9kH80nXccaQDE=
+X-Google-Smtp-Source: AMsMyM64XJzUHkbNPgJU9Pbog8Ij7QoURi5yiSqvzbNa01qcX2i7L0deLMBHbJeokkmw94e2KlZHQQ==
+X-Received: by 2002:a63:b12:0:b0:44a:d193:6b16 with SMTP id 18-20020a630b12000000b0044ad1936b16mr26809861pgl.604.1667488066226;
+        Thu, 03 Nov 2022 08:07:46 -0700 (PDT)
+Received: from ?IPV6:2404:f801:0:5:8000::75b? ([2404:f801:9000:1a:efea::75b])
+        by smtp.gmail.com with ESMTPSA id r12-20020a63ec4c000000b0046ae818b626sm896747pgj.30.2022.11.03.08.07.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Nov 2022 08:07:45 -0700 (PDT)
+Message-ID: <900971fc-e8c0-b81b-8836-c416554a4c22@gmail.com>
+Date: Thu, 3 Nov 2022 23:07:34 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221102063553.2464161-1-michael.riesch@wolfvision.net>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH 08/12] Drivers: hv: vmbus: Remove second way of mapping
+ ring buffers
+Content-Language: en-US
+To: Michael Kelley <mikelley@microsoft.com>, hpa@zytor.com,
+ kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+ wei.liu@kernel.org, decui@microsoft.com, luto@kernel.org,
+ peterz@infradead.org, davem@davemloft.net, edumazet@google.com,
+ kuba@kernel.org, pabeni@redhat.com, lpieralisi@kernel.org, robh@kernel.org,
+ kw@linux.com, bhelgaas@google.com, arnd@arndb.de, hch@infradead.org,
+ m.szyprowski@samsung.com, robin.murphy@arm.com, thomas.lendacky@amd.com,
+ brijesh.singh@amd.com, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, Tianyu.Lan@microsoft.com,
+ kirill.shutemov@linux.intel.com, sathyanarayanan.kuppuswamy@linux.intel.com,
+ ak@linux.intel.com, isaku.yamahata@intel.com, dan.j.williams@intel.com,
+ jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com, x86@kernel.org,
+ linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ netdev@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-arch@vger.kernel.org, iommu@lists.linux.dev
+References: <1666288635-72591-1-git-send-email-mikelley@microsoft.com>
+ <1666288635-72591-9-git-send-email-mikelley@microsoft.com>
+From: Tianyu Lan <ltykernel@gmail.com>
+In-Reply-To: <1666288635-72591-9-git-send-email-mikelley@microsoft.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Nov 02, 2022 at 07:35:53AM +0100, Michael Riesch wrote:
->  drivers/iommu/rockchip-iommu.c | 10 ++++------
->  1 file changed, 4 insertions(+), 6 deletions(-)
+On 10/21/2022 1:57 AM, Michael Kelley wrote:
+> With changes to how Hyper-V guest VMs flip memory between private
+> (encrypted) and shared (decrypted), it's no longer necessary to
+> have separate code paths for mapping VMBus ring buffers for
+> for normal VMs and for Confidential VMs.
+> 
+> As such, remove the code path that uses vmap_pfn(), and set
+> the protection flags argument to vmap() to account for the
+> difference between normal and Confidential VMs.
+> 
+> Signed-off-by: Michael Kelley<mikelley@microsoft.com>
+> ---
 
-Applied, thanks.
+Reviewed-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
