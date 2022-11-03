@@ -1,34 +1,30 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9740E6FCC
-	for <iommu@lists.linux.dev>; Thu,  3 Nov 2022 13:06:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A73226FD6
+	for <iommu@lists.linux.dev>; Thu,  3 Nov 2022 13:45:56 +0000 (UTC)
 Received: from 8bytes.org (p5b00664c.dip0.t-ipconnect.de [91.0.102.76])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 0123522405B;
-	Thu,  3 Nov 2022 13:59:14 +0100 (CET)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 37959260071;
+	Thu,  3 Nov 2022 14:45:55 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1667480355;
-	bh=qeEwW8fQOw1wm3MkjAsYSb7lyBfW6zgGK2aj+8YTzEY=;
+	s=default; t=1667483155;
+	bh=Iaiwo7D9Rrw+sA+ig2mBhOxAtfQms7zTRxU6Y1I83wo=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=6kfeTXWvHyDWmm4gAg+I+oycD2ChvmpeQkHL+lUiixejwNIRguYRNfoVlIyz3+mj1
-	 YgJD3atrD3Zw7958FVIRUoTa8G1x/tv23ozgFwxszeJ9+qWRndWCXzlJZXbZiCkICi
-	 pYEH+Sk++h03iXR1qNvhSRSyS1wyW/3cQI1txZv9P9/7tZdNzBtt7MXo6M42U4lLtn
-	 fsEhMbpot7QRE2DAVnChWkL1YLdxgPqgAxW9/BGnMH3BeG1hZBFE3CPRVPrz942fAw
-	 2Xh0+kZyq2mE/1yzXd6TVj2kBmpipXBMkGuo70NdGa+iFnENh8DsAYDjeBEq7wIYtj
-	 9EIWwm20sTg+w==
-Date: Thu, 3 Nov 2022 13:59:13 +0100
+	b=gZIZarNibES9GXaW2YPZMWbtBZX38/M2lt66BfCckVxHK0D/MRIWKwqgSPtXfrcyZ
+	 uqBz6uZxR9RfhM6h45WAznECc6bGef64KgCS50GwUWE4c0cFsfLjcCByMzZpkMCbtB
+	 kFyyOoTlN6r4hYnzJ+4Vl9fQ9nfi9xNnKjRiMzIhuXlHufmnWxhJYwEkSa5mCq7fHV
+	 Im32yC+2FFPuVqa8tTCYAyNzSHSY3WBzqRt9yUPHd7JcLu8DTu1ccGYa9oR3sO8GWU
+	 QxO3dCJhKOT18+CuJ98cJj/LA8M7C0U4OUaO68W5XHtBmeovEvG/tNSZ/T+SkSOtB6
+	 WQEkLz97G1lWA==
+Date: Thu, 3 Nov 2022 14:45:53 +0100
 From: Joerg Roedel <joro@8bytes.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Prathamesh Shete <pshete@nvidia.com>, iommu@lists.linux.dev,
-	linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu: Always define struct iommu_fwspec
-Message-ID: <Y2O7ITA/YQ31pTlz@8bytes.org>
-References: <20221018105149.820062-1-thierry.reding@gmail.com>
- <CAPDyKFopppohLJ7ptnQxpBHzMLh2SZObarQRC0bJyTwE=nky4w@mail.gmail.com>
- <Y1pLPHER+Pq+cRvc@orome>
+To: Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Subject: Re: [PATCH] iommu: fsl_pamu: Replace NO_IRQ by 0
+Message-ID: <Y2PGEbh9zFtRqrPP@8bytes.org>
+References: <2a2570a8d12c80a7d36837b6c586daa708ca09d7.1665033732.git.christophe.leroy@csgroup.eu>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,15 +33,10 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y1pLPHER+Pq+cRvc@orome>
+In-Reply-To: <2a2570a8d12c80a7d36837b6c586daa708ca09d7.1665033732.git.christophe.leroy@csgroup.eu>
 
-On Thu, Oct 27, 2022 at 11:11:24AM +0200, Thierry Reding wrote:
-> Adding Prathamesh for visibility. Another alternative would be to
-> prepend this to Prathamesh's series with an Acked-by from Joerg.
-> 
-> Joerg, any preference on how to move forward with this?
+On Thu, Oct 06, 2022 at 07:24:03AM +0200, Christophe Leroy wrote:
+>  drivers/iommu/fsl_pamu.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-Sorry, missed the discussion until now. Adding this patch to
-Prathamesh's series is fine with me. Feel free to add my
-
-Acked-by: Joerg Roedel <jroedel@suse.de>
+Applied, thanks.
