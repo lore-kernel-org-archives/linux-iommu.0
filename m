@@ -1,129 +1,87 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 08DAF6FAE
-	for <iommu@lists.linux.dev>; Thu,  3 Nov 2022 12:23:27 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 60E501FB;
-	Thu,  3 Nov 2022 05:23:33 -0700 (PDT)
-Received: from [10.57.37.13] (unknown [10.57.37.13])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5742A3F703;
-	Thu,  3 Nov 2022 05:23:24 -0700 (PDT)
-Message-ID: <6be39bae-f325-12e0-374b-a27c9ee2ef2b@arm.com>
-Date: Thu, 3 Nov 2022 12:23:20 +0000
+Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com [209.85.216.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AA6F6FCC
+	for <iommu@lists.linux.dev>; Thu,  3 Nov 2022 13:03:20 +0000 (UTC)
+Received: by mail-pj1-f52.google.com with SMTP id q1-20020a17090a750100b002139ec1e999so1741140pjk.1
+        for <iommu@lists.linux.dev>; Thu, 03 Nov 2022 06:03:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=sCUBB08PoVZ26bcT4Cxprl0+CgnyFaSro8o/etFxILQ=;
+        b=NMOF7LMrwGZkM4Tpc29C7h3cTqZFKOVJ3vIia5vjFEJJ4H7B5PBOcPyzkq455HN7gk
+         FTmv3c9jmCde5kxbFdR10ZoLz4a0JGb7Znsy/G7IW3aeadZOKKCIwmKa6neDPb/+PMlQ
+         G5q3pQ/DzKlFHkwEqE1EWRBb8h1BN/hw2oOsWTTcIxbTC8Rbh0h6JO5zsVlRMtfDcPmG
+         EwsBA48uyosKZ2jbVe5iAc8agQJkePiVass7YVRzKWxPROkBwJrrtbt0YtPlspLlftVk
+         CaAE3bU5N7T2BznUtAq+AbzJjt2hmk0sVJOfygsa2zvm6OklRDJ4p1kusTQunUxAS2Uc
+         +2fg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=sCUBB08PoVZ26bcT4Cxprl0+CgnyFaSro8o/etFxILQ=;
+        b=mDwvwDpGWGC+J90pYRLZ8wa1eOZaAx+5JyXwb18hbnool8kLBHMCbBHEq+lmIeuXVC
+         v7ijGuZFo2AtoH3g6Qr7Lpn9l5qXeAqTcGVvKWogscS7JxkyYwiS1DCVtCKDMFbxoeQs
+         r6m0GFAfNTwb0hXCNEC6UpfeNsAJHtngmg5RaN2iKqjs/KFw0JXCzp61ouoQszgsCugA
+         Um9JUBCS+tsOkpvVmMuXm9HkMNiccXQwU6xqQbpB3TbD5SWjLeFVO4DWApFU2DcANpGn
+         tyF85yiFvLjILaR0ws59zB03c1I2oEiPYfIRvwe0Qw4XXQ71SkpI2f7/JWEjN+NV1ena
+         ff4Q==
+X-Gm-Message-State: ACrzQf2BKT6B7MgXC5lPMLg0MPXa9tA+M3UW6GsvEQHr6dT4j7ZHzZvI
+	WLJtftzWVWyISEMMx5X83TorDUsqSTaL41H+23PezQ==
+X-Google-Smtp-Source: AMsMyM7FZiZCLkFDkx1bnVpjXpomckekbyKXpexKWDuVwHGpOCtLDD7blXzZ7m7RqCbEnHJAeDZqypgjZcrJQy4UliA=
+X-Received: by 2002:a17:903:41cc:b0:186:b756:a5f0 with SMTP id
+ u12-20020a17090341cc00b00186b756a5f0mr30145351ple.132.1667480600358; Thu, 03
+ Nov 2022 06:03:20 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.4.1
-Subject: Re: [PATCH v10 1/4] iommu: Always define struct iommu_fwspec
-Content-Language: en-GB
-To: Prathamesh Shete <pshete@nvidia.com>, joro@8bytes.org,
- adrian.hunter@intel.com, ulf.hansson@linaro.org, thierry.reding@gmail.com,
- jonathanh@nvidia.com, p.zabel@pengutronix.de, linux-mmc@vger.kernel.org,
- linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: will@kernel.org, iommu@lists.linux.dev, anrao@nvidia.com,
- smangipudi@nvidia.com, kyarlagadda@nvidia.com,
- Thierry Reding <treding@nvidia.com>
-References: <CAPDyKFqJdiCDkAfrONfnBVKw1v8=jZ+hEJiKGK70EQ4o7BSxaQ@mail.gmail.com>
- <20221103043852.24718-1-pshete@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20221103043852.24718-1-pshete@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20221028191243.31721-1-semen.protsenko@linaro.org>
+ <CGME20221028191256eucas1p1a4fd95cbcc44959fa968956a92738f03@eucas1p1.samsung.com>
+ <20221028191243.31721-4-semen.protsenko@linaro.org> <7ed8c884-cee1-7cb0-f2ce-f7ec156cd841@samsung.com>
+In-Reply-To: <7ed8c884-cee1-7cb0-f2ce-f7ec156cd841@samsung.com>
+From: Sam Protsenko <semen.protsenko@linaro.org>
+Date: Thu, 3 Nov 2022 14:03:08 +0100
+Message-ID: <CAPLW+4nrns9BovWCTOsi3F7=2FWLi2sK0+Cid4Cva2Vs2ZWdqQ@mail.gmail.com>
+Subject: Re: [PATCH 3/4] iommu/exynos: Modularize the driver
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Sumit Semwal <sumit.semwal@linaro.org>, Alim Akhtar <alim.akhtar@samsung.com>, 
+	Janghyuck Kim <janghyuck.kim@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, 
+	Daniel Mentz <danielmentz@google.com>, David Virag <virag.david003@gmail.com>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-samsung-soc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On 2022-11-03 04:38, Prathamesh Shete wrote:
-> In order to fully make use of the !IOMMU_API stub functions, make the
-> struct iommu_fwspec always available so that users of the stubs can keep
-> using the structure's internals without causing compile failures.
+Hi Marek,
 
-I'm really in two minds about this... fwspecs are an internal detail of 
-the IOMMU API that are meant to be private between individual drivers 
-and firmware code, so anything poking at them arguably does and should 
-depend on CONFIG_IOMMU_API. It looks like the stub for 
-dev_iommu_fwspec_get() was only added for the sake of one driver that 
-was misusing it where it really wanted device_iommu_mapped(), and has 
-since been fixed, so if anything my preference would be to remove that 
-stub :/
+[snip]
 
-I don't technically have much objection to this patch in isolation, but 
-what I don't like is the direction of travel it implies. I see the 
-anti-pattern is only spread across Tegra drivers, making Tegra-specific 
-assumptions, so in my view the best answer would be to abstract that 
-fwpsec dependency into a single Tegra-specific helper, which would 
-better represent the nature of what's really going on here.
+> MODULE_DEVICE_TABLE(of, sysmmu_of_match); is missing, so the driver
+> won't be automatically loaded, what breaks its operation if compiled as
+> module.
+>
 
-Thanks,
-Robin.
+Right, didn't think about hot-plug case. Will add
+MODULE_DEVICE_TABLE() along with MODULE_ALIAS() in v2, thanks.
 
-> Signed-off-by: Thierry Reding <treding@nvidia.com>
-> Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
-> ---
->   include/linux/iommu.h | 39 +++++++++++++++++++--------------------
->   1 file changed, 19 insertions(+), 20 deletions(-)
-> 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index ea30f00dc145..afa829bc4356 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -173,6 +173,25 @@ enum iommu_dev_features {
->   
->   #define IOMMU_PASID_INVALID	(-1U)
->   
-> +/**
-> + * struct iommu_fwspec - per-device IOMMU instance data
-> + * @ops: ops for this device's IOMMU
-> + * @iommu_fwnode: firmware handle for this device's IOMMU
-> + * @flags: IOMMU_FWSPEC_* flags
-> + * @num_ids: number of associated device IDs
-> + * @ids: IDs which this device may present to the IOMMU
-> + */
-> +struct iommu_fwspec {
-> +	const struct iommu_ops	*ops;
-> +	struct fwnode_handle	*iommu_fwnode;
-> +	u32			flags;
-> +	unsigned int		num_ids;
-> +	u32			ids[];
-> +};
-> +
-> +/* ATS is supported */
-> +#define IOMMU_FWSPEC_PCI_RC_ATS			(1 << 0)
-> +
->   #ifdef CONFIG_IOMMU_API
->   
->   /**
-> @@ -600,25 +619,6 @@ extern struct iommu_group *generic_device_group(struct device *dev);
->   /* FSL-MC device grouping function */
->   struct iommu_group *fsl_mc_device_group(struct device *dev);
->   
-> -/**
-> - * struct iommu_fwspec - per-device IOMMU instance data
-> - * @ops: ops for this device's IOMMU
-> - * @iommu_fwnode: firmware handle for this device's IOMMU
-> - * @flags: IOMMU_FWSPEC_* flags
-> - * @num_ids: number of associated device IDs
-> - * @ids: IDs which this device may present to the IOMMU
-> - */
-> -struct iommu_fwspec {
-> -	const struct iommu_ops	*ops;
-> -	struct fwnode_handle	*iommu_fwnode;
-> -	u32			flags;
-> -	unsigned int		num_ids;
-> -	u32			ids[];
-> -};
-> -
-> -/* ATS is supported */
-> -#define IOMMU_FWSPEC_PCI_RC_ATS			(1 << 0)
-> -
->   /**
->    * struct iommu_sva - handle to a device-mm bond
->    */
-> @@ -682,7 +682,6 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group);
->   
->   struct iommu_ops {};
->   struct iommu_group {};
-> -struct iommu_fwspec {};
->   struct iommu_device {};
->   struct iommu_fault_param {};
->   struct iommu_iotlb_gather {};
+> Also Exynos DRM and S5P-MFC drivers rely on the Exynos IOMMU being
+> built-in, so they need to be adjusted for modularized builds too imho,
+> at least in the Kconfig dependency.
+>
+
+Sure, I'll check all Kconfigs and defconfigs before sending out v2.
+
+Btw, can you please also check my most recent reply [1] for the
+"[PATCH 1/2] iommu/exynos: Abstract getting the fault info"?
+
+[1] https://lore.kernel.org/lkml/CAPLW+4n-Lf6je61rxdJ9nJnX9h9F8F-y+qikG7eFF0avQpMV9Q@mail.gmail.com/
+
+Thanks!
+
+[snip]
