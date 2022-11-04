@@ -1,50 +1,50 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73536AD50
-	for <iommu@lists.linux.dev>; Fri,  4 Nov 2022 21:27:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BA49AD56
+	for <iommu@lists.linux.dev>; Fri,  4 Nov 2022 22:03:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1667597240;
+	s=mimecast20190719; t=1667599433;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=YoZ/g2DAWgongxe9b4hSKenV+1Uju4Pu+Tb56vnaUnc=;
-	b=Y0YAndLmOxEUpvp0rXx+IX9akdc/syItKns7d72r8qZG9WQpBh5+YPIZpMjXGb3iFUP79i
-	7o0y/0bIOwCC8V2a39N2BaL9+5jNqDS3XpYaMfpD8iX+XcEVRzwCIrKg96RFhXI5GtdQBp
-	MYTg9hojxEAwDGqrgcURvU/5aeVLMGc=
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
- [209.85.166.200]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=4BKEW1vtM8NNbjWo0hdZBNH0W3ETngUyp+lvPMbVDv8=;
+	b=HlfEl+AhK9UjL6IfxbfaEwqoZMQ7fvpDI50ThHTKi/sYyYR4WYE5W8MHel2p1d6rfxq9F7
+	+MNfCdjvhvVktD6Ws9BX3UE/gRtuWvTHtOr1yq0PHYR2o3nxBHNKwogpSZ1Q675m1XzOoZ
+	npXVV2tfy7F06DTaoWwt+AjOHkw112Y=
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
+ [209.85.166.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-34-VI4Fi2sHPkOzMUFsdWGyjA-1; Fri, 04 Nov 2022 17:27:17 -0400
-X-MC-Unique: VI4Fi2sHPkOzMUFsdWGyjA-1
-Received: by mail-il1-f200.google.com with SMTP id j20-20020a056e02219400b00300a22a7fe0so4675392ila.3
-        for <iommu@lists.linux.dev>; Fri, 04 Nov 2022 14:27:16 -0700 (PDT)
+ us-mta-55-HXuSir4_PeeCUtvtOJLGNw-1; Fri, 04 Nov 2022 18:03:52 -0400
+X-MC-Unique: HXuSir4_PeeCUtvtOJLGNw-1
+Received: by mail-io1-f69.google.com with SMTP id v18-20020a5d9412000000b006bfdf74fa3bso3845155ion.3
+        for <iommu@lists.linux.dev>; Fri, 04 Nov 2022 15:03:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=YoZ/g2DAWgongxe9b4hSKenV+1Uju4Pu+Tb56vnaUnc=;
-        b=3OZ5SA0QADyu2M5B2mNkzLfkTJXICwSAFHfK1aWfzzIC4eSirENXqoO5uaYBAD0TdA
-         uMS5jw8j4YyIWM2f+suKb+7H3qKvYmuVKXyGb1eiLwl8AHk47xQ2qgv3vyRJzV5Uya1Z
-         7PQ/vi7Emp/Z19vtYIq6XlZJ924gg9TED9eBo56qGw7n4JmSZoZp6PS0ZTLD6WcnyLGS
-         yLjY51pMZdUOvbSBmFH0nyLkAJVIq4ugEUEdm457xGuIZTU/T1CIltSQXnwfs/JRk6+9
-         a0/Zm1ptUlXh5dFaool4g77f+XftF5DVE5OSsV84yOUaqk9FserIxU1MhyakOtbz4bvs
-         57WQ==
-X-Gm-Message-State: ACrzQf3nwjzD3bV7XaizRYqcbAOxPz8CrYCv0UAITED/N62SpiJthzA9
-	DUJvEA40Z4KzHMFaZTj3LMmV3Ck+yCnU2ONG6gUDTPaWl5xLNWvfTNki60lls1TI7AiZX+rwIT3
-	H9mxjTKEFZfO5bEM=
-X-Received: by 2002:a05:6e02:214f:b0:2fb:cffb:3182 with SMTP id d15-20020a056e02214f00b002fbcffb3182mr22382688ilv.161.1667597236130;
-        Fri, 04 Nov 2022 14:27:16 -0700 (PDT)
-X-Google-Smtp-Source: AMsMyM6xntdoFJKVfpeppsLDlrkfZ0zh5SfnW45NbHgq32Vi/+W9JWLm/9wuAT8FlOqwG8d2w81aMQ==
-X-Received: by 2002:a05:6e02:214f:b0:2fb:cffb:3182 with SMTP id d15-20020a056e02214f00b002fbcffb3182mr22382662ilv.161.1667597235835;
-        Fri, 04 Nov 2022 14:27:15 -0700 (PDT)
+        bh=4BKEW1vtM8NNbjWo0hdZBNH0W3ETngUyp+lvPMbVDv8=;
+        b=paBgv27e2NUSx2ZC8nsdqj6MLdZYgp1ZBeeYAOr96RHoZg1dwlpPg1xtGmWhlrVzYh
+         6jsikXkgsTDsyU+9jvLmTL2DFDCuTwR2+mwFayArS0Bkozumof+sqippVIPrn0GxtZqL
+         p6ysiWqvONvc63v82ZGJ1f5pCqe3sCIMLIY6yETQR7oije4/vSQfKe+jCDnpAlNvrHhr
+         zsgmV9Iv+l1gpJQWIBHkmN/NPrK+NgZssbfSL0560R4qLW9HUqCSiivMl3kRjc8T3qN5
+         OGVImqpyxx41+q98dHqNRb5SKeSQwi3DrxA7CtdhJ7CsC52JvJ3pz6fHhfL1doqh2n/y
+         yqag==
+X-Gm-Message-State: ACrzQf3VEXTtRuEym70GfqJkhhvv7o3bNlknGZJwsYZmOuEMod9S25Jc
+	3bEtHv+0algQurXckDPcME5PZLDVpgdUlQfcydw8vSQDIaTgUWM3d4u39DpO3l62giIXLIXgB/N
+	06gDYhXpt84t44yc=
+X-Received: by 2002:a05:6602:2d82:b0:6cc:ecf2:74f6 with SMTP id k2-20020a0566022d8200b006ccecf274f6mr22179688iow.103.1667599431270;
+        Fri, 04 Nov 2022 15:03:51 -0700 (PDT)
+X-Google-Smtp-Source: AMsMyM4BSIwnXgrh6WKIO+D6g0FMzzuLatSveMAp7xE1Q1wtwCSalcwPsKFPe4GaCpv4Kv1Id7VEmA==
+X-Received: by 2002:a05:6602:2d82:b0:6cc:ecf2:74f6 with SMTP id k2-20020a0566022d8200b006ccecf274f6mr22179670iow.103.1667599430970;
+        Fri, 04 Nov 2022 15:03:50 -0700 (PDT)
 Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id 67-20020a020a46000000b003636c046e73sm30446jaw.95.2022.11.04.14.27.14
+        by smtp.gmail.com with ESMTPSA id o6-20020a92c686000000b002ff5ac4fd1bsm224381ilg.54.2022.11.04.15.03.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Nov 2022 14:27:15 -0700 (PDT)
-Date: Fri, 4 Nov 2022 15:27:13 -0600
+        Fri, 04 Nov 2022 15:03:50 -0700 (PDT)
+Date: Fri, 4 Nov 2022 16:03:48 -0600
 From: Alex Williamson <alex.williamson@redhat.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
 Cc: Lu Baolu <baolu.lu@linux.intel.com>, bpf@vger.kernel.org, Jonathan
@@ -67,9 +67,10 @@ Cc: Lu Baolu <baolu.lu@linux.intel.com>, bpf@vger.kernel.org, Jonathan
  Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>, Yi Liu
  <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
 Subject: Re: [PATCH v3 00/15] IOMMUFD Generic interface
-Message-ID: <20221104152713.3ae1c409.alex.williamson@redhat.com>
-In-Reply-To: <0-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
+Message-ID: <20221104160348.07aed446.alex.williamson@redhat.com>
+In-Reply-To: <20221104152713.3ae1c409.alex.williamson@redhat.com>
 References: <0-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
+	<20221104152713.3ae1c409.alex.williamson@redhat.com>
 X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -82,100 +83,71 @@ X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 25 Oct 2022 15:12:09 -0300
-Jason Gunthorpe <jgg@nvidia.com> wrote:
+On Fri, 4 Nov 2022 15:27:13 -0600
+Alex Williamson <alex.williamson@redhat.com> wrote:
 
-> [
-> At this point everything is done and I will start putting this work into a
-> git tree and into linux-next with the intention of sending it during the
-> next merge window.
+> On Tue, 25 Oct 2022 15:12:09 -0300
+> Jason Gunthorpe <jgg@nvidia.com> wrote:
 > 
-> I intend to focus the next several weeks on more intensive QA to look at
-> error flows and other things. Hopefully including syzkaller if I'm lucky
-> ]
+> > [
+> > At this point everything is done and I will start putting this work into a
+> > git tree and into linux-next with the intention of sending it during the
+> > next merge window.
+> > 
+> > I intend to focus the next several weeks on more intensive QA to look at
+> > error flows and other things. Hopefully including syzkaller if I'm lucky
+> > ]  
+> 
+> In case this one hasn't been reported yet (with IOMMUFD_VFIO_CONTAINER):
 
-In case this one hasn't been reported yet (with IOMMUFD_VFIO_CONTAINER):
+And...
 
-======================================================
-WARNING: possible circular locking dependency detected
-6.1.0-rc3+ #133 Tainted: G            E     
-------------------------------------------------------
-qemu-system-x86/1731 is trying to acquire lock:
-ffff90d3f5fe3e08 (&iopt->iova_rwsem){++++}-{3:3}, at: iopt_map_pages.part.0+0x85/0xe0 [iommufd]
-
-but task is already holding lock:
-ffff90d3f5fe3d18 (&iopt->domains_rwsem){.+.+}-{3:3}, at: iopt_map_pages.part.0+0x18/0xe0 [iommufd]
-
-which lock already depends on the new lock.
-
-
-the existing dependency chain (in reverse order) is:
-
--> #1 (&iopt->domains_rwsem){.+.+}-{3:3}:
-       down_read+0x2d/0x40
-       iommufd_vfio_ioctl+0x2cc/0x640 [iommufd]
-       iommufd_fops_ioctl+0x14e/0x190 [iommufd]
-       __x64_sys_ioctl+0x8b/0xc0
-       do_syscall_64+0x3b/0x90
-       entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
--> #0 (&iopt->iova_rwsem){++++}-{3:3}:
-       __lock_acquire+0x10dc/0x1da0
-       lock_acquire+0xc2/0x2d0
-       down_write+0x2b/0xd0
-       iopt_map_pages.part.0+0x85/0xe0 [iommufd]
-       iopt_map_user_pages+0x179/0x1d0 [iommufd]
-       iommufd_vfio_ioctl+0x216/0x640 [iommufd]
-       iommufd_fops_ioctl+0x14e/0x190 [iommufd]
-       __x64_sys_ioctl+0x8b/0xc0
-       do_syscall_64+0x3b/0x90
-       entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-other info that might help us debug this:
-
- Possible unsafe locking scenario:
-
-       CPU0                    CPU1
-       ----                    ----
-  lock(&iopt->domains_rwsem);
-                               lock(&iopt->iova_rwsem);
-                               lock(&iopt->domains_rwsem);
-  lock(&iopt->iova_rwsem);
-
- *** DEADLOCK ***
-
-2 locks held by qemu-system-x86/1731:
- #0: ffff90d3f5fe3c70 (&obj->destroy_rwsem){.+.+}-{3:3}, at: get_compat_ioas+0x2b/0x90 [iommufd]
- #1: ffff90d3f5fe3d18 (&iopt->domains_rwsem){.+.+}-{3:3}, at: iopt_map_pages.part.0+0x18/0xe0 [iommufd]
-
-stack backtrace:
-CPU: 0 PID: 1731 Comm: qemu-system-x86 Tainted: G            E      6.1.0-rc3+ #133
+------------[ cut here ]------------
+WARNING: CPU: 4 PID: 1736 at drivers/iommu/iommufd/io_pagetable.c:660 iopt_destroy_table+0x91/0xc0 [iommufd]
+Modules linked in: scsi_transport_iscsi(E) xt_CHECKSUM(E) xt_MASQUERADE(E) xt_conntrack(E) ipt_REJECT(E) nf_nat_tftp(E) nft_objref(E) nf_conntrack_tftp(E) nft_fib_inet(E) nft_fib_ipv4(E) nft_fib_ipv6(E) nft_fib(E) nft_reject_inet(E) nf_reject_ipv4(E) nf_reject_ipv6(E) nft_reject(E) nft_ct(E) nft_chain_nat(E) nf_tables(E) bridge(E) stp(E) llc(E) ebtable_nat(E) ebtable_broute(E) ip6table_nat(E) ip6table_mangle(E) ip6table_raw(E) ip6table_security(E) iptable_nat(E) nf_nat(E) nf_conntrack(E) nf_defrag_ipv6(E) nf_defrag_ipv4(E) iptable_mangle(E) iptable_raw(E) iptable_security(E) ip_set(E) nfnetlink(E) ebtable_filter(E) ebtables(E) ip6table_filter(E) ip6_tables(E) iptable_filter(E) sunrpc(E) intel_rapl_msr(E) intel_rapl_common(E) x86_pkg_temp_thermal(E) intel_powerclamp(E) coretemp(E) snd_hda_intel(E) snd_intel_dspcfg(E) kvm_intel(E) snd_hda_codec(E) snd_hwdep(E) bcache(E) iTCO_wdt(E) snd_hda_core(E) kvm(E) mei_hdcp(E) intel_pmc_bxt(E) at24(E) snd_seq(E) iTCO_vendor_support(E)
+ eeepc_wmi(E) snd_seq_device(E) asus_wmi(E) rapl(E) snd_pcm(E) ledtrig_audio(E) intel_cstate(E) sparse_keymap(E) intel_uncore(E) mei_me(E) snd_timer(E) platform_profile(E) i2c_i801(E) rfkill(E) wmi_bmof(E) snd(E) i2c_smbus(E) soundcore(E) mei(E) lpc_ich(E) ip_tables(E) i915(E) crct10dif_pclmul(E) crc32_pclmul(E) crc32c_intel(E) ghash_clmulni_intel(E) vfio_pci(E) vfio_pci_core(E) irqbypass(E) vfio_virqfd(E) serio_raw(E) i2c_algo_bit(E) drm_buddy(E) drm_display_helper(E) drm_kms_helper(E) cec(E) ttm(E) r8169(E) e1000e(E) drm(E) video(E) wmi(E) mtty(E) mdev(E) vfio(E) iommufd(E) macvtap(E) macvlan(E) tap(E)
+CPU: 4 PID: 1736 Comm: qemu-system-x86 Tainted: G            E      6.1.0-rc3+ #133
 Hardware name: System manufacturer System Product Name/P8H67-M PRO, BIOS 3904 04/27/2013
+RIP: 0010:iopt_destroy_table+0x91/0xc0 [iommufd]
+Code: a8 01 00 00 48 85 c0 75 21 49 83 bc 24 e0 00 00 00 00 75 23 49 8b 84 24 88 01 00 00 48 85 c0 75 25 5b 5d 41 5c c3 cc cc cc cc <0f> 0b 49 83 bc 24 e0 00 00 00 00 74 dd 0f 0b 49 8b 84 24 88 01 00
+RSP: 0018:ffff9c8dc1c63cb0 EFLAGS: 00010282
+RAX: ffff90d454863a80 RBX: ffff90d3f5fe3e40 RCX: 0000000000000000
+RDX: ffffffffffffffff RSI: 0000000000000000 RDI: ffff90d3f5fe3e40
+RBP: 0000000000000000 R08: 0000000000000001 R09: ffff90d43234b240
+R10: 0000000000000000 R11: ffff90d42c703000 R12: ffff90d3f5fe3ca8
+R13: 0000000000000001 R14: ffff90d43ca32138 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff90d7df700000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f3fba3c6000 CR3: 000000009ba26005 CR4: 00000000001726e0
 Call Trace:
  <TASK>
- dump_stack_lvl+0x56/0x73
- check_noncircular+0xd6/0x100
- ? lock_is_held_type+0xe2/0x140
- __lock_acquire+0x10dc/0x1da0
- lock_acquire+0xc2/0x2d0
- ? iopt_map_pages.part.0+0x85/0xe0 [iommufd]
- ? lock_release+0x137/0x2d0
- down_write+0x2b/0xd0
- ? iopt_map_pages.part.0+0x85/0xe0 [iommufd]
- iopt_map_pages.part.0+0x85/0xe0 [iommufd]
- iopt_map_user_pages+0x179/0x1d0 [iommufd]
- iommufd_vfio_ioctl+0x216/0x640 [iommufd]
- iommufd_fops_ioctl+0x14e/0x190 [iommufd]
- __x64_sys_ioctl+0x8b/0xc0
- do_syscall_64+0x3b/0x90
+ iommufd_ioas_destroy+0x2b/0x60 [iommufd]
+ iommufd_fops_release+0x8b/0xe0 [iommufd]
+ __fput+0x94/0x250
+ task_work_run+0x59/0x90
+ do_exit+0x374/0xbd0
+ ? rcu_read_lock_sched_held+0x12/0x70
+ do_group_exit+0x33/0xa0
+ get_signal+0xaf4/0xb20
+ arch_do_signal_or_restart+0x36/0x780
+ ? do_futex+0x126/0x1c0
+ exit_to_user_mode_prepare+0x181/0x260
+ syscall_exit_to_user_mode+0x16/0x50
+ do_syscall_64+0x48/0x90
  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7fd1eee7c17b
-Code: 0f 1e fa 48 8b 05 1d ad 0c 00 64 c7 00 26 00 00 00 48 c7 c0 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa b8 10 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d ed ac 0c 00 f7 d8 64 89 01 48
-RSP: 002b:00007ffd9787b9a8 EFLAGS: 00000206 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fd1eee7c17b
-RDX: 00007ffd9787b9e0 RSI: 0000000000003b71 RDI: 000000000000001c
-RBP: 00007ffd9787ba10 R08: 0000000000000000 R09: 0000000000000000
-R10: 00000000000c0000 R11: 0000000000000206 R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+RIP: 0033:0x7fd1ef7a3750
+Code: Unable to access opcode bytes at 0x7fd1ef7a3726.
+RSP: 002b:00007fd1e21fb5d8 EFLAGS: 00000282 ORIG_RAX: 00000000000000ca
+RAX: fffffffffffffe00 RBX: 0000000000000000 RCX: 00007fd1ef7a3750
+RDX: 0000000000000002 RSI: 0000000000000080 RDI: 00005571b8cf38c0
+RBP: 00007fd1e21fb630 R08: 0000000000000000 R09: 000000000000000b
+R10: 0000000000000000 R11: 0000000000000282 R12: 00007ffd9787d1ae
+R13: 00007ffd9787d1af R14: 00007ffd9787d270 R15: 00007fd1e2200700
  </TASK>
+irq event stamp: 202
+hardirqs last  enabled at (201): [<ffffffffa7e235a2>] syscall_enter_from_user_mode+0x22/0xb0
+hardirqs last disabled at (202): [<ffffffffa7e2da5d>] __schedule+0x7ed/0xd30
+softirqs last  enabled at (0): [<ffffffffa70e2241>] copy_process+0x9f1/0x1e90
+softirqs last disabled at (0): [<0000000000000000>] 0x0
+---[ end trace 0000000000000000 ]---
 
