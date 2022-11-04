@@ -1,193 +1,142 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FF5610FA;
-	Fri,  4 Nov 2022 10:00:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667556029; x=1699092029;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=gQwwB1X1/9G4/YYk46bj7YzOPQSmB5R7/HHWoyPMHxg=;
-  b=UtZXALTMPwI01W3yNKJMYLEleNyJMlg4UPvpJglr0pwP7bb7MOdfj5Io
-   kGzJOlgp3vtHR0gWR2xlC3yvsxOZRAL1dMrFmHoHOWgMTk2Zizn2RFFTQ
-   NVZGUytEfHw2vJmLb4Wk7TOdy2tdl+6fcsKUkYjph1nlhD1S4ujIJziEM
-   9buWhQ96wRjUCvcyLFm4LdGRafMwVztflu6DYgvRtZkUCAw+yzTjZsp5K
-   LZr+cbR5vqRU6nes0pLnN3/KMHK+N34+qbyeNxITVPIvrgmEk4UIn1WN0
-   lC0yep7ecwp9Ye/LPKwVpo9Xf2O4Ki3sAqomo3JY3ceU4OonF+V9nRGJ2
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10520"; a="289647980"
-X-IronPort-AV: E=Sophos;i="5.96,137,1665471600"; 
-   d="scan'208";a="289647980"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2022 03:00:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10520"; a="629673077"
-X-IronPort-AV: E=Sophos;i="5.96,137,1665471600"; 
-   d="scan'208";a="629673077"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orsmga007.jf.intel.com with ESMTP; 04 Nov 2022 03:00:28 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 4 Nov 2022 03:00:27 -0700
-Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 4 Nov 2022 03:00:26 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Fri, 4 Nov 2022 03:00:26 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.109)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Fri, 4 Nov 2022 03:00:26 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RRgl9UZP9otpIKwcE8/mgFCceAoJEdlLVgxryjDb9qtXLB2rZvSuK0n/cdC2oVfU8lDdF39pbC715QE3M1amvClot0k5FpQN4rqjtrhbh8N28JY3EnovlQRsz6nyQIBhM9uxPXrFeGN23n97vx+ZVUKtxTJKUUUzUFym6r48bq+bjG0wiQmwKUqIquo6IqBr16bFEoMt1TWQX7zIAmxorDgb1QrcMekUHYjcKVkuTlEB1R9OAJfNIZfm1I4MiLLKO4+0sliAOciCeTEmi1rPPdtZo6RyodX8HZvok3yJuHb7AJNQdFOnEbOIPeZriEo4SbkA1MYiTF4RHkTALBCOwA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gQwwB1X1/9G4/YYk46bj7YzOPQSmB5R7/HHWoyPMHxg=;
- b=LgrLn9Jh8FoWOUIGjadUCINqOjEGMgpX8ZqGgAgnHjZPEfqNexQWda3OTUGATttCV7hC4d3viV/9L+5MqoLUtKx19re0UECEYDpAlifwW2cn5rl7/ahxsAj5x7UYPUte5yLeSeMySKjCCesIdzQ6SvJlJfcz7HF/5S6T9cVymQA87endqgGngfUSmiyBk8zgBG9F8S6U0FRI2PkypB6qvsWO8C2aJDOYnm8o/X3VlSWSrlCzT8uYT/3G/NIK0dMsSnTK3ndsh2f30Fhjp5cg8y4zbqkoJwatsQLa1K3OR20tSJExe9ZRmSC53xSTxzmGa3+1SCeY9Lzy6T8IkAVYIQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by PH7PR11MB5863.namprd11.prod.outlook.com (2603:10b6:510:135::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.22; Fri, 4 Nov
- 2022 10:00:24 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::737e:211a:bb53:4cd7]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::737e:211a:bb53:4cd7%5]) with mapi id 15.20.5791.022; Fri, 4 Nov 2022
- 10:00:24 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>,
-	"bpf@vger.kernel.org" <bpf@vger.kernel.org>, Jonathan Corbet
-	<corbet@lwn.net>, David Woodhouse <dwmw2@infradead.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, Joerg Roedel
-	<joro@8bytes.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	"llvm@lists.linux.dev" <llvm@lists.linux.dev>, Nathan Chancellor
-	<nathan@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda
-	<ojeda@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Shuah Khan
-	<shuah@kernel.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>
-CC: Alex Williamson <alex.williamson@redhat.com>, Chaitanya Kulkarni
-	<chaitanyak@nvidia.com>, Cornelia Huck <cohuck@redhat.com>, Daniel Jordan
-	<daniel.m.jordan@oracle.com>, David Gibson <david@gibson.dropbear.id.au>,
-	Eric Auger <eric.auger@redhat.com>, Eric Farman <farman@linux.ibm.com>,
-	"Jason Wang" <jasowang@redhat.com>, Jean-Philippe Brucker
-	<jean-philippe@linaro.org>, "Martins, Joao" <joao.m.martins@oracle.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, Matthew Rosato
-	<mjrosato@linux.ibm.com>, "Michael S. Tsirkin" <mst@redhat.com>, Nicolin Chen
-	<nicolinc@nvidia.com>, "Niklas Schnelle" <schnelle@linux.ibm.com>, Shameerali
- Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>, "Liu, Yi L"
-	<yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
-Subject: RE: [PATCH v3 11/15] iommufd: Add a HW pagetable object
-Thread-Topic: [PATCH v3 11/15] iommufd: Add a HW pagetable object
-Thread-Index: AQHY6J1wkejA0Ad3VEK0+/DX7xfUhK4uljBA
-Date: Fri, 4 Nov 2022 10:00:23 +0000
-Message-ID: <BN9PR11MB52762F734CF358C48FDFCB1C8C3B9@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <0-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
- <11-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
-In-Reply-To: <11-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|PH7PR11MB5863:EE_
-x-ms-office365-filtering-correlation-id: 8c026233-2711-45e2-ffef-08dabe4b643e
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: zaLT7W+s/gHqyF5mgiBbbLWNnsTRvI6E8hcZoRqfuIrLlGaHjeSmp4PK1EwDmV0u5aaCVoPGW1q+7m0eLnaSLkp7LB4rwegs/hByNQUK273nBJRpVLzoJRLKy4LEqx0juWs03I+Ne1IRvCdbZkP9Nz98LM3yMNJRM4dzTFF4Wp2yoBDhKm+Z5UjpHP4WiLW1/sS0LYQ2zFxxN+AuZ2cwWh3xUB6NGAgQS2GO+gDi1FDt7PSHB5DnQBpNQmFNJTwNrRzYBljXLtcBoYc/LnrhxZHQr4dgFOfKGFJD3Oc5Z3oUUZOLnrkLMyGBOKYmGwvKgNe69Pdj7TTmsEKkXrJH/NriNFxBBdxH8ohPfGEoo5KkALIVGZvYJIzu5SuwienIdNYJgn64j3AR27Oq0vkIJLU8hC+34e5vVILbPgW3fg3EbiD/Z/ROt+OqZssJeYNGeY/3bJOE21MBuQtc+oh4iZf+vBYWpYYLOTZtnzVuAuBpwKXKcfzOxMTl4HmEzHHMdYssliGZHgI8FPoJY5dZCPu3gQgNXQZHxkvMn0yu0Bi+85Z4jGTGnNKjxIco57+99xXCgA9aTNOeewW7M6Jmp8j6n8ADA1vuTEKCvwLjBsCZyx8XiO9jWdiBnTAThs5yv4U/vbrnuepsvpVi8nO6zYySo3CgLBCL+6qemWwlozICFU0veUX+UYcPR2i3QluMN388YH6ldH62J0SwVswIMxHn9H42VtOYd9fIlqPgx2fVSSwA82BcbM+mKdJ4s5NJc0tfUzunHJyq0ahycxprS5H2b/r90iwt1Jr0LeXgiNI=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(346002)(396003)(136003)(39860400002)(366004)(451199015)(33656002)(7406005)(7416002)(55016003)(82960400001)(4326008)(8936002)(41300700001)(5660300002)(316002)(52536014)(54906003)(71200400001)(66446008)(7696005)(66476007)(2906002)(64756008)(38070700005)(76116006)(122000001)(38100700002)(6506007)(186003)(110136005)(26005)(66946007)(9686003)(86362001)(921005)(66556008)(478600001)(8676002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?a1uGAb0fbnRd/KtMZ6hobw3JX+A3MOUel8Y51edFHIS3yhxLnEPEGySP4Vzn?=
- =?us-ascii?Q?6fLB/vU/p7yZfCTph5rqfOu7nKezshlXLHQBOon/Qz/EJnb4DuQ5IIaNSUEV?=
- =?us-ascii?Q?vpDckZC8iYxrezpe7PiDPZU3GGQb46stY2G3/jBQGDSxB8Zu2bxytt+PZmcJ?=
- =?us-ascii?Q?7z0EzGgvhenpNL08RJp5seM1QAlH13g4kGfPSa6yo+nHCGGCgT9gedlnA/T+?=
- =?us-ascii?Q?rjunRq4FpPoyDwPFSdt0QskpqtzfM7jH9lwo4TRpluE0Qsdyov2WxsMn/VsU?=
- =?us-ascii?Q?ZcFb6gY1Y5a3WuhyvFsXHj90yXVybvq+YpuZaPzKLLU6lzcDufrInsvNWEbj?=
- =?us-ascii?Q?d2ec3pLpe7sQ6JQS2FUdagMRI2mz3rlz8qoGNKvY0LpZ9UlPhhB16rgqU0xC?=
- =?us-ascii?Q?54fwA+XD1drpeb/DM1EquITuqSusAGblA7qiGD/nHU1H3b4iaIXeXVyW/2PQ?=
- =?us-ascii?Q?L3F3xEpdRhBcLK9GWHybgk/8fC9XBgDPMtbgy88gAFwRW9dyaTlrRBYlw42R?=
- =?us-ascii?Q?slV8tMtf6fdoJ2QV4uJZTZ2Ay0rBrMoejX58LUeJ7p4mmZApW0eVfD1erMJr?=
- =?us-ascii?Q?MB9HgQQdbYYLL08VwaxJq0q4Z4tBRt/ZzGwNeBvXQUnXPwyKakRPi7tNMeHX?=
- =?us-ascii?Q?wqcpy88I/OLeVzxtVELJJjgGBjRkdlAcz1WTlu05k9qTfa2Jw9dMpsW1qRbX?=
- =?us-ascii?Q?j21fV2AOcwR4w+zcfsXuVejP2wGoXrlYgu8IVaJDEEI+5tbv6w5eh1vl3nE1?=
- =?us-ascii?Q?SyI+cdmVghH0B/WDuXa5IHZAspt8oCOUH4WdHX3ZbWQUuTnP89Bukq9NMEQE?=
- =?us-ascii?Q?7MGdOeRSWKwZnIrBTe4JyNola2DBPlccVNJkWK5RK5bi7zikpMEPV8tehOMf?=
- =?us-ascii?Q?hg9LZf/01qhz6VlHPwMFVxFaRtIzNwuBm04HyVtGZ/5GF4Ka7URtNlwGb0cX?=
- =?us-ascii?Q?V9Vfqv1z7J2b1edzXkaPIV5/8yjkq8LlYWrharTGfi9S7CdjktVJ3ucQNYc4?=
- =?us-ascii?Q?TyUVxKRJG3oybNiSzLUG3HLiFvDRCzr7Le9wDsJnd+dlU4TRkM2/Fob0uSDF?=
- =?us-ascii?Q?JoONOLkoponUnBnxgGeocZq1s45L5BNLyvm7xSgTC7pB2PX0TlkDWKssSqKj?=
- =?us-ascii?Q?qfg4DejLCGAOk8gZ3ARRWQBIdTaJzZ/58MbP6fbDFlqHK9po9hoatJspWm39?=
- =?us-ascii?Q?KcQH6g2q7HMf+sLao4oX/Cw/4uaF5951iANdCqZpVvYgkM6p36nGa5X02T83?=
- =?us-ascii?Q?7MzuU/vqwQ4YjvcKstqoU8o9bXOBdkFHBXNCBj9MePGzolXDY5aPqp2bwAZ8?=
- =?us-ascii?Q?sOUVLKWLTu3HeP4abAe2Gh0ZQVwPcO9JNaVzT4EGsVuKDX9LCmGWPwQSfr/b?=
- =?us-ascii?Q?HlAUMDysyn4RP31JN/AbzMDS6f+Ou3BSl5qDAW3bsIr/dt1UH/iijrXJWjUn?=
- =?us-ascii?Q?BeiGb4Cobxd9OlZs2RUu1qul7EvMXmZ5ypCgd2vflfKAP/6/7ChDOVNdWqad?=
- =?us-ascii?Q?CCLxUfzvYcBN23dq1o1+S5e2uZgzplxm8ct3n3J0NIKxxiAbZNCPL+uk4azJ?=
- =?us-ascii?Q?mvmbxkcXGyZ9hY7L728brVxkVO+CNaeCVCafs+3C?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 818C87C
+	for <iommu@lists.linux.dev>; Fri,  4 Nov 2022 11:55:29 +0000 (UTC)
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20221104115522euoutp019a0152130fe4415978286e3617cfa5b5~kX6R8_Y322291322913euoutp01F
+	for <iommu@lists.linux.dev>; Fri,  4 Nov 2022 11:55:22 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20221104115522euoutp019a0152130fe4415978286e3617cfa5b5~kX6R8_Y322291322913euoutp01F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1667562922;
+	bh=0bjJJ72NgE7HBes5ZZXZXgX6KwAQSmQyte75G2LW2ao=;
+	h=From:To:Cc:Subject:Date:References:From;
+	b=V1Os/pm3Y+9AIiBd8BHTD1gNuSRg4Nuth01nxWtVDDb7tI6IaMN0igoS5xpHFxXVC
+	 VWrMdtdmUeInTJzM51A0KYxk90oPmHYBgKA10/khxw4jG2rqEEySzYSBjQPKZGHe3k
+	 AWgM9nXJS/6/xIdRFSUZf1DXOT3VG42IV59S4zeM=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+	20221104115521eucas1p25ff86f7c12bec265f0e303a18bd36c10~kX6RmG-nk2214922149eucas1p2G;
+	Fri,  4 Nov 2022 11:55:21 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+	eusmges3new.samsung.com (EUCPMTA) with SMTP id 0C.17.19378.9ADF4636; Fri,  4
+	Nov 2022 11:55:21 +0000 (GMT)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20221104115521eucas1p2ef149555574e8f6cbd1bb3df0bdbbb20~kX6RHZnjq2320023200eucas1p2D;
+	Fri,  4 Nov 2022 11:55:21 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+	20221104115521eusmtrp11dc9d1562fae828dd5ce7f176c062310~kX6RGs-Aa0229402294eusmtrp1O;
+	Fri,  4 Nov 2022 11:55:21 +0000 (GMT)
+X-AuditID: cbfec7f5-a4dff70000014bb2-0e-6364fda9091c
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+	eusmgms2.samsung.com (EUCPMTA) with SMTP id CB.D1.10862.9ADF4636; Fri,  4
+	Nov 2022 11:55:21 +0000 (GMT)
+Received: from AMDC2765.digital.local (unknown [106.120.51.73]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20221104115520eusmtip11fc5ba64fce5fac39d4bb74cd5217eee~kX6QlP4Sq2304223042eusmtip1Z;
+	Fri,  4 Nov 2022 11:55:20 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: iommu@lists.linux.dev, linux-samsung-soc@vger.kernel.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel
+	<joro@8bytes.org>, Will Deacon <will@kernel.org>, Krzysztof Kozlowski
+	<krzysztof.kozlowski@linaro.org>, Alim Akhtar <alim.akhtar@samsung.com>, Sam
+	Protsenko <semen.protsenko@linaro.org>
+Subject: [PATCH] iommu/exynos: Fix driver initialization sequence
+Date: Fri,  4 Nov 2022 12:55:11 +0100
+Message-Id: <20221104115511.28256-1-m.szyprowski@samsung.com>
+X-Mailer: git-send-email 2.17.1
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrJIsWRmVeSWpSXmKPExsWy7djP87or/6YkGxy5oWnxYN42NotfXyws
+	OmdvYLfY+3oru8WM8/uYLNYeuctu8bwPyGq5Y+rA4fHk4Dwmj02rOtk87lzbw+bxYvNMRo++
+	LasYPT5vkgtgi+KySUnNySxLLdK3S+DKePT4MHPBMp6KFR8nMTcwruXqYuTkkBAwkTg5rZGt
+	i5GLQ0hgBaPEsuVrmCGcL4wSDw8cg8p8ZpRobFrABNPycdkHRojEckaJLduesIAkwFo+XlQA
+	sdkEDCW63naxgdgiAjYSV04tAZvELPCXUeLapTmsIAlhAUeJi/P+s4PYLAKqEsumzmYGsXkF
+	bCU+/t/EDrFNXmL1hgPMEHYvh8T+u6ldjBxAtovEq4eJEGFhiVfHt0CVy0icntzDArJLQqCd
+	UWLB7/tMEM4ERomG57cYIaqsJe6c+8UGMohZQFNi/S59iLCjRMe8vewQ8/kkbrwVBAkzA5mT
+	tk1nhgjzSnS0CUFUq0nMOr4Obu3BC5egrvSQaO48yAoJkliJf00H2Scwys1C2LWAkXEVo3hq
+	aXFuemqxcV5quV5xYm5xaV66XnJ+7iZGYGo4/e/41x2MK1591DvEyMTBeIhRgoNZSYT307bk
+	ZCHelMTKqtSi/Pii0pzU4kOM0hwsSuK8bDO0koUE0hNLUrNTUwtSi2CyTBycUg1MXOtifr1K
+	dZhtln29/nHcsecxzZuEW6LPPOdd9WbFOw1v9ehv2Rd73RWqbPwv/2rNjFN48Unz6qLFj1UU
+	V8T/vKLy7ORF+zCpY8IneeawVbNcl7r0Su9E1frvnd8jpMy0zfqnmwkcOZs27Xdyqu9vrRL2
+	aUcPrVhoHfpQJjul8/uMbhEl1Sk8ZVxmxV/tdKwXzXktvDY5aP1z33C22VF6Hv5mZzn+Lend
+	purc/+O/utDF0CkLNEJNpknxxVSdlbshXfM66GxF9uHZAX+UD7u3viy7p9rrYz6x4Un9biEf
+	QbEd8sKH1nuEh+7Nd3xXUzdjkvubS+xHVfY2r4pb8lfy8P6MDTHNF/Nnhr+On1+mxFKckWio
+	xVxUnAgAWjIylHwDAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrILMWRmVeSWpSXmKPExsVy+t/xu7or/6YkG3Q1s1o8mLeNzeLXFwuL
+	ztkb2C32vt7KbjHj/D4mi7VH7rJbPO8DslrumDpweDw5OI/JY9OqTjaPO9f2sHm82DyT0aNv
+	yypGj8+b5ALYovRsivJLS1IVMvKLS2yVog0tjPQMLS30jEws9QyNzWOtjEyV9O1sUlJzMstS
+	i/TtEvQyHj0+zFywjKdixcdJzA2Ma7m6GDk5JARMJD4u+8DYxcjFISSwlFFiyZXbTBAJGYmT
+	0xpYIWxhiT/Xutggij4xSnT2/WQGSbAJGEp0vQVJcHKICNhJXPu8mBmkiFmgkUniwfteRpCE
+	sICjxMV5/9lBbBYBVYllU2eDNfMK2Ep8/L+JHWKDvMTqDQeYJzDyLGBkWMUoklpanJueW2yk
+	V5yYW1yal66XnJ+7iREYltuO/dyyg3Hlq496hxiZOBgPMUpwMCuJ8H7alpwsxJuSWFmVWpQf
+	X1Sak1p8iNEUaN9EZinR5HxgZOSVxBuaGZgamphZGphamhkrifN6FnQkCgmkJ5akZqemFqQW
+	wfQxcXBKNTCJrWxT+fiz8bjsSoafl035IkLKHxheqvfUtLDdt+NGD9Mth8g1++9EtuTeEt/2
+	mEvg982NNnn73+QqH83husx84qVbczVfa+HOi9Ibsid9+PyvV+y+0oN+teiNLvb3zt7RYkyv
+	8Vf+Y//txzHTCd+ObrXs+n2dT7Zz8zn9+yxvLohuMjZ3t5h9OCY9MGb+ut1HLOa9f3/hb98s
+	p3Pm37T84tjmv5VNv1Twz7C8niPtftj6j6H9O5wWm88sFN0YdJMl841BiVzTplmTDnfHSeUu
+	Mz45q2HaFbEtP8tCJvdOmdlyfvNXo7IJvgEmn7t2uhTG/JmySDN1nvLkYx/eWx+6PWf7PD8p
+	JV2NhyIlMt8FlFiKMxINtZiLihMB7q0w8tQCAAA=
+X-CMS-MailID: 20221104115521eucas1p2ef149555574e8f6cbd1bb3df0bdbbb20
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20221104115521eucas1p2ef149555574e8f6cbd1bb3df0bdbbb20
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20221104115521eucas1p2ef149555574e8f6cbd1bb3df0bdbbb20
+References: <CGME20221104115521eucas1p2ef149555574e8f6cbd1bb3df0bdbbb20@eucas1p2.samsung.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8c026233-2711-45e2-ffef-08dabe4b643e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Nov 2022 10:00:23.9552
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: PO7ZNqkfCPnw51JGV8m0tJU59rKU3B4O+35oBd9hUsv+EiUaRZzQD7Kfy2hzCgpDiSpTpKTwEUdlhej91stmrg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB5863
-X-OriginatorOrg: intel.com
 
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Wednesday, October 26, 2022 2:12 AM
->=20
-> The hw_pagetable object exposes the internal struct iommu_domain's to
-> userspace. An iommu_domain is required when any DMA device attaches to
-> an
-> IOAS to control the io page table through the iommu driver.
->=20
-> For compatibility with VFIO the hw_pagetable is automatically created whe=
-n
-> a DMA device is attached to the IOAS. If a compatible iommu_domain
-> already
-> exists then the hw_pagetable associated with it is used for the
-> attachment.
->=20
-> In the initial series there is no iommufd uAPI for the hw_pagetable
-> object. The next patch provides driver facing APIs for IO page table
-> attachment that allows drivers to accept either an IOAS or a hw_pagetable
-> ID and for the driver to return the hw_pagetable ID that was auto-selecte=
-d
-> from an IOAS. The expectation is the driver will provide uAPI through its
-> own FD for attaching its device to iommufd. This allows userspace to lear=
-n
-> the mapping of devices to iommu_domains and to override the automatic
-> attachment.
->=20
-> The future HW specific interface will allow userspace to create
-> hw_pagetable objects using iommu_domains with IOMMU driver specific
-> parameters. This infrastructure will allow linking those domains to IOAS'=
-s
-> and devices.
->=20
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Registering SYSMMU platform driver might directly trigger initializing
+IOMMU domains and performing initial mappings. That time all common
+resources for the SYSMMU driver must be already allocated, so move
+platform driver registration to the end of exynos_iommu_init() function.
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+---
+ drivers/iommu/exynos-iommu.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 45fd4850bacb..85a6a775aea5 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -1432,12 +1432,6 @@ static int __init exynos_iommu_init(void)
+ 		return -ENOMEM;
+ 	}
+ 
+-	ret = platform_driver_register(&exynos_sysmmu_driver);
+-	if (ret) {
+-		pr_err("%s: Failed to register driver\n", __func__);
+-		goto err_reg_driver;
+-	}
+-
+ 	zero_lv2_table = kmem_cache_zalloc(lv2table_kmem_cache, GFP_KERNEL);
+ 	if (zero_lv2_table == NULL) {
+ 		pr_err("%s: Failed to allocate zero level2 page table\n",
+@@ -1446,10 +1440,16 @@ static int __init exynos_iommu_init(void)
+ 		goto err_zero_lv2;
+ 	}
+ 
++	ret = platform_driver_register(&exynos_sysmmu_driver);
++	if (ret) {
++		pr_err("%s: Failed to register driver\n", __func__);
++		goto err_reg_driver;
++	}
++
+ 	return 0;
+-err_zero_lv2:
+-	platform_driver_unregister(&exynos_sysmmu_driver);
+ err_reg_driver:
++	platform_driver_unregister(&exynos_sysmmu_driver);
++err_zero_lv2:
+ 	kmem_cache_destroy(lv2table_kmem_cache);
+ 	return ret;
+ }
+-- 
+2.17.1
+
