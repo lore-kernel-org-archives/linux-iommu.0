@@ -1,388 +1,86 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2061.outbound.protection.outlook.com [40.107.94.61])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f48.google.com (mail-qv1-f48.google.com [209.85.219.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF576A47;
-	Fri,  4 Nov 2022 01:01:26 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SX06+mrHqy/bofCh99wn2wz9a7ZCN/UeXVf7lMDlpQZQpUGZcxfB7KsOuAt1iC6mFzzwSsXJF18hG9ctCJl6cG055QdjuQH+hoLfLvAK16UDo6WS12Mb9ef5u1LETIYr0RbxDZY9nKFxg+pp4tTJOmmZF2nnf6VVqVaGbpauHCrbSpwhKoMz4sFSq5W1TYObIXfQKpnk6orainV9WMl1nHcDvk38kBa4m31OhcItGY//2JQ3YiPdciA87qZUyJT8KKdCpTjTUz6tY1nnJAU3v5L0M26OqNMBeJplwfrovOH3EE88ExlB4HA3YXYI+1MHfK3CBxF6Rt06k29UMzmXGQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lEP7l7aPJ0HVUr1jSlstmTerFfJ5jA8N/g7XJ3oH60Q=;
- b=VS5mRkFesk4Z+xGVJvZHsvkSxcju2YyxwTiUU6LxcvQ1U/AGZL4dA/hq53OG/6/dcI2q29mR4ngaLJoQ1dl/nWrUJil4is5r/D+b5gsjewid43pzTcWos2lsPR3c+yDn7+VsnsPMtb/A66xc3mXCjiwDsjhhqJ4BbNYYiNR53jKC6iubedml39my2n4mb7HnkrsztmtB7iavDXQKy/BpknDl7TdksKzl6uZbXMBPraCiAtaHY3jhq6DFqLQznuLFFQlrEImoDPwQiIiE4+fUhPVaekmv0Q5B6JUKLWtWY2GPg7l9D41QrNKvh0HALaE1RDxA9OwGBi+IuVH4muEGIw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lEP7l7aPJ0HVUr1jSlstmTerFfJ5jA8N/g7XJ3oH60Q=;
- b=PjMxVCty8Xy70+/va2KuN/0fDBOcvQpOUhX85RznRYbzDfKovJB/phZdeYwxMUl15sDR/HlqSAVu8jix3FUoaW0RVAhFKjXYbqjoDwffi6HUOTiD2DHX7rq1E8QC4PQKm+GRjcLP65g0x8icJuGulDlecvvn3mHawsMu3FVU/LBIWvnYBwsEI97nl4jkc7EnnLJWzhfurJ7lEJk6wRXOq9DoxML1vQeDwoa1QusPSUuec5fdiPD9k0QtXPltPsTStZwCJiYbwsf+c84ZjTTm0aae8psdmR+nYyn2Maq/cvrPAHul0Y+SfeUjfNZW05PQm9O6y1aNIASgJrykk5O5og==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DM4PR12MB6566.namprd12.prod.outlook.com (2603:10b6:8:8d::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.16; Fri, 4 Nov
- 2022 01:01:24 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::7a81:a4e4:bb9c:d1de]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::7a81:a4e4:bb9c:d1de%6]) with mapi id 15.20.5769.015; Fri, 4 Nov 2022
- 01:01:24 +0000
-Date: Thu, 3 Nov 2022 22:01:17 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>, bpf@vger.kernel.org,
-	Jonathan Corbet <corbet@lwn.net>,
-	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-	linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
-	Nick Desaulniers <ndesaulniers@google.com>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>
-Cc: Alex Williamson <alex.williamson@redhat.com>,
-	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
-	Cornelia Huck <cohuck@redhat.com>,
-	Daniel Jordan <daniel.m.jordan@oracle.com>,
-	David Gibson <david@gibson.dropbear.id.au>,
-	Eric Auger <eric.auger@redhat.com>,
-	Eric Farman <farman@linux.ibm.com>,
-	Jason Wang <jasowang@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Joao Martins <joao.m.martins@oracle.com>, kvm@vger.kernel.org,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-	Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
-Subject: Re: [PATCH v3 15/15] iommufd: Add a selftest
-Message-ID: <Y2RkXV+q0Q6bdTde@nvidia.com>
-References: <0-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
- <15-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <15-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
-X-ClientProxiedBy: BL0PR1501CA0028.namprd15.prod.outlook.com
- (2603:10b6:207:17::41) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8CE5A47
+	for <iommu@lists.linux.dev>; Fri,  4 Nov 2022 01:45:40 +0000 (UTC)
+Received: by mail-qv1-f48.google.com with SMTP id o8so2363042qvw.5
+        for <iommu@lists.linux.dev>; Thu, 03 Nov 2022 18:45:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=idTS4SelBRvz9HEBMSJGvE/A1qHqs1yN4on3ybwNC48=;
+        b=OjBnP9x2dKU/TwQkPcpAefniTLnh89qNp0UZAZEcxTJgMM58mGfFQzaX621zsY5Nck
+         ojldyt/w1Mp/fw3IvEb4nFNkFczmPgS8rCXVvyEManOZPfKibqdAyj2TqJz12i+/0zvD
+         Ao31Q6GvcP3uoAid5T5ydbO4eiU3YR+OXDByETT64y49+Jvy5YZzWGpuJI1//a9LsfM+
+         Y/c3wGC2hOgBDqc7+4emqRJphavau+7wvhKwNODuxJgWfXXtCkyQqYuqY9Szt95If0o0
+         JPJBq8eU7RcxwIUCJ8nVEW8BPz7YatV+Lux05ccZzKHU/cYjSSlwmr/+LOb84VRXRfi+
+         LXWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=idTS4SelBRvz9HEBMSJGvE/A1qHqs1yN4on3ybwNC48=;
+        b=PD7FWRKkRQp0T60p6RreZ2nst57w1Qc/RRs3Oy80wy73ou9rfEpgYplalNv0TvWotP
+         U5g/mmI5N6jrfFjRBsx8mbDzKesd4gdysjgf5Z6m71YraZrYP3zJ60UUW8C5vRz3bXfi
+         tiy7WWVMcDtTKhrrEQ/OE1qpQZ4L+ayr6pfeux5hAnJgZgX/btFMAd3lHInY/qCZToNQ
+         kcLXuOgr9MzO1boXgCRqLcqUjH2InN+/f1Y/z5zoNCJTWZF87crE6B6Wj6p/oeZNFZRM
+         BEBwF5qaxvoPGfGHyhWCXD6uWcuW3Ms1qLYoyJDqzzKPcdpTEaHop5TQmyDFG4tKEu8v
+         SZzg==
+X-Gm-Message-State: ACrzQf0IV90xtNgv5/A3mrrazXH9ZPdCnJEalhwKHHKChyefn4Ne0jfm
+	VW7APoAgBFDTg8zLOl4eqKG8Eg==
+X-Google-Smtp-Source: AMsMyM5+T0lH6IliHmdWswvFwDwmXCa63u4RyjwkNBrqSnB0voVqyMdUppgaAB0i0IVqxZZcy9gF0w==
+X-Received: by 2002:a05:6214:268a:b0:4bb:62a8:990 with SMTP id gm10-20020a056214268a00b004bb62a80990mr29273628qvb.75.1667526339806;
+        Thu, 03 Nov 2022 18:45:39 -0700 (PDT)
+Received: from ?IPV6:2601:586:5000:570:da2a:9e7e:ddb5:dfa1? ([2601:586:5000:570:da2a:9e7e:ddb5:dfa1])
+        by smtp.gmail.com with ESMTPSA id g14-20020a05620a218e00b006ce580c2663sm1865195qka.35.2022.11.03.18.45.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Nov 2022 18:45:39 -0700 (PDT)
+Message-ID: <bac94304-794f-79ee-5ad3-0363121e0305@linaro.org>
+Date: Thu, 3 Nov 2022 21:45:38 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB6566:EE_
-X-MS-Office365-Filtering-Correlation-Id: 740c9bbb-14f0-4a78-de20-08dabe001809
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	GT2zdRz4Iqi6dhj1K6EwRfWcrfghKX5UQ/vbo1fG3W76E9qNK2oel17DJMe/qP6ZbW46S8wWMv38cSyfd8GjxoLczWW10oxWvdzjpoCqq8B5yMpW0xwyrULhxBT5Y00BM3Fa8yA06FNPs107xNvZ/su7IWGgI43S8ue1242cJmmKpKhrDqzbhzJzPuZFVSY0dTY+Im9hIjS0XPA9oDrvKdGmrnTIa23lXd6M+RXkqSiXC1bqTgiqEnh1llXoUjl/ekGtizzqntWrinvTkIi0MFhOx53aAR7OsaAl7BcUMNfKEXE7kgE4waLSAoNgfY3LCEBUMBVV+qGK7ZdMZ1ALIFbEEiU/tcd4AwWS6S773O8EtAlmu6S9aVMXvXj4gIaJZDTWrq+/yEiTEDT1yHku8mzZX4bJN1CE0iraIIgYv/0KD3xEQBS/cWvXqJjTFtPlN1eU36HjRpx6Jx/5HS2qXaqrhXJGOq14Qms+xFmC11i0qJ/+h3EaTku0PhedzDDZzn/LpohwAFOS6qKHwEq0+/eflNJlYtVQ9L1sPEsoU5Z3q7WYhgFT2MoQdZ56ftg47GpImQgqqXZC1/zHBp2sJ0FGIRMcO/tigx0JHDrv/oqdYonQ6JIgdcNNh8iDk4nmuvMtUkPBd0fITCTKVJueUxAo/LOwMjB/H7QODno1mldKERxCxtYTeaZ4cx4HAECiOY7ClG8scPCojnfO5hH3H3TPXR4mOAIDOCjcAdoa6u7Cr5e2Z43rBfblq1eYRxJ4JKBva1ipnkk1/D/nNIGbmg==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(376002)(366004)(136003)(39860400002)(346002)(451199015)(8936002)(2616005)(83380400001)(4326008)(316002)(36756003)(26005)(6666004)(5660300002)(186003)(7416002)(6512007)(66946007)(66556008)(8676002)(66476007)(41300700001)(6506007)(2906002)(7406005)(6486002)(54906003)(921005)(38100700002)(86362001)(110136005)(478600001)(67856001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?GaCzzxWX2pFPtKET2t2+m8nZyT4BC5i4k8NGyPr4hIaTMZW8UFUkDRyRZXLl?=
- =?us-ascii?Q?gtgPtvA1gP/pZSBKA6iXPORJu4UFJN9JESr2e7Z9UrbXhYMM+CGRVq4+tLr4?=
- =?us-ascii?Q?kxWuFcHdgLp3QIWktq8+2Bqdc2CkgTjd8FoJgswpOjh7lIKlWKr6kT5UvcoY?=
- =?us-ascii?Q?wuuD3gOdbEhGjxJuawGkVUg8vv9/1swk0RsAPSR9CEuOT/5MA/i19nhaa+gr?=
- =?us-ascii?Q?OMX9Q9AHYmIdM3v/HbsScjJeyyEUOtwEJz893puAbyvW1wjlOxszvHQTBVxZ?=
- =?us-ascii?Q?xZhDyKU+TEwgnO9+aRqVUfGh0ArJi+ANCxtBnAhWbO6M9osz8StPXFv27r1I?=
- =?us-ascii?Q?k69OftGlWZyewbKJHvlx42MKhpH97oH4ZWpfoGh0wb6+1imdvqBx1MTs8Soe?=
- =?us-ascii?Q?VEqQsWod6DqPsy7/XMunXoJeDWDputILzb3xINEOqYmTyVq72xU5uU+UzCQz?=
- =?us-ascii?Q?n1gvyXPuBL5Geckd7s4GT6NcJu0SOlbQ3BWlhx6Hva1BrkukpIsrfJXyvH2s?=
- =?us-ascii?Q?pfxWMUevZESTe9KuI5C4elHCppU1C7BFRGdz390TX6xqnlnlFTJ4C4lH/fjB?=
- =?us-ascii?Q?0fxEJnr42h8IhwmurqQ1FKtMUFXJmilItB7YcwdV95il+dFwDem3RprK8uiK?=
- =?us-ascii?Q?yYiZ3vh8OSmbdyXTLnXqSkDnLC3dpe3eZZI5dqCJS2AudLx7mJAYdWb7y1ih?=
- =?us-ascii?Q?6utfT1pfUxaIwgGC9G9ovJ8rTc28W9ohp2fHzBefM6m9LHvNcwPzhccVg/o4?=
- =?us-ascii?Q?4CaqKQiVHN1NMaKIEXDgbPUCkUa9hokjOMAyd0uOnxq/DF3Idj0VjjFWjdH9?=
- =?us-ascii?Q?dWf/FSQxqmIavx/R6FVNpVhI1RVq5yt/GffVap0X8aimhaEllbI+6HLV/8GX?=
- =?us-ascii?Q?gR5fjC1DyhZcZO/Trr7HzXJ0/JhphNolNZRic43TlneBWjbS3wTB4liRj90O?=
- =?us-ascii?Q?krafBZvw7bKqkja2hmwn0CoI7WKNc8nPhTNlNgDP+Aj5PNsTrV1ZNIezOiv2?=
- =?us-ascii?Q?9wcTnukIz/XqMlSDXkPwrNYiKdFTYaiJCSK0RcFxSuF+o+qibO4I9doMMhRs?=
- =?us-ascii?Q?79u/6TS3mzZkwyuLWx/vOdd9gORsOtG6hunYIUq+YZ8NvcoBMHe3Om0e3oc5?=
- =?us-ascii?Q?WSKxoMBfa3AiBx+NMrEcLOsQsSD3q04lF9Og2x7EZLBsButcFc9n2JeiRjau?=
- =?us-ascii?Q?xu71rcDTyNdYzWC0ep9zqZo2UmRxaCVUaHZ06aRUhzVrpsCeSot3+AskVTfk?=
- =?us-ascii?Q?pOCNuOnsKxxdQq5pFak2Zjz3HY7dJ3aE/ZLyMEzajIq5ilO4A9lAKJ0g1hoY?=
- =?us-ascii?Q?W5UXILyxL9RgD/BbckoZ67SiNVLIW/J0dcvqDzxpNgxXVEsgqk/YJGRZnMcj?=
- =?us-ascii?Q?6kVIdXg2lGvqc/AMKSGSMr1K235Ed/ilQVV/FNbhoVc+KxyyOZpDPDHbC/K+?=
- =?us-ascii?Q?/XRFXIYqelrGzssjFJRDSPaA9Bsn2ZKy1pB1ZMq83q5M4eO6pVESz/Pzr8if?=
- =?us-ascii?Q?+TKqabPdBIFYn0YOMhMdRpgxiGcm07LJAJneYUwRSPTXft/pWNRZLYibvoU9?=
- =?us-ascii?Q?BWlEBgtsnqKqWbxHkQo=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 740c9bbb-14f0-4a78-de20-08dabe001809
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Nov 2022 01:01:24.0955
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Zz0Ii0WcSxn0UAxoQsHf8PfmUbdgwRH2ia5SzQE6sGhqRwjxVQxR4uC8U7bO9zAL
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6566
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH v3 1/2] dt-bindings: iommu: arm-smmu: add sdm670
+ compatible
+Content-Language: en-US
+To: Richard Acayan <mailingradian@gmail.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+ Konrad Dybcio <konrad.dybcio@somainline.org>,
+ Bjorn Andersson <andersson@kernel.org>,
+ Sai Prakash Ranjan <quic_saipraka@quicinc.com>, Vinod Koul
+ <vkoul@kernel.org>, Emma Anholt <emma@anholt.net>,
+ Rob Clark <robdclark@chromium.org>, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, devicetree@vger.kernel.org
+References: <20221103232632.217324-1-mailingradian@gmail.com>
+ <20221103232632.217324-2-mailingradian@gmail.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221103232632.217324-2-mailingradian@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Tue, Oct 25, 2022 at 03:12:24PM -0300, Jason Gunthorpe wrote:
+On 03/11/2022 19:26, Richard Acayan wrote:
+> The Snapdragon 670 needs the IOMMU for GENI I2C. Add a compatible string in
+> the documentation to represent its support.
+> 
+> Signed-off-by: Richard Acayan <mailingradian@gmail.com>
 
-> +static void iommufd_test_access_unmap(void *data, unsigned long iova,
-> +				      unsigned long length)
-> +{
-> +	unsigned long iova_last = iova + length - 1;
-> +	struct selftest_access *staccess = data;
-> +	struct selftest_access_item *item;
-> +	struct selftest_access_item *tmp;
-> +
-> +	spin_lock(&staccess->lock);
-> +	list_for_each_entry_safe(item, tmp, &staccess->items, items_elm) {
-> +		if (iova > item->iova_end || iova_last < item->iova)
-> +			continue;
-> +		list_del(&item->items_elm);
-> +		spin_unlock(&staccess->lock);
-> +		iommufd_access_unpin_pages(staccess->access, item->iova,
-> +					   item->length);
-> +		kfree(item);
-> +		spin_lock(&staccess->lock);
-> +	}
-> +	spin_unlock(&staccess->lock);
-> +}
+There is ongoing rework of these bindings, so something needs rebase,
+but FWIW:
 
-> +static int iommufd_test_access_pages(struct iommufd_ucmd *ucmd,
-> +				     unsigned int access_id, unsigned long iova,
-> +				     size_t length, void __user *uptr,
-> +				     u32 flags)
-> +{
-> +	struct iommu_test_cmd *cmd = ucmd->cmd;
-> +	struct selftest_access_item *item;
-> +	struct selftest_access *staccess;
-> +	struct page **pages;
-> +	size_t npages;
-> +	int rc;
-> +
-> +	if (flags & ~MOCK_FLAGS_ACCESS_WRITE)
-> +		return -EOPNOTSUPP;
-> +
-> +	staccess = iommufd_access_get(access_id);
-> +	if (IS_ERR(staccess))
-> +		return PTR_ERR(staccess);
-> +
-> +	npages = (ALIGN(iova + length, PAGE_SIZE) -
-> +		  ALIGN_DOWN(iova, PAGE_SIZE)) /
-> +		 PAGE_SIZE;
-> +	pages = kvcalloc(npages, sizeof(*pages), GFP_KERNEL_ACCOUNT);
-> +	if (!pages) {
-> +		rc = -ENOMEM;
-> +		goto out_put;
-> +	}
-> +
-> +	rc = iommufd_access_pin_pages(staccess->access, iova, length, pages,
-> +				      flags & MOCK_FLAGS_ACCESS_WRITE);
-> +	if (rc)
-> +		goto out_free_pages;
-> +
-> +	rc = iommufd_test_check_pages(
-> +		uptr - (iova - ALIGN_DOWN(iova, PAGE_SIZE)), pages, npages);
-> +	if (rc)
-> +		goto out_unaccess;
-> +
-> +	item = kzalloc(sizeof(*item), GFP_KERNEL_ACCOUNT);
-> +	if (!item) {
-> +		rc = -ENOMEM;
-> +		goto out_unaccess;
-> +	}
-> +
-> +	item->iova = iova;
-> +	item->length = length;
-> +	spin_lock(&staccess->lock);
-> +	item->id = staccess->next_id++;
-> +	list_add_tail(&item->items_elm, &staccess->items);
-> +	spin_unlock(&staccess->lock);
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-I haven't been remarking on the bugs that syzkaller finds in the test
-suite itself (sigh), but this one is surprising and complicated enough
-to deserve some wider attention.
 
-VFIO has a protocol which has been mapped into iommufd allowing an
-external driver to convert IOVA to struct pages *. iommufd natively
-represents this as the sequence:
+Best regards,
+Krzysztof
 
-  access = iommufd_access_create(ops)
-  iommufd_access_pin_pages(access, iova, length, pages)
-  iommufd_access_unpin_pages(access, iova, length)
-
-One of the quirks of the VFIO design is that if userspace does an
-unmap then the unmap shall succeed, but like in a HW iommu, the above
-pin_pages is revoked and the external driver must stop accessing that
-memory. iommufd achieves this by calling a callback:
-
-static const struct iommufd_access_ops selftest_access_ops = {
-	.unmap = iommufd_test_access_unmap,
-};
-
-Which has the invariant that upon return the unpin_pages must be
-completed.
-
-This all sounds simple enough, but when you throw syzkalller at this
-and it generates all kinds of races it generates something like this:
-
-            CPU1                         CPU2                 CPU3
-    iommufd_access_create()
-    iommufd_access_pin_pages()
-                                       unmap_all()
-                                         iommufd_test_access_unmap()
-                                                            unmap_all()
-                                                             iommufd_test_access_unmap()
-
-    spin_lock(&staccess->lock);
-    list_add_tail(&item->items_elm, &staccess->items);
-
-And of course since the list_add_tail is in the wrong order it means
-iommufd_test_access_unmap() doesn't see it and doesn't undo it,
-triggering a WARN_ON.
-
-The only way I can see to solve this is to hold a serializing lock
-across iommufd_access_pin_pages() so that neither
-iommufd_test_access_unmap() can progress until both the pin is
-completed and the record of the pin is stored.
-
-Fortunately in the iommufd design we can hold a lock like this across
-these calls, and in the op callback, without deadlocking. I can't
-recall if vfio can do the same, I suspect not since I had in my mind I
-needed to avoid that kind of locking for deadlock reasons..
-
-I doubt any mdev drivers do this properly, so this will be some
-oddball bugs. Thankfully it doesn't harm kernel integrity, but it does
-leave a mess for a userspace vIOMMU which is tracking a guest command
-to unmap an IOVA range and the kernel chucked out a WARN_ON and told
-it EDEADLOCK. I guess sleep and retry?
-
-Anyhow, the below seems to have fixed it. And this is the last open
-syzkaller bug, the rest were dups of the prior one. Now we wait for it
-to find something else.
-
-Jason
-
-@@ -420,7 +420,7 @@ static int iommufd_test_md_check_refs(struct iommufd_ucmd *ucmd,
- struct selftest_access {
- 	struct iommufd_access *access;
- 	struct file *file;
--	spinlock_t lock;
-+	struct mutex lock;
- 	struct list_head items;
- 	unsigned int next_id;
- 	bool destroying;
-@@ -458,19 +458,17 @@ static void iommufd_test_access_unmap(void *data, unsigned long iova,
- 	struct selftest_access_item *item;
- 	struct selftest_access_item *tmp;
- 
--	spin_lock(&staccess->lock);
-+	mutex_lock(&staccess->lock);
- 	list_for_each_entry_safe(item, tmp, &staccess->items, items_elm) {
- 		if (iova > item->iova + item->length - 1 ||
- 		    iova_last < item->iova)
- 			continue;
- 		list_del(&item->items_elm);
--		spin_unlock(&staccess->lock);
- 		iommufd_access_unpin_pages(staccess->access, item->iova,
- 					   item->length);
- 		kfree(item);
--		spin_lock(&staccess->lock);
- 	}
--	spin_unlock(&staccess->lock);
-+	mutex_unlock(&staccess->lock);
- }
- 
- static int iommufd_test_access_item_destroy(struct iommufd_ucmd *ucmd,
-@@ -484,19 +482,19 @@ static int iommufd_test_access_item_destroy(struct iommufd_ucmd *ucmd,
- 	if (IS_ERR(staccess))
- 		return PTR_ERR(staccess);
- 
--	spin_lock(&staccess->lock);
-+	mutex_lock(&staccess->lock);
- 	list_for_each_entry(item, &staccess->items, items_elm) {
- 		if (item->id == item_id) {
- 			list_del(&item->items_elm);
--			spin_unlock(&staccess->lock);
- 			iommufd_access_unpin_pages(staccess->access, item->iova,
- 						   item->length);
-+			mutex_unlock(&staccess->lock);
- 			kfree(item);
- 			fput(staccess->file);
- 			return 0;
- 		}
- 	}
--	spin_unlock(&staccess->lock);
-+	mutex_unlock(&staccess->lock);
- 	fput(staccess->file);
- 	return -ENOENT;
- }
-@@ -510,6 +508,7 @@ static int iommufd_test_staccess_release(struct inode *inode,
- 		iommufd_test_access_unmap(staccess, 0, ULONG_MAX);
- 		iommufd_access_destroy(staccess->access);
- 	}
-+	mutex_destroy(&staccess->lock);
- 	kfree(staccess);
- 	return 0;
- }
-@@ -536,7 +535,7 @@ static struct selftest_access *iommufd_test_alloc_access(void)
- 	if (!staccess)
- 		return ERR_PTR(-ENOMEM);
- 	INIT_LIST_HEAD(&staccess->items);
--	spin_lock_init(&staccess->lock);
-+	mutex_init(&staccess->lock);
- 
- 	filep = anon_inode_getfile("[iommufd_test_staccess]",
- 				   &iommfd_test_staccess_fops, staccess,
-@@ -662,10 +661,20 @@ static int iommufd_test_access_pages(struct iommufd_ucmd *ucmd,
- 		goto out_put;
- 	}
- 
-+	/*
-+	 * Drivers will need to think very carefully about this locking. The
-+	 * core code can do multiple unmaps instantaneously after
-+	 * iommufd_access_pin_pages() and *all* the unmaps must not return until
-+	 * the range is unpinned. This simple implementation puts a global lock
-+	 * around the pin, which may not suit drivers that want this to be a
-+	 * performance path. drivers that get this wrong will trigger WARN_ON
-+	 * races and cause EDEADLOCK failures to userspace.
-+	 */
-+	mutex_lock(&staccess->lock);
- 	rc = iommufd_access_pin_pages(staccess->access, iova, length, pages,
- 				      flags & MOCK_FLAGS_ACCESS_WRITE);
- 	if (rc)
--		goto out_free_pages;
-+		goto out_unlock;
- 
- 	/* For syzkaller allow uptr to be NULL to skip this check */
- 	if (uptr) {
-@@ -684,25 +693,22 @@ static int iommufd_test_access_pages(struct iommufd_ucmd *ucmd,
- 
- 	item->iova = iova;
- 	item->length = length;
--	spin_lock(&staccess->lock);
- 	item->id = staccess->next_id++;
- 	list_add_tail(&item->items_elm, &staccess->items);
--	spin_unlock(&staccess->lock);
- 
- 	cmd->access_pages.out_access_pages_id = item->id;
- 	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
- 	if (rc)
- 		goto out_free_item;
--	goto out_free_pages;
-+	goto out_unlock;
- 
- out_free_item:
--	spin_lock(&staccess->lock);
- 	list_del(&item->items_elm);
--	spin_unlock(&staccess->lock);
- 	kfree(item);
- out_unaccess:
- 	iommufd_access_unpin_pages(staccess->access, iova, length);
--out_free_pages:
-+out_unlock:
-+	mutex_unlock(&staccess->lock);
- 	kvfree(pages);
- out_put:
- 	fput(staccess->file);
