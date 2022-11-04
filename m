@@ -1,134 +1,87 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com [209.85.222.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC36A79FA
-	for <iommu@lists.linux.dev>; Fri,  4 Nov 2022 13:23:10 +0000 (UTC)
-Received: by mail-pl1-f172.google.com with SMTP id l2so4830871pld.13
-        for <iommu@lists.linux.dev>; Fri, 04 Nov 2022 06:23:10 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A4DD1859
+	for <iommu@lists.linux.dev>; Fri,  4 Nov 2022 13:46:45 +0000 (UTC)
+Received: by mail-qk1-f179.google.com with SMTP id z30so3019425qkz.13
+        for <iommu@lists.linux.dev>; Fri, 04 Nov 2022 06:46:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=FGHJvH5/D8AJZ7n2XCmfVLOv2o6AE51FHJzxEvvVE44=;
-        b=BpgoUe38NeL/o/D6Jm/NVObs1UqmNYQJk47LgTYcILr2lQXRlv/9sKM9HQlcgVBo0R
-         e3kReny/m+oeMyWwL0tjLmEL4kp4brYzECmLyzQ48cBxDVInWKvOqaLLSTdoO+ESr0D8
-         b2nbQqakZKOmyEuAtCtFW8azxaP6+sAXeqQlw2ZPvraYgBjcTajNMFH1c4v6S/dhAG3u
-         tsASK1xNJzPqojy1VufjKAS7Mg8UdRZERLoY8fECuiWNbS2QEfSoQ8xsKzkmOvYQZjMb
-         AG2z8+ZMVLFMjk/Ux8j1YMCjdfGFzQb1DcAcbIgjE9r12h0MJjHglgvkQug6WRA6+EFn
-         tqYw==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+14ZUWUEMyjcOtsdl5nm/jkKpjvcaDV8XzIujT67FME=;
+        b=emY++djerGm0lszovpr9Vd21PpMd2jQrNZj5Bm5+El/7axZfaUPx03EX+joPBi3JOR
+         foCSvuo2+ptDMX9jhhVzuudgBAmDweLlg0vEuBWdMmVWmMokkd2JN5gRIGxVQq7ggK8C
+         jnV+/Oi7Tbw9v3aKFhHHrKIy87EUItUyHn+kk9JQldlzCggyf+LOyyLcVMgFPq0spEni
+         zcFlzW9Uf45dlopko0F8ORhfvlN4NvZr2VQzxfYNFcNjsUwcbhEUJDj7iOYtQroJxAXf
+         Rcj2tCwKxRoXPbotImvGB3JqSmPk6J5GZBSb7mFDcC4jTOK9cG4ICKytnRRZiJqY9k/S
+         UlNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=FGHJvH5/D8AJZ7n2XCmfVLOv2o6AE51FHJzxEvvVE44=;
-        b=V6MwIsH7E/rvyVwaZaBWMWxNbAiLxoJNzqQGtnTtWuVZ6nVnDSErqBd5cRviNSFMnR
-         HV9OZIw/5ZQVESa8fA+vbm4EuhMrjq28VNvjBBa1PChcXMfYyMVGnSBr+eVvbLF96vt1
-         JGUnGmnj1yw7biKq+4/6L4mHkchKgv3DkIkT1iS2NQmK/Ol0nBWkmT+ugwtj5npd3LY8
-         uJIrRCRGJ9ps+OaKm9LcTIKAOcyeyVWx9akZ3I2d/MxFH95uaIjTSsCuxMMMACFTdFG1
-         +8rjB3G145uiC8SrIYdHF5LGMrXY16+9fZVG09SIfyFUXKJkJgSRSr400VhbS4zmJuO1
-         ApXQ==
-X-Gm-Message-State: ACrzQf31pWFtz43dMopi9yo9jU85euGbwEkU1Cu3kereI4ad3Zut1xeu
-	PnIlevrHo5lMLppmdUVwMSkJknKAEb4VCEU78InoIQ==
-X-Google-Smtp-Source: AMsMyM7BZsnvLNkCl2tAKwLlXTokCs8ai7sZntekz1mF/3r2vOjkKVkB/V/1pWQJoW8MHgAqbU9RpQ0IY7WaYqrOulA=
-X-Received: by 2002:a17:902:e952:b0:17c:7aaa:c679 with SMTP id
- b18-20020a170902e95200b0017c7aaac679mr35952660pll.74.1667568190214; Fri, 04
- Nov 2022 06:23:10 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=+14ZUWUEMyjcOtsdl5nm/jkKpjvcaDV8XzIujT67FME=;
+        b=lRl+V0OPP3giiXZPe2Xs0o4dnKF7NdZx8teE7kH9mDviaiNwX7mibIznR7i5IXmPYF
+         02v8WC8E4NDYZMq4MBP20eZu0jlnDDRktPB9y1QfslNHuXamEox71DAq+h7caeK8+g5o
+         MA6mKCm0O7HuaWyZmUxamrzZ/9SUrpEnNJ3k+eqA+VVKev9w7DNcqWgTmuQTamxKvqc6
+         K7tbDEwx3ivYh07jbSYQ6EGHbvGQc9foHxV1QqFruBY/tdwviLX3YKgqcTfEU4Cske4J
+         D5dvh5ZglsExmaJK1en7FOZwLubzBjjJnC7zYhDFXrF3ULzab9CEXKdZvKZlqI1Py/KO
+         8utw==
+X-Gm-Message-State: ACrzQf0oO6Jzcaw7jYOLSyFTHUf+G9eekVOJDl3OP1yV3DSY0EeFI1j9
+	auI1mE5tIOW9qRSXDad8kcZgsA==
+X-Google-Smtp-Source: AMsMyM6DU+/lwsr/Q2kZzSsB9Lk0Dfgkv/qiMhXHBpS9JySuwMnyIwbnfcNc1Qkh1nbNtPUJFCjqtw==
+X-Received: by 2002:a05:620a:1337:b0:6fa:2ab0:503e with SMTP id p23-20020a05620a133700b006fa2ab0503emr20386421qkj.348.1667569604039;
+        Fri, 04 Nov 2022 06:46:44 -0700 (PDT)
+Received: from ?IPV6:2601:586:5000:570:aad6:acd8:4ed9:299b? ([2601:586:5000:570:aad6:acd8:4ed9:299b])
+        by smtp.gmail.com with ESMTPSA id f22-20020ac84996000000b0039953dcc480sm2463057qtq.88.2022.11.04.06.46.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Nov 2022 06:46:43 -0700 (PDT)
+Message-ID: <15eb2870-90b2-05dd-5a24-eef9dab6b31f@linaro.org>
+Date: Fri, 4 Nov 2022 09:46:42 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CGME20221103195201eucas1p2a6ec2df41ebac3d9ccbb0b252c2cad34@eucas1p2.samsung.com>
- <20221103195154.21495-1-semen.protsenko@linaro.org> <a7d9cd18-a328-209c-c89f-afdcb7db3eb0@samsung.com>
-In-Reply-To: <a7d9cd18-a328-209c-c89f-afdcb7db3eb0@samsung.com>
-From: Sam Protsenko <semen.protsenko@linaro.org>
-Date: Fri, 4 Nov 2022 14:22:57 +0100
-Message-ID: <CAPLW+4nrehDSNbjNzh5jWVWH3dMoN+YmXPQfpaTrqB1jjzHT-w@mail.gmail.com>
-Subject: Re: [PATCH v2 0/6] iommu/exynos: Convert to a module
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, Alim Akhtar <alim.akhtar@samsung.com>, 
-	Janghyuck Kim <janghyuck.kim@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, 
-	Daniel Mentz <danielmentz@google.com>, David Virag <virag.david003@gmail.com>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-samsung-soc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH v2 2/6] iommu/exynos: Fix retval on getting clocks in
+ probe
+Content-Language: en-US
+To: Sam Protsenko <semen.protsenko@linaro.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>,
+ Alim Akhtar <alim.akhtar@samsung.com>,
+ Janghyuck Kim <janghyuck.kim@samsung.com>,
+ Cho KyongHo <pullip.cho@samsung.com>, Daniel Mentz <danielmentz@google.com>,
+ David Virag <virag.david003@gmail.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-samsung-soc@vger.kernel.org
+References: <20221103195154.21495-1-semen.protsenko@linaro.org>
+ <20221103195154.21495-3-semen.protsenko@linaro.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221103195154.21495-3-semen.protsenko@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Fri, 4 Nov 2022 at 13:10, Marek Szyprowski <m.szyprowski@samsung.com> wrote:
->
-> On 03.11.2022 20:51, Sam Protsenko wrote:
-> > As exynos-iommu driver is not a critical platform driver, it can be
-> > converted to a loadable module to avoid loading it on non-Exynos
-> > platforms in order to improve the RAM footprint. This patch series
-> > converts it to a module and does some related cleanups. IOMMU/DMA
-> > specifics were taken into the account, so remove/exit methods weren't
-> > added.
-> >
-> > There are two drivers using CONFIG_EXYNOS_IOMMU in their code:
-> > DRM_EXYNOS and S5P_MFC. Both were checked, and only a slight change was
-> > needed for S5P_MFC driver (patch #6).
->
-> Funny, compiling this driver as a module revealed an issue in the driver
-> initialization sequence, here is a fix that need to be applied before
-> this patchset:
->
-> https://lore.kernel.org/all/20221104115511.28256-1-m.szyprowski@samsung.com/
->
-
-I wonder why I didn't stumble upon that issue. Anyway, the fix looks
-valid. I'll wait until you finish looking into that NULL pointer
-dereference, and then we can figure out how to organize our patches.
-Maybe I could send v3, including your patches in the beginning of the
-series, etc.
-
-> Besides that, the driver nukes with NULL pointer dereference in
-> exynos_iommu_of_xlate() when compiled as a module on ARM 64bit
-> Exynos5433 based TM2e board. ARM 32bit based board works fine. I'm
-> checking this issue now.
->
-
-Thanks for looking into that, Marek! I've tested the modularization
-patch series using my emulated translation driver [1,2]. It works
-fine, but exynos_iommu_of_xlate() is only executed once in my case,
-when the test driver module is loaded. It's finished successfully
-though. Not sure what is the cause of NULL pointer dereferences you're
-seeing, alas I still don't have real users of SysMMU driver on my
-platform, and my test driver is the only way for me to test it. Please
-let me know if I can help in any way (e.g. I can trace some calls on
-my board for you).
-
-[1] https://github.com/joe-skb7/linux/blob/e850-96-mainline-iommu/drivers/iommu/samsung-iommu-test.c#L263
-[2] https://github.com/joe-skb7/linux/blob/e850-96-mainline-iommu/arch/arm64/boot/dts/exynos/exynos850.dtsi#L477
+On 03/11/2022 15:51, Sam Protsenko wrote:
+> checkpatch reports next warning for clock getting code in probe
+> function:
+> 
+>     WARNING: ENOSYS means 'invalid syscall nr' and nothing else
+> 
+> Replace it with -ENOINT to make checkpatch happy.
+> 
+> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+> ---
 
 
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-> > Changes in v2:
-> >    - Extracted the "shutdown" method addition into a separate patch
-> >    - Added MODULE_DEVICE_TABLE(of, ...) to support hot-plug loading
-> >    - Added MODULE_ALIAS("platform:exynos-sysmmu")
-> >    - Added fix for S5P_MFC driver to work correctly with EXYNOS_IOMMU=m
-> >    - Fixed checkpatch coding style suggestion with "--strict" flag
-> >    - Rebased on top of most recent joro/iommu.git:next
-> >
-> > Sam Protsenko (6):
-> >    iommu: Export iommu_group_default_domain() API
-> >    iommu/exynos: Fix retval on getting clocks in probe
-> >    iommu/exynos: Modularize the driver
-> >    iommu/exynos: Implement shutdown driver method
-> >    iommu/exynos: Rearrange the platform driver code
-> >    media: platform: Use IS_ENABLED() to check EXYNOS_IOMMU in s5p_mfc
-> >
-> >   drivers/iommu/Kconfig                         |   2 +-
-> >   drivers/iommu/exynos-iommu.c                  | 355 +++++++++---------
-> >   drivers/iommu/iommu.c                         |   1 +
-> >   .../platform/samsung/s5p-mfc/s5p_mfc_iommu.h  |   4 +-
-> >   4 files changed, 191 insertions(+), 171 deletions(-)
-> >
-> Best regards
-> --
-> Marek Szyprowski, PhD
-> Samsung R&D Institute Poland
->
+Best regards,
+Krzysztof
+
