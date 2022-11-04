@@ -1,63 +1,67 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81FD7ED7;
-	Fri,  4 Nov 2022 05:43:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3DB910F9;
+	Fri,  4 Nov 2022 08:32:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667540613; x=1699076613;
+  t=1667550756; x=1699086756;
   h=from:to:cc:subject:date:message-id:references:
    in-reply-to:content-transfer-encoding:mime-version;
-  bh=trqSu4uttDtLId6wzhhHnXrPyjPOvJ92u2kouTvFFsc=;
-  b=jjBKBIfg57wr7ATgsrtgUhjQFP2WNnLbYrB79cVQbipXvgA313crgfJi
-   9TBNrb/mNast9AjuRGC8PcXolZN4lxwBxnpFC/ko6hOuCV+87dAcvq0Dj
-   RXGaDyih/cN73veQzGOrqN4ahUuCu/MLib+fGaUJXhyK34BzJSl+D7qhV
-   tZyLanchvTVC9OpPJoFkmedszYsZOKdfk1IsYEO+hEZ1E6oLu+J5AJpaz
-   afja/wI7fLJ4Qj7CkpxmRV0sJP9q70Iot3h/gwbHNaJG2k5QcAnUomqz5
-   KhJAzkMlG/EnuqiBfS9Cv74+jnTykTyxZCocTzd0gP8u861zPYD0Blagt
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10520"; a="308599475"
+  bh=qaqIB0DLjDa/q1nJj6Jd2LMoKIF5bSoAlMvTirS7r8Y=;
+  b=RRIe2DxNtcVK4mcyXKOb4Ec4+6MnFz16ueiR2CO7gCiaaWMX7sQsEuzk
+   GnKTWDgbD9zZMOYimSbGnjsOfzP0i3oUaCMP/jAy2qRZu1lCJvigwc8Od
+   BosoCkpBMJrbimLpsOhcbV2ZpN1ZkiWsmuxJF5iIljqLpCWgEtytR6fd8
+   6tjc0poeNmHeeQkzB93IuFcbm9nUZK+ARgkJ9LkqcQZYbHfDWWcf5qKkV
+   /3bisftXAWYIhz0dzFDyj9kIMfZlLSwy7dN3oAmlZ4YyGEKIIUbEiTZ0A
+   REosRSoWdkRE7nljSd1No1TO/Q22LW9M+ch/M0nOd1Ipr7MEgNJfRO7cd
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10520"; a="336616663"
 X-IronPort-AV: E=Sophos;i="5.96,136,1665471600"; 
-   d="scan'208";a="308599475"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2022 22:43:32 -0700
+   d="scan'208";a="336616663"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2022 01:32:34 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10520"; a="880175886"
+X-IronPort-AV: E=McAfee;i="6500,9779,10520"; a="666291185"
 X-IronPort-AV: E=Sophos;i="5.96,136,1665471600"; 
-   d="scan'208";a="880175886"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmsmga006.fm.intel.com with ESMTP; 03 Nov 2022 22:43:32 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+   d="scan'208";a="666291185"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orsmga008.jf.intel.com with ESMTP; 04 Nov 2022 01:32:34 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 3 Nov 2022 22:43:31 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ 15.1.2375.31; Fri, 4 Nov 2022 01:32:33 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Thu, 3 Nov 2022 22:43:31 -0700
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.40) by
- edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ 15.1.2375.31; Fri, 4 Nov 2022 01:32:32 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Fri, 4 Nov 2022 01:32:32 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.100)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Thu, 3 Nov 2022 22:43:31 -0700
+ 15.1.2375.31; Fri, 4 Nov 2022 01:32:32 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JWpdZKhR26ZTUt2g3B5yc+WvztZRrGaTMm7wxTh5v9A2xcRtsJ/skyS/m/aFg0oTfBPZwjfys4TN9dmwwcTP3kAQQqR/FoKKTGl+aKa1im6lYyRWnusUhSOpVd+DUAJf+uFx/Htc00AIL0hsgv/yh0xrcmaP7qpS6ARthbSc2dwCeEf1E+aZJpFmB0WmKl71sRFC0fnqLw0vH7mOGPziSc1TtzC/WJoQ1oCRUsOt46ZoDD40uGIGg6wDQhV7oxfSGs85+m/QOZLbTVRut+yUjLVGk6kj+ZK0ltq9SHEChTx4a3svhs63L8y5P3cyZfwH+F/yHU8X6htCyaRdhRdarg==
+ b=Bu/P1fmUugNiBjf7hF3RW5d9U0nLlZAfLZdvx6YppwGHjSLJclUd1b84Mw2NsKn7QmemHNjaPdQ0wJ98Kr9PA7Wny15SOKOam7mziF/mh3NyBGwcIiClnxLiASs5/60omyOsEYNk3rcRp9uCzz2LPGFdZIuiISJFCGcPiwkfSGurjMQVmsuW4/xpqkJjAB2zy7PSKTMSWeiNZvrp8iFLWOauw/Ng/XWoxdCoq8imb8ASoPj6qsgEUK0br65DT5EtJRO9eCkyYLyUiQZCWdDBcm+5eTt8JFoTCskq34DPtG+taYG0ZH54W+bqzEB00q4ofc+Twd+1v/S6ibJLgvL8Jw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=trqSu4uttDtLId6wzhhHnXrPyjPOvJ92u2kouTvFFsc=;
- b=LvZO1AoGjgCgKH7RQEhOQflt5J99yPC6fR71Lyx5y39+Ogyj+uZZy5iW75yexzqj8fcAFq4QzbPncMaFmeigYQQA6gv+EqHP/jxnkZ+X6/v8ZmcIW+WetvPDDRIERR67vkrfRGIuCe71aO6bZCmibtrkXbpbP+jhcLsp4zCA9vLDgMY3Fxck13VN6IAN1MfeGj+/lBLpvamgc3WGYsAvDajB+Zjcurw3siUAifAnT5zN1EZ91KJ8k1arNaKMUhSBGcgDVX4GX47yg06/9jkJzAYXBqsBcbM5Txrz5pEM46JwMpUH3axG7FPh7dzAsXSbw4M4q5QfaZFLu7MQRKd1eA==
+ bh=mEGAH9uBeuAF+Br8ZTyRf7mEzNhrjmxZVsmjgBGqPfk=;
+ b=DyZLVN9586EnmmcddMdXB/mzn8oFfz3Pa2oGqdTBJeuAVmmiMIgNQj/QR31/8xz9K8qqlxxgLQPwTwvthDxsKeFSKyjVpg86dNi7xxPDfvYQ5/yau0w/5NzyrDTji3hgZh3mD0Fh/GHGKsHuWy5fxjF60S+bSnHhZeXzK/FHIkaQUFXGXldEA9TOyjIML9LocEC8S/d4CuLUuvQxtuk7iV3kzyHt534j/G2JDkZWnGYlUwcBOaX2gZR/dCsTuzLChxm6jwjGnm4ycnBNmWDsIOD3cmW4rrk4QL1IKALGWxbdg9FU9Rpfb/dRkhbOvEF3kepCHS11JWEpDyjx2GpS7Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by IA0PR11MB7283.namprd11.prod.outlook.com (2603:10b6:208:439::10) with
+ by SN7PR11MB7511.namprd11.prod.outlook.com (2603:10b6:806:347::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.20; Fri, 4 Nov
- 2022 05:43:30 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5769.15; Fri, 4 Nov
+ 2022 08:32:31 +0000
 Received: from BN9PR11MB5276.namprd11.prod.outlook.com
  ([fe80::737e:211a:bb53:4cd7]) by BN9PR11MB5276.namprd11.prod.outlook.com
  ([fe80::737e:211a:bb53:4cd7%5]) with mapi id 15.20.5791.022; Fri, 4 Nov 2022
- 05:43:30 +0000
+ 08:32:30 +0000
 From: "Tian, Kevin" <kevin.tian@intel.com>
 To: Jason Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>,
 	"bpf@vger.kernel.org" <bpf@vger.kernel.org>, Jonathan Corbet
@@ -73,65 +77,68 @@ To: Jason Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>,
 CC: Alex Williamson <alex.williamson@redhat.com>, Chaitanya Kulkarni
 	<chaitanyak@nvidia.com>, Cornelia Huck <cohuck@redhat.com>, Daniel Jordan
 	<daniel.m.jordan@oracle.com>, David Gibson <david@gibson.dropbear.id.au>,
-	Eric Auger <eric.auger@redhat.com>, Eric Farman <farman@linux.ibm.com>, Jason
- Wang <jasowang@redhat.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	"Martins, Joao" <joao.m.martins@oracle.com>, "kvm@vger.kernel.org"
-	<kvm@vger.kernel.org>, Matthew Rosato <mjrosato@linux.ibm.com>, "Michael S.
- Tsirkin" <mst@redhat.com>, Nicolin Chen <nicolinc@nvidia.com>, Niklas
- Schnelle <schnelle@linux.ibm.com>, "Shameerali Kolothum Thodi"
-	<shameerali.kolothum.thodi@huawei.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
-	Keqian Zhu <zhukeqian1@huawei.com>
-Subject: RE: [PATCH v3 15/15] iommufd: Add a selftest
-Thread-Topic: [PATCH v3 15/15] iommufd: Add a selftest
-Thread-Index: AQHY6J1pXc4epOTBu0+Bzhxi63Udt64uAKiAgABLnFA=
-Date: Fri, 4 Nov 2022 05:43:29 +0000
-Message-ID: <BN9PR11MB52769FA78CA8B7FD3DB7595E8C3B9@BN9PR11MB5276.namprd11.prod.outlook.com>
+	Eric Auger <eric.auger@redhat.com>, Eric Farman <farman@linux.ibm.com>,
+	"Jason Wang" <jasowang@redhat.com>, Jean-Philippe Brucker
+	<jean-philippe@linaro.org>, "Martins, Joao" <joao.m.martins@oracle.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, Matthew Rosato
+	<mjrosato@linux.ibm.com>, "Michael S. Tsirkin" <mst@redhat.com>, Nicolin Chen
+	<nicolinc@nvidia.com>, "Niklas Schnelle" <schnelle@linux.ibm.com>, Shameerali
+ Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>, "Liu, Yi L"
+	<yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
+Subject: RE: [PATCH v3 10/15] iommufd: IOCTLs for the io_pagetable
+Thread-Topic: [PATCH v3 10/15] iommufd: IOCTLs for the io_pagetable
+Thread-Index: AQHY6J1k/MYko282jUa1sWU0zIDdtq4uXG3g
+Date: Fri, 4 Nov 2022 08:32:30 +0000
+Message-ID: <BN9PR11MB52765289F880B8A7297077318C3B9@BN9PR11MB5276.namprd11.prod.outlook.com>
 References: <0-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
- <15-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com> <Y2RkXV+q0Q6bdTde@nvidia.com>
-In-Reply-To: <Y2RkXV+q0Q6bdTde@nvidia.com>
+ <10-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
+In-Reply-To: <10-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach:
 X-MS-TNEF-Correlator:
+dlp-version: 11.6.500.17
+dlp-product: dlpe-windows
+dlp-reaction: no-action
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|IA0PR11MB7283:EE_
-x-ms-office365-filtering-correlation-id: f515e5a7-099c-435e-b3de-08dabe2780b9
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|SN7PR11MB7511:EE_
+x-ms-office365-filtering-correlation-id: 1af0de13-fe65-4e7e-7430-08dabe3f1d30
 x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: c0xilIuTZ/p5bHNvK89Hx5D0lSX4l0jmD7C5J+me8itrX/V5UnFYhxFR2TtlyJb6kTNVhOI1r1tspo4/1LppwV/Btw+Maxr4CaXbolV2xkiUJfqIFabi6Q34OxWEZU4w+xeW2Yy490NkNGwdj2JxELEiabH8zjscnhjvfSbuUum3aidAAV9rloxvkQ2rrLWi4Fdgq6AJATH5QxqeUCVr6ICGBv01qiyXAPy7uMow0FQnr0beYbUMbZbuvnY226JHv5bzor6PgBhmKlQHqt34xUVwIjJGFtzM1UbzrQRuOhrox0gEih/2Q3zh/n1sPqRqm0aD/FnMd6HCGem22x+LFqhDY97VCkTwGGX9c9wQcFDpOz3CPpsxi3n360vCR0Y4Mmt9mENm2aPRZV0iyTJZ9USRB6UzDWfAUgj7CL+f2+2LgjX22zLbEwyj2kURyQ9vIxjC/d1i6nM341sACzp5mwtaICtUC1qniedxUv+lgMioKUgnQGSxZLOSKEL20RqBvjQq8Zo85xjHj6atQ2nPGAEqPwr6wSvi1Qg/z4aKTTsDnagGtJ+R3KIqDOvRuBv5xb3CnWbkIwbxgC3/4SDP/k3wo7MGjorN32y5Q6D14kywjHLPhCA+I2j058n6cXt6268pAdRz+XATYNs8bLrZp/RI2Xu5jxvo3ptnCEw0Jj3EtHkWF3ESI6YS5sn5Wb61dKgvbQx8OU2ThF2kyyjhphr7QdlCEqjL9xemB7WgEvNGK0GuI9rKbfczht6XieAbJmLaMMPa0nK0EcJiALjvqaiMK7l0nVhWxS/ZoZG/MyE=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(39860400002)(396003)(346002)(366004)(376002)(451199015)(921005)(66556008)(66446008)(71200400001)(55016003)(64756008)(66946007)(6506007)(7416002)(66476007)(38070700005)(8936002)(5660300002)(52536014)(2906002)(41300700001)(110136005)(4744005)(54906003)(316002)(4326008)(76116006)(7406005)(8676002)(26005)(186003)(9686003)(83380400001)(38100700002)(33656002)(82960400001)(478600001)(7696005)(122000001)(86362001);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: 72pkc4N80OliOpi05lq7jZnVBuuCF0KQOllFGXM6Ta9yUaWCXMMZ/VOQGfrV8lSb/AQr2/CpAep9/tieD7xbd++rmMf0brMgzYIFTvaZ/fsYf3jFHJTyMJKrBCWX0WZF4Ntjk88IaQus12iOj48mgl26jLzRHphzrb6d1sXKA0JS0xBVqvr2637dbipubnrk94xmYLJ6TgBt8UpHbNTAUYBB5W7dBaapeZ/OJpqY8KAltHfumfWEBpHW9qk9RYXAmFJzQkx7kngdOQY7Vd9/NoYm/5kqNpXtec3dAI15iQlK2ePV85ZdsXi+soaj7lEwHQlyRFLKfD0usI1l7RWv1evzBqJl/fGPRd41FaD9FpSjPjlHPADumE9/jPkNTE7T4rggz9TsIciL6bBAxINAEOBmF531yPXUmCWkWl3n3YOky0HvY5Rk5NlXTHAiWallBJ6kxjnv9+bU5cgx2Beydt46bJsni+sEUOoYQCC6h/aV9KpWEJrCY0oXFHhVAK45A5PzvjohxiJTTE/sTqSUrVZ1eTf8kcCyhi2uP8Mmkb3cMYs7MAnUBCtkaXYx8I12PXAPhcvl5aSXJTjOBXqBnkXO/GZvov82YzXaCUswf0OHnssIVCKMs2yPqLP98lVokU8k59nyQO5xfKwRIyuqAny5z0Ad3H2Fo23rxVXWi9sj86pIsZVgq2N4UTu/1miw3oNQrNbE+8mYRQbFsOtUsSlSl4/dcXSDXL0qN5mTka0ZLaSuq/cu6wwTG4RS7yJF89uByBv5itlDUJt4e+2ZNh95L+Tn2y8HiPWwlSO3mOc=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(366004)(376002)(346002)(136003)(39860400002)(451199015)(66446008)(7416002)(8936002)(5660300002)(921005)(82960400001)(41300700001)(4326008)(76116006)(38070700005)(55016003)(71200400001)(52536014)(8676002)(33656002)(7406005)(83380400001)(26005)(122000001)(64756008)(186003)(7696005)(9686003)(478600001)(6506007)(38100700002)(66946007)(2906002)(54906003)(66556008)(86362001)(316002)(110136005)(66476007);DIR:OUT;SFP:1102;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?LHZZcyupQoW+WnhOROgBP9dSECgZHutrR+Pg/wTjaTjsdf1DsC2ASm+WyEqR?=
- =?us-ascii?Q?qHAzA+iNEk1b1SEerE7MENUsRoIzAQJrcTfatMa5H/WI9X34LIdVw31eX3hr?=
- =?us-ascii?Q?f/RWThtnLSbdzMth9TRNI+yvPpSCgv3sIpdm6dVLRb/DhI8F6384ZJVmFIGI?=
- =?us-ascii?Q?wq+nhD6sVv40UqN1dupgpvKFw4Iwtid8lus2eXZUSPjEacxdRaDxyQonRJek?=
- =?us-ascii?Q?plLkMUaM/i9UZOeGzSEid0RLsdLzIoAxe1tVz2EsL9D0s4iw1sRm3MtW+faF?=
- =?us-ascii?Q?50ENWP6KgMhQacYEppNthUo38WlHViXSRXSxkR949sfQUMbqFUAVUdeogly+?=
- =?us-ascii?Q?H24bAMbPq85MItgmyfMQ83VSSWo+tJLF98e/Knv3Hh/M9JzA7lczi7V/JSJh?=
- =?us-ascii?Q?ClVhCZEr6LygiGPTYfPZYXDxwKRezpdHIzajZYgD8L0aPupNexOjV+dho2Kh?=
- =?us-ascii?Q?rzVj9cne41aAJ4w6xLsN4x9L4oBjt+4Tlyl6SEY0LM1fBN0AV6YIqqXZ/M+T?=
- =?us-ascii?Q?CT9XOLaR9rKcyyx4rYap/ONBsLxlmM0xw4M+U25cor61f6dZENP3T5UaJbdv?=
- =?us-ascii?Q?iZOfGiq901ItYvBos9I5RiUbiXm2JFJXj3I5j37lJZJzChse6XSNMjZOV7O0?=
- =?us-ascii?Q?hE7YDm7zBl7DaPRF5sLnqLkgpaS6DYpbbjkBRrMYC+BEf/fqKRxeuJN6iNRH?=
- =?us-ascii?Q?3CsDi1DpsxXbLA85YGcYBX3uipsMf66mqH2KxOGNPJ6Ho77wKKV7TM06UnOO?=
- =?us-ascii?Q?4dRW3dJOYt6NrX/scrukze7iPRA98LfMqxeD0k+OqHPmmXp2r7Z53/+6pMAA?=
- =?us-ascii?Q?XE1d3L2IMWoX4Ma1THKuIVng0fSzDO27mEv93CGuffJilKi33tokoYEMjR3P?=
- =?us-ascii?Q?F3dn4CKLrHHNtYkqbG0zYDSCJPbA8ZBz09MatWcDQ+82Tz+iCnFDrdJsP50S?=
- =?us-ascii?Q?SETrCSrrJFEQ65HC1Cj3b3LSOuyQnm3U2G2CyKbsIQ83yJqdqdQvPvSvERaK?=
- =?us-ascii?Q?8j9264gJM7Q8wnYEiONDLdUpBiB1HIFYvlWO+weQtqh1gq17ajaY2D5refVX?=
- =?us-ascii?Q?8ldEW7Ud7Du9I2XX8dsPLv9MQG9q+/1PRMBMKQQt1Ee3kMcGo/Tu6w0ZZdwB?=
- =?us-ascii?Q?qMx9V2QltCzaZii/Qk8JMVgPhYJza0Zkip8hDvUqiYkc4MrW+kV0wXFd0gtC?=
- =?us-ascii?Q?f0k7PfrVt8r55V0KZ6wrp7oEONiyJhCfRfuEAeYxWGX+BezXYVJcXlh7tryu?=
- =?us-ascii?Q?1V4liicT7cczChBJ0B1ZmVHmKOqVCj9kzjlvS8HzpK9DzSvET8YZXVk0yLGf?=
- =?us-ascii?Q?/RB+CaR+FwsoX0W6e3cD06vnN/ux2T7ytTwOREAtpHXUsoiR/TnnK7/kWDkE?=
- =?us-ascii?Q?3olMw7gOi5PdtII3rip4a5h5YS1V3kIYW7YDa7IhyAdzSap9qjccbMBKbn7L?=
- =?us-ascii?Q?H8ydu4Wyl+LcIUun0oTZVJSAlAGWpOkHGmqbHTdVY6pf68m/5OwHDa5sptdw?=
- =?us-ascii?Q?cZ8+ntvTPClxaNMXi73yhV0KV40JS17RltLoUus1yqBHgiYKB6uh1HTiNi7v?=
- =?us-ascii?Q?ydKvNjBbINzKRfBgpGHDUVb/iAyuhtgf6QypiWq8?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?0Haz219PgZdje3qN6FqAA53uCPmm8esabpCGpIOk2+YsWedBRrXhuPXuwHm6?=
+ =?us-ascii?Q?21OHXY3e4x8GZL/86Y/GerX7X7YgrIM/H25HFfvJcnNMDHyJQKn46oWebwcn?=
+ =?us-ascii?Q?0xz6FwnQ5fGaKUMZGd91ShSCUAu8y7171DH58gobox5iuagIsqZJx+gW5cK/?=
+ =?us-ascii?Q?tTdctpeCfwUKRBxtV6go58RRQBW9jO7bnKBGj6wh26oL3ae8B1IEDez+4HYS?=
+ =?us-ascii?Q?uurW+AW7C2p+hmakOpooKMVgUCF/jNu9VDvtAsIJq7AU4P5uXCfoslOS3v2b?=
+ =?us-ascii?Q?vSTDq2AxUZuTWJizXhKQlz60IJ7MfvASIqMwGy4TTGpRnjqbK7X2mrtWSfqX?=
+ =?us-ascii?Q?kXS/rmChY+vvmLRP0DNVmFI60I5jXUxcu91ODfz1jHjiKvmzjgNH/UVZYr8f?=
+ =?us-ascii?Q?qDaWvBH+P2gLDplnCzcS21NigpNXnzyxmqg9GOoCrPN6x1I/raN/83p4KsTb?=
+ =?us-ascii?Q?TJYEt0A5XzY2x/iFmBQU6iRvJPFGjRCpWdfJ2D/LivYPHJCkUHgu7hz4/+DF?=
+ =?us-ascii?Q?wTzECL3Lqiu9inOMyb/0KeblEYUbC60QuqvIRjO1WKuWwBNNEBIhz/WmwPhW?=
+ =?us-ascii?Q?oaPjlBgLXSKNRsXUgnMKYu2LvkAEUW9ElxA7ILbAllz7UTZe9/wGvqK1TIi2?=
+ =?us-ascii?Q?jQyGVL/g2T196hmOCPySDnFRM+0pAREtf8bU6fI2vFX37ijQjCD86sN1R8kG?=
+ =?us-ascii?Q?k4BP507LSVKcQF6+7GXNu6eI8fTDj/8hfb+8vl4HVfrrN6C1z2PVQo9cuieJ?=
+ =?us-ascii?Q?Tvise+0elIU4keRX94LjGj0ANsqqUjTH7qM8+LpqtBBFluGP4T0CYcBIlkCL?=
+ =?us-ascii?Q?cwyRhfRlddhnU2hvelE/ZDy/MAXfYPIQ8ItkjizmWkpTJJW5iWdo4+289DcP?=
+ =?us-ascii?Q?sEkoH/G+BD+4Wod6Pi7cGV3RFn3nNeNq3+T8o9S7fpYDB9mUJDo8p+6PUGf6?=
+ =?us-ascii?Q?1mkqyTqmDrQzX6XAGHFrCjsj/6v64XCpGq67J8pEj3Rq8eGcEzrPBGggy30G?=
+ =?us-ascii?Q?TYchk3LkkG4kQiXp7d4pLFlPKxq0cJT0Rv9W+C2s/m3KxVzecmoOSaU5Veh4?=
+ =?us-ascii?Q?/zcIja5dk/I2xraVFX4Y2Vwu+YvJw/zd3V8HMPuVZa8lILo7eQ2xSt+/f2SE?=
+ =?us-ascii?Q?72sAxd4X/d9l/q/CdpNc1IYYJm4rlDoXfwD75CmQN+0HQ3/JYiVc92h20q18?=
+ =?us-ascii?Q?WFuY0draeKig6z2BOwh7NG22l1njg8VpPsFVtgextyhCFFpqHUqQmZXwQKI4?=
+ =?us-ascii?Q?TKSkuIhtyeTB5v4v/Jv2PxbiTsfD5QvHNcZnoCvgbnzJtMLNFGwHvmeL9Xe0?=
+ =?us-ascii?Q?Evhyd8TzAx22Zi50jf0OhqcHeN7lo1prmd8FH0RyhH0s0Uw7bUWiK5Fq/uD+?=
+ =?us-ascii?Q?pALa/x40buhlexUmLcVaMEc1kuTbPEBTC6yW48Hfc+E/RM1vYvQ8SyvKYGuP?=
+ =?us-ascii?Q?MuVsj2p438mORBCfTnUQ3VNw9r0d8LIGJ1EDr+24JK0nRTpDSTE0DPcyXrPQ?=
+ =?us-ascii?Q?aC+ITk6d6ahE6QwxtPD45ZpLjF9MhNws0eAMVspPhNgoCY+7vfZtw5PBI3UF?=
+ =?us-ascii?Q?y0Ug7b7kKUABlRv+Vr/vUd+HQm++vhG3+m3RAKh+?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
@@ -142,32 +149,244 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f515e5a7-099c-435e-b3de-08dabe2780b9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Nov 2022 05:43:29.8533
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1af0de13-fe65-4e7e-7430-08dabe3f1d30
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Nov 2022 08:32:30.7653
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 4pLgnATjJF9MN2ZJYeOEL7BE8YdyE/cXTlGU6AgKYJEn7MLPf/EZuFw2YeYXKZGrryislrKm7vfijbOMYYo/6A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR11MB7283
+X-MS-Exchange-CrossTenant-userprincipalname: tG4trWrDgXScxsRSJG+ZMSv4FHXHXrmnpAsaXFEnMdcBF/JSwiAkRICG5QDDX47He8AT5B39GnWnQA29EQ9gyA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB7511
 X-OriginatorOrg: intel.com
 
 > From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Friday, November 4, 2022 9:01 AM
+> Sent: Wednesday, October 26, 2022 2:12 AM
 >=20
-> The only way I can see to solve this is to hold a serializing lock
-> across iommufd_access_pin_pages() so that neither
-> iommufd_test_access_unmap() can progress until both the pin is
-> completed and the record of the pin is stored.
+> +int iommufd_ioas_allow_iovas(struct iommufd_ucmd *ucmd)
+> +{
+> +	struct iommu_ioas_allow_iovas *cmd =3D ucmd->cmd;
+> +	struct rb_root_cached allowed_iova =3D RB_ROOT_CACHED;
+> +	struct interval_tree_node *node;
+> +	struct iommufd_ioas *ioas;
+> +	struct io_pagetable *iopt;
+> +	int rc =3D 0;
+> +
+> +	ioas =3D iommufd_get_ioas(ucmd, cmd->ioas_id);
+> +	if (IS_ERR(ioas))
+> +		return PTR_ERR(ioas);
+> +	iopt =3D &ioas->iopt;
 
-same as gvt does which maintains an internal mapping cache and
-conducts pin/unmap with cache update under the mutex protection.
+Missed the check of __reserved field
 
->=20
-> Fortunately in the iommufd design we can hold a lock like this across
-> these calls, and in the op callback, without deadlocking. I can't
-> recall if vfio can do the same, I suspect not since I had in my mind I
-> needed to avoid that kind of locking for deadlock reasons..
+> +
+> +int iommufd_ioas_copy(struct iommufd_ucmd *ucmd)
+> +{
+> +	struct iommu_ioas_copy *cmd =3D ucmd->cmd;
+> +	struct iommufd_ioas *src_ioas;
+> +	struct iommufd_ioas *dst_ioas;
+> +	unsigned int flags =3D 0;
+> +	LIST_HEAD(pages_list);
+> +	unsigned long iova;
+> +	int rc;
+> +
+> +	if ((cmd->flags &
+> +	     ~(IOMMU_IOAS_MAP_FIXED_IOVA |
+> IOMMU_IOAS_MAP_WRITEABLE |
+> +	       IOMMU_IOAS_MAP_READABLE)))
+> +		return -EOPNOTSUPP;
+> +	if (cmd->length >=3D ULONG_MAX)
+> +		return -EOVERFLOW;
 
-I think so. iiuc vfio relies on driver to ensure serialization in this scen=
-ario.
+and overflow on cmd->dest_iova/src_iova
+
+> +
+> +	src_ioas =3D iommufd_get_ioas(ucmd, cmd->src_ioas_id);
+> +	if (IS_ERR(src_ioas))
+> +		return PTR_ERR(src_ioas);
+> +	rc =3D iopt_get_pages(&src_ioas->iopt, cmd->src_iova, cmd->length,
+> +			    &pages_list);
+> +	iommufd_put_object(&src_ioas->obj);
+> +	if (rc)
+> +		goto out_pages;
+
+direct return given iopt_get_pages() already called
+iopt_free_pages_list() upon error.
+
+> +int iommufd_ioas_unmap(struct iommufd_ucmd *ucmd)
+> +{
+> +	struct iommu_ioas_unmap *cmd =3D ucmd->cmd;
+> +	struct iommufd_ioas *ioas;
+> +	unsigned long unmapped =3D 0;
+> +	int rc;
+> +
+> +	ioas =3D iommufd_get_ioas(ucmd, cmd->ioas_id);
+> +	if (IS_ERR(ioas))
+> +		return PTR_ERR(ioas);
+> +
+> +	if (cmd->iova =3D=3D 0 && cmd->length =3D=3D U64_MAX) {
+> +		rc =3D iopt_unmap_all(&ioas->iopt, &unmapped);
+> +		if (rc)
+> +			goto out_put;
+> +	} else {
+> +		if (cmd->iova >=3D ULONG_MAX || cmd->length >=3D
+> ULONG_MAX) {
+> +			rc =3D -EOVERFLOW;
+> +			goto out_put;
+> +		}
+
+Above check can be moved before iommufd_get_ioas().
+
+> +static int iommufd_option(struct iommufd_ucmd *ucmd)
+> +{
+> +	struct iommu_option *cmd =3D ucmd->cmd;
+> +	int rc;
+> +
+
+lack of __reserved check
+
+>  static struct iommufd_ioctl_op iommufd_ioctl_ops[] =3D {
+>  	IOCTL_OP(IOMMU_DESTROY, iommufd_destroy, struct
+> iommu_destroy, id),
+> +	IOCTL_OP(IOMMU_IOAS_ALLOC, iommufd_ioas_alloc_ioctl,
+> +		 struct iommu_ioas_alloc, out_ioas_id),
+> +	IOCTL_OP(IOMMU_IOAS_ALLOW_IOVAS, iommufd_ioas_allow_iovas,
+> +		 struct iommu_ioas_allow_iovas, allowed_iovas),
+> +	IOCTL_OP(IOMMU_IOAS_COPY, iommufd_ioas_copy, struct
+> iommu_ioas_copy,
+> +		 src_iova),
+> +	IOCTL_OP(IOMMU_IOAS_IOVA_RANGES, iommufd_ioas_iova_ranges,
+> +		 struct iommu_ioas_iova_ranges, out_iova_alignment),
+> +	IOCTL_OP(IOMMU_IOAS_MAP, iommufd_ioas_map, struct
+> iommu_ioas_map,
+> +		 __reserved),
+> +	IOCTL_OP(IOMMU_IOAS_UNMAP, iommufd_ioas_unmap, struct
+> iommu_ioas_unmap,
+> +		 length),
+> +	IOCTL_OP(IOMMU_OPTION, iommufd_option, struct iommu_option,
+> +		 val64),
+>  };
+
+Just personal preference - it reads better to me if the above order (and
+the enum definition in iommufd.h) can be same as how those commands
+are defined/explained in iommufd.h.
+
+> +/**
+> + * struct iommu_ioas_iova_ranges - ioctl(IOMMU_IOAS_IOVA_RANGES)
+> + * @size: sizeof(struct iommu_ioas_iova_ranges)
+> + * @ioas_id: IOAS ID to read ranges from
+> + * @num_iovas: Input/Output total number of ranges in the IOAS
+> + * @__reserved: Must be 0
+> + * @allowed_iovas: Pointer to the output array of struct iommu_iova_rang=
+e
+> + * @out_iova_alignment: Minimum alignment required for mapping IOVA
+> + *
+> + * Query an IOAS for ranges of allowed IOVAs. Mapping IOVA outside these
+> ranges
+> + * is not allowed. out_num_iovas will be set to the total number of iova=
+s
+> and
+> + * the out_valid_iovas[] will be filled in as space permits.
+
+out_num_iovas and out_valid_iovas[] are stale.
+
+> + *
+> + * The allowed ranges are dependent on the HW path the DMA operation
+> takes, and
+> + * can change during the lifetime of the IOAS. A fresh empty IOAS will h=
+ave a
+> + * full range, and each attached device will narrow the ranges based on =
+that
+> + * devices HW restrictions. Detatching a device can widen the ranges.
+
+devices -> device's
+
+> +/**
+> + * struct iommu_ioas_allow_iovas - ioctl(IOMMU_IOAS_ALLOW_IOVAS)
+> + * @size: sizeof(struct iommu_ioas_allow_iovas)
+> + * @ioas_id: IOAS ID to allow IOVAs from
+
+missed num_iovas and __reserved
+
+> + * @allowed_iovas: Pointer to array of struct iommu_iova_range
+> + *
+> + * Ensure a range of IOVAs are always available for allocation. If this =
+call
+> + * succeeds then IOMMU_IOAS_IOVA_RANGES will never return a list of
+> IOVA ranges
+> + * that are narrower than the ranges provided here. This call will fail =
+if
+> + * IOMMU_IOAS_IOVA_RANGES is currently narrower than the given ranges.
+> + *
+> + * When an IOAS is first created the IOVA_RANGES will be maximally sized=
+,
+> and as
+> + * devices are attached the IOVA will narrow based on the device
+> restrictions.
+> + * When an allowed range is specified any narrowing will be refused, ie
+> device
+> + * attachment can fail if the device requires limiting within the allowe=
+d
+> range.
+> + *
+> + * Automatic IOVA allocation is also impacted by this call. MAP will onl=
+y
+> + * allocate within the allowed IOVAs if they are present.
+
+According to iopt_check_iova() FIXED_IOVA can specify an iova which
+is not in allowed list but in the list of reported IOVA_RANGES. Is it
+correct or make more sense to have FIXED_IOVA also under guard of
+the allowed list (if violating then fail the map call)?
+
+> +/**
+> + * struct iommu_ioas_unmap - ioctl(IOMMU_IOAS_UNMAP)
+> + * @size: sizeof(struct iommu_ioas_unmap)
+> + * @ioas_id: IOAS ID to change the mapping of
+> + * @iova: IOVA to start the unmapping at
+> + * @length: Number of bytes to unmap, and return back the bytes
+> unmapped
+> + *
+> + * Unmap an IOVA range. The iova/length must be a superset of a
+> previously
+> + * mapped range used with IOMMU_IOAS_PAGETABLE_MAP or COPY.
+
+remove 'PAGETABLE'
+
+> +/**
+> + * enum iommufd_option
+> + * @IOMMU_OPTION_RLIMIT_MODE:
+> + *    Change how RLIMIT_MEMLOCK accounting works. The caller must have
+> privilege
+> + *    to invoke this. Value 0 (default) is user based accouting, 1 uses =
+process
+> + *    based accounting. Global option, object_id must be 0
+> + * @IOMMU_OPTION_HUGE_PAGES:
+> + *    Value 1 (default) allows contiguous pages to be combined when
+> generating
+> + *    iommu mappings. Value 0 disables combining, everything is mapped t=
+o
+> + *    PAGE_SIZE. This can be useful for benchmarking.  This is a per-IOA=
+S
+> + *    option, the object_id must be the IOAS ID.
+
+What about HWPT ID? Is there value of supporting HWPT's with different
+mapping size attached to the same IOAS?
+
+> +/**
+> + * @size: sizeof(struct iommu_option)
+> + * @option_id: One of enum iommufd_option
+> + * @op: One of enum iommufd_option_ops
+> + * @__reserved: Must be 0
+> + * @object_id: ID of the object if required
+> + * @val64: Option value to set or value returned on get
+> + *
+> + * Change a simple option value. This multiplexor allows controlling a
+> options
+> + * on objects. IOMMU_OPTION_OP_SET will load an option and
+> IOMMU_OPTION_OP_GET
+> + * will return the current value.
+> + */
+
+This is quite generic. Does it imply that future device capability reportin=
+g
+can be also implemented based on this cmd, i.e. have OP_GET on a
+device object?
