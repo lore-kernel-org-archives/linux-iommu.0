@@ -1,33 +1,33 @@
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D95437F;
-	Sat,  5 Nov 2022 00:07:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B065F1101
+	for <iommu@lists.linux.dev>; Sat,  5 Nov 2022 01:09:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667606855; x=1699142855;
+  t=1667610578; x=1699146578;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=SK2sI5aDoV9/etevfTVRBjvDW9ZuCS66qUATN3sgJBw=;
-  b=ayEmehNwuQ/zjz1ydkXJ7oAEdaPl42r03VNwDT7lLUrh21bhAA46/DbQ
-   0YLA0aRb1FjWYgpb7tJmwiz8i3Xud/6tgHQFfN0XgRX970+dsMXfvCQlX
-   poPUIRZXR+yEPpvr1xFh3R9c/UqHkD3WyPa17HmkUzNCAMX2hC6+YpKQy
-   ayNN+yKvjMwBdnddCX0K6jH7VoRaFHsa1O/RK/sK6ZpEEm7AbNk05ZhcY
-   1xtW3Vdg3u3X4N6/74dkes1/vQLezkGF4YVkFbDdxtee3DSii9GwKeUfQ
-   a7E6ncv8pgiDv3TKNhSCPHXXJ6IfstaUVLV6V5xQHBF6GTV6TAUywMu/z
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10521"; a="290491523"
+  bh=055nwbvQLu4HeNy3wpjTtPCuFAGV9ueI6JYtKrhOUF0=;
+  b=EtPKvGSECXM3bOd1A1XTYT5wdDwkUI7W+y5FZbuSOROczlCNeil4j/14
+   9fHoprmQxLg86zc6PBxlf95ZnBRROX4STKq79JXWjPA0XRCuUR++PEldC
+   0gUSsrlKnv41jvAM/Xz4UAMRqdCzuVXwJ9JRaTPWaYJDADG5RzVUQRvNH
+   L10itG5kt0cMl0ttgbacGu6gcGZSnOKy8DLqEB1+H/+evM9/VSatXi9H3
+   10pr1EkSlKaBrPnCTzLsaJXSRplYPml2kSijn73V0d9+re4gK18YIIUUv
+   Paj/3LzK4Ystx5sxV9XDoqaC4sNEnr+GpY/Ok0FsNfN1kyfNTs44E2cyv
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10521"; a="293439273"
 X-IronPort-AV: E=Sophos;i="5.96,139,1665471600"; 
-   d="scan'208";a="290491523"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2022 17:07:35 -0700
-X-IronPort-AV: E=McAfee;i="6500,9779,10521"; a="760501944"
+   d="scan'208";a="293439273"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2022 18:09:38 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10521"; a="668543882"
 X-IronPort-AV: E=Sophos;i="5.96,139,1665471600"; 
-   d="scan'208";a="760501944"
-Received: from ztao-mobl.ccr.corp.intel.com (HELO [10.254.213.180]) ([10.254.213.180])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2022 17:07:26 -0700
-Message-ID: <2d2b467b-da07-2b96-27c9-569b727dd8c9@linux.intel.com>
-Date: Sat, 5 Nov 2022 08:07:24 +0800
+   d="scan'208";a="668543882"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.213.180]) ([10.254.213.180])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2022 18:09:35 -0700
+Message-ID: <cf157186-1ee1-0981-5425-d9cd186df57f@linux.intel.com>
+Date: Sat, 5 Nov 2022 09:09:33 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,125 +36,47 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.4.1
-Cc: baolu.lu@linux.intel.com, Alex Williamson <alex.williamson@redhat.com>,
- Chaitanya Kulkarni <chaitanyak@nvidia.com>, Cornelia Huck
- <cohuck@redhat.com>, Daniel Jordan <daniel.m.jordan@oracle.com>,
- David Gibson <david@gibson.dropbear.id.au>,
- Eric Auger <eric.auger@redhat.com>, Eric Farman <farman@linux.ibm.com>,
- Jason Wang <jasowang@redhat.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Joao Martins <joao.m.martins@oracle.com>, kvm@vger.kernel.org,
- Matthew Rosato <mjrosato@linux.ibm.com>, "Michael S. Tsirkin"
- <mst@redhat.com>, Nicolin Chen <nicolinc@nvidia.com>,
- Niklas Schnelle <schnelle@linux.ibm.com>,
- Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
-Subject: Re: [PATCH v3 14/15] iommufd: vfio container FD ioctl compatibility
-To: Jason Gunthorpe <jgg@nvidia.com>, bpf@vger.kernel.org,
- Jonathan Corbet <corbet@lwn.net>, David Woodhouse <dwmw2@infradead.org>,
- iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- Kevin Tian <kevin.tian@intel.com>, linux-doc@vger.kernel.org,
- linux-kselftest@vger.kernel.org, llvm@lists.linux.dev,
- Nathan Chancellor <nathan@kernel.org>,
- Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>
-References: <14-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ "Liu, Yi L" <yi.l.liu@intel.com>, "Pan, Jacob jun"
+ <jacob.jun.pan@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/7] iommu/vt-d: Allocate pasid table in device probe path
 Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+References: <20221103055329.633052-1-baolu.lu@linux.intel.com>
+ <20221103055329.633052-2-baolu.lu@linux.intel.com>
+ <BN9PR11MB52765902DF41858EF445E5BC8C3B9@BN9PR11MB5276.namprd11.prod.outlook.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <14-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
+In-Reply-To: <BN9PR11MB52765902DF41858EF445E5BC8C3B9@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2022/10/26 2:12, Jason Gunthorpe wrote:
-> +static int iommufd_fill_cap_iova(struct iommufd_ioas *ioas,
-> +				 struct vfio_info_cap_header __user *cur,
-> +				 size_t avail)
-> +{
-> +	struct vfio_iommu_type1_info_cap_iova_range __user *ucap_iovas =
-> +		container_of(cur,
-> +			     struct vfio_iommu_type1_info_cap_iova_range __user,
-> +			     header);
-> +	struct vfio_iommu_type1_info_cap_iova_range cap_iovas = {
-> +		.header = {
-> +			.id = VFIO_IOMMU_TYPE1_INFO_CAP_IOVA_RANGE,
-> +			.version = 1,
-> +		},
-> +	};
-> +	struct interval_tree_span_iter span;
+On 2022/11/4 10:06, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Thursday, November 3, 2022 1:53 PM
+>>
+>> @@ -4513,6 +4506,16 @@ static struct iommu_device
+>> *intel_iommu_probe_device(struct device *dev)
+>>
+>>   	dev_iommu_priv_set(dev, info);
+>>
+>> +	if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev)) {
+>> +		ret = intel_pasid_alloc_table(dev);
+>> +		if (ret) {
+>> +			dev_err(dev, "PASID table allocation failed\n");
+>> +			dev_iommu_priv_set(dev, NULL);
+>> +			kfree(info);
+>> +			return ERR_PTR(ret);
+>> +		}
+>> +	}
+>> +
+> 
+> move the added lines before dev_iommu_priv_set()
 
-Intel 0day robot reported:
-
-commit: 954c5e0297d664c7f46c628b3151567b53afe153 [14/15] iommufd: vfio 
-container FD ioctl compatibility
-config: m68k-randconfig-s053-20221104 (attached as .config)
-compiler: m68k-linux-gcc (GCC) 12.1.0
-reproduce:
-         wget 
-https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross 
--O ~/bin/make.cross
-         chmod +x ~/bin/make.cross
-         # apt-get install sparse
-         # sparse version: v0.6.4-39-gce1a6720-dirty
-         git remote add internal-blu2-usb 
-git://bee.sh.intel.com/git/blu2/usb.git
-         git fetch --no-tags internal-blu2-usb iommu/iommufd/v3
-         git checkout 954c5e0297d664c7f46c628b3151567b53afe153
-         # save the config file
-         mkdir build_dir && cp config build_dir/.config
-         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross 
-C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=m68k 
-SHELL=/bin/bash drivers/iommu/iommufd/
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-
-sparse warnings: (new ones prefixed by >>)
- >> drivers/iommu/iommufd/vfio_compat.c:294:17: sparse: sparse: cast 
-removes address space '__user' of expression
-
-vim +/__user +294 drivers/iommu/iommufd/vfio_compat.c
-
-    288	
-    289	static int iommufd_fill_cap_iova(struct iommufd_ioas *ioas,
-    290					 struct vfio_info_cap_header __user *cur,
-    291					 size_t avail)
-    292	{
-    293		struct vfio_iommu_type1_info_cap_iova_range __user *ucap_iovas =
-  > 294			container_of(cur,
-    295				     struct vfio_iommu_type1_info_cap_iova_range __user,
-    296				     header);
-    297		struct vfio_iommu_type1_info_cap_iova_range cap_iovas = {
-    298			.header = {
-    299				.id = VFIO_IOMMU_TYPE1_INFO_CAP_IOVA_RANGE,
-    300				.version = 1,
-    301			},
-    302		};
-    303		struct interval_tree_span_iter span;
-    304	
-    305		interval_tree_for_each_span(&span, &ioas->iopt.reserved_itree, 0,
-    306					    ULONG_MAX) {
-    307			struct vfio_iova_range range;
-    308	
-    309			if (!span.is_hole)
-    310				continue;
-    311			range.start = span.start_hole;
-    312			range.end = span.last_hole;
-    313			if (avail >= struct_size(&cap_iovas, iova_ranges,
-    314						 cap_iovas.nr_iovas + 1) &&
-    315			    copy_to_user(&ucap_iovas->iova_ranges[cap_iovas.nr_iovas],
-    316					 &range, sizeof(range)))
-    317				return -EFAULT;
-    318			cap_iovas.nr_iovas++;
-    319		}
-    320		if (avail >= struct_size(&cap_iovas, iova_ranges, 
-cap_iovas.nr_iovas) &&
-    321		    copy_to_user(ucap_iovas, &cap_iovas, sizeof(cap_iovas)))
-    322			return -EFAULT;
-    323		return struct_size(&cap_iovas, iova_ranges, cap_iovas.nr_iovas);
-    324	}
-    325	
+intel_pasid_alloc_table() needs to reference info and store the pasid
+table into it.
 
 Best regards,
 baolu
