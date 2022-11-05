@@ -1,176 +1,160 @@
-Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E7C71381
-	for <iommu@lists.linux.dev>; Sat,  5 Nov 2022 00:02:27 +0000 (UTC)
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-369426664f9so56991747b3.12
-        for <iommu@lists.linux.dev>; Fri, 04 Nov 2022 17:02:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=1MQ/MvgoaM+wuk0nP2WaO7/jeSNOQs6jynN/f4ocCQ0=;
-        b=uCT3v5zh5uawbjkGZjrXs2McNiTy2Rqhrb5BuXRgWWQ3haO3WKptSb8bw6bdNISc0w
-         QR/AeB0cr0BrpmdJFm7kSehiwr+DXXxaAEIxgz62SeEwFJa3YgPivysVmrK2c+MhRaNL
-         GplVFHS/MABcw4VntexMH3asNvfz0P0kWG/MM6p84ICuurNBYHgw/4saUx8TPt731IiI
-         rhlUS7izfD1FmuABNStKk/pcOw3SlIJuCsRBuy5ukCBHHxNatZ6rhEHsT43pOgjIt5VB
-         0HqCEhNfJyIf1RP9YoyUfHOB/DNIS8+UZMKtb9uVRe/syjvd7tC2XRYCUdi0FYGc+wza
-         8zvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=1MQ/MvgoaM+wuk0nP2WaO7/jeSNOQs6jynN/f4ocCQ0=;
-        b=AJVgR5+92E/ss1Ek9HxceJg5782KA6qfchc4nbTu6aTCvBwGyrdByKWTUmYJX7Zazh
-         /igi/QedEC/OD0XUr6TcOajZ4RInzZmlaMelkmEnSCaDlkpcQbE+IOkvDwupvLFCf8kP
-         jZ5SMM4SRIbNvb8XKLQI8xadjyTr47D3JO1ioS08ffOMHkG6DzcLzpI0k/+BKO2w59X2
-         wHX6stx338CLN06lCuDkr3ReS5JLdknov7tUXHSevc84xYC0p//YLmk6AjY9GPJy5MJT
-         hIf2vZ5qW81ROmi/bo2LhPXyuF5be64F4Uwj8r68g5IoRFCR1m9thHrLJXpV/tZ2bSzo
-         wM9g==
-X-Gm-Message-State: ACrzQf0cTMfNqfwPXrp4RhnKj484vtXbNIKNMHAYsmn7GbLkdyl9EFf6
-	4Rbw9XkRqFjXgg3FijN+E6HV/H+wypXE8Ie5jRNR2g==
-X-Google-Smtp-Source: AMsMyM6GhYGELNu1XpnEwkyMOuaA+7Wu3xX/XDzXNHgAcq/VxoTSRKNQdulOGDD9Y5cLUlahvA8V0t9bIJCdojcP29Y=
-X-Received: by 2002:a81:5905:0:b0:370:853a:80e4 with SMTP id
- n5-20020a815905000000b00370853a80e4mr25029225ywb.418.1667606546235; Fri, 04
- Nov 2022 17:02:26 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D95437F;
+	Sat,  5 Nov 2022 00:07:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1667606855; x=1699142855;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=SK2sI5aDoV9/etevfTVRBjvDW9ZuCS66qUATN3sgJBw=;
+  b=ayEmehNwuQ/zjz1ydkXJ7oAEdaPl42r03VNwDT7lLUrh21bhAA46/DbQ
+   0YLA0aRb1FjWYgpb7tJmwiz8i3Xud/6tgHQFfN0XgRX970+dsMXfvCQlX
+   poPUIRZXR+yEPpvr1xFh3R9c/UqHkD3WyPa17HmkUzNCAMX2hC6+YpKQy
+   ayNN+yKvjMwBdnddCX0K6jH7VoRaFHsa1O/RK/sK6ZpEEm7AbNk05ZhcY
+   1xtW3Vdg3u3X4N6/74dkes1/vQLezkGF4YVkFbDdxtee3DSii9GwKeUfQ
+   a7E6ncv8pgiDv3TKNhSCPHXXJ6IfstaUVLV6V5xQHBF6GTV6TAUywMu/z
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10521"; a="290491523"
+X-IronPort-AV: E=Sophos;i="5.96,139,1665471600"; 
+   d="scan'208";a="290491523"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2022 17:07:35 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10521"; a="760501944"
+X-IronPort-AV: E=Sophos;i="5.96,139,1665471600"; 
+   d="scan'208";a="760501944"
+Received: from ztao-mobl.ccr.corp.intel.com (HELO [10.254.213.180]) ([10.254.213.180])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2022 17:07:26 -0700
+Message-ID: <2d2b467b-da07-2b96-27c9-569b727dd8c9@linux.intel.com>
+Date: Sat, 5 Nov 2022 08:07:24 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20221102184420.534094-1-dmitry.baryshkov@linaro.org>
- <20221102184420.534094-9-dmitry.baryshkov@linaro.org> <Y2WOwZdMLjByosel@mailingradian>
-In-Reply-To: <Y2WOwZdMLjByosel@mailingradian>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Sat, 5 Nov 2022 03:02:15 +0300
-Message-ID: <CAA8EJpr6i9iG4EmzK+AzsqK6582LBScds2N5ZVv+=EyZwLs-Pg@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 08/11] iommu/arm-smmu-qcom: provide separate
- implementation for SDM845-smmu-500
-To: Richard Acayan <mailingradian@gmail.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Bjorn Andersson <andersson@kernel.org>, 
-	Konrad Dybcio <konrad.dybcio@somainline.org>, Rob Clark <robdclark@gmail.com>, 
-	Vinod Koul <vkoul@kernel.org>, Sai Prakash Ranjan <quic_saipraka@quicinc.com>, 
-	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, 
-	iommu@lists.linux.dev, devicetree@vger.kernel.org, 
-	freedreno@lists.freedesktop.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Cc: baolu.lu@linux.intel.com, Alex Williamson <alex.williamson@redhat.com>,
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>, Cornelia Huck
+ <cohuck@redhat.com>, Daniel Jordan <daniel.m.jordan@oracle.com>,
+ David Gibson <david@gibson.dropbear.id.au>,
+ Eric Auger <eric.auger@redhat.com>, Eric Farman <farman@linux.ibm.com>,
+ Jason Wang <jasowang@redhat.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Joao Martins <joao.m.martins@oracle.com>, kvm@vger.kernel.org,
+ Matthew Rosato <mjrosato@linux.ibm.com>, "Michael S. Tsirkin"
+ <mst@redhat.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ Niklas Schnelle <schnelle@linux.ibm.com>,
+ Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+ Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
+Subject: Re: [PATCH v3 14/15] iommufd: vfio container FD ioctl compatibility
+To: Jason Gunthorpe <jgg@nvidia.com>, bpf@vger.kernel.org,
+ Jonathan Corbet <corbet@lwn.net>, David Woodhouse <dwmw2@infradead.org>,
+ iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ Kevin Tian <kevin.tian@intel.com>, linux-doc@vger.kernel.org,
+ linux-kselftest@vger.kernel.org, llvm@lists.linux.dev,
+ Nathan Chancellor <nathan@kernel.org>,
+ Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>
+References: <14-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <14-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Sat, 5 Nov 2022 at 01:16, Richard Acayan <mailingradian@gmail.com> wrote:
->
-> On Wed, Nov 02, 2022 at 09:44:17PM +0300, Dmitry Baryshkov wrote:
-> > There is only one platform, which needs special care in the reset
-> > function, the SDM845. Add special handler for sdm845 and drop the
-> > qcom_smmu500_reset() function.
-> >
-> > Reviewed-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-> > Tested-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-> > Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> > ---
-> >  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 34 ++++++++++++----------
-> >  1 file changed, 19 insertions(+), 15 deletions(-)
-> >
-> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> > index c3bcd6eb2f42..75bc770ccf8c 100644
-> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> > @@ -361,6 +361,8 @@ static int qcom_sdm845_smmu500_reset(struct arm_smmu_device *smmu)
-> >  {
-> >       int ret;
-> >
-> > +     arm_mmu500_reset(smmu);
-> > +
-> >       /*
-> >        * To address performance degradation in non-real time clients,
-> >        * such as USB and UFS, turn off wait-for-safe on sdm845 based boards,
-> > @@ -374,23 +376,20 @@ static int qcom_sdm845_smmu500_reset(struct arm_smmu_device *smmu)
-> >       return ret;
-> >  }
-> >
-> > -static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
-> > -{
-> > -     const struct device_node *np = smmu->dev->of_node;
-> > -
-> > -     arm_mmu500_reset(smmu);
-> > -
-> > -     if (of_device_is_compatible(np, "qcom,sdm845-smmu-500"))
-> > -             return qcom_sdm845_smmu500_reset(smmu);
-> > -
-> > -     return 0;
-> > -}
-> > -
-> >  static const struct arm_smmu_impl qcom_smmu_impl = {
-> >       .init_context = qcom_smmu_init_context,
-> >       .cfg_probe = qcom_smmu_cfg_probe,
-> >       .def_domain_type = qcom_smmu_def_domain_type,
-> > -     .reset = qcom_smmu500_reset,
-> > +     .reset = arm_mmu500_reset,
-> > +     .write_s2cr = qcom_smmu_write_s2cr,
-> > +     .tlb_sync = qcom_smmu_tlb_sync,
-> > +};
-> > +
-> > +static const struct arm_smmu_impl sdm845_smmu_500_impl = {
-> > +     .init_context = qcom_smmu_init_context,
-> > +     .cfg_probe = qcom_smmu_cfg_probe,
-> > +     .def_domain_type = qcom_smmu_def_domain_type,
-> > +     .reset = qcom_sdm845_smmu500_reset,
-> >       .write_s2cr = qcom_smmu_write_s2cr,
-> >       .tlb_sync = qcom_smmu_tlb_sync,
-> >  };
-> > @@ -398,7 +397,7 @@ static const struct arm_smmu_impl qcom_smmu_impl = {
-> >  static const struct arm_smmu_impl qcom_adreno_smmu_impl = {
-> >       .init_context = qcom_adreno_smmu_init_context,
-> >       .def_domain_type = qcom_smmu_def_domain_type,
-> > -     .reset = qcom_smmu500_reset,
-> > +     .reset = arm_mmu500_reset,
-> >       .alloc_context_bank = qcom_adreno_smmu_alloc_context_bank,
-> >       .write_sctlr = qcom_adreno_smmu_write_sctlr,
-> >       .tlb_sync = qcom_smmu_tlb_sync,
-> > @@ -450,6 +449,11 @@ static const struct qcom_smmu_match_data qcom_smmu_data = {
-> >       .adreno_impl = &qcom_adreno_smmu_impl,
-> >  };
-> >
-> > +static const struct qcom_smmu_match_data sdm845_smmu_500_data = {
-> > +     .impl = &sdm845_smmu_500_impl,
-> > +     /* No adreno impl, on sdm845 it is handled by separete sdm845-smmu-v2. */
-> separete -> separate
+On 2022/10/26 2:12, Jason Gunthorpe wrote:
+> +static int iommufd_fill_cap_iova(struct iommufd_ioas *ioas,
+> +				 struct vfio_info_cap_header __user *cur,
+> +				 size_t avail)
+> +{
+> +	struct vfio_iommu_type1_info_cap_iova_range __user *ucap_iovas =
+> +		container_of(cur,
+> +			     struct vfio_iommu_type1_info_cap_iova_range __user,
+> +			     header);
+> +	struct vfio_iommu_type1_info_cap_iova_range cap_iovas = {
+> +		.header = {
+> +			.id = VFIO_IOMMU_TYPE1_INFO_CAP_IOVA_RANGE,
+> +			.version = 1,
+> +		},
+> +	};
+> +	struct interval_tree_span_iter span;
 
-Ack.
+Intel 0day robot reported:
 
-> Also, while I'm here, does "No adreno impl" constitute adding a
-> compatible in the driver?
+commit: 954c5e0297d664c7f46c628b3151567b53afe153 [14/15] iommufd: vfio 
+container FD ioctl compatibility
+config: m68k-randconfig-s053-20221104 (attached as .config)
+compiler: m68k-linux-gcc (GCC) 12.1.0
+reproduce:
+         wget 
+https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross 
+-O ~/bin/make.cross
+         chmod +x ~/bin/make.cross
+         # apt-get install sparse
+         # sparse version: v0.6.4-39-gce1a6720-dirty
+         git remote add internal-blu2-usb 
+git://bee.sh.intel.com/git/blu2/usb.git
+         git fetch --no-tags internal-blu2-usb iommu/iommufd/v3
+         git checkout 954c5e0297d664c7f46c628b3151567b53afe153
+         # save the config file
+         mkdir build_dir && cp config build_dir/.config
+         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross 
+C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=m68k 
+SHELL=/bin/bash drivers/iommu/iommufd/
 
-Not sure that I got your question, please excuse me. Could you please
-describe what you meant?
-We already have qcom,sdm845-smmu-v2 in the match table, if that's your
-question. And there is no need for Adreno impl here, on sdm845 the
-SMMU connected to Adreno is v2 rather than mmu-500.
-Probably I should change this to "No need for adreno impl....". Would
-that be better?
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
 
-> > +};
-> > +
-> >  static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
-> >       { .compatible = "qcom,msm8996-smmu-v2", .data = &msm8996_smmu_data },
-> >       { .compatible = "qcom,msm8998-smmu-v2", .data = &qcom_smmu_data },
-> > @@ -460,7 +464,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
-> >       { .compatible = "qcom,sc8280xp-smmu-500", .data = &qcom_smmu_data },
-> >       { .compatible = "qcom,sdm630-smmu-v2", .data = &qcom_smmu_data },
-> >       { .compatible = "qcom,sdm845-smmu-v2", .data = &qcom_smmu_data },
-> > -     { .compatible = "qcom,sdm845-smmu-500", .data = &qcom_smmu_data },
-> > +     { .compatible = "qcom,sdm845-smmu-500", .data = &sdm845_smmu_500_data },
-> >       { .compatible = "qcom,sm6125-smmu-500", .data = &qcom_smmu_data },
-> >       { .compatible = "qcom,sm6350-smmu-500", .data = &qcom_smmu_data },
-> >       { .compatible = "qcom,sm6375-smmu-500", .data = &qcom_smmu_data },
-> > --
-> > 2.35.1
-> >
+sparse warnings: (new ones prefixed by >>)
+ >> drivers/iommu/iommufd/vfio_compat.c:294:17: sparse: sparse: cast 
+removes address space '__user' of expression
 
+vim +/__user +294 drivers/iommu/iommufd/vfio_compat.c
 
+    288	
+    289	static int iommufd_fill_cap_iova(struct iommufd_ioas *ioas,
+    290					 struct vfio_info_cap_header __user *cur,
+    291					 size_t avail)
+    292	{
+    293		struct vfio_iommu_type1_info_cap_iova_range __user *ucap_iovas =
+  > 294			container_of(cur,
+    295				     struct vfio_iommu_type1_info_cap_iova_range __user,
+    296				     header);
+    297		struct vfio_iommu_type1_info_cap_iova_range cap_iovas = {
+    298			.header = {
+    299				.id = VFIO_IOMMU_TYPE1_INFO_CAP_IOVA_RANGE,
+    300				.version = 1,
+    301			},
+    302		};
+    303		struct interval_tree_span_iter span;
+    304	
+    305		interval_tree_for_each_span(&span, &ioas->iopt.reserved_itree, 0,
+    306					    ULONG_MAX) {
+    307			struct vfio_iova_range range;
+    308	
+    309			if (!span.is_hole)
+    310				continue;
+    311			range.start = span.start_hole;
+    312			range.end = span.last_hole;
+    313			if (avail >= struct_size(&cap_iovas, iova_ranges,
+    314						 cap_iovas.nr_iovas + 1) &&
+    315			    copy_to_user(&ucap_iovas->iova_ranges[cap_iovas.nr_iovas],
+    316					 &range, sizeof(range)))
+    317				return -EFAULT;
+    318			cap_iovas.nr_iovas++;
+    319		}
+    320		if (avail >= struct_size(&cap_iovas, iova_ranges, 
+cap_iovas.nr_iovas) &&
+    321		    copy_to_user(ucap_iovas, &cap_iovas, sizeof(cap_iovas)))
+    322			return -EFAULT;
+    323		return struct_size(&cap_iovas, iova_ranges, cap_iovas.nr_iovas);
+    324	}
+    325	
 
--- 
-With best wishes
-Dmitry
+Best regards,
+baolu
