@@ -1,145 +1,112 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 321EB1101;
-	Sat,  5 Nov 2022 01:49:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=9U5xi3PcgZdoJ36o8T9jPl/wvWDSsiwJ5sUl4RJdjZk=; b=ePD8DfII+AqMG+pbpQoEpH39TY
-	s+hVP+5iEsxjJ8oU86NNuGgxNscBI7RVuaMQbhuxsUyc/NKsegOoKTu/d3lCJQEInm5686UJ6Wa2e
-	p0O0X1IJWg4TguqnCcpF2gp22n3prg5INmSuVElNXeIumuzFhWMKz93GgmUd124H5vWdo9DX2GC/Q
-	L6RAQPhrX291UPkprEzJu1CtIYExY65loSeybACFw2S2XzgqwWva6KN++Siq3RaGhJlXWgJofVPCm
-	v29GnWL13GD+OZXJbOGFp2kJC0vlR+ZkeoBgCdlerynfZczDbJysumW3Tp8rsw/r4ky5ORlT1kUl/
-	ze9pMWlA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-	id 1or8IR-007rC4-5c; Sat, 05 Nov 2022 01:48:31 +0000
-Date: Sat, 5 Nov 2022 01:48:31 +0000
-From: Matthew Wilcox <willy@infradead.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	"bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	David Woodhouse <dwmw2@infradead.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	Joerg Roedel <joro@8bytes.org>,
-	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	"llvm@lists.linux.dev" <llvm@lists.linux.dev>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nick Desaulniers <ndesaulniers@google.com>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
-	Cornelia Huck <cohuck@redhat.com>,
-	Daniel Jordan <daniel.m.jordan@oracle.com>,
-	David Gibson <david@gibson.dropbear.id.au>,
-	Eric Auger <eric.auger@redhat.com>,
-	Eric Farman <farman@linux.ibm.com>,
-	Jason Wang <jasowang@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	"Martins, Joao" <joao.m.martins@oracle.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>,
-	Keqian Zhu <zhukeqian1@huawei.com>
-Subject: Re: [PATCH v3 03/15] interval-tree: Add a utility to iterate over
- spans in an interval tree
-Message-ID: <Y2XA702nWRGfP7mo@casper.infradead.org>
-References: <0-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
- <3-v3-402a7d6459de+24b-iommufd_jgg@nvidia.com>
- <BN9PR11MB527666424E77F8417DF1BF4C8C389@BN9PR11MB5276.namprd11.prod.outlook.com>
- <Y2VqK3m9i6FlQd9+@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 219FB1101
+	for <iommu@lists.linux.dev>; Sat,  5 Nov 2022 01:54:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1667613288; x=1699149288;
+  h=message-id:date:mime-version:cc:to:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=BWyOVHcYjGNHgPgYJFQZxzrNVguTi2BzFshMjf3Fowo=;
+  b=Fd3ppsJk5DVtpKKq9n4dIPqfQQaxbkGJmhKgrRX6iXEKozTOeU5rGlP5
+   3lgk4qOGn6VEX/I6eoOofGrTukqFprzuuJMHOV4YhaH6jwjaeUIeAFEDx
+   lKsZCoS5Ek+OpBjp+E211fbsL77mA1mc7wjwrlq9YO+rI+eA0Tg81Sr/n
+   EXnMw/0wENkJTPUHZBtJY4xG09dzDHwp9k3u2kLGuhhwXY/iLmgHfYISR
+   aGvwZ26/XNhGimbGf/qJYm6mYl/0dlUSujuwzelFSN1AW/hJytTfuaBz8
+   IzWdtmGbAtRVUOfJ9wiqk+0bGW2mQfRxZjj97G1Vxkk0hhDWHmEuY1TC7
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10521"; a="289837723"
+X-IronPort-AV: E=Sophos;i="5.96,139,1665471600"; 
+   d="scan'208";a="289837723"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2022 18:54:47 -0700
+X-IronPort-AV: E=McAfee;i="6500,9779,10521"; a="666568585"
+X-IronPort-AV: E=Sophos;i="5.96,139,1665471600"; 
+   d="scan'208";a="666568585"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.213.180]) ([10.254.213.180])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2022 18:54:44 -0700
+Message-ID: <5e9bf515-0d3a-9c4e-69b7-820b14979f6b@linux.intel.com>
+Date: Sat, 5 Nov 2022 09:54:42 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y2VqK3m9i6FlQd9+@nvidia.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ "Liu, Yi L" <yi.l.liu@intel.com>, "Pan, Jacob jun"
+ <jacob.jun.pan@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+References: <20221103055329.633052-1-baolu.lu@linux.intel.com>
+ <20221103055329.633052-3-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276C5A49961FA71CC7881428C3B9@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH 2/7] iommu/vt-d: Add blocking domain support
+In-Reply-To: <BN9PR11MB5276C5A49961FA71CC7881428C3B9@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Nov 04, 2022 at 04:38:19PM -0300, Jason Gunthorpe wrote:
-> On Thu, Nov 03, 2022 at 05:31:17AM +0000, Tian, Kevin wrote:
-> > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > Sent: Wednesday, October 26, 2022 2:12 AM
-> > > +/*
-> > > + * This iterator travels over spans in an interval tree. It does not return
-> > > + * nodes but classifies each span as either a hole, where no nodes intersect,
-> > > or
-> > > + * a used, which is fully covered by nodes. Each iteration step toggles
-> > > between
-> > > + * hole and used until the entire range is covered. The returned spans
-> > > always
-> > > + * fully cover the requested range.
-> > > + *
-> > > + * The iterator is greedy, it always returns the largest hole or used possible,
-> > > + * consolidating all consecutive nodes.
-> > > + *
-> > > + * Only is_hole, start_hole/used and last_hole/used are part of the external
-> > > + * interface.
-> > 
-> > slightly better readability if moving this sentence into the structure as
-> > the break line
+On 2022/11/4 10:11, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Thursday, November 3, 2022 1:53 PM
+>>
+>> +/*
+>> + * Clear the page table pointer in context or pasid table entries so that
+>> + * all DMA requests without PASID from the device are blocked. If the page
+>> + * table has been set, clean up the data structures.
+>> + */
+>> +static void device_block_translation(struct device *dev)
 > 
-> Do you mean like this?
+> given this helper will be used both by existing paths and the new block
+> domain, it makes more sense to have it work with existing paths first
+> i.e. merging with patch3 and then add block domain after.
+
+Yes. Sounds good.
+
 > 
-> @@ -37,13 +37,16 @@ interval_tree_iter_next(struct interval_tree_node *node,
->   * The iterator is greedy, it always returns the largest hole or used possible,
->   * consolidating all consecutive nodes.
-> - *
-> - * Only is_hole, start_hole/used and last_hole/used are part of the external
-> - * interface.
->   */
->  struct interval_tree_span_iter {
->  	struct interval_tree_node *nodes[2];
->  	unsigned long first_index;
->  	unsigned long last_index;
-> +
-> +	/*
-> +	 * Only is_hole, start_hole/used and last_hole/used are part of the
-> +	 * external interface.
-> +	 */
->  	union {
->  		unsigned long start_hole;
->  		unsigned long start_used;
+>> +{
+>> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
+>> +	struct intel_iommu *iommu = info->iommu;
+>> +	unsigned long flags;
+>> +
+>> +	if (!dev_is_real_dma_subdevice(dev)) {
+>> +		if (sm_supported(iommu))
+>> +			intel_pasid_tear_down_entry(iommu, dev,
+>> +						    PASID_RID2PASID, false);
+> 
+> Since commit 4140d77a aliases devices don't share pasid table,
+> which implies that pci_for_each_dma_alias() is required as did
+> in domain_context_clear().
 
-Or you could kernel-doc it ...
+The PCI alias devices have already been covered by the iommu group
+concept in the iommu core. On the contrary, I've been thinking about
+retiring pci_for_each_dma_alias() in domain_context_clear().
 
-/**
- * struct interval_tree_span_iter - Find used and unused spans.
- * @start_hole: ...
- * @start_used: ...
- ...
- *
- * This iterator travels over spans in an interval tree. It does not return
- * nodes but classifies each span as either a hole, where no nodes intersect,
- * or as used, which is fully covered by nodes. Each iteration step
- * alternates between hole and used until the entire range is covered. The
- * returned spans always fully cover the requested range.
- *
- * The iterator is greedy, it always returns the largest span possible,
- * consolidating all consecutive nodes.
- */
-struct interval_tree_span_iter {
-	/* private: not for use by the caller */
- 	struct interval_tree_node *nodes[2];
- 	unsigned long first_index;
- 	unsigned long last_index;
-	/* public: */
-	union {
-		unsigned long start_hole;
-		unsigned long start_used;
-...
-};
 
+
+> 
+>> +		else
+>> +			domain_context_clear(info);
+>> +	}
+>> +
+>> +	if (!info->domain)
+>> +		return;
+>> +
+>> +	spin_lock_irqsave(&info->domain->lock, flags);
+>> +	list_del(&info->link);
+>> +	spin_unlock_irqrestore(&info->domain->lock, flags);
+>> +
+>> +	domain_detach_iommu(info->domain, iommu);
+>> +	info->domain = NULL;
+>> +}
+>> +
+
+Best regards,
+baolu
