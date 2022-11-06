@@ -1,10 +1,10 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F861BA25
-	for <iommu@lists.linux.dev>; Sun,  6 Nov 2022 22:02:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E53CC4314C;
-	Sun,  6 Nov 2022 22:02:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B3DBBA25
+	for <iommu@lists.linux.dev>; Sun,  6 Nov 2022 22:02:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86607C433C1;
+	Sun,  6 Nov 2022 22:02:10 +0000 (UTC)
 From: Catalin Marinas <catalin.marinas@arm.com>
 To: Linus Torvalds <torvalds@linux-foundation.org>,
 	Arnd Bergmann <arnd@arndb.de>,
@@ -27,9 +27,9 @@ Cc: Will Deacon <will@kernel.org>,
 	linux-mm@kvack.org,
 	iommu@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v3 05/13] mm/slab: Simplify create_kmalloc_cache() args and make it static
-Date: Sun,  6 Nov 2022 22:01:35 +0000
-Message-Id: <20221106220143.2129263-6-catalin.marinas@arm.com>
+Subject: [PATCH v3 06/13] dma: Allow the smaller cache_line_size() returned by dma_get_cache_alignment()
+Date: Sun,  6 Nov 2022 22:01:36 +0000
+Message-Id: <20221106220143.2129263-7-catalin.marinas@arm.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221106220143.2129263-1-catalin.marinas@arm.com>
 References: <20221106220143.2129263-1-catalin.marinas@arm.com>
@@ -41,63 +41,64 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-create_kmalloc_cache() is now only called from new_kmalloc_cache() in
-the same file, so make it static. In addition, the useroffset argument
-is always 0 while usersize is the same as size. Remove them.
+On architectures like arm64, ARCH_DMA_MINALIGN is larger than the
+majority of cache line size configurations. Allow an architecture to opt
+in to dma_get_cache_alignment() returning such smaller size and select
+the option for arm64.
 
 Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Will Deacon <will@kernel.org>
 ---
- mm/slab.h        |  3 ---
- mm/slab_common.c | 11 +++++------
- 2 files changed, 5 insertions(+), 9 deletions(-)
 
-diff --git a/mm/slab.h b/mm/slab.h
-index d0460e0f6760..93ba93e7b772 100644
---- a/mm/slab.h
-+++ b/mm/slab.h
-@@ -285,9 +285,6 @@ gfp_t kmalloc_fix_flags(gfp_t flags);
- /* Functions provided by the slab allocators */
- int __kmem_cache_create(struct kmem_cache *, slab_flags_t flags);
+Is there any architecture where ARCH_DMA_MINALIGN is larger than
+cache_line_size()? We could avoid another Kconfig entry.
+
+ arch/arm64/Kconfig          | 1 +
+ include/linux/dma-mapping.h | 2 ++
+ kernel/dma/Kconfig          | 6 ++++++
+ 3 files changed, 9 insertions(+)
+
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 505c8a1ccbe0..3991cb7b8a33 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -22,6 +22,7 @@ config ARM64
+ 	select ARCH_HAS_CURRENT_STACK_POINTER
+ 	select ARCH_HAS_DEBUG_VIRTUAL
+ 	select ARCH_HAS_DEBUG_VM_PGTABLE
++	select ARCH_HAS_DMA_CACHE_LINE_SIZE
+ 	select ARCH_HAS_DMA_PREP_COHERENT
+ 	select ARCH_HAS_ACPI_TABLE_UPGRADE if ACPI
+ 	select ARCH_HAS_FAST_MULTIPLIER
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 3288a1339271..b29124341317 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -545,6 +545,8 @@ static inline int dma_set_min_align_mask(struct device *dev,
  
--struct kmem_cache *create_kmalloc_cache(const char *name, unsigned int size,
--			slab_flags_t flags, unsigned int useroffset,
--			unsigned int usersize);
- void __init new_kmalloc_cache(int idx, enum kmalloc_cache_type type,
- 			      slab_flags_t flags);
- extern void create_boot_cache(struct kmem_cache *, const char *name,
-diff --git a/mm/slab_common.c b/mm/slab_common.c
-index b62f27c2dda7..3fe3f4ad1362 100644
---- a/mm/slab_common.c
-+++ b/mm/slab_common.c
-@@ -654,17 +654,16 @@ void __init create_boot_cache(struct kmem_cache *s, const char *name,
- 	s->refcount = -1;	/* Exempt from merging for now */
- }
- 
--struct kmem_cache *__init create_kmalloc_cache(const char *name,
--		unsigned int size, slab_flags_t flags,
--		unsigned int useroffset, unsigned int usersize)
-+static struct kmem_cache *__init create_kmalloc_cache(const char *name,
-+						      unsigned int size,
-+						      slab_flags_t flags)
+ static inline int dma_get_cache_alignment(void)
  {
- 	struct kmem_cache *s = kmem_cache_zalloc(kmem_cache, GFP_NOWAIT);
++	if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_CACHE_LINE_SIZE))
++		return cache_line_size();
+ #ifdef ARCH_HAS_DMA_MINALIGN
+ 	return ARCH_DMA_MINALIGN;
+ #endif
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index 56866aaa2ae1..d6fab8e3cbae 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -76,6 +76,12 @@ config ARCH_HAS_DMA_PREP_COHERENT
+ config ARCH_HAS_FORCE_DMA_UNENCRYPTED
+ 	bool
  
- 	if (!s)
- 		panic("Out of memory when creating slab %s\n", name);
- 
--	create_boot_cache(s, name, size, flags | SLAB_KMALLOC, useroffset,
--								usersize);
-+	create_boot_cache(s, name, size, flags | SLAB_KMALLOC, 0, size);
- 	kasan_cache_create_kmalloc(s);
- 	list_add(&s->list, &slab_caches);
- 	s->refcount = 1;
-@@ -898,7 +897,7 @@ new_kmalloc_cache(int idx, enum kmalloc_cache_type type, slab_flags_t flags)
- 	if (!kmalloc_caches[type][aligned_idx])
- 		kmalloc_caches[type][aligned_idx] = create_kmalloc_cache(
- 					kmalloc_info[aligned_idx].name[type],
--					aligned_size, flags, 0, aligned_size);
-+					aligned_size, flags);
- 	if (idx != aligned_idx)
- 		kmalloc_caches[type][idx] = kmalloc_caches[type][aligned_idx];
- 
++config ARCH_HAS_DMA_CACHE_LINE_SIZE
++	bool
++	help
++	  Select if the architecture has non-coherent DMA and
++	  cache_line_size() is a safe alignment for DMA buffers.
++
+ config SWIOTLB
+ 	bool
+ 	select NEED_DMA_MAP_STATE
