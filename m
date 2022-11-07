@@ -1,183 +1,156 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C28AAD48
-	for <iommu@lists.linux.dev>; Mon,  7 Nov 2022 13:19:49 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QTfnkAMzELzwVXLsYm9Xz2BYWDu7NCLHu1rhWx/gdytFcH2ny5aCD02ESX6Dfg+hF0qWfovNGYPLHt+I4ASDCJySdxpSCu0Bcw+MAgUda5qGy8DXT6VoYi2s8BA3cVv9pyPlwVmhc5A5/EaqHkq4EsYy1KDPhrL9e0U94m0EKWXGEqn85dzdN8rd8CElAEjNcYW78iabjAn94/ROZqlbkn+r3tISbpzPjYqeAvmFlhl/9EEZ9vixUfkFa4gFMYfiS2CkUJj0gBhAB8ucA1JUjygfiOmbBhzf5rsXQwhwHuzNG3O8rAneBhXmeIY1HB2EHBturZGz9ZlYbs9qp7AbKA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4X5dG8QlSTh4dgjV3bEZBAoi/qJnVqmgFamMmqSL5G8=;
- b=UcUyO1Rp21mamHpsd/Lp8FcRbDyMQ4zc3BVN5b5k2RHmrXM3EKMTqFgETqLPJt5bX40sRYMa/FlW/+H6sFAez8l5dMU/8AkndFRU/2NZNU0QBlE8mtWWVWAxx+Yl+nfDlfLLVjwj3w4MB5OBlqHtkBxRKuAYArNl0+n4H+hs4InVdYwKiZswcvL5Vx2dSMhx7yXdtlfv87iYQA03utchlJs+/1UDuGqDpXryj9wLHrOg8ugH2tNR0rq3+mmiDJZDfVlXgluTslN+BB5YTTgAy/2i5Gd78ErGpAfxdNH74N73EUKPwS1K8RYLkFZdRmasfHQLu/JrcrXlvmHfmTAAeA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4X5dG8QlSTh4dgjV3bEZBAoi/qJnVqmgFamMmqSL5G8=;
- b=uemGWwacjLcTycDfZKyuSAW/nN3SW/HE5qu0tCWlkV8o/bAuAF43JVyeAIZPhbhpxXYdh5lPfZ6lg5m+Qb8lLYwNRN5aJBctrlcvmLJofzVBqJZCo+tU2Awn0LeWAhCNT0a8flRKlAePIxGrlN1MbzEbrLSYEIyahoq4whlEDghyZ5h/nyfoiV/KuMD6N86PoQ+O0pq1Au8/d4jf9eRmWjb3guqKX20CbAylZbmxripKjh880UZJ7/SEKvY521KT7u8D/vKRQNt5ASMeeevHVQDhi34/TISV23XJGIwI1ejCHYMVvq4VWi8sKfy8kCO3zJKma9sZw2i1HuPxioYp9A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DS7PR12MB5864.namprd12.prod.outlook.com (2603:10b6:8:7b::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.26; Mon, 7 Nov
- 2022 13:19:44 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::7a81:a4e4:bb9c:d1de]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::7a81:a4e4:bb9c:d1de%6]) with mapi id 15.20.5791.026; Mon, 7 Nov 2022
- 13:19:44 +0000
-Date: Mon, 7 Nov 2022 09:19:43 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: Alexander Gordeev <agordeev@linux.ibm.com>,
-	David Airlie <airlied@gmail.com>,
-	Tony Krowiak <akrowiak@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Cornelia Huck <cohuck@redhat.com>, Daniel Vetter <daniel@ffwll.ch>,
-	Diana Craciun <diana.craciun@oss.nxp.com>,
-	dri-devel@lists.freedesktop.org, Eric Auger <eric.auger@redhat.com>,
-	Eric Farman <farman@linux.ibm.com>,
-	Harald Freudenberger <freude@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>, intel-gfx@lists.freedesktop.org,
-	intel-gvt-dev@lists.freedesktop.org, iommu@lists.linux.dev,
-	Jani Nikula <jani.nikula@linux.intel.com>,
-	Jason Herne <jjherne@linux.ibm.com>,
-	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-	kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-	Longfang Liu <liulongfang@huawei.com>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Peter Oberparleiter <oberpar@linux.ibm.com>,
-	Halil Pasic <pasic@linux.ibm.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-	Vineeth Vijayan <vneethv@linux.ibm.com>,
-	Will Deacon <will@kernel.org>, Yishai Hadas <yishaih@nvidia.com>,
-	Zhenyu Wang <zhenyuw@linux.intel.com>,
-	Zhi Wang <zhi.a.wang@intel.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>
-Subject: Re: [PATCH 04/10] vfio: Move storage of allow_unsafe_interrupts to
- vfio_main.c
-Message-ID: <Y2kF75zVD581UeR2@nvidia.com>
-References: <0-v1-4991695894d8+211-vfio_iommufd_jgg@nvidia.com>
- <4-v1-4991695894d8+211-vfio_iommufd_jgg@nvidia.com>
- <20221026152442.4855c5de.alex.williamson@redhat.com>
- <Y1wiCc33Jh5QY+1f@nvidia.com>
- <20221031164526.0712e456.alex.williamson@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221031164526.0712e456.alex.williamson@redhat.com>
-X-ClientProxiedBy: BL0PR1501CA0012.namprd15.prod.outlook.com
- (2603:10b6:207:17::25) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1B9C2BA41
+	for <iommu@lists.linux.dev>; Mon,  7 Nov 2022 13:26:29 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6DF911FB;
+	Mon,  7 Nov 2022 05:26:35 -0800 (PST)
+Received: from [10.57.36.87] (unknown [10.57.36.87])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4D39B3F73D;
+	Mon,  7 Nov 2022 05:26:26 -0800 (PST)
+Message-ID: <b7315166-1e2c-27f4-ab6a-b7a7eb41c079@arm.com>
+Date: Mon, 7 Nov 2022 13:26:21 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DS7PR12MB5864:EE_
-X-MS-Office365-Filtering-Correlation-Id: 76b3bbaa-d521-4298-a7dd-08dac0c2bc79
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	H6TZ3XjPKagGwPPhvwmWSWUXl6G4xGdbn+N1blCXYpTEOOBJe1u5gXPXwX877Em71HHUAVOwUyChOIMyL4HoxvOouw6XU/wviKYyooISg1u58/0QeGbQKsZnVNMzQ/5AqKBqQsNNODGn2uKo4A1oGOfNRrS1dDZQa4mbFouufD48xYZcgNvTnHaJLPa/Rygn97RcK8mrl39vIgI0O8npeA2VdduTKmgKH9mwFumhm333Ji2DzggemYAE8KYRaZ+bDYN8osQbWpBtwsDWHiOmWyWH+G4scgHvF5x2U6GiJeGb+hQL2TA9aSXOV35ScGWBJhnpgTBeN5jQg0mW7nF5xVCouki9WyhwG/gt7LmerMta5uolXhf5K/X+rOc5dIv2st6rbc8qooadQZiWqqzjbvJAMol2raHdGMAP+bta/f03V19TkpMd3keVz1nN7OmekgU5cGoVi77NA/20IGZnFwgk7O91R+4revLvud5DAAUkU8CqS/yl2RDLJ1W2A3R5gMPJM58gEqs4fPtoTv43ZUgd3wsK3Ys9t6jXMg730Cew7p9WcLoZWZQKECNjeRMFSBOwE+Au7pZH3lGIyrdxtnRY3WN8nyYSTgeNEV9jdoE2/+5uY3u0tddQ0IblQcePM22MhvxMvelUHZvetTeTSoMueHJXhuQVLO6m/b5Y7zN3RKpDc15jv6zZEGvhsoBm6n8S6cmlQ/4y+QS/1GghZA==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(346002)(366004)(376002)(136003)(39860400002)(451199015)(478600001)(6486002)(38100700002)(86362001)(54906003)(6916009)(83380400001)(36756003)(8936002)(316002)(6506007)(6512007)(26005)(41300700001)(66946007)(66556008)(8676002)(66476007)(4326008)(186003)(2616005)(2906002)(7416002)(7406005)(5660300002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?3ycE2YlZfTG/oQoQNuNstdHGXUSS2MOxztYYF2Au9GQuT1CZdvQgX0GPg5H4?=
- =?us-ascii?Q?+m73EF2k8+kgNsc76r9LXWETx3XzR0IyWxYFQmkgTqKsK9FpKlv8fWgHbAae?=
- =?us-ascii?Q?qCW958njIzZ4sBDIjQeo36kRwp+IJoWdjyJYoe19g5RZ160DyxyIorcJWd56?=
- =?us-ascii?Q?gYgzOwHCYHrI7EUpwOARfT5s42zbAvYaqzxzIMe5CG4azCij2nSJi9ddCc4D?=
- =?us-ascii?Q?/McXeQkSsPEPK6VqaiycLAJ2b/bD+YhJS6acS3jbYKnkWaqXzsOxLQGE5V4p?=
- =?us-ascii?Q?Hje0KxoKrGLWkJjjlllrQShfWax+VQNxU8lbPIfwgogCxANMTpXqqc97906z?=
- =?us-ascii?Q?rrap+Ldg76EcpkTRL6+Ih1ZIAvEc8VSLDRMYWndJJb1ktNph6pC5/Mj1OOYB?=
- =?us-ascii?Q?p2fi1moCAG1rJD+QPR4DkFzzv+ECQNuTbxlxsWG1tqM3JsIdc0YeacM2WqTA?=
- =?us-ascii?Q?LB401VOkHDj0VWmImhkyCrYOtapuaMJeQvslhP1JG4lO03GgMqskdxC+cSt/?=
- =?us-ascii?Q?AGVd9YunblzfL4buRvn7+KR42rFq69W4JxZtX6qjTKjrFa1EkmTqLdse08IN?=
- =?us-ascii?Q?w3gxGBU7dovADzuvrp4ZofDmDvfI/6XiJzm1uj2hOOBSTcBc/A0tyFr4L07q?=
- =?us-ascii?Q?nHQ8EvEvL2bEvHkxNNhxEiHN34PjOCnhAlFaWtxIhMoAb2Du1rTgUJw0JIMy?=
- =?us-ascii?Q?vvNxNGt0x1bNfFwKAOwZn5XBaE2OUgGaLranlKdKY1YRDoG64Yl1YMEx2or6?=
- =?us-ascii?Q?TuI0lh/xp9wq6e+1YRn28QgJeo24iFlq42zhWPlcWPO09xy8flkeFFCUhW6+?=
- =?us-ascii?Q?0/mXaoIlCqYiKBJLvaIgOVVaHhDA8QDwXrk5tjTYP8H42P9on0XIi4G74uFK?=
- =?us-ascii?Q?3eiSfxDVvbtU3xr8CBjxsttPngrXylFlxup1kdcRDO1cYJcvH63sGh1gWPay?=
- =?us-ascii?Q?ua2D4wlzdPTPaK2gWQ6Nkcw5+sQG7pUV78GEqAOy6JJH+1wl2YxjG1IiVeBo?=
- =?us-ascii?Q?3aLkSe82aVz6TZzq9PXGr4+uWkBv/leHwHB0Vi2wKfKMw6MVbOKCIuTiovEZ?=
- =?us-ascii?Q?49fRzXh982yEX7VkzX5lTidMBoh+cQrk9N9MSfngDZSdjaspt5NNtwFQqmSu?=
- =?us-ascii?Q?ro1nQAzxRD0Rz8+/YP4lY8IHWZAJI+iqIJq+vHd9Bn/fCc4nEKzYqwkTlYio?=
- =?us-ascii?Q?rfxS4enyRHOKFGiBwOkiY5AGXh89wavb6nHtmIcO0wxrow2xROn6AkX0KvUN?=
- =?us-ascii?Q?m7qCosnRtBJ3AwFvRZjmDqUCJ3ZswfAqTPpjuk2nVGXvKVpuXuRQVFiW5ZRb?=
- =?us-ascii?Q?rlmOzg+0BVDN4OhNCp3gs+yFnaoy0B4yFNAZI12IrE2BCbF0YLqwJHTOYboJ?=
- =?us-ascii?Q?bhfmnbA1QZcxE7Rgv4x0i+nWkL+1+4tdwT/mXoZ9DoIaJKiEsnY0o6/8wxal?=
- =?us-ascii?Q?XHPrYFx+2efVGBvW8/RoIynU44pb0Olk++w7iaCbJnH/EpOvUdkDR+rj9S/C?=
- =?us-ascii?Q?rCNu2im1dmsdYW5o2iYBKCWjTll3t+kRu4SeDVvcsN4zxCvNHbIvzkGTYkBW?=
- =?us-ascii?Q?LAtIyrUYQKUCYj9aNAU=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 76b3bbaa-d521-4298-a7dd-08dac0c2bc79
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Nov 2022 13:19:44.8998
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MaisCtaZQ0vNJvx1NRF5hFN4IFlcFxcuV9hWzeWntYolr4QaV4CtsYEGio3yoHUt
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5864
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH v3 03/13] iommu/dma: Force bouncing of the size is not
+ cacheline-aligned
+Content-Language: en-GB
+To: Catalin Marinas <catalin.marinas@arm.com>, Christoph Hellwig <hch@lst.de>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>,
+ Arnd Bergmann <arnd@arndb.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Herbert Xu <herbert@gondor.apana.org.au>, Ard Biesheuvel <ardb@kernel.org>,
+ Isaac Manjarres <isaacmanjarres@google.com>,
+ Saravana Kannan <saravanak@google.com>, Alasdair Kergon <agk@redhat.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>,
+ Mark Brown <broonie@kernel.org>, Mike Snitzer <snitzer@kernel.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, linux-mm@kvack.org,
+ iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
+References: <20221106220143.2129263-1-catalin.marinas@arm.com>
+ <20221106220143.2129263-4-catalin.marinas@arm.com>
+ <20221107094603.GB6055@lst.de> <Y2jj7PlrIC6weDch@arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <Y2jj7PlrIC6weDch@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Mon, Oct 31, 2022 at 04:45:26PM -0600, Alex Williamson wrote:
-
-> > It is one idea, it depends how literal you want to be on "module
-> > parameters are ABI". IMHO it is a weak form of ABI and the need of
-> > this paramter in particular is not that common in modern times, AFAIK.
-> > 
-> > So perhaps we just also expose it through vfio.ko and expect people to
-> > migrate. That would give a window were both options are available.
+On 2022-11-07 10:54, Catalin Marinas wrote:
+> On Mon, Nov 07, 2022 at 10:46:03AM +0100, Christoph Hellwig wrote:
+>>> +static inline bool dma_sg_kmalloc_needs_bounce(struct device *dev,
+>>> +					       struct scatterlist *sg, int nents,
+>>> +					       enum dma_data_direction dir)
+>>> +{
+>>> +	struct scatterlist *s;
+>>> +	int i;
+>>> +
+>>> +	if (!IS_ENABLED(CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC) ||
+>>> +	    dir == DMA_TO_DEVICE || dev_is_dma_coherent(dev))
+>>> +		return false;
+>>
+>> This part should be shared with dma-direct in a well documented helper.
+>>
+>>> +	for_each_sg(sg, s, nents, i) {
+>>> +		if (dma_kmalloc_needs_bounce(dev, s->length, dir))
+>>> +			return true;
+>>> +	}
+>>
+>> And for this loop iteration I'd much prefer it to be out of line, and
+>> also not available in a global helper.
+>>
+>> But maybe someone can come up with a nice tweak to the dma-iommu
+>> code to not require the extra sglist walk anyway.
 > 
-> That might be best.  Ultimately this is an opt-out of a feature that
-> has security implications, so I'd rather error on the side of requiring
-> the user to re-assert that opt-out.  It seems the potential good in
-> eliminating stale or unnecessary options outweighs any weak claims of
-> preserving an ABI for a module that's no longer in service.
+> An idea: we could add another member to struct scatterlist to track the
+> bounced address. We can then do the bouncing in a similar way to
+> iommu_dma_map_sg_swiotlb() but without the iova allocation. The latter
+> would be a common path for both the bounced and non-bounced cases.
 
-Ok, lets do this
+FWIW I spent a little time looking at this as well; I'm pretty confident
+it can be done without the extra walk if the iommu-dma bouncing is
+completely refactored (and it might want a SWIOTLB helper to retrieve
+the original page from a bounced address). That's going to be a bigger
+job than I'll be able to finish this cycle, and I concluded that this
+in-between approach wouldn't be worth posting for its own sake, but as
+part of this series I think it's a reasonable compromise. What we have
+here is effectively a pretty specialist config that trades DMA mapping
+performance for memory efficiency, so trading a little more performance
+initially for the sake of keeping it manageable seems fair to me.
 
---- a/drivers/vfio/vfio_main.c
-+++ b/drivers/vfio/vfio_main.c
-@@ -55,6 +55,11 @@ static struct vfio {
- bool vfio_allow_unsafe_interrupts;
- EXPORT_SYMBOL_GPL(vfio_allow_unsafe_interrupts);
- 
-+module_param_named(allow_unsafe_interrupts,
-+                  vfio_allow_unsafe_interrupts, bool, S_IRUGO | S_IWUSR);
-+MODULE_PARM_DESC(allow_unsafe_interrupts,
-+                "Enable VFIO IOMMU support for on platforms without interrupt remapping support.");
+The one thing I did get as far as writing up is the patch below, which
+I'll share as an indirect review comment on this patch - feel free to
+pick it up or squash it in if you think it's worthwhile.
+
+Thanks,
+Robin.
+
+----->8-----
+From: Robin Murphy <robin.murphy@arm.com>
+Date: Wed, 2 Nov 2022 17:35:09 +0000
+Subject: [PATCH] scatterlist: Add dedicated config for DMA flags
+
+The DMA flags field will be useful for users beyond PCI P2P, so upgrade
+to its own dedicated config option.
+
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+  drivers/pci/Kconfig         | 1 +
+  include/linux/scatterlist.h | 4 ++--
+  kernel/dma/Kconfig          | 3 +++
+  3 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/pci/Kconfig b/drivers/pci/Kconfig
+index 55c028af4bd9..0303604d9de9 100644
+--- a/drivers/pci/Kconfig
++++ b/drivers/pci/Kconfig
+@@ -173,6 +173,7 @@ config PCI_P2PDMA
+  	#
+  	depends on 64BIT
+  	select GENERIC_ALLOCATOR
++	select NEED_SG_DMA_FLAGS
+  	help
+  	  Enableѕ drivers to do PCI peer-to-peer transactions to and from
+  	  BARs that are exposed in other devices that are the part of
+diff --git a/include/linux/scatterlist.h b/include/linux/scatterlist.h
+index 375a5e90d86a..87aaf8b5cdb4 100644
+--- a/include/linux/scatterlist.h
++++ b/include/linux/scatterlist.h
+@@ -16,7 +16,7 @@ struct scatterlist {
+  #ifdef CONFIG_NEED_SG_DMA_LENGTH
+  	unsigned int	dma_length;
+  #endif
+-#ifdef CONFIG_PCI_P2PDMA
++#ifdef CONFIG_NEED_SG_DMA_FLAGS
+  	unsigned int    dma_flags;
+  #endif
+  };
+@@ -249,7 +249,7 @@ static inline void sg_unmark_end(struct scatterlist *sg)
+  }
+  
+  /*
+- * CONFGI_PCI_P2PDMA depends on CONFIG_64BIT which means there is 4 bytes
++ * CONFIG_PCI_P2PDMA depends on CONFIG_64BIT which means there is 4 bytes
+   * in struct scatterlist (assuming also CONFIG_NEED_SG_DMA_LENGTH is set).
+   * Use this padding for DMA flags bits to indicate when a specific
+   * dma address is a bus address.
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index 56866aaa2ae1..48016c4f67ac 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -24,6 +24,9 @@ config DMA_OPS_BYPASS
+  config ARCH_HAS_DMA_MAP_DIRECT
+  	bool
+  
++config NEED_SG_DMA_FLAGS
++	bool
 +
- static DEFINE_XARRAY(vfio_device_set_xa);
- static const struct file_operations vfio_group_fops;
-
-> However, I'd question whether vfio is the right place for that new
-> module option.  As proposed, vfio is only passing it through to
-> iommufd, where an error related to lack of the hardware feature is
-> masked behind an -EPERM by the time it gets back to vfio, making any
-> sort of advisory to the user about the module option convoluted.  It
-> seems like iommufd should own the option to opt-out universally, not
-> just through the vfio use case.  Thanks,
-
-My thinking is this option shouldn't exist at all in other iommufd
-users. eg I don't see value in VDPA supporting it.
-
-So, let's wait and see if a need arises first. I'm reluctant to add
-options to disable kernel security without really good reasons.
-
-Jason
+  config NEED_SG_DMA_LENGTH
+  	bool
+  
+-- 
