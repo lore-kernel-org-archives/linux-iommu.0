@@ -1,11 +1,11 @@
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E71F37F
-	for <iommu@lists.linux.dev>; Mon,  7 Nov 2022 09:44:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F231A7F
+	for <iommu@lists.linux.dev>; Mon,  7 Nov 2022 09:46:08 +0000 (UTC)
 Received: by verein.lst.de (Postfix, from userid 2407)
-	id E953767373; Mon,  7 Nov 2022 10:43:55 +0100 (CET)
-Date: Mon, 7 Nov 2022 10:43:55 +0100
+	id D0F8B67373; Mon,  7 Nov 2022 10:46:03 +0100 (CET)
+Date: Mon, 7 Nov 2022 10:46:03 +0100
 From: Christoph Hellwig <hch@lst.de>
 To: Catalin Marinas <catalin.marinas@arm.com>
 Cc: Linus Torvalds <torvalds@linux-foundation.org>,
@@ -23,10 +23,10 @@ Cc: Linus Torvalds <torvalds@linux-foundation.org>,
 	"Rafael J. Wysocki" <rafael@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>, linux-mm@kvack.org,
 	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v3 02/13] dma-mapping: Force bouncing if the kmalloc()
- size is not cacheline-aligned
-Message-ID: <20221107094355.GA6055@lst.de>
-References: <20221106220143.2129263-1-catalin.marinas@arm.com> <20221106220143.2129263-3-catalin.marinas@arm.com>
+Subject: Re: [PATCH v3 03/13] iommu/dma: Force bouncing of the size is not
+ cacheline-aligned
+Message-ID: <20221107094603.GB6055@lst.de>
+References: <20221106220143.2129263-1-catalin.marinas@arm.com> <20221106220143.2129263-4-catalin.marinas@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,29 +35,29 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221106220143.2129263-3-catalin.marinas@arm.com>
+In-Reply-To: <20221106220143.2129263-4-catalin.marinas@arm.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 
-> +/*
-> + * Check whether the given size, assuming it is for a kmalloc()'ed object, is
-> + * safe for non-coherent DMA or needs bouncing.
-> + */
-> +static inline bool dma_kmalloc_needs_bounce(struct device *dev, size_t size,
-> +					    enum dma_data_direction dir)
+> +static inline bool dma_sg_kmalloc_needs_bounce(struct device *dev,
+> +					       struct scatterlist *sg, int nents,
+> +					       enum dma_data_direction dir)
 > +{
-> +	/*
-> +	 * No need for bouncing if coherent DMA or the direction is
-> +	 * DMA_TO_DEVICE.
-> +	 */
+> +	struct scatterlist *s;
+> +	int i;
+> +
 > +	if (!IS_ENABLED(CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC) ||
 > +	    dir == DMA_TO_DEVICE || dev_is_dma_coherent(dev))
+> +		return false;
 
-Minor nit, but for clarify I'd preper to split the generaly availabily
-checks from the direction one, i.e.:
+This part should be shared with dma-direct in a well documented helper.
 
-	if (dev_is_dma_coherent(dev) ||
-	    !IS_ENABLED(CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC))
-		return false;
+> +	for_each_sg(sg, s, nents, i) {
+> +		if (dma_kmalloc_needs_bounce(dev, s->length, dir))
+> +			return true;
+> +	}
 
-	if (dir == DMA_TO_DEVICE)
-		return false;
+And for this loop iteration I'd much prefer it to be out of line, and
+also not available in a global helper.
+
+But maybe someone can come up with a nice tweak to the dma-iommu
+code to not require the extra sglist walk anyway.
