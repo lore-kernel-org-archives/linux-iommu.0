@@ -1,20 +1,21 @@
-Received: from formenos.hmeau.com (helcar.hmeau.com [216.24.177.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BF3628E8
-	for <iommu@lists.linux.dev>; Mon,  7 Nov 2022 09:13:23 +0000 (UTC)
-Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
-	by formenos.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-	id 1oryAz-00AywG-AF; Mon, 07 Nov 2022 17:12:54 +0800
-Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Mon, 07 Nov 2022 17:12:53 +0800
-Date: Mon, 7 Nov 2022 17:12:53 +0800
-From: Herbert Xu <herbert@gondor.apana.org.au>
-To: Catalin Marinas <catalin.marinas@arm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5FE428E8;
+	Mon,  7 Nov 2022 09:22:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B630AC433C1;
+	Mon,  7 Nov 2022 09:22:36 +0000 (UTC)
+Date: Mon, 7 Nov 2022 09:22:33 +0000
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: kernel test robot <lkp@intel.com>
 Cc: Linus Torvalds <torvalds@linux-foundation.org>,
 	Arnd Bergmann <arnd@arndb.de>, Christoph Hellwig <hch@lst.de>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	oe-kbuild-all@lists.linux.dev, LKML <linux-kernel@vger.kernel.org>,
 	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
 	Andrew Morton <akpm@linux-foundation.org>,
+	Linux Memory Management List <linux-mm@kvack.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
 	Ard Biesheuvel <ardb@kernel.org>,
 	Isaac Manjarres <isaacmanjarres@google.com>,
 	Saravana Kannan <saravanak@google.com>,
@@ -22,15 +23,13 @@ Cc: Linus Torvalds <torvalds@linux-foundation.org>,
 	Joerg Roedel <joro@8bytes.org>, Mark Brown <broonie@kernel.org>,
 	Mike Snitzer <snitzer@kernel.org>,
 	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, linux-mm@kvack.org,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v3 11/13] crypto: Use ARCH_DMA_MINALIGN instead of
- ARCH_KMALLOC_MINALIGN
-Message-ID: <Y2jMFeB4h2YwyOpb@gondor.apana.org.au>
-References: <20221106220143.2129263-1-catalin.marinas@arm.com>
- <20221106220143.2129263-12-catalin.marinas@arm.com>
- <Y2hr2gbucDzOYI5S@gondor.apana.org.au>
- <Y2jKQOG/oKGXwCaZ@arm.com>
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v3 04/13] mm/slab: Allow kmalloc() minimum alignment
+ fallback to dma_get_cache_alignment()
+Message-ID: <Y2jOWXz0rdM/+jfx@arm.com>
+References: <20221106220143.2129263-5-catalin.marinas@arm.com>
+ <202211070812.BhGKB0Hd-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -39,33 +38,39 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y2jKQOG/oKGXwCaZ@arm.com>
+In-Reply-To: <202211070812.BhGKB0Hd-lkp@intel.com>
 
-On Mon, Nov 07, 2022 at 09:05:04AM +0000, Catalin Marinas wrote:
->
-> Well, it does ensure that the __alignof__ and sizeof structures like
-> crypto_alg and aead_request is still 128 after this change. A kmalloc()
-> of a size multiple of 128 returns a 128-byte aligned object. So the aim
-> is just to keep the current binary layout/alignment to 128 on arm64. In
-> theory, no functional change.
+On Mon, Nov 07, 2022 at 08:50:31AM +0800, kernel test robot wrote:
+> url:    https://github.com/intel-lab-lkp/linux/commits/Catalin-Marinas/mm-dma-arm64-Reduce-ARCH_KMALLOC_MINALIGN-to-8/20221107-060303
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-everything
+> patch link:    https://lore.kernel.org/r/20221106220143.2129263-5-catalin.marinas%40arm.com
+> patch subject: [PATCH v3 04/13] mm/slab: Allow kmalloc() minimum alignment fallback to dma_get_cache_alignment()
+> config: parisc-randconfig-r003-20221106
+> compiler: hppa-linux-gcc (GCC) 12.1.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://github.com/intel-lab-lkp/linux/commit/309bc52a1ed9665a1b9d32bcf094918ceb6af519
+>         git remote add linux-review https://github.com/intel-lab-lkp/linux
+>         git fetch --no-tags linux-review Catalin-Marinas/mm-dma-arm64-Reduce-ARCH_KMALLOC_MINALIGN-to-8/20221107-060303
+>         git checkout 309bc52a1ed9665a1b9d32bcf094918ceb6af519
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=parisc SHELL=/bin/bash
+> 
+> If you fix the issue, kindly add following tag where applicable
+> | Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>):
+> 
+>    mm/slab_common.c: In function '__kmalloc_minalign':
+> >> mm/slab_common.c:866:52: error: 'io_tlb_default_mem' undeclared (first use in this function)
+>      866 |             cache_align < ARCH_KMALLOC_MINALIGN || io_tlb_default_mem.nslabs)
+>          |                                                    ^~~~~~~~~~~~~~~~~~
+>    mm/slab_common.c:866:52: note: each undeclared identifier is reported only once for each function it appears in
 
-Changing CRYPTO_MINALIGN to 128 does not cause structures that are
-smaller than 128 bytes to magically become larger than 128 bytes.
-All it does is declare to the compiler that it may assume that
-these pointers are 128-byte aligned (which is obviously untrue
-if kmalloc does not guarantee that).
+Thanks for this. It looks like I didn't test the series with
+CONFIG_SWIOTLB disabled.
 
-So I don't see how this changes anything in practice.  Buffers
-that required bouncing prior to your change will still require
-bouncing.
-
-If you're set on doing it this way then I can proceed with the
-original patch-set to change the drivers.  I've just been putting
-it off because it seems that you guys weren't quite decided on
-which way to go.
-
-Cheers,
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+Catalin
