@@ -1,156 +1,202 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1B9C2BA41
-	for <iommu@lists.linux.dev>; Mon,  7 Nov 2022 13:26:29 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6DF911FB;
-	Mon,  7 Nov 2022 05:26:35 -0800 (PST)
-Received: from [10.57.36.87] (unknown [10.57.36.87])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4D39B3F73D;
-	Mon,  7 Nov 2022 05:26:26 -0800 (PST)
-Message-ID: <b7315166-1e2c-27f4-ab6a-b7a7eb41c079@arm.com>
-Date: Mon, 7 Nov 2022 13:26:21 +0000
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2056.outbound.protection.outlook.com [40.107.220.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6D2FBA55
+	for <iommu@lists.linux.dev>; Mon,  7 Nov 2022 13:57:46 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bTDF75lUZNeTe+uNLtwBt+mDJXP+PcYBe0G4/s/bBwukVoHDvsrpDW0hlJXuHOcxIi4xeR9+9L6u41UiKQa9SvtiDYPHG04SM+3qFQKKh019nRSoOyYfqqjxSgH8PZX8HAQAz2kn1teXT+J4PHnJHGyfQzFTwrqk2Z3DyKyTxWvEwjHLtHCKxSDb55cbxVRaKKKQUN3UZqhR+YTz99GHe9cE2lIGEcuSTTbsS36sCpHKJt14jR5Dnp25sYRbU/ZXhlI+UfsqhnbWj/FQKdfV2J5agmPPIX1m7Gsez2U0VDsPAKGsHseExRD1yOcwr+PSPQ8zMdzd5i4XdjESJkpBUA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=tya8+SvfMvAXd9qxFtkwJC29M3FyM7z3cyGjpEOpxWw=;
+ b=d2UO5ckJCImY3qbEyIPcBlcAywQJfzpcFiFaSdtJI0asZCbmICda+UEnZWCTJgHHob8CT3ww7lr54eWVPYf+xHFTiUlw21vq0jvGBlvO0A3RSS44XuyeDWcNK0yrBA0gb15xDfyt8635q3ICPbJ3DKsFlljKRXXCgiBRSsHn18oHQvGeBLe/dYobQQswGL4LW0kJvOVI2ZkYU0D3x2G4bVV9jWJf2aHANDSONh5EnF+CLZCQcqya99yiNu4zAp3SUIEj62+BcylcWwo2/dbsruaV2kKGfOAsyhvFV4BtGRQk4LBqBQoyu4cOIXp41rPQ5KbDg0vtZMdJpqHgQfiHag==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tya8+SvfMvAXd9qxFtkwJC29M3FyM7z3cyGjpEOpxWw=;
+ b=qukudt3NJIelbLRc1BFw2FpZUq6JkAMep2MXNOtzjWiF8HEjujuScdSmy3JnDaw7ewR9LVw885hk1YZlIbcyHQoFu8w/SdAsPjxAIAdh7/yBBkj2K1wtf0d/zo99RTnRtPkPUXDxw28agXjdt9jaYo9404MuWW+XPbjuN7V5nQtAkfZomNw9XRgBl+ViXGjUhEt661Rt1XqazEog7RVoQNygA4cZ2ADBSznZHWNEE7Cgyno3fArkFiCtSyFFAbhujXBzWXDCI+Yzk+c3UolFv8XBw+5PTPb5kaWZLMNBC19U5ZUh5nhdkEBZ18/cFoPdbcOuZQCwGfYcEWDlXjwNoQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by IA1PR12MB6042.namprd12.prod.outlook.com (2603:10b6:208:3d6::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.26; Mon, 7 Nov
+ 2022 13:57:43 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::7a81:a4e4:bb9c:d1de]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::7a81:a4e4:bb9c:d1de%6]) with mapi id 15.20.5791.026; Mon, 7 Nov 2022
+ 13:57:43 +0000
+Date: Mon, 7 Nov 2022 09:57:42 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: Alexander Gordeev <agordeev@linux.ibm.com>,
+	David Airlie <airlied@gmail.com>,
+	Tony Krowiak <akrowiak@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Cornelia Huck <cohuck@redhat.com>, Daniel Vetter <daniel@ffwll.ch>,
+	Diana Craciun <diana.craciun@oss.nxp.com>,
+	dri-devel@lists.freedesktop.org, Eric Auger <eric.auger@redhat.com>,
+	Eric Farman <farman@linux.ibm.com>,
+	Harald Freudenberger <freude@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>, intel-gfx@lists.freedesktop.org,
+	intel-gvt-dev@lists.freedesktop.org, iommu@lists.linux.dev,
+	Jani Nikula <jani.nikula@linux.intel.com>,
+	Jason Herne <jjherne@linux.ibm.com>,
+	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+	kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+	Longfang Liu <liulongfang@huawei.com>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Peter Oberparleiter <oberpar@linux.ibm.com>,
+	Halil Pasic <pasic@linux.ibm.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+	Vineeth Vijayan <vneethv@linux.ibm.com>,
+	Will Deacon <will@kernel.org>, Yishai Hadas <yishaih@nvidia.com>,
+	Zhenyu Wang <zhenyuw@linux.intel.com>,
+	Zhi Wang <zhi.a.wang@intel.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH 10/10] iommufd: Allow iommufd to supply /dev/vfio/vfio
+Message-ID: <Y2kO1njmu6sU55S0@nvidia.com>
+References: <0-v1-4991695894d8+211-vfio_iommufd_jgg@nvidia.com>
+ <10-v1-4991695894d8+211-vfio_iommufd_jgg@nvidia.com>
+ <20221026153133.44dc05c8.alex.williamson@redhat.com>
+ <Y1wjFNxwPRm7S6yZ@nvidia.com>
+ <20221031165311.0698e1ea.alex.williamson@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221031165311.0698e1ea.alex.williamson@redhat.com>
+X-ClientProxiedBy: MN2PR16CA0012.namprd16.prod.outlook.com
+ (2603:10b6:208:134::25) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.4.1
-Subject: Re: [PATCH v3 03/13] iommu/dma: Force bouncing of the size is not
- cacheline-aligned
-Content-Language: en-GB
-To: Catalin Marinas <catalin.marinas@arm.com>, Christoph Hellwig <hch@lst.de>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>,
- Arnd Bergmann <arnd@arndb.de>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
- Andrew Morton <akpm@linux-foundation.org>,
- Herbert Xu <herbert@gondor.apana.org.au>, Ard Biesheuvel <ardb@kernel.org>,
- Isaac Manjarres <isaacmanjarres@google.com>,
- Saravana Kannan <saravanak@google.com>, Alasdair Kergon <agk@redhat.com>,
- Daniel Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>,
- Mark Brown <broonie@kernel.org>, Mike Snitzer <snitzer@kernel.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>, linux-mm@kvack.org,
- iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
-References: <20221106220143.2129263-1-catalin.marinas@arm.com>
- <20221106220143.2129263-4-catalin.marinas@arm.com>
- <20221107094603.GB6055@lst.de> <Y2jj7PlrIC6weDch@arm.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <Y2jj7PlrIC6weDch@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|IA1PR12MB6042:EE_
+X-MS-Office365-Filtering-Correlation-Id: e4253e08-5b0a-4d12-ff21-08dac0c80aca
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	pLWpK5RTvTKtso2cPOgsl7sL6oNQgOkyo4NA83/AeOZDL/nvyv9GMJdpWU3aIVpyBGLobaB0+ScOWzOwPtW39hVOaQrQFMWrMdOUYpqRXHKZ/ipIj8Gzg6ZokMQ/3ejRlInrfk6TpIdCq+67Q8AA3OmBzBki2JeZ88k7dih2LCNYNNcG+iHhLFAOA3LFJxVV840ay8pJ4ndixIjqxqu5XOPB7AtvxdhFoL85Ulbxx+ZNp3FXx0OD+BWswlKrmRXHrvvF1DvfGid4CZlo4wvh4KNXeDAXCRuSTaNJlIG0OSG7LJbALv6IIgfRHzmjo/G3wPxx5GfAz3cVmw9jfI6LJj7qLSR1Wt2CSuQK3EpxnawtwNQrd1dd5SVQeQqDS2qD2oNMUJ4tnnc99WUEOe7F1D0Kn17iPFlHmtSpiHaJi1dDNk7nSXvj2engjISIS/sXhnFBKxMNDLx3AZkao9xKllXSsCKzAsoX8mQlvxJ2heneHzUWsL/+CWQtfMOwab/FqUHqDWAocliyexChTddKregpqD7PaO/jow+C26i6cmjEXUxfamHRsDsv8Kymf8GTnZHgSmOfTksMjMOAzyFJOSZr1KEAhR/HwAgeV/maV/S8gZpcaxkjaTkq+GUCBtSliNIKA4oyqHa4WfEYQW10Zv7OlVN+pGx0iT9LALgmOT50KJ6Pw0HXWRHYOZRV+tg+X90W0DG3Oqv8be4HzXp6QQ==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(346002)(396003)(376002)(39860400002)(136003)(451199015)(186003)(6512007)(26005)(6506007)(2616005)(38100700002)(83380400001)(7406005)(5660300002)(7416002)(2906002)(6916009)(6486002)(8936002)(41300700001)(478600001)(4326008)(316002)(66556008)(8676002)(66946007)(66476007)(54906003)(36756003)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?FhrspaPtonHLLLLfaJBGNlVKgf7AkSUqqyL4XFWI/z1at0LMdLjhQKv2uOFx?=
+ =?us-ascii?Q?FUkoAoXN8BvafY/UzVCTSUnEh6WWlMxnuguFRd04s+OEwJB6chHJGZNAV7bA?=
+ =?us-ascii?Q?vV5McKnnMX+FuSZAuxk6ToIYcaKFjaGyDrQy/ZueYC8YBfW6wWjaCkCdWt/g?=
+ =?us-ascii?Q?8nUZZKVLvYniqwnHnGYTotshtKSgmlAIdXLBIWa298lI0FitrRdZc07sZ0Dv?=
+ =?us-ascii?Q?EgXlVKkAWpD8PYT4bgkRrK5TGvxZ2jBHBgGZ1uvGajqAKbXM9nisFed8ZX3J?=
+ =?us-ascii?Q?ac9/iQ1B8nGRzRMak0ybCg1TKvcK1wM4TpPq7mtz15lHAFLW4yW9GZjYhqjp?=
+ =?us-ascii?Q?Mi+ld6RfqUnTFVGM62Ma+W0lNPDwStSSrxdQ5zbMrswg0et9S1izYAkubrkl?=
+ =?us-ascii?Q?wSxwXDZVUJRIy8I/PCI0rza735+xepnavxD/r8xHqZvsbMPKbrcztCBXOqh4?=
+ =?us-ascii?Q?tQNPj1/Hx1CAjEYQPQ1DlCMLWrWOhJvBSgWDWf0osHeLqGj5+ngn46AbmNMM?=
+ =?us-ascii?Q?o4H6t+8NaZze1mYdqrfzlvCC2IZ6FYaDmNch3qqRvT4LMcXzIXdrYdsrp3uy?=
+ =?us-ascii?Q?K4+CGTokQ3VoLFebstDXEg71HhlrkK7BP5xp7N68z9yCdP4pzmIlFOwtKS8t?=
+ =?us-ascii?Q?etbPYY5o9u4+1f0dPYAAsrhUSLv71gpDxbdj0v52DHHUfwlK1Mqg7BWPQROn?=
+ =?us-ascii?Q?Dmc2gtEs/KSJftNVk5Waa8VCDxXl5rwS5WkFKbAqJsiOpY6+4f57TIprSaw8?=
+ =?us-ascii?Q?/kOe8CkFM4xE0j01AE2vXM3SqrJv/W6WDcsRa/CVn4WBDifyWbQ1+SaYGh/b?=
+ =?us-ascii?Q?fHsBXabk2ERsU0pEB+5WMRq/t1cKpZ2yyWOl/YM6KJZotzTHxtFYOfBTdp59?=
+ =?us-ascii?Q?NA4AwznCdVedHTy/ke2G8v4t0v6YAZBgSyJtLK9aeM1QHDNGuwsqwcJce3BL?=
+ =?us-ascii?Q?fRBneilylG9hlP7atHccQEMKRgXp31/Pl75VQHM7zXy5EdfYfTlLVl4ayAGF?=
+ =?us-ascii?Q?ElPP2zFqufxdzmGZ9s0NanIPrYsP4V1ygxX93JLhFEUZqtTjrWepJmFg2SB2?=
+ =?us-ascii?Q?IWuhk0mnHXVHEkpWoBH27+EHCXwlaTfBVwHdXrk0IXmsu+uhaHme8afOmufb?=
+ =?us-ascii?Q?NcDyJTaTVj5KKkGbrKWyTheJOYH/N0vTyG65nVEE95s1q5BC3ypYtdyORg6N?=
+ =?us-ascii?Q?H22SAn9LTU7v3UYkb6zVITOOlkEcDBWLUHry4n9PdTa9OCbhJjpKu9GFe9ja?=
+ =?us-ascii?Q?wAo9+mPb0Z0axGMzIKhfc9YctmvKPalyQEhYkBOA3PUqn/8OBQ97E58LK54L?=
+ =?us-ascii?Q?7kNZdwMlFBk1DAi1nX6dOcbfO4FjsUi40g6uFZNs9Xwukv6Myy0lvr9Naj/G?=
+ =?us-ascii?Q?NThle6C1MkOehG8dtcP3S766T7ZEcpgR6vuZ7WGeLvzz7tWuLRF2d88vlOxt?=
+ =?us-ascii?Q?WxhKrzNo4xNpMLLxOGcY8fAUq29wx7x0TIPihqM/5ZXSX6zNREfk+4qukX2t?=
+ =?us-ascii?Q?3XZOydj6slv0dyNtTfsiDlgS/3bZWxA6NfsNH0lqCMO62Ocv8AVBLok8KFs1?=
+ =?us-ascii?Q?hovDRp2kGcMau3I+ewg=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e4253e08-5b0a-4d12-ff21-08dac0c80aca
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Nov 2022 13:57:43.6538
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: wxVWrO8NCsDj9oMUJo2GGb3Mz9lEP+fbHvCvwY4l/6dANepnFB1fhfrnVjmBGPK3
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6042
 
-On 2022-11-07 10:54, Catalin Marinas wrote:
-> On Mon, Nov 07, 2022 at 10:46:03AM +0100, Christoph Hellwig wrote:
->>> +static inline bool dma_sg_kmalloc_needs_bounce(struct device *dev,
->>> +					       struct scatterlist *sg, int nents,
->>> +					       enum dma_data_direction dir)
->>> +{
->>> +	struct scatterlist *s;
->>> +	int i;
->>> +
->>> +	if (!IS_ENABLED(CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC) ||
->>> +	    dir == DMA_TO_DEVICE || dev_is_dma_coherent(dev))
->>> +		return false;
->>
->> This part should be shared with dma-direct in a well documented helper.
->>
->>> +	for_each_sg(sg, s, nents, i) {
->>> +		if (dma_kmalloc_needs_bounce(dev, s->length, dir))
->>> +			return true;
->>> +	}
->>
->> And for this loop iteration I'd much prefer it to be out of line, and
->> also not available in a global helper.
->>
->> But maybe someone can come up with a nice tweak to the dma-iommu
->> code to not require the extra sglist walk anyway.
+On Mon, Oct 31, 2022 at 04:53:11PM -0600, Alex Williamson wrote:
+> On Fri, 28 Oct 2022 15:44:36 -0300
+> Jason Gunthorpe <jgg@nvidia.com> wrote:
 > 
-> An idea: we could add another member to struct scatterlist to track the
-> bounced address. We can then do the bouncing in a similar way to
-> iommu_dma_map_sg_swiotlb() but without the iova allocation. The latter
-> would be a common path for both the bounced and non-bounced cases.
+> > On Wed, Oct 26, 2022 at 03:31:33PM -0600, Alex Williamson wrote:
+> > > On Tue, 25 Oct 2022 15:50:45 -0300
+> > > Jason Gunthorpe <jgg@nvidia.com> wrote:
+> > >   
+> > > > If the VFIO container is compiled out, give a kconfig option for iommufd
+> > > > to provide the miscdev node with the same name and permissions as vfio
+> > > > uses.
+> > > > 
+> > > > The compatibility node supports the same ioctls as VFIO and automatically
+> > > > enables the VFIO compatible pinned page accounting mode.  
+> > > 
+> > > I think I'd like to see some sort of breadcrumb when /dev/vfio/vfio is
+> > > provided by something other than the vfio container code.  If we intend
+> > > to include this before P2P is resolved, that breadcrumb   
+> > 
+> > I don't belive I can get P2P done soon enough. I plan to do it after
+> > this is merged. Right now these two series are taking all my time.
+> > 
+> > > (dmesg I'm guessing) might also list any known limitations of the
+> > > compatibility to save time with debugging.  Thanks,  
+> > 
+> > Yes, that makes sense.
+> > 
+> > Do you want a dmesg at module load time, on every open, or a sysfs
+> > something? What seems like it would make it into a bug report?
+> 
+> I think dmesg at module load time should probably be ok, every open
+> seems like harassment and sysfs would require updated support in
+> various bug reporting tools.  Users are often terrible about reporting
+> full dmesg in bugs, but they do often filter it for "IOMMU" or "VFIO",
+> so keep that in mind when crafting the log message.  Thanks,
 
-FWIW I spent a little time looking at this as well; I'm pretty confident
-it can be done without the extra walk if the iommu-dma bouncing is
-completely refactored (and it might want a SWIOTLB helper to retrieve
-the original page from a bounced address). That's going to be a bigger
-job than I'll be able to finish this cycle, and I concluded that this
-in-between approach wouldn't be worth posting for its own sake, but as
-part of this series I think it's a reasonable compromise. What we have
-here is effectively a pretty specialist config that trades DMA mapping
-performance for memory efficiency, so trading a little more performance
-initially for the sake of keeping it manageable seems fair to me.
+This seems like the right approach, the message comes out once when it
+might be most useful:
 
-The one thing I did get as far as writing up is the patch below, which
-I'll share as an indirect review comment on this patch - feel free to
-pick it up or squash it in if you think it's worthwhile.
+@@ -176,8 +176,11 @@ static int iommufd_fops_open(struct inode *inode, struct file *filp)
+         * For compatibility with VFIO when /dev/vfio/vfio is opened we default
+         * to the same rlimit accounting as vfio uses.
+         */
+-       if (filp->private_data == &vfio_misc_dev)
++       if (IS_ENABLED(CONFIG_IOMMUFD_VFIO_CONTAINER) &&
++           filp->private_data == &vfio_misc_dev) {
+                ictx->account_mode = IOPT_PAGES_ACCOUNT_MM;
++               pr_info_once("IOMMUFD is providing /dev/vfio/vfio, not VFIO.\n");
++       }
+ 
+        xa_init_flags(&ictx->objects, XA_FLAGS_ALLOC1 | XA_FLAGS_ACCOUNT);
+        ictx->file = filp;
+
+Also this is needed:
+
+@@ -446,6 +449,7 @@ module_exit(iommufd_exit);
+ 
+ #if IS_ENABLED(CONFIG_IOMMUFD_VFIO_CONTAINER)
+ MODULE_ALIAS_MISCDEV(VFIO_MINOR);
++MODULE_ALIAS("devname:vfio/vfio");
+ #endif
+ MODULE_DESCRIPTION("I/O Address Space Management for passthrough devices");
+ MODULE_LICENSE("GPL");
 
 Thanks,
-Robin.
-
------>8-----
-From: Robin Murphy <robin.murphy@arm.com>
-Date: Wed, 2 Nov 2022 17:35:09 +0000
-Subject: [PATCH] scatterlist: Add dedicated config for DMA flags
-
-The DMA flags field will be useful for users beyond PCI P2P, so upgrade
-to its own dedicated config option.
-
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
-  drivers/pci/Kconfig         | 1 +
-  include/linux/scatterlist.h | 4 ++--
-  kernel/dma/Kconfig          | 3 +++
-  3 files changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/pci/Kconfig b/drivers/pci/Kconfig
-index 55c028af4bd9..0303604d9de9 100644
---- a/drivers/pci/Kconfig
-+++ b/drivers/pci/Kconfig
-@@ -173,6 +173,7 @@ config PCI_P2PDMA
-  	#
-  	depends on 64BIT
-  	select GENERIC_ALLOCATOR
-+	select NEED_SG_DMA_FLAGS
-  	help
-  	  Enableѕ drivers to do PCI peer-to-peer transactions to and from
-  	  BARs that are exposed in other devices that are the part of
-diff --git a/include/linux/scatterlist.h b/include/linux/scatterlist.h
-index 375a5e90d86a..87aaf8b5cdb4 100644
---- a/include/linux/scatterlist.h
-+++ b/include/linux/scatterlist.h
-@@ -16,7 +16,7 @@ struct scatterlist {
-  #ifdef CONFIG_NEED_SG_DMA_LENGTH
-  	unsigned int	dma_length;
-  #endif
--#ifdef CONFIG_PCI_P2PDMA
-+#ifdef CONFIG_NEED_SG_DMA_FLAGS
-  	unsigned int    dma_flags;
-  #endif
-  };
-@@ -249,7 +249,7 @@ static inline void sg_unmark_end(struct scatterlist *sg)
-  }
-  
-  /*
-- * CONFGI_PCI_P2PDMA depends on CONFIG_64BIT which means there is 4 bytes
-+ * CONFIG_PCI_P2PDMA depends on CONFIG_64BIT which means there is 4 bytes
-   * in struct scatterlist (assuming also CONFIG_NEED_SG_DMA_LENGTH is set).
-   * Use this padding for DMA flags bits to indicate when a specific
-   * dma address is a bus address.
-diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-index 56866aaa2ae1..48016c4f67ac 100644
---- a/kernel/dma/Kconfig
-+++ b/kernel/dma/Kconfig
-@@ -24,6 +24,9 @@ config DMA_OPS_BYPASS
-  config ARCH_HAS_DMA_MAP_DIRECT
-  	bool
-  
-+config NEED_SG_DMA_FLAGS
-+	bool
-+
-  config NEED_SG_DMA_LENGTH
-  	bool
-  
--- 
+Jason
