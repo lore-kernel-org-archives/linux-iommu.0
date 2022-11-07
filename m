@@ -1,79 +1,95 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA7F63209
-	for <iommu@lists.linux.dev>; Mon,  7 Nov 2022 12:58:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4797BC433D7;
-	Mon,  7 Nov 2022 12:58:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1667825928;
-	bh=7RfL+o9Qb8/fcUehnPJxj7oMhPv0Ybf4aLUaRvOshpI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=iRWtDMyjxEkpzPADgl+eb2FND7LRLZnWIKCprUKWxhqhZiut8Yw1Hq1s+2cXzCqvE
-	 tjfD0JATAVRJ89kwLMx5wepQbyr/StP4HJvUwtaHoDEsIBbsCfbFyl87cuqge8gcVT
-	 9eyrr29WRLSiC9VYOGBUK2VySGgk3vYTwfLl4aTdyhKKnQ9Y5DcJ+LuxdUBAEZ/kr8
-	 NCxE+eTvLmds7j7hPfWgqq7bM4DDNlJ861hjlq5nZRsWHarbfczmArb3mO368Fqunc
-	 h8AW6t6HDlGSmvjavhl466uZ//O9pGZAk/ksOyL87XTFbWIV4ZbtvgQtVLXd24VMPM
-	 ojMLUvCKinE+g==
-Date: Mon, 7 Nov 2022 12:58:41 +0000
-From: Mark Brown <broonie@kernel.org>
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>,
-	Arnd Bergmann <arnd@arndb.de>, Christoph Hellwig <hch@lst.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	Ard Biesheuvel <ardb@kernel.org>,
-	Isaac Manjarres <isaacmanjarres@google.com>,
-	Saravana Kannan <saravanak@google.com>,
-	Alasdair Kergon <agk@redhat.com>, Daniel Vetter <daniel@ffwll.ch>,
-	Joerg Roedel <joro@8bytes.org>, Mike Snitzer <snitzer@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, linux-mm@kvack.org,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v3 10/13] drivers/spi: Use ARCH_DMA_MINALIGN instead of
- ARCH_KMALLOC_MINALIGN
-Message-ID: <Y2kBAWw27P0WbACV@sirena.org.uk>
-References: <20221106220143.2129263-1-catalin.marinas@arm.com>
- <20221106220143.2129263-11-catalin.marinas@arm.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id ECCEE3209
+	for <iommu@lists.linux.dev>; Mon,  7 Nov 2022 13:03:42 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 72BFB1FB;
+	Mon,  7 Nov 2022 05:03:45 -0800 (PST)
+Received: from [10.57.36.87] (unknown [10.57.36.87])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 462E63F73D;
+	Mon,  7 Nov 2022 05:03:36 -0800 (PST)
+Message-ID: <6e846f75-b330-9523-4356-41d5f9e48f12@arm.com>
+Date: Mon, 7 Nov 2022 13:03:31 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="GQK+zVBkLWx/ZA39"
-Content-Disposition: inline
-In-Reply-To: <20221106220143.2129263-11-catalin.marinas@arm.com>
-X-Cookie: Minimum charge for booths.
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH v3 13/13] dma: arm64: Add
+ CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC and enable it for arm64
+Content-Language: en-GB
+To: Catalin Marinas <catalin.marinas@arm.com>,
+ Linus Torvalds <torvalds@linux-foundation.org>, Arnd Bergmann
+ <arnd@arndb.de>, Christoph Hellwig <hch@lst.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Herbert Xu <herbert@gondor.apana.org.au>, Ard Biesheuvel <ardb@kernel.org>,
+ Isaac Manjarres <isaacmanjarres@google.com>,
+ Saravana Kannan <saravanak@google.com>, Alasdair Kergon <agk@redhat.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>,
+ Mark Brown <broonie@kernel.org>, Mike Snitzer <snitzer@kernel.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, linux-mm@kvack.org,
+ iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
+References: <20221106220143.2129263-1-catalin.marinas@arm.com>
+ <20221106220143.2129263-14-catalin.marinas@arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20221106220143.2129263-14-catalin.marinas@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
+On 2022-11-06 22:01, Catalin Marinas wrote:
+> With all the infrastructure in place for bouncing small kmalloc()
+> buffers, add the corresponding Kconfig entry and select it for arm64.
 
---GQK+zVBkLWx/ZA39
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+AFAICS we're missing the crucial part to ensure that SWIOTLB is 
+available even when max_pfn <= arm64_dma_phys_limit, which is very 
+likely to be true on low-memory systems that care most about kmalloc 
+wastage. The only way to override that currently is with 
+"swiotlb=force", but bouncing *everything* is not desirable either.
 
-On Sun, Nov 06, 2022 at 10:01:40PM +0000, Catalin Marinas wrote:
-> ARCH_DMA_MINALIGN represents the minimum (static) alignment for safe DMA
-> operations while ARCH_KMALLOC_MINALIGN is the minimum kmalloc() objects
-> alignment.
+Thanks,
+Robin.
 
-Acked-by: Mark Brown <broonie@kernel.org>
-
---GQK+zVBkLWx/ZA39
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmNpAQAACgkQJNaLcl1U
-h9AWnwf+Lrga8EqgMaXZ1ojKH4O43q6wax8e5xgBnaeSz5/OND0SU2QUxsylAmFz
-9UcBZi7Irxjsn3FiLfkQ4Qz4l9pd9GRcvGAhjsk7wC8w9ssRPiXB7/ZIzWn28qlt
-68dzwREEd+kLfMDm0MA9m+3IaxRlhlm9WgVVHTs1lNoztsig0HjWGEMX9arPBrZn
-PrhQjsGetLaTOQZ8+qfuA7e6Xs/XnHyLWgz55JqZTsYN7hy66FtU3oq92LskJAOn
-dxm6N07+Fi4aae6kWb9B/MNF03yfA7iwnPvknAzoT8llWgjMyKo/vif4aBIOWcGI
-s+wZnpCqBfLxEVMQG7SitCbPHgYqHQ==
-=RkID
------END PGP SIGNATURE-----
-
---GQK+zVBkLWx/ZA39--
+> Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Christoph Hellwig <hch@lst.de>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> ---
+>   arch/arm64/Kconfig | 1 +
+>   kernel/dma/Kconfig | 8 ++++++++
+>   2 files changed, 9 insertions(+)
+> 
+> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+> index 3991cb7b8a33..f889cf16e6ab 100644
+> --- a/arch/arm64/Kconfig
+> +++ b/arch/arm64/Kconfig
+> @@ -100,6 +100,7 @@ config ARM64
+>   	select ARCH_WANT_FRAME_POINTERS
+>   	select ARCH_WANT_HUGE_PMD_SHARE if ARM64_4K_PAGES || (ARM64_16K_PAGES && !ARM64_VA_BITS_36)
+>   	select ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
+> +	select ARCH_WANT_KMALLOC_DMA_BOUNCE
+>   	select ARCH_WANT_LD_ORPHAN_WARN
+>   	select ARCH_WANTS_NO_INSTR
+>   	select ARCH_WANTS_THP_SWAP if ARM64_4K_PAGES
+> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+> index d6fab8e3cbae..b56e76371023 100644
+> --- a/kernel/dma/Kconfig
+> +++ b/kernel/dma/Kconfig
+> @@ -86,6 +86,14 @@ config SWIOTLB
+>   	bool
+>   	select NEED_DMA_MAP_STATE
+>   
+> +config ARCH_WANT_KMALLOC_DMA_BOUNCE
+> +	bool
+> +
+> +config DMA_BOUNCE_UNALIGNED_KMALLOC
+> +	def_bool y
+> +	depends on ARCH_WANT_KMALLOC_DMA_BOUNCE
+> +	depends on SWIOTLB && !SLOB
+> +
+>   config DMA_RESTRICTED_POOL
+>   	bool "DMA Restricted Pool"
+>   	depends on OF && OF_RESERVED_MEM && SWIOTLB
