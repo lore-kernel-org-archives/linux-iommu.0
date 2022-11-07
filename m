@@ -1,73 +1,114 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 117EAD527
-	for <iommu@lists.linux.dev>; Mon,  7 Nov 2022 15:24:23 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5B9BC1FB;
-	Mon,  7 Nov 2022 07:24:29 -0800 (PST)
-Received: from [10.57.36.87] (unknown [10.57.36.87])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 307573F73D;
-	Mon,  7 Nov 2022 07:24:20 -0800 (PST)
-Message-ID: <9c453c00-7950-9932-0fa6-5478d5cf44f1@arm.com>
-Date: Mon, 7 Nov 2022 15:24:13 +0000
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10F04D527
+	for <iommu@lists.linux.dev>; Mon,  7 Nov 2022 15:26:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45829C433C1;
+	Mon,  7 Nov 2022 15:26:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1667834814;
+	bh=W675gqNAfxBDemkU93uk7keZsNkIbPSTt12Mk3qnGOg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=CtQqMj5pvofsT6RL6c73nOHyJPNzYHtWR26lgwhR5lL+mFr3DLmnfXNOyM2ctk2EB
+	 DXSnyVmwBDVWCuh6t/jOYy4sGDpVuaah8fWod0gReT/fuEvZjRhpL+WKjRyfD3KxA5
+	 StyJ8iTVWr2AYevyJncv9jcjUdKTGN08CG+c4sb5sthZwvKGwtnyE5ke3jg/Iw5YSO
+	 IG58eDQv1Bu1n7fbiBR5ddQtysHqTwy/hn4mRBxbfYaLnb08KeHt4dh1qmmSMB2QnU
+	 Rbls6y5O+krcPIpTHylZ9sv6MHtZf+7JOJAm12EOSyHvBewer8sDqrAkrqaWflTupW
+	 qNvv+jC8xzkbQ==
+Date: Mon, 7 Nov 2022 15:26:45 +0000
+From: Will Deacon <will@kernel.org>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: joro@8bytes.org, robin.murphy@arm.com, jgg@nvidia.com,
+	kevin.tian@intel.com, quic_jjohnson@quicinc.com,
+	suravee.suthikulpanit@amd.com, robdclark@gmail.com,
+	dwmw2@infradead.org, baolu.lu@linux.intel.com, yong.wu@mediatek.com,
+	matthias.bgg@gmail.com, orsonzhai@gmail.com,
+	baolin.wang@linux.alibaba.com, zhang.lyra@gmail.com,
+	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
+	jean-philippe@linaro.org, tglx@linutronix.de,
+	shameerali.kolothum.thodi@huawei.com, christophe.jaillet@wanadoo.fr,
+	yangyicong@hisilicon.com, yangyingliang@huawei.com,
+	quic_saipraka@quicinc.com, jon@solid-run.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-arm-msm@vger.kernel.org, linux-mediatek@lists.infradead.org,
+	linux-tegra@vger.kernel.org,
+	virtualization@lists.linux-foundation.org
+Subject: Re: [PATCH v7 4/5] iommu: Use EINVAL for incompatible device/domain
+ in ->attach_dev
+Message-ID: <20221107152645.GD21002@willie-the-truck>
+References: <cover.1666042872.git.nicolinc@nvidia.com>
+ <f52a07f7320da94afe575c9631340d0019a203a7.1666042873.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.4.1
-Subject: Re: [PATCH v3 13/13] dma: arm64: Add
- CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC and enable it for arm64
-Content-Language: en-GB
-To: Christoph Hellwig <hch@lst.de>
-Cc: Catalin Marinas <catalin.marinas@arm.com>,
- Linus Torvalds <torvalds@linux-foundation.org>, Arnd Bergmann
- <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
- Andrew Morton <akpm@linux-foundation.org>,
- Herbert Xu <herbert@gondor.apana.org.au>, Ard Biesheuvel <ardb@kernel.org>,
- Isaac Manjarres <isaacmanjarres@google.com>,
- Saravana Kannan <saravanak@google.com>, Alasdair Kergon <agk@redhat.com>,
- Daniel Vetter <daniel@ffwll.ch>, Joerg Roedel <joro@8bytes.org>,
- Mark Brown <broonie@kernel.org>, Mike Snitzer <snitzer@kernel.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>, linux-mm@kvack.org,
- iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
-References: <20221106220143.2129263-1-catalin.marinas@arm.com>
- <20221106220143.2129263-14-catalin.marinas@arm.com>
- <6e846f75-b330-9523-4356-41d5f9e48f12@arm.com>
- <20221107143849.GA27946@lst.de>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20221107143849.GA27946@lst.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f52a07f7320da94afe575c9631340d0019a203a7.1666042873.git.nicolinc@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On 2022-11-07 14:38, Christoph Hellwig wrote:
-> On Mon, Nov 07, 2022 at 01:03:31PM +0000, Robin Murphy wrote:
->> On 2022-11-06 22:01, Catalin Marinas wrote:
->>> With all the infrastructure in place for bouncing small kmalloc()
->>> buffers, add the corresponding Kconfig entry and select it for arm64.
->>
->> AFAICS we're missing the crucial part to ensure that SWIOTLB is available
->> even when max_pfn <= arm64_dma_phys_limit, which is very likely to be true
->> on low-memory systems that care most about kmalloc wastage. The only way to
->> override that currently is with "swiotlb=force", but bouncing *everything*
->> is not desirable either.
+On Mon, Oct 17, 2022 at 04:02:21PM -0700, Nicolin Chen wrote:
+> Following the new rules in include/linux/iommu.h kdocs, update all drivers
+> ->attach_dev callback functions to return EINVAL in the failure paths that
+> are related to domain incompatibility.
 > 
-> FYI, one of the reasons for the swiotlb_init refactor that passes
-> flags and a boolean a while ago is that we can trivially just either
-> pass another flag or check a condition in swiotlb_init to allocate the
-> buffer.  There's actually another case for which we need the
-> unconditional allocation, and that is the bouncing for untrusted
-> external devices with dma-iommu.
+> Also, drop adjacent error prints to prevent a kernel log spam.
+> 
+> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 11 +----------
+>  drivers/iommu/arm/arm-smmu/arm-smmu.c       |  3 ---
+>  drivers/iommu/arm/arm-smmu/qcom_iommu.c     |  7 +------
+>  drivers/iommu/intel/iommu.c                 | 10 +++-------
+>  drivers/iommu/ipmmu-vmsa.c                  |  2 --
+>  drivers/iommu/omap-iommu.c                  |  2 +-
+>  drivers/iommu/sprd-iommu.c                  |  4 +---
+>  drivers/iommu/tegra-gart.c                  |  2 +-
+>  drivers/iommu/virtio-iommu.c                |  3 +--
+>  9 files changed, 9 insertions(+), 35 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index ba47c73f5b8c..01fd7df16cb9 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2430,23 +2430,14 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>  			goto out_unlock;
+>  		}
+>  	} else if (smmu_domain->smmu != smmu) {
+> -		dev_err(dev,
+> -			"cannot attach to SMMU %s (upstream of %s)\n",
+> -			dev_name(smmu_domain->smmu->dev),
+> -			dev_name(smmu->dev));
+> -		ret = -ENXIO;
+> +		ret = -EINVAL;
+>  		goto out_unlock;
+>  	} else if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1 &&
+>  		   master->ssid_bits != smmu_domain->s1_cfg.s1cdmax) {
+> -		dev_err(dev,
+> -			"cannot attach to incompatible domain (%u SSID bits != %u)\n",
+> -			smmu_domain->s1_cfg.s1cdmax, master->ssid_bits);
+>  		ret = -EINVAL;
+>  		goto out_unlock;
+>  	} else if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1 &&
+>  		   smmu_domain->stall_enabled != master->stall_enabled) {
+> -		dev_err(dev, "cannot attach to stall-%s domain\n",
+> -			smmu_domain->stall_enabled ? "enabled" : "disabled");
+>  		ret = -EINVAL;
+>  		goto out_unlock;
+>  	}
 
-Right, I guess machines with Thunderbolt and all the firmware 
-annotations but less than 4GB of RAM are unlikely to exist in the wild, 
-so the untrusted bouncing logic has been getting lucky so far. There are 
-however plenty of arm64 systems with small amounts of RAM and 
-non-coherent USB so in this case someone's likely to fall over it pretty 
-much right away. I know it's easy to add a new condition, but it still 
-has to actually *be* added.
+I think it would be helpful to preserve these messages using
+dev_err_ratelimited() so that attach failure can be diagnosed without
+having to hack the messages back into the driver.
 
-Thanks,
-Robin.
+With that:
+
+Acked-by: Will Deacon <will@kernel.org>
+
+Will
