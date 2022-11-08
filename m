@@ -1,59 +1,52 @@
-Received: from mail-io1-f47.google.com (mail-io1-f47.google.com [209.85.166.47])
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A03C2908
-	for <iommu@lists.linux.dev>; Tue,  8 Nov 2022 02:59:10 +0000 (UTC)
-Received: by mail-io1-f47.google.com with SMTP id s10so8651964ioa.5
-        for <iommu@lists.linux.dev>; Mon, 07 Nov 2022 18:59:09 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4208D2908
+	for <iommu@lists.linux.dev>; Tue,  8 Nov 2022 03:02:47 +0000 (UTC)
+Received: by mail-qt1-f178.google.com with SMTP id fz10so8049562qtb.3
+        for <iommu@lists.linux.dev>; Mon, 07 Nov 2022 19:02:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZQmrxV8UAMx8aTkAdlv23yBJFQlgUNmii3sTAapLgyI=;
-        b=T7fKMlBHsf/SjC3hRWE+bmKrYjO5qAYLR6+c4ucn2jrIpPSWUyqBCLQm3NPTJcea1B
-         IrOcGjMB8nJlqkwX8cqPGFV8j+WP+dfcpuaBnLyCZrK+HI+3tW/8pdV8jI5Ba1kYSGUq
-         QLz/rciyMiNfUAz3//JrlufbwRPtyjJKxT9XKK4Cjp2hI4Pd6/LTMjqZlhxNNHjHqGfC
-         BOmSItRWg4clR0YhMq99MezWQfwb/k/eOGCSP2HkVWRJsizyW3YW6qwO0x+crdUSsLNW
-         838wmRGtG3c+qBEZnNAtoWvvQlY4dCOz+zSr7YOz9cCwGo7MLwi0+b3n8RDhVcoy4CWx
-         dhUQ==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=wTgvsmQCgbUJy/uyEBLIwEwJeivJlDp4X00FjEbm73U=;
+        b=KpGOTlZpFF56PAJz4Zyiyj1+AE/0+obLPnwKtXkayi9BgHyMd1LEnld1njeN3AVfgp
+         9UT1CWH3HOhFEJzbQVxOzORHS5x6yip2l+gMDq/lFqFvzbdTS152Ur80e0112btw6Bt1
+         XB1mDSrtSD2Gz1yQEEmuhqap1RdI8vGjsaVVoe0MRVarxfgS/cSUw6cb1rN4+YZL7tWr
+         aLK8X9eTQg/KDyhYNBD1uyNc74TH6V5SsdcM7Wfw6O2f6fp71is/cQY0P/fnaZGgDQzV
+         7Ov6CJDUXtgzHjoOPsEYHR5WQt6vgYzBRZk2+OYc6boRZB3obYz8k5TB6LAU1hh40RrY
+         6+LA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ZQmrxV8UAMx8aTkAdlv23yBJFQlgUNmii3sTAapLgyI=;
-        b=ldV1LiG8frfWX9wlKLVFO4gkJ22ti6mG8Ys3zIFf/4c6rIgZ6xI8KoGT2mEK2HF7Tr
-         x9evMJlfpc9hQEgqNd1KzER4HkK3MEokCvLLeRDwzQksMzNiXwP5lYSMRquWW6fBhzqx
-         sTfFa43gLvQO3aiXAOnSKRCt6sI04pXKou5QrNzFhzERJM9C+zM7Mt9Fz+f0XIwHYgE/
-         fCS6cFDFbvcAAM/PlUHo3qLZ3R2TLd7Ou8W76A2vngSFQag0YOEqkcNkPF3jJl85jmWC
-         cGMKgBJbnXv7zjkvUNRZEnVzKYqQYj/dmjHPC0iESOy0hIel3DG97DA5wuHsS1YAV0Sj
-         OroA==
-X-Gm-Message-State: ACrzQf1OlIB7qam71xdsBmTJmJIJaMy2tw5fm9M8xGF8TM5x0z6u4dEC
-	OrSPrxaXGRM6gknmRJXFUgg=
-X-Google-Smtp-Source: AMsMyM7UeuJikzj7LIRlLxdJ3APD3Gi+t7E5Kh7yKxpgk7/fdMVy+3SOTwb4Qa8hPi400V+KW0I/Gg==
-X-Received: by 2002:a05:6638:d84:b0:373:2ad5:232d with SMTP id l4-20020a0566380d8400b003732ad5232dmr31641007jaj.251.1667876349206;
-        Mon, 07 Nov 2022 18:59:09 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=wTgvsmQCgbUJy/uyEBLIwEwJeivJlDp4X00FjEbm73U=;
+        b=NH27BkJ/rJTCLgwFhPBdc1+NixZm/aOAT27GuXEvwadUMF5QcbWJEnqnXZ6E1mdaOa
+         YNDCELW21ShqPznO7Zv96Uehv9b58Dq0CAuVv8jpo29otVS+qy0dRg726JQRqsAwDBLU
+         uuVG8ktZxwBBmjZ4zhJnlhURePfySBehqRBprpnTdRzODoM+jQtp3CiXorZ6L0HHaklq
+         4mPzu745u69xJsfebqHjjD6B1xW18TTQt5E+2lHLdMjgrG+0h5s4S4n3JSjAOK2BmEWq
+         U0I7FqBzHH5FnGxl1OCHoHl09ETqiRf65u2HE5rZND8VZrte+fxrWqyIu+kdeF9P8TBS
+         Og3Q==
+X-Gm-Message-State: ANoB5pllI/jVxv7ANEpifxU48/8nxvWtjflHmHsODabmmxPaNp4hohM9
+	aigXs8EvvffoAbHXP6Ftifg=
+X-Google-Smtp-Source: AA0mqf5kH5sVly/98XYjDeDQdqiaVJGNbUetyTPauSbsmbjnkjfzzoiUBE6uGJvjanAM9rKdnAswHg==
+X-Received: by 2002:ac8:5c07:0:b0:3a5:946e:8b7e with SMTP id i7-20020ac85c07000000b003a5946e8b7emr4462095qti.385.1667876566133;
+        Mon, 07 Nov 2022 19:02:46 -0800 (PST)
 Received: from localhost ([2607:fea8:a2e2:2d00::61cc])
-        by smtp.gmail.com with ESMTPSA id z20-20020a05663822b400b00363ec4dcaacsm3365438jas.22.2022.11.07.18.59.08
+        by smtp.gmail.com with ESMTPSA id ay14-20020a05620a178e00b006bb366779a4sm8347893qkb.6.2022.11.07.19.02.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Nov 2022 18:59:08 -0800 (PST)
+        Mon, 07 Nov 2022 19:02:45 -0800 (PST)
+Date: Mon, 7 Nov 2022 22:02:44 -0500
 From: Richard Acayan <mailingradian@gmail.com>
-To: Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Rob Herring <robh+dt@kernel.org>,
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
 	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
 	devicetree@vger.kernel.org
-Cc: linux-arm-msm@vger.kernel.org,
-	Richard Acayan <mailingradian@gmail.com>
-Subject: [PATCH v3 1/1] dt-bindings: iommu: arm-smmu: add sdm670 compatible
-Date: Mon,  7 Nov 2022 21:58:49 -0500
-Message-Id: <20221108025847.58352-2-mailingradian@gmail.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221108025847.58352-1-mailingradian@gmail.com>
+Cc: linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v3 0/1] iommu: SMMU for SDM670
+Message-ID: <Y2nG1ExgpYVm2sY+@mailingradian>
 References: <20221108025847.58352-1-mailingradian@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -61,29 +54,39 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221108025847.58352-1-mailingradian@gmail.com>
 
-The Snapdragon 670 needs the IOMMU for GENI I2C. Add a compatible string in
-the documentation to represent its support.
+On Mon, Nov 07, 2022 at 09:58:48PM -0500, Richard Acayan wrote:
+> Changes since v3:
+>  - drop driver patch
 
-Signed-off-by: Richard Acayan <mailingradian@gmail.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
- 1 file changed, 1 insertion(+)
+This is v4. I forgot to increment the version in the subject header. My
+apologies.
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-index 796dc7d4dbdd..f77597e8ed39 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-@@ -39,6 +39,7 @@ properties:
-               - qcom,sc7280-smmu-500
-               - qcom,sc8180x-smmu-500
-               - qcom,sc8280xp-smmu-500
-+              - qcom,sdm670-smmu-500
-               - qcom,sdm845-smmu-500
-               - qcom,sm6350-smmu-500
-               - qcom,sm6375-smmu-500
--- 
-2.38.1
-
+> 
+> Changes since v2:
+>  - rewrite driver patch (2/2)
+>  - rebase on (1/2):
+>    https://lore.kernel.org/linux-iommu/20221102184420.534094-1-dmitry.baryshkov@linaro.org/
+>  - reset review process (1-2/2)
+> 
+> Changes since v1 (no emails related to this series since last week):
+>  - accumulate tags (both were added because it seems like the discussion
+>    ended in agreement to keep adding compatible strings to the driver)
+> 
+> This adds the compatible string for the Qualcomm Snapdragon 670's SMMU. The
+> SMMU is necessary for GENI I2C, included in initial bringup because it
+> doesn't need non-trivial patches except for patches conventionally added
+> before the initial device tree (global clock controller and pinctrl).
+> 
+> Richard Acayan (1):
+>   dt-bindings: iommu: arm-smmu: add sdm670 compatible
+> 
+>  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> -- 
+> 2.38.1
+> 
