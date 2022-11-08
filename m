@@ -1,78 +1,118 @@
-Received: from mail-pg1-f182.google.com (mail-pg1-f182.google.com [209.85.215.182])
+Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B13692CA2
-	for <iommu@lists.linux.dev>; Tue,  8 Nov 2022 03:44:04 +0000 (UTC)
-Received: by mail-pg1-f182.google.com with SMTP id 78so12281635pgb.13
-        for <iommu@lists.linux.dev>; Mon, 07 Nov 2022 19:44:04 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47F392CA2;
+	Tue,  8 Nov 2022 03:45:19 +0000 (UTC)
+Received: by mail-pj1-f47.google.com with SMTP id m6-20020a17090a5a4600b00212f8dffec9so12281184pji.0;
+        Mon, 07 Nov 2022 19:45:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wMCLCyI3hZtXF/+wItazbuWkV+QYGcAifqVubozLyYk=;
-        b=BnmvNHqflPwI9phHciUytWQTJwsRTtkj1KxnJYIX5lR5H5tIpZirFCGFhlecvSdaDQ
-         DtNJd08ijF3C1W3zc3VN9aJaMrIEpro5RWUC45o+ZQZFcs4gQ8kShX9aalf5RbJgCl/s
-         dgTEZ7rbSs5OE6D4MrtYd+bZ+gyHLRtlJ45JzINtF2XxIeQt0Gi5UA2+6+1uVq0HNwrm
-         6KBuzMyYgAJpAl//WRopmWM+zVE3X9yNG9jpe8ptmHh/oAPhAa4VlKpOfteUekT60v8/
-         XkquNNQ92Xc3QTDieBy3hpF+rUv/flI4Wk2n/iPbJ+Diut741TTUzDB+VBXkAIaGQAe/
-         RzEw==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=qckFeD/Pt+sjt3ZlSfmlazZQAbxsJ1ktBLsagW6IgrQ=;
+        b=FH9VAzFoXUR46qDebGlu3fcJnK6+nfGW4qTxltGPb6jzH3adwTNgTYkarxOUiNIlVO
+         8ONzopdMsT3HUr26AGwrr9HvIg2iNaLFMz8QRpOdIqGaNX3fdM174GJuvGX3030eiTh1
+         q7cpasGEeVPpB1eDaw9JREPbNBd65Ezz+Pfw/ZIztSwL847bk2FFrtlHrazQInx0eHf5
+         RuhcW6K85YkWY25fnBJZowCCzFOEkCGNNpO5Kv7rDYPvig7cI/smneUMCUe8j6ZkDoxN
+         6LJl0pEsUl4RojdAG7FQ8yyJLK3ybfAD8CgYw/FzDj8yVMpvDbkt2M53CNm3TKyeGKfm
+         /Itw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=wMCLCyI3hZtXF/+wItazbuWkV+QYGcAifqVubozLyYk=;
-        b=YaOPZikA+9Pcair446UftUXpXV/19k0BiwfxRd0P7buK0HxEdhY/4qTjbrYhIHDBl8
-         zQ1ug56uS38Nllfa2GlowJTCxOzO7W95UNmHshOxuZDhKkW/xK/qrfeVfyMDqzv7vlAR
-         WZ9SDw3cEV11h/Lrs2hf4iL44E5AKA2/EC3wyfsUswri/gxJzIXW5YRph5R1fmYqAbEZ
-         ViwT/eFdO8wgb4LqdlvKMLpbiS0e+VBlX1IJmpBl80gHGSKn/5XiVauhspArBavtlrIz
-         H8B9RWL1IeHa9bYBhju4FzwiuOW0FuWHPHp7lwqNPr/oqRqXinTIo4k7JRxpc7m1fgSP
-         OeIw==
-X-Gm-Message-State: ACrzQf2d/u98pkytYmClt9QJkZmyJvooLU+P/kViUR70YlIDAWBPC43h
-	UU//Ke+mkDq6fLwGf8S+o7vj4g==
-X-Google-Smtp-Source: AMsMyM64W3vwEqO4HBVkCyFiuyZ8dDJNvWAYn7dEYV00PWb7kBu4s9Z7y7BjOmJa7I//9YQ9IICJ8g==
-X-Received: by 2002:a05:6a00:a15:b0:56e:9b2b:60dd with SMTP id p21-20020a056a000a1500b0056e9b2b60ddmr19672290pfh.35.1667879044094;
-        Mon, 07 Nov 2022 19:44:04 -0800 (PST)
-Received: from [10.255.232.252] ([139.177.225.243])
-        by smtp.gmail.com with ESMTPSA id b10-20020a17090a12ca00b0020dda7efe61sm6934662pjg.5.2022.11.07.19.44.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Nov 2022 19:44:03 -0800 (PST)
-Message-ID: <0689cf4d-adaa-c783-98e8-ffbe73291ae1@bytedance.com>
-Date: Tue, 8 Nov 2022 11:43:56 +0800
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=qckFeD/Pt+sjt3ZlSfmlazZQAbxsJ1ktBLsagW6IgrQ=;
+        b=k1wHh+G35dUXHjDXBlBHmBHK7E2YmbZin5pQsjdMFHN5P6bdF3ZWqCPpg6XgJhiHjS
+         ki8Lq1BYsprDdT0CcWNh2z8niDgwI4YBn2hr5GnPPqssDsUD3J1PpAWNcp3wWMviwbmM
+         8jEXxQmrxhQc1BXM5ExSRD7xTwg8wEnyZYyxTRfF5NupGi2k34LPiUU5DtNN7LEXIzbl
+         xJDntyjHTYhMwdqieXYSppjuWMt0SlJ4h/C37MAmeiejdzoXHrLsikfPmzkdv9ROk/SG
+         TJ/ZPY5UNYT7DN557MYvLobkh5z3CmhN0PHIvtg4bxLL6apG5Gg4YepuDroqFwsaeXGd
+         q7XA==
+X-Gm-Message-State: ACrzQf1C8KQF1Vv4SPmaM3sQ/Bqm5NgsnLPSt/NhAG8JHXUlV4936gKv
+	BE8svUspUAzhXoM9k+oQoh4=
+X-Google-Smtp-Source: AMsMyM5tBTqgUASBPjV21N8H6J2m+peEz7OGJWQsDcGg1rbGeXDb0doOv+V8wKJ1pTFS9FnJWBBTCg==
+X-Received: by 2002:a17:902:c94a:b0:186:e68a:9aad with SMTP id i10-20020a170902c94a00b00186e68a9aadmr53540653pla.72.1667879118728;
+        Mon, 07 Nov 2022 19:45:18 -0800 (PST)
+Received: from debian.me (subs02-180-214-232-93.three.co.id. [180.214.232.93])
+        by smtp.gmail.com with ESMTPSA id y15-20020a17090322cf00b00176d347e9a7sm5752203plg.233.2022.11.07.19.45.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Nov 2022 19:45:17 -0800 (PST)
+Received: by debian.me (Postfix, from userid 1000)
+	id 1B5A51038C6; Tue,  8 Nov 2022 10:45:10 +0700 (WIB)
+Date: Tue, 8 Nov 2022 10:45:10 +0700
+From: Bagas Sanjaya <bagasdotme@gmail.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: bpf@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+	linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <ndesaulniers@google.com>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+	Cornelia Huck <cohuck@redhat.com>,
+	Daniel Jordan <daniel.m.jordan@oracle.com>,
+	David Gibson <david@gibson.dropbear.id.au>,
+	Eric Auger <eric.auger@redhat.com>,
+	Eric Farman <farman@linux.ibm.com>,
+	Jason Wang <jasowang@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Joao Martins <joao.m.martins@oracle.com>, kvm@vger.kernel.org,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+	Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
+Subject: Re: [PATCH v4 04/17] iommufd: Document overview of iommufd
+Message-ID: <Y2nQxvRQKYtSAfTc@debian.me>
+References: <0-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
+ <4-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.4.2
-Subject: Re: [RESEND PATCH v3] iommu/iova: Optimize alloc_iova with
- rbtree_augmented
-To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org
-Cc: wangjie125@huawei.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, haifeng.zhao@linux.intel.com,
- john.garry@huawei.com
-References: <20220922183114.15135-1-zhangpeng.00@bytedance.com>
- <4a1d000e-e051-5972-bacc-d785ceeed879@arm.com>
-From: Peng Zhang <zhangpeng.00@bytedance.com>
-In-Reply-To: <4a1d000e-e051-5972-bacc-d785ceeed879@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="VlYIyqR9GGcDMQ/y"
+Content-Disposition: inline
+In-Reply-To: <4-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
 
-> https://lore.kernel.org/linux-iommu/2b0ca6254dd0102bf559b2a73e9b51da089afbe3.1663764627.git.robin.murphy@arm.com/
-I don't think this method solves the problem, because sometimes it's 
-just that the allocation is very slow, it's not that it can't be allocated.
 
-This is a test of the performance improvement of the network card by 
-this patch:
-https://lore.kernel.org/lkml/42909903-5b6c-efe8-9ed3-3ac012f1a421@huawei.com/
-At least this optimization makes sense.
+--VlYIyqR9GGcDMQ/y
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-The only downside of this optimization is that it is more complex, if 
-you think it is difficult to maintain it, I can help maintain it.
+On Mon, Nov 07, 2022 at 08:48:57PM -0400, Jason Gunthorpe wrote:
+> From: Kevin Tian <kevin.tian@intel.com>
+>=20
+> Add iommufd into the documentation tree, and supply initial documentation.
+> Much of this is linked from code comments by kdoc.
+>=20
 
-Thanks,
-Peng.
+The documentation LGTM, thanks.
 
+Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
+
+--=20
+An old man doll... just what I always wanted! - Clara
+
+--VlYIyqR9GGcDMQ/y
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCY2nQwQAKCRD2uYlJVVFO
+ozsKAPwOuRyOmFizFmjuooe/gexDrhdGHJSdBsMEQGnAYJfwKgEAsJqlXtWAwodg
+hHXROiqV7JqrnspKYDSIglvCm5IePAc=
+=NHaN
+-----END PGP SIGNATURE-----
+
+--VlYIyqR9GGcDMQ/y--
