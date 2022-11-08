@@ -1,51 +1,147 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C85C8F4A
-	for <iommu@lists.linux.dev>; Tue,  8 Nov 2022 10:03:43 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 473A268AFE; Tue,  8 Nov 2022 11:03:31 +0100 (CET)
-Date: Tue, 8 Nov 2022 11:03:31 +0100
-From: Christoph Hellwig <hch@lst.de>
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	Arnd Bergmann <arnd@arndb.de>, Christoph Hellwig <hch@lst.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	Ard Biesheuvel <ardb@kernel.org>,
-	Isaac Manjarres <isaacmanjarres@google.com>,
-	Saravana Kannan <saravanak@google.com>,
-	Alasdair Kergon <agk@redhat.com>, Daniel Vetter <daniel@ffwll.ch>,
-	Joerg Roedel <joro@8bytes.org>, Mark Brown <broonie@kernel.org>,
-	Mike Snitzer <snitzer@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>, linux-mm@kvack.org,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	agraf@csgraf.de
-Subject: Re: [PATCH v3 13/13] dma: arm64: Add
- CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC and enable it for arm64
-Message-ID: <20221108100331.GA31944@lst.de>
-References: <20221106220143.2129263-1-catalin.marinas@arm.com> <20221106220143.2129263-14-catalin.marinas@arm.com> <6e846f75-b330-9523-4356-41d5f9e48f12@arm.com> <Y2omz6pibSUNPtHu@arm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D05C88F4A
+	for <iommu@lists.linux.dev>; Tue,  8 Nov 2022 10:13:16 +0000 (UTC)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2A89WvsG008722;
+	Tue, 8 Nov 2022 10:12:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=dbSjy/6KboOVvEXug4RHKIbkd5zdJQGaWqPn2F0vmvw=;
+ b=IgdXE9I+HvXUz4eIuyzU5UFe6yeJOGnCtSBWlJhIAh/xNHnbyrxJy/CbyK0p3C04yTMJ
+ GmhK3qDhp0LMLd7D6IRA53r4BdKKUUIikyZFBSLjCWpMX+SdlJl4zUU/Ye7RYesNTC2R
+ cTuiz7NAVy7f5XMiI7UPbfQNIzV2Qw7jd/68ba6w0V05eEJyttuBnCJyg+7ihpTdyAZP
+ FB+Q9JN0IkhL/5D8g6KkM77/vM2lSYzql0VjvT+Yxf9xO3F+K8wQvFs3q/sCh00B2cVy
+ KnMbh2bSnus9rSZW7FtOWRBX3RI6tYfwaKv0ceAxLlmdRGa1S3/dANyVmFaS0u+vDgcj rw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3kqkjf33d6-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 08 Nov 2022 10:12:58 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2A89mkPA021424;
+	Tue, 8 Nov 2022 10:12:58 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3kqkjf33c1-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 08 Nov 2022 10:12:58 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+	by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2A8A6TD7021901;
+	Tue, 8 Nov 2022 10:12:55 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+	by ppma03fra.de.ibm.com with ESMTP id 3kngp5ju97-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 08 Nov 2022 10:12:55 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+	by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2A8ACqI366060624
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 8 Nov 2022 10:12:52 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 87C01A404D;
+	Tue,  8 Nov 2022 10:12:52 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id D19E3A4051;
+	Tue,  8 Nov 2022 10:12:51 +0000 (GMT)
+Received: from [9.171.92.113] (unknown [9.171.92.113])
+	by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+	Tue,  8 Nov 2022 10:12:51 +0000 (GMT)
+Message-ID: <fbb84105-cc6e-59bd-b09c-0ea4353d7605@linux.ibm.com>
+Date: Tue, 8 Nov 2022 11:12:51 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.0
+Subject: Re: S390 testing for IOMMUFD
+To: Jason Gunthorpe <jgg@nvidia.com>, Cornelia Huck <cohuck@redhat.com>,
+        Eric Farman <farman@linux.ibm.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Niklas Schnelle <schnelle@linux.ibm.com>,
+        Tony Krowiak <akrowiak@linux.ibm.com>,
+        Halil Pasic <pasic@linux.ibm.com>, Jason Herne <jjherne@linux.ibm.com>,
+        linux-s390@vger.kernel.org
+Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
+        Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Nicolin Chen <nicolinc@nvidia.com>
+References: <0-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
+ <Y2msLjrbvG5XPeNm@nvidia.com>
+Content-Language: en-US
+From: Christian Borntraeger <borntraeger@linux.ibm.com>
+In-Reply-To: <Y2msLjrbvG5XPeNm@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 88b1RjTTYRBxlBTkBjyzFSdWP3OuxAdE
+X-Proofpoint-GUID: Kk3uXu49M0BUpX-dT-SrN4RafkObPTS3
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y2omz6pibSUNPtHu@arm.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-07_11,2022-11-07_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
+ priorityscore=1501 impostorscore=0 suspectscore=0 spamscore=0 bulkscore=0
+ mlxlogscore=999 lowpriorityscore=0 adultscore=0 mlxscore=0 phishscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2210170000 definitions=main-2211080054
 
-On Tue, Nov 08, 2022 at 09:52:15AM +0000, Catalin Marinas wrote:
-> Since it's hard to guess the optimal swiotlb buffer for such platforms,
-> I think a follow-up step would be to use the DMA coherent pool for
-> bouncing if no swiotlb buffer is available. At least the pool can grow
-> dynamically. Yet another option would be to increase the swiotlb buffer
-> at run-time but it has an overhead for is_swiotlb_buffer().
 
-Alex said he wanted to look into growing the swiotlb buffer on demand
-for other reason, so adding him to Cc to check if there has been any
-progress on that.
+
+Am 08.11.22 um 02:09 schrieb Jason Gunthorpe:
+> On Mon, Nov 07, 2022 at 08:48:53PM -0400, Jason Gunthorpe wrote:
+>> [
+>> This has been in linux-next for a little while now, and we've completed
+>> the syzkaller run. 1300 hours of CPU time have been invested since the
+>> last report with no improvement in coverage or new detections. syzkaller
+>> coverage reached 69%(75%), and review of the misses show substantial
+>> amounts are WARN_ON's and other debugging which are not expected to be
+>> covered.
+>> ]
+>>
+>> iommufd is the user API to control the IOMMU subsystem as it relates to
+>> managing IO page tables that point at user space memory.
+> 
+> [chop cc list]
+> 
+> s390 mdev maintainers,
+> 
+> Can I ask your help to test this with the two S390 mdev drivers? Now
+> that gvt is passing and we've covered alot of the QA ground it is a
+> good time to run it.
+> 
+> Take the branch from here:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git/log/?h=for-next
+
+> 
+> And build the kernel with
+> 
+> CONFIG_VFIO_CONTAINER=n
+> CONFIG_IOMMUFD=y
+> CONFIG_IOMMUFD_VFIO_CONTAINER=y
+> 
+> And your existing stuff should work with iommufd providing the iommu
+> support to vfio. There will be a dmesg confirming this.
+
+Gave it a quick spin with vfio_ap:
+[  401.679199] vfio_ap_mdev b01a7c33-9696-48b2-9a98-050e8e17c69a: Adding to iommu group 1
+[  402.085386] iommufd: IOMMUFD is providing /dev/vfio/vfio, not VFIO.
+
+Some tests seem to work, but others dont (running into timeouts). I need to look
+into that (or ideally Tony will have a look, FWIW tests.test_vfio_ap.VfioAPAssignMdevToGuestTest
+fails for me.
+
+
+The same kernel tree with defconfig (instead of CONFIG_IOMMUFD_VFIO_CONTAINER=y) works fine.
+> 
+> Let me know if there are any problems!
+> 
+> If I recall there was some desire from the S390 platform team to start
+> building on iommufd to create some vIOMMU acceleration for S390
+> guests, this is a necessary first step.
+> 
+> Thanks,
+> Jason
