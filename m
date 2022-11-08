@@ -1,92 +1,78 @@
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
+Received: from mail-pg1-f182.google.com (mail-pg1-f182.google.com [209.85.215.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4208D2908
-	for <iommu@lists.linux.dev>; Tue,  8 Nov 2022 03:02:47 +0000 (UTC)
-Received: by mail-qt1-f178.google.com with SMTP id fz10so8049562qtb.3
-        for <iommu@lists.linux.dev>; Mon, 07 Nov 2022 19:02:47 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B13692CA2
+	for <iommu@lists.linux.dev>; Tue,  8 Nov 2022 03:44:04 +0000 (UTC)
+Received: by mail-pg1-f182.google.com with SMTP id 78so12281635pgb.13
+        for <iommu@lists.linux.dev>; Mon, 07 Nov 2022 19:44:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=wTgvsmQCgbUJy/uyEBLIwEwJeivJlDp4X00FjEbm73U=;
-        b=KpGOTlZpFF56PAJz4Zyiyj1+AE/0+obLPnwKtXkayi9BgHyMd1LEnld1njeN3AVfgp
-         9UT1CWH3HOhFEJzbQVxOzORHS5x6yip2l+gMDq/lFqFvzbdTS152Ur80e0112btw6Bt1
-         XB1mDSrtSD2Gz1yQEEmuhqap1RdI8vGjsaVVoe0MRVarxfgS/cSUw6cb1rN4+YZL7tWr
-         aLK8X9eTQg/KDyhYNBD1uyNc74TH6V5SsdcM7Wfw6O2f6fp71is/cQY0P/fnaZGgDQzV
-         7Ov6CJDUXtgzHjoOPsEYHR5WQt6vgYzBRZk2+OYc6boRZB3obYz8k5TB6LAU1hh40RrY
-         6+LA==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=wMCLCyI3hZtXF/+wItazbuWkV+QYGcAifqVubozLyYk=;
+        b=BnmvNHqflPwI9phHciUytWQTJwsRTtkj1KxnJYIX5lR5H5tIpZirFCGFhlecvSdaDQ
+         DtNJd08ijF3C1W3zc3VN9aJaMrIEpro5RWUC45o+ZQZFcs4gQ8kShX9aalf5RbJgCl/s
+         dgTEZ7rbSs5OE6D4MrtYd+bZ+gyHLRtlJ45JzINtF2XxIeQt0Gi5UA2+6+1uVq0HNwrm
+         6KBuzMyYgAJpAl//WRopmWM+zVE3X9yNG9jpe8ptmHh/oAPhAa4VlKpOfteUekT60v8/
+         XkquNNQ92Xc3QTDieBy3hpF+rUv/flI4Wk2n/iPbJ+Diut741TTUzDB+VBXkAIaGQAe/
+         RzEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wTgvsmQCgbUJy/uyEBLIwEwJeivJlDp4X00FjEbm73U=;
-        b=NH27BkJ/rJTCLgwFhPBdc1+NixZm/aOAT27GuXEvwadUMF5QcbWJEnqnXZ6E1mdaOa
-         YNDCELW21ShqPznO7Zv96Uehv9b58Dq0CAuVv8jpo29otVS+qy0dRg726JQRqsAwDBLU
-         uuVG8ktZxwBBmjZ4zhJnlhURePfySBehqRBprpnTdRzODoM+jQtp3CiXorZ6L0HHaklq
-         4mPzu745u69xJsfebqHjjD6B1xW18TTQt5E+2lHLdMjgrG+0h5s4S4n3JSjAOK2BmEWq
-         U0I7FqBzHH5FnGxl1OCHoHl09ETqiRf65u2HE5rZND8VZrte+fxrWqyIu+kdeF9P8TBS
-         Og3Q==
-X-Gm-Message-State: ANoB5pllI/jVxv7ANEpifxU48/8nxvWtjflHmHsODabmmxPaNp4hohM9
-	aigXs8EvvffoAbHXP6Ftifg=
-X-Google-Smtp-Source: AA0mqf5kH5sVly/98XYjDeDQdqiaVJGNbUetyTPauSbsmbjnkjfzzoiUBE6uGJvjanAM9rKdnAswHg==
-X-Received: by 2002:ac8:5c07:0:b0:3a5:946e:8b7e with SMTP id i7-20020ac85c07000000b003a5946e8b7emr4462095qti.385.1667876566133;
-        Mon, 07 Nov 2022 19:02:46 -0800 (PST)
-Received: from localhost ([2607:fea8:a2e2:2d00::61cc])
-        by smtp.gmail.com with ESMTPSA id ay14-20020a05620a178e00b006bb366779a4sm8347893qkb.6.2022.11.07.19.02.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Nov 2022 19:02:45 -0800 (PST)
-Date: Mon, 7 Nov 2022 22:02:44 -0500
-From: Richard Acayan <mailingradian@gmail.com>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org
-Cc: linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH v3 0/1] iommu: SMMU for SDM670
-Message-ID: <Y2nG1ExgpYVm2sY+@mailingradian>
-References: <20221108025847.58352-1-mailingradian@gmail.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=wMCLCyI3hZtXF/+wItazbuWkV+QYGcAifqVubozLyYk=;
+        b=YaOPZikA+9Pcair446UftUXpXV/19k0BiwfxRd0P7buK0HxEdhY/4qTjbrYhIHDBl8
+         zQ1ug56uS38Nllfa2GlowJTCxOzO7W95UNmHshOxuZDhKkW/xK/qrfeVfyMDqzv7vlAR
+         WZ9SDw3cEV11h/Lrs2hf4iL44E5AKA2/EC3wyfsUswri/gxJzIXW5YRph5R1fmYqAbEZ
+         ViwT/eFdO8wgb4LqdlvKMLpbiS0e+VBlX1IJmpBl80gHGSKn/5XiVauhspArBavtlrIz
+         H8B9RWL1IeHa9bYBhju4FzwiuOW0FuWHPHp7lwqNPr/oqRqXinTIo4k7JRxpc7m1fgSP
+         OeIw==
+X-Gm-Message-State: ACrzQf2d/u98pkytYmClt9QJkZmyJvooLU+P/kViUR70YlIDAWBPC43h
+	UU//Ke+mkDq6fLwGf8S+o7vj4g==
+X-Google-Smtp-Source: AMsMyM64W3vwEqO4HBVkCyFiuyZ8dDJNvWAYn7dEYV00PWb7kBu4s9Z7y7BjOmJa7I//9YQ9IICJ8g==
+X-Received: by 2002:a05:6a00:a15:b0:56e:9b2b:60dd with SMTP id p21-20020a056a000a1500b0056e9b2b60ddmr19672290pfh.35.1667879044094;
+        Mon, 07 Nov 2022 19:44:04 -0800 (PST)
+Received: from [10.255.232.252] ([139.177.225.243])
+        by smtp.gmail.com with ESMTPSA id b10-20020a17090a12ca00b0020dda7efe61sm6934662pjg.5.2022.11.07.19.44.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Nov 2022 19:44:03 -0800 (PST)
+Message-ID: <0689cf4d-adaa-c783-98e8-ffbe73291ae1@bytedance.com>
+Date: Tue, 8 Nov 2022 11:43:56 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221108025847.58352-1-mailingradian@gmail.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.4.2
+Subject: Re: [RESEND PATCH v3] iommu/iova: Optimize alloc_iova with
+ rbtree_augmented
+To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org
+Cc: wangjie125@huawei.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, haifeng.zhao@linux.intel.com,
+ john.garry@huawei.com
+References: <20220922183114.15135-1-zhangpeng.00@bytedance.com>
+ <4a1d000e-e051-5972-bacc-d785ceeed879@arm.com>
+From: Peng Zhang <zhangpeng.00@bytedance.com>
+In-Reply-To: <4a1d000e-e051-5972-bacc-d785ceeed879@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Nov 07, 2022 at 09:58:48PM -0500, Richard Acayan wrote:
-> Changes since v3:
->  - drop driver patch
+> https://lore.kernel.org/linux-iommu/2b0ca6254dd0102bf559b2a73e9b51da089afbe3.1663764627.git.robin.murphy@arm.com/
+I don't think this method solves the problem, because sometimes it's 
+just that the allocation is very slow, it's not that it can't be allocated.
 
-This is v4. I forgot to increment the version in the subject header. My
-apologies.
+This is a test of the performance improvement of the network card by 
+this patch:
+https://lore.kernel.org/lkml/42909903-5b6c-efe8-9ed3-3ac012f1a421@huawei.com/
+At least this optimization makes sense.
 
-> 
-> Changes since v2:
->  - rewrite driver patch (2/2)
->  - rebase on (1/2):
->    https://lore.kernel.org/linux-iommu/20221102184420.534094-1-dmitry.baryshkov@linaro.org/
->  - reset review process (1-2/2)
-> 
-> Changes since v1 (no emails related to this series since last week):
->  - accumulate tags (both were added because it seems like the discussion
->    ended in agreement to keep adding compatible strings to the driver)
-> 
-> This adds the compatible string for the Qualcomm Snapdragon 670's SMMU. The
-> SMMU is necessary for GENI I2C, included in initial bringup because it
-> doesn't need non-trivial patches except for patches conventionally added
-> before the initial device tree (global clock controller and pinctrl).
-> 
-> Richard Acayan (1):
->   dt-bindings: iommu: arm-smmu: add sdm670 compatible
-> 
->  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> -- 
-> 2.38.1
-> 
+The only downside of this optimization is that it is more complex, if 
+you think it is difficult to maintain it, I can help maintain it.
+
+Thanks,
+Peng.
+
