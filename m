@@ -1,34 +1,34 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2056.outbound.protection.outlook.com [40.107.102.56])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2051.outbound.protection.outlook.com [40.107.92.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25DD615BC;
-	Tue,  8 Nov 2022 00:49:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B50715AD;
+	Tue,  8 Nov 2022 00:49:19 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Qw0SrfmLDTxJmiXuwFImt7zLH1XSRtVSKKd8AldWSotkYpu/Yqc4jWBYje0S19RCdzlnJ2ji8NmrLtzJUfKTlZ2H7TYpkd+riSw/yuPtbCb33BTHogcVrK1U10N4ZL+Z6Xw2mAnLSk5aMUcV3qR882B7y4iiLppRA9AFnDIiKPwaiHvBcRkJlI1lLXFJRewPC8GDladhAdC4DyZms2XtnuHZ7qV2cY6+IUbFXhrqDicHXcHbYMiIozj4GlcAFBJM7gcZCRPf1pBeB8PxidY7Dd5fYlAmXAG+hlMM+S16irFzduT6xXU1GjKkiaEofuNrlVQVfGqAiet7yUhkhtS+iA==
+ b=W0b5wVcJlA7HYk0M8fMkfSW/tQ+t4gahzqdP6ZxwNyNFay391m4nhPR1G4cE4KNls6uqr7ENg4O2bEv3OjaACGMwVHjZQsI2nuwghXvWAhdPcPKAwpUwlWde1DmadrZY4wHbgcBohyRIXZI66EANSv39Vu8WrvG4lNCEygJt6/+NxGEEH3jLU5jOkigT3toHDr3A9ZkRgo0Dj0WfdiLAXX7phIPm2n1X23B0qjT/h5dkPp20n4Z2yGDLP3sud/9Y07I2+VnUeil2+itwnoYl4PkHNXLasDnh3SeOgD1pttjUAQYPq8ueVkIxFC8+HJwRTXc4hkP0anmqSPe1zZr/uA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=m9Vf1aXTCdfKFKYu1clZlG78GIvCEIN3hOWtGgpoQiI=;
- b=KN7Lrr7UIeLrIS3Nx8pwIr6AV3v5Gi1I9bOKT7HLg45wzOAwjNqfFhQljJrBvUKZWsLEVGP2LNmolbWmaDzcM1/Ta4i7KYQfZkmdSD+mV7C96Av3oX5RtZdN4Qr0qCZTBCE5Rw5khpMCpeKXzD+4fUSLyrowWqPUbQq5I3mxzf35BeaPl2EO9YR2it4pdtu58jBdo/Ak5dBW87X6asiuxJuWaUH/mnCTkmCUmbhYT3GI2lJmQPq6EiQ0TDLttwVUC4vJDajQRJtQ1Bx/5uUCYgjg67ly/+ViEIA5IkcN2M3KKVFM3ZxVtaSzGSyd6LJrQpZ8OImDNlHJFAooEwndFQ==
+ bh=Zfo1nweUziXTIC46MzaVsd6gCPm7DhMdYDgTF0tBuF0=;
+ b=Y8cxy/bImnF9bGEM+dknsjA7QX6OhRXUcdpgBRsnHmQQe0yjD/JORqo/eOol+11MPqRGwtXIW+vKsem2EE01FE6Nui6yktW6lv19d6js5PGjG2WZitLDl8yQAn6fq+u8W5rRLte9ZXjMY37G+tUVKClIbrMWjVZpWJ5wsxgSBmgYZHLbd6W30s3Al/BtDnF1TeYy0J6qyioxIYciaEaBCoTE+nqxOLv7ShhrvtkD4PCu3kOdIe68TcExk7EZEantqlonfcu9X4K7wUGp1zS14RB6FnB3jkXYrK5NWiSI48K/RQfcaQ4gVWcxaRjH8qiE3+diBz+sKMuWOMzJeoLW/Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=m9Vf1aXTCdfKFKYu1clZlG78GIvCEIN3hOWtGgpoQiI=;
- b=hcTpUhvFdPA4eWp58yIxmCHKcY7p5EHhad/NpxMFNuF5mrw89JG5PaPhTeNm/4a/oHGFGHSVHy07MuLZnAtdLnGjoxRICENqRxattIzNbU+x0A4ju3FLOynnsri7ndoxM7moBcOCHQBafzQSXaVCoX5PGrr5tCWYoClefJv2zpJtk8DZPebBwKIp8A8cCMSDWDPSmuPxgrXJqggiYB2nd29oskeZlQ1GVC3cp8htaSYXDcuuFD5tH1GdZ4o2N/o16wZUcULm4ew52TNyWc1OuXG7FSjzBwupq0FKygm0mrUqg15MTOCdA1Js1ZZRoUvoA6L65GizoFrdeostDqktdg==
+ bh=Zfo1nweUziXTIC46MzaVsd6gCPm7DhMdYDgTF0tBuF0=;
+ b=Wf51TWsyEO0C3tVBJ2lzwO3BBIYK+E1M81AoeFF4/gDJG+VG2WYpdtvna5kDJ/IxUvoHi0vSdlYis0F3V30eElfFC7RBpK3BJP32B2pOvBkbTuyyIO9YQrsK2LhdP7Ix9liSDNCCwdaQhU+c0Wi5WbLPtD0n26YJ+328+px+bhLme5ABFw7fNXpP2UaDkrV0UqntfcWcV5mX9o230v/cKNgB3BTT7ljlkNRLtAGiZoJ9YpvPjQjjO9RH185YQIGf9LID5YNoGrA9owNpPGZDoTCnBw53t7gfUw1CKTfSlWT12hxlgNqygE/q/d2xar1/x4+H6eR+fiuqyJjb97ylWQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by BN9PR12MB5212.namprd12.prod.outlook.com (2603:10b6:408:11d::14) with
+ by SA1PR12MB7222.namprd12.prod.outlook.com (2603:10b6:806:2bf::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.26; Tue, 8 Nov
- 2022 00:49:12 +0000
+ 2022 00:49:14 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::7a81:a4e4:bb9c:d1de]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::7a81:a4e4:bb9c:d1de%6]) with mapi id 15.20.5791.026; Tue, 8 Nov 2022
- 00:49:12 +0000
+ 00:49:14 +0000
 From: Jason Gunthorpe <jgg@nvidia.com>
 To: bpf@vger.kernel.org,
 	Jonathan Corbet <corbet@lwn.net>,
@@ -66,15 +66,15 @@ Cc: Alex Williamson <alex.williamson@redhat.com>,
 	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
 	Yi Liu <yi.l.liu@intel.com>,
 	Keqian Zhu <zhukeqian1@huawei.com>
-Subject: [PATCH v4 05/17] iommufd: File descriptor, context, kconfig and makefiles
-Date: Mon,  7 Nov 2022 20:48:58 -0400
-Message-Id: <5-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
+Subject: [PATCH v4 08/17] iommufd: Algorithms for PFN storage
+Date: Mon,  7 Nov 2022 20:49:01 -0400
+Message-Id: <8-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
 In-Reply-To: <0-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
 References:
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: MN2PR12CA0026.namprd12.prod.outlook.com
- (2603:10b6:208:a8::39) To LV2PR12MB5869.namprd12.prod.outlook.com
+X-ClientProxiedBy: MN2PR16CA0034.namprd16.prod.outlook.com
+ (2603:10b6:208:134::47) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -83,745 +83,1083 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BN9PR12MB5212:EE_
-X-MS-Office365-Filtering-Correlation-Id: 27f3b30e-1c96-4225-763a-08dac1230cb1
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SA1PR12MB7222:EE_
+X-MS-Office365-Filtering-Correlation-Id: ff8807e4-77ea-45f7-46b3-08dac1230d07
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	XBKlqRJvmJJh7uzEDgHBQbIcShhiIUIqPgGcgHi9qBflugHxszFptX6e9D/rhYiEdK3VlIHzSYRnnjxTwMKLHrHeugKpNBM6GHpuWOhscC7elf6dOKF7ZErmbzPFAZbaJ9o5JTQx9mCmUwBU919SiwYtl6n+6YbSaeLdH9E2MWJ83Wehs6ckfio9I8HWpWEX1xaXnrG09Q7lV2MVt49BPdhTJJeSN0f8GZlKaNvfdM/QxN+/y+qqL+Y/e8okMn9d4mcKO3CygaOTK0kqE5Uk0jDbwsaA6Tc5ujpMmlDVFMeEWT6oRjS9v+GoEQGvFOf00CYSeqpv9nBbSsc0Ziu9gOrEyo/Oi0KNT9oZIF5c3DZjS1nsVfpZyLJ292bFDqSG1dVdhiuXgNKWOTwg2r08vsleU8uTkCJtiTfEgq8rhy5GXoZu6p/uiHfh7jD/5wJkAD8O3atb9fL/2VAmFqo2lmngpN+HlaJk69hnZ0thTIB04vSj/u8RIPOorg3Z25x+CaMNTnHM6KmBpN3fCKzREOGVsEVGEuBUAUusWB2GHAV8F98Migw27sygMzxNx2WspLp9bYhIfXRnR6sFvPMPXWjUklBxlZG3K96NXsLKo0tSiHwJ/rUjtBtzOfvwHkdlZy5TtKaVoAhiJmB+X2ct2rTt4V3R8c+KrHeOnmEBjrEGt3u4MEv6kqK0qFPVAuwduTFFv43XXesvEjmZB79IH+G8EYHZo2XhcrVRwlcpiY7CUVCzcEcfx9xzA3Ggi03XYfugtkMvgSTALjoNvcjkTw==
+	UxksgMJvckXS4WuCl2Nt1pF0n4W4cCC7AoM0nMQMtfQtJ164vlMHzIi97188mDKbMSgQsGTT5K0pq26G7TCkSTls1ee0esDNv8YLKnRpotSqEtp8b9meKeTh/gjpPLKqPvi6Z3brUOBlWr+MiRxgfTcRZ40bB7OWwCtGTijSgKOO4lTRj0TcVRvs5GYa5mUEQ3oycc50+LgTN772/VJHKsDYyyuH2xnaoEdoUt5AQXvU9Cr40ioe38WCakUR2UP8EG0gq/nsLZQP9g17e+yRJAv+7tkn93+Lbp2Vc2rFR3rlm3nxomcO02ZjWbyD5XaTw0/ln0xWKNLbCI4AnXZVoa3HkWA+edPdA/P6JV/f1pj1oAXetht2EDgKqupAR+vzIyTfrYLeMW7504nhZXPEorkAFqV/aH+kcesxviicAPVPZ9AqJxaf+EWOlRCOmWvbOiEVwZWI8v6qylYIFB4j4FqBQ98DMT/5pacCPVp85a4LesG1oAHmwJEx3hQTjxdCfkwVKrGFGxofau60wyRNEk7osRzpIDyQaCMQ3jDNRmnatatdyAj0MtJcQJqv4tbe93sCH0a9FxFcUOpEoV/eKwFFf2uP0wnrhrXiAiD2i+Zofne/+IKG0W5cu6jQ7MCdsKJVNpNUg3WhZGsRNFkXbipWoAIsDFZlz/sApO00jpHg6amaosmPtTW9IVE7LgjNUOH1fIELM1GxB/mrdC+8tNbA6uGqb4uoeouQ9LVf+5H6Dz3yE67LrqkIzPFeIYOpEXxbqhQMVasIJ5NFlr1hmg==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(376002)(346002)(396003)(366004)(39860400002)(451199015)(83380400001)(36756003)(86362001)(30864003)(478600001)(2906002)(6486002)(38100700002)(921005)(26005)(186003)(6512007)(2616005)(54906003)(316002)(4326008)(66476007)(6666004)(6506007)(110136005)(41300700001)(8676002)(8936002)(7416002)(7406005)(66946007)(66556008)(5660300002)(4216001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(376002)(396003)(39860400002)(136003)(346002)(451199015)(30864003)(8676002)(54906003)(110136005)(66476007)(8936002)(7416002)(5660300002)(7406005)(2906002)(38100700002)(316002)(66946007)(41300700001)(66556008)(4326008)(186003)(2616005)(83380400001)(6486002)(478600001)(6512007)(26005)(6666004)(6506007)(86362001)(921005)(36756003)(4216001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?YIslUy4FVKCIH6RK4ttNQMy+ix9jgpNq2WmE+LEpZT6/D7V/GvzBrmVzpmj8?=
- =?us-ascii?Q?eEcURl+yxQEJJ2zZr3klfUcb+ua7m8r4uvHURLFTSeTtcAvfmWmPm7GprOo3?=
- =?us-ascii?Q?SSc7WtIrtPxvvaurt6GBuLtQ4nunMqSmQ4RRFFvQhwAbsGoJy3Ld2wq/KX7k?=
- =?us-ascii?Q?AxoSlv7vlZbU3UX9w95rhYZkUU+IAC06cHmUF4ZhHogcJvjH9v/YpZeb+XxF?=
- =?us-ascii?Q?j6ZbUwHytT6kCmO1kIW0rwlHrFpmUTz3dXMxc0OIYDTvPdHEYRrU+tWQalGA?=
- =?us-ascii?Q?ojILv+sPZol291M8Ng+PNscTNHFCO/9DZ+tHvnwVInJFJ7kEs1qpRx8iKQ/K?=
- =?us-ascii?Q?CgCGTYlxVawwxjY7BbzkbLTyD84dm67Qe52olKIVhHmOSAqvXKTdYOFIUx77?=
- =?us-ascii?Q?l1Lc8F3HPIDXIvlbMFc9YYkyBH2cqBPWsGzp0/5cqUzSt5Rjpg5wEQRQEEkZ?=
- =?us-ascii?Q?fUD4zNPtqZzMXEO4Y7mcwvHtnjEirsQCt2BFWFuEbaC+yd9veSUHvrK6+x0u?=
- =?us-ascii?Q?ANcKn1Qf+rqvqdUlkIIGJscKL9i5yPFNHU2veF9Qs8RCds/OeN0vqhgU/9Vk?=
- =?us-ascii?Q?tlZLtSxMR7QIMrGOHSiJkrHwz8o+8SsI0cX9TTC6wnhMk4lKFyrupFrD/p4g?=
- =?us-ascii?Q?pLo39edy+sIRdfFpNryvfG53ZQV6kITJkv7m7lw6QyDJi8V7FqVUJ+8/efbc?=
- =?us-ascii?Q?6HyzYs+6qUEFo+irlY7Jp5eMeacK2fkHw3At1JWkw500DpEAkjLCOzHjU4GA?=
- =?us-ascii?Q?HpSq0lBHw8zA3ovGv8jUBSPj1IC0udgr0FprrnHWC0GR7uJEmqRy7SiDpngq?=
- =?us-ascii?Q?FB8Pb57/hQQGT4F9HfkXkZsj7uFhK61/uZJcsVlzkiUxbLtg/HYFqWkJ5tOi?=
- =?us-ascii?Q?zL9PROSWIWM84ijMcEEb4BKaiG80vqGV1nV4lXomKhAW/LKOdam4Fbc8Q/lh?=
- =?us-ascii?Q?SvNPO5WkQuxEAsfhq0vogOeuqHNX2g6RhQSDE8ADR1n+mB9wixxFwxtplqLw?=
- =?us-ascii?Q?mpvGDf4aQNT+ozfA4c6eIFFxFwEec2k505MHfFI0CI2YsyoZJCQ/8UkxHi6n?=
- =?us-ascii?Q?1QRW0C3y+aQXISyUoohvQZpe12+vgxjZRHTKK6X/AD9qtb2yWGsAL3wbnzzG?=
- =?us-ascii?Q?TfrEgatCW+vFCo/X+LndvfzL8gh+kLx3SHZK6AuTZx7bySVwRj6c56zAWT2O?=
- =?us-ascii?Q?5rTzuRtE+RXAxH3ofooEUuWmA00qoY8RG1S95ub08Bc0yoPfV914Ve67Ode3?=
- =?us-ascii?Q?q5DyRDzY1BIQRodxOJOYhLWlQDO0nXrsgEMdmw/yKxDmzluTLZa+q6ehdhoR?=
- =?us-ascii?Q?c9Vo9/AwSuRmv0wW3+2XZ7s8YrGhyKZnwYdb+fHhzfBAwO/L3x/wvTdCxXS0?=
- =?us-ascii?Q?/M+Jnj4OqeEbzj+TIOXyE2+oHE5EfpRvjCxg2Qsp2SKaBzdQ/gF1kpmBjia+?=
- =?us-ascii?Q?8DU3WJXS2crtb+PS4US2O5fVl9aBZS14mzDu1Mbf4uUCB9/OKDBe2g5NRs+P?=
- =?us-ascii?Q?lO81iwBKRWojGMCAWFRkOYIYHdCKD7Qe79isMdmBQ32qLxqAdz3aq+ClTfv8?=
- =?us-ascii?Q?/5wpIPL+GwPSzW3ET20=3D?=
+	=?us-ascii?Q?MtcL4M9q+FPYPnQPlygw5zgKRT6NnOzPg7HYOCxDCBi+4iAKZFjp8/77zklx?=
+ =?us-ascii?Q?eBa3TaGxgbI/ne8nzF8tR7lpScdQ1Mfcfh90kE0jzp7I6jTOSz2flb+ThKOz?=
+ =?us-ascii?Q?lSB26cvcvmyE84oq4qTDXu8vaHtR9E/aN545UheMtBgfSDoqf1yNkZ8Ocr+w?=
+ =?us-ascii?Q?ywfHzG+eiWmYzyeecZvR/+FYXBS2BWf2DLZQuvyAEZlCD/Z0E9K2MeX3OnMd?=
+ =?us-ascii?Q?JHZqSkaZFkaX1WjzwewA31nv4n5hpWVdN2+8T2xCYC5Ld/hORzfRel+bm5k6?=
+ =?us-ascii?Q?Wo4PCiMcZjQ/ta/v2xiHF7z825xJtaWrqr1+Ecu7u4KBhMdt4cP0fKIdiY+t?=
+ =?us-ascii?Q?txKH6K8pz14X2WahivFWnpXnVXNoHz8ds/W0O3XA3kB1fpY4C3coCAFSn3ie?=
+ =?us-ascii?Q?w044GRliFTVTuY39MhVNv46V+PG7uuGxt8Ooq/remZHX4wd2KlvlpNb0gqBS?=
+ =?us-ascii?Q?1zEarh0lKCbEnaH50RIxeDjFmcgObpVr5Wkwwso+tFBOkL/UhrKdIFbkthBY?=
+ =?us-ascii?Q?k+RE6ONCztAfM5xCStsX2OMoh9/Sr24v8B/HmaL6qHISZV7G3g1Ht7da+e6X?=
+ =?us-ascii?Q?hgbBIXF0ch2iXm1BbBGaIZyWKWCHYz1OxNkwQtBCRR1OCIaLctv0BeAtSmLV?=
+ =?us-ascii?Q?AZMBwRuiDLtuFeVLoITY04VYlBS+lTIAVoB4rIUHQ0tTi+Yfcm+HQ5EzwoY5?=
+ =?us-ascii?Q?V2m354ce2hHENNWwAz/6IBywlgpgR8p50ht8NLt9GyoJu89dEaWT5kuAGlmb?=
+ =?us-ascii?Q?U7rqsSzYMzyWdLVh8sLZaHFreP+Gnu6gWH+Ntoq5eqcSNhFD22LB0r35IGw1?=
+ =?us-ascii?Q?fO2hTh8ZA8pNkE6i2wnecz4C/VWUKohrT4A9RRasgnaSAhE09ZYjEyqEpqVM?=
+ =?us-ascii?Q?8jxjtkujSQY/sDqAwNqQT/AScJwX3dml9FWM5C3NFPaeTdSZ7ErfZ83x3CXD?=
+ =?us-ascii?Q?lMn68k8vfWYApgg3/lysnU38iH+0UHJUO4OeSLbr7qzocwHrL1Ejjkj/+yas?=
+ =?us-ascii?Q?h+S2CFjLMH3ab/FJ5w4hhgP79EQZ/VMyXNE4TylRCNec9U6lHHvGBmV5fB48?=
+ =?us-ascii?Q?Tb7tYQDBzfRAhpov5JS/MZUV/bXdNkssbrETL3YLB7lPPUJi2bTHdFxoTQWn?=
+ =?us-ascii?Q?XFde8TqYi0bLGd/tu8VV1uCKcU3K4vfJR7TypnLb/+BQ+jh4j7BQjlD+7IqP?=
+ =?us-ascii?Q?vMAwNqf1TFIjuboxQwsEFik1CPp1wkMyGgPThoCAylQacd0Ee6uxMNMJq07x?=
+ =?us-ascii?Q?k++xPV/jFzwQR5yW36gqA1P4ErSV2DTHMz83hJ868ueZhWUlxIUfyEdTrBuQ?=
+ =?us-ascii?Q?rr38hYixJMIQrf2+C6b2nXv64lgcMN26lgTew8sxOLzl5+6a4xMw4ktUSeH3?=
+ =?us-ascii?Q?R7iy2lb+mkzFGM1+Vb7aOrx7s2hKEQ9Zomiqya4/Lc6VQzAF1A1QjzwZX7bG?=
+ =?us-ascii?Q?zSBfK8cp/x/1wrKTOXOOybovrS9UW9LlHY/shxHISDIvd32Bhj54iUkMIXqO?=
+ =?us-ascii?Q?4N3JTvoWPCirvJM5T1QFjU7deC0hGcAJusV46Aw7hQZAVcmk/cyWU9GhXew6?=
+ =?us-ascii?Q?Un0j+dmNSSgxpKkqrb0=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 27f3b30e-1c96-4225-763a-08dac1230cb1
+X-MS-Exchange-CrossTenant-Network-Message-Id: ff8807e4-77ea-45f7-46b3-08dac1230d07
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Nov 2022 00:49:10.9663
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Nov 2022 00:49:11.5755
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: kuwCNC1tuNFT4HkWTPMbUrfY8MnLNu9iaX96tsSCDZVEsefEhJW9mgTE4kuLWpWC
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5212
+X-MS-Exchange-CrossTenant-UserPrincipalName: p47hd3WFbMJ+NBiY+dFC9fmUxWK7xo1ipwHY/F6AUKexRwUKnrguyGo6rfjZVWU4
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7222
 
-This is the basic infrastructure of a new miscdevice to hold the iommufd
-IOCTL API.
+The iopt_pages which represents a logical linear list of full PFNs held in
+different storage tiers. Each area points to a slice of exactly one
+iopt_pages, and each iopt_pages can have multiple areas and accesses.
 
-It provides:
- - A miscdevice to create file descriptors to run the IOCTL interface over
+The three storage tiers are managed to meet these objectives:
 
- - A table based ioctl dispatch and centralized extendable pre-validation
-   step
+ - If no iommu_domain or in-kerenel access exists then minimal memory
+   should be consumed by iomufd
+ - If a page has been pinned then an iopt_pages will not pin it again
+ - If an in-kernel access exists then the xarray must provide the backing
+   storage to avoid allocations on domain removals
+ - Otherwise any iommu_domain will be used for storage
 
- - An xarray mapping userspace ID's to kernel objects. The design has
-   multiple inter-related objects held within in a single IOMMUFD fd
+In a common configuration with only an iommu_domain the iopt_pages does
+not allocate significant memory itself.
 
- - A simple usage count to build a graph of object relations and protect
-   against hostile userspace racing ioctls
+The external interface for pages has several logical operations:
 
-The only IOCTL provided in this patch is the generic 'destroy any object
-by handle' operation.
+  iopt_area_fill_domain() will load the PFNs from storage into a single
+  domain. This is used when attaching a new domain to an existing IOAS.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+  iopt_area_fill_domains() will load the PFNs from storage into multiple
+  domains. This is used when creating a new IOVA map in an existing IOAS
+
+  iopt_pages_add_access() creates an iopt_pages_access that tracks an
+  in-kernel access of PFNs. This is some external driver that might be
+  accessing the IOVA using the CPU, or programming PFNs with the DMA
+  API. ie a VFIO mdev.
+
+  iopt_pages_rw_access() directly perform a memcpy on the PFNs, without
+  the overhead of iopt_pages_add_access()
+
+  iopt_pages_fill_xarray() will load PFNs into the xarray and return a
+  'struct page *' array. It is used by iopt_pages_access's to extract PFNs
+  for in-kernel use. iopt_pages_fill_from_xarray() is a fast path when it
+  is known the xarray is already filled.
+
+As an iopt_pages can be referred to in slices by many areas and accesses
+it uses interval trees to keep track of which storage tiers currently hold
+the PFNs. On a page-by-page basis any request for a PFN will be satisfied
+from one of the storage tiers and the PFN copied to target domain/array.
+
+Unfill actions are similar, on a page by page basis domains are unmapped,
+xarray entries freed or struct pages fully put back.
+
+Significant complexity is required to fully optimize all of these data
+motions. The implementation calculates the largest consecutive range of
+same-storage indexes and operates in blocks. The accumulation of PFNs
+always generates the largest contiguous PFN range possible to optimize and
+this gathering can cross storage tier boundaries. For cases like 'fill
+domains' care is taken to avoid duplicated work and PFNs are read once and
+pushed into all domains.
+
+The map/unmap interaction with the iommu_domain always works in contiguous
+PFN blocks. The implementation does not require or benefit from any
+split/merge optimization in the iommu_domain driver.
+
+This design suggests several possible improvements in the IOMMU API that
+would greatly help performance, particularly a way for the driver to map
+and read the pfns lists instead of working with one driver call per page
+to read, and one driver call per contiguous range to store.
+
 Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- .../userspace-api/ioctl/ioctl-number.rst      |   1 +
- MAINTAINERS                                   |  12 +
- drivers/iommu/Kconfig                         |   1 +
- drivers/iommu/Makefile                        |   2 +-
- drivers/iommu/iommufd/Kconfig                 |  12 +
- drivers/iommu/iommufd/Makefile                |   5 +
- drivers/iommu/iommufd/iommufd_private.h       | 109 ++++++
- drivers/iommu/iommufd/main.c                  | 342 ++++++++++++++++++
- include/linux/iommufd.h                       |  31 ++
- include/uapi/linux/iommufd.h                  |  55 +++
- 10 files changed, 569 insertions(+), 1 deletion(-)
- create mode 100644 drivers/iommu/iommufd/Kconfig
- create mode 100644 drivers/iommu/iommufd/Makefile
- create mode 100644 drivers/iommu/iommufd/iommufd_private.h
- create mode 100644 drivers/iommu/iommufd/main.c
- create mode 100644 include/linux/iommufd.h
- create mode 100644 include/uapi/linux/iommufd.h
+ drivers/iommu/iommufd/io_pagetable.h |  74 +++
+ drivers/iommu/iommufd/pages.c        | 823 ++++++++++++++++++++++++++-
+ 2 files changed, 893 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/userspace-api/ioctl/ioctl-number.rst b/Documentation/userspace-api/ioctl/ioctl-number.rst
-index 5f81e2a24a5c04..eb045fc495a4e3 100644
---- a/Documentation/userspace-api/ioctl/ioctl-number.rst
-+++ b/Documentation/userspace-api/ioctl/ioctl-number.rst
-@@ -105,6 +105,7 @@ Code  Seq#    Include File                                           Comments
- '8'   all                                                            SNP8023 advanced NIC card
-                                                                      <mailto:mcr@solidum.com>
- ';'   64-7F  linux/vfio.h
-+';'   80-FF  linux/iommufd.h
- '='   00-3f  uapi/linux/ptp_clock.h                                  <mailto:richardcochran@gmail.com>
- '@'   00-0F  linux/radeonfb.h                                        conflict!
- '@'   00-0F  drivers/video/aty/aty128fb.c                            conflict!
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 379945f82a6438..c0a93779731d7e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -10717,6 +10717,18 @@ F:	drivers/iommu/dma-iommu.h
- F:	drivers/iommu/iova.c
- F:	include/linux/iova.h
+diff --git a/drivers/iommu/iommufd/io_pagetable.h b/drivers/iommu/iommufd/io_pagetable.h
+index b74bf01ffc52c2..aebb9a496258ce 100644
+--- a/drivers/iommu/iommufd/io_pagetable.h
++++ b/drivers/iommu/iommufd/io_pagetable.h
+@@ -49,6 +49,15 @@ struct iopt_area {
+ 	unsigned int num_accesses;
+ };
  
-+IOMMUFD
-+M:	Jason Gunthorpe <jgg@nvidia.com>
-+M:	Kevin Tian <kevin.tian@intel.com>
-+L:	iommu@lists.linux.dev
-+S:	Maintained
-+T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git
-+F:	Documentation/userspace-api/iommufd.rst
-+F:	drivers/iommu/iommufd/
-+F:	include/linux/iommufd.h
-+F:	include/uapi/linux/iommufd.h
-+F:	tools/testing/selftests/iommu/
++int iopt_area_fill_domains(struct iopt_area *area, struct iopt_pages *pages);
++void iopt_area_unfill_domains(struct iopt_area *area, struct iopt_pages *pages);
 +
- IOMMU SUBSYSTEM
- M:	Joerg Roedel <joro@8bytes.org>
- M:	Will Deacon <will@kernel.org>
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index dc5f7a156ff5ec..319966cde5cf6c 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -188,6 +188,7 @@ config MSM_IOMMU
++int iopt_area_fill_domain(struct iopt_area *area, struct iommu_domain *domain);
++void iopt_area_unfill_domain(struct iopt_area *area, struct iopt_pages *pages,
++			     struct iommu_domain *domain);
++void iopt_area_unmap_domain(struct iopt_area *area,
++			    struct iommu_domain *domain);
++
+ static inline unsigned long iopt_area_index(struct iopt_area *area)
+ {
+ 	return area->pages_node.start;
+@@ -69,6 +78,39 @@ static inline unsigned long iopt_area_last_iova(struct iopt_area *area)
+ 	return area->node.last;
+ }
  
- source "drivers/iommu/amd/Kconfig"
- source "drivers/iommu/intel/Kconfig"
-+source "drivers/iommu/iommufd/Kconfig"
- 
- config IRQ_REMAP
- 	bool "Support for Interrupt Remapping"
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 7fbf6a3376620e..f461d065138564 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -1,5 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0
--obj-y += amd/ intel/ arm/
-+obj-y += amd/ intel/ arm/ iommufd/
- obj-$(CONFIG_IOMMU_API) += iommu.o
- obj-$(CONFIG_IOMMU_API) += iommu-traces.o
- obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
-diff --git a/drivers/iommu/iommufd/Kconfig b/drivers/iommu/iommufd/Kconfig
-new file mode 100644
-index 00000000000000..6d65d0f06f169f
---- /dev/null
-+++ b/drivers/iommu/iommufd/Kconfig
-@@ -0,0 +1,12 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+config IOMMUFD
-+	tristate "IOMMU Userspace API"
-+	select INTERVAL_TREE
-+	select INTERVAL_TREE_SPAN_ITER
-+	select IOMMU_API
-+	default n
-+	help
-+	  Provides /dev/iommu the user API to control the IOMMU subsystem as
-+	  it relates to managing IO page tables that point at user space memory.
-+
-+	  If you don't know what to do here, say N.
-diff --git a/drivers/iommu/iommufd/Makefile b/drivers/iommu/iommufd/Makefile
-new file mode 100644
-index 00000000000000..a07a8cffe937c6
---- /dev/null
-+++ b/drivers/iommu/iommufd/Makefile
-@@ -0,0 +1,5 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+iommufd-y := \
-+	main.o
-+
-+obj-$(CONFIG_IOMMUFD) += iommufd.o
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-new file mode 100644
-index 00000000000000..d523e7967b1440
---- /dev/null
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -0,0 +1,109 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
-+ */
-+#ifndef __IOMMUFD_PRIVATE_H
-+#define __IOMMUFD_PRIVATE_H
-+
-+#include <linux/rwsem.h>
-+#include <linux/xarray.h>
-+#include <linux/refcount.h>
-+#include <linux/uaccess.h>
-+
-+struct iommufd_ctx {
-+	struct file *file;
-+	struct xarray objects;
-+};
-+
-+struct iommufd_ucmd {
-+	struct iommufd_ctx *ictx;
-+	void __user *ubuffer;
-+	u32 user_size;
-+	void *cmd;
-+};
-+
-+/* Copy the response in ucmd->cmd back to userspace. */
-+static inline int iommufd_ucmd_respond(struct iommufd_ucmd *ucmd,
-+				       size_t cmd_len)
++static inline size_t iopt_area_length(struct iopt_area *area)
 +{
-+	if (copy_to_user(ucmd->ubuffer, ucmd->cmd,
-+			 min_t(size_t, ucmd->user_size, cmd_len)))
-+		return -EFAULT;
-+	return 0;
++	return (area->node.last - area->node.start) + 1;
 +}
 +
-+enum iommufd_object_type {
-+	IOMMUFD_OBJ_NONE,
-+	IOMMUFD_OBJ_ANY = IOMMUFD_OBJ_NONE,
-+};
-+
-+/* Base struct for all objects with a userspace ID handle. */
-+struct iommufd_object {
-+	struct rw_semaphore destroy_rwsem;
-+	refcount_t users;
-+	enum iommufd_object_type type;
-+	unsigned int id;
-+};
-+
-+static inline bool iommufd_lock_obj(struct iommufd_object *obj)
-+{
-+	if (!down_read_trylock(&obj->destroy_rwsem))
-+		return false;
-+	if (!refcount_inc_not_zero(&obj->users)) {
-+		up_read(&obj->destroy_rwsem);
-+		return false;
++#define __make_iopt_iter(name)                                                 \
++	static inline struct iopt_##name *iopt_##name##_iter_first(            \
++		struct io_pagetable *iopt, unsigned long start,                \
++		unsigned long last)                                            \
++	{                                                                      \
++		struct interval_tree_node *node;                               \
++									       \
++		lockdep_assert_held(&iopt->iova_rwsem);                        \
++		node = interval_tree_iter_first(&iopt->name##_itree, start,    \
++						last);                         \
++		if (!node)                                                     \
++			return NULL;                                           \
++		return container_of(node, struct iopt_##name, node);           \
++	}                                                                      \
++	static inline struct iopt_##name *iopt_##name##_iter_next(             \
++		struct iopt_##name *last_node, unsigned long start,            \
++		unsigned long last)                                            \
++	{                                                                      \
++		struct interval_tree_node *node;                               \
++									       \
++		node = interval_tree_iter_next(&last_node->node, start, last); \
++		if (!node)                                                     \
++			return NULL;                                           \
++		return container_of(node, struct iopt_##name, node);           \
 +	}
-+	return true;
++
++__make_iopt_iter(area)
++
+ enum {
+ 	IOPT_PAGES_ACCOUNT_NONE = 0,
+ 	IOPT_PAGES_ACCOUNT_USER = 1,
+@@ -106,4 +148,36 @@ struct iopt_pages {
+ 	struct rb_root_cached domains_itree;
+ };
+ 
++struct iopt_pages *iopt_alloc_pages(void __user *uptr, unsigned long length,
++				    bool writable);
++void iopt_release_pages(struct kref *kref);
++static inline void iopt_put_pages(struct iopt_pages *pages)
++{
++	kref_put(&pages->kref, iopt_release_pages);
 +}
 +
-+struct iommufd_object *iommufd_get_object(struct iommufd_ctx *ictx, u32 id,
-+					  enum iommufd_object_type type);
-+static inline void iommufd_put_object(struct iommufd_object *obj)
++void iopt_pages_fill_from_xarray(struct iopt_pages *pages, unsigned long start,
++				 unsigned long last, struct page **out_pages);
++int iopt_pages_fill_xarray(struct iopt_pages *pages, unsigned long start,
++			   unsigned long last, struct page **out_pages);
++void iopt_pages_unfill_xarray(struct iopt_pages *pages, unsigned long start,
++			      unsigned long last);
++
++int iopt_pages_add_access(struct iopt_pages *pages, unsigned long start,
++			unsigned long last, struct page **out_pages,
++			unsigned int flags);
++void iopt_pages_remove_access(struct iopt_area *area, unsigned long start,
++			    unsigned long last);
++int iopt_pages_rw_access(struct iopt_pages *pages, unsigned long start_byte,
++			 void *data, unsigned long length, unsigned int flags);
++
++/*
++ * Each interval represents an active iopt_access_pages(), it acts as an
++ * interval lock that keeps the PFNs pinned and stored in the xarray.
++ */
++struct iopt_pages_access {
++	struct interval_tree_node node;
++	refcount_t refcount;
++};
++
+ #endif
+diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
+index 87e2bd78ae91e8..d8f3f2a07e8378 100644
+--- a/drivers/iommu/iommufd/pages.c
++++ b/drivers/iommu/iommufd/pages.c
+@@ -151,6 +151,18 @@ static void iommu_unmap_nofail(struct iommu_domain *domain, unsigned long iova,
+ 	WARN_ON(ret != size);
+ }
+ 
++static void iopt_area_unmap_domain_range(struct iopt_area *area,
++					 struct iommu_domain *domain,
++					 unsigned long start_index,
++					 unsigned long last_index)
 +{
-+	refcount_dec(&obj->users);
-+	up_read(&obj->destroy_rwsem);
++	unsigned long start_iova = iopt_area_index_to_iova(area, start_index);
++
++	iommu_unmap_nofail(domain, start_iova,
++			   iopt_area_index_to_iova_last(area, last_index) -
++				   start_iova + 1);
++}
++
+ static struct iopt_area *iopt_pages_find_domain_area(struct iopt_pages *pages,
+ 						     unsigned long index)
+ {
+@@ -171,7 +183,7 @@ static struct iopt_area *iopt_pages_find_domain_area(struct iopt_pages *pages,
+  */
+ struct pfn_batch {
+ 	unsigned long *pfns;
+-	u16 *npfns;
++	u32 *npfns;
+ 	unsigned int array_size;
+ 	unsigned int end;
+ 	unsigned int total_pfns;
+@@ -221,7 +233,7 @@ static int __batch_init(struct pfn_batch *batch, size_t max_pages, void *backup,
+ 	if (!batch->pfns)
+ 		return -ENOMEM;
+ 	batch->array_size = size / elmsz;
+-	batch->npfns = (u16 *)(batch->pfns + batch->array_size);
++	batch->npfns = (u32 *)(batch->pfns + batch->array_size);
+ 	batch_clear(batch);
+ 	return 0;
+ }
+@@ -246,10 +258,11 @@ static void batch_destroy(struct pfn_batch *batch, void *backup)
+ /* true if the pfn could be added, false otherwise */
+ static bool batch_add_pfn(struct pfn_batch *batch, unsigned long pfn)
+ {
+-	/* FIXME: U16 is too small */
++	const unsigned int MAX_NPFNS = type_max(typeof(*batch->npfns));
++
+ 	if (batch->end &&
+ 	    pfn == batch->pfns[batch->end - 1] + batch->npfns[batch->end - 1] &&
+-	    batch->npfns[batch->end - 1] != U16_MAX) {
++	    batch->npfns[batch->end - 1] != MAX_NPFNS) {
+ 		batch->npfns[batch->end - 1]++;
+ 		batch->total_pfns++;
+ 		return true;
+@@ -997,3 +1010,805 @@ static int pfn_reader_first(struct pfn_reader *pfns, struct iopt_pages *pages,
+ 	}
+ 	return 0;
+ }
++
++struct iopt_pages *iopt_alloc_pages(void __user *uptr, unsigned long length,
++				    bool writable)
++{
++	struct iopt_pages *pages;
++
++	/*
++	 * The iommu API uses size_t as the length, and protect the DIV_ROUND_UP
++	 * below from overflow
++	 */
++	if (length > SIZE_MAX - PAGE_SIZE || length == 0)
++		return ERR_PTR(-EINVAL);
++
++	pages = kzalloc(sizeof(*pages), GFP_KERNEL_ACCOUNT);
++	if (!pages)
++		return ERR_PTR(-ENOMEM);
++
++	kref_init(&pages->kref);
++	xa_init_flags(&pages->pinned_pfns, XA_FLAGS_ACCOUNT);
++	mutex_init(&pages->mutex);
++	pages->source_mm = current->mm;
++	mmgrab(pages->source_mm);
++	pages->uptr = (void __user *)ALIGN_DOWN((uintptr_t)uptr, PAGE_SIZE);
++	pages->npages = DIV_ROUND_UP(length + (uptr - pages->uptr), PAGE_SIZE);
++	pages->access_itree = RB_ROOT_CACHED;
++	pages->domains_itree = RB_ROOT_CACHED;
++	pages->writable = writable;
++	if (capable(CAP_IPC_LOCK))
++		pages->account_mode = IOPT_PAGES_ACCOUNT_NONE;
++	else
++		pages->account_mode = IOPT_PAGES_ACCOUNT_USER;
++	pages->source_task = current->group_leader;
++	get_task_struct(current->group_leader);
++	pages->source_user = get_uid(current_user());
++	return pages;
++}
++
++void iopt_release_pages(struct kref *kref)
++{
++	struct iopt_pages *pages = container_of(kref, struct iopt_pages, kref);
++
++	WARN_ON(!RB_EMPTY_ROOT(&pages->access_itree.rb_root));
++	WARN_ON(!RB_EMPTY_ROOT(&pages->domains_itree.rb_root));
++	WARN_ON(pages->npinned);
++	WARN_ON(!xa_empty(&pages->pinned_pfns));
++	mmdrop(pages->source_mm);
++	mutex_destroy(&pages->mutex);
++	put_task_struct(pages->source_task);
++	free_uid(pages->source_user);
++	kfree(pages);
++}
++
++static void
++iopt_area_unpin_domain(struct pfn_batch *batch, struct iopt_area *area,
++		       struct iopt_pages *pages, struct iommu_domain *domain,
++		       unsigned long start_index, unsigned long last_index,
++		       unsigned long *unmapped_end_index,
++		       unsigned long real_last_index)
++{
++	while (start_index <= last_index) {
++		unsigned long batch_last_index;
++
++		if (*unmapped_end_index <= last_index) {
++			unsigned long start =
++				max(start_index, *unmapped_end_index);
++
++			batch_from_domain(batch, domain, area, start,
++					  last_index);
++			batch_last_index = start + batch->total_pfns - 1;
++		} else {
++			batch_last_index = last_index;
++		}
++
++		/*
++		 * unmaps must always 'cut' at a place where the pfns are not
++		 * contiguous to pair with the maps that always install
++		 * contiguous pages. Thus, if we have to stop unpinning in the
++		 * middle of the domains we need to keep reading pfns until we
++		 * find a cut point to do the unmap. The pfns we read are
++		 * carried over and either skipped or integrated into the next
++		 * batch.
++		 */
++		if (batch_last_index == last_index &&
++		    last_index != real_last_index)
++			batch_from_domain_continue(batch, domain, area,
++						   last_index + 1,
++						   real_last_index);
++
++		if (*unmapped_end_index <= batch_last_index) {
++			iopt_area_unmap_domain_range(
++				area, domain, *unmapped_end_index,
++				start_index + batch->total_pfns - 1);
++			*unmapped_end_index = start_index + batch->total_pfns;
++		}
++
++		/* unpin must follow unmap */
++		batch_unpin(batch, pages, 0,
++			    batch_last_index - start_index + 1);
++		start_index = batch_last_index + 1;
++
++		batch_clear_carry(batch,
++				  *unmapped_end_index - batch_last_index - 1);
++	}
++}
++
++static void __iopt_area_unfill_domain(struct iopt_area *area,
++				      struct iopt_pages *pages,
++				      struct iommu_domain *domain,
++				      unsigned long last_index)
++{
++	struct interval_tree_double_span_iter span;
++	unsigned long start_index = iopt_area_index(area);
++	unsigned long unmapped_end_index = start_index;
++	u64 backup[BATCH_BACKUP_SIZE];
++	struct pfn_batch batch;
++
++	lockdep_assert_held(&pages->mutex);
++
++	batch_init_backup(&batch, last_index + 1, backup, sizeof(backup));
++	interval_tree_for_each_double_span(&span, &pages->domains_itree,
++					   &pages->access_itree, start_index,
++					   last_index) {
++		if (span.is_used) {
++			batch_skip_carry(&batch,
++					 span.last_used - span.start_used + 1);
++			continue;
++		}
++		iopt_area_unpin_domain(&batch, area, pages, domain,
++				       span.start_hole, span.last_hole,
++				       &unmapped_end_index, last_index);
++	}
++	if (unmapped_end_index != last_index + 1)
++		iopt_area_unmap_domain_range(area, domain, unmapped_end_index,
++					     last_index);
++	WARN_ON(batch.total_pfns);
++	batch_destroy(&batch, backup);
++	update_unpinned(pages);
++}
++
++static void iopt_area_unfill_partial_domain(struct iopt_area *area,
++					    struct iopt_pages *pages,
++					    struct iommu_domain *domain,
++					    unsigned long end_index)
++{
++	if (end_index != iopt_area_index(area))
++		__iopt_area_unfill_domain(area, pages, domain, end_index - 1);
 +}
 +
 +/**
-+ * iommufd_ref_to_users() - Switch from destroy_rwsem to users refcount
-+ *        protection
-+ * @obj - Object to release
++ * iopt_area_unmap_domain() - Unmap without unpinning PFNs in a domain
++ * @area: The IOVA range to unmap
++ * @domain: The domain to unmap
 + *
-+ * Objects have two refcount protections (destroy_rwsem and the refcount_t
-+ * users). Holding either of these will prevent the object from being destroyed.
-+ *
-+ * Depending on the use case, one protection or the other is appropriate.  In
-+ * most cases references are being protected by the destroy_rwsem. This allows
-+ * orderly destruction of the object because iommufd_object_destroy_user() will
-+ * wait for it to become unlocked. However, as a rwsem, it cannot be held across
-+ * a system call return. So cases that have longer term needs must switch
-+ * to the weaker users refcount_t.
-+ *
-+ * With users protection iommufd_object_destroy_user() will return -EBUSY to
-+ * userspace and refuse to destroy the object.
++ * The caller must know that unpinning is not required, usually because there
++ * are other domains in the iopt.
 + */
-+static inline void iommufd_ref_to_users(struct iommufd_object *obj)
++void iopt_area_unmap_domain(struct iopt_area *area, struct iommu_domain *domain)
 +{
-+	up_read(&obj->destroy_rwsem);
-+	/* iommufd_lock_obj() obtains users as well */
++	iommu_unmap_nofail(domain, iopt_area_iova(area),
++			   iopt_area_length(area));
 +}
-+void iommufd_object_abort(struct iommufd_ctx *ictx, struct iommufd_object *obj);
-+void iommufd_object_abort_and_destroy(struct iommufd_ctx *ictx,
-+				      struct iommufd_object *obj);
-+void iommufd_object_finalize(struct iommufd_ctx *ictx,
-+			     struct iommufd_object *obj);
-+bool iommufd_object_destroy_user(struct iommufd_ctx *ictx,
-+				 struct iommufd_object *obj);
-+struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
-+					     size_t size,
-+					     enum iommufd_object_type type);
 +
-+#define iommufd_object_alloc(ictx, ptr, type)                                  \
-+	container_of(_iommufd_object_alloc(                                    \
-+			     ictx,                                             \
-+			     sizeof(*(ptr)) + BUILD_BUG_ON_ZERO(               \
-+						      offsetof(typeof(*(ptr)), \
-+							       obj) != 0),     \
-+			     type),                                            \
-+		     typeof(*(ptr)), obj)
-+
-+#endif
-diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-new file mode 100644
-index 00000000000000..3a705cadb85020
---- /dev/null
-+++ b/drivers/iommu/iommufd/main.c
-@@ -0,0 +1,342 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (C) 2021 Intel Corporation
-+ * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
++/**
++ * iopt_area_unfill_domain() - Unmap and unpin PFNs in a domain
++ * @area: IOVA area to use
++ * @pages: page supplier for the area (area->pages is NULL)
++ * @domain: Domain to unmap from
 + *
-+ * iommufd provides control over the IOMMU HW objects created by IOMMU kernel
-+ * drivers. IOMMU HW objects revolve around IO page tables that map incoming DMA
-+ * addresses (IOVA) to CPU addresses.
++ * The domain should be removed from the domains_itree before calling. The
++ * domain will always be unmapped, but the PFNs may not be unpinned if there are
++ * still accesses.
 + */
-+#define pr_fmt(fmt) "iommufd: " fmt
-+
-+#include <linux/file.h>
-+#include <linux/fs.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/miscdevice.h>
-+#include <linux/mutex.h>
-+#include <linux/bug.h>
-+#include <uapi/linux/iommufd.h>
-+#include <linux/iommufd.h>
-+
-+#include "iommufd_private.h"
-+
-+struct iommufd_object_ops {
-+	void (*destroy)(struct iommufd_object *obj);
-+};
-+static const struct iommufd_object_ops iommufd_object_ops[];
-+
-+struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
-+					     size_t size,
-+					     enum iommufd_object_type type)
++void iopt_area_unfill_domain(struct iopt_area *area, struct iopt_pages *pages,
++			     struct iommu_domain *domain)
 +{
-+	struct iommufd_object *obj;
++	__iopt_area_unfill_domain(area, pages, domain,
++				  iopt_area_last_index(area));
++}
++
++/**
++ * iopt_area_fill_domain() - Map PFNs from the area into a domain
++ * @area: IOVA area to use
++ * @domain: Domain to load PFNs into
++ *
++ * Read the pfns from the area's underlying iopt_pages and map them into the
++ * given domain. Called when attaching a new domain to an io_pagetable.
++ */
++int iopt_area_fill_domain(struct iopt_area *area, struct iommu_domain *domain)
++{
++	unsigned long done_end_index;
++	struct pfn_reader pfns;
 +	int rc;
 +
-+	obj = kzalloc(size, GFP_KERNEL_ACCOUNT);
-+	if (!obj)
-+		return ERR_PTR(-ENOMEM);
-+	obj->type = type;
-+	init_rwsem(&obj->destroy_rwsem);
-+	refcount_set(&obj->users, 1);
++	lockdep_assert_held(&area->pages->mutex);
 +
-+	/*
-+	 * Reserve an ID in the xarray but do not publish the pointer yet since
-+	 * the caller hasn't initialized it yet. Once the pointer is published
-+	 * in the xarray and visible to other threads we can't reliably destroy
-+	 * it anymore, so the caller must complete all errorable operations
-+	 * before calling iommufd_object_finalize().
-+	 */
-+	rc = xa_alloc(&ictx->objects, &obj->id, XA_ZERO_ENTRY,
-+		      xa_limit_32b, GFP_KERNEL_ACCOUNT);
++	rc = pfn_reader_first(&pfns, area->pages, iopt_area_index(area),
++			      iopt_area_last_index(area));
 +	if (rc)
-+		goto out_free;
-+	return obj;
-+out_free:
-+	kfree(obj);
-+	return ERR_PTR(rc);
-+}
++		return rc;
 +
-+/*
-+ * Allow concurrent access to the object.
-+ *
-+ * Once another thread can see the object pointer it can prevent object
-+ * destruction. Expect for special kernel-only objects there is no in-kernel way
-+ * to reliably destroy a single object. Thus all APIs that are creating objects
-+ * must use iommufd_object_abort() to handle their errors and only call
-+ * iommufd_object_finalize() once object creation cannot fail.
-+ */
-+void iommufd_object_finalize(struct iommufd_ctx *ictx,
-+			     struct iommufd_object *obj)
-+{
-+	void *old;
++	while (!pfn_reader_done(&pfns)) {
++		done_end_index = pfns.batch_start_index;
++		rc = batch_to_domain(&pfns.batch, domain, area,
++				     pfns.batch_start_index);
++		if (rc)
++			goto out_unmap;
++		done_end_index = pfns.batch_end_index;
 +
-+	old = xa_store(&ictx->objects, obj->id, obj, GFP_KERNEL);
-+	/* obj->id was returned from xa_alloc() so the xa_store() cannot fail */
-+	WARN_ON(old);
-+}
-+
-+/* Undo _iommufd_object_alloc() if iommufd_object_finalize() was not called */
-+void iommufd_object_abort(struct iommufd_ctx *ictx, struct iommufd_object *obj)
-+{
-+	void *old;
-+
-+	old = xa_erase(&ictx->objects, obj->id);
-+	WARN_ON(old);
-+	kfree(obj);
-+}
-+
-+/*
-+ * Abort an object that has been fully initialized and needs destroy, but has
-+ * not been finalized.
-+ */
-+void iommufd_object_abort_and_destroy(struct iommufd_ctx *ictx,
-+				      struct iommufd_object *obj)
-+{
-+	iommufd_object_ops[obj->type].destroy(obj);
-+	iommufd_object_abort(ictx, obj);
-+}
-+
-+struct iommufd_object *iommufd_get_object(struct iommufd_ctx *ictx, u32 id,
-+					  enum iommufd_object_type type)
-+{
-+	struct iommufd_object *obj;
-+
-+	xa_lock(&ictx->objects);
-+	obj = xa_load(&ictx->objects, id);
-+	if (!obj || (type != IOMMUFD_OBJ_ANY && obj->type != type) ||
-+	    !iommufd_lock_obj(obj))
-+		obj = ERR_PTR(-ENOENT);
-+	xa_unlock(&ictx->objects);
-+	return obj;
-+}
-+
-+/*
-+ * The caller holds a users refcount and wants to destroy the object. Returns
-+ * true if the object was destroyed. In all cases the caller no longer has a
-+ * reference on obj.
-+ */
-+bool iommufd_object_destroy_user(struct iommufd_ctx *ictx,
-+				 struct iommufd_object *obj)
-+{
-+	/*
-+	 * The purpose of the destroy_rwsem is to ensure deterministic
-+	 * destruction of objects used by external drivers and destroyed by this
-+	 * function. Any temporary increment of the refcount must hold the read
-+	 * side of this, such as during ioctl execution.
-+	 */
-+	down_write(&obj->destroy_rwsem);
-+	xa_lock(&ictx->objects);
-+	refcount_dec(&obj->users);
-+	if (!refcount_dec_if_one(&obj->users)) {
-+		xa_unlock(&ictx->objects);
-+		up_write(&obj->destroy_rwsem);
-+		return false;
++		rc = pfn_reader_next(&pfns);
++		if (rc)
++			goto out_unmap;
 +	}
-+	__xa_erase(&ictx->objects, obj->id);
-+	xa_unlock(&ictx->objects);
-+	up_write(&obj->destroy_rwsem);
 +
-+	iommufd_object_ops[obj->type].destroy(obj);
-+	kfree(obj);
-+	return true;
++	rc = pfn_reader_update_pinned(&pfns);
++	if (rc)
++		goto out_unmap;
++	goto out_destroy;
++
++out_unmap:
++	pfn_reader_release_pins(&pfns);
++	iopt_area_unfill_partial_domain(area, area->pages, domain,
++					done_end_index);
++out_destroy:
++	pfn_reader_destroy(&pfns);
++	return rc;
 +}
 +
-+static int iommufd_destroy(struct iommufd_ucmd *ucmd)
++/**
++ * iopt_area_fill_domains() - Install PFNs into the area's domains
++ * @area: The area to act on
++ * @pages: The pages associated with the area (area->pages is NULL)
++ *
++ * Called during area creation. The area is freshly created and not inserted in
++ * the domains_itree yet. PFNs are read and loaded into every domain held in the
++ * area's io_pagetable and the area is installed in the domains_itree.
++ *
++ * On failure all domains are left unchanged.
++ */
++int iopt_area_fill_domains(struct iopt_area *area, struct iopt_pages *pages)
 +{
-+	struct iommu_destroy *cmd = ucmd->cmd;
-+	struct iommufd_object *obj;
++	unsigned long done_first_end_index;
++	unsigned long done_all_end_index;
++	struct iommu_domain *domain;
++	unsigned long unmap_index;
++	struct pfn_reader pfns;
++	unsigned long index;
++	int rc;
 +
-+	obj = iommufd_get_object(ucmd->ictx, cmd->id, IOMMUFD_OBJ_ANY);
-+	if (IS_ERR(obj))
-+		return PTR_ERR(obj);
-+	iommufd_ref_to_users(obj);
-+	/* See iommufd_ref_to_users() */
-+	if (!iommufd_object_destroy_user(ucmd->ictx, obj))
-+		return -EBUSY;
++	lockdep_assert_held(&area->iopt->domains_rwsem);
++
++	if (xa_empty(&area->iopt->domains))
++		return 0;
++
++	mutex_lock(&pages->mutex);
++	rc = pfn_reader_first(&pfns, pages, iopt_area_index(area),
++			      iopt_area_last_index(area));
++	if (rc)
++		goto out_unlock;
++
++	while (!pfn_reader_done(&pfns)) {
++		done_first_end_index = pfns.batch_end_index;
++		done_all_end_index = pfns.batch_start_index;
++		xa_for_each(&area->iopt->domains, index, domain) {
++			rc = batch_to_domain(&pfns.batch, domain, area,
++					     pfns.batch_start_index);
++			if (rc)
++				goto out_unmap;
++		}
++		done_all_end_index = done_first_end_index;
++
++		rc = pfn_reader_next(&pfns);
++		if (rc)
++			goto out_unmap;
++	}
++	rc = pfn_reader_update_pinned(&pfns);
++	if (rc)
++		goto out_unmap;
++
++	area->storage_domain = xa_load(&area->iopt->domains, 0);
++	interval_tree_insert(&area->pages_node, &pages->domains_itree);
++	goto out_destroy;
++
++out_unmap:
++	pfn_reader_release_pins(&pfns);
++	xa_for_each(&area->iopt->domains, unmap_index, domain) {
++		unsigned long end_index;
++
++		if (unmap_index < index)
++			end_index = done_first_end_index;
++		else
++			end_index = done_all_end_index;
++
++		/*
++		 * The area is not yet part of the domains_itree so we have to
++		 * manage the unpinning specially. The last domain does the
++		 * unpin, every other domain is just unmapped.
++		 */
++		if (unmap_index != area->iopt->next_domain_id - 1) {
++			if (end_index != iopt_area_index(area))
++				iopt_area_unmap_domain_range(
++					area, domain, iopt_area_index(area),
++					end_index - 1);
++		} else {
++			iopt_area_unfill_partial_domain(area, pages, domain,
++							end_index);
++		}
++	}
++out_destroy:
++	pfn_reader_destroy(&pfns);
++out_unlock:
++	mutex_unlock(&pages->mutex);
++	return rc;
++}
++
++/**
++ * iopt_area_unfill_domains() - unmap PFNs from the area's domains
++ * @area: The area to act on
++ * @pages: The pages associated with the area (area->pages is NULL)
++ *
++ * Called during area destruction. This unmaps the iova's covered by all the
++ * area's domains and releases the PFNs.
++ */
++void iopt_area_unfill_domains(struct iopt_area *area, struct iopt_pages *pages)
++{
++	struct io_pagetable *iopt = area->iopt;
++	struct iommu_domain *domain;
++	unsigned long index;
++
++	lockdep_assert_held(&iopt->domains_rwsem);
++
++	mutex_lock(&pages->mutex);
++	if (!area->storage_domain)
++		goto out_unlock;
++
++	xa_for_each(&iopt->domains, index, domain)
++		if (domain != area->storage_domain)
++			iopt_area_unmap_domain_range(
++				area, domain, iopt_area_index(area),
++				iopt_area_last_index(area));
++
++	interval_tree_remove(&area->pages_node, &pages->domains_itree);
++	iopt_area_unfill_domain(area, pages, area->storage_domain);
++	area->storage_domain = NULL;
++out_unlock:
++	mutex_unlock(&pages->mutex);
++}
++
++static void iopt_pages_unpin_xarray(struct pfn_batch *batch,
++				    struct iopt_pages *pages,
++				    unsigned long start_index,
++				    unsigned long end_index)
++{
++	while (start_index <= end_index) {
++		batch_from_xarray_clear(batch, &pages->pinned_pfns, start_index,
++					end_index);
++		batch_unpin(batch, pages, 0, batch->total_pfns);
++		start_index += batch->total_pfns;
++		batch_clear(batch);
++	}
++}
++
++/**
++ * iopt_pages_unfill_xarray() - Update the xarry after removing an access
++ * @pages: The pages to act on
++ * @start_index: Starting PFN index
++ * @last_index: Last PFN index
++ *
++ * Called when an iopt_pages_access is removed, removes pages from the itree.
++ * The access should already be removed from the access_itree.
++ */
++void iopt_pages_unfill_xarray(struct iopt_pages *pages,
++			      unsigned long start_index,
++			      unsigned long last_index)
++{
++	struct interval_tree_double_span_iter span;
++	u64 backup[BATCH_BACKUP_SIZE];
++	struct pfn_batch batch;
++	bool batch_inited = false;
++
++	lockdep_assert_held(&pages->mutex);
++
++	interval_tree_for_each_double_span(&span, &pages->access_itree,
++					   &pages->domains_itree, start_index,
++					   last_index) {
++		if (!span.is_used) {
++			if (!batch_inited) {
++				batch_init_backup(&batch,
++						  last_index - start_index + 1,
++						  backup, sizeof(backup));
++				batch_inited = true;
++			}
++			iopt_pages_unpin_xarray(&batch, pages, span.start_hole,
++						span.last_hole);
++		} else if (span.is_used == 2) {
++			/* Covered by a domain */
++			clear_xarray(&pages->pinned_pfns, span.start_used,
++				     span.last_used);
++		}
++		/* Otherwise covered by an existing access */
++	}
++	if (batch_inited)
++		batch_destroy(&batch, backup);
++	update_unpinned(pages);
++}
++
++/**
++ * iopt_pages_fill_from_xarray() - Fast path for reading PFNs
++ * @pages: The pages to act on
++ * @start_index: The first page index in the range
++ * @last_index: The last page index in the range
++ * @out_pages: The output array to return the pages
++ *
++ * This can be called if the caller is holding a refcount on an
++ * iopt_pages_access that is known to have already been filled. It quickly reads
++ * the pages directly from the xarray.
++ *
++ * This is part of the SW iommu interface to read pages for in-kernel use.
++ */
++void iopt_pages_fill_from_xarray(struct iopt_pages *pages,
++				 unsigned long start_index,
++				 unsigned long last_index,
++				 struct page **out_pages)
++{
++	XA_STATE(xas, &pages->pinned_pfns, start_index);
++	void *entry;
++
++	rcu_read_lock();
++	while (start_index <= last_index) {
++		entry = xas_next(&xas);
++		if (xas_retry(&xas, entry))
++			continue;
++		WARN_ON(!xa_is_value(entry));
++		*(out_pages++) = pfn_to_page(xa_to_value(entry));
++		start_index++;
++	}
++	rcu_read_unlock();
++}
++
++static int iopt_pages_fill_from_domain(struct iopt_pages *pages,
++				       unsigned long start_index,
++				       unsigned long last_index,
++				       struct page **out_pages)
++{
++	while (start_index != last_index + 1) {
++		unsigned long domain_last;
++		struct iopt_area *area;
++
++		area = iopt_pages_find_domain_area(pages, start_index);
++		if (WARN_ON(!area))
++			return -EINVAL;
++
++		domain_last = min(iopt_area_last_index(area), last_index);
++		out_pages = raw_pages_from_domain(area->storage_domain, area,
++						  start_index, domain_last,
++						  out_pages);
++		start_index = domain_last + 1;
++	}
 +	return 0;
 +}
 +
-+static int iommufd_fops_open(struct inode *inode, struct file *filp)
++static int iopt_pages_fill_from_mm(struct iopt_pages *pages,
++				   struct pfn_reader_user *user,
++				   unsigned long start_index,
++				   unsigned long last_index,
++				   struct page **out_pages)
 +{
-+	struct iommufd_ctx *ictx;
++	unsigned long cur_index = start_index;
++	int rc;
 +
-+	ictx = kzalloc(sizeof(*ictx), GFP_KERNEL_ACCOUNT);
-+	if (!ictx)
++	while (cur_index != last_index + 1) {
++		user->upages = out_pages + (cur_index - start_index);
++		rc = pfn_reader_user_pin(user, pages, cur_index, last_index);
++		if (rc)
++			goto out_unpin;
++		cur_index = user->upages_end;
++	}
++	return 0;
++
++out_unpin:
++	if (start_index != cur_index)
++		iopt_pages_err_unpin(pages, start_index, cur_index - 1,
++				     out_pages);
++	return rc;
++}
++
++/**
++ * iopt_pages_fill_xarray() - Read PFNs
++ * @pages: The pages to act on
++ * @start_index: The first page index in the range
++ * @last_index: The last page index in the range
++ * @out_pages: The output array to return the pages, may be NULL
++ *
++ * This populates the xarray and returns the pages in out_pages. As the slow
++ * path this is able to copy pages from other storage tiers into the xarray.
++ *
++ * On failure the xarray is left unchanged.
++ *
++ * This is part of the SW iommu interface to read pages for in-kernel use.
++ */
++int iopt_pages_fill_xarray(struct iopt_pages *pages, unsigned long start_index,
++			   unsigned long last_index, struct page **out_pages)
++{
++	struct interval_tree_double_span_iter span;
++	unsigned long xa_end = start_index;
++	struct pfn_reader_user user;
++	int rc;
++
++	lockdep_assert_held(&pages->mutex);
++
++	pfn_reader_user_init(&user, pages);
++	user.upages_len = (last_index - start_index + 1) * sizeof(*out_pages);
++	interval_tree_for_each_double_span(&span, &pages->access_itree,
++					   &pages->domains_itree, start_index,
++					   last_index) {
++		struct page **cur_pages;
++
++		if (span.is_used == 1) {
++			cur_pages = out_pages + (span.start_used - start_index);
++			iopt_pages_fill_from_xarray(pages, span.start_used,
++						    span.last_used, cur_pages);
++			continue;
++		}
++
++		if (span.is_used == 2) {
++			cur_pages = out_pages + (span.start_used - start_index);
++			iopt_pages_fill_from_domain(pages, span.start_used,
++						    span.last_used, cur_pages);
++			rc = pages_to_xarray(&pages->pinned_pfns,
++					     span.start_used, span.last_used,
++					     cur_pages);
++			if (rc)
++				goto out_clean_xa;
++			xa_end = span.last_used + 1;
++			continue;
++		}
++
++		/* hole */
++		cur_pages = out_pages + (span.start_hole - start_index);
++		rc = iopt_pages_fill_from_mm(pages, &user, span.start_hole,
++					     span.last_hole, cur_pages);
++		if (rc)
++			goto out_clean_xa;
++		rc = pages_to_xarray(&pages->pinned_pfns, span.start_hole,
++				     span.last_hole, cur_pages);
++		if (rc) {
++			iopt_pages_err_unpin(pages, span.start_hole,
++					     span.last_hole, cur_pages);
++			goto out_clean_xa;
++		}
++		xa_end = span.last_hole + 1;
++	}
++	rc = pfn_reader_user_update_pinned(&user, pages);
++	if (rc)
++		goto out_clean_xa;
++	user.upages = NULL;
++	pfn_reader_user_destroy(&user, pages);
++	return 0;
++
++out_clean_xa:
++	if (start_index != xa_end)
++		iopt_pages_unfill_xarray(pages, start_index, xa_end - 1);
++	user.upages = NULL;
++	pfn_reader_user_destroy(&user, pages);
++	return rc;
++}
++
++/*
++ * This can do everything and is fully coherent with what a iommu_domain would
++ * see.
++ */
++static int iopt_pages_rw_slow(struct iopt_pages *pages,
++			      unsigned long start_index,
++			      unsigned long last_index, unsigned long offset,
++			      void *data, unsigned long length,
++			      unsigned int flags)
++{
++	struct pfn_reader pfns;
++	int rc;
++
++	mutex_lock(&pages->mutex);
++
++	rc = pfn_reader_first(&pfns, pages, start_index, last_index);
++	if (rc)
++		goto out_unlock;
++
++	while (!pfn_reader_done(&pfns)) {
++		unsigned long done;
++
++		done = batch_rw(&pfns.batch, data, offset, length, flags);
++		data += done;
++		length -= done;
++		offset = 0;
++		pfn_reader_unpin(&pfns);
++
++		rc = pfn_reader_next(&pfns);
++		if (rc)
++			goto out_destroy;
++	}
++	if (WARN_ON(length != 0))
++		rc = -EINVAL;
++out_destroy:
++	pfn_reader_destroy(&pfns);
++out_unlock:
++	mutex_unlock(&pages->mutex);
++	return rc;
++}
++
++/*
++ * A medium speed path that still allows DMA decoherence, but doesn't do any
++ * memory allocations or interval tree searches.
++ */
++static int iopt_pages_rw_page(struct iopt_pages *pages, unsigned long index,
++			      unsigned long offset, void *data,
++			      unsigned long length, unsigned int flags)
++{
++	struct page *page = NULL;
++	int rc;
++
++	if (!mmget_not_zero(pages->source_mm))
++		return iopt_pages_rw_slow(pages, index, index, offset, data,
++					  length, flags);
++
++	mmap_read_lock(pages->source_mm);
++	rc = pin_user_pages_remote(
++		pages->source_mm, (uintptr_t)(pages->uptr + index * PAGE_SIZE),
++		1, (flags & IOMMUFD_ACCESS_RW_WRITE) ? FOLL_WRITE : 0, &page,
++		NULL, NULL);
++	mmap_read_unlock(pages->source_mm);
++	if (rc != 1) {
++		if (WARN_ON(rc >= 0))
++			rc = -EINVAL;
++		goto out_mmput;
++	}
++	copy_data_page(page, data, offset, length, flags);
++	unpin_user_page(page);
++	rc = 0;
++
++out_mmput:
++	mmput(pages->source_mm);
++	return rc;
++}
++
++/**
++ * iopt_pages_rw_access - Copy to/from a linear slice of the pages
++ * @pages: pages to act on
++ * @start_byte: First byte of pages to copy to/from
++ * @data: Kernel buffer to get/put the data
++ * @length: Number of bytes to copy
++ * @flags: IOMMUFD_ACCESS_RW_* flags
++ *
++ * This will find each page in the range, kmap it and then memcpy to/from
++ * the given kernel buffer.
++ */
++int iopt_pages_rw_access(struct iopt_pages *pages, unsigned long start_byte,
++			 void *data, unsigned long length, unsigned int flags)
++{
++	unsigned long start_index = start_byte / PAGE_SIZE;
++	unsigned long last_index = (start_byte + length - 1) / PAGE_SIZE;
++	bool change_mm = current->mm != pages->source_mm;
++	int rc = 0;
++
++	if ((flags & IOMMUFD_ACCESS_RW_WRITE) && !pages->writable)
++		return -EPERM;
++
++	if (!(flags & IOMMUFD_ACCESS_RW_KTHREAD) && change_mm) {
++		if (start_index == last_index)
++			return iopt_pages_rw_page(pages, start_index,
++						  start_byte % PAGE_SIZE, data,
++						  length, flags);
++		return iopt_pages_rw_slow(pages, start_index, last_index,
++					  start_byte % PAGE_SIZE, data, length,
++					  flags);
++	}
++
++	/*
++	 * Try to copy using copy_to_user(). We do this as a fast path and
++	 * ignore any pinning decoherence, unlike a real DMA path.
++	 */
++	if (change_mm) {
++		if (!mmget_not_zero(pages->source_mm))
++			return iopt_pages_rw_slow(pages, start_index,
++						  last_index,
++						  start_byte % PAGE_SIZE, data,
++						  length, flags);
++		kthread_use_mm(pages->source_mm);
++	}
++
++	if (flags & IOMMUFD_ACCESS_RW_WRITE) {
++		if (copy_to_user(pages->uptr + start_byte, data, length))
++			rc = -EFAULT;
++	} else {
++		if (copy_from_user(data, pages->uptr + start_byte, length))
++			rc = -EFAULT;
++	}
++
++	if (change_mm) {
++		kthread_unuse_mm(pages->source_mm);
++		mmput(pages->source_mm);
++	}
++
++	return rc;
++}
++
++static struct iopt_pages_access *
++iopt_pages_get_exact_access(struct iopt_pages *pages, unsigned long index,
++			    unsigned long last)
++{
++	struct interval_tree_node *node;
++
++	lockdep_assert_held(&pages->mutex);
++
++	/* There can be overlapping ranges in this interval tree */
++	for (node = interval_tree_iter_first(&pages->access_itree, index, last);
++	     node; node = interval_tree_iter_next(node, index, last))
++		if (node->start == index && node->last == last)
++			return container_of(node, struct iopt_pages_access,
++					    node);
++	return NULL;
++}
++
++/**
++ * iopt_pages_add_access() - Record an in-knerel access for PFNs
++ * @pages: The source of PFNs
++ * @start_index: First page index
++ * @last_index: Inclusive last page index
++ * @out_pages: Output list of struct page's representing the PFNs
++ * @flags: IOMMUFD_ACCESS_RW_* flags
++ *
++ * Record that an in-kernel access will be accessing the pages, ensure they are
++ * pinned, and return the PFNs as a simple list of 'struct page *'.
++ *
++ * This should be undone through a matching call to iopt_pages_remove_access()
++ */
++int iopt_pages_add_access(struct iopt_pages *pages, unsigned long start_index,
++			  unsigned long last_index, struct page **out_pages,
++			  unsigned int flags)
++{
++	struct iopt_pages_access *access;
++	int rc;
++
++	if ((flags & IOMMUFD_ACCESS_RW_WRITE) && !pages->writable)
++		return -EPERM;
++
++	access = iopt_pages_get_exact_access(pages, start_index, last_index);
++	if (access) {
++		refcount_inc(&access->refcount);
++		iopt_pages_fill_from_xarray(pages, start_index, last_index,
++					    out_pages);
++		return 0;
++	}
++
++	access = kzalloc(sizeof(*access), GFP_KERNEL_ACCOUNT);
++	if (!access)
 +		return -ENOMEM;
 +
-+	xa_init_flags(&ictx->objects, XA_FLAGS_ALLOC1 | XA_FLAGS_ACCOUNT);
-+	ictx->file = filp;
-+	filp->private_data = ictx;
++	rc = iopt_pages_fill_xarray(pages, start_index, last_index, out_pages);
++	if (rc)
++		goto out_free;
++
++	access->node.start = start_index;
++	access->node.last = last_index;
++	refcount_set(&access->refcount, 1);
++	interval_tree_insert(&access->node, &pages->access_itree);
 +	return 0;
++
++out_free:
++	kfree(access);
++	return rc;
 +}
-+
-+static int iommufd_fops_release(struct inode *inode, struct file *filp)
-+{
-+	struct iommufd_ctx *ictx = filp->private_data;
-+	struct iommufd_object *obj;
-+
-+	/* Destroy the graph from depth first */
-+	while (!xa_empty(&ictx->objects)) {
-+		unsigned int destroyed = 0;
-+		unsigned long index;
-+
-+		xa_for_each(&ictx->objects, index, obj) {
-+			/*
-+			 * Since we are in release elevated users must come from
-+			 * other objects holding the users. We will eventually
-+			 * destroy the object that holds this one and the next
-+			 * pass will progress it.
-+			 */
-+			if (!refcount_dec_if_one(&obj->users))
-+				continue;
-+			destroyed++;
-+			xa_erase(&ictx->objects, index);
-+			iommufd_object_ops[obj->type].destroy(obj);
-+			kfree(obj);
-+		}
-+		/* Bug related to users refcount */
-+		if (WARN_ON(!destroyed))
-+			break;
-+	}
-+	kfree(ictx);
-+	return 0;
-+}
-+
-+union ucmd_buffer {
-+	struct iommu_destroy destroy;
-+};
-+
-+struct iommufd_ioctl_op {
-+	unsigned int size;
-+	unsigned int min_size;
-+	unsigned int ioctl_num;
-+	int (*execute)(struct iommufd_ucmd *ucmd);
-+};
-+
-+#define IOCTL_OP(_ioctl, _fn, _struct, _last)                                  \
-+	[_IOC_NR(_ioctl) - IOMMUFD_CMD_BASE] = {                               \
-+		.size = sizeof(_struct) +                                      \
-+			BUILD_BUG_ON_ZERO(sizeof(union ucmd_buffer) <          \
-+					  sizeof(_struct)),                    \
-+		.min_size = offsetofend(_struct, _last),                       \
-+		.ioctl_num = _ioctl,                                           \
-+		.execute = _fn,                                                \
-+	}
-+static const struct iommufd_ioctl_op iommufd_ioctl_ops[] = {
-+	IOCTL_OP(IOMMU_DESTROY, iommufd_destroy, struct iommu_destroy, id),
-+};
-+
-+static long iommufd_fops_ioctl(struct file *filp, unsigned int cmd,
-+			       unsigned long arg)
-+{
-+	const struct iommufd_ioctl_op *op;
-+	struct iommufd_ucmd ucmd = {};
-+	union ucmd_buffer buf;
-+	unsigned int nr;
-+	int ret;
-+
-+	ucmd.ictx = filp->private_data;
-+	ucmd.ubuffer = (void __user *)arg;
-+	ret = get_user(ucmd.user_size, (u32 __user *)ucmd.ubuffer);
-+	if (ret)
-+		return ret;
-+
-+	nr = _IOC_NR(cmd);
-+	if (nr < IOMMUFD_CMD_BASE ||
-+	    (nr - IOMMUFD_CMD_BASE) >= ARRAY_SIZE(iommufd_ioctl_ops))
-+		return -ENOIOCTLCMD;
-+	op = &iommufd_ioctl_ops[nr - IOMMUFD_CMD_BASE];
-+	if (op->ioctl_num != cmd)
-+		return -ENOIOCTLCMD;
-+	if (ucmd.user_size < op->min_size)
-+		return -EINVAL;
-+
-+	ucmd.cmd = &buf;
-+	ret = copy_struct_from_user(ucmd.cmd, op->size, ucmd.ubuffer,
-+				    ucmd.user_size);
-+	if (ret)
-+		return ret;
-+	ret = op->execute(&ucmd);
-+	return ret;
-+}
-+
-+static const struct file_operations iommufd_fops = {
-+	.owner = THIS_MODULE,
-+	.open = iommufd_fops_open,
-+	.release = iommufd_fops_release,
-+	.unlocked_ioctl = iommufd_fops_ioctl,
-+};
 +
 +/**
-+ * iommufd_ctx_get - Get a context reference
-+ * @ictx: Context to get
++ * iopt_pages_remove_access() - Release an in-kernel access for PFNs
++ * @area: The source of PFNs
++ * @start_index: First page index
++ * @last_index: Inclusive last page index
 + *
-+ * The caller must already hold a valid reference to ictx.
++ * Undo iopt_pages_add_access() and unpin the pages if necessary. The caller
++ * must stop using the PFNs before calling this.
 + */
-+void iommufd_ctx_get(struct iommufd_ctx *ictx)
++void iopt_pages_remove_access(struct iopt_area *area, unsigned long start_index,
++			      unsigned long last_index)
 +{
-+	get_file(ictx->file);
++	struct iopt_pages_access *access;
++	struct iopt_pages *pages = area->pages;
++
++	mutex_lock(&pages->mutex);
++	access = iopt_pages_get_exact_access(pages, start_index, last_index);
++	if (WARN_ON(!access))
++		goto out_unlock;
++
++	WARN_ON(area->num_accesses == 0);
++	area->num_accesses--;
++
++	if (!refcount_dec_and_test(&access->refcount))
++		goto out_unlock;
++
++	interval_tree_remove(&access->node, &pages->access_itree);
++	iopt_pages_unfill_xarray(pages, start_index, last_index);
++	kfree(access);
++out_unlock:
++	mutex_unlock(&pages->mutex);
 +}
-+EXPORT_SYMBOL_NS_GPL(iommufd_ctx_get, IOMMUFD);
-+
-+/**
-+ * iommufd_ctx_from_file - Acquires a reference to the iommufd context
-+ * @file: File to obtain the reference from
-+ *
-+ * Returns a pointer to the iommufd_ctx, otherwise ERR_PTR. The struct file
-+ * remains owned by the caller and the caller must still do fput. On success
-+ * the caller is responsible to call iommufd_ctx_put().
-+ */
-+struct iommufd_ctx *iommufd_ctx_from_file(struct file *file)
-+{
-+	struct iommufd_ctx *ictx;
-+
-+	if (file->f_op != &iommufd_fops)
-+		return ERR_PTR(-EBADFD);
-+	ictx = file->private_data;
-+	iommufd_ctx_get(ictx);
-+	return ictx;
-+}
-+EXPORT_SYMBOL_NS_GPL(iommufd_ctx_from_file, IOMMUFD);
-+
-+/**
-+ * iommufd_ctx_put - Put back a reference
-+ * @ictx: Context to put back
-+ */
-+void iommufd_ctx_put(struct iommufd_ctx *ictx)
-+{
-+	fput(ictx->file);
-+}
-+EXPORT_SYMBOL_NS_GPL(iommufd_ctx_put, IOMMUFD);
-+
-+static const struct iommufd_object_ops iommufd_object_ops[] = {
-+};
-+
-+static struct miscdevice iommu_misc_dev = {
-+	.minor = MISC_DYNAMIC_MINOR,
-+	.name = "iommu",
-+	.fops = &iommufd_fops,
-+	.nodename = "iommu",
-+	.mode = 0660,
-+};
-+
-+static int __init iommufd_init(void)
-+{
-+	int ret;
-+
-+	ret = misc_register(&iommu_misc_dev);
-+	if (ret)
-+		return ret;
-+	return 0;
-+}
-+
-+static void __exit iommufd_exit(void)
-+{
-+	misc_deregister(&iommu_misc_dev);
-+}
-+
-+module_init(iommufd_init);
-+module_exit(iommufd_exit);
-+
-+MODULE_DESCRIPTION("I/O Address Space Management for passthrough devices");
-+MODULE_LICENSE("GPL");
-diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
-new file mode 100644
-index 00000000000000..d1817472c27373
---- /dev/null
-+++ b/include/linux/iommufd.h
-@@ -0,0 +1,31 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (C) 2021 Intel Corporation
-+ * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
-+ */
-+#ifndef __LINUX_IOMMUFD_H
-+#define __LINUX_IOMMUFD_H
-+
-+#include <linux/types.h>
-+#include <linux/errno.h>
-+#include <linux/err.h>
-+
-+struct iommufd_ctx;
-+struct file;
-+
-+void iommufd_ctx_get(struct iommufd_ctx *ictx);
-+
-+#if IS_ENABLED(CONFIG_IOMMUFD)
-+struct iommufd_ctx *iommufd_ctx_from_file(struct file *file);
-+void iommufd_ctx_put(struct iommufd_ctx *ictx);
-+#else /* !CONFIG_IOMMUFD */
-+static inline struct iommufd_ctx *iommufd_ctx_from_file(struct file *file)
-+{
-+	return ERR_PTR(-EOPNOTSUPP);
-+}
-+
-+static inline void iommufd_ctx_put(struct iommufd_ctx *ictx)
-+{
-+}
-+#endif /* CONFIG_IOMMUFD */
-+#endif
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-new file mode 100644
-index 00000000000000..2ad06b27a35fe5
---- /dev/null
-+++ b/include/uapi/linux/iommufd.h
-@@ -0,0 +1,55 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+/* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES.
-+ */
-+#ifndef _UAPI_IOMMUFD_H
-+#define _UAPI_IOMMUFD_H
-+
-+#include <linux/types.h>
-+#include <linux/ioctl.h>
-+
-+#define IOMMUFD_TYPE (';')
-+
-+/**
-+ * DOC: General ioctl format
-+ *
-+ * The ioctl interface follows a general format to allow for extensibility. Each
-+ * ioctl is passed in a structure pointer as the argument providing the size of
-+ * the structure in the first u32. The kernel checks that any structure space
-+ * beyond what it understands is 0. This allows userspace to use the backward
-+ * compatible portion while consistently using the newer, larger, structures.
-+ *
-+ * ioctls use a standard meaning for common errnos:
-+ *
-+ *  - ENOTTY: The IOCTL number itself is not supported at all
-+ *  - E2BIG: The IOCTL number is supported, but the provided structure has
-+ *    non-zero in a part the kernel does not understand.
-+ *  - EOPNOTSUPP: The IOCTL number is supported, and the structure is
-+ *    understood, however a known field has a value the kernel does not
-+ *    understand or support.
-+ *  - EINVAL: Everything about the IOCTL was understood, but a field is not
-+ *    correct.
-+ *  - ENOENT: An ID or IOVA provided does not exist.
-+ *  - ENOMEM: Out of memory.
-+ *  - EOVERFLOW: Mathematics oveflowed.
-+ *
-+ * As well as additional errnos, within specific ioctls.
-+ */
-+enum {
-+	IOMMUFD_CMD_BASE = 0x80,
-+	IOMMUFD_CMD_DESTROY = IOMMUFD_CMD_BASE,
-+};
-+
-+/**
-+ * struct iommu_destroy - ioctl(IOMMU_DESTROY)
-+ * @size: sizeof(struct iommu_destroy)
-+ * @id: iommufd object ID to destroy. Can by any destroyable object type.
-+ *
-+ * Destroy any object held within iommufd.
-+ */
-+struct iommu_destroy {
-+	__u32 size;
-+	__u32 id;
-+};
-+#define IOMMU_DESTROY _IO(IOMMUFD_TYPE, IOMMUFD_CMD_DESTROY)
-+
-+#endif
 -- 
 2.38.1
 
