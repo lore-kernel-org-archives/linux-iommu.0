@@ -1,147 +1,91 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com [209.85.216.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D05C88F4A
-	for <iommu@lists.linux.dev>; Tue,  8 Nov 2022 10:13:16 +0000 (UTC)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2A89WvsG008722;
-	Tue, 8 Nov 2022 10:12:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=dbSjy/6KboOVvEXug4RHKIbkd5zdJQGaWqPn2F0vmvw=;
- b=IgdXE9I+HvXUz4eIuyzU5UFe6yeJOGnCtSBWlJhIAh/xNHnbyrxJy/CbyK0p3C04yTMJ
- GmhK3qDhp0LMLd7D6IRA53r4BdKKUUIikyZFBSLjCWpMX+SdlJl4zUU/Ye7RYesNTC2R
- cTuiz7NAVy7f5XMiI7UPbfQNIzV2Qw7jd/68ba6w0V05eEJyttuBnCJyg+7ihpTdyAZP
- FB+Q9JN0IkhL/5D8g6KkM77/vM2lSYzql0VjvT+Yxf9xO3F+K8wQvFs3q/sCh00B2cVy
- KnMbh2bSnus9rSZW7FtOWRBX3RI6tYfwaKv0ceAxLlmdRGa1S3/dANyVmFaS0u+vDgcj rw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3kqkjf33d6-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 08 Nov 2022 10:12:58 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2A89mkPA021424;
-	Tue, 8 Nov 2022 10:12:58 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3kqkjf33c1-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 08 Nov 2022 10:12:58 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-	by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2A8A6TD7021901;
-	Tue, 8 Nov 2022 10:12:55 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-	by ppma03fra.de.ibm.com with ESMTP id 3kngp5ju97-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 08 Nov 2022 10:12:55 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-	by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2A8ACqI366060624
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 8 Nov 2022 10:12:52 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 87C01A404D;
-	Tue,  8 Nov 2022 10:12:52 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id D19E3A4051;
-	Tue,  8 Nov 2022 10:12:51 +0000 (GMT)
-Received: from [9.171.92.113] (unknown [9.171.92.113])
-	by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-	Tue,  8 Nov 2022 10:12:51 +0000 (GMT)
-Message-ID: <fbb84105-cc6e-59bd-b09c-0ea4353d7605@linux.ibm.com>
-Date: Tue, 8 Nov 2022 11:12:51 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.0
-Subject: Re: S390 testing for IOMMUFD
-To: Jason Gunthorpe <jgg@nvidia.com>, Cornelia Huck <cohuck@redhat.com>,
-        Eric Farman <farman@linux.ibm.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Niklas Schnelle <schnelle@linux.ibm.com>,
-        Tony Krowiak <akrowiak@linux.ibm.com>,
-        Halil Pasic <pasic@linux.ibm.com>, Jason Herne <jjherne@linux.ibm.com>,
-        linux-s390@vger.kernel.org
-Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
-        Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Nicolin Chen <nicolinc@nvidia.com>
-References: <0-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
- <Y2msLjrbvG5XPeNm@nvidia.com>
-Content-Language: en-US
-From: Christian Borntraeger <borntraeger@linux.ibm.com>
-In-Reply-To: <Y2msLjrbvG5XPeNm@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 88b1RjTTYRBxlBTkBjyzFSdWP3OuxAdE
-X-Proofpoint-GUID: Kk3uXu49M0BUpX-dT-SrN4RafkObPTS3
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8763182
+	for <iommu@lists.linux.dev>; Tue,  8 Nov 2022 10:36:54 +0000 (UTC)
+Received: by mail-pj1-f50.google.com with SMTP id gw22so13400984pjb.3
+        for <iommu@lists.linux.dev>; Tue, 08 Nov 2022 02:36:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=7FC4xTWKbEcJxVm+LBMuB4SUqqHDVOvyFDbcq+yh01A=;
+        b=oCWmwDp8Mq/94lPgWOpRNMqusVjIbpZKRV9JeuSrdvQOJhGpRXChOO08QAlKk8Wx73
+         s9dECqgOGqSg/8HsqRHiP/XKfZq37XO9aPQHjT6sIVfwd2T5rgHuMt0YXR0vcVnuqJPC
+         bYyXpc+YB5DY79XuJsgDgEnii3hXBb2hLVOouhQABdDKDpptyrIasT3qltTbts8XnJrU
+         VZTd4OMKS0clmozmVyOJgYGhRCfkJh6l8h11/FOcCQ+LBk3+XZqX0RE3+w4sLEria5R3
+         Qsi/EmUKkAqx8Cc/Ujp41/7pVyFg5TMnjalYEafM8z3HSH10qmw+8OMIN07CWneo6bGA
+         xdsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=7FC4xTWKbEcJxVm+LBMuB4SUqqHDVOvyFDbcq+yh01A=;
+        b=zWpJnFf28N13xlacyiLgVeNxut9rx3YLnUkMOOqHPZsKe2fRJ2lS0RInpuOH10evki
+         /yyLwHz/0X9p1r3HR4r2Ks/LbRvMHohhfdFZzTSMTbtr/NgfRHQMu9boStWcvY4CL47v
+         e9eP74FbXRrAs1yJs23D+gqO2vxVSigHFnIUkf5Dfen93YtDLuKxeD3WARRaAOhZXSJX
+         JZh5a0kRVwG04hozAk3+SyoUH+9zMPTNwySls8R8X3f9qpd024lvELXYOLwgEVS+6ZGe
+         2+XOSef0xILXjnA7Z9uIVxLarLU293SBWx+FTL+vjNKecJp9BvjrvT9MIc5lksLqU2sV
+         t9Fg==
+X-Gm-Message-State: ACrzQf2zDY8CJ0RUYsDf89icS+XF5YAUkRDW72vzLwwhn/SY5q3Z8R6x
+	caEfAelvtML1SZ7Mzh2+V9o=
+X-Google-Smtp-Source: AMsMyM4t0UZsTKGoBIe7o5gVWR0wgRXPrt+fajdjHMMuWw0RmjuTkgxkIK95E7qPspPcKE7d1giP0A==
+X-Received: by 2002:a17:90b:254c:b0:20a:8a92:ea5b with SMTP id nw12-20020a17090b254c00b0020a8a92ea5bmr56165515pjb.81.1667903814151;
+        Tue, 08 Nov 2022 02:36:54 -0800 (PST)
+Received: from ?IPV6:2404:f801:0:5:8000::75b? ([2404:f801:9000:1a:efea::75b])
+        by smtp.gmail.com with ESMTPSA id h5-20020a17090a648500b0020a11217682sm5700073pjj.27.2022.11.08.02.36.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Nov 2022 02:36:53 -0800 (PST)
+Message-ID: <9a4edf34-6e49-9fd0-fc23-2536c5f087ea@gmail.com>
+Date: Tue, 8 Nov 2022 18:36:40 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-11-07_11,2022-11-07_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
- priorityscore=1501 impostorscore=0 suspectscore=0 spamscore=0 bulkscore=0
- mlxlogscore=999 lowpriorityscore=0 adultscore=0 mlxscore=0 phishscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2210170000 definitions=main-2211080054
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH 09/12] hv_netvsc: Remove second mapping of send and recv
+ buffers
+Content-Language: en-US
+To: Michael Kelley <mikelley@microsoft.com>, hpa@zytor.com,
+ kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+ wei.liu@kernel.org, decui@microsoft.com, luto@kernel.org,
+ peterz@infradead.org, davem@davemloft.net, edumazet@google.com,
+ kuba@kernel.org, pabeni@redhat.com, lpieralisi@kernel.org, robh@kernel.org,
+ kw@linux.com, bhelgaas@google.com, arnd@arndb.de, hch@infradead.org,
+ m.szyprowski@samsung.com, robin.murphy@arm.com, thomas.lendacky@amd.com,
+ brijesh.singh@amd.com, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, Tianyu.Lan@microsoft.com,
+ kirill.shutemov@linux.intel.com, sathyanarayanan.kuppuswamy@linux.intel.com,
+ ak@linux.intel.com, isaku.yamahata@intel.com, dan.j.williams@intel.com,
+ jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com, x86@kernel.org,
+ linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ netdev@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-arch@vger.kernel.org, iommu@lists.linux.dev
+References: <1666288635-72591-1-git-send-email-mikelley@microsoft.com>
+ <1666288635-72591-10-git-send-email-mikelley@microsoft.com>
+From: Tianyu Lan <ltykernel@gmail.com>
+In-Reply-To: <1666288635-72591-10-git-send-email-mikelley@microsoft.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
+On 10/21/2022 1:57 AM, Michael Kelley wrote:
+> With changes to how Hyper-V guest VMs flip memory between private
+> (encrypted) and shared (decrypted), creating a second kernel virtual
+> mapping for shared memory is no longer necessary.  Everything needed
+> for the transition to shared is handled by set_memory_decrypted().
+> 
+> As such, remove the code to create and manage the second
+> mapping for the pre-allocated send and recv buffers.  This mapping
+> is the last user of hv_map_memory()/hv_unmap_memory(), so delete
+> these functions as well.  Finally, hv_map_memory() is the last
+> user of vmap_pfn() in Hyper-V guest code, so remove the Kconfig
+> selection of VMAP_PFN.
+> 
+> Signed-off-by: Michael Kelley<mikelley@microsoft.com>
 
-
-Am 08.11.22 um 02:09 schrieb Jason Gunthorpe:
-> On Mon, Nov 07, 2022 at 08:48:53PM -0400, Jason Gunthorpe wrote:
->> [
->> This has been in linux-next for a little while now, and we've completed
->> the syzkaller run. 1300 hours of CPU time have been invested since the
->> last report with no improvement in coverage or new detections. syzkaller
->> coverage reached 69%(75%), and review of the misses show substantial
->> amounts are WARN_ON's and other debugging which are not expected to be
->> covered.
->> ]
->>
->> iommufd is the user API to control the IOMMU subsystem as it relates to
->> managing IO page tables that point at user space memory.
-> 
-> [chop cc list]
-> 
-> s390 mdev maintainers,
-> 
-> Can I ask your help to test this with the two S390 mdev drivers? Now
-> that gvt is passing and we've covered alot of the QA ground it is a
-> good time to run it.
-> 
-> Take the branch from here:
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git/log/?h=for-next
-
-> 
-> And build the kernel with
-> 
-> CONFIG_VFIO_CONTAINER=n
-> CONFIG_IOMMUFD=y
-> CONFIG_IOMMUFD_VFIO_CONTAINER=y
-> 
-> And your existing stuff should work with iommufd providing the iommu
-> support to vfio. There will be a dmesg confirming this.
-
-Gave it a quick spin with vfio_ap:
-[  401.679199] vfio_ap_mdev b01a7c33-9696-48b2-9a98-050e8e17c69a: Adding to iommu group 1
-[  402.085386] iommufd: IOMMUFD is providing /dev/vfio/vfio, not VFIO.
-
-Some tests seem to work, but others dont (running into timeouts). I need to look
-into that (or ideally Tony will have a look, FWIW tests.test_vfio_ap.VfioAPAssignMdevToGuestTest
-fails for me.
-
-
-The same kernel tree with defconfig (instead of CONFIG_IOMMUFD_VFIO_CONTAINER=y) works fine.
-> 
-> Let me know if there are any problems!
-> 
-> If I recall there was some desire from the S390 platform team to start
-> building on iommufd to create some vIOMMU acceleration for S390
-> guests, this is a necessary first step.
-> 
-> Thanks,
-> Jason
+Reviewed-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
