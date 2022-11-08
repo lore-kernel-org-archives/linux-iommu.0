@@ -1,23 +1,23 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27E8D17CD
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B36419E
 	for <iommu@lists.linux.dev>; Tue,  8 Nov 2022 00:53:07 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mbSRHRK+IEVOz7oeXG85z3xVrXV8oh3CPs2tQAS/m+c/SeWl0TbcRIUyBuPlMkBbYYpmANknaAxcvbnT56/hBvz2/KWk510ZG1Lp941gSak998aFTzL4nJ0igq0JFbssXGz9H+RLHEDHhSt7HyL7ymS2U+9loN5pA0qDEKaylalsuPXewYuxbLMwJFgWRRf8ww1zTs84nzipA5Mi4IJx4593XOGOkaeLyAmqYmdieLmRNOf+yN/ZxD8KOMlDqJ7+q/nT1kNgoaaGZnM/74eRqf0u/NNcVWJeSZskrVP7xkXt8YFPTlL64eFUVfoSEino7i2UHc8K92ScG/rIF/YQmw==
+ b=XhmsC6X8Jkcy8qS5x9zYuPCit/cJM+G2EbbE3Ewb3rEU3pOtquHnFIuFedqlGI6w3RGeE6PAIiXznqd9dPx9tbHdcpy+DmKTjGv4aMotufm+mRnKxflEYtXMo7+UYMwjD2hNCtoMuINRIybMXjPBatVfAWuK0u6Ilz3POrUgCDa1V7CVSNEl99jq18FV0j0Ab4iy0366DlY8N2DD+wQREUaSUVERwhGLAicIuUEwdRQ3kqawMXa+ZJ64ruK0gpPwuIvHf2tpGpKYjbK+70bOSnSOL8wcKcGk/VxNCRPkNukg2X4GpD6xndfFUWftWLoDqVcx674UqeEtVkAh0t6Plw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mC3HWrwodv1qPgkzCtMsoU7B6Zkdi7mxmlfqrBfH9Ms=;
- b=g68wo891xQUfpSpdTOcI0mLwwYoE/Dbn3tDvkXPBZ4b9STnk+FoQGm3I8YAnyZZabdBQYPZdICDF3M/WOYMgiY/17A59FquEC2S5p3ZMn4iTVGSn5PCujS1W1oLz/zWRPp1IGSdzMOLlkU1xA5/iIXd15/NtJukruMP6GVoZTxZ9hxUMj87W8W+SBsd6B6ccQr8dLdS3HXdQ+y2yHlEThzggMjEYd/89907S0KUn+8qZOzr9Ipvm42Uz/m2Awzob4aZ5oJj+pF+in14koIJFqmY9RmIB4hxJZYu1E4KvTE2PY1T++r7mVX8kkMh2qSJh14ZWlPYmVBjPHNcNIPISyQ==
+ bh=/MNlH6lQNfC/xypoqYrci9gQNkIkhwL8/2HCUoUA7F4=;
+ b=BQeY7jSLE05DBrQGk2zLveNw5JU1nrkPLLjtA7Z35pJlUjyuW8hH5KTfno6PPyqaRwlFseRpxwVsqtEOwCJQzJFjeQFCaNhCEDuHKD6SkkKoXzFxx5+tfC/KLNpslsGCR9uPCO7HwN5hNyoOdmXLq7+6Wff76gfshUw/wDmkln2yF+L3mtKlDkH9PAZE7JEHanUIMj/oP/85t+4jhhfkPiWJVuPAmsQf6q42s08l0KwEfjCvRkWIVwpo1yQ9kxXj/msS6+wY5a6cDi8iCCjJqEZCFmNMkUAnt5kMK5L5+PueHyDu4MHXPF1moOKArmXPt1jiWnM6T6ZYN31NOIS0Ig==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mC3HWrwodv1qPgkzCtMsoU7B6Zkdi7mxmlfqrBfH9Ms=;
- b=qDeqCLhqc27YLAjcKUyc1lGg4JZyDu8BEjHJkvAKnjvnJkliSFvTLVZbt0+qYWjWskQlTrzlxYEvF2viRZU/xfe9iBU4iC5CimrrpnO3+mYgME95BfXfOeNR93QSKKZ+gtibCvi/yyHghtw3YLzGiKYrX3lomDaqI6ARVt7amynEHeQNkuMihFnjL8/aSaxtLYiEcJ6mxJwJ/qmi8HZOdS4EOadSr39UHbotfagCoeJDiI4doSyfji4g3Vw+dwTv7IJ8SaVNQ+H9b7uS6uM4FxPCyPhEDeniMo+7d3nmH363K0XSB285fRsgu6Hwo/CnQHTf461cEewbIT1V5E5yqw==
+ bh=/MNlH6lQNfC/xypoqYrci9gQNkIkhwL8/2HCUoUA7F4=;
+ b=dEAHYT4sIZOzvlvZMi7ozJOCGFqEBhaSH/U+ManSoYwgIqL7YOEuqgmeXIdBIkPAbguvXgW5g6/Dz8xfVqRNmazMeQnsU7F2urAUB3Sg6OuLMbhOmL6xDX54rXsDCE2QV4+DUpNou9AaDSnuLBUrzhzs5ihXyA23Gwyoml8u1sQUo8mEyf01sRRmpvfaB+TFCoQbrXa5vTBOM05fvhV0jGe4/v+SN5vv2u1pEyMgRconbYgHsSe+ee6CRF+qrY3S13DtfWaMY7Ztux9MH8f1ZJjHhgPffv1nfGcetpURKCYiW77O4cAW3XrB4bz+hhRKhZpwm1yApqbDvEV6WulIpQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
@@ -71,15 +71,15 @@ To: Alexander Gordeev <agordeev@linux.ibm.com>,
 Cc: Lu Baolu <baolu.lu@linux.intel.com>,
 	Nicolin Chen <nicolinc@nvidia.com>,
 	"Liu, Yi L" <yi.l.liu@intel.com>
-Subject: [PATCH v2 03/11] vfio: Rename vfio_device_assign/unassign_container()
-Date: Mon,  7 Nov 2022 20:52:47 -0400
-Message-Id: <3-v2-65016290f146+33e-vfio_iommufd_jgg@nvidia.com>
+Subject: [PATCH v2 05/11] vfio: Use IOMMU_CAP_ENFORCE_CACHE_COHERENCY for vfio_file_enforced_coherent()
+Date: Mon,  7 Nov 2022 20:52:49 -0400
+Message-Id: <5-v2-65016290f146+33e-vfio_iommufd_jgg@nvidia.com>
 In-Reply-To: <0-v2-65016290f146+33e-vfio_iommufd_jgg@nvidia.com>
 References:
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: BL0PR1501CA0005.namprd15.prod.outlook.com
- (2603:10b6:207:17::18) To LV2PR12MB5869.namprd12.prod.outlook.com
+X-ClientProxiedBy: BL1PR13CA0144.namprd13.prod.outlook.com
+ (2603:10b6:208:2bb::29) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -89,150 +89,165 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SJ0PR12MB6686:EE_
-X-MS-Office365-Filtering-Correlation-Id: f3038ec4-71b1-4dc1-4f2d-08dac123935e
+X-MS-Office365-Filtering-Correlation-Id: 1e9543b5-4436-45f1-13b2-08dac1239363
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	26G+5v5bJ6wOEl+p/ghKyzu50nv1M4fGUNIIMOgwMW1plyAhB7xjYuQ6hfkHc0jVwXX/o2bcGSN18QsM2xb2Y6K70JvO9SBUSrsKj5AQ9p73EzuQcIICYHvPXnTQh3EheXk3B0saYFiyN/6Z7Tt5Fax8MOYMepGPZVLck/hAMcxSZiWZjxK9XFPA5plZfdgSWL3nP25eTlrBphgQu1HeltQrqQalNXNuzHdLF0jAhK02TQTIR9qPxjePDTO69/G8izl8Isi3BWysCZ779m+sCOIDwUFx5jtO3cMEMiSpkT7pBw5o+sLb5+JeDd4c9ubSFA6AgDq/rv24xYhF18cEgo+cUeS4R819ycKYVfskVAYiOlUDlGPkxPTxxFcl6I3MWQQlj3zFqt484Lu2NfBTeFuBzDCvjNobG9bab7l289an0qq5A2BkQ8daDQllSFiPg39xz4RLhp5vlC6hcKyq03BEbROfVuNfWpvkwU0jfo+thz3Lm9I55B8GRLp7eRDSJIumZmEAWS7hoiec4/DXuSQORVUzet1Bcz3K3jVpgwcPHu+AVopDrkY4cAFRR78MSWGZOv6BHVtZ/Op8jlUcPh9mIAlJ+LiSmaSxMSepURXjMrMgFZL5ok4Ud1DhcA0tERxSW8oFlLCFroL17r4wNqI1hFZi+UETJSi2T1KtUPOcsB6I381sD5piHf6o8NwLb9IQl/VR1TJKrPHe/8BGNqs3k4DpWMkOWhJzFVsIzj9oxT/AIQlZjPvdjuUuvGopRvROEjALEOnxsGKIZxLfjw==
+	6LcXNRg5CRlkrv0tKlG+z1QNjVi6Mhqtj7QMb8/cuMPR1bzBCOIwErFXDm4Q9wsqGc18dESDYbCQ0n5TWI+EAnEohwHgEM76TkXXHg64K2Ig27zPl86LW+YCWLsVNEu4fO+fZgn2sfnKu60P/aUzY+m0cgrhrSdwxjHR2ZbV/aIOIC0n51pfz8e410iPIJNijQGCkZ+rjIvZa9AgkkYMEgVStkEFcuq3YOly3upCDrKg3AkkUWs1HFzMEVEMIPGNbvqjUvb3TD6SsGTBT3UeadPrGKxkzwB/7bNQ4W/LAVjBosldE5D1640l6aonmjnN779EahNWww8+CZL/EtBr2H6hspsdP0I0wn7lmf1wKjgz1IMpOaRTI8OCvv7aipjXciEULTSo9ByYLHjtG2e9cqXJPwiIigTv5OKi05npP416jlCKKa3PK2bkCduA1ce8ZoYwJT9x46adSZ6hMgeWcy07oU+zGe1I5kpbiwZ9d1yO9I2ipgv2sAtHI6Sa5SQAs9WYnva5xC6wseJIX3+r8Dtt78Mqurco/gAAnRZEvQJhdKEPPa53hzvHrbeEZUP0ocuEpItbAzVVKCM3Af6a8OYHctxC5kVgEKv8gU9QUY7oaOers/HNBlUsQOhLZAzmZ/2ijnNIrhpxqkCNqCcfGfi3gKwYRAswN0T2puU6OXgGXclBSTUokH3SiWvRLudPH885L0cNjVyxRUtI/4uTZ7h5aceohhsCFArvDt+naDg82SHwYBTDRIz82iEWn9zLMuh8ICOOgi04tfQONlBNqg==
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(396003)(39860400002)(376002)(136003)(346002)(451199015)(2616005)(921005)(83380400001)(38100700002)(186003)(2906002)(7416002)(7406005)(8936002)(86362001)(5660300002)(478600001)(6666004)(6486002)(26005)(6512007)(6506007)(66476007)(66556008)(8676002)(4326008)(316002)(41300700001)(110136005)(54906003)(66946007)(36756003)(4216001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?MxUVC4zmjBN/w0K+k+BtgRUARMeMGLN/8PcmF4bzZnkDBZVXrI9MvEAdeQw2?=
- =?us-ascii?Q?BpXdHSvjqa+kRsLmSlryHZiChZzhYVC0OCvEMlflub2GB0Sw1QWjMeuNottk?=
- =?us-ascii?Q?YB7BHaTKZR9ZczjThDDY3EH5Qz3e6oOiaARVJeMQXe/dMXMD4S8JYNyebkqz?=
- =?us-ascii?Q?GjGX4CgCL9Q2NysfLxjiBQ+K6Eal9DWIA7rJ9kaC3CBpyWpb8VAy1zbeS6aF?=
- =?us-ascii?Q?NbKrVtIcvvk2+7XD3xHqJb6SsyaQa13TGdvE+fG8WW4NsaePD2e3ceq96jvO?=
- =?us-ascii?Q?VKrA47vd9UCG66yv96+nL4AsrfYgo8zJmTruB/jWNqzlUcG13PytHn6bGc9O?=
- =?us-ascii?Q?QsM/8gGvidSkoOItr15sOW/M4JKQVX1Gy4rZnPfq5caRhhcqWOP/HkEt4Auu?=
- =?us-ascii?Q?nJg1GJq+PPUOxICCR4y0XB0ZesogM0UGDW7hZWz9VnouINA9txtBOwFq+zxq?=
- =?us-ascii?Q?qXcn65qis2E48XmmKs4QzE0peJ5qF46yCD54wi0jIs2P6YqjtCzwuRS6b8dG?=
- =?us-ascii?Q?wP4xNR5MNtLvlGL5E1CWZXUYpyGf6zdlFCJV/m3NSghnV63DX89RWOlsPXLS?=
- =?us-ascii?Q?R3mtv5eiBwHnRKAjjRu5rTyXtb2CuskLjOvIklzSZM3F/OVRUI3Qk1zCv2gH?=
- =?us-ascii?Q?1xdUZwG8pm+Qr2mmuSrActGwlbOwoxnpZPbiEXE8bwz6sWOcd7V8jhsVzbQm?=
- =?us-ascii?Q?bmQz6HYRoNLcrc+62GGFs5kc70noIGyle4T5q8te73Tkq9VgoWuVFmjTqjIv?=
- =?us-ascii?Q?rOiSYJ4XVJYPPzv0lQF9mfigFsDXwqorgeidDZxsfxavvqx3msBoqI7y4bOe?=
- =?us-ascii?Q?+Cqqj8eRNsUsxVViRqcR4r0WiJYq+GoXqdGRAGBN3L8wny11Jxs56qj/z93i?=
- =?us-ascii?Q?VXMgGYVdny5n8s+/leuL2GTBHoyS+sa4aXY5DhsRGL5KTLn6bgewXpP8+a0G?=
- =?us-ascii?Q?5iVx6064h6CUDiD3fQ87uOaTzcvgY8TyS4DSw4RATukte++i9fdIcZ/8nK2Y?=
- =?us-ascii?Q?Z1Ql3JWQWcf5hJN7snEDWvj1qcHQrmGR4qnBMznc2xs9cdFuEuv8O7Zkkdol?=
- =?us-ascii?Q?lv0/rHtpaeDVkyrWYQFoC3Fce2thmorD+zZa4M6xxs6CY6dmHaUFc9V1awn2?=
- =?us-ascii?Q?+atOcm+7jB1AYdJrJukaNOcgi8wKIC508Nec703EDBo3ivp0L/2fvpeF+jjT?=
- =?us-ascii?Q?17x8rMtsA6FdZTya1aCoUBKcjSMJ2YZFk1VmVJBKIbzvcK6tu/VMegMjGh78?=
- =?us-ascii?Q?/HACKWGWruXGLKYtk1qObKah47UUGERqCJqc1YciY2KYqDmJ430j/U7UW+9d?=
- =?us-ascii?Q?ObzSVzyNd5KK/7c5LXfY7tTUHRXeX1v2wXAOcUyPWSUKMud5e8xF66ouGP8x?=
- =?us-ascii?Q?Q2mHcJjtgBlle4yFwCz4Yf9jjQOSlxd1mi3TyLLqhZX8mEuUjNS5ViGlXwBk?=
- =?us-ascii?Q?Ian/PDElNWo9uYtgbG41A7ak0EVbL3Ogk0+FPgr98UL9bBCQC1QUKC3C21ku?=
- =?us-ascii?Q?1Ff0hcs1nOsO2nDeCclUg0OLURwdwZLVaz90r+bDIte9JK5nDqxOjvV8+4C1?=
- =?us-ascii?Q?AFJIMASvtOnBhqA8Ajk=3D?=
+	=?us-ascii?Q?IE7cjEUzMsCNiRQWKaEi3KqtDZcjJnNuxoIGeVWDmNUsaWBgoE1NGzaziG1q?=
+ =?us-ascii?Q?CuSPXau4EFEy6QvPIANOU3x3m4AVADFuWuYDTk/GdCu9OEEbFhUwcDRnYJV6?=
+ =?us-ascii?Q?GjW0pYg9Zg5BCZfr/xbmHGpXD9SXs3OoXYgFdz886DKz8XmBuQ6Fdt6QHd6l?=
+ =?us-ascii?Q?l2sNTBgVnW/NcOeq+xquy46nFbmTTlC9R/cialTSi79P16TOFYzXNaBiQw4N?=
+ =?us-ascii?Q?wGLHlaOEd62T/EM0AzPCj4bsw+WcNuGzBIc0iSccxnqbSVqzx0+pmruF3SE4?=
+ =?us-ascii?Q?Xhr346aBEAOnvbxtAuhLKMz2OzXkxXx1tfW/3MhOX0ehF/7T8VeMPOvFY+im?=
+ =?us-ascii?Q?gi1oUN2JL7SFyg/F874CnzuVzVuIhnW8BfaUS3QcVtMAonJh3EGIrblkvoeB?=
+ =?us-ascii?Q?Xr2/4pFjfooliEkDX//2kYeOAE1t5b75q02w5EV3b5ogFUQMQusouzuqdik5?=
+ =?us-ascii?Q?fPkNIQAr1CO/pDVerSRK6x6wfCeAPaG5VxKMNeMMPbWum8OvK+DniN/3fLF8?=
+ =?us-ascii?Q?j5sVxhRECkx5wGi9VoT2jZ38AcIx0qFmLHwvd66E1u1TK5MyVQ+blQ6yr1b9?=
+ =?us-ascii?Q?k4aQttpZRdIMkb2IHMCbwFKpeCmHiPjtI5CorH1nPiw4OHwrWx0PGj1ufFwa?=
+ =?us-ascii?Q?ROPsPje/Rf+yfl7qxQ+z1sFGrFI4lrhy6QBqKOB7LC0iSelymvfVxv5N4mfq?=
+ =?us-ascii?Q?PWeObDJhYisLQOifyf2XsYGeKQ1PtyETmWwzyesKwb3597OxoETzcIVI/NcW?=
+ =?us-ascii?Q?KlJMtzQrMCZgvPVxu0Xfnfr0LDC7xnzCFlPpRM92bvaEfqb75cxA3+5NTXKn?=
+ =?us-ascii?Q?Do9Fgb/uCtIDkhII/rDeuhlJyL/0SYFukOzQ7uiNC8sfCx6YPHhTtXw9fwdj?=
+ =?us-ascii?Q?llWSim6aYIBazWMHkx3Mm7wklFYlT14h2sBXT3UuCypwNDoDW7fPrOChnn6F?=
+ =?us-ascii?Q?dxRzzxC5lYYD0eZBXrZC3c55uUrO4x7Xn9lZSuiP5Aqw3SmzpTmBgK7wWh78?=
+ =?us-ascii?Q?cE/URNRklwta2BNmb2TzT2nzLZRmXEmK6eUsL6WwEDc3RDPBu2YHQHiihBgZ?=
+ =?us-ascii?Q?CAwwnxE8y98iwQNLPgH/mj4WNUOyIVGXwwz0A1UzwHk54iXMlnQ09b/bjVNW?=
+ =?us-ascii?Q?pSnX43E70a/JZ5prkXF5C1rMuEgUjnmwEY5HMZorUEPNSIdvlmWACEaxhSBD?=
+ =?us-ascii?Q?4+B29iKdpsUmSEqRb9EljGZ+oZ2GxwoMN3Kc0giFWE7zHJuMoaGLnCf0uWys?=
+ =?us-ascii?Q?fgeyC8G3vUulRQYX+Nd5K4RcvQF5vP3vSfi3yRLsG3U7ZIuzCp1eCnpdheuG?=
+ =?us-ascii?Q?fLO0yioyjlBmdn1NYY+GqIxiSWYxidBOZeauS9x3B8BlHhgJBu24zyt7bVYG?=
+ =?us-ascii?Q?zmHOml9696n1v0yLXefswIHdSwpLauFq8UslsRe1jbM2f17Ph5S+qglVGBK3?=
+ =?us-ascii?Q?fleFd74cw9dVpb0RLZ86dNKlIfmKiDoqv7zrzg+Pqq4HwQqeu17a1o/TYmdN?=
+ =?us-ascii?Q?sF3cBwm81GZt4hiWurVYJCtjxxpZLrl3yEPe+UnwfHPXZmAGUmOnDyM/i8fj?=
+ =?us-ascii?Q?HRmfUhg1KFVYGR+tulw=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f3038ec4-71b1-4dc1-4f2d-08dac123935e
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1e9543b5-4436-45f1-13b2-08dac1239363
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Nov 2022 00:52:56.8513
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Nov 2022 00:52:56.8669
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lmvq8mN9mb3qM5kw5ePBDfGwdNgzlp+I1yApiuDjpoRGWeowkF0p78oJQHDSZTWB
+X-MS-Exchange-CrossTenant-UserPrincipalName: NPpSbVIVLm1+HfcYOUbRRcCXiSOkLvxwA3lUBCpz7ISh76bLyvBLSh+vWZ2d83kZ
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB6686
 
-These functions don't really assign anything anymore, they just increment
-some refcounts and do a sanity check. Call them
-vfio_group_[un]use_container()
+iommufd doesn't establish the iommu_domains until after the device FD is
+opened, even if the container has been set. This design is part of moving
+away from the group centric iommu APIs.
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Yi Liu <yi.l.liu@intel.com>
+This is fine, except that the normal sequence of establishing the kvm
+wbinvd won't work:
+
+   group = open("/dev/vfio/XX")
+   ioctl(group, VFIO_GROUP_SET_CONTAINER)
+   ioctl(kvm, KVM_DEV_VFIO_GROUP_ADD)
+   ioctl(group, VFIO_GROUP_GET_DEVICE_FD)
+
+As the domains don't start existing until GET_DEVICE_FD. Further,
+GET_DEVICE_FD requires that KVM_DEV_VFIO_GROUP_ADD already be done as that
+is what sets the group->kvm and thus device->kvm for the driver to use
+during open.
+
+Now that we have device centric cap ops and the new
+IOMMU_CAP_ENFORCE_CACHE_COHERENCY we know what the iommu_domain will be
+capable of without having to create it. Use this to compute
+vfio_file_enforced_coherent() and resolve the ordering problems.
+
+VFIO always tries to upgrade domains to enforce cache coherency, it never
+attaches a device that supports enforce cache coherency to a less capable
+domain, so the cap test is a sufficient proxy for the ultimate
+outcome. iommufd also ensures that devices that set the cap will be
+connected to enforcing domains.
+
 Tested-by: Nicolin Chen <nicolinc@nvidia.com>
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- drivers/vfio/container.c | 14 ++++++--------
- drivers/vfio/vfio.h      |  4 ++--
- drivers/vfio/vfio_main.c |  6 +++---
- 3 files changed, 11 insertions(+), 13 deletions(-)
+ drivers/vfio/container.c |  5 +++--
+ drivers/vfio/vfio.h      |  2 --
+ drivers/vfio/vfio_main.c | 29 ++++++++++++++++-------------
+ 3 files changed, 19 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/vfio/container.c b/drivers/vfio/container.c
-index dd79a66ec62cad..499777930b08fa 100644
+index 499777930b08fa..d97747dfb05d02 100644
 --- a/drivers/vfio/container.c
 +++ b/drivers/vfio/container.c
-@@ -511,10 +511,8 @@ void vfio_group_detach_container(struct vfio_group *group)
- 	vfio_container_put(container);
+@@ -188,8 +188,9 @@ void vfio_device_container_unregister(struct vfio_device *device)
+ 			device->group->container->iommu_data, device);
  }
  
--int vfio_device_assign_container(struct vfio_device *device)
-+int vfio_group_use_container(struct vfio_group *group)
+-long vfio_container_ioctl_check_extension(struct vfio_container *container,
+-					  unsigned long arg)
++static long
++vfio_container_ioctl_check_extension(struct vfio_container *container,
++				     unsigned long arg)
  {
--	struct vfio_group *group = device->group;
--
- 	lockdep_assert_held(&group->group_lock);
- 
- 	if (!group->container || !group->container->iommu_driver ||
-@@ -529,13 +527,13 @@ int vfio_device_assign_container(struct vfio_device *device)
- 	return 0;
- }
- 
--void vfio_device_unassign_container(struct vfio_device *device)
-+void vfio_group_unuse_container(struct vfio_group *group)
- {
--	lockdep_assert_held_write(&device->group->group_lock);
-+	lockdep_assert_held(&group->group_lock);
- 
--	WARN_ON(device->group->container_users <= 1);
--	device->group->container_users--;
--	fput(device->group->opened_file);
-+	WARN_ON(group->container_users <= 1);
-+	group->container_users--;
-+	fput(group->opened_file);
- }
- 
- /*
+ 	struct vfio_iommu_driver *driver;
+ 	long ret = 0;
 diff --git a/drivers/vfio/vfio.h b/drivers/vfio/vfio.h
-index bcad54bbab08c4..f95f4925b83bbd 100644
+index 54e5a8e0834ccb..247590334e14b0 100644
 --- a/drivers/vfio/vfio.h
 +++ b/drivers/vfio/vfio.h
-@@ -112,8 +112,8 @@ void vfio_unregister_iommu_driver(const struct vfio_iommu_driver_ops *ops);
- bool vfio_assert_device_open(struct vfio_device *device);
- 
- struct vfio_container *vfio_container_from_file(struct file *filep);
--int vfio_device_assign_container(struct vfio_device *device);
--void vfio_device_unassign_container(struct vfio_device *device);
-+int vfio_group_use_container(struct vfio_group *group);
-+void vfio_group_unuse_container(struct vfio_group *group);
- int vfio_container_attach_group(struct vfio_container *container,
- 				struct vfio_group *group);
+@@ -119,8 +119,6 @@ int vfio_container_attach_group(struct vfio_container *container,
  void vfio_group_detach_container(struct vfio_group *group);
+ void vfio_device_container_register(struct vfio_device *device);
+ void vfio_device_container_unregister(struct vfio_device *device);
+-long vfio_container_ioctl_check_extension(struct vfio_container *container,
+-					  unsigned long arg);
+ int __init vfio_container_init(void);
+ void vfio_container_cleanup(void);
+ 
 diff --git a/drivers/vfio/vfio_main.c b/drivers/vfio/vfio_main.c
-index 717c7f404feeea..8c2dcb481ae10b 100644
+index e1fec1db6a3c93..5c0e810f8b4d08 100644
 --- a/drivers/vfio/vfio_main.c
 +++ b/drivers/vfio/vfio_main.c
-@@ -749,7 +749,7 @@ static int vfio_device_first_open(struct vfio_device *device)
- 	 * during close_device.
- 	 */
- 	mutex_lock(&device->group->group_lock);
--	ret = vfio_device_assign_container(device);
-+	ret = vfio_group_use_container(device->group);
- 	if (ret)
- 		goto err_module_put;
+@@ -1625,24 +1625,27 @@ EXPORT_SYMBOL_GPL(vfio_file_is_group);
+ bool vfio_file_enforced_coherent(struct file *file)
+ {
+ 	struct vfio_group *group = file->private_data;
+-	bool ret;
++	struct vfio_device *device;
++	bool ret = true;
  
-@@ -765,7 +765,7 @@ static int vfio_device_first_open(struct vfio_device *device)
+ 	if (!vfio_file_is_group(file))
+ 		return true;
  
- err_container:
- 	device->kvm = NULL;
--	vfio_device_unassign_container(device);
-+	vfio_group_unuse_container(device->group);
- err_module_put:
- 	mutex_unlock(&device->group->group_lock);
- 	module_put(device->dev->driver->owner);
-@@ -781,7 +781,7 @@ static void vfio_device_last_close(struct vfio_device *device)
- 	if (device->ops->close_device)
- 		device->ops->close_device(device);
- 	device->kvm = NULL;
--	vfio_device_unassign_container(device);
-+	vfio_group_unuse_container(device->group);
- 	mutex_unlock(&device->group->group_lock);
- 	module_put(device->dev->driver->owner);
+-	mutex_lock(&group->group_lock);
+-	if (group->container) {
+-		ret = vfio_container_ioctl_check_extension(group->container,
+-							   VFIO_DMA_CC_IOMMU);
+-	} else {
+-		/*
+-		 * Since the coherency state is determined only once a container
+-		 * is attached the user must do so before they can prove they
+-		 * have permission.
+-		 */
+-		ret = true;
++	/*
++	 * If the device does not have IOMMU_CAP_ENFORCE_CACHE_COHERENCY then
++	 * any domain later attached to it will also not support it. If the cap
++	 * is set then the iommu_domain eventually attached to the device/group
++	 * must use a domain with enforce_cache_coherency().
++	 */
++	mutex_lock(&group->device_lock);
++	list_for_each_entry(device, &group->device_list, group_next) {
++		if (!device_iommu_capable(device->dev,
++					  IOMMU_CAP_ENFORCE_CACHE_COHERENCY)) {
++			ret = false;
++			break;
++		}
+ 	}
+-	mutex_unlock(&group->group_lock);
++	mutex_unlock(&group->device_lock);
+ 	return ret;
  }
+ EXPORT_SYMBOL_GPL(vfio_file_enforced_coherent);
 -- 
 2.38.1
 
