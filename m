@@ -1,182 +1,499 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2089.outbound.protection.outlook.com [40.107.93.89])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D386E28EE
-	for <iommu@lists.linux.dev>; Tue,  8 Nov 2022 13:23:13 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BpG2xSfa1HLMlUoeIi+g/7tBt0wozc7x/8D49Ji4O70BNwwr1YIswezsjosHvt9EAVDbDgm/sQlqodsxXs2gZoWN4RJkYsgXkEm3vz3ChSNvn4a/DD4oaP0WglYKGGEVqO1KGXuSbDeiZW3sRTwz1DuvHfCRReGIzJAGziTed0V8SVyid5V/AKqFua8TCoSQ66hjzm1LJXXzJ8C+JKRNk0fBlEuc5X6GaaLdaF0ewPBRdluyujOCWq5X6jPg3/1e3mP0HiYbwj5LnOgviNHweA8/8BquE1Ptl6vmVzlik/SRVRZOQpPg4got/gTD6dASGsp74vn35QEa0v/iQIt9/A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Y4lg1aVjB5ZHRwdIvv/hl2uo2jH4KOQIwL5Zvpbr0TI=;
- b=gIzS+gbXe6qSmZ+pzRjOE0mAB12perKxa9i6VlpOruutuFnuI25BhD2L3Um9XV4Y8/nEhvQD1rZbJ5ZUM4SjjWLiPipgtp+6mOIp3miHfs9RRzxd1uORmdZfoq9GgR5dxIk+dL3GlMJ6TLEb0aq8hEb6fvgj/9DKEY56GZilXrHjaMnxLEAwUmbX/McXduCxLS6Fp0hOkU0ZRa4TuAp4YysCmDK99KTPWt+3ndxaibCArPgNBIjnNaS8r1V3lI+az8AmWgxvHBC+0o1BCv9lwABUott9k4OvgEdFqbhEHpebDj1lDk+k4puuB2/QhPOCBNOikSKuZintnmvgs1f29Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Y4lg1aVjB5ZHRwdIvv/hl2uo2jH4KOQIwL5Zvpbr0TI=;
- b=pitefX8Qc3ow3eTLM8p37Ho3H7ls2ehktxYNXaEVz4319uNjK2QpSF3rN4tVv7hlaINcm7Q0kpDGj/Qj2VnKOnZJVHCS3XuTO4Ky821t6DhJ+4xvF3dMuGI8kX7G+ZQhGq1ZDROIo1qtzclyG1dJeMe9lt3lIY1eMgSjZFju6n2iob4E+ZG5BBAu8Um5wqwjccJfyi9NzPMiXnplvYvW9qjs+kSbeAWG9nsrtPWb3c+rucM1IJZIDUxhkwhKra5zCn8GUG4DMhg2q+c20oBy5iaAzH8XJHZ4eSk2KrknBSxUKqy/qKEeXI5TITrzzigld8JgOD8wqPiyATOIXrAZlg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by MW4PR12MB5644.namprd12.prod.outlook.com (2603:10b6:303:189::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.24; Tue, 8 Nov
- 2022 13:23:11 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::7a81:a4e4:bb9c:d1de]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::7a81:a4e4:bb9c:d1de%6]) with mapi id 15.20.5791.026; Tue, 8 Nov 2022
- 13:23:11 +0000
-Date: Tue, 8 Nov 2022 09:23:10 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Will Deacon <will@kernel.org>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, joro@8bytes.org,
-	robin.murphy@arm.com, kevin.tian@intel.com,
-	quic_jjohnson@quicinc.com, suravee.suthikulpanit@amd.com,
-	robdclark@gmail.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
-	yong.wu@mediatek.com, matthias.bgg@gmail.com, orsonzhai@gmail.com,
-	baolin.wang@linux.alibaba.com, zhang.lyra@gmail.com,
-	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
-	jean-philippe@linaro.org, tglx@linutronix.de,
-	shameerali.kolothum.thodi@huawei.com, christophe.jaillet@wanadoo.fr,
-	yangyicong@hisilicon.com, yangyingliang@huawei.com,
-	quic_saipraka@quicinc.com, jon@solid-run.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-arm-msm@vger.kernel.org, linux-mediatek@lists.infradead.org,
-	linux-tegra@vger.kernel.org,
-	virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH v7 4/5] iommu: Use EINVAL for incompatible device/domain
- in ->attach_dev
-Message-ID: <Y2pYPnjMqrwDDwB/@nvidia.com>
-References: <cover.1666042872.git.nicolinc@nvidia.com>
- <f52a07f7320da94afe575c9631340d0019a203a7.1666042873.git.nicolinc@nvidia.com>
- <20221107152645.GD21002@willie-the-truck>
- <Y2mfaG1/6hd1qykW@Asurada-Nvidia>
- <20221108132041.GB22816@willie-the-truck>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221108132041.GB22816@willie-the-truck>
-X-ClientProxiedBy: BL0PR05CA0027.namprd05.prod.outlook.com
- (2603:10b6:208:91::37) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B30D228EE;
+	Tue,  8 Nov 2022 13:27:17 +0000 (UTC)
+Received: by mail-pj1-f42.google.com with SMTP id m14-20020a17090a3f8e00b00212dab39bcdso17924088pjc.0;
+        Tue, 08 Nov 2022 05:27:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=iIylKV8PWi6a84OxrCbfA4LgZR7i3vwQqVnaY7JrrQU=;
+        b=fQ0i8yqJcY3koYav4Xu6e+jcyhczfaD74ztJBEdo0oK6wDpgJIWBsmLnmK6qqt8ZRG
+         47PweuTHXBg7aahpH6Y93qGecXp53AJKhO+HLRa428/qhO5WjecDS8ZnB2E1+iECX/EZ
+         damthuBEya1P0YFv3Jg24HjaqPO4AwzEyl+zrN/TSl2gV+p9kexKz18UgoHEazS+yjD7
+         s3x/FU8I8XMgZR1j+K9o3pLmBwuXMH3BU3Vfd9w22Xb+MaOfnjMpcKSrjwOrUi9MGeMb
+         vH1FgOEnoeL32MtmlKS+jAGMo+ejfSXaBR4MN9K/941XlYE3F4ljKZIAIdvY6dCfLDwo
+         LzHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=iIylKV8PWi6a84OxrCbfA4LgZR7i3vwQqVnaY7JrrQU=;
+        b=K0q/47ItG0XUJaPTPCQN84nVcHcgOsZNHjZyPyUuoT+YpeYM7rAeYqT9x1650B2S2g
+         Tsf47SwOq0hu9DvnckdVvZL3dhP0pjzfIeqPklrdWoUgoAI3idKSHdTB+U5UovcfWQ2o
+         DlznNb9ok9BYvGLRhWI5MDCQwiMSIinRCnQdZaCPuWs4GlMqCS4ekxqR0LSPAy7Ujbf6
+         GIgzwZrRXQQOYqv0/FavjNDy5M5/v+GnfojhhxnMUkM2t+USxSNrboLdY+56LsjDF2id
+         pRLtbyRxKHm8dpbkkOa66DyAptGzw37HX7A1auS9DJe3dvnHItVg5J6BHZw8p95q16Vu
+         agwQ==
+X-Gm-Message-State: ACrzQf2vCEMj3oCIURqFXk+8lulD09+0QwnnXiTd7SVBI1ExJMUNb/5X
+	p3cXWgv2WjkcPOYiYq5iD/k=
+X-Google-Smtp-Source: AMsMyM4PQWl6zvFHk/r0XiP9GAls4l2/cyFEMX1EMtka4bQZocGBBFHBEtIDcV8wFn9XDQVJ4X1sXQ==
+X-Received: by 2002:a17:90b:4f45:b0:213:ccc6:87df with SMTP id pj5-20020a17090b4f4500b00213ccc687dfmr51987081pjb.227.1667914037053;
+        Tue, 08 Nov 2022 05:27:17 -0800 (PST)
+Received: from debian.me (subs09a-223-255-225-66.three.co.id. [223.255.225.66])
+        by smtp.gmail.com with ESMTPSA id x63-20020a626342000000b0056bcc744bdbsm6296700pfb.203.2022.11.08.05.27.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Nov 2022 05:27:16 -0800 (PST)
+Received: by debian.me (Postfix, from userid 1000)
+	id D871A10403D; Tue,  8 Nov 2022 20:27:13 +0700 (WIB)
+Date: Tue, 8 Nov 2022 20:27:13 +0700
+From: Bagas Sanjaya <bagasdotme@gmail.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: bpf@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+	linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <ndesaulniers@google.com>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+	Cornelia Huck <cohuck@redhat.com>,
+	Daniel Jordan <daniel.m.jordan@oracle.com>,
+	David Gibson <david@gibson.dropbear.id.au>,
+	Eric Auger <eric.auger@redhat.com>,
+	Eric Farman <farman@linux.ibm.com>,
+	Jason Wang <jasowang@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Joao Martins <joao.m.martins@oracle.com>, kvm@vger.kernel.org,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+	Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
+Subject: Re: [PATCH v4 10/17] iommufd: IOCTLs for the io_pagetable
+Message-ID: <Y2pZMSejF7nHinIr@debian.me>
+References: <0-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
+ <10-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MW4PR12MB5644:EE_
-X-MS-Office365-Filtering-Correlation-Id: 68453bd6-fc3e-4d54-4584-08dac18c61f7
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	1GVZAk95Dokbdn6h4APRIbB5zfquYIHt3gvq3rjyO5rxpLEiPYc2f6Q16kgPAeAs55+e1qvAJtkpYZkcW3B+yo0If1+UPDAwWjeudH3CDIocBkEYVxrWNGr+BfT6EPiao1OyjTVMOY19hvdqG48E1OUshNvDy624A9KM2jiLMpT0npmH1EqQGkjaJjyXeGKgif90BdE0f//3528YMo3TUshutDdlAniL2tFuWWtQQo618BRZHtZHJXM3xzKoZmaZiUMQVay8dItx/uvtIGuvIh3IBuY7jNsvm7a5MFR+OkEqBPu+pfwGC0bA8K3+rN0TXnB6N4ldFT1x8ZtCOifuMISfcVj9xNNC2MYzuXMFHZPytivgG5lNIMDFUIMV34bl7imNtrmzlUpkyIzAVb2JgcRJJSu1mjThNgZ/c0w9t3GGd+TxmQIee3/TLO8JUHjkRWiIG2NDal4phm4tpRhMCJVoxJxaPJFHSxFUyC15EQ98+yQJEGbaLEsGlerFSncqiuh+HA3lA52D7dqDvS6+ktz9rLsBjTe5gyQ1kWarewqd7LY1WxnDwc3T9ygPhD+4qUBUSLfEzS01ynGhiD3YY1V17oKQckXXuXt+8a6Dyg7uI0/IGYOFEDYJPJQhlrsXDNb7G0pnn08sz/qjAjYWdJrroUzgMpdslSY4uSu3J9oWMMWNYdh/IMW1itn86i1SiUALOJzyrMz6CGNOrsQKYV4p4XZPnsNJurQenp9raGI9HZyousiM+5F47CMSswpO
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(136003)(39860400002)(396003)(346002)(366004)(451199015)(66946007)(186003)(8936002)(86362001)(66556008)(6506007)(26005)(2906002)(8676002)(66476007)(6512007)(7416002)(36756003)(7406005)(5660300002)(41300700001)(2616005)(38100700002)(83380400001)(4326008)(316002)(478600001)(6486002)(6916009)(473944003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?zkQCf9vuhBEdzbhXikAa2y4l3nWaDHRbjPGkY7ZSHF3zIYJN5LL4PgELSkd9?=
- =?us-ascii?Q?xZkYHpuCRDR9aGKfRYW9fWopmuslW2EIafc4gQQN3IoamcFSZeTnM8DyQ3we?=
- =?us-ascii?Q?i475crH5A/bdTh6UkZAZac48vKWpcRiTozLvR4iu/XcbkzzQtHhR3y+sZ9Np?=
- =?us-ascii?Q?U+RiK5bhmWKjiCJGXfJN+pdyLibjzSiD6l050wgunz8oipiOhgzdEpIhwK2x?=
- =?us-ascii?Q?aFVA4rtIxvoIH0DoJdC7jSkjfsUgHjWnkr9ocWqkp/gBplMJfmOrMEVZAvv2?=
- =?us-ascii?Q?/pXchugcqtReV9lRinwG7Bo+k/I/nwMNp+HbYbLpkodogSd4BRTI3heGnosv?=
- =?us-ascii?Q?mFpLMbHrR5Ls5SlPQ5sYWR/EBos9C1r3sF0OWj4UC5VpV8Rsc9+kGjGBc30m?=
- =?us-ascii?Q?m5YqLkrle23xA4vsY1OWpF6+pLp4KB0CwWXzd5gHoqWkj/6RlYoImIx7pKXT?=
- =?us-ascii?Q?qR2GtNRM9x9wzt9qlbeF+LPTZnFfPhccUlaiq2i4f2LtN7CGes7LzaX4Ax86?=
- =?us-ascii?Q?M3/50uespqgRXg5uTOqA92j/kJqaBKyXoaLMt4DzpT24L1YYvnEkB6fNHjfx?=
- =?us-ascii?Q?ARotWDtj3q+3PFfYHZJ7ZcV9Umc/keRu4IPgkEcku3amKulScU7jVRlbT68d?=
- =?us-ascii?Q?4K+3c9a5IoMo5Qx6AjsobDutG/xIomFYxBJkLbQyJp5EQmZYD/rHJDXbjkF+?=
- =?us-ascii?Q?nOD1pz2BIvYPgCSLsX30jGlNPQGfEV/RFOLTgi7JRZhwdsZgE2yR4fhAJ9iR?=
- =?us-ascii?Q?WJcv1fwuR7LP16rUmBe6093TdBEE0v2ubeHQuxRkxIfD7d2vqFPw8VkBkrkn?=
- =?us-ascii?Q?owAaJk6e0b9wmIXqahfmQ0NwwR1xUVUAc04UgIIx60//aT8M/gIq8Co8wVK1?=
- =?us-ascii?Q?aqoNOnYL4LVRESuOLoQ5JVFxkvTjumJj+8G7am5zVeQH3fyPVwLCLUncIjGH?=
- =?us-ascii?Q?arDNxqydBv24Mnda2NStobHE/ZrPg+Fd4dbR2x/e9vJ66+UQvGFd5cjeREJ9?=
- =?us-ascii?Q?nZI+E/GxEZmQaQdTEieWH74ZXype3BYSjt1Xi81ViYJMuVD9Sjh8XonAfHup?=
- =?us-ascii?Q?0CY2EftL1CcAYA/0evxYNRodbryhKBgyqga//2tYH3SpL4I6W1Mymo4pOEMx?=
- =?us-ascii?Q?XXCsjwQf1ZQ5irlQB6onvPHUsYBG8tNeQ7LOWFHRRoIM7OPp3HOFpS4jzkuy?=
- =?us-ascii?Q?McsyzDsTzk+8CbD+6FG/hXf39rR7RitYlrPwfl6VRIQNj/RkkCOMN2WzJmbz?=
- =?us-ascii?Q?k4SHd+AYPc30J7f1Jn+YT2XTNVEuP6vIcm9VhLtCtRL2skmKZgjOy2Gg9RgA?=
- =?us-ascii?Q?3DdkPlL1JEgMxUAtmMNF9+btyzx5BPs0b7lEv3Tm9g1IaY4zT/R+tyJWpLDd?=
- =?us-ascii?Q?3YUW8eRPEz1NT7167SvG8h75grgv9BC8/ZJVXKBDVyB/ZIiUmbjh3JadhvSn?=
- =?us-ascii?Q?AHpKqDxuOZGxxsJJFu0iSAchO8IiESHQ8fq2L+1HLFFLEFFcAZe2bI03Nr3r?=
- =?us-ascii?Q?3FpCTcNSEbSLEIiZW/mXwI56yIhUC2Q+gKwfBzIl2Elc004tSKgS7Y/oZxPh?=
- =?us-ascii?Q?/Av82d8ON8zgK+tnYJ0=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 68453bd6-fc3e-4d54-4584-08dac18c61f7
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Nov 2022 13:23:11.2170
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: d9j3Ieq90+XWaodEymm1VndKGYkQI6xFGPWhYitdQpHyiYDBEfyouYYv54g4Ivnw
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB5644
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="0xuIlMeiFoV5n7Yi"
+Content-Disposition: inline
+In-Reply-To: <10-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
 
-On Tue, Nov 08, 2022 at 01:20:42PM +0000, Will Deacon wrote:
-> On Mon, Nov 07, 2022 at 04:14:32PM -0800, Nicolin Chen wrote:
-> > On Mon, Nov 07, 2022 at 03:26:45PM +0000, Will Deacon wrote:
-> > 
-> > > > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > > > index ba47c73f5b8c..01fd7df16cb9 100644
-> > > > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > > > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > > > @@ -2430,23 +2430,14 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
-> > > >                       goto out_unlock;
-> > > >               }
-> > > >       } else if (smmu_domain->smmu != smmu) {
-> > > > -             dev_err(dev,
-> > > > -                     "cannot attach to SMMU %s (upstream of %s)\n",
-> > > > -                     dev_name(smmu_domain->smmu->dev),
-> > > > -                     dev_name(smmu->dev));
-> > > > -             ret = -ENXIO;
-> > > > +             ret = -EINVAL;
-> > > >               goto out_unlock;
-> > > >       } else if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1 &&
-> > > >                  master->ssid_bits != smmu_domain->s1_cfg.s1cdmax) {
-> > > > -             dev_err(dev,
-> > > > -                     "cannot attach to incompatible domain (%u SSID bits != %u)\n",
-> > > > -                     smmu_domain->s1_cfg.s1cdmax, master->ssid_bits);
-> > > >               ret = -EINVAL;
-> > > >               goto out_unlock;
-> > > >       } else if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1 &&
-> > > >                  smmu_domain->stall_enabled != master->stall_enabled) {
-> > > > -             dev_err(dev, "cannot attach to stall-%s domain\n",
-> > > > -                     smmu_domain->stall_enabled ? "enabled" : "disabled");
-> > > >               ret = -EINVAL;
-> > > >               goto out_unlock;
-> > > >       }
-> > 
-> > > I think it would be helpful to preserve these messages using
-> > > dev_err_ratelimited() so that attach failure can be diagnosed without
-> > > having to hack the messages back into the driver.
-> > 
-> > Thank you for the review.
-> > 
-> > The change is already picked up last week. Yet, I can add prints
-> > back with a followup patch, if no one has a problem with that.
-> 
-> Sorry, I fell behind with upstream so I got to this late. A patch on top
-> would be fantastic!
-> 
-> > Also, I am not quite sure what the use case would be to have an
-> > error print. Perhaps dev_dbg() would be more fitting if it is
-> > just for diagnosis?
-> 
-> Sure, that works for me. I think the messages are useful for folks
-> triggering this path e.g. via sysfs but if they're limited to debug I think
-> that's better than removing them altogether.
 
-I suspsect it has to be dbg - vfio/iommufd will probably trigger these
-messages as it probes for domains that are compatible - eg certainly
-the first one. Even if it is a "once" it would still emit a confusing
-message for a normal occurance.
+--0xuIlMeiFoV5n7Yi
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-This is why they were removed in the first place..
+On Mon, Nov 07, 2022 at 08:49:03PM -0400, Jason Gunthorpe wrote:
+> diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+> index 2ad06b27a35fe5..a872a50d800a41 100644
+> --- a/include/uapi/linux/iommufd.h
+> +++ b/include/uapi/linux/iommufd.h
+> @@ -37,6 +37,13 @@
+>  enum {
+>  	IOMMUFD_CMD_BASE =3D 0x80,
+>  	IOMMUFD_CMD_DESTROY =3D IOMMUFD_CMD_BASE,
+> +	IOMMUFD_CMD_IOAS_ALLOC,
+> +	IOMMUFD_CMD_IOAS_ALLOW_IOVAS,
+> +	IOMMUFD_CMD_IOAS_COPY,
+> +	IOMMUFD_CMD_IOAS_IOVA_RANGES,
+> +	IOMMUFD_CMD_IOAS_MAP,
+> +	IOMMUFD_CMD_IOAS_UNMAP,
+> +	IOMMUFD_CMD_OPTION,
+>  };
+> =20
+>  /**
+> @@ -52,4 +59,238 @@ struct iommu_destroy {
+>  };
+>  #define IOMMU_DESTROY _IO(IOMMUFD_TYPE, IOMMUFD_CMD_DESTROY)
+> =20
+> +/**
+> + * struct iommu_ioas_alloc - ioctl(IOMMU_IOAS_ALLOC)
+> + * @size: sizeof(struct iommu_ioas_alloc)
+> + * @flags: Must be 0
+> + * @out_ioas_id: Output IOAS ID for the allocated object
+> + *
+> + * Allocate an IO Address Space (IOAS) which holds an IO Virtual Address=
+ (IOVA)
+> + * to memory mapping.
+> + */
+> +struct iommu_ioas_alloc {
+> +	__u32 size;
+> +	__u32 flags;
+> +	__u32 out_ioas_id;
+> +};
+> +#define IOMMU_IOAS_ALLOC _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_ALLOC)
+> +
+> +/**
+> + * struct iommu_iova_range
+> + * @start: First IOVA
+> + * @last: Inclusive last IOVA
+> + *
+> + * An interval in IOVA space.
+> + */
+> +struct iommu_iova_range {
+> +	__aligned_u64 start;
+> +	__aligned_u64 last;
+> +};
+> +
+> +/**
+> + * struct iommu_ioas_iova_ranges - ioctl(IOMMU_IOAS_IOVA_RANGES)
+> + * @size: sizeof(struct iommu_ioas_iova_ranges)
+> + * @ioas_id: IOAS ID to read ranges from
+> + * @num_iovas: Input/Output total number of ranges in the IOAS
+> + * @__reserved: Must be 0
+> + * @allowed_iovas: Pointer to the output array of struct iommu_iova_range
+> + * @out_iova_alignment: Minimum alignment required for mapping IOVA
+> + *
+> + * Query an IOAS for ranges of allowed IOVAs. Mapping IOVA outside these=
+ ranges
+> + * is not allowed. num_iovas will be set to the total number of iovas and
+> + * the allowed_iovas[] will be filled in as space permits.
+> + *
+> + * The allowed ranges are dependent on the HW path the DMA operation tak=
+es, and
+> + * can change during the lifetime of the IOAS. A fresh empty IOAS will h=
+ave a
+> + * full range, and each attached device will narrow the ranges based on =
+that
+> + * device's HW restrictions. Detatching a device can widen the ranges. U=
+serspace
+> + * should query ranges after every attach/detatch to know what IOVAs are=
+ valid
+> + * for mapping.
+> + *
+> + * On input num_iovas is the length of the allowed_iovas array. On outpu=
+t it is
+> + * the total number of iovas filled in. The ioctl will return -EMSGSIZE =
+and set
+> + * num_iovas to the required value if num_iovas is too small. In this ca=
+se the
+> + * caller should allocate a larger output array and re-issue the ioctl.
+> + */
+> +struct iommu_ioas_iova_ranges {
+> +	__u32 size;
+> +	__u32 ioas_id;
+> +	__u32 num_iovas;
+> +	__u32 __reserved;
+> +	__aligned_u64 allowed_iovas;
+> +	__aligned_u64 out_iova_alignment;
+> +};
+> +#define IOMMU_IOAS_IOVA_RANGES _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_IOVA_R=
+ANGES)
+> +
+> +/**
+> + * struct iommu_ioas_allow_iovas - ioctl(IOMMU_IOAS_ALLOW_IOVAS)
+> + * @size: sizeof(struct iommu_ioas_allow_iovas)
+> + * @ioas_id: IOAS ID to allow IOVAs from
+> + * @num_iovas: Input/Output total number of ranges in the IOAS
+> + * @__reserved: Must be 0
+> + * @allowed_iovas: Pointer to array of struct iommu_iova_range
+> + *
+> + * Ensure a range of IOVAs are always available for allocation. If this =
+call
+> + * succeeds then IOMMU_IOAS_IOVA_RANGES will never return a list of IOVA=
+ ranges
+> + * that are narrower than the ranges provided here. This call will fail =
+if
+> + * IOMMU_IOAS_IOVA_RANGES is currently narrower than the given ranges.
+> + *
+> + * When an IOAS is first created the IOVA_RANGES will be maximally sized=
+, and as
+> + * devices are attached the IOVA will narrow based on the device restric=
+tions.
+> + * When an allowed range is specified any narrowing will be refused, ie =
+device
+> + * attachment can fail if the device requires limiting within the allowe=
+d range.
+> + *
+> + * Automatic IOVA allocation is also impacted by this call. MAP will only
+> + * allocate within the allowed IOVAs if they are present.
+> + *
+> + * This call replaces the entire allowed list with the given list.
+> + */
+> +struct iommu_ioas_allow_iovas {
+> +	__u32 size;
+> +	__u32 ioas_id;
+> +	__u32 num_iovas;
+> +	__u32 __reserved;
+> +	__aligned_u64 allowed_iovas;
+> +};
+> +#define IOMMU_IOAS_ALLOW_IOVAS _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_ALLOW_=
+IOVAS)
+> +
+> +/**
+> + * enum iommufd_ioas_map_flags - Flags for map and copy
+> + * @IOMMU_IOAS_MAP_FIXED_IOVA: If clear the kernel will compute an appro=
+priate
+> + *                             IOVA to place the mapping at
+> + * @IOMMU_IOAS_MAP_WRITEABLE: DMA is allowed to write to this mapping
+> + * @IOMMU_IOAS_MAP_READABLE: DMA is allowed to read from this mapping
+> + */
+> +enum iommufd_ioas_map_flags {
+> +	IOMMU_IOAS_MAP_FIXED_IOVA =3D 1 << 0,
+> +	IOMMU_IOAS_MAP_WRITEABLE =3D 1 << 1,
+> +	IOMMU_IOAS_MAP_READABLE =3D 1 << 2,
+> +};
+> +
+> +/**
+> + * struct iommu_ioas_map - ioctl(IOMMU_IOAS_MAP)
+> + * @size: sizeof(struct iommu_ioas_map)
+> + * @flags: Combination of enum iommufd_ioas_map_flags
+> + * @ioas_id: IOAS ID to change the mapping of
+> + * @__reserved: Must be 0
+> + * @user_va: Userspace pointer to start mapping from
+> + * @length: Number of bytes to map
+> + * @iova: IOVA the mapping was placed at. If IOMMU_IOAS_MAP_FIXED_IOVA i=
+s set
+> + *        then this must be provided as input.
+> + *
+> + * Set an IOVA mapping from a user pointer. If FIXED_IOVA is specified t=
+hen the
+> + * mapping will be established at iova, otherwise a suitable location ba=
+sed on
+> + * the reserved and allowed lists will be automatically selected and ret=
+urned in
+> + * iova.
+> + */
+> +struct iommu_ioas_map {
+> +	__u32 size;
+> +	__u32 flags;
+> +	__u32 ioas_id;
+> +	__u32 __reserved;
+> +	__aligned_u64 user_va;
+> +	__aligned_u64 length;
+> +	__aligned_u64 iova;
+> +};
+> +#define IOMMU_IOAS_MAP _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_MAP)
+> +
+> +/**
+> + * struct iommu_ioas_copy - ioctl(IOMMU_IOAS_COPY)
+> + * @size: sizeof(struct iommu_ioas_copy)
+> + * @flags: Combination of enum iommufd_ioas_map_flags
+> + * @dst_ioas_id: IOAS ID to change the mapping of
+> + * @src_ioas_id: IOAS ID to copy from
+> + * @length: Number of bytes to copy and map
+> + * @dst_iova: IOVA the mapping was placed at. If IOMMU_IOAS_MAP_FIXED_IO=
+VA is
+> + *            set then this must be provided as input.
+> + * @src_iova: IOVA to start the copy
+> + *
+> + * Copy an already existing mapping from src_ioas_id and establish it in
+> + * dst_ioas_id. The src iova/length must exactly match a range used with
+> + * IOMMU_IOAS_MAP.
+> + *
+> + * This may be used to efficiently clone a subset of an IOAS to another,=
+ or as a
+> + * kind of 'cache' to speed up mapping. Copy has an effciency advantage =
+over
+> + * establishing equivalent new mappings, as internal resources are share=
+d, and
+> + * the kernel will pin the user memory only once.
+> + */
+> +struct iommu_ioas_copy {
+> +	__u32 size;
+> +	__u32 flags;
+> +	__u32 dst_ioas_id;
+> +	__u32 src_ioas_id;
+> +	__aligned_u64 length;
+> +	__aligned_u64 dst_iova;
+> +	__aligned_u64 src_iova;
+> +};
+> +#define IOMMU_IOAS_COPY _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_COPY)
+> +
+> +/**
+> + * struct iommu_ioas_unmap - ioctl(IOMMU_IOAS_UNMAP)
+> + * @size: sizeof(struct iommu_ioas_unmap)
+> + * @ioas_id: IOAS ID to change the mapping of
+> + * @iova: IOVA to start the unmapping at
+> + * @length: Number of bytes to unmap, and return back the bytes unmapped
+> + *
+> + * Unmap an IOVA range. The iova/length must be a superset of a previous=
+ly
+> + * mapped range used with IOMMU_IOAS_MAP or IOMMU_IOAS_COPY. Splitting or
+> + * truncating ranges is not allowed. The values 0 to U64_MAX will unmap
+> + * everything.
+> + */
+> +struct iommu_ioas_unmap {
+> +	__u32 size;
+> +	__u32 ioas_id;
+> +	__aligned_u64 iova;
+> +	__aligned_u64 length;
+> +};
+> +#define IOMMU_IOAS_UNMAP _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_UNMAP)
+> +
+> +/**
+> + * enum iommufd_option
+> + * @IOMMU_OPTION_RLIMIT_MODE:
+> + *    Change how RLIMIT_MEMLOCK accounting works. The caller must have p=
+rivilege
+> + *    to invoke this. Value 0 (default) is user based accouting, 1 uses =
+process
+> + *    based accounting. Global option, object_id must be 0
+> + * @IOMMU_OPTION_HUGE_PAGES:
+> + *    Value 1 (default) allows contiguous pages to be combined when gene=
+rating
+> + *    iommu mappings. Value 0 disables combining, everything is mapped to
+> + *    PAGE_SIZE. This can be useful for benchmarking.  This is a per-IOAS
+> + *    option, the object_id must be the IOAS ID.
+> + */
+> +enum iommufd_option {
+> +	IOMMU_OPTION_RLIMIT_MODE =3D 0,
+> +	IOMMU_OPTION_HUGE_PAGES =3D 1,
+> +};
+> +
+> +/**
+> + * enum iommufd_option_ops
+> + * @IOMMU_OPTION_OP_SET: Set the option's value
+> + * @IOMMU_OPTION_OP_GET: Get the option's value
+> + */
+> +enum iommufd_option_ops {
+> +	IOMMU_OPTION_OP_SET =3D 0,
+> +	IOMMU_OPTION_OP_GET =3D 1,
+> +};
+> +
+> +/**
+> + * @size: sizeof(struct iommu_option)
+> + * @option_id: One of enum iommufd_option
+> + * @op: One of enum iommufd_option_ops
+> + * @__reserved: Must be 0
+> + * @object_id: ID of the object if required
+> + * @val64: Option value to set or value returned on get
+> + *
+> + * Change a simple option value. This multiplexor allows controlling a o=
+ptions
+> + * on objects. IOMMU_OPTION_OP_SET will load an option and IOMMU_OPTION_=
+OP_GET
+> + * will return the current value.
+> + */
+> +struct iommu_option {
+> +	__u32 size;
+> +	__u32 option_id;
+> +	__u16 op;
+> +	__u16 __reserved;
+> +	__u32 object_id;
+> +	__aligned_u64 val64;
+> +};
+> +#define IOMMU_OPTION _IO(IOMMUFD_TYPE, IOMMUFD_CMD_OPTION)
+>  #endif
 
-Jason
+I see kernel-doc warnings (missing short descriptions) when making
+htmldocs, so I have applied the fixup:
+
+---- >8 ----
+
+=46rom 5643b202ae9853c11434466c76aeaaa044e88b07 Mon Sep 17 00:00:00 2001
+=46rom: Bagas Sanjaya <bagasdotme@gmail.com>
+Date: Tue, 8 Nov 2022 20:14:25 +0700
+Subject: [PATCH] iommufd: Add missing ioctl short descriptions
+
+Checking kernel-doc comments in iommufd.h header with scripts/kernel-doc
+produces missing short description warnings:
+
+include/uapi/linux/iommufd.h:80: warning: missing initial short description=
+ on line:
+ * struct iommu_iova_range
+include/uapi/linux/iommufd.h:250: warning: missing initial short descriptio=
+n on line:
+ * enum iommufd_option
+include/uapi/linux/iommufd.h:267: warning: missing initial short descriptio=
+n on line:
+ * enum iommufd_option_ops
+include/uapi/linux/iommufd.h:277: warning: Cannot understand  * @size: size=
+of(struct iommu_option)
+ on line 277 - I thought it was a doc line
+include/uapi/linux/iommufd.h:299: warning: missing initial short descriptio=
+n on line:
+ * enum iommufd_vfio_ioas_op
+
+One of them is reported by Stephen Rothwell when merging iommufd tree for
+linux-next.
+
+Describe these ioctl structs and enums to fix above warnings.
+
+Link: https://lore.kernel.org/linux-next/20221108165125.3bf96028@canb.auug.=
+org.au/
+Fixes: 5a013b3b3b2f02 ("iommufd: IOCTLs for the io_pagetable")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+---
+ include/uapi/linux/iommufd.h | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+index c7109d7e5e09a9..66e9fb104bde5a 100644
+--- a/include/uapi/linux/iommufd.h
++++ b/include/uapi/linux/iommufd.h
+@@ -77,7 +77,7 @@ struct iommu_ioas_alloc {
+ #define IOMMU_IOAS_ALLOC _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_ALLOC)
+=20
+ /**
+- * struct iommu_iova_range
++ * struct iommu_iova_range - ioctl(IOMMU_IOVA_RANGE)
+  * @start: First IOVA
+  * @last: Inclusive last IOVA
+  *
+@@ -247,7 +247,8 @@ struct iommu_ioas_unmap {
+ #define IOMMU_IOAS_UNMAP _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_UNMAP)
+=20
+ /**
+- * enum iommufd_option
++ * enum iommufd_option - ioctl(IOMMU_OPTION_RLIMIT_MODE) and
++ *                       ioctl(IOMMU_OPTION_HUGE_PAGES)
+  * @IOMMU_OPTION_RLIMIT_MODE:
+  *    Change how RLIMIT_MEMLOCK accounting works. The caller must have pri=
+vilege
+  *    to invoke this. Value 0 (default) is user based accouting, 1 uses pr=
+ocess
+@@ -264,7 +265,8 @@ enum iommufd_option {
+ };
+=20
+ /**
+- * enum iommufd_option_ops
++ * enum iommufd_option_ops - ioctl(IOMMU_OPTION_OP_SET) and
++ *                           ioctl(IOMMU_OPTION_OP_GET)
+  * @IOMMU_OPTION_OP_SET: Set the option's value
+  * @IOMMU_OPTION_OP_GET: Get the option's value
+  */
+@@ -274,6 +276,7 @@ enum iommufd_option_ops {
+ };
+=20
+ /**
++ * struct iommu_option - iommu option multiplexer
+  * @size: sizeof(struct iommu_option)
+  * @option_id: One of enum iommufd_option
+  * @op: One of enum iommufd_option_ops
+@@ -296,7 +299,7 @@ struct iommu_option {
+ #define IOMMU_OPTION _IO(IOMMUFD_TYPE, IOMMUFD_CMD_OPTION)
+=20
+ /**
+- * enum iommufd_vfio_ioas_op
++ * enum iommufd_vfio_ioas_op - IOMMU_VFIO_IOAS_* ioctls
+  * @IOMMU_VFIO_IOAS_GET: Get the current compatibility IOAS
+  * @IOMMU_VFIO_IOAS_SET: Change the current compatibility IOAS
+  * @IOMMU_VFIO_IOAS_CLEAR: Disable VFIO compatibility
+
+
+Thanks.
+
+--=20
+An old man doll... just what I always wanted! - Clara
+
+--0xuIlMeiFoV5n7Yi
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCY2pZLgAKCRD2uYlJVVFO
+o9K9AQCtNLE0xZ4ykEU7h5R+o1v92cceQfeYnkmrVQNzE5kxXQEA6jiZ2dFAtqfp
+HH10hjLTREXUf/udDwJ8ajJufP7Gdww=
+=mS8C
+-----END PGP SIGNATURE-----
+
+--0xuIlMeiFoV5n7Yi--
