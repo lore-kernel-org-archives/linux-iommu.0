@@ -1,122 +1,103 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DF3210788
-	for <iommu@lists.linux.dev>; Wed,  9 Nov 2022 19:13:31 +0000 (UTC)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2A9Id9Me005218;
-	Wed, 9 Nov 2022 19:13:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=Wj5gLw/WjfL7aTPc5gojcjD5pl2mrG+cbeay+gqSGR4=;
- b=WjjQa5a/pAF6Sui/5CKTAA3a+vC8C0nFYAmKAfMw3PDgbSKAgx4FPZj2eVvcCcVQXxFC
- fSJVhmnycKpMsSHNETG2VOunM8Wf8H5G5zJx5H4GcMh3fP0WVMT+HeN2Byy46L2HA+QB
- n/dyHbItQcnz81q5cHej1RvANtrbPN5U9rR22YRlB7D6G55leMEUUi39ncFNGHwclVwT
- CDLouAh3OU/kjAmU3HAk8M+64Bs6d8RltGLsj/a6ao6PryN0HyCTWu3rX4wVsT+Q6GuM
- EaVx4BrvikerVjZJEdXX5oUHDjV7qJey4tAlrtuBFgVS3mEP1XjrEP1LaASIA9WuBX9a ig== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3krgmw2dnt-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 09 Nov 2022 19:13:26 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2A9It2r8027998;
-	Wed, 9 Nov 2022 19:13:26 GMT
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3krgmw2dn8-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 09 Nov 2022 19:13:26 +0000
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-	by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2A9J5oAm010655;
-	Wed, 9 Nov 2022 19:13:25 GMT
-Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
-	by ppma03wdc.us.ibm.com with ESMTP id 3kngs7fn0p-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 09 Nov 2022 19:13:25 +0000
-Received: from smtpav05.dal12v.mail.ibm.com ([9.208.128.132])
-	by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2A9JDP6U2425492
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 9 Nov 2022 19:13:26 GMT
-Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id D662758065;
-	Wed,  9 Nov 2022 19:13:23 +0000 (GMT)
-Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id AC2BD5805D;
-	Wed,  9 Nov 2022 19:13:22 +0000 (GMT)
-Received: from [9.160.53.158] (unknown [9.160.53.158])
-	by smtpav05.dal12v.mail.ibm.com (Postfix) with ESMTP;
-	Wed,  9 Nov 2022 19:13:22 +0000 (GMT)
-Message-ID: <aef32076-6431-cdf2-4193-5e62549384ab@linux.ibm.com>
-Date: Wed, 9 Nov 2022 14:13:22 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.0
-Subject: Re: S390 testing for IOMMUFD
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Cornelia Huck <cohuck@redhat.com>, Eric Farman <farman@linux.ibm.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Niklas Schnelle <schnelle@linux.ibm.com>,
-        Halil Pasic <pasic@linux.ibm.com>, Jason Herne <jjherne@linux.ibm.com>,
-        linux-s390@vger.kernel.org, iommu@lists.linux.dev,
-        Kevin Tian <kevin.tian@intel.com>,
-        Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Nicolin Chen <nicolinc@nvidia.com>
-References: <0-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
- <Y2msLjrbvG5XPeNm@nvidia.com>
- <fbb84105-cc6e-59bd-b09c-0ea4353d7605@linux.ibm.com>
- <d814e245-2255-15ce-cf3d-65788aa61689@linux.ibm.com>
- <73dd6b0e-35c7-bb5d-b392-a9de012d4f92@linux.ibm.com>
- <Y2vRYUXvIG21ytkT@nvidia.com>
-From: Anthony Krowiak <akrowiak@linux.ibm.com>
-In-Reply-To: <Y2vRYUXvIG21ytkT@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: yM0u9vrQT78X6GxEHh0I-Tj9VH395SA4
-X-Proofpoint-ORIG-GUID: fRMfp2rrFJEZqNUiKzQgq3pcgtlQ4gug
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AC4932101
+	for <iommu@lists.linux.dev>; Wed,  9 Nov 2022 19:14:04 +0000 (UTC)
+Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (linux.microsoft.com [13.77.154.182])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 50C1F20B929F;
+	Wed,  9 Nov 2022 11:07:38 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 50C1F20B929F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1668020858;
+	bh=oKZaD4Qjvp917hAMIoauKzxyDhqCL2cTKsG7VBihYvA=;
+	h=From:To:Cc:Subject:Date:From;
+	b=lcmsxDcThq9edG7znbha1tIBUnNbQAh+M9zsf5/wezILs72dXw14K5pAsCoAt9Sz3
+	 XwKpaJEuL2/2lHxkhgIi4QQS3A2RtPah6hBBJ+mOUcOQ7X1ikgt61uW5I3S5zutV0M
+	 R4DIyY44VnueKoN7G6GZd2vgZx7H0tDz+9kE8lVw=
+From: Nuno Das Neves <nunodasneves@linux.microsoft.com>
+To: linux-hyperv@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Cc: mikelley@microsoft.com,
+	sunilmut@microsoft.com,
+	wei.liu@kernel.org,
+	kys@microsoft.com,
+	Tianyu.Lan@microsoft.com,
+	haiyangz@microsoft.com,
+	decui@microsoft.com,
+	dwmw2@infradead.org,
+	joro@8bytes.org,
+	will@kernel.org
+Subject: [PATCH] iommu/hyper-v: Allow hyperv irq remapping without x2apic
+Date: Wed,  9 Nov 2022 11:07:33 -0800
+Message-Id: <1668020853-23950-1-git-send-email-nunodasneves@linux.microsoft.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-11-09_06,2022-11-09_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 suspectscore=0
- lowpriorityscore=0 clxscore=1015 phishscore=0 impostorscore=0 spamscore=0
- priorityscore=1501 bulkscore=0 mlxlogscore=999 mlxscore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2210170000
- definitions=main-2211090144
 
+If x2apic is not available, hyperv-iommu skips remapping
+irqs. This breaks root partition which always needs irqs
+remapped.
 
-On 11/9/22 11:12 AM, Jason Gunthorpe wrote:
-> On Wed, Nov 09, 2022 at 09:49:01AM -0500, Anthony Krowiak wrote:
->> I cloned the https://lore.kernel.org/kvm/Y2q3nFXwOk9jul5u@nvidia.com/T/#m76a9c609c5ccd1494c05c6f598f9c8e75b7c9888
->> repo and ran the vfio_ap test cases. The tests ran without encountering the
->> errors related to the vfio_pin_pages() function
-> I updated the git repos with this change now
->
->> but I did see two tests fail attempting to run crypto tests on the
->> guest. I also saw a WARN_ON stack trace in the dmesg output
->> indicating a timeout occurred trying to verify the completion of a
->> queue reset. The reset problem has reared its ugly head in our CI,
->> so this may be a good thing as it will allow me to debug why its
->> happening.
-> Please let me know if you think this is iommufd related, from your
-> description it sounds like an existing latent bug?
+Fix this by allowing irq remapping regardless of x2apic,
+and change hyperv_enable_irq_remapping() to return
+IRQ_REMAP_XAPIC_MODE in case x2apic is missing.
 
+Tested with root and non-root hyperv partitions.
 
-Just in case you missed my response to my previous email, the problems I 
-was seeing were due to using a set regression tests that I patched to 
-try to improve the tests performance. When I ran the vanilla tests they 
-ran successfully without any problems with your patch. I will continue 
-testing but as of now, it looks good to me.
+Signed-off-by: Nuno Das Neves <nunodasneves@linux.microsoft.com>
+---
+ drivers/iommu/Kconfig        | 6 +++---
+ drivers/iommu/hyperv-iommu.c | 7 ++++---
+ 2 files changed, 7 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index dc5f7a156ff5..cf7433652db0 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -474,13 +474,13 @@ config QCOM_IOMMU
+ 	  Support for IOMMU on certain Qualcomm SoCs.
+ 
+ config HYPERV_IOMMU
+-	bool "Hyper-V x2APIC IRQ Handling"
++	bool "Hyper-V IRQ Handling"
+ 	depends on HYPERV && X86
+ 	select IOMMU_API
+ 	default HYPERV
+ 	help
+-	  Stub IOMMU driver to handle IRQs as to allow Hyper-V Linux
+-	  guests to run with x2APIC mode enabled.
++	  Stub IOMMU driver to handle IRQs to support Hyper-V Linux
++	  guest and root partitions.
+ 
+ config VIRTIO_IOMMU
+ 	tristate "Virtio IOMMU driver"
+diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
+index e190bb8c225c..abd1826a9e63 100644
+--- a/drivers/iommu/hyperv-iommu.c
++++ b/drivers/iommu/hyperv-iommu.c
+@@ -123,8 +123,7 @@ static int __init hyperv_prepare_irq_remapping(void)
+ 	const struct irq_domain_ops *ops;
+ 
+ 	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV) ||
+-	    x86_init.hyper.msi_ext_dest_id() ||
+-	    !x2apic_supported())
++	    x86_init.hyper.msi_ext_dest_id())
+ 		return -ENODEV;
+ 
+ 	if (hv_root_partition) {
+@@ -170,7 +169,9 @@ static int __init hyperv_prepare_irq_remapping(void)
+ 
+ static int __init hyperv_enable_irq_remapping(void)
+ {
+-	return IRQ_REMAP_X2APIC_MODE;
++	if (x2apic_supported())
++		return IRQ_REMAP_X2APIC_MODE;
++	return IRQ_REMAP_XAPIC_MODE;
+ }
+ 
+ struct irq_remap_ops hyperv_irq_remap_ops = {
+-- 
+2.25.1
 
->
-> Thanks,
-> Jason
