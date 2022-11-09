@@ -1,58 +1,39 @@
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9CBB29B2
-	for <iommu@lists.linux.dev>; Wed,  9 Nov 2022 13:16:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1667999818; x=1699535818;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=NGiS8NfW0dWzCQaSqeSFNqUhg2rjl+tPtdOmaAPC458=;
-  b=hteB62rpJtDJYkZwTwUpvKWX6+XutkrkOG6k8JhqaqPLA6/UKGD2GPWZ
-   k01wfWI/7CXlJW46SxFBLr3a6pcR1ydJhpL39lkDmNmLF22o4YuZplW8l
-   LarAoopRpCBdfZfD/65D98NRHB8o/mSdrGUqzH6TKqi+CrbENwHndAHcQ
-   44vBIt7FXqgZ/JdmIv/kUtREPArvxbFgQp326HGN8k6GLciyB0/2QePH2
-   p2S3yevHGBhtL25XIf4KNf1vLdC8qoMJqvGHJpuUPxa2fN97qFBBk9Viu
-   klxG3zKIx1gjuQp+P4KWfDOAAuvPrZupCv3CO0oe+HOrD1seQevEHaLpD
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10525"; a="312134310"
-X-IronPort-AV: E=Sophos;i="5.96,150,1665471600"; 
-   d="scan'208";a="312134310"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2022 05:16:58 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10525"; a="881926553"
-X-IronPort-AV: E=Sophos;i="5.96,150,1665471600"; 
-   d="scan'208";a="881926553"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.211.213]) ([10.254.211.213])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2022 05:16:55 -0800
-Message-ID: <3a7f5cdf-640b-f9d4-a25e-8be845abd7ba@linux.intel.com>
-Date: Wed, 9 Nov 2022 21:16:53 +0800
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 57F3229B2
+	for <iommu@lists.linux.dev>; Wed,  9 Nov 2022 13:26:58 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 01E181FB;
+	Wed,  9 Nov 2022 05:26:57 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8F1C03F73D;
+	Wed,  9 Nov 2022 05:26:49 -0800 (PST)
+Message-ID: <362bac0f-3dc1-b5e8-2bb7-c8e0f546eaa0@arm.com>
+Date: Wed, 9 Nov 2022 13:26:24 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.1
-Cc: baolu.lu@linux.intel.com, konrad.wilk@oracle.com,
- harshit.m.mogalapalli@gmail.com, David Woodhouse <dwmw2@infradead.org>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, Darren Kenny <darren.kenny@oracle.com>
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
 Subject: Re: [RFC] iommu/vt-d: set default value of INTEL_IOMMU_FLOPPY_WA to n
-To: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+To: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+ Baolu Lu <baolu.lu@linux.intel.com>
+Cc: konrad.wilk@oracle.com, harshit.m.mogalapalli@gmail.com,
+ David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, Darren Kenny <darren.kenny@oracle.com>
 References: <20221108125855.2984751-1-harshit.m.mogalapalli@oracle.com>
  <dc463b3e-2875-8aac-aca1-edacb90e5650@linux.intel.com>
  <76cbad17-ab5e-3dd9-cf94-df2b26748167@oracle.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
+Content-Language: en-GB
+From: Robin Murphy <robin.murphy@arm.com>
 In-Reply-To: <76cbad17-ab5e-3dd9-cf94-df2b26748167@oracle.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 2022/11/9 20:16, Harshit Mogalapalli wrote:
+On 09/11/2022 12:16 pm, Harshit Mogalapalli wrote:
 > 
 > 
 > On 09/11/22 12:35 pm, Baolu Lu wrote:
@@ -132,7 +113,22 @@ On 2022/11/9 20:16, Harshit Mogalapalli wrote:
 > 
 > I have a question:
 > Shouldn't we remove the code between ifdef-endif statements?
-> 
+
+No, machines with floppy drives may be uncommon, but almost certainly 
+some are still in use and being updated with new kernels, so we should 
+continue to support them.
+
+Do you have any practical issues with the ISA reserved region being 
+present, or is the only motivation here to save a few bytes of code when 
+it won't be needed? In the latter case, making it "def_bool BLK_DEV_FD" 
+might be sensible.
+
+(For the original patch, note that "def_bool n" is always a bit 
+redundant since plain "bool" implicitly defaults to "n" anyway)
+
+Thanks,
+Robin.
+
 > I mean something like this:
 > 
 > diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
@@ -185,10 +181,14 @@ On 2022/11/9 20:16, Harshit Mogalapalli wrote:
 > 
 > This code is introduced in Commit d850c2ee5fe2 ("iommu/vt-d: Expose ISA 
 > direct mapping region via iommu_get_resv_regions")
-
-As long as floppy driver exists in the tree, we have to include above
-code. Otherwise, floppy drivers don't work. At least we can easily find
-drivers/block/floppy.c which is still maintained (check MAINTAINERS).:-)
-
-Best regards,
-baolu
+> 
+> If others don't have an objection I can send a patch with the above diff.
+> 
+> Note: I am unsure about the code internals.
+> 
+> Thanks,
+> Harshit
+> 
+> 
+>> Best regards,
+>> baolu
