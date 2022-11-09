@@ -1,115 +1,194 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2045.outbound.protection.outlook.com [40.107.243.45])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 952CC2101
-	for <iommu@lists.linux.dev>; Wed,  9 Nov 2022 18:47:52 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=d1HUTLVu08e4n2xK6QFO1+Ie8klHSPv0wCif2v1qisoqADSrskhK2LkUqjvfTNy8vlb0mEyni8EEF3vCZ2X+yEtf/Ofspnm0ptO8thUXLtNI7059h7xcixBor2ShD+fx1JBn1xZD0EdB6NL7lJ7mIR5+ArQn7oYePOg8NMz8HLUje5xXWkfYovwESoUE9g+Vw54DwcFK/P6VWZ5B//18b/g7/7c7PsBpiPsjfwRqUdE7Zh45d2vZoeQtn83F4suU7pvGHs8AflCCjY35u8RI8X++BHlR14zVdY980bSzHABJ0YyalE4GvIqS/LbV2RqgdzkUBbaGbTDbh3owKH/4Ag==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vBty1l4hMLabYNWgf1dMFOtqobPwttwq/8XIjn2lRNA=;
- b=EO4W9K89rFQyazGNprXrrrojl6Pisthj8+MPgMpvFkdypFLd84aItY5a7fndsI0S3+ewSv/Jb4uegZkk2NOjxxsmcr60srG9g6y9fL3IXhp8jgP5VpCo9OL+Gcx7JIyDF1J8WPbH6MqBco6GcxYoq5bvN9m7kRgrVW/YRZ3WEUv9v9Z4Dy+mmBUURCDNt88GI1bH1XPwTkqj/IHSQrU2nyRteYAbf6LLd1RGuD8dENxQFeoqpfTGdjHvGR5q0ApBGnz/7sEHcgsvZfg6Szgr4yVUJ+RnsaGcxvOOoNS3i7vzdktTtimH1Kg167ZGL5bxjO6+fYzRDu8HN9wdGgBPLw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vBty1l4hMLabYNWgf1dMFOtqobPwttwq/8XIjn2lRNA=;
- b=SN0LlTbqn9RQxGRdLeTszQ7TrxIXSerxXGmWmbAhj2wEuy8HeiwcnAgkvbqyUNTf2TxKzVMo8PBYRxmiy56nA5R0TkoZhOwUkK9FsxwnB9lmNg59IrEZkSJCciJogyHqOke6DSYLWWI9rLWwJ72sQnIO38/FbHZtGiY2eJ7fRcDRa7jtbzoUWrAX7x3/RFFRY3zsdf4lWJOgKfvERdgS6Fa97LC63qd7hFHsxrc13bm0mp4DuK8TI8pAhernZthpIWUgirzHxB7VVp0OyXSZQLm5iv0uCbRVgdHkaiGW4ZEnQLOuhWYy40hJiUrIEFeBb16ZCegM2nDfMRonw/smeQ==
-Received: from MW2PR16CA0036.namprd16.prod.outlook.com (2603:10b6:907::49) by
- PH0PR12MB7957.namprd12.prod.outlook.com (2603:10b6:510:281::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.27; Wed, 9 Nov
- 2022 18:47:50 +0000
-Received: from CO1NAM11FT003.eop-nam11.prod.protection.outlook.com
- (2603:10b6:907:0:cafe::46) by MW2PR16CA0036.outlook.office365.com
- (2603:10b6:907::49) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.25 via Frontend
- Transport; Wed, 9 Nov 2022 18:47:50 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CO1NAM11FT003.mail.protection.outlook.com (10.13.175.93) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5813.12 via Frontend Transport; Wed, 9 Nov 2022 18:47:50 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Wed, 9 Nov 2022
- 10:47:37 -0800
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 9 Nov 2022
- 10:47:36 -0800
-Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.9)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36 via Frontend
- Transport; Wed, 9 Nov 2022 10:47:36 -0800
-Date: Wed, 9 Nov 2022 10:47:35 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <will@kernel.org>, <joro@8bytes.org>, <linux-kernel@vger.kernel.org>,
-	<iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>,
-	<robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Restore prints in
- arm_smmu_attach_dev()
-Message-ID: <Y2v1x6F31X6F/VHS@Asurada-Nvidia>
-References: <20221109070713.9617-1-nicolinc@nvidia.com>
- <Y2unGf7trHbfPh1v@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A618B10786
+	for <iommu@lists.linux.dev>; Wed,  9 Nov 2022 19:10:27 +0000 (UTC)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2A9GhW27030002;
+	Wed, 9 Nov 2022 19:10:01 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : from : to : cc : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=T/k3epjw4Qf8FbpJ6SymwJg2MM/DlmejbLOvCB2BWhk=;
+ b=nEL7bm5e1wwEttZbvbIQalZPxpLALPT2eqSWdTw8cl8oqnFf+pGYCVzMladGWWMb4Qgx
+ NAWLVMS5cH4pICSgJS0/jVwSpQK+jOWxU6HRjLUVEmXA/OuLktlUzW35BUaG00ooskQ3
+ cWFWTU4nVoOgdwys2pyTA1dtcX526h+eNZlEVpa69oA0BG448JBqbVhoSd1sz9ShxPmB
+ Euevwe/g24G4FxfPd4Gy7Nlj/2lD/ARFpLk1SPld7VnKnNj7BDMWAzDVzcxvfkIfu3c5
+ UZwT2UqG6MaZW0jwYDdEjAuE2C7FTMYY488grJtv9cByni+MavoJBD6KF2T4srOcDdKB RA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3krfym3mr3-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 09 Nov 2022 19:10:01 +0000
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2A9IoWet029044;
+	Wed, 9 Nov 2022 19:10:00 GMT
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3krfym3mqf-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 09 Nov 2022 19:10:00 +0000
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+	by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2A9J6E4e006536;
+	Wed, 9 Nov 2022 19:09:59 GMT
+Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
+	by ppma01dal.us.ibm.com with ESMTP id 3kngsyfd8s-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 09 Nov 2022 19:09:59 +0000
+Received: from smtpav05.dal12v.mail.ibm.com ([9.208.128.132])
+	by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2A9J9xjH58917126
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 9 Nov 2022 19:09:59 GMT
+Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 775DD5804C;
+	Wed,  9 Nov 2022 19:09:57 +0000 (GMT)
+Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 4C3E358052;
+	Wed,  9 Nov 2022 19:09:56 +0000 (GMT)
+Received: from [9.160.53.158] (unknown [9.160.53.158])
+	by smtpav05.dal12v.mail.ibm.com (Postfix) with ESMTP;
+	Wed,  9 Nov 2022 19:09:56 +0000 (GMT)
+Message-ID: <0869c784-14f2-9d7d-6cbb-d47ee713bbc1@linux.ibm.com>
+Date: Wed, 9 Nov 2022 14:09:55 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.0
+Subject: Re: S390 testing for IOMMUFD
+Content-Language: en-US
+From: Anthony Krowiak <akrowiak@linux.ibm.com>
+To: Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Jason Gunthorpe <jgg@nvidia.com>, Cornelia Huck <cohuck@redhat.com>,
+        Eric Farman <farman@linux.ibm.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Niklas Schnelle <schnelle@linux.ibm.com>,
+        Halil Pasic <pasic@linux.ibm.com>, Jason Herne <jjherne@linux.ibm.com>,
+        linux-s390@vger.kernel.org
+Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
+        Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Nicolin Chen <nicolinc@nvidia.com>
+References: <0-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
+ <Y2msLjrbvG5XPeNm@nvidia.com>
+ <fbb84105-cc6e-59bd-b09c-0ea4353d7605@linux.ibm.com>
+ <d814e245-2255-15ce-cf3d-65788aa61689@linux.ibm.com>
+ <73dd6b0e-35c7-bb5d-b392-a9de012d4f92@linux.ibm.com>
+In-Reply-To: <73dd6b0e-35c7-bb5d-b392-a9de012d4f92@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: QKRSSwBg2vaGArDz1D7dd19gEfxyQ74W
+X-Proofpoint-ORIG-GUID: n8KUgoBS1D1y3NEPKUDRJwXRSzwLASjY
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <Y2unGf7trHbfPh1v@nvidia.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT003:EE_|PH0PR12MB7957:EE_
-X-MS-Office365-Filtering-Correlation-Id: aa5a4d7f-cdaa-4291-7af7-08dac282e706
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	Ky8KrxwhsbXUeU+dXVhn7zHCYCvNM2bEj0KtkBgNUL7Md2Um7BqxrCGX7ojVIHCxaFV1TVPBOpPUHEEZwooCkWnglG5UQ1I85j03nEDPIAISUK3QoFUjZeGu1y61h9KaEHDH+pCQhdkfpO7DN40M9N+L/j0u96sioq4gigiDBfbtdhOb09GUNgv0cQom2IfeSB116QppybslG98V0U2TII6gqGiDiX/R1miOJfBUIhWte32Z1Qh5hWQ+BKTJ0JGAuAk03lnvBW4ud7/x4MZTxMpNosywotUAvj+mcmm5nYOntWoABunY4rJ+wUyQ9mf+h/bpshhnE8vSw/gZxsbzIqZD8InmXohScUhB6/XoBkKv/2bFRrMuqo+Xe5KgnmDezbRcO+kKT14NOS0/LQTdyIlBbu5AUr0vfKA2JmX+CsnTd56E8LTIs5pgPAwiiaKGI5qR9JzmSxfQ5fK6bosOSKROy8I7Exz25ugGD6ZPHxf6QD/oQEYGQzSSabyH+oH/eiuHtw2POlaEMiFk/EtBqV0Qwcsfe/eGq477MIJNjL6W4M7SWSquVRLUlSn8eyqD39RRy2Fcvz5oMj1fLANSJ2bTuKmPJI9GLPqPaffkA70rnNcsEaMdTObM2XYl5TLklPwWWCZME90u9NoR8RG/FfM4jxNQoNSeu9aNkIaD80N9H2zxy2TSJplezuP87awT/kfPhanlO9Cy0SRDbjE+KKQc+K3fXx/4zc3YF7ONh6iIyPD7Ri5At6dATp/67JNcnlnuTsHJpucXdKT/ALEdEg==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(39860400002)(136003)(396003)(451199015)(40470700004)(46966006)(36840700001)(4744005)(6862004)(8936002)(70586007)(478600001)(41300700001)(5660300002)(316002)(6636002)(54906003)(55016003)(40480700001)(82740400003)(7636003)(356005)(26005)(186003)(9686003)(336012)(4326008)(66899015)(8676002)(82310400005)(70206006)(2906002)(86362001)(40460700003)(47076005)(36860700001)(33716001)(426003)(83380400001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Nov 2022 18:47:50.2438
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: aa5a4d7f-cdaa-4291-7af7-08dac282e706
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT003.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB7957
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-09_06,2022-11-09_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 bulkscore=0
+ malwarescore=0 clxscore=1015 impostorscore=0 adultscore=0
+ lowpriorityscore=0 mlxlogscore=999 priorityscore=1501 mlxscore=0
+ phishscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2210170000 definitions=main-2211090144
 
-On Wed, Nov 09, 2022 at 09:11:53AM -0400, Jason Gunthorpe wrote:
-> On Tue, Nov 08, 2022 at 11:07:13PM -0800, Nicolin Chen wrote:
-> > The prints for incompatible failures in arm_smmu_attach_dev() might be
-> > still useful for error diagnosis. As VFIO and IOMMUFD would do testing
-> > attach() call, having previous dev_err() isn't ideal either.
-> > 
-> > Add the prints back using dev_dbg().
-> > 
-> > Suggested-by: Will Deacon <will@kernel.org>
-> > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> > ---
-> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 7 +++++++
-> >  1 file changed, 7 insertions(+)
-> 
-> You should probably include a fixes line
-> 
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-Just sent a v2 adding "Fixes" and "Reviewed-by". Thanks!
+On 11/9/22 9:49 AM, Anthony Krowiak wrote:
+>
+> On 11/8/22 9:04 AM, Anthony Krowiak wrote:
+>>
+>> On 11/8/22 5:12 AM, Christian Borntraeger wrote:
+>>>
+>>>
+>>> Am 08.11.22 um 02:09 schrieb Jason Gunthorpe:
+>>>> On Mon, Nov 07, 2022 at 08:48:53PM -0400, Jason Gunthorpe wrote:
+>>>>> [
+>>>>> This has been in linux-next for a little while now, and we've 
+>>>>> completed
+>>>>> the syzkaller run. 1300 hours of CPU time have been invested since 
+>>>>> the
+>>>>> last report with no improvement in coverage or new detections. 
+>>>>> syzkaller
+>>>>> coverage reached 69%(75%), and review of the misses show substantial
+>>>>> amounts are WARN_ON's and other debugging which are not expected 
+>>>>> to be
+>>>>> covered.
+>>>>> ]
+>>>>>
+>>>>> iommufd is the user API to control the IOMMU subsystem as it 
+>>>>> relates to
+>>>>> managing IO page tables that point at user space memory.
+>>>>
+>>>> [chop cc list]
+>>>>
+>>>> s390 mdev maintainers,
+>>>>
+>>>> Can I ask your help to test this with the two S390 mdev drivers? Now
+>>>> that gvt is passing and we've covered alot of the QA ground it is a
+>>>> good time to run it.
+>>>>
+>>>> Take the branch from here:
+>>>>
+>>>> https://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git/log/?h=for-next 
+>>>>
+>>>
+>>>>
+>>>> And build the kernel with
+>>>>
+>>>> CONFIG_VFIO_CONTAINER=n
+>>>> CONFIG_IOMMUFD=y
+>>>> CONFIG_IOMMUFD_VFIO_CONTAINER=y
+>>>>
+>>>> And your existing stuff should work with iommufd providing the iommu
+>>>> support to vfio. There will be a dmesg confirming this.
+>>>
+>>> Gave it a quick spin with vfio_ap:
+>>> [  401.679199] vfio_ap_mdev b01a7c33-9696-48b2-9a98-050e8e17c69a: 
+>>> Adding to iommu group 1
+>>> [  402.085386] iommufd: IOMMUFD is providing /dev/vfio/vfio, not VFIO.
+>>>
+>>> Some tests seem to work, but others dont (running into timeouts). I 
+>>> need to look
+>>> into that (or ideally Tony will have a look, FWIW 
+>>> tests.test_vfio_ap.VfioAPAssignMdevToGuestTest
+>>> fails for me.
+>>
+>>
+>> I'm looking into it.
+>
+>
+> I cloned the 
+> https://lore.kernel.org/kvm/Y2q3nFXwOk9jul5u@nvidia.com/T/#m76a9c609c5ccd1494c05c6f598f9c8e75b7c9888 
+> repo and ran the vfio_ap test cases. The tests ran without 
+> encountering the errors related to the vfio_pin_pages() function, but 
+> I did see two tests fail attempting to run crypto tests on the guest. 
+> I also saw a WARN_ON stack trace in the dmesg output indicating a 
+> timeout occurred trying to verify the completion of a queue reset. The 
+> reset problem has reared its ugly head in our CI, so this may be a 
+> good thing as it will allow me to debug why its happening.
+
+
+The problems I encountered were due to using a set of regression tests 
+that were not vanilla. They contained some changes I made to try to 
+improve performance of the tests. After restoring the vanilla regression 
+tests, I was able to successfully execute the tests without any problems 
+or errors with Jason's vfio_ap_(un)pin_pages patch installed, so that 
+looks good to me.
+
+
+>
+>
+>>
+>>
+>>>
+>>>
+>>> The same kernel tree with defconfig (instead of 
+>>> CONFIG_IOMMUFD_VFIO_CONTAINER=y) works fine.
+>>>>
+>>>> Let me know if there are any problems!
+>>>>
+>>>> If I recall there was some desire from the S390 platform team to start
+>>>> building on iommufd to create some vIOMMU acceleration for S390
+>>>> guests, this is a necessary first step.
+>>>>
+>>>> Thanks,
+>>>> Jason
