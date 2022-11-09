@@ -1,83 +1,130 @@
-Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2384107AE
-	for <iommu@lists.linux.dev>; Wed,  9 Nov 2022 21:09:10 +0000 (UTC)
-Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-13ae8117023so152455fac.9
-        for <iommu@lists.linux.dev>; Wed, 09 Nov 2022 13:09:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=date:subject:message-id:references:in-reply-to:cc:to:from
-         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=8s7hI8Zud53E/E/LGzGpSycc8sTlYS9S0JeTQWZw1BE=;
-        b=HbDO56JdX7NZQ+dqRW05reULqDqLF3SSDbmyi4pUjuMX0KPDOd6BwycINLkXRNGNaN
-         h5DJsUsUcuBwL1Et0i7P3z5qFoF50bBNgV6GQkwT3Wg1lnyrGdz2slQpuFQUqOeKkICu
-         N1ostiECe7A/rkEZyMIk6Kd6bb7girnCwssHUR/MnKDlKVQdAsewEm/PVMOY/LvI8PDE
-         1E8gljIVZv94PkrCgy430PtbT/qkf3hqnjMOY3CcXi0OFOcReqAACBx//a71jM24zcms
-         v1ZhvpZEaSqdUD2iZKJ3vo0xV2d4fnwI7+uKJlUcN21DOhVcMRBou4vXtL7MJ0WxlQsP
-         ZG5g==
-X-Gm-Message-State: ACrzQf3gU+KvXrIhfvMJKJErMNi8gwhLm6hpTjGVFQXcfMinzq9Wn1A8
-	C1Ndz17/35q6PK4ilgt0gg==
-X-Google-Smtp-Source: AMsMyM5pyAb0lxvqFEiih871wsejSy/ryTVCST1bIhwXfBgU1eV0o3m98wEwHeZxJ1wdpmrhvz7RAA==
-X-Received: by 2002:a05:6871:401:b0:13b:c222:456 with SMTP id d1-20020a056871040100b0013bc2220456mr47300571oag.234.1668028149580;
-        Wed, 09 Nov 2022 13:09:09 -0800 (PST)
-Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id g20-20020a4ab814000000b00480fd9f311esm4583432oop.13.2022.11.09.13.09.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Nov 2022 13:09:09 -0800 (PST)
-Received: (nullmailer pid 2868041 invoked by uid 1000);
-	Wed, 09 Nov 2022 21:09:10 -0000
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BCA812D83;
+	Wed,  9 Nov 2022 23:51:57 +0000 (UTC)
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2A9M6Wmk026925;
+	Wed, 9 Nov 2022 23:51:13 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=r2y6FqBtbLq2FplQA0MEJ5QEQdgEf4YRwMBtghSYQ50=;
+ b=NUoO9/P5o4yJwUu1TaYaJ9GIivUKJRvnKaAnO5G1f7SmkqRWmDAw6fRFpXdBrmV6gLDl
+ RZ2IaQ3wTzFFDsPScmvNYA7xZ+e2oROB9i4sY9Xx9nyp/xkEkzGEWP1sZj2NH0AM4tBh
+ HKoFOCUZ4RF+RHAAsjajGCfbP+YZM7eIIZfExWmWEyzVIG5Y4PRRsDpqM7ey7IM5Q6Dx
+ wsRycAa3Xb4mcxO2RdnbHPADWgvwg8pqILqwkj1DbyyfsjSkB7yvfH5Pgil7Wy9OZ1DV
+ fwGWwbaXMAHXMvCtcBWOJyobmX4qPysC6d/MWz1z3QG1uapdjgQCBvCXICS+SaASF1CE 8Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3krkgubm6e-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 09 Nov 2022 23:51:12 +0000
+Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2A9NhXNd004196;
+	Wed, 9 Nov 2022 23:51:11 GMT
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3krkgubm66-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 09 Nov 2022 23:51:11 +0000
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+	by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2A9No9Gq008858;
+	Wed, 9 Nov 2022 23:51:10 GMT
+Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
+	by ppma01dal.us.ibm.com with ESMTP id 3kngsyh2p8-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 09 Nov 2022 23:51:10 +0000
+Received: from smtpav03.dal12v.mail.ibm.com ([9.208.128.129])
+	by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2A9NpAlG47644974
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 9 Nov 2022 23:51:10 GMT
+Received: from smtpav03.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 6F6CD5805A;
+	Wed,  9 Nov 2022 23:51:08 +0000 (GMT)
+Received: from smtpav03.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id C9CCB58068;
+	Wed,  9 Nov 2022 23:51:05 +0000 (GMT)
+Received: from [9.160.191.98] (unknown [9.160.191.98])
+	by smtpav03.dal12v.mail.ibm.com (Postfix) with ESMTP;
+	Wed,  9 Nov 2022 23:51:05 +0000 (GMT)
+Message-ID: <6ddf657f-9ec7-6de5-62f4-508d61a467fe@linux.ibm.com>
+Date: Wed, 9 Nov 2022 18:51:05 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: Rob Herring <robh@kernel.org>
-To: Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, agross@kernel.org, krzysztof.kozlowski@linaro.org, Will Deacon <will@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, patches@linaro.org, andersson@kernel.org
-In-Reply-To: <20221109111236.46003-2-konrad.dybcio@linaro.org>
-References: <20221109111236.46003-1-konrad.dybcio@linaro.org>
- <20221109111236.46003-2-konrad.dybcio@linaro.org>
-Message-Id: <166802788099.2832919.14556738707192792770.robh@kernel.org>
-Subject: Re: [PATCH 01/10] dt-bindings: arm-smmu: Allow up to 3 power-domains
-Date: Wed, 09 Nov 2022 15:09:10 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH v4 15/17] iommufd: Add a selftest
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>, bpf@vger.kernel.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
+        Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Miguel Ojeda <ojeda@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+        Cornelia Huck
+ <cohuck@redhat.com>,
+        Daniel Jordan <daniel.m.jordan@oracle.com>,
+        David Gibson <david@gibson.dropbear.id.au>,
+        Eric Auger <eric.auger@redhat.com>, Eric Farman <farman@linux.ibm.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Joao Martins <joao.m.martins@oracle.com>, kvm@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Nicolin Chen <nicolinc@nvidia.com>,
+        Niklas Schnelle <schnelle@linux.ibm.com>,
+        Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+        Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
+References: <15-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <15-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: NVWUBpQHwQeub4Vtor_WE-ljRzrQR9IE
+X-Proofpoint-GUID: ZRDWBG7lTzZ5mzkpMVZQghrekqNfJFmA
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-09_06,2022-11-09_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
+ malwarescore=0 mlxlogscore=999 spamscore=0 clxscore=1011
+ lowpriorityscore=0 adultscore=0 bulkscore=0 suspectscore=0
+ priorityscore=1501 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2210170000 definitions=main-2211090177
 
-
-On Wed, 09 Nov 2022 12:12:26 +0100, Konrad Dybcio wrote:
-> Some SMMUs require that a vote is held on as much as 3 separate PDs
-> (hello Qualcomm). Allow it in bindings.
+On 11/7/22 7:49 PM, Jason Gunthorpe wrote:
+> Cover the essential functionality of the iommufd with a directed
+> test. This aims to achieve reasonable functional coverage using the
+> in-kernel self test framework.
 > 
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> ---
->  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> It provides a mock kernel module for the iommu_domain that allows it to
+> run without any HW and the mocking provides a way to directly validate
+> that the PFNs loaded into the iommu_domain are correct.
 > 
+> The mock also simulates the rare case of PAGE_SIZE > iommu page size as
+> the mock will operate at a 2K iommu page size. This allows exercising all
+> of the calculations to support this mismatch.
+> 
+> This allows achieving high coverage of the corner cases in the iopt_pages.
+> 
+> However, it is an unusually invasive config option to enable all of
+> this. The config option should not be enabled in a production kernel.
+> 
+> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Ran the selftests on s390 in both LPAR (z16) and a QEMU kvm guest using 1M hugepages, all tests are passing.
 
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iommu/arm,smmu.example.dtb: iommu@d00000: power-domains: [[4294967295, 0]] is too short
-	From schema: /builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+Tested-by: Matthew Rosato <mjrosato@linux.ibm.com> # s390
