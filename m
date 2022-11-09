@@ -1,122 +1,194 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2046.outbound.protection.outlook.com [40.107.244.46])
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7B9629B2
-	for <iommu@lists.linux.dev>; Wed,  9 Nov 2022 13:11:56 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TT4cCUATKTdzCaE1Rhm3P/uXelMGx00WOudSG4LsCjy28cI79GSLC8qpwg+EJ3BzWStUNYhnQA6b2Y0xtNfZzXnlZtgQHKdR7wg2HxdKQc1/Kib9IWDJxpVpRpOUYw6aGOtviD1YSXE8iSaFIDqxh8ZRju8v6zappscWXXv4JR3EXIvuG4NANKrrx8pfC4pKdnXjO8PLq/qBmLGtEcaWPRQMfGa6UkQ/4BPkCrbTvuQD1U2H7SZ93/E+w2p4pQQ72gHFKwYM+o9dcjE0Ohgp08mARWUjKdE9jLbyddRg/HXvsf+NBV3CnQxPsPhjq89glxApSaJRkhhMvu5JijPzJQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=k94oPj0Pg2Cfp1tIUMQTeSQIIR/zSWETdvY7cyDZSIg=;
- b=PV3yZSH7w8sZtp+DS7zW4jsQXzw3iW56FB2Wk5oL/1Sh2aNBuRUe46BCXReISuvieY/0hP6/uNERAwryEzUM3Etj/VP7/4bhwMWwLdMsjd9tTTSLRXQm714T70bl3iBkuRCQpeQHoPPC7KawQCLW1PARDzq7Xb8LnpFn+PQbtqz2AZdvyKTDEmBPQl/NC3FP8Qo/f++3YCS9RwpkQPM2fr1/sF6VewJsGmDqG6FCHlSmO3oqvfXDtXLibooSRbXJF5/tRalCqWXIkIDYECDptbVdda0bvW0gFw9VN+GBIkWTc1n/K7EkmxEZZMbVU127c8vAvZkH1emUTp6DTlUlUQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=k94oPj0Pg2Cfp1tIUMQTeSQIIR/zSWETdvY7cyDZSIg=;
- b=EGPNikT1yf+V6xjiBnUpqJ3IxwuUui6yY3VmTPsSR6+f/CBrSBae26nNyhT4ax/gk98mVWPMFt/vh20UePLS6kPECCOFOpOyl/5in8FsD8HJ0YZu9U3Fjowildrlxq1+L06us0aJByqmS1Ri3d4ENm5LoCJ/rCG8gsKmSGkL3+1u2LN3BxtRM7p4s/tTURaj2MdhbAX11sjFK1GxoS4wLWJUNQ5G2/OMpimomi1dxzRO9cMfE+hm5q++CVLKGl1dOgL9sYpWTiKGWGvLAMkPKo0JDQHtY7OPbV4eOYR7wST9lQ7KtCrn+YoBL9ATO6mVOuKUhrYB85UChFxF4ZbthA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by CH3PR12MB7642.namprd12.prod.outlook.com (2603:10b6:610:14a::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.22; Wed, 9 Nov
- 2022 13:11:55 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::7a81:a4e4:bb9c:d1de]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::7a81:a4e4:bb9c:d1de%7]) with mapi id 15.20.5791.027; Wed, 9 Nov 2022
- 13:11:55 +0000
-Date: Wed, 9 Nov 2022 09:11:53 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: will@kernel.org, joro@8bytes.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	robin.murphy@arm.com
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Restore prints in
- arm_smmu_attach_dev()
-Message-ID: <Y2unGf7trHbfPh1v@nvidia.com>
-References: <20221109070713.9617-1-nicolinc@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221109070713.9617-1-nicolinc@nvidia.com>
-X-ClientProxiedBy: BL0PR05CA0007.namprd05.prod.outlook.com
- (2603:10b6:208:91::17) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9CBB29B2
+	for <iommu@lists.linux.dev>; Wed,  9 Nov 2022 13:16:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1667999818; x=1699535818;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=NGiS8NfW0dWzCQaSqeSFNqUhg2rjl+tPtdOmaAPC458=;
+  b=hteB62rpJtDJYkZwTwUpvKWX6+XutkrkOG6k8JhqaqPLA6/UKGD2GPWZ
+   k01wfWI/7CXlJW46SxFBLr3a6pcR1ydJhpL39lkDmNmLF22o4YuZplW8l
+   LarAoopRpCBdfZfD/65D98NRHB8o/mSdrGUqzH6TKqi+CrbENwHndAHcQ
+   44vBIt7FXqgZ/JdmIv/kUtREPArvxbFgQp326HGN8k6GLciyB0/2QePH2
+   p2S3yevHGBhtL25XIf4KNf1vLdC8qoMJqvGHJpuUPxa2fN97qFBBk9Viu
+   klxG3zKIx1gjuQp+P4KWfDOAAuvPrZupCv3CO0oe+HOrD1seQevEHaLpD
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10525"; a="312134310"
+X-IronPort-AV: E=Sophos;i="5.96,150,1665471600"; 
+   d="scan'208";a="312134310"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2022 05:16:58 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10525"; a="881926553"
+X-IronPort-AV: E=Sophos;i="5.96,150,1665471600"; 
+   d="scan'208";a="881926553"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.211.213]) ([10.254.211.213])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2022 05:16:55 -0800
+Message-ID: <3a7f5cdf-640b-f9d4-a25e-8be845abd7ba@linux.intel.com>
+Date: Wed, 9 Nov 2022 21:16:53 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CH3PR12MB7642:EE_
-X-MS-Office365-Filtering-Correlation-Id: f7c9dac2-b36d-48bf-0ae4-08dac253f95f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	Zx/ggj6NTscQ7t3ktECDppVB4Al/ViY9YKU18UMqdevx49YxRSVhqE74qDCnSzW8njmQgFYiITf9l/AkZA7dJi6DTJfa/n+xuUhTCW2FjxgKFB8BxY4bkInUc+llxLQeca7CpySMqXbqqu/8tfqiEXjTeHne6l3LOtSXCpfYoKKQ/lyJTvb6TERthf7zmHunvYE3r8IC8aONHen04T1jEFHqbZQwP5QUrj40dsR3Vz/qJ4ktVK/spG25VpIX60roPBwvafhfh6zAAiXc2DG0no4RDNF4NAC+meyzMYffkhdDcKH8nE+TEkDuANrycDn7Mlt9ZQy7Z/AhNKt7/+P1w0J+btFvBwOEC/uHuS6ypqpMJOa9KC4k18BFcSQvdSu/6lwx4ntWqtnacHSX43Eo1R3JJ++UBFYqKMjR/iTLDSckJy5oXkx7DT5RysNnKr+uQLHGI5ioBB2+PFb5BW2LqxUP3uZZpUCNMfPjwkbzr80eJ285fxViUG8fzg1JvcPtpkgIPFhOYtPx9aHGuN1jh/mC2Cago8CYMYqHyWgPhvaewFNeeR5A6X2oNzICTq9hMHA787nOP+cOHd0rA/bMcNW20dumryT44oD6ZTaoaPdaTuSOz2AZT59aB758tR2JvEdrkElPJ8ZPeTvGNw+omRt3bsgs6tg80MC5QDdioR+7ikyyG25r/MGTybr8lZlbXoRAjBGxrGZNnMrYHjYKrQ==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(136003)(376002)(396003)(366004)(346002)(451199015)(6862004)(66476007)(4326008)(66946007)(5660300002)(66556008)(83380400001)(478600001)(8676002)(37006003)(41300700001)(86362001)(8936002)(6506007)(6636002)(38100700002)(6512007)(316002)(26005)(186003)(2616005)(4744005)(66899015)(6486002)(36756003)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?xdbSIvnqbuqZISjSBp+X3+fGNcKCsxvAcQ0wPwJA/qzqrBogUa1flEE/ygd0?=
- =?us-ascii?Q?5RbWdTdqBTlCoRi14x/uBhfRatEDooqQBV1tKAgx0yIIWQgT0xQWTuscROJa?=
- =?us-ascii?Q?Y62Et5ReMTM77bVbM+BZHUFP9vbg1BFRg4WW6tRTV+bDQn5yy2UEIXyJKN0S?=
- =?us-ascii?Q?TmpyviKSTkg9vx/6i61ctpB/uRgw8nbVncpbk4lpG4yTUow7907Yed5MMAiv?=
- =?us-ascii?Q?CdjstR7UqVpgOKm/gZ/ST7Xa0HkfN4BGcUEkCIPHJGh26ABDKS9JM+oMgAAR?=
- =?us-ascii?Q?MGvaG5IvT88rKesv02Vq94zoCXkdbcJCXumFID2EiEng5y/nxJrU7pUwaeVo?=
- =?us-ascii?Q?Qtdv7a1cQU77eQ0JGvjAGg5C8pocHWsTzdprQiIGObMnjrMqPlqc/ucevASy?=
- =?us-ascii?Q?DOcY2BQ7aL4fZQ+QSby+Qv2Z3U6F8xxXm6JXOq9N1IkEBH/PfODaKFYCdQv7?=
- =?us-ascii?Q?VIh/oAjcRcRJDAf39zRwf433zJxGGXhsOfx6u7omKQ2btkZU9iKYVTfkROOI?=
- =?us-ascii?Q?3+epDuqPBIXmLxgzvjz6u8fzmZD/miZfCcN6NI2YChepPqvy+5PfhbyQ7fBm?=
- =?us-ascii?Q?7LUWLMltcmtZZ2f7kSODjLzbP0gorF89wEzBDYkti7J5l/az7VHWvFF+m+Y+?=
- =?us-ascii?Q?l2CBMnIg5a6dXWwBhOPhpSxz+2IFYnUdpPc7HziZvGFGAgAycr8WuDEg2TO5?=
- =?us-ascii?Q?9pBTDgRJC2/VjtQiJyI4n5FhR9wcgu+niExxXk6LVSNCHM7Jrc6kLP/f9w1C?=
- =?us-ascii?Q?8f6l5+LFnoa3UG57Pc6rMOs/oRKqe23mOeEmFXB2LLX7gJwHKAQcQt1GyHYR?=
- =?us-ascii?Q?OOY8UEE1nD8OTiiBP4aZn7JpvdwRF6vuIZNb1v2LTr1a8vqNsNB7N2jKcv/J?=
- =?us-ascii?Q?kT7WQo9GrD24JG4aWjoSXYvi8O9BR2Xc79455DAwWO8cci00aUrhn3EkfF18?=
- =?us-ascii?Q?thpdApXBRaV3RCDdGRJkIUgsEqTKE0ZYMPfSYB0i60c/q4cQchUboIOJOjKO?=
- =?us-ascii?Q?VOTCkrCHfk9fVvokHOIqJ1gn+m81f+EY4O9YunwcidctFmv1KhW4Nb6uBRlS?=
- =?us-ascii?Q?OZ55RuYKCdJAcgwnjtldIYthezCQI4fNzVKdYn4yEPLLRZrNp6qQqWWLWcRr?=
- =?us-ascii?Q?ZN4tCofpCNvyYkctZnlJS5q87pKLfyvhX9EXhIaGPxpxTxTuadsHSqBAXt9Z?=
- =?us-ascii?Q?f+8leTIR39jugkrrBTq1OjXob6jcIIQxZtj7JSMFmwqBdOB2FfnFZ6jF601G?=
- =?us-ascii?Q?Ye1yiJ4kQUXmJwz4Y6PddaNyVWko8dFdkW1P+RsgGCvEzS3ZDp4039bVRcti?=
- =?us-ascii?Q?1COvPDcO2adeZ+sWoQtHyrjusB5l7aI7hWIQYIfkkcoxlsEHltowykINnpdm?=
- =?us-ascii?Q?N0ovkYDp58dJrul7hdFRrUwUAitR7BMR+kjh5GGFksu6+6jvV3vq2LPnk6iO?=
- =?us-ascii?Q?1srkMPnJWPgdZI6lnrm3Uaf8inVvuPnOwvI9Nbc42Gr2sa1VPH/zwPnr1zF8?=
- =?us-ascii?Q?VFoG9zv7F5ETgn/EH25UX8FZzRxX+xaFRHo+NLATDMh8BpCmKq719rG/lzwQ?=
- =?us-ascii?Q?waXYSiJgrRfsLd/UOX8=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f7c9dac2-b36d-48bf-0ae4-08dac253f95f
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Nov 2022 13:11:55.1925
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: p6zGYbzhXmXob0a+XMTRox9+6eHOWzxOclstNxLYkxbjrdv+Y1BMmtW954JXWEbb
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB7642
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Cc: baolu.lu@linux.intel.com, konrad.wilk@oracle.com,
+ harshit.m.mogalapalli@gmail.com, David Woodhouse <dwmw2@infradead.org>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, Darren Kenny <darren.kenny@oracle.com>
+Subject: Re: [RFC] iommu/vt-d: set default value of INTEL_IOMMU_FLOPPY_WA to n
+To: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+References: <20221108125855.2984751-1-harshit.m.mogalapalli@oracle.com>
+ <dc463b3e-2875-8aac-aca1-edacb90e5650@linux.intel.com>
+ <76cbad17-ab5e-3dd9-cf94-df2b26748167@oracle.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <76cbad17-ab5e-3dd9-cf94-df2b26748167@oracle.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Tue, Nov 08, 2022 at 11:07:13PM -0800, Nicolin Chen wrote:
-> The prints for incompatible failures in arm_smmu_attach_dev() might be
-> still useful for error diagnosis. As VFIO and IOMMUFD would do testing
-> attach() call, having previous dev_err() isn't ideal either.
+On 2022/11/9 20:16, Harshit Mogalapalli wrote:
 > 
-> Add the prints back using dev_dbg().
 > 
-> Suggested-by: Will Deacon <will@kernel.org>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 7 +++++++
->  1 file changed, 7 insertions(+)
+> On 09/11/22 12:35 pm, Baolu Lu wrote:
+>> On 2022/11/8 20:58, Harshit Mogalapalli wrote:
+>>> It is likely that modern intel motherboard will not ship with a
+>>> floppy connection anymore, so let us disable it by default, as it
+>>> gets turned on when we do a make defconfig.
+>>>
+>>> Suggested-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+>>> Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+>>> ---
+>>>   drivers/iommu/intel/Kconfig | 2 +-
+>>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+>>> index b7dff5092fd2..c783ae85ca9b 100644
+>>> --- a/drivers/iommu/intel/Kconfig
+>>> +++ b/drivers/iommu/intel/Kconfig
+>>> @@ -76,7 +76,7 @@ config INTEL_IOMMU_BROKEN_GFX_WA
+>>>         option is removed in the 2.6.32 kernel.
+>>>   config INTEL_IOMMU_FLOPPY_WA
+>>> -    def_bool y
+>>> +    def_bool n
+>>>       depends on X86
+>>>       help
+>>>         Floppy disk drivers are known to bypass DMA API calls
+>>
+>> Nobody selects or depends on this. How about removing this bool? Only
+>> less than 10 lines of code are impacted and are not in any performance
+>> path.
+>>
+>> diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+>> index b7dff5092fd2..5e077d1c5f5d 100644
+>> --- a/drivers/iommu/intel/Kconfig
+>> +++ b/drivers/iommu/intel/Kconfig
+>> @@ -75,15 +75,6 @@ config INTEL_IOMMU_BROKEN_GFX_WA
+>>         to use physical addresses for DMA, at least until this
+>>         option is removed in the 2.6.32 kernel.
+>>
+>> -config INTEL_IOMMU_FLOPPY_WA
+>> -    def_bool y
+>> -    depends on X86
+>> -    help
+>> -      Floppy disk drivers are known to bypass DMA API calls
+>> -      thereby failing to work when IOMMU is enabled. This
+>> -      workaround will setup a 1:1 mapping for the first
+>> -      16MiB to make floppy (an ISA device) work.
+>> -
+>>   config INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON
+>>       bool "Enable Intel IOMMU scalable mode by default"
+>>       default y
+>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+>> index 48cdcd0a5cf3..22801850f339 100644
+>> --- a/drivers/iommu/intel/iommu.c
+>> +++ b/drivers/iommu/intel/iommu.c
+>> @@ -4567,7 +4567,6 @@ static void intel_iommu_get_resv_regions(struct 
+>> device *device,
+>>       }
+>>       rcu_read_unlock();
+>>
+>> -#ifdef CONFIG_INTEL_IOMMU_FLOPPY_WA
+>>       if (dev_is_pci(device)) {
+>>           struct pci_dev *pdev = to_pci_dev(device);
+>>
+>> @@ -4579,7 +4578,6 @@ static void intel_iommu_get_resv_regions(struct 
+>> device *device,
+>>                   list_add_tail(&reg->list, head);
+>>           }
+>>       }
+>> -#endif /* CONFIG_INTEL_IOMMU_FLOPPY_WA */
+>>
+>>       reg = iommu_alloc_resv_region(IOAPIC_RANGE_START,
+>>                         IOAPIC_RANGE_END - IOAPIC_RANGE_START + 1,
+>>
+> 
+> Hi Baolu,
+> 
+> I have a question:
+> Shouldn't we remove the code between ifdef-endif statements?
+> 
+> I mean something like this:
+> 
+> diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+> index b7dff5092fd2..5e077d1c5f5d 100644
+> --- a/drivers/iommu/intel/Kconfig
+> +++ b/drivers/iommu/intel/Kconfig
+> @@ -75,15 +75,6 @@ config INTEL_IOMMU_BROKEN_GFX_WA
+>            to use physical addresses for DMA, at least until this
+>            option is removed in the 2.6.32 kernel.
+> 
+> -config INTEL_IOMMU_FLOPPY_WA
+> -       def_bool y
+> -       depends on X86
+> -       help
+> -         Floppy disk drivers are known to bypass DMA API calls
+> -         thereby failing to work when IOMMU is enabled. This
+> -         workaround will setup a 1:1 mapping for the first
+> -         16MiB to make floppy (an ISA device) work.
+> -
+>   config INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON
+>          bool "Enable Intel IOMMU scalable mode by default"
+>          default y
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 48cdcd0a5cf3..2c416ad3204e 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -4567,20 +4567,6 @@ static void intel_iommu_get_resv_regions(struct 
+> device *device,
+>          }
+>          rcu_read_unlock();
+> 
+> -#ifdef CONFIG_INTEL_IOMMU_FLOPPY_WA
+> -       if (dev_is_pci(device)) {
+> -               struct pci_dev *pdev = to_pci_dev(device);
+> -
+> -               if ((pdev->class >> 8) == PCI_CLASS_BRIDGE_ISA) {
+> -                       reg = iommu_alloc_resv_region(0, 1UL << 24, prot,
+> -                                       IOMMU_RESV_DIRECT_RELAXABLE,
+> -                                       GFP_KERNEL);
+> -                       if (reg)
+> -                               list_add_tail(&reg->list, head);
+> -               }
+> -       }
+> -#endif /* CONFIG_INTEL_IOMMU_FLOPPY_WA */
+> -
+>          reg = iommu_alloc_resv_region(IOAPIC_RANGE_START,
+>                                        IOAPIC_RANGE_END - 
+> IOAPIC_RANGE_START + 1,
+>                                        0, IOMMU_RESV_MSI, GFP_KERNEL);
+> 
+> This code is introduced in Commit d850c2ee5fe2 ("iommu/vt-d: Expose ISA 
+> direct mapping region via iommu_get_resv_regions")
 
-You should probably include a fixes line
+As long as floppy driver exists in the tree, we have to include above
+code. Otherwise, floppy drivers don't work. At least we can easily find
+drivers/block/floppy.c which is still maintained (check MAINTAINERS).:-)
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-
-Jason
+Best regards,
+baolu
