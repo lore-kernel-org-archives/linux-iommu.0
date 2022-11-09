@@ -1,81 +1,87 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F63BEC0E
-	for <iommu@lists.linux.dev>; Wed,  9 Nov 2022 17:18:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2959EC08
+	for <iommu@lists.linux.dev>; Wed,  9 Nov 2022 18:28:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1668014294;
+	s=mimecast20190719; t=1668018507;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=xnXgn16clICsmrV6UyAUvoxroMB/57yAi6UKnX9zn/8=;
-	b=WndcJS31A/P1ODA6rTNvkj8ScMzPivQmeCG6ltyPMuPO1g1swQy+xgmfyc8m8Zz2ZYqiMY
-	ZamY13c6wvzFLt/XVdu232RdK3iv4UdrxV8m2NXNjELaIAabZonkYufPMCv/CH1/k39iXz
-	2JcrNuO1py88L9Pyi31Gxyu1TY8uSY0=
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com
- [209.85.166.71]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=mt9wA9NJ8erhcq3hDeHIo3uLVdgY+wacj95T/avg+94=;
+	b=U02B9GKsXf2MQVNL1bpH7yiu0rBaQ6YqECKnSEIZyyip4tYU/fccJsGfi09odIslmhySEO
+	UBXTzrEe93O3HYXH9CmUXKxHqa8t568UVJFj3Lze9PTKpCpclxv+itezLwq4+lQK5BHrsI
+	gXHlik7nFp0r81h/XK9d5EECh+tydLk=
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
+ [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-539-cPFdjtP4P5yW3VR0gY5TZg-1; Wed, 09 Nov 2022 12:18:13 -0500
-X-MC-Unique: cPFdjtP4P5yW3VR0gY5TZg-1
-Received: by mail-io1-f71.google.com with SMTP id x5-20020a6bda05000000b006db3112c1deso6040464iob.0
-        for <iommu@lists.linux.dev>; Wed, 09 Nov 2022 09:18:13 -0800 (PST)
+ us-mta-186-226MRg38PperLCCUSHYzoQ-1; Wed, 09 Nov 2022 13:28:26 -0500
+X-MC-Unique: 226MRg38PperLCCUSHYzoQ-1
+Received: by mail-il1-f199.google.com with SMTP id u7-20020a056e021a4700b00300b1379a2fso14130588ilv.13
+        for <iommu@lists.linux.dev>; Wed, 09 Nov 2022 10:28:26 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=xnXgn16clICsmrV6UyAUvoxroMB/57yAi6UKnX9zn/8=;
-        b=oJnPT00r6jh6bzVpd2KTPFQ0nPr63VnQaMx8bIP6syPT+NuLPXaTO6lSzdSUh4oH5P
-         Ye6+PrgHArpcgXg4I3l0AD1TnbC5wGBlgt3Tg6zJGUFn6yGncTWB3BjLUklBCKHevdnZ
-         OH4G3Og0rKlTGlmr/clRc6oTtx6y7M26BT883npVefn9MznyHjquJFOQgh3ZKxbs7zSI
-         pheX5dVJMr33wnx6APcSd/I7OoZgo0Xw1KpJokxhflaViu6aki8SKTcAX+4SWvqWTEHk
-         HoMx6mvgbhrJeG68USAKWBj065fBiAErO+qLzHj56qQc0W4upHc5vNmYBB1tyz34bVlb
-         GSpw==
-X-Gm-Message-State: ACrzQf03BG2OBw6XeHBJHrp+zffdgkIMYQA43f18hk6S3h+dAN+hqnex
-	lqs44Xk2WOsBWKA+lIeKTFVm3XhZ62SCiBT4fJAlh8/U6mcTvWJu5a35Vj86JPxx2gkuz1CtLPP
-	xo01a9/9viDwgGUk=
-X-Received: by 2002:a6b:e208:0:b0:6d7:b1a7:c220 with SMTP id z8-20020a6be208000000b006d7b1a7c220mr1771045ioc.7.1668014292520;
-        Wed, 09 Nov 2022 09:18:12 -0800 (PST)
-X-Google-Smtp-Source: AMsMyM6F677E3Z9Fik/IZx4pkrsVOrB6N7Pz805qwA6pjiuY0YCpqNr/AQzfBn6PMq3gQd7YTPJ/wA==
-X-Received: by 2002:a6b:e208:0:b0:6d7:b1a7:c220 with SMTP id z8-20020a6be208000000b006d7b1a7c220mr1771033ioc.7.1668014292281;
-        Wed, 09 Nov 2022 09:18:12 -0800 (PST)
+        bh=mt9wA9NJ8erhcq3hDeHIo3uLVdgY+wacj95T/avg+94=;
+        b=7es5us87uSXNZIO4fYezcRfJA3ruCoMOaYc45zoDaojJrY7yDKHgy2NH4M1OqYxyqR
+         EKiiIwNZlyL7JbOuddTINFegUfVRfESQi3n3BALjlWULG41upjSkzmgBEPq2mpez1elG
+         pccIdoMedu83JcNkvmM5A4o3duM7ujmSBR2Auw6jcN4RLg7SUryYzK8weE4IZhTWPuRD
+         Y8xy6iHvO43gbmgur4koc2vlxP+95Qt3p9D/NPur8OWQEezF5Faj1StftTVy89alfaHA
+         u5cVb/hA2LfIzbAgnLjOEqKwIWvmYqcDdA5T+UF+2NpaFLzwN+DeZKBgaxs9BXReiWPi
+         4RAw==
+X-Gm-Message-State: ACrzQf3b+0WqcEbjlMQEkYXrSC45BiagA3sYhUEiuHhlJjbgjfSvGxMW
+	5OVRaGXMSU7PGMKZEzkj+vx2mWf74o9jT4lSfnJRb39ucj3VYf87NCxLjjWghXK7LsSakE6+IVd
+	l7ZniMBTiK3kjKnc=
+X-Received: by 2002:a05:6602:1218:b0:6ca:5fd2:f8e1 with SMTP id y24-20020a056602121800b006ca5fd2f8e1mr2102273iot.118.1668018505756;
+        Wed, 09 Nov 2022 10:28:25 -0800 (PST)
+X-Google-Smtp-Source: AMsMyM7eUfyPf7jZTqBn46xsn3j0EDMn1ZQ6U+esr6/ILDBLlfe7a8Y4zkj42s7VYGmSVWZgP6Q5SA==
+X-Received: by 2002:a05:6602:1218:b0:6ca:5fd2:f8e1 with SMTP id y24-20020a056602121800b006ca5fd2f8e1mr2102238iot.118.1668018505479;
+        Wed, 09 Nov 2022 10:28:25 -0800 (PST)
 Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id i12-20020a056e02152c00b00300e6efca96sm5020565ilu.55.2022.11.09.09.18.10
+        by smtp.gmail.com with ESMTPSA id b3-20020a92c143000000b002f165ceb09bsm5105515ilh.64.2022.11.09.10.28.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Nov 2022 09:18:11 -0800 (PST)
-Date: Wed, 9 Nov 2022 10:18:09 -0700
+        Wed, 09 Nov 2022 10:28:24 -0800 (PST)
+Date: Wed, 9 Nov 2022 11:28:22 -0700
 From: Alex Williamson <alex.williamson@redhat.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Alexander Gordeev <agordeev@linux.ibm.com>, David Airlie
- <airlied@gmail.com>, Tony Krowiak <akrowiak@linux.ibm.com>, Christian
- Borntraeger <borntraeger@linux.ibm.com>, Cornelia Huck <cohuck@redhat.com>,
- Daniel Vetter <daniel@ffwll.ch>, Diana Craciun <diana.craciun@oss.nxp.com>,
- dri-devel@lists.freedesktop.org, Eric Auger <eric.auger@redhat.com>, Eric
- Farman <farman@linux.ibm.com>, Harald Freudenberger <freude@linux.ibm.com>,
- Vasily Gorbik <gor@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>,
- intel-gfx@lists.freedesktop.org, intel-gvt-dev@lists.freedesktop.org,
- iommu@lists.linux.dev, Jani Nikula <jani.nikula@linux.intel.com>, Jason
- Herne <jjherne@linux.ibm.com>, Joonas Lahtinen
- <joonas.lahtinen@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Kevin
- Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
- linux-s390@vger.kernel.org, Longfang Liu <liulongfang@huawei.com>, Matthew
- Rosato <mjrosato@linux.ibm.com>, Peter Oberparleiter
- <oberpar@linux.ibm.com>, Halil Pasic <pasic@linux.ibm.com>, Robin Murphy
- <robin.murphy@arm.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>, Shameer
- Kolothum <shameerali.kolothum.thodi@huawei.com>, Sven Schnelle
- <svens@linux.ibm.com>, Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
- Vineeth Vijayan <vneethv@linux.ibm.com>, Will Deacon <will@kernel.org>,
- Yishai Hadas <yishaih@nvidia.com>, Zhenyu Wang <zhenyuw@linux.intel.com>,
- Zhi Wang <zhi.a.wang@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>,
- Nicolin Chen <nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>
-Subject: Re: [PATCH v2 10/11] vfio: Make vfio_container optionally compiled
-Message-ID: <20221109101809.2ff08303.alex.williamson@redhat.com>
-In-Reply-To: <Y2r6YnhuR3SxslL6@nvidia.com>
-References: <0-v2-65016290f146+33e-vfio_iommufd_jgg@nvidia.com>
-	<10-v2-65016290f146+33e-vfio_iommufd_jgg@nvidia.com>
-	<20221108152831.1a2ed3df.alex.williamson@redhat.com>
-	<Y2r6YnhuR3SxslL6@nvidia.com>
+Cc: kvm@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>,
+ dri-devel@lists.freedesktop.org, Vineeth Vijayan <vneethv@linux.ibm.com>,
+ Diana Craciun <diana.craciun@oss.nxp.com>, Alexander Gordeev
+ <agordeev@linux.ibm.com>, Longfang Liu <liulongfang@huawei.com>,
+ linux-s390@vger.kernel.org, Yi Liu <yi.l.liu@intel.com>, Matthew Rosato
+ <mjrosato@linux.ibm.com>, Will Deacon <will@kernel.org>, Joerg Roedel
+ <joro@8bytes.org>, Halil Pasic <pasic@linux.ibm.com>,
+ iommu@lists.linux.dev, Nicolin Chen <nicolinc@nvidia.com>, Christian
+ Borntraeger <borntraeger@linux.ibm.com>, intel-gfx@lists.freedesktop.org,
+ Zhi Wang <zhi.a.wang@intel.com>, Jason Herne <jjherne@linux.ibm.com>, Eric
+ Farman <farman@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, Heiko
+ Carstens <hca@linux.ibm.com>, Eric Auger <eric.auger@redhat.com>, Harald
+ Freudenberger <freude@linux.ibm.com>, Rodrigo Vivi
+ <rodrigo.vivi@intel.com>, intel-gvt-dev@lists.freedesktop.org, Tony Krowiak
+ <akrowiak@linux.ibm.com>, Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+ Yishai Hadas <yishaih@nvidia.com>, Cornelia Huck <cohuck@redhat.com>, Peter
+ Oberparleiter <oberpar@linux.ibm.com>, Shameer Kolothum
+ <shameerali.kolothum.thodi@huawei.com>, Sven Schnelle
+ <svens@linux.ibm.com>, Robin Murphy <robin.murphy@arm.com>, Lu Baolu
+ <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH 04/10] vfio: Move storage of allow_unsafe_interrupts to
+ vfio_main.c
+Message-ID: <20221109112822.7a8c5f7a.alex.williamson@redhat.com>
+In-Reply-To: <Y2r80RgytKpPtK58@nvidia.com>
+References: <4-v1-4991695894d8+211-vfio_iommufd_jgg@nvidia.com>
+	<20221026152442.4855c5de.alex.williamson@redhat.com>
+	<Y1wiCc33Jh5QY+1f@nvidia.com>
+	<20221031164526.0712e456.alex.williamson@redhat.com>
+	<Y2kF75zVD581UeR2@nvidia.com>
+	<20221107081853.18727337.alex.williamson@redhat.com>
+	<Y2klGAUEUwpjWHw6@nvidia.com>
+	<20221107110508.7f02abf4.alex.williamson@redhat.com>
+	<Y2lSZwNT8f/RMoZf@nvidia.com>
+	<20221108155520.4429c2e5.alex.williamson@redhat.com>
+	<Y2r80RgytKpPtK58@nvidia.com>
 X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -88,66 +94,92 @@ X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 8 Nov 2022 20:54:58 -0400
+On Tue, 8 Nov 2022 21:05:21 -0400
 Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-> On Tue, Nov 08, 2022 at 03:28:31PM -0700, Alex Williamson wrote:
+> On Tue, Nov 08, 2022 at 03:55:20PM -0700, Alex Williamson wrote:
 > 
-> > Perhaps this should have been obvious, but I'm realizing that
-> > vfio-noiommu mode is completely missing without VFIO_CONTAINER, which
-> > seems a barrier to deprecating VFIO_CONTAINER and perhaps makes it a  
+> > > > So why exactly isn't this an issue for VDPA?  Are we just burying our
+> > > > head in the sand that such platforms exists and can still be useful
+> > > > given the appropriate risk vs reward trade-off?    
+> > > 
+> > > Simply that nobody has asked for it, and might never ask for it. This
+> > > is all support for old platforms, and there just doesn't seem to be a
+> > > "real" use case for very new (and actually rare) NIC hardware stuck
+> > > into ancient platforms with this security problem.  
+> > 
+> > vIOMMU support for interrupt remapping is relatively new, the nesting
+> > case is important as well.  
 > 
-> Yes, it is the same as the allow_unsafe_interrupts - it is something
-> that currently goes missing if you turn off VFIO_CONTAINER.
+> This is where we got hit. In the end we fixed the qemu..
 > 
-> This seems straightforward enough to resolve in a followup, we mostly
-> just need someone with an existing no-iommu application to test
-> compatability against. Keeping it working with the device cdev will
-> also be a bit interesting. If you have or know about some application
-> I can try to make a patch.
+> > > I'd be much more comfortable with this as a system wide iommufd flag
+> > > if we also tied it to do some demonstration of privilege - eg a
+> > > requirement to open iommufd with CAP_SYS_RAWIO for instance.  
+> > 
+> > Which is not compatible to existing use cases, which is also why we
+> > can't invent some way to allow some applications to run without CPU
+> > mitigations, while requiring it for others as a baseline.  
+> 
+> Isn't it? Didn't we learn that libvirt runs as root and will open and
+> pass the iommufd as root?
 
-DPDK supports no-iommu mode.
+We're jumping ahead to native iommufd support here, what happens when
+VFIO_CONTAINER=n and it's QEMU opening the fds, with only file access
+privileges?
 
-> > question whether IOMMUFD should really be taking over /dev/vfio/vfio.
-> > No-iommu mode has users.    
+> > > That is the usual protocol for these kinds of insecurities..  
+> > 
+> > Hmm, is it?  
 > 
-> I view VFIO_CONTAINER=n as a process. An aspiration we can work
-> toward.
-> 
-> At this point there are few places that might want to use it. Android
-> perhaps, for example. It is also useful for testing. One of the main
-> values is you can switch the options and feed the kernel into an
-> existing test environment and see what happens. This is how we are
-> able to quickly get s390 mdev testing, for instance.
-> 
-> We are not going to get to a widely useful VFIO_CONTAINER=n if we
-> don't have a target that people can test against and evaluate what
-> compatability gaps may exist.
-> 
-> So, everytime we find something like this - let's think about how can
-> we make iommufd compatibility handle it and not jump straight to
-> giving up :)
-> 
-> I'm kind of thinking v6.4 might be a reasonable kernel target when we
-> might have closed off enough things.
+> I think so. At least you should have something to shut down an
+> insecure feature in kernel lockdown modes. CAP_SYS_RAWIO is a simple
+> way to do it.
 
-I agree that it's very useful for testing, I'm certainly not suggesting
-to give up, but I'm not sure where no-iommu lives when iommufd owns
-/dev/vfio/vfio.  Given the unsafe interrupts discussion, it doesn't
-seem like the type of thing that would be a priority for iommufd.
+How are CPU vulnerabilities handled in lockdown mode, do apps require
+certain capabilities to run fast vs safe, or do we simply disallow
+unsafe globally in lockdown?  I think we have a lot more leniency to
+ignore/disallow flags that enable global insecurities when any sort of
+lockdown is imposed.
 
-We're on a path where vfio accepts an iommufd as a container, and
-ultimately iommufd becomes the container provider, supplanting the
-IOMMU driver registration aspect of vfio.  I absolutely want type1 and
-spapr backends to get replaced by iommufd, but reluctance to support
-aspects of vfio "legacy" behavior doesn't give me warm fuzzies about a
-wholesale hand-off of the container to a different subsystem, for
-example vs an iommufd shim spoofing type1 support.
+> > > I think right now we can leave this as-is and we can wait for some
+> > > more information to decide how best to proceed.  
+> > 
+> > It's certainly not acceptable in the latest proposal, iommufd consumes
+> > an option set by another module and when that module goes away, so does
+> > any claim of compatibility.  The code becomes dead and the feature not
+> > present.  The option doesn't belong on the vfio module.  Do we need a
+> > vfio-iommufd module to host it?  Thanks,  
+> 
+> I don't know, as I said in the other email, these little things need
+> work and discussion to resolve. We need to recheck the security stuff
+> against the 2022 kernel where things have changed. We don't need to do
+> it all right now.
+> 
+> People who want allow_unsafe_interrupts to work will simply not set
+> VFIO_CONTAINER=n at this time. Same with P2P, vfio-no-iommu and any
+> other gaps we haven't discovered.
+> 
+> vfio-iommufd seems like overkill, I think your first suggestion to put
+> in vfio.ko was more practical.
 
-Unfortunately we no longer have a CONFIG_EXPERIMENTAL option to hide
-behind for disabling VFIO_CONTAINER, so regardless of our intentions
-that a transition is some time off, it may become an issue sooner than
-we expect.  Thanks,
+Convenient perhaps, but architecturally the wrong place for it.
+
+> My only doubt is if we should make it system wide for everything - and
+> I'm just a bit uncomfortable with that from a security POV. But maybe
+> I don't quite know exactly what the risks are.
+
+There's a paper about these sorts of attacks here[1].  As I noted
+earlier, a non-malicious DMA targeting an address that would trigger an
+interrupt is extremely unlikely, and the resulting vulnerability is
+largely more of a denial of service, IIRC.  It would certainly be
+strongly dis-recommended in any scenario where the userspace drivers
+are untrusted, such as a cloud hosting provider, but there are
+certainly other scenarios where either the guest or userspace drivers
+are also under the control of the hosting provider and this is not such
+a concern.  Thanks,
 
 Alex
+
+[1]https://invisiblethingslab.com/resources/2011/Software%20Attacks%20on%20Intel%20VT-d.pdf
 
