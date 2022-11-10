@@ -1,86 +1,78 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2084.outbound.protection.outlook.com [40.107.220.84])
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8352A1A629
-	for <iommu@lists.linux.dev>; Thu, 10 Nov 2022 19:19:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B7BF1E9F8
+	for <iommu@lists.linux.dev>; Thu, 10 Nov 2022 23:01:56 +0000 (UTC)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2AAL0Dpr007506;
+	Thu, 10 Nov 2022 21:01:58 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type :
+ content-transfer-encoding : in-reply-to : mime-version; s=corp-2022-7-12;
+ bh=Gk8VTcWTIuOFOjGRYldeuAIjGoS8kTluR8SSQaGrNh8=;
+ b=OH0YL/T1B6OOwd2qgoxTZIHcH3dW5b/knaNnfpx15rjHaoGkRZCl722y//1sW4IbttmG
+ ajdszn4R0eMzP4pZQ5uTmwQ2RsFpMO8Nj/v/X8v8JOCNvj6InpZH1LVKRO7kDHayc/P6
+ oLk+qs9pXjEenQqVNFeeqbBOHyu9MQzDH9mXnR0pqVY3CYswcHhrKiRGa7zaQAGDvXAn
+ xs9AaXdlJxCRplxCdzR4N2aqG53f4qUboJDxI5l40caKrnVavjuHK06o7pmy8luyfrym
+ HyzpnLmujcoBfYod41piYqP2RNxcE1Ss2wkCosEZN3PbgupilVIPdzAUoOzav3kSQzx6 Mw== 
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3ks8a0g4c5-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 10 Nov 2022 21:01:57 +0000
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 2AAKfdT1009832;
+	Thu, 10 Nov 2022 21:01:18 GMT
+Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2103.outbound.protection.outlook.com [104.47.55.103])
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3kpcq5h45s-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 10 Nov 2022 21:01:18 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cWzUGtpJgTF7wR04g9NYSt56Ylw3f6BP+g4rZK4p0xVtUJKsEgW/zNj+pyHKLXvuaRHuH4rDwQfa6qYhYM9uH3F2ND7mscZ6CLCzesnKRmwfVN3MDJHyoLLvvoLJosDNQ1KNzbfiyzIvxMjFVTjGtKOhIebUd2Gxc86eOa+oEuKSoM/bA3XFRAO3rQPcIpQfrNeZYkyl+CWFksWVF/FMvYGTQoPky1zW9QsRyAO70fBvVjvusEmfHoGu9/YNxXrRyVUgNZnyMR6NyoZKFe0YjC8WesO7t+lTIKhXzhETa9sioZQWeDxAiWgoKNy7J3WxRtcN5LqC8xE4/gMN7ftdjQ==
+ b=C8tEd/93XDR8PyQyVJ8L2T09HcDzGdn+8R2oYm1G7596rO9nwj8VfZx0GdM72TbPBJO/cZS+/YscHe/nrjiWGnFMploWCTVMQinHqL4sWiRnlF6BZaWFvmShvcfj24tvGv9s2XuNarQjud98g3bjRj8KBuO40r/YybFzcn90A3nlT/eSjPcL6dn0/wRv3aWqS8B0FRxYv5zeTRRDYWjB2zhFgbUdPaKIMIQNfgBOhak7uMJhdgLVWK253dV4HYrBmLtCMO5Zso/1yyUm5UqsE5r/dw/3Vn8TQadRO77vldXRCpEjv5Leou4y6iE0U1VnM1pLbFAqfcbBUMBWTP0mlw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aTBjqopfkP2iYv3rIuTb2Aw1BThon7runQkBpsK9mA0=;
- b=SvvWF+zG/a3NVSPw39ImlhRK0lsEGN6XlUr11GZnjF3098lMIq5Bzx+Vmnljob7z+6QLygkF0SouilnNqD+20VEGyjsVGcxGtmP/qR0wDr/QYJPLf0eLEotPQos7iMGh9tRzdRFITrGM7fnpn+TkC25fG+KFsiOW2VrtowJ/7WIWRlW7denjrleGG957lgoYbDBposhjHWzITj50pAvNwHdILfaO03q/8QwtgDFwdfitVLFj15pegxmjhNty333q5K2r/oqHHyXC/zjJiA5xnjg7wSRkRuKSFi1kazxJXNux6iZMKX6xoE20xkxAl087aB7s1wHaIDBtNBAT5kk3XQ==
+ bh=YuHzNph+e9HX9A4wmsO3FoEfXE+CQilThqjxg5hyEEo=;
+ b=czxEv3pFOXgVk3q2oKeccdkT8ejW7JDIjomWTT5bphswZ5MqRYTNtt6ru5iKtxoZo9PIJ/5fZepU4uvmrScxQL1OfUoxQKsRzBqpXIGUhzU0vvARgd9s8m0LyYhLsayPEoAF3G7c53nkxBR+496odNhFvWgtNQLeCW/L8Xt0jv+fJiXSe+N/ig0/1Na7ntQUbIG6WyWDn8bQW8ky0SVES+RP5/SyKbrslTvNYlVG+1Axwvhw9iPTIdQPO+BgWC3Og5y3TSwSdTgBJqJaZjvJA41xjTYhKt2mptDGirgE2AwqqCjhbIkoI42QDuQ72sa7/6PN2C2tY8OYkBTTH4PB0Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aTBjqopfkP2iYv3rIuTb2Aw1BThon7runQkBpsK9mA0=;
- b=Wh+FFSZh4gg1/VsEhaf+4fPwGA9POxfU4Yh9aPyu/FA+Nd1N76qk1Zn7epLyNK9GVaZhQhT8tSqTrlWl7S9mfR+eHwoj8xclm9ZqjtJ2gahIWJpPfevA0RTk1al4WtzcshduMmpKGlZzkwwJeMEOUibEltjNoqZYdlNDW+MqXeaHk4rS5Tqaa4Af8iJel35sRw+LHR5pn+/V8qZ2sU0QQ1uki270CbybUo/jD9hExHTxF1yI1uoGg4/4hA0oEQwxxVtW9DSjQ109YQ5snV2LZOtv5YhpZxmaMs8d6qVEuQF9fKmYCzkr6UNvnvLoZNTdtG7kz4EamrjmA7X7JMqOQA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by SJ1PR12MB6052.namprd12.prod.outlook.com (2603:10b6:a03:489::15) with
+ bh=YuHzNph+e9HX9A4wmsO3FoEfXE+CQilThqjxg5hyEEo=;
+ b=YTuOESwjkb4BHil/eDd7heRXoR1sGVWFanUU9WaIS3NLVu96DEurNMnHr9qnEVQyLEjGmKAyrx2qGsmmgIuboSSk+cSl+Uf/NtZf/vNlT/w6+piIjUYRdAWMHMpN1gLSwXgQTdjUJuU2+33Sj+1UMtBXh9vMk/GwjtRTGZyzTo0=
+Received: from BYAPR10MB2999.namprd10.prod.outlook.com (2603:10b6:a03:85::27)
+ by SJ0PR10MB4480.namprd10.prod.outlook.com (2603:10b6:a03:2d7::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.26; Thu, 10 Nov
- 2022 19:19:09 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::7a81:a4e4:bb9c:d1de]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::7a81:a4e4:bb9c:d1de%7]) with mapi id 15.20.5791.027; Thu, 10 Nov 2022
- 19:19:09 +0000
-Date: Thu, 10 Nov 2022 15:19:08 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: kvm@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>,
-	dri-devel@lists.freedesktop.org,
-	Vineeth Vijayan <vneethv@linux.ibm.com>,
-	Diana Craciun <diana.craciun@oss.nxp.com>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Longfang Liu <liulongfang@huawei.com>, linux-s390@vger.kernel.org,
-	Yi Liu <yi.l.liu@intel.com>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	Halil Pasic <pasic@linux.ibm.com>, iommu@lists.linux.dev,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	intel-gfx@lists.freedesktop.org, Zhi Wang <zhi.a.wang@intel.com>,
-	Jason Herne <jjherne@linux.ibm.com>,
-	Eric Farman <farman@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Eric Auger <eric.auger@redhat.com>,
-	Harald Freudenberger <freude@linux.ibm.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	intel-gvt-dev@lists.freedesktop.org,
-	Tony Krowiak <akrowiak@linux.ibm.com>,
-	Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Cornelia Huck <cohuck@redhat.com>,
-	Peter Oberparleiter <oberpar@linux.ibm.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH 04/10] vfio: Move storage of allow_unsafe_interrupts to
- vfio_main.c
-Message-ID: <Y21OrMoVW/x84qkX@nvidia.com>
-References: <Y1wiCc33Jh5QY+1f@nvidia.com>
- <20221031164526.0712e456.alex.williamson@redhat.com>
- <Y2kF75zVD581UeR2@nvidia.com>
- <20221107081853.18727337.alex.williamson@redhat.com>
- <Y2klGAUEUwpjWHw6@nvidia.com>
- <20221107110508.7f02abf4.alex.williamson@redhat.com>
- <Y2lSZwNT8f/RMoZf@nvidia.com>
- <20221108155520.4429c2e5.alex.williamson@redhat.com>
- <Y2r80RgytKpPtK58@nvidia.com>
- <20221109112822.7a8c5f7a.alex.williamson@redhat.com>
-Content-Type: text/plain; charset=us-ascii
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.13; Thu, 10 Nov
+ 2022 21:01:16 +0000
+Received: from BYAPR10MB2999.namprd10.prod.outlook.com
+ ([fe80::93:846c:dea2:6743]) by BYAPR10MB2999.namprd10.prod.outlook.com
+ ([fe80::93:846c:dea2:6743%5]) with mapi id 15.20.5791.027; Thu, 10 Nov 2022
+ 21:01:16 +0000
+Date: Thu, 10 Nov 2022 16:00:58 -0500
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+        harshit.m.mogalapalli@gmail.com, David Woodhouse <dwmw2@infradead.org>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, Darren Kenny <darren.kenny@oracle.com>
+Subject: Re: [RFC] iommu/vt-d: set default value of INTEL_IOMMU_FLOPPY_WA to n
+Message-ID: <Y21mitQsO2RG652t@char.us.oracle.com>
+References: <20221108125855.2984751-1-harshit.m.mogalapalli@oracle.com>
+ <dc463b3e-2875-8aac-aca1-edacb90e5650@linux.intel.com>
+ <76cbad17-ab5e-3dd9-cf94-df2b26748167@oracle.com>
+ <3a7f5cdf-640b-f9d4-a25e-8be845abd7ba@linux.intel.com>
+ <Y2wK6kWHE1iah/IG@char.us.oracle.com>
+ <0f1ad424-18b0-c27f-dbf6-745801182bd2@linux.intel.com>
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20221109112822.7a8c5f7a.alex.williamson@redhat.com>
-X-ClientProxiedBy: BLAPR03CA0168.namprd03.prod.outlook.com
- (2603:10b6:208:32f::6) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <0f1ad424-18b0-c27f-dbf6-745801182bd2@linux.intel.com>
+X-ClientProxiedBy: SA9PR10CA0015.namprd10.prod.outlook.com
+ (2603:10b6:806:a7::20) To BYAPR10MB2999.namprd10.prod.outlook.com
+ (2603:10b6:a03:85::27)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -88,110 +80,219 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SJ1PR12MB6052:EE_
-X-MS-Office365-Filtering-Correlation-Id: 12268162-4f3d-416d-90f8-08dac3507141
+X-MS-TrafficTypeDiagnostic: BYAPR10MB2999:EE_|SJ0PR10MB4480:EE_
+X-MS-Office365-Filtering-Correlation-Id: e5ff1f32-1be9-4ee3-d7cf-08dac35eb543
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	RQQRDG37XMLx2c3C9YMUdn5HG0jmhWQgodFg+Sc7JCdMfJc8VT1yusnkYHjyrcOIdF9PzlgIZpZojC1KJiCzYTt8xroWx0XF8RST1O73gI//QwC0bRt/L3H3uHQXVaSh1DLaLp8/QQd+QXd43dGmyZjSUkwfLTqPwtnWXV0htdQpu85Qj6QALUcQee5jHgr9flr3Zc6+FSbqHtIf6CI2CbzsS4R+6oEHaLiFa15Ig5G1cFCtiBcJwBS1A8qSE79FuN7ZKkEKdsnnuio5C+UojqxsjTTV2SKb2ASsXDNo7K57RSi//uEA48zEoOAvMQICu59EVESgCtjl+2ctBm8zETyEDgiz58ySPgeJqWb4xjP+MrtGQgPp8Uv7hAeCzuQdAWunat/RGc7QKt2qhg2o7Kao67ekI2VnxkbgQv1NuZMVJHasVTfMStwEnG3P7+TzJJfLZy6CkR3RinWmk6v6NIMjAUxa7QmTqAfZIr3GDZvArzo7ag+7MfyWxXKlgW5MRDK++upxSDKiwsREG5Jqxn25htDK1/p3mkhLxPFjQXxO8XniTyqjGZRf6wm7pJJ9ipMurjPd8ou419yji9UhwR8daR2VKBtl/6/AjOZkneeurwSij1NTh5MqKQTMKplNw55m75kT18J3vBRfe1kHGq2A0jvoN0pixKq68SZM2YAUhpQZ373iT8FGl/oDYEFa4KUruU1O9TggtrovWS7UnQ==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(396003)(39860400002)(376002)(366004)(346002)(451199015)(41300700001)(2906002)(54906003)(66946007)(4326008)(6916009)(8676002)(316002)(66476007)(66556008)(6486002)(36756003)(38100700002)(7416002)(8936002)(186003)(478600001)(83380400001)(6512007)(7406005)(26005)(5660300002)(6506007)(86362001)(2616005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 
+	tO3xi72evjyArxik/2p5LABQcsCO9RZC5EvUIBMxkpeU1DcCvaHbdBJy99XDdn/p816sIyxsy1RxY6DYJzxKUBKjLEbYiotfkA3z8NJXKhIX/iAmuEqD6aVK+jkg+HgolzDH1aYkPSybsDmTonB/yIyGBsQtgbp5386u002DFNgog7zbpP9oGNJ6JKE+sKWv2eWBaSijc3xrhnDdOQqERp99CVyL+9Q2w2zoQ4L29pcOO4KI63F34uf9Q0PyUmB637BPajhqlz7nM9K2oXX02okhKKzdfmUErhehCHat2qsnM5MFYCL6L5GavudwLRBwDAsQHkDs3LfP9WHo+0uiiXl4lo23wYJMZ5UHq/RO7evC72IjcPiFlK4jllPQfCDJM92RRg/eFuBjr/gG1zEE1AP3HqIvXjsGVXalT215hSQgj67mGmsO4dmmAypdQB9j/wZgSl6t8NeS9oWSelVYgyLgo0LG2K4zATHsEvdgw5U1Bvg1r1i4mFPcPwnNf/R/53/Ko3DP6F9GIsrI6QbfdXa7xjIwOVWSKQ1MPIAKXfGqStkjS2eLsl3w4xm0Z+/mhA5Mdz5mPDA30M9v9D3yOBQR0FEas61nNFbvyrBJ/EuoyPQzD0kpUl8Bl4gs2a/8KhxcjKY20u+y8IQBY/gVhSx7dz+qtD1Kbr26V5U4LBPkmWIeKAc8fm+i4a7aqn7PXJjB6fc6d3DJPs4pvBNqUkVGk3DTRB5MLiJocqVlY48E+ETxPVX8w6Iu4TZpjQeqM6Gcbcm5i4RsF8EcZfsfgg==
+X-Forefront-Antispam-Report: 
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR10MB2999.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(366004)(346002)(376002)(39860400002)(136003)(396003)(451199015)(6506007)(53546011)(86362001)(6512007)(38100700002)(6916009)(186003)(83380400001)(2906002)(26005)(54906003)(5660300002)(8936002)(107886003)(6666004)(6486002)(478600001)(66476007)(66556008)(316002)(4326008)(41300700001)(66946007)(8676002)(129723003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?EPc3QBCu5Z3+C63oUEZZ+2TSUPcspMygtP/4Y3AiHrovjwc5hL7bd2YMYAbc?=
- =?us-ascii?Q?h7er+Ewfk/gme0fr0KhVsb55T+SxlAyPyH/zGMT1nlM1fYDJ9mM8TFlgsTIb?=
- =?us-ascii?Q?ceVVLCBtlEp/XCwSgmt8DRuQlFqPHXiNTIAnWOp7DIuAqpqOeUMWIQbz6Kdl?=
- =?us-ascii?Q?DXOsN4Dos05rCux/feY4MKT9U7aykNlM7T3UETQw2Z+t4GRvNmdF2/2ONz7v?=
- =?us-ascii?Q?Y2OfI/oCEh5h7EH+FWGkZtivx6jdchVMJfGhAf02ytWnC+LzPyOertlqZxQz?=
- =?us-ascii?Q?UQpL+75GRkdTBGuFwo3NpFL4+X7A7zyk7X07qVZdtJpqlPM4T9ZVzJLoObKf?=
- =?us-ascii?Q?uTlhGcHI3vn28DtcLCvnQSrWa3ZujPzjwc93uuUtCiOg15sCmQV6OjsS6fOF?=
- =?us-ascii?Q?CiKDQGwG2F4BYfQi7wtFMNZJ9Ylvo4rNU0RFqM5f1QwdJE2jt9bw1vrOXtyA?=
- =?us-ascii?Q?fxcJPmLabw511lXwCJ7I/UahJOHSkH5L289AxmnVyl1gxVhxV8o2yqAxF6EA?=
- =?us-ascii?Q?q6KZM+KHXGk4yMaB3f17Lxa+AFKrtPd0yYYtL2UCqE6BcH+9ytMBec+nTqtZ?=
- =?us-ascii?Q?gLFSmjWE9FXNWsQd2XMFAw/y/Fe+o0rnmOotMfzPE+mBAgyLh+8N6rtt0h8x?=
- =?us-ascii?Q?+PIvtMNyg8o0EsoO/QT5hHCF9B8raFXC/p6mh9z3Rh1NAEELHysDjR2+YdtR?=
- =?us-ascii?Q?c+lDUSmGWrJ/Onz5jqG6b6KRbMU2COHYYc5j1HbCaicb3jBZcxX7jfDZYsO1?=
- =?us-ascii?Q?5YRyEfWPFf+diqLYYMdL6dR7cKdPykgRenCSPq/rHQ6e0MxqZEYyMMt5dfBg?=
- =?us-ascii?Q?uRdXAP41avbEkG/nKzBPkBUpn0NVXO72P2CKP5gWuxCNypDg8+Kf5RZ5r+KK?=
- =?us-ascii?Q?Ol0iMb7ZhtqKW9fBnihxQlyKnRNwfjALjOWIAhDv+7TfqoEJGl2fjxFytrfC?=
- =?us-ascii?Q?jtRseIkH1S9HPBGGuhmWtqGUKX2WhfXHgBsL0OFBTO2Ye0IKYSSiI3wrlhLJ?=
- =?us-ascii?Q?wxu/jyEpviEADe8O6wGVWwYqfg/X/MsMkIlmHtAGdwgTxKm5eneb7+eN9Kxz?=
- =?us-ascii?Q?Vy/2+FnTHqEuksddwbe7qv8GDcf9sihddYiVmXrO3WALfs8QXAo4jPJIj6O2?=
- =?us-ascii?Q?l6DCz/UGZ4TEIzICngGvgLIZY1fJRpLouZD3F06oB/YOyt8fWyvJ5hnxG3xL?=
- =?us-ascii?Q?fuh54yJAtPASxOjQrdE7IGwu/4pLE+W6U8Dc8CFMkRZL7SjGLeRhigLMu/9g?=
- =?us-ascii?Q?JPHO1//tK9bu/+rr/2W+IXNMLD2V9Pp1d8PqMwb73FHmMyl2iIHF7bsAxkfy?=
- =?us-ascii?Q?oKzQC/GUTfBgH5KKjUOOXAPHwMevDLS9EzQZgH4HaTVdv6GCYVkQKEzkPwgh?=
- =?us-ascii?Q?5gK4mliuXfzRgP7Uph8RXZsJaWrI3imUJ/SBD2M02p5QUQWVhjHug35osPpW?=
- =?us-ascii?Q?lhg/caMsseTwAxe2x4DDKRU6ASBL2WJfnk704xXKNDfqaDXCa3H7s3ElN+9R?=
- =?us-ascii?Q?3Sp7nsnNdVCJUyY6BUsyIcU7wnNJPKRn53C4jzzOyQ1R6abvN2CfwRRDeIax?=
- =?us-ascii?Q?olO3N1a5VEkwcGJ2LuY=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 12268162-4f3d-416d-90f8-08dac3507141
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: 
+	=?iso-8859-1?Q?ie4yTMtHXg4RaUvkwOz+OOfdFBnThJ8AiK6qZlrigXXz8HstR6S9LyLkpl?=
+ =?iso-8859-1?Q?yH5oq+gxb21yAOm4shs6LB4CKFN3jjBLI0D33rdffQzEdaE63OCaYjfdef?=
+ =?iso-8859-1?Q?hQi8LPbRXkVvCevVl36p+RYleZPcEsu/nOzbcVUVcrwgvRK0+9t2BotPSA?=
+ =?iso-8859-1?Q?KiSZ7CG5lg1GPhiB3R/o+WsOsxA5zF1ZdIEWIb96EfKzgVA0o70HMJK5bm?=
+ =?iso-8859-1?Q?dU6t9FcszS02xWIxN6Ub+9xIg33ZBroyCPaD8FwzQJ/p7nEzfEzkPzkdvY?=
+ =?iso-8859-1?Q?GPKfC2UmqSNwNmc2JHIKGlQbl+UjjofXJctBXYNYpPrTxjQAJgfQ8LIfME?=
+ =?iso-8859-1?Q?FzpqBObUH3/fRbotgWPnMhe9RfU/VuWz+0GQRnNKnVkVEzcBeobw9isywH?=
+ =?iso-8859-1?Q?1Gl6h1gM1xHeQjAX9YViSt+Zn+S04Lb5FmveBBq4UmTrq6SEKkps+IQYVd?=
+ =?iso-8859-1?Q?N+JCo/9U2M7NE3aTv72qPM3p5UQNpoVL9ry4ZnLSkvKeYVmijl6loK9WFE?=
+ =?iso-8859-1?Q?hlpG5/fL3eSJcbs46uTYF9gLixN2f81bZ5ZfVfJqCcYrhzzaAcSsoJKDBw?=
+ =?iso-8859-1?Q?RWtlOaotU9IK7p+8IQ3d87B/m5UN1GqFvWpxnAxD2cRLD4fTeWlP7IGeMa?=
+ =?iso-8859-1?Q?LikhNlLBgm67atpMYKNHRT0lCnpA4vPjPJ77jBbsojNyDv708s+0tlv3eC?=
+ =?iso-8859-1?Q?e7S6lgs5r2K4MG+emLIHrFa9uRnMSNA+OVuCbLkggwO1X7XWzgrnVspcmG?=
+ =?iso-8859-1?Q?fEnjasnBcaL+9QXU3idK8J+XMp4ABAySl1hsl7/jAPEGxbSoU7AlXRWh5k?=
+ =?iso-8859-1?Q?eXDqzXV79OtPF975FL2gbkjce3kxTs0aBr09Od7rvOWfFnGJUGnRIhagPs?=
+ =?iso-8859-1?Q?pcEr7EPT0vdP3TfMy3OkiQ1ts3QNP/Gh0jTwuTcDFt3FKCX8wOnEmm3CRC?=
+ =?iso-8859-1?Q?1VLo46m/zR1M5TzzSg4xxQFNOIryRegXFoJ/LNkdYcpSuNEWRGrM3aj/WL?=
+ =?iso-8859-1?Q?mNchOzWDqMoAaadG704R7PJoiNq42HDUEZrYKGpJNbPQKb8KKFFz+Lq9Oz?=
+ =?iso-8859-1?Q?fIZpnGi6rGAdFZZCPUC8ZyR/ZSvBrmsHZ4ox8aSoFYydNll56xBbv9VqEh?=
+ =?iso-8859-1?Q?HuWXQeXisbpKSpAGJvKXUk2YJa//Wft5HMQnCbwnf0wRf6Q92tGTnsb+Px?=
+ =?iso-8859-1?Q?0bSg/tPOFj0qrjcuemMJyoFyUQ/HOC5+2IIF6lgLbNYFmpEJCnj4wAgjF4?=
+ =?iso-8859-1?Q?fEmAQRZWVQiI3d+QA0jRb1gqlcbrcJkDQcvTrW8De6lmP4f/i1hI68esNJ?=
+ =?iso-8859-1?Q?1EPbdwfIt/uD1nCu1O9rhRaqUZA//IdoQgT0GXTT8oioGCY0cxgAZ540VV?=
+ =?iso-8859-1?Q?ZukJcimVCD9HUjVQbmWn/szhqKhSNOjmFWXdGRlyr4b1BE0r8wRs0N56aD?=
+ =?iso-8859-1?Q?YZC9VC1/xdTbZiMTrC71fXzxTVPSCZ76COqzBqbb7OiJi7MtIYbsZEREn/?=
+ =?iso-8859-1?Q?T4fuSSc4VAx5zE3kKROqYl61taxY/LJd+4kn1mdJCnyqG9ojxfNxpH9Nf7?=
+ =?iso-8859-1?Q?yYjPfSMktElRfrFnsOOZTzyoKDyPA3yoaoQu4YYJxmSipFNq6JS65DXBDm?=
+ =?iso-8859-1?Q?pdQjDi8/iyOT1ORk7LhXk0jhGAqoct5bqlDHwJp4SB2UA5gcKeYtLVmQ?=
+ =?iso-8859-1?Q?=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e5ff1f32-1be9-4ee3-d7cf-08dac35eb543
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR10MB2999.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Nov 2022 19:19:09.5031
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Nov 2022 21:01:16.4935
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KhIS4XsQ1mYSxKJe1cs0owUJGnvDFtl0EEw55K40eHW8SZ/qUDrZA8OeY+ktEGdR
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6052
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9QwZidBfdklmio/hIZkk6eUPu61YQpPe/pxmCMOrg2x9b/fllEDOotyiQb5Ac3vCi1eeK1+/ckzIKjWZI1Pcvg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB4480
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-10_13,2022-11-09_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 spamscore=0 adultscore=0
+ malwarescore=0 mlxlogscore=999 mlxscore=0 phishscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2210170000
+ definitions=main-2211100147
+X-Proofpoint-ORIG-GUID: iyvp-uFkJzs9wzmqLIeeadXYbfdgoVow
+X-Proofpoint-GUID: iyvp-uFkJzs9wzmqLIeeadXYbfdgoVow
 
-On Wed, Nov 09, 2022 at 11:28:22AM -0700, Alex Williamson wrote:
-> > > > I'd be much more comfortable with this as a system wide iommufd flag
-> > > > if we also tied it to do some demonstration of privilege - eg a
-> > > > requirement to open iommufd with CAP_SYS_RAWIO for instance.  
+On Thu, Nov 10, 2022 at 02:39:53PM +0800, Baolu Lu wrote:
+> On 2022/11/10 4:17, Konrad Rzeszutek Wilk wrote:
+> > On Wed, Nov 09, 2022 at 09:16:53PM +0800, Baolu Lu wrote:
+> > > On 2022/11/9 20:16, Harshit Mogalapalli wrote:
+> > > > 
+> > > > 
+> > > > On 09/11/22 12:35 pm, Baolu Lu wrote:
+> > > > > On 2022/11/8 20:58, Harshit Mogalapalli wrote:
+> > > > > > It is likely that modern intel motherboard will not ship with a
+> > > > > > floppy connection anymore, so let us disable it by default, as it
+> > > > > > gets turned on when we do a make defconfig.
+> > > > > > 
+> > > > > > Suggested-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+> > > > > > Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+> > > > > > ---
+> > > > > >    drivers/iommu/intel/Kconfig | 2 +-
+> > > > > >    1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > > > 
+> > > > > > diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+> > > > > > index b7dff5092fd2..c783ae85ca9b 100644
+> > > > > > --- a/drivers/iommu/intel/Kconfig
+> > > > > > +++ b/drivers/iommu/intel/Kconfig
+> > > > > > @@ -76,7 +76,7 @@ config INTEL_IOMMU_BROKEN_GFX_WA
+> > > > > >          option is removed in the 2.6.32 kernel.
+> > > > > >    config INTEL_IOMMU_FLOPPY_WA
+> > > > > > -    def_bool y
+> > > > > > +    def_bool n
+> > > > > >        depends on X86
+> > > > > >        help
+> > > > > >          Floppy disk drivers are known to bypass DMA API calls
+> > > > > 
+> > > > > Nobody selects or depends on this. How about removing this bool? Only
+> > > > > less than 10 lines of code are impacted and are not in any performance
+> > > > > path.
+> > > > > 
+> > > > > diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+> > > > > index b7dff5092fd2..5e077d1c5f5d 100644
+> > > > > --- a/drivers/iommu/intel/Kconfig
+> > > > > +++ b/drivers/iommu/intel/Kconfig
+> > > > > @@ -75,15 +75,6 @@ config INTEL_IOMMU_BROKEN_GFX_WA
+> > > > >          to use physical addresses for DMA, at least until this
+> > > > >          option is removed in the 2.6.32 kernel.
+> > > > > 
+> > > > > -config INTEL_IOMMU_FLOPPY_WA
+> > > > > -    def_bool y
+> > > > > -    depends on X86
+> > > > > -    help
+> > > > > -      Floppy disk drivers are known to bypass DMA API calls
+> > > > > -      thereby failing to work when IOMMU is enabled. This
+> > > > > -      workaround will setup a 1:1 mapping for the first
+> > > > > -      16MiB to make floppy (an ISA device) work.
+> > > > > -
+> > > > >    config INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON
+> > > > >        bool "Enable Intel IOMMU scalable mode by default"
+> > > > >        default y
+> > > > > diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> > > > > index 48cdcd0a5cf3..22801850f339 100644
+> > > > > --- a/drivers/iommu/intel/iommu.c
+> > > > > +++ b/drivers/iommu/intel/iommu.c
+> > > > > @@ -4567,7 +4567,6 @@ static void
+> > > > > intel_iommu_get_resv_regions(struct device *device,
+> > > > >        }
+> > > > >        rcu_read_unlock();
+> > > > > 
+> > > > > -#ifdef CONFIG_INTEL_IOMMU_FLOPPY_WA
+> > > > >        if (dev_is_pci(device)) {
+> > > > >            struct pci_dev *pdev = to_pci_dev(device);
+> > > > > 
+> > > > > @@ -4579,7 +4578,6 @@ static void
+> > > > > intel_iommu_get_resv_regions(struct device *device,
+> > > > >                    list_add_tail(&reg->list, head);
+> > > > >            }
+> > > > >        }
+> > > > > -#endif /* CONFIG_INTEL_IOMMU_FLOPPY_WA */
+> > > > > 
+> > > > >        reg = iommu_alloc_resv_region(IOAPIC_RANGE_START,
+> > > > >                          IOAPIC_RANGE_END - IOAPIC_RANGE_START + 1,
+> > > > > 
+> > > > 
+> > > > Hi Baolu,
+> > > > 
+> > > > I have a question:
+> > > > Shouldn't we remove the code between ifdef-endif statements?
+> > > > 
+> > > > I mean something like this:
+> > > > 
+> > > > diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+> > > > index b7dff5092fd2..5e077d1c5f5d 100644
+> > > > --- a/drivers/iommu/intel/Kconfig
+> > > > +++ b/drivers/iommu/intel/Kconfig
+> > > > @@ -75,15 +75,6 @@ config INTEL_IOMMU_BROKEN_GFX_WA
+> > > >             to use physical addresses for DMA, at least until this
+> > > >             option is removed in the 2.6.32 kernel.
+> > > > 
+> > > > -config INTEL_IOMMU_FLOPPY_WA
+> > > > -       def_bool y
+> > > > -       depends on X86
+> > > > -       help
+> > > > -         Floppy disk drivers are known to bypass DMA API calls
+> > > > -         thereby failing to work when IOMMU is enabled. This
+> > > > -         workaround will setup a 1:1 mapping for the first
+> > > > -         16MiB to make floppy (an ISA device) work.
+> > > > -
+> > > >    config INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON
+> > > >           bool "Enable Intel IOMMU scalable mode by default"
+> > > >           default y
+> > > > diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> > > > index 48cdcd0a5cf3..2c416ad3204e 100644
+> > > > --- a/drivers/iommu/intel/iommu.c
+> > > > +++ b/drivers/iommu/intel/iommu.c
+> > > > @@ -4567,20 +4567,6 @@ static void intel_iommu_get_resv_regions(struct
+> > > > device *device,
+> > > >           }
+> > > >           rcu_read_unlock();
+> > > > 
+> > > > -#ifdef CONFIG_INTEL_IOMMU_FLOPPY_WA
+> > > > -       if (dev_is_pci(device)) {
+> > > > -               struct pci_dev *pdev = to_pci_dev(device);
+> > > > -
+> > > > -               if ((pdev->class >> 8) == PCI_CLASS_BRIDGE_ISA) {
+> > > > -                       reg = iommu_alloc_resv_region(0, 1UL << 24, prot,
+> > > > -                                       IOMMU_RESV_DIRECT_RELAXABLE,
+> > > > -                                       GFP_KERNEL);
+> > > > -                       if (reg)
+> > > > -                               list_add_tail(&reg->list, head);
+> > > > -               }
+> > > > -       }
+> > > > -#endif /* CONFIG_INTEL_IOMMU_FLOPPY_WA */
+> > > > -
+> > > >           reg = iommu_alloc_resv_region(IOAPIC_RANGE_START,
+> > > >                                         IOAPIC_RANGE_END -
+> > > > IOAPIC_RANGE_START + 1,
+> > > >                                         0, IOMMU_RESV_MSI, GFP_KERNEL);
+> > > > 
+> > > > This code is introduced in Commit d850c2ee5fe2 ("iommu/vt-d: Expose ISA
+> > > > direct mapping region via iommu_get_resv_regions")
 > > > 
-> > > Which is not compatible to existing use cases, which is also why we
-> > > can't invent some way to allow some applications to run without CPU
-> > > mitigations, while requiring it for others as a baseline.  
+> > > As long as floppy driver exists in the tree, we have to include above
+> > > code. Otherwise, floppy drivers don't work. At least we can easily find
+> > > drivers/block/floppy.c which is still maintained (check MAINTAINERS).:-)
 > > 
-> > Isn't it? Didn't we learn that libvirt runs as root and will open and
-> > pass the iommufd as root?
+> > But this requires a machine with Intel IOMMU and ISA:
+> > 
+> > > > > -      16MiB to make floppy (an ISA device) work.
+> > 
+> > ISA device? I don't believe there are any Intel machines with an IOMMU
+> > and an ISA device?
 > 
-> We're jumping ahead to native iommufd support here, what happens when
-> VFIO_CONTAINER=n and it's QEMU opening the fds, with only file access
-> privileges?
+> This workaround was introduced by commit 49a0429e53f2 ("Intel IOMMU:
+> Iommu floppy workaround") in 2007. I can't remember what happened 15
+> years ago, but I believe there must have been corresponding hardware
+> configurations at that time, and the Linux kernel has been maintained it
+> to now.
 
-Yes, but I am thinking aloud about how to best to do this in native
-iommufd modes.
-
-> > I think so. At least you should have something to shut down an
-> > insecure feature in kernel lockdown modes. CAP_SYS_RAWIO is a simple
-> > way to do it.
-> 
-> How are CPU vulnerabilities handled in lockdown mode, do apps require
-> certain capabilities to run fast vs safe, or do we simply disallow
-> unsafe globally in lockdown?  I think we have a lot more leniency to
-> ignore/disallow flags that enable global insecurities when any sort of
-> lockdown is imposed.
-
-The CPU things are all information leaks from the kernel to
-userspace. lockdown is about preserving kernel operating integrity -
-eg preventing modification of hijacking of the running kernel.
-
-So, like you say below, this is kind of in between, it is not
-information leakage, and it is is hopefully not an integrity issue.
-
-Being more of a DOS maybe it is fine under the lockdown scenarios. At
-least I am happier to hear that.
-
-> > vfio-iommufd seems like overkill, I think your first suggestion to put
-> > in vfio.ko was more practical.
-> 
-> Convenient perhaps, but architecturally the wrong place for it.
-
-Ah, that is pretty subjective. If the architecture is that the iommufd
-user subsystem opts-in to this insecurity then it is an OK place
-
-If it is that iommufd sets it globaly for the whole system it is the
-wrong place.
-
-We could also talk about a per-vfio_device sysfs to control this? Then
-we can make the sysfs only appear for vfio_devices using the
-iommu_domain part of iommufd/vfio. That has a nice sort of compat
-shape as we can make the existing module option default the sysfs to
-insecure
-
-Jason
+At what point can this be removed then?
