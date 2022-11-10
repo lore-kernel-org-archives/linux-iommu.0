@@ -1,154 +1,125 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2077.outbound.protection.outlook.com [40.107.93.77])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A26771A601;
-	Thu, 10 Nov 2022 16:54:36 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=G5lkpbdIhpnlkvDX5mStyX0fBlcn3d5LSVr8M+dxYBDpC0zThTHZwpOn/nSIZHNefnjtwiECiLThK/XjWfekHW/2jFIGzwoAEDkl4vljcNTU6nglOstIpzgwg1zfa1auVFLjRgPEJp86IvT3YOVj9yI5cKgVHGkQigxFPU3t3KzSaDcVfEqOYEtwITjNhAmAZoyP81sxse0MEPMKVbEMo0T4vSw2WI5AW8jXY+Am5R+veqXhunAdUzgCNYO5y2cwc5cG7DWwU8UNBosNxx6k4SwRTR+gvzY36DpAwOFPjo5J+hJP0NfRVApPJW2xW+jh1ymalrLOSX8BGfVyPDX5Yg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wrrZWZU6FbMwGAp0zUwc1YwU9yX3ebzjFEAhB6dLDHE=;
- b=S9t7EvQSgCQufGH7W+jG0PJ4FihKYt57ig626+NfZUdQV6acewqaQCAGlAlxgY8qBaiqQcj4Yek0pjhnIVd0IQjy6imeePrTHY3dLdfT4UMFdhZdtkPV5OcZDLiZblldd1O948YPQ1HZcKre7Rmh1pZ4umhga7bcTF8ZwfR1n7gxMPLjBy/1mBSYaGCRDJqKFdhQjtPOoEy/mmRWc1Dyea8KoThOyHOtdzXMaa1GA/ImqPIeI5knGFUiTlrmWLn+YvFz0jg/RumlGfzDZTxdShoMyNvXE9QBoA5bTJdxA8+9KN/2GXq6Ya7Ug+At9N5WnhKU0bXFH2MBaZ/wLotvsw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wrrZWZU6FbMwGAp0zUwc1YwU9yX3ebzjFEAhB6dLDHE=;
- b=j9kJ236b1S8pdlZJppX8dmRIfnYC3nkbiTu5pftWJLXMNeoVazXUvACuzqiw6J3f9NYH9rKWeDXwq30VOtkE06NfgXPmUaWjhkdHOfDJ2isVDjWW26Hzm099lAuEc7gBlwpOYaBTZIptmDUcaTkXfWZH8D0vn0EU64ZoVMZzH7XlIBLywTtO1k6VM7kJ5ohma6rIZDO3unwfdTeawhzVTEee2pLzeLs9DjJBqv8+CoG+3pUFDW2DuzR+Km4+fBaLH38AylnHjJEzn2apIevwkE+ibt0xn///b7nokK/Xn+yFejSrOfLxm4fpgT6JH/2mCwag44fXJ3dl/FgjsgblWg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DM4PR12MB5168.namprd12.prod.outlook.com (2603:10b6:5:397::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.13; Thu, 10 Nov
- 2022 16:54:34 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::7a81:a4e4:bb9c:d1de]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::7a81:a4e4:bb9c:d1de%7]) with mapi id 15.20.5791.027; Thu, 10 Nov 2022
- 16:54:34 +0000
-Date: Thu, 10 Nov 2022 12:54:33 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Jonathan Corbet <corbet@lwn.net>
-Cc: Bagas Sanjaya <bagasdotme@gmail.com>, bpf@vger.kernel.org,
-	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-	linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
-	Nick Desaulniers <ndesaulniers@google.com>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
-	Cornelia Huck <cohuck@redhat.com>,
-	Daniel Jordan <daniel.m.jordan@oracle.com>,
-	David Gibson <david@gibson.dropbear.id.au>,
-	Eric Auger <eric.auger@redhat.com>,
-	Eric Farman <farman@linux.ibm.com>,
-	Jason Wang <jasowang@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Joao Martins <joao.m.martins@oracle.com>, kvm@vger.kernel.org,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-	Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
-Subject: Re: [PATCH v4 04/17] iommufd: Document overview of iommufd
-Message-ID: <Y20syTS/BUzPdu/i@nvidia.com>
-References: <0-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
- <4-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
- <Y2zE0zfnQ7mt740i@debian.me>
- <87v8nmhnkl.fsf@meer.lwn.net>
- <Y20QotPsxivvV53l@nvidia.com>
- <87r0yahmlg.fsf@meer.lwn.net>
- <Y20XhjH96k4x7qdx@nvidia.com>
- <87mt8yhlqr.fsf@meer.lwn.net>
- <Y20Y9Jlp3vG8x27a@nvidia.com>
- <87iljmhknj.fsf@meer.lwn.net>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87iljmhknj.fsf@meer.lwn.net>
-X-ClientProxiedBy: BL0PR02CA0103.namprd02.prod.outlook.com
- (2603:10b6:208:51::44) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 078901A601
+	for <iommu@lists.linux.dev>; Thu, 10 Nov 2022 17:10:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1668100235;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=3XBNZVfwHOyxrKzEqgSDBaV/kDGeCsLaREPRXxkN8EM=;
+	b=NkZJTQsuFZw+7N6PvaN5wTx0ag+rWgUjKGkZjCxER0FBFfEvcczdu/3q3gxgT6Cf7ljAHp
+	+7Lxfwscpb3dCFEpBJH5xgW5zCZtaWAbrsM9/jSCM3bI7PdU90ZbwUrglnI3atzshZL5K7
+	fvVQ4D7eEXUEbm/9My4hkrE7ywikF6w=
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
+ [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-413-Tu8wZQ6aOlyoXgfm_mEKHA-1; Thu, 10 Nov 2022 12:10:27 -0500
+X-MC-Unique: Tu8wZQ6aOlyoXgfm_mEKHA-1
+Received: by mail-il1-f197.google.com with SMTP id h20-20020a056e021d9400b00300581edaa5so1993940ila.12
+        for <iommu@lists.linux.dev>; Thu, 10 Nov 2022 09:10:27 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=3XBNZVfwHOyxrKzEqgSDBaV/kDGeCsLaREPRXxkN8EM=;
+        b=J73t4OsrX4z9qb9WVOetzm8GqZOx3L29UbLoIWlVwh4WlwB3z7BCBGwiX0Y6mgKLeV
+         PQWiSvNiaLG8rus1Ojub05sz+L8FrnakapWI9X6UvoLNWvtI/Tc0Jc6f65PKnbkj5FX+
+         /OhIdTAf1sW1eV8vqJGjgSkqz8SRjRpMKoG8KOaGTntQOpjodaexoI+NiACgcessPzo8
+         IEAujVWVyCCqdVVTKVtjG0/fmpPH6vL0K3o8H8BweKM0YZIfa2AULrZfzFi+TiC0Y3M8
+         ukBCwJQ5wLvmbxMTMsrZo0fMVKvbd5YlM2cJIAQh1pF9CFlY/f9YWo4qDFG9paZLVnBY
+         Zwig==
+X-Gm-Message-State: ACrzQf1FfWYOKVwNLcYbYQIH2crQDPBWskfO+WG+W71K0RJYnGKc5iZY
+	zXpt/Jekn+Jdjc8E6xJtQKl2Libyc1SizhQTSAQqLYBxSS3Ip0D959doWg30fPEVoZIk/Ne9iCl
+	LKmECzUtmEGMJ6GA=
+X-Received: by 2002:a05:6638:4413:b0:374:fbbe:2da6 with SMTP id bp19-20020a056638441300b00374fbbe2da6mr3149431jab.163.1668100226568;
+        Thu, 10 Nov 2022 09:10:26 -0800 (PST)
+X-Google-Smtp-Source: AMsMyM5st2ROvi8y5IPXYSHhk18Mv2oS6m3aLQCRNeAm9L0KyqI2dN1lMnwqPxWnGmIZODwHu3sF6g==
+X-Received: by 2002:a05:6638:4413:b0:374:fbbe:2da6 with SMTP id bp19-20020a056638441300b00374fbbe2da6mr3149377jab.163.1668100226283;
+        Thu, 10 Nov 2022 09:10:26 -0800 (PST)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id m1-20020a924a01000000b002f9652849f6sm30029ilf.67.2022.11.10.09.10.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Nov 2022 09:10:25 -0800 (PST)
+Date: Thu, 10 Nov 2022 10:10:23 -0700
+From: Alex Williamson <alex.williamson@redhat.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Alexander Gordeev
+ <agordeev@linux.ibm.com>, David Airlie <airlied@gmail.com>, Tony Krowiak
+ <akrowiak@linux.ibm.com>, "Christian Borntraeger"
+ <borntraeger@linux.ibm.com>, Cornelia Huck <cohuck@redhat.com>, Daniel
+ Vetter <daniel@ffwll.ch>, Diana Craciun <diana.craciun@oss.nxp.com>,
+ "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, "Eric
+ Auger" <eric.auger@redhat.com>, Eric Farman <farman@linux.ibm.com>, "Harald
+ Freudenberger" <freude@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+ Heiko Carstens <hca@linux.ibm.com>, "intel-gfx@lists.freedesktop.org"
+ <intel-gfx@lists.freedesktop.org>, "intel-gvt-dev@lists.freedesktop.org"
+ <intel-gvt-dev@lists.freedesktop.org>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Jani Nikula <jani.nikula@linux.intel.com>, "Jason
+ Herne" <jjherne@linux.ibm.com>, Joonas Lahtinen
+ <joonas.lahtinen@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-s390@vger.kernel.org"
+ <linux-s390@vger.kernel.org>, Longfang Liu <liulongfang@huawei.com>,
+ "Matthew Rosato" <mjrosato@linux.ibm.com>, Peter Oberparleiter
+ <oberpar@linux.ibm.com>, Halil Pasic <pasic@linux.ibm.com>, Robin Murphy
+ <robin.murphy@arm.com>, "Vivi, Rodrigo" <rodrigo.vivi@intel.com>, "Shameer
+ Kolothum" <shameerali.kolothum.thodi@huawei.com>, Sven Schnelle
+ <svens@linux.ibm.com>, Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+ Vineeth Vijayan <vneethv@linux.ibm.com>, Will Deacon <will@kernel.org>,
+ Yishai Hadas <yishaih@nvidia.com>, Zhenyu Wang <zhenyuw@linux.intel.com>,
+ "Wang, Zhi A" <zhi.a.wang@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>
+Subject: Re: [PATCH v2 10/11] vfio: Make vfio_container optionally compiled
+Message-ID: <20221110101023.28e7a790.alex.williamson@redhat.com>
+In-Reply-To: <BN9PR11MB5276494548F01A42694E366A8C019@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <0-v2-65016290f146+33e-vfio_iommufd_jgg@nvidia.com>
+	<10-v2-65016290f146+33e-vfio_iommufd_jgg@nvidia.com>
+	<20221108152831.1a2ed3df.alex.williamson@redhat.com>
+	<Y2r6YnhuR3SxslL6@nvidia.com>
+	<20221109101809.2ff08303.alex.williamson@redhat.com>
+	<Y2wFFy0cxIIlCeTu@nvidia.com>
+	<BN9PR11MB5276494548F01A42694E366A8C019@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM4PR12MB5168:EE_
-X-MS-Office365-Filtering-Correlation-Id: 360eb242-d9e6-436c-f0c0-08dac33c3e81
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	rwxmx1iXsZM2P9JOzKyKtzHaybCdg4a23beaDXgfhbOe59qIlSy47xFt10c38aM7Rqnrh4c3g3Er5Nn1BUVCpB0FED8Dw5Er3Py1pJrUM5IzZjo1eRt+v5YcZcl6AiMVy6LzX78jiO9ghZ9pmzBfbtFAs/h1Nhic9JI6Wyv0XoFpZpzSacqnpC1kq0D6j1RyRtJebrYmTT4l20ytFM3CKsA3tBfPNS9apCme3E8ILhUqABXFDcef+9KrEkU/9/YzY0Z9BX8p+WhqGA6qC4jn8PBdShY63DKXKk8S6KMPCV0sDF3+YNwpMWRNWZL8vaGhbMvO9FXm93ALu/hQcSRUSNjVdr1Cy7VHadwLCFu4Ukjefqle1nQa2uElm+H+K8az3rYhbC3dN/5vrWiWe7YeEi9Em1jCg03YKnN9aHe/1qEt4kZfzNAhNVi3Dq79sZVdJxfV01TO1Bg/1q8hUp17UqtX36i5lDWbgPWino/s7b3eJpV2XJveMDfbulP9wji6EPQtDImq4dDii9l5KBZAEiJbdqYaVvLvdn+A/cndcH53uEBboHnbC2J2xL+myq75ngKQAUKZORhCrhvIZDVh76fR6TyGwTwmbHIH40XcDk8B8Egz7Ux/hCN9Me3cLOsTEgFifu0qJMF97b+vPQkQjcFUMwH0fCd/KGjvevRf2p4FCfdo3nBFiRPyU0Idbwse
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(39860400002)(396003)(366004)(136003)(346002)(451199015)(316002)(6916009)(54906003)(2616005)(41300700001)(4744005)(5660300002)(7406005)(186003)(7416002)(86362001)(2906002)(6506007)(66476007)(66556008)(66946007)(4326008)(6512007)(8676002)(26005)(36756003)(8936002)(478600001)(6486002)(66899015)(38100700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?GdKpjsLOzgrJweAdI8yhSjX6izTEQjJlPgMw32X9prbwsgM2BbeSyKFPNmpI?=
- =?us-ascii?Q?OoNUuRqqIaMyzSnCHnkePegLZN4yii+lLYZWRS0uQ8dNovy9ya7d42cx5tlT?=
- =?us-ascii?Q?66RBK7LPIUPuPR115yZYz2pVyrfDdcS3DWZfOQzngGFA0wLBBG2f3lXYGgNr?=
- =?us-ascii?Q?2aiMXuXxgqL8i2kW9q4GcfFG596CN4YhzUqCWZ3V7T54sUEqw2kD85X+NSKT?=
- =?us-ascii?Q?OX+oZrYn1YSqx74x97xy30CJBDM8E3VzFFdY+QN0wIVAIUuKiUqhnx+qxC/J?=
- =?us-ascii?Q?NVMXYFFQwMxSHvlqWOUB/I1oWA8W/vWZWLC8RNNX3pBDBGDZMa/VUB3MXP+k?=
- =?us-ascii?Q?MHDavhd+AhbMjVor0cESTmu9YcJN9tWgbON0ESNPFosTMeFnoTNe/wzMFoiD?=
- =?us-ascii?Q?GODykfpfEEx0LsffMpnA8Wn0SXTAfLYV8y3LYjyh4PFiqQDzXl6vuf/CQiN/?=
- =?us-ascii?Q?R65Acm8C8NbpxhFjNd1H5kCKywHxekyoa+js1pNy8/wA0JyAGOkJ34SOMNp+?=
- =?us-ascii?Q?dJQxYviG0hsNPTg6InkotTDTobx2+0cRk7xPCJJV52dhGQNUEQyyl/b8CZUj?=
- =?us-ascii?Q?Qs8P0AKey6e99xyD4D5NImRcoAN/YrflMYV31iTZKpe8xxXqgBJ7vehYJgF2?=
- =?us-ascii?Q?/cB3yRfecBvsFDhK5u10EYlpvH/UXWXV6G1b5VAAbBy8HsVt83ZHhSaKQCVh?=
- =?us-ascii?Q?DXP4e8i9eO9A6+jBuTd2mBL8zdZZFnLwsYuj52r1aN4do7paMMhmyFCFucmN?=
- =?us-ascii?Q?yVc4CDAamOjESTEKbUEs30FlEw2SkYtmwfBCKQ5FPOsff9ERLllRnlD0oM0I?=
- =?us-ascii?Q?oJi0PV1KckleHBdPciEThdyRlLo3Q00d7jXmCOgYiYSRN503cQQr+w9y4hn1?=
- =?us-ascii?Q?Y4ibFewGTYPEqyWuVm80EMNMl5Ghm3Lu3dg5ifesFPbZX+gvCSHLnUjnCQMF?=
- =?us-ascii?Q?B1uealH4znnJTf5MDgNSgS27yV7ZB4KoMIhCX6AojkFhV0HIFYPmHx7g/826?=
- =?us-ascii?Q?WSzSyThQN1WEWiBUDle32w+NkeXaCPKisl8I9D5YbP4Y69636Vr0TLmIY+2X?=
- =?us-ascii?Q?wcJ1oF/TACfzv/PE2gD3c1qNbii16iA51o8BmJZ7WZSqLvt73K1lef/edlUy?=
- =?us-ascii?Q?3zv7QNJ2shGTFh23SVgZGzN3WKqgQquew/1qeKbCxqQxE0/s8xkIXaghyyQm?=
- =?us-ascii?Q?oHS9avFEW6DRehuelzPrjLBVR+0/y2HuAOFzeWKKtTlpgb8cNkjOg3evl92l?=
- =?us-ascii?Q?qvPDSis2TZqQuILy5uhv5UhA+ao3yr+EjoyidAEHLI/JHSXqTV9olULhG2Tv?=
- =?us-ascii?Q?u4ptBkUzmWaR96KEbcw4CAqRMCM+jDsvQ6XddqIp9Kwc6E2ypOuyrzSZ7AX6?=
- =?us-ascii?Q?njff+qt6gTzUr6j4gzNEsNNE9drl2QLDZ/qj2PD42AYHG5Hd/BjkPI3NPFru?=
- =?us-ascii?Q?XEYyFJ7ZSoLyNNqFQsSwMfWliEi04Uzdp8KmcygX5hnbZK6GGa9GvGhB8Ahi?=
- =?us-ascii?Q?dYU2lOYKePzYz395wURR2OPaariEPEpzwG0dsUtJu0kj7sJR1g61C8kcg6aS?=
- =?us-ascii?Q?iTHaa+cI4jykR4SkaVc=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 360eb242-d9e6-436c-f0c0-08dac33c3e81
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Nov 2022 16:54:34.1753
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GCTv8Tm8aHz7unUKyCYXkIPepOdo94/TOH35QO4mAEnbTgb/xjiTNVXGr4RtDY46
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5168
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, Nov 10, 2022 at 08:52:16AM -0700, Jonathan Corbet wrote:
-> Jason Gunthorpe <jgg@nvidia.com> writes:
-> 
-> >> Single is nicer but it's not worth a great deal of angst; nothing we do
-> >> is going to turn kernel-doc into a thing of beauty :)
-> >
-> > I will leave it be then because it is a bit tricky to tell if the new
-> > regex breaks anything, and the first three attempts to create it
-> > didn't work at all...
-> 
-> That's fine.  If you want to keep it as part of your series feel free to
-> add:
-> 
-> Acked-by: Jonathan Corbet <corbet@lwn.net>
+On Thu, 10 Nov 2022 06:57:57 +0000
+"Tian, Kevin" <kevin.tian@intel.com> wrote:
 
-Thanks, I'll keep it together since nothing else needs this right now
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > Sent: Thursday, November 10, 2022 3:53 AM
+> > 
+> > On Wed, Nov 09, 2022 at 10:18:09AM -0700, Alex Williamson wrote:
+> >   
+> > > DPDK supports no-iommu mode.  
+> > 
+> > Er? Huh? How? I thought no-iommu was for applications that didn't do
+> > DMA? How is DPDK getting packets in/out without DMA? I guess it snoops
+> > in /proc/ or something to learn PFNs of mlock'd memory? <shudder>  
+> 
+> iirc dpdk started with UIO plus various tricks (root privilege, hugepage, etc.)
+> to lock and learn PFN's from pagemap. Then when migrating it to vfio the
+> no-iommu option was introduced to provide UIO compatibility.
 
-Jason
+IIRC, we essentially introduced no-iommu mode vfio because DPDK started
+pushing for extending interrupt support in uio-pci-generic.  The UIO
+driver is also only meant for devices that don't do DMA, but obviously
+DPDK didn't care about that.  Rather than extend UIO, we offered this
+no-iommu mode in vfio since we already had more extensive MSI support,
+were better able to impose restrictions on access to the device, and
+using the same device access makes the transition to proper IOMMU
+backed configurations more seamless.  Thanks,
+
+Alex
+
