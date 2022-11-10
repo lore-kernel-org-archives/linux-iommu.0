@@ -1,33 +1,34 @@
 Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1805C2F23;
-	Thu, 10 Nov 2022 14:59:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96DF62F23;
+	Thu, 10 Nov 2022 15:10:20 +0000 (UTC)
 Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by ms.lwn.net (Postfix) with ESMTPSA id 1DF6B732;
-	Thu, 10 Nov 2022 14:49:15 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 1DF6B732
+	by ms.lwn.net (Postfix) with ESMTPSA id A5B6C37E;
+	Thu, 10 Nov 2022 15:10:19 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net A5B6C37E
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-	t=1668091755; bh=OnvK+2tUvYAfL0KCrr72dtwv0xTn5bAGv19wZNYmwMU=;
+	t=1668093019; bh=mBBbrMtJ5EuS0waUjuX4ugyR94/nkClQDPlg7UQzF8Y=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=f+dcELpnMaM1I4cy5d4quAPLBjCS/LGb+m7YcVxJ6Z39qJd41+owPjkcNC3fnzh+0
-	 2cVitnOOfzPKSqEzvOo8aJptjL4/EwAfILChx9pe2CeyyS7um7qnkYijGs6By4hsy3
-	 JRvNdmD3FXnAmMqbW4YW6otpVoSTjRJOGidR25+yyypyVOzlnKP/h0/lFRRPPUB4j+
-	 XTy7Yse+CL3yzh9nxnqHsoC/ooZbTZf/ifnGaRuVNSYQbcWeaXSQOh+dM4UfrttnxT
-	 h3iWuKUsFl3UT0CI3U5dx4ffobEydI44ecNfpm3/bxGQi8nqR9b04rIizVN2dFkMpv
-	 8BmSo3l60hlPg==
+	b=fMIg9GgJX6Yi1LkwBsIBU6h2mwkmwarirOjb/su2PGoW6AQeQJK3eTJId6Wxgil4l
+	 Isz1r9IqAHVjwMQEAXh8FUAe/HP+Qnx00HR8yjoI8ICNEAIL1PP8ePz3X2Plh48pxF
+	 s14Sz9HSryXXL1Xt55tLGvXFHkHGn8kzD3QGaojQbuyZ+o9OimM08WYil3dA9eYvcO
+	 Z9yBE7PlH6ZqDTWq62s3OReyeP7aOtfgGZsa4h6ndsxoAM2vv6kfJr+Ns8aLZIP4Fo
+	 X3/yxLKBIz/ZczuKvT46AUTA3r/AK+YM0HL8BIbykjzoBQY2TLNel2Aj3/ZswAkEM4
+	 W97k7Z43jx6jw==
 From: Jonathan Corbet <corbet@lwn.net>
-To: Bagas Sanjaya <bagasdotme@gmail.com>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: bpf@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>,
- iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, Kevin Tian
- <kevin.tian@intel.com>, linux-doc@vger.kernel.org,
- linux-kselftest@vger.kernel.org, llvm@lists.linux.dev, Nathan Chancellor
- <nathan@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, Miguel
- Ojeda <ojeda@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Shuah Khan
- <shuah@kernel.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>, Alex Williamson
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Bagas Sanjaya <bagasdotme@gmail.com>, bpf@vger.kernel.org, David
+ Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev, Joerg Roedel
+ <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+ linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>, Nick
+ Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Tom Rix
+ <trix@redhat.com>, Will Deacon <will@kernel.org>, Alex Williamson
  <alex.williamson@redhat.com>, Lu Baolu <baolu.lu@linux.intel.com>,
  Chaitanya Kulkarni <chaitanyak@nvidia.com>, Cornelia Huck
  <cohuck@redhat.com>, Daniel Jordan <daniel.m.jordan@oracle.com>, David
@@ -40,12 +41,13 @@ Cc: bpf@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>,
  Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>, Yi Liu
  <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
 Subject: Re: [PATCH v4 04/17] iommufd: Document overview of iommufd
-In-Reply-To: <Y2zE0zfnQ7mt740i@debian.me>
+In-Reply-To: <Y20QotPsxivvV53l@nvidia.com>
 References: <0-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
  <4-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
- <Y2zE0zfnQ7mt740i@debian.me>
-Date: Thu, 10 Nov 2022 07:49:14 -0700
-Message-ID: <87v8nmhnkl.fsf@meer.lwn.net>
+ <Y2zE0zfnQ7mt740i@debian.me> <87v8nmhnkl.fsf@meer.lwn.net>
+ <Y20QotPsxivvV53l@nvidia.com>
+Date: Thu, 10 Nov 2022 08:10:19 -0700
+Message-ID: <87r0yahmlg.fsf@meer.lwn.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,55 +56,30 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
 
-Bagas Sanjaya <bagasdotme@gmail.com> writes:
+Jason Gunthorpe <jgg@nvidia.com> writes:
 
-> On Mon, Nov 07, 2022 at 08:48:57PM -0400, Jason Gunthorpe wrote:
->> From: Kevin Tian <kevin.tian@intel.com>
->> 
->> Add iommufd into the documentation tree, and supply initial documentation.
->> Much of this is linked from code comments by kdoc.
->> 
+> On Thu, Nov 10, 2022 at 07:49:14AM -0700, Jonathan Corbet wrote:
 >
-> The patch also exposes htmldocs warnings as Stephen Rothwell has
-> reported on linux-next [1] due to the copyright comments mistaken for
-> kernel-doc comments, so I have applied the fixup:
+>> The *real* problem, methinks, is that the directives are added in patch 4
+>> of the series, but the documentation doesn't show up until later.  So
+>> the real fix would be to simply move this patch down.  Or just not worry
+>> about it, since it all works out in the end and nobody will be bisecting
+>> a docs build.
 >
-> ---- >8 ----
+> That is half the problem, the other is this:
 >
-> diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-> index 536a34d099968d..76b3761a89423e 100644
-> --- a/drivers/iommu/iommufd/device.c
-> +++ b/drivers/iommu/iommufd/device.c
-> @@ -1,5 +1,6 @@
->  // SPDX-License-Identifier: GPL-2.0-only
-> -/* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
-> +/*
-> + * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
+> https://lore.kernel.org/r/0-v1-c80e152ce63b+12-kdoc_export_ns_jgg@nvidia.com
+>
+> Since even after the whole series the EXPORT_NS functions don't parse
+> properly. I'm going to put this patch before the doc patch and ignore
+> the bisection problem.
+>
+> I'd like someone to say they are happy with the perl :)
 
-Um ... this makes no sense at all.  If kernel-doc thought that was a
-kernel-doc comment, the problem is there, not here.
+I'm not happy with *any* perl! :)
 
-<looks>
-
-So the report you're referring to is
-
-  https://lore.kernel.org/linux-next/20221110182938.40ce2651@canb.auug.org.au/
-
-?  If so, this change will not fix the problem.  That error:
-
-> drivers/iommu/iommufd/device.c:1: warning: no structured comments found
-> drivers/iommu/iommufd/main.c:1: warning: no structured comments found
-
-is caused by using .. kernel-doc:: directives to extract documentation
-from files where none exists - thus "no structured comments found".
-
-The *real* problem, methinks, is that the directives are added in patch 4
-of the series, but the documentation doesn't show up until later.  So
-the real fix would be to simply move this patch down.  Or just not worry
-about it, since it all works out in the end and nobody will be bisecting
-a docs build.
-
-Bagas, you are *again* misadvising people.  Please stop doing that!
+I've been sitting on that patch because I was under the impression
+another version was coming - was that wrong?
 
 Thanks,
 
