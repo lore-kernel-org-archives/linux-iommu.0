@@ -1,171 +1,79 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB991A490
-	for <iommu@lists.linux.dev>; Thu, 10 Nov 2022 15:44:21 +0000 (UTC)
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20221110154413euoutp018f420c9184a5cd1c5d9f69af6071a42a~mQ50C_0mm3076930769euoutp01Z
-	for <iommu@lists.linux.dev>; Thu, 10 Nov 2022 15:44:13 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20221110154413euoutp018f420c9184a5cd1c5d9f69af6071a42a~mQ50C_0mm3076930769euoutp01Z
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1668095053;
-	bh=RTlqPRPkAF90sJzQgDeIHX/QvRtLXffz+QWdpPDpvu0=;
-	h=From:To:Cc:Subject:Date:References:From;
-	b=PPBY9FdTlPCZiQNo3z/VV6Xob5CEgAjsIceYhT70gwsSPo21nGDLq/ANakprb+rkf
-	 wj51s8xPdpSgd5l0McPwGjvin6zks7jbepzjokg5SEFqLrrAk2fUg43JGbPa7v83Kh
-	 Wu0Xb5Ahjg+06UM/k7ZtqFF3mC/mbz38M5EoKZn8=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-	20221110154413eucas1p272965ba486543310ee03f7b39be7e985~mQ5zwOBmE3053030530eucas1p2-;
-	Thu, 10 Nov 2022 15:44:13 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-	eusmges1new.samsung.com (EUCPMTA) with SMTP id 6A.C8.09561.D4C1D636; Thu, 10
-	Nov 2022 15:44:13 +0000 (GMT)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20221110154412eucas1p26182a3d691584b577ddced9a1287df60~mQ5zRAH4K1747017470eucas1p2y;
-	Thu, 10 Nov 2022 15:44:12 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-	20221110154412eusmtrp201742c1069475873496966eb17dc1b29~mQ5zQbXZ32581425814eusmtrp2R;
-	Thu, 10 Nov 2022 15:44:12 +0000 (GMT)
-X-AuditID: cbfec7f2-0b3ff70000002559-72-636d1c4d29d7
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-	eusmgms2.samsung.com (EUCPMTA) with SMTP id 4E.10.09026.C4C1D636; Thu, 10
-	Nov 2022 15:44:12 +0000 (GMT)
-Received: from AMDC2765.digital.local (unknown [106.120.51.73]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20221110154412eusmtip1c91bac3ccf25c9263887bb4091735d2c~mQ5yycaMz2203222032eusmtip1N;
-	Thu, 10 Nov 2022 15:44:12 +0000 (GMT)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: iommu@lists.linux.dev, linux-samsung-soc@vger.kernel.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel
-	<joro@8bytes.org>, Will Deacon <will@kernel.org>, Krzysztof Kozlowski
-	<krzysztof.kozlowski@linaro.org>, Alim Akhtar <alim.akhtar@samsung.com>, Sam
-	Protsenko <semen.protsenko@linaro.org>
-Subject: [PATCH v2] iommu/exynos: Fix driver initialization sequence
-Date: Thu, 10 Nov 2022 16:44:07 +0100
-Message-Id: <20221110154407.26531-1-m.szyprowski@samsung.com>
-X-Mailer: git-send-email 2.17.1
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrFIsWRmVeSWpSXmKPExsWy7djP87q+MrnJBntm8Fg8mLeNzeLXFwuL
-	ztkb2C32vt7KbjHj/D4mi7VH7rJbPO8DslrumDpweDw5OI/JY9OqTjaPO9f2sHm82DyT0aNv
-	yypGj8+b5ALYorhsUlJzMstSi/TtErgyOtYaF1wUqtix8ztLA+MJ/i5GTg4JAROJpsWv2LsY
-	uTiEBFYwSvxa+58RwvnCKHFxwVyozGdGiUPb/jDDtMy7PYcNIrGcUeLf9EYmuJaeZ6/BqtgE
-	DCW63naxgdgiAjYSV04tAetgFvjLKHHt0hzWLkYODmEBF4m2XywgNSwCqhJPTp4Hq+cVsJVY
-	vusAO8Q2eYnVGw4wg/RKCHRySMxrPckGkXCROHzxFAuELSzx6vgWqAYZif875zNBNLQzSiz4
-	fR/KmcAo0fD8FiNElbXEnXO/2ECuYBbQlFi/Sx8i7CjRv3wXM0hYQoBP4sZbQZAwM5A5adt0
-	qDCvREebEES1msSs4+vg1h68cAkaQh4SzxYtYgWxhQRiJRa3zmGcwCg3C2HXAkbGVYziqaXF
-	uempxYZ5qeV6xYm5xaV56XrJ+bmbGIHJ4fS/4592MM599VHvECMTB+MhRgkOZiURXm6N7GQh
-	3pTEyqrUovz4otKc1OJDjNIcLErivGwztJKFBNITS1KzU1MLUotgskwcnFINTDHnnj7VSpm4
-	RUGD9ZHu0YLZpzw13a63Nm1Mvcx4zXHDJ7WNkou/Cqy70JdpXFgfP/eWnPoV/+tlB7a4/BIT
-	t9Se/6VfPnrvx/4/C+NNTabHl93WFM/as6hSZOkasYwzpk4i6SULnq89bponscP3V1zIysxv
-	fz3fyGmdDaudw7LmxH2mA0b9uqad/X3XOnsrhYI/733/eanwrjKLWr11oj/dDwrJ2cxXVrNP
-	/LVl//MW7n9q5279feokHZG+/s3yWc45XS0778964/I1fR7PuSeHz7XN7Tgabhy6YDOvUX7c
-	j9LA1Wwi/Ods2d+tDFLe3Hp9t8Nr58f1a803GdZfc/39yGxxz7GND363mAamximxFGckGmox
-	FxUnAgBtpP8KfQMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrPLMWRmVeSWpSXmKPExsVy+t/xu7o+MrnJBlPv6Vg8mLeNzeLXFwuL
-	ztkb2C32vt7KbjHj/D4mi7VH7rJbPO8DslrumDpweDw5OI/JY9OqTjaPO9f2sHm82DyT0aNv
-	yypGj8+b5ALYovRsivJLS1IVMvKLS2yVog0tjPQMLS30jEws9QyNzWOtjEyV9O1sUlJzMstS
-	i/TtEvQyOtYaF1wUqtix8ztLA+MJ/i5GTg4JAROJebfnsHUxcnEICSxllLh0ZDsbREJG4uS0
-	BlYIW1jiz7UuqKJPjBJd2/aCJdgEDCW63naBNYgI2Elc+7yYGaSIWaCRSeLB+17GLkYODmEB
-	F4m2XywgNSwCqhJPTp4Hq+cVsJVYvusAO8QCeYnVGw4wT2DkWcDIsIpRJLW0ODc9t9hIrzgx
-	t7g0L10vOT93EyMwJLcd+7llB+PKVx/1DjEycTAeYpTgYFYS4eXWyE4W4k1JrKxKLcqPLyrN
-	SS0+xGgKtG8is5Rocj4wKvJK4g3NDEwNTcwsDUwtzYyVxHk9CzoShQTSE0tSs1NTC1KLYPqY
-	ODilGpj2dtienb695oHfeb6CVBNmmezlUapm2vcDJ7l9dd/bqnzqWMP2M1YnisrPNW813bfQ
-	RJL5pM3jVwcqphse6K24sEFAI/Xzc1bFT9cafS++LpGx2uKzr/rXz8qFIvMXbNl6L3/3WoGg
-	wlUc3cknt5wvjPUSnbdFiltjcntkSCH3yfVt8j4Rf6wst0XFZmk8XNThFfIrJGKf49ozwolL
-	Lczuf7vg4+cV5rYjc1dbyNmeg5+Mbmq9u+fL+XKW7d3/L1QPc6onn3GJm+q2pr2wS81+6m+9
-	jhuP2MN33pz6e8bx5ENSE1ROz3f+Ze5aset0fvZDrvzqtCdtF85Ovl3yJvMwz5wb7EtuMnSc
-	6D755EKbEktxRqKhFnNRcSIAFMdDodICAAA=
-X-CMS-MailID: 20221110154412eucas1p26182a3d691584b577ddced9a1287df60
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20221110154412eucas1p26182a3d691584b577ddced9a1287df60
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20221110154412eucas1p26182a3d691584b577ddced9a1287df60
-References: <CGME20221110154412eucas1p26182a3d691584b577ddced9a1287df60@eucas1p2.samsung.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C572CA490;
+	Thu, 10 Nov 2022 15:52:18 +0000 (UTC)
+Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by ms.lwn.net (Postfix) with ESMTPSA id 7B7C037E;
+	Thu, 10 Nov 2022 15:52:17 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 7B7C037E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+	t=1668095537; bh=xpFTWZn9sbFBGd6WKn9o/SIHLSDqMwfNDLiBmx96Qjw=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=quXtIBVHhn6GRJvpgOS+7BTs3aZN6UDPSZkHRixCPa1D2mE8KI2+f7xpptqPAUzCb
+	 iYmP6g2ejS1Cn6vCrSix4w9C3MBwyU0eSF4mclPDsgxBks6KOFxoiDds4MYkj7xKdU
+	 Sot2p5dw8GRWYAFNKJLjgBFdyLG0KCcVsMJkM4vTQg0crFcfmHbprSaz5LBVmEaVRk
+	 wuq/T23gU9DmYOUF9KeNhvxdk7awpM/9NRTvATLZjhGjcG+++PIQbf/zWiZBQC4L9m
+	 +TU3oQG1Js9TOxRMlqh0Riw1SkkS8CRV4dVRvH6FHCwiBWfztDHquhlc3LZDzdHp7R
+	 y4+9067GwoQYg==
+From: Jonathan Corbet <corbet@lwn.net>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Bagas Sanjaya <bagasdotme@gmail.com>, bpf@vger.kernel.org, David
+ Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev, Joerg Roedel
+ <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+ linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>, Nick
+ Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Tom Rix
+ <trix@redhat.com>, Will Deacon <will@kernel.org>, Alex Williamson
+ <alex.williamson@redhat.com>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>, Cornelia Huck
+ <cohuck@redhat.com>, Daniel Jordan <daniel.m.jordan@oracle.com>, David
+ Gibson <david@gibson.dropbear.id.au>, Eric Auger <eric.auger@redhat.com>,
+ Eric Farman <farman@linux.ibm.com>, Jason Wang <jasowang@redhat.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>, Joao Martins
+ <joao.m.martins@oracle.com>, kvm@vger.kernel.org, Matthew Rosato
+ <mjrosato@linux.ibm.com>, "Michael S. Tsirkin" <mst@redhat.com>, Nicolin
+ Chen <nicolinc@nvidia.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
+ Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>, Yi Liu
+ <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
+Subject: Re: [PATCH v4 04/17] iommufd: Document overview of iommufd
+In-Reply-To: <Y20Y9Jlp3vG8x27a@nvidia.com>
+References: <0-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
+ <4-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
+ <Y2zE0zfnQ7mt740i@debian.me> <87v8nmhnkl.fsf@meer.lwn.net>
+ <Y20QotPsxivvV53l@nvidia.com> <87r0yahmlg.fsf@meer.lwn.net>
+ <Y20XhjH96k4x7qdx@nvidia.com> <87mt8yhlqr.fsf@meer.lwn.net>
+ <Y20Y9Jlp3vG8x27a@nvidia.com>
+Date: Thu, 10 Nov 2022 08:52:16 -0700
+Message-ID: <87iljmhknj.fsf@meer.lwn.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: text/plain
 
-Registering a SYSMMU platform driver might directly trigger initializing
-IOMMU domains and performing the initial mappings. Also the IOMMU core
-might use the IOMMU hardware once it has been registered with
-iommu_device_register() function. Ensure that all driver resources are
-allocated and initialized before the driver advertise its presence to the
-platform bus and the IOMMU subsystem.
+Jason Gunthorpe <jgg@nvidia.com> writes:
 
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
----
- drivers/iommu/exynos-iommu.c | 26 ++++++++++++--------------
- 1 file changed, 12 insertions(+), 14 deletions(-)
+>> Single is nicer but it's not worth a great deal of angst; nothing we do
+>> is going to turn kernel-doc into a thing of beauty :)
+>
+> I will leave it be then because it is a bit tricky to tell if the new
+> regex breaks anything, and the first three attempts to create it
+> didn't work at all...
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 45fd4850bacb..b0cde2211987 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -708,10 +708,6 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
--	ret = iommu_device_register(&data->iommu, &exynos_iommu_ops, dev);
--	if (ret)
--		goto err_iommu_register;
--
- 	platform_set_drvdata(pdev, data);
- 
- 	if (PG_ENT_SHIFT < 0) {
-@@ -743,11 +739,13 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
- 
- 	pm_runtime_enable(dev);
- 
-+	ret = iommu_device_register(&data->iommu, &exynos_iommu_ops, dev);
-+	if (ret)
-+		goto err_dma_set_mask;
-+
- 	return 0;
- 
- err_dma_set_mask:
--	iommu_device_unregister(&data->iommu);
--err_iommu_register:
- 	iommu_device_sysfs_remove(&data->iommu);
- 	return ret;
- }
-@@ -1432,12 +1430,6 @@ static int __init exynos_iommu_init(void)
- 		return -ENOMEM;
- 	}
- 
--	ret = platform_driver_register(&exynos_sysmmu_driver);
--	if (ret) {
--		pr_err("%s: Failed to register driver\n", __func__);
--		goto err_reg_driver;
--	}
--
- 	zero_lv2_table = kmem_cache_zalloc(lv2table_kmem_cache, GFP_KERNEL);
- 	if (zero_lv2_table == NULL) {
- 		pr_err("%s: Failed to allocate zero level2 page table\n",
-@@ -1446,10 +1438,16 @@ static int __init exynos_iommu_init(void)
- 		goto err_zero_lv2;
- 	}
- 
-+	ret = platform_driver_register(&exynos_sysmmu_driver);
-+	if (ret) {
-+		pr_err("%s: Failed to register driver\n", __func__);
-+		goto err_reg_driver;
-+	}
-+
- 	return 0;
--err_zero_lv2:
--	platform_driver_unregister(&exynos_sysmmu_driver);
- err_reg_driver:
-+	platform_driver_unregister(&exynos_sysmmu_driver);
-+err_zero_lv2:
- 	kmem_cache_destroy(lv2table_kmem_cache);
- 	return ret;
- }
--- 
-2.17.1
+That's fine.  If you want to keep it as part of your series feel free to
+add:
 
+Acked-by: Jonathan Corbet <corbet@lwn.net>
+
+Otherwise I can carry it through the docs tree.
+
+Thanks,
+
+jon
