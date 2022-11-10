@@ -1,130 +1,182 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BCA812D83;
-	Wed,  9 Nov 2022 23:51:57 +0000 (UTC)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2A9M6Wmk026925;
-	Wed, 9 Nov 2022 23:51:13 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=r2y6FqBtbLq2FplQA0MEJ5QEQdgEf4YRwMBtghSYQ50=;
- b=NUoO9/P5o4yJwUu1TaYaJ9GIivUKJRvnKaAnO5G1f7SmkqRWmDAw6fRFpXdBrmV6gLDl
- RZ2IaQ3wTzFFDsPScmvNYA7xZ+e2oROB9i4sY9Xx9nyp/xkEkzGEWP1sZj2NH0AM4tBh
- HKoFOCUZ4RF+RHAAsjajGCfbP+YZM7eIIZfExWmWEyzVIG5Y4PRRsDpqM7ey7IM5Q6Dx
- wsRycAa3Xb4mcxO2RdnbHPADWgvwg8pqILqwkj1DbyyfsjSkB7yvfH5Pgil7Wy9OZ1DV
- fwGWwbaXMAHXMvCtcBWOJyobmX4qPysC6d/MWz1z3QG1uapdjgQCBvCXICS+SaASF1CE 8Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3krkgubm6e-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 09 Nov 2022 23:51:12 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2A9NhXNd004196;
-	Wed, 9 Nov 2022 23:51:11 GMT
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3krkgubm66-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 09 Nov 2022 23:51:11 +0000
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-	by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2A9No9Gq008858;
-	Wed, 9 Nov 2022 23:51:10 GMT
-Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
-	by ppma01dal.us.ibm.com with ESMTP id 3kngsyh2p8-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 09 Nov 2022 23:51:10 +0000
-Received: from smtpav03.dal12v.mail.ibm.com ([9.208.128.129])
-	by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2A9NpAlG47644974
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 9 Nov 2022 23:51:10 GMT
-Received: from smtpav03.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 6F6CD5805A;
-	Wed,  9 Nov 2022 23:51:08 +0000 (GMT)
-Received: from smtpav03.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id C9CCB58068;
-	Wed,  9 Nov 2022 23:51:05 +0000 (GMT)
-Received: from [9.160.191.98] (unknown [9.160.191.98])
-	by smtpav03.dal12v.mail.ibm.com (Postfix) with ESMTP;
-	Wed,  9 Nov 2022 23:51:05 +0000 (GMT)
-Message-ID: <6ddf657f-9ec7-6de5-62f4-508d61a467fe@linux.ibm.com>
-Date: Wed, 9 Nov 2022 18:51:05 -0500
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE06E364
+	for <iommu@lists.linux.dev>; Thu, 10 Nov 2022 02:17:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668046630; x=1699582630;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=QhyD79hDSaJ2mqPkse9x0LnuPmDzakss2bdHxEUONsU=;
+  b=ZhgvWvQ7UCxyIBSrMWAVqfAQxnMIdq4ZYlKbhI+Qn6UXx/d/AXZJYMfo
+   pPe8Mg7O9NwJ8ZAqmllDTGwvgOcwzewcJglqt49oDtBBvRBNXuOjSKtfe
+   n9dW/mtuiNC204T2Ntr2uRtdPMlQg8nArbbrOWYJZBCLHJjOpe9pTAeDA
+   oxSKiiLXeLHWfRZOXI5fTz8hXniNLZVTIlnDbwVPt/jX07G15xvB5Jg/K
+   A0QaULZWVZhuQX3nUY6bkv8/aiQ1p/Xx07hFO9deUgoWnW7fNMjmlPaLb
+   Y4c847yPEpmm/6ucPRqnVKGmW9Dhvz7qM1uXEupH7NkPWgnMcxQotCmd5
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10526"; a="311185274"
+X-IronPort-AV: E=Sophos;i="5.96,152,1665471600"; 
+   d="scan'208";a="311185274"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Nov 2022 18:17:01 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10526"; a="639430534"
+X-IronPort-AV: E=Sophos;i="5.96,152,1665471600"; 
+   d="scan'208";a="639430534"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by fmsmga007.fm.intel.com with ESMTP; 09 Nov 2022 18:17:00 -0800
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Wed, 9 Nov 2022 18:16:59 -0800
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Wed, 9 Nov 2022 18:16:59 -0800
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (104.47.51.48) by
+ edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Wed, 9 Nov 2022 18:16:58 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EVIa16QaeuOdBy1rrI6LXmpMyWn/DfnU1FFL51HF51CKr0zdPGvDAtM+ph1vD/qDS200DczWJClE3njIkOPTRNFPB6mhESupv7cJKJJkARwbPgZpZ8yC+HPSyMxw10fxVlbbvffY/zZFsvGFnjL8Lzv/FlNlO7SOOOtVGz+OGaT1wd7wc55mqY9C/mXDbLjZcl3D2WVYMdHDjFtChNC7tv3KGKUi0jpO+SvnQUcib5zIcq79miDQvH+WdpKQBsJg0ILhyvLwKDGhXFgVU/SgnT3dvSxSCy7zZ1LkP7aYp2lTuOpXu+bs3+vU8+Nkg41sW1HQywd9NXkMAo2p+412KQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QhyD79hDSaJ2mqPkse9x0LnuPmDzakss2bdHxEUONsU=;
+ b=lJ9u8S1urSOpOr6zWYkHcmyI4NAVJiUl83FVQ8O2CTDgLtMwKhnMfzMo10cUx+D8JVq7fyuZZLyrfe8TQVGO885+oGrqS3TOqpZcypLZL5RCzNxgjGSQecRK0K/5Cd56eKXdpKccLI/MaBpj5vkRVJyroaKbLjriafKJghPMLTE+scWRPeDWA4aGyeVNR+lrRRbRhIQ/GllScg6WlyUu7uDGH2n4aXIRf/qqoC5NGDzQvZ6UE22zg6nsiBn9zoOPJ80uN3CgiLwPIcI2XRHVfQaDrmSBzMQ9MeeAWzi997trEO9kWp0uKJsRZzPcyn2Ph2QznEAWN4ak6CwaXZKeUQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by MN0PR11MB6034.namprd11.prod.outlook.com (2603:10b6:208:375::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5791.26; Thu, 10 Nov
+ 2022 02:16:55 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::737e:211a:bb53:4cd7]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::737e:211a:bb53:4cd7%6]) with mapi id 15.20.5813.012; Thu, 10 Nov 2022
+ 02:16:55 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Alexander Gordeev <agordeev@linux.ibm.com>, David Airlie
+	<airlied@gmail.com>, Tony Krowiak <akrowiak@linux.ibm.com>, Alex Williamson
+	<alex.williamson@redhat.com>, Christian Borntraeger
+	<borntraeger@linux.ibm.com>, Cornelia Huck <cohuck@redhat.com>, Daniel Vetter
+	<daniel@ffwll.ch>, Diana Craciun <diana.craciun@oss.nxp.com>,
+	"dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, "Eric
+ Auger" <eric.auger@redhat.com>, Eric Farman <farman@linux.ibm.com>, "Harald
+ Freudenberger" <freude@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>, "intel-gfx@lists.freedesktop.org"
+	<intel-gfx@lists.freedesktop.org>, "intel-gvt-dev@lists.freedesktop.org"
+	<intel-gvt-dev@lists.freedesktop.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, Jani Nikula <jani.nikula@linux.intel.com>, "Jason
+ Herne" <jjherne@linux.ibm.com>, Joonas Lahtinen
+	<joonas.lahtinen@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-s390@vger.kernel.org"
+	<linux-s390@vger.kernel.org>, Longfang Liu <liulongfang@huawei.com>, "Matthew
+ Rosato" <mjrosato@linux.ibm.com>, Peter Oberparleiter
+	<oberpar@linux.ibm.com>, Halil Pasic <pasic@linux.ibm.com>, Robin Murphy
+	<robin.murphy@arm.com>, "Vivi, Rodrigo" <rodrigo.vivi@intel.com>, "Shameer
+ Kolothum" <shameerali.kolothum.thodi@huawei.com>, Sven Schnelle
+	<svens@linux.ibm.com>, Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+	Vineeth Vijayan <vneethv@linux.ibm.com>, Will Deacon <will@kernel.org>,
+	Yishai Hadas <yishaih@nvidia.com>, Zhenyu Wang <zhenyuw@linux.intel.com>,
+	"Wang, Zhi A" <zhi.a.wang@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>
+Subject: RE: [PATCH v2 00/11] Connect VFIO to IOMMUFD
+Thread-Topic: [PATCH v2 00/11] Connect VFIO to IOMMUFD
+Thread-Index: AQHY8wx+1dkxGcCaVUCBYAtF8JMX8q42TMwggABAOwCAAOCeoA==
+Date: Thu, 10 Nov 2022 02:16:55 +0000
+Message-ID: <BN9PR11MB52769655CD0F2D7AC35D3BD28C019@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <0-v2-65016290f146+33e-vfio_iommufd_jgg@nvidia.com>
+ <BN9PR11MB5276F10DA6C223B78CA5F2458C3E9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <Y2uhnLeivWBR0wZV@nvidia.com>
+In-Reply-To: <Y2uhnLeivWBR0wZV@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|MN0PR11MB6034:EE_
+x-ms-office365-filtering-correlation-id: b07a7df5-8e37-4290-3c37-08dac2c1a37d
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 9nQxzqYJtxSOqi+7bi4nhgfM+Cg7svewZX8sh2UG8nnu16RPLzGWe1OqtioI/Aj44LR6lfeaCFu7WCwV/w1jn0fOB5YtV60GiqwWU4V4Mvs3hVX8j0nx2Fg7j2AP7CU4TE4YmpsermVEL+rKiDTXhvqBjbwqvEymdb2lBsF8qY1x7qgexJ/9f91+porHyhapPwTUOZ1kpgDLlo7t/V1niR2EEu3xDF6Xc4b108uvw3yAxG/rAUAYRydIp+iMCkbdOyy2r5f4XBWDkKFa+89+0fu03Ej/LgRjausgHTSRjM3e/zOsvEK3jJw+yUTq7B9ge22XhbBwtF6uqLqaG1AtVLJcgdV1EluaRngKI0KU2nbEJ65LuyCVioGkGUZMWTw2hO59VTMBTTmTgB21L0/DEqt79hz0pBtSNQlSpvX3V0Pc4g2ZnDHFXgGb108jI52bumD7IHKiYdliiHRZllxmK1ys8wclsEM1mOoAFjfzWnXdve1jB6DK93fKuyWr349bvwgWLZQQR7iCcurUrwOUZAnBTE18C+9jh5c77H6aJtgTcyq1sKr4hpgzhO5qZzcZg8YZSfujdGR69YZInfV+QCTO847AN8y7dcEKZ/I9mAqT/PByqru6aMahTgkklwNB5zfijxSdY8CMPVMIsrjhhdOTnA5cA1pHSgDNCgOIHAWWFQpVRXaSFxAYzZHmvuyHR0Bned27quxycqHUFCfG1x1nP3rQJhSDJ2ykKVKcsI6g3zvHdvFNIsXu+4yLODBxNZ7cEQn3JEJVK+cg6/mq4ujdOoNhoQTvFXChbc5HsVg=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(39860400002)(346002)(136003)(366004)(376002)(451199015)(186003)(38070700005)(71200400001)(83380400001)(6506007)(26005)(7696005)(9686003)(33656002)(122000001)(55016003)(6916009)(2906002)(316002)(7416002)(52536014)(41300700001)(5660300002)(8676002)(8936002)(4326008)(54906003)(66946007)(86362001)(478600001)(64756008)(38100700002)(82960400001)(4744005)(966005)(7406005)(66556008)(66446008)(76116006)(66476007);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?6nJHnQIUc5tLD5o/v3zI4dTR43hJndet8NedGkfCJSDYuLGm9oN2eamPoYMy?=
+ =?us-ascii?Q?Xn1dYFdSuA9nOt4LfQPouM7qK6B/zkKaDjLaeQouykaINqRAi4YhweSDJvCy?=
+ =?us-ascii?Q?dlG48q0PQ04XFPB2h8rvErHLu8UiqwT4CWGF3sRdGQXJQBdNCydWCgRHCmPV?=
+ =?us-ascii?Q?WFdVkyOePglad6rpeepjZvI3RHDoreslOkTs1oGHL9w1oWQAS/FqPbVClLI4?=
+ =?us-ascii?Q?JcekZ3hJ7mzJaCzzBVl0bldGTvIM3Y/k8gOJ51JyPH6nIacE3YwxnOJYCWMG?=
+ =?us-ascii?Q?t9Dp/cdd60cEgn7Qwd4fhdK/dNS/AucGWU6gwNm+gOXZlRDJUMNNPnjUmVEX?=
+ =?us-ascii?Q?TD0snvxksRdDUL7YyAgulyBSsfkSxcfmnAPxGzqxkp422B2h40jjFGr5IwPK?=
+ =?us-ascii?Q?OX5I8Z1Da5vty1jkjUhET2kBZSEz6lf3Oo667TWLqr9wVKL+YEa9y2OZioHS?=
+ =?us-ascii?Q?KT9QFAKQxoxjE2oZELWSFuA16fCg+WsJ/EDO1Ou+pfnrQY4ba4vF2iIjU3LY?=
+ =?us-ascii?Q?NY/t6ig5En6Er9b/AL0x1ffG9KJefcYB0Aaq4q0LG4aEr01cX9+u0mECh9f+?=
+ =?us-ascii?Q?20EpcEKMu5uTGPE3N6lKJDSZZ0jUUXmOIZBzc+Kkrk+HKllQAOEeEzW0xV41?=
+ =?us-ascii?Q?o8PhdzkgHwrL8iYWMRRb1EksEve/tun5UV+gi3V7E3EIPKB47MBD8eAobwFF?=
+ =?us-ascii?Q?498RYOnLxKthrqTxJXS0CCPr3+qLbp90XDAj34Pg4iuGjRLdx3p794mJ2Tvk?=
+ =?us-ascii?Q?rj2MqrIyvmsKXc4iqb7TjWmF6FBgttYbtycNuVBEQcjZTyRpwasHZHc7qBTe?=
+ =?us-ascii?Q?DzE3HcZwnJvXda4zqFszSSXnq3uei9/3N5pejOWsbjWWB+pdjNkSXiOb7Iut?=
+ =?us-ascii?Q?wM7Plg+zfUTf3bwUWUZ5qJJkpI4uf0vMCAtjOLLJv7dvbYbpLTD5KExlb/SD?=
+ =?us-ascii?Q?rObqrZEj8KvAmhe1J1fcg3Zz+0H8U4aWtffEafESAoxYwm8W7tXAsPmJKlxJ?=
+ =?us-ascii?Q?QxPnocNdOhIvjfp9IMVqQHZ4nFK7QyUVtjCr9A0lUrPR3U7QaWmy8nB2pQ9E?=
+ =?us-ascii?Q?/hab+/F6rcICONuK1kfR6HPlPGwrRxQUbK/h1U1PfsTsMv3H3jDhn8yUCJcC?=
+ =?us-ascii?Q?HRYP8BN+zQksUhUVZq3ZOFXvjL7sb8TeRYKelec0GHzrCM1W3zRoVALQ646d?=
+ =?us-ascii?Q?x6kI3Y2qslH6B4FWbFPt7hbMMVjx52zVtARCvMSHOes5RfmoiBRdYLcq7JAH?=
+ =?us-ascii?Q?i76abXVExlo9ug6BBxsYcJMhfMVvKkZ/DnZlHOk1K/YGIKbbw9DSGfJu7WBT?=
+ =?us-ascii?Q?XbLBY28KkbcoEi0bjFF8OVtP9nCB2beT9Iruj4Sxc6dBX/ajxfpnFtxIVUHX?=
+ =?us-ascii?Q?ie7fw6ANYf3ynfamgvXDdpRvlQBmlXr86bUDpRMa0vtDvnoSfFBK7S/LbSw3?=
+ =?us-ascii?Q?dGtutxGqtAvbc4v7NSzsKH+2a/aCqaRjjcyVwssGyeGBz5jWZgmsRiVF3548?=
+ =?us-ascii?Q?6XfXEAc50HLKCXQatXoaJ/bnk8TZZLO/aT9RMT8W3j53C6/KlxyanzsLtqge?=
+ =?us-ascii?Q?Yu/Y0DpPeyCXDwD4djpEMrLhkIW9a+Spr2aF0XSg?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.1
-Subject: Re: [PATCH v4 15/17] iommufd: Add a selftest
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, bpf@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
-        Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Miguel Ojeda <ojeda@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>
-Cc: Alex Williamson <alex.williamson@redhat.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Chaitanya Kulkarni <chaitanyak@nvidia.com>,
-        Cornelia Huck
- <cohuck@redhat.com>,
-        Daniel Jordan <daniel.m.jordan@oracle.com>,
-        David Gibson <david@gibson.dropbear.id.au>,
-        Eric Auger <eric.auger@redhat.com>, Eric Farman <farman@linux.ibm.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Joao Martins <joao.m.martins@oracle.com>, kvm@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Nicolin Chen <nicolinc@nvidia.com>,
-        Niklas Schnelle <schnelle@linux.ibm.com>,
-        Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-        Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
-References: <15-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <15-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: NVWUBpQHwQeub4Vtor_WE-ljRzrQR9IE
-X-Proofpoint-GUID: ZRDWBG7lTzZ5mzkpMVZQghrekqNfJFmA
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-11-09_06,2022-11-09_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
- malwarescore=0 mlxlogscore=999 spamscore=0 clxscore=1011
- lowpriorityscore=0 adultscore=0 bulkscore=0 suspectscore=0
- priorityscore=1501 phishscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2210170000 definitions=main-2211090177
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b07a7df5-8e37-4290-3c37-08dac2c1a37d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Nov 2022 02:16:55.3091
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: cO4XddH7WVO/AwQWFo0yNcdpJ+pvAJ29EKnHa6OGCVSZrJWmIoESejJEDV/x+kdPn4HiJKsG6je44CSY5ORG4w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR11MB6034
+X-OriginatorOrg: intel.com
 
-On 11/7/22 7:49 PM, Jason Gunthorpe wrote:
-> Cover the essential functionality of the iommufd with a directed
-> test. This aims to achieve reasonable functional coverage using the
-> in-kernel self test framework.
-> 
-> It provides a mock kernel module for the iommu_domain that allows it to
-> run without any HW and the mocking provides a way to directly validate
-> that the PFNs loaded into the iommu_domain are correct.
-> 
-> The mock also simulates the rare case of PAGE_SIZE > iommu page size as
-> the mock will operate at a 2K iommu page size. This allows exercising all
-> of the calculations to support this mismatch.
-> 
-> This allows achieving high coverage of the corner cases in the iopt_pages.
-> 
-> However, it is an unusually invasive config option to enable all of
-> this. The config option should not be enabled in a production kernel.
-> 
-> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Wednesday, November 9, 2022 8:48 PM
+>=20
+> On Wed, Nov 09, 2022 at 09:03:52AM +0000, Tian, Kevin wrote:
+> > every mail in this series is shown thrice in lore:
+> >
+> > https://lore.kernel.org/all/0-v2-65016290f146+33e-
+> vfio_iommufd_jgg@nvidia.com/
+> >
+> > not sure what caused it but it's annoying to check the conversation the=
+re.
+>=20
+> It is sort of a lore issue, it only combines messages that are exactly
+> the same together. Several of the mailing lists on CC here mangle the
+> message in various ways, eg adding trailer or whatever. This causes
+> repeated messages in lore.
+>=20
+> The trick in lore is to replace "/all/" with a good list, like /kvm/
+> or /linux-iommu/ that shows the original non-mangled version, and only
+> once.
+>=20
 
-Ran the selftests on s390 in both LPAR (z16) and a QEMU kvm guest using 1M hugepages, all tests are passing.
+this trick works. Thanks!
 
-Tested-by: Matthew Rosato <mjrosato@linux.ibm.com> # s390
