@@ -1,127 +1,84 @@
-Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38988625;
-	Thu, 10 Nov 2022 09:31:04 +0000 (UTC)
-Received: by mail-pf1-f174.google.com with SMTP id k22so1463640pfd.3;
-        Thu, 10 Nov 2022 01:31:04 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C420185E
+	for <iommu@lists.linux.dev>; Thu, 10 Nov 2022 10:20:25 +0000 (UTC)
+Received: by mail-ed1-f41.google.com with SMTP id l11so2362286edb.4
+        for <iommu@lists.linux.dev>; Thu, 10 Nov 2022 02:20:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=1EvpDdZ4hxcipg3MQAInCVCspubJ3uS0BC6hXCLOf3U=;
-        b=VLao0cXkAY92G2p1UszK3LD1hHzo5JKXYUXoOGc1CU/6NqeHnqjaxahdLAW55ynq6a
-         HW0ColHyQXlrfep5aM4JgxTYFd2eJ9eYp4eHMWRExB5lH9CotPkKJ9gBt6CcKWf+b7+b
-         LLErN5sw4qWqixwC3GqNeRDh6EwxVLM2ESzeOLCQgXOV93rn0vFlmOpW49YWoQqPXCzR
-         3lIi3Z1cdaapAKGETVC9o0nlnAogohAPpHpLQ65KW6UIImwCiYBJYT9IAm4PcvmA4xpg
-         AXrKN7MZyLeG7vZcizsK2unw6/+ZQ1EWybqZ2gnqROoGVHcuFu61S0JkGf/zsuy+fATw
-         h+rg==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=WT1sp5IPFlqAEGyaQKXIUIsFWQxK+jocZJELwyh5E0w=;
+        b=pBqPySRnHpyjJKe+ZBXagkUziKZPW/TImdx+vl4OfGoT9HVFMB3g5FYzMChNCzMIQO
+         xdtitKR4yHXxwO653Swmltzv5EnaKy70V4153yGyy89JVmGY/7fXk8JhBdG+8sdWUy3U
+         UW7mZHQLmSi+AENdVeIF5Qj/sqd8q9pqtl2b4cDGbMoy1ykuNhiOi5eKUcviKfOTzmO/
+         5l0wn//FrUB0W1AV5VaVDRGug+fm+A74IYCk3CK37EFs8BEXwTiNmZQR9slMlwbUiixx
+         h3h3G6nhzerbiu9HruFtykqs2Mu8VJ1/xFoTYVrX/i/FukGpJFRReo24grB1RwGLoZa2
+         SBOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1EvpDdZ4hxcipg3MQAInCVCspubJ3uS0BC6hXCLOf3U=;
-        b=ZabSlXotEUDJf3TKOhkWDGGkhmExXbZJ4jqQO8pSNVrhVCKhQMHiDul7ZVrf2M4kFe
-         ZVtlac6DW31lNava7+F0B+O2Msb+1CthkVjq4HtXUf116gNf10e7kWGOBZhLvdnd9U0x
-         SoJmnQjEJNxrGHlh3wliepaQSUh/XCkGkveLuA4JLxgbH9YhKdfd/WYfbVZ5Me38pZRa
-         9IzGRjWTH3hTnbtZe2RiYm2xnbPEqmGx1z9xEJIj5GEbmEBpj8/qt6KCVtVw6XCw7aLf
-         ryja5jVZkOl+IpD/5/ada0PqNShvTPUzWm54n2/0Le3u2DZYHFsNQpSjQpKoFWy1TN/2
-         IVkQ==
-X-Gm-Message-State: ACrzQf0GYl0cn3SxZLmWGHt/OUzTO/NHqQ9mBJWUDFWRfnJ44W1aUhy2
-	tFbI9MZ1wyPMntqk0pqcy6w=
-X-Google-Smtp-Source: AMsMyM78iiI/P+DpqpOA4p4lxe7GrKwstfV8mS9lP7o9wCPkGkzc4m7eiJTeoMbliQXRPEaHy5Nm5w==
-X-Received: by 2002:a62:1a97:0:b0:562:5587:12d6 with SMTP id a145-20020a621a97000000b00562558712d6mr62997671pfa.37.1668072663634;
-        Thu, 10 Nov 2022 01:31:03 -0800 (PST)
-Received: from debian.me (subs03-180-214-233-66.three.co.id. [180.214.233.66])
-        by smtp.gmail.com with ESMTPSA id l3-20020a17090a384300b00213c7cf21c0sm2677928pjf.5.2022.11.10.01.31.02
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=WT1sp5IPFlqAEGyaQKXIUIsFWQxK+jocZJELwyh5E0w=;
+        b=PO0XZPp6xN1CzadDiqdK21pdE1AlHopLGhpKzFemfb/glh1JLFHU7FxHNN+oQGzEu5
+         asjjIjKIq5sYoy63Nj1CsfT+98bGiKCBQ4Ka1wTdSsR2684hDM/y7BgTmnfOn+mbursB
+         yT9P+MAiP5R63oVfIBWIRvIacaeHSNQzhU89yB5qK7HhB8Ssa+453SPx9I+4/dgKZFh8
+         MbpbYBe7tFK3kSxQJHXgr7KzIQf+xHSN61EkeWsxUdQNEvC97XQdvxTW52V7uG3Q0bIH
+         tDrZF3X79DoafhOcggPZ8LrCFvWK8dqFaHqcj8gaRbySsbu6Rc8LGvg5Pd9Jh8J3XspC
+         z69w==
+X-Gm-Message-State: ACrzQf0NzNYThXTNgG7D+HPNdzNqnX5eeXDtWp7JtK+QlidKUhAjT1HF
+	/c43ZKXGLA3LajdAa3+/s6k=
+X-Google-Smtp-Source: AMsMyM7AM8HzOXBUhXvmNiVy48+7gon51CuVPmNToIk8pMMTZ49w9wO6yapdghVw78ZOaSpXDkqWUg==
+X-Received: by 2002:a05:6402:3512:b0:461:bcf0:86dc with SMTP id b18-20020a056402351200b00461bcf086dcmr2073597edd.368.1668075623499;
+        Thu, 10 Nov 2022 02:20:23 -0800 (PST)
+Received: from localhost (p200300e41f201d00f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f20:1d00:f22f:74ff:fe1f:3a53])
+        by smtp.gmail.com with ESMTPSA id o17-20020a170906601100b0073d83f80b05sm7047991ejj.94.2022.11.10.02.20.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Nov 2022 01:31:03 -0800 (PST)
-Received: by debian.me (Postfix, from userid 1000)
-	id A3B96104223; Thu, 10 Nov 2022 16:30:59 +0700 (WIB)
-Date: Thu, 10 Nov 2022 16:30:59 +0700
-From: Bagas Sanjaya <bagasdotme@gmail.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: bpf@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-	linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
-	Nick Desaulniers <ndesaulniers@google.com>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
-	Cornelia Huck <cohuck@redhat.com>,
-	Daniel Jordan <daniel.m.jordan@oracle.com>,
-	David Gibson <david@gibson.dropbear.id.au>,
-	Eric Auger <eric.auger@redhat.com>,
-	Eric Farman <farman@linux.ibm.com>,
-	Jason Wang <jasowang@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Joao Martins <joao.m.martins@oracle.com>, kvm@vger.kernel.org,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-	Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
-Subject: Re: [PATCH v4 04/17] iommufd: Document overview of iommufd
-Message-ID: <Y2zE0zfnQ7mt740i@debian.me>
-References: <0-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
- <4-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
+        Thu, 10 Nov 2022 02:20:22 -0800 (PST)
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Robin Murphy <robin.murphy@arm.com>,
+	thierry.reding@gmail.com
+Cc: linux-tegra@vger.kernel.org,
+	Dmitry Osipenko <digetx@gmail.com>,
+	iommu@lists.linux.dev,
+	Jon Hunter <jonathanh@nvidia.com>,
+	dri-devel@lists.freedesktop.org
+Subject: Re: [PATCH v2] gpu: host1x: Avoid trying to use GART on Tegra20
+Date: Thu, 10 Nov 2022 11:20:18 +0100
+Message-Id: <166807557587.2565903.17395326570545995355.b4-ty@nvidia.com>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <39c44dce203112a8dfe279e8e2c4ad164e3cf5e5.1666275461.git.robin.murphy@arm.com>
+References: <39c44dce203112a8dfe279e8e2c4ad164e3cf5e5.1666275461.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <4-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-On Mon, Nov 07, 2022 at 08:48:57PM -0400, Jason Gunthorpe wrote:
-> From: Kevin Tian <kevin.tian@intel.com>
+From: Thierry Reding <treding@nvidia.com>
+
+On Thu, 20 Oct 2022 15:23:40 +0100, Robin Murphy wrote:
+> Since commit c7e3ca515e78 ("iommu/tegra: gart: Do not register with
+> bus") quite some time ago, the GART driver has effectively disabled
+> itself to avoid issues with the GPU driver expecting it to work in ways
+> that it doesn't. As of commit 57365a04c921 ("iommu: Move bus setup to
+> IOMMU device registration") that bodge no longer works, but really the
+> GPU driver should be responsible for its own behaviour anyway. Make the
+> workaround explicit.
 > 
-> Add iommufd into the documentation tree, and supply initial documentation.
-> Much of this is linked from code comments by kdoc.
-> 
+> [...]
 
-The patch also exposes htmldocs warnings as Stephen Rothwell has
-reported on linux-next [1] due to the copyright comments mistaken for
-kernel-doc comments, so I have applied the fixup:
+Applied, thanks!
 
----- >8 ----
+[1/1] gpu: host1x: Avoid trying to use GART on Tegra20
+      commit: c8899b7129927d96d2a948a0d969ab13b9f1dad1
 
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index 536a34d099968d..76b3761a89423e 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0-only
--/* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
-+/*
-+ * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
-  */
- #include <linux/iommufd.h>
- #include <linux/slab.h>
-diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-index 1eeb326f74f005..fc4c80ec0511f4 100644
---- a/drivers/iommu/iommufd/main.c
-+++ b/drivers/iommu/iommufd/main.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0-only
--/* Copyright (C) 2021 Intel Corporation
-+/*
-+ * Copyright (C) 2021 Intel Corporation
-  * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
-  *
-  * iommufd provides control over the IOMMU HW objects created by IOMMU kernel
-
-Thanks.
-
+Best regards,
 -- 
-An old man doll... just what I always wanted! - Clara
+Thierry Reding <treding@nvidia.com>
