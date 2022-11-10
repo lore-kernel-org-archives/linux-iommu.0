@@ -1,29 +1,29 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5021679F8
-	for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 18:08:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12482C433C1;
-	Mon, 14 Nov 2022 18:08:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1668449307;
-	bh=6ggcnc4EObNXAZUMEIKulorxPo+p100CcZmu7UYGb10=;
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C506179FB
+	for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 18:18:11 +0000 (UTC)
+Received: from skinsburskii.localdomain (c-67-170-100-148.hsd1.wa.comcast.net [67.170.100.148])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 9CA0720B717A;
+	Mon, 14 Nov 2022 10:18:04 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 9CA0720B717A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1668449884;
+	bh=KRO/TqGp4x1anSCsu7IgV88Z9AUtXq8bdapPCe4k3bE=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=EScOKEF44ljWX/gUv9/uotNv54Kv7ghtCDDZi1ZPDSO8XhstlO9EuqqwviqhrV0gw
-	 MCUCIh68fnbB7WY0yxfxhJePGoCgXtnSfpODVHIUWsln6deXWrWaRAnvzcwY5UfMyf
-	 kVYWwPkr0U+XPqTXfVdiSjvQQTBu00gj2J8Xt6G2j8HEjXBqN7gBgIP6DNF9JpFQy6
-	 lEX8H0wv9N0z9byS7aZxEbZ654Q7KNvjis2rOeQJJfOAO7QbfL13Hq7wnRzK+EQVP7
-	 lT7UgoMUdWSd6T5PND93GTDLTcsF+cPLCNa66v8rXrI+HjFm8eX+wpryPwgA2157R0
-	 nvYDmVhkP2S3w==
-Date: Mon, 14 Nov 2022 18:08:22 +0000
-From: Will Deacon <will@kernel.org>
-To: Longfang Liu <liulongfang@huawei.com>
-Cc: robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH 2/2] iommu: fix smmu initialization memory leak problem
-Message-ID: <20221114180821.GC31476@willie-the-truck>
-References: <20221021035147.15292-1-liulongfang@huawei.com>
- <20221021035147.15292-3-liulongfang@huawei.com>
+	b=HwJcOTiX0CJurxpdLC+rWT0os26XIouCyWM9brJ0xd2i2lEpi8SgiOipAr2NaiFMC
+	 ep3DpGLk9AEnqJSWkNMND+7mmlWRMJdouHEHzgML/FwjIZEXOyCJWloZlrmSK6Kbs8
+	 C6drVwwC4ByD6bCaxIXGzRQrO6s7bPWmDZEQnULA=
+Date: Thu, 10 Nov 2022 05:41:52 -0800
+From: Stanislav Kinsburskii <skinsburskii@linux.microsoft.com>
+To: Nuno Das Neves <nunodasneves@linux.microsoft.com>
+Cc: linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, mikelley@microsoft.com,
+	sunilmut@microsoft.com, wei.liu@kernel.org, kys@microsoft.com,
+	Tianyu.Lan@microsoft.com, haiyangz@microsoft.com,
+	decui@microsoft.com, dwmw2@infradead.org, joro@8bytes.org,
+	will@kernel.org
+Subject: Re: [PATCH] iommu/hyper-v: Allow hyperv irq remapping without x2apic
+Message-ID: <20221110134152.GA27026@skinsburskii.localdomain>
+References: <1668020853-23950-1-git-send-email-nunodasneves@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -32,45 +32,72 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221021035147.15292-3-liulongfang@huawei.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <1668020853-23950-1-git-send-email-nunodasneves@linux.microsoft.com>
 
-On Fri, Oct 21, 2022 at 11:51:47AM +0800, Longfang Liu wrote:
-> When iommu_device_register() in arm_smmu_device_probe() fails,
-> in addition to sysfs needs to be deleted, device should also
-> be disabled, and the memory of iopf needs to be released to
-> prevent memory leak of iopf.
+On Wed, Nov 09, 2022 at 11:07:33AM -0800, Nuno Das Neves wrote:
+> If x2apic is not available, hyperv-iommu skips remapping
+> irqs. This breaks root partition which always needs irqs
+> remapped.
 > 
-> Signed-off-by: Longfang Liu <liulongfang@huawei.com>
+> Fix this by allowing irq remapping regardless of x2apic,
+> and change hyperv_enable_irq_remapping() to return
+> IRQ_REMAP_XAPIC_MODE in case x2apic is missing.
+> 
+> Tested with root and non-root hyperv partitions.
+> 
+> Signed-off-by: Nuno Das Neves <nunodasneves@linux.microsoft.com>
 > ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
+>  drivers/iommu/Kconfig        | 6 +++---
+>  drivers/iommu/hyperv-iommu.c | 7 ++++---
+>  2 files changed, 7 insertions(+), 6 deletions(-)
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index a1db07bed6a9..c70defb0c866 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -3816,11 +3816,16 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->  	ret = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
->  	if (ret) {
->  		dev_err(dev, "Failed to register iommu\n");
-> -		iommu_device_sysfs_remove(&smmu->iommu);
-> -		return ret;
-> +		goto err_sysfs_remove;
->  	}
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index dc5f7a156ff5..cf7433652db0 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -474,13 +474,13 @@ config QCOM_IOMMU
+>  	  Support for IOMMU on certain Qualcomm SoCs.
 >  
->  	return 0;
-> +
-> +err_sysfs_remove:
-> +	iommu_device_sysfs_remove(&smmu->iommu);
-> +	arm_smmu_device_disable(smmu);
-> +	iopf_queue_free(smmu->evtq.iopf);
-> +	return ret;
+>  config HYPERV_IOMMU
+> -	bool "Hyper-V x2APIC IRQ Handling"
+> +	bool "Hyper-V IRQ Handling"
+>  	depends on HYPERV && X86
+>  	select IOMMU_API
+>  	default HYPERV
+>  	help
+> -	  Stub IOMMU driver to handle IRQs as to allow Hyper-V Linux
+> -	  guests to run with x2APIC mode enabled.
+> +	  Stub IOMMU driver to handle IRQs to support Hyper-V Linux
+> +	  guest and root partitions.
+>  
+>  config VIRTIO_IOMMU
+>  	tristate "Virtio IOMMU driver"
+> diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
+> index e190bb8c225c..abd1826a9e63 100644
+> --- a/drivers/iommu/hyperv-iommu.c
+> +++ b/drivers/iommu/hyperv-iommu.c
+> @@ -123,8 +123,7 @@ static int __init hyperv_prepare_irq_remapping(void)
+>  	const struct irq_domain_ops *ops;
+>  
+>  	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV) ||
+> -	    x86_init.hyper.msi_ext_dest_id() ||
+> -	    !x2apic_supported())
+> +	    x86_init.hyper.msi_ext_dest_id())
+>  		return -ENODEV;
+>  
+>  	if (hv_root_partition) {
+> @@ -170,7 +169,9 @@ static int __init hyperv_prepare_irq_remapping(void)
+>  
+>  static int __init hyperv_enable_irq_remapping(void)
+>  {
+> -	return IRQ_REMAP_X2APIC_MODE;
+> +	if (x2apic_supported())
+> +		return IRQ_REMAP_X2APIC_MODE;
+> +	return IRQ_REMAP_XAPIC_MODE;
+>  }
+>  
+>  struct irq_remap_ops hyperv_irq_remap_ops = {
+> -- 
+> 2.25.1
 
-Doesn't this miss the cases where iommu_device_sysfs_add() or
-arm_smmu_device_reset() fail?
-
-We'd probably be better off using something like devres_alloc() to track
-the iopf queue here.
-
-Will
+Reviewed-by: Stanislav Kinsburskii <skinsburskii@linux.microsoft.com>
