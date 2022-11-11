@@ -1,103 +1,228 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D2BB2C9D
-	for <iommu@lists.linux.dev>; Fri, 11 Nov 2022 11:57:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668167837; x=1699703837;
-  h=message-id:date:mime-version:cc:to:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=Lmn4C24AWDgykOuF/NFLzvFk/w6nibxOYuugloUk8zU=;
-  b=J/I3PCqYjqfRh7nzoObfRSIOpxjHufamvUeZwrlbVxrCtrSvmu6o6b8Q
-   sWCcnFa0WNV8zHKphz3tszZhCgb7AY1mZy2O68Ue1WI/jP9NATOGIrROu
-   RvjrdRQL27z6J/vQLQMzvop9DOr0DjtyR8eutZA4UxUXtGKAW8cDla22j
-   lGEEHFbEXB7GNNcFmsMAGyypicpCSEN+T0vYVA4BrnwGkXcvOLTxrFrPz
-   YZXpuAA+4ATBMZutOrI25YH6ySacHx12+o81VGYfdw3lhk3PL/7tW6V0v
-   MC7V6kySn/oruvq7tXDAHbbgxdMaLH+l/ZygjYyCfSt4/bqBZ2Bxlyun6
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10527"; a="373714649"
-X-IronPort-AV: E=Sophos;i="5.96,156,1665471600"; 
-   d="scan'208";a="373714649"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2022 03:57:16 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10527"; a="812422141"
-X-IronPort-AV: E=Sophos;i="5.96,156,1665471600"; 
-   d="scan'208";a="812422141"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.215.246]) ([10.254.215.246])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2022 03:57:14 -0800
-Message-ID: <804d8102-f22c-2ac3-55d8-76b85cf526af@linux.intel.com>
-Date: Fri, 11 Nov 2022 19:57:12 +0800
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 74B262904
+	for <iommu@lists.linux.dev>; Fri, 11 Nov 2022 12:36:56 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AFEEF1FB;
+	Fri, 11 Nov 2022 04:37:01 -0800 (PST)
+Received: from [10.57.38.243] (unknown [10.57.38.243])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E14363F534;
+	Fri, 11 Nov 2022 04:36:53 -0800 (PST)
+Message-ID: <370142aa-8eae-8424-826d-c1fc21e4ea0f@arm.com>
+Date: Fri, 11 Nov 2022 12:36:48 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- "Liu, Yi L" <yi.l.liu@intel.com>, "Pan, Jacob jun"
- <jacob.jun.pan@intel.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-To: "Tian, Kevin" <kevin.tian@intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <20221108073408.1005721-1-baolu.lu@linux.intel.com>
- <20221108073408.1005721-3-baolu.lu@linux.intel.com>
- <BN9PR11MB52766AB454992F154C301CB28C009@BN9PR11MB5276.namprd11.prod.outlook.com>
- <d7f72290-c11a-64f7-c8ac-b752835d182d@linux.intel.com>
- <BN9PR11MB5276C64B56A1D1C658825C0B8C009@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v2 2/8] iommu/vt-d: Improve iommu_enable_pci_caps()
-In-Reply-To: <BN9PR11MB5276C64B56A1D1C658825C0B8C009@BN9PR11MB5276.namprd11.prod.outlook.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [RFC] iommu/vt-d: set default value of INTEL_IOMMU_FLOPPY_WA to n
+Content-Language: en-GB
+To: Baolu Lu <baolu.lu@linux.intel.com>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+ harshit.m.mogalapalli@gmail.com, David Woodhouse <dwmw2@infradead.org>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Darren Kenny <darren.kenny@oracle.com>
+References: <20221108125855.2984751-1-harshit.m.mogalapalli@oracle.com>
+ <dc463b3e-2875-8aac-aca1-edacb90e5650@linux.intel.com>
+ <76cbad17-ab5e-3dd9-cf94-df2b26748167@oracle.com>
+ <3a7f5cdf-640b-f9d4-a25e-8be845abd7ba@linux.intel.com>
+ <Y2wK6kWHE1iah/IG@char.us.oracle.com>
+ <0f1ad424-18b0-c27f-dbf6-745801182bd2@linux.intel.com>
+ <Y21mitQsO2RG652t@char.us.oracle.com>
+ <e03aaca5-b62d-451c-85e0-53c28e8eea82@linux.intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <e03aaca5-b62d-451c-85e0-53c28e8eea82@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2022/11/11 16:16, Tian, Kevin wrote:
->> From: Baolu Lu <baolu.lu@linux.intel.com>
->> Sent: Friday, November 11, 2022 2:59 PM
->>
->> On 2022/11/11 11:45, Tian, Kevin wrote:
->>>> From: Lu Baolu <baolu.lu@linux.intel.com>
->>>> Sent: Tuesday, November 8, 2022 3:34 PM
+On 2022-11-11 02:31, Baolu Lu wrote:
+> On 2022/11/11 5:00, Konrad Rzeszutek Wilk wrote:
+>> On Thu, Nov 10, 2022 at 02:39:53PM +0800, Baolu Lu wrote:
+>>> On 2022/11/10 4:17, Konrad Rzeszutek Wilk wrote:
+>>>> On Wed, Nov 09, 2022 at 09:16:53PM +0800, Baolu Lu wrote:
+>>>>> On 2022/11/9 20:16, Harshit Mogalapalli wrote:
+>>>>>>
+>>>>>>
+>>>>>> On 09/11/22 12:35 pm, Baolu Lu wrote:
+>>>>>>> On 2022/11/8 20:58, Harshit Mogalapalli wrote:
+>>>>>>>> It is likely that modern intel motherboard will not ship with a
+>>>>>>>> floppy connection anymore, so let us disable it by default, as it
+>>>>>>>> gets turned on when we do a make defconfig.
+>>>>>>>>
+>>>>>>>> Suggested-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+>>>>>>>> Signed-off-by: Harshit Mogalapalli 
+>>>>>>>> <harshit.m.mogalapalli@oracle.com>
+>>>>>>>> ---
+>>>>>>>>     drivers/iommu/intel/Kconfig | 2 +-
+>>>>>>>>     1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>>>>>
+>>>>>>>> diff --git a/drivers/iommu/intel/Kconfig 
+>>>>>>>> b/drivers/iommu/intel/Kconfig
+>>>>>>>> index b7dff5092fd2..c783ae85ca9b 100644
+>>>>>>>> --- a/drivers/iommu/intel/Kconfig
+>>>>>>>> +++ b/drivers/iommu/intel/Kconfig
+>>>>>>>> @@ -76,7 +76,7 @@ config INTEL_IOMMU_BROKEN_GFX_WA
+>>>>>>>>           option is removed in the 2.6.32 kernel.
+>>>>>>>>     config INTEL_IOMMU_FLOPPY_WA
+>>>>>>>> -    def_bool y
+>>>>>>>> +    def_bool n
+>>>>>>>>         depends on X86
+>>>>>>>>         help
+>>>>>>>>           Floppy disk drivers are known to bypass DMA API calls
+>>>>>>>
+>>>>>>> Nobody selects or depends on this. How about removing this bool? 
+>>>>>>> Only
+>>>>>>> less than 10 lines of code are impacted and are not in any 
+>>>>>>> performance
+>>>>>>> path.
+>>>>>>>
+>>>>>>> diff --git a/drivers/iommu/intel/Kconfig 
+>>>>>>> b/drivers/iommu/intel/Kconfig
+>>>>>>> index b7dff5092fd2..5e077d1c5f5d 100644
+>>>>>>> --- a/drivers/iommu/intel/Kconfig
+>>>>>>> +++ b/drivers/iommu/intel/Kconfig
+>>>>>>> @@ -75,15 +75,6 @@ config INTEL_IOMMU_BROKEN_GFX_WA
+>>>>>>>           to use physical addresses for DMA, at least until this
+>>>>>>>           option is removed in the 2.6.32 kernel.
+>>>>>>>
+>>>>>>> -config INTEL_IOMMU_FLOPPY_WA
+>>>>>>> -    def_bool y
+>>>>>>> -    depends on X86
+>>>>>>> -    help
+>>>>>>> -      Floppy disk drivers are known to bypass DMA API calls
+>>>>>>> -      thereby failing to work when IOMMU is enabled. This
+>>>>>>> -      workaround will setup a 1:1 mapping for the first
+>>>>>>> -      16MiB to make floppy (an ISA device) work.
+>>>>>>> -
+>>>>>>>     config INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON
+>>>>>>>         bool "Enable Intel IOMMU scalable mode by default"
+>>>>>>>         default y
+>>>>>>> diff --git a/drivers/iommu/intel/iommu.c 
+>>>>>>> b/drivers/iommu/intel/iommu.c
+>>>>>>> index 48cdcd0a5cf3..22801850f339 100644
+>>>>>>> --- a/drivers/iommu/intel/iommu.c
+>>>>>>> +++ b/drivers/iommu/intel/iommu.c
+>>>>>>> @@ -4567,7 +4567,6 @@ static void
+>>>>>>> intel_iommu_get_resv_regions(struct device *device,
+>>>>>>>         }
+>>>>>>>         rcu_read_unlock();
+>>>>>>>
+>>>>>>> -#ifdef CONFIG_INTEL_IOMMU_FLOPPY_WA
+>>>>>>>         if (dev_is_pci(device)) {
+>>>>>>>             struct pci_dev *pdev = to_pci_dev(device);
+>>>>>>>
+>>>>>>> @@ -4579,7 +4578,6 @@ static void
+>>>>>>> intel_iommu_get_resv_regions(struct device *device,
+>>>>>>>                     list_add_tail(&reg->list, head);
+>>>>>>>             }
+>>>>>>>         }
+>>>>>>> -#endif /* CONFIG_INTEL_IOMMU_FLOPPY_WA */
+>>>>>>>
+>>>>>>>         reg = iommu_alloc_resv_region(IOAPIC_RANGE_START,
+>>>>>>>                           IOAPIC_RANGE_END - IOAPIC_RANGE_START + 1,
+>>>>>>>
+>>>>>>
+>>>>>> Hi Baolu,
+>>>>>>
+>>>>>> I have a question:
+>>>>>> Shouldn't we remove the code between ifdef-endif statements?
+>>>>>>
+>>>>>> I mean something like this:
+>>>>>>
+>>>>>> diff --git a/drivers/iommu/intel/Kconfig 
+>>>>>> b/drivers/iommu/intel/Kconfig
+>>>>>> index b7dff5092fd2..5e077d1c5f5d 100644
+>>>>>> --- a/drivers/iommu/intel/Kconfig
+>>>>>> +++ b/drivers/iommu/intel/Kconfig
+>>>>>> @@ -75,15 +75,6 @@ config INTEL_IOMMU_BROKEN_GFX_WA
+>>>>>>              to use physical addresses for DMA, at least until this
+>>>>>>              option is removed in the 2.6.32 kernel.
+>>>>>>
+>>>>>> -config INTEL_IOMMU_FLOPPY_WA
+>>>>>> -       def_bool y
+>>>>>> -       depends on X86
+>>>>>> -       help
+>>>>>> -         Floppy disk drivers are known to bypass DMA API calls
+>>>>>> -         thereby failing to work when IOMMU is enabled. This
+>>>>>> -         workaround will setup a 1:1 mapping for the first
+>>>>>> -         16MiB to make floppy (an ISA device) work.
+>>>>>> -
+>>>>>>     config INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON
+>>>>>>            bool "Enable Intel IOMMU scalable mode by default"
+>>>>>>            default y
+>>>>>> diff --git a/drivers/iommu/intel/iommu.c 
+>>>>>> b/drivers/iommu/intel/iommu.c
+>>>>>> index 48cdcd0a5cf3..2c416ad3204e 100644
+>>>>>> --- a/drivers/iommu/intel/iommu.c
+>>>>>> +++ b/drivers/iommu/intel/iommu.c
+>>>>>> @@ -4567,20 +4567,6 @@ static void 
+>>>>>> intel_iommu_get_resv_regions(struct
+>>>>>> device *device,
+>>>>>>            }
+>>>>>>            rcu_read_unlock();
+>>>>>>
+>>>>>> -#ifdef CONFIG_INTEL_IOMMU_FLOPPY_WA
+>>>>>> -       if (dev_is_pci(device)) {
+>>>>>> -               struct pci_dev *pdev = to_pci_dev(device);
+>>>>>> -
+>>>>>> -               if ((pdev->class >> 8) == PCI_CLASS_BRIDGE_ISA) {
+>>>>>> -                       reg = iommu_alloc_resv_region(0, 1UL << 
+>>>>>> 24, prot,
+>>>>>> -                                       IOMMU_RESV_DIRECT_RELAXABLE,
+>>>>>> -                                       GFP_KERNEL);
+>>>>>> -                       if (reg)
+>>>>>> -                               list_add_tail(&reg->list, head);
+>>>>>> -               }
+>>>>>> -       }
+>>>>>> -#endif /* CONFIG_INTEL_IOMMU_FLOPPY_WA */
+>>>>>> -
+>>>>>>            reg = iommu_alloc_resv_region(IOAPIC_RANGE_START,
+>>>>>>                                          IOAPIC_RANGE_END -
+>>>>>> IOAPIC_RANGE_START + 1,
+>>>>>>                                          0, IOMMU_RESV_MSI, 
+>>>>>> GFP_KERNEL);
+>>>>>>
+>>>>>> This code is introduced in Commit d850c2ee5fe2 ("iommu/vt-d: 
+>>>>>> Expose ISA
+>>>>>> direct mapping region via iommu_get_resv_regions")
+>>>>>
+>>>>> As long as floppy driver exists in the tree, we have to include above
+>>>>> code. Otherwise, floppy drivers don't work. At least we can easily 
+>>>>> find
+>>>>> drivers/block/floppy.c which is still maintained (check 
+>>>>> MAINTAINERS).:-)
 >>>>
->>>> The PCI subsystem triggers WARN() if a feature is repeatedly enabled.
->>>> This improves iommu_enable_pci_caps() to avoid unnecessary kernel
->>>> traces through checking and enabling. This also adds kernel messages
->>>> if any feature enabling results in failure. It is worth noting that
->>>> PRI depends on ATS. This adds a check as well.
+>>>> But this requires a machine with Intel IOMMU and ISA:
+>>>>
+>>>>>>> -      16MiB to make floppy (an ISA device) work.
+>>>>
+>>>> ISA device? I don't believe there are any Intel machines with an IOMMU
+>>>> and an ISA device?
 >>>
->>> Cannot we have a helper to check whether this device has been attached
->>> to any domain? If no in the blocking path then disable PCI caps. If no
->>> in the attaching path then enable PCI caps.
->>>
->>> I just didn't get the point of leaving them enabled while the device can
->>> not do any DMA at all.
+>>> This workaround was introduced by commit 49a0429e53f2 ("Intel IOMMU:
+>>> Iommu floppy workaround") in 2007. I can't remember what happened 15
+>>> years ago, but I believe there must have been corresponding hardware
+>>> configurations at that time, and the Linux kernel has been maintained it
+>>> to now.
 >>
->> Ideally, the kernel owns the default policy (default on or off). The
->> upper layers are able to control it over IOMMUFD uAPI or kerneld kAPI.
->> I can't see the benefits of associating these features with the
->> existence of any domain.
+>> At what point can this be removed then?
 > 
-> we don't have such uAPI or kAPI today.
-> 
-> the current behavior before your change is default off and then toggled
-> along with attach/detach domain. as only one domain is allowed per
-> RID it implies the capabilities are toggled along with DMA allow/block.
-> 
-> now you change it to a messy model:
-> 
->    - default off when the device is probed
->    - turn on at the 1st domain attach and never turn off until release
->    - but iommu_enable_pci_caps() is still called at every domain attach
->      with band-aid to allow re-entrant
-> 
-> this isn't like a good cleanup...
+> No floppy block drivers in the tree or all floppy drivers' DMA going
+> through the kernel DMA APIs.
 
-Fair enough. We should not bury this behavior change in a cleanup
-series. Okay! I will keep the previous behavior.
+Presumably the point of the config is that ISA bridges aren't expected 
+on IA-64, so a tiny code saving can be made there, but at this point is 
+anyone really that bothered about any more? There's already tons more 
+code all through the driver to support newer features that aren't 
+meaningful to old IA-64 hardware, so in my opinion, meh. Given that this 
+already won't affect systems that truly can't have any ISA devices, I 
+don't see any issue with simply making it unconditional.
 
-Best regards,
-baolu
+Note that plenty of chipsets still have an "ISA" bridge to an LPC 
+interface, so ISA DMA is not necessarily as dead as one might like to think.
+
+Robin.
