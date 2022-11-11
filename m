@@ -1,245 +1,219 @@
-Received: from na01-obe.outbound.protection.outlook.com (mail-eastusazon11022027.outbound.protection.outlook.com [52.101.53.27])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2048.outbound.protection.outlook.com [40.107.244.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1668324F4F
-	for <iommu@lists.linux.dev>; Fri, 11 Nov 2022 17:58:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C66AA368
+	for <iommu@lists.linux.dev>; Fri, 11 Nov 2022 18:49:58 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MrDpHN0jlFS+2xDIL9quHkslqWkYiBGzZo6MTzDyOaOh4R/aqSP7pcY5dUvTZjHfCTslb+MIY44+itDoh2gM34wfASmX6JitLDCK48U7a94KVfIkUNwIucdWkJ1/vFkheXr+f1nocbrwvxhc2KueAKg/ow93NKfZVfjYncVpLJ/et8ZsCEaiFR/Apl/5n6pe4wWjhEdJwxZLDmLrM3CJPllQIm+wAOOI5zIk93yVEut9d3rW/ultkd3aYg7XEXLh3RAVglVOl0rJFzKK0kQfh7Fa99FJh8QPfca6clQEfpceVgg0V8kyMHoSMEH7SeGzbtPKUwrs6Hdb3WxpQJwwPw==
+ b=QgaXPya6+bA2+X8Zx19zxXOGmI6ar/NaTCoI3rrxMYY4BtZ/0UHt7Z34qw52RK4Ha52oTLpN4ZkhoBo2M8sKnUr5CjROSxi7LeDU6lFS4+vRxa6q8dMzc5R6rqmPPUFoM1zSY1gUfy48huQH0lziMKU1ducmkVtYe1IRPs+lXMsULciCs7dd563sH59KVd4xxSirg6jb7JqKzS10pt/fFY6yLWwbV/OvTeJM789opOjEB8nvX1RuK7Qc5HGZv+XAp0Gv19bdq25hM9SNo49iVQaXIenBpnzcZZOcXwdVdOsgSYyBXZHfFqwmb8zIrES+osM4kKjZI/XmfqSG2EeepA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nkjoFDq8gaUH9ng48j01bFVZX9pCzC8iPt0Chn0sP2Q=;
- b=kpvm0h9zfgR8z/kXxtcwEvIFtPWlDY0AnE9s688nLUt0Z7AynbOIP+BinY6EhMGbd5eVuhzB3HS+FC3kfXjeXqCuTsA/tKfTifaVFRrezhXtkLAzDPOtVTJ2YGjX8Uq18CQ1HJkIqx5ZCflX6s0cePXBXu1QFfL6hCW1R2Q9NMs9TRZu+Ogo82Y8ulBBp3X8EsIPgEOSB488ZHu9UNwsA2oHG4hXS1Bi1nPkVrTvUDreiIbe66pI3d4ruwl4ggRy2rBF6M9schdrGUGPR9SlSXmJS7Vg3tNGFt1G4eMtiO86ectXE4ndmsdjcNgLrU8AlFBUMCdviofh9UzQ7FciCA==
+ bh=Wu2dbqpHLlNamu6i5Ca+IS/EjWfOyzsd6P/dMpGT7wQ=;
+ b=ZnZttmg6q1tjaz2kVQZKkNmjWhr1FF27bhL240noew0n1TwDVY0Oilqjlu3Xd1vuBr6IFMbEvu/bJKDKuny5rrfIkNKLtzOhVmyACZTx9Mrsy6jQ/PZoExRygcsxsvXlreO1+3uGnef4dC4yNVBs99vrjOMaJwvgRSgVKt1Ib1aJi44UtNq5GIXiJziyzxYwyFkzey0MqTSw+CV4bDrmic3MWwkrJu4kFxeFluVSulFJ/JfYtKm1j6yApuzXLc883uowLPCPa5/+7kc/aet4T/GUqxtIBqI5DvSbLm4ou7xO+fsdDuGXKA5n+KBHbSSYViUiwnSXzjQGL7TYffQ6tw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nkjoFDq8gaUH9ng48j01bFVZX9pCzC8iPt0Chn0sP2Q=;
- b=WjKv9Rb4396ayfpe146nwCzgZST8RvrB49zyRArS60/NAqA3BZix0NyowIusXIWFF4eEaj6okA5OyJCrzcnj3bSJzDPHpvuc4OOsT7WMFkCra0CDukYFVfeeCRrFe7cNilNl54zaoobrDh/b8Jk+UFxYV85ho/O2kU0EhXerwVA=
-Received: from BYAPR21MB1688.namprd21.prod.outlook.com (2603:10b6:a02:bf::26)
- by PH0PR21MB1291.namprd21.prod.outlook.com (2603:10b6:510:109::11) with
+ bh=Wu2dbqpHLlNamu6i5Ca+IS/EjWfOyzsd6P/dMpGT7wQ=;
+ b=ivJF3OpBS/NZwTBnKIv2stV9jXZcd4hAAi/pbXabtNPhx84C4iAr4jecTUJcKAGNZ3n2W0jq9YwJBj/e6nIu1GgnT8BQITZRtYysvtVy/Qt7lmfmmhH2+BOTy58X1b5khY+MnJY1DFJ68AO8Cxz86GZEAF1YgO2U8zYTRTzqOmw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
+ by CO6PR12MB5460.namprd12.prod.outlook.com (2603:10b6:5:357::11) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.2; Fri, 11 Nov
- 2022 17:58:53 +0000
-Received: from BYAPR21MB1688.namprd21.prod.outlook.com
- ([fe80::1e50:78ec:6954:d6dd]) by BYAPR21MB1688.namprd21.prod.outlook.com
- ([fe80::1e50:78ec:6954:d6dd%7]) with mapi id 15.20.5813.015; Fri, 11 Nov 2022
- 17:58:53 +0000
-From: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-To: Wei Liu <wei.liu@kernel.org>
-CC: Nuno Das Neves <nunodasneves@linux.microsoft.com>, Tianyu Lan
-	<Tianyu.Lan@microsoft.com>, "linux-hyperv@vger.kernel.org"
-	<linux-hyperv@vger.kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, Sunil Muthuswamy <sunilmut@microsoft.com>, KY
- Srinivasan <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>,
-	Dexuan Cui <decui@microsoft.com>, "dwmw2@infradead.org"
-	<dwmw2@infradead.org>, "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org"
-	<will@kernel.org>
-Subject: RE: [PATCH] iommu/hyper-v: Allow hyperv irq remapping without x2apic
-Thread-Topic: [PATCH] iommu/hyper-v: Allow hyperv irq remapping without x2apic
-Thread-Index: AQHY9G6MTvL64VjEeUSlJ0XIa/5zY6457YUAgAAElfCAAAq9AIAAB60A
-Date: Fri, 11 Nov 2022 17:58:53 +0000
-Message-ID:
- <BYAPR21MB168819214A20DF2E4835E763D7009@BYAPR21MB1688.namprd21.prod.outlook.com>
-References:
- <1668020853-23950-1-git-send-email-nunodasneves@linux.microsoft.com>
- <Y255HhDbwbI/z5bJ@liuwe-devbox-debian-v2>
- <BYAPR21MB1688800D35F86D766567C1FAD7009@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y26F+H1SuJrad3Ra@liuwe-devbox-debian-v2>
-In-Reply-To: <Y26F+H1SuJrad3Ra@liuwe-devbox-debian-v2>
-Accept-Language: en-US
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.13; Fri, 11 Nov
+ 2022 18:49:54 +0000
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::4da8:e3eb:20eb:f00]) by DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::4da8:e3eb:20eb:f00%2]) with mapi id 15.20.5813.013; Fri, 11 Nov 2022
+ 18:49:54 +0000
+Message-ID: <177144ce-aa63-58f9-d3ea-dec9cde482a5@amd.com>
+Date: Fri, 11 Nov 2022 12:49:50 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH v2 05/12] x86/hyperv: Change vTOM handling to use standard
+ coco mechanisms
 Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=717aee75-fbc6-4d58-86c3-75827a242d47;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-11-11T17:54:48Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BYAPR21MB1688:EE_|PH0PR21MB1291:EE_
-x-ms-office365-filtering-correlation-id: 8330db9f-bf79-46e2-4470-08dac40e655e
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- +3jTSbF+bzgvjLNGA5Oa7FZFiKTV4QsDZrE9FtAsAJTZsR2vfAk7EB8SzcJru3TLvJt0ZKlmFBzB+184jfYiVhSpooJzQaZioqNXRcnFYzS+Tag7SnX0YT1zfdpUUYQ+ILXfZ8pVTYa/lZT7XzVr3BvPtaM8B3V7Bh5VgY/tkiOLk6HleeVzkfz52AXYvi83/T7JpmAdQH2KMYDdCogjpL6q0nKC1UuKStBEQhmLw83FGMHyrJxIkVji9VgeFtSgtBQWQ0nSnFmw9Z4jIdVHi4chUmp5GZsonNc/IdOjfHTtksJ+HljaGeveMzLbkm0rKV/b5vDC1rIMpfL8OV0+xmcXvm97tz3GEqsxRTeEwnyL3zyR/i+Lv47JbvBPJ8/QwHms6X4rlOu5epm/dOQa4qAddDg4Pox9JoQlI7ZdBCgLTPMCdzjXZjJyapNIMMTCsMQI4i+Myop8VCk5m/F3+hQ73wcW8M3EMudsyluT2MfypRDmFW3HddGeAis83NTQhiykeQNQ8vqK1j1OozM8n1dV58J8tHvmeLCnjBBeCsGxrIJsC8UcxlW+qsGQEnKFMjbgcwAfzzv2H2GhiXazfLOTzidOvup9ZbSil68uN/sGLv4ZS0YQu7ebn0tL9ALFDt43DFPedoHlc6YMOsltj3f/mi/LtJOi9+uaO2tK4tIxfMxsnEi8X+j8QZdv0xLBnUlS6dztTzVTpcVm12hfeuUG828FGFe+1Uf9TUW1GBrjsp+RWE7Eg7quQHXciNjkPoAZxuuATBkDRX2FanoClV3ALJKIzein74aZfgFLitFLJu1JJweKY2ji69iywLdP
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1688.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(366004)(136003)(376002)(346002)(39860400002)(451199015)(38070700005)(82950400001)(33656002)(86362001)(82960400001)(8936002)(6506007)(55016003)(2906002)(7696005)(9686003)(122000001)(83380400001)(186003)(6916009)(38100700002)(8990500004)(71200400001)(26005)(5660300002)(10290500003)(4326008)(76116006)(52536014)(64756008)(66446008)(66556008)(316002)(66946007)(66476007)(41300700001)(478600001)(8676002)(54906003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?NiOOCnG6VY5w7Hc7WwMq7KpNdQxrNBAjhAyZDFlSK3B8FPm+42aR31M1JIGn?=
- =?us-ascii?Q?r2S2HLpdwFQ3U3My9PziSL/MPr8A5bELCF+nEM/vDy8VzL+w8hspuixjcnVr?=
- =?us-ascii?Q?yqXN+GPA2I/rTNq9Rz8Iy5P7h3gjkQERGfngcOSOqVMGaOH8Xrc7lvsFyUXk?=
- =?us-ascii?Q?Jl+UT67NAGzA+xaqamQxCezICtyz6Q4S/Qk/UoZSsrCYdp9E7zUcX3HoTO5s?=
- =?us-ascii?Q?Z8YvZAvKfqcSEPcFTkm0r55NVBSCVYTcGwvOeRhRQNU+o2eD4EIInUJeL5mv?=
- =?us-ascii?Q?eh+A2NqX1YQtUNCek0HHHzhPnCaZOEcBQHPOqKBKJLf3ZYBQXKX6Zin2LY0q?=
- =?us-ascii?Q?a5cm5AjyWvAUhNt8TX13VNc7N5H9SP7iOu1YCR86wrJnbiffFdd1sDCtOJm2?=
- =?us-ascii?Q?WcFOTYq6J2rGuxdJHSFTFFh5748bjP6mr0CSNM+qhat3PqX3prLF78bymskk?=
- =?us-ascii?Q?eF/EKtkLcoOmoLtbS0Gn3EOxUNWnAG1Rjr7ftOOpn/ma6zDLxuo/wGFnvg7s?=
- =?us-ascii?Q?Xo3es5xtgzfXQOmD1AKhxbTfSgYqSx16ZrhL6hSD4h0EZvreW0BFI212c50d?=
- =?us-ascii?Q?gOQ6pCilEmdqxm16WWEmH1qOH6YkwMKxAMvfaEdcMRncVE997CgDiODMx22d?=
- =?us-ascii?Q?CcDuzSo1v9rXrxqu6qcsLGLS/EkD1wKFLE1gwgGJvXZFAlphQeryNboE+Yr1?=
- =?us-ascii?Q?gjb6kW2kz3I1EROn2cc+6NfFlWBdBW9CXXtinTnJx6lHX9+nJ46+eEY6dhss?=
- =?us-ascii?Q?30Y+A4mVp2238hsI7ItyCaMMNPS2X8onmu0uwlTIFexTmcrKa7lcoXkPG+4k?=
- =?us-ascii?Q?c3t8N/b2/VMo9zfX4J79HwSh0nTn1dmoCxRGFHS0eP3mZZgGC5jVovu9nHbB?=
- =?us-ascii?Q?XowwQKmbnn4S0LIDU9t2kutH1A9r51LNE5didjLtBL9fLQekRN+LRf0hHzZD?=
- =?us-ascii?Q?rX0qgOMEGHglWfIMr385FUaoGqQYGiBvWw+Jcb5KC66t9LA/ePfy9o2K5pO2?=
- =?us-ascii?Q?Vs5MbT4m/NKwBnyQw+cV0C1PImJjTFjXr6yGmQMTu8yNNaOuyUbh3dUSxaaL?=
- =?us-ascii?Q?UUNjpHkKWW/6w29P7RaCj/iczbntzfnHX9G4vytkIUA8ZdkVvv7ZWrpXMvjh?=
- =?us-ascii?Q?Pecxs7X60s1INP8lZbEBG80TQ2wsOYJ6HlJH/QK596/EYTrBM1cHnQHUlzMA?=
- =?us-ascii?Q?g1xF5OZS2bMZvhvilvd9u8TOSiiOA3syiKCTEafcAcq8S2tdAVuAvQCP70Zh?=
- =?us-ascii?Q?AAA/5mrYoQqZVxlqigj8r4O4kRpDm4bH6hmtmOe5UWLDE2MSJH0EDyqIn84d?=
- =?us-ascii?Q?atFh88lxS2uskBYw1rJn3XGycvp3WLYbXihxCSQtMDDtu7BOilUDP+cbzevm?=
- =?us-ascii?Q?46OI4DcXXXVG4kCJ98BuaVqlF5ujG8ZiWasZvR1kEEwNaLuHOUoqD9y8wvgR?=
- =?us-ascii?Q?LgC1k1eFRUFm1o+UloX+XkleFiI0nTwlEQydc820s3KEpwKnYNMATD0luYue?=
- =?us-ascii?Q?UaKVUBI8fHyUAKQocWdJ1AvnOjKHHyGTiSE/S7bVZtt1zc7i5XU6HJYRIJta?=
- =?us-ascii?Q?LjZxBzmenVYMBHJmqcszmmGIhTvXjrdtA5Pxf+/dvj5snPhdfeu2rZfexomW?=
- =?us-ascii?Q?OQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+To: Michael Kelley <mikelley@microsoft.com>, hpa@zytor.com,
+ kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
+ decui@microsoft.com, luto@kernel.org, peterz@infradead.org,
+ davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+ pabeni@redhat.com, lpieralisi@kernel.org, robh@kernel.org, kw@linux.com,
+ bhelgaas@google.com, arnd@arndb.de, hch@infradead.org,
+ m.szyprowski@samsung.com, robin.murphy@arm.com, brijesh.singh@amd.com,
+ tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, Tianyu.Lan@microsoft.com,
+ kirill.shutemov@linux.intel.com, sathyanarayanan.kuppuswamy@linux.intel.com,
+ ak@linux.intel.com, isaku.yamahata@intel.com, dan.j.williams@intel.com,
+ jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com, x86@kernel.org,
+ linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ netdev@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-arch@vger.kernel.org, iommu@lists.linux.dev
+References: <1668147701-4583-1-git-send-email-mikelley@microsoft.com>
+ <1668147701-4583-6-git-send-email-mikelley@microsoft.com>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+In-Reply-To: <1668147701-4583-6-git-send-email-mikelley@microsoft.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SA9PR13CA0089.namprd13.prod.outlook.com
+ (2603:10b6:806:23::34) To DM4PR12MB5229.namprd12.prod.outlook.com
+ (2603:10b6:5:398::12)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5229:EE_|CO6PR12MB5460:EE_
+X-MS-Office365-Filtering-Correlation-Id: ee1446d3-9f2f-4f6d-187c-08dac41585bf
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	X/iphSnXttxaSd5iN//iHdkJ8Mgk5K7eKSzP2E5juOGMYNUUmkNxhMbNlGTTfuVZxBDYgBh7ZrPq2KjMffMhtk8AA0DkajzWPZ+uYmma0kE3HxUHmiiBmSay/vmmm+fa6Zf3zDEfmCafF8blD9yVNNRAc4uZLxGdkOF5IPthezvD7gjRL+klWFeXOylPtUvZh5HMRcuA7SJzbpvdkYQMUTUnh2H/65gfAf/AtTu6y4yrlCrz8qlTx2yRh0ClBqU9d/uzdPXM12La94KR65cms0qikxWzDG62zyA0beSKviZjGP1dJtqWkZEsJTV8i/s4kUHsoNtblf81Yj0BDR0LohPWJ9mRbgUp12+Y3yBonaKMc6LV1K87bNgnUA19gSi6gvnASGXx9L8Dwl97f6qOJgU961nkl+b0udiTVS3MQ0Q0sfUl1pykHalE5j4O+xs2gfoveg0LoqMKcJ+a8dA6+1ns1JkK474GcBUh+Pr4yVJxyoDzZl/PxwCBk7lIUvzPhgPA1iMGJcQ0tSAWgJZ5PmZQNaWMi4KquIb4OpcvGvG7Ch6peck8VUvQbcltiCGaA23EK3HVAExgQn76IMWv9IO+RwAer0v9gQxvdenHv0152GOtPwJIxGww4YledOBdbKbbqjJSwIytqs7pznP3ab/Tkv9d44AgnyF2O/osbVKHbPXyNWhlNzXTTaXBqsKFfPiLUjL3J0iXyo7gFtyVRWRB/0hiTChOodo40pSVtNaU9OcOXOs0H72LqvKlnMneGAbmJf1NMvvQViUyiXZ5VRi6gCjByfTP0UrFBSszPwCMdSx77Q2zydq6zVrpDnjnM5i4XrML0IhaMw7s+OrBdwG7vq5k0dnynHaH+O1Zbm1dww1HdYtfmAl+1LGSjXswxW7Bb7RcsDaqjUHcbdzTTQ==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(376002)(346002)(136003)(396003)(366004)(451199015)(83380400001)(26005)(2616005)(38100700002)(186003)(6512007)(66556008)(6506007)(5660300002)(53546011)(7416002)(2906002)(7406005)(6486002)(8936002)(41300700001)(966005)(6666004)(478600001)(66476007)(316002)(66946007)(8676002)(31686004)(45080400002)(921005)(86362001)(31696002)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?VTFoR3pGVFZZREFzTng3MHJ2TnVqSFJtalA1cndPRTBab1lnQ0NyZlcvNmNV?=
+ =?utf-8?B?czBpTDJaeklKL3AvemFJbEgrOUlzTzg2Vy9pcHFqbnFRejNMSlI1TkU5ZVI4?=
+ =?utf-8?B?RlFUYzF2alhDdGxhVzl2Vmxvc2JyZm5JTVBNWENDREZ1b0RsY2t0YWNlL09F?=
+ =?utf-8?B?UnFPV0VTWWc4K1pMZDZZZjJjV3FxR201TmV2Q1lMR3p3c2RnR0hzSTlZNDBx?=
+ =?utf-8?B?blNTMHBTMVVNS1BZcVhPWFR1OWN3QmdRcUdUSHJFeld2QjdRenpYM2JaaE5J?=
+ =?utf-8?B?Q2FRT2MzNFY1OUxBT0RlR0psazF4dXdtUW1OWUZDeGZnemxDakliMmpzZFY2?=
+ =?utf-8?B?eHdLOEZPV25JYitxVHQ3YU1UMGtNNzN4a1RveDhZRGJ1N0dlNFJOeSs5Rkc5?=
+ =?utf-8?B?ekRkUk5ScGtKeVQvSGwxRUU5UGZLQ1dQcFBsN2JoSTFESEhDMXh6Uk9TaEtm?=
+ =?utf-8?B?Sy9IZUZtMWhHWUZmRmNsbXpDN3ZxTUlxWHRYcDNRUG9MNVR3TXlTdkthTWlB?=
+ =?utf-8?B?cXJaNlZIYzM2MTkvNm9ac0h1cUJSei9KYzU3ejdFSTlZM1JSZ01NVmVSdHIy?=
+ =?utf-8?B?NzhMR015T1llMFZkYkM1MlBqZk9VL04xbHdDejBpZ1FwNHNYWFBIQTltazRj?=
+ =?utf-8?B?VUVCa29zUTNsSHNoMS94OHRuN2pFMW1ybmVrS09QM3dWQmc1bjBLMkZYdFFR?=
+ =?utf-8?B?TEJWRGhBNjVaWjVvOUlnYUsxUzg4RzJmbEw0QWlVSnFYaThRQlhucWNWSlBk?=
+ =?utf-8?B?TUluRnJ3S1h2cGdyMUgzblFNeTFQZkZZUWRGK0ZVZS9KUEkrMDZlNmVXcVVp?=
+ =?utf-8?B?NXBTS1M2TWpZMS8wSlg1eDV4dmt0RnE5QzNTNGw4eHRycDUvZHpEMHpTOFQ5?=
+ =?utf-8?B?VDMvY2RZYktyaUlpTmtCT2lYN20yWUJUSWcxVFZrMzdvU08zU3kvWTdIVktT?=
+ =?utf-8?B?Uy8zd040S1kvY1pIY3ZoWWNzV2crK2swMjdtOXNjN3Z0RkduWnZGOFdJUTR4?=
+ =?utf-8?B?OS9XWWRZMDEveEszclJxYlVQR3JzNXBrWG8vUlpsTXZCczVkcyt4TUJyUXhB?=
+ =?utf-8?B?V2ExbFNJY05Ka2REKzFWdGs5MDhBWGNHS2luQWp4K2Y4d2ZuMVZXMG1MZjlo?=
+ =?utf-8?B?bmlNWHdneTlpL0lyMkw0V1UvVlc5ejZKMU5INGM1eTFLbktYT1ZkVHk1OUg0?=
+ =?utf-8?B?cHNWUEwyN1VacGhQQnNRdTR2QmFHS0UvbEd1MHRUMjd2MndsVExhcjU4Z044?=
+ =?utf-8?B?NmVRUElXTFRIUzR5Uk8zT003YjVuei84ckwzOHM3YUZoMWFWZi9CNWU1SDV5?=
+ =?utf-8?B?UFoxNVhHSTNERlFZYUpQSFdvS1JEZXo2L20rNkIzeElFTUxTQ0pVb0F3TDc3?=
+ =?utf-8?B?cEp3NDB6NkkwL3ZNTEJMUzgraXJBVWpUa0VJYUdrOTJZUmFrcTlLMVhLSm9I?=
+ =?utf-8?B?UXErbDJsR1kwZFJTMlJ2djR6Wnk2ZGNCbTdhM2xnY1JOTjhJZWRaZldvdVpw?=
+ =?utf-8?B?SS9hYzBLcE5hdnRCZ0JEV3U1K0JKbDNQYVh4d2VJVW1XMU9rU1NrYTdSR2dQ?=
+ =?utf-8?B?U2RlNlBpVDZFNmZwdlMycUhOVlNrM1F6YWRvM3ZURlN3WFlGeW4zc1hoeURy?=
+ =?utf-8?B?NHRqUWpzNFVNWFA4Rzk5MURiSjd0bXJQMXRHTUpCbzRDeW93Ty8zNTdtdzFB?=
+ =?utf-8?B?SlpDaWExRTBFTDNtRnVoT3crZDBBc3BabjFQSnFRS2I4c3hiQitsY1pWZHR0?=
+ =?utf-8?B?ZXYxKzVKZGY3M0pqZmZ0MjN6MXM3MHd1RlFZM3ZvV3d1NUxxcUNCbnU4VDVK?=
+ =?utf-8?B?YkU3UUsyRFpKYmc5Qy9MSXVIcnhITGdCN2hib1hMVE5PZU5sc2RrSlFuNTYy?=
+ =?utf-8?B?ZFNDRmhrZUlOa1F4RDZyai9xQk1IVXY3aDc2Z2p6dTR6L1Y4amZaYTZaa1Zj?=
+ =?utf-8?B?UmN6V25TZzNjMS8vU2lxMEFILzFVSHBzcWdWYWx2VXdpYVk3Rzg3QmJ6TUc0?=
+ =?utf-8?B?RWZnb0EzUzRnQUxmcnhCRnovd04wZWtnbXExSUFlRW54aFdqQllBTWo3dnVX?=
+ =?utf-8?B?UDRxS2dwSmxPRW5IVGRJR1NKbkZ1a2JNcmxmL1pCVVF0RWt2VGRzSWdhYzNm?=
+ =?utf-8?Q?6ZHUZTNZzAMq939bGIbNidE48?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ee1446d3-9f2f-4f6d-187c-08dac41585bf
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1688.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8330db9f-bf79-46e2-4470-08dac40e655e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Nov 2022 17:58:53.4984
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Nov 2022 18:49:54.5315
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: oRcIjFyab+9GtXf4S5St3yrHMWQd6aky+B6HCgt0SDT9i42Se/UaUIq912bZaH1Pi2RGBJck5SilMz2j4WDTNIljl9pmept7siI6UuCYXvg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR21MB1291
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: XCNmf/ckM7EPQAajVQtXxjXd+hberMaiOV36cn5T3Ij1KsamoB1knPATbTT/Rxgfoo0fTYG1+BiqpO3G/+6HKg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR12MB5460
 
-From: Wei Liu <wei.liu@kernel.org> Sent: Friday, November 11, 2022 9:27 AM
->=20
-> On Fri, Nov 11, 2022 at 04:55:22PM +0000, Michael Kelley (LINUX) wrote:
-> > From: Wei Liu <wei.liu@kernel.org> Sent: Friday, November 11, 2022 8:33=
- AM
-> > >
-> > > Hi Tianyu
-> > >
-> > > On Wed, Nov 09, 2022 at 11:07:33AM -0800, Nuno Das Neves wrote:
-> > > > If x2apic is not available, hyperv-iommu skips remapping
-> > > > irqs. This breaks root partition which always needs irqs
-> > > > remapped.
-> > > >
-> > > > Fix this by allowing irq remapping regardless of x2apic,
-> > > > and change hyperv_enable_irq_remapping() to return
-> > > > IRQ_REMAP_XAPIC_MODE in case x2apic is missing.
-> > > >
-> > >
-> > > Do you remember why it was x2apic only?
-> > >
-> > > We tested this patch on different VM SKUs and it worked fine. I'm jus=
-t
-> > > wondering if there would be some subtle breakages that we couldn't
-> > > easily test.
-> > >
-> > > Thanks,
-> > > Wei.
-> >
-> > My recollection is that originally Hyper-V provided the x2apic in the
-> > guest only when the number of vCPUs exceeded 255, and that was
-> > the only case where IRQ remapping was needed.  The intent was to
-> > not disturb the case where # of vCPUs was < 255 and the xapic is used.
-> > I don't remember there being any potential for subtle breakages.
->=20
-> Thanks for the information.
->=20
-> >
-> > I think more recent versions of Hyper-V now provide the x2apic
-> > in the guest in some cases when # of vCPUs is < 255.
-> >
->=20
-> On Azure the default for AMD SKUs is still xapic unless the number of
-> VCPUs exceeds 2XX (can't remember the exact number -- maybe it is 255).
+On 11/11/22 00:21, Michael Kelley wrote:
+> Hyper-V guests on AMD SEV-SNP hardware have the option of using the
+> "virtual Top Of Memory" (vTOM) feature specified by the SEV-SNP
+> architecture. With vTOM, shared vs. private memory accesses are
+> controlled by splitting the guest physical address space into two
+> halves.  vTOM is the dividing line where the uppermost bit of the
+> physical address space is set; e.g., with 47 bits of guest physical
+> address space, vTOM is 0x40000000000 (bit 46 is set).  Guest phyiscal
+> memory is accessible at two parallel physical addresses -- one below
+> vTOM and one above vTOM.  Accesses below vTOM are private (encrypted)
+> while accesses above vTOM are shared (decrypted). In this sense, vTOM
+> is like the GPA.SHARED bit in Intel TDX.
+> 
+> Support for Hyper-V guests using vTOM was added to the Linux kernel in
+> two patch sets[1][2]. This support treats the vTOM bit as part of
+> the physical address. For accessing shared (decrypted) memory, these
+> patch sets create a second kernel virtual mapping that maps to physical
+> addresses above vTOM.
+> 
+> A better approach is to treat the vTOM bit as a protection flag, not
+> as part of the physical address. This new approach is like the approach
+> for the GPA.SHARED bit in Intel TDX. Rather than creating a second kernel
+> virtual mapping, the existing mapping is updated using recently added
+> coco mechanisms.  When memory is changed between private and shared using
+> set_memory_decrypted() and set_memory_encrypted(), the PTEs for the
+> existing kernel mapping are changed to add or remove the vTOM bit
+> in the guest physical address, just as with TDX. The hypercalls to
+> change the memory status on the host side are made using the existing
+> callback mechanism. Everything just works, with a minor tweak to map
+> the I/O APIC to use private accesses.
+> 
+> To accomplish the switch in approach, the following must be done in
+> in this single patch:
+> 
+> * Update Hyper-V initialization to set the cc _mask based on vTOM
+>    and do other coco initialization.
+> 
+> * Update physical_mask so the vTOM bit is no longer treated as part
+>    of the physical address
+> 
+> * Update cc_mkenc() and cc_mkdec() to be active for Hyper-V guests.
+>    This makes the vTOM bit part of the protection flags.
+> 
+> * Code already exists to make hypercalls to inform Hyper-V about pages
+>    changing between shared and private.  Update this code to run as a
+>    callback from __set_memory_enc_pgtable().
+> 
+> * Remove the Hyper-V special case from __set_memory_enc_dec(), and
+>    make the normal case active for Hyper-V VMs, which have
+>    CC_ATTR_GUEST_MEM_ENCRYPT, but not CC_ATTR_MEM_ENCRYPT.
+> 
+> [1] https://lore.kernel.org/all/20211025122116.264793-1-ltykernel@gmail.com/
+> [2] https://lore.kernel.org/all/20211213071407.314309-1-ltykernel@gmail.com/
+> 
+> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+> Reviewed-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> ---
+>   arch/x86/coco/core.c            | 10 ++++++++-
+>   arch/x86/hyperv/ivm.c           | 45 +++++++++++++++++++++++++++++++----------
+>   arch/x86/include/asm/mshyperv.h |  8 ++------
+>   arch/x86/kernel/cpu/mshyperv.c  | 15 +++++++-------
+>   arch/x86/mm/pat/set_memory.c    |  6 ++----
+>   5 files changed, 54 insertions(+), 30 deletions(-)
+> 
 
-I don't think Azure has any VM sizes based on AMD processors with more
-than 255 vCPUs.  All the >255 vCPUs VM sizes use Intel processors.
 
-FWIW, I have a D2ds_v5 VM (2 CPUs & Intel processor) that shows an
-x2apic instead of an xapic.  My memory is vague, but I think that's the
-requirements to get an x2apic in a smaller VM:  must be a "v5" series and
-must be Intel processor.
+> diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+> index 06eb8910..024fbf4 100644
+> --- a/arch/x86/mm/pat/set_memory.c
+> +++ b/arch/x86/mm/pat/set_memory.c
+> @@ -2126,10 +2126,8 @@ static int __set_memory_enc_pgtable(unsigned long addr, int numpages, bool enc)
+>   
+>   static int __set_memory_enc_dec(unsigned long addr, int numpages, bool enc)
+>   {
+> -	if (hv_is_isolation_supported())
+> -		return hv_set_mem_host_visibility(addr, numpages, !enc);
+> -
+> -	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
+> +	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT) ||
+> +	    cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
 
-Michael
+This seems kind of strange since CC_ATTR_MEM_ENCRYPT is supposed to mean 
+either HOST or GUEST memory encryption, but then you check for GUEST 
+memory encryption directly. Can your cc_platform_has() support be setup to 
+handle the CC_ATTR_MEM_ENCRYPT attribute in some way?
 
->=20
-> Nuno, can you list the tests you've done? They will need to cover Linux
-> running as a normal guest on Azure and Hyper-V.
->=20
-> Thanks,
-> Wei.
->=20
->=20
-> > Michael
-> >
-> > >
-> > > > Tested with root and non-root hyperv partitions.
-> > > >
-> > > > Signed-off-by: Nuno Das Neves <nunodasneves@linux.microsoft.com>
-> > > > ---
-> > > >  drivers/iommu/Kconfig        | 6 +++---
-> > > >  drivers/iommu/hyperv-iommu.c | 7 ++++---
-> > > >  2 files changed, 7 insertions(+), 6 deletions(-)
-> > > >
-> > > > diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> > > > index dc5f7a156ff5..cf7433652db0 100644
-> > > > --- a/drivers/iommu/Kconfig
-> > > > +++ b/drivers/iommu/Kconfig
-> > > > @@ -474,13 +474,13 @@ config QCOM_IOMMU
-> > > >  	  Support for IOMMU on certain Qualcomm SoCs.
-> > > >
-> > > >  config HYPERV_IOMMU
-> > > > -	bool "Hyper-V x2APIC IRQ Handling"
-> > > > +	bool "Hyper-V IRQ Handling"
-> > > >  	depends on HYPERV && X86
-> > > >  	select IOMMU_API
-> > > >  	default HYPERV
-> > > >  	help
-> > > > -	  Stub IOMMU driver to handle IRQs as to allow Hyper-V Linux
-> > > > -	  guests to run with x2APIC mode enabled.
-> > > > +	  Stub IOMMU driver to handle IRQs to support Hyper-V Linux
-> > > > +	  guest and root partitions.
-> > > >
-> > > >  config VIRTIO_IOMMU
-> > > >  	tristate "Virtio IOMMU driver"
-> > > > diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-io=
-mmu.c
-> > > > index e190bb8c225c..abd1826a9e63 100644
-> > > > --- a/drivers/iommu/hyperv-iommu.c
-> > > > +++ b/drivers/iommu/hyperv-iommu.c
-> > > > @@ -123,8 +123,7 @@ static int __init hyperv_prepare_irq_remapping(=
-void)
-> > > >  	const struct irq_domain_ops *ops;
-> > > >
-> > > >  	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV) ||
-> > > > -	    x86_init.hyper.msi_ext_dest_id() ||
-> > > > -	    !x2apic_supported())
-> > > > +	    x86_init.hyper.msi_ext_dest_id())
-> > > >  		return -ENODEV;
-> > > >
-> > > >  	if (hv_root_partition) {
-> > > > @@ -170,7 +169,9 @@ static int __init hyperv_prepare_irq_remapping(=
-void)
-> > > >
-> > > >  static int __init hyperv_enable_irq_remapping(void)
-> > > >  {
-> > > > -	return IRQ_REMAP_X2APIC_MODE;
-> > > > +	if (x2apic_supported())
-> > > > +		return IRQ_REMAP_X2APIC_MODE;
-> > > > +	return IRQ_REMAP_XAPIC_MODE;
-> > > >  }
-> > > >
-> > > >  struct irq_remap_ops hyperv_irq_remap_ops =3D {
-> > > > --
-> > > > 2.25.1
-> > > >
+Thanks,
+Tom
+
+>   		return __set_memory_enc_pgtable(addr, numpages, enc);
+>   
+>   	return 0;
