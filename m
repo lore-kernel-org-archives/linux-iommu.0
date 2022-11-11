@@ -1,419 +1,303 @@
-Received: from na01-obe.outbound.protection.outlook.com (mail-eastusazon11022024.outbound.protection.outlook.com [52.101.53.24])
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C44D363D
-	for <iommu@lists.linux.dev>; Fri, 11 Nov 2022 06:22:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1B3E651
+	for <iommu@lists.linux.dev>; Fri, 11 Nov 2022 06:38:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668148712; x=1699684712;
+  h=message-id:date:subject:from:to:cc:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=KaWbtnvZ+zxNSi9PVLvfwTNQ0HLob92A+f1nZOAgtrU=;
+  b=CVElrltrRxNxQf6971LgkgmZ+MhRpivNvFkLGFI9ymyZhgLsXIx8m1R7
+   oGPy9ThuXrEsuvhmbk3u92i5OI8Rf8dwqXPDKKHI2VYo/4OrqsbSTnK3K
+   5Zk6yRCjHk921m+J9/n8VZBXsT/XnVK9z8fpN68V+68ac5ta3//7Sw2iF
+   zbu0V9hbtqcukdw+Aug1lBYLn/d4SKEA0h5X/9/P42Y5QyQGdrq6iPS87
+   EkSuXd9ScvuwkyAWjIixPMYuQzQ8KjIk7mW/KMsyZlzj9gtMshnSmJ0mG
+   XsZtd1oNl6u5lYogsnlhUPv4d3jIG+cwj+LCRlDo0nNy+XtRc7Z3RIm/e
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10527"; a="299047621"
+X-IronPort-AV: E=Sophos;i="5.96,156,1665471600"; 
+   d="scan'208";a="299047621"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2022 22:38:32 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10527"; a="882662859"
+X-IronPort-AV: E=Sophos;i="5.96,156,1665471600"; 
+   d="scan'208";a="882662859"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by fmsmga006.fm.intel.com with ESMTP; 10 Nov 2022 22:38:31 -0800
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 10 Nov 2022 22:38:30 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 10 Nov 2022 22:38:30 -0800
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Thu, 10 Nov 2022 22:38:30 -0800
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.168)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Thu, 10 Nov 2022 22:38:29 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dDL6YZLl0JrWEIS1KY8tinsMfJBC7LL6iy9Hh0J12kAMz3KOx3PYdBinorLPzbC23Nv8EG30+6hKhQsHPVGfDUnWfEX5yfT2V4zgqRhSy38TojV7ySqUDmilyxApqbPQ+AUHxebxSxlGMpLjImJQLStmjqp4a1kAbBM7ukPK2OwL8b4AwxwW6jhwLKYq/7s7St07UmjfyfxAXPR7qhbttDD9XUrigwGkjnhCawu+fWw/ny+2svjdj7qKUDoil0slqRkTTy6N03riL94dia3MBTc2Kwkt87kiFldZMm4TQ48cHdQ1XCOsxf3SzpIGzcJ/PGdH9nozP+kCimYZYzcyCw==
+ b=ggME3cLaOufVe/9aZhl5vpvJSN6ysTHXKZXGFNRHxa3+Rtg49Rl7rgicfISlupbHLy4eEYmTTrYsRoM5h8PTd1C9jh4qJIGLWbJiccV/F9/LancTbB9eMeLWkFnSOAGH6omZIwhjymUYhnvKtocJpU9NMZjT9LIHGF5wLv2MNMH5CBrhCeiWYz9XEgIqNdyJI+3rUJ/6U4GE/KA0h+Tefzv/tQeKjxJRZrxcTSrJ7zx1YJ2OnGNPRXm5lCC5j0vIA18dH7/XX0kaOZ5liV5mIQf/JPV7yIqRPnuUYFhFNA7xuh7WHdDHmu8OwSsVJNY4FYy5On1ndrdRz3FGr9xDow==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0vfRKktGtusAn2CuHkYy3SoKI+4YG9f3c1x8BjXPr9U=;
- b=Y3Up6zVbbaKNYW9CWyEJ7KyGIDNK8BGsvsFB/WjTh2ugqKj0m7VmsM3n4WIK2biK7Z8fUXL4F03aM9NPc7NkqtJ6VI1I8ss1SO4MtsjE0QnsHYY5BoJQtBmPil0Dl9YKAseeKHVoiUwIJhs4yWnw5r6AL4UbK2w8bcdus42Oi3EsKM+lbi0TBHqPJmIgv+vF1X5S8ENxhgmW3p378oereWbLeKUBqg1a52+TcRh9Sgcgke99xgErJAMLCw6QwaXKpofTICpSGLHReIRyJnIBt8r/T2QVQXyltn9svMxKn9pgYVwwWxhE/GWPdBRnMrYLcU51ErO7YXtBmDL12tYhHw==
+ bh=2w/PXhDdgYjxBXCqJWfWznbRscTOmlSyqhsDF2Vqo+A=;
+ b=Pgf+F74q10JUL4xkPWuVcGhcEm3pXPjog13dXK2B7SlvQ/E7I3LDwn1YSaOSxBTHNjHOOmJ5/1oRuiaw8UB2m/Xr9r4eTvc7OcUvXOkXPaMy65MerPhZitBdNjFfxWWYUBl9CZE61Q3gXiwMKJpMfBJFqNtnVOIPTvk51NQq/gEnBwFAZ/AC2m8W9fGdw3TPNhSqClG2r5JW4vdPhfenGqgC29d5y09ZhBa1Az0AU91lrKT0qMF5wrDWQ6RXgbEz8MQey9oa/92OoMKfO1h1n9+yQxi+wfr5OsudyIuy1tvSkKW8l6Ru+rtejqO/pvmvbPRPsydDWOrZx32m1yIC+g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0vfRKktGtusAn2CuHkYy3SoKI+4YG9f3c1x8BjXPr9U=;
- b=GAV3oE7v8Aap1vFNmCyDs19WaWsTlY7eEhckD0FfhImEhG2kXKwRoJ+iOdnzROAYWZcRKEFkMfDsJz3TGy5B9qSkfKK3SiKAQ+oAROaRtscPz0vt7pnP69vMpCwMAedpMcDxcFuSWN3CKgvfQGVQq0OTQglLOBVoW702zqXPVXA=
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-Received: from DM6PR21MB1370.namprd21.prod.outlook.com (2603:10b6:5:16b::28)
- by MW4PR21MB1857.namprd21.prod.outlook.com (2603:10b6:303:74::12) with
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
+ by CH0PR11MB5562.namprd11.prod.outlook.com (2603:10b6:610:d5::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.2; Fri, 11 Nov
- 2022 06:22:36 +0000
-Received: from DM6PR21MB1370.namprd21.prod.outlook.com
- ([fe80::c3e3:a6ef:232c:299b]) by DM6PR21MB1370.namprd21.prod.outlook.com
- ([fe80::c3e3:a6ef:232c:299b%7]) with mapi id 15.20.5834.002; Fri, 11 Nov 2022
- 06:22:36 +0000
-From: Michael Kelley <mikelley@microsoft.com>
-To: hpa@zytor.com,
-	kys@microsoft.com,
-	haiyangz@microsoft.com,
-	wei.liu@kernel.org,
-	decui@microsoft.com,
-	luto@kernel.org,
-	peterz@infradead.org,
-	davem@davemloft.net,
-	edumazet@google.com,
-	kuba@kernel.org,
-	pabeni@redhat.com,
-	lpieralisi@kernel.org,
-	robh@kernel.org,
-	kw@linux.com,
-	bhelgaas@google.com,
-	arnd@arndb.de,
-	hch@infradead.org,
-	m.szyprowski@samsung.com,
-	robin.murphy@arm.com,
-	thomas.lendacky@amd.com,
-	brijesh.singh@amd.com,
-	tglx@linutronix.de,
-	mingo@redhat.com,
-	bp@alien8.de,
-	dave.hansen@linux.intel.com,
-	Tianyu.Lan@microsoft.com,
-	kirill.shutemov@linux.intel.com,
-	sathyanarayanan.kuppuswamy@linux.intel.com,
-	ak@linux.intel.com,
-	isaku.yamahata@intel.com,
-	dan.j.williams@intel.com,
-	jane.chu@oracle.com,
-	seanjc@google.com,
-	tony.luck@intel.com,
-	x86@kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-hyperv@vger.kernel.org,
-	netdev@vger.kernel.org,
-	linux-pci@vger.kernel.org,
-	linux-arch@vger.kernel.org,
-	iommu@lists.linux.dev
-Cc: mikelley@microsoft.com
-Subject: [PATCH v2 12/12] PCI: hv: Enable PCI pass-thru devices in Confidential VMs
-Date: Thu, 10 Nov 2022 22:21:41 -0800
-Message-Id: <1668147701-4583-13-git-send-email-mikelley@microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1668147701-4583-1-git-send-email-mikelley@microsoft.com>
-References: <1668147701-4583-1-git-send-email-mikelley@microsoft.com>
-Content-Type: text/plain
-X-ClientProxiedBy: MW4PR04CA0329.namprd04.prod.outlook.com
- (2603:10b6:303:82::34) To DM6PR21MB1370.namprd21.prod.outlook.com
- (2603:10b6:5:16b::28)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.13; Fri, 11 Nov
+ 2022 06:38:26 +0000
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::ad39:e00a:a7cb:4ada]) by DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::ad39:e00a:a7cb:4ada%7]) with mapi id 15.20.5791.026; Fri, 11 Nov 2022
+ 06:38:26 +0000
+Message-ID: <9a91b6c1-b4b1-21cf-8f6b-79a27f58d71f@intel.com>
+Date: Fri, 11 Nov 2022 14:38:51 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH v2 11/11] iommufd: Allow iommufd to supply /dev/vfio/vfio
+Content-Language: en-US
+From: Yi Liu <yi.l.liu@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, Alexander Gordeev
+	<agordeev@linux.ibm.com>, David Airlie <airlied@gmail.com>, Tony Krowiak
+	<akrowiak@linux.ibm.com>, Alex Williamson <alex.williamson@redhat.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>, Cornelia Huck
+	<cohuck@redhat.com>, Daniel Vetter <daniel@ffwll.ch>, Diana Craciun
+	<diana.craciun@oss.nxp.com>, <dri-devel@lists.freedesktop.org>, Eric Auger
+	<eric.auger@redhat.com>, Eric Farman <farman@linux.ibm.com>, "Harald
+ Freudenberger" <freude@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>, <intel-gfx@lists.freedesktop.org>,
+	<intel-gvt-dev@lists.freedesktop.org>, <iommu@lists.linux.dev>, Jani Nikula
+	<jani.nikula@linux.intel.com>, Jason Herne <jjherne@linux.ibm.com>, "Joonas
+ Lahtinen" <joonas.lahtinen@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Kevin Tian <kevin.tian@intel.com>, <kvm@vger.kernel.org>,
+	<linux-s390@vger.kernel.org>, Longfang Liu <liulongfang@huawei.com>, "Matthew
+ Rosato" <mjrosato@linux.ibm.com>, Peter Oberparleiter
+	<oberpar@linux.ibm.com>, Halil Pasic <pasic@linux.ibm.com>, Robin Murphy
+	<robin.murphy@arm.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>, "Shameer
+ Kolothum" <shameerali.kolothum.thodi@huawei.com>, Sven Schnelle
+	<svens@linux.ibm.com>, Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+	Vineeth Vijayan <vneethv@linux.ibm.com>, Will Deacon <will@kernel.org>,
+	Yishai Hadas <yishaih@nvidia.com>, Zhenyu Wang <zhenyuw@linux.intel.com>,
+	"Zhi Wang" <zhi.a.wang@intel.com>
+CC: Lu Baolu <baolu.lu@linux.intel.com>, Nicolin Chen <nicolinc@nvidia.com>
+References: <11-v2-65016290f146+33e-vfio_iommufd_jgg@nvidia.com>
+ <9a47347a-c4b2-e589-c54f-b193d105c4ca@intel.com>
+In-Reply-To: <9a47347a-c4b2-e589-c54f-b193d105c4ca@intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SG2P153CA0047.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c6::16)
+ To DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR21MB1370:EE_|MW4PR21MB1857:EE_
-X-MS-Office365-Filtering-Correlation-Id: a1e3d493-6603-4beb-c515-08dac3ad202a
-X-LD-Processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|CH0PR11MB5562:EE_
+X-MS-Office365-Filtering-Correlation-Id: 186c556f-dfd7-444f-f2a1-08dac3af5660
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
- L6dLEXvJhw3Hv+YTYtjwlO4FqoiUlslw/7fjhKItZ25HyixIzuqbyzp8HO7Qcv5NP0LWi3xRh+Ntytt4/AS1gT2wTZm6vKdR6vc8QNKAsE1MW+FreYOrUZ0PnSYWrvZlbvbZpSwdAZhXM/v6IOU3tdI93ttocIfVb7iyS0z6ioFgSc/IIoi0fsDwa7k8gQZ3aPEPAwQTN8o6Y7C/Q8O9RMsDi5TRXXx3eAkiqq6H8rs/bBIBwlWwMputLrZR/K6f+iMGB2I9tC8Q0JWv0s950e8zcC1MEfYKR1c81+w0aIQmmq3OigSOaeLJta6iYU81QDs1IfzvwQT7pWRUcK4Kqv2ePPegsGPnmywFmZhJRT+Bity1nR3wQVNBdNhr/g95xD54oPdrMe8gMcjxsrP1ZUsZkgbaL8eKBvWNpoL2e7JtddQiIe4lP8uGbyIZfsL94JTGYsV20PH+64HsAogSf3I2usftT/Q8uEKUtxkmq2CmCn4YWMGppxKZnVTdruTKO59J75X+4HqqqlmDOmLiU8ppWX7/9tvdxOfde0PcSYyUAYruLc4tfmMlJaWCQPPSXuRZC1HXL+5/6YLtGie1KIlvOCdK0rldp6oIqoGeRqjwvnuC3fnSB9IK+p5ZAAIlHcgi+tVF/5pHmdE2cxSQUPFrqs1I3SCUHDW+pcYNK+/QHX4aa7Uqj5DmR3ZDZxEc2ZOC4aZEy849StSgDs+bwLmRbqf3pau6S6e0DeFBFezztQw+89TGW0EbdNe5jniadf0hCGv8MfFmRCuk2UgY0KznI6xu3qNzNc843L5tvZLgITdanmKRnist5qX58N+XCoQJ1F0z9Ndgt9O97faHhnXdISypThIu0o/HuiNhMRA=
-X-Forefront-Antispam-Report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1370.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(346002)(376002)(366004)(136003)(396003)(451199015)(83380400001)(52116002)(26005)(6666004)(6512007)(186003)(38100700002)(107886003)(2616005)(7406005)(2906002)(316002)(7416002)(6506007)(10290500003)(6486002)(66946007)(66476007)(5660300002)(966005)(8936002)(41300700001)(8676002)(4326008)(66556008)(478600001)(38350700002)(36756003)(86362001)(921005)(82960400001)(82950400001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: VWHEHkVKPd7jypnz9LF2pyw3tfVkmhFtuBKfLOloQ8D82Hy8QaSPrfGcPOPnfgI2yhsBY2wixbGrH1Cm0EQNp7LAa32DzFtO5Fj6agxli9TSSA8kJ4vfAOngM5KcVHQLT1siHVjlbDBAUfbiuCLNBoSaUrkfhDZ3gAyRRZu1V2kHy0BZts6PbbV4Lsasgib1h811SnN44Cbo2ekG5SoFLwA9MPjjgdlTwBghMh81My60vQyfm6PAywz48Y4qqgNwKUFSwBupNMQ+GaHoRAlziriI9iBtUvemiOYiXWXhzSlzCOCvNZ7aXtuVtLGPVEN94bXfxqnmIxlbYLySgnGwIeqsfgPQ+hN2a9oUnQLWRt86MEWomv4xfb3KmwcfBFN73bjVg3hfE6T/wW/SpnsJcLR1PYYdrVI0We6UlHhrbHrHgoUzU7HnTJ3c5Lok/GYs8dhwRjTJ30kF+WVYwj4Z75vdiyw0MD4RgQW0dDJtEj6J9KlHtKltoC2NXK4vQ0cloqwaJexEyn4jJhu5jgjHu/5kxGf8hTm9SP0w8N8NajuuI1E8pAr9rxmNiIXYkm3IIuW7aCRD5wRVRqg/sOICNuAKCN6dNzxjREzogJFIeT0dSM3a+CSNahQZHzc9Ou/BTOmxy4Sn2asCHe+CVUs9IZevdzgpV4pHazXyaTs1DSwe+chspJusp0qRGI3tem13phZeyan2jiC1FCEo/AKtxY6QDeeTGkfjCXK2qnN+qREyqIXjvlnUFkbGkJx35zcZwUwIaWBPDFmpxVJs/ftp1FyAGz/SHWngSU7ifq6MZMIOk6GheOxqBpC2sAx5DpCq
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(346002)(366004)(136003)(39860400002)(376002)(396003)(451199015)(4326008)(26005)(8676002)(6512007)(36756003)(66476007)(66556008)(66946007)(41300700001)(31696002)(54906003)(6636002)(110136005)(316002)(86362001)(53546011)(6486002)(6506007)(186003)(478600001)(83380400001)(5660300002)(2906002)(7416002)(7406005)(2616005)(8936002)(82960400001)(6666004)(921005)(38100700002)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
- =?us-ascii?Q?t40nKXbEll/pv94uG4XiAhccctpehCFbCqcIMnI08ih7fWzKoIKLTtYjUURW?=
- =?us-ascii?Q?uX+uTZncQVd5JGEtEAiJF9aRsB8YOvqVht9ARCeFMsVeTM93/M4jtuu9gjtW?=
- =?us-ascii?Q?MLvJd8Hawkm8SOh8/rJQl3+ZrKheUH2Dcxk4yZnck8R3t3KB7w7UisukvgzP?=
- =?us-ascii?Q?tB38IT4oEPObntCcvfN/nO9Isu9EgWnKjNgLpDU5pC/euDMA5IrpGHu5KxCh?=
- =?us-ascii?Q?oyjuDkosIZJnFGgT/1OMroJK+yFRol23yYHWz6AybpvOhmDg/7arXYnxTyC/?=
- =?us-ascii?Q?HHTgN2CB3lDcQRo9MZ8gLQHZRTCJCfh0uq/IaKbW6ihdVW6o5TY2Ur6A2/oh?=
- =?us-ascii?Q?otUlXXZw9GTxT07/Pcpzr2FnrqMSZcnWYLVfzWPCP2By4N6r/B7/ai5Cv8HJ?=
- =?us-ascii?Q?SW8dmpILVaTOTkbUjKw4hp/dFr8zMESffkdIqz+iCF5SNGMrL3xorUXvQZvq?=
- =?us-ascii?Q?NDRKlnTN0Pu8VqO1139SMplvveKYxPQkDtjLadnZ8XtPsAd/KEHdDXccWhqa?=
- =?us-ascii?Q?A+iroEvWWAq7MLfJKfFcRk5ZDKHPOi7gw6ijsU92m9vGAA4nNGQXiSWN+NuU?=
- =?us-ascii?Q?MdqgZ5vRITTQnQAGYDDYgLl59wWSsPo8I8OYI4T0hUSMxuO9F+v65g1+9gCg?=
- =?us-ascii?Q?FxQS1M5AUsyIi2ucK9j0s7D7guSmRY7YuHto4wCCp2EKavba1vXE9Z1llbJK?=
- =?us-ascii?Q?6tZ6ZKIUJXGxHSRbFHXX2kRGiA2ZlPN14zHcs7SIxhSiXOfOpoTBGpmND4lS?=
- =?us-ascii?Q?+G8b++tz6kQMWNfSmVgeppX2VM8a82nJdanPtvRBiplGUM+tB14p0XAzV6Aq?=
- =?us-ascii?Q?NMBCX5t66YY9ZmQmLExYRq0NJiYGTIUxfCb7gGVo10HpwMZpw5l4PXaksN1i?=
- =?us-ascii?Q?SvHnms+V18njpkpEBAyxMpq7tl451xqVNW2LS2b9+U52fBSp5ujNW1NqzJH6?=
- =?us-ascii?Q?kxRpvBTSrkBX12effhPNwsWey2UBCnxmZLlLLpRkjwvYeH/9yaENSGsSSPmZ?=
- =?us-ascii?Q?g/Yj30Sesnt71pqNhDh0Nvbd8cwqMFJuKWDZ53+3Ij5YOOC7r+VZX8Mdt4fi?=
- =?us-ascii?Q?62lkontgtJCRM9WlM6+J9k9n+veCOL9vXeLfvAFx/zTXuxRs4Tq5Lso3Q+lw?=
- =?us-ascii?Q?jSu2AcLfUVReYUTkcAObVRqjUcP5MD5U2VYqnuUdVflYU8hhlmJbpQj+huMT?=
- =?us-ascii?Q?PTnT6xJO5RimagWf2ESiKpiklHalcLK7f/vPBbatJVSYTLBNvNAxx7C+9gjV?=
- =?us-ascii?Q?iFYXdtU/ep200CR3/OabH+62lrtQ255SYiseEkR0Y+wVlN5TWEo7HBtZqPHv?=
- =?us-ascii?Q?ZdXRyZhjrJI5BVzkCioc+YcEKIggMyrOjSNOdMM9fT4Enr6B7Ri5jKZj9Zq4?=
- =?us-ascii?Q?Am3hBnOCX/SKTAq1R+znLc+8leSZs96RWKpRoOaURwZK71rpa3kcvc8RLCV0?=
- =?us-ascii?Q?kddNDO/fdDNjl93taO0xV7n92dxtaQaOxCTC7k/ro2L/13ymHziG7dtJrMHG?=
- =?us-ascii?Q?7IIYCMlRJWL/C2qMsaSfivU/9BL7lRnQ2gWQuVdLNwZKVnK70mXG8lN9Tev0?=
- =?us-ascii?Q?S1U5BVXqxT8hZILu72tTOdyUJ1tfnYfiiPH+MIWikoFr1Gx7fqk43t50wRBg?=
- =?us-ascii?Q?Hg=3D=3D?=
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a1e3d493-6603-4beb-c515-08dac3ad202a
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR21MB1370.namprd21.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NW5ObmtsSGs0bnBVZDgrZm9wUC9JN1EyRUdqdWYyY1Rjb2pSTlk3SG90bFNJ?=
+ =?utf-8?B?c280MnoyYnNiaDU1eXJ0Y2doYWhhRzIvWVZUeFVKK3NzMlZPQXhaNHRVMEVE?=
+ =?utf-8?B?M2FNRXQrSjNIUkdRWHQvTmlKLzl3dkptL1g3aDNLeElwVEFPZ0podkxCU0p6?=
+ =?utf-8?B?N3ZJa3J6ckdBMzJVZlFDZkZqRDhKNXo0clZWWDJIZFVmNjBSc010dHZtL0hz?=
+ =?utf-8?B?cjd5NTRXYmpPbmdLaTMzcERGSTcvbklOanFiNWdLS1k3OXRpTy9rV0hNM3BR?=
+ =?utf-8?B?NitVRWlHRzlJdXZEemZTTXpmalNkSjlJU3gwYkVUZFJaNjFFMXZWQUpLVFpI?=
+ =?utf-8?B?RmRwR0c4ZzlzeUhTUVhjTVliWkxEbzZzbUFZYU5td2JBaXVnTnlyYkx6OG1I?=
+ =?utf-8?B?ZkFROFV1SjlhRkVjK21pbGI4Wk5FYitrSlZURGQwdVBkOTFZeG9mbkFVUktz?=
+ =?utf-8?B?czFWb0xqUDlCdTYzNWpscE56RXZpQVJBanE3L2RqVytYUTREY1pQQnQvQllv?=
+ =?utf-8?B?WmVIbHBMM2lZaDJ5RTZYTEVvbTNTeEN4bkFoRXk2MmhRS21mcGs4UmlXTHJH?=
+ =?utf-8?B?b1IyTmlFeG83Rmx0MThRL3lreGhzekljOTZFTmQ3b2JYRVVrZTl2WXRTNVRk?=
+ =?utf-8?B?ZjRWYWc1dEhMdWxHdzRYaitpcmRoK3p3dzZFb1dLano2VDIrR3lSYU1XVkM3?=
+ =?utf-8?B?YmhvME51NGUzM2NIYWRaRjhWODdNdVZhSWpFUWFPZ2lpU0FoeVZLUVRnakhX?=
+ =?utf-8?B?MFNSVUc1UFV0Wm1Kd1JZYmNIYU9MZ1YvVlcxSHM1QkJydGNkOVEvM1JKVFE5?=
+ =?utf-8?B?bm1GV2RKK2hEbkdRUkZ6WC9Xa2paL3BLbXY5WklGa3BYMk9yMW9LWkQ1dzBk?=
+ =?utf-8?B?S3VUUU5qMDI4bmhDK29pWFBRVk1obWpTTjRDRGhWajZnZ0ZtY09NNkpadHZY?=
+ =?utf-8?B?ZDBTdWM4ZFl0M2xWZkVVcGhYV3ozZmZxQVcvZkRRcEE1cTFldGtBdFJrUU52?=
+ =?utf-8?B?dlQ2NmhOVi8rUXVZNVdLN1FUd042SzE4N2gvd1FQRjVJOUtjRks3b0c0VDBP?=
+ =?utf-8?B?QzRubGRXTFpWZXkzWkdEYTlaSncxdXRHamRWOHBCQVpnQnBnNVZaVGVjT0Iw?=
+ =?utf-8?B?MkI4clpuV3kzN0d3V2I1VE9sZm1lSjQreU9WYnlUQnZkN1AzaUlUcndBVnJI?=
+ =?utf-8?B?OEVzcmFPT1N4WTlrWHRINHF0bGczYW00TWlMaWw4ODRNVEZsTllQVU5vQXBB?=
+ =?utf-8?B?M1dLQnlzQnplR2JMWGNwd3RocWNCZW5KVGY1dXlhSzB4Q21GaGg4Z2FyWGFI?=
+ =?utf-8?B?TGF5amhWeXdxV0JnbXhnai9hZDMvdGpjN2s0aVVLRjNxS2RlTS84RXVDUXFj?=
+ =?utf-8?B?TVJSV1VkV3paVDE2WWtGcWZWZS95K2xhVnl2ZU1Zd200UU0rT1g1N2xqOXdK?=
+ =?utf-8?B?dHRnc1hFVFF5RmZWVUdtTzBrcE1yTkRwT3RJTzJVKzZvTkRsVkVlMDRxMlVq?=
+ =?utf-8?B?dzVTc3dMOGxydExmQ1Z1MCtBRjhPU29mQTg5RVFnenFWczVXYVBBYXAyZVdR?=
+ =?utf-8?B?NHZlQjBSM0w5WTFveWpYWE5CM0FGSzlmVTkwbHBZYk1LY3NMNVNLUWppdlFY?=
+ =?utf-8?B?OFJnT2NYVWp1ZDhpT20wNWhiYi9MT245RjVqYzVtVjY4N1dBTysrejMzZlND?=
+ =?utf-8?B?d3BUQ3ZDR0VEb2J0aE9HS0hJczh2Uzl5bU9lKzR3RU0waXdibVVWaXJRZHlw?=
+ =?utf-8?B?ZTVMSFJIRERKWjVJcmVMOGovMnpzREVQYWRxT24wWHdwMFJoMlVMMGlueTJJ?=
+ =?utf-8?B?NzhKUjkwNDU4RXhLemRJUkUxaWhacUxyWWUzWWdFTFI4ZW5EUkhSandzcHJr?=
+ =?utf-8?B?bEtGTUoveUdjREMzZzV1ejdyNnBmTk5hZm5GbHViZDFzMkRWajdXcmRXS2JX?=
+ =?utf-8?B?REpZNlBOQXM0MzdoTGhkNmdnZGY5a05CMWsyWWJTbmNNOXhSQk9WNHk3bTA5?=
+ =?utf-8?B?REcwcWJuT0ZZMkx1QlVUQlVFQ1RFUDRGWmJiWUJIR0NCbmZIY2FEOFRIeVZk?=
+ =?utf-8?B?L3QyVEVVcjQvRSs3VGNjUkFJcE1KMzRmcC9UR2JRbEhQaE1vdEhvRWpaUnI4?=
+ =?utf-8?Q?FVLcgzHKxqQdaJ+9CFfkqL+ms?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 186c556f-dfd7-444f-f2a1-08dac3af5660
+X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Nov 2022 06:22:36.4810
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Nov 2022 06:38:26.6452
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PzwHSP8bHTjp0BSFZNcfnU14VY7geNXCsdnZdm4DoEWumVeLW6TaS9bxmb95rlIoiTsniDAMgo1P67arE/SfxA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR21MB1857
+X-MS-Exchange-CrossTenant-UserPrincipalName: Jw3NZ2FTx/2mLHAqJdTMYF+gLPzCQIBsNliBk/HfM30xLSKXJmWBQ4esh6sVDiAOk3E+Ply+1GgPCl2CgdotRg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR11MB5562
+X-OriginatorOrg: intel.com
 
-For PCI pass-thru devices in a Confidential VM, Hyper-V requires
-that PCI config space be accessed via hypercalls.  In normal VMs,
-config space accesses are trapped to the Hyper-V host and emulated.
-But in a confidential VM, the host can't access guest memory to
-decode the instruction for emulation, so an explicit hypercall must
-be used.
+On 2022/11/11 12:16, Yi Liu wrote:
+> 
+> 
+> On 2022/11/8 08:52, Jason Gunthorpe wrote:
+>> If the VFIO container is compiled out, give a kconfig option for iommufd
+>> to provide the miscdev node with the same name and permissions as vfio
+>> uses.
+>>
+>> The compatibility node supports the same ioctls as VFIO and automatically
+>> enables the VFIO compatible pinned page accounting mode.
+>>
+>> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+>> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+>> ---
+>>   drivers/iommu/iommufd/Kconfig | 12 ++++++++++++
+>>   drivers/iommu/iommufd/main.c  | 36 +++++++++++++++++++++++++++++++++++
+>>   2 files changed, 48 insertions(+)
+>>
+>> diff --git a/drivers/iommu/iommufd/Kconfig b/drivers/iommu/iommufd/Kconfig
+>> index 399a2edeaef6de..f387f803dc6f7f 100644
+>> --- a/drivers/iommu/iommufd/Kconfig
+>> +++ b/drivers/iommu/iommufd/Kconfig
+>> @@ -12,6 +12,18 @@ config IOMMUFD
+>>         If you don't know what to do here, say N.
+>>   if IOMMUFD
+>> +config IOMMUFD_VFIO_CONTAINER
+>> +    bool "IOMMUFD provides the VFIO container /dev/vfio/vfio"
+>> +    depends on VFIO && !VFIO_CONTAINER
+>> +    default VFIO && !VFIO_CONTAINER
+>> +    help
+>> +      IOMMUFD will provide /dev/vfio/vfio instead of VFIO. This relies on
+>> +      IOMMUFD providing compatibility emulation to give the same ioctls.
+>> +      It provides an option to build a kernel with legacy VFIO components
+>> +      removed.
+>> +
+>> +      Unless testing IOMMUFD say N here.
+>> +
+>>   config IOMMUFD_TEST
+>>       bool "IOMMU Userspace API Test support"
+>>       depends on RUNTIME_TESTING_MENU
+>> diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
+>> index ab3fa05f38505d..1eeb326f74f005 100644
+>> --- a/drivers/iommu/iommufd/main.c
+>> +++ b/drivers/iommu/iommufd/main.c
+>> @@ -18,6 +18,7 @@
+>>   #include <uapi/linux/iommufd.h>
+>>   #include <linux/iommufd.h>
+>> +#include "io_pagetable.h"
+>>   #include "iommufd_private.h"
+>>   #include "iommufd_test.h"
+>> @@ -25,6 +26,7 @@ struct iommufd_object_ops {
+>>       void (*destroy)(struct iommufd_object *obj);
+>>   };
+>>   static const struct iommufd_object_ops iommufd_object_ops[];
+>> +static struct miscdevice vfio_misc_dev;
+>>   struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
+>>                            size_t size,
+>> @@ -170,6 +172,16 @@ static int iommufd_fops_open(struct inode *inode, 
+>> struct file *filp)
+>>       if (!ictx)
+>>           return -ENOMEM;
+>> +    /*
+>> +     * For compatibility with VFIO when /dev/vfio/vfio is opened we default
+>> +     * to the same rlimit accounting as vfio uses.
+>> +     */
+>> +    if (IS_ENABLED(CONFIG_IOMMUFD_VFIO_CONTAINER) &&
+>> +        filp->private_data == &vfio_misc_dev) {
+>> +        ictx->account_mode = IOPT_PAGES_ACCOUNT_MM;
+>> +        pr_info_once("IOMMUFD is providing /dev/vfio/vfio, not VFIO.\n");
+>> +    }
+>> +
+>>       xa_init_flags(&ictx->objects, XA_FLAGS_ALLOC1 | XA_FLAGS_ACCOUNT);
+>>       ictx->file = filp;
+>>       filp->private_data = ictx;
+>> @@ -395,6 +407,15 @@ static struct miscdevice iommu_misc_dev = {
+>>       .mode = 0660,
+>>   };
+>> +
+>> +static struct miscdevice vfio_misc_dev = {
+>> +    .minor = VFIO_MINOR,
+>> +    .name = "vfio",
+>> +    .fops = &iommufd_fops,
+>> +    .nodename = "vfio/vfio",
+>> +    .mode = 0666,
+>> +};
+>> +
+>>   static int __init iommufd_init(void)
+>>   {
+>>       int ret;
+>> @@ -402,18 +423,33 @@ static int __init iommufd_init(void)
+>>       ret = misc_register(&iommu_misc_dev);
+>>       if (ret)
+>>           return ret;
+>> +
+>> +    if (IS_ENABLED(CONFIG_IOMMUFD_VFIO_CONTAINER)) {
+>> +        ret = misc_register(&vfio_misc_dev);
+>> +        if (ret)
+>> +            goto err_misc;
+>> +    }
+>>       iommufd_test_init();
+>>       return 0;
+>> +err_misc:
+>> +    misc_deregister(&iommu_misc_dev);
+>> +    return ret;
+>>   }
+>>   static void __exit iommufd_exit(void)
+>>   {
+>>       iommufd_test_exit();
+>> +    if (IS_ENABLED(CONFIG_IOMMUFD_VFIO_CONTAINER))
+>> +        misc_deregister(&vfio_misc_dev);
+>>       misc_deregister(&iommu_misc_dev);
+>>   }
+>>   module_init(iommufd_init);
+>>   module_exit(iommufd_exit);
+>> +#if IS_ENABLED(CONFIG_IOMMUFD_VFIO_CONTAINER)
+>> +MODULE_ALIAS_MISCDEV(VFIO_MINOR);
+>> +MODULE_ALIAS("devname:vfio/vfio");
+> 
+> will this line also result in systemd to create this devnodes at boot
+> based on the module info even if the IOMMUFD_VFIO_CONTAINER is not
+> configured?
 
-Update the PCI config space access functions to use the hypercalls
-when such use is indicated by Hyper-V flags.  Also, set the flag to
-allow the Hyper-V PCI driver to be loaded and used in a Confidential
-VM (a.k.a., "Isolation VM").  The driver has previously been hardened
-against a malicious Hyper-V host[1].
+stale comment. it's already under if IS_ENABLED(CONFIG_IOMMUFD_VFIO_CONTAINER).
 
-[1] https://lore.kernel.org/all/20220511223207.3386-2-parri.andrea@gmail.com/
+looks good to me.
 
-Co-developed-by: Dexuan Cui <decui@microsoft.com>
-Signed-off-by: Dexuan Cui <decui@microsoft.com>
-Signed-off-by: Michael Kelley <mikelley@microsoft.com>
-Reviewed-by: Boqun Feng <boqun.feng@gmail.com>
----
- drivers/hv/channel_mgmt.c           |   2 +-
- drivers/pci/controller/pci-hyperv.c | 168 ++++++++++++++++++++++--------------
- 2 files changed, 105 insertions(+), 65 deletions(-)
+Reviewed-by: Yi Liu <yi.l.liu@intel.com>
 
-diff --git a/drivers/hv/channel_mgmt.c b/drivers/hv/channel_mgmt.c
-index 5b12040..c0f9ac2 100644
---- a/drivers/hv/channel_mgmt.c
-+++ b/drivers/hv/channel_mgmt.c
-@@ -67,7 +67,7 @@
- 	{ .dev_type = HV_PCIE,
- 	  HV_PCIE_GUID,
- 	  .perf_device = false,
--	  .allowed_in_isolated = false,
-+	  .allowed_in_isolated = true,
- 	},
- 
- 	/* Synthetic Frame Buffer */
-diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
-index 09b40a1..6ce83e4 100644
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -514,6 +514,7 @@ struct hv_pcibus_device {
- 
- 	/* Highest slot of child device with resources allocated */
- 	int wslot_res_allocated;
-+	bool use_calls; /* Use hypercalls to access mmio cfg space */
- 
- 	/* hypercall arg, must not cross page boundary */
- 	struct hv_retarget_device_interrupt retarget_msi_interrupt_params;
-@@ -1136,8 +1137,10 @@ static void hv_pci_write_mmio(struct device *dev, phys_addr_t gpa, int size, u32
- static void _hv_pcifront_read_config(struct hv_pci_dev *hpdev, int where,
- 				     int size, u32 *val)
- {
-+	struct hv_pcibus_device *hbus = hpdev->hbus;
-+	struct device *dev = &hbus->hdev->device;
-+	int offset = where + CFG_PAGE_OFFSET;
- 	unsigned long flags;
--	void __iomem *addr = hpdev->hbus->cfg_addr + CFG_PAGE_OFFSET + where;
- 
- 	/*
- 	 * If the attempt is to read the IDs or the ROM BAR, simulate that.
-@@ -1165,56 +1168,79 @@ static void _hv_pcifront_read_config(struct hv_pci_dev *hpdev, int where,
- 		 */
- 		*val = 0;
- 	} else if (where + size <= CFG_PAGE_SIZE) {
--		spin_lock_irqsave(&hpdev->hbus->config_lock, flags);
--		/* Choose the function to be read. (See comment above) */
--		writel(hpdev->desc.win_slot.slot, hpdev->hbus->cfg_addr);
--		/* Make sure the function was chosen before we start reading. */
--		mb();
--		/* Read from that function's config space. */
--		switch (size) {
--		case 1:
--			*val = readb(addr);
--			break;
--		case 2:
--			*val = readw(addr);
--			break;
--		default:
--			*val = readl(addr);
--			break;
-+
-+		spin_lock_irqsave(&hbus->config_lock, flags);
-+		if (hbus->use_calls) {
-+			phys_addr_t addr = hbus->mem_config->start + offset;
-+
-+			hv_pci_write_mmio(dev, hbus->mem_config->start, 4,
-+						hpdev->desc.win_slot.slot);
-+			hv_pci_read_mmio(dev, addr, size, val);
-+		} else {
-+			void __iomem *addr = hbus->cfg_addr + offset;
-+
-+			/* Choose the function to be read. (See comment above) */
-+			writel(hpdev->desc.win_slot.slot, hbus->cfg_addr);
-+			/* Make sure the function was chosen before reading. */
-+			mb();
-+			/* Read from that function's config space. */
-+			switch (size) {
-+			case 1:
-+				*val = readb(addr);
-+				break;
-+			case 2:
-+				*val = readw(addr);
-+				break;
-+			default:
-+				*val = readl(addr);
-+				break;
-+			}
-+			/*
-+			 * Make sure the read was done before we release the
-+			 * spinlock allowing consecutive reads/writes.
-+			 */
-+			mb();
- 		}
--		/*
--		 * Make sure the read was done before we release the spinlock
--		 * allowing consecutive reads/writes.
--		 */
--		mb();
--		spin_unlock_irqrestore(&hpdev->hbus->config_lock, flags);
-+		spin_unlock_irqrestore(&hbus->config_lock, flags);
- 	} else {
--		dev_err(&hpdev->hbus->hdev->device,
--			"Attempt to read beyond a function's config space.\n");
-+		dev_err(dev, "Attempt to read beyond a function's config space.\n");
- 	}
- }
- 
- static u16 hv_pcifront_get_vendor_id(struct hv_pci_dev *hpdev)
- {
-+	struct hv_pcibus_device *hbus = hpdev->hbus;
-+	struct device *dev = &hbus->hdev->device;
-+	u32 val;
- 	u16 ret;
- 	unsigned long flags;
--	void __iomem *addr = hpdev->hbus->cfg_addr + CFG_PAGE_OFFSET +
--			     PCI_VENDOR_ID;
- 
--	spin_lock_irqsave(&hpdev->hbus->config_lock, flags);
-+	spin_lock_irqsave(&hbus->config_lock, flags);
- 
--	/* Choose the function to be read. (See comment above) */
--	writel(hpdev->desc.win_slot.slot, hpdev->hbus->cfg_addr);
--	/* Make sure the function was chosen before we start reading. */
--	mb();
--	/* Read from that function's config space. */
--	ret = readw(addr);
--	/*
--	 * mb() is not required here, because the spin_unlock_irqrestore()
--	 * is a barrier.
--	 */
-+	if (hbus->use_calls) {
-+		phys_addr_t addr = hbus->mem_config->start +
-+					 CFG_PAGE_OFFSET + PCI_VENDOR_ID;
-+
-+		hv_pci_write_mmio(dev, hbus->mem_config->start, 4,
-+					hpdev->desc.win_slot.slot);
-+		hv_pci_read_mmio(dev, addr, 2, &val);
-+		ret = val;  /* Truncates to 16 bits */
-+	} else {
-+		void __iomem *addr = hbus->cfg_addr + CFG_PAGE_OFFSET +
-+					     PCI_VENDOR_ID;
-+		/* Choose the function to be read. (See comment above) */
-+		writel(hpdev->desc.win_slot.slot, hbus->cfg_addr);
-+		/* Make sure the function was chosen before we start reading. */
-+		mb();
-+		/* Read from that function's config space. */
-+		ret = readw(addr);
-+		/*
-+		 * mb() is not required here, because the
-+		 * spin_unlock_irqrestore() is a barrier.
-+		 */
-+	}
- 
--	spin_unlock_irqrestore(&hpdev->hbus->config_lock, flags);
-+	spin_unlock_irqrestore(&hbus->config_lock, flags);
- 
- 	return ret;
- }
-@@ -1229,39 +1255,51 @@ static u16 hv_pcifront_get_vendor_id(struct hv_pci_dev *hpdev)
- static void _hv_pcifront_write_config(struct hv_pci_dev *hpdev, int where,
- 				      int size, u32 val)
- {
-+	struct hv_pcibus_device *hbus = hpdev->hbus;
-+	struct device *dev = &hbus->hdev->device;
-+	int offset = where + CFG_PAGE_OFFSET;
- 	unsigned long flags;
--	void __iomem *addr = hpdev->hbus->cfg_addr + CFG_PAGE_OFFSET + where;
- 
- 	if (where >= PCI_SUBSYSTEM_VENDOR_ID &&
- 	    where + size <= PCI_CAPABILITY_LIST) {
- 		/* SSIDs and ROM BARs are read-only */
- 	} else if (where >= PCI_COMMAND && where + size <= CFG_PAGE_SIZE) {
--		spin_lock_irqsave(&hpdev->hbus->config_lock, flags);
--		/* Choose the function to be written. (See comment above) */
--		writel(hpdev->desc.win_slot.slot, hpdev->hbus->cfg_addr);
--		/* Make sure the function was chosen before we start writing. */
--		wmb();
--		/* Write to that function's config space. */
--		switch (size) {
--		case 1:
--			writeb(val, addr);
--			break;
--		case 2:
--			writew(val, addr);
--			break;
--		default:
--			writel(val, addr);
--			break;
-+		spin_lock_irqsave(&hbus->config_lock, flags);
-+
-+		if (hbus->use_calls) {
-+			phys_addr_t addr = hbus->mem_config->start + offset;
-+
-+			hv_pci_write_mmio(dev, hbus->mem_config->start, 4,
-+						hpdev->desc.win_slot.slot);
-+			hv_pci_write_mmio(dev, addr, size, val);
-+		} else {
-+			void __iomem *addr = hbus->cfg_addr + offset;
-+
-+			/* Choose the function to write. (See comment above) */
-+			writel(hpdev->desc.win_slot.slot, hbus->cfg_addr);
-+			/* Make sure the function was chosen before writing. */
-+			wmb();
-+			/* Write to that function's config space. */
-+			switch (size) {
-+			case 1:
-+				writeb(val, addr);
-+				break;
-+			case 2:
-+				writew(val, addr);
-+				break;
-+			default:
-+				writel(val, addr);
-+				break;
-+			}
-+			/*
-+			 * Make sure the write was done before we release the
-+			 * spinlock allowing consecutive reads/writes.
-+			 */
-+			mb();
- 		}
--		/*
--		 * Make sure the write was done before we release the spinlock
--		 * allowing consecutive reads/writes.
--		 */
--		mb();
--		spin_unlock_irqrestore(&hpdev->hbus->config_lock, flags);
-+		spin_unlock_irqrestore(&hbus->config_lock, flags);
- 	} else {
--		dev_err(&hpdev->hbus->hdev->device,
--			"Attempt to write beyond a function's config space.\n");
-+		dev_err(dev, "Attempt to write beyond a function's config space.\n");
- 	}
- }
- 
-@@ -3580,6 +3618,7 @@ static int hv_pci_probe(struct hv_device *hdev,
- 	hbus->bridge->domain_nr = dom;
- #ifdef CONFIG_X86
- 	hbus->sysdata.domain = dom;
-+	hbus->use_calls = !!(ms_hyperv.hints & HV_X64_USE_MMIO_HYPERCALLS);
- #elif defined(CONFIG_ARM64)
- 	/*
- 	 * Set the PCI bus parent to be the corresponding VMbus
-@@ -3589,6 +3628,7 @@ static int hv_pci_probe(struct hv_device *hdev,
- 	 * information to devices created on the bus.
- 	 */
- 	hbus->sysdata.parent = hdev->device.parent;
-+	hbus->use_calls = false;
- #endif
- 
- 	hbus->hdev = hdev;
+>> +#endif
+>>   MODULE_DESCRIPTION("I/O Address Space Management for passthrough 
+>> devices");
+>>   MODULE_LICENSE("GPL");
+> 
+
 -- 
-1.8.3.1
-
+Regards,
+Yi Liu
