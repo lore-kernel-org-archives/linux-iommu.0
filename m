@@ -1,44 +1,54 @@
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 755672F2B
-	for <iommu@lists.linux.dev>; Fri, 11 Nov 2022 16:32:34 +0000 (UTC)
-Received: by mail-wr1-f48.google.com with SMTP id h9so7180827wrt.0
-        for <iommu@lists.linux.dev>; Fri, 11 Nov 2022 08:32:34 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22E852F2B
+	for <iommu@lists.linux.dev>; Fri, 11 Nov 2022 16:44:57 +0000 (UTC)
+Received: by mail-wm1-f43.google.com with SMTP id o30so3243161wms.2
+        for <iommu@lists.linux.dev>; Fri, 11 Nov 2022 08:44:56 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=15l/tjkn1n+H5TD0Hk47oWikjwMgVaOYjZFSi1PWwnU=;
-        b=UpIiIlgLyGu9n4OAGdeJeyb5r7ol8GD4f1U4jwIbGsZ0ywz7bY1kPkfoeDyhxVC0zC
-         yvcFBqdOKgDqTEq+qoMFkzgAVKI7ORUvejrTkdjOLbv5wIjYaU71Xn6rjQsbBkr+bT4H
-         ZblTbYUADaAhzddJg6hTvLYdvUn0tMZcqxhLDYY4DjRAa4CwsZbwGIh9kvnnF3ytxkuN
-         8RUjJegbDPH71U/kVLps8tm4JlrmdR6xBx/+zmr1FaFO6MXRl2OxExXdW9tkanjPiV0Z
-         imfOpsylJSPN8YtqhMdKUlXHirk5WbqHXlMmErRXpjc9pTdXuiYcH0+goAenl/amTr2/
-         EKwA==
-X-Gm-Message-State: ANoB5pkFoP3KKQZ68wKXGTo8RY0lrTR6aHjUoRpm79qbxEL3cRIgCb1z
-	aHE/FWAj1pvzkYG3d8UnXYM=
-X-Google-Smtp-Source: AA0mqf526Ay2inaUCYCd70/sGA5iFRHIL1qrPSOWcu2g8ZiAtJ7gmz6MCmuXM6IQ106v6azLuQ7QVw==
-X-Received: by 2002:adf:f0cd:0:b0:22e:344a:ec5e with SMTP id x13-20020adff0cd000000b0022e344aec5emr1830279wro.673.1668184352674;
-        Fri, 11 Nov 2022 08:32:32 -0800 (PST)
+        bh=UXPe6WX8jBjWxRwy3pL5D2Wep2saGki4oUGtlWeziig=;
+        b=z7rnU8PHpAUcZeJff9swLBq9CyhHioh+Jd+XiHGWLy5MMVX6f3LhnmyILrBdUkmz9a
+         Av43s/bKY7YO8AWPWkDWIq1MFay5Nn3qlGO07RB6WCV6FzwDM9mqR2TbqksPq8gDUxs7
+         W9VlPuoCXPGLcn1CQbXoooiutBvRA44lhVmAeWRApKUeShSvNYc8/s2UFuI7IOAdGOt/
+         iuvabu81XyGIosG4jMMYjXaT1IrQeBWl+zU310avL25tn9zTwCQhFofOZhB5u9qnKDvG
+         oYDIPHahNUYUUSagugPhikl+3yyjDgrCVvR/U+6g+LdC7kvpfCiC4TNC7KhT7MEJGorn
+         5xOw==
+X-Gm-Message-State: ANoB5plp26SGe8obYaSGBPKFdJTYxTWfHrj6Npk6CExtYbVVXpVSBIra
+	Aj0b1VCZ5Lfn/MZpikprAxM=
+X-Google-Smtp-Source: AA0mqf5Sn0xQORHJpQN6R8VYO4G2A2ivXDMnYvQDhL1ytehzwGpbrmIn369cEycyw74wQAil/XuM7w==
+X-Received: by 2002:a05:600c:2195:b0:3cf:6c2f:950c with SMTP id e21-20020a05600c219500b003cf6c2f950cmr1893974wme.146.1668185095259;
+        Fri, 11 Nov 2022 08:44:55 -0800 (PST)
 Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id bp11-20020a5d5a8b000000b002366eb01e07sm2256397wrb.114.2022.11.11.08.32.31
+        by smtp.gmail.com with ESMTPSA id c2-20020a5d4cc2000000b0023655e51c14sm2282939wrt.32.2022.11.11.08.44.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Nov 2022 08:32:32 -0800 (PST)
-Date: Fri, 11 Nov 2022 16:32:30 +0000
+        Fri, 11 Nov 2022 08:44:54 -0800 (PST)
+Date: Fri, 11 Nov 2022 16:44:52 +0000
 From: Wei Liu <wei.liu@kernel.org>
-To: Nuno Das Neves <nunodasneves@linux.microsoft.com>,
-	tianyu.lan@microsoft.com
-Cc: linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, mikelley@microsoft.com,
-	sunilmut@microsoft.com, wei.liu@kernel.org, kys@microsoft.com,
-	Tianyu.Lan@microsoft.com, haiyangz@microsoft.com,
-	decui@microsoft.com, dwmw2@infradead.org, joro@8bytes.org,
-	will@kernel.org
-Subject: Re: [PATCH] iommu/hyper-v: Allow hyperv irq remapping without x2apic
-Message-ID: <Y255HhDbwbI/z5bJ@liuwe-devbox-debian-v2>
-References: <1668020853-23950-1-git-send-email-nunodasneves@linux.microsoft.com>
+To: Michael Kelley <mikelley@microsoft.com>
+Cc: hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
+	wei.liu@kernel.org, decui@microsoft.com, luto@kernel.org,
+	peterz@infradead.org, davem@davemloft.net, edumazet@google.com,
+	kuba@kernel.org, pabeni@redhat.com, lpieralisi@kernel.org,
+	robh@kernel.org, kw@linux.com, bhelgaas@google.com, arnd@arndb.de,
+	hch@infradead.org, m.szyprowski@samsung.com, robin.murphy@arm.com,
+	thomas.lendacky@amd.com, brijesh.singh@amd.com, tglx@linutronix.de,
+	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+	Tianyu.Lan@microsoft.com, kirill.shutemov@linux.intel.com,
+	sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
+	isaku.yamahata@intel.com, dan.j.williams@intel.com,
+	jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com,
+	x86@kernel.org, linux-kernel@vger.kernel.org,
+	linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: Re: [PATCH v2 00/12] Drivers: hv: Add PCI pass-thru support to
+ Hyper-V Confidential VMs
+Message-ID: <Y258BO8ohVtVZvSH@liuwe-devbox-debian-v2>
+References: <1668147701-4583-1-git-send-email-mikelley@microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -47,83 +57,24 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1668020853-23950-1-git-send-email-nunodasneves@linux.microsoft.com>
+In-Reply-To: <1668147701-4583-1-git-send-email-mikelley@microsoft.com>
 
-Hi Tianyu
-
-On Wed, Nov 09, 2022 at 11:07:33AM -0800, Nuno Das Neves wrote:
-> If x2apic is not available, hyperv-iommu skips remapping
-> irqs. This breaks root partition which always needs irqs
-> remapped.
+On Thu, Nov 10, 2022 at 10:21:29PM -0800, Michael Kelley wrote:
+[...]
+> Patch Organization
+> ==================
+> Patch 1 fixes a bug in __ioremap_caller() that affects the
+> existing Hyper-V code after the change to treat the vTOM bit as
+> a protection flag. Fixing the bug allows the old code to continue
+> to run until later patches in the series remove or update it.
+> This sequencing avoids the need to enable the new approach and
+> remove the old code in a single large patch.
 > 
-> Fix this by allowing irq remapping regardless of x2apic,
-> and change hyperv_enable_irq_remapping() to return
-> IRQ_REMAP_XAPIC_MODE in case x2apic is missing.
-> 
+> Patch 2 handles the I/O APIC quirk by defining a new CC_ATTR enum
+> member that is set only when running on Hyper-V.
 
-Do you remember why it was x2apic only?
-
-We tested this patch on different VM SKUs and it worked fine. I'm just
-wondering if there would be some subtle breakages that we couldn't
-easily test.
+I'm waiting for x86 maintainers acks on these two patches before merging
+this series.
 
 Thanks,
 Wei.
-
-> Tested with root and non-root hyperv partitions.
-> 
-> Signed-off-by: Nuno Das Neves <nunodasneves@linux.microsoft.com>
-> ---
->  drivers/iommu/Kconfig        | 6 +++---
->  drivers/iommu/hyperv-iommu.c | 7 ++++---
->  2 files changed, 7 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index dc5f7a156ff5..cf7433652db0 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -474,13 +474,13 @@ config QCOM_IOMMU
->  	  Support for IOMMU on certain Qualcomm SoCs.
->  
->  config HYPERV_IOMMU
-> -	bool "Hyper-V x2APIC IRQ Handling"
-> +	bool "Hyper-V IRQ Handling"
->  	depends on HYPERV && X86
->  	select IOMMU_API
->  	default HYPERV
->  	help
-> -	  Stub IOMMU driver to handle IRQs as to allow Hyper-V Linux
-> -	  guests to run with x2APIC mode enabled.
-> +	  Stub IOMMU driver to handle IRQs to support Hyper-V Linux
-> +	  guest and root partitions.
->  
->  config VIRTIO_IOMMU
->  	tristate "Virtio IOMMU driver"
-> diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
-> index e190bb8c225c..abd1826a9e63 100644
-> --- a/drivers/iommu/hyperv-iommu.c
-> +++ b/drivers/iommu/hyperv-iommu.c
-> @@ -123,8 +123,7 @@ static int __init hyperv_prepare_irq_remapping(void)
->  	const struct irq_domain_ops *ops;
->  
->  	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV) ||
-> -	    x86_init.hyper.msi_ext_dest_id() ||
-> -	    !x2apic_supported())
-> +	    x86_init.hyper.msi_ext_dest_id())
->  		return -ENODEV;
->  
->  	if (hv_root_partition) {
-> @@ -170,7 +169,9 @@ static int __init hyperv_prepare_irq_remapping(void)
->  
->  static int __init hyperv_enable_irq_remapping(void)
->  {
-> -	return IRQ_REMAP_X2APIC_MODE;
-> +	if (x2apic_supported())
-> +		return IRQ_REMAP_X2APIC_MODE;
-> +	return IRQ_REMAP_XAPIC_MODE;
->  }
->  
->  struct irq_remap_ops hyperv_irq_remap_ops = {
-> -- 
-> 2.25.1
-> 
