@@ -1,221 +1,133 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4114B370
-	for <iommu@lists.linux.dev>; Fri, 11 Nov 2022 02:31:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668133904; x=1699669904;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=N5U+kP9iSraKnp39MIZMLu8/kWQemWH4AMZrs2ghRNg=;
-  b=N5bnBzJTY40cTtQScVAE9nq0O/zgig5WMGYAc0yM5tZLDLb/GM+a1BlP
-   rb1Ux5Nwy8102BgNGWpmDKI7SP4c1ZnNWmFl8UB2DYq21R4iAGo4WTqT/
-   uVTOTIHcHo3nXC7f9BYsBgdOtfvI6Se+UUz3jlvPyfekQIBVKugVcOU0A
-   ah15sFCmpofevmmIB6getEjFag6g73soNsrl9/aNp2KiNrA5AbAQdA8N9
-   6XXxXCNeOOnSPXX0HJH8u8wFzUsuQPepU3t8YY7g5srIRk/XGSgIQoOkd
-   Jjs10uYRZTKP18lzNzXyO1F1axvmlhqVeoqKK+fCEd4ChgweC0cop3BBE
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10527"; a="338269776"
-X-IronPort-AV: E=Sophos;i="5.96,155,1665471600"; 
-   d="scan'208";a="338269776"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2022 18:31:32 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10527"; a="966662498"
-X-IronPort-AV: E=Sophos;i="5.96,155,1665471600"; 
-   d="scan'208";a="966662498"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.212.57]) ([10.254.212.57])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2022 18:31:28 -0800
-Message-ID: <e03aaca5-b62d-451c-85e0-53c28e8eea82@linux.intel.com>
-Date: Fri, 11 Nov 2022 10:31:26 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B651462A
+	for <iommu@lists.linux.dev>; Fri, 11 Nov 2022 03:01:54 +0000 (UTC)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2AB2g8qS006091;
+	Fri, 11 Nov 2022 03:01:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=00TlcYUA8IwStTfXDoL3E2DxuQ2WZQRuZzKUP07vGNo=;
+ b=Q4T42teEFhWY4+CvWtkyh4GJKfmrYAUM9/0H1D6q0GKmkbrSwNpcZzUmrECi6mvPh4XO
+ uzTFc5T2f1fsw8vEBYTZ5ntL82EarPMYNi2flne2Ib1unFb7snOP58ju0XSxBUD34TmX
+ 13wXg7guBbYQL/ugCp/E7SdZtwH0BUXHm+Z7ofWfexAQOdo5Q/d5gk1YGy68Odc4MecG
+ s50zbglmG6NHXz1Kh4qK/VmR35m20HfVWt/dV2rNLbo2ZYygDm0cP0i3Ku3OjUEIgJr0
+ FeRYqwJF58fb9+WecXajXcSScuXoqXvIAAkXI0Q79nouUQO/X3Vb2mnM2Q2XY25E9gu/ LQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ksdu7rbn0-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 11 Nov 2022 03:01:21 +0000
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2AB2i0tJ016049;
+	Fri, 11 Nov 2022 03:01:21 GMT
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3ksdu7rbmc-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 11 Nov 2022 03:01:21 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+	by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2AB2pAm0019707;
+	Fri, 11 Nov 2022 03:01:19 GMT
+Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
+	by ppma02dal.us.ibm.com with ESMTP id 3kngne22qw-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 11 Nov 2022 03:01:19 +0000
+Received: from smtpav03.dal12v.mail.ibm.com ([9.208.128.129])
+	by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2AB31Fle52101886
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 11 Nov 2022 03:01:15 GMT
+Received: from smtpav03.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id ABC3D5806E;
+	Fri, 11 Nov 2022 03:01:17 +0000 (GMT)
+Received: from smtpav03.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id E6D9458064;
+	Fri, 11 Nov 2022 03:01:14 +0000 (GMT)
+Received: from [9.160.191.98] (unknown [9.160.191.98])
+	by smtpav03.dal12v.mail.ibm.com (Postfix) with ESMTP;
+	Fri, 11 Nov 2022 03:01:14 +0000 (GMT)
+Message-ID: <f54c2a93-539f-4520-0561-fbe5cea7772f@linux.ibm.com>
+Date: Thu, 10 Nov 2022 22:01:13 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Cc: baolu.lu@linux.intel.com,
- Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
- harshit.m.mogalapalli@gmail.com, David Woodhouse <dwmw2@infradead.org>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, Darren Kenny <darren.kenny@oracle.com>
-Subject: Re: [RFC] iommu/vt-d: set default value of INTEL_IOMMU_FLOPPY_WA to n
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-References: <20221108125855.2984751-1-harshit.m.mogalapalli@oracle.com>
- <dc463b3e-2875-8aac-aca1-edacb90e5650@linux.intel.com>
- <76cbad17-ab5e-3dd9-cf94-df2b26748167@oracle.com>
- <3a7f5cdf-640b-f9d4-a25e-8be845abd7ba@linux.intel.com>
- <Y2wK6kWHE1iah/IG@char.us.oracle.com>
- <0f1ad424-18b0-c27f-dbf6-745801182bd2@linux.intel.com>
- <Y21mitQsO2RG652t@char.us.oracle.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH v2 00/11] Connect VFIO to IOMMUFD
 Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Y21mitQsO2RG652t@char.us.oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+To: Jason Gunthorpe <jgg@nvidia.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        David Airlie
+ <airlied@gmail.com>,
+        Tony Krowiak <akrowiak@linux.ibm.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Cornelia Huck <cohuck@redhat.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Diana Craciun <diana.craciun@oss.nxp.com>,
+        dri-devel@lists.freedesktop.org, Eric Auger <eric.auger@redhat.com>,
+        Eric Farman <farman@linux.ibm.com>,
+        Harald Freudenberger <freude@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>,
+        intel-gfx@lists.freedesktop.org, intel-gvt-dev@lists.freedesktop.org,
+        iommu@lists.linux.dev, Jani Nikula <jani.nikula@linux.intel.com>,
+        Jason Herne <jjherne@linux.ibm.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+        kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        Longfang Liu <liulongfang@huawei.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Halil Pasic <pasic@linux.ibm.com>, Robin Murphy <robin.murphy@arm.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>, Will Deacon <will@kernel.org>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>, Zhi Wang <zhi.a.wang@intel.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Nicolin Chen <nicolinc@nvidia.com>,
+        "Liu, Yi L" <yi.l.liu@intel.com>
+References: <0-v2-65016290f146+33e-vfio_iommufd_jgg@nvidia.com>
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <0-v2-65016290f146+33e-vfio_iommufd_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: YxgRt1vdsvEvvbqfh55g1ZCYoW5D9RzD
+X-Proofpoint-GUID: IC9-lYTkfXZkVJXpdPA5tora7izdjnW6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-10_14,2022-11-09_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ lowpriorityscore=0 spamscore=0 impostorscore=0 suspectscore=0 adultscore=0
+ phishscore=0 priorityscore=1501 clxscore=1011 mlxlogscore=738 mlxscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2210170000 definitions=main-2211110019
 
-On 2022/11/11 5:00, Konrad Rzeszutek Wilk wrote:
-> On Thu, Nov 10, 2022 at 02:39:53PM +0800, Baolu Lu wrote:
->> On 2022/11/10 4:17, Konrad Rzeszutek Wilk wrote:
->>> On Wed, Nov 09, 2022 at 09:16:53PM +0800, Baolu Lu wrote:
->>>> On 2022/11/9 20:16, Harshit Mogalapalli wrote:
->>>>>
->>>>>
->>>>> On 09/11/22 12:35 pm, Baolu Lu wrote:
->>>>>> On 2022/11/8 20:58, Harshit Mogalapalli wrote:
->>>>>>> It is likely that modern intel motherboard will not ship with a
->>>>>>> floppy connection anymore, so let us disable it by default, as it
->>>>>>> gets turned on when we do a make defconfig.
->>>>>>>
->>>>>>> Suggested-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
->>>>>>> Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
->>>>>>> ---
->>>>>>>     drivers/iommu/intel/Kconfig | 2 +-
->>>>>>>     1 file changed, 1 insertion(+), 1 deletion(-)
->>>>>>>
->>>>>>> diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
->>>>>>> index b7dff5092fd2..c783ae85ca9b 100644
->>>>>>> --- a/drivers/iommu/intel/Kconfig
->>>>>>> +++ b/drivers/iommu/intel/Kconfig
->>>>>>> @@ -76,7 +76,7 @@ config INTEL_IOMMU_BROKEN_GFX_WA
->>>>>>>           option is removed in the 2.6.32 kernel.
->>>>>>>     config INTEL_IOMMU_FLOPPY_WA
->>>>>>> -    def_bool y
->>>>>>> +    def_bool n
->>>>>>>         depends on X86
->>>>>>>         help
->>>>>>>           Floppy disk drivers are known to bypass DMA API calls
->>>>>>
->>>>>> Nobody selects or depends on this. How about removing this bool? Only
->>>>>> less than 10 lines of code are impacted and are not in any performance
->>>>>> path.
->>>>>>
->>>>>> diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
->>>>>> index b7dff5092fd2..5e077d1c5f5d 100644
->>>>>> --- a/drivers/iommu/intel/Kconfig
->>>>>> +++ b/drivers/iommu/intel/Kconfig
->>>>>> @@ -75,15 +75,6 @@ config INTEL_IOMMU_BROKEN_GFX_WA
->>>>>>           to use physical addresses for DMA, at least until this
->>>>>>           option is removed in the 2.6.32 kernel.
->>>>>>
->>>>>> -config INTEL_IOMMU_FLOPPY_WA
->>>>>> -    def_bool y
->>>>>> -    depends on X86
->>>>>> -    help
->>>>>> -      Floppy disk drivers are known to bypass DMA API calls
->>>>>> -      thereby failing to work when IOMMU is enabled. This
->>>>>> -      workaround will setup a 1:1 mapping for the first
->>>>>> -      16MiB to make floppy (an ISA device) work.
->>>>>> -
->>>>>>     config INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON
->>>>>>         bool "Enable Intel IOMMU scalable mode by default"
->>>>>>         default y
->>>>>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->>>>>> index 48cdcd0a5cf3..22801850f339 100644
->>>>>> --- a/drivers/iommu/intel/iommu.c
->>>>>> +++ b/drivers/iommu/intel/iommu.c
->>>>>> @@ -4567,7 +4567,6 @@ static void
->>>>>> intel_iommu_get_resv_regions(struct device *device,
->>>>>>         }
->>>>>>         rcu_read_unlock();
->>>>>>
->>>>>> -#ifdef CONFIG_INTEL_IOMMU_FLOPPY_WA
->>>>>>         if (dev_is_pci(device)) {
->>>>>>             struct pci_dev *pdev = to_pci_dev(device);
->>>>>>
->>>>>> @@ -4579,7 +4578,6 @@ static void
->>>>>> intel_iommu_get_resv_regions(struct device *device,
->>>>>>                     list_add_tail(&reg->list, head);
->>>>>>             }
->>>>>>         }
->>>>>> -#endif /* CONFIG_INTEL_IOMMU_FLOPPY_WA */
->>>>>>
->>>>>>         reg = iommu_alloc_resv_region(IOAPIC_RANGE_START,
->>>>>>                           IOAPIC_RANGE_END - IOAPIC_RANGE_START + 1,
->>>>>>
->>>>>
->>>>> Hi Baolu,
->>>>>
->>>>> I have a question:
->>>>> Shouldn't we remove the code between ifdef-endif statements?
->>>>>
->>>>> I mean something like this:
->>>>>
->>>>> diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
->>>>> index b7dff5092fd2..5e077d1c5f5d 100644
->>>>> --- a/drivers/iommu/intel/Kconfig
->>>>> +++ b/drivers/iommu/intel/Kconfig
->>>>> @@ -75,15 +75,6 @@ config INTEL_IOMMU_BROKEN_GFX_WA
->>>>>              to use physical addresses for DMA, at least until this
->>>>>              option is removed in the 2.6.32 kernel.
->>>>>
->>>>> -config INTEL_IOMMU_FLOPPY_WA
->>>>> -       def_bool y
->>>>> -       depends on X86
->>>>> -       help
->>>>> -         Floppy disk drivers are known to bypass DMA API calls
->>>>> -         thereby failing to work when IOMMU is enabled. This
->>>>> -         workaround will setup a 1:1 mapping for the first
->>>>> -         16MiB to make floppy (an ISA device) work.
->>>>> -
->>>>>     config INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON
->>>>>            bool "Enable Intel IOMMU scalable mode by default"
->>>>>            default y
->>>>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->>>>> index 48cdcd0a5cf3..2c416ad3204e 100644
->>>>> --- a/drivers/iommu/intel/iommu.c
->>>>> +++ b/drivers/iommu/intel/iommu.c
->>>>> @@ -4567,20 +4567,6 @@ static void intel_iommu_get_resv_regions(struct
->>>>> device *device,
->>>>>            }
->>>>>            rcu_read_unlock();
->>>>>
->>>>> -#ifdef CONFIG_INTEL_IOMMU_FLOPPY_WA
->>>>> -       if (dev_is_pci(device)) {
->>>>> -               struct pci_dev *pdev = to_pci_dev(device);
->>>>> -
->>>>> -               if ((pdev->class >> 8) == PCI_CLASS_BRIDGE_ISA) {
->>>>> -                       reg = iommu_alloc_resv_region(0, 1UL << 24, prot,
->>>>> -                                       IOMMU_RESV_DIRECT_RELAXABLE,
->>>>> -                                       GFP_KERNEL);
->>>>> -                       if (reg)
->>>>> -                               list_add_tail(&reg->list, head);
->>>>> -               }
->>>>> -       }
->>>>> -#endif /* CONFIG_INTEL_IOMMU_FLOPPY_WA */
->>>>> -
->>>>>            reg = iommu_alloc_resv_region(IOAPIC_RANGE_START,
->>>>>                                          IOAPIC_RANGE_END -
->>>>> IOAPIC_RANGE_START + 1,
->>>>>                                          0, IOMMU_RESV_MSI, GFP_KERNEL);
->>>>>
->>>>> This code is introduced in Commit d850c2ee5fe2 ("iommu/vt-d: Expose ISA
->>>>> direct mapping region via iommu_get_resv_regions")
->>>>
->>>> As long as floppy driver exists in the tree, we have to include above
->>>> code. Otherwise, floppy drivers don't work. At least we can easily find
->>>> drivers/block/floppy.c which is still maintained (check MAINTAINERS).:-)
->>>
->>> But this requires a machine with Intel IOMMU and ISA:
->>>
->>>>>> -      16MiB to make floppy (an ISA device) work.
->>>
->>> ISA device? I don't believe there are any Intel machines with an IOMMU
->>> and an ISA device?
->>
->> This workaround was introduced by commit 49a0429e53f2 ("Intel IOMMU:
->> Iommu floppy workaround") in 2007. I can't remember what happened 15
->> years ago, but I believe there must have been corresponding hardware
->> configurations at that time, and the Linux kernel has been maintained it
->> to now.
+On 11/7/22 7:52 PM, Jason Gunthorpe wrote:
+> This series provides an alternative container layer for VFIO implemented
+> using iommufd. This is optional, if CONFIG_IOMMUFD is not set then it will
+> not be compiled in.
 > 
-> At what point can this be removed then?
+> At this point iommufd can be injected by passing in a iommfd FD to
+> VFIO_GROUP_SET_CONTAINER which will use the VFIO compat layer in iommufd
+> to obtain the compat IOAS and then connect up all the VFIO drivers as
+> appropriate.
+> 
+> This is temporary stopping point, a following series will provide a way to
+> directly open a VFIO device FD and directly connect it to IOMMUFD using
+> native ioctls that can expose the IOMMUFD features like hwpt, future
+> vPASID and dynamic attachment.
+> 
+> This series, in compat mode, has passed all the qemu tests we have
+> available, including the test suites for the Intel GVT mdev. Aside from
+> the temporary limitation with P2P memory this is belived to be fully
+> compatible with VFIO.
 
-No floppy block drivers in the tree or all floppy drivers' DMA going
-through the kernel DMA APIs.
+AFAICT there is no equivalent means to specify vfio_iommu_type1.dma_entry_limit when using iommufd; looks like we'll just always get the default 65535.  Was this because you envision the limit being not applicable for iommufd (limits will be enforced via either means and eventually we won't want to ) or was it an oversight?
 
-Best regards,
-baolu
+Thanks,
+Matt
+
