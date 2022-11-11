@@ -1,98 +1,182 @@
-Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73BC528FA
-	for <iommu@lists.linux.dev>; Fri, 11 Nov 2022 21:37:56 +0000 (UTC)
-Received: by mail-qk1-f170.google.com with SMTP id s20so3778123qkg.5
-        for <iommu@lists.linux.dev>; Fri, 11 Nov 2022 13:37:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=70bGPbiqAKd6Lj1pvfQPegklyN+fxl8EXb9nnpTKORY=;
-        b=LCFDZZp96QMSp2MflvI3wKXDOOyFAL4rJ/9RV5YRuGGm38PHTHZIUaRR0b7TIav77I
-         ZFtKMKoBbMin+VIf3lzjALLzK2bGCHmH4nGCYYx+6m/sc/7yEbjocmQ1d42Z9C/iKA9j
-         shfLHnoLIrulLtUaTCgJ4MfTyWqfN15N1+NuVg1uEewzATuuY0DdiapFdrgp8SiUV37Y
-         xkfwPvAoONlGVebwBWlazjzjToC0PLptLZMvicURSWI2L1xofSy2KzP3sHmJDXQC8WI5
-         BSZqK2ZEvNa1ezdor7Kldt+pzg4dnkSdhxtHpIDm94XsL1My7PfHa9k9uYxmTbQ0TnSk
-         iyLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=70bGPbiqAKd6Lj1pvfQPegklyN+fxl8EXb9nnpTKORY=;
-        b=m7N4veQyxT/e4YgYkVF+bpE85EpN+rsgO0fiIXQt6u0G6IlsCZY0/GbyH/4az3ljjz
-         lMSVI2LjZyF2pgbghrJMcFpxuByzeQDwxgdbsYkpHn4PcxD7ETjUo66x1RRjLq4leanr
-         jhgoVDaWlgmk1t/rvxC4LlkcoNTDQJPJT2aAfIoDHS8zjpoUnG5Kcvrp9Hp4Hzt4O+xD
-         qIn7SDX1QmOzm5umVs0QAlBXjnhJdVp4ds3v6k+DiQL9WeQsW0+VrklvkeZdl/l43x3G
-         VAEjKUVlJOMQ5LmA/qhqmxYY3U4fW8JS2OKmkP7sLBZfHTWeiL3GeDg+LrTWg1d7dong
-         bvtA==
-X-Gm-Message-State: ANoB5pm492Kdpf2oU1X0dPpy0BKLXzpMOYhEwoALT88n0WR0lBh8o9jp
-	HaAYCFaVVHZPhaP86z4dI/Y=
-X-Google-Smtp-Source: AA0mqf48Z6Ii+VzHnDMBVWN9P8PzYH/laMyIxHyHYRJVZB0TmCs0Vj2Y6KdY1dKXVjBoCJ64I0zHjA==
-X-Received: by 2002:ae9:ef53:0:b0:6fa:4a82:1152 with SMTP id d80-20020ae9ef53000000b006fa4a821152mr2931568qkg.504.1668202675397;
-        Fri, 11 Nov 2022 13:37:55 -0800 (PST)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id m10-20020a05620a24ca00b006cbc6e1478csm2108327qkn.57.2022.11.11.13.37.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Nov 2022 13:37:54 -0800 (PST)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date: Fri, 11 Nov 2022 13:37:53 -0800
-From: Guenter Roeck <linux@roeck-us.net>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: fenghua.yu@intel.com, jdelvare@suse.com, linux-hwmon@vger.kernel.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	janusz.krzysztofik@linux.intel.com, lucas.demarchi@intel.com
-Subject: Re: [PATCH] hwmon/coretemp: Simplify platform device antics
-Message-ID: <20221111213753.GA1059841@roeck-us.net>
-References: <898dbb76a54aae6ca58ceefcab9ab18beeee2fff.1668096928.git.robin.murphy@arm.com>
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DFC1F1B541
+	for <iommu@lists.linux.dev>; Fri, 11 Nov 2022 22:54:06 +0000 (UTC)
+Received: from [192.168.0.5] (71-212-113-106.tukw.qwest.net [71.212.113.106])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 41AC520B717A;
+	Fri, 11 Nov 2022 14:54:00 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 41AC520B717A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1668207240;
+	bh=E1cYAShkFwLJuK7d/qqdtMRNldtQEcFrsAuldrsATQc=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=pwFifZLBiU8rZFBQk5Wr7OcBe28raXBorwSev/19x2Q8da2nqW/GclLu0uMqE3pQI
+	 x+F9Iso1ztkM3V2oAh6m+I2ICmVS2nssaMtw5D8uoyDXqkRX2ocf/enSaOiaZTbVNr
+	 KPrxo/ulL4lte4grZRarUXvCyuCTyqbbxtGBiV3c=
+Message-ID: <2f721208-d169-2baa-fa1f-b8450e80ddd7@linux.microsoft.com>
+Date: Fri, 11 Nov 2022 14:53:59 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <898dbb76a54aae6ca58ceefcab9ab18beeee2fff.1668096928.git.robin.murphy@arm.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH] iommu/hyper-v: Allow hyperv irq remapping without x2apic
+To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+ Wei Liu <wei.liu@kernel.org>
+Cc: Tianyu Lan <Tianyu.Lan@microsoft.com>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ Sunil Muthuswamy <sunilmut@microsoft.com>, KY Srinivasan
+ <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>,
+ Dexuan Cui <decui@microsoft.com>, "dwmw2@infradead.org"
+ <dwmw2@infradead.org>, "joro@8bytes.org" <joro@8bytes.org>,
+ "will@kernel.org" <will@kernel.org>
+References: <1668020853-23950-1-git-send-email-nunodasneves@linux.microsoft.com>
+ <Y255HhDbwbI/z5bJ@liuwe-devbox-debian-v2>
+ <BYAPR21MB1688800D35F86D766567C1FAD7009@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y26F+H1SuJrad3Ra@liuwe-devbox-debian-v2>
+ <BYAPR21MB168819214A20DF2E4835E763D7009@BYAPR21MB1688.namprd21.prod.outlook.com>
+Content-Language: en-US
+From: Nuno Das Neves <nunodasneves@linux.microsoft.com>
+In-Reply-To: <BYAPR21MB168819214A20DF2E4835E763D7009@BYAPR21MB1688.namprd21.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Thu, Nov 10, 2022 at 04:20:25PM +0000, Robin Murphy wrote:
-> Coretemp's vestigial platform driver is odd. All the real work is done
-> globally by the initcall and CPU hotplug notifiers, while the "driver"
-> effectively just wraps an allocation and the registration of the hwmon
-> interface in a long-winded round-trip through the driver core. The whole
-> logic of dynamically creating and destroying platform devices to bring
-> the interfaces up and down is fatally flawed right away, since it
-> assumes platform_device_add() will synchronously bind the driver and set
-> drvdata before it returns, thus results in a NULL dereference if
-> drivers_autoprobe is turned off for the platform bus. Furthermore, the
-> unusual approach of doing that from within a CPU hotplug notifier is
-> also problematic. It's already commented in the code that it deadlocks
-> suspend, but it also causes lockdep issues for other drivers or
-> subsystems which may want to legitimately register a CPU hotplug
-> notifier from a platform bus notifier.
+On 11/11/2022 9:58 AM, Michael Kelley (LINUX) wrote:
+> From: Wei Liu <wei.liu@kernel.org> Sent: Friday, November 11, 2022 9:27 AM
+>>
+>> On Fri, Nov 11, 2022 at 04:55:22PM +0000, Michael Kelley (LINUX) wrote:
+>>> From: Wei Liu <wei.liu@kernel.org> Sent: Friday, November 11, 2022 8:33 AM
+>>>>
+>>>> Hi Tianyu
+>>>>
+>>>> On Wed, Nov 09, 2022 at 11:07:33AM -0800, Nuno Das Neves wrote:
+>>>>> If x2apic is not available, hyperv-iommu skips remapping
+>>>>> irqs. This breaks root partition which always needs irqs
+>>>>> remapped.
+>>>>>
+>>>>> Fix this by allowing irq remapping regardless of x2apic,
+>>>>> and change hyperv_enable_irq_remapping() to return
+>>>>> IRQ_REMAP_XAPIC_MODE in case x2apic is missing.
+>>>>>
+>>>>
+>>>> Do you remember why it was x2apic only?
+>>>>
+>>>> We tested this patch on different VM SKUs and it worked fine. I'm just
+>>>> wondering if there would be some subtle breakages that we couldn't
+>>>> easily test.
+>>>>
+>>>> Thanks,
+>>>> Wei.
+>>>
+>>> My recollection is that originally Hyper-V provided the x2apic in the
+>>> guest only when the number of vCPUs exceeded 255, and that was
+>>> the only case where IRQ remapping was needed.  The intent was to
+>>> not disturb the case where # of vCPUs was < 255 and the xapic is used.
+>>> I don't remember there being any potential for subtle breakages.
+>>
+>> Thanks for the information.
+>>
+>>>
+>>> I think more recent versions of Hyper-V now provide the x2apic
+>>> in the guest in some cases when # of vCPUs is < 255.
+>>>
+>>
+>> On Azure the default for AMD SKUs is still xapic unless the number of
+>> VCPUs exceeds 2XX (can't remember the exact number -- maybe it is 255).
 > 
-> All of these issues can be solved by ripping this questionable behaviour
-> out completely, simply tying the platform devices to the lifetime of the
-> module itself, and directly managing the hwmon interfaces from the
-> hotplug notifiers. There is a slight user-visible change in that
-> /sys/bus/platform/drivers/coretemp will no longer appear, and
-> /sys/devices/platform/coretemp.n will remain present if package n is
-> hotplugged off, but hwmon users should really only be looking for the
-> presence of the hwmon interfaces, whose behaviour remains unchanged.
+> I don't think Azure has any VM sizes based on AMD processors with more
+> than 255 vCPUs.  All the >255 vCPUs VM sizes use Intel processors.
 > 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
+> FWIW, I have a D2ds_v5 VM (2 CPUs & Intel processor) that shows an
+> x2apic instead of an xapic.  My memory is vague, but I think that's the
+> requirements to get an x2apic in a smaller VM:  must be a "v5" series and
+> must be Intel processor.
 > 
-> I haven't been able to fully test hotplug since I only have a
-> single-socket Intel system to hand.
+> Michael
+>
 
-Someone with access to hardware will have to validate this.
+Yes this seems to be the case, although I didn't realise it until now!
+I sort of assumed since x2apic has been around so long, all the intel VMs
+just had it enabled...
 
-For both subject and description, please avoid terms like "antics",
-"odd", or "questionable". Please describe the problem in neutral terms.
+>>
+>> Nuno, can you list the tests you've done? They will need to cover Linux
+>> running as a normal guest on Azure and Hyper-V.
+>>>> Thanks,
+>> Wei.
+>>
 
-Thanks,
-Guenter
+I've tested this patch on these Azure SKUs:
+- Standard_D2S_v2 (intel xapic)
+- Standard_D4ds_v4 (intel xapic)
+- Standard_D4ds_v5 (intel x2apic)
+- Standard_D4ads_v5 (amd xapic)
+
+I've tested with linux Dom0 (nested hyperv root partition) and as a
+regular L1 guest.
+
+>>
+>>> Michael
+>>>
+>>>>
+>>>>> Tested with root and non-root hyperv partitions.
+>>>>>
+>>>>> Signed-off-by: Nuno Das Neves <nunodasneves@linux.microsoft.com>
+>>>>> ---
+>>>>>  drivers/iommu/Kconfig        | 6 +++---
+>>>>>  drivers/iommu/hyperv-iommu.c | 7 ++++---
+>>>>>  2 files changed, 7 insertions(+), 6 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+>>>>> index dc5f7a156ff5..cf7433652db0 100644
+>>>>> --- a/drivers/iommu/Kconfig
+>>>>> +++ b/drivers/iommu/Kconfig
+>>>>> @@ -474,13 +474,13 @@ config QCOM_IOMMU
+>>>>>  	  Support for IOMMU on certain Qualcomm SoCs.
+>>>>>
+>>>>>  config HYPERV_IOMMU
+>>>>> -	bool "Hyper-V x2APIC IRQ Handling"
+>>>>> +	bool "Hyper-V IRQ Handling"
+>>>>>  	depends on HYPERV && X86
+>>>>>  	select IOMMU_API
+>>>>>  	default HYPERV
+>>>>>  	help
+>>>>> -	  Stub IOMMU driver to handle IRQs as to allow Hyper-V Linux
+>>>>> -	  guests to run with x2APIC mode enabled.
+>>>>> +	  Stub IOMMU driver to handle IRQs to support Hyper-V Linux
+>>>>> +	  guest and root partitions.
+>>>>>
+>>>>>  config VIRTIO_IOMMU
+>>>>>  	tristate "Virtio IOMMU driver"
+>>>>> diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
+>>>>> index e190bb8c225c..abd1826a9e63 100644
+>>>>> --- a/drivers/iommu/hyperv-iommu.c
+>>>>> +++ b/drivers/iommu/hyperv-iommu.c
+>>>>> @@ -123,8 +123,7 @@ static int __init hyperv_prepare_irq_remapping(void)
+>>>>>  	const struct irq_domain_ops *ops;
+>>>>>
+>>>>>  	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV) ||
+>>>>> -	    x86_init.hyper.msi_ext_dest_id() ||
+>>>>> -	    !x2apic_supported())
+>>>>> +	    x86_init.hyper.msi_ext_dest_id())
+>>>>>  		return -ENODEV;
+>>>>>
+>>>>>  	if (hv_root_partition) {
+>>>>> @@ -170,7 +169,9 @@ static int __init hyperv_prepare_irq_remapping(void)
+>>>>>
+>>>>>  static int __init hyperv_enable_irq_remapping(void)
+>>>>>  {
+>>>>> -	return IRQ_REMAP_X2APIC_MODE;
+>>>>> +	if (x2apic_supported())
+>>>>> +		return IRQ_REMAP_X2APIC_MODE;
+>>>>> +	return IRQ_REMAP_XAPIC_MODE;
+>>>>>  }
+>>>>>
+>>>>>  struct irq_remap_ops hyperv_irq_remap_ops = {
+>>>>> --
+>>>>> 2.25.1
+>>>>>
