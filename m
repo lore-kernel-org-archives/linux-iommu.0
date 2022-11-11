@@ -1,42 +1,43 @@
 Received: from mail-il1-f180.google.com (mail-il1-f180.google.com [209.85.166.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFFFB372
-	for <iommu@lists.linux.dev>; Fri, 11 Nov 2022 00:36:14 +0000 (UTC)
-Received: by mail-il1-f180.google.com with SMTP id q5so1860764ilt.13
-        for <iommu@lists.linux.dev>; Thu, 10 Nov 2022 16:36:14 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44289375
+	for <iommu@lists.linux.dev>; Fri, 11 Nov 2022 00:36:16 +0000 (UTC)
+Received: by mail-il1-f180.google.com with SMTP id e19so1887163ili.4
+        for <iommu@lists.linux.dev>; Thu, 10 Nov 2022 16:36:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=gbdXluDmtwIUQ5Fk/3X9JKjl9348DISPBtcRQT1Y7qI=;
-        b=dbHjL7+KR/6hnZw6YfJ+IDYM1sCeAaA9K9vFKnpnOGO8a/yNWSD6PpZD/juUMATPm4
-         oAXahUsnSeF3vCBaCFYL8UEaZANdHhqaZGsi3tAgp+S0DA443Lki1sO0szLvqk+uMQnM
-         QpVUqsWCA6Y3YCIpQFZE/8gXyQ1nqVFtdhe8yaYZ3qD0SwQMf5mRVL0ONIA3emWAO5Sx
-         e4e8V0gL93byHCejHE16v/dRK5bTpHgo1unYeTAi+vqYweKRMaicYujEkxC6P4y+g/DD
-         811lYu7AB3whQyf1Xdtic/GZQfu4QtKyky7cxYQZ3i/Ag1A/7IIAoIPL6Zf/Q1ToVgeV
-         CoaQ==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ZQmrxV8UAMx8aTkAdlv23yBJFQlgUNmii3sTAapLgyI=;
+        b=By+u2s1zlMxrmcdLwoh001J8SribOcDyS7nZQpDSP6pEnWTPhIXGqKuoKdGgpVx0Ie
+         m9KJiuMqABLulmOmezG5pmPlNwYgZz2dNc58kHp69zkdV7Vf7VQ/tqcoJAsAqdq5N2K2
+         xI4u+XXNwkDCUBO+M19sMqbJnBHSz7Tim6llxRDwJUbAl3QN7Ph6vy4bmM1M9gN5mgwv
+         bh6VjwDQsLjHK4hUwgnRm3BpS7JwW2ForNcfI+3y//TYLxQZtiuE9srQqdq1Oxl4jCtt
+         HOiE/lv21om+670aij+fQ33k9rW5YUlTfavlSPgA2ky55GCsbQuLPYejHmg57/YUhk9s
+         Hbvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=gbdXluDmtwIUQ5Fk/3X9JKjl9348DISPBtcRQT1Y7qI=;
-        b=5856XSyJWhYkLFqz+QPxzEsTaY1KEcrZDAsqFYzllkXYwZgcce7zyzy1PqpkLpC/ry
-         YczdxTAOanRmgsuxQAQiZ1bxRgqvejAi2XfD2CmpWCk5Du6oGnoo48qIS7EvATSw1N+1
-         uJTlb2VhKDcbnuxURvZ1oivF7R6OEfYKoVS3W/PA0+0W7v+CmSxPvHLpdDR8TnoTLiXL
-         LvJtFoKtdcaxzT7WRNdX4HgKjQaiOfIHMkwfwQiNM2tFEvrQyVWyPj8amiYMH2ai1W85
-         bglf8IntHnClY3Fuxy57cceIvye2XtnnIJdnIOjjTv3FqFDkeZX7/JWkBykaX4HQ6CR5
-         IdgA==
-X-Gm-Message-State: ANoB5plrtAr1OvlfvOo9H1COSjI+g755OW3pyu/Ixt9cW9f4hkjxRlDR
-	+NNcwl/Q/upBl668nq+SalM=
-X-Google-Smtp-Source: AA0mqf4R4LohboNPAz0xIx9WUPcsbNzThvEpUaSgVXHILSNfmQI5g2eZVdiFy/+22yMSmHCGRRY3ig==
-X-Received: by 2002:a05:6e02:68a:b0:302:38a1:917c with SMTP id o10-20020a056e02068a00b0030238a1917cmr1004549ils.87.1668126973926;
-        Thu, 10 Nov 2022 16:36:13 -0800 (PST)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ZQmrxV8UAMx8aTkAdlv23yBJFQlgUNmii3sTAapLgyI=;
+        b=ddoEJd/JuS5H7AoZqR9oKkEOYsj3KqAfhea1z1vXpAsHh45DnC0PC2nMG/l01y/bQg
+         iOvBDApwPUPt0vWmpYM5g/ah09waJ0FzXTADRfsacdqApPLD4BUKaXEFZNM1Ijvj1aCQ
+         jOoP5BHpgh4/t6LglV/Z61gDae1T5z3yh5DGa0agu957f+8oTZd/IQ4T2ieb0hTX7X2h
+         zEfQQeDleYhTTfER9IAyxS4QK/tIF3rrw0HNmle6fo/WQFxNDCEBYqSvAlmAguJj+kQ/
+         TcXQZ64JY782T2vSi7t0WJW8YcEWB5vBE1JRqWbpHZiv+8bKazNTx3uAXoSIHFi9w+RQ
+         DAxA==
+X-Gm-Message-State: ACrzQf0ddEoCRlJOUdT/MkdI2Y4GBhMtV82eCX8sy1/MK8AP0e4purYj
+	uKz2cfQRz65q4Cqv061XwGs=
+X-Google-Smtp-Source: AMsMyM71OO5VNIX7PmdMMq8lznWfKCNntmbM6yx3dhGyaXm81q8wjDKI1gErrOmwXTLw7P4RV00jPQ==
+X-Received: by 2002:a92:d909:0:b0:2ff:e1b0:b150 with SMTP id s9-20020a92d909000000b002ffe1b0b150mr4087211iln.147.1668126975442;
+        Thu, 10 Nov 2022 16:36:15 -0800 (PST)
 Received: from localhost ([2607:fea8:a2e2:2d00::61cc])
-        by smtp.gmail.com with ESMTPSA id d99-20020a0285ec000000b003635a42d653sm306716jai.134.2022.11.10.16.36.13
+        by smtp.gmail.com with ESMTPSA id a12-20020a027a0c000000b0034a6d12aa25sm343343jac.4.2022.11.10.16.36.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Nov 2022 16:36:13 -0800 (PST)
+        Thu, 10 Nov 2022 16:36:15 -0800 (PST)
 From: Richard Acayan <mailingradian@gmail.com>
 To: Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
@@ -48,10 +49,12 @@ To: Will Deacon <will@kernel.org>,
 	devicetree@vger.kernel.org
 Cc: linux-arm-msm@vger.kernel.org,
 	Richard Acayan <mailingradian@gmail.com>
-Subject: [PATCH v5 0/1] iommu: SMMU for SDM670
-Date: Thu, 10 Nov 2022 19:36:05 -0500
-Message-Id: <20221111003606.126795-1-mailingradian@gmail.com>
+Subject: [PATCH v5 1/1] dt-bindings: iommu: arm-smmu: add sdm670 compatible
+Date: Thu, 10 Nov 2022 19:36:06 -0500
+Message-Id: <20221111003606.126795-2-mailingradian@gmail.com>
 X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221111003606.126795-1-mailingradian@gmail.com>
+References: <20221111003606.126795-1-mailingradian@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -60,33 +63,27 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Changes since v4:
- - version bump to fix double v3 (0-1/1)
+The Snapdragon 670 needs the IOMMU for GENI I2C. Add a compatible string in
+the documentation to represent its support.
 
-Changes since v3:
- - drop driver patch (2/2)
-
-Changes since v2:
- - rewrite driver patch (2/2)
- - rebase on (1/2):
-   https://lore.kernel.org/linux-iommu/20221102184420.534094-1-dmitry.baryshkov@linaro.org/
- - reset review process (1-2/2)
-
-Changes since v1 (no emails related to this series since last week):
- - accumulate tags (both were added because it seems like the discussion
-   ended in agreement to keep adding compatible strings to the driver)
-
-This adds the compatible string for the Qualcomm Snapdragon 670's SMMU. The
-SMMU is necessary for GENI I2C, included in initial bringup because it
-doesn't need non-trivial patches except for patches conventionally added
-before the initial device tree (global clock controller and pinctrl).
-
-Richard Acayan (1):
-  dt-bindings: iommu: arm-smmu: add sdm670 compatible
-
+Signed-off-by: Richard Acayan <mailingradian@gmail.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
  1 file changed, 1 insertion(+)
 
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+index 796dc7d4dbdd..f77597e8ed39 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+@@ -39,6 +39,7 @@ properties:
+               - qcom,sc7280-smmu-500
+               - qcom,sc8180x-smmu-500
+               - qcom,sc8280xp-smmu-500
++              - qcom,sdm670-smmu-500
+               - qcom,sdm845-smmu-500
+               - qcom,sm6350-smmu-500
+               - qcom,sm6375-smmu-500
 -- 
 2.38.1
 
