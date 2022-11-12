@@ -1,33 +1,33 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B0437B
-	for <iommu@lists.linux.dev>; Sat, 12 Nov 2022 00:11:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B5077B
+	for <iommu@lists.linux.dev>; Sat, 12 Nov 2022 00:21:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668211896; x=1699747896;
+  t=1668212510; x=1699748510;
   h=message-id:date:mime-version:subject:to:references:from:
    in-reply-to:content-transfer-encoding;
-  bh=LiZwmYGwAznYW6wrpo4GEBOGDwQrkWj7tTELRkONMMw=;
-  b=Ny7JK8HlDrFRt5trB8P87UdEy36SRNwkKbkK5Q6HUb6MMK14SVOHUwh3
-   YwcA3jc/+4bWBtgh3ELR1LQQPAvwQPpboqLBIN5+4faSnMzEaIDsi7CTe
-   PBPo6CuEA6LRF0XCasaoKb8VbqnQCx72bVXujZA95PMZpfxDqor5pWOAR
-   QNbQFX8WCnVhcA6sqRPWokmzpDYKBpoXFP+rMJQUhONGwNck04YG8Sz62
-   2q+9vg9NIa27tBBAhpc5KETG7ui7BqMaJFac/+eskgR3slGU+1xoej/Zp
-   kNivApIiDEkX3/TwBg3GID0Bz7t/i7IadFNZge/bkB+2mz67W/VYVFyL6
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10528"; a="338456862"
+  bh=j1lAUzMwl/IGPrbGdS61ib0IEbELaXeyWascY1TXhxo=;
+  b=aQnAbxPyF9RVn3scEzQ/7p8Qix1FaVe6jWSCyMbXomzTZ0SHAGQwFfGe
+   2p3C84rjcT4Wfakv/ATxTHMougy38pWi5yEqBTrg28ap13O2pXuk35AHF
+   mlnVV8UfjMiHbKGrigdnli7cgUZVJOxvQoJLEzKpUvV3ZdF7NXHtQ47V8
+   WRLF8jPLdTLX+/ZI8whVqkh5de+bATrZCPcyE1ztj0R2BtBopJYsSbLi3
+   IozF/7Jt9LTzPBqWm89TQ7XYm3lTt8j8mN1ljwRVlaPnb70xPzps8ugNa
+   jEcXYrq4dAhxTLq5fyNTfpHZOf+c1mnZptGQmOuh7mYyUs/8CH6SXCIz3
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10528"; a="299198566"
 X-IronPort-AV: E=Sophos;i="5.96,157,1665471600"; 
-   d="scan'208";a="338456862"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2022 16:11:35 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10528"; a="615617910"
+   d="scan'208";a="299198566"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2022 16:21:49 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10528"; a="726928308"
 X-IronPort-AV: E=Sophos;i="5.96,157,1665471600"; 
-   d="scan'208";a="615617910"
+   d="scan'208";a="726928308"
 Received: from nmpoonaw-mobl1.amr.corp.intel.com (HELO [10.252.134.46]) ([10.252.134.46])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2022 16:11:33 -0800
-Message-ID: <7d621ab2-6717-c6b6-5c3c-90af4c2f4afc@intel.com>
-Date: Fri, 11 Nov 2022 16:11:32 -0800
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2022 16:21:47 -0800
+Message-ID: <50a8517d-328e-2178-e98c-4b160456e092@intel.com>
+Date: Fri, 11 Nov 2022 16:21:45 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,8 +36,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.2.2
-Subject: Re: [PATCH v2 01/12] x86/ioremap: Fix page aligned size calculation
- in __ioremap_caller()
+Subject: Re: [PATCH v2 02/12] x86/ioapic: Gate decrypted mapping on
+ cc_platform_has() attribute
 Content-Language: en-US
 To: Michael Kelley <mikelley@microsoft.com>, hpa@zytor.com,
  kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
@@ -55,53 +55,20 @@ To: Michael Kelley <mikelley@microsoft.com>, hpa@zytor.com,
  netdev@vger.kernel.org, linux-pci@vger.kernel.org,
  linux-arch@vger.kernel.org, iommu@lists.linux.dev
 References: <1668147701-4583-1-git-send-email-mikelley@microsoft.com>
- <1668147701-4583-2-git-send-email-mikelley@microsoft.com>
+ <1668147701-4583-3-git-send-email-mikelley@microsoft.com>
 From: Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <1668147701-4583-2-git-send-email-mikelley@microsoft.com>
+In-Reply-To: <1668147701-4583-3-git-send-email-mikelley@microsoft.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 11/10/22 22:21, Michael Kelley wrote:
-> If applying the PHYSICAL_PAGE_MASK to the phys_addr argument causes
-> upper bits to be masked out, the re-calculation of size to account for
-> page alignment is incorrect because the same bits are not masked out
-> in last_addr.
-> 
-> Fix this by masking the page aligned last_addr as well.
+>  	 * Ensure fixmaps for IOAPIC MMIO respect memory encryption pgprot
+>  	 * bits, just like normal ioremap():
+>  	 */
+> -	flags = pgprot_decrypted(flags);
+> +	if (!cc_platform_has(CC_ATTR_HAS_PARAVISOR))
+> +		flags = pgprot_decrypted(flags);
 
-This makes sense at first glance.
-
-How did you notice this?  What is the impact to users?  Did the bug
-actually cause you some trouble or was it by inspection?  Do you have a
-sense of how many folks might be impacted?  Any thoughts on how it
-lasted for 14+ years?
-
-For the functionality of the mapping, I guess 'size' doesn't really
-matter because even a 1-byte 'size' will map a page.  The other fallout
-would be from memtype_reserve() reserving too little.  But, that's
-unlikely to matter for small mappings because even though:
-
-	ioremap(0x1800, 0x800);
-
-would end up just reserving 0x1000->0x1800, it still wouldn't allow
-
-	ioremap(0x1000, 0x800);
-
-to succeed because *both* of them would end up trying to reserve the
-beginning of the page.  Basically, the first caller effectively reserves
-the whole page and any second user will fail.
-
-So the other place it would matter would be for mappings that span two
-pages, say:
-
-	ioremap(0x1fff, 0x2)
-
-But I guess those aren't very common.  Most large ioremap() callers seem
-to already have base and size page-aligned.
-
-Anyway, sorry to make so much of a big deal about a one-liner.  But,
-these decade-old bugs really make me wonder how they stuck around for so
-long.
-
-I'd be curious if you thought about this too while putting together this
-fox.
+This begs the question whether *all* paravisors will want to avoid a
+decrypted ioapic mapping.  Is this _fundamental_ to paravisors, or it is
+an implementation detail of this _individual_ paravisor?
