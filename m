@@ -1,182 +1,107 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DFC1F1B541
-	for <iommu@lists.linux.dev>; Fri, 11 Nov 2022 22:54:06 +0000 (UTC)
-Received: from [192.168.0.5] (71-212-113-106.tukw.qwest.net [71.212.113.106])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 41AC520B717A;
-	Fri, 11 Nov 2022 14:54:00 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 41AC520B717A
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1668207240;
-	bh=E1cYAShkFwLJuK7d/qqdtMRNldtQEcFrsAuldrsATQc=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=pwFifZLBiU8rZFBQk5Wr7OcBe28raXBorwSev/19x2Q8da2nqW/GclLu0uMqE3pQI
-	 x+F9Iso1ztkM3V2oAh6m+I2ICmVS2nssaMtw5D8uoyDXqkRX2ocf/enSaOiaZTbVNr
-	 KPrxo/ulL4lte4grZRarUXvCyuCTyqbbxtGBiV3c=
-Message-ID: <2f721208-d169-2baa-fa1f-b8450e80ddd7@linux.microsoft.com>
-Date: Fri, 11 Nov 2022 14:53:59 -0800
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B0437B
+	for <iommu@lists.linux.dev>; Sat, 12 Nov 2022 00:11:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668211896; x=1699747896;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=LiZwmYGwAznYW6wrpo4GEBOGDwQrkWj7tTELRkONMMw=;
+  b=Ny7JK8HlDrFRt5trB8P87UdEy36SRNwkKbkK5Q6HUb6MMK14SVOHUwh3
+   YwcA3jc/+4bWBtgh3ELR1LQQPAvwQPpboqLBIN5+4faSnMzEaIDsi7CTe
+   PBPo6CuEA6LRF0XCasaoKb8VbqnQCx72bVXujZA95PMZpfxDqor5pWOAR
+   QNbQFX8WCnVhcA6sqRPWokmzpDYKBpoXFP+rMJQUhONGwNck04YG8Sz62
+   2q+9vg9NIa27tBBAhpc5KETG7ui7BqMaJFac/+eskgR3slGU+1xoej/Zp
+   kNivApIiDEkX3/TwBg3GID0Bz7t/i7IadFNZge/bkB+2mz67W/VYVFyL6
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10528"; a="338456862"
+X-IronPort-AV: E=Sophos;i="5.96,157,1665471600"; 
+   d="scan'208";a="338456862"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2022 16:11:35 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10528"; a="615617910"
+X-IronPort-AV: E=Sophos;i="5.96,157,1665471600"; 
+   d="scan'208";a="615617910"
+Received: from nmpoonaw-mobl1.amr.corp.intel.com (HELO [10.252.134.46]) ([10.252.134.46])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2022 16:11:33 -0800
+Message-ID: <7d621ab2-6717-c6b6-5c3c-90af4c2f4afc@intel.com>
+Date: Fri, 11 Nov 2022 16:11:32 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH] iommu/hyper-v: Allow hyperv irq remapping without x2apic
-To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
- Wei Liu <wei.liu@kernel.org>
-Cc: Tianyu Lan <Tianyu.Lan@microsoft.com>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- Sunil Muthuswamy <sunilmut@microsoft.com>, KY Srinivasan
- <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>,
- Dexuan Cui <decui@microsoft.com>, "dwmw2@infradead.org"
- <dwmw2@infradead.org>, "joro@8bytes.org" <joro@8bytes.org>,
- "will@kernel.org" <will@kernel.org>
-References: <1668020853-23950-1-git-send-email-nunodasneves@linux.microsoft.com>
- <Y255HhDbwbI/z5bJ@liuwe-devbox-debian-v2>
- <BYAPR21MB1688800D35F86D766567C1FAD7009@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y26F+H1SuJrad3Ra@liuwe-devbox-debian-v2>
- <BYAPR21MB168819214A20DF2E4835E763D7009@BYAPR21MB1688.namprd21.prod.outlook.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [PATCH v2 01/12] x86/ioremap: Fix page aligned size calculation
+ in __ioremap_caller()
 Content-Language: en-US
-From: Nuno Das Neves <nunodasneves@linux.microsoft.com>
-In-Reply-To: <BYAPR21MB168819214A20DF2E4835E763D7009@BYAPR21MB1688.namprd21.prod.outlook.com>
+To: Michael Kelley <mikelley@microsoft.com>, hpa@zytor.com,
+ kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
+ decui@microsoft.com, luto@kernel.org, peterz@infradead.org,
+ davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+ pabeni@redhat.com, lpieralisi@kernel.org, robh@kernel.org, kw@linux.com,
+ bhelgaas@google.com, arnd@arndb.de, hch@infradead.org,
+ m.szyprowski@samsung.com, robin.murphy@arm.com, thomas.lendacky@amd.com,
+ brijesh.singh@amd.com, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, Tianyu.Lan@microsoft.com,
+ kirill.shutemov@linux.intel.com, sathyanarayanan.kuppuswamy@linux.intel.com,
+ ak@linux.intel.com, isaku.yamahata@intel.com, dan.j.williams@intel.com,
+ jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com, x86@kernel.org,
+ linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ netdev@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-arch@vger.kernel.org, iommu@lists.linux.dev
+References: <1668147701-4583-1-git-send-email-mikelley@microsoft.com>
+ <1668147701-4583-2-git-send-email-mikelley@microsoft.com>
+From: Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <1668147701-4583-2-git-send-email-mikelley@microsoft.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 11/11/2022 9:58 AM, Michael Kelley (LINUX) wrote:
-> From: Wei Liu <wei.liu@kernel.org> Sent: Friday, November 11, 2022 9:27 AM
->>
->> On Fri, Nov 11, 2022 at 04:55:22PM +0000, Michael Kelley (LINUX) wrote:
->>> From: Wei Liu <wei.liu@kernel.org> Sent: Friday, November 11, 2022 8:33 AM
->>>>
->>>> Hi Tianyu
->>>>
->>>> On Wed, Nov 09, 2022 at 11:07:33AM -0800, Nuno Das Neves wrote:
->>>>> If x2apic is not available, hyperv-iommu skips remapping
->>>>> irqs. This breaks root partition which always needs irqs
->>>>> remapped.
->>>>>
->>>>> Fix this by allowing irq remapping regardless of x2apic,
->>>>> and change hyperv_enable_irq_remapping() to return
->>>>> IRQ_REMAP_XAPIC_MODE in case x2apic is missing.
->>>>>
->>>>
->>>> Do you remember why it was x2apic only?
->>>>
->>>> We tested this patch on different VM SKUs and it worked fine. I'm just
->>>> wondering if there would be some subtle breakages that we couldn't
->>>> easily test.
->>>>
->>>> Thanks,
->>>> Wei.
->>>
->>> My recollection is that originally Hyper-V provided the x2apic in the
->>> guest only when the number of vCPUs exceeded 255, and that was
->>> the only case where IRQ remapping was needed.  The intent was to
->>> not disturb the case where # of vCPUs was < 255 and the xapic is used.
->>> I don't remember there being any potential for subtle breakages.
->>
->> Thanks for the information.
->>
->>>
->>> I think more recent versions of Hyper-V now provide the x2apic
->>> in the guest in some cases when # of vCPUs is < 255.
->>>
->>
->> On Azure the default for AMD SKUs is still xapic unless the number of
->> VCPUs exceeds 2XX (can't remember the exact number -- maybe it is 255).
+On 11/10/22 22:21, Michael Kelley wrote:
+> If applying the PHYSICAL_PAGE_MASK to the phys_addr argument causes
+> upper bits to be masked out, the re-calculation of size to account for
+> page alignment is incorrect because the same bits are not masked out
+> in last_addr.
 > 
-> I don't think Azure has any VM sizes based on AMD processors with more
-> than 255 vCPUs.  All the >255 vCPUs VM sizes use Intel processors.
-> 
-> FWIW, I have a D2ds_v5 VM (2 CPUs & Intel processor) that shows an
-> x2apic instead of an xapic.  My memory is vague, but I think that's the
-> requirements to get an x2apic in a smaller VM:  must be a "v5" series and
-> must be Intel processor.
-> 
-> Michael
->
+> Fix this by masking the page aligned last_addr as well.
 
-Yes this seems to be the case, although I didn't realise it until now!
-I sort of assumed since x2apic has been around so long, all the intel VMs
-just had it enabled...
+This makes sense at first glance.
 
->>
->> Nuno, can you list the tests you've done? They will need to cover Linux
->> running as a normal guest on Azure and Hyper-V.
->>>> Thanks,
->> Wei.
->>
+How did you notice this?  What is the impact to users?  Did the bug
+actually cause you some trouble or was it by inspection?  Do you have a
+sense of how many folks might be impacted?  Any thoughts on how it
+lasted for 14+ years?
 
-I've tested this patch on these Azure SKUs:
-- Standard_D2S_v2 (intel xapic)
-- Standard_D4ds_v4 (intel xapic)
-- Standard_D4ds_v5 (intel x2apic)
-- Standard_D4ads_v5 (amd xapic)
+For the functionality of the mapping, I guess 'size' doesn't really
+matter because even a 1-byte 'size' will map a page.  The other fallout
+would be from memtype_reserve() reserving too little.  But, that's
+unlikely to matter for small mappings because even though:
 
-I've tested with linux Dom0 (nested hyperv root partition) and as a
-regular L1 guest.
+	ioremap(0x1800, 0x800);
 
->>
->>> Michael
->>>
->>>>
->>>>> Tested with root and non-root hyperv partitions.
->>>>>
->>>>> Signed-off-by: Nuno Das Neves <nunodasneves@linux.microsoft.com>
->>>>> ---
->>>>>  drivers/iommu/Kconfig        | 6 +++---
->>>>>  drivers/iommu/hyperv-iommu.c | 7 ++++---
->>>>>  2 files changed, 7 insertions(+), 6 deletions(-)
->>>>>
->>>>> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
->>>>> index dc5f7a156ff5..cf7433652db0 100644
->>>>> --- a/drivers/iommu/Kconfig
->>>>> +++ b/drivers/iommu/Kconfig
->>>>> @@ -474,13 +474,13 @@ config QCOM_IOMMU
->>>>>  	  Support for IOMMU on certain Qualcomm SoCs.
->>>>>
->>>>>  config HYPERV_IOMMU
->>>>> -	bool "Hyper-V x2APIC IRQ Handling"
->>>>> +	bool "Hyper-V IRQ Handling"
->>>>>  	depends on HYPERV && X86
->>>>>  	select IOMMU_API
->>>>>  	default HYPERV
->>>>>  	help
->>>>> -	  Stub IOMMU driver to handle IRQs as to allow Hyper-V Linux
->>>>> -	  guests to run with x2APIC mode enabled.
->>>>> +	  Stub IOMMU driver to handle IRQs to support Hyper-V Linux
->>>>> +	  guest and root partitions.
->>>>>
->>>>>  config VIRTIO_IOMMU
->>>>>  	tristate "Virtio IOMMU driver"
->>>>> diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
->>>>> index e190bb8c225c..abd1826a9e63 100644
->>>>> --- a/drivers/iommu/hyperv-iommu.c
->>>>> +++ b/drivers/iommu/hyperv-iommu.c
->>>>> @@ -123,8 +123,7 @@ static int __init hyperv_prepare_irq_remapping(void)
->>>>>  	const struct irq_domain_ops *ops;
->>>>>
->>>>>  	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV) ||
->>>>> -	    x86_init.hyper.msi_ext_dest_id() ||
->>>>> -	    !x2apic_supported())
->>>>> +	    x86_init.hyper.msi_ext_dest_id())
->>>>>  		return -ENODEV;
->>>>>
->>>>>  	if (hv_root_partition) {
->>>>> @@ -170,7 +169,9 @@ static int __init hyperv_prepare_irq_remapping(void)
->>>>>
->>>>>  static int __init hyperv_enable_irq_remapping(void)
->>>>>  {
->>>>> -	return IRQ_REMAP_X2APIC_MODE;
->>>>> +	if (x2apic_supported())
->>>>> +		return IRQ_REMAP_X2APIC_MODE;
->>>>> +	return IRQ_REMAP_XAPIC_MODE;
->>>>>  }
->>>>>
->>>>>  struct irq_remap_ops hyperv_irq_remap_ops = {
->>>>> --
->>>>> 2.25.1
->>>>>
+would end up just reserving 0x1000->0x1800, it still wouldn't allow
+
+	ioremap(0x1000, 0x800);
+
+to succeed because *both* of them would end up trying to reserve the
+beginning of the page.  Basically, the first caller effectively reserves
+the whole page and any second user will fail.
+
+So the other place it would matter would be for mappings that span two
+pages, say:
+
+	ioremap(0x1fff, 0x2)
+
+But I guess those aren't very common.  Most large ioremap() callers seem
+to already have base and size page-aligned.
+
+Anyway, sorry to make so much of a big deal about a one-liner.  But,
+these decade-old bugs really make me wonder how they stuck around for so
+long.
+
+I'd be curious if you thought about this too while putting together this
+fox.
