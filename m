@@ -1,135 +1,80 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07B61187B
-	for <iommu@lists.linux.dev>; Sun, 13 Nov 2022 16:36:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-	:Reply-To:Content-Type:Content-ID:Content-Description;
-	bh=bm9iJk+kVC/i+ZASfRIM102pV+AxG+Ji6MRA8D8G/hY=; b=D+OjBUBfCQQK7BJwONwAEfMW1V
-	8jRN6GgBR+VrL0tS3XZiRQ9Izl/KLvRdOZNqOKO2oIvVjbiEGO1c1mbTInhWzw5wANb8webd1H6p5
-	4/cHh9i8I5M7GvWwpaoJptq5AjmQRt8Uvmx0I5RXPXAGTwzpOau/gcI90NjYFBjagiMm2ZQ5k22MD
-	7he1X8jQVE3y/TPsjx6SSpehg1Wx7QAkYIJ9T/fxBFt3LhOvqAFBSPxj82bVviM8XSUfaM+n1JJeB
-	F3Tse+cErMM0s3ZTGzoBDhUF3xq2vcmDdNxALOObw3iQy8FqQtrGg2svEfAxxHzAdX4NFzYvz8ba/
-	OKZme3wA==;
-Received: from 213-225-8-167.nat.highway.a1.net ([213.225.8.167] helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-	id 1ouFxr-00CLdm-QM; Sun, 13 Nov 2022 16:36:12 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	Alexandra Winter <wintera@linux.ibm.com>,
-	Wenjia Zhang <wenjia@linux.ibm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Jaroslav Kysela <perex@perex.cz>,
-	Takashi Iwai <tiwai@suse.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: linux-arm-kernel@lists.infradead.org,
-	linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-media@vger.kernel.org,
-	netdev@vger.kernel.org,
-	linux-s390@vger.kernel.org,
-	alsa-devel@alsa-project.org
-Subject: [PATCH 7/7] dma-mapping: reject __GFP_COMP in dma_alloc_attrs
-Date: Sun, 13 Nov 2022 17:35:35 +0100
-Message-Id: <20221113163535.884299-8-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20221113163535.884299-1-hch@lst.de>
-References: <20221113163535.884299-1-hch@lst.de>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F2A82F5F
+	for <iommu@lists.linux.dev>; Sun, 13 Nov 2022 20:34:02 +0000 (UTC)
+Message-ID: <20221113201935.776707081@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1668371635;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc; bh=7MxnopjDUQ1bdcA7I42+FS4FruEBgUMrTam7b1hHOfY=;
+	b=GD7AYqNO+9zs89yvH9A3kuIe3BFCbmfyUX9bM5DxoGC2/9W9NdipMWcwOhTl9Pifdc0yCX
+	EDhvw2y+NoWqtlUiYz9FJqPR9CQny0Z12KgZ1d5E+TGqMmHlGz7MsPwC8U14oZBCtfjm6E
+	REU/mFYEcZcwcS0BNroWm8KMYTtPidN5lfjTpV++dxwqsHCUccIX2hT1SqgjPzktYZ+lG4
+	iELCXsN4rAiDDZdNSxbOCmhU6ODxCoqh5FpA0V3jZkg/TqabJcXckbAakEpN9zUH++JIo7
+	t5Thzi4kcs9WVGg3Y1kptNIVVOv3RRInTTR/1b4TKFM82gG7b4uRm+PuDFV7Hw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1668371635;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc; bh=7MxnopjDUQ1bdcA7I42+FS4FruEBgUMrTam7b1hHOfY=;
+	b=TOAACLZw9M5uSJ1ngz5jOUvHAmnmW+licTR7ipmgh8VxLfj/M9NIf4LtBb5fWxUDQ+jAKO
+	PNfZNRVVBs7etJCQ==
+From: Thomas Gleixner <tglx@linutronix.de>
+To: LKML <linux-kernel@vger.kernel.org>
+Cc: Marc Zyngier <maz@kernel.org>,
+ Lee Jones <lee@kernel.org>,
+ Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+ linux-ide@vger.kernel.org,
+ James Smart <james.smart@broadcom.com>,
+ Dick Kennedy <dick.kennedy@broadcom.com>,
+ "James E.J. Bottomley" <jejb@linux.ibm.com>,
+ "Martin K. Petersen" <martin.petersen@oracle.com>,
+ linux-scsi@vger.kernel.org,
+ Stuart Yoder <stuyoder@gmail.com>,
+ Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+ Fenghua Yu <fenghua.yu@intel.com>,
+ Dave Jiang <dave.jiang@intel.com>,
+ Vinod Koul <vkoul@kernel.org>,
+ dmaengine@vger.kernel.org,
+ Ioana Ciornei <ioana.ciornei@nxp.com>,
+ "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>,
+ netdev@vger.kernel.org,
+ Simon Horman <simon.horman@corigine.com>,
+ oss-drivers@corigine.com,
+ Roy Pledge <Roy.Pledge@nxp.com>,
+ Diana Craciun <diana.craciun@oss.nxp.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Cornelia Huck <cohuck@redhat.com>,
+ kvm@vger.kernel.org,
+ Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ iommu@lists.linux.dev
+Subject:
+ [patch 00/10] genirq/msi: Treewide cleanup of pointless linux/msi.h includes
+Date: Sun, 13 Nov 2022 21:33:54 +0100 (CET)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-DMA allocations can never be turned back into a page pointer, so
-requesting compound pages doesn't make sense and it can't even be
-supported at all by various backends.
+While working on per device MSI domains I noticed that quite some files
+include linux/msi.h just because.
 
-Reject __GFP_COMP with a warning in dma_alloc_attrs, and stop clearing
-the flag in the arm dma ops and dma-iommu.
+The top level comment in the header file clearly says:
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- arch/arm/mm/dma-mapping.c | 17 -----------------
- drivers/iommu/dma-iommu.c |  3 ---
- kernel/dma/mapping.c      |  8 ++++++++
- 3 files changed, 8 insertions(+), 20 deletions(-)
+  Regular device drivers have no business with any of these functions....
 
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index d7909091cf977..c135f6e37a00c 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -564,14 +564,6 @@ static void *__dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
- 	if (mask < 0xffffffffULL)
- 		gfp |= GFP_DMA;
- 
--	/*
--	 * Following is a work-around (a.k.a. hack) to prevent pages
--	 * with __GFP_COMP being passed to split_page() which cannot
--	 * handle them.  The real problem is that this flag probably
--	 * should be 0 on ARM as it is not supported on this
--	 * platform; see CONFIG_HUGETLBFS.
--	 */
--	gfp &= ~(__GFP_COMP);
- 	args.gfp = gfp;
- 
- 	*handle = DMA_MAPPING_ERROR;
-@@ -1093,15 +1085,6 @@ static void *arm_iommu_alloc_attrs(struct device *dev, size_t size,
- 		return __iommu_alloc_simple(dev, size, gfp, handle,
- 					    coherent_flag, attrs);
- 
--	/*
--	 * Following is a work-around (a.k.a. hack) to prevent pages
--	 * with __GFP_COMP being passed to split_page() which cannot
--	 * handle them.  The real problem is that this flag probably
--	 * should be 0 on ARM as it is not supported on this
--	 * platform; see CONFIG_HUGETLBFS.
--	 */
--	gfp &= ~(__GFP_COMP);
--
- 	pages = __iommu_alloc_buffer(dev, size, gfp, attrs, coherent_flag);
- 	if (!pages)
- 		return NULL;
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 9297b741f5e80..f798c44e09033 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -744,9 +744,6 @@ static struct page **__iommu_dma_alloc_pages(struct device *dev,
- 	/* IOMMU can map any pages, so himem can also be used here */
- 	gfp |= __GFP_NOWARN | __GFP_HIGHMEM;
- 
--	/* It makes no sense to muck about with huge pages */
--	gfp &= ~__GFP_COMP;
--
- 	while (count) {
- 		struct page *page = NULL;
- 		unsigned int order_size;
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index 33437d6206445..c026a5a5e0466 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -498,6 +498,14 @@ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
- 
- 	WARN_ON_ONCE(!dev->coherent_dma_mask);
- 
-+	/*
-+	 * DMA allocations can never be turned back into a page pointer, so
-+	 * requesting compound pages doesn't make sense (and can't even be
-+	 * supported at all by various backends).
-+	 */
-+	if (WARN_ON_ONCE(flag & __GFP_COMP))
-+		return NULL;
-+
- 	if (dma_alloc_from_dev_coherent(dev, size, dma_handle, &cpu_addr))
- 		return cpu_addr;
- 
--- 
-2.30.2
+and actually none of the drivers needs anything from msi.h.
 
+The series is not depending on anything so the individual patches can be
+picked up by the relevant maintainers. I'll mop up the leftovers close to
+the merge window.
+
+Thanks,
+
+	tglx
