@@ -1,147 +1,109 @@
-Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
+Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40484748D
-	for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 16:58:24 +0000 (UTC)
-Received: by mail-lf1-f42.google.com with SMTP id a29so20274997lfj.9
-        for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 08:58:24 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D1C0748D
+	for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 17:06:38 +0000 (UTC)
+Received: by mail-lj1-f181.google.com with SMTP id a15so14040279ljb.7
+        for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 09:06:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Ky6pMQvRONZVOpXOzzVJ/Yrj7b7SsY3DwGhKO3TyKDI=;
-        b=KiwHvFvs5FTx2Ns2wjm8nyJt/2QGsG7J1I7jBrEP8ulyplTvam57JpsemWKsa4IANV
-         Vh9WZTRlIH/pQdxw9+Y63655uGk6pKeomGl0pLOIV5DTbBEjyBlj+xxpETDp3Ot9qeS3
-         E0eEDnFkvnEoPylvCbwCzAhla68kLvZ0rFnVbGK8zWDKHONgsuGP5pv92+CXcS2SNYLz
-         heNYKB6k7A5WLTVqhcORRCNueXz/CsoDcgBEaV1WFDWgxZ5sO0JnKHkgMO3F9q8RSIcY
-         BDFFVO80RKSWQT35AYbyX3yoYGNVydUCTIfKu3yVFOh/jy6s6Dr2foCqWpyk4NSaTqvH
-         9MRA==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=g6guTtDkA1ReGKdqMu1CmE/t+c1qdwq/DIe8B70Maw4=;
+        b=lXt9G05aMbjIX8SyJJmKxQQbhZbT47qR3PDriRUC/rwgstPI+MLj2IFqwqUnpZ5tU3
+         ayjVTb6PpWhS+A2bV67A6/YDG2ql+DBZdtCwwlg62vZCFRODHCAhjZhgjgpGa98zlYua
+         pL4KZFtycsD2vkES+aMG8bJdCT7dTW0auwFq82bVlk19ckcJuRjI6UU/glPoHnmz6cxY
+         NfXglJ+Do9C4CJB0/BTKUhGIexhuMIfUFhFq03SoKV+AvchXxYvb9NdZmYk9WJ0sWRtW
+         7OugrtBlrqzWa9ZLPsxTLLo2jyE5UOP05RpTJR8nfJQYf/Qe6TAG+tddDgln383CNe5N
+         7GIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Ky6pMQvRONZVOpXOzzVJ/Yrj7b7SsY3DwGhKO3TyKDI=;
-        b=zq8EK0Kp+UKfP0ijEdrU4Fcd9EYze5Pg/hw/aGstxb6R1ZO2e+wwt76cK441nvX95E
-         N4rRNB1BRGX3B8Hb10Bn588ml0keo0sghKfN/DQV7HsBXPJReetW4Be6etpkJXwc48rE
-         QL8o9GAlFxu0inAa32BqNuo9ABq015c0L+3Ywjwm+6ZXcz7BW2rt4yuIT/ILeJo8a0hg
-         l4c4DtokbXsrqWaheoi4c6w3x/qrJcf5RcDH5pSP1LgRfvdQSPl4JzWO2XQBSQH6GKtX
-         j3N9aqd6nEC/k0dR+b1cwUnOiLPVfOUgjASRv9X5WBzfa8/KBN97zw9XEqsJKeg+NRSj
-         qi7Q==
-X-Gm-Message-State: ANoB5pmW1YC7a8vJ6s656054gsp+SaRVg09t28hs0iJjYDGa4I/ux2En
-	yq9APcmNLentRsiyNU0uuGmQjQ==
-X-Google-Smtp-Source: AA0mqf7/d/ExzMhN+Xf9uSDjhga3dRHbNfCb1ccpBEzobEMejcOy7EpBl3YlBur6KVu73zCB44OYgg==
-X-Received: by 2002:a05:6512:718:b0:4b1:b7d0:21e4 with SMTP id b24-20020a056512071800b004b1b7d021e4mr4701191lfs.72.1668445102292;
-        Mon, 14 Nov 2022 08:58:22 -0800 (PST)
-Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id bi39-20020a0565120ea700b004a91df49508sm1897033lfb.177.2022.11.14.08.58.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Nov 2022 08:58:21 -0800 (PST)
-Message-ID: <878402e7-7f80-31c7-3a6b-989a6ca29841@linaro.org>
-Date: Mon, 14 Nov 2022 17:58:20 +0100
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=g6guTtDkA1ReGKdqMu1CmE/t+c1qdwq/DIe8B70Maw4=;
+        b=RR2cdz6j+WkM1l3inkW+nJC3QKw6fBnboNF+wqxWIb7h10XOiHeoTaooTVBhhjZNBb
+         0DdK0fkYJc8OOZsr06Ee2IszPj3iKP5yP5B0JriyyH0TAZ7qwr5bscf9aaI41ngRwPgE
+         kbn/+i5sSgRIreGn4C3uQhNT4aGlOoRDYF5EkDlNxcgLXrO97qLpxN8Szh0BsrD9Q9EN
+         KiKma3sqBwDz6QNFcF96ooOqP9iKgifAiPQ1+YRVnYQroSyc8PPEZnH0I6fmYUrPPO4K
+         Yd81IgLNLMxveZ9p3jgvbtPrCFJQvXAwkVOHTIL8dv5VsSR0bnEnEt+CiOf+IxhB1i1c
+         Rdjg==
+X-Gm-Message-State: ANoB5pnz0sJRhkV2m7Z4PQthXgeF1ch2dMvWB/tpxSpZQST9uBsaWdni
+	XmQmJ1Zig1t3ch9Xi5AFyV1/PA==
+X-Google-Smtp-Source: AA0mqf7mzNaaz3n1mkr6Lj1F4uek+u1lXPv2BxwOoadDwOtOhQ+ybNFAsCQDUPJniHl3xDGMrg1xYw==
+X-Received: by 2002:a05:651c:194a:b0:277:9e5:6cc9 with SMTP id bs10-20020a05651c194a00b0027709e56cc9mr4916409ljb.165.1668445596544;
+        Mon, 14 Nov 2022 09:06:36 -0800 (PST)
+Received: from eriador.lan ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id q7-20020a056512210700b004a2ae643b99sm1896344lfr.170.2022.11.14.09.06.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Nov 2022 09:06:36 -0800 (PST)
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+To: Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konrad.dybcio@somainline.org>,
+	Rob Clark <robdclark@gmail.com>
+Cc: Vinod Koul <vkoul@kernel.org>,
+	Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-arm-msm@vger.kernel.org,
+	iommu@lists.linux.dev,
+	devicetree@vger.kernel.org,
+	freedreno@lists.freedesktop.org
+Subject: [PATCH v1 00/10] iommu/arm-smmu-qcom: Rework Qualcomm SMMU bindings and implementation
+Date: Mon, 14 Nov 2022 20:06:25 +0300
+Message-Id: <20221114170635.1406534-1-dmitry.baryshkov@linaro.org>
+X-Mailer: git-send-email 2.35.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH v2 1/9] dt-bindings: arm-smmu: Allow up to 3 power-domains
-Content-Language: en-US
-To: Konrad Dybcio <konrad.dybcio@linaro.org>, linux-arm-msm@vger.kernel.org,
- andersson@kernel.org, agross@kernel.org
-Cc: patches@linaro.org, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20221114104222.36329-1-konrad.dybcio@linaro.org>
- <20221114104222.36329-2-konrad.dybcio@linaro.org>
- <6fa8e3ea-2113-d930-96bc-3726d53e5bcd@linaro.org>
- <a4b160d8-0faa-3f4c-a925-0beaf6ace721@linaro.org>
- <0121fc03-b027-7659-5e6e-b42089c9888d@linaro.org>
- <12578e05-ced9-e5f7-7922-0af2f2159333@linaro.org>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <12578e05-ced9-e5f7-7922-0af2f2159333@linaro.org>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On 14/11/2022 16:53, Konrad Dybcio wrote:
-> 
-> On 14/11/2022 14:00, Krzysztof Kozlowski wrote:
->> On 14/11/2022 12:17, Konrad Dybcio wrote:
->>> On 14/11/2022 12:01, Krzysztof Kozlowski wrote:
->>>> On 14/11/2022 11:42, Konrad Dybcio wrote:
->>>>> Some SMMUs require that a vote is held on as much as 3 separate PDs
->>>>> (hello Qualcomm). Allow it in bindings.
->>>>>
->>>>> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
->>>>> ---
->>>>> Changes since v1:
->>>>> - Add minItems
->>>>>
->>>>>    Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 3 ++-
->>>>>    1 file changed, 2 insertions(+), 1 deletion(-)
->>>>>
->>>>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>>>> index 9066e6df1ba1..82bc696de662 100644
->>>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>>>> @@ -159,7 +159,8 @@ properties:
->>>>>              through the TCU's programming interface.
->>>>>    
->>>>>      power-domains:
->>>>> -    maxItems: 1
->>>>> +    minItems: 0
->>>> It cannot be 0.
->>>>
->>>> minItems: 1
->>>>
->>>> Anyway you still need to restrict it per variant, as I said in previous
->>>> version.
->>> Hm.. I'm not entirely sure what you mean.. Should I add a list of
->>> compatibles
->> Yes and limit it to maxItems: 1 for "else".
-> 
-> I tried adding:
-> 
-> 
-> 
->    - if:
->        properties:
->          compatible:
->            contains:
->              enum:
->                - qcom,sm6375-smmu-500
->      then:
->        properties:
->          power-domains:
->            minItems: 3
->            maxItems: 3
->      else:
->        properties:
->          power-domains:
->            maxItems: 1
-> 
-> 
-> Right under the nvidia reg if-else in the allOf, but dtbs_check throws 
-> errors like:
-> 
-> 
-> /home/konrad/linux/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino-poplar.dtb: 
-> iommu@5040000: 'power-domains' does not match any of the regexes: 
-> 'pinctrl-[0-9]+'
-> 
-> 
-> Any clues as to why?
+The main goal of this patchset is to define a generic qcom,smmu-500
+binding to be used by newer Qualcomm platforms instead of defining each
+and every SoC line with no actual differences between the compats.
 
-I don't know what code do you have there, but generic pattern is:
+While preparing this change it was required to cleanup the existing
+bindings and to rework the way the arm-smmu-qcom implementation handles
+binding to IOMMU devices.
 
-https://elixir.bootlin.com/linux/v5.19-rc6/source/Documentation/devicetree/bindings/clock/samsung,exynos7-clock.yaml#L38
+Changes since RFC v2:
+ - Dropped the dts patch, picked up by Bjorn
+ - Fixed minor nits in commit messages and in-file comments (noted by
+   Krzysztof and Richard Acayan)
 
-Best regards,
-Krzysztof
+Changes since RFC v1:
+ - Added the dts patch fixing order of clocks in msm8996.dtsi
+ - Fixed the DT bot errors
+ - Added separate clause for Google Cheza devices
+
+Dmitry Baryshkov (10):
+  dt-bindings: arm-smmu: Add missing Qualcomm SMMU compatibles
+  dt-bindings: arm-smmu: fix clocks/clock-names schema
+  dt-bindings: arm-smmu: add special case for Google Cheza platform
+  dt-bindings: arm-smmu: Add generic qcom,smmu-500 bindings
+  iommu/arm-smmu-qcom: Move implementation data into match data
+  iommu/arm-smmu-qcom: Move the qcom,adreno-smmu check into
+    qcom_smmu_create
+  iommu/arm-smmu-qcom: provide separate implementation for
+    SDM845-smmu-500
+  iommu/arm-smmu-qcom: Merge table from arm-smmu-qcom-debug into match
+    data
+  iommu/arm-smmu-qcom: Stop using mmu500 reset for v2 MMUs
+  iommu/arm-smmu-qcom: Add generic qcom,smmu-500 match entry
+
+ .../devicetree/bindings/iommu/arm,smmu.yaml   | 173 +++++++++++++++++-
+ .../iommu/arm/arm-smmu/arm-smmu-qcom-debug.c  |  91 ---------
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c    | 163 ++++++++++++-----
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h    |  21 ++-
+ 4 files changed, 298 insertions(+), 150 deletions(-)
+
+-- 
+2.35.1
 
