@@ -1,32 +1,32 @@
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C9B310F2
-	for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 01:47:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3BA510F2
+	for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 01:47:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668390472; x=1699926472;
+  t=1668390474; x=1699926474;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=7aamF6wGSE378rpzekeRabhg3g404C8LbAS2Hr4cz0g=;
-  b=Mf4GdQbulA6M59HtXAZTbaqR8JCIqPg2Wa6D86Mg/vUmy1ImJST3JqEF
-   2AJguVdmpJmiyDhWEZaXXG3ZZxgjTPD5U/SX9murcKuviE1sySHvj4rmy
-   BN0+Wa4QqVuCJbfS0PAEyAlltljMLV1C51R0ROLaH9ZE/8KamYvzG4c2B
-   KlLCYRWIXkbZ4ctwtpEUEFG5zqx0qLSUUoMydl3O5Z1CpuW25k2DaGceV
-   QopnrHHvFLLE6qL5YIqSUZ9WSWQh6oULr7J+JqtVEd/elXu+7LDZTeiVk
-   EokazkPVhB2kTRy+7HInVEjsuW5pmyxedGi7hMKsbaqiunp5L7GDoKWjJ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10530"; a="398151498"
+  bh=sNLRuDFy+mxQWPGwH2w3Z3rqtpY2BnCQzmJS+aDcxsw=;
+  b=AsfhpGOYNa+FITrMxBlsfe27F/Jg4UJt3j4mU36quohdO7sOw8eqT52i
+   Ep+QMNGAWx/EimV57qx+ZH4qCivrCKj8lWbln4f5Pnm8VO0A9HB3FlUMq
+   wso0dI9JjHrd0vdfDRBszqRdqfQ503j+v7yZsCCW2CBvvoNPqKdJ2blFo
+   zNBFVv4mI7jiIvs4hmWKBzbnIgKX5HAr5ZkYCmcYmz+UajDnmR5ZyO8bU
+   k+W+VoA5+Nkzor/S6gPcSy58fA7SypMGHaZVltKm3pmSUGzxJxreKJjWV
+   5zuRjPTGRACxgY9knA3huCdKuhFNUYb0peXY2mDGYgFqhrN3Tp3vmo+4v
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10530"; a="398151508"
 X-IronPort-AV: E=Sophos;i="5.96,161,1665471600"; 
-   d="scan'208";a="398151498"
+   d="scan'208";a="398151508"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2022 17:47:52 -0800
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2022 17:47:54 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10530"; a="707124208"
+X-IronPort-AV: E=McAfee;i="6500,9779,10530"; a="707124214"
 X-IronPort-AV: E=Sophos;i="5.96,161,1665471600"; 
-   d="scan'208";a="707124208"
+   d="scan'208";a="707124214"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga004.fm.intel.com with ESMTP; 13 Nov 2022 17:47:49 -0800
+  by fmsmga004.fm.intel.com with ESMTP; 13 Nov 2022 17:47:52 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: iommu@lists.linux.dev
 Cc: Joerg Roedel <joro@8bytes.org>,
@@ -37,9 +37,9 @@ Cc: Joerg Roedel <joro@8bytes.org>,
 	Jacob jun Pan <jacob.jun.pan@intel.com>,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v3 2/7] iommu/vt-d: Add device_block_translation() helper
-Date: Mon, 14 Nov 2022 09:40:44 +0800
-Message-Id: <20221114014049.3959-3-baolu.lu@linux.intel.com>
+Subject: [PATCH v3 3/7] iommu/vt-d: Add blocking domain support
+Date: Mon, 14 Nov 2022 09:40:45 +0800
+Message-Id: <20221114014049.3959-4-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221114014049.3959-1-baolu.lu@linux.intel.com>
 References: <20221114014049.3959-1-baolu.lu@linux.intel.com>
@@ -51,121 +51,87 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-If domain attaching to device fails, the IOMMU driver should bring the
-device to blocking DMA state. The upper layer is expected to recover it
-by attaching a new domain. Use device_block_translation() in the error
-path of dev_attach to make the behavior specific.
-
-The difference between device_block_translation() and the previous
-dmar_remove_one_dev_info() is that, in the scalable mode, it is the
-RID2PASID entry instead of context entry being cleared. As a result,
-enabling PCI capabilities is moved up.
+The Intel IOMMU hardwares support blocking DMA transactions by clearing
+the translation table entries. This implements a real blocking domain to
+avoid using an empty UNMANAGED domain. The detach_dev callback of the
+domain ops is not used in any path. Remove it to avoid dead code as well.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel/iommu.c | 44 ++++++++++++++++++++++++++++++++-----
- 1 file changed, 38 insertions(+), 6 deletions(-)
+ drivers/iommu/intel/iommu.c | 26 ++++++++++++++++++--------
+ 1 file changed, 18 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index bc42a2c84e2a..16eeff2f7e19 100644
+index 16eeff2f7e19..3d3fa182fcb1 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -277,7 +277,7 @@ static LIST_HEAD(dmar_satc_units);
- #define for_each_rmrr_units(rmrr) \
+@@ -278,6 +278,7 @@ static LIST_HEAD(dmar_satc_units);
  	list_for_each_entry(rmrr, &dmar_rmrr_units, list)
  
--static void dmar_remove_one_dev_info(struct device *dev);
-+static void device_block_translation(struct device *dev);
+ static void device_block_translation(struct device *dev);
++static void intel_iommu_domain_free(struct iommu_domain *domain);
  
  int dmar_disabled = !IS_ENABLED(CONFIG_INTEL_IOMMU_DEFAULT_ON);
  int intel_iommu_sm = IS_ENABLED(CONFIG_INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON);
-@@ -1402,7 +1402,7 @@ static void iommu_enable_pci_caps(struct device_domain_info *info)
- {
- 	struct pci_dev *pdev;
- 
--	if (!info || !dev_is_pci(info->dev))
-+	if (!dev_is_pci(info->dev))
- 		return;
- 
- 	pdev = to_pci_dev(info->dev);
-@@ -2047,7 +2047,6 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
- 	} else {
- 		iommu_flush_write_buffer(iommu);
- 	}
--	iommu_enable_pci_caps(info);
- 
- 	ret = 0;
- 
-@@ -2489,7 +2488,7 @@ static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
- 					dev, PASID_RID2PASID);
- 		if (ret) {
- 			dev_err(dev, "Setup RID2PASID failed\n");
--			dmar_remove_one_dev_info(dev);
-+			device_block_translation(dev);
- 			return ret;
- 		}
- 	}
-@@ -2497,10 +2496,12 @@ static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
- 	ret = domain_context_mapping(domain, dev);
- 	if (ret) {
- 		dev_err(dev, "Domain context map failed\n");
--		dmar_remove_one_dev_info(dev);
-+		device_block_translation(dev);
- 		return ret;
- 	}
- 
-+	iommu_enable_pci_caps(info);
-+
+@@ -4164,12 +4165,28 @@ static int md_domain_init(struct dmar_domain *domain, int guest_width)
  	return 0;
  }
  
-@@ -4111,6 +4112,37 @@ static void dmar_remove_one_dev_info(struct device *dev)
- 	info->domain = NULL;
- }
- 
-+/*
-+ * Clear the page table pointer in context or pasid table entries so that
-+ * all DMA requests without PASID from the device are blocked. If the page
-+ * table has been set, clean up the data structures.
-+ */
-+static void device_block_translation(struct device *dev)
++static int blocking_domain_attach_dev(struct iommu_domain *domain,
++				      struct device *dev)
 +{
-+	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+	struct intel_iommu *iommu = info->iommu;
-+	unsigned long flags;
-+
-+	iommu_disable_dev_iotlb(info);
-+	if (!dev_is_real_dma_subdevice(dev)) {
-+		if (sm_supported(iommu))
-+			intel_pasid_tear_down_entry(iommu, dev,
-+						    PASID_RID2PASID, false);
-+		else
-+			domain_context_clear(info);
-+	}
-+
-+	if (!info->domain)
-+		return;
-+
-+	spin_lock_irqsave(&info->domain->lock, flags);
-+	list_del(&info->link);
-+	spin_unlock_irqrestore(&info->domain->lock, flags);
-+
-+	domain_detach_iommu(info->domain, iommu);
-+	info->domain = NULL;
++	device_block_translation(dev);
++	return 0;
 +}
 +
- static int md_domain_init(struct dmar_domain *domain, int guest_width)
++static struct iommu_domain blocking_domain = {
++	.ops = &(const struct iommu_domain_ops) {
++		.attach_dev	= blocking_domain_attach_dev,
++		.free		= intel_iommu_domain_free
++	}
++};
++
+ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
  {
- 	int adjust_width;
-@@ -4232,7 +4264,7 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
- 		struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 	struct dmar_domain *dmar_domain;
+ 	struct iommu_domain *domain;
  
- 		if (info->domain)
--			dmar_remove_one_dev_info(dev);
-+			device_block_translation(dev);
- 	}
+ 	switch (type) {
++	case IOMMU_DOMAIN_BLOCKED:
++		return &blocking_domain;
+ 	case IOMMU_DOMAIN_DMA:
+ 	case IOMMU_DOMAIN_DMA_FQ:
+ 	case IOMMU_DOMAIN_UNMANAGED:
+@@ -4204,7 +4221,7 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
  
- 	ret = prepare_domain_attach_device(domain, dev);
+ static void intel_iommu_domain_free(struct iommu_domain *domain)
+ {
+-	if (domain != &si_domain->domain)
++	if (domain != &si_domain->domain && domain != &blocking_domain)
+ 		domain_exit(to_dmar_domain(domain));
+ }
+ 
+@@ -4274,12 +4291,6 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
+ 	return domain_add_dev_info(to_dmar_domain(domain), dev);
+ }
+ 
+-static void intel_iommu_detach_device(struct iommu_domain *domain,
+-				      struct device *dev)
+-{
+-	dmar_remove_one_dev_info(dev);
+-}
+-
+ static int intel_iommu_map(struct iommu_domain *domain,
+ 			   unsigned long iova, phys_addr_t hpa,
+ 			   size_t size, int iommu_prot, gfp_t gfp)
+@@ -4787,7 +4798,6 @@ const struct iommu_ops intel_iommu_ops = {
+ #endif
+ 	.default_domain_ops = &(const struct iommu_domain_ops) {
+ 		.attach_dev		= intel_iommu_attach_device,
+-		.detach_dev		= intel_iommu_detach_device,
+ 		.map_pages		= intel_iommu_map_pages,
+ 		.unmap_pages		= intel_iommu_unmap_pages,
+ 		.iotlb_sync_map		= intel_iommu_iotlb_sync_map,
 -- 
 2.34.1
 
