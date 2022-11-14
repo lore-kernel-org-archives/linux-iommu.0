@@ -1,147 +1,98 @@
-Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F2A96FC1
-	for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 15:53:37 +0000 (UTC)
-Received: by mail-lj1-f173.google.com with SMTP id x21so13745819ljg.10
-        for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 07:53:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=iFWd2m5XWAIUBukAvtG87ESkORevoEKwbahoShbsHGs=;
-        b=gHKpaujIP4yqkPLWSxP/u7oOLFIAUkdMqLmA2+M/QEBY4DUULV8ZWQ2SSHqq/xUBff
-         MDdDnV5i+9H4tVU+S0gIms9A5gbbT9D5LNPkzWPLBIvyIud5QSkUDfiRf7T5V/bQbg50
-         S8D1lkrwkdYQdzNx0CnkcRG08tvhfCEX/eV03FRz37df8u3eflXTgGKYBavc5XG33NCh
-         Sk70zjtPZHMO/yD9ctcTLLx9yaKv3Gb45tf2kUu2zqFgDagTEsi1zZ/Y2ieLgaXbdSdO
-         tROJy7mrxMIgPwvFUtuNbxW3Gx+a+Ar1iN8D4W3sDpbawFXw4JYQQsOtxNA7Mn1zoElR
-         0hgA==
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD1396FC1
+	for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 16:18:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1668442686;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=hxvXy2EJc9Qd0pwiulW/osrJ5/Pv/7EvjVfPKadkE/I=;
+	b=iCszBhR/W/l+/xv//Y/yM+yZA60ECwUWEN8iNJ1NA4dyBAKfCFyNCqz62QxrPvU3HPLWKe
+	5HFGkJEU3WTjDCoAvswtmMS0/0kIwJ7uMYBqZ8jWJBwgniT4h5fhmtdozSUmQN1S1jgDLK
+	B+To5HYNGWQz11gQf7sQwfIFsxkKGjo=
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
+ [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-376-mtMeh9YjOiOIt193nTe7kQ-1; Mon, 14 Nov 2022 11:18:05 -0500
+X-MC-Unique: mtMeh9YjOiOIt193nTe7kQ-1
+Received: by mail-il1-f198.google.com with SMTP id s4-20020a056e02216400b003021b648144so9602963ilv.19
+        for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 08:18:05 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=iFWd2m5XWAIUBukAvtG87ESkORevoEKwbahoShbsHGs=;
-        b=oRCsT6h9hGLkM2rJMqlZqHnN6R3fvFwvoiYRT4i6GbCgOzi3j09y1ABWBgbk9GGDlr
-         iLxT+Wv+1mSnwsFwX/v55eBoj0JM3ov6XaH1wmDAF1mxA3RJJe8lufjF+/lzz0xkSVYv
-         Z+D0xxIs1bfmMrRhAKTLcRhmTCfdU/pbEjpO7ly2L83Yiqi0eocbUldmeks6olX860Sh
-         EC5q05FS4wwCkQjIewYhPpQaRPWktA9s9fr5bWlo1s21vzdCBgLcpXsmwXBoZM4kzkx5
-         yDQEhNMYtVEXQ0fj9K2m8UwptYIC9cj5IzjbAgNyAMWQiUGrCiLBM/rqoI2GM0bpIIDb
-         OeTA==
-X-Gm-Message-State: ANoB5plOBk5I+vNi+foTaA20XhCBlkkqEDphY/IGFt2MoyIWfj2I4JIs
-	9Ne99NUL/veNSUJOK2XreMiciA==
-X-Google-Smtp-Source: AA0mqf7u3FO6mqMqL/O/9MD1mYQ8T/xRPY8vSC+lEwCmp+D+mRgb+hzX8+tpF096sntwINEzwHms9Q==
-X-Received: by 2002:a2e:7310:0:b0:277:d86:a36d with SMTP id o16-20020a2e7310000000b002770d86a36dmr4258270ljc.288.1668441215396;
-        Mon, 14 Nov 2022 07:53:35 -0800 (PST)
-Received: from [192.168.31.208] ([194.29.137.22])
-        by smtp.gmail.com with ESMTPSA id h31-20020a0565123c9f00b00498f00420e9sm1857160lfv.194.2022.11.14.07.53.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Nov 2022 07:53:34 -0800 (PST)
-Message-ID: <12578e05-ced9-e5f7-7922-0af2f2159333@linaro.org>
-Date: Mon, 14 Nov 2022 16:53:31 +0100
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=hxvXy2EJc9Qd0pwiulW/osrJ5/Pv/7EvjVfPKadkE/I=;
+        b=oWsuCBh7c7DsgsyjosWni9VF73C25fKLn3S/M21wjL+9SoC4V2kyqhIkFEo5QgF6SS
+         zvqhLsCRfFNsqKpTYQq7Fj9gVrDXVWDpS3XI4DFkB2UcXZ6ilpCewZoE+Z/mHnHFTvwJ
+         61i7a0o9pZvullt8Pza0rp87Nto4f7+cL9YPZc1oNZo5aK/QLeZCSFbNrMn9OqH5nQhu
+         LFOnuPm0N+YKfGVKAZ/Z/GtlbM/dSpA5h+Z7CnhKlYTlDulj3O1TWCWnQjbBThWgb1UL
+         gKJPudADVzW1K3RrZxmnlQmKzIcKWmYHpBdMyfjrrd9MhSD5AMRUKW3PTKQl2eRJRcDi
+         g8rg==
+X-Gm-Message-State: ANoB5pkPwQ+Fm/ssAxpzz9JvG6ds7Lb3OAFgPRoHWc3dGSEJwbDzue1w
+	OzqTg8stM1lpD+lFOiSivbfcCs0Lz1fdzkify8aLHPTuRNkOKqmGK7VL9RUFvTIiXEQaAbRyRt2
+	0sLujLqLk9IF5zmc=
+X-Received: by 2002:a05:6e02:1d06:b0:300:f4a5:7266 with SMTP id i6-20020a056e021d0600b00300f4a57266mr6579912ila.273.1668442684531;
+        Mon, 14 Nov 2022 08:18:04 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf7lPMQWW+38n5rm2EgYIjtpOtDqi7Qiix94SnrgiMLorpuKojFAx39PuDP8JvI8meve6GVa+A==
+X-Received: by 2002:a05:6e02:1d06:b0:300:f4a5:7266 with SMTP id i6-20020a056e021d0600b00300f4a57266mr6579906ila.273.1668442684300;
+        Mon, 14 Nov 2022 08:18:04 -0800 (PST)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id f19-20020a05660215d300b006ddf70e3ce8sm2290113iow.7.2022.11.14.08.18.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Nov 2022 08:18:03 -0800 (PST)
+Date: Mon, 14 Nov 2022 09:18:02 -0700
+From: Alex Williamson <alex.williamson@redhat.com>
+To: "leohou@tom.com" <leohou@tom.com>
+Cc: virtualization <virtualization@lists.linux-foundation.org>, iommu
+ <iommu@lists.linux.dev>, qemu-arm <qemu-arm@nongnu.org>, jasowang
+ <jasowang@redhat.com>, leohou1402 <leohou1402@gmail.com>
+Subject: Re: vIOMMU&IOMMU  gIOVA  to  HPA mapping
+Message-ID: <20221114091802.6be5099e.alex.williamson@redhat.com>
+In-Reply-To: <2022111420314945171759@tom.com>
+References: <2022111420314945171759@tom.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.4.2
-Subject: Re: [PATCH v2 1/9] dt-bindings: arm-smmu: Allow up to 3 power-domains
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- linux-arm-msm@vger.kernel.org, andersson@kernel.org, agross@kernel.org
-Cc: patches@linaro.org, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20221114104222.36329-1-konrad.dybcio@linaro.org>
- <20221114104222.36329-2-konrad.dybcio@linaro.org>
- <6fa8e3ea-2113-d930-96bc-3726d53e5bcd@linaro.org>
- <a4b160d8-0faa-3f4c-a925-0beaf6ace721@linaro.org>
- <0121fc03-b027-7659-5e6e-b42089c9888d@linaro.org>
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <0121fc03-b027-7659-5e6e-b42089c9888d@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
+On Mon, 14 Nov 2022 20:31:49 +0800
+"leohou@tom.com" <leohou@tom.com> wrote:
 
-On 14/11/2022 14:00, Krzysztof Kozlowski wrote:
-> On 14/11/2022 12:17, Konrad Dybcio wrote:
->> On 14/11/2022 12:01, Krzysztof Kozlowski wrote:
->>> On 14/11/2022 11:42, Konrad Dybcio wrote:
->>>> Some SMMUs require that a vote is held on as much as 3 separate PDs
->>>> (hello Qualcomm). Allow it in bindings.
->>>>
->>>> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
->>>> ---
->>>> Changes since v1:
->>>> - Add minItems
->>>>
->>>>    Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 3 ++-
->>>>    1 file changed, 2 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>>> index 9066e6df1ba1..82bc696de662 100644
->>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>>> @@ -159,7 +159,8 @@ properties:
->>>>              through the TCU's programming interface.
->>>>    
->>>>      power-domains:
->>>> -    maxItems: 1
->>>> +    minItems: 0
->>> It cannot be 0.
->>>
->>> minItems: 1
->>>
->>> Anyway you still need to restrict it per variant, as I said in previous
->>> version.
->> Hm.. I'm not entirely sure what you mean.. Should I add a list of
->> compatibles
-> Yes and limit it to maxItems: 1 for "else".
+> Hi=EF=BC=8C
+>      Here is my application scenario=EF=BC=9A
+> 1. The NIC (Network Information Center) passes through to the VM(Virtual =
+Machine);
+> 2. The VM uses the user mode driver DPDK;
+>=20
+> Question:
+> 1. vIOMMU maintains the mapping gIOVA->gPA, When do you use this gPA ?
 
-I tried adding:
+QEMU in the host derives the hVA from the gPA.  The vIOMMU driver in
+QEMU is triggering the gIOVA to hVA mapping through vfio in the host.
 
+> 2. Physical IOMMU maintains the GIOVA->HPA mapping ?  If so, by what mean=
+s (gIOVA -> HPA) mapping ?
 
+As above, the vIOMMU in the guest provides gIOVA -> gPA, in QEMU we do
+the gPA -> hVA, then vfio in the host kernel performs hVA -> hPA via
+page pinning.
 
-   - if:
-       properties:
-         compatible:
-           contains:
-             enum:
-               - qcom,sm6375-smmu-500
-     then:
-       properties:
-         power-domains:
-           minItems: 3
-           maxItems: 3
-     else:
-       properties:
-         power-domains:
-           maxItems: 1
+> 3. What does QEMU do in NIC pass-through address translation =EF=BC=9F
 
+The guest visible vIOMMU triggers MemoryListener notifications in QEMU
+for the device address space, which insert and removes mappings to the
+vfio layer below it.  Thanks,
 
-Right under the nvidia reg if-else in the allOf, but dtbs_check throws 
-errors like:
+Alex
 
-
-/home/konrad/linux/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino-poplar.dtb: 
-iommu@5040000: 'power-domains' does not match any of the regexes: 
-'pinctrl-[0-9]+'
-
-
-Any clues as to why?
-
-
-Konrad
-
->
->> that are allowed to have 3 power-domains and leave it as it was before
->> in the
->> 'else' case?
-> Best regards,
-> Krzysztof
->
