@@ -1,27 +1,27 @@
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8C9C2F24
-	for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 10:49:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2C3433CF
+	for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 10:54:43 +0000 (UTC)
 Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
 	(No client certificate requested)
 	(Authenticated sender: kholk11)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id 718DC6601E4C;
-	Mon, 14 Nov 2022 10:48:59 +0000 (GMT)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id B20F76601E4C;
+	Mon, 14 Nov 2022 10:54:40 +0000 (GMT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1668422940;
-	bh=b59RAUdgvzBDzIoLF/FN/FbsHdKBekzyW613jZm6ADQ=;
+	s=mail; t=1668423282;
+	bh=5RCv+9s4hD9rM0U7ey7QcmHhKUXJv0zWQbwP4P1/eks=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=WxjiIOjL9B3Vy5WWMdALNveVc0c5liT/GntHkm2C/hnfmCMT8kYAgsMHB1EsaML3B
-	 m39QcPqz0J9JdMoQkoCSI3GUxp+fKRcsBywaDbc8HAPXlRQz2gri2sGOzAygB+JdYd
-	 uOdoaKAmHoOqGaoYY00zhK2T+tuMTWxNNS8iSpiixdhv9M25ksRevkiTlBs/pw3bNd
-	 2buCwfspt8D438Mit/6CE2oj7I8agdlcmT8v8qoYjOPtcYeLPpjRSxT+LIh8h1LweV
-	 9acTigFkVy78oZfrL+zZ00P7roep6OSQb/CqVbhb/5i/0/of7P+rZydPMuhd6QMpJ3
-	 gPlORjjzF1Dbw==
-Message-ID: <f8f84113-c6f0-706c-cc87-4b57bacea059@collabora.com>
-Date: Mon, 14 Nov 2022 11:48:56 +0100
+	b=GtqAwvHKhgKgWI3ewuKyRKW/vPBpLlRSDT3EX08GVI76bTBlbcheO61x5bIrqrGhW
+	 mFrbYZvoKvMZEEhqZmZaqMuiA8+U0JyOkdo2YonZaFrLnoRcLSmUE41q7KbYwQzYtn
+	 k77wCRLgTviavyVPqKAGtKWEoLqwZnBrWG+VO5y7STBZv6DdZEKyfqUhHMDewnYJD7
+	 QdSVhVC7c9dQGVIbiaucjDTr2MYxCSzW4QZTjvHP2oLwq1RNnEEweKL15/CU8XS9wn
+	 iEAZBwsTylg9sG+D6ZBPo/zbaa82e/3bzTaLKISQwabsM/7beb71d2jJQh+FA3fBIw
+	 zd50wrzs+ziGQ==
+Message-ID: <b01091e0-993e-5dbb-ad69-c80d253fef76@collabora.com>
+Date: Mon, 14 Nov 2022 11:54:38 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -30,64 +30,43 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.3.3
-Subject: Re: [PATCH v2 3/8] iommu/arm-smmu: Add definition for
- ARM_SMMU_CB_FSRRESTORE
-To: Robin Murphy <robin.murphy@arm.com>, agross@kernel.org
+Subject: Re: [PATCH 1/7] dt-bindings: iommu: qcom,iommu: Document qcom,ctx-num
+ property
+Content-Language: en-US
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, agross@kernel.org
 Cc: andersson@kernel.org, konrad.dybcio@linaro.org, joro@8bytes.org,
- will@kernel.org, robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
- robdclark@gmail.com, linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
+ will@kernel.org, robin.murphy@arm.com, robh+dt@kernel.org,
+ krzysztof.kozlowski+dt@linaro.org, robdclark@gmail.com,
+ linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, marijn.suijten@somainline.org,
  kernel@collabora.com, luca@z3ntu.xyz, a39.skl@gmail.com,
  phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
-References: <20221111145919.221159-1-angelogioacchino.delregno@collabora.com>
- <20221111145919.221159-4-angelogioacchino.delregno@collabora.com>
- <d677f7c1-8c99-4bb0-d363-7a538b38a83a@arm.com>
-Content-Language: en-US
+References: <20221111135525.204134-1-angelogioacchino.delregno@collabora.com>
+ <20221111135525.204134-2-angelogioacchino.delregno@collabora.com>
+ <c0dca253-77a0-2a0a-8a03-2a727512eedb@linaro.org>
 From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <d677f7c1-8c99-4bb0-d363-7a538b38a83a@arm.com>
+In-Reply-To: <c0dca253-77a0-2a0a-8a03-2a727512eedb@linaro.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-Il 11/11/22 16:18, Robin Murphy ha scritto:
-> On 11/11/2022 2:59 pm, AngeloGioacchino Del Regno wrote:
->> In preparation for adding a proper context bank reset sequence in
->> qcom_iommu, add a definition for the implementation defined Fault
->> Status Restore register (FSRRESTORE).
+Il 14/11/22 09:23, Krzysztof Kozlowski ha scritto:
+> On 11/11/2022 14:55, AngeloGioacchino Del Regno wrote:
+>> Add a new "qcom,ctx-num" property to force an ASID number on IOMMU
+>> contexts where required.
+>>
+>> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+>> ---
+>>   Documentation/devicetree/bindings/iommu/qcom,iommu.txt | 1 +
 > 
-> It's not implementation defined, it's architectural. But I don't follow why we 
-> should need this. If we're resetting FSR, we don't need to restore any previous 
-> value to it; all we want to do is clear it, which we do already via its own mechanism.
+> This is already a v2:
+> https://lore.kernel.org/all/20220527212901.29268-1-konrad.dybcio@somainline.org/
+> 
+> and your v2 was a v3...
 > 
 
-The spec says "configurations" -> implementation defined whether the system
-implements stage 1 translation.... and that's how I got confused about it, sorry.
-
-Thanks for the review, this clears up my doubts: I can reset FSR without caring
-about FSRRESTORE.
-I'll send a v3 ASAP.
+I honestly didn't remember that this got sent again 5 months ago... besides,
+I have to send a new version anyway because of a code fix, should I name it v3?
 
 Regards,
 Angelo
-
-> Thanks,
-> Robin.
-> 
->> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
->> ---
->>   drivers/iommu/arm/arm-smmu/arm-smmu.h | 1 +
->>   1 file changed, 1 insertion(+)
->>
->> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h 
->> b/drivers/iommu/arm/arm-smmu/arm-smmu.h
->> index 703fd5817ec1..5015138799c5 100644
->> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
->> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
->> @@ -219,6 +219,7 @@ enum arm_smmu_cbar_type {
->>                        ARM_SMMU_FSR_TF |        \
->>                        ARM_SMMU_FSR_IGN)
->> +#define ARM_SMMU_CB_FSRRESTORE        0x5c
->>   #define ARM_SMMU_CB_FAR            0x60
->>   #define ARM_SMMU_CB_FSYNR0        0x68
-
-
