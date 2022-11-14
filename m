@@ -1,105 +1,147 @@
-Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
+Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CDB76FC1
-	for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 15:53:29 +0000 (UTC)
-Received: by mail-lf1-f49.google.com with SMTP id l12so19964724lfp.6
-        for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 07:53:29 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F2A96FC1
+	for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 15:53:37 +0000 (UTC)
+Received: by mail-lj1-f173.google.com with SMTP id x21so13745819ljg.10
+        for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 07:53:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ql7BbfjZhi9PUKex4VtigUx0q+x0JH+qcMLmXxKcm9A=;
-        b=B6RXSrmcloy8u6hww8BgiAqFD6lcgsmVusw5HA8LMyLb3k7XTt65oyuat6B3WJSLjE
-         0WAopbgePqczDLA2XSyO2OMPuyq+m9jZTtNAcKmMPm97TjdNVuSthc7DD2cBqm0DUPH+
-         49s3nTx2N9CuB2eapMLAD2qmaA8ESM6ZJHk8bGUMKEB4RzlZqA4+qFxsUyaWKrCbvuyN
-         TmkJdndOYYEFqjhZLpf1B2aZwHWHQp3UMwVoakPWAZAkUcDCVAOYxf1bGf1majwRo08+
-         WzZuHoZI3+jSSKbWzVALSzlhj1jo2MbvtkqlKKRNEDHyYFkDowiUSs4W6kdAZoPwhfm0
-         tNhA==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=iFWd2m5XWAIUBukAvtG87ESkORevoEKwbahoShbsHGs=;
+        b=gHKpaujIP4yqkPLWSxP/u7oOLFIAUkdMqLmA2+M/QEBY4DUULV8ZWQ2SSHqq/xUBff
+         MDdDnV5i+9H4tVU+S0gIms9A5gbbT9D5LNPkzWPLBIvyIud5QSkUDfiRf7T5V/bQbg50
+         S8D1lkrwkdYQdzNx0CnkcRG08tvhfCEX/eV03FRz37df8u3eflXTgGKYBavc5XG33NCh
+         Sk70zjtPZHMO/yD9ctcTLLx9yaKv3Gb45tf2kUu2zqFgDagTEsi1zZ/Y2ieLgaXbdSdO
+         tROJy7mrxMIgPwvFUtuNbxW3Gx+a+Ar1iN8D4W3sDpbawFXw4JYQQsOtxNA7Mn1zoElR
+         0hgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ql7BbfjZhi9PUKex4VtigUx0q+x0JH+qcMLmXxKcm9A=;
-        b=vWQlKVsOMS/Uzel0PBXHRgvyiJxqagNQ3u0U5lMrbHRQ8nNgHRNye5UtOkTcdTFDxa
-         kDN6RIdY99TA872JkWpaTEyhoLVo4E4nS5+DNOLCosKOfTUBMAlOFjtBchqdju3WowkJ
-         Feax+bg3qMegQWs012NrXxjBiHfrMK7lHtLeW2WsWbg+TJCdWf+Pc3vMJYdmYgQh6fJH
-         5tFIE0NHxylHLdTNPrXfETRSOLtLQbNdKy+AEORqSvMSN+KQsI+ym9rFTtPsTe9j5Tg+
-         UrLG9DDYh2H5idaDRHJmWdg/TykIJkJ28X/mbEmzU0LCQc27DH/pMPQ3DfC99xB0CrbY
-         WPgw==
-X-Gm-Message-State: ANoB5pk0n4iVtbWoK7/n0hpsKxOd3W/Avzzdm2DKAot0d+hUPlhrdliO
-	xbkO8BdetWKtX7eAHvvvUZBSUQ==
-X-Google-Smtp-Source: AA0mqf4LOVfsXdJpid8qCBFEZKOX1+gwsm7JoP/gdBWrJumjJEp6xqZ9ZpFEUBbr2IbTJX74ohz6Qg==
-X-Received: by 2002:a05:6512:3e14:b0:4aa:7eed:f70c with SMTP id i20-20020a0565123e1400b004aa7eedf70cmr4871674lfv.630.1668441207703;
-        Mon, 14 Nov 2022 07:53:27 -0800 (PST)
-Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id 2-20020a2e1542000000b0026c3ecf9a39sm2072160ljv.38.2022.11.14.07.53.26
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=iFWd2m5XWAIUBukAvtG87ESkORevoEKwbahoShbsHGs=;
+        b=oRCsT6h9hGLkM2rJMqlZqHnN6R3fvFwvoiYRT4i6GbCgOzi3j09y1ABWBgbk9GGDlr
+         iLxT+Wv+1mSnwsFwX/v55eBoj0JM3ov6XaH1wmDAF1mxA3RJJe8lufjF+/lzz0xkSVYv
+         Z+D0xxIs1bfmMrRhAKTLcRhmTCfdU/pbEjpO7ly2L83Yiqi0eocbUldmeks6olX860Sh
+         EC5q05FS4wwCkQjIewYhPpQaRPWktA9s9fr5bWlo1s21vzdCBgLcpXsmwXBoZM4kzkx5
+         yDQEhNMYtVEXQ0fj9K2m8UwptYIC9cj5IzjbAgNyAMWQiUGrCiLBM/rqoI2GM0bpIIDb
+         OeTA==
+X-Gm-Message-State: ANoB5plOBk5I+vNi+foTaA20XhCBlkkqEDphY/IGFt2MoyIWfj2I4JIs
+	9Ne99NUL/veNSUJOK2XreMiciA==
+X-Google-Smtp-Source: AA0mqf7u3FO6mqMqL/O/9MD1mYQ8T/xRPY8vSC+lEwCmp+D+mRgb+hzX8+tpF096sntwINEzwHms9Q==
+X-Received: by 2002:a2e:7310:0:b0:277:d86:a36d with SMTP id o16-20020a2e7310000000b002770d86a36dmr4258270ljc.288.1668441215396;
+        Mon, 14 Nov 2022 07:53:35 -0800 (PST)
+Received: from [192.168.31.208] ([194.29.137.22])
+        by smtp.gmail.com with ESMTPSA id h31-20020a0565123c9f00b00498f00420e9sm1857160lfv.194.2022.11.14.07.53.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Nov 2022 07:53:27 -0800 (PST)
-Message-ID: <6df463da-1065-025f-b104-dea5c0bd0dcd@linaro.org>
-Date: Mon, 14 Nov 2022 16:53:26 +0100
+        Mon, 14 Nov 2022 07:53:34 -0800 (PST)
+Message-ID: <12578e05-ced9-e5f7-7922-0af2f2159333@linaro.org>
+Date: Mon, 14 Nov 2022 16:53:31 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH v3 2/2] drivers: arm-smmu-impl: Add QDU1000 and QRU1000
- iommu implementation
-Content-Language: en-US
-To: Will Deacon <will@kernel.org>
-Cc: Melody Olvera <quic_molvera@quicinc.com>, Joerg Roedel <joro@8bytes.org>,
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.4.2
+Subject: Re: [PATCH v2 1/9] dt-bindings: arm-smmu: Allow up to 3 power-domains
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ linux-arm-msm@vger.kernel.org, andersson@kernel.org, agross@kernel.org
+Cc: patches@linaro.org, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
  Rob Herring <robh+dt@kernel.org>,
  Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20221026190534.4004945-1-quic_molvera@quicinc.com>
- <20221026190534.4004945-3-quic_molvera@quicinc.com>
- <0ae09be0-cb1b-dc27-943b-db64ca97b8c7@linaro.org>
- <20221114144220.GA31043@willie-the-truck>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20221114144220.GA31043@willie-the-truck>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20221114104222.36329-1-konrad.dybcio@linaro.org>
+ <20221114104222.36329-2-konrad.dybcio@linaro.org>
+ <6fa8e3ea-2113-d930-96bc-3726d53e5bcd@linaro.org>
+ <a4b160d8-0faa-3f4c-a925-0beaf6ace721@linaro.org>
+ <0121fc03-b027-7659-5e6e-b42089c9888d@linaro.org>
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+In-Reply-To: <0121fc03-b027-7659-5e6e-b42089c9888d@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On 14/11/2022 15:42, Will Deacon wrote:
-> On Mon, Nov 14, 2022 at 03:28:15PM +0100, Krzysztof Kozlowski wrote:
->> On 26/10/2022 21:05, Melody Olvera wrote:
->>> Add compatible for Qualcomm QDU1000 and QRU1000 SoCs to add iommu
->>> support for them.
+
+On 14/11/2022 14:00, Krzysztof Kozlowski wrote:
+> On 14/11/2022 12:17, Konrad Dybcio wrote:
+>> On 14/11/2022 12:01, Krzysztof Kozlowski wrote:
+>>> On 14/11/2022 11:42, Konrad Dybcio wrote:
+>>>> Some SMMUs require that a vote is held on as much as 3 separate PDs
+>>>> (hello Qualcomm). Allow it in bindings.
+>>>>
+>>>> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+>>>> ---
+>>>> Changes since v1:
+>>>> - Add minItems
+>>>>
+>>>>    Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 3 ++-
+>>>>    1 file changed, 2 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>>> index 9066e6df1ba1..82bc696de662 100644
+>>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>>> @@ -159,7 +159,8 @@ properties:
+>>>>              through the TCU's programming interface.
+>>>>    
+>>>>      power-domains:
+>>>> -    maxItems: 1
+>>>> +    minItems: 0
+>>> It cannot be 0.
 >>>
->>> Signed-off-by: Melody Olvera <quic_molvera@quicinc.com>
->>> ---
->>>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
->>>  1 file changed, 1 insertion(+)
+>>> minItems: 1
 >>>
->>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>> index b2708de25ea3..0580a381a04b 100644
->>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>> @@ -426,6 +426,7 @@ static struct arm_smmu_device *qcom_smmu_create(struct arm_smmu_device *smmu,
->>>  static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
->>>  	{ .compatible = "qcom,msm8998-smmu-v2" },
->>>  	{ .compatible = "qcom,qcm2290-smmu-500" },
->>> +	{ .compatible = "qcom,qdu1000-smmu-500" },
->>
->> The patch was applied but it contradicts work here:
->> https://lore.kernel.org/all/20221102184420.534094-12-dmitry.baryshkov@linaro.org/
->> which explicitly asks not to add such compatibles...
-> 
-> Sure, but we've been adding new compatibles for years so I don't mind
-> picking up the last few now before we stop accepting new ones.
-> 
-> I already asked Dmitry to respin his series as there are some open comments
-> from others anyway.
+>>> Anyway you still need to restrict it per variant, as I said in previous
+>>> version.
+>> Hm.. I'm not entirely sure what you mean.. Should I add a list of
+>> compatibles
+> Yes and limit it to maxItems: 1 for "else".
 
-OK. This also solves my other comment for other patch.
+I tried adding:
 
-Best regards,
-Krzysztof
 
+
+   - if:
+       properties:
+         compatible:
+           contains:
+             enum:
+               - qcom,sm6375-smmu-500
+     then:
+       properties:
+         power-domains:
+           minItems: 3
+           maxItems: 3
+     else:
+       properties:
+         power-domains:
+           maxItems: 1
+
+
+Right under the nvidia reg if-else in the allOf, but dtbs_check throws 
+errors like:
+
+
+/home/konrad/linux/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino-poplar.dtb: 
+iommu@5040000: 'power-domains' does not match any of the regexes: 
+'pinctrl-[0-9]+'
+
+
+Any clues as to why?
+
+
+Konrad
+
+>
+>> that are allowed to have 3 power-domains and leave it as it was before
+>> in the
+>> 'else' case?
+> Best regards,
+> Krzysztof
+>
