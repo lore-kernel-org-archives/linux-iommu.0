@@ -1,40 +1,65 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 321A923A8
-	for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 09:22:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668417768; x=1699953768;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=uJU2+7AiuWbeXCEmvvU/iSSjs/WzqaYsyF5mup6/980=;
-  b=F6tonpghIAxyYRzwuSxQ/D8Chz6sx4MiIGkX43v3v5KODQJMkrYfXuwn
-   njJFk3LZMNH7bUZF06RYmhC2l25bX27LW3JE1W2wWX0xEydUNF6Nw5BK5
-   xG8JNXFH4Q7mbQbEn+OQunTs7C2tq8rfEZlOP9VAPKTAkBDIaURuZVd+e
-   N7ja3m4SUSTIzaTnhvRi1q4aRWu7YmrGDDmsYNc/bOSTcHvwMDxeK8e3m
-   529+BWsUhRH5kksnyXLTkEjuH+qS83FIFGqkjqh6nCbTvMe3Q81cf1WbK
-   SiyW2sE+Fest8pAjna/U+ihKjyKtKpX3HX0Gg1fgdSXGBbU5Xzgr0u53a
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10530"; a="295285285"
-X-IronPort-AV: E=Sophos;i="5.96,161,1665471600"; 
-   d="scan'208";a="295285285"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2022 01:22:47 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10530"; a="701931366"
-X-IronPort-AV: E=Sophos;i="5.96,161,1665471600"; 
-   d="scan'208";a="701931366"
-Received: from test.bj.intel.com ([10.238.158.71])
-  by fmsmga008.fm.intel.com with ESMTP; 14 Nov 2022 01:22:45 -0800
-From: Tina Zhang <tina.zhang@intel.com>
-To: iommu@lists.linux.dev
-Cc: baolu.lu@linux.intel.com,
-	Tina Zhang <tina.zhang@intel.com>
-Subject: [PATCH] iommu/vt-d: Set SRE bit when hardware has SRS cap
-Date: Mon, 14 Nov 2022 03:55:14 -0500
-Message-Id: <20221114085514.1105039-1-tina.zhang@intel.com>
-X-Mailer: git-send-email 2.25.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6938C2F24
+	for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 10:42:36 +0000 (UTC)
+Received: by mail-lj1-f169.google.com with SMTP id d20so12547917ljc.12
+        for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 02:42:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=zDzwDb0dnKoTPgCy4RBfiMpDFetmXY9OEGk9SR/WSLY=;
+        b=FhlApcqDxCtCoupJ/TIS0Ykf65afLK30ejNB8v2zhMO/08W/KJGjo+jBHJsNqt10pm
+         1GEqKtYy830ohGlIM91yJZR6N3HiLjwX/ldBqlIKM5vXM3kFSN+2IIvvYOj+qJ87LRfI
+         dzDH0BAB4MOhdYEyvZ3udJabwEej8WLG14Mgf1O8L/LxHKjVqaxAvZpwi12vdDcBIVpu
+         SuIQrLXvLUodif/creo1nAh7wOM3vGtIU/3ALCYbvqgi8SSmbsONxt+v709lJdR5zYEw
+         fxJFr0c9PqfemGYKmEEvkXXlRTEeFlBCxfFC6xv+x98BZlO64aBbZ6833hVafWVYTAYD
+         0eZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=zDzwDb0dnKoTPgCy4RBfiMpDFetmXY9OEGk9SR/WSLY=;
+        b=NfWmaL0J/yqLsGayMuoYj1ZjiZh9LzYRU71FM7IileW0e+8dOjaywOb82saTBKjIiF
+         lqx2EXbMRiUjoWxtgp59YF85HazE42j4ym+0gBZXqtjwL1FqNTaICj1leqFcLTuOfP4s
+         8FRmtvyXB0o4aq96yorTOKgFGOkJrDqkeIsTtOQa2ZvKX0OyxyBS2Xb5+Y1Nx1HIESwq
+         /nWzXNqh7kopPhO4zeCr4CFPT7dAs5GOY7jGoDMJyXFLr7flgutweFh8hmAGiE70YVVI
+         B4kEx50/3mj7uCwDn7uB6jbbn01QGGQyZnO1quRUqNMYTOR96ttrRSLohkr3pDEtd8Cy
+         v+kw==
+X-Gm-Message-State: ANoB5pl08jOwCwXh8Q0N2Yj6k79v7wydxvOTUnLMmsofDRP3SB6S/prV
+	AEMO6Z6VusQC5+x0LE1pOJHBpw==
+X-Google-Smtp-Source: AA0mqf4qlxiMY3JDejy6a3SVEFC3TJHChXsZGfocnkqWhpRLRNPJLTzvyucW4mkNtj7j0c1yswAz8g==
+X-Received: by 2002:a2e:960d:0:b0:277:4f:bd2a with SMTP id v13-20020a2e960d000000b00277004fbd2amr3622765ljh.341.1668422554455;
+        Mon, 14 Nov 2022 02:42:34 -0800 (PST)
+Received: from localhost.localdomain ([194.29.137.22])
+        by smtp.gmail.com with ESMTPSA id bs21-20020a05651c195500b0026c4e922fb2sm1946486ljb.48.2022.11.14.02.42.33
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Mon, 14 Nov 2022 02:42:34 -0800 (PST)
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+To: linux-arm-msm@vger.kernel.org,
+	andersson@kernel.org,
+	agross@kernel.org,
+	krzysztof.kozlowski@linaro.org
+Cc: patches@linaro.org,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/9] dt-bindings: arm-smmu: Allow up to 3 power-domains
+Date: Mon, 14 Nov 2022 11:42:14 +0100
+Message-Id: <20221114104222.36329-2-konrad.dybcio@linaro.org>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
+In-Reply-To: <20221114104222.36329-1-konrad.dybcio@linaro.org>
+References: <20221114104222.36329-1-konrad.dybcio@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -43,39 +68,31 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-SRS cap is the hardware cap telling if the hardware IOMMU can support
-requests seeking supervisor privilege or not. SRE bit in scalable-mode
-PASID table entry is treated as Reserved(0) for implementation not
-supporting SRS cap.
+Some SMMUs require that a vote is held on as much as 3 separate PDs
+(hello Qualcomm). Allow it in bindings.
 
-Checking SRS cap before setting SRE bit can avoid the non-recoverable
-fault of "Non-zero reserved field set in PASID Table Entry" caused by
-setting SRE bit while there is no SRS cap support.
-
-Currently, both intel_pasid_setup_first_level() and
-intel_pasid_setup_second_level() implicitly take care about of it. The
-only missing SRS cap checking is in intel_pasid_setup_pass_through().
-
-Fixes: 6f7db75e1c46 ("iommu/vt-d: Add second level page table interface")
-Signed-off-by: Tina Zhang <tina.zhang@intel.com>
+Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 ---
- drivers/iommu/intel/pasid.c | 3 ++-
+Changes since v1:
+- Add minItems
+
+ Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index c30ddac40ee5..4a59035a5181 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -685,7 +685,8 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
- 	 * We should set SRE bit as well since the addresses are expected
- 	 * to be GPAs.
- 	 */
--	pasid_set_sre(pte);
-+	if (ecap_srs(iommu->ecap))
-+		pasid_set_sre(pte);
- 	pasid_set_present(pte);
- 	spin_unlock(&iommu->lock);
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+index 9066e6df1ba1..82bc696de662 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+@@ -159,7 +159,8 @@ properties:
+           through the TCU's programming interface.
  
+   power-domains:
+-    maxItems: 1
++    minItems: 0
++    maxItems: 3
+ 
+   nvidia,memory-controller:
+     description: |
 -- 
-2.25.1
+2.38.1
 
