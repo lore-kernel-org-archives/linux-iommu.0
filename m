@@ -1,231 +1,333 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 301944C70
-	for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 13:30:55 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6AC8B23A;
-	Mon, 14 Nov 2022 05:30:58 -0800 (PST)
-Received: from [10.57.70.90] (unknown [10.57.70.90])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 047623F73D;
-	Mon, 14 Nov 2022 05:30:50 -0800 (PST)
-Message-ID: <1602bacc-d6c6-3780-a0ae-68137746fcf2@arm.com>
-Date: Mon, 14 Nov 2022 13:30:46 +0000
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC8F14C78
+	for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 13:33:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1668432832;
+	h=from:from:reply-to:reply-to:subject:subject:date:date:
+	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+	 content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=9QiRkAJtis8qNtWpCrUk39hYQOMQJJ4HZJSB08SnAc8=;
+	b=hvX+aBfN2p6fsbzjKq4BoE1XBDmGrfWh51U7rpozRYGFhTS663OdXiLB0brsnX8blpd59g
+	sOl3u621ntmfF8BcoQyOKCXVdOET79hBIx5mD+QjzV+mIqJXejGEIfbfL2pkpaHus3xxom
+	4oFYSIz6jWy6485zU1bFG18Cws+kzm8=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-587-4IdHWOq3OQa0sJTFL9W-Tg-1; Mon, 14 Nov 2022 08:33:49 -0500
+X-MC-Unique: 4IdHWOq3OQa0sJTFL9W-Tg-1
+Received: by mail-qk1-f197.google.com with SMTP id w13-20020a05620a424d00b006e833c4fb0dso10887650qko.2
+        for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 05:33:49 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:reply-to:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=9QiRkAJtis8qNtWpCrUk39hYQOMQJJ4HZJSB08SnAc8=;
+        b=mjmRkN8uBDInxAcIBi/3zRa4bk0CpkRDhqeinMnZYJOIwdTBiA4JEe6XvuWocJBDOW
+         g+bi/71J5OAIykNhSk8BR6zDZ5sMwx7s7Olt+s7LWSJdD/JswYfTu/+UT2IrLhgrRHCJ
+         rH3aOjtSzy9DhJa3CWCGdQJbQKnUD/5zECs+Gu/+y5EazpVfM9oQYjiHiwxhoSfidrF5
+         X8pwBMrY/2TXa4KkEZpI2PO2DYpOmRTzFrYr664JvF9CHPs4yNFYoe/AgoiAAxGIuxnM
+         Utrg4CCzFjMVv+FWr/h6DqEnoViMwO2fkmw4v7igrCqXG4q00/RVnFJEM31GvTaDnjmy
+         On7w==
+X-Gm-Message-State: ANoB5pkEXyTiKE4H1oYYaB/MI5mjPn4jfnPr8hJ5FgNhnXIPVLmY8bgp
+	y3PMuPKUZHmqN2VRj3axl2zTreOM15F5KbU5GzgA+jtHP5xL8giP35r+xmJUGwdbKtKrBc7f+xG
+	wyHR0UyNIsBnC0+U=
+X-Received: by 2002:a05:622a:2443:b0:3a5:2de8:37d3 with SMTP id bl3-20020a05622a244300b003a52de837d3mr12190333qtb.217.1668432829247;
+        Mon, 14 Nov 2022 05:33:49 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf5MtlcI6o1/58VPaBjE0NvLA0zMfucHakDiba3NqKYYzSgAMOW+iPLhGMgIOTkcfylqwMLaJw==
+X-Received: by 2002:a05:622a:2443:b0:3a5:2de8:37d3 with SMTP id bl3-20020a05622a244300b003a52de837d3mr12190293qtb.217.1668432828927;
+        Mon, 14 Nov 2022 05:33:48 -0800 (PST)
+Received: from ?IPV6:2a01:e0a:59e:9d80:527b:9dff:feef:3874? ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
+        by smtp.gmail.com with ESMTPSA id v12-20020ac8748c000000b0039c37a7914csm5641393qtq.23.2022.11.14.05.33.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Nov 2022 05:33:48 -0800 (PST)
+Message-ID: <e1f7fe9c-5201-3fea-a354-bb79c06ddb4c@redhat.com>
+Date: Mon, 14 Nov 2022 14:33:41 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.4.1
-Subject: Re: [PATCH -next] iommu/dma: avoid expensive indirect calls for sync
- operations
-Content-Language: en-GB
-To: Eric Dumazet <edumazet@google.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>
-Cc: linux-kernel <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
- Eric Dumazet <eric.dumazet@gmail.com>, iommu@lists.linux.dev
-References: <20221112040452.644234-1-edumazet@google.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20221112040452.644234-1-edumazet@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.1
+Reply-To: eric.auger@redhat.com
+Subject: Re: [PATCH v4 02/17] iommu: Add device-centric DMA ownership
+ interfaces
+To: Jason Gunthorpe <jgg@nvidia.com>, bpf@vger.kernel.org,
+ Jonathan Corbet <corbet@lwn.net>, David Woodhouse <dwmw2@infradead.org>,
+ iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ Kevin Tian <kevin.tian@intel.com>, linux-doc@vger.kernel.org,
+ linux-kselftest@vger.kernel.org, llvm@lists.linux.dev,
+ Nathan Chancellor <nathan@kernel.org>,
+ Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+ Lu Baolu <baolu.lu@linux.intel.com>,
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>, Cornelia Huck
+ <cohuck@redhat.com>, Daniel Jordan <daniel.m.jordan@oracle.com>,
+ David Gibson <david@gibson.dropbear.id.au>,
+ Eric Farman <farman@linux.ibm.com>, Jason Wang <jasowang@redhat.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Joao Martins <joao.m.martins@oracle.com>, kvm@vger.kernel.org,
+ Matthew Rosato <mjrosato@linux.ibm.com>, "Michael S. Tsirkin"
+ <mst@redhat.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ Niklas Schnelle <schnelle@linux.ibm.com>,
+ Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+ Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
+References: <2-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
+From: Eric Auger <eric.auger@redhat.com>
+In-Reply-To: <2-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 2022-11-12 04:04, Eric Dumazet wrote:
-> Quite often, NIC devices do not need dma_sync operations
-> on x86_64 at least.
-> 
-> Indeed, when dev_is_dma_coherent(dev) is true and
-> dev_use_swiotlb(dev) is false, iommu_dma_sync_single_for_cpu()
-> and friends do nothing.
-> 
-> However, indirectly calling them when CONFIG_RETPOLINE=y
-> consumes about 10% of cycles on a cpu receiving packets
-> from softirq at ~100Gbit rate, as shown in [1]
-> 
-> Even if/when CONFIG_RETPOLINE is not set, there
-> is a cost of about 3%.
-> 
-> This patch adds a copy of iommu_dma_ops structure,
-> where sync_single_for_cpu, sync_single_for_device,
-> sync_sg_for_cpu and sync_sg_for_device are unset.
-
-TBH I reckon it might be worthwhile to add another top-level bitfield to 
-struct device to indicate when syncs can be optimised out completely, so 
-we can handle it at the DMA API dispatch level and short-circuit a bit 
-more of the dma-direct path too.
-
-> perf profile before the patch:
-> 
->      18.53%  [kernel]       [k] gq_rx_skb
->      14.77%  [kernel]       [k] napi_reuse_skb
->       8.95%  [kernel]       [k] skb_release_data
->       5.42%  [kernel]       [k] dev_gro_receive
->       5.37%  [kernel]       [k] memcpy
-> <*>  5.26%  [kernel]       [k] iommu_dma_sync_sg_for_cpu
->       4.78%  [kernel]       [k] tcp_gro_receive
-> <*>  4.42%  [kernel]       [k] iommu_dma_sync_sg_for_device
->       4.12%  [kernel]       [k] ipv6_gro_receive
->       3.65%  [kernel]       [k] gq_pool_get
->       3.25%  [kernel]       [k] skb_gro_receive
->       2.07%  [kernel]       [k] napi_gro_frags
->       1.98%  [kernel]       [k] tcp6_gro_receive
->       1.27%  [kernel]       [k] gq_rx_prep_buffers
->       1.18%  [kernel]       [k] gq_rx_napi_handler
->       0.99%  [kernel]       [k] csum_partial
->       0.74%  [kernel]       [k] csum_ipv6_magic
->       0.72%  [kernel]       [k] free_pcp_prepare
->       0.60%  [kernel]       [k] __napi_poll
->       0.58%  [kernel]       [k] net_rx_action
->       0.56%  [kernel]       [k] read_tsc
-> <*>  0.50%  [kernel]       [k] __x86_indirect_thunk_r11
->       0.45%  [kernel]       [k] memset
-> 
-> After patch, lines with <*> no longer show up, and overall
-> cpu usage looks much better (~60% instead of ~72%)
-> 
->      25.56%  [kernel]       [k] gq_rx_skb
->       9.90%  [kernel]       [k] napi_reuse_skb
->       7.39%  [kernel]       [k] dev_gro_receive
->       6.78%  [kernel]       [k] memcpy
->       6.53%  [kernel]       [k] skb_release_data
->       6.39%  [kernel]       [k] tcp_gro_receive
->       5.71%  [kernel]       [k] ipv6_gro_receive
->       4.35%  [kernel]       [k] napi_gro_frags
->       4.34%  [kernel]       [k] skb_gro_receive
->       3.50%  [kernel]       [k] gq_pool_get
->       3.08%  [kernel]       [k] gq_rx_napi_handler
->       2.35%  [kernel]       [k] tcp6_gro_receive
->       2.06%  [kernel]       [k] gq_rx_prep_buffers
->       1.32%  [kernel]       [k] csum_partial
->       0.93%  [kernel]       [k] csum_ipv6_magic
->       0.65%  [kernel]       [k] net_rx_action
-> 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: iommu@lists.linux.dev
+Hi,
+On 11/8/22 01:48, Jason Gunthorpe wrote:
+> From: Lu Baolu <baolu.lu@linux.intel.com>
+>
+> These complement the group interfaces used by VFIO and are for use by
+> iommufd. The main difference is that multiple devices in the same group
+> can all share the ownership by passing the same ownership pointer.
+>
+> Move the common code into shared functions.
+>
+> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > ---
->   drivers/iommu/dma-iommu.c | 67 +++++++++++++++++++++++++++------------
->   1 file changed, 47 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 9297b741f5e80e2408e864fc3f779410d6b04d49..976ba20a55eab5fd94e9bec2d38a2a60e0690444 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -522,6 +522,11 @@ static bool dev_use_swiotlb(struct device *dev)
->   	return IS_ENABLED(CONFIG_SWIOTLB) && dev_is_untrusted(dev);
->   }
->   
-> +static bool dev_is_dma_sync_needed(struct device *dev)
+>  drivers/iommu/iommu.c | 124 +++++++++++++++++++++++++++++++++---------
+>  include/linux/iommu.h |  12 ++++
+>  2 files changed, 110 insertions(+), 26 deletions(-)
+>
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 6ca377f4fbf9e9..4cb14e44e40f83 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -3108,41 +3108,52 @@ static int __iommu_group_alloc_blocking_domain(struct iommu_group *group)
+>  	return 0;
+>  }
+>  
+> +static int __iommu_take_dma_ownership(struct iommu_group *group, void *owner)
 > +{
-> +	return !dev_is_dma_coherent(dev) || dev_use_swiotlb(dev);
+> +	int ret;
+> +
+> +	if (WARN_ON(!owner))
+> +		return -EINVAL;
+> +
+> +	if ((group->domain && group->domain != group->default_domain) ||
+> +	    !xa_empty(&group->pasid_array))
+> +		return -EBUSY;
+> +
+> +	ret = __iommu_group_alloc_blocking_domain(group);
+> +	if (ret)
+> +		return ret;
+> +	ret = __iommu_group_set_domain(group, group->blocking_domain);
+> +	if (ret)
+> +		return ret;
+> +
+> +	group->owner = owner;
+> +	group->owner_cnt++;
+> +	return 0;
 > +}
 > +
->   /**
->    * iommu_dma_init_domain - Initialise a DMA mapping domain
->    * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie()
-> @@ -914,7 +919,7 @@ static void iommu_dma_sync_single_for_cpu(struct device *dev,
->   {
->   	phys_addr_t phys;
->   
-> -	if (dev_is_dma_coherent(dev) && !dev_use_swiotlb(dev))
-> +	if (!dev_is_dma_sync_needed(dev))
->   		return;
->   
->   	phys = iommu_iova_to_phys(iommu_get_dma_domain(dev), dma_handle);
-> @@ -930,7 +935,7 @@ static void iommu_dma_sync_single_for_device(struct device *dev,
->   {
->   	phys_addr_t phys;
->   
-> -	if (dev_is_dma_coherent(dev) && !dev_use_swiotlb(dev))
-> +	if (!dev_is_dma_sync_needed(dev))
->   		return;
->   
->   	phys = iommu_iova_to_phys(iommu_get_dma_domain(dev), dma_handle);
-> @@ -1544,30 +1549,51 @@ static size_t iommu_dma_opt_mapping_size(void)
->   	return iova_rcache_range();
->   }
->   
-> +#define iommu_dma_ops_common_fields \
-> +	.flags			= DMA_F_PCI_P2PDMA_SUPPORTED,		\
-> +	.alloc			= iommu_dma_alloc,			\
-> +	.free			= iommu_dma_free,			\
-> +	.alloc_pages		= dma_common_alloc_pages,		\
-> +	.free_pages		= dma_common_free_pages,		\
-> +	.alloc_noncontiguous	= iommu_dma_alloc_noncontiguous,	\
-> +	.free_noncontiguous	= iommu_dma_free_noncontiguous,		\
-> +	.mmap			= iommu_dma_mmap,			\
-> +	.get_sgtable		= iommu_dma_get_sgtable,		\
-> +	.map_page		= iommu_dma_map_page,			\
-> +	.unmap_page		= iommu_dma_unmap_page,			\
-> +	.map_sg			= iommu_dma_map_sg,			\
-> +	.unmap_sg		= iommu_dma_unmap_sg,			\
-> +	.map_resource		= iommu_dma_map_resource,		\
-> +	.unmap_resource		= iommu_dma_unmap_resource,		\
-> +	.get_merge_boundary	= iommu_dma_get_merge_boundary,		\
-> +	.opt_mapping_size	= iommu_dma_opt_mapping_size,
+>  /**
+>   * iommu_group_claim_dma_owner() - Set DMA ownership of a group
+>   * @group: The group.
+>   * @owner: Caller specified pointer. Used for exclusive ownership.
+>   *
+> - * This is to support backward compatibility for vfio which manages
+> - * the dma ownership in iommu_group level. New invocations on this
+> - * interface should be prohibited.
+> + * This is to support backward compatibility for vfio which manages the dma
+> + * ownership in iommu_group level. New invocations on this interface should be
+> + * prohibited. Only a single owner may exist for a group.
+>   */
+>  int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner)
+>  {
+>  	int ret = 0;
+>  
+> +	if (WARN_ON(!owner))
+> +		return -EINVAL;
 > +
->   static const struct dma_map_ops iommu_dma_ops = {
-> -	.flags			= DMA_F_PCI_P2PDMA_SUPPORTED,
-> -	.alloc			= iommu_dma_alloc,
-> -	.free			= iommu_dma_free,
-> -	.alloc_pages		= dma_common_alloc_pages,
-> -	.free_pages		= dma_common_free_pages,
-> -	.alloc_noncontiguous	= iommu_dma_alloc_noncontiguous,
-> -	.free_noncontiguous	= iommu_dma_free_noncontiguous,
-> -	.mmap			= iommu_dma_mmap,
-> -	.get_sgtable		= iommu_dma_get_sgtable,
-> -	.map_page		= iommu_dma_map_page,
-> -	.unmap_page		= iommu_dma_unmap_page,
-> -	.map_sg			= iommu_dma_map_sg,
-> -	.unmap_sg		= iommu_dma_unmap_sg,
-> +	iommu_dma_ops_common_fields
+>  	mutex_lock(&group->mutex);
+>  	if (group->owner_cnt) {
+>  		ret = -EPERM;
+>  		goto unlock_out;
+> -	} else {
+> -		if ((group->domain && group->domain != group->default_domain) ||
+> -		    !xa_empty(&group->pasid_array)) {
+> -			ret = -EBUSY;
+> -			goto unlock_out;
+> -		}
+> -
+> -		ret = __iommu_group_alloc_blocking_domain(group);
+> -		if (ret)
+> -			goto unlock_out;
+> -
+> -		ret = __iommu_group_set_domain(group, group->blocking_domain);
+> -		if (ret)
+> -			goto unlock_out;
+> -		group->owner = owner;
+>  	}
+>  
+> -	group->owner_cnt++;
+> +	ret = __iommu_take_dma_ownership(group, owner);
+>  unlock_out:
+>  	mutex_unlock(&group->mutex);
+>  
+> @@ -3151,30 +3162,91 @@ int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner)
+>  EXPORT_SYMBOL_GPL(iommu_group_claim_dma_owner);
+>  
+>  /**
+> - * iommu_group_release_dma_owner() - Release DMA ownership of a group
+> - * @group: The group.
+> + * iommu_device_claim_dma_owner() - Set DMA ownership of a device
+> + * @dev: The device.
+> + * @owner: Caller specified pointer. Used for exclusive ownership.
+>   *
+> - * Release the DMA ownership claimed by iommu_group_claim_dma_owner().
+> + * Claim the DMA ownership of a device. Multiple devices in the same group may
+> + * concurrently claim ownership if they present the same owner value. Returns 0
+> + * on success and error code on failure
+>   */
+> -void iommu_group_release_dma_owner(struct iommu_group *group)
+> +int iommu_device_claim_dma_owner(struct device *dev, void *owner)
+>  {
+> -	int ret;
+> +	struct iommu_group *group = iommu_group_get(dev);
+> +	int ret = 0;
 > +
->   	.sync_single_for_cpu	= iommu_dma_sync_single_for_cpu,
->   	.sync_single_for_device	= iommu_dma_sync_single_for_device,
->   	.sync_sg_for_cpu	= iommu_dma_sync_sg_for_cpu,
->   	.sync_sg_for_device	= iommu_dma_sync_sg_for_device,
-> -	.map_resource		= iommu_dma_map_resource,
-> -	.unmap_resource		= iommu_dma_unmap_resource,
-> -	.get_merge_boundary	= iommu_dma_get_merge_boundary,
-> -	.opt_mapping_size	= iommu_dma_opt_mapping_size,
->   };
->   
-> +/* Special instance of iommu_dma_ops for devices satisfying this condition:
-> + *   !dev_is_dma_sync_needed(dev)
+> +	if (!group)
+> +		return -ENODEV;
+>  
+>  	mutex_lock(&group->mutex);
+> +	if (group->owner_cnt) {
+> +		if (group->owner != owner) {
+> +			ret = -EPERM;
+> +			goto unlock_out;
+> +		}
+> +		group->owner_cnt++;
+> +		goto unlock_out;
+> +	}
+> +
+> +	ret = __iommu_take_dma_ownership(group, owner);
+> +unlock_out:
+> +	mutex_unlock(&group->mutex);
+> +	iommu_group_put(group);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_device_claim_dma_owner);
+> +
+> +static void __iommu_release_dma_ownership(struct iommu_group *group)
+> +{
+> +	int ret;
+> +
+>  	if (WARN_ON(!group->owner_cnt || !group->owner ||
+>  		    !xa_empty(&group->pasid_array)))
+> -		goto unlock_out;
+> +		return;
+>  
+>  	group->owner_cnt = 0;
+>  	group->owner = NULL;
+>  	ret = __iommu_group_set_domain(group, group->default_domain);
+>  	WARN(ret, "iommu driver failed to attach the default domain");
+> +}
+>  
+> -unlock_out:
+> +/**
+> + * iommu_group_release_dma_owner() - Release DMA ownership of a group
+> + * @group: The group.
 > + *
-> + * iommu_dma_sync_single_for_cpu(), iommu_dma_sync_single_for_device(),
-> + * iommu_dma_sync_sg_for_cpu(), iommu_dma_sync_sg_for_device()
-> + * do nothing special and can be avoided, saving indirect calls.
+> + * Release the DMA ownership claimed by iommu_group_claim_dma_owner().
 > + */
-> +static const struct dma_map_ops iommu_nosync_dma_ops = {
-> +	iommu_dma_ops_common_fields
+> +void iommu_group_release_dma_owner(struct iommu_group *group)
+> +{
+> +	mutex_lock(&group->mutex);
+> +	__iommu_release_dma_ownership(group);
+>  	mutex_unlock(&group->mutex);
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_group_release_dma_owner);
+>  
+> +/**
+> + * iommu_device_release_dma_owner() - Release DMA ownership of a device
+> + * @group: The device.
+@dev: the device
+> + *
+> + * Release the DMA ownership claimed by iommu_device_claim_dma_owner().
+> + */
+> +void iommu_device_release_dma_owner(struct device *dev)
+> +{
+> +	struct iommu_group *group = iommu_group_get(dev);
 > +
-> +	.sync_single_for_cpu	= NULL,
-> +	.sync_single_for_device	= NULL,
-> +	.sync_sg_for_cpu	= NULL,
-> +	.sync_sg_for_device	= NULL,
-> +};
-> +#undef iommu_dma_ops_common_fields
+> +	mutex_lock(&group->mutex);
+> +	if (group->owner_cnt > 1) {
+> +		group->owner_cnt--;
+> +		goto unlock_out;
+> +	}
+> +	__iommu_release_dma_ownership(group);
+> +unlock_out:
+> +	mutex_unlock(&group->mutex);
+
+if (group->owner_cnt > 1)
+
+	group->owner_cnt--;
+else
+	__iommu_release_dma_ownership(group);
+
+mutex_unlock(&group->mutex);
+
+iommu_group_put(group);
+
+> +	iommu_group_put(group);
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_device_release_dma_owner);
 > +
->   /*
->    * The IOMMU core code allocates the default DMA domain, which the underlying
->    * IOMMU driver needs to support via the dma-iommu layer.
-> @@ -1586,7 +1612,8 @@ void iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 dma_limit)
->   	if (iommu_is_dma_domain(domain)) {
->   		if (iommu_dma_init_domain(domain, dma_base, dma_limit, dev))
->   			goto out_err;
-> -		dev->dma_ops = &iommu_dma_ops;
-> +		dev->dma_ops = dev_is_dma_sync_needed(dev) ?
-> +				&iommu_dma_ops : &iommu_nosync_dma_ops;
+>  /**
+>   * iommu_group_dma_owner_claimed() - Query group dma ownership status
+>   * @group: The group.
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index a09fd32d8cc273..1690c334e51631 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -707,6 +707,9 @@ int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner);
+>  void iommu_group_release_dma_owner(struct iommu_group *group);
+>  bool iommu_group_dma_owner_claimed(struct iommu_group *group);
+>  
+> +int iommu_device_claim_dma_owner(struct device *dev, void *owner);
+> +void iommu_device_release_dma_owner(struct device *dev);
+> +
+>  struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
+>  					    struct mm_struct *mm);
+>  int iommu_attach_device_pasid(struct iommu_domain *domain,
+> @@ -1064,6 +1067,15 @@ static inline bool iommu_group_dma_owner_claimed(struct iommu_group *group)
+>  	return false;
+>  }
+>  
+> +static inline void iommu_device_release_dma_owner(struct device *dev)
+> +{
+> +}
+> +
+> +static inline int iommu_device_claim_dma_owner(struct device *dev, void *owner)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+>  static inline struct iommu_domain *
+>  iommu_sva_domain_alloc(struct device *dev, struct mm_struct *mm)
+>  {
+Besides
+Reviewed-by: Eric Auger <eric.auger@redhat.com>
 
-This doesn't work, because at this point we don't know whether a 
-coherent device is still going to need SWIOTLB for DMA mask reasons or not.
+Eric
 
-Thanks,
-Robin.
-
->   	}
->   
->   	return;
