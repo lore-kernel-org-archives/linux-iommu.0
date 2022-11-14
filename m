@@ -1,82 +1,97 @@
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CCBC4C78
-	for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 13:59:07 +0000 (UTC)
-Received: by mail-wr1-f44.google.com with SMTP id k8so18437661wrh.1
-        for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 05:59:06 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B50B64C78
+	for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 14:19:56 +0000 (UTC)
+Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-13c2cfd1126so12579618fac.10
+        for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 06:19:56 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=iqBw4uJGnVX3z4DPc2jSDRa31QQsaamARtV+B+AB37w=;
-        b=I7Fw3dN6D0oNium9zGsQ62LEfFU4SE1vaX9XCyYFpUrFcSXsm2shigs3JygwvRsT59
-         6nb/zBZCTEfshXa1JokpyFh4PAPalnj2bk1fgyi4v4Ndjp/PzH/Vq8nJ7V223yIPuEmc
-         AWyQF3mkU0g3mDxpcqwfYAu8PEqgIN8k5TpQiC7Xjus28Gf52gxBsvQfMHCLp5CoH6eP
-         OGU/xaCAI/b5rsttbSzVp7uvCqdfMzTzxXZOdq9Ezt10gYbGSael2aMusvOC7S9kyikR
-         2J7QIU1EhAxSKXxn11PIjreg3q2eq2PwvKxiRH/rpj1OREKlN54Txu4ycsGrbXs7dHSn
-         Iu0w==
-X-Gm-Message-State: ANoB5pkSWRLBUi857gCs302QNbuUYrO6Imspg9xobZXh7ocALtjjH/5G
-	lUCJGZb346xaKjlFXBMzH4I=
-X-Google-Smtp-Source: AA0mqf6sWl3Y3ybLQX3gzt/fpnJa5lC5OeEgLBiKOLq94WSSK5qCRn5EQdT6WADCZXcRKVREv3mgyQ==
-X-Received: by 2002:adf:fc8c:0:b0:235:9aae:35a6 with SMTP id g12-20020adffc8c000000b002359aae35a6mr7279816wrr.686.1668434345461;
-        Mon, 14 Nov 2022 05:59:05 -0800 (PST)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id g7-20020a056000118700b0022cd0c8c696sm9447356wrx.103.2022.11.14.05.59.04
+        h=date:subject:message-id:references:in-reply-to:cc:to:from
+         :mime-version:content-transfer-encoding:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=T363VWdQ5ocnDSQ5x4Cz3XrYjoogVZHJUwppT1WNaYs=;
+        b=kbIO6QUBvUthIqERCSK6rhqMn+HhKDFI9DXo4JIPXumMT69DJkViTzp2SSR6baMbBq
+         n7sOH7CdYSzWZFcRNIhyvwG4VEJZy56+G2Bj3j6w0hNqzSF7yFTteZFDq+2SuzUA4CGG
+         Umn5phEBsDAAtAVa9DaEb070NOITxfXnvUxSMWUOHwam2MiiRVmuOMkK5Nb9QG0y5KSM
+         8ji4bBoXz1Tj0ZJUrtQe7kKFTlgCSxdh1QDDdb9fjhngu7HBIiOEteqAMgIVVtkFuKuX
+         WxfoLI8PVmF6n1L19yCrzg7QgkEnLdHHJLXhAfwO0+dnRkt+6xRFSMW/pa9CdHzzmw3A
+         Reqw==
+X-Gm-Message-State: ANoB5pluhYEdRvdLGNjJWKee7i7V7GjYwez8fgJDtx/zU0rIA3+QVfLp
+	9lIz4hdimN6Amv0Ucg3dbw==
+X-Google-Smtp-Source: AA0mqf5YD2ya3ZXS0A73Y8ieA+ETvdMBfmcetHL50rNO1AXEo7hvIHk3FznZiOxaGoOQxPiD6GLxBg==
+X-Received: by 2002:a05:6870:8dc3:b0:13b:b3b7:1082 with SMTP id lq3-20020a0568708dc300b0013bb3b71082mr7186742oab.71.1668435595440;
+        Mon, 14 Nov 2022 06:19:55 -0800 (PST)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id h3-20020a9d7983000000b0063b24357269sm4138272otm.13.2022.11.14.06.19.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Nov 2022 05:59:04 -0800 (PST)
-Date: Mon, 14 Nov 2022 13:59:03 +0000
-From: Wei Liu <wei.liu@kernel.org>
-To: Nuno Das Neves <nunodasneves@linux.microsoft.com>
-Cc: "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-	Wei Liu <wei.liu@kernel.org>, Tianyu Lan <Tianyu.Lan@microsoft.com>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	Sunil Muthuswamy <sunilmut@microsoft.com>,
-	KY Srinivasan <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	Dexuan Cui <decui@microsoft.com>,
-	"dwmw2@infradead.org" <dwmw2@infradead.org>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"will@kernel.org" <will@kernel.org>
-Subject: Re: [PATCH] iommu/hyper-v: Allow hyperv irq remapping without x2apic
-Message-ID: <Y3JJpyvCcrRZfJkV@liuwe-devbox-debian-v2>
-References: <1668020853-23950-1-git-send-email-nunodasneves@linux.microsoft.com>
- <Y255HhDbwbI/z5bJ@liuwe-devbox-debian-v2>
- <BYAPR21MB1688800D35F86D766567C1FAD7009@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y26F+H1SuJrad3Ra@liuwe-devbox-debian-v2>
- <BYAPR21MB168819214A20DF2E4835E763D7009@BYAPR21MB1688.namprd21.prod.outlook.com>
- <2f721208-d169-2baa-fa1f-b8450e80ddd7@linux.microsoft.com>
+        Mon, 14 Nov 2022 06:19:54 -0800 (PST)
+Received: (nullmailer pid 2686451 invoked by uid 1000);
+	Mon, 14 Nov 2022 14:19:56 -0000
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2f721208-d169-2baa-fa1f-b8450e80ddd7@linux.microsoft.com>
+From: Rob Herring <robh@kernel.org>
+To: Konrad Dybcio <konrad.dybcio@linaro.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, patches@linaro.org, Rob Herring <robh+dt@kernel.org>, krzysztof.kozlowski@linaro.org, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, agross@kernel.org, andersson@kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
+In-Reply-To: <20221114104222.36329-2-konrad.dybcio@linaro.org>
+References: <20221114104222.36329-1-konrad.dybcio@linaro.org>
+ <20221114104222.36329-2-konrad.dybcio@linaro.org>
+Message-Id: <166843545485.2679805.16057396300948126713.robh@kernel.org>
+Subject: Re: [PATCH v2 1/9] dt-bindings: arm-smmu: Allow up to 3 power-domains
+Date: Mon, 14 Nov 2022 08:19:56 -0600
 
-On Fri, Nov 11, 2022 at 02:53:59PM -0800, Nuno Das Neves wrote:
-> On 11/11/2022 9:58 AM, Michael Kelley (LINUX) wrote:
-> > From: Wei Liu <wei.liu@kernel.org> Sent: Friday, November 11, 2022 9:27 AM
-[...]
+
+On Mon, 14 Nov 2022 11:42:14 +0100, Konrad Dybcio wrote:
+> Some SMMUs require that a vote is held on as much as 3 separate PDs
+> (hello Qualcomm). Allow it in bindings.
 > 
-> I've tested this patch on these Azure SKUs:
-> - Standard_D2S_v2 (intel xapic)
-> - Standard_D4ds_v4 (intel xapic)
-> - Standard_D4ds_v5 (intel x2apic)
-> - Standard_D4ads_v5 (amd xapic)
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> ---
+> Changes since v1:
+> - Add minItems
 > 
-> I've tested with linux Dom0 (nested hyperv root partition) and as a
-> regular L1 guest.
+>  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
 
-Okay. I think your tests are good.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Michael, do you have any further concern?
+yamllint warnings/errors:
 
-Thanks,
-Wei.
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iommu/arm,smmu.yaml: properties:power-domains:minItems: 0 is less than the minimum of 1
+	from schema $id: http://devicetree.org/meta-schemas/keywords.yaml#
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iommu/arm,smmu.yaml: properties:power-domains: 'anyOf' conditional failed, one must be fixed:
+	'minItems' is not one of ['maxItems', 'description', 'deprecated']
+		hint: Only "maxItems" is required for a single entry if there are no constraints defined for the values.
+	'minItems' is not one of ['description', 'deprecated', 'const', 'enum', 'minimum', 'maximum', 'multipleOf', 'default', '$ref', 'oneOf']
+	'maxItems' is not one of ['description', 'deprecated', 'const', 'enum', 'minimum', 'maximum', 'multipleOf', 'default', '$ref', 'oneOf']
+	1 was expected
+		hint: Only "maxItems" is required for a single entry if there are no constraints defined for the values.
+	0 is less than the minimum of 1
+		hint: Arrays must be described with a combination of minItems/maxItems/items
+	hint: cell array properties must define how many entries and what the entries are when there is more than one entry.
+	from schema $id: http://devicetree.org/meta-schemas/power-domain.yaml#
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
