@@ -1,98 +1,78 @@
-Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6938C2F24
-	for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 10:42:36 +0000 (UTC)
-Received: by mail-lj1-f169.google.com with SMTP id d20so12547917ljc.12
-        for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 02:42:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=zDzwDb0dnKoTPgCy4RBfiMpDFetmXY9OEGk9SR/WSLY=;
-        b=FhlApcqDxCtCoupJ/TIS0Ykf65afLK30ejNB8v2zhMO/08W/KJGjo+jBHJsNqt10pm
-         1GEqKtYy830ohGlIM91yJZR6N3HiLjwX/ldBqlIKM5vXM3kFSN+2IIvvYOj+qJ87LRfI
-         dzDH0BAB4MOhdYEyvZ3udJabwEej8WLG14Mgf1O8L/LxHKjVqaxAvZpwi12vdDcBIVpu
-         SuIQrLXvLUodif/creo1nAh7wOM3vGtIU/3ALCYbvqgi8SSmbsONxt+v709lJdR5zYEw
-         fxJFr0c9PqfemGYKmEEvkXXlRTEeFlBCxfFC6xv+x98BZlO64aBbZ6833hVafWVYTAYD
-         0eZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=zDzwDb0dnKoTPgCy4RBfiMpDFetmXY9OEGk9SR/WSLY=;
-        b=NfWmaL0J/yqLsGayMuoYj1ZjiZh9LzYRU71FM7IileW0e+8dOjaywOb82saTBKjIiF
-         lqx2EXbMRiUjoWxtgp59YF85HazE42j4ym+0gBZXqtjwL1FqNTaICj1leqFcLTuOfP4s
-         8FRmtvyXB0o4aq96yorTOKgFGOkJrDqkeIsTtOQa2ZvKX0OyxyBS2Xb5+Y1Nx1HIESwq
-         /nWzXNqh7kopPhO4zeCr4CFPT7dAs5GOY7jGoDMJyXFLr7flgutweFh8hmAGiE70YVVI
-         B4kEx50/3mj7uCwDn7uB6jbbn01QGGQyZnO1quRUqNMYTOR96ttrRSLohkr3pDEtd8Cy
-         v+kw==
-X-Gm-Message-State: ANoB5pl08jOwCwXh8Q0N2Yj6k79v7wydxvOTUnLMmsofDRP3SB6S/prV
-	AEMO6Z6VusQC5+x0LE1pOJHBpw==
-X-Google-Smtp-Source: AA0mqf4qlxiMY3JDejy6a3SVEFC3TJHChXsZGfocnkqWhpRLRNPJLTzvyucW4mkNtj7j0c1yswAz8g==
-X-Received: by 2002:a2e:960d:0:b0:277:4f:bd2a with SMTP id v13-20020a2e960d000000b00277004fbd2amr3622765ljh.341.1668422554455;
-        Mon, 14 Nov 2022 02:42:34 -0800 (PST)
-Received: from localhost.localdomain ([194.29.137.22])
-        by smtp.gmail.com with ESMTPSA id bs21-20020a05651c195500b0026c4e922fb2sm1946486ljb.48.2022.11.14.02.42.33
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Mon, 14 Nov 2022 02:42:34 -0800 (PST)
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-To: linux-arm-msm@vger.kernel.org,
-	andersson@kernel.org,
-	agross@kernel.org,
-	krzysztof.kozlowski@linaro.org
-Cc: patches@linaro.org,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/9] dt-bindings: arm-smmu: Allow up to 3 power-domains
-Date: Mon, 14 Nov 2022 11:42:14 +0100
-Message-Id: <20221114104222.36329-2-konrad.dybcio@linaro.org>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20221114104222.36329-1-konrad.dybcio@linaro.org>
-References: <20221114104222.36329-1-konrad.dybcio@linaro.org>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 95BF63FC2
+	for <iommu@lists.linux.dev>; Mon, 14 Nov 2022 10:46:53 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0A69223A;
+	Mon, 14 Nov 2022 02:46:59 -0800 (PST)
+Received: from [10.57.70.90] (unknown [10.57.70.90])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 97DD83F73D;
+	Mon, 14 Nov 2022 02:46:51 -0800 (PST)
+Message-ID: <93e31bd7-890b-abd9-a75b-44e86df5bb6d@arm.com>
+Date: Mon, 14 Nov 2022 10:46:47 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Optimize checking for invalid values
+To: Harry Song <jundongsong1@gmail.com>, will@kernel.org
+Cc: joro@8bytes.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20221113133855.6219-1-jundongsong1@gmail.com>
+Content-Language: en-GB
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20221113133855.6219-1-jundongsong1@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Some SMMUs require that a vote is held on as much as 3 separate PDs
-(hello Qualcomm). Allow it in bindings.
+On 2022-11-13 13:38, Harry Song wrote:
+> Move the check of invalid value (iotlb_gather->pgsize = 0) from
+> arm_smmu_iotlb_sync() to __arm_smmu_tlb_inv_range() for iotlb sync
+> to make the code clearer.
 
-Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
----
-Changes since v1:
-- Add minItems
+How is this an optimisation? It adds a redundant check on paths that 
+don't need it, and even the unmap error paths now have to do *more* work 
+to figure out when there's nothing to sync. Furthermore, to me "clear 
+code" means making decisions at the appropriate level of abstraction, 
+not deliberately passing invalid arguments down through 3 more levels of 
+callstack to eventually do nothing.
 
- Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+If you think that the gather->pgsize logic is hard to follow and needs 
+more explanation then by all means add a comment to call out how 
+iommu_iotlb_gather_init() and iommu_iotlb_gather_add_page() join it up, 
+but I don't agree with this patch as it is, sorry.
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-index 9066e6df1ba1..82bc696de662 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-@@ -159,7 +159,8 @@ properties:
-           through the TCU's programming interface.
- 
-   power-domains:
--    maxItems: 1
-+    minItems: 0
-+    maxItems: 3
- 
-   nvidia,memory-controller:
-     description: |
--- 
-2.38.1
+Thanks,
+Robin.
 
+> Signed-off-by: Harry Song <jundongsong1@gmail.com>
+> ---
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 5 +----
+>   1 file changed, 1 insertion(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 6d5df91c5..e51b9f506 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -1873,7 +1873,7 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
+>   	size_t inv_range = granule;
+>   	struct arm_smmu_cmdq_batch cmds;
+>   
+> -	if (!size)
+> +	if (!size || !inv_range)
+>   		return;
+>   
+>   	if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
+> @@ -2507,9 +2507,6 @@ static void arm_smmu_iotlb_sync(struct iommu_domain *domain,
+>   {
+>   	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>   
+> -	if (!gather->pgsize)
+> -		return;
+> -
+>   	arm_smmu_tlb_inv_range_domain(gather->start,
+>   				      gather->end - gather->start + 1,
+>   				      gather->pgsize, true, smmu_domain);
