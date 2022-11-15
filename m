@@ -1,112 +1,210 @@
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F3443C2D
-	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 12:49:51 +0000 (UTC)
-Received: by mail-wr1-f54.google.com with SMTP id z14so23929312wrn.7
-        for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 04:49:51 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B27C53C2D
+	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 12:54:12 +0000 (UTC)
+Received: by mail-ej1-f44.google.com with SMTP id m22so35711971eji.10
+        for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 04:54:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=D4OAPFPv9ICweMhHmhi9nXFzX1GVFUwibSbuKpM22sU=;
-        b=coF6qCD4Sv4T1AgerOOvdy+szNlwl9BpAoSyaj7uFwTuEIRIt1mHnFHHZTG3gJWjCa
-         P7dsYyf/dV+7XKS0G2t7Ihpro4cv3PewWCEnDRud76rchVoa0YCUlhH2uJOBGSl/ycZF
-         XgfuwI0gJUfdfGJHfwQzWYodSvYTWMH7AcGxa2QSInISvjJ0gqq5j39HGJOo5bc5z/nR
-         IJnH/1k14ojcHtD4cIpxkC4dgFyDf4Oc0b/MTdkl45AutwEbcUd3oUauVnMi6OPb01oS
-         iIYE1pDS8/nniiW8t8eU6M0jVuWHfqp0ELuTixuFDdaELq9HyjFXDMieyXhaV747Q2pO
-         YK5A==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4z+vcQIa+TDGxCARqFIzwt2He1hOQxmdiWKApcem7GQ=;
+        b=YBur8QGH9B9DZJb9Crmk5KuOxYHrJWzxdseDQl+IeoL+2tRYVKgX79q6/QfRdi2v4i
+         dGVvct0uk34s0I8Tj5z+wSNuYem5A2EDF+VqbvgbdeL2r+/u25BGmPePMAOp1TGcpigK
+         ycjgIAhVgYGfsGJPY7xcvVLepm4KgYt1RwuMbyjRgjJzGldhtsX+QgriBy/0r3aJtUC1
+         8e8xjsBUwqb3kmcidNMjfc4clzDOMhbgE5co459zupfdmvYmonS63k45OqPQRbmpv7q0
+         VUJoV0lSgfvHdijK1wrLvRE/RGe68xeSzJzC71XB9PVBpcxorwRHPAMA4JPh7+RQ56t1
+         boyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=D4OAPFPv9ICweMhHmhi9nXFzX1GVFUwibSbuKpM22sU=;
-        b=AgqiFGZ/m/UFcGoD3xhUXWiy94/nQz7ahixapdPcfMBuoGrqYyxijxFhmsg6elw+aA
-         5rFwdpulMkmskMEKYzYV63uvdcltkZhsRos0fSs547m+jxw0ydRseRuojHHcSCU+4Fzt
-         vXIcqcKQYNflAtt3Qi++gZF7YFT/lI8S86eKxpwaUvFZJ57r0FzVuSoveYc4DWcgSxZq
-         HwhOgGNJs4YXgPFHS/tyiM9uDQdCQUrcpU1zY25p/HrRkJCZzE8V00sthh00H+C5O3yF
-         ayCfMVNFyPkiaJPNNqNZIQFZ5/XQtCO3cWONrvlU/GpRILNBZsyfZz1X3mVBLh+5gDvT
-         Zzuw==
-X-Gm-Message-State: ANoB5pm+QVIFUULD2CUbN19LDIZySxLtIOWPJ69/JbEYvukqMw0fw/C+
-	VHxCRdJBaQYIE5HY2nqGel9wwMrfj4A=
-X-Google-Smtp-Source: AA0mqf7wc7sJxYIRlbcHllDD5oSli4Km4zN133Mc1HsvGWsgy5pBwMhO0uoVEiVR/N9SWPoheLvpFA==
-X-Received: by 2002:a05:6000:108b:b0:22e:68a1:ddab with SMTP id y11-20020a056000108b00b0022e68a1ddabmr10610951wrw.496.1668516589818;
-        Tue, 15 Nov 2022 04:49:49 -0800 (PST)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id p16-20020a5d48d0000000b00236c1f2cecesm14896265wrs.81.2022.11.15.04.49.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Nov 2022 04:49:49 -0800 (PST)
-Date: Tue, 15 Nov 2022 15:49:44 +0300
-From: Dan Carpenter <error27@gmail.com>
-To: jgg@ziepe.ca
-Cc: iommu@lists.linux.dev
-Subject: [bug report] iommufd: Add a selftest
-Message-ID: <Y3OK6DeM6X4q5JWO@kili>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=4z+vcQIa+TDGxCARqFIzwt2He1hOQxmdiWKApcem7GQ=;
+        b=GDpE8aEZXZtC+qAUzqmM8qzBMPhIuiNy9XPEdOkI23I82PcBbcyImyAGf8f2iWbpTi
+         VdfSJ1LQbG4wDlTuQH5tloqu9u2OWNk+iQtR7gzpFd/ke6gzSdeOVmzWX4RY2qGuQtzY
+         pQuLm0ASDewmhpANI46kboE4F9BQCGv31b1WjF0BeqEMtdUYuiesmZafMScQiC9gF6k9
+         YAW1ITiIXc2/Lm/qr2EYcreBoJZzIawaxdHAVeDAIGZLK3Rlt26ddq25tvtAsT13mikt
+         uuM3ZUmMiWuauM/fvc/aFHfGNdSGEuS6AUvvDpe9gitSQSq9NydHfQl0G3Dr8g6HLlgB
+         CEWQ==
+X-Gm-Message-State: ANoB5pk91QYrBE+GqJIbwT/ohjoHhYfjmtmqsknOqADKFi62QAOChwU5
+	LvfhHmwwFyL/+n4SshILUIykgQ==
+X-Google-Smtp-Source: AA0mqf7itE9nf4WRqEIO+vTD+BPP7Gr3FkphD9bLXegoH3gu+/hOfOjZOYe3Gji0QSO05rw767Q+hQ==
+X-Received: by 2002:a17:907:770f:b0:78d:c16e:dfc9 with SMTP id kw15-20020a170907770f00b0078dc16edfc9mr13754413ejc.327.1668516850970;
+        Tue, 15 Nov 2022 04:54:10 -0800 (PST)
+Received: from [192.168.31.208] ([194.29.137.22])
+        by smtp.gmail.com with ESMTPSA id c2-20020a17090618a200b007ad96726c42sm2946289ejf.91.2022.11.15.04.54.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Nov 2022 04:54:10 -0800 (PST)
+Message-ID: <f59ddce1-c2e1-4055-3bce-1319c68ddf94@linaro.org>
+Date: Tue, 15 Nov 2022 13:54:03 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Hello Jason Gunthorpe,
-
-The patch 147393321d65: "iommufd: Add a selftest" from Nov 19, 2021,
-leads to the following Smatch static checker warning:
-
-	drivers/iommu/iommufd/selftest.c:160 mock_domain_map_pages()
-	warn: use 'gfp' here instead of GFP_XXX?
-
-drivers/iommu/iommufd/selftest.c
-   133  static int mock_domain_map_pages(struct iommu_domain *domain,
-   134                                   unsigned long iova, phys_addr_t paddr,
-   135                                   size_t pgsize, size_t pgcount, int prot,
-   136                                   gfp_t gfp, size_t *mapped)
-   137  {
-   138          struct mock_iommu_domain *mock =
-   139                  container_of(domain, struct mock_iommu_domain, domain);
-   140          unsigned long flags = MOCK_PFN_START_IOVA;
-   141          unsigned long start_iova = iova;
-   142  
-   143          /*
-   144           * xarray does not reliably work with fault injection because it does a
-   145           * retry allocation, so put our own failure point.
-   146           */
-   147          if (iommufd_should_fail())
-   148                  return -ENOENT;
-   149  
-   150          WARN_ON(iova % MOCK_IO_PAGE_SIZE);
-   151          WARN_ON(pgsize % MOCK_IO_PAGE_SIZE);
-   152          for (; pgcount; pgcount--) {
-   153                  size_t cur;
-   154  
-   155                  for (cur = 0; cur != pgsize; cur += MOCK_IO_PAGE_SIZE) {
-   156                          void *old;
-   157  
-   158                          if (pgcount == 1 && cur + MOCK_IO_PAGE_SIZE == pgsize)
-   159                                  flags = MOCK_PFN_LAST_IOVA;
-   160                          old = xa_store(&mock->pfns, iova / MOCK_IO_PAGE_SIZE,
-   161                                         xa_mk_value((paddr / MOCK_IO_PAGE_SIZE) |
-   162                                                     flags),
-   163                                         GFP_KERNEL);
-                                               ^^^^^^^^^^
-"gfp" isn't used anywhere so maybe it was intended here?
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.4.2
+Subject: Re: [PATCH v2 1/9] dt-bindings: arm-smmu: Allow up to 3 power-domains
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ linux-arm-msm@vger.kernel.org, andersson@kernel.org, agross@kernel.org
+Cc: patches@linaro.org, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20221114104222.36329-1-konrad.dybcio@linaro.org>
+ <20221114104222.36329-2-konrad.dybcio@linaro.org>
+ <6fa8e3ea-2113-d930-96bc-3726d53e5bcd@linaro.org>
+ <a4b160d8-0faa-3f4c-a925-0beaf6ace721@linaro.org>
+ <0121fc03-b027-7659-5e6e-b42089c9888d@linaro.org>
+ <12578e05-ced9-e5f7-7922-0af2f2159333@linaro.org>
+ <878402e7-7f80-31c7-3a6b-989a6ca29841@linaro.org>
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+In-Reply-To: <878402e7-7f80-31c7-3a6b-989a6ca29841@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
 
 
-   164                          if (xa_is_err(old)) {
-   165                                  for (; start_iova != iova;
-   166                                       start_iova += MOCK_IO_PAGE_SIZE)
-   167                                          xa_erase(&mock->pfns,
-   168                                                   start_iova /
-   169                                                           MOCK_IO_PAGE_SIZE);
-   170                                  return xa_err(old);
-   171                          }
-   172                          WARN_ON(old);
-   173                          iova += MOCK_IO_PAGE_SIZE;
-   174                          paddr += MOCK_IO_PAGE_SIZE;
+On 14/11/2022 17:58, Krzysztof Kozlowski wrote:
+> On 14/11/2022 16:53, Konrad Dybcio wrote:
+>>
+>> On 14/11/2022 14:00, Krzysztof Kozlowski wrote:
+>>> On 14/11/2022 12:17, Konrad Dybcio wrote:
+>>>> On 14/11/2022 12:01, Krzysztof Kozlowski wrote:
+>>>>> On 14/11/2022 11:42, Konrad Dybcio wrote:
+>>>>>> Some SMMUs require that a vote is held on as much as 3 separate PDs
+>>>>>> (hello Qualcomm). Allow it in bindings.
+>>>>>>
+>>>>>> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+>>>>>> ---
+>>>>>> Changes since v1:
+>>>>>> - Add minItems
+>>>>>>
+>>>>>>     Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 3 ++-
+>>>>>>     1 file changed, 2 insertions(+), 1 deletion(-)
+>>>>>>
+>>>>>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>>>>> index 9066e6df1ba1..82bc696de662 100644
+>>>>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>>>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>>>>> @@ -159,7 +159,8 @@ properties:
+>>>>>>               through the TCU's programming interface.
+>>>>>>     
+>>>>>>       power-domains:
+>>>>>> -    maxItems: 1
+>>>>>> +    minItems: 0
+>>>>> It cannot be 0.
+>>>>>
+>>>>> minItems: 1
+>>>>>
+>>>>> Anyway you still need to restrict it per variant, as I said in previous
+>>>>> version.
+>>>> Hm.. I'm not entirely sure what you mean.. Should I add a list of
+>>>> compatibles
+>>> Yes and limit it to maxItems: 1 for "else".
+>>
+>> I tried adding:
+>>
+>>
+>>
+>>     - if:
+>>         properties:
+>>           compatible:
+>>             contains:
+>>               enum:
+>>                 - qcom,sm6375-smmu-500
+>>       then:
+>>         properties:
+>>           power-domains:
+>>             minItems: 3
+>>             maxItems: 3
+>>       else:
+>>         properties:
+>>           power-domains:
+>>             maxItems: 1
+>>
+>>
+>> Right under the nvidia reg if-else in the allOf, but dtbs_check throws
+>> errors like:
+>>
+>>
+>> /home/konrad/linux/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino-poplar.dtb:
+>> iommu@5040000: 'power-domains' does not match any of the regexes:
+>> 'pinctrl-[0-9]+'
+>>
+>>
+>> Any clues as to why?
+> 
+> I don't know what code do you have there, but generic pattern is:
+> 
+> https://elixir.bootlin.com/linux/v5.19-rc6/source/Documentation/devicetree/bindings/clock/samsung,exynos7-clock.yaml#L38
+> 
+I tried many things, but I still don't seem to get a hang of it.. Here's 
+my current diff rebased on top of Dmitry's recent cleanups (available at 
+[1])
 
-regards,
-dan carpenter
+
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml 
+b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+index 28f5720824cd..55759aebc4a0 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+@@ -200,7 +200,7 @@ properties:
+      maxItems: 7
+
+    power-domains:
+-    maxItems: 1
++    maxItems: 3
+
+    nvidia,memory-controller:
+      description: |
+@@ -364,6 +364,26 @@ allOf:
+              - description: interface clock required to access smmu's 
+registers
+                  through the TCU's programming interface.
+
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: qcom,sm6375-smmu-500
++    then:
++      properties:
++        power-domains:
++          items:
++            - description: SNoC MMU TBU RT GDSC
++            - description: SNoC MMU TBU NRT GDSC
++            - description: SNoC TURING MMU TBU0 GDSC
++
++      required:
++        - power-domains
++    else:
++      properties:
++        power-domains:
++          maxItems: 1
++
+  examples:
+    - |+
+      /* SMMU with stream matching or stream indexing */
+
+
+In my eyes, this should work, but I still get errors like:
+
+/home/konrad/linux/arch/arm64/boot/dts/qcom/sm8250-hdk.dtb: 
+iommu@3da0000: power-domains: [[108, 0]] is too short
+
+as if the else: path was never taken..
+
+[1] 
+https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git/log/?h=for-joerg/arm-smmu/bindings
+
+Konrad
+> Best regards,
+> Krzysztof
+> 
