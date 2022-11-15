@@ -1,198 +1,264 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f73.google.com (mail-qv1-f73.google.com [209.85.219.73])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F292BA5D;
-	Tue, 15 Nov 2022 16:44:59 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Hs+NHMCheCKLroyU626KI2tJAYE0VkGt98X/x9ZRNgUabJpuRLCZ73y63bAdoeioyBty5+HOyyzKcLs5Q/7xXHX+vZbhu8qZjvNbRvm4nSbEFEKZow3WNNenPvSrFZsT8O/FDUKR6MPjmOjHLAQvEhCGmdavIHnULPOkjPkGSkqOcOlUE/tJX731wzKWc1D6YxDhAVrMc6pyZTcZuwuIDBu9RBxc/G6ujvFsJ3a4qi65+TE9FZDPNDQvm1yT8T3g0/uZaf6Bv6LuPkZH6zeYAOl5koVP3S5Y119/VZks1R1LeGNtsY9ywStvlJsLtVWlsj+UY14I/pGzh02lKvxqlg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yadb2DY0fufBAn9xcNz380NISVadgeCgKXblmyMCJyE=;
- b=Lv+7Hf2otQAOhKQSBL5BHmzK6OBuM1NHXrYXPg9DnFIBRUZgNEgo1HNoCNkz9taGqwDfE3UP88kev106jzZiGlIqgJqKNiC86E5ayZreeWOv/fuKZFv48WORGG0f/Ap3iks/KuoK56y1Tccy/SGFPtwhU6EM2hpyTQJgEXg87yxobEEFOi3aFpWG+ZUUE09CS7/5EHBRlAHtx77egfK4xtX0kotGCQa3GPguHF+k+A6muEeFXw7RSsDwPo4hNcdX2mjpu/MA7N1crjCkPzuit/stD+/KblaJ69XPZBdc6xwl18ogM1fqOIRjrWKYwZFdNwIqKS7H7b+Sm19NeTC3FQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yadb2DY0fufBAn9xcNz380NISVadgeCgKXblmyMCJyE=;
- b=Qxxq+taYL+NeXd7816984RYvfC9eH2U2NVeWtnCcMYx6RUTQpyi6KzZD1U/h+EaD3DM8NGpQEpmd20R+qRJ0kphhMI4/3upBGTLDPzC4DsaSZ42/Ujk0xF6j1A5AoZ2TEjPTPhbVP2PPHyFA+iJMl41uk3Bn6+z9kmkGoDbAUPZxxizMdScCb4Msm6lbh59Gi4UulU+8lY6yG2VBMi5joIJHlNovi538l/pm/VCjyR18HZ0Bog2CYO/wjGonxEwvQWdyI1VolqgXIDHif6E9BYyL4akhFgmCaCqCbgSHk/wku0Go1Qo2YyROeR9KjFVLbR9yIWhGDewNwLqA9h1RTw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by SA1PR12MB7294.namprd12.prod.outlook.com (2603:10b6:806:2b8::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.17; Tue, 15 Nov
- 2022 16:44:55 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f8b0:df13:5f8d:12a%7]) with mapi id 15.20.5813.017; Tue, 15 Nov 2022
- 16:44:55 +0000
-Date: Tue, 15 Nov 2022 12:44:54 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Eric Auger <eric.auger@redhat.com>
-Cc: bpf@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-	linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
-	Nick Desaulniers <ndesaulniers@google.com>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
-	Cornelia Huck <cohuck@redhat.com>,
-	Daniel Jordan <daniel.m.jordan@oracle.com>,
-	David Gibson <david@gibson.dropbear.id.au>,
-	Eric Farman <farman@linux.ibm.com>,
-	Jason Wang <jasowang@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Joao Martins <joao.m.martins@oracle.com>, kvm@vger.kernel.org,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-	Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
-Subject: Re: [PATCH v4 03/17] interval-tree: Add a utility to iterate over
- spans in an interval tree
-Message-ID: <Y3PCBnGxPm2ZKrm+@nvidia.com>
-References: <3-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
- <112905a9-ed6f-4aaa-2bfc-46502e558ab5@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <112905a9-ed6f-4aaa-2bfc-46502e558ab5@redhat.com>
-X-ClientProxiedBy: MN2PR06CA0026.namprd06.prod.outlook.com
- (2603:10b6:208:23d::31) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1F2924F29
+	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 18:28:44 +0000 (UTC)
+Received: by mail-qv1-f73.google.com with SMTP id w12-20020a056214012c00b004c6257ca968so7841901qvs.16
+        for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 10:28:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=SoUmPkHlkDH+7nhAOWIZ0SCq+4Ebj+CALgmJJRMTdeg=;
+        b=eANR3/+r4/MRfVqHI/utl+NkZlPzevU1TGEEysolV5xO3wHm28FQqXZ3yK+tishuev
+         FEdyAzazOUwFaX/ieAkinArTmqoCzRPkfskS+jTQLD1MSouu/OMU9BXEUA/pPut5/7Rb
+         8fn99JhkQp5ZK/xXjV8842yEKstiUq2qleGkkoi+kBxNAuyXfOsquk6c5zVgEI4fEAjS
+         r9IEjLOtF7ByxDK7FTHiPiPVlT5Bn+FBXA5Vt40vGwdOeNFIQOVIcJN/BhQnjV17zKvA
+         cio68NUuIMMwMyvC7DbTShTMKa17vFn4vCPsfivXCRG8D7S3llUgVfR+CFMQNZnAf48h
+         F08Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=SoUmPkHlkDH+7nhAOWIZ0SCq+4Ebj+CALgmJJRMTdeg=;
+        b=igEDLjEp8jBlLfSGRryqgJkniAR0GaTojRbSv0w0sy2T4ye+dbfrBZDhPhOEtO5MHZ
+         YDvzU+ynjBQGiBD/cu5UQkgKd5P/Ox7ONw6FRPP2OmvCcVGN2lJojQdxYyGXyh+SSqYp
+         0OFAf+DMUfbS+B0QR8rer805Lwmvmqxvnmg0smao+T+VzCg/RQVg7//b2ak7hUOqOzIC
+         7YmAErUGy9aSOQOjkgTX09/1jqmoGRsLTO+22JeynIpiSMqBhI5SfFpEAbtFWq5rcEMz
+         LfcD2sg+d/wSl4Cv6T5VCRefH0CuIa8KU/PrZTa+4zSdFwGJG0mFh71dohcI7mEfX8ue
+         EjbA==
+X-Gm-Message-State: ANoB5pk1x0C3Zh9BfomlqXSq7Q9ftlCvfl6Z/dJNB50uiR2OgEVfI1TM
+	+jhQrrS0JImyvc4VOXLJeqVFIWJ24FrrCQ==
+X-Google-Smtp-Source: AA0mqf5m9Y9Hm6Nw/W5UoBKliGXP3uUoOBJcWlloA4j+N/XrgbIVcd0oc03Z6IzUgCXGvi39AAJLJagsngRr5A==
+X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
+ (user=edumazet job=sendgmr) by 2002:ac8:7502:0:b0:3a5:7e65:ddeb with SMTP id
+ u2-20020ac87502000000b003a57e65ddebmr17287503qtq.424.1668536923808; Tue, 15
+ Nov 2022 10:28:43 -0800 (PST)
+Date: Tue, 15 Nov 2022 18:28:41 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SA1PR12MB7294:EE_
-X-MS-Office365-Filtering-Correlation-Id: b2bb139f-d0d1-4a35-15de-08dac728b996
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	CoStVEITRn5h3gV1Dk5+m7AhZoSBIK/s96Sbl0PSXtbnD66fcCYEZrcLh6b2HbJfyRRt8mHysH4JSLHm492Xm98tV5bKG8NpaqbySIVqQdh9QvEMuJ1pTRRdBib/oFAENzYjqmOJPegN6kXKWs0uoByoei05yiyKZ3i9vD3ppD+68FAh+l1k3So6NuiwDPm2SCLAb62muoxclfRCkLuS5VQz0ZnDpBZsWSSHBwtzb34IlO54QwrME5/Cd2w5o+h9KLS7ldPwG3iv0CdEiTHltbpIUGyiqjKfLuEuUrXiME8QQkFDYB0sO4i3yz/Qet1ZSfe+ht1AiPii01DBaAkjGGqEP4vGc/AmEFWf6SDErE9VFV3XN3SgljtAhq9bb5EfQlfVs3332Zk7MdKDKRVrhBipJ2I8qHNxjgQEZNTTXr5+oE0Ef3IpM/X62U48An089TqvcPH/EGOCCancbiF0Su/0NcfQUAUcdC+LIERbiH4vm1sL70DHNF7Extz2j8KrMim4RD8mH6VLXqXWHAPV+kXy2BPoiwxRtk/ur5mVMpu5CRWUgPDTUgpe2NYejmRxkT+2KqJxvTepiocG4o3t5TB5zibjUBa9FTrieSPKGwf/foPNxvOPCfe0CK1GXo/8ZJqVC7MgZn2/SkHJA10S42zPlXXRRRxndPNa8c/UXCiCHNDQPDT+gHl0qbMYX02ZnZAngdH4GPjXrGXaCxyBMg==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(366004)(346002)(39860400002)(376002)(136003)(451199015)(2906002)(7406005)(7416002)(66946007)(66476007)(66556008)(5660300002)(8936002)(8676002)(4326008)(41300700001)(6506007)(6486002)(83380400001)(2616005)(36756003)(6512007)(26005)(316002)(6916009)(186003)(54906003)(478600001)(86362001)(38100700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?zxsIXjRvkDjAry3FO+8HNVEymt5B0g6sKzZ/c7To82FL3lG6N6AB12vVKJSw?=
- =?us-ascii?Q?Fw+1vc01Vm/5NllOYcIq5uWCH339x2/Y6P0NTg6vNdgjWkMytmdNE/c751KK?=
- =?us-ascii?Q?8hiz48822V64UHnLWZwpmperTigiFcSP28WaxD4DwipAiqaaR0GQpcLDvTRa?=
- =?us-ascii?Q?oeRi6ghYpio2hJ0Ps8yMGtrw5tp2dCPYPNFKFcEXJAdvkxhH/XNRwv0WEZJQ?=
- =?us-ascii?Q?aXXHWVvxlKmZGpL7NCswhpMI0rKWYV1pkFOJQ36lzvYdhSaP00u9EjXWgsEq?=
- =?us-ascii?Q?bq1rUZXSh3HdC8zUpZc3cSdNWma5zNmZS9E5d6n8bDMYoqXl/LVhGJnAd6iw?=
- =?us-ascii?Q?POPLSw7cWeYEZmsRtiGIGmZmylyj2OjeTzDKbJLiyOKNssQA4yL/Qo4KiW96?=
- =?us-ascii?Q?bKoaMMC7twlz8Eeg+cyGYzcYzUgNl+UJTjnEQ/E8tQYWgWh+fqpusrZFpxhd?=
- =?us-ascii?Q?zwylZGCqPcs5dl+5kwxydSnGzrSKQTp1lLQTLvYUzCuv8fzTC9XCwfTiicUr?=
- =?us-ascii?Q?f3eNnbM26L/nRt6YO/5sXP9tVz7TqKa05l9NKq2SJ/qGCE3+PH+Q5eHRB1zq?=
- =?us-ascii?Q?UiHTAiPjuQbceheB3UKnNnT+6KGfoCKE1HbJnvQbCuv7NYQnVGPOcccUxKa2?=
- =?us-ascii?Q?dugKmj+PhFuRpV4smRzm08bKADnAAFDQW2uXTo5aBL7a+3XzcbZuJRNFWFC1?=
- =?us-ascii?Q?POB+mR2MistKrDFAsQYCogw+tFIYqQnoPZ4pKPNF/ymoj5Hob2Z6IJYJ/pXq?=
- =?us-ascii?Q?vEMWio45laKDVLEawWqys3ZFVhDxWDexjAzaQ8K06mnq5vOwtKseW9/vlSWV?=
- =?us-ascii?Q?Qcs+DDJRhoTzM0z5DGkbc5IAGucYhKukVwGWOD7Twh/+GZ8bwgjEV/KHs9lV?=
- =?us-ascii?Q?jHj2wBprzObUlUkg0IKtqT5XIJLDlP4SWsBHmGO7cIC6ZWyfiz8We2wyyM8K?=
- =?us-ascii?Q?nGdRHnMKmTFF3/0TBqmvte+0baOnEdzTwhXiPc5cf6w61GEe7Kx+xTCoVerm?=
- =?us-ascii?Q?18A6r+5+JkMIM7hRY/23IPFEdK+HzRNNBQKJ+8P5c1qHn4qDTcWi+rnvSTnw?=
- =?us-ascii?Q?fxRUsEj/9sXzCbPkLCQvBIyAs+JBjs92ChUCUj2CytoYQj82RXieNZnsuxTW?=
- =?us-ascii?Q?t+NKg08P3MGP4F7DgLPaRe1IDWQKTnm/ixAo5ZT+4w48zKL3H8ztFWMKo3vS?=
- =?us-ascii?Q?adGhiL+aKLnp9/6Z1UoJ+ZibmLzT8CfcCUqOCvWEYH/ZBP7gP2KRXRAIxOsY?=
- =?us-ascii?Q?zTQGgAOO+JMeWdo7Jj89J9RFAYe5KVxGTC6R0IwD2g80NK3bEGJQrlaU3y1b?=
- =?us-ascii?Q?OK3SLNERcf0qbXgy5O7aL58J2qAJuMq5vgpH/uwQpjeF/9kyX59/TkntSpLw?=
- =?us-ascii?Q?NOWWQXAjHVklcqmrFH0ZlMGUWmBqwrxdGEXrAETHnkUPGfBoKXrqBQEbFtki?=
- =?us-ascii?Q?brqX505ylKuj6cBQv/fCIvJ3lCS/ZzVk0EL+HkS4RF2GUjaK06ZG9KBBYhr+?=
- =?us-ascii?Q?63e4l4Ikp0TSPEHB/DPwvehaveSztfKwGurdNGUKQBol2OvWodGonQfRcQP5?=
- =?us-ascii?Q?/TEh5F8dhWpwooHQjoQ=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b2bb139f-d0d1-4a35-15de-08dac728b996
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Nov 2022 16:44:55.5101
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ar/hvdcZ0QE/UG5lhoj6uKr4WwdMnBBSe1iRPIIrp1H/uM9tEiDOsXQk5arf9Xxl
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7294
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.38.1.431.g37b22c650d-goog
+Message-ID: <20221115182841.2640176-1-edumazet@google.com>
+Subject: [PATCH v2 -next] iommu/dma: avoid expensive indirect calls for sync operations
+From: Eric Dumazet <edumazet@google.com>
+To: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
+Cc: linux-kernel <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org, 
+	Eric Dumazet <edumazet@google.com>, Eric Dumazet <eric.dumazet@gmail.com>, iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Nov 15, 2022 at 03:14:00PM +0100, Eric Auger wrote:
-> > diff --git a/lib/interval_tree.c b/lib/interval_tree.c
-> > index 593ce56ece5050..d2882db8fa2a07 100644
-> > --- a/lib/interval_tree.c
-> > +++ b/lib/interval_tree.c
-> > @@ -15,3 +15,135 @@ EXPORT_SYMBOL_GPL(interval_tree_insert);
-> >  EXPORT_SYMBOL_GPL(interval_tree_remove);
-> >  EXPORT_SYMBOL_GPL(interval_tree_iter_first);
-> >  EXPORT_SYMBOL_GPL(interval_tree_iter_next);
-> > +
-> > +#ifdef CONFIG_INTERVAL_TREE_SPAN_ITER
+Quite often, NIC devices do not need dma_sync operations
+on x86_64 at least.
 
-> Maybe add in a kernel doc that a prerequisite is state.nodes[1] must be
-> populated
+Indeed, when dev_is_dma_coherent(dev) is true and
+dev_use_swiotlb(dev) is false, iommu_dma_sync_single_for_cpu()
+and friends do nothing.
 
-Sure, lets just move the below comment up a bit:
+However, indirectly calling them when CONFIG_RETPOLINE=y
+consumes about 10% of cycles on a cpu receiving packets
+from softirq at ~100Gbit rate, as shown in [1]
 
-/*
- * Roll nodes[1] into nodes[0] by advancing nodes[1] to the end of a contiguous
- * span of nodes. This makes nodes[0]->last the end of that contiguous used span
- * indexes that started at the original nodes[1]->start. nodes[1] is now the
- * first node starting the next used span. A hole span is between nodes[0]->last
- * and nodes[1]->start. nodes[1] must be !NULL.
- */
+Even if/when CONFIG_RETPOLINE is not set, there
+is a cost of about 3%.
 
-> > +/*
-> > + * Advance the iterator index to a specific position. The returned used/hole is
-> > + * updated to start at new_index. This is faster than calling
-> > + * interval_tree_span_iter_first() as it can avoid full searches in several
-> > + * cases where the iterator is already set.
-> > + */
-> > +void interval_tree_span_iter_advance(struct interval_tree_span_iter *iter,
-> > +				     struct rb_root_cached *itree,
-> > +				     unsigned long new_index)
-> > +{
-> > +	if (iter->is_hole == -1)
-> > +		return;
-> > +
-> > +	iter->first_index = new_index;
-> check new_index > iter->first_index?
+This patch adds dev->skip_dma_sync boolean that can be opted-in.
 
-It is odd but it actually works out OK if that is violated. I  guess a
-WARN_ON would be appropriate but I've avoided adding assertions to
-this code..
+For instance iommu_setup_dma_ops() can set this boolean to true
+if CONFIG_DMA_API_DEBUG is not set, and dev_is_dma_coherent(dev).
 
-> > +	if (new_index > iter->last_index) {
-> > +		iter->is_hole = -1;
-> > +		return;
-> > +	}
-> > +
-> > +	/* Rely on the union aliasing hole/used */
-> > +	if (iter->start_hole <= new_index && new_index <= iter->last_hole) {
-> > +		iter->start_hole = new_index;
-> > +		return;
-> > +	}
-> > +	if (new_index == iter->last_hole + 1)
-> > +		interval_tree_span_iter_next(iter);
-> > +	else
-> > +		interval_tree_span_iter_first(iter, itree, new_index,
-> > +					      iter->last_index);
+Then later, if/when swiotlb is used for the first time, the flag
+is turned off, from swiotlb_tbl_map_single()
 
-This call will reset iter->first_index to new_index and even if it is
-outside the original bounds everything will work. Of course if the
-caller does some 'backwards' advance then they are going to probably
-be very sad and likely hit an infinite loop, but that applies to all
-kinds of backwards advances, not just going before the original
-bounds.
+We might in the future inline again these helpers, like:
 
-Thanks,
-Jason
+static void inline
+dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr,
+			size_t size, enum dma_data_direction dir)
+{
+	if (!dev_skip_dma_sync(dev))
+		__dma_sync_single_for_cpu(dev, addr, size, dir);
+}
+
+perf profile before the patch:
+
+    18.53%  [kernel]       [k] gq_rx_skb
+    14.77%  [kernel]       [k] napi_reuse_skb
+     8.95%  [kernel]       [k] skb_release_data
+     5.42%  [kernel]       [k] dev_gro_receive
+     5.37%  [kernel]       [k] memcpy
+<*>  5.26%  [kernel]       [k] iommu_dma_sync_sg_for_cpu
+     4.78%  [kernel]       [k] tcp_gro_receive
+<*>  4.42%  [kernel]       [k] iommu_dma_sync_sg_for_device
+     4.12%  [kernel]       [k] ipv6_gro_receive
+     3.65%  [kernel]       [k] gq_pool_get
+     3.25%  [kernel]       [k] skb_gro_receive
+     2.07%  [kernel]       [k] napi_gro_frags
+     1.98%  [kernel]       [k] tcp6_gro_receive
+     1.27%  [kernel]       [k] gq_rx_prep_buffers
+     1.18%  [kernel]       [k] gq_rx_napi_handler
+     0.99%  [kernel]       [k] csum_partial
+     0.74%  [kernel]       [k] csum_ipv6_magic
+     0.72%  [kernel]       [k] free_pcp_prepare
+     0.60%  [kernel]       [k] __napi_poll
+     0.58%  [kernel]       [k] net_rx_action
+     0.56%  [kernel]       [k] read_tsc
+<*>  0.50%  [kernel]       [k] __x86_indirect_thunk_r11
+     0.45%  [kernel]       [k] memset
+
+After patch, lines with <*> no longer show up, and overall
+cpu usage looks much better (~60% instead of ~72%)
+
+    25.56%  [kernel]       [k] gq_rx_skb
+     9.90%  [kernel]       [k] napi_reuse_skb
+     7.39%  [kernel]       [k] dev_gro_receive
+     6.78%  [kernel]       [k] memcpy
+     6.53%  [kernel]       [k] skb_release_data
+     6.39%  [kernel]       [k] tcp_gro_receive
+     5.71%  [kernel]       [k] ipv6_gro_receive
+     4.35%  [kernel]       [k] napi_gro_frags
+     4.34%  [kernel]       [k] skb_gro_receive
+     3.50%  [kernel]       [k] gq_pool_get
+     3.08%  [kernel]       [k] gq_rx_napi_handler
+     2.35%  [kernel]       [k] tcp6_gro_receive
+     2.06%  [kernel]       [k] gq_rx_prep_buffers
+     1.32%  [kernel]       [k] csum_partial
+     0.93%  [kernel]       [k] csum_ipv6_magic
+     0.65%  [kernel]       [k] net_rx_action
+
+Many thanks to Robin Murphy for his feedback and ideas to make this patch
+much better !
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux.dev
+---
+ drivers/iommu/dma-iommu.c   |  2 ++
+ include/linux/device.h      |  1 +
+ include/linux/dma-map-ops.h |  5 +++++
+ kernel/dma/mapping.c        | 20 ++++++++++++++++----
+ kernel/dma/swiotlb.c        |  3 +++
+ 5 files changed, 27 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 9297b741f5e80e2408e864fc3f779410d6b04d49..bd3f4d3d646cc57c7588f22d49ea32ac693e38ff 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -1587,6 +1587,8 @@ void iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 dma_limit)
+ 		if (iommu_dma_init_domain(domain, dma_base, dma_limit, dev))
+ 			goto out_err;
+ 		dev->dma_ops = &iommu_dma_ops;
++		if (!IS_ENABLED(CONFIG_DMA_API_DEBUG) && dev_is_dma_coherent(dev))
++			dev->skip_dma_sync = true;
+ 	}
+ 
+ 	return;
+diff --git a/include/linux/device.h b/include/linux/device.h
+index 424b55df02727b5742070f72374fd65f5dd68151..2fbb2cc18e44e21eba5f43557ee16d0dc92ef2ef 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -647,6 +647,7 @@ struct device {
+     defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
+ 	bool			dma_coherent:1;
+ #endif
++	bool			skip_dma_sync:1;
+ #ifdef CONFIG_DMA_OPS_BYPASS
+ 	bool			dma_ops_bypass : 1;
+ #endif
+diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+index d678afeb8a13a3a54380a959d14f79bca9c23d8e..4691081f71c51da5468cf6703570ebc7a64d40c5 100644
+--- a/include/linux/dma-map-ops.h
++++ b/include/linux/dma-map-ops.h
+@@ -275,6 +275,11 @@ static inline bool dev_is_dma_coherent(struct device *dev)
+ }
+ #endif /* CONFIG_ARCH_HAS_DMA_COHERENCE_H */
+ 
++static inline bool dev_skip_dma_sync(struct device *dev)
++{
++	return dev->skip_dma_sync;
++}
++
+ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ 		gfp_t gfp, unsigned long attrs);
+ void arch_dma_free(struct device *dev, size_t size, void *cpu_addr,
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index 33437d6206445812b6d4d5b33c77235d18074dec..5d5d286ffae7fa6b7ff1aef46bdc59e7e31a8038 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -328,9 +328,12 @@ EXPORT_SYMBOL(dma_unmap_resource);
+ void dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr, size_t size,
+ 		enum dma_data_direction dir)
+ {
+-	const struct dma_map_ops *ops = get_dma_ops(dev);
++	const struct dma_map_ops *ops;
+ 
+ 	BUG_ON(!valid_dma_direction(dir));
++	if (dev_skip_dma_sync(dev))
++		return;
++	ops = get_dma_ops(dev);;
+ 	if (dma_map_direct(dev, ops))
+ 		dma_direct_sync_single_for_cpu(dev, addr, size, dir);
+ 	else if (ops->sync_single_for_cpu)
+@@ -342,9 +345,12 @@ EXPORT_SYMBOL(dma_sync_single_for_cpu);
+ void dma_sync_single_for_device(struct device *dev, dma_addr_t addr,
+ 		size_t size, enum dma_data_direction dir)
+ {
+-	const struct dma_map_ops *ops = get_dma_ops(dev);
++	const struct dma_map_ops *ops;
+ 
+ 	BUG_ON(!valid_dma_direction(dir));
++	if (dev_skip_dma_sync(dev))
++		return;
++	ops = get_dma_ops(dev);;
+ 	if (dma_map_direct(dev, ops))
+ 		dma_direct_sync_single_for_device(dev, addr, size, dir);
+ 	else if (ops->sync_single_for_device)
+@@ -356,9 +362,12 @@ EXPORT_SYMBOL(dma_sync_single_for_device);
+ void dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
+ 		    int nelems, enum dma_data_direction dir)
+ {
+-	const struct dma_map_ops *ops = get_dma_ops(dev);
++	const struct dma_map_ops *ops;
+ 
+ 	BUG_ON(!valid_dma_direction(dir));
++	if (dev_skip_dma_sync(dev))
++		return;
++	ops = get_dma_ops(dev);;
+ 	if (dma_map_direct(dev, ops))
+ 		dma_direct_sync_sg_for_cpu(dev, sg, nelems, dir);
+ 	else if (ops->sync_sg_for_cpu)
+@@ -370,9 +379,12 @@ EXPORT_SYMBOL(dma_sync_sg_for_cpu);
+ void dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
+ 		       int nelems, enum dma_data_direction dir)
+ {
+-	const struct dma_map_ops *ops = get_dma_ops(dev);
++	const struct dma_map_ops *ops;
+ 
+ 	BUG_ON(!valid_dma_direction(dir));
++	if (dev_skip_dma_sync(dev))
++		return;
++	ops = get_dma_ops(dev);;
+ 	if (dma_map_direct(dev, ops))
+ 		dma_direct_sync_sg_for_device(dev, sg, nelems, dir);
+ 	else if (ops->sync_sg_for_device)
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 339a990554e7fed98dd337efe4fb759a98161cdb..03ebd9803db1a457600f1fac8a18fb3dde724a6f 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -734,6 +734,9 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 	int index;
+ 	phys_addr_t tlb_addr;
+ 
++	if (unlikely(dev->skip_dma_sync))
++		dev->skip_dma_sync = false;
++
+ 	if (!mem || !mem->nslabs) {
+ 		dev_warn_ratelimited(dev,
+ 			"Can not allocate SWIOTLB buffer earlier and can't now provide you with the DMA bounce buffer");
+-- 
+2.38.1.431.g37b22c650d-goog
+
