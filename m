@@ -1,159 +1,81 @@
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4E762F31
-	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 10:11:41 +0000 (UTC)
-Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: kholk11)
-	by madras.collabora.co.uk (Postfix) with ESMTPSA id 751E66602980;
-	Tue, 15 Nov 2022 10:11:39 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1668507100;
-	bh=nr11OW0GjXZZd+uqu9pF2DuJ8K92kyYL5cWgAQ18zqQ=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=kKPZyci6AotvDeCWL9iM2NEBpE7Z8BD20eVo35ib98AltVwiFBcwZmfIMnMFF1XPr
-	 5vlVtGEjd11fz+YRLkMmUhn97qlpsdkc4DL6NhgMm7Mkwyq1oicoTZ7ILmmgDzuhjM
-	 ze0fKEDW33y8MZR0UepcThvIbFu3/lAeZE00q+cOipZQ8Lcqot9TRVnTyQN8HPCKck
-	 pMryKWdgZqXUNVnkCcUcU72ywyTz5g2+BhbOUwbY61ixF1hwqgKC+NR2GZoEY2LovL
-	 adOi8bpXpHWwZ9iuBZ2twoRkkWBhNpLm4nS9wufTfY8QLx9jZPPZJENuxux6eG7vRa
-	 qdyNF8dFcgZWw==
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-To: agross@kernel.org
-Cc: andersson@kernel.org,
-	konrad.dybcio@linaro.org,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	robh+dt@kernel.org,
-	krzysztof.kozlowski+dt@linaro.org,
-	robdclark@gmail.com,
-	linux-arm-msm@vger.kernel.org,
-	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	marijn.suijten@somainline.org,
-	kernel@collabora.com,
-	luca@z3ntu.xyz,
-	a39.skl@gmail.com,
-	phone-devel@vger.kernel.org,
-	~postmarketos/upstreaming@lists.sr.ht,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH v3 6/6] iommu/qcom: Add support for QSMMUv2 and QSMMU-500 secured contexts
-Date: Tue, 15 Nov 2022 11:11:22 +0100
-Message-Id: <20221115101122.155440-7-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.38.1
-In-Reply-To: <20221115101122.155440-1-angelogioacchino.delregno@collabora.com>
-References: <20221115101122.155440-1-angelogioacchino.delregno@collabora.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA9542F31
+	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 10:14:42 +0000 (UTC)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+	id 1ousxh-0004BE-Dw; Tue, 15 Nov 2022 11:14:37 +0100
+Message-ID: <563f0162-ae94-0d74-bb25-1c0753af9329@leemhuis.info>
+Date: Tue, 15 Nov 2022 11:14:36 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH] hwmon/coretemp: Simplify platform device antics
+Content-Language: en-US, de-DE
+To: Robin Murphy <robin.murphy@arm.com>, fenghua.yu@intel.com,
+ jdelvare@suse.com, linux@roeck-us.net
+Cc: linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, janusz.krzysztofik@linux.intel.com,
+ lucas.demarchi@intel.com
+References: <898dbb76a54aae6ca58ceefcab9ab18beeee2fff.1668096928.git.robin.murphy@arm.com>
+From: Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <898dbb76a54aae6ca58ceefcab9ab18beeee2fff.1668096928.git.robin.murphy@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1668507282;c3ceb43f;
+X-HE-SMSGID: 1ousxh-0004BE-Dw
 
-On some SoCs like MSM8956, MSM8976 and others, secure contexts are
-also secured: these get programmed by the bootloader or TZ (as usual)
-but their "interesting" registers are locked out by the hypervisor,
-disallowing direct register writes from Linux and, in many cases,
-completely disallowing the reprogramming of TTBR, TCR, MAIR and other
-registers including, but not limited to, resetting contexts.
-This is referred downstream as a "v2" IOMMU but this is effectively
-a "v2 firmware configuration" instead.
+On 10.11.22 17:20, Robin Murphy wrote:
+> Coretemp's vestigial platform driver is odd. All the real work is done
+> globally by the initcall and CPU hotplug notifiers, while the "driver"
+> effectively just wraps an allocation and the registration of the hwmon
+> interface in a long-winded round-trip through the driver core. The whole
+> logic of dynamically creating and destroying platform devices to bring
+> the interfaces up and down is fatally flawed right away, since it
+> assumes platform_device_add() will synchronously bind the driver and set
+> drvdata before it returns, thus results in a NULL dereference if
+> drivers_autoprobe is turned off for the platform bus. Furthermore, the
+> unusual approach of doing that from within a CPU hotplug notifier is
+> also problematic. It's already commented in the code that it deadlocks
+> suspend, but it also causes lockdep issues for other drivers or
+> subsystems which may want to legitimately register a CPU hotplug
+> notifier from a platform bus notifier.
+> 
+> All of these issues can be solved by ripping this questionable behaviour
+> out completely, simply tying the platform devices to the lifetime of the
+> module itself, and directly managing the hwmon interfaces from the
+> hotplug notifiers. There is a slight user-visible change in that
+> /sys/bus/platform/drivers/coretemp will no longer appear, and
+> /sys/devices/platform/coretemp.n will remain present if package n is
+> hotplugged off, but hwmon users should really only be looking for the
+> presence of the hwmon interfaces, whose behaviour remains unchanged.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
-Luckily, the described behavior of version 2 is effective only on
-secure contexts and not on non-secure ones: add support for that,
-finally getting a completely working IOMMU on at least MSM8956/76.
+For future archeologists and the regression tracking this afaics should
+have the following tags, as outlined by the documentation[1].
 
-Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
-[Marijn: Rebased over next-20221111]
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/iommu/arm/arm-smmu/qcom_iommu.c | 22 +++++++++++++++++++---
- 1 file changed, 19 insertions(+), 3 deletions(-)
+Link:
+https://lore.kernel.org/lkml/20220922101036.87457-1-janusz.krzysztofik@linux.intel.com/
+Link: https://gitlab.freedesktop.org/drm/intel/issues/6641
 
-diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index 94f51cafee17..db7d7cf5cc7d 100644
---- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -59,6 +59,7 @@ struct qcom_iommu_ctx {
- 	struct device		*dev;
- 	void __iomem		*base;
- 	bool			 secure_init;
-+	bool			 secured_ctx;
- 	u8			 asid;      /* asid and ctx bank # are 1:1 */
- 	struct iommu_domain	*domain;
- };
-@@ -287,6 +288,12 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
- 			ctx->secure_init = true;
- 		}
- 
-+		/* Secured QSMMU-500/QSMMU-v2 contexts cannot be programmed */
-+		if (ctx->secured_ctx) {
-+			ctx->domain = domain;
-+			continue;
-+		}
-+
- 		qcom_iommu_reset_ctx(ctx);
- 
- 		/* TTBRs */
-@@ -418,7 +425,8 @@ static void qcom_iommu_detach_dev(struct iommu_domain *domain, struct device *de
- 		struct qcom_iommu_ctx *ctx = to_ctx(qcom_domain, fwspec->ids[i]);
- 
- 		/* Disable and reset the context bank */
--		qcom_iommu_reset_ctx(ctx);
-+		if (!ctx->secured_ctx)
-+			qcom_iommu_reset_ctx(ctx);
- 
- 		ctx->domain = NULL;
- 	}
-@@ -699,10 +707,14 @@ static int qcom_iommu_ctx_probe(struct platform_device *pdev)
- 	if (irq < 0)
- 		return -ENODEV;
- 
-+	if (of_device_is_compatible(dev->of_node, "qcom,msm-iommu-v2-sec"))
-+		ctx->secured_ctx = true;
-+
- 	/* clear IRQs before registering fault handler, just in case the
- 	 * boot-loader left us a surprise:
- 	 */
--	iommu_writel(ctx, ARM_SMMU_CB_FSR, iommu_readl(ctx, ARM_SMMU_CB_FSR));
-+	if (!ctx->secured_ctx)
-+		iommu_writel(ctx, ARM_SMMU_CB_FSR, iommu_readl(ctx, ARM_SMMU_CB_FSR));
- 
- 	ret = devm_request_irq(dev, irq,
- 			       qcom_iommu_fault,
-@@ -744,6 +756,8 @@ static int qcom_iommu_ctx_remove(struct platform_device *pdev)
- static const struct of_device_id ctx_of_match[] = {
- 	{ .compatible = "qcom,msm-iommu-v1-ns" },
- 	{ .compatible = "qcom,msm-iommu-v1-sec" },
-+	{ .compatible = "qcom,msm-iommu-v2-ns" },
-+	{ .compatible = "qcom,msm-iommu-v2-sec" },
- 	{ /* sentinel */ }
- };
- 
-@@ -761,7 +775,8 @@ static bool qcom_iommu_has_secure_context(struct qcom_iommu_dev *qcom_iommu)
- 	struct device_node *child;
- 
- 	for_each_child_of_node(qcom_iommu->dev->of_node, child) {
--		if (of_device_is_compatible(child, "qcom,msm-iommu-v1-sec")) {
-+		if (of_device_is_compatible(child, "qcom,msm-iommu-v1-sec") ||
-+		    of_device_is_compatible(child, "qcom,msm-iommu-v2-sec")) {
- 			of_node_put(child);
- 			return true;
- 		}
-@@ -909,6 +924,7 @@ static const struct dev_pm_ops qcom_iommu_pm_ops = {
- 
- static const struct of_device_id qcom_iommu_of_match[] = {
- 	{ .compatible = "qcom,msm-iommu-v1" },
-+	{ .compatible = "qcom,msm-iommu-v2" },
- 	{ /* sentinel */ }
- };
- 
--- 
-2.38.1
+Any maybe a reported-by for Janusz, too.
+
+Ciao, Thorsten
+
+[1] see Documentation/process/submitting-patches.rst
+(http://docs.kernel.org/process/submitting-patches.html) and
+Documentation/process/5.Posting.rst
+(https://docs.kernel.org/process/5.Posting.html)
+
+P.S.:
+
+#regzbot ^backmonitor:
+https://lore.kernel.org/lkml/20220922101036.87457-1-janusz.krzysztofik@linux.intel.com/
 
