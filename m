@@ -1,56 +1,53 @@
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
+Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CED3AD30
-	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 13:22:38 +0000 (UTC)
-Received: by mail-qt1-f178.google.com with SMTP id l2so8644151qtq.11
-        for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 05:22:38 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C00A1AD30
+	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 13:25:09 +0000 (UTC)
+Received: by mail-qk1-f172.google.com with SMTP id s20so9417410qkg.5
+        for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 05:25:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=ziepe.ca; s=google;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Lh8kCd+TI/xMEHQ4yRh0KMNGAg8os9nKv0lKY/zh0Go=;
-        b=LVZKY8SfY9u6FcTa9AD6FwFlVb/vZp2aVm4cbxICKH7kGpqhTxBSXHiwM7qAKvGpLh
-         xN4aPKGNLPzRlvSnd2EUFrpip10r9/Q0aRRlyZsKLi5lykehd1uk/INit1NnAeCAqpwg
-         I1xHTItK5QlilorDD0tu9a6PLz0bsDW2dt66QQd6qKFByK2VXY/zirFvHK2FuV6RWci/
-         kSeski+7K5DoBpqI3eJZ9wwj8xPAWCXfLNc6wqfYpvwS/jP+v0GQbT2tKO7uxCM4m6Lj
-         14fv+0mx4Ou+ZyF4MQ3HBOV+L7aaHFh2e2myIzi1l5pOAMy4mw4Bl0xTpB1yUAKRDFwv
-         eGAQ==
+        bh=3FFkarC3g2Wo3KNSd9cKHA/vHYavLbu7x70aWEvueqs=;
+        b=pK70hIzR/AwJqhg4FXL7rkWJsxc9oWPlH7P1+X30OCFC3CAdUlD//J/rUoMZqhMfjY
+         o8f4fjDov3MENq1XFWufBPGQCNB3MTcsBagRqspghOot35mI7OTem43H3R6zQz/P8L6X
+         xIOHi7OxLXf2DREZcruTzSWpQDrarXu1U7+wEsidISOdu2+/shnyk8pV3MP6rfzb5y7K
+         wgy/gdJr785E/C/7lQinoVSCeh57bTLiQw393YE9yig4kYPuLWfnzVU7WFl4kZXxXh2W
+         EW8iwmnQoKBJFCMGqgtjxUGf7t07r5g179ivE/uFCu+eyXDwKanY6VrU49RRk4ywmCPy
+         ElrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Lh8kCd+TI/xMEHQ4yRh0KMNGAg8os9nKv0lKY/zh0Go=;
-        b=50kYogOuYNSAzW3Igh8Vi76Jlz5J5YOGE7/ln9gQgmktStHx3Ms+2pu6zewt+BoPyG
-         HWdDwOPjv1fXkIzlkgyhE3rxSit7RkMfrgoJbC42l3eS7ARHvuzREyTKUGlMZc5RHYM3
-         NXL/i2bxBPCQD5mn3vunp5zUWx+Jhsbv/nJSxdZtinv8e/u/tJmZQIwTfrsBIokS94cU
-         PtPsr38uvg3YQrK7uu/3Cya2iB7KHEfQRyS764O7bz5O1V34jc+rC7gwAfsbfi1EuFxZ
-         rOYUIQMxXtG8LeRxydwwde16s5vVDZSO5d9Q3LOaJh5fOOhjknuctpMerAspDctWJXN9
-         ifZw==
-X-Gm-Message-State: ANoB5pl/HveGVnJfSWwD0mXDzOr2+v6DYZVyENOkUXgaz2kxlLdZFyF1
-	YhFhzaJLGLBz7GOU+/eQi8vZZbH9/ednfg==
-X-Google-Smtp-Source: AA0mqf4gFHMBOCd+hxMH99i63M4A4Zz5W56sVQvjZOTc2gLX9kTF10IvIhipJtAr6YKEO2g7ttTAtw==
-X-Received: by 2002:ac8:44c4:0:b0:3a5:8b71:cca3 with SMTP id b4-20020ac844c4000000b003a58b71cca3mr16457992qto.292.1668518557368;
-        Tue, 15 Nov 2022 05:22:37 -0800 (PST)
+        bh=3FFkarC3g2Wo3KNSd9cKHA/vHYavLbu7x70aWEvueqs=;
+        b=bhouS1fZDhCNX4ec+YgRaAu6jaeBsgfsfiileH9lShGHnFN+nMHTWPqKYn0E3O42FP
+         Icx0cI6YDsn5TM7ASJG78oAB8fU/yk2tzRRaSD4+0N4u5gzIcv5kDpWgY/MOp8yYHcL9
+         M3gdQcWheIKHjOk/CDaxm0GJM7zxaEmhkM72K3YcQvkWCKtGQQEDKcCjIIaskVvRycqm
+         VKgvsiGtQytG5SRiF+6vCS91D/8lHkj49U5zqk5yJ2/IaWPUAJPzQ+uUIDXQifft3AWR
+         KB9nd27m6vxinfzIUR/lpcFBLmdu8fdRG1Xoj8DkJ4xD1V809plixqK4ScikLYFo55Wt
+         yUKg==
+X-Gm-Message-State: ANoB5plS+JrJhfTmNurw/nrNvoq4I3f9RnPxIQRvMg+BcghxmULXbPzI
+	WbW7wWYOiGwgzY5YbvObFX9AYWx9xdawjw==
+X-Google-Smtp-Source: AA0mqf5wSrjegLfvPc7TIH17rmpYrwDWDGcyL5ks9rMLoJdLFUzMp6UFxqRApOeS5cdl9fsTYQSAMw==
+X-Received: by 2002:a37:bb06:0:b0:6fa:43e1:2d48 with SMTP id l6-20020a37bb06000000b006fa43e12d48mr14918170qkf.12.1668518708595;
+        Tue, 15 Nov 2022 05:25:08 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-47-55-122-23.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.122.23])
-        by smtp.gmail.com with ESMTPSA id i19-20020a05620a249300b006fb38ff190bsm8047711qkn.34.2022.11.15.05.22.36
+        by smtp.gmail.com with ESMTPSA id x200-20020a3763d1000000b006fa8299b4d5sm8049159qkb.100.2022.11.15.05.25.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Nov 2022 05:22:36 -0800 (PST)
+        Tue, 15 Nov 2022 05:25:07 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1ouvtb-003s6G-OY;
-	Tue, 15 Nov 2022 09:22:35 -0400
-Date: Tue, 15 Nov 2022 09:22:35 -0400
+	id 1ouvw3-003sAn-7a;
+	Tue, 15 Nov 2022 09:25:07 -0400
+Date: Tue, 15 Nov 2022 09:25:07 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Dan Carpenter <error27@gmail.com>
-Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
-	kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] iommufd: vfio: info leak in iommufd_vfio_unmap_dma()
-Message-ID: <Y3OSm9dmaQJkjL6D@ziepe.ca>
-References: <Y3OKdW/WXVr1VYbc@kili>
+Cc: iommu@lists.linux.dev
+Subject: Re: [bug report] iommufd: Add a selftest
+Message-ID: <Y3OTMwnYKWs7z8lj@ziepe.ca>
+References: <Y3OK6DeM6X4q5JWO@kili>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -59,30 +56,52 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y3OKdW/WXVr1VYbc@kili>
+In-Reply-To: <Y3OK6DeM6X4q5JWO@kili>
 
-On Tue, Nov 15, 2022 at 03:47:49PM +0300, Dan Carpenter wrote:
-> If iopt_unmap_iova() fails then "unmapped" is uninitialized.  Copying it
-> to the user can leak stack information.
+On Tue, Nov 15, 2022 at 03:49:44PM +0300, Dan Carpenter wrote:
+> Hello Jason Gunthorpe,
 > 
-> Fixes: 32c328dc9b73 ("iommufd: vfio container FD ioctl compatibility")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> ---
->  drivers/iommu/iommufd/vfio_compat.c | 3 +++
->  1 file changed, 3 insertions(+)
+> The patch 147393321d65: "iommufd: Add a selftest" from Nov 19, 2021,
+> leads to the following Smatch static checker warning:
 > 
-> diff --git a/drivers/iommu/iommufd/vfio_compat.c b/drivers/iommu/iommufd/vfio_compat.c
-> index 976aa12b247d..30a13552d632 100644
-> --- a/drivers/iommu/iommufd/vfio_compat.c
-> +++ b/drivers/iommu/iommufd/vfio_compat.c
-> @@ -189,6 +189,9 @@ static int iommufd_vfio_unmap_dma(struct iommufd_ctx *ictx, unsigned int cmd,
->  		rc = iopt_unmap_iova(&ioas->iopt, unmap.iova, unmap.size,
->  				     &unmapped);
->  	}
-> +	if (rc)
-> +		goto err_put;
-> +
+> 	drivers/iommu/iommufd/selftest.c:160 mock_domain_map_pages()
+> 	warn: use 'gfp' here instead of GFP_XXX?
+> 
+> drivers/iommu/iommufd/selftest.c
+>    133  static int mock_domain_map_pages(struct iommu_domain *domain,
+>    134                                   unsigned long iova, phys_addr_t paddr,
+>    135                                   size_t pgsize, size_t pgcount, int prot,
+>    136                                   gfp_t gfp, size_t *mapped)
+>    137  {
+>    138          struct mock_iommu_domain *mock =
+>    139                  container_of(domain, struct mock_iommu_domain, domain);
+>    140          unsigned long flags = MOCK_PFN_START_IOVA;
+>    141          unsigned long start_iova = iova;
+>    142  
+>    143          /*
+>    144           * xarray does not reliably work with fault injection because it does a
+>    145           * retry allocation, so put our own failure point.
+>    146           */
+>    147          if (iommufd_should_fail())
+>    148                  return -ENOENT;
+>    149  
+>    150          WARN_ON(iova % MOCK_IO_PAGE_SIZE);
+>    151          WARN_ON(pgsize % MOCK_IO_PAGE_SIZE);
+>    152          for (; pgcount; pgcount--) {
+>    153                  size_t cur;
+>    154  
+>    155                  for (cur = 0; cur != pgsize; cur += MOCK_IO_PAGE_SIZE) {
+>    156                          void *old;
+>    157  
+>    158                          if (pgcount == 1 && cur + MOCK_IO_PAGE_SIZE == pgsize)
+>    159                                  flags = MOCK_PFN_LAST_IOVA;
+>    160                          old = xa_store(&mock->pfns, iova / MOCK_IO_PAGE_SIZE,
+>    161                                         xa_mk_value((paddr / MOCK_IO_PAGE_SIZE) |
+>    162                                                     flags),
+>    163                                         GFP_KERNEL);
+>                                                ^^^^^^^^^^
+> "gfp" isn't used anywhere so maybe it was intended here?
 
-It should be inited to 0, I fixed it, thanks
+It is always GFP_KERNEL, but yes it can use that. I fixed it
 
 Jason
