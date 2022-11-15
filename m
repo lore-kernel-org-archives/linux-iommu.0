@@ -1,377 +1,183 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2042.outbound.protection.outlook.com [40.107.223.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5935FAD47
-	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 14:14:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1668521651;
-	h=from:from:reply-to:reply-to:subject:subject:date:date:
-	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-	 content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=uBHWqy78eJDHtx/+9ycGf77SRANac5lVpltsrKsyVRI=;
-	b=CqypqTjxQ+aFiBBlz26RQKoEtwN381l3Anjykp2JCVtc+EK9ziDagpo7G/Xtz4m/4FqjSK
-	iyrMum5s7/qwJadq2soz+MVTVGDWGHFeaHtz1mlJZFhhBM/PqdW9v7qlV6Bq5jORCEU/Sl
-	K/Pi7Qfn2C8i3dnzhcwRj8yuYOZfTxQ=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-557-OmL_d8-VMre3Ruxy5-RA3A-1; Tue, 15 Nov 2022 09:14:10 -0500
-X-MC-Unique: OmL_d8-VMre3Ruxy5-RA3A-1
-Received: by mail-qv1-f69.google.com with SMTP id lb11-20020a056214318b00b004c63b9f91e5so4140615qvb.8
-        for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 06:14:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:reply-to:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=uBHWqy78eJDHtx/+9ycGf77SRANac5lVpltsrKsyVRI=;
-        b=by4l7oUiluDYuxWWSLunyfAIowhbVDXwpr2FxZhNDZu4hDKguxuFXN32lt9NVyTXNO
-         1y5HzLQ41Dc8zxqFriZTaxHYy+dqpjZzJdhMHPqVZamW35h12ei54gv5n44N7lwSoiqw
-         ud4n0AwlzMTZXOJjlJ8xwaDuJLxCR7CSw3YucprC0XaavPSz4oOQvnUOkQsGmCn/sOLK
-         mzQw2183c50LQRVyx9oRYIe5qJCS15p2SOII6Gdme3nXO4IbwrRkptSpLC200zt4Cmfh
-         0mru8uuyHFLS6DE/gXFgxMcEnkWeHw6mMe8brOUbjDybXOBuElPjiY/+MWbnO1LDSEkz
-         nPzw==
-X-Gm-Message-State: ANoB5plYGLvcfhHc57ibZq+kIsJVtR9nuKKFSwx5hGRhnySfwoKOICYx
-	aaUKP1axoRsh7M5/1jj90oa6H50ZzzL90A0kA6mWUzmX9N6grIxcCx8+BzAWxSLCYNyIbtFTPRU
-	jeu0kOWz2B1vDzh4=
-X-Received: by 2002:ac8:5787:0:b0:3a5:ef4:675d with SMTP id v7-20020ac85787000000b003a50ef4675dmr17018444qta.409.1668521648894;
-        Tue, 15 Nov 2022 06:14:08 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf4Y4TimZPGdX70IP8PmI8c9rCynvQENWzgkJNWsyiaJkaR7UUVYgMweGq+PBlV4dXb9mUSPFA==
-X-Received: by 2002:ac8:5787:0:b0:3a5:ef4:675d with SMTP id v7-20020ac85787000000b003a50ef4675dmr17018410qta.409.1668521648505;
-        Tue, 15 Nov 2022 06:14:08 -0800 (PST)
-Received: from ?IPV6:2a01:e0a:59e:9d80:527b:9dff:feef:3874? ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
-        by smtp.gmail.com with ESMTPSA id x81-20020a376354000000b006cfc9846594sm8029860qkb.93.2022.11.15.06.14.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Nov 2022 06:14:07 -0800 (PST)
-Message-ID: <112905a9-ed6f-4aaa-2bfc-46502e558ab5@redhat.com>
-Date: Tue, 15 Nov 2022 15:14:00 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B967C139E;
+	Tue, 15 Nov 2022 14:49:12 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=W1CajyqRI3hwTH5OTG4V0QR5L2zHOeT0YbJbVraIKr++t6t2hly+oQqRv3SQt8Nk8CA0SCOGEoPrx3ol79ZOv6ItdCDYYYRE+vHzedPGWnc8kZ36wCnbI47Vk8lupyf+2L1WLvXVh6Z6VmzmWZ2W6ucfmAwpQUIYvIG2h0pGYXdBCHeYRK0i3UZqpTeFW4zwiFV6MtqyWLgrstnBlGu4ChHVfLjvt5EU75Nq5dm0Yp3fnkJBg/iL2TagsVfy+P9C2TYq6aM3qaCZHqAjUxnXFTSmbg6f/Ocj16pRYB62Yb5NSRz3Co0maimD8G2L27y3v9q4pNbZRjLbqhautUqlvA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6yvfH4zQLQ+BI3FnwlxjOgFeNphjhDMZUMeTQED5QcE=;
+ b=Yh0kcJE/KTmtJXd9MZdHqlkw/Eb1BCNpocEH0Hs1G6kPxJ5/lj7rDeufvSMLrCLx14pcMr+J3wjppjT6cJNWvhhvhzaPf+YeahWX1aL+Qq/rzCb69L7p/81X6v0ko9KyKNqGNVgqLIvqY5lMr/fv2/mHzhEuEu8xwN5hjRZm9C4ZrfxV/L/Nw/ybLnh5uWs6lszl2mzRYU26TYTCABnRJ9h0vOKxTUBn8JJkYKWrl3JqKYWs+lfAPRPrdek66aKYvIU6FVc0+1cBg02qMzuDY9t5ckM0vorOb0+3qixjfJET2Pxq1dpDUqqkCtF/wYl0+T/uKVCpUZvK8Al+8xu+9A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6yvfH4zQLQ+BI3FnwlxjOgFeNphjhDMZUMeTQED5QcE=;
+ b=AVWV6bh6ZpGyENu7uFjR2LsFoEt3yZpDlWjKB4AgDJSSJG36fk0ak9G6VOMLn4BWrYW9K3LJ+zf6sp25SnE3X5QsbOW/jMOyzM2z4M2eyU6WLzT8VoT0Fsx4qNVWxCpwUxOLLbdgYNo+ylqN/YBtWvFQ32sSLAayZ1hbZ9Ok8wi5NIq7FiXqVT57/X7GBQXJOSkU2Voqq5B487xn8rJNcyqFDeBaqQ7dNjBBpXSEIBrHFHi1Mh4IxmMhnna+egLMm8hCmgyDUG+GrQ3GKR9o06VOwDtqWI187FF4PEAlYmfK4AE9a9h8j+ONsS4Y20WS87qmKc1flQJOUNQ8wOMFfg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by BN9PR12MB5274.namprd12.prod.outlook.com (2603:10b6:408:11f::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.17; Tue, 15 Nov
+ 2022 14:49:10 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f8b0:df13:5f8d:12a%7]) with mapi id 15.20.5813.017; Tue, 15 Nov 2022
+ 14:49:10 +0000
+Date: Tue, 15 Nov 2022 10:49:09 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	David Woodhouse <dwmw2@infradead.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Joerg Roedel <joro@8bytes.org>,
+	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+	"llvm@lists.linux.dev" <llvm@lists.linux.dev>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <ndesaulniers@google.com>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+	Cornelia Huck <cohuck@redhat.com>,
+	Daniel Jordan <daniel.m.jordan@oracle.com>,
+	David Gibson <david@gibson.dropbear.id.au>,
+	Eric Auger <eric.auger@redhat.com>,
+	Eric Farman <farman@linux.ibm.com>,
+	Jason Wang <jasowang@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	"Martins, Joao" <joao.m.martins@oracle.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+	"Liu, Yi L" <yi.l.liu@intel.com>,
+	Keqian Zhu <zhukeqian1@huawei.com>
+Subject: Re: [PATCH v4 08/17] iommufd: Algorithms for PFN storage
+Message-ID: <Y3Om5Wv2rE4fH9y4@nvidia.com>
+References: <0-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
+ <8-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
+ <BN9PR11MB52762E5ACAAE7D7B398730D78C059@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <Y3KCvnLOZpGXAGhU@nvidia.com>
+ <BN9PR11MB5276E1EFCCDBDFA8D6C58FF78C049@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <BN9PR11MB5276E1EFCCDBDFA8D6C58FF78C049@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-ClientProxiedBy: BL1PR13CA0015.namprd13.prod.outlook.com
+ (2603:10b6:208:256::20) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.1
-Reply-To: eric.auger@redhat.com
-Subject: Re: [PATCH v4 03/17] interval-tree: Add a utility to iterate over
- spans in an interval tree
-To: Jason Gunthorpe <jgg@nvidia.com>, bpf@vger.kernel.org,
- Jonathan Corbet <corbet@lwn.net>, David Woodhouse <dwmw2@infradead.org>,
- iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- Kevin Tian <kevin.tian@intel.com>, linux-doc@vger.kernel.org,
- linux-kselftest@vger.kernel.org, llvm@lists.linux.dev,
- Nathan Chancellor <nathan@kernel.org>,
- Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>
-Cc: Alex Williamson <alex.williamson@redhat.com>,
- Lu Baolu <baolu.lu@linux.intel.com>,
- Chaitanya Kulkarni <chaitanyak@nvidia.com>, Cornelia Huck
- <cohuck@redhat.com>, Daniel Jordan <daniel.m.jordan@oracle.com>,
- David Gibson <david@gibson.dropbear.id.au>,
- Eric Farman <farman@linux.ibm.com>, Jason Wang <jasowang@redhat.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Joao Martins <joao.m.martins@oracle.com>, kvm@vger.kernel.org,
- Matthew Rosato <mjrosato@linux.ibm.com>, "Michael S. Tsirkin"
- <mst@redhat.com>, Nicolin Chen <nicolinc@nvidia.com>,
- Niklas Schnelle <schnelle@linux.ibm.com>,
- Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
-References: <3-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
-From: Eric Auger <eric.auger@redhat.com>
-In-Reply-To: <3-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BN9PR12MB5274:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7d039fb5-51cb-465a-52e6-08dac7188e17
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	lnzxflYdm9UGCQVLyp8NXQOVjhsUOJf1Cl2d2QxaRT1/gSuLbJIHT5Ucx2G+cCOnsNFO8611T3r5GbDgR8w1Syv3A1pXYdmGQY91qMFzQaOnMnk5GSv24UL34WeCk33Bl0yTnEV+m77gG56UeASS5B0LMgsayBik/aHkZgbTOT1ogoRNNXnq/guK2uftDblXCg/H6H3XbGtevoSqBxvdSuYIHOKHlvZF2HRzH4N/tSQWkg+eo4x5aG5T+FQf3xlSA4rl0JG/Zz0s13V73+09zoVh8xZEPOTJQZKrzBy53OdntVTFS9O/NkoExmx41+i+RFE9LenB/pkBzB1KA2XX/WboGjiUk0YG0sjEUcaww8v61qNI1txQOoU0G7CJCIqpVCqDSbB+I+XjZiEf0yjX7sNDZOkn5nNGWTxkXT1SMUoPKF7EL1+Fa289ZoMrBlv23rN22t+DxGq0UAVLE8tuXrv5QE6RhC1nFtIwBAhc55GuGLhwsg6OBTL+a8Q6Ma6iDeYB1NjIO5snOmtwhxP2E7T83J/k1ASyW5T2c4uYsniUcBzcTbxdnzooilt9ouEQS8s3qVntmr1eeSHen0xoQNGiDQXMb2Ca1WNJlz2L5cNZk5h3cqh3LcBozp3EFSJjtiLVm26QPs/N8Bwj8XwmSfKJn7xurY0EbZDJdxPzXz2HLRO49S0SNT3TVe4tFphP5L2CtPBNxRKCUycp82r5+Q==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(366004)(376002)(39860400002)(346002)(396003)(451199015)(6486002)(478600001)(54906003)(6916009)(6506007)(4326008)(7416002)(5660300002)(26005)(66556008)(7406005)(66476007)(316002)(66946007)(8676002)(6512007)(186003)(8936002)(41300700001)(36756003)(2616005)(83380400001)(2906002)(38100700002)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?YjF3ejNwYTg5ZU1BMkt6TjZaVHhIalFLcUNTY3FOOVVwYmtqbHpqdWxScjgw?=
+ =?utf-8?B?K0gyVjQzMCtITldnZ0JoYStxd1liOW45NEpvV0J6d2NDWGVpWWFiUXZocCt0?=
+ =?utf-8?B?RnFRL08zcy9hblMwOGlFVCsySmVwOVVtSmtlNVNMOWxpVTFtbGdHU3ptNVpk?=
+ =?utf-8?B?b2hPM0x6VWppWEtlRm5ENm85Nk5wNGprUVlTcUFOcE4zVG12bm5VVi8wdllD?=
+ =?utf-8?B?eFR1bTNqUFFGcWxqTEl3TEZkVUl1ejRjRnA2cXV3QzBCaC9ZM25udXU2WTlj?=
+ =?utf-8?B?Qk5iTTFBbEQ0bkVpRThrNXd0a2xxemM1YkZhSTNFS1ZHcUZ1bHJEWGJPZGpC?=
+ =?utf-8?B?bUZwNDJDakxoc2VyU0NzRWljb0tyWXNaTzgyd1lHTDN0YnU3bDNuL2JDT1Vq?=
+ =?utf-8?B?VkMzMjZWZE9QNUpXbkQ4d0pSa2dJUUVVY0RNYkozYnlsWWpaSDFRaC85Mk9I?=
+ =?utf-8?B?UjFsclp0RDZqQ1JhWDRWRDd2R2JsWEpDdnNMVDYvU0pOMTZEbkxlVUNZMXJV?=
+ =?utf-8?B?TlV0VFBwME83YWNxOWVzMWpvTmhvWVlVZ0d3b2k1cTBhd2c4Z2tvSnU2Tjhk?=
+ =?utf-8?B?UnpQNU5XQVA3b2VXcU5ERkZIcDhkWVRETkE5QUEvcVVuN0h1NVdhYUxsK2dh?=
+ =?utf-8?B?T0dtZkRYdkN1TlVRUVhjNTFwOXhwQ0N2OExVeGFxanR2Y2xBV3pZRkI5NEF0?=
+ =?utf-8?B?ZnFoQkpYalF0ZEppaU5IUnJvb1FXQytuZ2ZoSTJ5Y3oxNnlVMjQvRG83bkpH?=
+ =?utf-8?B?NVQvNTY0Z01ZVmJEWVE0NEoxeG5nN3l2YmtTd0h5cE4rT3ZYSlFWQ0p0L2d2?=
+ =?utf-8?B?Yk9oaUJZZmlZRWp6Wkk4dDlZZ2szOVNrTDFpT3I5WWVrT1lYWnhqQlgxdWVw?=
+ =?utf-8?B?UVZqRlVTQWxtV1Ezc1ZLOVV5UTJvc0taaXk4SStvWlErUUhPUjBvVlFoYVVG?=
+ =?utf-8?B?S3JVVGwzSEFtR1c3SGpJUmVsWmFBeHdNSFJOMDVlTURyWDRxanMwVEZqbXN5?=
+ =?utf-8?B?ZkE0aVYrdytJOUxxTkd4MTdiOGRVWkM2N0JiNGpyOXphWTlMTTRrcXpwK1R0?=
+ =?utf-8?B?dHFXZkduOUcyeW9OZDMydU9WUXVoQ1FOaDFJeGIyODhYWitOUHcwdit0eXNo?=
+ =?utf-8?B?TnIrMCtqL0V0b1lKQkV5THFGZ1RKVkJ6bzZ5cVVSNnRaMTdFM01lcWVVTEtr?=
+ =?utf-8?B?eFIwMU5URkQzNzhwQkdoblBPeWZzYkZBYzl4YVZNVEw1SjBLVmwzaFM3Wi9h?=
+ =?utf-8?B?azgrQWFtcmF2WnpTTjRBNU1TMjdhZDVLeUFzRnUzdEJ3R3ErL1hwbm9JQkRa?=
+ =?utf-8?B?Nm9jOUg2ejZYbno2MHVZZnhPVjJuU2NEemNkdzJHZlUveWVnd1h6UDZYclcr?=
+ =?utf-8?B?clk1SHc2K1FHUVZ2ZERvOEdzcHVVc2VpWEpUV2taeERBQ1pZRDk2VStDNGFx?=
+ =?utf-8?B?TXB5TnloNXhZd1FaNEFqTjZ3a0pZY0RHSVFnYWV2M3FOSFpRcU9GUnRsZlMy?=
+ =?utf-8?B?bS92UDJEaFd5L0xJVElwaXREUDMrMWJvalBhdVQvd0h3VVFBRWF6Zks3VW5a?=
+ =?utf-8?B?eXVwTHROOU1xcVFlV292Q2ZkcDBBNC9NTmVWRStKS3hyS1J3WjhtZXYrL3Zx?=
+ =?utf-8?B?OW9NTUtBUFNUamxreVJwczhOVXhlOUhxZTc5OHZaRGw2VUZ4bEt3Y1NhdU1p?=
+ =?utf-8?B?d1RxMFBMdGNzQjRoWVdxSjJxcDJ3NXUrdTVmTjBwWFpFMjJQbWFIWXg5QnVl?=
+ =?utf-8?B?RUxiVUZTMkFWZmhZK1BmU0RHVk1rOE83Ri84QUhGMW9HSHNBMjgybHVERU1M?=
+ =?utf-8?B?dTNTcXJ4LzJuQnQwZjNaQi9TSkl4ZnlabnMvcFN4SmpCa3h4UzFzelFhLy83?=
+ =?utf-8?B?bDJ4OGMwVDlSSEJKRlp6ZHZKOFoyQWhQMHRVVEVxU0FkK29EOVFKd0h1L0J0?=
+ =?utf-8?B?U3A2a2Y2SnB1ejVZRWhJcjFlTkR6T3E5eE1oWnVNT3FjTjIzVnYrRDlDSitG?=
+ =?utf-8?B?T0FsTGRvQlB3U0FmSXZIZ20rdFlkZldNanRXWWNCaEpNTEVDelFucTkxdGZ0?=
+ =?utf-8?B?T2RkaVpCaXpyeXlZalJ3N3lNUjNLR1RLZ3VrcHUvZkRrdEZaZjRVWmlrQ09M?=
+ =?utf-8?Q?5Ubs=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7d039fb5-51cb-465a-52e6-08dac7188e17
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Nov 2022 14:49:10.5413
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: BzjbWCnghH+s561FdWy6OnhsmnvfDNmB1Cyp+w2cupUzMYInTAaf6F0y1f15TruF
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5274
 
-Hi Jason,
+On Tue, Nov 15, 2022 at 03:06:57AM +0000, Tian, Kevin wrote:
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > Sent: Tuesday, November 15, 2022 2:03 AM
+> > -		mutex_lock(&area->pages->mutex);
+> > -		rc = iopt_pages_add_access(area->pages, index, last_index,
+> > -					   out_pages, flags);
+> > -		if (rc) {
+> > -			mutex_unlock(&area->pages->mutex);
+> > +		rc = iopt_pages_add_access(area, index, last_index,
+> > out_pages,
+> > +					   flags);
+> > +		if (rc)
+> 
+> iopt_area_add_access(), which I suppose you have already fixed when
+> compiling this change. but just in case... 😊
+> 
+> > @@ -1819,40 +1838,49 @@ iopt_pages_get_exact_access(struct iopt_pages
+> > *pages, unsigned long index,
+> >   *
+> >   * This should be undone through a matching call to
+> > iopt_pages_remove_access()
+> 
+> iopt_area_remove_access()
+> 
+> > @@ -1865,11 +1893,11 @@ int iopt_pages_add_access(struct iopt_pages
+> > *pages, unsigned long start_index,
+> >   * Undo iopt_pages_add_access() and unpin the pages if necessary. The
+> 
+> iopt_area_add_access()
+> 
+> with above,
 
-On 11/8/22 01:48, Jason Gunthorpe wrote:
-> The span iterator travels over the indexes of the interval_tree, not the
-> nodes, and classifies spans of indexes as either 'used' or 'hole'.
->
-> 'used' spans are fully covered by nodes in the tree and 'hole' spans have
-> no node intersecting the span.
->
-> This is done greedily such that spans are maximally sized and every
-> iteration step switches between used/hole.
->
-> As an example a trivial allocator can be written as:
->
-> 	for (interval_tree_span_iter_first(&span, itree, 0, ULONG_MAX);
-> 	     !interval_tree_span_iter_done(&span);
-> 	     interval_tree_span_iter_next(&span))
-> 		if (span.is_hole &&
-> 		    span.last_hole - span.start_hole >= allocation_size - 1)
-> 			return span.start_hole;
->
-> With all the tricky boundary conditions handled by the library code.
->
-> The following iommufd patches have several algorithms for its overlapping
-> node interval trees that are significantly simplified with this kind of
-> iteration primitive. As it seems generally useful, put it into lib/.
->
-> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  .clang-format                 |   1 +
->  include/linux/interval_tree.h |  58 +++++++++++++++
->  lib/Kconfig                   |   4 ++
->  lib/interval_tree.c           | 132 ++++++++++++++++++++++++++++++++++
->  4 files changed, 195 insertions(+)
->
-> diff --git a/.clang-format b/.clang-format
-> index 1247d54f9e49fa..96d07786dcfb46 100644
-> --- a/.clang-format
-> +++ b/.clang-format
-> @@ -440,6 +440,7 @@ ForEachMacros:
->    - 'inet_lhash2_for_each_icsk'
->    - 'inet_lhash2_for_each_icsk_continue'
->    - 'inet_lhash2_for_each_icsk_rcu'
-> +  - 'interval_tree_for_each_span'
->    - 'intlist__for_each_entry'
->    - 'intlist__for_each_entry_safe'
->    - 'kcore_copy__for_each_phdr'
-> diff --git a/include/linux/interval_tree.h b/include/linux/interval_tree.h
-> index 288c26f50732d7..2b8026a3990645 100644
-> --- a/include/linux/interval_tree.h
-> +++ b/include/linux/interval_tree.h
-> @@ -27,4 +27,62 @@ extern struct interval_tree_node *
->  interval_tree_iter_next(struct interval_tree_node *node,
->  			unsigned long start, unsigned long last);
->  
-> +/**
-> + * struct interval_tree_span_iter - Find used and unused spans.
-> + * @start_hole: Start of an interval for a hole when is_hole == 1
-> + * @last_hole: Inclusive end of an interval for a hole when is_hole == 1
-> + * @start_used: Start of a used interval when is_hole == 0
-> + * @last_used: Inclusive end of a used interval when is_hole == 0
-> + * @is_hole: 0 == used, 1 == is_hole, -1 == done iteration
-> + *
-> + * This iterator travels over spans in an interval tree. It does not return
-> + * nodes but classifies each span as either a hole, where no nodes intersect, or
-> + * a used, which is fully covered by nodes. Each iteration step toggles between
-> + * hole and used until the entire range is covered. The returned spans always
-> + * fully cover the requested range.
-> + *
-> + * The iterator is greedy, it always returns the largest hole or used possible,
-> + * consolidating all consecutive nodes.
-> + *
-> + * Use interval_tree_span_iter_done() to detect end of iteration.
-> + */
-> +struct interval_tree_span_iter {
-> +	/* private: not for use by the caller */
-> +	struct interval_tree_node *nodes[2];
-> +	unsigned long first_index;
-> +	unsigned long last_index;
-> +
-> +	/* public: */
-> +	union {
-> +		unsigned long start_hole;
-> +		unsigned long start_used;
-> +	};
-> +	union {
-> +		unsigned long last_hole;
-> +		unsigned long last_used;
-> +	};
-> +	int is_hole;
-> +};
-> +
-> +void interval_tree_span_iter_first(struct interval_tree_span_iter *state,
-> +				   struct rb_root_cached *itree,
-> +				   unsigned long first_index,
-> +				   unsigned long last_index);
-> +void interval_tree_span_iter_advance(struct interval_tree_span_iter *iter,
-> +				     struct rb_root_cached *itree,
-> +				     unsigned long new_index);
-> +void interval_tree_span_iter_next(struct interval_tree_span_iter *state);
-> +
-> +static inline bool
-> +interval_tree_span_iter_done(struct interval_tree_span_iter *state)
-> +{
-> +	return state->is_hole == -1;
-> +}
-> +
-> +#define interval_tree_for_each_span(span, itree, first_index, last_index)      \
-> +	for (interval_tree_span_iter_first(span, itree,                        \
-> +					   first_index, last_index);           \
-> +	     !interval_tree_span_iter_done(span);                              \
-> +	     interval_tree_span_iter_next(span))
-> +
->  #endif	/* _LINUX_INTERVAL_TREE_H */
-> diff --git a/lib/Kconfig b/lib/Kconfig
-> index 9bbf8a4b2108e6..c6c323fd251721 100644
-> --- a/lib/Kconfig
-> +++ b/lib/Kconfig
-> @@ -479,6 +479,10 @@ config INTERVAL_TREE
->  
->  	  for more information.
->  
-> +config INTERVAL_TREE_SPAN_ITER
-> +	bool
-> +	depends on INTERVAL_TREE
-> +
->  config XARRAY_MULTI
->  	bool
->  	help
-> diff --git a/lib/interval_tree.c b/lib/interval_tree.c
-> index 593ce56ece5050..d2882db8fa2a07 100644
-> --- a/lib/interval_tree.c
-> +++ b/lib/interval_tree.c
-> @@ -15,3 +15,135 @@ EXPORT_SYMBOL_GPL(interval_tree_insert);
->  EXPORT_SYMBOL_GPL(interval_tree_remove);
->  EXPORT_SYMBOL_GPL(interval_tree_iter_first);
->  EXPORT_SYMBOL_GPL(interval_tree_iter_next);
-> +
-> +#ifdef CONFIG_INTERVAL_TREE_SPAN_ITER
-Maybe add in a kernel doc that a prerequisite is state.nodes[1] must be
-populated
-> +static void
-> +interval_tree_span_iter_next_gap(struct interval_tree_span_iter *state)
-> +{
-> +	struct interval_tree_node *cur = state->nodes[1];
-> +
-> +	/*
-> +	 * Roll nodes[1] into nodes[0] by advancing nodes[1] to the end of a
-> +	 * contiguous span of nodes. This makes nodes[0]->last the end of that
-> +	 * contiguous span of valid indexes that started at the original
-I would suggest s/contiguous span/contiguous used span and remove "of
-valid indexes"
-> +	 * nodes[1]->start. nodes[1] is now the next node and a hole is between
-nodes[1] is now the first node starting the next used span. A hole span
-is between nodes[0]->last and nodes[1]->start
-> +	 * nodes[0] and [1].
-> +	 */
-> +	state->nodes[0] = cur;
-> +	do {
-> +		if (cur->last > state->nodes[0]->last)
-> +			state->nodes[0] = cur;
-> +		cur = interval_tree_iter_next(cur, state->first_index,
-> +					      state->last_index);
-> +	} while (cur && (state->nodes[0]->last >= cur->start ||
-> +			 state->nodes[0]->last + 1 == cur->start));
-> +	state->nodes[1] = cur;
-> +}
-> +
-> +void interval_tree_span_iter_first(struct interval_tree_span_iter *iter,
-> +				   struct rb_root_cached *itree,
-> +				   unsigned long first_index,
-> +				   unsigned long last_index)
-> +{
-> +	iter->first_index = first_index;
-> +	iter->last_index = last_index;
-> +	iter->nodes[0] = NULL;
-> +	iter->nodes[1] =
-> +		interval_tree_iter_first(itree, first_index, last_index);
-> +	if (!iter->nodes[1]) {
-> +		/* No nodes intersect the span, whole span is hole */
-> +		iter->start_hole = first_index;
-> +		iter->last_hole = last_index;
-> +		iter->is_hole = 1;
-> +		return;
-> +	}
-> +	if (iter->nodes[1]->start > first_index) {
-> +		/* Leading hole on first iteration */
-> +		iter->start_hole = first_index;
-> +		iter->last_hole = iter->nodes[1]->start - 1;
-> +		iter->is_hole = 1;
-> +		interval_tree_span_iter_next_gap(iter);
-> +		return;
-> +	}
-> +
-> +	/* Starting inside a used */
-> +	iter->start_used = first_index;
-> +	iter->is_hole = 0;
-> +	interval_tree_span_iter_next_gap(iter);
-> +	iter->last_used = iter->nodes[0]->last;
-> +	if (iter->last_used >= last_index) {
-> +		iter->last_used = last_index;
-> +		iter->nodes[0] = NULL;
-> +		iter->nodes[1] = NULL;
-> +	}
-> +}
-> +EXPORT_SYMBOL_GPL(interval_tree_span_iter_first);
-> +
-> +void interval_tree_span_iter_next(struct interval_tree_span_iter *iter)
-> +{
-> +	if (!iter->nodes[0] && !iter->nodes[1]) {
-> +		iter->is_hole = -1;
-> +		return;
-> +	}
-> +
-> +	if (iter->is_hole) {
-> +		iter->start_used = iter->last_hole + 1;
-> +		iter->last_used = iter->nodes[0]->last;
-> +		if (iter->last_used >= iter->last_index) {
-> +			iter->last_used = iter->last_index;
-> +			iter->nodes[0] = NULL;
-> +			iter->nodes[1] = NULL;
-> +		}
-> +		iter->is_hole = 0;
-> +		return;
-> +	}
-> +
-> +	if (!iter->nodes[1]) {
-> +		/* Trailing hole */
-> +		iter->start_hole = iter->nodes[0]->last + 1;
-> +		iter->last_hole = iter->last_index;
-> +		iter->nodes[0] = NULL;
-> +		iter->is_hole = 1;
-> +		return;
-> +	}
-> +
-> +	/* must have both nodes[0] and [1], interior hole */
-> +	iter->start_hole = iter->nodes[0]->last + 1;
-> +	iter->last_hole = iter->nodes[1]->start - 1;
-> +	iter->is_hole = 1;
-> +	interval_tree_span_iter_next_gap(iter);
-> +}
-> +EXPORT_SYMBOL_GPL(interval_tree_span_iter_next);
-> +
-> +/*
-> + * Advance the iterator index to a specific position. The returned used/hole is
-> + * updated to start at new_index. This is faster than calling
-> + * interval_tree_span_iter_first() as it can avoid full searches in several
-> + * cases where the iterator is already set.
-> + */
-> +void interval_tree_span_iter_advance(struct interval_tree_span_iter *iter,
-> +				     struct rb_root_cached *itree,
-> +				     unsigned long new_index)
-> +{
-> +	if (iter->is_hole == -1)
-> +		return;
-> +
-> +	iter->first_index = new_index;
-check new_index > iter->first_index?
-> +	if (new_index > iter->last_index) {
-> +		iter->is_hole = -1;
-> +		return;
-> +	}
-> +
-> +	/* Rely on the union aliasing hole/used */
-> +	if (iter->start_hole <= new_index && new_index <= iter->last_hole) {
-> +		iter->start_hole = new_index;
-> +		return;
-> +	}
-> +	if (new_index == iter->last_hole + 1)
-> +		interval_tree_span_iter_next(iter);
-> +	else
-> +		interval_tree_span_iter_first(iter, itree, new_index,
-> +					      iter->last_index);
-> +}
-> +EXPORT_SYMBOL_GPL(interval_tree_span_iter_advance);
-> +#endif
+Yep, I got those
 
-Besides, looks good to me
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
-
-Eric
-
+Thanks,
+Jason
