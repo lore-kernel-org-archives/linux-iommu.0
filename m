@@ -1,264 +1,63 @@
-Received: from mail-qv1-f73.google.com (mail-qv1-f73.google.com [209.85.219.73])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1F2924F29
-	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 18:28:44 +0000 (UTC)
-Received: by mail-qv1-f73.google.com with SMTP id w12-20020a056214012c00b004c6257ca968so7841901qvs.16
-        for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 10:28:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=SoUmPkHlkDH+7nhAOWIZ0SCq+4Ebj+CALgmJJRMTdeg=;
-        b=eANR3/+r4/MRfVqHI/utl+NkZlPzevU1TGEEysolV5xO3wHm28FQqXZ3yK+tishuev
-         FEdyAzazOUwFaX/ieAkinArTmqoCzRPkfskS+jTQLD1MSouu/OMU9BXEUA/pPut5/7Rb
-         8fn99JhkQp5ZK/xXjV8842yEKstiUq2qleGkkoi+kBxNAuyXfOsquk6c5zVgEI4fEAjS
-         r9IEjLOtF7ByxDK7FTHiPiPVlT5Bn+FBXA5Vt40vGwdOeNFIQOVIcJN/BhQnjV17zKvA
-         cio68NUuIMMwMyvC7DbTShTMKa17vFn4vCPsfivXCRG8D7S3llUgVfR+CFMQNZnAf48h
-         F08Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=SoUmPkHlkDH+7nhAOWIZ0SCq+4Ebj+CALgmJJRMTdeg=;
-        b=igEDLjEp8jBlLfSGRryqgJkniAR0GaTojRbSv0w0sy2T4ye+dbfrBZDhPhOEtO5MHZ
-         YDvzU+ynjBQGiBD/cu5UQkgKd5P/Ox7ONw6FRPP2OmvCcVGN2lJojQdxYyGXyh+SSqYp
-         0OFAf+DMUfbS+B0QR8rer805Lwmvmqxvnmg0smao+T+VzCg/RQVg7//b2ak7hUOqOzIC
-         7YmAErUGy9aSOQOjkgTX09/1jqmoGRsLTO+22JeynIpiSMqBhI5SfFpEAbtFWq5rcEMz
-         LfcD2sg+d/wSl4Cv6T5VCRefH0CuIa8KU/PrZTa+4zSdFwGJG0mFh71dohcI7mEfX8ue
-         EjbA==
-X-Gm-Message-State: ANoB5pk1x0C3Zh9BfomlqXSq7Q9ftlCvfl6Z/dJNB50uiR2OgEVfI1TM
-	+jhQrrS0JImyvc4VOXLJeqVFIWJ24FrrCQ==
-X-Google-Smtp-Source: AA0mqf5m9Y9Hm6Nw/W5UoBKliGXP3uUoOBJcWlloA4j+N/XrgbIVcd0oc03Z6IzUgCXGvi39AAJLJagsngRr5A==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:ac8:7502:0:b0:3a5:7e65:ddeb with SMTP id
- u2-20020ac87502000000b003a57e65ddebmr17287503qtq.424.1668536923808; Tue, 15
- Nov 2022 10:28:43 -0800 (PST)
-Date: Tue, 15 Nov 2022 18:28:41 +0000
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5339D2F28
+	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 18:33:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EAD8C433D6;
+	Tue, 15 Nov 2022 18:33:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1668537192;
+	bh=aUlE+XlVtUegRenzbhP2nA8Eu9V4nyuIs/7txING2vE=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=KmiVS0bwNsNgQR9IogJTkocpIWRJL4gMbDTftt+LqCKzy+ODrFWamEOjkp3qBKTXd
+	 gojnf5W1y5hOIbTk7a3Pw6X4QCy6WfVQOq+RN1TzR0jnXcEkdwtO1UjaruVGj8UFtt
+	 PMrw2qMfvFIlBqT6UquCepxuFmupbcjRR/4/z5Oeg/xF94yPGhqyfrnPVnVkZ8vAzH
+	 DyJ6Yaot/lkl+oB/8M7QIQ7ucSSedTEFjVBZoMiy3z3EpECPyJSMbZgHdgV8MiNSuM
+	 1QW/vBpNRflFf4GlyZbxA3Lipg6Lj8pTFWvQtSBRj/EchpRFF+pbgdawfyp64ShzPp
+	 ais38Hecsow7Q==
+From: Will Deacon <will@kernel.org>
+To: Chen Lin <chen45464546@163.com>
+Cc: catalin.marinas@arm.com,
+	kernel-team@android.com,
+	Will Deacon <will@kernel.org>,
+	robin.murphy@arm.com,
+	treding@nvidia.com,
+	joro@8bytes.org,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/arm-smmu: Warn once when the perfetcher errata patch fails to apply
+Date: Tue, 15 Nov 2022 18:32:54 +0000
+Message-Id: <166851283020.1266596.8585820030047050712.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20221103222121.3051-1-chen45464546@163.com>
+References: <20221103222121.3051-1-chen45464546@163.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.38.1.431.g37b22c650d-goog
-Message-ID: <20221115182841.2640176-1-edumazet@google.com>
-Subject: [PATCH v2 -next] iommu/dma: avoid expensive indirect calls for sync operations
-From: Eric Dumazet <edumazet@google.com>
-To: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
-Cc: linux-kernel <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org, 
-	Eric Dumazet <edumazet@google.com>, Eric Dumazet <eric.dumazet@gmail.com>, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-Quite often, NIC devices do not need dma_sync operations
-on x86_64 at least.
+On Fri, 4 Nov 2022 06:21:21 +0800, Chen Lin wrote:
+> Default reset value of secure banked register SMMU_sACR.cache_lock is 1.
+> If it is not been set to 0 by secure software(eg: atf), the non-secure
+> linux cannot clear ARM_MMU500_ACTLR_CPRE bit. In this situation,
+> the prefetcher errata is not applied successfully, warn once.
+> 
+> 
 
-Indeed, when dev_is_dma_coherent(dev) is true and
-dev_use_swiotlb(dev) is false, iommu_dma_sync_single_for_cpu()
-and friends do nothing.
+Applied to will (for-joerg/arm-smmu/updates), thanks!
 
-However, indirectly calling them when CONFIG_RETPOLINE=y
-consumes about 10% of cycles on a cpu receiving packets
-from softirq at ~100Gbit rate, as shown in [1]
+[1/1] iommu/arm-smmu: Warn once when the perfetcher errata patch fails to apply
+      https://git.kernel.org/will/c/f87f6e5b4539
 
-Even if/when CONFIG_RETPOLINE is not set, there
-is a cost of about 3%.
-
-This patch adds dev->skip_dma_sync boolean that can be opted-in.
-
-For instance iommu_setup_dma_ops() can set this boolean to true
-if CONFIG_DMA_API_DEBUG is not set, and dev_is_dma_coherent(dev).
-
-Then later, if/when swiotlb is used for the first time, the flag
-is turned off, from swiotlb_tbl_map_single()
-
-We might in the future inline again these helpers, like:
-
-static void inline
-dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr,
-			size_t size, enum dma_data_direction dir)
-{
-	if (!dev_skip_dma_sync(dev))
-		__dma_sync_single_for_cpu(dev, addr, size, dir);
-}
-
-perf profile before the patch:
-
-    18.53%  [kernel]       [k] gq_rx_skb
-    14.77%  [kernel]       [k] napi_reuse_skb
-     8.95%  [kernel]       [k] skb_release_data
-     5.42%  [kernel]       [k] dev_gro_receive
-     5.37%  [kernel]       [k] memcpy
-<*>  5.26%  [kernel]       [k] iommu_dma_sync_sg_for_cpu
-     4.78%  [kernel]       [k] tcp_gro_receive
-<*>  4.42%  [kernel]       [k] iommu_dma_sync_sg_for_device
-     4.12%  [kernel]       [k] ipv6_gro_receive
-     3.65%  [kernel]       [k] gq_pool_get
-     3.25%  [kernel]       [k] skb_gro_receive
-     2.07%  [kernel]       [k] napi_gro_frags
-     1.98%  [kernel]       [k] tcp6_gro_receive
-     1.27%  [kernel]       [k] gq_rx_prep_buffers
-     1.18%  [kernel]       [k] gq_rx_napi_handler
-     0.99%  [kernel]       [k] csum_partial
-     0.74%  [kernel]       [k] csum_ipv6_magic
-     0.72%  [kernel]       [k] free_pcp_prepare
-     0.60%  [kernel]       [k] __napi_poll
-     0.58%  [kernel]       [k] net_rx_action
-     0.56%  [kernel]       [k] read_tsc
-<*>  0.50%  [kernel]       [k] __x86_indirect_thunk_r11
-     0.45%  [kernel]       [k] memset
-
-After patch, lines with <*> no longer show up, and overall
-cpu usage looks much better (~60% instead of ~72%)
-
-    25.56%  [kernel]       [k] gq_rx_skb
-     9.90%  [kernel]       [k] napi_reuse_skb
-     7.39%  [kernel]       [k] dev_gro_receive
-     6.78%  [kernel]       [k] memcpy
-     6.53%  [kernel]       [k] skb_release_data
-     6.39%  [kernel]       [k] tcp_gro_receive
-     5.71%  [kernel]       [k] ipv6_gro_receive
-     4.35%  [kernel]       [k] napi_gro_frags
-     4.34%  [kernel]       [k] skb_gro_receive
-     3.50%  [kernel]       [k] gq_pool_get
-     3.08%  [kernel]       [k] gq_rx_napi_handler
-     2.35%  [kernel]       [k] tcp6_gro_receive
-     2.06%  [kernel]       [k] gq_rx_prep_buffers
-     1.32%  [kernel]       [k] csum_partial
-     0.93%  [kernel]       [k] csum_ipv6_magic
-     0.65%  [kernel]       [k] net_rx_action
-
-Many thanks to Robin Murphy for his feedback and ideas to make this patch
-much better !
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Will Deacon <will@kernel.org>
-Cc: iommu@lists.linux.dev
----
- drivers/iommu/dma-iommu.c   |  2 ++
- include/linux/device.h      |  1 +
- include/linux/dma-map-ops.h |  5 +++++
- kernel/dma/mapping.c        | 20 ++++++++++++++++----
- kernel/dma/swiotlb.c        |  3 +++
- 5 files changed, 27 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 9297b741f5e80e2408e864fc3f779410d6b04d49..bd3f4d3d646cc57c7588f22d49ea32ac693e38ff 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -1587,6 +1587,8 @@ void iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 dma_limit)
- 		if (iommu_dma_init_domain(domain, dma_base, dma_limit, dev))
- 			goto out_err;
- 		dev->dma_ops = &iommu_dma_ops;
-+		if (!IS_ENABLED(CONFIG_DMA_API_DEBUG) && dev_is_dma_coherent(dev))
-+			dev->skip_dma_sync = true;
- 	}
- 
- 	return;
-diff --git a/include/linux/device.h b/include/linux/device.h
-index 424b55df02727b5742070f72374fd65f5dd68151..2fbb2cc18e44e21eba5f43557ee16d0dc92ef2ef 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -647,6 +647,7 @@ struct device {
-     defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
- 	bool			dma_coherent:1;
- #endif
-+	bool			skip_dma_sync:1;
- #ifdef CONFIG_DMA_OPS_BYPASS
- 	bool			dma_ops_bypass : 1;
- #endif
-diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index d678afeb8a13a3a54380a959d14f79bca9c23d8e..4691081f71c51da5468cf6703570ebc7a64d40c5 100644
---- a/include/linux/dma-map-ops.h
-+++ b/include/linux/dma-map-ops.h
-@@ -275,6 +275,11 @@ static inline bool dev_is_dma_coherent(struct device *dev)
- }
- #endif /* CONFIG_ARCH_HAS_DMA_COHERENCE_H */
- 
-+static inline bool dev_skip_dma_sync(struct device *dev)
-+{
-+	return dev->skip_dma_sync;
-+}
-+
- void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
- 		gfp_t gfp, unsigned long attrs);
- void arch_dma_free(struct device *dev, size_t size, void *cpu_addr,
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index 33437d6206445812b6d4d5b33c77235d18074dec..5d5d286ffae7fa6b7ff1aef46bdc59e7e31a8038 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -328,9 +328,12 @@ EXPORT_SYMBOL(dma_unmap_resource);
- void dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr, size_t size,
- 		enum dma_data_direction dir)
- {
--	const struct dma_map_ops *ops = get_dma_ops(dev);
-+	const struct dma_map_ops *ops;
- 
- 	BUG_ON(!valid_dma_direction(dir));
-+	if (dev_skip_dma_sync(dev))
-+		return;
-+	ops = get_dma_ops(dev);;
- 	if (dma_map_direct(dev, ops))
- 		dma_direct_sync_single_for_cpu(dev, addr, size, dir);
- 	else if (ops->sync_single_for_cpu)
-@@ -342,9 +345,12 @@ EXPORT_SYMBOL(dma_sync_single_for_cpu);
- void dma_sync_single_for_device(struct device *dev, dma_addr_t addr,
- 		size_t size, enum dma_data_direction dir)
- {
--	const struct dma_map_ops *ops = get_dma_ops(dev);
-+	const struct dma_map_ops *ops;
- 
- 	BUG_ON(!valid_dma_direction(dir));
-+	if (dev_skip_dma_sync(dev))
-+		return;
-+	ops = get_dma_ops(dev);;
- 	if (dma_map_direct(dev, ops))
- 		dma_direct_sync_single_for_device(dev, addr, size, dir);
- 	else if (ops->sync_single_for_device)
-@@ -356,9 +362,12 @@ EXPORT_SYMBOL(dma_sync_single_for_device);
- void dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
- 		    int nelems, enum dma_data_direction dir)
- {
--	const struct dma_map_ops *ops = get_dma_ops(dev);
-+	const struct dma_map_ops *ops;
- 
- 	BUG_ON(!valid_dma_direction(dir));
-+	if (dev_skip_dma_sync(dev))
-+		return;
-+	ops = get_dma_ops(dev);;
- 	if (dma_map_direct(dev, ops))
- 		dma_direct_sync_sg_for_cpu(dev, sg, nelems, dir);
- 	else if (ops->sync_sg_for_cpu)
-@@ -370,9 +379,12 @@ EXPORT_SYMBOL(dma_sync_sg_for_cpu);
- void dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
- 		       int nelems, enum dma_data_direction dir)
- {
--	const struct dma_map_ops *ops = get_dma_ops(dev);
-+	const struct dma_map_ops *ops;
- 
- 	BUG_ON(!valid_dma_direction(dir));
-+	if (dev_skip_dma_sync(dev))
-+		return;
-+	ops = get_dma_ops(dev);;
- 	if (dma_map_direct(dev, ops))
- 		dma_direct_sync_sg_for_device(dev, sg, nelems, dir);
- 	else if (ops->sync_sg_for_device)
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 339a990554e7fed98dd337efe4fb759a98161cdb..03ebd9803db1a457600f1fac8a18fb3dde724a6f 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -734,6 +734,9 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 	int index;
- 	phys_addr_t tlb_addr;
- 
-+	if (unlikely(dev->skip_dma_sync))
-+		dev->skip_dma_sync = false;
-+
- 	if (!mem || !mem->nslabs) {
- 		dev_warn_ratelimited(dev,
- 			"Can not allocate SWIOTLB buffer earlier and can't now provide you with the DMA bounce buffer");
+Cheers,
 -- 
-2.38.1.431.g37b22c650d-goog
+Will
 
+https://fixes.arm64.dev
+https://next.arm64.dev
+https://will.arm64.dev
