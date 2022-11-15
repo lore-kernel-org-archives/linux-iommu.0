@@ -1,183 +1,260 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2042.outbound.protection.outlook.com [40.107.223.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B967C139E;
-	Tue, 15 Nov 2022 14:49:12 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=W1CajyqRI3hwTH5OTG4V0QR5L2zHOeT0YbJbVraIKr++t6t2hly+oQqRv3SQt8Nk8CA0SCOGEoPrx3ol79ZOv6ItdCDYYYRE+vHzedPGWnc8kZ36wCnbI47Vk8lupyf+2L1WLvXVh6Z6VmzmWZ2W6ucfmAwpQUIYvIG2h0pGYXdBCHeYRK0i3UZqpTeFW4zwiFV6MtqyWLgrstnBlGu4ChHVfLjvt5EU75Nq5dm0Yp3fnkJBg/iL2TagsVfy+P9C2TYq6aM3qaCZHqAjUxnXFTSmbg6f/Ocj16pRYB62Yb5NSRz3Co0maimD8G2L27y3v9q4pNbZRjLbqhautUqlvA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6yvfH4zQLQ+BI3FnwlxjOgFeNphjhDMZUMeTQED5QcE=;
- b=Yh0kcJE/KTmtJXd9MZdHqlkw/Eb1BCNpocEH0Hs1G6kPxJ5/lj7rDeufvSMLrCLx14pcMr+J3wjppjT6cJNWvhhvhzaPf+YeahWX1aL+Qq/rzCb69L7p/81X6v0ko9KyKNqGNVgqLIvqY5lMr/fv2/mHzhEuEu8xwN5hjRZm9C4ZrfxV/L/Nw/ybLnh5uWs6lszl2mzRYU26TYTCABnRJ9h0vOKxTUBn8JJkYKWrl3JqKYWs+lfAPRPrdek66aKYvIU6FVc0+1cBg02qMzuDY9t5ckM0vorOb0+3qixjfJET2Pxq1dpDUqqkCtF/wYl0+T/uKVCpUZvK8Al+8xu+9A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6yvfH4zQLQ+BI3FnwlxjOgFeNphjhDMZUMeTQED5QcE=;
- b=AVWV6bh6ZpGyENu7uFjR2LsFoEt3yZpDlWjKB4AgDJSSJG36fk0ak9G6VOMLn4BWrYW9K3LJ+zf6sp25SnE3X5QsbOW/jMOyzM2z4M2eyU6WLzT8VoT0Fsx4qNVWxCpwUxOLLbdgYNo+ylqN/YBtWvFQ32sSLAayZ1hbZ9Ok8wi5NIq7FiXqVT57/X7GBQXJOSkU2Voqq5B487xn8rJNcyqFDeBaqQ7dNjBBpXSEIBrHFHi1Mh4IxmMhnna+egLMm8hCmgyDUG+GrQ3GKR9o06VOwDtqWI187FF4PEAlYmfK4AE9a9h8j+ONsS4Y20WS87qmKc1flQJOUNQ8wOMFfg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by BN9PR12MB5274.namprd12.prod.outlook.com (2603:10b6:408:11f::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.17; Tue, 15 Nov
- 2022 14:49:10 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f8b0:df13:5f8d:12a%7]) with mapi id 15.20.5813.017; Tue, 15 Nov 2022
- 14:49:10 +0000
-Date: Tue, 15 Nov 2022 10:49:09 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	David Woodhouse <dwmw2@infradead.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	Joerg Roedel <joro@8bytes.org>,
-	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	"llvm@lists.linux.dev" <llvm@lists.linux.dev>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nick Desaulniers <ndesaulniers@google.com>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
-	Cornelia Huck <cohuck@redhat.com>,
-	Daniel Jordan <daniel.m.jordan@oracle.com>,
-	David Gibson <david@gibson.dropbear.id.au>,
-	Eric Auger <eric.auger@redhat.com>,
-	Eric Farman <farman@linux.ibm.com>,
-	Jason Wang <jasowang@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	"Martins, Joao" <joao.m.martins@oracle.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>,
-	Keqian Zhu <zhukeqian1@huawei.com>
-Subject: Re: [PATCH v4 08/17] iommufd: Algorithms for PFN storage
-Message-ID: <Y3Om5Wv2rE4fH9y4@nvidia.com>
-References: <0-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
- <8-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
- <BN9PR11MB52762E5ACAAE7D7B398730D78C059@BN9PR11MB5276.namprd11.prod.outlook.com>
- <Y3KCvnLOZpGXAGhU@nvidia.com>
- <BN9PR11MB5276E1EFCCDBDFA8D6C58FF78C049@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <BN9PR11MB5276E1EFCCDBDFA8D6C58FF78C049@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: BL1PR13CA0015.namprd13.prod.outlook.com
- (2603:10b6:208:256::20) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDD9B139E
+	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 15:04:42 +0000 (UTC)
+Received: by mail-ej1-f50.google.com with SMTP id y14so36727339ejd.9
+        for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 07:04:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=d9LeILXvw8L9LoEFMAR3miqDBARgsMFwg1ZrW9AFkIk=;
+        b=jDUHta9jtUjIl9jrU1sLbM7rBYUjPsoylRiLOMdRDqi+BOGmx5u4eRb4/HiKseL232
+         FhDu1k2nLxoNlP9n1hhtq+KMOjVaGWvccm/svuCSmvRH2z3U8+kMNhT66an9lZ2FJGLW
+         XjdMDFy6f7z2DlD/9Ja/5sivV+usDEtyPrpQrwbw3fSooNkoCXYRT+Quorpz88oWxstO
+         sBLsQHVlZGVFhavpiQp+62kfjGo4Xy6ryCZrRXuVk+pJNABdCXIP3CBLxdwGuO/Oc5IE
+         VHvIILZmgni9Dz+v1wQQDpV3JLR30W2HIgyCU3k2dbg0eaCx//UWVXCeuyU7UQv0CrOc
+         e/iQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=d9LeILXvw8L9LoEFMAR3miqDBARgsMFwg1ZrW9AFkIk=;
+        b=GVXJ7xpPQTA37z81h0aa8c63tVQbVEUCmNuUnmybaGi4XQ2RcV/ACKKPaX8GegX7Zq
+         +yfHbTk/aJa2EzdIkRPl6qrMQIIcHSEdIGC5eEKAGhTVY2elnLAS/W7s7Kn8p0vnSEq5
+         7CN2hanvWvD2+JJJdJRzy9p7OAu3tFJksV5mOcoP82xbE9VQl5W/wWamZWbu3edpblQJ
+         1+k97vU9nAmBTfAoqlo8T3x9AaWcOQI6scvQinDXTasx+2a57rkJQ5jHOYe3knQSx59N
+         Eee0oFjxTxsjUqVGS8yzMG7IE6PLPjTasMrrHaeI45MnfXZBZmmtPGwL3tfhcQqIVuyH
+         5gaw==
+X-Gm-Message-State: ANoB5pnIfVHZ3z8Vm6swXsnrK7/pS60A3E3wTI2R6B8+vrmfnZO0umJg
+	azKGhY0OXzobVeurwb8+JvLykg==
+X-Google-Smtp-Source: AA0mqf6KK9noe2qvxHfnjBSUJjx6KLuYgdcHS4UDhN/VuQX/gbwFigj+4fke8gGB5rAnslfFsSRCZg==
+X-Received: by 2002:a17:907:8e92:b0:7ad:a34f:1efe with SMTP id tx18-20020a1709078e9200b007ada34f1efemr14115723ejc.350.1668524681034;
+        Tue, 15 Nov 2022 07:04:41 -0800 (PST)
+Received: from [192.168.31.208] ([194.29.137.22])
+        by smtp.gmail.com with ESMTPSA id b3-20020a170906728300b007a559542fcfsm5571581ejl.70.2022.11.15.07.04.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Nov 2022 07:04:40 -0800 (PST)
+Message-ID: <03a8c0e4-bc5c-1447-e3b6-a26f2f221862@linaro.org>
+Date: Tue, 15 Nov 2022 16:04:34 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BN9PR12MB5274:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7d039fb5-51cb-465a-52e6-08dac7188e17
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	lnzxflYdm9UGCQVLyp8NXQOVjhsUOJf1Cl2d2QxaRT1/gSuLbJIHT5Ucx2G+cCOnsNFO8611T3r5GbDgR8w1Syv3A1pXYdmGQY91qMFzQaOnMnk5GSv24UL34WeCk33Bl0yTnEV+m77gG56UeASS5B0LMgsayBik/aHkZgbTOT1ogoRNNXnq/guK2uftDblXCg/H6H3XbGtevoSqBxvdSuYIHOKHlvZF2HRzH4N/tSQWkg+eo4x5aG5T+FQf3xlSA4rl0JG/Zz0s13V73+09zoVh8xZEPOTJQZKrzBy53OdntVTFS9O/NkoExmx41+i+RFE9LenB/pkBzB1KA2XX/WboGjiUk0YG0sjEUcaww8v61qNI1txQOoU0G7CJCIqpVCqDSbB+I+XjZiEf0yjX7sNDZOkn5nNGWTxkXT1SMUoPKF7EL1+Fa289ZoMrBlv23rN22t+DxGq0UAVLE8tuXrv5QE6RhC1nFtIwBAhc55GuGLhwsg6OBTL+a8Q6Ma6iDeYB1NjIO5snOmtwhxP2E7T83J/k1ASyW5T2c4uYsniUcBzcTbxdnzooilt9ouEQS8s3qVntmr1eeSHen0xoQNGiDQXMb2Ca1WNJlz2L5cNZk5h3cqh3LcBozp3EFSJjtiLVm26QPs/N8Bwj8XwmSfKJn7xurY0EbZDJdxPzXz2HLRO49S0SNT3TVe4tFphP5L2CtPBNxRKCUycp82r5+Q==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(366004)(376002)(39860400002)(346002)(396003)(451199015)(6486002)(478600001)(54906003)(6916009)(6506007)(4326008)(7416002)(5660300002)(26005)(66556008)(7406005)(66476007)(316002)(66946007)(8676002)(6512007)(186003)(8936002)(41300700001)(36756003)(2616005)(83380400001)(2906002)(38100700002)(86362001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?YjF3ejNwYTg5ZU1BMkt6TjZaVHhIalFLcUNTY3FOOVVwYmtqbHpqdWxScjgw?=
- =?utf-8?B?K0gyVjQzMCtITldnZ0JoYStxd1liOW45NEpvV0J6d2NDWGVpWWFiUXZocCt0?=
- =?utf-8?B?RnFRL08zcy9hblMwOGlFVCsySmVwOVVtSmtlNVNMOWxpVTFtbGdHU3ptNVpk?=
- =?utf-8?B?b2hPM0x6VWppWEtlRm5ENm85Nk5wNGprUVlTcUFOcE4zVG12bm5VVi8wdllD?=
- =?utf-8?B?eFR1bTNqUFFGcWxqTEl3TEZkVUl1ejRjRnA2cXV3QzBCaC9ZM25udXU2WTlj?=
- =?utf-8?B?Qk5iTTFBbEQ0bkVpRThrNXd0a2xxemM1YkZhSTNFS1ZHcUZ1bHJEWGJPZGpC?=
- =?utf-8?B?bUZwNDJDakxoc2VyU0NzRWljb0tyWXNaTzgyd1lHTDN0YnU3bDNuL2JDT1Vq?=
- =?utf-8?B?VkMzMjZWZE9QNUpXbkQ4d0pSa2dJUUVVY0RNYkozYnlsWWpaSDFRaC85Mk9I?=
- =?utf-8?B?UjFsclp0RDZqQ1JhWDRWRDd2R2JsWEpDdnNMVDYvU0pOMTZEbkxlVUNZMXJV?=
- =?utf-8?B?TlV0VFBwME83YWNxOWVzMWpvTmhvWVlVZ0d3b2k1cTBhd2c4Z2tvSnU2Tjhk?=
- =?utf-8?B?UnpQNU5XQVA3b2VXcU5ERkZIcDhkWVRETkE5QUEvcVVuN0h1NVdhYUxsK2dh?=
- =?utf-8?B?T0dtZkRYdkN1TlVRUVhjNTFwOXhwQ0N2OExVeGFxanR2Y2xBV3pZRkI5NEF0?=
- =?utf-8?B?ZnFoQkpYalF0ZEppaU5IUnJvb1FXQytuZ2ZoSTJ5Y3oxNnlVMjQvRG83bkpH?=
- =?utf-8?B?NVQvNTY0Z01ZVmJEWVE0NEoxeG5nN3l2YmtTd0h5cE4rT3ZYSlFWQ0p0L2d2?=
- =?utf-8?B?Yk9oaUJZZmlZRWp6Wkk4dDlZZ2szOVNrTDFpT3I5WWVrT1lYWnhqQlgxdWVw?=
- =?utf-8?B?UVZqRlVTQWxtV1Ezc1ZLOVV5UTJvc0taaXk4SStvWlErUUhPUjBvVlFoYVVG?=
- =?utf-8?B?S3JVVGwzSEFtR1c3SGpJUmVsWmFBeHdNSFJOMDVlTURyWDRxanMwVEZqbXN5?=
- =?utf-8?B?ZkE0aVYrdytJOUxxTkd4MTdiOGRVWkM2N0JiNGpyOXphWTlMTTRrcXpwK1R0?=
- =?utf-8?B?dHFXZkduOUcyeW9OZDMydU9WUXVoQ1FOaDFJeGIyODhYWitOUHcwdit0eXNo?=
- =?utf-8?B?TnIrMCtqL0V0b1lKQkV5THFGZ1RKVkJ6bzZ5cVVSNnRaMTdFM01lcWVVTEtr?=
- =?utf-8?B?eFIwMU5URkQzNzhwQkdoblBPeWZzYkZBYzl4YVZNVEw1SjBLVmwzaFM3Wi9h?=
- =?utf-8?B?azgrQWFtcmF2WnpTTjRBNU1TMjdhZDVLeUFzRnUzdEJ3R3ErL1hwbm9JQkRa?=
- =?utf-8?B?Nm9jOUg2ejZYbno2MHVZZnhPVjJuU2NEemNkdzJHZlUveWVnd1h6UDZYclcr?=
- =?utf-8?B?clk1SHc2K1FHUVZ2ZERvOEdzcHVVc2VpWEpUV2taeERBQ1pZRDk2VStDNGFx?=
- =?utf-8?B?TXB5TnloNXhZd1FaNEFqTjZ3a0pZY0RHSVFnYWV2M3FOSFpRcU9GUnRsZlMy?=
- =?utf-8?B?bS92UDJEaFd5L0xJVElwaXREUDMrMWJvalBhdVQvd0h3VVFBRWF6Zks3VW5a?=
- =?utf-8?B?eXVwTHROOU1xcVFlV292Q2ZkcDBBNC9NTmVWRStKS3hyS1J3WjhtZXYrL3Zx?=
- =?utf-8?B?OW9NTUtBUFNUamxreVJwczhOVXhlOUhxZTc5OHZaRGw2VUZ4bEt3Y1NhdU1p?=
- =?utf-8?B?d1RxMFBMdGNzQjRoWVdxSjJxcDJ3NXUrdTVmTjBwWFpFMjJQbWFIWXg5QnVl?=
- =?utf-8?B?RUxiVUZTMkFWZmhZK1BmU0RHVk1rOE83Ri84QUhGMW9HSHNBMjgybHVERU1M?=
- =?utf-8?B?dTNTcXJ4LzJuQnQwZjNaQi9TSkl4ZnlabnMvcFN4SmpCa3h4UzFzelFhLy83?=
- =?utf-8?B?bDJ4OGMwVDlSSEJKRlp6ZHZKOFoyQWhQMHRVVEVxU0FkK29EOVFKd0h1L0J0?=
- =?utf-8?B?U3A2a2Y2SnB1ejVZRWhJcjFlTkR6T3E5eE1oWnVNT3FjTjIzVnYrRDlDSitG?=
- =?utf-8?B?T0FsTGRvQlB3U0FmSXZIZ20rdFlkZldNanRXWWNCaEpNTEVDelFucTkxdGZ0?=
- =?utf-8?B?T2RkaVpCaXpyeXlZalJ3N3lNUjNLR1RLZ3VrcHUvZkRrdEZaZjRVWmlrQ09M?=
- =?utf-8?Q?5Ubs=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7d039fb5-51cb-465a-52e6-08dac7188e17
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Nov 2022 14:49:10.5413
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: BzjbWCnghH+s561FdWy6OnhsmnvfDNmB1Cyp+w2cupUzMYInTAaf6F0y1f15TruF
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5274
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.4.2
+Subject: Re: [PATCH v2 1/9] dt-bindings: arm-smmu: Allow up to 3 power-domains
+To: Robin Murphy <robin.murphy@arm.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ linux-arm-msm@vger.kernel.org, andersson@kernel.org, agross@kernel.org
+Cc: patches@linaro.org, Will Deacon <will@kernel.org>,
+ Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20221114104222.36329-1-konrad.dybcio@linaro.org>
+ <20221114104222.36329-2-konrad.dybcio@linaro.org>
+ <6fa8e3ea-2113-d930-96bc-3726d53e5bcd@linaro.org>
+ <a4b160d8-0faa-3f4c-a925-0beaf6ace721@linaro.org>
+ <0121fc03-b027-7659-5e6e-b42089c9888d@linaro.org>
+ <12578e05-ced9-e5f7-7922-0af2f2159333@linaro.org>
+ <878402e7-7f80-31c7-3a6b-989a6ca29841@linaro.org>
+ <f59ddce1-c2e1-4055-3bce-1319c68ddf94@linaro.org>
+ <4b4ca3ba-8e4d-088e-8b3e-a47ad6ecb965@linaro.org>
+ <cff269c8-f944-9277-9df8-653522efbba0@linaro.org>
+ <4a9083fc-81ba-f5ca-5df7-cd04becb1dce@arm.com>
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+In-Reply-To: <4a9083fc-81ba-f5ca-5df7-cd04becb1dce@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Tue, Nov 15, 2022 at 03:06:57AM +0000, Tian, Kevin wrote:
-> > From: Jason Gunthorpe <jgg@nvidia.com>
-> > Sent: Tuesday, November 15, 2022 2:03 AM
-> > -		mutex_lock(&area->pages->mutex);
-> > -		rc = iopt_pages_add_access(area->pages, index, last_index,
-> > -					   out_pages, flags);
-> > -		if (rc) {
-> > -			mutex_unlock(&area->pages->mutex);
-> > +		rc = iopt_pages_add_access(area, index, last_index,
-> > out_pages,
-> > +					   flags);
-> > +		if (rc)
-> 
-> iopt_area_add_access(), which I suppose you have already fixed when
-> compiling this change. but just in case... 😊
-> 
-> > @@ -1819,40 +1838,49 @@ iopt_pages_get_exact_access(struct iopt_pages
-> > *pages, unsigned long index,
-> >   *
-> >   * This should be undone through a matching call to
-> > iopt_pages_remove_access()
-> 
-> iopt_area_remove_access()
-> 
-> > @@ -1865,11 +1893,11 @@ int iopt_pages_add_access(struct iopt_pages
-> > *pages, unsigned long start_index,
-> >   * Undo iopt_pages_add_access() and unpin the pages if necessary. The
-> 
-> iopt_area_add_access()
-> 
-> with above,
 
-Yep, I got those
 
-Thanks,
-Jason
+On 15/11/2022 14:43, Robin Murphy wrote:
+> On 2022-11-15 13:06, Konrad Dybcio wrote:
+>>
+>>
+>> On 15/11/2022 14:00, Krzysztof Kozlowski wrote:
+>>> On 15/11/2022 13:54, Konrad Dybcio wrote:
+>>>>
+>>>>
+>>>> On 14/11/2022 17:58, Krzysztof Kozlowski wrote:
+>>>>> On 14/11/2022 16:53, Konrad Dybcio wrote:
+>>>>>>
+>>>>>> On 14/11/2022 14:00, Krzysztof Kozlowski wrote:
+>>>>>>> On 14/11/2022 12:17, Konrad Dybcio wrote:
+>>>>>>>> On 14/11/2022 12:01, Krzysztof Kozlowski wrote:
+>>>>>>>>> On 14/11/2022 11:42, Konrad Dybcio wrote:
+>>>>>>>>>> Some SMMUs require that a vote is held on as much as 3 
+>>>>>>>>>> separate PDs
+>>>>>>>>>> (hello Qualcomm). Allow it in bindings.
+>>>>>>>>>>
+>>>>>>>>>> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+>>>>>>>>>> ---
+>>>>>>>>>> Changes since v1:
+>>>>>>>>>> - Add minItems
+>>>>>>>>>>
+>>>>>>>>>>      Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 3 
+>>>>>>>>>> ++-
+>>>>>>>>>>      1 file changed, 2 insertions(+), 1 deletion(-)
+>>>>>>>>>>
+>>>>>>>>>> diff --git 
+>>>>>>>>>> a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml 
+>>>>>>>>>> b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>>>>>>>>> index 9066e6df1ba1..82bc696de662 100644
+>>>>>>>>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>>>>>>>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>>>>>>>>> @@ -159,7 +159,8 @@ properties:
+>>>>>>>>>>                through the TCU's programming interface.
+>>>>>>>>>>        power-domains:
+>>>>>>>>>> -    maxItems: 1
+>>>>>>>>>> +    minItems: 0
+>>>>>>>>> It cannot be 0.
+>>>>>>>>>
+>>>>>>>>> minItems: 1
+>>>>>>>>>
+>>>>>>>>> Anyway you still need to restrict it per variant, as I said in 
+>>>>>>>>> previous
+>>>>>>>>> version.
+>>>>>>>> Hm.. I'm not entirely sure what you mean.. Should I add a list of
+>>>>>>>> compatibles
+>>>>>>> Yes and limit it to maxItems: 1 for "else".
+>>>>>>
+>>>>>> I tried adding:
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>>      - if:
+>>>>>>          properties:
+>>>>>>            compatible:
+>>>>>>              contains:
+>>>>>>                enum:
+>>>>>>                  - qcom,sm6375-smmu-500
+>>>>>>        then:
+>>>>>>          properties:
+>>>>>>            power-domains:
+>>>>>>              minItems: 3
+>>>>>>              maxItems: 3
+>>>>>>        else:
+>>>>>>          properties:
+>>>>>>            power-domains:
+>>>>>>              maxItems: 1
+>>>>>>
+>>>>>>
+>>>>>> Right under the nvidia reg if-else in the allOf, but dtbs_check 
+>>>>>> throws
+>>>>>> errors like:
+>>>>>>
+>>>>>>
+>>>>>> /home/konrad/linux/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino-poplar.dtb:
+>>>>>> iommu@5040000: 'power-domains' does not match any of the regexes:
+>>>>>> 'pinctrl-[0-9]+'
+>>>>>>
+>>>>>>
+>>>>>> Any clues as to why?
+>>>>>
+>>>>> I don't know what code do you have there, but generic pattern is:
+>>>>>
+>>>>> https://elixir.bootlin.com/linux/v5.19-rc6/source/Documentation/devicetree/bindings/clock/samsung,exynos7-clock.yaml#L38
+>>>>>
+>>>> I tried many things, but I still don't seem to get a hang of it.. 
+>>>> Here's
+>>>> my current diff rebased on top of Dmitry's recent cleanups 
+>>>> (available at
+>>>> [1])
+>>>>
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>>> b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>>> index 28f5720824cd..55759aebc4a0 100644
+>>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>>> @@ -200,7 +200,7 @@ properties:
+>>>>        maxItems: 7
+>>>>
+>>>>      power-domains:
+>>>
+>>> As I mentioned before - minItems: 1.
+>> But not all SMMUs require a power domain :/
+> 
+> Right, so it's not a required property. However if it *is* present, then 
+> it needs to reference at least one power domain, because having an empty 
+> property, i.e.:
+> 
+>      power-domains = <>;
+> 
+> or
+>      power-domains;
+> 
+> makes no sense whatsoever.
+> 
+> Thanks,
+> Robin.
+OHHHH!
+
+That was the missing piece that made it click for me!
+Thanks Krzysztof, Robin for guiding me through this.
+
+Konrad
+> 
+>>
+>>>
+>>> Just like the link I gave you.
+>>>
+>>>> -    maxItems: 1
+>>>> +    maxItems: 3
+>>>>
+>>>>      nvidia,memory-controller:
+>>>>        description: |
+>>>> @@ -364,6 +364,26 @@ allOf:
+>>>>                - description: interface clock required to access smmu's
+>>>> registers
+>>>>                    through the TCU's programming interface.
+>>>>
+>>>> +  - if:
+>>>> +      properties:
+>>>> +        compatible:
+>>>> +          contains:
+>>>> +            const: qcom,sm6375-smmu-500
+>>>> +    then:
+>>>> +      properties:
+>>>> +        power-domains:
+>>>> +          items:
+>>>> +            - description: SNoC MMU TBU RT GDSC
+>>>> +            - description: SNoC MMU TBU NRT GDSC
+>>>> +            - description: SNoC TURING MMU TBU0 GDSC
+>>>> +
+>>>> +      required:
+>>>> +        - power-domains
+>>>> +    else:
+>>>> +      properties:
+>>>> +        power-domains:
+>>>> +          maxItems: 1
+>>>> +
+>>>>    examples:
+>>>>      - |+
+>>>>        /* SMMU with stream matching or stream indexing */
+>>>>
+>>>>
+>>>> In my eyes, this should work, but I still get errors like:
+>>>>
+>>>> /home/konrad/linux/arch/arm64/boot/dts/qcom/sm8250-hdk.dtb:
+>>>> iommu@3da0000: power-domains: [[108, 0]] is too short
+>>>>
+>>>> as if the else: path was never taken..
+>>>
+>>> It was, but the top-level property said that minItems=3 (implicitly), so
+>>> it is too short.
+>> So the top-level properties take precedence over the ones that come 
+>> from the if-then-else?? Ugh.
+>>
+>> Konrad
+>>>
+>>> Best regards,
+>>> Krzysztof
+>>>
