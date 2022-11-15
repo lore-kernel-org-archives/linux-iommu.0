@@ -1,88 +1,85 @@
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89D5623C9
-	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 07:31:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668497480; x=1700033480;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=f/EQVxj62tLtKfBgUY8KuLhjUMZUtipEPhQ+i2eSZus=;
-  b=euX7ZXBz/v4T+3YYc6Tl9i65ZZxvS1QLmBkgIYtfsF3WPaAAimzNde3t
-   FA4qi78JbX2m9BCfKPFFCEhnOJARfRHwkTMeLv/ofRZ2Rc7MoiesA3kz6
-   qutiM31e0xMlbNGkUfqpYhniOMOSHvR+qjYumDIYrtMxhvMUhxEThgtyi
-   ATxX5AX9OSheVdaet0UEHimkDgNlX9njNmb8Ri1Gf2D1dNc573sRl9Ptm
-   EBgigDySDQ7UXYkv5KI8joJJCwjZer8ZfHbwm+GxK9Tqr6YKDX2IVk1v6
-   ZP8XF9mgzDGzeJ23IvVvmUgnMo4BZ0PieRztYDnTE+KO4TzSEsCQGdpuP
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="312190313"
-X-IronPort-AV: E=Sophos;i="5.96,165,1665471600"; 
-   d="scan'208";a="312190313"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Nov 2022 23:31:19 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10531"; a="702333190"
-X-IronPort-AV: E=Sophos;i="5.96,165,1665471600"; 
-   d="scan'208";a="702333190"
-Received: from test.bj.intel.com ([10.238.158.71])
-  by fmsmga008.fm.intel.com with ESMTP; 14 Nov 2022 23:31:18 -0800
-From: Tina Zhang <tina.zhang@intel.com>
-To: iommu@lists.linux.dev
-Cc: baolu.lu@linux.intel.com,
-	Tina Zhang <tina.zhang@intel.com>
-Subject: [PATCH v2] iommu/vt-d: Set SRE bit when hardware has SRS cap
-Date: Tue, 15 Nov 2022 02:03:46 -0500
-Message-Id: <20221115070346.1112273-1-tina.zhang@intel.com>
-X-Mailer: git-send-email 2.25.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88D3A28ED
+	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 09:52:56 +0000 (UTC)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
+	(No client certificate requested)
+	(Authenticated sender: kholk11)
+	by madras.collabora.co.uk (Postfix) with ESMTPSA id 8E9916602A0B;
+	Tue, 15 Nov 2022 09:52:53 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1668505974;
+	bh=fTz1/LN3UJg7iGi864PNg/UpPBmLtN7Aac88qggrMqc=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=fnK2ETBoLYl0jFzGtqol98jYRtaoaU2ghK6T6YxMvG6AWKtz1sTk2+/raMyvhYa01
+	 qDQs9wRUxrhEZ3IOoZb/pWUIAcYR71xq57IudW1u6ErKbATs6qE/Fmmp+pp52y2RNt
+	 89bUWxbQo7A57BSmfvOAgEGI7J6iJR5kWjEnKmHGQLDYjvSpg/sMrmq3lIVgCt0yfm
+	 8SFxaL3BT19jdF44+W9hto0JHj4b1ks2enjhbSqEZmMEWpE1Quijc1NsgLLk3lNE2C
+	 nFX8MFUdDlFMWpENTXF/Drf3uTS8cV1biqXRM28JlSqXSHhL0hzw8NHMknjIgkKRSs
+	 2cUbXwYp1f0Yw==
+Message-ID: <2883ef06-7293-d5fd-4b62-ba796a6a2c69@collabora.com>
+Date: Tue, 15 Nov 2022 10:52:50 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.3
+Subject: Re: [PATCH v2 8/8] dt-bindings: iommu: qcom,iommu: Document MSM8976
+ compatible
+Content-Language: en-US
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, agross@kernel.org
+Cc: andersson@kernel.org, konrad.dybcio@linaro.org, joro@8bytes.org,
+ will@kernel.org, robin.murphy@arm.com, robh+dt@kernel.org,
+ krzysztof.kozlowski+dt@linaro.org, robdclark@gmail.com,
+ linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, marijn.suijten@somainline.org,
+ kernel@collabora.com, luca@z3ntu.xyz, a39.skl@gmail.com,
+ phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
+References: <20221111145919.221159-1-angelogioacchino.delregno@collabora.com>
+ <20221111145919.221159-9-angelogioacchino.delregno@collabora.com>
+ <92a75ab2-ffb9-9acd-4a98-a91589ad7e14@linaro.org>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <92a75ab2-ffb9-9acd-4a98-a91589ad7e14@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-SRS cap is the hardware cap telling if the hardware IOMMU can support
-requests seeking supervisor privilege or not. SRE bit in scalable-mode
-PASID table entry is treated as Reserved(0) for implementation not
-supporting SRS cap.
+Il 14/11/22 09:22, Krzysztof Kozlowski ha scritto:
+> On 11/11/2022 15:59, AngeloGioacchino Del Regno wrote:
+>> Add "qcom,msm8976-iommu" to support IOMMUs on this SoC.
+>>
+>> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+>> ---
+>>   Documentation/devicetree/bindings/iommu/qcom,iommu.txt | 3 ++-
+>>   1 file changed, 2 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+>> index b762772f80e7..b7a5822ac00d 100644
+>> --- a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+>> +++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+>> @@ -9,7 +9,8 @@ to non-secure vs secure interrupt line.
+>>   
+>>   - compatible       : Should be one of:
+>>   
+>> -                        "qcom,msm8916-iommu"
+>> +                        - "qcom,msm8916-iommu"
+>> +                        - "qcom,msm8976-iommu"
+> 
+> Shouldn't the new compatible be followed by IOMMU v2, not v1?
+> 
 
-Checking SRS cap before setting SRE bit can avoid the non-recoverable
-fault of "Non-zero reserved field set in PASID Table Entry" caused by
-setting SRE bit while there is no SRS cap support.
+Yes, effectively, it should.
 
-V2: Add SRS cap checking in intel_pasid_setup_second_level()
+I'll have to partially rewrite also commit 6/8, so I'll have to drop your
+Acked-by tag on both....
+Will send a new one shortly.
 
-Fixes: 6f7db75e1c46 ("iommu/vt-d: Add second level page table interface")
-Signed-off-by: Tina Zhang <tina.zhang@intel.com>
----
- drivers/iommu/intel/pasid.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index c30ddac40ee5..23dee5db7439 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -642,7 +642,7 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
- 	 * Since it is a second level only translation setup, we should
- 	 * set SRE bit as well (addresses are expected to be GPAs).
- 	 */
--	if (pasid != PASID_RID2PASID)
-+	if ((pasid != PASID_RID2PASID) && ecap_srs(iommu->ecap))
- 		pasid_set_sre(pte);
- 	pasid_set_present(pte);
- 	spin_unlock(&iommu->lock);
-@@ -685,7 +685,8 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
- 	 * We should set SRE bit as well since the addresses are expected
- 	 * to be GPAs.
- 	 */
--	pasid_set_sre(pte);
-+	if (ecap_srs(iommu->ecap))
-+		pasid_set_sre(pte);
- 	pasid_set_present(pte);
- 	spin_unlock(&iommu->lock);
- 
--- 
-2.25.1
+Cheers,
+Angelo
 
