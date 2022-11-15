@@ -1,139 +1,133 @@
-Received: from IND01-BMX-obe.outbound.protection.outlook.com (mail-bmxind01olkn2011.outbound.protection.outlook.com [40.92.103.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89D021FA0
-	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 12:01:02 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SrpYOffFJUQDUSO4ye6vwENlXgHZ02yeRPkhlzo2hzZRiqtcmY5LlIA8Al/95hI9WB0aCdTkth+U7EmcrjEhLQc/reK2oCfQLyviaoKjj8C35jQW8bPKdYde1ftf70OWk3qH9JAAHglKsE6kqflrc8xoH0P5bQqdLvVEjA0bkV/6szf5TYGyqT1WmOxGua5xQmZLPn8npNo0GvZDcme2rb4lQzhSxirSE5oU566KZj75fvwlgEDXt+e+0t5M017wJZCd8OY++EZ7qtxBn8/vUkwqBGBC4ynVLVqNdJpHTuLKQ2TMrb12G6uIQcJDsArpTCena7/dm8Ant/Xov0NyOQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jpy5no7kzVEyRnSnE37h0NWjcV6feWbHsIVQR1yNCPo=;
- b=CNsQvQBt0JpLPr/2oi/WjDXwYx4TpoTZFukJTzv12o2+QE8yBC1zYoP8vvG13Z/a77OiT6DD8fpajzBYboxMGelzF4A0p4jxIH46ZOnPKIlBmnnJyUr4L8CzlQzz2qojMvPPwbw2lV2DsxLpW9KckLZk7Se6V59QsD1qS9YDAfiJzCdKhj3rynP3sDIkmSrE//BXXt7cwqz7EOsE3Wz1S181IzFvpykGEVKN1jKaJkXArSGuKeUV8dL7FQ+Wj1d3fSOVfp99zrNLFiO0BcXFAvqMkmy8dO+ir7g8jGX6+dgrjNc46HAvGFde/DWxeSnADjzHuwXLM8NfymMSN3veqw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jpy5no7kzVEyRnSnE37h0NWjcV6feWbHsIVQR1yNCPo=;
- b=UPfWj0NOej853lODCIkG7avDzQAETcghhH7NoAfZZ06al4JkzoMSZYe6VLO5FhvRiPaeMZswgIWe1PKEZ5YFwOipOaYw6xv/dlNWG420sC7Kz3MNEcp6ADiBBMrd2bZtmSgF4dKT/M+UjQJl1kMmjiUy3A86RKnWHpiSVhgqZrGBdPevVWuBEK2JpZev7IH9TjuactTRnqDiXh4AM86srsxB1rtjn0UmQN2XaAeD8FacGd07tpFxi3ICb6RfNbSEA3QoxSJ7CucdwjmXcYv6MtXnwYDiFK/oZjkrbULbjns4B45LEIV011UiYeCRdAc4KDsjcjQDk7/mNKCnrUcuNw==
-Received: from MA0PR01MB5784.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a01:49::5)
- by MAZPR01MB7732.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a01:23::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.18; Tue, 15 Nov
- 2022 12:00:58 +0000
-Received: from MA0PR01MB5784.INDPRD01.PROD.OUTLOOK.COM
- ([fe80::2a26:9a6b:6c95:2cdd]) by MA0PR01MB5784.INDPRD01.PROD.OUTLOOK.COM
- ([fe80::2a26:9a6b:6c95:2cdd%4]) with mapi id 15.20.5813.017; Tue, 15 Nov 2022
- 12:00:57 +0000
-Date: Tue, 15 Nov 2022 20:00:56 +0800
-From: "leo-hou@hotmail.com" <leo-hou@hotmail.com>
-To: robin.murphy <robin.murphy@arm.com>, 
-	iommu <iommu@lists.linux.dev>, 
-	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, 
-	virtualization <virtualization@lists.linux-foundation.org>
-Cc: will <will@kernel.org>
-Subject: Re: Re: The arm smmu driver for Linux does not support debugfs
-References: <202211141141302410923@hotmail.com>, 
-	<MA0PR01MB5784354703A7B446A6D85CADF6049@MA0PR01MB5784.INDPRD01.PROD.OUTLOOK.COM>, 
-	<9031b28f-0431-22eb-5dd3-01ae0589b940@arm.com>
-X-GUID: 5A2D872E-0819-4AE5-8042-C6479B1E6F0B
-X-Has-Attach: no
-X-Mailer: Foxmail 7.2.25.148[cn]
-Message-ID:
- <MA0PR01MB5784DE8F3A7437C3B8FB0516F6049@MA0PR01MB5784.INDPRD01.PROD.OUTLOOK.COM>
-Content-Type: text/plain;
-	charset="UTF-8"
-Content-Transfer-Encoding: base64
-X-TMN: [50HqPjRj657uMwYXzpYrz6nmwGcc+LcJSSqZEtU9in0=]
-X-ClientProxiedBy: SG2PR04CA0201.apcprd04.prod.outlook.com
- (2603:1096:4:187::23) To MA0PR01MB5784.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:a01:49::5)
-X-Microsoft-Original-Message-ID: <202211152000535288226@hotmail.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BD6C3C2D
+	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 12:45:05 +0000 (UTC)
+Received: by mail-wm1-f51.google.com with SMTP id v7so9596388wmn.0
+        for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 04:45:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=IV6joo5swjIJ7Qz4dnFwthREitc1EDnaiNatMyucR3o=;
+        b=lbXDZukmc95YXe3tijSl/lIlK7YT2yqLg0vLpXJrHn8RnBag6eC4NOcYjP/dIbHHZ7
+         a/TSYcwOXsT0n2mVJ/h7YlnFlaJ3KSmHvETqnMwKqXhoojha9joQDOiClWbJuAF0WvlY
+         H3Fs/Pd2gzXfJmDi/vkhi41PP1qJt+pAr1QhJL33QhFDIhiF1EeZYskLV3LdbFRD6LJD
+         dEieLynRWU1Ho8qMeK3UqQyHtqpS6YYK3BJYf3APc4Y7Qwqik7QNdWdIgbQkMLNwKZnq
+         sOC+HTYLEHLSNdZLNv922lT5RUWiEE+B4yrQajExJjk2H6it7rULl+U3a6itTDlUfpcL
+         wKUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=IV6joo5swjIJ7Qz4dnFwthREitc1EDnaiNatMyucR3o=;
+        b=FBCDtoYcDEX+l9ogRm9BAsovXh+vokj275FC8g4JFTchdAWM80sNLGUxdTEPSR19hh
+         zVAHK/HZv6iyPvFAP57G+HDTUXoKnhqwEstAsvCYvOXjQVmd5oisphIM/j5c57ACoLT9
+         lpA7R9dtk2fvJSWEwMQu6/WE1H0UJvWJlAVZLN/YRcTCipToNHrO0siClJ5Bz2MDdXqu
+         Q06SR0alp5kkl4QUzq77QSWaPsvdp6QT5qX9M/CJkVGmogUiWaPbToyVVShf79DRZIDN
+         oMnpLjrJK14/otNA/nUQoaV4sWe++NTrd7L9cNRUJZdasDSv2dDc3XpXRNpVnlRVES4L
+         tzMQ==
+X-Gm-Message-State: ANoB5plagp1Byqk+p1DICoOo4UOx1R+M0q84fqRdwh707oDpFESp60Ey
+	Tj/GkRDU2pA2i7xviNWNhCI=
+X-Google-Smtp-Source: AA0mqf4HWInMzJzxeHF0TK7a1v387boolNlig/Uk+g0dbIcX4OoT9mkm3+108jPbEuXpMT3L1xmzqg==
+X-Received: by 2002:a05:600c:2190:b0:3cf:8b23:549c with SMTP id e16-20020a05600c219000b003cf8b23549cmr1314941wme.174.1668516303746;
+        Tue, 15 Nov 2022 04:45:03 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id b11-20020a5d550b000000b0023659925b2asm12094074wrv.51.2022.11.15.04.45.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Nov 2022 04:45:03 -0800 (PST)
+Date: Tue, 15 Nov 2022 15:45:00 +0300
+From: Dan Carpenter <error27@gmail.com>
+To: jgg@ziepe.ca
+Cc: iommu@lists.linux.dev
+Subject: [bug report] iommufd: vfio container FD ioctl compatibility
+Message-ID: <Y2Nhj0mIjrSJwO7W@kili>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MA0PR01MB5784:EE_|MAZPR01MB7732:EE_
-X-MS-Office365-Filtering-Correlation-Id: 661bf9a0-656d-485a-a721-08dac7010e34
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	m+MQHYBcYtmY6vDzKbvsJXZS7AqrElZcbP78WeF45psaN2wCYBJq2GQR6vg4eBso+cG6lg3C5xZ+1GOQGHaHbL9HzSg6D++n5fowdUsJ4np2ukYArFPe/JV/SiuJqfgGCLx7rM/xWWRVGjw7kqLXI7WyyOT8Sxku3scZt6/3Gtpk3iKSZGo+FJpYO4HKC3SeDSUhczjZZd3fBIpPfdTM+CtxK3CoapTXRMfC9wzA7iwCSzjxbQKY/XbmeAww9VeGv94fC3OjVAipLRpcQj35GwScEtggcNki4HVKKYwgT/1O8ONnfS1CsmDat4MRvR9bsbmQwiuOCJTn66IgEDpO9xkZc0COj2kX0K8C+SEhNS9lnqSw+qYDQylAYiMQBEnvehB7NDXy0ovRdf2e/Ge3lYwhYqFNNtKKyKATgML2rKy8tM+MZR1bwfFQF/4OkRZhK+yCRj2ycgt18Pb0T/neQQJ+OGvYPr06YZbAltxi/J5dJj0vpyyD8FEg7RbUq7xkri5qsDI+pE7ZlAfMVfyea2UHp9/D53pb1BdFptunlWD5F5JGsf2QmHdTtuo2/IzlwKQNDATZx5Bvyg4ZfIkVgEEy0vpnBIV0OMOA9iMA4SmgxVrmkzVCOriyfMvTTD12JRI1oWV+19xqd3Qp52OkHhumHqMBlN8sHNeeVUsLboDonznFFnrWnnHMJa479cy+4bFyEjqzgxRTzdDQmhloQY3jRtmCaCXfv2Cc82vxUx0=
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?RWY2MXlDMHdFUlBoTTJrYjYrTkJrY3JTdkVKVFJ1MHlNRURiaUhibGxacFR1?=
- =?utf-8?B?NTZGZEV0VVFNMHpKNVJEZGpxa2w3QWNOOFB1VkI2ajRsOXgrNHJYZHNjV3d2?=
- =?utf-8?B?cTVZYVcvVzJ3b3RFcDdlMEZ2ZlhLeEp2TmFnTEZnbEZDRko4MWU2NTFlaDdE?=
- =?utf-8?B?eTBuSUR1aFJEakR4YVNOK2lCd3lHMThuYUVOOTlSanBRY0Y5dSs4T2pKQnB3?=
- =?utf-8?B?eHFNcU5UUFN4M0x0ZTJWS1NkeFBFN003RDAxZXVob2NjdnYwVHVncXRXS2Q2?=
- =?utf-8?B?NURBbGlhem1zSk5UUncwUHpqYUY0YU53bzFCUENtUVlnT0lYNEFXaHowSHZz?=
- =?utf-8?B?TkRnb0FveDM0TE11NkkzUVREcGx4ZEMwYmxsMW5aYXdnczJtMEdsOG05VW5a?=
- =?utf-8?B?T3JmdFNLZzVrcWNRZUd4RU9xQnRlTjd1U1pBZW0rdk9RWUZIL0IwRTd3TmFp?=
- =?utf-8?B?NTMrczJUQzNXckk2UGpMNWNLaWpaZmc1WEVEMTZ6RVgrcjZ6ZWFZRERvY0dw?=
- =?utf-8?B?UjFkZG1ZeUdIdlJ0a0kxbzlNallDayt1SEpQV0RIUTU1TGpIOUdUSXRQSFlM?=
- =?utf-8?B?TkFnYzZ3M1NwRUtLSlhjMzExWE40Q3VERkNXS08yNUYrd1Z1NHNlazRIaCtk?=
- =?utf-8?B?SDlqUmlLaEpqMkoyODlOUFQwQkczQVdhUnpOVGJoY1BpckNwZHhweU5RUWpX?=
- =?utf-8?B?eXMzaE9LVmw1NGNzSmNRWVpzdGpDQnFsMGN2VjZya1VNWEJUdDhmbUJZNytn?=
- =?utf-8?B?UC83NFNlekx1R1B6QWhlNmo2Sk9mNGp0M0R3dUxnelUvQlBMUFA5RDR6NWtq?=
- =?utf-8?B?V2lhek9oeTFMWUpiQS9pcFk0Tk1yU2djVHVzSlp3clk3M3FyYjZjNWJwYWxO?=
- =?utf-8?B?NE1ubFJwS0hQcTlISEVxTDEzTTdPZlRRL2xaY3Z3U1hvbFhIRFBSUE5TMTNz?=
- =?utf-8?B?cGxMdS9rZ1F6RXRYblArRGxIUzZjbDJlVmJyVVZtZmxhOGdMQk1YUmN5blNr?=
- =?utf-8?B?QkdVU2xzdng4L0VkSkJsaTdXRm1LVmFCNEFsOTNpS0VESnlRTm5lZklLb1kr?=
- =?utf-8?B?aWQvMFgyb29ZcXdIZ2hLejFrMC9HMjBDaFdMbTQ5MW0ra2NoSVhZb25UNmFR?=
- =?utf-8?B?d3VGYVNzZExmOFNKYlVvcmRYVmxUTi9HTnNra3hyWkxyNWNkOXNaaUJCbG8z?=
- =?utf-8?B?SFlXQkJQU1E4Z1NxeklpbFBEaUM4TXdJY3ZHV1lnZGZzYnBoQ2NWUUUwNUlP?=
- =?utf-8?B?ZXYyaG5WcWFhOVNDSmFZcHZ0V0FWeHBuV3BKMjZpVU11TWhVanI0TXFOZGxr?=
- =?utf-8?B?ajlqLzlyMkRtZjZlWHB1bEJzMmR0MThZZG41WGV4NUZBMzhtYkFwZHBMZnI1?=
- =?utf-8?B?K3k2Ri9JbVl0eGJwUkdYanplRTNFL0pQY1dkM0dLcm0xY25NbUQvV1NGa0tT?=
- =?utf-8?B?dzRxOTZRT1EwM0ZjOVUvWU1CaFNBci9RUEI5Qzg2QjdqczluWVN5RWRlK3ls?=
- =?utf-8?B?ZkpPcmdlUzBjNFZieVgxTzRmSUs2RGtiQjMraGNtQU5jL203YVJHMW9Wc2Uz?=
- =?utf-8?B?WWk0L1BOVGFvZ2labDhha25rT25KOGxNODFzU2xNOXRjZ2xvS2t0QmVyNjVq?=
- =?utf-8?B?Uk5sNzhZUVBoM0RvSWpJS01uRGx2aWdzdHFHbTJqeVE5Mm1aV2MraG80TXJo?=
- =?utf-8?B?TTJPRGcwbHVURzhTbHZSY0tkQllMSkJmUU1jQlprRENCRGR2ZFQ3UGF3PT0=?=
-X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-42ed3.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: 661bf9a0-656d-485a-a721-08dac7010e34
-X-MS-Exchange-CrossTenant-AuthSource: MA0PR01MB5784.INDPRD01.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Nov 2022 12:00:57.9041
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
-	00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MAZPR01MB7732
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-T24gMjAyMi0xMS0xNSAxOToyMCArMDgwMCwgIFJvYmluIE11cnBoeTxyb2Jpbi5tdXJwaHlAYXJt
-LmNvbT4gIHdyb3RlOgoKCgo+T24gMjAyMi0xMS0xNSAwMjoyOCwgbGVvLWhvdUBob3RtYWlsLmNv
-bSB3cm90ZToKCj4KCj4+Cj4+Cj4+IEhpLAo+Pgo+PsKgIMKgwqDCoMKgIFdoeSBkb2Vzbid0IHRo
-ZSBhcm0gc21tdSBkcml2ZXIgZm9yIExpbnV4IHN1cHBvcnQgZGVidWdmcyA/Cgo+Cj5CZWNhdXNl
-IG5vYm9keSdzIGV2ZXIgd3JpdHRlbiBhbnkgZGVidWdmcyBjb2RlIGZvciBpdC4KCj4KPj4gQXJl
-IHRoZXJlIGFueSBoaXN0b3JpY2FsIHJlYXNvbnM/Cgo+Cj5Pbmx5IHRoYXQgc28gZmFyIG5vYm9k
-eSdzIG5lZWRlZCB0by4KCj4KPlRCSCwgYXJtLXNtbXUgaXMgYWN0dWFsbHkgcXVpdGUgc3RyYWln
-aHRmb3J3YXJkLCBhbmQgbm9uZSBvZiB0aGUKCj5pbnRlcm5hbCBkcml2ZXIgc3RhdGUgaXMgcmVh
-bGx5IGFsbCB0aGF0IGludGVyZXN0aW5nIChvdGhlciB0aGFuIHRoZQoKPnNwZWNpYWwgcHJpdmF0
-ZSBBZHJlbm8gc3R1ZmYsIGJ1dCB3ZSBsZWF2ZSBpdCB1cCB0byBSb2IgdG8gaW1wbGVtZW50Cj53
-aGF0ZXZlciBoZSBuZWVkcyB0aGVyZSkuIEdpdmVuIHRoZSBrZXJuZWwgY29uZmlnLCBtb2R1bGUg
-cGFyYW1ldGVycywKPmFuZCB0aGUgZmVhdHVyZXMgbG9nZ2VkIGF0IHByb2JlLCB5b3UgY2FuIGFs
-cmVhZHkgaW5mZXIgaG93IGl0IHdpbGwgc2V0Cgo+dXAgY29udGV4dCBiYW5rcyBldGMuIGZvciBy
-ZWd1bGFyIElPTU1VIEFQSSB3b3JrOyB0aGVyZSB3b24ndCBiZSBhbnkKCj5zdXJwcmlzZXMuIEF0
-IHRoaXMgcG9pbnQgdGhlcmUgc2hvdWxkbid0IGJlIGFueSBuZWVkIHRvIGRlYnVnIHRoZSBkcml2
-ZXIKCj5pdHNlbGYsIGl0J3MgbWF0dXJlIGFuZCBzdGFibGUuIEZvciBkZWJ1Z2dpbmcgKnVzZXJz
-KiBvZiB0aGUgZHJpdmVyLAoKPkkndmUgb25seSBkZWFsdCB3aXRoIHRoZSBETUEgbGF5ZXIsIHdo
-ZXJlIGEgY29tYmluYXRpb24gb2YgdGhlIElPTU1VIEFQSQoKPnRyYWNlcG9pbnRzLCBDT05GSUdf
-RE1BX0FQSV9ERUJVRywgYW5kIG15IG93biBoYWNrcyB0byBpb21tdS1kbWEgaGF2ZQoKPmFsd2F5
-cyBwcm92ZWQgc3VmZmljaWVudCB0byBnZXQgZW5vdWdoIGluc2lnaHQgaW50byB3aGF0J3MgYmVp
-bmcgbWFwcGVkCgo+d2hlcmUuCgo+Cj5JIHRoaW5rIGEgY291cGxlIG9mIHBlb3BsZSBoYXZlIHBy
-ZXZpb3VzbHkgcmFpc2VkIHRoZSBpZGVhIG9mCgo+aW1wbGVtZW50aW5nIHNvbWUga2luZCBvZiBk
-ZWJ1Z2ZzIGR1bXBpbmcgZm9yIGlvLXBndGFibGUsIGJ1dCBub3RoaW5nJ3MKCj5ldmVyIGNvbWUg
-b2YgaXQuIEFzIGFib3ZlLCBpdCBvZnRlbiB0dXJucyBvdXQgdGhhdCB5b3UgY2FuIGZpbmQgdGhl
-Cgo+aW5mb3JtYXRpb24geW91IG5lZWQgZnJvbSBvdGhlciBleGlzdGluZyBzb3VyY2VzLCB0aHVz
-IHRoZSBlZmZvcnQgb2YKCj5pbXBsZW1lbnRpbmcgYW5kIG1haW50YWluaW5nIGEgbG9hZCBvZiBz
-cGVjaWFsLXB1cnBvc2UgZGVidWcgY29kZSBjYW4gYmUKCj5zYXZlZC4gSW4gcGFydGljdWxhciBp
-dCB3b3VsZCBub3QgYmUgd29ydGggaGF2aW5nIGRyaXZlci1zcGVjaWZpYyBjb2RlCgo+dGhhdCBv
-bmx5IGhlbHBzIGRlYnVnIGdlbmVyaWMgSU9NTVUgQVBJIHVzYWdlIC0gdGhhdCB3b3VsZCBiZSBt
-dWNoCgo+YmV0dGVyIGltcGxlbWVudGVkIGF0IHRoZSBnZW5lcmljIElPTU1VIEFQSSBsZXZlbC4K
-CgoKClRoYW5rcyBmb3IgeW91ciByZXBseSwgbGV0IG1lIGtub3cgdGhhdC4KCgoKTGVvLgoKCg==
+[ Resending two weeks of email because mutt + msmtp has been silently
+  eating my outgoing mail instead of delivering it.  *sigh* -dan ]
+
+Hello Jason Gunthorpe,
+
+The patch 32c328dc9b73: "iommufd: vfio container FD ioctl
+compatibility" from Dec 15, 2021, leads to the following Smatch
+static checker warning:
+
+	drivers/iommu/iommufd/vfio_compat.c:174 iommufd_vfio_unmap_dma()
+	warn: potential integer overflow from user (local copy) 'unmap.iova + unmap.size'
+
+drivers/iommu/iommufd/vfio_compat.c
+    140 static int iommufd_vfio_unmap_dma(struct iommufd_ctx *ictx, unsigned int cmd,
+    141                                   void __user *arg)
+    142 {
+    143         size_t minsz = offsetofend(struct vfio_iommu_type1_dma_unmap, size);
+    144         /*
+    145          * VFIO_DMA_UNMAP_FLAG_GET_DIRTY_BITMAP is obsoleted by the new
+    146          * dirty tracking direction:
+    147          *  https://lore.kernel.org/kvm/20220731125503.142683-1-yishaih@nvidia.com/
+    148          *  https://lore.kernel.org/kvm/20220428210933.3583-1-joao.m.martins@oracle.com/
+    149          */
+    150         u32 supported_flags = VFIO_DMA_UNMAP_FLAG_ALL;
+    151         struct vfio_iommu_type1_dma_unmap unmap;
+    152         struct iommufd_ioas *ioas;
+    153         unsigned long unmapped;
+    154         int rc;
+    155 
+    156         if (copy_from_user(&unmap, arg, minsz))
+    157                 return -EFAULT;
+    158 
+    159         if (unmap.argsz < minsz || unmap.flags & ~supported_flags)
+    160                 return -EINVAL;
+    161 
+    162         ioas = get_compat_ioas(ictx);
+    163         if (IS_ERR(ioas))
+    164                 return PTR_ERR(ioas);
+    165 
+    166         if (unmap.flags & VFIO_DMA_UNMAP_FLAG_ALL) {
+    167                 if (unmap.iova != 0 || unmap.size != 0) {
+    168                         rc = -EINVAL;
+    169                         goto err_put;
+    170                 }
+    171                 rc = iopt_unmap_all(&ioas->iopt, &unmapped);
+    172         } else {
+    173                 if (READ_ONCE(ioas->iopt.disable_large_pages)) {
+--> 174                         unsigned long iovas[] = { unmap.iova + unmap.size - 1,
+
+The unmap.iova + unmap.size addition can have an integer overflow.  It's
+unclear to me if this is caught later or if it has any negative
+implications.
+
+What I remeber from looking at similar code is that because of the - 1,
+it's supposed to be allowed to overflow to 0 but not further than that.
+In other words the highest allowed value it ULONG_MAX and not
+"ULONG_MAX - 1".
+
+    175                                                   unmap.iova - 1 };
+    176 
+    177                         rc = iopt_cut_iova(&ioas->iopt, iovas,
+    178                                            unmap.iova ? 2 : 1);
+    179                         if (rc)
+    180                                 goto err_put;
+    181                 }
+    182                 rc = iopt_unmap_iova(&ioas->iopt, unmap.iova, unmap.size,
+    183                                      &unmapped);
+    184         }
+    185         unmap.size = unmapped;
+    186         if (copy_to_user(arg, &unmap, minsz))
+    187                 rc = -EFAULT;
+    188 
+    189 err_put:
+    190         iommufd_put_object(&ioas->obj);
+    191         return rc;
+    192 }
+
+regards,
+dan carpenter
+
