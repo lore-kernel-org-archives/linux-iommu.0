@@ -1,12 +1,12 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5FE4FAD5F
-	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 15:26:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1F667BA3D
+	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 15:26:53 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id ECB0E150C;
-	Tue, 15 Nov 2022 07:26:57 -0800 (PST)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0F7851515;
+	Tue, 15 Nov 2022 07:26:59 -0800 (PST)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id C2FA23F587;
-	Tue, 15 Nov 2022 07:26:50 -0800 (PST)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id DA3BA3F587;
+	Tue, 15 Nov 2022 07:26:51 -0800 (PST)
 From: Robin Murphy <robin.murphy@arm.com>
 To: joro@8bytes.org,
 	will@kernel.org
@@ -14,9 +14,9 @@ Cc: iommu@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org,
 	robdclark@gmail.com,
 	yong.wu@mediatek.com
-Subject: [PATCH 3/9] iommu/mediatek: Update to {map,unmap}_pages
-Date: Tue, 15 Nov 2022 15:26:37 +0000
-Message-Id: <25b65b71e7e5d1006469aee48bab07ca87227bfa.1668100209.git.robin.murphy@arm.com>
+Subject: [PATCH 4/9] iommu/msm: Update to {map,unmap}_pages
+Date: Tue, 15 Nov 2022 15:26:38 +0000
+Message-Id: <24a8f522710ddd6bbac4da154aa28799e939ebe4.1668100209.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.36.1.dirty
 In-Reply-To: <cover.1668100209.git.robin.murphy@arm.com>
 References: <cover.1668100209.git.robin.murphy@arm.com>
@@ -33,56 +33,65 @@ since we just pass them through to io-pgtable anyway.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/mtk_iommu.c | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+ drivers/iommu/msm_iommu.c | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 2ab2ecfe01f8..e2599ad8272b 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -711,7 +711,8 @@ static void mtk_iommu_detach_device(struct iommu_domain *domain,
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index 16179a9a7283..c60624910872 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -471,14 +471,16 @@ static void msm_iommu_detach_dev(struct iommu_domain *domain,
  }
  
- static int mtk_iommu_map(struct iommu_domain *domain, unsigned long iova,
--			 phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
-+			 phys_addr_t paddr, size_t pgsize, size_t pgcount,
+ static int msm_iommu_map(struct iommu_domain *domain, unsigned long iova,
+-			 phys_addr_t pa, size_t len, int prot, gfp_t gfp)
++			 phys_addr_t pa, size_t pgsize, size_t pgcount,
 +			 int prot, gfp_t gfp, size_t *mapped)
  {
- 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
+ 	struct msm_priv *priv = to_msm_priv(domain);
+ 	unsigned long flags;
+ 	int ret;
  
-@@ -720,17 +721,17 @@ static int mtk_iommu_map(struct iommu_domain *domain, unsigned long iova,
- 		paddr |= BIT_ULL(32);
+ 	spin_lock_irqsave(&priv->pgtlock, flags);
+-	ret = priv->iop->map(priv->iop, iova, pa, len, prot, GFP_ATOMIC);
++	ret = priv->iop->map_pages(priv->iop, iova, pa, pgsize, pgcount, prot,
++				   GFP_ATOMIC, mapped);
+ 	spin_unlock_irqrestore(&priv->pgtlock, flags);
  
- 	/* Synchronize with the tlb_lock */
--	return dom->iop->map(dom->iop, iova, paddr, size, prot, gfp);
-+	return dom->iop->map_pages(dom->iop, iova, paddr, pgsize, pgcount, prot, gfp, mapped);
+ 	return ret;
+@@ -493,16 +495,18 @@ static void msm_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
  }
  
- static size_t mtk_iommu_unmap(struct iommu_domain *domain,
--			      unsigned long iova, size_t size,
-+			      unsigned long iova, size_t pgsize, size_t pgcount,
- 			      struct iommu_iotlb_gather *gather)
+ static size_t msm_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+-			      size_t len, struct iommu_iotlb_gather *gather)
++			      size_t pgsize, size_t pgcount,
++			      struct iommu_iotlb_gather *gather)
  {
- 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
+ 	struct msm_priv *priv = to_msm_priv(domain);
+ 	unsigned long flags;
++	size_t ret;
  
--	iommu_iotlb_gather_add_range(gather, iova, size);
--	return dom->iop->unmap(dom->iop, iova, size, gather);
-+	iommu_iotlb_gather_add_range(gather, iova, pgsize * pgcount);
-+	return dom->iop->unmap_pages(dom->iop, iova, pgsize, pgcount, gather);
+ 	spin_lock_irqsave(&priv->pgtlock, flags);
+-	len = priv->iop->unmap(priv->iop, iova, len, gather);
++	ret = priv->iop->unmap_pages(priv->iop, iova, pgsize, pgcount, gather);
+ 	spin_unlock_irqrestore(&priv->pgtlock, flags);
+ 
+-	return len;
++	return ret;
  }
  
- static void mtk_iommu_flush_iotlb_all(struct iommu_domain *domain)
-@@ -938,8 +939,8 @@ static const struct iommu_ops mtk_iommu_ops = {
+ static phys_addr_t msm_iommu_iova_to_phys(struct iommu_domain *domain,
+@@ -679,8 +683,8 @@ static struct iommu_ops msm_iommu_ops = {
  	.default_domain_ops = &(const struct iommu_domain_ops) {
- 		.attach_dev	= mtk_iommu_attach_device,
- 		.detach_dev	= mtk_iommu_detach_device,
--		.map		= mtk_iommu_map,
--		.unmap		= mtk_iommu_unmap,
-+		.map_pages	= mtk_iommu_map,
-+		.unmap_pages	= mtk_iommu_unmap,
- 		.flush_iotlb_all = mtk_iommu_flush_iotlb_all,
- 		.iotlb_sync	= mtk_iommu_iotlb_sync,
- 		.iotlb_sync_map	= mtk_iommu_sync_map,
+ 		.attach_dev	= msm_iommu_attach_dev,
+ 		.detach_dev	= msm_iommu_detach_dev,
+-		.map		= msm_iommu_map,
+-		.unmap		= msm_iommu_unmap,
++		.map_pages	= msm_iommu_map,
++		.unmap_pages	= msm_iommu_unmap,
+ 		/*
+ 		 * Nothing is needed here, the barrier to guarantee
+ 		 * completion of the tlb sync operation is implicitly
 -- 
 2.36.1.dirty
 
