@@ -1,226 +1,88 @@
-Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37497AD30
-	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 13:06:59 +0000 (UTC)
-Received: by mail-ed1-f49.google.com with SMTP id l11so21790907edb.4
-        for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 05:06:59 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CED3AD30
+	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 13:22:38 +0000 (UTC)
+Received: by mail-qt1-f178.google.com with SMTP id l2so8644151qtq.11
+        for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 05:22:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=CwWycAgBZx11btkkrzaVTYJbNLpNPYle/o/S+NTzqgM=;
-        b=vYxVRdNMz0n5VZYRmPPGzC91CEDXXFb8YVYHrGuEp2orpacB+c/XJ0Etqznomn5uhG
-         IScdRCHyDWhXiDmVa84951l6o91VuWLdPPJUjxu1IcVf+R3vYe109fg/DIT3OAye8dGO
-         jo+0C+S5rrByR89nlcIhw49pY82B3BjtBw2gIC3upySc/wOpcZCWBkXH/fB5qMNdHc+Z
-         bMBdMUsLS8Vgrzsp59+MrMHtuvbQE5IrgEdgpyly710UCB2lO8sAzeMM6OcHr0mLfvop
-         uw2cNwl7ssRBzbzErms/sE/jbpS8sZAa2hjyenDCqx9BAmu56a0f4o0/7K+tkWYqFdoK
-         pvcA==
+        d=ziepe.ca; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Lh8kCd+TI/xMEHQ4yRh0KMNGAg8os9nKv0lKY/zh0Go=;
+        b=LVZKY8SfY9u6FcTa9AD6FwFlVb/vZp2aVm4cbxICKH7kGpqhTxBSXHiwM7qAKvGpLh
+         xN4aPKGNLPzRlvSnd2EUFrpip10r9/Q0aRRlyZsKLi5lykehd1uk/INit1NnAeCAqpwg
+         I1xHTItK5QlilorDD0tu9a6PLz0bsDW2dt66QQd6qKFByK2VXY/zirFvHK2FuV6RWci/
+         kSeski+7K5DoBpqI3eJZ9wwj8xPAWCXfLNc6wqfYpvwS/jP+v0GQbT2tKO7uxCM4m6Lj
+         14fv+0mx4Ou+ZyF4MQ3HBOV+L7aaHFh2e2myIzi1l5pOAMy4mw4Bl0xTpB1yUAKRDFwv
+         eGAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=CwWycAgBZx11btkkrzaVTYJbNLpNPYle/o/S+NTzqgM=;
-        b=aVRCgZGvOFkCzyLsqaMY3x1KLyccqCIRJpPwbFHXOEDtdBY3ywqiFJjWnhhjv1hf0F
-         0U0nm5LkMstr7Ahe3HHBcmeJKrqGoccflhfLoZJq+pLBuw+4dHAW5EWFogRe6yBHwcq8
-         wOYbJ5vw4skSwztHOXhGmzTVqANhLi2Gd6Dd7OyXqH0xUO1/p4HlF2a0QROPPVOp7t70
-         gu6+PpbfegqTJlzdvNw8Li306FkPTWO5LCfUgPD+sIKdvjgxnwf0olZbiPl/9ZeC0vp4
-         ZFaMxtE74TEArKKXZNACn2WrDQPs4IhOohxFRVgE0fRHUg1wf6bxuWqHn5lcoCwN2aZA
-         FccA==
-X-Gm-Message-State: ANoB5pklAscR32iCb14DLxL+tXWL8j4Qd/b0w234fHuyAKHORJcoR9pK
-	LuVDEbirasPctlI5sl8Ru3nmwg==
-X-Google-Smtp-Source: AA0mqf6ZxVZRs5NI9Eqvpjc3S1CVjWo9pE8CyFrlgaXR/C+NmJTl1rSgor2AhHD7JpNTYBze9wtDNg==
-X-Received: by 2002:a05:6402:3787:b0:45c:55f8:4fbf with SMTP id et7-20020a056402378700b0045c55f84fbfmr14420810edb.277.1668517617385;
-        Tue, 15 Nov 2022 05:06:57 -0800 (PST)
-Received: from [192.168.31.208] ([194.29.137.22])
-        by smtp.gmail.com with ESMTPSA id hw20-20020a170907a0d400b00779cde476e4sm5471812ejc.62.2022.11.15.05.06.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Nov 2022 05:06:56 -0800 (PST)
-Message-ID: <cff269c8-f944-9277-9df8-653522efbba0@linaro.org>
-Date: Tue, 15 Nov 2022 14:06:51 +0100
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Lh8kCd+TI/xMEHQ4yRh0KMNGAg8os9nKv0lKY/zh0Go=;
+        b=50kYogOuYNSAzW3Igh8Vi76Jlz5J5YOGE7/ln9gQgmktStHx3Ms+2pu6zewt+BoPyG
+         HWdDwOPjv1fXkIzlkgyhE3rxSit7RkMfrgoJbC42l3eS7ARHvuzREyTKUGlMZc5RHYM3
+         NXL/i2bxBPCQD5mn3vunp5zUWx+Jhsbv/nJSxdZtinv8e/u/tJmZQIwTfrsBIokS94cU
+         PtPsr38uvg3YQrK7uu/3Cya2iB7KHEfQRyS764O7bz5O1V34jc+rC7gwAfsbfi1EuFxZ
+         rOYUIQMxXtG8LeRxydwwde16s5vVDZSO5d9Q3LOaJh5fOOhjknuctpMerAspDctWJXN9
+         ifZw==
+X-Gm-Message-State: ANoB5pl/HveGVnJfSWwD0mXDzOr2+v6DYZVyENOkUXgaz2kxlLdZFyF1
+	YhFhzaJLGLBz7GOU+/eQi8vZZbH9/ednfg==
+X-Google-Smtp-Source: AA0mqf4gFHMBOCd+hxMH99i63M4A4Zz5W56sVQvjZOTc2gLX9kTF10IvIhipJtAr6YKEO2g7ttTAtw==
+X-Received: by 2002:ac8:44c4:0:b0:3a5:8b71:cca3 with SMTP id b4-20020ac844c4000000b003a58b71cca3mr16457992qto.292.1668518557368;
+        Tue, 15 Nov 2022 05:22:37 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-47-55-122-23.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.122.23])
+        by smtp.gmail.com with ESMTPSA id i19-20020a05620a249300b006fb38ff190bsm8047711qkn.34.2022.11.15.05.22.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Nov 2022 05:22:36 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1ouvtb-003s6G-OY;
+	Tue, 15 Nov 2022 09:22:35 -0400
+Date: Tue, 15 Nov 2022 09:22:35 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Dan Carpenter <error27@gmail.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
+	kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] iommufd: vfio: info leak in iommufd_vfio_unmap_dma()
+Message-ID: <Y3OSm9dmaQJkjL6D@ziepe.ca>
+References: <Y3OKdW/WXVr1VYbc@kili>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.4.2
-Subject: Re: [PATCH v2 1/9] dt-bindings: arm-smmu: Allow up to 3 power-domains
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- linux-arm-msm@vger.kernel.org, andersson@kernel.org, agross@kernel.org
-Cc: patches@linaro.org, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20221114104222.36329-1-konrad.dybcio@linaro.org>
- <20221114104222.36329-2-konrad.dybcio@linaro.org>
- <6fa8e3ea-2113-d930-96bc-3726d53e5bcd@linaro.org>
- <a4b160d8-0faa-3f4c-a925-0beaf6ace721@linaro.org>
- <0121fc03-b027-7659-5e6e-b42089c9888d@linaro.org>
- <12578e05-ced9-e5f7-7922-0af2f2159333@linaro.org>
- <878402e7-7f80-31c7-3a6b-989a6ca29841@linaro.org>
- <f59ddce1-c2e1-4055-3bce-1319c68ddf94@linaro.org>
- <4b4ca3ba-8e4d-088e-8b3e-a47ad6ecb965@linaro.org>
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <4b4ca3ba-8e4d-088e-8b3e-a47ad6ecb965@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y3OKdW/WXVr1VYbc@kili>
 
+On Tue, Nov 15, 2022 at 03:47:49PM +0300, Dan Carpenter wrote:
+> If iopt_unmap_iova() fails then "unmapped" is uninitialized.  Copying it
+> to the user can leak stack information.
+> 
+> Fixes: 32c328dc9b73 ("iommufd: vfio container FD ioctl compatibility")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> ---
+>  drivers/iommu/iommufd/vfio_compat.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/iommu/iommufd/vfio_compat.c b/drivers/iommu/iommufd/vfio_compat.c
+> index 976aa12b247d..30a13552d632 100644
+> --- a/drivers/iommu/iommufd/vfio_compat.c
+> +++ b/drivers/iommu/iommufd/vfio_compat.c
+> @@ -189,6 +189,9 @@ static int iommufd_vfio_unmap_dma(struct iommufd_ctx *ictx, unsigned int cmd,
+>  		rc = iopt_unmap_iova(&ioas->iopt, unmap.iova, unmap.size,
+>  				     &unmapped);
+>  	}
+> +	if (rc)
+> +		goto err_put;
+> +
 
+It should be inited to 0, I fixed it, thanks
 
-On 15/11/2022 14:00, Krzysztof Kozlowski wrote:
-> On 15/11/2022 13:54, Konrad Dybcio wrote:
->>
->>
->> On 14/11/2022 17:58, Krzysztof Kozlowski wrote:
->>> On 14/11/2022 16:53, Konrad Dybcio wrote:
->>>>
->>>> On 14/11/2022 14:00, Krzysztof Kozlowski wrote:
->>>>> On 14/11/2022 12:17, Konrad Dybcio wrote:
->>>>>> On 14/11/2022 12:01, Krzysztof Kozlowski wrote:
->>>>>>> On 14/11/2022 11:42, Konrad Dybcio wrote:
->>>>>>>> Some SMMUs require that a vote is held on as much as 3 separate PDs
->>>>>>>> (hello Qualcomm). Allow it in bindings.
->>>>>>>>
->>>>>>>> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
->>>>>>>> ---
->>>>>>>> Changes since v1:
->>>>>>>> - Add minItems
->>>>>>>>
->>>>>>>>      Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 3 ++-
->>>>>>>>      1 file changed, 2 insertions(+), 1 deletion(-)
->>>>>>>>
->>>>>>>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>>>>>>> index 9066e6df1ba1..82bc696de662 100644
->>>>>>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>>>>>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>>>>>>> @@ -159,7 +159,8 @@ properties:
->>>>>>>>                through the TCU's programming interface.
->>>>>>>>      
->>>>>>>>        power-domains:
->>>>>>>> -    maxItems: 1
->>>>>>>> +    minItems: 0
->>>>>>> It cannot be 0.
->>>>>>>
->>>>>>> minItems: 1
->>>>>>>
->>>>>>> Anyway you still need to restrict it per variant, as I said in previous
->>>>>>> version.
->>>>>> Hm.. I'm not entirely sure what you mean.. Should I add a list of
->>>>>> compatibles
->>>>> Yes and limit it to maxItems: 1 for "else".
->>>>
->>>> I tried adding:
->>>>
->>>>
->>>>
->>>>      - if:
->>>>          properties:
->>>>            compatible:
->>>>              contains:
->>>>                enum:
->>>>                  - qcom,sm6375-smmu-500
->>>>        then:
->>>>          properties:
->>>>            power-domains:
->>>>              minItems: 3
->>>>              maxItems: 3
->>>>        else:
->>>>          properties:
->>>>            power-domains:
->>>>              maxItems: 1
->>>>
->>>>
->>>> Right under the nvidia reg if-else in the allOf, but dtbs_check throws
->>>> errors like:
->>>>
->>>>
->>>> /home/konrad/linux/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino-poplar.dtb:
->>>> iommu@5040000: 'power-domains' does not match any of the regexes:
->>>> 'pinctrl-[0-9]+'
->>>>
->>>>
->>>> Any clues as to why?
->>>
->>> I don't know what code do you have there, but generic pattern is:
->>>
->>> https://elixir.bootlin.com/linux/v5.19-rc6/source/Documentation/devicetree/bindings/clock/samsung,exynos7-clock.yaml#L38
->>>
->> I tried many things, but I still don't seem to get a hang of it.. Here's
->> my current diff rebased on top of Dmitry's recent cleanups (available at
->> [1])
->>
->>
->> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->> b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->> index 28f5720824cd..55759aebc4a0 100644
->> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->> @@ -200,7 +200,7 @@ properties:
->>        maxItems: 7
->>
->>      power-domains:
-> 
-> As I mentioned before - minItems: 1.
-But not all SMMUs require a power domain :/
-
-> 
-> Just like the link I gave you.
-> 
->> -    maxItems: 1
->> +    maxItems: 3
->>
->>      nvidia,memory-controller:
->>        description: |
->> @@ -364,6 +364,26 @@ allOf:
->>                - description: interface clock required to access smmu's
->> registers
->>                    through the TCU's programming interface.
->>
->> +  - if:
->> +      properties:
->> +        compatible:
->> +          contains:
->> +            const: qcom,sm6375-smmu-500
->> +    then:
->> +      properties:
->> +        power-domains:
->> +          items:
->> +            - description: SNoC MMU TBU RT GDSC
->> +            - description: SNoC MMU TBU NRT GDSC
->> +            - description: SNoC TURING MMU TBU0 GDSC
->> +
->> +      required:
->> +        - power-domains
->> +    else:
->> +      properties:
->> +        power-domains:
->> +          maxItems: 1
->> +
->>    examples:
->>      - |+
->>        /* SMMU with stream matching or stream indexing */
->>
->>
->> In my eyes, this should work, but I still get errors like:
->>
->> /home/konrad/linux/arch/arm64/boot/dts/qcom/sm8250-hdk.dtb:
->> iommu@3da0000: power-domains: [[108, 0]] is too short
->>
->> as if the else: path was never taken..
-> 
-> It was, but the top-level property said that minItems=3 (implicitly), so
-> it is too short.
-So the top-level properties take precedence over the ones that come from 
-the if-then-else?? Ugh.
-
-Konrad
-> 
-> Best regards,
-> Krzysztof
-> 
+Jason
