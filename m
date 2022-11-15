@@ -1,107 +1,216 @@
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C00A1AD30
-	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 13:25:09 +0000 (UTC)
-Received: by mail-qk1-f172.google.com with SMTP id s20so9417410qkg.5
-        for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 05:25:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=3FFkarC3g2Wo3KNSd9cKHA/vHYavLbu7x70aWEvueqs=;
-        b=pK70hIzR/AwJqhg4FXL7rkWJsxc9oWPlH7P1+X30OCFC3CAdUlD//J/rUoMZqhMfjY
-         o8f4fjDov3MENq1XFWufBPGQCNB3MTcsBagRqspghOot35mI7OTem43H3R6zQz/P8L6X
-         xIOHi7OxLXf2DREZcruTzSWpQDrarXu1U7+wEsidISOdu2+/shnyk8pV3MP6rfzb5y7K
-         wgy/gdJr785E/C/7lQinoVSCeh57bTLiQw393YE9yig4kYPuLWfnzVU7WFl4kZXxXh2W
-         EW8iwmnQoKBJFCMGqgtjxUGf7t07r5g179ivE/uFCu+eyXDwKanY6VrU49RRk4ywmCPy
-         ElrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3FFkarC3g2Wo3KNSd9cKHA/vHYavLbu7x70aWEvueqs=;
-        b=bhouS1fZDhCNX4ec+YgRaAu6jaeBsgfsfiileH9lShGHnFN+nMHTWPqKYn0E3O42FP
-         Icx0cI6YDsn5TM7ASJG78oAB8fU/yk2tzRRaSD4+0N4u5gzIcv5kDpWgY/MOp8yYHcL9
-         M3gdQcWheIKHjOk/CDaxm0GJM7zxaEmhkM72K3YcQvkWCKtGQQEDKcCjIIaskVvRycqm
-         VKgvsiGtQytG5SRiF+6vCS91D/8lHkj49U5zqk5yJ2/IaWPUAJPzQ+uUIDXQifft3AWR
-         KB9nd27m6vxinfzIUR/lpcFBLmdu8fdRG1Xoj8DkJ4xD1V809plixqK4ScikLYFo55Wt
-         yUKg==
-X-Gm-Message-State: ANoB5plS+JrJhfTmNurw/nrNvoq4I3f9RnPxIQRvMg+BcghxmULXbPzI
-	WbW7wWYOiGwgzY5YbvObFX9AYWx9xdawjw==
-X-Google-Smtp-Source: AA0mqf5wSrjegLfvPc7TIH17rmpYrwDWDGcyL5ks9rMLoJdLFUzMp6UFxqRApOeS5cdl9fsTYQSAMw==
-X-Received: by 2002:a37:bb06:0:b0:6fa:43e1:2d48 with SMTP id l6-20020a37bb06000000b006fa43e12d48mr14918170qkf.12.1668518708595;
-        Tue, 15 Nov 2022 05:25:08 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-47-55-122-23.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.122.23])
-        by smtp.gmail.com with ESMTPSA id x200-20020a3763d1000000b006fa8299b4d5sm8049159qkb.100.2022.11.15.05.25.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Nov 2022 05:25:07 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1ouvw3-003sAn-7a;
-	Tue, 15 Nov 2022 09:25:07 -0400
-Date: Tue, 15 Nov 2022 09:25:07 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Dan Carpenter <error27@gmail.com>
-Cc: iommu@lists.linux.dev
-Subject: Re: [bug report] iommufd: Add a selftest
-Message-ID: <Y3OTMwnYKWs7z8lj@ziepe.ca>
-References: <Y3OK6DeM6X4q5JWO@kili>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 14AF1AD30
+	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 13:43:22 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6EE8E13D5;
+	Tue, 15 Nov 2022 05:43:28 -0800 (PST)
+Received: from [10.57.70.90] (unknown [10.57.70.90])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EDDEA3F73B;
+	Tue, 15 Nov 2022 05:43:19 -0800 (PST)
+Message-ID: <4a9083fc-81ba-f5ca-5df7-cd04becb1dce@arm.com>
+Date: Tue, 15 Nov 2022 13:43:11 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y3OK6DeM6X4q5JWO@kili>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH v2 1/9] dt-bindings: arm-smmu: Allow up to 3 power-domains
+Content-Language: en-GB
+To: Konrad Dybcio <konrad.dybcio@linaro.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ linux-arm-msm@vger.kernel.org, andersson@kernel.org, agross@kernel.org
+Cc: patches@linaro.org, Will Deacon <will@kernel.org>,
+ Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20221114104222.36329-1-konrad.dybcio@linaro.org>
+ <20221114104222.36329-2-konrad.dybcio@linaro.org>
+ <6fa8e3ea-2113-d930-96bc-3726d53e5bcd@linaro.org>
+ <a4b160d8-0faa-3f4c-a925-0beaf6ace721@linaro.org>
+ <0121fc03-b027-7659-5e6e-b42089c9888d@linaro.org>
+ <12578e05-ced9-e5f7-7922-0af2f2159333@linaro.org>
+ <878402e7-7f80-31c7-3a6b-989a6ca29841@linaro.org>
+ <f59ddce1-c2e1-4055-3bce-1319c68ddf94@linaro.org>
+ <4b4ca3ba-8e4d-088e-8b3e-a47ad6ecb965@linaro.org>
+ <cff269c8-f944-9277-9df8-653522efbba0@linaro.org>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <cff269c8-f944-9277-9df8-653522efbba0@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Tue, Nov 15, 2022 at 03:49:44PM +0300, Dan Carpenter wrote:
-> Hello Jason Gunthorpe,
+On 2022-11-15 13:06, Konrad Dybcio wrote:
 > 
-> The patch 147393321d65: "iommufd: Add a selftest" from Nov 19, 2021,
-> leads to the following Smatch static checker warning:
 > 
-> 	drivers/iommu/iommufd/selftest.c:160 mock_domain_map_pages()
-> 	warn: use 'gfp' here instead of GFP_XXX?
-> 
-> drivers/iommu/iommufd/selftest.c
->    133  static int mock_domain_map_pages(struct iommu_domain *domain,
->    134                                   unsigned long iova, phys_addr_t paddr,
->    135                                   size_t pgsize, size_t pgcount, int prot,
->    136                                   gfp_t gfp, size_t *mapped)
->    137  {
->    138          struct mock_iommu_domain *mock =
->    139                  container_of(domain, struct mock_iommu_domain, domain);
->    140          unsigned long flags = MOCK_PFN_START_IOVA;
->    141          unsigned long start_iova = iova;
->    142  
->    143          /*
->    144           * xarray does not reliably work with fault injection because it does a
->    145           * retry allocation, so put our own failure point.
->    146           */
->    147          if (iommufd_should_fail())
->    148                  return -ENOENT;
->    149  
->    150          WARN_ON(iova % MOCK_IO_PAGE_SIZE);
->    151          WARN_ON(pgsize % MOCK_IO_PAGE_SIZE);
->    152          for (; pgcount; pgcount--) {
->    153                  size_t cur;
->    154  
->    155                  for (cur = 0; cur != pgsize; cur += MOCK_IO_PAGE_SIZE) {
->    156                          void *old;
->    157  
->    158                          if (pgcount == 1 && cur + MOCK_IO_PAGE_SIZE == pgsize)
->    159                                  flags = MOCK_PFN_LAST_IOVA;
->    160                          old = xa_store(&mock->pfns, iova / MOCK_IO_PAGE_SIZE,
->    161                                         xa_mk_value((paddr / MOCK_IO_PAGE_SIZE) |
->    162                                                     flags),
->    163                                         GFP_KERNEL);
->                                                ^^^^^^^^^^
-> "gfp" isn't used anywhere so maybe it was intended here?
+> On 15/11/2022 14:00, Krzysztof Kozlowski wrote:
+>> On 15/11/2022 13:54, Konrad Dybcio wrote:
+>>>
+>>>
+>>> On 14/11/2022 17:58, Krzysztof Kozlowski wrote:
+>>>> On 14/11/2022 16:53, Konrad Dybcio wrote:
+>>>>>
+>>>>> On 14/11/2022 14:00, Krzysztof Kozlowski wrote:
+>>>>>> On 14/11/2022 12:17, Konrad Dybcio wrote:
+>>>>>>> On 14/11/2022 12:01, Krzysztof Kozlowski wrote:
+>>>>>>>> On 14/11/2022 11:42, Konrad Dybcio wrote:
+>>>>>>>>> Some SMMUs require that a vote is held on as much as 3 separate 
+>>>>>>>>> PDs
+>>>>>>>>> (hello Qualcomm). Allow it in bindings.
+>>>>>>>>>
+>>>>>>>>> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+>>>>>>>>> ---
+>>>>>>>>> Changes since v1:
+>>>>>>>>> - Add minItems
+>>>>>>>>>
+>>>>>>>>>      Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 3 ++-
+>>>>>>>>>      1 file changed, 2 insertions(+), 1 deletion(-)
+>>>>>>>>>
+>>>>>>>>> diff --git 
+>>>>>>>>> a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml 
+>>>>>>>>> b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>>>>>>>> index 9066e6df1ba1..82bc696de662 100644
+>>>>>>>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>>>>>>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>>>>>>>> @@ -159,7 +159,8 @@ properties:
+>>>>>>>>>                through the TCU's programming interface.
+>>>>>>>>>        power-domains:
+>>>>>>>>> -    maxItems: 1
+>>>>>>>>> +    minItems: 0
+>>>>>>>> It cannot be 0.
+>>>>>>>>
+>>>>>>>> minItems: 1
+>>>>>>>>
+>>>>>>>> Anyway you still need to restrict it per variant, as I said in 
+>>>>>>>> previous
+>>>>>>>> version.
+>>>>>>> Hm.. I'm not entirely sure what you mean.. Should I add a list of
+>>>>>>> compatibles
+>>>>>> Yes and limit it to maxItems: 1 for "else".
+>>>>>
+>>>>> I tried adding:
+>>>>>
+>>>>>
+>>>>>
+>>>>>      - if:
+>>>>>          properties:
+>>>>>            compatible:
+>>>>>              contains:
+>>>>>                enum:
+>>>>>                  - qcom,sm6375-smmu-500
+>>>>>        then:
+>>>>>          properties:
+>>>>>            power-domains:
+>>>>>              minItems: 3
+>>>>>              maxItems: 3
+>>>>>        else:
+>>>>>          properties:
+>>>>>            power-domains:
+>>>>>              maxItems: 1
+>>>>>
+>>>>>
+>>>>> Right under the nvidia reg if-else in the allOf, but dtbs_check throws
+>>>>> errors like:
+>>>>>
+>>>>>
+>>>>> /home/konrad/linux/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino-poplar.dtb:
+>>>>> iommu@5040000: 'power-domains' does not match any of the regexes:
+>>>>> 'pinctrl-[0-9]+'
+>>>>>
+>>>>>
+>>>>> Any clues as to why?
+>>>>
+>>>> I don't know what code do you have there, but generic pattern is:
+>>>>
+>>>> https://elixir.bootlin.com/linux/v5.19-rc6/source/Documentation/devicetree/bindings/clock/samsung,exynos7-clock.yaml#L38
+>>>>
+>>> I tried many things, but I still don't seem to get a hang of it.. Here's
+>>> my current diff rebased on top of Dmitry's recent cleanups (available at
+>>> [1])
+>>>
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>> b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>> index 28f5720824cd..55759aebc4a0 100644
+>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+>>> @@ -200,7 +200,7 @@ properties:
+>>>        maxItems: 7
+>>>
+>>>      power-domains:
+>>
+>> As I mentioned before - minItems: 1.
+> But not all SMMUs require a power domain :/
 
-It is always GFP_KERNEL, but yes it can use that. I fixed it
+Right, so it's not a required property. However if it *is* present, then 
+it needs to reference at least one power domain, because having an empty 
+property, i.e.:
 
-Jason
+	power-domains = <>;
+
+or
+	power-domains;
+
+makes no sense whatsoever.
+
+Thanks,
+Robin.
+
+> 
+>>
+>> Just like the link I gave you.
+>>
+>>> -    maxItems: 1
+>>> +    maxItems: 3
+>>>
+>>>      nvidia,memory-controller:
+>>>        description: |
+>>> @@ -364,6 +364,26 @@ allOf:
+>>>                - description: interface clock required to access smmu's
+>>> registers
+>>>                    through the TCU's programming interface.
+>>>
+>>> +  - if:
+>>> +      properties:
+>>> +        compatible:
+>>> +          contains:
+>>> +            const: qcom,sm6375-smmu-500
+>>> +    then:
+>>> +      properties:
+>>> +        power-domains:
+>>> +          items:
+>>> +            - description: SNoC MMU TBU RT GDSC
+>>> +            - description: SNoC MMU TBU NRT GDSC
+>>> +            - description: SNoC TURING MMU TBU0 GDSC
+>>> +
+>>> +      required:
+>>> +        - power-domains
+>>> +    else:
+>>> +      properties:
+>>> +        power-domains:
+>>> +          maxItems: 1
+>>> +
+>>>    examples:
+>>>      - |+
+>>>        /* SMMU with stream matching or stream indexing */
+>>>
+>>>
+>>> In my eyes, this should work, but I still get errors like:
+>>>
+>>> /home/konrad/linux/arch/arm64/boot/dts/qcom/sm8250-hdk.dtb:
+>>> iommu@3da0000: power-domains: [[108, 0]] is too short
+>>>
+>>> as if the else: path was never taken..
+>>
+>> It was, but the top-level property said that minItems=3 (implicitly), so
+>> it is too short.
+> So the top-level properties take precedence over the ones that come from 
+> the if-then-else?? Ugh.
+> 
+> Konrad
+>>
+>> Best regards,
+>> Krzysztof
+>>
