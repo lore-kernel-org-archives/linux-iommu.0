@@ -1,81 +1,70 @@
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA9542F31
-	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 10:14:42 +0000 (UTC)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-	id 1ousxh-0004BE-Dw; Tue, 15 Nov 2022 11:14:37 +0100
-Message-ID: <563f0162-ae94-0d74-bb25-1c0753af9329@leemhuis.info>
-Date: Tue, 15 Nov 2022 11:14:36 +0100
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0E33333C7
+	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 11:20:28 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9CB7A13D5;
+	Tue, 15 Nov 2022 03:20:33 -0800 (PST)
+Received: from [10.57.70.90] (unknown [10.57.70.90])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8016E3F73B;
+	Tue, 15 Nov 2022 03:20:26 -0800 (PST)
+Message-ID: <9031b28f-0431-22eb-5dd3-01ae0589b940@arm.com>
+Date: Tue, 15 Nov 2022 11:20:22 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
  Thunderbird/102.4.1
-Subject: Re: [PATCH] hwmon/coretemp: Simplify platform device antics
-Content-Language: en-US, de-DE
-To: Robin Murphy <robin.murphy@arm.com>, fenghua.yu@intel.com,
- jdelvare@suse.com, linux@roeck-us.net
-Cc: linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, janusz.krzysztofik@linux.intel.com,
- lucas.demarchi@intel.com
-References: <898dbb76a54aae6ca58ceefcab9ab18beeee2fff.1668096928.git.robin.murphy@arm.com>
-From: Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <898dbb76a54aae6ca58ceefcab9ab18beeee2fff.1668096928.git.robin.murphy@arm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1668507282;c3ceb43f;
-X-HE-SMSGID: 1ousxh-0004BE-Dw
+Subject: Re: The arm smmu driver for Linux does not support debugfs
+Content-Language: en-GB
+To: "leo-hou@hotmail.com" <leo-hou@hotmail.com>, iommu
+ <iommu@lists.linux.dev>,
+ linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+ virtualization <virtualization@lists.linux-foundation.org>
+Cc: will <will@kernel.org>
+References: <202211141141302410923@hotmail.com>
+ <MA0PR01MB5784354703A7B446A6D85CADF6049@MA0PR01MB5784.INDPRD01.PROD.OUTLOOK.COM>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <MA0PR01MB5784354703A7B446A6D85CADF6049@MA0PR01MB5784.INDPRD01.PROD.OUTLOOK.COM>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On 10.11.22 17:20, Robin Murphy wrote:
-> Coretemp's vestigial platform driver is odd. All the real work is done
-> globally by the initcall and CPU hotplug notifiers, while the "driver"
-> effectively just wraps an allocation and the registration of the hwmon
-> interface in a long-winded round-trip through the driver core. The whole
-> logic of dynamically creating and destroying platform devices to bring
-> the interfaces up and down is fatally flawed right away, since it
-> assumes platform_device_add() will synchronously bind the driver and set
-> drvdata before it returns, thus results in a NULL dereference if
-> drivers_autoprobe is turned off for the platform bus. Furthermore, the
-> unusual approach of doing that from within a CPU hotplug notifier is
-> also problematic. It's already commented in the code that it deadlocks
-> suspend, but it also causes lockdep issues for other drivers or
-> subsystems which may want to legitimately register a CPU hotplug
-> notifier from a platform bus notifier.
+On 2022-11-15 02:28, leo-hou@hotmail.com wrote:
 > 
-> All of these issues can be solved by ripping this questionable behaviour
-> out completely, simply tying the platform devices to the lifetime of the
-> module itself, and directly managing the hwmon interfaces from the
-> hotplug notifiers. There is a slight user-visible change in that
-> /sys/bus/platform/drivers/coretemp will no longer appear, and
-> /sys/devices/platform/coretemp.n will remain present if package n is
-> hotplugged off, but hwmon users should really only be looking for the
-> presence of the hwmon interfaces, whose behaviour remains unchanged.
 > 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> Hi,
+> 
+>       Why doesn't the arm smmu driver for Linux support debugfs ?
 
-For future archeologists and the regression tracking this afaics should
-have the following tags, as outlined by the documentation[1].
+Because nobody's ever written any debugfs code for it.
 
-Link:
-https://lore.kernel.org/lkml/20220922101036.87457-1-janusz.krzysztofik@linux.intel.com/
-Link: https://gitlab.freedesktop.org/drm/intel/issues/6641
+> Are there any historical reasons?
 
-Any maybe a reported-by for Janusz, too.
+Only that so far nobody's needed to.
 
-Ciao, Thorsten
+TBH, arm-smmu is actually quite straightforward, and none of the 
+internal driver state is really all that interesting (other than the 
+special private Adreno stuff, but we leave it up to Rob to implement 
+whatever he needs there). Given the kernel config, module parameters, 
+and the features logged at probe, you can already infer how it will set 
+up context banks etc. for regular IOMMU API work; there won't be any 
+surprises. At this point there shouldn't be any need to debug the driver 
+itself, it's mature and stable. For debugging *users* of the driver, 
+I've only dealt with the DMA layer, where a combination of the IOMMU API 
+tracepoints, CONFIG_DMA_API_DEBUG, and my own hacks to iommu-dma have 
+always proved sufficient to get enough insight into what's being mapped 
+where.
 
-[1] see Documentation/process/submitting-patches.rst
-(http://docs.kernel.org/process/submitting-patches.html) and
-Documentation/process/5.Posting.rst
-(https://docs.kernel.org/process/5.Posting.html)
+I think a couple of people have previously raised the idea of 
+implementing some kind of debugfs dumping for io-pgtable, but nothing's 
+ever come of it. As above, it often turns out that you can find the 
+information you need from other existing sources, thus the effort of 
+implementing and maintaining a load of special-purpose debug code can be 
+saved. In particular it would not be worth having driver-specific code 
+that only helps debug generic IOMMU API usage - that would be much 
+better implemented at the generic IOMMU API level.
 
-P.S.:
-
-#regzbot ^backmonitor:
-https://lore.kernel.org/lkml/20220922101036.87457-1-janusz.krzysztofik@linux.intel.com/
-
+Thanks,
+Robin.
