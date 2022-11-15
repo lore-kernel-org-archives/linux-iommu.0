@@ -1,29 +1,60 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 14AF1AD30
-	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 13:43:22 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6EE8E13D5;
-	Tue, 15 Nov 2022 05:43:28 -0800 (PST)
-Received: from [10.57.70.90] (unknown [10.57.70.90])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EDDEA3F73B;
-	Tue, 15 Nov 2022 05:43:19 -0800 (PST)
-Message-ID: <4a9083fc-81ba-f5ca-5df7-cd04becb1dce@arm.com>
-Date: Tue, 15 Nov 2022 13:43:11 +0000
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EE65AD30
+	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 13:48:22 +0000 (UTC)
+Received: by mail-lf1-f54.google.com with SMTP id s8so7351147lfc.8
+        for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 05:48:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=PyQQsmdB9p1iCbGlgrbpIM/umuy2agle/uOgcxWJaw0=;
+        b=ifGbpBcqd+1nCUiyTrYte34kDBWXyRIYNmNA/HCI0elOYiAzLvI010U5mZ1NaqUCIr
+         PO/fHVmh7JB+FX+3TAHtpuM0QWLqfRib8Ymr3wAauhli56Dm77ENoOYnzuinHPc3H1cV
+         B9TY/9dQbZi2UcigQna6+JW6cvs6SYJjKXj8peTnDPLMT1cszxjjTIBBwjXHfSnkNwTA
+         9P0ZNihkfIEwMSr7/bIhf23XcMgXqi7v1gr/Q8aWCAe5KlBXny9Fx3GHdUW/TD88wsgg
+         1U6kX5uHrW47sF0n6w99xKMwCP1/w+sWvmuCqTuxz/MdeW6QRCy3rSBUgNEATjjB3mxd
+         GtMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=PyQQsmdB9p1iCbGlgrbpIM/umuy2agle/uOgcxWJaw0=;
+        b=05hBxnPgUh8ejy7ArPS/F0mrwryBL3J6kpz5fWYV/uBwwrPsligJaPJ7h1VokAjuwc
+         spbsYHJ86OHWgFw0uuO37VqbAIUqCsRIiwpI8gqpD3ggkXkIKUmsrMRhGwTeTMdzHc4g
+         /Asz1ZpWaJKcWYLULqJZ/iyFuhJX/GHqUPgG9nNLcNgZBjsKGiXNExiiGeuVFzfu5nio
+         GjL6H370bCFR56FjZrKJYCKnvvebNKx3OoglkY8FQ6zkPNLczIkNi3CPh/E9pqC3O2kT
+         wrfHsV+g0evK+VuWh7+oXD4/tlXMUwb0TEBL2XTGLp8gSje6M8b9JUkzeQpOQ4008kww
+         rDzA==
+X-Gm-Message-State: ANoB5plrHQYIViIJs/x8X46Pdc97LERpl6ZWGWHHZLiRYyvOjHXxd1vF
+	2n05pfSWFQlHFkuBfPBelVMe/Q==
+X-Google-Smtp-Source: AA0mqf7NzmaJ1S8z7UNAq0GcGiVsV6Ak7vPyFfGsvevSVpg2e8K8g3+r2D+3QVfW/6/DuccuYbUTvg==
+X-Received: by 2002:a19:5051:0:b0:499:8e29:2763 with SMTP id z17-20020a195051000000b004998e292763mr6406317lfj.137.1668520100303;
+        Tue, 15 Nov 2022 05:48:20 -0800 (PST)
+Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
+        by smtp.gmail.com with ESMTPSA id c8-20020ac24148000000b00492c663bba2sm2207122lfi.124.2022.11.15.05.48.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Nov 2022 05:48:19 -0800 (PST)
+Message-ID: <3fd767c3-84c3-7155-9e05-cc124e3b3d2f@linaro.org>
+Date: Tue, 15 Nov 2022 14:48:18 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.4.1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
 Subject: Re: [PATCH v2 1/9] dt-bindings: arm-smmu: Allow up to 3 power-domains
-Content-Language: en-GB
-To: Konrad Dybcio <konrad.dybcio@linaro.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- linux-arm-msm@vger.kernel.org, andersson@kernel.org, agross@kernel.org
+Content-Language: en-US
+To: Konrad Dybcio <konrad.dybcio@linaro.org>, linux-arm-msm@vger.kernel.org,
+ andersson@kernel.org, agross@kernel.org
 Cc: patches@linaro.org, Will Deacon <will@kernel.org>,
- Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh+dt@kernel.org>,
  Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
  linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
@@ -37,164 +68,64 @@ References: <20221114104222.36329-1-konrad.dybcio@linaro.org>
  <f59ddce1-c2e1-4055-3bce-1319c68ddf94@linaro.org>
  <4b4ca3ba-8e4d-088e-8b3e-a47ad6ecb965@linaro.org>
  <cff269c8-f944-9277-9df8-653522efbba0@linaro.org>
-From: Robin Murphy <robin.murphy@arm.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 In-Reply-To: <cff269c8-f944-9277-9df8-653522efbba0@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On 2022-11-15 13:06, Konrad Dybcio wrote:
-> 
-> 
-> On 15/11/2022 14:00, Krzysztof Kozlowski wrote:
->> On 15/11/2022 13:54, Konrad Dybcio wrote:
->>>
->>>
->>> On 14/11/2022 17:58, Krzysztof Kozlowski wrote:
->>>> On 14/11/2022 16:53, Konrad Dybcio wrote:
->>>>>
->>>>> On 14/11/2022 14:00, Krzysztof Kozlowski wrote:
->>>>>> On 14/11/2022 12:17, Konrad Dybcio wrote:
->>>>>>> On 14/11/2022 12:01, Krzysztof Kozlowski wrote:
->>>>>>>> On 14/11/2022 11:42, Konrad Dybcio wrote:
->>>>>>>>> Some SMMUs require that a vote is held on as much as 3 separate 
->>>>>>>>> PDs
->>>>>>>>> (hello Qualcomm). Allow it in bindings.
->>>>>>>>>
->>>>>>>>> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
->>>>>>>>> ---
->>>>>>>>> Changes since v1:
->>>>>>>>> - Add minItems
->>>>>>>>>
->>>>>>>>>      Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 3 ++-
->>>>>>>>>      1 file changed, 2 insertions(+), 1 deletion(-)
->>>>>>>>>
->>>>>>>>> diff --git 
->>>>>>>>> a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml 
->>>>>>>>> b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>>>>>>>> index 9066e6df1ba1..82bc696de662 100644
->>>>>>>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>>>>>>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>>>>>>>> @@ -159,7 +159,8 @@ properties:
->>>>>>>>>                through the TCU's programming interface.
->>>>>>>>>        power-domains:
->>>>>>>>> -    maxItems: 1
->>>>>>>>> +    minItems: 0
->>>>>>>> It cannot be 0.
->>>>>>>>
->>>>>>>> minItems: 1
->>>>>>>>
->>>>>>>> Anyway you still need to restrict it per variant, as I said in 
->>>>>>>> previous
->>>>>>>> version.
->>>>>>> Hm.. I'm not entirely sure what you mean.. Should I add a list of
->>>>>>> compatibles
->>>>>> Yes and limit it to maxItems: 1 for "else".
->>>>>
->>>>> I tried adding:
->>>>>
->>>>>
->>>>>
->>>>>      - if:
->>>>>          properties:
->>>>>            compatible:
->>>>>              contains:
->>>>>                enum:
->>>>>                  - qcom,sm6375-smmu-500
->>>>>        then:
->>>>>          properties:
->>>>>            power-domains:
->>>>>              minItems: 3
->>>>>              maxItems: 3
->>>>>        else:
->>>>>          properties:
->>>>>            power-domains:
->>>>>              maxItems: 1
->>>>>
->>>>>
->>>>> Right under the nvidia reg if-else in the allOf, but dtbs_check throws
->>>>> errors like:
->>>>>
->>>>>
->>>>> /home/konrad/linux/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino-poplar.dtb:
->>>>> iommu@5040000: 'power-domains' does not match any of the regexes:
->>>>> 'pinctrl-[0-9]+'
->>>>>
->>>>>
->>>>> Any clues as to why?
->>>>
->>>> I don't know what code do you have there, but generic pattern is:
->>>>
->>>> https://elixir.bootlin.com/linux/v5.19-rc6/source/Documentation/devicetree/bindings/clock/samsung,exynos7-clock.yaml#L38
->>>>
->>> I tried many things, but I still don't seem to get a hang of it.. Here's
->>> my current diff rebased on top of Dmitry's recent cleanups (available at
->>> [1])
->>>
->>>
->>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+On 15/11/2022 14:06, Konrad Dybcio wrote:>> diff --git
+a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
 >>> b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
 >>> index 28f5720824cd..55759aebc4a0 100644
 >>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
 >>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
 >>> @@ -200,7 +200,7 @@ properties:
->>>        maxItems: 7
+>>>        maxItems: 7
 >>>
->>>      power-domains:
+>>>      power-domains:
 >>
 >> As I mentioned before - minItems: 1.
 > But not all SMMUs require a power domain :/
 
-Right, so it's not a required property. However if it *is* present, then 
-it needs to reference at least one power domain, because having an empty 
-property, i.e.:
-
-	power-domains = <>;
-
-or
-	power-domains;
-
-makes no sense whatsoever.
-
-Thanks,
-Robin.
+It does not matter. This does not require power-domains.
 
 > 
 >>
 >> Just like the link I gave you.
 >>
->>> -    maxItems: 1
->>> +    maxItems: 3
+>>> -    maxItems: 1
+>>> +    maxItems: 3
 >>>
->>>      nvidia,memory-controller:
->>>        description: |
+>>>      nvidia,memory-controller:
+>>>        description: |
 >>> @@ -364,6 +364,26 @@ allOf:
->>>                - description: interface clock required to access smmu's
+>>>                - description: interface clock required to access smmu's
 >>> registers
->>>                    through the TCU's programming interface.
+>>>                    through the TCU's programming interface.
 >>>
->>> +  - if:
->>> +      properties:
->>> +        compatible:
->>> +          contains:
->>> +            const: qcom,sm6375-smmu-500
->>> +    then:
->>> +      properties:
->>> +        power-domains:
->>> +          items:
->>> +            - description: SNoC MMU TBU RT GDSC
->>> +            - description: SNoC MMU TBU NRT GDSC
->>> +            - description: SNoC TURING MMU TBU0 GDSC
+>>> +  - if:
+>>> +      properties:
+>>> +        compatible:
+>>> +          contains:
+>>> +            const: qcom,sm6375-smmu-500
+>>> +    then:
+>>> +      properties:
+>>> +        power-domains:
+>>> +          items:
+>>> +            - description: SNoC MMU TBU RT GDSC
+>>> +            - description: SNoC MMU TBU NRT GDSC
+>>> +            - description: SNoC TURING MMU TBU0 GDSC
 >>> +
->>> +      required:
->>> +        - power-domains
->>> +    else:
->>> +      properties:
->>> +        power-domains:
->>> +          maxItems: 1
+>>> +      required:
+>>> +        - power-domains
+>>> +    else:
+>>> +      properties:
+>>> +        power-domains:
+>>> +          maxItems: 1
 >>> +
->>>    examples:
->>>      - |+
->>>        /* SMMU with stream matching or stream indexing */
+>>>    examples:
+>>>      - |+
+>>>        /* SMMU with stream matching or stream indexing */
 >>>
 >>>
 >>> In my eyes, this should work, but I still get errors like:
@@ -208,9 +139,10 @@ Robin.
 >> it is too short.
 > So the top-level properties take precedence over the ones that come from 
 > the if-then-else?? Ugh.
-> 
-> Konrad
->>
->> Best regards,
->> Krzysztof
->>
+
+It's a sum of them. Top level is expected to define the widest
+constraints and if-then-else narrows them per variants.
+
+Best regards,
+Krzysztof
+
