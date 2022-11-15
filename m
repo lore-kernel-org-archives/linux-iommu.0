@@ -1,260 +1,247 @@
-Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2060.outbound.protection.outlook.com [40.107.101.60])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDD9B139E
-	for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 15:04:42 +0000 (UTC)
-Received: by mail-ej1-f50.google.com with SMTP id y14so36727339ejd.9
-        for <iommu@lists.linux.dev>; Tue, 15 Nov 2022 07:04:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=d9LeILXvw8L9LoEFMAR3miqDBARgsMFwg1ZrW9AFkIk=;
-        b=jDUHta9jtUjIl9jrU1sLbM7rBYUjPsoylRiLOMdRDqi+BOGmx5u4eRb4/HiKseL232
-         FhDu1k2nLxoNlP9n1hhtq+KMOjVaGWvccm/svuCSmvRH2z3U8+kMNhT66an9lZ2FJGLW
-         XjdMDFy6f7z2DlD/9Ja/5sivV+usDEtyPrpQrwbw3fSooNkoCXYRT+Quorpz88oWxstO
-         sBLsQHVlZGVFhavpiQp+62kfjGo4Xy6ryCZrRXuVk+pJNABdCXIP3CBLxdwGuO/Oc5IE
-         VHvIILZmgni9Dz+v1wQQDpV3JLR30W2HIgyCU3k2dbg0eaCx//UWVXCeuyU7UQv0CrOc
-         e/iQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=d9LeILXvw8L9LoEFMAR3miqDBARgsMFwg1ZrW9AFkIk=;
-        b=GVXJ7xpPQTA37z81h0aa8c63tVQbVEUCmNuUnmybaGi4XQ2RcV/ACKKPaX8GegX7Zq
-         +yfHbTk/aJa2EzdIkRPl6qrMQIIcHSEdIGC5eEKAGhTVY2elnLAS/W7s7Kn8p0vnSEq5
-         7CN2hanvWvD2+JJJdJRzy9p7OAu3tFJksV5mOcoP82xbE9VQl5W/wWamZWbu3edpblQJ
-         1+k97vU9nAmBTfAoqlo8T3x9AaWcOQI6scvQinDXTasx+2a57rkJQ5jHOYe3knQSx59N
-         Eee0oFjxTxsjUqVGS8yzMG7IE6PLPjTasMrrHaeI45MnfXZBZmmtPGwL3tfhcQqIVuyH
-         5gaw==
-X-Gm-Message-State: ANoB5pnIfVHZ3z8Vm6swXsnrK7/pS60A3E3wTI2R6B8+vrmfnZO0umJg
-	azKGhY0OXzobVeurwb8+JvLykg==
-X-Google-Smtp-Source: AA0mqf6KK9noe2qvxHfnjBSUJjx6KLuYgdcHS4UDhN/VuQX/gbwFigj+4fke8gGB5rAnslfFsSRCZg==
-X-Received: by 2002:a17:907:8e92:b0:7ad:a34f:1efe with SMTP id tx18-20020a1709078e9200b007ada34f1efemr14115723ejc.350.1668524681034;
-        Tue, 15 Nov 2022 07:04:41 -0800 (PST)
-Received: from [192.168.31.208] ([194.29.137.22])
-        by smtp.gmail.com with ESMTPSA id b3-20020a170906728300b007a559542fcfsm5571581ejl.70.2022.11.15.07.04.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Nov 2022 07:04:40 -0800 (PST)
-Message-ID: <03a8c0e4-bc5c-1447-e3b6-a26f2f221862@linaro.org>
-Date: Tue, 15 Nov 2022 16:04:34 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E02AE139E;
+	Tue, 15 Nov 2022 15:05:20 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cz/gcMYKneHtW6ckyn1GwjZbFEdose0g7UbaulPn4bn/E4bVE6islKY8nokzfhE50kxUP5ml2Su8FgBdc6RfOhjs0A3GvvP6bs5Oa2atUkuJ2BVI+FWVmCNmFtfGAWjQDfLzsDLpofFpDj5zNCBqwxdCY36J9fanTBJgNLNio9f7yPjj3J9Qfdu9HK3a4WE0VVutLn0Xk8vgVccMhXlRfvXVuUcY7ZDyXUUtOpnrnu9SGyXCIPnmCzVspoFwQ+ZX2x+KHTDICuKlyX20v5lDdbqLclwFEWSaZlstZOgQkHCOAB8d+dUfA2OrF03BsRBdRLdeJsFX6dxbNZf1gjd79w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=J02oea7PZPCY7jpwjjmdjlROdLqj7RHg9e0Z/xsc5Z4=;
+ b=ig9+QIGz+UjlGciDp8yVR7zPTYDGXSbK5xf0ip3kQhyEV23i6MQq/PB7biNTSyc+JGY6orAE55B8YMxbebS6kTfCA9zIgpSTDI40uEI7unf4mXx6hIAmnLbB1cigRk0JDV7TJeI2VOoX0qP1My13Jj5dQxdUfx3P5dqBIGeEpcJq0hhQwSOBkdY0d8HuCpeyAUaNq76WZ1bTkA1wE7Qi4oOUtlcgM9gFiRYAjRwpAc/xvRFSrdswocUscFUAXvN5GWyfkMaBLzCC3n90R+G/XwuJ6n3VgPpDTlZzUjRFP/CIogWoeXlX0kyivB0g/9FmF70vymxR98OVPJk1Et4Efg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=J02oea7PZPCY7jpwjjmdjlROdLqj7RHg9e0Z/xsc5Z4=;
+ b=Xerap/rN6i94Ikc9MNzyNaZH13gUXNdc/GicUbQ1R0v19YRiUQMgpK8AOBKZj6lQitvZUvVWWwrCLV06mDyOnWxLpQzBhkjTD8PcRT11laiBUAg8jpYBWxiwBkaiblL92ufaZyppnsoMe+uRF5NY7PYH2065syDxAmvwc8PkMlmD6rWl5e9TO2+fH3BkuJuANjAJah4KTXi9CyfhSENnhNNSy7HNg1WpFsQAqIlHJAoDDuOoKiVjAoXSuq9rkuiTrBL77cXLE8+S9/j/HH/7a+G54oneEWdv9kV3ejOgqZ6hgxbPhuhnGPKnJe2pQdKbLJepJd7lUNHsxKehxhpgxA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by SN7PR12MB7345.namprd12.prod.outlook.com (2603:10b6:806:298::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.17; Tue, 15 Nov
+ 2022 15:05:17 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f8b0:df13:5f8d:12a%7]) with mapi id 15.20.5813.017; Tue, 15 Nov 2022
+ 15:05:17 +0000
+Date: Tue, 15 Nov 2022 11:05:15 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	David Woodhouse <dwmw2@infradead.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Joerg Roedel <joro@8bytes.org>,
+	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+	"llvm@lists.linux.dev" <llvm@lists.linux.dev>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <ndesaulniers@google.com>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+	Cornelia Huck <cohuck@redhat.com>,
+	Daniel Jordan <daniel.m.jordan@oracle.com>,
+	David Gibson <david@gibson.dropbear.id.au>,
+	Eric Auger <eric.auger@redhat.com>,
+	Eric Farman <farman@linux.ibm.com>,
+	Jason Wang <jasowang@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	"Martins, Joao" <joao.m.martins@oracle.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+	"Liu, Yi L" <yi.l.liu@intel.com>,
+	Keqian Zhu <zhukeqian1@huawei.com>
+Subject: Re: [PATCH v4 09/17] iommufd: Data structure to provide IOVA to PFN
+ mapping
+Message-ID: <Y3Oqq74bKsQo1YMH@nvidia.com>
+References: <0-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
+ <9-v4-0de2f6c78ed0+9d1-iommufd_jgg@nvidia.com>
+ <BN9PR11MB527638FCF4A1351DBA1A644E8C059@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <Y3KMbyVwS6D505cA@nvidia.com>
+ <BN9PR11MB5276CAB38B1691983A20B1D18C049@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB5276CAB38B1691983A20B1D18C049@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-ClientProxiedBy: MN2PR07CA0030.namprd07.prod.outlook.com
+ (2603:10b6:208:1a0::40) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.4.2
-Subject: Re: [PATCH v2 1/9] dt-bindings: arm-smmu: Allow up to 3 power-domains
-To: Robin Murphy <robin.murphy@arm.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- linux-arm-msm@vger.kernel.org, andersson@kernel.org, agross@kernel.org
-Cc: patches@linaro.org, Will Deacon <will@kernel.org>,
- Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20221114104222.36329-1-konrad.dybcio@linaro.org>
- <20221114104222.36329-2-konrad.dybcio@linaro.org>
- <6fa8e3ea-2113-d930-96bc-3726d53e5bcd@linaro.org>
- <a4b160d8-0faa-3f4c-a925-0beaf6ace721@linaro.org>
- <0121fc03-b027-7659-5e6e-b42089c9888d@linaro.org>
- <12578e05-ced9-e5f7-7922-0af2f2159333@linaro.org>
- <878402e7-7f80-31c7-3a6b-989a6ca29841@linaro.org>
- <f59ddce1-c2e1-4055-3bce-1319c68ddf94@linaro.org>
- <4b4ca3ba-8e4d-088e-8b3e-a47ad6ecb965@linaro.org>
- <cff269c8-f944-9277-9df8-653522efbba0@linaro.org>
- <4a9083fc-81ba-f5ca-5df7-cd04becb1dce@arm.com>
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <4a9083fc-81ba-f5ca-5df7-cd04becb1dce@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SN7PR12MB7345:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1d88027d-4945-4c4c-a4f4-08dac71ace23
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	gB9Ob7LCmMSEZaSs9CCWfhwH+lo1GJ3pa09zDqxEMW9yeKN82LEtVhIZ0stmIOaTGBZgtuwP3EImDJQCZbs1ngucCVstsMxHKcmmPN5H6T34LpVWNHFAm0zTOZoYpPxsZjKrmEjqKB+P0GFufgKeM2lHHNDTvFLq0isBoqU/H1CsiKLgFKzlFazDtUAQr4JSPe7+aPeOD/F2n6+QtE3gXqp2feidH3bKigfHpQXgnr7enUYVO6cOwpzVRsAezn7ybxnhn3jgSLq2vuHtAz+LP5dsYo82lJ6nFKa7p9r9A4k8gxndI8bkMBzWlkT3QLzViEEtS8xo8YlK7G4A7KH8dUuUf++C7fcl4h89LazusHTqCdVaKFs6GuNJ+rPqzg3eZspIxmP1tZEoRzTfzZjFGrfY8PaCtJHaBVMb5L624edk4SEAKwhVkYai1DshK+uHYIGZBBSqRBeR5/zsUO9RY0ogPdFs0axDz63NPOo63dhcXvdkIItm0oNWgPTlo3kJ8wn8ivqlZp0R1O6DZWXqYUCuy0GikP2Buh9xuP6ib4Qu5yqMahdJpiL0xqAoDyPLG0pGYTw5X8cjIx60mWZXRri2MeLqxuUICRsrnC0039tDECJ6XDp+R5Wnpgx3pnkJF+U5vW9zIqi/I98xC3+T39tWhHwpLganLZmWMmA7JizRlQV59OTg/XZqTPgZ/od+fTfmtYGfTj+GuPuxQWlLtA==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(346002)(396003)(136003)(39860400002)(366004)(451199015)(478600001)(6916009)(54906003)(6506007)(6486002)(26005)(316002)(6512007)(86362001)(66556008)(8936002)(38100700002)(66476007)(186003)(4326008)(8676002)(66946007)(2616005)(7416002)(5660300002)(7406005)(36756003)(83380400001)(41300700001)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?zE6tcv/O49PUcJVxB88pXmCFqaZF79jCjoz6XKV0PvJcgDeqIObGj9VMy8Fk?=
+ =?us-ascii?Q?C9Een9ctnU42a1tinT2hK9SnroGwGoOKPRmKYzPAMq7a5f8SjiU91jWxj8Wo?=
+ =?us-ascii?Q?T7s9p76tw6E/TOzEtOxmOUZBtZFyIXnRMnwYIaf6juTKk+wmZkFyhBOVsuy6?=
+ =?us-ascii?Q?KSSx+gUYvElIFIKVpFrmjGeLo+4wbBBXce5M2HLI/bUbqQMb4yoswvx/JfSs?=
+ =?us-ascii?Q?pSWOfUtLhpEa7paz7ZgFbRHDCLq1Kcyv9UryifOhYEVN9jGuwYb7yl2Kg8nP?=
+ =?us-ascii?Q?ZuMdQws8lbNN8styv7XLxyV5nCgPS3fD5HtVGPB5CyN8uQ/2s9l22Rdv+G4o?=
+ =?us-ascii?Q?FwEfkTDMO56YQJadm3nY15TRswq44XWsc/Q8KuEtG1MpJHL/BIUqLjby2zkU?=
+ =?us-ascii?Q?nzaUT3CPiFIQtXEaKVV6/wD561nRxQQe8+zjQfOIb7O6VeyOCaVCcCOun6Bd?=
+ =?us-ascii?Q?taJuQsIjUGrmpYmcEOTMwPET1GO9nI/IoTsNGUnrHypssxmnmrXmeVdDHajV?=
+ =?us-ascii?Q?t6fvAyeGqSF3H9UWq8K5SwSmoJiHImhZiNL/Ge7ICNalHyisdJLMFzvjzjnK?=
+ =?us-ascii?Q?IcEWpMi8+8nW7O4ZXyOEuH2e3/9+ZDOhXQlxl8nDCcZwsEbYarlvP/AB69nU?=
+ =?us-ascii?Q?bYrtpUeyXmoRhymoQlngwoctu2OHQt3iHxaWEef41cM/0hBZ92FhxU8KkK33?=
+ =?us-ascii?Q?IQSFwW90oYmUdqDt9P9vch6JSEI3Qo5g5Y3rml9HFpDzUvy6FVo2pWYJLdPI?=
+ =?us-ascii?Q?HjWXZtdy8E0QrUZGfZsqvDUKU2hb4SELY84u+tl3hNi8v7SDjF4fTaPWpZKb?=
+ =?us-ascii?Q?1qLwX+GWz1Yfb8LemGz6DPEsh2AL3mAb5UcTBT7POmGdalFd9x7xXQVJcLt3?=
+ =?us-ascii?Q?ECFAQu6k8PfE1TDzhugdxWKIYw2wltvfj64QcWdXKn89PAT8m97arP2p7wIt?=
+ =?us-ascii?Q?2j73Pke74efzNNBzcifb2RcwJhXMtwr7w7EVHYz4CfGw8eKYLA3tsqpIY+YM?=
+ =?us-ascii?Q?bHVp5vQ08WE1J13tLvXtzpWTbPwGCP8PIYh6zuyVyjnPe8fkb8UiDv2XOpWV?=
+ =?us-ascii?Q?feXr3uyB60RsJWA7AYCmmEGVIUvaepjcyqJiTQ+vQfJjdtfFKr/9R2/rxzPl?=
+ =?us-ascii?Q?oXkpjajsZrut+fdP6gd4bVH5rkZ10qklfWAQRhJNbD45JhoUV71vVor7r+zf?=
+ =?us-ascii?Q?5ksow4dzOocQuW3IcZzNdVwHaV6JB2vMOf+4n31b9Goj32hUNbXaUNse7dEh?=
+ =?us-ascii?Q?IitP/u+FJu2auxYT4qQzHIbEQyCf+u/MhLad/1HB7XET75c8NUfON7d57v2Z?=
+ =?us-ascii?Q?wshtXX24N8BW2uszFC6oOcOjGikqEVpeHQgwVOer5WWDWuWurkmzc+28cQZ7?=
+ =?us-ascii?Q?ipYgdCHj+Lm8jMtrd5zDLVFSWljKKsvio6P9K4XZDV7dyhv+nwTHQO2n4O3c?=
+ =?us-ascii?Q?XIyC9LlNmk9O35GbMWg4PZ6zSlg0UoQIuaDSACsOcmo0zOqWtxR6ytfau81S?=
+ =?us-ascii?Q?FlYzIkudYcskyjn55cWzNckWpm28aDNv/NxMNT4nl/ytO72xefBasVQEGrlH?=
+ =?us-ascii?Q?b4tjoP+z0gPQDviYhUc=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1d88027d-4945-4c4c-a4f4-08dac71ace23
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Nov 2022 15:05:17.0678
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: OmWoDFbGiJ+EXUsZoX72CPeM2UuT+pM6PwFkZ8SY+lOSmOjxIRXvBFTvVcvD7tzj
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7345
 
+On Tue, Nov 15, 2022 at 03:13:56AM +0000, Tian, Kevin wrote:
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > Sent: Tuesday, November 15, 2022 2:44 AM
+> > 
+> > On Mon, Nov 14, 2022 at 07:28:47AM +0000, Tian, Kevin wrote:
+> > > > From: Jason Gunthorpe <jgg@nvidia.com>
+> > > > Sent: Tuesday, November 8, 2022 8:49 AM
+> > > >
+> > > > +
+> > > > +/*
+> > > > + * Automatically find a block of IOVA that is not being used and not
+> > reserved.
+> > > > + * Does not return a 0 IOVA even if it is valid.
+> > >
+> > > what is the problem with 0? should this be documented in uAPI?
+> > 
+> > 0 is commonly used as an errant value for uninitialized things. We
+> > don't automatically map it into a process mm because it can cause
+> > security problems if we don't trap a bogus 0/NULL pointer reference.
+> > 
+> > The same logic applies here too, the allocator should not return 0 to
+> > reserve it as an unmapped IOVA page to catch bugs.
+> 
+> CPU doesn't reference IOVA. Where do such bugs exist?
 
+SW is always buggy and SW programs the DMA address, so it could leave
+a 0 behind or something during the programming.
 
-On 15/11/2022 14:43, Robin Murphy wrote:
-> On 2022-11-15 13:06, Konrad Dybcio wrote:
->>
->>
->> On 15/11/2022 14:00, Krzysztof Kozlowski wrote:
->>> On 15/11/2022 13:54, Konrad Dybcio wrote:
->>>>
->>>>
->>>> On 14/11/2022 17:58, Krzysztof Kozlowski wrote:
->>>>> On 14/11/2022 16:53, Konrad Dybcio wrote:
->>>>>>
->>>>>> On 14/11/2022 14:00, Krzysztof Kozlowski wrote:
->>>>>>> On 14/11/2022 12:17, Konrad Dybcio wrote:
->>>>>>>> On 14/11/2022 12:01, Krzysztof Kozlowski wrote:
->>>>>>>>> On 14/11/2022 11:42, Konrad Dybcio wrote:
->>>>>>>>>> Some SMMUs require that a vote is held on as much as 3 
->>>>>>>>>> separate PDs
->>>>>>>>>> (hello Qualcomm). Allow it in bindings.
->>>>>>>>>>
->>>>>>>>>> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
->>>>>>>>>> ---
->>>>>>>>>> Changes since v1:
->>>>>>>>>> - Add minItems
->>>>>>>>>>
->>>>>>>>>>      Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 3 
->>>>>>>>>> ++-
->>>>>>>>>>      1 file changed, 2 insertions(+), 1 deletion(-)
->>>>>>>>>>
->>>>>>>>>> diff --git 
->>>>>>>>>> a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml 
->>>>>>>>>> b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>>>>>>>>> index 9066e6df1ba1..82bc696de662 100644
->>>>>>>>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>>>>>>>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>>>>>>>>> @@ -159,7 +159,8 @@ properties:
->>>>>>>>>>                through the TCU's programming interface.
->>>>>>>>>>        power-domains:
->>>>>>>>>> -    maxItems: 1
->>>>>>>>>> +    minItems: 0
->>>>>>>>> It cannot be 0.
->>>>>>>>>
->>>>>>>>> minItems: 1
->>>>>>>>>
->>>>>>>>> Anyway you still need to restrict it per variant, as I said in 
->>>>>>>>> previous
->>>>>>>>> version.
->>>>>>>> Hm.. I'm not entirely sure what you mean.. Should I add a list of
->>>>>>>> compatibles
->>>>>>> Yes and limit it to maxItems: 1 for "else".
->>>>>>
->>>>>> I tried adding:
->>>>>>
->>>>>>
->>>>>>
->>>>>>      - if:
->>>>>>          properties:
->>>>>>            compatible:
->>>>>>              contains:
->>>>>>                enum:
->>>>>>                  - qcom,sm6375-smmu-500
->>>>>>        then:
->>>>>>          properties:
->>>>>>            power-domains:
->>>>>>              minItems: 3
->>>>>>              maxItems: 3
->>>>>>        else:
->>>>>>          properties:
->>>>>>            power-domains:
->>>>>>              maxItems: 1
->>>>>>
->>>>>>
->>>>>> Right under the nvidia reg if-else in the allOf, but dtbs_check 
->>>>>> throws
->>>>>> errors like:
->>>>>>
->>>>>>
->>>>>> /home/konrad/linux/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino-poplar.dtb:
->>>>>> iommu@5040000: 'power-domains' does not match any of the regexes:
->>>>>> 'pinctrl-[0-9]+'
->>>>>>
->>>>>>
->>>>>> Any clues as to why?
->>>>>
->>>>> I don't know what code do you have there, but generic pattern is:
->>>>>
->>>>> https://elixir.bootlin.com/linux/v5.19-rc6/source/Documentation/devicetree/bindings/clock/samsung,exynos7-clock.yaml#L38
->>>>>
->>>> I tried many things, but I still don't seem to get a hang of it.. 
->>>> Here's
->>>> my current diff rebased on top of Dmitry's recent cleanups 
->>>> (available at
->>>> [1])
->>>>
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>>> b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>>> index 28f5720824cd..55759aebc4a0 100644
->>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->>>> @@ -200,7 +200,7 @@ properties:
->>>>        maxItems: 7
->>>>
->>>>      power-domains:
->>>
->>> As I mentioned before - minItems: 1.
->> But not all SMMUs require a power domain :/
+> > I don't think it needs to be documented
 > 
-> Right, so it's not a required property. However if it *is* present, then 
-> it needs to reference at least one power domain, because having an empty 
-> property, i.e.:
-> 
->      power-domains = <>;
-> 
-> or
->      power-domains;
-> 
-> makes no sense whatsoever.
-> 
-> Thanks,
-> Robin.
-OHHHH!
+> this again causes a subtle difference between automatic allocation
+> and fixed iova. If we really think address 0 is something related
+> to bug, then why is it allowed with fixed iova?
 
-That was the missing piece that made it click for me!
-Thanks Krzysztof, Robin for guiding me through this.
+Because fixed can do anything up to the limits of the HW. It is like
+mmp, where MAP_FIXED can allocate 0s as well, but automatic allocation
+will not.
 
-Konrad
+> > > > +		if (!__alloc_iova_check_used(&allowed_span, length,
+> > > > +					     iova_alignment, page_offset))
+> > > > +			continue;
+> > > > +
+> > > > +		interval_tree_for_each_span(&area_span, &iopt->area_itree,
+> > > > +					    allowed_span.start_used,
+> > > > +					    allowed_span.last_used) {
+> > > > +			if (!__alloc_iova_check_hole(&area_span, length,
+> > > > +						     iova_alignment,
+> > > > +						     page_offset))
+> > > > +				continue;
+> > > > +
+> > > > +			interval_tree_for_each_span(&reserved_span,
+> > > > +						    &iopt->reserved_itree,
+> > > > +						    area_span.start_used,
+> > > > +						    area_span.last_used) {
+> > > > +				if (!__alloc_iova_check_hole(
+> > > > +					    &reserved_span, length,
+> > > > +					    iova_alignment, page_offset))
+> > > > +					continue;
+> > >
+> > > this could be simplified by double span.
+> > 
+> > It is subtly not compatible, the double span looks for used areas.
+> > This is looking for a used area in the allowed_itree, a hole in the
+> > area_itree, and a hole in the reserved_itree.
 > 
->>
->>>
->>> Just like the link I gave you.
->>>
->>>> -    maxItems: 1
->>>> +    maxItems: 3
->>>>
->>>>      nvidia,memory-controller:
->>>>        description: |
->>>> @@ -364,6 +364,26 @@ allOf:
->>>>                - description: interface clock required to access smmu's
->>>> registers
->>>>                    through the TCU's programming interface.
->>>>
->>>> +  - if:
->>>> +      properties:
->>>> +        compatible:
->>>> +          contains:
->>>> +            const: qcom,sm6375-smmu-500
->>>> +    then:
->>>> +      properties:
->>>> +        power-domains:
->>>> +          items:
->>>> +            - description: SNoC MMU TBU RT GDSC
->>>> +            - description: SNoC MMU TBU NRT GDSC
->>>> +            - description: SNoC TURING MMU TBU0 GDSC
->>>> +
->>>> +      required:
->>>> +        - power-domains
->>>> +    else:
->>>> +      properties:
->>>> +        power-domains:
->>>> +          maxItems: 1
->>>> +
->>>>    examples:
->>>>      - |+
->>>>        /* SMMU with stream matching or stream indexing */
->>>>
->>>>
->>>> In my eyes, this should work, but I still get errors like:
->>>>
->>>> /home/konrad/linux/arch/arm64/boot/dts/qcom/sm8250-hdk.dtb:
->>>> iommu@3da0000: power-domains: [[108, 0]] is too short
->>>>
->>>> as if the else: path was never taken..
->>>
->>> It was, but the top-level property said that minItems=3 (implicitly), so
->>> it is too short.
->> So the top-level properties take precedence over the ones that come 
->> from the if-then-else?? Ugh.
->>
->> Konrad
->>>
->>> Best regards,
->>> Krzysztof
->>>
+> the inner two loops can be replaced by double span, since both
+> are skipping used areas.
+
+The 2nd loop is looking for a used on allowed and the 3rd loop is
+looking for a hole in reserved. To fix it we'd have to invert allowed
+to work like reserved - which complicates the uAPI code.
+
+> > > > +	if (iopt->disable_large_pages)
+> > > > +		new_iova_alignment = PAGE_SIZE;
+> > > > +	else
+> > > > +		new_iova_alignment = 1;
+> > >
+> > > I didn't understand why we start searching alignment from a
+> > > smaller value when large pages is enabled. what is the
+> > > connection here?
+> > 
+> > 'disable_large_pages' is a tiny bit misnamed, what it really does is
+> > ensure that every iommu_map call is exactly PAGE_SIZE, not more (large
+> > pages) and not less (what this is protecting against).
+> > 
+> > So if a domain has less than PAGE_SIZE we upgrade to
+> > PAGE_SIZE. Otherwise we allow using the lowest possible alignment.
+> > 
+> > This allows userspace to always work in PAGE_SIZE units without fear
+> > of problems, eg with sub-page-size units becoming weird or something.
+> 
+> above are good stuff in a comment.
+
+This is the comment:
+
+/*
+ * This is part of the VFIO compatibility support for VFIO_TYPE1_IOMMU. That
+ * mode permits splitting a mapped area up, and then one of the splits is
+ * unmapped. Doing this normally would cause us to violate our invariant of
+ * pairing map/unmap. Thus, to support old VFIO compatibility disable support
+ * for batching consecutive PFNs. All PFNs mapped into the iommu are done in
+ * PAGE_SIZE units, not larger or smaller.
+ */
+static int batch_iommu_map_small(struct iommu_domain *domain,
+				 unsigned long iova, phys_addr_t paddr,
+				 size_t size, int prot)
+
+Thanks,
+Jason
