@@ -1,158 +1,125 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2211D51B
-	for <iommu@lists.linux.dev>; Wed, 16 Nov 2022 18:07:36 +0000 (UTC)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AGGg24V031453;
-	Wed, 16 Nov 2022 17:17:06 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=tvO5QRhnZQNwwKCc2yWc5VgfQdhcmKr/lkbJbaWChko=;
- b=G57pzugsozEV35YcVL6LNsPFWKSHx4/WhveKRFpulayy74ZY2OriAJ3LPTbipmuf0uG/
- Nz4YpAxRS8X8IhFbO1yK1ZIWusLa3fzdqjyPfbd/RMjyooUKbdknjRPeZS1v1PCTgBq8
- q+ouHeR419B2EpmfO9UyRPt76p5lYQir0zBXZhpFvBaNCNgjVvZ6Mwi42G08/9jRpwEk
- VrV6spQfX97ET6QmaF5NjJQtl6lMTWdP+fM1kdW7bw+HizZQfQBjo7MaRDZOmDIan56M
- XfbGLSY7BoTpFrxrPLWOMx3ny4b/mW34x5O0/nfbwJjKp4GFQ1PNyntj52z5NiGB5Rtl WQ== 
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3kw3m50w66-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 16 Nov 2022 17:17:05 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-	by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2AGH4kwp006968;
-	Wed, 16 Nov 2022 17:17:04 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-	by ppma05fra.de.ibm.com with ESMTP id 3kt3494qum-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 16 Nov 2022 17:17:03 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-	by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2AGHH02G60490164
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 16 Nov 2022 17:17:00 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id D40D552054;
-	Wed, 16 Nov 2022 17:17:00 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-	by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 54A0D52050;
-	Wed, 16 Nov 2022 17:17:00 +0000 (GMT)
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Matthew Rosato <mjrosato@linux.ibm.com>, Gerd Bayer <gbayer@linux.ibm.com>,
-        iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Jason Gunthorpe <jgg@nvidia.com>, Wenjia Zhang <wenjia@linux.ibm.com>
-Cc: Pierre Morel <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, linux-kernel@vger.kernel.org,
-        Julian Ruess <julianr@linux.ibm.com>
-Subject: [PATCH v2 7/7] iommu/s390: flush queued IOVAs on RPCIT out of resource indication
-Date: Wed, 16 Nov 2022 18:16:56 +0100
-Message-Id: <20221116171656.4128212-8-schnelle@linux.ibm.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221116171656.4128212-1-schnelle@linux.ibm.com>
-References: <20221116171656.4128212-1-schnelle@linux.ibm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB148D51B
+	for <iommu@lists.linux.dev>; Wed, 16 Nov 2022 18:11:08 +0000 (UTC)
+Received: by mail-wr1-f54.google.com with SMTP id d9so26521823wrm.13
+        for <iommu@lists.linux.dev>; Wed, 16 Nov 2022 10:11:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=jXUrh/5nwD/o+lxT2UQDr3GIedJ5OTEbeeA4oKAPCJU=;
+        b=HIgDYWVXWjmS+KTbLLdGplMOxwcC9jfWjS7pjRFM1xOd3Xlixm82Uy7BdGGtO6Va5G
+         NlD+BNS8bA1OgESs0vTdz9zWfJw6f/vc7RfUK8EKvewuXh2+kfyASYH8XMk3j09j3Hi+
+         9SD4pq/wsqoscwcsthe+SqluXpsGOKFISXaWeom3jms0Iw9pCRno4Dm2XiuWGCteTAL2
+         +kj3u/kUySXUJoK+McyDLOTJXMFzDsrEC4sc6R2LD236jT2F/pnU1vSqPlezzAF4Azo4
+         uWEq3qhbDcVgKz4ZrXQqrZO8jUMXZQuKBGaRT9GOGIPFJQoo2VlMsKyAZu70T4S1s2U0
+         pUBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=jXUrh/5nwD/o+lxT2UQDr3GIedJ5OTEbeeA4oKAPCJU=;
+        b=ukJ/aTJWCz7bwbJpOUEKQYjMbtvFCVOVmNlT871uP0sBGi+Dl+VyOZD0H6TBahOjZf
+         AdzZSGe+9r0FMFbDaW2uTtDsXNvipUt9t++CJgBMhrpEMIFTdKKAyMnS5W0QQlJgnpeW
+         8uD0D/LeP5okM9iemUyZqOLfqDeRcGN+4ZMibXgmfDGdPnv064058xdYJvjGGdPSylc6
+         a++A1RxScnbFh3DkD8HikYBlAFRM918GZz8w4He4SdY6bq2NXK6WcS5rE7ihEbkNz1mR
+         1ntZvjUsxs/JA1EKGHLq+H2Q0bBH9tqSeWBc0YjuE0Nrh4k9mA8bJZ7VmRCwSeiesiE2
+         CJyg==
+X-Gm-Message-State: ANoB5pma1DDzoFXhRUs5rJ5ceD7+aEd+Pud9lv7IymJkr40ikILXrjtU
+	UFc/TUE9DcEbPsFjmbsGaLI=
+X-Google-Smtp-Source: AA0mqf4dY4OsqWQ9ilBzVdWnLdqzfeksb8IeB81scWDAHwf0V02NHZgCQZDCm8FKNeGVXCeAMK9AOA==
+X-Received: by 2002:a05:6000:3c3:b0:22e:3275:983e with SMTP id b3-20020a05600003c300b0022e3275983emr15028487wrg.71.1668622267054;
+        Wed, 16 Nov 2022 10:11:07 -0800 (PST)
+Received: from localhost ([102.36.222.112])
+        by smtp.gmail.com with ESMTPSA id n1-20020a05600c4f8100b003cf78aafdd7sm3172139wmq.39.2022.11.16.10.11.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Nov 2022 10:11:06 -0800 (PST)
+Date: Wed, 16 Nov 2022 21:11:00 +0300
+From: Dan Carpenter <error27@gmail.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: iommu@lists.linux.dev
+Subject: Re: [bug report] iommufd: vfio container FD ioctl compatibility
+Message-ID: <Y3UntBjV51+MNwep@kadam>
+References: <Y2Nhj0mIjrSJwO7W@kili>
+ <Y3P2oEIICOTiVOBH@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 3urLWCGZdldKrrByunqB7bPZQSfeAO4S
-X-Proofpoint-ORIG-GUID: 3urLWCGZdldKrrByunqB7bPZQSfeAO4S
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-11-16_03,2022-11-16_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 priorityscore=1501 suspectscore=0
- mlxlogscore=999 phishscore=0 malwarescore=0 spamscore=0 adultscore=0
- bulkscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2210170000 definitions=main-2211160119
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y3P2oEIICOTiVOBH@ziepe.ca>
 
-When RPCIT indicates that the underlying hypervisor has run out of
-resources it often means that its IOVA space is exhausted and IOVAs need
-to be freed before new ones can be created. By triggering a flush of the
-IOVA queue we can get the queued IOVAs freed and also get the new
-mapping established during the global flush.
+On Tue, Nov 15, 2022 at 04:29:20PM -0400, Jason Gunthorpe wrote:
+> On Tue, Nov 15, 2022 at 03:45:00PM +0300, Dan Carpenter wrote:
+> > [ Resending two weeks of email because mutt + msmtp has been silently
+> >   eating my outgoing mail instead of delivering it.  *sigh* -dan ]
+> > 
+> > Hello Jason Gunthorpe,
+> > 
+> > The patch 32c328dc9b73: "iommufd: vfio container FD ioctl
+> > compatibility" from Dec 15, 2021, leads to the following Smatch
+> > static checker warning:
+> > 
+> > 	drivers/iommu/iommufd/vfio_compat.c:174 iommufd_vfio_unmap_dma()
+> > 	warn: potential integer overflow from user (local copy) 'unmap.iova + unmap.size'
+> > 
+> > drivers/iommu/iommufd/vfio_compat.c
+> >     140 static int iommufd_vfio_unmap_dma(struct iommufd_ctx *ictx, unsigned int cmd,
+> >     141                                   void __user *arg)
+> >     142 {
+> >     143         size_t minsz = offsetofend(struct vfio_iommu_type1_dma_unmap, size);
+> >     144         /*
+> >     145          * VFIO_DMA_UNMAP_FLAG_GET_DIRTY_BITMAP is obsoleted by the new
+> >     146          * dirty tracking direction:
+> >     147          *  https://lore.kernel.org/kvm/20220731125503.142683-1-yishaih@nvidia.com/
+> >     148          *  https://lore.kernel.org/kvm/20220428210933.3583-1-joao.m.martins@oracle.com/
+> >     149          */
+> >     150         u32 supported_flags = VFIO_DMA_UNMAP_FLAG_ALL;
+> >     151         struct vfio_iommu_type1_dma_unmap unmap;
+> >     152         struct iommufd_ioas *ioas;
+> >     153         unsigned long unmapped;
+> >     154         int rc;
+> >     155 
+> >     156         if (copy_from_user(&unmap, arg, minsz))
+> >     157                 return -EFAULT;
+> >     158 
+> >     159         if (unmap.argsz < minsz || unmap.flags & ~supported_flags)
+> >     160                 return -EINVAL;
+> >     161 
+> >     162         ioas = get_compat_ioas(ictx);
+> >     163         if (IS_ERR(ioas))
+> >     164                 return PTR_ERR(ioas);
+> >     165 
+> >     166         if (unmap.flags & VFIO_DMA_UNMAP_FLAG_ALL) {
+> >     167                 if (unmap.iova != 0 || unmap.size != 0) {
+> >     168                         rc = -EINVAL;
+> >     169                         goto err_put;
+> >     170                 }
+> >     171                 rc = iopt_unmap_all(&ioas->iopt, &unmapped);
+> >     172         } else {
+> >     173                 if (READ_ONCE(ioas->iopt.disable_large_pages)) {
+> > --> 174                         unsigned long iovas[] = { unmap.iova + unmap.size - 1,
+> > 
+> > The unmap.iova + unmap.size addition can have an integer overflow.  It's
+> > unclear to me if this is caught later or if it has any negative
+> > implications.
+> 
+> There are no negative implications to the kernel, which is why I left
+> it unchecked here.
+> 
+> Do you think we should have the check for the sake of static tools?
 
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
----
- drivers/iommu/dma-iommu.c  | 14 +++++++++-----
- drivers/iommu/dma-iommu.h  |  1 +
- drivers/iommu/s390-iommu.c |  7 +++++--
- 3 files changed, 15 insertions(+), 7 deletions(-)
+No.  I've written something like five different integer overflow checks.
+One is pretty decent but the problem is a hard nut to crack.  This
+heuristic here is not useful enough to the point where we'd want to
+silence false positives.
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 3801cdf11aa8..54e7f63fd0d9 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -188,19 +188,23 @@ static void fq_flush_single(struct iommu_dma_cookie *cookie)
- 	spin_unlock_irqrestore(&fq->lock, flags);
- }
- 
--static void fq_flush_timeout(struct timer_list *t)
-+void iommu_dma_flush_fq(struct iommu_dma_cookie *cookie)
- {
--	struct iommu_dma_cookie *cookie = from_timer(cookie, t, fq_timer);
--
--	atomic_set(&cookie->fq_timer_on, 0);
- 	fq_flush_iotlb(cookie);
--
- 	if (cookie->fq_domain->type == IOMMU_DOMAIN_DMA_FQ)
- 		fq_flush_percpu(cookie);
- 	else
- 		fq_flush_single(cookie);
- }
- 
-+static void fq_flush_timeout(struct timer_list *t)
-+{
-+	struct iommu_dma_cookie *cookie = from_timer(cookie, t, fq_timer);
-+
-+	atomic_set(&cookie->fq_timer_on, 0);
-+	iommu_dma_flush_fq(cookie);
-+}
-+
- static void queue_iova(struct iommu_dma_cookie *cookie,
- 		unsigned long pfn, unsigned long pages,
- 		struct list_head *freelist)
-diff --git a/drivers/iommu/dma-iommu.h b/drivers/iommu/dma-iommu.h
-index 942790009292..cac06030aa26 100644
---- a/drivers/iommu/dma-iommu.h
-+++ b/drivers/iommu/dma-iommu.h
-@@ -13,6 +13,7 @@ int iommu_get_dma_cookie(struct iommu_domain *domain);
- void iommu_put_dma_cookie(struct iommu_domain *domain);
- 
- int iommu_dma_init_fq(struct iommu_domain *domain);
-+void iommu_dma_flush_fq(struct iommu_dma_cookie *cookie);
- 
- void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);
- 
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index 087bb2acff30..9c2782c4043e 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -538,14 +538,17 @@ static void s390_iommu_iotlb_sync_map(struct iommu_domain *domain,
- {
- 	struct s390_domain *s390_domain = to_s390_domain(domain);
- 	struct zpci_dev *zdev;
-+	int rc;
- 
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(zdev, &s390_domain->devices, iommu_list) {
- 		if (!zdev->tlb_refresh)
- 			continue;
- 		atomic64_inc(&s390_domain->ctrs.sync_map_rpcits);
--		zpci_refresh_trans((u64)zdev->fh << 32,
--				   iova, size);
-+		rc = zpci_refresh_trans((u64)zdev->fh << 32,
-+					iova, size);
-+		if (rc == -ENOMEM)
-+			iommu_dma_flush_fq(domain->iova_cookie);
- 	}
- 	rcu_read_unlock();
- }
--- 
-2.34.1
+regards,
+dan carpenter
 
