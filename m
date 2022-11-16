@@ -1,64 +1,86 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2062.outbound.protection.outlook.com [40.107.243.62])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2064.outbound.protection.outlook.com [40.107.220.64])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA20B33D1
-	for <iommu@lists.linux.dev>; Wed, 16 Nov 2022 20:35:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7CC712290;
+	Wed, 16 Nov 2022 21:00:58 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Rusd9CL8UjXgsOrcXGp9noWpnkAPp/9Ywsd6BjqDwj42psxdDqYjFLBmcdj75jKIY6QoCa+KyQP7wJ2O+mK/lphDZMR6PFF9SwUDBSPRDy8DQHX3V/Wt14Wcc8cS4eAJAPbtTpszwW92Dmre+V7DiV857VwRvAqzTF7OzLJFAaVDzeli7s41KFkyhTLFl8ktd46FmWzhPZ1uvIMHBSTsbH53xWr/BOnupeYDWJ9NuLFtuJ27+tsvDlkjVSa269ztGB8NbAUT6eNHV+NxnLwkjY9RyfMI0jAr9a1aKvjynIQ8pk3qRJvqUnTV8HZ872G655yp/ej+QQPfrRlKuQFBWA==
+ b=C/nliwOKzUHBcQdGGL89sZAKhO/VfGoBF5yGLnm9wa0wdJz3jSiUOmIAnlo0rQWkGEebEqK66u6R3UQ+bbmqeR0pr+Xk8jFZF5LV6k05cjIFAM0DOgdX6RU/5bLDUbh8x9CVy4XNEBbRUhYZfdkc1sBQjdpNoyHC7y4I1blwGBZBfpxOJQgBThMRXNsufLrb05kG+1NTbJLp508/64Kf2Rc6K8z0qtIcmuDQ1TxIjyyOYmg3MecBlB2lCGLZ18tvBfE4wusVdh5kJZf1OibhrroyOD4J5R4AQSXGjPU8rn/16Uf8CkVhAJNxH+0i5V1NeXwSgUzTQaRHopPw1KTVIA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UTfYZkwwayi1+OL5LpFuhJ11LzX8fvVYc9f4jETPTy8=;
- b=Nz5gpLW8ZxmdexOpmWc8TjF/Chv4eGcdDj/ViCJd1OzP5L1rXfQ87QD0CfkpTJ4zflrzYM8L7YiwuAZeuyshIVgK+9XScwZpBI/kix3keL4qTopzbLQndYLNGiDgJM+KPbj09AS6O67lKPmTy3ZhSfMFodmj7mQZssfmjcXg3cLnWnSDLCX3H0DuiyZ1hTLgt1FAWqrNFyMKyVNygNjnPeY1y4fb24mKOUDdCfr+4Av6tCimgulatI1QCxPkeZ0IEfU30OUdMWrENcvwVKeAEDL24Yp/1QPJEBhmyDrmbKAXL/aR5i83ju3CbEpu3TIYPIO7Fi70NBtFIappGklw1Q==
+ bh=i/5IoMdzanZlihohIxZq3RVStRxJF7NBwPZO3xVT9Aw=;
+ b=E+RIt2koyx1uIcE1D36njNU4Lg9bXuwwfBgMX9vyeVvjQPymnSZkns47ITr1VJq7QMlsXBIOT6GHtfpexFN5On6nKZcRUYPHUUZBW3n6VRzNimzauNQcWxCZABwHTrxa8iw1pjaNIjIe4bIVgDPlQL142XLiROSKDxuR0oL1X82hdXv2UNFlxdL56FUvThkmcXOtKRZDeekjyTm4aC3TB3IIIHhqu5e4Ov4U/CgOrGvTRRrDOoxuTvTOFAhki7PRtohPtifwyhp3+63qdSXsvPyiQikZANd0mWpRGiA/Um3WbV03ZlNm2/1zzt23WBgW+0Te/OKgYwdHkm/T0mjTiQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UTfYZkwwayi1+OL5LpFuhJ11LzX8fvVYc9f4jETPTy8=;
- b=W5uK717GGywcdujRzJ6EOMN0bPSJc63f+6eWFDYxfMqCyOTY2z3hjKCs+j/0Jnu9Kn7L+X3dxhWU+Q3Iy25ZUuc5pd/A8P1eirK9bzDeJRfOWH9rvg/hxtsbnaOGYzyXWBqRrCU4Eqfd+6ajM+fkpU5926+UW0CL78XPxiDgD34=
+ bh=i/5IoMdzanZlihohIxZq3RVStRxJF7NBwPZO3xVT9Aw=;
+ b=J/Xu12puPI4+TtguG1rQOieFSPJ5B/p2XVtHM4h0C71VG7O2qrmOg2rVF3VC2sicJMmauUmsuoyMzQ/upMbyiyzbmROYU0Sil2dU55uIPQUjJpmzE5BClwhDV7lOfCOVzkbpaWkg+4y2+U6RA3sL/imV5yc6rzsOAq3xd33fi0+Zsja7F18d+zrHSAvrjLNkWCxOYcyott1tQDij4rZgkcnNlPnjuCyBQreHEwPr/g2pQhgJ4NsDZ6I2avBxoPeTCR6AtGwI6EGrCwo77LL7osSyfNJ0BkYSnVgSSK2rF0zyblznh85XEa4IyMI4bvhuDFFMHgb7ZyiwAHisayWWFQ==
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
- by SA0PR12MB4511.namprd12.prod.outlook.com (2603:10b6:806:95::9) with
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by CY8PR12MB7682.namprd12.prod.outlook.com (2603:10b6:930:85::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.18; Wed, 16 Nov
- 2022 20:35:39 +0000
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::4da8:e3eb:20eb:f00]) by DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::4da8:e3eb:20eb:f00%2]) with mapi id 15.20.5813.018; Wed, 16 Nov 2022
- 20:35:39 +0000
-Message-ID: <4d27540e-691e-bd86-0f70-1faff39f7187@amd.com>
-Date: Wed, 16 Nov 2022 14:35:35 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [Patch v3 05/14] x86/mm: Handle decryption/re-encryption of
- bss_decrypted consistently
-Content-Language: en-US
-To: Michael Kelley <mikelley@microsoft.com>, hpa@zytor.com,
- kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
- decui@microsoft.com, luto@kernel.org, peterz@infradead.org,
- davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
- pabeni@redhat.com, lpieralisi@kernel.org, robh@kernel.org, kw@linux.com,
- bhelgaas@google.com, arnd@arndb.de, hch@infradead.org,
- m.szyprowski@samsung.com, robin.murphy@arm.com, brijesh.singh@amd.com,
- tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
- dave.hansen@linux.intel.com, Tianyu.Lan@microsoft.com,
- kirill.shutemov@linux.intel.com, sathyanarayanan.kuppuswamy@linux.intel.com,
- ak@linux.intel.com, isaku.yamahata@intel.com, dan.j.williams@intel.com,
- jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com, x86@kernel.org,
- linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
- netdev@vger.kernel.org, linux-pci@vger.kernel.org,
- linux-arch@vger.kernel.org, iommu@lists.linux.dev
-References: <1668624097-14884-1-git-send-email-mikelley@microsoft.com>
- <1668624097-14884-6-git-send-email-mikelley@microsoft.com>
-From: Tom Lendacky <thomas.lendacky@amd.com>
-In-Reply-To: <1668624097-14884-6-git-send-email-mikelley@microsoft.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: CH2PR07CA0011.namprd07.prod.outlook.com
- (2603:10b6:610:20::24) To DM4PR12MB5229.namprd12.prod.outlook.com
- (2603:10b6:5:398::12)
+ 2022 21:00:57 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f8b0:df13:5f8d:12a%7]) with mapi id 15.20.5813.017; Wed, 16 Nov 2022
+ 21:00:56 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: bpf@vger.kernel.org,
+	Jonathan Corbet <corbet@lwn.net>,
+	David Woodhouse <dwmw2@infradead.org>,
+	iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	linux-doc@vger.kernel.org,
+	linux-kselftest@vger.kernel.org,
+	llvm@lists.linux.dev,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <ndesaulniers@google.com>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Shuah Khan <shuah@kernel.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Tom Rix <trix@redhat.com>,
+	Will Deacon <will@kernel.org>
+Cc: Anthony Krowiak <akrowiak@linux.ibm.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Bagas Sanjaya <bagasdotme@gmail.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+	Cornelia Huck <cohuck@redhat.com>,
+	Daniel Jordan <daniel.m.jordan@oracle.com>,
+	David Gibson <david@gibson.dropbear.id.au>,
+	Eric Auger <eric.auger@redhat.com>,
+	Eric Farman <farman@linux.ibm.com>,
+	Jason Wang <jasowang@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Jason Herne <jjherne@linux.ibm.com>,
+	Joao Martins <joao.m.martins@oracle.com>,
+	kvm@vger.kernel.org,
+	Lixiao Yang <lixiao.yang@intel.com>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Halil Pasic <pasic@linux.ibm.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+	Yi Liu <yi.l.liu@intel.com>,
+	Keqian Zhu <zhukeqian1@huawei.com>
+Subject: [PATCH v5 02/19] iommu: Add device-centric DMA ownership interfaces
+Date: Wed, 16 Nov 2022 17:00:38 -0400
+Message-Id: <2-v5-4001c2997bd0+30c-iommufd_jgg@nvidia.com>
+In-Reply-To: <0-v5-4001c2997bd0+30c-iommufd_jgg@nvidia.com>
+References:
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BL0PR02CA0116.namprd02.prod.outlook.com
+ (2603:10b6:208:35::21) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -66,110 +88,279 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5229:EE_|SA0PR12MB4511:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7231f684-2441-445a-625e-08dac8121f58
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CY8PR12MB7682:EE_
+X-MS-Office365-Filtering-Correlation-Id: ec1cd239-51bf-4ef1-6590-08dac815a7ed
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	Cb932wuHDh8FcsML9wILsrYqIo/hIkL/L6MtHQ8ovoFEhy8aQ0mzL6Y2uomh/E1jqn4pj4iumKB4v6II2hu2uuTVs5hbM9VSUG+weCOGrSGW1iolgUQ//qhZl0dB+SDYRkf0nl089h18u9nGNr8K4Amgo2fK3CEH4Ny5nnNBwyy4Rq+lpDAjv3PXp+n6WFMHLit4xkCZb1wAEU99qmNjvQ9CC9r2KQXTktoy7gA3TpqzBk2ECDQxrm3TNExv3eFB0ABE+NsVvWJ6JgSZoAmxuUcew+XtdCMujRqBrblvh6PAcvuReJ00yq5ED/CASGU01W3g9Y6lwAwLovwYxARZzskKr747r33WRs2KD64vruUHP5Ikf16WMHeeg0dC3FTWJRbaxdgm6X3AqgnaXv4Q7ivdZ7XmXfRCgttxzX3addblrp+PjbAAgbvG/S+I/BjlNK+wJPTEtOvPn1LYczvBI93ojMP7ta4eu8iKROnAOxBfbE257LF5FTMpLt61VQZpo29aOvBjHRaTlAsLJCwxAEY8K3yN+3OM5QM+CfYEkB94Bw67oPSo4yD3wHHCEBYkE6RfotvdgfIPIVlHmqc/kRdqli0sHZXRD3KfPwaTUEe0HpC5mBJHIdEGD78QvWOJZqpUXbEiJlNWKCIgwlmtu67P6hXGduPwsRKnkUeA/8PVzJC6/eGshYLcJcQsg0hTUBeuG2xyiChrHut2wHXkFeySnqpanumoEwW6gaNcOihLWEo9WlB6s/ZpioTWVoFNpU5pj9k+U2IiJtAbh/pvUSBDF0nhABvWvgpm2CYTQ8YEduFq6Xuv8JOT4L6im0gK
+	gqtLpxZckgvsM9KZS0iDDBHLFwvn7ytrIHPxpdOnj0mQ1tUwDR+URItxXpWh1BjYTnC1OrRqO3dhWgOy9Elouhj3yzlfN7u2LJm90fWNZ9jxIRqOHDlJSF8sTWr+cUDXYXEh8jA0Z6jyLYXBLSh80ihev75txP6trbktUXY3Fc7OqO0eZM1jjrJmwrS3C338zVQtZdlWRZ4x5EqsjlKDlmTF06KWfQNnQDMfYv0JwsrMgDXw91YxD0qM7H4Ps7znw15xJnHLBdldIjCgu6TOBaNSFsut7uMDR+zZ+nlFD3mJeI/rIGBM6hHN9AD33mtapKNybs0l+vFPsM+mODIpgWws9hZUHcCytavnnzchSdqd09IzuQH5T8OeJqIFUTzQyVes4BOwQCRAGfcVHt/60NLzxcGoskD4tIYw1/XpbrikyiZoluLHsW4xjufNGs5IiwrkcaUSA5l61jHA9/UUpzP97rbIQ9jTXNWuXDvJ3nFyyVfVhpEA0dlXrDNwwR2/AOl5AO+Clv58eLFm/qNHtEtAAVBGwMxGg+K2P6goFsnzdBQJUP9x8HTnGW8xr24zGt3XvPwoKcIxAIBZDAfEqQvhsxmZyeexgaiWYvued00gi8Vs0JDJtdKZGgZPqAI1eC4Rv84NswxfehOFzO6VBjlrLGBUdZvcdE30CtiiRgMrdD1TelXNJYvAS0IVO95JChGkafpE39q5t2sfj2jUY+p5wawQRmQqTlhQDz7m1B383Udf7I7BqxZHlsPv7Ekm1TDu3LMfqVHKNyx9jvVfhA==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(376002)(346002)(136003)(39860400002)(366004)(451199015)(6512007)(26005)(66946007)(316002)(8676002)(8936002)(5660300002)(186003)(53546011)(2616005)(66476007)(66556008)(36756003)(41300700001)(6506007)(2906002)(86362001)(31696002)(38100700002)(7406005)(921005)(7416002)(83380400001)(6486002)(6666004)(478600001)(31686004)(45080400002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(346002)(136003)(396003)(366004)(376002)(451199015)(38100700002)(2616005)(86362001)(921005)(110136005)(7406005)(6666004)(478600001)(6486002)(7416002)(8936002)(66476007)(8676002)(4326008)(54906003)(66556008)(66946007)(316002)(41300700001)(83380400001)(2906002)(6506007)(186003)(5660300002)(6512007)(36756003)(26005)(4216001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?dmtFenEwbkJoYzl5dzZpeXFocEVtTU15a1VHbWJ6QmpCZWVoVW8xcmRyL0Ni?=
- =?utf-8?B?TzFLeHJkdlNwK3NqYjg3eGJRbXBMQXZOZ01tWllpTTVUdmRLRS9DdkEvM2I2?=
- =?utf-8?B?cjF2dGRuZ29TNXZUSlRINksxWXZSOTJZU0JBN1Q0R2dwcWZyV0VIdy9lWFJ5?=
- =?utf-8?B?NGhjVEJ1YzhIaUlwd0tqZ2NORTJ4UWNKMWJTeEU0MDJXdG9TREQxT29EbldZ?=
- =?utf-8?B?aVRWVjhUVHRvK3J4Z1l2QTdxbkJXUXlLZUMrK013N3lFdWs4TlVucVhMcGF5?=
- =?utf-8?B?SXFRaUhFSnRIb215NUJ6bnl6WEVnZjFreXdQN0VNQ2FBcW1nSzFPSHpONDh0?=
- =?utf-8?B?eFgwV2JBNkQ0dlRGVEcrNlRhMGxkd0UwNnQ4dkZudmdWTFhOQm9ZRy9jQUcz?=
- =?utf-8?B?UnpoT0dzaDJpUmJLMUllRTN2OG5sRGQzMUFkbitzSkF3UlNHYlVYRm1uVGNQ?=
- =?utf-8?B?TWs0Z0VVU0lkcy9vb0U1MlloMUxzTGZCVlNVdUhKWkJ0T1RoOFpna01ocFFI?=
- =?utf-8?B?Y2JlWDBURjA1OUU4eVFzaDJCY1g2Y0RONXBiOHV5Ly9ETGprcldndGNtbkNa?=
- =?utf-8?B?V2FjZVFBMkVrVlV4SFdDSUNMZUVOQkRQVXM0VE9rRkNoNTdLNk9xV3o3R3Vu?=
- =?utf-8?B?MXp1NGkvNzFENXdURnYwMExHSzhQaXdnSjBSSkN2K01QUEZXejFXZzF4RExS?=
- =?utf-8?B?Vnh2ZjdQNDV2TFhveTk5L1NsaDBWRm9qTWREOHdqSWliVll4U05mVmNlWS82?=
- =?utf-8?B?WndQVVZJeElkM216NzN6TTBTT0xQK3QrNGI1NUlOUXQ4VDl6cmZVN1lIN0lI?=
- =?utf-8?B?c25nQnBlQlUyL3hlSWYzbUZZZXpzN21ocHlOYjVYRytLclRaZEFxR21rNnhx?=
- =?utf-8?B?MnYvNjVaaWt0UkluUXZxOEFiMGJsUzVUcERBbDlneEQ4bGh4Rk1kVmhaTWw0?=
- =?utf-8?B?b2Y1d2FEZUJPY1FkU1RLY2FRV3FFVXlwekNEWml4bHR5S1dDbk02Z2o1bkN3?=
- =?utf-8?B?SUZsalI3Q0RHSlo1T1QxYmNoYWErWmQxSmFidVM3cE5pUjRheVJqeUF5aVJC?=
- =?utf-8?B?dnBHNTFCemRqejFQR0E1UGR4Qno5b3I3R3pSdkNnTk1McVRMYTY4Um94NjY1?=
- =?utf-8?B?SU5lSmluL2ZrT1o1cytYQ3pSM1pPVEJHVE94RnhFSmN4d0NBcmIrMXZIcEpq?=
- =?utf-8?B?bHdtY2Q2eGFjcUJvY09DbndJa2ZMNjRLa2c2djVMczlRdUVPZGwyQ0NrWjA5?=
- =?utf-8?B?SFhsdS9UZjZuQktKYWlFeWJFVXNxTW9BMDRIa3B0cks3dTVmWS9jb2NMTDB0?=
- =?utf-8?B?clZxci82bExObHZ1SmlHYkNsTVdEQVQ3dS9UdWdTQVA3a1VvR3kvdVBsZ0x4?=
- =?utf-8?B?OHBySk05WCtXM0QwdjgrWGZNSTFWRlZtSmpkS0Zoek1jZ0JxeXRFT0lXQXRo?=
- =?utf-8?B?WWZnS2gyVEE3eUMwR2kyM002ZDFNbXNsanRKTTdEZnJiTlFDczdtVE5XUWxS?=
- =?utf-8?B?bTJ4dWJPTmZVbVpBY3hGbm9UcGRJZm9WbWJuUlBpbHZTTlVwS2sxNzBSYU95?=
- =?utf-8?B?b0ZqcHlvKzhxbSs4K1lacEw4Nk5nS1VIcVRrK3hGNm41TEQ2d3NMc3pidjlv?=
- =?utf-8?B?K1NIS3ZGK0crUSs5Qi92eTV3MTliR29YRW0veWZDOWROejRPR25pU0M0YnpU?=
- =?utf-8?B?Z3hERWI1dkpyVEtXWVhSblRIMllqVEVTWk1WcWQxK2pmN0ZoOHNpNFVvc0E2?=
- =?utf-8?B?SEROYkhMcW5aaVBKbk8vQ2dYNTBKN1VjMlZVY1FyK2p3M3J1Y1c0WEhkMjhS?=
- =?utf-8?B?NW1iVWxVVXovL0tEMjQwWkFkNnhENHh4R1J0V1NzdjFDWnRBa05UUllKTHVm?=
- =?utf-8?B?ZlRPNFNqWlQwN2VsSEJJd1k4MkV6NFpMMk8rOHd3ZXVrUHQ4YUxIQXpoTlE5?=
- =?utf-8?B?STdod3BnRUdmOGsySjRta0JVcWhEYzdPRkJLT0htQUdGK0xhL0x6aFl6R0dD?=
- =?utf-8?B?ejdmTHc5Vm1JTnBXVXJxYWUxbDRicmR5V3pmeEdmZ1F5RGpaTFJDNEMya3JR?=
- =?utf-8?B?MjU4NVNCcUlBUXlxb0ZDVlFXQkt1Y0c3QmZmaFNya1d1SkMzd0JUNG5FNllZ?=
- =?utf-8?Q?z04A+glIuNV7FfP4ZCckbIM3Z?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7231f684-2441-445a-625e-08dac8121f58
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
+	=?us-ascii?Q?+bfF6etGvMY6tDqd/t6iXbjw7VPCukrjkUNUQjKpNYF3z6te5niHCyCEc7jv?=
+ =?us-ascii?Q?+m+m2mrBA0VCgr5mCF3m9ITgxZsV6Z8cYDwxpshzi6fTtMEGVhBoY/6UZxrT?=
+ =?us-ascii?Q?JBPSeHb21kNT8XSaLql793f2K2wy5VKrriRvNF9doV1EWtPV0vwHw8A4+pzW?=
+ =?us-ascii?Q?6vioNQu7bh26udhmlPBgVaXOLQVKiy9QItvKRAi+A8ZmUD6yE3jTdwvkaWG0?=
+ =?us-ascii?Q?VBR4bAMtx5Z1+N2OgXaEfFwRVZbLTK7h8J3B8ix35rtwjNPbPcC3EzjxCkWj?=
+ =?us-ascii?Q?83oVBOoasFjTo+EN4Ly1zmwdh2CDfZnsbJKAoz/jjjwUK68XRr/CtmWLBT7B?=
+ =?us-ascii?Q?AfrfLup/JcxliIhZqg0vZm1UaoWHfTsDwBriuTfTVGjAceIamavKtbo25+uh?=
+ =?us-ascii?Q?noVyysQxALhNF+ASWHT2O6tK+60X4TMoEcGrpBd9buJOICnPNIZ4r7b4SvOi?=
+ =?us-ascii?Q?uwzHIcuz8VXcK2/UAWuxYs29T7uzqAoLC3bY29wTOGO8Fy007uvvYve7L9+V?=
+ =?us-ascii?Q?yeg2q35dQbvCcvlVX2krqOAb3I6ORP/0ddA/atTY38aNpx2Nnytyil8aKQp2?=
+ =?us-ascii?Q?8VnvSLlOtAMSw8T/GAHfJIw2yKqyYlF4V1Oyh0atqgxDDHV8PNY3alfng67z?=
+ =?us-ascii?Q?3ivMLT10qsOxsYvYHMWwzgouHTzzb6ynVCiAbKyO7enARQTasC1TtPwWbJFu?=
+ =?us-ascii?Q?KriJjsVaveVx/38rXATlHLnX08jilg8utLkzIZGBuXLAHAgSXHiseMrjpqo0?=
+ =?us-ascii?Q?xXjRfHjpRNA2LWV0XSNkpMK/YQcRLtXV5vG9nKpuP7gHF+hZmMQ/7Agwl5y2?=
+ =?us-ascii?Q?eywygOSR31CzUPgpdGTXB5TFGm4Q7rtnCSvtOQNHU0bJJOrWSDwXncE+pQI7?=
+ =?us-ascii?Q?O8CrYxPjRzV0nE/H+xSoMsHSujrnezAdqEi0B+jApaMgxwgXcDDZmidrgGSL?=
+ =?us-ascii?Q?E3gC4fnxa9PxfPuRHGYMd9qT501Oa5CSEMlHVQaRrP8j179USMa7FC/qaaIx?=
+ =?us-ascii?Q?KUG6iOFhJ2Fr1AbSaTW5gXz7SAfrPmJbX9vpHOVv7+S6EWeKUQ2pUdUSZi1o?=
+ =?us-ascii?Q?iH/WlBX0uRGIIgQXRoRWVYHxQENUV5qivD4KKInn2d6jwz190Fmhitc7mrbk?=
+ =?us-ascii?Q?bnm/BkjcZGrrtRAeEWgYpNGPx9UozG5gWMHJwF/DDbYs0O+FaHZuRwIEPklb?=
+ =?us-ascii?Q?Bm4Y0x8KQLEKA9QKTRQIhZ2hhCjJ8CE2NNa26INYn33FrsSsip8dI5+/KOlr?=
+ =?us-ascii?Q?ube799GQiw8dRZLKkobN6FiNi9QS9XcqEFbeqODHHyMtApprMz6gDtnnuFsI?=
+ =?us-ascii?Q?/yjBt604yX39YMMI+HmXZS/VUngeM++oaGEG3Zto5PiiISYrmX8VL0+9azI2?=
+ =?us-ascii?Q?/bW2Qz1xuVRETsle/eaoZLAdL+zWuFG6BEjbC35Sp08FxXxE40ze2jQatuQJ?=
+ =?us-ascii?Q?vZlY6KWy3QwAKOFlj/3zgneH+GDiJDKN1QfcygLGfiYVbNSWDNhbDE6ZitIs?=
+ =?us-ascii?Q?Ey4Y5X3Of5kLXR7TbnMFl8ay+PY0rACl6ChMrkfDdfbHcQaTxfqb40RdRK1Y?=
+ =?us-ascii?Q?2cEpAYr8jypnCn0tlVQ=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ec1cd239-51bf-4ef1-6590-08dac815a7ed
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2022 20:35:38.8917
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2022 21:00:56.7004
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6CxDAPkhQ5vfXkLzRoNvUwZaAwGShvbFFAkZwjdnX+x67C7glpVBmlpSNWEnf5LpgIhmvNy7PpxnjCgjWqXeQQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4511
+X-MS-Exchange-CrossTenant-UserPrincipalName: dZh/onY7Q3IyZQxJKknIesshoPTQyiNNpowHXP8agmjDim5vMKSr6EorVl3iQPbn
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7682
 
-On 11/16/22 12:41, Michael Kelley wrote:
-> Current code in sme_postprocess_startup() decrypts the bss_decrypted
-> section when sme_me_mask is non-zero.  But code in
-> mem_encrypt_free_decrytped_mem() re-encrypts the unused portion based
-> on CC_ATTR_MEM_ENCRYPT.  In a Hyper-V guest VM using vTOM, these
-> conditions are not equivalent as sme_me_mask is always zero when
-> using vTOM.  Consequently, mem_encrypt_free_decrypted_mem() attempts
-> to re-encrypt memory that was never decrypted.
-> 
-> Fix this in mem_encrypt_free_decrypted_mem() by conditioning the
-> re-encryption on the same test for non-zero sme_me_mask.  Hyper-V
-> guests using vTOM don't need the bss_decrypted section to be
-> decrypted, so skipping the decryption/re-encryption doesn't cause
-> a problem.
-> 
-> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
-> ---
->   arch/x86/mm/mem_encrypt_amd.c | 10 +++++++---
->   1 file changed, 7 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/x86/mm/mem_encrypt_amd.c b/arch/x86/mm/mem_encrypt_amd.c
-> index 9c4d8db..5a51343 100644
-> --- a/arch/x86/mm/mem_encrypt_amd.c
-> +++ b/arch/x86/mm/mem_encrypt_amd.c
-> @@ -513,10 +513,14 @@ void __init mem_encrypt_free_decrypted_mem(void)
->   	npages = (vaddr_end - vaddr) >> PAGE_SHIFT;
->   
->   	/*
-> -	 * The unused memory range was mapped decrypted, change the encryption
-> -	 * attribute from decrypted to encrypted before freeing it.
-> +	 * If the unused memory range was mapped decrypted, change the encryption
-> +	 * attribute from decrypted to encrypted before freeing it. Base the
-> +	 * re-encryption on the same condition used for the decryption in
-> +	 * sme_postprocess_startup(). Higher level abstractions, such as
-> +	 * CC_ATTR_MEM_ENCRYPT, aren't necessarily equivalent in a Hyper-V VM
-> +	 * using vTOM, where sme_me_mask is always zero.
->   	 */
-> -	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT)) {
-> +	if (sme_get_me_mask()) {
+From: Lu Baolu <baolu.lu@linux.intel.com>
 
-To be consistent within this file, you should use sme_me_mask directly.
+These complement the group interfaces used by VFIO and are for use by
+iommufd. The main difference is that multiple devices in the same group
+can all share the ownership by passing the same ownership pointer.
 
-Thanks,
-Tom
+Move the common code into shared functions.
 
->   		r = set_memory_encrypted(vaddr, npages);
->   		if (r) {
->   			pr_warn("failed to free unused decrypted pages\n");
+Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+Tested-by: Yi Liu <yi.l.liu@intel.com>
+Tested-by: Lixiao Yang <lixiao.yang@intel.com>
+Tested-by: Matthew Rosato <mjrosato@linux.ibm.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Reviewed-by: Eric Auger <eric.auger@redhat.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/iommu/iommu.c | 121 +++++++++++++++++++++++++++++++++---------
+ include/linux/iommu.h |  12 +++++
+ 2 files changed, 107 insertions(+), 26 deletions(-)
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 6ca377f4fbf9e9..d69ebba81bebd8 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -3108,41 +3108,49 @@ static int __iommu_group_alloc_blocking_domain(struct iommu_group *group)
+ 	return 0;
+ }
+ 
++static int __iommu_take_dma_ownership(struct iommu_group *group, void *owner)
++{
++	int ret;
++
++	if ((group->domain && group->domain != group->default_domain) ||
++	    !xa_empty(&group->pasid_array))
++		return -EBUSY;
++
++	ret = __iommu_group_alloc_blocking_domain(group);
++	if (ret)
++		return ret;
++	ret = __iommu_group_set_domain(group, group->blocking_domain);
++	if (ret)
++		return ret;
++
++	group->owner = owner;
++	group->owner_cnt++;
++	return 0;
++}
++
+ /**
+  * iommu_group_claim_dma_owner() - Set DMA ownership of a group
+  * @group: The group.
+  * @owner: Caller specified pointer. Used for exclusive ownership.
+  *
+- * This is to support backward compatibility for vfio which manages
+- * the dma ownership in iommu_group level. New invocations on this
+- * interface should be prohibited.
++ * This is to support backward compatibility for vfio which manages the dma
++ * ownership in iommu_group level. New invocations on this interface should be
++ * prohibited. Only a single owner may exist for a group.
+  */
+ int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner)
+ {
+ 	int ret = 0;
+ 
++	if (WARN_ON(!owner))
++		return -EINVAL;
++
+ 	mutex_lock(&group->mutex);
+ 	if (group->owner_cnt) {
+ 		ret = -EPERM;
+ 		goto unlock_out;
+-	} else {
+-		if ((group->domain && group->domain != group->default_domain) ||
+-		    !xa_empty(&group->pasid_array)) {
+-			ret = -EBUSY;
+-			goto unlock_out;
+-		}
+-
+-		ret = __iommu_group_alloc_blocking_domain(group);
+-		if (ret)
+-			goto unlock_out;
+-
+-		ret = __iommu_group_set_domain(group, group->blocking_domain);
+-		if (ret)
+-			goto unlock_out;
+-		group->owner = owner;
+ 	}
+ 
+-	group->owner_cnt++;
++	ret = __iommu_take_dma_ownership(group, owner);
+ unlock_out:
+ 	mutex_unlock(&group->mutex);
+ 
+@@ -3151,30 +3159,91 @@ int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner)
+ EXPORT_SYMBOL_GPL(iommu_group_claim_dma_owner);
+ 
+ /**
+- * iommu_group_release_dma_owner() - Release DMA ownership of a group
+- * @group: The group.
++ * iommu_device_claim_dma_owner() - Set DMA ownership of a device
++ * @dev: The device.
++ * @owner: Caller specified pointer. Used for exclusive ownership.
+  *
+- * Release the DMA ownership claimed by iommu_group_claim_dma_owner().
++ * Claim the DMA ownership of a device. Multiple devices in the same group may
++ * concurrently claim ownership if they present the same owner value. Returns 0
++ * on success and error code on failure
+  */
+-void iommu_group_release_dma_owner(struct iommu_group *group)
++int iommu_device_claim_dma_owner(struct device *dev, void *owner)
+ {
+-	int ret;
++	struct iommu_group *group = iommu_group_get(dev);
++	int ret = 0;
++
++	if (!group)
++		return -ENODEV;
++	if (WARN_ON(!owner))
++		return -EINVAL;
+ 
+ 	mutex_lock(&group->mutex);
++	if (group->owner_cnt) {
++		if (group->owner != owner) {
++			ret = -EPERM;
++			goto unlock_out;
++		}
++		group->owner_cnt++;
++		goto unlock_out;
++	}
++
++	ret = __iommu_take_dma_ownership(group, owner);
++unlock_out:
++	mutex_unlock(&group->mutex);
++	iommu_group_put(group);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(iommu_device_claim_dma_owner);
++
++static void __iommu_release_dma_ownership(struct iommu_group *group)
++{
++	int ret;
++
+ 	if (WARN_ON(!group->owner_cnt || !group->owner ||
+ 		    !xa_empty(&group->pasid_array)))
+-		goto unlock_out;
++		return;
+ 
+ 	group->owner_cnt = 0;
+ 	group->owner = NULL;
+ 	ret = __iommu_group_set_domain(group, group->default_domain);
+ 	WARN(ret, "iommu driver failed to attach the default domain");
++}
+ 
+-unlock_out:
++/**
++ * iommu_group_release_dma_owner() - Release DMA ownership of a group
++ * @dev: The device
++ *
++ * Release the DMA ownership claimed by iommu_group_claim_dma_owner().
++ */
++void iommu_group_release_dma_owner(struct iommu_group *group)
++{
++	mutex_lock(&group->mutex);
++	__iommu_release_dma_ownership(group);
+ 	mutex_unlock(&group->mutex);
+ }
+ EXPORT_SYMBOL_GPL(iommu_group_release_dma_owner);
+ 
++/**
++ * iommu_device_release_dma_owner() - Release DMA ownership of a device
++ * @group: The device.
++ *
++ * Release the DMA ownership claimed by iommu_device_claim_dma_owner().
++ */
++void iommu_device_release_dma_owner(struct device *dev)
++{
++	struct iommu_group *group = iommu_group_get(dev);
++
++	mutex_lock(&group->mutex);
++	if (group->owner_cnt > 1)
++		group->owner_cnt--;
++	else
++		__iommu_release_dma_ownership(group);
++	mutex_unlock(&group->mutex);
++	iommu_group_put(group);
++}
++EXPORT_SYMBOL_GPL(iommu_device_release_dma_owner);
++
+ /**
+  * iommu_group_dma_owner_claimed() - Query group dma ownership status
+  * @group: The group.
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index a09fd32d8cc273..1690c334e51631 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -707,6 +707,9 @@ int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner);
+ void iommu_group_release_dma_owner(struct iommu_group *group);
+ bool iommu_group_dma_owner_claimed(struct iommu_group *group);
+ 
++int iommu_device_claim_dma_owner(struct device *dev, void *owner);
++void iommu_device_release_dma_owner(struct device *dev);
++
+ struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
+ 					    struct mm_struct *mm);
+ int iommu_attach_device_pasid(struct iommu_domain *domain,
+@@ -1064,6 +1067,15 @@ static inline bool iommu_group_dma_owner_claimed(struct iommu_group *group)
+ 	return false;
+ }
+ 
++static inline void iommu_device_release_dma_owner(struct device *dev)
++{
++}
++
++static inline int iommu_device_claim_dma_owner(struct device *dev, void *owner)
++{
++	return -ENODEV;
++}
++
+ static inline struct iommu_domain *
+ iommu_sva_domain_alloc(struct device *dev, struct mm_struct *mm)
+ {
+-- 
+2.38.1
+
