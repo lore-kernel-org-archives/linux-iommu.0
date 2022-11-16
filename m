@@ -1,34 +1,34 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2074.outbound.protection.outlook.com [40.107.220.74])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2064.outbound.protection.outlook.com [40.107.220.64])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BDEC12290;
-	Wed, 16 Nov 2022 21:01:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E242122A5;
+	Wed, 16 Nov 2022 21:01:03 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TWVcCmVBnlxW37h+G3m95MHwmxy0+uKveqB2YDOTRQWL5MvuAXH1lb3xq7VpkLk5IJYrDNvy4UudOYMjiR3yupHDsQIYfmnvJG/B6JfgIgmy72/1PjomjC6akJi8wVWsWJEFj/RyUXRzjN34XCyxJ7m6nz9hLhRL0D/haKFkSR+nkiLJIkFKWSDc5Fr6ydfo3cDNYlvI8ZpvZCMLtQH4NyoshW5PYNchC1kPDB4ZjfVJz95gGU7L9WM3qAC+NHbcnDJkEx6vcT4GmJk0MthDT/d3Xw35PtkcmP9O1MSZcmI+X2Uk4TbGn+JAtece43n4LGdDMHQLJ2KsZpzi7kqzWQ==
+ b=nh6oDnlYNPbx5nY9Laj+CCovpnxUzYLYzOYB5FFPPBlSf4gGOiCI5ewidRAtKdjbgkmcwjf0ujTv9ssNjwkHZz7xvpWmrkpzqZ3WOc+AvBC/twhl0B/hQS7b/dTCJhqxREJ3M2B9+PcLSISQj6KzJZPfML+1eUnWYRnBnT9jkzVwYcFT0US6LYoH7Ny+xghELHqA9v5eXQOAVWsV6FBmbYC44GFJfcZZbd9/cxKRN7hrx9ZqdgS1laoAdLcBiMAWY/omWpDsCjnIYexpT3xK9xfpn9K4xe8uRHIHQZSjz3g6oyA9yjKzsMUMMBKWkLKVrrZoq6v23AxrXcgm6rRV/g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nferIdE5hEyQVrK+uXaRn9YN26fsfcsmwb7nmE0obQ4=;
- b=UrOpn1N7B+qH6eXZKM/s7oeZ+EaQhtscvrK6TI9qYJ31E10CMTqe61mxMHlcvF7cqkLpb4TFPbUWBDsoYR+3bq6K0TVL+mRNx606zhBhYdPZv5upLkd2bTpbEPYnjp/uBOsZSkkHSfj5Jc2oN7v7dp2OQSghjy9d0gQeLqhvED7ZFUJPQs+vzfSflAjG6fCmj+KhmR9Ee44dDaeGiTZUmsd9E4qMVBMHmio/egckRTjnhIPfKwTxp6CQjkP9j/oKZm1S6cZjqg9MxcaThJJp4vMe6NPnPjqduTq6jC+6OQBAM41x/8HqOwi3F4d756WGnsWGA/BXIqzm2o6HnKWGSw==
+ bh=j1ns1RBZlNvW9wa41AzKWH485BLRGI/NY0lWTXw9CcM=;
+ b=lUpK4l6QsCEbGrbzp4X4C5u23T6oKhjYxCIUseNf0R7E0CBxyHP1Ei07aatd6If4dodqEoUyULcfts8JGg8j7Gk8JF/UROv7DukyFEx+zrtrp7jSKYE5VLpoQjYT5tG3O+/TDc9kgGLlf77k8p7AI4DtIrRcK9qgNX6WS+LDJptMwp/wlOsvFhSXiL0GfYYuKSZjmb1NB8bgtl1Y7Sg8kJzZ6uUYSf8oW8BGDKzEwkpif6mRXjnfIiV/Xexb2HkVmcty5u+nSPCdGIbeN+gISOWLDJw8RrWUOjLArBxzQcxY1XJtGFtgEDQIJA7BRH7HLcp2FToadnQBDIjX9BXsEw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nferIdE5hEyQVrK+uXaRn9YN26fsfcsmwb7nmE0obQ4=;
- b=avD8aSF5umEkH33UQSn2278uTXsXu8BR/s2toK05oBvYGbQcm3FxqTwbeQ5+oVh2tAoAUsykGJ3I4TvWwj/48+/e9ozkIfLRLXjxZwdBnCU+9GWPnKs0qZmQw0qnBNKdjvHKNHhsKbGir8RAnaYlr/Nuig0qmZF26dtiCTceim/OtuRrxO+5Ho9CV4teT9Sma+WDSq7EjaM3dntKO5tKjIj7XHSGGNRLyqGbNXKKPOWfp3ndMb0ex+gsGNe4Axp20Tmqf6/Ag09r9FBaTG8UA3CPLFVf214ATpckhJbOilUoUWpww5NVY+gocWfYeyL4+NpschpwhLalV0mr/EQDOA==
+ bh=j1ns1RBZlNvW9wa41AzKWH485BLRGI/NY0lWTXw9CcM=;
+ b=c7nwd1dAVhjDmaEibc39xKnxhlsnrreyVd39vI7LRXNeS1eEktSuBZK0DY8Pwwv5sRgAB9vQfdaB1sXL7ffwN9di/gx5MPtdg2uyWEAet8I/0FZn0p5Jm5VVSKlZqtChaSvDT5zcmpWp3w+dGHI0X3bEVx0zCckrpu71GfOAercuMKY7X3ISB7Jgmvhd1Sodtmi6PT4aaWm1RgkZMdbom3yKZKg9NzkXcFbJj8Ram97GMRhWMCALZmK/4n9gCeji3BiMTlrSKU0qW7lvYMlCLsr8FoejbDmmnQ2URck1V6vFAISCY9RvvjMdFmQaVQugxNcaoGtvhjG/8WEfH/8iVg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
  by CY8PR12MB7682.namprd12.prod.outlook.com (2603:10b6:930:85::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.18; Wed, 16 Nov
- 2022 21:00:57 +0000
+ 2022 21:00:59 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::f8b0:df13:5f8d:12a%7]) with mapi id 15.20.5813.017; Wed, 16 Nov 2022
- 21:00:57 +0000
+ 21:00:59 +0000
 From: Jason Gunthorpe <jgg@nvidia.com>
 To: bpf@vger.kernel.org,
 	Jonathan Corbet <corbet@lwn.net>,
@@ -71,15 +71,15 @@ Cc: Anthony Krowiak <akrowiak@linux.ibm.com>,
 	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
 	Yi Liu <yi.l.liu@intel.com>,
 	Keqian Zhu <zhukeqian1@huawei.com>
-Subject: [PATCH v5 03/19] interval-tree: Add a utility to iterate over spans in an interval tree
-Date: Wed, 16 Nov 2022 17:00:39 -0400
-Message-Id: <3-v5-4001c2997bd0+30c-iommufd_jgg@nvidia.com>
+Subject: [PATCH v5 05/19] iommufd: Document overview of iommufd
+Date: Wed, 16 Nov 2022 17:00:41 -0400
+Message-Id: <5-v5-4001c2997bd0+30c-iommufd_jgg@nvidia.com>
 In-Reply-To: <0-v5-4001c2997bd0+30c-iommufd_jgg@nvidia.com>
 References:
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: MN2PR19CA0013.namprd19.prod.outlook.com
- (2603:10b6:208:178::26) To LV2PR12MB5869.namprd12.prod.outlook.com
+X-ClientProxiedBy: MN2PR19CA0007.namprd19.prod.outlook.com
+ (2603:10b6:208:178::20) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -89,327 +89,310 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CY8PR12MB7682:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6070305a-1231-4b61-2a00-08dac815a7f2
+X-MS-Office365-Filtering-Correlation-Id: 5b684b83-7729-441d-4ae8-08dac815a837
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	SVShoWeQn1pReU5lwnS2tQ6SOCrzA2axKrbGFJG/Z+X6PwdMiiEAdeGQEZWxKOI4zvz8K+Lr3O/Us3NLt2NFiRszN28f2ktLKmGkd3bH+MwD8wl6A7t9Q1Uhm/xIawMjPVrV8BEolmsnmWjeZBkBiuhziLE1FkvdZbJ817Ql6bnNhmSArO8lx1m3HOmfAnaSOQhswTrq12eTKR1mErSlQqBe3tdASJ3qCbRZ+OZg9Aemp42b5/75RrxLEc3U1OiJ8KqxaVGicZmxEcgDopb9szikA7r7/nqdbhxH4nNtLbIS4/37QMr/sUl9RuwjfS+zGt9uVhebwkYp2wKt6TvyK1oLQvlP8mDaquQUz1lWcU3cQXeY72/FWPBtyGTH0ey7kuxKJ7rUyv+akci/9tELk48rLI2yX90uhoFmeleuPplFzSfDNmjGr+ObJ/Xu/IgejlJGoV8qZsZGUXjWp5vhn5LnnUkyWfBQxKHaDc2DYor1GuzLqF6Prwj8Ai8ttYIkXgrzIbW1XrV/vZl4r08TjcyDloplHWuDaTxDae7gJLsr6N27Oq5L9mnBVgjLtBXNoIlWsKuZpVeaYBKqplfoHjORJBiRxtmwNmXqNa1qA4CSZpB01vBPSlYLdce7cbTK5Rzht16ra4dOYqC+wqdKdRaXwXgwIAfTcRsDRmSOzGW7+YBDmIflz5KKIBhfjWaAYvPW3DwnSFfdoJf66Ky/6ufsgkuWPu26ftTTxWJ/S5eN1I40JtsEChOG68aeLw6vBwfvKi5kJu8WC3ClcRypJQ==
+	ZStOIWQqSUTlB4wFoNrV0Uxh3TBqK3HLX8XfJFWONRLNvYIRbwEIWJamq2TfakDvjXvwqlaPcu81YyK7yheXroHfI8dYK7T7d8JAa1j8Icn4y2IejRZ5h55WEzx0uhvkNZE4vnQx2XMPpQgnPr8E6a2XNbDEUzvoBkCYZukrz2x5I796EgsZi/O4XaMr1GN+C80znTGFZqhkb41NNO3KgF0HjZYsmvh+g9h+UfMkC/wwPVMFK6H4Oi0976EQDO7B8oQiUKXHQ0a9mL28Al87cs8lKWqThcacb0lr2+Nqq3kJX5pFO+WaB35KLhoL/d+YUH9c5Pgs/VZhlSpNkOVrfb8KHN0KNWsaYrq92AZEvaOFFGLmjNfCAeZCf2KApyQOSiMfKDgVF3pi2gLPlpQryvQls7amgdXX7R1aT8vU15lnSIxP9mjA6NVpJ99b7086T5n5GNeRe5+ZllqMYG3L8zh89w4zaqqHlki7QFXUMqXkNSzHVkF1IwP0lXdHfewBN1TkxowA8xvNIt6ArIo2ecTrnTTkdx4LtT0oKRsYWfxloNe6ti+akJWz8u/HnrxKwJ9rUKMl3Fi3kWhWbpGQPyz8jpaAJ7vNEbL6CQmbejeCcI7YJOzYcsokMcZ67EwqBaxTM+WSDGAvQLbkoC7jpdzN/wXHpjOCXx/fgTcMx/tW2vcJoXSS8deRiTe3zF3iJwUsihTAU9LiSJIukC668A2kvwJ+w7gqA1W4UTmedMTkpMYjA2vdYdZ9oB3ONJbpufEezxnE/wLzACcg9AlPxQ==
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(346002)(136003)(396003)(366004)(376002)(451199015)(38100700002)(2616005)(86362001)(921005)(110136005)(7406005)(6666004)(478600001)(6486002)(7416002)(8936002)(66476007)(8676002)(4326008)(54906003)(66556008)(66946007)(316002)(41300700001)(83380400001)(2906002)(6506007)(186003)(5660300002)(6512007)(36756003)(26005)(4216001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?fhuRNx7PGu9FqRm2usYXOgUgCP7PCLA3w4xSYUdOu05TT5SjnrrUJzlG3YNe?=
- =?us-ascii?Q?sWclKkHEJlhzqbNXpgcS8hCcfg+KAfVhBf3bCY2QGK1nGad/NefEwvR8U1L/?=
- =?us-ascii?Q?lqTQrY/aDCPZ3fR7xrbNmP0LKIs077qH9IllxXXmjn4T6iuMwkQD0mH1DJD0?=
- =?us-ascii?Q?kEuoWvwv+Yq4Aiweln1M6EjlNTm1+lGpKNCqyYwBT5vVWXjFIhh3ISZD/1M+?=
- =?us-ascii?Q?5LNtWdAkpQfA8WLgoJbln89B4tE2C5XfJrkEKaVTn1ttJZLhXZGjfsB1Rw+d?=
- =?us-ascii?Q?1xiqm6r0DUPoRpIfkCB8frh4X4PTodbG3MeB7XzeBL4iC3z8xXdlMYmPsN90?=
- =?us-ascii?Q?9FIWefSA1hdOYLO/m3JgFETYyhJBVkZWcsJ4NbHYQwSZA/vtEFBRpSlTZf+m?=
- =?us-ascii?Q?Sl6Ey4tQh0AYlSYeOJLB/DQCrL8+J3j7JaQMsq1XJVSB7r100M4rYpRvz1cI?=
- =?us-ascii?Q?dHhl+pMZLwZS7VONCXejXtYT2oTSZ1WufQAf5qnq30VaPxWQOiJbonhEsp8A?=
- =?us-ascii?Q?jm9hmbDuTcaA+ey7HSfSNnZ01djMb3qibOsqET4zuNxD6/Y7TlP0wE2vOzPh?=
- =?us-ascii?Q?YZi2CvO91CxSrcrw1eozKSTVXw4+jKlqhotomSs8RANByni7sgMCItreq/1z?=
- =?us-ascii?Q?TqMZA2IgvYBcvBSvT1A3dKc3LGHB2bIJeQxrj6t1x2b5oknYzttH3iVryyUX?=
- =?us-ascii?Q?gPEwOgzBvKkU9sE91CtzQCBhDX62W8qpwbwf8+2nj43VwvYCJL7LaE6SouUZ?=
- =?us-ascii?Q?chPlatvhk6sDYDqNSfZOm8hgnWmaNc6zh6yVqEXULG2mpgJjW4VsYVO2vD+s?=
- =?us-ascii?Q?H+LJHKwneTgOZmbMVPm4liEuPVNLEAr0G/7DRUsuOE177Ead9Vbgt8QCe4jp?=
- =?us-ascii?Q?ThDOzhhWbAnTr1mIh3wLK04S1yN1zvB4IVT4+NeJ2oaSo7ZPFCnxsEZGaGK0?=
- =?us-ascii?Q?cMGwr2WqI2k4KB120fWwVZ7tP2f+UkV1rFZHRA5V9pzZWdwi/Tf2iVSgRcWa?=
- =?us-ascii?Q?xlBVFyPRsExsDPExJfBeacIurlRBCuMci4rJ1DWgsTOpfTJQOGxKH5NmnQqg?=
- =?us-ascii?Q?H+YThr6cQ/gMXDFthSqhc5ZYWfwVB2ovNdjFchNwhkri4XHg/6SSuwN37rPl?=
- =?us-ascii?Q?NbW3amE27LDnQM5VVc3OXbQaWMY8SuUJEi6NrbJOlXPUdWNkM21Vk5IHhCMe?=
- =?us-ascii?Q?fMlxq0V/UX5AfRcC4pJPXbgg/XvrVknTin0mb+/NsfQVtM+tSZ3RNFeHWCex?=
- =?us-ascii?Q?AkhOuQyrJ7ZlHpB6VDrw7Y2rbPYhAIflpXEDcMWVOjpopOGL575zh/A8BIIp?=
- =?us-ascii?Q?auHo97gDN1AZXNWWVt6/DAguAR9MFJj4P32aP/vgtZY7rp4szHvuK8Kna0sL?=
- =?us-ascii?Q?Xjy56QVu/2vpCwmLh6YHfwvJMr7EECSkciSL79AybtazntJ9r1Xq77PErwt8?=
- =?us-ascii?Q?JCCsQBufF+nudcXVO6+7Ww0hSTKs1AI8zNgeBTuDofH0lyaQ835UvU8TJsnJ?=
- =?us-ascii?Q?NLb/hE3hYsQMsp2xftzm+uSeQAXzSj4IcDVGSUdQpX5PMnJ1C8C6wiIFcSYw?=
- =?us-ascii?Q?+blw8RUukxDyNZ6aEnk=3D?=
+	=?us-ascii?Q?0GnLSgVVooON7LKvsjhzyYu2oFXYIUwwZBiah1otytSdiQI1MV0qy/vKeY6n?=
+ =?us-ascii?Q?l9r7RcyTiqOatBaZsfSCqReLm5KDIyjScLHQEUJh5CgJw4gwZX/dBsdENdWp?=
+ =?us-ascii?Q?jmLiZyuE+zkp0A1Z+B7hj0zoWO8RI4D2ivvZOSksZ8YlSgF1do1k7UdwghlT?=
+ =?us-ascii?Q?QTAJmqkETMhIGqJVJtIcoufiIF2a+TcfC2v49dmyzs4qnOEOwd7r37/fqi8H?=
+ =?us-ascii?Q?n+m+EzREOL/I5XGh4vtgqGn1yc0gkYjDetJ4LJxt7S23LfAGEITVAwqazGhB?=
+ =?us-ascii?Q?Brc+ybyvxgeb697BqFDQeLuKom4c0fHr35yLKZA3OFNleHTneQRoVQhQcG4x?=
+ =?us-ascii?Q?RHv3Nf/OVqgGT7nXRc503V380bcEGie6JOOPYqaKjaHfzJ0ABa/AyJCk9gvp?=
+ =?us-ascii?Q?a/MlzKKD+rYLEh9SYZpvwiBsuhepWaC88OBKv02AkGuwru70IRbtQnvG6v1J?=
+ =?us-ascii?Q?ODorSg3BHDjcHzzmNd/JfzVGn/HfCMMllDEJe9GbmCS9ogdcwoBQ7E0XsD+z?=
+ =?us-ascii?Q?hzmlbGQ5eudcfJecDmsr2JQ9hDrrVVgjeri3J55TvKP9dw+7L043l7+0zkG4?=
+ =?us-ascii?Q?HhbT+k6tKYCI00XqGazPzE7Yd7XmdZ66DCFWPZ7p3KhVlLJ7lj/hV0cZShRl?=
+ =?us-ascii?Q?mA+2GBUNgEADwm16NyRzG/2TNRunaCpVl1v+fsMi9iFV/WOl/GrkhLnbLkb4?=
+ =?us-ascii?Q?llejBAHr3lLgK1lUV5xLl4wP9gyF0Tyeb3QcAFIIilI5nfVWF1E7vU1zddrM?=
+ =?us-ascii?Q?7kx6Bo2HXGUCSNl1N9t94ocxGR+S0gJDDep0HdsvkcApVO+wWZpp7Kmfhght?=
+ =?us-ascii?Q?O4WKR9D3O7NPAqbxkXKmeo2fLSx4/AmzKqMzsSvslj01W89MhIGFHaf4HQCJ?=
+ =?us-ascii?Q?HFt1vVnH9IrMdQSS59Ml8uzudDNRvusqK2BaAgGCNsYCDFcIG+exWjdUgmh0?=
+ =?us-ascii?Q?6tXprfE1QZt2TBhvTD64SepY/vR021TYwwUv+M1wRkpuho+4pJOT97kI29gS?=
+ =?us-ascii?Q?hMyIAH3E6b38wQ1tPjPnkCG3R21ZrM/rtDR9jidfA955+0mTJhDk2mVz+XoV?=
+ =?us-ascii?Q?3yujHWks+uo1YClgmLe0jzwVqSulE0zQQweSjB9cLJuoo/bBr5hbWo3Xeake?=
+ =?us-ascii?Q?aWyGbH+EVWosIqNXn1s1xtmisq+IQKXHM25dCGb0VQsvNZ4nPakQbLai2azg?=
+ =?us-ascii?Q?9bMhngPXLTrXu9pSgMg6Fb4nTdvE+n3crWxxSVGK0/n9u/1yASQMiHuMwVaW?=
+ =?us-ascii?Q?dN3+EbI9BnwO1Jc7eN5QGtpXEpxFxUsVaUaAvEQqLqYGfFIMEy+l6rF7VGEo?=
+ =?us-ascii?Q?Anf7+lzJLcHc+YV/UueJ/GVJnVWc7HC1nUjCfoVWG9DnbaP8WgiTZwlurqBi?=
+ =?us-ascii?Q?Eefbqwhy7HJjDyOqxmI0u2XSXnzoZlWg30cKFgvpVjZ/g2Naj1zCnQ4NhpCo?=
+ =?us-ascii?Q?j8YllJ2si/ES7cr4k15DdNG+CvpBvDlZXksGKZDb3BK2gPtLnoMN8BcHvRpR?=
+ =?us-ascii?Q?XdbgZKCHAajMTgXv4W8Iq/lLXxddI8tyk1EtLFiErQBqi8tF7o+dd6Uy6yJp?=
+ =?us-ascii?Q?ZpCpTGTV3Uxy1E1alEM=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6070305a-1231-4b61-2a00-08dac815a7f2
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5b684b83-7729-441d-4ae8-08dac815a837
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2022 21:00:56.7317
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2022 21:00:57.1847
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: p9L1EXU5Izq0gXqQg1VxPahuGSbA8oeRiaYL8TRgxJyopRdagCy+gp1zMfRO38AH
+X-MS-Exchange-CrossTenant-UserPrincipalName: IIG9NpOUNMCDprhXOHjaDloGwdvkv8+whImz/n5Q+FwaqyXR+JsScpylqoKTqXyD
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7682
 
-The span iterator travels over the indexes of the interval_tree, not the
-nodes, and classifies spans of indexes as either 'used' or 'hole'.
+From: Kevin Tian <kevin.tian@intel.com>
 
-'used' spans are fully covered by nodes in the tree and 'hole' spans have
-no node intersecting the span.
+Add iommufd into the documentation tree, and supply initial documentation.
+Much of this is linked from code comments by kdoc.
 
-This is done greedily such that spans are maximally sized and every
-iteration step switches between used/hole.
-
-As an example a trivial allocator can be written as:
-
-	for (interval_tree_span_iter_first(&span, itree, 0, ULONG_MAX);
-	     !interval_tree_span_iter_done(&span);
-	     interval_tree_span_iter_next(&span))
-		if (span.is_hole &&
-		    span.last_hole - span.start_hole >= allocation_size - 1)
-			return span.start_hole;
-
-With all the tricky boundary conditions handled by the library code.
-
-The following iommufd patches have several algorithms for its overlapping
-node interval trees that are significantly simplified with this kind of
-iteration primitive. As it seems generally useful, put it into lib/.
-
-Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-Tested-by: Yi Liu <yi.l.liu@intel.com>
-Tested-by: Lixiao Yang <lixiao.yang@intel.com>
-Tested-by: Matthew Rosato <mjrosato@linux.ibm.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
+Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
+Signed-off-by: Kevin Tian <kevin.tian@intel.com>
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- .clang-format                 |   1 +
- include/linux/interval_tree.h |  58 +++++++++++++++
- lib/Kconfig                   |   4 ++
- lib/interval_tree.c           | 132 ++++++++++++++++++++++++++++++++++
- 4 files changed, 195 insertions(+)
+ Documentation/userspace-api/index.rst   |   1 +
+ Documentation/userspace-api/iommufd.rst | 223 ++++++++++++++++++++++++
+ 2 files changed, 224 insertions(+)
+ create mode 100644 Documentation/userspace-api/iommufd.rst
 
-diff --git a/.clang-format b/.clang-format
-index 1247d54f9e49fa..96d07786dcfb46 100644
---- a/.clang-format
-+++ b/.clang-format
-@@ -440,6 +440,7 @@ ForEachMacros:
-   - 'inet_lhash2_for_each_icsk'
-   - 'inet_lhash2_for_each_icsk_continue'
-   - 'inet_lhash2_for_each_icsk_rcu'
-+  - 'interval_tree_for_each_span'
-   - 'intlist__for_each_entry'
-   - 'intlist__for_each_entry_safe'
-   - 'kcore_copy__for_each_phdr'
-diff --git a/include/linux/interval_tree.h b/include/linux/interval_tree.h
-index 288c26f50732d7..2b8026a3990645 100644
---- a/include/linux/interval_tree.h
-+++ b/include/linux/interval_tree.h
-@@ -27,4 +27,62 @@ extern struct interval_tree_node *
- interval_tree_iter_next(struct interval_tree_node *node,
- 			unsigned long start, unsigned long last);
- 
-+/**
-+ * struct interval_tree_span_iter - Find used and unused spans.
-+ * @start_hole: Start of an interval for a hole when is_hole == 1
-+ * @last_hole: Inclusive end of an interval for a hole when is_hole == 1
-+ * @start_used: Start of a used interval when is_hole == 0
-+ * @last_used: Inclusive end of a used interval when is_hole == 0
-+ * @is_hole: 0 == used, 1 == is_hole, -1 == done iteration
-+ *
-+ * This iterator travels over spans in an interval tree. It does not return
-+ * nodes but classifies each span as either a hole, where no nodes intersect, or
-+ * a used, which is fully covered by nodes. Each iteration step toggles between
-+ * hole and used until the entire range is covered. The returned spans always
-+ * fully cover the requested range.
-+ *
-+ * The iterator is greedy, it always returns the largest hole or used possible,
-+ * consolidating all consecutive nodes.
-+ *
-+ * Use interval_tree_span_iter_done() to detect end of iteration.
-+ */
-+struct interval_tree_span_iter {
-+	/* private: not for use by the caller */
-+	struct interval_tree_node *nodes[2];
-+	unsigned long first_index;
-+	unsigned long last_index;
+diff --git a/Documentation/userspace-api/index.rst b/Documentation/userspace-api/index.rst
+index c78da9ce0ec44e..f16337bdb8520f 100644
+--- a/Documentation/userspace-api/index.rst
++++ b/Documentation/userspace-api/index.rst
+@@ -25,6 +25,7 @@ place where this information is gathered.
+    ebpf/index
+    ioctl/index
+    iommu
++   iommufd
+    media/index
+    netlink/index
+    sysfs-platform_profile
+diff --git a/Documentation/userspace-api/iommufd.rst b/Documentation/userspace-api/iommufd.rst
+new file mode 100644
+index 00000000000000..8b1392fd2e3487
+--- /dev/null
++++ b/Documentation/userspace-api/iommufd.rst
+@@ -0,0 +1,223 @@
++.. SPDX-License-Identifier: GPL-2.0+
 +
-+	/* public: */
-+	union {
-+		unsigned long start_hole;
-+		unsigned long start_used;
-+	};
-+	union {
-+		unsigned long last_hole;
-+		unsigned long last_used;
-+	};
-+	int is_hole;
-+};
++=======
++IOMMUFD
++=======
 +
-+void interval_tree_span_iter_first(struct interval_tree_span_iter *state,
-+				   struct rb_root_cached *itree,
-+				   unsigned long first_index,
-+				   unsigned long last_index);
-+void interval_tree_span_iter_advance(struct interval_tree_span_iter *iter,
-+				     struct rb_root_cached *itree,
-+				     unsigned long new_index);
-+void interval_tree_span_iter_next(struct interval_tree_span_iter *state);
++:Author: Jason Gunthorpe
++:Author: Kevin Tian
 +
-+static inline bool
-+interval_tree_span_iter_done(struct interval_tree_span_iter *state)
-+{
-+	return state->is_hole == -1;
-+}
++Overview
++========
 +
-+#define interval_tree_for_each_span(span, itree, first_index, last_index)      \
-+	for (interval_tree_span_iter_first(span, itree,                        \
-+					   first_index, last_index);           \
-+	     !interval_tree_span_iter_done(span);                              \
-+	     interval_tree_span_iter_next(span))
++IOMMUFD is the user API to control the IOMMU subsystem as it relates to managing
++IO page tables from userspace using file descriptors. It intends to be general
++and consumable by any driver that wants to expose DMA to userspace. These
++drivers are eventually expected to deprecate any internal IOMMU logic
++they may already/historically implement (e.g. vfio_iommu_type1.c).
 +
- #endif	/* _LINUX_INTERVAL_TREE_H */
-diff --git a/lib/Kconfig b/lib/Kconfig
-index 9bbf8a4b2108e6..c6c323fd251721 100644
---- a/lib/Kconfig
-+++ b/lib/Kconfig
-@@ -479,6 +479,10 @@ config INTERVAL_TREE
- 
- 	  for more information.
- 
-+config INTERVAL_TREE_SPAN_ITER
-+	bool
-+	depends on INTERVAL_TREE
++At minimum iommufd provides universal support of managing I/O address spaces and
++I/O page tables for all IOMMUs, with room in the design to add non-generic
++features to cater to specific hardware functionality.
 +
- config XARRAY_MULTI
- 	bool
- 	help
-diff --git a/lib/interval_tree.c b/lib/interval_tree.c
-index 593ce56ece5050..3412737ff365ec 100644
---- a/lib/interval_tree.c
-+++ b/lib/interval_tree.c
-@@ -15,3 +15,135 @@ EXPORT_SYMBOL_GPL(interval_tree_insert);
- EXPORT_SYMBOL_GPL(interval_tree_remove);
- EXPORT_SYMBOL_GPL(interval_tree_iter_first);
- EXPORT_SYMBOL_GPL(interval_tree_iter_next);
++In this context the capital letter (IOMMUFD) refers to the subsystem while the
++small letter (iommufd) refers to the file descriptors created via /dev/iommu for
++use by userspace.
 +
-+#ifdef CONFIG_INTERVAL_TREE_SPAN_ITER
-+/*
-+ * Roll nodes[1] into nodes[0] by advancing nodes[1] to the end of a contiguous
-+ * span of nodes. This makes nodes[0]->last the end of that contiguous used span
-+ * indexes that started at the original nodes[1]->start. nodes[1] is now the
-+ * first node starting the next used span. A hole span is between nodes[0]->last
-+ * and nodes[1]->start. nodes[1] must be !NULL.
-+ */
-+static void
-+interval_tree_span_iter_next_gap(struct interval_tree_span_iter *state)
-+{
-+	struct interval_tree_node *cur = state->nodes[1];
++Key Concepts
++============
 +
-+	state->nodes[0] = cur;
-+	do {
-+		if (cur->last > state->nodes[0]->last)
-+			state->nodes[0] = cur;
-+		cur = interval_tree_iter_next(cur, state->first_index,
-+					      state->last_index);
-+	} while (cur && (state->nodes[0]->last >= cur->start ||
-+			 state->nodes[0]->last + 1 == cur->start));
-+	state->nodes[1] = cur;
-+}
++User Visible Objects
++--------------------
 +
-+void interval_tree_span_iter_first(struct interval_tree_span_iter *iter,
-+				   struct rb_root_cached *itree,
-+				   unsigned long first_index,
-+				   unsigned long last_index)
-+{
-+	iter->first_index = first_index;
-+	iter->last_index = last_index;
-+	iter->nodes[0] = NULL;
-+	iter->nodes[1] =
-+		interval_tree_iter_first(itree, first_index, last_index);
-+	if (!iter->nodes[1]) {
-+		/* No nodes intersect the span, whole span is hole */
-+		iter->start_hole = first_index;
-+		iter->last_hole = last_index;
-+		iter->is_hole = 1;
-+		return;
-+	}
-+	if (iter->nodes[1]->start > first_index) {
-+		/* Leading hole on first iteration */
-+		iter->start_hole = first_index;
-+		iter->last_hole = iter->nodes[1]->start - 1;
-+		iter->is_hole = 1;
-+		interval_tree_span_iter_next_gap(iter);
-+		return;
-+	}
++Following IOMMUFD objects are exposed to userspace:
 +
-+	/* Starting inside a used */
-+	iter->start_used = first_index;
-+	iter->is_hole = 0;
-+	interval_tree_span_iter_next_gap(iter);
-+	iter->last_used = iter->nodes[0]->last;
-+	if (iter->last_used >= last_index) {
-+		iter->last_used = last_index;
-+		iter->nodes[0] = NULL;
-+		iter->nodes[1] = NULL;
-+	}
-+}
-+EXPORT_SYMBOL_GPL(interval_tree_span_iter_first);
++- IOMMUFD_OBJ_IOAS, representing an I/O address space (IOAS), allowing map/unmap
++  of user space memory into ranges of I/O Virtual Address (IOVA).
 +
-+void interval_tree_span_iter_next(struct interval_tree_span_iter *iter)
-+{
-+	if (!iter->nodes[0] && !iter->nodes[1]) {
-+		iter->is_hole = -1;
-+		return;
-+	}
++  The IOAS is a functional replacement for the VFIO container, and like the VFIO
++  container it copies an IOVA map to a list of iommu_domains held within it.
 +
-+	if (iter->is_hole) {
-+		iter->start_used = iter->last_hole + 1;
-+		iter->last_used = iter->nodes[0]->last;
-+		if (iter->last_used >= iter->last_index) {
-+			iter->last_used = iter->last_index;
-+			iter->nodes[0] = NULL;
-+			iter->nodes[1] = NULL;
-+		}
-+		iter->is_hole = 0;
-+		return;
-+	}
++- IOMMUFD_OBJ_DEVICE, representing a device that is bound to iommufd by an
++  external driver.
 +
-+	if (!iter->nodes[1]) {
-+		/* Trailing hole */
-+		iter->start_hole = iter->nodes[0]->last + 1;
-+		iter->last_hole = iter->last_index;
-+		iter->nodes[0] = NULL;
-+		iter->is_hole = 1;
-+		return;
-+	}
++- IOMMUFD_OBJ_HW_PAGETABLE, representing an actual hardware I/O page table
++  (i.e. a single struct iommu_domain) managed by the iommu driver.
 +
-+	/* must have both nodes[0] and [1], interior hole */
-+	iter->start_hole = iter->nodes[0]->last + 1;
-+	iter->last_hole = iter->nodes[1]->start - 1;
-+	iter->is_hole = 1;
-+	interval_tree_span_iter_next_gap(iter);
-+}
-+EXPORT_SYMBOL_GPL(interval_tree_span_iter_next);
++  The IOAS has a list of HW_PAGETABLES that share the same IOVA mapping and
++  it will synchronize its mapping with each member HW_PAGETABLE.
 +
-+/*
-+ * Advance the iterator index to a specific position. The returned used/hole is
-+ * updated to start at new_index. This is faster than calling
-+ * interval_tree_span_iter_first() as it can avoid full searches in several
-+ * cases where the iterator is already set.
-+ */
-+void interval_tree_span_iter_advance(struct interval_tree_span_iter *iter,
-+				     struct rb_root_cached *itree,
-+				     unsigned long new_index)
-+{
-+	if (iter->is_hole == -1)
-+		return;
++All user-visible objects are destroyed via the IOMMU_DESTROY uAPI.
 +
-+	iter->first_index = new_index;
-+	if (new_index > iter->last_index) {
-+		iter->is_hole = -1;
-+		return;
-+	}
++The diagram below shows relationship between user-visible objects and kernel
++datastructures (external to iommufd), with numbers referred to operations
++creating the objects and links::
 +
-+	/* Rely on the union aliasing hole/used */
-+	if (iter->start_hole <= new_index && new_index <= iter->last_hole) {
-+		iter->start_hole = new_index;
-+		return;
-+	}
-+	if (new_index == iter->last_hole + 1)
-+		interval_tree_span_iter_next(iter);
-+	else
-+		interval_tree_span_iter_first(iter, itree, new_index,
-+					      iter->last_index);
-+}
-+EXPORT_SYMBOL_GPL(interval_tree_span_iter_advance);
-+#endif
++  _________________________________________________________
++ |                         iommufd                         |
++ |       [1]                                               |
++ |  _________________                                      |
++ | |                 |                                     |
++ | |                 |                                     |
++ | |                 |                                     |
++ | |                 |                                     |
++ | |                 |                                     |
++ | |                 |                                     |
++ | |                 |        [3]                 [2]      |
++ | |                 |    ____________         __________  |
++ | |      IOAS       |<--|            |<------|          | |
++ | |                 |   |HW_PAGETABLE|       |  DEVICE  | |
++ | |                 |   |____________|       |__________| |
++ | |                 |         |                   |       |
++ | |                 |         |                   |       |
++ | |                 |         |                   |       |
++ | |                 |         |                   |       |
++ | |                 |         |                   |       |
++ | |_________________|         |                   |       |
++ |         |                   |                   |       |
++ |_________|___________________|___________________|_______|
++           |                   |                   |
++           |              _____v______      _______v_____
++           | PFN storage |            |    |             |
++           |------------>|iommu_domain|    |struct device|
++                         |____________|    |_____________|
++
++1. IOMMUFD_OBJ_IOAS is created via the IOMMU_IOAS_ALLOC uAPI. An iommufd can
++   hold multiple IOAS objects. IOAS is the most generic object and does not
++   expose interfaces that are specific to single IOMMU drivers. All operations
++   on the IOAS must operate equally on each of the iommu_domains inside of it.
++
++2. IOMMUFD_OBJ_DEVICE is created when an external driver calls the IOMMUFD kAPI
++   to bind a device to an iommufd. The driver is expected to implement a set of
++   ioctls to allow userspace to initiate the binding operation. Successful
++   completion of this operation establishes the desired DMA ownership over the
++   device. The driver must also set the driver_managed_dma flag and must not
++   touch the device until this operation succeeds.
++
++3. IOMMUFD_OBJ_HW_PAGETABLE is created when an external driver calls the IOMMUFD
++   kAPI to attach a bound device to an IOAS. Similarly the external driver uAPI
++   allows userspace to initiate the attaching operation. If a compatible
++   pagetable already exists then it is reused for the attachment. Otherwise a
++   new pagetable object and iommu_domain is created. Successful completion of
++   this operation sets up the linkages among IOAS, device and iommu_domain. Once
++   this completes the device could do DMA.
++
++   Every iommu_domain inside the IOAS is also represented to userspace as a
++   HW_PAGETABLE object.
++
++   .. note::
++
++      Future IOMMUFD updates will provide an API to create and manipulate the
++      HW_PAGETABLE directly.
++
++A device can only bind to an iommufd due to DMA ownership claim and attach to at
++most one IOAS object (no support of PASID yet).
++
++Kernel Datastructure
++--------------------
++
++User visible objects are backed by following datastructures:
++
++- iommufd_ioas for IOMMUFD_OBJ_IOAS.
++- iommufd_device for IOMMUFD_OBJ_DEVICE.
++- iommufd_hw_pagetable for IOMMUFD_OBJ_HW_PAGETABLE.
++
++Several terminologies when looking at these datastructures:
++
++- Automatic domain - refers to an iommu domain created automatically when
++  attaching a device to an IOAS object. This is compatible to the semantics of
++  VFIO type1.
++
++- Manual domain - refers to an iommu domain designated by the user as the
++  target pagetable to be attached to by a device. Though currently there are
++  no uAPIs to directly create such domain, the datastructure and algorithms
++  are ready for handling that use case.
++
++- In-kernel user - refers to something like a VFIO mdev that is using the
++  IOMMUFD access interface to access the IOAS. This starts by creating an
++  iommufd_access object that is similar to the domain binding a physical device
++  would do. The access object will then allow converting IOVA ranges into struct
++  page * lists, or doing direct read/write to an IOVA.
++
++iommufd_ioas serves as the metadata datastructure to manage how IOVA ranges are
++mapped to memory pages, composed of:
++
++- struct io_pagetable holding the IOVA map
++- struct iopt_areas representing populated portions of IOVA
++- struct iopt_pages representing the storage of PFNs
++- struct iommu_domain representing the IO page table in the IOMMU
++- struct iopt_pages_access representing in-kernel users of PFNs
++- struct xarray pinned_pfns holding a list of pages pinned by in-kernel users
++
++Each iopt_pages represents a logical linear array of full PFNs. The PFNs are
++ultimately derived from userspave VAs via an mm_struct. Once they have been
++pinned the PFNs are stored in IOPTEs of an iommu_domain or inside the pinned_pages
++xarray if they have been pinned through an iommufd_access.
++
++PFN have to be copied between all combinations of storage locations, depending
++on what domains are present and what kinds of in-kernel "software access" users
++exists. The mechanism ensures that a page is pinned only once.
++
++An io_pagetable is composed of iopt_areas pointing at iopt_pages, along with a
++list of iommu_domains that mirror the IOVA to PFN map.
++
++Multiple io_pagetable-s, through their iopt_area-s, can share a single
++iopt_pages which avoids multi-pinning and double accounting of page
++consumption.
++
++iommufd_ioas is sharable between subsystems, e.g. VFIO and VDPA, as long as
++devices managed by different subsystems are bound to a same iommufd.
++
++IOMMUFD User API
++================
++
++.. kernel-doc:: include/uapi/linux/iommufd.h
++
++IOMMUFD Kernel API
++==================
++
++The IOMMUFD kAPI is device-centric with group-related tricks managed behind the
++scene. This allows the external drivers calling such kAPI to implement a simple
++device-centric uAPI for connecting its device to an iommufd, instead of
++explicitly imposing the group semantics in its uAPI as VFIO does.
++
++.. kernel-doc:: drivers/iommu/iommufd/device.c
++   :export:
++
++.. kernel-doc:: drivers/iommu/iommufd/main.c
++   :export:
++
++VFIO and IOMMUFD
++----------------
++
++Connecting a VFIO device to iommufd can be done in two ways.
++
++First is a VFIO compatible way by directly implementing the /dev/vfio/vfio
++container IOCTLs by mapping them into io_pagetable operations. Doing so allows
++the use of iommufd in legacy VFIO applications by symlinking /dev/vfio/vfio to
++/dev/iommufd or extending VFIO to SET_CONTAINER using an iommufd instead of a
++container fd.
++
++The second approach directly extends VFIO to support a new set of device-centric
++user API based on aforementioned IOMMUFD kernel API. It requires userspace
++change but better matches the IOMMUFD API semantics and easier to support new
++iommufd features when comparing it to the first approach.
++
++Currently both approaches are still work-in-progress.
++
++There are still a few gaps to be resolved to catch up with VFIO type1, as
++documented in iommufd_vfio_check_extension().
++
++Future TODOs
++============
++
++Currently IOMMUFD supports only kernel-managed I/O page table, similar to VFIO
++type1. New features on the radar include:
++
++ - Binding iommu_domain's to PASID/SSID
++ - Userspace page tables, for ARM, x86 and S390
++ - Kernel bypass'd invalidation of user page tables
++ - Re-use of the KVM page table in the IOMMU
++ - Dirty page tracking in the IOMMU
++ - Runtime Increase/Decrease of IOPTE size
++ - PRI support with faults resolved in userspace
 -- 
 2.38.1
 
