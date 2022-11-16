@@ -1,34 +1,34 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2064.outbound.protection.outlook.com [40.107.220.64])
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2043.outbound.protection.outlook.com [40.107.96.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E242122A5;
-	Wed, 16 Nov 2022 21:01:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAB5812290;
+	Wed, 16 Nov 2022 21:01:04 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nh6oDnlYNPbx5nY9Laj+CCovpnxUzYLYzOYB5FFPPBlSf4gGOiCI5ewidRAtKdjbgkmcwjf0ujTv9ssNjwkHZz7xvpWmrkpzqZ3WOc+AvBC/twhl0B/hQS7b/dTCJhqxREJ3M2B9+PcLSISQj6KzJZPfML+1eUnWYRnBnT9jkzVwYcFT0US6LYoH7Ny+xghELHqA9v5eXQOAVWsV6FBmbYC44GFJfcZZbd9/cxKRN7hrx9ZqdgS1laoAdLcBiMAWY/omWpDsCjnIYexpT3xK9xfpn9K4xe8uRHIHQZSjz3g6oyA9yjKzsMUMMBKWkLKVrrZoq6v23AxrXcgm6rRV/g==
+ b=ORvtD2X2xvB3P5Aq2nIkNjjluL2vqRIpQB7+r5FDZkA2qpnNPmS3QteVy8Aja6IcawWelZl717d887AbJ3X4hCDoB7n5ra3szMxVkqDTlUyOeUUOEdgaHizbDU11nRaFiKED3/OZnu6OKFyrRTl9bj3BhKdSypqg24nrYxH5QDefJwWYjex+I64j6zAH5MBkuSJS9NmT/2rn9BbAe585hDCR+rP5XLbIkkqX/RSUju35J3Xv/T6P1zm9px7DuW6PVR5aVkQsUih/lBb+jFr6u+L9/kHXMEcHrAcn6+3Dwy/8gDBaFcWuQwBzDezlgx7s7Bpv1azV9dCCAKqUrAQ5Bw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=j1ns1RBZlNvW9wa41AzKWH485BLRGI/NY0lWTXw9CcM=;
- b=lUpK4l6QsCEbGrbzp4X4C5u23T6oKhjYxCIUseNf0R7E0CBxyHP1Ei07aatd6If4dodqEoUyULcfts8JGg8j7Gk8JF/UROv7DukyFEx+zrtrp7jSKYE5VLpoQjYT5tG3O+/TDc9kgGLlf77k8p7AI4DtIrRcK9qgNX6WS+LDJptMwp/wlOsvFhSXiL0GfYYuKSZjmb1NB8bgtl1Y7Sg8kJzZ6uUYSf8oW8BGDKzEwkpif6mRXjnfIiV/Xexb2HkVmcty5u+nSPCdGIbeN+gISOWLDJw8RrWUOjLArBxzQcxY1XJtGFtgEDQIJA7BRH7HLcp2FToadnQBDIjX9BXsEw==
+ bh=gM0J8I+cDDsR7EFJ2KWf9L5XHLZ6bTPo+155hHNKXoU=;
+ b=UXnLk1yrlJKLbknNjs//FiJQ0r6JlSa0ja35IubT4Ecc8JlpBetfofVd0StahSwQyW07I/ixF7/JLhLziNgFiQTDCIxFkMIp5/JVY4yeQf9VkQaU1ekBJ8x6f9N3/zihMbEDejVDv1p/a9G/irpWCpYK60YTjaYlVoOy5olVNvY9dxEViKy/YmjCtEZfNLZeqK4dXQS3njxjnvAaiZJmJ7G20NaboAofFqbTkcxFGlp9o5/7DEENzWlTbQNtvVoeLh3sjY3rQWKl24qVF1DhJVEXTXn9PgVPHj5jEtAx0hmlWYQoYnF+iJqv4A79DtpVXCbb/q+I5wxiZ2ECXpnnNg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=j1ns1RBZlNvW9wa41AzKWH485BLRGI/NY0lWTXw9CcM=;
- b=c7nwd1dAVhjDmaEibc39xKnxhlsnrreyVd39vI7LRXNeS1eEktSuBZK0DY8Pwwv5sRgAB9vQfdaB1sXL7ffwN9di/gx5MPtdg2uyWEAet8I/0FZn0p5Jm5VVSKlZqtChaSvDT5zcmpWp3w+dGHI0X3bEVx0zCckrpu71GfOAercuMKY7X3ISB7Jgmvhd1Sodtmi6PT4aaWm1RgkZMdbom3yKZKg9NzkXcFbJj8Ram97GMRhWMCALZmK/4n9gCeji3BiMTlrSKU0qW7lvYMlCLsr8FoejbDmmnQ2URck1V6vFAISCY9RvvjMdFmQaVQugxNcaoGtvhjG/8WEfH/8iVg==
+ bh=gM0J8I+cDDsR7EFJ2KWf9L5XHLZ6bTPo+155hHNKXoU=;
+ b=TbZYuhmvDbaq96BRaokjR1ieAzhlk5BBs4Ot+XDWRkPhw37SeEZytWybBL7JILyeStjwRQ9RUjW1ebHVHa1qNGepTBmg/Ffn67sUJaGbViFnizfSuU10Xn+lHtfNFfz0F05hMvQGDUkWhNXJKozfFD/yURPdNMkM6cD57LeX7f9XOIBt2DMjgdQWpIBqoCb+G9XFzQGn5BiFThb9tu84tVGTswEA3h9tf8SC9rCALBUkS1Bj90MQET6SX5oZ3X8v4ViaXrV/2tYNSNK4ZODkMX/Z3Rv6+Kc83+rJwpu/PhMgSddIuhnnIqljqqbitvRH1BYvyGLaXW8fjwuJUn9Zpg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by CY8PR12MB7682.namprd12.prod.outlook.com (2603:10b6:930:85::15) with
+ by BY5PR12MB4936.namprd12.prod.outlook.com (2603:10b6:a03:1d4::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.18; Wed, 16 Nov
- 2022 21:00:59 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.19; Wed, 16 Nov
+ 2022 21:01:01 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::f8b0:df13:5f8d:12a%7]) with mapi id 15.20.5813.017; Wed, 16 Nov 2022
- 21:00:59 +0000
+ 21:01:01 +0000
 From: Jason Gunthorpe <jgg@nvidia.com>
 To: bpf@vger.kernel.org,
 	Jonathan Corbet <corbet@lwn.net>,
@@ -71,15 +71,15 @@ Cc: Anthony Krowiak <akrowiak@linux.ibm.com>,
 	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
 	Yi Liu <yi.l.liu@intel.com>,
 	Keqian Zhu <zhukeqian1@huawei.com>
-Subject: [PATCH v5 05/19] iommufd: Document overview of iommufd
-Date: Wed, 16 Nov 2022 17:00:41 -0400
-Message-Id: <5-v5-4001c2997bd0+30c-iommufd_jgg@nvidia.com>
+Subject: [PATCH v5 17/19] iommufd: Add some fault injection points
+Date: Wed, 16 Nov 2022 17:00:53 -0400
+Message-Id: <17-v5-4001c2997bd0+30c-iommufd_jgg@nvidia.com>
 In-Reply-To: <0-v5-4001c2997bd0+30c-iommufd_jgg@nvidia.com>
 References:
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: MN2PR19CA0007.namprd19.prod.outlook.com
- (2603:10b6:208:178::20) To LV2PR12MB5869.namprd12.prod.outlook.com
+X-ClientProxiedBy: MN2PR12CA0016.namprd12.prod.outlook.com
+ (2603:10b6:208:a8::29) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -88,311 +88,159 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CY8PR12MB7682:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5b684b83-7729-441d-4ae8-08dac815a837
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BY5PR12MB4936:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2f882a76-b704-4733-2fce-08dac815a8d7
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	ZStOIWQqSUTlB4wFoNrV0Uxh3TBqK3HLX8XfJFWONRLNvYIRbwEIWJamq2TfakDvjXvwqlaPcu81YyK7yheXroHfI8dYK7T7d8JAa1j8Icn4y2IejRZ5h55WEzx0uhvkNZE4vnQx2XMPpQgnPr8E6a2XNbDEUzvoBkCYZukrz2x5I796EgsZi/O4XaMr1GN+C80znTGFZqhkb41NNO3KgF0HjZYsmvh+g9h+UfMkC/wwPVMFK6H4Oi0976EQDO7B8oQiUKXHQ0a9mL28Al87cs8lKWqThcacb0lr2+Nqq3kJX5pFO+WaB35KLhoL/d+YUH9c5Pgs/VZhlSpNkOVrfb8KHN0KNWsaYrq92AZEvaOFFGLmjNfCAeZCf2KApyQOSiMfKDgVF3pi2gLPlpQryvQls7amgdXX7R1aT8vU15lnSIxP9mjA6NVpJ99b7086T5n5GNeRe5+ZllqMYG3L8zh89w4zaqqHlki7QFXUMqXkNSzHVkF1IwP0lXdHfewBN1TkxowA8xvNIt6ArIo2ecTrnTTkdx4LtT0oKRsYWfxloNe6ti+akJWz8u/HnrxKwJ9rUKMl3Fi3kWhWbpGQPyz8jpaAJ7vNEbL6CQmbejeCcI7YJOzYcsokMcZ67EwqBaxTM+WSDGAvQLbkoC7jpdzN/wXHpjOCXx/fgTcMx/tW2vcJoXSS8deRiTe3zF3iJwUsihTAU9LiSJIukC668A2kvwJ+w7gqA1W4UTmedMTkpMYjA2vdYdZ9oB3ONJbpufEezxnE/wLzACcg9AlPxQ==
+	5XPJP9iHnyUhgwoMbogEjhX3owrLd+1c7GpFEwEGguqikB8cTh3YpYjEV0A1wUa/ZhjgH73an0HCzbMSUcSHr+SxEJ1/QWd0R+IrW7R54IX84fwCrtkt1QLvukC8pnYcQlkyjoE5nE1oWfTCj38APMvNt+N/8R5xTtDf8zCsCQcfIyHzWnuhKIyPHuB82gOjpyOcy2YZfx51XK/mBO4MNQrTrYqStju1V4JONtZ7tc5zIn2XKjOdy/Olx7j/BoWwOVtSmAKAt9LzcXH0CWHiwLGWdsxQmpLphI51dUlrOHtTOgngTB06IITl+Z29TAFy3mVu97U3TTKDm9cVMAdPiq0tafLw9S2HgrhdujI96j+IFqbUpxvAIr0EP3+YraECjfGF9FN2S6NfjllksaCKgewhhUe7lqggOckJjyIszNrpf7of5Kn59uQc79n7E4WwidvSJgXVxAMCP/1+DYJRwFP5DI2L1suCoLaHvgJRj+zuXAvkquBC5Dp6z2PFYIW45EcECe+3F0pO0IMkiVOeqNGd5pbdQ/p9P//4N7j7ou9wWPFxbmbgdyfi08NWVfkA6+Yub4j7ybm57CyarIV+uG0FFlakyZaUznAOhJ06exC4/5M9uZemlLMBwBCVyi/4SInRn9mm5LFf1wFxNbhCyJruzCc6085Voc1FvfV4Tv9DZCYKg8LP/QgHvihT0fj74KZteU70/Y/noDdnF1Zyj9XEhZc/nTcy5YSPnga4kWgSwKnQggS4vnqeMO6Xsa6o
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(346002)(136003)(396003)(366004)(376002)(451199015)(38100700002)(2616005)(86362001)(921005)(110136005)(7406005)(6666004)(478600001)(6486002)(7416002)(8936002)(66476007)(8676002)(4326008)(54906003)(66556008)(66946007)(316002)(41300700001)(83380400001)(2906002)(6506007)(186003)(5660300002)(6512007)(36756003)(26005)(4216001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(396003)(136003)(346002)(366004)(39860400002)(451199015)(478600001)(36756003)(38100700002)(6486002)(921005)(83380400001)(86362001)(7416002)(8936002)(6666004)(7406005)(5660300002)(186003)(2906002)(66476007)(4326008)(8676002)(66946007)(66556008)(110136005)(6506007)(2616005)(26005)(6512007)(316002)(54906003)(41300700001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?0GnLSgVVooON7LKvsjhzyYu2oFXYIUwwZBiah1otytSdiQI1MV0qy/vKeY6n?=
- =?us-ascii?Q?l9r7RcyTiqOatBaZsfSCqReLm5KDIyjScLHQEUJh5CgJw4gwZX/dBsdENdWp?=
- =?us-ascii?Q?jmLiZyuE+zkp0A1Z+B7hj0zoWO8RI4D2ivvZOSksZ8YlSgF1do1k7UdwghlT?=
- =?us-ascii?Q?QTAJmqkETMhIGqJVJtIcoufiIF2a+TcfC2v49dmyzs4qnOEOwd7r37/fqi8H?=
- =?us-ascii?Q?n+m+EzREOL/I5XGh4vtgqGn1yc0gkYjDetJ4LJxt7S23LfAGEITVAwqazGhB?=
- =?us-ascii?Q?Brc+ybyvxgeb697BqFDQeLuKom4c0fHr35yLKZA3OFNleHTneQRoVQhQcG4x?=
- =?us-ascii?Q?RHv3Nf/OVqgGT7nXRc503V380bcEGie6JOOPYqaKjaHfzJ0ABa/AyJCk9gvp?=
- =?us-ascii?Q?a/MlzKKD+rYLEh9SYZpvwiBsuhepWaC88OBKv02AkGuwru70IRbtQnvG6v1J?=
- =?us-ascii?Q?ODorSg3BHDjcHzzmNd/JfzVGn/HfCMMllDEJe9GbmCS9ogdcwoBQ7E0XsD+z?=
- =?us-ascii?Q?hzmlbGQ5eudcfJecDmsr2JQ9hDrrVVgjeri3J55TvKP9dw+7L043l7+0zkG4?=
- =?us-ascii?Q?HhbT+k6tKYCI00XqGazPzE7Yd7XmdZ66DCFWPZ7p3KhVlLJ7lj/hV0cZShRl?=
- =?us-ascii?Q?mA+2GBUNgEADwm16NyRzG/2TNRunaCpVl1v+fsMi9iFV/WOl/GrkhLnbLkb4?=
- =?us-ascii?Q?llejBAHr3lLgK1lUV5xLl4wP9gyF0Tyeb3QcAFIIilI5nfVWF1E7vU1zddrM?=
- =?us-ascii?Q?7kx6Bo2HXGUCSNl1N9t94ocxGR+S0gJDDep0HdsvkcApVO+wWZpp7Kmfhght?=
- =?us-ascii?Q?O4WKR9D3O7NPAqbxkXKmeo2fLSx4/AmzKqMzsSvslj01W89MhIGFHaf4HQCJ?=
- =?us-ascii?Q?HFt1vVnH9IrMdQSS59Ml8uzudDNRvusqK2BaAgGCNsYCDFcIG+exWjdUgmh0?=
- =?us-ascii?Q?6tXprfE1QZt2TBhvTD64SepY/vR021TYwwUv+M1wRkpuho+4pJOT97kI29gS?=
- =?us-ascii?Q?hMyIAH3E6b38wQ1tPjPnkCG3R21ZrM/rtDR9jidfA955+0mTJhDk2mVz+XoV?=
- =?us-ascii?Q?3yujHWks+uo1YClgmLe0jzwVqSulE0zQQweSjB9cLJuoo/bBr5hbWo3Xeake?=
- =?us-ascii?Q?aWyGbH+EVWosIqNXn1s1xtmisq+IQKXHM25dCGb0VQsvNZ4nPakQbLai2azg?=
- =?us-ascii?Q?9bMhngPXLTrXu9pSgMg6Fb4nTdvE+n3crWxxSVGK0/n9u/1yASQMiHuMwVaW?=
- =?us-ascii?Q?dN3+EbI9BnwO1Jc7eN5QGtpXEpxFxUsVaUaAvEQqLqYGfFIMEy+l6rF7VGEo?=
- =?us-ascii?Q?Anf7+lzJLcHc+YV/UueJ/GVJnVWc7HC1nUjCfoVWG9DnbaP8WgiTZwlurqBi?=
- =?us-ascii?Q?Eefbqwhy7HJjDyOqxmI0u2XSXnzoZlWg30cKFgvpVjZ/g2Naj1zCnQ4NhpCo?=
- =?us-ascii?Q?j8YllJ2si/ES7cr4k15DdNG+CvpBvDlZXksGKZDb3BK2gPtLnoMN8BcHvRpR?=
- =?us-ascii?Q?XdbgZKCHAajMTgXv4W8Iq/lLXxddI8tyk1EtLFiErQBqi8tF7o+dd6Uy6yJp?=
- =?us-ascii?Q?ZpCpTGTV3Uxy1E1alEM=3D?=
+	=?us-ascii?Q?Tv5gu0IXQPDXq1Xyp6IWo1mMdmuaw2W/JqaCIgByA8WJcobW/y+Qjft9xaWq?=
+ =?us-ascii?Q?lIHz/7tdIGT2fZN0TB+WqVp32dg5Z5QJq1L3VfJxUnJf25u+NfYYcAPRxP21?=
+ =?us-ascii?Q?DcrqshpKE5vb7g++T4bZjYoWlelrOasFg0ENq3GqThNQcphRJxX5LdCuL69W?=
+ =?us-ascii?Q?PQ9yhMg8x7riD5cku8nDXjMycz/vy9j/DT5wUutaiPCfUMpM9TPiPLsZreIz?=
+ =?us-ascii?Q?8iopapI6yt5KnTByrEw39zlGrydDA2UPtqGITeju6ZY+EedzlI+1AVasEL/B?=
+ =?us-ascii?Q?3H3CpN+7a8E+KAbBiKg8hPjYe51Bp9klc2UWSYDB9XeAL8P61i79gR4Zqeit?=
+ =?us-ascii?Q?Qhkof8LxZqh7fS77ChPp+RQU+qs2QdBJDJk9/1MaldKdcR18KbUJHQxNZG9T?=
+ =?us-ascii?Q?ZiFrWwzsEfWiheYT6hRMjbZysuXBvbfjLMnTm5H3Ig7KfcEAyRCH3MKkzP+R?=
+ =?us-ascii?Q?OJqBtxIa4vq7zQ1qVeJSoo1/AKK0uqdeYDFSK91Gc7PUK+isgbktWqB69jY+?=
+ =?us-ascii?Q?fIpdkUCZ5Q1su1xaqi5+oIKoy5mYiy3RSbBd1N8v4rtKZb/mWH68Zx0UyJDS?=
+ =?us-ascii?Q?m4j6dzOF2agpbn9n2SBUN8nAvRtNJWDVylwhXrg/q1sOpxiTkAAleHp8pzQT?=
+ =?us-ascii?Q?cNS1R7JE0gTYQ68SsQtWzQJBGtTsLHG3E2j1Vum8QbceMJO8ozZ+WQZ0pFso?=
+ =?us-ascii?Q?80RLngnzXoOCsIyTwBI3r5nvOUS5SG7nORg+R/eYaQrH/28jUywXu1t5QtR5?=
+ =?us-ascii?Q?XGleveEBgT14hFTuhMHKRx21Ysnn2rQvZiBXsKJyD5LtVu4oI2PJaNOfdNA4?=
+ =?us-ascii?Q?0H+3n5hmLkhU5q2DqGGu/R1MLXkvp9nQYFPdMVUE+yaun4jeTHaLJ3FheBWk?=
+ =?us-ascii?Q?cRKfKRTjlovQmiaykQNbw3MHEGwv+VOArkDNmf7imws3Hkn/42rGb0x3w+Gk?=
+ =?us-ascii?Q?MplofOVlve/VOZGgteHjriniBaZ5ezl2QRDuk5x0rhTJ8vxFegg1FHgmAXNn?=
+ =?us-ascii?Q?htstoPQpXm4EvR7MYPgiybCqzoV+4oPWqwjJ6U/ORsLKd+aOEqJcNp5v5MgO?=
+ =?us-ascii?Q?PfTR7bZazm3aClggUKIJeA388K5JYmH+PNYtgu1rUyl14L8Q7dczemM+bt2f?=
+ =?us-ascii?Q?f12SBGAPqjXrNunuYfuY//j/Rn11B83D915kcNRuiyrwrYvCF41nUOowrYgg?=
+ =?us-ascii?Q?dVGk1eC5F8JoSeD5JzFLHlE/uy1BuDQDROr/8+ENaYNNWPWZfSVg6Rla+I+B?=
+ =?us-ascii?Q?QaIHf8weZfdiuh1v5RVNgXcXklHXJXm/J85Hoj3PtXeSDs6P5hZJ8dU5LON9?=
+ =?us-ascii?Q?UrHK7kVnHV9pWwUar3TaZpdrraDzOdJ56TXVFANV//p1+CkvxPqotNztgeGB?=
+ =?us-ascii?Q?hQgyq00Fy1iBQ2GSsbpKhL19KBk0TgIa6Bo6UPt6XvjRFcW4ffbJmnIGIaWx?=
+ =?us-ascii?Q?Ko2nAomQ+tWVts//KVwoK08yeD9Y5invkEbJxYANrpfPArrvlQHHouw4axYc?=
+ =?us-ascii?Q?8i4lWzDHQvE1UIDM8A/Lh1QrTBcLyaaUmbKGv1bnclNBNHZSJEdGjFmDc6J7?=
+ =?us-ascii?Q?2Dfqw8GhpmLw6iU8LBQ=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5b684b83-7729-441d-4ae8-08dac815a837
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2f882a76-b704-4733-2fce-08dac815a8d7
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2022 21:00:57.1847
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2022 21:00:58.2014
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: IIG9NpOUNMCDprhXOHjaDloGwdvkv8+whImz/n5Q+FwaqyXR+JsScpylqoKTqXyD
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7682
+X-MS-Exchange-CrossTenant-UserPrincipalName: OZ6ILNYt87Pjlw6ecqactw6bnfLaUWjyIyOJwWrdyvd0GqZb/rwdVnkezpt52f5+
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4936
 
-From: Kevin Tian <kevin.tian@intel.com>
+This increases the coverage the fail_nth test gets, as well as via
+syzkaller.
 
-Add iommufd into the documentation tree, and supply initial documentation.
-Much of this is linked from code comments by kdoc.
-
-Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
-Signed-off-by: Kevin Tian <kevin.tian@intel.com>
+Tested-by: Matthew Rosato <mjrosato@linux.ibm.com> # s390
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- Documentation/userspace-api/index.rst   |   1 +
- Documentation/userspace-api/iommufd.rst | 223 ++++++++++++++++++++++++
- 2 files changed, 224 insertions(+)
- create mode 100644 Documentation/userspace-api/iommufd.rst
+ drivers/iommu/iommufd/main.c  |  3 +++
+ drivers/iommu/iommufd/pages.c | 26 ++++++++++++++++++++++++++
+ 2 files changed, 29 insertions(+)
 
-diff --git a/Documentation/userspace-api/index.rst b/Documentation/userspace-api/index.rst
-index c78da9ce0ec44e..f16337bdb8520f 100644
---- a/Documentation/userspace-api/index.rst
-+++ b/Documentation/userspace-api/index.rst
-@@ -25,6 +25,7 @@ place where this information is gathered.
-    ebpf/index
-    ioctl/index
-    iommu
-+   iommufd
-    media/index
-    netlink/index
-    sysfs-platform_profile
-diff --git a/Documentation/userspace-api/iommufd.rst b/Documentation/userspace-api/iommufd.rst
-new file mode 100644
-index 00000000000000..8b1392fd2e3487
---- /dev/null
-+++ b/Documentation/userspace-api/iommufd.rst
-@@ -0,0 +1,223 @@
-+.. SPDX-License-Identifier: GPL-2.0+
+diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
+index 7de0f95f2ee68a..ab3fa05f38505d 100644
+--- a/drivers/iommu/iommufd/main.c
++++ b/drivers/iommu/iommufd/main.c
+@@ -102,6 +102,9 @@ struct iommufd_object *iommufd_get_object(struct iommufd_ctx *ictx, u32 id,
+ {
+ 	struct iommufd_object *obj;
+ 
++	if (iommufd_should_fail())
++		return ERR_PTR(-ENOENT);
 +
-+=======
-+IOMMUFD
-+=======
+ 	xa_lock(&ictx->objects);
+ 	obj = xa_load(&ictx->objects, id);
+ 	if (!obj || (type != IOMMUFD_OBJ_ANY && obj->type != type) ||
+diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
+index 640331b8a07919..c5d2d9a8c56203 100644
+--- a/drivers/iommu/iommufd/pages.c
++++ b/drivers/iommu/iommufd/pages.c
+@@ -80,6 +80,10 @@ static void *temp_kmalloc(size_t *size, void *backup, size_t backup_len)
+ 
+ 	if (*size < backup_len)
+ 		return backup;
 +
-+:Author: Jason Gunthorpe
-+:Author: Kevin Tian
++	if (!backup && iommufd_should_fail())
++		return NULL;
 +
-+Overview
-+========
+ 	*size = min_t(size_t, *size, TEMP_MEMORY_LIMIT);
+ 	res = kmalloc(*size, GFP_KERNEL | __GFP_NOWARN | __GFP_NORETRY);
+ 	if (res)
+@@ -544,6 +548,7 @@ static int pages_to_xarray(struct xarray *xa, unsigned long start_index,
+ 			   unsigned long last_index, struct page **pages)
+ {
+ 	struct page **end_pages = pages + (last_index - start_index) + 1;
++	struct page **half_pages = pages + (end_pages - pages) / 2;
+ 	XA_STATE(xas, xa, start_index);
+ 
+ 	do {
+@@ -551,6 +556,15 @@ static int pages_to_xarray(struct xarray *xa, unsigned long start_index,
+ 
+ 		xas_lock(&xas);
+ 		while (pages != end_pages) {
++			/* xarray does not participate in fault injection */
++			if (pages == half_pages && iommufd_should_fail()) {
++				xas_set_err(&xas, -EINVAL);
++				xas_unlock(&xas);
++				/* aka xas_destroy() */
++				xas_nomem(&xas, GFP_KERNEL);
++				goto err_clear;
++			}
 +
-+IOMMUFD is the user API to control the IOMMU subsystem as it relates to managing
-+IO page tables from userspace using file descriptors. It intends to be general
-+and consumable by any driver that wants to expose DMA to userspace. These
-+drivers are eventually expected to deprecate any internal IOMMU logic
-+they may already/historically implement (e.g. vfio_iommu_type1.c).
+ 			old = xas_store(&xas, xa_mk_value(page_to_pfn(*pages)));
+ 			if (xas_error(&xas))
+ 				break;
+@@ -561,6 +575,7 @@ static int pages_to_xarray(struct xarray *xa, unsigned long start_index,
+ 		xas_unlock(&xas);
+ 	} while (xas_nomem(&xas, GFP_KERNEL));
+ 
++err_clear:
+ 	if (xas_error(&xas)) {
+ 		if (xas.xa_index != start_index)
+ 			clear_xarray(xa, start_index, xas.xa_index - 1);
+@@ -728,6 +743,10 @@ static int pfn_reader_user_pin(struct pfn_reader_user *user,
+ 	npages = min_t(unsigned long, last_index - start_index + 1,
+ 		       user->upages_len / sizeof(*user->upages));
+ 
 +
-+At minimum iommufd provides universal support of managing I/O address spaces and
-+I/O page tables for all IOMMUs, with room in the design to add non-generic
-+features to cater to specific hardware functionality.
++	if (iommufd_should_fail())
++		return -EFAULT;
 +
-+In this context the capital letter (IOMMUFD) refers to the subsystem while the
-+small letter (iommufd) refers to the file descriptors created via /dev/iommu for
-+use by userspace.
+ 	uptr = (uintptr_t)(pages->uptr + start_index * PAGE_SIZE);
+ 	if (!remote_mm)
+ 		rc = pin_user_pages_fast(uptr, npages, user->gup_flags,
+@@ -872,6 +891,8 @@ static int pfn_reader_user_update_pinned(struct pfn_reader_user *user,
+ 		npages = pages->last_npinned - pages->npinned;
+ 		inc = false;
+ 	} else {
++		if (iommufd_should_fail())
++			return -ENOMEM;
+ 		npages = pages->npinned - pages->last_npinned;
+ 		inc = true;
+ 	}
+@@ -1721,6 +1742,11 @@ static int iopt_pages_rw_page(struct iopt_pages *pages, unsigned long index,
+ 		return iopt_pages_rw_slow(pages, index, index, offset, data,
+ 					  length, flags);
+ 
++	if (iommufd_should_fail()) {
++		rc = -EINVAL;
++		goto out_mmput;
++	}
 +
-+Key Concepts
-+============
-+
-+User Visible Objects
-+--------------------
-+
-+Following IOMMUFD objects are exposed to userspace:
-+
-+- IOMMUFD_OBJ_IOAS, representing an I/O address space (IOAS), allowing map/unmap
-+  of user space memory into ranges of I/O Virtual Address (IOVA).
-+
-+  The IOAS is a functional replacement for the VFIO container, and like the VFIO
-+  container it copies an IOVA map to a list of iommu_domains held within it.
-+
-+- IOMMUFD_OBJ_DEVICE, representing a device that is bound to iommufd by an
-+  external driver.
-+
-+- IOMMUFD_OBJ_HW_PAGETABLE, representing an actual hardware I/O page table
-+  (i.e. a single struct iommu_domain) managed by the iommu driver.
-+
-+  The IOAS has a list of HW_PAGETABLES that share the same IOVA mapping and
-+  it will synchronize its mapping with each member HW_PAGETABLE.
-+
-+All user-visible objects are destroyed via the IOMMU_DESTROY uAPI.
-+
-+The diagram below shows relationship between user-visible objects and kernel
-+datastructures (external to iommufd), with numbers referred to operations
-+creating the objects and links::
-+
-+  _________________________________________________________
-+ |                         iommufd                         |
-+ |       [1]                                               |
-+ |  _________________                                      |
-+ | |                 |                                     |
-+ | |                 |                                     |
-+ | |                 |                                     |
-+ | |                 |                                     |
-+ | |                 |                                     |
-+ | |                 |                                     |
-+ | |                 |        [3]                 [2]      |
-+ | |                 |    ____________         __________  |
-+ | |      IOAS       |<--|            |<------|          | |
-+ | |                 |   |HW_PAGETABLE|       |  DEVICE  | |
-+ | |                 |   |____________|       |__________| |
-+ | |                 |         |                   |       |
-+ | |                 |         |                   |       |
-+ | |                 |         |                   |       |
-+ | |                 |         |                   |       |
-+ | |                 |         |                   |       |
-+ | |_________________|         |                   |       |
-+ |         |                   |                   |       |
-+ |_________|___________________|___________________|_______|
-+           |                   |                   |
-+           |              _____v______      _______v_____
-+           | PFN storage |            |    |             |
-+           |------------>|iommu_domain|    |struct device|
-+                         |____________|    |_____________|
-+
-+1. IOMMUFD_OBJ_IOAS is created via the IOMMU_IOAS_ALLOC uAPI. An iommufd can
-+   hold multiple IOAS objects. IOAS is the most generic object and does not
-+   expose interfaces that are specific to single IOMMU drivers. All operations
-+   on the IOAS must operate equally on each of the iommu_domains inside of it.
-+
-+2. IOMMUFD_OBJ_DEVICE is created when an external driver calls the IOMMUFD kAPI
-+   to bind a device to an iommufd. The driver is expected to implement a set of
-+   ioctls to allow userspace to initiate the binding operation. Successful
-+   completion of this operation establishes the desired DMA ownership over the
-+   device. The driver must also set the driver_managed_dma flag and must not
-+   touch the device until this operation succeeds.
-+
-+3. IOMMUFD_OBJ_HW_PAGETABLE is created when an external driver calls the IOMMUFD
-+   kAPI to attach a bound device to an IOAS. Similarly the external driver uAPI
-+   allows userspace to initiate the attaching operation. If a compatible
-+   pagetable already exists then it is reused for the attachment. Otherwise a
-+   new pagetable object and iommu_domain is created. Successful completion of
-+   this operation sets up the linkages among IOAS, device and iommu_domain. Once
-+   this completes the device could do DMA.
-+
-+   Every iommu_domain inside the IOAS is also represented to userspace as a
-+   HW_PAGETABLE object.
-+
-+   .. note::
-+
-+      Future IOMMUFD updates will provide an API to create and manipulate the
-+      HW_PAGETABLE directly.
-+
-+A device can only bind to an iommufd due to DMA ownership claim and attach to at
-+most one IOAS object (no support of PASID yet).
-+
-+Kernel Datastructure
-+--------------------
-+
-+User visible objects are backed by following datastructures:
-+
-+- iommufd_ioas for IOMMUFD_OBJ_IOAS.
-+- iommufd_device for IOMMUFD_OBJ_DEVICE.
-+- iommufd_hw_pagetable for IOMMUFD_OBJ_HW_PAGETABLE.
-+
-+Several terminologies when looking at these datastructures:
-+
-+- Automatic domain - refers to an iommu domain created automatically when
-+  attaching a device to an IOAS object. This is compatible to the semantics of
-+  VFIO type1.
-+
-+- Manual domain - refers to an iommu domain designated by the user as the
-+  target pagetable to be attached to by a device. Though currently there are
-+  no uAPIs to directly create such domain, the datastructure and algorithms
-+  are ready for handling that use case.
-+
-+- In-kernel user - refers to something like a VFIO mdev that is using the
-+  IOMMUFD access interface to access the IOAS. This starts by creating an
-+  iommufd_access object that is similar to the domain binding a physical device
-+  would do. The access object will then allow converting IOVA ranges into struct
-+  page * lists, or doing direct read/write to an IOVA.
-+
-+iommufd_ioas serves as the metadata datastructure to manage how IOVA ranges are
-+mapped to memory pages, composed of:
-+
-+- struct io_pagetable holding the IOVA map
-+- struct iopt_areas representing populated portions of IOVA
-+- struct iopt_pages representing the storage of PFNs
-+- struct iommu_domain representing the IO page table in the IOMMU
-+- struct iopt_pages_access representing in-kernel users of PFNs
-+- struct xarray pinned_pfns holding a list of pages pinned by in-kernel users
-+
-+Each iopt_pages represents a logical linear array of full PFNs. The PFNs are
-+ultimately derived from userspave VAs via an mm_struct. Once they have been
-+pinned the PFNs are stored in IOPTEs of an iommu_domain or inside the pinned_pages
-+xarray if they have been pinned through an iommufd_access.
-+
-+PFN have to be copied between all combinations of storage locations, depending
-+on what domains are present and what kinds of in-kernel "software access" users
-+exists. The mechanism ensures that a page is pinned only once.
-+
-+An io_pagetable is composed of iopt_areas pointing at iopt_pages, along with a
-+list of iommu_domains that mirror the IOVA to PFN map.
-+
-+Multiple io_pagetable-s, through their iopt_area-s, can share a single
-+iopt_pages which avoids multi-pinning and double accounting of page
-+consumption.
-+
-+iommufd_ioas is sharable between subsystems, e.g. VFIO and VDPA, as long as
-+devices managed by different subsystems are bound to a same iommufd.
-+
-+IOMMUFD User API
-+================
-+
-+.. kernel-doc:: include/uapi/linux/iommufd.h
-+
-+IOMMUFD Kernel API
-+==================
-+
-+The IOMMUFD kAPI is device-centric with group-related tricks managed behind the
-+scene. This allows the external drivers calling such kAPI to implement a simple
-+device-centric uAPI for connecting its device to an iommufd, instead of
-+explicitly imposing the group semantics in its uAPI as VFIO does.
-+
-+.. kernel-doc:: drivers/iommu/iommufd/device.c
-+   :export:
-+
-+.. kernel-doc:: drivers/iommu/iommufd/main.c
-+   :export:
-+
-+VFIO and IOMMUFD
-+----------------
-+
-+Connecting a VFIO device to iommufd can be done in two ways.
-+
-+First is a VFIO compatible way by directly implementing the /dev/vfio/vfio
-+container IOCTLs by mapping them into io_pagetable operations. Doing so allows
-+the use of iommufd in legacy VFIO applications by symlinking /dev/vfio/vfio to
-+/dev/iommufd or extending VFIO to SET_CONTAINER using an iommufd instead of a
-+container fd.
-+
-+The second approach directly extends VFIO to support a new set of device-centric
-+user API based on aforementioned IOMMUFD kernel API. It requires userspace
-+change but better matches the IOMMUFD API semantics and easier to support new
-+iommufd features when comparing it to the first approach.
-+
-+Currently both approaches are still work-in-progress.
-+
-+There are still a few gaps to be resolved to catch up with VFIO type1, as
-+documented in iommufd_vfio_check_extension().
-+
-+Future TODOs
-+============
-+
-+Currently IOMMUFD supports only kernel-managed I/O page table, similar to VFIO
-+type1. New features on the radar include:
-+
-+ - Binding iommu_domain's to PASID/SSID
-+ - Userspace page tables, for ARM, x86 and S390
-+ - Kernel bypass'd invalidation of user page tables
-+ - Re-use of the KVM page table in the IOMMU
-+ - Dirty page tracking in the IOMMU
-+ - Runtime Increase/Decrease of IOPTE size
-+ - PRI support with faults resolved in userspace
+ 	mmap_read_lock(pages->source_mm);
+ 	rc = pin_user_pages_remote(
+ 		pages->source_mm, (uintptr_t)(pages->uptr + index * PAGE_SIZE),
 -- 
 2.38.1
 
