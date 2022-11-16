@@ -1,114 +1,88 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com [209.85.208.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ADE87C
-	for <iommu@lists.linux.dev>; Wed, 16 Nov 2022 12:08:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668600517; x=1700136517;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=ROaSIFRIO9vsgedLMOHZiWNscCfhR6myclt50kra5OA=;
-  b=TeQF+Sm/1kbEZLdTPoP1UDAqasndrD47DvZdb4YP4RT4fa2SFVMG3Sk3
-   QOkn8U58GlhmmxNMy+m1dLVdl1xe8oNIEAyA0VaZHD1gcsSqslRWwhy3M
-   uBTXFJl5PP1cW76HJP0SLuXlaOsOq5Kd438iCy8WfsO5iXgkExSsqnLpt
-   +ezclqbhywN1UR9iUK0ELtxrnVlIVfzQhxPiXyK94k4Upj8VVusTFAJ87
-   WlW7T5sKpkucFWozKu4CqF6YRWy6fUiCHTxJ81rPWdCWJM2gkUxjMAhjc
-   sUSTZxxLqIc4wNzuNeNBR3GBG1kqKXMPvE6oNhsiQBbimO7We4r7KMRa+
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10532"; a="398815183"
-X-IronPort-AV: E=Sophos;i="5.96,167,1665471600"; 
-   d="scan'208";a="398815183"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2022 04:08:35 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10532"; a="641620162"
-X-IronPort-AV: E=Sophos;i="5.96,167,1665471600"; 
-   d="scan'208";a="641620162"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.212.114]) ([10.254.212.114])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2022 04:08:33 -0800
-Message-ID: <b2fba491-2196-bd6a-d6ef-4029a04a97e6@linux.intel.com>
-Date: Wed, 16 Nov 2022 20:08:30 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E25947C
+	for <iommu@lists.linux.dev>; Wed, 16 Nov 2022 12:22:20 +0000 (UTC)
+Received: by mail-lj1-f180.google.com with SMTP id h12so21600568ljg.9
+        for <iommu@lists.linux.dev>; Wed, 16 Nov 2022 04:22:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=xljYnYnQPEIox8T8MM9nvvNS3niXSPZfVXSMrwlG7XY=;
+        b=XZuqrVaVAtWxSXiEujtNCvoWY32ZxJtglYxJErw6sAxsimQUTKv6R3hzdkwJS/uovh
+         yK++rudGgAYYQO+oq4GdMlO16A9iKWRhTk3U4oqNc68QWux0waCXdKhqNPl/vkY+PjTv
+         JytbW1ZY+tw6x2Lc8w95J9u+j8kjIlnZ3EHeVXsCPIoWCnUUXMANszFp/c1W27r71Dw5
+         r5N2uWXu5wRlqBl5gLkCHvPljr654HO4D/6eY77u8ldMUAwfCRm6EfSaUmOE6sFItfCV
+         gdBx7OJ6KiFkKsdpPfp4EhVcUGCEQHcnc44l7VNOjpk+hJ4k2kJzicJWIG5M1hKLD+zS
+         G8zQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=xljYnYnQPEIox8T8MM9nvvNS3niXSPZfVXSMrwlG7XY=;
+        b=ymBPkO8yupbVTPK3PvaAiThF0N5EcNNy30WELoNf+bW35sQvglEQj13Yj+Fumso3V4
+         9XLWZgO64XLAV1O4xXFrh33J/DOTPiT/C4Y9iep9av9xI4xDMffjQB3QLpjINjEBBJU9
+         V/RwRcTVdL4jAg0b/HiiRcCH7SHoF+gWLeS3wLySbQlG5A042Jw+7kK6qIFvV5TJVPEg
+         88zTzNEkC3Yl/hzMj5YCO3VJZta39Pbf/2wQa9exYN6XGY/6RxM26rbWcwk7Yy0ySmwD
+         mnX1mHlhBOLVPXdpz0C5ydkTBJs3FNB9M6LG/vgHF0ZOZg3jkB1vOj6Ldyw8rLCXqKcp
+         pOzw==
+X-Gm-Message-State: ANoB5pnowdzhB79Zu1dhMx4g8mr0U/kletyouFnuv60Gjzgr1zrvaGwE
+	h3WAl1xbtoCWLR156AQl5D5YYw==
+X-Google-Smtp-Source: AA0mqf4AyH2iCKvMUFEi0Bg9zUVmNfqqLJ1Oc+IlY8lQaQWt6ko7D1XFUcumAl5Uw0STphIKazmSzw==
+X-Received: by 2002:a2e:b54c:0:b0:276:ff0c:b7d1 with SMTP id a12-20020a2eb54c000000b00276ff0cb7d1mr7943969ljn.164.1668601338933;
+        Wed, 16 Nov 2022 04:22:18 -0800 (PST)
+Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
+        by smtp.gmail.com with ESMTPSA id bd18-20020a05651c169200b002790d8012cfsm1059467ljb.139.2022.11.16.04.22.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Nov 2022 04:22:18 -0800 (PST)
+Message-ID: <9dcf36f2-ad3c-842d-db72-f534aad8667b@linaro.org>
+Date: Wed, 16 Nov 2022 13:22:16 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.4.2
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- "Liu, Yi L" <yi.l.liu@intel.com>, "Pan, Jacob jun"
- <jacob.jun.pan@intel.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 4/7] iommu/vt-d: Fold dmar_remove_one_dev_info() into
- its caller
+Subject: Re: [PATCH v3 5/6] dt-bindings: iommu: qcom,iommu: Document QSMMUv2
+ and MSM8976 compatibles
 Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <20221114014049.3959-1-baolu.lu@linux.intel.com>
- <20221114014049.3959-5-baolu.lu@linux.intel.com>
- <BN9PR11MB527668E6C7666CAA5F0804428C079@BN9PR11MB5276.namprd11.prod.outlook.com>
- <e7c686d7-bad9-b58b-3be4-50898e142230@linux.intel.com>
- <BL1PR11MB5271F0D4E91A3F6179216ADA8C079@BL1PR11MB5271.namprd11.prod.outlook.com>
- <ebace32b-be36-5c9f-579b-211cad75df02@linux.intel.com>
- <BN9PR11MB5276DEEEA205B267192FC01B8C079@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276DEEEA205B267192FC01B8C079@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ agross@kernel.org
+Cc: andersson@kernel.org, konrad.dybcio@linaro.org, joro@8bytes.org,
+ will@kernel.org, robin.murphy@arm.com, robh+dt@kernel.org,
+ krzysztof.kozlowski+dt@linaro.org, robdclark@gmail.com,
+ linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, marijn.suijten@somainline.org,
+ kernel@collabora.com, luca@z3ntu.xyz, a39.skl@gmail.com,
+ phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
+References: <20221115101122.155440-1-angelogioacchino.delregno@collabora.com>
+ <20221115101122.155440-6-angelogioacchino.delregno@collabora.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20221115101122.155440-6-angelogioacchino.delregno@collabora.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 2022/11/16 17:15, Tian, Kevin wrote:
->> From: Baolu Lu <baolu.lu@linux.intel.com>
->> Sent: Wednesday, November 16, 2022 4:03 PM
->>
->> On 2022/11/16 13:35, Tian, Kevin wrote:
->>>> From: Baolu Lu<baolu.lu@linux.intel.com>
->>>> Sent: Wednesday, November 16, 2022 12:36 PM
->>>>
->>>> On 11/16/22 11:53 AM, Tian, Kevin wrote:
->>>>>> From: Lu Baolu<baolu.lu@linux.intel.com>
->>>>>> Sent: Monday, November 14, 2022 9:41 AM
->>>>>> @@ -4562,7 +4538,10 @@ static void
->> intel_iommu_release_device(struct
->>>>>> device *dev)
->>>>>>     {
->>>>>>     	struct device_domain_info *info = dev_iommu_priv_get(dev);
->>>>>>
->>>>>> -	dmar_remove_one_dev_info(dev);
->>>>>> +	iommu_disable_pci_caps(info);
->>>>>> +	domain_context_clear(info);
->>>>>> +	device_block_translation(dev);
->>>>> clear context after blocking translation.
->>>> Unfortunately domain_context_clear() needs reference to info->domain
->>>> (for domain id when flushing cache), which is cleared in
->>>> device_block_translation().
->>>>
->>> this sounds an ordering problem. clearing context should be after
->>> blocking translation in concept.
->>
->> At present, when the default domain is attached to the device, we first
->> populate the pasid table entry, and then populate the device context
->> entry. Above code is just the reverse operation.
->>
->> Can you see any practical problems caused by this sequence? If so, it
->> seems that we should carefully consider whether such problems already
->> exist.
->>
+On 15/11/2022 11:11, AngeloGioacchino Del Regno wrote:
+> Add compatible strings for "qcom,msm-iommu-v2" for the inner node,
 > 
-> there is no problem with existing code. Just after this patch the order
-> looks weird based on the literal name of those functions.
+> Add compatible string "qcom,msm-iommu-v2" for the inner node,
+> along with "qcom,msm8976-iommu" as a first user of it and
+> "qcom,msm-iommu-v2-ns" and "qcom,msm-iommu-v2-sec" for the context
+> bank nodes to support Qualcomm's secure fw "SMMU v2" implementation.
 > 
-> domain_context_clear() is a big hammer to disable the context entry,
-> implying translation must be blocked. Then calling another block
-> translation afterwards becomes unnecessary.
-> 
-> Probably it should be split into two functions with one requiring
-> info->domain called before block translation and the rest which
-> actually clears the context entry being the last step?
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> ---
+>  Documentation/devicetree/bindings/iommu/qcom,iommu.txt | 8 ++++++++
 
-This is what the existing code does. Perhaps I should drop this patch,
-or only rename iommu_disable_dev_iotlb() to iommu_disable_pci_caps().
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 Best regards,
-baolu
+Krzysztof
+
