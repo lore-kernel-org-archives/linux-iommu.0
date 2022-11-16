@@ -1,34 +1,34 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2088.outbound.protection.outlook.com [40.107.94.88])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2064.outbound.protection.outlook.com [40.107.220.64])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACBE7122A5;
-	Wed, 16 Nov 2022 21:01:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA665122B2;
+	Wed, 16 Nov 2022 21:01:07 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Bd6rlDIkCtjhcOCasNgOUZT9DwhNbDaCFQ28ryxD9aFa3lBL0oAhR6WmGw5DvPUp5zjcx/Lt06j7tKvARyZw862Aqna068fKL5uqzY0rAKK1t/20wqXSEZYoY22+7gTqcI2ZCxV6zRxDvwJb0wWJ6JfMx1NrY0tfBfqNKmmFgDzUzV9mYpBjeGDkqjGfCv8VO8jApTtFTvAnKPsCRXQA5hdG7zq7urUX3pTXzX/jc8oFoB/J+iR+BWMdrw+oJPoYbB1jpqHp8JK5X+ufQFVYcedAUQB02Ju/W07Gz0vdvNvdSMZsBUhBCJq7GHLqw4UjU0DA3NqC5QUHe2UaPTR+mw==
+ b=ORdSFKLmjti/nJ65Rh9R1fkLzU2OnzxsCvjKjU65g5prMU/e5RUlophAB//Z2awlDJaHyLwr6IE9TGgnhM9vkw7wuUDIm+grqxczu1CmPwl8xoFwkL0KwQOqryzoYQMckhsMIZoKmFDphkfIOWOrdBQliUwziDDWXyFiTZoQkgOaiK6SSANKNcR20K/8o1GkR37bTku228z6C9X4TldDDx1db3V/cG91ykzRoBlGsxlX7XFaRcUnlBB15Hle4C8TlpwqM97cstIqFb9DBi217s+MPpoMQ2Be4/A5GqLmNAcEzAVLT4E/mkQ28MkpWmL15oIpJVOyK+USUD6x/IlG0w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=W88SO10xccdsqF+CcdZ13NTL2mvdBP1SakI2v1PQROo=;
- b=EkGqqd2VLVJHEx9sLA1goPVn2+bjSKKpsqNheJh3Qan+7nXCPJ6zHovI8rW5bqSlW2MaROPklhj/9KjCF+s6d6Gt8CyWD00oWjCvblKaHA2ObGXwD2HGAxpeMvalXsA2QHaBupvsiFbLTsIHXAWFAYa79me5SvmWioPuO0oqLFATelYkzxvZr5bcGvhGNxA3HaPSZY/VNcNEmP0huRCISw6lembFRAr6ARNt9sreG4FmxyBsFDBrHrnVIHVeQ/NcPVs+CqbAnHI/dbe3fYhP0ih+H8mUL13sIC32x4w+dWf3OesWdg6MwHd5EPg6y+P30fAPjGBp7n+TYTS4etL3AQ==
+ bh=fg/y5XOISbY7aMh5HOd5Q23eYMEF5jQCaqyUIS5HYoo=;
+ b=Ek2RLm/kUXXuxUlV3/QSZGdAnBMGtiIHFSsxt87USoxLob3U2BIr6pxQ0OQ1aBdDRSSxwEgufkA57QaQA8x1hOFKKa3pKK4AQBCjdKyX//sXQEFz7DyMKQvV0OdBeeE/+a16YY/TSlYAzs2ArdIBSwW+9vqq5mje9lUEOVGfsjpGAOX1BFgZjJwTR8UwLYO/daUs+0c/Moqok3JePW6Pt4WTZPt0XT8+exPNqPbC/31vWL9JE0pYx+Gl+TiDRi+lFuqTpGb1rfDMWqhYzL3iN6e2x9c/mNm3pddxx0QFgLCYv1dAooP9NKWSRFJ7KZ4i7EpjQBOaRaturlI+nbtSZA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=W88SO10xccdsqF+CcdZ13NTL2mvdBP1SakI2v1PQROo=;
- b=leVkLoIKuDBgr8/0w4XdBkf1RlTvQ/18fyMVVGSgtxI06KnBfCTJIpVrPqxhTUNPbHSTylFxPp50tJFe/R2086KkSv4ICfK+DY3UzuHg8whoy7/77FAnYNETowa3vrrUul9CFKH1AozwnQk+i9Tp49G0fzyj7gZVW9qFB4dKi++FrtOYfq09gXx6TzaBpvniSa2MKKbUQ4LOZuVtn+jezGtvdZawlAUmWrMlssaKRwo7mtzOEwsFVsXr+m0BSAHZ7H/ix4UWqvqdLMgmcs5jnpU/SgIR/YQKFn6X/QR5KN+15Kp1aSpSMyF5CCpLXYIjFTLHtZhk8RB/trjbiVNpEg==
+ bh=fg/y5XOISbY7aMh5HOd5Q23eYMEF5jQCaqyUIS5HYoo=;
+ b=D35NXJyuDC8eMpB7jV6dnRpxMYGzfZzOAzawuLpuAMnFuLswFJWIBnN0Iqh3/EkWZnwyqOg5AkhUTO8k1tWaRq7r0LU1hxIpRI+yn3GZBeDOjkqbYONgLY+Xi0RYK74O42dzkxvEv9xmOhQl8/YUW/+GkI8Rn04+3VZMtkoub1ikWMADiiqyIe8p11afw9usyg2pQJwdJaXEEKp/cdKkcH4xBFID5Sh1CvJicrU7P0+J2b4+uittvPuFx/Dch+NzuYqg+yO0pfONe8qJ255MQRclW+4ElfNMESF34Dcjkc5+9PoloXTg1HnrOiZAFn+NdBmcJZ48hFVeG1ecsqYzug==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by PH8PR12MB7136.namprd12.prod.outlook.com (2603:10b6:510:22b::5) with
+ by CY8PR12MB7682.namprd12.prod.outlook.com (2603:10b6:930:85::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.19; Wed, 16 Nov
- 2022 21:01:03 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.18; Wed, 16 Nov
+ 2022 21:00:59 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::f8b0:df13:5f8d:12a%7]) with mapi id 15.20.5813.017; Wed, 16 Nov 2022
- 21:01:03 +0000
+ 21:00:59 +0000
 From: Jason Gunthorpe <jgg@nvidia.com>
 To: bpf@vger.kernel.org,
 	Jonathan Corbet <corbet@lwn.net>,
@@ -71,15 +71,15 @@ Cc: Anthony Krowiak <akrowiak@linux.ibm.com>,
 	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
 	Yi Liu <yi.l.liu@intel.com>,
 	Keqian Zhu <zhukeqian1@huawei.com>
-Subject: [PATCH v5 18/19] iommufd: Add additional invariant assertions
-Date: Wed, 16 Nov 2022 17:00:54 -0400
-Message-Id: <18-v5-4001c2997bd0+30c-iommufd_jgg@nvidia.com>
+Subject: [PATCH v5 04/19] scripts/kernel-doc: support EXPORT_SYMBOL_NS_GPL() with -export
+Date: Wed, 16 Nov 2022 17:00:40 -0400
+Message-Id: <4-v5-4001c2997bd0+30c-iommufd_jgg@nvidia.com>
 In-Reply-To: <0-v5-4001c2997bd0+30c-iommufd_jgg@nvidia.com>
 References:
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: MN2PR19CA0031.namprd19.prod.outlook.com
- (2603:10b6:208:178::44) To LV2PR12MB5869.namprd12.prod.outlook.com
+X-ClientProxiedBy: MN2PR12CA0029.namprd12.prod.outlook.com
+ (2603:10b6:208:a8::42) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -88,283 +88,113 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|PH8PR12MB7136:EE_
-X-MS-Office365-Filtering-Correlation-Id: dfff7a07-df26-43af-50a8-08dac815a91c
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CY8PR12MB7682:EE_
+X-MS-Office365-Filtering-Correlation-Id: 628bead4-e55c-427b-23da-08dac815a886
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	X8jTGjzqysHrSErq1UZ5RTfQsL4dBuXVK49p1vr317uOJvfFL25HApsSU0iS4aRbL8B+YQhgmx7ge3Oejz2/oYfFeR8ornRnSQQwaua9Ekh9h+v0ssjFVuW4he/ysZm1BfRFlpofnLEXVTna9NX89TucTx6IttUDf8Ffi7fQivPorOkIpzDK+j1Y5t1P3O9B72qrrVqGndg1B0DtcIytzva4z1cQ8sNdb2UxmH4odzCGVd5+Ta444u4c4o1+WrobU1IUhjMqV/3erltUSoKWMCYllD1WI13aEMexMdM7moeEERbzYYsFlz0VvRb/CdB9mGE0Hu3D/k/TmIBEZi9tyRMTCDx8nff/xUM4kBMyzLIaa1114ihmZrdF1oWVqGBp0VdxK9IV6+Ldn7CM8llZZS7lZ1FgRagPEhIh6vOBJEYnHM19ra2x1URPOnRSqDV57r4YP5sh4gPuSQq0OeoK4dIFFva+E1O1KRU0okmeOhjdP9ZlLZ7Yp9DHj/XvUqV66B015Ai0TI+D1Bb7UIdbgH7p54uS0tqeADZZfGnP4OcHDvPTe5YRU+5JBnGhGX9xWKLQFfbl1lSnwwBbp81uMboT7jdaqK38GCWmFsmzebwNviUm+HkR6q/GotrEQUiQQa8BxV5MAWsLzzwheYFdcyY5A77aJgfLG3t4PqYak55e1iKCSAGBwOfYOMiZfSQ7fq0zx7HB1/9ysQjvAQS3Hr56/VPHbiTOuchoelgW8VBMi3CoZVh1m11cyAib2o0G
+	2nnjXJSxUsBWIEg/W4DAY/+Ij2Q+b0KobNNDZwNzvv4kfocsNVegnwjSsgat/wetL8IqOJhT7FnptFGQ7fc5uQj5MY/iqCmTVpP+QbtugL/gr1QfTc/a+q8Z/db8mZVWav7N/wRHydhV1IACXJbhcSls1YRmNqmyTcAvJZIHjzxtM2x6yPSqDNLuhIjU4M8ZhMSadN1yOfVADY4i4LU2VrMg3zb/G9Zdety9gSOhBEEmcxIBELeMqmmj7FDX04IOu4yjr1twFb5KgPmZs2hpyLckh/WLirXWPRYdQBKZu2tqJNQHT7zK+yYW5yvSyeo4UIMHY7opW3eeEiVOOpx4SyptpUVeKKklYAZzQxdRY+TaDoGAewUJ2KzE592uuOoLWW8Gnsob2Tdzki6405a2Lv/uFJTOZv/t8SGWa6/MgbdG/oJuxNx/dYC9g/mH6gCruNKiGy6NdFB03u3BHLYL3Sxua06zVMTI2qHOGoz11yb81qUOKmZjvJkBB+4NLFvq86m9wkK8uB8ErG9dUE0czzpKmYmUvtkteeW2Y4UFjFgtAyCOrbVLD679yTSD7OBNN4vPyDyybgGN2nK2WdPtKk+UQO8rg9URvyUS0Duobu1yLA5GInUBdgqDsHU+YQ5z43ObHflrTK3PBi1VJOGBTqWjxWgojSot7EEYt2iVWi0rmpg2hmR9abb8rmvex4Lr8F0DUd8TcXR20ITUrA+5f94SUJgNiOrY5/VlIl0GtIKcAjrhyPU/we82CEqj5RK5
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(136003)(39860400002)(346002)(376002)(366004)(451199015)(36756003)(41300700001)(4326008)(8676002)(66556008)(6486002)(186003)(66476007)(86362001)(66946007)(2616005)(478600001)(26005)(316002)(6666004)(110136005)(54906003)(6506007)(921005)(6512007)(83380400001)(2906002)(7406005)(7416002)(8936002)(5660300002)(38100700002);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(346002)(136003)(396003)(366004)(376002)(451199015)(38100700002)(2616005)(86362001)(921005)(110136005)(7406005)(6666004)(478600001)(6486002)(7416002)(8936002)(66476007)(8676002)(4326008)(54906003)(66556008)(66946007)(316002)(41300700001)(83380400001)(2906002)(6506007)(186003)(5660300002)(6512007)(36756003)(26005)(4216001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?vmkUw53w5AZs3VT0lVqEH6xQXYIXdKr5kl14XAMZpIz4CYojkKtmQCEhIL11?=
- =?us-ascii?Q?INXInABr3zxyHy96TXNZ3ofsdHuJWAbsbsmvsl4pUkxss8NcJeHqFsMQC9rR?=
- =?us-ascii?Q?kZfXfZfAopyaOcf0yo6F8O6+deYgoV2bWa2DZtRrdZAi//plLfU4/sAu5Hk8?=
- =?us-ascii?Q?ewwP7eI962pPAj+PHM/H9N8cORxGMiTJFjVARWT9qzHp0AhV52EWcDmvkWQs?=
- =?us-ascii?Q?KwKRkn8+hJud0XOJxTClFr+BZZIfXLbTMMToG1VL44/FoQsf/VOksQ9ygi8A?=
- =?us-ascii?Q?nveQxCQS2fCKqgcENdep9xF+P/O0ENthhY6jdhdtdqVttl1CDW0CgNtW2mTX?=
- =?us-ascii?Q?FMctdbb8nK5Yt7rjEFMSBQqu8rgWKwWhPLycnuSasqlxPFKyPqnl/No+mAY2?=
- =?us-ascii?Q?osgTcOcXQrzm4TcxFFXPI9Z5vQUTAbgrDHM3GzAYt9rzJD7h/59aV6bbXI07?=
- =?us-ascii?Q?U8xuiOGHvHlkw7ZLjJPpPT3Illz0NxOb9rvB7bDLXi+HrkP4yKUmT06mlQFS?=
- =?us-ascii?Q?SL5d1gJPSP8wL0c2RTTvs5GHVabmfs8dKM6T7LUllEQKW3H1KE0c7XKUmCUj?=
- =?us-ascii?Q?TtRJNNG/jJ7XByOmpW51MKuR5+n21FZNA+Oijgc7j5qmAAaWFpupxsNjqe2c?=
- =?us-ascii?Q?/Y9wLkdu630iQZCkSW4laMLDmsBR7FICBzibW7euDBCN0EksulB2P+8kv608?=
- =?us-ascii?Q?VMS0dk1fWfrjnLHdExxhAmaGquHUK9cDWg3cCf2rt64BOd1/Dssa4HZI/Fgp?=
- =?us-ascii?Q?EOiPV5ppOCLLEpE4dXesYPKQ5bU/7r9xFt1gXF5N/6/hDw6QSI5xIRHPHrZd?=
- =?us-ascii?Q?xGA5pxvKiJdxYd0zcCCIPDnD5VZvRKbrJag9+cRB2giwgvA3ctyXQK0OZRui?=
- =?us-ascii?Q?2JBBuqPxb031BL0zzCpuPaGvaYaP1mMfK7nbDm5gn2uFHOvN28PM6solpbUf?=
- =?us-ascii?Q?VWrT5a4PrfCm0kFdpc7kWC/20xUSct2X+s5+CoxRm+Wp0v4TAhD6wLADkVUj?=
- =?us-ascii?Q?qdSr134iR0YdODenJGemuT1LYN6lxeSxel+NiErN1Tk2tup9+jU3O66tzinn?=
- =?us-ascii?Q?GAgvj8qPbNVUDZ9xkwSNMX4wJYRs5uk+C753YVPDowRaJ5Pwe9+gfXiGR6YL?=
- =?us-ascii?Q?BX2S/sk6TJZR9oxOe3bnqPZWwV9rEzS5pBHEt3TkMHJzWhDM09K8iI2fAXu/?=
- =?us-ascii?Q?SCN/0dJ10Yjg4bEggE//D213Di6CsPIPP66/xA6neXRKjq75FQK24rFxLsOp?=
- =?us-ascii?Q?WZFHr6vzVP6ecEFZo2mW9matLj/emOSQUmKMZAHmS+e2ru3XlOFnuuHDf54d?=
- =?us-ascii?Q?hxL/AmV3bTd+FLgKnH9whe6bTOeJ5z9UUGqrBuo1oVZdt50ZkSEYe9rO/V4c?=
- =?us-ascii?Q?prNKcbKXJmzyRhgKGTh3JNeGmO884UAT0NULhsiYMkUDZVzmZer7gPVUw8gc?=
- =?us-ascii?Q?TyMrzs7+GM7TiDOztNClIySlRBcIY+/BzrX7WyqYazl1teAxbT70oeU+wgtN?=
- =?us-ascii?Q?FXPNSPBUEXYiNJcbqNcHdlPj7unxY3hGprGL9+Ark/wzexTsbQFjCgs6izo8?=
- =?us-ascii?Q?u8rYmk6iPjg/qDACn0E=3D?=
+	=?us-ascii?Q?v6hOb1svaYoAXScIw4U30A3HdORfNIiKhyiJ/4ZYYrdt+vqlVMquGCW0wuou?=
+ =?us-ascii?Q?yQ0qzHDVAMRy6izCwi/n4WzkRdpxsYH0k1MAHNZMCvbmNXuHzw5i8KKbP7YD?=
+ =?us-ascii?Q?3gf37jqTmDukGd14j1CjKjeYq7DJdsWE79pj+pNGbd4K1n0aj6tPKhemhk/P?=
+ =?us-ascii?Q?c7Bevt1fzxF1gU8RhOlnx5UBnMYQQ6Q39kmYkyhQIbHrE+VP+FwYKTrYrzzF?=
+ =?us-ascii?Q?40bvFyZPQh8iJuq8gkNNUQ5fImL1anvrU5DprCiqtuqn1QMOc+grbgXqUKJx?=
+ =?us-ascii?Q?H4T5KmYu5rJeBahiHoHLtWS1J0Pjfl2CyF77GxsWzoUflxoHdlreUdn2JCyk?=
+ =?us-ascii?Q?TIQIszhkBJ0MGITbAC3iIXgxkv3iOW52hwWnq2e/61MHpWoIFhN2GwNY7POV?=
+ =?us-ascii?Q?ic2l4JsmCDmNfKNdpQ5WMytntYHX5r8K39D94xbwnKuYw9awiA7wgur3NNSh?=
+ =?us-ascii?Q?9eHwtoWTqcK8Y/7BMYZGih2hBEVhdkTeTxD662K8/f5UiMTRQlUxJEhDyYIg?=
+ =?us-ascii?Q?M50GgfOzz31IgOSj6zY3Vxg/wjpK8ZILnecIUKcMInv6invd09EvPts3DPjY?=
+ =?us-ascii?Q?Rrb3eNt4UqIX4DYTNqpybKatOYb+c0uL/mLZp0UPFHYFXP67cyQ7H0RpieG0?=
+ =?us-ascii?Q?jRlrdbmMu9Y5DzfDDFdcCdL+4va4C+AFDeBUYX/SBsudH6RxlzH7V1dTBPIz?=
+ =?us-ascii?Q?cAdR7dFr0w192CGyaW2h62Y+0dQx8lz+qA/t5KY0t5gyJeuWTxjcO0jR0l3L?=
+ =?us-ascii?Q?J/CbZWPerXegk8/nHOoNDbyfTxjBEY+zcJzPVBO/ZUds88vkUynw/xcGNKtm?=
+ =?us-ascii?Q?tn7VrxFifiqqWsTJIttUw60BND1xAgp1hBpfCR8EpWhLljBiBKM6Tw1YT3OZ?=
+ =?us-ascii?Q?bCK7n64Ug//ygPnNug0IMXWlQt3oZRJKbidYYY/hvkGAixIVJZHsRXBP/G/T?=
+ =?us-ascii?Q?e0wmRMWSXERjJ95+ARzHjqBeOUTDXD0oS2B5tMNV1YFM80awCm+NGmY8bZRV?=
+ =?us-ascii?Q?L7oxHpiLKMiM2IzLtA+BT/CZAP+pTXJOB7SGHaLBe0HnMUdzNOOi3EmXlq9p?=
+ =?us-ascii?Q?WGST4caStplrTJwEpO4ySK6Mx2fBnNqmFsNTSZZuenK5GRipTg4oGMetAPZZ?=
+ =?us-ascii?Q?W1XBmjHFBTULUnHdnD3tHq+keARlY8BMVtub30LXeBGz9vBJeW1YDOj0C/LA?=
+ =?us-ascii?Q?0VOS4Np8PGlBYXusiL+Rmyf2WEbQa8MOmpyq8MccgyzViMgRqxKsOr7oEokI?=
+ =?us-ascii?Q?CCIENRdNLGE+25aIjjp1h8IzElzl/ENQ2lGvlYzPEr317FQMKzW3/S7uEhMu?=
+ =?us-ascii?Q?BBJ8TD49raWv2/GLrtX7P9Emm/ZjewfzR1/Dqvyj9uasTyov6O5PbODBBjlU?=
+ =?us-ascii?Q?Eb5UF7qFP5txTqokUhTdXsbjJc7wqoe3gaMaCsTr6iDueSNTxYKOXO0sAeTN?=
+ =?us-ascii?Q?EJHFpV2nXFzl0ZAzpJSvGFq6S+u6lu1W5qCv/c7w6NasIgF2twvB7NTl4k1U?=
+ =?us-ascii?Q?YCADuTJ1rkmGHljAfg0Zr30eRT+eoUU+pQ+0Fq55J9Qj4JSU6/nyEgTORF1o?=
+ =?us-ascii?Q?iAc8yNSODjgdK+XdizY=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dfff7a07-df26-43af-50a8-08dac815a91c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 628bead4-e55c-427b-23da-08dac815a886
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2022 21:00:58.7160
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2022 21:00:57.6702
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: WmRZ208yYKiAApvL1JCEfaOkyxrp+ZlxzRkelI5CDZVoORIyf3d/OeQGNQwkcS4R
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7136
+X-MS-Exchange-CrossTenant-UserPrincipalName: rEl6hSssGvufSE65iCFayI4VLq0tvlhOekKMFyzARBEecMXyYj+op7ISDTGsqF3M
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7682
 
-These are on performance paths so we protect them using the
-CONFIG_IOMMUFD_TEST to not take a hit during normal operation.
+Parse EXPORT_SYMBOL_NS_GPL() in addition to EXPORT_SYMBOL_GPL() for use
+with the -export flag.
 
-These are useful when running the test suite and syzkaller to find data
-structure inconsistencies early.
-
-Tested-by: Yi Liu <yi.l.liu@intel.com>
-Tested-by: Matthew Rosato <mjrosato@linux.ibm.com> # s390
+Acked-by: Jonathan Corbet <corbet@lwn.net>
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- drivers/iommu/iommufd/device.c       |  5 ++++
- drivers/iommu/iommufd/io_pagetable.c | 22 +++++++++++++++
- drivers/iommu/iommufd/io_pagetable.h |  3 ++
- drivers/iommu/iommufd/pages.c        | 42 ++++++++++++++++++++++++++--
- 4 files changed, 70 insertions(+), 2 deletions(-)
+ scripts/kernel-doc | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index a9105237ec4131..07d4dcc0dbf5e1 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -621,6 +621,11 @@ int iommufd_access_pin_pages(struct iommufd_access *access, unsigned long iova,
- 	struct iopt_area *area;
- 	int rc;
+diff --git a/scripts/kernel-doc b/scripts/kernel-doc
+index aea04365bc69d3..48e3feca31701a 100755
+--- a/scripts/kernel-doc
++++ b/scripts/kernel-doc
+@@ -256,6 +256,7 @@ my $doc_inline_sect = '\s*\*\s*(@\s*[\w][\w\.]*\s*):(.*)';
+ my $doc_inline_end = '^\s*\*/\s*$';
+ my $doc_inline_oneline = '^\s*/\*\*\s*(@[\w\s]+):\s*(.*)\s*\*/\s*$';
+ my $export_symbol = '^\s*EXPORT_SYMBOL(_GPL)?\s*\(\s*(\w+)\s*\)\s*;';
++my $export_symbol_ns = '^\s*EXPORT_SYMBOL_NS(_GPL)?\s*\(\s*(\w+)\s*,\s*\w+\)\s*;';
+ my $function_pointer = qr{([^\(]*\(\*)\s*\)\s*\(([^\)]*)\)};
+ my $attribute = qr{__attribute__\s*\(\([a-z0-9,_\*\s\(\)]*\)\)}i;
  
-+	/* Driver's ops don't support pin_pages */
-+	if (IS_ENABLED(CONFIG_IOMMUFD_TEST) &&
-+	    WARN_ON(access->iova_alignment != PAGE_SIZE || !access->ops->unmap))
-+		return -EINVAL;
-+
- 	if (!length)
- 		return -EINVAL;
- 	if (check_add_overflow(iova, length - 1, &last_iova))
-diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd/io_pagetable.c
-index 4f4a9d9aac570e..3467cea795684c 100644
---- a/drivers/iommu/iommufd/io_pagetable.c
-+++ b/drivers/iommu/iommufd/io_pagetable.c
-@@ -251,6 +251,11 @@ static int iopt_alloc_area_pages(struct io_pagetable *iopt,
- 			(uintptr_t)elm->pages->uptr + elm->start_byte, length);
- 		if (rc)
- 			goto out_unlock;
-+		if (IS_ENABLED(CONFIG_IOMMUFD_TEST) &&
-+		    WARN_ON(iopt_check_iova(iopt, *dst_iova, length))) {
-+			rc = -EINVAL;
-+			goto out_unlock;
-+		}
- 	} else {
- 		rc = iopt_check_iova(iopt, *dst_iova, length);
- 		if (rc)
-@@ -277,6 +282,8 @@ static int iopt_alloc_area_pages(struct io_pagetable *iopt,
- 
- static void iopt_abort_area(struct iopt_area *area)
- {
-+	if (IS_ENABLED(CONFIG_IOMMUFD_TEST))
-+		WARN_ON(area->pages);
- 	if (area->iopt) {
- 		down_write(&area->iopt->iova_rwsem);
- 		interval_tree_remove(&area->node, &area->iopt->area_itree);
-@@ -642,6 +649,9 @@ void iopt_destroy_table(struct io_pagetable *iopt)
- {
- 	struct interval_tree_node *node;
- 
-+	if (IS_ENABLED(CONFIG_IOMMUFD_TEST))
-+		iopt_remove_reserved_iova(iopt, NULL);
-+
- 	while ((node = interval_tree_iter_first(&iopt->allowed_itree, 0,
- 						ULONG_MAX))) {
- 		interval_tree_remove(node, &iopt->allowed_itree);
-@@ -688,6 +698,8 @@ static void iopt_unfill_domain(struct io_pagetable *iopt,
- 				continue;
- 
- 			mutex_lock(&pages->mutex);
-+			if (IS_ENABLED(CONFIG_IOMMUFD_TEST))
-+				WARN_ON(!area->storage_domain);
- 			if (area->storage_domain == domain)
- 				area->storage_domain = storage_domain;
- 			mutex_unlock(&pages->mutex);
-@@ -792,6 +804,16 @@ static int iopt_check_iova_alignment(struct io_pagetable *iopt,
- 		    (iopt_area_length(area) & align_mask) ||
- 		    (area->page_offset & align_mask))
- 			return -EADDRINUSE;
-+
-+	if (IS_ENABLED(CONFIG_IOMMUFD_TEST)) {
-+		struct iommufd_access *access;
-+		unsigned long index;
-+
-+		xa_for_each(&iopt->access_list, index, access)
-+			if (WARN_ON(access->iova_alignment >
-+				    new_iova_alignment))
-+				return -EADDRINUSE;
+@@ -1948,6 +1949,10 @@ sub process_export_file($) {
+ 	    next if (defined($nosymbol_table{$2}));
+ 	    $function_table{$2} = 1;
+ 	}
++	if (/$export_symbol_ns/) {
++	    next if (defined($nosymbol_table{$2}));
++	    $function_table{$2} = 1;
 +	}
- 	return 0;
- }
+     }
  
-diff --git a/drivers/iommu/iommufd/io_pagetable.h b/drivers/iommu/iommufd/io_pagetable.h
-index 2ee6942c3ef4a5..83e7c175f2a277 100644
---- a/drivers/iommu/iommufd/io_pagetable.h
-+++ b/drivers/iommu/iommufd/io_pagetable.h
-@@ -101,6 +101,9 @@ static inline size_t iopt_area_length(struct iopt_area *area)
- static inline unsigned long iopt_area_start_byte(struct iopt_area *area,
- 						 unsigned long iova)
- {
-+	if (IS_ENABLED(CONFIG_IOMMUFD_TEST))
-+		WARN_ON(iova < iopt_area_iova(area) ||
-+			iova > iopt_area_last_iova(area));
- 	return (iova - iopt_area_iova(area)) + area->page_offset +
- 	       iopt_area_index(area) * PAGE_SIZE;
- }
-diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
-index c5d2d9a8c56203..429fa3b0a239cd 100644
---- a/drivers/iommu/iommufd/pages.c
-+++ b/drivers/iommu/iommufd/pages.c
-@@ -162,12 +162,20 @@ void interval_tree_double_span_iter_next(
+     close(IN);
+@@ -2419,12 +2424,12 @@ found on PATH.
+ =item -export
  
- static void iopt_pages_add_npinned(struct iopt_pages *pages, size_t npages)
- {
--	pages->npinned += npages;
-+	int rc;
-+
-+	rc = check_add_overflow(pages->npinned, npages, &pages->npinned);
-+	if (IS_ENABLED(CONFIG_IOMMUFD_TEST))
-+		WARN_ON(rc || pages->npinned > pages->npages);
- }
+ Only output documentation for the symbols that have been exported using
+-EXPORT_SYMBOL() or EXPORT_SYMBOL_GPL() in any input FILE or -export-file FILE.
++EXPORT_SYMBOL() and related macros in any input FILE or -export-file FILE.
  
- static void iopt_pages_sub_npinned(struct iopt_pages *pages, size_t npages)
- {
--	pages->npinned -= npages;
-+	int rc;
-+
-+	rc = check_sub_overflow(pages->npinned, npages, &pages->npinned);
-+	if (IS_ENABLED(CONFIG_IOMMUFD_TEST))
-+		WARN_ON(rc || pages->npinned > pages->npages);
- }
+ =item -internal
  
- static void iopt_pages_err_unpin(struct iopt_pages *pages,
-@@ -189,6 +197,9 @@ static void iopt_pages_err_unpin(struct iopt_pages *pages,
- static unsigned long iopt_area_index_to_iova(struct iopt_area *area,
- 					     unsigned long index)
- {
-+	if (IS_ENABLED(CONFIG_IOMMUFD_TEST))
-+		WARN_ON(index < iopt_area_index(area) ||
-+			index > iopt_area_last_index(area));
- 	index -= iopt_area_index(area);
- 	if (index == 0)
- 		return iopt_area_iova(area);
-@@ -198,6 +209,9 @@ static unsigned long iopt_area_index_to_iova(struct iopt_area *area,
- static unsigned long iopt_area_index_to_iova_last(struct iopt_area *area,
- 						  unsigned long index)
- {
-+	if (IS_ENABLED(CONFIG_IOMMUFD_TEST))
-+		WARN_ON(index < iopt_area_index(area) ||
-+			index > iopt_area_last_index(area));
- 	if (index == iopt_area_last_index(area))
- 		return iopt_area_last_iova(area);
- 	return iopt_area_iova(area) - area->page_offset +
-@@ -286,6 +300,8 @@ static void batch_skip_carry(struct pfn_batch *batch, unsigned int skip_pfns)
- {
- 	if (!batch->total_pfns)
- 		return;
-+	if (IS_ENABLED(CONFIG_IOMMUFD_TEST))
-+		WARN_ON(batch->total_pfns != batch->npfns[0]);
- 	skip_pfns = min(batch->total_pfns, skip_pfns);
- 	batch->pfns[0] += skip_pfns;
- 	batch->npfns[0] -= skip_pfns;
-@@ -301,6 +317,8 @@ static int __batch_init(struct pfn_batch *batch, size_t max_pages, void *backup,
- 	batch->pfns = temp_kmalloc(&size, backup, backup_len);
- 	if (!batch->pfns)
- 		return -ENOMEM;
-+	if (IS_ENABLED(CONFIG_IOMMUFD_TEST) && WARN_ON(size < elmsz))
-+		return -EINVAL;
- 	batch->array_size = size / elmsz;
- 	batch->npfns = (u32 *)(batch->pfns + batch->array_size);
- 	batch_clear(batch);
-@@ -429,6 +447,10 @@ static int batch_iommu_map_small(struct iommu_domain *domain,
- 	unsigned long start_iova = iova;
- 	int rc;
+ Only output documentation for the symbols that have NOT been exported using
+-EXPORT_SYMBOL() or EXPORT_SYMBOL_GPL() in any input FILE or -export-file FILE.
++EXPORT_SYMBOL() and related macros in any input FILE or -export-file FILE.
  
-+	if (IS_ENABLED(CONFIG_IOMMUFD_TEST))
-+		WARN_ON(paddr % PAGE_SIZE || iova % PAGE_SIZE ||
-+			size % PAGE_SIZE);
-+
- 	while (size) {
- 		rc = iommu_map(domain, iova, paddr, PAGE_SIZE, prot);
- 		if (rc)
-@@ -718,6 +740,10 @@ static int pfn_reader_user_pin(struct pfn_reader_user *user,
- 	uintptr_t uptr;
- 	long rc;
+ =item -function NAME
  
-+	if (IS_ENABLED(CONFIG_IOMMUFD_TEST) &&
-+	    WARN_ON(last_index < start_index))
-+		return -EINVAL;
-+
- 	if (!user->upages) {
- 		/* All undone in pfn_reader_destroy() */
- 		user->upages_len =
-@@ -956,6 +982,10 @@ static int pfn_reader_fill_span(struct pfn_reader *pfns)
- 	struct iopt_area *area;
- 	int rc;
+@@ -2451,8 +2456,7 @@ Do not output DOC: sections.
  
-+	if (IS_ENABLED(CONFIG_IOMMUFD_TEST) &&
-+	    WARN_ON(span->last_used < start_index))
-+		return -EINVAL;
-+
- 	if (span->is_used == 1) {
- 		batch_from_xarray(&pfns->batch, &pfns->pages->pinned_pfns,
- 				  start_index, span->last_used);
-@@ -1008,6 +1038,10 @@ static int pfn_reader_next(struct pfn_reader *pfns)
- 	while (pfns->batch_end_index != pfns->last_index + 1) {
- 		unsigned int npfns = pfns->batch.total_pfns;
+ =item -export-file FILE
  
-+		if (IS_ENABLED(CONFIG_IOMMUFD_TEST) &&
-+		    WARN_ON(interval_tree_double_span_iter_done(&pfns->span)))
-+			return -EINVAL;
-+
- 		rc = pfn_reader_fill_span(pfns);
- 		if (rc)
- 			return rc;
-@@ -1091,6 +1125,10 @@ static int pfn_reader_first(struct pfn_reader *pfns, struct iopt_pages *pages,
- {
- 	int rc;
+-Specify an additional FILE in which to look for EXPORT_SYMBOL() and
+-EXPORT_SYMBOL_GPL().
++Specify an additional FILE in which to look for EXPORT_SYMBOL information.
  
-+	if (IS_ENABLED(CONFIG_IOMMUFD_TEST) &&
-+	    WARN_ON(last_index < start_index))
-+		return -EINVAL;
-+
- 	rc = pfn_reader_init(pfns, pages, start_index, last_index);
- 	if (rc)
- 		return rc;
+ To be used with -export or -internal.
+ 
 -- 
 2.38.1
 
