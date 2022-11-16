@@ -1,63 +1,92 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A668C451
-	for <iommu@lists.linux.dev>; Wed, 16 Nov 2022 07:11:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCAD1C433D6;
-	Wed, 16 Nov 2022 07:11:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1668582674;
-	bh=zJUKF6B5wFDQpbk6RK2X5F8SYhcjLUE/tEWHlFSY8dU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=BMV2L/XVq3E4FzYxRA5sBJZqAKYUQbu9BdO1dXl0c8ZCElt4lSimYTB4GO7Z24qjm
-	 kI0FzTBs+IIAUJeAW6mROyWAOFLoPpc1EIMgx5OGMPTyVsTC4USEQkNBgtLwdrFdaY
-	 sxe718Vn7b8WWwyaxHU5mxH0JZFk/KczdyXRdpq/0ptjUJoPryOmoT5HXcz76B5iIS
-	 +yzicr64Ss0txe2dkw+Ikpts9er6Je7q68fj/Yijarx/ht/FBhpzVbeNGbZeRspYFf
-	 RG6kEQESaVupz3EzjRbND7MDxqS/BBnsO4R/4VvV5O+ihHPe1O4qjcLA4IhhRN74HA
-	 s4kd5LzGpAgew==
-Date: Wed, 16 Nov 2022 09:11:09 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	Alexandra Winter <wintera@linux.ibm.com>,
-	Wenjia Zhang <wenjia@linux.ibm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Robin Murphy <robin.murphy@arm.com>,
-	linux-arm-kernel@lists.infradead.org, linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev, linux-media@vger.kernel.org,
-	netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-	alsa-devel@alsa-project.org
-Subject: Re: [PATCH 7/7] dma-mapping: reject __GFP_COMP in dma_alloc_attrs
-Message-ID: <Y3SNDR7KMJOkTREK@unreal>
-References: <20221113163535.884299-1-hch@lst.de>
- <20221113163535.884299-8-hch@lst.de>
- <Y3H4RobK/pmDd3xG@unreal>
- <20221116061106.GA19118@lst.de>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34C757F
+	for <iommu@lists.linux.dev>; Wed, 16 Nov 2022 08:02:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1668585771; x=1700121771;
+  h=message-id:date:mime-version:cc:to:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=P7XmQDqtWN3uGybclt/6TjW9vIWa6aTdjZL3gss/tJE=;
+  b=Vw1ouYJJmf0hqHpc7eS/mjM3gqrV4m3fYalnDnlv+6Q5y19rQVLT0Opt
+   QLOFQ/jXFG6u4uK7f58OkS5oPrHz/IZZcincrwPCtatW8rPgjf3tTyOet
+   uEP4d4GqaTdU6dsx1+tHrIDREEOzDTc80sBG8Cen99BC6xOyXzzrI8RLv
+   ruEHP2uR9U+rSMVm/FlLZ9JnJrbt5D2YAC27rPniJi6fCAwOsTdfeDY5g
+   bHYN/SjpaTgOekiPK2/QyrSwuRgcxZgvKG0XTrvRxdfWV5FFKJDHTfwS4
+   HL90rDc+/ndzolIv6qbwmbVHs0oz+/Us9iMgxHtyuA3SkvIvZRblkwVwn
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10532"; a="374614003"
+X-IronPort-AV: E=Sophos;i="5.96,167,1665471600"; 
+   d="scan'208";a="374614003"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2022 00:02:50 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10532"; a="672303490"
+X-IronPort-AV: E=Sophos;i="5.96,167,1665471600"; 
+   d="scan'208";a="672303490"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.212.114]) ([10.254.212.114])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2022 00:02:48 -0800
+Message-ID: <ebace32b-be36-5c9f-579b-211cad75df02@linux.intel.com>
+Date: Wed, 16 Nov 2022 16:02:46 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221116061106.GA19118@lst.de>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ "Liu, Yi L" <yi.l.liu@intel.com>, "Pan, Jacob jun"
+ <jacob.jun.pan@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+References: <20221114014049.3959-1-baolu.lu@linux.intel.com>
+ <20221114014049.3959-5-baolu.lu@linux.intel.com>
+ <BN9PR11MB527668E6C7666CAA5F0804428C079@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <e7c686d7-bad9-b58b-3be4-50898e142230@linux.intel.com>
+ <BL1PR11MB5271F0D4E91A3F6179216ADA8C079@BL1PR11MB5271.namprd11.prod.outlook.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v3 4/7] iommu/vt-d: Fold dmar_remove_one_dev_info() into
+ its caller
+In-Reply-To: <BL1PR11MB5271F0D4E91A3F6179216ADA8C079@BL1PR11MB5271.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Nov 16, 2022 at 07:11:06AM +0100, Christoph Hellwig wrote:
-> On Mon, Nov 14, 2022 at 10:11:50AM +0200, Leon Romanovsky wrote:
-> > In RDMA patches, you wrote that GFP_USER is not legal flag either. So it
-> > is better to WARN here for everything that is not allowed.
-> 
-> So __GFP_COMP is actually problematic and changes behavior, and I plan
-> to lift an optimization from the arm code to the generic one that
-> only rounds up allocations to the next page size instead of the next
-> power of two, so I need this check now.  Other flags including
-> GFP_USER are pretty bogus to, but I actually need to do a full audit
-> before rejecting them, which I've only done for GFP_COMP so far.
+On 2022/11/16 13:35, Tian, Kevin wrote:
+>> From: Baolu Lu<baolu.lu@linux.intel.com>
+>> Sent: Wednesday, November 16, 2022 12:36 PM
+>>
+>> On 11/16/22 11:53 AM, Tian, Kevin wrote:
+>>>> From: Lu Baolu<baolu.lu@linux.intel.com>
+>>>> Sent: Monday, November 14, 2022 9:41 AM
+>>>> @@ -4562,7 +4538,10 @@ static void intel_iommu_release_device(struct
+>>>> device *dev)
+>>>>    {
+>>>>    	struct device_domain_info *info = dev_iommu_priv_get(dev);
+>>>>
+>>>> -	dmar_remove_one_dev_info(dev);
+>>>> +	iommu_disable_pci_caps(info);
+>>>> +	domain_context_clear(info);
+>>>> +	device_block_translation(dev);
+>>> clear context after blocking translation.
+>> Unfortunately domain_context_clear() needs reference to info->domain
+>> (for domain id when flushing cache), which is cleared in
+>> device_block_translation().
+>>
+> this sounds an ordering problem. clearing context should be after
+> blocking translation in concept.
 
-ok, let's do it later.
+At present, when the default domain is attached to the device, we first
+populate the pasid table entry, and then populate the device context
+entry. Above code is just the reverse operation.
 
-Thanks
+Can you see any practical problems caused by this sequence? If so, it
+seems that we should carefully consider whether such problems already
+exist.
+
+Best regards,
+baolu
