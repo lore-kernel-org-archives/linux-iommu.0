@@ -1,31 +1,41 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55A847F
-	for <iommu@lists.linux.dev>; Wed, 16 Nov 2022 06:53:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=1TLoj1jBh9mfMsybawiDvBcJ2RcbjxqyJGEX5P65aOg=; b=bU6HegogN9wH+X9y5iGWJdisoO
-	k2Ymc/RhPss5DD1PUdAnIYOcGXq08cIdUXnSu7fknT3bN7sh8c3wALssuMTPRne3/L+ZS61ufQZXN
-	9Pjuddt0jI5AnGbXPA5PnshgQxRaKH5b7pjnonneOw7g2lmW+ntc/7cpF944/iC6X9uPizKqiwGdK
-	yGrPUs2DpOLpw/ssxLxrGHXcx4XRjB+G1SWH2nTjcb7aJl22kQaq1RTHL3H7Tjp2lZ/2/9XEwd+ud
-	RJdtZE/gFeJt3xGddeKtNAsknRtiHqN+h32kyqNkDqp1o8h6rtdYkCvgae4U/ArvtBIqJ/eLjJGI0
-	8fpeP64A==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-	id 1ovCIM-000NU5-7X; Wed, 16 Nov 2022 06:53:14 +0000
-Date: Tue, 15 Nov 2022 22:53:14 -0800
-From: Christoph Hellwig <hch@infradead.org>
-To: Eric Dumazet <edumazet@google.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
-	Will Deacon <will@kernel.org>,
-	linux-kernel <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
-	Eric Dumazet <eric.dumazet@gmail.com>, iommu@lists.linux.dev
-Subject: Re: [PATCH v2 -next] iommu/dma: avoid expensive indirect calls for
- sync operations
-Message-ID: <Y3SI2vMf58/WZDwS@infradead.org>
-References: <20221115182841.2640176-1-edumazet@google.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A668C451
+	for <iommu@lists.linux.dev>; Wed, 16 Nov 2022 07:11:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCAD1C433D6;
+	Wed, 16 Nov 2022 07:11:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1668582674;
+	bh=zJUKF6B5wFDQpbk6RK2X5F8SYhcjLUE/tEWHlFSY8dU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=BMV2L/XVq3E4FzYxRA5sBJZqAKYUQbu9BdO1dXl0c8ZCElt4lSimYTB4GO7Z24qjm
+	 kI0FzTBs+IIAUJeAW6mROyWAOFLoPpc1EIMgx5OGMPTyVsTC4USEQkNBgtLwdrFdaY
+	 sxe718Vn7b8WWwyaxHU5mxH0JZFk/KczdyXRdpq/0ptjUJoPryOmoT5HXcz76B5iIS
+	 +yzicr64Ss0txe2dkw+Ikpts9er6Je7q68fj/Yijarx/ht/FBhpzVbeNGbZeRspYFf
+	 RG6kEQESaVupz3EzjRbND7MDxqS/BBnsO4R/4VvV5O+ihHPe1O4qjcLA4IhhRN74HA
+	 s4kd5LzGpAgew==
+Date: Wed, 16 Nov 2022 09:11:09 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	Alexandra Winter <wintera@linux.ibm.com>,
+	Wenjia Zhang <wenjia@linux.ibm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Robin Murphy <robin.murphy@arm.com>,
+	linux-arm-kernel@lists.infradead.org, linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev, linux-media@vger.kernel.org,
+	netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+	alsa-devel@alsa-project.org
+Subject: Re: [PATCH 7/7] dma-mapping: reject __GFP_COMP in dma_alloc_attrs
+Message-ID: <Y3SNDR7KMJOkTREK@unreal>
+References: <20221113163535.884299-1-hch@lst.de>
+ <20221113163535.884299-8-hch@lst.de>
+ <Y3H4RobK/pmDd3xG@unreal>
+ <20221116061106.GA19118@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -34,56 +44,20 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221115182841.2640176-1-edumazet@google.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <20221116061106.GA19118@lst.de>
 
-As Robing pointed out this really is mostly a dma-mapping layer
-patch and the subject should reflect that.
+On Wed, Nov 16, 2022 at 07:11:06AM +0100, Christoph Hellwig wrote:
+> On Mon, Nov 14, 2022 at 10:11:50AM +0200, Leon Romanovsky wrote:
+> > In RDMA patches, you wrote that GFP_USER is not legal flag either. So it
+> > is better to WARN here for everything that is not allowed.
+> 
+> So __GFP_COMP is actually problematic and changes behavior, and I plan
+> to lift an optimization from the arm code to the generic one that
+> only rounds up allocations to the next page size instead of the next
+> power of two, so I need this check now.  Other flags including
+> GFP_USER are pretty bogus to, but I actually need to do a full audit
+> before rejecting them, which I've only done for GFP_COMP so far.
 
-> +		if (!IS_ENABLED(CONFIG_DMA_API_DEBUG) && dev_is_dma_coherent(dev))
-> +			dev->skip_dma_sync = true;
+ok, let's do it later.
 
-I don't think CONFIG_DMA_API_DEBUG should come into play here.  It
-is independent from the low-level sync calls.  That'll need a bit
-of restructuring later on to only skil the sync calls and not the
-debug_dma_* calls, but I think that is worth it to keep the concept
-clean.
-In fact that might lead to just checking the skip_dma_sync flag in
-a wrapper in dma-mapping.h, avoiding the function call entirely
-for the fast path, at the downside of increasing code size by
-adding an extra branch in the callers, but I think that is ok.
-
-I think we should also apply the skip_dma_sync to dma-direct while
-we're it.  While dma-direct already avoids the indirect calls we can
-shave off a few more cycles with this infrastructure, so why skip that?
-
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -647,6 +647,7 @@ struct device {
->      defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
->  	bool			dma_coherent:1;
->  #endif
-> +	bool			skip_dma_sync:1;
-
-This also needs a blurb in the kerneldoc comment describing struct
-device.  Please make it very clear in the comment that the flag is
-only for internal use in the DMA mapping subsystem and not for use
-by drives.
-
-> +static inline bool dev_skip_dma_sync(struct device *dev)
-> +{
-> +	return dev->skip_dma_sync;
-> +}
-
-I'd drop this wrapper and just check the flag directly.
-
-> +	if (unlikely(dev->skip_dma_sync))
-> +		dev->skip_dma_sync = false;
-
-Please add a comment here.
-
-
-Btw, one thing I had in my mind for a while is to do direct calls to
-dma-iommu from the core mapping code just like we for dma-direct.
-Would that be useful for your networking loads, or are the actual
-mapping calls rare enough to not matter?
+Thanks
