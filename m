@@ -1,125 +1,111 @@
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB148D51B
-	for <iommu@lists.linux.dev>; Wed, 16 Nov 2022 18:11:08 +0000 (UTC)
-Received: by mail-wr1-f54.google.com with SMTP id d9so26521823wrm.13
-        for <iommu@lists.linux.dev>; Wed, 16 Nov 2022 10:11:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=jXUrh/5nwD/o+lxT2UQDr3GIedJ5OTEbeeA4oKAPCJU=;
-        b=HIgDYWVXWjmS+KTbLLdGplMOxwcC9jfWjS7pjRFM1xOd3Xlixm82Uy7BdGGtO6Va5G
-         NlD+BNS8bA1OgESs0vTdz9zWfJw6f/vc7RfUK8EKvewuXh2+kfyASYH8XMk3j09j3Hi+
-         9SD4pq/wsqoscwcsthe+SqluXpsGOKFISXaWeom3jms0Iw9pCRno4Dm2XiuWGCteTAL2
-         +kj3u/kUySXUJoK+McyDLOTJXMFzDsrEC4sc6R2LD236jT2F/pnU1vSqPlezzAF4Azo4
-         uWEq3qhbDcVgKz4ZrXQqrZO8jUMXZQuKBGaRT9GOGIPFJQoo2VlMsKyAZu70T4S1s2U0
-         pUBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jXUrh/5nwD/o+lxT2UQDr3GIedJ5OTEbeeA4oKAPCJU=;
-        b=ukJ/aTJWCz7bwbJpOUEKQYjMbtvFCVOVmNlT871uP0sBGi+Dl+VyOZD0H6TBahOjZf
-         AdzZSGe+9r0FMFbDaW2uTtDsXNvipUt9t++CJgBMhrpEMIFTdKKAyMnS5W0QQlJgnpeW
-         8uD0D/LeP5okM9iemUyZqOLfqDeRcGN+4ZMibXgmfDGdPnv064058xdYJvjGGdPSylc6
-         a++A1RxScnbFh3DkD8HikYBlAFRM918GZz8w4He4SdY6bq2NXK6WcS5rE7ihEbkNz1mR
-         1ntZvjUsxs/JA1EKGHLq+H2Q0bBH9tqSeWBc0YjuE0Nrh4k9mA8bJZ7VmRCwSeiesiE2
-         CJyg==
-X-Gm-Message-State: ANoB5pma1DDzoFXhRUs5rJ5ceD7+aEd+Pud9lv7IymJkr40ikILXrjtU
-	UFc/TUE9DcEbPsFjmbsGaLI=
-X-Google-Smtp-Source: AA0mqf4dY4OsqWQ9ilBzVdWnLdqzfeksb8IeB81scWDAHwf0V02NHZgCQZDCm8FKNeGVXCeAMK9AOA==
-X-Received: by 2002:a05:6000:3c3:b0:22e:3275:983e with SMTP id b3-20020a05600003c300b0022e3275983emr15028487wrg.71.1668622267054;
-        Wed, 16 Nov 2022 10:11:07 -0800 (PST)
-Received: from localhost ([102.36.222.112])
-        by smtp.gmail.com with ESMTPSA id n1-20020a05600c4f8100b003cf78aafdd7sm3172139wmq.39.2022.11.16.10.11.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Nov 2022 10:11:06 -0800 (PST)
-Date: Wed, 16 Nov 2022 21:11:00 +0300
-From: Dan Carpenter <error27@gmail.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: iommu@lists.linux.dev
-Subject: Re: [bug report] iommufd: vfio container FD ioctl compatibility
-Message-ID: <Y3UntBjV51+MNwep@kadam>
-References: <Y2Nhj0mIjrSJwO7W@kili>
- <Y3P2oEIICOTiVOBH@ziepe.ca>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8BB5115CA
+	for <iommu@lists.linux.dev>; Wed, 16 Nov 2022 18:37:39 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C141E1477;
+	Wed, 16 Nov 2022 10:37:44 -0800 (PST)
+Received: from [10.57.70.190] (unknown [10.57.70.190])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EE3123F587;
+	Wed, 16 Nov 2022 10:37:35 -0800 (PST)
+Message-ID: <29d11541-8c11-4c3e-db76-a982751e61e6@arm.com>
+Date: Wed, 16 Nov 2022 18:37:10 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y3P2oEIICOTiVOBH@ziepe.ca>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.1
+Subject: Re: [PATCH 2/7] RDMA/hfi1: don't pass bogus GFP_ flags to
+ dma_alloc_coherent
+Content-Language: en-GB
+To: Dean Luick <dean.luick@cornelisnetworks.com>,
+ Christoph Hellwig <hch@lst.de>,
+ Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ Alexandra Winter <wintera@linux.ibm.com>, Wenjia Zhang
+ <wenjia@linux.ibm.com>, Marek Szyprowski <m.szyprowski@samsung.com>,
+ Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+ Russell King <linux@armlinux.org.uk>
+Cc: linux-arm-kernel@lists.infradead.org, linux-rdma@vger.kernel.org,
+ iommu@lists.linux.dev, linux-media@vger.kernel.org, netdev@vger.kernel.org,
+ linux-s390@vger.kernel.org, alsa-devel@alsa-project.org
+References: <20221113163535.884299-1-hch@lst.de>
+ <20221113163535.884299-3-hch@lst.de>
+ <c7c6eb30-4b54-01f7-9651-07deac3662bf@cornelisnetworks.com>
+ <be8ca3f9-b7f7-5402-0cfc-47b9985e007b@arm.com>
+ <87b12755-15d6-1064-1559-8951c1252eaa@cornelisnetworks.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <87b12755-15d6-1064-1559-8951c1252eaa@cornelisnetworks.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Nov 15, 2022 at 04:29:20PM -0400, Jason Gunthorpe wrote:
-> On Tue, Nov 15, 2022 at 03:45:00PM +0300, Dan Carpenter wrote:
-> > [ Resending two weeks of email because mutt + msmtp has been silently
-> >   eating my outgoing mail instead of delivering it.  *sigh* -dan ]
-> > 
-> > Hello Jason Gunthorpe,
-> > 
-> > The patch 32c328dc9b73: "iommufd: vfio container FD ioctl
-> > compatibility" from Dec 15, 2021, leads to the following Smatch
-> > static checker warning:
-> > 
-> > 	drivers/iommu/iommufd/vfio_compat.c:174 iommufd_vfio_unmap_dma()
-> > 	warn: potential integer overflow from user (local copy) 'unmap.iova + unmap.size'
-> > 
-> > drivers/iommu/iommufd/vfio_compat.c
-> >     140 static int iommufd_vfio_unmap_dma(struct iommufd_ctx *ictx, unsigned int cmd,
-> >     141                                   void __user *arg)
-> >     142 {
-> >     143         size_t minsz = offsetofend(struct vfio_iommu_type1_dma_unmap, size);
-> >     144         /*
-> >     145          * VFIO_DMA_UNMAP_FLAG_GET_DIRTY_BITMAP is obsoleted by the new
-> >     146          * dirty tracking direction:
-> >     147          *  https://lore.kernel.org/kvm/20220731125503.142683-1-yishaih@nvidia.com/
-> >     148          *  https://lore.kernel.org/kvm/20220428210933.3583-1-joao.m.martins@oracle.com/
-> >     149          */
-> >     150         u32 supported_flags = VFIO_DMA_UNMAP_FLAG_ALL;
-> >     151         struct vfio_iommu_type1_dma_unmap unmap;
-> >     152         struct iommufd_ioas *ioas;
-> >     153         unsigned long unmapped;
-> >     154         int rc;
-> >     155 
-> >     156         if (copy_from_user(&unmap, arg, minsz))
-> >     157                 return -EFAULT;
-> >     158 
-> >     159         if (unmap.argsz < minsz || unmap.flags & ~supported_flags)
-> >     160                 return -EINVAL;
-> >     161 
-> >     162         ioas = get_compat_ioas(ictx);
-> >     163         if (IS_ERR(ioas))
-> >     164                 return PTR_ERR(ioas);
-> >     165 
-> >     166         if (unmap.flags & VFIO_DMA_UNMAP_FLAG_ALL) {
-> >     167                 if (unmap.iova != 0 || unmap.size != 0) {
-> >     168                         rc = -EINVAL;
-> >     169                         goto err_put;
-> >     170                 }
-> >     171                 rc = iopt_unmap_all(&ioas->iopt, &unmapped);
-> >     172         } else {
-> >     173                 if (READ_ONCE(ioas->iopt.disable_large_pages)) {
-> > --> 174                         unsigned long iovas[] = { unmap.iova + unmap.size - 1,
-> > 
-> > The unmap.iova + unmap.size addition can have an integer overflow.  It's
-> > unclear to me if this is caught later or if it has any negative
-> > implications.
+On 2022-11-16 16:21, Dean Luick wrote:
+> On 11/16/2022 9:15 AM, Robin Murphy wrote:
+>> On 2022-11-16 14:40, Dean Luick wrote:
+>>> On 11/13/2022 10:35 AM, Christoph Hellwig wrote:
+>>>> dma_alloc_coherent is an opaque allocator that only uses the GFP_ flags
+>>>> for allocation context control.  Don't pass GFP_USER which doesn't make
+>>>> sense for a kernel DMA allocation or __GFP_COMP which makes no sense
+>>>> for an allocation that can't in any way be converted to a page pointer.
+>>>>
+>>>> Signed-off-by: Christoph Hellwig <hch@lst.de>
+>>>> ---
+>>>>    drivers/infiniband/hw/hfi1/init.c | 21 +++------------------
+>>>>    1 file changed, 3 insertions(+), 18 deletions(-)
+>>>>
+>>>> diff --git a/drivers/infiniband/hw/hfi1/init.c b/drivers/infiniband/hw/hfi1/init.c
+>>>> index 436372b314312..24c0f0d257fc9 100644
+>>>> --- a/drivers/infiniband/hw/hfi1/init.c
+>>>> +++ b/drivers/infiniband/hw/hfi1/init.c
+>>>> @@ -1761,17 +1761,11 @@ int hfi1_create_rcvhdrq(struct hfi1_devdata *dd, struct hfi1_ctxtdata *rcd)
+>>>>         unsigned amt;
+>>>>
+>>>>         if (!rcd->rcvhdrq) {
+>>>> -             gfp_t gfp_flags;
+>>>> -
+>>>>                 amt = rcvhdrq_size(rcd);
+>>>>
+>>>> -             if (rcd->ctxt < dd->first_dyn_alloc_ctxt || rcd->is_vnic)
+>>>> -                     gfp_flags = GFP_KERNEL;
+>>>> -             else
+>>>> -                     gfp_flags = GFP_USER;
+>>>>                 rcd->rcvhdrq = dma_alloc_coherent(&dd->pcidev->dev, amt,
+>>>>                                                   &rcd->rcvhdrq_dma,
+>>>> -                                               gfp_flags | __GFP_COMP);
+>>>> +                                               GFP_KERNEL);
+>>>
+>>> A user context receive header queue may be mapped into user space.  Is that not the use case for GFP_USER?  The above conditional is what decides.
+>>>
+>>> Why do you think GFP_USER should be removed here?
+>>
+>> Coherent DMA buffers are allocated by a kernel driver or subsystem for the use of a device managed by that driver or subsystem, and thus they fundamentally belong to the kernel as proxy for the device. Any coherent DMA buffer may be mapped to userspace with the dma_mmap_*() interfaces, but they're never a "userspace allocation" in that sense.
 > 
-> There are no negative implications to the kernel, which is why I left
-> it unchecked here.
-> 
-> Do you think we should have the check for the sake of static tools?
+> My (seemingly dated) understanding is that GFP_USER is for kernel allocations that may be mapped into user space.  The description of GFP_USER in gfp_types.h enforces my understanding.  Is my uderstanding no longer correct?  If not, then what is the point of GFP_USER?  Is GFP_USER now mostly an artifact?  Should its description be updated?
 
-No.  I've written something like five different integer overflow checks.
-One is pretty decent but the problem is a hard nut to crack.  This
-heuristic here is not useful enough to the point where we'd want to
-silence false positives.
+I think there's a subtle distinction between userspace memory which may 
+be shared with DMA, and DMA memory which may be shared with userspace. 
+My reading is that GFP_USER (vs. GFP_HIGHUSER or GFP_HIGHUSER_MOVABLE) 
+matters for the former case, where you might use alloc_pages(), but 
+intend to come back and do dma_map_single() at some point afterwards. 
+For dma_alloc_coherent(), it's clearly always a DMA allocation from the 
+off, so whether it might also end up mmap()ed into one or more processes 
+later doesn't really have much practical impact.
 
-regards,
-dan carpenter
+> Presently, the difference between GFP_KERNEL and GFP_USER is __GFP_HARDWALL.  This enforces cpuset allocation policy. If HARDWALL is not set, the allocator will back off to the nearest memory ancestor if needed.  The back off seems like a reasonable general policy.  I do have one concern that may be hypothetical: if GFP_KERNEL is used and a buffer is silently pushed out of the expected cpuset, this can lead to mysterious slowdowns.
 
+Note that NUMA-aware dma_alloc_coherent() implementations do try to 
+place the buffer close to the device (since typically over its lifetime 
+it may be accessed by any CPU, but not any other device), therefore not 
+being bound by process restrictions is arguably right for that. If a 
+process is bound to a different node than a device it's trying to use 
+then *something's* going to have to eat the cross-node latency either 
+way. I suppose one could argue that GFP_USER might make sense when it's 
+known that the device is only ever going to use this buffer for work on 
+behalf of the current process, and thus it could be accounted to the 
+process instead of the kernel, but that seems incredibly niche and 
+likely to be far outweighed by people just using it wrong.
+
+Thanks,
+Robin.
