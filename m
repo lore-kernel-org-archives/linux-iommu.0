@@ -1,62 +1,87 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2134.outbound.protection.outlook.com [40.107.237.134])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2083.outbound.protection.outlook.com [40.107.93.83])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DCC58F42
-	for <iommu@lists.linux.dev>; Wed, 16 Nov 2022 16:22:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2E6415B0
+	for <iommu@lists.linux.dev>; Wed, 16 Nov 2022 16:38:15 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=c92f3Esz0mJ+08nLHna5BzS2zxxlGSguVpCUYFWDXKQhXVhRXyb/olwrMh2pP7GqBiUgEwT33YamlFIOkrvC7dCVxTrCJvJXjvu9xjAQSQqupM4ZXyYk67FljHdAK+pqop5Wdo0Q8HmtJbJT3oD+lfpcticY7JP2i7/+qcyGKuwOLh2sR6HAPB+C6FLMf0h+jjixdOulxRMsYKDOlI6yQazWv2BQRP1ABFHJvFNjUSCvArQSvqjDRexGpUA4FotZHluZKiS1KUb3UvCAb9gMwZEdnEjifXW43T1MUi8v8O4nNEFngrNtqPn5PboJTrYEMc2OS4xuaN2N46eVYbjCKw==
+ b=lyiyJcXJjCu8INIZ87KDxsqpHeoS86qNTBqxj/eLo0ltpWfpAYw/x+oAF0DEFrd/8xSJ3KJEEJrrGHSplHVwm2CS5TGbC3PisfZ/vYWEsFfWhYNuti08Wi/bA9QW+fIV0U553+kItO/0BnHy7xv0zGBIuFtI4SMMF7cuC4xP1S8yMl7JsWiiCjg0JvvlIrxafvemg0qWb6Oo4BLkEYOD3P+W5kn7se6s6adpi2sKxm1t/iJ1y4LdNiBt4Zfx2rd0D7ZZUhv36EuwcvPSmhCeHVa2FUPr1LgZZiAN8FoHTUXqkKyFDkGSJOoXwKTvv9cira+Ef3AYZkVnAk2S9Fcp2w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5b4a3m1STINXt1z1tTb31a6jjRY59A41licBByOEc4E=;
- b=GqedXjz1CAKNVZIAckRmtq9OXNA2pFvRcwWC26nDLBn8xvsc9DzLHp6vBRvtIdDHufL9Ndb8W0sz7/cY0nzRVKJ8JJeBIuH4P9tXGUFRC4qYfBDd07PmLeIG4ObwbCUc4DJnlmjSk2JO2PiMKhDYvj0lJE1hbryA0Gh+s/ATi+7Dauec97BChKf9DoLKFo7lLr64Xh8jK2K9iu9GzDcjgO/A0di7qRj201X5OeJyzgRqGceYxxHEa2J5ALp6nqKEYm5Ai+vtOX/wmzMDMhySscSMmXafZ5Kecd8UIn2Yh2LK/YH5Cn8qpDTPg8IyTYyl/3Ep5r5XfdHgdHcBomUZwg==
+ bh=OMSqpaMQ5RnYG1UOKzcoFuI8DAY0tfNJKi6TP2uAgcg=;
+ b=bD5Q8bpg6N91/dSg6LV9RveYEm/ESQEowOso1nlwCIw6x3bHoXSlHHd2WoDT86EOCNZxMCdG3GjUqLH9dMyeyoC9bcwKSm802cVt2i3GoWoyKkh880RnSyNkVwpTtrc6Jgy7+pXATNmAynmFBJ8p32SXXUq/0jUpeKQ+wZM9XJ+hrXRk7RRuaMiry9KT/YkN6neTThrmU1tgEzvIgG+eDO74feDw7pyM5RgIf3MHuavSpdtr6l3bNuCWQbNkHWwuuPKhytIRAHpaUy3XYYKVLvDyFcNB47/VnYM72IfvZB6m7BrEP8IS1yta7e6TMB37Ik4KiBaSmA/tg0P5kYc5Aw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=cornelisnetworks.com; dmarc=pass action=none
- header.from=cornelisnetworks.com; dkim=pass header.d=cornelisnetworks.com;
- arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cornelisnetworks.com;
- s=selector1;
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5b4a3m1STINXt1z1tTb31a6jjRY59A41licBByOEc4E=;
- b=OlzsCtDJJEGgD4m4s2JThSgQo9P0FwAjznSSnJ2d7CRY1sTbTn/X+5E1nT1FuLROEW4CiV19pV3z3UJjH7SoEBCVqSV8eWBziHyRk1zL0wX0uOvWcRoJmA9R22K1O1sAmPff7CMlZ5knXfjaEne2QS6gbiXcgbz6+PR0ak63elbXfNazUKcd63s0IGH5gvx+Q60yJkace+IYLHz9ymooB1IwZERjj11gUrMXLV0Lk8F8Q9goKUOydl37U3AgXLVTb/Fk3Yv/DxolWUuGvj9xqqXxkPvYXYrLxtmy3m5B0PVELYCCiTHzDLBRhyUGpKsnHC5XfESNR4PJYcLXy3AKXw==
+ bh=OMSqpaMQ5RnYG1UOKzcoFuI8DAY0tfNJKi6TP2uAgcg=;
+ b=kzhVnjR5I2EtqxA4uj2dMgEoEd7U6zAjxm7//8ciL009GtkTu+v4YON/K8wVP3O+0XjVTQIBIQLxls0vvd8UM9Kt5GbO6lX9tlxn4ZKo0JpbXpqfdBGEn8H40jWM2B5hV3ZNKAbxM2gccKkUDaIlPsaPNbfnU+hTkcd0TFmiuYw=
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=cornelisnetworks.com;
-Received: from BL0PR01MB4131.prod.exchangelabs.com (2603:10b6:208:42::20) by
- CY4PR01MB3301.prod.exchangelabs.com (2603:10b6:903:e4::16) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5813.19; Wed, 16 Nov 2022 16:21:59 +0000
-Received: from BL0PR01MB4131.prod.exchangelabs.com
- ([fe80::619b:37fc:f005:109b]) by BL0PR01MB4131.prod.exchangelabs.com
- ([fe80::619b:37fc:f005:109b%4]) with mapi id 15.20.5813.019; Wed, 16 Nov 2022
- 16:21:58 +0000
-Message-ID: <87b12755-15d6-1064-1559-8951c1252eaa@cornelisnetworks.com>
-Date: Wed, 16 Nov 2022 10:21:26 -0600
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH 2/7] RDMA/hfi1: don't pass bogus GFP_ flags to
- dma_alloc_coherent
-To: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
- Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- Alexandra Winter <wintera@linux.ibm.com>, Wenjia Zhang
- <wenjia@linux.ibm.com>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
- Russell King <linux@armlinux.org.uk>
-Cc: linux-arm-kernel@lists.infradead.org, linux-rdma@vger.kernel.org,
- iommu@lists.linux.dev, linux-media@vger.kernel.org, netdev@vger.kernel.org,
- linux-s390@vger.kernel.org, alsa-devel@alsa-project.org
-References: <20221113163535.884299-1-hch@lst.de>
- <20221113163535.884299-3-hch@lst.de>
- <c7c6eb30-4b54-01f7-9651-07deac3662bf@cornelisnetworks.com>
- <be8ca3f9-b7f7-5402-0cfc-47b9985e007b@arm.com>
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
+ by DM4PR12MB6088.namprd12.prod.outlook.com (2603:10b6:8:af::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.17; Wed, 16 Nov
+ 2022 16:38:12 +0000
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::4da8:e3eb:20eb:f00]) by DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::4da8:e3eb:20eb:f00%2]) with mapi id 15.20.5813.018; Wed, 16 Nov 2022
+ 16:38:12 +0000
+Message-ID: <686b824d-e175-1997-7712-1eeee77ae9cb@amd.com>
+Date: Wed, 16 Nov 2022 10:38:08 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH v2 05/12] x86/hyperv: Change vTOM handling to use standard
+ coco mechanisms
 Content-Language: en-US
-From: Dean Luick <dean.luick@cornelisnetworks.com>
-In-Reply-To: <be8ca3f9-b7f7-5402-0cfc-47b9985e007b@arm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-ClientProxiedBy: CH0PR03CA0068.namprd03.prod.outlook.com
- (2603:10b6:610:cc::13) To BL0PR01MB4131.prod.exchangelabs.com
- (2603:10b6:208:42::20)
+To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+ "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>,
+ "wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+ "luto@kernel.org" <luto@kernel.org>,
+ "peterz@infradead.org" <peterz@infradead.org>,
+ "davem@davemloft.net" <davem@davemloft.net>,
+ "edumazet@google.com" <edumazet@google.com>,
+ "kuba@kernel.org" <kuba@kernel.org>, "pabeni@redhat.com"
+ <pabeni@redhat.com>, "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
+ "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
+ "bhelgaas@google.com" <bhelgaas@google.com>, "arnd@arndb.de"
+ <arnd@arndb.de>, "hch@infradead.org" <hch@infradead.org>,
+ "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+ "tglx@linutronix.de" <tglx@linutronix.de>,
+ "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
+ "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+ Tianyu Lan <Tianyu.Lan@microsoft.com>,
+ "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+ "sathyanarayanan.kuppuswamy@linux.intel.com"
+ <sathyanarayanan.kuppuswamy@linux.intel.com>,
+ "ak@linux.intel.com" <ak@linux.intel.com>,
+ "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+ "Williams, Dan J" <dan.j.williams@intel.com>,
+ "jane.chu@oracle.com" <jane.chu@oracle.com>,
+ "seanjc@google.com" <seanjc@google.com>,
+ "tony.luck@intel.com" <tony.luck@intel.com>, "x86@kernel.org"
+ <x86@kernel.org>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+ "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+References: <1668147701-4583-1-git-send-email-mikelley@microsoft.com>
+ <1668147701-4583-6-git-send-email-mikelley@microsoft.com>
+ <177144ce-aa63-58f9-d3ea-dec9cde482a5@amd.com>
+ <BYAPR21MB16885EAC0F3670125073F32DD7029@BYAPR21MB1688.namprd21.prod.outlook.com>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+In-Reply-To: <BYAPR21MB16885EAC0F3670125073F32DD7029@BYAPR21MB1688.namprd21.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: CH2PR17CA0029.namprd17.prod.outlook.com
+ (2603:10b6:610:53::39) To DM4PR12MB5229.namprd12.prod.outlook.com
+ (2603:10b6:5:398::12)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,128 +89,148 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL0PR01MB4131:EE_|CY4PR01MB3301:EE_
-X-MS-Office365-Filtering-Correlation-Id: f94ab83b-5838-4411-6ec6-08dac7eeaf60
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5229:EE_|DM4PR12MB6088:EE_
+X-MS-Office365-Filtering-Correlation-Id: 00b3e63e-95ec-4cbf-5ce9-08dac7f0f3f3
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	oXMi8VLWdG149kuS90zguMYpOGhR8XBIvGIvbIvvbvdVkZuKsWz78zUWCWFzea/kWZNYYhJfpQP/pdm+I5QQDBN0KWD+yTFr/vUBB14fG9wSLWSuCC3iLbOA0ChcZFyBACrfyOjNJVEArj+RC9o5ngEykeiwB8LCpamCDJEG73/e44VRCvtKLS4lN1NnsoLGrwfZaF8CF4KyAn+pL/pXDcEFBmVkPtIihhvyIqwT5MVgK4ZhlhWXueFML5FqAmX3zQVCRrdf6gsKoFzBsh8ANCUxJap8z33nvf/jLDTYiUqDwbihRG4kdFjG3hsb/JFDvSP0/SkzQueqtTBFZG7TcRTrCPudU7fCnSr/pdGlqSgdxBHw0YhHHZx5mde9zGlolRU4IHNuW9VdvIzviclS7aWY+CRcXlrn4E9tg4ZZtWpxQkd4PHhRJgdz1PJSRkHAUTd3729Crwx8b3yJ3fUApFXl/6PTl8bKUKCUORlXBShGcFAbRYjFd/rT5iyC33hdjcCLaaW+2jTkhOOOdr0UHa41fv5O62CSFmMeQkFd1e+NqSVXEXHipM4PZIu4xYv129NpYhfvVB+YCIqGoSnGcpfi8RPZbGsiY8JfQHFBlLajlrQYv/str2kVlqW7wQJzYrngXmbIgc1BqhSdUtC27VGdACyXZGCK4sZWnM2uruX3bVmPlhoINnIObgLeIifKlAhX9IAXRijWeNLrKjskvS6/h8fwxgQutHTphLVddRmpC2GBIqebglks9XIR6dsHKKgllmbzKV4YKVy+4b4hTw==
+	Sk0EOBHjzcfdlZOZiIouJm4qFjeBva5kmqGReug0n6jMH9NnWvX7BVhtw/2M12VSGR5R9XQ7XG0+nKDy4SZAO4Dlwc1uiG/wLrQe0ur9yMyYZBRn4iZiUNjknX11iA+tlHhP9GHPF0jL+/bQjuVyWdhuYNZ1qmGdLOGI0vBIJqB5Mt+xsVQOjk+MtJaXFKVzqqBEZgljFEXENZyFTioRoTF/SchqwsPz0NzGdPKCagAuYM1ir+KWaBlOiBWlydVvU9/ihpVcjBmlmvz89N5uLH2ZkvwRvWCuX2fGPeF+lpUVe+fs82hjW1mSdE3A5ntyyuTEaZu9zlvBW3cOYsMGSUvsPlBBgrj+Dd7x8Ca/ED7lp1RYcA8J/CGMCUsjGnEKTW7bXgQkyequLXyZOF4mXXStsewrdTYakj/bYJGQAqPFW23E2T45+hum+RPfJLtP+w9+bFBJW1zFSypH5qgjAk3XRW+liqDPNTRZbAsLhQt6JpVNOtce/ZadajXWU1NzwlbcUmRP865aJbo2C3EalP9aA4/Pt8AjPPZwbjJSlW2S1zBu9IxyBPJyw7e47dHdJRoW98t7+k4CRxkQt1APSIYlt1BJRrHT/xuD04QSD6bIP7wySw1ZFq9V2gsajhlhbdzkAXIPsIUaK2SI5CIYBU8VO69aZV5jUggbj+G2PQ0jdl43NaWTotaJ1ZHmsld/FS6L23o/i+Mw7BotUiI0N7tDOTYqaLpCkjeTM6b3NyGw+YLwNUHSVBSS8cgq2BAJRxL9U6WMaITuPMsPL4w8AzM8X3rcAOK7RN5HNsYamsbij+Y9Mv7nH8FyX7m/CH+0
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR01MB4131.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(346002)(39840400004)(366004)(136003)(396003)(451199015)(41300700001)(8676002)(83380400001)(4326008)(66946007)(66556008)(66476007)(6486002)(36756003)(2616005)(186003)(110136005)(316002)(31696002)(38100700002)(86362001)(921005)(8936002)(44832011)(7416002)(4001150100001)(5660300002)(2906002)(31686004)(26005)(53546011)(6666004)(6506007)(6512007)(478600001)(43740500002);DIR:OUT;SFP:1102;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(346002)(376002)(136003)(366004)(396003)(451199015)(7416002)(2906002)(5660300002)(31696002)(7406005)(41300700001)(921005)(2616005)(26005)(83380400001)(8936002)(316002)(38100700002)(86362001)(110136005)(66946007)(66476007)(8676002)(6666004)(66556008)(6506007)(6512007)(53546011)(478600001)(31686004)(6486002)(186003)(36756003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?SCs0RzUzdDdpRmdYckdydmJQOUFIRk0rbVZocG9rM1NLNTlIMzFwTHlWaXJS?=
- =?utf-8?B?bEcxL3VSTklFNkZBUFdYb04vVXMzYyt2cHl4QkhQRmF4dHNsbFpncjN3Mmh1?=
- =?utf-8?B?MGRvL3NSL01lQVEwaUFCSFNEcVlDVEtnbGZMclUrMzJGcHNLVWJKN0pPTTc2?=
- =?utf-8?B?bHBZcE5DT2ZOd2NVMmY3WTVOVS9WUndaTjMzYUpPbFVzUWZ5Z3hnUkFreU5U?=
- =?utf-8?B?bmhxTnZUOHpIUDZyOHU1d2Y4cGxCYU5rSlJiM29WWFJSN3pPdWk1aGt2c1Vm?=
- =?utf-8?B?aTBRV1VEbnFjYlRrVlRNR3RjNGd0cWw4UlFvRXQyb1FONWdRRXE2SDlxdVc4?=
- =?utf-8?B?Z0t5NUl0eTJZTnJoRjQwM0JYNzIrSk9La3RVMkdKeDdrTTBza25wMU16VFpS?=
- =?utf-8?B?bHo4NzAwSEdvNnkxamcxcUM5QjlCRC9wVVZlOWtlckw5d045emRRczhkTWJB?=
- =?utf-8?B?eGo2cmhuTS9rTkVCTnBsaUM1K3gyOXM0YmVETGNnRmRJR2U5NU1ORmNMWXBh?=
- =?utf-8?B?NHZpMDhKdXcxUTdDRXB5QlJJZGkzTEViSE80MkIzbllBcDd4b3VjV3BLOStM?=
- =?utf-8?B?bHAyWWJWRWNYMHg2N05PczZ3UUE4c0l3WHhORnlhY3N3czcxTE83VzBVakx2?=
- =?utf-8?B?TGdpUmhKRFJlTFBPWTVFMXdSM3BRMTAyRVhjcU5ZQnJ5K0FSYVdqUG85NVVX?=
- =?utf-8?B?TUtkalZYNHJUZTBZQUpCLytRTXVMd1lNenBybWI0R1VDbjJ1RGZCSm9wOHds?=
- =?utf-8?B?aHV5N2xIajZxVzVYZnVTOGQ2SnNubWlKb003RUE3RlU1dnlwVGVNYWJkSjBx?=
- =?utf-8?B?SGFpNlRmaDZvSjZRanBHN3k5SGhTdW9vZHZjbkI5ZkVORkdsdCtIRWJvMHo2?=
- =?utf-8?B?eVZoZnQ4L2FWWGV1QTJldWhRUlBtTDVWbDF2Q1NRZ2VQYm40MUtEbHhlK3RM?=
- =?utf-8?B?MVNSY3FWRVNHTThNK0F6RDQ1eG5Ba1M3UFMwZ0JpYlpGNDZvam54ckoyNlJI?=
- =?utf-8?B?OWx2cHA2VUkyRDBlcmY0Mi9mVXZuOEYweVowV3hLeWVCM01FaWl2ajh1SE1Y?=
- =?utf-8?B?STg4SjVSYXJoRy9aMFJnaWVzdm5pNkVFVFYydHlFc1BZdkhLVnVlRVlPWlBt?=
- =?utf-8?B?S25nUFlJVzYyM1JybDZxMEJURTdtZUtGcE96a21tT1FRK1JnTUxrTWZhbFJU?=
- =?utf-8?B?VWN2WkJtd3lCYkxETHdGWDEzLzREY25iS0hGeDRjbW9SaGFIdE9HQ1pHbFpX?=
- =?utf-8?B?UmZ2R0ZoaU1tV3k5QkNiRTF6dlFPbDNkT3BobnFhbHQ5TW83OERlQTJ2bGNn?=
- =?utf-8?B?OGNyTHJyRFZzQTd4ZWpyT2RBWkd4WE5vR1J3ck9EUlhRTStqUzdzdUlCa01k?=
- =?utf-8?B?TkVtdWlSeWdwVjJwc3NwbXkxYWtWWUpVNTNjMEpOTFhoWDV3Z1ZWV05JSlEw?=
- =?utf-8?B?bnh5eW5qYitudzJZeXoyMG1RRDZHenBnS2lwSmFmbzM4SHlsTlc0cjNDeElS?=
- =?utf-8?B?TFhMb2d5QlZRN0VCUU5maXpIVkxUQmpvODQ4d3JYVjNJYTRkSG1xaGp0QVM1?=
- =?utf-8?B?cCt3RWV0QlptM0VJbmYzUVNqcDIza2x0R3dCZ09ZVDcybExHSlUyd0ZDN0lD?=
- =?utf-8?B?dWlMYy9XZTVmSys0UnRqVWpmaHVlcmVmdjRob25YaXFodTU1Qno4eFQ2eXBW?=
- =?utf-8?B?eHlzKzVlRHUrNERUeG9xcWZNbHJSaEwxY1BaL3RwSHlSMVNVNC81ZjRsQ1JS?=
- =?utf-8?B?QThwL3JKNWppbXB4SXF5ZWpjZUM4dkZac1VJbWJzR0Z1TStzUHErb28vM1c3?=
- =?utf-8?B?aDEvQkJMUGVlZkNZallXRVZ1ZUhVcHlyYmYwOWJYdEQxWVNHQlIrYW1vRElN?=
- =?utf-8?B?TmxOc1RialdnVU1qMDd3UWxWU1F4Wld1Q3UwS3hPTDBHTXg2aGtFRk5tS1ZR?=
- =?utf-8?B?SDZmWHpiVGxrR2ZzNjY3T0NwdHFSd1ovUkRnUjZGYll6a0thZXVQbkNHaGk5?=
- =?utf-8?B?cnZOOWdPa09MTllkR0ZnMCsyeC9JWlpUbFdWOFIzL2xJMjA1KzM2UnMrMkRH?=
- =?utf-8?B?ajU3b2Y5TmltMlVqZUNmU2pjTGQxZ0R2bnhVRmJKa014azNGN0pWN29GTmQv?=
- =?utf-8?B?b2sxRWRVWHRUWk9kbSt3Wlh4ODRRaHNUQzlOdDRkaG9mZ016N08zTG1kcEsx?=
- =?utf-8?B?OUE9PQ==?=
-X-OriginatorOrg: cornelisnetworks.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f94ab83b-5838-4411-6ec6-08dac7eeaf60
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR01MB4131.prod.exchangelabs.com
+	=?utf-8?B?QW9WaGs5cVRsblZ5dmFhY1cxYmo2ZGZLKzQyRTRBL2JGN3g2VS9UdEIzaW9Y?=
+ =?utf-8?B?VmEyZnY4TTZsdnVnTVBrcGIzcUZwVjNHUy9BTTh1UXhnVXp3bjZBVWNKdSs3?=
+ =?utf-8?B?L3J2ZDJJTGxoMkFrUnNyTC94WFdsY3ZJeDhWeWlkUnJNT2t2b2xyaDJFY2J4?=
+ =?utf-8?B?aDk5YVVZM0JuTldHSHNtT0x6bjBCZis3YWtlRi9PUXA3YjRHZVovQ3JNeDFp?=
+ =?utf-8?B?VjhqS2gvSjQ4RnJuRTNrTWxueDgvQmlFN0lNdFQyMHVPdGwwTFVxdVl0UCtP?=
+ =?utf-8?B?cFBETCtPMncxQklFTWVjZnNNOW4rbVRIZkthSjNaaHdpNUkzZXh3VUxnVHBm?=
+ =?utf-8?B?ZlEyREdmRnMzQ2tCall5RkxlTUc0WjNhQ1AyOWRXNURhNG9FcFdMQ1pwYlB2?=
+ =?utf-8?B?Y1FGbW55OU8reGZYV1h5NklsSjdpc21HcnhkOHlkcUtkUHJ5RDBSU3drR2h1?=
+ =?utf-8?B?ZDFaa2N6aTZ1T1FjdmgyQUk4WHZFanlnRHpVYU9nejVDalVjNlBJdXhpRS80?=
+ =?utf-8?B?emVlZ1pVdG9kOFBsdWdYblF3Y3M4Qzh6Ymtac211bHZKZFFxK0pZRDNOWlJ6?=
+ =?utf-8?B?VHQxdjdVSERiUTNHNE5jZ1RwSVdoUTRvNVQvZkxac0Y2bnY1ZnBQVnNvK2gv?=
+ =?utf-8?B?eDB6dTUrcDZ0aklSb1hBNjFoQkpEM1BnZjA0WUxRNHFrekxCSHVBTXQzclRl?=
+ =?utf-8?B?d2dOdDhUdnF2VWZhUnNNMm1HZFRNVUJwR2M4Y25aRlN2NDZnS2ZMODhhSkFr?=
+ =?utf-8?B?bGM1NTMrSncyRCtSSkh2M2Ztbi9KMGlKTnBaT0RDeUZWRTh0M0ExTWwyME5E?=
+ =?utf-8?B?ditLcm5TSlh6dEpvNG1SZVZVWm5ibXZxWlZrWjIwTGJnOEtTWk9mUysrRTc2?=
+ =?utf-8?B?UTcwSGxNcWxyL0J0cnYzeG1WMTgwY3VzMlZVU1F6N2VrYmJ2TE0xczZzS1V0?=
+ =?utf-8?B?WnpVWXZnR29wYUg0QUswN1dydEV1eXh2aEdUV3RsUVpNeS95eHR5WWlLS29r?=
+ =?utf-8?B?bnh2L1pUTVN4TXBDMmwvT092OTlsZTdQSHRwOXEzT0o2SUNjdXJpRXplSGNa?=
+ =?utf-8?B?N3NITnhORUhZT2VmN2dFZVVtT3ArN0ttalVnYlBHQTVyZ0Z3Q2JPZFJCaGF2?=
+ =?utf-8?B?Y29FRUFNaUZNT1FmdXVlcldxeFB6YTFYSXpFS0VsQytQQWF2WXN2Zkczdjdm?=
+ =?utf-8?B?czdWRy9TU2FwY0NYZ2RFSCtlcXJCVWhiWUMxVnhWL1lUWnkvQW1lbHNNZks4?=
+ =?utf-8?B?T3M0Z0drUTNvQjRmVzBnMGw2R0NtWEtqMWlqY2FVVldJeTNaM1hpNkh6ajZv?=
+ =?utf-8?B?OGROUkFYa0lqT0NkM1VUSk9BcnRnL3dUM2ZVbnJQWXNUOWpUckFaS1NmR0Er?=
+ =?utf-8?B?ci80TzRDeFVKUUgydEhsSm13alBLRTFLcjV0WEowNEVSL1NVOEF3UzhQM21W?=
+ =?utf-8?B?NzM4cGgybzZGeTFUNlR2clhhaElDYjVPdG1JQ0daNUUrQXBHbSsremY5RDhJ?=
+ =?utf-8?B?TXVpRXZvdFhYOS8vallYMnFIZytpQ3FRaE5wQ05ic2xKRWUvbzVGR1hWaXkw?=
+ =?utf-8?B?bDFJVUczOEw5SzlKQ2lIVDZJKzdyaDkyK1N5WFFSRzlENDhXV0FvNW9QV1o2?=
+ =?utf-8?B?Z0VsSjcrQ3VGQXZzbFZuaWNIQmE2MEtUajNuZ0RKT2luc2dPVkVYK2V2OCsr?=
+ =?utf-8?B?dHNOdHF0OFZjM2JRQXVzZzVodkhSaXZYVXRMeko4MGJ4b3JnaWg5YWRxY2sv?=
+ =?utf-8?B?MkloV2VHcDhPck5VellqQzQyMHF3TEVETUF5L2JveXZETVRlOWgvM2xrRWNV?=
+ =?utf-8?B?dUxSaG0wVE9ONWkxYXBNbDJpZXhpcmhyNXlBRDRiYlNnU2s5QW5WSlQ5Yml0?=
+ =?utf-8?B?UDBoTjh4NDFDV3dldmlUbGV3MXlQVVdHUDRLYS8vMFZGc1krT0FOTnExYWx5?=
+ =?utf-8?B?M09zRjhEdXZxTURWT09jakVwSC8rY0c3cndrMS9GT0R4aFRmWGhTYzlxK3Fs?=
+ =?utf-8?B?WnRKc05DQ3E2Y285SlJOa1I1bjM0YVFJSitINVBrVlR3UnZVRFVtR1NmeTY5?=
+ =?utf-8?B?MzR6WEVNYzRkUVFWdnRubnlra1RjWnV3RlR2ZmRSTTdTbkQvWVBMd2lBVDA3?=
+ =?utf-8?Q?xYNMWiHbEhUnQfn0ztJnzxLk/?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 00b3e63e-95ec-4cbf-5ce9-08dac7f0f3f3
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2022 16:21:58.7479
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2022 16:38:12.7893
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4dbdb7da-74ee-4b45-8747-ef5ce5ebe68a
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CEJgAUljV/gXjyHgtrtn50S9JAnvHBdZfKc5Cwg76kyzr8IXzxtmWX6+kuLHrL50jfxcuoh2JS0wUJb9BoBfsDbSEaBUc8wVAclLJzNEucA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR01MB3301
+X-MS-Exchange-CrossTenant-UserPrincipalName: rJTB/gHpJ22Xny7P5Ng6fZVaQ71L5Y5vsf8UQDJcs3t/r9DGDr7YrrugujqSJt2q07qpgfECGOFMm0jfqX95SQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6088
 
-On 11/16/2022 9:15 AM, Robin Murphy wrote:
-> On 2022-11-16 14:40, Dean Luick wrote:
->> On 11/13/2022 10:35 AM, Christoph Hellwig wrote:
->>> dma_alloc_coherent is an opaque allocator that only uses the GFP_ flags
->>> for allocation context control.  Don't pass GFP_USER which doesn't make
->>> sense for a kernel DMA allocation or __GFP_COMP which makes no sense
->>> for an allocation that can't in any way be converted to a page pointer.
+On 11/13/22 10:01, Michael Kelley (LINUX) wrote:
+> From: Tom Lendacky <thomas.lendacky@amd.com> Sent: Friday, November 11, 2022 10:50 AM
+>>
+>> On 11/11/22 00:21, Michael Kelley wrote:
+> 
+> [snip]
+> 
+>>> diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+>>> index 06eb8910..024fbf4 100644
+>>> --- a/arch/x86/mm/pat/set_memory.c
+>>> +++ b/arch/x86/mm/pat/set_memory.c
+>>> @@ -2126,10 +2126,8 @@ static int __set_memory_enc_pgtable(unsigned long
+>> addr, int numpages, bool enc)
 >>>
->>> Signed-off-by: Christoph Hellwig <hch@lst.de>
->>> ---
->>>   drivers/infiniband/hw/hfi1/init.c | 21 +++------------------
->>>   1 file changed, 3 insertions(+), 18 deletions(-)
->>>
->>> diff --git a/drivers/infiniband/hw/hfi1/init.c b/drivers/infiniband/hw/=
-hfi1/init.c
->>> index 436372b314312..24c0f0d257fc9 100644
->>> --- a/drivers/infiniband/hw/hfi1/init.c
->>> +++ b/drivers/infiniband/hw/hfi1/init.c
->>> @@ -1761,17 +1761,11 @@ int hfi1_create_rcvhdrq(struct hfi1_devdata *dd=
-, struct hfi1_ctxtdata *rcd)
->>>        unsigned amt;
->>>
->>>        if (!rcd->rcvhdrq) {
->>> -             gfp_t gfp_flags;
+>>>    static int __set_memory_enc_dec(unsigned long addr, int numpages, bool enc)
+>>>    {
+>>> -	if (hv_is_isolation_supported())
+>>> -		return hv_set_mem_host_visibility(addr, numpages, !enc);
 >>> -
->>>                amt =3D rcvhdrq_size(rcd);
->>>
->>> -             if (rcd->ctxt < dd->first_dyn_alloc_ctxt || rcd->is_vnic)
->>> -                     gfp_flags =3D GFP_KERNEL;
->>> -             else
->>> -                     gfp_flags =3D GFP_USER;
->>>                rcd->rcvhdrq =3D dma_alloc_coherent(&dd->pcidev->dev, am=
-t,
->>>                                                  &rcd->rcvhdrq_dma,
->>> -                                               gfp_flags | __GFP_COMP)=
-;
->>> +                                               GFP_KERNEL);
+>>> -	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
+>>> +	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT) ||
+>>> +	    cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
 >>
->> A user context receive header queue may be mapped into user space.  Is t=
-hat not the use case for GFP_USER?  The above conditional is what decides.
+>> This seems kind of strange since CC_ATTR_MEM_ENCRYPT is supposed to mean
+>> either HOST or GUEST memory encryption, but then you check for GUEST
+>> memory encryption directly. Can your cc_platform_has() support be setup to
+>> handle the CC_ATTR_MEM_ENCRYPT attribute in some way?
 >>
->> Why do you think GFP_USER should be removed here?
->
-> Coherent DMA buffers are allocated by a kernel driver or subsystem for th=
-e use of a device managed by that driver or subsystem, and thus they fundam=
-entally belong to the kernel as proxy for the device. Any coherent DMA buff=
-er may be mapped to userspace with the dma_mmap_*() interfaces, but they're=
- never a "userspace allocation" in that sense.
+>> Thanks,
+>> Tom
+> 
+> Current upstream code for Hyper-V guests with vTOM enables only
+> CC_ATTR_GUEST_MEM_ENCRYPT.  I had been wary of also enabling
+> CC_ATTR_MEM_ENCRYPT because that would enable other code paths that
+> Might not be right for the vTOM case.  But looking at it more closely, enabling
+> CC_ATTR_MEM_ENCRYPT may work.
+> 
+> There are two problems with Hyper-V vTOM enabling CC_ATTR_MEM_ENCRYPT,
+> but both are fixable:
+> 
+> 1) The call to mem_encrypt_init() happens a little bit too soon.  Hyper-V is fully
+> initialized and hypercalls become possible after start_kernel() calls late_time_init().
+> mem_encrypt_init() needs to happen after the call to late_time_init() so that
+> marking the swiotlb memory as decrypted can make the hypercalls to sync the
+> page state change with the host.   Moving mem_encrypt_init() a few lines later in
+> start_kernel() works in my case, but I can't test all the cases that you probably
+> have.  This change also has the benefit of removing the call to
+> swiotlb_update_mem_attributes() at the end of hyperv_init(), which always
+> seemed like a hack.
 
-My (seemingly dated) understanding is that GFP_USER is for kernel allocatio=
-ns that may be mapped into user space.  The description of GFP_USER in gfp_=
-types.h enforces my understanding.  Is my uderstanding no longer correct?  =
-If not, then what is the point of GFP_USER?  Is GFP_USER now mostly an arti=
-fact?  Should its description be updated?
+It seems safe for SME/SEV since mem_encrypt_init() is only updating the 
+SWIOTLB attributes at this point. I'll do some quick testing, but you 
+might want to verify with TDX folks, too.
 
-Presently, the difference between GFP_KERNEL and GFP_USER is __GFP_HARDWALL=
-.  This enforces cpuset allocation policy. If HARDWALL is not set, the allo=
-cator will back off to the nearest memory ancestor if needed.  The back off=
- seems like a reasonable general policy.  I do have one concern that may be=
- hypothetical: if GFP_KERNEL is used and a buffer is silently pushed out of=
- the expected cpuset, this can lead to mysterious slowdowns.
+> 
+> 2)  mem_encrypt_free_decrypted_mem() is mismatched with
+> sme_postprocess_startup() in its handling of bss decrypted memory.  The
+> decryption is done if sme_me_mask is non-zero, while the re-encryption is
+> done if CC_ATTR_MEM_ENCRYPT is true, and those conditions won't be
+> equivalent in a Hyper-V vTOM VM if we enable CC_ATTR_MEM_ENCRYPT
+> (sme_me_mask is always zero in a Hyper-V vTOM VM).  Changing
+> mem_encrypt_free_decrypted_mem() to do re-encryption only if sme_me_mask
+> is non-zero solves that problem.  Note that there doesn't seem to be a way for a
 
--Dean
+Hmmm, yes, this was because of an issue using the cc_platform_has() call 
+during identity mapped paging. I think matching them in this case would be 
+best, e.g., changing mem_encrypt_free_decrypted_mem() to check for a 
+non-zero sme_me_mask - along with a nice comment on why it is checking 
+sme_me_mask.
 
-External recipient
+Thanks,
+Tom
+
+> Hyper-V vTOM VM to have decrypted bss, since there's no way to sync the
+> page state change with the host that early in the boot process, but I don't think
+> there's a requirement for such, so all is good.
+> 
+> With the above two changes, Hyper-V vTOM VMs can enable
+> CC_ATTR_MEM_ENCRYPT.  The Hyper-V hack in __set_memory_enc_dec()
+> still goes away, and there's no change to the condition for invoking
+> __set_memory_enc_pgtable().
+> 
+> Thoughts?  Have I missed anything?  Overall, I'm persuaded that this is a better
+> approach and can submit a v3 patch series with these changes if you agree.
+> 
+> Michael
