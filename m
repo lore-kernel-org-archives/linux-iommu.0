@@ -1,33 +1,45 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12B2015A5
-	for <iommu@lists.linux.dev>; Thu, 17 Nov 2022 01:55:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668650133; x=1700186133;
-  h=message-id:date:mime-version:cc:to:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=uuP5q8gUlbvgaw8quTq8oqXHFLQt2Yhg3IPq6GPh/j8=;
-  b=kyzPc3OhUoVlT2pPzR/XVs5KXd3N9Egb1n6jyUCuc4bnjPaostM4761b
-   xYUc3G6kMMiSJmi6pZsMmk0/LNJwQpLjnjrM71wx2XxkraIBHi/SOAa4p
-   uiJF8BNlYxuCUV8viCe9GlzBKeHWasoigiegFzbZgkiL5oQUCHWztrTvY
-   C3rSKSJxo9YV1eqxQfz0eA4xZp2NTl+Icet+Cx0nqFx6ND0EQb+vdNWfQ
-   XccNlrZZXNIpqFxY7b25D2emookkWvNAGhj4hpA52a2sDoPGZhFQlEOVy
-   Bwn+u9/ZgjZLH1xceUrE3GMJmGZCUh3nodtkMBwNoAuUMjAyS/snFLSiW
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10533"; a="296087991"
-X-IronPort-AV: E=Sophos;i="5.96,169,1665471600"; 
-   d="scan'208";a="296087991"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2022 17:55:32 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10533"; a="764562079"
-X-IronPort-AV: E=Sophos;i="5.96,169,1665471600"; 
-   d="scan'208";a="764562079"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.210.247]) ([10.254.210.247])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2022 17:55:27 -0800
-Message-ID: <33eea9bd-e101-4836-19e8-d4b191b78b00@linux.intel.com>
-Date: Thu, 17 Nov 2022 09:55:25 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CB33191
+	for <iommu@lists.linux.dev>; Thu, 17 Nov 2022 02:59:46 +0000 (UTC)
+Received: by mail-pl1-f178.google.com with SMTP id 4so406519pli.0
+        for <iommu@lists.linux.dev>; Wed, 16 Nov 2022 18:59:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=cI9YYkR2j8+5CF7GfcB2FXJqCD4sST4budEVfbt757Q=;
+        b=oACv8HUbmtF4bbCohU0VsqWmMRoz4kTqqUzaSK/NwOkNHBWesmZfRTXxIv9MMqaiL4
+         cFkzGXWV0Yhu71xa8W4PvCJG2RM6jQW99Yg97jB9KyTpD0Wwhh/+fRLbvZMymBmYYZBZ
+         h63492wB40VNTe6++pCK2OW7ZWtAxZYuJvnb0uqhYpk15FDkJnN+uezx2MuzWfkZnf1B
+         X2gCAu3FyQE8utKdqpXZMwIV7afmW4Z5SPDLDQqhmQGt3lsQYTEuLB+KIZ4n7hC5OO2f
+         n85EBvnuYWWeGhIKiX4xEHwPs3Vd2h3x2RyqbEaMY1HwDgDpbdBupM0es8ZXjaNcWXQV
+         wlgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=cI9YYkR2j8+5CF7GfcB2FXJqCD4sST4budEVfbt757Q=;
+        b=LP/pDGwg8VsBBI9imLgQIi+UFwcNAPtrSamz1+Up5SgHMh8bH5JRIClYG9ww6UwhmL
+         ms9LnUU5jy+QUc5P5sC7wd4kAtFbERe39tvcE+nLjASZIWuVC6uIFv88zzW5+hj4h1Iq
+         QlRufs6bQ3ACOQMssdaF38m3NRoDG6C3L3ADMQekgaS81xIoTyihnGcehQnqIBywzL3k
+         MDZGTSEX/RMkHqcRMBFNp261eTowqNIjDXGH102JX3HKqNRMnikl1EhTBgCLmmH57YUD
+         SjTEN0u4/b2Isyru5l+zsCgFtILb2KBsy6cSItn4fE66RbftZedD7R+v7OPauHNvJsMW
+         Njcw==
+X-Gm-Message-State: ANoB5pm6LZ5MtR7mCuPapU/KoelAV4BRSucfJqk1VRXtJqMOq4yf+zDv
+	G4KCB18CybuBN7fv3CYFo6I=
+X-Google-Smtp-Source: AA0mqf4vg7BcdWVHlmKhHo0hA6tIGJidHiu9taIeC8ozWjdRQILWPBG5TLa1G3gSVAigRXnEGtIU0w==
+X-Received: by 2002:a17:902:db01:b0:187:3921:2b2d with SMTP id m1-20020a170902db0100b0018739212b2dmr909370plx.13.1668653985703;
+        Wed, 16 Nov 2022 18:59:45 -0800 (PST)
+Received: from ?IPV6:2404:f801:0:5:8000::75b? ([2404:f801:9000:1a:efea::75b])
+        by smtp.gmail.com with ESMTPSA id n15-20020a170903110f00b00188c5f0f9e9sm8258439plh.199.2022.11.16.18.59.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Nov 2022 18:59:44 -0800 (PST)
+Message-ID: <079dc969-37e7-1da0-84cc-9d2e047156d5@gmail.com>
+Date: Thu, 17 Nov 2022 10:59:32 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,55 +47,95 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Cc: baolu.lu@linux.intel.com, Pierre Morel <pmorel@linux.ibm.com>,
- linux-s390@vger.kernel.org, borntraeger@linux.ibm.com, hca@linux.ibm.com,
- gor@linux.ibm.com, gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
- svens@linux.ibm.com, linux-kernel@vger.kernel.org,
- Julian Ruess <julianr@linux.ibm.com>
-To: Niklas Schnelle <schnelle@linux.ibm.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>, Gerd Bayer <gbayer@linux.ibm.com>,
- iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Wenjia Zhang <wenjia@linux.ibm.com>
-References: <20221116171656.4128212-1-schnelle@linux.ibm.com>
- <20221116171656.4128212-5-schnelle@linux.ibm.com>
+ Thunderbird/102.4.1
+Subject: Re: [Patch v3 07/14] x86/hyperv: Change vTOM handling to use standard
+ coco mechanisms
 Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v2 4/7] iommu: Let iommu.strict override
- ops->def_domain_type
-In-Reply-To: <20221116171656.4128212-5-schnelle@linux.ibm.com>
+To: Michael Kelley <mikelley@microsoft.com>, hpa@zytor.com,
+ kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
+ decui@microsoft.com, luto@kernel.org, peterz@infradead.org,
+ davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+ pabeni@redhat.com, lpieralisi@kernel.org, robh@kernel.org, kw@linux.com,
+ bhelgaas@google.com, arnd@arndb.de, hch@infradead.org,
+ m.szyprowski@samsung.com, robin.murphy@arm.com, thomas.lendacky@amd.com,
+ brijesh.singh@amd.com, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, Tianyu.Lan@microsoft.com,
+ kirill.shutemov@linux.intel.com, sathyanarayanan.kuppuswamy@linux.intel.com,
+ ak@linux.intel.com, isaku.yamahata@intel.com, dan.j.williams@intel.com,
+ jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com, x86@kernel.org,
+ linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ netdev@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-arch@vger.kernel.org, iommu@lists.linux.dev
+References: <1668624097-14884-1-git-send-email-mikelley@microsoft.com>
+ <1668624097-14884-8-git-send-email-mikelley@microsoft.com>
+From: Tianyu Lan <ltykernel@gmail.com>
+In-Reply-To: <1668624097-14884-8-git-send-email-mikelley@microsoft.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2022/11/17 1:16, Niklas Schnelle wrote:
-> When iommu.strict=1 is set or iommu_set_dma_strict() was called we
-> should use IOMMU_DOMAIN_DMA irrespective of ops->def_domain_type.
+On 11/17/2022 2:41 AM, Michael Kelley wrote:
+> Hyper-V guests on AMD SEV-SNP hardware have the option of using the
+> "virtual Top Of Memory" (vTOM) feature specified by the SEV-SNP
+> architecture. With vTOM, shared vs. private memory accesses are
+> controlled by splitting the guest physical address space into two
+> halves.  vTOM is the dividing line where the uppermost bit of the
+> physical address space is set; e.g., with 47 bits of guest physical
+> address space, vTOM is 0x40000000000 (bit 46 is set).  Guest phyiscal
+> memory is accessible at two parallel physical addresses -- one below
+> vTOM and one above vTOM.  Accesses below vTOM are private (encrypted)
+> while accesses above vTOM are shared (decrypted). In this sense, vTOM
+> is like the GPA.SHARED bit in Intel TDX.
 > 
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> Support for Hyper-V guests using vTOM was added to the Linux kernel in
+> two patch sets[1][2]. This support treats the vTOM bit as part of
+> the physical address. For accessing shared (decrypted) memory, these
+> patch sets create a second kernel virtual mapping that maps to physical
+> addresses above vTOM.
+> 
+> A better approach is to treat the vTOM bit as a protection flag, not
+> as part of the physical address. This new approach is like the approach
+> for the GPA.SHARED bit in Intel TDX. Rather than creating a second kernel
+> virtual mapping, the existing mapping is updated using recently added
+> coco mechanisms.  When memory is changed between private and shared using
+> set_memory_decrypted() and set_memory_encrypted(), the PTEs for the
+> existing kernel mapping are changed to add or remove the vTOM bit
+> in the guest physical address, just as with TDX. The hypercalls to
+> change the memory status on the host side are made using the existing
+> callback mechanism. Everything just works, with a minor tweak to map
+> the I/O APIC to use private accesses.
+> 
+> To accomplish the switch in approach, the following must be done in
+> in this single patch:
+> 
+> * Update Hyper-V initialization to set the cc_mask based on vTOM
+>    and do other coco initialization.
+> 
+> * Update physical_mask so the vTOM bit is no longer treated as part
+>    of the physical address
+> 
+> * Update cc_mkenc() and cc_mkdec() to be active for Hyper-V guests.
+>    This makes the vTOM bit part of the protection flags.
+> 
+> * Code already exists to make hypercalls to inform Hyper-V about pages
+>    changing between shared and private.  Update this code to run as a
+>    callback from __set_memory_enc_pgtable().
+> 
+> * Remove the Hyper-V special case from __set_memory_enc_dec()
+> 
+> * Remove the Hyper-V specific call to swiotlb_update_mem_attributes()
+>    since mem_encrypt_init() will now do it.
+> 
+> [1]https://lore.kernel.org/all/20211025122116.264793-1-ltykernel@gmail.com/
+> [2]https://lore.kernel.org/all/20211213071407.314309-1-ltykernel@gmail.com/
+> 
+> Signed-off-by: Michael Kelley<mikelley@microsoft.com>
 > ---
->   drivers/iommu/iommu.c | 3 +++
->   1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 65a3b3d886dc..d9bf94d198df 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1562,6 +1562,9 @@ static int iommu_get_def_domain_type(struct device *dev)
->   {
->   	const struct iommu_ops *ops = dev_iommu_ops(dev);
->   
-> +	if (iommu_dma_strict)
-> +		return IOMMU_DOMAIN_DMA;
+>   arch/x86/coco/core.c            | 11 +++++++++-
+>   arch/x86/hyperv/hv_init.c       | 11 ----------
+>   arch/x86/hyperv/ivm.c           | 45 +++++++++++++++++++++++++++++++----------
+>   arch/x86/include/asm/mshyperv.h |  8 ++------
+>   arch/x86/kernel/cpu/mshyperv.c  | 15 +++++++-------
+>   arch/x86/mm/pat/set_memory.c    |  3 ---
+>   6 files changed, 53 insertions(+), 40 deletions(-)
 
-If any quirky device must work in IOMMU identity mapping mode, this
-might introduce functional regression. At least for VT-d platforms, some
-devices do require IOMMU identity mapping mode for functionality.
-
-> +
->   	if (dev_is_pci(dev) && to_pci_dev(dev)->untrusted)
->   		return IOMMU_DOMAIN_DMA;
->   
-
-Best regards,
-baolu
+Reviewed-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
