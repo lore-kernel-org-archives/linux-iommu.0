@@ -1,35 +1,44 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70374443B
-	for <iommu@lists.linux.dev>; Fri, 18 Nov 2022 13:39:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92B03C433C1;
-	Fri, 18 Nov 2022 13:39:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1668778743;
-	bh=HRUKLVHLfVR3bag7itC0ot8FpX0rB1IDAEuPUNc1mv0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=nmA+1Dwr363MWkHzHw7zScpU9AHs07WYlR7VixpOq/+4Ze4oQyedQtkwOPZ/LzemA
-	 zQAJ9Zm7HwpDmk47fdwBjbAjsWhD+2t+pCeU2mJI+NypaFXBOX8e21WbCQDxLQQ/ek
-	 Svi1WeBBhXuqBP+Q1alHn8WWRDYnwEBSZBjdkrtS3Tu/AMAis4p8DCO1VEmE2NIqMT
-	 YiGDFqIh+p8blZWwrfh+BQAMtxQ9kpr47Vt0wO+33a0YGmuunGnO06EHIxG7J2M1JJ
-	 VA9GURRmNFs/StIX93u19cg/jBPBNItrvlfaL90pF3EfqiFbHG7mg90WTGXNflJY0w
-	 7rmIa4PCEg0HQ==
-Date: Fri, 18 Nov 2022 13:38:56 +0000
-From: Will Deacon <will@kernel.org>
-To: Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc: linux-arm-msm@vger.kernel.org, andersson@kernel.org, agross@kernel.org,
-	krzysztof.kozlowski@linaro.org, patches@linaro.org,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/9] dt-bindings: arm-smmu: Allow 3 power domains on
- SM6375 MMU500
-Message-ID: <20221118133855.GB4046@willie-the-truck>
-References: <20221115152727.9736-1-konrad.dybcio@linaro.org>
- <20221115152727.9736-2-konrad.dybcio@linaro.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 050AB3D78
+	for <iommu@lists.linux.dev>; Fri, 18 Nov 2022 14:34:50 +0000 (UTC)
+Received: by mail-wr1-f41.google.com with SMTP id g2so5857525wrv.6
+        for <iommu@lists.linux.dev>; Fri, 18 Nov 2022 06:34:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=R4toaSer+DSC9C7UHmt6s1A3ErWAKiU/7f6LW1Uo6bg=;
+        b=qpjHqeUcStDQX0Fqzw8bcCpEwUjm3PcKxqaQmVyG9BQ+sNcVV5jhEn6g7rpjlB+Cxk
+         /5aGI+esbWrvwOD6hURp2Fc+T0ElBJPnPGoq4w77N1Is9kaz22jb4gQS9ykS1GKUmG2K
+         emozNBfaUzpaLQ0JL3/1lFPxgHx7F5vAy8LFKQRVGLKCOhqvnQVhzid43iInnyRWCxRZ
+         Gq/5cuICCpF1MUawSrPs48eMFiqSbKbri0PwwM3NwZDPPD/II7wqEEISJ8o1vofIZpG/
+         K7y483EsZzJa+95wg5nuBDw+NhrfrQ3j5vWkyFZLw0KuDfXaNe0w0sSrRhgWXYB35UpG
+         ZX0A==
+X-Gm-Message-State: ANoB5pm3K9E1zecTiU0tk0VGWXCyVwGJH4va5ibH166+TMeYoVHKigtx
+	vs02ipaLZKsvOTRu7qrrWKY=
+X-Google-Smtp-Source: AA0mqf6xd23CergG26RTQ00+DtiYnR2z8QS9+b0CEY7p5WOlXzZ5D8aEBANGloY2SpHuGJKMYI7aXg==
+X-Received: by 2002:a5d:56d0:0:b0:236:59ab:cf30 with SMTP id m16-20020a5d56d0000000b0023659abcf30mr4403560wrw.485.1668782089167;
+        Fri, 18 Nov 2022 06:34:49 -0800 (PST)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id j18-20020a05600c191200b003c83465ccbfsm10372760wmq.35.2022.11.18.06.34.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Nov 2022 06:34:48 -0800 (PST)
+Date: Fri, 18 Nov 2022 14:34:40 +0000
+From: Wei Liu <wei.liu@kernel.org>
+To: Nuno Das Neves <nunodasneves@linux.microsoft.com>
+Cc: linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, mikelley@microsoft.com,
+	sunilmut@microsoft.com, wei.liu@kernel.org, kys@microsoft.com,
+	Tianyu.Lan@microsoft.com, haiyangz@microsoft.com,
+	decui@microsoft.com, dwmw2@infradead.org, joro@8bytes.org,
+	will@kernel.org
+Subject: Re: [PATCH v2] iommu/hyper-v: Allow hyperv irq remapping without
+ x2apic
+Message-ID: <Y3eYAFDKhwsOyeY7@liuwe-devbox-debian-v2>
+References: <1668715899-8971-1-git-send-email-nunodasneves@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -38,20 +47,19 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221115152727.9736-2-konrad.dybcio@linaro.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <1668715899-8971-1-git-send-email-nunodasneves@linux.microsoft.com>
 
-On Tue, Nov 15, 2022 at 04:27:19PM +0100, Konrad Dybcio wrote:
-> The SMMU on SM6375 requires 3 power domains to be active. Add an
-> appropriate description of that.
+On Thu, Nov 17, 2022 at 12:11:39PM -0800, Nuno Das Neves wrote:
+> If x2apic is not available, hyperv-iommu skips remapping
+> irqs. This breaks root partition which always needs irqs
+> remapped.
 > 
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> ---
->  .../devicetree/bindings/iommu/arm,smmu.yaml   | 23 ++++++++++++++++++-
->  1 file changed, 22 insertions(+), 1 deletion(-)
+> Fix this by allowing irq remapping regardless of x2apic,
+> and change hyperv_enable_irq_remapping() to return
+> IRQ_REMAP_XAPIC_MODE in case x2apic is missing.
+> 
+> Tested with root and non-root hyperv partitions.
+> 
+> Signed-off-by: Nuno Das Neves <nunodasneves@linux.microsoft.com>
 
-Acked-by: Will Deacon <will@kernel.org>
-
-Let me know if you'd like me to take this one via the Arm SMMU tree.
-
-Will
+Applied to hyperv-next. Thanks.
