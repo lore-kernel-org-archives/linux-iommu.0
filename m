@@ -1,114 +1,189 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99E578F51
-	for <iommu@lists.linux.dev>; Thu, 17 Nov 2022 21:47:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20FB717C2;
+	Fri, 18 Nov 2022 02:24:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1668721658; x=1700257658;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=0xIE0lGR+1HvQFnathUuD8Giy/crD3N1QjHrDya9xTk=;
-  b=U/ChOYXC27GRWC2VvwYixln6dj5kV5LFA4e6S67p7LiE5cISxSmQOlfc
-   nfGpeq6SQFSnRVNcA5MxHUCCpU/vTQY5NukqL8SqtGj7J0ao9+4WnZ3d9
-   434918MKKFpCjieaO5X7kgP5rjClM2HXvFHmWun1im5FbvyMJUxMH6F59
-   maEr6fMdlqOlF+PVkjckE6qXR+cMDddJky5doIBeubb8Ew5xrn7xKhymW
-   H2lRahQ9tE5lbHF9P/+phCupu5+OEqVeRytMMtFgsnurc9NQTW4NaRlby
-   iEZJ/sqVX5v855BH6FCeb5TZLbNrw4wi6cf/Z+5X30yJyjBR1bQxj9dSg
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10534"; a="377249818"
+  t=1668738269; x=1700274269;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=en3VoICR5M82P62XCBtHO2t2Ea2oHwbCTuHkuJXofAU=;
+  b=KZoyWWve7re81AYlUUsXf5R4rtThcrehE05M3VYP/+AUuKdM3hwBONCZ
+   JaK/aiKFU2tp7uweX8wIn5zmkM/R5R4Brky+/8zOlUdXISbjSv+cx7Fzr
+   KOilTAb4zUTPdgm/+qYv17b9VrkpzLlJ1FiNM9JyhRsP6aSfKhRMGDDd0
+   2DxkpLmnbtMZZmGBr1n/cFVK0h9hqBg4rlbYb7DK2ls85qs9tOXNgkc15
+   t2HSt1AJZQrwZEVypb2CaI0wmOY4acRsYOBTM/V3wtRMFh3IuTDEyj7B2
+   WRwtI98/Vi7tHoO0TDDGOAGB6HukJ0dVAdVAyHhIRmCLGWTTI5YuLJYTc
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10534"; a="311735848"
 X-IronPort-AV: E=Sophos;i="5.96,172,1665471600"; 
-   d="scan'208";a="377249818"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2022 13:47:37 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10534"; a="642261895"
+   d="scan'208";a="311735848"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2022 18:24:28 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10534"; a="634274856"
 X-IronPort-AV: E=Sophos;i="5.96,172,1665471600"; 
-   d="scan'208";a="642261895"
-Received: from wangyi7-mobl3.amr.corp.intel.com (HELO [10.212.182.5]) ([10.212.182.5])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Nov 2022 13:47:35 -0800
-Message-ID: <01d7c7cc-bd4e-ee9b-f5b2-73ea367e602f@linux.intel.com>
-Date: Thu, 17 Nov 2022 13:47:35 -0800
+   d="scan'208";a="634274856"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga007.jf.intel.com with ESMTP; 17 Nov 2022 18:24:26 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 17 Nov 2022 18:24:26 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 17 Nov 2022 18:24:25 -0800
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Thu, 17 Nov 2022 18:24:25 -0800
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.102)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Thu, 17 Nov 2022 18:24:25 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WCYb2abZ1aGqlYrSCize4/Cq4xk3k+3OD46kapIXJA78qW6O8K8M51i1qKUUf+xz34VKw5m5t54OhIlWwx4NXyOWHljcJnA425QRIdzQiXJa/fb8cGG7JTET+0KqYfsor1UjWxRlPwrLpNbG2wGNYr7f7uT5OkJ6ST47NUFBiNGVxMt0GDRGiuOZdUik1nyF3HN/7qs9V5upnlUm9lh9YVcXhUKAGYYc8uYuc1l1apazMhhy7n3hfMUwnBXbSNvZQT/PjEtM8rCODGNFiKMsQqQPhVsEJPDN3PpmKtkFZHXdjdEt9VEAYh6j2zfBLsMl67QE50y8ubln8zKgr2GIMA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=touMk3fvGnjoB4TGPQ8BXM09YylRDp/PhCYw5kZu1bs=;
+ b=bsOH6BrW/twIAG/PM2mRR+fQ9fXiH+W5Sm8n4VBgEPT5pF8AYu09uUmdDU/2RkUQEW5TlBascSvcstykKDqLeo6E6FWFJzQei0G4bLkrvA8eMHvXXgRtO6exuily1EniFA00smJvYMl/QC/z5VySgjSkQgdTNkFVFleA2WsekRZAXX99xe5WHbAhYB9p3MF3Z+QqbIcJwq1G0UnHtjb275t40NBtSOWXf9+TZrNduwzNVPkCLtdCTMWGrjiY3gk4Q+q0qGb6rH06g+9afu/5LEEkCOeubG/lVZTGr5LkWdJ2f2Yg892xJpsZNyWKTVFkPvNZGYy2KMEAtSPSgav6uA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by MN2PR11MB4599.namprd11.prod.outlook.com (2603:10b6:208:26d::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5813.19; Fri, 18 Nov
+ 2022 02:24:23 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::9929:858c:3d20:9489]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::9929:858c:3d20:9489%4]) with mapi id 15.20.5813.019; Fri, 18 Nov 2022
+ 02:24:23 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, "bpf@vger.kernel.org"
+	<bpf@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>, David Woodhouse
+	<dwmw2@infradead.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"Joerg Roedel" <joro@8bytes.org>, "linux-doc@vger.kernel.org"
+	<linux-doc@vger.kernel.org>, "linux-kselftest@vger.kernel.org"
+	<linux-kselftest@vger.kernel.org>, "llvm@lists.linux.dev"
+	<llvm@lists.linux.dev>, Nathan Chancellor <nathan@kernel.org>, "Nick
+ Desaulniers" <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>, "Suravee
+ Suthikulpanit" <suravee.suthikulpanit@amd.com>, Tom Rix <trix@redhat.com>,
+	Will Deacon <will@kernel.org>
+CC: Anthony Krowiak <akrowiak@linux.ibm.com>, Alex Williamson
+	<alex.williamson@redhat.com>, Bagas Sanjaya <bagasdotme@gmail.com>, Lu Baolu
+	<baolu.lu@linux.intel.com>, Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+	Cornelia Huck <cohuck@redhat.com>, Daniel Jordan
+	<daniel.m.jordan@oracle.com>, David Gibson <david@gibson.dropbear.id.au>,
+	Eric Auger <eric.auger@redhat.com>, Eric Farman <farman@linux.ibm.com>,
+	"Jason Wang" <jasowang@redhat.com>, Jean-Philippe Brucker
+	<jean-philippe@linaro.org>, Jason Herne <jjherne@linux.ibm.com>, "Martins,
+ Joao" <joao.m.martins@oracle.com>, "kvm@vger.kernel.org"
+	<kvm@vger.kernel.org>, "Yang, Lixiao" <lixiao.yang@intel.com>, Matthew Rosato
+	<mjrosato@linux.ibm.com>, "Michael S. Tsirkin" <mst@redhat.com>, Nicolin Chen
+	<nicolinc@nvidia.com>, Halil Pasic <pasic@linux.ibm.com>, Niklas Schnelle
+	<schnelle@linux.ibm.com>, Shameerali Kolothum Thodi
+	<shameerali.kolothum.thodi@huawei.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+	Keqian Zhu <zhukeqian1@huawei.com>
+Subject: RE: [PATCH v5 08/19] iommufd: PFN handling for iopt_pages
+Thread-Topic: [PATCH v5 08/19] iommufd: PFN handling for iopt_pages
+Thread-Index: AQHY+f+U4QXW8VD9aUSJAPUbFnRCH65D9MVA
+Date: Fri, 18 Nov 2022 02:24:23 +0000
+Message-ID: <BN9PR11MB527690223B13E5B57AC6636C8C099@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <0-v5-4001c2997bd0+30c-iommufd_jgg@nvidia.com>
+ <8-v5-4001c2997bd0+30c-iommufd_jgg@nvidia.com>
+In-Reply-To: <8-v5-4001c2997bd0+30c-iommufd_jgg@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|MN2PR11MB4599:EE_
+x-ms-office365-filtering-correlation-id: 3aed31de-cee7-4334-127c-08dac90c01cc
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: nWF/lAWG8FNY3v69b3/DArlTk09OZYorNqXhLfw31xOxWAP0v4fDeRxB56aMNv8PxudGX7tknK7adhHZGPB2FhCOCvU9MZ9vbXePYxdiyVP6W+ERA3P4G1tCcfGcDPl8CC1IwGI4NQCArRffjUd39/IO6zAcMi89x8H9tMdOzgCcPcEtHDSshffMscDkEWqCi9juaogPAQSSEQ1GRLqG7aemej8NJ3DsiUE2rmMdrwjvSfsiFZpRQYiqgA+VX9d2lyb9cfzr0Bw193V5hNiiHGviYxB2zJ4hxCKKZY/wnnTgC1krAH0LXf427EIGJAzSOAGIwtHzAwuVJ6V5eM8JBURlveGpByFkOshhLrUO56ry+1FGjwuBTL0ldjKm/+5PU002kq+ZJST/kAjKRKBqvJTdvTJRv23vNTrqhutdPXhU0hIP4ZJMbfPiQe+adDSTO6LnLvyUKgfHO8+AIdsYf4HjYs0JfaEOP6xHojxLWtmKPrpF48s/y9gIdaufeYrfFrc92BSfG3EynIXv2Z8+wm/2D6baeH+YvY2y0qvjiVSIA7//0NbogN6HW10RV70gFxwUdwBCZkMSvX0x5T2HJ5wsL0KgUO12xbSyZTpSL3sIfrTQOlYM7g1ls6JQ9Q2K7YyUKWlPvqnIkG5/nO7N8DEjUViw6bcq8FH4bL88xj46MYI+9t9SkxhxdhDKstt7fzJXKoTqreLzbij6nw3Rw9gFZonjWI4UGZl2f7vOjok=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(136003)(39860400002)(346002)(396003)(376002)(366004)(451199015)(921005)(86362001)(41300700001)(33656002)(38100700002)(122000001)(82960400001)(38070700005)(71200400001)(186003)(478600001)(8936002)(8676002)(7696005)(26005)(66446008)(52536014)(55016003)(76116006)(66556008)(66476007)(64756008)(5660300002)(110136005)(316002)(9686003)(54906003)(66946007)(7416002)(7406005)(4744005)(6506007)(4326008)(2906002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?sIi8/MpVZakrUmAwzbr9OuWVHksRFSl+5xp977BWDV0DztCoGS/zY3henO1P?=
+ =?us-ascii?Q?B5JACP/UcvD3jcp6skBqU0WJ2Jm/JzyxgLDmEZvdZHeS2WgnhA90oD7+4MyJ?=
+ =?us-ascii?Q?KwJFzYiMofWY15UmJ1XoSPs/NlqdarNHktkto2m1J7tKzqgPbBnP8ZpBzI3J?=
+ =?us-ascii?Q?CpQx+IXrOjCBP3rCnfaKcwjBq2hsMzWP+zyRrs8VhpcEhgWiwcY7Wu5XBcJC?=
+ =?us-ascii?Q?zSwXjLGV9kqZTZZJH9fbp9bHUElB2+GqiR6jKLa8JvfYmEC0+PWesRiCpDkF?=
+ =?us-ascii?Q?hE2f0nyLYf9bj9yD1MGk7E7A3usd5fvxGf37GbA/UfjjlwgIp8Qt3jYfd7oQ?=
+ =?us-ascii?Q?rpgv5gmttb3UoRj9ZweG2ZW2Jh2yJthMO8SiBzokIxoz5boY11YgnHzRnEjc?=
+ =?us-ascii?Q?uZHhsYrpHG1AuwKS0y0wgd1gPljhBC7adoQ/eBvoFfUf801Es43EIStrnO1n?=
+ =?us-ascii?Q?ZNwwZ6kgMPNDbVx8+ZaXO6KG8V2s/uM0LftIOxRpwwuqgTAtcOlHkJ6ZdMUp?=
+ =?us-ascii?Q?mj7zALlDr/7KQVfUIMyqNB011mmnUpif/m7GsAbwadHxJurajFRO0iPJRZDx?=
+ =?us-ascii?Q?8m2yST2e3AibWaAMrEDdztyEasgCFredsg0jdBQHIn4MILdzxXg8Acm7sI0D?=
+ =?us-ascii?Q?xjcDC/ese9mlAfX6T5pK7p2HQxfObcW0hw6j/edQQaGDj20GtAm/cbPR8D2t?=
+ =?us-ascii?Q?UDHI0l1gdeLJb9/GsRI/W5tYOaV85hQ0HIsKNMqPn85XCHnZD1kXSYJjEIrT?=
+ =?us-ascii?Q?qM+PWPXc0EBo2OHTySz2hZSFdHdIc3WVtS6hsMZf93CCPiSjPgyBdMrQjNyn?=
+ =?us-ascii?Q?mGOn9cojWqPlkUpfeYK79aClX8JTNHxsbeFtIjVXCj2vvYUfKbKUhrGpznDO?=
+ =?us-ascii?Q?jtO0ERBHWmb4h9NYUKWXp0nNHeEtqSYF9z6lDenpIZCoORybJDlxpMhp/iMr?=
+ =?us-ascii?Q?e4nqKGzRUT2XzaBZvZT04zegeU4GUo99C82HqaAT1XqU4CD5QGhbrCMa3jRm?=
+ =?us-ascii?Q?UOZTqFLeJm7jVZbRU+l3dOJHfuA8ICkkpbZ2pP1PYyIdIhDTreUFfpHMEFu/?=
+ =?us-ascii?Q?Lg5f+Fb7dtCmuqfwHapR5VBskjso+06/epFhQ/4xW5XTjRQ1VrBacS9vxtrF?=
+ =?us-ascii?Q?ysPdc7FDF5Ne4VrksnVYQFFW/7nJIbo7LvNip6wjM9SU4u8xHjnIqAIUaWtb?=
+ =?us-ascii?Q?tdFSKzT++Wci0EvzSf4U+/DDnKXTQXLdSoYomFYU+PpDHdmjwc0eGafVwyAZ?=
+ =?us-ascii?Q?OyRJZoT+Hh9tDq2FWTApXWifH+8xTKKCbfs7QFL+d5vKJxTS/1UN8iUE94k6?=
+ =?us-ascii?Q?jtFh09eWU3R9SzXqa4JzlPDQW08YRYMTx/IIDyCN0WSCFoFS1yd+rdh4TIEp?=
+ =?us-ascii?Q?mPgQybbemlxC5Qrk6QJe8rp12r65PhRIt5579zfzhcyj5n8/mrOkFu9ESsPN?=
+ =?us-ascii?Q?ODVSsgSLxEgcNly1gcZVgnLIrtoFdI0dzRphazNUlmWJHm39F8pJvPBgBqmR?=
+ =?us-ascii?Q?wOJupdbUCSQ9ogVmhlYbyja4b01+uE9RzQu7SqvmAshBOaPzrgX9Bwk8wZFM?=
+ =?us-ascii?Q?qkHA5mtbL8QpBggPZpooAMUi09QNKwpSd5jwZfF2?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.2.2
-Subject: Re: [Patch v3 05/14] x86/mm: Handle decryption/re-encryption of
- bss_decrypted consistently
-Content-Language: en-US
-To: Michael Kelley <mikelley@microsoft.com>, hpa@zytor.com,
- kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
- decui@microsoft.com, luto@kernel.org, peterz@infradead.org,
- davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
- pabeni@redhat.com, lpieralisi@kernel.org, robh@kernel.org, kw@linux.com,
- bhelgaas@google.com, arnd@arndb.de, hch@infradead.org,
- m.szyprowski@samsung.com, robin.murphy@arm.com, thomas.lendacky@amd.com,
- brijesh.singh@amd.com, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
- dave.hansen@linux.intel.com, Tianyu.Lan@microsoft.com,
- kirill.shutemov@linux.intel.com, ak@linux.intel.com,
- isaku.yamahata@intel.com, dan.j.williams@intel.com, jane.chu@oracle.com,
- seanjc@google.com, tony.luck@intel.com, x86@kernel.org,
- linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
- netdev@vger.kernel.org, linux-pci@vger.kernel.org,
- linux-arch@vger.kernel.org, iommu@lists.linux.dev
-References: <1668624097-14884-1-git-send-email-mikelley@microsoft.com>
- <1668624097-14884-6-git-send-email-mikelley@microsoft.com>
-From: Sathyanarayanan Kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>
-In-Reply-To: <1668624097-14884-6-git-send-email-mikelley@microsoft.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3aed31de-cee7-4334-127c-08dac90c01cc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Nov 2022 02:24:23.2663
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: o3DRhwFZSV7tc+HpMcXBDRa8G84RNVDHDlt4yAeVxuhCeldUNDuuuS4abDOeL5jIRt+stZrF8pymQKEH9DdpqA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4599
+X-OriginatorOrg: intel.com
 
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Thursday, November 17, 2022 5:01 AM
+> +static void batch_skip_carry(struct pfn_batch *batch, unsigned int skip_=
+pfns)
+> +{
+> +	if (!batch->total_pfns)
+> +		return;
+> +	skip_pfns =3D min(batch->total_pfns, skip_pfns);
+> +	batch->pfns[0] +=3D skip_pfns;
+> +	batch->npfns[0] -=3D skip_pfns;
+> +	batch->total_pfns -=3D skip_pfns;
+> +}
 
+You forgot to add the assertion which you replied to v4:
 
-On 11/16/22 10:41 AM, Michael Kelley wrote:
-> Current code in sme_postprocess_startup() decrypts the bss_decrypted
-> section when sme_me_mask is non-zero.  But code in
-> mem_encrypt_free_decrytped_mem() re-encrypts the unused portion based
-> on CC_ATTR_MEM_ENCRYPT.  In a Hyper-V guest VM using vTOM, these
-> conditions are not equivalent as sme_me_mask is always zero when
-> using vTOM.  Consequently, mem_encrypt_free_decrypted_mem() attempts
-> to re-encrypt memory that was never decrypted.
-> 
-> Fix this in mem_encrypt_free_decrypted_mem() by conditioning the
-> re-encryption on the same test for non-zero sme_me_mask.  Hyper-V
-> guests using vTOM don't need the bss_decrypted section to be
-> decrypted, so skipping the decryption/re-encryption doesn't cause
-> a problem.
-> 
+@@ -239,6 +239,8 @@ static void batch_skip_carry(struct pfn_batch *batch, u=
+nsigned int skip_pfns)
+ {
+        if (!batch->total_pfns)
+                return;
++       if (IS_ENABLED(CONFIG_IOMMUFD_TEST))
++               WARN_ON(batch->total_pfns !=3D batch->npfns[0]);
+        skip_pfns =3D min(batch->total_pfns, skip_pfns);
 
-Do you think it needs Fixes tag?
+otherwise looks good to me:
 
-> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
-> ---
->  arch/x86/mm/mem_encrypt_amd.c | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/x86/mm/mem_encrypt_amd.c b/arch/x86/mm/mem_encrypt_amd.c
-> index 9c4d8db..5a51343 100644
-> --- a/arch/x86/mm/mem_encrypt_amd.c
-> +++ b/arch/x86/mm/mem_encrypt_amd.c
-> @@ -513,10 +513,14 @@ void __init mem_encrypt_free_decrypted_mem(void)
->  	npages = (vaddr_end - vaddr) >> PAGE_SHIFT;
->  
->  	/*
-> -	 * The unused memory range was mapped decrypted, change the encryption
-> -	 * attribute from decrypted to encrypted before freeing it.
-> +	 * If the unused memory range was mapped decrypted, change the encryption
-> +	 * attribute from decrypted to encrypted before freeing it. Base the
-> +	 * re-encryption on the same condition used for the decryption in
-> +	 * sme_postprocess_startup(). Higher level abstractions, such as
-> +	 * CC_ATTR_MEM_ENCRYPT, aren't necessarily equivalent in a Hyper-V VM
-> +	 * using vTOM, where sme_me_mask is always zero.
->  	 */
-> -	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT)) {
-> +	if (sme_get_me_mask()) {
->  		r = set_memory_encrypted(vaddr, npages);
->  		if (r) {
->  			pr_warn("failed to free unused decrypted pages\n");
-
--- 
-Sathyanarayanan Kuppuswamy
-Linux Kernel Developer
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
