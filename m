@@ -1,66 +1,82 @@
-Received: from mx.swemel.ru (mx.swemel.ru [95.143.211.150])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C772F2F2A
-	for <iommu@lists.linux.dev>; Fri, 18 Nov 2022 10:52:51 +0000 (UTC)
-From: Denis Arefev <arefev@swemel.ru>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=swemel.ru; s=mail;
-	t=1668768172;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=zhq3ZPbOW/IjySbkqalqQrSgHm9uIPo6a/xa8S5bNyE=;
-	b=Ht2++LndUjVOqrAQD0+1tnKkVc0lpX3HoTEFa58uWLO+SaR/r7amjxj5fYlev1agdSx5LN
-	RwfAjrXH7aOkiRE3FHSxFwxWW/tnzL/GYYZbFyI4aqhhEY4B5R2vy+0fjc4p4kxMEwHTi1
-	zJUmdMN7WjkNR5fza5+eRJ+gB44Kny0=
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Will Deacon <will@kernel.org>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	lvc-project@linuxtesting.org,
-	trufanov@swemel.ru,
-	vfh@swemel.ru
-Subject: [PATCH] iommu: amd: Added value check
-Date: Fri, 18 Nov 2022 13:42:52 +0300
-Message-Id: <20221118104252.122809-1-arefev@swemel.ru>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id ECD8829A1
+	for <iommu@lists.linux.dev>; Fri, 18 Nov 2022 11:54:36 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C0F2923A;
+	Fri, 18 Nov 2022 03:54:36 -0800 (PST)
+Received: from [10.57.70.144] (unknown [10.57.70.144])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B16E83F587;
+	Fri, 18 Nov 2022 03:54:29 -0800 (PST)
+Message-ID: <75fa75cf-a4ab-d7d8-e3ab-adb402600f7e@arm.com>
+Date: Fri, 18 Nov 2022 11:54:15 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH 2/2] iommu: fix smmu initialization memory leak problem
+To: liulongfang <liulongfang@huawei.com>, Will Deacon <will@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
+References: <20221021035147.15292-1-liulongfang@huawei.com>
+ <20221021035147.15292-3-liulongfang@huawei.com>
+ <20221114180821.GC31476@willie-the-truck>
+ <26e8c338-7e4b-b35e-c68a-78a7cbdf2d45@huawei.com>
+Content-Language: en-GB
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <26e8c338-7e4b-b35e-c68a-78a7cbdf2d45@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Аdded a return value check for the function
-mmu_notifier_register.
+On 2022-11-18 09:28, liulongfang wrote:
+> On 2022/11/15 2:08, Will Deacon Wrote:
+>> On Fri, Oct 21, 2022 at 11:51:47AM +0800, Longfang Liu wrote:
+>>> When iommu_device_register() in arm_smmu_device_probe() fails,
+>>> in addition to sysfs needs to be deleted, device should also
+>>> be disabled, and the memory of iopf needs to be released to
+>>> prevent memory leak of iopf.
+>>>
+>>> Signed-off-by: Longfang Liu <liulongfang@huawei.com>
+>>> ---
+>>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 9 +++++++--
+>>>   1 file changed, 7 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>> index a1db07bed6a9..c70defb0c866 100644
+>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>> @@ -3816,11 +3816,16 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>>>   	ret = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
+>>>   	if (ret) {
+>>>   		dev_err(dev, "Failed to register iommu\n");
+>>> -		iommu_device_sysfs_remove(&smmu->iommu);
+>>> -		return ret;
+>>> +		goto err_sysfs_remove;
+>>>   	}
+>>>   
+>>>   	return 0;
+>>> +
+>>> +err_sysfs_remove:
+>>> +	iommu_device_sysfs_remove(&smmu->iommu);
+>>> +	arm_smmu_device_disable(smmu);
+>>> +	iopf_queue_free(smmu->evtq.iopf);
+>>> +	return ret;
+>>
+>> Doesn't this miss the cases where iommu_device_sysfs_add() or
+>> arm_smmu_device_reset() fail?
+>>
+>> We'd probably be better off using something like devres_alloc() to track
+>> the iopf queue here.
+>>
+> This is actually not a problem found by the test, but a problem found
+> by the code logic analysis. When an error exits, the memory allocated
+> by the iopf queue is not released during the entire exit process.
 
-Return value of a function 'mmu_notifier_register'
-called at iommu_v2.c:642 is not checked,
- but it is usually checked for this function
+Sure, but the point is that there are at least 5 points of failure after 
+iopf_queue_alloc() succeeds, which could result in an early exit from 
+probe. This patch only affects the last one of those, so the theoretical 
+problem it claims to fix still exists just as much as before.
 
-Found by Linux Verification Center (linuxtesting.org) with SVACE.
-
-Signed-off-by: Denis Arefev <arefev@swemel.ru>
----
- drivers/iommu/amd/iommu_v2.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/amd/iommu_v2.c b/drivers/iommu/amd/iommu_v2.c
-index 5ecc0bc608ec..88134f34589f 100644
---- a/drivers/iommu/amd/iommu_v2.c
-+++ b/drivers/iommu/amd/iommu_v2.c
-@@ -639,7 +639,9 @@ int amd_iommu_bind_pasid(struct pci_dev *pdev, u32 pasid,
- 	if (pasid_state->mm == NULL)
- 		goto out_free;
- 
--	mmu_notifier_register(&pasid_state->mn, mm);
-+	ret = mmu_notifier_register(&pasid_state->mn, mm);
-+	if (ret)
-+		goto out_free;
- 
- 	ret = set_pasid_state(dev_state, pasid_state, pasid);
- 	if (ret)
--- 
-2.25.1
-
+Robin.
