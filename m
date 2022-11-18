@@ -1,44 +1,29 @@
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 050AB3D78
-	for <iommu@lists.linux.dev>; Fri, 18 Nov 2022 14:34:50 +0000 (UTC)
-Received: by mail-wr1-f41.google.com with SMTP id g2so5857525wrv.6
-        for <iommu@lists.linux.dev>; Fri, 18 Nov 2022 06:34:50 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=R4toaSer+DSC9C7UHmt6s1A3ErWAKiU/7f6LW1Uo6bg=;
-        b=qpjHqeUcStDQX0Fqzw8bcCpEwUjm3PcKxqaQmVyG9BQ+sNcVV5jhEn6g7rpjlB+Cxk
-         /5aGI+esbWrvwOD6hURp2Fc+T0ElBJPnPGoq4w77N1Is9kaz22jb4gQS9ykS1GKUmG2K
-         emozNBfaUzpaLQ0JL3/1lFPxgHx7F5vAy8LFKQRVGLKCOhqvnQVhzid43iInnyRWCxRZ
-         Gq/5cuICCpF1MUawSrPs48eMFiqSbKbri0PwwM3NwZDPPD/II7wqEEISJ8o1vofIZpG/
-         K7y483EsZzJa+95wg5nuBDw+NhrfrQ3j5vWkyFZLw0KuDfXaNe0w0sSrRhgWXYB35UpG
-         ZX0A==
-X-Gm-Message-State: ANoB5pm3K9E1zecTiU0tk0VGWXCyVwGJH4va5ibH166+TMeYoVHKigtx
-	vs02ipaLZKsvOTRu7qrrWKY=
-X-Google-Smtp-Source: AA0mqf6xd23CergG26RTQ00+DtiYnR2z8QS9+b0CEY7p5WOlXzZ5D8aEBANGloY2SpHuGJKMYI7aXg==
-X-Received: by 2002:a5d:56d0:0:b0:236:59ab:cf30 with SMTP id m16-20020a5d56d0000000b0023659abcf30mr4403560wrw.485.1668782089167;
-        Fri, 18 Nov 2022 06:34:49 -0800 (PST)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id j18-20020a05600c191200b003c83465ccbfsm10372760wmq.35.2022.11.18.06.34.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Nov 2022 06:34:48 -0800 (PST)
-Date: Fri, 18 Nov 2022 14:34:40 +0000
-From: Wei Liu <wei.liu@kernel.org>
-To: Nuno Das Neves <nunodasneves@linux.microsoft.com>
-Cc: linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, mikelley@microsoft.com,
-	sunilmut@microsoft.com, wei.liu@kernel.org, kys@microsoft.com,
-	Tianyu.Lan@microsoft.com, haiyangz@microsoft.com,
-	decui@microsoft.com, dwmw2@infradead.org, joro@8bytes.org,
-	will@kernel.org
-Subject: Re: [PATCH v2] iommu/hyper-v: Allow hyperv irq remapping without
- x2apic
-Message-ID: <Y3eYAFDKhwsOyeY7@liuwe-devbox-debian-v2>
-References: <1668715899-8971-1-git-send-email-nunodasneves@linux.microsoft.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B6673D78
+	for <iommu@lists.linux.dev>; Fri, 18 Nov 2022 14:41:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3477C433D6;
+	Fri, 18 Nov 2022 14:41:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1668782518;
+	bh=3BDUgvBxoQ6ynhU3RnNM6d/uQAhJoqBegUWUv1fw6pg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=vMfhy0Ouxk07x5LpFTwZ6qamu7YafxPQWbmPcTnp3+25K+npppvxKdVCvCZVCOOQc
+	 fBE7Rz+YsIJRrFV5Zr5lJvYrdOcPSSMmHpntFpb49rp3AzQQusHTuBsSfp8IsFgC/Q
+	 0E2U7DG+PmNe+fwu3mVLpXxRfOwJksTm3JCMv7hsgs3W00YBPB6cZyFYp4JFKOEaTb
+	 +AXgZY9PixlSDCiFnRel54WbH15Q2d+SKGMOTwgPHv6F5v7aiOmy5aaSHvh/QoVrS2
+	 J4mLDg0dhdiVKzoDzw0WANVdvuTigmOic1N3xVXzc7UJNapvxlk751SPTcP7FIYYZm
+	 OmXaV7CePD8tA==
+Date: Fri, 18 Nov 2022 14:41:53 +0000
+From: Will Deacon <will@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, robdclark@gmail.com,
+	yong.wu@mediatek.com
+Subject: Re: [PATCH 0/9] iommu: {map,unmap}_pages cleanup
+Message-ID: <20221118144153.GA4624@willie-the-truck>
+References: <cover.1668100209.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -47,19 +32,46 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1668715899-8971-1-git-send-email-nunodasneves@linux.microsoft.com>
+In-Reply-To: <cover.1668100209.git.robin.murphy@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Thu, Nov 17, 2022 at 12:11:39PM -0800, Nuno Das Neves wrote:
-> If x2apic is not available, hyperv-iommu skips remapping
-> irqs. This breaks root partition which always needs irqs
-> remapped.
+On Tue, Nov 15, 2022 at 03:26:34PM +0000, Robin Murphy wrote:
+> Here's a couple more strands of cleanup along a common theme. With the
+> original pgsize_bitmap trick for multi-page mappings long gone from
+> Intel and now getting cleaned up from s390 as well, the first two
+> patches here convert the remaining instances of that to the proper new
+> multi-page interfaces. The rest then convert the remaining users of the
+> io-pgtable API, so we can clean up the old interfaces entirely at that
+> level.
 > 
-> Fix this by allowing irq remapping regardless of x2apic,
-> and change hyperv_enable_irq_remapping() to return
-> IRQ_REMAP_XAPIC_MODE in case x2apic is missing.
+> Cheers,
+> Robin.
 > 
-> Tested with root and non-root hyperv partitions.
 > 
-> Signed-off-by: Nuno Das Neves <nunodasneves@linux.microsoft.com>
+> Robin Murphy (9):
+>   iommu/mediatek-v1: Update to {map,unmap}_pages
+>   iommu/sprd: Update to {map,unmap}_pages
+>   iommu/mediatek: Update to {map,unmap}_pages
+>   iommu/msm: Update to {map,unmap}_pages
+>   iommu/ipmmu-vmsa: Update to {map,unmap}_pages
+>   iommu/qcom: Update to {map,unmap}_pages
+>   iommu/io-pgtable-arm: Remove map/unmap
+>   iommu/io-pgtable-arm-v7s: Remove map/unmap
+>   iommu/io-pgtable: Remove map/unmap
+> 
+>  drivers/iommu/arm/arm-smmu/qcom_iommu.c | 14 +++++----
+>  drivers/iommu/io-pgtable-arm-v7s.c      | 41 +++++++++---------------
+>  drivers/iommu/io-pgtable-arm.c          | 42 +++++++++----------------
+>  drivers/iommu/ipmmu-vmsa.c              | 18 +++++------
+>  drivers/iommu/msm_iommu.c               | 18 ++++++-----
+>  drivers/iommu/mtk_iommu.c               | 15 ++++-----
+>  drivers/iommu/mtk_iommu_v1.c            | 30 +++++++++---------
+>  drivers/iommu/sprd-iommu.c              | 25 ++++++++-------
+>  include/linux/io-pgtable.h              |  6 ----
+>  9 files changed, 94 insertions(+), 115 deletions(-)
 
-Applied to hyperv-next. Thanks.
+Thanks for doing this. For the lot:
+
+Acked-by: Will Deacon <will@kernel.org>
+
+Will
