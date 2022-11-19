@@ -1,82 +1,103 @@
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4688F2CA6
+	for <iommu@lists.linux.dev>; Sat, 19 Nov 2022 16:13:14 +0000 (UTC)
+Received: from 8bytes.org (p5b00664c.dip0.t-ipconnect.de [91.0.102.76])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA1FD7C
-	for <iommu@lists.linux.dev>; Sat, 19 Nov 2022 14:42:30 +0000 (UTC)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
-	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NDxF70bqVzRpFb;
-	Sat, 19 Nov 2022 22:42:03 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Sat, 19 Nov 2022 22:42:27 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Sat, 19 Nov
- 2022 22:42:26 +0800
-From: Yang Yingliang <yangyingliang@huawei.com>
-To: <dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <joro@8bytes.org>,
-	<will@kernel.org>, <robin.murphy@arm.com>
-CC: <iommu@lists.linux.dev>, <yangyingliang@huawei.com>
-Subject: [PATCH v2] iommu/vt-d: fix pci device refcount leak in prq_event_thread()
-Date: Sat, 19 Nov 2022 22:40:28 +0800
-Message-ID: <20221119144028.2452731-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+	by mail.8bytes.org (Postfix) with ESMTPSA id C51512A029B;
+	Sat, 19 Nov 2022 17:13:12 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1668874393;
+	bh=pKZSOrFJ0a9jKmN1CuPpLnJ+pFpga/JV8WusiyY0ZG4=;
+	h=Date:From:To:Cc:Subject:From;
+	b=OdDddaqTizQN6ByY/OGzcqozhLZHehAgZblXoSs/3vbEsx2bB2Pa4NuX5tRswAI7n
+	 R1IUDkxmHf5Vvpuuo+nDwAq9wo5aWTTTSkcKLtcJdS5togtwF9JqiVOV+KAW9rdtk9
+	 sx/IjjjfM3dPEB8uqBHj7FUWz76Rn89zdAOHZFbvp/qo3ZS3YQJg+L8xxF7xBKvP3R
+	 5MRU7dgcdMNHZkta1rM4q2ywmCcwm+09XzhWtq56ZnVohtZMMAO9JkLpQH7XqVLP3D
+	 aWBPwyTNGj5AM7FS2crJgSPdMqHQWCbi/KMF9l4M+LeLf/W5nruB182faWl9Mg3J+o
+	 kukseuJ4a++jQ==
+Date: Sat, 19 Nov 2022 17:13:11 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: [git pull] IOMMU Fixes for Linux v6.1-rc5
+Message-ID: <Y3kAl1vpndkuviqt@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="zSTt2Xp8a783qA4a"
+Content-Disposition: inline
 
-As comment of pci_get_domain_bus_and_slot() says, it returns
-a pci device with refcount increment, when finish using it,
-the caller must decrement the reference count by calling
-pci_dev_put(). So call pci_dev_put() after using the 'pdev'
-to avoid refcount leak.
 
-Besides, if the 'pdev' is null or intel_svm_prq_report()
-returns error, there is no need to trace this fault.
+--zSTt2Xp8a783qA4a
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Fixes: 06f4b8d09dba ("iommu/vt-d: Remove unnecessary SVA data accesses in page fault path")
-Suggested-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/iommu/intel/svm.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+Hi Linus,
 
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 7d08eb034f2d..3fa7446fb2e9 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -745,12 +745,16 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 		 * If prq is to be handled outside iommu driver via receiver of
- 		 * the fault notifiers, we skip the page response here.
- 		 */
--		if (!pdev || intel_svm_prq_report(iommu, &pdev->dev, req))
--			handle_bad_prq_event(iommu, req, QI_RESP_INVALID);
-+		if (!pdev)
-+			goto bad_req;
- 
--		trace_prq_report(iommu, &pdev->dev, req->qw_0, req->qw_1,
--				 req->priv_data[0], req->priv_data[1],
--				 iommu->prq_seq_number++);
-+		if (intel_svm_prq_report(iommu, &pdev->dev, req))
-+			handle_bad_prq_event(iommu, req, QI_RESP_INVALID);
-+		else
-+			trace_prq_report(iommu, &pdev->dev, req->qw_0, req->qw_1,
-+					 req->priv_data[0], req->priv_data[1],
-+					 iommu->prq_seq_number++);
-+		pci_dev_put(pdev);
- prq_advance:
- 		head = (head + sizeof(*req)) & PRQ_RING_MASK;
- 	}
--- 
-2.25.1
+The following changes since commit 094226ad94f471a9f19e8f8e7140a09c2625abaa:
 
+  Linux 6.1-rc5 (2022-11-13 13:12:55 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.1-rc5
+
+for you to fetch changes up to 7fc961cf7ffcb130c4e93ee9a5628134f9de700a:
+
+  iommu/vt-d: Set SRE bit only when hardware has SRS cap (2022-11-19 10:46:52 +0100)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v6.1-rc5
+
+Including:
+
+	- Fix presetting accessed bits in Intel VT-d page-directory
+	  entries to avoid hardware error
+
+	- Set supervisor bit only when Intel IOMMU has the SRS
+	  capability
+
+----------------------------------------------------------------
+Tina Zhang (2):
+      iommu/vt-d: Preset Access bit for IOVA in FL non-leaf paging entries
+      iommu/vt-d: Set SRE bit only when hardware has SRS cap
+
+ drivers/iommu/intel/iommu.c | 8 +++-----
+ drivers/iommu/intel/pasid.c | 5 +++--
+ 2 files changed, 6 insertions(+), 7 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--zSTt2Xp8a783qA4a
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmN5AJcACgkQK/BELZcB
+GuPtBQ/+Kxv2obtuPUS79X+4hxloB0znNhTBEkcD4k67lOEiH/8zMUI6Ykc16KQu
+SIIB0WCc4i2GTCKs8xJc3U7F1QMZSsPl1/89GrTvQgZJ6NBW4t6xlvCLQhyU16LM
+0onnlx+UOwg0l8na2FR15urj67Mc3PQOZeKEgwF5eIbNfDhgJgdz8Mh/TEmKxDxE
+59H8HanwWE9Q2JwpAvQpymS6XGPW7obhuPeQRD+7N5FNkC78TIIboNmiZ8S7r7e2
+CZ45iv3i4u60T2OiWSxp4F19O35AuL6J50ZmOTYI/Xq5qLreCtcqq4EYb50qpGgv
+rVXC4D4nY4+YJMyBWS9mh8QX8cJXxMbhsE4I2CV50u5WPs+bORf5T9ds/o+glr2I
+IAzrWeeA02QBfD9FQKLUH/cV0QrDPxDJfIy6bq57ws8nRl3z1+m87NmXWFTn/Ht2
+fcOktVKFxE45fOiQv98cv2Jf1tv4gnS/ggntaDNuA1zdxlkJyZHrc+mdSJ8QyQ3O
+afkeQTStzat6SiaDW9SMEG0LybnJWC0St1gQH5Wkd8oexNkiGtko2wDu6NCZB8SB
+C4Q4LZLj/qVU3/pL2938QhwMIQtJkrHohtcpt0FErd7Ltaj8TOZFpxpNQ4tNjYho
+Lo6pPm2vmz+MKSRnv43N669Zehj1lUIA6TBI+aSysn/V67sdeN4=
+=9988
+-----END PGP SIGNATURE-----
+
+--zSTt2Xp8a783qA4a--
