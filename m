@@ -1,34 +1,30 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EC1A81368
-	for <iommu@lists.linux.dev>; Sat, 19 Nov 2022 09:15:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A7DE01368
+	for <iommu@lists.linux.dev>; Sat, 19 Nov 2022 09:18:27 +0000 (UTC)
 Received: from 8bytes.org (p200300c27724780086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:7724:7800:86ad:4f9d:2505:dd0d])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id CF9B62A02E2;
-	Sat, 19 Nov 2022 10:15:55 +0100 (CET)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 765282A02A4;
+	Sat, 19 Nov 2022 10:18:26 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1668849356;
-	bh=bAWWr9POnrJ3vGSz6N2a/qyoeet6mFZL89l+jLDNx4k=;
+	s=default; t=1668849506;
+	bh=Vt5L0VElcFLbmhh0x4LVugTf29bcONLPlCjevjgvFSg=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=MXNtOzhcEWoeblnEK/Cv/yBvH/uu8SXZyyLyzwTEiZtT8wf+nceecXfKL9xSLzmbm
-	 iRqQ2WTySzxTSt7aDXXiICV6+YnoaWEitQ8kYLcHOqU0YaiSwgzR3HKFJCwSCHyEke
-	 jRqvIFvWsWQP2wH7zKi9Bx+drMMFnuru/PrLiR/DCzNddNdA73V3L2hmGpRUkyrbz6
-	 xmgDw3KlbLYjay1grKJoJB6uCt7uTgKRqIKXDTD0N2BbhWERZF+wHqO+ANkZP0zybo
-	 T/HcUvxyBwoJC674b+iC0/ESaSO1r3kUHGrDWKCseHFupcqBYcnoXrUUtI+zoC5Pob
-	 bfKKAqBcpzw3g==
-Date: Sat, 19 Nov 2022 10:15:54 +0100
+	b=pxqePUhEdc0C9R5uhSi+uSJ/g85ULckh94wlPP27t6X8nuCvyvAbpxUIWRuoahfuu
+	 eO7zx1vYItI4B4YLKAFyGoTjN3jl8oPfhNj3hiS4jdlr7j2/SSq56ihOmpnizwj9JC
+	 ZDxF8CW4kvQDq7qD+2LlGw16aJqTA4Xkw8FB/qCsBGq6I+JG2miXnT/kA3v7NnMx0R
+	 wlNqj27wNFIwt+f2Gcp5q90fWxR6IY7+dczbcH7seymKYp1REx45BgSfsVi5YXlI9x
+	 VQxRI4RZa4v0JIxw4wT0eEv5YQqpKM47wIcpp/qPGa2B1VZoJw0RyOq92GRsXeoCPG
+	 yr65UEbrXrAPg==
+Date: Sat, 19 Nov 2022 10:18:25 +0100
 From: Joerg Roedel <joro@8bytes.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: iommu@lists.linux.dev, linux-samsung-soc@vger.kernel.org,
-	Will Deacon <will@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Alim Akhtar <alim.akhtar@samsung.com>,
-	Sam Protsenko <semen.protsenko@linaro.org>
-Subject: Re: [PATCH] iommu/exynos: Fix driver initialization sequence
-Message-ID: <Y3ieyubpoq5U62/B@8bytes.org>
-References: <CGME20221104115521eucas1p2ef149555574e8f6cbd1bb3df0bdbbb20@eucas1p2.samsung.com>
- <20221104115511.28256-1-m.szyprowski@samsung.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: will@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	Brian Norris <briannorris@chromium.org>
+Subject: Re: [PATCH] iommu: Avoid races around device probe
+Message-ID: <Y3ifYR9ZuqQN79vb@8bytes.org>
+References: <1946ef9f774851732eed78760a78ec40dbc6d178.1667591503.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,17 +33,25 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221104115511.28256-1-m.szyprowski@samsung.com>
+In-Reply-To: <1946ef9f774851732eed78760a78ec40dbc6d178.1667591503.git.robin.murphy@arm.com>
 
-On Fri, Nov 04, 2022 at 12:55:11PM +0100, Marek Szyprowski wrote:
-> Registering SYSMMU platform driver might directly trigger initializing
-> IOMMU domains and performing initial mappings. That time all common
-> resources for the SYSMMU driver must be already allocated, so move
-> platform driver registration to the end of exynos_iommu_init() function.
+On Fri, Nov 04, 2022 at 07:51:43PM +0000, Robin Murphy wrote:
+> We currently have 3 different ways that __iommu_probe_device() may be
+> called, but no real guarantee that multiple callers can't tread on each
+> other, especially once asynchronous driver probe gets involved. It would
+> likely have taken a fair bit of luck to hit this previously, but commit
+> 57365a04c921 ("iommu: Move bus setup to IOMMU device registration") ups
+> the odds since now it's not just omap-iommu that may trigger multiple
+> bus_iommu_probe() calls in parallel if probing asynchronously.
 > 
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Add a lock to ensure we can't try to double-probe a device, and also
+> close some possible race windows to make sure we're truly robust against
+> trying to double-initialise a group via two different member devices.
+> 
+> Reported-by: Brian Norris <briannorris@chromium.org>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 > ---
->  drivers/iommu/exynos-iommu.c | 16 ++++++++--------
->  1 file changed, 8 insertions(+), 8 deletions(-)
+>  drivers/iommu/iommu.c | 28 ++++++++++++++++++++++------
+>  1 file changed, 22 insertions(+), 6 deletions(-)
 
-Applied, thanks.
+Applied, thanks Robin.
