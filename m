@@ -1,103 +1,53 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4688F2CA6
-	for <iommu@lists.linux.dev>; Sat, 19 Nov 2022 16:13:14 +0000 (UTC)
-Received: from 8bytes.org (p5b00664c.dip0.t-ipconnect.de [91.0.102.76])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id C51512A029B;
-	Sat, 19 Nov 2022 17:13:12 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1668874393;
-	bh=pKZSOrFJ0a9jKmN1CuPpLnJ+pFpga/JV8WusiyY0ZG4=;
-	h=Date:From:To:Cc:Subject:From;
-	b=OdDddaqTizQN6ByY/OGzcqozhLZHehAgZblXoSs/3vbEsx2bB2Pa4NuX5tRswAI7n
-	 R1IUDkxmHf5Vvpuuo+nDwAq9wo5aWTTTSkcKLtcJdS5togtwF9JqiVOV+KAW9rdtk9
-	 sx/IjjjfM3dPEB8uqBHj7FUWz76Rn89zdAOHZFbvp/qo3ZS3YQJg+L8xxF7xBKvP3R
-	 5MRU7dgcdMNHZkta1rM4q2ywmCcwm+09XzhWtq56ZnVohtZMMAO9JkLpQH7XqVLP3D
-	 aWBPwyTNGj5AM7FS2crJgSPdMqHQWCbi/KMF9l4M+LeLf/W5nruB182faWl9Mg3J+o
-	 kukseuJ4a++jQ==
-Date: Sat, 19 Nov 2022 17:13:11 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: [git pull] IOMMU Fixes for Linux v6.1-rc5
-Message-ID: <Y3kAl1vpndkuviqt@8bytes.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3454A8C1C
+	for <iommu@lists.linux.dev>; Sat, 19 Nov 2022 17:14:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DA222C433D7;
+	Sat, 19 Nov 2022 17:14:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1668878087;
+	bh=ViUt861U9NZUfU0dUux6MCnqEVPqanlr7xe9etONFhw=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=QOSsu1MLeVUPuWsZN8PeiQ/p1y/q4ohqYJ5r8eWTWWhr5buwSw3Ks2wmQIUv6vO1v
+	 OklLyBWeJ3RxCSLcJ24EZlRRfVFpjJ1V7Q/NFy26gzmGIcvx578+ZPj0mMH80bTB88
+	 19vSZYjDwXa9lr0MDS1prvVHNCO5KjMt7IyhBOdYdoTRYxVfG7Y9DUpqpb7ITWZDnv
+	 p9+usT3oys50uaO6sY4Q2jajMv+zZAQlOwyQRkHfsmbZFvpw9vNy5tnO3yDhtpGGeI
+	 eVte0co5T2sYM8RDpLyiXw1znYMB/JvJacuiyiOyvYib5Q9BBYcfJE95b35rMeI0tX
+	 HT0AH1Sb+YHfg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C32E9E29F44;
+	Sat, 19 Nov 2022 17:14:47 +0000 (UTC)
+Subject: Re: [git pull] IOMMU Fixes for Linux v6.1-rc5
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <Y3kAl1vpndkuviqt@8bytes.org>
+References: <Y3kAl1vpndkuviqt@8bytes.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <Y3kAl1vpndkuviqt@8bytes.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.1-rc5
+X-PR-Tracked-Commit-Id: 7fc961cf7ffcb130c4e93ee9a5628134f9de700a
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: b6e7fdfd6f6a8bf88fcdb4a45da52c42ba238c25
+Message-Id: <166887808779.22538.16903428600473858764.pr-tracker-bot@kernel.org>
+Date: Sat, 19 Nov 2022 17:14:47 +0000
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="zSTt2Xp8a783qA4a"
-Content-Disposition: inline
 
+The pull request you sent on Sat, 19 Nov 2022 17:13:11 +0100:
 
---zSTt2Xp8a783qA4a
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.1-rc5
 
-Hi Linus,
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/b6e7fdfd6f6a8bf88fcdb4a45da52c42ba238c25
 
-The following changes since commit 094226ad94f471a9f19e8f8e7140a09c2625abaa:
+Thank you!
 
-  Linux 6.1-rc5 (2022-11-13 13:12:55 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.1-rc5
-
-for you to fetch changes up to 7fc961cf7ffcb130c4e93ee9a5628134f9de700a:
-
-  iommu/vt-d: Set SRE bit only when hardware has SRS cap (2022-11-19 10:46:52 +0100)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v6.1-rc5
-
-Including:
-
-	- Fix presetting accessed bits in Intel VT-d page-directory
-	  entries to avoid hardware error
-
-	- Set supervisor bit only when Intel IOMMU has the SRS
-	  capability
-
-----------------------------------------------------------------
-Tina Zhang (2):
-      iommu/vt-d: Preset Access bit for IOVA in FL non-leaf paging entries
-      iommu/vt-d: Set SRE bit only when hardware has SRS cap
-
- drivers/iommu/intel/iommu.c | 8 +++-----
- drivers/iommu/intel/pasid.c | 5 +++--
- 2 files changed, 6 insertions(+), 7 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
---zSTt2Xp8a783qA4a
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmN5AJcACgkQK/BELZcB
-GuPtBQ/+Kxv2obtuPUS79X+4hxloB0znNhTBEkcD4k67lOEiH/8zMUI6Ykc16KQu
-SIIB0WCc4i2GTCKs8xJc3U7F1QMZSsPl1/89GrTvQgZJ6NBW4t6xlvCLQhyU16LM
-0onnlx+UOwg0l8na2FR15urj67Mc3PQOZeKEgwF5eIbNfDhgJgdz8Mh/TEmKxDxE
-59H8HanwWE9Q2JwpAvQpymS6XGPW7obhuPeQRD+7N5FNkC78TIIboNmiZ8S7r7e2
-CZ45iv3i4u60T2OiWSxp4F19O35AuL6J50ZmOTYI/Xq5qLreCtcqq4EYb50qpGgv
-rVXC4D4nY4+YJMyBWS9mh8QX8cJXxMbhsE4I2CV50u5WPs+bORf5T9ds/o+glr2I
-IAzrWeeA02QBfD9FQKLUH/cV0QrDPxDJfIy6bq57ws8nRl3z1+m87NmXWFTn/Ht2
-fcOktVKFxE45fOiQv98cv2Jf1tv4gnS/ggntaDNuA1zdxlkJyZHrc+mdSJ8QyQ3O
-afkeQTStzat6SiaDW9SMEG0LybnJWC0St1gQH5Wkd8oexNkiGtko2wDu6NCZB8SB
-C4Q4LZLj/qVU3/pL2938QhwMIQtJkrHohtcpt0FErd7Ltaj8TOZFpxpNQ4tNjYho
-Lo6pPm2vmz+MKSRnv43N669Zehj1lUIA6TBI+aSysn/V67sdeN4=
-=9988
------END PGP SIGNATURE-----
-
---zSTt2Xp8a783qA4a--
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
