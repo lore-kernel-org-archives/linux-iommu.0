@@ -1,23 +1,23 @@
 Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9D4D63C2
-	for <iommu@lists.linux.dev>; Mon, 21 Nov 2022 14:46:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BEA463CB
+	for <iommu@lists.linux.dev>; Mon, 21 Nov 2022 15:03:13 +0000 (UTC)
 Received: from zn.tnic (p200300ea9733e725329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9733:e725:329c:23ff:fea6:a903])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 728E61EC071C;
-	Mon, 21 Nov 2022 15:46:25 +0100 (CET)
+	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 45E7E1EC064C;
+	Mon, 21 Nov 2022 16:03:11 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-	t=1669041985;
+	t=1669042991;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-	bh=xCGd6hIfxBt7cfQnfEqxSw7FPCqLC4Ck4a/q2jKRpXs=;
-	b=LYt3r1VGYpjFq2eY/1Ig8EB3IqiCf4tNl8mN6dMAnrQpepWGDiaxtPiv4BXj0A6jaCD+Kg
-	K6ao66qLGGIogTA7O/cDGBLmoMgFJB0PO40fxjVY3RQwJbP6X4+tmXifRdjlV9jvmVnhxt
-	RisyrBR0wBFbkpZYBwrRyZoAITaTgGY=
-Date: Mon, 21 Nov 2022 15:46:25 +0100
+	bh=Ad0xyJQtRuj2l0HKhWgNpGUpnSMGJ0sK9iQrDE+ZQ9k=;
+	b=UxVYoF3Ez3k9aL2h4PQRxGYz0bNOj11by8YRTCWsFJS4EMjNk4OCRpnme2Scpi73L/9qlf
+	IbNFDMlblbgrdYpZBKjhcf3pXJPR5glZBVzvEMcTFrrAYXrhOqK8c7sDEXcYzkH5YxdjyL
+	AvxLtCqL6o1513540e1ijOqmzdvqdA8=
+Date: Mon, 21 Nov 2022 16:03:07 +0100
 From: Borislav Petkov <bp@alien8.de>
 To: Michael Kelley <mikelley@microsoft.com>
 Cc: hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
@@ -36,11 +36,11 @@ Cc: hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
 	linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
 	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
 	iommu@lists.linux.dev
-Subject: Re: [Patch v3 06/14] init: Call mem_encrypt_init() after Hyper-V
- hypercall init is done
-Message-ID: <Y3uPQTKDnD+/tv6g@zn.tnic>
+Subject: Re: [Patch v3 07/14] x86/hyperv: Change vTOM handling to use
+ standard coco mechanisms
+Message-ID: <Y3uTK3rBV6eXSJnC@zn.tnic>
 References: <1668624097-14884-1-git-send-email-mikelley@microsoft.com>
- <1668624097-14884-7-git-send-email-mikelley@microsoft.com>
+ <1668624097-14884-8-git-send-email-mikelley@microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,19 +49,59 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <1668624097-14884-7-git-send-email-mikelley@microsoft.com>
+In-Reply-To: <1668624097-14884-8-git-send-email-mikelley@microsoft.com>
 
-On Wed, Nov 16, 2022 at 10:41:29AM -0800, Michael Kelley wrote:
-> Fix this by moving mem_encrypt_init() after late_time_init() and
-> related clock initializations. The intervening initializations don't
-> do any I/O that requires the swiotlb, so moving mem_encrypt_init()
-> slightly later has no impact.
+On Wed, Nov 16, 2022 at 10:41:30AM -0800, Michael Kelley wrote:
+> Hyper-V guests on AMD SEV-SNP hardware have the option of using the
+> "virtual Top Of Memory" (vTOM) feature specified by the SEV-SNP
+> architecture. With vTOM, shared vs. private memory accesses are
+> controlled by splitting the guest physical address space into two
+> halves.  vTOM is the dividing line where the uppermost bit of the
+> physical address space is set; e.g., with 47 bits of guest physical
+> address space, vTOM is 0x40000000000 (bit 46 is set).  Guest phyiscal
 
-I hope you're right. Our boot ordering is fragile as hell. But
-mem_encrypt_init() doesn't do a whole lot of important setup - that has
-happened a lot earlier already - so I'm not too worried.
+Unknown word [phyiscal] in commit message.
+Suggestions: ['physical', 'physically', ... ]
 
-But we'll see what breaks in wider testing.
+Please introduce a spellchecker into your patch creation workflow.
+
+...
+
+> @@ -108,6 +115,7 @@ u64 cc_mkenc(u64 val)
+>  	switch (vendor) {
+>  	case CC_VENDOR_AMD:
+>  		return val | cc_mask;
+> +	case CC_VENDOR_HYPERV:
+>  	case CC_VENDOR_INTEL:
+>  		return val & ~cc_mask;
+>  	default:
+> @@ -121,6 +129,7 @@ u64 cc_mkdec(u64 val)
+>  	switch (vendor) {
+>  	case CC_VENDOR_AMD:
+>  		return val & ~cc_mask;
+> +	case CC_VENDOR_HYPERV:
+>  	case CC_VENDOR_INTEL:
+>  		return val | cc_mask;
+>  	default:
+
+Uuuh, this needs a BIG FAT COMMENT.
+
+You're running on SNP and yet the enc/dec meaning is flipped. And that's
+because of vTOM.
+
+What happens if you have other types of SNP-based VMs on HyperV? The
+isolation VMs thing? Or is that the same?
+
+What happens when you do TDX guests with HyperV?
+
+This becomes wrong then.
+
+I think you need a more finer-grained check here in the sense of "is it
+a HyperV guest using a paravisor and vTOM is enabled" or so.
+
+Otherwise, I like the removal of the HyperV-specific checks ofc.
+
+Thx.
 
 -- 
 Regards/Gruss,
