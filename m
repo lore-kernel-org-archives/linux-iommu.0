@@ -1,92 +1,112 @@
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11C6BEC18
-	for <iommu@lists.linux.dev>; Mon, 21 Nov 2022 21:09:01 +0000 (UTC)
-Received: from zn.tnic (p200300ea9733e79b329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9733:e79b:329c:23ff:fea6:a903])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 9D37A1EC064C;
-	Mon, 21 Nov 2022 22:08:57 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-	t=1669064937;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-	bh=Ps0UcYp5gM24J5hSU66DdbpV/Yl/tpj5pyYHVyXWda8=;
-	b=mKhr1ArqU9mMwZGT3iV4PiahgslmdNM5IrgwAvoO2VExbeKhQidnjg1U4MuQjxtMqhREUt
-	FLvIGA8wUmt+fZ6CqcttWVUsMucmjX5eOHIo+xxQHQ8FIJlEjpm7T8LYjr9Mr1Nc2wHhZ8
-	4RaVNn6lPe0y8OdN9HNLeaj/de56Erw=
-Date: Mon, 21 Nov 2022 22:08:53 +0100
-From: Borislav Petkov <bp@alien8.de>
-To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc: Dave Hansen <dave.hansen@intel.com>, "hpa@zytor.com" <hpa@zytor.com>,
-	KY Srinivasan <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	"wei.liu@kernel.org" <wei.liu@kernel.org>,
-	Dexuan Cui <decui@microsoft.com>,
-	"luto@kernel.org" <luto@kernel.org>,
-	"peterz@infradead.org" <peterz@infradead.org>,
-	"davem@davemloft.net" <davem@davemloft.net>,
-	"edumazet@google.com" <edumazet@google.com>,
-	"kuba@kernel.org" <kuba@kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>,
-	"lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-	"robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-	"bhelgaas@google.com" <bhelgaas@google.com>,
-	"arnd@arndb.de" <arnd@arndb.de>,
-	"hch@infradead.org" <hch@infradead.org>,
-	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-	"brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-	"tglx@linutronix.de" <tglx@linutronix.de>,
-	"mingo@redhat.com" <mingo@redhat.com>,
-	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-	Tianyu Lan <Tianyu.Lan@microsoft.com>,
-	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-	"sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>,
-	"ak@linux.intel.com" <ak@linux.intel.com>,
-	"isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-	"Williams, Dan J" <dan.j.williams@intel.com>,
-	"jane.chu@oracle.com" <jane.chu@oracle.com>,
-	"seanjc@google.com" <seanjc@google.com>,
-	"tony.luck@intel.com" <tony.luck@intel.com>,
-	"x86@kernel.org" <x86@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [Patch v3 01/14] x86/ioremap: Fix page aligned size calculation
- in __ioremap_caller()
-Message-ID: <Y3vo5drAFPQSsrF4@zn.tnic>
-References: <1668624097-14884-1-git-send-email-mikelley@microsoft.com>
- <1668624097-14884-2-git-send-email-mikelley@microsoft.com>
- <e5f9529f-955c-fc28-5d46-c77f23a71d04@intel.com>
- <BYAPR21MB168831473395F841EF51E541D70A9@BYAPR21MB1688.namprd21.prod.outlook.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84F1010786
+	for <iommu@lists.linux.dev>; Mon, 21 Nov 2022 21:45:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0540EC433C1;
+	Mon, 21 Nov 2022 21:45:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1669067155;
+	bh=wLqFABjJ3uzCRmQ6ciIEyO2/VGvPFJAvl+pC+DOyGz4=;
+	h=Date:From:To:Cc:Subject:From;
+	b=k/AThiopGeqRS8E2O5eA+N2g0DM0+AEJy5UUR/Sr/EBr91R8zA6+qxuuC2WMStIBL
+	 2x+Pn9eISyTqzs5ipB/o+KkJ0P01DlT34zM6/AL9vjYBcfH9gFOf1wGRV4zyHcWEh1
+	 1etnoaaq+lWm5jGcb79iHhvN9C0YR2X8BVDmXryhRmR7B+VLA9+ABg+t4DEJzalevg
+	 GGpnjbPGBbCsqRhvfN4B867N+l7pWBBRiCbHy2lh4P42ItLcLhiyMupqeQIW43iFZ3
+	 d+FEIQj9wUebg8ucdKLioLN33Qm9TrKbK60NCNC+eKB4+vlXvDPTAeuknJqa/CnroE
+	 nHKzLrzowGl6A==
+Date: Mon, 21 Nov 2022 21:45:50 +0000
+From: Will Deacon <will@kernel.org>
+To: joro@8bytes.org
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, robin.murphy@arm.com,
+	kernel-team@android.com
+Subject: [GIT PULL] iommu/arm-smmu: Updates for 6.2
+Message-ID: <20221121214549.GA8910@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <BYAPR21MB168831473395F841EF51E541D70A9@BYAPR21MB1688.namprd21.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Mon, Nov 21, 2022 at 09:04:06PM +0000, Michael Kelley (LINUX) wrote:
-> You and Boris agree and I have no objection, so I'll add the "Fixes:" tag.
-> I'd like to keep the patch as part of this series because it *is* needed to
-> make the series work.
+Hi Joerg,
 
-Yeah, no worries. I can take it tomorrow through urgent and send it to
-Linus this week so whatever you rebase your tree on, it should already
-have it.
+Please pull these Arm SMMU updates for 6.2. As per usual, it's mostly
+updates to the devicetree bindings, but this time around the introduction of
+a generic compatible string for Qualcomm MMU-500 implementations promises an
+end to the churn.
 
--- 
-Regards/Gruss,
-    Boris.
+Summary in the tag.
 
-https://people.kernel.org/tglx/notes-about-netiquette
+Please pull,
+
+Will
+
+--->8
+
+
+The following changes since commit 9abf2313adc1ca1b6180c508c25f22f9395cc780:
+
+  Linux 6.1-rc1 (2022-10-16 15:36:24 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git tags/arm-smmu-updates
+
+for you to fetch changes up to 4428673bc89b547a35019f0d3bd8821beacf86ef:
+
+  Merge branch 'for-joerg/arm-smmu/bindings' into for-joerg/arm-smmu/updates (2022-11-21 19:21:53 +0000)
+
+----------------------------------------------------------------
+Arm SMMU updates for 6.2
+
+- Report a warning if we fail to disable the MMU-500 prefetcher
+
+- Usual mass of devicetree binding additions
+
+- Qualcomm SMMU refactoring and generic "qcom,smmu-500" addition
+
+----------------------------------------------------------------
+Adam Skladowski (2):
+      dt-bindings: arm-smmu: Add compatible for Qualcomm SM6115
+      iommu/arm-smmu-qcom: Add SM6115 support
+
+Chen Lin (1):
+      iommu/arm-smmu: Warn once when the perfetcher errata patch fails to apply
+
+Dmitry Baryshkov (10):
+      dt-bindings: arm-smmu: Add missing Qualcomm SMMU compatibles
+      dt-bindings: arm-smmu: fix clocks/clock-names schema
+      dt-bindings: arm-smmu: add special case for Google Cheza platform
+      dt-bindings: arm-smmu: Add generic qcom,smmu-500 bindings
+      iommu/arm-smmu-qcom: Move implementation data into match data
+      iommu/arm-smmu-qcom: Move the qcom,adreno-smmu check into qcom_smmu_create
+      iommu/arm-smmu-qcom: provide separate implementation for SDM845-smmu-500
+      iommu/arm-smmu-qcom: Merge table from arm-smmu-qcom-debug into match data
+      iommu/arm-smmu-qcom: Stop using mmu500 reset for v2 MMUs
+      iommu/arm-smmu-qcom: Add generic qcom,smmu-500 match entry
+
+Konrad Dybcio (2):
+      dt-bindings: arm-smmu: Add SM6350 GPU SMMUv2
+      iommu/arm-smmu-qcom: Add SM6350 SMMUv2
+
+Melody Olvera (2):
+      dt-bindings: arm-smmu: Add 'compatible' for QDU1000 and QRU1000
+      drivers: arm-smmu-impl: Add QDU1000 and QRU1000 iommu implementation
+
+Richard Acayan (1):
+      dt-bindings: iommu: arm-smmu: add sdm670 compatible
+
+Will Deacon (1):
+      Merge branch 'for-joerg/arm-smmu/bindings' into for-joerg/arm-smmu/updates
+
+ .../devicetree/bindings/iommu/arm,smmu.yaml        | 178 +++++++++++++++++++--
+ drivers/iommu/arm/arm-smmu/arm-smmu-impl.c         |   3 +
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c   |  91 -----------
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         | 157 +++++++++++++-----
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h         |  21 ++-
+ 5 files changed, 302 insertions(+), 148 deletions(-)
