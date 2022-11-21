@@ -1,13 +1,13 @@
 Received: from osmtp.xiscosoft.net (osmtp.xiscosoft.net [5.135.184.108])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C80810798
-	for <iommu@lists.linux.dev>; Mon, 21 Nov 2022 23:20:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6C791078E
+	for <iommu@lists.linux.dev>; Mon, 21 Nov 2022 23:20:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=klondike.es;
-	s=xiscosoft_net; t=1669072459; x=1670282059;
-	bh=ZlfLIaSQOZEsDAnTcz0g2kh4ehwLFtc9OFJGT5YVhr4=;
-	h=Message-ID:Date:MIME-Version:Content-Language:To:Cc:References:
-	 From:Subject:In-Reply-To:Content-Type:From:Subject:To:Cc:Date:
+	s=xiscosoft_net; t=1669072833; x=1670282433;
+	bh=/xCBI4eDt6d0wVoTdVi7Yv/CE5HWE1qQ1gBjwhoOr3E=;
+	h=Message-ID:Date:MIME-Version:Subject:Content-Language:To:Cc:
+	 References:From:In-Reply-To:Content-Type:From:Subject:To:Cc:Date:
 	 Reply-To:Content-Type:Sender:Message-ID:References:In-Reply-To:
 	 Content-Base:Content-Location:Content-features:Content-Disposition:
 	 Content-Alternative:Content-MD5:Content-Duration:
@@ -16,22 +16,23 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=klondike.es;
 	 List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:
 	 List-Archive:Original-Message-ID:Require-Recipient-Valid-Since:
 	 Solicitation:Organization:Jabber-ID:Auto-Submitted;
-	b=mBAWzFWJ4+PxQki6MMSU3YlBiKpok/TpWoMVyGGRS7GGObCqXQ6924HahgeZ6IQ5b
-	 vHe+LfnvGlzGyatxM7SfWnMou2BShEoxqpWysFDzQgjnzQZpPISfp3Tn9ZRCR0aM+6
-	 JvWwlx+HZvFkjJzfI0Z/R6Iy5HmghMwGfH4RSsoi3TITbuKdLUH+SDk53YptWGbfgV
-	 I4Q0dulI7Am+MND4u9ctyj5brPdYBxCq8vRzXgz4I6R+/Qv1CSmV1oYczkaVuYXifn
-	 3rm2wFQihe7F61/bYpPgrjFSvEY4Y+Kd5bAPqcP0+MOaEegsUmHV32tAC3GWwvuk5B
-	 RsxHvQLsw03PA==
-Message-ID: <b02255a5-366c-f509-c498-9eab0f83dba0@klondike.es>
-Date: Tue, 22 Nov 2022 00:14:17 +0100
+	b=dV9vfbbgKEy/nc5CO5bDDXwGQ1mW0JUhwJsuI7xcQudTGgAuKy2vKsUd5PlF8cGjR
+	 z3/loGk6bwE1P5/0u+1sABhSkJ/CIgP2f7Yp+ltR0vFqCad3RjQABoDHOvjIzxlhmM
+	 a0MAvvyM2W8JQfSPit9QWqNZdRZtsUvnFNVWWM56f5natlahPU9nmz39w/MXwZRUT+
+	 dDjjeXTX6BjxpkSh2yzltXriRL4W5esKOEUlBtHX2VBGmMJgIWPnYpaaTaQFqjolQg
+	 2dLRSnLZYer1l794A4eHnwL2hlfidOk8EaMmdzROcOzB8ac9HBJ+kK92sdIUNGC58j
+	 0OgwK7H1/+yGA==
+Message-ID: <b678693a-4348-81c8-e0b5-c513c082e162@klondike.es>
+Date: Tue, 22 Nov 2022 00:20:32 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Subject: Re: [PATCH v2] PCI: Add DMA alias for Intel Corporation 8 Series HECI
 Content-Language: en-US
-To: Bjorn Helgaas <helgaas@kernel.org>,
+To: Robin Murphy <robin.murphy@arm.com>, Bjorn Helgaas <helgaas@kernel.org>,
  Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
  Jarkko Sakkinen <jarkko@kernel.org>, Tomas Winkler
  <tomas.winkler@intel.com>, Alexander Usyskin <alexander.usyskin@intel.com>
@@ -39,52 +40,69 @@ Cc: linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
  David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
  iommu@lists.linux.dev
 References: <20221121175419.GA122359@bhelgaas>
+ <1e5a085e-b040-0832-cfd1-d4f2986fb1fc@arm.com>
 From: klondike <klondike@klondike.es>
-Subject: Re: [PATCH v2] PCI: Add DMA alias for Intel Corporation 8 Series HECI
-In-Reply-To: <20221121175419.GA122359@bhelgaas>
+In-Reply-To: <1e5a085e-b040-0832-cfd1-d4f2986fb1fc@arm.com>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="------------BZZ0mNUYg4PnIga869EL5xzy"
+ boundary="------------J1W5DQpNQp1rUSp6ay4LgMZq"
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------BZZ0mNUYg4PnIga869EL5xzy
-Content-Type: multipart/mixed; boundary="------------A5g8WSTD0lvG9ZutgMbQy91j";
+--------------J1W5DQpNQp1rUSp6ay4LgMZq
+Content-Type: multipart/mixed; boundary="------------I2ebPgDyHKcsRT16AASKSv0Z";
  protected-headers="v1"
 From: klondike <klondike@klondike.es>
-To: Bjorn Helgaas <helgaas@kernel.org>,
+To: Robin Murphy <robin.murphy@arm.com>, Bjorn Helgaas <helgaas@kernel.org>,
  Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
  Jarkko Sakkinen <jarkko@kernel.org>, Tomas Winkler
  <tomas.winkler@intel.com>, Alexander Usyskin <alexander.usyskin@intel.com>
 Cc: linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
  David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
  iommu@lists.linux.dev
-Message-ID: <b02255a5-366c-f509-c498-9eab0f83dba0@klondike.es>
+Message-ID: <b678693a-4348-81c8-e0b5-c513c082e162@klondike.es>
 Subject: Re: [PATCH v2] PCI: Add DMA alias for Intel Corporation 8 Series HECI
 References: <20221121175419.GA122359@bhelgaas>
-In-Reply-To: <20221121175419.GA122359@bhelgaas>
+ <1e5a085e-b040-0832-cfd1-d4f2986fb1fc@arm.com>
+In-Reply-To: <1e5a085e-b040-0832-cfd1-d4f2986fb1fc@arm.com>
 
---------------A5g8WSTD0lvG9ZutgMbQy91j
-Content-Type: multipart/mixed; boundary="------------5SrKTRJn0IWHntAuDQ0QMMDY"
+--------------I2ebPgDyHKcsRT16AASKSv0Z
+Content-Type: multipart/mixed; boundary="------------P8ZACHe0DUJaV6YAD6b1CwCF"
 
---------------5SrKTRJn0IWHntAuDQ0QMMDY
+--------------P8ZACHe0DUJaV6YAD6b1CwCF
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: base64
 
-RWwgMjEvMTEvMjIgYSBsYXMgMTg6NTQsIEJqb3JuIEhlbGdhYXMgZXNjcmliacOzOg0KPiBG
-cmFuY2lzY28sIGlzIHRoZSBETUFSIHBhdGNoKmFsc28qICByZXF1aXJlZD8gIFdlIGhhdmUg
-c2V2ZXJhbCBzaW1pbGFyDQo+IHF1aXJrcyBmb3IgZGV2aWNlcyB0aGF0IHVzZSB1bmV4cGVj
-dGVkIGZ1bmN0aW9uIG51bWJlcnMsIGJ1dCBJIGRvbid0DQo+IHJlbWVtYmVyIGFueSB0aGF0
-IHJlcXVpcmUgRE1BUiBjaGFuZ2VzLg0KDQpBdCBsZWFzdCBvbiB0aGUgTGVub3ZvcyBYMjQw
-IEkgd2FzIGFkZHJlc3NpbmcgdGhpcyBvbiBpdCBpcy4gVGhlIGJpb3MgKEkgaW5zdGFsbGVk
-IHRoZSBsYXRlc3QpIGRvZXMgbm90IGFkZCB0aGUgUk1SUiBmb3IgdGhlIGZ3VFBNIG9uIHRo
-ZSBIRUNJLg0KDQo+IElzIHRoZXJlIGEgd2F5IHRvIGFkZCBhIGtlcm5lbCBxdWlyayB0byBh
-Y2NvbXBsaXNoIHRoZSBzYW1lIERNQVINCj4gb3ZlcnJpZGU/DQoNCkkgdGhpbmsgeW91IGNv
-dWxkIGFkZCBhIHF1aXJrIGRlcGVuZGluZyBvbiBib3RoLCBBQ1BJIGRldmljZSBhbmQgUENJ
-IGRldmljZS4gSWYgeW91IHNlZSBhIE1TRlQwMTAxOjAwIGRldmljZSBvbiBhIDggU2VyaWVz
-IEhFQ0ksIHlvdSB3aWxsIG5lZWQgdG8gYWRkIGEgbWFwcGluZyBmb3IgZnVuY3Rpb24gNyBv
-ZiB0aGUgSEVDSSBmb3IgdGhlIG1lbW9yeSByYW5nZSB1c2VkIGJ5IHRoZSBNU0ZUMDEwMTow
-MCBkZXZpY2UuDQoNCg==
---------------5SrKTRJn0IWHntAuDQ0QMMDY
+RWwgMjEvMTEvMjIgYSBsYXMgMjA6MzksIFJvYmluIE11cnBoeSBlc2NyaWJpw7M6DQo+IFll
+cywgaW4gcHJpbmNpcGxlIGl0J3MgcG9zc2libGUgdG8gcXVpcmsgYSByZXNlcnZlZCByZWdp
+b24gZm9yIGEgcGFydGljdWxhciBkZXZpY2UgLSBsaWtlIGludGVsLWlvbW11IGRvZXMgZm9y
+IElTQSBicmlkZ2VzIGZvciBpbnN0YW5jZSAtIGhvd2V2ZXIgZmlndXJpbmcgb3V0IGV4YWN0
+bHkgKndoZXJlKiB0byByZXNlcnZlIG1pZ2h0IGJlIGEgbG90IG1vcmUgdHJpY2t5IGlmIGl0
+J3Mgbm90IGluIGEgZml4ZWQgcGxhY2UuIFRoZSBvdGhlciBwb3NzaWJpbGl0eSBpcyB0byB1
+c2UgLmRlZl9kb21haW5fdHlwZSB0byBxdWlyayB0aGUgZW50aXJlIGRldmljZSB0byB1c2Ug
+YW4gaWRlbnRpdHkgZG9tYWluIC0gbGlrZSBmb3IgY2VydGFpbiBpbnRlZ3JhdGVkIEdQVXMg
+LSBidXQgdGhhdCBtaWdodCBkZXBlbmQgb24gdGhlIHNjb3BlIG9mIGhvdyBtdWNoIHlvdSB3
+YW50IHRvIHRydXN0IGl0IGFuZCB3aGV0aGVyIHRoZXJlIGFyZSBhbHNvIG90aGVyIGRldmlj
+ZXMgaW4gdGhlIHNhbWUgSU9NTVUgZ3JvdXAuDQoNCldlbGwsIGluIHRoZW9yeSB5b3UgY2Fu
+IHVzZSB0aGUgVFBNMiBBQ1BJIHRhYmxlIHRvIGZpbmQgdGhlIChwaHlzaWNhbCkgYWRkcmVz
+cyBvZiB0aGUgZGV2aWNlLiBBbmQgaWRlbnRpdHkgbWFwcGluZyBmb3IgdGhlIGRvbWFpbiBp
+cyB0aGVuIG5lZWRlZC4gVGhlIHJlYWwgaXNzdWUgaXMgdGhhdCBmdW5jdGlvbiA3IG9mIHRo
+ZSBIRUNJIGlzIGhpZGRlbiB3aGljaCBpcyB3aHkganVzdCBwYXRjaGluZyB0aGUgQUNQSSBE
+TUFSIHRhYmxlIGRvZXNuJ3Qgc29sdmUgaXQuDQoNCk9uIHRoZSBjb21wdXRlcnMgSSB3YXMg
+dGVzdGluZyB0aGUgbWFwcGluZyBpcyBmaXhlZCB0aG91Z2ggYnV0IHRoYXQgbWlnaHQgbm90
+IGFsd2F5cyBiZSB0aGUgY2FzZS4NCg0KPiBJZiBhbnl0aGluZyBJJ20gbm90IHN1cmUgdGhh
+dCB0aGUgUENJIERNQSBhbGlhcyBxdWlyayByZWFsbHkgc291bmRzIGxpa2UgdGhlIG1vc3Qg
+Y29ycmVjdCB0aGluZyB0byBkbywgaWYgdGhlIGhpZGRlbiBmdW5jdGlvbiBpcyBkb2luZyBp
+dHMgb3duIERNQSB1bnJlbGF0ZWQgdG8gd2hhdGV2ZXIgZnVuY3Rpb24gMCBhbmQgaXRzIGRy
+aXZlciBtaWdodCBkby4gSWYgSSdtIHVuZGVyc3RhbmRpbmcgdGhlIHNpdHVhdGlvbiBjb3Jy
+ZWN0bHksIGEgcXVpcmsgZm9yIHRoZSBBQ1BJIFRQTSBkZXZpY2UgaW4gcHJvYmVfYWNwaV9u
+YW1lc3BhY2VfZGV2aWNlcygpIChhc3N1bWluZyBpdCBkb2Vzbid0IGhhdmUgYW4gQU5ERCBl
+bnRyeSBhbHJlYWR5KSBtaWdodCBiZSBtb3JlIGVsZWdhbnQgKGJ1dCBhZG1pdHRlZGx5IG1v
+cmUgd29yaykuDQoNClRoZSBBQ1BJIHRhYmxlcyBJIHNhdyBkaWQgbm90IGhhdmUgYW55IEFO
+REQgZGV2aWNlcyBhbmQgYWx0aG91Z2ggbXkgZmlyc3QgcGF0Y2ggdXNlZCB0aGUgQU5ERCtN
+VFJSIGFwcHJvYWNoIEkgd2FzIGFza2VkIHRvIGRyb3AgdGhhdCBhcyBubyBmdXJ0aGVyIHN1
+cHBvcnQgdG8gTVRSUnMgd2FzIGdvaW5nIHRvIGJlIGFkZGVkIGFuZCBsaW51eCBkb2VzIG5v
+dCBzdXBwb3J0IEFOREQgYmFzZWQgTVRSUnMuDQoNCktsb25kaWtlDQoNCg==
+--------------P8ZACHe0DUJaV6YAD6b1CwCF
 Content-Type: application/pgp-keys; name="OpenPGP_0x5608AEA28AAFC0EC.asc"
 Content-Disposition: attachment; filename="OpenPGP_0x5608AEA28AAFC0EC.asc"
 Content-Description: OpenPGP public key
@@ -1348,29 +1366,29 @@ MiI8RfALivbeaUvGldvNC9tOZX9hlj48db2S1HXTqn/XcjpKZ4kvZclSMFfnRkuT
 =3DADbt
 -----END PGP PUBLIC KEY BLOCK-----
 
---------------5SrKTRJn0IWHntAuDQ0QMMDY--
+--------------P8ZACHe0DUJaV6YAD6b1CwCF--
 
---------------A5g8WSTD0lvG9ZutgMbQy91j--
+--------------I2ebPgDyHKcsRT16AASKSv0Z--
 
---------------BZZ0mNUYg4PnIga869EL5xzy
+--------------J1W5DQpNQp1rUSp6ay4LgMZq
 Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="OpenPGP_signature"
 
 -----BEGIN PGP SIGNATURE-----
 
-wsF5BAABCAAjFiEEfxbTlVjbAaSxX4Ek8tyApW4P2M0FAmN8BkkFAwAAAAAACgkQ8tyApW4P2M3n
-MA/+PTQK2sD4GCMPnPeM85ElhEGjIPW/kMffXcL/1NpEXS5xQOLIK2hkpHXxvo6/SV5lauhUunzP
-SGN8nUau63FA6L4UF7JRgFmDotUc/eqGyidmpG0L9sDn+WZnA+nVA0lHiSNJF4L2ziF5JmTOiCyf
-amU36ga3XuPSsHdLwQT/qyLoYB3Fj/7MuZk6gupPegD/vpJPIUHcLCzAivRsDR1KFeA+rINNKI14
-rlkxYZHEk4NQObZ/aaAqgbmHkjIdIVm/w5r0e9JtEfPUoAfrfArck1ixB38LPkQ39P/c5KeVexOd
-lucehyrdYGDyfUoBoa2lZcfnaYJx5dl0CRiHY+11Rcn1GE7ZCznp9SWSQA1VcpL9teBivsgrR5Cz
-y7G/bZIcfJP5haLieLDrGPAIgV2T7ky+gB+ura2W82sJS82RQ1XNwFxhTN+ha/qZOWuZ5/e3tnLO
-/8GHgdeBef4847jAbIsZNg/wiPhnEK0fYJG9dBQlwlljLM5HoRHxkg4j65pdmWn61Sci13K7676H
-xRdZgDGQLTu9Ppf1+hEVf8xugykiHGjCJyNQspTEI8OCLSHpJtZAMBU5U3n4344u1IBj2zjWmW09
-pj7RAFXXfowsIkbmLyrp5H8G9VrzqpqzciC2H1cDzZ7gxKLLics5FDaGtaUY3aulEvOFNXNtlTV1
-7+E=
-=joZP
+wsF5BAABCAAjFiEEfxbTlVjbAaSxX4Ek8tyApW4P2M0FAmN8B8AFAwAAAAAACgkQ8tyApW4P2M14
+Iw//ZWt9Qybv4mVum1vJL3/J78NZ9n0S3xKfrnoXutyXpnWEFIgipzbtB5K2KixDJLMPVNlxFmXn
+Zdnag07fHPaiFD3zClLCwEMWB4WSxrXigDjeoKiywxfPIwNw8NDvGa8WPMFtSriBlJWpe2i509Qh
+BNnt7XqiW+lc+DXB/LAmxfYpo5X6pIc58L21bcrFRBEPQUFMwFxyWKVnqswtcI17eYKAmrsWsGUp
+jjE+8+GheomDgsYVHp10o/U3rP+q25nA9gQt1PUtz5zgplr0rYRYniv3EOdWcPWPxqMyhuvuUyKj
+Swb/btlIAMqyIzCacZgwaMnk1OROSBgtaR5qMG3DNHgFrsCDGzP/rt8x+egjdKUgZIgqVWGEU/Oo
+yBlp/4TQD9hbJXQcPV4HnvQlhUx0XI9fabsxJyDXWhGxa2/IZDSepwPQa4xT1lp5YigCHJi029nd
+DmVQIlMQ5Jf3zLI/Pt9G1c/DsIvwDlhwZYjitcLPP5X5po5Gc4vjEFzLCMKhwpyEnwo7N/tQF7SK
+9zKkyGRtn2m4MfsrS5rH4ZJwWXBHqJ1vSDiedW66GGYUjEqdmBvJQ2QRyQnrr6kwyIlfXggZJ8K0
+0mWjyPCG6HuqXej8JlM+iL2d7JMrCIbuVNpuhLW7Hc9AVmswoWUzdZTyln/o+724rsbCqr4zJQzo
+Ob0=
+=5h6S
 -----END PGP SIGNATURE-----
 
---------------BZZ0mNUYg4PnIga869EL5xzy--
+--------------J1W5DQpNQp1rUSp6ay4LgMZq--
