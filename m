@@ -1,32 +1,28 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDAD86FBA
-	for <iommu@lists.linux.dev>; Mon, 21 Nov 2022 17:54:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C840C433C1;
-	Mon, 21 Nov 2022 17:54:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFDDE63D6
+	for <iommu@lists.linux.dev>; Mon, 21 Nov 2022 18:05:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 931F9C433C1;
+	Mon, 21 Nov 2022 18:05:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1669053261;
-	bh=U9GAbtKpbOcEGLHkAF6EWI2FRUiJLfEVdQD+b+Wb5eU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=MPrAh8ZzZd5mogOZOqsn73sV9OB8etDQMMfVPvDn7qqBCG0Pv0oFPe+tylGqoNdT8
-	 vvumMWJt6KxxzTDfLholqVEuICF0jlm9xIqTNwBgxxjv4lBuki605job3dhGRfnp6q
-	 dYlzfEwiMM8p9hjJvAWFFQ0X4sbgomgwKp/AQThQPTayINHxa8v8EVVv1mDoanQ4e0
-	 P1sruwrhrEVqvferJMRlqoIwpSw5m9q+gfUdYVegVIhuY1LA5+HaXzrohpnRKUbwwb
-	 ft75ZpQTmbhb8ij3McoAHidQ2QCTqO7lzyuk2iC+xl5ODpUkoV11qT6+qTjDWgRYb1
-	 y2Bgrl7x5drgw==
-Date: Mon, 21 Nov 2022 11:54:19 -0600
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
-	Jarkko Sakkinen <jarkko@kernel.org>,
-	Tomas Winkler <tomas.winkler@intel.com>,
-	Alexander Usyskin <alexander.usyskin@intel.com>
-Cc: linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
-	Francisco Blas Izquierdo Riera <klondike@klondike.es>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev
-Subject: Re: [PATCH v2] PCI: Add DMA alias for Intel Corporation 8 Series HECI
-Message-ID: <20221121175419.GA122359@bhelgaas>
+	s=k20201202; t=1669053958;
+	bh=2lsKTqMwT3+dFZ/UNz0+idX/0zWQNI0kZA93uSAEzok=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=jNE83fCrpTjfNKpfavKQY0d8ZCGu+vrkGg/8UyFeYRvXlX1NfEZcNR/tYILbpqLLr
+	 /XZ7a/uc811rQ0jPlBBMo1llNzphr+iZpkz+odRkW40P656uPlQi3r49C39atQkCl3
+	 eG6dpAhOioHmpQX1FY1iq0PToG+Jq4dLKxxLUhMIEgBHpC3mZULCOgsIiPpcz0EJIX
+	 KLk58eVphGBPJSWXFkPnErSMUKwP18Yyy5q9oINMj+PKrK1RMfpcWZ6ESMSEUeOjYY
+	 WpHFXSodtjxs6v+WD8j+7uqx+HaPaKRFsTEtovoOBIHNwI2+itL2wywcsfYuF76zJh
+	 DV9BckaYUyxag==
+Date: Mon, 21 Nov 2022 18:05:53 +0000
+From: Will Deacon <will@kernel.org>
+To: Longfang Liu <liulongfang@huawei.com>
+Cc: robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev
+Subject: Re: [PATCH v2] iommu: fix smmu initialization memory leak problem
+Message-ID: <20221121180552.GB7645@willie-the-truck>
+References: <20221121030421.19295-1-liulongfang@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,93 +31,68 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20221121164037.8C73110BB536@smtp.xiscosoft.net>
+In-Reply-To: <20221121030421.19295-1-liulongfang@huawei.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-[+to Jarkko, Tomas, Alexander; can any of you confirm this behavior of
-the HECI device?  Are there any other HECI devices that should be
-included in this quirk?]
-
-[+cc David, Lu, iommu list]
-
-On Mon, Nov 21, 2022 at 05:40:37PM +0100, Francisco Blas Izquierdo Riera wrote:
-> PCI: Add function 7 DMA alias quirk for Intel Corporation 8 Series HECI.
+On Mon, Nov 21, 2022 at 11:04:21AM +0800, Longfang Liu wrote:
+> When iommu_device_register() in arm_smmu_device_probe() fails,
+> in addition to sysfs needs to be deleted, device should also
+> be disabled, and the memory of iopf needs to be released to
+> prevent memory leak of iopf.
 > 
-> Intel Corporation 8 Series HECIs include support for a CRB TPM 2.0
-> device. When the device is enabled on the BIOS, the TPM 2.0 device is
-> detected but the IOMMU prevents it from being accessed.
+> Changes v1 -> v2:
+> 	-Improve arm_smmu_device_probe() abnormal exit function.
 > 
-> Even on a computer with a fixed DMAR table, device initialization
-> fails with DMA errors:
->   DMAR: DRHD: handling fault status reg 3
->   DMAR: [DMA Read NO_PASID] Request device [00:16.7] fault addr 0xdceff000 [fault reason 0x06] PTE Read access is not set
->   DMAR: DRHD: handling fault status reg 2
->   DMAR: [DMA Write NO_PASID] Request device [00:16.7] fault addr 0xdceff000 [fault reason 0x05] PTE Write access is not set
->   DMAR: DRHD: handling fault status reg 2
->   DMAR: [DMA Write NO_PASID] Request device [00:16.7] fault addr 0xdceff000 [fault reason 0x05] PTE Write access is not set
->   tpm tpm0: Operation Timed out
->   DMAR: DRHD: handling fault status reg 3
->   tpm tpm0: Operation Timed out
->   tpm_crb: probe of MSFT0101:00 failed with error -62
+> Signed-off-by: Longfang Liu <liulongfang@huawei.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 16 +++++++++++-----
+>  1 file changed, 11 insertions(+), 5 deletions(-)
 > 
-> After patching the DMAR table and adding this patch, the TPM 2.0
-> device is initialized correctly and no DMA errors appear. Accessing
-> the TPM 2.0 PCR banks also works as expected.
-
-Francisco, is the DMAR patch *also* required?  We have several similar
-quirks for devices that use unexpected function numbers, but I don't
-remember any that require DMAR changes.
-
-A kernel quirk requires no action on the part of users, so that's
-easy.  But I don't think it's practical for ordinary users to extract
-the DMAR, disassemble it, patch it, recompile it, and update the
-initramfs as described in your blog post.
-
-Is there a way to add a kernel quirk to accomplish the same DMAR
-override?
-
-> Since most Haswell computers supporting this do not seem to have a
-> valid DMAR table patching the table with an appropriate RMRR is
-> usually also needed. I have published a blogpost describing the
-> process.
-> 
-> This patch currently adds the alias only for function 0. Since this
-> is the only function I have seen provided by the HECI on actual
-> hardware.
-> 
-> 
-> V2: Resent using a sendmail to fix tab mangling made by Thunderbird.
-> 
-> Link: https://bugzilla.kernel.org/show_bug.cgi?id=108251
-> Link: https://klondike.es/klog/2022/11/21/patching-the-acpi-dmar-table-to-allow-tpm2-0/
-> Reported-by: Pierre Chifflier <chifflier@gmail.com>
-> Tested-by: Francisco Blas Izquierdo Riera (klondike) <klondike@klondike.es>
-> Signed-off-by: Francisco Blas Izquierdo Riera <klondike@klondike.es>
-> Suggested-by: Baolu Lu <baolu.lu@linux.intel.com>
-> Cc: Bjorn Helgaas <bhelgaas@google.com>
-> Cc: stable@vger.kernel.org
-> 
-> --- a/drivers/pci/quirks.c
-> +++ b/drivers/pci/quirks.c
-> @@ -4162,6 +4162,22 @@
->  			 0x0122, /* Plextor M6E (Marvell 88SS9183)*/
->  			 quirk_dma_func1_alias);
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index ab160198edd6..b892f5233f88 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -3815,7 +3815,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>  	/* Initialise in-memory data structures */
+>  	ret = arm_smmu_init_structures(smmu);
+>  	if (ret)
+> -		return ret;
+> +		goto err_iopf;
 >  
-> +static void quirk_dma_func7_alias(struct pci_dev *dev)
-> +{
-> +	if (PCI_FUNC(dev->devfn) == 0)
-> +		pci_add_dma_alias(dev, PCI_DEVFN(PCI_SLOT(dev->devfn), 7), 1);
-> +}
-> +
-> +/*
-> + * Certain HECIs in Haswell systems support TPM 2.0. Unfortunately they
-> + * perform DMA using the hidden function 7. Fixing this requires this
-> + * alias and a patch of the DMAR ACPI table to include the appropriate
-> + *  MTRR.
-> + * https://bugzilla.kernel.org/show_bug.cgi?id=108251
-> + */
-> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x9c3a,
-> +			 quirk_dma_func7_alias);
-> +
->  /*
->   * Some devices DMA with the wrong devfn, not just the wrong function.
->   * quirk_fixed_dma_alias() uses this table to create fixed aliases, where
+>  	/* Record our private device structure */
+>  	platform_set_drvdata(pdev, smmu);
+> @@ -3826,22 +3826,28 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>  	/* Reset the device */
+>  	ret = arm_smmu_device_reset(smmu, bypass);
+>  	if (ret)
+> -		return ret;
+> +		goto err_iopf;
+>  
+>  	/* And we're up. Go go go! */
+>  	ret = iommu_device_sysfs_add(&smmu->iommu, dev, NULL,
+>  				     "smmu3.%pa", &ioaddr);
+>  	if (ret)
+> -		return ret;
+> +		goto err_reset;
+>  
+>  	ret = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
+>  	if (ret) {
+>  		dev_err(dev, "Failed to register iommu\n");
+> -		iommu_device_sysfs_remove(&smmu->iommu);
+> -		return ret;
+> +		goto err_sysfs_add;
+>  	}
+>  
+>  	return 0;
+> +err_sysfs_add:
+> +	iommu_device_sysfs_remove(&smmu->iommu);
+> +err_reset:
+> +	arm_smmu_device_disable(smmu);
+> +err_iopf:
+> +	iopf_queue_free(smmu->evtq.iopf);
+> +	return ret;
+
+I previously suggested using devres_alloc() for this instead. Did that
+not work?
+
+Will
