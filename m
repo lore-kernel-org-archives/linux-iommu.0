@@ -1,98 +1,84 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFDDE63D6
-	for <iommu@lists.linux.dev>; Mon, 21 Nov 2022 18:05:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 931F9C433C1;
-	Mon, 21 Nov 2022 18:05:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1669053958;
-	bh=2lsKTqMwT3+dFZ/UNz0+idX/0zWQNI0kZA93uSAEzok=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=jNE83fCrpTjfNKpfavKQY0d8ZCGu+vrkGg/8UyFeYRvXlX1NfEZcNR/tYILbpqLLr
-	 /XZ7a/uc811rQ0jPlBBMo1llNzphr+iZpkz+odRkW40P656uPlQi3r49C39atQkCl3
-	 eG6dpAhOioHmpQX1FY1iq0PToG+Jq4dLKxxLUhMIEgBHpC3mZULCOgsIiPpcz0EJIX
-	 KLk58eVphGBPJSWXFkPnErSMUKwP18Yyy5q9oINMj+PKrK1RMfpcWZ6ESMSEUeOjYY
-	 WpHFXSodtjxs6v+WD8j+7uqx+HaPaKRFsTEtovoOBIHNwI2+itL2wywcsfYuF76zJh
-	 DV9BckaYUyxag==
-Date: Mon, 21 Nov 2022 18:05:53 +0000
-From: Will Deacon <will@kernel.org>
-To: Longfang Liu <liulongfang@huawei.com>
-Cc: robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH v2] iommu: fix smmu initialization memory leak problem
-Message-ID: <20221121180552.GB7645@willie-the-truck>
-References: <20221121030421.19295-1-liulongfang@huawei.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B15663D6
+	for <iommu@lists.linux.dev>; Mon, 21 Nov 2022 18:15:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669054538; x=1700590538;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=xX4/g0oio96LX1HY5otdCTZt6qmKzdQZbF++Ebk/k10=;
+  b=KuAHObFMefHByW8DqVfpJTsnCWQJArrB8BPfn4CO6tv6EifFixaPiiwC
+   p9vcFzj6acPUYJqait4SwOZq51hwLSw7+4anvqT4iJfL41fk9q7sFhlVF
+   D48BJw7CCeGJHb1gp/Db6MZCvLSqidydahGiiGDMHHMZ9h/BF3HFRfEcf
+   TL3rY1NC/MqQ+Polsvr2f5dachg8hQ1F4ULz9dKKX48OCC1XwmHIIjYt0
+   wY5NsUYWehjBEyj62TwJ+r4CPfWsMPK9LFn/y7yB7uiVSm/HKqjTyONE1
+   yWxckocSGTfxCBkMs67M+aEA7Sx9/midqCwC5ny2cKI1lhT9uYvP6P5kT
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10538"; a="313658359"
+X-IronPort-AV: E=Sophos;i="5.96,182,1665471600"; 
+   d="scan'208";a="313658359"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2022 10:14:39 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10538"; a="709905335"
+X-IronPort-AV: E=Sophos;i="5.96,182,1665471600"; 
+   d="scan'208";a="709905335"
+Received: from ticela-or-327.amr.corp.intel.com (HELO [10.209.6.63]) ([10.209.6.63])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2022 10:14:28 -0800
+Message-ID: <e5f9529f-955c-fc28-5d46-c77f23a71d04@intel.com>
+Date: Mon, 21 Nov 2022 10:14:27 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221121030421.19295-1-liulongfang@huawei.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.2
+Subject: Re: [Patch v3 01/14] x86/ioremap: Fix page aligned size calculation
+ in __ioremap_caller()
+Content-Language: en-US
+To: Michael Kelley <mikelley@microsoft.com>, hpa@zytor.com,
+ kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
+ decui@microsoft.com, luto@kernel.org, peterz@infradead.org,
+ davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+ pabeni@redhat.com, lpieralisi@kernel.org, robh@kernel.org, kw@linux.com,
+ bhelgaas@google.com, arnd@arndb.de, hch@infradead.org,
+ m.szyprowski@samsung.com, robin.murphy@arm.com, thomas.lendacky@amd.com,
+ brijesh.singh@amd.com, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, Tianyu.Lan@microsoft.com,
+ kirill.shutemov@linux.intel.com, sathyanarayanan.kuppuswamy@linux.intel.com,
+ ak@linux.intel.com, isaku.yamahata@intel.com, dan.j.williams@intel.com,
+ jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com, x86@kernel.org,
+ linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ netdev@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-arch@vger.kernel.org, iommu@lists.linux.dev
+References: <1668624097-14884-1-git-send-email-mikelley@microsoft.com>
+ <1668624097-14884-2-git-send-email-mikelley@microsoft.com>
+From: Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <1668624097-14884-2-git-send-email-mikelley@microsoft.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Mon, Nov 21, 2022 at 11:04:21AM +0800, Longfang Liu wrote:
-> When iommu_device_register() in arm_smmu_device_probe() fails,
-> in addition to sysfs needs to be deleted, device should also
-> be disabled, and the memory of iopf needs to be released to
-> prevent memory leak of iopf.
+On 11/16/22 10:41, Michael Kelley wrote:
+> Current code re-calculates the size after aligning the starting and
+> ending physical addresses on a page boundary. But the re-calculation
+> also embeds the masking of high order bits that exceed the size of
+> the physical address space (via PHYSICAL_PAGE_MASK). If the masking
+> removes any high order bits, the size calculation results in a huge
+> value that is likely to immediately fail.
 > 
-> Changes v1 -> v2:
-> 	-Improve arm_smmu_device_probe() abnormal exit function.
+> Fix this by re-calculating the page-aligned size first. Then mask any
+> high order bits using PHYSICAL_PAGE_MASK.
 > 
-> Signed-off-by: Longfang Liu <liulongfang@huawei.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 16 +++++++++++-----
->  1 file changed, 11 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index ab160198edd6..b892f5233f88 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -3815,7 +3815,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->  	/* Initialise in-memory data structures */
->  	ret = arm_smmu_init_structures(smmu);
->  	if (ret)
-> -		return ret;
-> +		goto err_iopf;
->  
->  	/* Record our private device structure */
->  	platform_set_drvdata(pdev, smmu);
-> @@ -3826,22 +3826,28 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->  	/* Reset the device */
->  	ret = arm_smmu_device_reset(smmu, bypass);
->  	if (ret)
-> -		return ret;
-> +		goto err_iopf;
->  
->  	/* And we're up. Go go go! */
->  	ret = iommu_device_sysfs_add(&smmu->iommu, dev, NULL,
->  				     "smmu3.%pa", &ioaddr);
->  	if (ret)
-> -		return ret;
-> +		goto err_reset;
->  
->  	ret = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
->  	if (ret) {
->  		dev_err(dev, "Failed to register iommu\n");
-> -		iommu_device_sysfs_remove(&smmu->iommu);
-> -		return ret;
-> +		goto err_sysfs_add;
->  	}
->  
->  	return 0;
-> +err_sysfs_add:
-> +	iommu_device_sysfs_remove(&smmu->iommu);
-> +err_reset:
-> +	arm_smmu_device_disable(smmu);
-> +err_iopf:
-> +	iopf_queue_free(smmu->evtq.iopf);
-> +	return ret;
+> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
 
-I previously suggested using devres_alloc() for this instead. Did that
-not work?
+Looks good:
 
-Will
+Acked-by: Dave Hansen <dave.hansen@linux.intel.com>
+
+Although I do agree with Boris that this superficially looks like
+something that's important to backport.  It would be best to either beef
+up the changelog to explain why that's not the case, or to treat this as
+an actual fix and submit separately.
