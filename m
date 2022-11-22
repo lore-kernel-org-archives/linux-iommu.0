@@ -1,137 +1,125 @@
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDD6215CBB
-	for <iommu@lists.linux.dev>; Tue, 22 Nov 2022 22:18:24 +0000 (UTC)
-Received: from zn.tnic (p200300ea9733e747329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9733:e747:329c:23ff:fea6:a903])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 3C0BA1EC064F;
-	Tue, 22 Nov 2022 23:18:22 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-	t=1669155502;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-	bh=vW0B+TAHUwisjxfaBne/M3qasDBVG7nKJqzQcmiMG10=;
-	b=MFe6z+1Kfz6XbF4ixEsnZwacl3uI2WXTk9DxxQCdQhBv+K/6F/9E0blW+kMZCgQzdMAYwA
-	A/GgxEvERo1EGXqiNoRejymtMKj06+CpGkudbfhEsA+iekLVAVIr19epOSW6cDTRx5gEwa
-	NA2MiaKjV0NXc0/Pm9xqIRQZYW3FNu4=
-Date: Tue, 22 Nov 2022 23:18:17 +0100
-From: Borislav Petkov <bp@alien8.de>
-To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc: "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	"wei.liu@kernel.org" <wei.liu@kernel.org>,
-	Dexuan Cui <decui@microsoft.com>,
-	"luto@kernel.org" <luto@kernel.org>,
-	"peterz@infradead.org" <peterz@infradead.org>,
-	"davem@davemloft.net" <davem@davemloft.net>,
-	"edumazet@google.com" <edumazet@google.com>,
-	"kuba@kernel.org" <kuba@kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>,
-	"lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-	"robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-	"bhelgaas@google.com" <bhelgaas@google.com>,
-	"arnd@arndb.de" <arnd@arndb.de>,
-	"hch@infradead.org" <hch@infradead.org>,
-	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-	"brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-	"tglx@linutronix.de" <tglx@linutronix.de>,
-	"mingo@redhat.com" <mingo@redhat.com>,
-	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-	Tianyu Lan <Tianyu.Lan@microsoft.com>,
-	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-	"sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>,
-	"ak@linux.intel.com" <ak@linux.intel.com>,
-	"isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-	"Williams, Dan J" <dan.j.williams@intel.com>,
-	"jane.chu@oracle.com" <jane.chu@oracle.com>,
-	"seanjc@google.com" <seanjc@google.com>,
-	"tony.luck@intel.com" <tony.luck@intel.com>,
-	"x86@kernel.org" <x86@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [Patch v3 07/14] x86/hyperv: Change vTOM handling to use
- standard coco mechanisms
-Message-ID: <Y31Kqacbp9R5A1PF@zn.tnic>
-References: <1668624097-14884-1-git-send-email-mikelley@microsoft.com>
- <1668624097-14884-8-git-send-email-mikelley@microsoft.com>
- <Y3uTK3rBV6eXSJnC@zn.tnic>
- <BYAPR21MB16886AF404739449CA467B1AD70D9@BYAPR21MB1688.namprd21.prod.outlook.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D56C17CA3
+	for <iommu@lists.linux.dev>; Tue, 22 Nov 2022 22:55:09 +0000 (UTC)
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-3a7081e3b95so54699677b3.1
+        for <iommu@lists.linux.dev>; Tue, 22 Nov 2022 14:55:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=vgVj81TaAJFPaup6fEizR2CqkCcmP7+hjUnyLuec4+o=;
+        b=RuJwiWKaa2cOkX9/h/pterDKBIAJDyCMl3Gr2uokUaHiSgUYf21FBwhwfxGjFmEaux
+         DBrN6a5QhNaok28H5BUN4BDVZPpvBg2kKMmzDbJkI3dN14ygAuhbKzSGa7RHQSIYVb6J
+         M26ETl80wMn5iENf8wxbk0Q+FoFB6tTXpvTjNWzl5v1R5ed7nRKbE/JX3ORhTe5mVAJX
+         FM9+59F9ZllVPLSRCp4yncMNAebZy8+1gwc+2Hg99EJhj9XIegPAVWMNOhNhYbwjRzXm
+         vci4H/4bdTkf3ixODqhpo65YzIV0aiMt9txB6cEo61dfu7HSU17O1o0AqK/FzDJa+1eI
+         sxRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=vgVj81TaAJFPaup6fEizR2CqkCcmP7+hjUnyLuec4+o=;
+        b=RIj7v+AP/YudLnjgIiERIiY0w7sjU8I4os4Tn118nzRkoqHbT3GyuBwIK8FsBQBzaq
+         mnTvN13qHElpQ5IoP8nxEaxRYsldf39xGU2RCZT24BaG4TRpQ6dIFSsuaCqn5T66XF9n
+         k4cOIJnU8myr80jdVymSRh0g8nRjlki8heY4AqDgL51IvfvtArHwxhkic/K11FHiCeoA
+         U6N7Y8sYT50rELX6pBBUMZ8T4W+AguyEo0JIg6lhpDzEJPh/FK82bxsn7RgRnTWXiXMF
+         4XyDurIypbVoc7a2e4Wsn90eETcQpwUe0ME2dXYVbh0OXJ2SovFuFtLPwawZwKGJlOj1
+         gwqA==
+X-Gm-Message-State: ANoB5pkmOa2PP961NWJ+r7u6/dMy8KZZd/qbmTOFy4GPZZfjixlLJgQf
+	Mq4KhHTxqxI00EAIaWjNwY2tAbpIWVMxTYXNzbqxPg==
+X-Google-Smtp-Source: AA0mqf5lWYRbouY3wvSyTTHF5VwEyw1ykqzKm2VlVp0D1XBZHCXBRTzTAdT5ZyzQLfVztmPc7a+6n8h/U/Z8cXwlc/M=
+X-Received: by 2002:a81:5f04:0:b0:393:ab0b:5a31 with SMTP id
+ t4-20020a815f04000000b00393ab0b5a31mr22706109ywb.55.1669157708673; Tue, 22
+ Nov 2022 14:55:08 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <BYAPR21MB16886AF404739449CA467B1AD70D9@BYAPR21MB1688.namprd21.prod.outlook.com>
+References: <20221112040452.644234-1-edumazet@google.com> <Y30gZm0mO4YNO85d@localhost.localdomain>
+In-Reply-To: <Y30gZm0mO4YNO85d@localhost.localdomain>
+From: Eric Dumazet <edumazet@google.com>
+Date: Tue, 22 Nov 2022 14:54:57 -0800
+Message-ID: <CANn89iL-hGPeaTzCibdaOoquAQYNYa8Fu337tqu98xyoZWarOQ@mail.gmail.com>
+Subject: Re: [PATCH -next] iommu/dma: avoid expensive indirect calls for sync operations
+To: Michal Kubiak <michal.kubiak@intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, 
+	linux-kernel <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org, 
+	Eric Dumazet <eric.dumazet@gmail.com>, iommu@lists.linux.dev, 
+	maciej.fijalkowski@intel.com, magnus.karlsson@intel.com
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Nov 22, 2022 at 06:22:46PM +0000, Michael Kelley (LINUX) wrote:
-> I think the core problem here is the naming and meaning of
-> CC_VENDOR_HYPERV. The name was created originally when the
-> Hyper-V vTOM handling code was a lot of special cases.   With the
-> changes in this patch series that make the vTOM functionality more
-> mainstream, the name would be better as CC_VENDOR_AMD_VTOM.
+On Tue, Nov 22, 2022 at 11:18 AM Michal Kubiak <michal.kubiak@intel.com> wrote:
+>
+> On Sat, Nov 12, 2022 at 04:04:52AM +0000, Eric Dumazet wrote:
+> > Quite often, NIC devices do not need dma_sync operations
+> > on x86_64 at least.
+> >
+> > Indeed, when dev_is_dma_coherent(dev) is true and
+> > dev_use_swiotlb(dev) is false, iommu_dma_sync_single_for_cpu()
+> > and friends do nothing.
+> >
+> > However, indirectly calling them when CONFIG_RETPOLINE=y
+> > consumes about 10% of cycles on a cpu receiving packets
+> > from softirq at ~100Gbit rate, as shown in [1]
+> >
+> > Even if/when CONFIG_RETPOLINE is not set, there
+> > is a cost of about 3%.
+> >
+> > This patch adds a copy of iommu_dma_ops structure,
+> > where sync_single_for_cpu, sync_single_for_device,
+> > sync_sg_for_cpu and sync_sg_for_device are unset.
+>
+>
+> Larysa from our team has found out this patch introduces also a
+> functional improvement for batch allocation in AF_XDP while iommmu is
+> turned on.
+> In 'xp_alloc_batch()' function there is a check if DMA needs a
+> synchronization. If so, batch allocation is not supported and we can
+> allocate only one buffer at a time.
+>
+> The flag 'dma_need_sync' is being set according to the value returned by
+> the function 'dma_need_sync()' (from '/kernel/dma/mapping.c').
+> That function only checks if at least one of two DMA ops is defined:
+> 'ops->sync_single_for_cpu' or 'ops->sync_single_for_device'.
+>
+> > +static const struct dma_map_ops iommu_nosync_dma_ops = {
+> > +     iommu_dma_ops_common_fields
+> > +
+> > +     .sync_single_for_cpu    = NULL,
+> > +     .sync_single_for_device = NULL,
+> > +     .sync_sg_for_cpu        = NULL,
+> > +     .sync_sg_for_device     = NULL,
+> > +};
+> > +#undef iommu_dma_ops_common_fields
+> > +
+> >  /*
+> >   * The IOMMU core code allocates the default DMA domain, which the underlying
+> >   * IOMMU driver needs to support via the dma-iommu layer.
+> > @@ -1586,7 +1612,8 @@ void iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 dma_limit)
+> >       if (iommu_is_dma_domain(domain)) {
+> >               if (iommu_dma_init_domain(domain, dma_base, dma_limit, dev))
+> >                       goto out_err;
+> > -             dev->dma_ops = &iommu_dma_ops;
+> > +             dev->dma_ops = dev_is_dma_sync_needed(dev) ?
+> > +                             &iommu_dma_ops : &iommu_nosync_dma_ops;
+> >       }
+> >
+> >       return;
+>
+>  This code removes defining 'sync_*' DMA ops if they are not actually
+>  used. Thanks to that improvement the function 'dma_need_sync()' will
+>  always return more meaningful information if any DMA synchronization is
+>  actually needed for iommu.
+>
+>  Together with Larysa we have applied that patch and we can confirm it
+>  helps for batch buffer allocation in AF_XDP ('xsk_buff_alloc_batch()'
+>  call) when iommu is enabled.
 
-No, if CC_VENDOR_HYPERV means different things depending on what kind of
-guests you're doing, then you should not use a CC_VENDOR at all.
+Thanks for testing !
 
-> vTOM is part of the AMD SEV-SNP spec, and it's a different way of
-> doing the encryption from the "C-bit" based approach. As much as
-> possible, I'm trying to not make it be Hyper-V specific, though
-> currently we have N=1 for hypervisors that offer the vTOM option, so
-> it's a little hard to generalize.
-
-Actually, it is very simple to generalize: vTOM and the paravisor and
-VMPL are all part of the effort to support unenlightened, unmodified
-guests with SNP.
-
-So, if KVM wants to run Windows NT 4.0 guests as SNP guests, then it
-probably would need the same contraptions.
-
-> With the thinking oriented that way, a Linux guest on Hyper-V using
-> TDX will run with CC_VENDOR_INTEL.  A Linux guest on Hyper-V that
-> is fully enlightened to use the "C-bit" will run with CC_VENDOR_AMD.
-
-Right.
-
-> Dexuan Cui just posted a patch set for initial TDX support on Hyper-V,
-> and I think that runs with CC_VENDOR_INTEL (Dexuan -- correct me if
-> I'm wrong about that -- I haven't reviewed your patches yet).  Tianyu Lan
-> has a patch set out for Hyper-V guests using the "C-bit".  That patch set
-> still uses CC_VENDOR_HYPERV.  Tianyu and I need to work through
-> whether his patch set can run with CC_VENDOR_AMD like everyone
-> else using the "C-bit" approach.
-
-So I'm not sure the vendor is the right approach here. I guess we need
-to specify the *type* of guest being supported.
-
-> Yes, the polarity of the AMD vTOM bit matches the polarity of the
-> TDX GPA.SHARED bit, and is the opposite polarity of the AMD "C-bit".
-> I'll add a comment to that effect.
-> 
-> Anyway, that's where I think this should go. Does it make sense?
-> Other thoughts?
-
-I think all that polarity doesn't matter as long as we abstract it away
-with, "mark encrypted" and "mark decrypted".
-
-But it is late now and I could be wrong - I'll look at the rest
-tomorrow-ish.
-
-Thx.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+I am quite busy relocating, I will address Christoph feedback next week.
