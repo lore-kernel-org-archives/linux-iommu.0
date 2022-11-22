@@ -1,39 +1,39 @@
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 472217E
-	for <iommu@lists.linux.dev>; Tue, 22 Nov 2022 00:37:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FC6DA4C
+	for <iommu@lists.linux.dev>; Tue, 22 Nov 2022 00:37:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669077422; x=1700613422;
+  t=1669077423; x=1700613423;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=/Jv3x8HF8iyBg2+XPw8GVEDuKMcTJ8Vysh0iMn4ChJY=;
-  b=dwnwGxOFmxx3aKYg/cEXly0Vto3tnJglsizbdg1S9i2tP7jsGEk1N6ak
-   aR8a3gCBZt7i15/y0v/v/VAuKO+mjQhSQdmZz6xMqIWSaFL2WVno24C8F
-   02epWQXK0DYhlJsst5W2CZG/CnCckQFcp06qsg+zv1dx2aEHE5utBo164
-   89LUaeGdIqAl1lVIkEF/sdFzkCKkPwHUcLveGsr/erxbiuMW+5SQAkd8Z
-   xoIKUJWYwJ7OL/1IUOXxgpdJKee0Bi8Akd9IP3quPmZpJyVOCPQcsvjep
-   l0pRycsBsS57SuvFhJgsqS8Qh5LG3dwbnu/4BSRXa+irApw1y6eYkfblQ
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10538"; a="297052084"
+  bh=43F3BI4HZ1o7zLhMgPgev7UwWC1JI2ewMMrjPJKUpH4=;
+  b=XfU2rGYLqqp+rd7MBpWxOlxXqHtxoRGUWCG2SWX/YRtN+zbyDSdZdnbH
+   5IdB92YZIZEW7fi2ybPY2ht+lgL1RIyNxRFYZ89PpVFq091MK3qc1S4Uq
+   Q8IkGFTh/12UwKRFG0L7kwnDruTA40AD6bbH9+XH4FVmT9iXJahCWkHFX
+   51PLo8ZQWLwaFGbVekxSAH21dTuZ5O2O/6oU9riIgYvrziaSaeeCo7DnB
+   T5eXRIV0Cr2dV1Q5N0RztcNCoY8dSQgW7fv0zZYoVEhmyzw7sQH2UvrdY
+   hISAnumpgbdUS5+JULhQ+xSsJtxQwCFYj/s/iwL1MoUXxhEqmASRV6Qjl
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10538"; a="297052090"
 X-IronPort-AV: E=Sophos;i="5.96,182,1665471600"; 
-   d="scan'208";a="297052084"
+   d="scan'208";a="297052090"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2022 16:37:02 -0800
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Nov 2022 16:37:03 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10538"; a="619018435"
+X-IronPort-AV: E=McAfee;i="6500,9779,10538"; a="619018448"
 X-IronPort-AV: E=Sophos;i="5.96,182,1665471600"; 
-   d="scan'208";a="619018435"
+   d="scan'208";a="619018448"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga006.jf.intel.com with ESMTP; 21 Nov 2022 16:37:01 -0800
+  by orsmga006.jf.intel.com with ESMTP; 21 Nov 2022 16:37:02 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 6/7] iommu/vt-d: Remove unnecessary domain_context_mapped()
-Date: Tue, 22 Nov 2022 08:29:48 +0800
-Message-Id: <20221122002949.148140-7-baolu.lu@linux.intel.com>
+Subject: [PATCH 7/7] iommu/vt-d: Use real field for indication of first level
+Date: Tue, 22 Nov 2022 08:29:49 +0800
+Message-Id: <20221122002949.148140-8-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221122002949.148140-1-baolu.lu@linux.intel.com>
 References: <20221122002949.148140-1-baolu.lu@linux.intel.com>
@@ -45,96 +45,164 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The device_domain_info::domain accurately records the domain attached to
-the device. It is unnecessary to check whether the context is present in
-the attach_dev path. Remove it to make the code neat.
+The dmar_domain uses bit field members to indicate the behaviors. Add
+a bit field for using first level and remove the flags member to avoid
+duplication.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Link: https://lore.kernel.org/r/20221118132451.114406-7-baolu.lu@linux.intel.com
+Link: https://lore.kernel.org/r/20221118132451.114406-8-baolu.lu@linux.intel.com
 ---
- drivers/iommu/intel/iommu.c | 47 +++----------------------------------
- 1 file changed, 3 insertions(+), 44 deletions(-)
+ drivers/iommu/intel/iommu.h | 15 +++++----------
+ drivers/iommu/intel/iommu.c | 25 ++++++++++---------------
+ 2 files changed, 15 insertions(+), 25 deletions(-)
 
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 251a609fdce3..7b7234689cb4 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -515,14 +515,6 @@ struct context_entry {
+ 	u64 hi;
+ };
+ 
+-/*
+- * When VT-d works in the scalable mode, it allows DMA translation to
+- * happen through either first level or second level page table. This
+- * bit marks that the DMA translation for the domain goes through the
+- * first level page table, otherwise, it goes through the second level.
+- */
+-#define DOMAIN_FLAG_USE_FIRST_LEVEL		BIT(1)
+-
+ struct iommu_domain_info {
+ 	struct intel_iommu *iommu;
+ 	unsigned int refcnt;		/* Refcount of devices per iommu */
+@@ -539,6 +531,11 @@ struct dmar_domain {
+ 	u8 iommu_coherency: 1;		/* indicate coherency of iommu access */
+ 	u8 force_snooping : 1;		/* Create IOPTEs with snoop control */
+ 	u8 set_pte_snp:1;
++	u8 use_first_level:1;		/* DMA translation for the domain goes
++					 * through the first level page table,
++					 * otherwise, goes through the second
++					 * level.
++					 */
+ 
+ 	spinlock_t lock;		/* Protect device tracking lists */
+ 	struct list_head devices;	/* all devices' list */
+@@ -548,8 +545,6 @@ struct dmar_domain {
+ 
+ 	/* adjusted guest address width, 0 is level 2 30-bit */
+ 	int		agaw;
+-
+-	int		flags;		/* flags to find out type of domain */
+ 	int		iommu_superpage;/* Level of superpages supported:
+ 					   0 == 4KiB (no superpages), 1 == 2MiB,
+ 					   2 == 1GiB, 3 == 512GiB, 4 == 1TiB */
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 4484da88f917..3a05cfbc252a 100644
+index 3a05cfbc252a..cd71194fe7a6 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -780,19 +780,6 @@ static void domain_flush_cache(struct dmar_domain *domain,
- 		clflush_cache_range(addr, size);
+@@ -383,11 +383,6 @@ static inline int domain_type_is_si(struct dmar_domain *domain)
+ 	return domain->domain.type == IOMMU_DOMAIN_IDENTITY;
  }
  
--static int device_context_mapped(struct intel_iommu *iommu, u8 bus, u8 devfn)
+-static inline bool domain_use_first_level(struct dmar_domain *domain)
 -{
--	struct context_entry *context;
--	int ret = 0;
--
--	spin_lock(&iommu->lock);
--	context = iommu_context_addr(iommu, bus, devfn, 0);
--	if (context)
--		ret = context_present(context);
--	spin_unlock(&iommu->lock);
--	return ret;
+-	return domain->flags & DOMAIN_FLAG_USE_FIRST_LEVEL;
 -}
 -
- static void free_context_table(struct intel_iommu *iommu)
+ static inline int domain_pfn_supported(struct dmar_domain *domain,
+ 				       unsigned long pfn)
  {
- 	struct context_entry *context;
-@@ -2097,30 +2084,6 @@ domain_context_mapping(struct dmar_domain *domain, struct device *dev)
- 				      &domain_context_mapping_cb, &data);
- }
+@@ -501,7 +496,7 @@ static int domain_update_iommu_superpage(struct dmar_domain *domain,
+ 	rcu_read_lock();
+ 	for_each_active_iommu(iommu, drhd) {
+ 		if (iommu != skip) {
+-			if (domain && domain_use_first_level(domain)) {
++			if (domain && domain->use_first_level) {
+ 				if (!cap_fl1gp_support(iommu->cap))
+ 					mask = 0x1;
+ 			} else {
+@@ -579,7 +574,7 @@ static void domain_update_iommu_cap(struct dmar_domain *domain)
+ 	 * paging and 57-bits with 5-level paging). Hence, skip bit
+ 	 * [N-1].
+ 	 */
+-	if (domain_use_first_level(domain))
++	if (domain->use_first_level)
+ 		domain->domain.geometry.aperture_end = __DOMAIN_MAX_ADDR(domain->gaw - 1);
+ 	else
+ 		domain->domain.geometry.aperture_end = __DOMAIN_MAX_ADDR(domain->gaw);
+@@ -947,7 +942,7 @@ static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
  
--static int domain_context_mapped_cb(struct pci_dev *pdev,
--				    u16 alias, void *opaque)
--{
--	struct intel_iommu *iommu = opaque;
--
--	return !device_context_mapped(iommu, PCI_BUS_NUM(alias), alias & 0xff);
--}
--
--static int domain_context_mapped(struct device *dev)
--{
--	struct intel_iommu *iommu;
--	u8 bus, devfn;
--
--	iommu = device_to_iommu(dev, &bus, &devfn);
--	if (!iommu)
--		return -ENODEV;
--
--	if (!dev_is_pci(dev))
--		return device_context_mapped(iommu, bus, devfn);
--
--	return !pci_for_each_dma_alias(to_pci_dev(dev),
--				       domain_context_mapped_cb, iommu);
--}
--
- /* Returns a number of VTD pages, but aligned to MM page size */
- static inline unsigned long aligned_nrpages(unsigned long host_addr,
- 					    size_t size)
-@@ -4267,6 +4230,7 @@ static int prepare_domain_attach_device(struct iommu_domain *domain,
- static int intel_iommu_attach_device(struct iommu_domain *domain,
- 				     struct device *dev)
- {
-+	struct device_domain_info *info = dev_iommu_priv_get(dev);
- 	int ret;
+ 			domain_flush_cache(domain, tmp_page, VTD_PAGE_SIZE);
+ 			pteval = ((uint64_t)virt_to_dma_pfn(tmp_page) << VTD_PAGE_SHIFT) | DMA_PTE_READ | DMA_PTE_WRITE;
+-			if (domain_use_first_level(domain))
++			if (domain->use_first_level)
+ 				pteval |= DMA_FL_PTE_XD | DMA_FL_PTE_US | DMA_FL_PTE_ACCESS;
  
- 	if (domain->type == IOMMU_DOMAIN_UNMANAGED &&
-@@ -4275,13 +4239,8 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
- 		return -EPERM;
+ 			if (cmpxchg64(&pte->val, 0ULL, pteval))
+@@ -1498,7 +1493,7 @@ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
+ 	if (ih)
+ 		ih = 1 << 6;
+ 
+-	if (domain_use_first_level(domain)) {
++	if (domain->use_first_level) {
+ 		qi_flush_piotlb(iommu, did, PASID_RID2PASID, addr, pages, ih);
+ 	} else {
+ 		unsigned long bitmask = aligned_pages - 1;
+@@ -1552,7 +1547,7 @@ static inline void __mapping_notify_one(struct intel_iommu *iommu,
+ 	 * It's a non-present to present mapping. Only flush if caching mode
+ 	 * and second level.
+ 	 */
+-	if (cap_caching_mode(iommu->cap) && !domain_use_first_level(domain))
++	if (cap_caching_mode(iommu->cap) && !domain->use_first_level)
+ 		iommu_flush_iotlb_psi(iommu, domain, pfn, pages, 0, 1);
+ 	else
+ 		iommu_flush_write_buffer(iommu);
+@@ -1568,7 +1563,7 @@ static void intel_flush_iotlb_all(struct iommu_domain *domain)
+ 		struct intel_iommu *iommu = info->iommu;
+ 		u16 did = domain_id_iommu(dmar_domain, iommu);
+ 
+-		if (domain_use_first_level(dmar_domain))
++		if (dmar_domain->use_first_level)
+ 			qi_flush_piotlb(iommu, did, PASID_RID2PASID, 0, -1, 0);
+ 		else
+ 			iommu->flush.flush_iotlb(iommu, did, 0, 0,
+@@ -1741,7 +1736,7 @@ static struct dmar_domain *alloc_domain(unsigned int type)
+ 
+ 	domain->nid = NUMA_NO_NODE;
+ 	if (first_level_by_default(type))
+-		domain->flags |= DOMAIN_FLAG_USE_FIRST_LEVEL;
++		domain->use_first_level = true;
+ 	domain->has_iotlb_device = false;
+ 	INIT_LIST_HEAD(&domain->devices);
+ 	spin_lock_init(&domain->lock);
+@@ -2173,7 +2168,7 @@ __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+ 
+ 	attr = prot & (DMA_PTE_READ | DMA_PTE_WRITE | DMA_PTE_SNP);
+ 	attr |= DMA_FL_PTE_PRESENT;
+-	if (domain_use_first_level(domain)) {
++	if (domain->use_first_level) {
+ 		attr |= DMA_FL_PTE_XD | DMA_FL_PTE_US | DMA_FL_PTE_ACCESS;
+ 		if (prot & DMA_PTE_WRITE)
+ 			attr |= DMA_FL_PTE_DIRTY;
+@@ -2443,7 +2438,7 @@ static int dmar_domain_attach_device(struct dmar_domain *domain,
+ 		if (hw_pass_through && domain_type_is_si(domain))
+ 			ret = intel_pasid_setup_pass_through(iommu, domain,
+ 					dev, PASID_RID2PASID);
+-		else if (domain_use_first_level(domain))
++		else if (domain->use_first_level)
+ 			ret = domain_setup_first_level(iommu, domain, dev,
+ 					PASID_RID2PASID);
+ 		else
+@@ -4410,7 +4405,7 @@ static void domain_set_force_snooping(struct dmar_domain *domain)
+ 	 * Second level page table supports per-PTE snoop control. The
+ 	 * iommu_map() interface will handle this by setting SNP bit.
+ 	 */
+-	if (!domain_use_first_level(domain)) {
++	if (!domain->use_first_level) {
+ 		domain->set_pte_snp = true;
+ 		return;
  	}
- 
--	/* normally dev is not mapped */
--	if (unlikely(domain_context_mapped(dev))) {
--		struct device_domain_info *info = dev_iommu_priv_get(dev);
--
--		if (info->domain)
--			device_block_translation(dev);
--	}
-+	if (info->domain)
-+		device_block_translation(dev);
- 
- 	ret = prepare_domain_attach_device(domain, dev);
- 	if (ret)
 -- 
 2.34.1
 
