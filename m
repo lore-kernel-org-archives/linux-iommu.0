@@ -1,188 +1,267 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2092.outbound.protection.outlook.com [40.107.243.92])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA360107A1
-	for <iommu@lists.linux.dev>; Tue, 22 Nov 2022 17:42:23 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DtaTvrg7N3QlvCNMoKWXrLKo2glPv7j/nOPvMvWJKHfsXIgoyIEBFLomSpl0ynPG6LAnp3AAZK0EM81c0inzg/N0rrx/K/1iz9IYYsdlP2QuTCkH3KHH/a3UsmcewzBWqJ2u3y7A/ml36GeIMYUXFznVcrsB7fKN8mje/+4t+4nwrwRPU6qWwZCpS3URLJ0dNqVbslpbhwnvzK8pqu/SszLCaQyKXhU5aI7Rw7izAJ49NE6yazJJI17TbdcsfAHdWBGkdAoLY7cS2Hvk4WpPcd8DqQFc8By2TiZCPfeExL/3ZNXj/9s1VDK5Fx+ZT+4wKhF+vzJGlaUoq+H0Yj5OUw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GF+ZspVrzWWFsb4Y1zyj4l5I6i2RQL4kbglTZ1rx4SI=;
- b=UAYsMrNZEQRbs7c4KrvWPKeRtpmiQIEpHOPD5ORBHs20TS2ru0tQEe8xeqrGKe4hFtOXUhfbt8w9s3jiXzlSdDmmJulXHvrd2AtUzQvP5IoRoosUQajIHMGITgINS3dAwTw4jlxaPh7BLedrGV/W3eeu7trthdE0RR1J67fRPBMbWIYfky+jm/FUkpK65jzOiI6SwE9sH8vhAJA1Y4/BUlleJGI9VNo7uxO658bHnooCin6XDryEuEqEocg1K4umY+UschvSVSQN6nDhY4sFa6/oVOHdt5RcBmfXZ12vOkyR/DsO/rNBRX1ajikZwzH9o9kgd4X72K90DUu+GgcjAA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GF+ZspVrzWWFsb4Y1zyj4l5I6i2RQL4kbglTZ1rx4SI=;
- b=FofFUq2EDKgfGL0rYX9BBVggmlC+W21LlgSeNHxa/gmdH5tSdaoOtlkY/FdYQ9IhaWuF9suyrlQ/2Gpd5X/j15Uqo/qiMc/mHoStQpxkTYIlh6bVBFvZDrY5LhUzwaEoThtssvK8og99DUsfahi+0/gEBXCQbAoLMNJc90OLzxU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-Received: from BN8PR21MB1361.namprd21.prod.outlook.com (2603:10b6:408:a7::23)
- by BL1PR21MB3379.namprd21.prod.outlook.com (2603:10b6:208:39f::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.2; Tue, 22 Nov
- 2022 17:42:09 +0000
-Received: from BN8PR21MB1361.namprd21.prod.outlook.com
- ([fe80::a8a1:1319:9d94:77e7]) by BN8PR21MB1361.namprd21.prod.outlook.com
- ([fe80::a8a1:1319:9d94:77e7%4]) with mapi id 15.20.5880.002; Tue, 22 Nov 2022
- 17:42:07 +0000
-From: Michael Kelley <mikelley@microsoft.com>
-To: hpa@zytor.com,
-	kys@microsoft.com,
-	haiyangz@microsoft.com,
-	wei.liu@kernel.org,
-	decui@microsoft.com,
-	luto@kernel.org,
-	peterz@infradead.org,
-	davem@davemloft.net,
-	edumazet@google.com,
-	kuba@kernel.org,
-	pabeni@redhat.com,
-	lpieralisi@kernel.org,
-	robh@kernel.org,
-	kw@linux.com,
-	bhelgaas@google.com,
-	arnd@arndb.de,
-	hch@infradead.org,
-	m.szyprowski@samsung.com,
-	robin.murphy@arm.com,
-	thomas.lendacky@amd.com,
-	brijesh.singh@amd.com,
-	tglx@linutronix.de,
-	mingo@redhat.com,
-	bp@alien8.de,
-	dave.hansen@linux.intel.com,
-	Tianyu.Lan@microsoft.com,
-	kirill.shutemov@linux.intel.com,
-	sathyanarayanan.kuppuswamy@linux.intel.com,
-	ak@linux.intel.com,
-	isaku.yamahata@intel.com,
-	dan.j.williams@intel.com,
-	jane.chu@oracle.com,
-	seanjc@google.com,
-	tony.luck@intel.com,
-	x86@kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-hyperv@vger.kernel.org,
-	netdev@vger.kernel.org,
-	linux-pci@vger.kernel.org,
-	linux-arch@vger.kernel.org,
-	iommu@lists.linux.dev
-Cc: mikelley@microsoft.com
-Subject: [PATCH v4 1/1] x86/ioremap: Fix page aligned size calculation in __ioremap_caller()
-Date: Tue, 22 Nov 2022 09:40:42 -0800
-Message-Id: <1669138842-30100-1-git-send-email-mikelley@microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
-Content-Type: text/plain
-X-ClientProxiedBy: MW4PR03CA0059.namprd03.prod.outlook.com
- (2603:10b6:303:8e::34) To BN8PR21MB1361.namprd21.prod.outlook.com
- (2603:10b6:408:a7::23)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E3FC3107BE
+	for <iommu@lists.linux.dev>; Tue, 22 Nov 2022 17:49:10 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B68E31FB;
+	Tue, 22 Nov 2022 09:49:16 -0800 (PST)
+Received: from [10.57.71.118] (unknown [10.57.71.118])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 875FB3F73D;
+	Tue, 22 Nov 2022 09:49:08 -0800 (PST)
+Message-ID: <bc647ceb-b14b-dc5b-ba83-4f8befd188c5@arm.com>
+Date: Tue, 22 Nov 2022 17:49:02 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN8PR21MB1361:EE_|BL1PR21MB3379:EE_
-X-MS-Office365-Filtering-Correlation-Id: 90f8cd86-1f20-42c6-016a-08daccb0e031
-X-LD-Processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
- nkIGM3HcKtGDPHNTsLgtvGhbqgUoacoB3gGQmojiIVL/KYw8M02OWdMjYzSIAKjy47/4dBO8OBtAPLU9gKcdIa9vvNTLj2NkHc8fU8oOCYoQi5sbS+ll1O+BxLIFhKns+hFiBhTOsr/DuS/1Oekle5sMgP7oV4qmTHzt91cvUwdh1f6O/meFbgzQ+Smazt7kfWTzYpJGgGEZmx/FzCuYrj5F8M3y9SAgxrTaFuEYCDIGf+hxQxDddVdAQ31w+Q2yaaxkJBjXEa96tzhhjga88GPJSR8uuDndOQevlvx27bOBkGNrBJdws2ntEryi8xmO0Y4AwoAWq1jq7RiUcpQ0OGS2Jms6AxOJ4FW2I5JTc7NTMDchHEVN0UOujerGMPe6gfs0ToblLwfSLbpJ7rw0GzXZObXNORaHHAuWPYQjxdGY1NlZ4fg3PN09EIwFh+4c7YyUB1oIJzqcohXf6emNrpuZClNF/Q1JZu52BFffxBA6kojPYXlaQU90Bx6lC7TGWYbIwlKn5qlr0zfL6nMBEI7Hxf3aAJM8Z/y4l577FG9WiccXsLAEkHWlzKI4uaIo2X7sUArDgzSQ9T8SL0VNPV8x5MiDTHDv9rKg8SKe2GQYh3sOUYIQsotI1+AeAATqn+KGioCxUIQsNMYku2CXePRW1QZrzxTutu3nMnkiLWxoMf96LU7RJEfQuCGUeYmnFbMRmYAdR+Y+dKxzTVcuyTtp6gskvKCj/eY/a2L+YpBhKtYqCDml2RUlI2tFbUuso6se55ZR/dZOZeszTknEFurrSwZNkprz0GIJSFqH3FI=
-X-Forefront-Antispam-Report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR21MB1361.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(136003)(376002)(39860400002)(396003)(346002)(451199015)(36756003)(82960400001)(921005)(2906002)(8936002)(8676002)(7416002)(7406005)(82950400001)(83380400001)(86362001)(38100700002)(316002)(10290500003)(186003)(2616005)(966005)(6486002)(4326008)(478600001)(38350700002)(5660300002)(66946007)(66556008)(66476007)(41300700001)(52116002)(107886003)(6666004)(26005)(6506007)(6512007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
- =?us-ascii?Q?YBSQ1HoozY0JR5zS2HUPqHoWvcil5nIgsFKE3D1S6vSm3XsM0+pFew9ECGco?=
- =?us-ascii?Q?0TDA2RPcX44zSEkSbH8RDlwuts2e5bgEKzTUoeKmQxih1w3BSfrFrMUBupbQ?=
- =?us-ascii?Q?yCcMEosGbyMkouxvEubXuQoDu4KvhiSLxVbmsCnO7nY7Wada/louJtoHMsPj?=
- =?us-ascii?Q?/y+t8JAZeGAeWxDzec837seX0zOLLjNVtv8G+7mGkCUjePbIdIfXrQgB5zLU?=
- =?us-ascii?Q?Q2FXjSRFQ90qV8nO9fw920ewUn0OCFCayMSiFn9Z+43BDWw4t22GIiUAG8VI?=
- =?us-ascii?Q?tbpXXklcQuhwJQW52nPQRa3sQuTQIDoxqdwUumE0dnPY+/Jm3Aynn3YSyJuG?=
- =?us-ascii?Q?Ko7jMknuh6xGJR1NSatjKvz2SzFUhe09OabAjnN4ZYWe0g10dYON3JCkApjd?=
- =?us-ascii?Q?RTK1oxIICri7PRUeNzRBHdnp3nDC1F+CLavwsaNWfg/7VgpbgEvAufqZj7xZ?=
- =?us-ascii?Q?RizP8BDiewdNfx0YCdbyPUwRbVIcDHANQtAi6od/ZXL7mGnuCNakAPZX4wHC?=
- =?us-ascii?Q?FEVa2CZyqLPRFaqOkc73hsIZluy4c0La6J7UIIPxCzmSCE/jmQuTYYNGlo6e?=
- =?us-ascii?Q?6rUXRJB1RA+DBH26+sD2slFxqEU/c/r6epvMn/ztI5WE25VXyHo3JEYn6Crv?=
- =?us-ascii?Q?ki5X5ASn2RbTRBuLfwX+KL7gVZrhjp9Te8Qmmwa3Rr7QcgLUQS3+l8d2ozkr?=
- =?us-ascii?Q?gMIj2NxZW0EheRDS8/aeANkcZGPovC/lEvLcGDQJYNTAfnuZ2pP1UmH3Wshi?=
- =?us-ascii?Q?BR3bZrSpB2MBTbfkC9/OKnZ3wOTgm2YSDKpWnYhMKJvKj+DQg+0HR9+Dp4xB?=
- =?us-ascii?Q?3EG6GH5OLC2O8qvYYwKRQpRti322htu+pqymnLGG3/NkBAJPV2XPiD2jGqo2?=
- =?us-ascii?Q?AshE64d7x2AjWXK/Dv/SkSN1gJn+ZpAf+nvj5b7S8t9lmR3dZ01l/iGluJxT?=
- =?us-ascii?Q?8C3lYjiKCFMISlr7KyDbff8NPOidQcYwfct/DFqTRV0xXvBkgAefFAej3YeP?=
- =?us-ascii?Q?57OfDJbEUixw7Zh7fl+Fy//6YMfcPMU9OVc/f3k7scKT/ECrPX5g/bLvNLVd?=
- =?us-ascii?Q?M18LM0SPzOHGt/veskukf6OASwjfnQsLeB73vo6PrWHkmxwRD1CjudfTDXu8?=
- =?us-ascii?Q?D+Em3jEVxhOcPCbJIlZVd4Cuvp+EoCDhWihvICP8gC5xeJR9ftoH1YrZ1qO5?=
- =?us-ascii?Q?OLReqt8DuvqavlZ5QNLguUx6Hol7HcWn29luAGKAhTW8JuzXEFfI5u4GdnSl?=
- =?us-ascii?Q?E+ElrlWF//W9EQo3pb16xw4js4XuvtyUenaK03q0JuJ0kikhGciAjiLXSVNU?=
- =?us-ascii?Q?GkSThlHl5fQI0iFt/SY+MCyLULmH5cyFq8TlXE4lf45Krdhf5lchm0ji11E4?=
- =?us-ascii?Q?J1fCU1thYeHfKrLaSs9zxXAOgH1++flKSPSoPbBPW1pd5VDmXaamE64XYjYb?=
- =?us-ascii?Q?ep7Wh1EOE8AasNjzPE9vSPenSOCcOmxlkpy12cuhhaflklNKtrSotyHKZGkg?=
- =?us-ascii?Q?DLHvATesdo64gK1tugH1SVvIPBif+NySDHv06tX1szH2+1JzzW5HNj4D+wDw?=
- =?us-ascii?Q?5UmJ+PRFYr9E/EQuwDDOR//ZcIJjdK/L3d71IKYE?=
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 90f8cd86-1f20-42c6-016a-08daccb0e031
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR21MB1361.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Nov 2022 17:42:07.7078
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1NNRh5wz6j334e8LlGLGno8gkAOisPCfo96dyRiP9RHX0+zzVO1Mo2AUV8N0dEbHW5MbjlGhv3+Ln9RV3nD+iA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR21MB3379
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH] iommu/vt-d: Add a fix for devices need extra dtlb flush
+Content-Language: en-GB
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
+ Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>
+Cc: Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
+ Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+ Yi Liu <yi.l.liu@intel.com>, Yuzhang Luo <yuzhang.luo@intel.com>
+References: <20221122034529.3311562-1-jacob.jun.pan@linux.intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20221122034529.3311562-1-jacob.jun.pan@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Current code re-calculates the size after aligning the starting and
-ending physical addresses on a page boundary. But the re-calculation
-also embeds the masking of high order bits that exceed the size of
-the physical address space (via PHYSICAL_PAGE_MASK). If the masking
-removes any high order bits, the size calculation results in a huge
-value that is likely to immediately fail.
+On 2022-11-22 03:45, Jacob Pan wrote:
+> QAT devices on Intel Sapphire Rapids and Emerald Rapids has a defect in
+> address translation service (ATS). These devices may inadvertently issue
+> ATS invalidation completion before posted writes initiated with
+> translated address that utilized translations matching the invalidation
+> address range, violating the invalidation completion ordering.
+> 
+> An additional device TLB invalidation is needed to ensure no more posted
+> writes with translated address following the invalidation completion.
+> 
+> Without this fix, DMA writes with translated address can happen after
+> device TLB invalidation is completed. Random data corruption can occur
+> as the DMA buffer gets reused after invalidation.
+> 
+> This patch adds a flag to mark the need for an extra flush based on given
+> device IDs, this flag is set during initialization when ATS support is
+> enabled.
+> 
+> At runtime, this flag is used to control the extra dTLB flush. The
+> overhead of checking this unlikely true flag is smaller than checking
+> PCI device IDs every time.
+> 
+> Device TLBs are invalidated under the following six conditions:
+> 1. Device driver does DMA API unmap IOVA
+> 2. Device driver unbind a PASID from a process, sva_unbind_device()
+> 3. PASID is torn down, after PASID cache is flushed. e.g. process
+> exit_mmap() due to crash
+> 4. Under SVA usage, called by mmu_notifier.invalidate_range() where
+> VM has to free pages that were unmapped
+> 5. userspace driver unmaps a DMA buffer
+> 6. Cache invalidation in vSVA usage (upcoming)
+> 
+> For #1 and #2, device drivers are responsible for stopping DMA traffic
+> before unmap/unbind. For #3, iommu driver gets mmu_notifier to
+> invalidate TLB the same way as normal user unmap which will do an extra
+> invalidation. The dTLB invalidation after PASID cache flush does not
+> need an extra invalidation.
+> 
+> Therefore, we only need to deal with #4 and #5 in this patch. #1 is also
+> covered by this patch due to common code path with #5.
+> 
+> Tested-by: Yuzhang Luo <yuzhang.luo@intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>   drivers/iommu/intel/iommu.c | 100 +++++++++++++++++++++++++++++-------
+>   drivers/iommu/intel/iommu.h |   3 ++
+>   drivers/iommu/intel/svm.c   |   4 +-
+>   3 files changed, 87 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 996a8b5ee5ee..6254788330b8 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -1396,6 +1396,39 @@ static void domain_update_iotlb(struct dmar_domain *domain)
+>   	spin_unlock_irqrestore(&domain->lock, flags);
+>   }
+>   
+> +/*
+> + * Check that the device does not live on an external facing PCI port that is
+> + * marked as untrusted. Such devices should not be able to apply quirks and
+> + * thus not be able to bypass the IOMMU restrictions.
+> + */
+> +static bool risky_device(struct pci_dev *pdev)
+> +{
+> +	if (pdev->untrusted) {
+> +		pci_info(pdev,
+> +			 "Skipping IOMMU quirk for dev [%04X:%04X] on untrusted PCI link\n",
+> +			 pdev->vendor, pdev->device);
+> +		pci_info(pdev, "Please check with your BIOS/Platform vendor about this\n");
+> +		return true;
+> +	}
+> +	return false;
+> +}
+> +
+> +/* Impacted QAT device IDs ranging from 0x4940 to 0x4943 */
+> +#define BUGGY_QAT_DEVID_MASK 0x494c
+> +static bool dev_needs_extra_dtlb_flush(struct pci_dev *pdev)
+> +{
+> +	if (pdev->vendor != PCI_VENDOR_ID_INTEL)
+> +		return false;
+> +
+> +	if ((pdev->device & 0xfffc) != BUGGY_QAT_DEVID_MASK)
+> +		return false;
+> +
+> +	if (risky_device(pdev))
+> +		return false;
 
-Fix this by re-calculating the page-aligned size first. Then mask any
-high order bits using PHYSICAL_PAGE_MASK.
+Hmm, I'm not sure that that makes much sense to me - what privilege can 
+the device gain from being told to invalidate things twice? Why would we 
+want to implicitly *allow* a device to potentially keep using a stale 
+translation if for some bizarre reason firmware has marked it as 
+external, surely that's worse?
 
-Fixes: ffa71f33a820 ("x86, ioremap: Fix incorrect physical address handling in PAE mode")
-Acked-by: Dave Hansen <dave.hansen@linux.intel.com>
-Signed-off-by: Michael Kelley <mikelley@microsoft.com>
----
+Robin.
 
-This patch was previously Patch 1 of a larger series[1].  Breaking
-it out separately per discussion with Dave Hansen and Boris Petkov.
-
-[1] https://lore.kernel.org/linux-hyperv/1668624097-14884-1-git-send-email-mikelley@microsoft.com/
-
- arch/x86/mm/ioremap.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
-index 78c5bc6..6453fba 100644
---- a/arch/x86/mm/ioremap.c
-+++ b/arch/x86/mm/ioremap.c
-@@ -217,9 +217,15 @@ static void __ioremap_check_mem(resource_size_t addr, unsigned long size,
- 	 * Mappings have to be page-aligned
- 	 */
- 	offset = phys_addr & ~PAGE_MASK;
--	phys_addr &= PHYSICAL_PAGE_MASK;
-+	phys_addr &= PAGE_MASK;
- 	size = PAGE_ALIGN(last_addr+1) - phys_addr;
- 
-+	/*
-+	 * Mask out any bits not part of the actual physical
-+	 * address, like memory encryption bits.
-+	 */
-+	phys_addr &= PHYSICAL_PAGE_MASK;
-+
- 	retval = memtype_reserve(phys_addr, (u64)phys_addr + size,
- 						pcm, &new_pcm);
- 	if (retval) {
--- 
-1.8.3.1
-
+> +
+> +	return true;
+> +}
+> +
+>   static void iommu_enable_pci_caps(struct device_domain_info *info)
+>   {
+>   	struct pci_dev *pdev;
+> @@ -1478,6 +1511,7 @@ static void __iommu_flush_dev_iotlb(struct device_domain_info *info,
+>   	qdep = info->ats_qdep;
+>   	qi_flush_dev_iotlb(info->iommu, sid, info->pfsid,
+>   			   qdep, addr, mask);
+> +	quirk_dev_tlb(info, addr, mask, PASID_RID2PASID, qdep);
+>   }
+>   
+>   static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
+> @@ -4490,9 +4524,10 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+>   	if (dev_is_pci(dev)) {
+>   		if (ecap_dev_iotlb_support(iommu->ecap) &&
+>   		    pci_ats_supported(pdev) &&
+> -		    dmar_ats_supported(pdev, iommu))
+> +		    dmar_ats_supported(pdev, iommu)) {
+>   			info->ats_supported = 1;
+> -
+> +			info->dtlb_extra_inval = dev_needs_extra_dtlb_flush(pdev);
+> +		}
+>   		if (sm_supported(iommu)) {
+>   			if (pasid_supported(iommu)) {
+>   				int features = pci_pasid_features(pdev);
+> @@ -4680,23 +4715,6 @@ static bool intel_iommu_is_attach_deferred(struct device *dev)
+>   	return translation_pre_enabled(info->iommu) && !info->domain;
+>   }
+>   
+> -/*
+> - * Check that the device does not live on an external facing PCI port that is
+> - * marked as untrusted. Such devices should not be able to apply quirks and
+> - * thus not be able to bypass the IOMMU restrictions.
+> - */
+> -static bool risky_device(struct pci_dev *pdev)
+> -{
+> -	if (pdev->untrusted) {
+> -		pci_info(pdev,
+> -			 "Skipping IOMMU quirk for dev [%04X:%04X] on untrusted PCI link\n",
+> -			 pdev->vendor, pdev->device);
+> -		pci_info(pdev, "Please check with your BIOS/Platform vendor about this\n");
+> -		return true;
+> -	}
+> -	return false;
+> -}
+> -
+>   static void intel_iommu_iotlb_sync_map(struct iommu_domain *domain,
+>   				       unsigned long iova, size_t size)
+>   {
+> @@ -4931,3 +4949,47 @@ static void __init check_tylersburg_isoch(void)
+>   	pr_warn("Recommended TLB entries for ISOCH unit is 16; your BIOS set %d\n",
+>   	       vtisochctrl);
+>   }
+> +
+> +/*
+> + * Here we deal with a device TLB defect where device may inadvertently issue ATS
+> + * invalidation completion before posted writes initiated with translated address
+> + * that utilized translations matching the invalidation address range, violating
+> + * the invalidation completion ordering.
+> + * Therefore, any use cases that cannot guarantee DMA is stopped before unmap is
+> + * vulnerable to this defect. In other words, any dTLB invalidation initiated not
+> + * under the control of the trusted/privileged host device driver must use this
+> + * quirk.
+> + * Device TLBs are invalidated under the following six conditions:
+> + * 1. Device driver does DMA API unmap IOVA
+> + * 2. Device driver unbind a PASID from a process, sva_unbind_device()
+> + * 3. PASID is torn down, after PASID cache is flushed. e.g. process
+> + *    exit_mmap() due to crash
+> + * 4. Under SVA usage, called by mmu_notifier.invalidate_range() where
+> + *    VM has to free pages that were unmapped
+> + * 5. Userspace driver unmaps a DMA buffer
+> + * 6. Cache invalidation in vSVA usage (upcoming)
+> + *
+> + * For #1 and #2, device drivers are responsible for stopping DMA traffic
+> + * before unmap/unbind. For #3, iommu driver gets mmu_notifier to
+> + * invalidate TLB the same way as normal user unmap which will use this quirk.
+> + * The dTLB invalidation after PASID cache flush does not need this quirk.
+> + *
+> + * As a reminder, #6 will *NEED* this quirk as we enable nested translation.
+> + */
+> +void quirk_dev_tlb(struct device_domain_info *info, unsigned long address,
+> +		   unsigned long mask, u32 pasid, u16 qdep)
+> +{
+> +	u16 sid;
+> +
+> +	if (likely(!info->dtlb_extra_inval))
+> +		return;
+> +
+> +	sid = PCI_DEVID(info->bus, info->devfn);
+> +	if (pasid == PASID_RID2PASID) {
+> +		qi_flush_dev_iotlb(info->iommu, sid, info->pfsid,
+> +				   qdep, address, mask);
+> +	} else {
+> +		qi_flush_dev_iotlb_pasid(info->iommu, sid, info->pfsid,
+> +					 pasid, qdep, address, mask);
+> +	}
+> +}
+> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+> index 92023dff9513..09b989bf545f 100644
+> --- a/drivers/iommu/intel/iommu.h
+> +++ b/drivers/iommu/intel/iommu.h
+> @@ -623,6 +623,7 @@ struct device_domain_info {
+>   	u8 pri_enabled:1;
+>   	u8 ats_supported:1;
+>   	u8 ats_enabled:1;
+> +	u8 dtlb_extra_inval:1;	/* Quirk for devices need extra flush */
+>   	u8 ats_qdep;
+>   	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
+>   	struct intel_iommu *iommu; /* IOMMU used by this device */
+> @@ -728,6 +729,8 @@ void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u32 pasid, u64 addr,
+>   void qi_flush_dev_iotlb_pasid(struct intel_iommu *iommu, u16 sid, u16 pfsid,
+>   			      u32 pasid, u16 qdep, u64 addr,
+>   			      unsigned int size_order);
+> +void quirk_dev_tlb(struct device_domain_info *info, unsigned long address,
+> +		   unsigned long pages, u32 pasid, u16 qdep);
+>   void qi_flush_pasid_cache(struct intel_iommu *iommu, u16 did, u64 granu,
+>   			  u32 pasid);
+>   
+> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+> index 7d08eb034f2d..117430b97ba9 100644
+> --- a/drivers/iommu/intel/svm.c
+> +++ b/drivers/iommu/intel/svm.c
+> @@ -184,10 +184,12 @@ static void __flush_svm_range_dev(struct intel_svm *svm,
+>   		return;
+>   
+>   	qi_flush_piotlb(sdev->iommu, sdev->did, svm->pasid, address, pages, ih);
+> -	if (info->ats_enabled)
+> +	if (info->ats_enabled) {
+>   		qi_flush_dev_iotlb_pasid(sdev->iommu, sdev->sid, info->pfsid,
+>   					 svm->pasid, sdev->qdep, address,
+>   					 order_base_2(pages));
+> +		quirk_dev_tlb(info, address, order_base_2(pages), svm->pasid, sdev->qdep);
+> +	}
+>   }
+>   
+>   static void intel_flush_svm_range_dev(struct intel_svm *svm,
