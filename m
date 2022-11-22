@@ -1,174 +1,308 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64CADED0
-	for <iommu@lists.linux.dev>; Tue, 22 Nov 2022 16:49:06 +0000 (UTC)
-Received: by mail-wm1-f41.google.com with SMTP id o7-20020a05600c510700b003cffc0b3374so11563209wms.0
-        for <iommu@lists.linux.dev>; Tue, 22 Nov 2022 08:49:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=z3fcqOHVduVIIg4z4ijk3ykjn2RM3trgK5/ehZ3bY1M=;
-        b=GdK7IiaGPYoYt2Cullz/bFXz5P3zaEbhbB2t0ZpbwFzBQeOMMKazdbcRBwospX37Ui
-         pqMiIGLcaq9zFfPEICfldvKXfL31lnz0AaqH4lHRW1xbnHaDy/Lg4rdvd7XQjNxtq+ay
-         1iqBc+fexaXnaY8vB2aO3JXyzKh/ipGhRImpUWnP3k8BcfmZebvEe4wqfSsUE5LZmN+8
-         LmM6RhNUPnWyN7PHzsyFSneAEOivB3ucTrbdj4p7TsX7scxtByO6GWlpXTANw65+rSSo
-         fJQ6zBeq9qJWeAL4dyugp+BKONx4Qikr+2fGiGvQOWJomWt9c7/sR/U9dBCEYOn2FDML
-         9FtQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=z3fcqOHVduVIIg4z4ijk3ykjn2RM3trgK5/ehZ3bY1M=;
-        b=wo09ta/yFW2MGOIyABkKHd7dgVfRj8N7bfrjfqlhax8G7W3v4ZE74iKsxVAUi3xexr
-         PqWCVGWYjZ9RrsM1gCL5jDOugo22YFB4Ztc8lLJ/q5vWwvsJQQNDEr1hbktiRpfkAVON
-         VqVSH8HBloEt8jXRROM/ZWTWJqqjCdU0KjiTKr00jc5JFnoEPBBclYSh8USMBRRkmMpl
-         14ncYyM0r9NWZT7Yr2WuuSp/+xaItK78XSgzuNH1W71hzxZhs1ud1rgR9SH42+wDyuKb
-         hoBLDC5FAgZW5c2fp203UJS6x5PmLZIxr0xHpfbf3erFo/pGKS11p9AHA/CRsnM+VyFJ
-         aUIA==
-X-Gm-Message-State: ANoB5pndlnjvllngYmftwhnUgEUoNq07GNKwEWu7/N+/Pn4+GgouwX0K
-	OMSvb+7L/9VWroponCLtdRk=
-X-Google-Smtp-Source: AA0mqf5ZtsT30GoUH/4TBViJcG2p2xVpb/2WXR2KXr7wvrCOOAoP5enGR17CBNRPJryrNLruXod8Yg==
-X-Received: by 2002:a05:600c:3590:b0:3d0:1489:78c4 with SMTP id p16-20020a05600c359000b003d0148978c4mr5836156wmq.167.1669135744520;
-        Tue, 22 Nov 2022 08:49:04 -0800 (PST)
-Received: from [192.168.0.25] ([37.222.251.204])
-        by smtp.gmail.com with ESMTPSA id x9-20020a5d6509000000b0023c8026841csm14497653wru.23.2022.11.22.08.49.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Nov 2022 08:49:03 -0800 (PST)
-Message-ID: <f51c7f56-4c62-0351-3b01-ae2f6432fb05@gmail.com>
-Date: Tue, 22 Nov 2022 17:49:01 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFE2FED0
+	for <iommu@lists.linux.dev>; Tue, 22 Nov 2022 16:52:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669135957; x=1700671957;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=1InFcshJ6BkGxovepIOtFxf1177oRXbVXt0TP4XS+cs=;
+  b=eqm7dQITGa2l77dfAOK+hEzWiuMsQiVFUoqqhyJdHaumzveciDM1fzUe
+   +qltIfrxoR0P9emfiefNusELxEF6mDJkw1Njw6l4SK5TK+WVVv+p/ulJO
+   hNO085wo62XJQu2pVHtDmllrKkwtfyVUoQBdDI9s6Wm2sS1WfdQXCcp4E
+   lkO0ezHE/GMoOgK1x3AyxI91/liV8l0Oqva7uu+hsIIIg0Ytrf4d7jPgL
+   lDN68Lo/MXa8bNc7wGY2Jrr7ccRaaSe0wHuGI2GBwLHC5Ml/8Ar9BuhYX
+   n0oDFNCctCwTDPVX51mF2yrxn1LIjTi8g2pZbegTNILk7GlZVXsEUIfgk
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10539"; a="376003980"
+X-IronPort-AV: E=Sophos;i="5.96,184,1665471600"; 
+   d="scan'208";a="376003980"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2022 08:52:37 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10539"; a="970532308"
+X-IronPort-AV: E=Sophos;i="5.96,184,1665471600"; 
+   d="scan'208";a="970532308"
+Received: from araj-dh-work.jf.intel.com (HELO araj-dh-work) ([10.165.157.158])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2022 08:52:36 -0800
+Date: Tue, 22 Nov 2022 16:52:26 +0000
+From: Ashok Raj <ashok_raj@linux.intel.com>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Raj Ashok <ashok.raj@intel.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+	Yuzhang Luo <yuzhang.luo@intel.com>
+Subject: Re: [PATCH] iommu/vt-d: Add a fix for devices need extra dtlb flush
+Message-ID: <Y3z+SojRxCGancX1@araj-dh-work>
+References: <20221122034529.3311562-1-jacob.jun.pan@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH v7 5/6] iommu/mediatek: Improve safety for mediatek,smi
- property in larb nodes
-Content-Language: en-US
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
- linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- mingyuan.ma@mediatek.com, yf.wang@mediatek.com, libo.kang@mediatek.com,
- chengci.xu@mediatek.com, youlin.pei@mediatek.com, anan.sun@mediatek.com,
- xueqi.zhang@mediatek.com, Guenter Roeck <groeck@chromium.org>,
- Dan Carpenter <dan.carpenter@oracle.com>
-References: <20221018024258.19073-1-yong.wu@mediatek.com>
- <20221018024258.19073-6-yong.wu@mediatek.com>
-From: Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20221018024258.19073-6-yong.wu@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221122034529.3311562-1-jacob.jun.pan@linux.intel.com>
 
+On Mon, Nov 21, 2022 at 07:45:29PM -0800, Jacob Pan wrote:
+> QAT devices on Intel Sapphire Rapids and Emerald Rapids has a defect in
 
+s/has/have
+> address translation service (ATS). These devices may inadvertently issue
+> ATS invalidation completion before posted writes initiated with
+> translated address that utilized translations matching the invalidation
+> address range, violating the invalidation completion ordering.
 
-On 18/10/2022 04:42, Yong Wu wrote:
-> No functional change. Just improve safety from dts.
+Above is a bit hard to read, can you see if the rephrasing works?
+
+These devices send the invalidation response ahead of servicing any posted
+writes that could be using the same address range. This can lead to memory
+corruption.
+
 > 
-> All the larbs that connect to one IOMMU must connect with the same
-> smi-common. This patch checks all the mediatek,smi property for each
-> larb, If their mediatek,smi are different, it will return fails.
-> Also avoid there is no available smi-larb nodes.
+> An additional device TLB invalidation is needed to ensure no more posted
+> writes with translated address following the invalidation completion.
 > 
-> Suggested-by: Guenter Roeck <groeck@chromium.org>
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> Without this fix, DMA writes with translated address can happen after
+> device TLB invalidation is completed. Random data corruption can occur
+> as the DMA buffer gets reused after invalidation.
 
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Maybe drop both para above and replace with.
 
+An additional dTLB invalidation ensures the ordering is preserved and
+prevents any data-corruption.
+> 
+> This patch adds a flag to mark the need for an extra flush based on given
+> device IDs, this flag is set during initialization when ATS support is
+> enabled.
+> 
+> At runtime, this flag is used to control the extra dTLB flush. The
+> overhead of checking this unlikely true flag is smaller than checking
+> PCI device IDs every time.
+
+The above 2 para's can be dropped? Since that's what the code does and
+probably not needed in the commit log.
+> 
+> Device TLBs are invalidated under the following six conditions:
+> 1. Device driver does DMA API unmap IOVA
+> 2. Device driver unbind a PASID from a process, sva_unbind_device()
+> 3. PASID is torn down, after PASID cache is flushed. e.g. process
+> exit_mmap() due to crash
+> 4. Under SVA usage, called by mmu_notifier.invalidate_range() where
+> VM has to free pages that were unmapped
+> 5. userspace driver unmaps a DMA buffer
+> 6. Cache invalidation in vSVA usage (upcoming)
+> 
+> For #1 and #2, device drivers are responsible for stopping DMA traffic
+> before unmap/unbind. For #3, iommu driver gets mmu_notifier to
+> invalidate TLB the same way as normal user unmap which will do an extra
+> invalidation. The dTLB invalidation after PASID cache flush does not
+> need an extra invalidation.
+> 
+> Therefore, we only need to deal with #4 and #5 in this patch. #1 is also
+> covered by this patch due to common code path with #5.
+
+I was told to add an imperative statement to tell what the patch does,
+without the code. 
+
+Maybe something like:
+
+Add an extra device TLB invalidation for affected devices.
+
+> 
+> Tested-by: Yuzhang Luo <yuzhang.luo@intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 > ---
->   drivers/iommu/mtk_iommu.c | 53 +++++++++++++++++++++++++++------------
->   1 file changed, 37 insertions(+), 16 deletions(-)
+
+Reviewed-by: Ashok Raj <ashok.raj@intel.com>
+
+>  drivers/iommu/intel/iommu.c | 100 +++++++++++++++++++++++++++++-------
+>  drivers/iommu/intel/iommu.h |   3 ++
+>  drivers/iommu/intel/svm.c   |   4 +-
+>  3 files changed, 87 insertions(+), 20 deletions(-)
 > 
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index 9cbff48f03c0..f7ac102e343f 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -1042,7 +1042,7 @@ static const struct component_master_ops mtk_iommu_com_ops = {
->   static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **match,
->   				  struct mtk_iommu_data *data)
->   {
-> -	struct device_node *larbnode, *smicomm_node, *smi_subcomm_node;
-> +	struct device_node *larbnode, *frst_avail_smicomm_node = NULL;
->   	struct platform_device *plarbdev, *pcommdev;
->   	struct device_link *link;
->   	int i, larb_nr, ret;
-> @@ -1054,6 +1054,7 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
->   		return -EINVAL;
->   
->   	for (i = 0; i < larb_nr; i++) {
-> +		struct device_node *smicomm_node, *smi_subcomm_node;
->   		u32 id;
->   
->   		larbnode = of_parse_phandle(dev->of_node, "mediatek,larbs", i);
-> @@ -1094,27 +1095,47 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
->   			goto err_larbdev_put;
->   		}
->   
-> +		/* Get smi-(sub)-common dev from the last larb. */
-> +		smi_subcomm_node = of_parse_phandle(larbnode, "mediatek,smi", 0);
-> +		if (!smi_subcomm_node) {
-> +			ret = -EINVAL;
-> +			goto err_larbdev_put;
-> +		}
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 996a8b5ee5ee..6254788330b8 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -1396,6 +1396,39 @@ static void domain_update_iotlb(struct dmar_domain *domain)
+>  	spin_unlock_irqrestore(&domain->lock, flags);
+>  }
+>  
+> +/*
+> + * Check that the device does not live on an external facing PCI port that is
+> + * marked as untrusted. Such devices should not be able to apply quirks and
+> + * thus not be able to bypass the IOMMU restrictions.
+> + */
+> +static bool risky_device(struct pci_dev *pdev)
+> +{
+> +	if (pdev->untrusted) {
+> +		pci_info(pdev,
+> +			 "Skipping IOMMU quirk for dev [%04X:%04X] on untrusted PCI link\n",
+> +			 pdev->vendor, pdev->device);
+> +		pci_info(pdev, "Please check with your BIOS/Platform vendor about this\n");
+> +		return true;
+> +	}
+> +	return false;
+> +}
 > +
-> +		/*
-> +		 * It may have two level smi-common. the node is smi-sub-common if it
-> +		 * has a new mediatek,smi property. otherwise it is smi-commmon.
-> +		 */
-> +		smicomm_node = of_parse_phandle(smi_subcomm_node, "mediatek,smi", 0);
-> +		if (smicomm_node)
-> +			of_node_put(smi_subcomm_node);
-> +		else
-> +			smicomm_node = smi_subcomm_node;
+> +/* Impacted QAT device IDs ranging from 0x4940 to 0x4943 */
+> +#define BUGGY_QAT_DEVID_MASK 0x494c
+> +static bool dev_needs_extra_dtlb_flush(struct pci_dev *pdev)
+> +{
+> +	if (pdev->vendor != PCI_VENDOR_ID_INTEL)
+> +		return false;
 > +
-> +		/*
-> +		 * All the larbs that connect to one IOMMU must connect with the same
-> +		 * smi-common.
-> +		 */
-> +		if (!frst_avail_smicomm_node) {
-> +			frst_avail_smicomm_node = smicomm_node;
-> +		} else if (frst_avail_smicomm_node != smicomm_node) {
-> +			dev_err(dev, "mediatek,smi property is not right @larb%d.", id);
-> +			of_node_put(smicomm_node);
-> +			ret = -EINVAL;
-> +			goto err_larbdev_put;
-> +		} else {
-> +			of_node_put(smicomm_node);
-> +		}
+> +	if ((pdev->device & 0xfffc) != BUGGY_QAT_DEVID_MASK)
+> +		return false;
 > +
->   		component_match_add(dev, match, component_compare_dev, &plarbdev->dev);
->   		platform_device_put(plarbdev);
->   	}
->   
-> -	/* Get smi-(sub)-common dev from the last larb. */
-> -	smi_subcomm_node = of_parse_phandle(larbnode, "mediatek,smi", 0);
-> -	if (!smi_subcomm_node)
-> +	if (!frst_avail_smicomm_node)
->   		return -EINVAL;
->   
-> -	/*
-> -	 * It may have two level smi-common. the node is smi-sub-common if it
-> -	 * has a new mediatek,smi property. otherwise it is smi-commmon.
-> -	 */
-> -	smicomm_node = of_parse_phandle(smi_subcomm_node, "mediatek,smi", 0);
-> -	if (smicomm_node)
-> -		of_node_put(smi_subcomm_node);
-> -	else
-> -		smicomm_node = smi_subcomm_node;
+> +	if (risky_device(pdev))
+> +		return false;
+> +
+> +	return true;
+> +}
+> +
+>  static void iommu_enable_pci_caps(struct device_domain_info *info)
+>  {
+>  	struct pci_dev *pdev;
+> @@ -1478,6 +1511,7 @@ static void __iommu_flush_dev_iotlb(struct device_domain_info *info,
+>  	qdep = info->ats_qdep;
+>  	qi_flush_dev_iotlb(info->iommu, sid, info->pfsid,
+>  			   qdep, addr, mask);
+> +	quirk_dev_tlb(info, addr, mask, PASID_RID2PASID, qdep);
+>  }
+>  
+>  static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
+> @@ -4490,9 +4524,10 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+>  	if (dev_is_pci(dev)) {
+>  		if (ecap_dev_iotlb_support(iommu->ecap) &&
+>  		    pci_ats_supported(pdev) &&
+> -		    dmar_ats_supported(pdev, iommu))
+> +		    dmar_ats_supported(pdev, iommu)) {
+>  			info->ats_supported = 1;
 > -
-> -	pcommdev = of_find_device_by_node(smicomm_node);
-> -	of_node_put(smicomm_node);
-> +	pcommdev = of_find_device_by_node(frst_avail_smicomm_node);
-> +	of_node_put(frst_avail_smicomm_node);
->   	if (!pcommdev)
->   		return -ENODEV;
->   	data->smicomm_dev = &pcommdev->dev;
+> +			info->dtlb_extra_inval = dev_needs_extra_dtlb_flush(pdev);
+> +		}
+>  		if (sm_supported(iommu)) {
+>  			if (pasid_supported(iommu)) {
+>  				int features = pci_pasid_features(pdev);
+> @@ -4680,23 +4715,6 @@ static bool intel_iommu_is_attach_deferred(struct device *dev)
+>  	return translation_pre_enabled(info->iommu) && !info->domain;
+>  }
+>  
+> -/*
+> - * Check that the device does not live on an external facing PCI port that is
+> - * marked as untrusted. Such devices should not be able to apply quirks and
+> - * thus not be able to bypass the IOMMU restrictions.
+> - */
+> -static bool risky_device(struct pci_dev *pdev)
+> -{
+> -	if (pdev->untrusted) {
+> -		pci_info(pdev,
+> -			 "Skipping IOMMU quirk for dev [%04X:%04X] on untrusted PCI link\n",
+> -			 pdev->vendor, pdev->device);
+> -		pci_info(pdev, "Please check with your BIOS/Platform vendor about this\n");
+> -		return true;
+> -	}
+> -	return false;
+> -}
+> -
+>  static void intel_iommu_iotlb_sync_map(struct iommu_domain *domain,
+>  				       unsigned long iova, size_t size)
+>  {
+> @@ -4931,3 +4949,47 @@ static void __init check_tylersburg_isoch(void)
+>  	pr_warn("Recommended TLB entries for ISOCH unit is 16; your BIOS set %d\n",
+>  	       vtisochctrl);
+>  }
+> +
+> +/*
+> + * Here we deal with a device TLB defect where device may inadvertently issue ATS
+> + * invalidation completion before posted writes initiated with translated address
+> + * that utilized translations matching the invalidation address range, violating
+> + * the invalidation completion ordering.
+> + * Therefore, any use cases that cannot guarantee DMA is stopped before unmap is
+> + * vulnerable to this defect. In other words, any dTLB invalidation initiated not
+> + * under the control of the trusted/privileged host device driver must use this
+> + * quirk.
+> + * Device TLBs are invalidated under the following six conditions:
+> + * 1. Device driver does DMA API unmap IOVA
+> + * 2. Device driver unbind a PASID from a process, sva_unbind_device()
+> + * 3. PASID is torn down, after PASID cache is flushed. e.g. process
+> + *    exit_mmap() due to crash
+> + * 4. Under SVA usage, called by mmu_notifier.invalidate_range() where
+> + *    VM has to free pages that were unmapped
+> + * 5. Userspace driver unmaps a DMA buffer
+> + * 6. Cache invalidation in vSVA usage (upcoming)
+> + *
+> + * For #1 and #2, device drivers are responsible for stopping DMA traffic
+> + * before unmap/unbind. For #3, iommu driver gets mmu_notifier to
+> + * invalidate TLB the same way as normal user unmap which will use this quirk.
+> + * The dTLB invalidation after PASID cache flush does not need this quirk.
+> + *
+> + * As a reminder, #6 will *NEED* this quirk as we enable nested translation.
+> + */
+> +void quirk_dev_tlb(struct device_domain_info *info, unsigned long address,
+> +		   unsigned long mask, u32 pasid, u16 qdep)
+> +{
+> +	u16 sid;
+> +
+> +	if (likely(!info->dtlb_extra_inval))
+> +		return;
+> +
+> +	sid = PCI_DEVID(info->bus, info->devfn);
+> +	if (pasid == PASID_RID2PASID) {
+> +		qi_flush_dev_iotlb(info->iommu, sid, info->pfsid,
+> +				   qdep, address, mask);
+> +	} else {
+> +		qi_flush_dev_iotlb_pasid(info->iommu, sid, info->pfsid,
+> +					 pasid, qdep, address, mask);
+> +	}
+> +}
+> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+> index 92023dff9513..09b989bf545f 100644
+> --- a/drivers/iommu/intel/iommu.h
+> +++ b/drivers/iommu/intel/iommu.h
+> @@ -623,6 +623,7 @@ struct device_domain_info {
+>  	u8 pri_enabled:1;
+>  	u8 ats_supported:1;
+>  	u8 ats_enabled:1;
+> +	u8 dtlb_extra_inval:1;	/* Quirk for devices need extra flush */
+>  	u8 ats_qdep;
+>  	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
+>  	struct intel_iommu *iommu; /* IOMMU used by this device */
+> @@ -728,6 +729,8 @@ void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u32 pasid, u64 addr,
+>  void qi_flush_dev_iotlb_pasid(struct intel_iommu *iommu, u16 sid, u16 pfsid,
+>  			      u32 pasid, u16 qdep, u64 addr,
+>  			      unsigned int size_order);
+> +void quirk_dev_tlb(struct device_domain_info *info, unsigned long address,
+> +		   unsigned long pages, u32 pasid, u16 qdep);
+>  void qi_flush_pasid_cache(struct intel_iommu *iommu, u16 did, u64 granu,
+>  			  u32 pasid);
+>  
+> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+> index 7d08eb034f2d..117430b97ba9 100644
+> --- a/drivers/iommu/intel/svm.c
+> +++ b/drivers/iommu/intel/svm.c
+> @@ -184,10 +184,12 @@ static void __flush_svm_range_dev(struct intel_svm *svm,
+>  		return;
+>  
+>  	qi_flush_piotlb(sdev->iommu, sdev->did, svm->pasid, address, pages, ih);
+> -	if (info->ats_enabled)
+> +	if (info->ats_enabled) {
+>  		qi_flush_dev_iotlb_pasid(sdev->iommu, sdev->sid, info->pfsid,
+>  					 svm->pasid, sdev->qdep, address,
+>  					 order_base_2(pages));
+> +		quirk_dev_tlb(info, address, order_base_2(pages), svm->pasid, sdev->qdep);
+> +	}
+>  }
+>  
+>  static void intel_flush_svm_range_dev(struct intel_svm *svm,
+> -- 
+> 2.25.1
+> 
+> 
