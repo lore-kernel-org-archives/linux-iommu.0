@@ -1,112 +1,181 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48ACA7E
-	for <iommu@lists.linux.dev>; Wed, 23 Nov 2022 05:03:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 387037E
+	for <iommu@lists.linux.dev>; Wed, 23 Nov 2022 05:19:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669179838; x=1700715838;
-  h=message-id:date:mime-version:cc:to:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=piSeHphfFBUuFKj955dzRIMO4eKHzZ6VALiFWXwyXUo=;
-  b=K6iP0TWGyTcVYXDkDUQH0Z69msbvVOdS8Qt7c+WTtSTVTCmDbArCG6PO
-   K4rUqHnNcG9l51goWal78yYa0vaz1+1Khmx2wEqoi+89C/hCr8jb1g1M9
-   Fgnk+u1zqraeWa2n8BX3O7OeCP4+jtp73X506zWW/fBDJ9oAX+xM7TY9Q
-   ZU31RDS4BD23T898mV/HlS2mBvudtWBJaC+rlKSGkITPQiQRznRy1vizm
-   UAEs51vk6AtxxuKDn5KI/DClzcdMHvXDBHX3YMUdwZetBTV9ehdfBbfYw
-   k8ddG0RjWx09+NQm4gq6Z9gCz2E0qc2dE4kD+s+gv3+bapxZBp2NxrxFP
+  t=1669180743; x=1700716743;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=D6sHzMdig+VSHFTAuarShAfzNOI1DJxQGvCphRx4Dmo=;
+  b=jDL/WRpYeMCxuusVEnYN70T4J9Xwgq71VuOIJN5RcWcAn8NtSxZtyQuN
+   3BdzdMsoIebpPds7OOhQjnejzi7SK26CB/Zb1EZsn15XDHBMU3ej5ApeP
+   j3rhkB1qOAAsXDAeXUlpOhzVLKfBWUcaPjxN2mqUj+iS3RL2e4ReRe+sj
+   CRL/ymZo10i5bjYmR4EhlzU5iPJEPVZEhWzU6D/GdTb+06rpUCEbtcIbY
+   ngFLQLJr/kXE2RmV8EXx9Tk9WUhNEe4Cx00z+vkpNYAXvcCVKrrK6EHs1
+   wiy9UnKO9e0UHVFcrh+wybD3kXoiAi6F5LL7ebqldv/chyqDjLUSLPVRS
    g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10539"; a="312681139"
+X-IronPort-AV: E=McAfee;i="6500,9779,10539"; a="293691283"
 X-IronPort-AV: E=Sophos;i="5.96,186,1665471600"; 
-   d="scan'208";a="312681139"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2022 21:03:57 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10539"; a="816348905"
+   d="scan'208";a="293691283"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2022 21:19:02 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10539"; a="635792326"
 X-IronPort-AV: E=Sophos;i="5.96,186,1665471600"; 
-   d="scan'208";a="816348905"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.213.242]) ([10.254.213.242])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Nov 2022 21:03:54 -0800
-Message-ID: <c085f67d-7874-4a83-a12c-703d1638d940@linux.intel.com>
-Date: Wed, 23 Nov 2022 13:03:52 +0800
+   d="scan'208";a="635792326"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga007.jf.intel.com with ESMTP; 22 Nov 2022 21:19:01 -0800
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 22 Nov 2022 21:19:01 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Tue, 22 Nov 2022 21:19:01 -0800
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.41) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Tue, 22 Nov 2022 21:19:01 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ikSDxa9L9DprDY65kfFjcjNZXKjn1ZRfeuwxR92obIOBrwhfjToRJZ9Y2wxI9YK7TiwTrmnO+KY4lKN5cjXuAj/CcdrWRpQ9mGJ5N3TrlqQ5bBc1fZsd5AlyQS6DbUSHQF1cnZx/0ZS4Ia/E6YOy7EQX6nmgjYpKJ63GPbJo8b4Yk834wAc5L5Wz0pwpHvGy5Vrs8u4oFbBq2V/wKbkyoc09aDoHP38ipJ8jLlgPeV57Qe0z6zhLxsCXVMeCxIgNKdXaVLQ7tB+O/FJ/XTJTDscTYmiVPyboPo3BuCScOObYpRpko5qtprQhmAZPhei2/cqq58aJmob8KP0sv9Kf2g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=D6sHzMdig+VSHFTAuarShAfzNOI1DJxQGvCphRx4Dmo=;
+ b=FbSOu3mwqrQB1G4J59IngyFcPP0ofZb9RFxjbseZ6nvUQEqkFtFO/HqQuR5Jv4zDdVOL0ByG/tEOV6cQ8ZNjOsUq9tuvUIsFl5wM1U6pPiw7pe/D+2g6rTn81TOre/Z/uY94Zx3JSrQUbyOVHXjeaKFOYxVg56LOokhKdMUme/Yz9MtTvyDJE5x3yMb0ZLFlvdoi1MGFpSZtzelkpoPeSm6bb7g2wKiMxfw8Qt4fpqj+rY2mV+jPlVeY4JB5YBL1YMKHoSSuZ1Tpwo6YekbW5AaMLxv2n9xkpZnSk1B4AdT3UM/GnzGpq8Fvp4b/KageW07xJECvfuOdatlACOsJwg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by SA1PR11MB6848.namprd11.prod.outlook.com (2603:10b6:806:29c::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5834.15; Wed, 23 Nov
+ 2022 05:18:55 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::d30c:c435:9b26:7dde]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::d30c:c435:9b26:7dde%9]) with mapi id 15.20.5834.015; Wed, 23 Nov 2022
+ 05:18:55 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>, Robin Murphy <robin.murphy@arm.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>, LKML
+	<linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>
+CC: Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
+	"Raj, Ashok" <ashok.raj@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Luo,
+ Yuzhang" <yuzhang.luo@intel.com>
+Subject: RE: [PATCH] iommu/vt-d: Add a fix for devices need extra dtlb flush
+Thread-Topic: [PATCH] iommu/vt-d: Add a fix for devices need extra dtlb flush
+Thread-Index: AQHY/iRZ1HNxV1akM0yWbTOvvjHGEq5LOSEAgAB3ReCAAEVGAIAAA3wQ
+Date: Wed, 23 Nov 2022 05:18:55 +0000
+Message-ID: <BN9PR11MB527642B1DA920C78742036FD8C0C9@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20221122034529.3311562-1-jacob.jun.pan@linux.intel.com>
+ <bc647ceb-b14b-dc5b-ba83-4f8befd188c5@arm.com>
+ <BN9PR11MB527620902046A4339EAACD3F8C0C9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <c085f67d-7874-4a83-a12c-703d1638d940@linux.intel.com>
+In-Reply-To: <c085f67d-7874-4a83-a12c-703d1638d940@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|SA1PR11MB6848:EE_
+x-ms-office365-filtering-correlation-id: e709cc62-83ac-49dd-a476-08dacd12378a
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: BqIPEVz0Tv/aPQLF/6Ah+Q5hEX5j49FVgPalX4PER+MlaYesCiIBnHmFbiZjelbYzXtJ1H/wbXKlDE29gyPApoBEr7yf9OF08V22Rj/tcIWQw5dz8HTY9L6b/03n8wBwJnr3x4GwmNflHPqUvOiBgZRXkhZw1wffPgSg9nzdbF+/1mUlwmKtfui+35SHsDBc6gvpg2vvgqNkjmODdKpWyDO2TOpHNw1JAw0EZeHhJTJDGSdc5CzJ/z+1V8SjYErz6VU33xdgJhlY994Kkduo+xd4liRMmfyhFEzjJnh4Mw/Bqx0/0ra6sh87erWcX+8ILK67/KkKSLc8CNtBoXNUlCpCu/jnPI/kiv2Qy4/fMiOX2EkFbfaEV8ugyP7o3C0TZ+0tP0uLxpYcOWXNEmjg91FPWH6f9h/VtnIwmehD+4hyzgmlN9IyermafMQiZ7x3rMIapL3Ms5aoBqTG16oQqmttGYTpEkwRTgKWxpp5bKKPHvvCMu6ArYdjF0OM+2SbGy02+MfXkWSTPiCMLkGPFbFgJXiMkiObOQMUo1grT1kz4tK9+Cg8ptRDAIgApVeCO/uONvDT1uZqL8UjqWf4wFWvrXMHt4v+o4c8HngaOq4lNxnJKC/LOXnWIIFlDftdDuU84axV0Zirx+0m4EfI3o0RGRKdvzhXbk4u2FnRWmeY8HvzQis2+BzHGsFD/5H6rbd70XbEzWo9d3fdtwaUFA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(366004)(396003)(39860400002)(136003)(346002)(451199015)(33656002)(38070700005)(86362001)(8676002)(55016003)(6506007)(5660300002)(7696005)(83380400001)(122000001)(53546011)(9686003)(82960400001)(38100700002)(186003)(26005)(76116006)(2906002)(54906003)(66446008)(478600001)(66556008)(66476007)(41300700001)(64756008)(71200400001)(110136005)(8936002)(52536014)(316002)(66946007)(4326008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?dWd1dHd0eW14VzllZ0tsemFVWTNnY0x0L2kvRTY0RkYrU2hRb3RHb3FCMGZr?=
+ =?utf-8?B?UVUxS3RwS01OUkNONWpURmdQYllsdWhRSXFtVmRudDBva1YvSmZmMHQwQUlo?=
+ =?utf-8?B?SGZIRVRMQnlKUUoyUStkbFcrTjZWSVFQWEpXcEppV21uTWRVczIvelYwWUdH?=
+ =?utf-8?B?cTE5d29lVlZYRFN2QUk1YUdnNVRrOXkxTVduN09JcGFFQmt6cDBPU2MyZjNn?=
+ =?utf-8?B?bzJmNHNYR2hCSkxGelJrcDcxV1AvN0pSazBBWUtyME5reEV5aUZjOGl4aFp4?=
+ =?utf-8?B?a0VDc2h5ekg1blNPRFpGelNobnBCZHBnVHU0YU1uZlBkcXJCZEc4U2ppbkpm?=
+ =?utf-8?B?dkNzcG1SekEzb2pmUjJGR0FQVkd2cU13U3h1ejg3ZUthTmtLeDkxSTZ3a3JK?=
+ =?utf-8?B?QkZWU3pWNnR1RmpmSEw3Z21kdUZTSHhOSTlJZFZuU3c0dnRYNWNYMWp6aGlK?=
+ =?utf-8?B?UTVLbHNCZmhZTkR1Qmo3ZzVDZTBmYjhKaEZsTjFZcTgyWUlGNUJ2TWk3VGgw?=
+ =?utf-8?B?Skx2WDA2eCtWOHF5dUd6TnNrOUhJRHdzODJsd1pZSUZIREVrTis5V0FJVTZo?=
+ =?utf-8?B?WnZWNXFzSmVpOTVtNnpUNFVYNi9BOSttS1U0K2VDYUl5VWRZSXZYMVNseTNB?=
+ =?utf-8?B?RlBVRVd5ZUlmSXBsVVYzaEpoRjhvQ0d0UGN3OXVlMk54YmdhN3ROdVlJN0Q4?=
+ =?utf-8?B?czV2TXFIR3M4Y3MvNVg4Mkd5YnlpUnM5YXRZY3d3S1RkSllpcElzdFdIUjhn?=
+ =?utf-8?B?dUlrUHdTVThVVElCTHBUYlFLRE9HRm1pcFNscHNRK01ZbUZtTnB5QjZLVVhs?=
+ =?utf-8?B?WEdpU093MUdjdWk1NFYzZGp6a01YUG5LUEFqS3pJL1VXVzdFME9GczBBaEVa?=
+ =?utf-8?B?NnBQNVNJVWR4Q0lvaldCaHdydk5UQ1R3RnZubkZSTnUwcS9KVFlKaDVHZVhE?=
+ =?utf-8?B?QjF5aWxmejh5ZjhkNlZCK25VUmlHRWZnUE9RNmVjdHlNYWtaV2RJd2JyNm95?=
+ =?utf-8?B?OTl1STFuUjBhMnEvNTd0eUJ6SUNwa1lKam1oWlU5UGdpNWx0K0krbVoxTkpK?=
+ =?utf-8?B?eVc5Q1plMGFZNE5RUkRpMGt5WXY3eC94ZXpVQ3JCSDZmZ2FZODJJQUN0ZFJi?=
+ =?utf-8?B?TzRuSTQzTGFKSzFNVlMwNUFoOVQ4Um1SYWJia2s3SEVjQU10UHVxQmZsVTlt?=
+ =?utf-8?B?ekhpMmFyQTZMS0pDb291Vyt2TEpad0xleFA4SDRQdHloWlNkSHh5WGtwQ3V4?=
+ =?utf-8?B?aWE4Q3U4YlBjd25BU2Q0cWlWNWJ5SzEvNDUweXZER2hvUlg0bjRueEg1bGVv?=
+ =?utf-8?B?K0s4VG0rYVJoMk5NMlNyR28zajkzdUhTVlFzOVgxS3VJU0Q3RG5naHo3dWpu?=
+ =?utf-8?B?bnYrKzFxY2tNRG02bkJMNHdBKzVNV3BkMGFGWUZ2UElpa2RPVDJlZlVERmZT?=
+ =?utf-8?B?WkN3ZHUycTVHb1U4NGV6bVlFSWpaVkp1TVdJWWkxNUNaN1MzcTRjODlRT3NI?=
+ =?utf-8?B?bjNnS3VUeDIvOEdqOHpFOWhSL05samZENU5NcVFuRmhpaG9KWnVnZzFXVEx6?=
+ =?utf-8?B?ekZpY1M5blBLcGlLbUY0blcrK0JGTGVmV0FVTXRXWSt0YjFUWTVQZFl4dDYy?=
+ =?utf-8?B?c3BqOFVBSXY5RTRWOTUvTHEzQy9YOTNlbUVIMlJpTmQvVVA3c1djWjlIaU02?=
+ =?utf-8?B?aG1HaHBuOExGQUgxYVpKOVh0MEhEMTVmYTFrMmN3QWVLYU44TnBMY0lmeEs5?=
+ =?utf-8?B?U0d5Y280T28yUGJOKy92a08wYkl6ZFVaNWNaOW9VV1dPOUVhMUhlaHVRdlpY?=
+ =?utf-8?B?RG43dE1nVm1uTVUvRFBXVHU5UzRJTG5xUWNkYnJWUWswTWc4QVN6aGFGaURP?=
+ =?utf-8?B?YnFWWWZxWDFRQUZvTHczaXRZcUxCZGpUQVJHd1d3dW9mVGxuZHVCTDBjMldO?=
+ =?utf-8?B?WWdqVUVIeE01T2kxblVGZ2xMZXlZZyt1UGtNa3hqT0tSVHg3UTBacFFWSFcx?=
+ =?utf-8?B?bGpBSVBqRHA2aWFDTkRLWk5mZVV1TUpYRVhMVjRyWnZxNnNsTEFESUtBOFlk?=
+ =?utf-8?B?d2sxUXdTWndSUFFHZEU4ZG95dHNqZTlXWCtkM0wycjJBd0FqU2NRV0VVMXRS?=
+ =?utf-8?Q?sbwYErt7ES1dymN4ReERkwHvu?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Cc: baolu.lu@linux.intel.com, Will Deacon <will@kernel.org>,
- David Woodhouse <dwmw2@infradead.org>, "Raj, Ashok" <ashok.raj@intel.com>,
- "Liu, Yi L" <yi.l.liu@intel.com>, "Luo, Yuzhang" <yuzhang.luo@intel.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>, Robin Murphy
- <robin.murphy@arm.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>,
- LKML <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- Joerg Roedel <joro@8bytes.org>
-References: <20221122034529.3311562-1-jacob.jun.pan@linux.intel.com>
- <bc647ceb-b14b-dc5b-ba83-4f8befd188c5@arm.com>
- <BN9PR11MB527620902046A4339EAACD3F8C0C9@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH] iommu/vt-d: Add a fix for devices need extra dtlb flush
-In-Reply-To: <BN9PR11MB527620902046A4339EAACD3F8C0C9@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e709cc62-83ac-49dd-a476-08dacd12378a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Nov 2022 05:18:55.0815
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: hCQQTQ5s9g02AlN8Hw9/dou+hptnBTl/eO7F1lBrQm0SyH7a9r1lUsI4/qhT4VtvLW4vCDJyLeBSjmPNTkPoig==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB6848
+X-OriginatorOrg: intel.com
 
-On 2022/11/23 9:02, Tian, Kevin wrote:
->> From: Robin Murphy <robin.murphy@arm.com>
->> Sent: Wednesday, November 23, 2022 1:49 AM
->>
->>> +
->>> +/* Impacted QAT device IDs ranging from 0x4940 to 0x4943 */
->>> +#define BUGGY_QAT_DEVID_MASK 0x494c
->>> +static bool dev_needs_extra_dtlb_flush(struct pci_dev *pdev)
->>> +{
->>> +	if (pdev->vendor != PCI_VENDOR_ID_INTEL)
->>> +		return false;
->>> +
->>> +	if ((pdev->device & 0xfffc) != BUGGY_QAT_DEVID_MASK)
->>> +		return false;
->>> +
->>> +	if (risky_device(pdev))
->>> +		return false;
->>
->> Hmm, I'm not sure that that makes much sense to me - what privilege can
->> the device gain from being told to invalidate things twice? Why would we
->> want to implicitly *allow* a device to potentially keep using a stale
->> translation if for some bizarre reason firmware has marked it as
->> external, surely that's worse?
-
- From the perspective of IOMMU, any quirk is only applicable to trusted
-devices. If the IOMMU driver detects that a quirk is being applied to an
-untrusted device, it is already buggy or malicious. The IOMMU driver
-should let the users know by:
-
-	pci_info(pdev,
-		 "Skipping IOMMU quirk for dev [%04X:%04X] on untrusted PCI link\n",
-		 pdev->vendor, pdev->device);
-	pci_info(pdev, "Please check with your BIOS/Platform vendor about this\n");
-
-and stop applying any quirk.
-
->>
-> 
-> ATS is disabled for such device hence no dtlb at all.
-> 
-> bool pci_ats_supported(struct pci_dev *dev)
-> {
-> 	if (!dev->ats_cap)
-> 		return false;
-> 
-> 	return (dev->untrusted == 0);
-> }
-> 
-> So above check doesn't make things worse. It's kind of meaningless
-> but according to Baolu he wants that check in every quirk...
-
-At some time in the future, the hardware may support kind of enhanced
-ATS (or Secure ATS). At that time, above condition may be changed.
-
-Best regards,
-baolu
+PiBGcm9tOiBCYW9sdSBMdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiBTZW50OiBXZWRu
+ZXNkYXksIE5vdmVtYmVyIDIzLCAyMDIyIDE6MDQgUE0NCj4gDQo+IE9uIDIwMjIvMTEvMjMgOTow
+MiwgVGlhbiwgS2V2aW4gd3JvdGU6DQo+ID4+IEZyb206IFJvYmluIE11cnBoeSA8cm9iaW4ubXVy
+cGh5QGFybS5jb20+DQo+ID4+IFNlbnQ6IFdlZG5lc2RheSwgTm92ZW1iZXIgMjMsIDIwMjIgMTo0
+OSBBTQ0KPiA+Pg0KPiA+Pj4gKw0KPiA+Pj4gKy8qIEltcGFjdGVkIFFBVCBkZXZpY2UgSURzIHJh
+bmdpbmcgZnJvbSAweDQ5NDAgdG8gMHg0OTQzICovDQo+ID4+PiArI2RlZmluZSBCVUdHWV9RQVRf
+REVWSURfTUFTSyAweDQ5NGMNCj4gPj4+ICtzdGF0aWMgYm9vbCBkZXZfbmVlZHNfZXh0cmFfZHRs
+Yl9mbHVzaChzdHJ1Y3QgcGNpX2RldiAqcGRldikNCj4gPj4+ICt7DQo+ID4+PiArCWlmIChwZGV2
+LT52ZW5kb3IgIT0gUENJX1ZFTkRPUl9JRF9JTlRFTCkNCj4gPj4+ICsJCXJldHVybiBmYWxzZTsN
+Cj4gPj4+ICsNCj4gPj4+ICsJaWYgKChwZGV2LT5kZXZpY2UgJiAweGZmZmMpICE9IEJVR0dZX1FB
+VF9ERVZJRF9NQVNLKQ0KPiA+Pj4gKwkJcmV0dXJuIGZhbHNlOw0KPiA+Pj4gKw0KPiA+Pj4gKwlp
+ZiAocmlza3lfZGV2aWNlKHBkZXYpKQ0KPiA+Pj4gKwkJcmV0dXJuIGZhbHNlOw0KPiA+Pg0KPiA+
+PiBIbW0sIEknbSBub3Qgc3VyZSB0aGF0IHRoYXQgbWFrZXMgbXVjaCBzZW5zZSB0byBtZSAtIHdo
+YXQgcHJpdmlsZWdlIGNhbg0KPiA+PiB0aGUgZGV2aWNlIGdhaW4gZnJvbSBiZWluZyB0b2xkIHRv
+IGludmFsaWRhdGUgdGhpbmdzIHR3aWNlPyBXaHkgd291bGQgd2UNCj4gPj4gd2FudCB0byBpbXBs
+aWNpdGx5ICphbGxvdyogYSBkZXZpY2UgdG8gcG90ZW50aWFsbHkga2VlcCB1c2luZyBhIHN0YWxl
+DQo+ID4+IHRyYW5zbGF0aW9uIGlmIGZvciBzb21lIGJpemFycmUgcmVhc29uIGZpcm13YXJlIGhh
+cyBtYXJrZWQgaXQgYXMNCj4gPj4gZXh0ZXJuYWwsIHN1cmVseSB0aGF0J3Mgd29yc2U/DQo+IA0K
+PiAgRnJvbSB0aGUgcGVyc3BlY3RpdmUgb2YgSU9NTVUsIGFueSBxdWlyayBpcyBvbmx5IGFwcGxp
+Y2FibGUgdG8gdHJ1c3RlZA0KPiBkZXZpY2VzLiBJZiB0aGUgSU9NTVUgZHJpdmVyIGRldGVjdHMg
+dGhhdCBhIHF1aXJrIGlzIGJlaW5nIGFwcGxpZWQgdG8gYW4NCj4gdW50cnVzdGVkIGRldmljZSwg
+aXQgaXMgYWxyZWFkeSBidWdneSBvciBtYWxpY2lvdXMuIFRoZSBJT01NVSBkcml2ZXINCj4gc2hv
+dWxkIGxldCB0aGUgdXNlcnMga25vdyBieToNCj4gDQo+IAlwY2lfaW5mbyhwZGV2LA0KPiAJCSAi
+U2tpcHBpbmcgSU9NTVUgcXVpcmsgZm9yIGRldiBbJTA0WDolMDRYXSBvbiB1bnRydXN0ZWQNCj4g
+UENJIGxpbmtcbiIsDQo+IAkJIHBkZXYtPnZlbmRvciwgcGRldi0+ZGV2aWNlKTsNCj4gCXBjaV9p
+bmZvKHBkZXYsICJQbGVhc2UgY2hlY2sgd2l0aCB5b3VyIEJJT1MvUGxhdGZvcm0gdmVuZG9yIGFi
+b3V0DQo+IHRoaXNcbiIpOw0KPiANCj4gYW5kIHN0b3AgYXBwbHlpbmcgYW55IHF1aXJrLg0KPiAN
+Cg0KQSBxdWlyayB1c3VhbGx5IHJlbGF4ZXMgc29tZXRoaW5nIHRoZW4geW91IHdhbnQgaXQgb25s
+eSBvbiB0cnVzdGVkIGRldmljZXMuDQoNCmJ1dCB0aGUgcXVpcmsgaW4gdGhpcyBwYXRjaCBpcyB0
+cnlpbmcgdG8gZml4IGEgdnVsbmVyYWJpbGl0eS4gSW4gY29uY2VwdCBpdCdzDQp3ZWlyZCB0byBz
+a2lwIGl0IG9uIHVudHJ1c3RlZCBkZXZpY2VzLiBUaGlzIGlpdWMgd2FzIHRoZSBwYXJ0IGNhdXNp
+bmcgY29uZnVzaW9uDQp0byBSb2Jpbi4NCg==
