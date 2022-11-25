@@ -1,112 +1,117 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE0A55C9B
-	for <iommu@lists.linux.dev>; Fri, 25 Nov 2022 15:19:40 +0000 (UTC)
-Received: by mail-wm1-f46.google.com with SMTP id v7so3723225wmn.0
-        for <iommu@lists.linux.dev>; Fri, 25 Nov 2022 07:19:40 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF47A5CA4
+	for <iommu@lists.linux.dev>; Fri, 25 Nov 2022 16:28:20 +0000 (UTC)
+Received: by mail-ej1-f44.google.com with SMTP id cw8so1311744ejb.10
+        for <iommu@lists.linux.dev>; Fri, 25 Nov 2022 08:28:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=FPfIcZ7oMFAWMErNOiDjIKAKPnIKu22VqMpx37ofk00=;
+        b=aUwGVuMXyJgJCAsCUvWy3cRAnZdydVYshWa7vdWjNxFdJlX17LHfBZidw2jPsd6Ias
+         rDsTEWcavVDqxeeofCi6uvNO79qiGVFMmDKKrrMomr8desXQAn9S2PY5T+eVfdHMFi/h
+         8ty+kGBPgvn7HF22ZOAAZA0P+oYT/20dD8t9s=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hZxVZyzuCq/7TKW0PGUA94kRptUFc8WRLxofFIt0CnI=;
-        b=P3+z0KF8dsMt0qrAxIEGZXo07bNXWiO/huhu3CNRAhpcK9dmTJW/KePojtyhK15YHc
-         gkfbyR0HY5KO6XE1rKvJkzm6V9sO11b5FR0p5QgNra4qH0tBfoh+LO/6mboK9H/ewWof
-         xZrlviHwtp6A+kSqUdMOAER066eEOlupBBPFV7Gi8gQmmMXNns+2QUJ4LkW4zBDPsb8y
-         jQmMrkdltUin2AKOov+oup+YrA0XmO8O9x/HEzOqtdvzSm5O9JlxoKs6A8QUEAdbql6u
-         hvCUiMu28k2lLiOVUaYtbNlpmksbpy86r/zCCQAxyFkxRXpNDALNWyacE8utj8PfmWEM
-         f95Q==
-X-Gm-Message-State: ANoB5pnVCyG7UCUlNPLlzUhJg4YfnmVQIkLEvH2Wk2ADE6bSI/mGCRWP
-	QcwH11cWB/NTVTtkrd//+6o=
-X-Google-Smtp-Source: AA0mqf6RdksmLN5860hkrp3lxt4PM3nDpnu7U9LFfaxxW9+solGQCcJhVDWAaW44mPX5LbxbF1jj8A==
-X-Received: by 2002:a05:600c:4b10:b0:3cf:eaf5:77c6 with SMTP id i16-20020a05600c4b1000b003cfeaf577c6mr27241123wmp.56.1669389578960;
-        Fri, 25 Nov 2022 07:19:38 -0800 (PST)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id v17-20020a05600c445100b003c64c186206sm6133436wmn.16.2022.11.25.07.19.37
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=FPfIcZ7oMFAWMErNOiDjIKAKPnIKu22VqMpx37ofk00=;
+        b=NKd4l5PSJT2CHNipzXPj2LMue7KDqzcjQGxqRdrH7dT1JChfAcieMLe8Zq/v6Fee6M
+         YDgFFR3K6zP8ghShGfA6yvk38F0mMFwkM2k/3v/EIuAs+UCySri/h4uwTVEKWOnnDKhT
+         1pfjfb7V5q6h4/XEK4tBXZ4LnbaPf8JoxvbGfGeqT/Ah+MJXEbhLmsgws/baSfATQXHv
+         MfCqu/LZy4dO3EmeUNnz9beL/gaUJXdqQh9g95M9Hsju+kLBk6gnZtXw27n+dDjm02Sq
+         QiEFuqUbnyEbRvvSBo9O5mee+AJneaUGsCl2YOhRKmeIt6SU9D4ovH9cZDioQJeItVhG
+         nZHQ==
+X-Gm-Message-State: ANoB5plSLk1zRqyrLEQ4eEsKYtGOeWrkBLfZEF4/f2PRSbCekQmkr7sW
+	DA7Mci7iyqbaJbfHz++QNjyZ4Q==
+X-Google-Smtp-Source: AA0mqf5CoPt+3iMGVdMS5sptppyW5DW0OMpWoLkAdjvxpFJYpZ18xIoomWaaxApwBWBj+x5ZfUfApg==
+X-Received: by 2002:a17:906:d8db:b0:7ba:8633:7f7b with SMTP id re27-20020a170906d8db00b007ba86337f7bmr9893641ejb.206.1669393699000;
+        Fri, 25 Nov 2022 08:28:19 -0800 (PST)
+Received: from alco.roam.corp.google.com (80.71.134.83.ipv4.parknet.dk. [80.71.134.83])
+        by smtp.gmail.com with ESMTPSA id ud10-20020a170907c60a00b007b29eb8a4dbsm1771589ejc.13.2022.11.25.08.28.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Nov 2022 07:19:38 -0800 (PST)
-Date: Fri, 25 Nov 2022 15:19:36 +0000
-From: Wei Liu <wei.liu@kernel.org>
-To: Michael Kelley <mikelley@microsoft.com>
-Cc: hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
-	wei.liu@kernel.org, decui@microsoft.com, luto@kernel.org,
-	peterz@infradead.org, davem@davemloft.net, edumazet@google.com,
-	kuba@kernel.org, pabeni@redhat.com, lpieralisi@kernel.org,
-	robh@kernel.org, kw@linux.com, bhelgaas@google.com, arnd@arndb.de,
-	hch@infradead.org, m.szyprowski@samsung.com, robin.murphy@arm.com,
-	thomas.lendacky@amd.com, brijesh.singh@amd.com, tglx@linutronix.de,
-	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-	Tianyu.Lan@microsoft.com, kirill.shutemov@linux.intel.com,
-	sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
-	isaku.yamahata@intel.com, dan.j.williams@intel.com,
-	jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com,
-	x86@kernel.org, linux-kernel@vger.kernel.org,
-	linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH v4 1/1] x86/ioremap: Fix page aligned size calculation in
- __ioremap_caller()
-Message-ID: <Y4DdCD7555d2SpkZ@liuwe-devbox-debian-v2>
-References: <1669138842-30100-1-git-send-email-mikelley@microsoft.com>
+        Fri, 25 Nov 2022 08:28:18 -0800 (PST)
+From: Ricardo Ribalda <ribalda@chromium.org>
+Date: Fri, 25 Nov 2022 17:28:10 +0100
+Subject: [PATCH] iommu/mediatek: Fix crash on isr after kexec()
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1669138842-30100-1-git-send-email-mikelley@microsoft.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20221125-mtk-iommu-v1-0-bb5ecac97a28@chromium.org>
+To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ Yong Wu <yong.wu@mediatek.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, Ricardo Ribalda <ribalda@chromium.org>,
+ linux-mediatek@lists.infradead.org
+X-Mailer: b4 0.11.0-dev-696ae
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1626; i=ribalda@chromium.org;
+ h=from:subject:message-id; bh=yRsx62PHekdowYwa/Kc+JnAl1OMT11qcvF/UlUuv6e0=;
+ b=owEBbQKS/ZANAwAKAdE30T7POsSIAcsmYgBjgO0e3Iz3uM3saXvlJTwcfd3xV9teD31lx/tBsCaA
+ +GKjJmCJAjMEAAEKAB0WIQREDzjr+/4oCDLSsx7RN9E+zzrEiAUCY4DtHgAKCRDRN9E+zzrEiJyVD/
+ 4m5rgQ65+VT7WWI6q1UJaIcmFMXSC9WDSpsxRNyMBz6BZRl8DFMhNassgGM7Yjvs/dpX2vSLlc65qv
+ GiFTZaTAvqIk5J8IS7wIrf4/vfknf9EVix8AUcFguYeK8FlPNWbxWWVPtum55vKSQS1a86HOlOtmAt
+ 0JWGTzVCkSPmG9whMr37fwsQmcXd1U22IoxKYKxlTDsW43eplAc8+YCXlGUw/jIRf6VSD2jyCC6q1s
+ VPPdqFmFrVvYPnvPj9x2JYrSyJxgATgup+ik22/syCK/2Gfm/q6Q+F3i9D5SlOi9UceYAkazZgGTQ4
+ 9DU0HQ4BfNJxEdEHEeiAwMuFuA4ghfTigyEgD/U2gIt2mVnaI0+ja67va3TFrqfFjX4viTps6fQDRO
+ ysS39413twJwmd2jmq9jSUAMgv7dJJnpAAwajU5EO5Ll7Jiefj982V5jwuHIEv+2UfNBcNcNy4hHpC
+ rT4CPllsoZC40ASm16E4LEQ8k957AN9mCXoSOAaFpM9xoKhtwIOthkoXW5QRWPjB1iYsAYfiMo3GDb
+ vpyigsb2GbfNvCV7+oZmpcrnWBBqBG/Oiohf4LIsBsuI+3HWAZMIKAT2sYpW9BrpXoPvD7qKWefC9f
+ VT9oitp2Ge/qjpxG1RCS3QoszdeRwAsmwGWTzh2I0RFE5HJUvMUQaTOzdYLg==
+X-Developer-Key: i=ribalda@chromium.org; a=openpgp;
+ fpr=9EC3BB66E2FC129A6F90B39556A0D81F9F782DA9
 
-On Tue, Nov 22, 2022 at 09:40:42AM -0800, Michael Kelley wrote:
-> Current code re-calculates the size after aligning the starting and
-> ending physical addresses on a page boundary. But the re-calculation
-> also embeds the masking of high order bits that exceed the size of
-> the physical address space (via PHYSICAL_PAGE_MASK). If the masking
-> removes any high order bits, the size calculation results in a huge
-> value that is likely to immediately fail.
-> 
-> Fix this by re-calculating the page-aligned size first. Then mask any
-> high order bits using PHYSICAL_PAGE_MASK.
-> 
-> Fixes: ffa71f33a820 ("x86, ioremap: Fix incorrect physical address handling in PAE mode")
-> Acked-by: Dave Hansen <dave.hansen@linux.intel.com>
-> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+If the system is rebooted via isr(), the IRQ handler might be triggerd
+before the domain is initialized. Resulting on an invalid memory access
+error.
 
-Reviewed-by: Wei Liu <wei.liu@kernel.org>
+Fix:
+[    0.500930] Unable to handle kernel read from unreadable memory at virtual address 0000000000000070
+[    0.501166] Call trace:
+[    0.501174]  report_iommu_fault+0x28/0xfc
+[    0.501180]  mtk_iommu_isr+0x10c/0x1c0
 
-> ---
-> 
-> This patch was previously Patch 1 of a larger series[1].  Breaking
-> it out separately per discussion with Dave Hansen and Boris Petkov.
-> 
-> [1] https://lore.kernel.org/linux-hyperv/1668624097-14884-1-git-send-email-mikelley@microsoft.com/
-> 
->  arch/x86/mm/ioremap.c | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
-> index 78c5bc6..6453fba 100644
-> --- a/arch/x86/mm/ioremap.c
-> +++ b/arch/x86/mm/ioremap.c
-> @@ -217,9 +217,15 @@ static void __ioremap_check_mem(resource_size_t addr, unsigned long size,
->  	 * Mappings have to be page-aligned
->  	 */
->  	offset = phys_addr & ~PAGE_MASK;
-> -	phys_addr &= PHYSICAL_PAGE_MASK;
-> +	phys_addr &= PAGE_MASK;
->  	size = PAGE_ALIGN(last_addr+1) - phys_addr;
->  
-> +	/*
-> +	 * Mask out any bits not part of the actual physical
-> +	 * address, like memory encryption bits.
-> +	 */
-> +	phys_addr &= PHYSICAL_PAGE_MASK;
-> +
->  	retval = memtype_reserve(phys_addr, (u64)phys_addr + size,
->  						pcm, &new_pcm);
->  	if (retval) {
-> -- 
-> 1.8.3.1
-> 
+Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
+---
+To: Yong Wu <yong.wu@mediatek.com>
+To: Joerg Roedel <joro@8bytes.org>
+To: Will Deacon <will@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+To: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: iommu@lists.linux.dev
+Cc: linux-mediatek@lists.infradead.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+---
+ drivers/iommu/mtk_iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 2ab2ecfe01f8..17f6be5a5097 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -454,7 +454,7 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+ 		fault_larb = data->plat_data->larbid_remap[fault_larb][sub_comm];
+ 	}
+ 
+-	if (report_iommu_fault(&dom->domain, bank->parent_dev, fault_iova,
++	if (dom && report_iommu_fault(&dom->domain, bank->parent_dev, fault_iova,
+ 			       write ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ)) {
+ 		dev_err_ratelimited(
+ 			bank->parent_dev,
+
+---
+base-commit: 4312098baf37ee17a8350725e6e0d0e8590252d4
+change-id: 20221125-mtk-iommu-13023f971298
+
+Best regards,
+-- 
+Ricardo Ribalda <ribalda@chromium.org>
