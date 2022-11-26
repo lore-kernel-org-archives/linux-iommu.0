@@ -1,156 +1,100 @@
-Received: from mail-io1-f41.google.com (mail-io1-f41.google.com [209.85.166.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 098D93C38
-	for <iommu@lists.linux.dev>; Fri, 25 Nov 2022 17:15:33 +0000 (UTC)
-Received: by mail-io1-f41.google.com with SMTP id i85so3453493ioa.5
-        for <iommu@lists.linux.dev>; Fri, 25 Nov 2022 09:15:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=IW9TW2hjrT+/De0pJl1J2xvxRS2i1/S0hDRBrqezdyE=;
-        b=i95daCPbgmjJiaRUVDPwpjztsQpU5y1IZdtrbvbWhoqPaeLXPbMAiWP5GlDzc9//P+
-         1x7oYxNZsjvdPj5ccAZRy+GC4mjgA5WwpSUILvWLfYvYR7I0rjh1oo0ny5jCePDycVn1
-         2RZu7gZtDqX6wFcDUgcQT0WzCzKDMp8hbCeBI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=IW9TW2hjrT+/De0pJl1J2xvxRS2i1/S0hDRBrqezdyE=;
-        b=HSWjqPK0Qg2Ju/bvLEi3omNFiINsc4pchd7zYviullqXC3yJLjYqX3+VCKDIQvqrg9
-         H6BIv5eZS39pJ8oGQ06Dgp2xz74dw74t20KM3naiue1rluQI5lvkPVqr0dJEV8s1+9cy
-         hIUcf5s6FGmL6guvgNfEzQKPN/gC1hHfrv64SeI6ArlyBeMkZMaleNm4Q7hiyYEvQ3wy
-         kj7lgirSoLA8NTZup2jMWVyfpE4B3h9XNkgsfPdDvgktFIwXd9iY8r7l1LLkZyj2BfiF
-         SdPVweGNkMGpgFpQ8qAWXgxCQgm4UubVkhvHBV82yLIciQjPRfPT8Nefkf9MnGrhYm3y
-         97dw==
-X-Gm-Message-State: ANoB5pm+cDiAtLOrLxnFdhrGgKO7Ucyvnlb257Ufz6gl/jOnvA09CWur
-	rU1+M7mMGDaw+wJiJFlesjTojNSNd+xcDydA
-X-Google-Smtp-Source: AA0mqf61uRzeDX+GczA7ICAGOAXiSbdobIwCkx63PHoGvCUEU7CSOxXDGjlQ5Bm5pj5sTg/EXxCqTw==
-X-Received: by 2002:a6b:b24c:0:b0:6df:4527:63e8 with SMTP id b73-20020a6bb24c000000b006df452763e8mr2228731iof.103.1669396532902;
-        Fri, 25 Nov 2022 09:15:32 -0800 (PST)
-Received: from mail-il1-f169.google.com (mail-il1-f169.google.com. [209.85.166.169])
-        by smtp.gmail.com with ESMTPSA id l13-20020a056e0205cd00b00302a00aaefasm1442659ils.26.2022.11.25.09.15.29
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Nov 2022 09:15:30 -0800 (PST)
-Received: by mail-il1-f169.google.com with SMTP id x13so2231828ilp.8
-        for <iommu@lists.linux.dev>; Fri, 25 Nov 2022 09:15:29 -0800 (PST)
-X-Received: by 2002:a05:6e02:1312:b0:302:f7e9:ca64 with SMTP id
- g18-20020a056e02131200b00302f7e9ca64mr1841112ilr.133.1669396529417; Fri, 25
- Nov 2022 09:15:29 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DFB47E
+	for <iommu@lists.linux.dev>; Sat, 26 Nov 2022 03:28:15 +0000 (UTC)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AQ2hbup007916;
+	Sat, 26 Nov 2022 03:27:48 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=corp-2022-7-12;
+ bh=AcagkFnJ+fxUlscIN6IjL6P7egIgluL1OZhulAL1UnQ=;
+ b=mvu81B1jAjb+iQ6MM92frRDUHEr4JjxmPPoaI8lGgelfK0tY26AeAGpXKYQqxl7PfakE
+ zKYR5gspEHq4K8A5lXxuzIhtLNaXvmIKO62/MRCp0/7BL781RtS2v7uCoevnZJ3y5Jpe
+ o4k15RYgVjtQOzJ7HMVMABblAwr0dtY49pEsscSVs8hehmj/twewXRy1+1LN1vLlT3G/
+ v2xYrPsJW6V6XrJm2hokCQMoNB7mRQcHFN2tzIe9dpmq/LftKP6ZeS9lIhBRARfqXgp+
+ Eaf1bj/wXzdFOlU5SlpQfuENIvXv9u+TNm6GxzDP01RMy7w2HAFdX8VSqM3T7Hplrxc0 Qw== 
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3m39k2g1ng-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Sat, 26 Nov 2022 03:27:47 +0000
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 2AQ1XTWB007302;
+	Sat, 26 Nov 2022 03:27:47 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3m3988b812-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Sat, 26 Nov 2022 03:27:47 +0000
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2AQ3Rhsb028327;
+	Sat, 26 Nov 2022 03:27:46 GMT
+Received: from ca-mkp2.ca.oracle.com.com (mpeterse-ol9.allregionaliads.osdevelopmeniad.oraclevcn.com [100.100.251.135])
+	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3m3988b7y9-8;
+	Sat, 26 Nov 2022 03:27:46 +0000
+From: "Martin K. Petersen" <martin.petersen@oracle.com>
+To: Thomas Gleixner <tglx@linutronix.de>, LKML <linux-kernel@vger.kernel.org>
+Cc: "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Fenghua Yu <fenghua.yu@intel.com>, oss-drivers@corigine.com,
+        James Smart <james.smart@broadcom.com>,
+        Cornelia Huck <cohuck@redhat.com>, dmaengine@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>, Will Deacon <will@kernel.org>,
+        Lee Jones <lee@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Roy Pledge <Roy.Pledge@nxp.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>, iommu@lists.linux.dev,
+        Joerg Roedel <joro@8bytes.org>,
+        Alex Williamson <alex.williamson@redhat.com>, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Diana Craciun <diana.craciun@oss.nxp.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Stuart Yoder <stuyoder@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dick Kennedy <dick.kennedy@broadcom.com>, linux-scsi@vger.kernel.org,
+        Dave Jiang <dave.jiang@intel.com>, linux-ide@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Subject: Re: [patch 00/10] genirq/msi: Treewide cleanup of pointless linux/msi.h includes
+Date: Sat, 26 Nov 2022 03:27:39 +0000
+Message-Id: <166943312556.1684293.1625990735787388062.b4-ty@oracle.com>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20221113201935.776707081@linutronix.de>
+References: <20221113201935.776707081@linutronix.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20221125-mtk-iommu-v1-0-bb5ecac97a28@chromium.org> <b5682296-4844-863c-83c1-1fb9a35009d8@arm.com>
-In-Reply-To: <b5682296-4844-863c-83c1-1fb9a35009d8@arm.com>
-From: Ricardo Ribalda <ribalda@chromium.org>
-Date: Fri, 25 Nov 2022 18:15:18 +0100
-X-Gmail-Original-Message-ID: <CANiDSCv14WNUmAf5H6H-nsz8WZTTT5niUO-dAGtkdohPnn3b1Q@mail.gmail.com>
-Message-ID: <CANiDSCv14WNUmAf5H6H-nsz8WZTTT5niUO-dAGtkdohPnn3b1Q@mail.gmail.com>
-Subject: Re: [PATCH] iommu/mediatek: Fix crash on isr after kexec()
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
-	Yong Wu <yong.wu@mediatek.com>, Will Deacon <will@kernel.org>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-mediatek@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-26_02,2022-11-25_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 suspectscore=0 phishscore=0
+ mlxlogscore=825 mlxscore=0 adultscore=0 bulkscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2210170000
+ definitions=main-2211260024
+X-Proofpoint-GUID: oUxjHgTGr4WNozsr_LV_OOFyzCy5QslK
+X-Proofpoint-ORIG-GUID: oUxjHgTGr4WNozsr_LV_OOFyzCy5QslK
 
-Hi Robin
+On Sun, 13 Nov 2022 21:33:54 +0100 (CET), Thomas Gleixner wrote:
 
+> While working on per device MSI domains I noticed that quite some files
+> include linux/msi.h just because.
+> 
+> The top level comment in the header file clearly says:
+> 
+>   Regular device drivers have no business with any of these functions....
+> 
+> [...]
 
-Thanks for your  review!
+Applied to 6.2/scsi-queue, thanks!
 
-On Fri, 25 Nov 2022 at 18:02, Robin Murphy <robin.murphy@arm.com> wrote:
->
-> On 2022-11-25 16:28, Ricardo Ribalda wrote:
-> > If the system is rebooted via isr(), the IRQ handler might be triggerd
-> > before the domain is initialized. Resulting on an invalid memory access
-> > error.
-> >
-> > Fix:
-> > [    0.500930] Unable to handle kernel read from unreadable memory at virtual address 0000000000000070
-> > [    0.501166] Call trace:
-> > [    0.501174]  report_iommu_fault+0x28/0xfc
-> > [    0.501180]  mtk_iommu_isr+0x10c/0x1c0
->
-> Hmm, shouldn't we clear any pending faults at probe in
-> mtk_iommu_hw_init(), before the IRQ is requested? mtk_iommu_isr() might
-> still want to be robust against a spurious interrupt, but then it can
-> simply return without doing anything at all if the domain is NULL, since
-> we'll know that's the case.
->
-> Thanks,
-> Robin.
->
-> (It might be nice if request_irq() had a flag to say "if this IRQ looks
-> pending already just clear it" for drivers that know it could only be
-> spurious at that point; kexec seems to lead to this problem quite a lot...)
-
-It is not only about the "last" IRQ before kexec. The peripherals
-under the IOMMU might still active and producing faults and therefore
-IRQs.
-
-I tried this:
-
-@@ -886,6 +886,11 @@ static int mtk_iommu_hw_init(const struct
-mtk_iommu_data *data, unsigned int ban
-                         upper_32_bits(data->protect_base);
-        writel_relaxed(regval, bankx->base + REG_MMU_IVRP_PADDR);
-
-+       /* Clear previous IRQs */
-+       regval = readl_relaxed(bankx->base + REG_MMU_INT_CONTROL0);
-+       regval |= F_INT_CLR_BIT;
-+       writel_relaxed(regval, bankx->base + REG_MMU_INT_CONTROL0);
-+
-        if (devm_request_irq(bankx->pdev, bankx->irq, mtk_iommu_isr, 0,
-                             dev_name(bankx->pdev), (void *)bankx)) {
-                writel_relaxed(0, bankx->base + REG_MMU_PT_BASE_ADDR);
-
-And I still get the same crash
-
-
->
-> > Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
-> > ---
-> > To: Yong Wu <yong.wu@mediatek.com>
-> > To: Joerg Roedel <joro@8bytes.org>
-> > To: Will Deacon <will@kernel.org>
-> > To: Robin Murphy <robin.murphy@arm.com>
-> > To: Matthias Brugger <matthias.bgg@gmail.com>
-> > Cc: iommu@lists.linux.dev
-> > Cc: linux-mediatek@lists.infradead.org
-> > Cc: linux-arm-kernel@lists.infradead.org
-> > Cc: linux-kernel@vger.kernel.org
-> > ---
-> >   drivers/iommu/mtk_iommu.c | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> > index 2ab2ecfe01f8..17f6be5a5097 100644
-> > --- a/drivers/iommu/mtk_iommu.c
-> > +++ b/drivers/iommu/mtk_iommu.c
-> > @@ -454,7 +454,7 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
-> >               fault_larb = data->plat_data->larbid_remap[fault_larb][sub_comm];
-> >       }
-> >
-> > -     if (report_iommu_fault(&dom->domain, bank->parent_dev, fault_iova,
-> > +     if (dom && report_iommu_fault(&dom->domain, bank->parent_dev, fault_iova,
-> >                              write ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ)) {
-> >               dev_err_ratelimited(
-> >                       bank->parent_dev,
-> >
-> > ---
-> > base-commit: 4312098baf37ee17a8350725e6e0d0e8590252d4
-> > change-id: 20221125-mtk-iommu-13023f971298
-> >
-> > Best regards,
-
-
+[03/10] scsi: lpfc: Remove linux/msi.h include
+        https://git.kernel.org/mkp/scsi/c/cdd9344e00b4
 
 -- 
-Ricardo Ribalda
+Martin K. Petersen	Oracle Linux Engineering
