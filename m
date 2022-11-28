@@ -1,149 +1,220 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 75E828F6C
-	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 16:56:48 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 12FCAD6E;
-	Mon, 28 Nov 2022 08:56:54 -0800 (PST)
-Received: from [10.57.71.118] (unknown [10.57.71.118])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B77073F73B;
-	Mon, 28 Nov 2022 08:56:44 -0800 (PST)
-Message-ID: <815278cc-7fad-1657-c07a-e9825f137e5c@arm.com>
-Date: Mon, 28 Nov 2022 16:56:39 +0000
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2111.outbound.protection.outlook.com [40.107.92.111])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27D388F6C
+	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 16:59:34 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=k5wmV4TTv1IHEQbscLAViiEAdhISWwEyI7G3T8wYBi01GQQwCF0vNeVVxn9j1JrdzpmWvqFvkKvh6HKroU0/wOlv5ztluNqkvsh8iXXQi3KnCuY4SA0OdC/kfpIX1HXlrP6wdLRjJkrpphqLX/7kTzpfU8PZ2cXTI4ErNgvvStaKD/4RDNJwWHk+naaS6M1enWdEmWVdEiFltXALnkTRtNyOL5A3AdEXTlqIWwKKty/zp17oLgkyNXRbdKwajGRnJFlM0FgnTCTPi1IzVghYWC/aIzimh/Qco2GxgnyW1w8gPRoWAJpiQz9xv4DtVEAzBVUyJH3255OCoMU3TIJcWg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=x2CGhaj39sGDdV2j7/KMluDll2Qz2xqfA707G5yV0C4=;
+ b=b3GmTdJZF/9arQ/wtEEEAZFI6UDbNqPw5xKkUNnle1krfDXMk9hSX8QhEW4Hq29ZT0a46oEumMcRjSwr73XaLOrXA07EqFqQDD9w5QxsLtq2UkiU93OyGooCXelbLVsL02NE13fTkV+ZQfP+uBkWpN2P8H2UPJZqFjwdo6Mjw6ZuQUL/VVo8eSAQg99QZRIPdCI+uJUdWGbRmlWXNc9pEi36ZK7/MV7zrqFrVoMEglE5Xs0RTAS0NPSN2Twj6AaYx88zyFGHWiT3kZ951l0g1wS0UG5wQmnSAGPdUtNdikLawd8smnvs52tVpZZ64SMzK9/oEuDtBeb3JZwCfOMumQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=x2CGhaj39sGDdV2j7/KMluDll2Qz2xqfA707G5yV0C4=;
+ b=YoxCsELRkLckFno0U4HvrQgFVjQL1rUB2opMRYiqq5r9JDOecf8lXd8cLvDsLBds/l+WoAFQOvxwVDq9aWBscseiRRnYJrZJ6ghpRKN00R78T/taw/f4fkpggS47V4TQrGv3P9OB/e6T7Phef+Mnhyu8iJnw4SfsKMTokObsyzM=
+Received: from BYAPR21MB1688.namprd21.prod.outlook.com (2603:10b6:a02:bf::26)
+ by SJ1PR21MB3553.namprd21.prod.outlook.com (2603:10b6:a03:453::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5901.4; Mon, 28 Nov
+ 2022 16:59:27 +0000
+Received: from BYAPR21MB1688.namprd21.prod.outlook.com
+ ([fe80::1e50:78ec:6954:d6dd]) by BYAPR21MB1688.namprd21.prod.outlook.com
+ ([fe80::1e50:78ec:6954:d6dd%6]) with mapi id 15.20.5880.008; Mon, 28 Nov 2022
+ 16:59:27 +0000
+From: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+To: Borislav Petkov <bp@alien8.de>
+CC: "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>, "wei.liu@kernel.org"
+	<wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>, "luto@kernel.org"
+	<luto@kernel.org>, "peterz@infradead.org" <peterz@infradead.org>,
+	"davem@davemloft.net" <davem@davemloft.net>, "edumazet@google.com"
+	<edumazet@google.com>, "kuba@kernel.org" <kuba@kernel.org>,
+	"pabeni@redhat.com" <pabeni@redhat.com>, "lpieralisi@kernel.org"
+	<lpieralisi@kernel.org>, "robh@kernel.org" <robh@kernel.org>, "kw@linux.com"
+	<kw@linux.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "arnd@arndb.de"
+	<arnd@arndb.de>, "hch@infradead.org" <hch@infradead.org>,
+	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+	"brijesh.singh@amd.com" <brijesh.singh@amd.com>, "tglx@linutronix.de"
+	<tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>,
+	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>, Tianyu Lan
+	<Tianyu.Lan@microsoft.com>, "kirill.shutemov@linux.intel.com"
+	<kirill.shutemov@linux.intel.com>,
+	"sathyanarayanan.kuppuswamy@linux.intel.com"
+	<sathyanarayanan.kuppuswamy@linux.intel.com>, "ak@linux.intel.com"
+	<ak@linux.intel.com>, "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+	"Williams, Dan J" <dan.j.williams@intel.com>, "jane.chu@oracle.com"
+	<jane.chu@oracle.com>, "seanjc@google.com" <seanjc@google.com>,
+	"tony.luck@intel.com" <tony.luck@intel.com>, "x86@kernel.org"
+	<x86@kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-hyperv@vger.kernel.org"
+	<linux-hyperv@vger.kernel.org>, "netdev@vger.kernel.org"
+	<netdev@vger.kernel.org>, "linux-pci@vger.kernel.org"
+	<linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org"
+	<linux-arch@vger.kernel.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: RE: [Patch v3 07/14] x86/hyperv: Change vTOM handling to use standard
+ coco mechanisms
+Thread-Topic: [Patch v3 07/14] x86/hyperv: Change vTOM handling to use
+ standard coco mechanisms
+Thread-Index:
+ AQHY+es2O4adbWIH8UyWtCwRyUnUyq5JgOOAgAHDpcCAAEhFgIAAJ7oQgAjDHRCAACLagIAAALfw
+Date: Mon, 28 Nov 2022 16:59:27 +0000
+Message-ID:
+ <BYAPR21MB1688466C7766148C6B3B4684D7139@BYAPR21MB1688.namprd21.prod.outlook.com>
+References: <1668624097-14884-1-git-send-email-mikelley@microsoft.com>
+ <1668624097-14884-8-git-send-email-mikelley@microsoft.com>
+ <Y3uTK3rBV6eXSJnC@zn.tnic>
+ <BYAPR21MB16886AF404739449CA467B1AD70D9@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y31Kqacbp9R5A1PF@zn.tnic>
+ <BYAPR21MB16886FF8B35F51964A515CD5D70C9@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <BYAPR21MB1688AF2F106CDC14E4F97DB4D7139@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y4Ti4UTBRGmbi0hD@zn.tnic>
+In-Reply-To: <Y4Ti4UTBRGmbi0hD@zn.tnic>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=4176f919-ddf7-4f49-89fb-37a83cc50a1e;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-11-28T16:36:10Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BYAPR21MB1688:EE_|SJ1PR21MB3553:EE_
+x-ms-office365-filtering-correlation-id: 9e2fc197-a42f-4a8c-1286-08dad161e8d9
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ LQ3tO71qrzcp/uoGrpS9FpuCZ6InOOcMW+qm5q/ObpKKyZU53qFt3Vv2U33KhU1abPYeMXSJ9xFNZqYJ/IMHFw5Oz5y2tMcWycPdyODAPzKMJR65cZQcgd9wiDeg8SByUKdPpOz/5cX2AE0lWg40k8hIcjcDxtqUw4wY1bNIOPsmFLpVM1uFhunuOGmdOKVGtCrdeRzecJTAO5w+kmg5BI5vcqC1jaHDNX4pwCJIjUHyyd2x/YqqGy1aPLP9s+/0jdZnfi/jkjY/7+5gzIqmYOpSwIO919YzVGmAqnJfheoioITRPpG9UGVeJDgmecZQQb99HFnCbwQNXBC8/wjYCDmBxjqjllQ4U+pJt8rtZrYU8W1hDbR8Av4dM28NMhY4gMWhQEY50VOr8o9w1E4BLC7kLGxUFymZ4SzeqBhnU0IEPGiimZjsPHmDOrmmv4k5s4oXMVxfLfkythbkIdzsGgu7on1FqPR8j/PXNC4Jr9gya8q8z1GlQT26BVvwstX5rS59tz1KJ0kXAlzn7K8SwYYVDrLBB31MTR/jVlMv40Oaz65vTQveKHgOeLGPpkVHmz0Q74mLNeSlz+GCXWkEtaqCQbx/4/G3Nn9k0K59ydbbgSfYFnznxGAsT8/XyaWhazb3NASDDDCHJpdcxJSgTfti2an4HFAJ3AS7Mk/l6Pl2c9QhvSBw/yA75wAfuJskWfgPHknZQN1CcmQvKMHGvs8Mk5iyL5HIhK90tqFKS/SlzckeikV9hzjJDhQYjORl
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1688.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(39860400002)(366004)(376002)(136003)(346002)(451199015)(2906002)(8990500004)(82960400001)(82950400001)(4326008)(86362001)(52536014)(66946007)(76116006)(66446008)(66556008)(66476007)(64756008)(33656002)(5660300002)(41300700001)(8936002)(7406005)(8676002)(7416002)(38070700005)(316002)(54906003)(6916009)(55016003)(478600001)(38100700002)(83380400001)(6506007)(7696005)(26005)(122000001)(9686003)(186003)(10290500003)(71200400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?kx9GeKb6ewmwn8XNC8SNX9tjilAKnrfD65jpAynZ4OlSQVMmcdqNtSsj9u3P?=
+ =?us-ascii?Q?PB/ztmfrXsPLILpmb3eLQ/VjeJkmJgVFd9EU7gjdGgtmK7+fYcUjjVbA7RdR?=
+ =?us-ascii?Q?3ltSqA/xvPUTrBv1iAOo/B0yEHpY1QVIVybJqaCszCoJyRTwn9/5IGTlG9Rs?=
+ =?us-ascii?Q?R66rTz1kWrLWTcrZJVFdtX4hGfgoNbdF389hReFkxxHMf9VbtRlOYhOSNjx2?=
+ =?us-ascii?Q?Bogbw3l1euFMvpqsR3Z1MpKoGR6HED1CcxBg3in7GiT/nYs5V/ue9+bByKv5?=
+ =?us-ascii?Q?21msfe1zWBLhLotialMJXkGdn6kkhmI0rlzcVpWt5LOamMV4Vz5TQQJePAo4?=
+ =?us-ascii?Q?E0ilZvMuIjkoE/TmHJxH281VRhg6fnSLqEj1ED2ddD541BMQVDmG0726zcRl?=
+ =?us-ascii?Q?MxXOEqkgzXSL/BCdcpj4n37wFETZHk98e3u01WCpRqBoE3eKGC2w7t5PAJ0e?=
+ =?us-ascii?Q?6HOX+zuRhshS04l/71pSOKQj3NhhDocGLhRF8TNzOntElTw7QkgFDv+j1QUh?=
+ =?us-ascii?Q?QWHDPqnS+lPXR1LQAE3zVKfya0G2ScUVo49wCvyegGnRuH7Jnpcef0QeW6oR?=
+ =?us-ascii?Q?WwcDMvcdkPrNtl260qewLfb6Pvt7fdTgnJJqw1ewsqHLyQtuU0qhpKcmTM1z?=
+ =?us-ascii?Q?YF5//3oVQ2kPCE/NeQiZNhfCPIYzCUIGZH6dRtE32PqqJsJNZE1RIPMv6Q/E?=
+ =?us-ascii?Q?ztSVYSV18vU9/Ft/8XzauQd4WnMXBcSm5UZQNSwuCervz2o+Nf5ddOZ58yZZ?=
+ =?us-ascii?Q?q9ec5FRRlXKZ7StzcCuvGf3flgXWILt8WdTuOHeh5RgYWKE/R/G1mIJwi5xm?=
+ =?us-ascii?Q?jJnCSMvEZrxQWM7CcZ8RoZE41ehzyMvpN8BtiB/6qc//3aq+HICtACcGMwGx?=
+ =?us-ascii?Q?WiAXc1WfyuALikB5Ds5tQh1zrWt6jftg+wFI42kWXqp2aJFZeO1qC2Wxq0L0?=
+ =?us-ascii?Q?fRWw3B6Y4eae4fdXRuJJ45EXLejaYPcF2ApH4ZAowm4o0CkRj6eXO4J6Ykii?=
+ =?us-ascii?Q?2nPiQ2nECzuJgNjyynxsIdo4UwPFZom34Rwl1bMs73T7jPiJJ+pROyzP5bEr?=
+ =?us-ascii?Q?DUk23SzVPtCxRvuaXb266sglD6TxTdxc+eAbN4mQVyfS2iVXDOz2zSTzdHoR?=
+ =?us-ascii?Q?YcO33Tf5E9bYsUIn68kEtr3bX8sqbbZL2Xcl6XV4ucLtPUctik6CxsCWJdsW?=
+ =?us-ascii?Q?S+nXj0T2uPtpEtqgvPZP1YC9KwHV0UjqwuV3z93hxbiNXVlFXh+1VUy0K8Pt?=
+ =?us-ascii?Q?x012t8OJ45DkggthprqQNfDAx09CTfbdkoruSYxTgujiOzh2wE9BS3AXkvlv?=
+ =?us-ascii?Q?uPRNKto8lE50zVUAXA5/6jb/CMKM72KBZQM17jaswUUdzkaquoBI+liXlxS6?=
+ =?us-ascii?Q?QwYOqp5OtbF1hxo7J4yZF3dsb/LH3cFpbGslm/ODfcvclt8O2Vibv9TBFILj?=
+ =?us-ascii?Q?zg6NKBQWIb5Y3IRqiDOaPEG4TE1vEpoEzSXEv37QbrTK0DuJjhS0n66jHPoK?=
+ =?us-ascii?Q?BcmPg8UQds6LjvkY1ajK937/U8NlkL67Zb9Korny50NAMv+b6OXAPp/gvaF8?=
+ =?us-ascii?Q?709OBoymEPDkd6m3L9wCTW3mxG3rcgsjNb8GfK61y7RdetdeMqfDtzHXHf9e?=
+ =?us-ascii?Q?SA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH v2 4/7] iommu: Let iommu.strict override
- ops->def_domain_type
-Content-Language: en-GB
-To: Niklas Schnelle <schnelle@linux.ibm.com>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>, Gerd Bayer <gbayer@linux.ibm.com>,
- iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Wenjia Zhang <wenjia@linux.ibm.com>,
- Pierre Morel <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
- borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
- gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com, svens@linux.ibm.com,
- linux-kernel@vger.kernel.org, Julian Ruess <julianr@linux.ibm.com>
-References: <20221116171656.4128212-1-schnelle@linux.ibm.com>
- <20221116171656.4128212-5-schnelle@linux.ibm.com>
- <33eea9bd-e101-4836-19e8-d4b191b78b00@linux.intel.com>
- <9163440eb6a47fe02730638bbdf72fda5ee5ad2c.camel@linux.ibm.com>
- <Y4S3z6IpeDHmdUs/@nvidia.com>
- <52fe7769ca5b66523c2c93c7d46ebc17dc144aca.camel@linux.ibm.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <52fe7769ca5b66523c2c93c7d46ebc17dc144aca.camel@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1688.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9e2fc197-a42f-4a8c-1286-08dad161e8d9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Nov 2022 16:59:27.4294
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: RaQmnIrdvU7ksnUDrqTx3lDCUlE+AX73NeLcBXtPPMbvUqYA5Z3HonZfTrnM41eMXH7zDX9IdXBvxd70+de3Xy/bTXYr5YBmpKwtm/Wyg+E=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR21MB3553
 
-On 2022-11-28 15:54, Niklas Schnelle wrote:
-> On Mon, 2022-11-28 at 09:29 -0400, Jason Gunthorpe wrote:
->> On Mon, Nov 28, 2022 at 12:10:39PM +0100, Niklas Schnelle wrote:
->>> On Thu, 2022-11-17 at 09:55 +0800, Baolu Lu wrote:
->>>> On 2022/11/17 1:16, Niklas Schnelle wrote:
->>>>> When iommu.strict=1 is set or iommu_set_dma_strict() was called we
->>>>> should use IOMMU_DOMAIN_DMA irrespective of ops->def_domain_type.
->>>>>
->>>>> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
->>>>> ---
->>>>>    drivers/iommu/iommu.c | 3 +++
->>>>>    1 file changed, 3 insertions(+)
->>>>>
->>>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>>>> index 65a3b3d886dc..d9bf94d198df 100644
->>>>> --- a/drivers/iommu/iommu.c
->>>>> +++ b/drivers/iommu/iommu.c
->>>>> @@ -1562,6 +1562,9 @@ static int iommu_get_def_domain_type(struct device *dev)
->>>>>    {
->>>>>    	const struct iommu_ops *ops = dev_iommu_ops(dev);
->>>>>    
->>>>> +	if (iommu_dma_strict)
->>>>> +		return IOMMU_DOMAIN_DMA;
->>>>
->>>> If any quirky device must work in IOMMU identity mapping mode, this
->>>> might introduce functional regression. At least for VT-d platforms, some
->>>> devices do require IOMMU identity mapping mode for functionality.
->>>
->>> That's a good point. How about instead of unconditionally returning
->>> IOMMU_DOMAIN_DMA we just do so if the domain type returned by ops-
->>>> def_domain_type uses a flush queue (i.e. the __IOMMU_DOMAIN_DMA_FQ bit
->>> is set). That way a device that only supports identity mapping gets to
->>> set that but iommu_dma_strict at least always prevents use of an IOVA
->>> flush queue.
->>
->> I would prefer we create some formal caps in iommu_ops to describe
->> whatever it is you are trying to do.
->>
->> Jason
-> 
-> I agree that there is currently a lack of distinction between what
-> domain types can be used (capability) and which should be used as
-> default (iommu.strict=<x>, iommu_set_...(), CONFIG_IOMMU_DEFAULT_DMA,
-> ops->def_domain_type.).
+From: Borislav Petkov <bp@alien8.de> Sent: Monday, November 28, 2022 8:34 A=
+M
+>=20
+> On Mon, Nov 28, 2022 at 02:38:11PM +0000, Michael Kelley (LINUX) wrote:
+> > Any further comment on this patch?  I think we're agreement.  For
+> > this patch series I propose to change the symbol "CC_VENDOR_HYPERV"
+> > to "CC_VENDOR_AMD_VTOM" and the function name
+> > hyperv_cc_platform_has() to amd_vtom_cc_platform_has().
+>=20
+> That doesn't sound optimal to me.
+>=20
+> So, let's clarify things first: those Isolation VMs - are they going to
+> be the paravisors?
 
-As far as I'm concerned, the purpose of .def_domain_type is really just 
-for quirks where the device needs an identity mapping, based on 
-knowledge that tends to be sufficiently platform-specific that we prefer 
-to delegate it to drivers. What apple-dart is doing is really just a 
-workaround for not being to indicate per-instance domain type support at 
-the point of the .domain_alloc call, and IIRC what mtk_iommu_v1 is doing 
-is a horrible giant hack around the arch/arm DMA ops that don't 
-understand IOMMU groups. Both of those situations are on the cards to be 
-cleaned up, so don't take too much from them.
+No.  The paravisor exists in another layer (VMPL 0 in the AMD vTOM
+architecture) that isn't visible to the Linux guest.  The paravisor is
+a separate code base that isn't currently open source.  All code
+in this patch series is code that runs in the Linux guest.
 
-> My case though is about the latter which I think has some undocumented
-> and surprising precedences built in at the moment. With this series we
-> can use all of IOMMU_DOMAIN_DMA(_FQ, _SQ) on any PCI device but we want
-> to default to either IOMMU_DOMAIN_DMA_FQ or IOMMU_DOMAIN_SQ based on
-> whether we're running in a paging hypervisor (z/VM or KVM) to get the
-> best performance. From a semantic point of view I felt that this is a
-> good match for ops->def_domain_type in that we pick a default but it's
-> still possible to change the domain type e.g. via sysfs. Now this had
-> the problem that ops->def_domain_type would cause IOMMU_DOMAIN_DMA_FQ
-> to be used even if iommu_set_dma_strict() was called (via
-> iommu.strict=1) because there is a undocumented override of ops-
->> def_domain_type over iommu_def_domain_type which I believe comes from
-> the mixing of capability and default you also point at.
-> 
-> I think ideally we need two separate mechanism to determine which
-> domain types can be used for a particular device (capability) and for
-> which one to default to with the latter part having a clear precedence
-> between the options. Put together I think iommu.strict=1 should
-> override a device's preference (ops->def_domain_type) and
-> CONFIG_IOMMU_DEFAULT_DMA to use IOMMU_DOMAIN_DMA but of course only if
-> the device is capable of that. Does that sound reasonable?
+From an encryption standpoint, the Linux guest sees the following:
 
-That sounds like essentially what we already have, though. The current 
-logic should be thus:
+1) Guest memory is encrypted by default
+2) The Linux guest must set the vTOM flag in a PTE to access a page
+as unencrypted.
+3) The Linux guest must explicitly notify the hypervisor to change a
+page from private (encrypted) to shared (decrypted), and vice versa.
 
-1: If the device is untrusted, it gets strict translation, nothing else. 
-If that won't actually work, tough.
-2: If .def_domain_type returns a specific type, it is because any other 
-type will not work correctly at all, so we must use that.
-3: Otherwise, we compute the user's preferred default type based on 
-kernel config and command line options.
-4: Then we determine whether the IOMMU driver actually supports that 
-type, by trying to allocate it. If allocation fails and the preferred 
-type was more relaxed than IOMMU_DOMAIN_DMA, fall back to the stricter 
-type and try one last time.
+>=20
+> I don't see any other option because the unmodified guest must be some
+> old windoze....
 
-AFAICS the distinction and priority of those steps is pretty clear:
+What Windows guests do isn't really relevant.  Again, the code in this patc=
+h
+series all runs directly in the Linux guest, not the paravisor.  And the Li=
+nux
+guest isn't unmodified.  We've added changes to understand vTOM and
+the need to communicate with the hypervisor about page changes
+between private and shared.  But there are other changes for a fully
+enlightened guest that we don't have to make when using AMD vTOM,
+because the paravisor transparently (to the guest -- Linux or Windows)
+handles those issues.
 
-1: Core requirements
-2: Driver-specific requirements
-3: Core preference
-4: Driver-specific support
+>=20
+> So, if they're going to be that, then I guess this should be called
+>=20
+> 	CC_ATTR_PARAVISOR
+>=20
+> to denote that it is a thin layer of virt gunk between an unmodified
+> guest and a hypervisor.
 
-Now, for step 4 we *could* potentially use static capability flags in 
-place of the "try allocating different things until one succeeds", but 
-that doesn't change anything other than saving the repetitive 
-boilerplate in everyone's .domain_alloc implementations. The real moral 
-of the story here is not to express a soft preference where it will be 
-interpreted as a hard requirement.
+No, the code is this patch series is not that at all.  It's not code that i=
+s
+part of the paravisor.  It's Linux guest code that understands it is runnin=
+g
+in an environment where AMD vTOM is the encryption scheme, which is
+different from the AMD C-bit encryption scheme.
 
-Thanks,
-Robin.
+>=20
+> And if TDX wants to do that too later, then they can use that flag too.
+>=20
+
+Again, no.  What I have proposed as CC_VENDOR_AMD_VTOM is
+specific to AMD's virtual-Top-of-Memory architecture.  The TDX
+architecture doesn't really have a way to use a paravisor.
+
+To summarize, the code in this patch series is about a 3rd encryption
+scheme that is used by the guest.  It is completely parallel to the AMD
+C-bit encryption scheme and the Intel TDX encryption scheme.   With
+the AMD vTOM scheme, there is a paravisor that transparently emulates
+some things for the guest so there are fewer code changes needed in the
+guest, but this patch series is not about that paravisor code.
+
+Michael
