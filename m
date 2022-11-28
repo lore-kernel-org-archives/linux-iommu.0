@@ -1,220 +1,237 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2111.outbound.protection.outlook.com [40.107.92.111])
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27D388F6C
-	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 16:59:34 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k5wmV4TTv1IHEQbscLAViiEAdhISWwEyI7G3T8wYBi01GQQwCF0vNeVVxn9j1JrdzpmWvqFvkKvh6HKroU0/wOlv5ztluNqkvsh8iXXQi3KnCuY4SA0OdC/kfpIX1HXlrP6wdLRjJkrpphqLX/7kTzpfU8PZ2cXTI4ErNgvvStaKD/4RDNJwWHk+naaS6M1enWdEmWVdEiFltXALnkTRtNyOL5A3AdEXTlqIWwKKty/zp17oLgkyNXRbdKwajGRnJFlM0FgnTCTPi1IzVghYWC/aIzimh/Qco2GxgnyW1w8gPRoWAJpiQz9xv4DtVEAzBVUyJH3255OCoMU3TIJcWg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=x2CGhaj39sGDdV2j7/KMluDll2Qz2xqfA707G5yV0C4=;
- b=b3GmTdJZF/9arQ/wtEEEAZFI6UDbNqPw5xKkUNnle1krfDXMk9hSX8QhEW4Hq29ZT0a46oEumMcRjSwr73XaLOrXA07EqFqQDD9w5QxsLtq2UkiU93OyGooCXelbLVsL02NE13fTkV+ZQfP+uBkWpN2P8H2UPJZqFjwdo6Mjw6ZuQUL/VVo8eSAQg99QZRIPdCI+uJUdWGbRmlWXNc9pEi36ZK7/MV7zrqFrVoMEglE5Xs0RTAS0NPSN2Twj6AaYx88zyFGHWiT3kZ951l0g1wS0UG5wQmnSAGPdUtNdikLawd8smnvs52tVpZZ64SMzK9/oEuDtBeb3JZwCfOMumQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x2CGhaj39sGDdV2j7/KMluDll2Qz2xqfA707G5yV0C4=;
- b=YoxCsELRkLckFno0U4HvrQgFVjQL1rUB2opMRYiqq5r9JDOecf8lXd8cLvDsLBds/l+WoAFQOvxwVDq9aWBscseiRRnYJrZJ6ghpRKN00R78T/taw/f4fkpggS47V4TQrGv3P9OB/e6T7Phef+Mnhyu8iJnw4SfsKMTokObsyzM=
-Received: from BYAPR21MB1688.namprd21.prod.outlook.com (2603:10b6:a02:bf::26)
- by SJ1PR21MB3553.namprd21.prod.outlook.com (2603:10b6:a03:453::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5901.4; Mon, 28 Nov
- 2022 16:59:27 +0000
-Received: from BYAPR21MB1688.namprd21.prod.outlook.com
- ([fe80::1e50:78ec:6954:d6dd]) by BYAPR21MB1688.namprd21.prod.outlook.com
- ([fe80::1e50:78ec:6954:d6dd%6]) with mapi id 15.20.5880.008; Mon, 28 Nov 2022
- 16:59:27 +0000
-From: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-To: Borislav Petkov <bp@alien8.de>
-CC: "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>, "wei.liu@kernel.org"
-	<wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>, "luto@kernel.org"
-	<luto@kernel.org>, "peterz@infradead.org" <peterz@infradead.org>,
-	"davem@davemloft.net" <davem@davemloft.net>, "edumazet@google.com"
-	<edumazet@google.com>, "kuba@kernel.org" <kuba@kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>, "lpieralisi@kernel.org"
-	<lpieralisi@kernel.org>, "robh@kernel.org" <robh@kernel.org>, "kw@linux.com"
-	<kw@linux.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "arnd@arndb.de"
-	<arnd@arndb.de>, "hch@infradead.org" <hch@infradead.org>,
-	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "robin.murphy@arm.com"
-	<robin.murphy@arm.com>, "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-	"brijesh.singh@amd.com" <brijesh.singh@amd.com>, "tglx@linutronix.de"
-	<tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>,
-	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>, Tianyu Lan
-	<Tianyu.Lan@microsoft.com>, "kirill.shutemov@linux.intel.com"
-	<kirill.shutemov@linux.intel.com>,
-	"sathyanarayanan.kuppuswamy@linux.intel.com"
-	<sathyanarayanan.kuppuswamy@linux.intel.com>, "ak@linux.intel.com"
-	<ak@linux.intel.com>, "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-	"Williams, Dan J" <dan.j.williams@intel.com>, "jane.chu@oracle.com"
-	<jane.chu@oracle.com>, "seanjc@google.com" <seanjc@google.com>,
-	"tony.luck@intel.com" <tony.luck@intel.com>, "x86@kernel.org"
-	<x86@kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-hyperv@vger.kernel.org"
-	<linux-hyperv@vger.kernel.org>, "netdev@vger.kernel.org"
-	<netdev@vger.kernel.org>, "linux-pci@vger.kernel.org"
-	<linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org"
-	<linux-arch@vger.kernel.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: RE: [Patch v3 07/14] x86/hyperv: Change vTOM handling to use standard
- coco mechanisms
-Thread-Topic: [Patch v3 07/14] x86/hyperv: Change vTOM handling to use
- standard coco mechanisms
-Thread-Index:
- AQHY+es2O4adbWIH8UyWtCwRyUnUyq5JgOOAgAHDpcCAAEhFgIAAJ7oQgAjDHRCAACLagIAAALfw
-Date: Mon, 28 Nov 2022 16:59:27 +0000
-Message-ID:
- <BYAPR21MB1688466C7766148C6B3B4684D7139@BYAPR21MB1688.namprd21.prod.outlook.com>
-References: <1668624097-14884-1-git-send-email-mikelley@microsoft.com>
- <1668624097-14884-8-git-send-email-mikelley@microsoft.com>
- <Y3uTK3rBV6eXSJnC@zn.tnic>
- <BYAPR21MB16886AF404739449CA467B1AD70D9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y31Kqacbp9R5A1PF@zn.tnic>
- <BYAPR21MB16886FF8B35F51964A515CD5D70C9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <BYAPR21MB1688AF2F106CDC14E4F97DB4D7139@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y4Ti4UTBRGmbi0hD@zn.tnic>
-In-Reply-To: <Y4Ti4UTBRGmbi0hD@zn.tnic>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=4176f919-ddf7-4f49-89fb-37a83cc50a1e;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-11-28T16:36:10Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BYAPR21MB1688:EE_|SJ1PR21MB3553:EE_
-x-ms-office365-filtering-correlation-id: 9e2fc197-a42f-4a8c-1286-08dad161e8d9
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- LQ3tO71qrzcp/uoGrpS9FpuCZ6InOOcMW+qm5q/ObpKKyZU53qFt3Vv2U33KhU1abPYeMXSJ9xFNZqYJ/IMHFw5Oz5y2tMcWycPdyODAPzKMJR65cZQcgd9wiDeg8SByUKdPpOz/5cX2AE0lWg40k8hIcjcDxtqUw4wY1bNIOPsmFLpVM1uFhunuOGmdOKVGtCrdeRzecJTAO5w+kmg5BI5vcqC1jaHDNX4pwCJIjUHyyd2x/YqqGy1aPLP9s+/0jdZnfi/jkjY/7+5gzIqmYOpSwIO919YzVGmAqnJfheoioITRPpG9UGVeJDgmecZQQb99HFnCbwQNXBC8/wjYCDmBxjqjllQ4U+pJt8rtZrYU8W1hDbR8Av4dM28NMhY4gMWhQEY50VOr8o9w1E4BLC7kLGxUFymZ4SzeqBhnU0IEPGiimZjsPHmDOrmmv4k5s4oXMVxfLfkythbkIdzsGgu7on1FqPR8j/PXNC4Jr9gya8q8z1GlQT26BVvwstX5rS59tz1KJ0kXAlzn7K8SwYYVDrLBB31MTR/jVlMv40Oaz65vTQveKHgOeLGPpkVHmz0Q74mLNeSlz+GCXWkEtaqCQbx/4/G3Nn9k0K59ydbbgSfYFnznxGAsT8/XyaWhazb3NASDDDCHJpdcxJSgTfti2an4HFAJ3AS7Mk/l6Pl2c9QhvSBw/yA75wAfuJskWfgPHknZQN1CcmQvKMHGvs8Mk5iyL5HIhK90tqFKS/SlzckeikV9hzjJDhQYjORl
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1688.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(39860400002)(366004)(376002)(136003)(346002)(451199015)(2906002)(8990500004)(82960400001)(82950400001)(4326008)(86362001)(52536014)(66946007)(76116006)(66446008)(66556008)(66476007)(64756008)(33656002)(5660300002)(41300700001)(8936002)(7406005)(8676002)(7416002)(38070700005)(316002)(54906003)(6916009)(55016003)(478600001)(38100700002)(83380400001)(6506007)(7696005)(26005)(122000001)(9686003)(186003)(10290500003)(71200400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?kx9GeKb6ewmwn8XNC8SNX9tjilAKnrfD65jpAynZ4OlSQVMmcdqNtSsj9u3P?=
- =?us-ascii?Q?PB/ztmfrXsPLILpmb3eLQ/VjeJkmJgVFd9EU7gjdGgtmK7+fYcUjjVbA7RdR?=
- =?us-ascii?Q?3ltSqA/xvPUTrBv1iAOo/B0yEHpY1QVIVybJqaCszCoJyRTwn9/5IGTlG9Rs?=
- =?us-ascii?Q?R66rTz1kWrLWTcrZJVFdtX4hGfgoNbdF389hReFkxxHMf9VbtRlOYhOSNjx2?=
- =?us-ascii?Q?Bogbw3l1euFMvpqsR3Z1MpKoGR6HED1CcxBg3in7GiT/nYs5V/ue9+bByKv5?=
- =?us-ascii?Q?21msfe1zWBLhLotialMJXkGdn6kkhmI0rlzcVpWt5LOamMV4Vz5TQQJePAo4?=
- =?us-ascii?Q?E0ilZvMuIjkoE/TmHJxH281VRhg6fnSLqEj1ED2ddD541BMQVDmG0726zcRl?=
- =?us-ascii?Q?MxXOEqkgzXSL/BCdcpj4n37wFETZHk98e3u01WCpRqBoE3eKGC2w7t5PAJ0e?=
- =?us-ascii?Q?6HOX+zuRhshS04l/71pSOKQj3NhhDocGLhRF8TNzOntElTw7QkgFDv+j1QUh?=
- =?us-ascii?Q?QWHDPqnS+lPXR1LQAE3zVKfya0G2ScUVo49wCvyegGnRuH7Jnpcef0QeW6oR?=
- =?us-ascii?Q?WwcDMvcdkPrNtl260qewLfb6Pvt7fdTgnJJqw1ewsqHLyQtuU0qhpKcmTM1z?=
- =?us-ascii?Q?YF5//3oVQ2kPCE/NeQiZNhfCPIYzCUIGZH6dRtE32PqqJsJNZE1RIPMv6Q/E?=
- =?us-ascii?Q?ztSVYSV18vU9/Ft/8XzauQd4WnMXBcSm5UZQNSwuCervz2o+Nf5ddOZ58yZZ?=
- =?us-ascii?Q?q9ec5FRRlXKZ7StzcCuvGf3flgXWILt8WdTuOHeh5RgYWKE/R/G1mIJwi5xm?=
- =?us-ascii?Q?jJnCSMvEZrxQWM7CcZ8RoZE41ehzyMvpN8BtiB/6qc//3aq+HICtACcGMwGx?=
- =?us-ascii?Q?WiAXc1WfyuALikB5Ds5tQh1zrWt6jftg+wFI42kWXqp2aJFZeO1qC2Wxq0L0?=
- =?us-ascii?Q?fRWw3B6Y4eae4fdXRuJJ45EXLejaYPcF2ApH4ZAowm4o0CkRj6eXO4J6Ykii?=
- =?us-ascii?Q?2nPiQ2nECzuJgNjyynxsIdo4UwPFZom34Rwl1bMs73T7jPiJJ+pROyzP5bEr?=
- =?us-ascii?Q?DUk23SzVPtCxRvuaXb266sglD6TxTdxc+eAbN4mQVyfS2iVXDOz2zSTzdHoR?=
- =?us-ascii?Q?YcO33Tf5E9bYsUIn68kEtr3bX8sqbbZL2Xcl6XV4ucLtPUctik6CxsCWJdsW?=
- =?us-ascii?Q?S+nXj0T2uPtpEtqgvPZP1YC9KwHV0UjqwuV3z93hxbiNXVlFXh+1VUy0K8Pt?=
- =?us-ascii?Q?x012t8OJ45DkggthprqQNfDAx09CTfbdkoruSYxTgujiOzh2wE9BS3AXkvlv?=
- =?us-ascii?Q?uPRNKto8lE50zVUAXA5/6jb/CMKM72KBZQM17jaswUUdzkaquoBI+liXlxS6?=
- =?us-ascii?Q?QwYOqp5OtbF1hxo7J4yZF3dsb/LH3cFpbGslm/ODfcvclt8O2Vibv9TBFILj?=
- =?us-ascii?Q?zg6NKBQWIb5Y3IRqiDOaPEG4TE1vEpoEzSXEv37QbrTK0DuJjhS0n66jHPoK?=
- =?us-ascii?Q?BcmPg8UQds6LjvkY1ajK937/U8NlkL67Zb9Korny50NAMv+b6OXAPp/gvaF8?=
- =?us-ascii?Q?709OBoymEPDkd6m3L9wCTW3mxG3rcgsjNb8GfK61y7RdetdeMqfDtzHXHf9e?=
- =?us-ascii?Q?SA=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A7AC8F6C
+	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 17:00:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669654824; x=1701190824;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=t8Bjbd/FJV0b3wHt4FA0sTYYiLYmpYfnvwHrv8Z/kaw=;
+  b=eiRbj+tb+g3hugVBDIhCznxj0HHzxxl0bG6Lf5U8u/xSWhQWeL0SoAcE
+   IJeQ2qL92s97C2sFqHW+Q8w7RP2LdeUt55E0o7YtxOg2Te9Iv/ST9+Pg4
+   be6EyDW0xCOJlgGA0ImCUMPmx3NeMk/Rzyv6ZMDMXNTJaE6CrFUFqu7n2
+   iThNqtkKmWtOCOZlPK9J+th0SZ4yPodG1ptfvypsZN8DmCRtpSYo5HQ2l
+   kMLusY4kd5ymqKfqqt8r3BW/iyrDLoh85QdUZEi/oEGz9TqBdsT7qno+A
+   j/uHiNn7ZyJpphLYf1JnKlg+vunU+E2mehV2OOw+0EmJ1kszyC00MiXZz
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="316722270"
+X-IronPort-AV: E=Sophos;i="5.96,200,1665471600"; 
+   d="scan'208";a="316722270"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2022 09:00:23 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="768108880"
+X-IronPort-AV: E=Sophos;i="5.96,200,1665471600"; 
+   d="scan'208";a="768108880"
+Received: from otc-nc-03.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.110])
+  by orsmga004.jf.intel.com with ESMTP; 28 Nov 2022 09:00:23 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: iommu@lists.linux.dev,
+	LKML <linux-kernel@vger.kernel.org>,
+	"Lu Baolu" <baolu.lu@linux.intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	David Woodhouse <dwmw2@infradead.org>,
+	"Robin Murphy" <robin.murphy@arm.com>,
+	"Will Deacon" <will@kernel.org>
+Cc: Yi Liu <yi.l.liu@intel.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	Raj Ashok <ashok.raj@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	Yuzhang Luo <yuzhang.luo@intel.com>
+Subject: [PATCH v2] iommu/vt-d: Add a fix for devices need extra dtlb flush
+Date: Mon, 28 Nov 2022 09:04:10 -0800
+Message-Id: <20221128170410.3830605-1-jacob.jun.pan@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1688.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9e2fc197-a42f-4a8c-1286-08dad161e8d9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Nov 2022 16:59:27.4294
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: RaQmnIrdvU7ksnUDrqTx3lDCUlE+AX73NeLcBXtPPMbvUqYA5Z3HonZfTrnM41eMXH7zDX9IdXBvxd70+de3Xy/bTXYr5YBmpKwtm/Wyg+E=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR21MB3553
+Content-Transfer-Encoding: 8bit
 
-From: Borislav Petkov <bp@alien8.de> Sent: Monday, November 28, 2022 8:34 A=
-M
->=20
-> On Mon, Nov 28, 2022 at 02:38:11PM +0000, Michael Kelley (LINUX) wrote:
-> > Any further comment on this patch?  I think we're agreement.  For
-> > this patch series I propose to change the symbol "CC_VENDOR_HYPERV"
-> > to "CC_VENDOR_AMD_VTOM" and the function name
-> > hyperv_cc_platform_has() to amd_vtom_cc_platform_has().
->=20
-> That doesn't sound optimal to me.
->=20
-> So, let's clarify things first: those Isolation VMs - are they going to
-> be the paravisors?
+QAT devices on Intel Sapphire Rapids and Emerald Rapids have a defect in
+address translation service (ATS). These devices may inadvertently issue
+ATS invalidation completion before posted writes initiated with
+translated address that utilized translations matching the invalidation
+address range, violating the invalidation completion ordering.
 
-No.  The paravisor exists in another layer (VMPL 0 in the AMD vTOM
-architecture) that isn't visible to the Linux guest.  The paravisor is
-a separate code base that isn't currently open source.  All code
-in this patch series is code that runs in the Linux guest.
+This patch adds an extra device TLB invalidation for the affected devices,
+it is needed to ensure no more posted writes with translated address
+following the invalidation completion. Therefore, the ordering is
+preserved and data-corruption is prevented.
 
-From an encryption standpoint, the Linux guest sees the following:
+Device TLBs are invalidated under the following six conditions:
+1. Device driver does DMA API unmap IOVA
+2. Device driver unbind a PASID from a process, sva_unbind_device()
+3. PASID is torn down, after PASID cache is flushed. e.g. process
+exit_mmap() due to crash
+4. Under SVA usage, called by mmu_notifier.invalidate_range() where
+VM has to free pages that were unmapped
+5. userspace driver unmaps a DMA buffer
+6. Cache invalidation in vSVA usage (upcoming)
 
-1) Guest memory is encrypted by default
-2) The Linux guest must set the vTOM flag in a PTE to access a page
-as unencrypted.
-3) The Linux guest must explicitly notify the hypervisor to change a
-page from private (encrypted) to shared (decrypted), and vice versa.
+For #1 and #2, device drivers are responsible for stopping DMA traffic
+before unmap/unbind. For #3, iommu driver gets mmu_notifier to
+invalidate TLB the same way as normal user unmap which will do an extra
+invalidation. The dTLB invalidation after PASID cache flush does not
+need an extra invalidation.
 
->=20
-> I don't see any other option because the unmodified guest must be some
-> old windoze....
+Therefore, we only need to deal with #4 and #5 in this patch. #1 is also
+covered by this patch due to common code path with #5.
 
-What Windows guests do isn't really relevant.  Again, the code in this patc=
-h
-series all runs directly in the Linux guest, not the paravisor.  And the Li=
-nux
-guest isn't unmodified.  We've added changes to understand vTOM and
-the need to communicate with the hypervisor about page changes
-between private and shared.  But there are other changes for a fully
-enlightened guest that we don't have to make when using AMD vTOM,
-because the paravisor transparently (to the guest -- Linux or Windows)
-handles those issues.
+Tested-by: Yuzhang Luo <yuzhang.luo@intel.com>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Reviewed-by: Ashok Raj <ashok.raj@intel.com>
+---
+v2
+- removed risky_device() check based on the review by Robin, added comments
+  to explain the exemption.
+- reworked commit message based on the review from Ashok
+---
+ drivers/iommu/intel/iommu.c | 67 +++++++++++++++++++++++++++++++++++--
+ drivers/iommu/intel/iommu.h |  3 ++
+ drivers/iommu/intel/svm.c   |  4 ++-
+ 3 files changed, 71 insertions(+), 3 deletions(-)
 
->=20
-> So, if they're going to be that, then I guess this should be called
->=20
-> 	CC_ATTR_PARAVISOR
->=20
-> to denote that it is a thin layer of virt gunk between an unmodified
-> guest and a hypervisor.
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 996a8b5ee5ee..a97e9247037f 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1396,6 +1396,23 @@ static void domain_update_iotlb(struct dmar_domain *domain)
+ 	spin_unlock_irqrestore(&domain->lock, flags);
+ }
+ 
++/*
++ * Impacted QAT device IDs ranging from 0x4940 to 0x4943.
++ * This quirk is exempted from risky_device() check because it applies only
++ * to the built-in QAT devices.
++ */
++#define BUGGY_QAT_DEVID_MASK 0x494c
++static bool dev_needs_extra_dtlb_flush(struct pci_dev *pdev)
++{
++	if (pdev->vendor != PCI_VENDOR_ID_INTEL)
++		return false;
++
++	if ((pdev->device & 0xfffc) != BUGGY_QAT_DEVID_MASK)
++		return false;
++
++	return true;
++}
++
+ static void iommu_enable_pci_caps(struct device_domain_info *info)
+ {
+ 	struct pci_dev *pdev;
+@@ -1478,6 +1495,7 @@ static void __iommu_flush_dev_iotlb(struct device_domain_info *info,
+ 	qdep = info->ats_qdep;
+ 	qi_flush_dev_iotlb(info->iommu, sid, info->pfsid,
+ 			   qdep, addr, mask);
++	quirk_dev_tlb(info, addr, mask, PASID_RID2PASID, qdep);
+ }
+ 
+ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
+@@ -4490,9 +4508,10 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+ 	if (dev_is_pci(dev)) {
+ 		if (ecap_dev_iotlb_support(iommu->ecap) &&
+ 		    pci_ats_supported(pdev) &&
+-		    dmar_ats_supported(pdev, iommu))
++		    dmar_ats_supported(pdev, iommu)) {
+ 			info->ats_supported = 1;
+-
++			info->dtlb_extra_inval = dev_needs_extra_dtlb_flush(pdev);
++		}
+ 		if (sm_supported(iommu)) {
+ 			if (pasid_supported(iommu)) {
+ 				int features = pci_pasid_features(pdev);
+@@ -4931,3 +4950,47 @@ static void __init check_tylersburg_isoch(void)
+ 	pr_warn("Recommended TLB entries for ISOCH unit is 16; your BIOS set %d\n",
+ 	       vtisochctrl);
+ }
++
++/*
++ * Here we deal with a device TLB defect where device may inadvertently issue ATS
++ * invalidation completion before posted writes initiated with translated address
++ * that utilized translations matching the invalidation address range, violating
++ * the invalidation completion ordering.
++ * Therefore, any use cases that cannot guarantee DMA is stopped before unmap is
++ * vulnerable to this defect. In other words, any dTLB invalidation initiated not
++ * under the control of the trusted/privileged host device driver must use this
++ * quirk.
++ * Device TLBs are invalidated under the following six conditions:
++ * 1. Device driver does DMA API unmap IOVA
++ * 2. Device driver unbind a PASID from a process, sva_unbind_device()
++ * 3. PASID is torn down, after PASID cache is flushed. e.g. process
++ *    exit_mmap() due to crash
++ * 4. Under SVA usage, called by mmu_notifier.invalidate_range() where
++ *    VM has to free pages that were unmapped
++ * 5. Userspace driver unmaps a DMA buffer
++ * 6. Cache invalidation in vSVA usage (upcoming)
++ *
++ * For #1 and #2, device drivers are responsible for stopping DMA traffic
++ * before unmap/unbind. For #3, iommu driver gets mmu_notifier to
++ * invalidate TLB the same way as normal user unmap which will use this quirk.
++ * The dTLB invalidation after PASID cache flush does not need this quirk.
++ *
++ * As a reminder, #6 will *NEED* this quirk as we enable nested translation.
++ */
++void quirk_dev_tlb(struct device_domain_info *info, unsigned long address,
++		   unsigned long mask, u32 pasid, u16 qdep)
++{
++	u16 sid;
++
++	if (likely(!info->dtlb_extra_inval))
++		return;
++
++	sid = PCI_DEVID(info->bus, info->devfn);
++	if (pasid == PASID_RID2PASID) {
++		qi_flush_dev_iotlb(info->iommu, sid, info->pfsid,
++				   qdep, address, mask);
++	} else {
++		qi_flush_dev_iotlb_pasid(info->iommu, sid, info->pfsid,
++					 pasid, qdep, address, mask);
++	}
++}
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 92023dff9513..09b989bf545f 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -623,6 +623,7 @@ struct device_domain_info {
+ 	u8 pri_enabled:1;
+ 	u8 ats_supported:1;
+ 	u8 ats_enabled:1;
++	u8 dtlb_extra_inval:1;	/* Quirk for devices need extra flush */
+ 	u8 ats_qdep;
+ 	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
+ 	struct intel_iommu *iommu; /* IOMMU used by this device */
+@@ -728,6 +729,8 @@ void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u32 pasid, u64 addr,
+ void qi_flush_dev_iotlb_pasid(struct intel_iommu *iommu, u16 sid, u16 pfsid,
+ 			      u32 pasid, u16 qdep, u64 addr,
+ 			      unsigned int size_order);
++void quirk_dev_tlb(struct device_domain_info *info, unsigned long address,
++		   unsigned long pages, u32 pasid, u16 qdep);
+ void qi_flush_pasid_cache(struct intel_iommu *iommu, u16 did, u64 granu,
+ 			  u32 pasid);
+ 
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index 7d08eb034f2d..117430b97ba9 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -184,10 +184,12 @@ static void __flush_svm_range_dev(struct intel_svm *svm,
+ 		return;
+ 
+ 	qi_flush_piotlb(sdev->iommu, sdev->did, svm->pasid, address, pages, ih);
+-	if (info->ats_enabled)
++	if (info->ats_enabled) {
+ 		qi_flush_dev_iotlb_pasid(sdev->iommu, sdev->sid, info->pfsid,
+ 					 svm->pasid, sdev->qdep, address,
+ 					 order_base_2(pages));
++		quirk_dev_tlb(info, address, order_base_2(pages), svm->pasid, sdev->qdep);
++	}
+ }
+ 
+ static void intel_flush_svm_range_dev(struct intel_svm *svm,
+-- 
+2.25.1
 
-No, the code is this patch series is not that at all.  It's not code that i=
-s
-part of the paravisor.  It's Linux guest code that understands it is runnin=
-g
-in an environment where AMD vTOM is the encryption scheme, which is
-different from the AMD C-bit encryption scheme.
-
->=20
-> And if TDX wants to do that too later, then they can use that flag too.
->=20
-
-Again, no.  What I have proposed as CC_VENDOR_AMD_VTOM is
-specific to AMD's virtual-Top-of-Memory architecture.  The TDX
-architecture doesn't really have a way to use a paravisor.
-
-To summarize, the code in this patch series is about a 3rd encryption
-scheme that is used by the guest.  It is completely parallel to the AMD
-C-bit encryption scheme and the Intel TDX encryption scheme.   With
-the AMD vTOM scheme, there is a paravisor that transparently emulates
-some things for the guest so there are fewer code changes needed in the
-guest, but this patch series is not about that paravisor code.
-
-Michael
