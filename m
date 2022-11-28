@@ -1,32 +1,32 @@
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 128FD361
-	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 06:55:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8322361
+	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 06:55:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669618510; x=1701154510;
+  t=1669618515; x=1701154515;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=zq7NjJNxRgriS5ThoBBkHtRQsns0/Mg1Qwl0eHqflWY=;
-  b=IrqxEfaGL7gmidHK55weo2DGnBpvQuw4u+tWmyrZGajnL5bfbn/LAwVP
-   nwn/nn1FGP+jO9jlAsFs6gbj9IMXULAnjtOLD42nXf8VIakLAbvj+A3Af
-   CuBW5LYkR0mHO0wjxjgDsCOoDinIwnSXRcxgkmNmt8vYpfm28wn99fHZ4
-   G1acO4te2Ess75MUuLit823Qb3VnP9VtkKlqvnWNiOuciSlbvcPjoXDvz
-   7olH3rjAaoUM3iH3IF7wh1V4tYC9zkOrvh3MiTlhkyNgmlh9dPcwdHE8R
-   lBfpS5wlV/B2jMjcWGqzsP5ecMcfaMo8RZCcgF+GlN2757AHOMwlTDicO
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="315916120"
+  bh=PhxHKh8gGEUFxS7QMyT5AZD9ZvqhOGgKls6j0D/stek=;
+  b=Rc3bmt03yumtNzpQzASOiUaOg72feZgWsxxZ+8r3Q0yjPEx8Xul7mPXV
+   VcNN8OLYEq6BukDVTixEPl4F08GNnuKjtulfRabyXtIHr/RfCfzewizNx
+   7cdXgEr4Po8rYIBreSDqHjbjtCG/Dc58n9xKUQM2xSybVFn9fi/qe0vOV
+   AvaqSpLIKosjWfVcTjHCnuBDUv9/j16sWSNsT8+WOsbTKLmeLVL4aIohI
+   ChLog/6J/RGVD0YHvVw7eRoXeHb1kteb6UeM05Er5ih+IUCtQMVlltQg4
+   6GrudMQci49lVstCpvZAUQYqxEoe1NQuoV+YK4+3aQCHYZG2Z1VGJgVtL
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="379016199"
 X-IronPort-AV: E=Sophos;i="5.96,199,1665471600"; 
-   d="scan'208";a="315916120"
+   d="scan'208";a="379016199"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2022 22:55:09 -0800
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2022 22:55:15 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="674120912"
+X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="674120967"
 X-IronPort-AV: E=Sophos;i="5.96,199,1665471600"; 
-   d="scan'208";a="674120912"
+   d="scan'208";a="674120967"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga008.jf.intel.com with ESMTP; 27 Nov 2022 22:55:01 -0800
+  by orsmga008.jf.intel.com with ESMTP; 27 Nov 2022 22:55:08 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Jason Gunthorpe <jgg@nvidia.com>,
@@ -55,9 +55,9 @@ Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v3 09/20] iommu/sun50i: Remove detach_dev callback
-Date: Mon, 28 Nov 2022 14:46:37 +0800
-Message-Id: <20221128064648.1934720-10-baolu.lu@linux.intel.com>
+Subject: [PATCH v3 10/20] iommu: Add set_platform_dma iommu ops
+Date: Mon, 28 Nov 2022 14:46:38 +0800
+Message-Id: <20221128064648.1934720-11-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221128064648.1934720-1-baolu.lu@linux.intel.com>
 References: <20221128064648.1934720-1-baolu.lu@linux.intel.com>
@@ -69,26 +69,43 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The IOMMU driver supports default domain, so the detach_dev op will never
-be called. Remove it to avoid dead code.
+When VFIO finishes assigning a device to user space and calls
+iommu_group_release_dma_owner() to return the device to kernel, the IOMMU
+core will attach the default domain to the device. Unfortunately, some
+IOMMU drivers don't support default domain, hence in the end, the core
+calls .detach_dev instead.
 
+This adds set_platform_dma iommu ops to make it clear that what it does
+is returning control back to the platform DMA ops.
+
+Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/sun50i-iommu.c | 1 -
- 1 file changed, 1 deletion(-)
+ include/linux/iommu.h | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
-index 5cb2d44dfb92..37b074be87a5 100644
---- a/drivers/iommu/sun50i-iommu.c
-+++ b/drivers/iommu/sun50i-iommu.c
-@@ -835,7 +835,6 @@ static const struct iommu_ops sun50i_iommu_ops = {
- 	.probe_device	= sun50i_iommu_probe_device,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
- 		.attach_dev	= sun50i_iommu_attach_device,
--		.detach_dev	= sun50i_iommu_detach_device,
- 		.flush_iotlb_all = sun50i_iommu_flush_iotlb_all,
- 		.iotlb_sync_map = sun50i_iommu_iotlb_sync_map,
- 		.iotlb_sync	= sun50i_iommu_iotlb_sync,
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 68d7d304cdb7..3542461558fa 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -223,6 +223,9 @@ struct iommu_iotlb_gather {
+  * @release_device: Remove device from iommu driver handling
+  * @probe_finalize: Do final setup work after the device is added to an IOMMU
+  *                  group and attached to the groups domain
++ * @set_platform_dma: Returning control back to the platform DMA ops. Only
++ *                    valid for IOMMU drivers which don't support default
++ *                    domain.
+  * @device_group: find iommu group for a particular device
+  * @get_resv_regions: Request list of reserved regions for a device
+  * @of_xlate: add OF master IDs to iommu grouping
+@@ -251,6 +254,7 @@ struct iommu_ops {
+ 	struct iommu_device *(*probe_device)(struct device *dev);
+ 	void (*release_device)(struct device *dev);
+ 	void (*probe_finalize)(struct device *dev);
++	void (*set_platform_dma)(struct device *dev);
+ 	struct iommu_group *(*device_group)(struct device *dev);
+ 
+ 	/* Request/Free a list of reserved regions for a device */
 -- 
 2.34.1
 
