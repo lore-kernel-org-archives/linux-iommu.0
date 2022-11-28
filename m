@@ -1,111 +1,158 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 820CFA461
-	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 18:04:04 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 87553D6E;
-	Mon, 28 Nov 2022 10:04:04 -0800 (PST)
-Received: from [10.57.71.118] (unknown [10.57.71.118])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 30E293F73B;
-	Mon, 28 Nov 2022 10:03:55 -0800 (PST)
-Message-ID: <bc1e4fd5-bf96-f579-8190-fda9b41d1547@arm.com>
-Date: Mon, 28 Nov 2022 18:03:51 +0000
+Received: from BN6PR00CU002-vft-obe.outbound.protection.outlook.com (mail-eastus2azon11021023.outbound.protection.outlook.com [52.101.57.23])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAD1CA461
+	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 18:06:34 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dR6WJk0FQaWwgFfMcxFZMWNHhZJtuxMfgpevwW+v9ZEzkEz7/FKrqzFBSTbkaHQveNvy6DIGv8oYMcYoInP0j3YB+W09NQpf7WG0wtFkxnIrjd6FgTIuyL5qDVJ40xJeRsabVfWERkd/si+1GrSbLZGFCFYIVReeoxKwUccvZAkyDcqzgN4lUxOGReMAIKZWW4NV0LVq8SDfCdxcskIiA7z/xjhYb4wV624RLQZ6t0HYB0zOimwKf3XdZD8Ahumz/oM1K+RTJ0NU8b8NbhLLivLsRBBuZlrgABKtLq3b9cSvjXv0MLVIG5jDWODFEOenLvScM/I73qWntLUxSofYkA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SxxPwB2akai3saP/93ma8ag5k74qZK0TqXBTmZHmBRw=;
+ b=JTe3jPwUWRMSP7yfu1gU65lcqO5FkZxUyoaCHo91i0M9dninkzepQu9cPiBIFX7W0Xd/+ZNuYMqUNJImTEIsLxuZMz0kXYCBcQpZEXf/BvtVOXSS7Xg+uOe0VtjL0OiCR8chv1YbEYkpmk1agrVz+xizTmeq+bw5dRXZIGyK2t3Jdi1qesO3hOy7Ad1u8dYCNSJDaa6/4Uom7/gKFfAyGdanOjYpeXmQVt04XvAH5azTYtgebqKokZZapeNqsd22HouXZe3cP5JlnoPhe4yviBZJcb4Tw701+qosRmxjDhWZpzZZGMwEFDiXJ5d3BR+cyp2n9kZzqCt4qoWyibU1nA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+Received: from SA1PR21MB1335.namprd21.prod.outlook.com (2603:10b6:806:1f2::11)
+ by CD1PPF08B6E7A8B.namprd21.prod.outlook.com (2603:10b6:340:1:0:2:0:4) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.8; Mon, 28 Nov
+ 2022 18:06:26 +0000
+Received: from SA1PR21MB1335.namprd21.prod.outlook.com
+ ([fe80::ac9b:6fe1:dca5:b817]) by SA1PR21MB1335.namprd21.prod.outlook.com
+ ([fe80::ac9b:6fe1:dca5:b817%6]) with mapi id 15.20.5880.008; Mon, 28 Nov 2022
+ 18:06:24 +0000
+From: Dexuan Cui <decui@microsoft.com>
+To: Tom Lendacky <thomas.lendacky@amd.com>, "Michael Kelley (LINUX)"
+	<mikelley@microsoft.com>, Sathyanarayanan Kuppuswamy
+	<sathyanarayanan.kuppuswamy@linux.intel.com>, "hpa@zytor.com"
+	<hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>, Haiyang Zhang
+	<haiyangz@microsoft.com>, "wei.liu@kernel.org" <wei.liu@kernel.org>,
+	"luto@kernel.org" <luto@kernel.org>, "peterz@infradead.org"
+	<peterz@infradead.org>, "davem@davemloft.net" <davem@davemloft.net>,
+	"edumazet@google.com" <edumazet@google.com>, "kuba@kernel.org"
+	<kuba@kernel.org>, "pabeni@redhat.com" <pabeni@redhat.com>,
+	"lpieralisi@kernel.org" <lpieralisi@kernel.org>, "robh@kernel.org"
+	<robh@kernel.org>, "kw@linux.com" <kw@linux.com>, "bhelgaas@google.com"
+	<bhelgaas@google.com>, "arnd@arndb.de" <arnd@arndb.de>, "hch@infradead.org"
+	<hch@infradead.org>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "brijesh.singh@amd.com"
+	<brijesh.singh@amd.com>, "tglx@linutronix.de" <tglx@linutronix.de>,
+	"mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
+	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>, Tianyu Lan
+	<Tianyu.Lan@microsoft.com>, "kirill.shutemov@linux.intel.com"
+	<kirill.shutemov@linux.intel.com>, "ak@linux.intel.com" <ak@linux.intel.com>,
+	"isaku.yamahata@intel.com" <isaku.yamahata@intel.com>, "Williams, Dan J"
+	<dan.j.williams@intel.com>, "jane.chu@oracle.com" <jane.chu@oracle.com>,
+	"seanjc@google.com" <seanjc@google.com>, "tony.luck@intel.com"
+	<tony.luck@intel.com>, "x86@kernel.org" <x86@kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+	"linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: RE: [Patch v3 05/14] x86/mm: Handle decryption/re-encryption of
+ bss_decrypted consistently
+Thread-Topic: [Patch v3 05/14] x86/mm: Handle decryption/re-encryption of
+ bss_decrypted consistently
+Thread-Index: AQHY+s4ztxnVbL+L5UCX76A2RK98j65D/NUAgA+0gRCAAMDsAIAAP/RQ
+Date: Mon, 28 Nov 2022 18:06:24 +0000
+Message-ID:
+ <SA1PR21MB1335D3133B884CA4221BB16DBF139@SA1PR21MB1335.namprd21.prod.outlook.com>
+References: <1668624097-14884-1-git-send-email-mikelley@microsoft.com>
+ <1668624097-14884-6-git-send-email-mikelley@microsoft.com>
+ <01d7c7cc-bd4e-ee9b-f5b2-73ea367e602f@linux.intel.com>
+ <BYAPR21MB1688A31ED795ED1B5ACB6D26D7099@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <SA1PR21MB133512D4B7B78DB38765EBFEBF139@SA1PR21MB1335.namprd21.prod.outlook.com>
+ <fbf2cdcc-4ff7-b466-a6af-7a147f3bc94d@amd.com>
+In-Reply-To: <fbf2cdcc-4ff7-b466-a6af-7a147f3bc94d@amd.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=f2833e17-622b-4296-b903-afed3f98bbc2;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-11-28T18:04:51Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SA1PR21MB1335:EE_|CD1PPF08B6E7A8B:EE_
+x-ms-office365-filtering-correlation-id: 32abef16-6f50-43c0-f816-08dad16b4332
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ HSGs1Y5//Apu12L8w2j6Bclmyq0UzVBX6nPAdyZyWLMgfIST6DjH6cC+bYpggyBUe6Kw5jLFlLQnz6Mq+kZfErmbisviythZmSHITyN0AQ9gavB0bvz1v3D0kwa+72/pXr1Kj+eOj6exSHemg9REKoVqRUJrJXut6vyYqwUHFjYVvltgGDFuSTOYb3kUlHG3wLAMXqAJK1Wddv6TGPGeynUe92aZoSSgyNI6qA2334qoxLdU1rNqzjLzv3J1spOMCLCKDYzSyWcuxxARL3hMRZ+bL4DrT0dBe8vhvOvoaymoRA/q/bWysRak7IuCRJiPjQUUx89yXxXuJZfPLSU9gnjVTI3MfFtFu9nE7LVw7ABMf1OIF8gyG1jDYQg+NFd07x0Lw2GSYaUwZkYZhJUYeq/90P0GjqEUOSGiJjdamO1nmOo2O/NVxfQFAj+69EBwhSnC+vUaAPrmHuZCEI61yAbtZp2TaK5ZiHjA9kftV4x+KxzvmWu/SOarllKCBwZa6uOZlFSIWuZHq05Zke0Kc2Z2fpSWaU4+MFCQJbHcq5glZCLT0+S+phHuchuEpmrpG0h03R+/MmWShObTnszakvF29cGx12JnJVd6P3XCe5UGFgtgvqV/hQUWGWiUa2KWOJ3HiMF+vkP78Q0FlS7lKddpa1NW3T+QuAvZd0eikQ5iQcU1lUCFiEHT8CLV/RjKfGTi5A97UnqCoCBccwiy9vQTItkbmdBp0ArPVdj6pOx6QSCCFprBeTGpPGHHyxHkKKiMchg3TXDPivx5ptxHOg==
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR21MB1335.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(346002)(366004)(136003)(396003)(376002)(451199015)(2906002)(26005)(9686003)(83380400001)(52536014)(5660300002)(4744005)(8936002)(7416002)(7406005)(41300700001)(316002)(110136005)(66946007)(64756008)(8676002)(66446008)(66556008)(66476007)(76116006)(10290500003)(8990500004)(71200400001)(478600001)(7696005)(6506007)(86362001)(55016003)(33656002)(82950400001)(82960400001)(921005)(38100700002)(186003)(122000001)(38070700005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?OGMzV3NtRWYyelpsOVBIcjRUdHc1OXQrc0FOUE54YVc2amZnSEtnUVN6bmZX?=
+ =?utf-8?B?QWpiQU9kY2JFU2JOOFQ1U1MxRHpJcDVhMVlSZ3ozSFo4UTZmbE9sY1dLVFlm?=
+ =?utf-8?B?R1p5dXlSTDNoenRzdlpUWmliY29wYUFsWFVTSmo4d1F2bTIveElQaDlOSGJR?=
+ =?utf-8?B?SVdKWVBEdjVaUHVwSjNlNXN1VTc4OE9JSkNEM1JtaXAyNm9rTURXQU9zdlkr?=
+ =?utf-8?B?Y2cvQTU5bzk4M0ZMWE14UXl3K2p1enJ1by90ckNHaytZdE1QVFBOVHlHSWt3?=
+ =?utf-8?B?dlZLME8rR2ZXd09maUhRSlBuNStxV3dwbFBWSktxM25aWG11d0lUYTJSTHd4?=
+ =?utf-8?B?U3FPemhiZDV1NkhMbnhESTZOejRjdVp4bnZQNU9tdVd2VlJYNHNCZHMxT3J6?=
+ =?utf-8?B?ellEb1IxTU13RlNrSnlCZ3pwdEpsNDQvSDk2Nm9YMThXZ1pMUDEzSzV5RlFR?=
+ =?utf-8?B?UDZFandzUitHTmNmaGpkMkFCeElRVFA4TUI5ejh0R3kzS3pTZHFOQlpyRWVF?=
+ =?utf-8?B?VzRTejhzVW5jdGExT3RHK2hpaGtWZGgzYnA0QnAzRUhUL0RsaUxhejFGYWda?=
+ =?utf-8?B?bCtpZG41dmdsWHdGY0I0ZGl5NVo3TzFuUmlObU9UQXN4NG91ZG94amc0Mndk?=
+ =?utf-8?B?OFpPdDJBdDFmWkJDRmREeDdGUTQxRDREQnE2RGJFaDNsV3JEeDdzZWw4Tk1k?=
+ =?utf-8?B?MVBROC9mQnZ6MllIWlVTRnNMdGxKQnFvMzV4LzQwNUVpT2pvTzJrTEcrU2kr?=
+ =?utf-8?B?bURFdEdnY2h1b3dLektwbHFHeTNjZEF1KzVWU1Vpbmk1cUVWaTM0U2lMV1lG?=
+ =?utf-8?B?TVJGRmNoZmNya2dMdkZtQ2VPSElaVUlEV29uZk8ybnVlbS9taHZvUWg4QzRP?=
+ =?utf-8?B?citGU2hrQ1orclhHc3pNbHVKLzhzZnV4NGxoVG9TSU1xZFc5VHJ0MDZ2dk12?=
+ =?utf-8?B?SU9zZUQxYXZPclFoUmNieUJDdmZOcVFGcTZ0OERHRGRFVG5sQ0NlYlhNdkNB?=
+ =?utf-8?B?QmlwVVNwRHpUR1ZwY3Fsc1hzQXA5M1k0b2ttQTN3N2cxeWczZ2MrbkdGUHJY?=
+ =?utf-8?B?THVwTE5VQWw5WWx0NURsUXFQZ2Y1Tml1SHcrd01DWUwxRDRjdjNwaXZHc25B?=
+ =?utf-8?B?VUR5RFZjdjBtYWFxMTZwQzVKWXhsaXJKTk1PdUg2eGZCOTFBSVpGZWQ1Q3lr?=
+ =?utf-8?B?bVQ4Rk90Q2FiV0NhdG0rWkJObzVEWVBiTnhhbGpGVGh5ZHNiY1VvNUdaTkE2?=
+ =?utf-8?B?ZUxiRy9Ia0JUOWUwYUY5VzJtRGxJM3k2WjFYdlVYczl5cVJVSDJQT0tNZFBr?=
+ =?utf-8?B?VFdQS0ZNVU5sSWVDN1BLbjFvK2RtejlndWRLN250dU5GWnNyS3pJWjI5Wk1Y?=
+ =?utf-8?B?WFBSOVF0UFFSUHdXSDZBZHFCc1piSDJoeWhMRmZ0Y3RWRVB1dTRVcW95L3Jh?=
+ =?utf-8?B?eVN5VEd5YXBuM1lTNVEvSXNWd2FhRElsMjllOEg4ZW9SOGxZNXhNQWpWWUsz?=
+ =?utf-8?B?djMwYlVQelRzZmNPeWFtalBCRUpCbDlrR3FVRG91T0huc0kvZHNaVkJpK0JF?=
+ =?utf-8?B?OUcwVnZxSG50M1F4NnRKTDlkbjJWMksvM1BSYVhGMmhVRXh6cTRXa2VDVzhr?=
+ =?utf-8?B?Mkh3OTYyaGN4Sy9veGtzMlc3eFhpQitqOHhWOE14M3krREJyblVYb1RTKzRN?=
+ =?utf-8?B?MmFua1hNQWp4d09GcE8zU1J6bW9TTUZwU1pqMExPU2JhR2w4cE55dk9zaGhB?=
+ =?utf-8?B?djdPUERLTFZSRHFBREtvaG5NeldXdW5kRXNLaTlMOUM0ZFRlZjJRZkx3aWlx?=
+ =?utf-8?B?Zm1qWnhreEZ2TytuUjJxdTlHWWx2d2t2L1NPUDQ5bzlFQlJyUUdGeGo2a3hm?=
+ =?utf-8?B?c1k4VUNycEtPdjNEMHc4ZXB5WCtKZmdJVGEyeVNzbTNCUGVPcVhaMERucGd4?=
+ =?utf-8?B?WnZlNGlnc1k4UVovTUkwNFhGWEg3RWgzY2VQenhldzBiREczMXh5QjRiWWZM?=
+ =?utf-8?B?WnlIV3lCYXlBTjFOb2VHeWgrMjdTYmNUR0luRlYrVGcydzVuc3pCandraGFH?=
+ =?utf-8?B?eDJDYXA4VjZPellzMXpWcmZGLzdmeEJpcVZWSFpWRU43L3RjM3pCcGRrNDlv?=
+ =?utf-8?Q?ScbBbVr94ThmmSpiunYypb2eg?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH v2 3/7] s390/pci: Use dma-iommu layer
-Content-Language: en-GB
-To: Niklas Schnelle <schnelle@linux.ibm.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>, Gerd Bayer <gbayer@linux.ibm.com>,
- iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>,
- Wenjia Zhang <wenjia@linux.ibm.com>
-Cc: Pierre Morel <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
- borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
- gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com, svens@linux.ibm.com,
- linux-kernel@vger.kernel.org, Julian Ruess <julianr@linux.ibm.com>
-References: <20221116171656.4128212-1-schnelle@linux.ibm.com>
- <20221116171656.4128212-4-schnelle@linux.ibm.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20221116171656.4128212-4-schnelle@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR21MB1335.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 32abef16-6f50-43c0-f816-08dad16b4332
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Nov 2022 18:06:24.5152
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: oS4YbM3Xx1bSkr5HU78Xpb0WZY8WfuLjq1a5TZTrRim7uyvZxPzkmhCEPnPqvCO+K847bDhU/d0OkgQ9fiXyvA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CD1PPF08B6E7A8B
 
-On 2022-11-16 17:16, Niklas Schnelle wrote:
-[...]
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index dc5f7a156ff5..804fb8f42d61 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -93,7 +93,7 @@ config IOMMU_DEBUGFS
->   choice
->   	prompt "IOMMU default domain type"
->   	depends on IOMMU_API
-> -	default IOMMU_DEFAULT_DMA_LAZY if X86 || IA64
-> +	default IOMMU_DEFAULT_DMA_LAZY if X86 || IA64 || S390
->   	default IOMMU_DEFAULT_DMA_STRICT
->   	help
->   	  Choose the type of IOMMU domain used to manage DMA API usage by
-> @@ -412,6 +412,7 @@ config ARM_SMMU_V3_SVA
->   config S390_IOMMU
->   	def_bool y if S390 && PCI
->   	depends on S390 && PCI
-> +	select IOMMU_DMA
-
-Please add S390 to the condition under config IOMMU_DMA instead.
-
->   	select IOMMU_API
->   	help
->   	  Support for the IOMMU API for s390 PCI devices.
-[...]
-> @@ -45,9 +329,14 @@ static struct iommu_domain *s390_domain_alloc(unsigned domain_type)
->   {
->   	struct s390_domain *s390_domain;
->   
-> -	if (domain_type != IOMMU_DOMAIN_UNMANAGED)
-> +	switch (domain_type) {
-> +	case IOMMU_DOMAIN_DMA:
-> +	case IOMMU_DOMAIN_DMA_FQ:
-
-I was about to question adding this without any visible treatment of 
-iommu_iotlb_gather_queued() or domain->type == IOMMU_DOMAIN_DMA_FQ as a 
-whole, but I guess if you never actually free any pagetables it does 
-work out OK. Bit of a timebomb if there's a chance of that ever changing 
-in future, though.
-
-> +	case IOMMU_DOMAIN_UNMANAGED:
-> +		break;
-> +	default:
->   		return NULL;
-> -
-> +	}
->   	s390_domain = kzalloc(sizeof(*s390_domain), GFP_KERNEL);
->   	if (!s390_domain)
->   		return NULL;
-[...]
-> @@ -397,12 +678,29 @@ static size_t s390_iommu_unmap_pages(struct iommu_domain *domain,
->   		return 0;
->   
->   	iommu_iotlb_gather_add_range(gather, iova, size);
-> +	atomic64_add(pgcount, &s390_domain->ctrs.unmapped_pages);
->   
->   	return size;
->   }
->   
-> +static void s390_iommu_probe_finalize(struct device *dev)
-> +{
-> +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-> +
-> +	iommu_dma_forcedac = true;
-> +	iommu_setup_dma_ops(dev, domain->geometry.aperture_start, domain->geometry.aperture_end);
-
-For consistency with all but one other caller now, just pass 0 and 
-U64_MAX for base and size to make it clear that they're meaningless 
-(they will eventually go away as part of a bigger refactoring).
-
-Thanks,
-Robin.
+PiBGcm9tOiBUb20gTGVuZGFja3kgPHRob21hcy5sZW5kYWNreUBhbWQuY29tPg0KPiBTZW50OiBN
+b25kYXksIE5vdmVtYmVyIDI4LCAyMDIyIDY6MTYgQU0NCj4gPiBbLi4uXQ0KPiA+IE9uIGEgVERY
+IHN5c3RlbSAqd2l0aCogQ09ORklHX0FNRF9NRU1fRU5DUllQVCwgdGhlIHVudXNlZA0KPiA+IG1l
+bW9yeSBpbiB0aGUgYnNzX2RlY3J5cHRlZCBzZWN0aW9uIGFsc28gbmV2ZXIgZ2V0cyBmcmVlZCBk
+dWUgdG8gdGhlDQo+ID4gYmVsb3cgInJldHVybjsiDQo+ID4NCj4gPiBJJ2Qgc3VnZ2VzdCBhIEZp
+eGVzIHRhZyBzaG91bGQgYmUgYWRkZWQgdG8gbWFrZSBzdXJlIHRoZSBkaXN0cm8gdmVuZG9ycw0K
+PiA+IG5vdGljZSB0aGUgcGF0Y2ggYW5kIGJhY2twb3J0IGl0IDotKQ0KPiA+IFsuLi5dDQo+ID4g
+Rml4ZXM6IGIzZjA5MDdjNzFlMCAoIng4Ni9tbTogQWRkIC5ic3MuLmRlY3J5cHRlZCBzZWN0aW9u
+IHRvIGhvbGQgc2hhcmVkDQo+IHZhcmlhYmxlcyIpDQo+IA0KPiBJIHRoaW5rIHRoZSBGaXhlczog
+dGFnIHNob3VsZCByZWFsbHkgYmU6DQo+IA0KPiBlOWQxZDJiYjc1YjIgKCJ0cmVld2lkZTogUmVw
+bGFjZSB0aGUgdXNlIG9mIG1lbV9lbmNyeXB0X2FjdGl2ZSgpIHdpdGgNCj4gY2NfcGxhdGZvcm1f
+aGFzKCkiKQ0KDQpZZXMsIHlvdSdyZSBjb3JyZWN0Lg0K
