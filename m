@@ -1,35 +1,35 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2065.outbound.protection.outlook.com [40.107.92.65])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 469BFA461;
-	Mon, 28 Nov 2022 18:56:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCF64A461;
+	Mon, 28 Nov 2022 19:37:09 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HkB4KJ4nXj61F7AN0L7wwO9HqWFZyrTbAognkTOfBNf40b+cIN0mZ3SsjLm484HacI6s6WsHgDBC2myYRbIHubZUClaL3fKE6VC54GU3tJvTZtaIzkM2s04FdcvPC2yRMrRDpJrNKrorAqub06I7R8ru7l3B9O/y/r2w8mxSzrxIDnRx6DK7Pcg7C9dpvYHyT/Y1mzm7YoRm5w7CakwcXNdBd+vlZ0CTWuxtvt+wbHMZRF89WEdYXDRf8ZH9EDB6zGwatcKAEONEk9G+KAtJ9p/BflwCqvJqYwWVjT9dLIWYSGgLm+MkTA6vbCEEPv/ME6KJ4zlSdy/mxK5jPAMSLQ==
+ b=M3NHtOO98YYxfLLyoDL+2GsRun5F8s2KKR/OKqr7AC11Sos0HU33FheJiib74ZIm0FeVyMna9Zo1rDDi+gNNAa7LyFaLVqRN6gPMqPUfLXhWMiZeRIsLdc8uheMUxgBYhrc70oH14zkJG6x6btnHz8iWmMbFCtSi8GQFG7+GdsIc848OHhri817cpW9YyFIe4/hkNG/RctWGU8+57ac+WxeaAOOYyCSp+MRDdWc1BGPeKJlfDcf16ndNnPg+VyzliThJ1AoRh2okUPMjzYZxG70SVlchirFbEqJlm8FJc1UsJZ6X2GuOqMJT9DWfy2r8j2AcTg+kRsgtaBFdtUq+pg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=I3E9JaZxyl71ozPTYkGyLzac8DBpc90zVq83YJtx1U4=;
- b=BEM/fhiIdRZEBFwpjZxIU1nYAi4yp9ubOocFaVgN9tX/RRht99nGSob9g1wyoiJJYPvEm5KDFc0hSYjzvz2sv+fyhE2Ku8pJypA/BKeZvfsilelXV6Emhgs9C0UJ/VVbJCphIMlU0+6kueUWunnZxtr7JaxhtZVytzCs+IissYtbz5ZE59h53dW0L/mPfltWtiMge5roexFuFYvYdDqHvPpN1qInXKAzDuMl6euybGSo6/NUtMmjanaqYLGaw2lBBkIJESVvRuscpEN046730TtCdJPj5bKfpTsxpwK+WlhnXAGdmwDUKjd9ae2CAXQFL9gFQDqgTmDnNJTd253wWw==
+ bh=H+/XakltiqK9sZrCP0G8diU4NULejcT+PAv+4/+sWcY=;
+ b=SNqrImDTgoAsTq1qYyqPg04qvZsXltyBVsZzb3taK6RP/gtWeqnHx6DCL+BZ6u7SGyYdVzIR5qaSmROrMRW6wrI5SfuqKo8vn1p4ap2f6fiwQ8q5WrXcJDcokA7MqHTg9AyEDGST+PAJDBHfUmL9NMFkNWN2eSTp0C8KBFDkEuejKacoyddhjU7bV2gt56lDqEAvjdOEzMBOxsZZhqYwzRMDizp+EQwZ9/JZIS40ZyZj0pZQ45FB46Xl478GQovzKuVzpbaJRLV7VNbf15ElqxLqDqKdfcC9ps8bYx/7xAcinEJFe6nLEmerF2EUcG2Pr818XvaBauhof4jKKhqQDQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=I3E9JaZxyl71ozPTYkGyLzac8DBpc90zVq83YJtx1U4=;
- b=XeDlZ3vFIRUcqBBoILMyu4Be/RIEUBPmNTzQW6QRXfkDZBz4GVeynfeTt7JoTYU6vT0BVXSTHwdcG8Mo+Jt+zEdh/iXsU/dIS4o8nmu1rCR5nWDiTNU+RYLyMgeXQHcWiXFU0XBA04L8NbZJolZho3pSHjll5ic0hWRntpWcHqCCrZJt1hvGkTZal2zyRNfdbuNgjGZKvDtQY00xCazrHwS2vEAcFCk4TK9NE+y/eLzQoL0/MjqY7bPyqpXH7TlWkka4AfZ/R9YIXN3LaKrZcDOWvN7uaGrEf5DDHdhj65MkUfjd171MdKE6Th0gYU+F3IRyUhgbCSQp6xMfTkQUXw==
+ bh=H+/XakltiqK9sZrCP0G8diU4NULejcT+PAv+4/+sWcY=;
+ b=OGIpzZRMpOCLcKjM36loxZffNlM9I8qJEEGrpkBZb1ghGNs4UEK0Isn54Dqld4JNmylbhQRPdnQm+5TqU0Wtk2c2JXwZXBOvdsxp7/+12h/8gGLjw8idIqdAqysRyaGO8pfNA3vyGFD2rUZa8FCgjDMfRHN6PC0JfES6gbP3cGTgk7ReEkzhAhtw1WMD/2jNBQfG28d5PDJ0yiK/Kn0fKJaoymG4RNGTeKeMaWSKvmrjQAiRsublH1cua/+ygvu3sU2FYDOG69zYwUfg/cb9liBNEUknNivcR9qk53kkl+t1klTXCIg8Syvka4PwLGhCP75N8qneoABlUbiMqZvTfw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by CH2PR12MB5515.namprd12.prod.outlook.com (2603:10b6:610:34::20) with
+ by CH2PR12MB4184.namprd12.prod.outlook.com (2603:10b6:610:a7::9) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Mon, 28 Nov
- 2022 18:56:18 +0000
+ 2022 19:37:07 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::f8b0:df13:5f8d:12a%9]) with mapi id 15.20.5857.021; Mon, 28 Nov 2022
- 18:56:18 +0000
-Date: Mon, 28 Nov 2022 14:56:17 -0400
+ 19:37:07 +0000
+Date: Mon, 28 Nov 2022 15:37:06 -0400
 From: Jason Gunthorpe <jgg@nvidia.com>
 To: Eric Auger <eric.auger@redhat.com>
 Cc: bpf@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
@@ -63,16 +63,15 @@ Cc: bpf@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
 	Niklas Schnelle <schnelle@linux.ibm.com>,
 	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
 	Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
-Subject: Re: [PATCH v5 14/19] iommufd: Add kAPI toward external drivers for
- kernel access
-Message-ID: <Y4UEUXO09YeKhrtt@nvidia.com>
-References: <14-v5-4001c2997bd0+30c-iommufd_jgg@nvidia.com>
- <44ea1bad-500c-b4a5-c2a5-e7bc79de2394@redhat.com>
+Subject: Re: [PATCH v5 15/19] iommufd: vfio container FD ioctl compatibility
+Message-ID: <Y4UN4qVpNqTP/JEF@nvidia.com>
+References: <15-v5-4001c2997bd0+30c-iommufd_jgg@nvidia.com>
+ <81f898b6-e40f-be72-78d4-b5d836981d8f@redhat.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <44ea1bad-500c-b4a5-c2a5-e7bc79de2394@redhat.com>
-X-ClientProxiedBy: MN2PR18CA0016.namprd18.prod.outlook.com
- (2603:10b6:208:23c::21) To LV2PR12MB5869.namprd12.prod.outlook.com
+In-Reply-To: <81f898b6-e40f-be72-78d4-b5d836981d8f@redhat.com>
+X-ClientProxiedBy: MN2PR19CA0047.namprd19.prod.outlook.com
+ (2603:10b6:208:19b::24) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -81,200 +80,165 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CH2PR12MB5515:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2f3ce07d-de11-4b53-f577-08dad1723ba6
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CH2PR12MB4184:EE_
+X-MS-Office365-Filtering-Correlation-Id: 17fa30cd-7810-46d6-5b57-08dad177ef26
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	OacnhGe6lfBbXa842ihuU5k6On7d/W+Fa5K4L46HdzDFyI67lKLyvD6h7ljWNcMhcTU4oaBz7Ql8NUVSOI21R4R+diGOiPxmFwG+SgrSZHySJjMfL6f/ev5FwnlHEA0mU7/0d4aPUgji2X3uM80Xpx8EBUTC8ldKW7NFA8sEc2SR4I8sR3Wpvahjc6vkiBcmszp1J+aTrd/cIj/FO96/iHB214ec1774OOVMamVYvZVlH6RomVMFLSmWk+lWZZZo8UMI1IqrA0SCc4LFS6TUcV0HBWkBJfM2su6DoNsxAKCpPvn7Fa7RVOX23/3jMFFRrcsnQBWia9gHV6z3aCLoNq70Qaz/VYhbuwyoYI2Kbd3eeSVVVy4Xbwto5L2MbilVsANK8W83zipI/sSClZ7QTWr4+4YNdZ9/MfY+YwCqmTAtgAMFrTiul8MQcy4tJimhkPq356vNqejXLHbETMfaUvkDF6nHz3MszqOYNMRUA/FS0QQB3Bj3BJku0nKDKGnfoBHZdQtux8IIYGIfZzWyz+3XaulHIWMwshaZyIbAWqM8mi9unNwB/v7uB7OiQpwf0561iUX2CGdTdWv5nN84l/ExY8aZocFM6ALRIWjXz/M8hHgQzaHv2HxurNI/WrIuRcje2Olgtadcf3JCrQx3WQ==
+	A9HBaYDl3gD3HKE/iZe8NXYEL7G/UULnvlKhjTshJ//AIMXQnBxwCmLFiW2eCyQi7ikdvRmxPvDTdOCrWqhCjAxGgfBj6Pu2Id+hLRi8TYy2Irhg5yfJm+FAjerC2/SkC35RAqQIhhjpwdXOuPxgl20bYdSN4Y8IcDEPWkBDzkf4+Pfu1e+T1In8VqQRC8QUjNa7zby6xKawz7zZIRP1RXcLELfZk+mhpzcGfMT3YoEt7ERHt9QVxsEsU9qyOZ10RP02ZlQZiSeHVVeChioEAURTKUn/DuJQi5HeA7MeT2No26no9NJV3wTc4DNmFfe0008T7nNGvPJdUYhYx7PxQcIsTJJT9EaHBpzKr4fZTI53RG6PSWh6k8K3OUvUBpf4tLmeMGzCSi5n/AbczTKOZ1+fvP9k6ALCYdZr/cs4FoHWjk4dJZaXMbXIuFRbwN44rjBlq2MgFejzKRPr4mpCGvZlANO6MB9MVGWAFJjSI/hwMCUFKrhpmQnGeN8i85rDI2JiN9fj4FBX/Uw4kqIC1xs9uX3QH2eS6I61nEZqQoyAkFwX4h7aXUH05Sf5ufp6ds1g7Iz13SMz+3GaZYL0CRuJaHWZm2AEYEYCK8vlEISqbpKJ9dx5/Siv+EXhLwlf2tOyRR2py+8oZyfRuMuByJjZVfsALJVHJXfKSpnrVbrHKmZfRxy00c9NUTKW0fyxBQlE2bXlcMD8T+ND9SbXmSg+5ChUaJDc7KAim2asr1NjNkBNXTNULa2DGBBvNKZF360pkfs/+T/QJ1hoIJwVog==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(136003)(396003)(376002)(39860400002)(346002)(451199015)(38100700002)(6486002)(66946007)(66556008)(66476007)(4326008)(41300700001)(36756003)(478600001)(7406005)(2906002)(8676002)(6916009)(54906003)(316002)(7416002)(5660300002)(8936002)(86362001)(2616005)(83380400001)(186003)(26005)(6512007)(6506007);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(346002)(366004)(39860400002)(396003)(376002)(451199015)(2906002)(4326008)(41300700001)(66476007)(6916009)(54906003)(36756003)(66556008)(186003)(66946007)(8676002)(316002)(8936002)(5660300002)(26005)(2616005)(6512007)(86362001)(966005)(6486002)(7406005)(7416002)(478600001)(6506007)(83380400001)(38100700002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?NNohlT/TzauimAgW4UVfsuUOG5HqKswu9H7Mxkof2NZoD8d3vkmqxhnp6FVI?=
- =?us-ascii?Q?PypMk5eLZteZ7d36gPPo5BZIJU4r2q/btNWtLf3iVGksl/XCCrRihf8VfLD9?=
- =?us-ascii?Q?TIuz6yeSzU3EyEJXt+2xtpJncZ+xD9oWFn/AvNtfUnxYjx/OkgaG36fGvUR7?=
- =?us-ascii?Q?F7Xug+gG3/u26DNWDWQRhCQaKEr3ppcnrPCHxP2OJggkGNcpJFVzi3nH0jiA?=
- =?us-ascii?Q?/sgW2nNZPyrR3OcSVNqALQ9YOHOBYY15nLs9s31xIVoczGo5frc1XwY1F0Zg?=
- =?us-ascii?Q?UGWYsDCDAZ02CwPFWKFDcQn9ty4VAv0EBIUsyvnMGvo1a9XhlmQWzbfWq3iF?=
- =?us-ascii?Q?jVAIJgfpYyxS4JBvveooHyadQ86ecCUyzJkN87EIOJnOKtWO2jyWNqpATWSF?=
- =?us-ascii?Q?iUZ6JrxSw6GS0VzE3rBeJVycQ967P4JuiwFqdBsPsCfkKra8ewqBq8oNb3ok?=
- =?us-ascii?Q?Z5/EVm2VndWhNskLID48DQ5v4L5ZMxcKj6faAXdepCGVTqsKKdJ7V2p58V9M?=
- =?us-ascii?Q?RFIQMeNptefXd0DigcYqKP6v/mUFPrXtdahTnBoZHt38TwfHy4yt/TZ6vmHm?=
- =?us-ascii?Q?tSxZVJTnOqqCJvsTuXwSpuoXUzh61iWgnIq7pQzrIH0AR56uCv/tG5QrgXJi?=
- =?us-ascii?Q?OVT2EbQU99YQaWbEjOu/ydD78a9nkm7SuZQJUU2/vEBa3xkIlrCjpiAlqaWN?=
- =?us-ascii?Q?Ish73LMUyGMGMPfIuEM/zGigrD8zF81LnIUjwqgxzKjKgQbGISE/sKJ7Fd9I?=
- =?us-ascii?Q?GGoGpNcR1pUCHa5yz2wa8xw7mZ+rtGvdl7jQ2/eaz5zTYtdpxuY0e7PVburP?=
- =?us-ascii?Q?HCi25JwZnfyPn3eJdoX788ivB7hfTMhdSbZdprMGjLEmvJJzEFJd7VzuIijS?=
- =?us-ascii?Q?rXElAunChh7EIDrAio93q8ZPu4Yq7fM1pMCBe8NNJ7zSxO9CE/uTkrMhoJMR?=
- =?us-ascii?Q?vC30zbOu5e7s8xpCjIZeDGEBu0Z4tBxGOGWf3Fu7tjpEKahnDkTb3Hnqcl7T?=
- =?us-ascii?Q?asRihY9MOthUDieFSe3hs1ClSGGA9Qf761RPD7YoCThafn2hOnKLAouhu4Hd?=
- =?us-ascii?Q?aN2n4eBQLbCzKIbeEYMoxWtLbwMA/S+iPZZ+ymrOLrS4XZTwH6dk7YorJ0NR?=
- =?us-ascii?Q?CiT7v6001rXwYQkNMxwuy0c2iNJed9q4wsOMFhAwGf1+x9NChYkqhgm/75S/?=
- =?us-ascii?Q?gE6bt9LYC38ZMuQOkKsVReuw6mJ7AFJFhynC9k6/wE27TWTiXeGcMVnuYIoR?=
- =?us-ascii?Q?yNWBmLYfRqxcOk6eryrPzT29Aq+7hvIfdo/O4kO68MU+6ID4URsRO3B2r7gE?=
- =?us-ascii?Q?gUZKjU+S0R1gM2p3O8IU8H/8zc5quot2NbR9R6TYZVWYaoRwnW4N9SXiT9aP?=
- =?us-ascii?Q?SZ6GucU6c83sPd5jefAbxIDy8sC9G7H1BZEl13HkFXcPhr50HsP8iJ9i2axp?=
- =?us-ascii?Q?qbPc90PXyWxMuGpLhbAwajePxab8QVC5AVFX1jImItxgohhCQMD/4hdh1PWP?=
- =?us-ascii?Q?4IaWzZW4ThJ9pEUdlrpXGmS3ynJ6VnTBazwnWF5XIrZ48V5eaA5mZouGqLuo?=
- =?us-ascii?Q?oMO5cFnJpByfpBAMZwc=3D?=
+	=?us-ascii?Q?aMumD6eNN62oXTkxHoI2WlmYuE63iP2hoysjfQm77QXVIEnLWc0zzC4utsoa?=
+ =?us-ascii?Q?muQ90vdvTgxO1gM42sTHsJmYWC1KBWhNRIIMBDFPhcJk53RxtYXyEjbp3Ao9?=
+ =?us-ascii?Q?SIGUGeKR6SGrtHlztVv9OCp8Zfa9/5Aw45SuJ7Hf2WHUxKHRkFj87sb4REqO?=
+ =?us-ascii?Q?hMcK7RtuFwSsPBSiswLEvwnKfTGTvHQaiF3bYOqhPgRAHm7HwNES3huLZ2G+?=
+ =?us-ascii?Q?BVyW6LC7K8FMvXN5bOIt3uJ4WVaWXJK3N9Vmj7SlzfUjBs4BUR9Htx99B19E?=
+ =?us-ascii?Q?QXILlmDIZAQd6E0OqJr5A/TvIagU88EmSrQykRAga+fsv75wQdOWI9PsjHaa?=
+ =?us-ascii?Q?N9JDzjgPmdPyQ/n/KmZRgDlLXVYqNeECwVCsyAy5Urfkpcfm9skwUk532wf5?=
+ =?us-ascii?Q?va6rsrbGxBo5waJJr8Vu/WtcMpieckdsQG2jeJGieGugWuvJ49/KiRL/IwCY?=
+ =?us-ascii?Q?6qXyuLI7bL7wdj6Yw1uwOdOImyu51X3ZnU0iOOEXcI4eRR23WzhRepH3bueD?=
+ =?us-ascii?Q?1mmUr1ZDyUgUIrzZe4DvPHZu21ySgVltC6sSYlogjzEmRge7LC++yQOETqPR?=
+ =?us-ascii?Q?I0e0OOu5nRPtFrPDFoNRI5x1m/vG2nIbFeEeSwMwqsyy3GprXpZnEMxoWh6s?=
+ =?us-ascii?Q?gP00TxAKFJWBjcbQAvw1NieaLIQxYAgP3l9xy2CbtBUqt5PzosxxxFJY9l1O?=
+ =?us-ascii?Q?OQo4eokNwpJ7NN7Oq1/mm2kDJJEcOrtKYadJ6IENh7OlykgRP/YsfGVX+FzZ?=
+ =?us-ascii?Q?iNQeYyD8qWpYMI2yG6nxSGpLev6UsLH6n5EJIbaoj+il4aPnbF/6CLmEHQNw?=
+ =?us-ascii?Q?vp/5fMgWKRxRuUaEgA4O/0XKvuQyNPKPZLMD0pHrNfjDc/LVm1IqSlyYKKSR?=
+ =?us-ascii?Q?lNlIAmAXfBiJJJAF/usQMwqWrtY2RhB8tDJvNpiMEf/gpcnVKwmVVHRXzgiy?=
+ =?us-ascii?Q?ZF1zb7GqacCrdX159b+WWL+qBVcPQO0XtKSfAU8EnapHb/+Y7oF7U8o4VYBN?=
+ =?us-ascii?Q?G8/AixnsBptnpFOIpJttYfR5QdypqYDdHz6mqdCEmDwZAvqapSysYpai9eB+?=
+ =?us-ascii?Q?CWOQDSBB06BrG7nDsjQvJKeYK9Pium4k5SK/e3l93z2KLIV50l/O6Cj0hHwu?=
+ =?us-ascii?Q?6Laltl5WkR/DSIyS2rcr1qOvVIY3RwjayGO/pSNW7aHftS5M+/oqcDPmQkg9?=
+ =?us-ascii?Q?0ln7j3oIfP9Wey4tAvfHSwS8pjLkWIOWcH8RqVxfVfpbbACxPdK4zVwx4ZkT?=
+ =?us-ascii?Q?RxmblZgOXVdfnJ+6M7p9112NMPxMfAZtSiY6bG5cdAi4WbocN2E/viO5yKnS?=
+ =?us-ascii?Q?dx6h28I4bxv5QBfQDJR78qpLf5f+Z0kXuk5ddgpI7EcfHIT+ENvLmhN45I+x?=
+ =?us-ascii?Q?2J59HAF1KqEC83WV8UpxsUaq084qebqtS1bVwlcHpjT6R0InkYMkr3An2g8g?=
+ =?us-ascii?Q?9R/QgVXwABow+QOFUzwgEbt18nZngY0mEEnDE8YE3riO98ns0zI40JA96A7n?=
+ =?us-ascii?Q?wo1Z0j/rOkxXPSVF/Cx8WF+rsQJaF7VkIDnkMvwrs8wbQgBDJ5EYuZa9VXQf?=
+ =?us-ascii?Q?sWn9AJdXVFtsAYGCiKY=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2f3ce07d-de11-4b53-f577-08dad1723ba6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 17fa30cd-7810-46d6-5b57-08dad177ef26
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Nov 2022 18:56:18.5495
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Nov 2022 19:37:07.1803
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8gU5zgA710HtwL/zBRizcTljRKB1270Y3m0XQqAgZuYCB2LfK/0gVzp5qWohgQez
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB5515
+X-MS-Exchange-CrossTenant-UserPrincipalName: KTFR7mwVPp4l0vPfy7e2JAd/saL1MhpMHsY6poPecK6LRt3/sTWiL/XVtz2WzYdp
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4184
 
-On Mon, Nov 28, 2022 at 04:48:58PM +0100, Eric Auger wrote:
-> > +/**
-> > + * iommufd_access_notify_unmap - Notify users of an iopt to stop using it
-> > + * @iopt: iopt to work on
-> > + * @iova: Starting iova in the iopt
-> > + * @length: Number of bytes
-> > + *
-> > + * After this function returns there should be no users attached to the pages
-> > + * linked to this iopt that intersect with iova,length. Anyone that has attached
-> > + * a user through iopt_access_pages() needs to detatch it through
-> detach
-> > + * iommufd_access_unpin_pages() before this function returns.
-> > + *
-> > + * The unmap callback may not call or wait for a iommufd_access_destroy() to
-> > + * complete. Once iommufd_access_destroy() returns no ops are running and no
-> > + * future ops will be called.
-> I don't understand the above sentence. Is that related to the
-> 
-> +		if (!iommufd_lock_obj(&access->obj))
-> +			continue;
-> 
-> where is the unmap() called in that case?
+On Mon, Nov 28, 2022 at 06:53:12PM +0100, Eric Auger wrote:
 
-It is basically saying a driver cannot write this:
+> > +static int iommufd_vfio_map_dma(struct iommufd_ctx *ictx, unsigned int cmd,
+> > +				void __user *arg)
+> > +{
+> > +	u32 supported_flags = VFIO_DMA_MAP_FLAG_READ | VFIO_DMA_MAP_FLAG_WRITE;
+> > +	size_t minsz = offsetofend(struct vfio_iommu_type1_dma_map, size);
+> > +	struct vfio_iommu_type1_dma_map map;
+> > +	int iommu_prot = IOMMU_CACHE;
+> > +	struct iommufd_ioas *ioas;
+> > +	unsigned long iova;
+> > +	int rc;
+> > +
+> > +	if (copy_from_user(&map, arg, minsz))
+> > +		return -EFAULT;
+> > +
+> > +	if (map.argsz < minsz || map.flags & ~supported_flags)
+> > +		return -EINVAL;
+> > +
+> > +	if (map.flags & VFIO_DMA_MAP_FLAG_READ)
+> > +		iommu_prot |= IOMMU_READ;
+> > +	if (map.flags & VFIO_DMA_MAP_FLAG_WRITE)
+> > +		iommu_prot |= IOMMU_WRITE;
+> > +
+> > +	ioas = get_compat_ioas(ictx);
+> > +	if (IS_ERR(ioas))
+> > +		return PTR_ERR(ioas);
+> > +
+> > +	/*
+> > +	 * Maps created through the legacy interface always use VFIO compatible
+> > +	 * rlimit accounting. If the user wishes to use the faster user based
+> > +	 * rlimit accounting then they must use the new interface.
+> s/they/he
 
-unmap():
-  mutex_lock(lock)
-   iommufd_access_unpin_pages(access)
-  mutex_unlock(lock)
+"they" has become a common neutral singular pronoun in English.
 
-driver_close
-  mutex_lock(lock)
-   iommufd_access_destroy(access)
-  mutex_unlock(lock)
+> > +static int iommufd_vfio_unmap_dma(struct iommufd_ctx *ictx, unsigned int cmd,
+> > +				  void __user *arg)
+> > +{
+> > +	size_t minsz = offsetofend(struct vfio_iommu_type1_dma_unmap, size);
+> > +	/*
+> > +	 * VFIO_DMA_UNMAP_FLAG_GET_DIRTY_BITMAP is obsoleted by the new
+> > +	 * dirty tracking direction:
+> > +	 *  https://lore.kernel.org/kvm/20220731125503.142683-1-yishaih@nvidia.com/
+> > +	 *  https://lore.kernel.org/kvm/20220428210933.3583-1-joao.m.martins@oracle.com/
+> > +	 */
+> > +	u32 supported_flags = VFIO_DMA_UNMAP_FLAG_ALL;
+> > +	struct vfio_iommu_type1_dma_unmap unmap;
+> > +	unsigned long unmapped = 0;
+> > +	struct iommufd_ioas *ioas;
+> > +	int rc;
+> > +
+> > +	if (copy_from_user(&unmap, arg, minsz))
+> > +		return -EFAULT;
+> > +
+> > +	if (unmap.argsz < minsz || unmap.flags & ~supported_flags)
+> > +		return -EINVAL;
+> > +
+> > +	ioas = get_compat_ioas(ictx);
+> > +	if (IS_ERR(ioas))
+> > +		return PTR_ERR(ioas);
+> > +
+> > +	if (unmap.flags & VFIO_DMA_UNMAP_FLAG_ALL) {
+> > +		if (unmap.iova != 0 || unmap.size != 0) {
+> > +			rc = -EINVAL;
+> > +			goto err_put;
+> > +		}
+> > +		rc = iopt_unmap_all(&ioas->iopt, &unmapped);
+> > +	} else {
+> > +		if (READ_ONCE(ioas->iopt.disable_large_pages)) {
+> > +			unsigned long iovas[] = { unmap.iova + unmap.size - 1,
+> > +						  unmap.iova - 1 };
+> > +
+> > +			rc = iopt_cut_iova(&ioas->iopt, iovas,
+> > +					   unmap.iova ? 2 : 1);
+> please can you add a comment to explain what this is supposed to do?
 
-Or any other equivalent thing. How about
+iova -1 when iova == 0 will underflow and becomes garbage
 
- * iommufd_access_destroy() will wait for any outstanding unmap callback to
- * complete. Once iommufd_access_destroy() no unmap ops are running or will
- * run in the future. Due to this a driver must not create locking that prevents
- * unmap to complete while iommufd_access_destroy() is running.
+			/*
+			 * Create cuts at the start and last of the requested
+			 * range. If the start IOVA is 0 then it doesn't need to
+			 * be cut.
+			 */
 
-And I should really add a lockdep map here, which I will add as a
-followup patch:
+> > +static int iommufd_vfio_set_iommu(struct iommufd_ctx *ictx, unsigned long type)
+> > +{
+> > +	struct iommufd_ioas *ioas = NULL;
+> > +	int rc = 0;
+> > +
+> > +	if (type != VFIO_TYPE1_IOMMU && type != VFIO_TYPE1v2_IOMMU)
+> > +		return -EINVAL;
+> > +
+> > +	/* VFIO fails the set_iommu if there is no group */
+> > +	ioas = get_compat_ioas(ictx);
+> > +	if (IS_ERR(ioas))
+> > +		return PTR_ERR(ioas);
+> > +	if (type == VFIO_TYPE1_IOMMU)
+> > +		rc = iopt_disable_large_pages(&ioas->iopt);
+> please can you document/explain this setting?
 
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index de1babd56af156..d2b8e33ffaa0d7 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -5,6 +5,7 @@
- #include <linux/slab.h>
- #include <linux/iommu.h>
- #include <linux/irqdomain.h>
-+#include <linux/lockdep.h>
- 
- #include "io_pagetable.h"
- #include "iommufd_private.h"
-@@ -501,6 +502,15 @@ void iommufd_access_destroy(struct iommufd_access *access)
- {
- 	bool was_destroyed;
- 
-+	/*
-+	 * Alert lockdep that this cannot become entangled with an unmap
-+	 * callback, or we will have deadlock.
-+	 */
-+#ifdef CONFIG_LOCKDEP
-+	lock_acquire_exclusive(&access->ioas->iopt.unmap_map, 0, 0, NULL, _RET_IP_);
-+	lock_release(&access->ioas->iopt.unmap_map, _RET_IP_);
-+#endif
-+
- 	was_destroyed = iommufd_object_destroy_user(access->ictx, &access->obj);
- 	WARN_ON(!was_destroyed);
- }
-diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd/io_pagetable.c
-index 3467cea795684c..d858cc7f241fd0 100644
---- a/drivers/iommu/iommufd/io_pagetable.c
-+++ b/drivers/iommu/iommufd/io_pagetable.c
-@@ -460,6 +460,9 @@ static int iopt_unmap_iova_range(struct io_pagetable *iopt, unsigned long start,
- 	unsigned long unmapped_bytes = 0;
- 	int rc = -ENOENT;
- 
-+#ifdef CONFIG_LOCKDEP
-+	lock_acquire(&iopt->unmap_map, 0, 0, NULL, _RET_IP_);
-+#endif
- 	/*
- 	 * The domains_rwsem must be held in read mode any time any area->pages
- 	 * is NULL. This prevents domain attach/detatch from running
-@@ -521,6 +524,10 @@ static int iopt_unmap_iova_range(struct io_pagetable *iopt, unsigned long start,
- 	up_read(&iopt->domains_rwsem);
- 	if (unmapped)
- 		*unmapped = unmapped_bytes;
-+
-+#ifdef CONFIG_LOCKDEP
-+	lock_release(&iopt->unmap_map, _RET_IP_);
-+#endif
- 	return rc;
- }
- 
-@@ -643,6 +650,14 @@ void iopt_init_table(struct io_pagetable *iopt)
- 	 * restriction.
- 	 */
- 	iopt->iova_alignment = 1;
-+
-+#ifdef CONFIG_LOCKDEP
-+	{
-+		static struct lock_class_key key;
-+
-+		lockdep_init_map(&iopt->unmap_map, "access_unmap", &key, 0);
-+	}
-+#endif
- }
- 
- void iopt_destroy_table(struct io_pagetable *iopt)
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index 222e86591f8ac9..8fb8e53ee0d3d3 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -45,6 +45,10 @@ struct io_pagetable {
- 	struct rb_root_cached reserved_itree;
- 	u8 disable_large_pages;
- 	unsigned long iova_alignment;
-+
-+#ifdef CONFIG_LOCKDEP
-+	struct lockdep_map unmap_map;
-+#endif
- };
- 
- void iopt_init_table(struct io_pagetable *iopt);
-
-> > +/**
-> > + * iommufd_access_pin_pages() - Return a list of pages under the iova
-> > + * @access: IOAS access to act on
-> > + * @iova: Starting IOVA
-> > + * @length: Number of bytes to access
-> > + * @out_pages: Output page list
-> > + * @flags: IOPMMUFD_ACCESS_RW_* flags
-> > + *
-> > + * Reads @length bytes starting at iova and returns the struct page * pointers.
-> > + * These can be kmap'd by the caller for CPU access.
-> > + *
-> > + * The caller must perform iopt_unaccess_pages() when done to balance this.
-> this function does not exist
-
-iommufd_access_unpin_pages()
+	/*
+	 * The difference between TYPE1 and TYPE1v2 is the ability to unmap in
+	 * the middle of mapped ranges. This is complicated by huge page support
+	 * which creates single large IOPTEs that cannot be split by the iommu
+	 * driver. TYPE1 is very old at this point and likely nothing uses it,
+	 * however it is simple enough to emulate by simply disabling the
+	 * problematic large IOPTEs. Then we can safely unmap within any range.
+	 */
 
 Thanks,
 Jason
