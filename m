@@ -1,32 +1,32 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3B9D361
-	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 06:54:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F16E9361
+	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 06:54:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669618481; x=1701154481;
+  t=1669618489; x=1701154489;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=eIhdB1b3IGDflIBfoIAJvdUglY1B9SKoTD7H5eODBXw=;
-  b=mk4KMxTcGK37OlF9PXvjpWKaUHGQjEzfW+r9hgEeRMoIuMLFSrlRK5sC
-   ZT4isFG14W1DisGUao9G4pqfXjLBxOeXNjH66cHESuX27ukx0uzIF1hwC
-   0/4dDgAWN6U7bZwY5Qtlr//5A0gugBoVRph7RfOJOpkMap1y0F3Sd5aEQ
-   V5kK+9F9P3RZ8StcUXnNPGjvyx/7Y8LpiHxhPuYfCawTO9F9BECDqcT0e
-   Wka7D035urO2hZ1TtG+5cTbXwRy5Hj/2B88ijconA9IcMpDENDiN0GgPG
-   /D5piwhIGovxWcgZoQTsDoe/1oluyiY42ZMkI5HRBUhAN4uYDLSqrWg1v
+  bh=foe9CYLv4t/yayK/wv2PdURR8PHQrrf3ntMgKPrhGNg=;
+  b=QPt1W/VyTDfg0NgK1EcL08/CXsc7uTmgzhdREfmS7Ugs4ZHMOgDUS8VB
+   +PxH8eKIYSq+/iecATtRDfOQ/uWJ3sNKuiP5aNQeybBE5RYu/+sufykoh
+   SaVeqHByiZ26wW00Zo3Q9ZM7tDWrTvUGZWtghVVa0Yt6+rzoad71/UqHj
+   vBax6wykLppUP0V0mIlJDxl13leoxrWUp8/eSn0fwqPYOmZNN+ibQEvry
+   teH4RB+uM5PnSeQfw81x556HAsX+iOQrpypy1hiP19qH59PioVWUMV69n
+   JUIiLfP1WCFxqLCFKw7Awo2rWypKVc8GQufQ166XvOsina8d4mKBqrr8i
    Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="379016128"
+X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="312395008"
 X-IronPort-AV: E=Sophos;i="5.96,199,1665471600"; 
-   d="scan'208";a="379016128"
+   d="scan'208";a="312395008"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2022 22:54:41 -0800
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2022 22:54:48 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="674120787"
+X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="674120803"
 X-IronPort-AV: E=Sophos;i="5.96,199,1665471600"; 
-   d="scan'208";a="674120787"
+   d="scan'208";a="674120803"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga008.jf.intel.com with ESMTP; 27 Nov 2022 22:54:34 -0800
+  by orsmga008.jf.intel.com with ESMTP; 27 Nov 2022 22:54:41 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Jason Gunthorpe <jgg@nvidia.com>,
@@ -55,9 +55,9 @@ Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v3 05/20] iommu/ipmmu: Remove detach_dev callback
-Date: Mon, 28 Nov 2022 14:46:33 +0800
-Message-Id: <20221128064648.1934720-6-baolu.lu@linux.intel.com>
+Subject: [PATCH v3 06/20] iommu/mtk: Remove detach_dev callback
+Date: Mon, 28 Nov 2022 14:46:34 +0800
+Message-Id: <20221128064648.1934720-7-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221128064648.1934720-1-baolu.lu@linux.intel.com>
 References: <20221128064648.1934720-1-baolu.lu@linux.intel.com>
@@ -74,43 +74,36 @@ be called. Remove it to avoid dead code.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/ipmmu-vmsa.c | 16 ----------------
- 1 file changed, 16 deletions(-)
+ drivers/iommu/mtk_iommu.c | 9 ---------
+ 1 file changed, 9 deletions(-)
 
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index a003bd5fc65c..3112822ac7be 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -643,21 +643,6 @@ static int ipmmu_attach_device(struct iommu_domain *io_domain,
- 	return 0;
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 5dc1009a19ed..2022f47529c1 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -713,14 +713,6 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 	return ret;
  }
  
--static void ipmmu_detach_device(struct iommu_domain *io_domain,
--				struct device *dev)
+-static void mtk_iommu_detach_device(struct iommu_domain *domain,
+-				    struct device *dev)
 -{
--	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
--	unsigned int i;
+-	struct mtk_iommu_data *data = dev_iommu_priv_get(dev);
 -
--	for (i = 0; i < fwspec->num_ids; ++i)
--		ipmmu_utlb_disable(domain, fwspec->ids[i]);
--
--	/*
--	 * TODO: Optimize by disabling the context when no device is attached.
--	 */
+-	mtk_iommu_config(data, dev, false, 0);
 -}
 -
- static int ipmmu_map(struct iommu_domain *io_domain, unsigned long iova,
- 		     phys_addr_t paddr, size_t pgsize, size_t pgcount,
- 		     int prot, gfp_t gfp, size_t *mapped)
-@@ -876,7 +861,6 @@ static const struct iommu_ops ipmmu_ops = {
- 	.of_xlate = ipmmu_of_xlate,
+ static int mtk_iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 			 phys_addr_t paddr, size_t pgsize, size_t pgcount,
+ 			 int prot, gfp_t gfp, size_t *mapped)
+@@ -949,7 +941,6 @@ static const struct iommu_ops mtk_iommu_ops = {
+ 	.owner		= THIS_MODULE,
  	.default_domain_ops = &(const struct iommu_domain_ops) {
- 		.attach_dev	= ipmmu_attach_device,
--		.detach_dev	= ipmmu_detach_device,
- 		.map_pages	= ipmmu_map,
- 		.unmap_pages	= ipmmu_unmap,
- 		.flush_iotlb_all = ipmmu_flush_iotlb_all,
+ 		.attach_dev	= mtk_iommu_attach_device,
+-		.detach_dev	= mtk_iommu_detach_device,
+ 		.map_pages	= mtk_iommu_map,
+ 		.unmap_pages	= mtk_iommu_unmap,
+ 		.flush_iotlb_all = mtk_iommu_flush_iotlb_all,
 -- 
 2.34.1
 
