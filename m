@@ -1,32 +1,32 @@
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13372631
-	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 06:56:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAC59631
+	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 06:56:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669618566; x=1701154566;
+  t=1669618573; x=1701154573;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=2uZWB31+7BHbXDhpDwxdAHkoChULgPE00ii//Ntnb2A=;
-  b=XOQg0KrdRIMjNX1p57SeF5T2gSkCwDprFd017cW+BoQKsPmzLfs2H84e
-   lijFvWhvIPetbGZcGzmPDrUxAPGmwOvOjxjU/k3zuuMqp/SxtGlflw6SL
-   aY46z0xjJq/4B4o3BEDH9F8+Z3ct7L9TkRFA1J++HruRboZlNxUJ4XiwK
-   Ck7gv4rf4q1AOCDpPfOO4mD7s9Mb0L+uumo6fOlI/0PCGZTcMmB6yDMoY
-   QCSkbBYXKOA7kxGbvL0y8zCugjFgfU56uJ8iKVSKDSftbSOHmnLFq0Nzk
-   klYzvm1YDX5gAeLcJSrMsjZqNsDigorzVhr45avoE5cBbFLUxw5rA6eJw
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="295145884"
+  bh=r5xbh896pHOm4nF0J2WHqkUdwYnD0sIQJbuduyaVUB4=;
+  b=Om73+VA5QdJRWNBTLDm/i4vKIWWYNrFBFnY6V2NttEeaqOmmg8nApRhG
+   hp/0d/pBsVKqiI7a5ppNUiWNFvD1oDT9RB10icF7DNHFeqRVsRunKQdYY
+   aQvR9OR45Qo2v28R3q/2kYCWdH1Phh7dQfjkJyBaOy590v5w1iLNp/tQ7
+   5MpL23mKt8OySZNtzOTCwD31xbINjfutExRMilhpf6qD0wlyYSvDeAHdQ
+   oSB2VWHhGBSVp/LYMRN1+LR78uobapay+ZR3GP0A+1j39ASvtju8XCUhd
+   kZTnM84cGDHFTXJf3EfwkaIkAC1gXRXd5T6N/XZ3Ggz5fpthdc2A+oqTJ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="379016404"
 X-IronPort-AV: E=Sophos;i="5.96,199,1665471600"; 
-   d="scan'208";a="295145884"
+   d="scan'208";a="379016404"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2022 22:56:05 -0800
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2022 22:55:58 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="674121278"
+X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="674121259"
 X-IronPort-AV: E=Sophos;i="5.96,199,1665471600"; 
-   d="scan'208";a="674121278"
+   d="scan'208";a="674121259"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga008.jf.intel.com with ESMTP; 27 Nov 2022 22:55:58 -0800
+  by orsmga008.jf.intel.com with ESMTP; 27 Nov 2022 22:55:51 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Jason Gunthorpe <jgg@nvidia.com>,
@@ -55,9 +55,9 @@ Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v3 17/20] iommu/tegra: Add set_platform_dma callback
-Date: Mon, 28 Nov 2022 14:46:45 +0800
-Message-Id: <20221128064648.1934720-18-baolu.lu@linux.intel.com>
+Subject: [PATCH v3 16/20] iommu/gart: Add set_platform_dma callback
+Date: Mon, 28 Nov 2022 14:46:44 +0800
+Message-Id: <20221128064648.1934720-17-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221128064648.1934720-1-baolu.lu@linux.intel.com>
 References: <20221128064648.1934720-1-baolu.lu@linux.intel.com>
@@ -75,35 +75,35 @@ DMA control.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/tegra-smmu.c | 9 +++++++++
+ drivers/iommu/tegra-gart.c | 9 +++++++++
  1 file changed, 9 insertions(+)
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 5b1af40221ec..a36e163e5cc1 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -527,6 +527,14 @@ static void tegra_smmu_detach_dev(struct iommu_domain *domain, struct device *de
- 	}
+diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+index ed53279d1106..f56e40b5c47a 100644
+--- a/drivers/iommu/tegra-gart.c
++++ b/drivers/iommu/tegra-gart.c
+@@ -141,6 +141,14 @@ static void gart_iommu_detach_dev(struct iommu_domain *domain,
+ 	spin_unlock(&gart->dom_lock);
  }
  
-+static void tegra_smmu_set_platform_dma(struct device *dev)
++static void gart_iommu_set_platform_dma(struct device *dev)
 +{
 +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
 +
 +	if (domain)
-+		tegra_smmu_detach_dev(domain, dev);
++		gart_iommu_detach_dev(domain, dev);
 +}
 +
- static void tegra_smmu_set_pde(struct tegra_smmu_as *as, unsigned long iova,
- 			       u32 value)
+ static struct iommu_domain *gart_iommu_domain_alloc(unsigned type)
  {
-@@ -965,6 +973,7 @@ static const struct iommu_ops tegra_smmu_ops = {
- 	.domain_alloc = tegra_smmu_domain_alloc,
- 	.probe_device = tegra_smmu_probe_device,
- 	.device_group = tegra_smmu_device_group,
-+	.set_platform_dma = tegra_smmu_set_platform_dma,
- 	.of_xlate = tegra_smmu_of_xlate,
- 	.pgsize_bitmap = SZ_4K,
+ 	struct iommu_domain *domain;
+@@ -270,6 +278,7 @@ static const struct iommu_ops gart_iommu_ops = {
+ 	.domain_alloc	= gart_iommu_domain_alloc,
+ 	.probe_device	= gart_iommu_probe_device,
+ 	.device_group	= generic_device_group,
++	.set_platform_dma = gart_iommu_set_platform_dma,
+ 	.pgsize_bitmap	= GART_IOMMU_PGSIZES,
+ 	.of_xlate	= gart_iommu_of_xlate,
  	.default_domain_ops = &(const struct iommu_domain_ops) {
 -- 
 2.34.1
