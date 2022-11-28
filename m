@@ -1,110 +1,184 @@
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2076.outbound.protection.outlook.com [40.107.220.76])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F04C2F2D
-	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 16:33:43 +0000 (UTC)
-Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 316F51EC06AC;
-	Mon, 28 Nov 2022 17:33:41 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-	t=1669653221;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-	bh=EkSu+bn5/ZdG6Mdy9WEl50uErDZt1Q23YH5+7wiGeAg=;
-	b=DblfEotbkHNmwa2p8MaGT0cfAGRLMK+vW9sJd37I3B/E+hScXEcT3rlwTevGqgYvTw6YOk
-	OS/2zXzpf0gG1G6P1TZSyLNhxqgSE2qY1ASAQ6JDdC6hnDVheJwoeDtZhMWDVfqQcJwrnq
-	nCCI8Z2KkjwSaOGbQrxrcHjRo+6zFBg=
-Date: Mon, 28 Nov 2022 17:33:37 +0100
-From: Borislav Petkov <bp@alien8.de>
-To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc: "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	"wei.liu@kernel.org" <wei.liu@kernel.org>,
-	Dexuan Cui <decui@microsoft.com>,
-	"luto@kernel.org" <luto@kernel.org>,
-	"peterz@infradead.org" <peterz@infradead.org>,
-	"davem@davemloft.net" <davem@davemloft.net>,
-	"edumazet@google.com" <edumazet@google.com>,
-	"kuba@kernel.org" <kuba@kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>,
-	"lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-	"robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-	"bhelgaas@google.com" <bhelgaas@google.com>,
-	"arnd@arndb.de" <arnd@arndb.de>,
-	"hch@infradead.org" <hch@infradead.org>,
-	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-	"brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-	"tglx@linutronix.de" <tglx@linutronix.de>,
-	"mingo@redhat.com" <mingo@redhat.com>,
-	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-	Tianyu Lan <Tianyu.Lan@microsoft.com>,
-	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-	"sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>,
-	"ak@linux.intel.com" <ak@linux.intel.com>,
-	"isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-	"Williams, Dan J" <dan.j.williams@intel.com>,
-	"jane.chu@oracle.com" <jane.chu@oracle.com>,
-	"seanjc@google.com" <seanjc@google.com>,
-	"tony.luck@intel.com" <tony.luck@intel.com>,
-	"x86@kernel.org" <x86@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [Patch v3 07/14] x86/hyperv: Change vTOM handling to use
- standard coco mechanisms
-Message-ID: <Y4Ti4UTBRGmbi0hD@zn.tnic>
-References: <1668624097-14884-1-git-send-email-mikelley@microsoft.com>
- <1668624097-14884-8-git-send-email-mikelley@microsoft.com>
- <Y3uTK3rBV6eXSJnC@zn.tnic>
- <BYAPR21MB16886AF404739449CA467B1AD70D9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y31Kqacbp9R5A1PF@zn.tnic>
- <BYAPR21MB16886FF8B35F51964A515CD5D70C9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <BYAPR21MB1688AF2F106CDC14E4F97DB4D7139@BYAPR21MB1688.namprd21.prod.outlook.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52EEF2F2D
+	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 16:35:40 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CM2eW9kRSMD6N1NjTgzUdqzA2eqL3RE44g581IO8/7tvvIWCqeoId5J5ExkMp3QRekb4YCONOdDUCYzEYiz2KB5IUxOkcYF6DIRZejwy/WUUGXWKoPU67+FpbDqCvUu7J1UnNDflEtfue6fDXR+Q0JqPHSpvjZw6Qn15sx2iIpjICw/Sj6k4ilSmIJeqYh0/4uMo0srsPjO8EcRFREal05VYv/wfue9yR+mkFzrNr9icidUnNDRrMy13N+sktGnJpA8QoYSK0UlWTHiSXWzG3cfrs+7ihTJy0QoaVTQvWgpgaFnVMH3AIdxXjyNy5vHwUjBvYtvXqVGKRpx2QfeWJg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ZdS/xlFTV00VHwYQ/Di5PXTr4aN/gTzPlKL5GK9ys+0=;
+ b=QGWw1HkfyMo9u2WFxlNHxhop78vaCNK8+yZ9ZEvMu3qHC/+LCmbkSbDKb42/O4UGf3Sfmu5BRCStBsYtjzyVdy9umuJ4+6eYyIkarZD0rSx1/JyZQSePCJSEKBaq7cYAl/SULL0hvEiKIMj0W+32v4EG84ar9v0HR9Uo2mN16OFj+mTXpQfuUUJoJhuh17Jagemzqri1iTu4l3b1lUCU9SVEL82TiwvZK0OnKDDQnwtZfv+EZiJJTyO0xTjKZZ5AExb8KDg4aKgoVPR/TYfGXmaaNZwzgf8yIeHQsOIVSwXu+OHz96yoApPjK3vAd5lv5eS/swy3ZExqHyDyiDOjwQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZdS/xlFTV00VHwYQ/Di5PXTr4aN/gTzPlKL5GK9ys+0=;
+ b=H6TUE/r04NusyXdAdcWiNpvhFo5xPlNHGCMoa2yiXvzdlHaE4mQxRpO9NNuBm6gGiEkH0s3LEGXj9iHuJdr2Y5KTWpfayMrVaAR6nV26+z6W9wj8lhWr89wFyj5RU1ZWGspLinNmzx+3T1luNAD+2j5JK3PRH3UVvEMGPJXJ6PqCRW0XBjauUTrMrj/S5rXR/WDZJEZjqCWIimgA5XC2/WT2UXPiCOPBg+Wnaf7CX5Ndt7zbxaVlKFefdjCWgBspdwxhvgvoJ0qdHqaEMDHGdIpqFHqZFCrQCk+rWot1m5lSqO5auHGUwZv0H1oMJvPmMXBHBP1MTATAIByxGCLQdg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by CH2PR12MB4296.namprd12.prod.outlook.com (2603:10b6:610:af::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Mon, 28 Nov
+ 2022 16:35:38 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f8b0:df13:5f8d:12a%9]) with mapi id 15.20.5857.021; Mon, 28 Nov 2022
+ 16:35:38 +0000
+Date: Mon, 28 Nov 2022 12:35:36 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Gerd Bayer <gbayer@linux.ibm.com>, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Wenjia Zhang <wenjia@linux.ibm.com>,
+	Pierre Morel <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
+	borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+	gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+	svens@linux.ibm.com, linux-kernel@vger.kernel.org,
+	Julian Ruess <julianr@linux.ibm.com>
+Subject: Re: [PATCH v2 4/7] iommu: Let iommu.strict override
+ ops->def_domain_type
+Message-ID: <Y4TjWOXYD+DK+d/B@nvidia.com>
+References: <20221116171656.4128212-1-schnelle@linux.ibm.com>
+ <20221116171656.4128212-5-schnelle@linux.ibm.com>
+ <33eea9bd-e101-4836-19e8-d4b191b78b00@linux.intel.com>
+ <9163440eb6a47fe02730638bbdf72fda5ee5ad2c.camel@linux.ibm.com>
+ <Y4S3z6IpeDHmdUs/@nvidia.com>
+ <52fe7769ca5b66523c2c93c7d46ebc17dc144aca.camel@linux.ibm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <52fe7769ca5b66523c2c93c7d46ebc17dc144aca.camel@linux.ibm.com>
+X-ClientProxiedBy: BLAPR03CA0058.namprd03.prod.outlook.com
+ (2603:10b6:208:32d::33) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <BYAPR21MB1688AF2F106CDC14E4F97DB4D7139@BYAPR21MB1688.namprd21.prod.outlook.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CH2PR12MB4296:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5b64d223-932c-4d58-9198-08dad15e94ac
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	VlffHEs+KRdN+CrFpDBQc4Rtf1N/T1QNP10QP1ZY2/c8C1FmrNZwZzdWZ7cdxflRHcUfhq4jPFclkXF8z1DboAW6be6e4FT4T8Pr7uvbfm2LWErZECiEd2xft7IFvsyRv6HOFkz6kcsjcnfadRQjOfKxtI/FHwyjgC2S7b0DPZpLab5/LhiFHx4DuwOU19U914C1W+ft5m81Za/WEVnB4qwYugpNfMuW3v5nx0GZLES563d9G+2eicbuGSA21Ujc/ru2FvPcCNa7kH14uHzCfXGuTdu9PsbJzXd9EytK2YnfN5EkBK16p81urNqy6eSFSqKh3DsKuzJSr1XH5zhG04xha7MSV8+pNpF3rbclHpWCj0YpHNQ2rDVgqE0ytZ4iQ/LtW+W3EDQafUcsuyXTaSLe508ZwIcne2Ul+jsTqE/r8i4SBJpymewGbc4oqCzRaYRz0Xnlzk0ZZ/ggoyAjQTcsqhxnCpO6G1O0DPnfdD/oLBnd5uqPN+a/rptw9W9BnAM5GdSEOiCatfQsX1v1ttyFUndQyxdBfp9GVH+yjIXhWtz/iaBb70uxMYiO/mxqtpi5mQEu9oCS4C8Yf/qN8uOdpoUamztK2yeBe4uB2aXQqy0tjkjMvZcBVhbIaO1UqjUjp1lRU6MRkKlD6wdKkscZq5m77eYUPSp2VXOAjCqFbPI7ATaHbnbA7+5wo+gV8pK+kA7lq+CnJRsa87xnyA==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(396003)(39860400002)(366004)(136003)(451199015)(966005)(6486002)(38100700002)(66556008)(66476007)(66946007)(4326008)(41300700001)(478600001)(36756003)(8676002)(2906002)(54906003)(6916009)(316002)(8936002)(7416002)(5660300002)(86362001)(2616005)(83380400001)(66899015)(186003)(6512007)(26005)(6506007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?ZZHiegT09Kgg5jnZ7KytYx0z9VeQSylzFGA5nOYjdCuswS/Ras5dWf8T7pJ+?=
+ =?us-ascii?Q?MrwUKQ8jEvsRNOHnm/H3Gn8+E3NTeOQg5INwXuh6CUwXGDPZDEnn7vd8KQkP?=
+ =?us-ascii?Q?ijPDh+7ekjkso9PE5e9+HNFYaBP00ubI2pmQPDv+d8f1TVCVoswdeK74yxVq?=
+ =?us-ascii?Q?ugd+xodX2hoPA41J2o3EF1gHGBOD2it0jpkHcoLO4jHaXRzvcqgg7Ym/gGc7?=
+ =?us-ascii?Q?B86hUhqrkQ6ilTYEdFMxERGReAGeaHSZlQQgr3VLWEBKPq3ppiKfHBvqXwtF?=
+ =?us-ascii?Q?b0DpF5WLzrHcXtgrbnc1RW8x/a/le7d0Z1uFH0XwmcUaDfSFRSqOlWK8/wgZ?=
+ =?us-ascii?Q?4VRVJQl+kp1u4c2gcyln8HLFnSWPENB3f4amU2UPsJzy+zciHmPFbz2JOTRZ?=
+ =?us-ascii?Q?QteeNkIS9Q5YpZXfjcGqjfrPPtzk2McL1ZC977drDWlIFqocivesnyZmKp0X?=
+ =?us-ascii?Q?35VOo+D/7/INrsu7CRu0YRg6IPtBnL5Ogmzx0fd9POQqSUTt/wDXpCCinImw?=
+ =?us-ascii?Q?VJRoNLmoAd8bKAe3/iz1UUOTTnmAtxlSv4lR/lFDroXFmqJ2t5pr4d9uLC0n?=
+ =?us-ascii?Q?j5PK1LON18uUkU2ONYjUaB2I/AfhXYN3I6H9HKK3Lu+nHLQItQRXCNtu/CfW?=
+ =?us-ascii?Q?pwhnPfIdX7m/0BM+d1uU4cOf6D+0Kn35vasu2kun/Q2a/cfO98cUOI0adjkZ?=
+ =?us-ascii?Q?13awXgFdBmOln8AFrD2BBjKA+FeUCZmDc9jjZ7GVHQm8XPkYkhmVDVk16O/c?=
+ =?us-ascii?Q?I5ZrPkOGxqLsFheDRvU2lzMSOKF5BpDkAzKoss6DWtTfDMzcUN9VYJjnEf8A?=
+ =?us-ascii?Q?AGstgpdYAv2eQGjEzsjSlO+NDJ02P2TbNkcLshX0e8eQ8B667xjKukZIy/fn?=
+ =?us-ascii?Q?PK+8RrSIsPmPtjuA+yB67k5abg1FZx2Cl6v28qwX0mj3fsInxsQEMrEBxRL2?=
+ =?us-ascii?Q?LMwteaJTBjhdH1Oq1WPLYvmzCOuejzyA3/oRx+C2FygKtmVg+fBoogVPbAB0?=
+ =?us-ascii?Q?3MA770meYrZ//TkgnYO36Yva+xfPpu/D7nOlPI97X5v7uYuWODVkdSjdJ9s4?=
+ =?us-ascii?Q?QoWZ6V6415osUu0QqR8vicT+qcvElrHCSMN33LXNdt7KdjMb6tUDvtqFAFOA?=
+ =?us-ascii?Q?W+eXML1Rv2uR0Zmg8o9MGo6bP1M1Q8rikuYHfMswaxmBflYoSnPHbPaJQ7BZ?=
+ =?us-ascii?Q?wJvF4Jf9KHWYImLh/s/Imx/watZMKxSsOeUtrpKCgLEuTkMIOWJnrnQRWowf?=
+ =?us-ascii?Q?bU85wFJlkvIh9n1auHmSvjAtfcr8g7cw6+qTcyMtFYzEJ7aT1llw0d9Rx+xt?=
+ =?us-ascii?Q?2RYfHH7HK7QjhEd0TynUY4QEoZ0agWfK1VZl5LIxrj4X90oxkYpKg8fJPHDF?=
+ =?us-ascii?Q?xLBkyBUvZs6kubMXQN1J/EoIr6IcveMgYvPGSeu4ucF/0WW87JEsnBYRRZ0U?=
+ =?us-ascii?Q?1gr7cF8MYFTuBg95ODE2pGCmETcu4o6H0xaSMFy6ineA0vEsMwx9rOsnn8Yj?=
+ =?us-ascii?Q?4QChXh3iqCN6kD7XfTH4Rff99jkM0SpeNP3WQAKhWSS8satP/uI+3FNLmkHN?=
+ =?us-ascii?Q?Owzuh7eXYKXw7366fxA=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5b64d223-932c-4d58-9198-08dad15e94ac
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Nov 2022 16:35:37.9533
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sSKx/owHR244bR6dpsM5wr7WaahbLVGTuxorkMVHcI6IIFOdmFCCL4CnjYvUzhKF
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4296
 
-On Mon, Nov 28, 2022 at 02:38:11PM +0000, Michael Kelley (LINUX) wrote:
-> Any further comment on this patch?  I think we're agreement.  For
-> this patch series I propose to change the symbol "CC_VENDOR_HYPERV"
-> to "CC_VENDOR_AMD_VTOM" and the function name
-> hyperv_cc_platform_has() to amd_vtom_cc_platform_has().
+On Mon, Nov 28, 2022 at 04:54:03PM +0100, Niklas Schnelle wrote:
 
-That doesn't sound optimal to me.
+> I agree that there is currently a lack of distinction between what
+> domain types can be used (capability) and which should be used as
+> default (iommu.strict=<x>, iommu_set_...(), CONFIG_IOMMU_DEFAULT_DMA,
+> ops->def_domain_type.).
 
-So, let's clarify things first: those Isolation VMs - are they going to
-be the paravisors?
+What I would like to get to is the drivers only expose UNMANAGED,
+IDENTITY and BLOCKING domains. Everything that the DMA/FQ/etc domains
+were doing should be handled as some kind of cap.
 
-I don't see any other option because the unmodified guest must be some
-old windoze....
+Eg, after Lu's series:
 
-So, if they're going to be that, then I guess this should be called
+https://lore.kernel.org/linux-iommu/20221128064648.1934720-1-baolu.lu@linux.intel.com/
 
-	CC_ATTR_PARAVISOR
+We should be able to remove IOMMU_DOMAIN_DMA and its related from the
+drivers entirely. Instead drivers will provide UNMANAGED domains and
+dma-iommu.c will operate the UNMANAGED domain to provide the dma
+api. We can detect if the driver supports this by set_platform_dma()
+being NULL.
 
-to denote that it is a thin layer of virt gunk between an unmodified
-guest and a hypervisor.
+A statement that a driver performs better using SQ/FQ/none should be
+something that is queried from the UNMANAGED domain as a guidance to
+dma-iommu.c what configuration to pick if not overriden.
 
-And if TDX wants to do that too later, then they can use that flag too.
+So, I would say what you want is some option flag, perhaps on the
+domain ops: 'domain performs better with SQ or FQ'
 
-Yes, no?
+> My case though is about the latter which I think has some undocumented
+> and surprising precedences built in at the moment. With this series we
+> can use all of IOMMU_DOMAIN_DMA(_FQ, _SQ) on any PCI device but we want
+> to default to either IOMMU_DOMAIN_DMA_FQ or IOMMU_DOMAIN_SQ based on
+> whether we're running in a paging hypervisor (z/VM or KVM) to get the
+> best performance. From a semantic point of view I felt that this is a
+> good match for ops->def_domain_type in that we pick a default but it's
+> still possible to change the domain type e.g. via sysfs. Now this had
+> the problem that ops->def_domain_type would cause IOMMU_DOMAIN_DMA_FQ
+> to be used even if iommu_set_dma_strict() was called (via
+> iommu.strict=1) because there is a undocumented override of ops-
+> >def_domain_type over iommu_def_domain_type which I believe comes from
+> the mixing of capability and default you also point at.
 
--- 
-Regards/Gruss,
-    Boris.
+Yeah, this does sounds troubled.
 
-https://people.kernel.org/tglx/notes-about-netiquette
+> I think ideally we need two separate mechanism to determine which
+> domain types can be used for a particular device (capability) and for
+> which one to default to with the latter part having a clear precedence
+> between the options. Put together I think iommu.strict=1 should
+> override a device's preference (ops->def_domain_type) and
+> CONFIG_IOMMU_DEFAULT_DMA to use IOMMU_DOMAIN_DMA but of course only if
+> the device is capable of that. Does that sound reasonable?
+
+Using the language above, if someone asks for strict then the
+infrastructure should try to allocate an UNMANAGED domain, not an
+identity domain, and not use the lazy flush algorithms in dma-iommu.c
+
+Similarly if sysfs asks for lazy flush or identity maps then it should
+get it, always.
+
+The driver should have no say in how dma-iommu.c works beyond if it
+provides the required ops functionalities, and hint(s) as to what
+gives best performance.
+
+So anything that moves closer to this direction seems like a good
+choice to me.
+
+Jason
