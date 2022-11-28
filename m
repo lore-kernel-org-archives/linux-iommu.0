@@ -1,812 +1,281 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2099.outbound.protection.outlook.com [40.107.223.99])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D02FA461
-	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 17:53:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1669657999;
-	h=from:from:reply-to:reply-to:subject:subject:date:date:
-	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-	 content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=+jPMepWJrmCQgm33DaLLsw9PGYFq62gz+peGxCiDEoA=;
-	b=amI+Aux4FKGU+uB4aX7ziDgO43hdSnUit/4C2oeAqsCW6/Sb4BeZE7ZhSzNMIFWuGzMm/o
-	tTepFAK9WZ3TL6JeqVPdK7c7lFokVueUnOfJDy2DDPUpKC9U96i5xmAhHm0QKWxwoKbUZb
-	TtBlZDNQhDAiglLCwyWBlTJL1pmeKgM=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-151-4Zr25h5mMD2htXWvR7nT_w-1; Mon, 28 Nov 2022 12:53:18 -0500
-X-MC-Unique: 4Zr25h5mMD2htXWvR7nT_w-1
-Received: by mail-wm1-f70.google.com with SMTP id 204-20020a1c02d5000000b003d06031f2cfso423995wmc.0
-        for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 09:53:18 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:reply-to:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=+jPMepWJrmCQgm33DaLLsw9PGYFq62gz+peGxCiDEoA=;
-        b=HN2dvkfFBDF6CRtX508mv8gg8WmnWWRu+8wqrr6Hqn00EZ5+O75C/wJ7VNDqj6SQ/V
-         gpTNMPJtq/t4ebPiT17PdiZ3fvpE/14LKmmsppw6Ddp5/FegkA/qu3hStCM7JK6F+J+e
-         I5vg/gCUcSKfXR5j7BjryMaq4TQfmRXozsniFbOeXfvXoeAkKKQ/I7GrFN9o0O3gRvNI
-         9cTTWmkBbo8YhRomIxS08x7/XTICkXCxQcrFD+U9mAO/pSWis0cUvzmRFA0TslUXtejF
-         f4beUyvqD0eHFnHkQqoMmfVQWE4bswG3o7+AB7VDxYnxzAPJ5BXipwFVl4yIZKJocNes
-         cRrg==
-X-Gm-Message-State: ANoB5pk6082zcayYYRvyMBPUIMsBZhMQIH1PH/A4UylPRBRHf/e+/GXb
-	FQiICBTd9L9BXr09vi80TNJn84q7/5buDq4E+Xhn+GTlw1Ja2NK1g5FHk1KcXyRX7rx/vLF6vtb
-	UcStQS44LST6WsCk=
-X-Received: by 2002:a05:600c:4916:b0:3cf:85e7:7b40 with SMTP id f22-20020a05600c491600b003cf85e77b40mr27823118wmp.63.1669657997012;
-        Mon, 28 Nov 2022 09:53:17 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf41FpMeP4Ok9FL0zc9+FO0qUGjRtlMf3LagsM7iAaG0ltFNIZUEvW1KlzMFyGy7ofsQjFAe6g==
-X-Received: by 2002:a05:600c:4916:b0:3cf:85e7:7b40 with SMTP id f22-20020a05600c491600b003cf85e77b40mr27823055wmp.63.1669657996497;
-        Mon, 28 Nov 2022 09:53:16 -0800 (PST)
-Received: from ?IPV6:2a01:e0a:59e:9d80:527b:9dff:feef:3874? ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
-        by smtp.gmail.com with ESMTPSA id hg27-20020a05600c539b00b003a3170a7af9sm16226785wmb.4.2022.11.28.09.53.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Nov 2022 09:53:15 -0800 (PST)
-Message-ID: <81f898b6-e40f-be72-78d4-b5d836981d8f@redhat.com>
-Date: Mon, 28 Nov 2022 18:53:12 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B01DA461
+	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 17:55:15 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kyijFl4DCJlx1X9yJ1a9lqUCV87VQtxADMA1Opi2PrjbnGEWeXFzSWfuQpigGWbzMAypwcnhiWhQMM+847Y8E4K7Jiis4gUv/QW42Ht77Zb9bRqYP50jEDnwa9VtaHEuVvbcc7cmapP7LGVQCNV5DvYfrnbJyGyYCVc3ewzYQlxYXaKGWGaLC1U/u3FqUHKV7scadpwCwjm62aQHlQuPub2dRp9ot4LNYbxw7K5g1w2B55F2uv7otxV+tkBOepXFrhWUUBpyS3U2mTGlAOBI4p+5fTYFyHA4YXu4VDNgRLds/HOjRF3sPHT3SHZoi61c/4PvlidXhRvk0dQARy0Mzw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pZt157AVu0UU8Xii48dq5NXW5NR2Rrm7ClkH8MI0fkw=;
+ b=Zei0ggoI0GBLG/KWm/xCzQ4cZnB40qAn83VfwM3itHy09sfIa+3zwcIWEM9W51yNZJusgaDGiatO8PepOOnWZkl/vHRGsPu4nAwIkBMmmaqwjc4Ha732sSBG9M54nCHCouV8EELI/8/dUalYwCTRgSHEDebzIUeR9G84SNMnuzYyk5TEn90ZWpaFH1tdSpM3yOvhPVFryFAKZcl1iFTwBRKV7HZiA7vFnkIxKoOgei78Zgd9XsJ+ntfpzb9xtTai7lK0oWJJ9eZjM7rbp/JMwII99UfpxXWRLekSpY3NjkiFKfrfIoE6Y28SLhh4AsfYA3iSCMIaiMa7vbm1Zkc/Qw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pZt157AVu0UU8Xii48dq5NXW5NR2Rrm7ClkH8MI0fkw=;
+ b=XJgFFw+BfXUTOWAPmpKiebwr7awXGXizGyF+WSQsBMTOuQHn0AMsafg6BLHALa9Zj71mou3Oy7VoO+Y2OqmrPqKOClm8cJvUTnkcgd2mXX0YPObZLQicEo55YlV9N67m+B8dmw7cSXIkQMgTaOAYGh8dND9+4Gl6IuLv04nl9us=
+Received: from BYAPR21MB1688.namprd21.prod.outlook.com (2603:10b6:a02:bf::26)
+ by IA1PR21MB3401.namprd21.prod.outlook.com (2603:10b6:208:3e2::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.8; Mon, 28 Nov
+ 2022 17:55:11 +0000
+Received: from BYAPR21MB1688.namprd21.prod.outlook.com
+ ([fe80::1e50:78ec:6954:d6dd]) by BYAPR21MB1688.namprd21.prod.outlook.com
+ ([fe80::1e50:78ec:6954:d6dd%6]) with mapi id 15.20.5880.008; Mon, 28 Nov 2022
+ 17:55:11 +0000
+From: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+To: Borislav Petkov <bp@alien8.de>
+CC: "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>, "wei.liu@kernel.org"
+	<wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>, "luto@kernel.org"
+	<luto@kernel.org>, "peterz@infradead.org" <peterz@infradead.org>,
+	"davem@davemloft.net" <davem@davemloft.net>, "edumazet@google.com"
+	<edumazet@google.com>, "kuba@kernel.org" <kuba@kernel.org>,
+	"pabeni@redhat.com" <pabeni@redhat.com>, "lpieralisi@kernel.org"
+	<lpieralisi@kernel.org>, "robh@kernel.org" <robh@kernel.org>, "kw@linux.com"
+	<kw@linux.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "arnd@arndb.de"
+	<arnd@arndb.de>, "hch@infradead.org" <hch@infradead.org>,
+	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+	"brijesh.singh@amd.com" <brijesh.singh@amd.com>, "tglx@linutronix.de"
+	<tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>,
+	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>, Tianyu Lan
+	<Tianyu.Lan@microsoft.com>, "kirill.shutemov@linux.intel.com"
+	<kirill.shutemov@linux.intel.com>,
+	"sathyanarayanan.kuppuswamy@linux.intel.com"
+	<sathyanarayanan.kuppuswamy@linux.intel.com>, "ak@linux.intel.com"
+	<ak@linux.intel.com>, "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+	"Williams, Dan J" <dan.j.williams@intel.com>, "jane.chu@oracle.com"
+	<jane.chu@oracle.com>, "seanjc@google.com" <seanjc@google.com>,
+	"tony.luck@intel.com" <tony.luck@intel.com>, "x86@kernel.org"
+	<x86@kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-hyperv@vger.kernel.org"
+	<linux-hyperv@vger.kernel.org>, "netdev@vger.kernel.org"
+	<netdev@vger.kernel.org>, "linux-pci@vger.kernel.org"
+	<linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org"
+	<linux-arch@vger.kernel.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: RE: [Patch v3 07/14] x86/hyperv: Change vTOM handling to use standard
+ coco mechanisms
+Thread-Topic: [Patch v3 07/14] x86/hyperv: Change vTOM handling to use
+ standard coco mechanisms
+Thread-Index:
+ AQHY+es2O4adbWIH8UyWtCwRyUnUyq5JgOOAgAHDpcCAAEhFgIAAJ7oQgAjDHRCAACLagIAAALfwgAANigCAAAHQEA==
+Date: Mon, 28 Nov 2022 17:55:11 +0000
+Message-ID:
+ <BYAPR21MB1688BCC5DF4636DBF4DEA525D7139@BYAPR21MB1688.namprd21.prod.outlook.com>
+References: <1668624097-14884-1-git-send-email-mikelley@microsoft.com>
+ <1668624097-14884-8-git-send-email-mikelley@microsoft.com>
+ <Y3uTK3rBV6eXSJnC@zn.tnic>
+ <BYAPR21MB16886AF404739449CA467B1AD70D9@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y31Kqacbp9R5A1PF@zn.tnic>
+ <BYAPR21MB16886FF8B35F51964A515CD5D70C9@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <BYAPR21MB1688AF2F106CDC14E4F97DB4D7139@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y4Ti4UTBRGmbi0hD@zn.tnic>
+ <BYAPR21MB1688466C7766148C6B3B4684D7139@BYAPR21MB1688.namprd21.prod.outlook.com>
+ <Y4Tu1tx6E1CfnrJi@zn.tnic>
+In-Reply-To: <Y4Tu1tx6E1CfnrJi@zn.tnic>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=9b9758f3-9d09-4647-8da9-ef2639e3b5bd;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-11-28T17:31:07Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BYAPR21MB1688:EE_|IA1PR21MB3401:EE_
+x-ms-office365-filtering-correlation-id: 77eca875-7ea3-4d5e-a8c5-08dad169b1c9
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ gVPmxIKOJS/TQRaopT8JnlLUqTM+szRqRjOUhJI2Sbp8/dKs5LbEycKTVR3hGGuxAA8QLAN2XdiY0lPIxZtpxjLdScrrqMznsSOLjZOWdaM3MVhUn5b8FMM6gDfi18TeTqw2FtueSPQbzWo4ks7ik9Ct/I/uc/3vOoqXXKLjdgrRRKbCxyEcdI2McUvQpPoM/qErs9c2hjMNDWlO47b3SY4K8PaAG1rqm23CI4+blRJ9b74KKHGzN86QF2wKoeVnkGM5mXUJ21pJ9e2Fcws3+qzVlF/kjGkYhMrezAjAaNWGgZtfOcFyRc7xmsiGdjgFzquapc4sm05lvcXPLvA80v8X+uJ6saHDsj1DyS/AduHYuPnHfwWa2r2OaN39f9WDR5qhU/nWTqAbw5IjRFwlIS1n/8M9p4nVv5JcYLQmxdruYQacZ8TNUrk5T2HlVjZbF++EgmgM294CkGextZTi4W8ulgKRVRQ2v5iAAL9yQWA/GPCyCIBHzNrXNNWmKpxkNLz6pPWPB3HRIQ5Q3etHQlwrmyPSSEYlrPfmmvhVsp5AQyzGZ1cAlJErf8YF+FVEnc9kot8vFHxEeHOi2d1+YTHpf3lAt5RI/Vw6e2qwyJbwkfE3qNQ1klAjuE01vHdSjurzrB04f0fu25J+U2+HHlbyHspcn+o2NzfUSCeI8o/Ozbe1DfIon+dF7/FEuIB+Gi4XMyIUnv89thtEVyHxnvByqZ9xjRcahQjm6+KJmTrThN/0L+keTB8tc26EHqHevQmJk6Sw0pNxKS+gJEHYX/awA8d6/ahOP67hEDiKfdtXrBr/DfZKD7jtnG7hQv3Z
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1688.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(376002)(136003)(396003)(366004)(346002)(39860400002)(451199015)(5660300002)(7406005)(7416002)(41300700001)(52536014)(8936002)(66899015)(4326008)(66476007)(64756008)(66446008)(66556008)(8676002)(966005)(54906003)(6916009)(8990500004)(71200400001)(10290500003)(76116006)(316002)(478600001)(66946007)(2906002)(86362001)(7696005)(9686003)(6506007)(26005)(33656002)(38070700005)(186003)(83380400001)(38100700002)(82960400001)(82950400001)(122000001)(55016003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?N/MShVtR8njTthfFNMCdqawvkp80ynmJWNYthUn7H3Ni6t84oPTKRAcPU3Ev?=
+ =?us-ascii?Q?2WCoRS+rxZWcO3oJsiFm394zOmWRyKKQkB8wwfOhF9g3/Nu/lG5bMngIbrbo?=
+ =?us-ascii?Q?dcTIElFhp9ffmQ5NBNfwYHykDQEbzCCXf0G5p0nNOgurgEEer5g11wiE5vja?=
+ =?us-ascii?Q?N+zOHHEc8r9VHgwTS+oWbv7W4tWNrUx/pUmrZIkWNpIc1Fw2NULCa11mNN5+?=
+ =?us-ascii?Q?zq7aimufZyudtj2y/ekhK+D6R/hnuBlZ5CPOD0xwVTO3SRlKmivuD8cE8JdJ?=
+ =?us-ascii?Q?OGqLtoV7hKcI4/0q16ZyT5lDm8RMJC5JvYS5mSfwX2wXeb491vYHuzIu/tPn?=
+ =?us-ascii?Q?5bzNKMhVESspjT+aU5sP873nbVNMrC73ORZ57iKmiJh0b6rDPPo+IhN+42FW?=
+ =?us-ascii?Q?emrLVvGCaWk8jaNJg4Zltbz9CV/tSbZa+6m54EkzbXKU6C0lfhpCYx1jtXGD?=
+ =?us-ascii?Q?XT8rQiXiITGFuPdEscj1mepwy5sf958BhAVRqu/ryXfmD5OU+eaHTUHUtLRd?=
+ =?us-ascii?Q?f4RxH+FJ3bW2I84vq+YqovBJ+WwoOLCMsMMkV08S2/0g9qlNxalRhbonI9FL?=
+ =?us-ascii?Q?AyJoagYc0oSLaynNVAD2qb/rjwW4JxqOkPlBXE7Hi8O4Bnl06vzod8azNHYE?=
+ =?us-ascii?Q?XzQZdv9pk7JPzrR0D2lJ4zfhxjUGTaDRihhqiz2H6mix3+3i6AWIfpbe9/jX?=
+ =?us-ascii?Q?zzq0XpdxtIQl0er8nVBoi7D3gy3SJccJ8t0E6qDWYRXXCff81OFp33yE8vDi?=
+ =?us-ascii?Q?Tw5QUKtrU+Ox6MIk4TGSAQA6ZLzqTn4ZTP4mqgbdbJY62SGHBlMZ1GJWcl44?=
+ =?us-ascii?Q?XbMa6T2e85viT8AD/BVhyjc3YvWoyU9to0xo2jz5+xZUuHBpVFIVl/JN5eIp?=
+ =?us-ascii?Q?jTLIZ0t2vzkUp9RjUAgOLHjWdQPGiGY8ZwAdjcSgwn9Drxuaj4WLbTrmT3ua?=
+ =?us-ascii?Q?Dij3XQTttreGsF+Y+ov54dKKwIqK2pmqmBbPhOhB8l9wEnyVDg/FYAGVQPSn?=
+ =?us-ascii?Q?5Lkt8dHWFRIaRrEmA08jCqqwjhyJ1UrSC5s+e8AbxTqdOos6AENLrWmzvH/L?=
+ =?us-ascii?Q?1a12iAr7kMdfF3/OUal0YRGY4P39qFF/Y+cZjhX1xHXiTcXkv2/26AJ7v1s8?=
+ =?us-ascii?Q?O/1/NOto1XxkqojMrevctd4MOw9uSWRoxo8DvT0znA9S6zUI4teTIJ9iJnM+?=
+ =?us-ascii?Q?nJ1q7h/E8b7KslN6YP8rDHP662Sz1EHthCGcWO0pqWJE/9NXFkSIFHqKtFIZ?=
+ =?us-ascii?Q?VYEGh1syxb2o7nEvUlEyj2Bhw08GW4F+PMEnVmbgyJAIW9WdGihzz/j9kPOj?=
+ =?us-ascii?Q?mWtSbsr9fbZ5y/4lViidaQqrHCcCFsShVzbFaxY4KfGqvs1GCYuS835S3vrM?=
+ =?us-ascii?Q?skbYJee5Qte3pouLmE3YguO2h4U/Aoql+n0VbEqvffijo1tC3zPE6EOHURri?=
+ =?us-ascii?Q?4xANcjb5UOIKSSoPiWW1jaD/a2OJ/uFB0OoOLihuKYUxuNUDNHyDVWp7yZCK?=
+ =?us-ascii?Q?1C57dOPg7wplRoDUXjWdDcbrvftOrNKz8XU8FOPLuCjwePxDvnX3soAfuMYu?=
+ =?us-ascii?Q?Fc71qZzw7AsAPIrraYkwFC2xabZ8nBrbgoLkIagKvPlL/D2WI/IN6DSOPg52?=
+ =?us-ascii?Q?KQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.3.1
-Reply-To: eric.auger@redhat.com
-Subject: Re: [PATCH v5 15/19] iommufd: vfio container FD ioctl compatibility
-To: Jason Gunthorpe <jgg@nvidia.com>, bpf@vger.kernel.org,
- Jonathan Corbet <corbet@lwn.net>, David Woodhouse <dwmw2@infradead.org>,
- iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- Kevin Tian <kevin.tian@intel.com>, linux-doc@vger.kernel.org,
- linux-kselftest@vger.kernel.org, llvm@lists.linux.dev,
- Nathan Chancellor <nathan@kernel.org>,
- Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>
-Cc: Anthony Krowiak <akrowiak@linux.ibm.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Bagas Sanjaya <bagasdotme@gmail.com>, Lu Baolu <baolu.lu@linux.intel.com>,
- Chaitanya Kulkarni <chaitanyak@nvidia.com>, Cornelia Huck
- <cohuck@redhat.com>, Daniel Jordan <daniel.m.jordan@oracle.com>,
- David Gibson <david@gibson.dropbear.id.au>,
- Eric Farman <farman@linux.ibm.com>, Jason Wang <jasowang@redhat.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Jason Herne <jjherne@linux.ibm.com>, Joao Martins
- <joao.m.martins@oracle.com>, kvm@vger.kernel.org,
- Lixiao Yang <lixiao.yang@intel.com>, Matthew Rosato
- <mjrosato@linux.ibm.com>, "Michael S. Tsirkin" <mst@redhat.com>,
- Nicolin Chen <nicolinc@nvidia.com>, Halil Pasic <pasic@linux.ibm.com>,
- Niklas Schnelle <schnelle@linux.ibm.com>,
- Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
-References: <15-v5-4001c2997bd0+30c-iommufd_jgg@nvidia.com>
-From: Eric Auger <eric.auger@redhat.com>
-In-Reply-To: <15-v5-4001c2997bd0+30c-iommufd_jgg@nvidia.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1688.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 77eca875-7ea3-4d5e-a8c5-08dad169b1c9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Nov 2022 17:55:11.0744
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: hYxU3hQD6A86w9ouE1FqdeZe6tQHqmB5x5D+IpEcQOcE9e/C6IyVz9Wv2CzgGodLxOZN8H0+YAEmzXMwjQ2/RDmFSgBSE+ngCdyrhn5Lvpg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR21MB3401
 
-Hi,
+From: Borislav Petkov <bp@alien8.de> Sent: Monday, November 28, 2022 9:25 A=
+M
+>=20
+> On Mon, Nov 28, 2022 at 04:59:27PM +0000, Michael Kelley (LINUX) wrote:
+> > 2) The Linux guest must set the vTOM flag in a PTE to access a page
+> > as unencrypted.
+>=20
+> What exactly do you call the "vTOM flag in the PTE"?
+>=20
+> I see this here:
+>=20
+> "When bit 1 (vTOM) of SEV_FEATURES is set in the VMSA of an SNP-active
+> VM, the VIRTUAL_TOM field is used to determine the C-bit for data
+> accesses instead of the guest page table contents. All data accesses
+> below VIRTUAL_TOM are accessed with an effective C-bit of 1 and all
+> addresses at or above VIRTUAL_TOM are accessed with an effective C-bit
+> of 0."
+>=20
+> Now you say
+>=20
+> "vTOM is the dividing line where the uppermost bit of the physical
+> address space is set; e.g., with 47 bits of guest physical address
+> space, vTOM is 0x40000000000 (bit 46 is set)."
+>=20
+> So on your guests, is VIRTUAL_TOM =3D=3D 0x400000000000?
+>=20
+> Btw, that 0x4000.. does not have bit 46 set but bit 42. Bit 46 set is
+>=20
+> 	0x400000000000
+>=20
+> which means one more '0' at the end.
 
-On 11/16/22 22:00, Jason Gunthorpe wrote:
-> iommufd can directly implement the /dev/vfio/vfio container IOCTLs by
-> mapping them into io_pagetable operations.
->
-> A userspace application can test against iommufd and confirm compatibility
-> then simply make a small change to open /dev/iommu instead of
-> /dev/vfio/vfio.
->
-> For testing purposes /dev/vfio/vfio can be symlinked to /dev/iommu and
-> then all applications will use the compatibility path with no code
-> changes. A later series allows /dev/vfio/vfio to be directly provided by
-> iommufd, which allows the rlimit mode to work the same as well.
->
-> This series just provides the iommufd side of compatibility. Actually
-> linking this to VFIO_SET_CONTAINER is a followup series, with a link in
-> the cover letter.
->
-> Internally the compatibility API uses a normal IOAS object that, like
-> vfio, is automatically allocated when the first device is
-> attached.
->
-> Userspace can also query or set this IOAS object directly using the
-> IOMMU_VFIO_IOAS ioctl. This allows mixing and matching new iommufd only
-> features while still using the VFIO style map/unmap ioctls.
->
-> While this is enough to operate qemu, it has a few differences:
->
->  - Resource limits rely on memory cgroups to bound what userspace can do
->    instead of the module parameter dma_entry_limit.
->
->  - VFIO P2P is not implemented. The DMABUF patches for vfio are a start at
->    a solution where iommufd would import a special DMABUF. This is to avoid
->    further propogating the follow_pfn() security problem.
->
->  - A full audit for pedantic compatibility details (eg errnos, etc) has
->    not yet been done
->
->  - powerpc SPAPR is left out, as it is not connected to the iommu_domain
->    framework. It seems interest in SPAPR is minimal as it is currently
->    non-working in v6.1-rc1. They will have to convert to the iommu
->    subsystem framework to enjoy iommfd.
->
-> The following are not going to be implemented and we expect to remove them
-> from VFIO type1:
->
->  - SW access 'dirty tracking'. As discussed in the cover letter this will
->    be done in VFIO.
->
->  - VFIO_TYPE1_NESTING_IOMMU
->     https://lore.kernel.org/all/0-v1-0093c9b0e345+19-vfio_no_nesting_jgg@nvidia.com/
->
->  - VFIO_DMA_MAP_FLAG_VADDR
->     https://lore.kernel.org/all/Yz777bJZjTyLrHEQ@nvidia.com/
->
-> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-> Tested-by: Yi Liu <yi.l.liu@intel.com>
-> Tested-by: Lixiao Yang <lixiao.yang@intel.com>
-> Tested-by: Matthew Rosato <mjrosato@linux.ibm.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/iommufd/Makefile          |   3 +-
->  drivers/iommu/iommufd/iommufd_private.h |   6 +
->  drivers/iommu/iommufd/main.c            |  16 +-
->  drivers/iommu/iommufd/vfio_compat.c     | 458 ++++++++++++++++++++++++
->  include/linux/iommufd.h                 |   7 +
->  include/uapi/linux/iommufd.h            |  36 ++
->  6 files changed, 520 insertions(+), 6 deletions(-)
->  create mode 100644 drivers/iommu/iommufd/vfio_compat.c
->
-> diff --git a/drivers/iommu/iommufd/Makefile b/drivers/iommu/iommufd/Makefile
-> index ca28a135b9675f..2fdff04000b326 100644
-> --- a/drivers/iommu/iommufd/Makefile
-> +++ b/drivers/iommu/iommufd/Makefile
-> @@ -5,6 +5,7 @@ iommufd-y := \
->  	io_pagetable.o \
->  	ioas.o \
->  	main.o \
-> -	pages.o
-> +	pages.o \
-> +	vfio_compat.o
->  
->  obj-$(CONFIG_IOMMUFD) += iommufd.o
-> diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-> index e1653b2276dac9..f1d462f40ac7b7 100644
-> --- a/drivers/iommu/iommufd/iommufd_private.h
-> +++ b/drivers/iommu/iommufd/iommufd_private.h
-> @@ -18,6 +18,7 @@ struct iommufd_ctx {
->  	struct xarray objects;
->  
->  	u8 account_mode;
-> +	struct iommufd_ioas *vfio_ioas;
->  };
->  
->  /*
-> @@ -92,6 +93,9 @@ struct iommufd_ucmd {
->  	void *cmd;
->  };
->  
-> +int iommufd_vfio_ioctl(struct iommufd_ctx *ictx, unsigned int cmd,
-> +		       unsigned long arg);
-> +
->  /* Copy the response in ucmd->cmd back to userspace. */
->  static inline int iommufd_ucmd_respond(struct iommufd_ucmd *ucmd,
->  				       size_t cmd_len)
-> @@ -222,6 +226,8 @@ int iommufd_ioas_option(struct iommufd_ucmd *ucmd);
->  int iommufd_option_rlimit_mode(struct iommu_option *cmd,
->  			       struct iommufd_ctx *ictx);
->  
-> +int iommufd_vfio_ioas(struct iommufd_ucmd *ucmd);
-> +
->  /*
->   * A HW pagetable is called an iommu_domain inside the kernel. This user object
->   * allows directly creating and inspecting the domains. Domains that have kernel
-> diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-> index c8cc0953dea13a..f76b2c8dcde8e5 100644
-> --- a/drivers/iommu/iommufd/main.c
-> +++ b/drivers/iommu/iommufd/main.c
-> @@ -133,6 +133,8 @@ bool iommufd_object_destroy_user(struct iommufd_ctx *ictx,
->  		return false;
->  	}
->  	__xa_erase(&ictx->objects, obj->id);
-> +	if (ictx->vfio_ioas && &ictx->vfio_ioas->obj == obj)
-> +		ictx->vfio_ioas = NULL;
->  	xa_unlock(&ictx->objects);
->  	up_write(&obj->destroy_rwsem);
->  
-> @@ -266,27 +268,31 @@ static const struct iommufd_ioctl_op iommufd_ioctl_ops[] = {
->  		 length),
->  	IOCTL_OP(IOMMU_OPTION, iommufd_option, struct iommu_option,
->  		 val64),
-> +	IOCTL_OP(IOMMU_VFIO_IOAS, iommufd_vfio_ioas, struct iommu_vfio_ioas,
-> +		 __reserved),
->  };
->  
->  static long iommufd_fops_ioctl(struct file *filp, unsigned int cmd,
->  			       unsigned long arg)
->  {
-> +	struct iommufd_ctx *ictx = filp->private_data;
->  	const struct iommufd_ioctl_op *op;
->  	struct iommufd_ucmd ucmd = {};
->  	union ucmd_buffer buf;
->  	unsigned int nr;
->  	int ret;
->  
-> -	ucmd.ictx = filp->private_data;
-> +	nr = _IOC_NR(cmd);
-> +	if (nr < IOMMUFD_CMD_BASE ||
-> +	    (nr - IOMMUFD_CMD_BASE) >= ARRAY_SIZE(iommufd_ioctl_ops))
-> +		return iommufd_vfio_ioctl(ictx, cmd, arg);
-> +
-> +	ucmd.ictx = ictx;
->  	ucmd.ubuffer = (void __user *)arg;
->  	ret = get_user(ucmd.user_size, (u32 __user *)ucmd.ubuffer);
->  	if (ret)
->  		return ret;
->  
-> -	nr = _IOC_NR(cmd);
-> -	if (nr < IOMMUFD_CMD_BASE ||
-> -	    (nr - IOMMUFD_CMD_BASE) >= ARRAY_SIZE(iommufd_ioctl_ops))
-> -		return -ENOIOCTLCMD;
->  	op = &iommufd_ioctl_ops[nr - IOMMUFD_CMD_BASE];
->  	if (op->ioctl_num != cmd)
->  		return -ENOIOCTLCMD;
-> diff --git a/drivers/iommu/iommufd/vfio_compat.c b/drivers/iommu/iommufd/vfio_compat.c
-> new file mode 100644
-> index 00000000000000..c993269ebb5119
-> --- /dev/null
-> +++ b/drivers/iommu/iommufd/vfio_compat.c
-> @@ -0,0 +1,458 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
-> + */
-> +#include <linux/file.h>
-> +#include <linux/interval_tree.h>
-> +#include <linux/iommu.h>
-> +#include <linux/iommufd.h>
-> +#include <linux/slab.h>
-> +#include <linux/vfio.h>
-> +#include <uapi/linux/vfio.h>
-> +#include <uapi/linux/iommufd.h>
-> +
-> +#include "iommufd_private.h"
-> +
-> +static struct iommufd_ioas *get_compat_ioas(struct iommufd_ctx *ictx)
-> +{
-> +	struct iommufd_ioas *ioas = ERR_PTR(-ENODEV);
-> +
-> +	xa_lock(&ictx->objects);
-> +	if (!ictx->vfio_ioas || !iommufd_lock_obj(&ictx->vfio_ioas->obj))
-> +		goto out_unlock;
-> +	ioas = ictx->vfio_ioas;
-> +out_unlock:
-> +	xa_unlock(&ictx->objects);
-> +	return ioas;
-> +}
-> +
-> +/**
-> + * iommufd_vfio_compat_ioas_id - Return the IOAS ID that vfio should use
-> + * @ictx: Context to operate on
-> + * @out_ioas_id: The ioas_id the caller should use
-> + *
-> + * The compatibility IOAS is the IOAS that the vfio compatibility ioctls operate
-> + * on since they do not have an IOAS ID input in their ABI. Only attaching a
-> + * group should cause a default creation of the internal ioas, this returns the
-> + * existing ioas if it has already been assigned somehow.
-> + */
-> +int iommufd_vfio_compat_ioas_id(struct iommufd_ctx *ictx, u32 *out_ioas_id)
-> +{
-> +	struct iommufd_ioas *ioas = NULL;
-> +	struct iommufd_ioas *out_ioas;
-> +
-> +	ioas = iommufd_ioas_alloc(ictx);
-> +	if (IS_ERR(ioas))
-> +		return PTR_ERR(ioas);
-> +
-> +	xa_lock(&ictx->objects);
-> +	if (ictx->vfio_ioas && iommufd_lock_obj(&ictx->vfio_ioas->obj))
-> +		out_ioas = ictx->vfio_ioas;
-> +	else {
-> +		out_ioas = ioas;
-> +		ictx->vfio_ioas = ioas;
-> +	}
-> +	xa_unlock(&ictx->objects);
-> +
-> +	*out_ioas_id = out_ioas->obj.id;
-> +	if (out_ioas != ioas) {
-> +		iommufd_put_object(&out_ioas->obj);
-> +		iommufd_object_abort(ictx, &ioas->obj);
-> +		return 0;
-> +	}
-> +	/*
-> +	 * An automatically created compat IOAS is treated as a userspace
-> +	 * created object. Userspace can learn the ID via IOMMU_VFIO_IOAS_GET,
-> +	 * and if not manually destroyed it will be destroyed automatically
-> +	 * at iommufd release.
-> +	 */
-> +	iommufd_object_finalize(ictx, &ioas->obj);
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_NS_GPL(iommufd_vfio_compat_ioas_id, IOMMUFD_VFIO);
-> +
-> +int iommufd_vfio_ioas(struct iommufd_ucmd *ucmd)
-> +{
-> +	struct iommu_vfio_ioas *cmd = ucmd->cmd;
-> +	struct iommufd_ioas *ioas;
-> +
-> +	if (cmd->__reserved)
-> +		return -EOPNOTSUPP;
-> +	switch (cmd->op) {
-> +	case IOMMU_VFIO_IOAS_GET:
-> +		ioas = get_compat_ioas(ucmd->ictx);
-> +		if (IS_ERR(ioas))
-> +			return PTR_ERR(ioas);
-> +		cmd->ioas_id = ioas->obj.id;
-> +		iommufd_put_object(&ioas->obj);
-> +		return iommufd_ucmd_respond(ucmd, sizeof(*cmd));
-> +
-> +	case IOMMU_VFIO_IOAS_SET:
-> +		ioas = iommufd_get_ioas(ucmd, cmd->ioas_id);
-> +		if (IS_ERR(ioas))
-> +			return PTR_ERR(ioas);
-> +		xa_lock(&ucmd->ictx->objects);
-> +		ucmd->ictx->vfio_ioas = ioas;
-> +		xa_unlock(&ucmd->ictx->objects);
-> +		iommufd_put_object(&ioas->obj);
-> +		return 0;
-> +
-> +	case IOMMU_VFIO_IOAS_CLEAR:
-> +		xa_lock(&ucmd->ictx->objects);
-> +		ucmd->ictx->vfio_ioas = NULL;
-> +		xa_unlock(&ucmd->ictx->objects);
-> +		return 0;
-> +	default:
-> +		return -EOPNOTSUPP;
-> +	}
-> +}
-> +
-> +static int iommufd_vfio_map_dma(struct iommufd_ctx *ictx, unsigned int cmd,
-> +				void __user *arg)
-> +{
-> +	u32 supported_flags = VFIO_DMA_MAP_FLAG_READ | VFIO_DMA_MAP_FLAG_WRITE;
-> +	size_t minsz = offsetofend(struct vfio_iommu_type1_dma_map, size);
-> +	struct vfio_iommu_type1_dma_map map;
-> +	int iommu_prot = IOMMU_CACHE;
-> +	struct iommufd_ioas *ioas;
-> +	unsigned long iova;
-> +	int rc;
-> +
-> +	if (copy_from_user(&map, arg, minsz))
-> +		return -EFAULT;
-> +
-> +	if (map.argsz < minsz || map.flags & ~supported_flags)
-> +		return -EINVAL;
-> +
-> +	if (map.flags & VFIO_DMA_MAP_FLAG_READ)
-> +		iommu_prot |= IOMMU_READ;
-> +	if (map.flags & VFIO_DMA_MAP_FLAG_WRITE)
-> +		iommu_prot |= IOMMU_WRITE;
-> +
-> +	ioas = get_compat_ioas(ictx);
-> +	if (IS_ERR(ioas))
-> +		return PTR_ERR(ioas);
-> +
-> +	/*
-> +	 * Maps created through the legacy interface always use VFIO compatible
-> +	 * rlimit accounting. If the user wishes to use the faster user based
-> +	 * rlimit accounting then they must use the new interface.
-s/they/he
-> +	 */
-> +	iova = map.iova;
-> +	rc = iopt_map_user_pages(ictx, &ioas->iopt, &iova, u64_to_user_ptr(map.vaddr),
-> +				 map.size, iommu_prot, 0);
-> +	iommufd_put_object(&ioas->obj);
-> +	return rc;
-> +}
-> +
-> +static int iommufd_vfio_unmap_dma(struct iommufd_ctx *ictx, unsigned int cmd,
-> +				  void __user *arg)
-> +{
-> +	size_t minsz = offsetofend(struct vfio_iommu_type1_dma_unmap, size);
-> +	/*
-> +	 * VFIO_DMA_UNMAP_FLAG_GET_DIRTY_BITMAP is obsoleted by the new
-> +	 * dirty tracking direction:
-> +	 *  https://lore.kernel.org/kvm/20220731125503.142683-1-yishaih@nvidia.com/
-> +	 *  https://lore.kernel.org/kvm/20220428210933.3583-1-joao.m.martins@oracle.com/
-> +	 */
-> +	u32 supported_flags = VFIO_DMA_UNMAP_FLAG_ALL;
-> +	struct vfio_iommu_type1_dma_unmap unmap;
-> +	unsigned long unmapped = 0;
-> +	struct iommufd_ioas *ioas;
-> +	int rc;
-> +
-> +	if (copy_from_user(&unmap, arg, minsz))
-> +		return -EFAULT;
-> +
-> +	if (unmap.argsz < minsz || unmap.flags & ~supported_flags)
-> +		return -EINVAL;
-> +
-> +	ioas = get_compat_ioas(ictx);
-> +	if (IS_ERR(ioas))
-> +		return PTR_ERR(ioas);
-> +
-> +	if (unmap.flags & VFIO_DMA_UNMAP_FLAG_ALL) {
-> +		if (unmap.iova != 0 || unmap.size != 0) {
-> +			rc = -EINVAL;
-> +			goto err_put;
-> +		}
-> +		rc = iopt_unmap_all(&ioas->iopt, &unmapped);
-> +	} else {
-> +		if (READ_ONCE(ioas->iopt.disable_large_pages)) {
-> +			unsigned long iovas[] = { unmap.iova + unmap.size - 1,
-> +						  unmap.iova - 1 };
-> +
-> +			rc = iopt_cut_iova(&ioas->iopt, iovas,
-> +					   unmap.iova ? 2 : 1);
-please can you add a comment to explain what this is supposed to do?
-> +			if (rc)
-> +				goto err_put;
-> +		}
-> +		rc = iopt_unmap_iova(&ioas->iopt, unmap.iova, unmap.size,
-> +				     &unmapped);
-> +	}
-> +	unmap.size = unmapped;
-> +	if (copy_to_user(arg, &unmap, minsz))
-> +		rc = -EFAULT;
-> +
-> +err_put:
-> +	iommufd_put_object(&ioas->obj);
-> +	return rc;
-> +}
-> +
-> +static int iommufd_vfio_cc_iommu(struct iommufd_ctx *ictx)
-> +{
-> +	struct iommufd_hw_pagetable *hwpt;
-> +	struct iommufd_ioas *ioas;
-> +	int rc = 1;
-> +
-> +	ioas = get_compat_ioas(ictx);
-> +	if (IS_ERR(ioas))
-> +		return PTR_ERR(ioas);
-> +
-> +	mutex_lock(&ioas->mutex);
-> +	list_for_each_entry(hwpt, &ioas->hwpt_list, hwpt_item) {
-> +		if (!hwpt->enforce_cache_coherency) {
-> +			rc = 0;
-> +			break;
-> +		}
-> +	}
-> +	mutex_unlock(&ioas->mutex);
-> +
-> +	iommufd_put_object(&ioas->obj);
-> +	return rc;
-> +}
-> +
-> +static int iommufd_vfio_check_extension(struct iommufd_ctx *ictx,
-> +					unsigned long type)
-> +{
-> +	switch (type) {
-> +	case VFIO_TYPE1_IOMMU:
-> +	case VFIO_TYPE1v2_IOMMU:
-> +	case VFIO_UNMAP_ALL:
-> +		return 1;
-> +
-> +	case VFIO_DMA_CC_IOMMU:
-> +		return iommufd_vfio_cc_iommu(ictx);
-> +
-> +	/*
-> +	 * This is obsolete, and to be removed from VFIO. It was an incomplete
-> +	 * idea that got merged.
-> +	 * https://lore.kernel.org/kvm/0-v1-0093c9b0e345+19-vfio_no_nesting_jgg@nvidia.com/
-> +	 */
-> +	case VFIO_TYPE1_NESTING_IOMMU:
-> +		return 0;
-> +
-> +	/*
-> +	 * VFIO_DMA_MAP_FLAG_VADDR
-> +	 * https://lore.kernel.org/kvm/1611939252-7240-1-git-send-email-steven.sistare@oracle.com/
-> +	 * https://lore.kernel.org/all/Yz777bJZjTyLrHEQ@nvidia.com/
-> +	 *
-> +	 * It is hard to see how this could be implemented safely.
-> +	 */
-> +	case VFIO_UPDATE_VADDR:
-> +	default:
-> +		return 0;
-> +	}
-> +}
-> +
-> +static int iommufd_vfio_set_iommu(struct iommufd_ctx *ictx, unsigned long type)
-> +{
-> +	struct iommufd_ioas *ioas = NULL;
-> +	int rc = 0;
-> +
-> +	if (type != VFIO_TYPE1_IOMMU && type != VFIO_TYPE1v2_IOMMU)
-> +		return -EINVAL;
-> +
-> +	/* VFIO fails the set_iommu if there is no group */
-> +	ioas = get_compat_ioas(ictx);
-> +	if (IS_ERR(ioas))
-> +		return PTR_ERR(ioas);
-> +	if (type == VFIO_TYPE1_IOMMU)
-> +		rc = iopt_disable_large_pages(&ioas->iopt);
-please can you document/explain this setting?
-> +	iommufd_put_object(&ioas->obj);
-> +	return rc;
-> +}
-> +
-> +static unsigned long iommufd_get_pagesizes(struct iommufd_ioas *ioas)
-> +{
-> +	struct io_pagetable *iopt = &ioas->iopt;
-> +	unsigned long pgsize_bitmap = ULONG_MAX;
-> +	struct iommu_domain *domain;
-> +	unsigned long index;
-> +
-> +	down_read(&iopt->domains_rwsem);
-> +	xa_for_each(&iopt->domains, index, domain)
-> +		pgsize_bitmap &= domain->pgsize_bitmap;
-> +
-> +	/* See vfio_update_pgsize_bitmap() */
-> +	if (pgsize_bitmap & ~PAGE_MASK) {
-> +		pgsize_bitmap &= PAGE_MASK;
-> +		pgsize_bitmap |= PAGE_SIZE;
-> +	}
-> +	pgsize_bitmap = max(pgsize_bitmap, ioas->iopt.iova_alignment);
-> +	up_read(&iopt->domains_rwsem);
-> +	return pgsize_bitmap;
-> +}
-> +
-> +static int iommufd_fill_cap_iova(struct iommufd_ioas *ioas,
-> +				 struct vfio_info_cap_header __user *cur,
-> +				 size_t avail)
-> +{
-> +	struct vfio_iommu_type1_info_cap_iova_range __user *ucap_iovas =
-> +		container_of(cur,
-> +			     struct vfio_iommu_type1_info_cap_iova_range __user,
-> +			     header);
-> +	struct vfio_iommu_type1_info_cap_iova_range cap_iovas = {
-> +		.header = {
-> +			.id = VFIO_IOMMU_TYPE1_INFO_CAP_IOVA_RANGE,
-> +			.version = 1,
-> +		},
-> +	};
-> +	struct interval_tree_span_iter span;
-> +
-> +	interval_tree_for_each_span(&span, &ioas->iopt.reserved_itree, 0,
-> +				    ULONG_MAX) {
-> +		struct vfio_iova_range range;
-> +
-> +		if (!span.is_hole)
-> +			continue;
-> +		range.start = span.start_hole;
-> +		range.end = span.last_hole;
-> +		if (avail >= struct_size(&cap_iovas, iova_ranges,
-> +					 cap_iovas.nr_iovas + 1) &&
-> +		    copy_to_user(&ucap_iovas->iova_ranges[cap_iovas.nr_iovas],
-> +				 &range, sizeof(range)))
-> +			return -EFAULT;
-> +		cap_iovas.nr_iovas++;
-> +	}
-> +	if (avail >= struct_size(&cap_iovas, iova_ranges, cap_iovas.nr_iovas) &&
-> +	    copy_to_user(ucap_iovas, &cap_iovas, sizeof(cap_iovas)))
-> +		return -EFAULT;
-> +	return struct_size(&cap_iovas, iova_ranges, cap_iovas.nr_iovas);
-> +}
-> +
-> +static int iommufd_fill_cap_dma_avail(struct iommufd_ioas *ioas,
-> +				      struct vfio_info_cap_header __user *cur,
-> +				      size_t avail)
-> +{
-> +	struct vfio_iommu_type1_info_dma_avail cap_dma = {
-> +		.header = {
-> +			.id = VFIO_IOMMU_TYPE1_INFO_DMA_AVAIL,
-> +			.version = 1,
-> +		},
-> +		/*
-> +		 * iommufd's limit is based on the cgroup's memory limit.
-> +		 * Normally vfio would return U16_MAX here, and provide a module
-> +		 * parameter to adjust it. Since S390 qemu userspace actually
-> +		 * pays attention and needs a value bigger than U16_MAX return
-> +		 * U32_MAX.
-> +		 */
-> +		.avail = U32_MAX,
-> +	};
-> +
-> +	if (avail >= sizeof(cap_dma) &&
-> +	    copy_to_user(cur, &cap_dma, sizeof(cap_dma)))
-> +		return -EFAULT;
-> +	return sizeof(cap_dma);
-> +}
-> +
-> +static int iommufd_vfio_iommu_get_info(struct iommufd_ctx *ictx,
-> +				       void __user *arg)
-> +{
-> +	typedef int (*fill_cap_fn)(struct iommufd_ioas *ioas,
-> +				   struct vfio_info_cap_header __user *cur,
-> +				   size_t avail);
-> +	static const fill_cap_fn fill_fns[] = {
-> +		iommufd_fill_cap_dma_avail,
-> +		iommufd_fill_cap_iova,
-> +	};
-> +	size_t minsz = offsetofend(struct vfio_iommu_type1_info, iova_pgsizes);
-> +	struct vfio_info_cap_header __user *last_cap = NULL;
-> +	struct vfio_iommu_type1_info info;
-> +	struct iommufd_ioas *ioas;
-> +	size_t total_cap_size;
-> +	int rc;
-> +	int i;
-> +
-> +	if (copy_from_user(&info, arg, minsz))
-> +		return -EFAULT;
-> +
-> +	if (info.argsz < minsz)
-> +		return -EINVAL;
-> +	minsz = min_t(size_t, info.argsz, sizeof(info));
-> +
-> +	ioas = get_compat_ioas(ictx);
-> +	if (IS_ERR(ioas))
-> +		return PTR_ERR(ioas);
-> +
-> +	info.flags = VFIO_IOMMU_INFO_PGSIZES;
-> +	info.iova_pgsizes = iommufd_get_pagesizes(ioas);
-> +	info.cap_offset = 0;
-> +
-> +	down_read(&ioas->iopt.iova_rwsem);
-> +	total_cap_size = sizeof(info);
-> +	for (i = 0; i != ARRAY_SIZE(fill_fns); i++) {
-> +		int cap_size;
-> +
-> +		if (info.argsz > total_cap_size)
-> +			cap_size = fill_fns[i](ioas, arg + total_cap_size,
-> +					       info.argsz - total_cap_size);
-> +		else
-> +			cap_size = fill_fns[i](ioas, NULL, 0);
-> +		if (cap_size < 0) {
-> +			rc = cap_size;
-> +			goto out_put;
-> +		}
-> +		if (last_cap && info.argsz >= total_cap_size &&
-> +		    put_user(total_cap_size, &last_cap->next)) {
-> +			rc = -EFAULT;
-> +			goto out_put;
-> +		}
-> +		last_cap = arg + total_cap_size;
-> +		total_cap_size += cap_size;
-> +	}
-> +
-> +	/*
-> +	 * If the user did not provide enough space then only some caps are
-> +	 * returned and the argsz will be updated to the correct amount to get
-> +	 * all caps.
-> +	 */
-> +	if (info.argsz >= total_cap_size)
-> +		info.cap_offset = sizeof(info);
-> +	info.argsz = total_cap_size;
-> +	info.flags |= VFIO_IOMMU_INFO_CAPS;
-> +	if (copy_to_user(arg, &info, minsz)) {
-> +		rc = -EFAULT;
-> +		goto out_put;
-> +	}
-> +	rc = 0;
-> +
-> +out_put:
-> +	up_read(&ioas->iopt.iova_rwsem);
-> +	iommufd_put_object(&ioas->obj);
-> +	return rc;
-> +}
-> +
-> +int iommufd_vfio_ioctl(struct iommufd_ctx *ictx, unsigned int cmd,
-> +		       unsigned long arg)
-> +{
-> +	void __user *uarg = (void __user *)arg;
-> +
-> +	switch (cmd) {
-> +	case VFIO_GET_API_VERSION:
-> +		return VFIO_API_VERSION;
-> +	case VFIO_SET_IOMMU:
-> +		return iommufd_vfio_set_iommu(ictx, arg);
-> +	case VFIO_CHECK_EXTENSION:
-> +		return iommufd_vfio_check_extension(ictx, arg);
-> +	case VFIO_IOMMU_GET_INFO:
-> +		return iommufd_vfio_iommu_get_info(ictx, uarg);
-> +	case VFIO_IOMMU_MAP_DMA:
-> +		return iommufd_vfio_map_dma(ictx, cmd, uarg);
-> +	case VFIO_IOMMU_UNMAP_DMA:
-> +		return iommufd_vfio_unmap_dma(ictx, cmd, uarg);
-> +	case VFIO_IOMMU_DIRTY_PAGES:
-> +	default:
-> +		return -ENOIOCTLCMD;
-> +	}
-> +	return -ENOIOCTLCMD;
-> +}
-> diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
-> index fb9a4c275cca86..d57b044acca4cb 100644
-> --- a/include/linux/iommufd.h
-> +++ b/include/linux/iommufd.h
-> @@ -58,6 +58,7 @@ void iommufd_access_unpin_pages(struct iommufd_access *access,
->  				unsigned long iova, unsigned long length);
->  int iommufd_access_rw(struct iommufd_access *access, unsigned long iova,
->  		      void *data, size_t len, unsigned int flags);
-> +int iommufd_vfio_compat_ioas_id(struct iommufd_ctx *ictx, u32 *out_ioas_id);
->  #else /* !CONFIG_IOMMUFD */
->  static inline struct iommufd_ctx *iommufd_ctx_from_file(struct file *file)
->  {
-> @@ -88,5 +89,11 @@ static inline int iommufd_access_rw(struct iommufd_access *access, unsigned long
->  {
->  	return -EOPNOTSUPP;
->  }
-> +
-> +static inline int iommufd_vfio_compat_ioas_id(struct iommufd_ctx *ictx,
-> +					      u32 *out_ioas_id)
-> +{
-> +	return -EOPNOTSUPP;
-> +}
->  #endif /* CONFIG_IOMMUFD */
->  #endif
-> diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-> index 9e9250dfc4fb1b..24100494aa90b8 100644
-> --- a/include/uapi/linux/iommufd.h
-> +++ b/include/uapi/linux/iommufd.h
-> @@ -44,6 +44,7 @@ enum {
->  	IOMMUFD_CMD_IOAS_MAP,
->  	IOMMUFD_CMD_IOAS_UNMAP,
->  	IOMMUFD_CMD_OPTION,
-> +	IOMMUFD_CMD_VFIO_IOAS,
->  };
->  
->  /**
-> @@ -296,4 +297,39 @@ struct iommu_option {
->  	__aligned_u64 val64;
->  };
->  #define IOMMU_OPTION _IO(IOMMUFD_TYPE, IOMMUFD_CMD_OPTION)
-> +
-> +/**
-> + * enum iommufd_vfio_ioas_op - IOMMU_VFIO_IOAS_* ioctls
-> + * @IOMMU_VFIO_IOAS_GET: Get the current compatibility IOAS
-> + * @IOMMU_VFIO_IOAS_SET: Change the current compatibility IOAS
-> + * @IOMMU_VFIO_IOAS_CLEAR: Disable VFIO compatibility
-> + */
-> +enum iommufd_vfio_ioas_op {
-> +	IOMMU_VFIO_IOAS_GET = 0,
-> +	IOMMU_VFIO_IOAS_SET = 1,
-> +	IOMMU_VFIO_IOAS_CLEAR = 2,
-> +};
-> +
-> +/**
-> + * struct iommu_vfio_ioas - ioctl(IOMMU_VFIO_IOAS)
-> + * @size: sizeof(struct iommu_vfio_ioas)
-> + * @ioas_id: For IOMMU_VFIO_IOAS_SET the input IOAS ID to set
-> + *           For IOMMU_VFIO_IOAS_GET will output the IOAS ID
-> + * @op: One of enum iommufd_vfio_ioas_op
-> + * @__reserved: Must be 0
-> + *
-> + * The VFIO compatibility support uses a single ioas because VFIO APIs do not
-> + * support the ID field. Set or Get the IOAS that VFIO compatibility will use.
-> + * When VFIO_GROUP_SET_CONTAINER is used on an iommufd it will get the
-> + * compatibility ioas, either by taking what is already set, or auto creating
-> + * one. From then on VFIO will continue to use that ioas and is not effected by
-> + * this ioctl. SET or CLEAR does not destroy any auto-created IOAS.
-> + */
-> +struct iommu_vfio_ioas {
-> +	__u32 size;
-> +	__u32 ioas_id;
-> +	__u16 op;
-> +	__u16 __reserved;
-> +};
-> +#define IOMMU_VFIO_IOAS _IO(IOMMUFD_TYPE, IOMMUFD_CMD_VFIO_IOAS)
->  #endif
+Yeah, looks like I dropped a '0' in my comment text.  Will fix.
 
-Thanks
+>=20
+> So before we discuss this further, let's agree on the basics first.
+>=20
+> > What Windows guests do isn't really relevant.  Again, the code in this =
+patch
+> > series all runs directly in the Linux guest, not the paravisor.  And th=
+e Linux
+> > guest isn't unmodified.  We've added changes to understand vTOM and
+> > the need to communicate with the hypervisor about page changes
+> > between private and shared.  But there are other changes for a fully
+> > enlightened guest that we don't have to make when using AMD vTOM,
+> > because the paravisor transparently (to the guest -- Linux or Windows)
+> > handles those issues.
+>=20
+> So this is some other type of guest you wanna run.
+>=20
+> Where is the documentation of that thing?
+>=20
+> I'd like to know what exactly it is going to use in the kernel.
 
-Eric
+Standard Linux is the guest.  It's fully functional for running general
+Purpose workloads that want "confidential computing" where guest
+memory is encrypted and the data in the guest is not visible to the
+host hypervisor.  It's a standard Linux kernel.  I'm not sure what you
+mean by "some other type of guest".
 
+>=20
+> > Again, no.  What I have proposed as CC_VENDOR_AMD_VTOM is
+>=20
+> There's no vendor AMD_VTOM!
+>=20
+> We did the vendor thing to denote Intel or AMD wrt to confidential
+> computing.
 
+But vendor AMD effectively offers two different encryption schemes that
+could be seen by the guest VM.  The hypervisor chooses which scheme a
+particular guest will see.  Hyper-V has chosen to present the vTOM scheme
+to guest VMs, including normal Linux and Windows guests, that have been
+modestly updated to understand vTOM.
 
+>=20
+> Now you're coming up with something special. It can't be HYPERV because
+> Hyper-V does other types of confidential solutions too, apparently.
 
+In the future, Hyper-V may also choose to present original AMD C-bit scheme
+in some guest VMs, depending on the use case.  And it will present the Inte=
+l
+TDX scheme when running on that hardware.
+
+>=20
+> Now before this goes any further I'd like for "something special" to be
+> defined properly and not just be a one-off Hyper-V thing.
+>=20
+> > specific to AMD's virtual-Top-of-Memory architecture.  The TDX
+> > architecture doesn't really have a way to use a paravisor.
+> >
+> > To summarize, the code in this patch series is about a 3rd encryption
+> > scheme that is used by the guest.
+>=20
+> Yes, can that third thing be used by other hypervisors or is this
+> Hyper-V special?
+
+This third thing is part of the AMD SEV-SNP architecture and could be used
+by any hypervisor.
+
+>=20
+> > It is completely parallel to the AMD C-bit encryption scheme and
+> > the Intel TDX encryption scheme. With the AMD vTOM scheme, there is
+> > a paravisor that transparently emulates some things for the guest
+> > so there are fewer code changes needed in the guest, but this patch
+> > series is not about that paravisor code.
+>=20
+> Would other hypervisors want to support such a scheme?
+>=20
+> Is this architecture documented somewhere? If so, where?
+
+The AMD vTOM scheme is documented in the AMD SEV-SNP
+architecture specs.
+
+>=20
+> What would it mean for the kernel to support it.
+
+The Linux kernel running as a guest already supports it, at least when
+running on Hyper-V.   The code went into the 5.15 kernel [1][2] about
+a year ago.  But that code is more Hyper-V specific than is desirable.=20
+This patch set makes the AMD vTOM support more parallel to the Intel
+TDX and AMD C-bit support.
+
+To my knowledge, KVM does not support the AMD vTOM scheme.
+Someone from AMD may have a better sense whether adding that
+support is likely in the future.
+
+[1] https://lore.kernel.org/all/20211025122116.264793-1-ltykernel@gmail.com=
+/
+[2] https://lore.kernel.org/all/20211213071407.314309-1-ltykernel@gmail.com=
+/
+
+Michael
