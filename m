@@ -1,156 +1,155 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33E208F51
-	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 15:54:22 +0000 (UTC)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2ASFROEj011568;
-	Mon, 28 Nov 2022 15:54:10 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=V9RHMe5UmmTFPxpkSh2dvjoU3yp2xmtmpWOJKhFGpzo=;
- b=SX9t14YmYl85bLbbLxM1S+hgurM+8Zr/sBP+gae88rQeAh6brph4Z7DKK1ldWvMA9yxC
- NuGpxxDVPjosod/fmmXwJ6Co/UXH5UKe7O9HF2G90qPCB9xEQSbi9r7/TG/RodyD0QTP
- EJVK6P6NiXJplpktwcBDFGIm9k548nVjfD56s6zSNdrCRAk94Blo7oiek42o9rfkzEav
- gzYbQsn/V0nCmHfOeLUo/GWtO7MAvH2q0TcczHx9/ssWXIsynof3jrUHAWVHGd7kXI0m
- x46RiIXW+83hqsKgs/YHlvd21wxFpikwIjCLNCHzQwwTz1XFKF+n5oqVGNYlZ6CafbhO oA== 
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3m3vmrm5t4-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 28 Nov 2022 15:54:10 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-	by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2ASFoG4A010579;
-	Mon, 28 Nov 2022 15:54:07 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-	by ppma06ams.nl.ibm.com with ESMTP id 3m3a2httgt-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 28 Nov 2022 15:54:07 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-	by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2ASFs4xR7602938
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 28 Nov 2022 15:54:04 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 8B282A405B;
-	Mon, 28 Nov 2022 15:54:04 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id A4A97A4054;
-	Mon, 28 Nov 2022 15:54:03 +0000 (GMT)
-Received: from sig-9-145-47-38.uk.ibm.com (unknown [9.145.47.38])
-	by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-	Mon, 28 Nov 2022 15:54:03 +0000 (GMT)
-Message-ID: <52fe7769ca5b66523c2c93c7d46ebc17dc144aca.camel@linux.ibm.com>
-Subject: Re: [PATCH v2 4/7] iommu: Let iommu.strict override
- ops->def_domain_type
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>,
-        Matthew Rosato
- <mjrosato@linux.ibm.com>,
-        Gerd Bayer <gbayer@linux.ibm.com>, iommu@lists.linux.dev,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon
- <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Wenjia Zhang
- <wenjia@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, linux-kernel@vger.kernel.org,
-        Julian Ruess
- <julianr@linux.ibm.com>
-Date: Mon, 28 Nov 2022 16:54:03 +0100
-In-Reply-To: <Y4S3z6IpeDHmdUs/@nvidia.com>
-References: <20221116171656.4128212-1-schnelle@linux.ibm.com>
-	 <20221116171656.4128212-5-schnelle@linux.ibm.com>
-	 <33eea9bd-e101-4836-19e8-d4b191b78b00@linux.intel.com>
-	 <9163440eb6a47fe02730638bbdf72fda5ee5ad2c.camel@linux.ibm.com>
-	 <Y4S3z6IpeDHmdUs/@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC2138F51
+	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 15:59:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669651161; x=1701187161;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=LBuxU49LUQ4uKW0JjDLf2e9bsk7OGzzJsrGbayCoQb0=;
+  b=jAnyIHlQGoB+gKWaU94BYh2FaKHACPYvWe59GCESd7pOJR0smRAfN+0b
+   1qoGgZJKvlnVb0y71EO2dBl4f0Gj9ZvU3tbNhrZ/iquC11CyZlUxlCzkl
+   aVgP1+xlC/2f1g6z+H0dfdcfXxm/xOoOVRUuBykTOZSEizAzGRI8/kGvg
+   zjD+k5U7VKkLbcnX6eL/NqqGS7fxpTvhRumaK4hsiAlFsp4wwovxORA0y
+   lBOS2IdimQtwuEXyWbQ+95a7AsCAqYdLTjyrrsbvNIck0o3EPJNLEAnba
+   fQ9H0nihzPrWvzb39TSKDcw6DNzivgo+XTXextY43tkoTQP4mre71tWT9
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="316700557"
+X-IronPort-AV: E=Sophos;i="5.96,200,1665471600"; 
+   d="scan'208";a="316700557"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2022 07:58:34 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="643435705"
+X-IronPort-AV: E=Sophos;i="5.96,200,1665471600"; 
+   d="scan'208";a="643435705"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2022 07:58:34 -0800
+Date: Mon, 28 Nov 2022 08:02:25 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, LKML <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Joerg Roedel
+ <joro@8bytes.org>, Will Deacon <will@kernel.org>, David Woodhouse
+ <dwmw2@infradead.org>, "Raj, Ashok" <ashok.raj@intel.com>, "Liu, Yi L"
+ <yi.l.liu@intel.com>, "Luo, Yuzhang" <yuzhang.luo@intel.com>,
+ jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH] iommu/vt-d: Add a fix for devices need extra dtlb flush
+Message-ID: <20221128080225.6d51a474@jacob-builder>
+In-Reply-To: <992ba86c-73e6-8db0-0216-c2a8b7d1f58f@linux.intel.com>
+References: <20221122034529.3311562-1-jacob.jun.pan@linux.intel.com>
+	<bc647ceb-b14b-dc5b-ba83-4f8befd188c5@arm.com>
+	<BN9PR11MB527620902046A4339EAACD3F8C0C9@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<c085f67d-7874-4a83-a12c-703d1638d940@linux.intel.com>
+	<BN9PR11MB527642B1DA920C78742036FD8C0C9@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<53678e27-1bbc-a7e8-a1b0-0427fc0e5b62@arm.com>
+	<992ba86c-73e6-8db0-0216-c2a8b7d1f58f@linux.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: jGe2FfV0R5QPPmdx1v5v7mwqDGHY7ucg
-X-Proofpoint-ORIG-GUID: jGe2FfV0R5QPPmdx1v5v7mwqDGHY7ucg
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-11-28_13,2022-11-28_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
- priorityscore=1501 mlxlogscore=999 impostorscore=0 mlxscore=0 bulkscore=0
- phishscore=0 lowpriorityscore=0 malwarescore=0 adultscore=0 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2210170000
- definitions=main-2211280115
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 2022-11-28 at 09:29 -0400, Jason Gunthorpe wrote:
-> On Mon, Nov 28, 2022 at 12:10:39PM +0100, Niklas Schnelle wrote:
-> > On Thu, 2022-11-17 at 09:55 +0800, Baolu Lu wrote:
-> > > On 2022/11/17 1:16, Niklas Schnelle wrote:
-> > > > When iommu.strict=1 is set or iommu_set_dma_strict() was called we
-> > > > should use IOMMU_DOMAIN_DMA irrespective of ops->def_domain_type.
-> > > > 
-> > > > Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> > > > ---
-> > > >   drivers/iommu/iommu.c | 3 +++
-> > > >   1 file changed, 3 insertions(+)
-> > > > 
-> > > > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > > > index 65a3b3d886dc..d9bf94d198df 100644
-> > > > --- a/drivers/iommu/iommu.c
-> > > > +++ b/drivers/iommu/iommu.c
-> > > > @@ -1562,6 +1562,9 @@ static int iommu_get_def_domain_type(struct device *dev)
-> > > >   {
-> > > >   	const struct iommu_ops *ops = dev_iommu_ops(dev);
-> > > >   
-> > > > +	if (iommu_dma_strict)
-> > > > +		return IOMMU_DOMAIN_DMA;
-> > > 
-> > > If any quirky device must work in IOMMU identity mapping mode, this
-> > > might introduce functional regression. At least for VT-d platforms, some
-> > > devices do require IOMMU identity mapping mode for functionality.
-> > 
-> > That's a good point. How about instead of unconditionally returning
-> > IOMMU_DOMAIN_DMA we just do so if the domain type returned by ops-
-> > > def_domain_type uses a flush queue (i.e. the __IOMMU_DOMAIN_DMA_FQ bit
-> > is set). That way a device that only supports identity mapping gets to
-> > set that but iommu_dma_strict at least always prevents use of an IOVA
-> > flush queue.
-> 
-> I would prefer we create some formal caps in iommu_ops to describe
-> whatever it is you are trying to do.
-> 
-> Jason
+Hi Baolu,
 
-I agree that there is currently a lack of distinction between what
-domain types can be used (capability) and which should be used as
-default (iommu.strict=<x>, iommu_set_...(), CONFIG_IOMMU_DEFAULT_DMA,
-ops->def_domain_type.).
+On Thu, 24 Nov 2022 10:52:32 +0800, Baolu Lu <baolu.lu@linux.intel.com>
+wrote:
 
-My case though is about the latter which I think has some undocumented
-and surprising precedences built in at the moment. With this series we
-can use all of IOMMU_DOMAIN_DMA(_FQ, _SQ) on any PCI device but we want
-to default to either IOMMU_DOMAIN_DMA_FQ or IOMMU_DOMAIN_SQ based on
-whether we're running in a paging hypervisor (z/VM or KVM) to get the
-best performance. From a semantic point of view I felt that this is a
-good match for ops->def_domain_type in that we pick a default but it's
-still possible to change the domain type e.g. via sysfs. Now this had
-the problem that ops->def_domain_type would cause IOMMU_DOMAIN_DMA_FQ
-to be used even if iommu_set_dma_strict() was called (via
-iommu.strict=1) because there is a undocumented override of ops-
->def_domain_type over iommu_def_domain_type which I believe comes from
-the mixing of capability and default you also point at.
+> On 11/23/22 7:32 PM, Robin Murphy wrote:
+> > On 2022-11-23 05:18, Tian, Kevin wrote: =20
+> >>> From: Baolu Lu <baolu.lu@linux.intel.com>
+> >>> Sent: Wednesday, November 23, 2022 1:04 PM
+> >>>
+> >>> On 2022/11/23 9:02, Tian, Kevin wrote: =20
+> >>>>> From: Robin Murphy <robin.murphy@arm.com>
+> >>>>> Sent: Wednesday, November 23, 2022 1:49 AM
+> >>>>> =20
+> >>>>>> +
+> >>>>>> +/* Impacted QAT device IDs ranging from 0x4940 to 0x4943 */
+> >>>>>> +#define BUGGY_QAT_DEVID_MASK 0x494c
+> >>>>>> +static bool dev_needs_extra_dtlb_flush(struct pci_dev *pdev)
+> >>>>>> +{
+> >>>>>> +=C2=A0=C2=A0=C2=A0 if (pdev->vendor !=3D PCI_VENDOR_ID_INTEL)
+> >>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return false;
+> >>>>>> +
+> >>>>>> +=C2=A0=C2=A0=C2=A0 if ((pdev->device & 0xfffc) !=3D BUGGY_QAT_DEV=
+ID_MASK)
+> >>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return false;
+> >>>>>> +
+> >>>>>> +=C2=A0=C2=A0=C2=A0 if (risky_device(pdev))
+> >>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return false; =20
+> >>>>>
+> >>>>> Hmm, I'm not sure that that makes much sense to me - what privilege=
+=20
+> >>>>> can
+> >>>>> the device gain from being told to invalidate things twice? Why=20
+> >>>>> would we
+> >>>>> want to implicitly *allow* a device to potentially keep using a
+> >>>>> stale translation if for some bizarre reason firmware has marked it
+> >>>>> as external, surely that's worse? =20
+> >>>
+> >>> =C2=A0 From the perspective of IOMMU, any quirk is only applicable to
+> >>> trusted devices. If the IOMMU driver detects that a quirk is being
+> >>> applied to an untrusted device, it is already buggy or malicious. The
+> >>> IOMMU driver should let the users know by:
+> >>>
+> >>> =C2=A0=C2=A0=C2=A0=C2=A0pci_info(pdev,
+> >>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 "Skipping IOMMU quir=
+k for dev [%04X:%04X] on untrusted
+> >>> PCI link\n",
+> >>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pdev->vendor, pdev->=
+device);
+> >>> =C2=A0=C2=A0=C2=A0=C2=A0pci_info(pdev, "Please check with your BIOS/P=
+latform vendor about
+> >>> this\n");
+> >>>
+> >>> and stop applying any quirk.
+> >>> =20
+> >>
+> >> A quirk usually relaxes something then you want it only on trusted=20
+> >> devices.
+> >>
+> >> but the quirk in this patch is trying to fix a vulnerability. In=20
+> >> concept it's
+> >> weird to skip it on untrusted devices. This iiuc was the part causing=
+=20
+> >> confusion
+> >> to Robin. =20
+> >=20
+> > Right, it's that reasoning in general that seems bogus to me. Clearly=20
+> > any quirk that effectively grants additional privileges, like an=20
+> > identity mapping quirk, should not be applied to untrusted external=20
+> > devices which may be spoofing an affected VID/DID to gain that=20
+> > privilege, but not all quirks imply privilege. If, say, a WiFI=20
+> > controller needs something innocuous like a DMA alias or address width=
+=20
+> > quirk to function correctly, it will still need that regardless of=20
+> > whether it's soldered to a motherboard or to a removable expansion
+> > card, and it would do nobody any good to deny correct functionality
+> > based on that unnecessary distinction. Yes, I appreciate that in
+> > practice many of those kind of quirks will be applied in other layers
+> > anyway, but I still think it's wrong to make a sweeping assumption that
+> > all IOMMU-level quirks are precious treasure not to be shared with
+> > outsiders, rather than assess their impact individually. The detriment
+> > in this case is small (just needless code churn), but even that's still
+> > not nothing. =20
+>=20
+> Fair enough. I agreed here.
+>=20
+> Can we put some comments here so that people can still easily read the
+> discussion here after a long time?
 
-I think ideally we need two separate mechanism to determine which
-domain types can be used for a particular device (capability) and for
-which one to default to with the latter part having a clear precedence
-between the options. Put together I think iommu.strict=1 should
-override a device's preference (ops->def_domain_type) and
-CONFIG_IOMMU_DEFAULT_DMA to use IOMMU_DOMAIN_DMA but of course only if
-the device is capable of that. Does that sound reasonable?
+Sure, I will remove risky_device(pdev) check and add a comment explaining
+the exemption.
 
 
+Thanks,
+
+Jacob
