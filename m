@@ -1,211 +1,193 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2062.outbound.protection.outlook.com [40.107.237.62])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 845518BF0
-	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 14:16:08 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Wql2f0DMNjB8iA5Bddtle/YZauwjD907t4DQh+5aHJxviZ9Cpywjea9vatPtzwNdCI0wj0yO1gsPJ04PYhBCcX88A/0z7CQiqTsOcMnvCzRInx7uLyN/fjabRRhg4+g98b9+2pQIPfM9V9MJurCgAUrTXHDdemTigf+TrJTnuE2hA8yNvBgk2d8PbLRW1x3Q0nBMC4zMlICTLLAmPJ2RR203uBXGO6w+DKYYbTR0HF6PlSy169Ny3t5LE8TuyvzVzW75/wy2pnt9CkhvBbTIb+IGtn6Ckg2Q1frpEWm1kpPhNpEM7h9gAdTScAZHS/ea8UT7pJHA1CDw9KgVcGP10A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jqZ2ovek96zJgtCIfTuLDLaNRAhoJYeEY+x6HUh+tO4=;
- b=K+5COq8+mP59piQCQP2W+xyEN3XsiAUPDqPNpSJOeQK895ByeKJRpaEUi4NJxLaZpSTPOqcpj/azU2XhA1W3PuKCkMnrqN33Oan7pNcUAgyeMDG//ywLFvRyUGZ2oFd986oci3h/djXscqZPnUMjc0NSYFOV7bmDQvaiJaVG5xMlQ2ZxHPag3KkTbpV5ErAtGJGZidI3AYl+dz/nkF9li4Ln7mzLcQZSUwQ5iVEddiu8/GWND8HUohO2h+Kc1jwFG3Jxw4F/ufnpRb7Z3Q/Ei3bzuuCKKs7QgyLeNNXvBaAb8SwQAYY75RhiqAwfBoFeQwtMJOcic6TGHr+cBAIYfA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jqZ2ovek96zJgtCIfTuLDLaNRAhoJYeEY+x6HUh+tO4=;
- b=SS6r7qOxGDJ15AoA0EbOSrN+9qJka1kPG/0vZJu1Tm1pJGjSgPsovP361OhgAuCkBpC7q4tmq7NvJwpvbQ0I7B4xWw9SScIFguIfU3FaFYtCyfcwmBQI/Pn3p02WOgh3IwtMIFNxfiZ8gOavDCAOFm7Ma6lxvtPaYYLxSjedhZc=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
- by CO6PR12MB5426.namprd12.prod.outlook.com (2603:10b6:5:35d::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Mon, 28 Nov
- 2022 14:16:02 +0000
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::d2d2:c91a:5927:104b]) by DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::d2d2:c91a:5927:104b%5]) with mapi id 15.20.5857.023; Mon, 28 Nov 2022
- 14:16:02 +0000
-Message-ID: <fbf2cdcc-4ff7-b466-a6af-7a147f3bc94d@amd.com>
-Date: Mon, 28 Nov 2022 08:15:58 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [Patch v3 05/14] x86/mm: Handle decryption/re-encryption of
- bss_decrypted consistently
-Content-Language: en-US
-To: Dexuan Cui <decui@microsoft.com>,
- "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
- Sathyanarayanan Kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>,
- "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
- Haiyang Zhang <haiyangz@microsoft.com>,
- "wei.liu@kernel.org" <wei.liu@kernel.org>, "luto@kernel.org"
- <luto@kernel.org>, "peterz@infradead.org" <peterz@infradead.org>,
- "davem@davemloft.net" <davem@davemloft.net>,
- "edumazet@google.com" <edumazet@google.com>,
- "kuba@kernel.org" <kuba@kernel.org>, "pabeni@redhat.com"
- <pabeni@redhat.com>, "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
- "robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
- "bhelgaas@google.com" <bhelgaas@google.com>, "arnd@arndb.de"
- <arnd@arndb.de>, "hch@infradead.org" <hch@infradead.org>,
- "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
- "tglx@linutronix.de" <tglx@linutronix.de>,
- "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
- "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
- Tianyu Lan <Tianyu.Lan@microsoft.com>,
- "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
- "ak@linux.intel.com" <ak@linux.intel.com>,
- "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
- "Williams, Dan J" <dan.j.williams@intel.com>,
- "jane.chu@oracle.com" <jane.chu@oracle.com>,
- "seanjc@google.com" <seanjc@google.com>,
- "tony.luck@intel.com" <tony.luck@intel.com>, "x86@kernel.org"
- <x86@kernel.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
- "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <1668624097-14884-1-git-send-email-mikelley@microsoft.com>
- <1668624097-14884-6-git-send-email-mikelley@microsoft.com>
- <01d7c7cc-bd4e-ee9b-f5b2-73ea367e602f@linux.intel.com>
- <BYAPR21MB1688A31ED795ED1B5ACB6D26D7099@BYAPR21MB1688.namprd21.prod.outlook.com>
- <SA1PR21MB133512D4B7B78DB38765EBFEBF139@SA1PR21MB1335.namprd21.prod.outlook.com>
-From: Tom Lendacky <thomas.lendacky@amd.com>
-In-Reply-To: <SA1PR21MB133512D4B7B78DB38765EBFEBF139@SA1PR21MB1335.namprd21.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: CH2PR11CA0024.namprd11.prod.outlook.com
- (2603:10b6:610:54::34) To DM4PR12MB5229.namprd12.prod.outlook.com
- (2603:10b6:5:398::12)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E7058C11
+	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 14:17:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1669645040;
+	h=from:from:reply-to:reply-to:subject:subject:date:date:
+	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+	 content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=jCazpTTy+F7fa4dxFepBnOElkUnDE1h7gUS6HgFedPY=;
+	b=OCkxvK7L1zjcU8P6bg4pxXbUXT7vXz0NTRsLKl5bzpooGH1KFL9no+RI+YNHxWcoMa88ed
+	y8u0Z42Y7fOCdcwmc2z5bw1nkMwHZg4LoOQvRZPfMkeNrL8Ap65sgMrGZs9+IFKSQIzUdG
+	4yN1+xiV3I/ZQ4UD/EWa7hHUteywV3U=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-55-Qylc6_quPV6nohC7hhtMSA-1; Mon, 28 Nov 2022 09:17:19 -0500
+X-MC-Unique: Qylc6_quPV6nohC7hhtMSA-1
+Received: by mail-qk1-f200.google.com with SMTP id j13-20020a05620a410d00b006e08208eb31so20340631qko.3
+        for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 06:17:19 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:reply-to:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=jCazpTTy+F7fa4dxFepBnOElkUnDE1h7gUS6HgFedPY=;
+        b=mX3syeZFez/DFNI+TbYXwrLWl/qSzkEENLhJdS/OPuSE+GBqgZXrzL0+dtrxw5u1oc
+         WC2nEYBZb/qbmt+wYae36qI/cUdn6CVIbufMKiEuKEzyyYVNdz4/KW55hMOxU4yVG8Qh
+         Ei//nOcq11yGX+/FqQAL4lvSCnlKeKPOXKDxsed2R9hgccQhGjs79XFlWMM0MYGQN2Nh
+         7fdF5IpV/LDLUpBoJbJ/BZ++0sX/7JnX7rjft0ftdCVKOxyM69xTGSBCDyVnCErkAiWD
+         b9kPpX2wEgpOokFcUIwB0sLOQCOfqqbdGEFjp8YI0fYdYKU/wykW31GNqzsfad06S6WF
+         DVkw==
+X-Gm-Message-State: ANoB5pmpFxz8R7MytNCVGnjiRKNfuRpptIaIUBl8S440lZrzdChpmdW+
+	Fnh9IW/F47xlHM3+FURRwQD37hI2SpXyaXYwhctPqXXFeVpnFTvRfp63DW6ySsOz52KVNrc0uPe
+	TwSR/jEIDYTW5syE=
+X-Received: by 2002:a05:620a:15f4:b0:6fc:5e75:8452 with SMTP id p20-20020a05620a15f400b006fc5e758452mr12348133qkm.565.1669645038419;
+        Mon, 28 Nov 2022 06:17:18 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf7v1fq7/cmmRa8boL0KEKgHvn1ntFy91sfTcqo+21QKxMb9e0oyQ5n2B68KMni02H2rUIIZ6Q==
+X-Received: by 2002:a05:620a:15f4:b0:6fc:5e75:8452 with SMTP id p20-20020a05620a15f400b006fc5e758452mr12348062qkm.565.1669645038027;
+        Mon, 28 Nov 2022 06:17:18 -0800 (PST)
+Received: from ?IPV6:2a01:e0a:59e:9d80:527b:9dff:feef:3874? ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
+        by smtp.gmail.com with ESMTPSA id s6-20020a05620a254600b006cbc6e1478csm8423957qko.57.2022.11.28.06.17.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Nov 2022 06:17:17 -0800 (PST)
+Message-ID: <722b8767-daf9-f5b8-8ad7-0d9cb22d4b7d@redhat.com>
+Date: Mon, 28 Nov 2022 15:17:09 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5229:EE_|CO6PR12MB5426:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5ecb2ecf-5a97-4bfa-ed65-08dad14b1449
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	E+QoF1RtLXqO7H6EJyloXOiSayKKqE8SqTWFUvDZc5Uu6lmV6lOqpG+6tDZhoyINKiFkhAj4BLTKHCUCUBZDSekUZCVERw0YaKRSkN4nT2hTsfGeRpTpBYVM7W3RBAwS/5oWTBlkwo54gzB8ZnlTiax3do8RWRG3STbQfEb/TwNYWx5snD8hLeuyZxJrdAFlw0R7GmqvTKTtDeKW6eygCu2VLlmTCYI+QIecEnIKSqH/OKI+kNBoyinPuAG1w+UAF02Nuu+gW/kEJGmLdysRd84egaYz1PJDiO1VMrqezvZFlsyp37TaFcqtCX5JLJovkUJf314B6B6fkk/Dz+tB3OZazucYgf9qL+jGrGEzY1JKL5jxXEZfSvThpGX3232unPI5zjL01ckbbPxMhFHTO8wVl8kgXqoCXlOPR5PpvNFI4aG+C64ZXi1h61HwUQBih7DHm2Oy6nfqWscD2dXGphmIfeR52MGyNtXBPcgyw9zgUQuJfcm0lWgQKWvTpG/gn2icI19o+ioeBFL6K7jNvNDMTAaHL/qn/J0o1UwSoJfdsYBPOKEqupZWIxEq3tOTeVO7ueBtLrWBkdfS0MI3qtQV08bOlH+8UKYf4rL6MYt9v1pQ6U662ybWKbXB77JHHrTpTFW7H2u0cYg/3by+brrvhNMi6T7mDEVMaS+hI3BaX7Tb3C2S4I3gZve3kyEf3iZxRj47EUIzH/+r5gr2eDkQGK6/6mBBGR05SKKWlPM2GjWvwHbqxg+elHmPOB4G
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(346002)(366004)(396003)(136003)(376002)(451199015)(921005)(53546011)(36756003)(45080400002)(6666004)(478600001)(38100700002)(26005)(6512007)(6506007)(6486002)(41300700001)(8676002)(66556008)(66476007)(66946007)(2616005)(86362001)(31696002)(7406005)(7416002)(316002)(110136005)(8936002)(5660300002)(186003)(31686004)(83380400001)(2906002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?UjhZblI2cW5rOE5XNFF5aG03dzFmbmNpb2Fic215VUtWWW9hTENwM3NuN3Zl?=
- =?utf-8?B?U2gzYXJob3lSeWhWbkRwRFZybDdUZWdCNmdPQWxnbm1UYkYyYTJDTk9zL1lR?=
- =?utf-8?B?OWF6MW1wbWorTDlkc3crdFQ1Yng3UnRzZzV0Y1lwSUVYZFBma1hrUmt1dEJH?=
- =?utf-8?B?U01QMUE2QkNJRHE0L1FqWm5tU21mbVpKblZSNlplckt6Q3VFMzNBMHk2Rk56?=
- =?utf-8?B?YmU4aXBJYitMSUhBOXhIYnQrUjIxL2VmTDdyYTMwWjl6ZzRWdjZ5L25BZlox?=
- =?utf-8?B?dzcxK1QwZXFDQWVML3JVRitSWitNdFFIbjNLMzd0T0JBVUlmRUJhMHQybXJF?=
- =?utf-8?B?UDZNdFRmdFV1Uk41cVRqYlVocnRtc05jaWx0L250TTJ3UnpxODZKMlRWWmoy?=
- =?utf-8?B?TTd0SGNoWnRiRmV2aG1ReHVIeHZVNmsyN0hFeHJpcmpNMDkxYS9XdHRMekFM?=
- =?utf-8?B?WURxUGZBZnVweG9aTFcvN25IdHpnVFU3anV4aUY2OWVPR2lNMDhGbHZkOWtZ?=
- =?utf-8?B?NGJyWFpvRVlTYVcrTENRSWxpTVlJYnZTaWwwS2w3UGlwV29mWG1vdVlRazBk?=
- =?utf-8?B?NzFkcEtXa1hzc2xpT3h1VTdBV1hNamFscmpxeEN6WTBVU1JGSGdocEZIVDhj?=
- =?utf-8?B?VHVhZGVSelFickdnZ25YM1NtRHVNWVljMmhtcUNnRmRSN2YwcVgxTnpOUDd4?=
- =?utf-8?B?eUU2M0lMbG4vT2ZqK2lISHM4eURZRTIxbUZieG1DQmprMEk3UGxZUGdNdFZZ?=
- =?utf-8?B?S2FObjludEEya3FjcHl3Vmk5ZWlsaGVveXVIcFNlNjNJUUh6NEM5WG5NbVlm?=
- =?utf-8?B?aXp6WWxzZ2RDWitVSjdEbFYvWFpKNW41emdKRWYzdC9NYWhtK2FoVUxsQ2xF?=
- =?utf-8?B?WkFtcm44VHM5Y3pWa0xpWU1NakZhWHNEUlltR3JraDMxNnBsVjFSU21CUlRU?=
- =?utf-8?B?S0QxVlltd3FPb1hBTkRNaDNGZFV3TWNGVTRxRGZzK2pndFBSS1RjbjFrcjNX?=
- =?utf-8?B?dFQ3akNDU2MyenNZdmFuejRlakNMeElZQjczODgzZk1xVVU1Y09LK2pvYUN3?=
- =?utf-8?B?TWFKenRUZncrdDdTZkE3ODUzWmtpRE1qVjkzRDdhREt2K09ySHVlamx1Tmlv?=
- =?utf-8?B?YWZsTk5ZeGNDTWU4akM3SVBMUHFqMkxnRXJ1eUsyY20xL3Z1S1N0V2lGcWI2?=
- =?utf-8?B?QTl3cHh2NXBLWkg4MmRka0NNY3N2MkhVSkxFSFVxSWhYZytIMmFvYzljTHVH?=
- =?utf-8?B?bHJITHpHUjFHaFlFV3BJcGpvZTBIOTJnU0FINjBLVm5uK3VCcG1sYitQMmM2?=
- =?utf-8?B?RFZJWnFmRmxxUHZwclphTitueGNsVHkzWHl3bEhvVndqaHEySG5KMlpzakpv?=
- =?utf-8?B?U2hiVStvSFZSdGNjMi9GLzRhc1dPQS9YTnpvWXVxS0hYK3VqSncwT3dSN2dT?=
- =?utf-8?B?TVk3Nit6UjB5clZyWVIzQkdNMzZ0dTU4NE5RckhSUDR0RDZkKzh0YUtUTGtT?=
- =?utf-8?B?R2M2ckoxdEx1aXNyeWs4VjM5bjlUQm9rd2JqRFdGemVDdmRhOGFYM1dlQTRM?=
- =?utf-8?B?NVVUS2M0RUVCdWtqRVdiN28vZVdnbGE5Zmc5LzJxbXNJYUwwc1ppQ0ZBc21N?=
- =?utf-8?B?N1hMUjBVSU8rdENFemJGYXZmaWFFNUJDd01TNEtZM1EyVmJadWVYR3ZudnlW?=
- =?utf-8?B?L3hoU3lzbzUwd0ZnUWp6WUFZT1ZMc2llQllRSFNuWHh4WENSMTdSWjNaL1Uy?=
- =?utf-8?B?VHFjV2FwSzA2Ym9ka1lzM3BEanlEWHlUWkZSMGdnL2VUSHZGWEJnSGhSajQy?=
- =?utf-8?B?SGxoMjlVSnhVOHZBK2lmRFJJOGUvOEF1cUJmd3ovR1ZjMlZIZzZNcVlrdldp?=
- =?utf-8?B?VHV1b3h1MnJhRWxNVHowK3RJRXFpREZEMkwzTDVKL2o5QVY5WEdpSGRKNHlL?=
- =?utf-8?B?VUUwdWVpRnpxTitjUTVUSldsUE5RYTNGZnVqb2w3MU9QQXBUOHY3NXNzWUdn?=
- =?utf-8?B?ZmwrTkdabEY0YVdNdkRNSG00NXJjYjdvYlA5VDA0YVczcVdjWEN1c3QxRVBs?=
- =?utf-8?B?UkdEUFFkZDk2TzllcmhLL2U3R1h5SlByaEVQL3F0SjVCY2pRK0ZTUGZCc09O?=
- =?utf-8?Q?l0gF+56ui57ZIaCA7AcaLQXKv?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5ecb2ecf-5a97-4bfa-ed65-08dad14b1449
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Nov 2022 14:16:02.2143
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VjGuXdJBHaP6sgR1nFeJ6OpW1NUYL5d7l3kDN9uKna/wC6MnONlGEhqwesEkC8tTeINDa1rcTLhcoXrOAC9I7Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR12MB5426
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.1
+Reply-To: eric.auger@redhat.com
+Subject: Re: [PATCH v5 13/19] iommufd: Add kAPI toward external drivers for
+ physical devices
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: bpf@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+ David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+ linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
+ Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>,
+ Anthony Krowiak <akrowiak@linux.ibm.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Bagas Sanjaya <bagasdotme@gmail.com>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>, Cornelia Huck
+ <cohuck@redhat.com>, Daniel Jordan <daniel.m.jordan@oracle.com>,
+ David Gibson <david@gibson.dropbear.id.au>,
+ Eric Farman <farman@linux.ibm.com>, Jason Wang <jasowang@redhat.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Jason Herne <jjherne@linux.ibm.com>, Joao Martins
+ <joao.m.martins@oracle.com>, kvm@vger.kernel.org,
+ Lixiao Yang <lixiao.yang@intel.com>, Matthew Rosato
+ <mjrosato@linux.ibm.com>, "Michael S. Tsirkin" <mst@redhat.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, Halil Pasic <pasic@linux.ibm.com>,
+ Niklas Schnelle <schnelle@linux.ibm.com>,
+ Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+ Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
+References: <13-v5-4001c2997bd0+30c-iommufd_jgg@nvidia.com>
+ <4c429c36-146e-e2b2-0cb4-d256ca659280@redhat.com>
+ <Y4P9VzpCv/DyHeaD@nvidia.com>
+ <94e6034a-c4c1-be0a-ea8c-f5934dbadd4c@redhat.com>
+ <Y4S1hYFm9HaP0KdR@nvidia.com>
+From: Eric Auger <eric.auger@redhat.com>
+In-Reply-To: <Y4S1hYFm9HaP0KdR@nvidia.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On 11/27/22 20:52, Dexuan Cui wrote:
->> From: Michael Kelley (LINUX) <mikelley@microsoft.com>
->> Sent: Thursday, November 17, 2022 6:56 PM
->> [...]
->>
->> But I had not thought about TDX.  In the TDX case, it appears that
->> sme_postprocess_startup() will not decrypt the bss_decrypted section.
->> The corresponding mem_encrypt_free_decrypted_mem() is a no-op unless
->> CONFIG_AMD_MEM_ENCRYPT is set.  But maybe if someone builds a
->> kernel image that supports both TDX and AMD encryption, it could break
->> at runtime on a TDX system.  I would also note that on a TDX system
->> without CONFIG_AMD_MEM_ENCRYPT, the unused memory in the
->> bss_decrypted section never gets freed.
-> 
-> On a TDX system *with* CONFIG_AMD_MEM_ENCRYPT, the unused
-> memory in the bss_decrypted section also never gets freed due to the
-> below "return;"
-> 
-> I'd suggest a Fixes tag should be added to make sure the distro vendors
-> notice the patch and backport it :-)
-> 
-> BTW, I just posted a similar patch as I didn't notice this patch. I have
-> replied to my patch email, asking people to ignore my patch.
-> 
-> Fixes: b3f0907c71e0 ("x86/mm: Add .bss..decrypted section to hold shared variables")
 
-I think the Fixes: tag should really be:
 
-e9d1d2bb75b2 ("treewide: Replace the use of mem_encrypt_active() with cc_platform_has()")
+On 11/28/22 14:20, Jason Gunthorpe wrote:
+> On Mon, Nov 28, 2022 at 11:55:41AM +0100, Eric Auger wrote:
+>
+>>> Not really. The name is a mess, but as it is implemented, it means the
+>>> platform is implementing MSI security. How exactly that is done is not
+>>> really defined, and it doesn't really belong as an iommu property.
+>>> However the security is being created is done in a way that is
+>>> transparent to the iommu_domain user.
+>> Some 'ARM platforms' implement what you call MSI security but they do
+>> not advertise IOMMU_CAP_INTR_REMAP
+> Sounds like a bug.
+>  
+>> Besides refering to include/linux/iommu.h:
+>> IOMMU_CAP_INTR_REMAP,           /* IOMMU supports interrupt isolation */
+> Documentation doesn't match code.
+>
+>>> It doesn't matter how it is done, if it remapping HW, fancy
+>>> iommu_domain tricks, or built into the MSI controller. Set this flag
+>>> if the platform is secure and doesn't need the code triggered by
+>>> irq_domain_check_msi_remap().
+>> this is not what is implemented as of now. If the IOMMU does support
+>> interrupt isolation, it advertises IOMMU_CAP_INTR_REMAP. On ARM this
+>> feature is implemented by the ITS MSI controller instead and the only
+>> way to retrieve the info whether the device MSIs are directed to that
+>> kind of MSI controller is to use irq_domain_check_msi_remap().
+> It is important to keep the Linux design seperated from what the
+> architecture papers describes. In Linux the IOMMU is represented by
+> the iommu_domain and the iommu_ops. On x86 neither of these objects
+> play any role in interrupt delivery. Yes, the x86 architecture papers
+> place some of the interrupt logic inside what they consider the iommu
+> block, but that is just some historical stuff and shouldn't impact the
+> SW design.
+>
+> If we had put the IRTE bits inside the irqchip layer instead of in the
+> iommu driver, it would have made a lot more sense.
+>
+> The fact that ARM was allowed to be different (or rather the x86 mess
+> wasn't cleaned up before the ARM mess was overlayed on top) is why
+> this is so confusing. They are doing the same things, just in
+> unnecessarily different ways.
 
-since mem_encrypt_active() used to return sme_me_mask, so the checks were
-balanced at that point.
+fair enough. But that's a separate discussion that needs to happen with
+iommu and irqchip maintainers I think. At the moment things are
+implemented that way.
+>
+>>>> irq_domain_check_msi_remap() instead means the MSI controller
+>>>> implements that functionality (a given device id is able to trigger
+>>> Not quite, it means that MSI isolation is available, however it is not
+>>> transparent and the iommu_domain user must do the little dance that
+>>> follows.
+>> No I do not agree on that point. The 'little dance' is needed because
+>> the SMMU does not bypass MSI writes as done on Intel. And someone must
+>> take care of the MSI transaction mapping. This is the role of the MSI
+>> cookie stuff. To me this is independent on the above discussion whether
+>> MSI isolation is implemented.
+> OK, so you are worried about someone who sets
+> allow_unsafe_interrupts=1 they will not get the iommu_get_msi_cookie()
+> call done even though they still need it? That does seem wrong.
+yes
+>
+>>> This was sort of sloppy copied from VFIO - we should just delete
+>>> it. The is no driver that sets both, and once the platform asserts
+>>> irq_domain_check_msi_remap() it is going down the non-transparent path
+>>> anyhow and must set a cookie to work. [again the names doesn't make
+>>> any sense for the functionality]
+>>>
+>>> Failing with EPERM is probably not so bad since the platform is using
+>>> an invalid configuration. I'm kind of inclined to leave this for
+>>> right
+>> I don't understand why it is invalid? HW MSI RESV region is a valid
+>> config and not sure you tested with that kind of setup, did you?
+> Why would it be a valid config? No driver sets both..
+>
+> HW MSI RESV should set IOMMU_CAP_INTR_REMAP like Intel does.
+>
+> irq_domain_check_msi_remap() is only for SW MSI RESV regions.
+In theory no. Nothing prevents from having an MSI isolation capable
+controller (such as the ITS) with an IOMMU HW which wouldn't translate
+MSIs. In the past there has been such kind of problematic I think for
+HiSilicon HW
+https://lore.kernel.org/all/20171006140450.89652-1-shameerali.kolothum.thodi@huawei.com/
+This was eventually addressed differently but Shameer may precise ... 
 
-Thanks,
-Tom
+Eric
 
-> 
-> void __init mem_encrypt_free_decrypted_mem(void)
-> {
->          unsigned long vaddr, vaddr_end, npages;
->          int r;
-> 
->          vaddr = (unsigned long)__start_bss_decrypted_unused;
->          vaddr_end = (unsigned long)__end_bss_decrypted;
->          npages = (vaddr_end - vaddr) >> PAGE_SHIFT;
-> 
->          /*
->           * The unused memory range was mapped decrypted, change the encryption
->           * attribute from decrypted to encrypted before freeing it.
->           */
->          if (cc_platform_has(CC_ATTR_MEM_ENCRYPT)) {
->                  r = set_memory_encrypted(vaddr, npages);
->                  if (r) {
->                          pr_warn("failed to free unused decrypted pages\n");
->                          return;
->                  }
->          }
-> 
->          free_init_pages("unused decrypted", vaddr, vaddr_end);
-> }
-> 
+>
+> This is what the code implements, and yes it makes no sense.
+>
+> Jason
+>
+
