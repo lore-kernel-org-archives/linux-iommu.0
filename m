@@ -1,76 +1,156 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 26C308F51
-	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 15:53:29 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E1F23D6E;
-	Mon, 28 Nov 2022 07:53:35 -0800 (PST)
-Received: from [10.57.71.118] (unknown [10.57.71.118])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A1CB73F67D;
-	Mon, 28 Nov 2022 07:53:25 -0800 (PST)
-Message-ID: <8a46bb18-4cc4-dd08-1f06-399d3c875ad8@arm.com>
-Date: Mon, 28 Nov 2022 15:53:21 +0000
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33E208F51
+	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 15:54:22 +0000 (UTC)
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2ASFROEj011568;
+	Mon, 28 Nov 2022 15:54:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=V9RHMe5UmmTFPxpkSh2dvjoU3yp2xmtmpWOJKhFGpzo=;
+ b=SX9t14YmYl85bLbbLxM1S+hgurM+8Zr/sBP+gae88rQeAh6brph4Z7DKK1ldWvMA9yxC
+ NuGpxxDVPjosod/fmmXwJ6Co/UXH5UKe7O9HF2G90qPCB9xEQSbi9r7/TG/RodyD0QTP
+ EJVK6P6NiXJplpktwcBDFGIm9k548nVjfD56s6zSNdrCRAk94Blo7oiek42o9rfkzEav
+ gzYbQsn/V0nCmHfOeLUo/GWtO7MAvH2q0TcczHx9/ssWXIsynof3jrUHAWVHGd7kXI0m
+ x46RiIXW+83hqsKgs/YHlvd21wxFpikwIjCLNCHzQwwTz1XFKF+n5oqVGNYlZ6CafbhO oA== 
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3m3vmrm5t4-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 28 Nov 2022 15:54:10 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+	by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2ASFoG4A010579;
+	Mon, 28 Nov 2022 15:54:07 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+	by ppma06ams.nl.ibm.com with ESMTP id 3m3a2httgt-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 28 Nov 2022 15:54:07 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+	by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2ASFs4xR7602938
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 28 Nov 2022 15:54:04 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 8B282A405B;
+	Mon, 28 Nov 2022 15:54:04 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id A4A97A4054;
+	Mon, 28 Nov 2022 15:54:03 +0000 (GMT)
+Received: from sig-9-145-47-38.uk.ibm.com (unknown [9.145.47.38])
+	by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+	Mon, 28 Nov 2022 15:54:03 +0000 (GMT)
+Message-ID: <52fe7769ca5b66523c2c93c7d46ebc17dc144aca.camel@linux.ibm.com>
+Subject: Re: [PATCH v2 4/7] iommu: Let iommu.strict override
+ ops->def_domain_type
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>,
+        Matthew Rosato
+ <mjrosato@linux.ibm.com>,
+        Gerd Bayer <gbayer@linux.ibm.com>, iommu@lists.linux.dev,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon
+ <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Wenjia Zhang
+ <wenjia@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, linux-kernel@vger.kernel.org,
+        Julian Ruess
+ <julianr@linux.ibm.com>
+Date: Mon, 28 Nov 2022 16:54:03 +0100
+In-Reply-To: <Y4S3z6IpeDHmdUs/@nvidia.com>
+References: <20221116171656.4128212-1-schnelle@linux.ibm.com>
+	 <20221116171656.4128212-5-schnelle@linux.ibm.com>
+	 <33eea9bd-e101-4836-19e8-d4b191b78b00@linux.intel.com>
+	 <9163440eb6a47fe02730638bbdf72fda5ee5ad2c.camel@linux.ibm.com>
+	 <Y4S3z6IpeDHmdUs/@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH v3 20/20] iommu: Rename attach_dev to set_dev
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
- Will Deacon <will@kernel.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
- Rob Clark <robdclark@gmail.com>, Marek Szyprowski
- <m.szyprowski@samsung.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
- Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>,
- Heiko Stuebner <heiko@sntech.de>, Matthew Rosato <mjrosato@linux.ibm.com>,
- Orson Zhai <orsonzhai@gmail.com>, Baolin Wang
- <baolin.wang@linux.alibaba.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
- Chen-Yu Tsai <wens@csie.org>, Thierry Reding <thierry.reding@gmail.com>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20221128064648.1934720-1-baolu.lu@linux.intel.com>
- <20221128064648.1934720-21-baolu.lu@linux.intel.com>
- <01296f25-b507-c965-9840-119487a00534@arm.com> <Y4TNK9J8NijPbOVZ@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <Y4TNK9J8NijPbOVZ@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: jGe2FfV0R5QPPmdx1v5v7mwqDGHY7ucg
+X-Proofpoint-ORIG-GUID: jGe2FfV0R5QPPmdx1v5v7mwqDGHY7ucg
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-11-28_13,2022-11-28_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
+ priorityscore=1501 mlxlogscore=999 impostorscore=0 mlxscore=0 bulkscore=0
+ phishscore=0 lowpriorityscore=0 malwarescore=0 adultscore=0 clxscore=1015
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2210170000
+ definitions=main-2211280115
 
-On 2022-11-28 15:00, Jason Gunthorpe wrote:
-> On Mon, Nov 28, 2022 at 01:41:56PM +0000, Robin Murphy wrote:
->> On 2022-11-28 06:46, Lu Baolu wrote:
->>> With the retirement of the detach_dev callback, the naming of attach_dev
->>> isn't meaningful anymore. Rename it to set_dev to restore its real
->>> meaning, that is, setting an iommu domain to a device.
->>
->> English grammar alert: this part is confusing, since the usual in-context
->> reading* of "set[ting] X to Y" is going to imply assigning a value of Y to
->> some unique property of X. Given the actual semantic that when we attach the
->> device to the domain, we are setting the (current) domain as a property of
->> the device, I think the most logical and intuitive abbreviation for this
->> method would be set_domain(), where the target device is then clearly
->> implied by the argument (as the target domain was for attach_dev()).
+On Mon, 2022-11-28 at 09:29 -0400, Jason Gunthorpe wrote:
+> On Mon, Nov 28, 2022 at 12:10:39PM +0100, Niklas Schnelle wrote:
+> > On Thu, 2022-11-17 at 09:55 +0800, Baolu Lu wrote:
+> > > On 2022/11/17 1:16, Niklas Schnelle wrote:
+> > > > When iommu.strict=1 is set or iommu_set_dma_strict() was called we
+> > > > should use IOMMU_DOMAIN_DMA irrespective of ops->def_domain_type.
+> > > > 
+> > > > Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> > > > ---
+> > > >   drivers/iommu/iommu.c | 3 +++
+> > > >   1 file changed, 3 insertions(+)
+> > > > 
+> > > > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> > > > index 65a3b3d886dc..d9bf94d198df 100644
+> > > > --- a/drivers/iommu/iommu.c
+> > > > +++ b/drivers/iommu/iommu.c
+> > > > @@ -1562,6 +1562,9 @@ static int iommu_get_def_domain_type(struct device *dev)
+> > > >   {
+> > > >   	const struct iommu_ops *ops = dev_iommu_ops(dev);
+> > > >   
+> > > > +	if (iommu_dma_strict)
+> > > > +		return IOMMU_DOMAIN_DMA;
+> > > 
+> > > If any quirky device must work in IOMMU identity mapping mode, this
+> > > might introduce functional regression. At least for VT-d platforms, some
+> > > devices do require IOMMU identity mapping mode for functionality.
+> > 
+> > That's a good point. How about instead of unconditionally returning
+> > IOMMU_DOMAIN_DMA we just do so if the domain type returned by ops-
+> > > def_domain_type uses a flush queue (i.e. the __IOMMU_DOMAIN_DMA_FQ bit
+> > is set). That way a device that only supports identity mapping gets to
+> > set that but iommu_dma_strict at least always prevents use of an IOVA
+> > flush queue.
 > 
-> This is the iommu_domain_ops, it seems a bit weird to call it
-> set_domain when it is already acting on a domain object.
+> I would prefer we create some formal caps in iommu_ops to describe
+> whatever it is you are trying to do.
 > 
-> set_device_domain()
-> 
-> ?
+> Jason
 
-Ah, the iommu_domain_ops split had completely slipped my mind - maybe 
-with that additional context, assign_dev() might work well enough to 
-maintain the pattern while still being sufficiently different?
+I agree that there is currently a lack of distinction between what
+domain types can be used (capability) and which should be used as
+default (iommu.strict=<x>, iommu_set_...(), CONFIG_IOMMU_DEFAULT_DMA,
+ops->def_domain_type.).
 
-Otherwise, set_device_domain() (or just set_dev_domain()) sounds fair to me.
+My case though is about the latter which I think has some undocumented
+and surprising precedences built in at the moment. With this series we
+can use all of IOMMU_DOMAIN_DMA(_FQ, _SQ) on any PCI device but we want
+to default to either IOMMU_DOMAIN_DMA_FQ or IOMMU_DOMAIN_SQ based on
+whether we're running in a paging hypervisor (z/VM or KVM) to get the
+best performance. From a semantic point of view I felt that this is a
+good match for ops->def_domain_type in that we pick a default but it's
+still possible to change the domain type e.g. via sysfs. Now this had
+the problem that ops->def_domain_type would cause IOMMU_DOMAIN_DMA_FQ
+to be used even if iommu_set_dma_strict() was called (via
+iommu.strict=1) because there is a undocumented override of ops-
+>def_domain_type over iommu_def_domain_type which I believe comes from
+the mixing of capability and default you also point at.
 
-Cheers,
-Robin.
+I think ideally we need two separate mechanism to determine which
+domain types can be used for a particular device (capability) and for
+which one to default to with the latter part having a clear precedence
+between the options. Put together I think iommu.strict=1 should
+override a device's preference (ops->def_domain_type) and
+CONFIG_IOMMU_DEFAULT_DMA to use IOMMU_DOMAIN_DMA but of course only if
+the device is capable of that. Does that sound reasonable?
+
+
