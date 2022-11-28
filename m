@@ -1,32 +1,32 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F29B9361
-	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 06:55:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84309631
+	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 06:55:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669618544; x=1701154544;
+  t=1669618551; x=1701154551;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Ff31laKxSfpGr9mFdQQubwFooU0bdzqdYVYXB0kO0dk=;
-  b=nO6mryGu2cs6NBNmObkLlUl31LjuaLmQEESaAsMBsdXyDKmPtwuqnnjA
-   48FeEiOYnCam1awlxa/Nc3mtSBlNVZY3O5Ju1suiVz7kI//Z7vBh/dkUj
-   LAE2PrRJaEq2rxHBkKuGLCj8dzVQzbGEufi6qnCRMQAc2GYlPO9Xr8aaX
-   nivJ0Iwuvfoq/pZaoT3D7j4AjAejJFaKOOivkdWdH4mMx5HCu5yLzfFha
-   7Y3QjBm9MZYqXxqV9nCkCXoCu+5upBfnPwLRSrZOTwH6ISbLOnKqArhi9
-   wUu8VDO+5ZSIeAVwqtMlhCFnyrqDorZy+aNe8VdmLAprSiR14vK17kYgm
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="376901642"
+  bh=Ol98imkt/vwMTgfO5T+HiqA4V5Kbbou7eJPlJ+Hm468=;
+  b=Dhy1gCw8prjGRJ01TcrFi5Hf0en3tS6ITPzY2SfsBU0n187tozSwNOqv
+   DdPkdmbcMBkPr2XbJBkBgv0L7Ruv5VeCMgk+gSlEeKgdIygm2GtNWoGc4
+   iItu0Uf9iAUUCNN+Vqfc12mTl3H9+c8Uu4QoRzAJDE/2mldcEp1uLa5ci
+   HrzhrcjGqXwu1nteMdb4+HMkjq2rL59j6WGDjCEiHKOtqnt90hKOmVC03
+   QnUAaYlvaZO9jsu7K/33zRZvUmxOVNvk3Xjv8EW1E8gTwf7PKt/X1Hmt+
+   wge0QnX/6vBSRKF4sfGFm4O0ZFN/eoouB3xM1F86khYFgLkpeomuJq7k5
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="302338306"
 X-IronPort-AV: E=Sophos;i="5.96,199,1665471600"; 
-   d="scan'208";a="376901642"
+   d="scan'208";a="302338306"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2022 22:55:44 -0800
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2022 22:55:51 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="674121224"
+X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="674121238"
 X-IronPort-AV: E=Sophos;i="5.96,199,1665471600"; 
-   d="scan'208";a="674121224"
+   d="scan'208";a="674121238"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga008.jf.intel.com with ESMTP; 27 Nov 2022 22:55:37 -0800
+  by orsmga008.jf.intel.com with ESMTP; 27 Nov 2022 22:55:44 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Jason Gunthorpe <jgg@nvidia.com>,
@@ -55,9 +55,9 @@ Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v3 14/20] iommu/omap: Add set_platform_dma callback
-Date: Mon, 28 Nov 2022 14:46:42 +0800
-Message-Id: <20221128064648.1934720-15-baolu.lu@linux.intel.com>
+Subject: [PATCH v3 15/20] iommu/s390: Add set_platform_dma callback
+Date: Mon, 28 Nov 2022 14:46:43 +0800
+Message-Id: <20221128064648.1934720-16-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221128064648.1934720-1-baolu.lu@linux.intel.com>
 References: <20221128064648.1934720-1-baolu.lu@linux.intel.com>
@@ -75,36 +75,36 @@ DMA control.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/omap-iommu.c | 9 +++++++++
+ drivers/iommu/s390-iommu.c | 9 +++++++++
  1 file changed, 9 insertions(+)
 
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index 2fd7702c6709..aa3858a48bbf 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -1566,6 +1566,14 @@ static void omap_iommu_detach_dev(struct iommu_domain *domain,
- 	spin_unlock(&omap_domain->lock);
+diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+index ed33c6cce083..507bbc2c9b58 100644
+--- a/drivers/iommu/s390-iommu.c
++++ b/drivers/iommu/s390-iommu.c
+@@ -179,6 +179,14 @@ static void s390_iommu_get_resv_regions(struct device *dev,
+ 	}
  }
  
-+static void omap_iommu_set_platform_dma(struct device *dev)
++static void s390_iommu_set_platform_dma(struct device *dev)
 +{
 +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
 +
 +	if (domain)
-+		omap_iommu_detach_dev(domain, dev);
++		s390_iommu_detach_device(domain, dev);
 +}
 +
- static struct iommu_domain *omap_iommu_domain_alloc(unsigned type)
+ static struct iommu_device *s390_iommu_probe_device(struct device *dev)
  {
- 	struct omap_iommu_domain *omap_domain;
-@@ -1737,6 +1745,7 @@ static const struct iommu_ops omap_iommu_ops = {
- 	.probe_device	= omap_iommu_probe_device,
- 	.release_device	= omap_iommu_release_device,
- 	.device_group	= omap_iommu_device_group,
-+	.set_platform_dma = omap_iommu_set_platform_dma,
- 	.pgsize_bitmap	= OMAP_IOMMU_PGSIZES,
+ 	struct zpci_dev *zdev;
+@@ -435,6 +443,7 @@ static const struct iommu_ops s390_iommu_ops = {
+ 	.probe_device = s390_iommu_probe_device,
+ 	.release_device = s390_iommu_release_device,
+ 	.device_group = generic_device_group,
++	.set_platform_dma = s390_iommu_set_platform_dma,
+ 	.pgsize_bitmap = SZ_4K,
+ 	.get_resv_regions = s390_iommu_get_resv_regions,
  	.default_domain_ops = &(const struct iommu_domain_ops) {
- 		.attach_dev	= omap_iommu_attach_dev,
 -- 
 2.34.1
 
