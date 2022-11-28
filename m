@@ -1,100 +1,283 @@
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC3FB2C9E
-	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 10:50:56 +0000 (UTC)
-Received: from zn.tnic (p200300ea9733e719329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9733:e719:329c:23ff:fea6:a903])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 4BBF71EC059E;
-	Mon, 28 Nov 2022 11:50:49 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-	t=1669632649;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-	bh=ZCCj7bcQc75acbwO7FOWk4dJlCrWMoBIyYNAusQQi2U=;
-	b=oAEzJbYg5od8O3kDuXXte3PxpqRhYKSbKUONg0mq2ROUkTDdzrKVonBJnEQ5T41YGSsGOe
-	rIo1R8sUPfBlavzVlofbxLwQPbc7E4cGRNEl8iN2+/Tl/4mcYIfR+6Nj2qS2ynm1/KS7Hm
-	w4HnHBDdjRCvLu/emxxA1vwYAVRcccA=
-Date: Mon, 28 Nov 2022 11:50:45 +0100
-From: Borislav Petkov <bp@alien8.de>
-To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc: Sathyanarayanan Kuppuswamy <sathyanarayanan.kuppuswamy@linux.intel.com>,
-	"hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	"wei.liu@kernel.org" <wei.liu@kernel.org>,
-	Dexuan Cui <decui@microsoft.com>,
-	"luto@kernel.org" <luto@kernel.org>,
-	"peterz@infradead.org" <peterz@infradead.org>,
-	"davem@davemloft.net" <davem@davemloft.net>,
-	"edumazet@google.com" <edumazet@google.com>,
-	"kuba@kernel.org" <kuba@kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>,
-	"lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-	"robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-	"bhelgaas@google.com" <bhelgaas@google.com>,
-	"arnd@arndb.de" <arnd@arndb.de>,
-	"hch@infradead.org" <hch@infradead.org>,
-	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-	"brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-	"tglx@linutronix.de" <tglx@linutronix.de>,
-	"mingo@redhat.com" <mingo@redhat.com>,
-	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-	Tianyu Lan <Tianyu.Lan@microsoft.com>,
-	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-	"ak@linux.intel.com" <ak@linux.intel.com>,
-	"isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-	"Williams, Dan J" <dan.j.williams@intel.com>,
-	"jane.chu@oracle.com" <jane.chu@oracle.com>,
-	"seanjc@google.com" <seanjc@google.com>,
-	"tony.luck@intel.com" <tony.luck@intel.com>,
-	"x86@kernel.org" <x86@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [Patch v3 05/14] x86/mm: Handle decryption/re-encryption of
- bss_decrypted consistently
-Message-ID: <Y4SShb6nMz3gqkwh@zn.tnic>
-References: <1668624097-14884-1-git-send-email-mikelley@microsoft.com>
- <1668624097-14884-6-git-send-email-mikelley@microsoft.com>
- <01d7c7cc-bd4e-ee9b-f5b2-73ea367e602f@linux.intel.com>
- <BYAPR21MB1688A31ED795ED1B5ACB6D26D7099@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y3uNj0z26EjkHeCn@zn.tnic>
- <6b5129cf-6986-bbb1-7e60-37849fc383fc@linux.intel.com>
- <BYAPR21MB168873879B0EEF71DED3D460D70D9@BYAPR21MB1688.namprd21.prod.outlook.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 179AE2C9E
+	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 10:55:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1669632953;
+	h=from:from:reply-to:reply-to:subject:subject:date:date:
+	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+	 content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=QhYdHOX1qbSelyQF1n2caoyOhYaSnNc+Zc/+zPUkQ+s=;
+	b=XsDY6+Dd+4bC4ZLPRa6HpO4w+vI1fVpdNiT7o+B3k2KoeBE70m3qLnQ3S2wplo+0qQhvC0
+	H5FFtvZSWDG65idN5IFHR17NsBLXIFm8SAo+8kx6pyK7xCxS5hxX9jA/krQdpSyRqjSiUt
+	8xxH7iS3dNAsI0htnh4TEAS/NAugHR4=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-144-uIWCKa5mPviy1aKV0xH1hQ-1; Mon, 28 Nov 2022 05:55:50 -0500
+X-MC-Unique: uIWCKa5mPviy1aKV0xH1hQ-1
+Received: by mail-qt1-f200.google.com with SMTP id cj6-20020a05622a258600b003a519d02f59so14117032qtb.5
+        for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 02:55:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:reply-to:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=QhYdHOX1qbSelyQF1n2caoyOhYaSnNc+Zc/+zPUkQ+s=;
+        b=m9DyH4PCDWsg4w44q3zl5EyOEOZ1Tiglf+j5P6TNLe4tJ0I7y+cAzAhAgnaG9Ik6Zp
+         dNjv8zpcgo0lz9LEZRr+AY5/hPCohuq4zrXqihywPtpDWVBtQk+NWEnBJftGIhAHsnwn
+         LFgRBjcLRzWewJeSBuwfrVszjBwUAnHZfjGdW8PyO6gHtfAt1WxyyS3vtVE+nwiQMuOI
+         XnOgzPGanpHDupoQ5wEFQhwTjgdveQ3YwLu2feGtp1oSrO1gjUzsEQQztI4xXNjZpWJK
+         P1ytef1tw4vzplu1311WOUe7TQsi8vZXIqh6FKJgSVJyrah9QpdIRLggVrcvCF83Bg+U
+         0F0w==
+X-Gm-Message-State: ANoB5pmZ3oNdqm9kHUKPZgFuZsLywj9/PqV9kyfiwQag+8ck/czJ9hS4
+	PaxFahzM9t1WpJHC44Bx7ZXtm3dB/gY0D2w5wGqFnPJFsr04BSH8XjsKznyDm9F5mkEA9NWWk+d
+	qcfsic8O1lXUxkeU=
+X-Received: by 2002:a05:6214:5504:b0:4c6:9399:9335 with SMTP id mb4-20020a056214550400b004c693999335mr41468290qvb.12.1669632950398;
+        Mon, 28 Nov 2022 02:55:50 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf6R1JyULPFe65HEgSq/X9lfxRMMZgXu5jvkRqbYJFnB6yxrk1GeFdc2izLM+ws6kfHPBGer7g==
+X-Received: by 2002:a05:6214:5504:b0:4c6:9399:9335 with SMTP id mb4-20020a056214550400b004c693999335mr41468274qvb.12.1669632950103;
+        Mon, 28 Nov 2022 02:55:50 -0800 (PST)
+Received: from ?IPV6:2a01:e0a:59e:9d80:527b:9dff:feef:3874? ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
+        by smtp.gmail.com with ESMTPSA id z1-20020ac84541000000b003a530a32f67sm6703684qtn.65.2022.11.28.02.55.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Nov 2022 02:55:49 -0800 (PST)
+Message-ID: <94e6034a-c4c1-be0a-ea8c-f5934dbadd4c@redhat.com>
+Date: Mon, 28 Nov 2022 11:55:41 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <BYAPR21MB168873879B0EEF71DED3D460D70D9@BYAPR21MB1688.namprd21.prod.outlook.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.1
+Reply-To: eric.auger@redhat.com
+Subject: Re: [PATCH v5 13/19] iommufd: Add kAPI toward external drivers for
+ physical devices
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: bpf@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+ David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+ linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
+ Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda <ojeda@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>,
+ Anthony Krowiak <akrowiak@linux.ibm.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Bagas Sanjaya <bagasdotme@gmail.com>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>, Cornelia Huck
+ <cohuck@redhat.com>, Daniel Jordan <daniel.m.jordan@oracle.com>,
+ David Gibson <david@gibson.dropbear.id.au>,
+ Eric Farman <farman@linux.ibm.com>, Jason Wang <jasowang@redhat.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Jason Herne <jjherne@linux.ibm.com>, Joao Martins
+ <joao.m.martins@oracle.com>, kvm@vger.kernel.org,
+ Lixiao Yang <lixiao.yang@intel.com>, Matthew Rosato
+ <mjrosato@linux.ibm.com>, "Michael S. Tsirkin" <mst@redhat.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, Halil Pasic <pasic@linux.ibm.com>,
+ Niklas Schnelle <schnelle@linux.ibm.com>,
+ Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+ Yi Liu <yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
+References: <13-v5-4001c2997bd0+30c-iommufd_jgg@nvidia.com>
+ <4c429c36-146e-e2b2-0cb4-d256ca659280@redhat.com>
+ <Y4P9VzpCv/DyHeaD@nvidia.com>
+From: Eric Auger <eric.auger@redhat.com>
+In-Reply-To: <Y4P9VzpCv/DyHeaD@nvidia.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Tue, Nov 22, 2022 at 05:59:04PM +0000, Michael Kelley (LINUX) wrote:
-> Right.  But here's my point:  With current code and an image built with
-> CONFIG_AMD_MEM_ENCRYPT=y and running as a TDX guest,
-> sme_postprocess_startup() will not decrypt the bss_decrypted section.
-> Then later mem_encrypt_free_decrypted_mem() will run, see that
-> CC_ATTR_MEM_ENCRYPT is true, and try to re-encrypt the memory.
-> In other words, a TDX guest would break in the same way as a Hyper-V
-> vTOM guest would break.  This patch fixes the problem for both cases.
+Hi Jason,
 
-I guess making the check more concrete by checking sme_me_mask directly
-along with a comment makes sense.
+On 11/28/22 01:14, Jason Gunthorpe wrote:
+> On Sun, Nov 27, 2022 at 10:13:55PM +0100, Eric Auger wrote:
+>>> +static int iommufd_device_setup_msi(struct iommufd_device *idev,
+>>> +				    struct iommufd_hw_pagetable *hwpt,
+>>> +				    phys_addr_t sw_msi_start,
+>>> +				    unsigned int flags)
+>>> +{
+>>> +	int rc;
+>>> +
+>>> +	/*
+>>> +	 * IOMMU_CAP_INTR_REMAP means that the platform is isolating MSI, and it
+>> rather means that the *IOMMU* implements IRQ remapping.
+> Not really. The name is a mess, but as it is implemented, it means the
+> platform is implementing MSI security. How exactly that is done is not
+> really defined, and it doesn't really belong as an iommu property.
+> However the security is being created is done in a way that is
+> transparent to the iommu_domain user.
+Some 'ARM platforms' implement what you call MSI security but they do
+not advertise IOMMU_CAP_INTR_REMAP
 
-We need to be very careful here not to fragment the code too much for
-all the different guest types.
+Besides refering to include/linux/iommu.h:
+IOMMU_CAP_INTR_REMAP,           /* IOMMU supports interrupt isolation */
 
--- 
-Regards/Gruss,
-    Boris.
+>
+> MSI security means that the originating device (eg the RID for PCI) is
+> validated when the MSI is processed. RIDs can only use MSIs they are
+> authorized to use.
+agreed this is what I described below.
+>
+> It doesn't matter how it is done, if it remapping HW, fancy
+> iommu_domain tricks, or built into the MSI controller. Set this flag
+> if the platform is secure and doesn't need the code triggered by
+> irq_domain_check_msi_remap().
+this is not what is implemented as of now. If the IOMMU does support
+interrupt isolation, it advertises IOMMU_CAP_INTR_REMAP. On ARM this
+feature is implemented by the ITS MSI controller instead and the only
+way to retrieve the info whether the device MSIs are directed to that
+kind of MSI controller is to use irq_domain_check_msi_remap().
+>
+>> irq_domain_check_msi_remap() instead means the MSI controller
+>> implements that functionality (a given device id is able to trigger
+> Not quite, it means that MSI isolation is available, however it is not
+> transparent and the iommu_domain user must do the little dance that
+> follows.
+No I do not agree on that point. The 'little dance' is needed because
+the SMMU does not bypass MSI writes as done on Intel. And someone must
+take care of the MSI transaction mapping. This is the role of the MSI
+cookie stuff. To me this is independent on the above discussion whether
+MSI isolation is implemented.
+>
+> It does not mean the MSI controller implements the security
+> functionality because it is not set on x86.
+>
+> Logically on x86 we should consider the remapping logic as part of the
+> MSI controller even if x86 makes them separated for historical
+> reasons.
+>
+>> MSI #n and this #n gets translated into actual MSI #m) So what you
+>> want is to prevent an assigned device from being able to DMA into an
+>> MSI doorbell that is not protected by either the IOMMU or the MSI
+>> controller. If this happens this means the DMA can generate any kind
+>> of MSI traffic that can jeopardize the host or other VMs
+> I don't know of any real systems that work like this. ARM standard GIC
+> uses a shared ITS page, the IOMMU does nothing to provide MSI
+> security. MSI security is built into the GIC because it validates the
+> device ID as part of processing the MSI. The IOMMU is only involved
+> to grant access to the shared ITS page.
 
-https://people.kernel.org/tglx/notes-about-netiquette
+?? Yeah that's what I said. The SMMU does nothing about MSI security.
+The ITS does.
+>
+> Intel is similar, it provides security through the MSI controller's
+> remapping logic, the only difference is that on Intel the MSI window
+> is always present in every iommu_domain (becuase it occures before the
+> IOMMU), and in ARM you have to do the little dance.
+On Intel the MSI window [FEE0_0000h - FEF0_000h] is bypassed by the
+IOMMU. On ARM MSI transactions are translated except in case of HW MSI
+RESV regions (I think).
+>
+> Even if the iommu is to be involved it is all hidden from this layer.
+>
+>> and afterwards resv_msi is checked to see if we need to create the
+>> so-called msi cookie.  This msi cookie tells the MSI writes are
+>> translated by the IOMMU and somebody must create a mapping for those
+>> transactions.
+> The cookie is always necessary if we are going to use the
+> non-transparent mode. That is what makes it the non transparent
+> mode. We have to supply the reserved IOVA range from one part of the
+> iommu driver to another part.
+>
+>>> +	 * creates the MSI window by default in the iommu domain. Nothing
+>>> +	 * further to do.
+>>> +	 */
+>>> +	if (device_iommu_capable(idev->dev, IOMMU_CAP_INTR_REMAP))
+>>> +		return 0;
+>>> +
+>>> +	/*
+>>> +	 * On ARM systems that set the global IRQ_DOMAIN_FLAG_MSI_REMAP every
+>>> +	 * allocated iommu_domain will block interrupts by default and this
+>> It sounds there is a confusion between IRQ remapping and the fact MSI
+>> writes are not bypassed by the IOMMU.
+> I don't think I'm confused :)
+As soon as there is an SW MSI_RESV region and only in that case you need
+to put in place the msi cookie (because it indicates the IOMMU
+translates MSI transactions).
+
+The fact the platform provides MSI security (through IOMMU or MSI
+controller) looks orthogonal to me.
+>
+>>> +static int iommufd_device_do_attach(struct iommufd_device *idev,
+>>> +				    struct iommufd_hw_pagetable *hwpt,
+>>> +				    unsigned int flags)
+>>> +{
+>>> +	phys_addr_t sw_msi_start = 0;
+>>> +	int rc;
+>>> +
+>>> +	mutex_lock(&hwpt->devices_lock);
+>>> +
+>>> +	/*
+>>> +	 * Try to upgrade the domain we have, it is an iommu driver bug to
+>>> +	 * report IOMMU_CAP_ENFORCE_CACHE_COHERENCY but fail
+>>> +	 * enforce_cache_coherency when there are no devices attached to the
+>>> +	 * domain.
+>>> +	 */
+>>> +	if (idev->enforce_cache_coherency && !hwpt->enforce_cache_coherency) {
+>>> +		if (hwpt->domain->ops->enforce_cache_coherency)
+>>> +			hwpt->enforce_cache_coherency =
+>>> +				hwpt->domain->ops->enforce_cache_coherency(
+>>> +					hwpt->domain);
+>>> +		if (!hwpt->enforce_cache_coherency) {
+>>> +			WARN_ON(list_empty(&hwpt->devices));
+>>> +			rc = -EINVAL;
+>>> +			goto out_unlock;
+>>> +		}
+>>> +	}
+>>> +
+>>> +	rc = iopt_table_enforce_group_resv_regions(&hwpt->ioas->iopt, idev->dev,
+>>> +						   idev->group, &sw_msi_start);
+>>> +	if (rc)
+>>> +		goto out_unlock;
+>>> +
+>> so in the case of any IOMMU_RESV_MSI, iommufd_device_setup_msi() will be
+>> called with *sw_msi_start = 0 which will return -EPERM?
+>> I don't think this is what we want. In that case I think we want the
+>> RESV_MSI region to be taken into account as a RESV region but we don't
+>> need the MSI cookie.
+> This was sort of sloppy copied from VFIO - we should just delete
+> it. The is no driver that sets both, and once the platform asserts
+> irq_domain_check_msi_remap() it is going down the non-transparent path
+> anyhow and must set a cookie to work. [again the names doesn't make
+> any sense for the functionality]
+>
+> Failing with EPERM is probably not so bad since the platform is using
+> an invalid configuration. I'm kind of inclined to leave this for right
+I don't understand why it is invalid? HW MSI RESV region is a valid
+config and not sure you tested with that kind of setup, did you?
+> now since it has all be tested and I don't want to make a
+> regression. But I can try to send a patch to tidy it a bit more, maybe
+> add an appropriate WARN_ON.
+>
+> The whole thing is actually backwards. The IOMMU_CAP_INTR_REMAP should
+> have been some global irq_has_secure_msi() and everything with
+> interrupt remapping, and ARM should set it.
+You are revisiting this IOMMU_CAP_INTR_REMAP definition ... this is not
+what is documented in the header file.
+
+>
+> Then the domain should have had a domain cap
+> IOMUU_CAP_REQUIRE_MSI_WINDOW_SETUP to do the little dance ARM drivers
+> need.
+>
+> And even better would have been to not have the little dance in the
+> first place, as we don't really need the iommu_domain user to convey
+> the fixed MSI window from one part of the iommu driver to another.
+>
+> We may try to fix this up when we get to doing nesting on ARM, or
+> maybe just leave the confusing sort of working thing as-is. I don't
+> know.
+>
+> Jason
+>
+Eric
+
