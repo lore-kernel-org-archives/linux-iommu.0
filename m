@@ -1,144 +1,266 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CD9DC8F42
-	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 14:52:26 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9B735D6E;
-	Mon, 28 Nov 2022 06:52:31 -0800 (PST)
-Received: from [10.57.71.118] (unknown [10.57.71.118])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6C9E73F67D;
-	Mon, 28 Nov 2022 06:52:22 -0800 (PST)
-Message-ID: <cf0fed35-2d9d-3d19-3538-1ddcbfd563b0@arm.com>
-Date: Mon, 28 Nov 2022 14:52:17 +0000
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2062.outbound.protection.outlook.com [40.107.93.62])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6FBF8F42
+	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 14:57:10 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mp2p9lhyYtUShKg2Fhb77khpY6ptaGDgQlJhgNDIu8XoC/7xhp5vkTkcEbRozf2Ueqi3g6mjoM2O94hzgG6WLBVxNp53ZAihzW1iHF4S219AWQRff30TRuYj1ijeEhefuwf3PZom5FXy4LawepxPWdKO3USbD6E0cofJK3VwuKFnfiLjUZ59azWRY7UgBZbBKOxw0ZwYWpRXVgQMkJL23mooH8cS7LcuSm2csAfGDSGF39+jQnmoC8J7h1o5EcVzZXDFLTlcvfPEx7PlW0rwk4Mf/iJAgI3bwn9+W5z607I05dCHTabU8VR/VvEy6z3P9RPWzFts4K/dUCAShm2mkg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=B95teZYQz0vQcTIXA5Al57FleOummYQGUGDFVcsW9bI=;
+ b=nhpEzAnSWxGRIw2zl8GlEuhZw3f4WVJoO+hSFGZxfljS6rdXUM8VhaNy92Nh2x0ouNHYNMGjOkduLzoETd/LCYCEs8pUJGW7oJkJhqxmJp9Oa++a5cpjHJ141lDY0hfFrFSMw7tdBwDueP9xQEWrGRxaMsXsGYF5XG11pggRXjFVyZEN6Pj7oylb8cBYCazMYsRkyoHJ54SUBIZc4eZvVQUcknD44A8fKEUJD//U2poFt1SgVNQ7TvSzlkgev65Ozq6uvYTYksagY1F0EiXct4/6J235kF9PbOYhvLUbdr51hsf9mRE9uVlXg7OqO+VE2e8iFzMcA/0Q5kuaw4zWAw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=B95teZYQz0vQcTIXA5Al57FleOummYQGUGDFVcsW9bI=;
+ b=L9cKgTRQONtXMMEoqyycQNsh5y5xJTHPMEx7AJ967gm2yqOsHYLA6a2FFIAmGzQqZb7dH+skilwiqVGO265dvk0ej8x+g1ADRGSe+w6lSYOVJ6MFOgV+qb82QVadV5RkzkLaYPiTmfM6NtXiT2lbJQcpIqLuq9RzEIwWqPqLYlJA9vXV7x2pc+TlnQNgQZOvVJqlUIXPrP7Yx71K5iTyiq2oL51JEttbREKbGkaT6FpW4RLeUldJGSLYMXruUHQBAGj+lu5zzxJIEKXZvSKxtoPu69z1uhJ6xfkW0JzpeQa9h1h53OYB7NsTzW/Wd8hkwXLVodXHpVYXxQM15qCknA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by BL1PR12MB5851.namprd12.prod.outlook.com (2603:10b6:208:396::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Mon, 28 Nov
+ 2022 14:57:08 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f8b0:df13:5f8d:12a%9]) with mapi id 15.20.5857.021; Mon, 28 Nov 2022
+ 14:57:08 +0000
+Date: Mon, 28 Nov 2022 10:57:07 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@infradead.org>,
+	Kevin Tian <kevin.tian@intel.com>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+	Rob Clark <robdclark@gmail.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Andy Gross <agross@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Yong Wu <yong.wu@mediatek.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	Heiko Stuebner <heiko@sntech.de>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
+	Thierry Reding <thierry.reding@gmail.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 18/20] iommu: Call set_platform_dma if default domain
+ is unavailable
+Message-ID: <Y4TMQ7HazPWMdsNj@nvidia.com>
+References: <20221128064648.1934720-1-baolu.lu@linux.intel.com>
+ <20221128064648.1934720-19-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221128064648.1934720-19-baolu.lu@linux.intel.com>
+X-ClientProxiedBy: BLAPR03CA0023.namprd03.prod.outlook.com
+ (2603:10b6:208:32b::28) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH v2 7/7] iommu/s390: flush queued IOVAs on RPCIT out of
- resource indication
-Content-Language: en-GB
-To: Niklas Schnelle <schnelle@linux.ibm.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>, Gerd Bayer <gbayer@linux.ibm.com>,
- iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>,
- Wenjia Zhang <wenjia@linux.ibm.com>
-Cc: Pierre Morel <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
- borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
- gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com, svens@linux.ibm.com,
- linux-kernel@vger.kernel.org, Julian Ruess <julianr@linux.ibm.com>
-References: <20221116171656.4128212-1-schnelle@linux.ibm.com>
- <20221116171656.4128212-8-schnelle@linux.ibm.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20221116171656.4128212-8-schnelle@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BL1PR12MB5851:EE_
+X-MS-Office365-Filtering-Correlation-Id: ea05bcb1-081c-4dfe-fba2-08dad150d228
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	486m/QwQZzEc5lM1zhBon6QXUghhS0sg3MHJp/hrr5o4lRX7db2Bx2W7o53LxGhOMsR7Vn2fZUOyfYDVeIYZjHiNWRx+B6KdV4RH5DvBdf9AFaJ07yRkSY2AHwW7NqQ2xJBRFVg7+B6vEzWZ4chDNPNvccUyKOmXXAGxaphJHby57nENdItT2VhZrIcc/EkbDHYK4sMkMOTKx7tp7ZcrHlW85utQMYZDwci4Pi4jwMkGEVTrjc46gdgRUKnFtTfr1/Y9NrOyM1QrokbAJGQLy7Xk87eL5qqWSd/aCcy4/qRdvZ3cZDX2wwD19hu/d72fxj7pxDXfNDks/P9HphQbBfxR+zyLZcI37hSSRQpnh00DG7qkpSItuHSv1iXmRnTuP3RG2N4OC1eIC5fbDklq34gSMQLbmYgy/6xLw3sEfP+LH5TBgCDmMfT1vLI+5NR5VFsw7gN9WSx5fEkqiraYO5Es7iJUwR1MMaAJXdBgpmXM7nZ7YLxzN1lj3Y6b1gAijFPWdRfcSpdnS6+/Iw7btXg7T+zdjmyCNoZOnbwGQLkQcSksibjb2ogiHVIlWU/hVluvG14vsj9V74yY0Wq1pv1lTU2tgxCSZ7M9xSwE02WOhtOcKAAyt4TcfSp6q6eq
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(39860400002)(136003)(346002)(376002)(396003)(451199015)(316002)(478600001)(66946007)(2906002)(36756003)(54906003)(6486002)(6916009)(83380400001)(38100700002)(6506007)(26005)(86362001)(6512007)(2616005)(186003)(5660300002)(7416002)(8936002)(41300700001)(8676002)(66556008)(66476007)(4326008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?ScUx67gT6p2vkj2lt4u5+EzfZiZdghbXOfOWBidN/HcisdMNxiYJbAFEUbS2?=
+ =?us-ascii?Q?j0egxoN4wFOmzCK/NzuTotYCR+1jffxpMuE3BNgTyXR9mQ/qp9T/d4fUCkOo?=
+ =?us-ascii?Q?NG7k7u/rEWolUMt9oePG+Cx9EkqFbEqXsbIcS/qAfazokaEzYSr8EoWexoP8?=
+ =?us-ascii?Q?q4h6gYF824CSoB1+hTEIX8c40ZzCNDKvWfgYSU8xInGoaSKF0R4tlJW+DeBh?=
+ =?us-ascii?Q?/AJ9EhYhD9YOTAx2oelBSXCrLaO++sbc2Cvi/e5/UzdvespIFnOpmqeALNsT?=
+ =?us-ascii?Q?qR++0OiHOl+Qzo6rU26DKR5uU49UtcQxBGCU0wjJBMsvNk8nn2do6yjcxgST?=
+ =?us-ascii?Q?5p8v9zFmwHXybVB2GpcTMPjqsnIAfO6EQ/JnDX6w/5y68D99PnrIbfaLGIZa?=
+ =?us-ascii?Q?Mejksm/2G6zUFD3OK3BCT9oqxZYhzRE09ZWeHp1bXmtl9RB76Rb586udtdQJ?=
+ =?us-ascii?Q?lLafAAi9CtOa2mhffCK3hUyin7+U8UsMpatohYuFrhqqdhpmoulJJLjtmIe+?=
+ =?us-ascii?Q?D8h+0HScM06ZYknnxd07QIdZ5QT9l6qpv1+SU2YVbtLojpkcqyEA9SKbGfHm?=
+ =?us-ascii?Q?gGCiGQjIarZGFPfKaKVyT7j40qCHzgu219jtMzj/jpXIERv6fCe9FcFg4l84?=
+ =?us-ascii?Q?Y1lnK/NWi8pzdu3EYHjgMC/INlqIJTNSpOB2LdM17bXTpGllNagGd49jjFt5?=
+ =?us-ascii?Q?KoPLMaiy6+1n09y3EBkZpixyNbeyDHIkfC/zJAYejYVoOmcwMev02QxdDkX4?=
+ =?us-ascii?Q?h02t9A8ieVvVZa1Vd8mkSIOlBUYwunzfqNxt5VqwflRZe0lKFCyQk6lkcjUb?=
+ =?us-ascii?Q?r8mTJb2LQh0ytr/1kRzgY0uPa79Ggz1AeqnPPRmw2IBPUQkBKwh+Ib593xuk?=
+ =?us-ascii?Q?bPN0XjL2XmJwAy1gAs+yYeyShzSBsGiI3OW19anyAgxTgAuSwaWmEL1mvRre?=
+ =?us-ascii?Q?WRsTEhMcfLiCLhGcfVQZVc4jgYpBQTEVhTiAJsLKmxxAvvQ5jrX50RXehQ65?=
+ =?us-ascii?Q?Qq88BjenvnL3g/MsxMJciiv1Vyu3Q54D0+H1PGkNHrqsqp16kXFTK1ktB0tx?=
+ =?us-ascii?Q?K2s4Nt7ztlU/bLzgdFBQyF5QASWQoLV1j0bQ064WuPWKYuGJbTnN6s5R8+Zx?=
+ =?us-ascii?Q?SadVesTsBskqvazsh7cjGODnKycxFE2eiJYjZAATNOE/jKhJQalnCaxnpnXI?=
+ =?us-ascii?Q?QyG137/H6CeF9Qr4Lh0AN2AECKlHybcft+HJyx5m3QxN3Tw18Fwh4Rkiqk4E?=
+ =?us-ascii?Q?KWAcjZ5VXDIopcDRAWmFYfu0WXPlTmAPP3s1j7sEazup6kNOkwTgnDIJJtrK?=
+ =?us-ascii?Q?gRDIv5ogKfYuTPveyvLwOCegdN0Kj1/tNXYMMmFvkDAZ2si+L9GrNYOl9RR7?=
+ =?us-ascii?Q?5zkwszuwF/9ZMD2ewr8Lk2XKP/imuZ1wm5rgQs/5aRCAMmgn2LNf8o4qiWT/?=
+ =?us-ascii?Q?aO4K7Ka1MzFbPSJHCXUgkLwjNfVuBfWXBvacghIUzLwRqAP47dkvsTv7L1RU?=
+ =?us-ascii?Q?UeG0uUIVVLU+dHbnxEeWYNU8a5t5Hi6MY49pv7kpXxJMzrOfQAJs8+/SJCjx?=
+ =?us-ascii?Q?kyM3Dx5WWbf10arv1jk=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ea05bcb1-081c-4dfe-fba2-08dad150d228
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Nov 2022 14:57:08.1086
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: DcL9AN1jRFthSGKYZwpRMmhpVZgq9djYudqJstjhdtuKEXdsN0Bzfqkn9x2/MqRP
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5851
 
-On 2022-11-16 17:16, Niklas Schnelle wrote:
-> When RPCIT indicates that the underlying hypervisor has run out of
-> resources it often means that its IOVA space is exhausted and IOVAs need
-> to be freed before new ones can be created. By triggering a flush of the
-> IOVA queue we can get the queued IOVAs freed and also get the new
-> mapping established during the global flush.
-
-Shouldn't iommu_dma_alloc_iova() already see that the IOVA space is 
-exhausted and fail the DMA API call before even getting as far as 
-iommu_map(), though? Or is there some less obvious limitation like a 
-maximum total number of distinct IOVA regions regardless of size?
-
-Other than the firmware reserved region helpers which are necessarily a 
-bit pick-and-mix, I've been trying to remove all the iommu-dma details 
-from drivers, so I'd really like to maintain that separation if at all 
-possible.
-
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> ---
->   drivers/iommu/dma-iommu.c  | 14 +++++++++-----
->   drivers/iommu/dma-iommu.h  |  1 +
->   drivers/iommu/s390-iommu.c |  7 +++++--
->   3 files changed, 15 insertions(+), 7 deletions(-)
+On Mon, Nov 28, 2022 at 02:46:46PM +0800, Lu Baolu wrote:
+> If the IOMMU driver has no default domain support, call set_platform_dma
+> explicitly to return the kernel DMA control back to the platform DMA ops.
 > 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 3801cdf11aa8..54e7f63fd0d9 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -188,19 +188,23 @@ static void fq_flush_single(struct iommu_dma_cookie *cookie)
->   	spin_unlock_irqrestore(&fq->lock, flags);
->   }
->   
-> -static void fq_flush_timeout(struct timer_list *t)
-> +void iommu_dma_flush_fq(struct iommu_dma_cookie *cookie)
->   {
-> -	struct iommu_dma_cookie *cookie = from_timer(cookie, t, fq_timer);
-> -
-> -	atomic_set(&cookie->fq_timer_on, 0);
->   	fq_flush_iotlb(cookie);
-> -
->   	if (cookie->fq_domain->type == IOMMU_DOMAIN_DMA_FQ)
->   		fq_flush_percpu(cookie);
->   	else
->   		fq_flush_single(cookie);
->   }
->   
-> +static void fq_flush_timeout(struct timer_list *t)
-> +{
-> +	struct iommu_dma_cookie *cookie = from_timer(cookie, t, fq_timer);
-> +
-> +	atomic_set(&cookie->fq_timer_on, 0);
-> +	iommu_dma_flush_fq(cookie);
-> +}
-> +
->   static void queue_iova(struct iommu_dma_cookie *cookie,
->   		unsigned long pfn, unsigned long pages,
->   		struct list_head *freelist)
-> diff --git a/drivers/iommu/dma-iommu.h b/drivers/iommu/dma-iommu.h
-> index 942790009292..cac06030aa26 100644
-> --- a/drivers/iommu/dma-iommu.h
-> +++ b/drivers/iommu/dma-iommu.h
-> @@ -13,6 +13,7 @@ int iommu_get_dma_cookie(struct iommu_domain *domain);
->   void iommu_put_dma_cookie(struct iommu_domain *domain);
->   
->   int iommu_dma_init_fq(struct iommu_domain *domain);
-> +void iommu_dma_flush_fq(struct iommu_dma_cookie *cookie);
->   
->   void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);
->   
-> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-> index 087bb2acff30..9c2782c4043e 100644
-> --- a/drivers/iommu/s390-iommu.c
-> +++ b/drivers/iommu/s390-iommu.c
-> @@ -538,14 +538,17 @@ static void s390_iommu_iotlb_sync_map(struct iommu_domain *domain,
->   {
->   	struct s390_domain *s390_domain = to_s390_domain(domain);
->   	struct zpci_dev *zdev;
-> +	int rc;
->   
->   	rcu_read_lock();
->   	list_for_each_entry_rcu(zdev, &s390_domain->devices, iommu_list) {
->   		if (!zdev->tlb_refresh)
->   			continue;
->   		atomic64_inc(&s390_domain->ctrs.sync_map_rpcits);
-> -		zpci_refresh_trans((u64)zdev->fh << 32,
-> -				   iova, size);
-> +		rc = zpci_refresh_trans((u64)zdev->fh << 32,
-> +					iova, size);
-> +		if (rc == -ENOMEM)
-> +			iommu_dma_flush_fq(domain->iova_cookie);
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  drivers/iommu/iommu.c | 28 ++++++++--------------------
+>  1 file changed, 8 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 7c99d8eb3182..e4966f088184 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2040,16 +2040,6 @@ int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
+>  	return 0;
+>  }
+>  
+> -static void __iommu_detach_device(struct iommu_domain *domain,
+> -				  struct device *dev)
+> -{
+> -	if (iommu_is_attach_deferred(dev))
+> -		return;
 
-Could -ENOMEM ever be returned for some reason on an IOMMU_DOMAIN_DMA or 
-IOMMU_DOMAIN_UNMANAGED domain?
+This removal might want to be its own patch with an explanation.
 
-However I can't figure out how this is supposed to work anyway - 
-.sync_map only gets called if .map claimed that the actual mapping(s) 
-succeeded, it can't fail itself, and even if it does free up some IOVAs 
-at this point by draining the flush queue, I don't see how the mapping 
-then gets retried, or what happens if it still fails after that :/
+It looks like at the current moment __iommu_detach_device() is only
+called via call chains that are after the device driver is attached -
+eg via explicit attach APIs called by the device driver.
 
-Thanks,
-Robin.
+So it should just unconditionally work. It is actually looks like a
+bug that we were blocking detach on these paths since the attach was
+unconditional and the caller is going to free the (probably) UNAMANGED
+domain once this returns.
 
->   	}
->   	rcu_read_unlock();
->   }
+The only place we should be testing for deferred attach is during the
+initial point the dma device is linked to the group, and then again
+during the dma api calls to check if the device
+
+This maybe the patch that is needed to explain this:
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index d69ebba81bebd8..06f1fe6563bb30 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -993,8 +993,8 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+ 
+ 	mutex_lock(&group->mutex);
+ 	list_add_tail(&device->list, &group->devices);
+-	if (group->domain  && !iommu_is_attach_deferred(dev))
+-		ret = __iommu_attach_device(group->domain, dev);
++	if (group->domain)
++		ret = iommu_group_do_dma_first_attach(dev, group->domain);
+ 	mutex_unlock(&group->mutex);
+ 	if (ret)
+ 		goto err_put_group;
+@@ -1760,21 +1760,24 @@ static void probe_alloc_default_domain(struct bus_type *bus,
+ 
+ }
+ 
+-static int iommu_group_do_dma_attach(struct device *dev, void *data)
++static int iommu_group_do_dma_first_attach(struct device *dev, void *data)
+ {
+ 	struct iommu_domain *domain = data;
+-	int ret = 0;
+ 
+-	if (!iommu_is_attach_deferred(dev))
+-		ret = __iommu_attach_device(domain, dev);
++	lockdep_assert_held(&dev->iommu_group->mutex);
+ 
+-	return ret;
++	if (iommu_is_attach_deferred(dev)) {
++		dev->iommu->attach_deferred = 1;
++		return 0;
++	}
++
++	return __iommu_attach_device(domain, dev);
+ }
+ 
+-static int __iommu_group_dma_attach(struct iommu_group *group)
++static int __iommu_group_dma_first_attach(struct iommu_group *group)
+ {
+ 	return __iommu_group_for_each_dev(group, group->default_domain,
+-					  iommu_group_do_dma_attach);
++					  iommu_group_do_dma_first_attach);
+ }
+ 
+ static int iommu_group_do_probe_finalize(struct device *dev, void *data)
+@@ -1839,7 +1842,7 @@ int bus_iommu_probe(struct bus_type *bus)
+ 
+ 		iommu_group_create_direct_mappings(group);
+ 
+-		ret = __iommu_group_dma_attach(group);
++		ret = __iommu_group_dma_first_attach(group);
+ 
+ 		mutex_unlock(&group->mutex);
+ 
+@@ -1971,9 +1974,11 @@ static int __iommu_attach_device(struct iommu_domain *domain,
+ 		return -ENODEV;
+ 
+ 	ret = domain->ops->attach_dev(domain, dev);
+-	if (!ret)
+-		trace_attach_device_to_domain(dev);
+-	return ret;
++	if (ret)
++		return ret;
++	dev->iommu->attach_deferred = 0;
++	trace_attach_device_to_domain(dev);
++	return 0;
+ }
+ 
+ /**
+@@ -2018,7 +2023,7 @@ EXPORT_SYMBOL_GPL(iommu_attach_device);
+ 
+ int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
+ {
+-	if (iommu_is_attach_deferred(dev))
++	if (dev->iommu && dev->iommu->attach_deferred)
+ 		return __iommu_attach_device(domain, dev);
+ 
+ 	return 0;
+@@ -2027,9 +2032,6 @@ int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
+ static void __iommu_detach_device(struct iommu_domain *domain,
+ 				  struct device *dev)
+ {
+-	if (iommu_is_attach_deferred(dev))
+-		return;
+-
+ 	domain->ops->detach_dev(domain, dev);
+ 	trace_detach_device_from_domain(dev);
+ }
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 1690c334e51631..ebac04a13fff68 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -413,6 +413,7 @@ struct dev_iommu {
+ 	struct iommu_device		*iommu_dev;
+ 	void				*priv;
+ 	u32				max_pasids;
++	u8				attach_deferred;
+ };
+ 
+ int iommu_device_register(struct iommu_device *iommu,
+
+
