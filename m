@@ -1,152 +1,409 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2049.outbound.protection.outlook.com [40.107.220.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 835BA8BF0
-	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 13:29:54 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hOei92wAvIxfACbWOB6pMjvutAnaac5taxvmxgPAx8hxHjPQfRNyTKVLxYWrmhZGpFF3+B2C1YS/a8r0gaNwF9qmQDEVMQz4nlKOgVyL0IjjIWshjRI7lcLpM3OIfYTsPMc+IU4iCgwqQpCttM5mNNGCErzQg1AQALeSo9CGWn73M8AihQN0LSOHKPgtMEX63aWQw5FYUo5zJvvJUAnMXHzJRy15r4Q62VjXldnaj1ASgDSTXj7YdrCSKa3ZIcd6oR4YQ24VxIGE5oCiAAFI/RjGwIkzuiv27HE8Q2tdvB/292u2Eb8HoRzE5Why5uiOgMhRneSqAD4f4Wb2Uc+F8A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Pnv+axmQ2v/PQadUxc0Fs12JCzWl6uxl/vu+XCY3gzg=;
- b=Kc38Un3EUGLu5azRTtf/XiyFkDmj0o05YsfKwVl2+eIkWR5kI492LnpiilviefzjlN9w8SbHM/U0t2r/zzvUPbCc3vnscja1aFhXYD7bm9Ai1lu8dxmu5Xwc+KaqeM6YKucwRn8ZvtuQ+fRaXdKKtB4e/wi8PHcvdsVqipAdTc/I3gMEt7TzJZCCeUhDGz2AvFCVW1o0jwiNhiXyC19cLbY2dvYHRXXZBSYgHIvBkPPSOZNSBrxzv4FLlNy4BWkG4ZzQxNUexfDkkkCNpdydNs2AWt0wMzvXqrkcqYkpsmeRAMDdjJbD80sWiXSRtJxFXxXbSCW4UCgdrLuAHxhcyA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Pnv+axmQ2v/PQadUxc0Fs12JCzWl6uxl/vu+XCY3gzg=;
- b=azZ9CJIz9Sjx9zzKZo6BRYpoDGWo5INuqGJglrnqVAwvc3MFozXjGMjTSSv0d8iHW3z+G+b4cGWROXLZMM4wxNGvbXyGALtFRgP/pwX773DuH/yum0CvZJ1Mr316VFS4tC1Xk5pD1FFb9Z2FsBF2sZQE6LoSK6p/KQv22naDkf9kHUMgYwt1F438me88fx24sUkNSkOnYa3oQfJEMlYAQy3L35VytBpDMknpA5DmC2XTiMofpYj2eO2aU/eJ/WHGnj/99gxUf+u/LctgRFT36aNvLBaUj7OfICvfmIA1NngEqw+492S6psnQ7Gn1/jx7ZNn8MrftziEM3Ql53s/KSQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by SJ1PR12MB6098.namprd12.prod.outlook.com (2603:10b6:a03:45f::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Mon, 28 Nov
- 2022 13:29:52 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f8b0:df13:5f8d:12a%9]) with mapi id 15.20.5857.021; Mon, 28 Nov 2022
- 13:29:52 +0000
-Date: Mon, 28 Nov 2022 09:29:51 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Niklas Schnelle <schnelle@linux.ibm.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Gerd Bayer <gbayer@linux.ibm.com>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Wenjia Zhang <wenjia@linux.ibm.com>,
-	Pierre Morel <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
-	borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-	gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-	svens@linux.ibm.com, linux-kernel@vger.kernel.org,
-	Julian Ruess <julianr@linux.ibm.com>
-Subject: Re: [PATCH v2 4/7] iommu: Let iommu.strict override
- ops->def_domain_type
-Message-ID: <Y4S3z6IpeDHmdUs/@nvidia.com>
-References: <20221116171656.4128212-1-schnelle@linux.ibm.com>
- <20221116171656.4128212-5-schnelle@linux.ibm.com>
- <33eea9bd-e101-4836-19e8-d4b191b78b00@linux.intel.com>
- <9163440eb6a47fe02730638bbdf72fda5ee5ad2c.camel@linux.ibm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9163440eb6a47fe02730638bbdf72fda5ee5ad2c.camel@linux.ibm.com>
-X-ClientProxiedBy: BL1PR13CA0011.namprd13.prod.outlook.com
- (2603:10b6:208:256::16) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F17508BF0
+	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 13:42:05 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 82080D6E;
+	Mon, 28 Nov 2022 05:42:11 -0800 (PST)
+Received: from [10.57.71.118] (unknown [10.57.71.118])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C439F3F73D;
+	Mon, 28 Nov 2022 05:42:00 -0800 (PST)
+Message-ID: <01296f25-b507-c965-9840-119487a00534@arm.com>
+Date: Mon, 28 Nov 2022 13:41:56 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SJ1PR12MB6098:EE_
-X-MS-Office365-Filtering-Correlation-Id: 55a8a091-8b91-48d5-2eff-08dad144a157
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	DK0al0j+WpgX7NX753FPkrQQdWFix3w3DQrDQuILgF8rUKA+IuQO7CEXdMrJQ+E59+fK7qQQx5G1nNc2mEFnsAAsZbDEeWIQ3Wwxp2PE4DKESu0KhWi/1kwNjX8OQlr33vszcG32lnhE8OQhhIy8gSFVNBQQ7F2SiCfzCUnYexvP4Qy5UX0cNW5bN1v4cMqr6YWI0UKbwTvZphefZPwDGadL7P3HVuXp8m+MYRp7TlnRJNH9fEYh7EZ3VhuHTxtr0SaAhb02mBQLAcU1mTzwErHI4Qh8aIH8e326k8Vvy+8vdnojpvjU7d5k5wA6frtW6fsoawPzpvuHI+Y8CwZeD9QlipuKrrPIO8zM6JyGbPVH09eAIC0RUn85JRltYiM5NRx4hbWlUnbREdN+yLB3FBFu1ANnqshO//lVuaoPrRqOc3QK1wNItAp03B/tPdDkrtj/P815XeNXEv5dIvK2n/vY3h6IPZXLTQtp1fxVi8ffFBHKb61U2T9y8COioyBl27B1s809kUx/AiMmzBB0PPblxRHAAKy8pc2jjWgmUAA1Q1CHQ1PgsCPCcW1zx/jwYu5C9CoTWKecFJchHYV6qxpDR5sKJtL7gNHehi5rsHKQkjYsgtXBZmlLFWlBaRI685cgzYCjtjV7t55Cg/bD8Q==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(366004)(39860400002)(136003)(376002)(396003)(451199015)(2906002)(36756003)(86362001)(53546011)(6506007)(6512007)(26005)(2616005)(186003)(38100700002)(66556008)(66476007)(66946007)(8936002)(4001150100001)(7416002)(4326008)(8676002)(5660300002)(41300700001)(6486002)(6916009)(478600001)(54906003)(316002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?ix9ZXWO7m5SSzNvW6ROhbevhedv4D7/jJOnsxx6oS34Oqsu1L3GCVOup3nq1?=
- =?us-ascii?Q?lgtpZIdp+oPwm+UoH3eVR9tq+JciEI6kY227SKtampHMy+q9CdiH3X37sShp?=
- =?us-ascii?Q?OVgRSh47XTTMeyHfVLqKQ5ZUllyWes4tsfZZSjJAYjWVTMPTKd1gv4TZ6Bt7?=
- =?us-ascii?Q?kWYnfBOetSjxLABnlj7wnTWcKUjPrpzh7aoSj/c1GI034eguIPcaADZNRTYJ?=
- =?us-ascii?Q?0Dby8oL4Xk7pFIg9vg2pnFu6uOfHNm+n3nRhCzayIlC9b67CZ3DAxhBpAAAA?=
- =?us-ascii?Q?M0GJtAo1pwbeX3Ixc9o5SB7xa25bX440CNh64OYyCXpvCX2LIj+wzE/VCpnI?=
- =?us-ascii?Q?9GdJte18KOznNi4fXAyd8Qxx8N3ay0I0MAbsAdbBrZ4ik7h8a9XZ19VohNKb?=
- =?us-ascii?Q?J9Le8okI98MKJ893TavyGnlv8cXDqHDmtySgse1Di3L8sSLWLYsT8QWqgJL4?=
- =?us-ascii?Q?FW0KBIIA4o058s1o+CY5by+9wWACRS2R/hJb7LdB14DXivPAd6is8Mt4H8Mi?=
- =?us-ascii?Q?br4GoQLdymyqExZRtnr3jZbWgnrtfbNTxPLzI9mh8WiUQN1HNuGSX/xcNRSu?=
- =?us-ascii?Q?bvhXuTpS2Vs0/+ZjBqK2vL5ObL8VC7+Cg5aPiRnGmZ1xlU3ONSzo/rd1JyuP?=
- =?us-ascii?Q?3G6U/4cGAu+HR8ksg/KlAE61DnCf0YBHw/gsc+UFbS6B548CiuvzfYpdc2OH?=
- =?us-ascii?Q?N29izZGefCKyeivFTmYdtczc4rHPpLyC2RppmRwoUXNwAIBNk1s0rQ6BhUGq?=
- =?us-ascii?Q?73dEMTDEMUVXWHF8mt78Bhpqg6ihnyaabH0P7tMjNe0g0Owu4fVwtuXZiNZE?=
- =?us-ascii?Q?fxniPjVU5DgIejG1T1RxXtXsqyLgksOx5XIpO1wubRRGmmsfEs6SXCH9zb9F?=
- =?us-ascii?Q?xa5yA/v4A6hQFdHdUkm05xZiR31HfnqAfboOG+BFypZ0TloLvQzxidhrABy6?=
- =?us-ascii?Q?of+w+VlCdQtjVqWaYb+dTxVERBw9MMJxiw3Jsbq/6TWEUg0EbY7QE63qraFv?=
- =?us-ascii?Q?6dWG6+UeoISaLww5f+BP7CUJkRLkJPRSWZiWAMI950/t4Wyu+rbOeAcoWioO?=
- =?us-ascii?Q?CdI60K6QlB7Le3lazQeVXB7IIrd8K2/hxjL6UGbNpohm3PjFlltWb5LTa40i?=
- =?us-ascii?Q?l/zeL6hP5H+kUBoVIn8dVPA1HZJbm6tMJWfmZ3XPiKoFyqkVVVdklNzr5vt0?=
- =?us-ascii?Q?gdsi8goCdSFoCphvoYoaKpFZmE7u9YKsJvWm7NjLmLybolJ+Z2U4sgPHIrgC?=
- =?us-ascii?Q?giN3Unb+vpEV1qRB1Ziscj2WtA50tC4+HpFeVhB14fDEKt/sJySM17/ieRik?=
- =?us-ascii?Q?LwZcSGExH7kQZmktnFVpzcemSVtOpoXgSEaPuYshCfhIEY9HHC5GkUHgRkSg?=
- =?us-ascii?Q?5cR+DWOOoWJn/rHfd+KldSehj6xiFN3LrWTFc1U831BQZC3uoyLxjTt+J506?=
- =?us-ascii?Q?5/5zq6sOV3FECfCt14HqFfYy3c4WFYKB95WRc0OMu+m3I6k6DWD89IvoJWIu?=
- =?us-ascii?Q?hxkaH4PDKsj2wukq4bn8XLgHN2QdR0eFXBM97t10d29Etko9u3y5mK2T9Ptu?=
- =?us-ascii?Q?qFr6ikh7h45Bmu+SkXA=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 55a8a091-8b91-48d5-2eff-08dad144a157
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Nov 2022 13:29:52.2110
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: S9mAyqZ3dXNK9iVgr+HHCHpuJWDsqRTuuh1MzCo54fnZnIZwMjXYHA+OTIwG2p8i
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6098
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH v3 20/20] iommu: Rename attach_dev to set_dev
+Content-Language: en-GB
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ Kevin Tian <kevin.tian@intel.com>, Will Deacon <will@kernel.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+ Rob Clark <robdclark@gmail.com>, Marek Szyprowski
+ <m.szyprowski@samsung.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
+ Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>,
+ Heiko Stuebner <heiko@sntech.de>, Matthew Rosato <mjrosato@linux.ibm.com>,
+ Orson Zhai <orsonzhai@gmail.com>, Baolin Wang
+ <baolin.wang@linux.alibaba.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
+ Chen-Yu Tsai <wens@csie.org>, Thierry Reding <thierry.reding@gmail.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20221128064648.1934720-1-baolu.lu@linux.intel.com>
+ <20221128064648.1934720-21-baolu.lu@linux.intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20221128064648.1934720-21-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Nov 28, 2022 at 12:10:39PM +0100, Niklas Schnelle wrote:
-> On Thu, 2022-11-17 at 09:55 +0800, Baolu Lu wrote:
-> > On 2022/11/17 1:16, Niklas Schnelle wrote:
-> > > When iommu.strict=1 is set or iommu_set_dma_strict() was called we
-> > > should use IOMMU_DOMAIN_DMA irrespective of ops->def_domain_type.
-> > > 
-> > > Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> > > ---
-> > >   drivers/iommu/iommu.c | 3 +++
-> > >   1 file changed, 3 insertions(+)
-> > > 
-> > > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > > index 65a3b3d886dc..d9bf94d198df 100644
-> > > --- a/drivers/iommu/iommu.c
-> > > +++ b/drivers/iommu/iommu.c
-> > > @@ -1562,6 +1562,9 @@ static int iommu_get_def_domain_type(struct device *dev)
-> > >   {
-> > >   	const struct iommu_ops *ops = dev_iommu_ops(dev);
-> > >   
-> > > +	if (iommu_dma_strict)
-> > > +		return IOMMU_DOMAIN_DMA;
-> > 
-> > If any quirky device must work in IOMMU identity mapping mode, this
-> > might introduce functional regression. At least for VT-d platforms, some
-> > devices do require IOMMU identity mapping mode for functionality.
+On 2022-11-28 06:46, Lu Baolu wrote:
+> With the retirement of the detach_dev callback, the naming of attach_dev
+> isn't meaningful anymore. Rename it to set_dev to restore its real
+> meaning, that is, setting an iommu domain to a device.
+
+English grammar alert: this part is confusing, since the usual 
+in-context reading* of "set[ting] X to Y" is going to imply assigning a 
+value of Y to some unique property of X. Given the actual semantic that 
+when we attach the device to the domain, we are setting the (current) 
+domain as a property of the device, I think the most logical and 
+intuitive abbreviation for this method would be set_domain(), where the 
+target device is then clearly implied by the argument (as the target 
+domain was for attach_dev()).
+
+FWIW I also wouldn't say that "attach" loses its meaning in a context 
+where an equivalent "detach" operation is only ever implicit in 
+reattaching to something else, however I do agree that it *is* worth 
+switching the terminology to clearly differentiate this internal 
+behaviour from the public attach/detach API for unmanaged domains.
+
+Thanks,
+Robin.
+
+
+[*] Note that It's not strictly incorrect, but "set to" in the sense of 
+starting work, e.g. "At 6PM I set to cooking dinner", is much less 
+commonly used, especially in code. Although I think technically 
+set_dev_to(dev, domain) would work gramatically to abbreviate that sense 
+of "set device to start using domain", it's still rather obscure and not 
+much less ambiguous.
+
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>   include/linux/iommu.h                       | 4 ++--
+>   drivers/iommu/amd/iommu.c                   | 2 +-
+>   drivers/iommu/apple-dart.c                  | 2 +-
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
+>   drivers/iommu/arm/arm-smmu/arm-smmu.c       | 2 +-
+>   drivers/iommu/arm/arm-smmu/qcom_iommu.c     | 2 +-
+>   drivers/iommu/exynos-iommu.c                | 2 +-
+>   drivers/iommu/fsl_pamu_domain.c             | 2 +-
+>   drivers/iommu/intel/iommu.c                 | 4 ++--
+>   drivers/iommu/iommu.c                       | 4 ++--
+>   drivers/iommu/ipmmu-vmsa.c                  | 2 +-
+>   drivers/iommu/msm_iommu.c                   | 2 +-
+>   drivers/iommu/mtk_iommu.c                   | 2 +-
+>   drivers/iommu/mtk_iommu_v1.c                | 2 +-
+>   drivers/iommu/omap-iommu.c                  | 2 +-
+>   drivers/iommu/rockchip-iommu.c              | 2 +-
+>   drivers/iommu/s390-iommu.c                  | 2 +-
+>   drivers/iommu/sprd-iommu.c                  | 2 +-
+>   drivers/iommu/sun50i-iommu.c                | 2 +-
+>   drivers/iommu/tegra-gart.c                  | 2 +-
+>   drivers/iommu/tegra-smmu.c                  | 2 +-
+>   drivers/iommu/virtio-iommu.c                | 2 +-
+>   22 files changed, 25 insertions(+), 25 deletions(-)
 > 
-> That's a good point. How about instead of unconditionally returning
-> IOMMU_DOMAIN_DMA we just do so if the domain type returned by ops-
-> >def_domain_type uses a flush queue (i.e. the __IOMMU_DOMAIN_DMA_FQ bit
-> is set). That way a device that only supports identity mapping gets to
-> set that but iommu_dma_strict at least always prevents use of an IOVA
-> flush queue.
-
-I would prefer we create some formal caps in iommu_ops to describe
-whatever it is you are trying to do.
-
-Jason
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 4c0491e5708c..1def4b4bb2b9 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -281,7 +281,7 @@ struct iommu_ops {
+>   
+>   /**
+>    * struct iommu_domain_ops - domain specific operations
+> - * @attach_dev: attach an iommu domain to a device
+> + * @set_dev: set an iommu domain to a device
+>    *  Return:
+>    * * 0		- success
+>    * * EINVAL	- can indicate that device and domain are incompatible due to
+> @@ -313,7 +313,7 @@ struct iommu_ops {
+>    * @free: Release the domain after use.
+>    */
+>   struct iommu_domain_ops {
+> -	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
+> +	int (*set_dev)(struct iommu_domain *domain, struct device *dev);
+>   	int (*set_dev_pasid)(struct iommu_domain *domain, struct device *dev,
+>   			     ioasid_t pasid);
+>   
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index bd1970b4f48b..f628bd0f9632 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -2388,7 +2388,7 @@ const struct iommu_ops amd_iommu_ops = {
+>   	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
+>   	.def_domain_type = amd_iommu_def_domain_type,
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+> -		.attach_dev	= amd_iommu_attach_device,
+> +		.set_dev	= amd_iommu_attach_device,
+>   		.map_pages	= amd_iommu_map_pages,
+>   		.unmap_pages	= amd_iommu_unmap_pages,
+>   		.iotlb_sync_map	= amd_iommu_iotlb_sync_map,
+> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+> index 6fbe6b275c79..77c9e7d3e1a2 100644
+> --- a/drivers/iommu/apple-dart.c
+> +++ b/drivers/iommu/apple-dart.c
+> @@ -763,7 +763,7 @@ static const struct iommu_ops apple_dart_iommu_ops = {
+>   	.pgsize_bitmap = -1UL, /* Restricted during dart probe */
+>   	.owner = THIS_MODULE,
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+> -		.attach_dev	= apple_dart_attach_dev,
+> +		.set_dev	= apple_dart_attach_dev,
+>   		.map_pages	= apple_dart_map_pages,
+>   		.unmap_pages	= apple_dart_unmap_pages,
+>   		.flush_iotlb_all = apple_dart_flush_iotlb_all,
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index ab160198edd6..194c304c5ee8 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2859,7 +2859,7 @@ static struct iommu_ops arm_smmu_ops = {
+>   	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+>   	.owner			= THIS_MODULE,
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+> -		.attach_dev		= arm_smmu_attach_dev,
+> +		.set_dev		= arm_smmu_attach_dev,
+>   		.map_pages		= arm_smmu_map_pages,
+>   		.unmap_pages		= arm_smmu_unmap_pages,
+>   		.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> index 719fbca1fe52..e31002d84b4a 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> @@ -1567,7 +1567,7 @@ static struct iommu_ops arm_smmu_ops = {
+>   	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+>   	.owner			= THIS_MODULE,
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+> -		.attach_dev		= arm_smmu_attach_dev,
+> +		.set_dev		= arm_smmu_attach_dev,
+>   		.map_pages		= arm_smmu_map_pages,
+>   		.unmap_pages		= arm_smmu_unmap_pages,
+>   		.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
+> diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+> index d7be3adee426..195add905364 100644
+> --- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+> +++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+> @@ -560,7 +560,7 @@ static const struct iommu_ops qcom_iommu_ops = {
+>   	.of_xlate	= qcom_iommu_of_xlate,
+>   	.pgsize_bitmap	= SZ_4K | SZ_64K | SZ_1M | SZ_16M,
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+> -		.attach_dev	= qcom_iommu_attach_dev,
+> +		.set_dev	= qcom_iommu_attach_dev,
+>   		.map_pages	= qcom_iommu_map,
+>   		.unmap_pages	= qcom_iommu_unmap,
+>   		.flush_iotlb_all = qcom_iommu_flush_iotlb_all,
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index 29ec713e8a21..7e735929e395 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -1403,7 +1403,7 @@ static const struct iommu_ops exynos_iommu_ops = {
+>   	.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
+>   	.of_xlate = exynos_iommu_of_xlate,
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+> -		.attach_dev	= exynos_iommu_attach_device,
+> +		.set_dev	= exynos_iommu_attach_device,
+>   		.map		= exynos_iommu_map,
+>   		.unmap		= exynos_iommu_unmap,
+>   		.iova_to_phys	= exynos_iommu_iova_to_phys,
+> diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+> index 272d88e415c6..c66e48b0ed6f 100644
+> --- a/drivers/iommu/fsl_pamu_domain.c
+> +++ b/drivers/iommu/fsl_pamu_domain.c
+> @@ -462,7 +462,7 @@ static const struct iommu_ops fsl_pamu_ops = {
+>   	.device_group   = fsl_pamu_device_group,
+>   	.set_platform_dma = fsl_pamu_set_platform_dma;
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+> -		.attach_dev	= fsl_pamu_attach_device,
+> +		.set_dev	= fsl_pamu_attach_device,
+>   		.iova_to_phys	= fsl_pamu_iova_to_phys,
+>   		.free		= fsl_pamu_domain_free,
+>   	}
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index cd71194fe7a6..7bcadb702e00 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -4131,7 +4131,7 @@ static int blocking_domain_attach_dev(struct iommu_domain *domain,
+>   
+>   static struct iommu_domain blocking_domain = {
+>   	.ops = &(const struct iommu_domain_ops) {
+> -		.attach_dev	= blocking_domain_attach_dev,
+> +		.set_dev	= blocking_domain_attach_dev,
+>   		.free		= intel_iommu_domain_free
+>   	}
+>   };
+> @@ -4750,7 +4750,7 @@ const struct iommu_ops intel_iommu_ops = {
+>   	.page_response		= intel_svm_page_response,
+>   #endif
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+> -		.attach_dev		= intel_iommu_attach_device,
+> +		.set_dev		= intel_iommu_attach_device,
+>   		.map_pages		= intel_iommu_map_pages,
+>   		.unmap_pages		= intel_iommu_unmap_pages,
+>   		.iotlb_sync_map		= intel_iommu_iotlb_sync_map,
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index e4966f088184..dca31065cdb5 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1983,10 +1983,10 @@ static int __iommu_attach_device(struct iommu_domain *domain,
+>   {
+>   	int ret;
+>   
+> -	if (unlikely(domain->ops->attach_dev == NULL))
+> +	if (unlikely(!domain->ops->set_dev))
+>   		return -ENODEV;
+>   
+> -	ret = domain->ops->attach_dev(domain, dev);
+> +	ret = domain->ops->set_dev(domain, dev);
+>   	if (!ret)
+>   		trace_attach_device_to_domain(dev);
+>   	return ret;
+> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+> index 3112822ac7be..8d40a2c150d4 100644
+> --- a/drivers/iommu/ipmmu-vmsa.c
+> +++ b/drivers/iommu/ipmmu-vmsa.c
+> @@ -860,7 +860,7 @@ static const struct iommu_ops ipmmu_ops = {
+>   	.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K,
+>   	.of_xlate = ipmmu_of_xlate,
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+> -		.attach_dev	= ipmmu_attach_device,
+> +		.set_dev	= ipmmu_attach_device,
+>   		.map_pages	= ipmmu_map,
+>   		.unmap_pages	= ipmmu_unmap,
+>   		.flush_iotlb_all = ipmmu_flush_iotlb_all,
+> diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+> index 564f9dc0140d..9f7432443726 100644
+> --- a/drivers/iommu/msm_iommu.c
+> +++ b/drivers/iommu/msm_iommu.c
+> @@ -690,7 +690,7 @@ static struct iommu_ops msm_iommu_ops = {
+>   	.pgsize_bitmap = MSM_IOMMU_PGSIZES,
+>   	.of_xlate = qcom_iommu_of_xlate,
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+> -		.attach_dev	= msm_iommu_attach_dev,
+> +		.set_dev	= msm_iommu_attach_dev,
+>   		.map_pages	= msm_iommu_map,
+>   		.unmap_pages	= msm_iommu_unmap,
+>   		/*
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 2022f47529c1..6bd4eb39c08f 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -940,7 +940,7 @@ static const struct iommu_ops mtk_iommu_ops = {
+>   	.pgsize_bitmap	= SZ_4K | SZ_64K | SZ_1M | SZ_16M,
+>   	.owner		= THIS_MODULE,
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+> -		.attach_dev	= mtk_iommu_attach_device,
+> +		.set_dev	= mtk_iommu_attach_device,
+>   		.map_pages	= mtk_iommu_map,
+>   		.unmap_pages	= mtk_iommu_unmap,
+>   		.flush_iotlb_all = mtk_iommu_flush_iotlb_all,
+> diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+> index c2d80b7a377f..785fc1569bc7 100644
+> --- a/drivers/iommu/mtk_iommu_v1.c
+> +++ b/drivers/iommu/mtk_iommu_v1.c
+> @@ -596,7 +596,7 @@ static const struct iommu_ops mtk_iommu_v1_ops = {
+>   	.set_platform_dma = mtk_iommu_v1_set_platform_dma,
+>   	.owner          = THIS_MODULE,
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+> -		.attach_dev	= mtk_iommu_v1_attach_device,
+> +		.set_dev	= mtk_iommu_v1_attach_device,
+>   		.map_pages	= mtk_iommu_v1_map,
+>   		.unmap_pages	= mtk_iommu_v1_unmap,
+>   		.iova_to_phys	= mtk_iommu_v1_iova_to_phys,
+> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+> index c3eedab00038..6f1031336611 100644
+> --- a/drivers/iommu/omap-iommu.c
+> +++ b/drivers/iommu/omap-iommu.c
+> @@ -1748,7 +1748,7 @@ static const struct iommu_ops omap_iommu_ops = {
+>   	.set_platform_dma = omap_iommu_set_platform_dma,
+>   	.pgsize_bitmap	= OMAP_IOMMU_PGSIZES,
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+> -		.attach_dev	= omap_iommu_attach_dev,
+> +		.set_dev	= omap_iommu_attach_dev,
+>   		.map		= omap_iommu_map,
+>   		.unmap		= omap_iommu_unmap,
+>   		.iova_to_phys	= omap_iommu_iova_to_phys,
+> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+> index f30db22ea5d7..5381dbf624ad 100644
+> --- a/drivers/iommu/rockchip-iommu.c
+> +++ b/drivers/iommu/rockchip-iommu.c
+> @@ -1191,7 +1191,7 @@ static const struct iommu_ops rk_iommu_ops = {
+>   	.pgsize_bitmap = RK_IOMMU_PGSIZE_BITMAP,
+>   	.of_xlate = rk_iommu_of_xlate,
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+> -		.attach_dev	= rk_iommu_attach_device,
+> +		.set_dev	= rk_iommu_attach_device,
+>   		.map		= rk_iommu_map,
+>   		.unmap		= rk_iommu_unmap,
+>   		.iova_to_phys	= rk_iommu_iova_to_phys,
+> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+> index 33dba5ee5e20..5fa8ea6687e7 100644
+> --- a/drivers/iommu/s390-iommu.c
+> +++ b/drivers/iommu/s390-iommu.c
+> @@ -447,7 +447,7 @@ static const struct iommu_ops s390_iommu_ops = {
+>   	.pgsize_bitmap = SZ_4K,
+>   	.get_resv_regions = s390_iommu_get_resv_regions,
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+> -		.attach_dev	= s390_iommu_attach_device,
+> +		.set_dev	= s390_iommu_attach_device,
+>   		.map_pages	= s390_iommu_map_pages,
+>   		.unmap_pages	= s390_iommu_unmap_pages,
+>   		.flush_iotlb_all = s390_iommu_flush_iotlb_all,
+> diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
+> index ae94d74b73f4..e105fa476e94 100644
+> --- a/drivers/iommu/sprd-iommu.c
+> +++ b/drivers/iommu/sprd-iommu.c
+> @@ -398,7 +398,7 @@ static const struct iommu_ops sprd_iommu_ops = {
+>   	.pgsize_bitmap	= SPRD_IOMMU_PAGE_SIZE,
+>   	.owner		= THIS_MODULE,
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+> -		.attach_dev	= sprd_iommu_attach_device,
+> +		.set_dev	= sprd_iommu_attach_device,
+>   		.map_pages	= sprd_iommu_map,
+>   		.unmap_pages	= sprd_iommu_unmap,
+>   		.iotlb_sync_map	= sprd_iommu_sync_map,
+> diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
+> index 37b074be87a5..2a35148c2b65 100644
+> --- a/drivers/iommu/sun50i-iommu.c
+> +++ b/drivers/iommu/sun50i-iommu.c
+> @@ -834,7 +834,7 @@ static const struct iommu_ops sun50i_iommu_ops = {
+>   	.of_xlate	= sun50i_iommu_of_xlate,
+>   	.probe_device	= sun50i_iommu_probe_device,
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+> -		.attach_dev	= sun50i_iommu_attach_device,
+> +		.set_dev	= sun50i_iommu_attach_device,
+>   		.flush_iotlb_all = sun50i_iommu_flush_iotlb_all,
+>   		.iotlb_sync_map = sun50i_iommu_iotlb_sync_map,
+>   		.iotlb_sync	= sun50i_iommu_iotlb_sync,
+> diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+> index a532b333233f..2b3944d10735 100644
+> --- a/drivers/iommu/tegra-gart.c
+> +++ b/drivers/iommu/tegra-gart.c
+> @@ -282,7 +282,7 @@ static const struct iommu_ops gart_iommu_ops = {
+>   	.pgsize_bitmap	= GART_IOMMU_PGSIZES,
+>   	.of_xlate	= gart_iommu_of_xlate,
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+> -		.attach_dev	= gart_iommu_attach_dev,
+> +		.set_dev	= gart_iommu_attach_dev,
+>   		.map		= gart_iommu_map,
+>   		.unmap		= gart_iommu_unmap,
+>   		.iova_to_phys	= gart_iommu_iova_to_phys,
+> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+> index 247d485904c1..b9f035069794 100644
+> --- a/drivers/iommu/tegra-smmu.c
+> +++ b/drivers/iommu/tegra-smmu.c
+> @@ -977,7 +977,7 @@ static const struct iommu_ops tegra_smmu_ops = {
+>   	.of_xlate = tegra_smmu_of_xlate,
+>   	.pgsize_bitmap = SZ_4K,
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+> -		.attach_dev	= tegra_smmu_attach_dev,
+> +		.set_dev	= tegra_smmu_attach_dev,
+>   		.map		= tegra_smmu_map,
+>   		.unmap		= tegra_smmu_unmap,
+>   		.iova_to_phys	= tegra_smmu_iova_to_phys,
+> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+> index 5b8fe9bfa9a5..c407c4b213db 100644
+> --- a/drivers/iommu/virtio-iommu.c
+> +++ b/drivers/iommu/virtio-iommu.c
+> @@ -1028,7 +1028,7 @@ static struct iommu_ops viommu_ops = {
+>   	.of_xlate		= viommu_of_xlate,
+>   	.owner			= THIS_MODULE,
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+> -		.attach_dev		= viommu_attach_dev,
+> +		.set_dev		= viommu_attach_dev,
+>   		.map_pages		= viommu_map_pages,
+>   		.unmap_pages		= viommu_unmap_pages,
+>   		.iova_to_phys		= viommu_iova_to_phys,
