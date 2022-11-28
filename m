@@ -1,412 +1,180 @@
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 865D963A
-	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 06:56:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CA0E2104;
+	Mon, 28 Nov 2022 09:05:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669618586; x=1701154586;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=nLuhPxobe8kTeSr/8uapIkQWPmWiW5lqkROueW3ss2c=;
-  b=gCbYUGaTLvOVEdjRfB1CZtHfIF+Ba76Ot04FN3GdSw0yRkyStReMqZAE
-   uOhmMFj+NfQM20lBIQ/ZYWdFRptGVmd1olDZAMlAsaMZ2l7YPv6SctWtW
-   zE0hTROyQ548v0kLfP5PD1I4Ywipi3hf5Cz0CS7dHMjeSXWfGSgFH4rrX
-   KCqcsBhDf2TiYKg6VchErv22NsZfV7XLoXmHPQzdvsGL9ajG2E0Osi4pH
-   u0HRfJLTQQi3eKqt6kEHMdKLGbqszvWcClkEjr3aG7ykA7fHv8Ht5Lt9s
-   xq5a5oYfaVid3LKFnawGk63fTSrEpbqDz3JOX7OdLuVgNum5kZAmhMquz
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="302338444"
-X-IronPort-AV: E=Sophos;i="5.96,199,1665471600"; 
-   d="scan'208";a="302338444"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2022 22:56:26 -0800
+  t=1669626354; x=1701162354;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=XvxlA+juhQq/cm6MrLg4Sr7KWfQT6qQUVvmDJscPV8E=;
+  b=k+eH04zywoB0kzCQ2MhVdeaQgvrS+daN3e3a/GTZf4lVaZvSphdgmZ3l
+   0HSAxPViERi19nFQmThOLhlEUmhBy1jnKGcj/7ZydiaxbC9HVAmG5PO0i
+   aMTLx9aZzahcuwFND+ijW6dkaWz78sBLGU1pO03Z0mIx8XWxm1EP8zGU2
+   y82jPl8tfl3WOYq6C43H0EWD9DH6NO8ovLEk70SHxTT7H63IpGFhjk7V5
+   YVdBVJFBdI6KPS3r1BQtzXSBGLyep0fk0W4Ms89rA9ZEd1MH7WMHc4LQk
+   0z13qPgyj/7bqIu9rWYslKdKEd5Z9/1hzwgAWewNb68ou3cm/Zu5S48SC
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="315940877"
+X-IronPort-AV: E=Sophos;i="5.96,200,1665471600"; 
+   d="scan'208";a="315940877"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2022 01:05:53 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="674121355"
-X-IronPort-AV: E=Sophos;i="5.96,199,1665471600"; 
-   d="scan'208";a="674121355"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga008.jf.intel.com with ESMTP; 27 Nov 2022 22:56:19 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Christoph Hellwig <hch@infradead.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Hector Martin <marcan@marcan.st>,
-	Sven Peter <sven@svenpeter.dev>,
-	Rob Clark <robdclark@gmail.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Andy Gross <agross@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Yong Wu <yong.wu@mediatek.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	Heiko Stuebner <heiko@sntech.de>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	Chen-Yu Tsai <wens@csie.org>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v3 20/20] iommu: Rename attach_dev to set_dev
-Date: Mon, 28 Nov 2022 14:46:48 +0800
-Message-Id: <20221128064648.1934720-21-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221128064648.1934720-1-baolu.lu@linux.intel.com>
-References: <20221128064648.1934720-1-baolu.lu@linux.intel.com>
+X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="620976651"
+X-IronPort-AV: E=Sophos;i="5.96,200,1665471600"; 
+   d="scan'208";a="620976651"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by orsmga006.jf.intel.com with ESMTP; 28 Nov 2022 01:05:52 -0800
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Mon, 28 Nov 2022 01:05:52 -0800
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Mon, 28 Nov 2022 01:05:51 -0800
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Mon, 28 Nov 2022 01:05:51 -0800
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (104.47.74.44) by
+ edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Mon, 28 Nov 2022 01:05:51 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NqluySPEqRmtrh2ereJAXh3GZLDJACjXk4NewuvN6GkCq+IZQfdQeCLfnb9QXw6ABhwOcPAjRZIaSASl2oFtScBPWMwD/+9fA6dAvEgRcJIpMaevdWs8xoWmd1EXem0P8lcKG4+JURjsynYH2EDddfOG1V0EWIEYybxuhYCgQgO4Z2LnaRvz7Od3JI/+fQuNahm2+hPu86ksq0iuDXVoFXPm9WQf4k0hLdZWQmeuwoDcQlFWnU0H9lBLF2kAjh3DUOZxRDPxKm9ebvirROpG7lA7dbtrHnlkJhjl5b9bfWjTXJLM0TPCdCgYSlbYUV9RstlFCLpe/towEwtb7zhE/A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XvxlA+juhQq/cm6MrLg4Sr7KWfQT6qQUVvmDJscPV8E=;
+ b=gWmImxR0etQv1u60D3Pt3TLO2E1ixIO8La015MLmTv626fOtxnezbXbZ74aXTQReAvYfFcE9nNP/WUyYLFs/bLdLwE+oLMdf3jjA2XzfPPIdYnuoryaVMYZ0uCt/iOKkEoLRkf9HM9AnuJvAPk5/ss+pJthBgRkRYnawpbDQYPvxMaCDtTLATcristXLlV2Npi6lSPaiLu85jrmjm01WFF7WP1gBUZ0fObJZHws7yVGeWTQzsPxpJ/d+o9RaI9vvFVQTZlSRoTZ2fSwCU+VYkjHiiL/lMilCT01WNV0Z4vtM9nUsirm2eh8K7iQUwFGcIlid8RwWZ0860eIooatDiA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by BN9PR11MB5356.namprd11.prod.outlook.com (2603:10b6:408:11d::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Mon, 28 Nov
+ 2022 09:05:49 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::d30c:c435:9b26:7dde]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::d30c:c435:9b26:7dde%9]) with mapi id 15.20.5857.021; Mon, 28 Nov 2022
+ 09:05:49 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: "eric.auger@redhat.com" <eric.auger@redhat.com>, Jason Gunthorpe
+	<jgg@nvidia.com>, "bpf@vger.kernel.org" <bpf@vger.kernel.org>, "Jonathan
+ Corbet" <corbet@lwn.net>, David Woodhouse <dwmw2@infradead.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, Joerg Roedel
+	<joro@8bytes.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+	"llvm@lists.linux.dev" <llvm@lists.linux.dev>, Nathan Chancellor
+	<nathan@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, Miguel Ojeda
+	<ojeda@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Shuah Khan
+	<shuah@kernel.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Tom Rix <trix@redhat.com>, Will Deacon <will@kernel.org>
+CC: Anthony Krowiak <akrowiak@linux.ibm.com>, Alex Williamson
+	<alex.williamson@redhat.com>, Bagas Sanjaya <bagasdotme@gmail.com>, Lu Baolu
+	<baolu.lu@linux.intel.com>, Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+	Cornelia Huck <cohuck@redhat.com>, Daniel Jordan
+	<daniel.m.jordan@oracle.com>, David Gibson <david@gibson.dropbear.id.au>,
+	Eric Farman <farman@linux.ibm.com>, Jason Wang <jasowang@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>, Jason Herne
+	<jjherne@linux.ibm.com>, "Martins, Joao" <joao.m.martins@oracle.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Yang, Lixiao"
+	<lixiao.yang@intel.com>, Matthew Rosato <mjrosato@linux.ibm.com>, "Michael S.
+ Tsirkin" <mst@redhat.com>, Nicolin Chen <nicolinc@nvidia.com>, Halil Pasic
+	<pasic@linux.ibm.com>, Niklas Schnelle <schnelle@linux.ibm.com>, "Shameerali
+ Kolothum Thodi" <shameerali.kolothum.thodi@huawei.com>, "Liu, Yi L"
+	<yi.l.liu@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
+Subject: RE: [PATCH v5 11/19] iommufd: IOCTLs for the io_pagetable
+Thread-Topic: [PATCH v5 11/19] iommufd: IOCTLs for the io_pagetable
+Thread-Index: AQHY+f/Tzbd60/PmH0uUc2fq1I1b8K5THTKAgAD+1/A=
+Date: Mon, 28 Nov 2022 09:05:48 +0000
+Message-ID: <BN9PR11MB5276E400C99C0933E00FB9E18C139@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <11-v5-4001c2997bd0+30c-iommufd_jgg@nvidia.com>
+ <16bcfd63-2803-8000-7725-b42cd05061fa@redhat.com>
+In-Reply-To: <16bcfd63-2803-8000-7725-b42cd05061fa@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|BN9PR11MB5356:EE_
+x-ms-office365-filtering-correlation-id: a0ec6f8a-4216-45a7-9225-08dad11fbe11
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: vxP1fqcshT7LF+/A/TuBGHfubSt+3q3MlVVS7FMOs3SFcQa32EYr2pq9K3WXZjl0xL6yXdOAEFzKITI2qUUlvrOwGG3lNzVZkraqwDI1DF6KFYvmE4EDzvDXd1OOzUqsicYPmi7HlEEawlzYyHHu0nQ06apDIMCAcMIoMQrmPD356qqjSL3zw0tocTnT1kZjEbEwkbbKRS3YRVO88y+zmiNNmkXtD1tPXXL5vmGoxuv28TxMZC7m4lAy9m7+1sTA8P+42qKITE36GMwOncc2TTwQ8lnV9uECIksnLLDylessafdI6CKd64Fib3YtTphVOXO0sPTv5UsegTnPpIDx85FyFEdoOPclV1Y8nRLgTWvjZpvuP6R+zoxrBKU1RPb1UNfCzUvG4KaH3NesHPzdd2AF+jJArQCCTdWxJj9ijcBkYdkaRwvw8bkhglwZ+JbKkgk/Nf8nw87Vbjz6oLleZwCpDtmofPtbfH56lVl/+nI9W675MqanltPIwrz6jYlJtF9gtOY+cb6QmQKIioRNUyVs3p73K69a8TVwd8UldHHKt9AbydzETqQWSzO6VxYClxO1YfcEfIZc8DdE+APit76wIJ4jtx+YXo0QXtlLNOArfs7Oe89XnWcV2Q3i/B78lHWmlkxW5Kfc1acHKkihEE/N5Fm8mUXuwheatayGkCSIce8QrJmO8grdEMlTn4eS0AbXUzNP8HDQnlwmgrUOwg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(396003)(366004)(136003)(346002)(376002)(39860400002)(451199015)(86362001)(478600001)(71200400001)(6506007)(7696005)(54906003)(26005)(9686003)(316002)(110136005)(52536014)(41300700001)(8936002)(7416002)(5660300002)(4744005)(7406005)(55016003)(33656002)(82960400001)(38070700005)(2906002)(38100700002)(921005)(76116006)(8676002)(66946007)(66476007)(64756008)(66446008)(66556008)(4326008)(186003)(122000001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?MUJQR3ZiWGZ3bXJ2NWJVd3h3SC9oYmxiSjhidm81UDA5TUZqaGlHTU85YzJm?=
+ =?utf-8?B?MmY3aTdyY1FLMDhVeWRQcCtqcmhlTnVCYmFlL1RyaVlsK3djbk1VVlQ1QXk4?=
+ =?utf-8?B?UG1OWEVZaEUxNU1lRXFvZmJ6dk51TFVtYTVTT1ZUS3JYc3RpTVB4L1JXVzZE?=
+ =?utf-8?B?TklBQ3hqNzMzQ2JKdUV0ZzlJcHVjSzBndnBkbnVyeXNVWm90VVFRYmhYemlF?=
+ =?utf-8?B?SWZhaVZGRlhIN0VoYXNvWkhrd1piTktocEpYa3hLY0x3cjNGMEh6SzhLcmxK?=
+ =?utf-8?B?OEhubTRKNktQKzBDWkt2QlRkZnVBOHRTM25ORUtQZmVQbGlXRDFSUXJmN2xR?=
+ =?utf-8?B?TmFFSzlzR3BDbVpkYmtTaEhLVVpWenJ5M3N0cmVZRXF3WUFkcUdSeXdQOHdn?=
+ =?utf-8?B?SGwyakNNSkxkY3hsa2xKOVo0UVZTRXhIQ3hPRVNwRk5QbzQ0dklXU3hrSlZZ?=
+ =?utf-8?B?SjRyN21yczU5akRCZWhYbjAvZGFFV09CakliYWN2Wm1sL1c1SmFQSnEzME5U?=
+ =?utf-8?B?aVIvejJkV1FWY1lEVmFDR3p0dmxIYkQ3M1J2WHRsa0MyRHo5MzhobzUrRlRL?=
+ =?utf-8?B?cXYvWHVyR29UZjVYV0JsNTFjNENiZFlDQVppNUtKNkxFdVU3ZC92d3Jzdy9o?=
+ =?utf-8?B?bWRlOUNUODlENlp1MmhXTDgzZmEzUGhKZEI2VnRQYnRHYlJBSktuTlp3amJ0?=
+ =?utf-8?B?U0VGRFU1WWJ3N2RoQjVBN3FzMXRSckJGeGN3ekNSdzdXS3pzMGJLL1hFS1VX?=
+ =?utf-8?B?NisyRGxzRnJyQm80RWI3TmdUQUpkemY0NDJNTnZ6RjZ6Z2YzZkxVdDhxMDJX?=
+ =?utf-8?B?WGkzZi8wUG9ZZ283bnBidS82WUp2M05PSXM5MThvd3FNQ21nWjZ3TGRTTHE0?=
+ =?utf-8?B?YWR4OXduREdXMjUxbkhWTWFOUzdQUE12QyszZllFVm9XVFFlVmZWSlJCQU8y?=
+ =?utf-8?B?aElWVHdsbURic0tIN011TXZnVEZzTUNwdFZ2RmpMOTc4Q3JkNXR2MnA2Q1Ey?=
+ =?utf-8?B?UGh1bkRSemxKTHdMKzZOVTZWNzBySFE5Q2VLOWYvZTZ0SDZwWmxhczVJZ2o5?=
+ =?utf-8?B?cUNMNklZQmJGd3BQaXR0K1g5b0FWQWErcnNYU0ZXV2RnWE5JNUpndmFCVFBO?=
+ =?utf-8?B?MWVHVUMxTWRPS004L1pBRWprQzFROTltUHdhb0ZaUFVQMkFyYzlVZm1KWnd4?=
+ =?utf-8?B?VCtVZ1hDeDk3LzN1RkpzSDJiYnVITTdGUFl6OVo1L0NMajA5dGtqL3daK1Fr?=
+ =?utf-8?B?UGVGbkU3SUZrYlNSOEJEc3NESEZ6WkhMYUJPMHJDWjhROFNBVy9ROStvYWFj?=
+ =?utf-8?B?eVowcFZ5VGdNOUZzVzRSL1BxSWdJTi8wYm8xYURKY0ZPUXFJLzMxbC9scXF2?=
+ =?utf-8?B?MXRjczh5SlphNXovZHRYb0Y5NVVXQnpUSzdyQlkzVVJrWW50KytHcTdNYXo0?=
+ =?utf-8?B?YXRVTDByd1BFZHJJYko5VGhQbm5GM1RsMDlwZVBGUTc2Yk4rNXR3cWM1UWpK?=
+ =?utf-8?B?NDJaUmxQc3hqM3V3YVdkdytxWUoweFljN2FOZ05RRk4xYVRKV0JiQWFHRlVk?=
+ =?utf-8?B?QldQTEVXYVorOWw2WUJKdyt6VUx5TEhvZ2hkU0cvQ29kMXlsYjh5TVd0S2dU?=
+ =?utf-8?B?YmZFV2ZiSHVEOUpnYVR4QXltKy9yWFJORUswMkt3bytLNTFNQ3lLU0QwOEts?=
+ =?utf-8?B?Y2ZybVB5aldqeWNHWkJYc1BhVjJrQ1BOWVRkZ3ZKdzJ1eHJiMldiNTAzZGFa?=
+ =?utf-8?B?eXY2bWdibXVJbXN3TjBEdkMreTBxN0xBYVM4b0lnVFV3bm1yYWtIM0NtOGRm?=
+ =?utf-8?B?ekkvckRLa1E4YTlmYXhXMllEL3ExYWhMaDdMZGlGZHNlWVJHaTFMeDNETU1i?=
+ =?utf-8?B?N1dpSUgyQWl2TlV2MEsyaXdpOHZxRVBRVWZrS2JJV0plRS9Gdy9sUElveGI1?=
+ =?utf-8?B?N0N3bUdxS2MzRVp6aWUwTFI2cE44THFnOGdwSnp5eGlDekkxcnZEUWpOY1hB?=
+ =?utf-8?B?bE5iTlpJZmZYc2s5c2tCZU1jOE1QT3pVSG5RVCtnOUQ0RmFtaVRpTE1CR2Qr?=
+ =?utf-8?B?dkRBNVhwa0l0dktpQWsyRTE1ZWlCRUt5TWNqL3l1cENJSnhrY2pDRkNuTGRs?=
+ =?utf-8?Q?8bb4hF88gGDQRvMMgRsaZdn1k?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a0ec6f8a-4216-45a7-9225-08dad11fbe11
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Nov 2022 09:05:48.9204
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7cGJPfho8WlChYFhC6PtY6Lm1BLn8b8N551WoomxaBf7Yws4unja25UwDgB1UGx0DcXU4yosnxh5VnWqk1hsJg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR11MB5356
+X-OriginatorOrg: intel.com
 
-With the retirement of the detach_dev callback, the naming of attach_dev
-isn't meaningful anymore. Rename it to set_dev to restore its real
-meaning, that is, setting an iommu domain to a device.
-
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- include/linux/iommu.h                       | 4 ++--
- drivers/iommu/amd/iommu.c                   | 2 +-
- drivers/iommu/apple-dart.c                  | 2 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
- drivers/iommu/arm/arm-smmu/arm-smmu.c       | 2 +-
- drivers/iommu/arm/arm-smmu/qcom_iommu.c     | 2 +-
- drivers/iommu/exynos-iommu.c                | 2 +-
- drivers/iommu/fsl_pamu_domain.c             | 2 +-
- drivers/iommu/intel/iommu.c                 | 4 ++--
- drivers/iommu/iommu.c                       | 4 ++--
- drivers/iommu/ipmmu-vmsa.c                  | 2 +-
- drivers/iommu/msm_iommu.c                   | 2 +-
- drivers/iommu/mtk_iommu.c                   | 2 +-
- drivers/iommu/mtk_iommu_v1.c                | 2 +-
- drivers/iommu/omap-iommu.c                  | 2 +-
- drivers/iommu/rockchip-iommu.c              | 2 +-
- drivers/iommu/s390-iommu.c                  | 2 +-
- drivers/iommu/sprd-iommu.c                  | 2 +-
- drivers/iommu/sun50i-iommu.c                | 2 +-
- drivers/iommu/tegra-gart.c                  | 2 +-
- drivers/iommu/tegra-smmu.c                  | 2 +-
- drivers/iommu/virtio-iommu.c                | 2 +-
- 22 files changed, 25 insertions(+), 25 deletions(-)
-
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 4c0491e5708c..1def4b4bb2b9 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -281,7 +281,7 @@ struct iommu_ops {
- 
- /**
-  * struct iommu_domain_ops - domain specific operations
-- * @attach_dev: attach an iommu domain to a device
-+ * @set_dev: set an iommu domain to a device
-  *  Return:
-  * * 0		- success
-  * * EINVAL	- can indicate that device and domain are incompatible due to
-@@ -313,7 +313,7 @@ struct iommu_ops {
-  * @free: Release the domain after use.
-  */
- struct iommu_domain_ops {
--	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
-+	int (*set_dev)(struct iommu_domain *domain, struct device *dev);
- 	int (*set_dev_pasid)(struct iommu_domain *domain, struct device *dev,
- 			     ioasid_t pasid);
- 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index bd1970b4f48b..f628bd0f9632 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2388,7 +2388,7 @@ const struct iommu_ops amd_iommu_ops = {
- 	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
- 	.def_domain_type = amd_iommu_def_domain_type,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
--		.attach_dev	= amd_iommu_attach_device,
-+		.set_dev	= amd_iommu_attach_device,
- 		.map_pages	= amd_iommu_map_pages,
- 		.unmap_pages	= amd_iommu_unmap_pages,
- 		.iotlb_sync_map	= amd_iommu_iotlb_sync_map,
-diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-index 6fbe6b275c79..77c9e7d3e1a2 100644
---- a/drivers/iommu/apple-dart.c
-+++ b/drivers/iommu/apple-dart.c
-@@ -763,7 +763,7 @@ static const struct iommu_ops apple_dart_iommu_ops = {
- 	.pgsize_bitmap = -1UL, /* Restricted during dart probe */
- 	.owner = THIS_MODULE,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
--		.attach_dev	= apple_dart_attach_dev,
-+		.set_dev	= apple_dart_attach_dev,
- 		.map_pages	= apple_dart_map_pages,
- 		.unmap_pages	= apple_dart_unmap_pages,
- 		.flush_iotlb_all = apple_dart_flush_iotlb_all,
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index ab160198edd6..194c304c5ee8 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2859,7 +2859,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
- 	.owner			= THIS_MODULE,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
--		.attach_dev		= arm_smmu_attach_dev,
-+		.set_dev		= arm_smmu_attach_dev,
- 		.map_pages		= arm_smmu_map_pages,
- 		.unmap_pages		= arm_smmu_unmap_pages,
- 		.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 719fbca1fe52..e31002d84b4a 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -1567,7 +1567,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
- 	.owner			= THIS_MODULE,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
--		.attach_dev		= arm_smmu_attach_dev,
-+		.set_dev		= arm_smmu_attach_dev,
- 		.map_pages		= arm_smmu_map_pages,
- 		.unmap_pages		= arm_smmu_unmap_pages,
- 		.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
-diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index d7be3adee426..195add905364 100644
---- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -560,7 +560,7 @@ static const struct iommu_ops qcom_iommu_ops = {
- 	.of_xlate	= qcom_iommu_of_xlate,
- 	.pgsize_bitmap	= SZ_4K | SZ_64K | SZ_1M | SZ_16M,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
--		.attach_dev	= qcom_iommu_attach_dev,
-+		.set_dev	= qcom_iommu_attach_dev,
- 		.map_pages	= qcom_iommu_map,
- 		.unmap_pages	= qcom_iommu_unmap,
- 		.flush_iotlb_all = qcom_iommu_flush_iotlb_all,
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 29ec713e8a21..7e735929e395 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -1403,7 +1403,7 @@ static const struct iommu_ops exynos_iommu_ops = {
- 	.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
- 	.of_xlate = exynos_iommu_of_xlate,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
--		.attach_dev	= exynos_iommu_attach_device,
-+		.set_dev	= exynos_iommu_attach_device,
- 		.map		= exynos_iommu_map,
- 		.unmap		= exynos_iommu_unmap,
- 		.iova_to_phys	= exynos_iommu_iova_to_phys,
-diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-index 272d88e415c6..c66e48b0ed6f 100644
---- a/drivers/iommu/fsl_pamu_domain.c
-+++ b/drivers/iommu/fsl_pamu_domain.c
-@@ -462,7 +462,7 @@ static const struct iommu_ops fsl_pamu_ops = {
- 	.device_group   = fsl_pamu_device_group,
- 	.set_platform_dma = fsl_pamu_set_platform_dma;
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
--		.attach_dev	= fsl_pamu_attach_device,
-+		.set_dev	= fsl_pamu_attach_device,
- 		.iova_to_phys	= fsl_pamu_iova_to_phys,
- 		.free		= fsl_pamu_domain_free,
- 	}
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index cd71194fe7a6..7bcadb702e00 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4131,7 +4131,7 @@ static int blocking_domain_attach_dev(struct iommu_domain *domain,
- 
- static struct iommu_domain blocking_domain = {
- 	.ops = &(const struct iommu_domain_ops) {
--		.attach_dev	= blocking_domain_attach_dev,
-+		.set_dev	= blocking_domain_attach_dev,
- 		.free		= intel_iommu_domain_free
- 	}
- };
-@@ -4750,7 +4750,7 @@ const struct iommu_ops intel_iommu_ops = {
- 	.page_response		= intel_svm_page_response,
- #endif
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
--		.attach_dev		= intel_iommu_attach_device,
-+		.set_dev		= intel_iommu_attach_device,
- 		.map_pages		= intel_iommu_map_pages,
- 		.unmap_pages		= intel_iommu_unmap_pages,
- 		.iotlb_sync_map		= intel_iommu_iotlb_sync_map,
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index e4966f088184..dca31065cdb5 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1983,10 +1983,10 @@ static int __iommu_attach_device(struct iommu_domain *domain,
- {
- 	int ret;
- 
--	if (unlikely(domain->ops->attach_dev == NULL))
-+	if (unlikely(!domain->ops->set_dev))
- 		return -ENODEV;
- 
--	ret = domain->ops->attach_dev(domain, dev);
-+	ret = domain->ops->set_dev(domain, dev);
- 	if (!ret)
- 		trace_attach_device_to_domain(dev);
- 	return ret;
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 3112822ac7be..8d40a2c150d4 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -860,7 +860,7 @@ static const struct iommu_ops ipmmu_ops = {
- 	.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K,
- 	.of_xlate = ipmmu_of_xlate,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
--		.attach_dev	= ipmmu_attach_device,
-+		.set_dev	= ipmmu_attach_device,
- 		.map_pages	= ipmmu_map,
- 		.unmap_pages	= ipmmu_unmap,
- 		.flush_iotlb_all = ipmmu_flush_iotlb_all,
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index 564f9dc0140d..9f7432443726 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -690,7 +690,7 @@ static struct iommu_ops msm_iommu_ops = {
- 	.pgsize_bitmap = MSM_IOMMU_PGSIZES,
- 	.of_xlate = qcom_iommu_of_xlate,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
--		.attach_dev	= msm_iommu_attach_dev,
-+		.set_dev	= msm_iommu_attach_dev,
- 		.map_pages	= msm_iommu_map,
- 		.unmap_pages	= msm_iommu_unmap,
- 		/*
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 2022f47529c1..6bd4eb39c08f 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -940,7 +940,7 @@ static const struct iommu_ops mtk_iommu_ops = {
- 	.pgsize_bitmap	= SZ_4K | SZ_64K | SZ_1M | SZ_16M,
- 	.owner		= THIS_MODULE,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
--		.attach_dev	= mtk_iommu_attach_device,
-+		.set_dev	= mtk_iommu_attach_device,
- 		.map_pages	= mtk_iommu_map,
- 		.unmap_pages	= mtk_iommu_unmap,
- 		.flush_iotlb_all = mtk_iommu_flush_iotlb_all,
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index c2d80b7a377f..785fc1569bc7 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -596,7 +596,7 @@ static const struct iommu_ops mtk_iommu_v1_ops = {
- 	.set_platform_dma = mtk_iommu_v1_set_platform_dma,
- 	.owner          = THIS_MODULE,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
--		.attach_dev	= mtk_iommu_v1_attach_device,
-+		.set_dev	= mtk_iommu_v1_attach_device,
- 		.map_pages	= mtk_iommu_v1_map,
- 		.unmap_pages	= mtk_iommu_v1_unmap,
- 		.iova_to_phys	= mtk_iommu_v1_iova_to_phys,
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index c3eedab00038..6f1031336611 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -1748,7 +1748,7 @@ static const struct iommu_ops omap_iommu_ops = {
- 	.set_platform_dma = omap_iommu_set_platform_dma,
- 	.pgsize_bitmap	= OMAP_IOMMU_PGSIZES,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
--		.attach_dev	= omap_iommu_attach_dev,
-+		.set_dev	= omap_iommu_attach_dev,
- 		.map		= omap_iommu_map,
- 		.unmap		= omap_iommu_unmap,
- 		.iova_to_phys	= omap_iommu_iova_to_phys,
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index f30db22ea5d7..5381dbf624ad 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -1191,7 +1191,7 @@ static const struct iommu_ops rk_iommu_ops = {
- 	.pgsize_bitmap = RK_IOMMU_PGSIZE_BITMAP,
- 	.of_xlate = rk_iommu_of_xlate,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
--		.attach_dev	= rk_iommu_attach_device,
-+		.set_dev	= rk_iommu_attach_device,
- 		.map		= rk_iommu_map,
- 		.unmap		= rk_iommu_unmap,
- 		.iova_to_phys	= rk_iommu_iova_to_phys,
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index 33dba5ee5e20..5fa8ea6687e7 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -447,7 +447,7 @@ static const struct iommu_ops s390_iommu_ops = {
- 	.pgsize_bitmap = SZ_4K,
- 	.get_resv_regions = s390_iommu_get_resv_regions,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
--		.attach_dev	= s390_iommu_attach_device,
-+		.set_dev	= s390_iommu_attach_device,
- 		.map_pages	= s390_iommu_map_pages,
- 		.unmap_pages	= s390_iommu_unmap_pages,
- 		.flush_iotlb_all = s390_iommu_flush_iotlb_all,
-diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
-index ae94d74b73f4..e105fa476e94 100644
---- a/drivers/iommu/sprd-iommu.c
-+++ b/drivers/iommu/sprd-iommu.c
-@@ -398,7 +398,7 @@ static const struct iommu_ops sprd_iommu_ops = {
- 	.pgsize_bitmap	= SPRD_IOMMU_PAGE_SIZE,
- 	.owner		= THIS_MODULE,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
--		.attach_dev	= sprd_iommu_attach_device,
-+		.set_dev	= sprd_iommu_attach_device,
- 		.map_pages	= sprd_iommu_map,
- 		.unmap_pages	= sprd_iommu_unmap,
- 		.iotlb_sync_map	= sprd_iommu_sync_map,
-diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
-index 37b074be87a5..2a35148c2b65 100644
---- a/drivers/iommu/sun50i-iommu.c
-+++ b/drivers/iommu/sun50i-iommu.c
-@@ -834,7 +834,7 @@ static const struct iommu_ops sun50i_iommu_ops = {
- 	.of_xlate	= sun50i_iommu_of_xlate,
- 	.probe_device	= sun50i_iommu_probe_device,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
--		.attach_dev	= sun50i_iommu_attach_device,
-+		.set_dev	= sun50i_iommu_attach_device,
- 		.flush_iotlb_all = sun50i_iommu_flush_iotlb_all,
- 		.iotlb_sync_map = sun50i_iommu_iotlb_sync_map,
- 		.iotlb_sync	= sun50i_iommu_iotlb_sync,
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index a532b333233f..2b3944d10735 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -282,7 +282,7 @@ static const struct iommu_ops gart_iommu_ops = {
- 	.pgsize_bitmap	= GART_IOMMU_PGSIZES,
- 	.of_xlate	= gart_iommu_of_xlate,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
--		.attach_dev	= gart_iommu_attach_dev,
-+		.set_dev	= gart_iommu_attach_dev,
- 		.map		= gart_iommu_map,
- 		.unmap		= gart_iommu_unmap,
- 		.iova_to_phys	= gart_iommu_iova_to_phys,
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 247d485904c1..b9f035069794 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -977,7 +977,7 @@ static const struct iommu_ops tegra_smmu_ops = {
- 	.of_xlate = tegra_smmu_of_xlate,
- 	.pgsize_bitmap = SZ_4K,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
--		.attach_dev	= tegra_smmu_attach_dev,
-+		.set_dev	= tegra_smmu_attach_dev,
- 		.map		= tegra_smmu_map,
- 		.unmap		= tegra_smmu_unmap,
- 		.iova_to_phys	= tegra_smmu_iova_to_phys,
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index 5b8fe9bfa9a5..c407c4b213db 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -1028,7 +1028,7 @@ static struct iommu_ops viommu_ops = {
- 	.of_xlate		= viommu_of_xlate,
- 	.owner			= THIS_MODULE,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
--		.attach_dev		= viommu_attach_dev,
-+		.set_dev		= viommu_attach_dev,
- 		.map_pages		= viommu_map_pages,
- 		.unmap_pages		= viommu_unmap_pages,
- 		.iova_to_phys		= viommu_iova_to_phys,
--- 
-2.34.1
-
+PiBGcm9tOiBFcmljIEF1Z2VyIDxlcmljLmF1Z2VyQHJlZGhhdC5jb20+DQo+IFNlbnQ6IE1vbmRh
+eSwgTm92ZW1iZXIgMjgsIDIwMjIgMTo0OSBBTQ0KPiA+ICtzdHJ1Y3QgaW9tbXVfaW9hc19jb3B5
+IHsNCj4gPiArCV9fdTMyIHNpemU7DQo+ID4gKwlfX3UzMiBmbGFnczsNCj4gPiArCV9fdTMyIGRz
+dF9pb2FzX2lkOw0KPiA+ICsJX191MzIgc3JjX2lvYXNfaWQ7DQo+IGlzIHNyY19pb2FzX2lkID09
+IGRzdF9pb2FzX2lkIGFsbG93ZWQ/DQoNCkkgc3VwcG9zZSBzby4gaW9tbXVmZF9pb2FzX2NvcHko
+KSBzaW1wbHkgZ2V0cyBhIHJlZmVyZW5jZSB0bw0KdW5kZXJseWluZyBpb3B0X3BhZ2VzIGFjY29y
+ZGluZyB0byBbc3JjX2lvYXNfaWQsIHNyY19pb3ZhXSBhbmQNCnRoZW4gbWFwIGl0IGludG8gW2Rz
+dF9pb2FzX2lkLCBkc3RfaW92YV0uIEl0IGRvZXNu4oCZdCBtYXR0ZXINCndoZXRoZXIgaW9wdF9w
+YWdlcyBjb21lcyBmcm9tIGEgc2FtZSBvciBkaWZmZXJlbnQgaW9hcy4NCg0KVGhlIG9ubHkgcmVz
+dHJpY3Rpb24gaXMgdGhhdCB0aGUgc3JjL2RzdCByYW5nZXMgZG9uJ3Qgb3ZlcmxhcC4NCg==
