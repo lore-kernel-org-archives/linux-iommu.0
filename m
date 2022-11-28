@@ -1,32 +1,32 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8322361
-	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 06:55:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDECB39F
+	for <iommu@lists.linux.dev>; Mon, 28 Nov 2022 06:55:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669618515; x=1701154515;
+  t=1669618522; x=1701154522;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=PhxHKh8gGEUFxS7QMyT5AZD9ZvqhOGgKls6j0D/stek=;
-  b=Rc3bmt03yumtNzpQzASOiUaOg72feZgWsxxZ+8r3Q0yjPEx8Xul7mPXV
-   VcNN8OLYEq6BukDVTixEPl4F08GNnuKjtulfRabyXtIHr/RfCfzewizNx
-   7cdXgEr4Po8rYIBreSDqHjbjtCG/Dc58n9xKUQM2xSybVFn9fi/qe0vOV
-   AvaqSpLIKosjWfVcTjHCnuBDUv9/j16sWSNsT8+WOsbTKLmeLVL4aIohI
-   ChLog/6J/RGVD0YHvVw7eRoXeHb1kteb6UeM05Er5ih+IUCtQMVlltQg4
-   6GrudMQci49lVstCpvZAUQYqxEoe1NQuoV+YK4+3aQCHYZG2Z1VGJgVtL
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="379016199"
+  bh=AAYy0JUpin+OfoNJn9WkR2B9kCOfW+EhBpCdyTnxdnM=;
+  b=Jp1Cz+LDq0gVrY3mNc084BwzVFpO24oWKHJ38mYedOXDqszDcK0dBh3g
+   e+03b/RrqdhdtJsPAMifyufUsfT0eJXZDu7NK4IFK9aP46tHuCoFd6NUF
+   CmmxwyE4GnidPTzxfjRnPj2BGBskhHl9/zDSKAoHIhIrlvXp2XAQp206i
+   QS7eoEgsQfOPLSDphwowunmnR/PXSaFzIZXs5imNtr+aTRuni7EesxTI8
+   qLnrmvZ3qvkB3p48lN2jkQP63+6A9m6qzu3E5LaBxpQhupg2KlpdkYxrT
+   LcxgGNp2buOWU1TO+QzoaDomRPq8w6F6LKXgjxpYWJxF/LrGRQOJ3ZTKM
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="315916163"
 X-IronPort-AV: E=Sophos;i="5.96,199,1665471600"; 
-   d="scan'208";a="379016199"
+   d="scan'208";a="315916163"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2022 22:55:15 -0800
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2022 22:55:22 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="674120967"
+X-IronPort-AV: E=McAfee;i="6500,9779,10544"; a="674121024"
 X-IronPort-AV: E=Sophos;i="5.96,199,1665471600"; 
-   d="scan'208";a="674120967"
+   d="scan'208";a="674121024"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga008.jf.intel.com with ESMTP; 27 Nov 2022 22:55:08 -0800
+  by orsmga008.jf.intel.com with ESMTP; 27 Nov 2022 22:55:15 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Jason Gunthorpe <jgg@nvidia.com>,
@@ -55,9 +55,9 @@ Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v3 10/20] iommu: Add set_platform_dma iommu ops
-Date: Mon, 28 Nov 2022 14:46:38 +0800
-Message-Id: <20221128064648.1934720-11-baolu.lu@linux.intel.com>
+Subject: [PATCH v3 11/20] iommu/fsl_pamu: Add set_platform_dma callback
+Date: Mon, 28 Nov 2022 14:46:39 +0800
+Message-Id: <20221128064648.1934720-12-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20221128064648.1934720-1-baolu.lu@linux.intel.com>
 References: <20221128064648.1934720-1-baolu.lu@linux.intel.com>
@@ -69,43 +69,42 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-When VFIO finishes assigning a device to user space and calls
-iommu_group_release_dma_owner() to return the device to kernel, the IOMMU
-core will attach the default domain to the device. Unfortunately, some
-IOMMU drivers don't support default domain, hence in the end, the core
-calls .detach_dev instead.
+This IOMMU driver doesn't support default domain. Add the implementation
+of set_platform_dma callback so that the IOMMU core could return the
+DMA control.
 
-This adds set_platform_dma iommu ops to make it clear that what it does
-is returning control back to the platform DMA ops.
-
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- include/linux/iommu.h | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/iommu/fsl_pamu_domain.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 68d7d304cdb7..3542461558fa 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -223,6 +223,9 @@ struct iommu_iotlb_gather {
-  * @release_device: Remove device from iommu driver handling
-  * @probe_finalize: Do final setup work after the device is added to an IOMMU
-  *                  group and attached to the groups domain
-+ * @set_platform_dma: Returning control back to the platform DMA ops. Only
-+ *                    valid for IOMMU drivers which don't support default
-+ *                    domain.
-  * @device_group: find iommu group for a particular device
-  * @get_resv_regions: Request list of reserved regions for a device
-  * @of_xlate: add OF master IDs to iommu grouping
-@@ -251,6 +254,7 @@ struct iommu_ops {
- 	struct iommu_device *(*probe_device)(struct device *dev);
- 	void (*release_device)(struct device *dev);
- 	void (*probe_finalize)(struct device *dev);
-+	void (*set_platform_dma)(struct device *dev);
- 	struct iommu_group *(*device_group)(struct device *dev);
+diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+index 4408ac3c49b6..b8c716e7c424 100644
+--- a/drivers/iommu/fsl_pamu_domain.c
++++ b/drivers/iommu/fsl_pamu_domain.c
+@@ -314,6 +314,14 @@ static void fsl_pamu_detach_device(struct iommu_domain *domain,
+ 		pr_debug("missing fsl,liodn property at %pOF\n", dev->of_node);
+ }
  
- 	/* Request/Free a list of reserved regions for a device */
++static void fsl_pamu_set_platform_dma(struct device *dev)
++{
++	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
++
++	if (domain)
++		fsl_pamu_detach_device(domain, dev);
++}
++
+ /* Set the domain stash attribute */
+ int fsl_pamu_configure_l1_stash(struct iommu_domain *domain, u32 cpu)
+ {
+@@ -452,6 +460,7 @@ static const struct iommu_ops fsl_pamu_ops = {
+ 	.domain_alloc	= fsl_pamu_domain_alloc,
+ 	.probe_device	= fsl_pamu_probe_device,
+ 	.device_group   = fsl_pamu_device_group,
++	.set_platform_dma = fsl_pamu_set_platform_dma;
+ 	.default_domain_ops = &(const struct iommu_domain_ops) {
+ 		.attach_dev	= fsl_pamu_attach_device,
+ 		.detach_dev	= fsl_pamu_detach_device,
 -- 
 2.34.1
 
