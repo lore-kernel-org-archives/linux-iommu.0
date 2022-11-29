@@ -1,74 +1,81 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59FBAAD4B
-	for <iommu@lists.linux.dev>; Tue, 29 Nov 2022 17:54:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669744473; x=1701280473;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=eWmuqTFqNsAoet0OLkvih5/7bcZ+zSGLf0yM6dcoYG4=;
-  b=QQa281WG+hzqaYQRO/sqRwZoXWZDu61ChX4WuwCpuGlm1XXQQZi1U2XR
-   yAxhSlsb7djzk4HqD2030kBT3hJPmzKe+RhUPjc9qrpip0d+8wHUdlWLN
-   XXtEhrgkqBYtWZ0/N5AQN5bx+DvspRqW3HxlG8Iy1Jb8ZlgYJwMaOWfPp
-   lfga5U5ybzIA5hOEKpo9invWTDrGpi1HbZ1MceSAN8hCL5YfMNEUGh/SS
-   6AXRWMxQl+RTS7ZVEVwSGnE1nO7WIycpdMCxXxVGQPGMxTT/ZUvWyd0EK
-   wsw+9IpKbD/YezgFP1NSYXzGDq3gxKTKgYAa+qMIGr//1ysj2WmLLz/Hp
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="294879774"
-X-IronPort-AV: E=Sophos;i="5.96,204,1665471600"; 
-   d="scan'208";a="294879774"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2022 09:54:32 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="732650483"
-X-IronPort-AV: E=Sophos;i="5.96,204,1665471600"; 
-   d="scan'208";a="732650483"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2022 09:54:32 -0800
-Date: Tue, 29 Nov 2022 09:58:23 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>, LKML
- <linux-kernel@vger.kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg
- Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Robin
- Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, "Liu, Yi L"
- <yi.l.liu@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, "Luo, Yuzhang"
- <yuzhang.luo@intel.com>, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v2] iommu/vt-d: Add a fix for devices need extra dtlb
- flush
-Message-ID: <20221129095823.3009552a@jacob-builder>
-In-Reply-To: <BL1PR11MB52716203AF9CC7CADDAC0B4D8C129@BL1PR11MB5271.namprd11.prod.outlook.com>
-References: <20221128170410.3830605-1-jacob.jun.pan@linux.intel.com>
-	<BL1PR11MB52716203AF9CC7CADDAC0B4D8C129@BL1PR11MB5271.namprd11.prod.outlook.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4E6A5808
+	for <iommu@lists.linux.dev>; Tue, 29 Nov 2022 18:41:32 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8926ED6E;
+	Tue, 29 Nov 2022 10:41:32 -0800 (PST)
+Received: from [10.57.71.118] (unknown [10.57.71.118])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1E9503FA32;
+	Tue, 29 Nov 2022 10:41:22 -0800 (PST)
+Message-ID: <eb30ad63-92d4-2af4-22e7-d82cdf08565e@arm.com>
+Date: Tue, 29 Nov 2022 18:41:22 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH v2 4/7] iommu: Let iommu.strict override
+ ops->def_domain_type
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Niklas Schnelle <schnelle@linux.ibm.com>,
+ Baolu Lu <baolu.lu@linux.intel.com>, Matthew Rosato
+ <mjrosato@linux.ibm.com>, Gerd Bayer <gbayer@linux.ibm.com>,
+ iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Wenjia Zhang <wenjia@linux.ibm.com>,
+ Pierre Morel <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
+ borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+ gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com, svens@linux.ibm.com,
+ linux-kernel@vger.kernel.org, Julian Ruess <julianr@linux.ibm.com>
+References: <20221116171656.4128212-1-schnelle@linux.ibm.com>
+ <20221116171656.4128212-5-schnelle@linux.ibm.com>
+ <33eea9bd-e101-4836-19e8-d4b191b78b00@linux.intel.com>
+ <9163440eb6a47fe02730638bbdf72fda5ee5ad2c.camel@linux.ibm.com>
+ <Y4S3z6IpeDHmdUs/@nvidia.com>
+ <52fe7769ca5b66523c2c93c7d46ebc17dc144aca.camel@linux.ibm.com>
+ <Y4TjWOXYD+DK+d/B@nvidia.com> <6c4c3a3e-1d8d-7994-3c03-388ef63dddb3@arm.com>
+ <Y4ZCVgLO9AHatwXe@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <Y4ZCVgLO9AHatwXe@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Hi Kevin,
-
-On Tue, 29 Nov 2022 02:37:45 +0000, "Tian, Kevin" <kevin.tian@intel.com>
-wrote:
-
-> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Sent: Tuesday, November 29, 2022 1:04 AM
-> >
-> > +void quirk_dev_tlb(struct device_domain_info *info, unsigned long
-> > address,
-> > +		   unsigned long mask, u32 pasid, u16 qdep)  
+On 2022-11-29 17:33, Jason Gunthorpe wrote:
+> On Mon, Nov 28, 2022 at 09:01:43PM +0000, Robin Murphy wrote:
 > 
-> quirk_extra_dtlb_flush()
+>> I'm hardly an advocate for trying to save users from themselves, but I
+>> honestly can't see any justifiable reason for not having sysfs respect
+>> iommu_get_def_domain_type().
 > 
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-will do in the next version!
+> We really need to rename this value if it is not actually just an
+> advisory "default" but a functional requirement ..
 
-Thanks,
+It represents a required default domain type. As in, the type for the 
+device's default domain. Not the default type for a domain. It's the 
+iommu_def_domain_type variable that holds the *default* default domain 
+type ;)
 
-Jacob
+Which reminds me I should finish that patch undoing my terrible 
+ops->default_domain_ops idea, not least because they are misleadingly 
+unrelated to default domains...
+
+>>> The driver should have no say in how dma-iommu.c works beyond if it
+>>> provides the required ops functionalities, and hint(s) as to what
+>>> gives best performance.
+>>
+>> That should already be the case today, as outlined in my other mail. It's
+>> just somewhat more evolved than designed, so may not be so clear to
+>> everyone.
+> 
+> It is close to being clear, once we get the last touches of dma-iommu
+> stuff out of the drivers it should be quite clear
+
+Cool, some upheaval of .domain_alloc is next on my hitlist anyway, so 
+that might be a good excuse to upheave it a bit more and streamline the 
+type stuff along the way.
+
+Cheers,
+Robin.
