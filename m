@@ -1,66 +1,73 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2071.outbound.protection.outlook.com [40.107.93.71])
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2058.outbound.protection.outlook.com [40.107.212.58])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 653CCAD5E
-	for <iommu@lists.linux.dev>; Tue, 29 Nov 2022 20:09:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1149ABA28
+	for <iommu@lists.linux.dev>; Tue, 29 Nov 2022 20:29:47 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GwRZ3AyccZqtqL/7W5t7iPYOcilX46LIa6qllLmdwRLqFxdqP8irEnAny2EZJHqxmP9AkVVGKnxlWudHV85PH+rPR+80Vviy3pN9KcG+Ci3sDd49+7FST5GR//iZjVa/8yRpaO9nt3XAF0aM6Bzr4RSbMVUoDTkrU+WOeeouqjFePx8QheoQCBdy2tCSLNo1fKUSr3qH6GKdD/gbngJNt8lxcVKHp6UTXmp2RKoBp7OFYQFQwrO9z6HTp2l5EA43JkffMzPkL+YYcCeGUMGJi1mEFxyY8QXQ7JqR8pdDrV+1YzljAJRJ1Wuyb+uOhNOPSpTOPdOWqcpMvQ1lkLaxuA==
+ b=a992TBV6R4Aw9ck3ub7NRchaXHU2CR8en+HZDtI1xnfNEiLo+AZOmXL1CxX0AVo9I4SRlDmgVFCvYGw7uf6ib9djgoYterV3UR7pVK23pSxZ7TTvrryOO1BvdO6mJ7IkI5MI9h0A61bMFH06VNVOHod9lDC+GafLBgTnbKlLL2CwAF4q2XNxsJ0xmt38XevP49reb3onahX+tYjoyNm0Q9IvY+A5tlC6pVtZWrSbrB5tEB1obLA9JRL8X0FjVdM8vw6S0W4esAKvvZy+bflkWQyyC1N6z9DliPeWgk+2SE98ZxkTEJp6qxNhgmWxV021HJtKAiR75muht34wO2NhFQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=I1NPcNU6pJ2j98YvgPWXbMA5Ku4st6k91kxZOME50Hk=;
- b=GUq/csSCoJawb2wCdS7oA5suFdy+9d1Ed0VC2Lr35lUb7tN4gsI8+WmMUlu/90lT6GS9Dax45HhzmhjPmD1HLE/kYu7SYndOB2wV52mrZt4WhRc/ce+2koTzqRMwwcm7l/jvbb9kE4X4lzuA7xshSUvsUS/xigmi/DUZw2IcZG41ohrRcqreK5WSON5PXgAEvd7Hb9crREUmJM8UL6ydJqp0rHcVh2BMqAhMLmjhQYaOdAyLn5XU7DDDMvCgs+6XmRhOrAIp9vmK4sJB2esE/fJg25+blQxdw9rJwi3EKAwbcfFKHiWSmO2hGrTwhOVnuRfH+DRWiRomPL7U0N0wjw==
+ bh=fg/y5XOISbY7aMh5HOd5Q23eYMEF5jQCaqyUIS5HYoo=;
+ b=e1ka9eLxKgDZRZwLe5smU3V0/fAyr4tivUhmS8z4/wr/8SzaSs4OpDLcbpJmShKOu75DSMiNlXXXM+9fFL/SkJMGtK3waSMF4TPMXZ4AThuqWYxb7cLD3ftt6IbAwEIYhx1zGMyw5EgNixs9fSxZzmyzAiHZslEyU9iqfkcfIbRnMkTs2qRHnifjwfj12e7vpvyT+csdJcvR1KxEA5t4dNxBFGBSdGHhqS8Kvj012VJl305EOWUrxznyboA7bQXcPMsd9MseILdnX4Qb7zFkTOsXzra6syAh6LUiOpVCl9V51M8Bnl25ggG4m+9M8LOXiXCSqNgObrTLOU1h9Ed8Mg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=I1NPcNU6pJ2j98YvgPWXbMA5Ku4st6k91kxZOME50Hk=;
- b=Fw2sTe4VjclDU4zd3bJcDgP8EuhvJOXUrwQy29CLxAxNILL1FC3D2ru5tD7nEc2xDaQJbtHLO9sFywk0UsIPuO54U//6Mz7lRYqwsDULRef75TYKZIXFviVaMMu2ximS9LhnWLBlZkm+74eLzyX1qlKCmr+/f3N8/3R4xfxMyeZWUKgt0SNdmX/Ph+RPFjTudxjKoVq1Umq6TK4ZvfJiLOAtJCzTKiu1WK5TtTFJ8ErpMM9kt/wHl08TDJzouj2H5iC21qUX+IB+yj3wL2Q4p1zqUc2xul7ECg4QXsL0cMQcsd8GNjLCPg4+Yi3MuN714bi7TPCNPRj9QMBpy3ma7Q==
+ bh=fg/y5XOISbY7aMh5HOd5Q23eYMEF5jQCaqyUIS5HYoo=;
+ b=bT3oXseie+Su9MS09YN+LtlYmbYDUP4T94L6iq3AJm6SnzuKnSflaPvvDFnZfShPUUrz78/HGRDz5ilc5ZKKC7JQmWnoJlfQY6nsWOy9PLT+XSdPbEpOboDHjTakGHwvAEipSBFiS5ajm/EGTCDRpz01nBr0EgLli6Yn7IpnYnzFKm5mOU9FmP9tVcCjIdzyVCxGQwPfB2n0mPeB8o3RgCSjCJLKbmuwQQpBug6kcrCCP8l1Db58hwSoZIUKjofyJz7lMlB4MwU5T9O4U2VKB4g7HmJq6Us1NISCpp6fokoiAnoK+jaT4ZXsvwIAspHVFgRYE2yeozLwmh+V5nBUmA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by MW6PR12MB7085.namprd12.prod.outlook.com (2603:10b6:303:238::9) with
+ by CY5PR12MB6059.namprd12.prod.outlook.com (2603:10b6:930:2c::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Tue, 29 Nov
- 2022 20:09:14 +0000
+ 2022 20:29:45 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::f8b0:df13:5f8d:12a%8]) with mapi id 15.20.5857.023; Tue, 29 Nov 2022
- 20:09:13 +0000
-Date: Tue, 29 Nov 2022 16:09:11 -0400
+ 20:29:44 +0000
 From: Jason Gunthorpe <jgg@nvidia.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Niklas Schnelle <schnelle@linux.ibm.com>,
-	Baolu Lu <baolu.lu@linux.intel.com>,
+To:
+Cc: Anthony Krowiak <akrowiak@linux.ibm.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Bagas Sanjaya <bagasdotme@gmail.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+	Cornelia Huck <cohuck@redhat.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Daniel Jordan <daniel.m.jordan@oracle.com>,
+	David Gibson <david@gibson.dropbear.id.au>,
+	Eric Auger <eric.auger@redhat.com>,
+	Eric Farman <farman@linux.ibm.com>,
+	iommu@lists.linux.dev,
+	Jason Wang <jasowang@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Jason Herne <jjherne@linux.ibm.com>,
+	Joao Martins <joao.m.martins@oracle.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	kvm@vger.kernel.org,
+	Lixiao Yang <lixiao.yang@intel.com>,
 	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Gerd Bayer <gbayer@linux.ibm.com>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Wenjia Zhang <wenjia@linux.ibm.com>,
-	Pierre Morel <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
-	borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-	gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-	svens@linux.ibm.com, linux-kernel@vger.kernel.org,
-	Julian Ruess <julianr@linux.ibm.com>
-Subject: Re: [PATCH v2 4/7] iommu: Let iommu.strict override
- ops->def_domain_type
-Message-ID: <Y4Zm53o1ovdIAqr/@nvidia.com>
-References: <20221116171656.4128212-1-schnelle@linux.ibm.com>
- <20221116171656.4128212-5-schnelle@linux.ibm.com>
- <33eea9bd-e101-4836-19e8-d4b191b78b00@linux.intel.com>
- <9163440eb6a47fe02730638bbdf72fda5ee5ad2c.camel@linux.ibm.com>
- <Y4S3z6IpeDHmdUs/@nvidia.com>
- <52fe7769ca5b66523c2c93c7d46ebc17dc144aca.camel@linux.ibm.com>
- <Y4TjWOXYD+DK+d/B@nvidia.com>
- <6c4c3a3e-1d8d-7994-3c03-388ef63dddb3@arm.com>
- <Y4ZCVgLO9AHatwXe@nvidia.com>
- <eb30ad63-92d4-2af4-22e7-d82cdf08565e@arm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <eb30ad63-92d4-2af4-22e7-d82cdf08565e@arm.com>
-X-ClientProxiedBy: SJ0PR13CA0211.namprd13.prod.outlook.com
- (2603:10b6:a03:2c1::6) To LV2PR12MB5869.namprd12.prod.outlook.com
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Halil Pasic <pasic@linux.ibm.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+	Yi Liu <yi.l.liu@intel.com>,
+	Yu He <yu.he@intel.com>,
+	Keqian Zhu <zhukeqian1@huawei.com>
+Subject: [PATCH v6 04/19] scripts/kernel-doc: support EXPORT_SYMBOL_NS_GPL() with -export
+Date: Tue, 29 Nov 2022 16:29:27 -0400
+Message-Id: <4-v6-a196d26f289e+11787-iommufd_jgg@nvidia.com>
+In-Reply-To: <0-v6-a196d26f289e+11787-iommufd_jgg@nvidia.com>
+References:
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SJ0PR05CA0110.namprd05.prod.outlook.com
+ (2603:10b6:a03:334::25) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -69,111 +76,113 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MW6PR12MB7085:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0fe869f6-777a-4614-93b2-08dad24595f8
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CY5PR12MB6059:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2e28e870-7493-4b31-b76d-08dad24873ae
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	7lh10gPVexaw1JqLfYAwfl/rvsbbB8tJKS/ca7/2EZde6OR0aqhNSpEanx8GgeOz/8rYj4Wec+r7q1AEejOgOoIYFwRzjpr84nMOu/VcRQzhrM388qhSiKi1f1zOzNaenPtILsj++va+R5VWsDfl812C9AElo5yZXqFxyQtRLbUMsB4KqyJGf4MeWTK87VZcA5Un7pQ7StkNB6JLCIjlE4oATbWRqFT7ypHQT0dVbozZwVqCSZFsv6t9YMQlKB4a7lrBAgEg5PxAh7UDRmlSRrPAFt/P1/ddbEc4YXdkttTYmchpcKgj3rtdawCYhxw12c6Mt1OdP12IC3YA/ROOm3tqa6vMob5hJiZLTC0mOaQ4n9Gb1nlNXtHaDScs3j3lFEN+h3z7iQVSVyD11RxTzFd5kTP26wwFaWZ3+ma125Cef6uLxu65cb2J4/Eb4KRbvS3fDICb8sXWys9vjZaT7ZRb5MMSH0lZIYoTEyIp2Jm8Vv3jwhT44pkux+RaJCHAiy0dmitXQYTVtovPZYBhOj9Iee6MvW/8wi+R57NeZYaxCejbb5QhQgSkUTw8ok/xHduSnBfT6kbFNTHmb8jU4shSG8rkeGkrlqw1a7lfdXi53czHBOE5k18J+eibXePflpZ7w4qANSFK3REwcrvdZA==
+	3DyvJO2b7GG2hk6oE+OIyVb0g09XYn7vVngo1+/D57f1COZsje1sqmkALk2rO2wTmt21y5YOVyrX8lPmTjGk1hb4a6NUdd8xqH/xOUoCNhNipIahR8JdXQWtq372SKYIIljIrfKvjcSY1LTchCuL8HckfvFUXbTcS7xsxRAuiVQKZCa2bWV532q2muejjFXl/76UmWjCWnUOBBC3FWiUGheMEc8cdsngcgYJth5EWKHCqYo8IeEOc2hszFf9wH8ESg+aRXn5i1NLw+FuYfVR6WUwVbSXZhPCESFaF5GvxlC0jAjriFGyLtQy0C0mRc7WkFbnBY95VtsYlSf5M47ZW2TwBaDWLecf3xMAz8yCVlhbpbwrqw9UEp4a+6nATSNWKw/6ZI3DQkJ0TAYHa+U2rB5wlWwuboMZdpr++ACBMkYUpvM4VapH6qdxCUwRMSnYTkr8TLdJxR/y4nEjkMak3Wx8Hp0nHeidLBRUmHLRjYPGdk8we4Q3l8Vin5QdE+qdOdlDFBM/V/oJM3gUw0Q3GYpgO3jfiLwQ0k3DHsAsVTclUBFW9rztbr3lIGWz3yecoKOsVOyxKmSe31DzleTrqWAwl8Pyp5dGcuf8pqeAMUl+lb5uA4zzk6Ak4mKpVhFjflbWDNNeOguMOjoF/cs8XbavZKTdqWbKPew2QgSxheRisbz5NRmQULPy8J8oT+Y2
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(366004)(346002)(396003)(376002)(39860400002)(451199015)(5660300002)(7416002)(66476007)(4326008)(8676002)(8936002)(41300700001)(6486002)(66556008)(36756003)(54906003)(6916009)(86362001)(4001150100001)(66946007)(2906002)(316002)(478600001)(6512007)(26005)(53546011)(6506007)(2616005)(186003)(83380400001)(38100700002);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(346002)(376002)(396003)(39860400002)(366004)(451199015)(109986013)(36756003)(86362001)(54906003)(6486002)(316002)(478600001)(2906002)(66476007)(66556008)(66946007)(4326008)(8936002)(7416002)(41300700001)(8676002)(5660300002)(83380400001)(38100700002)(26005)(6506007)(6666004)(6512007)(186003)(2616005)(4216001)(266003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?mY5erK4tjLF5/gcs5qkM1TpZwsPO2fRmd0iAa3Wq9sd9xB3Zbqbnf0TY3n0q?=
- =?us-ascii?Q?3ttZZU0qT80zGuPP3Y8iwDte2V1ITRo6+U2oQmTM63piENXt/FmcE0eN2kRD?=
- =?us-ascii?Q?Dgrluf8g9ln9ql48cMu14nuKR/kPR0nGQckO6b6d0XLNoyrrKEIg6TGJxsls?=
- =?us-ascii?Q?i+wFMaLlmXgJMCHPKyQorkLwkAtVjhk9eUP1qvqiuoTUGYRAqnqoowVtjkDX?=
- =?us-ascii?Q?USQJwwBTWr/4mzOjDedBLAmyAgSCIFkn3Jd5l/NSIMJhsnXZFQNbC61okG1k?=
- =?us-ascii?Q?a1u3WGlumngqk7FvSZpZNtJhiU7IXp9AOjfbIt1tTUXf3y919uKGZsZrPk7V?=
- =?us-ascii?Q?tCcQdwSwp2XouaiE/kvUZsBOSv79ihSOXX7NSPqq5Jb6H8ig5waQ/M7IOgo2?=
- =?us-ascii?Q?4rs2rg19s3Bxb3+7CgwdAnwGEpWryPiUYwlHFmY/AX4K2I4+iNyFJPYs+2mj?=
- =?us-ascii?Q?4EB7vVbR6sCn06HcafVuWTOaQd09iWFHTB9Kay/nwdrNFDGfaTCMaRJd5iyq?=
- =?us-ascii?Q?mXqOg6gGlp5jqfXhFDrQn4RddiPh5SzvwAEmv90dez6fFxFzB56uQOlu+Ioq?=
- =?us-ascii?Q?FolNZcv0gzVNAoqEe5CuJw/8OiMYDuVFthSuuxJ6lzjTQoLp4+byGdGLtwSP?=
- =?us-ascii?Q?wh73VNdMXHxDZ/KhgOBEfQPRZU4EWrIfTFz7YOgZNtmkE9RsvCC9sIvHPHWY?=
- =?us-ascii?Q?igRP6H2M0Mbn34PehKWwxVkv5zMNSO4BJex/dqz0FyhxDs9xV0XTLghujZu4?=
- =?us-ascii?Q?IogFJ3xtUUW5HovNLOVdMlmF71yiR1HD3sxKnw8pQFx+tilYDnlTRm5JrHm8?=
- =?us-ascii?Q?ym7ecVxiCAcNme7MfLiLXt10gPtu6Jt3OqHe7hzPrPt1IgWt2Hm5iohylfcy?=
- =?us-ascii?Q?Nmc+Z1NL1Z2hYvruivKRRZlciEUnMWD68mIoXgb2C3sEUFfjRB8sWdK8l/R+?=
- =?us-ascii?Q?+nabKLhFnDOjg+vE1a8qB85GVWwG/RJre/k1iOveouBg15ucA8KcaHcL5gXX?=
- =?us-ascii?Q?cRVayRnKTBRrmS3ikMLNKVjT7ZrmNrOXOtFRmegCfZ7o6f2BVRP9xZp0vS2t?=
- =?us-ascii?Q?PL/PtewZL1V7/zFT3+Kesdc6CUVps5AWmOg2KxYeA7rdHWc68WtHlc9s54/G?=
- =?us-ascii?Q?7zSy9KSJuyRBQVAZmd0p6vPB4HyfkXpJmfMUkvBB5O7JVY4oveKnGPDGEph6?=
- =?us-ascii?Q?7U5lKkoh7vpvbl5NZcf/GdzMhb86fwIt3B/AEwYsHkGMJacXJSoRMoxywRfp?=
- =?us-ascii?Q?YVLBHnXfjo+Pr3bO4bdE4F635Byt8pcoTkvkm1YZ7Pp59zXl74TwPQWVs7Mn?=
- =?us-ascii?Q?ZH5kkaSnM3GFzuaVC1n0Hk8aZqDskTjJkV+8NzfI9gebTFcGKie2r39bwUIq?=
- =?us-ascii?Q?Uj2a3t1G/omC+o49c592ngMXIDspjRIlqtnmFbtb8JRWXOT9u3IDBHrZOPDD?=
- =?us-ascii?Q?q+b9CyvZ13iYfqm8KUzrrnNwRnqbGxI9izImcnqaLl5SMdwsvlyhNIVPJC5L?=
- =?us-ascii?Q?c3XgIrKs88urgC+O32to+7GK+QfZTxEpS3jLOHgktbFrOuQTlWP4CYPjGsEM?=
- =?us-ascii?Q?98PpaPB95MDrsB40yybA7OI07CpZkUABt5yDcvOj?=
+	=?us-ascii?Q?bsggVvTFDaDX6xvHcE073mX/evaI8PffvSvKwfViVq6lkNzTs/Y5KjOP//Cl?=
+ =?us-ascii?Q?4Mb7At4T3PSgvXpgrK+9SnxCTfTy/D9jMmVFjzaD17XM1kUVu1UIczq8a1z+?=
+ =?us-ascii?Q?Efj56Iy1HNu0c07GCH6Q84tDXcVSvwP0xo6JBmmkrxJu9S9VOKXFj6kui1/t?=
+ =?us-ascii?Q?OVPJkfmRhLufO6LysvcS7ykotmWxfkac1llJyhwyCgsQ6jXFE1le9JjgkkUh?=
+ =?us-ascii?Q?W2CrNCBVwCRjLuZo+QGfJP1X078884JgpvIQTnx9iykx5+h52UgWcABDNiCT?=
+ =?us-ascii?Q?uzfXngeLkB3on7Nt1AO/pO8MySfxAP650oL6h5n17WIzsvQ8yFWlLpz7UnQk?=
+ =?us-ascii?Q?vEtBC1b1SS9O9Ewx6eMa1qxNlLVvLM56w4HbTVpreuNyoXnL5UySBmQcQC9D?=
+ =?us-ascii?Q?C4l8xvp+emj7qVUqoohr+1fdSkceJK2t/XEGkxSPL6rF4JsZFAas+vpqqp1u?=
+ =?us-ascii?Q?lXvNurAuuZhke6lJoWP3nBiNDyDCQbb/VQUUnUzfv2F6HIrrEthT08C3FOKo?=
+ =?us-ascii?Q?6nXrrnz4PD0M3i4ZgzlBVGZ4D1JYUv4qbw/FYExhF319eyYFPgRfL0KqquUW?=
+ =?us-ascii?Q?pWjMKxxvx0jfN1/t4vPrcIFth7rkAndjZnjhMIE8hCEoOknB9M6FQ3QKiaN9?=
+ =?us-ascii?Q?ED0ZR8vH8S7DdpWtWBOedoll4IwbeIm95u2o4yHmpxYaylz4IIRmHTSo1360?=
+ =?us-ascii?Q?xMQwp/Bxr96r9cul5WIRd+i4g+7q3Sqee4sMe+2uzplIwmS5xBez2ml1jA4h?=
+ =?us-ascii?Q?1gXEGaa4oXaDezl9Nk0wPdCPCCNl1Ouhqp5wedDqsDD3e/hWmLukge1Kd3Iu?=
+ =?us-ascii?Q?LZRpJ2HzZFNpjBHpcF69a/V82cXE7sgpUIWxmOn95zuNt6irsaPYhlDL2U44?=
+ =?us-ascii?Q?W8KTXtw+nM7KJVXnmCFgb1TJh5GvwbfpU9f2vQDeDJGeDOLcQ++PUorWgMDs?=
+ =?us-ascii?Q?p/0q73I7yKUj5oUvSGYmtnxBRb73JJvW10+3Y7i1aPO3qzQ5sBDB3lk0SEdQ?=
+ =?us-ascii?Q?mUp4nRs+GX1veBgRv7siAkAOSonoi937k0UEdV2ETSQ/PdQxShxCzwzVRJmv?=
+ =?us-ascii?Q?4usvYPPVBrYgs4wIxUSY7kvmSzwHJ75jJeKMY0VLN8kUrS5wNdANj4QzbXqM?=
+ =?us-ascii?Q?BV3nQSMgjuT0ds4YKgzF2gxdgkgE1gdhtHf7qFQFG0ONf1bD8fXyF88iil8K?=
+ =?us-ascii?Q?KFjW+kqWQK57gkoMwqC+FF71x1hn0NUHPODJq+WClTlB+vWvrI4VWn5a8iqy?=
+ =?us-ascii?Q?ivRXz2sVkfJle67Mwlg/BC57zoHLu/uTvdZWEg3xX3TLcC6T818LSouOhUo0?=
+ =?us-ascii?Q?IPfXWsqr3pWrXnZ5uRFo60TLQcXTh5UXAeZrfgELZxfg+XYXQvggouMH3sFT?=
+ =?us-ascii?Q?nbrep0vNvzZexNl8xJtO0t5y485ESwbx3DJxUmGofwgZoYP6zVY8Lg0QMy0Z?=
+ =?us-ascii?Q?WDzUhCpz4QvMM9kO/UG+dODusIkUBTLFpi5P3XzK1MJjj13DvKavc5hZ0fMa?=
+ =?us-ascii?Q?i46wXIBKZkh/2SRusPvOxyprU/vBHCCdnxSsxRdb4a+K662w0qVkMX8Iw8+2?=
+ =?us-ascii?Q?KIR6sw3ZTZXOZfos8WQy955dMgnMts5ix/SP6JIs?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0fe869f6-777a-4614-93b2-08dad24595f8
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2e28e870-7493-4b31-b76d-08dad24873ae
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Nov 2022 20:09:13.8579
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Nov 2022 20:29:44.8998
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oyou9GYVgusmxzypQ47RNXQxVvTeVkT39aN6RZbeS8wv+/jDnWEB5+kQiuVvFF2X
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW6PR12MB7085
+X-MS-Exchange-CrossTenant-UserPrincipalName: JLTBbd3wXgT1WMyAJBWMQDaPR5e6KA0ev2EgDXde5AGhBHhSzyWX5XewJqkaNxPH
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6059
 
-On Tue, Nov 29, 2022 at 06:41:22PM +0000, Robin Murphy wrote:
-> On 2022-11-29 17:33, Jason Gunthorpe wrote:
-> > On Mon, Nov 28, 2022 at 09:01:43PM +0000, Robin Murphy wrote:
-> > 
-> > > I'm hardly an advocate for trying to save users from themselves, but I
-> > > honestly can't see any justifiable reason for not having sysfs respect
-> > > iommu_get_def_domain_type().
-> > 
-> > We really need to rename this value if it is not actually just an
-> > advisory "default" but a functional requirement ..
-> 
-> It represents a required default domain type. As in, the type for the
-> device's default domain. Not the default type for a domain. It's the
-> iommu_def_domain_type variable that holds the *default* default domain type
-> ;)
+Parse EXPORT_SYMBOL_NS_GPL() in addition to EXPORT_SYMBOL_GPL() for use
+with the -export flag.
 
-I find the name "default domain" incredibly confusing at this point in
-time.
+Acked-by: Jonathan Corbet <corbet@lwn.net>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ scripts/kernel-doc | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-I would like to call that the "dma-api domain" - its primary purpose
-is to be the domain that the DMA API uses to operate the IOMMU, there
-is little "default" about it. This meshes better with our apis talking
-about ownership and so forth.
+diff --git a/scripts/kernel-doc b/scripts/kernel-doc
+index aea04365bc69d3..48e3feca31701a 100755
+--- a/scripts/kernel-doc
++++ b/scripts/kernel-doc
+@@ -256,6 +256,7 @@ my $doc_inline_sect = '\s*\*\s*(@\s*[\w][\w\.]*\s*):(.*)';
+ my $doc_inline_end = '^\s*\*/\s*$';
+ my $doc_inline_oneline = '^\s*/\*\*\s*(@[\w\s]+):\s*(.*)\s*\*/\s*$';
+ my $export_symbol = '^\s*EXPORT_SYMBOL(_GPL)?\s*\(\s*(\w+)\s*\)\s*;';
++my $export_symbol_ns = '^\s*EXPORT_SYMBOL_NS(_GPL)?\s*\(\s*(\w+)\s*,\s*\w+\)\s*;';
+ my $function_pointer = qr{([^\(]*\(\*)\s*\)\s*\(([^\)]*)\)};
+ my $attribute = qr{__attribute__\s*\(\([a-z0-9,_\*\s\(\)]*\)\)}i;
+ 
+@@ -1948,6 +1949,10 @@ sub process_export_file($) {
+ 	    next if (defined($nosymbol_table{$2}));
+ 	    $function_table{$2} = 1;
+ 	}
++	if (/$export_symbol_ns/) {
++	    next if (defined($nosymbol_table{$2}));
++	    $function_table{$2} = 1;
++	}
+     }
+ 
+     close(IN);
+@@ -2419,12 +2424,12 @@ found on PATH.
+ =item -export
+ 
+ Only output documentation for the symbols that have been exported using
+-EXPORT_SYMBOL() or EXPORT_SYMBOL_GPL() in any input FILE or -export-file FILE.
++EXPORT_SYMBOL() and related macros in any input FILE or -export-file FILE.
+ 
+ =item -internal
+ 
+ Only output documentation for the symbols that have NOT been exported using
+-EXPORT_SYMBOL() or EXPORT_SYMBOL_GPL() in any input FILE or -export-file FILE.
++EXPORT_SYMBOL() and related macros in any input FILE or -export-file FILE.
+ 
+ =item -function NAME
+ 
+@@ -2451,8 +2456,7 @@ Do not output DOC: sections.
+ 
+ =item -export-file FILE
+ 
+-Specify an additional FILE in which to look for EXPORT_SYMBOL() and
+-EXPORT_SYMBOL_GPL().
++Specify an additional FILE in which to look for EXPORT_SYMBOL information.
+ 
+ To be used with -export or -internal.
+ 
+-- 
+2.38.1
 
-So, if the op was called
-  get_dma_api_domain_type()
-
-It is pretty clear that it is the exact type of domain that should be
-created to support the DMA API, which is what I think you have been
-describing it is supposed to do?
-
-And with Lu's series we have the set_platform_dma() (Lu perhaps you
-should call this set_platform_dma_api() to re-enforce it is about the
-DMA API, not some nebulous DMA thing)
-
-Which is basically the other way to configure the DMA API for
-operation.
-
-And encapsulating more of the logic to setup and manage the DMA API's
-domain into dma-iommu.c would also be helpful to understanding.
-
-> Which reminds me I should finish that patch undoing my terrible
-> ops->default_domain_ops idea, not least because they are misleadingly
-> unrelated to default domains...
-
-:)
-
-> > It is close to being clear, once we get the last touches of dma-iommu
-> > stuff out of the drivers it should be quite clear
-> 
-> Cool, some upheaval of .domain_alloc is next on my hitlist anyway, so that
-> might be a good excuse to upheave it a bit more and streamline the type
-> stuff along the way.
-
-Yes, I think so. I want to tidy things a bit so adding this "user
-space" domain concept is a little nicer
-
-Jason
