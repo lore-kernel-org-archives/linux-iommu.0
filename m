@@ -1,131 +1,74 @@
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C8C5AD4B
-	for <iommu@lists.linux.dev>; Tue, 29 Nov 2022 17:47:12 +0000 (UTC)
-Received: from zn.tnic (p200300ea9733e724329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9733:e724:329c:23ff:fea6:a903])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id DDD711EC04CB;
-	Tue, 29 Nov 2022 18:47:09 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-	t=1669744029;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-	bh=JYhgRUKR3FJNpFBq84Sg5nW8vU15kq68SWoPzofwG0Q=;
-	b=C9yhgsGHLVsG8saaLstTe4dmxJhjJrBTCPd3mxTbQfv/ZNKgNmjwaJFRkyIDeReJdY8oJp
-	ijIxUTdRKklOYNwQC8739rCLHnOBfPiMOPxKOA45aWsUni+NS12zAui7+VMmWL4BjXL+IF
-	GJdt2hcUVZySzvYGVvQ2SxFp4+cFRpM=
-Date: Tue, 29 Nov 2022 18:47:06 +0100
-From: Borislav Petkov <bp@alien8.de>
-To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc: "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-	"hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	"wei.liu@kernel.org" <wei.liu@kernel.org>,
-	Dexuan Cui <decui@microsoft.com>,
-	"luto@kernel.org" <luto@kernel.org>,
-	"peterz@infradead.org" <peterz@infradead.org>,
-	"davem@davemloft.net" <davem@davemloft.net>,
-	"edumazet@google.com" <edumazet@google.com>,
-	"kuba@kernel.org" <kuba@kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>,
-	"lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-	"robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-	"bhelgaas@google.com" <bhelgaas@google.com>,
-	"arnd@arndb.de" <arnd@arndb.de>,
-	"hch@infradead.org" <hch@infradead.org>,
-	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-	"tglx@linutronix.de" <tglx@linutronix.de>,
-	"mingo@redhat.com" <mingo@redhat.com>,
-	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-	Tianyu Lan <Tianyu.Lan@microsoft.com>,
-	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-	"sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>,
-	"ak@linux.intel.com" <ak@linux.intel.com>,
-	"isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-	"Williams, Dan J" <dan.j.williams@intel.com>,
-	"jane.chu@oracle.com" <jane.chu@oracle.com>,
-	"seanjc@google.com" <seanjc@google.com>,
-	"tony.luck@intel.com" <tony.luck@intel.com>,
-	"x86@kernel.org" <x86@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [Patch v3 07/14] x86/hyperv: Change vTOM handling to use
- standard coco mechanisms
-Message-ID: <Y4ZFmktxPlEjyoeR@zn.tnic>
-References: <BYAPR21MB16886FF8B35F51964A515CD5D70C9@BYAPR21MB1688.namprd21.prod.outlook.com>
- <BYAPR21MB1688AF2F106CDC14E4F97DB4D7139@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y4Ti4UTBRGmbi0hD@zn.tnic>
- <BYAPR21MB1688466C7766148C6B3B4684D7139@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y4Tu1tx6E1CfnrJi@zn.tnic>
- <BYAPR21MB1688BCC5DF4636DBF4DEA525D7139@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y4USb2niHHicZLCY@zn.tnic>
- <BYAPR21MB16886FF5A63334994476B6ADD7129@BYAPR21MB1688.namprd21.prod.outlook.com>
- <Y4XFjqEATqOgEnR6@zn.tnic>
- <BYAPR21MB1688D73FBBF41B6E21265DA3D7129@BYAPR21MB1688.namprd21.prod.outlook.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59FBAAD4B
+	for <iommu@lists.linux.dev>; Tue, 29 Nov 2022 17:54:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1669744473; x=1701280473;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=eWmuqTFqNsAoet0OLkvih5/7bcZ+zSGLf0yM6dcoYG4=;
+  b=QQa281WG+hzqaYQRO/sqRwZoXWZDu61ChX4WuwCpuGlm1XXQQZi1U2XR
+   yAxhSlsb7djzk4HqD2030kBT3hJPmzKe+RhUPjc9qrpip0d+8wHUdlWLN
+   XXtEhrgkqBYtWZ0/N5AQN5bx+DvspRqW3HxlG8Iy1Jb8ZlgYJwMaOWfPp
+   lfga5U5ybzIA5hOEKpo9invWTDrGpi1HbZ1MceSAN8hCL5YfMNEUGh/SS
+   6AXRWMxQl+RTS7ZVEVwSGnE1nO7WIycpdMCxXxVGQPGMxTT/ZUvWyd0EK
+   wsw+9IpKbD/YezgFP1NSYXzGDq3gxKTKgYAa+qMIGr//1ysj2WmLLz/Hp
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="294879774"
+X-IronPort-AV: E=Sophos;i="5.96,204,1665471600"; 
+   d="scan'208";a="294879774"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2022 09:54:32 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="732650483"
+X-IronPort-AV: E=Sophos;i="5.96,204,1665471600"; 
+   d="scan'208";a="732650483"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2022 09:54:32 -0800
+Date: Tue, 29 Nov 2022 09:58:23 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>, LKML
+ <linux-kernel@vger.kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg
+ Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Robin
+ Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, "Liu, Yi L"
+ <yi.l.liu@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, "Luo, Yuzhang"
+ <yuzhang.luo@intel.com>, jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v2] iommu/vt-d: Add a fix for devices need extra dtlb
+ flush
+Message-ID: <20221129095823.3009552a@jacob-builder>
+In-Reply-To: <BL1PR11MB52716203AF9CC7CADDAC0B4D8C129@BL1PR11MB5271.namprd11.prod.outlook.com>
+References: <20221128170410.3830605-1-jacob.jun.pan@linux.intel.com>
+	<BL1PR11MB52716203AF9CC7CADDAC0B4D8C129@BL1PR11MB5271.namprd11.prod.outlook.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <BYAPR21MB1688D73FBBF41B6E21265DA3D7129@BYAPR21MB1688.namprd21.prod.outlook.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, Nov 29, 2022 at 03:49:06PM +0000, Michael Kelley (LINUX) wrote:
-> But it turns out that AMD really has two fairly different schemes:
-> the C-bit scheme and the vTOM scheme.
+Hi Kevin,
 
-Except it doesn't:
+On Tue, 29 Nov 2022 02:37:45 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+wrote:
 
-"In the VMSA of an SNP-active guest, the VIRTUAL_TOM field designates
-a 2MB aligned guest physical address called the virtual top of memory.
-When bit 1 (vTOM) of SEV_FEATURES is set in the VMSA of an SNP-active
-VM, the VIRTUAL_TOM..."
+> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Sent: Tuesday, November 29, 2022 1:04 AM
+> >
+> > +void quirk_dev_tlb(struct device_domain_info *info, unsigned long
+> > address,
+> > +		   unsigned long mask, u32 pasid, u16 qdep)  
+> 
+> quirk_extra_dtlb_flush()
+> 
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+will do in the next version!
 
-So SEV_FEATURES[1] is vTOM and it is part of SNP.
+Thanks,
 
-Why do you keep harping on this being something else is beyond me...
-
-I already pointed you to the patch which adds this along with the other
-SEV_FEATURES.
-
-> The details of these two AMD schemes are pretty different. vTOM is
-> *not* just a minor option on the C-bit scheme. It's an either/or -- a
-> guest VM is either doing the C-bit scheme or the vTOM scheme, not some
-> combination. Linux code in coco/core.c could choose to treat C-bit and
-> vTOM as two sub-schemes under CC_VENDOR_AMD, but that makes the code a
-> bit messy because we end up with "if" statements to figure out whether
-> to do things the C-bit way or the vTOM way.
-
-Are you saying that that:
-
-	if (cc_vendor == CC_VENDOR_AMD &&
-	    sev_features & MSR_AMD64_SNP_VTOM_ENABLED)
-
-is messy? Why?
-
-We will have to support vTOM sooner or later.
-
-> Or we could model the two AMD schemes as two different vendors,
-> which is what I'm suggesting.  Doing so recognizes that the two schemes
-> are fairly disjoint, and it makes the code cleaner.
-
-How is that any different from the above check?
-
-You *need* some sort of a check to differentiate between the two anyway.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Jacob
