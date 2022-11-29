@@ -1,14 +1,14 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B5836811
-	for <iommu@lists.linux.dev>; Tue, 29 Nov 2022 11:45:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D274B811
+	for <iommu@lists.linux.dev>; Tue, 29 Nov 2022 11:48:15 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3D956D6E;
-	Tue, 29 Nov 2022 03:46:00 -0800 (PST)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BC6B2D6E;
+	Tue, 29 Nov 2022 03:48:21 -0800 (PST)
 Received: from [10.57.71.118] (unknown [10.57.71.118])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D4F9D3F73D;
-	Tue, 29 Nov 2022 03:45:49 -0800 (PST)
-Message-ID: <f9d005e2-9fc6-bbf4-53fb-95f18201ce2d@arm.com>
-Date: Tue, 29 Nov 2022 11:45:45 +0000
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C5EF03F73D;
+	Tue, 29 Nov 2022 03:48:13 -0800 (PST)
+Message-ID: <da0f6ffc-efa2-66cf-770b-1fd007894f3a@arm.com>
+Date: Tue, 29 Nov 2022 11:48:07 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -17,92 +17,67 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
  Thunderbird/102.5.0
-Subject: Re: [PATCH v3 06/20] iommu/mtk: Remove detach_dev callback
+Subject: Re: [PATCH v2] iommu/mediatek: Fix crash on isr after kexec()
 Content-Language: en-GB
-To: Baolu Lu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@infradead.org>,
- Kevin Tian <kevin.tian@intel.com>, Will Deacon <will@kernel.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
- Rob Clark <robdclark@gmail.com>, Marek Szyprowski
- <m.szyprowski@samsung.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
- Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>,
- Heiko Stuebner <heiko@sntech.de>, Matthew Rosato <mjrosato@linux.ibm.com>,
- Orson Zhai <orsonzhai@gmail.com>, Baolin Wang
- <baolin.wang@linux.alibaba.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
- Chen-Yu Tsai <wens@csie.org>, Thierry Reding <thierry.reding@gmail.com>,
+To: Ricardo Ribalda <ribalda@chromium.org>, Joerg Roedel <joro@8bytes.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>, Yong Wu <yong.wu@mediatek.com>,
+ Will Deacon <will@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
  iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20221128064648.1934720-1-baolu.lu@linux.intel.com>
- <20221128064648.1934720-7-baolu.lu@linux.intel.com>
- <Y4S8elzfzdTJGtyK@nvidia.com> <cb1b825c-55f1-d305-0727-ce8180d5a79e@arm.com>
- <4a979bdc-d7b4-77b4-490a-5f3e691e3df3@linux.intel.com>
+References: <20221125-mtk-iommu-v2-0-e168dff7d43e@chromium.org>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <4a979bdc-d7b4-77b4-490a-5f3e691e3df3@linux.intel.com>
+In-Reply-To: <20221125-mtk-iommu-v2-0-e168dff7d43e@chromium.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 2022-11-29 02:07, Baolu Lu wrote:
-> On 11/28/22 9:59 PM, Robin Murphy wrote:
->> On 2022-11-28 13:49, Jason Gunthorpe wrote:
->>> On Mon, Nov 28, 2022 at 02:46:34PM +0800, Lu Baolu wrote:
->>>> The IOMMU driver supports default domain, so the detach_dev op will 
->>>> never
->>>> be called. Remove it to avoid dead code.
->>>>
->>>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->>>> ---
->>>>   drivers/iommu/mtk_iommu.c | 9 ---------
->>>>   1 file changed, 9 deletions(-)
->>>
->>> I listed this driver as not supporting default domains:
->>>
->>> https://lore.kernel.org/linux-iommu/20220516135741.GV1343366@nvidia.com/
->>>
->>> ?
->>>
->>> Has something changed? Did I get it wrong?
->>
->> static struct iommu_domain *mtk_iommu_domain_alloc(unsigned type)
->> {
->>      struct mtk_iommu_domain *dom;
->>
->>      if (type != IOMMU_DOMAIN_DMA && type != IOMMU_DOMAIN_UNMANAGED)
->>          return NULL;
->> ...
->>
->>
->> This one runs on arm64, so has always supported default domains for 
->> iommu-dma to work.
+On 2022-11-28 22:16, Ricardo Ribalda wrote:
+> If the system is rebooted via isr(), the IRQ handler might be triggerd
+> before the domain is initialized. Resulting on an invalid memory access
+> error.
 > 
-> This, together with several other ones, only support IOMMU_DOMAIN_DMA
-> type of default domain. The iommu core handle this by falling back to
-> IOMMU_DOMAIN_DMA if other types fail.
-> 
->          dom = __iommu_domain_alloc(bus, type);
->          if (!dom && type != IOMMU_DOMAIN_DMA) {
->                  dom = __iommu_domain_alloc(bus, IOMMU_DOMAIN_DMA);
->                  if (dom)
->                          pr_warn("Failed to allocate default IOMMU 
-> domain of type %u for group %s - Falling back to IOMMU_DOMAIN_DMA",
->                                  type, group->name);
->          }
-> 
-> I have another cleanup series:
-> 
-> https://github.com/LuBaolu/intel-iommu/commits/iommu-use-def_default_type-wip
-> 
-> which adds IOMMU_DOMAIN_DMA default domain type requirement in the
-> def_domain_type callback. I planed to bring that to discussion after
-> this one.
+> Fix:
+> [    0.500930] Unable to handle kernel read from unreadable memory at virtual address 0000000000000070
+> [    0.501166] Call trace:
+> [    0.501174]  report_iommu_fault+0x28/0xfc
+> [    0.501180]  mtk_iommu_isr+0x10c/0x1c0
 
-Per the discussion over on the s390 thread, I think that would be a step 
-in the wrong direction. I'd prefer to keep .def_domain_type for 
-device-specific requirements and express general driver domain support a 
-different way. If the IOMMU_DOMAIN_DMA fallback is worth removing then 
-the one for IOMMU_DOMAIN_BLOCKED is as well - no point doing half the job ;)
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
-Thanks,
-Robin.
+> Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
+> ---
+> To: Yong Wu <yong.wu@mediatek.com>
+> To: Joerg Roedel <joro@8bytes.org>
+> To: Will Deacon <will@kernel.org>
+> To: Robin Murphy <robin.murphy@arm.com>
+> To: Matthias Brugger <matthias.bgg@gmail.com>
+> Cc: iommu@lists.linux.dev
+> Cc: linux-mediatek@lists.infradead.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-kernel@vger.kernel.org
+> ---
+> Changes in v2:
+> - Also print the error message if !dom (Thanks Yong)
+> - Link to v1: https://lore.kernel.org/r/20221125-mtk-iommu-v1-0-bb5ecac97a28@chromium.org
+> ---
+>   drivers/iommu/mtk_iommu.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 2ab2ecfe01f8..3d913ab5029c 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -454,7 +454,7 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+>   		fault_larb = data->plat_data->larbid_remap[fault_larb][sub_comm];
+>   	}
+>   
+> -	if (report_iommu_fault(&dom->domain, bank->parent_dev, fault_iova,
+> +	if (!dom || report_iommu_fault(&dom->domain, bank->parent_dev, fault_iova,
+>   			       write ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ)) {
+>   		dev_err_ratelimited(
+>   			bank->parent_dev,
+> 
+> ---
+> base-commit: 4312098baf37ee17a8350725e6e0d0e8590252d4
+> change-id: 20221125-mtk-iommu-13023f971298
+> 
+> Best regards,
