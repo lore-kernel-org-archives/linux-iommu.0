@@ -1,96 +1,149 @@
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52C197C
-	for <iommu@lists.linux.dev>; Tue, 29 Nov 2022 02:22:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CAE7364
+	for <iommu@lists.linux.dev>; Tue, 29 Nov 2022 02:37:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669688543; x=1701224543;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=tbc+ZueGykxDbF9jnsj+Z1gJ1TR24nDwb3s1ZF8qrDE=;
-  b=c+pNgdZtXdSyn+Z8xuK5+S54AlMh1SjGuJq52Cbc9r4wuS0/yCQMTWA+
-   B5glfJlaJ2qgSGUFsNq+ZVXIqGWEIp7y3R3k44i/KX+SfKXvBxHtheqZc
-   vCsToVAnvg/+ILmuoEEwRK+D5iuUu1At4kQVIKfM19mNVJtOKP20cD+gq
-   0V63tBcE9q5SRiJDGEsnBnhcTSU2ocecd4+KO0M2bfdOKwW9c3ezV64qv
-   O9t0BREWVLUk6mbI9Rk6Y9SPwM2fgl/wd320I3Wb0NhhkEqitolJcr4uH
-   BJrdhrC+kh7PJzEYGCz+DLCxKo4U4d9DDW34cQFmko0nNUNuGWDwm1OHY
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="312630484"
+  t=1669689469; x=1701225469;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=E82gyarBCFsNNOtAxJWdi0iafr8keX5tzFsWVvap+YI=;
+  b=EMCn5CAHLb75M0eENFvITCFu5xlhA/o5Gct45AJg50M/xx8l0K26QuPk
+   xXTjV0VQt7EvcFNzs0BdlmjxskoGwGnqA8SN3ArknJv6r9PfJVlmTu8J8
+   y+oE/uPHwIY2/pnGU8RX9UgO7M/VOfAQu8/4HLtxgiQs+DB5myA6CCky7
+   0EMA1VEuAAhqa7nUoSjcZ4ryjoWrv7HZJY898QHulwxbS9dlDaVFAIjri
+   RchuEl9OFRYFoZDwMK5Eq01JO2J1if3gWQbNtPe15YmN7XA7KZOVuuznd
+   Jss6mgB+C8jTpf0VkPRbJTzcT1ymZtdAbTrWP6XSPuqmanhlOSjd1n3to
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="341921578"
 X-IronPort-AV: E=Sophos;i="5.96,201,1665471600"; 
-   d="scan'208";a="312630484"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2022 18:22:22 -0800
+   d="scan'208";a="341921578"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2022 18:37:48 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="594094969"
+X-IronPort-AV: E=McAfee;i="6500,9779,10545"; a="785873589"
 X-IronPort-AV: E=Sophos;i="5.96,201,1665471600"; 
-   d="scan'208";a="594094969"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by orsmga003.jf.intel.com with ESMTP; 28 Nov 2022 18:22:15 -0800
-Message-ID: <777eb770-7db2-0cb8-876e-67d86abffa42@linux.intel.com>
-Date: Tue, 29 Nov 2022 10:15:03 +0800
+   d="scan'208";a="785873589"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmsmga001.fm.intel.com with ESMTP; 28 Nov 2022 18:37:48 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Mon, 28 Nov 2022 18:37:48 -0800
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Mon, 28 Nov 2022 18:37:48 -0800
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (104.47.74.43) by
+ edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Mon, 28 Nov 2022 18:37:48 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dj8qvcHirej2IyvHNjYeFoMe/zpFZrMydZdSN6erJpjksZlaBxH8MXDf0qp12wP8AW+0ZkGV4fEu26ZGS+U0jzKCohaHVdTr/fAomsSq044wkt0JuSTD0INUqcJM2J/76EhTBGdN2ALxHJQed9tHSgnheE0890HhtqjfKGrvFrI7KP+I3+hYyUQFoap3vOHWdeyBXDLBSC7hUoeMagdsgK1ZWmZcL/X2LXPFGZwkDbi8mKh3vUhnDGOKBfrC95xgIqa8YbHgXDknlfPt1QlCMAYUk7ZTfh3Np+LG3qYVd4NJCO5v0XtMx6fZPMHJFIsY1q4BdhBtCKlPdAVvebYHWA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=s0zFsH1ugX0wPoQ+2hV0IBypL3PbgvRadm7a1mh4KVg=;
+ b=nkyskFARNfAgY4JXsnLUe9l8bGWXR1PalKRbqX3ykI8kxEmV7hQHAHUllSGpI7zHbWuOSPWiqx3Q5qVj76nVUOWRV/yWJTIHXazLxvhbFDieJalGWnz+LB8ndsKebH5HWh+3OV2JBvkJmzsIwmPYLnF5D7VyCTix++es0Q10+625PCWF3oOxBF4poVcvex9jsmBZ1Vbo3xcjsUKfULreZCh2xBBJ89nFF7f6WfPSxbpzZ/L4gzJDLZ18Ro+nxPti5FEvBckI4uAUI4SPmPSeK4k3pJ87YUNqCFZzYoeG/TlqI1NK08DiG6hviBGqR3ufHvwUkNMGhwEPfRmlogZiTQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BL1PR11MB5271.namprd11.prod.outlook.com (2603:10b6:208:31a::21)
+ by IA0PR11MB7283.namprd11.prod.outlook.com (2603:10b6:208:439::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5857.23; Tue, 29 Nov
+ 2022 02:37:46 +0000
+Received: from BL1PR11MB5271.namprd11.prod.outlook.com
+ ([fe80::7a7f:9d68:b0ec:1d04]) by BL1PR11MB5271.namprd11.prod.outlook.com
+ ([fe80::7a7f:9d68:b0ec:1d04%9]) with mapi id 15.20.5857.021; Tue, 29 Nov 2022
+ 02:37:46 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, LKML <linux-kernel@vger.kernel.org>, Lu Baolu
+	<baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse
+	<dwmw2@infradead.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon
+	<will@kernel.org>
+CC: "Liu, Yi L" <yi.l.liu@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+	"Luo, Yuzhang" <yuzhang.luo@intel.com>
+Subject: RE: [PATCH v2] iommu/vt-d: Add a fix for devices need extra dtlb
+ flush
+Thread-Topic: [PATCH v2] iommu/vt-d: Add a fix for devices need extra dtlb
+ flush
+Thread-Index: AQHZA0sDmZMJponTzEKZnMmF3PJ0y65VMCYg
+Date: Tue, 29 Nov 2022 02:37:45 +0000
+Message-ID: <BL1PR11MB52716203AF9CC7CADDAC0B4D8C129@BL1PR11MB5271.namprd11.prod.outlook.com>
+References: <20221128170410.3830605-1-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <20221128170410.3830605-1-jacob.jun.pan@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BL1PR11MB5271:EE_|IA0PR11MB7283:EE_
+x-ms-office365-filtering-correlation-id: e78da6a3-7747-46c1-1411-08dad1b2b2f4
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Q5jQWlzNGRAv5HQ/7LmHiG+PPjKfuF+D+HCN9aeXNLlsINZFCijJmLAMYA9Lz4wqK7Fis32eOkS3xi5INYOG2TVQ5IAzlpmUTzyvIwI5ycVFWH2rn1oJu1VPhtBdjfwmtu7Ai4mkpt5ohE04mPMmA7OglvNsNHfzJZjqs+6499+8PwnW6DXhvjt4/ARnR029watD2bea7yuTXy6nS7KNG+SvScwWvaAolAV+KKhHhBI6oZy0u2DITq5IBvJhE2OKprNRcPbUb17AqjSwu2tQyJhQSIQ7rO/X+SRPAD41YrgAtLsPTw6zJOwJ3VKVvPdceicUVJRCASw/yBmJm2BDXCbRGJ+RNEKVYfHD50ioffY8UUQeuZfmaBLgsslCOjNHc9k2vmtBfZ7mj/YedXQ+kqMMaaBYtI6Zbjkx0sHIvKKJSj1jflRTETG+6M88jbIBO7h+6dN5jrcovlxdNpjBQLD5TYlbvKbed3QmuM/h7f3mZqzGoR3K23Eu3m6yVrYY1oEK38C6CzR4cNjJycTdkLMQGUSgP8mZz0XShcE2ZeyIUB1lE8kqUtalPy3SZQzooXgqnJa9dOFM48XplLRaQiHEjXJFXJpdVrCD6PXqAK53cKIBLf0JJ/5UgcjYPnhVviQ55A37ZKkBFRnU9oE7Gqcpbu1fu3e/Ep2mzb2WdytyJC0+4zMsGe00fIR9/S9+w/S7Uv4DoxGuvQSPlvabvQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR11MB5271.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(376002)(346002)(366004)(396003)(39860400002)(136003)(451199015)(38070700005)(55016003)(558084003)(33656002)(82960400001)(86362001)(316002)(110136005)(54906003)(478600001)(6506007)(2906002)(66476007)(66556008)(66946007)(8676002)(76116006)(64756008)(66446008)(4326008)(41300700001)(8936002)(5660300002)(52536014)(71200400001)(38100700002)(122000001)(7696005)(9686003)(26005)(186003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?2k308atOfyBkezdm5/m+G4Z5oxowR+ZcwKf9G8QaqmyWk3HS1qT5lqf9r+yU?=
+ =?us-ascii?Q?Jmh6g33gVVXWKF0JMASrjbRzQcKgVNkUe8TgsHBy10x3HfbFVPEdDI8kCjOB?=
+ =?us-ascii?Q?vC27JNn71sqn5OlOhWY089gPi0afdXQIpX/9nVviPC4agLKXb6RbFKy5sNIb?=
+ =?us-ascii?Q?/updo08onGBecwVOj1lEGAqDECzGt5z2ps4ay5ljjG0bgUA+0+zr3pY07fS6?=
+ =?us-ascii?Q?mH14tuBHBuQodcxTua2soVRmAShvxyjQnl/ihXh2b3BH9iEELRpwMrZtfYS5?=
+ =?us-ascii?Q?MltozUKBpCCp253Zzdp/1sH/vvbFerzb4SNVY3sCkWFo/rKGZAVmXuKJxVa8?=
+ =?us-ascii?Q?a3EUDvEc0RktE/Rhc5KjUv583cJK88mleWd3bwB+51v4NJzOGYVLPUdgyDIb?=
+ =?us-ascii?Q?mHT/Yf5FfbGnqIOBBu8MriYMqkm926K4zakN+c17UiEFJWEJUKPPeUV/B/iL?=
+ =?us-ascii?Q?KoTcr4Zvq8aFbttHdWV5j6VKKjaDzPEIrxYxVBQukb81kuGi74/meZZ3snFd?=
+ =?us-ascii?Q?Kgk6vpDJk4HSQk1l5RFjmN/LO5S7IiuXzAuI8VFjj3xeOGDUIP+E49zGmFkp?=
+ =?us-ascii?Q?wptX4tSkIGE+EZl5Vm3PC9iGrH323drxHhep5TjCHxQDWsxu2S38uqx5IpQW?=
+ =?us-ascii?Q?ccLaNmNtx3AcphtbHaHqt9PSrUAPYXc2qehlbBoT3OY3H2tK/Na9gUdodSvA?=
+ =?us-ascii?Q?yhj5E/CCe0frM30FpY9WUiakuHrrIZ+NqZkWDYy3P1/dUrW8COgIjCsR4lCI?=
+ =?us-ascii?Q?EzilCT1hY4jYbZjmVqu9Z4yPsYExs/IUtdFBQjyTvf2ajh3x84u92zMa31ks?=
+ =?us-ascii?Q?tk7R/i98dB6rcO5aB+n5r2eFK5/L37vODsVkKkTdNiazrqX1AuLqXL3LWRtc?=
+ =?us-ascii?Q?yBsdJYO3db58WgEceYysfCTCUHWNjQFN/i8YZoesJoprBXrIeTDnaEpAuDIk?=
+ =?us-ascii?Q?BLw8ALrdH4rnvXSD8U48qwBOHhLwh00jVqZgJBVX2xNtud8iK9bFb6NAdxaa?=
+ =?us-ascii?Q?zyqQoZpsaLvaS6pARK5hfzcqKqxVCxMcSh5jWDpp3yl+J2jxQ3K57jiUQBxS?=
+ =?us-ascii?Q?1EYGkT+LFK+/L8o1EPm4Q2VRzyemRvp8D2QoVSiWymxSe3x4n7Dlt2CJY9nE?=
+ =?us-ascii?Q?bOwJ2Zb4HO7MWp6Fy3KJIrTb1sibePZ+YbVblWgOIS9mig7mcikk3JBhfhSj?=
+ =?us-ascii?Q?B3cZ4ikqyp2N9HgPd8dXcY4MZWdL48BF+OktDP5+4a2m7SycmYG2Wg+Pbmx/?=
+ =?us-ascii?Q?otuKK8Cbmx+bCSWyTTUxUWYIXoi0rOBlQ2j+wmy9/F6TLA4ZOTTlhg5SmPM5?=
+ =?us-ascii?Q?9nF/QWs/EQ9oXvFm+Cagb683kkK2hFQh1/5ULt84WUs1yU08qPPT9nNlOFaN?=
+ =?us-ascii?Q?Z8a/PYhEODAPlqaylFYx3s6nRMY7LftkhCp6F9nvMaqLzpJ2xGu9IhbJnzHX?=
+ =?us-ascii?Q?IIyIDZv3vD3JT/EvPy/Ga0qcx9ni/n//IxUClZdRIFQlrR/fQO9B25gaA9PZ?=
+ =?us-ascii?Q?yWHPPiFnRXfG51yesvoaQPbR+59b3RTFlMB/jCgxC8CPibqYDJn+pyuru9If?=
+ =?us-ascii?Q?w+DzVc0GiyEgMO/IGctA6rLTbh3hWoSo21Q/Mso2?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
- Rob Clark <robdclark@gmail.com>, Marek Szyprowski
- <m.szyprowski@samsung.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
- Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>,
- Heiko Stuebner <heiko@sntech.de>, Matthew Rosato <mjrosato@linux.ibm.com>,
- Orson Zhai <orsonzhai@gmail.com>, Baolin Wang
- <baolin.wang@linux.alibaba.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
- Chen-Yu Tsai <wens@csie.org>, Thierry Reding <thierry.reding@gmail.com>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 10/20] iommu: Add set_platform_dma iommu ops
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <20221128064648.1934720-1-baolu.lu@linux.intel.com>
- <20221128064648.1934720-11-baolu.lu@linux.intel.com>
- <Y4TBng2SY0eGE7wx@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Y4TBng2SY0eGE7wx@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BL1PR11MB5271.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e78da6a3-7747-46c1-1411-08dad1b2b2f4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Nov 2022 02:37:46.2445
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Yv7GEvLEKj4+EIIEBoNtIDIsEqax0Flm320BaJt+2m5cw3Zmso/5BgWThpB1hDVT9W7EgI0IZW3dGP12e22XdA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR11MB7283
+X-OriginatorOrg: intel.com
 
-On 11/28/22 10:11 PM, Jason Gunthorpe wrote:
-> On Mon, Nov 28, 2022 at 02:46:38PM +0800, Lu Baolu wrote:
->> When VFIO finishes assigning a device to user space and calls
->> iommu_group_release_dma_owner() to return the device to kernel, the IOMMU
->> core will attach the default domain to the device. Unfortunately, some
->> IOMMU drivers don't support default domain, hence in the end, the core
->> calls .detach_dev instead.
->>
->> This adds set_platform_dma iommu ops to make it clear that what it does
->> is returning control back to the platform DMA ops.
->>
->> Suggested-by: Jason Gunthorpe<jgg@nvidia.com>
->> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
->> ---
->>   include/linux/iommu.h | 4 ++++
->>   1 file changed, 4 insertions(+)
-> Reviewed-by: Jason Gunthorpe<jgg@nvidia.com>
-> 
->> + * @set_platform_dma: Returning control back to the platform DMA ops. Only
->> + *                    valid for IOMMU drivers which don't support default
->> + *                    domain.
-> I would add:
-> 
->    This op is to support old IOMMU drivers, new drivers should use
->    default domains, and the common IOMMU DMA ops.
+> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Sent: Tuesday, November 29, 2022 1:04 AM
+>
+> +void quirk_dev_tlb(struct device_domain_info *info, unsigned long addres=
+s,
+> +		   unsigned long mask, u32 pasid, u16 qdep)
 
-Done. Thank you!
+quirk_extra_dtlb_flush()
 
-Best regards,
-baolu
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
