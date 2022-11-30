@@ -1,95 +1,144 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAB6363D7
-	for <iommu@lists.linux.dev>; Wed, 30 Nov 2022 16:29:18 +0000 (UTC)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2AUGIB4I009352;
-	Wed, 30 Nov 2022 16:29:09 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=VV3smw0uO8uzSuO+VY0XddbFhxCvz0keXmOmUEo/naY=;
- b=GeqUah9JYf8K4KJkCcD63UeTdVDLD3GzuDKaFqdGWNK5kk5xUwcFOFe9U3uP1ZzbLwLw
- Q0vX7caRoaCA/QPUrHBgD8LQ8fZaGuxm7aXp7O1+qiMwSWvsjD8z+6z4y0aUsX0Mz+6B
- GTdkWxrEcoKmv+PIcgTSVMDN/yv4scA6cU+W8yQDsdgUyS3Kla3ItrLIHsoy6OdoEYfi
- B1TCVio9/WcmZgk7dKTBazKK0/JzRpLCuT8+fy70bbP9VbBLmXB2bf9krGokawh9P7dE
- kd6GcGmD/dvujlUCl/DwiCi6AAK4+FR3LhaJZekgEEauytzg76dWDQskPF89eGbBz4XQ wg== 
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3m6ajpg82w-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 30 Nov 2022 16:29:09 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-	by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2AUGLqs8022051;
-	Wed, 30 Nov 2022 16:29:07 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-	by ppma02fra.de.ibm.com with ESMTP id 3m3ae94dre-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 30 Nov 2022 16:29:07 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-	by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2AUGT5mt22086260
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 30 Nov 2022 16:29:05 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 1F05EA405F;
-	Wed, 30 Nov 2022 16:29:05 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id DF393A4054;
-	Wed, 30 Nov 2022 16:29:04 +0000 (GMT)
-Received: from dilbert5.boeblingen.de.ibm.com (unknown [9.152.212.238])
-	by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-	Wed, 30 Nov 2022 16:29:04 +0000 (GMT)
-From: Gerd Bayer <gbayer@linux.ibm.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux.dev, linux390-list@tuxmaker.boeblingen.de.ibm.com,
-        Niklas Schnelle <schnelle@linux.ibm.com>
-Subject: [PATCH] iommu/s390: Remove duplicate statement
-Date: Wed, 30 Nov 2022 17:29:04 +0100
-Message-Id: <20221130162904.472226-1-gbayer@linux.ibm.com>
-X-Mailer: git-send-email 2.38.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BA136FA1
+	for <iommu@lists.linux.dev>; Wed, 30 Nov 2022 17:00:43 +0000 (UTC)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	by mailout.nyi.internal (Postfix) with ESMTP id 74E2B5C01A8;
+	Wed, 30 Nov 2022 12:00:42 -0500 (EST)
+Received: from imap47 ([10.202.2.97])
+  by compute5.internal (MEProxy); Wed, 30 Nov 2022 12:00:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
+	 h=cc:cc:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:sender
+	:subject:subject:to:to; s=fm1; t=1669827642; x=1669914042; bh=4B
+	IHbe0ZunOdNysyDyAs7e5Nl+Er7gjdTx5kTJsmAhI=; b=kTkEYFOT+51YmyRr0W
+	uuK26cq30w6gHYKYqmkGMZvmx4fuLSonon5+GqInSAUimAxZiJszRaCiRONhZDDf
+	F+gIj2ARDA7IM+2Y/gnRiEDoHLODeuAe8DknFOIZUcuNWyUnbkhHlgeFdihZDx96
+	mrwLCLCzTUFBxE3kqX3X4XzRP6LNORgCJ+G0U/lS0ydmf15qQgO/5i8Xdq8xZcx6
+	6fo9DxmgRqJa4WUa4wwbzQNXsC6UlekNeT3pCTHcv8PigCjShg6HTwCZDO2lEodS
+	NaKY425J4K5vIcFpDAEvF2N/nair14lFUOoMYaczvEyJzbt+k+OJ0AClBZ4Q9B+D
+	Pikg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+	:feedback-id:from:from:in-reply-to:in-reply-to:message-id
+	:mime-version:references:reply-to:sender:subject:subject:to:to
+	:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+	fm1; t=1669827642; x=1669914042; bh=4BIHbe0ZunOdNysyDyAs7e5Nl+Er
+	7gjdTx5kTJsmAhI=; b=VgMqYh0iq/eR0MZQ8k1vOF8o6LYji5VADjuivBY0Czbz
+	xtmFdALzod1Ahq3I4cZr/tEFcq0jBJUuU3YvcuesPVR8wwLH0MLWsZQi07D1TwjB
+	LOpbFupr5MQN8Na+2Hg+OK2POCVNNPElJt4MwcaovbcVLljULl2ztBcJ4PtAZ1cU
+	NhfObtmqnv3ma7ciRL10ANbdCqk0KHc/kStMOzFjKJUH+AS4jW8y2w5d3BzbtpEd
+	YOyF93I1SLYDJUTjGk7H7GNw4Gk+ePwo7rLPwmkm8Tv3sugcXlLcq465OXrDbqYm
+	1c/xrCBGDe3x+bhaC8gKZAs/73n3lpyewqcJnb/sEw==
+X-ME-Sender: <xms:N4yHY3tixQNB3iFPS4e5K1BH1v728NttXlOoL2lBcw3eXKLNkVo1Kg>
+    <xme:N4yHY4eM36wXkPloIBtUUuh2vuhBSrSIRAsA1TMmdPsBjWuGggqOQ8gPSVJ6vnAJN
+    plaENKVo1HzFlPbwh4>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrtdefgdelfecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdfuvhgv
+    nhcurfgvthgvrhdfuceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrg
+    htthgvrhhnpeelvefggeffheevtdeivefhkeehfeettdejteduveeiheevveeilefghfei
+    veeiueenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hsvhgvnhesshhvvghnphgvthgvrhdruggvvh
+X-ME-Proxy: <xmx:N4yHY6x3RAmP9g8RrBnv1U6oVg3XkWGN82LdOwaP5n0bUF8C-P3NJw>
+    <xmx:N4yHY2PoHjUeoadpQubo2faQp9jd80TPEIActvaztn4kexK8c2Knpw>
+    <xmx:N4yHY3-oebQVHhwvJcsdARTAtvF8_6oaks8tK24WKPZxRDsyyMTxew>
+    <xmx:OoyHY_9LYDfysdzs3fyDJPopEdNFr3SFlRS3H7dCjoKJRwPutUfzwg>
+Feedback-ID: i51094778:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id 578D4A6007C; Wed, 30 Nov 2022 12:00:39 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-1115-g8b801eadce-fm-20221102.001-g8b801ead
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: D0KJxY9iyEYwDaKp0SozOaBanAca1RyD
-X-Proofpoint-ORIG-GUID: D0KJxY9iyEYwDaKp0SozOaBanAca1RyD
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.895,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-11-30_04,2022-11-30_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- mlxlogscore=999 impostorscore=0 adultscore=0 mlxscore=0 malwarescore=0
- priorityscore=1501 phishscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2210170000 definitions=main-2211300112
+Mime-Version: 1.0
+Message-Id: <e255ed09-ed67-46b3-b055-287959d1b76f@app.fastmail.com>
+In-Reply-To: <20221128064648.1934720-3-baolu.lu@linux.intel.com>
+References: <20221128064648.1934720-1-baolu.lu@linux.intel.com>
+ <20221128064648.1934720-3-baolu.lu@linux.intel.com>
+Date: Wed, 30 Nov 2022 18:00:38 +0100
+From: "Sven Peter" <sven@svenpeter.dev>
+To: "Lu Baolu" <baolu.lu@linux.intel.com>, "Joerg Roedel" <joro@8bytes.org>,
+ "Jason Gunthorpe" <jgg@nvidia.com>, "Christoph Hellwig" <hch@infradead.org>,
+ "Kevin Tian" <kevin.tian@intel.com>, "Will Deacon" <will@kernel.org>,
+ "Robin Murphy" <robin.murphy@arm.com>,
+ "Jean-Philippe Brucker" <jean-philippe@linaro.org>
+Cc: "Suravee Suthikulpanit" <suravee.suthikulpanit@amd.com>,
+ "Hector Martin" <marcan@marcan.st>, "Rob Clark" <robdclark@gmail.com>,
+ "Marek Szyprowski" <m.szyprowski@samsung.com>,
+ "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>,
+ "Andy Gross" <agross@kernel.org>, "Bjorn Andersson" <andersson@kernel.org>,
+ "Yong Wu" <yong.wu@mediatek.com>,
+ "Matthias Brugger" <matthias.bgg@gmail.com>,
+ "Heiko Stuebner" <heiko@sntech.de>,
+ "Matthew Rosato" <mjrosato@linux.ibm.com>,
+ "Orson Zhai" <orsonzhai@gmail.com>,
+ "Baolin Wang" <baolin.wang@linux.alibaba.com>,
+ "Chunyan Zhang" <zhang.lyra@gmail.com>, "Chen-Yu Tsai" <wens@csie.org>,
+ "Thierry Reding" <thierry.reding@gmail.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 02/20] iommu/apple-dart: Remove detach_dev callback
+Content-Type: text/plain
 
-Clean up an erroneously duplicated statement. This is
-a late finding while reviewing the latest s390 IOMMU work.
+Hi,
 
-Fixes: cbf7827bc5dc ("iommu/s390: Fix potential s390_domain aperture shrinking")
-Signed-off-by: Gerd Bayer <gbayer@linux.ibm.com>
----
+On Mon, Nov 28, 2022, at 07:46, Lu Baolu wrote:
+> The IOMMU driver supports default domain, so the detach_dev op will never
+> be called. Remove it to avoid dead code.
+>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
 
-This duplicate line is currently in the -next and the IOMMU trees but not yet in
-mainline.
+Reviewed-by: Sven Peter <sven@svenpeter.dev>
 
- drivers/iommu/s390-iommu.c | 1 -
- 1 file changed, 1 deletion(-)
+>  drivers/iommu/apple-dart.c | 17 -----------------
+>  1 file changed, 17 deletions(-)
+>
+> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+> index 4f4a323be0d0..6fbe6b275c79 100644
+> --- a/drivers/iommu/apple-dart.c
+> +++ b/drivers/iommu/apple-dart.c
+> @@ -535,22 +535,6 @@ static int apple_dart_attach_dev(struct 
+> iommu_domain *domain,
+>  	return ret;
+>  }
+> 
+> -static void apple_dart_detach_dev(struct iommu_domain *domain,
+> -				  struct device *dev)
+> -{
 
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index ed33c6cce083..3fd0e9fdacb8 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -132,7 +132,6 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 	 */
- 	if (cc && status != ZPCI_PCI_ST_FUNC_NOT_AVAIL)
- 		return -EIO;
--	zdev->dma_table = s390_domain->dma_table;
+Thanks for cleaning this entire API up!
 
- 	zdev->dma_table = s390_domain->dma_table;
- 	zdev->s390_domain = s390_domain;
--- 
-2.38.1
+It actually turns out that this is slightly broken because I assumed that
+detach_dev would always be called for any attach_dev. I think the only
+consequence for a device that used to be assigned to domain A and is now moved to
+domain B is that any TLB flushes required for A will still flush the TLB for that
+device.
 
+That's not a big deal but I'll eventually send a fix.
+
+> -	int i;
+> -	struct apple_dart_stream_map *stream_map;
+> -	struct apple_dart_master_cfg *cfg = dev_iommu_priv_get(dev);
+> -	struct apple_dart_domain *dart_domain = to_dart_domain(domain);
+> -
+> -	for_each_stream_map(i, cfg, stream_map)
+> -		apple_dart_hw_disable_dma(stream_map);
+> -
+> -	if (domain->type == IOMMU_DOMAIN_DMA ||
+> -	    domain->type == IOMMU_DOMAIN_UNMANAGED)
+> -		apple_dart_domain_remove_streams(dart_domain, cfg);
+
+Something might complain about unused apple_dart_domain_remove_streams now.
+Might make sense to drop that for now as well.
+
+
+
+Best,
+
+Sven
