@@ -1,81 +1,131 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E14A7363
-	for <iommu@lists.linux.dev>; Wed, 30 Nov 2022 00:30:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D82547E0
+	for <iommu@lists.linux.dev>; Wed, 30 Nov 2022 01:28:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669768221; x=1701304221;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=1GWWc4Tc75XYzHefA3rY5s7nAsU8WGJ5jGlKkeOVvf4=;
-  b=dtpD9i3CW+w6PsAFLKmprf+CV2nXNNZ48cKVtJ8ni9pPyuHLMTB6vCQ4
-   xmghF/RzYE2pn1ONbxM77kwihK0KK+lgQa3jMefXhXIACjfb2f18VsVA8
-   MTEc2Vl8b6FxBbLjAwPUsojxe5g0ZxjK5ZVe58QxwPqZZ+1VLRHevDDoL
-   wAzpKFxdxpD56p8J3SI9Dim9fcU/6L0PtFSGmIDESWp9z/YeHqpoIQI3t
-   Qo0i96b00M3mymRUOvIVK4ChBumVEhG/tY6g+AFYuK8zycinGYAPinzy4
-   bSFYRlRq0xrvRuynOhwF6j22r42ZHW+x1dRI2h8Xawuej/SMHjq1YzPuY
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="313961648"
+  t=1669771734; x=1701307734;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=FiqAFQXIvz60hbT0xq79nRbGcPgH1YTtz35ZXjIbxDA=;
+  b=XFrEWzILez8jbBrfp5zZWFyH7r5c8GaAWOxgH2gs/PXQfq/G4gvD48Mz
+   wG6V5yBHY6NRDtXvIboBbLi28YU3Dzm2cufxSGdpNCfV8mSkUD4OAb6tM
+   gBPLz39xa43T3FSXSpUwt+7Dg9Ll/eSTsoe5L5VKeg+GT9Qpaf10dfL3F
+   jc5p8kJVwbq6xkZcQARwUHH4S3RChNLNT6nttGsP58h624i4LLrpiZrLi
+   SaBb43up+c/IYfqldU+EvTxipd/NXOoZ6451AUasKCIotb+xd0naPMPae
+   zX7TrHYbGcUmTwIFpHjFLaLPOiakaxoau+0UphBc21YRVoa1h35jVREEq
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="377434704"
 X-IronPort-AV: E=Sophos;i="5.96,204,1665471600"; 
-   d="scan'208";a="313961648"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2022 16:30:21 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="889074941"
+   d="scan'208";a="377434704"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2022 17:28:54 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="768645885"
 X-IronPort-AV: E=Sophos;i="5.96,204,1665471600"; 
-   d="scan'208";a="889074941"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2022 16:30:20 -0800
-Date: Tue, 29 Nov 2022 16:34:12 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux.dev, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel
- <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Robin Murphy
- <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Yi Liu
- <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok
- <ashok.raj@intel.com>, Yuzhang Luo <yuzhang.luo@intel.com>,
- jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v2] iommu/vt-d: Add a fix for devices need extra dtlb
- flush
-Message-ID: <20221129163412.15da3081@jacob-builder>
-In-Reply-To: <9fd4bf6c-5525-c209-28b6-492558c1dd35@linux.intel.com>
-References: <20221128170410.3830605-1-jacob.jun.pan@linux.intel.com>
-	<9fd4bf6c-5525-c209-28b6-492558c1dd35@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+   d="scan'208";a="768645885"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.210.199]) ([10.254.210.199])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2022 17:28:49 -0800
+Message-ID: <ca0d8de0-a881-0ccb-75fb-2530428f2c3e@linux.intel.com>
+Date: Wed, 30 Nov 2022 09:28:47 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Cc: baolu.lu@linux.intel.com, Niklas Schnelle <schnelle@linux.ibm.com>,
+ Matthew Rosato <mjrosato@linux.ibm.com>, Gerd Bayer <gbayer@linux.ibm.com>,
+ iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Wenjia Zhang <wenjia@linux.ibm.com>,
+ Pierre Morel <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
+ borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+ gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com, svens@linux.ibm.com,
+ linux-kernel@vger.kernel.org, Julian Ruess <julianr@linux.ibm.com>
+Subject: Re: [PATCH v2 4/7] iommu: Let iommu.strict override
+ ops->def_domain_type
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>
+References: <20221116171656.4128212-1-schnelle@linux.ibm.com>
+ <20221116171656.4128212-5-schnelle@linux.ibm.com>
+ <33eea9bd-e101-4836-19e8-d4b191b78b00@linux.intel.com>
+ <9163440eb6a47fe02730638bbdf72fda5ee5ad2c.camel@linux.ibm.com>
+ <Y4S3z6IpeDHmdUs/@nvidia.com>
+ <52fe7769ca5b66523c2c93c7d46ebc17dc144aca.camel@linux.ibm.com>
+ <Y4TjWOXYD+DK+d/B@nvidia.com> <6c4c3a3e-1d8d-7994-3c03-388ef63dddb3@arm.com>
+ <Y4ZCVgLO9AHatwXe@nvidia.com> <eb30ad63-92d4-2af4-22e7-d82cdf08565e@arm.com>
+ <Y4Zm53o1ovdIAqr/@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <Y4Zm53o1ovdIAqr/@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Hi Baolu,
-
-On Wed, 30 Nov 2022 08:10:55 +0800, Baolu Lu <baolu.lu@linux.intel.com>
-wrote:
-
-> > --- a/drivers/iommu/intel/iommu.c
-> > +++ b/drivers/iommu/intel/iommu.c
-> > @@ -1396,6 +1396,23 @@ static void domain_update_iotlb(struct
-> > dmar_domain *domain) spin_unlock_irqrestore(&domain->lock, flags);
-> >   }
-> >   
-> > +/*
-> > + * Impacted QAT device IDs ranging from 0x4940 to 0x4943.
-> > + * This quirk is exempted from risky_device() check because it applies
-> > only
-> > + * to the built-in QAT devices.
-> > + */  
+On 2022/11/30 4:09, Jason Gunthorpe wrote:
+> On Tue, Nov 29, 2022 at 06:41:22PM +0000, Robin Murphy wrote:
+>> On 2022-11-29 17:33, Jason Gunthorpe wrote:
+>>> On Mon, Nov 28, 2022 at 09:01:43PM +0000, Robin Murphy wrote:
+>>>
+>>>> I'm hardly an advocate for trying to save users from themselves, but I
+>>>> honestly can't see any justifiable reason for not having sysfs respect
+>>>> iommu_get_def_domain_type().
+>>>
+>>> We really need to rename this value if it is not actually just an
+>>> advisory "default" but a functional requirement ..
+>>
+>> It represents a required default domain type. As in, the type for the
+>> device's default domain. Not the default type for a domain. It's the
+>> iommu_def_domain_type variable that holds the *default* default domain type
+>> ;)
 > 
-> How about adding:
+> I find the name "default domain" incredibly confusing at this point in
+> time.
 > 
-> "This quirk is exempted from risky_device() check because it doesn't
-> effectively grant additional privileges."
-sounds good.
+> I would like to call that the "dma-api domain" - its primary purpose
+> is to be the domain that the DMA API uses to operate the IOMMU, there
+> is little "default" about it. This meshes better with our apis talking
+> about ownership and so forth.
+> 
+> So, if the op was called
+>    get_dma_api_domain_type()
+> 
+> It is pretty clear that it is the exact type of domain that should be
+> created to support the DMA API, which is what I think you have been
+> describing it is supposed to do?
+> 
+> And with Lu's series we have the set_platform_dma() (Lu perhaps you
+> should call this set_platform_dma_api() to re-enforce it is about the
+> DMA API, not some nebulous DMA thing)
 
-Thanks,
+Sure thing. It's more specific.
 
-Jacob
+> 
+> Which is basically the other way to configure the DMA API for
+> operation.
+> 
+> And encapsulating more of the logic to setup and manage the DMA API's
+> domain into dma-iommu.c would also be helpful to understanding.
+> 
+>> Which reminds me I should finish that patch undoing my terrible
+>> ops->default_domain_ops idea, not least because they are misleadingly
+>> unrelated to default domains...
+> 
+> :)
+> 
+>>> It is close to being clear, once we get the last touches of dma-iommu
+>>> stuff out of the drivers it should be quite clear
+>>
+>> Cool, some upheaval of .domain_alloc is next on my hitlist anyway, so that
+>> might be a good excuse to upheave it a bit more and streamline the type
+>> stuff along the way.
+> 
+> Yes, I think so. I want to tidy things a bit so adding this "user
+> space" domain concept is a little nicer
+> 
+> Jason
+> 
+
+--
+Best regards,
+baolu
