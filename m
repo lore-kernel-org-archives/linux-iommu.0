@@ -1,144 +1,137 @@
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BA136FA1
-	for <iommu@lists.linux.dev>; Wed, 30 Nov 2022 17:00:43 +0000 (UTC)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-	by mailout.nyi.internal (Postfix) with ESMTP id 74E2B5C01A8;
-	Wed, 30 Nov 2022 12:00:42 -0500 (EST)
-Received: from imap47 ([10.202.2.97])
-  by compute5.internal (MEProxy); Wed, 30 Nov 2022 12:00:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
-	 h=cc:cc:content-type:date:date:from:from:in-reply-to
-	:in-reply-to:message-id:mime-version:references:reply-to:sender
-	:subject:subject:to:to; s=fm1; t=1669827642; x=1669914042; bh=4B
-	IHbe0ZunOdNysyDyAs7e5Nl+Er7gjdTx5kTJsmAhI=; b=kTkEYFOT+51YmyRr0W
-	uuK26cq30w6gHYKYqmkGMZvmx4fuLSonon5+GqInSAUimAxZiJszRaCiRONhZDDf
-	F+gIj2ARDA7IM+2Y/gnRiEDoHLODeuAe8DknFOIZUcuNWyUnbkhHlgeFdihZDx96
-	mrwLCLCzTUFBxE3kqX3X4XzRP6LNORgCJ+G0U/lS0ydmf15qQgO/5i8Xdq8xZcx6
-	6fo9DxmgRqJa4WUa4wwbzQNXsC6UlekNeT3pCTHcv8PigCjShg6HTwCZDO2lEodS
-	NaKY425J4K5vIcFpDAEvF2N/nair14lFUOoMYaczvEyJzbt+k+OJ0AClBZ4Q9B+D
-	Pikg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-	:feedback-id:from:from:in-reply-to:in-reply-to:message-id
-	:mime-version:references:reply-to:sender:subject:subject:to:to
-	:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-	fm1; t=1669827642; x=1669914042; bh=4BIHbe0ZunOdNysyDyAs7e5Nl+Er
-	7gjdTx5kTJsmAhI=; b=VgMqYh0iq/eR0MZQ8k1vOF8o6LYji5VADjuivBY0Czbz
-	xtmFdALzod1Ahq3I4cZr/tEFcq0jBJUuU3YvcuesPVR8wwLH0MLWsZQi07D1TwjB
-	LOpbFupr5MQN8Na+2Hg+OK2POCVNNPElJt4MwcaovbcVLljULl2ztBcJ4PtAZ1cU
-	NhfObtmqnv3ma7ciRL10ANbdCqk0KHc/kStMOzFjKJUH+AS4jW8y2w5d3BzbtpEd
-	YOyF93I1SLYDJUTjGk7H7GNw4Gk+ePwo7rLPwmkm8Tv3sugcXlLcq465OXrDbqYm
-	1c/xrCBGDe3x+bhaC8gKZAs/73n3lpyewqcJnb/sEw==
-X-ME-Sender: <xms:N4yHY3tixQNB3iFPS4e5K1BH1v728NttXlOoL2lBcw3eXKLNkVo1Kg>
-    <xme:N4yHY4eM36wXkPloIBtUUuh2vuhBSrSIRAsA1TMmdPsBjWuGggqOQ8gPSVJ6vnAJN
-    plaENKVo1HzFlPbwh4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrtdefgdelfecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdfuvhgv
-    nhcurfgvthgvrhdfuceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrg
-    htthgvrhhnpeelvefggeffheevtdeivefhkeehfeettdejteduveeiheevveeilefghfei
-    veeiueenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    hsvhgvnhesshhvvghnphgvthgvrhdruggvvh
-X-ME-Proxy: <xmx:N4yHY6x3RAmP9g8RrBnv1U6oVg3XkWGN82LdOwaP5n0bUF8C-P3NJw>
-    <xmx:N4yHY2PoHjUeoadpQubo2faQp9jd80TPEIActvaztn4kexK8c2Knpw>
-    <xmx:N4yHY3-oebQVHhwvJcsdARTAtvF8_6oaks8tK24WKPZxRDsyyMTxew>
-    <xmx:OoyHY_9LYDfysdzs3fyDJPopEdNFr3SFlRS3H7dCjoKJRwPutUfzwg>
-Feedback-ID: i51094778:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-	id 578D4A6007C; Wed, 30 Nov 2022 12:00:39 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-1115-g8b801eadce-fm-20221102.001-g8b801ead
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D09746FA1
+	for <iommu@lists.linux.dev>; Wed, 30 Nov 2022 17:18:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1669828723;
+	h=from:from:reply-to:reply-to:subject:subject:date:date:
+	 message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+	 content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=7yqed071pAVP6WInKQJMIjJsrRbR4/XvmYMWkwCqNRs=;
+	b=MHEsJ+5J8wPuFvgZZTB4aM0TExELUAS6VScWprkZlrmiOqCFmTu5OauFcTaOXGXGY87rwT
+	xj9eUALyjeFJfuUmtqvtVmRMxVp5hlCXZ32RGf2t80TcDDHw4LpO0pZEKxGHnT6zsqIdfO
+	jV0y9w0Yvb+zltbOCl0RObxfN9UnIjU=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-408-fnyfo6EpMmmOO2WBqqQ2Iw-1; Wed, 30 Nov 2022 12:18:42 -0500
+X-MC-Unique: fnyfo6EpMmmOO2WBqqQ2Iw-1
+Received: by mail-qk1-f198.google.com with SMTP id h8-20020a05620a284800b006b5c98f09fbso41494803qkp.21
+        for <iommu@lists.linux.dev>; Wed, 30 Nov 2022 09:18:42 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:reply-to:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=7yqed071pAVP6WInKQJMIjJsrRbR4/XvmYMWkwCqNRs=;
+        b=QzbJPlNXBlkA+AML3XSdAjA5vEg1g36aVGwrcJIDTiZyBQ/4OifKKa4wGFhsRxnLqW
+         TAIC+SniW/Pg56OcXezfDLTfguJdJSIIYKbJDoUzYxOymE0eUgekft4MBRT0lKgyVYMb
+         FQ36vJSuQO2hHsemT3P9qtJJ3FwSBgYPr0oBIpkmC3rS6yTnic4p83rkP9vTMgxT1lzY
+         Z8eX8+jcvLdnteCWVPGv1krI0vJ0yQ9DpXI9rBz9L5vPWCjW1a3/FGqui6Na5RapIgXV
+         I+lpSejvXGwboZgB0tPS+sx7/rxDfUc8xaRbK5EdGCLMazYlvY/GOSsMwFFqu8HsG1yT
+         LUrw==
+X-Gm-Message-State: ANoB5pnw2AHZaSmPXtLZ8y3tKZ+6Xtaib5Qq2yrLVNf2BIAtrUenP6hU
+	lZTDqLHQEMfW2wx6NYoIJQKI5IZHkZ3swEK1PcR7eq83Hkm/kqaCwkhQP+WGOpa4YrQU+o3IYuo
+	jiyotMJulGcVv3Go=
+X-Received: by 2002:a05:6214:2b9e:b0:4c6:fadf:7b2c with SMTP id kr30-20020a0562142b9e00b004c6fadf7b2cmr17156926qvb.77.1669828721572;
+        Wed, 30 Nov 2022 09:18:41 -0800 (PST)
+X-Google-Smtp-Source: AA0mqf4zt5mmMEfHFozNLW9g2zKcAVTsYZDjrkdfzXQDS+o3p5ygCELbVIfinTFrJDyhD/JRr82p3g==
+X-Received: by 2002:a05:6214:2b9e:b0:4c6:fadf:7b2c with SMTP id kr30-20020a0562142b9e00b004c6fadf7b2cmr17156891qvb.77.1669828721349;
+        Wed, 30 Nov 2022 09:18:41 -0800 (PST)
+Received: from ?IPV6:2a01:e0a:59e:9d80:527b:9dff:feef:3874? ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
+        by smtp.gmail.com with ESMTPSA id bs42-20020a05620a472a00b006b61b2cb1d2sm1588557qkb.46.2022.11.30.09.18.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Nov 2022 09:18:40 -0800 (PST)
+Message-ID: <00d43a82-3262-5248-a066-e71c608be0a9@redhat.com>
+Date: Wed, 30 Nov 2022 18:18:34 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Message-Id: <e255ed09-ed67-46b3-b055-287959d1b76f@app.fastmail.com>
-In-Reply-To: <20221128064648.1934720-3-baolu.lu@linux.intel.com>
-References: <20221128064648.1934720-1-baolu.lu@linux.intel.com>
- <20221128064648.1934720-3-baolu.lu@linux.intel.com>
-Date: Wed, 30 Nov 2022 18:00:38 +0100
-From: "Sven Peter" <sven@svenpeter.dev>
-To: "Lu Baolu" <baolu.lu@linux.intel.com>, "Joerg Roedel" <joro@8bytes.org>,
- "Jason Gunthorpe" <jgg@nvidia.com>, "Christoph Hellwig" <hch@infradead.org>,
- "Kevin Tian" <kevin.tian@intel.com>, "Will Deacon" <will@kernel.org>,
- "Robin Murphy" <robin.murphy@arm.com>,
- "Jean-Philippe Brucker" <jean-philippe@linaro.org>
-Cc: "Suravee Suthikulpanit" <suravee.suthikulpanit@amd.com>,
- "Hector Martin" <marcan@marcan.st>, "Rob Clark" <robdclark@gmail.com>,
- "Marek Szyprowski" <m.szyprowski@samsung.com>,
- "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>,
- "Andy Gross" <agross@kernel.org>, "Bjorn Andersson" <andersson@kernel.org>,
- "Yong Wu" <yong.wu@mediatek.com>,
- "Matthias Brugger" <matthias.bgg@gmail.com>,
- "Heiko Stuebner" <heiko@sntech.de>,
- "Matthew Rosato" <mjrosato@linux.ibm.com>,
- "Orson Zhai" <orsonzhai@gmail.com>,
- "Baolin Wang" <baolin.wang@linux.alibaba.com>,
- "Chunyan Zhang" <zhang.lyra@gmail.com>, "Chen-Yu Tsai" <wens@csie.org>,
- "Thierry Reding" <thierry.reding@gmail.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 02/20] iommu/apple-dart: Remove detach_dev callback
-Content-Type: text/plain
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.1
+Reply-To: eric.auger@redhat.com
+Subject: Re: [PATCH v6 19/19] iommufd: Add a selftest
+To: Jason Gunthorpe <jgg@nvidia.com>, Yi Liu <yi.l.liu@intel.com>
+Cc: Anthony Krowiak <akrowiak@linux.ibm.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Bagas Sanjaya <bagasdotme@gmail.com>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>, Cornelia Huck
+ <cohuck@redhat.com>, Jonathan Corbet <corbet@lwn.net>,
+ Daniel Jordan <daniel.m.jordan@oracle.com>,
+ David Gibson <david@gibson.dropbear.id.au>,
+ Eric Farman <farman@linux.ibm.com>, iommu@lists.linux.dev,
+ Jason Wang <jasowang@redhat.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Jason Herne <jjherne@linux.ibm.com>, Joao Martins
+ <joao.m.martins@oracle.com>, Kevin Tian <kevin.tian@intel.com>,
+ kvm@vger.kernel.org, Lixiao Yang <lixiao.yang@intel.com>,
+ Matthew Rosato <mjrosato@linux.ibm.com>, "Michael S. Tsirkin"
+ <mst@redhat.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ Halil Pasic <pasic@linux.ibm.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
+ Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+ Yu He <yu.he@intel.com>, Keqian Zhu <zhukeqian1@huawei.com>
+References: <19-v6-a196d26f289e+11787-iommufd_jgg@nvidia.com>
+ <48c89797-600b-48db-8df4-fc6674561417@intel.com>
+ <Y4dfxp19/OVreNoU@nvidia.com>
+From: Eric Auger <eric.auger@redhat.com>
+In-Reply-To: <Y4dfxp19/OVreNoU@nvidia.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi,
+Hi Jason,
 
-On Mon, Nov 28, 2022, at 07:46, Lu Baolu wrote:
-> The IOMMU driver supports default domain, so the detach_dev op will never
-> be called. Remove it to avoid dead code.
+On 11/30/22 14:51, Jason Gunthorpe wrote:
+> On Wed, Nov 30, 2022 at 03:14:32PM +0800, Yi Liu wrote:
+>> On 2022/11/30 04:29, Jason Gunthorpe wrote:
+>>> Cover the essential functionality of the iommufd with a directed test from
+>>> userspace. This aims to achieve reasonable functional coverage using the
+>>> in-kernel self test framework.
+>>>
+>>> A second test does a failure injection sweep of the success paths to study
+>>> error unwind behaviors.
+>>>
+>>> This allows achieving high coverage of the corner cases in pages.c.
+>>>
+>>> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+>>> Tested-by: Matthew Rosato <mjrosato@linux.ibm.com> # s390
+>>> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+>>> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+>>> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+>> with sudo echo 4 > /proc/sys/vm/nr_hugepages
+>>
+>> Both "sudo ./iommufd" and "sudo ./iommufd_fail_nth" works on my
+>> side.
+> It is interesting that you need that, my VM doesn't, I wonder what the
+> difference is
+
+That's the same on my end, I need at least 2 hugepages to get all tests
+passing.
+Otherwise
+# FAILED: 113 / 121 tests passed.
+# Totals: pass:113 fail:8 xfail:0 xpass:0 skip:0 error:0
+
+I think you should add this in the commit msg + also the fact that
+CONFIG_IOMMUFD_TEST is required
+
+Besides, tested on ARM with both 4kB page and 64kB page size
+Feel free to add my Tested-by: Eric Auger <eric.auger@redhat.com> #aarch64
+
+Thanks
+
+Eric
+
 >
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
-
-Reviewed-by: Sven Peter <sven@svenpeter.dev>
-
->  drivers/iommu/apple-dart.c | 17 -----------------
->  1 file changed, 17 deletions(-)
+> Thanks,
+> Jason
 >
-> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-> index 4f4a323be0d0..6fbe6b275c79 100644
-> --- a/drivers/iommu/apple-dart.c
-> +++ b/drivers/iommu/apple-dart.c
-> @@ -535,22 +535,6 @@ static int apple_dart_attach_dev(struct 
-> iommu_domain *domain,
->  	return ret;
->  }
-> 
-> -static void apple_dart_detach_dev(struct iommu_domain *domain,
-> -				  struct device *dev)
-> -{
 
-Thanks for cleaning this entire API up!
-
-It actually turns out that this is slightly broken because I assumed that
-detach_dev would always be called for any attach_dev. I think the only
-consequence for a device that used to be assigned to domain A and is now moved to
-domain B is that any TLB flushes required for A will still flush the TLB for that
-device.
-
-That's not a big deal but I'll eventually send a fix.
-
-> -	int i;
-> -	struct apple_dart_stream_map *stream_map;
-> -	struct apple_dart_master_cfg *cfg = dev_iommu_priv_get(dev);
-> -	struct apple_dart_domain *dart_domain = to_dart_domain(domain);
-> -
-> -	for_each_stream_map(i, cfg, stream_map)
-> -		apple_dart_hw_disable_dma(stream_map);
-> -
-> -	if (domain->type == IOMMU_DOMAIN_DMA ||
-> -	    domain->type == IOMMU_DOMAIN_UNMANAGED)
-> -		apple_dart_domain_remove_streams(dart_domain, cfg);
-
-Something might complain about unused apple_dart_domain_remove_streams now.
-Might make sense to drop that for now as well.
-
-
-
-Best,
-
-Sven
