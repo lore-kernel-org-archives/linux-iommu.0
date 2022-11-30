@@ -1,131 +1,242 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D82547E0
-	for <iommu@lists.linux.dev>; Wed, 30 Nov 2022 01:28:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEECA7E9
+	for <iommu@lists.linux.dev>; Wed, 30 Nov 2022 06:21:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669771734; x=1701307734;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=FiqAFQXIvz60hbT0xq79nRbGcPgH1YTtz35ZXjIbxDA=;
-  b=XFrEWzILez8jbBrfp5zZWFyH7r5c8GaAWOxgH2gs/PXQfq/G4gvD48Mz
-   wG6V5yBHY6NRDtXvIboBbLi28YU3Dzm2cufxSGdpNCfV8mSkUD4OAb6tM
-   gBPLz39xa43T3FSXSpUwt+7Dg9Ll/eSTsoe5L5VKeg+GT9Qpaf10dfL3F
-   jc5p8kJVwbq6xkZcQARwUHH4S3RChNLNT6nttGsP58h624i4LLrpiZrLi
-   SaBb43up+c/IYfqldU+EvTxipd/NXOoZ6451AUasKCIotb+xd0naPMPae
-   zX7TrHYbGcUmTwIFpHjFLaLPOiakaxoau+0UphBc21YRVoa1h35jVREEq
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="377434704"
-X-IronPort-AV: E=Sophos;i="5.96,204,1665471600"; 
-   d="scan'208";a="377434704"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2022 17:28:54 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="768645885"
-X-IronPort-AV: E=Sophos;i="5.96,204,1665471600"; 
-   d="scan'208";a="768645885"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.210.199]) ([10.254.210.199])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2022 17:28:49 -0800
-Message-ID: <ca0d8de0-a881-0ccb-75fb-2530428f2c3e@linux.intel.com>
-Date: Wed, 30 Nov 2022 09:28:47 +0800
+  t=1669789261; x=1701325261;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=LUeWxWmjVm3akRt4cUHVyVlUrmIQ4Wukv83FFYOHGpc=;
+  b=MFPhx8IG24hor37RqanKoc2lKguaVk8IFTEBTC5zcrCpJpGl23MNaiS9
+   sCQMWk+I+XW+CmH6PdmgvNEr0bfiH3QHfh9jjrc5wYhd/A/7GUjKC/gjm
+   o8n4U+WuAuJOsb3LJfZZFDdwHiCzKqWYJeNUhFDzEv7Gm2jTfmAj20Rh4
+   7eQW6Y/u3ssTeP+u8zfqaxnAyTN09aKo2d+oFnJJwYIWQhnSnap4jbXMr
+   fmDwXGxAACAMAnp/p+U35JUliWLhdn4quTkXbkGsm2gj7pCYiqawSJ9uX
+   kIidKPF9F6FSbivhbxFkP4DJORdW1bEALIw95shdo8cCmZT2LGXibUy3m
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="302922978"
+X-IronPort-AV: E=Sophos;i="5.96,205,1665471600"; 
+   d="scan'208";a="302922978"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Nov 2022 22:21:01 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10546"; a="637878338"
+X-IronPort-AV: E=Sophos;i="5.96,205,1665471600"; 
+   d="scan'208";a="637878338"
+Received: from otc-nc-03.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.110])
+  by orsmga007.jf.intel.com with ESMTP; 29 Nov 2022 22:21:00 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: LKML <linux-kernel@vger.kernel.org>,
+	iommu@lists.linux.dev,
+	"Lu Baolu" <baolu.lu@linux.intel.com>,
+	Joerg Roedel <joro@8bytes.org>
+Cc: "Robin Murphy" <robin.murphy@arm.com>,
+	"Will Deacon" <will@kernel.org>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Raj Ashok <ashok.raj@intel.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	Yi Liu <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	Yuzhang Luo <yuzhang.luo@intel.com>
+Subject: [PATCH v3] iommu/vt-d: Add a fix for devices need extra dtlb flush
+Date: Tue, 29 Nov 2022 22:24:49 -0800
+Message-Id: <20221130062449.1360063-1-jacob.jun.pan@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Cc: baolu.lu@linux.intel.com, Niklas Schnelle <schnelle@linux.ibm.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>, Gerd Bayer <gbayer@linux.ibm.com>,
- iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Wenjia Zhang <wenjia@linux.ibm.com>,
- Pierre Morel <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
- borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
- gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com, svens@linux.ibm.com,
- linux-kernel@vger.kernel.org, Julian Ruess <julianr@linux.ibm.com>
-Subject: Re: [PATCH v2 4/7] iommu: Let iommu.strict override
- ops->def_domain_type
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>
-References: <20221116171656.4128212-1-schnelle@linux.ibm.com>
- <20221116171656.4128212-5-schnelle@linux.ibm.com>
- <33eea9bd-e101-4836-19e8-d4b191b78b00@linux.intel.com>
- <9163440eb6a47fe02730638bbdf72fda5ee5ad2c.camel@linux.ibm.com>
- <Y4S3z6IpeDHmdUs/@nvidia.com>
- <52fe7769ca5b66523c2c93c7d46ebc17dc144aca.camel@linux.ibm.com>
- <Y4TjWOXYD+DK+d/B@nvidia.com> <6c4c3a3e-1d8d-7994-3c03-388ef63dddb3@arm.com>
- <Y4ZCVgLO9AHatwXe@nvidia.com> <eb30ad63-92d4-2af4-22e7-d82cdf08565e@arm.com>
- <Y4Zm53o1ovdIAqr/@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Y4Zm53o1ovdIAqr/@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2022/11/30 4:09, Jason Gunthorpe wrote:
-> On Tue, Nov 29, 2022 at 06:41:22PM +0000, Robin Murphy wrote:
->> On 2022-11-29 17:33, Jason Gunthorpe wrote:
->>> On Mon, Nov 28, 2022 at 09:01:43PM +0000, Robin Murphy wrote:
->>>
->>>> I'm hardly an advocate for trying to save users from themselves, but I
->>>> honestly can't see any justifiable reason for not having sysfs respect
->>>> iommu_get_def_domain_type().
->>>
->>> We really need to rename this value if it is not actually just an
->>> advisory "default" but a functional requirement ..
->>
->> It represents a required default domain type. As in, the type for the
->> device's default domain. Not the default type for a domain. It's the
->> iommu_def_domain_type variable that holds the *default* default domain type
->> ;)
-> 
-> I find the name "default domain" incredibly confusing at this point in
-> time.
-> 
-> I would like to call that the "dma-api domain" - its primary purpose
-> is to be the domain that the DMA API uses to operate the IOMMU, there
-> is little "default" about it. This meshes better with our apis talking
-> about ownership and so forth.
-> 
-> So, if the op was called
->    get_dma_api_domain_type()
-> 
-> It is pretty clear that it is the exact type of domain that should be
-> created to support the DMA API, which is what I think you have been
-> describing it is supposed to do?
-> 
-> And with Lu's series we have the set_platform_dma() (Lu perhaps you
-> should call this set_platform_dma_api() to re-enforce it is about the
-> DMA API, not some nebulous DMA thing)
+QAT devices on Intel Sapphire Rapids and Emerald Rapids have a defect in
+address translation service (ATS). These devices may inadvertently issue
+ATS invalidation completion before posted writes initiated with
+translated address that utilized translations matching the invalidation
+address range, violating the invalidation completion ordering.
 
-Sure thing. It's more specific.
+This patch adds an extra device TLB invalidation for the affected devices,
+it is needed to ensure no more posted writes with translated address
+following the invalidation completion. Therefore, the ordering is
+preserved and data-corruption is prevented.
 
-> 
-> Which is basically the other way to configure the DMA API for
-> operation.
-> 
-> And encapsulating more of the logic to setup and manage the DMA API's
-> domain into dma-iommu.c would also be helpful to understanding.
-> 
->> Which reminds me I should finish that patch undoing my terrible
->> ops->default_domain_ops idea, not least because they are misleadingly
->> unrelated to default domains...
-> 
-> :)
-> 
->>> It is close to being clear, once we get the last touches of dma-iommu
->>> stuff out of the drivers it should be quite clear
->>
->> Cool, some upheaval of .domain_alloc is next on my hitlist anyway, so that
->> might be a good excuse to upheave it a bit more and streamline the type
->> stuff along the way.
-> 
-> Yes, I think so. I want to tidy things a bit so adding this "user
-> space" domain concept is a little nicer
-> 
-> Jason
-> 
+Device TLBs are invalidated under the following six conditions:
+1. Device driver does DMA API unmap IOVA
+2. Device driver unbind a PASID from a process, sva_unbind_device()
+3. PASID is torn down, after PASID cache is flushed. e.g. process
+exit_mmap() due to crash
+4. Under SVA usage, called by mmu_notifier.invalidate_range() where
+VM has to free pages that were unmapped
+5. userspace driver unmaps a DMA buffer
+6. Cache invalidation in vSVA usage (upcoming)
 
---
-Best regards,
-baolu
+For #1 and #2, device drivers are responsible for stopping DMA traffic
+before unmap/unbind. For #3, iommu driver gets mmu_notifier to
+invalidate TLB the same way as normal user unmap which will do an extra
+invalidation. The dTLB invalidation after PASID cache flush does not
+need an extra invalidation.
+
+Therefore, we only need to deal with #4 and #5 in this patch. #1 is also
+covered by this patch due to common code path with #5.
+
+Tested-by: Yuzhang Luo <yuzhang.luo@intel.com>
+Reviewed-by: Ashok Raj <ashok.raj@intel.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+---
+v3
+- renamed quirk function
+- add more comments to explain risky_device() check
+v2
+- removed risky_device() check based on the review by Robin, added comments
+  to explain the exemption.
+- reworked commit message based on the review from Ashok
+---
+ drivers/iommu/intel/iommu.c | 67 +++++++++++++++++++++++++++++++++++--
+ drivers/iommu/intel/iommu.h |  3 ++
+ drivers/iommu/intel/svm.c   |  5 ++-
+ 3 files changed, 72 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 996a8b5ee5ee..d8759f445aff 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1396,6 +1396,23 @@ static void domain_update_iotlb(struct dmar_domain *domain)
+ 	spin_unlock_irqrestore(&domain->lock, flags);
+ }
+ 
++/*
++ * Impacted QAT device IDs ranging from 0x4940 to 0x4943.
++ * This quirk is exempted from risky_device() check because it applies only
++ * to the built-in QAT devices and it doesn't grant additional privileges.
++ */
++#define BUGGY_QAT_DEVID_MASK 0x494c
++static bool dev_needs_extra_dtlb_flush(struct pci_dev *pdev)
++{
++	if (pdev->vendor != PCI_VENDOR_ID_INTEL)
++		return false;
++
++	if ((pdev->device & 0xfffc) != BUGGY_QAT_DEVID_MASK)
++		return false;
++
++	return true;
++}
++
+ static void iommu_enable_pci_caps(struct device_domain_info *info)
+ {
+ 	struct pci_dev *pdev;
+@@ -1478,6 +1495,7 @@ static void __iommu_flush_dev_iotlb(struct device_domain_info *info,
+ 	qdep = info->ats_qdep;
+ 	qi_flush_dev_iotlb(info->iommu, sid, info->pfsid,
+ 			   qdep, addr, mask);
++	quirk_extra_dev_tlb_flush(info, addr, mask, PASID_RID2PASID, qdep);
+ }
+ 
+ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
+@@ -4490,9 +4508,10 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+ 	if (dev_is_pci(dev)) {
+ 		if (ecap_dev_iotlb_support(iommu->ecap) &&
+ 		    pci_ats_supported(pdev) &&
+-		    dmar_ats_supported(pdev, iommu))
++		    dmar_ats_supported(pdev, iommu)) {
+ 			info->ats_supported = 1;
+-
++			info->dtlb_extra_inval = dev_needs_extra_dtlb_flush(pdev);
++		}
+ 		if (sm_supported(iommu)) {
+ 			if (pasid_supported(iommu)) {
+ 				int features = pci_pasid_features(pdev);
+@@ -4931,3 +4950,47 @@ static void __init check_tylersburg_isoch(void)
+ 	pr_warn("Recommended TLB entries for ISOCH unit is 16; your BIOS set %d\n",
+ 	       vtisochctrl);
+ }
++
++/*
++ * Here we deal with a device TLB defect where device may inadvertently issue ATS
++ * invalidation completion before posted writes initiated with translated address
++ * that utilized translations matching the invalidation address range, violating
++ * the invalidation completion ordering.
++ * Therefore, any use cases that cannot guarantee DMA is stopped before unmap is
++ * vulnerable to this defect. In other words, any dTLB invalidation initiated not
++ * under the control of the trusted/privileged host device driver must use this
++ * quirk.
++ * Device TLBs are invalidated under the following six conditions:
++ * 1. Device driver does DMA API unmap IOVA
++ * 2. Device driver unbind a PASID from a process, sva_unbind_device()
++ * 3. PASID is torn down, after PASID cache is flushed. e.g. process
++ *    exit_mmap() due to crash
++ * 4. Under SVA usage, called by mmu_notifier.invalidate_range() where
++ *    VM has to free pages that were unmapped
++ * 5. Userspace driver unmaps a DMA buffer
++ * 6. Cache invalidation in vSVA usage (upcoming)
++ *
++ * For #1 and #2, device drivers are responsible for stopping DMA traffic
++ * before unmap/unbind. For #3, iommu driver gets mmu_notifier to
++ * invalidate TLB the same way as normal user unmap which will use this quirk.
++ * The dTLB invalidation after PASID cache flush does not need this quirk.
++ *
++ * As a reminder, #6 will *NEED* this quirk as we enable nested translation.
++ */
++void quirk_extra_dev_tlb_flush(struct device_domain_info *info, unsigned long address,
++		   unsigned long mask, u32 pasid, u16 qdep)
++{
++	u16 sid;
++
++	if (likely(!info->dtlb_extra_inval))
++		return;
++
++	sid = PCI_DEVID(info->bus, info->devfn);
++	if (pasid == PASID_RID2PASID) {
++		qi_flush_dev_iotlb(info->iommu, sid, info->pfsid,
++				   qdep, address, mask);
++	} else {
++		qi_flush_dev_iotlb_pasid(info->iommu, sid, info->pfsid,
++					 pasid, qdep, address, mask);
++	}
++}
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 92023dff9513..36297e17d815 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -623,6 +623,7 @@ struct device_domain_info {
+ 	u8 pri_enabled:1;
+ 	u8 ats_supported:1;
+ 	u8 ats_enabled:1;
++	u8 dtlb_extra_inval:1;	/* Quirk for devices need extra flush */
+ 	u8 ats_qdep;
+ 	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
+ 	struct intel_iommu *iommu; /* IOMMU used by this device */
+@@ -728,6 +729,8 @@ void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u32 pasid, u64 addr,
+ void qi_flush_dev_iotlb_pasid(struct intel_iommu *iommu, u16 sid, u16 pfsid,
+ 			      u32 pasid, u16 qdep, u64 addr,
+ 			      unsigned int size_order);
++void quirk_extra_dev_tlb_flush(struct device_domain_info *info, unsigned long address,
++		   unsigned long pages, u32 pasid, u16 qdep);
+ void qi_flush_pasid_cache(struct intel_iommu *iommu, u16 did, u64 granu,
+ 			  u32 pasid);
+ 
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index 7d08eb034f2d..fe615c53479c 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -184,10 +184,13 @@ static void __flush_svm_range_dev(struct intel_svm *svm,
+ 		return;
+ 
+ 	qi_flush_piotlb(sdev->iommu, sdev->did, svm->pasid, address, pages, ih);
+-	if (info->ats_enabled)
++	if (info->ats_enabled) {
+ 		qi_flush_dev_iotlb_pasid(sdev->iommu, sdev->sid, info->pfsid,
+ 					 svm->pasid, sdev->qdep, address,
+ 					 order_base_2(pages));
++		quirk_extra_dev_tlb_flush(info, address, order_base_2(pages),
++					  svm->pasid, sdev->qdep);
++	}
+ }
+ 
+ static void intel_flush_svm_range_dev(struct intel_svm *svm,
+-- 
+2.25.1
+
