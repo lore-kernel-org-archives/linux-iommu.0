@@ -1,84 +1,117 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4938EC3
-	for <iommu@lists.linux.dev>; Thu,  1 Dec 2022 04:08:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90169EC4
+	for <iommu@lists.linux.dev>; Thu,  1 Dec 2022 04:51:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669867732; x=1701403732;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=yXwiYNvS9neESZJSKR531+MusOXMqiOrzDRp1zDx7kM=;
-  b=Jf0W3lshrUC8TnjRDPxAkoS+snHaSNwauAcuLIedBOdY8ThklVkCDRBR
-   P8TjrTyXkPTHvGXij3MBiyimL6VrR6LjYYWMwwlBeZKd1qtw7tu73NVYp
-   EviW8LpJwRZ0tnivRdheNDiotAssCY0/7jeowfikSmZ8zwrQd37N/GlNY
-   Is6LngOsGwMAvJBnlLofviejUjuaxD2ltDQaSveUBMnLHQz27dIioHb+Y
-   R9RLK8ANS88gKZNq/dqrwgeUrnmfVdmNPkILpAdfAwofXwSCNwXgbs4N+
-   3W4DgrmmCcfpsk682FhAoqYAA4Uq4+BYjRVxtxJZTIVcwN9NqGa8wC2HP
+  t=1669870260; x=1701406260;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=czGBSNX4YjAv5jaWl9TGCSmAfkTUKYI5muAxzvlCGss=;
+  b=YloN2lPafsPcUyfxf99tSPLBwLfG5Vwxahqq9cUjHvfd7WtsHaglTqM/
+   1n8X2Fm9yK5IxNKOI7c+K8j3mpuujABk4sQNzwP1kx1/igLM5BcfM/zgu
+   6TpxL1a2VQyPB4Cg3ZDNgILYymoMdka/zmB+zG1Llx4PnWbB3QfJ7HyuJ
+   wQ5tHE+GoXENwVoEY93YGdSWAKcJ21uPfuG+hx33omUCtLP94GmpKG+Vc
+   JvSLHPL2X4v2Y45+D2Dr+MHfoeXMCSzi981/i5NIpEgkLBkH3P4HROwZv
+   F8cytEMYFKHbFiKWc/84roFNwUPvBHTVqbkPfOtwCVhD6RfAsQOg1K84d
    w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="377745767"
+X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="314287181"
 X-IronPort-AV: E=Sophos;i="5.96,207,1665471600"; 
-   d="scan'208";a="377745767"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2022 20:08:49 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="707911661"
+   d="scan'208";a="314287181"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2022 20:50:59 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="786745982"
 X-IronPort-AV: E=Sophos;i="5.96,207,1665471600"; 
-   d="scan'208";a="707911661"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga008.fm.intel.com with ESMTP; 30 Nov 2022 20:08:48 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Xiongfeng Wang <wangxiongfeng2@huawei.com>,
-	Yang Yingliang <yangyingliang@huawei.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 4/4] iommu/vt-d: Fix PCI device refcount leak in dmar_dev_scope_init()
-Date: Thu,  1 Dec 2022 12:01:27 +0800
-Message-Id: <20221201040127.1962750-5-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20221201040127.1962750-1-baolu.lu@linux.intel.com>
-References: <20221201040127.1962750-1-baolu.lu@linux.intel.com>
+   d="scan'208";a="786745982"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.215.206]) ([10.254.215.206])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2022 20:50:54 -0800
+Message-ID: <b3b2226e-7eee-f24c-9f61-8b968ef6af9c@linux.intel.com>
+Date: Thu, 1 Dec 2022 12:50:52 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Cc: baolu.lu@linux.intel.com,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Hector Martin <marcan@marcan.st>, Rob Clark <robdclark@gmail.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
+ Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>,
+ Heiko Stuebner <heiko@sntech.de>, Matthew Rosato <mjrosato@linux.ibm.com>,
+ Orson Zhai <orsonzhai@gmail.com>, Baolin Wang
+ <baolin.wang@linux.alibaba.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
+ Chen-Yu Tsai <wens@csie.org>, Thierry Reding <thierry.reding@gmail.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 02/20] iommu/apple-dart: Remove detach_dev callback
+Content-Language: en-US
+To: Sven Peter <sven@svenpeter.dev>, Joerg Roedel <joro@8bytes.org>,
+ Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ Kevin Tian <kevin.tian@intel.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
+References: <20221128064648.1934720-1-baolu.lu@linux.intel.com>
+ <20221128064648.1934720-3-baolu.lu@linux.intel.com>
+ <e255ed09-ed67-46b3-b055-287959d1b76f@app.fastmail.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <e255ed09-ed67-46b3-b055-287959d1b76f@app.fastmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+On 2022/12/1 1:00, Sven Peter wrote:
+> On Mon, Nov 28, 2022, at 07:46, Lu Baolu wrote:
+>> The IOMMU driver supports default domain, so the detach_dev op will never
+>> be called. Remove it to avoid dead code.
+>>
+>> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+>> ---
+> Reviewed-by: Sven Peter<sven@svenpeter.dev>
+> 
+>>   drivers/iommu/apple-dart.c | 17 -----------------
+>>   1 file changed, 17 deletions(-)
+>>
+>> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+>> index 4f4a323be0d0..6fbe6b275c79 100644
+>> --- a/drivers/iommu/apple-dart.c
+>> +++ b/drivers/iommu/apple-dart.c
+>> @@ -535,22 +535,6 @@ static int apple_dart_attach_dev(struct
+>> iommu_domain *domain,
+>>   	return ret;
+>>   }
+>>
+>> -static void apple_dart_detach_dev(struct iommu_domain *domain,
+>> -				  struct device *dev)
+>> -{
+> Thanks for cleaning this entire API up!
+> 
+> It actually turns out that this is slightly broken because I assumed that
+> detach_dev would always be called for any attach_dev. I think the only
+> consequence for a device that used to be assigned to domain A and is now moved to
+> domain B is that any TLB flushes required for A will still flush the TLB for that
+> device.
+> 
+> That's not a big deal but I'll eventually send a fix.
+> 
+>> -	int i;
+>> -	struct apple_dart_stream_map *stream_map;
+>> -	struct apple_dart_master_cfg *cfg = dev_iommu_priv_get(dev);
+>> -	struct apple_dart_domain *dart_domain = to_dart_domain(domain);
+>> -
+>> -	for_each_stream_map(i, cfg, stream_map)
+>> -		apple_dart_hw_disable_dma(stream_map);
+>> -
+>> -	if (domain->type == IOMMU_DOMAIN_DMA ||
+>> -	    domain->type == IOMMU_DOMAIN_UNMANAGED)
+>> -		apple_dart_domain_remove_streams(dart_domain, cfg);
+> Something might complain about unused apple_dart_domain_remove_streams now.
+> Might make sense to drop that for now as well.
 
-for_each_pci_dev() is implemented by pci_get_device(). The comment of
-pci_get_device() says that it will increase the reference count for the
-returned pci_dev and also decrease the reference count for the input
-pci_dev @from if it is not NULL.
+Done. Thanks!
 
-If we break for_each_pci_dev() loop with pdev not NULL, we need to call
-pci_dev_put() to decrease the reference count. Add the missing
-pci_dev_put() for the error path to avoid reference count leak.
-
-Fixes: 2e4552893038 ("iommu/vt-d: Unify the way to process DMAR device scope array")
-Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
-Link: https://lore.kernel.org/r/20221121113649.190393-3-wangxiongfeng2@huawei.com
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/dmar.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 5a8f780e7ffd..bc94059a5b87 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -820,6 +820,7 @@ int __init dmar_dev_scope_init(void)
- 			info = dmar_alloc_pci_notify_info(dev,
- 					BUS_NOTIFY_ADD_DEVICE);
- 			if (!info) {
-+				pci_dev_put(dev);
- 				return dmar_dev_scope_status;
- 			} else {
- 				dmar_pci_bus_add_dev(info);
--- 
-2.34.1
-
+Best regards,
+baolu
