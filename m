@@ -1,107 +1,118 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25E30A3D
-	for <iommu@lists.linux.dev>; Thu,  1 Dec 2022 08:36:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669883791; x=1701419791;
-  h=message-id:date:mime-version:cc:from:to:references:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=ASObx3YU40ta1bnwquNX450TvnchyRNCWB+x90kDyHQ=;
-  b=dMPo2G1PWVee5gdsegeXHuSF6h8KKzWvKsiWqfzHYucDFjFjYwwU17OF
-   8Zr/47fAz/SjkQhO1WjiULpoHbaEIYnTVAGTG90xlkCvwJR6+LKWZyVo6
-   yVisTXSrLst7mm622njt2R6JC53eEICrSeKonqhSRdVLDMcHoNYaUuO2z
-   KRoXv3egLbS+uJ3CcHUiSFZwEzRhwx4Mdv+wJOhfumOWsmUbgJsoq2yyU
-   SxRNbrWsdHyFmpR/g0I3tCrGFuOg/jdZwkOB3ew1XvZicrdUuxQmRWX1y
-   e+HLl+iaEavn0GiD6uSeEPDHaEP0RmGv0GArVT3I2mTtYqODU8vFMVSUI
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="298994278"
-X-IronPort-AV: E=Sophos;i="5.96,207,1665471600"; 
-   d="scan'208";a="298994278"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2022 00:36:30 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="889645029"
-X-IronPort-AV: E=Sophos;i="5.96,207,1665471600"; 
-   d="scan'208";a="889645029"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.214.50]) ([10.254.214.50])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Dec 2022 00:36:27 -0800
-Message-ID: <edbcfb02-0c20-5444-b2fa-34189faa923d@linux.intel.com>
-Date: Thu, 1 Dec 2022 16:36:26 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05436A31
+	for <iommu@lists.linux.dev>; Thu,  1 Dec 2022 12:42:44 +0000 (UTC)
+Received: from kwepemm600005.china.huawei.com (unknown [172.30.72.56])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4NNG0N5xNnzHw22;
+	Thu,  1 Dec 2022 20:41:24 +0800 (CST)
+Received: from [10.67.103.158] (10.67.103.158) by
+ kwepemm600005.china.huawei.com (7.193.23.191) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 1 Dec 2022 20:42:03 +0800
+Subject: Re: [PATCH v2] iommu: fix smmu initialization memory leak problem
+To: Will Deacon <will@kernel.org>
+CC: <robin.murphy@arm.com>, <linux-arm-kernel@lists.infradead.org>,
+	<iommu@lists.linux.dev>
+References: <20221121030421.19295-1-liulongfang@huawei.com>
+ <20221121180552.GB7645@willie-the-truck>
+ <cb6fcc72-bb50-5fb9-f7c3-648538fbd376@huawei.com>
+ <20221129152452.GB26561@willie-the-truck>
+From: liulongfang <liulongfang@huawei.com>
+Message-ID: <fe32de72-caf4-f6bb-565f-93ea1d3a003b@huawei.com>
+Date: Thu, 1 Dec 2022 20:42:02 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Cc: Xiongfeng Wang <wangxiongfeng2@huawei.com>,
- Yang Yingliang <yangyingliang@huawei.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-References: <20221201040127.1962750-1-baolu.lu@linux.intel.com>
- <20221201040127.1962750-2-baolu.lu@linux.intel.com>
-Subject: Re: [PATCH 1/4] iommu/vt-d: Add a fix for devices need extra dtlb
- flush
-In-Reply-To: <20221201040127.1962750-2-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <20221129152452.GB26561@willie-the-truck>
+Content-Type: text/plain; charset="gbk"
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.103.158]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600005.china.huawei.com (7.193.23.191)
+X-CFilter-Loop: Reflected
 
-On 2022/12/1 12:01, Lu Baolu wrote:
-> From: Jacob Pan<jacob.jun.pan@linux.intel.com>
+On 2022/11/29 23:24, Will Deacon wrote:
+> On Tue, Nov 22, 2022 at 08:00:39PM +0800, liulongfang wrote:
+>> On 2022/11/22 2:05, Will Deacon wrote:
+>>> On Mon, Nov 21, 2022 at 11:04:21AM +0800, Longfang Liu wrote:
+>>>> When iommu_device_register() in arm_smmu_device_probe() fails,
+>>>> in addition to sysfs needs to be deleted, device should also
+>>>> be disabled, and the memory of iopf needs to be released to
+>>>> prevent memory leak of iopf.
+>>>>
+>>>> Changes v1 -> v2:
+>>>> 	-Improve arm_smmu_device_probe() abnormal exit function.
+>>>>
+>>>> Signed-off-by: Longfang Liu <liulongfang@huawei.com>
+>>>> ---
+>>>>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 16 +++++++++++-----
+>>>>  1 file changed, 11 insertions(+), 5 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>>> index ab160198edd6..b892f5233f88 100644
+>>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>>> @@ -3815,7 +3815,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>>>>  	/* Initialise in-memory data structures */
+>>>>  	ret = arm_smmu_init_structures(smmu);
+>>>>  	if (ret)
+>>>> -		return ret;
+>>>> +		goto err_iopf;
+>>>>  
+>>>>  	/* Record our private device structure */
+>>>>  	platform_set_drvdata(pdev, smmu);
+>>>> @@ -3826,22 +3826,28 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>>>>  	/* Reset the device */
+>>>>  	ret = arm_smmu_device_reset(smmu, bypass);
+>>>>  	if (ret)
+>>>> -		return ret;
+>>>> +		goto err_iopf;
+>>>>  
+>>>>  	/* And we're up. Go go go! */
+>>>>  	ret = iommu_device_sysfs_add(&smmu->iommu, dev, NULL,
+>>>>  				     "smmu3.%pa", &ioaddr);
+>>>>  	if (ret)
+>>>> -		return ret;
+>>>> +		goto err_reset;
+>>>>  
+>>>>  	ret = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
+>>>>  	if (ret) {
+>>>>  		dev_err(dev, "Failed to register iommu\n");
+>>>> -		iommu_device_sysfs_remove(&smmu->iommu);
+>>>> -		return ret;
+>>>> +		goto err_sysfs_add;
+>>>>  	}
+>>>>  
+>>>>  	return 0;
+>>>> +err_sysfs_add:
+>>>> +	iommu_device_sysfs_remove(&smmu->iommu);
+>>>> +err_reset:
+>>>> +	arm_smmu_device_disable(smmu);
+>>>> +err_iopf:
+>>>> +	iopf_queue_free(smmu->evtq.iopf);
+>>>> +	return ret;
+>>>
+>>> I previously suggested using devres_alloc() for this instead. Did that
+>>> not work?
+>>>
+>>
+>> This patch is only for fixing iopf's memory leak.
+>> The use of devres_alloc() is an optimization solution for iopf queue management,
+>> which is another set of patch matters.
 > 
-> QAT devices on Intel Sapphire Rapids and Emerald Rapids have a defect in
-> address translation service (ATS). These devices may inadvertently issue
-> ATS invalidation completion before posted writes initiated with
-> translated address that utilized translations matching the invalidation
-> address range, violating the invalidation completion ordering.
+> Great, I look forward to that set of patches!
 > 
-> This patch adds an extra device TLB invalidation for the affected devices,
-> it is needed to ensure no more posted writes with translated address
-> following the invalidation completion. Therefore, the ordering is
-> preserved and data-corruption is prevented.
+> Will
+> .
 > 
-> Device TLBs are invalidated under the following six conditions:
-> 1. Device driver does DMA API unmap IOVA
-> 2. Device driver unbind a PASID from a process, sva_unbind_device()
-> 3. PASID is torn down, after PASID cache is flushed. e.g. process
-> exit_mmap() due to crash
-> 4. Under SVA usage, called by mmu_notifier.invalidate_range() where
-> VM has to free pages that were unmapped
-> 5. userspace driver unmaps a DMA buffer
-> 6. Cache invalidation in vSVA usage (upcoming)
-> 
-> For #1 and #2, device drivers are responsible for stopping DMA traffic
-> before unmap/unbind. For #3, iommu driver gets mmu_notifier to
-> invalidate TLB the same way as normal user unmap which will do an extra
-> invalidation. The dTLB invalidation after PASID cache flush does not
-> need an extra invalidation.
-> 
-> Therefore, we only need to deal with #4 and #5 in this patch. #1 is also
-> covered by this patch due to common code path with #5.
-> 
-> Tested-by: Yuzhang Luo<yuzhang.luo@intel.com>
-> Reviewed-by: Ashok Raj<ashok.raj@intel.com>
-> Reviewed-by: Kevin Tian<kevin.tian@intel.com>
 
-This missed cc stable tag.
+Will this patch be merged into the next branch?
+Thanks,
+Longfang.
 
-Cc: stable@vger.kernel.org # v5.15+
-
-Sorry for the inconvenience.
-
-> Signed-off-by: Jacob Pan<jacob.jun.pan@linux.intel.com>
-> Link:https://lore.kernel.org/r/20221130062449.1360063-1-jacob.jun.pan@linux.intel.com
-> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
-> ---
->   drivers/iommu/intel/iommu.h |  4 +++
->   drivers/iommu/intel/iommu.c | 69 +++++++++++++++++++++++++++++++++++--
->   drivers/iommu/intel/svm.c   |  5 ++-
->   3 files changed, 75 insertions(+), 3 deletions(-)
-
-Best regards,
-baolu
