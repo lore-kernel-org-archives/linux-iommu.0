@@ -1,32 +1,32 @@
 Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E645B7C
-	for <iommu@lists.linux.dev>; Thu,  1 Dec 2022 04:08:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD6987C
+	for <iommu@lists.linux.dev>; Thu,  1 Dec 2022 04:08:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1669867728; x=1701403728;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=wDFL+yM/dCNG+ZwuVw9ZgnAnjVMbNp4Dy+Z5/rRcjE0=;
-  b=jVvlDVso4+Tg7XXcF/d/WGG3EwlOyA+MuG5u5uUoWSG0AAP9xtvHW8kc
-   dAi+029OhfgnC1ELiOp4qAe1FKYVEAlJa2fOJSe99KCp7eTS4TEYBaUzO
-   Nrxhn/74E2rKBBRqIHmPBmEsr3QFKBUxDSQodqoZr3YLmfeuAh+mXzhbO
-   cCyFsTuDZY/NVGzz0ryIg0l7+5KGSDv+yLD26865Bf6Kd3hGfs9DlOfQm
-   2QzarJluHLWDIW28te4bwr7IsAFz1BFEf0psv8E9FkCGN9x00/WciLbwz
-   MQXD48lzSM0smw59vWe5akHnoWJRdWZRZOZZ0lVWxZAp3J1LewWkChxme
+  t=1669867730; x=1701403730;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=r8ZxO0P+bgikDq55sQqKBRK6c8+nVfCJ+RSELC/xG0I=;
+  b=WKyKpUE/lFiwXXxNsQ5684QBAeJEWRGEw6ryWs2Q0VWlyZSchtjk79U3
+   UpKxNhLWaFmi6H2369z9nrbcNb9Sf25hbPQcV+b97cqkYDKfvcrKoi2SU
+   eln7+uUwFC1Py8W/5d6yvYsB3hVf38GsTQBXvXFBi6KMt42j8vY3ZoTbV
+   EbEf4XMxKyogJn4+y+DhqiiWNlGdWvuGLucyxOWSeVizNVnuN4r0amTW3
+   WImnbm7S3wmdgK6zRX8NdXg62XZpEC1xLV4+ylHKBYThN73+RF4yY265K
+   V7jDpinDEiAw0sF8JIoT86OqdNgeLCb3/5OcAV8gz7t1ix2m7VkJUTvIu
    w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="377745722"
+X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="377745742"
 X-IronPort-AV: E=Sophos;i="5.96,207,1665471600"; 
-   d="scan'208";a="377745722"
+   d="scan'208";a="377745742"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2022 20:08:45 -0800
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2022 20:08:46 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="707911652"
+X-IronPort-AV: E=McAfee;i="6500,9779,10547"; a="707911656"
 X-IronPort-AV: E=Sophos;i="5.96,207,1665471600"; 
-   d="scan'208";a="707911652"
+   d="scan'208";a="707911656"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga008.fm.intel.com with ESMTP; 30 Nov 2022 20:08:41 -0800
+  by fmsmga008.fm.intel.com with ESMTP; 30 Nov 2022 20:08:44 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: Xiongfeng Wang <wangxiongfeng2@huawei.com>,
@@ -34,10 +34,12 @@ Cc: Xiongfeng Wang <wangxiongfeng2@huawei.com>,
 	Jacob Pan <jacob.jun.pan@linux.intel.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 0/4] [PULL REQUEST] iommu/vt-d: Fixes for v6.1-rc8
-Date: Thu,  1 Dec 2022 12:01:23 +0800
-Message-Id: <20221201040127.1962750-1-baolu.lu@linux.intel.com>
+Subject: [PATCH 2/4] iommu/vt-d: Fix PCI device refcount leak in prq_event_thread()
+Date: Thu,  1 Dec 2022 12:01:25 +0800
+Message-Id: <20221201040127.1962750-3-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20221201040127.1962750-1-baolu.lu@linux.intel.com>
+References: <20221201040127.1962750-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -46,37 +48,51 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi Joerg,
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-Below fixes are queued for v6.1. They aim to:
+As comment of pci_get_domain_bus_and_slot() says, it returns a pci device
+with refcount increment, when finish using it, the caller must decrease
+the reference count by calling pci_dev_put(). So call pci_dev_put() after
+using the 'pdev' to avoid refcount leak.
 
-- Add a fix to handle a QAT device quirk.
-- Fix 3 PCI device refcount leaks.
+Besides, if the 'pdev' is null or intel_svm_prq_report() returns error,
+there is no need to trace this fault.
 
-This series is also available at github.
-https://github.com/LuBaolu/intel-iommu/commits/vtd-fix-for-v6.1-rc8
+Fixes: 06f4b8d09dba ("iommu/vt-d: Remove unnecessary SVA data accesses in page fault path")
+Suggested-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20221119144028.2452731-1-yangyingliang@huawei.com
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/svm.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-Please consider it for the iommu/fix branch.
-
-Best regards,
-Lu Baolu
-
-Jacob Pan (1):
-  iommu/vt-d: Add a fix for devices need extra dtlb flush
-
-Xiongfeng Wang (2):
-  iommu/vt-d: Fix PCI device refcount leak in has_external_pci()
-  iommu/vt-d: Fix PCI device refcount leak in dmar_dev_scope_init()
-
-Yang Yingliang (1):
-  iommu/vt-d: Fix PCI device refcount leak in prq_event_thread()
-
- drivers/iommu/intel/iommu.h |  4 ++
- drivers/iommu/intel/dmar.c  |  1 +
- drivers/iommu/intel/iommu.c | 73 +++++++++++++++++++++++++++++++++++--
- drivers/iommu/intel/svm.c   | 19 +++++++---
- 4 files changed, 88 insertions(+), 9 deletions(-)
-
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index fe615c53479c..03b25358946c 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -748,12 +748,16 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 		 * If prq is to be handled outside iommu driver via receiver of
+ 		 * the fault notifiers, we skip the page response here.
+ 		 */
+-		if (!pdev || intel_svm_prq_report(iommu, &pdev->dev, req))
+-			handle_bad_prq_event(iommu, req, QI_RESP_INVALID);
++		if (!pdev)
++			goto bad_req;
+ 
+-		trace_prq_report(iommu, &pdev->dev, req->qw_0, req->qw_1,
+-				 req->priv_data[0], req->priv_data[1],
+-				 iommu->prq_seq_number++);
++		if (intel_svm_prq_report(iommu, &pdev->dev, req))
++			handle_bad_prq_event(iommu, req, QI_RESP_INVALID);
++		else
++			trace_prq_report(iommu, &pdev->dev, req->qw_0, req->qw_1,
++					 req->priv_data[0], req->priv_data[1],
++					 iommu->prq_seq_number++);
++		pci_dev_put(pdev);
+ prq_advance:
+ 		head = (head + sizeof(*req)) & PRQ_RING_MASK;
+ 	}
 -- 
 2.34.1
 
