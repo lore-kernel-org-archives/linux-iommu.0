@@ -1,113 +1,123 @@
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94918259B
-	for <iommu@lists.linux.dev>; Sun,  4 Dec 2022 10:59:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1670151542; x=1701687542;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=2FvkjXhvsE24dnPr4S1RPCbyCxxrCseUazftBUtT+x8=;
-  b=Biw0mps5EHq/jSeC6jeIfsPbsKwCeScQ+f2e3APDr0CNDypgRc2405aO
-   twKFvx2vIel5zPHSkqV/NwOZqSD0skcTpnjB3Cb2VtUkzRYX1O4StDYBd
-   4fTgDPOnUslYG+HeTxjhkfei8UMahgLczlS62qUlLCNOnM+YW402JvRj+
-   ThYYeiB517aqyJ0nH5dKjUbWn38fMW85QlmqGL19l4ybelGLbl0vpr/LH
-   mN/zAJ89GM/1CyLZ2ZZgyOKunAeuf1+MIE1un4Wk64FLezlorsX/JKqva
-   I/+BmE9tgTlZUMRmQK9HUM9UHohu4uQAwwwVZolcLrePemSs53/s+Tdz2
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10550"; a="296542090"
-X-IronPort-AV: E=Sophos;i="5.96,217,1665471600"; 
-   d="scan'208";a="296542090"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Dec 2022 02:59:01 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10550"; a="819888958"
-X-IronPort-AV: E=Sophos;i="5.96,217,1665471600"; 
-   d="scan'208";a="819888958"
-Received: from binbinwu-mobl.ccr.corp.intel.com (HELO [10.249.172.62]) ([10.249.172.62])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Dec 2022 02:58:54 -0800
-Message-ID: <6a557dd1-b19e-e78a-58f0-544ce134ca31@linux.intel.com>
-Date: Sun, 4 Dec 2022 18:58:52 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCDDAEB22
+	for <iommu@lists.linux.dev>; Mon,  5 Dec 2022 09:50:28 +0000 (UTC)
+X-UUID: 98574c79b8334582b21bcde3840804ed-20221205
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=kTJMxExPsJ4uFzNi9My9H5x7NfzxY6cGVhswaoYNhhU=;
+	b=q1ENYF15cljAf+pksSq25XHReKrlpvrdlka5b9jXhZTkwnnCniFM4GB0pqTJIv4SPmvvPB7r+XXkG9ABkSvq/S9D7Um7XSYU9IaPoFf+pW00GWjtBPHlPT1VuyPZ0+HM1666tdsRgGgMs0i/XJJgohcpnOTxDN+1SfbCEBhNDgA=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.14,REQID:bc9ef79a-3bb4-432d-a3c3-50b2fb298187,IP:0,U
+	RL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION
+	:release,TS:-5
+X-CID-META: VersionHash:dcaaed0,CLOUDID:3ae2acd1-652d-43fd-a13a-a5dd3c69a43d,B
+	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
+	RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 98574c79b8334582b21bcde3840804ed-20221205
+Received: from mtkmbs13n2.mediatek.inc [(172.21.101.108)] by mailgw01.mediatek.com
+	(envelope-from <chengci.xu@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 13003475; Mon, 05 Dec 2022 17:50:19 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Mon, 5 Dec 2022 17:50:12 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
+ Transport; Mon, 5 Dec 2022 17:50:12 +0800
+From: Chengci.Xu <chengci.xu@mediatek.com>
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, "Will
+ Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
+	<robh+dt@kernel.org>, Krzysztof Kozlowski
+	<krzysztof.kozlowski+dt@linaro.org>, Matthias Brugger
+	<matthias.bgg@gmail.com>
+CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>,
+	<Project_Global_Chrome_Upstream_Group@mediatek.com>, Chengci.Xu
+	<chengci.xu@mediatek.com>
+Subject: [PATCH v5 0/4] MT8188 IOMMU SUPPORT
+Date: Mon, 5 Dec 2022 17:49:57 +0800
+Message-ID: <20221205095001.31918-1-chengci.xu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.0
-Subject: Re: [PATCH v6 06/19] iommufd: File descriptor, context, kconfig and
- makefiles
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Anthony Krowiak <akrowiak@linux.ibm.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Bagas Sanjaya <bagasdotme@gmail.com>, Lu Baolu <baolu.lu@linux.intel.com>,
- Chaitanya Kulkarni <chaitanyak@nvidia.com>, Cornelia Huck
- <cohuck@redhat.com>, Jonathan Corbet <corbet@lwn.net>,
- Daniel Jordan <daniel.m.jordan@oracle.com>,
- David Gibson <david@gibson.dropbear.id.au>,
- Eric Auger <eric.auger@redhat.com>, Eric Farman <farman@linux.ibm.com>,
- iommu@lists.linux.dev, Jason Wang <jasowang@redhat.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Jason Herne <jjherne@linux.ibm.com>, Joao Martins
- <joao.m.martins@oracle.com>, Kevin Tian <kevin.tian@intel.com>,
- kvm@vger.kernel.org, Lixiao Yang <lixiao.yang@intel.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>, "Michael S. Tsirkin"
- <mst@redhat.com>, Nicolin Chen <nicolinc@nvidia.com>,
- Halil Pasic <pasic@linux.ibm.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
- Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- Yi Liu <yi.l.liu@intel.com>, Yu He <yu.he@intel.com>,
- Keqian Zhu <zhukeqian1@huawei.com>
-References: <6-v6-a196d26f289e+11787-iommufd_jgg@nvidia.com>
-From: Binbin Wu <binbin.wu@linux.intel.com>
-In-Reply-To: <6-v6-a196d26f289e+11787-iommufd_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
+Adds MT8188 IOMMU support.
 
-On 11/30/2022 4:29 AM, Jason Gunthorpe wrote:
-> diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
-> new file mode 100644
-> index 00000000000000..d1817472c27373
-> --- /dev/null
-> +++ b/include/linux/iommufd.h
-> @@ -0,0 +1,31 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * Copyright (C) 2021 Intel Corporation
-> + * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
-> + */
-> +#ifndef __LINUX_IOMMUFD_H
-> +#define __LINUX_IOMMUFD_H
-> +
-> +#include <linux/types.h>
-> +#include <linux/errno.h>
-> +#include <linux/err.h>
-> +
-> +struct iommufd_ctx;
-> +struct file;
-> +
-> +void iommufd_ctx_get(struct iommufd_ctx *ictx);
-> +
-> +#if IS_ENABLED(CONFIG_IOMMUFD)
-> +struct iommufd_ctx *iommufd_ctx_from_file(struct file *file);
-> +void iommufd_ctx_put(struct iommufd_ctx *ictx);
-> +#else /* !CONFIG_IOMMUFD */
-> +static inline struct iommufd_ctx *iommufd_ctx_from_file(struct file *file)
-> +{
-> +	return ERR_PTR(-EOPNOTSUPP);
-> +}
-> +
-> +static inline void iommufd_ctx_put(struct iommufd_ctx *ictx)
-> +{
-> +}
+MT8188 have 3 IOMMU HWs. 2 IOMMU HW is for multimedia, and 1 IOMMU HW
+is for infra-master, like PCIe.
 
-Although iommufd_ctx_get is not callded when !CONFIG_IOMMUFD, but from 
-the view of code iommufd_ctx_get and iommufd_ctx_put are not symmetric 
-when !CONFIG_IOMMUFD.
-I am not sure if it is a common style in kernel code.
+About the 2 MM IOMMU HW, the connection could be something like this:
 
+        IOMMU(VDO)          IOMMU(VPP)
+           |                   |
+      SMI_COMMON(VDO)      SMI_COMMON(VPP)
+      ---------------     ----------------
+      |      |   ...      |      |     ...
+    larb0 larb2  ...    larb1 larb3    ...
 
-> +#endif /* CONFIG_IOMMUFD */
-> +#endif
->
+INFRA IOMMU does not have SMI, the master connects to IOMMU directly.
+
+Although multiple banks supported in MT8188, we only use one of them,
+which means PCIe is put in bank0 of INFRA IOMMU.
+
+So we have two pgtable for MT8188, specifically, these two MM IOMMU HW
+share a pgtable while INFRA IOMMU HW use a independent pgtable.
+
+Another change is that we add some SMC command for INFRA master to 
+enable/disable INFRA IOMMU in ATF considering security concerns.
+
+We also adjust the flow of mtk_iommu_config to reduce indention.
+
+changes since v5:
+  - base on tag: next-20221205
+  - add flag PGTABLE_PA_35_EN for all IOMMU in MT8188.
+  - modify the type of "portid_msk" from "u32" to "unsigned long".
+
+changes since v4:
+  - base on tag: next-20221018.
+  - add patch[2/4] to reduce indention by adjust mtk_iommu_config flow.
+
+changes since v3:
+  - base on tag: next-20220916.
+  - use license "GPL-2.0-only OR BSD-2-Clause" in bingings head file.
+  - drop redundant "portid" assignment when configure infra master.
+  - reduce indentation by using "else if" when config infra master.
+  - update probe flow about "pericfg" for CFG_IFA_MASTER_IN_ATF.
+  - drop unused "pericfg_comp_str" in mt8188_data_infra.
+  - drop words like "This commit/patch".
+
+changes since v2:
+  - base on tag: next-20220831.
+  - rename "mt8188-memory-port.h" to "mediatek,mt8188-memory-port.h".
+  - use dual-license in "mediatek,mt8188-memory-port.h"
+  - remove unnecessary "()" when define SMI_LARB_ID
+
+changes since v1:
+  - base on tag: next-20220803.
+  - adds MT8188 IOMMU support.
+
+Chengci.Xu (4):
+  dt-bindings: mediatek: mt8188: Add binding for MM & INFRA IOMMU
+  iommu/mediatek: Adjust mtk_iommu_config flow
+  iommu/mediatek: Add enable IOMMU SMC command for INFRA master
+  iommu/mediatek: Add MT8188 IOMMU Support
+
+ .../bindings/iommu/mediatek,iommu.yaml        |  12 +-
+ drivers/iommu/mtk_iommu.c                     | 113 +++-
+ .../memory/mediatek,mt8188-memory-port.h      | 482 ++++++++++++++++++
+ include/soc/mediatek/smi.h                    |   1 +
+ 4 files changed, 584 insertions(+), 24 deletions(-)
+ create mode 100644 include/dt-bindings/memory/mediatek,mt8188-memory-port.h
+
+-- 
+2.25.1
+
