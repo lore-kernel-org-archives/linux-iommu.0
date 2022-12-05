@@ -1,188 +1,290 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E0556112
-	for <iommu@lists.linux.dev>; Mon,  5 Dec 2022 15:34:27 +0000 (UTC)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2B5FIsUj001116;
-	Mon, 5 Dec 2022 15:34:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=vbmo28ZDDXC+hnndAKE8gpWRQOJ16yZkGqBoLdsO1/Y=;
- b=IdKSWx72MuNKHMwCNvvbK4Jru/fVNpVUJEFRSPYKFdiQvr6oNCImmDsR/nXPnHDQSzRB
- K5HyHxOM1l1rUS6JDFMJ310tuMzY9x39zlU4A3nh8vNPydYjsI+dMQqxd5r/BglNmN1d
- +R8qNfWvlPCN8DZziQikyFxvr+XUBEEb/O07eZmYuvOVUb2pIbvAWY0XUQyLpn4v/oEs
- fTYqP1Xs/BDPsrNVCJ+WxskpKm+fBjTwudOk3I/wEQ3x549qOrcSBzejr+MLVNtjh6iE
- Z6sRsB81ocfvyhH8K/KUW/l0KfgsLcKUxP5gsDsluGZdizUwmC2RvBJi4I0pFl8Wycff 0Q== 
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3m8g9qg4wg-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 05 Dec 2022 15:34:15 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-	by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with ESMTP id 2B5FVSiV008515;
-	Mon, 5 Dec 2022 15:34:13 GMT
-Received: from smtprelay05.fra02v.mail.ibm.com ([9.218.2.225])
-	by ppma06ams.nl.ibm.com (PPS) with ESMTPS id 3m9kby004e-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 05 Dec 2022 15:34:13 +0000
-Received: from d06av23.portsmouth.uk.ibm.com ([9.149.105.59])
-	by smtprelay05.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2B5FY99W44892544
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 5 Dec 2022 15:34:09 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id B297BA4053;
-	Mon,  5 Dec 2022 15:34:09 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id AE61CA4040;
-	Mon,  5 Dec 2022 15:34:08 +0000 (GMT)
-Received: from [9.171.41.104] (unknown [9.171.41.104])
-	by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-	Mon,  5 Dec 2022 15:34:08 +0000 (GMT)
-Message-ID: <4b34be4433856d9a3a5bf13dad7a77c1ba93db13.camel@linux.ibm.com>
-Subject: Re: [PATCH v2 4/7] iommu: Let iommu.strict override
- ops->def_domain_type
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>,
-        Matthew Rosato
- <mjrosato@linux.ibm.com>,
-        Gerd Bayer <gbayer@linux.ibm.com>, iommu@lists.linux.dev,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon
- <will@kernel.org>,
-        Wenjia Zhang <wenjia@linux.ibm.com>,
-        Pierre Morel
- <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, linux-kernel@vger.kernel.org,
-        Julian Ruess
- <julianr@linux.ibm.com>
-Date: Mon, 05 Dec 2022 16:34:08 +0100
-In-Reply-To: <Y4Zm53o1ovdIAqr/@nvidia.com>
-References: <20221116171656.4128212-1-schnelle@linux.ibm.com>
-	 <20221116171656.4128212-5-schnelle@linux.ibm.com>
-	 <33eea9bd-e101-4836-19e8-d4b191b78b00@linux.intel.com>
-	 <9163440eb6a47fe02730638bbdf72fda5ee5ad2c.camel@linux.ibm.com>
-	 <Y4S3z6IpeDHmdUs/@nvidia.com>
-	 <52fe7769ca5b66523c2c93c7d46ebc17dc144aca.camel@linux.ibm.com>
-	 <Y4TjWOXYD+DK+d/B@nvidia.com>
-	 <6c4c3a3e-1d8d-7994-3c03-388ef63dddb3@arm.com>
-	 <Y4ZCVgLO9AHatwXe@nvidia.com>
-	 <eb30ad63-92d4-2af4-22e7-d82cdf08565e@arm.com>
-	 <Y4Zm53o1ovdIAqr/@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.1 (3.46.1-1.fc37) 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 749676112
+	for <iommu@lists.linux.dev>; Mon,  5 Dec 2022 15:58:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1670255930; x=1701791930;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=JNqk2zo29jRbPdA2MLbxtaNrrxw57qCJpdGVShNnXcM=;
+  b=WvMRs3Cd59KepwfflK4NUX7/hpInBsppz2vPU4lukqUeNRkYNAFX3c6K
+   DbK08n3XMX2lg/VdNhyh14jt/JjuE8oJtU4QpS98ZPyvczot3AKD35Ias
+   ZdlvFVn71CXTLOZmDrnCjo6NacHx3IBVq+ZYG9qlrI1aF6qGYSQjHRBr4
+   Ran0hH2YQ99uAAV7OiHNdSDomyEOy/981WzTTQwCBjrDmClv6B6JInDSW
+   OS1f909FFzLrISEDseZF3zKo1nNL2Fy7m2I5PcCpU1B/pNpU1RX297Fv8
+   yvrDEGoFAB67uP8Wccvzhy53QySpDzveSD+m5N1gYEA3qcm+4LYyeewFp
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10552"; a="296077587"
+X-IronPort-AV: E=Sophos;i="5.96,219,1665471600"; 
+   d="scan'208";a="296077587"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2022 07:58:49 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10552"; a="734641288"
+X-IronPort-AV: E=Sophos;i="5.96,219,1665471600"; 
+   d="scan'208";a="734641288"
+Received: from binbinwu-mobl.ccr.corp.intel.com (HELO [10.255.28.239]) ([10.255.28.239])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2022 07:58:43 -0800
+Message-ID: <7403f46e-90ff-9761-0b92-8dc8c163ebf8@linux.intel.com>
+Date: Mon, 5 Dec 2022 23:58:41 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: JaMdlU25etf6Mb6Q8UnN2XsCfrMgEpIM
-X-Proofpoint-ORIG-GUID: JaMdlU25etf6Mb6Q8UnN2XsCfrMgEpIM
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-12-05_01,2022-12-05_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 impostorscore=0
- mlxscore=0 malwarescore=0 clxscore=1015 priorityscore=1501 suspectscore=0
- mlxlogscore=999 adultscore=0 phishscore=0 lowpriorityscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2210170000
- definitions=main-2212050128
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH v6 08/19] iommufd: PFN handling for iopt_pages
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Anthony Krowiak <akrowiak@linux.ibm.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Bagas Sanjaya <bagasdotme@gmail.com>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>, Cornelia Huck
+ <cohuck@redhat.com>, Jonathan Corbet <corbet@lwn.net>,
+ Daniel Jordan <daniel.m.jordan@oracle.com>,
+ David Gibson <david@gibson.dropbear.id.au>,
+ Eric Auger <eric.auger@redhat.com>, Eric Farman <farman@linux.ibm.com>,
+ iommu@lists.linux.dev, Jason Wang <jasowang@redhat.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Jason Herne <jjherne@linux.ibm.com>, Joao Martins
+ <joao.m.martins@oracle.com>, Kevin Tian <kevin.tian@intel.com>,
+ kvm@vger.kernel.org, Lixiao Yang <lixiao.yang@intel.com>,
+ Matthew Rosato <mjrosato@linux.ibm.com>, "Michael S. Tsirkin"
+ <mst@redhat.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ Halil Pasic <pasic@linux.ibm.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
+ Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+ Yi Liu <yi.l.liu@intel.com>, Yu He <yu.he@intel.com>,
+ Keqian Zhu <zhukeqian1@huawei.com>
+References: <8-v6-a196d26f289e+11787-iommufd_jgg@nvidia.com>
+From: Binbin Wu <binbin.wu@linux.intel.com>
+In-Reply-To: <8-v6-a196d26f289e+11787-iommufd_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, 2022-11-29 at 16:09 -0400, Jason Gunthorpe wrote:
-> On Tue, Nov 29, 2022 at 06:41:22PM +0000, Robin Murphy wrote:
-> > On 2022-11-29 17:33, Jason Gunthorpe wrote:
-> > > On Mon, Nov 28, 2022 at 09:01:43PM +0000, Robin Murphy wrote:
-> > >=20
-> > > > I'm hardly an advocate for trying to save users from themselves, bu=
-t I
-> > > > honestly can't see any justifiable reason for not having sysfs resp=
-ect
-> > > > iommu_get_def_domain_type().
-> > >=20
-> > > We really need to rename this value if it is not actually just an
-> > > advisory "default" but a functional requirement ..
-> >=20
-> > It represents a required default domain type. As in, the type for the
-> > device's default domain. Not the default type for a domain. It's the
-> > iommu_def_domain_type variable that holds the *default* default domain =
-type
-> > ;)
->=20
-> I find the name "default domain" incredibly confusing at this point in
-> time.
 
-Yes it definitely confused me as evidenced by this patch.
+On 11/30/2022 4:29 AM, Jason Gunthorpe wrote:
+> +#ifndef __IO_PAGETABLE_H
+> +#define __IO_PAGETABLE_H
+> +
+> +#include <linux/interval_tree.h>
+> +#include <linux/mutex.h>
+> +#include <linux/kref.h>
+> +#include <linux/xarray.h>
+> +
+> +#include "iommufd_private.h"
+> +
+> +struct iommu_domain;
+> +
+> +/*
+> + * Each io_pagetable is composed of intervals of areas which cover regions of
+> + * the iova that are backed by something. iova not covered by areas is not
+> + * populated in the page table. Each area is fully populated with pages.
+> + *
+> + * iovas are in byte units, but must be iopt->iova_alignment aligned.
+> + *
+> + * pages can be NULL, this means some other thread is still working on setting
+> + * up or tearing down the area. When observed under the write side of the
+> + * domain_rwsem a NULL pages must mean the area is still being setup and no
+> + * domains are filled.
+> + *
+> + * storage_domain points at an arbitrary iommu_domain that is holding the PFNs
+> + * for this area. It is locked by the pages->mutex. This simplifies the locking
+> + * as the pages code can rely on the storage_domain without having to get the
+> + * iopt->domains_rwsem.
+> + *
+> + * The io_pagetable::iova_rwsem protects node
+> + * The iopt_pages::mutex protects pages_node
+> + * iopt and immu_prot
 
->=20
-> I would like to call that the "dma-api domain" - its primary purpose
-> is to be the domain that the DMA API uses to operate the IOMMU, there
-> is little "default" about it. This meshes better with our apis talking
-> about ownership and so forth.
->=20
-> So, if the op was called
->   get_dma_api_domain_type()
->=20
-> It is pretty clear that it is the exact type of domain that should be
-> created to support the DMA API, which is what I think you have been
-> describing it is supposed to do?
->=20
-> And with Lu's series we have the set_platform_dma() (Lu perhaps you
-> should call this set_platform_dma_api() to re-enforce it is about the
-> DMA API, not some nebulous DMA thing)
->=20
-> Which is basically the other way to configure the DMA API for
-> operation.
->=20
-> And encapsulating more of the logic to setup and manage the DMA API's
-> domain into dma-iommu.c would also be helpful to understanding.
->=20
-> > Which reminds me I should finish that patch undoing my terrible
-> > ops->default_domain_ops idea, not least because they are misleadingly
-> > unrelated to default domains...
->=20
-> :)
->=20
-> > > It is close to being clear, once we get the last touches of dma-iommu
-> > > stuff out of the drivers it should be quite clear
-> >=20
-> > Cool, some upheaval of .domain_alloc is next on my hitlist anyway, so t=
-hat
-> > might be a good excuse to upheave it a bit more and streamline the type
-> > stuff along the way.
->=20
-> Yes, I think so. I want to tidy things a bit so adding this "user
-> space" domain concept is a little nicer
->=20
-> Jason
+typo, immu_prot -> iommu_prot
 
-Ok, so it sounds to me like there is going to be quite a bit of change
-in this area. Thus I'm a little unsure however how to proceed here. I
-think especially with the proposed multiple queue types in this series
-it makes sense for an IOMMU driver to express its preference of a
-particular domain type if it supports multiple which clearly isn't what
-iommu_get_def_domain_type() is currently supposed to do.
 
-Looking at the current code I don't see a trivial way to integrate this
-especially with a lot of reworks going on.
+>   are immutable
 
-At the moment the preference for IOMMU_DOMAIN_DMA_FQ over
-IOMMU_DOMAIN_DMA during initial boot is hard coded in
-iommu_subsys_init() before we even know what IOMMU driver will be used.
-so can't really access its ops there. On the other hand this decision
-may still be rolled back if iommu_dma_init_fq() fails in
-iommu_dma_init_domain() so maybe it would make sense to assume a DMA
-domain type of IOMMU_DOMAIN_DMA until that point and only then prefer
-IOMMU_DOMAIN_DMA_FQ or something else if the driver has a preference.
+> +
+> +/*
+> + * Carry means we carry a portion of the final hugepage over to the front of the
+> + * batch
+> + */
+> +static void batch_clear_carry(struct pfn_batch *batch, unsigned int keep_pfns)
+> +{
+> +	if (!keep_pfns)
+> +		return batch_clear(batch);
+> +
+> +	batch->total_pfns = keep_pfns;
+> +	batch->npfns[0] = keep_pfns;
+> +	batch->pfns[0] = batch->pfns[batch->end - 1] +
+> +			 (batch->npfns[batch->end - 1] - keep_pfns);
 
-Maybe it would also make sense not to mix the type of flush queue used
-with the domain and maybe the queue type could be passed in via
-iommu_setup_dma_ops() -> iommu_dma_init_domain() though I do remember
-that there is also a planned rework for that. Any suggestions?
+The range of the skip_pfns is checked in batch_skip_carry, should 
+keep_pfns also be checked in this function?
 
-Thanks,
-Niklas
+
+> +	batch->end = 0;
+> +}
+> +
+> +static void batch_skip_carry(struct pfn_batch *batch, unsigned int skip_pfns)
+> +{
+> +	if (!batch->total_pfns)
+> +		return;
+> +	skip_pfns = min(batch->total_pfns, skip_pfns);
+
+Should use batch->npfns[0] instead of batch->total_pfns?
+
+
+
+> +	batch->pfns[0] += skip_pfns;
+> +	batch->npfns[0] -= skip_pfns;
+> +	batch->total_pfns -= skip_pfns;
+> +}
+> +
+> +static int __batch_init(struct pfn_batch *batch, size_t max_pages, void *backup,
+> +			size_t backup_len)
+> +{
+> +	const size_t elmsz = sizeof(*batch->pfns) + sizeof(*batch->npfns);
+> +	size_t size = max_pages * elmsz;
+> +
+> +	batch->pfns = temp_kmalloc(&size, backup, backup_len);
+> +	if (!batch->pfns)
+> +		return -ENOMEM;
+> +	batch->array_size = size / elmsz;
+> +	batch->npfns = (u32 *)(batch->pfns + batch->array_size);
+> +	batch_clear(batch);
+> +	return 0;
+> +}
+> +
+> +static int batch_init(struct pfn_batch *batch, size_t max_pages)
+> +{
+> +	return __batch_init(batch, max_pages, NULL, 0);
+> +}
+> +
+> +static void batch_init_backup(struct pfn_batch *batch, size_t max_pages,
+> +			      void *backup, size_t backup_len)
+> +{
+> +	__batch_init(batch, max_pages, backup, backup_len);
+> +}
+> +
+> +static void batch_destroy(struct pfn_batch *batch, void *backup)
+> +{
+> +	if (batch->pfns != backup)
+> +		kfree(batch->pfns);
+> +}
+> +
+> +/* true if the pfn could be added, false otherwise */
+
+It is not accurate to use "could be" here because returning ture means 
+the pfn has been added.
+
+
+> +static bool batch_add_pfn(struct pfn_batch *batch, unsigned long pfn)
+> +{
+> +	const unsigned int MAX_NPFNS = type_max(typeof(*batch->npfns));
+> +
+> +	if (batch->end &&
+> +	    pfn == batch->pfns[batch->end - 1] + batch->npfns[batch->end - 1] &&
+> +	    batch->npfns[batch->end - 1] != MAX_NPFNS) {
+> +		batch->npfns[batch->end - 1]++;
+> +		batch->total_pfns++;
+> +		return true;
+> +	}
+> +	if (batch->end == batch->array_size)
+> +		return false;
+> +	batch->total_pfns++;
+> +	batch->pfns[batch->end] = pfn;
+> +	batch->npfns[batch->end] = 1;
+> +	batch->end++;
+> +	return true;
+> +}
+> +
+> +/*
+> + * Fill the batch with pfns from the domain. When the batch is full, or it
+> + * reaches last_index, the function will return. The caller should use
+> + * batch->total_pfns to determine the starting point for the next iteration.
+> + */
+> +static void batch_from_domain(struct pfn_batch *batch,
+> +			      struct iommu_domain *domain,
+> +			      struct iopt_area *area, unsigned long start_index,
+> +			      unsigned long last_index)
+> +{
+> +	unsigned int page_offset = 0;
+> +	unsigned long iova;
+> +	phys_addr_t phys;
+> +
+> +	iova = iopt_area_index_to_iova(area, start_index);
+> +	if (start_index == iopt_area_index(area))
+> +		page_offset = area->page_offset;
+> +	while (start_index <= last_index) {
+> +		/*
+> +		 * This is pretty slow, it would be nice to get the page size
+> +		 * back from the driver, or have the driver directly fill the
+> +		 * batch.
+> +		 */
+> +		phys = iommu_iova_to_phys(domain, iova) - page_offset;
+
+seems no need to handle the page_offset, since PHYS_PFN(phys) is used in 
+batch_add_pfn below?
+
+
+
+> +		if (!batch_add_pfn(batch, PHYS_PFN(phys)))
+> +			return;
+> +		iova += PAGE_SIZE - page_offset;
+> +		page_offset = 0;
+> +		start_index++;
+> +	}
+> +}
+> +
+> +static struct page **raw_pages_from_domain(struct iommu_domain *domain,
+> +					   struct iopt_area *area,
+> +					   unsigned long start_index,
+> +					   unsigned long last_index,
+> +					   struct page **out_pages)
+> +{
+> +	unsigned int page_offset = 0;
+> +	unsigned long iova;
+> +	phys_addr_t phys;
+> +
+> +	iova = iopt_area_index_to_iova(area, start_index);
+> +	if (start_index == iopt_area_index(area))
+> +		page_offset = area->page_offset;
+> +	while (start_index <= last_index) {
+> +		phys = iommu_iova_to_phys(domain, iova) - page_offset;
+
+ditto, since only PHYS_PFN(phys) is actually used, no need to handle 
+page_offset
+
+
+
+> +		*(out_pages++) = pfn_to_page(PHYS_PFN(phys));
+> +		iova += PAGE_SIZE - page_offset;
+> +		page_offset = 0;
+> +		start_index++;
+> +	}
+> +	return out_pages;
+> +}
+> +
+> +/* Continues reading a domain until we reach a discontiguity
+
+typo, discontiguity -> discontinuity
+
+
+>   in the pfns. */
+> +static void batch_from_domain_continue(struct pfn_batch *batch,
+> +				       struct iommu_domain *domain,
+> +				       struct iopt_area *area,
+> +				       unsigned long start_index,
+> +				       unsigned long last_index)
+> +{
+> +	unsigned int array_size = batch->array_size;
+> +
+> +	batch->array_size = batch->end;
+> +	batch_from_domain(batch, domain, area, start_index, last_index);
+> +	batch->array_size = array_size;
+> +}
+> +
+
+BTW, this is a quite big patch, maybe break into smaller ones?
+
 
