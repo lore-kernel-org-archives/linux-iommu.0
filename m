@@ -1,42 +1,44 @@
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D3767C
-	for <iommu@lists.linux.dev>; Mon,  5 Dec 2022 13:21:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0DA37C
+	for <iommu@lists.linux.dev>; Mon,  5 Dec 2022 13:21:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1670246494; x=1701782494;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=YYI9+dQAeNtU/Cg2+gsptBgiX5yh40A4JHayJSrxBPg=;
-  b=bUIQpteWidonPHJ0LDfVqb1YpgdxCcUnz6vmL4JWHQlGIjMXCyXd1L6e
-   FZ9yBJDZ+xH7tthT3IjYDyL6k1Wd3RaoB//Z6W7o8jmxnshXrxtAIvWQw
-   JhVVFPQXPMqDu5w8xk21fBPBI2L2RMRimpxSBPYoDYKYSZwrS6O4r/g8U
-   ArvPVx3gq29qRjZb4rbY0oiYgvwmcLSxflq/WFwUZxppnychu+owVCWtw
-   5ibVR683BOzxjOzimJ6pGSwd2s7PiFSn032zZIZs0wCmAdRLe7uP56T0b
-   jI74evN5R8i4btqvaWQLViflUnh7j97KLIPcs6mpPu373Jaxmkea3vPo/
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10551"; a="315046101"
+  t=1670246495; x=1701782495;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=tvirCoktsOJCDgLp5DXt2SRw2Wm/ltzUXfTouRmkaSQ=;
+  b=ildT5qOLNqHg8JiLzvQKlWMSeOy4AGtPGWoTFntjK5scufuvPD6pbU4R
+   NVDZq3RT6xkwg+XMNlVAO/ys9oEJuo8m3XL2oAbG72yRG0heZUidkwwua
+   yCQSkS9IC9Ql5e8bOXvPRIZG9axmOGiBMcG1DMgsmFnSVnhY5aZhzkOB8
+   WPbHSNRIug6IIaJ4q4idsIRNFzwGxRd8aU05E9nfj8Siq/XcDTv+X787V
+   W8Yn+PiKjsu/WGJWbuQ5l492uHHyMK3gPT0vElqfGAxrc3ju17Lz25NF9
+   dfXpSdHm6YHcblpEdx3OJC8PZOgRjmeAhPh8tFY6J94bcn3jYbntXpQQg
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10551"; a="315046109"
 X-IronPort-AV: E=Sophos;i="5.96,219,1665471600"; 
-   d="scan'208";a="315046101"
+   d="scan'208";a="315046109"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2022 05:21:33 -0800
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Dec 2022 05:21:35 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10551"; a="676583246"
+X-IronPort-AV: E=McAfee;i="6500,9779,10551"; a="676583250"
 X-IronPort-AV: E=Sophos;i="5.96,219,1665471600"; 
-   d="scan'208";a="676583246"
+   d="scan'208";a="676583250"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga008.jf.intel.com with ESMTP; 05 Dec 2022 05:21:31 -0800
+  by orsmga008.jf.intel.com with ESMTP; 05 Dec 2022 05:21:33 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>,
 	Ashok Raj <ashok.raj@intel.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 0/1] [PULL REQUEST] iommu/vt-d: Fixes for v6.1
-Date: Mon,  5 Dec 2022 21:14:11 +0800
-Message-Id: <20221205131412.2003159-1-baolu.lu@linux.intel.com>
+Subject: [PATCH 1/1] iommu/vt-d: Fix buggy QAT device mask
+Date: Mon,  5 Dec 2022 21:14:12 +0800
+Message-Id: <20221205131412.2003159-2-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20221205131412.2003159-1-baolu.lu@linux.intel.com>
+References: <20221205131412.2003159-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -45,23 +47,35 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi Joerg,
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 
-Below iommu/vt-d fix is queued for your fixes branch. It aims to:
+Impacted QAT device IDs that need extra dtlb flush quirk is ranging
+from 0x4940 to 0x4943. After bitwise AND device ID with 0xfffc the
+result should be 0x4940 instead of 0x494c to identify these devices.
 
-- Fix buggy QAT device mask.
-
-Please consider it for the iommu/fixes branch.
-
-Best regards,
-Lu Baolu
-
-Jacob Pan (1):
-  iommu/vt-d: Fix buggy QAT device mask
-
+Fixes: e65a6897be5e ("iommu/vt-d: Add a fix for devices need extra dtlb flush")
+Reported-by: Raghunathan Srinivasan <raghunathan.srinivasan@intel.com>
+Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Link: https://lore.kernel.org/r/20221203005610.2927487-1-jacob.jun.pan@linux.intel.com
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
  drivers/iommu/intel/iommu.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 5287efe247b1..644ca49e8cf8 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1402,7 +1402,7 @@ static void domain_update_iotlb(struct dmar_domain *domain)
+  * check because it applies only to the built-in QAT devices and it doesn't
+  * grant additional privileges.
+  */
+-#define BUGGY_QAT_DEVID_MASK 0x494c
++#define BUGGY_QAT_DEVID_MASK 0x4940
+ static bool dev_needs_extra_dtlb_flush(struct pci_dev *pdev)
+ {
+ 	if (pdev->vendor != PCI_VENDOR_ID_INTEL)
 -- 
 2.34.1
 
