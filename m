@@ -1,77 +1,69 @@
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D542520EC;
-	Tue,  6 Dec 2022 05:54:52 +0000 (UTC)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-	id 1p2Qud-0007tz-Vq; Tue, 06 Dec 2022 06:54:40 +0100
-Message-ID: <6fd52cbe-4cb0-d7a2-9f55-1e56c07843fe@leemhuis.info>
-Date: Tue, 6 Dec 2022 06:54:39 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E87A028E7
+	for <iommu@lists.linux.dev>; Tue,  6 Dec 2022 09:56:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16B61C433C1;
+	Tue,  6 Dec 2022 09:56:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1670320609;
+	bh=H4M/+p7AkJ/i6ORamRR1po4sDDc3p/wTeEVuAunv+9w=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=ja6ECJdGE0y7qkbILuEeOYDwyaeyhKoITYR4QfZwUlHu2ON/5zDL8k0QgGa06UiXK
+	 IjIFFgene1o3lkGrmu+ONTuSNB5V/FNRP3ujN2RI8AVDM91aVSnoFP0rhnIBZG3G3G
+	 SOlOTjp/G5FwIShX9WSSjZikSAAHgL9VOuQLzb+VU3HOFWJlkLSkZ80qeI4p4c+G+w
+	 zajPUQTlekWnMRwZ35kLKm+DMKfl/7ElvavxqktpdjzZ7ohuX199wlmYHmE9o7R63h
+	 HMVZYjHACzD9nxLr8NAMI/0vN5SSVV303THnGrbDcI4RIYnxfoCI7cSB+1dbUJFeYN
+	 HPFWN/VzHQKPg==
+Date: Tue, 6 Dec 2022 09:56:43 +0000
+From: Will Deacon <will@kernel.org>
+To: Bjorn Andersson <andersson@kernel.org>
+Cc: Konrad Dybcio <konrad.dybcio@linaro.org>, linux-arm-msm@vger.kernel.org,
+	agross@kernel.org, krzysztof.kozlowski@linaro.org,
+	patches@linaro.org, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/9] dt-bindings: arm-smmu: Allow 3 power domains on
+ SM6375 MMU500
+Message-ID: <20221206095642.GA317@willie-the-truck>
+References: <20221115152727.9736-1-konrad.dybcio@linaro.org>
+ <20221115152727.9736-2-konrad.dybcio@linaro.org>
+ <20221118133855.GB4046@willie-the-truck>
+ <20221205205640.kawreo3yyeh2meci@builder.lan>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-Subject: Re: [PATCH] hwmon/coretemp: Simplify platform device antics
-From: Thorsten Leemhuis <regressions@leemhuis.info>
-To: Robin Murphy <robin.murphy@arm.com>, janusz.krzysztofik@linux.intel.com
-Cc: fenghua.yu@intel.com, jdelvare@suse.com, linux-hwmon@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- lucas.demarchi@intel.com, Guenter Roeck <linux@roeck-us.net>,
- "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-References: <898dbb76a54aae6ca58ceefcab9ab18beeee2fff.1668096928.git.robin.murphy@arm.com>
- <20221111213753.GA1059841@roeck-us.net>
- <ac2e553f-fa8b-8b08-aba9-e04529adad34@leemhuis.info>
-Content-Language: en-US, de-DE
-In-Reply-To: <ac2e553f-fa8b-8b08-aba9-e04529adad34@leemhuis.info>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1670306092;a018b135;
-X-HE-SMSGID: 1p2Qud-0007tz-Vq
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221205205640.kawreo3yyeh2meci@builder.lan>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On 01.12.22 16:02, Thorsten Leemhuis wrote:
-> Hi, this is your Linux kernel regression tracker. I wondered what
-> happened to this regression fix, as things looks stalled from here --
-> but maybe I'm missing something.
+Hi Bjorn,
 
-This still looks stalled; hope someone will tell me if I missed any
-progress.
-
-> On 11.11.22 22:37, Guenter Roeck wrote:
->> On Thu, Nov 10, 2022 at 04:20:25PM +0000, Robin Murphy wrote:
->>> Coretemp's vestigial platform driver is odd. All the real work is done
->>> globally by the initcall and CPU hotplug notifiers, while the "driver"
->>> effectively just wraps an allocation and the registration of the hwmon
->>> interface in a long-winded round-trip through the driver core. The whole
->>> logic of dynamically creating and destroying platform devices to bring
->>> the interfaces up and down is fatally flawed right away, since it
->>> notifier from a platform bus notifier.
->> [...]
->>> I haven't been able to fully test hotplug since I only have a
->>> single-socket Intel system to hand.
->> Someone with access to hardware will have to validate this.
-> That afaics has happened.
+On Mon, Dec 05, 2022 at 02:56:40PM -0600, Bjorn Andersson wrote:
+> On Fri, Nov 18, 2022 at 01:38:56PM +0000, Will Deacon wrote:
+> > On Tue, Nov 15, 2022 at 04:27:19PM +0100, Konrad Dybcio wrote:
+> > > The SMMU on SM6375 requires 3 power domains to be active. Add an
+> > > appropriate description of that.
+> > > 
+> > > Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> > > ---
+> > >  .../devicetree/bindings/iommu/arm,smmu.yaml   | 23 ++++++++++++++++++-
+> > >  1 file changed, 22 insertions(+), 1 deletion(-)
+> > 
+> > Acked-by: Will Deacon <will@kernel.org>
+> > 
+> > Let me know if you'd like me to take this one via the Arm SMMU tree.
+> > 
 > 
->> For both subject and description, please avoid terms like "antics",
->> "odd", or "questionable". Please describe the problem in neutral terms.
-> Robin, did you take care of that?
+> Yes, please pick this through the SMMU tree.
 
-Robin, are you busy, or is there some other reason why this regression
-fix afaics isn't making any progress?
+I've already sent my pull request for 6.2, so this will have to wait until
+6.3 now (unless somebody else takes it in the meantime).
 
-Janusz Krzysztofik, as you seemed to care: if you have a minute and
-Robin doesn't show up within a day or wo, could you maybe improve
-subject and description to make Guenter happy?
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-
-P.S.: As the Linux kernel's regression tracker I deal with a lot of
-reports and sometimes miss something important when writing mails like
-this. If that's the case here, don't hesitate to tell me in a public
-reply, it's in everyone's interest to set the public record straight.
-
-#regzbot poke
+Will
