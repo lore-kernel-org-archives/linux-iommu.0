@@ -1,61 +1,79 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96EA77C
-	for <iommu@lists.linux.dev>; Mon,  5 Dec 2022 20:56:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EB2CC433D6;
-	Mon,  5 Dec 2022 20:56:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1670273803;
-	bh=vk+UZ6tUq7mNy/roi7+hY87YUI/a6jLm+DDd/E/E9ig=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=nfpXJ0XLZ6VnzsONDET4qRF8KKe1UDuxi1Nh+q7Ae++1QZJiRrm0zOIgndJ5K8pNy
-	 TL4JXQC8g0vGKe5fU3D/z0pAA3aTe57OFvds3PBNCnhcJaLldHonUGLDKefB4rFlhj
-	 jihBMagbzyn3mdMOSYlxg5+Tgp2brE9ZWVgodaO2c5WoD+cbLuesyioEdkvWAcxF4N
-	 jq1WVg5SqP5FK/24raToNWF52w0et/m79ZAaMaqg2wl8HS/RgPuMKbfh+W2bGub4Ch
-	 Yb1+er4kRdChZrMRKdEjOWJ01tiCORUGQMG6iaN3+kr5c3A6WpP0AB34I/KJseAW7v
-	 tEZEItD1jkfeA==
-Date: Mon, 5 Dec 2022 14:56:40 -0600
-From: Bjorn Andersson <andersson@kernel.org>
-To: Will Deacon <will@kernel.org>
-Cc: Konrad Dybcio <konrad.dybcio@linaro.org>, linux-arm-msm@vger.kernel.org,
-	agross@kernel.org, krzysztof.kozlowski@linaro.org,
-	patches@linaro.org, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/9] dt-bindings: arm-smmu: Allow 3 power domains on
- SM6375 MMU500
-Message-ID: <20221205205640.kawreo3yyeh2meci@builder.lan>
-References: <20221115152727.9736-1-konrad.dybcio@linaro.org>
- <20221115152727.9736-2-konrad.dybcio@linaro.org>
- <20221118133855.GB4046@willie-the-truck>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FC1E17E2
+	for <iommu@lists.linux.dev>; Tue,  6 Dec 2022 03:13:40 +0000 (UTC)
+Received: from kwepemi500016.china.huawei.com (unknown [172.30.72.57])
+	by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4NR54s13DNzJp5S;
+	Tue,  6 Dec 2022 11:10:05 +0800 (CST)
+Received: from [10.40.193.166] (10.40.193.166) by
+ kwepemi500016.china.huawei.com (7.221.188.220) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 6 Dec 2022 11:13:33 +0800
+Subject: Re: [PATCH] dma-mapping: benchmark: Fix compile error in user-space
+ tool
+To: Gerd Bayer <gbayer@linux.ibm.com>, Barry Song <song.bao.hua@hisilicon.com>
+References: <20221205135022.49708-1-gbayer@linux.ibm.com>
+CC: Joerg Roedel <joro@8bytes.org>, Shuah Khan <shuah@kernel.org>,
+	<iommu@lists.linux.dev>, <linux-kselftest@vger.kernel.org>, Niklas Schnelle
+	<schnelle@linux.ibm.com>
+From: "chenxiang (M)" <chenxiang66@hisilicon.com>
+Message-ID: <fd189113-deae-d6b7-bb9a-a5a94f7b0815@hisilicon.com>
+Date: Tue, 6 Dec 2022 11:13:33 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221118133855.GB4046@willie-the-truck>
+In-Reply-To: <20221205135022.49708-1-gbayer@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.40.193.166]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemi500016.china.huawei.com (7.221.188.220)
+X-CFilter-Loop: Reflected
 
-On Fri, Nov 18, 2022 at 01:38:56PM +0000, Will Deacon wrote:
-> On Tue, Nov 15, 2022 at 04:27:19PM +0100, Konrad Dybcio wrote:
-> > The SMMU on SM6375 requires 3 power domains to be active. Add an
-> > appropriate description of that.
-> > 
-> > Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> > ---
-> >  .../devicetree/bindings/iommu/arm,smmu.yaml   | 23 ++++++++++++++++++-
-> >  1 file changed, 22 insertions(+), 1 deletion(-)
-> 
-> Acked-by: Will Deacon <will@kernel.org>
-> 
-> Let me know if you'd like me to take this one via the Arm SMMU tree.
-> 
 
-Yes, please pick this through the SMMU tree.
+在 2022/12/5 21:50, Gerd Bayer 写道:
+> Since [1] the user-space program dma_map_benchmark shares the header file
+> linux/map_benchmark.h with the kernel driver in kernel/dma/map_benchmark.c.
+> With latest kernel version this does not compile any more.
+>
+> While https://kernelnewbies.org/KernelHeaders suggests otherwise, allow it
+> to use of kernel headers through the uapi/ include direcotry. I assume we can
+> do so safely, since the controlling user-space program is distributed with
+> the kernel.
+>
+> With this change dma_map_benchmark compiles with just the obvious warning
+> about uapi usage on ARCH=x86 and s390 and runs on ARCH=s390.
+>
+> [1] commit 8ddde07a3d28 ("dma-mapping: benchmark: extract a common header file for map_benchmark definition")
+>
+> Signed-off-by: Gerd Bayer <gbayer@linux.ibm.com>
 
-Bjorn
+It also solves the compile error on arm64 platform.
+Acked-by:  Xiang Chen <chenxiang66@hisilicon.com>
+
+> ---
+>   tools/testing/selftests/dma/dma_map_benchmark.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/tools/testing/selftests/dma/dma_map_benchmark.c b/tools/testing/selftests/dma/dma_map_benchmark.c
+> index 5c997f17fcbd..d49d7ea6a63e 100644
+> --- a/tools/testing/selftests/dma/dma_map_benchmark.c
+> +++ b/tools/testing/selftests/dma/dma_map_benchmark.c
+> @@ -10,7 +10,7 @@
+>   #include <unistd.h>
+>   #include <sys/ioctl.h>
+>   #include <sys/mman.h>
+> -#include <linux/types.h>
+> +#include <uapi/linux/types.h>
+>   #include <linux/map_benchmark.h>
+>   
+>   #define NSEC_PER_MSEC	1000000L
+>
+> base-commit: 8abacb3356e68261ccd3a2ad74ed6042363e5d0f
+
