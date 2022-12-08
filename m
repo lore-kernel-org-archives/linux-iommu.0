@@ -1,154 +1,128 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB01CA460
-	for <iommu@lists.linux.dev>; Thu,  8 Dec 2022 21:48:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1670536112;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=JlSLHZU0UyP1zXnoWLl9wrALkHazYkzcA1gB5b/QBD4=;
-	b=JJZBu7TUwJ+HZaiFG+1XLWR2bW3ByIG3O5QWDZahSDO/JqXaue/ngXmPqKgbTV7ICkEklc
-	PN9OTHsRr7a5Nx080a0eDTYmD4yOtEmTx99m1Jh2kEZ3e9vePYPYiGTa9JttuuF8VNPtnu
-	zCjlOfZZqd91vDsPfi9XdJMcfIVC/sY=
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
- [209.85.166.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-622-EMxaN324OPWnXTLPqvywZg-1; Thu, 08 Dec 2022 16:48:29 -0500
-X-MC-Unique: EMxaN324OPWnXTLPqvywZg-1
-Received: by mail-il1-f200.google.com with SMTP id h10-20020a056e021b8a00b00302671bb5fdso2428159ili.21
-        for <iommu@lists.linux.dev>; Thu, 08 Dec 2022 13:48:29 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=JlSLHZU0UyP1zXnoWLl9wrALkHazYkzcA1gB5b/QBD4=;
-        b=srd/IiZRlKrCiqOCThOduL3DJ0RgKckRKawfHuhbrVAO6yept2xgrdUVPwps9fOpy+
-         0zMjzer3IrgvzG6Ew9qPTmQR1RqKnVYoYlhOjHjeTTLBimb5MlFl7BZ3oz4N89y1P8mI
-         5pCiSM1BSpwT7tfrCbT4ctMT/bNlIncZUcoFK+faeJJ4f2Ft1ksEUSq7/tW/USbWvskl
-         XFhX4Dnt2Ycvw6+cZLchfrBTe0RegPr2JFVK+gsfPK28YRr8qfsTx7o7fpjuVVuMkqUV
-         xbjt53w7tvS5w5ll0bbw7HvDqJ/epwx3KV/pYy5ZkcFi/BcKWCLekTM+wCKSBFbdXH5d
-         cZOg==
-X-Gm-Message-State: ANoB5pmkI1IpL963KsMifNIvgsGo3LkOMJwqUnkBNs/idCGBxp5yJdx2
-	10umZcXddYoAQRJGoPADsML3E8rkttKOocmS9SNwrO4ykXIeVETOOQ1i0jn/W9gCxLJhF3GpvNF
-	8HvRp5f31sajZSHU=
-X-Received: by 2002:a02:caa9:0:b0:38a:4f3e:a8f3 with SMTP id e9-20020a02caa9000000b0038a4f3ea8f3mr7633691jap.118.1670536108936;
-        Thu, 08 Dec 2022 13:48:28 -0800 (PST)
-X-Google-Smtp-Source: AA0mqf5z9amCYid4VD2QKF39+LEnq0/gOoAHkRrex2ThE5am1xPidFCUVQZkXXRQS46wsmIHSMDr3g==
-X-Received: by 2002:a02:caa9:0:b0:38a:4f3e:a8f3 with SMTP id e9-20020a02caa9000000b0038a4f3ea8f3mr7633686jap.118.1670536108715;
-        Thu, 08 Dec 2022 13:48:28 -0800 (PST)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id q18-20020a927512000000b00302bb083c2bsm1115985ilc.21.2022.12.08.13.48.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Dec 2022 13:48:28 -0800 (PST)
-Date: Thu, 8 Dec 2022 14:48:25 -0700
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Alexander Gordeev <agordeev@linux.ibm.com>, Lu Baolu
- <baolu.lu@linux.intel.com>, Christian Borntraeger
- <borntraeger@linux.ibm.com>, Cornelia Huck <cohuck@redhat.com>, David
- Woodhouse <dwmw2@infradead.org>, Gerald Schaefer
- <gerald.schaefer@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, Heiko
- Carstens <hca@linux.ibm.com>, iommu@lists.linux.dev, Joerg Roedel
- <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
- linux-s390@vger.kernel.org, Marc Zyngier <maz@kernel.org>, Robin Murphy
- <robin.murphy@arm.com>, Suravee Suthikulpanit
- <suravee.suthikulpanit@amd.com>, Sven Schnelle <svens@linux.ibm.com>,
- Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>, Bharat
- Bhushan <bharat.bhushan@nxp.com>, Christian Borntraeger
- <borntraeger@de.ibm.com>, Eric Auger <eric.auger@redhat.com>, Eric Farman
- <farman@linux.ibm.com>, Marc Zyngier <marc.zyngier@arm.com>, Matthew Rosato
- <mjrosato@linux.ibm.com>, Tomasz Nowicki
- <tomasz.nowicki@caviumnetworks.com>, Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH iommufd 2/9] vfio/type1: Check that every device
- supports IOMMU_CAP_INTR_REMAP
-Message-ID: <20221208144825.33823739.alex.williamson@redhat.com>
-In-Reply-To: <2-v1-9e466539c244+47b5-secure_msi_jgg@nvidia.com>
-References: <0-v1-9e466539c244+47b5-secure_msi_jgg@nvidia.com>
-	<2-v1-9e466539c244+47b5-secure_msi_jgg@nvidia.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFB102F36
+	for <iommu@lists.linux.dev>; Thu,  8 Dec 2022 23:38:35 +0000 (UTC)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2B8LhVqA010876;
+	Thu, 8 Dec 2022 23:37:49 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=pcvR2OovyEHQ/qmAzwx0cNoXm9yr0HnIedlWMmv9zNY=;
+ b=fnGZw8tl/ApqqeJERG8k+Jp4KTKOHlgfLGWBOcdhQ3h6RPVPHxm4a0B2MiZoI0XC49iD
+ 0PrixQf9usV+y2yJ0DO/yXm04EXwtIuPXEzxSFBOe05IU/Hrb4XCqhDo8aSLyujeb/9a
+ Ps7aCA5FJjnLP2IrY+G5I92QfnOPay9ZXmPHQiH8l55GcS+AfiU+wiYqiwLgRdL+QTa/
+ yYf+c6h/oflLRMJBiX/sTJkCNMO+1lmIVY3G+iKW5wNaKIaqtfdXCxJ0ew3yZozcjxNF
+ FRcsJW+S0JB70j2/d75x6P7zavwxMNrtwb6/nCJNxujCQRtqJswY5Pn+qW2gss48ecJx gg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3mbj3tbnw3-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 08 Dec 2022 23:37:48 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2B8NV04l025172;
+	Thu, 8 Dec 2022 23:37:48 GMT
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3mbj3tbnvt-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 08 Dec 2022 23:37:48 +0000
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+	by ppma03wdc.us.ibm.com (8.17.1.19/8.16.1.2) with ESMTP id 2B8KJwL3032416;
+	Thu, 8 Dec 2022 23:37:47 GMT
+Received: from smtprelay07.wdc07v.mail.ibm.com ([9.208.129.116])
+	by ppma03wdc.us.ibm.com (PPS) with ESMTPS id 3m9pwnuvm3-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 08 Dec 2022 23:37:47 +0000
+Received: from smtpav02.dal12v.mail.ibm.com (smtpav02.dal12v.mail.ibm.com [10.241.53.101])
+	by smtprelay07.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2B8NbjaF7864874
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 8 Dec 2022 23:37:45 GMT
+Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 727F55805A;
+	Thu,  8 Dec 2022 23:37:45 +0000 (GMT)
+Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 23A5358051;
+	Thu,  8 Dec 2022 23:37:43 +0000 (GMT)
+Received: from [9.160.69.73] (unknown [9.160.69.73])
+	by smtpav02.dal12v.mail.ibm.com (Postfix) with ESMTP;
+	Thu,  8 Dec 2022 23:37:43 +0000 (GMT)
+Message-ID: <31af8174-35e9-ebeb-b9ef-74c90d4bfd93@linux.ibm.com>
+Date: Thu, 8 Dec 2022 18:37:42 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.0
+Subject: Re: [PATCH iommufd 0/9] Remove IOMMU_CAP_INTR_REMAP
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>,
+        iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+        Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
+        linux-s390@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>,
+        Niklas Schnelle <schnelle@linux.ibm.com>,
+        Gerd Bayer <gbayer@linux.ibm.com>
+Cc: Bharat Bhushan <bharat.bhushan@nxp.com>,
+        Eric Auger <eric.auger@redhat.com>, Eric Farman <farman@linux.ibm.com>,
+        Marc Zyngier <marc.zyngier@arm.com>,
+        Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>,
+        Will Deacon <will.deacon@arm.com>
+References: <0-v1-9e466539c244+47b5-secure_msi_jgg@nvidia.com>
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <0-v1-9e466539c244+47b5-secure_msi_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: GF3RvFliaKjcg5CZXo2eyf_mwIH3FusE
+X-Proofpoint-ORIG-GUID: AJ_9iPhj7wWuyrSWzUAE4alRNbsYx6Cp
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-12-08_12,2022-12-08_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxscore=0
+ bulkscore=0 spamscore=0 priorityscore=1501 phishscore=0 clxscore=1011
+ mlxlogscore=999 impostorscore=0 lowpriorityscore=0 malwarescore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2210170000 definitions=main-2212080194
 
-On Thu,  8 Dec 2022 16:26:29 -0400
-Jason Gunthorpe <jgg@nvidia.com> wrote:
+On 12/8/22 3:26 PM, Jason Gunthorpe wrote:
 
-> iommu_group_for_each_dev() exits the loop at the first callback that
-> returns 1 - thus returning 1 fails to check the rest of the devices in the
-> group.
-> 
-> msi_remap (aka secure MSI) requires that all the devices in the group
-> support it, not just any one. This is only a theoretical problem as no
-> current drivers will have different secure MSI properties within a group.
+>  - S390 has unconditionally claimed it has secure MSI through the iommu=
 
-Which is exactly how Robin justified the behavior in the referenced
-commit:
+>    driver. I'm not sure how it works, or if it even does. Perhaps
+>    zpci_set_airq() pushes the "zdev->gias" to the hypervisor which
+>    limits a device's MSI to only certain KVM contexts (though if true
+>    this would be considered insecure by VFIO)
+>=20
 
-  As with domains, any capability must in practice be consistent for
-  devices in a given group - and after all it's still the same
-  capability which was expected to be consistent across an entire bus!
-  - so there's no need for any complicated validation.
-
-That suggests to me that it's intentional that we break if any device
-supports the capability and therefore this isn't so much a "Fixes:", as
-it is a refactoring expressly to support msi_device_has_secure_msi(),
-which cannot make these sort of assumptions as a non-group API.  Thanks,
-
-Alex
-
-> Make vfio_iommu_device_secure_msi() reduce AND across all the devices.
-> 
-> Fixes: eed20c782aea ("vfio/type1: Simplify bus_type determination")
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/vfio/vfio_iommu_type1.c | 17 +++++++++++------
->  1 file changed, 11 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index 23c24fe98c00d4..3025b4e643c135 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -2160,10 +2160,12 @@ static void vfio_iommu_iova_insert_copy(struct vfio_iommu *iommu,
->  	list_splice_tail(iova_copy, iova);
->  }
->  
-> -/* Redundantly walks non-present capabilities to simplify caller */
-> -static int vfio_iommu_device_capable(struct device *dev, void *data)
-> +static int vfio_iommu_device_secure_msi(struct device *dev, void *data)
->  {
-> -	return device_iommu_capable(dev, (enum iommu_cap)data);
-> +	bool *secure_msi = data;
-> +
-> +	*secure_msi &= device_iommu_capable(dev, IOMMU_CAP_INTR_REMAP);
-> +	return 0;
->  }
->  
->  static int vfio_iommu_domain_alloc(struct device *dev, void *data)
-> @@ -2278,9 +2280,12 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->  	INIT_LIST_HEAD(&domain->group_list);
->  	list_add(&group->next, &domain->group_list);
->  
-> -	msi_remap = irq_domain_check_msi_remap() ||
-> -		    iommu_group_for_each_dev(iommu_group, (void *)IOMMU_CAP_INTR_REMAP,
-> -					     vfio_iommu_device_capable);
-> +	msi_remap = irq_domain_check_msi_remap();
-> +	if (!msi_remap) {
-> +		msi_remap = true;
-> +		iommu_group_for_each_dev(iommu_group, &msi_remap,
-> +					 vfio_iommu_device_secure_msi);
-> +	}
->  
->  	if (!allow_unsafe_interrupts && !msi_remap) {
->  		pr_warn("%s: No interrupt remapping support.  Use the module param \"allow_unsafe_interrupts\" to enable VFIO IOMMU support on this platform\n",
-
+There are a few layers here.  Interrupt isolation and mapping on s390 is =
+accomplished via a mapping table used by a layer of firmware (and can be =
+shared by a hypervisor e.g. qemu/kvm) that sits between the device and th=
+e kernel/driver (s390 linux always runs on at least this 'bare-metal hype=
+rvisor' firmware layer).  Indeed the initial relationship is established =
+via zpci_set_airq -- the "zdev->fh" identifies the device, the "zdev->gis=
+a" (if applicable) identifies the single KVM context that is eligible to =
+receive interrupts related to the specified device as well as the single =
+KVM context allowed to access the device via any zPCI instructions (e.g. =
+config space access).  The aibv/noi indicate the vector mappings that are=
+ authorized for that device; firmware will typically route the interrupts=
+ to the guest without hypervisor involvement once this is established, bu=
+t the table is shared by the hypervisor so that it can be tapped to compl=
+ete delivery when necessary.  This registration process enables a firmwar=
+e intermediary that will only pass along MSI from the device that has an =
+associated, previously-authorized vector, associated with either the 'bar=
+e-metal hypervisor' (gisa =3D 0) and/or a specific VM (gisa !=3D 0), depe=
+nding what was registered as zpci_set_airq.
