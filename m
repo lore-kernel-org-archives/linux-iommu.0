@@ -1,126 +1,131 @@
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
+Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6165423BD
-	for <iommu@lists.linux.dev>; Mon, 12 Dec 2022 11:20:22 +0000 (UTC)
-Received: by mail-lf1-f54.google.com with SMTP id 1so17992268lfz.4
-        for <iommu@lists.linux.dev>; Mon, 12 Dec 2022 03:20:22 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F5F423BD
+	for <iommu@lists.linux.dev>; Mon, 12 Dec 2022 11:21:56 +0000 (UTC)
+Received: by mail-lf1-f47.google.com with SMTP id 1so17998425lfz.4
+        for <iommu@lists.linux.dev>; Mon, 12 Dec 2022 03:21:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=ds1hOC+51hj11fCUViYpPSQxr8FkVZNzM9T5gdhTwsw=;
-        b=Hz9qip5z9D0crBWl3/XgYxi+mLsK2KSsnlFR88ntWeICN92BM6ZwHYQ7TPyv7Etuge
-         fjp4pe7399woH49S6PbAzSqyUOl0nueVSLyGpdNiJwJkomnNU2jHeSybvGyDYwsIAFG/
-         oyhFmHBjCS6YLXw4Gmo5/KqCAbG+10UVMZwNSprBWrNw1pwGESe1pDmp++BLVqu/X6dA
-         F1m9I5JOGMCbJeo++VTKT5v1iIudovZ5+F3WeALTZTi8XUBl6m4xtTtOQOQ/SEkU8p+V
-         BC09pDfWmG9VsvTDRhyzKcxo6UcSHQzn+4Rt5L8apNNXv1C2edoaOTv5t17hMtuo2owW
-         PyGA==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=glTvLRuHC4ZX/EsgPrtjqzGC7be65qHZLQLtVcgtfKE=;
+        b=pjU6j75Dgm4RKGxIji8QeCGgIVlHl3X9VAPJf5VvKd4eR0fVmP/9l73xwbirrMqKun
+         /p7Q1ETyZIHgzg0D90mr+T8mCdoDEbeUr6ZwhvIQ0JssdUlhV8Z/S/9D+KD37mIwfm25
+         0buyzJSfiq+EUspLwgY817cYeGdTUsv/7VZm9yJt3NFPTTetcAzOQREQFucuFI2eNgg3
+         8UFc304tzX6W7ALm3Bpj07cawN498+2gLk/30pzkNzkA46+tYe0HXRg8J9TY51+dBsel
+         wgU+rOZM3PgURWQIZQ0kerdoFvFShqeno/1zmQvfIB2yK54wQGbNmnTBnmlAIaJ4K/p5
+         qY5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ds1hOC+51hj11fCUViYpPSQxr8FkVZNzM9T5gdhTwsw=;
-        b=2P5gVIdHo9uKGLjlAYMjuBorAFd8nUNk/YnK0AoHRKRd/XU1Rz+ngZ+5c0wFcFfuxP
-         Irv0u2+F6NA28uJltD/MzgpcqcW2bV+0HaJnpQXJecdGDg4idvgDJD34Pxflr8fRI8SQ
-         MQWnEnTpFFz2lIeM5YaMEKs+sws0cZicBP0eVCugU1JEOGpSP4TH4Q3OoZpJ+w4UI4Ty
-         w3mCNZjAwHIiyJTdNMS2Wq45dp0zf15J6oC6of7Ff6Q38l6k0T0cpoeVHp8yrOCHgmvY
-         9F2Y+pS5kq0mlFVuTnCl0A2j36EKvD9yxWkB0cLVt/AeYvX+7h8D15wPLU4p2k6Hchx3
-         pj5w==
-X-Gm-Message-State: ANoB5pmi+kacoSWulQB57QDrHEk6MwX0KU75GNa1Zo/QgaW6Bc/QK87L
-	lPTBSDrXvlvE5NrBWZipV0wZEQ==
-X-Google-Smtp-Source: AA0mqf6tLiVUJeAowyx3FkHUYgxKVqJXgW8BgWc3cNEaJy4ED+DeX/XFuIhf8Gp8WDB/EdtCjxInjg==
-X-Received: by 2002:ac2:4f0e:0:b0:4a4:68b7:d655 with SMTP id k14-20020ac24f0e000000b004a468b7d655mr4481995lfr.60.1670844020358;
-        Mon, 12 Dec 2022 03:20:20 -0800 (PST)
-Received: from [127.0.0.1] ([94.25.229.102])
-        by smtp.gmail.com with ESMTPSA id p23-20020a056512329700b004b5853f0fc6sm1593838lfe.246.2022.12.12.03.20.19
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 12 Dec 2022 03:20:19 -0800 (PST)
-Date: Mon, 12 Dec 2022 14:20:16 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To: Konrad Dybcio <konrad.dybcio@linaro.org>, linux-arm-msm@vger.kernel.org,
- andersson@kernel.org, agross@kernel.org, krzysztof.kozlowski@linaro.org
-CC: marijn.suijten@somainline.org, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Konrad Dybcio <konrad.dybcio@somainline.org>,
- Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
- Rob Clark <robdclark@chromium.org>, Adam Skladowski <a39.skl@gmail.com>,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/arm-smmu-qcom: Add SM8150 DPU compatible
-User-Agent: K-9 Mail for Android
-In-Reply-To: <57d3ba20-f1de-d7f3-d689-b25a02174379@linaro.org>
-References: <20221212100617.18190-1-konrad.dybcio@linaro.org> <552EFDD5-4BBE-408D-90EA-C96F4A0876B7@linaro.org> <57d3ba20-f1de-d7f3-d689-b25a02174379@linaro.org>
-Message-ID: <CAC2A315-5861-4324-849D-3EBF793146EA@linaro.org>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=glTvLRuHC4ZX/EsgPrtjqzGC7be65qHZLQLtVcgtfKE=;
+        b=3UtwUVz2SjoR2Q+H17uQuHmXwIZuD8FYUhdD7akZ7wWIEd4eNlFmJ4Htp3aDXsurxv
+         r5b8POSQhHb/g8a/14vG9xEnkPKmd9MzgHJYcax8hiYIEAQj9hkU6aSA214bS8Ekip9W
+         OwVYtyL08TtwoHlvOLKDerzrsWmiK1AkYOU5Hf1UZWnFmb3md3MBEx78kweKCLXtJ2TF
+         BcAhxCdVibtnXXT4d7ycE29PI4tXhe0RhrzmZZYt4gqSYBgpAio8myUKxiYj2zUFY+I7
+         dUpuSm1c0iCQ95d3k4z8b15sIsv26RgMAh3ixy4XOi00vMuLau8pHC3uFEwo8eKY+QMh
+         xplQ==
+X-Gm-Message-State: ANoB5pk3AZKSn3ooLBNSbds9Wwf/LzuOYcVf+nrBZQ5vbvHAZfKasn8I
+	CsDBsXYQBGk3s090neVg/h2JjA==
+X-Google-Smtp-Source: AA0mqf4xh1Suym2+rM2PZHE1O5sparKm3e/R6efWN5I9I4+nFbvi3+H7dif7UWMb1bOBaNGfbvaxPQ==
+X-Received: by 2002:ac2:4950:0:b0:4b5:7925:870d with SMTP id o16-20020ac24950000000b004b57925870dmr3819266lfi.12.1670844114618;
+        Mon, 12 Dec 2022 03:21:54 -0800 (PST)
+Received: from [192.168.1.101] (abxh44.neoplus.adsl.tpnet.pl. [83.9.1.44])
+        by smtp.gmail.com with ESMTPSA id g14-20020a0565123b8e00b004b4fefacd89sm1586129lfv.139.2022.12.12.03.21.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 12 Dec 2022 03:21:54 -0800 (PST)
+Message-ID: <c0145eca-5cdd-4600-89e1-00c0fd8b22ef@linaro.org>
+Date: Mon, 12 Dec 2022 12:21:52 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.1
+Subject: Re: [PATCH] iommu/arm-smmu-qcom: Add SM8150 DPU compatible
+Content-Language: en-US
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+ linux-arm-msm@vger.kernel.org, andersson@kernel.org, agross@kernel.org,
+ krzysztof.kozlowski@linaro.org
+Cc: marijn.suijten@somainline.org, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Konrad Dybcio <konrad.dybcio@somainline.org>,
+ Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+ Rob Clark <robdclark@chromium.org>, Adam Skladowski <a39.skl@gmail.com>,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20221212100617.18190-1-konrad.dybcio@linaro.org>
+ <552EFDD5-4BBE-408D-90EA-C96F4A0876B7@linaro.org>
+ <57d3ba20-f1de-d7f3-d689-b25a02174379@linaro.org>
+ <CAC2A315-5861-4324-849D-3EBF793146EA@linaro.org>
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+In-Reply-To: <CAC2A315-5861-4324-849D-3EBF793146EA@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
 
 
-On 12 December 2022 14:00:10 GMT+03:00, Konrad Dybcio <konrad=2Edybcio@lin=
-aro=2Eorg> wrote:
->
->
->On 12=2E12=2E2022 11:58, Dmitry Baryshkov wrote:
->>=20
->>=20
->> On 12 December 2022 13:06:16 GMT+03:00, Konrad Dybcio <konrad=2Edybcio@=
-linaro=2Eorg> wrote:
->>> From: Marijn Suijten <marijn=2Esuijten@somainline=2Eorg>
+On 12.12.2022 12:20, Dmitry Baryshkov wrote:
+> 
+> 
+> On 12 December 2022 14:00:10 GMT+03:00, Konrad Dybcio <konrad.dybcio@linaro.org> wrote:
+>>
+>>
+>> On 12.12.2022 11:58, Dmitry Baryshkov wrote:
 >>>
->>> Add the SM8150 DPU compatible to clients compatible list, as it also
->>> needs the workarounds=2E
->>=20
->> Please rebase on top of linux-next, this part was rewritten=2E
->This one wasn't, but yeah it is based on some local changes
->(see 6350/6375)=2E=2E
-
-It was,
-
-https://git=2Ekernel=2Eorg/pub/scm/linux/kernel/git/next/linux-next=2Egit/=
-tree/drivers/iommu/arm/arm-smmu/arm-smmu-qcom=2Ec?h=3Dnext-20221208#n498
-
->
->Konrad
->>=20
->>=20
 >>>
->>> Signed-off-by: Marijn Suijten <marijn=2Esuijten@somainline=2Eorg>
->>> Signed-off-by: Konrad Dybcio <konrad=2Edybcio@linaro=2Eorg>
->>> ---
->>> Depends on the binding here:
+>>> On 12 December 2022 13:06:16 GMT+03:00, Konrad Dybcio <konrad.dybcio@linaro.org> wrote:
+>>>> From: Marijn Suijten <marijn.suijten@somainline.org>
+>>>>
+>>>> Add the SM8150 DPU compatible to clients compatible list, as it also
+>>>> needs the workarounds.
 >>>
->>> [1] https://lore=2Ekernel=2Eorg/linux-arm-msm/20221212093315=2E11390-1=
--konrad=2Edybcio@linaro=2Eorg/T/#t
->>>
->>> drivers/iommu/arm/arm-smmu/arm-smmu-qcom=2Ec | 1 +
->>> 1 file changed, 1 insertion(+)
->>>
->>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom=2Ec b/drivers/io=
-mmu/arm/arm-smmu/arm-smmu-qcom=2Ec
->>> index 6610f5d2877d=2E=2Ecd74c1efcfde 100644
->>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom=2Ec
->>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom=2Ec
->>> @@ -255,6 +255,7 @@ static const struct of_device_id qcom_smmu_client_=
-of_match[] __maybe_unused =3D {
->>> 	{ =2Ecompatible =3D "qcom,sdm845-mss-pil" },
->>> 	{ =2Ecompatible =3D "qcom,sm6350-mdss" },
->>> 	{ =2Ecompatible =3D "qcom,sm6375-mdss" },
->>> +	{ =2Ecompatible =3D "qcom,sm8150-mdss" },
->>> 	{ =2Ecompatible =3D "qcom,sm8250-mdss" },
->>> 	{ }
->>> };
->>=20
+>>> Please rebase on top of linux-next, this part was rewritten.
+>> This one wasn't, but yeah it is based on some local changes
+>> (see 6350/6375)..
+> 
+> It was,
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c?h=next-20221208#n498
+We're not looking at the same thing, this patch adds a compatible
+for 8150's mdss so that it can be matched as a client, not a
+compatible for the SMMU itself (which itself has been merged
+dinosaur years ago).
 
---=20
-With best wishes
-Dmitry
+Konrad
+> 
+>>
+>> Konrad
+>>>
+>>>
+>>>>
+>>>> Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+>>>> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+>>>> ---
+>>>> Depends on the binding here:
+>>>>
+>>>> [1] https://lore.kernel.org/linux-arm-msm/20221212093315.11390-1-konrad.dybcio@linaro.org/T/#t
+>>>>
+>>>> drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
+>>>> 1 file changed, 1 insertion(+)
+>>>>
+>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> index 6610f5d2877d..cd74c1efcfde 100644
+>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> @@ -255,6 +255,7 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
+>>>> 	{ .compatible = "qcom,sdm845-mss-pil" },
+>>>> 	{ .compatible = "qcom,sm6350-mdss" },
+>>>> 	{ .compatible = "qcom,sm6375-mdss" },
+>>>> +	{ .compatible = "qcom,sm8150-mdss" },
+>>>> 	{ .compatible = "qcom,sm8250-mdss" },
+>>>> 	{ }
+>>>> };
+>>>
+> 
