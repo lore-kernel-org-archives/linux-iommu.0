@@ -1,127 +1,97 @@
-Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B318323BD
-	for <iommu@lists.linux.dev>; Mon, 12 Dec 2022 11:33:58 +0000 (UTC)
-Received: by mail-lf1-f49.google.com with SMTP id c1so18048464lfi.7
-        for <iommu@lists.linux.dev>; Mon, 12 Dec 2022 03:33:58 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE45123BD
+	for <iommu@lists.linux.dev>; Mon, 12 Dec 2022 12:10:59 +0000 (UTC)
+Received: by mail-lf1-f50.google.com with SMTP id 1so18202116lfz.4
+        for <iommu@lists.linux.dev>; Mon, 12 Dec 2022 04:10:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=H9GNjVU5sxMe9Q/VIxOWf6Z5lKsfx+IlGPy9pdhxemM=;
-        b=O+Lw7JXSyl1E9PjF08XNf+Pcwhrglu/JueODn5sElY3v+LKw1UBjYSYcC/PRwD0akO
-         rf1Dxxh25AdujQCMHYdHPvbwS66LMGcjouB2XypXocl6iOfPql7wWw8MoSf+DnkqJNNM
-         uGhCHop//yArIYRHvd0fZFkSgFie/LT6aJv6MwaGcMmtYjZQ97aJszY4GrnSYH2Mlhtm
-         uf8hV8xzJlGHmPnCeHiP3nXSiPiQMz6W0fZ/1az/op7FZJdsCN7vHNx9MLeXM1eaXCB6
-         Ue6TTAd+dVOt6C3trExdA62FVfYRKAcY6dn0Tn0wbIOv4s1Tzs7ffk3FsyCx39k+ykVw
-         fGpg==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ArZdgDUPTxxyHH9qYlQrCbZtI7IOKmLLf9ZbqR0krVg=;
+        b=euJoDwYFzbm62Z2MoNPWwEh0uYkbDZZY5Ge2FXxsFmGKf8k35Tw5IyBCfaFR3xIuYW
+         i5KD9wihfj0XjGvieZjDZneMohCZyhVsSmdu4QN++NKWb1Lz0uRB9c78yrNzGnG/qW8q
+         BvdNUFd19wjl+xz3oHZanWNyR3v6Gf2DAl8vkURtOXaXTdr94MtUzuBECLaIuFUtrEB3
+         KXgCzDdg+XG3SAN+esCfhrlOmynUDQfs7fvg+lCGvV3LIlcFTDLKsPNj7S07Rzix6AmV
+         OwSHjBBTC62wSdr9InzccDj5Jlvcvfwj6vpq36jK901X3dRl3U13gK6zxHfckMI/uADH
+         5pJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=H9GNjVU5sxMe9Q/VIxOWf6Z5lKsfx+IlGPy9pdhxemM=;
-        b=FfNiVQSI8EJvtEj/CUrLaSFh1uiehOM/e7G5V6S0rmT1g057cNsvw7fw3Lem72kb4B
-         3He9bkkDuU+S6ADCcryKjHmw02dX9wpjBfK3fZInTCl6fy8KRosLoUt+BafvzsHbRfw2
-         bN1kflAbX7z9KG3MvRqKYDwthceiv+MyqGkTJePOQ1vQFSIgQRt99ZKCSCTJ0wKH0QyA
-         T644M+ZhgnJOhW2b2tTG77bBkUJxMrUz4upyf4dhfu0k38IPrHWAm6Ss/VJk1to+YMJg
-         fIm9iLx3FX9Won+0K75TCD95Cw6U3rUJbaNcQCkHAQkKzi+/RlOmzi6v0edYndDoPEmD
-         T2WQ==
-X-Gm-Message-State: ANoB5pmRuUgF8au6WObYGSZFb9AdGihszIpQmikWYubh660F3uyO+ZLK
-	Y5szXAzsK8h5MMNbKckri3+H1A==
-X-Google-Smtp-Source: AA0mqf7+UAOn2V1OdU8uHl/pgi/QO5fTBszZ3Aa+FP8PGlUL1LJJiKOlsa9jZXt8QltRZYcvRHlpkg==
-X-Received: by 2002:ac2:4305:0:b0:4b0:25f9:14ea with SMTP id l5-20020ac24305000000b004b025f914eamr3324056lfh.21.1670844836665;
-        Mon, 12 Dec 2022 03:33:56 -0800 (PST)
-Received: from [192.168.1.101] (abxh44.neoplus.adsl.tpnet.pl. [83.9.1.44])
-        by smtp.gmail.com with ESMTPSA id u9-20020ac258c9000000b004b59067142bsm1608166lfo.8.2022.12.12.03.33.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 12 Dec 2022 03:33:56 -0800 (PST)
-Message-ID: <aa60fcf8-5663-b2de-9d68-701dceeb493c@linaro.org>
-Date: Mon, 12 Dec 2022 12:33:54 +0100
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ArZdgDUPTxxyHH9qYlQrCbZtI7IOKmLLf9ZbqR0krVg=;
+        b=E84zQda8r15+K4lGkKKh5VNPC4uPGtl/x0jqA/SlVa7AdwRm1h2QAQetpUZ2gUaCcp
+         4/uWhJT/1v629bYJ2d4uEJ88l+gDaz551pAgtjWIR6LGwCpAvhw1lp8xId6qCouJWljV
+         1Y+KJnQzgFYcvRz6cfXXvSzRg//eQ4U7WrCj6febExsymXon3zlmFFhDEOLSN/dYXzvP
+         //E75pf6Bb/2uPPrcU6tHDDyk+5PANkwyTObPZh/y0/ckXmq5icuFHXNViohXxEVJ0R/
+         JKGkD8s/JAmPBm4Yq6DVNg4f8ADI0BhWk4D/2Yny14bmE357hT9wQL9k0UFD9L9//QgD
+         iwow==
+X-Gm-Message-State: ANoB5pmG6LgVRPi2KPcxZaS91386LORH8pKBf4XOVS18a9MgQ2o6xh7Q
+	dUpHtgobMiFDPp2KPjBivDGeyg==
+X-Google-Smtp-Source: AA0mqf4UwVm2QNGEWhCr8AWM3w7xJopx1vjnQH10HOcb31DgqEYIDHUbF+ieDqBsnWDwIh7npmW6Gw==
+X-Received: by 2002:a05:6512:224a:b0:4a4:68b9:19fc with SMTP id i10-20020a056512224a00b004a468b919fcmr6308665lfu.36.1670847057942;
+        Mon, 12 Dec 2022 04:10:57 -0800 (PST)
+Received: from localhost.localdomain (abxh44.neoplus.adsl.tpnet.pl. [83.9.1.44])
+        by smtp.gmail.com with ESMTPSA id c7-20020ac25f67000000b004b55ef84338sm1604592lfc.305.2022.12.12.04.10.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Dec 2022 04:10:57 -0800 (PST)
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+To: linux-arm-msm@vger.kernel.org,
+	andersson@kernel.org,
+	agross@kernel.org,
+	krzysztof.kozlowski@linaro.org
+Cc: marijn.suijten@somainline.org,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+	Emma Anholt <emma@anholt.net>,
+	Rob Clark <robdclark@chromium.org>,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v2] iommu/arm-smmu-qcom: Add SM8150 DPU compatible
+Date: Mon, 12 Dec 2022 13:10:53 +0100
+Message-Id: <20221212121054.193059-1-konrad.dybcio@linaro.org>
+X-Mailer: git-send-email 2.38.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-Subject: Re: [PATCH] iommu/arm-smmu-qcom: Add SM8150 DPU compatible
-Content-Language: en-US
-To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
- linux-arm-msm@vger.kernel.org, andersson@kernel.org, agross@kernel.org,
- krzysztof.kozlowski@linaro.org
-Cc: marijn.suijten@somainline.org, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Konrad Dybcio <konrad.dybcio@somainline.org>,
- Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
- Rob Clark <robdclark@chromium.org>, Adam Skladowski <a39.skl@gmail.com>,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20221212100617.18190-1-konrad.dybcio@linaro.org>
- <552EFDD5-4BBE-408D-90EA-C96F4A0876B7@linaro.org>
- <57d3ba20-f1de-d7f3-d689-b25a02174379@linaro.org>
- <72615A58-A0AB-4C3B-A97A-96144E391EBB@linaro.org>
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <72615A58-A0AB-4C3B-A97A-96144E391EBB@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
+From: Marijn Suijten <marijn.suijten@somainline.org>
 
+Add the SM8150 DPU compatible to clients compatible list, as it also
+needs the workarounds.
 
-On 12.12.2022 12:27, Dmitry Baryshkov wrote:
-> 
-> 
-> On 12 December 2022 14:00:10 GMT+03:00, Konrad Dybcio <konrad.dybcio@linaro.org> wrote:
->>
->>
->> On 12.12.2022 11:58, Dmitry Baryshkov wrote:
->>>
->>>
->>> On 12 December 2022 13:06:16 GMT+03:00, Konrad Dybcio <konrad.dybcio@linaro.org> wrote:
->>>> From: Marijn Suijten <marijn.suijten@somainline.org>
->>>>
->>>> Add the SM8150 DPU compatible to clients compatible list, as it also
->>>> needs the workarounds.
->>>
->>> Please rebase on top of linux-next, this part was rewritten.
->> This one wasn't, but yeah it is based on some local changes
->> (see 6350/6375)..
-> 
-> Stupid me, you are right here. This part wasn't changed. Please ignore the comment.
-As I mentioned, it was accidentally right, as this doesn't apply
-on plain next ^^
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+---
+Changes since v1:
+- rebase on clean -next
 
-Konrad
-> 
->>
->> Konrad
->>>
->>>
->>>>
->>>> Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
->>>> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
->>>> ---
->>>> Depends on the binding here:
->>>>
->>>> [1] https://lore.kernel.org/linux-arm-msm/20221212093315.11390-1-konrad.dybcio@linaro.org/T/#t
->>>>
->>>> drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
->>>> 1 file changed, 1 insertion(+)
->>>>
->>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>> index 6610f5d2877d..cd74c1efcfde 100644
->>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>> @@ -255,6 +255,7 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
->>>> 	{ .compatible = "qcom,sdm845-mss-pil" },
->>>> 	{ .compatible = "qcom,sm6350-mdss" },
->>>> 	{ .compatible = "qcom,sm6375-mdss" },
->>>> +	{ .compatible = "qcom,sm8150-mdss" },
->>>> 	{ .compatible = "qcom,sm8250-mdss" },
->>>> 	{ }
->>>> };
->>>
-> 
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 91d404deb115..ed884c85e262 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -250,6 +250,7 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
+ 	{ .compatible = "qcom,sc7280-mdss" },
+ 	{ .compatible = "qcom,sc7280-mss-pil" },
+ 	{ .compatible = "qcom,sc8180x-mdss" },
++	{ .compatible = "qcom,sm8150-mdss" },
+ 	{ .compatible = "qcom,sm8250-mdss" },
+ 	{ .compatible = "qcom,sdm845-mdss" },
+ 	{ .compatible = "qcom,sdm845-mss-pil" },
+-- 
+2.38.1
+
