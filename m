@@ -1,372 +1,81 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57A115CBC
-	for <iommu@lists.linux.dev>; Tue, 13 Dec 2022 15:40:31 +0000 (UTC)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2BDEuUOs013522;
-	Tue, 13 Dec 2022 15:40:18 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=KmdS9rUzjesq1B709Sm7Kwl2XLfu6My20QnZdfuetHQ=;
- b=XvsEjWBbXYIcaSRMji2zFA1RCNs9YKD1LNZx5CguOA4zMGj/xiWG4Vt8BjGdv4L8PUhZ
- iASavKteoyuxXSuzj+I9nzqO8GJ6TpRqoObdrgrvkTDEJiBtKZRwgQ7MmqGEP81Xr9AV
- +MdtDibxmHbOCFcNKLPuYMYMYcNMo8W0yARxrem2pnFwsv2uFJQSpAez35MLY5ICFrsi
- uMu12KhD/VBaut0Tu2IetrWp6yuHd7eIaiCEzHz4p49B6ho5MOjV7kHt6PEPIZ2sauEJ
- MGnl7WyOxFaf7VfeTVFVWCcC8XEnMRKndIVVjaFQxinAtPXYszaTH2lWXsOF2vFpQhgf JA== 
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3meukp9cen-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 13 Dec 2022 15:40:18 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-	by ppma06ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 2BD5UJt5007832;
-	Tue, 13 Dec 2022 15:40:16 GMT
-Received: from smtprelay02.fra02v.mail.ibm.com ([9.218.2.226])
-	by ppma06ams.nl.ibm.com (PPS) with ESMTPS id 3mchcf4dmf-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 13 Dec 2022 15:40:15 +0000
-Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
-	by smtprelay02.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2BDFeC3443712988
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 13 Dec 2022 15:40:12 GMT
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id E40FA20040;
-	Tue, 13 Dec 2022 15:40:11 +0000 (GMT)
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 7B1652004E;
-	Tue, 13 Dec 2022 15:40:11 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-	by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Tue, 13 Dec 2022 15:40:11 +0000 (GMT)
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Matthew Rosato <mjrosato@linux.ibm.com>, iommu@lists.linux.dev,
-        Joerg Roedel <joro@8bytes.org>
-Cc: Pierre Morel <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, borntraeger@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        agordeev@linux.ibm.com, svens@linux.ibm.com, will@kernel.org,
-        Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
-        linux-kernel@vger.kernel.org,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Sven Peter <sven@svenpeter.dev>
-Subject: [PATCH v2] iommu: Allow .iotlb_sync_map to fail and handle s390's -ENOMEM return
-Date: Tue, 13 Dec 2022 16:40:11 +0100
-Message-Id: <20221213154011.2889260-1-schnelle@linux.ibm.com>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B61F92563
+	for <iommu@lists.linux.dev>; Tue, 13 Dec 2022 16:35:08 +0000 (UTC)
+Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-1441d7d40c6so13198526fac.8
+        for <iommu@lists.linux.dev>; Tue, 13 Dec 2022 08:35:08 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YJVQxyn8gXiSA1AhPudrUs7ABz5sBN5zDoG4vdYkTS8=;
+        b=z5gQCqe/AzStJsTr1r0RqBn2U0AxW+20rYZyfRxEquiBwSjgr9EhacLDobTz7GvaGq
+         HQWvdGrl95Wzd7y3MSlPtScvQjU7Hgr7cvaqHcXG/qAOpNEWY1bTOlVGbUaB40iVYnHC
+         chL/tXTsoKeESznvE25KODqOxPA9CUKwcfljvo3FuoGQ3knr69kC4QIp7KQI1neZy/RP
+         uXCuDMqyYRvZgymd0EWC9axf6c+8mzPTtNxgB70OcJFj+vGAY2KdzTUAhM6IjNjTMNpL
+         bhE6zSga+VIyk31rlbDPFEx2/1LhDGO+gAjLcZ1hMGJe2yO6KhP23gq1b6+DSyA79Zp9
+         xgmg==
+X-Gm-Message-State: ANoB5pkzmSjYmhJcZfX3nt96KcgcQeP2wL0537jQT3Nd5vx/8R4qY05D
+	XZfb5CQYHxxE8utzAAapsg==
+X-Google-Smtp-Source: AA0mqf6gAyXmBROc/uHUvFJFQsXUK5ZsOJyrNY4N5rAb+6eVQ/bZLAv3s7BlqspIZ6lr1OzI3lo9/g==
+X-Received: by 2002:a05:6870:4608:b0:13b:e0a:20e6 with SMTP id z8-20020a056870460800b0013b0e0a20e6mr10759985oao.34.1670949307632;
+        Tue, 13 Dec 2022 08:35:07 -0800 (PST)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id k16-20020a056870819000b0014866eb34cesm1570367oae.48.2022.12.13.08.35.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Dec 2022 08:35:07 -0800 (PST)
+Received: (nullmailer pid 2014809 invoked by uid 1000);
+	Tue, 13 Dec 2022 16:35:06 -0000
+Date: Tue, 13 Dec 2022 10:35:06 -0600
+From: Rob Herring <robh@kernel.org>
+To: Georgi Djakov <quic_c_gdjako@quicinc.com>
+Cc: krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, djakov@kernel.org
+Subject: Re: [RFC v2 1/2] dt-bindings: iommu: Document iova-best-fit property
+ for IOMMU masters
+Message-ID: <20221213163506.GA2011062-robh@kernel.org>
+References: <20221212215138.17897-1-quic_c_gdjako@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: BiLhIZJFhEWVB7e9rF2_Nm6oCHIaTyaK
-X-Proofpoint-ORIG-GUID: BiLhIZJFhEWVB7e9rF2_Nm6oCHIaTyaK
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-12-13_03,2022-12-13_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 phishscore=0
- malwarescore=0 mlxlogscore=999 suspectscore=0 bulkscore=0 spamscore=0
- mlxscore=0 clxscore=1015 priorityscore=1501 adultscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2210170000 definitions=main-2212130137
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221212215138.17897-1-quic_c_gdjako@quicinc.com>
 
-On s390 .iotlb_sync_map is used to sync mappings to an underlying
-hypervisor by letting the hypervisor inspect the synced IOVA range and
-updating its shadow table. This however means that it can fail as the
-hypervisor may run out of resources. This can be due to the hypervisor
-being unable to pin guest pages, due to a limit on concurrently mapped
-addresses such as vfio_iommu_type1.dma_entry_limit or other resources.
-Either way such a failure to sync a mapping should result in
-a DMA_MAPPING_EROR.
+On Mon, Dec 12, 2022 at 01:51:37PM -0800, Georgi Djakov wrote:
+> Document the "iova-best-fit" device-tree property, which is used to
+> describe that the iommu master is constrained on memory and the system
+> must put more effort when allocating IOVAs to avoid holes/gaps in
+> memory. This improves the memory utilization and helps with memory
+> fragmentation issues in some cases, but it could take longer to allocate
+> an IOVA compared with the default "first-fit" algorithm.
+> 
+> Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
+> ---
+>  Documentation/devicetree/bindings/iommu/iommu.txt | 4 ++++
+>  1 file changed, 4 insertions(+)
 
-Now especially when running with batched IOTLB flushes for unmap it may
-be that some IOVAs have already been invalidated but not yet synced via
-.iotlb_sync_map. Thus if the hypervisor indicates running out of
-resources, first do a global flush allowing the hypervisor to free
-resources associated with these mappings and only if that also fails
-report this error to callers.
+No new properties in common .txt files. Schemas only.
 
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
----
-v1 -> v2:
-- Add missing return in gart_iommu_sync_map() (Jason)
+However, this looks like kernel policy which doesn't belong in DT.
 
- drivers/iommu/amd/iommu.c   |  5 +++--
- drivers/iommu/apple-dart.c  |  5 +++--
- drivers/iommu/intel/iommu.c |  5 +++--
- drivers/iommu/iommu.c       | 20 ++++++++++++++++----
- drivers/iommu/msm_iommu.c   |  5 +++--
- drivers/iommu/mtk_iommu.c   |  5 +++--
- drivers/iommu/s390-iommu.c  | 29 ++++++++++++++++++++++++-----
- drivers/iommu/sprd-iommu.c  |  5 +++--
- drivers/iommu/tegra-gart.c  |  5 +++--
- include/linux/iommu.h       |  4 ++--
- 10 files changed, 63 insertions(+), 25 deletions(-)
-
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index d3b39d0416fa..35476eb389a1 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2189,14 +2189,15 @@ static int amd_iommu_attach_device(struct iommu_domain *dom,
- 	return ret;
- }
- 
--static void amd_iommu_iotlb_sync_map(struct iommu_domain *dom,
--				     unsigned long iova, size_t size)
-+static int amd_iommu_iotlb_sync_map(struct iommu_domain *dom,
-+				    unsigned long iova, size_t size)
- {
- 	struct protection_domain *domain = to_pdomain(dom);
- 	struct io_pgtable_ops *ops = &domain->iop.iop.ops;
- 
- 	if (ops->map_pages)
- 		domain_flush_np_cache(domain, iova, size);
-+	return 0;
- }
- 
- static int amd_iommu_map_pages(struct iommu_domain *dom, unsigned long iova,
-diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-index 4f4a323be0d0..4a76f4d95459 100644
---- a/drivers/iommu/apple-dart.c
-+++ b/drivers/iommu/apple-dart.c
-@@ -344,10 +344,11 @@ static void apple_dart_iotlb_sync(struct iommu_domain *domain,
- 	apple_dart_domain_flush_tlb(to_dart_domain(domain));
- }
- 
--static void apple_dart_iotlb_sync_map(struct iommu_domain *domain,
--				      unsigned long iova, size_t size)
-+static int apple_dart_iotlb_sync_map(struct iommu_domain *domain,
-+				     unsigned long iova, size_t size)
- {
- 	apple_dart_domain_flush_tlb(to_dart_domain(domain));
-+	return 0;
- }
- 
- static phys_addr_t apple_dart_iova_to_phys(struct iommu_domain *domain,
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 48cdcd0a5cf3..8299517e0f8b 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4699,8 +4699,8 @@ static bool risky_device(struct pci_dev *pdev)
- 	return false;
- }
- 
--static void intel_iommu_iotlb_sync_map(struct iommu_domain *domain,
--				       unsigned long iova, size_t size)
-+static int intel_iommu_iotlb_sync_map(struct iommu_domain *domain,
-+				      unsigned long iova, size_t size)
- {
- 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
- 	unsigned long pages = aligned_nrpages(iova, size);
-@@ -4710,6 +4710,7 @@ static void intel_iommu_iotlb_sync_map(struct iommu_domain *domain,
- 
- 	xa_for_each(&dmar_domain->iommu_array, i, info)
- 		__mapping_notify_one(info->iommu, dmar_domain, pfn, pages);
-+	return 0;
- }
- 
- const struct iommu_ops intel_iommu_ops = {
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 65a3b3d886dc..7e72ec9ab367 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2300,8 +2300,17 @@ static int _iommu_map(struct iommu_domain *domain, unsigned long iova,
- 	int ret;
- 
- 	ret = __iommu_map(domain, iova, paddr, size, prot, gfp);
--	if (ret == 0 && ops->iotlb_sync_map)
--		ops->iotlb_sync_map(domain, iova, size);
-+	if (ret == 0 && ops->iotlb_sync_map) {
-+		ret = ops->iotlb_sync_map(domain, iova, size);
-+		if (ret)
-+			goto out_err;
-+	}
-+
-+	return ret;
-+
-+out_err:
-+	/* undo mappings already done */
-+	iommu_unmap(domain, iova, size);
- 
- 	return ret;
- }
-@@ -2449,8 +2458,11 @@ static ssize_t __iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
- 			sg = sg_next(sg);
- 	}
- 
--	if (ops->iotlb_sync_map)
--		ops->iotlb_sync_map(domain, iova, mapped);
-+	if (ops->iotlb_sync_map) {
-+		ret = ops->iotlb_sync_map(domain, iova, mapped);
-+		if (ret)
-+			goto out_err;
-+	}
- 	return mapped;
- 
- out_err:
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index 16179a9a7283..415b7008dd2f 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -484,12 +484,13 @@ static int msm_iommu_map(struct iommu_domain *domain, unsigned long iova,
- 	return ret;
- }
- 
--static void msm_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
--			       size_t size)
-+static int msm_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
-+			      size_t size)
- {
- 	struct msm_priv *priv = to_msm_priv(domain);
- 
- 	__flush_iotlb_range(iova, size, SZ_4K, false, priv);
-+	return 0;
- }
- 
- static size_t msm_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 2ab2ecfe01f8..d437946231bf 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -749,12 +749,13 @@ static void mtk_iommu_iotlb_sync(struct iommu_domain *domain,
- 	mtk_iommu_tlb_flush_range_sync(gather->start, length, dom->bank);
- }
- 
--static void mtk_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
--			       size_t size)
-+static int mtk_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
-+			      size_t size)
- {
- 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
- 
- 	mtk_iommu_tlb_flush_range_sync(iova, size, dom->bank);
-+	return 0;
- }
- 
- static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index ed33c6cce083..6ba38b4f5b37 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -210,6 +210,14 @@ static void s390_iommu_release_device(struct device *dev)
- 		__s390_iommu_detach_device(zdev);
- }
- 
-+
-+static int zpci_refresh_all(struct zpci_dev *zdev)
-+{
-+	return zpci_refresh_trans((u64)zdev->fh << 32, zdev->start_dma,
-+				  zdev->end_dma - zdev->start_dma + 1);
-+
-+}
-+
- static void s390_iommu_flush_iotlb_all(struct iommu_domain *domain)
- {
- 	struct s390_domain *s390_domain = to_s390_domain(domain);
-@@ -217,8 +225,7 @@ static void s390_iommu_flush_iotlb_all(struct iommu_domain *domain)
- 
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(zdev, &s390_domain->devices, iommu_list) {
--		zpci_refresh_trans((u64)zdev->fh << 32, zdev->start_dma,
--				   zdev->end_dma - zdev->start_dma + 1);
-+		zpci_refresh_all(zdev);
- 	}
- 	rcu_read_unlock();
- }
-@@ -242,20 +249,32 @@ static void s390_iommu_iotlb_sync(struct iommu_domain *domain,
- 	rcu_read_unlock();
- }
- 
--static void s390_iommu_iotlb_sync_map(struct iommu_domain *domain,
-+static int s390_iommu_iotlb_sync_map(struct iommu_domain *domain,
- 				      unsigned long iova, size_t size)
- {
- 	struct s390_domain *s390_domain = to_s390_domain(domain);
- 	struct zpci_dev *zdev;
-+	int ret = 0;
- 
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(zdev, &s390_domain->devices, iommu_list) {
- 		if (!zdev->tlb_refresh)
- 			continue;
--		zpci_refresh_trans((u64)zdev->fh << 32,
--				   iova, size);
-+		ret = zpci_refresh_trans((u64)zdev->fh << 32,
-+					 iova, size);
-+		/*
-+		 * let the hypervisor disover invalidated entries
-+		 * allowing it to free IOVAs and unpin pages
-+		 */
-+		if (ret == -ENOMEM) {
-+			ret = zpci_refresh_all(zdev);
-+			if (ret)
-+				break;
-+		}
- 	}
- 	rcu_read_unlock();
-+
-+	return ret;
- }
- 
- static int s390_iommu_validate_trans(struct s390_domain *s390_domain,
-diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
-index fadd2c907222..08c25f6e7157 100644
---- a/drivers/iommu/sprd-iommu.c
-+++ b/drivers/iommu/sprd-iommu.c
-@@ -329,8 +329,8 @@ static size_t sprd_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
- 	return 0;
- }
- 
--static void sprd_iommu_sync_map(struct iommu_domain *domain,
--				unsigned long iova, size_t size)
-+static int sprd_iommu_sync_map(struct iommu_domain *domain,
-+			       unsigned long iova, size_t size)
- {
- 	struct sprd_iommu_domain *dom = to_sprd_domain(domain);
- 	unsigned int reg;
-@@ -342,6 +342,7 @@ static void sprd_iommu_sync_map(struct iommu_domain *domain,
- 
- 	/* clear IOMMU TLB buffer after page table updated */
- 	sprd_iommu_write(dom->sdev, reg, 0xffffffff);
-+	return 0;
- }
- 
- static void sprd_iommu_sync(struct iommu_domain *domain,
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index e5ca3cf1a949..19b79150e459 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -252,10 +252,11 @@ static int gart_iommu_of_xlate(struct device *dev,
- 	return 0;
- }
- 
--static void gart_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
--				size_t size)
-+static int gart_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
-+			       size_t size)
- {
- 	FLUSH_GART_REGS(gart_handle);
-+	return 0;
- }
- 
- static void gart_iommu_sync(struct iommu_domain *domain,
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 3c9da1f8979e..359f471f9ef8 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -300,8 +300,8 @@ struct iommu_domain_ops {
- 			      struct iommu_iotlb_gather *iotlb_gather);
- 
- 	void (*flush_iotlb_all)(struct iommu_domain *domain);
--	void (*iotlb_sync_map)(struct iommu_domain *domain, unsigned long iova,
--			       size_t size);
-+	int (*iotlb_sync_map)(struct iommu_domain *domain, unsigned long iova,
-+			      size_t size);
- 	void (*iotlb_sync)(struct iommu_domain *domain,
- 			   struct iommu_iotlb_gather *iotlb_gather);
- 
--- 
-2.34.1
-
+> diff --git a/Documentation/devicetree/bindings/iommu/iommu.txt b/Documentation/devicetree/bindings/iommu/iommu.txt
+> index 26ba9e530f13..ca1b4813c5bf 100644
+> --- a/Documentation/devicetree/bindings/iommu/iommu.txt
+> +++ b/Documentation/devicetree/bindings/iommu/iommu.txt
+> @@ -88,6 +88,10 @@ prevent any driver from properly setting up the translations.
+>  
+>  Optional properties:
+>  --------------------
+> +- iova-best-fit: When present, the best-fit algorithm will be used, instead
+> +  of first-fit. This reduces memory fragmentation when allocating IOVAs in
+> +  some cases, but may also increase the time it takes to allocate an IOVA.
+> +
+>  - pasid-num-bits: Some masters support multiple address spaces for DMA, by
+>    tagging DMA transactions with an address space identifier. By default,
+>    this is 0, which means that the device only has one address space.
+> 
