@@ -1,237 +1,94 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCD266FD9
-	for <iommu@lists.linux.dev>; Mon, 12 Dec 2022 21:52:20 +0000 (UTC)
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2BCKv2WB002523;
-	Mon, 12 Dec 2022 21:52:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=qcppdkim1;
- bh=/RzOpCPL4eZiVJddHN/KXGXNwmco06pBhZZ9D0pTebE=;
- b=pkpjReZ5dVdfjX+2Nnz1FKkQMvgmnwgrAUBfWeyK8AUhzijgFHhOXIr5j0B34Xe7xnUY
- cVtRkFs3QB/4YOpprNmoFb4j0eU/s7JEXo80luhNxLiIx49/Yh0H3X4DSweHpW7S2n2l
- ToFjoU6RW012Lz7oU/7diw5tFOQU0u4ZdfwvZ3niN6a6UwNVjPD1N9bI7H2w/eGNEfwz
- E69EkkkSxUpErCIK0mzMzgVqiDR3v5uNpE4a9JfRwxXqOvfXvK5T0Lyf0GlNXr7qUKeW
- AfOJ82QIwyxPqskz0bqR70M3bz70S0RRnoI4JjwcwKudZhPGi+QdrJ9u0dEYpvDYeG79 Zg== 
-Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3mcffvdgcj-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 12 Dec 2022 21:52:05 +0000
-Received: from nasanex01a.na.qualcomm.com ([10.52.223.231])
-	by NASANPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 2BCLq3HO008267
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 12 Dec 2022 21:52:04 GMT
-Received: from hu-c-gdjako-lv.qualcomm.com (10.49.16.6) by
- nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.36; Mon, 12 Dec 2022 13:52:03 -0800
-From: Georgi Djakov <quic_c_gdjako@quicinc.com>
-To: <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <devicetree@vger.kernel.org>
-CC: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
-        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-        <djakov@kernel.org>
-Subject: [RFC v2 2/2] iommu/iova: Add support for best-fit algorithm
-Date: Mon, 12 Dec 2022 13:51:38 -0800
-Message-ID: <20221212215138.17897-2-quic_c_gdjako@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20221212215138.17897-1-quic_c_gdjako@quicinc.com>
-References: <20221212215138.17897-1-quic_c_gdjako@quicinc.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF7B27F
+	for <iommu@lists.linux.dev>; Tue, 13 Dec 2022 00:26:31 +0000 (UTC)
+Received: by mail-lf1-f47.google.com with SMTP id j4so2409818lfk.0
+        for <iommu@lists.linux.dev>; Mon, 12 Dec 2022 16:26:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ugTcOj9Npd/SMM1GNN3IBZ5YypTVeK9e1l/D45aeEQU=;
+        b=QYVSM+NGhUbi/7aRxbymFXrovv+CUzYPcENl4GN7SIgV+MQg+wUXavYJZCsCWrvJot
+         lFQH4r05WWl3ZV/hs3fyHPhK90GrK0ubW3Dfq/BP5BD/Qp2mT0kGtr6ufOF6Du6zQDFv
+         DJPPlMBxYcWmWiLW1wjpsS/9/6IE3o/OLCW3r73bWzf18roRO9628xRSQrWbX0YRbyy/
+         F3ce4rC6eKJDrd481mVsMrB2o9DEjzW111Ouuqa3ottXYLSmwbMqei2LWom6vcp5n909
+         Yo04KYt+DLCWiPfXLHwMzDC9hcb8kZZNGaOoWNNLNvU59YoDL+SIkpCN21+SzI/3Fkbe
+         /05A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ugTcOj9Npd/SMM1GNN3IBZ5YypTVeK9e1l/D45aeEQU=;
+        b=DLbKuqQ7YC0L0cjZQJpp7iEXOSmAMImOi/Ketu2nIKO9d/XxbXr7BWzwocjyhU+Kqq
+         9bxdsUY7miafUSg1mIUc/hTnqTRNXsUSYa0Dy3nOmrSo+fKtBKa9G3rmJh/YXoYV2BJ2
+         Jow3SbSqCp+5TKZd2bHay0hLVG7hqqFyz7E+wyEkmqF022EBWZd4Vz/Xbvh+NraxF3Fc
+         sp+anhBsnzW/TkaFUSYTqpuT+Th1STNSENZtejV5VMh3li/M9RZYJibR4mD/tHMYfQc1
+         9a+k8zwJaw72OeaMyOgZEqSqA1tn1pxLyise4xlan9eRTIFFgy8bdT3t8LZ8oW9eW6Jr
+         C7sg==
+X-Gm-Message-State: ANoB5plLkWFIK4Wk8GEPOJrwS4zVTMcAZp8VKLRVC0FL5T5AS7VYrfej
+	EIK2qClJD/RUH47t0yDX+kUZ+A==
+X-Google-Smtp-Source: AA0mqf4UdtCG6n/ULmv52B8o3H8MKIe/aZ4oTvNr2ISnyj/sS85Aq3S68jHLXpqqySkfR2zExz4Hmg==
+X-Received: by 2002:a05:6512:41e:b0:4b5:7925:8707 with SMTP id u30-20020a056512041e00b004b579258707mr4923602lfk.26.1670891190110;
+        Mon, 12 Dec 2022 16:26:30 -0800 (PST)
+Received: from localhost.localdomain (abxh44.neoplus.adsl.tpnet.pl. [83.9.1.44])
+        by smtp.gmail.com with ESMTPSA id y28-20020a19915c000000b00492dba3c85asm139371lfj.220.2022.12.12.16.26.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Dec 2022 16:26:29 -0800 (PST)
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+To: linux-arm-msm@vger.kernel.org,
+	andersson@kernel.org,
+	agross@kernel.org,
+	krzysztof.kozlowski@linaro.org
+Cc: marijn.suijten@somainline.org,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] dt-bindings: arm-smmu: Add sm8150-smmu-500 to the list of Adreno smmus
+Date: Tue, 13 Dec 2022 01:26:25 +0100
+Message-Id: <20221213002626.260267-1-konrad.dybcio@linaro.org>
+X-Mailer: git-send-email 2.39.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.49.16.6]
-X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: YcsA7Avi8EwkyfRhrEwCoovPLYRalZfM
-X-Proofpoint-GUID: YcsA7Avi8EwkyfRhrEwCoovPLYRalZfM
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2022-12-12_02,2022-12-12_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
- bulkscore=0 mlxlogscore=976 clxscore=1015 spamscore=0 malwarescore=0
- phishscore=0 lowpriorityscore=0 adultscore=0 impostorscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2210170000 definitions=main-2212120188
+Content-Transfer-Encoding: 8bit
 
-In some multimedia use-cases that involve allocating buffers less than
-PAGE_SIZE, combined with allocating ~400MB buffers, the IOVA space is
-getting fragmented and allocation failures are observed.
+From: Marijn Suijten <marijn.suijten@somainline.org>
 
-In these scenarios, there are hundreds of randomly distributed non-power
-of two allocations, which in some cases leave behind holes of up to 100MB
-in the IOVA space.
+sm8150 has an smmu-500 specifically for Adreno, where the GPU is allowed
+to switch pagetables.  Document the allowed 3-compatibles for this,
+similar to sc7280 and sm8250.
 
-To reduce the memory fragmentation in these use-cases, introduce the
-"best-fit" algorithm, which can be enabled by individual devices with
-a device-tree property. If the DT property is not present, the default
-"first-fit" algorithm will be used.
-
-Example usage:
-
-	device {
-		compatible = "example-device";
-       		iommus = <&smmu 0x21 0>;
-		iova-best-fit;
-	};
-
-Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 ---
+ Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-RFC v1: https://lore.kernel.org/r/1581721602-17010-1-git-send-email-isaacm@codeaurora.org/
-- Use a DT property instead of an API to enable the best-fit algorithm for the device
-- Rename __alloc_and_insert_iova_range() to __alloc_and_insert_iova_first_fit()
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+index 895ec8418465..b97181d4a399 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+@@ -84,6 +84,7 @@ properties:
+         items:
+           - enum:
+               - qcom,sc7280-smmu-500
++              - qcom,sm8150-smmu-500
+               - qcom,sm8250-smmu-500
+           - const: qcom,adreno-smmu
+           - const: arm,mmu-500
+-- 
+2.39.0
 
-
- drivers/iommu/dma-iommu.c |  5 +++
- drivers/iommu/iova.c      | 79 ++++++++++++++++++++++++++++++++++++---
- include/linux/iova.h      |  1 +
- 3 files changed, 80 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index f798c44e0903..1be25e54d050 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -582,6 +582,11 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
- 	if (ret)
- 		goto done_unlock;
- 
-+	if (dev && dev->of_node) {
-+		if (of_property_read_bool(dev->of_node, "iommu-best-fit"))
-+			iovad->best_fit = true;
-+	}
-+
- 	/* If the FQ fails we can simply fall back to strict mode */
- 	if (domain->type == IOMMU_DOMAIN_DMA_FQ && iommu_dma_init_fq(domain))
- 		domain->type = IOMMU_DOMAIN_DMA;
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index a44ad92fc5eb..34ad05a4095f 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -64,6 +64,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
- 	iovad->cached_node = &iovad->anchor.node;
- 	iovad->cached32_node = &iovad->anchor.node;
- 	iovad->granule = granule;
-+	iovad->best_fit = false;
- 	iovad->start_pfn = start_pfn;
- 	iovad->dma_32bit_pfn = 1UL << (32 - iova_shift(iovad));
- 	iovad->max32_alloc_size = iovad->dma_32bit_pfn;
-@@ -175,9 +176,10 @@ iova_insert_rbtree(struct rb_root *root, struct iova *iova,
- 	rb_insert_color(&iova->node, root);
- }
- 
--static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
--		unsigned long size, unsigned long limit_pfn,
--			struct iova *new, bool size_aligned)
-+static int __alloc_and_insert_iova_first_fit(struct iova_domain *iovad,
-+					     unsigned long size,
-+					     unsigned long limit_pfn,
-+					     struct iova *new, bool size_aligned)
- {
- 	struct rb_node *curr, *prev;
- 	struct iova *curr_iova;
-@@ -236,6 +238,68 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
- 	return -ENOMEM;
- }
- 
-+static int __alloc_and_insert_iova_best_fit(struct iova_domain *iovad,
-+					    unsigned long size,
-+					    unsigned long limit_pfn,
-+					    struct iova *new, bool size_aligned)
-+{
-+	struct rb_node *curr, *prev;
-+	struct iova *curr_iova, *prev_iova;
-+	unsigned long flags;
-+	unsigned long align_mask = ~0UL;
-+	struct rb_node *candidate_rb_parent;
-+	unsigned long new_pfn, candidate_pfn = ~0UL;
-+	unsigned long gap, candidate_gap = ~0UL;
-+
-+	if (size_aligned)
-+		align_mask <<= fls_long(size - 1);
-+
-+	/* Walk the tree backwards */
-+	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
-+	curr = &iovad->anchor.node;
-+	prev = rb_prev(curr);
-+	for (; prev; curr = prev, prev = rb_prev(curr)) {
-+		curr_iova = rb_entry(curr, struct iova, node);
-+		prev_iova = rb_entry(prev, struct iova, node);
-+
-+		limit_pfn = min(limit_pfn, curr_iova->pfn_lo);
-+		new_pfn = (limit_pfn - size) & align_mask;
-+		gap = curr_iova->pfn_lo - prev_iova->pfn_hi - 1;
-+		if (limit_pfn >= size && new_pfn > prev_iova->pfn_hi && gap < candidate_gap) {
-+			candidate_gap = gap;
-+			candidate_pfn = new_pfn;
-+			candidate_rb_parent = curr;
-+			if (gap == size)
-+				goto insert;
-+		}
-+	}
-+
-+	curr_iova = rb_entry(curr, struct iova, node);
-+	limit_pfn = min(limit_pfn, curr_iova->pfn_lo);
-+	new_pfn = (limit_pfn - size) & align_mask;
-+	gap = curr_iova->pfn_lo - iovad->start_pfn;
-+	if (limit_pfn >= size && new_pfn >= iovad->start_pfn && gap < candidate_gap) {
-+		candidate_gap = gap;
-+		candidate_pfn = new_pfn;
-+		candidate_rb_parent = curr;
-+	}
-+
-+insert:
-+	if (candidate_pfn == ~0UL) {
-+		spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-+		return -ENOMEM;
-+	}
-+
-+	/* pfn_lo will point to size aligned address if size_aligned is set */
-+	new->pfn_lo = candidate_pfn;
-+	new->pfn_hi = new->pfn_lo + size - 1;
-+
-+	/* If we have 'prev', it's a valid place to start the insertion. */
-+	iova_insert_rbtree(&iovad->rbroot, new, candidate_rb_parent);
-+	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-+	return 0;
-+}
-+
- static struct kmem_cache *iova_cache;
- static unsigned int iova_cache_users;
- static DEFINE_MUTEX(iova_cache_mutex);
-@@ -322,8 +386,13 @@ alloc_iova(struct iova_domain *iovad, unsigned long size,
- 	if (!new_iova)
- 		return NULL;
- 
--	ret = __alloc_and_insert_iova_range(iovad, size, limit_pfn + 1,
--			new_iova, size_aligned);
-+	if (iovad->best_fit) {
-+		ret = __alloc_and_insert_iova_best_fit(iovad, size, limit_pfn + 1,
-+						       new_iova, size_aligned);
-+	} else {
-+		ret = __alloc_and_insert_iova_first_fit(iovad, size, limit_pfn + 1,
-+							new_iova, size_aligned);
-+	}
- 
- 	if (ret) {
- 		free_iova_mem(new_iova);
-diff --git a/include/linux/iova.h b/include/linux/iova.h
-index 83c00fac2acb..c0c77f676e17 100644
---- a/include/linux/iova.h
-+++ b/include/linux/iova.h
-@@ -38,6 +38,7 @@ struct iova_domain {
- 
- 	struct iova_rcache	*rcaches;
- 	struct hlist_node	cpuhp_dead;
-+	bool best_fit;			/* best-fit algorithm is enabled */
- };
- 
- static inline unsigned long iova_size(struct iova *iova)
