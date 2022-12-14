@@ -1,127 +1,53 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2088.outbound.protection.outlook.com [40.107.237.88])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91505AD25
-	for <iommu@lists.linux.dev>; Wed, 14 Dec 2022 18:00:40 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OB/1IW6b9QRz5DN/vs7yxNG6y+bvo9ahCh60+39mQqMm+7EGbZHl6y6plDwJ68/2bLcOLolWV6FhJfdPwGZN/Q5Fy7xjvqhNGkIGSF9dHqDlcc9viJClmsC68ZK6CbqTHZBU44aVuVhqfrvOvW0uY+vdOsmM7UuWFDABiemVlDtjddcHpAA+L1npsqCK+fyi44Mf3aSO6kR6hcOe67b1wcZEYv9CK9QAT6xjvAY7qXy4Ki9c6R48d+sVwFNhj43zTYAVPz7LuDPUYfEyKcG+g5tHPrfnTJsaV+DfhFn+sBEoV75JsABIAAUyF3HZIviOU15R8dAziACy8o21uanucQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NkANwOBVp1EnfJwpcuRP5jhVYFtwDFBD8SeGlFNM9Wg=;
- b=B7dACuQ6U7nyvplfg1NXx5REaq44kbmKdfZMNOp3zvT1PrqyEWHNGeOzIfw1BD/J+meIQsO2EKp4o9eoVLQ/NP+vzqfywcqO/hP5sPMN1o7S86IAIsxpEmWPLCDjsRN4a4Efc2Nr/+ofGJcHSdZP/zUQqDZi/9pfRHRMy3AIAiS7oSc4anVzkZOtEBmXBRM6QSHGabRJ++6LF/k0p8tNvjgnSYKFVz5BCU9SDwcnGLGi/njagHoEpFcsVr9OOsAGPtBVCg/Avw7zAAjeF5HE30ocBPK58hYAHal6WEDdIWVVBfzoLTwzEPFqzSUnc6FfiS61OSeC1r6Pc+BiL2Kq3w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NkANwOBVp1EnfJwpcuRP5jhVYFtwDFBD8SeGlFNM9Wg=;
- b=N5sz4bW58LLTEMr4f4Czasbhf/OrhdLdgY7CFNxu9tDIFayNJGdPvhYAAeeb6jqY+BoaujpXVQnVPLXL65MJK6ijLoMQipt9MTX/73p49yWFc6s47XM/u21DKG4rP7M+nPrDiSUdNXeljT8ctBlDsCQG1hOXb9gbmGkIs0HaLGY=
-Received: from MN2PR05CA0045.namprd05.prod.outlook.com (2603:10b6:208:236::14)
- by MN2PR12MB4125.namprd12.prod.outlook.com (2603:10b6:208:1d9::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.19; Wed, 14 Dec
- 2022 18:00:37 +0000
-Received: from BL02EPF00010209.namprd05.prod.outlook.com
- (2603:10b6:208:236:cafe::3f) by MN2PR05CA0045.outlook.office365.com
- (2603:10b6:208:236::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.6 via Frontend
- Transport; Wed, 14 Dec 2022 18:00:37 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BL02EPF00010209.mail.protection.outlook.com (10.167.241.198) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5924.10 via Frontend Transport; Wed, 14 Dec 2022 18:00:37 +0000
-Received: from localhost.localdomain.amd.com (10.180.168.240) by
- SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.34; Wed, 14 Dec 2022 12:00:34 -0600
-From: Luben Tuikov <luben.tuikov@amd.com>
-To: <iommu@lists.linux.dev>
-CC: Luben Tuikov <luben.tuikov@amd.com>, Christoph Hellwig <hch@lst.de>,
-	"Robin Murphy" <robin.murphy@arm.com>, Alex Deucher
-	<Alexander.Deucher@amd.com>, =?UTF-8?q?Christian=20K=C3=B6nig?=
-	<christian.koenig@amd.com>, "Linux Kernel Mailing List"
-	<linux-kernel@vger.kernel.org>
-Subject: [PATCH] dma-direct: Optimize get_required_mask
-Date: Wed, 14 Dec 2022 13:00:25 -0500
-Message-ID: <20221214180025.163207-1-luben.tuikov@amd.com>
-X-Mailer: git-send-email 2.39.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7772AD25
+	for <iommu@lists.linux.dev>; Wed, 14 Dec 2022 18:04:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8E6C2C433F0;
+	Wed, 14 Dec 2022 18:04:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1671041083;
+	bh=av1MGpkBAVrOC3/H1ODRwPW9Zkps1Lgfe1vtqovQRA8=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=Kadt2vsiAcq7L3uiFtwnmay30cYJ9LNI33Qg72tILJPn+5T8Z+W8i72XEP1+fO05v
+	 ACXlVzcnYg1jpwaV2O1fYHFmxybU27YzjI7l7BpnSgYG9wnTMbwgRHrfuWXyc/9exo
+	 wQbJ7xamxn8DJdTZEP5W+iFJ0voCf5Em6YCFD49qIdmg9IFh6ckm6Lf7TSUNz0MGwx
+	 tmmCYRMO2iiwyAv6zCzePcTzMig6jHf8c5v/D4VvETj6EZnYEDzBUyXsdwl4VYMM4A
+	 mHvVBU5bOEXroVsmYfVJJ1nRZgx7bnrJqVIIQz4P4pHhRFQBHlZzle5DMvJigyyaHV
+	 EK5s40RXyOfNA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7D8C2E29F4D;
+	Wed, 14 Dec 2022 18:04:43 +0000 (UTC)
+Subject: Re: [GIT PULL] Please pull IOMMUFD subsystem changes
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <Y5dzTU8dlmXTbzoJ@nvidia.com>
+References: <Y5dzTU8dlmXTbzoJ@nvidia.com>
+X-PR-Tracked-List-Id: <kvm.vger.kernel.org>
+X-PR-Tracked-Message-Id: <Y5dzTU8dlmXTbzoJ@nvidia.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
+X-PR-Tracked-Commit-Id: d6c55c0a20e5059abdde81713ddf6324a946eb3c
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 08cdc2157966c07d3f986a097ddaa74cee312751
+Message-Id: <167104108351.17244.14344497629587467451.pr-tracker-bot@kernel.org>
+Date: Wed, 14 Dec 2022 18:04:43 +0000
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-X-check-string-leak: v1.0
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF00010209:EE_|MN2PR12MB4125:EE_
-X-MS-Office365-Filtering-Correlation-Id: e6f1c868-49f5-42dd-f7bb-08daddfd1ae1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	juiIG3lUEDGjZFqT2Lf+25nXvPxWYQ+57OKe/0vzTrMpmvZhoeuj3rFLiEVJqvPh0F5aQzx0Q+1zaJvu+2zQjp3qo6ovBvvfByobGzuLGgQbpNMI3qAHn+i7pWAY3EGQwbld8bkVCZqzGHrY1AK13gHQ9n6lFNXYyTB57VNiLR/D55Vw9CjL6dMbrLUyli0fIxN/9Axjy1MXQgBcFthxOURf4iTngwa/y7CFxvOWFeJ44+Uh+8I0VgaV3Oe1aMRIN6eaATDLGa1DDYPhrfykhLaKXrthQhgUyqVFZ8oyGNDh2M5mNjWfpsTzHOl2ZsD2nNG7OsasmA8p5cvXDI4TZStfxGfyumxyi7d4TI6yzSOObLGkL7cMfIs4iYLsm8go43sK2A0MYN7H9pfqrT0E7MurMm/7SO011t3xw+eBiUrjW/bKifjIgnb8ARllqmG3vkMsxUkcu4XA8FKW/iLQg8hKGelzrMOk97YtzhAg3BBv8Ie5w2/qKj205qp00EmVt+yjNhv1ZOjl5ffK9qX3jAMauqmDGlUYa9yDXKr+m2TKqbuX65jB7JaTR5aBpH/TdIaBw5aKcMJX0NaEcTzjMZR5zN/n3aYSInKHBmfYTGyo21bMLMD7WF6tmp/2Vejx82mQ/8agxP6zlhw0vF+qEnXqxOo0Rg0BadNlLx7TPbfr+z/ZaQPEbiQ1/8Zd4KJHkvKyB+245ItrRXIblPrxAqN/M3VAV25mk6b0TaVXhUI=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:CA;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(376002)(136003)(39860400002)(346002)(396003)(451199015)(36840700001)(46966006)(40470700004)(82740400003)(40460700003)(36756003)(86362001)(356005)(83380400001)(2616005)(26005)(81166007)(1076003)(6666004)(478600001)(186003)(426003)(16526019)(47076005)(66574015)(336012)(7696005)(36860700001)(54906003)(6916009)(70206006)(4326008)(70586007)(41300700001)(5660300002)(8936002)(2906002)(316002)(44832011)(40480700001)(8676002)(82310400005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Dec 2022 18:00:37.2265
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e6f1c868-49f5-42dd-f7bb-08daddfd1ae1
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL02EPF00010209.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4125
 
-Optimize dma_direct_get_required_mask(), in that we don't need to multiply by
-two if we don't subtract 1 from the exponent. That is,
+The pull request you sent on Mon, 12 Dec 2022 14:30:37 -0400:
 
-    (1 << (n - 1)) * 2 - 1 <==>
-    2^(n-1) * 2^1 - 1       = (by rule of exponents)
-    2^n - 1                 <==>
-    (1 << n) - 1.
+> git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
 
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Alex Deucher <Alexander.Deucher@amd.com>
-Cc: Christian König <christian.koenig@amd.com>
-Cc: iommu@lists.linux.dev
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Signed-off-by: Luben Tuikov <luben.tuikov@amd.com>
----
- kernel/dma/direct.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/08cdc2157966c07d3f986a097ddaa74cee312751
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 63859a101ed831..bb416a3949dac0 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -41,7 +41,7 @@ u64 dma_direct_get_required_mask(struct device *dev)
- 	phys_addr_t phys = (phys_addr_t)(max_pfn - 1) << PAGE_SHIFT;
- 	u64 max_dma = phys_to_dma_direct(dev, phys);
- 
--	return (1ULL << (fls64(max_dma) - 1)) * 2 - 1;
-+	return (1ULL << fls64(max_dma)) - 1;
- }
- 
- static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
+Thank you!
 
-base-commit: e2ca6ba6ba0152361aa4fcbf6067db71b2c7a770
 -- 
-2.39.0
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
