@@ -1,150 +1,127 @@
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2089.outbound.protection.outlook.com [40.107.8.89])
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2088.outbound.protection.outlook.com [40.107.237.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B491193
-	for <iommu@lists.linux.dev>; Wed, 14 Dec 2022 17:34:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91505AD25
+	for <iommu@lists.linux.dev>; Wed, 14 Dec 2022 18:00:40 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=niYzYVAX62N/CekmYLaGG7/0yonyPBIxiBjDR1GL4I4/EccwotIllImR3FfUO2QeIJkJGh7/WWErogEcxaHd6g9F4QlkfweczBQoQzgzN6o+rJ8eFiMAK3LLnPkf+T6icFfUK2jTt8wXcERWhG6Fj90oO0UzbPwrYGFeTAhqBn1jXuNpNcRwM+4P/tNOXRIyDzzHcovIm1Z5KZQ7fSu1zzJcTk6Ck7dswGqiW9mBUD1ik0HaemVbWLwBjyy+u65MpXJ9kWqq4a32Z3eUjocYK7xUXTXvMJTWPqitc/k9rn7k+D58v87TdRLDg2l067xI8vurXsgw+D3gxhxOOGBtjQ==
+ b=OB/1IW6b9QRz5DN/vs7yxNG6y+bvo9ahCh60+39mQqMm+7EGbZHl6y6plDwJ68/2bLcOLolWV6FhJfdPwGZN/Q5Fy7xjvqhNGkIGSF9dHqDlcc9viJClmsC68ZK6CbqTHZBU44aVuVhqfrvOvW0uY+vdOsmM7UuWFDABiemVlDtjddcHpAA+L1npsqCK+fyi44Mf3aSO6kR6hcOe67b1wcZEYv9CK9QAT6xjvAY7qXy4Ki9c6R48d+sVwFNhj43zTYAVPz7LuDPUYfEyKcG+g5tHPrfnTJsaV+DfhFn+sBEoV75JsABIAAUyF3HZIviOU15R8dAziACy8o21uanucQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=L5FkmtlR3EPrYuZXZLi6Pl3AQ/Jtu+febR4ZtM5Li2Y=;
- b=T+kwSUsTFu4sCaQUUrUWDpst38lXO/8qkm80dENJvXF2W2xw9bgv9A99kSdPU0sKrWS7RbBsIhP3/rWkoN7mw/qhxz2pcqQm17ikFASthmpnIZx6ARXwHLzLSBxQM/YRhvLF2TAHX0akff9m/QZYI5gU8JWFbaUFRh4hmINLsel81uiLVMaxUp3z7+GlgOCxc1OBRV4smM3YaB3FD3mi2egVBBYg8jy3FTxitsc2VuKOss7eC9IrQ2rCPn62tLhnIgxEF72tYm3m/0bsAk6IRS90gHsr7qnMMAOxicavzn4/gTFF4Kep+8U+K02Nc3VaVRtGweeF5kiBzPO4jIgcyg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ bh=NkANwOBVp1EnfJwpcuRP5jhVYFtwDFBD8SeGlFNM9Wg=;
+ b=B7dACuQ6U7nyvplfg1NXx5REaq44kbmKdfZMNOp3zvT1PrqyEWHNGeOzIfw1BD/J+meIQsO2EKp4o9eoVLQ/NP+vzqfywcqO/hP5sPMN1o7S86IAIsxpEmWPLCDjsRN4a4Efc2Nr/+ofGJcHSdZP/zUQqDZi/9pfRHRMy3AIAiS7oSc4anVzkZOtEBmXBRM6QSHGabRJ++6LF/k0p8tNvjgnSYKFVz5BCU9SDwcnGLGi/njagHoEpFcsVr9OOsAGPtBVCg/Avw7zAAjeF5HE30ocBPK58hYAHal6WEDdIWVVBfzoLTwzEPFqzSUnc6FfiS61OSeC1r6Pc+BiL2Kq3w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=L5FkmtlR3EPrYuZXZLi6Pl3AQ/Jtu+febR4ZtM5Li2Y=;
- b=qNCCZxnqC45W2i502QWWmfYa0fXnfa2HBYu1LkOzpR1/E219mP3qtdzrhEk5hSWpiOod2KMhFWfB4X1mniy5BG5AHbFUpd3AiTzr4SmOXm4vGK7Q+3LMY6J8dkUqEBSFe+eKhKE9Ca2MWUkBAXQIoc15Mrs5jY3HumLKpZCkHYE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AS8PR04MB8948.eurprd04.prod.outlook.com (2603:10a6:20b:42f::17) with
+ bh=NkANwOBVp1EnfJwpcuRP5jhVYFtwDFBD8SeGlFNM9Wg=;
+ b=N5sz4bW58LLTEMr4f4Czasbhf/OrhdLdgY7CFNxu9tDIFayNJGdPvhYAAeeb6jqY+BoaujpXVQnVPLXL65MJK6ijLoMQipt9MTX/73p49yWFc6s47XM/u21DKG4rP7M+nPrDiSUdNXeljT8ctBlDsCQG1hOXb9gbmGkIs0HaLGY=
+Received: from MN2PR05CA0045.namprd05.prod.outlook.com (2603:10b6:208:236::14)
+ by MN2PR12MB4125.namprd12.prod.outlook.com (2603:10b6:208:1d9::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.11; Wed, 14 Dec
- 2022 17:34:22 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::9317:77dc:9be2:63b]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::9317:77dc:9be2:63b%7]) with mapi id 15.20.5880.019; Wed, 14 Dec 2022
- 17:34:22 +0000
-Date: Wed, 14 Dec 2022 19:34:18 +0200
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	Michael Walle <michael@walle.cc>,
-	Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-	Claudiu Manoil <claudiu.manoil@nxp.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH] iommu/arm-smmu: don't unregister on shutdown
-Message-ID: <20221214173418.iwovyxlbogkspjxy@skbuf>
-References: <20221208165350.3895136-1-vladimir.oltean@nxp.com>
- <d3517811-232c-592d-f973-2870bb5ec3ac@arm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d3517811-232c-592d-f973-2870bb5ec3ac@arm.com>
-X-ClientProxiedBy: BE1P281CA0059.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:23::18) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5880.19; Wed, 14 Dec
+ 2022 18:00:37 +0000
+Received: from BL02EPF00010209.namprd05.prod.outlook.com
+ (2603:10b6:208:236:cafe::3f) by MN2PR05CA0045.outlook.office365.com
+ (2603:10b6:208:236::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.6 via Frontend
+ Transport; Wed, 14 Dec 2022 18:00:37 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BL02EPF00010209.mail.protection.outlook.com (10.167.241.198) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5924.10 via Frontend Transport; Wed, 14 Dec 2022 18:00:37 +0000
+Received: from localhost.localdomain.amd.com (10.180.168.240) by
+ SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Wed, 14 Dec 2022 12:00:34 -0600
+From: Luben Tuikov <luben.tuikov@amd.com>
+To: <iommu@lists.linux.dev>
+CC: Luben Tuikov <luben.tuikov@amd.com>, Christoph Hellwig <hch@lst.de>,
+	"Robin Murphy" <robin.murphy@arm.com>, Alex Deucher
+	<Alexander.Deucher@amd.com>, =?UTF-8?q?Christian=20K=C3=B6nig?=
+	<christian.koenig@amd.com>, "Linux Kernel Mailing List"
+	<linux-kernel@vger.kernel.org>
+Subject: [PATCH] dma-direct: Optimize get_required_mask
+Date: Wed, 14 Dec 2022 13:00:25 -0500
+Message-ID: <20221214180025.163207-1-luben.tuikov@amd.com>
+X-Mailer: git-send-email 2.39.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+X-check-string-leak: v1.0
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|AS8PR04MB8948:EE_
-X-MS-Office365-Filtering-Correlation-Id: 45f01e8e-6f6f-4ed8-76c0-08daddf96fce
+X-MS-TrafficTypeDiagnostic: BL02EPF00010209:EE_|MN2PR12MB4125:EE_
+X-MS-Office365-Filtering-Correlation-Id: e6f1c868-49f5-42dd-f7bb-08daddfd1ae1
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	21AlQxuAJyJz8cnY/6OdEbrkksSjUpQAQ4myOupmDA8lH48d/FiIIYKPbL9oemuG40+oQ5roJt07ZPrDYiqIrSPkFXripE8sddjMo4TL6Fqg0TFVxLH2FAF4jQw4a5Y5FUnuoBhud//PPZ2c6/dgL3LDW6PdrYzAYsAkzaisL7jnFKsStNrknJgr131hHcGwEjlcPqUmuWSimeZupcuft/+jycTJWG58v5EFocgEAtQHlDaaowlDX5lBitn+YhxLoTd+kJOAVolygnd5LGvfX9alub0Ll5Xn2iGRE9xPwHKYEv7kx38Sl8Wx7AH7MG2qz7LwVByFI45s/zLt2xHVWnlFoWsVUBDST2zWttxxeGKdwfWsqilDEzDpQFBopzrDIMrM2aEhWiL/UDk49jTP+Xp6k7SVysCsaUVawRYK7G9IoApDY+7tWgkkDgiu7P5gVYL819YyPcscMw/6wWql+RAzBOk/w6oVjvi4kogFtXiG1w6T4/ykRhohRkpRy0hPw5fboMAm1gbRrOwuZsM1HJBA3IFotDdO59giZQdwU3M2lYNRXmgTohzK7MQCV+NhZMpkpbuy6SCRvJBW3XIi3L/vhneXNOw83qv3bpnyT/iMg7ODLqpg7ijTt1zIrRrktNR3Wa/pSb7qlE/tbxtKIw==
+	juiIG3lUEDGjZFqT2Lf+25nXvPxWYQ+57OKe/0vzTrMpmvZhoeuj3rFLiEVJqvPh0F5aQzx0Q+1zaJvu+2zQjp3qo6ovBvvfByobGzuLGgQbpNMI3qAHn+i7pWAY3EGQwbld8bkVCZqzGHrY1AK13gHQ9n6lFNXYyTB57VNiLR/D55Vw9CjL6dMbrLUyli0fIxN/9Axjy1MXQgBcFthxOURf4iTngwa/y7CFxvOWFeJ44+Uh+8I0VgaV3Oe1aMRIN6eaATDLGa1DDYPhrfykhLaKXrthQhgUyqVFZ8oyGNDh2M5mNjWfpsTzHOl2ZsD2nNG7OsasmA8p5cvXDI4TZStfxGfyumxyi7d4TI6yzSOObLGkL7cMfIs4iYLsm8go43sK2A0MYN7H9pfqrT0E7MurMm/7SO011t3xw+eBiUrjW/bKifjIgnb8ARllqmG3vkMsxUkcu4XA8FKW/iLQg8hKGelzrMOk97YtzhAg3BBv8Ie5w2/qKj205qp00EmVt+yjNhv1ZOjl5ffK9qX3jAMauqmDGlUYa9yDXKr+m2TKqbuX65jB7JaTR5aBpH/TdIaBw5aKcMJX0NaEcTzjMZR5zN/n3aYSInKHBmfYTGyo21bMLMD7WF6tmp/2Vejx82mQ/8agxP6zlhw0vF+qEnXqxOo0Rg0BadNlLx7TPbfr+z/ZaQPEbiQ1/8Zd4KJHkvKyB+245ItrRXIblPrxAqN/M3VAV25mk6b0TaVXhUI=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(366004)(136003)(376002)(346002)(39860400002)(396003)(451199015)(2906002)(3716004)(5660300002)(8936002)(44832011)(83380400001)(86362001)(1076003)(38100700002)(54906003)(6916009)(186003)(316002)(6512007)(6486002)(9686003)(6666004)(41300700001)(26005)(33716001)(4326008)(66556008)(8676002)(66476007)(478600001)(6506007)(66946007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?ZDnMGXzUH4hYdfISdno7627auG7LNCcC8mtj3X41erDj6UDqxvL8sbpUQkq4?=
- =?us-ascii?Q?cvwCZIUhez1Mnd2MoqigOqGxEdfoMTRe7gSHzapoCDbGyK2nGjfWfmejT43e?=
- =?us-ascii?Q?Db80lDmdv7IFdYO+Leat0fABTEhUOG9VInBopO+YJrPwqBRYThIxeBKtMkLx?=
- =?us-ascii?Q?a+s6gXhDN/gUtmpneooD3/NIt2kcZstcn+5RANozqxXl0LDeBYDAv3XtRRWZ?=
- =?us-ascii?Q?M8V22st1Y+qeftwXNRGlpnAkdEMwR1hb00L0mbypWMzyPLMP9fdqHQbqxzg9?=
- =?us-ascii?Q?2JdWA+oWQ33Qh2U0fZFo0uw3gbAbHPJC7UHwRTNG2Mxk7AVJUcDs+/KPQLDS?=
- =?us-ascii?Q?G1CDIg0uiYYoxD5CTzH1dC7YuxSBglhZ/Q/vLl10M57N6gdN3HvatyXt0z4e?=
- =?us-ascii?Q?cOPUDh9zeSeOo+ooICLiUFkfBslIQ0Qov6E4GWhHTaOauD+Oisk2vpX0UpJT?=
- =?us-ascii?Q?aaIVc9pfqxc+zL5XaqfAc84eIX2d6qWTsvDS+K4y8BrFky2BA0ENCq32pG2J?=
- =?us-ascii?Q?+AZe1hBiEZadk3Ot5vV/os8yORMa04p6SbN6/B/mnvAr5GhiZrAQ5wo0N1KO?=
- =?us-ascii?Q?qM34yW+BPemCFRWHwrFxEOaj0W0xtrrXZWou66XV7vcYmyv2MDJLZA3Ir+dw?=
- =?us-ascii?Q?vlYSxYvrFN58lwV/+kUqcYGgDmraMHaIviyNMKWp9MLZy2cgndtpvSk5H1g0?=
- =?us-ascii?Q?d0qg9xWdqOMqtVb6KF/SMuY+YwtVwtk1eCr7tlPJ5WJ/g7mjoRqpgAqi6tpt?=
- =?us-ascii?Q?bISZJty0WT1DP1GhmcVfts1PjJa9m8JLrFUH8ywUOXBP4/ieyDODMeYytMIw?=
- =?us-ascii?Q?rXoXRLB3D3s4TjsBb2zYO9U4gRhQjsaA1KCyMgXJGzNl910uTvQJc+5e/tFG?=
- =?us-ascii?Q?XtmxCxIcDhfy5rdpPMyTiYuch3kws8gMFo9GauCuWu7rCeLtfW+gY6W7mtxv?=
- =?us-ascii?Q?2Fgvm/P7fJZTuPqPPj61lLPb/fjqoChbfnGgtklOFkDfLsTKblQtQjRKk0Au?=
- =?us-ascii?Q?uHVfrajkXBCp6h3gr5m+5Wh5eRZdO0ddiNjBfr9fJt6+JtnZ0OTdmeo2tjO4?=
- =?us-ascii?Q?Nnad4V7hFoTic4gSyox5T73QcjaNIKeME/buwGEsSpokXdGX2AwVFXfzfosM?=
- =?us-ascii?Q?B0d5S/W15tL65fEJN6KLTAwDdkWmBPqQKVJcKrdpufGBzHTA8I4Y/Iop0YqR?=
- =?us-ascii?Q?zOT/VnYw91boKglN/oi1spWqhUnwxyP4tiO4OQvDgQ+y1mWQaQVl+rUe/kSA?=
- =?us-ascii?Q?6KIMWagssfgY3AOEVOOblPDcgxYAg+t+G4fxuoMt/UHiR4DesDFf0/ESGMvH?=
- =?us-ascii?Q?I+1iKIJB4HeVd8mirFxHVfV9zYMi2TXmWv/TMnaVPVgLp5RRZdpUymjgErTy?=
- =?us-ascii?Q?YzOfFF5oc3AH2UIXVwV136h+uSNVExnyW4y3Se67nsfzcEZLiidmkK5PyGMv?=
- =?us-ascii?Q?pEpK8z+TK++dSVyx46P2nEPNh3yqHnnwE3XpRgEFkiGBKjg/YLqSkelJpp6j?=
- =?us-ascii?Q?ulpfqAYK4gJGvP8hDjeLaRaPaz56kWcnWftCMcYoeRis71rIBARy4FQR0Ucu?=
- =?us-ascii?Q?P0007xaJoipBgEGapDIOFBH3nWkPJJ5BNEnChNOlrakQi4C9R6zyAtwm9t+l?=
- =?us-ascii?Q?cw=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 45f01e8e-6f6f-4ed8-76c0-08daddf96fce
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Dec 2022 17:34:22.2180
+	CIP:165.204.84.17;CTRY:CA;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(376002)(136003)(39860400002)(346002)(396003)(451199015)(36840700001)(46966006)(40470700004)(82740400003)(40460700003)(36756003)(86362001)(356005)(83380400001)(2616005)(26005)(81166007)(1076003)(6666004)(478600001)(186003)(426003)(16526019)(47076005)(66574015)(336012)(7696005)(36860700001)(54906003)(6916009)(70206006)(4326008)(70586007)(41300700001)(5660300002)(8936002)(2906002)(316002)(44832011)(40480700001)(8676002)(82310400005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Dec 2022 18:00:37.2265
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: L6VwnOnw2Ks9weUdWC3+4AmFsYIJF6lz8aZCVAIlC0ALgwl7pIRehj6MMFuI79MjD02Q4Uf9pIvUBivDG1Ry7g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8948
+X-MS-Exchange-CrossTenant-Network-Message-Id: e6f1c868-49f5-42dd-f7bb-08daddfd1ae1
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL02EPF00010209.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4125
 
-On Fri, Dec 09, 2022 at 11:24:32AM +0000, Robin Murphy wrote:
-> > Fixes: b06c076ea962 ("Revert "iommu/arm-smmu: Make arm-smmu explicitly non-modular"")
-> 
-> I think that's semantically correct, but I'm pretty sure at that point it
-> would have been benign in practice - the observable splat will be a much
-> more recent fallout from me changing the iommu_device_unregister() behaviour
-> in 57365a04c921 ("iommu: Move bus setup to IOMMU device registration"). The
-> assumption therein is that unregister would only happen on probe failure,
-> before the IOMMU instance is in use, or on module unload, which would not be
-> allowed while active devices still hold module references. I overlooked that
-> the SMMU drivers were doing what they do, sorry about that.
+Optimize dma_direct_get_required_mask(), in that we don't need to multiply by
+two if we don't subtract 1 from the exponent. That is,
 
-Ok, I'll change the Fixes: tag, I didn't notice that iommu_device_unregister()
-changed in behavior only later, I just looked at current trees and tried
-to infer what went wrong.
+    (1 << (n - 1)) * 2 - 1 <==>
+    2^(n-1) * 2^1 - 1       = (by rule of exponents)
+    2^n - 1                 <==>
+    (1 << n) - 1.
 
-> The change itself looks sensible. The point of this shutdown hook is simply
-> not to leave active translations in place that might confuse future software
-> after reboot/kexec; any housekeeping in the current kernel state is a waste
-> of time anyway. Fancy doing the same for SMMUv3 as well?
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Alex Deucher <Alexander.Deucher@amd.com>
+Cc: Christian König <christian.koenig@amd.com>
+Cc: iommu@lists.linux.dev
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Signed-off-by: Luben Tuikov <luben.tuikov@amd.com>
+---
+ kernel/dma/direct.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I can try, but I won't have hardware to test.
-
-Basically the only thing truly relevant for shutdown from arm_smmu_device_remove()
-is arm_smmu_device_disable(), would you agree to a patch which changes
-things as below?
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 6d5df91c5c46..d4d8bfee9feb 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -3854,7 +3854,9 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 63859a101ed831..bb416a3949dac0 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -41,7 +41,7 @@ u64 dma_direct_get_required_mask(struct device *dev)
+ 	phys_addr_t phys = (phys_addr_t)(max_pfn - 1) << PAGE_SHIFT;
+ 	u64 max_dma = phys_to_dma_direct(dev, phys);
  
- static void arm_smmu_device_shutdown(struct platform_device *pdev)
- {
--	arm_smmu_device_remove(pdev);
-+	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
-+
-+	arm_smmu_device_disable(smmu);
+-	return (1ULL << (fls64(max_dma) - 1)) * 2 - 1;
++	return (1ULL << fls64(max_dma)) - 1;
  }
  
- static const struct of_device_id arm_smmu_of_match[] = {
+ static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
+
+base-commit: e2ca6ba6ba0152361aa4fcbf6067db71b2c7a770
+-- 
+2.39.0
+
