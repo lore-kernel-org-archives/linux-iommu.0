@@ -1,14 +1,14 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 422A0AD51
-	for <iommu@lists.linux.dev>; Wed, 14 Dec 2022 21:04:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 49B83AD47
+	for <iommu@lists.linux.dev>; Wed, 14 Dec 2022 21:25:53 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1D3CFFEC;
-	Wed, 14 Dec 2022 13:05:00 -0800 (PST)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3ECA5FEC;
+	Wed, 14 Dec 2022 13:26:33 -0800 (PST)
 Received: from [10.57.88.237] (unknown [10.57.88.237])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7C66D3F71E;
-	Wed, 14 Dec 2022 13:04:18 -0800 (PST)
-Message-ID: <b8665f9d-44cf-5719-c206-5eb622978b1a@arm.com>
-Date: Wed, 14 Dec 2022 21:04:13 +0000
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F106F3F71E;
+	Wed, 14 Dec 2022 13:25:50 -0800 (PST)
+Message-ID: <a3a034b5-9493-e345-bcb4-8c5eef7f9a65@arm.com>
+Date: Wed, 14 Dec 2022 21:25:45 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -17,69 +17,71 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
  Thunderbird/102.5.1
-Subject: Re: [PATCH] RISC-V: Disable IPMMU_VMSA on rv32
+Subject: Re: [PATCH] iommu/arm-smmu: don't unregister on shutdown
 Content-Language: en-GB
-To: Conor Dooley <conor@kernel.org>, linux-riscv@lists.infradead.org,
- Palmer Dabbelt <palmer@rivosinc.com>, arnd@arndb.de, iommu@lists.linux.dev
-Cc: prabhakar.mahadev-lad.rj@bp.renesas.com
-References: <20221214180409.7354-1-palmer@rivosinc.com>
- <8DACBAC8-F220-4DA7-BCC2-4E2ED9E3E03E@kernel.org>
+To: Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
+ Joerg Roedel <joro@8bytes.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ Michael Walle <michael@walle.cc>, Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+ Claudiu Manoil <claudiu.manoil@nxp.com>, netdev@vger.kernel.org
+References: <20221208165350.3895136-1-vladimir.oltean@nxp.com>
+ <d3517811-232c-592d-f973-2870bb5ec3ac@arm.com>
+ <20221214173418.iwovyxlbogkspjxy@skbuf>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <8DACBAC8-F220-4DA7-BCC2-4E2ED9E3E03E@kernel.org>
+In-Reply-To: <20221214173418.iwovyxlbogkspjxy@skbuf>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2022-12-14 19:46, Conor Dooley wrote:
-> 
-> 
-> On 14 December 2022 10:04:09 GMT-08:00, Palmer Dabbelt <palmer@rivosinc.com> wrote:
->> Without this I get a Kconfig warning and then subsequent build failure
->> when building allmodconfig on rv32.
+On 2022-12-14 17:34, Vladimir Oltean wrote:
+> On Fri, Dec 09, 2022 at 11:24:32AM +0000, Robin Murphy wrote:
+>>> Fixes: b06c076ea962 ("Revert "iommu/arm-smmu: Make arm-smmu explicitly non-modular"")
 >>
->> WARNING: unmet direct dependencies detected for IOMMU_IO_PGTABLE_LPAE
->>   Depends on [n]: IOMMU_SUPPORT [=y] && (ARM || ARM64 || COMPILE_TEST [=y] && !GENERIC_ATOMIC64 [=y])
->>   Selected by [y]:
->>   - IPMMU_VMSA [=y] && IOMMU_SUPPORT [=y] && (ARCH_RENESAS [=y] || COMPILE_TEST [=y]
+>> I think that's semantically correct, but I'm pretty sure at that point it
+>> would have been benign in practice - the observable splat will be a much
+>> more recent fallout from me changing the iommu_device_unregister() behaviour
+>> in 57365a04c921 ("iommu: Move bus setup to IOMMU device registration"). The
+>> assumption therein is that unregister would only happen on probe failure,
+>> before the IOMMU instance is in use, or on module unload, which would not be
+>> allowed while active devices still hold module references. I overlooked that
+>> the SMMU drivers were doing what they do, sorry about that.
 > 
-> This here is your problem afaict
-> I got a report from lkp about it yesterday, "blaming" Prabhakar for it:
-> https://lore.kernel.org/all/202212142355.b7vf3Jh0-lkp@intel.com/
+> Ok, I'll change the Fixes: tag, I didn't notice that iommu_device_unregister()
+> changed in behavior only later, I just looked at current trees and tried
+> to infer what went wrong.
 > 
-> I hate selects, just ignores the dependency :(
+>> The change itself looks sensible. The point of this shutdown hook is simply
+>> not to leave active translations in place that might confuse future software
+>> after reboot/kexec; any housekeeping in the current kernel state is a waste
+>> of time anyway. Fancy doing the same for SMMUv3 as well?
 > 
->   && !GENERIC_ATOMIC64 [=y])
+> I can try, but I won't have hardware to test.
+> 
+> Basically the only thing truly relevant for shutdown from arm_smmu_device_remove()
+> is arm_smmu_device_disable(), would you agree to a patch which changes
+> things as below?
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 6d5df91c5c46..d4d8bfee9feb 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -3854,7 +3854,9 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+>   
+>   static void arm_smmu_device_shutdown(struct platform_device *pdev)
+>   {
+> -	arm_smmu_device_remove(pdev);
+> +	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
+> +
+> +	arm_smmu_device_disable(smmu);
+>   }
+>   
+>   static const struct of_device_id arm_smmu_of_match[] = {
 
-I think the existing assumption was that ARCH_RENESAS implied 
-!GENERIC_ATOMIC64. If that is no longer true then please feel free to 
-adjust drivers/iommu/Kconfig to suit.
 
-Thanks,
+Looks fine to me! I'll let Will decide if he'd still prefer to do the 
+full remove-calls-shutdown reversal here as well for complete 
+consistency, but I reckon the minimal diff is no bad thing :)
+
+Cheers,
 Robin.
-
->> linux/drivers/iommu/io-pgtable-arm.c: Assembler messages:
->> linux/drivers/iommu/io-pgtable-arm.c:330: Error: unrecognized opcode `lr.d s4,0(s1)'
->> linux/drivers/iommu/io-pgtable-arm.c:332: Error: unrecognized opcode `sc.d.rl a5,s6,0(s1)'
->> make[5]: *** [linux/scripts/Makefile.build:250: drivers/iommu/io-pgtable-arm.o] Error 1
->> make[4]: *** [linux/scripts/Makefile.build:502: drivers/iommu] Error 2
->> make[3]: *** [linux/scripts/Makefile.build:502: drivers] Error 2
->>
->> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
->>
->> ---
->>
->> This one seems pretty ugly, but I like to at least have a workaround for
->> the allmodconfig failures before sending up a PR.
->> ---
->> arch/riscv/configs/32-bit.config | 1 +
->> 1 file changed, 1 insertion(+)
->>
->> diff --git a/arch/riscv/configs/32-bit.config b/arch/riscv/configs/32-bit.config
->> index f6af0f708df4..7a2fa9b37b1c 100644
->> --- a/arch/riscv/configs/32-bit.config
->> +++ b/arch/riscv/configs/32-bit.config
->> @@ -2,3 +2,4 @@ CONFIG_ARCH_RV32I=y
->> CONFIG_32BIT=y
->> # CONFIG_PORTABLE is not set
->> CONFIG_NONPORTABLE=y
->> +CONFIG_IPMMU_VMSA=n
-> 
