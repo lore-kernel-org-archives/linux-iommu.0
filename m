@@ -1,214 +1,166 @@
-Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2129.outbound.protection.outlook.com [40.107.114.129])
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2069.outbound.protection.outlook.com [40.107.21.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7059328E7
-	for <iommu@lists.linux.dev>; Thu, 15 Dec 2022 09:14:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D4932CA2
+	for <iommu@lists.linux.dev>; Thu, 15 Dec 2022 10:13:11 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LcdZevMzOhJrYK7XwNEjK6BZcpu3i9KofbiXOOGYzpIhT1V2ki0fqUusUFoW+pUktiuCQ2rv58M/PB7q3WwEx7LlICv/bExEQJgM6P4QSM6Oxm5+oC6anVZ8mG7gLgNWqgvF89voYtSy6cdIZeKqjHVLL0bIRaTTXcijtcVruirfoP1Nml3Oq0V51lTs7eGYzC4rgZvKTB4y2dFSFnzVdWFDQwIFTvTqj5tHlgtDFn1rGKvd7e4nV9143Z9vNHi/rn8PZQwYaLAVVhWcelH3oyrF46Dxo2yKC9IuJ+elt2uEk/5hVMHW+KLsem1sbBPaxVpxAtnoibDABFK8XtYvGA==
+ b=lDYdf6pHBC7XFS4KyMifhSR/E08rEavyomq4r+D/OqfW0l2RFUOozo2NUbffy/GySbD1SNPvLtmrJSpJffP4u/F7Lpy9OE8T7tYZjpIE12ozJ+HRUfv007qhZmqLVOIDXnADBGwgrKFzffsH3GUNe3IutTSVHtEXVfuotc2V/ENnk5GLnoUQ7xC7Z46pYpyo4PiCzMU+PSMuu3eflqTBjbkiSbKK3mA9tB77RHpCEpZsritQHXDbr+NIzAT3uiG9G2tJxicgQbb1YX+VbJMHthQ48tenYS6o7XtzbggLle5DwdHI67HRIYdy70HpQDEfjTp3vFXasslqTZ8YzeEDbw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iiB4UtRaGRIgIyoEu0DhdqweS8RUFsvlLqyMLTsB4dE=;
- b=N/+AlVPmaRyC4e29wTCfwQpzS+13BRTP4r5R2RnurjYxdHKrzHMUzRcxeORidlg0mdaOj0E5TlHvP7sxPnNWb7ts0IcDtZEeDhtqkWYQo1NxZaEYLM7RNsZm9oy4vEGb7UbqQdCug771qqz7Tw904R7/5RI37HJfuLMjsQYlgT2v/zx61COFbzwChczd7pZSAPurs55Okd9u5vYdtOGhMk1l21FsUa/gTBw0SMFSKGCG8lxlQyGBL4hB6mnXsmd/u+F3WvuUOCFlCQ2gTW0AbNY3l6DoTUoy6gUUdxCuHEGFQjmsgje9800bBmPvx35Ox/6DCSvM/NYy5rL8IT9EGg==
+ bh=WenFXQl/3OnND6LKgFGkCS489sNIo2H0WP3cO5C7hw8=;
+ b=RpnAVhWFEvoYwjZLmR+WEL+HYdEsBIvx43YS7f5D3LPOuP0Ws2QInV7S9OzwCkpWk3if+sJaucW5j946xWp+5prHYPYvyIqLrdSh4OZcFyboXG+4PSRt7OyNUh4O8AoK4925FXvjsGvt/XKIoED7cif38C28KgbZnYlrXLCyRx2Uf8GDtfnAovhZOMBoHhFkMUvN5tZgfSt3I/tBvqXsivgJBmmz3/dgE0HThOctSR4gTVWIPoIBDcGIPhcb1xgrQqJM63Jr43zzPZqtkPlT7cVLbc2+jAQsKmWXtSCQRXky+vSP6g7eR8bNxRpcHfhlzub2mclGRCFx4xy94I/c+A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
- s=selector1;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iiB4UtRaGRIgIyoEu0DhdqweS8RUFsvlLqyMLTsB4dE=;
- b=UCtWHE1Ve4tz2w2QkzzlHbefKbPRtcyOKjJQY9k2PRKpQkFl9GVu2+UhxCTCAjwtfr8zVLAz5X0chQZPQa0X+ka4K9XC2KlqUj20ER05kxkDxE3AYdMo7w0DSzBI1wamMuyyFIk37oN431LQNLamwqyrYWl6iAKvgp0oSpkZUDs=
-Received: from TYYPR01MB7024.jpnprd01.prod.outlook.com (2603:1096:400:dc::9)
- by TYCPR01MB6301.jpnprd01.prod.outlook.com (2603:1096:400:79::14) with
+ bh=WenFXQl/3OnND6LKgFGkCS489sNIo2H0WP3cO5C7hw8=;
+ b=j3rCsxQq/ZFKUc5d1/lTBvoE+qZlagu6PyQXcrv/G2aPPwNYJsnGbPKcTyMtf7fTeJ9Y8LvphG0zq8fFOODU2JrZkDpjqFxxOxJ3TI33dcdBYUGau04GyiBV4F6bfE5X4Mi9aEruJsAbUe4VYDwWvip6DqZQ7AAByVg5VpPVyF8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM0PR04MB5121.eurprd04.prod.outlook.com (2603:10a6:208:c1::16)
+ by AS8PR04MB8658.eurprd04.prod.outlook.com (2603:10a6:20b:429::22) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.11; Thu, 15 Dec
- 2022 09:14:51 +0000
-Received: from TYYPR01MB7024.jpnprd01.prod.outlook.com
- ([fe80::c3c4:a23f:33ad:d6e2]) by TYYPR01MB7024.jpnprd01.prod.outlook.com
- ([fe80::c3c4:a23f:33ad:d6e2%7]) with mapi id 15.20.5924.011; Thu, 15 Dec 2022
- 09:14:51 +0000
-From: Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-CC: Robin Murphy <robin.murphy@arm.com>, Conor Dooley <conor@kernel.org>,
-	"linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>, Palmer
- Dabbelt <palmer@rivosinc.com>, "arnd@arndb.de" <arnd@arndb.de>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, Linux-Renesas
-	<linux-renesas-soc@vger.kernel.org>, "guoren@linux.alibaba.com"
-	<guoren@linux.alibaba.com>
-Subject: RE: [PATCH] RISC-V: Disable IPMMU_VMSA on rv32
-Thread-Topic: [PATCH] RISC-V: Disable IPMMU_VMSA on rv32
-Thread-Index: AQHZD/TEl8pPFAVi00Odphb7AlEWFa5t31KAgAAJSpCAAL/6AIAAAeQQ
-Date: Thu, 15 Dec 2022 09:14:51 +0000
-Message-ID:
- <TYYPR01MB70244846B75DBCDD9CF86CECAAE19@TYYPR01MB7024.jpnprd01.prod.outlook.com>
-References: <20221214180409.7354-1-palmer@rivosinc.com>
- <8DACBAC8-F220-4DA7-BCC2-4E2ED9E3E03E@kernel.org>
- <b8665f9d-44cf-5719-c206-5eb622978b1a@arm.com>
- <OSZPR01MB7019D761845E3AC9E30F2D2DAAE09@OSZPR01MB7019.jpnprd01.prod.outlook.com>
- <CAMuHMdUt7coFBx-+mXJcf7E0f5S_Q_Rmb6VVq-4E7_m99GXyRw@mail.gmail.com>
-In-Reply-To:
- <CAMuHMdUt7coFBx-+mXJcf7E0f5S_Q_Rmb6VVq-4E7_m99GXyRw@mail.gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bp.renesas.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: TYYPR01MB7024:EE_|TYCPR01MB6301:EE_
-x-ms-office365-filtering-correlation-id: cf30ab7a-0a19-4a0a-0d04-08dade7cd254
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- rA3YOp1CIF8s6oBldd/7E5TpS+KlpFrHcDo0LiDSo+ognVM2w4k5bi3NgDInhmUP9YvQaJhUAtUNvnzkUotSED/d13kjoJ/xWLiuFEHUlGFwo9Msx1nAyQ3cezdmuqN/Jtl9RdNjfbR0X/Yr+vo4rRE60zfJ+OYPtqUZ/TYWcuQRlcjUSYhgekBznyRNEH53Zfivj2J+tim+Kcm0JbzYityZEPEekrcknvbZkXHikrzMV5OJ7OW4r0uN6dWp50CjNb0nhEIF61NR8V4T7qoq5w3BFUODmccz6SpyLxGDBnCmOqJBe9YE0TkQNnGG+rxA1wIw6cuGHYxpo+5VhZaSSlzMAx9bQLZCAUAkdPAPBolVX718YZpKFEgcUjpMHe4dLpXR6lZLQ64kJ/GOCB6ac2Ua2PKkITPbiEu1BsmhRY93HFVkDjfQRjEgdv8wQNw6enFSPCzDCHAJQSADwUCznoZmEq889t0/ZxHxch4q0WCeIg9fWJIVhZWH1fs0Ywx/n5SxyicQBN9sCgIfWSt1cW9Nwhny3FnQbEfbPIvEZN9b2Lk61OQb781IrceFf/H6c8LJZlAOi+HwvKCSFEtlBxMwpuXX3IzT9NrFc/xK4JyvWeXAlOUiGOcq7yf6S86lfPNELf85YTefygeKmJaHzpLGTvFBrGI5h9daijGc6NFpTDb9znvWgRT17ewmFtN20iEqgyEoZIkzny56CErBFPzs/Ok0DeEl3PXViFlbDcTEXSArKkriuCOJWzukuWCoLibfIkZPgJmjtrEWAZ/1vw==
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYYPR01MB7024.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(346002)(136003)(376002)(366004)(39860400002)(451199015)(26005)(478600001)(54906003)(966005)(186003)(7696005)(53546011)(6916009)(6506007)(316002)(122000001)(86362001)(45080400002)(55016003)(38100700002)(38070700005)(9686003)(33656002)(83380400001)(8936002)(52536014)(41300700001)(71200400001)(2906002)(4001150100001)(5660300002)(66446008)(66476007)(66556008)(4326008)(76116006)(66946007)(64756008)(8676002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?L7jPHcWH6uTBVw6+bBgko6hOtdejEZPR19pYhRjHr+e3xZuNTIxbSm9CCIlD?=
- =?us-ascii?Q?ZGdDWwINoHdNqdRiDVkST0rzjALkHdF0nLGaL+Z6Ss78YjoH/vHD3PzQrs45?=
- =?us-ascii?Q?FIoOxvD0HUQvfx+LY1EPbklEE1iDn7D/p+FahPVpBe3eig3qUa02P494CxF0?=
- =?us-ascii?Q?8CyYSTq6cx0sgNfcXUuNLXVdZfSf9ctLkYNXDsw4ln3qd76sN78Qas+q8Ija?=
- =?us-ascii?Q?gazPDxXbUgAgPl8lDFL+1w7tY3HII8hHgdiVpPB+DfRnuhXQJIwu162mh4dQ?=
- =?us-ascii?Q?9lQyR82JSFIs5o5TZVUsXy3UD8l3+YNXqFsQ/R5D5QPfZvp3iJWzz5lI66ie?=
- =?us-ascii?Q?pNt5W5Xz3TniiIEqetHL9Cq0IRXeW5OMzoBLP29h0J33HI2P7ArDxzIxncEN?=
- =?us-ascii?Q?D0VeSu6NT3DRRksXJac6MksRUdsyL4PTIW2ISI/Ri19Zn6ZDYywQjOOJFRIK?=
- =?us-ascii?Q?RKKB9HGLxfy1vkURPXm7B7ti5EUJYblvoEAP3rWL/y/GJmHdQ7QW3Wc6uMyj?=
- =?us-ascii?Q?GER1kC/3qoTF1nbAK/pnKSNcC4eu00Q25nLj5tpjp7e8hCBuOvOqmgfOenuY?=
- =?us-ascii?Q?0B94jWjrqyspU0ol6zTqmFjoCrRLaV6bxoLnrnaX8pz4VxLu5dWo00VG3ex+?=
- =?us-ascii?Q?eWT8D79saL6rsXF8l/YBRt2BXVT6K/8m0mTjSywCyOaBKmK5mxFkBtdh1fYW?=
- =?us-ascii?Q?G+Pvy/exciJp69K1KmQZp2L+gd2uegRfFzU5Y7y3JZ5u0Znc/ctiwA6y56Xp?=
- =?us-ascii?Q?bLmao236H0Z8+D3k4TAh+kIGdFakOFGSRcF4fQbK2XJL1FISVYcxAhZs4G5q?=
- =?us-ascii?Q?hCP4Rf9rK8wmX4PDBt3D693Vx6MYQIjWFdH43ihSLZPjwbco/CxwSCmwWKa7?=
- =?us-ascii?Q?ORUbk2MiZe859zELFKjMq+rjDKsoqfodBjeak85WM+KqHambQS37H/vZBKSA?=
- =?us-ascii?Q?EL8G7jayXe1jQFyN2r3Es9f4SFVYeTKN0rX9JFGiATUzwMpUwlkEgqm475+q?=
- =?us-ascii?Q?i7jfYs5u+hIBhFgEQDpvfezjx5NhwY46820Ffu6Q2S31MKOg9fRL7LPXhsIb?=
- =?us-ascii?Q?nHk9RwCtG+gqLVsKH2CQfzhMKtt2xrhVsPHt1t1uBBrDaHifDJtQdAO0OzhH?=
- =?us-ascii?Q?b/pN/0INhezxWKSziYdG6F5NKq+BHk7E/j9m27ES31nCWgP72Xv7NXW0zTrQ?=
- =?us-ascii?Q?AhNS0dLqP5KQ2nc+GRE9uJ8lAzow9S43uycv3JA0yauulNNfhdw2L+wL4y6o?=
- =?us-ascii?Q?nqGsw9ADZHjgc0ZO5qmiAlV9eza6ckHorxVBk9KdpoM2OojUlUcQQVEn7f7f?=
- =?us-ascii?Q?fTmzriK60rpzA2ddoIzTKtf2mLoyhFrxWIc+U9ysTImtfmQ24IKyWluvWQCO?=
- =?us-ascii?Q?6Tg8iM2UOM58q7DEjTMvfaFaCb1hmcGfr8QT1rbz7KEejhDxk0vGsd4j5C6h?=
- =?us-ascii?Q?C8pHCn9LFYdZGUN1SOu6Sxn4txP23RXIgh+pn/eRGuB4VhJP/Ws82sYUO2US?=
- =?us-ascii?Q?EYJd83Ca13PKwW5WtfJ6KXBDwEcCPEGpALquTGWhVnxtSUQbfsT18qaedXd6?=
- =?us-ascii?Q?wR/pnG/XL/gs+tW9WP4k4iFKUQdHyvirJdwMGBVvRU3wYf6U3Mg3HQVwTgC+?=
- =?us-ascii?Q?3hLqcpBdItCkArp4RQDLCrA=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.12; Thu, 15 Dec
+ 2022 10:13:07 +0000
+Received: from AM0PR04MB5121.eurprd04.prod.outlook.com
+ ([fe80::2101:60dc:1fd1:425c]) by AM0PR04MB5121.eurprd04.prod.outlook.com
+ ([fe80::2101:60dc:1fd1:425c%7]) with mapi id 15.20.5880.019; Thu, 15 Dec 2022
+ 10:13:07 +0000
+Date: Thu, 15 Dec 2022 12:13:03 +0200
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	Michael Walle <michael@walle.cc>,
+	Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+	Claudiu Manoil <claudiu.manoil@nxp.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH] iommu/arm-smmu: don't unregister on shutdown
+Message-ID: <20221215101303.6rezz5mqjwupdaqe@skbuf>
+References: <20221208165350.3895136-1-vladimir.oltean@nxp.com>
+ <d3517811-232c-592d-f973-2870bb5ec3ac@arm.com>
+ <20221214173418.iwovyxlbogkspjxy@skbuf>
+ <a3a034b5-9493-e345-bcb4-8c5eef7f9a65@arm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a3a034b5-9493-e345-bcb4-8c5eef7f9a65@arm.com>
+X-ClientProxiedBy: FR2P281CA0043.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:92::16) To AM0PR04MB5121.eurprd04.prod.outlook.com
+ (2603:10a6:208:c1::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM0PR04MB5121:EE_|AS8PR04MB8658:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9e01acc2-6959-4484-ca06-08dade84f5d3
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	afqt31a6HAfgrdmKqooZi00crskk8NDDV6TkcukVu/h876WTFBxatDj9LDxADomlTRwK/q24pi3FdpDfws03wo1OhK5pQS7ppZrdlIBJaWvP2qhWM8Tzno3th164jvTOX7Boca4tVNcpk30dHdH/o5rFqqSXPWAidyYmWj+9eKGo0H9P62D/K5/DAlfQkVMZ3zzev7IyBZggVjESyq9m1n7OS1ZajQsZHL8Lnv4FBW0+gv6eJ4QWpwNnjqncCiUnr/22QAnmQP7sgV0GB+Yriq257XxpxfKiPJnvEvPyRxqNAXqyw1tmf9Mj/+rxvsVrfj7GHaa3xae76kFjzCdX6guGHSUKRLnuxOzUhM7fDyu6lruCn7u/WJQ4vjalIEQZK8Dajuud8ek39qezunKSHMIl/EoFW/9tjs4s9lKBSzPJU+f16KSRdTyZ/qyrZtbxJVv5GGM0uvmkX1hnNUUgtriOzsM8Dokbl/fZoXztnQrMOeQNljIcwQJad2YxpsfqdrmCbd6JeQefD8wuGrxj1R3ztI2TIX4uNS78MBtdxKGvuGV60UrveF3vZ/3O9Sr4Gn/PdCc8Pn9dPOBsCHtToXM4RN2X2l3Lsw+OEn49nzEdeZGt9VpsEM2XAsXmMJdVMzRNjSgxsOLuJcn6+L9SZg==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5121.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(7916004)(39860400002)(396003)(366004)(376002)(346002)(136003)(451199015)(6666004)(6486002)(478600001)(6506007)(2906002)(33716001)(9686003)(6512007)(186003)(26005)(86362001)(6916009)(38100700002)(83380400001)(44832011)(316002)(66476007)(66556008)(1076003)(54906003)(66946007)(8676002)(4326008)(8936002)(41300700001)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?mkblOT7+rzBf5BkuXf1Mr1uvF9rukZu70+4IYNYt3HLWRUszbumu5FoGZ4ww?=
+ =?us-ascii?Q?ovhbdr/dCRqeFPRHaNBmkuT7YsVxnWUAJvRS2j1aSqvPWSaKLK7KK4kN8oLq?=
+ =?us-ascii?Q?WJXrXrsePQYp6z4qHCTm9KX0Lco+SPoGXzUKl/7V0LPTlHjV92csQZEchzKr?=
+ =?us-ascii?Q?1aH9K6gJ62TwNKUXSF2mHnNfEtQSGGdz8gXxHd1HUvgoCpLRP6H6b9jvvcvc?=
+ =?us-ascii?Q?rhgsE8t7H74q2PYsNJdW0hhn1ZlB34gDhtTO3PJSOKRlW4atsqzPAKjx8kHd?=
+ =?us-ascii?Q?Grs1ZcvIQ4+sRUfEwCKXZeMfmWy9F0r02clSRaguu3ZlO3ao/X9QZ2Ml1zH+?=
+ =?us-ascii?Q?+jNQFubkTzemO6/Kmd5CmUJUspSLaP8KnayiHzYbc1Ma/Y53m9othfGNdJ9i?=
+ =?us-ascii?Q?7t8qmO6kLISdMG99lT/s6L275FjOqIHV5wJSvCYekqrMyzbyZCzgIlO3d8QE?=
+ =?us-ascii?Q?c/TOi83Fml+PMjlCyu5dSnY1uOzgsE+QcfnqZxzTU2ayyTTQiC92XlUvwZXH?=
+ =?us-ascii?Q?LP5ILXGQ9p8wt1CXJYGlVMogDYVzK84NXzZWQLMzNpPLUgDlpG6IC/Jm5nja?=
+ =?us-ascii?Q?EXNvy9iA9mbASRG9Byn7+COa53xorGVmFWa0nlWsscN0EXS/C0gluKZAeGW1?=
+ =?us-ascii?Q?Sb4w8soFI6YY9aJWxEFTaKpaWIYcvQbo73jyvJ/WUy5AMJJlk7Cx9qCsv6RZ?=
+ =?us-ascii?Q?Q5cvjF25NZT9xFVL6eXAqLoivBAjFOH1CMPArUmHvnQS35m9lYVrQG4bETNd?=
+ =?us-ascii?Q?SiMt2IE36HWISlA+RknzW4kQ7yNRrvzGyOBYl3qzFU6kfY2gzCBha/CkABbv?=
+ =?us-ascii?Q?F5cmPvdoCWATQc1F8LOhY+HkJQ/nsA0Dp24tSHQqiR7ihbNIDpj1CDPFBo4b?=
+ =?us-ascii?Q?NYgH/KEpfUb8qdobXtPl1S6nbuUnbTjfZNYB+m1FZ/4WcgcYGL1sO1nEPGOZ?=
+ =?us-ascii?Q?Bp2SOGZSSBYoUnasbaydPA6TK+fK3LW0/6QvOiioEs9BCgEK9ogqbCqAZn++?=
+ =?us-ascii?Q?fnihRKpEnm7uDDRTQv94SKHpJLExsj74eoR2Jk5JfweHbNOAEXskUdmUX6PZ?=
+ =?us-ascii?Q?6QKl2JpyobgLqdsgdA8GUOK7NFwmWsTvWtzo2IPkIyCulR0mDjYfqUOfODxv?=
+ =?us-ascii?Q?BDtMaty6jQOUWZQZYMLcCFJpuubZ9LUhBp0VpNu/gcm+xPDlw3ERA6rDAubc?=
+ =?us-ascii?Q?v9+llMiqsgZ8sYxWzdcpp40ITEz3o4eymFYrRa1YTuIi/zDlb+GwuB8X5hQ+?=
+ =?us-ascii?Q?COMR+CZjZTx5jgzPebcq9ZYN7n4wC7segocTUrUZF0Ni13B51BPPoA2Horts?=
+ =?us-ascii?Q?Szqont+HgHjBMWYkuWo/BMj/FlXsDMhw6tnCyMcShtDgW1BAjK9J7IN07ROf?=
+ =?us-ascii?Q?XNxR8paueUQG/djfRotbYYZvbRes3LBNarsLBjbCM3vcfvpSDJ8TLbUaNik8?=
+ =?us-ascii?Q?lUWfjQFWV88tBvQL/Vc1oKGj3PqfEnK5PnUmH67ltjdmNkpNBGHmunja9OLY?=
+ =?us-ascii?Q?+lvpBeEXaW0kSthfH/hR7TfhgDnX1bVNsNBTlckvA7kiwBeSbG30vaZmPxc/?=
+ =?us-ascii?Q?7G3bGJuOg1bpsJRJFpnMsM0GQnqr6zeInl+SvE3BnLm4Gac3scK1hDFjeUrD?=
+ =?us-ascii?Q?vw=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9e01acc2-6959-4484-ca06-08dade84f5d3
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5121.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYYPR01MB7024.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cf30ab7a-0a19-4a0a-0d04-08dade7cd254
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Dec 2022 09:14:51.1912
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Dec 2022 10:13:07.4099
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: XKf0kAykd/9A4wQYCyVawn6Dqo1oVGHjDb79BobfNTwevAFMPWZtMD0rS6/35K73TQAfBtjILQkGsp9YOZnO7iL9LH+1PxT5DhqwSdCRvkTajI9veNESXt1bKbgg2awO
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB6301
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NE2zK3pDiNrXAHpFqzbMfWfvO6ybRkpiEDpXq6x7TEWEn8gjrTtKa+XZ+Sq4HHBDPzlEo4K0TO0XnG49QhfwTQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8658
 
-Hi Geert,
+On Wed, Dec 14, 2022 at 09:25:45PM +0000, Robin Murphy wrote:
+> > > The change itself looks sensible. The point of this shutdown hook is simply
+> > > not to leave active translations in place that might confuse future software
+> > > after reboot/kexec; any housekeeping in the current kernel state is a waste
+> > > of time anyway. Fancy doing the same for SMMUv3 as well?
+> > 
+> > I can try, but I won't have hardware to test.
+> > 
+> > Basically the only thing truly relevant for shutdown from arm_smmu_device_remove()
+> > is arm_smmu_device_disable(), would you agree to a patch which changes
+> > things as below?
+> > 
+> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > index 6d5df91c5c46..d4d8bfee9feb 100644
+> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > @@ -3854,7 +3854,9 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+> >   static void arm_smmu_device_shutdown(struct platform_device *pdev)
+> >   {
+> > -	arm_smmu_device_remove(pdev);
+> > +	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
+> > +
+> > +	arm_smmu_device_disable(smmu);
+> >   }
+> >   static const struct of_device_id arm_smmu_of_match[] = {
+> 
+> 
+> Looks fine to me! I'll let Will decide if he'd still prefer to do the full
+> remove-calls-shutdown reversal here as well for complete consistency, but I
+> reckon the minimal diff is no bad thing :)
 
-> -----Original Message-----
-> From: Geert Uytterhoeven <geert@linux-m68k.org>
-> Sent: 15 December 2022 09:05
-> To: Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Cc: Robin Murphy <robin.murphy@arm.com>; Conor Dooley <conor@kernel.org>;=
- linux-
-> riscv@lists.infradead.org; Palmer Dabbelt <palmer@rivosinc.com>; arnd@arn=
-db.de; iommu@lists.linux.dev;
-> Linux-Renesas <linux-renesas-soc@vger.kernel.org>
-> Subject: Re: [PATCH] RISC-V: Disable IPMMU_VMSA on rv32
->=20
-> Hi Prabhakar,
->=20
-> On Wed, Dec 14, 2022 at 10:40 PM Prabhakar Mahadev Lad <prabhakar.mahadev=
--lad.rj@bp.renesas.com>
-> wrote:
-> > > From: Robin Murphy <robin.murphy@arm.com> On 2022-12-14 19:46, Conor
-> > > Dooley wrote:
-> > > > On 14 December 2022 10:04:09 GMT-08:00, Palmer Dabbelt <palmer@rivo=
-sinc.com> wrote:
-> > > >> Without this I get a Kconfig warning and then subsequent build
-> > > >> failure when building allmodconfig on rv32.
-> > > >>
-> > > >> WARNING: unmet direct dependencies detected for IOMMU_IO_PGTABLE_L=
-PAE
-> > > >>   Depends on [n]: IOMMU_SUPPORT [=3Dy] && (ARM || ARM64 ||
-> > > >> COMPILE_TEST [=3Dy] && !GENERIC_ATOMIC64
-> > > [=3Dy])
-> > > >>   Selected by [y]:
-> > > >>   - IPMMU_VMSA [=3Dy] && IOMMU_SUPPORT [=3Dy] && (ARCH_RENESAS [=
-=3Dy]
-> > > >> || COMPILE_TEST [=3Dy]
-> > > >
-> > > > This here is your problem afaict
-> > > > I got a report from lkp about it yesterday, "blaming" Prabhakar for=
- it:
-> > > > https://jpn01.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2=
-F
-> > > > lore
-> > > > .kernel.org%2Fall%2F202212142355.b7vf3Jh0-lkp%40intel.com%2F&amp;d
-> > > > ata=3D
-> > > > 05%7C01%7Cprabhakar.mahadev-lad.rj%40bp.renesas.com%7Ca51ccd27ccda
-> > > > 45e7
-> > > > 53c208dade16c553%7C53d82571da1947e49cb4625a166a4a2a%7C0%7C0%7C6380
-> > > > 6648
-> > > > 6632283001%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2l
-> > > > uMzI
-> > > > iLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=3DFshRCpn=
-I
-> > > > oU0b
-> > > > c38MYnesotcgOV4JT%2FXVOidbDMpAWbc%3D&amp;reserved=3D0
-> > > >
-> > > > I hate selects, just ignores the dependency :(
-> > > >
-> > > >   && !GENERIC_ATOMIC64 [=3Dy])
-> > >
-> > > I think the existing assumption was that ARCH_RENESAS implied
-> > > !GENERIC_ATOMIC64. If that is no longer true then please feel free to=
- adjust drivers/iommu/Kconfig
-> to suit.
-> > >
-> > IPMMU is not available on Renesas RISCV SoCs, so maybe something like b=
-elow?
-> >
-> > --- a/drivers/iommu/Kconfig
-> > +++ b/drivers/iommu/Kconfig
-> > @@ -283,7 +283,7 @@ config EXYNOS_IOMMU_DEBUG
-> >
-> >  config IPMMU_VMSA
-> >         bool "Renesas VMSA-compatible IPMMU"
-> > -       depends on ARCH_RENESAS || (COMPILE_TEST && !GENERIC_ATOMIC64)
-> > +       depends on (ARCH_RENESAS && !RISCV) || (COMPILE_TEST &&
-> > + !GENERIC_ATOMIC64)
->=20
-> Negative dependencies on a symbol like that tend to need future extension=
-.
->=20
-> What about
->=20
->     depends on ARCH_RENESAS || COMPILE_TEST
->     depends on !GENERIC_ATOMIC64
->=20
-> instead?
->=20
-> That does mean the question will show up on RV64, too.
-> Adding
->=20
->     depends on ARM || ARM64 || COMPILE_TEST
->=20
-Guo has posted a similar patch [0].
+The reason why I did it this way is that if remove() still called
+shutdown(), it would have looked like this here:
 
-[0] https://patchwork.kernel.org/project/linux-riscv/patch/20221215073212.1=
-966823-1-guoren@kernel.org/
+static void arm_smmu_device_shutdown(struct platform_device *pdev)
+{
+	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
 
-Cheers,
-Prabhakar
+	arm_smmu_device_disable(smmu);
+}
+
+static int arm_smmu_device_remove(struct platform_device *pdev)
+{
+	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
+
+	iommu_device_unregister(&smmu->iommu);
+	iommu_device_sysfs_remove(&smmu->iommu);
+	arm_smmu_device_shutdown(pdev);
+	iopf_queue_free(smmu->evtq.iopf);
+
+	return 0;
+}
+
+Not really that beneficial. I also didn't want to reorder any
+operations, they seem to be done in reverse order of what is being done
+in arm_smmu_device_probe().
