@@ -1,64 +1,137 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3D1988820
-	for <iommu@lists.linux.dev>; Fri, 16 Dec 2022 12:53:03 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 112861042;
-	Fri, 16 Dec 2022 04:53:43 -0800 (PST)
-Received: from [10.57.88.234] (unknown [10.57.88.234])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 44FBC3F5A1;
-	Fri, 16 Dec 2022 04:53:01 -0800 (PST)
-Message-ID: <f77a41bd-9df7-87c0-9b3c-e9e1a5deaa63@arm.com>
-Date: Fri, 16 Dec 2022 12:52:56 +0000
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C65B8832
+	for <iommu@lists.linux.dev>; Fri, 16 Dec 2022 14:36:03 +0000 (UTC)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2BGENAaC012365;
+	Fri, 16 Dec 2022 14:35:50 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=OpGeMrx3l8FMfLqoj8wbeRmgdg6YhdniUmTRzGfOvLQ=;
+ b=YgVED4emC3DfnvgKgFF/5ionKgTFYZ8z82iyaH2dKDA/yDTTPVO5IDcu48Od/kuRvzrO
+ o8GFx7tbtcdrpLR8jLutR/wuetzJk24a+iSgC4/5asjda9JxM0HKCVy0pS6zLnW/w6dT
+ cn7/qo9NFhpuXAS++rh4wRtGK064u1tyUQqE/ogGQ753GWqadJxzu+IuSur71xE/0quj
+ lbk1PDunWb75VYdf3JZBq/WRFUtpHJjG57jOLtAGPw0ERjjNfLSLohsQGki6RCwX3gRW
+ eRZNYuVBF5zCRPaNGpceZS84RKKX94SQaLKEC1TIXdm40yZbtJvsraYVFFyi7S3zPkTn gw== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3mgtd30afs-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 16 Dec 2022 14:35:49 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+	by ppma03ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 2BG2Z01U026988;
+	Fri, 16 Dec 2022 14:35:47 GMT
+Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
+	by ppma03ams.nl.ibm.com (PPS) with ESMTPS id 3meyjbmkf7-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 16 Dec 2022 14:35:47 +0000
+Received: from smtpav07.fra02v.mail.ibm.com (smtpav07.fra02v.mail.ibm.com [10.20.54.106])
+	by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2BGEZj6623134496
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 16 Dec 2022 14:35:45 GMT
+Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id EEBC120040;
+	Fri, 16 Dec 2022 14:35:44 +0000 (GMT)
+Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 77F442005A;
+	Fri, 16 Dec 2022 14:35:44 +0000 (GMT)
+Received: from [9.171.33.197] (unknown [9.171.33.197])
+	by smtpav07.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Fri, 16 Dec 2022 14:35:44 +0000 (GMT)
+Message-ID: <3193d6833feccc5c2fbdef9b1f71f292eddb8f27.camel@linux.ibm.com>
+Subject: Re: [PATCH] dma-mapping: benchmark: Fix compile error in user-space
+ tool
+From: Gerd Bayer <gbayer@linux.ibm.com>
+To: "chenxiang (M)" <chenxiang66@hisilicon.com>,
+        Shuah Khan
+ <shuah@kernel.org>
+Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev,
+        linux-kselftest@vger.kernel.org,
+        Niklas Schnelle <schnelle@linux.ibm.com>
+Date: Fri, 16 Dec 2022 15:35:44 +0100
+In-Reply-To: <fd189113-deae-d6b7-bb9a-a5a94f7b0815@hisilicon.com>
+References: <20221205135022.49708-1-gbayer@linux.ibm.com>
+	 <fd189113-deae-d6b7-bb9a-a5a94f7b0815@hisilicon.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.46.1 (3.46.1-1.module_f37+15677+998b8b6b) 
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 3ddMfe128csJBk1qWHOmIFuUp22jiGR4
+X-Proofpoint-GUID: 3ddMfe128csJBk1qWHOmIFuUp22jiGR4
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-Subject: Re: [6.2][regression] after commit
- ffcb754584603adf7039d7972564fbf6febdc542 all sound devices disappeared (due
- BUG at mm/page_alloc.c:3592!)
-Content-Language: en-GB
-To: Christoph Hellwig <hch@lst.de>
-Cc: Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>,
- Takashi Iwai <tiwai@suse.de>, alsa-devel@alsa-project.org,
- m.szyprowski@samsung.com,
- Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
- iommu@lists.linux.dev
-References: <CABXGCsPnpu0TGHnvXM1we7q1t3tJAOYW2rA=AMvf7ZahcYvpRQ@mail.gmail.com>
- <20221216064645.GA24446@lst.de>
- <a76cb262-a24f-e113-5680-2025aa143ee6@arm.com> <20221216121519.GA5710@lst.de>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20221216121519.GA5710@lst.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-12-16_09,2022-12-15_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
+ priorityscore=1501 clxscore=1015 lowpriorityscore=0 mlxscore=0
+ mlxlogscore=999 phishscore=0 adultscore=0 bulkscore=0 suspectscore=0
+ impostorscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2212070000 definitions=main-2212160127
 
-On 2022-12-16 12:15, Christoph Hellwig wrote:
-> On Fri, Dec 16, 2022 at 11:40:57AM +0000, Robin Murphy wrote:
->> On 2022-12-16 06:46, Christoph Hellwig wrote:
->>> Ok, it seems like the sound noncontig alloc code that I already
->>> commented on as potentially bogus GFP_GOMP mapping trips this.  I think
->>> for now the right thing would be to revert the hunk in dma-iommu.c
->>> (see patch below).  The other thing to try would be to remove both
->>> uses GFP_COMP in sound/core/memalloc.c, which should have the same
->>> effect.
->>
->> Or we explicitly strip the flag in dma_alloc_noncontiguous() (and maybe
->> dma_alloc_pages() as well) for consistency with dma_alloc_attrs(). That
->> seems like it might be the most robust option.
-> 
-> In the long run warning there and returning an error seems like the
-> right thing to do, yes. I'm just a little worried doing this right now
-> after the merge window.
+On Tue, 2022-12-06 at 11:13 +0800, chenxiang (M) wrote:
+>=20
+> =E5=9C=A8 2022/12/5 21:50, Gerd Bayer =E5=86=99=E9=81=93:
+> > Since [1] the user-space program dma_map_benchmark shares the
+> > header file
+> > linux/map_benchmark.h with the kernel driver in
+> > kernel/dma/map_benchmark.c.
+> > With latest kernel version this does not compile any more.
+> >=20
+> > While https://kernelnewbies.org/KernelHeaders=C2=A0suggests otherwise,
+> > allow it
+> > to use of kernel headers through the uapi/ include direcotry. I
+> > assume we can
+> > do so safely, since the controlling user-space program is
+> > distributed with
+> > the kernel.
+> >=20
+> > With this change dma_map_benchmark compiles with just the obvious
+> > warning
+> > about uapi usage on ARCH=3Dx86 and s390 and runs on ARCH=3Ds390.
+> >=20
+> > [1] commit 8ddde07a3d28 ("dma-mapping: benchmark: extract a common
+> > header file for map_benchmark definition")
+> >=20
+> > Signed-off-by: Gerd Bayer <gbayer@linux.ibm.com>
+>=20
+> It also solves the compile error on arm64 platform.
+> Acked-by:=C2=A0 Xiang Chen <chenxiang66@hisilicon.com>
 
-Fair point, I guess nobody else actually implements 
-dma_alloc_noncontiguous(), and dma_alloc_pages() seems a bit of a grey 
-area since it is more of an explicit page allocator. So yeah, just 
-restoring iommu-dma (perhaps with a mild VM_WARN_ON?) seems like a 
-sufficiently safe and sensible fix for the short term. You can have my 
-pre-emptive ack for that.
+Hi Xiang Chen, hi Shuah,
 
-Cheers,
-Robin.
+so is there any chance to have this compile fix integrated into linux-
+next still, or is this too late now?
+
+Thanks,
+Gerd
+
+>=20
+> > ---
+> > =C2=A0 tools/testing/selftests/dma/dma_map_benchmark.c | 2 +-
+> > =C2=A0 1 file changed, 1 insertion(+), 1 deletion(-)
+> >=20
+> > diff --git a/tools/testing/selftests/dma/dma_map_benchmark.c
+> > b/tools/testing/selftests/dma/dma_map_benchmark.c
+> > index 5c997f17fcbd..d49d7ea6a63e 100644
+> > --- a/tools/testing/selftests/dma/dma_map_benchmark.c
+> > +++ b/tools/testing/selftests/dma/dma_map_benchmark.c
+> > @@ -10,7 +10,7 @@
+> > =C2=A0 #include <unistd.h>
+> > =C2=A0 #include <sys/ioctl.h>
+> > =C2=A0 #include <sys/mman.h>
+> > -#include <linux/types.h>
+> > +#include <uapi/linux/types.h>
+> > =C2=A0 #include <linux/map_benchmark.h>
+> > =C2=A0=20
+> > =C2=A0 #define NSEC_PER_MSEC=C2=A01000000L
+> >=20
+> > base-commit: 8abacb3356e68261ccd3a2ad74ed6042363e5d0f
+>=20
+
