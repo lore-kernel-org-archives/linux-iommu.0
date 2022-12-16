@@ -1,14 +1,14 @@
-Received: from relay02.th.seeweb.it (relay02.th.seeweb.it [5.144.164.163])
+Received: from relay04.th.seeweb.it (relay04.th.seeweb.it [5.144.164.165])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45D238BEE
-	for <iommu@lists.linux.dev>; Fri, 16 Dec 2022 22:00:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DE678BEE
+	for <iommu@lists.linux.dev>; Fri, 16 Dec 2022 22:00:09 +0000 (UTC)
 Received: from localhost.localdomain (94-209-172-39.cable.dynamic.v4.ziggo.nl [94.209.172.39])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by m-r1.th.seeweb.it (Postfix) with ESMTPSA id 6A9892010A;
-	Fri, 16 Dec 2022 23:00:02 +0100 (CET)
+	by m-r1.th.seeweb.it (Postfix) with ESMTPSA id 2ACD2200B8;
+	Fri, 16 Dec 2022 23:00:01 +0100 (CET)
 From: Marijn Suijten <marijn.suijten@somainline.org>
 To: phone-devel@vger.kernel.org,
 	Will Deacon <will@kernel.org>,
@@ -37,12 +37,10 @@ Cc: ~postmarketos/upstreaming@lists.sr.ht,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-arm-msm@vger.kernel.org
-Subject: [PATCH v4 1/4] dt-bindings: arm-smmu: Document smmu-500 binding for SM6125
-Date: Fri, 16 Dec 2022 22:58:16 +0100
-Message-Id: <20221216215819.1164973-2-marijn.suijten@somainline.org>
+Subject: [PATCH v4 0/4] arm64: dts: qcom: sm6125: Enable APPS SMMU
+Date: Fri, 16 Dec 2022 22:58:15 +0100
+Message-Id: <20221216215819.1164973-1-marijn.suijten@somainline.org>
 X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20221216215819.1164973-1-marijn.suijten@somainline.org>
-References: <20221216215819.1164973-1-marijn.suijten@somainline.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,29 +49,33 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Martin Botka <martin.botka@somainline.org>
+Add APPS SMMU to SM6125 dtsi and use it in SDHCI/USB nodes.
 
-Document smmu-500 compatibility with the SM6125 SoC.
+Changes since v3:
 
-Signed-off-by: Martin Botka <martin.botka@somainline.org>
-[Marijn: Move compatible to the new, generic, qcom,smmu-500 list]
-Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
----
- Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
- 1 file changed, 1 insertion(+)
+- Drop driver patch in favour of using generic qcom,smmu-500 compatible;
+- Add patches that use apps_smmu in USB and SDHCI nodes, reconfiguring
+  their streamID which otherwise gets lost (from the bootloader) as soon
+  as SMMU probes, breaking their functionality;
+- Rebased on next-20221216 to solve dt-bindings conflict.
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-index b28c5c2b0ff2..95b03fd86e18 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-@@ -43,6 +43,7 @@ properties:
-               - qcom,sdm670-smmu-500
-               - qcom,sdm845-smmu-500
-               - qcom,sm6115-smmu-500
-+              - qcom,sm6125-smmu-500
-               - qcom,sm6350-smmu-500
-               - qcom,sm6375-smmu-500
-               - qcom,sm8150-smmu-500
--- 
+v3: https://lore.kernel.org/linux-iommu/20210612094606.89576-2-martin.botka@somainline.org/T/#u
+
+AngeloGioacchino Del Regno (1):
+  arm64: dts: qcom: sm6125: Add IOMMU context to DWC3
+
+Marijn Suijten (1):
+  arm64: dts: qcom: sm6125: Add apps_smmu with streamID to SDHCI 1/2
+    nodes
+
+Martin Botka (2):
+  dt-bindings: arm-smmu: Document smmu-500 binding for SM6125
+  arm64: dts: qcom: sm6125: Configure APPS SMMU
+
+ .../devicetree/bindings/iommu/arm,smmu.yaml   |  1 +
+ arch/arm64/boot/dts/qcom/sm6125.dtsi          | 76 +++++++++++++++++++
+ 2 files changed, 77 insertions(+)
+
+--
 2.39.0
 
