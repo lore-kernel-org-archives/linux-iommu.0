@@ -1,79 +1,181 @@
-Received: from relay02.th.seeweb.it (relay02.th.seeweb.it [5.144.164.163])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED3948BFA
-	for <iommu@lists.linux.dev>; Fri, 16 Dec 2022 22:06:34 +0000 (UTC)
-Received: from localhost.localdomain (94-209-172-39.cable.dynamic.v4.ziggo.nl [94.209.172.39])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by m-r1.th.seeweb.it (Postfix) with ESMTPSA id A74832017E;
-	Fri, 16 Dec 2022 23:00:05 +0100 (CET)
-From: Marijn Suijten <marijn.suijten@somainline.org>
-To: phone-devel@vger.kernel.org,
-	Will Deacon <will@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Bjorn Andersson <andersson@kernel.org>
-Cc: ~postmarketos/upstreaming@lists.sr.ht,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>,
-	Konrad Dybcio <konrad.dybcio@somainline.org>,
-	Martin Botka <martin.botka@somainline.org>,
-	Jami Kettunen <jami.kettunen@somainline.org>,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	Lux Aliaga <they@mint.lgbt>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Andy Gross <agross@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Thierry Reding <treding@nvidia.com>,
-	Melody Olvera <quic_molvera@quicinc.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Bhupesh Sharma <bhupesh.sharma@linaro.org>,
-	Douglas Anderson <dianders@chromium.org>,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org
-Subject: [PATCH v4 4/4] arm64: dts: qcom: sm6125: Add IOMMU context to DWC3
-Date: Fri, 16 Dec 2022 22:58:19 +0100
-Message-Id: <20221216215819.1164973-5-marijn.suijten@somainline.org>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20221216215819.1164973-1-marijn.suijten@somainline.org>
-References: <20221216215819.1164973-1-marijn.suijten@somainline.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6310C20F3
+	for <iommu@lists.linux.dev>; Sat, 17 Dec 2022 14:25:44 +0000 (UTC)
+Received: by mail-lj1-f181.google.com with SMTP id h10so4910782ljk.11
+        for <iommu@lists.linux.dev>; Sat, 17 Dec 2022 06:25:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=AbkQiFOGaUTxjVfMNbHPRgK4jY57Ynyi5LA7DMw6iGs=;
+        b=i13UUw/qhReRwrqL2wm6Slq8OeTCbX4r2X1YqZsDGN909O0GDRgqmClAZehsNrOUfe
+         j8ehCr0WdpoFV/UumV9+t7QDdrfHSt78ve8lzcfOMl8EzoG9bW+9uRjawht36GnArN9d
+         QYThTxMghwgR0NyHrJoetyv3sCBsnMZ32WvornpMIToVAj8AUpkWhSA0pndpmJt6FNmH
+         94aTUgge5Q7pZQEeGz52/BM0swwGaDZtbo3+uCPb57BLs9ilmhS+EhfrBF5+T0DwlNMb
+         oVdnylK3ccjS7XTFCoLV+VtD32WihPmJFB3teag1AoKJUHBUZN/G9sKMPykZaI+DJnQN
+         XjSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=AbkQiFOGaUTxjVfMNbHPRgK4jY57Ynyi5LA7DMw6iGs=;
+        b=It6yNx2XQqitHrXuZnlXpTT/4zrjjUv90VvBZJVk1WAv2f9cY+z97a1viN1rw4PJ9f
+         JvjUSx+g46bzP3BETTItNZF+RTB06D3X1YMDpuaK/wUejbL3YMFLPKcUDZD/xfXLvfgc
+         HiA+yFNVVODiGQp3TLHShVhmH01sgT04XNEy+0cTS2Rs1TG8xln4t7xs+h6XWGQUeA8v
+         INK32N39AhczjP8OBSmoeIQQsxdsapUCeXgwNuz2urZCcb3phgvgFquI4RebpdtI9wBV
+         zu+Kvpu1vm/OB4nAG8mprEE1tt+pEcplugJHjyuB10MZnBzeWmja5FjE+G/L4Gw8j4Vu
+         ms4g==
+X-Gm-Message-State: ANoB5pljQwiuwqIJJqZ/7Y5eZkQpDTNTveLNxuX6WB7CSybu278NGVwE
+	e6AJizbNRKwjzdMkEyXkaZQ7Xw==
+X-Google-Smtp-Source: AA0mqf7xrFRwNMGb2RtvbMR7QSO+gl/dwgUlXXZ4xE24Pvbi68yb3d5sVWaljwReIh3irB0dFAUupg==
+X-Received: by 2002:a05:651c:12c7:b0:276:103f:dc36 with SMTP id 7-20020a05651c12c700b00276103fdc36mr14388214lje.1.1671287142491;
+        Sat, 17 Dec 2022 06:25:42 -0800 (PST)
+Received: from [192.168.1.101] (abxh44.neoplus.adsl.tpnet.pl. [83.9.1.44])
+        by smtp.gmail.com with ESMTPSA id z14-20020a05651c11ce00b0027f770526ebsm106761ljo.75.2022.12.17.06.25.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 17 Dec 2022 06:25:42 -0800 (PST)
+Message-ID: <a20b17b5-385d-ec32-8fb9-beaa3b2fde15@linaro.org>
+Date: Sat, 17 Dec 2022 15:25:39 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Subject: Re: [PATCH v4 2/4] arm64: dts: qcom: sm6125: Configure APPS SMMU
+Content-Language: en-US
+To: Marijn Suijten <marijn.suijten@somainline.org>,
+ phone-devel@vger.kernel.org, Will Deacon <will@kernel.org>,
+ Joerg Roedel <joro@8bytes.org>, Bjorn Andersson <andersson@kernel.org>
+Cc: ~postmarketos/upstreaming@lists.sr.ht,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>,
+ Konrad Dybcio <konrad.dybcio@somainline.org>,
+ Martin Botka <martin.botka@somainline.org>,
+ Jami Kettunen <jami.kettunen@somainline.org>, Lux Aliaga <they@mint.lgbt>,
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Andy Gross <agross@kernel.org>,
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+ Thierry Reding <treding@nvidia.com>, Melody Olvera
+ <quic_molvera@quicinc.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+ Douglas Anderson <dianders@chromium.org>,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org
+References: <20221216215819.1164973-1-marijn.suijten@somainline.org>
+ <20221216215819.1164973-3-marijn.suijten@somainline.org>
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+In-Reply-To: <20221216215819.1164973-3-marijn.suijten@somainline.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
 
-Add an IOMMU context to the USB DWC3 controller, required to get USB
-functionality upon enablement of apps_smmu.
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
-Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
----
- arch/arm64/boot/dts/qcom/sm6125.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+On 16.12.2022 22:58, Marijn Suijten wrote:
+> From: Martin Botka <martin.botka@somainline.org>
+> 
+> Add a node for the APPS SMMU, to which various devices such as USB and
+> storage nodes are connected.
+> 
+> Signed-off-by: Martin Botka <martin.botka@somainline.org>
+> [Marijn: add the new, generic, "qcom,smmu-500" compatible, add patch
+>  description, reorder # properties]
+> Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+> ---
+Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 
-diff --git a/arch/arm64/boot/dts/qcom/sm6125.dtsi b/arch/arm64/boot/dts/qcom/sm6125.dtsi
-index f560499cc0ca..a205121ab4a7 100644
---- a/arch/arm64/boot/dts/qcom/sm6125.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm6125.dtsi
-@@ -542,6 +542,7 @@ usb3_dwc3: usb@4e00000 {
- 				compatible = "snps,dwc3";
- 				reg = <0x04e00000 0xcd00>;
- 				interrupts = <GIC_SPI 255 IRQ_TYPE_LEVEL_HIGH>;
-+				iommus = <&apps_smmu 0x100 0x0>;
- 				phys = <&hsusb_phy1>;
- 				phy-names = "usb2-phy";
- 				snps,dis_u2_susphy_quirk;
--- 
-2.39.0
-
+Konrad
+>  arch/arm64/boot/dts/qcom/sm6125.dtsi | 73 ++++++++++++++++++++++++++++
+>  1 file changed, 73 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sm6125.dtsi b/arch/arm64/boot/dts/qcom/sm6125.dtsi
+> index bf9e8d45ee44..347665c2067c 100644
+> --- a/arch/arm64/boot/dts/qcom/sm6125.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sm6125.dtsi
+> @@ -573,6 +573,79 @@ spmi_bus: spmi@1c40000 {
+>  			cell-index = <0>;
+>  		};
+>  
+> +		apps_smmu: iommu@c600000 {
+> +			compatible = "qcom,sm6125-smmu-500", "qcom,smmu-500", "arm,mmu-500";
+> +			reg = <0xc600000 0x80000>;
+> +			interrupts = <GIC_SPI 81 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 88 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 89 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 91 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 92 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 104 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 105 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 112 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 114 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 119 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 120 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 121 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 122 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 124 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 125 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 126 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 127 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 128 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 129 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 130 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 131 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 132 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 133 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 134 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 135 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 136 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 137 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 139 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 140 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 141 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 142 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 143 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 144 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 145 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 146 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 148 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 149 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 150 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 151 IRQ_TYPE_LEVEL_HIGH>;
+> +
+> +			#global-interrupts = <1>;
+> +			#iommu-cells = <2>;
+> +		};
+> +
+>  		apcs_glb: mailbox@f111000 {
+>  			compatible = "qcom,sm6125-apcs-hmss-global";
+>  			reg = <0x0f111000 0x1000>;
