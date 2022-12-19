@@ -1,94 +1,70 @@
-Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
+Received: from mail-vs1-f46.google.com (mail-vs1-f46.google.com [209.85.217.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 230BC10EF
-	for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 09:09:07 +0000 (UTC)
-Received: by mail-lf1-f47.google.com with SMTP id q6so12668146lfm.10
-        for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 01:09:06 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C33C10EF
+	for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 10:01:59 +0000 (UTC)
+Received: by mail-vs1-f46.google.com with SMTP id i2so8188196vsc.1
+        for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 02:01:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=JZyR5gSmKyguAcX5pHH35Ht5JLpx7+cAaPVpmD/qMPE=;
-        b=TdN7ALFw6/NFrG+fG2GiKk5ZlonpRX6iE/1DSwfQwwykBTZo7SI/QFd4Y34CqHQyoV
-         TC+uee+pPB4LMC2egRTx0qz8OtcXbCUvkjIt37NQt5Pd2a1cMze93funFnotHLbflkIC
-         qUtA7WVresBz1tKDYdluUypqgVGxx83Tayr3rqNHODhKPwYVpljVQ6KVmaPLU36G4dgs
-         vykXOMCJ7/s7O+/+BIyclgtBFwEko9hf/7mwWl6Fm/GxHFtnhfP+JaHadxcmlV1pUOuJ
-         mWVJvXt5Uu9YSGK1dkp1ZyWZc/3Gt0BQGEdRXTq7bbbaYfc/L0mFYPoajjxndcScTn4w
-         q9VA==
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=lCDOO4VPZC6I/ow/QnYvYYMpSXdiSjKaJtZIVyZxvEE=;
+        b=mOtdqjcN2Q+lYcbuQkk+7XmEkdgmncgKTiCt6qcnIl9LxKIyrA9C9+kYAYYGX3Iq3b
+         6JKV2CH5JjzySELSxzFzDkXA0/qzGraNPEjqOCNTaqSteogolPKnnmO1NBOZoHwGzQgs
+         ptI9YgvzV13kcdXChGr0YKpidltW4SSG67y2STPnCLdbED+CJy4hT6R3657k6ji6DYPb
+         JTjtNbBcBH5D09ZfJc0LkL/jd/kbtj40S9T7fJfvGAQAInlBHLr6+7fbhUcJ0M7zzgXF
+         a91M0M24p25GDDYDRbm+qU4Vp3ikeprcRgzhGfokpCInUx58z3HNWedmoqXF5PKpgpdB
+         1dJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=JZyR5gSmKyguAcX5pHH35Ht5JLpx7+cAaPVpmD/qMPE=;
-        b=fMw6oXJmIM+XzM7ItfwoW2cdTyt1PQFYiIWqql5Y0AgQzodNxWbBDa2dRWe+RU8L0H
-         6dI4Fb7wVdhImXaJRZ4cNVkkDpxwMYJkChnJgV/3PgFvbweUdTSVC3T4z2rCg1+a5id/
-         m7HvTZfO3z+1q01jJW2yhlLVnNMCt5mA54wR5VMze9LdJfhN6vAM/xQQr3zxm8k7v04x
-         SjUp5SpJ/KWv4V+0Fxe76FD4tIXABfpGx/3pt+YdsIGoqDVUqbBeRNKLehWKlZiXeEe4
-         CrRfvtm2+ZZZzAsQq6RML/fNt0JMfJBtp4GZTdnYmU36H9T9L+5t0ir00yuVai3M9PzK
-         yr1Q==
-X-Gm-Message-State: ANoB5pm8D17f83enuqGV543X8yJtKSnOMs2MAJaoPpE78BAgZ9gL2uX8
-	l9/cBMskHGiMqXYSpqWM3BeN2w==
-X-Google-Smtp-Source: AA0mqf5X0yqQn8C9U/nSEy2RW1j67TKUJw0sbleYyIOJ2Iiqe4iuR9Vs33wEupgZWbCbz7rYk83HuA==
-X-Received: by 2002:a19:e059:0:b0:4b5:8987:1db8 with SMTP id g25-20020a19e059000000b004b589871db8mr11186995lfj.59.1671440945251;
-        Mon, 19 Dec 2022 01:09:05 -0800 (PST)
-Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id b8-20020a056512070800b004acbfa4a18bsm1057604lfs.173.2022.12.19.01.09.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Dec 2022 01:09:04 -0800 (PST)
-Message-ID: <6d263321-782d-9d9c-4fdf-8bcf5b280779@linaro.org>
-Date: Mon, 19 Dec 2022 10:09:03 +0100
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=lCDOO4VPZC6I/ow/QnYvYYMpSXdiSjKaJtZIVyZxvEE=;
+        b=myUfot+TOi5koJwbOmQJBKVyX17Clnpjty7Cxfk3rQZMe89A5X8BNj57T1s+tO6XuJ
+         UbAt71GoOIuhDdo+irBVYKM10E7412kDtMHbzmfAtC/dERUqarTK2rBd1P9RMe7fRUHr
+         iZyjUYwTwvpG6PsMWPiO/WxiVv84vZIfZqXr5vJDhmel3e8q7tgPOBXYGYsfj/gwMYOG
+         UxeuDVdpGKn8++kh5at0rI4zlqHUXIiu5EnTvUds3WIWCOJpK4sN1+Lw+/U1lKko0h1v
+         133zaQ8EbiV7YoyZH1eSdSDP68p63C+j0fUuUYiaJPJtO7YdhBnhHQxxAwiG9ocEVCaT
+         66RQ==
+X-Gm-Message-State: ANoB5pnq1h8iBXHXaCh7jME4TakX1RNwxf3dIS6FDZbN/Qc7aynVbmmu
+	Bo8feibWFKL7FgNlzyfjueDh3Y4rzc9/Vils6xM=
+X-Google-Smtp-Source: AA0mqf4ROgAqL66e4a/+lmlVndnHpc5y+QPZsBm8wwkxvClIFBYSMaQfW5JScMW2tffHoRiJQd70LauX0BVgg7SXON4=
+X-Received: by 2002:a67:fa8f:0:b0:3a9:5a1e:ffa with SMTP id
+ f15-20020a67fa8f000000b003a95a1e0ffamr41970859vsq.39.1671444118071; Mon, 19
+ Dec 2022 02:01:58 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH v4 1/4] dt-bindings: arm-smmu: Document smmu-500 binding
- for SM6125
-Content-Language: en-US
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To: Marijn Suijten <marijn.suijten@somainline.org>,
- phone-devel@vger.kernel.org, Will Deacon <will@kernel.org>,
- Joerg Roedel <joro@8bytes.org>, Bjorn Andersson <andersson@kernel.org>
-Cc: ~postmarketos/upstreaming@lists.sr.ht,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>,
- Konrad Dybcio <konrad.dybcio@somainline.org>,
- Martin Botka <martin.botka@somainline.org>,
- Jami Kettunen <jami.kettunen@somainline.org>, Lux Aliaga <they@mint.lgbt>,
- Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Andy Gross <agross@kernel.org>, Konrad Dybcio <konrad.dybcio@linaro.org>,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
- Thierry Reding <treding@nvidia.com>, Melody Olvera
- <quic_molvera@quicinc.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Bhupesh Sharma <bhupesh.sharma@linaro.org>,
- Douglas Anderson <dianders@chromium.org>,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-msm@vger.kernel.org
-References: <20221216215819.1164973-1-marijn.suijten@somainline.org>
- <20221216215819.1164973-2-marijn.suijten@somainline.org>
- <306709f8-7d45-9b76-f95b-1b3088d37a78@linaro.org>
-In-Reply-To: <306709f8-7d45-9b76-f95b-1b3088d37a78@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20221030094258.486428-1-iskren.chernev@gmail.com>
+ <20221030094258.486428-6-iskren.chernev@gmail.com> <9e94c0b9-f901-5ac9-2abb-40e958cbe5a2@linaro.org>
+ <3134ba66-27bb-7015-8988-6c8dec046b0f@linaro.org>
+In-Reply-To: <3134ba66-27bb-7015-8988-6c8dec046b0f@linaro.org>
+From: Iskren Chernev <iskren.chernev@gmail.com>
+Date: Mon, 19 Dec 2022 12:01:46 +0200
+Message-ID: <CAL7jhid=inAk85h9tHOD6rjFc-aNufvZPQw3ALfsrqTm6oHCag@mail.gmail.com>
+Subject: Re: [PATCH v5 5/8] iommu/arm-smmu-qcom: Add SM6115 support
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Bjorn Andersson <andersson@kernel.org>, 
+	Rob Herring <robh+dt@kernel.org>, phone-devel@vger.kernel.org, 
+	~postmarketos/upstreaming@lists.sr.ht, linux-arm-msm@vger.kernel.org, 
+	devicetree@vger.kernel.org, Adam Skladowski <a39.skl@gmail.com>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+	Konrad Dybcio <konrad.dybcio@somainline.org>, 
+	Sai Prakash Ranjan <quic_saipraka@quicinc.com>, Emma Anholt <emma@anholt.net>, 
+	Rob Clark <robdclark@chromium.org>, linux-arm-kernel@lists.infradead.org, 
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On 19/12/2022 10:07, Krzysztof Kozlowski wrote:
-> On 16/12/2022 22:58, Marijn Suijten wrote:
->> From: Martin Botka <martin.botka@somainline.org>
->>
->> Document smmu-500 compatibility with the SM6125 SoC.
->>
-> 
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> So, hopefully you can skip this patch completely by depending on the
+> generic "qcom,smmu-500" compatible.
 
-Wait, not entirely... no constraints for clocks and regs?
+To be clear -- I still need the qcom,SOC-smmu-500 compatible in DT and
+bindings, but not in the driver (i.e driver will pick generic)?
 
-Best regards,
-Krzysztof
-
+Then this can indeed be dropped (but it is merged in linux-next ATM,
+6.2-rc1 based next won't have it, I guess?).
