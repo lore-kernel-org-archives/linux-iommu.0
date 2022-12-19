@@ -1,93 +1,200 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DE3F4A17
-	for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 15:56:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83A4CC433F0;
-	Mon, 19 Dec 2022 15:56:41 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-	dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="QAL5Ft+C"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-	t=1671465399;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=81vP/WZfkabtKBEFH0+IkYNddzD7C35Ot4O6pKjKCUI=;
-	b=QAL5Ft+CRVjgFazjSaWQke+om0MPkMazc/xZcVmBYAxpw5EucxYhwoG/jqyorloH07JPIh
-	2Co8/IsFgaYX3B26tsS1uLsDb+oqNgS2m4jTopzXzp2LXtEDmXqpF16eNAmTppVsKLepWa
-	UX8TRJrd/Jvnf1V6FSWgDbH69/XNoow=
-Received: 
-	by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 4929dc98 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-	Mon, 19 Dec 2022 15:56:39 +0000 (UTC)
-Date: Mon, 19 Dec 2022 16:56:33 +0100
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: torvalds@linux-foundation.org, corbet@lwn.net, will@kernel.org,
-	boqun.feng@gmail.com, mark.rutland@arm.com, catalin.marinas@arm.com,
-	dennis@kernel.org, tj@kernel.org, cl@linux.com, hca@linux.ibm.com,
-	gor@linux.ibm.com, agordeev@linux.ibm.com,
-	borntraeger@linux.ibm.com, svens@linux.ibm.com,
-	Herbert Xu <herbert@gondor.apana.org.au>, davem@davemloft.net,
-	tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-	dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-	joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	robin.murphy@arm.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
-	Arnd Bergmann <arnd@arndb.de>, penberg@kernel.org,
-	rientjes@google.com, iamjoonsoo.kim@lge.com,
-	Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz,
-	roman.gushchin@linux.dev, 42.hyeyoo@gmail.com,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org, linux-s390@vger.kernel.org,
-	linux-crypto@vger.kernel.org, iommu@lists.linux.dev,
-	linux-arch@vger.kernel.org
-Subject: Re: [RFC][PATCH 01/12] crypto: Remove u128 usage
-Message-ID: <Y6CJsWBhcbKatZNg@zx2c4.com>
-References: <20221219153525.632521981@infradead.org>
- <20221219154118.889543494@infradead.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C43074A17
+	for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 16:17:18 +0000 (UTC)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2BJGBWlQ001910;
+	Mon, 19 Dec 2022 16:16:43 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=RtsWhsVJvLGz1G5bUGjFJl7qw+Tu+K2zEzV90qBQFDU=;
+ b=PcuJHY6lD0GVFAt1z+4FuKrLP7tlVE2ajsO8MDv2BEK+YCnOtVy1Z4tMh+GAq+vyR7Zs
+ db8cvsYRFYI0OgjLfuhmtBaigPiG09aIvwXwnCYNYky8pIvwjHAo1t0OmzSMM36V3EFp
+ uFc+W5UW6MB+thwtH0lPtlb52GhBCkC1s8ADVU9trLzm8hidYq+upnQQx4o1RiauiVRp
+ drpEzz3ctAzPKkXpjw5UNFBS1NRgu+t/VScThUM7BdCe17slII6dtVZc5C1JpwXfXjxA
+ G7LTbr4FH3A5j0dlAuQ5kgeag/WyS75Z44te8Zbp9qZivoGsmZ/FHNGj3ZCbSBgFLqtD ew== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3mju8v88ak-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 19 Dec 2022 16:16:43 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2BJGBlH1005097;
+	Mon, 19 Dec 2022 16:16:42 GMT
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3mju8v8896-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 19 Dec 2022 16:16:42 +0000
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+	by ppma03wdc.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 2BJFKOIC022061;
+	Mon, 19 Dec 2022 16:16:40 GMT
+Received: from smtprelay02.dal12v.mail.ibm.com ([9.208.130.97])
+	by ppma03wdc.us.ibm.com (PPS) with ESMTPS id 3mh6yxedf9-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 19 Dec 2022 16:16:40 +0000
+Received: from smtpav02.wdc07v.mail.ibm.com (smtpav02.wdc07v.mail.ibm.com [10.39.53.229])
+	by smtprelay02.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2BJGGdek35324618
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 19 Dec 2022 16:16:39 GMT
+Received: from smtpav02.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 24E475805B;
+	Mon, 19 Dec 2022 16:16:39 +0000 (GMT)
+Received: from smtpav02.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 65B645805C;
+	Mon, 19 Dec 2022 16:16:36 +0000 (GMT)
+Received: from [9.60.89.243] (unknown [9.60.89.243])
+	by smtpav02.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Mon, 19 Dec 2022 16:16:36 +0000 (GMT)
+Message-ID: <8275f4e0-aa73-d4e1-5612-ccf6a369fa07@linux.ibm.com>
+Date: Mon, 19 Dec 2022 11:16:35 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.5.1
+Subject: Re: [PATCH iommufd v2 8/9] irq/s390: Add arch_is_isolated_msi() for
+ s390
+To: Jason Gunthorpe <jgg@nvidia.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>,
+        iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+        Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
+        linux-s390@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>
+Cc: Bharat Bhushan <bharat.bhushan@nxp.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Eric Auger <eric.auger@redhat.com>, Eric Farman <farman@linux.ibm.com>,
+        Marc Zyngier <marc.zyngier@arm.com>,
+        Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>,
+        Will Deacon <will.deacon@arm.com>
+References: <8-v2-10ad79761833+40588-secure_msi_jgg@nvidia.com>
+Content-Language: en-US
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <8-v2-10ad79761833+40588-secure_msi_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 0m-J6pGlXN0pvE8Z2zYy5ilSktGE0m3s
+X-Proofpoint-ORIG-GUID: haiwmW7D8jw19evlCLssWmJKGuC9cwcG
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20221219154118.889543494@infradead.org>
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2022-12-19_01,2022-12-15_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ lowpriorityscore=0 suspectscore=0 priorityscore=1501 spamscore=0
+ mlxlogscore=999 phishscore=0 adultscore=0 bulkscore=0 clxscore=1015
+ mlxscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2212190142
 
-On Mon, Dec 19, 2022 at 04:35:26PM +0100, Peter Zijlstra wrote:
-> As seems to be the common (majority) usage in crypto, use __uint128_t
-> instead of u128.
+On 12/12/22 1:46 PM, Jason Gunthorpe wrote:
+> s390 doesn't use irq_domains, so it has no place to set
+> IRQ_DOMAIN_FLAG_ISOLATED_MSI. Instead of continuing to abuse the iommu
+> subsystem to convey this information add a simple define which s390 can
+> make statically true. The define will cause msi_device_has_isolated() to
+> return true.
 > 
-> This frees up u128 for definition in linux/types.h.
+> Remove IOMMU_CAP_INTR_REMAP from the s390 iommu driver.
 > 
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> Cc: Matthew Rosato <mjrosato@linux.ibm.com>
+> Cc: Christian Borntraeger <borntraeger@de.ibm.com>
+> Cc: Eric Farman <farman@linux.ibm.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+
+Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
+
+Also sanity-tested on s390 (needed the previously-mentioned #include <linux/msi.h> added to drivers/iommu/iommu.c)
+
 > ---
->  lib/crypto/curve25519-hacl64.c |  142 ++++++++++++++++++++---------------------
->  lib/crypto/poly1305-donna64.c  |   22 ++----
->  2 files changed, 80 insertions(+), 84 deletions(-)
+>  arch/s390/include/asm/msi.h | 17 +++++++++++++++++
+>  drivers/iommu/s390-iommu.c  |  2 --
+>  include/linux/msi.h         |  6 +++++-
+>  kernel/irq/msi.c            |  2 +-
+>  4 files changed, 23 insertions(+), 4 deletions(-)
+>  create mode 100644 arch/s390/include/asm/msi.h
 > 
-> --- a/lib/crypto/curve25519-hacl64.c
-> +++ b/lib/crypto/curve25519-hacl64.c
-> @@ -14,8 +14,6 @@
->  #include <crypto/curve25519.h>
->  #include <linux/string.h>
+> diff --git a/arch/s390/include/asm/msi.h b/arch/s390/include/asm/msi.h
+> new file mode 100644
+> index 00000000000000..399343ed9ffbc6
+> --- /dev/null
+> +++ b/arch/s390/include/asm/msi.h
+> @@ -0,0 +1,17 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef _ASM_S390_MSI_H
+> +#define _ASM_S390_MSI_H
+> +#include <asm-generic/msi.h>
+> +
+> +/*
+> + * Work around S390 not using irq_domain at all so we can't set
+> + * IRQ_DOMAIN_FLAG_ISOLATED_MSI. See for an explanation how it works:
+> + *
+> + * https://lore.kernel.org/r/31af8174-35e9-ebeb-b9ef-74c90d4bfd93@linux.ibm.com/
+> + *
+> + * Note this is less isolated than the ARM/x86 versions as userspace can trigger
+> + * MSI belonging to kernel devices within the same gisa.
+> + */
+> +#define arch_is_isolated_msi() true
+> +
+> +#endif
+> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+> index 3c071782f6f16d..c80f4728c0f307 100644
+> --- a/drivers/iommu/s390-iommu.c
+> +++ b/drivers/iommu/s390-iommu.c
+> @@ -44,8 +44,6 @@ static bool s390_iommu_capable(struct device *dev, enum iommu_cap cap)
+>  	switch (cap) {
+>  	case IOMMU_CAP_CACHE_COHERENCY:
+>  		return true;
+> -	case IOMMU_CAP_INTR_REMAP:
+> -		return true;
+>  	default:
+>  		return false;
+>  	}
+> diff --git a/include/linux/msi.h b/include/linux/msi.h
+> index e8a3f3a8a7f427..5cbe6a9d27efd6 100644
+> --- a/include/linux/msi.h
+> +++ b/include/linux/msi.h
+> @@ -48,6 +48,10 @@ typedef struct arch_msi_msg_data {
+>  } __attribute__ ((packed)) arch_msi_msg_data_t;
+>  #endif
 >  
-> -typedef __uint128_t u128;
-> -
->  static __always_inline u64 u64_eq_mask(u64 a, u64 b)
->  {
->  	u64 x = a ^ b;
-> @@ -50,77 +48,77 @@ static __always_inline void modulo_carry
->  	b[0] = b0_;
+> +#ifndef arch_is_isolated_msi
+> +#define arch_is_isolated_msi() false
+> +#endif
+> +
+>  /**
+>   * msi_msg - Representation of a MSI message
+>   * @address_lo:		Low 32 bits of msi message address
+> @@ -660,7 +664,7 @@ static inline bool msi_device_has_isolated_msi(struct device *dev)
+>  	 * is inherently isolated by our definition. As nobody seems to needs
+>  	 * this be conservative and return false anyhow.
+>  	 */
+> -	return false;
+> +	return arch_is_isolated_msi();
 >  }
+>  #endif /* CONFIG_GENERIC_MSI_IRQ */
 >  
-> -static __always_inline void fproduct_copy_from_wide_(u64 *output, u128 *input)
-> +static __always_inline void fproduct_copy_from_wide_(u64 *output, __uint128_t *input)
->  {
->  	{
-> -		u128 xi = input[0];
-> +		__uint128_t xi = input[0];
+> diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
+> index 7c5579d3ea4f79..3e46420a4f1a9f 100644
+> --- a/kernel/irq/msi.c
+> +++ b/kernel/irq/msi.c
+> @@ -1646,6 +1646,6 @@ bool msi_device_has_isolated_msi(struct device *dev)
+>  	for (; domain; domain = domain->parent)
+>  		if (domain->flags & IRQ_DOMAIN_FLAG_ISOLATED_MSI)
+>  			return true;
+> -	return false;
+> +	return arch_is_isolated_msi();
+>  }
+>  EXPORT_SYMBOL_GPL(msi_device_has_isolated_msi);
 
-Why not just use `u128` from types.h in this file?
-
-Jason
