@@ -1,32 +1,32 @@
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29CBD46AB
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D138446B4
 	for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 15:43:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
 	Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
 	Content-ID:Content-Description:In-Reply-To;
-	bh=TPf252rpqr9tSwRpNAavICICeFc5ydD0TdU6p9uBQtA=; b=hikgFxO9sKFM24xM6AvNTdx5rx
-	4bK/y8q/B0VCEnW01d/jdOIOOgxIQq4NAI6Euj1jUMXfyP+rrDOK4e4zF1MxY9SDmw3712EXyfs0e
-	zZyVyHpAFwBjGr/vHvoeSRNRrKno451ZKvcGDinbA8BYM5e9DbPj/bZgs6iT29aBwXdpHXM81ydbA
-	BuU2h9UTrqr7sYcUkI12tkRLSEh3whv/yts2oyMWWf/AtwiO7CtycmUfUgvK9Yfqfb/hCNyOAszam
-	f/zQg3GR+4JQj5VUE26N5UTKvtWgZjr6FBo4UI3eE2tZNipWqM42J/lcxj2ocKWrQLjmoRPH/MazT
-	iU0/RFQw==;
+	bh=LatshXnMYCOGTRlakBz337bCR5sPE/9cJhDhXQqvVDY=; b=Aw3O8XqIY/S7IlsVQ/vztRWMgZ
+	9MZkonC3mns2/7yAkQNiwPXzwmfBls4vaouAPRXYWbYwoAstiZ4ypUsECL7omaUYUtnI+EZ6P2V3q
+	y/xcU1yy7FDkewopYOQj1Nhj8XcQ428K57j1QJkMCYDX1H0YnXT/ueX2JiIkaqg3dGA8DpE+uDHuZ
+	XbkHNHNiVQLGrU4dprOjpr2trbXxO1lIDg6Cer+yAbg1xvT5Wewrt05BD6+u3Lj5CFMlGQOOT7hNz
+	97N20DbnzOeiDbQdYLEw7Y4vbsRRe+9WwBIoqo4YmUd5wlZH4B2ZRAk6v1VeIfq+JnxA7jHGols8G
+	ZrKZ2grg==;
 Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
 	by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-	id 1p7IIT-000qwq-PH; Mon, 19 Dec 2022 15:43:21 +0000
+	id 1p7IIS-000qwd-Of; Mon, 19 Dec 2022 15:43:21 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
 	(Client did not present a certificate)
-	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 0DCAD3031AE;
-	Mon, 19 Dec 2022 16:43:10 +0100 (CET)
+	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 9DABD300422;
+	Mon, 19 Dec 2022 16:43:06 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-	id 96CCA20B0F89E; Mon, 19 Dec 2022 16:43:06 +0100 (CET)
-Message-ID: <20221219154119.419176389@infradead.org>
+	id 7217320A25F3F; Mon, 19 Dec 2022 16:43:06 +0100 (CET)
+Message-ID: <20221219154119.087799661@infradead.org>
 User-Agent: quilt/0.66
-Date: Mon, 19 Dec 2022 16:35:34 +0100
+Date: Mon, 19 Dec 2022 16:35:29 +0100
 From: Peter Zijlstra <peterz@infradead.org>
 To: torvalds@linux-foundation.org
 Cc: corbet@lwn.net,
@@ -71,7 +71,7 @@ Cc: corbet@lwn.net,
  linux-crypto@vger.kernel.org,
  iommu@lists.linux.dev,
  linux-arch@vger.kernel.org
-Subject: [RFC][PATCH 09/12] x86,amd_iommu: Replace cmpxchg_double()
+Subject: [RFC][PATCH 04/12] types: Introduce [us]128
 References: <20221219153525.632521981@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -81,64 +81,44 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 
+Introduce [us]128 (when available). Unlike [us]64, ensure they are
+always naturally aligned.
+
+This also enables 128bit wide atomics (which require natural
+alignment) such as cmpxchg128().
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- drivers/iommu/amd/amd_iommu_types.h |    9 +++++++--
- drivers/iommu/amd/iommu.c           |   10 ++++------
- 2 files changed, 11 insertions(+), 8 deletions(-)
+ include/linux/types.h      |    5 +++++
+ include/uapi/linux/types.h |    4 ++++
+ 2 files changed, 9 insertions(+)
 
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -979,8 +979,13 @@ union irte_ga_hi {
- };
+--- a/include/linux/types.h
++++ b/include/linux/types.h
+@@ -10,6 +10,11 @@
+ #define DECLARE_BITMAP(name,bits) \
+ 	unsigned long name[BITS_TO_LONGS(bits)]
  
- struct irte_ga {
--	union irte_ga_lo lo;
--	union irte_ga_hi hi;
-+	union {
-+		struct {
-+			union irte_ga_lo lo;
-+			union irte_ga_hi hi;
-+		};
-+		u128 irte;
-+	};
- };
++#ifdef __SIZEOF_INT128__
++typedef __s128 s128;
++typedef __u128 u128;
++#endif
++
+ typedef u32 __kernel_dev_t;
  
- struct irq_2_irte {
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2992,10 +2992,10 @@ static int alloc_irq_index(struct amd_io
- static int modify_irte_ga(struct amd_iommu *iommu, u16 devid, int index,
- 			  struct irte_ga *irte, struct amd_ir_data *data)
- {
--	bool ret;
- 	struct irq_remap_table *table;
--	unsigned long flags;
- 	struct irte_ga *entry;
-+	unsigned long flags;
-+	u128 old;
+ typedef __kernel_fd_set		fd_set;
+--- a/include/uapi/linux/types.h
++++ b/include/uapi/linux/types.h
+@@ -13,6 +13,10 @@
  
- 	table = get_irq_table(iommu, devid);
- 	if (!table)
-@@ -3006,16 +3006,14 @@ static int modify_irte_ga(struct amd_iom
- 	entry = (struct irte_ga *)table->table;
- 	entry = &entry[index];
+ #include <linux/posix_types.h>
  
--	ret = cmpxchg_double(&entry->lo.val, &entry->hi.val,
--			     entry->lo.val, entry->hi.val,
--			     irte->lo.val, irte->hi.val);
- 	/*
- 	 * We use cmpxchg16 to atomically update the 128-bit IRTE,
- 	 * and it cannot be updated by the hardware or other processors
- 	 * behind us, so the return value of cmpxchg16 should be the
- 	 * same as the old value.
- 	 */
--	WARN_ON(!ret);
-+	old = entry->irte;
-+	WARN_ON(!try_cmpxchg128(&entry->irte, &old, irte->irte));
++#ifdef __SIZEOF_INT128__
++typedef __signed__ __int128 __s128 __attribute__((aligned(16)));
++typedef unsigned __int128 __u128 __attribute__((aligned(16)));
++#endif
  
- 	if (data)
- 		data->ref = entry;
+ /*
+  * Below are truly Linux-specific types that should never collide with
 
 
