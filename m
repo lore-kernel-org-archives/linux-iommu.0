@@ -1,72 +1,79 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6720863D4
-	for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 17:03:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDB39C433EF
-	for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 17:03:29 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-	dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="iqHjA6Et"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-	t=1671469408;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=IefjMF7tOMH0wax39/RLpi+AIb8VNuSkBwczTr3jg6k=;
-	b=iqHjA6EtH/BErKl8Q+ih/TwoWgTf6nmWjN0OWisAyKx05PwPJ+q8knOXAIYGaJ0HKBu90I
-	c8CprBhVTmMpMsmYquNydFuNUy9UYKHoqIqkW9dqEXGM0dhddu7b5cz3RIwNZJhFgc8hkf
-	lz+x7xq2SAuGaozwrxKNsbExyf9wLqI=
-Received: 
-	by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 21d053de (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
-	for <iommu@lists.linux.dev>;
-	Mon, 19 Dec 2022 17:03:27 +0000 (UTC)
-Received: by mail-ot1-f42.google.com with SMTP id x25-20020a056830115900b00670932eff32so5702580otq.3
-        for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 09:03:27 -0800 (PST)
-X-Gm-Message-State: ANoB5plGusrJcdNDfo+SZx9QDkyaefCUSVespBCfc5+JZnsfMLiNFbAt
-	A5r7WLDjnms1dftjkUccNFdUHfB6FZS/kXKkZ7U=
-X-Google-Smtp-Source: AA0mqf56hSUvnp6sOH/4lCw8h7C5hUdYBXkDOQf8YsHAL5a33e68otGl2Xumid7SYgRvw7HIbTyPONVAqZXy7J7ezBw=
-X-Received: by 2002:a0d:c6c3:0:b0:3f8:5b0b:bbb8 with SMTP id
- i186-20020a0dc6c3000000b003f85b0bbbb8mr14883107ywd.79.1671469396034; Mon, 19
- Dec 2022 09:03:16 -0800 (PST)
+Received: from smtp.smtpout.orange.fr (smtp-16.smtpout.orange.fr [80.12.242.16])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1CC6D6FA4
+	for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 18:14:05 +0000 (UTC)
+Received: from pop-os.home ([86.243.100.34])
+	by smtp.orange.fr with ESMTPA
+	id 7KWtpg0ivBonI7KWtprGLS; Mon, 19 Dec 2022 19:06:28 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Mon, 19 Dec 2022 19:06:28 +0100
+X-ME-IP: 86.243.100.34
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To: Yong Wu <yong.wu@mediatek.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	Honghui Zhang <honghui.zhang@mediatek.com>
+Cc: linux-kernel@vger.kernel.org,
+	kernel-janitors@vger.kernel.org,
+	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+	Joerg Roedel <jroedel@suse.de>,
+	iommu@lists.linux.dev,
+	linux-mediatek@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH] iommu/mediatek-v1: Fix an error handling path in mtk_iommu_v1_probe()
+Date: Mon, 19 Dec 2022 19:06:22 +0100
+Message-Id: <593e7b7d97c6e064b29716b091a9d4fd122241fb.1671473163.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20221219153525.632521981@infradead.org> <20221219154118.889543494@infradead.org>
- <Y6CJsWBhcbKatZNg@zx2c4.com> <Y6CYu4skFFMopU+g@hirez.programming.kicks-ass.net>
-In-Reply-To: <Y6CYu4skFFMopU+g@hirez.programming.kicks-ass.net>
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date: Mon, 19 Dec 2022 18:03:04 +0100
-X-Gmail-Original-Message-ID: <CAHmME9oCBgNCfYFxirA-fdarGip5MvOG-iUxT=2HC=iSXRMH-Q@mail.gmail.com>
-Message-ID: <CAHmME9oCBgNCfYFxirA-fdarGip5MvOG-iUxT=2HC=iSXRMH-Q@mail.gmail.com>
-Subject: Re: [RFC][PATCH 01/12] crypto: Remove u128 usage
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: torvalds@linux-foundation.org, corbet@lwn.net, will@kernel.org, 
-	boqun.feng@gmail.com, mark.rutland@arm.com, catalin.marinas@arm.com, 
-	dennis@kernel.org, tj@kernel.org, cl@linux.com, hca@linux.ibm.com, 
-	gor@linux.ibm.com, agordeev@linux.ibm.com, borntraeger@linux.ibm.com, 
-	svens@linux.ibm.com, Herbert Xu <herbert@gondor.apana.org.au>, davem@davemloft.net, 
-	tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, 
-	dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com, joro@8bytes.org, 
-	suravee.suthikulpanit@amd.com, robin.murphy@arm.com, dwmw2@infradead.org, 
-	baolu.lu@linux.intel.com, Arnd Bergmann <arnd@arndb.de>, penberg@kernel.org, 
-	rientjes@google.com, iamjoonsoo.kim@lge.com, 
-	Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz, roman.gushchin@linux.dev, 
-	42.hyeyoo@gmail.com, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-mm@kvack.org, linux-s390@vger.kernel.org, linux-crypto@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-On Mon, Dec 19, 2022 at 6:01 PM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> On Mon, Dec 19, 2022 at 04:56:33PM +0100, Jason A. Donenfeld wrote:
->
-> > Why not just use `u128` from types.h in this file?
->
-> Ordering, I can't very well introduce it in types.h while other
-> definitions exist in the tree. So I first have to clean up the u128
-> namespace.
+A clk, prepared and enabled in mtk_iommu_v1_hw_init(), is not released in
+the error handling path of mtk_iommu_v1_probe().
 
-Is there a patch at the end of the series that adds it back in to use u128?
+Add the corresponding clk_disable_unprepare(), as already done in the
+remove function.
+
+Fixes: b17336c55d89 ("iommu/mediatek: add support for mtk iommu generation one HW")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+Another option would be to use devm_clk_get_enabled(). This would save a
+few LoC in mtk_iommu_v1_hw_init() and in the remove function.
+However, it would change the order of function calls in the remove function
+so I leave it as-is.
+Let me know if it is fine and if you prefer this alternative.
+---
+ drivers/iommu/mtk_iommu_v1.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index 69682ee068d2..ca581ff1c769 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -683,7 +683,7 @@ static int mtk_iommu_v1_probe(struct platform_device *pdev)
+ 	ret = iommu_device_sysfs_add(&data->iommu, &pdev->dev, NULL,
+ 				     dev_name(&pdev->dev));
+ 	if (ret)
+-		return ret;
++		goto out_clk_unprepare;
+ 
+ 	ret = iommu_device_register(&data->iommu, &mtk_iommu_v1_ops, dev);
+ 	if (ret)
+@@ -698,6 +698,8 @@ static int mtk_iommu_v1_probe(struct platform_device *pdev)
+ 	iommu_device_unregister(&data->iommu);
+ out_sysfs_remove:
+ 	iommu_device_sysfs_remove(&data->iommu);
++out_clk_unprepare:
++	clk_disable_unprepare(data->bclk);
+ 	return ret;
+ }
+ 
+-- 
+2.34.1
+
