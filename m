@@ -1,33 +1,33 @@
 Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C577046BA
-	for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 15:44:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3483B46BE
+	for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 15:44:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
 	Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
 	Content-ID:Content-Description:In-Reply-To;
-	bh=HwKpSq8Syzt9wYk5/qyQZy9JqJElqdY1XVTNG2HpXaA=; b=C89SVOTN4frRfghMH72mO24iYJ
-	pVkZGAAkMqRxVkuH3fpqA8/0D1aFHW6y76H1YnF8kEDFDm33E8UubQcUKhJKpWZG8jDggtq8uBBzW
-	U+SxkTxM4g0Q4uVrYdyNJqtyBLrQ5J7iHfduxeojqYnxDrzaSPCi7ttbP4Dg/mEyo3g341YNDQ5Bj
-	8CplCFReZ3n2JbDGVtP5MXOFW56RblTJKRv8Kcn9PDdv6XD/jCDzjQgWk8Jwq7PfTGyAOmvYLBOrd
-	tix3uV9D5+yfntLLV6oTkPEC51xWm3pii6k4b1Pg03G6ocA15Z1RIniFBXvpIunHhG6jU70qH5Akn
-	jgEqG5Xw==;
+	bh=EGvEEhj67bxGYwjZSrZRnMP7nFcuILVLo/TJsg7wp70=; b=XTpDGZcOneyi2jU6pOMWNGxSrG
+	Tdqw3sx7AG1vT1ne1fXNaPNp/c69+TrAS0VOUR9s5qT2xIXABRaivHmARLOPbnJq0jzG+7GWUEiE4
+	eO1FkjNo5cUP4B8MZTqFLdIr08eD9muQ0B3AXs0KOvBV3UbV3RCW3i/O7OXSbm86entb2bwh0I9fN
+	D5sLZ8446vFcqxVt8ybKuHmZk9Lw7DXjhJh5Qg3IyC7Yy85C812g45O996HpRXURZMlMLfklLD21p
+	LvziG6s731SVNOgX+uqOircga46FxYtSbIOBEecUmbyboFFKGW/xwGhoUzyXfAUnoDpZ3INrhuGol
+	Y+kXACug==;
 Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
 	by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-	id 1p7III-00CeDm-27;
+	id 1p7III-00CeDq-39;
 	Mon, 19 Dec 2022 15:43:11 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
 	(Client did not present a certificate)
-	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id A20AD302DA8;
-	Mon, 19 Dec 2022 16:43:06 +0100 (CET)
+	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 0EB5F303382;
+	Mon, 19 Dec 2022 16:43:10 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-	id 6BFEC20B0F89A; Mon, 19 Dec 2022 16:43:06 +0100 (CET)
-Message-ID: <20221219154119.022180444@infradead.org>
+	id 8676D20B0F899; Mon, 19 Dec 2022 16:43:06 +0100 (CET)
+Message-ID: <20221219154119.286760562@infradead.org>
 User-Agent: quilt/0.66
-Date: Mon, 19 Dec 2022 16:35:28 +0100
+Date: Mon, 19 Dec 2022 16:35:32 +0100
 From: Peter Zijlstra <peterz@infradead.org>
 To: torvalds@linux-foundation.org
 Cc: corbet@lwn.net,
@@ -72,7 +72,7 @@ Cc: corbet@lwn.net,
  linux-crypto@vger.kernel.org,
  iommu@lists.linux.dev,
  linux-arch@vger.kernel.org
-Subject: [RFC][PATCH 03/12] cyrpto/b128ops: Remove struct u128
+Subject: [RFC][PATCH 07/12] percpu: Wire up cmpxchg128
 References: <20221219153525.632521981@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -82,50 +82,214 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 
-Per git-grep u128_xor() and its related struct u128 are unused except
-to implement {be,le}128_xor(). Remove them to free up the namespace.
+In order to replace cmpxchg_double() with the newly minted
+cmpxchg128() family of functions, wire it up in this_cpu_cmpxchg().
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- include/crypto/b128ops.h |   14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
+ arch/arm64/include/asm/percpu.h |   24 ++++++++++++++++++
+ arch/s390/include/asm/percpu.h  |   20 +++++++++++++++
+ arch/x86/include/asm/percpu.h   |   52 ++++++++++++++++++++++++++++++++++++++++
+ include/asm-generic/percpu.h    |    8 ++++++
+ include/linux/percpu-defs.h     |   20 +++++++++++++--
+ 5 files changed, 122 insertions(+), 2 deletions(-)
 
---- a/include/crypto/b128ops.h
-+++ b/include/crypto/b128ops.h
-@@ -50,10 +50,6 @@
- #include <linux/types.h>
+--- a/arch/arm64/include/asm/percpu.h
++++ b/arch/arm64/include/asm/percpu.h
+@@ -140,6 +140,10 @@ PERCPU_RET_OP(add, add, ldadd)
+  * re-enabling preemption for preemptible kernels, but doing that in a way
+  * which builds inside a module would mean messing directly with the preempt
+  * count. If you do this, peterz and tglx will hunt you down.
++ *
++ * Not to mention it'll break the actual preemption model for missing a
++ * preemption point when TIF_NEED_RESCHED gets set while preemption is
++ * disabled.
+  */
+ #define this_cpu_cmpxchg_double_8(ptr1, ptr2, o1, o2, n1, n2)		\
+ ({									\
+@@ -240,6 +244,26 @@ PERCPU_RET_OP(add, add, ldadd)
+ #define this_cpu_cmpxchg_8(pcp, o, n)	\
+ 	_pcp_protect_return(cmpxchg_relaxed, pcp, o, n)
  
- typedef struct {
--	u64 a, b;
--} u128;
--
--typedef struct {
- 	__be64 a, b;
- } be128;
++#define __pcpu_cast_128(_exp, _val)					\
++	_Generic((_exp),						\
++		 u128: (_val),						\
++		 s128: (_val),						\
++		 default: (unsigned long)(_val))
++
++#define this_cpu_cmpxchg_16(pcp, o, n)					\
++({									\
++	u128 old__ = __pcpu_cast_128((o), (o));				\
++	u128 new__ = __pcpu_cast_128((n), (n));				\
++	typedef typeof(pcp) pcp_op_T__;					\
++	pcp_op_T__ *ptr__;						\
++	u128 ret__;							\
++	preempt_disable_notrace();					\
++	ptr__ = raw_cpu_ptr(&(pcp));					\
++	ret__ = cmpxchg128_local((void *)ptr__, old__, new__);		\
++	preempt_enable_notrace();					\
++	(typeof(pcp))__pcpu_cast_128(*ptr__, ret__);			\
++})
++
+ #ifdef __KVM_NVHE_HYPERVISOR__
+ extern unsigned long __hyp_per_cpu_offset(unsigned int cpu);
+ #define __per_cpu_offset
+--- a/arch/s390/include/asm/percpu.h
++++ b/arch/s390/include/asm/percpu.h
+@@ -148,6 +148,26 @@
+ #define this_cpu_cmpxchg_4(pcp, oval, nval) arch_this_cpu_cmpxchg(pcp, oval, nval)
+ #define this_cpu_cmpxchg_8(pcp, oval, nval) arch_this_cpu_cmpxchg(pcp, oval, nval)
  
-@@ -61,20 +57,16 @@ typedef struct {
- 	__le64 b, a;
- } le128;
++#define __pcpu_cast_128(_exp, _val)					\
++	_Generic((_exp),						\
++		 u128: (_val),						\
++		 s128: (_val),						\
++		 default: (unsigned long)(_val))
++
++#define this_cpu_cmpxchg_16(pcp, oval, nval)				\
++({									\
++	u128 old__ = __pcpu_cast_128((nval), (nval));			\
++	u128 new__ = __pcpu_cast_128((oval), (oval));			\
++	typedef typeof(pcp) pcp_op_T__;					\
++	pcp_op_T__ *ptr__;						\
++	u128 ret__;							\
++	preempt_disable_notrace();					\
++	ptr__ = raw_cpu_ptr(&(pcp));					\
++	ret__ = cmpxchg128((void *)ptr__, old__, new__);		\
++	preempt_enable_notrace();					\
++	(typeof(pcp))__pcpu_cast_128(*ptr__, ret__);			\
++})
++
+ #define arch_this_cpu_xchg(pcp, nval)					\
+ ({									\
+ 	typeof(pcp) *ptr__;						\
+--- a/arch/x86/include/asm/percpu.h
++++ b/arch/x86/include/asm/percpu.h
+@@ -210,6 +210,58 @@ do {									\
+ 	(typeof(_var))(unsigned long) pco_old__;			\
+ })
  
--static inline void u128_xor(u128 *r, const u128 *p, const u128 *q)
-+static inline void be128_xor(be128 *r, const be128 *p, const be128 *q)
- {
- 	r->a = p->a ^ q->a;
- 	r->b = p->b ^ q->b;
- }
++#if defined(CONFIG_X86_32) && defined(CONFIG_X86_CMPXCHG64)
++#define __pcpu_cast_64(_exp, _val)					\
++	_Generic((_exp),						\
++		 u64: (_val),						\
++		 s64: (_val),						\
++		 default: (unsigned long)(_val))
++
++#define percpu_cmpxchg64_op(size, qual, _var, _oval, _nval)		\
++({									\
++	__pcpu_type_##size pco_old__ = __pcpu_cast_64((_oval), (_oval));\
++	__pcpu_type_##size pco_new__ = __pcpu_cast_64((_nval), (_nval));\
++	asm qual ("cmpxchg8b " __percpu_arg([var])			\
++		  : [var] "+m" (_var),					\
++		    "+A" (pco_old__)					\
++		  : "b" ((u32)pco_new__), "c" ((u32)(pco_new__ >> 32))	\
++		  : "memory");						\
++	(typeof(_var))__pcpu_cast_64(_var, pco_old__);			\
++})
++
++#define raw_cpu_cmpxchg_8(pcp, oval, nval)	percpu_cmpxchg64_op(8,         , pcp, oval, nval)
++#define this_cpu_cmpxchg_8(pcp, oval, nval)	percpu_cmpxchg64_op(8, volatile, pcp, oval, nval)
++#endif
++
++#ifdef CONFIG_X86_64
++#define __pcpu_cast_128(_exp, _val)					\
++	_Generic((_exp),						\
++		 u128: (_val),						\
++		 s128: (_val),						\
++		 default: (unsigned long)(_val))
++
++#define percpu_cmpxchg128_op(size, qual, _var, _oval, _nval)		\
++({									\
++	union __u128_halves pco_old__ = {				\
++		.full = __pcpu_cast_128((_oval), (_oval))		\
++	};								\
++	union __u128_halves pco_new__ = {				\
++		.full = __pcpu_cast_128((_nval), (_nval))		\
++	};								\
++	asm qual ("cmpxchg16b " __percpu_arg([var])			\
++		  : [var] "+m" (_var),					\
++		    "+a" (pco_old__.low),				\
++		    "+d" (pco_old__.high)				\
++		  : "b" (pco_new__.low),				\
++		    "c" (pco_new__.high)				\
++		  : "memory");						\
++	(typeof(_var))__pcpu_cast_128(_var, pco_old__.full);		\
++})
++
++#define raw_cpu_cmpxchg_16(pcp, oval, nval)	percpu_cmpxchg128_op(16,         , pcp, oval, nval)
++#define this_cpu_cmpxchg_16(pcp, oval, nval)	percpu_cmpxchg128_op(16, volatile, pcp, oval, nval)
++#endif
++
+ /*
+  * this_cpu_read() makes gcc load the percpu variable every time it is
+  * accessed while this_cpu_read_stable() allows the value to be cached.
+--- a/include/asm-generic/percpu.h
++++ b/include/asm-generic/percpu.h
+@@ -298,6 +298,10 @@ do {									\
+ #define raw_cpu_cmpxchg_8(pcp, oval, nval) \
+ 	raw_cpu_generic_cmpxchg(pcp, oval, nval)
+ #endif
++#ifndef raw_cpu_cmpxchg_16
++#define raw_cpu_cmpxchg_16(pcp, oval, nval) \
++	raw_cpu_generic_cmpxchg(pcp, oval, nval)
++#endif
  
--static inline void be128_xor(be128 *r, const be128 *p, const be128 *q)
--{
--	u128_xor((u128 *)r, (u128 *)p, (u128 *)q);
--}
--
- static inline void le128_xor(le128 *r, const le128 *p, const le128 *q)
- {
--	u128_xor((u128 *)r, (u128 *)p, (u128 *)q);
-+	r->a = p->a ^ q->a;
-+	r->b = p->b ^ q->b;
- }
+ #ifndef raw_cpu_cmpxchg_double_1
+ #define raw_cpu_cmpxchg_double_1(pcp1, pcp2, oval1, oval2, nval1, nval2) \
+@@ -423,6 +427,10 @@ do {									\
+ #define this_cpu_cmpxchg_8(pcp, oval, nval) \
+ 	this_cpu_generic_cmpxchg(pcp, oval, nval)
+ #endif
++#ifndef this_cpu_cmpxchg_16
++#define this_cpu_cmpxchg_16(pcp, oval, nval) \
++	this_cpu_generic_cmpxchg(pcp, oval, nval)
++#endif
  
- #endif /* _CRYPTO_B128OPS_H */
+ #ifndef this_cpu_cmpxchg_double_1
+ #define this_cpu_cmpxchg_double_1(pcp1, pcp2, oval1, oval2, nval1, nval2) \
+--- a/include/linux/percpu-defs.h
++++ b/include/linux/percpu-defs.h
+@@ -343,6 +343,22 @@ static inline void __this_cpu_preempt_ch
+ 	pscr2_ret__;							\
+ })
+ 
++#define __pcpu_size16_call_return2(stem, variable, ...)			\
++({									\
++	typeof(variable) pscr2_ret__;					\
++	__verify_pcpu_ptr(&(variable));					\
++	switch(sizeof(variable)) {					\
++	case 1: pscr2_ret__ = stem##1(variable, __VA_ARGS__); break;	\
++	case 2: pscr2_ret__ = stem##2(variable, __VA_ARGS__); break;	\
++	case 4: pscr2_ret__ = stem##4(variable, __VA_ARGS__); break;	\
++	case 8: pscr2_ret__ = stem##8(variable, __VA_ARGS__); break;	\
++	case 16: pscr2_ret__ = stem##16(variable, __VA_ARGS__); break;	\
++	default:							\
++		__bad_size_call_parameter(); break;			\
++	}								\
++	pscr2_ret__;							\
++})
++
+ /*
+  * Special handling for cmpxchg_double.  cmpxchg_double is passed two
+  * percpu variables.  The first has to be aligned to a double word
+@@ -425,7 +441,7 @@ do {									\
+ #define raw_cpu_add_return(pcp, val)	__pcpu_size_call_return2(raw_cpu_add_return_, pcp, val)
+ #define raw_cpu_xchg(pcp, nval)		__pcpu_size_call_return2(raw_cpu_xchg_, pcp, nval)
+ #define raw_cpu_cmpxchg(pcp, oval, nval) \
+-	__pcpu_size_call_return2(raw_cpu_cmpxchg_, pcp, oval, nval)
++	__pcpu_size16_call_return2(raw_cpu_cmpxchg_, pcp, oval, nval)
+ #define raw_cpu_cmpxchg_double(pcp1, pcp2, oval1, oval2, nval1, nval2) \
+ 	__pcpu_double_call_return_bool(raw_cpu_cmpxchg_double_, pcp1, pcp2, oval1, oval2, nval1, nval2)
+ 
+@@ -512,7 +528,7 @@ do {									\
+ #define this_cpu_add_return(pcp, val)	__pcpu_size_call_return2(this_cpu_add_return_, pcp, val)
+ #define this_cpu_xchg(pcp, nval)	__pcpu_size_call_return2(this_cpu_xchg_, pcp, nval)
+ #define this_cpu_cmpxchg(pcp, oval, nval) \
+-	__pcpu_size_call_return2(this_cpu_cmpxchg_, pcp, oval, nval)
++	__pcpu_size16_call_return2(this_cpu_cmpxchg_, pcp, oval, nval)
+ #define this_cpu_cmpxchg_double(pcp1, pcp2, oval1, oval2, nval1, nval2) \
+ 	__pcpu_double_call_return_bool(this_cpu_cmpxchg_double_, pcp1, pcp2, oval1, oval2, nval1, nval2)
+ 
 
 
