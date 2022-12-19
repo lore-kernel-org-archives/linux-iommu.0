@@ -1,200 +1,161 @@
 Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C43074A17
-	for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 16:17:18 +0000 (UTC)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2BJGBWlQ001910;
-	Mon, 19 Dec 2022 16:16:43 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF53E63D4
+	for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 16:49:42 +0000 (UTC)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 2BJGgCkw012947;
+	Mon, 19 Dec 2022 16:47:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
  content-transfer-encoding : mime-version; s=pp1;
- bh=RtsWhsVJvLGz1G5bUGjFJl7qw+Tu+K2zEzV90qBQFDU=;
- b=PcuJHY6lD0GVFAt1z+4FuKrLP7tlVE2ajsO8MDv2BEK+YCnOtVy1Z4tMh+GAq+vyR7Zs
- db8cvsYRFYI0OgjLfuhmtBaigPiG09aIvwXwnCYNYky8pIvwjHAo1t0OmzSMM36V3EFp
- uFc+W5UW6MB+thwtH0lPtlb52GhBCkC1s8ADVU9trLzm8hidYq+upnQQx4o1RiauiVRp
- drpEzz3ctAzPKkXpjw5UNFBS1NRgu+t/VScThUM7BdCe17slII6dtVZc5C1JpwXfXjxA
- G7LTbr4FH3A5j0dlAuQ5kgeag/WyS75Z44te8Zbp9qZivoGsmZ/FHNGj3ZCbSBgFLqtD ew== 
+ bh=X/TCy+np95A3btt+KYPVOzVuzd5nRH3EepKk5/dPBvM=;
+ b=Js/kiTBvvm2xw1oUgfBeMmxw836mIfpYmLwOVfwK9/IhsQBOLcdR7/iW2C5PzFewk1Ou
+ PEXfPORBVX+EXj+REDuUAt+HL7rcGQr7z6Axq3mw7U8Wh2/Bh2UcCgJYFgpp3z1dIRKw
+ rhJTAkqn4SlC5knZh30sF33RBo5fQKW/IcjIVE13uSHE/kt2DZaLiiK8g9lv5VKheZMr
+ Ut5riOVi7wFaify6AtSW6zE4QurCH7VAToHKyWjysHcjxnZerFWNyNUBhrdD1qPMSO+9
+ xVd5iH3Plp0NfQh5WDd1UYpdb9PpLp/UxGLR7hn4wxafFtJeMwXb51gII/Ib8qanoCrP wA== 
 Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3mju8v88ak-1
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3mjuq108qk-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 19 Dec 2022 16:16:43 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2BJGBlH1005097;
-	Mon, 19 Dec 2022 16:16:42 GMT
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3mju8v8896-1
+	Mon, 19 Dec 2022 16:47:57 +0000
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2BJGigIl001168;
+	Mon, 19 Dec 2022 16:47:56 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3mjuq108pj-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 19 Dec 2022 16:16:42 +0000
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-	by ppma03wdc.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 2BJFKOIC022061;
-	Mon, 19 Dec 2022 16:16:40 GMT
-Received: from smtprelay02.dal12v.mail.ibm.com ([9.208.130.97])
-	by ppma03wdc.us.ibm.com (PPS) with ESMTPS id 3mh6yxedf9-1
+	Mon, 19 Dec 2022 16:47:55 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+	by ppma04ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 2BJE7cBC024486;
+	Mon, 19 Dec 2022 16:47:52 GMT
+Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
+	by ppma04ams.nl.ibm.com (PPS) with ESMTPS id 3mh6ywjv2n-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 19 Dec 2022 16:16:40 +0000
-Received: from smtpav02.wdc07v.mail.ibm.com (smtpav02.wdc07v.mail.ibm.com [10.39.53.229])
-	by smtprelay02.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2BJGGdek35324618
+	Mon, 19 Dec 2022 16:47:52 +0000
+Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
+	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2BJGlmPq23921026
 	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 19 Dec 2022 16:16:39 GMT
-Received: from smtpav02.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 24E475805B;
-	Mon, 19 Dec 2022 16:16:39 +0000 (GMT)
-Received: from smtpav02.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 65B645805C;
-	Mon, 19 Dec 2022 16:16:36 +0000 (GMT)
-Received: from [9.60.89.243] (unknown [9.60.89.243])
-	by smtpav02.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Mon, 19 Dec 2022 16:16:36 +0000 (GMT)
-Message-ID: <8275f4e0-aa73-d4e1-5612-ccf6a369fa07@linux.ibm.com>
-Date: Mon, 19 Dec 2022 11:16:35 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.5.1
-Subject: Re: [PATCH iommufd v2 8/9] irq/s390: Add arch_is_isolated_msi() for
- s390
-To: Jason Gunthorpe <jgg@nvidia.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>,
-        iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-        Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
-        linux-s390@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>
-Cc: Bharat Bhushan <bharat.bhushan@nxp.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Eric Auger <eric.auger@redhat.com>, Eric Farman <farman@linux.ibm.com>,
-        Marc Zyngier <marc.zyngier@arm.com>,
-        Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>,
-        Will Deacon <will.deacon@arm.com>
-References: <8-v2-10ad79761833+40588-secure_msi_jgg@nvidia.com>
-Content-Language: en-US
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <8-v2-10ad79761833+40588-secure_msi_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 0m-J6pGlXN0pvE8Z2zYy5ilSktGE0m3s
-X-Proofpoint-ORIG-GUID: haiwmW7D8jw19evlCLssWmJKGuC9cwcG
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+	Mon, 19 Dec 2022 16:47:48 GMT
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id C9C1420040;
+	Mon, 19 Dec 2022 16:47:48 +0000 (GMT)
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 15D0420043;
+	Mon, 19 Dec 2022 16:47:48 +0000 (GMT)
+Received: from [9.155.211.163] (unknown [9.155.211.163])
+	by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Mon, 19 Dec 2022 16:47:48 +0000 (GMT)
+Message-ID: <3088ea5ffdfd095ca67265ed711e8d2bc188b362.camel@linux.ibm.com>
+Subject: Re: [RFC][PATCH 09/12] x86,amd_iommu: Replace cmpxchg_double()
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Peter Zijlstra <peterz@infradead.org>, torvalds@linux-foundation.org
+Cc: corbet@lwn.net, will@kernel.org, boqun.feng@gmail.com,
+        mark.rutland@arm.com, catalin.marinas@arm.com, dennis@kernel.org,
+        tj@kernel.org, cl@linux.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        agordeev@linux.ibm.com, borntraeger@linux.ibm.com, svens@linux.ibm.com,
+        Herbert Xu <herbert@gondor.apana.org.au>, davem@davemloft.net,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        joro@8bytes.org, suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
+        dwmw2@infradead.org, baolu.lu@linux.intel.com,
+        Arnd Bergmann
+ <arnd@arndb.de>, penberg@kernel.org,
+        rientjes@google.com, iamjoonsoo.kim@lge.com,
+        Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz,
+        roman.gushchin@linux.dev, 42.hyeyoo@gmail.com,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-s390@vger.kernel.org,
+        linux-crypto@vger.kernel.org, iommu@lists.linux.dev,
+        linux-arch@vger.kernel.org
+Date: Mon, 19 Dec 2022 17:47:47 +0100
+In-Reply-To: <20221219154119.419176389@infradead.org>
+References: <20221219153525.632521981@infradead.org>
+	 <20221219154119.419176389@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.2 (3.46.2-1.fc37) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: avK4AaeUvBdFbu_514SfMdG6OTeTMyeK
+X-Proofpoint-GUID: MKTubrQvIx2xVgk4vNHOE1U_o7athJpa
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
  definitions=2022-12-19_01,2022-12-15_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- lowpriorityscore=0 suspectscore=0 priorityscore=1501 spamscore=0
- mlxlogscore=999 phishscore=0 adultscore=0 bulkscore=0 clxscore=1015
- mlxscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2212190142
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ priorityscore=1501 bulkscore=0 lowpriorityscore=0 suspectscore=0
+ clxscore=1011 mlxlogscore=721 phishscore=0 mlxscore=0 adultscore=0
+ spamscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2212070000 definitions=main-2212190147
 
-On 12/12/22 1:46 PM, Jason Gunthorpe wrote:
-> s390 doesn't use irq_domains, so it has no place to set
-> IRQ_DOMAIN_FLAG_ISOLATED_MSI. Instead of continuing to abuse the iommu
-> subsystem to convey this information add a simple define which s390 can
-> make statically true. The define will cause msi_device_has_isolated() to
-> return true.
-> 
-> Remove IOMMU_CAP_INTR_REMAP from the s390 iommu driver.
-> 
-> Cc: Matthew Rosato <mjrosato@linux.ibm.com>
-> Cc: Christian Borntraeger <borntraeger@de.ibm.com>
-> Cc: Eric Farman <farman@linux.ibm.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-
-Reviewed-by: Matthew Rosato <mjrosato@linux.ibm.com>
-
-Also sanity-tested on s390 (needed the previously-mentioned #include <linux/msi.h> added to drivers/iommu/iommu.c)
-
+On Mon, 2022-12-19 at 16:35 +0100, Peter Zijlstra wrote:
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 > ---
->  arch/s390/include/asm/msi.h | 17 +++++++++++++++++
->  drivers/iommu/s390-iommu.c  |  2 --
->  include/linux/msi.h         |  6 +++++-
->  kernel/irq/msi.c            |  2 +-
->  4 files changed, 23 insertions(+), 4 deletions(-)
->  create mode 100644 arch/s390/include/asm/msi.h
-> 
-> diff --git a/arch/s390/include/asm/msi.h b/arch/s390/include/asm/msi.h
-> new file mode 100644
-> index 00000000000000..399343ed9ffbc6
-> --- /dev/null
-> +++ b/arch/s390/include/asm/msi.h
-> @@ -0,0 +1,17 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _ASM_S390_MSI_H
-> +#define _ASM_S390_MSI_H
-> +#include <asm-generic/msi.h>
-> +
-> +/*
-> + * Work around S390 not using irq_domain at all so we can't set
-> + * IRQ_DOMAIN_FLAG_ISOLATED_MSI. See for an explanation how it works:
-> + *
-> + * https://lore.kernel.org/r/31af8174-35e9-ebeb-b9ef-74c90d4bfd93@linux.ibm.com/
-> + *
-> + * Note this is less isolated than the ARM/x86 versions as userspace can trigger
-> + * MSI belonging to kernel devices within the same gisa.
-> + */
-> +#define arch_is_isolated_msi() true
-> +
-> +#endif
-> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-> index 3c071782f6f16d..c80f4728c0f307 100644
-> --- a/drivers/iommu/s390-iommu.c
-> +++ b/drivers/iommu/s390-iommu.c
-> @@ -44,8 +44,6 @@ static bool s390_iommu_capable(struct device *dev, enum iommu_cap cap)
->  	switch (cap) {
->  	case IOMMU_CAP_CACHE_COHERENCY:
->  		return true;
-> -	case IOMMU_CAP_INTR_REMAP:
-> -		return true;
->  	default:
->  		return false;
->  	}
-> diff --git a/include/linux/msi.h b/include/linux/msi.h
-> index e8a3f3a8a7f427..5cbe6a9d27efd6 100644
-> --- a/include/linux/msi.h
-> +++ b/include/linux/msi.h
-> @@ -48,6 +48,10 @@ typedef struct arch_msi_msg_data {
->  } __attribute__ ((packed)) arch_msi_msg_data_t;
->  #endif
->  
-> +#ifndef arch_is_isolated_msi
-> +#define arch_is_isolated_msi() false
-> +#endif
-> +
->  /**
->   * msi_msg - Representation of a MSI message
->   * @address_lo:		Low 32 bits of msi message address
-> @@ -660,7 +664,7 @@ static inline bool msi_device_has_isolated_msi(struct device *dev)
->  	 * is inherently isolated by our definition. As nobody seems to needs
->  	 * this be conservative and return false anyhow.
+>  drivers/iommu/amd/amd_iommu_types.h |    9 +++++++--
+>  drivers/iommu/amd/iommu.c           |   10 ++++------
+>  2 files changed, 11 insertions(+), 8 deletions(-)
+>=20
+> --- a/drivers/iommu/amd/amd_iommu_types.h
+> +++ b/drivers/iommu/amd/amd_iommu_types.h
+> @@ -979,8 +979,13 @@ union irte_ga_hi {
+>  };
+> =20
+>  struct irte_ga {
+> -	union irte_ga_lo lo;
+> -	union irte_ga_hi hi;
+> +	union {
+> +		struct {
+> +			union irte_ga_lo lo;
+> +			union irte_ga_hi hi;
+> +		};
+> +		u128 irte;
+> +	};
+>  };
+> =20
+>  struct irq_2_irte {
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -2992,10 +2992,10 @@ static int alloc_irq_index(struct amd_io
+>  static int modify_irte_ga(struct amd_iommu *iommu, u16 devid, int index,
+>  			  struct irte_ga *irte, struct amd_ir_data *data)
+>  {
+> -	bool ret;
+>  	struct irq_remap_table *table;
+> -	unsigned long flags;
+>  	struct irte_ga *entry;
+> +	unsigned long flags;
+> +	u128 old;
+> =20
+>  	table =3D get_irq_table(iommu, devid);
+>  	if (!table)
+> @@ -3006,16 +3006,14 @@ static int modify_irte_ga(struct amd_iom
+>  	entry =3D (struct irte_ga *)table->table;
+>  	entry =3D &entry[index];
+> =20
+> -	ret =3D cmpxchg_double(&entry->lo.val, &entry->hi.val,
+> -			     entry->lo.val, entry->hi.val,
+> -			     irte->lo.val, irte->hi.val);
+>  	/*
+>  	 * We use cmpxchg16 to atomically update the 128-bit IRTE,
+>  	 * and it cannot be updated by the hardware or other processors
+>  	 * behind us, so the return value of cmpxchg16 should be the
+>  	 * same as the old value.
+
+The above comment seems to have already been out of date but could be
+updated to say cmpxchg128 instead of cmxchg16 anyway.
+
 >  	 */
-> -	return false;
-> +	return arch_is_isolated_msi();
->  }
->  #endif /* CONFIG_GENERIC_MSI_IRQ */
->  
-> diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
-> index 7c5579d3ea4f79..3e46420a4f1a9f 100644
-> --- a/kernel/irq/msi.c
-> +++ b/kernel/irq/msi.c
-> @@ -1646,6 +1646,6 @@ bool msi_device_has_isolated_msi(struct device *dev)
->  	for (; domain; domain = domain->parent)
->  		if (domain->flags & IRQ_DOMAIN_FLAG_ISOLATED_MSI)
->  			return true;
-> -	return false;
-> +	return arch_is_isolated_msi();
->  }
->  EXPORT_SYMBOL_GPL(msi_device_has_isolated_msi);
+> -	WARN_ON(!ret);
+> +	old =3D entry->irte;
+> +	WARN_ON(!try_cmpxchg128(&entry->irte, &old, irte->irte));
+> =20
+>  	if (data)
+>  		data->ref =3D entry;
+>=20
+>=20
 
