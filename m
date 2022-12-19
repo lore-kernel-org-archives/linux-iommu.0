@@ -1,45 +1,45 @@
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
+Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F4F110EF
-	for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 09:07:21 +0000 (UTC)
-Received: by mail-lf1-f54.google.com with SMTP id b13so12715964lfo.3
-        for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 01:07:21 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 230BC10EF
+	for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 09:09:07 +0000 (UTC)
+Received: by mail-lf1-f47.google.com with SMTP id q6so12668146lfm.10
+        for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 01:09:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=L4tpSk+tjYm0GwOPhGRXLIEBiSIOkO/36qvtptczgjw=;
-        b=N3oFLtrcYYoltNNztEkRCstMhmF7L/B1dnooX75CzPsUn+NB8JbGvQdJ++Vql486rF
-         sefNxpApu6gMAkVRZOYes5d3WqLsgDYrPWXIykFUNwYYPYntjL7zQN/Yhj84qQ9yoiOq
-         za7S99D23KoxgXtbD8tcKKJM6ms0CopXhQBeC/57fZXbvDUvweuKwwtELoDksuGGEnXN
-         xMA4hzwsvuWl0iJx4kqAGSdbI2IBE6c3UtHU8lwq8qaa4WXjxWha0/uYfo266NJHaDjJ
-         hXNkPR4WAkVmQWhue7F5tmilGwwmT1Qz3/wvZnTpuPGZ8ofXrIqRmnAPPfHGg+Hw1acY
-         dv6Q==
+        bh=JZyR5gSmKyguAcX5pHH35Ht5JLpx7+cAaPVpmD/qMPE=;
+        b=TdN7ALFw6/NFrG+fG2GiKk5ZlonpRX6iE/1DSwfQwwykBTZo7SI/QFd4Y34CqHQyoV
+         TC+uee+pPB4LMC2egRTx0qz8OtcXbCUvkjIt37NQt5Pd2a1cMze93funFnotHLbflkIC
+         qUtA7WVresBz1tKDYdluUypqgVGxx83Tayr3rqNHODhKPwYVpljVQ6KVmaPLU36G4dgs
+         vykXOMCJ7/s7O+/+BIyclgtBFwEko9hf/7mwWl6Fm/GxHFtnhfP+JaHadxcmlV1pUOuJ
+         mWVJvXt5Uu9YSGK1dkp1ZyWZc/3Gt0BQGEdRXTq7bbbaYfc/L0mFYPoajjxndcScTn4w
+         q9VA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+        h=content-transfer-encoding:in-reply-to:references:cc:to:from
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=L4tpSk+tjYm0GwOPhGRXLIEBiSIOkO/36qvtptczgjw=;
-        b=pJw5JMmAmu/6NPGhHuzPRmk+pwK2g3eyHjtxqaB1YHEK8XbH7tZSWOjJzEOqO2sbw5
-         8bBO5a+QBfIBPDG8UYQQiHRo3VrRy+f8HPE1McVFIyPzUcGcut0AkcF9R8Gog9UEAMkA
-         oq0FMzIfGD61tvq/Stwzyg3kF820V2qZGfJJnLKY3+j7GAB+NURTE2um5icLoauwR9y1
-         F9bfYQ1KV0Icc+/nnCNUwJFF/THTdXn284nMXnS0Uk026qqNvIzEV5hQiB2feBfts6lo
-         YN0I+gvr3D01taaZlp3LQHzDE3AA09Dt1kAQmJLqqc3D5bLm7eroxE0NJozGVXnRZbVA
-         TJWQ==
-X-Gm-Message-State: ANoB5pk0cN/SKDYLTS4D9dsfLzJ3fWF+qry7c84O/WGaU0VfqJKrD5dU
-	jFLdeVfAjEyWQLKQW//sz+duBg==
-X-Google-Smtp-Source: AA0mqf6yerJKFHzLlNexb6x/HD/ZwWzG43qKAdQsx9Tu5MD1hdnY7UrOWDYeXeOGe3TiRLg+e8ZbFw==
-X-Received: by 2002:a05:6512:32cd:b0:4a4:68b7:f87a with SMTP id f13-20020a05651232cd00b004a468b7f87amr20619118lfg.30.1671440839244;
-        Mon, 19 Dec 2022 01:07:19 -0800 (PST)
+        bh=JZyR5gSmKyguAcX5pHH35Ht5JLpx7+cAaPVpmD/qMPE=;
+        b=fMw6oXJmIM+XzM7ItfwoW2cdTyt1PQFYiIWqql5Y0AgQzodNxWbBDa2dRWe+RU8L0H
+         6dI4Fb7wVdhImXaJRZ4cNVkkDpxwMYJkChnJgV/3PgFvbweUdTSVC3T4z2rCg1+a5id/
+         m7HvTZfO3z+1q01jJW2yhlLVnNMCt5mA54wR5VMze9LdJfhN6vAM/xQQr3zxm8k7v04x
+         SjUp5SpJ/KWv4V+0Fxe76FD4tIXABfpGx/3pt+YdsIGoqDVUqbBeRNKLehWKlZiXeEe4
+         CrRfvtm2+ZZZzAsQq6RML/fNt0JMfJBtp4GZTdnYmU36H9T9L+5t0ir00yuVai3M9PzK
+         yr1Q==
+X-Gm-Message-State: ANoB5pm8D17f83enuqGV543X8yJtKSnOMs2MAJaoPpE78BAgZ9gL2uX8
+	l9/cBMskHGiMqXYSpqWM3BeN2w==
+X-Google-Smtp-Source: AA0mqf5X0yqQn8C9U/nSEy2RW1j67TKUJw0sbleYyIOJ2Iiqe4iuR9Vs33wEupgZWbCbz7rYk83HuA==
+X-Received: by 2002:a19:e059:0:b0:4b5:8987:1db8 with SMTP id g25-20020a19e059000000b004b589871db8mr11186995lfj.59.1671440945251;
+        Mon, 19 Dec 2022 01:09:05 -0800 (PST)
 Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id m16-20020a05651202f000b004b4930d53b5sm1042586lfq.134.2022.12.19.01.07.17
+        by smtp.gmail.com with ESMTPSA id b8-20020a056512070800b004acbfa4a18bsm1057604lfs.173.2022.12.19.01.09.03
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Dec 2022 01:07:18 -0800 (PST)
-Message-ID: <306709f8-7d45-9b76-f95b-1b3088d37a78@linaro.org>
-Date: Mon, 19 Dec 2022 10:07:17 +0100
+        Mon, 19 Dec 2022 01:09:04 -0800 (PST)
+Message-ID: <6d263321-782d-9d9c-4fdf-8bcf5b280779@linaro.org>
+Date: Mon, 19 Dec 2022 10:09:03 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,6 +51,7 @@ User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
 Subject: Re: [PATCH v4 1/4] dt-bindings: arm-smmu: Document smmu-500 binding
  for SM6125
 Content-Language: en-US
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To: Marijn Suijten <marijn.suijten@somainline.org>,
  phone-devel@vger.kernel.org, Will Deacon <will@kernel.org>,
  Joerg Roedel <joro@8bytes.org>, Bjorn Andersson <andersson@kernel.org>
@@ -72,18 +73,21 @@ Cc: ~postmarketos/upstreaming@lists.sr.ht,
  linux-arm-msm@vger.kernel.org
 References: <20221216215819.1164973-1-marijn.suijten@somainline.org>
  <20221216215819.1164973-2-marijn.suijten@somainline.org>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20221216215819.1164973-2-marijn.suijten@somainline.org>
+ <306709f8-7d45-9b76-f95b-1b3088d37a78@linaro.org>
+In-Reply-To: <306709f8-7d45-9b76-f95b-1b3088d37a78@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 16/12/2022 22:58, Marijn Suijten wrote:
-> From: Martin Botka <martin.botka@somainline.org>
+On 19/12/2022 10:07, Krzysztof Kozlowski wrote:
+> On 16/12/2022 22:58, Marijn Suijten wrote:
+>> From: Martin Botka <martin.botka@somainline.org>
+>>
+>> Document smmu-500 compatibility with the SM6125 SoC.
+>>
 > 
-> Document smmu-500 compatibility with the SM6125 SoC.
-> 
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Wait, not entirely... no constraints for clocks and regs?
 
 Best regards,
 Krzysztof
