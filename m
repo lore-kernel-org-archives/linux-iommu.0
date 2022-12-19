@@ -1,83 +1,101 @@
-Received: from relay07.th.seeweb.it (relay07.th.seeweb.it [5.144.164.168])
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AED79EA5
-	for <iommu@lists.linux.dev>; Sun, 18 Dec 2022 11:17:20 +0000 (UTC)
-Received: from [192.168.2.144] (adsl-d248.84-47-10.t-com.sk [84.47.10.248])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits))
-	(No client certificate requested)
-	by m-r2.th.seeweb.it (Postfix) with ESMTPSA id D0D1E3EF1C;
-	Sun, 18 Dec 2022 12:11:03 +0100 (CET)
-Date: Sun, 18 Dec 2022 12:10:57 +0100
-From: Martin Botka <martin.botka@somainline.org>
-Subject: Re: [PATCH v4 4/4] arm64: dts: qcom: sm6125: Add IOMMU context to
- DWC3
-To: Marijn Suijten <marijn.suijten@somainline.org>
-Cc: phone-devel@vger.kernel.org, Will Deacon <will@kernel.org>, Joerg Roedel
-	<joro@8bytes.org>, Bjorn Andersson <andersson@kernel.org>,
-	~postmarketos/upstreaming@lists.sr.ht, AngeloGioacchino Del Regno
-	<angelogioacchino.delregno@somainline.org>, Konrad Dybcio
-	<konrad.dybcio@somainline.org>, Jami Kettunen <jami.kettunen@somainline.org>,
-	Lux Aliaga <they@mint.lgbt>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
-	<robh+dt@kernel.org>, Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>, Andy Gross <agross@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>, Dmitry Baryshkov
-	<dmitry.baryshkov@linaro.org>, Thierry Reding <treding@nvidia.com>,
-	Melody Olvera <quic_molvera@quicinc.com>, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>, Bhupesh Sharma <bhupesh.sharma@linaro.org>,
-	Douglas Anderson <dianders@chromium.org>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org
-Message-Id: <9233NR.PQPFERN2D1SO1@somainline.org>
-In-Reply-To: <20221216215819.1164973-5-marijn.suijten@somainline.org>
-References: <20221216215819.1164973-1-marijn.suijten@somainline.org>
-	<20221216215819.1164973-5-marijn.suijten@somainline.org>
-X-Mailer: geary/40.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAAC77E4
+	for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 00:57:21 +0000 (UTC)
+Received: from kwepemi500016.china.huawei.com (unknown [172.30.72.57])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Nb17N6dZDzJqbN;
+	Mon, 19 Dec 2022 08:39:44 +0800 (CST)
+Received: from [10.40.193.166] (10.40.193.166) by
+ kwepemi500016.china.huawei.com (7.221.188.220) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Mon, 19 Dec 2022 08:40:42 +0800
+Subject: Re: [PATCH] dma-mapping: benchmark: Fix compile error in user-space
+ tool
+To: Gerd Bayer <gbayer@linux.ibm.com>, Shuah Khan <shuah@kernel.org>
+References: <20221205135022.49708-1-gbayer@linux.ibm.com>
+ <fd189113-deae-d6b7-bb9a-a5a94f7b0815@hisilicon.com>
+ <3193d6833feccc5c2fbdef9b1f71f292eddb8f27.camel@linux.ibm.com>
+CC: Joerg Roedel <joro@8bytes.org>, <iommu@lists.linux.dev>,
+	<linux-kselftest@vger.kernel.org>, Niklas Schnelle <schnelle@linux.ibm.com>,
+	Christoph Hellwig <hch@lst.de>
+From: "chenxiang (M)" <chenxiang66@hisilicon.com>
+Message-ID: <357fa52d-ae0d-ded9-5fd0-c5d15bc06ff9@hisilicon.com>
+Date: Mon, 19 Dec 2022 08:40:42 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+In-Reply-To: <3193d6833feccc5c2fbdef9b1f71f292eddb8f27.camel@linux.ibm.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.40.193.166]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemi500016.china.huawei.com (7.221.188.220)
+X-CFilter-Loop: Reflected
+
++cc Christoph Hellwig
 
 
-
-On Fri, Dec 16 2022 at 10:58:19 PM +01:00:00, Marijn Suijten 
-<marijn.suijten@somainline.org> wrote:
-> From: AngeloGioacchino Del Regno 
-> <angelogioacchino.delregno@somainline.org>
-> 
-> Add an IOMMU context to the USB DWC3 controller, required to get USB
-> functionality upon enablement of apps_smmu.
-> 
-> Signed-off-by: AngeloGioacchino Del Regno 
-> <angelogioacchino.delregno@somainline.org>
-> Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
-> ---
->  arch/arm64/boot/dts/qcom/sm6125.dtsi | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sm6125.dtsi 
-> b/arch/arm64/boot/dts/qcom/sm6125.dtsi
-> index f560499cc0ca..a205121ab4a7 100644
-> --- a/arch/arm64/boot/dts/qcom/sm6125.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sm6125.dtsi
-> @@ -542,6 +542,7 @@ usb3_dwc3: usb@4e00000 {
->  				compatible = "snps,dwc3";
->  				reg = <0x04e00000 0xcd00>;
->  				interrupts = <GIC_SPI 255 IRQ_TYPE_LEVEL_HIGH>;
-> +				iommus = <&apps_smmu 0x100 0x0>;
->  				phys = <&hsusb_phy1>;
->  				phy-names = "usb2-phy";
->  				snps,dis_u2_susphy_quirk;
-> --
-> 2.39.0
-> 
-Reviewed-by: Martin Botka <martin.botka@somainline.org>
-
--Martin
-
+在 2022/12/16 22:35, Gerd Bayer 写道:
+> On Tue, 2022-12-06 at 11:13 +0800, chenxiang (M) wrote:
+>> 在 2022/12/5 21:50, Gerd Bayer 写道:
+>>> Since [1] the user-space program dma_map_benchmark shares the
+>>> header file
+>>> linux/map_benchmark.h with the kernel driver in
+>>> kernel/dma/map_benchmark.c.
+>>> With latest kernel version this does not compile any more.
+>>>
+>>> While https://kernelnewbies.org/KernelHeaders suggests otherwise,
+>>> allow it
+>>> to use of kernel headers through the uapi/ include direcotry. I
+>>> assume we can
+>>> do so safely, since the controlling user-space program is
+>>> distributed with
+>>> the kernel.
+>>>
+>>> With this change dma_map_benchmark compiles with just the obvious
+>>> warning
+>>> about uapi usage on ARCH=x86 and s390 and runs on ARCH=s390.
+>>>
+>>> [1] commit 8ddde07a3d28 ("dma-mapping: benchmark: extract a common
+>>> header file for map_benchmark definition")
+>>>
+>>> Signed-off-by: Gerd Bayer <gbayer@linux.ibm.com>
+>> It also solves the compile error on arm64 platform.
+>> Acked-by:  Xiang Chen <chenxiang66@hisilicon.com>
+> Hi Xiang Chen, hi Shuah,
+>
+> so is there any chance to have this compile fix integrated into linux-
+> next still, or is this too late now?
+>
+> Thanks,
+> Gerd
+>
+>>> ---
+>>>    tools/testing/selftests/dma/dma_map_benchmark.c | 2 +-
+>>>    1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/tools/testing/selftests/dma/dma_map_benchmark.c
+>>> b/tools/testing/selftests/dma/dma_map_benchmark.c
+>>> index 5c997f17fcbd..d49d7ea6a63e 100644
+>>> --- a/tools/testing/selftests/dma/dma_map_benchmark.c
+>>> +++ b/tools/testing/selftests/dma/dma_map_benchmark.c
+>>> @@ -10,7 +10,7 @@
+>>>    #include <unistd.h>
+>>>    #include <sys/ioctl.h>
+>>>    #include <sys/mman.h>
+>>> -#include <linux/types.h>
+>>> +#include <uapi/linux/types.h>
+>>>    #include <linux/map_benchmark.h>
+>>>    
+>>>    #define NSEC_PER_MSEC 1000000L
+>>>
+>>> base-commit: 8abacb3356e68261ccd3a2ad74ed6042363e5d0f
+> .
+>
 
