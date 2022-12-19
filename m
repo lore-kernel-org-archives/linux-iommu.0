@@ -1,85 +1,127 @@
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com [209.85.219.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2048.outbound.protection.outlook.com [40.107.20.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB0A77E
-	for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 11:28:15 +0000 (UTC)
-Received: by mail-yb1-f179.google.com with SMTP id 192so9090010ybt.6
-        for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 03:28:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=VMzRLzpincvsgDVrWJjWjP9c4+ebaH5xlefFAGcNSZA=;
-        b=DMVPFm0Qra9ZvdI6GKXI+xlvwdbT5lwLM8UR0YOC5fSQbwHKk7RntvaxLgWFASZUJe
-         oT3TvPOVWUVCYvbvqmplYlrGXZfBUDnlyOQ/sD7QXyaYJ2SaDr+a9Ea7GVxpceseaHdF
-         t78QI68S8jMNZqs8bs2zDXosG6U4O8hV/YvQFqnBdgesha7r4NqWJ69ZbDDbicDWC0eO
-         flxfn+AA6g8koS4YKFWoq3x3PL5+mG+/+Mek1UdKpzt0LlXKBmDzQK+8Zw0hiISX1Wi/
-         mVGMxFrBL812p0tNTD/JHf8iUFfWFztY5Bjuo2JOyW1GAowqmvez/cwZMxjE1graAlxZ
-         HHwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=VMzRLzpincvsgDVrWJjWjP9c4+ebaH5xlefFAGcNSZA=;
-        b=clLnwF8vz7kOQuWrk2iXSVrP9ObuXiXR9bCyt2qJLeXTz9AAvTjE1vTvn9MxKit7Y8
-         8dxmAXMK93J/2BPL2dEmuM4Pm9CmGH/oQu5shAfdAyry1IS4VRaz9XD5SaMdAZnMepe/
-         W9VLS+WIz1TTJ5izNppEHhU0wOK/pKns9mXqSvjgjLJrXQNjqJiL1xMQLQ0JqagVvrRu
-         7oc1gbjNrmN5LyrfU9lsSmSjHePn3haz/C9V+MAIvEhy8ZPM/Qp4hKPQETq7Ty+RKzhE
-         ELiJQEtP38+khqj4BKW7Kq2L1H4wdZiyxZFqLupA2/HdX4V48/oGvGAVLETiecdIa5e0
-         dcSw==
-X-Gm-Message-State: ANoB5pmq8xFpblEio+ZEX2VFwmh5iXMJp0Vf+BxQhynd30Gt1LtDRoX9
-	9fvbmTmviTnrSYPrFnfhcL2jTGrH92XhPByEmOpbiQ==
-X-Google-Smtp-Source: AA0mqf5rJm4+V2jdIAc5ils+CtzrRHnCeWU83mLN5tiYq2OCzVIN03D3XQasvpS35GJdyTd4AGBBoPofWN2Kt+wpZTk=
-X-Received: by 2002:a25:8544:0:b0:723:5b57:cde9 with SMTP id
- f4-20020a258544000000b007235b57cde9mr4351163ybn.194.1671449294770; Mon, 19
- Dec 2022 03:28:14 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E7047E
+	for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 12:03:18 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dG+UNBBLrTSYv5guvZ1Mm7bK6XYakwE00XRqgnRun2TuV9cA4kSaNmOqzZpdZl5ldHRta4L5diqauDU+EnT1sgLOlrGDEs2/J8UrBuf6wjm258Ws5LSgjJtBh6UQFx0BrmE01k4zlih59aDTWwlxAQVdyOquwXr6AMFCbd7adi84EnJqUjBVRr5ONkbrC8Ii1pxx26fY64Z017sKEJfu8YbnPao2cssCzillFDHmva/jYjk9k5BjEQScp8ItJM09abNOAEcmlTOtZurYB9EClUTLti7yYYVNEKswY3RJoyLU0IxYEWAHfumlVqz5Q+CBg0qub1y44mQrW4TvF0/xbw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=T0rn+qTVu/0JLw53ON5WONKkEvwqFBo3pSZmXrsK9Bc=;
+ b=Xx3zFeCQe+1fKE9L2IGDhttSLGstQ10smvmt78toqsQuPUr/L0IZudUa/YJFhti2Ht6ajXO5KIDoc44PRAkVrvITGpP+QZz4vj7wCiFKqcHrdSFA4ZLbuBf0cAWDpDgfqKuZQA/rwPb/4KpTX+Arw5uR/ieC9BV6dfsbH/xWl9d0bUKjKjPSG/sbcJIM9WFoqSqSdepj3n2u8btGSsqQ7L7Fqn+pffgq700+74AMHE9cchJJb18uR1E760FIDZbjBsA0fE9BQgHF1CDLkbA5VPnAmbuteJ4p8w6ZE8TmPwK1sGpBIoCsCyiNYcsNcs5fBmDazfimNTq9pyBY5EuxHg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=T0rn+qTVu/0JLw53ON5WONKkEvwqFBo3pSZmXrsK9Bc=;
+ b=ps5D3CtoP1BfyrBeE4Nx0HsKskpfMWC5+RqEpsGJH7ncFfJViOe8cFzNV+Ddkrn0egDpBY+o+bCTSTaCvydcOwQb5TVH/r0XgWlMgMfWmmK+KJrD+TadKXZ0j/Ap6mfEMewLqhqmiCnufbPntRH4oeE0pmLAipk5xwGxchXyrUc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by PR3PR04MB7305.eurprd04.prod.outlook.com (2603:10a6:102:83::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5924.16; Mon, 19 Dec
+ 2022 12:03:15 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::7c13:ef9:b52f:47d8]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::7c13:ef9:b52f:47d8%6]) with mapi id 15.20.5924.016; Mon, 19 Dec 2022
+ 12:03:15 +0000
+Date: Mon, 19 Dec 2022 14:03:10 +0200
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: will@kernel.org, joro@8bytes.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] iommu/arm-smmu: Report IOMMU_CAP_CACHE_COHERENCY even
+ betterer
+Message-ID: <20221219120310.hf3343kmzovuvxw3@skbuf>
+References: <d6dc41952961e5c7b21acac08a8bf1eb0f69e124.1671123115.git.robin.murphy@arm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d6dc41952961e5c7b21acac08a8bf1eb0f69e124.1671123115.git.robin.murphy@arm.com>
+X-ClientProxiedBy: AM4PR07CA0032.eurprd07.prod.outlook.com
+ (2603:10a6:205:1::45) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20221030094258.486428-1-iskren.chernev@gmail.com>
- <20221030094258.486428-6-iskren.chernev@gmail.com> <9e94c0b9-f901-5ac9-2abb-40e958cbe5a2@linaro.org>
- <3134ba66-27bb-7015-8988-6c8dec046b0f@linaro.org> <CAL7jhid=inAk85h9tHOD6rjFc-aNufvZPQw3ALfsrqTm6oHCag@mail.gmail.com>
-In-Reply-To: <CAL7jhid=inAk85h9tHOD6rjFc-aNufvZPQw3ALfsrqTm6oHCag@mail.gmail.com>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Mon, 19 Dec 2022 13:28:03 +0200
-Message-ID: <CAA8EJpop-xO3TJgxHQ7PRCEi55tQNEM58vbOsKwjC_vQRCHtqA@mail.gmail.com>
-Subject: Re: [PATCH v5 5/8] iommu/arm-smmu-qcom: Add SM6115 support
-To: Iskren Chernev <iskren.chernev@gmail.com>
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Bjorn Andersson <andersson@kernel.org>, 
-	Rob Herring <robh+dt@kernel.org>, phone-devel@vger.kernel.org, 
-	~postmarketos/upstreaming@lists.sr.ht, linux-arm-msm@vger.kernel.org, 
-	devicetree@vger.kernel.org, Adam Skladowski <a39.skl@gmail.com>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
-	Konrad Dybcio <konrad.dybcio@somainline.org>, 
-	Sai Prakash Ranjan <quic_saipraka@quicinc.com>, Emma Anholt <emma@anholt.net>, 
-	Rob Clark <robdclark@chromium.org>, linux-arm-kernel@lists.infradead.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5136:EE_|PR3PR04MB7305:EE_
+X-MS-Office365-Filtering-Correlation-Id: 61c45f4b-4c85-4cd1-9160-08dae1b901f0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	3LZOkHfMszAHLkKvfaddZQCfbs9kDxBSfm1mXo8R/r7w7MWPMfhEOQXeRCF2anUiqVY0PVt9onb91Ys6e82bMUvmdj32XG/m4g3CJfaZ6Bydcil/pBwsyc212lSYavk7wycxJT8XuBPn4GULdSBh6QWg5LN8Iik0uLqZyMsEBp4s2vaKqtE+RiyyHRFO4hMWrjyhw2CPvAm9Nzo4RlbRsowYG/QKa2WBcciwe2YUtVSpSZaUhmooRnsKW1MAVGSTQMK2MOsuiBQE5suML1Uwy0u+KzztOLKZtGQcEZJ1eMZW1OjzgpcR3vv6j+xqWTQPSj3TiJrCrmyGGAJlgLv6M73lOTKhPrWA2EdBzHB8AFbjWNoKeO2bCuxr819S82xcFQnxjIL3kITwex6ilj4STUyNCNwilLJEbVx48MGAhtkim37Fg/zzoYLA+JAcvzaCP9hMbyDIxr1grqkRNFjEOPjOaZlRrdI6ppnl/vTjvvCZgGXgozTDdut5CufF+bG4UxUNQpYxorwtIfDEtYllzCMas1mvHxzN0o6L2stZTKc4dzNzi0IzSydxtVhub/iMhRnBSpA1odaintDBO9abbF8+pkcBW1plApXKird/vg5KaCrfAiqZm0tGmNIlmXmo32ccu1OtxdLul7RxFL2oRQ==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(7916004)(4636009)(366004)(39860400002)(136003)(396003)(376002)(346002)(451199015)(6666004)(6506007)(6486002)(26005)(9686003)(6512007)(316002)(478600001)(6916009)(66556008)(2906002)(66476007)(4326008)(41300700001)(8676002)(66946007)(1076003)(44832011)(83380400001)(5660300002)(8936002)(186003)(38100700002)(86362001)(33716001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?OZxLUAN3o21CovLaRcB3Uecg8wgAkpzFPimfu4bDV+L5v1tNVkaBBcGQEEuh?=
+ =?us-ascii?Q?K5fANpnH5NHTRivh1411QaevXvzlQWq+ozLHnrx9cthnFtgiLw8oxNzeA4Pz?=
+ =?us-ascii?Q?7oO+yLV8SOreSlIkgO26DrmCYgEAz/99oUmrO1mWkfEFTDGf7xvDMzEE2y0c?=
+ =?us-ascii?Q?a8P7sO5rM3FJm4md6EHtkMtdI2lyvZ/UYF9HQU1tZCKqJ/jjx0qTw1ks7iJf?=
+ =?us-ascii?Q?j+nJ3MdYcHrkFz+xQp/REmCsxDJkDaNKB78bypMBbG8Zbndn5FG6kx1KHLik?=
+ =?us-ascii?Q?8OQzxNnnjkaSFoJY7/REDEbddriqCEQ4zOZiVgJyouN/apjDP6e3cdjkTy+I?=
+ =?us-ascii?Q?r5vhYbF1V3v9QLB7hP+I/OD/HoaNEqKG8ucTgiqCpUxRGSCTibAO0XTd4sYF?=
+ =?us-ascii?Q?3CAWHwEds+irwdcoDMim95LZQJthK7/RsSpbCqLgL3DG0BtQbIr1ParKpK+i?=
+ =?us-ascii?Q?sxqLfr8h8TmO2PrWLX6GScDCkEdluS/IBy4uBX+Sbj80yncMS0RcSpl38enA?=
+ =?us-ascii?Q?qRc/Tknz8QNBKQTR6zE2duimB+qmpOYy+xZ9vYzUx+6mqDqC2qs8zJP/BQml?=
+ =?us-ascii?Q?MHTWCy/KrUTHQWNGoYB5r+M0RY1Br2WaYo8iIytkREMlj/9c0PPVeDRyzqdp?=
+ =?us-ascii?Q?c2KMNM9KpOfFQG8w49PEdUCw01l8hSfx/ILaKDxYNfzBgT2ZPXTK2lREoVME?=
+ =?us-ascii?Q?3DVsyGbgPzsnkZvostMDK7L8C2m9pMsY+ns2tvx4XrD8rvuvrz51VOXrEGOA?=
+ =?us-ascii?Q?60xvdR17mHZx9CVsDNY93FAbS6XwSCBDrjXASEO/TP6RFgTzW66KHbjf9HIQ?=
+ =?us-ascii?Q?DbLisPXS2+JNyn9dAAXMzfoq2XSkzgBlW0ktBQTBOkt0psQaWG3/Kwnx60jx?=
+ =?us-ascii?Q?IiDNtfF0FAiq0VIIBcijjPKWEwZt+c+YeAL60fCvx76N+lqnf7sE78zhpNrs?=
+ =?us-ascii?Q?pykUT4fBHhh81N2eder9gyErsRyjspMTXMO0ifDQxprIfhVIldhkKpzsmNIn?=
+ =?us-ascii?Q?oTkNHSAaZ+/lH0TUV3k69iaAPKr7BEDRG9MYSuhJvlzwrj4p/VhU+4MzpZpr?=
+ =?us-ascii?Q?Y0RwXb3YCcthffksX+yMeFJfR73ujkX/RzJ4wnQrmAiMwYuXiGxUvyNX6Q5b?=
+ =?us-ascii?Q?PniPq5G+EhKwlR6k8e4xANOHRzJc3rPMLxOUYEh8+MKPSEBa3LiIZpUo7fLb?=
+ =?us-ascii?Q?3tfzLV+2CKYjnNNDk0UkXYjj0bQbeI5WST5g5JQSVeA9x/bDLvRrp4ENuzcb?=
+ =?us-ascii?Q?ksSa3oqf+BdbaZPxIQqxE8XMR+Namkw2iwb5TZD3mIXH4dmZK3d+q/lZRL+T?=
+ =?us-ascii?Q?WuezBcjcWUMHrSTsL6ULnKGhbaIPQKUplMNG8Vk9/qW0y1pnI4Ba8eySz3xZ?=
+ =?us-ascii?Q?bUyU7C/10GA/QlWoAjhpKJ2D8CDfV/vxAUgJT+dJFoSM+op2LNJBy/zvqhNq?=
+ =?us-ascii?Q?shWWaG41t8claNi3bZBYGtcvVg7iJJslMLPB0Pc7mF0fCecot5kwsT20TUis?=
+ =?us-ascii?Q?QHpmuawDJ74wh/yoQ05GWHRNGvfOg/Qvc69+VY3gMx2P26Dg5NkJ8XZ8o5pw?=
+ =?us-ascii?Q?EtyGwJiupSMJLVEmG4JhnqcT0yFJDjoV6IjucS3impv50FezNawHCe14CU9l?=
+ =?us-ascii?Q?EA=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 61c45f4b-4c85-4cd1-9160-08dae1b901f0
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Dec 2022 12:03:15.7056
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Wvc7olfiSFgvLPV/SlEZTW9HiD8tpRcxie3x/EAiu5DQyThOvd/IhWsvku7JofNX4EI40lcJr1OvH/YYWJJ1Uw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR04MB7305
 
-Hi,
+On Thu, Dec 15, 2022 at 04:51:55PM +0000, Robin Murphy wrote:
+> Although it's vanishingly unlikely that anyone would integrate an SMMU
+> within a coherent interconnect without also making the pagetable walk
+> interface coherent, the same effect happens if a coherent SMMU fails to
+> advertise CTTW correctly. This turns out to be the case on some popular
+> NXP SoCs, where VFIO started failing the IOMMU_CAP_CACHE_COHERENCY test,
+> even though IOMMU_CACHE *was* previously achieving the desired effect
+> anyway thanks to the underlying integration.
+> 
+> While those SoCs stand to gain some more general benefits from a
+> firmware update to override CTTW correctly in DT/ACPI, it's also easy
+> to work around this in Linux as well, to avoid imposing too much on
+> affected users - since the upstream client devices *are* correctly
+> marked as coherent, we can trivially infer their coherent paths through
+> the SMMU as well.
+> 
+> Reported-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Fixes: df198b37e72c ("iommu/arm-smmu: Report IOMMU_CAP_CACHE_COHERENCY better")
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
 
-On Mon, 19 Dec 2022 at 12:01, Iskren Chernev <iskren.chernev@gmail.com> wrote:
->
-> > So, hopefully you can skip this patch completely by depending on the
-> > generic "qcom,smmu-500" compatible.
->
-> To be clear -- I still need the qcom,SOC-smmu-500 compatible in DT and
-> bindings, but not in the driver (i.e driver will pick generic)?
->
-> Then this can indeed be dropped (but it is merged in linux-next ATM,
-> 6.2-rc1 based next won't have it, I guess?).
+Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The thread got bumped in my email client, so I replied with my review
-as if these patches were brand new. However I failed to notice that
-the patches were already accepted by Will Deacon. And that my rework
-happened already on top of your patches. So, you don't have to do
-anything, the IOMMU part will be a part of 6.3. Please excuse me for
-the noise.
-
--- 
-With best wishes
-Dmitry
+Thanks for the help!
