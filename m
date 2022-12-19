@@ -1,32 +1,32 @@
 Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 237B446B1
-	for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 15:43:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A4CE46B5
+	for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 15:43:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
 	Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
 	Content-ID:Content-Description:In-Reply-To;
-	bh=ezxvAyohFkyD0fBAJIL+qTrFeT/MhmgYOqNL8/CaLLo=; b=EpCbp6SSB82FBRpRL3WLFqa1er
-	fuzx4lpjiwMDgI2wDkjoqisa1rFP2utGhxIaOhxTrHCo7GVehas62q8lOrxKyUExkTPgH5qrJlgmD
-	mdLMP53s/UdjA6xFdacYlLwfmWKVGgN3FDnUJc+YE6QaSFx2faUMB9M6ycuS9i+QXaYo1GZ45IuFJ
-	MLKh2Lk5mUsf7UiRdYtCL6rq+w1NEEnIXm7NyWF8oPWx10GLQhHJOxBvnuKwjkt4yuS47GJYU3R22
-	p58A2Hq1aQJaVBZxqTlizmhlk3cfNJT7v4y+MhwyWx8cFLoCzjcwo0zOIMO0tcf6r9L03dJVuMEwy
-	eDeSbfPQ==;
+	bh=wYWf/6rFD/HTF6iXeYomE1fwdD9WYUdD1TmCeycYrdc=; b=Ok+W64ZxfwZpDsrf9CXSHPYK0h
+	I6SL5Z2AIcqGg7qtbahx3ygvP+yDl3hCzMKCe+4ecyC6I/mFyduGdyhWQrU7BTaPc9aDFcpHLOXlH
+	cbLTk5WibKaAvN3kfNlfjolGtji/pdnI6Ja5JtV2Q387gaBBdGgO5CfK4Vm1/MzkuoTzB1HsrUpvd
+	zFGz+v2PV3pdYCIsDzG4MU5E676AYo55K30T8PLAWiYVU35lcFfetSFLkve3O101sZijZmU3N3p3w
+	O9q8qTmUA4IoKbBWg128vEdtWEsLMqqB4aTiVxBT7zheUDZLbwk4tmzx3dkKgEltN9+VZI9TgG4st
+	Bx1HKCWw==;
 Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
 	by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-	id 1p7IIS-000qwb-OL; Mon, 19 Dec 2022 15:43:21 +0000
+	id 1p7IIU-000qwu-6N; Mon, 19 Dec 2022 15:43:22 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
 	(Client did not present a certificate)
-	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 9FE0F300642;
-	Mon, 19 Dec 2022 16:43:06 +0100 (CET)
+	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 1989A30339C;
+	Mon, 19 Dec 2022 16:43:10 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-	id 64DEF20B0F898; Mon, 19 Dec 2022 16:43:06 +0100 (CET)
-Message-ID: <20221219154118.889543494@infradead.org>
+	id A6BDB20B0F8A0; Mon, 19 Dec 2022 16:43:06 +0100 (CET)
+Message-ID: <20221219154119.550996611@infradead.org>
 User-Agent: quilt/0.66
-Date: Mon, 19 Dec 2022 16:35:26 +0100
+Date: Mon, 19 Dec 2022 16:35:36 +0100
 From: Peter Zijlstra <peterz@infradead.org>
 To: torvalds@linux-foundation.org
 Cc: corbet@lwn.net,
@@ -71,7 +71,7 @@ Cc: corbet@lwn.net,
  linux-crypto@vger.kernel.org,
  iommu@lists.linux.dev,
  linux-arch@vger.kernel.org
-Subject: [RFC][PATCH 01/12] crypto: Remove u128 usage
+Subject: [RFC][PATCH 11/12] slub: Replace cmpxchg_double()
 References: <20221219153525.632521981@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -81,363 +81,361 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 
-As seems to be the common (majority) usage in crypto, use __uint128_t
-instead of u128.
-
-This frees up u128 for definition in linux/types.h.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- lib/crypto/curve25519-hacl64.c |  142 ++++++++++++++++++++---------------------
- lib/crypto/poly1305-donna64.c  |   22 ++----
- 2 files changed, 80 insertions(+), 84 deletions(-)
+ include/linux/slub_def.h |   12 ++-
+ mm/slab.h                |   41 +++++++++++--
+ mm/slub.c                |  146 ++++++++++++++++++++++++++++-------------------
+ 3 files changed, 135 insertions(+), 64 deletions(-)
 
---- a/lib/crypto/curve25519-hacl64.c
-+++ b/lib/crypto/curve25519-hacl64.c
-@@ -14,8 +14,6 @@
- #include <crypto/curve25519.h>
- #include <linux/string.h>
+--- a/include/linux/slub_def.h
++++ b/include/linux/slub_def.h
+@@ -39,15 +39,21 @@ enum stat_item {
+ 	CPU_PARTIAL_FREE,	/* Refill cpu partial on free */
+ 	CPU_PARTIAL_NODE,	/* Refill cpu partial from node partial */
+ 	CPU_PARTIAL_DRAIN,	/* Drain cpu partial to node partial */
+-	NR_SLUB_STAT_ITEMS };
++	NR_SLUB_STAT_ITEMS
++};
  
--typedef __uint128_t u128;
+ /*
+  * When changing the layout, make sure freelist and tid are still compatible
+  * with this_cpu_cmpxchg_double() alignment requirements.
+  */
+ struct kmem_cache_cpu {
+-	void **freelist;	/* Pointer to next available object */
+-	unsigned long tid;	/* Globally unique transaction id */
++	union {
++		struct {
++			void **freelist;	/* Pointer to next available object */
++			unsigned long tid;	/* Globally unique transaction id */
++		};
++		freelist_aba_t freelist_tid;
++	};
+ 	struct slab *slab;	/* The slab from which we are allocating */
+ #ifdef CONFIG_SLUB_CPU_PARTIAL
+ 	struct slab *partial;	/* Partially allocated frozen slabs */
+--- a/mm/slab.h
++++ b/mm/slab.h
+@@ -5,6 +5,32 @@
+  * Internal slab definitions
+  */
+ 
++/*
++ * Freelist pointer and counter to cmpxchg together, avoids the typical ABA
++ * problems with cmpxchg of just a pointer.
++ */
++typedef union {
++	struct {
++		void *freelist;
++		unsigned long counter;
++	};
++#ifdef CONFIG_64BIT
++	u128 full;
++#else
++	u64 full;
++#endif
++} freelist_aba_t;
++
++#ifdef CONFIG_64BIT
++# ifdef system_has_cmpxchg128
++# define system_has_freelist_aba() system_has_cmpxchg128()
++# endif
++#else /* CONFIG_64BIT */
++# ifdef system_has_cmpxchg64
++# define system_has_freelist_aba() system_has_cmpxchg64()
++# endif
++#endif /* CONFIG_64BIT */
++
+ /* Reuses the bits in struct page */
+ struct slab {
+ 	unsigned long __page_flags;
+@@ -34,14 +60,19 @@ struct slab {
+ 	};
+ 	struct kmem_cache *slab_cache;
+ 	/* Double-word boundary */
+-	void *freelist;		/* first free object */
+ 	union {
+-		unsigned long counters;
+ 		struct {
+-			unsigned inuse:16;
+-			unsigned objects:15;
+-			unsigned frozen:1;
++			void *freelist;		/* first free object */
++			union {
++				unsigned long counters;
++				struct {
++					unsigned inuse:16;
++					unsigned objects:15;
++					unsigned frozen:1;
++				};
++			};
+ 		};
++		freelist_aba_t freelist_counter;
+ 	};
+ 	unsigned int __unused;
+ 
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -280,7 +280,13 @@ static inline bool kmem_cache_has_cpu_pa
+ /* Poison object */
+ #define __OBJECT_POISON		((slab_flags_t __force)0x80000000U)
+ /* Use cmpxchg_double */
++
++#if defined(system_has_freelist_aba) && \
++    defined(CONFIG_HAVE_ALIGNED_STRUCT_PAGE)
+ #define __CMPXCHG_DOUBLE	((slab_flags_t __force)0x40000000U)
++#else
++#define __CMPXCHG_DOUBLE	((slab_flags_t __force)0U)
++#endif
+ 
+ /*
+  * Tracking user of a slab.
+@@ -496,6 +502,47 @@ static __always_inline void slab_unlock(
+ 	__bit_spin_unlock(PG_locked, &page->flags);
+ }
+ 
++static inline bool
++__update_freelist_fast(struct slab *slab,
++		      void *freelist_old, unsigned long counters_old,
++		      void *freelist_new, unsigned long counters_new)
++{
++
++	bool ret = false;
++
++#ifdef system_has_freelist_aba
++	freelist_aba_t old = { .freelist = freelist_old, .counter = counters_old };
++	freelist_aba_t new = { .freelist = freelist_new, .counter = counters_new };
++
++#ifdef CONFIG_64BIT
++	ret = try_cmpxchg128(&slab->freelist_counter.full, &old.full, new.full);
++#else
++	ret = try_cmpxchg64(&slab->freelist_counter.full, &old.full, new.full);
++#endif
++#endif /* system_has_freelist_aba */
++
++	return ret;
++}
++
++static inline bool
++__update_freelist_slow(struct slab *slab,
++		      void *freelist_old, unsigned long counters_old,
++		      void *freelist_new, unsigned long counters_new)
++{
++	bool ret = false;
++
++	slab_lock(slab);
++	if (slab->freelist == freelist_old &&
++	    slab->counters == counters_old) {
++		slab->freelist = freelist_new;
++		slab->counters = counters_new;
++		ret = true;
++	}
++	slab_unlock(slab);
++
++	return ret;
++}
++
+ /*
+  * Interrupts must be disabled (for the fallback code to work right), typically
+  * by an _irqsave() lock variant. On PREEMPT_RT the preempt_disable(), which is
+@@ -503,33 +550,25 @@ static __always_inline void slab_unlock(
+  * allocation/ free operation in hardirq context. Therefore nothing can
+  * interrupt the operation.
+  */
+-static inline bool __cmpxchg_double_slab(struct kmem_cache *s, struct slab *slab,
++static inline bool __slab_update_freelist(struct kmem_cache *s, struct slab *slab,
+ 		void *freelist_old, unsigned long counters_old,
+ 		void *freelist_new, unsigned long counters_new,
+ 		const char *n)
+ {
++	bool ret;
++
+ 	if (USE_LOCKLESS_FAST_PATH())
+ 		lockdep_assert_irqs_disabled();
+-#if defined(CONFIG_HAVE_CMPXCHG_DOUBLE) && \
+-    defined(CONFIG_HAVE_ALIGNED_STRUCT_PAGE)
++
+ 	if (s->flags & __CMPXCHG_DOUBLE) {
+-		if (cmpxchg_double(&slab->freelist, &slab->counters,
+-				   freelist_old, counters_old,
+-				   freelist_new, counters_new))
+-			return true;
+-	} else
+-#endif
+-	{
+-		slab_lock(slab);
+-		if (slab->freelist == freelist_old &&
+-					slab->counters == counters_old) {
+-			slab->freelist = freelist_new;
+-			slab->counters = counters_new;
+-			slab_unlock(slab);
+-			return true;
+-		}
+-		slab_unlock(slab);
++		ret = __update_freelist_fast(slab, freelist_old, counters_old,
++				            freelist_new, counters_new);
++	} else {
++		ret = __update_freelist_slow(slab, freelist_old, counters_old,
++				            freelist_new, counters_new);
+ 	}
++	if (likely(ret))
++		return true;
+ 
+ 	cpu_relax();
+ 	stat(s, CMPXCHG_DOUBLE_FAIL);
+@@ -541,36 +580,26 @@ static inline bool __cmpxchg_double_slab
+ 	return false;
+ }
+ 
+-static inline bool cmpxchg_double_slab(struct kmem_cache *s, struct slab *slab,
++static inline bool slab_update_freelist(struct kmem_cache *s, struct slab *slab,
+ 		void *freelist_old, unsigned long counters_old,
+ 		void *freelist_new, unsigned long counters_new,
+ 		const char *n)
+ {
+-#if defined(CONFIG_HAVE_CMPXCHG_DOUBLE) && \
+-    defined(CONFIG_HAVE_ALIGNED_STRUCT_PAGE)
++	bool ret;
++
+ 	if (s->flags & __CMPXCHG_DOUBLE) {
+-		if (cmpxchg_double(&slab->freelist, &slab->counters,
+-				   freelist_old, counters_old,
+-				   freelist_new, counters_new))
+-			return true;
+-	} else
+-#endif
+-	{
++		ret = __update_freelist_fast(slab, freelist_old, counters_old,
++				            freelist_new, counters_new);
++	} else {
+ 		unsigned long flags;
+ 
+ 		local_irq_save(flags);
+-		slab_lock(slab);
+-		if (slab->freelist == freelist_old &&
+-					slab->counters == counters_old) {
+-			slab->freelist = freelist_new;
+-			slab->counters = counters_new;
+-			slab_unlock(slab);
+-			local_irq_restore(flags);
+-			return true;
+-		}
+-		slab_unlock(slab);
++		ret = __update_freelist_slow(slab, freelist_old, counters_old,
++				            freelist_new, counters_new);
+ 		local_irq_restore(flags);
+ 	}
++	if (likely(ret))
++		return true;
+ 
+ 	cpu_relax();
+ 	stat(s, CMPXCHG_DOUBLE_FAIL);
+@@ -2168,7 +2197,7 @@ static inline void *acquire_slab(struct
+ 	VM_BUG_ON(new.frozen);
+ 	new.frozen = 1;
+ 
+-	if (!__cmpxchg_double_slab(s, slab,
++	if (!__slab_update_freelist(s, slab,
+ 			freelist, counters,
+ 			new.freelist, new.counters,
+ 			"acquire_slab"))
+@@ -2500,7 +2529,7 @@ static void deactivate_slab(struct kmem_
+ 	}
+ 
+ 
+-	if (!cmpxchg_double_slab(s, slab,
++	if (!slab_update_freelist(s, slab,
+ 				old.freelist, old.counters,
+ 				new.freelist, new.counters,
+ 				"unfreezing slab")) {
+@@ -2561,7 +2590,7 @@ static void __unfreeze_partials(struct k
+ 
+ 			new.frozen = 0;
+ 
+-		} while (!__cmpxchg_double_slab(s, slab,
++		} while (!__slab_update_freelist(s, slab,
+ 				old.freelist, old.counters,
+ 				new.freelist, new.counters,
+ 				"unfreezing slab"));
+@@ -3022,7 +3051,7 @@ static inline void *get_freelist(struct
+ 		new.inuse = slab->objects;
+ 		new.frozen = freelist != NULL;
+ 
+-	} while (!__cmpxchg_double_slab(s, slab,
++	} while (!__slab_update_freelist(s, slab,
+ 		freelist, counters,
+ 		NULL, new.counters,
+ 		"get_freelist"));
+@@ -3295,6 +3324,18 @@ static __always_inline void maybe_wipe_o
+ 			0, sizeof(void *));
+ }
+ 
++static inline bool
++__update_cpu_freelist_fast(struct kmem_cache *s,
++			   void *freelist_old, void *freelist_new,
++			   unsigned long tid)
++{
++	freelist_aba_t old = { .freelist = freelist_old, .counter = tid };
++	freelist_aba_t new = { .freelist = freelist_new, .counter = next_tid(tid) };
++
++	return this_cpu_cmpxchg(s->cpu_slab->freelist_tid.full,
++				old.full, new.full) == old.full;
++}
++
+ /*
+  * Inlined fastpath so that allocation functions (kmalloc, kmem_cache_alloc)
+  * have the fastpath folded into their functions. So no function call
+@@ -3379,11 +3420,7 @@ static __always_inline void *slab_alloc_
+ 		 * against code executing on this cpu *not* from access by
+ 		 * other cpus.
+ 		 */
+-		if (unlikely(!this_cpu_cmpxchg_double(
+-				s->cpu_slab->freelist, s->cpu_slab->tid,
+-				object, tid,
+-				next_object, next_tid(tid)))) {
 -
- static __always_inline u64 u64_eq_mask(u64 a, u64 b)
- {
- 	u64 x = a ^ b;
-@@ -50,77 +48,77 @@ static __always_inline void modulo_carry
- 	b[0] = b0_;
- }
++		if (unlikely(!__update_cpu_freelist_fast(s, object, next_object, tid))) {
+ 			note_cmpxchg_failure("slab_alloc", s, tid);
+ 			goto redo;
+ 		}
+@@ -3517,7 +3554,7 @@ static void __slab_free(struct kmem_cach
+ 			}
+ 		}
  
--static __always_inline void fproduct_copy_from_wide_(u64 *output, u128 *input)
-+static __always_inline void fproduct_copy_from_wide_(u64 *output, __uint128_t *input)
- {
- 	{
--		u128 xi = input[0];
-+		__uint128_t xi = input[0];
- 		output[0] = ((u64)(xi));
- 	}
- 	{
--		u128 xi = input[1];
-+		__uint128_t xi = input[1];
- 		output[1] = ((u64)(xi));
- 	}
- 	{
--		u128 xi = input[2];
-+		__uint128_t xi = input[2];
- 		output[2] = ((u64)(xi));
- 	}
- 	{
--		u128 xi = input[3];
-+		__uint128_t xi = input[3];
- 		output[3] = ((u64)(xi));
- 	}
- 	{
--		u128 xi = input[4];
-+		__uint128_t xi = input[4];
- 		output[4] = ((u64)(xi));
- 	}
- }
+-	} while (!cmpxchg_double_slab(s, slab,
++	} while (!slab_update_freelist(s, slab,
+ 		prior, counters,
+ 		head, new.counters,
+ 		"__slab_free"));
+@@ -3621,11 +3658,7 @@ static __always_inline void do_slab_free
  
- static __always_inline void
--fproduct_sum_scalar_multiplication_(u128 *output, u64 *input, u64 s)
-+fproduct_sum_scalar_multiplication_(__uint128_t *output, u64 *input, u64 s)
- {
--	output[0] += (u128)input[0] * s;
--	output[1] += (u128)input[1] * s;
--	output[2] += (u128)input[2] * s;
--	output[3] += (u128)input[3] * s;
--	output[4] += (u128)input[4] * s;
-+	output[0] += (__uint128_t)input[0] * s;
-+	output[1] += (__uint128_t)input[1] * s;
-+	output[2] += (__uint128_t)input[2] * s;
-+	output[3] += (__uint128_t)input[3] * s;
-+	output[4] += (__uint128_t)input[4] * s;
- }
+ 		set_freepointer(s, tail_obj, freelist);
  
--static __always_inline void fproduct_carry_wide_(u128 *tmp)
-+static __always_inline void fproduct_carry_wide_(__uint128_t *tmp)
- {
- 	{
- 		u32 ctr = 0;
--		u128 tctr = tmp[ctr];
--		u128 tctrp1 = tmp[ctr + 1];
-+		__uint128_t tctr = tmp[ctr];
-+		__uint128_t tctrp1 = tmp[ctr + 1];
- 		u64 r0 = ((u64)(tctr)) & 0x7ffffffffffffLLU;
--		u128 c = ((tctr) >> (51));
--		tmp[ctr] = ((u128)(r0));
-+		__uint128_t c = ((tctr) >> (51));
-+		tmp[ctr] = ((__uint128_t)(r0));
- 		tmp[ctr + 1] = ((tctrp1) + (c));
- 	}
- 	{
- 		u32 ctr = 1;
--		u128 tctr = tmp[ctr];
--		u128 tctrp1 = tmp[ctr + 1];
-+		__uint128_t tctr = tmp[ctr];
-+		__uint128_t tctrp1 = tmp[ctr + 1];
- 		u64 r0 = ((u64)(tctr)) & 0x7ffffffffffffLLU;
--		u128 c = ((tctr) >> (51));
--		tmp[ctr] = ((u128)(r0));
-+		__uint128_t c = ((tctr) >> (51));
-+		tmp[ctr] = ((__uint128_t)(r0));
- 		tmp[ctr + 1] = ((tctrp1) + (c));
- 	}
- 
- 	{
- 		u32 ctr = 2;
--		u128 tctr = tmp[ctr];
--		u128 tctrp1 = tmp[ctr + 1];
-+		__uint128_t tctr = tmp[ctr];
-+		__uint128_t tctrp1 = tmp[ctr + 1];
- 		u64 r0 = ((u64)(tctr)) & 0x7ffffffffffffLLU;
--		u128 c = ((tctr) >> (51));
--		tmp[ctr] = ((u128)(r0));
-+		__uint128_t c = ((tctr) >> (51));
-+		tmp[ctr] = ((__uint128_t)(r0));
- 		tmp[ctr + 1] = ((tctrp1) + (c));
- 	}
- 	{
- 		u32 ctr = 3;
--		u128 tctr = tmp[ctr];
--		u128 tctrp1 = tmp[ctr + 1];
-+		__uint128_t tctr = tmp[ctr];
-+		__uint128_t tctrp1 = tmp[ctr + 1];
- 		u64 r0 = ((u64)(tctr)) & 0x7ffffffffffffLLU;
--		u128 c = ((tctr) >> (51));
--		tmp[ctr] = ((u128)(r0));
-+		__uint128_t c = ((tctr) >> (51));
-+		tmp[ctr] = ((__uint128_t)(r0));
- 		tmp[ctr + 1] = ((tctrp1) + (c));
- 	}
- }
-@@ -154,7 +152,7 @@ static __always_inline void fmul_shift_r
- 	output[0] = 19 * b0;
- }
- 
--static __always_inline void fmul_mul_shift_reduce_(u128 *output, u64 *input,
-+static __always_inline void fmul_mul_shift_reduce_(__uint128_t *output, u64 *input,
- 						   u64 *input21)
- {
- 	u32 i;
-@@ -188,21 +186,21 @@ static __always_inline void fmul_fmul(u6
- {
- 	u64 tmp[5] = { input[0], input[1], input[2], input[3], input[4] };
- 	{
--		u128 b4;
--		u128 b0;
--		u128 b4_;
--		u128 b0_;
-+		__uint128_t b4;
-+		__uint128_t b0;
-+		__uint128_t b4_;
-+		__uint128_t b0_;
- 		u64 i0;
- 		u64 i1;
- 		u64 i0_;
- 		u64 i1_;
--		u128 t[5] = { 0 };
-+		__uint128_t t[5] = { 0 };
- 		fmul_mul_shift_reduce_(t, tmp, input21);
- 		fproduct_carry_wide_(t);
- 		b4 = t[4];
- 		b0 = t[0];
--		b4_ = ((b4) & (((u128)(0x7ffffffffffffLLU))));
--		b0_ = ((b0) + (((u128)(19) * (((u64)(((b4) >> (51))))))));
-+		b4_ = ((b4) & (((__uint128_t)(0x7ffffffffffffLLU))));
-+		b0_ = ((b0) + (((__uint128_t)(19) * (((u64)(((b4) >> (51))))))));
- 		t[4] = b4_;
- 		t[0] = b0_;
- 		fproduct_copy_from_wide_(output, t);
-@@ -215,7 +213,7 @@ static __always_inline void fmul_fmul(u6
- 	}
- }
- 
--static __always_inline void fsquare_fsquare__(u128 *tmp, u64 *output)
-+static __always_inline void fsquare_fsquare__(__uint128_t *tmp, u64 *output)
- {
- 	u64 r0 = output[0];
- 	u64 r1 = output[1];
-@@ -227,16 +225,16 @@ static __always_inline void fsquare_fsqu
- 	u64 d2 = r2 * 2 * 19;
- 	u64 d419 = r4 * 19;
- 	u64 d4 = d419 * 2;
--	u128 s0 = ((((((u128)(r0) * (r0))) + (((u128)(d4) * (r1))))) +
--		   (((u128)(d2) * (r3))));
--	u128 s1 = ((((((u128)(d0) * (r1))) + (((u128)(d4) * (r2))))) +
--		   (((u128)(r3 * 19) * (r3))));
--	u128 s2 = ((((((u128)(d0) * (r2))) + (((u128)(r1) * (r1))))) +
--		   (((u128)(d4) * (r3))));
--	u128 s3 = ((((((u128)(d0) * (r3))) + (((u128)(d1) * (r2))))) +
--		   (((u128)(r4) * (d419))));
--	u128 s4 = ((((((u128)(d0) * (r4))) + (((u128)(d1) * (r3))))) +
--		   (((u128)(r2) * (r2))));
-+	__uint128_t s0 = ((((((__uint128_t)(r0) * (r0))) + (((__uint128_t)(d4) * (r1))))) +
-+		   (((__uint128_t)(d2) * (r3))));
-+	__uint128_t s1 = ((((((__uint128_t)(d0) * (r1))) + (((__uint128_t)(d4) * (r2))))) +
-+		   (((__uint128_t)(r3 * 19) * (r3))));
-+	__uint128_t s2 = ((((((__uint128_t)(d0) * (r2))) + (((__uint128_t)(r1) * (r1))))) +
-+		   (((__uint128_t)(d4) * (r3))));
-+	__uint128_t s3 = ((((((__uint128_t)(d0) * (r3))) + (((__uint128_t)(d1) * (r2))))) +
-+		   (((__uint128_t)(r4) * (d419))));
-+	__uint128_t s4 = ((((((__uint128_t)(d0) * (r4))) + (((__uint128_t)(d1) * (r3))))) +
-+		   (((__uint128_t)(r2) * (r2))));
- 	tmp[0] = s0;
- 	tmp[1] = s1;
- 	tmp[2] = s2;
-@@ -244,12 +242,12 @@ static __always_inline void fsquare_fsqu
- 	tmp[4] = s4;
- }
- 
--static __always_inline void fsquare_fsquare_(u128 *tmp, u64 *output)
-+static __always_inline void fsquare_fsquare_(__uint128_t *tmp, u64 *output)
- {
--	u128 b4;
--	u128 b0;
--	u128 b4_;
--	u128 b0_;
-+	__uint128_t b4;
-+	__uint128_t b0;
-+	__uint128_t b4_;
-+	__uint128_t b0_;
- 	u64 i0;
- 	u64 i1;
- 	u64 i0_;
-@@ -258,8 +256,8 @@ static __always_inline void fsquare_fsqu
- 	fproduct_carry_wide_(tmp);
- 	b4 = tmp[4];
- 	b0 = tmp[0];
--	b4_ = ((b4) & (((u128)(0x7ffffffffffffLLU))));
--	b0_ = ((b0) + (((u128)(19) * (((u64)(((b4) >> (51))))))));
-+	b4_ = ((b4) & (((__uint128_t)(0x7ffffffffffffLLU))));
-+	b0_ = ((b0) + (((__uint128_t)(19) * (((u64)(((b4) >> (51))))))));
- 	tmp[4] = b4_;
- 	tmp[0] = b0_;
- 	fproduct_copy_from_wide_(output, tmp);
-@@ -271,7 +269,7 @@ static __always_inline void fsquare_fsqu
- 	output[1] = i1_;
- }
- 
--static __always_inline void fsquare_fsquare_times_(u64 *output, u128 *tmp,
-+static __always_inline void fsquare_fsquare_times_(u64 *output, __uint128_t *tmp,
- 						   u32 count1)
- {
- 	u32 i;
-@@ -283,7 +281,7 @@ static __always_inline void fsquare_fsqu
- static __always_inline void fsquare_fsquare_times(u64 *output, u64 *input,
- 						  u32 count1)
- {
--	u128 t[5];
-+	__uint128_t t[5];
- 	memcpy(output, input, 5 * sizeof(*input));
- 	fsquare_fsquare_times_(output, t, count1);
- }
-@@ -291,7 +289,7 @@ static __always_inline void fsquare_fsqu
- static __always_inline void fsquare_fsquare_times_inplace(u64 *output,
- 							  u32 count1)
- {
--	u128 t[5];
-+	__uint128_t t[5];
- 	fsquare_fsquare_times_(output, t, count1);
- }
- 
-@@ -396,36 +394,36 @@ static __always_inline void fdifference(
- 
- static __always_inline void fscalar(u64 *output, u64 *b, u64 s)
- {
--	u128 tmp[5];
--	u128 b4;
--	u128 b0;
--	u128 b4_;
--	u128 b0_;
-+	__uint128_t tmp[5];
-+	__uint128_t b4;
-+	__uint128_t b0;
-+	__uint128_t b4_;
-+	__uint128_t b0_;
- 	{
- 		u64 xi = b[0];
--		tmp[0] = ((u128)(xi) * (s));
-+		tmp[0] = ((__uint128_t)(xi) * (s));
- 	}
- 	{
- 		u64 xi = b[1];
--		tmp[1] = ((u128)(xi) * (s));
-+		tmp[1] = ((__uint128_t)(xi) * (s));
- 	}
- 	{
- 		u64 xi = b[2];
--		tmp[2] = ((u128)(xi) * (s));
-+		tmp[2] = ((__uint128_t)(xi) * (s));
- 	}
- 	{
- 		u64 xi = b[3];
--		tmp[3] = ((u128)(xi) * (s));
-+		tmp[3] = ((__uint128_t)(xi) * (s));
- 	}
- 	{
- 		u64 xi = b[4];
--		tmp[4] = ((u128)(xi) * (s));
-+		tmp[4] = ((__uint128_t)(xi) * (s));
- 	}
- 	fproduct_carry_wide_(tmp);
- 	b4 = tmp[4];
- 	b0 = tmp[0];
--	b4_ = ((b4) & (((u128)(0x7ffffffffffffLLU))));
--	b0_ = ((b0) + (((u128)(19) * (((u64)(((b4) >> (51))))))));
-+	b4_ = ((b4) & (((__uint128_t)(0x7ffffffffffffLLU))));
-+	b0_ = ((b0) + (((__uint128_t)(19) * (((u64)(((b4) >> (51))))))));
- 	tmp[4] = b4_;
- 	tmp[0] = b0_;
- 	fproduct_copy_from_wide_(output, tmp);
---- a/lib/crypto/poly1305-donna64.c
-+++ b/lib/crypto/poly1305-donna64.c
-@@ -10,8 +10,6 @@
- #include <asm/unaligned.h>
- #include <crypto/internal/poly1305.h>
- 
--typedef __uint128_t u128;
+-		if (unlikely(!this_cpu_cmpxchg_double(
+-				s->cpu_slab->freelist, s->cpu_slab->tid,
+-				freelist, tid,
+-				head, next_tid(tid)))) {
 -
- void poly1305_core_setkey(struct poly1305_core_key *key,
- 			  const u8 raw_key[POLY1305_BLOCK_SIZE])
- {
-@@ -41,7 +39,7 @@ void poly1305_core_blocks(struct poly130
- 	u64 s1, s2;
- 	u64 h0, h1, h2;
- 	u64 c;
--	u128 d0, d1, d2, d;
-+	__uint128_t d0, d1, d2, d;
++		if (unlikely(!__update_cpu_freelist_fast(s, freelist, head, tid))) {
+ 			note_cmpxchg_failure("slab_free", s, tid);
+ 			goto redo;
+ 		}
+@@ -4319,11 +4352,12 @@ static int kmem_cache_open(struct kmem_c
+ 		}
+ 	}
  
- 	if (!nblocks)
- 		return;
-@@ -71,20 +69,20 @@ void poly1305_core_blocks(struct poly130
- 		h2 += (((t1 >> 24)) & 0x3ffffffffffULL) | hibit64;
+-#if defined(CONFIG_HAVE_CMPXCHG_DOUBLE) && \
++#if defined(system_has_freelist_aba) && \
+     defined(CONFIG_HAVE_ALIGNED_STRUCT_PAGE)
+-	if (system_has_cmpxchg_double() && (s->flags & SLAB_NO_CMPXCHG) == 0)
++	if (system_has_freelist_aba() && !(s->flags & SLAB_NO_CMPXCHG)) {
+ 		/* Enable fast mode */
+ 		s->flags |= __CMPXCHG_DOUBLE;
++	}
+ #endif
  
- 		/* h *= r */
--		d0 = (u128)h0 * r0;
--		d = (u128)h1 * s2;
-+		d0 = (__uint128_t)h0 * r0;
-+		d = (__uint128_t)h1 * s2;
- 		d0 += d;
--		d = (u128)h2 * s1;
-+		d = (__uint128_t)h2 * s1;
- 		d0 += d;
--		d1 = (u128)h0 * r1;
--		d = (u128)h1 * r0;
-+		d1 = (__uint128_t)h0 * r1;
-+		d = (__uint128_t)h1 * r0;
- 		d1 += d;
--		d = (u128)h2 * s2;
-+		d = (__uint128_t)h2 * s2;
- 		d1 += d;
--		d2 = (u128)h0 * r2;
--		d = (u128)h1 * r1;
-+		d2 = (__uint128_t)h0 * r2;
-+		d = (__uint128_t)h1 * r1;
- 		d2 += d;
--		d = (u128)h2 * r0;
-+		d = (__uint128_t)h2 * r0;
- 		d2 += d;
- 
- 		/* (partial) h %= p */
+ 	/*
 
 
