@@ -1,33 +1,33 @@
 Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38A4146BE
-	for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 15:43:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56DE446B1
+	for <iommu@lists.linux.dev>; Mon, 19 Dec 2022 15:44:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
 	Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
 	Content-ID:Content-Description:In-Reply-To;
-	bh=gkcjStIUQsvZMzBnRMKIS/S8C1S2HdQdTZCEH219uhc=; b=H4AjUmHwWCRzxq87XM6dpIVmhp
-	a6K9WMWqe+zvKBxZT3MnWCIIOoYI+xLcYdnMcJtUyBQ537agojcGqjlVwUHqfZ8U+DwCSlb/u9KU1
-	a9t3thKS+ZDlG1xqzGNzzZa48TCVaH1NcBD5Az/De/G46fj5MSt/nmPBonJHKh8hNu9qACt/gtfvp
-	STxqJIgeYtBhW19qvGf/EppiN+gRv9z++90g+9r9t5rp2CxhjZeNcDiUYzRO10sDir1IBJqPb3ok/
-	xDzrfmrgdazGWSgN0dy03Y8gM38cdg75QYDKcSDFiiZOXRZBaXpEIx9k4lY2E1hX7XWVYP22eha5G
-	9ZUUr+Fg==;
+	bh=QJ923ExDj0XcuShmfE67Q3JbXhYYvsBZdme4aHvNZqo=; b=L1IW8vYeBrUO/INAKwHRRlhJVX
+	i/vG9qTUNs+oa6cLvr2/Xu8n10441UAqstaULlYbvtYtvBB8LKp5je0sNowRdtYNbuOsLa4LKS3CY
+	ehyeCPRWtvV4hGe0ZB3g6kR8E71kEvMsxxMtQrGDHXor+ViJ0P/iVOtCKziKJj7Si1SEXl6vlANmB
+	yYWIS8cHYYC4BX1p6xQ5JmaJ/1KWfoI/zkCuJdzbYjW06InrNLxk+2aKKyhk5GG61r78NF3XKBgq1
+	pHVhdDp4lqC8zzJrPRgm38RR7St7UYIkuWJmN6/KKJLCp+ZckgxoC6jHXr9M2Ub80pLF+e7+CCCy0
+	TLS8Y1ow==;
 Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
 	by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-	id 1p7III-00CeDp-35;
+	id 1p7IIJ-00CeDr-0Z;
 	Mon, 19 Dec 2022 15:43:11 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
 	(Client did not present a certificate)
-	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 0DD4F30330E;
+	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 0DCF930325C;
 	Mon, 19 Dec 2022 16:43:10 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-	id 8F28420B0F89B; Mon, 19 Dec 2022 16:43:06 +0100 (CET)
-Message-ID: <20221219154119.352918965@infradead.org>
+	id 7679B20B0F89C; Mon, 19 Dec 2022 16:43:06 +0100 (CET)
+Message-ID: <20221219154119.154045458@infradead.org>
 User-Agent: quilt/0.66
-Date: Mon, 19 Dec 2022 16:35:33 +0100
+Date: Mon, 19 Dec 2022 16:35:30 +0100
 From: Peter Zijlstra <peterz@infradead.org>
 To: torvalds@linux-foundation.org
 Cc: corbet@lwn.net,
@@ -72,7 +72,7 @@ Cc: corbet@lwn.net,
  linux-crypto@vger.kernel.org,
  iommu@lists.linux.dev,
  linux-arch@vger.kernel.org
-Subject: [RFC][PATCH 08/12] s390: Replace cmpxchg_double() with cmpxchg128()
+Subject: [RFC][PATCH 05/12] arch: Introduce arch_{,try_}_cmpxchg128{,_local}()
 References: <20221219153525.632521981@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -82,186 +82,269 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 
-In order to depricate cmpxchg_double(), replace all its usage with
-cmpxchg128().
+For all architectures that currently support cmpxchg_double()
+implement the cmpxchg128() family of functions that is basically the
+same but with a saner interface.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/s390/include/asm/cpu_mf.h  |   29 ++++++++++++-----
- arch/s390/kernel/perf_cpum_sf.c |   65 +++++++++++++++++++++++++---------------
- 2 files changed, 63 insertions(+), 31 deletions(-)
+ arch/arm64/include/asm/atomic_ll_sc.h |   38 +++++++++++++++++++++++
+ arch/arm64/include/asm/atomic_lse.h   |   33 +++++++++++++++++++-
+ arch/arm64/include/asm/cmpxchg.h      |   26 ++++++++++++++++
+ arch/s390/include/asm/cmpxchg.h       |   33 ++++++++++++++++++++
+ arch/x86/include/asm/cmpxchg_32.h     |    3 +
+ arch/x86/include/asm/cmpxchg_64.h     |   55 +++++++++++++++++++++++++++++++++-
+ 6 files changed, 185 insertions(+), 3 deletions(-)
 
---- a/arch/s390/include/asm/cpu_mf.h
-+++ b/arch/s390/include/asm/cpu_mf.h
-@@ -131,19 +131,32 @@ struct hws_combined_entry {
- 	struct hws_diag_entry	diag;	/* Diagnostic-sampling data entry */
- } __packed;
+--- a/arch/arm64/include/asm/atomic_ll_sc.h
++++ b/arch/arm64/include/asm/atomic_ll_sc.h
+@@ -326,6 +326,44 @@ __CMPXCHG_DBL(   ,        ,  ,         )
+ __CMPXCHG_DBL(_mb, dmb ish, l, "memory")
  
-+union hws_flags_and_overflow {
+ #undef __CMPXCHG_DBL
++
++union __u128_halves {
++	u128 full;
 +	struct {
-+		unsigned long flags;
-+		unsigned long overflow;
++		u64 low, high;
 +	};
-+	u128	full;
 +};
 +
- struct hws_trailer_entry {
- 	union {
- 		struct {
--			unsigned int f:1;	/* 0 - Block Full Indicator   */
--			unsigned int a:1;	/* 1 - Alert request control  */
--			unsigned int t:1;	/* 2 - Timestamp format	      */
--			unsigned int :29;	/* 3 - 31: Reserved	      */
--			unsigned int bsdes:16;	/* 32-47: size of basic SDE   */
--			unsigned int dsdes:16;	/* 48-63: size of diagnostic SDE */
-+			union {
-+				struct {
-+					unsigned int f:1;	/* 0 - Block Full Indicator   */
-+					unsigned int a:1;	/* 1 - Alert request control  */
-+					unsigned int t:1;	/* 2 - Timestamp format	      */
-+					unsigned int :29;	/* 3 - 31: Reserved	      */
-+					unsigned int bsdes:16;	/* 32-47: size of basic SDE   */
-+					unsigned int dsdes:16;	/* 48-63: size of diagnostic SDE */
-+				};
-+				unsigned long long flags;	/* 0 - 63: All indicators     */
-+			};
-+			unsigned long long overflow;	 /* 64 - sample Overflow count	      */
- 		};
--		unsigned long long flags;	/* 0 - 63: All indicators     */
-+		union hws_flags_and_overflow flags_and_overflow;
- 	};
--	unsigned long long overflow;	 /* 64 - sample Overflow count	      */
- 	unsigned char timestamp[16];	 /* 16 - 31 timestamp		      */
- 	unsigned long long reserved1;	 /* 32 -Reserved		      */
- 	unsigned long long reserved2;	 /*				      */
---- a/arch/s390/kernel/perf_cpum_sf.c
-+++ b/arch/s390/kernel/perf_cpum_sf.c
-@@ -1227,6 +1227,8 @@ static void hw_collect_samples(struct pe
- 	}
- }
- 
-+typedef union hws_flags_and_overflow fao_t;
++#define __CMPXCHG128(name, mb, rel, cl)					\
++static __always_inline u128						\
++__ll_sc__cmpxchg128##name(volatile u128 *ptr, u128 old, u128 new)	\
++{									\
++	union __u128_halves r, o = { .full = (old) },			\
++			       n = { .full = (new) };			\
++									\
++	asm volatile("// __cmpxchg128" #name "\n"			\
++	"	prfm	pstl1strm, %2\n"				\
++	"1:	ldxp	%0, %1, %2\n"					\
++	"	eor	%3, %0, %3\n"					\
++	"	eor	%4, %1, %4\n"					\
++	"	orr	%3, %4, %3\n"					\
++	"	cbnz	%3, 2f\n"					\
++	"	st" #rel "xp	%w3, %5, %6, %2\n"			\
++	"	cbnz	%w3, 1b\n"					\
++	"	" #mb "\n"						\
++	"2:"								\
++	: "=&r" (r.low), "=&r" (r.high), "+Q" (*(unsigned long *)ptr)	\
++	: "r" (o.low), "r" (o.high), "r" (n.low), "r" (n.high)		\
++	: cl);								\
++									\
++	return r.full;							\
++}
 +
- /* hw_perf_event_update() - Process sampling buffer
-  * @event:	The perf event
-  * @flush_all:	Flag to also flush partially filled sample-data-blocks
-@@ -1243,10 +1245,11 @@ static void hw_collect_samples(struct pe
-  */
- static void hw_perf_event_update(struct perf_event *event, int flush_all)
- {
-+	unsigned long long event_overflow, sampl_overflow, num_sdb;
- 	struct hw_perf_event *hwc = &event->hw;
- 	struct hws_trailer_entry *te;
-+	fao_t old_fao, new_fao;
- 	unsigned long *sdbt;
--	unsigned long long event_overflow, sampl_overflow, num_sdb, te_flags;
- 	int done;
- 
- 	/*
-@@ -1294,12 +1297,16 @@ static void hw_perf_event_update(struct
- 		num_sdb++;
- 
- 		/* Reset trailer (using compare-double-and-swap) */
-+		old_fao = te->flags_and_overflow;
- 		do {
--			te_flags = te->flags & ~SDB_TE_BUFFER_FULL_MASK;
--			te_flags |= SDB_TE_ALERT_REQ_MASK;
--		} while (!cmpxchg_double(&te->flags, &te->overflow,
--					 te->flags, te->overflow,
--					 te_flags, 0ULL));
-+			new_fao = (fao_t){
-+				.flags = old_fao.flags,
-+				.overflow = 0,
-+			};
-+			new_fao.flags &= ~SDB_TE_BUFFER_FULL_MASK;
-+			new_fao.flags |= SDB_TE_ALERT_REQ_MASK;
-+		} while (!try_cmpxchg128(&te->flags_and_overflow.full,
-+					 &old_fao.full, new_fao.full));
- 
- 		/* Advance to next sample-data-block */
- 		sdbt++;
-@@ -1475,14 +1482,19 @@ static int aux_output_begin(struct perf_
- static bool aux_set_alert(struct aux_buffer *aux, unsigned long alert_index,
- 			  unsigned long long *overflow)
- {
--	unsigned long long orig_overflow, orig_flags, new_flags;
- 	struct hws_trailer_entry *te;
-+	fao_t old_fao, new_fao;
- 
- 	te = aux_sdb_trailer(aux, alert_index);
++__CMPXCHG128(   ,        ,  ,         )
++__CMPXCHG128(_mb, dmb ish, l, "memory")
 +
-+	old_fao = te->flags_and_overflow;
- 	do {
--		orig_flags = te->flags;
--		*overflow = orig_overflow = te->overflow;
--		if (orig_flags & SDB_TE_BUFFER_FULL_MASK) {
-+		new_fao = (fao_t){
-+			.flags = old_fao.flags,
-+			.overflow = 0,
-+		};
-+		*overflow = old_fao.overflow;
-+		if (new_fao.flags & SDB_TE_BUFFER_FULL_MASK) {
- 			/*
- 			 * SDB is already set by hardware.
- 			 * Abort and try to set somewhere
-@@ -1490,10 +1502,11 @@ static bool aux_set_alert(struct aux_buf
- 			 */
- 			return false;
- 		}
--		new_flags = orig_flags | SDB_TE_ALERT_REQ_MASK;
--	} while (!cmpxchg_double(&te->flags, &te->overflow,
--				 orig_flags, orig_overflow,
--				 new_flags, 0ULL));
-+		new_fao.flags |= SDB_TE_ALERT_REQ_MASK;
++#undef __CMPXCHG128
 +
-+	} while (!try_cmpxchg128(&te->flags_and_overflow.full,
-+				 &old_fao.full, new_fao.full));
-+
- 	return true;
- }
+ #undef K
  
-@@ -1522,9 +1535,10 @@ static bool aux_set_alert(struct aux_buf
- static bool aux_reset_buffer(struct aux_buffer *aux, unsigned long range,
- 			     unsigned long long *overflow)
- {
--	unsigned long long orig_overflow, orig_flags, new_flags;
- 	unsigned long i, range_scan, idx, idx_old;
-+	unsigned long long orig_overflow;
- 	struct hws_trailer_entry *te;
-+	fao_t old_fao, new_fao;
+ #endif	/* __ASM_ATOMIC_LL_SC_H */
+--- a/arch/arm64/include/asm/atomic_lse.h
++++ b/arch/arm64/include/asm/atomic_lse.h
+@@ -151,7 +151,7 @@ __lse_atomic64_fetch_##op##name(s64 i, a
+ 	"	" #asm_op #mb "	%[i], %[old], %[v]"			\
+ 	: [v] "+Q" (v->counter),					\
+ 	  [old] "=r" (old)						\
+-	: [i] "r" (i) 							\
++	: [i] "r" (i)							\
+ 	: cl);								\
+ 									\
+ 	return old;							\
+@@ -324,4 +324,35 @@ __CMPXCHG_DBL(_mb, al, "memory")
  
- 	debug_sprintf_event(sfdbg, 6, "%s: range %ld head %ld alert %ld "
- 			    "empty %ld\n", __func__, range, aux->head,
-@@ -1554,17 +1568,22 @@ static bool aux_reset_buffer(struct aux_
- 	idx_old = idx = aux->empty_mark + 1;
- 	for (i = 0; i < range_scan; i++, idx++) {
- 		te = aux_sdb_trailer(aux, idx);
-+
-+		old_fao = te->flags_and_overflow;
- 		do {
--			orig_flags = te->flags;
--			orig_overflow = te->overflow;
--			new_flags = orig_flags & ~SDB_TE_BUFFER_FULL_MASK;
-+			new_fao = (fao_t){
-+				.flags = old_fao.flags,
-+				.overflow = 0,
-+			};
-+			orig_overflow = old_fao.overflow;
-+			new_fao.flags &= ~SDB_TE_BUFFER_FULL_MASK;
- 			if (idx == aux->alert_mark)
--				new_flags |= SDB_TE_ALERT_REQ_MASK;
-+				new_fao.flags |= SDB_TE_ALERT_REQ_MASK;
- 			else
--				new_flags &= ~SDB_TE_ALERT_REQ_MASK;
--		} while (!cmpxchg_double(&te->flags, &te->overflow,
--					 orig_flags, orig_overflow,
--					 new_flags, 0ULL));
-+				new_fao.flags &= ~SDB_TE_ALERT_REQ_MASK;
-+		} while (!try_cmpxchg128(&te->flags_and_overflow.full,
-+					 &old_fao.full, new_fao.full));
-+
- 		*overflow += orig_overflow;
- 	}
+ #undef __CMPXCHG_DBL
  
++#define __CMPXCHG128(name, mb, cl...)					\
++static __always_inline u128						\
++__lse__cmpxchg128##name(volatile u128 *ptr, u128 old, u128 new)		\
++{									\
++	union __u128_halves r, o = { .full = (old) },			\
++			       n = { .full = (new) };			\
++	register unsigned long x0 asm ("x0") = o.low;			\
++	register unsigned long x1 asm ("x1") = o.high;			\
++	register unsigned long x2 asm ("x2") = n.low;			\
++	register unsigned long x3 asm ("x3") = n.high;			\
++	register unsigned long x4 asm ("x4") = (unsigned long)ptr;	\
++									\
++	asm volatile(							\
++	__LSE_PREAMBLE							\
++	"	casp" #mb "\t%[old1], %[old2], %[new1], %[new2], %[v]\n"\
++	: [old1] "+&r" (x0), [old2] "+&r" (x1),				\
++	  [v] "+Q" (*(unsigned long *)ptr)				\
++	: [new1] "r" (x2), [new2] "r" (x3), [ptr] "r" (x4),		\
++	  [oldval1] "r" (r.low), [oldval2] "r" (r.high)			\
++	: cl);								\
++									\
++	r.low = x0; r.high = x1;					\
++									\
++	return r.full;							\
++}
++
++__CMPXCHG128(   ,   )
++__CMPXCHG128(_mb, al, "memory")
++
++#undef __CMPXCHG128
++
+ #endif	/* __ASM_ATOMIC_LSE_H */
+--- a/arch/arm64/include/asm/cmpxchg.h
++++ b/arch/arm64/include/asm/cmpxchg.h
+@@ -147,6 +147,19 @@ __CMPXCHG_DBL(_mb)
+ 
+ #undef __CMPXCHG_DBL
+ 
++#define __CMPXCHG128(name)						\
++static inline long __cmpxchg128##name(volatile u128 *ptr,		\
++				      u128 old, u128 new)		\
++{									\
++	return __lse_ll_sc_body(_cmpxchg128##name,			\
++				ptr, old, new);				\
++}
++
++__CMPXCHG128(   )
++__CMPXCHG128(_mb)
++
++#undef __CMPXCHG128
++
+ #define __CMPXCHG_GEN(sfx)						\
+ static __always_inline unsigned long __cmpxchg##sfx(volatile void *ptr,	\
+ 					   unsigned long old,		\
+@@ -229,6 +242,19 @@ __CMPXCHG_GEN(_mb)
+ 	__ret;									\
+ })
+ 
++/* cmpxchg128 */
++#define system_has_cmpxchg128()		1
++
++#define arch_cmpxchg128(ptr, o, n)						\
++({										\
++	__cmpxchg128_mb((ptr), (o), (n));					\
++})
++
++#define arch_cmpxchg128_local(ptr, o, n)					\
++({										\
++	__cmpxchg128((ptr), (o), (n));						\
++})
++
+ #define __CMPWAIT_CASE(w, sfx, sz)					\
+ static inline void __cmpwait_case_##sz(volatile void *ptr,		\
+ 				       unsigned long val)		\
+--- a/arch/s390/include/asm/cmpxchg.h
++++ b/arch/s390/include/asm/cmpxchg.h
+@@ -201,4 +201,37 @@ static __always_inline int __cmpxchg_dou
+ 			 (unsigned long)(n1), (unsigned long)(n2));	\
+ })
+ 
++#define system_has_cmpxchg128()		1
++
++static __always_inline u128 arch_cmpxchg128(volatile u128 *ptr, u128 old, u128 new)
++{
++	asm volatile(
++		"	cdsg	%[old],%[new],%[ptr]\n"
++		: [old] "+&d" (old)
++		: [new] "d" (new),
++		  [ptr] "QS" (*(unsigned long *)ptr)
++		: "memory", "cc");
++	return old;
++}
++
++static __always_inline bool arch_try_cmpxchg128(volatile u128 *ptr, u128 *oldp, u128 new)
++{
++	u128 old = *oldp;
++	int cc;
++
++	asm volatile(
++		"	cdsg	%[old],%[new],%[ptr]\n"
++		"	ipm	%[cc]\n"
++		"	srl	%[cc],28\n"
++		: [cc] "=&d" (cc), [old] "+&d" (old)
++		: [new] "d" (new),
++		  [ptr] "QS" (*(unsigned long *)ptr)
++		: "memory", "cc");
++
++	if (unlikely(!cc))
++		*oldp = old;
++
++	return likely(cc);
++}
++
+ #endif /* __ASM_CMPXCHG_H */
+--- a/arch/x86/include/asm/cmpxchg_32.h
++++ b/arch/x86/include/asm/cmpxchg_32.h
+@@ -103,6 +103,7 @@ static inline bool __try_cmpxchg64(volat
+ 
+ #endif
+ 
+-#define system_has_cmpxchg_double() boot_cpu_has(X86_FEATURE_CX8)
++#define system_has_cmpxchg_double()	boot_cpu_has(X86_FEATURE_CX8)
++#define system_has_cmpxchg64()		boot_cpu_has(X86_FEATURE_CX8)
+ 
+ #endif /* _ASM_X86_CMPXCHG_32_H */
+--- a/arch/x86/include/asm/cmpxchg_64.h
++++ b/arch/x86/include/asm/cmpxchg_64.h
+@@ -20,6 +20,59 @@
+ 	arch_try_cmpxchg((ptr), (po), (n));				\
+ })
+ 
+-#define system_has_cmpxchg_double() boot_cpu_has(X86_FEATURE_CX16)
++union __u128_halves {
++	u128 full;
++	struct {
++		u64 low, high;
++	};
++};
++
++static __always_inline u128 arch_cmpxchg128(volatile u128 *ptr, u128 old, u128 new)
++{
++	union __u128_halves o = { .full = old, }, n = { .full = new, };
++
++	asm volatile(LOCK_PREFIX "cmpxchg16b %[ptr]"
++		     : [ptr] "+m" (*ptr),
++		       "+a" (o.low), "+d" (o.high)
++		     : "b" (n.low), "c" (n.high)
++		     : "memory");
++
++	return o.full;
++}
++
++static __always_inline u128 arch_cmpxchg128_local(volatile u128 *ptr, u128 old, u128 new)
++{
++	union __u128_halves o = { .full = old, }, n = { .full = new, };
++
++	asm volatile("cmpxchg16b %[ptr]"
++		     : [ptr] "+m" (*ptr),
++		       "+a" (o.low), "+d" (o.high)
++		     : "b" (n.low), "c" (n.high)
++		     : "memory");
++
++	return o.full;
++}
++
++static __always_inline bool arch_try_cmpxchg128(volatile u128 *ptr, u128 *old, u128 new)
++{
++	union __u128_halves o = { .full = *old, }, n = { .full = new, };
++	bool ret;
++
++	asm volatile(LOCK_PREFIX "cmpxchg16b %[ptr]"
++		     CC_SET(e)
++		     : CC_OUT(e) (ret),
++		       [ptr] "+m" (*ptr),
++		       "+a" (o.low), "+d" (o.high)
++		     : "b" (n.low), "c" (n.high)
++		     : "memory");
++
++	if (unlikely(!ret))
++		*old = o.full;
++
++	return likely(ret);
++}
++
++#define system_has_cmpxchg_double()	boot_cpu_has(X86_FEATURE_CX16)
++#define system_has_cmpxchg128()		boot_cpu_has(X86_FEATURE_CX16)
+ 
+ #endif /* _ASM_X86_CMPXCHG_64_H */
 
 
