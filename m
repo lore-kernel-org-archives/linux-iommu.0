@@ -1,20 +1,20 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A4C51112
-	for <iommu@lists.linux.dev>; Tue, 20 Dec 2022 05:41:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03933C433D2;
-	Tue, 20 Dec 2022 05:41:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEB741383
+	for <iommu@lists.linux.dev>; Tue, 20 Dec 2022 05:41:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F4F8C43398;
+	Tue, 20 Dec 2022 05:41:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1671514916;
-	bh=aobfGfEvD4AGl4vRZJIYk0SEFsUj+YmTUfc3k7PaaFE=;
-	h=From:To:Cc:Subject:Date:From;
-	b=dyv9hCR8Y5cKQ80uJ7AOscEh/kDAsDsF/psMVIGEwc0LkdOg5NUaH5C0HkfiCuFW8
-	 APy2e/R0Sv2c/yUAuAtJCbtRZ2YpFw+9nNcCAAIhNvWkiCmFo9Ni48HLJ8f6owdZz9
-	 bvaGPQwFQJy8ILpQHBlW733ozfua0bPZIqY1z8QoB67C+m86a2FImqFuVLu8uNHKmM
-	 zdPiDDH9x/QnQYik3ctlDWzw+wmZQEc1cHg9bs3J66Nb5NHUxPLb/IsfXd98KFi1Ou
-	 7LJMOzENRw1+SpzJX8XSSYpYhuu4B2HkJHZUDT6gZsEnrpvnLuzKE9H0GScTlzcIAS
-	 1DDhFajrzTg3w==
+	s=k20201202; t=1671514917;
+	bh=3n9ADRO4nwA4vng1EWokN1HkHn+cKE/ZleCXkk6FZuU=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=IvUk8ADqzbVfp/roQjX87ypPf+5oAlzPl/WmfbZwTC7hJGifzKIvrISekXo1QbPwj
+	 77veN4ECatl/Cp4R0djvSgbZtgQ55keX8ZIkZI6jwUwT7Rr+rlabmPl5waJUVMEYj6
+	 XyAo0xmS282IUjrk6asDmm9DdzzAFQgTRU4HxJjUaPmxA1hb+Iu5q+ddQU8JBD6mm3
+	 pmfhJ238h55NLqoCVkky8COjAQAbUY+kKd3+uo5qVrJratiTxIXlJhqeLW1lo+OA7M
+	 9buDvhj1+x2uw3hIpNFy1RbrfxJv0tFYb3c95M8thLEx4T6NY9TZm8pqO+xvypQF+X
+	 XOzOZKCnjxGzQ==
 From: Eric Biggers <ebiggers@kernel.org>
 To: linux-crypto@vger.kernel.org
 Cc: Peter Zijlstra <peterz@infradead.org>,
@@ -58,10 +58,12 @@ Cc: Peter Zijlstra <peterz@infradead.org>,
 	linux-s390@vger.kernel.org,
 	iommu@lists.linux.dev,
 	linux-arch@vger.kernel.org
-Subject: [PATCH 0/3] crypto: x86/ghash cleanups
-Date: Mon, 19 Dec 2022 21:40:39 -0800
-Message-Id: <20221220054042.188537-1-ebiggers@kernel.org>
+Subject: [PATCH 1/3] crypto: x86/ghash - fix unaligned access in ghash_setkey()
+Date: Mon, 19 Dec 2022 21:40:40 -0800
+Message-Id: <20221220054042.188537-2-ebiggers@kernel.org>
 X-Mailer: git-send-email 2.39.0
+In-Reply-To: <20221220054042.188537-1-ebiggers@kernel.org>
+References: <20221220054042.188537-1-ebiggers@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -70,21 +72,46 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-These patches are a replacement for Peter Zijlstra's patch
-"[RFC][PATCH 02/12] crypto/ghash-clmulni: Use (struct) be128"
-(https://lore.kernel.org/r/20221219154118.955831880@infradead.org).
+From: Eric Biggers <ebiggers@google.com>
 
-Eric Biggers (3):
-  crypto: x86/ghash - fix unaligned access in ghash_setkey()
-  crypto: x86/ghash - use le128 instead of u128
-  crypto: x86/ghash - add comment and fix broken link
+The key can be unaligned, so use the unaligned memory access helpers.
 
- arch/x86/crypto/ghash-clmulni-intel_asm.S  |  6 +--
- arch/x86/crypto/ghash-clmulni-intel_glue.c | 45 +++++++++++++++-------
- 2 files changed, 35 insertions(+), 16 deletions(-)
+Fixes: 8ceee72808d1 ("crypto: ghash-clmulni-intel - use C implementation for setkey()")
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+---
+ arch/x86/crypto/ghash-clmulni-intel_glue.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-
-base-commit: 6feb57c2fd7c787aecf2846a535248899e7b70fa
+diff --git a/arch/x86/crypto/ghash-clmulni-intel_glue.c b/arch/x86/crypto/ghash-clmulni-intel_glue.c
+index 1f1a95f3dd0c..c0ab0ff4af65 100644
+--- a/arch/x86/crypto/ghash-clmulni-intel_glue.c
++++ b/arch/x86/crypto/ghash-clmulni-intel_glue.c
+@@ -19,6 +19,7 @@
+ #include <crypto/internal/simd.h>
+ #include <asm/cpu_device_id.h>
+ #include <asm/simd.h>
++#include <asm/unaligned.h>
+ 
+ #define GHASH_BLOCK_SIZE	16
+ #define GHASH_DIGEST_SIZE	16
+@@ -54,15 +55,14 @@ static int ghash_setkey(struct crypto_shash *tfm,
+ 			const u8 *key, unsigned int keylen)
+ {
+ 	struct ghash_ctx *ctx = crypto_shash_ctx(tfm);
+-	be128 *x = (be128 *)key;
+ 	u64 a, b;
+ 
+ 	if (keylen != GHASH_BLOCK_SIZE)
+ 		return -EINVAL;
+ 
+ 	/* perform multiplication by 'x' in GF(2^128) */
+-	a = be64_to_cpu(x->a);
+-	b = be64_to_cpu(x->b);
++	a = get_unaligned_be64(key);
++	b = get_unaligned_be64(key + 8);
+ 
+ 	ctx->shash.a = (b << 1) | (a >> 63);
+ 	ctx->shash.b = (a << 1) | (b >> 63);
 -- 
 2.39.0
 
