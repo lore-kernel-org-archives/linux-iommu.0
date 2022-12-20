@@ -1,145 +1,71 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9423A1383
-	for <iommu@lists.linux.dev>; Tue, 20 Dec 2022 05:42:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3059AC433A0;
-	Tue, 20 Dec 2022 05:41:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FD221383
+	for <iommu@lists.linux.dev>; Tue, 20 Dec 2022 05:45:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 817CEC433D2;
+	Tue, 20 Dec 2022 05:45:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1671514920;
-	bh=dsBT80rMbHb7evBtDRzv5PT3ZA7g7MTpg/OO26ExzF0=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=jYOojsuBCSLHGr8TW6ECUwgWw+LEvw+PHi3nql2vBWzBzEq7MyKtVOLJ/b2Kiu4gS
-	 oMG/dlg3OnMmVJmrdSv2oL97DF/CUUglF7nDPoQjrR1EUjWMzPIKMXZdHUPv8l8Sjd
-	 UXS+WUfMJ0NGEcylNFSYCWZt2yo1UQq4aV3vPbfVoQuD+Qp8TbeWtUxBsxReFPOxlA
-	 zfs32JevZlz+K+Uv5duClJslwi2mYsu29ttlLiM4znIDXOp4GXmEIq6usK1oiCT/rX
-	 LwdwbARx6KolYJUmb/r6mqXzDaBmbWq87tBtJKhhILBQJc9wo5CJtT/46YobC23TXN
-	 w7YoOtqqwQbVA==
+	s=k20201202; t=1671515136;
+	bh=QcK/x+eqx8iacc7s1AbUsKNKBvDGfjfcoe194ABwpQM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=F8xxaZB9wVAaw8858zsn8j1mrqTrJVesFUAdVe1W83ufJ9sHcvCYkV2q2anEmukUN
+	 m1NdhGXzBH6dnyOgVPP1qWonQ5KDZOv4oGgd66a1HDiUHo8tyaR6C3rklA4HaPex8T
+	 6El86mTLGFyzwTBHvO1T6TKqSr1Gluavng5x1qicELSXHhUHzLp5Yt6NrtuNXWla+z
+	 OwhmF2NtdbiZ6g7uwEgtX/hs9JZptcnA9ToGBHbwN5w+6ddS8cho+unrKLXqMcqQHL
+	 /99nwU6CNZMNgTkrx9zgJkD/Ng5bgFcZ4+HjTqlpCIoQQLeK2jct+t2dfB0xpzdzD4
+	 51h2h+3/WkC/g==
+Date: Mon, 19 Dec 2022 21:45:33 -0800
 From: Eric Biggers <ebiggers@kernel.org>
-To: linux-crypto@vger.kernel.org
-Cc: Peter Zijlstra <peterz@infradead.org>,
-	corbet@lwn.net,
-	will@kernel.org,
-	boqun.feng@gmail.com,
-	mark.rutland@arm.com,
-	catalin.marinas@arm.com,
-	dennis@kernel.org,
-	tj@kernel.org,
-	cl@linux.com,
-	hca@linux.ibm.com,
-	gor@linux.ibm.com,
-	agordeev@linux.ibm.com,
-	borntraeger@linux.ibm.com,
-	svens@linux.ibm.com,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	davem@davemloft.net,
-	tglx@linutronix.de,
-	mingo@redhat.com,
-	bp@alien8.de,
-	dave.hansen@linux.intel.com,
-	x86@kernel.org,
-	hpa@zytor.com,
-	joro@8bytes.org,
-	suravee.suthikulpanit@amd.com,
-	robin.murphy@arm.com,
-	dwmw2@infradead.org,
-	baolu.lu@linux.intel.com,
-	Arnd Bergmann <arnd@arndb.de>,
-	penberg@kernel.org,
-	rientjes@google.com,
-	iamjoonsoo.kim@lge.com,
-	Andrew Morton <akpm@linux-foundation.org>,
-	vbabka@suse.cz,
-	roman.gushchin@linux.dev,
-	42.hyeyoo@gmail.com,
-	linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org,
-	linux-s390@vger.kernel.org,
-	iommu@lists.linux.dev,
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: torvalds@linux-foundation.org, corbet@lwn.net, will@kernel.org,
+	boqun.feng@gmail.com, mark.rutland@arm.com, catalin.marinas@arm.com,
+	dennis@kernel.org, tj@kernel.org, cl@linux.com, hca@linux.ibm.com,
+	gor@linux.ibm.com, agordeev@linux.ibm.com,
+	borntraeger@linux.ibm.com, svens@linux.ibm.com,
+	Herbert Xu <herbert@gondor.apana.org.au>, davem@davemloft.net,
+	tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+	dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+	joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	robin.murphy@arm.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
+	Arnd Bergmann <arnd@arndb.de>, penberg@kernel.org,
+	rientjes@google.com, iamjoonsoo.kim@lge.com,
+	Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz,
+	roman.gushchin@linux.dev, 42.hyeyoo@gmail.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, linux-s390@vger.kernel.org,
+	linux-crypto@vger.kernel.org, iommu@lists.linux.dev,
 	linux-arch@vger.kernel.org
-Subject: [PATCH 3/3] crypto: x86/ghash - add comment and fix broken link
-Date: Mon, 19 Dec 2022 21:40:42 -0800
-Message-Id: <20221220054042.188537-4-ebiggers@kernel.org>
-X-Mailer: git-send-email 2.39.0
-In-Reply-To: <20221220054042.188537-1-ebiggers@kernel.org>
-References: <20221220054042.188537-1-ebiggers@kernel.org>
+Subject: Re: [RFC][PATCH 02/12] crypto/ghash-clmulni: Use (struct) be128
+Message-ID: <Y6FL/WRO1cleCI2w@sol.localdomain>
+References: <20221219153525.632521981@infradead.org>
+ <20221219154118.955831880@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221219154118.955831880@infradead.org>
 
-From: Eric Biggers <ebiggers@google.com>
+On Mon, Dec 19, 2022 at 04:35:27PM +0100, Peter Zijlstra wrote:
+> Even though x86 is firmly little endian, use be128 because le128 is in
+> fact the wrong way around :/ The actual code is already using be128 in
+> ghash_setkey() so this shouldn't be more confusing.
+> 
+> This frees up the u128 name for a real u128 type.
+> 
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 
-Add a comment that explains what ghash_setkey() is doing, as it's hard
-to understand otherwise.  Also fix a broken hyperlink.
+This patch doesn't make sense.  The x86 ghash code is definitely storing the key
+as a little endian value, not big endian.  The reason be128 shows up in
+ghash_setkey() is because the code is doing a byteswap from the original key
+bytes.  Also, this patch causes 'sparse' warnings.
 
-Signed-off-by: Eric Biggers <ebiggers@google.com>
----
- arch/x86/crypto/ghash-clmulni-intel_asm.S  |  2 +-
- arch/x86/crypto/ghash-clmulni-intel_glue.c | 27 ++++++++++++++++++----
- 2 files changed, 24 insertions(+), 5 deletions(-)
+Can you consider
+https://lore.kernel.org/linux-crypto/20221220054042.188537-1-ebiggers@kernel.org/T/#u
+instead?
 
-diff --git a/arch/x86/crypto/ghash-clmulni-intel_asm.S b/arch/x86/crypto/ghash-clmulni-intel_asm.S
-index 9dfeb4d31b92..257ed9446f3e 100644
---- a/arch/x86/crypto/ghash-clmulni-intel_asm.S
-+++ b/arch/x86/crypto/ghash-clmulni-intel_asm.S
-@@ -4,7 +4,7 @@
-  * instructions. This file contains accelerated part of ghash
-  * implementation. More information about PCLMULQDQ can be found at:
-  *
-- * http://software.intel.com/en-us/articles/carry-less-multiplication-and-its-usage-for-computing-the-gcm-mode/
-+ * https://www.intel.com/content/dam/develop/external/us/en/documents/clmul-wp-rev-2-02-2014-04-20.pdf
-  *
-  * Copyright (c) 2009 Intel Corp.
-  *   Author: Huang Ying <ying.huang@intel.com>
-diff --git a/arch/x86/crypto/ghash-clmulni-intel_glue.c b/arch/x86/crypto/ghash-clmulni-intel_glue.c
-index 9453b094bb3b..700ecaee9a08 100644
---- a/arch/x86/crypto/ghash-clmulni-intel_glue.c
-+++ b/arch/x86/crypto/ghash-clmulni-intel_glue.c
-@@ -60,16 +60,35 @@ static int ghash_setkey(struct crypto_shash *tfm,
- 	if (keylen != GHASH_BLOCK_SIZE)
- 		return -EINVAL;
- 
--	/* perform multiplication by 'x' in GF(2^128) */
-+	/*
-+	 * GHASH maps bits to polynomial coefficients backwards, which makes it
-+	 * hard to implement.  But it can be shown that the GHASH multiplication
-+	 *
-+	 *	D * K (mod x^128 + x^7 + x^2 + x + 1)
-+	 *
-+	 * (where D is a data block and K is the key) is equivalent to:
-+	 *
-+	 *	bitreflect(D) * bitreflect(K) * x^(-127)
-+	 *		(mod x^128 + x^127 + x^126 + x^121 + 1)
-+	 *
-+	 * So, the code below precomputes:
-+	 *
-+	 *	bitreflect(K) * x^(-127) (mod x^128 + x^127 + x^126 + x^121 + 1)
-+	 *
-+	 * ... but in Montgomery form (so that Montgomery multiplication can be
-+	 * used), i.e. with an extra x^128 factor, which means actually:
-+	 *
-+	 *	bitreflect(K) * x (mod x^128 + x^127 + x^126 + x^121 + 1)
-+	 *
-+	 * The within-a-byte part of bitreflect() cancels out GHASH's built-in
-+	 * reflection, and thus bitreflect() is actually a byteswap.
-+	 */
- 	a = get_unaligned_be64(key);
- 	b = get_unaligned_be64(key + 8);
--
- 	ctx->shash.a = cpu_to_le64((a << 1) | (b >> 63));
- 	ctx->shash.b = cpu_to_le64((b << 1) | (a >> 63));
--
- 	if (a >> 63)
- 		ctx->shash.a ^= cpu_to_le64((u64)0xc2 << 56);
--
- 	return 0;
- }
- 
--- 
-2.39.0
-
+- Eric
