@@ -1,66 +1,87 @@
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03B801859
-	for <iommu@lists.linux.dev>; Tue, 20 Dec 2022 14:58:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1671548283; x=1703084283;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=vwUKN1/weYQ7e+JpH0fGZo7ZcRb7Zd8KPmAQp/z+Z+0=;
-  b=Hs6MyjUXSmOBPbgD7QxRGwFY6mS5G0cV1DAipQrL8n+foL5UP3KzXPd1
-   uKExKCUNmMxjFlOgEpC5Yj4Abo9EvSUNi+lp4k48RhQ1slRRk9HTbWk1u
-   JHcZ5SuG2UpD6xL9nlgKDJG941nTgjLC+qgigISsoVLrYa/vk8QMdv5UM
-   84U/gIPdFqOWuytKXVkQfkRSwlyf3KtVInVBuY/KPTo/RCXseTpzZVlrt
-   EoX8SheSdhc8/OLfA1bD+NLgkcRYUvapPIg/gOtZ9cOfsIpuxAa2un/rb
-   ZHWtjkN1VTUYCaLIueTQEhGM1PBshA/nbANTqiXJ3BNbm9X0bqoDEc1QL
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10567"; a="299972191"
-X-IronPort-AV: E=Sophos;i="5.96,259,1665471600"; 
-   d="scan'208";a="299972191"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2022 06:57:56 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10567"; a="601122249"
-X-IronPort-AV: E=Sophos;i="5.96,259,1665471600"; 
-   d="scan'208";a="601122249"
-Received: from eliteleevi.tm.intel.com ([10.237.54.20])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2022 06:57:53 -0800
-Date: Tue, 20 Dec 2022 16:57:25 +0200 (EET)
-From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-X-X-Sender: kvehmane@eliteleevi.tm.intel.com
-To: Christoph Hellwig <hch@lst.de>
-cc: iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>, 
-    Robin Murphy <robin.murphy@arm.com>, Jaroslav Kysela <perex@perex.cz>, 
-    Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org, 
-    Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>, 
-    Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Subject: Re: [PATCH 2/2] dma-mapping: reject GFP_COMP for noncohernt
- allocaions
-In-Reply-To: <20221220082009.569785-3-hch@lst.de>
-Message-ID: <alpine.DEB.2.22.394.2212201653520.3532114@eliteleevi.tm.intel.com>
-References: <20221220082009.569785-1-hch@lst.de> <20221220082009.569785-3-hch@lst.de>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7 02160 Espoo
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C793C46B3
+	for <iommu@lists.linux.dev>; Tue, 20 Dec 2022 15:10:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=FFNeZkVqnyoGozFMwV8suZuO15qmhw0RI08pyhsvplQ=; b=aj3xUuejuA9YH7oE/tMQbHxDrC
+	5p9yKMxF2BMunnN+3aFfpuq4xvQtgL6Mtrf776Ph7v2oiGV9BjVApUkzIjk/WfaM1JFNiL/d3uNFt
+	Cv73DfWGBBk8PaAlwJVSwfYr3hfq3P/tA8V8DL1kjpeeNx7zhonlT8kvfC88Q40rDC5AGMpqylyTa
+	hPk5u9253JZPrw4gklKKy0rEjWbNLpr/vX9MLoGk1h4JsNN6FMYf6ULtZxxqymlZtiTpJmvNfyRE+
+	Vda14xeiFfnUBjl0zdQiemuszxdTFOeh76ZedxboR2+ROwt3pEguOkI7xDP9FcJk8q2/NS7Axhz1z
+	OnVJkmTA==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+	by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1p7eFb-001u7k-I3; Tue, 20 Dec 2022 15:09:52 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 3BE3F300193;
+	Tue, 20 Dec 2022 16:09:38 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+	id 0457E223694AF; Tue, 20 Dec 2022 16:09:37 +0100 (CET)
+Date: Tue, 20 Dec 2022 16:09:37 +0100
+From: Peter Zijlstra <peterz@infradead.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Boqun Feng <boqun.feng@gmail.com>, corbet@lwn.net, will@kernel.org,
+	mark.rutland@arm.com, catalin.marinas@arm.com, dennis@kernel.org,
+	tj@kernel.org, cl@linux.com, hca@linux.ibm.com, gor@linux.ibm.com,
+	agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+	svens@linux.ibm.com, Herbert Xu <herbert@gondor.apana.org.au>,
+	davem@davemloft.net, tglx@linutronix.de, mingo@redhat.com,
+	bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+	hpa@zytor.com, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	robin.murphy@arm.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
+	Arnd Bergmann <arnd@arndb.de>, penberg@kernel.org,
+	rientjes@google.com, iamjoonsoo.kim@lge.com,
+	Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz,
+	roman.gushchin@linux.dev, 42.hyeyoo@gmail.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, linux-s390@vger.kernel.org,
+	linux-crypto@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arch@vger.kernel.org
+Subject: Re: [RFC][PATCH 05/12] arch: Introduce
+ arch_{,try_}_cmpxchg128{,_local}()
+Message-ID: <Y6HQMVz041V7NruP@hirez.programming.kicks-ass.net>
+References: <20221219153525.632521981@infradead.org>
+ <20221219154119.154045458@infradead.org>
+ <Y6DEfQXymYVgL3oJ@boqun-archlinux>
+ <Y6GXoO4qmH9OIZ5Q@hirez.programming.kicks-ass.net>
+ <CAHk-=wi493ukLwziiqofe=WCSfUU8Qa+LK0mp_GrGWKV3NnTpQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wi493ukLwziiqofe=WCSfUU8Qa+LK0mp_GrGWKV3NnTpQ@mail.gmail.com>
 
-Hey,
+On Tue, Dec 20, 2022 at 08:31:19AM -0600, Linus Torvalds wrote:
+> On Tue, Dec 20, 2022 at 5:09 AM Peter Zijlstra <peterz@infradead.org> wrote:
+> >
+> > On Mon, Dec 19, 2022 at 12:07:25PM -0800, Boqun Feng wrote:
+> > >
+> > > I wonder whether we should use "(*(u128 *)ptr)" instead of "(*(unsigned
+> > > long *) ptr)"? Because compilers may think only 64bit value pointed by
+> > > "ptr" gets modified, and they are allowed to do "useful" optimization.
+> >
+> > In this I've copied the existing cmpxchg_double() code; I'll have to let
+> > the arch folks speak here, I've no clue.
+> 
+> It does sound like the right thing to do. I doubt it ends up making a
+> difference in practice, but yes, the asm doesn't have a memory
+> clobber, so the input/output types should be the right ones for the
+> compiler to not possibly do something odd and cache the part that it
+> doesn't see as being accessed.
 
-On Tue, 20 Dec 2022, Christoph Hellwig wrote:
+Right, and x86 does just *ptr, without trying to cast away the volatile
+even.
 
-> While not quite as bogus as for the dma-coherent allocations that were
-> fixed earlier, GFP_COMP for these allocations has no benefits for
-> the dma-direct case, and can't be supported at all by dma dma-iommu
-
-tested the series and this fixes the issue:
-Tested-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-
-Minor nit, typo "noncohernt allocaions" in subject of this second patch.
-
-Br, Kai
+I've pushed out a *(u128 *)ptr variant for arm64 and s390, then at least
+we'll know if the compiler objects.
