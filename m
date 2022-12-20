@@ -1,119 +1,83 @@
-Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79FBB7E
-	for <iommu@lists.linux.dev>; Tue, 20 Dec 2022 11:09:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=WnDr2T6Lz6o8EGXfFOLVGTm1EwVLYgoHb8GLpQHXt1M=; b=IagLEV2UTnOH/1oiatZU2t3fd9
-	wIPIif+7ieQr0xntpK0GaWRRyiwDimnm1M6YG2G9sgsXB6FHTn576bYXZ2XsZQu0X8SVskwk0RdED
-	sUugD1rIZDNEonT+Wrqt9z6gKuYGTXksjAvjtBZde5JzbCpvKPzWPD1B3Cr1mg/gBpkJd++WwKlHn
-	CyrczxUMFGQp9teEMndrfFHW1fsEnOaw7HKW7iIuwSjcBQVnSoFpre5ReinrnsDbQ5HAqkui68Umh
-	mhCAarnFYTE260WL9Igxo03K9hMfZoyNoHum8h5NGIXp5g8yzrlrLDnscp3XKQ468GvNz5tPnXOvK
-	5BahRGCw==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-	by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
-	id 1p7aTs-00Cy6n-0d;
-	Tue, 20 Dec 2022 11:08:20 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 037321C02
+	for <iommu@lists.linux.dev>; Tue, 20 Dec 2022 12:34:57 +0000 (UTC)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id E507F300023;
-	Tue, 20 Dec 2022 12:08:16 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-	id 767AE201D1375; Tue, 20 Dec 2022 12:08:16 +0100 (CET)
-Date: Tue, 20 Dec 2022 12:08:16 +0100
-From: Peter Zijlstra <peterz@infradead.org>
-To: Boqun Feng <boqun.feng@gmail.com>
-Cc: torvalds@linux-foundation.org, corbet@lwn.net, will@kernel.org,
-	mark.rutland@arm.com, catalin.marinas@arm.com, dennis@kernel.org,
-	tj@kernel.org, cl@linux.com, hca@linux.ibm.com, gor@linux.ibm.com,
-	agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
-	svens@linux.ibm.com, Herbert Xu <herbert@gondor.apana.org.au>,
-	davem@davemloft.net, tglx@linutronix.de, mingo@redhat.com,
-	bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-	hpa@zytor.com, joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	robin.murphy@arm.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
-	Arnd Bergmann <arnd@arndb.de>, penberg@kernel.org,
-	rientjes@google.com, iamjoonsoo.kim@lge.com,
-	Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz,
-	roman.gushchin@linux.dev, 42.hyeyoo@gmail.com,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org, linux-s390@vger.kernel.org,
-	linux-crypto@vger.kernel.org, iommu@lists.linux.dev,
-	linux-arch@vger.kernel.org
-Subject: Re: [RFC][PATCH 05/12] arch: Introduce
- arch_{,try_}_cmpxchg128{,_local}()
-Message-ID: <Y6GXoO4qmH9OIZ5Q@hirez.programming.kicks-ass.net>
-References: <20221219153525.632521981@infradead.org>
- <20221219154119.154045458@infradead.org>
- <Y6DEfQXymYVgL3oJ@boqun-archlinux>
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 2C95E75C14;
+	Tue, 20 Dec 2022 12:27:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1671539257; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=oppyfO3kjNX4WPlQpDPLe2f/6tYwV/K4TERCCx1nk0Q=;
+	b=Czvvq32zphllbpZQLRlmeu+YqQcu0QFYDITaUa0KLf3SDqzET/dYV78ZjNT4+6syQtNYqc
+	Mt9hfXjsKD+CJeZ+TEmZlunopL2EjXike1UtrqaC3gVnAUDFmLme3vehe0a/jXvVn+zAKN
+	bNhMwGnQVxapA6hJ0wKpFh4dUtNFy4Q=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1671539257;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=oppyfO3kjNX4WPlQpDPLe2f/6tYwV/K4TERCCx1nk0Q=;
+	b=gDsrSuvPuc3ONuBsjwKpB2O/+6mIGbDGHixHiR+fWGonKVHyGOrip8anMuKGFvX4OcmMDE
+	ur+Ysi2cinSJwKDw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1B87913254;
+	Tue, 20 Dec 2022 12:27:37 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+	by imap2.suse-dmz.suse.de with ESMTPSA
+	id d9pmBjmqoWNMcgAAMHmgww
+	(envelope-from <tiwai@suse.de>); Tue, 20 Dec 2022 12:27:37 +0000
+Date: Tue, 20 Dec 2022 13:27:36 +0100
+Message-ID: <s5hk02mp8ef.wl-tiwai@suse.de>
+From: Takashi Iwai <tiwai@suse.de>
+To: Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux.dev,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jaroslav Kysela <perex@perex.cz>,
+	Takashi Iwai <tiwai@suse.com>,
+	alsa-devel@alsa-project.org
+Subject: Re: fix GFP_COMP use in noncoherent dma allocators
+In-Reply-To: <20221220082009.569785-1-hch@lst.de>
+References: <20221220082009.569785-1-hch@lst.de>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y6DEfQXymYVgL3oJ@boqun-archlinux>
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
 
-On Mon, Dec 19, 2022 at 12:07:25PM -0800, Boqun Feng wrote:
-> On Mon, Dec 19, 2022 at 04:35:30PM +0100, Peter Zijlstra wrote:
-> > For all architectures that currently support cmpxchg_double()
-> > implement the cmpxchg128() family of functions that is basically the
-> > same but with a saner interface.
-> > 
-> > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> > ---
-> >  arch/arm64/include/asm/atomic_ll_sc.h |   38 +++++++++++++++++++++++
-> >  arch/arm64/include/asm/atomic_lse.h   |   33 +++++++++++++++++++-
-> >  arch/arm64/include/asm/cmpxchg.h      |   26 ++++++++++++++++
-> >  arch/s390/include/asm/cmpxchg.h       |   33 ++++++++++++++++++++
-> >  arch/x86/include/asm/cmpxchg_32.h     |    3 +
-> >  arch/x86/include/asm/cmpxchg_64.h     |   55 +++++++++++++++++++++++++++++++++-
-> >  6 files changed, 185 insertions(+), 3 deletions(-)
-> > 
-> > --- a/arch/arm64/include/asm/atomic_ll_sc.h
-> > +++ b/arch/arm64/include/asm/atomic_ll_sc.h
-> > @@ -326,6 +326,44 @@ __CMPXCHG_DBL(   ,        ,  ,         )
-> >  __CMPXCHG_DBL(_mb, dmb ish, l, "memory")
-> >  
-> >  #undef __CMPXCHG_DBL
-> > +
-> > +union __u128_halves {
-> > +	u128 full;
-> > +	struct {
-> > +		u64 low, high;
-> > +	};
-> > +};
-> > +
-> > +#define __CMPXCHG128(name, mb, rel, cl)					\
-> > +static __always_inline u128						\
-> > +__ll_sc__cmpxchg128##name(volatile u128 *ptr, u128 old, u128 new)	\
-> > +{									\
-> > +	union __u128_halves r, o = { .full = (old) },			\
-> > +			       n = { .full = (new) };			\
-> > +									\
-> > +	asm volatile("// __cmpxchg128" #name "\n"			\
-> > +	"	prfm	pstl1strm, %2\n"				\
-> > +	"1:	ldxp	%0, %1, %2\n"					\
-> > +	"	eor	%3, %0, %3\n"					\
-> > +	"	eor	%4, %1, %4\n"					\
-> > +	"	orr	%3, %4, %3\n"					\
-> > +	"	cbnz	%3, 2f\n"					\
-> > +	"	st" #rel "xp	%w3, %5, %6, %2\n"			\
-> > +	"	cbnz	%w3, 1b\n"					\
-> > +	"	" #mb "\n"						\
-> > +	"2:"								\
-> > +	: "=&r" (r.low), "=&r" (r.high), "+Q" (*(unsigned long *)ptr)	\
+On Tue, 20 Dec 2022 09:20:07 +0100,
+Christoph Hellwig wrote:
 > 
-> I wonder whether we should use "(*(u128 *)ptr)" instead of "(*(unsigned
-> long *) ptr)"? Because compilers may think only 64bit value pointed by
-> "ptr" gets modified, and they are allowed to do "useful" optimization.
+> Hi all,
+> 
+> this series fixe the regression where dma-iommu stopped clearing
+> GFP_COMP from noncoherent dma allocations by never requesting those
+> in the sound code and rejecting them in the core DMA API code.
+> 
+> Diffstat:
+>  kernel/dma/mapping.c  |    4 ++++
+>  sound/core/memalloc.c |    4 ++--
+>  2 files changed, 6 insertions(+), 2 deletions(-)
 
-In this I've copied the existing cmpxchg_double() code; I'll have to let
-the arch folks speak here, I've no clue.
+Thank you Christoph for taking care of this mess, and apologies for my
+delayed reaction, as I've been (still) on vacation since the last
+week.
+
+FWIW, feel free to take my ack for the sound part:
+
+Acked-by: Takashi Iwai <tiwai@suse.de>
+
+
+Takashi
