@@ -1,45 +1,45 @@
-Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
+Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08BEB15D5
-	for <iommu@lists.linux.dev>; Thu, 22 Dec 2022 10:36:19 +0000 (UTC)
-Received: by mail-lj1-f174.google.com with SMTP id f20so1470027lja.4
-        for <iommu@lists.linux.dev>; Thu, 22 Dec 2022 02:36:19 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B2EA28F0
+	for <iommu@lists.linux.dev>; Thu, 22 Dec 2022 10:36:53 +0000 (UTC)
+Received: by mail-lf1-f41.google.com with SMTP id x11so2172389lfn.0
+        for <iommu@lists.linux.dev>; Thu, 22 Dec 2022 02:36:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+        h=content-transfer-encoding:in-reply-to:from:references:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=7+5IJIhCpMH6P+7mzwBTOjOH2P/NLSgQduJLQ+ZFZnE=;
-        b=u/FHIhyvBTH3ODdQatZXfqJ4HUrXxu13PFK2fa9NOlw3NeibuQqgjun0GfEa9dF7CM
-         oAq0M+I/sn1TfE2OKrB9h0aKLMIeo/rX4q++iWL++/WTC1T+mrDip2p+QcB29xsPJEm2
-         2zz13/tjmuEZ22VyjaljWw8yn7CWQtz/lHwmjUAgwil34KhOx3qGSbAov40TBSE7teZd
-         9zY+F6HxPqnTFN/JzamtSR1YwxtcaOxE3tbgs579grzgQ6YdKbBTa6oYYt3E5TseonSM
-         zvARrajybk1yqd2xYie2gU+yLkZ117uMGqCrZQLvUSVc/JmlBtSZtauKB666rA4iv8nE
-         nqDw==
+        bh=Y9FtXCraXeF1bNJWdq+qVeCXME0uFG8Ztiufy+tT/Ak=;
+        b=F49hpEpDvjixKw9Z3bdbgWi8NQQ3gWhE9qDeNcBGNCTnhdkBBzlbgtBQefuftVTnKt
+         q1uNjUbh8nTK/9mKc+Sb8VjzEC5Utoxm/kXSZRAX/qppkPsCAAQCYKO4joO8bUxTdEhK
+         FU1bBLFcvhz8OETmUj21d0/8/dmF/OWVbdYnP3Dq0nHng4b//sKKgZLqVmpJnT3zNrXN
+         xBszfcaRtSp+d/iVr/cdJmxqG7Bp5Nj5SQiqs+Rxv7AGTJkXrX98yC6zATuVI575uz74
+         FIDsazYuVfObNctM+sknwG8RsnnltH3NEMO5vFtq5RFfDhkCGYm8zQe3eh+V0QkLNdqK
+         qabg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+        h=content-transfer-encoding:in-reply-to:from:references:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=7+5IJIhCpMH6P+7mzwBTOjOH2P/NLSgQduJLQ+ZFZnE=;
-        b=f2fGPcqglUmZutPZLB5K2c8l2oVRXi7qe2T0lZmsqSSnV9vO0WXGaanjxonIY3Dee9
-         ToEkGqgZzs6+4SNnsax1xXMUKaxaqL9U1bNcrc7B9MD0rfIKGlQL001nsoov6f9XtxUf
-         icRurXFB1VoFhrflnJuwRxyMRB5WtcIN1z+DB0+B1zVBuQFVfPXXCFXfH9byVBsLm6KR
-         OiEtNu2ObiQ2uUmjGrWfN4af4iWANgD+1ibduSbC583WC34eoxZbI1Lox00xTvecUy4K
-         htp1/0bQ40DR6JTFp8BRxArzj+8SpZypoqv7wKailK+jyTepd49RXJNRMcEvTqxO11pP
-         CrRA==
-X-Gm-Message-State: AFqh2ko1cRAMGsPD580WMs5EFHlrHQ6hgux1cH9XYd44SLsw0FIxKILV
-	qWPHGL5BjVaUxT7rNq/uE7FL4Q==
-X-Google-Smtp-Source: AMrXdXsVlTloCzB2iAxBgbSBfusHqnXp2uP31OGYzPRWoJH7xgWb92tAKsblhbawpDaQgajQLr6DIA==
-X-Received: by 2002:a2e:9d86:0:b0:279:b96d:6f79 with SMTP id c6-20020a2e9d86000000b00279b96d6f79mr1462022ljj.20.1671705378050;
-        Thu, 22 Dec 2022 02:36:18 -0800 (PST)
+        bh=Y9FtXCraXeF1bNJWdq+qVeCXME0uFG8Ztiufy+tT/Ak=;
+        b=shgOH+oF+kdXE7csPsbcWLpeDKBZHfZ3BMR0g5NOxt5hls1sB5UQtLuoR1pBaRNvfr
+         m3o5CC0SLbzluuxP49z6uUCW+CZYbVbqhG1npEEuG8T2ymlqyzVvqbJNeusr0hTxAYUw
+         HhZZKGnAdxCt+qf/p/0XnUarVr38QVTQcb8+/axMIseIS+QLECsFje4ebhFjEpnqvN6O
+         Xawg6UcTGyCCT1FPxjdneQKHedSU0S0HpyEavu6XeuXUhpwytJS5aD2ASoAGVVugUy08
+         u/hd46gG5ETsXO/S662G34ywOhHjfmUCm0ol4BXsfGKzcpbftHMXdPdNnw7CV+bqHEt5
+         CM9Q==
+X-Gm-Message-State: AFqh2kqphCkAwXTbpJJWkltZXzqW35N7vmY8MK5jULXMfp0mUYCxeCw2
+	BU5A/ePVbVDDpwHasPV3C1qRGg==
+X-Google-Smtp-Source: AMrXdXvu1EoX1irEwWg7GOK/BhvjZeB+FZsY9+ZwXfr7eosom0HjDQRzGk0P6ZYQtqF+PJQIGetZYw==
+X-Received: by 2002:a05:6512:3c89:b0:4b6:fddc:1fcd with SMTP id h9-20020a0565123c8900b004b6fddc1fcdmr3402492lfv.23.1671705411525;
+        Thu, 22 Dec 2022 02:36:51 -0800 (PST)
 Received: from [192.168.0.20] (088156142067.dynamic-2-waw-k-3-2-0.vectranet.pl. [88.156.142.67])
-        by smtp.gmail.com with ESMTPSA id z5-20020a05651c11c500b0027da3a87ff6sm10067ljo.83.2022.12.22.02.36.17
+        by smtp.gmail.com with ESMTPSA id v26-20020a05651203ba00b004b593fd84ccsm26971lfp.221.2022.12.22.02.36.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 22 Dec 2022 02:36:17 -0800 (PST)
-Message-ID: <bff48e91-3cdc-a052-9573-3c4271f88e5a@linaro.org>
-Date: Thu, 22 Dec 2022 11:36:16 +0100
+        Thu, 22 Dec 2022 02:36:51 -0800 (PST)
+Message-ID: <7d45c125-e4f5-b03f-45d6-3ecf87b2f09d@linaro.org>
+Date: Thu, 22 Dec 2022 11:36:49 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,93 +48,82 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.0
-Subject: Re: [PATCH] dt-bindings: arm-smmu: disallow clocks when not used
+Subject: Re: [PATCH v4 1/4] dt-bindings: arm-smmu: Document smmu-500 binding
+ for SM6125
 Content-Language: en-US
-To: Marijn Suijten <marijn.suijten@somainline.org>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
+To: Marijn Suijten <marijn.suijten@somainline.org>,
+ phone-devel@vger.kernel.org, Will Deacon <will@kernel.org>,
+ Joerg Roedel <joro@8bytes.org>, Bjorn Andersson <andersson@kernel.org>,
+ ~postmarketos/upstreaming@lists.sr.ht,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>,
+ Konrad Dybcio <konrad.dybcio@somainline.org>,
+ Martin Botka <martin.botka@somainline.org>,
+ Jami Kettunen <jami.kettunen@somainline.org>, Lux Aliaga <they@mint.lgbt>,
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>,
  Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Andy Gross <agross@kernel.org>, Konrad Dybcio <konrad.dybcio@linaro.org>,
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+ Thierry Reding <treding@nvidia.com>, Melody Olvera
+ <quic_molvera@quicinc.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+ Douglas Anderson <dianders@chromium.org>,
  linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
- Konrad Dybcio <konrad.dybcio@linaro.org>
-References: <20221222092355.74586-1-krzysztof.kozlowski@linaro.org>
- <20221222101611.nwt5arux2hcvvtvf@SoMainline.org>
+ linux-arm-msm@vger.kernel.org
+References: <20221216215819.1164973-1-marijn.suijten@somainline.org>
+ <20221216215819.1164973-2-marijn.suijten@somainline.org>
+ <306709f8-7d45-9b76-f95b-1b3088d37a78@linaro.org>
+ <6d263321-782d-9d9c-4fdf-8bcf5b280779@linaro.org>
+ <20221219192839.6oqialqqw5xw5fxa@SoMainline.org>
+ <b4186ec6-a3f2-4dfb-a83e-25cf6d460a39@linaro.org>
+ <20221222082353.lhdw7h3pdqyyvsxy@SoMainline.org>
+ <a251f29d-58b7-5ccb-2661-a397e41fba80@linaro.org>
+ <20221222101012.ptrrugxj3ksiyitn@SoMainline.org>
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20221222101611.nwt5arux2hcvvtvf@SoMainline.org>
+In-Reply-To: <20221222101012.ptrrugxj3ksiyitn@SoMainline.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 22/12/2022 11:16, Marijn Suijten wrote:
-> Is this missing a cc to linux-arm-msm?
-
-No, it is not (or maybe but then fix MAINTAINERS). The policy is to use
-get_maintainers.pl to CC people.
-
-> 
-> On 2022-12-22 10:23:55, Krzysztof Kozlowski wrote:
->> Disallow clocks for variants other than:
->> 1. SMMUs with platform-specific compatibles which list explicit clocks
->>    and clock-names,
->> 2. SMMUs using only generic compatibles, e.g. arm,mmu-500, which have a
->>    variable clocks on different implementations.
+On 22/12/2022 11:10, Marijn Suijten wrote:
+> On 2022-12-22 10:29:40, Krzysztof Kozlowski wrote:
+>> On 22/12/2022 09:23, Marijn Suijten wrote:
+>>> On 2022-12-20 10:52:49, Krzysztof Kozlowski wrote:
+>>>> On 19/12/2022 20:28, Marijn Suijten wrote:
+>>>>> On 2022-12-19 10:09:03, Krzysztof Kozlowski wrote:
+>>>>>> On 19/12/2022 10:07, Krzysztof Kozlowski wrote:
+>>>>>>> On 16/12/2022 22:58, Marijn Suijten wrote:
+>>>>>>>> From: Martin Botka <martin.botka@somainline.org>
+>>>>>>>>
+>>>>>>>> Document smmu-500 compatibility with the SM6125 SoC.
+>>>>>>>>
+>>>>>>>
+>>>>>>> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>>>>>>
+>>>>>> Wait, not entirely... no constraints for clocks and regs?
+>>>>>
+>>>>> Quite odd that there is no warning for my DT patch as it clearly
+>>>>> requires at least one clock...
+>>>
+>>> Again, any idea why there's no warning for this DT mismatching minItems:
+>>> 1 for clocks, clock-names and power-domains?
 >>
->> This requires such variants with platform-specific compatible, to
->> explicitly list the clocks or omit them, making the binding more
->> constraint.
->>
->> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>> I don't know what do you have in DT and what is mismatched. Why there
+>> should be a warning?
 > 
-> Reviewed-by: Marijn Suijten <marijn.suijten@somainline.org>
+> There is:
 > 
-> But...
+>   clock-names:
+>     minItems: 1
+>     maxItems: 7
 > 
->> ---
->>
->> Cc: Marijn Suijten <marijn.suijten@somainline.org>
->> Cc: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
->> Cc: Konrad Dybcio <konrad.dybcio@linaro.org>
->> ---
->>  .../devicetree/bindings/iommu/arm,smmu.yaml   | 28 +++++++++++++++++++
->>  1 file changed, 28 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->> index 895ec8418465..0d88395e43ad 100644
->> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->> @@ -367,6 +367,34 @@ allOf:
->>              - description: interface clock required to access smmu's registers
->>                  through the TCU's programming interface.
->>  
->> +  # Disallow clocks for all other platforms with specific compatibles
->> +  - if:
->> +      properties:
->> +        compatible:
->> +          contains:
->> +            enum:
->> +              - cavium,smmu-v2
->> +              - marvell,ap806-smmu-500
->> +              - nvidia,smmu-500
->> +              - qcom,qcm2290-smmu-500
->> +              - qcom,qdu1000-smmu-500
->> +              - qcom,sc7180-smmu-500
+>   clocks:
+>     minItems: 1
+>     maxItems: 7
 > 
-> Hmm, sc7280 has two SMMUs.  The one for Adreno has clocks and a PD, the
+> But I did not provide _any_ (see patch 2 of this series).  Shouldn't
+> that trigger a warning?
 
-sc7280 is not here, so what is the mistake you see?
-
-> one for APPS has neither.  Same story on sm8[12]50.  Aren't those going
-> to trip up the other `if` that requires clocks in both scenarios?
-
-They are not here either, so what is the error?
-
-> 
-> Note that the Adreno SMMUs have (or will get when we/Konrad submit
-> support for it) the "qcom,adreno-smmu" compatible to distinguish them.
-> 
-> - Marijn
-> 
-
+No. Are these required properties?
 
 Best regards,
 Krzysztof
