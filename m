@@ -1,83 +1,137 @@
-Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2EB829CA
-	for <iommu@lists.linux.dev>; Thu, 22 Dec 2022 15:23:27 +0000 (UTC)
-Received: by mail-pj1-f48.google.com with SMTP id gv5-20020a17090b11c500b00223f01c73c3so5657458pjb.0
-        for <iommu@lists.linux.dev>; Thu, 22 Dec 2022 07:23:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=TDClChrfZ3CM22ZB33Zhm+2Cm6wH/+CI7RGcO5VoIOc=;
-        b=AYVTaF/tvAYpuIo2cO2xMxmq3YZvWi6+P+eVf4M2dI7HOuiq+2MDwl9LaSf6k0Q2xf
-         NPHYSfR6YtiIB6asp9gGjWy6wsf5bQqUmdZKu8QRBhEQexhf4MPLOISEx2aK/8TtHlRR
-         9I0GHuT1G2mp1O09pJVNg/G1QrXj+crjTKvH5W/otSK3mQHE5PUZue0pcWA0IzIY7YIa
-         T862w3cdjToAA1KJ8OLiVpzIreW30gXsmU2eQRnmzGYKrelk4mTnN/8Jp6campkRPvy0
-         8rzwDwpHB0AKhWdyF6sQB12XHCcM6n9NxBPz8QOhnuMGRR88luDh6utQet3lP0CHMrwn
-         QQvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=TDClChrfZ3CM22ZB33Zhm+2Cm6wH/+CI7RGcO5VoIOc=;
-        b=QemUp1r9iiXk/dnUpHHbAefptji5wpU6OsCe+Vn4wY8Zq8UcKu+t25GdkOICj8oMwY
-         LdmmG/qzp5zatMH9QN9vBVGdGSoMaX78KNP52vdzWp6CKVMNQ7rLNUdAk/0HloRjRBEg
-         eicgpaexecbJgzBYEi4ju3TuvkRu7It4Teeo7gNB2elby6Wk8+osGnr8w8NWzzWEeX4q
-         M4IYu0KopYbokD12tTHLjz7TPa1nS2XYUNn7VdBZXXKRhi5rbkHXkD3FSZYvdnRAe2tZ
-         kjZZrDpT8KBho+JSCsMNuglXQ8hG+q23ZTnrwEqEZvz5Vq9Guh9WEdITkM3g9HI7zspU
-         gh4Q==
-X-Gm-Message-State: AFqh2kpDbFf4QIcBb5sNGjRpws3A3cyisEA3iuZdZAEANFWs9W+86KA0
-	K1lBhzbxAFAyWakEHfCud3WUlt0OGeXhX/CrR47sng==
-X-Google-Smtp-Source: AMrXdXtPZ0oPZ7gYP9RSL3je4qwX/SGfRW2HgVpAuXOcyTc9fXtZevwi3y3gE3yeLHcQmvVrDyFyxm2Jmt9mOlc9J18=
-X-Received: by 2002:a17:902:dc83:b0:189:9ee0:cca4 with SMTP id
- n3-20020a170902dc8300b001899ee0cca4mr578301pld.74.1671722607302; Thu, 22 Dec
- 2022 07:23:27 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2111729CA
+	for <iommu@lists.linux.dev>; Thu, 22 Dec 2022 15:34:50 +0000 (UTC)
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20221222153448euoutp015ef278042bec63bc6bbc1c66cb1e7d22~zJ3kw0cz10421004210euoutp01e
+	for <iommu@lists.linux.dev>; Thu, 22 Dec 2022 15:34:48 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20221222153448euoutp015ef278042bec63bc6bbc1c66cb1e7d22~zJ3kw0cz10421004210euoutp01e
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1671723288;
+	bh=XX+9SmKEg+cXS57bzc0fTtmKQ3zPVGFXFn0xXKarshI=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=rS3uQ9YxTeFoypKwpRMKEKMg3+MLO+53iD552gGcGpj8uXA6WdaXUJQsjcNeN9fWw
+	 esV2P0EnnH/t0T5MkAJbJvwfXb3B9Yuf1JpSb6vEH6OnUcv8ixcAMegWv0u3tBz/tU
+	 dtP0DBnHMtzZXLjOx7A7rh8c3DZ4DeKduVPeIEgQ=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+	20221222153447eucas1p22dc03e0831b223e2cd2bc027ebed746a~zJ3kgU-bj2381423814eucas1p2K;
+	Thu, 22 Dec 2022 15:34:47 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+	eusmges2new.samsung.com (EUCPMTA) with SMTP id 33.38.61936.71974A36; Thu, 22
+	Dec 2022 15:34:47 +0000 (GMT)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20221222153447eucas1p2c1148ca6e9d92d7a61327a81e19ca028~zJ3kJdBVW2393623936eucas1p2S;
+	Thu, 22 Dec 2022 15:34:47 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+	20221222153447eusmtrp26f85bad0c1c75fdd77436f026c4eea11~zJ3kIuYDL0886508865eusmtrp2e;
+	Thu, 22 Dec 2022 15:34:47 +0000 (GMT)
+X-AuditID: cbfec7f4-a2dff7000002f1f0-1d-63a479171c30
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+	eusmgms1.samsung.com (EUCPMTA) with SMTP id D7.E6.23420.71974A36; Thu, 22
+	Dec 2022 15:34:47 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20221222153446eusmtip2d4fa2ae06e15b46f74e2a127eeff84fc~zJ3jYn2X93267932679eusmtip2h;
+	Thu, 22 Dec 2022 15:34:46 +0000 (GMT)
+Message-ID: <5757a45f-0685-a82b-edd6-ae5c98781ad3@samsung.com>
+Date: Thu, 22 Dec 2022 16:34:46 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20220726200739.30017-1-semen.protsenko@linaro.org>
- <CGME20220726200747eucas1p226a18ed7760741ddaed94483ba1f9228@eucas1p2.samsung.com>
- <20220726200739.30017-2-semen.protsenko@linaro.org> <7e9e509a-0ef7-087d-e379-14fb58e3e14f@samsung.com>
- <CAPLW+4n-Lf6je61rxdJ9nJnX9h9F8F-y+qikG7eFF0avQpMV9Q@mail.gmail.com>
- <CAPLW+4mPeX-cQR_oLKh+zPwEXuwfQtk2t2USP77C6Y9UmgYq_w@mail.gmail.com> <3751c425-aefa-a3b4-62f4-53d7e369bc1e@samsung.com>
-In-Reply-To: <3751c425-aefa-a3b4-62f4-53d7e369bc1e@samsung.com>
-From: Sam Protsenko <semen.protsenko@linaro.org>
-Date: Thu, 22 Dec 2022 09:23:15 -0600
-Message-ID: <CAPLW+4=-cqQPmQi57_ARn1C6LqK+LffrFEgLqi6Lwb=YJ7sRSw@mail.gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0)
+	Gecko/20100101 Thunderbird/102.6.0
 Subject: Re: [PATCH 1/2] iommu/exynos: Abstract getting the fault info
-To: Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Janghyuck Kim <janghyuck.kim@samsung.com>, 
-	Cho KyongHo <pullip.cho@samsung.com>, Daniel Mentz <danielmentz@google.com>, 
-	David Virag <virag.david003@gmail.com>, Sumit Semwal <sumit.semwal@linaro.org>, 
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Language: en-US
+To: Sam Protsenko <semen.protsenko@linaro.org>, Joerg Roedel
+	<joro@8bytes.org>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Will Deacon
+	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Janghyuck Kim
+	<janghyuck.kim@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, Daniel
+	Mentz <danielmentz@google.com>, David Virag <virag.david003@gmail.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <CAPLW+4=-cqQPmQi57_ARn1C6LqK+LffrFEgLqi6Lwb=YJ7sRSw@mail.gmail.com>
+Content-Transfer-Encoding: 7bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrKKsWRmVeSWpSXmKPExsWy7djPc7rilUuSDdbPMrCY0NHKZPHri4XF
+	5jnFFp2zN7Bb7H29ld1i0+NrrBaXd81hs5hxfh+Txb/eg4wWBz88YbV43gfknrr7md3i+PvH
+	jBYtd0wd+DyeHJzH5LFm3hpGj52z7rJ7LNhU6rFpVSebx51re9g8Ni+p93ixeSajR9+WVYwe
+	nzfJBXBFcdmkpOZklqUW6dslcGU8vDWVqWA2W0X3PLUGxvcsXYycHBICJhJzn/cwdzFycQgJ
+	rGCU+DX9NBOE84VRYuac34wQzmdGiR/rn7LDtByY0c8OkVjOKLG3ey8LhPORUeJM+xVGkCpe
+	ATuJvtnfmEBsFgFVidfL97JCxAUlTs58ArZcVCBFYtXbZcwgtrCAm8T2s1PA4swC4hK3nswH
+	6uXgEBEIkPj0iRtkPrPAOWaJm7cPg81kEzCU6HrbxQZicwoEShx6soEZoldeYvvbOWAPSQgs
+	55RY9vUfK8TZLhInuy9BvSAs8er4FihbRuL/zvlMEA3tjBILft+HciYwSjQ8v8UIUWUtcefc
+	LzaQk5gFNCXW79KHCDtKfJu2DywsIcAnceOtIMQRfBKTtk1nhgjzSnS0CUFUq0nMOr4Obu3B
+	C5eYJzAqzUIKlllI3p+F5J1ZCHsXMLKsYhRPLS3OTU8tNspLLdcrTswtLs1L10vOz93ECEx5
+	p/8d/7KDcfmrj3qHGJk4GA8xSnAwK4nwbnm8OFmINyWxsiq1KD++qDQntfgQozQHi5I474yt
+	85OFBNITS1KzU1MLUotgskwcnFINTJP+KMU0n1qq07D5p/GX9dbxpWbvnuecOcXqHlKar8p/
+	7Gi3bdOi0Mm2SipPTp4vuOdzeT33/KooF95rcXlmoic1rLZ8vLn1uZa5WcCGjLrNiW1lz3YE
+	uXfunmTune//ZMXsKyZzdMLEpCSF/k8PO9jRWXtnifuWJMaF9UcXPtG4kH1QU6DaZSHHxqwF
+	4tvadVsEHbYJ3CxZ4PpsaaWRe9zuHT/M/LQvZl/fxlSomP/GaeuOq7P+7lF9et+MsT7n4JtS
+	fQWjCJNXH51mb9erP3uUceXNvWyNywNWa+Rurfj86OIOP53W3RYnWP49D567N66Eudonc8f8
+	pbP0M15n+bDe26AhlbBSTN3riFvVbiWW4oxEQy3mouJEAFLzrSLoAwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrBIsWRmVeSWpSXmKPExsVy+t/xe7rilUuSDVYuEbeY0NHKZPHri4XF
+	5jnFFp2zN7Bb7H29ld1i0+NrrBaXd81hs5hxfh+Txb/eg4wWBz88YbV43gfknrr7md3i+PvH
+	jBYtd0wd+DyeHJzH5LFm3hpGj52z7rJ7LNhU6rFpVSebx51re9g8Ni+p93ixeSajR9+WVYwe
+	nzfJBXBF6dkU5ZeWpCpk5BeX2CpFG1oY6RlaWugZmVjqGRqbx1oZmSrp29mkpOZklqUW6dsl
+	6GU8vDWVqWA2W0X3PLUGxvcsXYycHBICJhIHZvSzdzFycQgJLGWU+HhpBTNEQkbi5LQGVghb
+	WOLPtS42iKL3jBI/5y8DS/AK2En0zf7GBGKzCKhKvF6+FyouKHFy5hOwDaICKRIvL7eA2cIC
+	bhLbz04Bs5kFxCVuPZkP1isi4CdxeNkUsCuYBS4wS7T27WaE2NbBInFv6xqwk9gEDCW63oKc
+	wcnBKRAocejJBmaISWYSXVu7GCFseYntb+cwT2AUmoXkkFlIFs5C0jILScsCRpZVjCKppcW5
+	6bnFhnrFibnFpXnpesn5uZsYgVG+7djPzTsY5736qHeIkYmD8RCjBAezkgjvlseLk4V4UxIr
+	q1KL8uOLSnNSiw8xmgJDYyKzlGhyPjDN5JXEG5oZmBqamFkamFqaGSuJ83oWdCQKCaQnlqRm
+	p6YWpBbB9DFxcEo1MDG/Dj0mNUuOW7liVfs1x5vTqu7MXcF8aZOmnFz5ZdnztxTXnfO/dFDp
+	l/BRfuGNhwx8/Oq64gq0dFZknWyakXww+tSF96esf7IaJZ4VKu25GXr4evlzgTkssozcK34E
+	HFpxoZd72orQfNHuiyuWu0x1eizPXx+l3RX7u0rNzH2ztvQuLl3xLqdl1i+Dzl9Pv3PTtnTP
+	YuEDT9PFV7lcOffGc+rX7zf3/n/AZ2f5RvtC3GUZO56vF5dbrVtYdP66tm+Hlk2VtKe0TJy+
+	6wZ9zvuPddMPuZWrnZVh4Wi9//HrjAxpZ+aGv0GCAdyHN7+uunaveOtyzncfWrs8o99Kff+h
+	ktablfhv9VqH+q/r2ZRYijMSDbWYi4oTAQCoPz97AwAA
+X-CMS-MailID: 20221222153447eucas1p2c1148ca6e9d92d7a61327a81e19ca028
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20220726200747eucas1p226a18ed7760741ddaed94483ba1f9228
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20220726200747eucas1p226a18ed7760741ddaed94483ba1f9228
+References: <20220726200739.30017-1-semen.protsenko@linaro.org>
+	<CGME20220726200747eucas1p226a18ed7760741ddaed94483ba1f9228@eucas1p2.samsung.com>
+	<20220726200739.30017-2-semen.protsenko@linaro.org>
+	<7e9e509a-0ef7-087d-e379-14fb58e3e14f@samsung.com>
+	<CAPLW+4n-Lf6je61rxdJ9nJnX9h9F8F-y+qikG7eFF0avQpMV9Q@mail.gmail.com>
+	<CAPLW+4mPeX-cQR_oLKh+zPwEXuwfQtk2t2USP77C6Y9UmgYq_w@mail.gmail.com>
+	<3751c425-aefa-a3b4-62f4-53d7e369bc1e@samsung.com>
+	<CAPLW+4=-cqQPmQi57_ARn1C6LqK+LffrFEgLqi6Lwb=YJ7sRSw@mail.gmail.com>
 
-On Thu, 22 Dec 2022 at 07:20, Marek Szyprowski <m.szyprowski@samsung.com> wrote:
-
-[snip]
-
-> > So, what do you think about this?
+On 22.12.2022 16:23, Sam Protsenko wrote:
+> On Thu, 22 Dec 2022 at 07:20, Marek Szyprowski <m.szyprowski@samsung.com> wrote:
 >
-> Okay, go ahead with your approach. If I find a better way, I will rework
-> it then. I would just like to have the code for fault handling for hw
-> v1, v5 and v7 similar as much as possible.
+> [snip]
 >
-
-Thanks, Marek!
-
-Joerg, can you please apply this series? Please let me know if I need
-to rebase it first, but I guess there shouldn't be any issues, the
-SysMMU driver doesn't seem to get updated often.
-
-> Best regards
-> --
-> Marek Szyprowski, PhD
-> Samsung R&D Institute Poland
+>>> So, what do you think about this?
+>> Okay, go ahead with your approach. If I find a better way, I will rework
+>> it then. I would just like to have the code for fault handling for hw
+>> v1, v5 and v7 similar as much as possible.
+>>
+> Thanks, Marek!
 >
+> Joerg, can you please apply this series? Please let me know if I need
+> to rebase it first, but I guess there shouldn't be any issues, the
+> SysMMU driver doesn't seem to get updated often.
+
+Just to makes things a bit more formal - feel free to add:
+
+Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
