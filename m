@@ -1,76 +1,56 @@
-Received: from relay03.th.seeweb.it (relay03.th.seeweb.it [5.144.164.164])
+Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15AF333E4
-	for <iommu@lists.linux.dev>; Thu, 22 Dec 2022 13:17:17 +0000 (UTC)
-Received: from SoMainline.org (94-209-172-39.cable.dynamic.v4.ziggo.nl [94.209.172.39])
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E0BB33E4
+	for <iommu@lists.linux.dev>; Thu, 22 Dec 2022 13:17:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=2XcHZF1PZLR2wIWpbwHYxjPC+APViKRD8vA3VUxcIvg=; b=KCXj9vIla9OYqKdFn9cR8kvNM7
+	aFCQeC8riSg8V400TR89vezYQDYLiis4eNRLNs8TpTaXaw65hlSoAk1r6vPtZd+exgqLf0ix1mWk/
+	7mD3VAmxpBkRslmasRJRs+fKtYpKnU1ADefum9T6WSCkywkO5VAsLjiapOTmMfHm3hWA+ZnPwbN/x
+	w/QRGrx3Tff9U3N5qrWzRNVImBPIIWUH62fHNh4gOn/lh1uA85Bq4VekD+WTPjngLVS9jAhxdeZUl
+	IsMAPZLgwBX86nVypWOAboNnZASXp2L/Ju1gXccS53q3KAKJFdUiOmNk/uvedjpjQbE+kHWV+JJwu
+	O+7WKnuA==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+	by desiato.infradead.org with esmtpsa (Exim 4.96 #2 (Red Hat Linux))
+	id 1p8LR1-00Dq0t-2q;
+	Thu, 22 Dec 2022 13:16:32 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by m-r1.th.seeweb.it (Postfix) with ESMTPSA id A70361F69E;
-	Thu, 22 Dec 2022 14:17:08 +0100 (CET)
-Date: Thu, 22 Dec 2022 14:17:07 +0100
-From: Marijn Suijten <marijn.suijten@somainline.org>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: phone-devel@vger.kernel.org, Will Deacon <will@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	~postmarketos/upstreaming@lists.sr.ht,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>,
-	Konrad Dybcio <konrad.dybcio@somainline.org>,
-	Martin Botka <martin.botka@somainline.org>,
-	Jami Kettunen <jami.kettunen@somainline.org>,
-	Lux Aliaga <they@mint.lgbt>, Robin Murphy <robin.murphy@arm.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Andy Gross <agross@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Thierry Reding <treding@nvidia.com>,
-	Melody Olvera <quic_molvera@quicinc.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Bhupesh Sharma <bhupesh.sharma@linaro.org>,
-	Douglas Anderson <dianders@chromium.org>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH v4 1/4] dt-bindings: arm-smmu: Document smmu-500 binding
- for SM6125
-Message-ID: <20221222131707.avpdf7ioo3x36nix@SoMainline.org>
-Mail-Followup-To: Marijn Suijten <marijn.suijten@somainline.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	phone-devel@vger.kernel.org, Will Deacon <will@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	~postmarketos/upstreaming@lists.sr.ht,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>,
-	Konrad Dybcio <konrad.dybcio@somainline.org>,
-	Martin Botka <martin.botka@somainline.org>,
-	Jami Kettunen <jami.kettunen@somainline.org>,
-	Lux Aliaga <they@mint.lgbt>, Robin Murphy <robin.murphy@arm.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Andy Gross <agross@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Thierry Reding <treding@nvidia.com>,
-	Melody Olvera <quic_molvera@quicinc.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Bhupesh Sharma <bhupesh.sharma@linaro.org>,
-	Douglas Anderson <dianders@chromium.org>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org
-References: <20221216215819.1164973-1-marijn.suijten@somainline.org>
- <20221216215819.1164973-2-marijn.suijten@somainline.org>
- <306709f8-7d45-9b76-f95b-1b3088d37a78@linaro.org>
- <6d263321-782d-9d9c-4fdf-8bcf5b280779@linaro.org>
- <20221219192839.6oqialqqw5xw5fxa@SoMainline.org>
- <b4186ec6-a3f2-4dfb-a83e-25cf6d460a39@linaro.org>
- <20221222082353.lhdw7h3pdqyyvsxy@SoMainline.org>
- <a251f29d-58b7-5ccb-2661-a397e41fba80@linaro.org>
- <20221222101012.ptrrugxj3ksiyitn@SoMainline.org>
- <7d45c125-e4f5-b03f-45d6-3ecf87b2f09d@linaro.org>
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
+	(Client did not present a certificate)
+	by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id D4E3C30006D;
+	Thu, 22 Dec 2022 14:16:28 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+	id 5D8FC2CEAF0FB; Thu, 22 Dec 2022 14:16:28 +0100 (CET)
+Date: Thu, 22 Dec 2022 14:16:28 +0100
+From: Peter Zijlstra <peterz@infradead.org>
+To: Boqun Feng <boqun.feng@gmail.com>
+Cc: torvalds@linux-foundation.org, corbet@lwn.net, will@kernel.org,
+	mark.rutland@arm.com, catalin.marinas@arm.com, dennis@kernel.org,
+	tj@kernel.org, cl@linux.com, hca@linux.ibm.com, gor@linux.ibm.com,
+	agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+	svens@linux.ibm.com, Herbert Xu <herbert@gondor.apana.org.au>,
+	davem@davemloft.net, tglx@linutronix.de, mingo@redhat.com,
+	bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+	hpa@zytor.com, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	robin.murphy@arm.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
+	Arnd Bergmann <arnd@arndb.de>, penberg@kernel.org,
+	rientjes@google.com, iamjoonsoo.kim@lge.com,
+	Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz,
+	roman.gushchin@linux.dev, 42.hyeyoo@gmail.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, linux-s390@vger.kernel.org,
+	linux-crypto@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arch@vger.kernel.org
+Subject: Re: [RFC][PATCH 05/12] arch: Introduce
+ arch_{,try_}_cmpxchg128{,_local}()
+Message-ID: <Y6RYrHV3PK+FwW2p@hirez.programming.kicks-ass.net>
+References: <20221219153525.632521981@infradead.org>
+ <20221219154119.154045458@infradead.org>
+ <Y6OyAL2epKPHj+tr@boqun-archlinux>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -79,28 +59,67 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7d45c125-e4f5-b03f-45d6-3ecf87b2f09d@linaro.org>
+In-Reply-To: <Y6OyAL2epKPHj+tr@boqun-archlinux>
 
-On 2022-12-22 11:36:49, Krzysztof Kozlowski wrote:
-> [..]
-> > There is:
-> > 
-> >   clock-names:
-> >     minItems: 1
-> >     maxItems: 7
-> > 
-> >   clocks:
-> >     minItems: 1
-> >     maxItems: 7
-> > 
-> > But I did not provide _any_ (see patch 2 of this series).  Shouldn't
-> > that trigger a warning?
+On Wed, Dec 21, 2022 at 05:25:20PM -0800, Boqun Feng wrote:
+
+> > +#define __CMPXCHG128(name, mb, cl...)					\
+> > +static __always_inline u128						\
+> > +__lse__cmpxchg128##name(volatile u128 *ptr, u128 old, u128 new)		\
+> > +{									\
+> > +	union __u128_halves r, o = { .full = (old) },			\
+> > +			       n = { .full = (new) };			\
+> > +	register unsigned long x0 asm ("x0") = o.low;			\
+> > +	register unsigned long x1 asm ("x1") = o.high;			\
+> > +	register unsigned long x2 asm ("x2") = n.low;			\
+> > +	register unsigned long x3 asm ("x3") = n.high;			\
+> > +	register unsigned long x4 asm ("x4") = (unsigned long)ptr;	\
+> > +									\
+> > +	asm volatile(							\
+> > +	__LSE_PREAMBLE							\
+> > +	"	casp" #mb "\t%[old1], %[old2], %[new1], %[new2], %[v]\n"\
+> > +	: [old1] "+&r" (x0), [old2] "+&r" (x1),				\
+> > +	  [v] "+Q" (*(unsigned long *)ptr)				\
+> > +	: [new1] "r" (x2), [new2] "r" (x3), [ptr] "r" (x4),		\
 > 
-> No. Are these required properties?
+> Issue #1: the line below can be removed, otherwise..
+> 
+> > +	  [oldval1] "r" (r.low), [oldval2] "r" (r.high)			\
+> 
+> warning:
+> 
+> 	./arch/arm64/include/asm/atomic_lse.h: In function '__lse__cmpxchg128_mb':
+> 	./arch/arm64/include/asm/atomic_lse.h:309:27: warning: 'r.<U97b8>.low' is used uninitialized [-Wuninitialized]
+> 	  309 |           [oldval1] "r" (r.low), [oldval2] "r" (r.high)
+> 
+> 
+> > +	: cl);								\
+> > +									\
+> > +	r.low = x0; r.high = x1;					\
+> > +									\
+> > +	return r.full;							\
+> > +}
+> > +
+> > +__CMPXCHG128(   ,   )
+> > +__CMPXCHG128(_mb, al, "memory")
+> > +
+> > +#undef __CMPXCHG128
+> > +
+> >  #endif	/* __ASM_ATOMIC_LSE_H */
+> > --- a/arch/arm64/include/asm/cmpxchg.h
+> > +++ b/arch/arm64/include/asm/cmpxchg.h
+> > @@ -147,6 +147,19 @@ __CMPXCHG_DBL(_mb)
+> >  
+> >  #undef __CMPXCHG_DBL
+> >  
+> > +#define __CMPXCHG128(name)						\
+> > +static inline long __cmpxchg128##name(volatile u128 *ptr,		\
+> 
+> Issue #2: this should be
+> 
+> static inline u128 __cmpxchg128##name(..)
+> 
+> because cmpxchg* needs to return the old value.
 
-Ah right, this has no effect if the property is not required.  Only if
-the property is set should it adhere to minItems; that is, `clocks;` or
-`clock-names;` as boolean property isn't allowed, it has to have `clocks
-= <between 1 and 7 items>`.
-
-- Marijn
+Duh.. fixed both. Pushed out to queue/core/wip-u128. I'll probably
+continue all this in two weeks (yay xmas break!).
