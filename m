@@ -1,14 +1,14 @@
-Received: from relay04.th.seeweb.it (relay04.th.seeweb.it [5.144.164.165])
+Received: from relay02.th.seeweb.it (relay02.th.seeweb.it [5.144.164.163])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BE137494
-	for <iommu@lists.linux.dev>; Thu, 22 Dec 2022 19:33:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 003A57491
+	for <iommu@lists.linux.dev>; Thu, 22 Dec 2022 19:33:33 +0000 (UTC)
 Received: from localhost.localdomain (94-209-172-39.cable.dynamic.v4.ziggo.nl [94.209.172.39])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by m-r1.th.seeweb.it (Postfix) with ESMTPSA id 47C382021E;
-	Thu, 22 Dec 2022 20:33:27 +0100 (CET)
+	by m-r1.th.seeweb.it (Postfix) with ESMTPSA id 4A421201A2;
+	Thu, 22 Dec 2022 20:33:25 +0100 (CET)
 From: Marijn Suijten <marijn.suijten@somainline.org>
 To: phone-devel@vger.kernel.org,
 	Will Deacon <will@kernel.org>,
@@ -36,9 +36,9 @@ Cc: ~postmarketos/upstreaming@lists.sr.ht,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-arm-msm@vger.kernel.org
-Subject: [PATCH v5 4/4] arm64: dts: qcom: sm6125: Add IOMMU context to DWC3
-Date: Thu, 22 Dec 2022 20:32:54 +0100
-Message-Id: <20221222193254.126925-5-marijn.suijten@somainline.org>
+Subject: [PATCH v5 2/4] arm64: dts: qcom: sm6125: Configure APPS SMMU
+Date: Thu, 22 Dec 2022 20:32:52 +0100
+Message-Id: <20221222193254.126925-3-marijn.suijten@somainline.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20221222193254.126925-1-marijn.suijten@somainline.org>
 References: <20221222193254.126925-1-marijn.suijten@somainline.org>
@@ -50,31 +50,104 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+From: Martin Botka <martin.botka@somainline.org>
 
-Add an IOMMU context to the USB DWC3 controller, required to get USB
-functionality upon enablement of apps_smmu.
+Add a node for the APPS SMMU, to which various devices such as USB and
+storage nodes are connected.
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+Signed-off-by: Martin Botka <martin.botka@somainline.org>
+[Marijn: add the new, generic, "qcom,smmu-500" compatible, add patch
+ description, reorder # properties]
 Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
 Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-Reviewed-by: Martin Botka <martin.botka@somainline.org>
 ---
- arch/arm64/boot/dts/qcom/sm6125.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/boot/dts/qcom/sm6125.dtsi | 73 ++++++++++++++++++++++++++++
+ 1 file changed, 73 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/qcom/sm6125.dtsi b/arch/arm64/boot/dts/qcom/sm6125.dtsi
-index 32dd172ea104..7c326368e30d 100644
+index bf9e8d45ee44..347665c2067c 100644
 --- a/arch/arm64/boot/dts/qcom/sm6125.dtsi
 +++ b/arch/arm64/boot/dts/qcom/sm6125.dtsi
-@@ -542,6 +542,7 @@ usb3_dwc3: usb@4e00000 {
- 				compatible = "snps,dwc3";
- 				reg = <0x04e00000 0xcd00>;
- 				interrupts = <GIC_SPI 255 IRQ_TYPE_LEVEL_HIGH>;
-+				iommus = <&apps_smmu 0x100 0x0>;
- 				phys = <&hsusb_phy1>;
- 				phy-names = "usb2-phy";
- 				snps,dis_u2_susphy_quirk;
+@@ -573,6 +573,79 @@ spmi_bus: spmi@1c40000 {
+ 			cell-index = <0>;
+ 		};
+ 
++		apps_smmu: iommu@c600000 {
++			compatible = "qcom,sm6125-smmu-500", "qcom,smmu-500", "arm,mmu-500";
++			reg = <0xc600000 0x80000>;
++			interrupts = <GIC_SPI 81 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 88 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 89 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 91 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 92 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 104 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 105 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 112 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 114 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 119 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 120 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 121 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 122 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 124 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 125 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 126 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 127 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 128 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 129 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 130 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 131 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 132 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 133 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 134 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 135 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 136 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 137 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 139 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 140 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 141 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 142 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 143 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 144 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 145 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 146 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 148 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 149 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 150 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 151 IRQ_TYPE_LEVEL_HIGH>;
++
++			#global-interrupts = <1>;
++			#iommu-cells = <2>;
++		};
++
+ 		apcs_glb: mailbox@f111000 {
+ 			compatible = "qcom,sm6125-apcs-hmss-global";
+ 			reg = <0x0f111000 0x1000>;
 -- 
 2.39.0
 
