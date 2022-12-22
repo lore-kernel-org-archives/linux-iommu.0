@@ -1,137 +1,240 @@
-Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
+Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4BFA3212
-	for <iommu@lists.linux.dev>; Wed, 21 Dec 2022 21:32:40 +0000 (UTC)
-Received: by mail-pf1-f181.google.com with SMTP id t18so11559254pfq.13
-        for <iommu@lists.linux.dev>; Wed, 21 Dec 2022 13:32:40 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 108BF15A9
+	for <iommu@lists.linux.dev>; Thu, 22 Dec 2022 01:21:36 +0000 (UTC)
+Received: by mail-qv1-f41.google.com with SMTP id u10so354563qvp.4
+        for <iommu@lists.linux.dev>; Wed, 21 Dec 2022 17:21:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=MrBMXlM/PPucL2ewFp8ah2l3bi7uAYq0NzUMHnh5YoI=;
-        b=pRNb0ldWbyMBo7VrEAvBmAT+yPI2hLPO0fYYHkAS9PNkHBEQmql77FkcG8c6cHtTXs
-         LIDs90mEdA4kYXr06z6pv8Q6gkMgRgAs9+5yXvLOUDO1uBuLS3lTSn6pWr8f0/JgN5Tn
-         P5Y83E+ai7bF/FCCZdEdAfbTsYUKf0K32/7OysyCLNLVy9iQwpC0poi2oW9cmMUTistt
-         jCYpOJSpHbAnigX14r29F+d7XoaGHJI+Q9gqiyE8yRKXwlDcQNcVgB6qL2KhjlvdWzch
-         2YwLEubM/P4sogocS7S9rZmk632faVL0H7psNswtIX4EeTRyBF8/oM7QylRpnDXSIm1C
-         1SRw==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:feedback-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1vQ+zYR3T/MLmRvx1y4HrhYHCm/YFhPZhfUkcUcESfM=;
+        b=l2fa+q+FEd2XVftJdKunAWsH1HG7S8dBsHb+pyQnkCSX1TXkuXti8JKHEfARmsSWRT
+         xQebS6MZkDhnAZE1A3MSyIEK1eUPZUe1gprb22RcFQ//PuymRzd8BLNOtFAGp/a61FTx
+         57JSoFp9tNTtN1QcKe76hmTtf/9LzGx+KUuDqVsOlyBa3P8Z9dneruz+vGAafZacrKIF
+         5D4qdPPjWSMkoveXI7RPaxRIbWKtRPn50A747wMHhLLoo8U+VfMCok3edYL+wnhGBTCJ
+         v8NDSlV/3lrChQ+UVwl5AoSSDCCE4tVU9WZAvbYyVr00y/GTw1B5kOj7gmspi/N26quY
+         /XKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=MrBMXlM/PPucL2ewFp8ah2l3bi7uAYq0NzUMHnh5YoI=;
-        b=iGm13fwrLqltwHKaZrwJPHsE615+5mTIH+R0KY8moJcvk50binNGAS8gTrSJ4ELWFY
-         jPfZ5saZL/CVrr4r90RZSNsctUriWFMKrF/bq4+MBqOpdS/ONlUucFumDv2SsJw59BnG
-         qA/QYEj6DBKrqqbgb9+ayW5NdVrY2A0Yl0BzoknzAycDPn7SbI9Cn3iOMVS8FPi4ckU+
-         aQJUVoRJXIjNKLiJ9LOMlsaiDRussbXmWOvGcSMIJ1xNkni1i+eqlbfMEIs6gflL8Ng6
-         u+5W/IpR4shtiK+ItYQLTeaD25TEEdURtHK9xr7wTpuRyAW1oDsoS75sBymzYn1LmcCV
-         KavQ==
-X-Gm-Message-State: AFqh2kqPnSEd4dE2O1f/HxmHY+XwGvk8V0OE4XERS4yZ38ZulCn0MFWj
-	K4gzKieW9cfC40YcSjAqwMGIdZSdrh/44lIWdMukzQ==
-X-Google-Smtp-Source: AMrXdXsNBi8/ReLwjQzffiE6gznKI76a59rEhIrU/zCiqZylXSFp5D1KHj386Cvgn+Ab613xGEYChgmQa5IhgZRmGdc=
-X-Received: by 2002:aa7:85d3:0:b0:577:599d:b2b7 with SMTP id
- z19-20020aa785d3000000b00577599db2b7mr234449pfn.25.1671658360171; Wed, 21 Dec
- 2022 13:32:40 -0800 (PST)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:feedback-id:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=1vQ+zYR3T/MLmRvx1y4HrhYHCm/YFhPZhfUkcUcESfM=;
+        b=xCCn8furcxnkQ8D1zzH27TIqgQr0rpNhNSlWONOXkUP2YsFm56JpXGAWTt1VW4f8za
+         kskqb26fc4Pr4xh3dypdo4OUbNefT7Ppj9Rt7hw4uZgLWDYiWnNUfgraO4xyfPO5miEn
+         wfowkNe7P/kbC4RRkEcIjtJBuxq8daYkaS5+VXhxbcPGURC01YOOYK7c8Wm22poiVO9n
+         /8ns5PenMj8o0grachMdOEqWG+vySOvRSFN9olAVG+xk/cJ0q7RlZfmjanmsfjpM2YM3
+         zZG/yHQEA8orqFBLAb5QGFwlPkdSXg247ANuGA1bE41wifpmWchy5/cmowKlMH0zLe4i
+         YQUg==
+X-Gm-Message-State: AFqh2kouOrjvxrSd7aa2UUF4CXBWquZBaJWI2JnzKv4HfTx7ZgzOkl4F
+	/JZNBYF1fQobWrdHQDA0bqM=
+X-Google-Smtp-Source: AMrXdXsShUh4L0yNGW8xONTed3Jku8Vj2tplYIwpahvEr5EHAURbNPUd/5CxhDGXUPZFyuLmJTm1qQ==
+X-Received: by 2002:a05:6214:1bcd:b0:4c7:595c:993b with SMTP id m13-20020a0562141bcd00b004c7595c993bmr7380408qvc.40.1671672095984;
+        Wed, 21 Dec 2022 17:21:35 -0800 (PST)
+Received: from auth2-smtp.messagingengine.com (auth2-smtp.messagingengine.com. [66.111.4.228])
+        by smtp.gmail.com with ESMTPSA id x18-20020a05620a259200b006fc2b672950sm11762886qko.37.2022.12.21.17.21.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Dec 2022 17:21:35 -0800 (PST)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+	by mailauth.nyi.internal (Postfix) with ESMTP id 53E7F27C0054;
+	Wed, 21 Dec 2022 20:21:34 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Wed, 21 Dec 2022 20:21:34 -0500
+X-ME-Sender: <xms:HLGjY9HklIzv77_Ct9lMRDUUZb6eQZa3yWh170mrFyW89x0jtHNjOA>
+    <xme:HLGjYyVPmxd67lgBprsePVUHyTIbmxYBuswvDpnSE1LaX4Fk0VtZwvRh0xyufIUfo
+    Z4CcOSYLSo3jI-gsA>
+X-ME-Received: <xmr:HLGjY_JIuJnH4DJCOG6szjiAGggRCSJAEb8Iwik3CXE1nqxc07XdZPwLNC4>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrgeelgdefhecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpeeuohhquhhn
+    ucfhvghnghcuoegsohhquhhnrdhfvghnghesghhmrghilhdrtghomheqnecuggftrfgrth
+    htvghrnhephfetvdfgtdeukedvkeeiteeiteejieehvdetheduudejvdektdekfeegvddv
+    hedtnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpe
+    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegsohhquhhnodhmvghsmhhtphgruhhthhhp
+    vghrshhonhgrlhhithihqdeiledvgeehtdeigedqudejjeekheehhedvqdgsohhquhhnrd
+    hfvghngheppehgmhgrihhlrdgtohhmsehfihigmhgvrdhnrghmvg
+X-ME-Proxy: <xmx:HLGjYzHn-2QPGDrrRW8mLT94tasGENTscfk3B9t1nA3LK58a-ZZAMw>
+    <xmx:HLGjYzU6ZywxNOeGu02VYyDqSSw-TM6buuzedUbIQ3Dz8ouTDzdx1Q>
+    <xmx:HLGjY-MCAsYWrrwM_UVYF3caK2jVGszAVuVLkzMGsuXrqP9hm8VU4w>
+    <xmx:HrGjY1HNBcK7WC41nwtRf2BlnZ2Rer4p-OxYjeo5j3vOumT9YXfVdghNAUc>
+Feedback-ID: iad51458e:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 21 Dec 2022 20:21:31 -0500 (EST)
+Date: Wed, 21 Dec 2022 17:21:09 -0800
+From: Boqun Feng <boqun.feng@gmail.com>
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: torvalds@linux-foundation.org, corbet@lwn.net, will@kernel.org,
+	mark.rutland@arm.com, catalin.marinas@arm.com, dennis@kernel.org,
+	tj@kernel.org, cl@linux.com, hca@linux.ibm.com, gor@linux.ibm.com,
+	agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+	svens@linux.ibm.com, Herbert Xu <herbert@gondor.apana.org.au>,
+	davem@davemloft.net, tglx@linutronix.de, mingo@redhat.com,
+	bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+	hpa@zytor.com, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	robin.murphy@arm.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
+	Arnd Bergmann <arnd@arndb.de>, penberg@kernel.org,
+	rientjes@google.com, iamjoonsoo.kim@lge.com,
+	Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz,
+	roman.gushchin@linux.dev, 42.hyeyoo@gmail.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, linux-s390@vger.kernel.org,
+	linux-crypto@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arch@vger.kernel.org
+Subject: Re: [RFC][PATCH 00/12] Introduce cmpxchg128() -- aka. the demise of
+ cmpxchg_double()
+Message-ID: <Y6OxBW5F/ZF5wocE@boqun-archlinux>
+References: <20221219153525.632521981@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20220726200739.30017-1-semen.protsenko@linaro.org>
- <CGME20220726200747eucas1p226a18ed7760741ddaed94483ba1f9228@eucas1p2.samsung.com>
- <20220726200739.30017-2-semen.protsenko@linaro.org> <7e9e509a-0ef7-087d-e379-14fb58e3e14f@samsung.com>
- <CAPLW+4n-Lf6je61rxdJ9nJnX9h9F8F-y+qikG7eFF0avQpMV9Q@mail.gmail.com>
-In-Reply-To: <CAPLW+4n-Lf6je61rxdJ9nJnX9h9F8F-y+qikG7eFF0avQpMV9Q@mail.gmail.com>
-From: Sam Protsenko <semen.protsenko@linaro.org>
-Date: Wed, 21 Dec 2022 15:32:28 -0600
-Message-ID: <CAPLW+4mPeX-cQR_oLKh+zPwEXuwfQtk2t2USP77C6Y9UmgYq_w@mail.gmail.com>
-Subject: Re: [PATCH 1/2] iommu/exynos: Abstract getting the fault info
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Janghyuck Kim <janghyuck.kim@samsung.com>, Cho KyongHo <pullip.cho@samsung.com>, 
-	Daniel Mentz <danielmentz@google.com>, David Virag <virag.david003@gmail.com>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, iommu@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221219153525.632521981@infradead.org>
 
-Hi Marek,
+Hi Peter,
 
-On Mon, 24 Oct 2022 at 09:43, Sam Protsenko <semen.protsenko@linaro.org> wrote:
->
-> Hi Marek,
->
-> On Fri, 12 Aug 2022 at 14:25, Marek Szyprowski <m.szyprowski@samsung.com> wrote:
-> >
-> > Hi Sam,
-> >
->
-> [snip]
->
-> > > Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
-> >
-> > I'm not very happy with converting the sysmmu_fault_info arrays into the
-> > decoding functions. If I got the code right, adding v7 is still possible
-> > with the current approach. The main advantage of the array-based
-> > approach is readability and keeping all the information together in a
-> > single place.
-> >
-> > I agree for the items listed above as 'minor functional changes',
-> > though. Those sysmmu_fault_info arrays might be a part of sysmmu hw
-> > variant to avoid decoding hw version for each fault.
-> >
-> > I'm not sure that the linear scan is so problematic with regards to the
-> > performance. You really don't want your drivers to trigger IOMMU fault
-> > so often during normal operation. It is just a way to get some debugging
-> > information or handle some exception.
-> >
-> > You mentioned that the transaction type is read from the separate
-> > register in case of v7, but your code (here and in second patch) still
-> > relies on the reported interrupt bits.
-> >
-> > Could you try to rework all your changes in a such way, that the
-> > sysmmu_fault_info arrays are still used? V7 is really very similar to
-> > the v5 already supported by the current driver.
-> >
->
-> That's actually how I implemented this patch on my first attempt.
-> Really didn't like it, because a half of existing sysmmu_fault_info
-> structure doesn't make sense for v7, and some functionality of v7 has
-> to be implemented separately from that structure. I'd argue that
-> previous abstraction is just broken, and doesn't work for all SysMMU
-> versions anymore. It's easy to see how much difference between v5 and
-> v7, just by looking at corresponding get_fault_info() functions I
-> implemented. For example, the transaction type is probed from
-> different registers using different version, etc. There is also the
-> need to handle new VM/non-VM registers on v7. Also there is some extra
-> functionality that will be added later, like multiple translation
-> domains support, which is also quite different from how things done
-> for v5.
->
-> I'd show more specifics to demonstrate my statements above, but alas I
-> already deleted my initial implementation (which was exactly what you
-> suggest). This callback-style HAL seems to be a perfect choice, and I
-> spent several days just experimenting with different approaches and
-> seeing all pros and cons. And from my point of view, this way is the
-> best for providing actual solid abstraction, which doesn't require
-> adding any workarounds on top of that. I understand that my patch
-> changes the very conception of how IRQ is handled in this driver, but
-> I'm still convinced it's a proper way to do that for all v1/v5/v7,
-> especially w.r.t. further v7 additions, to keep the abstraction solid.
-> Not that I'm lazy and don't want to rework things :) But in this
-> particular case I'd go with unchanged patches.
->
-> Do you think it's reasonable to take this series as is? I can try and
-> collect more particular code snippets to demonstrate my point, if you
-> like.
->
-> Thanks!
->
+On Mon, Dec 19, 2022 at 04:35:25PM +0100, Peter Zijlstra wrote:
+> Hi,
+> 
+> Since Linus hated on cmpxchg_double(), a few patches to get rid of it, as proposed here:
+> 
+>   https://lkml.kernel.org/r/Y2U3WdU61FvYlpUh@hirez.programming.kicks-ass.net
+> 
+> based on tip/master because Linus' tree is moving a wee bit fast at the moment.
+> 
+> 0day robot is all green for building, very limited testing on arm64/s390
+> for obvious raisins -- I tried to get the asm right, but please, double
+> check.
+> 
 
-So, what do you think about this?
+I added some test cases for cmpxcgh128 APIs, and found two issues. I
+will reply separately in the patches. The test cases themselves are at
+the end, let me know if you want to me to send a proper patch.
 
-> [snip]
+Regards,
+Boqun
+
+------------------------------------------------------------>8
+Subject: [PATCH] atomic: Add test cases for cmpxchg128 family
+
+Besides for 32bit and 64bit cmpxchg, we only test via atomic_cmpxchg_*
+APIs, add tests via cmpxchg* APIs while we are at it.
+
+Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+---
+ lib/atomic64_test.c | 41 ++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 40 insertions(+), 1 deletion(-)
+
+diff --git a/lib/atomic64_test.c b/lib/atomic64_test.c
+index d9d170238165..7f79d0704ba8 100644
+--- a/lib/atomic64_test.c
++++ b/lib/atomic64_test.c
+@@ -76,12 +76,19 @@ do {								\
+ 	BUG_ON(atomic##bit##_read(&v) != expect);		\
+ } while (0)
+ 
++#define TEST_ARGS_PLAIN(_, op, init, ret, expect, args...)	\
++do {								\
++	__WRITE_ONCE(n, init);					\
++	BUG_ON(op(&n, ##args) != ret);				\
++	BUG_ON(__READ_ONCE(n) != expect);			\
++} while (0)
++
+ #define XCHG_FAMILY_TEST(bit, init, new)				\
+ do {									\
+ 	FAMILY_TEST(TEST_ARGS, bit, xchg, init, init, new, new);	\
+ } while (0)
+ 
+-#define CMPXCHG_FAMILY_TEST(bit, init, new, wrong)			\
++#define ATOMIC_CMPXCHG_FAMILY_TEST(bit, init, new, wrong)		\
+ do {									\
+ 	FAMILY_TEST(TEST_ARGS, bit, cmpxchg, 				\
+ 			init, init, new, init, new);			\
+@@ -89,6 +96,14 @@ do {									\
+ 			init, init, init, wrong, new);			\
+ } while (0)
+ 
++#define CMPXCHG_FAMILY_TEST(bit, init, new, wrong)			\
++do {									\
++	FAMILY_TEST(TEST_ARGS_PLAIN, _, cmpxchg##bit, 			\
++			init, init, new, init, new);			\
++	FAMILY_TEST(TEST_ARGS_PLAIN, _, cmpxchg##bit,			\
++			init, init, init, wrong, new);			\
++} while (0)
++
+ #define INC_RETURN_FAMILY_TEST(bit, i)			\
+ do {							\
+ 	FAMILY_TEST(TEST_ARGS, bit, inc_return,		\
+@@ -109,6 +124,7 @@ static __init void test_atomic(void)
+ 	int one = 1;
+ 
+ 	atomic_t v;
++	int n;
+ 	int r;
+ 
+ 	TEST(, add, +=, onestwos);
+@@ -139,6 +155,7 @@ static __init void test_atomic(void)
+ 	DEC_RETURN_FAMILY_TEST(, v0);
+ 
+ 	XCHG_FAMILY_TEST(, v0, v1);
++	ATOMIC_CMPXCHG_FAMILY_TEST(, v0, v1, onestwos);
+ 	CMPXCHG_FAMILY_TEST(, v0, v1, onestwos);
+ 
+ }
+@@ -155,6 +172,7 @@ static __init void test_atomic64(void)
+ 	int r_int;
+ 
+ 	atomic64_t v = ATOMIC64_INIT(v0);
++	long long n = 0;
+ 	long long r = v0;
+ 	BUG_ON(v.counter != r);
+ 
+@@ -201,6 +219,7 @@ static __init void test_atomic64(void)
+ 	DEC_RETURN_FAMILY_TEST(64, v0);
+ 
+ 	XCHG_FAMILY_TEST(64, v0, v1);
++	ATOMIC_CMPXCHG_FAMILY_TEST(64, v0, v1, v2);
+ 	CMPXCHG_FAMILY_TEST(64, v0, v1, v2);
+ 
+ 	INIT(v0);
+@@ -245,10 +264,30 @@ static __init void test_atomic64(void)
+ 	BUG_ON(!r_int);
+ }
+ 
++#ifdef system_has_cmpxchg128
++static __init void test_atomic128(void)
++{
++	long long v0 = 0xaaa31337c001d00dLL;
++	long long v1 = 0xdeadbeefdeafcafeLL;
++	long long v2 = 0xfaceabadf00df001LL;
++	long long v3 = 0x8000000000000000LL;
++
++	s128 init = ((s128)v0 << 64) + v1;
++	s128 new = ((s128)v1 << 64) + v0;
++	s128 wrong = ((s128)v2 << 64) + v3;
++	s128 n = 1;
++
++	CMPXCHG_FAMILY_TEST(128, init, new, wrong);
++}
++#else
++static __init void test_atomic128(void) {}
++#endif
++
+ static __init int test_atomics_init(void)
+ {
+ 	test_atomic();
+ 	test_atomic64();
++	test_atomic128();
+ 
+ #ifdef CONFIG_X86
+ 	pr_info("passed for %s platform %s CX8 and %s SSE\n",
+-- 
+2.38.1
+
