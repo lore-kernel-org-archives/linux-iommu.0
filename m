@@ -1,82 +1,86 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EF628476
-	for <iommu@lists.linux.dev>; Fri, 23 Dec 2022 14:10:35 +0000 (UTC)
-Received: by mail-wm1-f44.google.com with SMTP id p13-20020a05600c468d00b003cf8859ed1bso3613819wmo.1
-        for <iommu@lists.linux.dev>; Fri, 23 Dec 2022 06:10:35 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 482448476
+	for <iommu@lists.linux.dev>; Fri, 23 Dec 2022 14:15:50 +0000 (UTC)
+Received: by mail-ej1-f46.google.com with SMTP id kw15so12277355ejc.10
+        for <iommu@lists.linux.dev>; Fri, 23 Dec 2022 06:15:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=jrkt2ot3JD+yIheZ+BquTWsj1MB0Lqe52uu/xeIaxHg=;
-        b=lI5KuU4mVDOuTLwNWArrptCjqXpIWpvYkJqZcUSoPRyFT6W4M47B3RCqI+yc6WzPK3
-         iHSS90uRCXNm/yZbdZiKjCa6zg2SgmvHoLSvZUJFW301oXt9pvfmwisN7OJadA2/eNfy
-         fzDXduLscMlHI+wfVAfriIWCvqJttAkBJOnCvsWYWnh385dju9iSzYhPRTBdeQji3FLl
-         103VfMGahh2BPhGcfpAdVaj98rMvEZxYJVZ73t1Br3PIklOV7HSfkVppInIJazSgPiDM
-         YVCXB+YEabWCftEiQ+lred5nSAPQF8S6Gwm0D7b5HcsAF3GoI0JAhF+q5gNOiKzm3Ukm
-         hl7A==
+        h=content-transfer-encoding:subject:from:cc:to:content-language
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=XxcMe0Os2CLd8DrC5SPm9UsJfIj4MxnAyfLWs8/rZ6Q=;
+        b=C2CWmMZmvz+JkpMFwXq8tGoHtLqvc36gmbDJD/lUkNHSf/STjVrn+1LmpacEBM4OXg
+         ufUrYbgv91eGE7PEKCAv44nsQLxhd2fdoxfuPzDup/iG033Ayv2ogauR6buwZmnd17iR
+         XufsnJtXM2XrgOeiEiVdmLsEFEQOh4mJOn+PoGrLAiO3udbXHmtoSq771ZT2ubje40Vn
+         sc8NATkkC6lRfxB79kIWkAP90EZiPvhejeRoGlxoHcjFLFR/Adq3PaBiejuWg+CRxwhb
+         ADA0dttWZzpLhM33TZy9yOm1BSlQYBRnOnxgnji2/61bO//q077AZ8OxiQ4Z7Ct6xaPy
+         okSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jrkt2ot3JD+yIheZ+BquTWsj1MB0Lqe52uu/xeIaxHg=;
-        b=mtUyooYWT/t153Liu6Pg1M9/UKo4MmCQJbl3c0bylgMW5O7Kq2Shijct2AcOig4dNc
-         uqnBZ1+1Gk4sKfUsSLRjXmHI6BN/E+HQTvWkaumuFLbL3ZmhO/YUE75NQVtN8VllSYN6
-         qQOU4Rzw2Bpj1nhN7gIrbWV9+qU9Xw0QQwxAvvfRMuVFU3j1OeHasipH/Pw1qorjq0Xm
-         gE+FIPpPw7Ev2xUWDOGH9DezbnuEZZJOhoObDVgY1tLIKzQH3TtSPPd/ueEzOfpvHzyG
-         Rx+dCuIJssobU3HxgP3cu6v4EeOhzZ2Q43AKGZk7Y2ObgF5zh3PwK/ed6QnfwmJdhyuS
-         TvJQ==
-X-Gm-Message-State: AFqh2koLbFh4nSV4ufKKEGQzVpD3Rs91U/0I7fFtnnO+zejuN2xAsO0g
-	NAQ1M5NTvHhfoECeVmi/suo=
-X-Google-Smtp-Source: AMrXdXv0AlqKbQolCmoSGD2HjnFBytfXNWEYlwxW+TP+9Wiv2DDOJjTjfmppDXDuI1BEVhEyUGnWzQ==
-X-Received: by 2002:a05:600c:3844:b0:3d2:191d:2420 with SMTP id s4-20020a05600c384400b003d2191d2420mr7376196wmr.7.1671804633771;
-        Fri, 23 Dec 2022 06:10:33 -0800 (PST)
-Received: from localhost ([2a00:23c5:dc8c:8701:fdcf:52c5:7af:c812])
-        by smtp.gmail.com with ESMTPSA id b2-20020adff242000000b0023662245d3csm3236111wrp.95.2022.12.23.06.10.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Dec 2022 06:10:32 -0800 (PST)
-Date: Fri, 23 Dec 2022 14:10:32 +0000
-From: Lorenzo Stoakes <lstoakes@gmail.com>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Mathieu Poirier <mathieu.poirier@linaro.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Uladzislau Rezki <urezki@gmail.com>, linux-arm-msm@vger.kernel.org,
-	linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org, iommu@lists.linux.dev
-Subject: Re: [PATCH 2/2] vmalloc: reject vmap with VM_FLUSH_RESET_PERMS
-Message-ID: <Y6W22EHKwrTztnJR@murray>
-References: <20221223092703.61927-1-hch@lst.de>
- <20221223092703.61927-3-hch@lst.de>
- <Y6WB2ZGoL7FaFK+f@lucifer>
- <20221223140312.GA26826@lst.de>
+        h=content-transfer-encoding:subject:from:cc:to:content-language
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=XxcMe0Os2CLd8DrC5SPm9UsJfIj4MxnAyfLWs8/rZ6Q=;
+        b=lZjk5rOUl/DzSBSioj0SPMHunAIGrfsh5WYDuSKfZvdKkplOOR9TmUaqmSds3HMaED
+         fLqp0/FYHkAv/yXfnHZ8btsXjTlC00XSqJJO+t9TySjE1/eo06KkIZ2xwOcOyvQ4TPiJ
+         GX/FuXONPUJFbWPlMd+TttCpz8RkA11yVh1HTN4X/sHbmb4yJw+gMD+BNLDpJHPQrV8/
+         IxueeGWD9E4Kn66Y43ifOpcUjfx5CYKwO4q74wSJG2kwjQ8QiVHLwEw8ieazbQiRyQXD
+         kQIsWphZNvjU9rA4JyTEwJehvjy6o4XP9kyep4EXwOSzm2psxxzYrK4L1tjkMqTYVYSZ
+         pTeQ==
+X-Gm-Message-State: AFqh2koKZHZIor42uCc3gAeg8FAyTCzyQ2xtqFk7e+VfsDkZtHAutd27
+	wXqkGF3RPCPHaf3W1DEKft8=
+X-Google-Smtp-Source: AMrXdXtynENf3tIE0bQJup9upFNaHJqdVlwP0H7Otd6vetF5y2pyZvV88caCKrEZXJC0CSDzOW37EQ==
+X-Received: by 2002:a17:907:9d19:b0:7b9:f9d8:9554 with SMTP id kt25-20020a1709079d1900b007b9f9d89554mr7244445ejc.40.1671804948374;
+        Fri, 23 Dec 2022 06:15:48 -0800 (PST)
+Received: from ?IPV6:2a02:1810:3e1d:aa00:47f0:a197:6e87:4e8f? (ptr-1v3h17jmmq23dx2hcb3.18120a2.ip6.access.telenet.be. [2a02:1810:3e1d:aa00:47f0:a197:6e87:4e8f])
+        by smtp.gmail.com with ESMTPSA id lb2-20020a170907784200b0084aade9d6b5sm221045ejc.17.2022.12.23.06.15.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 23 Dec 2022 06:15:47 -0800 (PST)
+Message-ID: <14dccd8c-e29a-fe93-5d4c-f0c3ff4f2430@gmail.com>
+Date: Fri, 23 Dec 2022 15:15:47 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221223140312.GA26826@lst.de>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Content-Language: ru, nl, en-US
+To: hch@lst.de
+Cc: iommu@lists.linux.dev, robin.murphy@arm.com, m.szyprowski@samsung.com
+From: Igor Klochko <igor.klochko@gmail.com>
+Subject: [PATCH] arch/arm/mm/dma-mapping.c: fix __alloc_from_pool returning a
+ dirty buffer
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Fri, Dec 23, 2022 at 03:03:12PM +0100, Christoph Hellwig wrote:
-> On Fri, Dec 23, 2022 at 10:24:25AM +0000, Lorenzo Stoakes wrote:
-> > Might it be worth adding a specific vmap mask that explicitly indicates what
-> > flags are permissible on vmap()? Then this could become e.g.:-
-> >
-> > 	if (WARN_ON_ONCE(flags & ~VM_VMAP_PERMITTED_MASK))
-> > 		return NULL;
-> >
-> > And would be self-documenting as to why we are disallowing flags (i.e. they are
-> > not part of the permitted vmap mask).
->
-> That's probably a good idea.  It might need some time to audit
-> for use of all the flags, though.
 
-Perhaps leave that for a later patch (I could take a look as well), but in the
-meantime might be worth adding a quick comment here indicating why the flag is
-prohibited?
+Hi, 
+
+A small patch for __alloc_from_pool to clean the buffer before returning.
+ 
+---
+ arch/arm/mm/dma-mapping.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index c135f6e37a00..bb2bb3ab497a 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -366,6 +366,7 @@ static void *__alloc_from_pool(size_t size, struct page **ret_page)
+ 
+ 		*ret_page = phys_to_page(phys);
+ 		ptr = (void *)val;
++		memset(ptr, 0, size);
+ 	}
+ 
+ 	return ptr;
+-- 
+2.39.0
+
+
+Kind regards,
+Igor Klochko
