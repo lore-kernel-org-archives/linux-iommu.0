@@ -1,48 +1,53 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CE848F63
-	for <iommu@lists.linux.dev>; Fri, 23 Dec 2022 15:51:46 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 85B4668AA6; Fri, 23 Dec 2022 16:51:41 +0100 (CET)
-Date: Fri, 23 Dec 2022 16:51:41 +0100
-From: Christoph Hellwig <hch@lst.de>
-To: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc: Christoph Hellwig <hch@lst.de>, Andy Gross <agross@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Mathieu Poirier <mathieu.poirier@linaro.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Uladzislau Rezki <urezki@gmail.com>, linux-arm-msm@vger.kernel.org,
-	linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org, iommu@lists.linux.dev
-Subject: Re: [PATCH 1/2] Revert "remoteproc: qcom_q6v5_mss: map/unmap
- metadata region before/after use"
-Message-ID: <20221223155141.GB30339@lst.de>
-References: <20221223092703.61927-1-hch@lst.de> <20221223092703.61927-2-hch@lst.de> <20221223144731.GA4587@thinkpad> <20221223145722.GA29401@lst.de> <20221223154039.GD4587@thinkpad>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7C7AA49D
+	for <iommu@lists.linux.dev>; Fri, 23 Dec 2022 20:08:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 65691C433D2;
+	Fri, 23 Dec 2022 20:08:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1671826113;
+	bh=5rCuwx60PAGyYzejORrmURo2MBtSfJ6GDgThJgNrgqo=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=ZSDo25rdCkc4ftQt9yOLnq/XPYGVsPZRbEDmuWKMwoGiGhPAg4qbai1d6nL/Cz1UQ
+	 0xgbHaJf9FEPWO90nmC74J9nGQxf/jqVQC55lJQA9PDIJVv9WW6EohTSnigNMnlN4w
+	 mXCFnES///jihlXWcMWYQXE4l/rg09VbJxSGH0XoTU4YFz6uuPz7B/VVua3E7yhO3t
+	 KFJBqe6s3LI/z7TnyyLkTnc1jh4U9DDB6VQYIwumWG2MyLCCvIxb0mFdGABKC0SYYl
+	 CJGDgfDx/rdJmggYuAKxbj3yYwpR6hdwuPurNBOi0n7mSLOF5Zuuc717BgOenkfkxO
+	 /BGxqI9rAIJJw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 50885C395DF;
+	Fri, 23 Dec 2022 20:08:33 +0000 (UTC)
+Subject: Re: [GIT PULL] dma-mapping fixes for Linux 6.2
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <Y6W+k0hUkeRaXCTO@infradead.org>
+References: <Y6W+k0hUkeRaXCTO@infradead.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <Y6W+k0hUkeRaXCTO@infradead.org>
+X-PR-Tracked-Remote: git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-2022-12-23
+X-PR-Tracked-Commit-Id: 3622b86f49f84e52fb41fee9eb55f9290613dfc3
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 59d2c635f6cfb0a8c7e5acb06b10c4e587fbfd1a
+Message-Id: <167182611332.4135.10054718204972322093.pr-tracker-bot@kernel.org>
+Date: Fri, 23 Dec 2022 20:08:33 +0000
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221223154039.GD4587@thinkpad>
-User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Fri, Dec 23, 2022 at 09:10:39PM +0530, Manivannan Sadhasivam wrote:
-> On Fri, Dec 23, 2022 at 03:57:22PM +0100, Christoph Hellwig wrote:
-> > On Fri, Dec 23, 2022 at 08:17:31PM +0530, Manivannan Sadhasivam wrote:
-> > > Acked-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> > 
-> > Btw, if the hardware really does not like a kernel mapping, the
-> > right way is to just keep using the normal dma allocator, but make
-> > sure that there shared-dma-pool with the no-map property for the
-> > device.
-> 
-> Sibi posted a series that uses a separate no-map carveout for this usecase:
-> https://lore.kernel.org/lkml/20221213140724.8612-1-quic_sibis@quicinc.com/
+The pull request you sent on Fri, 23 Dec 2022 15:43:31 +0100:
 
-Oh, I've missed that entire thread.  I actually stumbled over this
-today while finding it during a vmap audit..
+> git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-2022-12-23
+
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/59d2c635f6cfb0a8c7e5acb06b10c4e587fbfd1a
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
