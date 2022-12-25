@@ -1,39 +1,39 @@
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C37E881B
-	for <iommu@lists.linux.dev>; Sun, 25 Dec 2022 14:03:18 +0000 (UTC)
-Received: by mail-ed1-f42.google.com with SMTP id c17so12931652edj.13
-        for <iommu@lists.linux.dev>; Sun, 25 Dec 2022 06:03:18 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D47E0881F
+	for <iommu@lists.linux.dev>; Sun, 25 Dec 2022 14:27:08 +0000 (UTC)
+Received: by mail-ej1-f46.google.com with SMTP id fc4so21749622ejc.12
+        for <iommu@lists.linux.dev>; Sun, 25 Dec 2022 06:27:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=DuTcTdyWe6Y84QMdROYViIK2QWcXLGLnMiYSgiOFsYk=;
-        b=psLrQssVYx7uLAH/cW1OTvZDmxKVpJp4AgYPjNPeU6BzTetw6iTrL5mlapIVVmXLs4
-         WOcm+KgrFTLSz2hshO8EnhZnP8Q1UNAQG7SadkbW6ByLvXqvfPHCc/oRJWAddvPEYGb8
-         MdymNlaBt4mWERGggN9/ncvW830xYCuWMXtKJtY/RishVz6BEtOBski+RCiD5xfMoJBw
-         q7ys6bEVFcHHzAYxtvKjl0oGc9O90QkmSl79YOWMLLDAern4BrE58KfbVpmoyX2UHmP8
-         IZ/MT5XIMT8FrEt1FIxMjNRldDT6bzp9IN7SwQJs2sQVZWpMHv8gkV6m+d1hlZUaR/lN
-         zCxw==
+        bh=l0HQo0Uft0T8VxsKwPRkMhcgNln9pBoHhuFSGzN1zn8=;
+        b=b1FiBf0gQjcjcgGEIuv6yVR8jv6iYP8N/dboBANVF5S92hEvFO1iOAF/SK4iQ44Rjc
+         jDH/1hppfhsxc4y6XD5dG0Bq6R9UY7gcp67n5/gaMYCWmgz88ri2SSLrubyYZWROedt2
+         4ZU8xhP8qR4yWIAeufpKYnKk6LYG/9hl42UL/BVwFXS5IYOZVuoo6jzh7vrkyXP6Y6Ak
+         t9OpLA4ZPIeaWo9ihDlzVvyQtYbiz9+H/SLYEim3aVt2IXVP+sVJ+wWmh+NHfP0PmPF9
+         G3M89cJSRXsiYqrnt5vc8B5CCCGc7bBEv1OvetqY3LPL58vr5d5lZtxwiSaKEw1RRXEd
+         /QBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=DuTcTdyWe6Y84QMdROYViIK2QWcXLGLnMiYSgiOFsYk=;
-        b=7FWGINQwABnH8luth70pqB2cPSw+G8/1IgpxyGvOEWEnmgym8tRGWdVJ75s3c0nqmD
-         ogfjmF87TJjrbLvy0s3H92YGeW/YggE0voZvw7Ge2CWbDlp3ztD0U4AT5POjid7lbenp
-         76lwhdHv+MR62ZvnpwjhdwpMz5zXFJxA8+XzcLaibX1u75QBm5+87HlpODtalM8LydKJ
-         fUW/iHpPSwZ0Ppp3nWPe4C5BWN8XKQJ7wdgHkhyA9fJ9hIdC+7R2n88U/EsKmgOHES2l
-         yxWRj7XofuPJTlfl0IDvicuwV4hAJ/IAFO8mHLLN48vpHAOn+d/R7ST5TIhbCIeuH8A1
-         C/5A==
-X-Gm-Message-State: AFqh2krcAtcYVaShHbT9dX9s5vQ4WbA/xNTSXprAW8E0Xfz85dSJnbuI
-	jkb5+Wxh8VESHhGm0YN5DGP39b6gB+AFOeNfac/rnn1h+IM=
-X-Google-Smtp-Source: AMrXdXuKTlfSaO4r4oKRfORhRE/L68DhBD50WBXrHhKQR5itFG+6xTsKlaMIzjfFAwVj0DNCcVZhoeDfpPTe3SMeKv8=
-X-Received: by 2002:a05:6402:501f:b0:46f:77af:10ff with SMTP id
- p31-20020a056402501f00b0046f77af10ffmr1905874eda.178.1671976996465; Sun, 25
- Dec 2022 06:03:16 -0800 (PST)
+        bh=l0HQo0Uft0T8VxsKwPRkMhcgNln9pBoHhuFSGzN1zn8=;
+        b=qZwZH1F6mEj2MG3Rc29TKonaq2PWPOCD4rQewpZOudQxHsvYlJlhzA5cwAKQUhy7Sl
+         WVynFv6Z0A0R1k8cIMl+L7mYX+jckujBuPvgOxaygP1pyiHAktlUHVknxhOCiYQ9b6FK
+         0nWRF2D1CO82CfLcpkaFt5SOKZBx7T3PE1Ie5oshhU8H3FwBvWeTyJwicF29DPaaII2z
+         1kRs15WJ4GGudNGNlwmjMzfNjwzTJiV0zwtBwwotBA9BZi5oal1AHBEm/BlJXfP6weVm
+         8GA/wN2SLDX8xf/7C8Rr3s27+iN47FhvtSHrGjGM95s0A7lvOFpBWxNbRyDCqxDrCrue
+         fwWw==
+X-Gm-Message-State: AFqh2kq1jwCFyUJheshJ/osuVwM+cigr6Im2Txh2Al1FA6aOMNDY5DWa
+	vC11Ac19bbYP7cNKLIbob7Xt0/TSvZYCjBH28gI=
+X-Google-Smtp-Source: AMrXdXumUZ0egLCgdNl+lat9zn+x+X7k504TH6k/KmHZcmWIEf8pX/Lu9CfWyS/UmPDBJiOZ9JiJ6KM41R4UN67hDr0=
+X-Received: by 2002:a17:906:4f12:b0:77f:9082:73c7 with SMTP id
+ t18-20020a1709064f1200b0077f908273c7mr839677eju.517.1671978427064; Sun, 25
+ Dec 2022 06:27:07 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -45,8 +45,8 @@ References: <D41A3A42-2412-4722-9090-01565058E525@gmail.com>
  <1c3be2ab-43af-cac7-fa0b-f3118b4e714e@linux.intel.com>
 In-Reply-To: <1c3be2ab-43af-cac7-fa0b-f3118b4e714e@linux.intel.com>
 From: Zeno Davatz <zdavatz@gmail.com>
-Date: Sun, 25 Dec 2022 15:03:05 +0100
-Message-ID: <CAOkhzLVBY9aVVT98bYtOAJc+EwYfnjru8fJcthNmwM8Z0V+y+A@mail.gmail.com>
+Date: Sun, 25 Dec 2022 15:26:55 +0100
+Message-ID: <CAOkhzLW-GttO2fA-qaQ5eAu02VoOhxR7sG2u9itVCvcbrCxrzg@mail.gmail.com>
 Subject: Re: [PATCH 1/2] iommu/vt-d: Fix PCI device reference count leak in
  has_external pci()
 To: Baolu Lu <baolu.lu@linux.intel.com>
@@ -92,10 +92,8 @@ On Sun, Dec 25, 2022 at 2:52 PM Baolu Lu <baolu.lu@linux.intel.com> wrote:
 >
 > Can you please simply revert this patch and check the boot again?
 
-Yes, I can try that. What is the git checkout hash, where I have to checkout at?
-
-This hang is very strange. Did something change in the Kernel
-enumeration process?
+I am also seeing some "refcount" mentions here:
+https://lore.kernel.org/lkml/CAHk-=wgyXu4D44b8wQU9dpTYUft6WhZ0wr3nV1fziy6k0GwCCw@mail.gmail.com/
 
 Best
 Zeno
