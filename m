@@ -1,68 +1,85 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9998E361
-	for <iommu@lists.linux.dev>; Sun, 25 Dec 2022 13:16:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1671974177; x=1703510177;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=0AUUMSVBSULgI6+gop4YNd2amu+IyDWT9Tic3OuWVe0=;
-  b=SAfNJ8OSueVP7rHxFBgaXzO5s5qzRGFlTY/0Z31XWURa+FsCe84mSs2G
-   0n8XZK2VNYGyO3J2qBuROFqvehK28XFSi9JZlwPT3JqDUB05qmCklzxr2
-   JIJQ61AFnEC0NiLhgoHRjGJRkN2pPhHGzmtUKtbvhn+sHisos+MFBZuT2
-   j2kVZ0VJSgMX/SiQoL6qku9h789VF7WuDBfcJwronxzDJEIjzzK+usSHt
-   CTiARPh+Ncruqoq/r+qFHAXk3xAE9S2jyU37GfOhnJKNxrrra+RMgtiqd
-   TqyOrY+DMA0/MUBT0LOs4QXob1wRclE2dYK8Bcc9AGYW+s2zEKU7o2hHT
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10571"; a="384892608"
-X-IronPort-AV: E=Sophos;i="5.96,273,1665471600"; 
-   d="scan'208";a="384892608"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Dec 2022 05:16:16 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10571"; a="652545816"
-X-IronPort-AV: E=Sophos;i="5.96,273,1665471600"; 
-   d="scan'208";a="652545816"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.211.120]) ([10.254.211.120])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Dec 2022 05:16:14 -0800
-Message-ID: <6531c0eb-5ca7-9026-a8b7-eb4442629d0d@linux.intel.com>
-Date: Sun, 25 Dec 2022 21:16:12 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72AF58817
+	for <iommu@lists.linux.dev>; Sun, 25 Dec 2022 13:37:48 +0000 (UTC)
+Received: by mail-ed1-f41.google.com with SMTP id u18so11503885eda.9
+        for <iommu@lists.linux.dev>; Sun, 25 Dec 2022 05:37:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=s5w2zE/944m+g5V/bVTV7gQUFsx9I9RhF9qMrL1AVKU=;
+        b=ZXPrlu+3zNj/q9voGn5Syh1d19df7JfB636Er7w4octj+XVnK8wPGwNi4Izfjz5C7B
+         0KehT2/hZ0znsNfxE+zM4TxxNWcxE74lpcV9Ibwikt1GfWnvxvJ2NbeVdNd9ZDU0dlCX
+         I24b8VTFuPxw06lOcGbNR/izgoJu5H0AoKsEvdEBfaWinDYyPlxFBAsN5XAlpokbLAyU
+         O9XdU7ENZshK5J0HwzJLKnWzdz/wiXnxoZRo/WOoWIWZsQNx+LuXMOsepWCv3yEbTGcM
+         O6cHIoTtBlScmRYbQweafWjnwezQZzOkaHYHHRBgzat4suZnwed/MwUAQw7mA+ODvA14
+         ZvWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=s5w2zE/944m+g5V/bVTV7gQUFsx9I9RhF9qMrL1AVKU=;
+        b=cFMmVwAsCGnwRo0r1QDr44gKykpZYuSpLFaDmHhKApgOvS72g8Sqxbe4LjrA1Xltfj
+         MaAHnkNgnSYNIRj8umTKfV6pcB5wyq/ho2B/PWc6UAwy00T1ZpGp478THyM2aO9DUx+f
+         xFtm7lvu67A89XYGQ6bRnAx8yNkJgb6BEGzzfSfL44CTyMUZOHlckCb3ukybVtN3KJ+U
+         nFyIv6MzEPE89I+0aIguMLMMhqDXY2dSrVJN41ebwQq66T8CKcmtp1UilAzncN+z6EdQ
+         NryoHNeB6TCbwmt2tVs6LTW2r4Gmr0x86+nrxS5UDyVDOuB56FkGOjYfWxlH0h209Hcs
+         5CCg==
+X-Gm-Message-State: AFqh2koptDYBdhkGrZdLKfBqV/LYe+OMSEml/N8BUWCOF6JF3MzFqhbu
+	yleyS7p9pF3KYbnbZ9BOpGd4z4Zp3JHdkErcHYg=
+X-Google-Smtp-Source: AMrXdXvWErugVRrVIpWDdxw+hsLc2tiLuCIRz/I7TOIG7FubPLTl5MEiGzoskAAxPNvGwEMKvkAl9IWbJ2vi4QQHeNY=
+X-Received: by 2002:a50:fd8c:0:b0:484:9b8:4318 with SMTP id
+ o12-20020a50fd8c000000b0048409b84318mr270521edt.115.1671975466540; Sun, 25
+ Dec 2022 05:37:46 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Cc: baolu.lu@linux.intel.com, dwmw2@infradead.org, iommu@lists.linux.dev,
- joro@8bytes.org, jroedel@suse.de, robin.murphy@arm.com, will@kernel.org,
- yangyingliang@huawei.com
+References: <D41A3A42-2412-4722-9090-01565058E525@gmail.com> <6531c0eb-5ca7-9026-a8b7-eb4442629d0d@linux.intel.com>
+In-Reply-To: <6531c0eb-5ca7-9026-a8b7-eb4442629d0d@linux.intel.com>
+From: Zeno Davatz <zdavatz@gmail.com>
+Date: Sun, 25 Dec 2022 14:37:35 +0100
+Message-ID: <CAOkhzLWJzYoE-1b02ZLra=1FF7WjLYznf_PwMEAQWB0NGJsJhw@mail.gmail.com>
 Subject: Re: [PATCH 1/2] iommu/vt-d: Fix PCI device reference count leak in
  has_external pci()
-To: Zeno Davatz <zdavatz@gmail.com>, wangxiongfeng2@huawei.com
-References: <D41A3A42-2412-4722-9090-01565058E525@gmail.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <D41A3A42-2412-4722-9090-01565058E525@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: wangxiongfeng2@huawei.com, dwmw2@infradead.org, iommu@lists.linux.dev, 
+	joro@8bytes.org, jroedel@suse.de, robin.murphy@arm.com, will@kernel.org, 
+	yangyingliang@huawei.com
+Content-Type: text/plain; charset="UTF-8"
 
-On 2022/12/25 20:11, Zeno Davatz wrote:
-> Hi
-> 
-> I am getting this hang with kernel 6.1. See attachment.
-> 
-> Is this related to your patch?
-> 
-> Kernel 6.1 does not boot for me. Kernel 6.0 was fine.
+Dear Baolu
 
-It seems unlikely.
+On Sun, Dec 25, 2022 at 2:16 PM Baolu Lu <baolu.lu@linux.intel.com> wrote:
+>
+> On 2022/12/25 20:11, Zeno Davatz wrote:
+> > Hi
+> >
+> > I am getting this hang with kernel 6.1. See attachment.
+> >
+> > Is this related to your patch?
+> >
+> > Kernel 6.1 does not boot for me. Kernel 6.0 was fine.
+>
+> It seems unlikely.
+>
+> Have you located the patch through the bisect tool? Or does it boot well
+> if you revert this patch?
 
-Have you located the patch through the bisect tool? Or does it boot well
-if you revert this patch?
+I did not bisect the patch. All I currently know is that version 5.5
+and version 6.0 of the Kernel booted fine for me.
 
---
-Best regards,
-baolu
+I test every Kernel release and normally the boot process goes flawless.
+
+The patch I am referring to is also mentioned by Linus in the Kernel
+log, AFAICT tell the only PCI patch.
+
+https://lkml.org/lkml/2022/12/11/206
+
+Best
+Zeno
