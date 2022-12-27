@@ -1,90 +1,89 @@
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA225A21;
-	Tue, 27 Dec 2022 07:37:23 +0000 (UTC)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-	id 1pA4WU-00036h-ED; Tue, 27 Dec 2022 08:37:18 +0100
-Message-ID: <f5ab3515-eb0e-5c1e-e767-01c164d461a6@leemhuis.info>
-Date: Tue, 27 Dec 2022 08:37:18 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9C378494
+	for <iommu@lists.linux.dev>; Tue, 27 Dec 2022 20:33:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B521C43398;
+	Tue, 27 Dec 2022 20:33:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1672173200;
+	bh=I8m2fSy540HdqyYEIxo83HseOdiuUlSL2etr2oXtefo=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=RQJcuKAkaxcmqI1LLcaVXy6ZX1bV5z6Q3S9QNZfpHlFTUe7pplheo3J8XPUlXsHkJ
+	 8RcPs1iEeH+wFWH7dkXBCxThhZ/yumdQ4r/es3F6y37WzSf5+3Y1waB/1Dkbn8D3FX
+	 qFEB6exyvYoSbbcKjOjqlukDUZ63br6Nje8kgieWtr2U0AhdmUmjIyusZ5HRCIdWox
+	 MYTyspCstLE7ihZhRLrgsnHQOf/ikvjni0TeF+TvmiQW5HKWgzFvp3ep2whF2alNGv
+	 Htzv9qqhS1hxxqcSaLir7RsepgZZ42t/XxXOs0Xj0auKDpwr+0Ovq8tPOHrSUFE2Zl
+	 vVaKB1t8Wmadw==
+From: Sasha Levin <sashal@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Cc: Ricardo Ribalda <ribalda@chromium.org>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <jroedel@suse.de>,
+	Sasha Levin <sashal@kernel.org>,
+	yong.wu@mediatek.com,
+	joro@8bytes.org,
+	will@kernel.org,
+	matthias.bgg@gmail.com,
+	iommu@lists.linux.dev,
+	linux-mediatek@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 6.1 20/28] iommu/mediatek: Fix crash on isr after kexec()
+Date: Tue, 27 Dec 2022 15:32:41 -0500
+Message-Id: <20221227203249.1213526-20-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20221227203249.1213526-1-sashal@kernel.org>
+References: <20221227203249.1213526-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH 1/2] iommu/vt-d: Fix PCI device reference count leak in
- has_external pci()
-Content-Language: en-US, de-DE
-To: Baolu Lu <baolu.lu@linux.intel.com>,
- "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-Cc: iommu@lists.linux.dev
-References: <D41A3A42-2412-4722-9090-01565058E525@gmail.com>
- <4eac7a29-fed2-6493-a604-17fcba2a13ba@leemhuis.info>
- <77905fdc-ca91-75ef-4d79-378c108ee4b2@linux.intel.com>
-From: Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <77905fdc-ca91-75ef-4d79-378c108ee4b2@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1672126644;a56a573d;
-X-HE-SMSGID: 1pA4WU-00036h-ED
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 
-On 27.12.22 08:20, Baolu Lu wrote:
-> On 2022/12/26 21:29, Thorsten Leemhuis wrote:
->> [Note: this mail contains only information for Linux kernel regression
->> tracking. Mails like these contain '#forregzbot' in the subject to make
->> then easy to spot and filter out. The author also tried to remove most
->> or all individuals from the list of recipients to spare them the hassle.]
->>
->> On 25.12.22 13:11, Zeno Davatz wrote:
->>> Hi
->>>
->>> I am getting this hang with kernel 6.1. See attachment.
->>>
->>> Is this related to your patch?
->>>
->>> Kernel 6.1 does not boot for me. Kernel 6.0 was fine.
->>>
->>> Thank you for your reply.
->>
->> Thanks for the report. To be sure below issue doesn't fall through the
->> cracks unnoticed, I'm adding it to regzbot, my Linux kernel regression
->> tracking bot:
->>
->> #regzbot ^introduced v6.0..v6.1-rc1
->> #regzbot title pci(?)/iommu(?): hang with kernel 6.1
->> #regzbot ignore-activity
->>
->> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
->>
->> P.S.: As the Linux kernel's regression tracker I deal with a lot of
->> reports and sometimes miss something important when writing mails like
->> this. If that's the case here, don't hesitate to tell me in a public
->> reply, it's in everyone's interest to set the public record straight.
->>
-> 
-> The reporter said that "The problem happens somewhere between Kernel
-> Version 6.0 and 6.1-rc1." 
+From: Ricardo Ribalda <ribalda@chromium.org>
 
-Don't worry, I know, that's why I used "#regzbot ^introduced
-v6.0..v6.1-rc1" above.
+[ Upstream commit 00ef8885a945c37551547d8ac8361cacd20c4e42 ]
 
-> This patch only shows up since v6.1-rc8. This
-> patch cannot generate any kernel regression on v6.1-rc1.
+If the system is rebooted via isr(), the IRQ handler might
+be triggered before the domain is initialized. Resulting on
+an invalid memory access error.
 
-I'm not blaming the patch mentioned in the subject, but this is the
-report about an regression that shouldn't be forgotten about, hence I
-track it, even if the discussion uses a misleading subject (hopefully
-someone will change that).
+Fix:
+[    0.500930] Unable to handle kernel read from unreadable memory at virtual address 0000000000000070
+[    0.501166] Call trace:
+[    0.501174]  report_iommu_fault+0x28/0xfc
+[    0.501180]  mtk_iommu_isr+0x10c/0x1c0
 
-Or am I missing something here?
+Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Link: https://lore.kernel.org/r/20221125-mtk-iommu-v2-0-e168dff7d43e@chromium.org
+[ joro: Fixed spelling in commit message ]
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/iommu/mtk_iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 2ab2ecfe01f8..3d913ab5029c 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -454,7 +454,7 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+ 		fault_larb = data->plat_data->larbid_remap[fault_larb][sub_comm];
+ 	}
+ 
+-	if (report_iommu_fault(&dom->domain, bank->parent_dev, fault_iova,
++	if (!dom || report_iommu_fault(&dom->domain, bank->parent_dev, fault_iova,
+ 			       write ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ)) {
+ 		dev_err_ratelimited(
+ 			bank->parent_dev,
+-- 
+2.35.1
 
-P.S.: As the Linux kernel's regression tracker I deal with a lot of
-reports and sometimes miss something important when writing mails like
-this. If that's the case here, don't hesitate to tell me in a public
-reply, it's in everyone's interest to set the public record straight.
