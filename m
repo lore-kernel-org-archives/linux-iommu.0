@@ -1,20 +1,20 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9C378494
-	for <iommu@lists.linux.dev>; Tue, 27 Dec 2022 20:33:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B521C43398;
-	Tue, 27 Dec 2022 20:33:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B63D8494
+	for <iommu@lists.linux.dev>; Tue, 27 Dec 2022 20:34:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BED6C433D2;
+	Tue, 27 Dec 2022 20:34:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1672173200;
-	bh=I8m2fSy540HdqyYEIxo83HseOdiuUlSL2etr2oXtefo=;
+	s=k20201202; t=1672173252;
+	bh=lXpXGDVABBxF0Wo9jihuxkhviG7fucblA67dNbJIpLo=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=RQJcuKAkaxcmqI1LLcaVXy6ZX1bV5z6Q3S9QNZfpHlFTUe7pplheo3J8XPUlXsHkJ
-	 8RcPs1iEeH+wFWH7dkXBCxThhZ/yumdQ4r/es3F6y37WzSf5+3Y1waB/1Dkbn8D3FX
-	 qFEB6exyvYoSbbcKjOjqlukDUZ63br6Nje8kgieWtr2U0AhdmUmjIyusZ5HRCIdWox
-	 MYTyspCstLE7ihZhRLrgsnHQOf/ikvjni0TeF+TvmiQW5HKWgzFvp3ep2whF2alNGv
-	 Htzv9qqhS1hxxqcSaLir7RsepgZZ42t/XxXOs0Xj0auKDpwr+0Ovq8tPOHrSUFE2Zl
-	 vVaKB1t8Wmadw==
+	b=ZJwuXYtbT6jPX/2d5hzcZc+nxRdGS4UmqO+Pv5j0CDvyQFc6BWaOH3y8B3EFTFhEx
+	 vZWaJIm1JPG5h+g7portQxLmhPzGxBrm0dXKiZSGsiPKy4DmeDZJ8s4lkv6JwzC8O8
+	 Eh+jwWRgMf8bwGVMPV5Ay6Got9bzNkkX9UzWw7hKJ9RDUgQ6Bw5+xNf4P2f64+G8uv
+	 uqsg52883STiQxBk1pkuLhF2s92FSjQkNU9x4LyGvtFRjG4c6jh4vfKBMQNFUIhmDk
+	 n45QpQbMXQD6Hkb9E+9FAw/YPT2ReWh72of7JX2GztXG+S25z6CmWLFALGKJLH/5fA
+	 AbJ8lAq60zDNQ==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -30,12 +30,12 @@ Cc: Ricardo Ribalda <ribalda@chromium.org>,
 	iommu@lists.linux.dev,
 	linux-mediatek@lists.infradead.org,
 	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 6.1 20/28] iommu/mediatek: Fix crash on isr after kexec()
-Date: Tue, 27 Dec 2022 15:32:41 -0500
-Message-Id: <20221227203249.1213526-20-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.0 20/27] iommu/mediatek: Fix crash on isr after kexec()
+Date: Tue, 27 Dec 2022 15:33:35 -0500
+Message-Id: <20221227203342.1213918-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20221227203249.1213526-1-sashal@kernel.org>
-References: <20221227203249.1213526-1-sashal@kernel.org>
+In-Reply-To: <20221227203342.1213918-1-sashal@kernel.org>
+References: <20221227203342.1213918-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -72,10 +72,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 2ab2ecfe01f8..3d913ab5029c 100644
+index 7e363b1f24df..b5ccdc134e84 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -454,7 +454,7 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+@@ -452,7 +452,7 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
  		fault_larb = data->plat_data->larbid_remap[fault_larb][sub_comm];
  	}
  
