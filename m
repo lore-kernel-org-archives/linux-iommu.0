@@ -1,65 +1,80 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13E423217
-	for <iommu@lists.linux.dev>; Wed, 28 Dec 2022 18:13:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7494C433D2;
-	Wed, 28 Dec 2022 18:13:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1672251228;
-	bh=lVwSaqSZ7IuhavkV9bL4BSr/f9Da8jSkCwPr1LBYck0=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=moKj8pZL8Wrj9P/eXsJ1Lgk3vAhAqLZvJdm41aT7jjWHVzU+cDx7eQ76dLuPOcaQg
-	 ZFQkAacEzfxqeB2ML0zbu+de2Ew3hki+kAeU9m2yDg8qqJRq568PMKoFCzGhtCaDl3
-	 2wIeFSyEspJIkTNow/2PQiG/DjwIvtO2QC7nXfCxy42pC8pigC5/iCBbEpsb5ltGCG
-	 3VL6MNymaTUkZexJN/Z5pT7CwV9BfDFK1p1+9b/6NdXd3qzhslDrUrE7b2KOUUmnXX
-	 2Hks/s3yPGQManGLBSs/FixP3Db+jcRMPlsaiMu8nfibsV4Tr5TTi0u7V1/fWp519x
-	 jdYZEkcXCu7TA==
-From: Bjorn Andersson <andersson@kernel.org>
-To: linux-arm-msm@vger.kernel.org,
-	konrad.dybcio@linaro.org,
-	agross@kernel.org,
-	krzysztof.kozlowski@linaro.org
-Cc: robin.murphy@arm.com,
-	joro@8bytes.org,
-	linux-arm-kernel@lists.infradead.org,
-	robh+dt@kernel.org,
-	will@kernel.org,
-	krzysztof.kozlowski+dt@linaro.org,
-	linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	marijn.suijten@somainline.org,
-	iommu@lists.linux.dev
-Subject: Re: (subset) [PATCH 1/2] dt-bindings: arm-smmu: Add sm8150-smmu-500 to the list of Adreno smmus
-Date: Wed, 28 Dec 2022 12:13:42 -0600
-Message-Id: <167225121530.949655.3229083574762071501.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20221213002626.260267-1-konrad.dybcio@linaro.org>
-References: <20221213002626.260267-1-konrad.dybcio@linaro.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7941C6FAE
+	for <iommu@lists.linux.dev>; Wed, 28 Dec 2022 21:42:39 +0000 (UTC)
+Received: from g550jk.localnet (2a02-8388-6582-fe80-0000-0000-0000-0005.cable.dynamic.v6.surfer.at [IPv6:2a02:8388:6582:fe80::5])
+	by mail.z3ntu.xyz (Postfix) with ESMTPSA id 964ABCB428;
+	Wed, 28 Dec 2022 21:34:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
+	t=1672263276; bh=P7Zg/b7zNWRtK1YhRoeKSV0ZncuTX3zqOfvkP8ZocvM=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=jlfuRHrKhhHdomTKJzvJoOzwZIG6RMbL6HUGhCGxDsDDdlR5wRQrfYCFM9Z+YskjO
+	 ByxnoQytPVdCSl/1CrWpsMa7sy4qNwBJgmTImQ4bKW4PTttgH9IWkFCIRgsBSoQMpx
+	 SiPr/BsvcbwvfgVxYsflVk2rZ8WRCdtkJFzuSsNo=
+From: Luca Weiss <luca@z3ntu.xyz>
+To: Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux.dev, ~postmarketos/upstreaming@lists.sr.ht,
+ phone-devel@vger.kernel.org, Rob Herring <robh@kernel.org>,
+ Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konrad.dybcio@somainline.org>, Joerg Roedel <joro@8bytes.org>,
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject:
+ Re: [PATCH v5] dt-bindings: iommu: qcom: Add Qualcomm MSM8953 compatible
+Date: Wed, 28 Dec 2022 22:34:35 +0100
+Message-ID: <4793103.31r3eYUQgx@g550jk>
+In-Reply-To: <20221114134458.GD30263@willie-the-truck>
+References:
+ <20221105142016.93406-1-luca@z3ntu.xyz>
+ <20221114134458.GD30263@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 
-On Tue, 13 Dec 2022 01:26:25 +0100, Konrad Dybcio wrote:
-> From: Marijn Suijten <marijn.suijten@somainline.org>
+On Montag, 14. November 2022 14:44:59 CET Will Deacon wrote:
+> On Sat, Nov 05, 2022 at 03:20:17PM +0100, Luca Weiss wrote:
+> > Document the compatible used for IOMMU on the msm8953 SoC.
+> > 
+> > Acked-by: Rob Herring <robh@kernel.org>
+> > Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+> > ---
+> > Changes in v5:
+> > * Change subject so it hopefully gets noticed by iommu maintainers
+> > 
+> >   (thanks Krzysztof, maybe this helps..)
+> >  
+> >  Documentation/devicetree/bindings/iommu/qcom,iommu.txt | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+> > b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt index
+> > 059139abce35..e6cecfd360eb 100644
+> > --- a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+> > +++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+> > @@ -10,6 +10,7 @@ to non-secure vs secure interrupt line.
+> > 
+> >  - compatible       : Should be one of:
+> >                          "qcom,msm8916-iommu"
+> > 
+> > +                        "qcom,msm8953-iommu"
+> > 
+> >                       Followed by "qcom,msm-iommu-v1".
 > 
-> sm8150 has an smmu-500 specifically for Adreno, where the GPU is allowed
-> to switch pagetables.  Document the allowed 3-compatibles for this,
-> similar to sc7280 and sm8250.
+> I'd expect the MSM maintainers (i.e Andy and Bjorn) to pick this up.
+
+Bjorn, could you pick this up for v6.3 please?
+
 > 
-> 
-> [...]
+> Will
 
-Applied, thanks!
 
-[2/2] arm64: dts: qcom: sm8150: Enable split pagetables for Adreno SMMU
-      commit: c34bef62a0096d1db309db8ffd165a1a6f01f227
 
-Best regards,
--- 
-Bjorn Andersson <andersson@kernel.org>
+
