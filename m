@@ -1,77 +1,81 @@
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA58E1FAF
-	for <iommu@lists.linux.dev>; Thu, 29 Dec 2022 17:12:19 +0000 (UTC)
-Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id EA61F1EC01CE;
-	Thu, 29 Dec 2022 18:12:17 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-	t=1672333938;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-	bh=sqeooaleqBTMPBtHWAeLVMtTZ1xfk6rO2FzUqBNbtKw=;
-	b=QObNy42hmAtuswnJb8OglmyKvFnt1YAyP0phH4fNMyCB+uOSiROVBU9rTNybRKMg2S/OeP
-	JPC3cXk44PBGhiQPG6PRlGGJpi7nj21yYAIhgZNHgpszrJKFqxoS/Z9pQk0OGZjqHuG9SP
-	FiF4iIDhSNFB61FuWL9Zr6ZwEnAwzio=
-Date: Thu, 29 Dec 2022 18:12:17 +0100
-From: Borislav Petkov <bp@alien8.de>
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: Michael Kelley <mikelley@microsoft.com>, hpa@zytor.com,
-	kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
-	decui@microsoft.com, luto@kernel.org, peterz@infradead.org,
-	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-	pabeni@redhat.com, lpieralisi@kernel.org, robh@kernel.org,
-	kw@linux.com, bhelgaas@google.com, arnd@arndb.de, hch@infradead.org,
-	m.szyprowski@samsung.com, robin.murphy@arm.com,
-	thomas.lendacky@amd.com, brijesh.singh@amd.com, tglx@linutronix.de,
-	mingo@redhat.com, dave.hansen@linux.intel.com,
-	Tianyu.Lan@microsoft.com, kirill.shutemov@linux.intel.com,
-	sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
-	isaku.yamahata@intel.com, dan.j.williams@intel.com,
-	jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com,
-	x86@kernel.org, linux-kernel@vger.kernel.org,
-	linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8C541FAF
+	for <iommu@lists.linux.dev>; Thu, 29 Dec 2022 17:24:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAD65C433EF;
+	Thu, 29 Dec 2022 17:24:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1672334642;
+	bh=XHmLp9yZDI+BKgWJ96JFpf1Pfxo9Zv/tr9yi9QJuKX0=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=mcK3XdXbBpV36VckC+R/1ONh/uy9uKkTBKyERB85jj+dKbOf+YjepFPvWAkAXrI1I
+	 zOAAhEp6/a2toL52Lywi+Dq1l9zy+hVidY9zLxEyWuQ1/P4ZSMwzdRBGl/tKLZZwfA
+	 XfjRsCWQVUnDIGDPeyYqbmH9Tc7l+GXh0U/pAbtXs3uroqE1XN93ZmQilfJEPUU/S+
+	 98oaDSSyOwAAbLEq3Yexn8GanJxR2zU5eUAZsLTKeLJrwVBVNQjnK4K+JPRLp0yR8J
+	 b5HxwzS65RlgWkMZk9E7Mbw1fLJPOvg94N3GvbV8w9UwgSICNuHnq1nw+3Iru7Zaog
+	 iZo6ulTDdBXNw==
+From: Bjorn Andersson <andersson@kernel.org>
+To: joro@8bytes.org,
+	phone-devel@vger.kernel.org,
+	Marijn Suijten <marijn.suijten@somainline.org>,
+	will@kernel.org
+Cc: linux-arm-msm@vger.kernel.org,
+	konrad.dybcio@somainline.org,
+	martin.botka@somainline.org,
+	krzysztof.kozlowski+dt@linaro.org,
+	~postmarketos/upstreaming@lists.sr.ht,
+	angelogioacchino.delregno@somainline.org,
+	bhupesh.sharma@linaro.org,
+	dmitry.baryshkov@linaro.org,
+	quic_molvera@quicinc.com,
+	linux-arm-kernel@lists.infradead.org,
+	Douglas Anderson <dianders@chromium.org>,
+	linux-kernel@vger.kernel.org,
+	jami.kettunen@somainline.org,
+	robh+dt@kernel.org,
+	treding@nvidia.com,
+	agross@kernel.org,
+	they@mint.lgbt,
+	konrad.dybcio@linaro.org,
+	robin.murphy@arm.com,
+	devicetree@vger.kernel.org,
 	iommu@lists.linux.dev
-Subject: Re: [Patch v4 04/13] x86/mm: Handle decryption/re-encryption of
- bss_decrypted consistently
-Message-ID: <Y63Kcaqo2U6G+JmY@zn.tnic>
-References: <Y62FbJ1rZ6TVUgml@zn.tnic>
- <20221229165431.GA611286@bhelgaas>
+Subject: Re: (subset) [PATCH v5 0/4] arm64: dts: qcom: sm6125: Enable APPS SMMU
+Date: Thu, 29 Dec 2022 11:23:39 -0600
+Message-Id: <167233461773.1099840.14120754082491956847.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20221222193254.126925-1-marijn.suijten@somainline.org>
+References: <20221222193254.126925-1-marijn.suijten@somainline.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20221229165431.GA611286@bhelgaas>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-On Thu, Dec 29, 2022 at 10:54:31AM -0600, Bjorn Helgaas wrote:
-> > "sme_postprocess_startup() decrypts the bss_decrypted ection when me_mask
-> > sme_is non-zero.
+On Thu, 22 Dec 2022 20:32:50 +0100, Marijn Suijten wrote:
+> Add APPS SMMU to SM6125 dtsi and use it in SDHCI/USB nodes.
 > 
-> s/ection/section/
+> Changes since v4:
 > 
-> (In case you copy/paste this text without noticing the typo)
+> - Use hexadecimal 0x0 for iommu mask;
+> - Add sm6125 to the dt-bindings list without clocks, now depending on:
+>   https://lore.kernel.org/linux-arm-kernel/20221222092355.74586-1-krzysztof.kozlowski@linaro.org/
+> 
+> [...]
 
-Thanks.
+Applied, thanks!
 
-My par-agraph reformating helper does mangle words like that sometimes.
-The correct sentence should be:
+[2/4] arm64: dts: qcom: sm6125: Configure APPS SMMU
+      commit: 8ddb4bc3d3b52e0a560a18e4d739c83f56efe7c9
+[3/4] arm64: dts: qcom: sm6125: Add apps_smmu with streamID to SDHCI 1/2 nodes
+      commit: 60f6c86fb4fd16bd86aa1b16bc51ef4ac0e20d4e
+[4/4] arm64: dts: qcom: sm6125: Add IOMMU context to DWC3
+      commit: ac54563c27528ab9461899de7d99ee4e3858b858
 
-"sme_postprocess_startup() decrypts the bss_decrypted section when
-sme_me_mask is non-zero."
-
-/me makes a mental note to switch to the vim builtin instead.
-
+Best regards,
 -- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Bjorn Andersson <andersson@kernel.org>
