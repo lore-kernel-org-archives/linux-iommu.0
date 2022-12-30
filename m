@@ -1,130 +1,98 @@
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f178.google.com (mail-pg1-f178.google.com [209.85.215.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AE6C1FA8;
-	Fri, 30 Dec 2022 08:19:00 +0000 (UTC)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-	id 1pBAbQ-0003Oo-SD; Fri, 30 Dec 2022 09:18:56 +0100
-Message-ID: <15d0f9ff-2a56-b3e9-5b45-e6b23300ae3b@leemhuis.info>
-Date: Fri, 30 Dec 2022 09:18:56 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 536077E
+	for <iommu@lists.linux.dev>; Fri, 30 Dec 2022 08:31:32 +0000 (UTC)
+Received: by mail-pg1-f178.google.com with SMTP id h192so8963487pgc.7
+        for <iommu@lists.linux.dev>; Fri, 30 Dec 2022 00:31:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=HPSc5CLczFof6Az09YQrNvJzlEU7+w21O5dXtl4mqyk=;
+        b=lMGhHsMvJXqUL1WfSWtNrtoqQ6vbQ8zSMbNi4ZfLr6yGd+iI9hh2xm4OY8u6H0Go1a
+         CRiG/cfzwsPXQBIKH0SNonLyEto/TmbUZtxEFKTtqIYL66ODBGy0t4WXObCEICe3kDGR
+         8YRC4yRX/fhYyCflh9NNuUvujL/14pnsIISl0GQerrQRob8bRGlyVcutFiYh9C8KUjdL
+         VbiLNF1sse3ZJoGI/Wvw+ZNu4HUap0FfEfHaBX1uNsAkyuEZSVgQ80sj1Q3YLo7rgnLo
+         xZ2pxM4v2cGvbNPgTPF/11XWj/vW70W8z/kP3EnBjVJB+hw4e4VGS+OM3TbIkUvvuOIF
+         EvEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=HPSc5CLczFof6Az09YQrNvJzlEU7+w21O5dXtl4mqyk=;
+        b=Ct99gSMbKXEJh11E9mmaTncLlmIHEjJjUG/Oz4NtshXLRNsUTNJIq8oa02Jn887uLV
+         N1NhWzGJxfQTyoQVAi78CjZ88e0B9aNzpVaVQ4xBjoA8zowapv04VYF4IxcPkDWg8CIu
+         DCkMJZIRqSa0BG9x6CZXr+H+f6zHEou0KxXATSNrxO6ePTN1JNFo22OGKnzaOHJVvjir
+         Rj8uIc4lxwv7kXtnYvFzT+bXBwaF8/7Wvg3ORgYVOpKu+LxsQPsvq5qq1tP+xNn1Nc0e
+         XdfqFO2mdJYRw9SARnan9/k3d11Q150pVtB3NQTKMJO4VOrqRP+/lNqlH8hGcXdXkvcX
+         Xjsg==
+X-Gm-Message-State: AFqh2kpBJ3c6Cu/bzd2YuGVD6oH8VnfU+N4FFzaCACcVbXmYgoJjDHay
+	LBfzfDTX5MH0wGZwaBA6aSI=
+X-Google-Smtp-Source: AMrXdXtJsKuFq/yA8finz6BSFXjWdGZhmxoS70wa6aAQdiMsdDW7v9DTz++wMC4LjcQsJ/9B8bgXLg==
+X-Received: by 2002:a62:404:0:b0:581:91d1:3cc4 with SMTP id 4-20020a620404000000b0058191d13cc4mr8260380pfe.7.1672389091733;
+        Fri, 30 Dec 2022 00:31:31 -0800 (PST)
+Received: from localhost.localdomain ([202.120.234.246])
+        by smtp.googlemail.com with ESMTPSA id 68-20020a621947000000b00580e679dcf2sm10182227pfz.157.2022.12.30.00.31.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Dec 2022 00:31:31 -0800 (PST)
+From: Miaoqian Lin <linmq006@gmail.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Eric Auger <eric.auger@redhat.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: linmq006@gmail.com
+Subject: [PATCH] iommu: Fix refcount leak in iommu_device_claim_dma_owner
+Date: Fri, 30 Dec 2022 12:31:00 +0400
+Message-Id: <20221230083100.1489569-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Content-Language: en-US, de-DE
-From: Thorsten Leemhuis <regressions@leemhuis.info>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <jroedel@suse.de>, Matt Fagnani <matt.fagnani@bell.net>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- LKML <linux-kernel@vger.kernel.org>,
- "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
- Linux PCI <linux-pci@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>
-Subject: =?UTF-8?Q?=5bregression=2c_bisected=2c_pci/iommu=5d_Bug=c2=a0216865?=
- =?UTF-8?Q?_-_Black_screen_when_amdgpu_started_during_6=2e2-rc1_boot_with_AM?=
- =?UTF-8?Q?D_IOMMU_enabled?=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1672388340;85de40be;
-X-HE-SMSGID: 1pBAbQ-0003Oo-SD
+Content-Transfer-Encoding: 8bit
 
-Hi, this is your Linux kernel regression tracker speaking.
+iommu_group_get() returns the group with the reference incremented.
+Move iommu_group_get() after owner check to fix the refcount leak.
 
-I noticed a regression report in bugzilla.kernel.org. As many (most?)
-kernel developer don't keep an eye on it, I decided to forward it by
-mail. Quoting from https://bugzilla.kernel.org/show_bug.cgi?id=216865 :
+Fixes: 89395ccedbc1 ("iommu: Add device-centric DMA ownership interfaces")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ drivers/iommu/iommu.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
->  Matt Fagnani 2022-12-29 18:39:56 UTC
-> 
-> I booted the Fedora Rawhide KDE Plasma live image
-> Fedora-KDE-Live-x86_64-Rawhide-20221227.n.0.iso
-> https://koji.fedoraproject.org/koji/buildinfo?buildID=2104562 from a USB
-> flash drive written with Fedora Media Writer on an hp laptop with an
-> integrated Radeon R5 GPU. The system froze with a black screen when
-> amdgpu started during 6.2-rc1 kernel boot. When I booted with quiet rhgb
-> removed from the kernel command line the last line shown before the
-> black screen was
->
-> kernel: [drm] amdgpu kernel modesetting enabled.
-> 
-> This problem happened each of several boots when using the amdgpu
-> driver (the default). This problem didn't happen when I booted the same
-> image using Troubleshooting > Boot Fedora-KDE-Plasma-live in basic
-> graphics mode which used the simpledrm driver and started Plasma on X
-> normally. This problem also didn't happen when I booted the image in a
-> QEMU/KVM VM in GNOME Boxes with 3 GB RAM using the virtio-gpu driver.
-> 
-> The data from the previous boots using live images aren't saved by
-> default so I couldn't get the journal that way as far as I knew. I
-> installed kernel-6.2.0-0.rc1.14.fc38 in my Fedora 37 KDE Plasma
-> installation and reproduced the problem 3 times with quiet rhgb removed
-> from the kernel command line and sysrq_always_enabled drm.debug=14 added
-> to it. I used sysrq+alt+r,s,u,b which rebooted the system so the kernel
-> wasn't completely frozen. The journals from the boots with the problem
-> weren't shown in journalctl. I booted with amdgpu.dc=0 on the kernel
-> command line and the screen froze with the last line
-> kernel: [drm] amdgpu kernel modesetting enabled. and the black
-> screen
-> didn't happen. I booted with drm.debug=94 on the kernel command line and
-> the screen's drm settings were shown repeatedly until I rebooted after
-> 2-3 minutes.
-> 
-> This problem didn't happen with kernel-6.1.0-65.fc38 or earlier in
-> the
-> Fedora Rawhide live image
-> Fedora-KDE-Live-x86_64-Rawhide-20221217.n.0.iso. The first Fedora
-> Rawhide kernel with this problem was
-> 6.2.0-0.rc0.20221215git041fae9c105a.5.fc38, while
-> 6.2.0-0.rc0.20221214gite2ca6ba6ba01.3.fc38 was the last one without the
-> problem. I bisected the mainline kernel between e2ca6ba6ba01 and
-> 041fae9c105a. The first bad commit was the following involving PCI and
-> IOMMUs.
-> 
-> 201007ef707a8bb5592cd07dd46fc9222c48e0b9 is the first bad commit
-> commit 201007ef707a8bb5592cd07dd46fc9222c48e0b9
-> Author: Lu Baolu <baolu.lu@linux.intel.com>
-> Date:   Mon Oct 31 08:59:08 2022 +0800
-> 
->     PCI: Enable PASID only when ACS RR & UF enabled on upstream path
->     
->     The Requester ID/Process Address Space ID (PASID) combination
->     identifies an address space distinct from the PCI bus address space,
->     e.g., an address space defined by an IOMMU.
->     
-> [...]
-> 
-> My system has an AMD IOMMU enabled. When I booted 6.2-rc1 with
-> amd_iommu=off on the kernel command line, the problem didn't happen and
-> the boot completed. There were IOMMU-related errors when amdgpu started
-> with amd_iommu=off. So the problem appears to involve amdgpu not
-> starting properly when the IOMMU is enabled after that change. When I
-> booted with quiet rhgb removed from the kernel command line, I noted
-> that the AMD IOMMU started about 3 seconds before the problem happened
-> when amdgpu started with a line like kernel: AMD-Vi: AMD IOMMUv2 loaded
-> and initialized
-> 
-> I reported this problem at
-> https://gitlab.freedesktop.org/drm/amd/-/issues/2319 where Alex Deucher
-> wrote "Please report this upstream to the IOMMU subsystem:
-> https://bugzilla.kernel.org/" I reported it for Fedora at
-> https://bugzilla.redhat.com/show_bug.cgi?id=2156691
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index de91dd88705b..3a7dd8b61fab 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -3185,14 +3185,16 @@ EXPORT_SYMBOL_GPL(iommu_group_claim_dma_owner);
+  */
+ int iommu_device_claim_dma_owner(struct device *dev, void *owner)
+ {
+-	struct iommu_group *group = iommu_group_get(dev);
++	struct iommu_group *group = NULL;
+ 	int ret = 0;
+ 
+-	if (!group)
+-		return -ENODEV;
+ 	if (WARN_ON(!owner))
+ 		return -EINVAL;
+ 
++	group = iommu_group_get(dev);
++	if (!group)
++		return -ENODEV;
++
+ 	mutex_lock(&group->mutex);
+ 	if (group->owner_cnt) {
+ 		if (group->owner != owner) {
+-- 
+2.25.1
 
-See the ticket for more details.
-
-BTW, let me use this mail to also add the report to the list of tracked
-regressions to ensure it's doesn't fall through the cracks:
-
-#regzbot introduced: 201007ef707a8bb
-https://bugzilla.kernel.org/show_bug.cgi?id=216865
-#regzbot ignore-activity
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-
-P.S.: As the Linux kernel's regression tracker I deal with a lot of
-reports and sometimes miss something important when writing mails like
-this. If that's the case here, don't hesitate to tell me in a public
-reply, it's in everyone's interest to set the public record straight.
