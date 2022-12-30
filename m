@@ -1,98 +1,63 @@
-Received: from mail-pg1-f178.google.com (mail-pg1-f178.google.com [209.85.215.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from formenos.hmeau.com (helcar.hmeau.com [216.24.177.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 536077E
-	for <iommu@lists.linux.dev>; Fri, 30 Dec 2022 08:31:32 +0000 (UTC)
-Received: by mail-pg1-f178.google.com with SMTP id h192so8963487pgc.7
-        for <iommu@lists.linux.dev>; Fri, 30 Dec 2022 00:31:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=HPSc5CLczFof6Az09YQrNvJzlEU7+w21O5dXtl4mqyk=;
-        b=lMGhHsMvJXqUL1WfSWtNrtoqQ6vbQ8zSMbNi4ZfLr6yGd+iI9hh2xm4OY8u6H0Go1a
-         CRiG/cfzwsPXQBIKH0SNonLyEto/TmbUZtxEFKTtqIYL66ODBGy0t4WXObCEICe3kDGR
-         8YRC4yRX/fhYyCflh9NNuUvujL/14pnsIISl0GQerrQRob8bRGlyVcutFiYh9C8KUjdL
-         VbiLNF1sse3ZJoGI/Wvw+ZNu4HUap0FfEfHaBX1uNsAkyuEZSVgQ80sj1Q3YLo7rgnLo
-         xZ2pxM4v2cGvbNPgTPF/11XWj/vW70W8z/kP3EnBjVJB+hw4e4VGS+OM3TbIkUvvuOIF
-         EvEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=HPSc5CLczFof6Az09YQrNvJzlEU7+w21O5dXtl4mqyk=;
-        b=Ct99gSMbKXEJh11E9mmaTncLlmIHEjJjUG/Oz4NtshXLRNsUTNJIq8oa02Jn887uLV
-         N1NhWzGJxfQTyoQVAi78CjZ88e0B9aNzpVaVQ4xBjoA8zowapv04VYF4IxcPkDWg8CIu
-         DCkMJZIRqSa0BG9x6CZXr+H+f6zHEou0KxXATSNrxO6ePTN1JNFo22OGKnzaOHJVvjir
-         Rj8uIc4lxwv7kXtnYvFzT+bXBwaF8/7Wvg3ORgYVOpKu+LxsQPsvq5qq1tP+xNn1Nc0e
-         XdfqFO2mdJYRw9SARnan9/k3d11Q150pVtB3NQTKMJO4VOrqRP+/lNqlH8hGcXdXkvcX
-         Xjsg==
-X-Gm-Message-State: AFqh2kpBJ3c6Cu/bzd2YuGVD6oH8VnfU+N4FFzaCACcVbXmYgoJjDHay
-	LBfzfDTX5MH0wGZwaBA6aSI=
-X-Google-Smtp-Source: AMrXdXtJsKuFq/yA8finz6BSFXjWdGZhmxoS70wa6aAQdiMsdDW7v9DTz++wMC4LjcQsJ/9B8bgXLg==
-X-Received: by 2002:a62:404:0:b0:581:91d1:3cc4 with SMTP id 4-20020a620404000000b0058191d13cc4mr8260380pfe.7.1672389091733;
-        Fri, 30 Dec 2022 00:31:31 -0800 (PST)
-Received: from localhost.localdomain ([202.120.234.246])
-        by smtp.googlemail.com with ESMTPSA id 68-20020a621947000000b00580e679dcf2sm10182227pfz.157.2022.12.30.00.31.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Dec 2022 00:31:31 -0800 (PST)
-From: Miaoqian Lin <linmq006@gmail.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Eric Auger <eric.auger@redhat.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Cc: linmq006@gmail.com
-Subject: [PATCH] iommu: Fix refcount leak in iommu_device_claim_dma_owner
-Date: Fri, 30 Dec 2022 12:31:00 +0400
-Message-Id: <20221230083100.1489569-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.25.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 398307E
+	for <iommu@lists.linux.dev>; Fri, 30 Dec 2022 09:38:20 +0000 (UTC)
+Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
+	by formenos.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
+	id 1pBBUj-00CILa-7B; Fri, 30 Dec 2022 17:16:06 +0800
+Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Fri, 30 Dec 2022 17:16:05 +0800
+Date: Fri, 30 Dec 2022 17:16:05 +0800
+From: Herbert Xu <herbert@gondor.apana.org.au>
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: Eric Biggers <ebiggers@kernel.org>, linux-crypto@vger.kernel.org,
+	corbet@lwn.net, will@kernel.org, boqun.feng@gmail.com,
+	mark.rutland@arm.com, catalin.marinas@arm.com, dennis@kernel.org,
+	tj@kernel.org, cl@linux.com, hca@linux.ibm.com, gor@linux.ibm.com,
+	agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+	svens@linux.ibm.com, davem@davemloft.net, tglx@linutronix.de,
+	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+	x86@kernel.org, hpa@zytor.com, joro@8bytes.org,
+	suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
+	dwmw2@infradead.org, baolu.lu@linux.intel.com,
+	Arnd Bergmann <arnd@arndb.de>, penberg@kernel.org,
+	rientjes@google.com, iamjoonsoo.kim@lge.com,
+	Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz,
+	roman.gushchin@linux.dev, 42.hyeyoo@gmail.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, linux-s390@vger.kernel.org,
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org
+Subject: Re: [PATCH 3/3] crypto: x86/ghash - add comment and fix broken link
+Message-ID: <Y66sVbBVtYu8Jll5@gondor.apana.org.au>
+References: <20221220054042.188537-1-ebiggers@kernel.org>
+ <20221220054042.188537-4-ebiggers@kernel.org>
+ <Y6GJzD9PLKj+Ocr2@hirez.programming.kicks-ass.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y6GJzD9PLKj+Ocr2@hirez.programming.kicks-ass.net>
 
-iommu_group_get() returns the group with the reference incremented.
-Move iommu_group_get() after owner check to fix the refcount leak.
+On Tue, Dec 20, 2022 at 11:09:16AM +0100, Peter Zijlstra wrote:
+> On Mon, Dec 19, 2022 at 09:40:42PM -0800, Eric Biggers wrote:
+>
+> > - * http://software.intel.com/en-us/articles/carry-less-multiplication-and-its-usage-for-computing-the-gcm-mode/
+> > + * https://www.intel.com/content/dam/develop/external/us/en/documents/clmul-wp-rev-2-02-2014-04-20.pdf
+> 
+> Since these things have a habbit if changing, we tend to prefer to host
+> a copy on kernel.org somewhere (used to be bugzilla, but perhaps there's
+> a better places these days).
 
-Fixes: 89395ccedbc1 ("iommu: Add device-centric DMA ownership interfaces")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
- drivers/iommu/iommu.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+Alternatively just save a copy at web.archive.org when you submit
+the patch and use that link.  In fact it seems that the original
+link is still available via web.archive.org (sans pictures).
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index de91dd88705b..3a7dd8b61fab 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -3185,14 +3185,16 @@ EXPORT_SYMBOL_GPL(iommu_group_claim_dma_owner);
-  */
- int iommu_device_claim_dma_owner(struct device *dev, void *owner)
- {
--	struct iommu_group *group = iommu_group_get(dev);
-+	struct iommu_group *group = NULL;
- 	int ret = 0;
- 
--	if (!group)
--		return -ENODEV;
- 	if (WARN_ON(!owner))
- 		return -EINVAL;
- 
-+	group = iommu_group_get(dev);
-+	if (!group)
-+		return -ENODEV;
-+
- 	mutex_lock(&group->mutex);
- 	if (group->owner_cnt) {
- 		if (group->owner != owner) {
+Cheers,
 -- 
-2.25.1
-
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
