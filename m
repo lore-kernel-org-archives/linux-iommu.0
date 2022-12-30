@@ -1,81 +1,130 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8C541FAF
-	for <iommu@lists.linux.dev>; Thu, 29 Dec 2022 17:24:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAD65C433EF;
-	Thu, 29 Dec 2022 17:24:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1672334642;
-	bh=XHmLp9yZDI+BKgWJ96JFpf1Pfxo9Zv/tr9yi9QJuKX0=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=mcK3XdXbBpV36VckC+R/1ONh/uy9uKkTBKyERB85jj+dKbOf+YjepFPvWAkAXrI1I
-	 zOAAhEp6/a2toL52Lywi+Dq1l9zy+hVidY9zLxEyWuQ1/P4ZSMwzdRBGl/tKLZZwfA
-	 XfjRsCWQVUnDIGDPeyYqbmH9Tc7l+GXh0U/pAbtXs3uroqE1XN93ZmQilfJEPUU/S+
-	 98oaDSSyOwAAbLEq3Yexn8GanJxR2zU5eUAZsLTKeLJrwVBVNQjnK4K+JPRLp0yR8J
-	 b5HxwzS65RlgWkMZk9E7Mbw1fLJPOvg94N3GvbV8w9UwgSICNuHnq1nw+3Iru7Zaog
-	 iZo6ulTDdBXNw==
-From: Bjorn Andersson <andersson@kernel.org>
-To: joro@8bytes.org,
-	phone-devel@vger.kernel.org,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	will@kernel.org
-Cc: linux-arm-msm@vger.kernel.org,
-	konrad.dybcio@somainline.org,
-	martin.botka@somainline.org,
-	krzysztof.kozlowski+dt@linaro.org,
-	~postmarketos/upstreaming@lists.sr.ht,
-	angelogioacchino.delregno@somainline.org,
-	bhupesh.sharma@linaro.org,
-	dmitry.baryshkov@linaro.org,
-	quic_molvera@quicinc.com,
-	linux-arm-kernel@lists.infradead.org,
-	Douglas Anderson <dianders@chromium.org>,
-	linux-kernel@vger.kernel.org,
-	jami.kettunen@somainline.org,
-	robh+dt@kernel.org,
-	treding@nvidia.com,
-	agross@kernel.org,
-	they@mint.lgbt,
-	konrad.dybcio@linaro.org,
-	robin.murphy@arm.com,
-	devicetree@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: (subset) [PATCH v5 0/4] arm64: dts: qcom: sm6125: Enable APPS SMMU
-Date: Thu, 29 Dec 2022 11:23:39 -0600
-Message-Id: <167233461773.1099840.14120754082491956847.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20221222193254.126925-1-marijn.suijten@somainline.org>
-References: <20221222193254.126925-1-marijn.suijten@somainline.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AE6C1FA8;
+	Fri, 30 Dec 2022 08:19:00 +0000 (UTC)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+	id 1pBAbQ-0003Oo-SD; Fri, 30 Dec 2022 09:18:56 +0100
+Message-ID: <15d0f9ff-2a56-b3e9-5b45-e6b23300ae3b@leemhuis.info>
+Date: Fri, 30 Dec 2022 09:18:56 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Content-Language: en-US, de-DE
+From: Thorsten Leemhuis <regressions@leemhuis.info>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <jroedel@suse.de>, Matt Fagnani <matt.fagnani@bell.net>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ LKML <linux-kernel@vger.kernel.org>,
+ "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+ Linux PCI <linux-pci@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>
+Subject: =?UTF-8?Q?=5bregression=2c_bisected=2c_pci/iommu=5d_Bug=c2=a0216865?=
+ =?UTF-8?Q?_-_Black_screen_when_amdgpu_started_during_6=2e2-rc1_boot_with_AM?=
+ =?UTF-8?Q?D_IOMMU_enabled?=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1672388340;85de40be;
+X-HE-SMSGID: 1pBAbQ-0003Oo-SD
 
-On Thu, 22 Dec 2022 20:32:50 +0100, Marijn Suijten wrote:
-> Add APPS SMMU to SM6125 dtsi and use it in SDHCI/USB nodes.
+Hi, this is your Linux kernel regression tracker speaking.
+
+I noticed a regression report in bugzilla.kernel.org. As many (most?)
+kernel developer don't keep an eye on it, I decided to forward it by
+mail. Quoting from https://bugzilla.kernel.org/show_bug.cgi?id=216865 :
+
+>  Matt Fagnani 2022-12-29 18:39:56 UTC
 > 
-> Changes since v4:
+> I booted the Fedora Rawhide KDE Plasma live image
+> Fedora-KDE-Live-x86_64-Rawhide-20221227.n.0.iso
+> https://koji.fedoraproject.org/koji/buildinfo?buildID=2104562 from a USB
+> flash drive written with Fedora Media Writer on an hp laptop with an
+> integrated Radeon R5 GPU. The system froze with a black screen when
+> amdgpu started during 6.2-rc1 kernel boot. When I booted with quiet rhgb
+> removed from the kernel command line the last line shown before the
+> black screen was
+>
+> kernel: [drm] amdgpu kernel modesetting enabled.
 > 
-> - Use hexadecimal 0x0 for iommu mask;
-> - Add sm6125 to the dt-bindings list without clocks, now depending on:
->   https://lore.kernel.org/linux-arm-kernel/20221222092355.74586-1-krzysztof.kozlowski@linaro.org/
+> This problem happened each of several boots when using the amdgpu
+> driver (the default). This problem didn't happen when I booted the same
+> image using Troubleshooting > Boot Fedora-KDE-Plasma-live in basic
+> graphics mode which used the simpledrm driver and started Plasma on X
+> normally. This problem also didn't happen when I booted the image in a
+> QEMU/KVM VM in GNOME Boxes with 3 GB RAM using the virtio-gpu driver.
 > 
+> The data from the previous boots using live images aren't saved by
+> default so I couldn't get the journal that way as far as I knew. I
+> installed kernel-6.2.0-0.rc1.14.fc38 in my Fedora 37 KDE Plasma
+> installation and reproduced the problem 3 times with quiet rhgb removed
+> from the kernel command line and sysrq_always_enabled drm.debug=14 added
+> to it. I used sysrq+alt+r,s,u,b which rebooted the system so the kernel
+> wasn't completely frozen. The journals from the boots with the problem
+> weren't shown in journalctl. I booted with amdgpu.dc=0 on the kernel
+> command line and the screen froze with the last line
+> kernel: [drm] amdgpu kernel modesetting enabled. and the black
+> screen
+> didn't happen. I booted with drm.debug=94 on the kernel command line and
+> the screen's drm settings were shown repeatedly until I rebooted after
+> 2-3 minutes.
+> 
+> This problem didn't happen with kernel-6.1.0-65.fc38 or earlier in
+> the
+> Fedora Rawhide live image
+> Fedora-KDE-Live-x86_64-Rawhide-20221217.n.0.iso. The first Fedora
+> Rawhide kernel with this problem was
+> 6.2.0-0.rc0.20221215git041fae9c105a.5.fc38, while
+> 6.2.0-0.rc0.20221214gite2ca6ba6ba01.3.fc38 was the last one without the
+> problem. I bisected the mainline kernel between e2ca6ba6ba01 and
+> 041fae9c105a. The first bad commit was the following involving PCI and
+> IOMMUs.
+> 
+> 201007ef707a8bb5592cd07dd46fc9222c48e0b9 is the first bad commit
+> commit 201007ef707a8bb5592cd07dd46fc9222c48e0b9
+> Author: Lu Baolu <baolu.lu@linux.intel.com>
+> Date:   Mon Oct 31 08:59:08 2022 +0800
+> 
+>     PCI: Enable PASID only when ACS RR & UF enabled on upstream path
+>     
+>     The Requester ID/Process Address Space ID (PASID) combination
+>     identifies an address space distinct from the PCI bus address space,
+>     e.g., an address space defined by an IOMMU.
+>     
 > [...]
+> 
+> My system has an AMD IOMMU enabled. When I booted 6.2-rc1 with
+> amd_iommu=off on the kernel command line, the problem didn't happen and
+> the boot completed. There were IOMMU-related errors when amdgpu started
+> with amd_iommu=off. So the problem appears to involve amdgpu not
+> starting properly when the IOMMU is enabled after that change. When I
+> booted with quiet rhgb removed from the kernel command line, I noted
+> that the AMD IOMMU started about 3 seconds before the problem happened
+> when amdgpu started with a line like kernel: AMD-Vi: AMD IOMMUv2 loaded
+> and initialized
+> 
+> I reported this problem at
+> https://gitlab.freedesktop.org/drm/amd/-/issues/2319 where Alex Deucher
+> wrote "Please report this upstream to the IOMMU subsystem:
+> https://bugzilla.kernel.org/" I reported it for Fedora at
+> https://bugzilla.redhat.com/show_bug.cgi?id=2156691
 
-Applied, thanks!
+See the ticket for more details.
 
-[2/4] arm64: dts: qcom: sm6125: Configure APPS SMMU
-      commit: 8ddb4bc3d3b52e0a560a18e4d739c83f56efe7c9
-[3/4] arm64: dts: qcom: sm6125: Add apps_smmu with streamID to SDHCI 1/2 nodes
-      commit: 60f6c86fb4fd16bd86aa1b16bc51ef4ac0e20d4e
-[4/4] arm64: dts: qcom: sm6125: Add IOMMU context to DWC3
-      commit: ac54563c27528ab9461899de7d99ee4e3858b858
+BTW, let me use this mail to also add the report to the list of tracked
+regressions to ensure it's doesn't fall through the cracks:
 
-Best regards,
--- 
-Bjorn Andersson <andersson@kernel.org>
+#regzbot introduced: 201007ef707a8bb
+https://bugzilla.kernel.org/show_bug.cgi?id=216865
+#regzbot ignore-activity
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+
+P.S.: As the Linux kernel's regression tracker I deal with a lot of
+reports and sometimes miss something important when writing mails like
+this. If that's the case here, don't hesitate to tell me in a public
+reply, it's in everyone's interest to set the public record straight.
