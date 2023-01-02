@@ -1,65 +1,110 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0A0C7E
-	for <iommu@lists.linux.dev>; Sat, 31 Dec 2022 13:35:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A23F6C433EF;
-	Sat, 31 Dec 2022 13:35:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1672493703;
-	bh=dUnijUHbgerYaBzn9Rg23kVSkLXe70+EE1pNnR1zUuw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=cHSEUqYKnvGPlARWi/AMAcNkhRPToDn/GslN7uuW7RCqWuaQYIkinrbZS7FQZnSNg
-	 KJvdsv/d106SjzhUn94GO+7gkl7XeUUKYTbOzvZSPF06l6vyeVVFrjnUB83YnlxbJ7
-	 0QgKMIrjv9W/IgRGE3h6V1Jica9hfh4tquR+7iH092UQEBdqprp1cLxtc6mJiqmx7B
-	 pnauiV8ZT94c4SdYOgdZs4EMBN22OtSuiFEOOdWKOetoRrL3sQxGQ9h44j+WSwvjAk
-	 muZa1FADl9+FohPmFi2kYrMf9QUU0BVWMJFaVdq3WeHi2Vz0CBtbKcFOdgExKpe6jP
-	 AhHJtzDcCQ4IA==
-Date: Sat, 31 Dec 2022 21:34:55 +0800
-From: Shawn Guo <shawnguo@kernel.org>
-To: Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc: devicetree@vger.kernel.org, iommu@lists.linux.dev,
-	Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	linux-arm-kernel@lists.infradead.org, Li Yang <leoyang.li@nxp.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH v2 1/2] arm64: dts: ls1028a: declare cache-coherent page
- table walk feature for IOMMU
-Message-ID: <20221231133454.GF6112@T480>
-References: <20221215135636.3684026-1-vladimir.oltean@nxp.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A82CF28EE
+	for <iommu@lists.linux.dev>; Mon,  2 Jan 2023 12:05:03 +0000 (UTC)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+	by mx0b-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 3028Eebh022345;
+	Mon, 2 Jan 2023 11:56:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=x1CQIPTFGI4XvF4eZXRQn4xVZA4mx39SnnoYF2uy778=;
+ b=bxj1RgM0Ic/thEz9uFeDmQlsJLqfPqF89TyZOtkHaq8P3xGWhWxQ7/xHiFc158lVg/5Y
+ FAuzSClKd4mYhYglt/cLq9l8KB96lnY/5jQARatKOhCdaoDg2vlUFxdw2p025JYAQOwQ
+ h1RYKPPV90i3/f2APtXRQ5iDm9xdILf454Jol2tTBIFzfcjLnv5C8cGfGJ4cayz9oiHJ
+ UcAFM6/Ziz69v3wedxFU8ssz7mZz3rSkfetTHeQvrh91gJbpetqxOtr14Bzui0ZWuycy
+ FJybwKUK3MVAPh/y3ShlBpkvyIMx3bCO/vRe9ReTWqZw7vrJXmknurr14wkYK8nyVLjN Qw== 
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3mty10yj31-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 02 Jan 2023 11:56:26 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+	by ppma05fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 30180E11032663;
+	Mon, 2 Jan 2023 11:56:24 GMT
+Received: from smtprelay05.fra02v.mail.ibm.com ([9.218.2.225])
+	by ppma05fra.de.ibm.com (PPS) with ESMTPS id 3mtcq6hrts-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 02 Jan 2023 11:56:24 +0000
+Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
+	by smtprelay05.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 302BuKMn42926418
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 2 Jan 2023 11:56:20 GMT
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 8AB8620043;
+	Mon,  2 Jan 2023 11:56:20 +0000 (GMT)
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 2C0DC2004B;
+	Mon,  2 Jan 2023 11:56:20 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+	by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Mon,  2 Jan 2023 11:56:20 +0000 (GMT)
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>, Gerd Bayer <gbayer@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev,
+        linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        agordeev@linux.ibm.com, svens@linux.ibm.com,
+        linux-kernel@vger.kernel.org, Julian Ruess <julianr@linux.ibm.com>
+Subject: [PATCH v3 1/7] s390/ism: Set DMA coherent mask
+Date: Mon,  2 Jan 2023 12:56:13 +0100
+Message-Id: <20230102115619.2088685-2-schnelle@linux.ibm.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20230102115619.2088685-1-schnelle@linux.ibm.com>
+References: <20230102115619.2088685-1-schnelle@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221215135636.3684026-1-vladimir.oltean@nxp.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: sr0IXvfJQmwYVheqH3Wc8v2N4k7c9ufn
+X-Proofpoint-ORIG-GUID: sr0IXvfJQmwYVheqH3Wc8v2N4k7c9ufn
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2023-01-02_06,2022-12-30_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 suspectscore=0
+ mlxlogscore=971 mlxscore=0 lowpriorityscore=0 malwarescore=0 phishscore=0
+ bulkscore=0 adultscore=0 impostorscore=0 priorityscore=1501 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
+ definitions=main-2301020105
 
-On Thu, Dec 15, 2022 at 03:56:35PM +0200, Vladimir Oltean wrote:
-> The SMMUv2 driver for MMU-500 reads the ARM_SMMU_GR0_ID0 register at
-> probe time and tries to determine based on the CTTW (Coherent
-> Translation Table Walk) bit whether this feature is supported.
-> 
-> Unfortunately, it looks like the SMMU integration in the NXP LS1028A has
-> wrongly tied the cfg_cttw signal to 0, even though the SoC documentation
-> specifies that "The SMMU supports cache coherency for page table walks
-> and DVM transactions for page table cache maintenance operations."
-> 
-> Device tree provides the option of overriding the ID register via the
-> dma-coherent property since commit bae2c2d421cd ("iommu/arm-smmu: Sort
-> out coherency"), and that's what we do here.
-> 
-> Telling struct io_pgtable_cfg that the SMMU page table walks are
-> coherent with the CPU caches brings performance benefits, because it
-> avoids certain operations such as __arm_lpae_sync_pte() for PTE updates.
-> 
-> Link: https://lore.kernel.org/linux-iommu/3f3112e4-65ff-105d-8cd7-60495ec9054a@arm.com/
-> Suggested-by: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+A future change will convert the DMA API implementation from the
+architecture specific arch/s390/pci/pci_dma.c to using the common code
+drivers/iommu/dma-iommu.c which the utilizes the same IOMMU hardware
+through the s390-iommu driver. Unlike the s390 specific DMA API this
+requires devices to correctly call set the coherent mask to be allowed
+to use IOVAs >2^32 in dma_alloc_coherent(). This was however not done
+for ISM devices. ISM requires such addresses since currently the DMA
+aperture for PCI devices starts at 2^32 and all calls to
+dma_alloc_coherent() would thus fail.
 
-Applied both, thanks!
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+---
+v1 -> v2:
+- Use dma_set_mask_and_coherent() (Christoph Hellwig)
+
+ drivers/s390/net/ism_drv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/s390/net/ism_drv.c b/drivers/s390/net/ism_drv.c
+index dfd401d9e362..aba03b613296 100644
+--- a/drivers/s390/net/ism_drv.c
++++ b/drivers/s390/net/ism_drv.c
+@@ -557,7 +557,7 @@ static int ism_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	if (ret)
+ 		goto err_disable;
+ 
+-	ret = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64));
++	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+ 	if (ret)
+ 		goto err_resource;
+ 
+-- 
+2.34.1
+
