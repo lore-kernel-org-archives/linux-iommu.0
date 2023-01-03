@@ -1,173 +1,107 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67F2A5667
-	for <iommu@lists.linux.dev>; Mon,  2 Jan 2023 18:25:52 +0000 (UTC)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 302IIprG022715;
-	Mon, 2 Jan 2023 18:25:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=xyRjw0Wo2CFFlkXuVTCQ/L+itXir78Z0mpr1AfKePgI=;
- b=sufAtXimIAEFNLzc/5eha0sn19ZL+xovWPFUWo+KXy1LC4eARpfyEothkhg4xW79+uHc
- 6ng0VzqIl1wSbJdVQDAim9VJqqXj4H+rxJ35roW1d65j6c6LHMZDmGx5V235hUfUz2px
- jLd2ODwMIzXh5wGzpMAT8jXySlmN6xUd/AkELfH9kUATQuMstYdb14hxSPeYUo0lfuS3
- 4BJpujcq4YKsiTircEdBWu2QvxaOzmALP17QO1QfHmmkZqymg77aM2+PRjvsMI2yu4Mh
- 5PCGhU5Mx1jm6uLinrFF+bP5CK1yF0EUn8DAE/34rMEqQcaQwm2/bUVjK8Ic5i5w9F1w GQ== 
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3mv44u88bb-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 02 Jan 2023 18:25:29 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-	by ppma04ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 302GHPNb021827;
-	Mon, 2 Jan 2023 18:25:28 GMT
-Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
-	by ppma04ams.nl.ibm.com (PPS) with ESMTPS id 3mtcq6as7b-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 02 Jan 2023 18:25:27 +0000
-Received: from smtpav01.fra02v.mail.ibm.com (smtpav01.fra02v.mail.ibm.com [10.20.54.100])
-	by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 302IPOpR47448336
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 2 Jan 2023 18:25:24 GMT
-Received: from smtpav01.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 3992C20043;
-	Mon,  2 Jan 2023 18:25:24 +0000 (GMT)
-Received: from smtpav01.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 3F3F720040;
-	Mon,  2 Jan 2023 18:25:23 +0000 (GMT)
-Received: from [9.179.24.9] (unknown [9.179.24.9])
-	by smtpav01.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Mon,  2 Jan 2023 18:25:23 +0000 (GMT)
-Message-ID: <2f1beb15-e9e4-d8ab-1b68-c83f1a53c5c5@linux.ibm.com>
-Date: Mon, 2 Jan 2023 19:25:22 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEE837F;
+	Tue,  3 Jan 2023 01:09:08 +0000 (UTC)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+	by mailout.west.internal (Postfix) with ESMTP id AA81E3200913;
+	Mon,  2 Jan 2023 20:09:06 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Mon, 02 Jan 2023 20:09:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+	cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
+	:message-id:mime-version:reply-to:sender:subject:subject:to:to;
+	 s=fm3; t=1672708146; x=1672794546; bh=frVBfqgdXyytW4RDcsNsr65XW
+	bIE8IRHvES+ci0D9gk=; b=TbcNQ6hMRQ0js7MXzWW/XTV0UCtSym6MDqyCGKWSO
+	iE7WvW/paXk/HtvkQrNJ+EZLKY4Hg1kkZWdSxz9B/d5mHOwksUHco4JI9bYrM9gx
+	ZbV3TNjMXQBOBm5fbpgh8yHaEiMf68RUmzzgo5JUZ55WV9QsVQ6h5TqAwM7/8Duu
+	ynMjxXhPrR835PmjojpXfa9J1Llpq5oNpvuiucEziWK+KWeuy0rZgvF3QL6KnHtd
+	DhX7hOnxwmPdxs1q/fFadcXmgswt9Z/QPcTxnp8CzCG1O9NSd9nx3YmYXQuYs789
+	6LQtmv5Dk7+9MRFIZ6F2fZbygb6/hckbWtgXD4jPv2+KQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:message-id
+	:mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+	:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
+	1672708146; x=1672794546; bh=frVBfqgdXyytW4RDcsNsr65XWbIE8IRHvES
+	+ci0D9gk=; b=H3+bytyQighzU75PalWI9Uc+ZVdCAoTS6wDS8ONekmGfvArKteG
+	TMI9UR4hR96V7sfddq3/5F+oVALiAHomElZVGya+iWwwLURlBqedHJA2SVo5CRxp
+	NZA0YUIO83QOs3Vvz4giBtjYEefQhZNMuNFlw195uYPnpLk+nuAsXehVcuXUzQcG
+	ruiETmgIYumrwadvP3H/akBRjGVc7Un+YiIsj4bxY+O7FkhAMbwnjM17eOP2scIO
+	ON3nhv+Rb3DvrifbDrCgwghVgepDEXFaJKd9gtynabHKzyW4vptYUU8hxYg1sCbs
+	+CBb0Bpr0Vf4R1/LUMyGsBvNKyZRDzhcQZw==
+X-ME-Sender: <xms:MYCzY4chcK9aPrGiDc1M6mQiBBdnDtnZXWRKRP2CJaDNSsAcVLSM_Q>
+    <xme:MYCzY6OsR7PQkCisJKesEcpLkRmvSewtJCU1uOp_stMnxIdduJJjp4HfdRmLoqmeF
+    30nZB-uqSTPMIn1nA>
+X-ME-Received: <xmr:MYCzY5hLQzJBIdYZdcCZPHefBzzHwa9CMZkkzD5FtLkkNm8XXjXV6fnaVKgVIi9ivoFCwjy4ZCUXveoe6pOvSmEChuM3hVrB5w0LlTHhxJ_Ad-WBn0K5luLo7z_b4MPH-mVN2g>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrjeefgdeffecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgvlhcu
+    jfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtffrrg
+    htthgvrhhnpeekheffteehtdetfffgfeetteejvdefleeuvedufffguedtjedvheelvddv
+    fffhveenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivg
+    eptdenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehshhholhhlrghnugdr
+    ohhrgh
+X-ME-Proxy: <xmx:MYCzY98rlaFHqgdsIqR3G8SSgmIiglY_3ViHRAo64It5XsSPmPIMHQ>
+    <xmx:MYCzY0vMxeEKicSGbfapf2P2Ln_w1um7HeZBkD5Du4q5Tq5gIzWfuQ>
+    <xmx:MYCzY0H6zbYfBGIYiSUWZGxFcm79aJheVR7WSSdy9Q9E4KP-0TRW6Q>
+    <xmx:MoCzY1E4x_YztRQAtpqcWYWn0PgyP3tq8L-y7cn0diLfiMZ9bwPVeA>
+Feedback-ID: i0ad843c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 2 Jan 2023 20:09:04 -0500 (EST)
+From: Samuel Holland <samuel@sholland.org>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Chen-Yu Tsai <wens@csie.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Rob Herring <robh+dt@kernel.org>
+Cc: iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-sunxi@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Maxime Ripard <mripard@kernel.org>,
+	Samuel Holland <samuel@sholland.org>
+Subject: [PATCH v2 0/6] iommu/sun50i: Allwinner D1 support
+Date: Mon,  2 Jan 2023 19:08:57 -0600
+Message-Id: <20230103010903.11181-1-samuel@sholland.org>
+X-Mailer: git-send-email 2.37.4
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.6.1
-Subject: Re: [PATCH v3 2/7] iommu: Allow .iotlb_sync_map to fail and handle
- s390's -ENOMEM return
-Content-Language: en-US
-To: Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Jason Gunthorpe <jgg@nvidia.com>, Wenjia Zhang <wenjia@linux.ibm.com>
-Cc: Matthew Rosato <mjrosato@linux.ibm.com>,
-        Gerd Bayer
- <gbayer@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev,
-        linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        agordeev@linux.ibm.com, svens@linux.ibm.com,
-        linux-kernel@vger.kernel.org, Julian Ruess <julianr@linux.ibm.com>
-References: <20230102115619.2088685-1-schnelle@linux.ibm.com>
- <20230102115619.2088685-3-schnelle@linux.ibm.com>
-From: Alexandra Winter <wintera@linux.ibm.com>
-In-Reply-To: <20230102115619.2088685-3-schnelle@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: tZGRnBv8dcmi0mWG7BD-VJl5yDQrg3lA
-X-Proofpoint-GUID: tZGRnBv8dcmi0mWG7BD-VJl5yDQrg3lA
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2023-01-02_11,2022-12-30_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- lowpriorityscore=0 malwarescore=0 spamscore=0 adultscore=0 phishscore=0
- impostorscore=0 bulkscore=0 mlxlogscore=999 clxscore=1015
- priorityscore=1501 mlxscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2212070000 definitions=main-2301020159
+Content-Transfer-Encoding: 8bit
 
+D1 is a RISC-V SoC from Allwinner's sunxi family. This series adds IOMMU
+binding and driver support. The RISC-V architecture code still needs
+some small updates to use an IOMMU for DMA[1][2]. I will send those
+separately.
 
+[1]: https://lore.kernel.org/linux-riscv/20220428010401.11323-1-samuel@sholland.org/
+[2]: https://lore.kernel.org/linux-riscv/7b09e989-0aa1-a557-485e-572f69caf881@arm.com/
 
-On 02.01.23 12:56, Niklas Schnelle wrote:
-> On s390 .iotlb_sync_map is used to sync mappings to an underlying
-> hypervisor by letting the hypervisor inspect the synced IOVA range and
-> updating its shadow table. This however means that it can fail as the
-> hypervisor may run out of resources. This can be due to the hypervisor
-> being unable to pin guest pages, due to a limit on concurrently mapped
-> addresses such as vfio_iommu_type1.dma_entry_limit or other resources.
-> Either way such a failure to sync a mapping should result in
-> a DMA_MAPPING_EROR.
-> 
-> Now especially when running with batched IOTLB flushes for unmap it may
-> be that some IOVAs have already been invalidated but not yet synced via
-> .iotlb_sync_map. Thus if the hypervisor indicates running out of
-> resources, first do a global flush allowing the hypervisor to free
-> resources associated with these mappings and only if that also fails
-> report this error to callers.
-> 
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> ---
-Just a small typo, I noticed
-[...]
-> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-> index ed33c6cce083..6ba38b4f5b37 100644
-> --- a/drivers/iommu/s390-iommu.c
-> +++ b/drivers/iommu/s390-iommu.c
-> @@ -210,6 +210,14 @@ static void s390_iommu_release_device(struct device *dev)
->  		__s390_iommu_detach_device(zdev);
->  }
->  
-> +
-> +static int zpci_refresh_all(struct zpci_dev *zdev)
-> +{
-> +	return zpci_refresh_trans((u64)zdev->fh << 32, zdev->start_dma,
-> +				  zdev->end_dma - zdev->start_dma + 1);
-> +
-> +}
-> +
->  static void s390_iommu_flush_iotlb_all(struct iommu_domain *domain)
->  {
->  	struct s390_domain *s390_domain = to_s390_domain(domain);
-> @@ -217,8 +225,7 @@ static void s390_iommu_flush_iotlb_all(struct iommu_domain *domain)
->  
->  	rcu_read_lock();
->  	list_for_each_entry_rcu(zdev, &s390_domain->devices, iommu_list) {
-> -		zpci_refresh_trans((u64)zdev->fh << 32, zdev->start_dma,
-> -				   zdev->end_dma - zdev->start_dma + 1);
-> +		zpci_refresh_all(zdev);
->  	}
->  	rcu_read_unlock();
->  }
-> @@ -242,20 +249,32 @@ static void s390_iommu_iotlb_sync(struct iommu_domain *domain,
->  	rcu_read_unlock();
->  }
->  
-> -static void s390_iommu_iotlb_sync_map(struct iommu_domain *domain,
-> +static int s390_iommu_iotlb_sync_map(struct iommu_domain *domain,
->  				      unsigned long iova, size_t size)
->  {
->  	struct s390_domain *s390_domain = to_s390_domain(domain);
->  	struct zpci_dev *zdev;
-> +	int ret = 0;
->  
->  	rcu_read_lock();
->  	list_for_each_entry_rcu(zdev, &s390_domain->devices, iommu_list) {
->  		if (!zdev->tlb_refresh)
->  			continue;
-> -		zpci_refresh_trans((u64)zdev->fh << 32,
-> -				   iova, size);
-> +		ret = zpci_refresh_trans((u64)zdev->fh << 32,
-> +					 iova, size);
-> +		/*
-> +		 * let the hypervisor disover invalidated entries
-			typo: s/disover/discover/g
-> +		 * allowing it to free IOVAs and unpin pages
-> +		 */
-> +		if (ret == -ENOMEM) {
-> +			ret = zpci_refresh_all(zdev);
-> +			if (ret)
-> +				break;
-> +		}
->  	}
->  	rcu_read_unlock();
-> +
-> +	return ret;
->  }
->  
->  static int s390_iommu_validate_trans(struct s390_domain *s390_domain,
-[...]
+Changes in v2:
+ - Disallow the 'resets' property for the D1 variant
+ - Set bypass based on attached devices instead of using a fixed value
+
+Samuel Holland (6):
+  dt-bindings: iommu: sun50i: Add compatible for Allwinner D1
+  iommu/sun50i: Track masters attached to the domain
+  iommu/sun50i: Keep the bypass register up to date
+  iommu/sun50i: Support variants without an external reset
+  iommu/sun50i: Add support for the D1 variant
+  riscv: dts: allwinner: d1: Add the IOMMU node
+
+ .../iommu/allwinner,sun50i-h6-iommu.yaml      | 20 +++++-
+ .../boot/dts/allwinner/sunxi-d1s-t113.dtsi    | 10 +++
+ drivers/iommu/sun50i-iommu.c                  | 68 ++++++++++++++-----
+ 3 files changed, 79 insertions(+), 19 deletions(-)
+
+-- 
+2.37.4
+
