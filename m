@@ -1,48 +1,48 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 031A88483
-	for <iommu@lists.linux.dev>; Tue,  3 Jan 2023 16:29:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC803362
+	for <iommu@lists.linux.dev>; Tue,  3 Jan 2023 16:35:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1672763369; x=1704299369;
+  t=1672763717; x=1704299717;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
   bh=YGmCRw23hc83hc1Hm9zD3o3OuJY1E8OGzBfqIp9cLms=;
-  b=K1S6kvauGfXvyq9j/AEUpOdxQL27xEqZ+E3Pcq0UDHzAY357P4ZmBqVp
-   zlJHLQxmOWJF5FINAgu/VP0Ee5vFwNaj8JTT+gW93DKBuhrukeifWXWN7
-   qBptZuG/5C33lRqo/EUkvSFOh6Q/VbI1W0PDiwupL4LTnoJ1pwDAPeScr
-   xqw9F9xmVpKZ+snW4OBNB/rtZe9jUazQZwzRBydMoKA4ez+K3YreDC7y2
-   CZ+cZf65E+e8Z3GG0lhOmwwxr+BB/Yx24mdaTNRjw2zR19QGK5RgSKmOs
-   5296gVFHVxNIahhQhyXiA1jYcXjzBIr4rWKKjN+/bKOP7lsrTT8hgqJF9
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="320406127"
+  b=W8cbNWOPw8eRD7StDEOgP6EOOi/ZjPJjt+64HYtwCzoviBbD4cIJozx5
+   zlCitzmAJVqlofMzDs3Z0eNwgZb7Lez9pbqzPly3hLrLVwW7CNgHmgVdU
+   s9nI9PoFQbIq9ZoNssglamd39lbcHksd2yoA23VIowbk4Yv/pMVKpDX6X
+   lefPpB/oj1U6rnmm+W2VqAT0YTdxow92Gdd17SVfX/Q0jCEj58a62swwH
+   CJCRL1okxFPuTeXNz/d4533wcHbmZtIuUI1sCMB8XbFeR+RHC/Z0QjB4W
+   q/F98IYI7uMhsl3svp+9J4RCCZl5s/GHMLYbepYpCiwjG2uOb0nqWmGjW
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="302072323"
 X-IronPort-AV: E=Sophos;i="5.96,297,1665471600"; 
-   d="scan'208";a="320406127"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jan 2023 08:29:25 -0800
+   d="scan'208";a="302072323"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jan 2023 08:35:14 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="983608221"
+X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="604858514"
 X-IronPort-AV: E=Sophos;i="5.96,297,1665471600"; 
-   d="scan'208";a="983608221"
+   d="scan'208";a="604858514"
 Received: from fyu1.sc.intel.com ([172.25.103.126])
-  by fmsmga005.fm.intel.com with ESMTP; 03 Jan 2023 08:29:25 -0800
+  by orsmga003.jf.intel.com with ESMTP; 03 Jan 2023 08:35:13 -0800
 From: Fenghua Yu <fenghua.yu@intel.com>
 To: "Vinod Koul" <vkoul@kernel.org>,
-	devejiang
+	"Dave Jiang" <dave.jiang@intel.com>
 Cc: "Fenghua Yu" <fenghua.yu@intel.com>,
-	Dave Jiang <dave.jiang@intel.com>,
+	dmaengine@vger.kernel.org,
 	Tony Zhu <tony.zhu@intel.com>,
 	Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
 	iommu@lists.linux.dev
 Subject: [PATCH 08/17] iommu: expose iommu_sva_find() to common header
-Date: Tue,  3 Jan 2023 08:29:11 -0800
-Message-Id: <20230103162920.1569002-9-fenghua.yu@intel.com>
+Date: Tue,  3 Jan 2023 08:34:56 -0800
+Message-Id: <20230103163505.1569356-9-fenghua.yu@intel.com>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20230103162920.1569002-1-fenghua.yu@intel.com>
-References: <20230103162920.1569002-1-fenghua.yu@intel.com>
+In-Reply-To: <20230103163505.1569356-1-fenghua.yu@intel.com>
+References: <20230103163505.1569356-1-fenghua.yu@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
