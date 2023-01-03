@@ -1,102 +1,128 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 89CE0362
-	for <iommu@lists.linux.dev>; Tue,  3 Jan 2023 16:40:10 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 819861516;
-	Tue,  3 Jan 2023 08:40:51 -0800 (PST)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 804AE3F71A;
-	Tue,  3 Jan 2023 08:40:07 -0800 (PST)
-Message-ID: <832f3200-77ac-1ee0-e1b5-5f56353cba36@arm.com>
-Date: Tue, 3 Jan 2023 16:39:59 +0000
+Received: from wnew1-smtp.messagingengine.com (wnew1-smtp.messagingengine.com [64.147.123.26])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18635362
+	for <iommu@lists.linux.dev>; Tue,  3 Jan 2023 16:50:26 +0000 (UTC)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+	by mailnew.west.internal (Postfix) with ESMTP id 36F072B06721;
+	Tue,  3 Jan 2023 11:50:23 -0500 (EST)
+Received: from imap51 ([10.202.2.101])
+  by compute6.internal (MEProxy); Tue, 03 Jan 2023 11:50:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:sender:subject
+	:subject:to:to; s=fm2; t=1672764622; x=1672771822; bh=OAEx+kWOpU
+	s1ovkCOUPYt4BrguZtb4ZebjcqYHg4/yk=; b=SAmVbdnFaBzWfpnFGzV4NSDsrp
+	w/oJNVKvqGJxgxv+5cuJf5nW1Un9vV0Dp+Wz/8PRNAPQi9a6E9iB6P7fPKvjIxDc
+	sL4HDcHtwrl7pXHk7V3MgPQWqu05FxSbB9sUvpWN9KKGs4x8vL+qIY/u0O2fp32A
+	WAqTXa3KI/HWcNdqPcB+rYggrEcH15MpJ6Rkc4JPKXgau/UtLCWzNDxTa3kwfqeV
+	zzXlg1coYrCQvujOFEC7eWm3ZTrIXSENwnHXqfIt0HR4tRDATgdIYXJK/5Nklyc9
+	aK1RL7dvFw5nAF9DzxYqmKbi/kWMx9keHmBbHeA7s/EWyr+VxGNjwhtKapYA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+	:feedback-id:from:from:in-reply-to:in-reply-to:message-id
+	:mime-version:references:reply-to:sender:subject:subject:to:to
+	:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+	fm2; t=1672764622; x=1672771822; bh=OAEx+kWOpUs1ovkCOUPYt4BrguZt
+	b4ZebjcqYHg4/yk=; b=Os1ym1lstngE1yum7vioqidaf0tpUcIIddLV9oaWSOfr
+	Bp/LOs8s1eDc1lv7yge46iL+oTo/wMkxx27m9Yc6N3aV2TFIrYSkjiZdPQ8Dixm+
+	MdtzUXOxkrF8n3jv67bTVLyIeEpdtwhZZbr6DRy6eSsxHEeLTvrwGMCkx5wOQru3
+	LcNlUNWCaMJK5m1qqNpuLPnUa66cfWOJJRIOlVox9K7/RRqPZ9SJl0dYQTo66EU5
+	cPPwriRMEe+ZdKHvf4o8MaE+JiGSbpGlrJv8+wqaIVkBvWZfTB6lLcEQvdFquzkx
+	fChHnH7XWHxMTXIIMydoHXwDKugKo6A7KVet7ij5Nw==
+X-ME-Sender: <xms:zVy0Y_OMAKlPmEOZgHU3a6aRFfK4FxfhdvwVIklHrp_YRo8o61lqRQ>
+    <xme:zVy0Y59x2GX8W2BoN-3zVKBdj25Ajq9AP-OrqTzquZvM2wI-7Ix0NtTzj27YrKddM
+    tZvWCMnOIl-fW65cx4>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrjeeggdelfecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdetrhhn
+    ugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrghtth
+    gvrhhnpefhfeehgfejkedugeeutdffveehheeugfehgeelleefudeluedtgfejffeihffh
+    heenucffohhmrghinhepkhgvrhhnvghlrdhorhhgpdguvggsihgrnhdrohhrghenucevlh
+    hushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrhhnugesrghr
+    nhgusgdruggv
+X-ME-Proxy: <xmx:zVy0Y-SSMWtvnv9ZxmJhry6mi4BiUHZLH8otfjVaL1ZvtYqw_HgNxg>
+    <xmx:zVy0YzvPJ5VhbjYKcO9WXl04J_Mdvuydp68lACKnB0sC0DcdlpA9uw>
+    <xmx:zVy0Y3cCyrZtBDo3MJ4Hdt1EHAWboT_3ZNKcff2QNMqRJXhlhsucqg>
+    <xmx:zly0Y2fTU14izRdahtJutvIauGNC4i8YnSE3hUn7fbjaIA917RmO5fEWBSI>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id 465BAB60086; Tue,  3 Jan 2023 11:50:21 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-1185-g841157300a-fm-20221208.002-g84115730
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH v2 2/3] iommu/sound: Use component_match_add_of helper
-Content-Language: en-GB
-To: Maxime Ripard <maxime@cerno.tech>
-Cc: Sean Anderson <sean.anderson@seco.com>, David Airlie <airlied@gmail.com>,
- Daniel Vetter <daniel@ffwll.ch>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Thomas Zimmermann <tzimmermann@suse.de>, dri-devel@lists.freedesktop.org,
- linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
- Jaroslav Kysela <perex@perex.cz>, Joerg Roedel <joro@8bytes.org>,
- Liam Girdwood <lgirdwood@gmail.com>,
- Matthias Brugger <matthias.bgg@gmail.com>, Takashi Iwai <tiwai@suse.com>,
- Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
- alsa-devel@alsa-project.org, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
-References: <20221222233759.1934852-1-sean.anderson@seco.com>
- <20221222233759.1934852-3-sean.anderson@seco.com>
- <7897d4a6-bf43-becd-3437-7a254f38f6be@arm.com>
- <20230103161550.4tui3ihl65olvkd7@houat>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20230103161550.4tui3ihl65olvkd7@houat>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+Message-Id: <8fea3494-1d1f-4f64-b525-279152cf430b@app.fastmail.com>
+In-Reply-To: <Y7RVkjDC3EjQUCzM@FVFF77S0Q05N>
+References: <20221219153525.632521981@infradead.org>
+ <20221219154119.154045458@infradead.org> <Y6DEfQXymYVgL3oJ@boqun-archlinux>
+ <Y6GXoO4qmH9OIZ5Q@hirez.programming.kicks-ass.net>
+ <Y7QszyTEG2+WiI/C@FVFF77S0Q05N> <Y7Q1uexv6DrxCASB@FVFF77S0Q05N>
+ <Y7RVkjDC3EjQUCzM@FVFF77S0Q05N>
+Date: Tue, 03 Jan 2023 17:50:00 +0100
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Mark Rutland" <mark.rutland@arm.com>,
+ "Peter Zijlstra" <peterz@infradead.org>
+Cc: "Boqun Feng" <boqun.feng@gmail.com>,
+ "Linus Torvalds" <torvalds@linux-foundation.org>,
+ "Jonathan Corbet" <corbet@lwn.net>, "Will Deacon" <will@kernel.org>,
+ "Catalin Marinas" <catalin.marinas@arm.com>, dennis@kernel.org,
+ "Tejun Heo" <tj@kernel.org>, "Christoph Lameter" <cl@linux.com>,
+ "Heiko Carstens" <hca@linux.ibm.com>, gor@linux.ibm.com,
+ "Alexander Gordeev" <agordeev@linux.ibm.com>, borntraeger@linux.ibm.com,
+ svens@linux.ibm.com, "Herbert Xu" <herbert@gondor.apana.org.au>,
+ "David S . Miller" <davem@davemloft.net>,
+ "Thomas Gleixner" <tglx@linutronix.de>, "Ingo Molnar" <mingo@redhat.com>,
+ "Borislav Petkov" <bp@alien8.de>,
+ "Dave Hansen" <dave.hansen@linux.intel.com>, x86@kernel.org,
+ "H. Peter Anvin" <hpa@zytor.com>, joro@8bytes.org,
+ suravee.suthikulpanit@amd.com, "Robin Murphy" <robin.murphy@arm.com>,
+ dwmw2@infradead.org, baolu.lu@linux.intel.com,
+ "Pekka Enberg" <penberg@kernel.org>,
+ "David Rientjes" <rientjes@google.com>,
+ "Joonsoo Kim" <iamjoonsoo.kim@lge.com>,
+ "Andrew Morton" <akpm@linux-foundation.org>,
+ "Vlastimil Babka" <vbabka@suse.cz>,
+ "Roman Gushchin" <roman.gushchin@linux.dev>,
+ "Hyeonggon Yoo" <42.hyeyoo@gmail.com>, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+ linux-s390@vger.kernel.org, linux-crypto@vger.kernel.org,
+ iommu@lists.linux.dev, Linux-Arch <linux-arch@vger.kernel.org>
+Subject: Re: [RFC][PATCH 05/12] arch: Introduce arch_{,try_}_cmpxchg128{,_local}()
+Content-Type: text/plain
 
-On 03/01/2023 4:15 pm, Maxime Ripard wrote:
-> Hi Robin,
-> 
-> On Tue, Jan 03, 2023 at 01:01:07PM +0000, Robin Murphy wrote:
->> Hi Sean,
->>
->> On 22/12/2022 11:37 pm, Sean Anderson wrote:
->>> Convert users of component_match_add_release with component_release_of
->>> and component_compare_of to component_match_add_of.
->>>
->>> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
->>> Acked-by: Mark Brown <broonie@kernel.org>
->>> ---
->>>
->>> Changes in v2:
->>> - Split off from helper addition
->>>
->>>    drivers/iommu/mtk_iommu.c    | 3 +--
->>>    drivers/iommu/mtk_iommu_v1.c | 3 +--
->>>    sound/soc/codecs/wcd938x.c   | 6 ++----
->>>    3 files changed, 4 insertions(+), 8 deletions(-)
->>>
->>> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
->>> index 2ab2ecfe01f8..483b7a9e4410 100644
->>> --- a/drivers/iommu/mtk_iommu.c
->>> +++ b/drivers/iommu/mtk_iommu.c
->>> @@ -1079,8 +1079,7 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
->>>    		}
->>>    		data->larb_imu[id].dev = &plarbdev->dev;
->>> -		component_match_add_release(dev, match, component_release_of,
->>> -					    component_compare_of, larbnode);
->>> +		component_match_add_of(dev, match, larbnode);
->>
->> I've long since given up trying to make sense of how the DRM tree works, but
->> the conflicting change is definitely already in mainline:
->>
->> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit?id=b5765a1b44bea9dfcae69c53ffeb4c689d0922a7
-> 
-> As far as I can see, that patch doesn't affect DRM at all, and the
-> commit you pointed to doesn't either, nor has it been merged through the
-> DRM tree.
+On Tue, Jan 3, 2023, at 17:19, Mark Rutland wrote:
+> On Tue, Jan 03, 2023 at 02:03:37PM +0000, Mark Rutland wrote:
+>> On Tue, Jan 03, 2023 at 01:25:35PM +0000, Mark Rutland wrote:
+>> > On Tue, Dec 20, 2022 at 12:08:16PM +0100, Peter Zijlstra wrote:
 
-Right it doesn't affect DRM, and was merged via the IOMMU tree, but it 
-does affect *this* patch, which Sean has based on a drm-next branch that 
-seemingly still wasn't up to date with 6.2-rc1 at the time.
+>> ... makes GCC much happier:
+>
+>> ... I'll go check whether clang is happy with that, and how far back that can
+>> go, otherwise we'll need to blat the high half with a separate constaint that
+>> (ideally) doesn't end up allocating a pointless address register.
+>
+> Hmm... from the commit history it looks like GCC prior to 5.1 might not be
+> happy with that, but that *might* just be if we actually do arithmetic on the
+> value, and we might be ok just using it for memroy effects. I can't currently
+> get such an old GCC to run on my machines so I haven't been able to check.
 
-Since v2 had already been posted, it seemed like a bright idea to 
-comment here to clarify that it was still relevant, rather than bumping 
-the old thread to reply directly. Apologies for any confusion.
+gcc-5.1 is the oldest (barely) supported compiler, the minimum was
+last raised from gcc-4.9 in linux-5.15. If only gcc-4.9 and older are
+affected, we're good on mainline but may still want a fix for stable
+kernels.
 
-In practical terms I think it's merely a case of dropping this hunk; the 
-other one in mtk_iommu_v1.c looks fine to me.
+I checked that the cross-compiler binaries from [1] still work, but I noticed
+that this version is missing the native aarch64-to-aarch64 compiler (x86 to
+aarch64 and vice versa are there), and you need to install libmpfr4 [2]
+as a dependency. The newer compilers (6.5.0 and up) don't have these problems.
 
-Cheers,
-Robin.
+     Arnd
 
-> Can you expand a bit on how we're involved in this, what we should
-> clarify or help with?
-> 
-> Maxime
+[1] https://mirrors.edge.kernel.org/pub/tools/crosstool/files/bin/arm64/5.5.0/
+[2] http://ftp.uk.debian.org/debian/pool/main/m/mpfr4/libmpfr4_3.1.5-1_arm64.deb
