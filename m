@@ -1,112 +1,102 @@
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC803362
-	for <iommu@lists.linux.dev>; Tue,  3 Jan 2023 16:35:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1672763717; x=1704299717;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=YGmCRw23hc83hc1Hm9zD3o3OuJY1E8OGzBfqIp9cLms=;
-  b=W8cbNWOPw8eRD7StDEOgP6EOOi/ZjPJjt+64HYtwCzoviBbD4cIJozx5
-   zlCitzmAJVqlofMzDs3Z0eNwgZb7Lez9pbqzPly3hLrLVwW7CNgHmgVdU
-   s9nI9PoFQbIq9ZoNssglamd39lbcHksd2yoA23VIowbk4Yv/pMVKpDX6X
-   lefPpB/oj1U6rnmm+W2VqAT0YTdxow92Gdd17SVfX/Q0jCEj58a62swwH
-   CJCRL1okxFPuTeXNz/d4533wcHbmZtIuUI1sCMB8XbFeR+RHC/Z0QjB4W
-   q/F98IYI7uMhsl3svp+9J4RCCZl5s/GHMLYbepYpCiwjG2uOb0nqWmGjW
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="302072323"
-X-IronPort-AV: E=Sophos;i="5.96,297,1665471600"; 
-   d="scan'208";a="302072323"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jan 2023 08:35:14 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="604858514"
-X-IronPort-AV: E=Sophos;i="5.96,297,1665471600"; 
-   d="scan'208";a="604858514"
-Received: from fyu1.sc.intel.com ([172.25.103.126])
-  by orsmga003.jf.intel.com with ESMTP; 03 Jan 2023 08:35:13 -0800
-From: Fenghua Yu <fenghua.yu@intel.com>
-To: "Vinod Koul" <vkoul@kernel.org>,
-	"Dave Jiang" <dave.jiang@intel.com>
-Cc: "Fenghua Yu" <fenghua.yu@intel.com>,
-	dmaengine@vger.kernel.org,
-	Tony Zhu <tony.zhu@intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev
-Subject: [PATCH 08/17] iommu: expose iommu_sva_find() to common header
-Date: Tue,  3 Jan 2023 08:34:56 -0800
-Message-Id: <20230103163505.1569356-9-fenghua.yu@intel.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20230103163505.1569356-1-fenghua.yu@intel.com>
-References: <20230103163505.1569356-1-fenghua.yu@intel.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 89CE0362
+	for <iommu@lists.linux.dev>; Tue,  3 Jan 2023 16:40:10 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 819861516;
+	Tue,  3 Jan 2023 08:40:51 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 804AE3F71A;
+	Tue,  3 Jan 2023 08:40:07 -0800 (PST)
+Message-ID: <832f3200-77ac-1ee0-e1b5-5f56353cba36@arm.com>
+Date: Tue, 3 Jan 2023 16:39:59 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH v2 2/3] iommu/sound: Use component_match_add_of helper
+Content-Language: en-GB
+To: Maxime Ripard <maxime@cerno.tech>
+Cc: Sean Anderson <sean.anderson@seco.com>, David Airlie <airlied@gmail.com>,
+ Daniel Vetter <daniel@ffwll.ch>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Thomas Zimmermann <tzimmermann@suse.de>, dri-devel@lists.freedesktop.org,
+ linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+ Jaroslav Kysela <perex@perex.cz>, Joerg Roedel <joro@8bytes.org>,
+ Liam Girdwood <lgirdwood@gmail.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>, Takashi Iwai <tiwai@suse.com>,
+ Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+ alsa-devel@alsa-project.org, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
+References: <20221222233759.1934852-1-sean.anderson@seco.com>
+ <20221222233759.1934852-3-sean.anderson@seco.com>
+ <7897d4a6-bf43-becd-3437-7a254f38f6be@arm.com>
+ <20230103161550.4tui3ihl65olvkd7@houat>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20230103161550.4tui3ihl65olvkd7@houat>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Dave Jiang <dave.jiang@intel.com>
+On 03/01/2023 4:15 pm, Maxime Ripard wrote:
+> Hi Robin,
+> 
+> On Tue, Jan 03, 2023 at 01:01:07PM +0000, Robin Murphy wrote:
+>> Hi Sean,
+>>
+>> On 22/12/2022 11:37 pm, Sean Anderson wrote:
+>>> Convert users of component_match_add_release with component_release_of
+>>> and component_compare_of to component_match_add_of.
+>>>
+>>> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+>>> Acked-by: Mark Brown <broonie@kernel.org>
+>>> ---
+>>>
+>>> Changes in v2:
+>>> - Split off from helper addition
+>>>
+>>>    drivers/iommu/mtk_iommu.c    | 3 +--
+>>>    drivers/iommu/mtk_iommu_v1.c | 3 +--
+>>>    sound/soc/codecs/wcd938x.c   | 6 ++----
+>>>    3 files changed, 4 insertions(+), 8 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+>>> index 2ab2ecfe01f8..483b7a9e4410 100644
+>>> --- a/drivers/iommu/mtk_iommu.c
+>>> +++ b/drivers/iommu/mtk_iommu.c
+>>> @@ -1079,8 +1079,7 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
+>>>    		}
+>>>    		data->larb_imu[id].dev = &plarbdev->dev;
+>>> -		component_match_add_release(dev, match, component_release_of,
+>>> -					    component_compare_of, larbnode);
+>>> +		component_match_add_of(dev, match, larbnode);
+>>
+>> I've long since given up trying to make sense of how the DRM tree works, but
+>> the conflicting change is definitely already in mainline:
+>>
+>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit?id=b5765a1b44bea9dfcae69c53ffeb4c689d0922a7
+> 
+> As far as I can see, that patch doesn't affect DRM at all, and the
+> commit you pointed to doesn't either, nor has it been merged through the
+> DRM tree.
 
-Move iommu_sva_find() prototype to global header from local header in order
-to allow drivers to call the function. Used by idxd driver to find the mm
-from device reported PASID. The symbol is already exported.
+Right it doesn't affect DRM, and was merged via the IOMMU tree, but it 
+does affect *this* patch, which Sean has based on a drm-next branch that 
+seemingly still wasn't up to date with 6.2-rc1 at the time.
 
-Tested-by: Tony Zhu <tony.zhu@intel.com>
-Signed-off-by: Dave Jiang <dave.jiang@intel.com>
-Co-developed-by: Fenghua Yu <fenghua.yu@intel.com>
-Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev
----
- drivers/iommu/iommu-sva.h | 1 -
- include/linux/iommu.h     | 7 +++++++
- 2 files changed, 7 insertions(+), 1 deletion(-)
+Since v2 had already been posted, it seemed like a bright idea to 
+comment here to clarify that it was still relevant, rather than bumping 
+the old thread to reply directly. Apologies for any confusion.
 
-diff --git a/drivers/iommu/iommu-sva.h b/drivers/iommu/iommu-sva.h
-index 7215a761b962..102eae1817a2 100644
---- a/drivers/iommu/iommu-sva.h
-+++ b/drivers/iommu/iommu-sva.h
-@@ -9,7 +9,6 @@
- #include <linux/mm_types.h>
- 
- int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max);
--struct mm_struct *iommu_sva_find(ioasid_t pasid);
- 
- /* I/O Page fault */
- struct device;
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 46e1347bfa22..7db16ca3f519 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -704,6 +704,8 @@ void iommu_release_device(struct device *dev);
- int iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features f);
- int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features f);
- 
-+struct mm_struct *iommu_sva_find(ioasid_t pasid);
-+
- int iommu_device_use_default_domain(struct device *dev);
- void iommu_device_unuse_default_domain(struct device *dev);
- 
-@@ -1042,6 +1044,11 @@ iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
- 	return -ENODEV;
- }
- 
-+static inline struct mm_struct *iommu_sva_find(ioasid_t pasid)
-+{
-+	return ERR_PTR(-ENODEV);
-+}
-+
- static inline struct iommu_fwspec *dev_iommu_fwspec_get(struct device *dev)
- {
- 	return NULL;
--- 
-2.32.0
+In practical terms I think it's merely a case of dropping this hunk; the 
+other one in mtk_iommu_v1.c looks fine to me.
 
+Cheers,
+Robin.
+
+> Can you expand a bit on how we're involved in this, what we should
+> clarify or help with?
+> 
+> Maxime
