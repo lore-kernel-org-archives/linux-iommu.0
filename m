@@ -1,119 +1,118 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7200279C5
-	for <iommu@lists.linux.dev>; Tue,  3 Jan 2023 13:01:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 90EBA79C5
+	for <iommu@lists.linux.dev>; Tue,  3 Jan 2023 13:25:47 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6C8471516;
-	Tue,  3 Jan 2023 05:01:55 -0800 (PST)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6E6EC3F587;
-	Tue,  3 Jan 2023 05:01:11 -0800 (PST)
-Message-ID: <7897d4a6-bf43-becd-3437-7a254f38f6be@arm.com>
-Date: Tue, 3 Jan 2023 13:01:07 +0000
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4809B2F4;
+	Tue,  3 Jan 2023 05:26:28 -0800 (PST)
+Received: from FVFF77S0Q05N (unknown [10.57.37.13])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CA5683F587;
+	Tue,  3 Jan 2023 05:25:40 -0800 (PST)
+Date: Tue, 3 Jan 2023 13:25:35 +0000
+From: Mark Rutland <mark.rutland@arm.com>
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: Boqun Feng <boqun.feng@gmail.com>, torvalds@linux-foundation.org,
+	corbet@lwn.net, will@kernel.org, catalin.marinas@arm.com,
+	dennis@kernel.org, tj@kernel.org, cl@linux.com, hca@linux.ibm.com,
+	gor@linux.ibm.com, agordeev@linux.ibm.com,
+	borntraeger@linux.ibm.com, svens@linux.ibm.com,
+	Herbert Xu <herbert@gondor.apana.org.au>, davem@davemloft.net,
+	tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+	dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+	joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	robin.murphy@arm.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
+	Arnd Bergmann <arnd@arndb.de>, penberg@kernel.org,
+	rientjes@google.com, iamjoonsoo.kim@lge.com,
+	Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz,
+	roman.gushchin@linux.dev, 42.hyeyoo@gmail.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, linux-s390@vger.kernel.org,
+	linux-crypto@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arch@vger.kernel.org
+Subject: Re: [RFC][PATCH 05/12] arch: Introduce
+ arch_{,try_}_cmpxchg128{,_local}()
+Message-ID: <Y7QszyTEG2+WiI/C@FVFF77S0Q05N>
+References: <20221219153525.632521981@infradead.org>
+ <20221219154119.154045458@infradead.org>
+ <Y6DEfQXymYVgL3oJ@boqun-archlinux>
+ <Y6GXoO4qmH9OIZ5Q@hirez.programming.kicks-ass.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH v2 2/3] iommu/sound: Use component_match_add_of helper
-To: Sean Anderson <sean.anderson@seco.com>, David Airlie <airlied@gmail.com>,
- Daniel Vetter <daniel@ffwll.ch>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- dri-devel@lists.freedesktop.org
-Cc: linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
- Jaroslav Kysela <perex@perex.cz>, Joerg Roedel <joro@8bytes.org>,
- Liam Girdwood <lgirdwood@gmail.com>,
- Matthias Brugger <matthias.bgg@gmail.com>, Takashi Iwai <tiwai@suse.com>,
- Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
- alsa-devel@alsa-project.org, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
-References: <20221222233759.1934852-1-sean.anderson@seco.com>
- <20221222233759.1934852-3-sean.anderson@seco.com>
-Content-Language: en-GB
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20221222233759.1934852-3-sean.anderson@seco.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y6GXoO4qmH9OIZ5Q@hirez.programming.kicks-ass.net>
 
-Hi Sean,
-
-On 22/12/2022 11:37 pm, Sean Anderson wrote:
-> Convert users of component_match_add_release with component_release_of
-> and component_compare_of to component_match_add_of.
+On Tue, Dec 20, 2022 at 12:08:16PM +0100, Peter Zijlstra wrote:
+> On Mon, Dec 19, 2022 at 12:07:25PM -0800, Boqun Feng wrote:
+> > On Mon, Dec 19, 2022 at 04:35:30PM +0100, Peter Zijlstra wrote:
+> > > For all architectures that currently support cmpxchg_double()
+> > > implement the cmpxchg128() family of functions that is basically the
+> > > same but with a saner interface.
+> > > 
+> > > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> > > ---
+> > >  arch/arm64/include/asm/atomic_ll_sc.h |   38 +++++++++++++++++++++++
+> > >  arch/arm64/include/asm/atomic_lse.h   |   33 +++++++++++++++++++-
+> > >  arch/arm64/include/asm/cmpxchg.h      |   26 ++++++++++++++++
+> > >  arch/s390/include/asm/cmpxchg.h       |   33 ++++++++++++++++++++
+> > >  arch/x86/include/asm/cmpxchg_32.h     |    3 +
+> > >  arch/x86/include/asm/cmpxchg_64.h     |   55 +++++++++++++++++++++++++++++++++-
+> > >  6 files changed, 185 insertions(+), 3 deletions(-)
+> > > 
+> > > --- a/arch/arm64/include/asm/atomic_ll_sc.h
+> > > +++ b/arch/arm64/include/asm/atomic_ll_sc.h
+> > > @@ -326,6 +326,44 @@ __CMPXCHG_DBL(   ,        ,  ,         )
+> > >  __CMPXCHG_DBL(_mb, dmb ish, l, "memory")
+> > >  
+> > >  #undef __CMPXCHG_DBL
+> > > +
+> > > +union __u128_halves {
+> > > +	u128 full;
+> > > +	struct {
+> > > +		u64 low, high;
+> > > +	};
+> > > +};
+> > > +
+> > > +#define __CMPXCHG128(name, mb, rel, cl)					\
+> > > +static __always_inline u128						\
+> > > +__ll_sc__cmpxchg128##name(volatile u128 *ptr, u128 old, u128 new)	\
+> > > +{									\
+> > > +	union __u128_halves r, o = { .full = (old) },			\
+> > > +			       n = { .full = (new) };			\
+> > > +									\
+> > > +	asm volatile("// __cmpxchg128" #name "\n"			\
+> > > +	"	prfm	pstl1strm, %2\n"				\
+> > > +	"1:	ldxp	%0, %1, %2\n"					\
+> > > +	"	eor	%3, %0, %3\n"					\
+> > > +	"	eor	%4, %1, %4\n"					\
+> > > +	"	orr	%3, %4, %3\n"					\
+> > > +	"	cbnz	%3, 2f\n"					\
+> > > +	"	st" #rel "xp	%w3, %5, %6, %2\n"			\
+> > > +	"	cbnz	%w3, 1b\n"					\
+> > > +	"	" #mb "\n"						\
+> > > +	"2:"								\
+> > > +	: "=&r" (r.low), "=&r" (r.high), "+Q" (*(unsigned long *)ptr)	\
+> > 
+> > I wonder whether we should use "(*(u128 *)ptr)" instead of "(*(unsigned
+> > long *) ptr)"? Because compilers may think only 64bit value pointed by
+> > "ptr" gets modified, and they are allowed to do "useful" optimization.
 > 
-> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-> Acked-by: Mark Brown <broonie@kernel.org>
-> ---
-> 
-> Changes in v2:
-> - Split off from helper addition
-> 
->   drivers/iommu/mtk_iommu.c    | 3 +--
->   drivers/iommu/mtk_iommu_v1.c | 3 +--
->   sound/soc/codecs/wcd938x.c   | 6 ++----
->   3 files changed, 4 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index 2ab2ecfe01f8..483b7a9e4410 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -1079,8 +1079,7 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
->   		}
->   		data->larb_imu[id].dev = &plarbdev->dev;
->   
-> -		component_match_add_release(dev, match, component_release_of,
-> -					    component_compare_of, larbnode);
-> +		component_match_add_of(dev, match, larbnode);
+> In this I've copied the existing cmpxchg_double() code; I'll have to let
+> the arch folks speak here, I've no clue.
 
-I've long since given up trying to make sense of how the DRM tree works, 
-but the conflicting change is definitely already in mainline:
+We definitely need to ensure the compiler sees we poke the whole thing, or it
+can get this horribly wrong, so that is a latent bug.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit?id=b5765a1b44bea9dfcae69c53ffeb4c689d0922a7
+See commit:
 
-Thanks,
-Robin.
+  fee960bed5e857eb ("arm64: xchg: hazard against entire exchange variable")
 
->   	}
->   
->   	/* Get smi-(sub)-common dev from the last larb. */
-> diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-> index 6e0e65831eb7..fb09ed6bf550 100644
-> --- a/drivers/iommu/mtk_iommu_v1.c
-> +++ b/drivers/iommu/mtk_iommu_v1.c
-> @@ -672,8 +672,7 @@ static int mtk_iommu_v1_probe(struct platform_device *pdev)
->   		}
->   		data->larb_imu[i].dev = &plarbdev->dev;
->   
-> -		component_match_add_release(dev, &match, component_release_of,
-> -					    component_compare_of, larbnode);
-> +		component_match_add_of(dev, &match, larbnode);
->   	}
->   
->   	platform_set_drvdata(pdev, data);
-> diff --git a/sound/soc/codecs/wcd938x.c b/sound/soc/codecs/wcd938x.c
-> index aca06a4026f3..2f8444e54083 100644
-> --- a/sound/soc/codecs/wcd938x.c
-> +++ b/sound/soc/codecs/wcd938x.c
-> @@ -4474,8 +4474,7 @@ static int wcd938x_add_slave_components(struct wcd938x_priv *wcd938x,
->   	}
->   
->   	of_node_get(wcd938x->rxnode);
-> -	component_match_add_release(dev, matchptr, component_release_of,
-> -				    component_compare_of, wcd938x->rxnode);
-> +	component_match_add_of(dev, matchptr, wcd938x->rxnode);
->   
->   	wcd938x->txnode = of_parse_phandle(np, "qcom,tx-device", 0);
->   	if (!wcd938x->txnode) {
-> @@ -4483,8 +4482,7 @@ static int wcd938x_add_slave_components(struct wcd938x_priv *wcd938x,
->   		return -ENODEV;
->   	}
->   	of_node_get(wcd938x->txnode);
-> -	component_match_add_release(dev, matchptr, component_release_of,
-> -				    component_compare_of, wcd938x->txnode);
-> +	component_match_add_of(dev, matchptr, wcd938x->txnode);
->   	return 0;
->   }
->   
+... for examples of GCC being clever, where I overlooked the *_double() cases.
+
+I'll go spin a quick fix for that so that we can have something go to stable
+before we rejig the API.
+
+Mark.
