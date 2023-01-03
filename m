@@ -1,149 +1,168 @@
-Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 232708483
-	for <iommu@lists.linux.dev>; Tue,  3 Jan 2023 16:15:58 +0000 (UTC)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-	by mailout.west.internal (Postfix) with ESMTP id 2C3583200902;
-	Tue,  3 Jan 2023 11:15:55 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Tue, 03 Jan 2023 11:15:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-	:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:sender:subject
-	:subject:to:to; s=fm3; t=1672762554; x=1672848954; bh=wNHGYeVYFI
-	zxBf24jgwJU2T/wl2hD0aiCUszvE1r6qc=; b=pjCYKo7gkCK5f2pIymt6QPnLBC
-	1DAk7msGDlygQAQNqEVyCIpFaOyMgaHSi40KVwP+w+L6RrW2p5XYYI1VqB3rG7dx
-	KEjGnr8HJwsjwZoQRvabZE5YxL8qXbJz8wRykSz3ERcPZx7n7E/OG+hl11/vLkbg
-	a06mvms0SGOqlyX0iMJ83oydOETkNwpTTu7grzSiLToon31tLFhkz4o7eh5iBou4
-	MxVnC/ZDnvM9P94hvHrcDURJq58ZYxwA3SlT3lGqJlK0eSF0GPHMddpVHO2ldnjB
-	uhG30YyVqwEtr/cCfgAAU1RUwWaiMmfwyBP76iCkiVBIeOBs/K8Nobgq0IpQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-	:feedback-id:from:from:in-reply-to:in-reply-to:message-id
-	:mime-version:references:reply-to:sender:subject:subject:to:to
-	:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-	fm2; t=1672762554; x=1672848954; bh=wNHGYeVYFIzxBf24jgwJU2T/wl2h
-	D0aiCUszvE1r6qc=; b=j531BDLWxm/ohYQJ7nDDhf9HZ38aqVzvC/s9TGxSWFOF
-	iiYyCfot5ViuJBPsApS5/UR9lIF4taTuAL4+nbDvqMjQkZGhHU9h03T8aaJaQjHJ
-	KTOMF2W1onoAb/5nUCjwe3LJeMQJeuG9q89F1Y0ozgV/zdROkYA9crYI+U05Jvmt
-	nCvLmp92lk26OKxFnXrgHeSFA3iVvwxkR69pcDKumWR3J0EWWdDUkd0mLpuBi97M
-	l/88gmqhLrZQCuPWRLEuc553zwBBHOTY2e+B+OrNT8lgoICwo/vmtj+9+DkWcXSd
-	NotMN9hkOPXxvXxGe/ixjYNbxBvbmJ+YFvUJxxpuLg==
-X-ME-Sender: <xms:uVS0YzB0JXSRVIAi_tGC1otQM2RzPjHpcflhIgdzCVRZrzgRfROJDQ>
-    <xme:uVS0Y5i0ix6UjpUCqv-WU3J8FLgiHnuLKXZKjl9oCftIjeoxe8ZhAZLuUMwa_4PBv
-    ytZfM0HWcvHe6enzsA>
-X-ME-Received: <xmr:uVS0Y-nMPMm_4ZZv6rRdHATK2kWWJIZJ8TVVp4gOFFT1RGkmP6Q_UDvLqCmbfQ35RACyLiq4fB9tjz0QGBKP9nEVd7kPF1FHT_4s6tSM4oeIJA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrjeeggdekiecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvvefukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
-    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
-    htvghrnheptdelkeejiedufedvhfeiffetlefhiedvleeigfeiuefghfdvleeiffejieeg
-    teejnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpe
-    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrgigihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:uVS0Y1wBrIhxHWXikal4guApjH66SvtY4OcZSpj9b1-KrvPGX-uI8g>
-    <xmx:uVS0Y4QAif-qqBka94NRhYpDVTtWsMhf5sxJwNSqoyhZC3swXYhcog>
-    <xmx:uVS0Y4ZsYlbpnrqbDSwACwmC-fzNNOsr_D788yWirfW-kANxEbry5g>
-    <xmx:ulS0Y7YS89FzmTs6M_WxvTPd4EyTSa5Y4NKV3wydY-ZSTc8dmhi46g>
-Feedback-ID: i8771445c:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 3 Jan 2023 11:15:53 -0500 (EST)
-Date: Tue, 3 Jan 2023 17:15:50 +0100
-From: Maxime Ripard <maxime@cerno.tech>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Sean Anderson <sean.anderson@seco.com>,
-	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-	Mark Brown <broonie@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
-	Joerg Roedel <joro@8bytes.org>, Liam Girdwood <lgirdwood@gmail.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	Takashi Iwai <tiwai@suse.com>, Will Deacon <will@kernel.org>,
-	Yong Wu <yong.wu@mediatek.com>, alsa-devel@alsa-project.org,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH v2 2/3] iommu/sound: Use component_match_add_of helper
-Message-ID: <20230103161550.4tui3ihl65olvkd7@houat>
-References: <20221222233759.1934852-1-sean.anderson@seco.com>
- <20221222233759.1934852-3-sean.anderson@seco.com>
- <7897d4a6-bf43-becd-3437-7a254f38f6be@arm.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 46EFA8483
+	for <iommu@lists.linux.dev>; Tue,  3 Jan 2023 16:19:43 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F23A51516;
+	Tue,  3 Jan 2023 08:20:23 -0800 (PST)
+Received: from FVFF77S0Q05N (unknown [10.57.37.13])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7D57E3F71A;
+	Tue,  3 Jan 2023 08:19:36 -0800 (PST)
+Date: Tue, 3 Jan 2023 16:19:30 +0000
+From: Mark Rutland <mark.rutland@arm.com>
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: Boqun Feng <boqun.feng@gmail.com>, torvalds@linux-foundation.org,
+	corbet@lwn.net, will@kernel.org, catalin.marinas@arm.com,
+	dennis@kernel.org, tj@kernel.org, cl@linux.com, hca@linux.ibm.com,
+	gor@linux.ibm.com, agordeev@linux.ibm.com,
+	borntraeger@linux.ibm.com, svens@linux.ibm.com,
+	Herbert Xu <herbert@gondor.apana.org.au>, davem@davemloft.net,
+	tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+	dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+	joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	robin.murphy@arm.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
+	Arnd Bergmann <arnd@arndb.de>, penberg@kernel.org,
+	rientjes@google.com, iamjoonsoo.kim@lge.com,
+	Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz,
+	roman.gushchin@linux.dev, 42.hyeyoo@gmail.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, linux-s390@vger.kernel.org,
+	linux-crypto@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arch@vger.kernel.org
+Subject: Re: [RFC][PATCH 05/12] arch: Introduce
+ arch_{,try_}_cmpxchg128{,_local}()
+Message-ID: <Y7RVkjDC3EjQUCzM@FVFF77S0Q05N>
+References: <20221219153525.632521981@infradead.org>
+ <20221219154119.154045458@infradead.org>
+ <Y6DEfQXymYVgL3oJ@boqun-archlinux>
+ <Y6GXoO4qmH9OIZ5Q@hirez.programming.kicks-ass.net>
+ <Y7QszyTEG2+WiI/C@FVFF77S0Q05N>
+ <Y7Q1uexv6DrxCASB@FVFF77S0Q05N>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="7v4zidzdfmuud6o5"
-Content-Disposition: inline
-In-Reply-To: <7897d4a6-bf43-becd-3437-7a254f38f6be@arm.com>
-
-
---7v4zidzdfmuud6o5
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <Y7Q1uexv6DrxCASB@FVFF77S0Q05N>
 
-Hi Robin,
+On Tue, Jan 03, 2023 at 02:03:37PM +0000, Mark Rutland wrote:
+> On Tue, Jan 03, 2023 at 01:25:35PM +0000, Mark Rutland wrote:
+> > On Tue, Dec 20, 2022 at 12:08:16PM +0100, Peter Zijlstra wrote:
+> > > On Mon, Dec 19, 2022 at 12:07:25PM -0800, Boqun Feng wrote:
+> > > > On Mon, Dec 19, 2022 at 04:35:30PM +0100, Peter Zijlstra wrote:
+> > > > > For all architectures that currently support cmpxchg_double()
+> > > > > implement the cmpxchg128() family of functions that is basically the
+> > > > > same but with a saner interface.
+> > > > > 
+> > > > > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> > > > > ---
+> > > > >  arch/arm64/include/asm/atomic_ll_sc.h |   38 +++++++++++++++++++++++
+> > > > >  arch/arm64/include/asm/atomic_lse.h   |   33 +++++++++++++++++++-
+> > > > >  arch/arm64/include/asm/cmpxchg.h      |   26 ++++++++++++++++
+> > > > >  arch/s390/include/asm/cmpxchg.h       |   33 ++++++++++++++++++++
+> > > > >  arch/x86/include/asm/cmpxchg_32.h     |    3 +
+> > > > >  arch/x86/include/asm/cmpxchg_64.h     |   55 +++++++++++++++++++++++++++++++++-
+> > > > >  6 files changed, 185 insertions(+), 3 deletions(-)
+> > > > > 
+> > > > > --- a/arch/arm64/include/asm/atomic_ll_sc.h
+> > > > > +++ b/arch/arm64/include/asm/atomic_ll_sc.h
+> > > > > @@ -326,6 +326,44 @@ __CMPXCHG_DBL(   ,        ,  ,         )
+> > > > >  __CMPXCHG_DBL(_mb, dmb ish, l, "memory")
+> > > > >  
+> > > > >  #undef __CMPXCHG_DBL
+> > > > > +
+> > > > > +union __u128_halves {
+> > > > > +	u128 full;
+> > > > > +	struct {
+> > > > > +		u64 low, high;
+> > > > > +	};
+> > > > > +};
+> > > > > +
+> > > > > +#define __CMPXCHG128(name, mb, rel, cl)					\
+> > > > > +static __always_inline u128						\
+> > > > > +__ll_sc__cmpxchg128##name(volatile u128 *ptr, u128 old, u128 new)	\
+> > > > > +{									\
+> > > > > +	union __u128_halves r, o = { .full = (old) },			\
+> > > > > +			       n = { .full = (new) };			\
+> > > > > +									\
+> > > > > +	asm volatile("// __cmpxchg128" #name "\n"			\
+> > > > > +	"	prfm	pstl1strm, %2\n"				\
+> > > > > +	"1:	ldxp	%0, %1, %2\n"					\
+> > > > > +	"	eor	%3, %0, %3\n"					\
+> > > > > +	"	eor	%4, %1, %4\n"					\
+> > > > > +	"	orr	%3, %4, %3\n"					\
+> > > > > +	"	cbnz	%3, 2f\n"					\
+> > > > > +	"	st" #rel "xp	%w3, %5, %6, %2\n"			\
+> > > > > +	"	cbnz	%w3, 1b\n"					\
+> > > > > +	"	" #mb "\n"						\
+> > > > > +	"2:"								\
+> > > > > +	: "=&r" (r.low), "=&r" (r.high), "+Q" (*(unsigned long *)ptr)	\
+> > > > 
+> > > > I wonder whether we should use "(*(u128 *)ptr)" instead of "(*(unsigned
+> > > > long *) ptr)"? Because compilers may think only 64bit value pointed by
+> > > > "ptr" gets modified, and they are allowed to do "useful" optimization.
+> > > 
+> > > In this I've copied the existing cmpxchg_double() code; I'll have to let
+> > > the arch folks speak here, I've no clue.
+> > 
+> > We definitely need to ensure the compiler sees we poke the whole thing, or it
+> > can get this horribly wrong, so that is a latent bug.
+> > 
+> > See commit:
+> > 
+> >   fee960bed5e857eb ("arm64: xchg: hazard against entire exchange variable")
+> > 
+> > ... for examples of GCC being clever, where I overlooked the *_double() cases.
 
-On Tue, Jan 03, 2023 at 01:01:07PM +0000, Robin Murphy wrote:
-> Hi Sean,
->=20
-> On 22/12/2022 11:37 pm, Sean Anderson wrote:
-> > Convert users of component_match_add_release with component_release_of
-> > and component_compare_of to component_match_add_of.
-> >=20
-> > Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-> > Acked-by: Mark Brown <broonie@kernel.org>
-> > ---
-> >=20
-> > Changes in v2:
-> > - Split off from helper addition
-> >=20
-> >   drivers/iommu/mtk_iommu.c    | 3 +--
-> >   drivers/iommu/mtk_iommu_v1.c | 3 +--
-> >   sound/soc/codecs/wcd938x.c   | 6 ++----
-> >   3 files changed, 4 insertions(+), 8 deletions(-)
-> >=20
-> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> > index 2ab2ecfe01f8..483b7a9e4410 100644
-> > --- a/drivers/iommu/mtk_iommu.c
-> > +++ b/drivers/iommu/mtk_iommu.c
-> > @@ -1079,8 +1079,7 @@ static int mtk_iommu_mm_dts_parse(struct device *=
-dev, struct component_match **m
-> >   		}
-> >   		data->larb_imu[id].dev =3D &plarbdev->dev;
-> > -		component_match_add_release(dev, match, component_release_of,
-> > -					    component_compare_of, larbnode);
-> > +		component_match_add_of(dev, match, larbnode);
->=20
-> I've long since given up trying to make sense of how the DRM tree works, =
-but
-> the conflicting change is definitely already in mainline:
->=20
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit=
-?id=3Db5765a1b44bea9dfcae69c53ffeb4c689d0922a7
+> Using __uint128_t instead, e.g.
+> 
+> diff --git a/arch/arm64/include/asm/atomic_ll_sc.h b/arch/arm64/include/asm/atomic_ll_sc.h
+> index 0890e4f568fb7..cbb3d961123b1 100644
+> --- a/arch/arm64/include/asm/atomic_ll_sc.h
+> +++ b/arch/arm64/include/asm/atomic_ll_sc.h
+> @@ -315,7 +315,7 @@ __ll_sc__cmpxchg_double##name(unsigned long old1,                   \
+>         "       cbnz    %w0, 1b\n"                                      \
+>         "       " #mb "\n"                                              \
+>         "2:"                                                            \
+> -       : "=&r" (tmp), "=&r" (ret), "+Q" (*(unsigned long *)ptr)        \
+> +       : "=&r" (tmp), "=&r" (ret), "+Q" (*(__uint128_t *)ptr)          \
+>         : "r" (old1), "r" (old2), "r" (new1), "r" (new2)                \
+>         : cl);                                                          \
+>                                                                         \
+> diff --git a/arch/arm64/include/asm/atomic_lse.h b/arch/arm64/include/asm/atomic_lse.h
+> index 52075e93de6c0..a94d6dacc0292 100644
+> --- a/arch/arm64/include/asm/atomic_lse.h
+> +++ b/arch/arm64/include/asm/atomic_lse.h
+> @@ -311,7 +311,7 @@ __lse__cmpxchg_double##name(unsigned long old1,                             \
+>         "       eor     %[old2], %[old2], %[oldval2]\n"                 \
+>         "       orr     %[old1], %[old1], %[old2]"                      \
+>         : [old1] "+&r" (x0), [old2] "+&r" (x1),                         \
+> -         [v] "+Q" (*(unsigned long *)ptr)                              \
+> +         [v] "+Q" (*(__uint128_t *)ptr)                                \
+>         : [new1] "r" (x2), [new2] "r" (x3), [ptr] "r" (x4),             \
+>           [oldval1] "r" (oldval1), [oldval2] "r" (oldval2)              \
+>         : cl);                                                          \
+> 
+> ... makes GCC much happier:
 
-As far as I can see, that patch doesn't affect DRM at all, and the
-commit you pointed to doesn't either, nor has it been merged through the
-DRM tree.
+> ... I'll go check whether clang is happy with that, and how far back that can
+> go, otherwise we'll need to blat the high half with a separate constaint that
+> (ideally) doesn't end up allocating a pointless address register.
 
-Can you expand a bit on how we're involved in this, what we should
-clarify or help with?
+Hmm... from the commit history it looks like GCC prior to 5.1 might not be
+happy with that, but that *might* just be if we actually do arithmetic on the
+value, and we might be ok just using it for memroy effects. I can't currently
+get such an old GCC to run on my machines so I haven't been able to check.
 
-Maxime
+I'll dig into this a bit more tomorrow, but it looks like the options (for a
+backport-suitable fix) will be:
 
---7v4zidzdfmuud6o5
-Content-Type: application/pgp-signature; name="signature.asc"
+(a) use a __uint128_t input+output, as above, if we're lucky
 
------BEGIN PGP SIGNATURE-----
+(b) introduce a second 64-bit input+output for the high half (likely a "+o")
 
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCY7RUtgAKCRDj7w1vZxhR
-xdWgAQCl2SxPgHcEj92AdlH7Y2VvK6G5Bczcu2wrB4ZrHXVpawEAsJlD4MKrpINP
-IZalK2KlJTqUilPQudOtqmCeQzWQqAo=
-=cdeC
------END PGP SIGNATURE-----
+(c) use a full memory clobber for ancient compilers.
 
---7v4zidzdfmuud6o5--
+Mark.
