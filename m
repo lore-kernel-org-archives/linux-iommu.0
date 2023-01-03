@@ -1,324 +1,119 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C1C828E1;
-	Tue,  3 Jan 2023 11:47:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1672746456; x=1704282456;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=8dZkxVOI6PyfoIo2vV+E9Vgk67Nph2gFq+gQLmyC8KE=;
-  b=iZ7PBHkHcWUEAZkjK0lqtPn5p/Io3Dt090x2ElkzyVpYFwYnGqd4OFKw
-   /dPFjJ7CrYTBuqLeQFZU7H64mVVJUE858Ql6Rx36Qdi3js43h8EaVOrz1
-   81p3HeBR2JvmxdIiMh7WhiMW9IWaa+ROS6hswxXB7h+PFVP7kP2QubYPq
-   XLyyzq43mkFS8J4QvTVg5N0EVYRYl0bL6/GFJU4gtlvImVWVyt2+gequR
-   2X0lfmEyyyloj6ElLJxLMz7lCD+d2URf5cqTcECxD0GnvC0Qnl7sS3fe+
-   HZtz9gtSjgGE3U+lvoW3AP6QV82/vgzSP+7FzlpRWGkAzi1X8fkmiLFC/
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10578"; a="407899904"
-X-IronPort-AV: E=Sophos;i="5.96,296,1665471600"; 
-   d="scan'208";a="407899904"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jan 2023 03:47:35 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10578"; a="723239138"
-X-IronPort-AV: E=Sophos;i="5.96,296,1665471600"; 
-   d="scan'208";a="723239138"
-Received: from jkrzyszt-mobl1.ger.corp.intel.com (HELO jkrzyszt-mobl1.lan) ([10.213.19.68])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jan 2023 03:47:32 -0800
-From: Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>
-To: Guenter Roeck <linux@roeck-us.net>,
-	Fenghua Yu <fenghua.yu@intel.com>,
-	Jean Delvare <jdelvare@suse.com>
-Cc: Thorsten Leemhuis <regressions@leemhuis.info>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>,
-	linux-hwmon@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev,
-	regressions@lists.linux.dev
-Subject: [PATCH v2] hwmon/coretemp: Simplify platform device handling
-Date: Tue,  3 Jan 2023 12:46:20 +0100
-Message-Id: <20230103114620.15319-1-janusz.krzysztofik@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7200279C5
+	for <iommu@lists.linux.dev>; Tue,  3 Jan 2023 13:01:14 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6C8471516;
+	Tue,  3 Jan 2023 05:01:55 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6E6EC3F587;
+	Tue,  3 Jan 2023 05:01:11 -0800 (PST)
+Message-ID: <7897d4a6-bf43-becd-3437-7a254f38f6be@arm.com>
+Date: Tue, 3 Jan 2023 13:01:07 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH v2 2/3] iommu/sound: Use component_match_add_of helper
+To: Sean Anderson <sean.anderson@seco.com>, David Airlie <airlied@gmail.com>,
+ Daniel Vetter <daniel@ffwll.ch>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ dri-devel@lists.freedesktop.org
+Cc: linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+ Jaroslav Kysela <perex@perex.cz>, Joerg Roedel <joro@8bytes.org>,
+ Liam Girdwood <lgirdwood@gmail.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>, Takashi Iwai <tiwai@suse.com>,
+ Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+ alsa-devel@alsa-project.org, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
+References: <20221222233759.1934852-1-sean.anderson@seco.com>
+ <20221222233759.1934852-3-sean.anderson@seco.com>
+Content-Language: en-GB
 From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20221222233759.1934852-3-sean.anderson@seco.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Coretemp's platform driver is unconventional. All the real work is done
-globally by the initcall and CPU hotplug notifiers, while the "driver"
-effectively just wraps an allocation and the registration of the hwmon
-interface in a long-winded round-trip through the driver core.  The whole
-logic of dynamically creating and destroying platform devices to bring
-the interfaces up and down is error prone, since it assumes
-platform_device_add() will synchronously bind the driver and set drvdata
-before it returns, thus results in a NULL dereference if drivers_autoprobe
-is turned off for the platform bus. Furthermore, the unusual approach of
-doing that from within a CPU hotplug notifier, already commented in the
-code that it deadlocks suspend, also causes lockdep issues for other
-drivers or subsystems which may want to legitimately register a CPU
-hotplug notifier from a platform bus notifier.
+Hi Sean,
 
-All of these issues can be solved by ripping this unusual behaviour out
-completely, simply tying the platform devices to the lifetime of the
-module itself, and directly managing the hwmon interfaces from the
-hotplug notifiers. There is a slight user-visible change in that
-/sys/bus/platform/drivers/coretemp will no longer appear, and
-/sys/devices/platform/coretemp.n will remain present if package n is
-hotplugged off, but hwmon users should really only be looking for the
-presence of the hwmon interfaces, whose behaviour remains unchanged.
+On 22/12/2022 11:37 pm, Sean Anderson wrote:
+> Convert users of component_match_add_release with component_release_of
+> and component_compare_of to component_match_add_of.
+> 
+> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+> Acked-by: Mark Brown <broonie@kernel.org>
+> ---
+> 
+> Changes in v2:
+> - Split off from helper addition
+> 
+>   drivers/iommu/mtk_iommu.c    | 3 +--
+>   drivers/iommu/mtk_iommu_v1.c | 3 +--
+>   sound/soc/codecs/wcd938x.c   | 6 ++----
+>   3 files changed, 4 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 2ab2ecfe01f8..483b7a9e4410 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -1079,8 +1079,7 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
+>   		}
+>   		data->larb_imu[id].dev = &plarbdev->dev;
+>   
+> -		component_match_add_release(dev, match, component_release_of,
+> -					    component_compare_of, larbnode);
+> +		component_match_add_of(dev, match, larbnode);
 
-v2: describe the problem in neutral terms
+I've long since given up trying to make sense of how the DRM tree works, 
+but the conflicting change is definitely already in mainline:
 
-Link: https://lore.kernel.org/lkml/20220922101036.87457-1-janusz.krzysztofik@linux.intel.com/
-Link: https://gitlab.freedesktop.org/drm/intel/issues/6641
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>
----
- drivers/hwmon/coretemp.c | 128 ++++++++++++++++++---------------------
- 1 file changed, 58 insertions(+), 70 deletions(-)
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit?id=b5765a1b44bea9dfcae69c53ffeb4c689d0922a7
 
-diff --git a/drivers/hwmon/coretemp.c b/drivers/hwmon/coretemp.c
-index ca7a9b373bbd6..3e440ebe2508c 100644
---- a/drivers/hwmon/coretemp.c
-+++ b/drivers/hwmon/coretemp.c
-@@ -588,66 +588,49 @@ static void coretemp_remove_core(struct platform_data *pdata, int indx)
- 		ida_free(&pdata->ida, indx - BASE_SYSFS_ATTR_NO);
- }
- 
--static int coretemp_probe(struct platform_device *pdev)
-+static int coretemp_device_add(int zoneid)
- {
--	struct device *dev = &pdev->dev;
-+	struct platform_device *pdev;
- 	struct platform_data *pdata;
-+	int err;
- 
- 	/* Initialize the per-zone data structures */
--	pdata = devm_kzalloc(dev, sizeof(struct platform_data), GFP_KERNEL);
-+	pdata = kzalloc(sizeof(*pdata), GFP_KERNEL);
- 	if (!pdata)
- 		return -ENOMEM;
- 
--	pdata->pkg_id = pdev->id;
-+	pdata->pkg_id = zoneid;
- 	ida_init(&pdata->ida);
--	platform_set_drvdata(pdev, pdata);
- 
--	pdata->hwmon_dev = devm_hwmon_device_register_with_groups(dev, DRVNAME,
--								  pdata, NULL);
--	return PTR_ERR_OR_ZERO(pdata->hwmon_dev);
--}
--
--static int coretemp_remove(struct platform_device *pdev)
--{
--	struct platform_data *pdata = platform_get_drvdata(pdev);
--	int i;
-+	pdev = platform_device_alloc(DRVNAME, zoneid);
-+	if (!pdev) {
-+		err = -ENOMEM;
-+		goto err_free_pdata;
-+	}
- 
--	for (i = MAX_CORE_DATA - 1; i >= 0; --i)
--		if (pdata->core_data[i])
--			coretemp_remove_core(pdata, i);
-+	err = platform_device_add(pdev);
-+	if (err)
-+		goto err_put_dev;
- 
--	ida_destroy(&pdata->ida);
-+	platform_set_drvdata(pdev, pdata);
-+	zone_devices[zoneid] = pdev;
- 	return 0;
--}
- 
--static struct platform_driver coretemp_driver = {
--	.driver = {
--		.name = DRVNAME,
--	},
--	.probe = coretemp_probe,
--	.remove = coretemp_remove,
--};
-+err_put_dev:
-+	platform_device_put(pdev);
-+err_free_pdata:
-+	kfree(pdata);
-+	return err;
-+}
- 
--static struct platform_device *coretemp_device_add(unsigned int cpu)
-+static void coretemp_device_remove(int zoneid)
- {
--	int err, zoneid = topology_logical_die_id(cpu);
--	struct platform_device *pdev;
--
--	if (zoneid < 0)
--		return ERR_PTR(-ENOMEM);
--
--	pdev = platform_device_alloc(DRVNAME, zoneid);
--	if (!pdev)
--		return ERR_PTR(-ENOMEM);
--
--	err = platform_device_add(pdev);
--	if (err) {
--		platform_device_put(pdev);
--		return ERR_PTR(err);
--	}
-+	struct platform_device *pdev = zone_devices[zoneid];
-+	struct platform_data *pdata = platform_get_drvdata(pdev);
- 
--	zone_devices[zoneid] = pdev;
--	return pdev;
-+	ida_destroy(&pdata->ida);
-+	kfree(pdata);
-+	platform_device_unregister(pdev);
- }
- 
- static int coretemp_cpu_online(unsigned int cpu)
-@@ -671,7 +654,10 @@ static int coretemp_cpu_online(unsigned int cpu)
- 	if (!cpu_has(c, X86_FEATURE_DTHERM))
- 		return -ENODEV;
- 
--	if (!pdev) {
-+	pdata = platform_get_drvdata(pdev);
-+	if (!pdata->hwmon_dev) {
-+		struct device *hwmon;
-+
- 		/* Check the microcode version of the CPU */
- 		if (chk_ucode_version(cpu))
- 			return -EINVAL;
-@@ -682,9 +668,11 @@ static int coretemp_cpu_online(unsigned int cpu)
- 		 * online. So, initialize per-pkg data structures and
- 		 * then bring this core online.
- 		 */
--		pdev = coretemp_device_add(cpu);
--		if (IS_ERR(pdev))
--			return PTR_ERR(pdev);
-+		hwmon = hwmon_device_register_with_groups(&pdev->dev, DRVNAME,
-+							  pdata, NULL);
-+		if (IS_ERR(hwmon))
-+			return PTR_ERR(hwmon);
-+		pdata->hwmon_dev = hwmon;
- 
- 		/*
- 		 * Check whether pkgtemp support is available.
-@@ -694,7 +682,6 @@ static int coretemp_cpu_online(unsigned int cpu)
- 			coretemp_add_core(pdev, cpu, 1);
- 	}
- 
--	pdata = platform_get_drvdata(pdev);
- 	/*
- 	 * Check whether a thread sibling is already online. If not add the
- 	 * interface for this CPU core.
-@@ -713,18 +700,14 @@ static int coretemp_cpu_offline(unsigned int cpu)
- 	struct temp_data *tdata;
- 	int i, indx = -1, target;
- 
--	/*
--	 * Don't execute this on suspend as the device remove locks
--	 * up the machine.
--	 */
-+	/* No need to tear down any interfaces for suspend */
- 	if (cpuhp_tasks_frozen)
- 		return 0;
- 
- 	/* If the physical CPU device does not exist, just return */
--	if (!pdev)
--		return 0;
--
- 	pd = platform_get_drvdata(pdev);
-+	if (!pd->hwmon_dev)
-+		return 0;
- 
- 	for (i = 0; i < NUM_REAL_CORES; i++) {
- 		if (pd->cpu_map[i] == topology_core_id(cpu)) {
-@@ -756,13 +739,14 @@ static int coretemp_cpu_offline(unsigned int cpu)
- 	}
- 
- 	/*
--	 * If all cores in this pkg are offline, remove the device. This
--	 * will invoke the platform driver remove function, which cleans up
--	 * the rest.
-+	 * If all cores in this pkg are offline, remove the interface.
- 	 */
-+	tdata = pd->core_data[PKG_SYSFS_ATTR_NO];
- 	if (cpumask_empty(&pd->cpumask)) {
--		zone_devices[topology_logical_die_id(cpu)] = NULL;
--		platform_device_unregister(pdev);
-+		if (tdata)
-+			coretemp_remove_core(pd, PKG_SYSFS_ATTR_NO);
-+		hwmon_device_unregister(pd->hwmon_dev);
-+		pd->hwmon_dev = NULL;
- 		return 0;
- 	}
- 
-@@ -770,7 +754,6 @@ static int coretemp_cpu_offline(unsigned int cpu)
- 	 * Check whether this core is the target for the package
- 	 * interface. We need to assign it to some other cpu.
- 	 */
--	tdata = pd->core_data[PKG_SYSFS_ATTR_NO];
- 	if (tdata && tdata->cpu == cpu) {
- 		target = cpumask_first(&pd->cpumask);
- 		mutex_lock(&tdata->update_lock);
-@@ -789,7 +772,7 @@ static enum cpuhp_state coretemp_hp_online;
- 
- static int __init coretemp_init(void)
- {
--	int err;
-+	int i, err;
- 
- 	/*
- 	 * CPUID.06H.EAX[0] indicates whether the CPU has thermal
-@@ -805,20 +788,22 @@ static int __init coretemp_init(void)
- 	if (!zone_devices)
- 		return -ENOMEM;
- 
--	err = platform_driver_register(&coretemp_driver);
--	if (err)
--		goto outzone;
-+	for (i = 0; i < max_zones; i++) {
-+		err = coretemp_device_add(i);
-+		if (err)
-+			goto outzone;
-+	}
- 
- 	err = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "hwmon/coretemp:online",
- 				coretemp_cpu_online, coretemp_cpu_offline);
- 	if (err < 0)
--		goto outdrv;
-+		goto outzone;
- 	coretemp_hp_online = err;
- 	return 0;
- 
--outdrv:
--	platform_driver_unregister(&coretemp_driver);
- outzone:
-+	while (i--)
-+		coretemp_device_remove(i);
- 	kfree(zone_devices);
- 	return err;
- }
-@@ -826,8 +811,11 @@ module_init(coretemp_init)
- 
- static void __exit coretemp_exit(void)
- {
-+	int i;
-+
- 	cpuhp_remove_state(coretemp_hp_online);
--	platform_driver_unregister(&coretemp_driver);
-+	for (i = 0; i < max_zones; i++)
-+		coretemp_device_remove(i);
- 	kfree(zone_devices);
- }
- module_exit(coretemp_exit)
--- 
-2.25.1
+Thanks,
+Robin.
 
+>   	}
+>   
+>   	/* Get smi-(sub)-common dev from the last larb. */
+> diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+> index 6e0e65831eb7..fb09ed6bf550 100644
+> --- a/drivers/iommu/mtk_iommu_v1.c
+> +++ b/drivers/iommu/mtk_iommu_v1.c
+> @@ -672,8 +672,7 @@ static int mtk_iommu_v1_probe(struct platform_device *pdev)
+>   		}
+>   		data->larb_imu[i].dev = &plarbdev->dev;
+>   
+> -		component_match_add_release(dev, &match, component_release_of,
+> -					    component_compare_of, larbnode);
+> +		component_match_add_of(dev, &match, larbnode);
+>   	}
+>   
+>   	platform_set_drvdata(pdev, data);
+> diff --git a/sound/soc/codecs/wcd938x.c b/sound/soc/codecs/wcd938x.c
+> index aca06a4026f3..2f8444e54083 100644
+> --- a/sound/soc/codecs/wcd938x.c
+> +++ b/sound/soc/codecs/wcd938x.c
+> @@ -4474,8 +4474,7 @@ static int wcd938x_add_slave_components(struct wcd938x_priv *wcd938x,
+>   	}
+>   
+>   	of_node_get(wcd938x->rxnode);
+> -	component_match_add_release(dev, matchptr, component_release_of,
+> -				    component_compare_of, wcd938x->rxnode);
+> +	component_match_add_of(dev, matchptr, wcd938x->rxnode);
+>   
+>   	wcd938x->txnode = of_parse_phandle(np, "qcom,tx-device", 0);
+>   	if (!wcd938x->txnode) {
+> @@ -4483,8 +4482,7 @@ static int wcd938x_add_slave_components(struct wcd938x_priv *wcd938x,
+>   		return -ENODEV;
+>   	}
+>   	of_node_get(wcd938x->txnode);
+> -	component_match_add_release(dev, matchptr, component_release_of,
+> -				    component_compare_of, wcd938x->txnode);
+> +	component_match_add_of(dev, matchptr, wcd938x->txnode);
+>   	return 0;
+>   }
+>   
