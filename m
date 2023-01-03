@@ -1,233 +1,103 @@
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 361AA7E
-	for <iommu@lists.linux.dev>; Tue,  3 Jan 2023 02:53:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1672714401; x=1704250401;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=ZnawkaIQRSyqmMXF2c3jHVfo9pYOC0DUPmp8CLyVqg8=;
-  b=izmxEBAgHVIDouT0RWKL5jMhceS39G3cMUjYsSXMyVWfMpYMwWzepahd
-   5xoBaZAcgAjHo7CkrxM2GWZx1fJFRrslt4xGMzD75awzMbx4J4OP71z3i
-   KnzbJwK/pKRinF9fHDZISt45bCcWErPUlG0nvdVV59iV2e11u2Q2uK1sL
-   Mkvoh+y0Hvt8C/HA5srl3MM0Lr7wizyxhEjwmm9b/bDqSjl4ceM5zvCU7
-   HkXtGXiv5/9x/e2gL8ED+uqq3Wd/3jLrZpgSwjK+NmsddYLn+pyKTPnqX
-   CKIJ9fSx1M/RTj7X3j1mHJX/kR8LCo5r1aw2bGoPSzNtJ4pnSrhr9Ilat
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10578"; a="319274406"
-X-IronPort-AV: E=Sophos;i="5.96,295,1665471600"; 
-   d="scan'208";a="319274406"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jan 2023 18:53:15 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10578"; a="654641915"
-X-IronPort-AV: E=Sophos;i="5.96,295,1665471600"; 
-   d="scan'208";a="654641915"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
-  by orsmga002.jf.intel.com with ESMTP; 02 Jan 2023 18:53:08 -0800
-Message-ID: <e51496f4-2874-04ad-818f-e4579cf3a1d3@linux.intel.com>
-Date: Tue, 3 Jan 2023 10:45:24 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1236436E
+	for <iommu@lists.linux.dev>; Tue,  3 Jan 2023 06:30:27 +0000 (UTC)
+Received: by mail-pf1-f178.google.com with SMTP id w203so3258774pfc.12
+        for <iommu@lists.linux.dev>; Mon, 02 Jan 2023 22:30:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=IH4BnFmj51xja43rQ2VjV2A7Vl5bq18SZUAgL2EcwnI=;
+        b=TG8uvyWlWw/f/acMw9cbu5au61WMfhj8SQ7FwLvxR65sqsYZBrZeJ84HJaB1uTlkJL
+         NjKW3hoU0GcIiCuaxhYad+YSh6y8IxPDZsTYtz7rjBw5PGyuCpsS6al8/MpbgN0ZcJLJ
+         f88f2MFNLsumloslDC9abPso5qnjumuUgJm8gVlEsK/WS9uv28IZhOLXdwC54bcSLGsx
+         PqxZZ1FK2Lacldkq5OtLbraJqwV9ht6pZiE6vLz7JKYvU0RMFEvhq/nSEVE+5hmPHNvl
+         874ZBFtjftFatmgPEAof5bKW7H8DotegkmfFt/Hnwa6ydCivHzy46tLoyJTNJaFjfLWZ
+         zGSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=IH4BnFmj51xja43rQ2VjV2A7Vl5bq18SZUAgL2EcwnI=;
+        b=xqMIgDP00PbPfcP3bYAqhLwD1/F41gxOw5JyHSjle04vEKW44RKFIIikI+RWdefbvp
+         fC4f/2c9bu57zFqUc5WBZAHSYQvK4brFZToA0Y51vCaOPl601qNuKN94W4TV2Zm5t2Sg
+         +1Sijaw6pveyoS6WTwLSCuUxLLr9l1YcsIk5I1knLDhupBx8MGXitv8eZck/bi97/0C7
+         ZVfmo4/ylK9Hxl73ivrqG66wsTPwapeVkCY8HNZhB9U3OEuifnXy4AMA//x/t111CDv2
+         EBfYdyxk4QgpolmzirIKQcmsrqL37z8y9fyNxnwgeJKgMnNmA1ICHb3C8w2+3qXGGBLT
+         WEtA==
+X-Gm-Message-State: AFqh2koEyOslzedaN/zqAQup+bb8wvZVQZ795I189sq+P6bZlnGcw6PW
+	Ir7+bTiIBxz64p3BKgEAfDo=
+X-Google-Smtp-Source: AMrXdXuB8TRSOt5N1YqvE+OSqTWyWFvhKTUMq1KEyXVklZBiK31z6i7whkRLrLYws9KRNGMhpo6u6Q==
+X-Received: by 2002:a05:6a00:88a:b0:581:19ed:78b9 with SMTP id q10-20020a056a00088a00b0058119ed78b9mr38707011pfj.2.1672727427390;
+        Mon, 02 Jan 2023 22:30:27 -0800 (PST)
+Received: from localhost.localdomain ([202.120.234.246])
+        by smtp.googlemail.com with ESMTPSA id i127-20020a626d85000000b00581a156b920sm10418848pfc.132.2023.01.02.22.30.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Jan 2023 22:30:26 -0800 (PST)
+From: Miaoqian Lin <linmq006@gmail.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Eric Auger <eric.auger@redhat.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: linmq006@gmail.com
+Subject: [PATCH] iommu: Fix refcount leak in iommu_device_claim_dma_owner
+Date: Tue,  3 Jan 2023 10:30:17 +0400
+Message-Id: <20230103063017.4022393-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
- Rob Clark <robdclark@gmail.com>, Marek Szyprowski
- <m.szyprowski@samsung.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
- Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>,
- Heiko Stuebner <heiko@sntech.de>, Matthew Rosato <mjrosato@linux.ibm.com>,
- Orson Zhai <orsonzhai@gmail.com>, Baolin Wang
- <baolin.wang@linux.alibaba.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
- Chen-Yu Tsai <wens@csie.org>, Thierry Reding <thierry.reding@gmail.com>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 18/20] iommu: Call set_platform_dma if default domain
- is unavailable
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <20221128064648.1934720-1-baolu.lu@linux.intel.com>
- <20221128064648.1934720-19-baolu.lu@linux.intel.com>
- <Y4TMQ7HazPWMdsNj@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Y4TMQ7HazPWMdsNj@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-Hi Jason,
+iommu_group_get() returns the group with the reference incremented.
+Also an empty @owner is a more serious problem than refcount leak.
+Move iommu_group_get() after owner check to fix the refcount leak.
 
-On 11/28/22 10:57 PM, Jason Gunthorpe wrote:
-> On Mon, Nov 28, 2022 at 02:46:46PM +0800, Lu Baolu wrote:
->> If the IOMMU driver has no default domain support, call set_platform_dma
->> explicitly to return the kernel DMA control back to the platform DMA ops.
->>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> ---
->>   drivers/iommu/iommu.c | 28 ++++++++--------------------
->>   1 file changed, 8 insertions(+), 20 deletions(-)
->>
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 7c99d8eb3182..e4966f088184 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -2040,16 +2040,6 @@ int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
->>   	return 0;
->>   }
->>   
->> -static void __iommu_detach_device(struct iommu_domain *domain,
->> -				  struct device *dev)
->> -{
->> -	if (iommu_is_attach_deferred(dev))
->> -		return;
-> 
-> This removal might want to be its own patch with an explanation.
-> 
-> It looks like at the current moment __iommu_detach_device() is only
-> called via call chains that are after the device driver is attached -
-> eg via explicit attach APIs called by the device driver.
-> 
-> So it should just unconditionally work. It is actually looks like a
-> bug that we were blocking detach on these paths since the attach was
-> unconditional and the caller is going to free the (probably) UNAMANGED
-> domain once this returns.
-> 
-> The only place we should be testing for deferred attach is during the
-> initial point the dma device is linked to the group, and then again
-> during the dma api calls to check if the device
-> 
-> This maybe the patch that is needed to explain this:
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index d69ebba81bebd8..06f1fe6563bb30 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -993,8 +993,8 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
->   
->   	mutex_lock(&group->mutex);
->   	list_add_tail(&device->list, &group->devices);
-> -	if (group->domain  && !iommu_is_attach_deferred(dev))
-> -		ret = __iommu_attach_device(group->domain, dev);
-> +	if (group->domain)
-> +		ret = iommu_group_do_dma_first_attach(dev, group->domain);
->   	mutex_unlock(&group->mutex);
->   	if (ret)
->   		goto err_put_group;
-> @@ -1760,21 +1760,24 @@ static void probe_alloc_default_domain(struct bus_type *bus,
->   
->   }
->   
-> -static int iommu_group_do_dma_attach(struct device *dev, void *data)
-> +static int iommu_group_do_dma_first_attach(struct device *dev, void *data)
->   {
->   	struct iommu_domain *domain = data;
-> -	int ret = 0;
->   
-> -	if (!iommu_is_attach_deferred(dev))
-> -		ret = __iommu_attach_device(domain, dev);
-> +	lockdep_assert_held(&dev->iommu_group->mutex);
->   
-> -	return ret;
-> +	if (iommu_is_attach_deferred(dev)) {
-> +		dev->iommu->attach_deferred = 1;
-> +		return 0;
-> +	}
-> +
-> +	return __iommu_attach_device(domain, dev);
->   }
->   
-> -static int __iommu_group_dma_attach(struct iommu_group *group)
-> +static int __iommu_group_dma_first_attach(struct iommu_group *group)
->   {
->   	return __iommu_group_for_each_dev(group, group->default_domain,
-> -					  iommu_group_do_dma_attach);
-> +					  iommu_group_do_dma_first_attach);
->   }
->   
->   static int iommu_group_do_probe_finalize(struct device *dev, void *data)
-> @@ -1839,7 +1842,7 @@ int bus_iommu_probe(struct bus_type *bus)
->   
->   		iommu_group_create_direct_mappings(group);
->   
-> -		ret = __iommu_group_dma_attach(group);
-> +		ret = __iommu_group_dma_first_attach(group);
->   
->   		mutex_unlock(&group->mutex);
->   
-> @@ -1971,9 +1974,11 @@ static int __iommu_attach_device(struct iommu_domain *domain,
->   		return -ENODEV;
->   
->   	ret = domain->ops->attach_dev(domain, dev);
-> -	if (!ret)
-> -		trace_attach_device_to_domain(dev);
-> -	return ret;
-> +	if (ret)
-> +		return ret;
-> +	dev->iommu->attach_deferred = 0;
-> +	trace_attach_device_to_domain(dev);
-> +	return 0;
->   }
->   
->   /**
-> @@ -2018,7 +2023,7 @@ EXPORT_SYMBOL_GPL(iommu_attach_device);
->   
->   int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
->   {
-> -	if (iommu_is_attach_deferred(dev))
-> +	if (dev->iommu && dev->iommu->attach_deferred)
->   		return __iommu_attach_device(domain, dev);
->   
->   	return 0;
-> @@ -2027,9 +2032,6 @@ int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
->   static void __iommu_detach_device(struct iommu_domain *domain,
->   				  struct device *dev)
->   {
-> -	if (iommu_is_attach_deferred(dev))
-> -		return;
-> -
->   	domain->ops->detach_dev(domain, dev);
->   	trace_detach_device_from_domain(dev);
->   }
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 1690c334e51631..ebac04a13fff68 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -413,6 +413,7 @@ struct dev_iommu {
->   	struct iommu_device		*iommu_dev;
->   	void				*priv;
->   	u32				max_pasids;
-> +	u8				attach_deferred;
->   };
->   
->   int iommu_device_register(struct iommu_device *iommu,
+Fixes: 89395ccedbc1 ("iommu: Add device-centric DMA ownership interfaces")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+changes in v2:
+- Remove set NULL to group as suggested by Baolu Lu.
+- Update commit message according to Lu's explanation.
+---
+ drivers/iommu/iommu.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-Thanks for the patch! It seems that we also need to call
-iommu_group_do_dma_first_attach() in the iommu_probe_device() path?
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index de91dd88705b..5f6a85aea501 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -3185,14 +3185,16 @@ EXPORT_SYMBOL_GPL(iommu_group_claim_dma_owner);
+  */
+ int iommu_device_claim_dma_owner(struct device *dev, void *owner)
+ {
+-	struct iommu_group *group = iommu_group_get(dev);
++	struct iommu_group *group;
+ 	int ret = 0;
+ 
+-	if (!group)
+-		return -ENODEV;
+ 	if (WARN_ON(!owner))
+ 		return -EINVAL;
+ 
++	group = iommu_group_get(dev);
++	if (!group)
++		return -ENODEV;
++
+ 	mutex_lock(&group->mutex);
+ 	if (group->owner_cnt) {
+ 		if (group->owner != owner) {
+-- 
+2.25.1
 
-@@ -401,7 +425,7 @@ int iommu_probe_device(struct device *dev)
-          * attach the default domain.
-          */
-         if (group->default_domain && !group->owner) {
--               ret = __iommu_attach_device(group->default_domain, dev);
-+               ret = iommu_group_do_dma_first_attach(dev, 
-group->default_domain);
-                 if (ret) {
-                         mutex_unlock(&group->mutex);
-                         iommu_group_put(group);
-
-By the way, I'd like to put above code in a separated patch of the next
-version, can I add your signed-off-by?
-
---
-Best regards,
-baolu
