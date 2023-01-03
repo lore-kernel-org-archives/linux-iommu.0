@@ -1,55 +1,55 @@
 Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEE837F;
-	Tue,  3 Jan 2023 01:09:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1080B7F;
+	Tue,  3 Jan 2023 01:09:11 +0000 (UTC)
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-	by mailout.west.internal (Postfix) with ESMTP id AA81E3200913;
-	Mon,  2 Jan 2023 20:09:06 -0500 (EST)
+	by mailout.west.internal (Postfix) with ESMTP id 6B3AA320091E;
+	Mon,  2 Jan 2023 20:09:09 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Mon, 02 Jan 2023 20:09:07 -0500
+  by compute4.internal (MEProxy); Mon, 02 Jan 2023 20:09:10 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
 	cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-	:message-id:mime-version:reply-to:sender:subject:subject:to:to;
-	 s=fm3; t=1672708146; x=1672794546; bh=frVBfqgdXyytW4RDcsNsr65XW
-	bIE8IRHvES+ci0D9gk=; b=TbcNQ6hMRQ0js7MXzWW/XTV0UCtSym6MDqyCGKWSO
-	iE7WvW/paXk/HtvkQrNJ+EZLKY4Hg1kkZWdSxz9B/d5mHOwksUHco4JI9bYrM9gx
-	ZbV3TNjMXQBOBm5fbpgh8yHaEiMf68RUmzzgo5JUZ55WV9QsVQ6h5TqAwM7/8Duu
-	ynMjxXhPrR835PmjojpXfa9J1Llpq5oNpvuiucEziWK+KWeuy0rZgvF3QL6KnHtd
-	DhX7hOnxwmPdxs1q/fFadcXmgswt9Z/QPcTxnp8CzCG1O9NSd9nx3YmYXQuYs789
-	6LQtmv5Dk7+9MRFIZ6F2fZbygb6/hckbWtgXD4jPv2+KQ==
+	:in-reply-to:message-id:mime-version:references:reply-to:sender
+	:subject:subject:to:to; s=fm3; t=1672708149; x=1672794549; bh=rS
+	dD9Eyr/xiErPEA9MSXkTaUL862gDKe06QmYAccHDA=; b=bJ5mBVoE1Z3WMZTo+G
+	W4RivL6losj1Yk3heM1b+vtHt1v7g7+gzFV9eBDACr4xqZFZ2sJAqvRYyCd16V0y
+	bjqiJ2HwzctfOPdWeo+o5GpmSV9vEdN/z1OgHlrd/fzgFWDHO5mTOm1nbhG1bh+h
+	RwQhbu1+MxHnuHBwWBVbyshF2EWzsNAHZdcaOSKsCiE+MteKZBS8Lts45RlqsFS7
+	MXPyx8b8wivKv5g351huCEjoQARmd+V4LBFHuBBRWdQKwRW4emwpyWBwsuSkqOz/
+	mhf4V8BGEM8h1ytspibokGxUVlaTtYZwKmvEfwIV0a/0921RXFe8ggPVNjgm00+w
+	5Tsw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:message-id
-	:mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-	:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
-	1672708146; x=1672794546; bh=frVBfqgdXyytW4RDcsNsr65XWbIE8IRHvES
-	+ci0D9gk=; b=H3+bytyQighzU75PalWI9Uc+ZVdCAoTS6wDS8ONekmGfvArKteG
-	TMI9UR4hR96V7sfddq3/5F+oVALiAHomElZVGya+iWwwLURlBqedHJA2SVo5CRxp
-	NZA0YUIO83QOs3Vvz4giBtjYEefQhZNMuNFlw195uYPnpLk+nuAsXehVcuXUzQcG
-	ruiETmgIYumrwadvP3H/akBRjGVc7Un+YiIsj4bxY+O7FkhAMbwnjM17eOP2scIO
-	ON3nhv+Rb3DvrifbDrCgwghVgepDEXFaJKd9gtynabHKzyW4vptYUU8hxYg1sCbs
-	+CBb0Bpr0Vf4R1/LUMyGsBvNKyZRDzhcQZw==
-X-ME-Sender: <xms:MYCzY4chcK9aPrGiDc1M6mQiBBdnDtnZXWRKRP2CJaDNSsAcVLSM_Q>
-    <xme:MYCzY6OsR7PQkCisJKesEcpLkRmvSewtJCU1uOp_stMnxIdduJJjp4HfdRmLoqmeF
-    30nZB-uqSTPMIn1nA>
-X-ME-Received: <xmr:MYCzY5hLQzJBIdYZdcCZPHefBzzHwa9CMZkkzD5FtLkkNm8XXjXV6fnaVKgVIi9ivoFCwjy4ZCUXveoe6pOvSmEChuM3hVrB5w0LlTHhxJ_Ad-WBn0K5luLo7z_b4MPH-mVN2g>
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:sender:subject
+	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+	:x-sasl-enc; s=fm2; t=1672708149; x=1672794549; bh=rSdD9Eyr/xiEr
+	PEA9MSXkTaUL862gDKe06QmYAccHDA=; b=Whxu3WgLF0P77rD14HLeM43ijeHqC
+	pjfUh17lGRnn5tjzOiWgRmun8SMHWmt9cARqW8svO2yJ6O1ZHkG0R07zyTxWjHVq
+	tB6ZXwWSBMdpP+MErqZy+qQmOZ4AK39vAm5xjFvI3p8HnjL4TlXnX0oNKagHpuQO
+	i9agxF7aOC134tzqDMrd6eb6fHuDL01r2t7j/Sxlmz7PMGiqHGq1AnKA6tLz1NiC
+	+fhAqO7qZahSUqTm02M+x5j2gVRPjGKV5sdxEiuoua4ar8yLM5TFnha50w9TEvIz
+	DsQk1ZBEFYH9AbhY85yYujm0dx3FwzAIBK+QBGvBQCyOTj9u5ywMOUAaQ==
+X-ME-Sender: <xms:NICzY14jMx27nHmvp5QXPZrFIV5SNQ4WQb5XFPS5-zr4TiOp3CkcMQ>
+    <xme:NICzYy6fKsdnVIUWSNAdi3XKAEL9INEliksrYEGiL62UL4NqBX97S6z4avqqloUQN
+    IVZyj7w5k47ensCDA>
+X-ME-Received: <xmr:NICzY8dy8bH7Al714AUXWQlJ3-My-7GKOW4jlHXNqQiDooql249NZRQNxhy0ocTG6vC3aLm1ebpbT-htsfIbVzRXLULm1rinZZTFSj0tu-O3gabfTDgtNpvXe5atmgJdhp3Cwg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrjeefgdeffecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgvlhcu
-    jfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtffrrg
-    htthgvrhhnpeekheffteehtdetfffgfeetteejvdefleeuvedufffguedtjedvheelvddv
-    fffhveenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivg
-    eptdenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehshhholhhlrghnugdr
-    ohhrgh
-X-ME-Proxy: <xmx:MYCzY98rlaFHqgdsIqR3G8SSgmIiglY_3ViHRAo64It5XsSPmPIMHQ>
-    <xmx:MYCzY0vMxeEKicSGbfapf2P2Ln_w1um7HeZBkD5Du4q5Tq5gIzWfuQ>
-    <xmx:MYCzY0H6zbYfBGIYiSUWZGxFcm79aJheVR7WSSdy9Q9E4KP-0TRW6Q>
-    <xmx:MoCzY1E4x_YztRQAtpqcWYWn0PgyP3tq8L-y7cn0diLfiMZ9bwPVeA>
+    fjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgv
+    lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
+    frrghtthgvrhhnpedukeetueduhedtleetvefguddvvdejhfefudelgfduveeggeehgfdu
+    feeitdevteenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
+    hmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:NICzY-IURFeAUznAaQ74JpkdpG2OHhjXNuwO7OU9SW6GeDVTNTBKDA>
+    <xmx:NICzY5K0W8u5t6u2nOYyZuRv82iW6F7rpbfoLMQynWz2ejCMfbhFwA>
+    <xmx:NICzY3yqxY1C2FQw3VGYOQRxsWr0w8FYZl1fjr7J2baw9mjxaugQsw>
+    <xmx:NYCzYzBJ27ooWwpSqG1j8qEkdDVKPmQHt5-ipw4qMdEbkERfOkHxoA>
 Feedback-ID: i0ad843c9:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 2 Jan 2023 20:09:04 -0500 (EST)
+ 2 Jan 2023 20:09:08 -0500 (EST)
 From: Samuel Holland <samuel@sholland.org>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -65,10 +65,12 @@ Cc: iommu@lists.linux.dev,
 	devicetree@vger.kernel.org,
 	Maxime Ripard <mripard@kernel.org>,
 	Samuel Holland <samuel@sholland.org>
-Subject: [PATCH v2 0/6] iommu/sun50i: Allwinner D1 support
-Date: Mon,  2 Jan 2023 19:08:57 -0600
-Message-Id: <20230103010903.11181-1-samuel@sholland.org>
+Subject: [PATCH v2 1/6] dt-bindings: iommu: sun50i: Add compatible for Allwinner D1
+Date: Mon,  2 Jan 2023 19:08:58 -0600
+Message-Id: <20230103010903.11181-2-samuel@sholland.org>
 X-Mailer: git-send-email 2.37.4
+In-Reply-To: <20230103010903.11181-1-samuel@sholland.org>
+References: <20230103010903.11181-1-samuel@sholland.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -77,31 +79,56 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-D1 is a RISC-V SoC from Allwinner's sunxi family. This series adds IOMMU
-binding and driver support. The RISC-V architecture code still needs
-some small updates to use an IOMMU for DMA[1][2]. I will send those
-separately.
+D1 contains an IOMMU similar to the one in the H6 SoC, but the D1
+variant has no external reset signal.
 
-[1]: https://lore.kernel.org/linux-riscv/20220428010401.11323-1-samuel@sholland.org/
-[2]: https://lore.kernel.org/linux-riscv/7b09e989-0aa1-a557-485e-572f69caf881@arm.com/
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+---
 
 Changes in v2:
  - Disallow the 'resets' property for the D1 variant
- - Set bypass based on attached devices instead of using a fixed value
 
-Samuel Holland (6):
-  dt-bindings: iommu: sun50i: Add compatible for Allwinner D1
-  iommu/sun50i: Track masters attached to the domain
-  iommu/sun50i: Keep the bypass register up to date
-  iommu/sun50i: Support variants without an external reset
-  iommu/sun50i: Add support for the D1 variant
-  riscv: dts: allwinner: d1: Add the IOMMU node
+ .../iommu/allwinner,sun50i-h6-iommu.yaml      | 20 +++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
 
- .../iommu/allwinner,sun50i-h6-iommu.yaml      | 20 +++++-
- .../boot/dts/allwinner/sunxi-d1s-t113.dtsi    | 10 +++
- drivers/iommu/sun50i-iommu.c                  | 68 ++++++++++++++-----
- 3 files changed, 79 insertions(+), 19 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/iommu/allwinner,sun50i-h6-iommu.yaml b/Documentation/devicetree/bindings/iommu/allwinner,sun50i-h6-iommu.yaml
+index e20016f12017..5aeea10cf899 100644
+--- a/Documentation/devicetree/bindings/iommu/allwinner,sun50i-h6-iommu.yaml
++++ b/Documentation/devicetree/bindings/iommu/allwinner,sun50i-h6-iommu.yaml
+@@ -17,7 +17,9 @@ properties:
+       The content of the cell is the master ID.
+ 
+   compatible:
+-    const: allwinner,sun50i-h6-iommu
++    enum:
++      - allwinner,sun20i-d1-iommu
++      - allwinner,sun50i-h6-iommu
+ 
+   reg:
+     maxItems: 1
+@@ -37,7 +39,21 @@ required:
+   - reg
+   - interrupts
+   - clocks
+-  - resets
++
++if:
++  properties:
++    compatible:
++      contains:
++        enum:
++          - allwinner,sun50i-h6-iommu
++
++then:
++  required:
++    - resets
++
++else:
++  properties:
++    resets: false
+ 
+ additionalProperties: false
+ 
 -- 
 2.37.4
 
