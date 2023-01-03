@@ -1,131 +1,104 @@
-Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5195E7F;
-	Tue,  3 Jan 2023 01:09:25 +0000 (UTC)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-	by mailout.west.internal (Postfix) with ESMTP id 7CE103200900;
-	Mon,  2 Jan 2023 20:09:23 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Mon, 02 Jan 2023 20:09:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-	cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-	:in-reply-to:message-id:mime-version:references:reply-to:sender
-	:subject:subject:to:to; s=fm3; t=1672708163; x=1672794563; bh=kZ
-	sTHUFAGL+nV4DJ8yYJfUo1prfIfeItgnkARi0XucI=; b=I7sS11A2fNj9GnEtLL
-	di2WxTbt2fNqMvmw2JjUkrMMjEGSpUzNj0K6KEkITQSRDIkVAuPjbAPS+s22k7aS
-	tfsAgV+9rhwz0OsKtDzaywoFQ5TzYWohtV7IcdmmfJ9PBxrpvEfzw2dj6Y0RjFQ0
-	xKrmbQXuOfVFjpqqddgqlSYwYv48DCLF3OhNx9Cqrh5HIE0Fu/auiua9PE/6y3ij
-	NjLCren3eo0hKw48PTujzcAXpGXQTe6pCInodtiy9FRNN4bE6LE/fMHgbziM9i8d
-	6AGjT2p29+wbfJoj8BJupdBGZM/XTeq82N9bNT1VH0iEqrJqlich4l1ZcpQl8O5w
-	sn4Q==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:sender:subject
-	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-	:x-sasl-enc; s=fm2; t=1672708163; x=1672794563; bh=kZsTHUFAGL+nV
-	4DJ8yYJfUo1prfIfeItgnkARi0XucI=; b=eX3XuWrX8cm2ftUAKF2gxfelvft5x
-	+bjA9gM3kX1V3S39zQtE/PSsqVvhgCHtNInNIuAupyq8jd9GND0d6sxcO9oRLsOd
-	GdhKOW9EkeaQFXtKCwYD/eDqIKQpds2sk9gqSH9cjeU5OT4xyyLjM/gYZQtHjCKv
-	yF3RlSodYhmfUzGHzVPp1eMl753ra/d/PzadFj3FoI8BwDQb9WEz6yvxhDOoI3AT
-	fT6cvdtMMTy9IioN9e1FDX33JWlKHwEn8OmARDTeKDprdkQTwLcmnr98k16P7Ucm
-	Y0r/8BUpfPugtHovwcL1DwCsYtF21e58T31Gyj7TRdFjrPvsPSZIIgbTw==
-X-ME-Sender: <xms:QoCzYy9TDq9iWF74Sx08Jj2X5BtMYIMHwLJ1M1B8URilJFRNm4b5BQ>
-    <xme:QoCzYyvBHyEduguIVDOllusGjDcbo7ASoqRWSJbHTvhjKp2BuOI9oGLcqdtrhaTfQ
-    3890VFvM-40RxOqbQ>
-X-ME-Received: <xmr:QoCzY4A5Fve0aixke3s71sd1_EuxU27lvm4JErr237ULCze1afkHGrLHs5WYeMBRilmDedcNCL5c-gPJYAoamyShrscsj6WWNzVs_jXkC4yAIi7d7540CIbLg93qwre6U7o20A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrjeefgdeffecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgv
-    lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
-    frrghtthgvrhhnpedukeetueduhedtleetvefguddvvdejhfefudelgfduveeggeehgfdu
-    feeitdevteenucevlhhushhtvghrufhiiigvpedvnecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:Q4CzY6fnAnPQYSmjSVqj0oY1bDJrW05uOYRKGtJzWq6ND-MRD5oqLA>
-    <xmx:Q4CzY3NwlDA12CGwmQrotGqdECTzqEqAPp1y6_9CVDtCaKCG0zDzyw>
-    <xmx:Q4CzY0nPJfHDUPdYMp8jdKHk0YFpAWOas1q1Bs2YLhkxhollMohmUA>
-    <xmx:Q4CzY7kGlOpZCnM6B36tC02s93AE8msh-NalISTYKpsC4WQoVph1bw>
-Feedback-ID: i0ad843c9:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 2 Jan 2023 20:09:22 -0500 (EST)
-From: Samuel Holland <samuel@sholland.org>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Chen-Yu Tsai <wens@csie.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>
-Cc: iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-sunxi@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	Maxime Ripard <mripard@kernel.org>,
-	Samuel Holland <samuel@sholland.org>
-Subject: [PATCH v2 6/6] riscv: dts: allwinner: d1: Add the IOMMU node
-Date: Mon,  2 Jan 2023 19:09:03 -0600
-Message-Id: <20230103010903.11181-7-samuel@sholland.org>
-X-Mailer: git-send-email 2.37.4
-In-Reply-To: <20230103010903.11181-1-samuel@sholland.org>
-References: <20230103010903.11181-1-samuel@sholland.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93A377F
+	for <iommu@lists.linux.dev>; Tue,  3 Jan 2023 01:34:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1672709646; x=1704245646;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=6guush2vfOoBc9v6cMZa7A/f9x+xz+VSebDHnSj7k/k=;
+  b=e24/Y9hKGtfo01N7fjlJb9q+ERetUJH/rbQ8HcXzEhIklLQILu6GfrZp
+   rwjqR5WmJYRMKk/Yi7hX8VaFDU/K1g/Cxunk2oD56OjPOgRgdMPVzyr0T
+   qUaO6XbNhjiR6BronoVRW7jXtE3h1hGWvWpuax3qCghv0n/kK3KaBPtIV
+   pXSgNUH7Z+iHHgklbBzZnW3OhJnCXP03+iPbwut8I/SSFVygkkMBUWkSs
+   37jun/WHM2G0vI62QETknH8HIzefvxCEpybL9M1dzynjpLtOb9R5tgDOG
+   FJyI22kVaN4vpqCwJM/6WYbvsdKKcNIprfu3lF6roScOFh8RV0cQ+X14O
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10578"; a="301247135"
+X-IronPort-AV: E=Sophos;i="5.96,295,1665471600"; 
+   d="scan'208";a="301247135"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jan 2023 17:34:05 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10578"; a="983417229"
+X-IronPort-AV: E=Sophos;i="5.96,295,1665471600"; 
+   d="scan'208";a="983417229"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.48]) ([10.239.159.48])
+  by fmsmga005.fm.intel.com with ESMTP; 02 Jan 2023 17:34:03 -0800
+Message-ID: <ffe919f3-f4f2-b378-947f-4cf704ad8950@linux.intel.com>
+Date: Tue, 3 Jan 2023 09:26:19 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Cc: baolu.lu@linux.intel.com
+Subject: Re: [PATCH] iommu: Fix refcount leak in iommu_device_claim_dma_owner
+To: Miaoqian Lin <linmq006@gmail.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, Eric Auger <eric.auger@redhat.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20221230083100.1489569-1-linmq006@gmail.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20221230083100.1489569-1-linmq006@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-D1 contains an IOMMU for its video-related hardware. Add the node, and
-hook it up to the masters which are already described in the devicetree.
+On 12/30/22 4:31 PM, Miaoqian Lin wrote:
+> iommu_group_get() returns the group with the reference incremented.
+> Move iommu_group_get() after owner check to fix the refcount leak.
 
-Signed-off-by: Samuel Holland <samuel@sholland.org>
----
+An empty @owner is a more serious problem than refcount leak. It should
+not happen, so a WARN_ON() was added there.
 
-Changes in v2:
- - New patch for v2
+Anyway, your change makes the code better.
 
- arch/riscv/boot/dts/allwinner/sunxi-d1s-t113.dtsi | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+> 
+> Fixes: 89395ccedbc1 ("iommu: Add device-centric DMA ownership interfaces")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> ---
+>   drivers/iommu/iommu.c | 8 +++++---
+>   1 file changed, 5 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index de91dd88705b..3a7dd8b61fab 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -3185,14 +3185,16 @@ EXPORT_SYMBOL_GPL(iommu_group_claim_dma_owner);
+>    */
+>   int iommu_device_claim_dma_owner(struct device *dev, void *owner)
+>   {
+> -	struct iommu_group *group = iommu_group_get(dev);
+> +	struct iommu_group *group = NULL;
 
-diff --git a/arch/riscv/boot/dts/allwinner/sunxi-d1s-t113.dtsi b/arch/riscv/boot/dts/allwinner/sunxi-d1s-t113.dtsi
-index dff363a3c934..ade50f1e01a4 100644
---- a/arch/riscv/boot/dts/allwinner/sunxi-d1s-t113.dtsi
-+++ b/arch/riscv/boot/dts/allwinner/sunxi-d1s-t113.dtsi
-@@ -138,6 +138,14 @@ ccu: clock-controller@2001000 {
- 			#reset-cells = <1>;
- 		};
- 
-+		iommu: iommu@2010000 {
-+			compatible = "allwinner,sun20i-d1-iommu";
-+			reg = <0x2010000 0x10000>;
-+			interrupts = <SOC_PERIPHERAL_IRQ(64) IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&ccu CLK_BUS_IOMMU>;
-+			#iommu-cells = <1>;
-+		};
-+
- 		dmic: dmic@2031000 {
- 			compatible = "allwinner,sun20i-d1-dmic",
- 				     "allwinner,sun50i-h6-dmic";
-@@ -574,6 +582,7 @@ mixer0: mixer@5100000 {
- 				 <&display_clocks CLK_MIXER0>;
- 			clock-names = "bus", "mod";
- 			resets = <&display_clocks RST_MIXER0>;
-+			iommus = <&iommu 2>;
- 
- 			ports {
- 				#address-cells = <1>;
-@@ -596,6 +605,7 @@ mixer1: mixer@5200000 {
- 				 <&display_clocks CLK_MIXER1>;
- 			clock-names = "bus", "mod";
- 			resets = <&display_clocks RST_MIXER1>;
-+			iommus = <&iommu 2>;
- 
- 			ports {
- 				#address-cells = <1>;
--- 
-2.37.4
+No need to set NULL to group.
 
+>   	int ret = 0;
+>   
+> -	if (!group)
+> -		return -ENODEV;
+>   	if (WARN_ON(!owner))
+>   		return -EINVAL;
+>   
+> +	group = iommu_group_get(dev);
+> +	if (!group)
+> +		return -ENODEV;
+> +
+>   	mutex_lock(&group->mutex);
+>   	if (group->owner_cnt) {
+>   		if (group->owner != owner) {
+
+Others look good to me.
+
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+
+--
+Best regards,
+baolu
