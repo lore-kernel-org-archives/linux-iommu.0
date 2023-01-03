@@ -1,103 +1,79 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A951362
-	for <iommu@lists.linux.dev>; Tue,  3 Jan 2023 17:17:49 +0000 (UTC)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 303FBZbW024241;
-	Tue, 3 Jan 2023 17:16:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=vYy7M1t90PXp8Ww5l79hBYIeVV3imFzvlAp6ShHvT+A=;
- b=Kuc1aXe4Le2pJh78LzwravdcrsyCccOE2BEmjTicEZwqlCSjHjZ3nDDLwXlcjLpPFDS/
- TKMgGhc7mSifKtxMTqVtl+pLRYNfbrS4pCYmS+QWJOp/cTXCN0qPCOqs+VMLSKQEC8+Z
- frju4tXZGjGrOMq/LYw6nHmELHDEPekPOdaoz62nvCJAJc//CbjTXKTEU5LLbGG2N6p8
- GT0DsUdazyvytqOzMe9gpytlJWXmFJSuSX2Hg5Qf2oqxhjY/QfmqeVy88GpkIl9mupM1
- 6M+rFKMvK9Ls2i6k3OSTw8GoN35oaa3dewxD9CNtc94omRrKe4Y9dmIfY2I00JqcmAhK iw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3mvhh4jhv2-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 03 Jan 2023 17:16:53 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 303HF0cs024698;
-	Tue, 3 Jan 2023 17:16:52 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3mvhh4jhu1-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 03 Jan 2023 17:16:52 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-	by ppma03fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 303FN4hK005328;
-	Tue, 3 Jan 2023 17:16:49 GMT
-Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
-	by ppma03fra.de.ibm.com (PPS) with ESMTPS id 3mtcq6k0pq-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 03 Jan 2023 17:16:49 +0000
-Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
-	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 303HGjnh20644460
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 3 Jan 2023 17:16:45 GMT
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 75F8F2004B;
-	Tue,  3 Jan 2023 17:16:45 +0000 (GMT)
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 3E35F20040;
-	Tue,  3 Jan 2023 17:16:43 +0000 (GMT)
-Received: from osiris (unknown [9.171.65.115])
-	by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTPS;
-	Tue,  3 Jan 2023 17:16:43 +0000 (GMT)
-Date: Tue, 3 Jan 2023 18:16:41 +0100
-From: Heiko Carstens <hca@linux.ibm.com>
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: torvalds@linux-foundation.org, corbet@lwn.net, will@kernel.org,
-        boqun.feng@gmail.com, mark.rutland@arm.com, catalin.marinas@arm.com,
-        dennis@kernel.org, tj@kernel.org, cl@linux.com, gor@linux.ibm.com,
-        agordeev@linux.ibm.com, borntraeger@linux.ibm.com, svens@linux.ibm.com,
-        Herbert Xu <herbert@gondor.apana.org.au>, davem@davemloft.net,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        joro@8bytes.org, suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
-        dwmw2@infradead.org, baolu.lu@linux.intel.com,
-        Arnd Bergmann <arnd@arndb.de>, penberg@kernel.org, rientjes@google.com,
-        iamjoonsoo.kim@lge.com, Andrew Morton <akpm@linux-foundation.org>,
-        vbabka@suse.cz, roman.gushchin@linux.dev, 42.hyeyoo@gmail.com,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-s390@vger.kernel.org,
-        linux-crypto@vger.kernel.org, iommu@lists.linux.dev,
-        linux-arch@vger.kernel.org
-Subject: Re: [RFC][PATCH 11/12] slub: Replace cmpxchg_double()
-Message-ID: <Y7Ri+Uij1GFkI/LB@osiris>
-References: <20221219153525.632521981@infradead.org>
- <20221219154119.550996611@infradead.org>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D52FB8F47
+	for <iommu@lists.linux.dev>; Tue,  3 Jan 2023 18:12:42 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AAD221516;
+	Tue,  3 Jan 2023 10:13:23 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B17B73F663;
+	Tue,  3 Jan 2023 10:12:33 -0800 (PST)
+Message-ID: <67ae3a53-3db9-c1bc-2b67-08df14bc15cc@arm.com>
+Date: Tue, 3 Jan 2023 18:12:29 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221219154119.550996611@infradead.org>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: aYt5JesJFhS0mKJx405t1-xW5NqppuLb
-X-Proofpoint-GUID: Z03ZnZI1MCXR4CrburtVGAvLqmHB93ng
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2023-01-03_05,2023-01-03_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 suspectscore=0
- adultscore=0 mlxscore=0 phishscore=0 spamscore=0 bulkscore=0
- impostorscore=0 lowpriorityscore=0 priorityscore=1501 malwarescore=0
- mlxlogscore=618 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2301030145
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [RFC PATCH] arm64: dts: ls1028a: mark ARM SMMU as DMA coherent
+Content-Language: en-GB
+To: Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc: devicetree@vger.kernel.org, iommu@lists.linux.dev,
+ Laurentiu Tudor <laurentiu.tudor@nxp.com>, Will Deacon <will@kernel.org>,
+ linux-arm-kernel@lists.infradead.org, Shawn Guo <shawnguo@kernel.org>,
+ Li Yang <leoyang.li@nxp.com>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
+References: <20221208151514.3840720-1-vladimir.oltean@nxp.com>
+ <2a188b8a-ab16-d5d4-ed5f-f8eec236e4ca@arm.com>
+ <20221214165356.6tbzmfyoifqt4cwk@skbuf>
+ <3f3112e4-65ff-105d-8cd7-60495ec9054a@arm.com>
+ <20221219121618.z3dcyob542cnmdnk@skbuf>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20221219121618.z3dcyob542cnmdnk@skbuf>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Dec 19, 2022 at 04:35:36PM +0100, Peter Zijlstra wrote:
+On 19/12/2022 12:16 pm, Vladimir Oltean wrote:
+> Hi Robin,
 > 
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> ---
->  include/linux/slub_def.h |   12 ++-
->  mm/slab.h                |   41 +++++++++++--
->  mm/slub.c                |  146 ++++++++++++++++++++++++++++-------------------
->  3 files changed, 135 insertions(+), 64 deletions(-)
+> On Wed, Dec 14, 2022 at 08:33:10PM +0000, Robin Murphy wrote:
+>>> Does looking at the CTTW bit make any sense for MMU-500?
+>>
+>> In general, yes. The result above does imply that NXP have inadvertently set
+>> cfg_cttw wrong. For the avoidance of doubt, here's another MMU-500 showing
+>> SMMU_IDR0.CTTW set:
+>>
+>> [    3.014972] arm-smmu arm-smmu.0.auto: probing hardware configuration...
+>> [    3.014974] arm-smmu arm-smmu.0.auto: SMMUv2 with:
+>> [    3.014976] arm-smmu arm-smmu.0.auto:        stage 2 translation
+>> [    3.014977] arm-smmu arm-smmu.0.auto:        coherent table walk
+>> [    3.014979] arm-smmu arm-smmu.0.auto:        stream matching with 128 register groups
+>> [    3.014981] arm-smmu arm-smmu.0.auto:        128 context banks (128 stage-2 only)
+>> [    3.014984] arm-smmu arm-smmu.0.auto:        Supported page sizes: 0x60211000
+>> [    3.014986] arm-smmu arm-smmu.0.auto:        Stage-2: 48-bit IPA -> 48-bit PA
+> 
+> Thanks for the explanations and the patch you've sent separately.
+> 
+> I have a side question, why is the dev_name() of your SMMU set to
+> "arm-smmu.0.auto" (determined by PLATFORM_DEVID_AUTO if I'm not mistaken)?
 
-Does this actually work? Just wondering since I end up with an instant
-list corruption on s390. Might be endianness related, but I can't see
-anything obvious at a first glance.
+This is an ACPI-based machine, where platform device discovery and 
+creation is... different :)
+
+SMMUs are among those managed by drivers/acpi/arm64/iort.c
+
+> I'm asking because I would like to study the mechanism through which
+> your SMMU platform device get probed, to make sure that it's not
+> possible, during shutdown, for both platform_driver :: shutdown()
+> and platform_driver :: remove() methods to get called by the driver core.
+> This is generally not disallowed, and even possible if the entity who
+> registers these platform devices has its ->shutdown() method pointing
+> at ->remove().
+
+Yikes, I'd very much hope that that's not a thing!
+
+Cheers,
+Robin.
