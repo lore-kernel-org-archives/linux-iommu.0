@@ -1,40 +1,40 @@
 Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCD297F;
-	Tue,  3 Jan 2023 01:09:13 +0000 (UTC)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-	by mailout.west.internal (Postfix) with ESMTP id 2FC683200921;
-	Mon,  2 Jan 2023 20:09:12 -0500 (EST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96BA07F;
+	Tue,  3 Jan 2023 01:09:16 +0000 (UTC)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+	by mailout.west.internal (Postfix) with ESMTP id 07CFF3200919;
+	Mon,  2 Jan 2023 20:09:14 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Mon, 02 Jan 2023 20:09:13 -0500
+  by compute6.internal (MEProxy); Mon, 02 Jan 2023 20:09:16 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
 	cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
 	:in-reply-to:message-id:mime-version:references:reply-to:sender
-	:subject:subject:to:to; s=fm3; t=1672708151; x=1672794551; bh=4M
-	/YXCFP6z1qeIXax4Ipe9C0Q4INtZD2QYn6boleEmw=; b=VcD1lLVKCld/+P9wLE
-	KW3ZOldbUX1wubsUnP3aJLxPD5Blj+qfvTRWaQEYASDSdo3Uw80g7ipNC/nDFena
-	3UCt7UHojnDPRb07tRCIbQmyCTqrC92R2rCHbXS5dUJjnEOszohdEq0QVX97xpJq
-	wRajs6Pqd7x3tkttbkxV+v2rba81C0Z9XoNMiB46u+W3+4V1ggrAemKqan9wNZ7j
-	y8le58BlPT8MPm5uwo8Gd6al8YKh2c8r0IETEV/RTSdkyLQpmYkujON8CLFuTAg4
-	x2LpULr2AQbZ3gBSojOAa1ECwHuMrTQdaZrx3sfDxLcjHYcBS7wmZHIk1ezp7TJF
-	GuRQ==
+	:subject:subject:to:to; s=fm3; t=1672708154; x=1672794554; bh=l3
+	3byjN96tAFT91WzVSv7uBqAlUyhhwrwVPAOp/DxlI=; b=cUBLPZjztaJPEF/tEF
+	eXnYxSk3QYC4X9Z7BNWWtKNjLeMXIICX3Z0F8srYK52u98ILXKIAd8ey6+qiX+2/
+	CCjS38MZ8Oe+mD2bKi4MAGhwnVkT3B9toQo1K9iJowu5tTZG2k97iHSKAnbB5/Jr
+	ke2GtIwXCgCdTv3mcZAC5/B0XRLjz3OJvSCueGp7HtFYI5nJzW1M+rEgNePKjwt+
+	1JpAKKyNSlpHCfgUifkjt+vrUsCE8D9ExCMld5D4SiccVrOLbsjmmIlCmYP/1n/a
+	oJkSowd45RKHw7EOYQcZgaLe7UgxoBTS6CEczexSaGjrIbnpgcpS3XgRVgeskRTc
+	ZPFQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
 	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
 	:message-id:mime-version:references:reply-to:sender:subject
 	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-	:x-sasl-enc; s=fm2; t=1672708151; x=1672794551; bh=4M/YXCFP6z1qe
-	IXax4Ipe9C0Q4INtZD2QYn6boleEmw=; b=MfvkZe35is+AYz1KZfpm56KzHfUF3
-	l2I/MQNEVuq+SVKg8uw/d15uLW2acIvx55iCE2rfs61u7a0AQNGjP/FSrRVbf+Sc
-	fxcgacJCwJ3PYN+vLgXBUHQuW/SuwQeUUV5V0B1xfS4ExHSZfEqkzIXIhPpyptWC
-	Dex+xkeB9L0cdh+3VoNJnemAjjic39s++1EgB1Ug5gpEEzwaufFPKmC/Cn9DGQ9Q
-	HrpR6skSs0S4bJiPCz2CsjuT3UIIqCXlfYmT3SIuDzUhKv3dE2mf28gjutCIj3N0
-	ZLMrV22aRi7Csi8emYMMat8XtNUFhzNRSUK4NvV+9f7rEf0aO6gyS6x5w==
-X-ME-Sender: <xms:N4CzY2nTZ_MVPUwqTT3ArYbk15ZJViaxtufg8RjQP3K5W3nEXEs-Tw>
-    <xme:N4CzY9115yVQgeKN-4ZrOjSsmO7pWYr0TiW4qefeUW_GAr_zOmQfHo35CDKum6jAL
-    f3gRRPVjfhnV-QZWA>
-X-ME-Received: <xmr:N4CzY0oVjlxr9BIfsVxIQwmTnFdPv4hmVztdGQfMbyWxIbgo1Rx-F8FxM8Kg6VlkeH9h-7eXTNf_IkT9bb7ns23CQcFXiKWWSS5ZzLtVsNq1RpCuCuF_GDYnxTWg61kP_eKe9w>
+	:x-sasl-enc; s=fm2; t=1672708154; x=1672794554; bh=l33byjN96tAFT
+	91WzVSv7uBqAlUyhhwrwVPAOp/DxlI=; b=o4pb0s46K9RCUY30Fk6zVEKZDK0lT
+	JnqzFQvbGCV95Q4cwbpolMY8oC7geSKBCkCT/zx1IY5on+go50zWThlMBK6iUhha
+	mo850IGtZegHv5RvI74j/eHf38uCTQRfnU3wJy6Bcl/BTiLoZBmzmGnLFFdm1zTn
+	Ogx4W7OaNakzafipaZcj0y2ttLazg6HwIFGJioYA75B3ywDWBepeEQWH6PqAXjyJ
+	2SDLMjvaa6rw7jliJ3nJsUraewPELG4b6UnNIKLYaeKIC4pXj4jNpSsiEOqdi8mM
+	73ZnvyMUw7evkNB+jW1rsWE3mlVf7C8suf7LVlBRcHw6jvdfF2zuJG7bw==
+X-ME-Sender: <xms:OoCzY40XwAL7Mw2qfW8R7yZtSXnkTobP58eAxsWnVsjHT3L97Dnjmw>
+    <xme:OoCzYzHR5ATTmvCuW0oDQmDii67QGh5rV8bTrLI0UJas1y9sDl3JJJhfLDJt7VXCi
+    mp3YSZ_8g3GI93twQ>
+X-ME-Received: <xmr:OoCzYw5w6_foboC11EytP4uHHf7K75hsh7KEwTOe8OXLi512oZjF_6B6UzaYNzJI1ePgQ4k675xNVGUAuk00XBKaC7BS9-j-pkEWhaOV2piQJUkyLYx-pdWbVJlRKsC-Uggjmw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrjeefgdeffecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
@@ -43,13 +43,13 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrjeefgdeffecutefuodetggdote
     frrghtthgvrhhnpedukeetueduhedtleetvefguddvvdejhfefudelgfduveeggeehgfdu
     feeitdevteenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
     hmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
-X-ME-Proxy: <xmx:N4CzY6n4uiDMTHGsXWyR5MBK3LO7xaQhURk1z4Q9kvCBT2abWPWO7w>
-    <xmx:N4CzY016E_FN1x2CPPSBKRdaxqptDRM-QDg7rC_jelIZrxDK65tQ_A>
-    <xmx:N4CzYxvdDiuFszQa1hmifHoLzaETiv7bonmP9gqN8p8diTeES_5LuA>
-    <xmx:N4CzY6MDWqGWVfe1mSp7cM0p7GKsbJzxLMPizj85K7CHPMUGduWmGA>
+X-ME-Proxy: <xmx:OoCzYx22tssr2N_jjw1IDDP1HktzUEyAq6_ZmAcbxjp_oiFcDm8Zkg>
+    <xmx:OoCzY7FcaSnWQYLRNYsiyc26yuAbA8jY8eh_vJDOaBwUsnwH_qiqcw>
+    <xmx:OoCzY68ZNr3X_rlHBINkSxzu6lyII9TiB36pUYrEIPhOZCsDMsg6Mg>
+    <xmx:OoCzY6ePsjL84G5bb2BTz9wkGzE2_6JrqKiBPnyTkQBEA18PuV-cqQ>
 Feedback-ID: i0ad843c9:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 2 Jan 2023 20:09:10 -0500 (EST)
+ 2 Jan 2023 20:09:13 -0500 (EST)
 From: Samuel Holland <samuel@sholland.org>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -65,9 +65,9 @@ Cc: iommu@lists.linux.dev,
 	devicetree@vger.kernel.org,
 	Maxime Ripard <mripard@kernel.org>,
 	Samuel Holland <samuel@sholland.org>
-Subject: [PATCH v2 2/6] iommu/sun50i: Track masters attached to the domain
-Date: Mon,  2 Jan 2023 19:08:59 -0600
-Message-Id: <20230103010903.11181-3-samuel@sholland.org>
+Subject: [PATCH v2 3/6] iommu/sun50i: Keep the bypass register up to date
+Date: Mon,  2 Jan 2023 19:09:00 -0600
+Message-Id: <20230103010903.11181-4-samuel@sholland.org>
 X-Mailer: git-send-email 2.37.4
 In-Reply-To: <20230103010903.11181-1-samuel@sholland.org>
 References: <20230103010903.11181-1-samuel@sholland.org>
@@ -79,98 +79,71 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The refcount logic here is broken. The refcount is initialized to 1 with
-no devices attached, so it will be decremented back to 1 when the last
-device is detached. However, refcount_dec_and_test() returns true only
-when the refcount gets decremented to zero, so the domain will never be
-cleaned up, and the hardware will never be disabled.
+Currently, the IOMMU driver leaves the bypass register at its default
+value. The H6 variant of the hardware disables bypass by default. So
+once the first device is attached to the IOMMU, translation is enabled
+for all masters, even those not attached to an IOMMU group/domain.
 
-Replace the refcount with a mask of masters attached to the domain. The
-domain can be cleaned up when the last master detaches. This mask is
-also necessary to correctly set the bypass register.
+On the other hand, the D1 hardware variant enables bypass by default, so
+keeping the default value prevents the IOMMU from functioning entirely.
 
 Fixes: 4100b8c229b3 ("iommu: Add Allwinner H6 IOMMU driver")
 Signed-off-by: Samuel Holland <samuel@sholland.org>
 ---
 
 Changes in v2:
- - New patch for v2
+ - Set bypass based on attached devices instead of using a fixed value
 
- drivers/iommu/sun50i-iommu.c | 28 +++++++++++++---------------
- 1 file changed, 13 insertions(+), 15 deletions(-)
+ drivers/iommu/sun50i-iommu.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
 diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
-index 5b585eace3d4..3757d5a18318 100644
+index 3757d5a18318..a3a462933c62 100644
 --- a/drivers/iommu/sun50i-iommu.c
 +++ b/drivers/iommu/sun50i-iommu.c
-@@ -114,8 +114,8 @@ struct sun50i_iommu {
- struct sun50i_iommu_domain {
- 	struct iommu_domain domain;
+@@ -441,6 +441,9 @@ static int sun50i_iommu_enable(struct sun50i_iommu *iommu)
  
--	/* Number of devices attached to the domain */
--	refcount_t refcnt;
-+	/* Mask of masters attached to this domain */
-+	atomic_t masters;
+ 	spin_lock_irqsave(&iommu->iommu_lock, flags);
  
- 	/* L1 Page Table */
- 	u32 *dt;
-@@ -684,8 +684,6 @@ static struct iommu_domain *sun50i_iommu_domain_alloc(unsigned type)
- 	if (!sun50i_domain->dt)
- 		goto err_free_domain;
++	iommu_write(iommu, IOMMU_BYPASS_REG,
++		    ~atomic_read(&sun50i_domain->masters));
++
+ 	iommu_write(iommu, IOMMU_TTB_REG, sun50i_domain->dt_dma);
+ 	iommu_write(iommu, IOMMU_TLB_PREFETCH_REG,
+ 		    IOMMU_TLB_PREFETCH_MASTER_ENABLE(0) |
+@@ -755,6 +758,17 @@ static void sun50i_iommu_detach_domain(struct sun50i_iommu *iommu,
+ 	iommu->domain = NULL;
+ }
  
--	refcount_set(&sun50i_domain->refcnt, 1);
--
- 	sun50i_domain->domain.geometry.aperture_start = 0;
- 	sun50i_domain->domain.geometry.aperture_end = DMA_BIT_MASK(32);
- 	sun50i_domain->domain.geometry.force_aperture = true;
-@@ -760,23 +758,27 @@ static void sun50i_iommu_detach_domain(struct sun50i_iommu *iommu,
++static void sun50i_iommu_update_masters(struct sun50i_iommu *iommu,
++					struct sun50i_iommu_domain *sun50i_domain)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&iommu->iommu_lock, flags);
++	iommu_write(iommu, IOMMU_BYPASS_REG,
++		    ~atomic_read(&sun50i_domain->masters));
++	spin_unlock_irqrestore(&iommu->iommu_lock, flags);
++}
++
  static void sun50i_iommu_detach_device(struct iommu_domain *domain,
  				       struct device *dev)
  {
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct sun50i_iommu_domain *sun50i_domain = to_sun50i_domain(domain);
- 	struct sun50i_iommu *iommu = dev_iommu_priv_get(dev);
-+	int masters = 0;
+@@ -770,6 +784,8 @@ static void sun50i_iommu_detach_device(struct iommu_domain *domain,
  
- 	dev_dbg(dev, "Detaching from IOMMU domain\n");
- 
--	if (iommu->domain != domain)
--		return;
-+	for (unsigned int i = 0; i < fwspec->num_ids; i++)
-+		masters |= BIT(fwspec->ids[i]);
- 
--	if (refcount_dec_and_test(&sun50i_domain->refcnt))
-+	if (atomic_fetch_andnot(masters, &sun50i_domain->masters) == masters)
+ 	if (atomic_fetch_andnot(masters, &sun50i_domain->masters) == masters)
  		sun50i_iommu_detach_domain(iommu, sun50i_domain);
++	else
++		sun50i_iommu_update_masters(iommu, sun50i_domain);
  }
  
  static int sun50i_iommu_attach_device(struct iommu_domain *domain,
- 				      struct device *dev)
- {
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct sun50i_iommu_domain *sun50i_domain = to_sun50i_domain(domain);
- 	struct sun50i_iommu *iommu;
-+	int masters = 0;
+@@ -791,6 +807,8 @@ static int sun50i_iommu_attach_device(struct iommu_domain *domain,
  
- 	iommu = sun50i_iommu_from_dev(dev);
- 	if (!iommu)
-@@ -784,15 +786,11 @@ static int sun50i_iommu_attach_device(struct iommu_domain *domain,
- 
- 	dev_dbg(dev, "Attaching to IOMMU domain\n");
- 
--	refcount_inc(&sun50i_domain->refcnt);
--
--	if (iommu->domain == domain)
--		return 0;
--
--	if (iommu->domain)
--		sun50i_iommu_detach_device(iommu->domain, dev);
-+	for (unsigned int i = 0; i < fwspec->num_ids; i++)
-+		masters |= BIT(fwspec->ids[i]);
- 
--	sun50i_iommu_attach_domain(iommu, sun50i_domain);
-+	if (atomic_fetch_or(masters, &sun50i_domain->masters) == 0)
-+		sun50i_iommu_attach_domain(iommu, sun50i_domain);
+ 	if (atomic_fetch_or(masters, &sun50i_domain->masters) == 0)
+ 		sun50i_iommu_attach_domain(iommu, sun50i_domain);
++	else
++		sun50i_iommu_update_masters(iommu, sun50i_domain);
  
  	return 0;
  }
