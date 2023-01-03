@@ -1,133 +1,149 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D19A78483
-	for <iommu@lists.linux.dev>; Tue,  3 Jan 2023 16:03:59 +0000 (UTC)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 303F6dY7007140;
-	Tue, 3 Jan 2023 16:03:31 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=KPIltgXLcHbMrQ52Lpe9AnY3EOsSgDqPWtgU38MSmuA=;
- b=Wvje720BtmDRxaBaFTG4WI2s7O8GUwyEAllmpNHFRat0EtXvcTMs/HmDclcIxfSD4low
- qR4Zpu9wEa4/za4wgVv+gLsmGaBGvVptWxjOzJ9GnQ8xq8WAzW7bF5R3hO5STbETkmL4
- YTgqEJ/Shh7K4Ko/tm+kEbxFQdhN9dfL6Yvv5Oh4fBWT8bMEMp+p6gEKDWnZ0I9jWlll
- fLMGSK016qyVW68O7fMzzAEvxj0t9Bp3h7qbgjIgJ7jHbRHdh5omVEtLdKIarCVKBAR7
- mmP01DupO5JONdbk+9aGGNNywS0VNGAzEytFTO9G5Ub9DeITM/E8FAMhQIm591HfWpbn TQ== 
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3mvmb7n9v8-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 03 Jan 2023 16:03:31 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-	by ppma04fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 302N0mkG006506;
-	Tue, 3 Jan 2023 16:03:29 GMT
-Received: from smtprelay02.fra02v.mail.ibm.com ([9.218.2.226])
-	by ppma04fra.de.ibm.com (PPS) with ESMTPS id 3mtcq6ay3n-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 03 Jan 2023 16:03:29 +0000
-Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
-	by smtprelay02.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 303G3PPh41157076
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 3 Jan 2023 16:03:25 GMT
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id B473720040;
-	Tue,  3 Jan 2023 16:03:25 +0000 (GMT)
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id B25A420049;
-	Tue,  3 Jan 2023 16:03:24 +0000 (GMT)
-Received: from [9.179.26.205] (unknown [9.179.26.205])
-	by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Tue,  3 Jan 2023 16:03:24 +0000 (GMT)
-Message-ID: <310913b0a92bd06b93ede9e01e3f99cb5bce4e7a.camel@linux.ibm.com>
-Subject: Re: [PATCH v3 2/7] iommu: Allow .iotlb_sync_map to fail and handle
- s390's -ENOMEM return
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin
- Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
-        Wenjia
- Zhang <wenjia@linux.ibm.com>
-Cc: Matthew Rosato <mjrosato@linux.ibm.com>,
-        Gerd Bayer
- <gbayer@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev,
-        linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        agordeev@linux.ibm.com, svens@linux.ibm.com,
-        linux-kernel@vger.kernel.org, Julian Ruess <julianr@linux.ibm.com>
-Date: Tue, 03 Jan 2023 17:03:23 +0100
-In-Reply-To: <20230102115619.2088685-3-schnelle@linux.ibm.com>
-References: <20230102115619.2088685-1-schnelle@linux.ibm.com>
-	 <20230102115619.2088685-3-schnelle@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.2 (3.46.2-1.fc37) 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 232708483
+	for <iommu@lists.linux.dev>; Tue,  3 Jan 2023 16:15:58 +0000 (UTC)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	by mailout.west.internal (Postfix) with ESMTP id 2C3583200902;
+	Tue,  3 Jan 2023 11:15:55 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Tue, 03 Jan 2023 11:15:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+	:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:sender:subject
+	:subject:to:to; s=fm3; t=1672762554; x=1672848954; bh=wNHGYeVYFI
+	zxBf24jgwJU2T/wl2hD0aiCUszvE1r6qc=; b=pjCYKo7gkCK5f2pIymt6QPnLBC
+	1DAk7msGDlygQAQNqEVyCIpFaOyMgaHSi40KVwP+w+L6RrW2p5XYYI1VqB3rG7dx
+	KEjGnr8HJwsjwZoQRvabZE5YxL8qXbJz8wRykSz3ERcPZx7n7E/OG+hl11/vLkbg
+	a06mvms0SGOqlyX0iMJ83oydOETkNwpTTu7grzSiLToon31tLFhkz4o7eh5iBou4
+	MxVnC/ZDnvM9P94hvHrcDURJq58ZYxwA3SlT3lGqJlK0eSF0GPHMddpVHO2ldnjB
+	uhG30YyVqwEtr/cCfgAAU1RUwWaiMmfwyBP76iCkiVBIeOBs/K8Nobgq0IpQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+	:feedback-id:from:from:in-reply-to:in-reply-to:message-id
+	:mime-version:references:reply-to:sender:subject:subject:to:to
+	:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+	fm2; t=1672762554; x=1672848954; bh=wNHGYeVYFIzxBf24jgwJU2T/wl2h
+	D0aiCUszvE1r6qc=; b=j531BDLWxm/ohYQJ7nDDhf9HZ38aqVzvC/s9TGxSWFOF
+	iiYyCfot5ViuJBPsApS5/UR9lIF4taTuAL4+nbDvqMjQkZGhHU9h03T8aaJaQjHJ
+	KTOMF2W1onoAb/5nUCjwe3LJeMQJeuG9q89F1Y0ozgV/zdROkYA9crYI+U05Jvmt
+	nCvLmp92lk26OKxFnXrgHeSFA3iVvwxkR69pcDKumWR3J0EWWdDUkd0mLpuBi97M
+	l/88gmqhLrZQCuPWRLEuc553zwBBHOTY2e+B+OrNT8lgoICwo/vmtj+9+DkWcXSd
+	NotMN9hkOPXxvXxGe/ixjYNbxBvbmJ+YFvUJxxpuLg==
+X-ME-Sender: <xms:uVS0YzB0JXSRVIAi_tGC1otQM2RzPjHpcflhIgdzCVRZrzgRfROJDQ>
+    <xme:uVS0Y5i0ix6UjpUCqv-WU3J8FLgiHnuLKXZKjl9oCftIjeoxe8ZhAZLuUMwa_4PBv
+    ytZfM0HWcvHe6enzsA>
+X-ME-Received: <xmr:uVS0Y-nMPMm_4ZZv6rRdHATK2kWWJIZJ8TVVp4gOFFT1RGkmP6Q_UDvLqCmbfQ35RACyLiq4fB9tjz0QGBKP9nEVd7kPF1FHT_4s6tSM4oeIJA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrjeeggdekiecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvvefukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
+    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
+    htvghrnheptdelkeejiedufedvhfeiffetlefhiedvleeigfeiuefghfdvleeiffejieeg
+    teejnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpe
+    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrgigihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:uVS0Y1wBrIhxHWXikal4guApjH66SvtY4OcZSpj9b1-KrvPGX-uI8g>
+    <xmx:uVS0Y4QAif-qqBka94NRhYpDVTtWsMhf5sxJwNSqoyhZC3swXYhcog>
+    <xmx:uVS0Y4ZsYlbpnrqbDSwACwmC-fzNNOsr_D788yWirfW-kANxEbry5g>
+    <xmx:ulS0Y7YS89FzmTs6M_WxvTPd4EyTSa5Y4NKV3wydY-ZSTc8dmhi46g>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 3 Jan 2023 11:15:53 -0500 (EST)
+Date: Tue, 3 Jan 2023 17:15:50 +0100
+From: Maxime Ripard <maxime@cerno.tech>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Sean Anderson <sean.anderson@seco.com>,
+	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+	Mark Brown <broonie@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
+	Joerg Roedel <joro@8bytes.org>, Liam Girdwood <lgirdwood@gmail.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	Takashi Iwai <tiwai@suse.com>, Will Deacon <will@kernel.org>,
+	Yong Wu <yong.wu@mediatek.com>, alsa-devel@alsa-project.org,
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH v2 2/3] iommu/sound: Use component_match_add_of helper
+Message-ID: <20230103161550.4tui3ihl65olvkd7@houat>
+References: <20221222233759.1934852-1-sean.anderson@seco.com>
+ <20221222233759.1934852-3-sean.anderson@seco.com>
+ <7897d4a6-bf43-becd-3437-7a254f38f6be@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: c3genIMIgTmUDXTYXgiTkNQddLTb2SxI
-X-Proofpoint-GUID: c3genIMIgTmUDXTYXgiTkNQddLTb2SxI
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2023-01-03_05,2023-01-03_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 phishscore=0
- mlxlogscore=754 malwarescore=0 bulkscore=0 lowpriorityscore=0
- priorityscore=1501 clxscore=1015 mlxscore=0 spamscore=0 adultscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2301030136
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="7v4zidzdfmuud6o5"
+Content-Disposition: inline
+In-Reply-To: <7897d4a6-bf43-becd-3437-7a254f38f6be@arm.com>
 
-On Mon, 2023-01-02 at 12:56 +0100, Niklas Schnelle wrote:
-> On s390 .iotlb_sync_map is used to sync mappings to an underlying
-> hypervisor by letting the hypervisor inspect the synced IOVA range and
-> updating its shadow table. This however means that it can fail as the
-> hypervisor may run out of resources. This can be due to the hypervisor
-> being unable to pin guest pages, due to a limit on concurrently mapped
-> addresses such as vfio_iommu_type1.dma_entry_limit or other resources.
-> Either way such a failure to sync a mapping should result in
-> a DMA_MAPPING_EROR.
->=20
-> Now especially when running with batched IOTLB flushes for unmap it may
-> be that some IOVAs have already been invalidated but not yet synced via
-> .iotlb_sync_map. Thus if the hypervisor indicates running out of
-> resources, first do a global flush allowing the hypervisor to free
-> resources associated with these mappings and only if that also fails
-> report this error to callers.
->=20
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> ---
->  drivers/iommu/amd/iommu.c   |  5 +++--
->  drivers/iommu/apple-dart.c  |  5 +++--
->  drivers/iommu/intel/iommu.c |  5 +++--
->  drivers/iommu/iommu.c       | 20 ++++++++++++++++----
->  drivers/iommu/msm_iommu.c   |  5 +++--
->  drivers/iommu/mtk_iommu.c   |  5 +++--
->  drivers/iommu/s390-iommu.c  | 29 ++++++++++++++++++++++++-----
->  drivers/iommu/sprd-iommu.c  |  5 +++--
->  drivers/iommu/tegra-gart.c  |  5 +++--
->  include/linux/iommu.h       |  4 ++--
->  10 files changed, 63 insertions(+), 25 deletions(-)
 
-Ok kernel test robot reported that I missed an implementation of
-.iotlb_sync_map in drivers/iommu/sun50i-iommu.c during rebase as that
-was only added in v6.2-rc1 by commit e563cc0c787c85 ("iommu/sun50i:
-Implement .iotlb_sync_map"). Will add and send a v4 including the
-proposed commit message rewording too.
+--7v4zidzdfmuud6o5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+Hi Robin,
+
+On Tue, Jan 03, 2023 at 01:01:07PM +0000, Robin Murphy wrote:
+> Hi Sean,
 >=20
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index cbeaab55c0db..3df7d20e0e52 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -2180,14 +2180,15 @@ static int amd_iommu_attach_device(struct iommu_d=
-omain *dom,
->  	return ret;
->  }
-> =20
-> -static void amd_iommu_iotlb_sync_map(struct iommu_domain *dom,
-> -				     unsigned long iova, size_t size)
----8<---
+> On 22/12/2022 11:37 pm, Sean Anderson wrote:
+> > Convert users of component_match_add_release with component_release_of
+> > and component_compare_of to component_match_add_of.
+> >=20
+> > Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+> > Acked-by: Mark Brown <broonie@kernel.org>
+> > ---
+> >=20
+> > Changes in v2:
+> > - Split off from helper addition
+> >=20
+> >   drivers/iommu/mtk_iommu.c    | 3 +--
+> >   drivers/iommu/mtk_iommu_v1.c | 3 +--
+> >   sound/soc/codecs/wcd938x.c   | 6 ++----
+> >   3 files changed, 4 insertions(+), 8 deletions(-)
+> >=20
+> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> > index 2ab2ecfe01f8..483b7a9e4410 100644
+> > --- a/drivers/iommu/mtk_iommu.c
+> > +++ b/drivers/iommu/mtk_iommu.c
+> > @@ -1079,8 +1079,7 @@ static int mtk_iommu_mm_dts_parse(struct device *=
+dev, struct component_match **m
+> >   		}
+> >   		data->larb_imu[id].dev =3D &plarbdev->dev;
+> > -		component_match_add_release(dev, match, component_release_of,
+> > -					    component_compare_of, larbnode);
+> > +		component_match_add_of(dev, match, larbnode);
+>=20
+> I've long since given up trying to make sense of how the DRM tree works, =
+but
+> the conflicting change is definitely already in mainline:
+>=20
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit=
+?id=3Db5765a1b44bea9dfcae69c53ffeb4c689d0922a7
+
+As far as I can see, that patch doesn't affect DRM at all, and the
+commit you pointed to doesn't either, nor has it been merged through the
+DRM tree.
+
+Can you expand a bit on how we're involved in this, what we should
+clarify or help with?
+
+Maxime
+
+--7v4zidzdfmuud6o5
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCY7RUtgAKCRDj7w1vZxhR
+xdWgAQCl2SxPgHcEj92AdlH7Y2VvK6G5Bczcu2wrB4ZrHXVpawEAsJlD4MKrpINP
+IZalK2KlJTqUilPQudOtqmCeQzWQqAo=
+=cdeC
+-----END PGP SIGNATURE-----
+
+--7v4zidzdfmuud6o5--
