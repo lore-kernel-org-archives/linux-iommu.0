@@ -1,195 +1,86 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB92F33EA
-	for <iommu@lists.linux.dev>; Wed,  4 Jan 2023 13:07:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1672837660; x=1704373660;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=6JspMSxf4tOO5N5gZs/+2wzcZApAr4SYcbdCKphs0Zg=;
-  b=i74u11fAx8vX0ieOZXpjnQYqaIR6OWG34MJbL4XOoXw0HIKOTBZYGtcc
-   hGWiosodl/iyCyspxc1Iia5yhUlc5DXlukzE78zoPSmc4pl3uh5Kg5b00
-   XHkiCPdrnn6y1gWy2TnisEFhNk+2XrhY9g5XPB+UVlihXlpox/101iI2X
-   fhgHUC2dRjvCI2yS/jGoJcgP5WNizKrPZ7pThDofYyR5R/rGW8dpANxmW
-   VHVnoQ0Jj06xWLazRi82v5hybxoQ2nM+F4LTHMatEjRsaMoahpEgUYZkT
-   jpT283SWUFvYSQ5wGmps5098p/3e7klIriHt8JlDU/Q/eZuZQsksNa0rx
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="320640355"
-X-IronPort-AV: E=Sophos;i="5.96,300,1665471600"; 
-   d="scan'208";a="320640355"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jan 2023 05:07:28 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="797529492"
-X-IronPort-AV: E=Sophos;i="5.96,299,1665471600"; 
-   d="scan'208";a="797529492"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga001.fm.intel.com with ESMTP; 04 Jan 2023 05:07:20 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Christoph Hellwig <hch@infradead.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Hector Martin <marcan@marcan.st>,
-	Sven Peter <sven@svenpeter.dev>,
-	Rob Clark <robdclark@gmail.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Andy Gross <agross@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Yong Wu <yong.wu@mediatek.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	Heiko Stuebner <heiko@sntech.de>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	Chen-Yu Tsai <wens@csie.org>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v4 19/19] iommu: Remove detach_dev callback
-Date: Wed,  4 Jan 2023 20:57:25 +0800
-Message-Id: <20230104125725.271850-20-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230104125725.271850-1-baolu.lu@linux.intel.com>
-References: <20230104125725.271850-1-baolu.lu@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2817D33EA;
+	Wed,  4 Jan 2023 13:09:13 +0000 (UTC)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	by mailout.west.internal (Postfix) with ESMTP id 63C62320091E;
+	Wed,  4 Jan 2023 08:09:11 -0500 (EST)
+Received: from imap47 ([10.202.2.97])
+  by compute5.internal (MEProxy); Wed, 04 Jan 2023 08:09:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
+	 h=cc:cc:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:sender
+	:subject:subject:to:to; s=fm2; t=1672837751; x=1672924151; bh=sW
+	97sEIph+hgvFghJa+u0wBCf7AiPUYeQdDtJ0BUk6c=; b=hE19vYa45oYCigsNdz
+	PXnGM8k46ZlLPD1vWz7V9kusPHwzNr0i3KR3PBAdkA8wCzeTR6KoYqLS1YoU33Hh
+	rGwsh7G8fTJPRHwH6oq+gGl81WB8XhbW50t9pJO5aRyPe1/FIuNyz02b4rr3oNSr
+	UQ75Uffrr7Mc/7dZkdTIW12dx9tb1OjmmkQOg2302FSqTRQ9ygDP1KWI3cGx6Sba
+	+5xs5zNpLd/sSoS6CYljQhAWdT3gJspPS9wxvOEZSqBIA+3lE/gDBjq4wrx3Nq0M
+	sm+qQ3i643Ux1c3aisS00saZZ88QSpI53i/wQUl7j5yiuPsckZ/2YqpG7Dt77Itl
+	5axA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+	:feedback-id:from:from:in-reply-to:in-reply-to:message-id
+	:mime-version:references:reply-to:sender:subject:subject:to:to
+	:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+	fm2; t=1672837751; x=1672924151; bh=sW97sEIph+hgvFghJa+u0wBCf7Ai
+	PUYeQdDtJ0BUk6c=; b=YxnUHEhiKcb8lZ5UjzCdfW4EqEjQubucJO3YTDJwxGK+
+	dCDPx1Yia2YciL2zdof/aWicGBZqsENFN5aIz1OMVtGKQwPYh3ALXt+s/f/I0SE9
+	1E/uDnq4PNpvdkQkGPeMTWQ/xoL2dxGKEb5zuZBch1Y12/NEMKoSnzE189zmjKZ5
+	bYqQ/ZgLOq7hihySC4j+DMKtgioPR0NOs43mHBVM16Dpao5nUChPV57CLkPk1HjK
+	eDuVMkhLo844Bj0Wbk1T4/rnAAyTKrayqW1kqjdotRxFQYpeRAsLBnJ08CGaMWxj
+	+eARmJ0NYSnjA0f78gGs4rdYjfQAl+ejlh5kVdTwRA==
+X-ME-Sender: <xms:dnq1Y4xbEsBi_ZZyK8aqYryYMZRzpiqyuK301GmvIvJgYnY5VTyRLA>
+    <xme:dnq1Y8TeFluo6wHZtCGgxausyZ8AtX00ps2Tx5XiP7MbPbFUf_icxQqTuaxuJfrkp
+    TgmKltpjuTc47CNEuk>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrjeeigdegkecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdfuvhgv
+    nhcurfgvthgvrhdfuceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrg
+    htthgvrhhnpeelvefggeffheevtdeivefhkeehfeettdejteduveeiheevveeilefghfei
+    veeiueenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
+    hsvhgvnhesshhvvghnphgvthgvrhdruggvvh
+X-ME-Proxy: <xmx:dnq1Y6VJ8aA2FhvZ6dNUS1QbWMTUw6TRSDw1PGPDrZEX-9Fg4K3L5A>
+    <xmx:dnq1Y2gF5o1db_P2UT03VTg4ce88CjKm6_GueOZAGLIuldYJd8FG0g>
+    <xmx:dnq1Y6CB73uums9oT5l9Lt_WriwfTvtKuSD2a0hd4OAu_5uJMZw6fQ>
+    <xmx:d3q1Y-67uaMPAchUrJ4I6Jo-2yL7pIfbA_8Ql5zIfidKyp8qEE8DvQ>
+Feedback-ID: i51094778:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id 0F62AA6007C; Wed,  4 Jan 2023 08:09:09 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-1185-g841157300a-fm-20221208.002-g84115730
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+Message-Id: <1205bb21-c252-4c6f-be2d-4a10bb3cd077@app.fastmail.com>
+In-Reply-To: <20230104110013.24738-2-marcan@marcan.st>
+References: <20230104110013.24738-1-marcan@marcan.st>
+ <20230104110013.24738-2-marcan@marcan.st>
+Date: Wed, 04 Jan 2023 14:08:43 +0100
+From: "Sven Peter" <sven@svenpeter.dev>
+To: "Hector Martin" <marcan@marcan.st>, "Joerg Roedel" <joro@8bytes.org>,
+ "Will Deacon" <will@kernel.org>, "Robin Murphy" <robin.murphy@arm.com>
+Cc: "Alyssa Rosenzweig" <alyssa@rosenzweig.io>, "Janne Grunau" <j@jannau.net>,
+ "Rob Herring" <robh+dt@kernel.org>,
+ "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+ devicetree@vger.kernel.org, iommu@lists.linux.dev, asahi@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/7] dt-bindings: iommu: dart: add t8110 compatible
+Content-Type: text/plain
 
-The detach_dev callback of domain ops is not called in the IOMMU core.
-Remove this callback to avoid dead code. The trace event for detaching
-domain from device is removed accordingly.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- include/linux/iommu.h        |  2 --
- include/trace/events/iommu.h |  7 -------
- drivers/iommu/iommu-traces.c |  1 -
- drivers/iommu/iommu.c        | 29 +++++------------------------
- 4 files changed, 5 insertions(+), 34 deletions(-)
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 0d10566b3cb2..a8063f26ff69 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -299,7 +299,6 @@ struct iommu_ops {
-  * * EBUSY	- device is attached to a domain and cannot be changed
-  * * ENODEV	- device specific errors, not able to be attached
-  * * <others>	- treated as ENODEV by the caller. Use is discouraged
-- * @detach_dev: detach an iommu domain from a device
-  * @set_dev_pasid: set an iommu domain to a pasid of device
-  * @map: map a physically contiguous memory region to an iommu domain
-  * @map_pages: map a physically contiguous set of pages of the same size to
-@@ -320,7 +319,6 @@ struct iommu_ops {
-  */
- struct iommu_domain_ops {
- 	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
--	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
- 	int (*set_dev_pasid)(struct iommu_domain *domain, struct device *dev,
- 			     ioasid_t pasid);
- 
-diff --git a/include/trace/events/iommu.h b/include/trace/events/iommu.h
-index 29096fe12623..70743db1fb75 100644
---- a/include/trace/events/iommu.h
-+++ b/include/trace/events/iommu.h
-@@ -76,13 +76,6 @@ DEFINE_EVENT(iommu_device_event, attach_device_to_domain,
- 	TP_ARGS(dev)
- );
- 
--DEFINE_EVENT(iommu_device_event, detach_device_from_domain,
--
--	TP_PROTO(struct device *dev),
--
--	TP_ARGS(dev)
--);
--
- TRACE_EVENT(map,
- 
- 	TP_PROTO(unsigned long iova, phys_addr_t paddr, size_t size),
-diff --git a/drivers/iommu/iommu-traces.c b/drivers/iommu/iommu-traces.c
-index 1e9ca7789de1..23416bf76df9 100644
---- a/drivers/iommu/iommu-traces.c
-+++ b/drivers/iommu/iommu-traces.c
-@@ -18,7 +18,6 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(remove_device_from_group);
- 
- /* iommu_device_event */
- EXPORT_TRACEPOINT_SYMBOL_GPL(attach_device_to_domain);
--EXPORT_TRACEPOINT_SYMBOL_GPL(detach_device_from_domain);
- 
- /* iommu_map_unmap */
- EXPORT_TRACEPOINT_SYMBOL_GPL(map);
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index c7bd8663f1f5..d2b3210170a8 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2045,13 +2045,6 @@ int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
- 	return 0;
- }
- 
--static void __iommu_detach_device(struct iommu_domain *domain,
--				  struct device *dev)
--{
--	domain->ops->detach_dev(domain, dev);
--	trace_detach_device_from_domain(dev);
--}
--
- void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
- {
- 	struct iommu_group *group;
-@@ -2156,15 +2149,6 @@ int iommu_attach_group(struct iommu_domain *domain, struct iommu_group *group)
- }
- EXPORT_SYMBOL_GPL(iommu_attach_group);
- 
--static int iommu_group_do_detach_device(struct device *dev, void *data)
--{
--	struct iommu_domain *domain = data;
--
--	__iommu_detach_device(domain, dev);
--
--	return 0;
--}
--
- static int iommu_group_do_set_platform_dma(struct device *dev, void *data)
- {
- 	const struct iommu_ops *ops = dev_iommu_ops(dev);
-@@ -2185,19 +2169,16 @@ static int __iommu_group_set_domain(struct iommu_group *group,
- 		return 0;
- 
- 	/*
--	 * New drivers should support default domains and so the detach_dev() op
--	 * will never be called. Otherwise the NULL domain represents some
-+	 * New drivers should support default domains and so set_platform_dma()
-+	 * op will never be called. Otherwise the NULL domain represents some
- 	 * platform specific behavior.
- 	 */
- 	if (!new_domain) {
- 		ret = __iommu_group_for_each_dev(group, NULL,
- 				iommu_group_do_set_platform_dma);
--		if (ret) {
--			if (WARN_ON(!group->domain->ops->detach_dev))
--				return -EINVAL;
--			__iommu_group_for_each_dev(group, group->domain,
--				iommu_group_do_detach_device);
--		}
-+		if (ret)
-+			return ret;
-+
- 		group->domain = NULL;
- 		return 0;
- 	}
--- 
-2.34.1
+On Wed, Jan 4, 2023, at 12:00, Hector Martin wrote:
+> t600x SoCs use this DART style for the Thunderbolt ports, and t8112 SoCs
+> use them everywhere. Add a compatible for it. No other binding changes
+> necessary.
+>
+> Signed-off-by: Hector Martin <marcan@marcan.st>
+
+Reviewed-by: Sven Peter <sven@svenpeter.dev>
 
