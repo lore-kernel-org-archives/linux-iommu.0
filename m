@@ -1,32 +1,32 @@
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A9262F49
-	for <iommu@lists.linux.dev>; Wed,  4 Jan 2023 13:05:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EB192F49
+	for <iommu@lists.linux.dev>; Wed,  4 Jan 2023 13:05:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1672837542; x=1704373542;
+  t=1672837549; x=1704373549;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Ly1CFFQsdha64HGKM2XxpjbOlFYepHT9+afzlH0HDzc=;
-  b=BjQ54+0snMrgndXDoGEmY//s9CmOtYlRGo+Hoh+eKELcNGyEJHz64Dpy
-   sM3oKJCJ00X0GX8LSfWUzQmJBNczGQV9ORbrNWf0FyihbTNBAFfxxcYft
-   HpmwQ6s3/DY7fd3VbOGlglbdcf1IyEw9/5e2FRUF/UfGnaw3LAGCfLzuP
-   AZRinBX+iSjdPFYk4nso6GaHzc9wSqFxt7nE4rBneapx1LU4FuT7dDwvz
-   qXO25Jvr2i7XO5vWnPLfTLVXDrgiRpIYrSaU++FLREvFnmiYOuddtETjI
-   Mv7uFD3oU9ctf83JD0YobPWC2ctrfMy4aE0QPUTi/V5yg/kVIE1tdRTM9
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="320639661"
+  bh=I/VfrjLUBWPAYQJBDRBjLOcCQ9XfMy3A9aZ5hKuLdMA=;
+  b=nGmT/9Stg4ngI8bn2Tsp0cacXZ8p3csGdePcaBj5JMkqhHFZ3yHOtaxk
+   4f7oPyCXQy2aetLlrzQwIyhdVmxwew8Bj3bLW7xJIlbCG+rdn3N/W4FL4
+   5YBpzEwXpWLuQGSRlmTwX902/vhNxabkQuKXlhaRafVM9CEFiaxkCfO2K
+   idRV9Ugpo16avqxCyOVE4cYTO4dN2x3J+ZfKdfbckv4btVPPnzychvpj9
+   uWRijXx488puzQpt/MhJ4evkVXogbhU3iHJJXUsEKRsDa093273uQcNyO
+   ffLYXXppzh37bC/NL8ZICA716A/VMs2MJvk+UPdeECVffo6ihFRJ9bKKx
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="320639701"
 X-IronPort-AV: E=Sophos;i="5.96,299,1665471600"; 
-   d="scan'208";a="320639661"
+   d="scan'208";a="320639701"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jan 2023 05:05:41 -0800
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jan 2023 05:05:48 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="797529035"
+X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="797529043"
 X-IronPort-AV: E=Sophos;i="5.96,299,1665471600"; 
-   d="scan'208";a="797529035"
+   d="scan'208";a="797529043"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga001.fm.intel.com with ESMTP; 04 Jan 2023 05:05:35 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 04 Jan 2023 05:05:41 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Jason Gunthorpe <jgg@nvidia.com>,
@@ -55,9 +55,9 @@ Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v4 03/19] iommu/qcom: Remove detach_dev callback
-Date: Wed,  4 Jan 2023 20:57:09 +0800
-Message-Id: <20230104125725.271850-4-baolu.lu@linux.intel.com>
+Subject: [PATCH v4 04/19] iommu/exynos: Remove detach_dev callback
+Date: Wed,  4 Jan 2023 20:57:10 +0800
+Message-Id: <20230104125725.271850-5-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230104125725.271850-1-baolu.lu@linux.intel.com>
 References: <20230104125725.271850-1-baolu.lu@linux.intel.com>
@@ -75,50 +75,21 @@ be called. Remove it to avoid dead code.
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/arm/arm-smmu/qcom_iommu.c | 23 -----------------------
- 1 file changed, 23 deletions(-)
+ drivers/iommu/exynos-iommu.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index 270c3d9128ba..d7be3adee426 100644
---- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -387,28 +387,6 @@ static int qcom_iommu_attach_dev(struct iommu_domain *domain, struct device *dev
- 	return 0;
- }
- 
--static void qcom_iommu_detach_dev(struct iommu_domain *domain, struct device *dev)
--{
--	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
--	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--	struct qcom_iommu_dev *qcom_iommu = to_iommu(dev);
--	unsigned i;
--
--	if (WARN_ON(!qcom_domain->iommu))
--		return;
--
--	pm_runtime_get_sync(qcom_iommu->dev);
--	for (i = 0; i < fwspec->num_ids; i++) {
--		struct qcom_iommu_ctx *ctx = to_ctx(qcom_domain, fwspec->ids[i]);
--
--		/* Disable the context bank: */
--		iommu_writel(ctx, ARM_SMMU_CB_SCTLR, 0);
--
--		ctx->domain = NULL;
--	}
--	pm_runtime_put_sync(qcom_iommu->dev);
--}
--
- static int qcom_iommu_map(struct iommu_domain *domain, unsigned long iova,
- 			  phys_addr_t paddr, size_t pgsize, size_t pgcount,
- 			  int prot, gfp_t gfp, size_t *mapped)
-@@ -583,7 +561,6 @@ static const struct iommu_ops qcom_iommu_ops = {
- 	.pgsize_bitmap	= SZ_4K | SZ_64K | SZ_1M | SZ_16M,
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index b0cde2211987..29ec713e8a21 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -1404,7 +1404,6 @@ static const struct iommu_ops exynos_iommu_ops = {
+ 	.of_xlate = exynos_iommu_of_xlate,
  	.default_domain_ops = &(const struct iommu_domain_ops) {
- 		.attach_dev	= qcom_iommu_attach_dev,
--		.detach_dev	= qcom_iommu_detach_dev,
- 		.map_pages	= qcom_iommu_map,
- 		.unmap_pages	= qcom_iommu_unmap,
- 		.flush_iotlb_all = qcom_iommu_flush_iotlb_all,
+ 		.attach_dev	= exynos_iommu_attach_device,
+-		.detach_dev	= exynos_iommu_detach_device,
+ 		.map		= exynos_iommu_map,
+ 		.unmap		= exynos_iommu_unmap,
+ 		.iova_to_phys	= exynos_iommu_iova_to_phys,
 -- 
 2.34.1
 
