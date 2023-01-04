@@ -1,32 +1,32 @@
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 224AB2F49
-	for <iommu@lists.linux.dev>; Wed,  4 Jan 2023 13:07:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06A752F49
+	for <iommu@lists.linux.dev>; Wed,  4 Jan 2023 13:07:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1672837648; x=1704373648;
+  t=1672837652; x=1704373652;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=NqpK1UK4zC2YasbUe6iVPvT9t2cN4N0bRVM1VXzIvT0=;
-  b=LIt17OrX1aZ5NoMgwytm5+YjrpCruFhyQaZ0uKSdeHDp7VHUXCQPhtdE
-   n/0cW0CjgSy6rcXfGhcnGDaAce1i7ZW/EUXrXZGsVeitv2JhJKsEwF871
-   FwyxLEKl8GIZfmgeY39xv0wOoUbezE4hDL3NeGmzQ1is0XruBRSFvsLQR
-   /cZkV7tNkjpcv6CUOl7Uu+3EaQAXs7gVPxo+HIOtcvG5RyavaU23TAwQv
-   HhtJx0MXfQ3Mi1MkdqflSnqz73cs69XDYcxDW3qlHu16Q24vAIrpH64Vi
-   oOF1oQ4y1teKDQpY9SdSV+4muTi7IdHBezMAcc+6D8S/aLpRkF9Rwi9or
+  bh=Xleto1bNcJbkoJR+rItuVcszZ5LEAV28VIm/LQTaL2s=;
+  b=KGG6mN+8e5MPITVi6+TTaycglDqIk8rdmnQBtz5eyjFryRSn0WYo7YPO
+   mwyLCmLTSCSnKR5s1Bfof9kcdLOpqF02OpkOqN4t/YH5PmGZoMlZfMGTb
+   GCjsbtx0EOqVn+g2Y2IRyCn25BS13P9SZajq7cgOgZ0s4DlZhzhwpN6bn
+   IzHVvV9aBTy5tQUtkYTfhTp8qddDZjl3P/hEQ6AoCv7Ilxv5PtpEhx/nN
+   YoUdIeCq3nsxHtj/i7Bwk71jInHEq4N7F/ZzpSvBGS19wai5SsJG0Cpkq
+   6gkwvwkXWDYKvQfJFsf/ydyxawbq8VOrCcVSaW8dkVpHqb046Kly6/ZC6
    Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="320640186"
+X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="320640230"
 X-IronPort-AV: E=Sophos;i="5.96,300,1665471600"; 
-   d="scan'208";a="320640186"
+   d="scan'208";a="320640230"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jan 2023 05:07:00 -0800
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jan 2023 05:07:07 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="797529147"
+X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="797529180"
 X-IronPort-AV: E=Sophos;i="5.96,299,1665471600"; 
-   d="scan'208";a="797529147"
+   d="scan'208";a="797529180"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by fmsmga001.fm.intel.com with ESMTP; 04 Jan 2023 05:06:54 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 04 Jan 2023 05:07:00 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Jason Gunthorpe <jgg@nvidia.com>,
@@ -55,9 +55,9 @@ Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v4 15/19] iommu/s390: Add set_platform_dma_ops callback
-Date: Wed,  4 Jan 2023 20:57:21 +0800
-Message-Id: <20230104125725.271850-16-baolu.lu@linux.intel.com>
+Subject: [PATCH v4 16/19] iommu/gart: Add set_platform_dma_ops callback
+Date: Wed,  4 Jan 2023 20:57:22 +0800
+Message-Id: <20230104125725.271850-17-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230104125725.271850-1-baolu.lu@linux.intel.com>
 References: <20230104125725.271850-1-baolu.lu@linux.intel.com>
@@ -71,46 +71,43 @@ Content-Transfer-Encoding: 8bit
 
 This IOMMU driver doesn't support default domain. Add the implementation
 of set_platform_dma_ops callback so that the IOMMU core could return the
-DMA control. With the set_platform_dma implemented, there's no need for
+DMA control. With set_platform_dma_ops implemented, there's no need for
 detach_dev. Remove it to avoid dead code.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/s390-iommu.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/iommu/tegra-gart.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index ed33c6cce083..5591dab99446 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -144,13 +144,10 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
- 	return 0;
+diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+index ed53279d1106..a482ff838b53 100644
+--- a/drivers/iommu/tegra-gart.c
++++ b/drivers/iommu/tegra-gart.c
+@@ -124,9 +124,9 @@ static int gart_iommu_attach_dev(struct iommu_domain *domain,
+ 	return ret;
  }
  
--static void s390_iommu_detach_device(struct iommu_domain *domain,
--				     struct device *dev)
-+static void s390_iommu_set_platform_dma(struct device *dev)
+-static void gart_iommu_detach_dev(struct iommu_domain *domain,
+-				  struct device *dev)
++static void gart_iommu_set_platform_dma(struct device *dev)
  {
- 	struct zpci_dev *zdev = to_zpci_dev(dev);
++	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+ 	struct gart_device *gart = gart_handle;
  
--	WARN_ON(zdev->s390_domain != to_s390_domain(domain));
--
- 	__s390_iommu_detach_device(zdev);
- 	zpci_dma_init_device(zdev);
- }
-@@ -435,11 +432,11 @@ static const struct iommu_ops s390_iommu_ops = {
- 	.probe_device = s390_iommu_probe_device,
- 	.release_device = s390_iommu_release_device,
- 	.device_group = generic_device_group,
-+	.set_platform_dma_ops = s390_iommu_set_platform_dma,
- 	.pgsize_bitmap = SZ_4K,
- 	.get_resv_regions = s390_iommu_get_resv_regions,
+ 	spin_lock(&gart->dom_lock);
+@@ -270,11 +270,11 @@ static const struct iommu_ops gart_iommu_ops = {
+ 	.domain_alloc	= gart_iommu_domain_alloc,
+ 	.probe_device	= gart_iommu_probe_device,
+ 	.device_group	= generic_device_group,
++	.set_platform_dma_ops = gart_iommu_set_platform_dma,
+ 	.pgsize_bitmap	= GART_IOMMU_PGSIZES,
+ 	.of_xlate	= gart_iommu_of_xlate,
  	.default_domain_ops = &(const struct iommu_domain_ops) {
- 		.attach_dev	= s390_iommu_attach_device,
--		.detach_dev	= s390_iommu_detach_device,
- 		.map_pages	= s390_iommu_map_pages,
- 		.unmap_pages	= s390_iommu_unmap_pages,
- 		.flush_iotlb_all = s390_iommu_flush_iotlb_all,
+ 		.attach_dev	= gart_iommu_attach_dev,
+-		.detach_dev	= gart_iommu_detach_dev,
+ 		.map		= gart_iommu_map,
+ 		.unmap		= gart_iommu_unmap,
+ 		.iova_to_phys	= gart_iommu_iova_to_phys,
 -- 
 2.34.1
 
