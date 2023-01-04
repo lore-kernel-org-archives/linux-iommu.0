@@ -1,121 +1,196 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72BF32F27
-	for <iommu@lists.linux.dev>; Wed,  4 Jan 2023 12:09:55 +0000 (UTC)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 304BUDcm025186;
-	Wed, 4 Jan 2023 12:09:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=RSYhdqTpMfykqc1ctl3BKtFuCm8inJnwJpeRspp9ONY=;
- b=WAY+yTiyqrC0H8nHA99N8GOhbtvysVlsp+R2PZkxQv/54AlHHBRZHekzaTqR5be2E1R3
- L7xZyLM/oqTgp/twEaYJRB4NOlfP99IN0XguZux5AXg3Ea5eHFhp7lbpy3qFJIBmejk9
- XbeLvtPSeoLzRFRn4bkFUSzubVFJgswEPxVtKtqP0Vxx26IVfRTY3iIYisHWrxQhndP5
- q16YnO97n04MLUE21A536mcKpY0iwXftD8Gy6h3KS5ZKPcpY0WCx/RfFglTBxkysQ5TQ
- iQPPjUcOuHnJhtyx4SFnoalJUzXWkIXwPfn3ZsDwv2P0Sjq6AKeVuS3FzR47u5HrlWUc /Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3mw8mp8su2-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 04 Jan 2023 12:09:26 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 304Bn1l4000794;
-	Wed, 4 Jan 2023 12:09:25 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3mw8mp8stf-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 04 Jan 2023 12:09:25 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-	by ppma02fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 303H2vOL028210;
-	Wed, 4 Jan 2023 12:09:23 GMT
-Received: from smtprelay05.fra02v.mail.ibm.com ([9.218.2.225])
-	by ppma02fra.de.ibm.com (PPS) with ESMTPS id 3mtcq6uu67-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 04 Jan 2023 12:09:23 +0000
-Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
-	by smtprelay05.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 304C9JKt44171612
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 4 Jan 2023 12:09:19 GMT
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 858F520049;
-	Wed,  4 Jan 2023 12:09:19 +0000 (GMT)
-Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id BEC312004E;
-	Wed,  4 Jan 2023 12:09:17 +0000 (GMT)
-Received: from osiris (unknown [9.179.28.126])
-	by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTPS;
-	Wed,  4 Jan 2023 12:09:17 +0000 (GMT)
-Date: Wed, 4 Jan 2023 13:09:16 +0100
-From: Heiko Carstens <hca@linux.ibm.com>
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: torvalds@linux-foundation.org, corbet@lwn.net, will@kernel.org,
-        boqun.feng@gmail.com, mark.rutland@arm.com, catalin.marinas@arm.com,
-        dennis@kernel.org, tj@kernel.org, cl@linux.com, gor@linux.ibm.com,
-        agordeev@linux.ibm.com, borntraeger@linux.ibm.com, svens@linux.ibm.com,
-        Herbert Xu <herbert@gondor.apana.org.au>, davem@davemloft.net,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        joro@8bytes.org, suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
-        dwmw2@infradead.org, baolu.lu@linux.intel.com,
-        Arnd Bergmann <arnd@arndb.de>, penberg@kernel.org, rientjes@google.com,
-        iamjoonsoo.kim@lge.com, Andrew Morton <akpm@linux-foundation.org>,
-        vbabka@suse.cz, roman.gushchin@linux.dev, 42.hyeyoo@gmail.com,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-s390@vger.kernel.org,
-        linux-crypto@vger.kernel.org, iommu@lists.linux.dev,
-        linux-arch@vger.kernel.org
-Subject: Re: [RFC][PATCH 07/12] percpu: Wire up cmpxchg128
-Message-ID: <Y7VsbM4ada2KkAdx@osiris>
-References: <20221219153525.632521981@infradead.org>
- <20221219154119.286760562@infradead.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A816A2F49
+	for <iommu@lists.linux.dev>; Wed,  4 Jan 2023 13:05:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1672837524; x=1704373524;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=rdI/oJ9HW+kmCjRVi5jemUFp00YfbT8GRbCeKCMZrnI=;
+  b=bWvIbuLgpKfTYzZneyjzFSzVrYngInKbVq97403KFnehqeNBfCKEZE4u
+   pNbCvJ8G4CfK5Qi4BiV0oxdf2vMd7Jo9KYApNCtP4+XJy+Oxd07H5dJSV
+   KjvfFtvUl0wzsyNkx53bft/8UJ5KVumedyLOpcEQJ/loOLOU4LWWIzFNm
+   dPE+f97OnbeqA0I2aIvtDfpvGTk9szI4Dpz/fnWt7c++vbvoxanmWO0a4
+   htmUut570ZQIWkyp4VizMXmUSB9TcJYmpecd/dA6mfqAOzOCR+KV74OdV
+   oapgGHf5/RC34KY35ZmS29jcwmgrxRjLzxX656E4+Qi6btmLkt/UACBtq
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="320639540"
+X-IronPort-AV: E=Sophos;i="5.96,299,1665471600"; 
+   d="scan'208";a="320639540"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jan 2023 05:05:23 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10579"; a="797528992"
+X-IronPort-AV: E=Sophos;i="5.96,299,1665471600"; 
+   d="scan'208";a="797528992"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by fmsmga001.fm.intel.com with ESMTP; 04 Jan 2023 05:05:15 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Christoph Hellwig <hch@infradead.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Hector Martin <marcan@marcan.st>,
+	Sven Peter <sven@svenpeter.dev>,
+	Rob Clark <robdclark@gmail.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Andy Gross <agross@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Yong Wu <yong.wu@mediatek.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	Heiko Stuebner <heiko@sntech.de>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>,
+	Chen-Yu Tsai <wens@csie.org>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v4 00/19] iommu: Retire detach_dev callback
+Date: Wed,  4 Jan 2023 20:57:06 +0800
+Message-Id: <20230104125725.271850-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20221219154119.286760562@infradead.org>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: v6Cdb3q06drLPDoMeGnxfYaUTPnm6fUF
-X-Proofpoint-GUID: VZjraPk3cBZ_DLGZSw4eYM75PJm0BhwW
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2023-01-04_06,2023-01-04_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 malwarescore=0
- adultscore=0 clxscore=1015 suspectscore=0 lowpriorityscore=0
- priorityscore=1501 mlxlogscore=683 mlxscore=0 impostorscore=0 bulkscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2301040102
+Content-Transfer-Encoding: 8bit
 
-On Mon, Dec 19, 2022 at 04:35:32PM +0100, Peter Zijlstra wrote:
-> In order to replace cmpxchg_double() with the newly minted
-> cmpxchg128() family of functions, wire it up in this_cpu_cmpxchg().
-> 
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-...
-> --- a/arch/s390/include/asm/percpu.h
-> +++ b/arch/s390/include/asm/percpu.h
-> +#define this_cpu_cmpxchg_16(pcp, oval, nval)				\
-> +({									\
-> +	u128 old__ = __pcpu_cast_128((nval), (nval));			\
-> +	u128 new__ = __pcpu_cast_128((oval), (oval));			\
+Hi folks,
 
-spot the bug... please merge the below into this patch.
+The iommu core calls the driver's detach_dev domain op callback only when
+a device is finished assigning to user space and
+iommu_group_release_dma_owner() is called to return the device to the
+kernel, where iommu core wants to set the default domain to the device but
+the driver didn't provide one. The code looks like:
 
-diff --git a/arch/s390/include/asm/percpu.h b/arch/s390/include/asm/percpu.h
-index 24a4d9d644c0..d1997d01892a 100644
---- a/arch/s390/include/asm/percpu.h
-+++ b/arch/s390/include/asm/percpu.h
-@@ -156,8 +156,8 @@
- 
- #define this_cpu_cmpxchg_16(pcp, oval, nval)				\
- ({									\
--	u128 old__ = __pcpu_cast_128((nval), (nval));			\
--	u128 new__ = __pcpu_cast_128((oval), (oval));			\
-+	u128 old__ = __pcpu_cast_128((oval), (oval));			\
-+	u128 new__ = __pcpu_cast_128((nval), (nval));			\
- 	typedef typeof(pcp) pcp_op_T__;					\
- 	pcp_op_T__ *ptr__;						\
- 	u128 ret__;							\
+        /*
+         * New drivers should support default domains and so the detach_dev() op
+         * will never be called. Otherwise the NULL domain represents some
+         * platform specific behavior.
+         */
+        if (!new_domain) {
+                if (WARN_ON(!group->domain->ops->detach_dev))
+                        return -EINVAL;
+                __iommu_group_for_each_dev(group, group->domain,
+                                           iommu_group_do_detach_device);
+                group->domain = NULL;
+                return 0;
+        }
+
+In other words, if the iommu driver provides default domains, the
+.detach_dev callback will never be called; Otherwise, the .detach_dev
+callback is actually called to return control back to the platform DMA
+ops, other than detaching the domain from device.
+
+This series cleanups this by:
+
+- If the IOMMU driver provides default domains, remove .detach_dev
+  callback.
+- Adds a new set_platform_dma iommu op. Any IOMMU driver that doesn't
+  provide default domain should implement set_platform_dma callback
+  instead.
+- Retire .detach_dev callback.
+
+This series originates from various discussion in the community. Thank
+Jason, Robin and all others for their ideas. This series looks very
+long. It is necessary because I hope that change in each driver has a
+confirmation from its stakeholder. I will then be able to merge some of
+them to make the series cute.
+
+The whole series is available on github:
+https://github.com/LuBaolu/intel-iommu/commits/iommu-retire-detach_dev-v4
+
+Please review and suggest.
+
+Change log:
+v4:
+ - Drop the patch which renamed .attach_dev to .set_dev. As Robin said,
+   "... I also wouldn't say that "attach" loses its meaning in a context
+   where an equivalent "detach" operation is only ever implicit in 
+   reattaching to something else...". If we have a better name in the
+   future, we can do it in other series.
+ - Adjust the patch of "iommu: Add set_platform_dma_ops iommu ops"
+   according to Jason's following suggestion " ... This is a bit ugly,
+   it would be better to make the previous patch call set_platform_dma
+   if it is set instead of detach_dev and then these patches should just
+   rename the driver's fsl_pamu_detach_device to
+   fsl_pamu_set_platform_dma ..."
+ - Add a new patch to remove deferred attach check from
+   __iommu_detach_domain() path. Make it a separate patch as the
+   prerequisite to remove __iommu_detach_device() helper.
+ - Rename set_platform_dma to set_platform_dma_ops to make it more
+   meaningful.
+
+v3:
+ - https://lore.kernel.org/linux-iommu/20221128064648.1934720-1-baolu.lu@linux.intel.com/
+ - Setting blocking domain is not conceptually equal to detach_dev.
+   Dropped all blocking domain related staffs in the previous version.
+
+v2:
+ - https://lore.kernel.org/linux-iommu/20220826123014.52709-1-baolu.lu@linux.intel.com/
+ - Replace .detach_dev callback with static block domain ops;
+ - Rename .attach_dev to .set_dev.
+
+v1:
+ - https://lore.kernel.org/linux-iommu/20220516015759.2952771-1-baolu.lu@linux.intel.com/
+
+Jason Gunthorpe (1):
+  iommu: Remove deferred attach check from __iommu_detach_device()
+
+Lu Baolu (18):
+  iommu/amd: Remove detach_dev callback
+  iommu/apple-dart: Remove detach_dev callback
+  iommu/qcom: Remove detach_dev callback
+  iommu/exynos: Remove detach_dev callback
+  iommu/ipmmu: Remove detach_dev callback
+  iommu/mtk: Remove detach_dev callback
+  iommu/rockchip: Remove detach_dev callback
+  iommu/sprd: Remove detach_dev callback
+  iommu/sun50i: Remove detach_dev callback
+  iommu: Add set_platform_dma_ops iommu ops
+  iommu/fsl_pamu: Add set_platform_dma_ops callback
+  iommu/msm: Add set_platform_dma_ops callback
+  iommu/mtk_v1: Add set_platform_dma_ops callback
+  iommu/omap: Add set_platform_dma_ops callback
+  iommu/s390: Add set_platform_dma_ops callback
+  iommu/gart: Add set_platform_dma_ops callback
+  iommu/tegra: Add set_platform_dma_ops callback
+  iommu: Remove detach_dev callback
+
+ include/linux/iommu.h                   |  8 +-
+ include/trace/events/iommu.h            |  7 --
+ drivers/iommu/amd/iommu.c               | 26 -------
+ drivers/iommu/apple-dart.c              | 24 ------
+ drivers/iommu/arm/arm-smmu/qcom_iommu.c | 23 ------
+ drivers/iommu/exynos-iommu.c            |  1 -
+ drivers/iommu/fsl_pamu_domain.c         |  6 +-
+ drivers/iommu/iommu-traces.c            |  1 -
+ drivers/iommu/iommu.c                   | 98 ++++++++++++-------------
+ drivers/iommu/ipmmu-vmsa.c              | 16 ----
+ drivers/iommu/msm_iommu.c               |  6 +-
+ drivers/iommu/mtk_iommu.c               |  9 ---
+ drivers/iommu/mtk_iommu_v1.c            |  4 +-
+ drivers/iommu/omap-iommu.c              |  6 +-
+ drivers/iommu/rockchip-iommu.c          |  1 -
+ drivers/iommu/s390-iommu.c              |  7 +-
+ drivers/iommu/sprd-iommu.c              | 16 ----
+ drivers/iommu/sun50i-iommu.c            |  1 -
+ drivers/iommu/tegra-gart.c              |  6 +-
+ drivers/iommu/tegra-smmu.c              |  5 +-
+ 20 files changed, 73 insertions(+), 198 deletions(-)
+
+-- 
+2.34.1
+
