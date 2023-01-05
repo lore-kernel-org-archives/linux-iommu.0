@@ -1,34 +1,34 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2043.outbound.protection.outlook.com [40.107.92.43])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2077.outbound.protection.outlook.com [40.107.93.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A070FEB27
-	for <iommu@lists.linux.dev>; Thu,  5 Jan 2023 19:34:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88852EB34
+	for <iommu@lists.linux.dev>; Thu,  5 Jan 2023 19:34:03 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iDRSCUu33YB4KhlXWr3z52n4mg/gkm/76UT8Vsvvmls7O9ENt8u+yyHecJVyiTrUfWKCtP20sMRUS8j0bXmCgU9sGaAJrFzXEJEZpcTy+jQMTIAf1NXBbrBJv7KVND8XpXWHSA8X6jx0LvqauamdLK9ykoYMA/aGJi6MhQQL2KaKcYENUEpGxRymSy719g0jCy8RNPUP06AIcC4mK48NZPGB0IdqkGRT4Jxbu1bmMRqKmVbMif43eVBLmrByuDNy9FD+HcPrjIm4aYw2fj2to+GUXbKOn9g+EaZlPXegHarrhPa6ppMAQNdLjCn3hYqFvT/++SxevIypZEvqDfXc1g==
+ b=RgInahvDA/g74xa0Qw2Af6Ul78WPJGeBPqY28CehO7PwVn2oqGn9/dPNHIJhhCFiawakVeDycauXO8ajPIJS//7caVUCKb+aIRUKXYuu4QHMsY3y8xP2zXtve/C2MkTK0JJBkM2IKjxxtg4hH06Mh4fZy3jreFLYWBeLTfo3OvaytFkQhBBZcVm8WXfyVkXSxopcvGLn1lU1NPXokfX63JkQuYBJJ+41tGBzscNm5o9AUrwpjfbmebYNvCGx4nZH0731Kbx/6SM73NRh1FrZyv9XU4LXdAbHI1Ae2x/j2N4Un7niYRi5SaGBPqFIfRn+dtTNWh6QXq1kTvMApq/E/g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Rsr/lhBcuVU1xrYn8NOic0gYBZ2p5nfAYZZXHfwOpic=;
- b=FdzCnHFunTJkoLhlCXRkcan18ffmoiviemhtJ3CDxOJVRBZxbusWVeI2AVBVejI+d0GxC9SgrcJQ0XmeCCpaxCEovIn9NH56Pik1ACNe8Q1+nh2kkJeJYUGT/Mbqc2S3O8eFNxdS2PuxMQcIQ1A5TLq5AaMZXibbDRR0yJ5WPr1khiD/mKbYMyPrS3p67w18OAVpySazhTl/0IVWB6JO57LDcNy7Wtpe3vWQVqnB4s+RxGXKb7ijAAqTWQtYfnKhnvRHzdE7Wnl+jaX2bxy8x/CUycYEWUOVlqM0T5cz73wgsgB8G/NosMwa1hLDEytLIjJXNnljjkqIgYMElGQbJg==
+ bh=kZ+ZVwve1nnZe95+ZC0zjQXYD+Q1A6RwLMLYEtdXT+c=;
+ b=BYq2ZfMGkyiV0zqrthA4R+pC/bw0PROV0vDcHDRc5HuLMgfgPaQVTDhAwxX9fg3O5Q1JN14RaJTm0xrKenDk2hCctZeH33A+BAlAHCboRaXMvrICfp4LyDK7aS52b6sVBhT2hauA8298cQKPRdC36v28NmnqnThM625tf8xv8mTHa99twPA/NP5c1HIoAathQUtwocDsgHxb/aYmNN49lyRlmTk3M6gubvP1XhFG7lg+iwSjca08mvWpKgKHiMH6C0Io4G9rMM4E/er3WazfKRtikY0aW0f9ci24zfISvMhtLmsx6tolK1jk1hyzMYalvPcYCiycEAoMrYGa7QlwIg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Rsr/lhBcuVU1xrYn8NOic0gYBZ2p5nfAYZZXHfwOpic=;
- b=LJFdR8kjGWYy4pFTODcGZAXQBfW4X/kuaCCxPIF5iWGrs92mLf8fskrAadP8jDDVWsMLerkGGXTEyouYxQA5GOOorfuDFj6H2PKEreK4CV26KTFmSJ8neze56VBp8ZHGXuu8/OaDryJLsdY1Ylk+duYRoFr2vKEeI2VviS0PC5WOEHZAOqR4AaQEJI1eC3DrbRzA2EbbhG82UQC4D2Tqg4QZU3//A3Fwj4zmfHG9maktMB3v8yXd1sn1ruehZGYc+wtwR26AR3fixZ3DLMkhvH/Z09yXxPCKYnpEGVAtNb3fHEo9g5v8RmVIHIHLV8GjHbHeSF2qxyAj/AJ63KDwiA==
+ bh=kZ+ZVwve1nnZe95+ZC0zjQXYD+Q1A6RwLMLYEtdXT+c=;
+ b=SjD36juiujqYyp9LUqsRn2LgneuonInJf2yreXuiQV23lD5rWRUEd41Ey29lbfWkM54EHtNMPVFAfPkZ/ggrzxwi4CYaukPUHk5FwGsVRlO9cntYvO6H67pIXYntjUdwIui4oMF0uZdfZmEQfyUwh0xYmUnjiO2P4xFDdfKsMoPhoYPEjPJDsN/+/rN5CBfvdryID376zJAB7mCw2EuKUg6+lhXqQglqC0KptR+F/2ROGsz3aope+6diuPqnXJZeT+iDXY4H5cRHeqqz1Ecvxfta6z/R3HnFSKm6dYL7d9Gvgc2CKB74Zh3v2O+CO/X4GT2lwt+hyVkoJ73tKc/JWg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by SA1PR12MB6776.namprd12.prod.outlook.com (2603:10b6:806:25b::14) with
+ by SA3PR12MB7950.namprd12.prod.outlook.com (2603:10b6:806:31c::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5944.19; Thu, 5 Jan
- 2023 19:33:59 +0000
+ 2023 19:34:01 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::f8b0:df13:5f8d:12a%9]) with mapi id 15.20.5944.019; Thu, 5 Jan 2023
- 19:33:59 +0000
+ 19:34:01 +0000
 From: Jason Gunthorpe <jgg@nvidia.com>
 To: Alexander Gordeev <agordeev@linux.ibm.com>,
 	Alex Williamson <alex.williamson@redhat.com>,
@@ -58,15 +58,15 @@ Cc: Bharat Bhushan <bharat.bhushan@nxp.com>,
 	Matthew Rosato <mjrosato@linux.ibm.com>,
 	Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>,
 	Will Deacon <will.deacon@arm.com>
-Subject: [PATCH iommufd v3 6/9] irq: Rename IRQ_DOMAIN_MSI_REMAP to IRQ_DOMAIN_ISOLATED_MSI
-Date: Thu,  5 Jan 2023 15:33:54 -0400
-Message-Id: <6-v3-3313bb5dd3a3+10f11-secure_msi_jgg@nvidia.com>
+Subject: [PATCH iommufd v3 9/9] iommu: Remove IOMMU_CAP_INTR_REMAP
+Date: Thu,  5 Jan 2023 15:33:57 -0400
+Message-Id: <9-v3-3313bb5dd3a3+10f11-secure_msi_jgg@nvidia.com>
 In-Reply-To: <0-v3-3313bb5dd3a3+10f11-secure_msi_jgg@nvidia.com>
 References:
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: MN2PR02CA0019.namprd02.prod.outlook.com
- (2603:10b6:208:fc::32) To LV2PR12MB5869.namprd12.prod.outlook.com
+X-ClientProxiedBy: MN2PR02CA0002.namprd02.prod.outlook.com
+ (2603:10b6:208:fc::15) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -75,124 +75,93 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SA1PR12MB6776:EE_
-X-MS-Office365-Filtering-Correlation-Id: fab7249e-502b-4868-08c2-08daef53ca8c
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SA3PR12MB7950:EE_
+X-MS-Office365-Filtering-Correlation-Id: cda4bbc9-9b68-421f-d3fb-08daef53cb24
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	9VP5BoSG7MJK6t0/1qojK/Q23BvoDSDLs6VFd9er1mFvC33YN7M9+5K1DklrvnjXWXAGlpo14cXc/dsx/j/oZLJ4k9XGnan4f3oMrWl86YrEJ54xhHr1gwKsLgFDty3R1XpaUypyNIbVAq9sybewd8G8gzyvA6JfDOCDa2qdupbUEqr7TzlQrXHTzktyQAJJECfixfKvCphIYo6NpMJN7rezHY76JrPK/et8lTx4mXBF11IbB/qYPzCK8caQtREse+oycxGNB8mMarj4TuB7xgQi4wTEKdiU+IM7gjDXy01rN/b32yiM7jTS7eBbb+k2dyZMedaOBT83RRw27nqr0qJn88PJdrhQPSFIQ9VCWf52UgG4HsQ4aXse086Ud3VwcxW8jeQwIGZsayp8ZGDWOPpij6ohigYdiEIMCWbm2Nj65sFnmT96hqJ1hYmgOGyGyB8NPv3GLgp1XxDWl1oflKQhHILdkuBjFyGEWhTltePOyqIN0Q1K+WF3IXOHbf45ovIUbNU2xWHVtODyazidJHT37tqed8klstdZ9rBc7rNnz0C4L390JnNWJcZsEABngOUatpOlNXyaahAHOrGen6WTFm+sOQJasqe/+FvurE6CrqeoukHuQXLcdFKCL3sZM62GSzYIW/m7vq6Pp7cycSyPbRGNKPyEPa23QTNukAQ5fAswQNJ3RrU+nvZsQVm5g79dmr5QkfIKsHJI22xsxw==
+	vT2QNUgdNar6WYvaRfIE+RiPgoPfrJ8h2YiJy3ualIAdQag5XLoKdZN5Q1NXYaVlK9kDOZu8f9dJc9COw94qnGEYGWTwlVute+gr6wYWjs3zL9N1pVm2FTEPBbwCUnPKJTdczUkipfmZR8CziAtxyCiCZH1WK7GObV9Cld29/VaeaKbQQBEu9PptPyUnor41MCSLxpZMBWIfzGW0QcOEx30Wi+t/4TpYAGM8wUiQbMQBqbOBCkWTAzAHy6sht8FDIzeUmNKI/5e6X8scMj4F582kw7WB7s8UZSZOqAvzygCObNPRYUVz8onpiwD9vmdFjKc0fPLQnD4gZKt8PfcWQf2zIovDXgG2ipPiCNvRRdMpdFWWrN++N9uw1PMCGX6uR4Vf9w2e7KeDdixl9wW12aa6No8XezjNyv/6Eg0kB+6J56xkWxkrFyWNhhMpsYd+jMTarcR0E63c19d0CWzbvkm+FgWHfBkUiY1rGGBReO/4DdKl8aL3zxZ99ifU3718iun+YNEiB6QN6Px23VuGoT7JDplKx79Afc+KcyfxZWfrhzUCJsGQONb/hrzueyqhks3+aFJBbr/4tjJGZAMc1j36F6ofKCo+NXeqEK63jZEkgKJdewWqVfl7ajMUWt8Xv5rMVTAt3+C/9QRwkNQtHyWr1OppIdM7TDCIq/mN1tJBIiPY7Pzx/t+umEuXSxlpzijb4JbmKPFWKiNfh1YKaA==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(376002)(396003)(346002)(366004)(39860400002)(451199015)(6486002)(6512007)(26005)(186003)(6506007)(7416002)(8936002)(83380400001)(478600001)(54906003)(4326008)(316002)(2616005)(66476007)(8676002)(36756003)(66556008)(6666004)(66946007)(41300700001)(38100700002)(5660300002)(2906002)(110136005)(921005)(86362001)(4216001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(136003)(376002)(366004)(346002)(39860400002)(451199015)(66556008)(7416002)(41300700001)(4326008)(66946007)(5660300002)(66476007)(8936002)(8676002)(110136005)(54906003)(2906002)(316002)(6506007)(478600001)(6512007)(6666004)(26005)(186003)(6486002)(86362001)(2616005)(83380400001)(38100700002)(921005)(36756003)(4216001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?PJX7y66W1Jw8B6ngp7d6VEiS8lgIvs2hG55M2WwewYMTeZJDHAGf9LpRYkRR?=
- =?us-ascii?Q?SxO/AfS87W/Oxi65XYzl2xcmFaMzhOKEr1Z+DbQI+KRJQ9e4Q9XhlhHBowek?=
- =?us-ascii?Q?soN2Gmiij68DK61iBCGc05y6IYxoZz4Ll5NGJ8xbNI7DUVw8oMgLXVcob2cK?=
- =?us-ascii?Q?Op2JBQNNiPUQcxwtbMyUFt3sjVvWQB9NwIPeFhI/MkCH3jTEoyghg6zUKyGk?=
- =?us-ascii?Q?cSSYAhoDndUZs3fgFPP28lRyXWVdfS9Bik0aQWpkeZi5G2c1PJBObvBR1SgE?=
- =?us-ascii?Q?w7/0bEbSGydTcbNa5tL5PrgooADe3PNleKc2/CGnGIkCW31Kv3lHJp4bkCR3?=
- =?us-ascii?Q?q87d8ojWE7mjiGc6MbA6lKCy3ennMUXHtwd+wQZBBWrWH70TRYN1ROAL7Z+P?=
- =?us-ascii?Q?BglIiqYtz9h3glwg4VPBJRx2XvhnXKHGp2JVHq3x9UvYBMPfNDiMQTg1fM+m?=
- =?us-ascii?Q?7gA64mfSgTZGh6VjlUhZKfcHhuVtHUDUdvhagO/FX85N6J6C42b6fHVrc0Im?=
- =?us-ascii?Q?OCnrXaeTX5sIIJXXyhpdyEFqNjV9GBqVl7Ih+sydtRqxPyk7GVoByrzoycVL?=
- =?us-ascii?Q?Lw4ZZNKVdrDtNzPHyf48BzUcOlDphfCMiiJpBnQfOuv06JtlPOGPFgIQs6nq?=
- =?us-ascii?Q?fa1NNtF85upHxdRwNfU/IB6he1l6flTPLsDNqW5zt8Ne8FA0PDIlywHG7dtR?=
- =?us-ascii?Q?yxw0C7nSNZAeItcPDG8Aqk1qyiPzSlOer3fgsatWB37UKY4NyWlwevu+h41c?=
- =?us-ascii?Q?sQbRUcjOxt5UESmDxp9H6c0s2aRdQPflyGrJqjhKaHpVypr/N/qwySDbTzcl?=
- =?us-ascii?Q?1EcN/3jQU4H5rVHbExO+4zM+Qeo9Z/lOB5LzWjHuLtvyzlJiEAhq3a9f7dt6?=
- =?us-ascii?Q?kPhe8jr20WJCkAsykZqvLWvcts6jipMBDRW/hzIE4L3X6OBX9vM0MjpR6h/8?=
- =?us-ascii?Q?zz3SsbGgLETjvjn+LgvTJ9GcdMRmpse4/wBu0zcULMe6+mzWdKudpAdnKiQL?=
- =?us-ascii?Q?iEyfZWWjHb8FAcf7RlaUELeChrOMTNkX73K0JS5lJ49G8b4aCzWWisqQo/bm?=
- =?us-ascii?Q?DOy1zY0rJ7yOBU+gMlXjx0YfKDl3+f7PP7DmxCTeceZvCx2Wx/Ya6oyewtA+?=
- =?us-ascii?Q?AoQf72L7+aXnq6BcrZFDHqAMCiVtLGSSttvq8OYJkwOZK8CO2sADfJYt86tN?=
- =?us-ascii?Q?z6T05gabJqCG+3BOgCOhZNDvjdL4crl+856uueNUf29zxEeUhzVAhV6TmRag?=
- =?us-ascii?Q?B0e1hu8/1lsdrbzfjU0+gIqVRjEg0XOK0ro6JrSaKHUvnysn8PkcwO9SEAbQ?=
- =?us-ascii?Q?8RrpXr5ZNMbbb+02MS0xwBVbL5Q1B/cxdfZ78LCns8A0f8HPJ8WXcN01JqwQ?=
- =?us-ascii?Q?obiGEAXwbajraKJE3szzCC+gjXMfAKHXlpTbVbs8K5dofDSKe1xkTarcPAP2?=
- =?us-ascii?Q?+Wo8ynkClF7JAeV2y8mH/GZSv6gdcSVlnz4s9W7DfGANHyfvN0xm5xCTvKOB?=
- =?us-ascii?Q?YBd24u8qOYxnVZXGkp8vR7Ki5ELPWXkEu+faKsvHPiIUQYzXiBZCA9z/o95L?=
- =?us-ascii?Q?b9D9jb1rkSe2IC9JqIMwKQKmwPDqGHJUn85axLyU?=
+	=?us-ascii?Q?QsgrkMXry//xfSjSbJOB5rTyEZw68wxNTXUEGxLgE9fAPspPFKZTEx1hJeAV?=
+ =?us-ascii?Q?FqSHwt3GVly045DOXcjbSEN+J222NQ/r0QG37DkGsUuScTKpvnbsoQiA2xes?=
+ =?us-ascii?Q?yZUVWEJLxuUXAuE/jR+v1jsDQ/8HU8vjYBxHvyM1U9orjRLjqT8xHzgE/qyp?=
+ =?us-ascii?Q?E3DOdziLBjl6cFGvININL1nYSJpJxZjQarmMGaYWz1XQPMpyDwB/2Za5xRsJ?=
+ =?us-ascii?Q?hAGx3mubQh25N2e4uhnFKwWPT09u7SxHN55/CwSSocxw7SvjE1Vvhy5bom9p?=
+ =?us-ascii?Q?ZxAM2uoOSx/RPD2l1Fp7YDAIlGzFJuAiX7RrvT0MXiRGGGno1Bw62Wnj0K31?=
+ =?us-ascii?Q?znfth83Ca56q6idPHAvY7RQVFxtNHxnxh58cpL6lVVntiJBklwVYfCd4uYpn?=
+ =?us-ascii?Q?Va2uzzYZAN/25Da9I1zJcpSQFT37uzDABrw/GSohOo9Ht1zdHvb91WrTbyzc?=
+ =?us-ascii?Q?SzEvOU4xb32zNljE2gLAl9U64RTNXCGxHRMIQVHk/DB5pR8NFqzTDxcTC6YC?=
+ =?us-ascii?Q?zAbdJnd1YRC5XLO5rOrfinyDGgXdvJg0qX/mM0ASmKJ5RqD7mUSHoxE6O7zC?=
+ =?us-ascii?Q?ie6FN5DDLCgXGPh0PyamcNDhubDgIZUj27hGZoBATYiqcZZy4IjEyfNWxfqZ?=
+ =?us-ascii?Q?WW+V8gIfm+2WmIxgVwZBjYbBTxX3w5njIZOTesN0lnL6gAbUtCs9b6HW67zj?=
+ =?us-ascii?Q?oVIO79cckGZJTgvIJuY1Izb2Y7ie/MAXJ1qZV96ZPpDEAM95r57YGFVXrg9u?=
+ =?us-ascii?Q?6Elo6UGpjbJ42+20LCvL3xvl5UJ8tkelIZskXT+sBnXy7w1HgYriuahQVji9?=
+ =?us-ascii?Q?HDe1jXWhgTV1cOVgFMERNzi0c0vBLfPU/5TeYj5FNo6hCxe7ASI5kyDix5xp?=
+ =?us-ascii?Q?vTOv8pY5/YADW4uOezvFnR0ETZPFcx9MeALgx3yATni/X1/lfkhhE8SKt06R?=
+ =?us-ascii?Q?XoXoYMBf1QhjYvGauv1MoBvwUliglxEljGN31bTT6QgTjHOm6Yd/tVwpYkCX?=
+ =?us-ascii?Q?m9JZFr208e6GPu7/IYqqx9NY6KKmloSf+whdZ88AUzkbDWbxl2p4MS2JeGaR?=
+ =?us-ascii?Q?reBH4ITl98aOlIZr1ZDs/31+4umc/JT0CURqLGXxTf+cDjFAqAUTt6iGZBWJ?=
+ =?us-ascii?Q?U5nXHHNTDC0pFrBek0JR7KJQ7XJDD4ocOa7lUGiR3/gGJXaHO6ZIL9uODKPl?=
+ =?us-ascii?Q?b7oOdXNCw4X0hQiy/VqZjsOJblqihuu7YP9ToUysbjPFIBmBdm4N5FHuMXWW?=
+ =?us-ascii?Q?GtDfjeI53dzRINZAvz6Z81q7Y5KpGx/9nbcN6IkwfsOSVVQbnHBunpkNvIw9?=
+ =?us-ascii?Q?rgWRPwT3MAA2y3PgRpMu2xUpZrFjjXbUkWl+Ehzd1WDlAx3Kv/rCBqIfEm07?=
+ =?us-ascii?Q?Osb76WIwr4Ove2YegmnEaDQX3ZJnwSH+nwitzcuT7JRBxwI9xDcHtM597G7H?=
+ =?us-ascii?Q?V+y1qMZq6PEGFV9FH4dirtRzBGdrByBJffrmKKadoVNvjMa0KPFHC2rMh9HU?=
+ =?us-ascii?Q?UU7RQ86JrEa88JY4VJJ9GzPVsE89PkTidUgarFE/LKdrAqoJM1+Y030mIJE9?=
+ =?us-ascii?Q?SzZn6QGTvPUpWenEDr31LZYDujZ7B/ButC4FrXqN?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fab7249e-502b-4868-08c2-08daef53ca8c
+X-MS-Exchange-CrossTenant-Network-Message-Id: cda4bbc9-9b68-421f-d3fb-08daef53cb24
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2023 19:33:58.8047
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2023 19:33:59.7577
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rrGJxPSyJKEFv56YEavm/K4Bnl6UWRWN/Wy208Me9ZhOO6+lbxCQEvZIKnm/MPI+
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB6776
+X-MS-Exchange-CrossTenant-UserPrincipalName: LmVgf2tKUSiECJFMcJW83dOlwiwBMMtAb99LjF9wI+3lV+S8HCX0IGoasK8cRLoE
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB7950
 
-What x86 calls "interrupt remapping" is one way to achieve isolated MSI,
-make it clear this is talking about isolated MSI, no matter how it is
-achieved. This matches the new driver facing API name of
-msi_device_has_isolated_msi()
-
-No functional change.
+No iommu driver implements this any more, get rid of it.
 
 Tested-by: Matthew Rosato <mjrosato@linux.ibm.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- drivers/irqchip/irq-gic-v3-its.c | 4 ++--
- include/linux/irqdomain.h        | 6 ++++--
- kernel/irq/msi.c                 | 2 +-
- 3 files changed, 7 insertions(+), 5 deletions(-)
+ drivers/iommu/iommu.c | 4 +---
+ include/linux/iommu.h | 1 -
+ 2 files changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
-index 973ede0197e36f..b4069f825a9b73 100644
---- a/drivers/irqchip/irq-gic-v3-its.c
-+++ b/drivers/irqchip/irq-gic-v3-its.c
-@@ -4692,7 +4692,7 @@ static bool __maybe_unused its_enable_quirk_socionext_synquacer(void *data)
- 		}
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 7f744904e02f4d..834e6ecf3e5197 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1915,9 +1915,7 @@ bool iommu_group_has_isolated_msi(struct iommu_group *group)
  
- 		/* the pre-ITS breaks isolation, so disable MSI remapping */
--		its->msi_domain_flags &= ~IRQ_DOMAIN_FLAG_MSI_REMAP;
-+		its->msi_domain_flags &= ~IRQ_DOMAIN_FLAG_ISOLATED_MSI;
- 		return true;
- 	}
- 	return false;
-@@ -5074,7 +5074,7 @@ static int __init its_probe_one(struct resource *res,
- 	its->cmd_write = its->cmd_base;
- 	its->fwnode_handle = handle;
- 	its->get_msi_base = its_irq_get_msi_base;
--	its->msi_domain_flags = IRQ_DOMAIN_FLAG_MSI_REMAP;
-+	its->msi_domain_flags = IRQ_DOMAIN_FLAG_ISOLATED_MSI;
- 
- 	its_enable_quirks(its);
- 
-diff --git a/include/linux/irqdomain.h b/include/linux/irqdomain.h
-index b04ce03d3bb69f..0a3e974b7288d0 100644
---- a/include/linux/irqdomain.h
-+++ b/include/linux/irqdomain.h
-@@ -192,8 +192,10 @@ enum {
- 	/* Irq domain implements MSIs */
- 	IRQ_DOMAIN_FLAG_MSI		= (1 << 4),
- 
--	/* Irq domain implements MSI remapping */
--	IRQ_DOMAIN_FLAG_MSI_REMAP	= (1 << 5),
-+	/*
-+	 * Irq domain implements isolated MSI, see msi_device_has_isolated_msi()
-+	 */
-+	IRQ_DOMAIN_FLAG_ISOLATED_MSI	= (1 << 5),
- 
- 	/* Irq domain doesn't translate anything */
- 	IRQ_DOMAIN_FLAG_NO_MAP		= (1 << 6),
-diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
-index dfb5d40abac9e8..ac5e224a11b9aa 100644
---- a/kernel/irq/msi.c
-+++ b/kernel/irq/msi.c
-@@ -1645,7 +1645,7 @@ bool msi_device_has_isolated_msi(struct device *dev)
- 	struct irq_domain *domain = dev_get_msi_domain(dev);
- 
- 	for (; domain; domain = domain->parent)
--		if (domain->flags & IRQ_DOMAIN_FLAG_MSI_REMAP)
-+		if (domain->flags & IRQ_DOMAIN_FLAG_ISOLATED_MSI)
- 			return true;
- 	return false;
+ 	mutex_lock(&group->mutex);
+ 	list_for_each_entry(group_dev, &group->devices, list)
+-		ret &= msi_device_has_isolated_msi(group_dev->dev) ||
+-		       device_iommu_capable(group_dev->dev,
+-					    IOMMU_CAP_INTR_REMAP);
++		ret &= msi_device_has_isolated_msi(group_dev->dev);
+ 	mutex_unlock(&group->mutex);
+ 	return ret;
  }
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 9b7a9fa5ad28d3..933cc57bfc4818 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -120,7 +120,6 @@ static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
+ 
+ enum iommu_cap {
+ 	IOMMU_CAP_CACHE_COHERENCY,	/* IOMMU_CACHE is supported */
+-	IOMMU_CAP_INTR_REMAP,		/* IOMMU supports interrupt isolation */
+ 	IOMMU_CAP_NOEXEC,		/* IOMMU_NOEXEC flag */
+ 	IOMMU_CAP_PRE_BOOT_PROTECTION,	/* Firmware says it used the IOMMU for
+ 					   DMA protection and we should too */
 -- 
 2.39.0
 
