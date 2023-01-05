@@ -1,33 +1,33 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 948A780F
-	for <iommu@lists.linux.dev>; Thu,  5 Jan 2023 06:42:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4844380F
+	for <iommu@lists.linux.dev>; Thu,  5 Jan 2023 07:15:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1672900921; x=1704436921;
+  t=1672902928; x=1704438928;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=tkEn4+iyBrYyM+BG70qzWehw5bgsW2jWNnwljwaqr/w=;
-  b=XDOkdEwXLxonj7U2mCW7uP1gDKtkepabsCgIsHuM2PWHU9bLOwG0e5wh
-   qVXl3KJdrQOsO271qb1JtTRjZQTGDmTgNIbiCO5Lrn7Q9kmYJV/h70I9o
-   kyzPvzvZLpSTTokblD/bEMbR1OxIIJzLzNznv6sLAKTx0/n1KzMLBOGYt
-   cX3n1KulfCWWhe7F9bc0z68EcWiir2kVCs89Of96NIcqpJqbYlUEYWEHh
-   lfhVI5NjZcnaE6BgFfkcGpVxIpmJVwPLB2O8Pva4Xlpu/HvF4J1EVqygO
-   1WYrQYTtd2ED8Z51WPalhZ0ydD77HFCsVCTMh94dNVTtVQ/rHNdfPmJaR
+  bh=FBUtjr95t8Agi5j8hAHBpZDM7ThY2F/mQgfHkWT2GB4=;
+  b=D64iTKeuqGq740uUx4IcYoU8EBrxRhq3meARSTWN1sn5KNJbg2ePVHs1
+   ShcDkbKsOiJb0ydERN2yUgTMT8obFr1aeLl38Tl6SDdan3DAkA9LTJjfs
+   e2Puhc5k0k2kLezDRHxgjyahQdjmGMmDv+5ec0LnK83qfcJ3aMloLBvO0
+   nRKBkhuAWu5yfl223VWbVvDN8FwjdK7q34dMNqlzXW5Z0w72HQhSaVkeg
+   opgHzbc5OlzPVDTkX6RHyBKN+fZoyje4pU3LI/egRF87HJuJX73BDjwAS
+   FqtqJlzEQblhetgM/qcq+J5KuRRLcv1QlvVs+qxjBbeH1BNlHfrIJlaGP
    Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10580"; a="349350125"
+X-IronPort-AV: E=McAfee;i="6500,9779,10580"; a="301831441"
 X-IronPort-AV: E=Sophos;i="5.96,302,1665471600"; 
-   d="scan'208";a="349350125"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jan 2023 22:41:52 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10580"; a="723945456"
+   d="scan'208";a="301831441"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jan 2023 23:15:27 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10580"; a="797815544"
 X-IronPort-AV: E=Sophos;i="5.96,302,1665471600"; 
-   d="scan'208";a="723945456"
+   d="scan'208";a="797815544"
 Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.211.114]) ([10.254.211.114])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jan 2023 22:41:46 -0800
-Message-ID: <d0dafb48-9c3f-834a-abc6-52cdb8f3ebf6@linux.intel.com>
-Date: Thu, 5 Jan 2023 14:41:43 +0800
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jan 2023 23:15:23 -0800
+Message-ID: <1b01a5ba-3cfa-c968-59d1-1399c1b8cc1d@linux.intel.com>
+Date: Thu, 5 Jan 2023 15:15:19 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,88 +36,45 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
- Rob Clark <robdclark@gmail.com>, Marek Szyprowski
- <m.szyprowski@samsung.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
- Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>,
- Heiko Stuebner <heiko@sntech.de>, Matthew Rosato <mjrosato@linux.ibm.com>,
- Orson Zhai <orsonzhai@gmail.com>, Baolin Wang
- <baolin.wang@linux.alibaba.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
- Chen-Yu Tsai <wens@csie.org>, Thierry Reding <thierry.reding@gmail.com>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 19/19] iommu: Remove detach_dev callback
+Cc: baolu.lu@linux.intel.com, Matthew Rosato <mjrosato@linux.ibm.com>,
+ Gerd Bayer <gbayer@linux.ibm.com>, Pierre Morel <pmorel@linux.ibm.com>,
+ iommu@lists.linux.dev, linux-s390@vger.kernel.org,
+ borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+ gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com, svens@linux.ibm.com,
+ linux-kernel@vger.kernel.org, Julian Ruess <julianr@linux.ibm.com>
+Subject: Re: [PATCH v4 2/7] iommu: Allow .iotlb_sync_map to fail and handle
+ s390's -ENOMEM return
 Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <20230104125725.271850-1-baolu.lu@linux.intel.com>
- <20230104125725.271850-20-baolu.lu@linux.intel.com>
- <Y7V9rHPWoKvHTyrZ@nvidia.com>
+To: Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Wenjia Zhang <wenjia@linux.ibm.com>
+References: <20230104120543.308933-1-schnelle@linux.ibm.com>
+ <20230104120543.308933-3-schnelle@linux.ibm.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Y7V9rHPWoKvHTyrZ@nvidia.com>
+In-Reply-To: <20230104120543.308933-3-schnelle@linux.ibm.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/1/4 21:22, Jason Gunthorpe wrote:
-> On Wed, Jan 04, 2023 at 08:57:25PM +0800, Lu Baolu wrote:
->> The detach_dev callback of domain ops is not called in the IOMMU core.
->> Remove this callback to avoid dead code. The trace event for detaching
->> domain from device is removed accordingly.
->>
->> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
->> ---
->>   include/linux/iommu.h        |  2 --
->>   include/trace/events/iommu.h |  7 -------
->>   drivers/iommu/iommu-traces.c |  1 -
->>   drivers/iommu/iommu.c        | 29 +++++------------------------
->>   4 files changed, 5 insertions(+), 34 deletions(-)
->>
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index 0d10566b3cb2..a8063f26ff69 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -299,7 +299,6 @@ struct iommu_ops {
->>    * * EBUSY	- device is attached to a domain and cannot be changed
->>    * * ENODEV	- device specific errors, not able to be attached
->>    * * <others>	- treated as ENODEV by the caller. Use is discouraged
->> - * @detach_dev: detach an iommu domain from a device
->>    * @set_dev_pasid: set an iommu domain to a pasid of device
->>    * @map: map a physically contiguous memory region to an iommu domain
->>    * @map_pages: map a physically contiguous set of pages of the same size to
->> @@ -320,7 +319,6 @@ struct iommu_ops {
->>    */
->>   struct iommu_domain_ops {
->>   	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
->> -	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
->>   	int (*set_dev_pasid)(struct iommu_domain *domain, struct device *dev,
->>   			     ioasid_t pasid);
->>   
->> diff --git a/include/trace/events/iommu.h b/include/trace/events/iommu.h
->> index 29096fe12623..70743db1fb75 100644
->> --- a/include/trace/events/iommu.h
->> +++ b/include/trace/events/iommu.h
->> @@ -76,13 +76,6 @@ DEFINE_EVENT(iommu_device_event, attach_device_to_domain,
->>   	TP_ARGS(dev)
->>   );
->>   
->> -DEFINE_EVENT(iommu_device_event, detach_device_from_domain,
->> -
->> -	TP_PROTO(struct device *dev),
->> -
->> -	TP_ARGS(dev)
->> -);
->> -
-> did you want to add a trace for the set_platform_dma_ops in the
-> earlier patch?
+On 2023/1/4 20:05, Niklas Schnelle wrote:
+> On s390 when using a paging hypervisor, .iotlb_sync_map is used to sync
+> mappings by letting the hypervisor inspect the synced IOVA range and
+> updating a shadow table. This however means that .iotlb_sync_map can
+> fail as the hypervisor may run out of resources while doing the sync.
+> This can be due to the hypervisor being unable to pin guest pages, due
+> to a limit on mapped addresses such as vfio_iommu_type1.dma_entry_limit
+> or lack of other resources. Either way such a failure to sync a mapping
+> should result in a DMA_MAPPING_ERROR.
+> 
+> Now especially when running with batched IOTLB flushes for unmap it may
+> be that some IOVAs have already been invalidated but not yet synced via
+> .iotlb_sync_map. Thus if the hypervisor indicates running out of
+> resources, first do a global flush allowing the hypervisor to free
+> resources associated with these mappings as well a retry creating the
+> new mappings and only if that also fails report this error to callers.
+> 
+> Signed-off-by: Niklas Schnelle<schnelle@linux.ibm.com>
 
-If necessary, we can add such a trace event. But I do hope to further
-evolve the iommu drivers that need this callback. Finally, we should
-remove it totally.
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
 --
 Best regards,
