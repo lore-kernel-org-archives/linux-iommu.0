@@ -1,144 +1,99 @@
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2072.outbound.protection.outlook.com [40.107.101.72])
+Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1557A38
-	for <iommu@lists.linux.dev>; Thu,  5 Jan 2023 09:18:22 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WPu9no9L0/kD1MIVIVcNlIVnj5Ph/vgmW/C9oDkoTClwpGmO/ZvoTdbllEOSHrRlexuFPm4f/ftAM99FIf676OwJNxAmQBXgnhCv6wYHxEUHysS8hldVt17FEnWadoN6Jy02NJqRRjQnyyPhPwVUhoR8MzqjDVap3i4SFDsPopRWG3mM+y4Au1BfxzFC7PbboSHvkdcZSJtTeobmYy1/syksJsAvRudPLF/1MIbGhewyNUei9cvajsVCkCPX/KpMEa7z5aJ512MTSOyCIWhuphFOFkR79RDhnBVVE3lSpYZaygUM6zksl1v+ZX3yGUZtM6A6NxzL+nRdLJFt5fDjwg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=v0vZgGoX32L/KGKBxwP3//FdZZqPz3OdCkPKag8caLA=;
- b=eWLsLO7QPBx4tQOBULLGcqoRdycmsSJBQzRI4CpD68QlXdVzoNDAyO8j2UYGV8WD4F+35dwLjmJyoy7f8BMjaeGtC7khAgQRkBB3hTjejh36vsq4Vfv2vjjZzy++JoE6mi+BNw9Azhp91+XEyiYB0UcvfvAOTadgPqthzohmAc56WIcXxRh0eawadPitLPVz66C4Y2C6JV8a/eZ7Vct3ZBXGTyVTFhe/7TnVIyFOiqMog322jX6Yk7XwsqByT/9zwquNBWJEKNXMXMmC6koIkM0gwb+3oxH15VcHM3EahMAjtIgbIpjPP2XcU2IBJqU5Dk+6s+RpNp8Wg2mwXZaOrw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=v0vZgGoX32L/KGKBxwP3//FdZZqPz3OdCkPKag8caLA=;
- b=SIYv9CvPDp03Et5yO2pbtNMtqmaj1ieO4IpIo+5y4SlQE2dSYlz7WpO1iKeOHaAj60Xe3BMeGbGQOOPqgirAODImwLb7B2GM9hDoi4dvmqxHGIEIUPH/cM9gA5IGhSeKgmHPIR4f4AeW8JfiBtUjTq47jPLzYj4jWHLkOY1bT/Y=
-Received: from DS7PR07CA0022.namprd07.prod.outlook.com (2603:10b6:5:3af::24)
- by SJ0PR12MB5634.namprd12.prod.outlook.com (2603:10b6:a03:429::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5944.19; Thu, 5 Jan
- 2023 09:18:20 +0000
-Received: from DM6NAM11FT032.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3af:cafe::4) by DS7PR07CA0022.outlook.office365.com
- (2603:10b6:5:3af::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.15 via Frontend
- Transport; Thu, 5 Jan 2023 09:18:20 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT032.mail.protection.outlook.com (10.13.173.93) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5944.17 via Frontend Transport; Thu, 5 Jan 2023 09:18:20 +0000
-Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Thu, 5 Jan
- 2023 03:18:17 -0600
-From: Vasant Hegde <vasant.hegde@amd.com>
-To: <iommu@lists.linux.dev>, <joro@8bytes.org>
-CC: <suravee.suthikulpanit@amd.com>, Tom Lendacky <thomas.lendacky@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH] iommu/amd: Do not clear event/ppr log buffer when snp is enabled
-Date: Thu, 5 Jan 2023 09:18:04 +0000
-Message-ID: <20230105091804.42506-1-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3EF7EA5;
+	Thu,  5 Jan 2023 09:45:53 +0000 (UTC)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	by mailout.west.internal (Postfix) with ESMTP id C8CAA3200A01;
+	Thu,  5 Jan 2023 04:45:51 -0500 (EST)
+Received: from imap47 ([10.202.2.97])
+  by compute5.internal (MEProxy); Thu, 05 Jan 2023 04:45:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
+	 h=cc:cc:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:sender
+	:subject:subject:to:to; s=fm2; t=1672911951; x=1672998351; bh=51
+	c0Ws4aE5zuhiM20BTPanynGNXeOuqkek9xxgYiHCQ=; b=UfFaFz9CVYAtKPPoaf
+	/dw9VFTAYq4Nc2ofPjWkN+xpYtuwA8K2b65XYmPfdpv1UGkdMx4yxhW6nui6BE2D
+	K4n2T/X9FWJO0G40gEMl7ysoA/86IUM8zByodQ2f58Z31CsARndka+mGpB98hk+u
+	rCRPAfPJ+YHoH9XzaGyb5W0tdJhrPmOIW/EMZ4EDpEhuOahvbkb02TXI6iIPBP3U
+	pDmiLboFvbSxMgdujGTCWRFLdENfHmkASdj4mln5XCgZO10sPEiuIp28P7UI3ALv
+	wljAyH7Q5zYMBcwsLRYu6VzELWxwNnSzvrLgkSOoiB3ZnxR96ghGw3MukpsCBbHU
+	/qEw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+	:feedback-id:from:from:in-reply-to:in-reply-to:message-id
+	:mime-version:references:reply-to:sender:subject:subject:to:to
+	:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+	fm2; t=1672911951; x=1672998351; bh=51c0Ws4aE5zuhiM20BTPanynGNXe
+	Ouqkek9xxgYiHCQ=; b=qjQ+7c0EUdq9qlKGbTx5H+g6AHVyXjVrw+/ksGuW8pe9
+	JWbzVxfSMu4YWQpDfwnB3iod0cYZ8iWPe/aTyjO3Yjp2Oro51T7U9SfO63ak1tui
+	fUYD6yLe0Rr29xKZZJoSS5ZHuZBEGTWTf0Lev7w0w99VVDT2yc9B1WDcBwnSiKWV
+	bxaqOWRPu2yEMv3qrBSDU2Ef8Np9GwvNle8sYSX0SGhqayFkCB6di5DshTINQm1Z
+	V6bpLPybCVEUtMa8+dOJAcIPnqwJXJ23ujDEKlbn26nHLJj5BbtCo/xz/YSsztOv
+	gAU/vDqZlHrKs2UGviwyM65UH82gindlI+tjHLjsig==
+X-ME-Sender: <xms:Tpy2Y7TIiFieamIoccbfuxR-0mRf8GIxks2VA9izr0Yq-bYdwD1DVg>
+    <xme:Tpy2Y8xIdfxrB0_Ao0rqVCVeDXX0F8qi1VKIFgOkM0BDYYjx8CHOXaNxQ1lkKAp6K
+    18LhqQI4hDkNEipAmA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrjeekgddtjecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdfuvhgv
+    nhcurfgvthgvrhdfuceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrg
+    htthgvrhhnpedvkeehfeffudehtefftddtgefhjeehgffggffhueegiefhheeihfdvvdel
+    hfdtveenucffohhmrghinhepghhithhhuhgsrdgtohhmpdgurghrthekuddutddrphihne
+    cuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshhvvghn
+    sehsvhgvnhhpvghtvghrrdguvghv
+X-ME-Proxy: <xmx:Tpy2Yw2fx9ilqALzM2-4-l-b50SvpEqBtmQl5GkHok0_sZ87RmTeEQ>
+    <xmx:Tpy2Y7DSw9AVejI2WelEQM0kmtJ79iz2_m8Tz5Td79nOpJIx_ZQPSw>
+    <xmx:Tpy2Y0iZLumdlnfvhgeZ_0S6-fWJN7mKJw0g2zjPBYvr4X9xIMtTbA>
+    <xmx:T5y2Y5YNDpdUA1QOwdi85QAxxDHch6A38DPRqXM7Yr6AsNaZC_UmcQ>
+Feedback-ID: i51094778:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id 3E249A6007C; Thu,  5 Jan 2023 04:45:50 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-1185-g841157300a-fm-20221208.002-g84115730
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+Message-Id: <bfee5a64-bb7c-43ee-a2ca-7e13421508f4@app.fastmail.com>
+In-Reply-To: <fd66fa48-8810-5b8b-c330-8456bdb9de9e@marcan.st>
+References: <20230104110013.24738-1-marcan@marcan.st>
+ <20230104110013.24738-8-marcan@marcan.st>
+ <bebc741d-bcbe-4449-9379-be70fd65b0f0@app.fastmail.com>
+ <fd66fa48-8810-5b8b-c330-8456bdb9de9e@marcan.st>
+Date: Thu, 05 Jan 2023 10:45:29 +0100
+From: "Sven Peter" <sven@svenpeter.dev>
+To: "Hector Martin" <marcan@marcan.st>, "Joerg Roedel" <joro@8bytes.org>,
+ "Will Deacon" <will@kernel.org>, "Robin Murphy" <robin.murphy@arm.com>
+Cc: "Alyssa Rosenzweig" <alyssa@rosenzweig.io>, "Janne Grunau" <j@jannau.net>,
+ "Rob Herring" <robh+dt@kernel.org>,
+ "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
+ devicetree@vger.kernel.org, iommu@lists.linux.dev, asahi@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 7/7] iommu: dart: Add t8110 DART support
 Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT032:EE_|SJ0PR12MB5634:EE_
-X-MS-Office365-Filtering-Correlation-Id: b2de6fa0-a0f1-4106-a7be-08daeefdc9aa
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	X/5u3M6wTJdak3+BhJmJdpYQKXIcg5j0JYelbP3QsYu0Pwu8LQ57IRRmIUAEnbQgDPpA34XsYnOeSOC2m2CjuCCQhOqggAZdiRkZX358sChslgGF8dr1P1jPvZLGL1tsoF1sDGKu7+4J66F7KoqZLy4HX0V2g0pAXX6gLVH2FXNKHPocnMUtMRr8ebpZPfSIVNLNnkSXhoXcHg/ibsLfR2OfuZfqvIMXv+xf+HQ/Vp/HIlGwmcTGQIwq358mdg+46zMcQp8tUyPnRM5NM8eFLpc/pm9Oqhp/2e5FdLMpfbnteUCRwDtSMpzM+d3v+KGGVmkdsO9q0YbS/IXR/Oq9n0sxL9/o+Kue3Cd16aI7r6Kd9Nin2ORltSwkwfbJhU+Nvx+AoDVDBOjlo0dOYWRSU4DApEedFrHwZZRZvm+WIJ9hrG7jaDKuVwMsBYbbWs/UeYzo8iOEqzWTgQBEJQwQjab0uDpTy10YKLVS7HdtQcuqky/M2kFc+QVE0uLzwhXrNJv8J0jhgCz4lpUDayDneDLoIqP7/oT0G3Wbz67ATLSnMignF/JXv/zTs/dtvMrTsuKh6WgCABMCWa0w1lgGRIDMW8xj/Hxo1OAeA1rnQQR3aOq7ySo5l1zqjxOHmuTDqCuhZmiSy/NQbaNH9aigu0d8BtRuyac34CXEYcYwUUYCgj1nF3KtE9HhDZd/lfX74DeQwwe1C0hooZIiGOG1yo9/k+1c248BZg/koUslunQqU6erjZ9y4VBFTVuLIVh9TVdCKcj49x3xOHi6g7i0fak1ntHThW3nOz+XNbtmD5d+gPHrETsKQBsSkujtXz9/
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(136003)(376002)(39860400002)(346002)(396003)(451199015)(36840700001)(40470700004)(46966006)(36756003)(2906002)(81166007)(82740400003)(8936002)(5660300002)(41300700001)(44832011)(426003)(36860700001)(83380400001)(47076005)(86362001)(40460700003)(110136005)(70206006)(70586007)(54906003)(966005)(356005)(6666004)(336012)(2616005)(7696005)(40480700001)(26005)(316002)(82310400005)(16526019)(4326008)(8676002)(186003)(1076003)(478600001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2023 09:18:20.3106
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b2de6fa0-a0f1-4106-a7be-08daeefdc9aa
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT032.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB5634
 
-From: Tom Lendacky <thomas.lendacky@amd.com>
+Hi,
 
-Current code clears event log and ppr log entry after processing it due
-to hardware errata ([1]  erratum #732, #733). We do not have hardware
-issue on SNP enabled system.
+On Thu, Jan 5, 2023, at 06:19, Hector Martin wrote:
+> On 2023/01/04 22:50, Sven Peter wrote:
+>> Do you have any more details on this registers? For the 8103 DART
+>> we called it _CONFIG but I assume for the t8110 DART it can
+>> actually lock different parts of the HW instead of just a global lock?
+>
+> This is based on R's reverse engineering here:
+>
+> https://github.com/AsahiLinux/m1n1/blob/main/proxyclient/m1n1/hw/dart8110.py#L87
+>
+> I don't think they ever fully nailed down exactly what the lock bit
+> behavior is, though.
 
-When SNP is enabled, the event logs, PPR log and completion wait buffer
-are read-only to the host (see SNP FW ABI spec [2]). Clearing those entry
-will result in a kernel #PF for an RMP violation. Hence do not clear
-event and ppr log entry after processing it.
+Fair enough, I was mostly curious if it was actually _PROTECT and not just
+_CONFIG with different bit assignments. Sounds like it does mostly set up
+protections though.
 
-[1] http://developer.amd.com/wordpress/media/2012/10/48931_15h_Mod_10h-1Fh_Rev_Guide.pdf
-[2] https://www.amd.com/system/files/TechDocs/56860.pdf
 
-Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- drivers/iommu/amd/iommu.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index cbeaab55c0db..acc5e5e4f9e2 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -667,7 +667,13 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
- 			event[0], event[1], event[2], event[3]);
- 	}
- 
--	memset(__evt, 0, 4 * sizeof(u32));
-+	if (!amd_iommu_snp_en) {
-+		/*
-+		 * To detect the hardware errata 732 we need to clear the
-+		 * entry back to zero.
-+		 */
-+		memset(__evt, 0, 4 * sizeof(u32));
-+	}
- }
- 
- static void iommu_poll_events(struct amd_iommu *iommu)
-@@ -736,10 +742,11 @@ static void iommu_poll_ppr_log(struct amd_iommu *iommu)
- 		entry[1] = raw[1];
- 
- 		/*
--		 * To detect the hardware bug we need to clear the entry
--		 * back to zero.
-+		 * To detect the hardware errata 733 we need to clear the
-+		 * entry back to zero.
- 		 */
--		raw[0] = raw[1] = 0UL;
-+		if (!amd_iommu_snp_en)
-+			raw[0] = raw[1] = 0UL;
- 
- 		/* Update head pointer of hardware ring-buffer */
- 		head = (head + PPR_ENTRY_SIZE) % PPR_LOG_SIZE;
--- 
-2.31.1
-
+Sven
