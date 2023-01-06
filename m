@@ -1,33 +1,33 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0389111D
-	for <iommu@lists.linux.dev>; Fri,  6 Jan 2023 11:28:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55175137F
+	for <iommu@lists.linux.dev>; Fri,  6 Jan 2023 11:34:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673004536; x=1704540536;
+  t=1673004892; x=1704540892;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=gtPxb1hUG19sdZyr90eZiXbtQnVpYQmHDV48nV4t68A=;
-  b=RFmAN/QzTo/y3p4RCcU7lSOe7KSes2IPOLeYyaxe+DewQeTSRHumi4Pz
-   UgJwMXJTeonGD+P+SehgdB+6MdsQEM1ved1rXmI+12qSteRMEPJwGCWek
-   3YZRZCjKDVje9Cj4W+qcOWSiIr4ZY/mWWTgZcJ11koDFyWaTPeavxhzfS
-   IVzE+MeO7iLg2nQesxWPMT7cQ/q0aXPJ8OgYpRfBaL7wqoy+n17Qf9fw6
-   aB7pRJRSyyO40jw2z3byAwNseX4Yq98tXj2TkNWK4Eo1Nngi8DrD/Prys
-   AqobJZWvSXNlxTBRP6oeFcV6giJrARCP2J2Epm3X6ybPSb45XjCl55g7+
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10581"; a="321165609"
+  bh=h52bTybgotE/+arZH7dQLP3uJT6YAOrJvSJlk08qNYs=;
+  b=R9hmaZhIN1CwJhZw+eQrauZoAul16HpX/7J/uC+M1V0AThl6YdpaqQGv
+   Yo2lFVEsBQxYlYIRswePMmH5cpcae0NuqVxW18L6DLErgNBq4puJ1HK7G
+   9YEv587YBPiTyK0KheOlgTmgNRn0KJRQZn9T7PjtV5HiumpcDov95+HTW
+   NP/LOBilXUOMmgLd1+EPviq/MpXviWyWuC8qy0a8IdgR1jXHH7kFBP5qZ
+   qTaqmQrR3c9l3rJImXSU7FrRzEoAyqyywtOq5EMhNRWvg4Fg8kdlat7+G
+   fLkcH3XJaJKDkOCLEzrKSyIlxjTvi/NZ4vbKxMKqRppevt2l3JLaimUoG
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10581"; a="322531835"
 X-IronPort-AV: E=Sophos;i="5.96,305,1665471600"; 
-   d="scan'208";a="321165609"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2023 03:28:55 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10581"; a="798258834"
+   d="scan'208";a="322531835"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2023 03:34:51 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10581"; a="655934700"
 X-IronPort-AV: E=Sophos;i="5.96,305,1665471600"; 
-   d="scan'208";a="798258834"
+   d="scan'208";a="655934700"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.211.214]) ([10.254.211.214])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2023 03:28:49 -0800
-Message-ID: <2c12143b-eaa9-2f6b-d367-e55d6f1e180d@linux.intel.com>
-Date: Fri, 6 Jan 2023 19:28:46 +0800
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2023 03:34:43 -0800
+Message-ID: <654b8a24-e5a5-07b1-3127-46df80c1b545@linux.intel.com>
+Date: Fri, 6 Jan 2023 19:34:41 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,7 +36,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Subject: Re: [PATCH iommufd v3 2/9] iommu: Add iommu_group_has_isolated_msi()
+Subject: Re: [PATCH iommufd v3 3/9] vfio/type1: Convert to
+ iommu_group_has_isolated_msi()
+Content-Language: en-US
 To: Jason Gunthorpe <jgg@nvidia.com>,
  Alexander Gordeev <agordeev@linux.ibm.com>,
  Alex Williamson <alex.williamson@redhat.com>,
@@ -57,87 +59,70 @@ Cc: Bharat Bhushan <bharat.bhushan@nxp.com>,
  Matthew Rosato <mjrosato@linux.ibm.com>,
  Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>,
  Will Deacon <will.deacon@arm.com>
-References: <2-v3-3313bb5dd3a3+10f11-secure_msi_jgg@nvidia.com>
-Content-Language: en-US
+References: <3-v3-3313bb5dd3a3+10f11-secure_msi_jgg@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <2-v3-3313bb5dd3a3+10f11-secure_msi_jgg@nvidia.com>
+In-Reply-To: <3-v3-3313bb5dd3a3+10f11-secure_msi_jgg@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 1/6/2023 3:33 AM, Jason Gunthorpe wrote:
-> Compute the isolated_msi over all the devices in the IOMMU group because
-> iommufd and vfio both need to know that the entire group is isolated
-> before granting access to it.
+> Trivially use the new API.
 >
 > Tested-by: Matthew Rosato <mjrosato@linux.ibm.com>
 > Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > ---
->   drivers/iommu/iommu.c | 26 ++++++++++++++++++++++++++
->   include/linux/iommu.h |  1 +
->   2 files changed, 27 insertions(+)
+>   drivers/vfio/vfio_iommu_type1.c | 16 +++-------------
+>   1 file changed, 3 insertions(+), 13 deletions(-)
 >
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index de91dd88705bd3..7f744904e02f4d 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -30,6 +30,7 @@
->   #include <linux/cc_platform.h>
->   #include <trace/events/iommu.h>
->   #include <linux/sched/mm.h>
-> +#include <linux/msi.h>
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index 23c24fe98c00d4..393b27a3bd87ee 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -37,7 +37,6 @@
+>   #include <linux/vfio.h>
+>   #include <linux/workqueue.h>
+>   #include <linux/notifier.h>
+> -#include <linux/irqdomain.h>
+>   #include "vfio.h"
 >   
->   #include "dma-iommu.h"
->   
-> @@ -1897,6 +1898,31 @@ bool device_iommu_capable(struct device *dev, enum iommu_cap cap)
+>   #define DRIVER_VERSION  "0.2"
+> @@ -2160,12 +2159,6 @@ static void vfio_iommu_iova_insert_copy(struct vfio_iommu *iommu,
+>   	list_splice_tail(iova_copy, iova);
 >   }
->   EXPORT_SYMBOL_GPL(device_iommu_capable);
 >   
-> +/**
-> + * iommu_group_has_isolated_msi() - Compute msi_device_has_isolated_msi()
-> + *       for a group
-> + * @group: Group to query
-> + *
-> + * IOMMU groups should not have differing values of
-> + * msi_device_has_isolated_msi() for devices in a group. However nothing
-> + * directly prevents this, so ensure mistakes don't result in isolation failures
-> + * by checking that all the devices are the same.
-> + */
-> +bool iommu_group_has_isolated_msi(struct iommu_group *group)
-> +{
-> +	struct group_device *group_dev;
-> +	bool ret = true;
-> +
-> +	mutex_lock(&group->mutex);
-> +	list_for_each_entry(group_dev, &group->devices, list)
-> +		ret &= msi_device_has_isolated_msi(group_dev->dev) ||
-> +		       device_iommu_capable(group_dev->dev,
-> +					    IOMMU_CAP_INTR_REMAP);
-> +	mutex_unlock(&group->mutex);
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_group_has_isolated_msi);
-> +
->   /**
->    * iommu_set_fault_handler() - set a fault handler for an iommu domain
->    * @domain: iommu domain
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 46e1347bfa2286..9b7a9fa5ad28d3 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -455,6 +455,7 @@ static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
->   extern int bus_iommu_probe(struct bus_type *bus);
->   extern bool iommu_present(struct bus_type *bus);
->   extern bool device_iommu_capable(struct device *dev, enum iommu_cap cap);
-> +extern bool iommu_group_has_isolated_msi(struct iommu_group *group);
-
-This lacks a static inline definition when CONFIG_IOMMU_API is false?
-
->   extern struct iommu_domain *iommu_domain_alloc(struct bus_type *bus);
->   extern struct iommu_group *iommu_group_get_by_id(int id);
->   extern void iommu_domain_free(struct iommu_domain *domain);
-
-Others look good to me. With above addressed,
+> -/* Redundantly walks non-present capabilities to simplify caller */
+> -static int vfio_iommu_device_capable(struct device *dev, void *data)
+> -{
+> -	return device_iommu_capable(dev, (enum iommu_cap)data);
+> -}
+> -
+>   static int vfio_iommu_domain_alloc(struct device *dev, void *data)
+>   {
+>   	struct iommu_domain **domain = data;
+> @@ -2180,7 +2173,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>   	struct vfio_iommu *iommu = iommu_data;
+>   	struct vfio_iommu_group *group;
+>   	struct vfio_domain *domain, *d;
+> -	bool resv_msi, msi_remap;
+> +	bool resv_msi;
+>   	phys_addr_t resv_msi_base = 0;
+>   	struct iommu_domain_geometry *geo;
+>   	LIST_HEAD(iova_copy);
+> @@ -2278,11 +2271,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>   	INIT_LIST_HEAD(&domain->group_list);
+>   	list_add(&group->next, &domain->group_list);
+>   
+> -	msi_remap = irq_domain_check_msi_remap() ||
+> -		    iommu_group_for_each_dev(iommu_group, (void *)IOMMU_CAP_INTR_REMAP,
+> -					     vfio_iommu_device_capable);
+> -
+> -	if (!allow_unsafe_interrupts && !msi_remap) {
+> +	if (!allow_unsafe_interrupts &&
+> +	    !iommu_group_has_isolated_msi(iommu_group)) {
+>   		pr_warn("%s: No interrupt remapping support.  Use the module param \"allow_unsafe_interrupts\" to enable VFIO IOMMU support on this platform\n",
+>   		       __func__);
+>   		ret = -EPERM;
 
 Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
