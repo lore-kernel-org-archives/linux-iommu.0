@@ -1,33 +1,33 @@
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EAE810FA;
-	Sat,  7 Jan 2023 02:44:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A372A10FA
+	for <iommu@lists.linux.dev>; Sat,  7 Jan 2023 02:48:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673059491; x=1704595491;
+  t=1673059721; x=1704595721;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=G0fbwXW0MolWEJ1yoKtJ5qcnQjpT3neE3ClvtGEJC38=;
-  b=icmaueQLRobyT5Oqnww306fwRAc4hR0XPcUBCFQrYyxHbWNOSOSO4I98
-   bQJfkedY48Vy1cEhFV5tKDn50QIv7ig6wm34JDVlGhcZXCPnTe52Q1DuU
-   +sizvK9qn/bRBaWxrE63sCBbRjUHJWuUDhfgs16upj0QUooCbiJOnyH2J
-   v38/1Io/lbWSfVs89uzLOgHaKfORFtqOoMy30RNcBfq8LqIwUnKQPlu2d
-   /Iy6FCAT2dPJvWmwz07WSRq/Yh5IEC7KSocgAN+W4ssGp1laHC4NpKFO3
-   WaDriZGsx71TJ9DP9ERDIMtMpCLjkWVR6HRtVoY2Q1l0w6tERnNw2Kg4z
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10582"; a="322678316"
+  bh=jeI+tFkLh+++AU1LMUIzjlxVEKuYd/d2QZDYvn5z6VU=;
+  b=MFTcESiUkgK7HY3aj4DrKcOiOIqdHS0rYPrpJ8FeG/u2bSPzlFpgbY2n
+   SZUi+wc9wAxz7BR96hVXOZRCFRctv9JtOlw+63ahKdTyd3t8x/uxu1lDb
+   mJBwU1PZaXPUJ7m5fFxUEK95lJsk9gr47dgvagJTuUGiFfgjaX6N6bGwO
+   XKDgD65+jREeREIaBwDxDJsK/t0Lz31VzB221P47HInNPgQCjMvnPNEDQ
+   VLXHlGMRY/4HRspjAARVRKmZ+XmnS0EsBrJKkJdbqSrW4U6uT1yPE2fzD
+   qnCEhctnYRR7kRuju7lZG4AeJfqbLMjViT/lvXvezsxJTLpyipOEOg4yn
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10582"; a="387062694"
 X-IronPort-AV: E=Sophos;i="5.96,307,1665471600"; 
-   d="scan'208";a="322678316"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2023 18:44:50 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10582"; a="901474463"
+   d="scan'208";a="387062694"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2023 18:48:40 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10582"; a="984854342"
 X-IronPort-AV: E=Sophos;i="5.96,307,1665471600"; 
-   d="scan'208";a="901474463"
+   d="scan'208";a="984854342"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.209.158]) ([10.254.209.158])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2023 18:44:48 -0800
-Message-ID: <bb865b8f-6f8f-769a-6364-d46b45caca85@linux.intel.com>
-Date: Sat, 7 Jan 2023 10:44:46 +0800
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2023 18:48:33 -0800
+Message-ID: <5ce5a6a4-9397-9665-7352-862d89b3f228@linux.intel.com>
+Date: Sat, 7 Jan 2023 10:48:31 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,89 +36,98 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Subject: =?UTF-8?Q?Re=3a_=5bregression=2c_bisected=2c_pci/iommu=5d_Bug=c2=a0?=
- =?UTF-8?Q?216865_-_Black_screen_when_amdgpu_started_during_6=2e2-rc1_boot_w?=
- =?UTF-8?Q?ith_AMD_IOMMU_enabled?=
+Subject: Re: [PATCH v4 10/19] iommu: Add set_platform_dma_ops iommu ops
 Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, Vasant Hegde <vasant.hegde@amd.com>
-Cc: Matt Fagnani <matt.fagnani@bell.net>,
- Thorsten Leemhuis <regressions@leemhuis.info>, Joerg Roedel
- <jroedel@suse.de>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- LKML <linux-kernel@vger.kernel.org>,
- "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
- Linux PCI <linux-pci@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>
-References: <15d0f9ff-2a56-b3e9-5b45-e6b23300ae3b@leemhuis.info>
- <5aa0e698-f715-0481-36e5-46505024ebc1@bell.net>
- <aea57c5f-2d20-c589-ad44-a63f1133a3db@linux.intel.com>
- <157c4ca4-370a-5d7e-fe32-c64d934f6979@amd.com>
- <223ee6d6-70ea-1d53-8bc2-2d22201d8dde@bell.net>
- <6fff9d10-f77f-e55a-9020-8a1bd34cf508@amd.com> <Y7gs0zYKp/VXACBi@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@infradead.org>,
+ Kevin Tian <kevin.tian@intel.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+ Rob Clark <robdclark@gmail.com>, Marek Szyprowski
+ <m.szyprowski@samsung.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
+ Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>,
+ Heiko Stuebner <heiko@sntech.de>, Matthew Rosato <mjrosato@linux.ibm.com>,
+ Orson Zhai <orsonzhai@gmail.com>, Baolin Wang
+ <baolin.wang@linux.alibaba.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
+ Chen-Yu Tsai <wens@csie.org>, Thierry Reding <thierry.reding@gmail.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20230104125725.271850-1-baolu.lu@linux.intel.com>
+ <20230104125725.271850-11-baolu.lu@linux.intel.com>
+ <Y7V8bcUF5zvGvCAP@nvidia.com>
+ <1ef288af-885a-f724-ea37-199f181e4937@linux.intel.com>
+ <Y7bNidP/px0NmvR+@nvidia.com>
+ <0f6426c9-71bb-826a-78f0-bc8851b6468e@linux.intel.com>
+ <Y7gveMpxJWmpYkk2@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Y7gs0zYKp/VXACBi@nvidia.com>
+In-Reply-To: <Y7gveMpxJWmpYkk2@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 1/6/2023 10:14 PM, Jason Gunthorpe wrote:
-> On Thu, Jan 05, 2023 at 03:57:28PM +0530, Vasant Hegde wrote:
->> Matt,
+On 1/6/2023 10:26 PM, Jason Gunthorpe wrote:
+> On Fri, Jan 06, 2023 at 02:07:32PM +0800, Baolu Lu wrote:
+> 
+>> Above looks good to me. Thanks! I have updated this part of code like
+>> below:
 >>
->> On 1/5/2023 6:39 AM, Matt Fagnani wrote:
->>> I built 6.2-rc2 with the patch applied. The same black screen problem happened
->>> with 6.2-rc2 with the patch. I tried to use early kdump with 6.2-rc2 with the
->>> patch twice by panicking the kernel with sysrq+alt+c after the black screen
->>> happened. The system rebooted after about 10-20 seconds both times, but no kdump
->>> and dmesg files were saved in /var/crash. I'm attaching the lspci -vvv output as
->>> requested.
->>>
->>
->> Thanks for testing. As mentioned earlier I was not expecting this patch to fix
->> the black screen issue. It should fix kernel warnings and IOMMU page fault
->> related call traces. By any chance do you have the kernel boot logs?
->>
->>
->> @Baolu,
->>    Looking into lspci output, it doesn't list ACS feature for Graphics card. So
->> with your fix it didn't enable PASID and hence it failed to boot.
-> 
-> The ACS checks being done are feature of the path not the end point or
-> root port.
-> 
-> If we are expecting ACS on the end port then it is just a bug in how
-> the test was written.. The test should be a NOP because there are no
-> switches in this topology.
-> 
-> Looking at it, this seems to just be because pci_enable_pasid is
-> calling pci_acs_path_enabled wrong, the only other user is here:
-> 
-> 	for (bus = pdev->bus; !pci_is_root_bus(bus); bus = bus->parent) {
-> 		if (!bus->self)
-> 			continue;
-> 
-> 		if (pci_acs_path_enabled(bus->self, NULL, REQ_ACS_FLAGS))
-> 			break;
-> 
-> 		pdev = bus->self;
-> 
-> 		group = iommu_group_get(&pdev->dev);
-> 		if (group)
-> 			return group;
-> 	}
-> 
-> And notice it is calling it on pdev->bus not on pdev itself which
-> naturally excludes the end point from the ACS validation.
-> 
-> So try something like:
-> 
-> 	if (!pci_acs_path_enabled(pdev->bus->self, NULL, PCI_ACS_RR | PCI_ACS_UF))
-> 
-> (and probably need to check for null ?)
+>> @@ -2177,10 +2188,20 @@ static int __iommu_group_set_domain(struct
+>> iommu_group *group,
+>>           * platform specific behavior.
+>>           */
+>>          if (!new_domain) {
+>> -               if (WARN_ON(!group->domain->ops->detach_dev))
+>> -                       return -EINVAL;
+>> -               __iommu_group_for_each_dev(group, group->domain,
+>> -                                          iommu_group_do_detach_device);
+>> +               struct group_device *grp_dev;
+>> +
+>> +               grp_dev = list_first_entry(&group->devices,
+>> +                                          struct group_device, list);
+> It seems OK - I hope we naturally can't ever get in a situation where
+> a group has disjoint iommu drivers.
 
-Yeah! This really is a misuse of pci_acs_path_enabled().
+The final code after cleanup looks like below. We will WARN_ON the lack
+of callback in the iommu_group_do_set_platform_dma() helper.
 
-But if @pdev is an endpoint of a multiple function device, perhaps we
-still need to check acs on it?
+2152 static int iommu_group_do_set_platform_dma(struct device *dev, void 
+*data)
+2153 {
+2154         const struct iommu_ops *ops = dev_iommu_ops(dev);
+2155
+2156         if (!WARN_ON(!ops->set_platform_dma_ops))
+2157                 ops->set_platform_dma_ops(dev);
+2158
+2159         return 0;
+2160 }
+2161
+2162 static int __iommu_group_set_domain(struct iommu_group *group,
+2163                                     struct iommu_domain *new_domain)
+2164 {
+2165         int ret;
+2166
+2167         if (group->domain == new_domain)
+2168                 return 0;
+2169
+2170         /*
+2171          * New drivers should support default domains, so 
+set_platform_dma()
+2172          * op will never be called. Otherwise the NULL domain 
+represents some
+2173          * platform specific behavior.
+2174          */
+2175         if (!new_domain) {
+2176                 __iommu_group_for_each_dev(group, NULL,
+2177 
+iommu_group_do_set_platform_dma);
+2178                 group->domain = NULL;
+2179                 return 0;
+2180         }
+
+How do you like this?
 
 --
 Best regards,
 baolu
-
