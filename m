@@ -1,133 +1,82 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A372A10FA
-	for <iommu@lists.linux.dev>; Sat,  7 Jan 2023 02:48:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673059721; x=1704595721;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=jeI+tFkLh+++AU1LMUIzjlxVEKuYd/d2QZDYvn5z6VU=;
-  b=MFTcESiUkgK7HY3aj4DrKcOiOIqdHS0rYPrpJ8FeG/u2bSPzlFpgbY2n
-   SZUi+wc9wAxz7BR96hVXOZRCFRctv9JtOlw+63ahKdTyd3t8x/uxu1lDb
-   mJBwU1PZaXPUJ7m5fFxUEK95lJsk9gr47dgvagJTuUGiFfgjaX6N6bGwO
-   XKDgD65+jREeREIaBwDxDJsK/t0Lz31VzB221P47HInNPgQCjMvnPNEDQ
-   VLXHlGMRY/4HRspjAARVRKmZ+XmnS0EsBrJKkJdbqSrW4U6uT1yPE2fzD
-   qnCEhctnYRR7kRuju7lZG4AeJfqbLMjViT/lvXvezsxJTLpyipOEOg4yn
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10582"; a="387062694"
-X-IronPort-AV: E=Sophos;i="5.96,307,1665471600"; 
-   d="scan'208";a="387062694"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2023 18:48:40 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10582"; a="984854342"
-X-IronPort-AV: E=Sophos;i="5.96,307,1665471600"; 
-   d="scan'208";a="984854342"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.209.158]) ([10.254.209.158])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2023 18:48:33 -0800
-Message-ID: <5ce5a6a4-9397-9665-7352-862d89b3f228@linux.intel.com>
-Date: Sat, 7 Jan 2023 10:48:31 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D498A1C3C
+	for <iommu@lists.linux.dev>; Sun,  8 Jan 2023 06:53:44 +0000 (UTC)
+Received: by mail-pj1-f54.google.com with SMTP id o8-20020a17090a9f8800b00223de0364beso9544607pjp.4
+        for <iommu@lists.linux.dev>; Sat, 07 Jan 2023 22:53:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=H/VDmG0gdlZJvoOOCR9LZEjMINUvMdkeoZNcXYasXMA=;
+        b=JjaV7/CZSpMtpB3/NAfRJ+GfwUFPa4n//oyxermfR/6ymk6fOKZQOkWjwbWBTodJfs
+         Ehz6QSs2o6hEbzmur/eIpG8xZeP9J8p0QOZwymPDQLCLFAJATffQKbQoVb+2Wqhc99lU
+         xUFxaXmXTnAOZjBuTS6el5rZfCjGFLAyREl99UE/qGPF1In0HuQxPxddOfDk/A+P1040
+         clMlIrxQraDTb6dEqGCBo/LCZu5kmViFGB5MSG9YFIJwcnypqA5Pe0bCkvNz8dDDoW+P
+         6icPZPehUO+CVCsX6cRPFnSZWBQ9n+oSXo7KbosF55J+N2KnjLc6zVFlgqPWagmcbwso
+         xD4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=H/VDmG0gdlZJvoOOCR9LZEjMINUvMdkeoZNcXYasXMA=;
+        b=sTFzxmA5wfroYUEq8DCQpcqmTXxrxaLr7x3WwmJoWARAwp5o66Q2dbOjaLTBASZ1gM
+         j8yBAtRlTcfvCBTdleeQ0CkIUwDxLCPdtTFjR0xYD0LaQPc4B08AElR72uACF0s6S1JB
+         /HKAHlaXajwgMdoqs76/sDVnSzAqGyzyhEIJrJ1Gaf8EBeVU8ZKabsq9eF4V9UZESUiW
+         AApkajXwZ7EzfJmhB7EI9wbpmXGX7+cAuc+THL5OCdjKC+GVk1RZ5ThB+AUVHIK/jtWp
+         fBrL+BmA/ZWYQQ+0MSTeP6QZGkxatLyO8TBuZNxzojayjt2WOBGdS3z+Kv+wZWMlKzji
+         bvQw==
+X-Gm-Message-State: AFqh2kqBZYvoNiTJn83eatqp09a4idd/gnUWaewgTtYVU9mfyligCYEL
+	NgRGsAdsdJxx/5qC1H80ges=
+X-Google-Smtp-Source: AMrXdXvj7pJXlDVac5JQM7nClMOZFKZor6ueZeav4eRhzDnnC6YB0QW8FLdOLL/5H3YB5z+tf3OUjg==
+X-Received: by 2002:a17:902:7688:b0:192:ce01:7d82 with SMTP id m8-20020a170902768800b00192ce017d82mr22054178pll.52.1673160824313;
+        Sat, 07 Jan 2023 22:53:44 -0800 (PST)
+Received: from morpheus.lan (106-69-189-37.dyn.iinet.net.au. [106.69.189.37])
+        by smtp.googlemail.com with ESMTPSA id t1-20020a170902d14100b00186b3c3e2dasm3685296plt.155.2023.01.07.22.53.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 07 Jan 2023 22:53:43 -0800 (PST)
+From: Peter Robinson <pbrobinson@gmail.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org
+Cc: Peter Robinson <pbrobinson@gmail.com>
+Subject: [PATCH] iommu: dart: depend on ARCH_APPLE rather than ARM64
+Date: Sun,  8 Jan 2023 06:53:34 +0000
+Message-Id: <20230108065334.397200-1-pbrobinson@gmail.com>
+X-Mailer: git-send-email 2.39.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v4 10/19] iommu: Add set_platform_dma_ops iommu ops
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@infradead.org>,
- Kevin Tian <kevin.tian@intel.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
- Rob Clark <robdclark@gmail.com>, Marek Szyprowski
- <m.szyprowski@samsung.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
- Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>,
- Heiko Stuebner <heiko@sntech.de>, Matthew Rosato <mjrosato@linux.ibm.com>,
- Orson Zhai <orsonzhai@gmail.com>, Baolin Wang
- <baolin.wang@linux.alibaba.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
- Chen-Yu Tsai <wens@csie.org>, Thierry Reding <thierry.reding@gmail.com>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20230104125725.271850-1-baolu.lu@linux.intel.com>
- <20230104125725.271850-11-baolu.lu@linux.intel.com>
- <Y7V8bcUF5zvGvCAP@nvidia.com>
- <1ef288af-885a-f724-ea37-199f181e4937@linux.intel.com>
- <Y7bNidP/px0NmvR+@nvidia.com>
- <0f6426c9-71bb-826a-78f0-bc8851b6468e@linux.intel.com>
- <Y7gveMpxJWmpYkk2@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Y7gveMpxJWmpYkk2@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 1/6/2023 10:26 PM, Jason Gunthorpe wrote:
-> On Fri, Jan 06, 2023 at 02:07:32PM +0800, Baolu Lu wrote:
-> 
->> Above looks good to me. Thanks! I have updated this part of code like
->> below:
->>
->> @@ -2177,10 +2188,20 @@ static int __iommu_group_set_domain(struct
->> iommu_group *group,
->>           * platform specific behavior.
->>           */
->>          if (!new_domain) {
->> -               if (WARN_ON(!group->domain->ops->detach_dev))
->> -                       return -EINVAL;
->> -               __iommu_group_for_each_dev(group, group->domain,
->> -                                          iommu_group_do_detach_device);
->> +               struct group_device *grp_dev;
->> +
->> +               grp_dev = list_first_entry(&group->devices,
->> +                                          struct group_device, list);
-> It seems OK - I hope we naturally can't ever get in a situation where
-> a group has disjoint iommu drivers.
+It's a better fit for the Apple DART driver to depend
+on ARCH_APPLE than just the ARM64 architecture.
 
-The final code after cleanup looks like below. We will WARN_ON the lack
-of callback in the iommu_group_do_set_platform_dma() helper.
+Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
+---
+ drivers/iommu/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-2152 static int iommu_group_do_set_platform_dma(struct device *dev, void 
-*data)
-2153 {
-2154         const struct iommu_ops *ops = dev_iommu_ops(dev);
-2155
-2156         if (!WARN_ON(!ops->set_platform_dma_ops))
-2157                 ops->set_platform_dma_ops(dev);
-2158
-2159         return 0;
-2160 }
-2161
-2162 static int __iommu_group_set_domain(struct iommu_group *group,
-2163                                     struct iommu_domain *new_domain)
-2164 {
-2165         int ret;
-2166
-2167         if (group->domain == new_domain)
-2168                 return 0;
-2169
-2170         /*
-2171          * New drivers should support default domains, so 
-set_platform_dma()
-2172          * op will never be called. Otherwise the NULL domain 
-represents some
-2173          * platform specific behavior.
-2174          */
-2175         if (!new_domain) {
-2176                 __iommu_group_for_each_dev(group, NULL,
-2177 
-iommu_group_do_set_platform_dma);
-2178                 group->domain = NULL;
-2179                 return 0;
-2180         }
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 79707685d54a..6fa22f29d884 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -70,7 +70,7 @@ config IOMMU_IO_PGTABLE_ARMV7S_SELFTEST
+ config IOMMU_IO_PGTABLE_DART
+ 	bool "Apple DART Formats"
+ 	select IOMMU_IO_PGTABLE
+-	depends on ARM64 || (COMPILE_TEST && !GENERIC_ATOMIC64)
++	depends on ARCH_APPLE || (COMPILE_TEST && !GENERIC_ATOMIC64)
+ 	help
+ 	  Enable support for the Apple DART pagetable formats. These include
+ 	  the t8020 and t6000/t8110 DART formats used in Apple M1/M2 family
+-- 
+2.39.0
 
-How do you like this?
-
---
-Best regards,
-baolu
