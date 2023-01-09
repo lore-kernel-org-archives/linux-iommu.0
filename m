@@ -1,45 +1,45 @@
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3B176108
-	for <iommu@lists.linux.dev>; Mon,  9 Jan 2023 18:19:57 +0000 (UTC)
-Received: by mail-wr1-f53.google.com with SMTP id bn26so9133582wrb.0
-        for <iommu@lists.linux.dev>; Mon, 09 Jan 2023 10:19:57 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAE496108
+	for <iommu@lists.linux.dev>; Mon,  9 Jan 2023 18:22:09 +0000 (UTC)
+Received: by mail-wr1-f46.google.com with SMTP id bk16so9090165wrb.11
+        for <iommu@lists.linux.dev>; Mon, 09 Jan 2023 10:22:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=oeo5OtVq8imDZHD82tnbeCo8M/ylS8y24Un+2HomtKs=;
-        b=Sl7Cj1xuTp7WQTESfCdvuPCm6DywpiiwjCQZJYA+LwFzIGbpb333b9Um+7zU1k9ecT
-         2dMrjoE1W70ruVRvUm2evh/DWnuNEhWjQtOLm0wGdm36umYS0BUprjkmc6i58Cm1Pn1N
-         bx2AGC6wH1vxYUu0yIHy1SMsDXAJz4wDO1YOqN29gCQC0pNGH/DPPCMDUW3do2AhBCE0
-         E7CiCp0Fb8sMmO8DjHaKDtxW7Y5XvBjt9fTMHVCCyeusiMLrl7/rvLR5tCh1Q357f0/2
-         gtnnNYQQOFqli8o9Y2iO4yPBnNuFFHW1AgNneNezr7xhQNoEbJOH/J+WiN1gg8HgOoRx
-         0oIA==
+        bh=jvYugD5smOlPeb8yw4a3uYKIpMLS5cDQVS3icNcFMKA=;
+        b=Z6PyaEpVm6gQZPhyOA+umXIzP1gj2ivonb832kvaPK2LHBAyLgqzEzWs+trmEE0Jln
+         khMmlms5Uv6PhL4q8PhFwsygO3DHLGc4l5gyw4ZBVAMxJaFNOTa/D+37v6hQEgNUi6HJ
+         MwrpiJXqxUpvHZ/jLL+pwFgBfNyRIeOFG6BE2kS+7uUlUG3H6z1r5xzHXB+rv1s49c7Z
+         /cxqXGU2xlMj3qBcL9i+f7FQf/GhDu4ibCR+/YuG/aUITAgdMLmIeG9x8sQ8tEVru5a6
+         NNDcVLsWYktntSaFMN0HlSbfAEBeUesEeaNrLaNMlba8+UyRhbCP48f1qqKf5QYGnay+
+         VoIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=oeo5OtVq8imDZHD82tnbeCo8M/ylS8y24Un+2HomtKs=;
-        b=JYhJT0sBI1ULEkFRJa7a/Col5UfOVzVgLfxBgahZy4N+o3MEQaZAXe8Fs9T13tN6kv
-         rydMOD+5vSjsWeMjfjldBoG41hBxRJNU+Fu0gYS76YRMOZr9oKmC8s+QofeVTy5AdEd1
-         OsGub23RVQHBiSX0dJxxrqXgaeezXxpCkgmgA6f6v+Y+ztKRcX2xWXA0D9GK+il+4a8V
-         T7gghpKlfODLK6jM9DV4DQ5XL66/BWY2OAg67wRFqPMg3+sOSjZZVpbfaw77bXrGUDYk
-         JHT8sIJafkkc1WAuLZfD0jK4ZoSGZXBXmffy7/y+4OEvUaHIhgN4Dg588ZsdYNP27oSy
-         LAXA==
-X-Gm-Message-State: AFqh2kozmTtbNOaZCeE5fbpps3EaTM0okBVU5k8vwdwROZbc1IBqh3Zq
-	fYS4RoqZ+HCwcG3rX6DrSVxN/Q==
-X-Google-Smtp-Source: AMrXdXsHmRrRWiLJ0gOPMtFN8/kxB3iO5ZcLc0KpMt7uRGmwjxmNtC8/G2RPCwQiylGezoGMKXZXJQ==
-X-Received: by 2002:a05:6000:382:b0:2b0:eee2:a43e with SMTP id u2-20020a056000038200b002b0eee2a43emr12090389wrf.38.1673288396176;
-        Mon, 09 Jan 2023 10:19:56 -0800 (PST)
+        bh=jvYugD5smOlPeb8yw4a3uYKIpMLS5cDQVS3icNcFMKA=;
+        b=33XlGnW1MEipyEydDb/X0f37RZEqqpNEDIObynxnomtC8fRQy5Eh4pKf62A9ct2bnh
+         Ub8uJCkbesJOzWg51LH0n0OW+dKYUHaR0wsEnUD8m4evc+MeEGFMo3vVHPGrTpzKJeG8
+         Tu4FZBxBfLs1C6dN1lDp3AR8uQ0c3AVGD5k3KCymIRIv8RwqSWCUlNhGjLJQa1dV4VLf
+         CuwR7r0/h5Fs6ncRNTY0AZqRczzBxtVRt2n8adRTKboo3+yz1TYeelchpLZRQnaU3c3B
+         gP5lhGB9FWzvqhdPPbAgGTlVR4nnun2aaa9PFLJV/eH7l79n4I3cFkKV4dxRY7jQtb+0
+         ybZA==
+X-Gm-Message-State: AFqh2kqv7txT/x85BMvhcotWZoM7TbMOgZJa9s639ZIL401CCsITAPM2
+	jAbXf+bls1bGGFIL7T8+pCrwig==
+X-Google-Smtp-Source: AMrXdXvjfzGBA2k+30sjPaP84E+50hgotZRZMLKqmz8cAfThUKaz2IKhBGPXhX7+mGfJd+LOudPNGg==
+X-Received: by 2002:a5d:5544:0:b0:26d:2af7:420 with SMTP id g4-20020a5d5544000000b0026d2af70420mr40676769wrw.33.1673288528036;
+        Mon, 09 Jan 2023 10:22:08 -0800 (PST)
 Received: from [192.168.1.109] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id y15-20020adffa4f000000b002bbec19c8acsm3862109wrr.64.2023.01.09.10.19.53
+        by smtp.gmail.com with ESMTPSA id o15-20020a5d62cf000000b002bbedd60a9asm3589168wrv.77.2023.01.09.10.22.05
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Jan 2023 10:19:55 -0800 (PST)
-Message-ID: <8b634315-ae4e-1710-bebd-17f30620e52b@linaro.org>
-Date: Mon, 9 Jan 2023 19:19:52 +0100
+        Mon, 09 Jan 2023 10:22:07 -0800 (PST)
+Message-ID: <e96fcaee-488f-53ff-5fb2-0cea411677b9@linaro.org>
+Date: Mon, 9 Jan 2023 19:22:04 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,8 +48,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Subject: Re: [PATCH 06/18] dt-bindings: interconnect: qcom: document the
- interconnects for sa8775p
+Subject: Re: [PATCH 07/18] interconnect: qcom: add a driver for sa8775p
 Content-Language: en-US
 To: Bartosz Golaszewski <brgl@bgdev.pl>, Andy Gross <agross@kernel.org>,
  Bjorn Andersson <andersson@kernel.org>,
@@ -69,75 +68,57 @@ Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
  linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux.dev, linux-gpio@vger.kernel.org, netdev@vger.kernel.org,
+ Shazad Hussain <quic_shazhuss@quicinc.com>,
  Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 References: <20230109174511.1740856-1-brgl@bgdev.pl>
- <20230109174511.1740856-7-brgl@bgdev.pl>
+ <20230109174511.1740856-8-brgl@bgdev.pl>
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230109174511.1740856-7-brgl@bgdev.pl>
+In-Reply-To: <20230109174511.1740856-8-brgl@bgdev.pl>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 09/01/2023 18:44, Bartosz Golaszewski wrote:
-> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+On 09/01/2023 18:45, Bartosz Golaszewski wrote:
+> From: Shazad Hussain <quic_shazhuss@quicinc.com>
 > 
-> Add a set of new compatibles and DT include defines for the sa8775p
-> platforms.
+> Introduce QTI SA8775P-specific interconnect driver.
 > 
-> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> ---
->  .../bindings/interconnect/qcom,rpmh.yaml      |  14 ++
->  .../dt-bindings/interconnect/qcom,sa8775p.h   | 231 ++++++++++++++++++
->  2 files changed, 245 insertions(+)
->  create mode 100644 include/dt-bindings/interconnect/qcom,sa8775p.h
-> 
-> diff --git a/Documentation/devicetree/bindings/interconnect/qcom,rpmh.yaml b/Documentation/devicetree/bindings/interconnect/qcom,rpmh.yaml
-> index a429a1ed1006..ad3e0c7e9430 100644
-> --- a/Documentation/devicetree/bindings/interconnect/qcom,rpmh.yaml
-> +++ b/Documentation/devicetree/bindings/interconnect/qcom,rpmh.yaml
-> @@ -27,6 +27,20 @@ properties:
->  
->    compatible:
->      enum:
-> +      - qcom,sa8775p-aggre1-noc
-> +      - qcom,sa8775p-aggre2-noc
-> +      - qcom,sa8775p-clk-virt
 
-Are you sure they come with IO address space? IOW, was the binding and
-DTS tested against each other?
+> +
+> +static struct qcom_icc_desc sa8775p_pcie_anoc = {
+> +	.nodes = pcie_anoc_nodes,
+> +	.num_nodes = ARRAY_SIZE(pcie_anoc_nodes),
+> +	.bcms = pcie_anoc_bcms,
+> +	.num_bcms = ARRAY_SIZE(pcie_anoc_bcms),
+> +};
+> +
+> +static struct qcom_icc_bcm *system_noc_bcms[] = {
+> +	&bcm_sn0,
+> +	&bcm_sn1,
+> +	&bcm_sn3,
+> +	&bcm_sn4,
+> +	&bcm_sn9,
+> +};
+> +
+> +static struct qcom_icc_node *system_noc_nodes[] = {
+> +	[MASTER_GIC_AHB] = &qhm_gic,
+> +	[MASTER_A1NOC_SNOC] = &qnm_aggre1_noc,
+> +	[MASTER_A2NOC_SNOC] = &qnm_aggre2_noc,
+> +	[MASTER_LPASS_ANOC] = &qnm_lpass_noc,
+> +	[MASTER_SNOC_CFG] = &qnm_snoc_cfg,
+> +	[MASTER_PIMEM] = &qxm_pimem,
+> +	[MASTER_GIC] = &xm_gic,
+> +	[SLAVE_SNOC_GEM_NOC_GC] = &qns_gemnoc_gc,
+> +	[SLAVE_SNOC_GEM_NOC_SF] = &qns_gemnoc_sf,
+> +	[SLAVE_SERVICE_SNOC] = &srvc_snoc,
+> +};
+> +
+> +static struct qcom_icc_desc sa8775p_system_noc = {
 
-All recent bindings are split into their own file:
-
-https://lore.kernel.org/all/20221223132040.80858-3-krzysztof.kozlowski@linaro.org/
-
-https://lore.kernel.org/all/20221202232054.2666830-2-abel.vesa@linaro.org/
-
-
-> +      - qcom,sa8775p-config-noc
-> +      - qcom,sa8775p-dc-noc
-> +      - qcom,sa8775p-gem-noc
-> +      - qcom,sa8775p-gpdsp-anoc
-> +      - qcom,sa8775p-lpass-ag-noc
-> +      - qcom,sa8775p-mc-virt
-> +      - qcom,sa8775p-mmss-noc
-> +      - qcom,sa8775p-nspa-noc
-> +      - qcom,sa8775p-nspb-noc
-> +      - qcom,sa8775p-pcie-anoc
-> +      - qcom,sa8775p-system-noc
->        - qcom,sc7180-aggre1-noc
->        - qcom,sc7180-aggre2-noc
->        - qcom,sc7180-camnoc-virt
-> diff --git a/include/dt-bindings/interconnect/qcom,sa8775p.h b/include/dt-bindings/interconnect/qcom,sa8775p.h
-> new file mode 100644
-> index 000000000000..8d5968854187
-> --- /dev/null
-> +++ b/include/dt-bindings/interconnect/qcom,sa8775p.h
-
-Filename matching family/compatible style, so just like sm8550.
-
-> @@ -0,0 +1,231 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-
-Dual license.
+This and several others are const, which means you started entire work
+on some old code. It's quite a waste of your effort as now you have to
+get all the patches we did for cleanups. Much better to start off from a
+newest file. If you based work on downstream code, then this definitely
+needs many fixes...
 
 Best regards,
 Krzysztof
