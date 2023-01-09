@@ -1,165 +1,125 @@
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87F6415A8
-	for <iommu@lists.linux.dev>; Mon,  9 Jan 2023 16:38:49 +0000 (UTC)
-Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 190A41EC0104;
-	Mon,  9 Jan 2023 17:38:41 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-	t=1673282321;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-	bh=VUS6E1kTGTyemsfzfDqBXzhlr7jEukuBikzhrrd6xvM=;
-	b=Qz2DjSz9JIXdYW/k4q2ntmvFXAyjTyzOsL7PHKUlXR2z1WdVdr2mSARwV5cs7weWdpWH0v
-	lQUgEwCRqE5GGMeONmDT4Jz/Of3fTORO5ee/Cerm9gqRJ6+AsyRNHr0Yv03wcP20WFbXdP
-	1NyOsABbKcWFqOwVPPg4B46fXe8ZjN8=
-Date: Mon, 9 Jan 2023 17:38:36 +0100
-From: Borislav Petkov <bp@alien8.de>
-To: Michael Kelley <mikelley@microsoft.com>
-Cc: hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
-	wei.liu@kernel.org, decui@microsoft.com, luto@kernel.org,
-	peterz@infradead.org, davem@davemloft.net, edumazet@google.com,
-	kuba@kernel.org, pabeni@redhat.com, lpieralisi@kernel.org,
-	robh@kernel.org, kw@linux.com, bhelgaas@google.com, arnd@arndb.de,
-	hch@infradead.org, m.szyprowski@samsung.com, robin.murphy@arm.com,
-	thomas.lendacky@amd.com, brijesh.singh@amd.com, tglx@linutronix.de,
-	mingo@redhat.com, dave.hansen@linux.intel.com,
-	Tianyu.Lan@microsoft.com, kirill.shutemov@linux.intel.com,
-	sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
-	isaku.yamahata@intel.com, dan.j.williams@intel.com,
-	jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com,
-	x86@kernel.org, linux-kernel@vger.kernel.org,
-	linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [Patch v4 06/13] x86/hyperv: Change vTOM handling to use
- standard coco mechanisms
-Message-ID: <Y7xDDNMIDyHKLicG@zn.tnic>
-References: <1669951831-4180-1-git-send-email-mikelley@microsoft.com>
- <1669951831-4180-7-git-send-email-mikelley@microsoft.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1BDF33D6
+	for <iommu@lists.linux.dev>; Mon,  9 Jan 2023 16:45:57 +0000 (UTC)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 309FdspQ016333;
+	Mon, 9 Jan 2023 16:45:42 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=r/c+/V8fPl7liKWfOzIezG4cPmu1VXMZ6/z7UfvLYsM=;
+ b=bNHjKAdqtLysGj2NJSy4wq0BsfiPDkZOKC+vuSB3ec1h2ZEBT7oa8BX4shGOLRwWAHVe
+ eeBSZcc06evWJnuQc1Y7NOX3V3XwWGJYVQQ7tWyjAXz6H6JY2EJGyk3dxfsgrTh/zxtd
+ Kq0lRJrx5lPQhT391psKwJzCXP0A92oLiRJ9paShf3e2GmDpt6YHxCYGT7PX7Rqa9bCs
+ Cb7UbAfZBogUFP9BiZ3Mos7eQkwvt/l1MlSpQc644OAPdgRfRmqeqZgs2s09AJyLXURz
+ tOVbRcMEqadNoDOO5itUAgwk396cIs60DQgCY4SOubJ+rIT7YVE5jeDIYTDUHfEh0lo2 OA== 
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3myj6jkrup-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 09 Jan 2023 16:45:41 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+	by ppma06ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 3098dIkR012461;
+	Mon, 9 Jan 2023 16:45:39 GMT
+Received: from smtprelay01.fra02v.mail.ibm.com ([9.218.2.227])
+	by ppma06ams.nl.ibm.com (PPS) with ESMTPS id 3my00fk8h5-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 09 Jan 2023 16:45:39 +0000
+Received: from smtpav03.fra02v.mail.ibm.com (smtpav03.fra02v.mail.ibm.com [10.20.54.102])
+	by smtprelay01.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 309Gjb7t37683464
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 9 Jan 2023 16:45:37 GMT
+Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 1AD1220040;
+	Mon,  9 Jan 2023 16:45:37 +0000 (GMT)
+Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 9452B20049;
+	Mon,  9 Jan 2023 16:45:36 +0000 (GMT)
+Received: from [9.171.48.140] (unknown [9.171.48.140])
+	by smtpav03.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Mon,  9 Jan 2023 16:45:36 +0000 (GMT)
+Message-ID: <8315d3374f6129d99c07eb965f7f7bb2bd0bbd25.camel@linux.ibm.com>
+Subject: Re: [PATCH] dma-mapping: benchmark: Fix compile error in user-space
+ tool
+From: Gerd Bayer <gbayer@linux.ibm.com>
+To: Shuah Khan <skhan@linuxfoundation.org>,
+        "chenxiang (M)"
+	 <chenxiang66@hisilicon.com>,
+        Shuah Khan <shuah@kernel.org>
+Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev,
+        linux-kselftest@vger.kernel.org,
+        Niklas Schnelle <schnelle@linux.ibm.com>,
+        Christoph Hellwig
+	 <hch@lst.de>
+Date: Mon, 09 Jan 2023 17:45:36 +0100
+In-Reply-To: <cdfc618a-5091-8989-7ca2-5d8d467b4adb@linuxfoundation.org>
+References: <20221205135022.49708-1-gbayer@linux.ibm.com>
+	 <fd189113-deae-d6b7-bb9a-a5a94f7b0815@hisilicon.com>
+	 <3193d6833feccc5c2fbdef9b1f71f292eddb8f27.camel@linux.ibm.com>
+	 <4d8454c5-35d9-13f7-9571-4d38006061e2@linuxfoundation.org>
+	 <cdfc618a-5091-8989-7ca2-5d8d467b4adb@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.2 (3.46.2-1.module_f37+15771+ac82e58b) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1669951831-4180-7-git-send-email-mikelley@microsoft.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: o6fOt9DhG2fB8U5eoaPFVn24w76LwAQc
+X-Proofpoint-GUID: o6fOt9DhG2fB8U5eoaPFVn24w76LwAQc
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2023-01-09_09,2023-01-09_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
+ lowpriorityscore=0 mlxlogscore=999 phishscore=0 adultscore=0 mlxscore=0
+ suspectscore=0 impostorscore=0 priorityscore=1501 bulkscore=0 spamscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2301090119
 
-On Thu, Dec 01, 2022 at 07:30:24PM -0800, Michael Kelley wrote:
-> Hyper-V guests on AMD SEV-SNP hardware have the option of using the
-> "virtual Top Of Memory" (vTOM) feature specified by the SEV-SNP
-> architecture. With vTOM, shared vs. private memory accesses are
-> controlled by splitting the guest physical address space into two
-> halves.  vTOM is the dividing line where the uppermost bit of the
-> physical address space is set; e.g., with 47 bits of guest physical
-> address space, vTOM is 0x400000000000 (bit 46 is set).  Guest physical
-> memory is accessible at two parallel physical addresses -- one below
-> vTOM and one above vTOM.  Accesses below vTOM are private (encrypted)
-> while accesses above vTOM are shared (decrypted). In this sense, vTOM
-> is like the GPA.SHARED bit in Intel TDX.
-> 
-> Support for Hyper-V guests using vTOM was added to the Linux kernel in
-> two patch sets[1][2]. This support treats the vTOM bit as part of
-> the physical address. For accessing shared (decrypted) memory, these
-> patch sets create a second kernel virtual mapping that maps to physical
-> addresses above vTOM.
-> 
-> A better approach is to treat the vTOM bit as a protection flag, not
-> as part of the physical address. This new approach is like the approach
-> for the GPA.SHARED bit in Intel TDX. Rather than creating a second kernel
-> virtual mapping, the existing mapping is updated using recently added
-> coco mechanisms.  When memory is changed between private and shared using
-> set_memory_decrypted() and set_memory_encrypted(), the PTEs for the
-> existing kernel mapping are changed to add or remove the vTOM bit
-> in the guest physical address, just as with TDX. The hypercalls to
-> change the memory status on the host side are made using the existing
-> callback mechanism. Everything just works, with a minor tweak to map
-> the IO-APIC to use private accesses.
-> 
-> To accomplish the switch in approach, the following must be done in
-> this single patch:
+On Wed, 2022-12-21 at 09:44 -0700, Shuah Khan wrote:
+> On 12/21/22 09:39, Shuah Khan wrote:
+> > On 12/16/22 07:35, Gerd Bayer wrote:
+> > > On Tue, 2022-12-06 at 11:13 +0800, chenxiang (M) wrote:
+> > > >=20
+> > > > =E5=9C=A8 2022/12/5 21:50, Gerd Bayer =E5=86=99=E9=81=93:
+> > > > > Since [1] the user-space program dma_map_benchmark shares the
+> > > > > header file
+> > > > > linux/map_benchmark.h with the kernel driver in
+> > > > > kernel/dma/map_benchmark.c.
+> > > > > With latest kernel version this does not compile any more.
+ [...]
+> > > >=20
+> > > > It also solves the compile error on arm64 platform.
+> > > > Acked-by:=C2=A0 Xiang Chen <chenxiang66@hisilicon.com>
+> > >=20
+> > > Hi Xiang Chen, hi Shuah,
+> > >=20
+> > > so is there any chance to have this compile fix integrated into
+> > > linux-
+> > > next still, or is this too late now?
+> > Plan to apply this after the merge window closes
+> >=20
+>=20
+> The reason for the delay is this patch doesn't have the right commit
+> header. This should have been "selftests:dma -----"
+>=20
+> It makes it easier for maintainers to parse and pay attention to the
+> patches if they indicate the area they fall under. Something to
+> keep in mind for your future patches.
+>=20
+> Please resend the patch with the Acks you received and a correct
+> commit header.
+>=20
+> thanks,
+> -- Shuah
 
-s/in this single patch//
+Shuah,
 
-> * Update Hyper-V initialization to set the cc_mask based on vTOM
->   and do other coco initialization.
-> 
-> * Update physical_mask so the vTOM bit is no longer treated as part
->   of the physical address
-> 
-> * Remove CC_VENDOR_HYPERV and merge the associated vTOM functionality
->   under CC_VENDOR_AMD. Update cc_mkenc() and cc_mkdec() to set/clear
->   the vTOM bit as a protection flag.
-> 
-> * Code already exists to make hypercalls to inform Hyper-V about pages
->   changing between shared and private.  Update this code to run as a
->   callback from __set_memory_enc_pgtable().
-> 
-> * Remove the Hyper-V special case from __set_memory_enc_dec()
-> 
-> * Remove the Hyper-V specific call to swiotlb_update_mem_attributes()
->   since mem_encrypt_init() will now do it.
-> 
-> [1] https://lore.kernel.org/all/20211025122116.264793-1-ltykernel@gmail.com/
-> [2] https://lore.kernel.org/all/20211213071407.314309-1-ltykernel@gmail.com/
-> 
-> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
-> ---
->  arch/x86/coco/core.c             | 37 ++++++++++++++++++++--------
->  arch/x86/hyperv/hv_init.c        | 11 ---------
->  arch/x86/hyperv/ivm.c            | 52 +++++++++++++++++++++++++++++++---------
->  arch/x86/include/asm/coco.h      |  1 -
->  arch/x86/include/asm/mshyperv.h  |  8 ++-----
->  arch/x86/include/asm/msr-index.h |  1 +
->  arch/x86/kernel/cpu/mshyperv.c   | 15 ++++++------
->  arch/x86/mm/pat/set_memory.c     |  3 ---
->  8 files changed, 78 insertions(+), 50 deletions(-)
-> 
-> diff --git a/arch/x86/coco/core.c b/arch/x86/coco/core.c
-> index 49b44f8..c361c52 100644
-> --- a/arch/x86/coco/core.c
-> +++ b/arch/x86/coco/core.c
-> @@ -44,6 +44,24 @@ static bool intel_cc_platform_has(enum cc_attr attr)
->  static bool amd_cc_platform_has(enum cc_attr attr)
->  {
->  #ifdef CONFIG_AMD_MEM_ENCRYPT
-> +
-> +	/*
-> +	 * Handle the SEV-SNP vTOM case where sme_me_mask must be zero,
-> +	 * and the other levels of SME/SEV functionality, including C-bit
-> +	 * based SEV-SNP, must not be enabled.
-> +	 */
-> +	if (sev_status & MSR_AMD64_SNP_VTOM_ENABLED) {
+thank you for your explanation. I'm working on resending the patch.
 
-		return amd_cc_platform_vtom();
-
-or so and then stick that switch in there.
-
-This way it looks kinda grafted in front and with a function call with a telling
-name it says it is a special case...
-
-> +		switch (attr) {
-> +		case CC_ATTR_GUEST_MEM_ENCRYPT:
-> +		case CC_ATTR_MEM_ENCRYPT:
-> +		case CC_ATTR_ACCESS_IOAPIC_ENCRYPTED:
-> +			return true;
-> +		default:
-> +			return false;
-> +		}
-> +	}
-
-The rest looks kinda nice, I gotta say. I can't complain. :)
-
-Thx.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Thanks,
+Gerd
