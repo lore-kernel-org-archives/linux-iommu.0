@@ -1,106 +1,72 @@
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A39E163
-	for <iommu@lists.linux.dev>; Mon,  9 Jan 2023 18:41:18 +0000 (UTC)
-Received: by mail-wr1-f50.google.com with SMTP id r2so9162372wrv.7
-        for <iommu@lists.linux.dev>; Mon, 09 Jan 2023 10:41:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Lcc+8lVbMYPsY9hr9mnuWPkOBuZt4DN6m8H6MCFQl9I=;
-        b=YjDc9PqXhIZZk0bX7b8BB4evTX85CYzcPiWqlK81Bu/4k4LECqwb0hYWdsJkfkDdzF
-         XBYREDtE8j8novHKhJ9sFt+z55dqSlk4SBcnglKQVImykO6BBJ7hsN4GRyYu5IF2WIE+
-         cD5Mwb2Fb03e8OlC798Omfc82h33Tg4S200+QgHaJXlqTKSlv52ctBcZpWGYVvvCOaOs
-         YVmpcuMlYvJw26IN75e8+XTuySv5EuV4I0dnkFw43XNpM7wHIa9g42CAt9e+KU1l0tQ1
-         EzEyv/KoEveL+e0rWTHLGLARaMYJ7XJh2ENmpvMaWD78CADmt4AGnswZgC+2iLaJDXm5
-         f0Ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Lcc+8lVbMYPsY9hr9mnuWPkOBuZt4DN6m8H6MCFQl9I=;
-        b=1Baff+bsHSb3WXqsiQbrZBGVSYnFVvjRIuQ58vCVEWVpoLJop/c4ohVOxQ8p7k2lBT
-         3/V5cg81piuD29F/mAq15lClFul9vclmXgZKYAKIjvMt9ho1BQe75ThACz8D69fc7RlJ
-         PK0CCgOJTDcNixfg4YaR5ony4CZqZgafevK78YK6r3w1ej4hNyU/x6/Wsp5ytDKSY1D5
-         Sj2KX5LZiPMtmQPZUdfvF9yH3YSup/KLt2D2s2wSBi7tZBm9z/0Qj74YeHDU1HwNqUer
-         2HyoHAYfHtvoqm6dWyuDzHfVClCfHngxgaEVW8nRdnHLr+qXgXe4JIeaG0TC0PlKFFNC
-         iy+w==
-X-Gm-Message-State: AFqh2krSAT8lvY4SrFXTSkOl99jZkqxm8EABMaCKdu74ib3bkejDLOEl
-	7hsTiBt2zxJKZBEr4WkThxLi0g==
-X-Google-Smtp-Source: AMrXdXumJbNcUy9i1KX7PhYzq0uyUfiILub8pKYoeZhwSOhszfVhOxH+Aq3IU8EKBd2IxhZh2c/Tng==
-X-Received: by 2002:a5d:5a15:0:b0:29b:9e07:24f with SMTP id bq21-20020a5d5a15000000b0029b9e07024fmr18983669wrb.0.1673289677303;
-        Mon, 09 Jan 2023 10:41:17 -0800 (PST)
-Received: from [192.168.1.109] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id d20-20020adfa354000000b002bc50ba3d06sm3503192wrb.9.2023.01.09.10.41.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Jan 2023 10:41:16 -0800 (PST)
-Message-ID: <8ac52d50-168c-5c84-29fc-10219d97ff39@linaro.org>
-Date: Mon, 9 Jan 2023 19:41:13 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B0D7163
+	for <iommu@lists.linux.dev>; Mon,  9 Jan 2023 18:47:14 +0000 (UTC)
+Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id E62A21EC0104;
+	Mon,  9 Jan 2023 19:47:11 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+	t=1673290032;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+	bh=11LnUf4MhejKfgisfPSyS9B0B0xaSZCrX17MQeoncqE=;
+	b=sAByOsc/+Oj0INi0+tr34pMFzTLKYdE0Sr9YpSor17uoouv6rwXdWzR47sn0Zolbt29b6f
+	gsg8XJ7C2pb+Kcg1pn60LMqgasxwuYbWtcF9SA0noFAmkwEsX+HalnvnH2QPTIxXMsCoGF
+	qf5/yHPQ0ycrMslQs6xaSQRFnJsU084=
+Date: Mon, 9 Jan 2023 19:47:08 +0100
+From: Borislav Petkov <bp@alien8.de>
+To: Michael Kelley <mikelley@microsoft.com>, wei.liu@kernel.org
+Cc: hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
+	decui@microsoft.com, luto@kernel.org, peterz@infradead.org,
+	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+	pabeni@redhat.com, lpieralisi@kernel.org, robh@kernel.org,
+	kw@linux.com, bhelgaas@google.com, arnd@arndb.de, hch@infradead.org,
+	m.szyprowski@samsung.com, robin.murphy@arm.com,
+	thomas.lendacky@amd.com, brijesh.singh@amd.com, tglx@linutronix.de,
+	mingo@redhat.com, dave.hansen@linux.intel.com,
+	Tianyu.Lan@microsoft.com, kirill.shutemov@linux.intel.com,
+	sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
+	isaku.yamahata@intel.com, dan.j.williams@intel.com,
+	jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com,
+	x86@kernel.org, linux-kernel@vger.kernel.org,
+	linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: Re: [Patch v4 00/13] Add PCI pass-thru support to Hyper-V
+ Confidential VMs
+Message-ID: <Y7xhLCgCq0MOsqxH@zn.tnic>
+References: <1669951831-4180-1-git-send-email-mikelley@microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH 16/18] iommu: arm-smmu: qcom: add support for sa8775p
-Content-Language: en-US
-To: Konrad Dybcio <konrad.dybcio@linaro.org>,
- Bartosz Golaszewski <brgl@bgdev.pl>, Andy Gross <agross@kernel.org>,
- Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
- <sboyd@kernel.org>, Georgi Djakov <djakov@kernel.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, Manivannan Sadhasivam <mani@kernel.org>,
- Jassi Brar <jassisinghbrar@gmail.com>,
- Linus Walleij <linus.walleij@linaro.org>,
- Catalin Marinas <catalin.marinas@arm.com>,
- Richard Cochran <richardcochran@gmail.com>,
- Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
- Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
- linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-gpio@vger.kernel.org, netdev@vger.kernel.org,
- Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-References: <20230109174511.1740856-1-brgl@bgdev.pl>
- <20230109174511.1740856-17-brgl@bgdev.pl>
- <863ca113-cf78-1844-d0be-e21915ef662f@linaro.org>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <863ca113-cf78-1844-d0be-e21915ef662f@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1669951831-4180-1-git-send-email-mikelley@microsoft.com>
 
-On 09/01/2023 19:10, Konrad Dybcio wrote:
-> 
-> 
-> On 9.01.2023 18:45, Bartosz Golaszewski wrote:
->> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
->>
->> Extend the driver to support the sa8775p platform.
->>
->> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
->> ---
->>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
->>  1 file changed, 1 insertion(+)
->>
->> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->> index 91d404deb115..5e12742fcfd9 100644
->> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> /*
->  * Do not add any more qcom,SOC-smmu-500 entries to this list, unless they need
->  * special handling and can not be covered by the qcom,smmu-500 entry.
->  */
+On Thu, Dec 01, 2022 at 07:30:18PM -0800, Michael Kelley wrote:
+> This patch series adds support for PCI pass-thru devices to Hyper-V
+> Confidential VMs (also called "Isolation VMs"). But in preparation, it
+> first changes how private (encrypted) vs. shared (decrypted) memory is
+> handled in Hyper-V SEV-SNP guest VMs. The new approach builds on the
+> confidential computing (coco) mechanisms introduced in the 5.19 kernel
+> for TDX support and significantly reduces the amount of Hyper-V specific
+> code. Furthermore, with this new approach a proposed RFC patch set for
+> generic DMA layer functionality[1] is no longer necessary.
 
-We should change the default -U argument for git format-patch :)
+In any case, this is starting to get ready - how do we merge this?
 
-Best regards,
-Krzysztof
+I apply the x86 bits and give Wei an immutable branch to add the rest of the
+HyperV stuff ontop?
 
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
