@@ -1,171 +1,106 @@
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F85A15CA
-	for <iommu@lists.linux.dev>; Mon,  9 Jan 2023 01:58:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673229484; x=1704765484;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=GDYJ6Y89oJ5wOsjNTY7g9ajEpmKqwp+GoMmPOL3dWqA=;
-  b=j7qHp4Srfs6buZIe/EC0QuQLO3ZsAiYKVx5u9nPErXp8z3LHKRvjhVxg
-   glqmPFApKNccqHQKCnXge4gBSrZDFleI++Ha2jUOiv7+tIeMbO5/UEWVy
-   wIimRgvaqkZ4BAYdYAGnI/qLIZQh6WoJ9XSsrr8FOAc0IhDrfNmcXcHFy
-   jq1QSgYSnajV6jEggrgv5J00Wj1NMxAhwmAh4+GuAlYXYR0ntD//5iMQ0
-   +FALEKeJkQODDC/yO3+Zwp+x56U/bVx5bQx9ET8821ziq7rLb6H4CXj8g
-   mMJFgD9h8FblHnzj62X0+Z2wret4MYg5lTL3eKNj4PpxItt1nahACdmM4
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10584"; a="322848740"
-X-IronPort-AV: E=Sophos;i="5.96,311,1665471600"; 
-   d="scan'208";a="322848740"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2023 17:57:55 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10584"; a="649867430"
-X-IronPort-AV: E=Sophos;i="5.96,311,1665471600"; 
-   d="scan'208";a="649867430"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga007.jf.intel.com with ESMTP; 08 Jan 2023 17:57:52 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: iommu@lists.linux.dev
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 3/4] iommu/vt-d: Remove users from intel_svm_dev
-Date: Mon,  9 Jan 2023 09:49:54 +0800
-Message-Id: <20230109014955.147068-4-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230109014955.147068-1-baolu.lu@linux.intel.com>
-References: <20230109014955.147068-1-baolu.lu@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4176A2571
+	for <iommu@lists.linux.dev>; Mon,  9 Jan 2023 08:46:03 +0000 (UTC)
+X-UUID: 10559a3b014e4c4dafccc2fcf81277e1-20230109
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Type:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=BAp+xDBGU54PPm/5VMviuQnl/KdEsY0dtwop6ZaDpbE=;
+	b=Lh6Kv2eOAHNBuX+fabw0f7BoGh6FE2jcq2Vq+/TjNFfhU3uaXKcfsW08fR7rQxpsYJvEGFPniqHjHnqsyRCgnDJnQfPf6fKc1iiSSBDy1FxG6iYedTeNbjfXuhHGScAiZASD9auB7+9Hk0L1UdvpUPHtyB65eNizFYTuQtMCuO8=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.17,REQID:79fc4fbf-def8-4ea4-a046-e4f36bb84947,IP:0,U
+	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
+	release,TS:0
+X-CID-META: VersionHash:543e81c,CLOUDID:16751754-dd49-462e-a4be-2143a3ddc739,B
+	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
+	RL:11|1,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0
+X-CID-BVR: 0
+X-UUID: 10559a3b014e4c4dafccc2fcf81277e1-20230109
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw02.mediatek.com
+	(envelope-from <yf.wang@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 1951956810; Mon, 09 Jan 2023 16:45:52 +0800
+Received: from mtkmbs13n1.mediatek.inc (172.21.101.193) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Mon, 9 Jan 2023 16:45:51 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
+ mtkmbs13n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.15 via Frontend Transport; Mon, 9 Jan 2023 16:45:50 +0800
+From: <yf.wang@mediatek.com>
+To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, "Will
+ Deacon" <will@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, "open
+ list:IOMMU DMA-API LAYER" <iommu@lists.linux.dev>, open list
+	<linux-kernel@vger.kernel.org>, "moderated list:ARM/Mediatek SoC support"
+	<linux-arm-kernel@lists.infradead.org>, "moderated list:ARM/Mediatek SoC
+ support" <linux-mediatek@lists.infradead.org>
+CC: <wsd_upstream@mediatek.com>, Libo Kang <Libo.Kang@mediatek.com>, Yong Wu
+	<yong.wu@mediatek.com>, Ning Li <Ning.Li@mediatek.com>, jianjiao zeng
+	<jianjiao.zeng@mediatek.com>, Yunfei Wang <yf.wang@mediatek.com>
+Subject: [PATCH] iommu/iova: Fix alloc iova overflows issue
+Date: Mon, 9 Jan 2023 16:34:28 +0800
+Message-ID: <20230109083429.25622-1-yf.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK: N
 
-It was used as a reference counter of an existing bond between device
-and user application memory address. Commit be51b1d6bbff ("iommu/sva:
-Refactoring iommu_sva_bind/unbind_device()") has added this in iommu
-core. Remove it to avoid duplicate code.
+From: Yunfei Wang <yf.wang@mediatek.com>
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+In __alloc_and_insert_iova_range, there is an issue that retry_pfn
+overflows. The value of iovad->anchor.pfn_hi is ~0UL, then when
+iovad->cached_node is iovad->anchor, curr_iova->pfn_hi + 1 will
+overflow. As a result, if the retry logic is executed, low_pfn is
+updated to 0, and then new_pfn < low_pfn returns false to make the
+allocation successful.
+
+This issue occurs in the following two situations:
+1. The first iova size exceeds the domain size. When initializing
+iova domain, iovad->cached_node is assigned as iovad->anchor. For
+example, the iova domain size is 10M, start_pfn is 0x1_F000_0000,
+and the iova size allocated for the first time is 11M. The
+following is the log information, new->pfn_lo is smaller than
+iovad->cached_node.
+
+Example log:
+[  223.798112][T1705487] sh: [name:iova&]__alloc_and_insert_iova_range
+start_pfn:0x1f0000,retry_pfn:0x0,size:0xb00,limit_pfn:0x1f0a00
+[  223.799590][T1705487] sh: [name:iova&]__alloc_and_insert_iova_range
+success start_pfn:0x1f0000,new->pfn_lo:0x1efe00,new->pfn_hi:0x1f08ff
+
+2. The node with the largest iova->pfn_lo value in the iova domain
+is deleted, iovad->cached_node will be updated to iovad->anchor,
+and then the alloc iova size exceeds the maximum iova size that can
+be allocated in the domain.
+
+Adding judgment that retry_pfn must be greater than iovad->start_pfn
+can fix this issue.
+
+Signed-off-by: jianjiao zeng <jianjiao.zeng@mediatek.com>
+Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
 ---
- drivers/iommu/intel/iommu.h |  1 -
- drivers/iommu/intel/svm.c   | 62 ++++++++++++++++---------------------
- 2 files changed, 27 insertions(+), 36 deletions(-)
+ drivers/iommu/iova.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index e7c732979364..2a1619ff0d79 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -762,7 +762,6 @@ struct intel_svm_dev {
- 	struct device *dev;
- 	struct intel_iommu *iommu;
- 	struct iommu_sva sva;
--	int users;
- 	u16 did;
- 	u16 sid, qdep;
- };
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index d1e445f03aa6..c7dc53e40c26 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -333,13 +333,6 @@ static struct iommu_sva *intel_svm_bind_mm(struct intel_iommu *iommu,
- 		}
- 	}
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index a44ad92fc5eb..0073206c2a95 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -209,7 +209,8 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 	} while (curr && new_pfn <= curr_iova->pfn_hi && new_pfn >= low_pfn);
  
--	/* Find the matching device in svm list */
--	sdev = svm_lookup_device_by_dev(svm, dev);
--	if (sdev) {
--		sdev->users++;
--		goto success;
--	}
--
- 	sdev = kzalloc(sizeof(*sdev), GFP_KERNEL);
- 	if (!sdev) {
- 		ret = -ENOMEM;
-@@ -350,7 +343,6 @@ static struct iommu_sva *intel_svm_bind_mm(struct intel_iommu *iommu,
- 	sdev->iommu = iommu;
- 	sdev->did = FLPT_DEFAULT_DID;
- 	sdev->sid = PCI_DEVID(info->bus, info->devfn);
--	sdev->users = 1;
- 	sdev->sva.dev = dev;
- 	init_rcu_head(&sdev->rcu);
- 	if (info->ats_enabled) {
-@@ -367,7 +359,7 @@ static struct iommu_sva *intel_svm_bind_mm(struct intel_iommu *iommu,
- 		goto free_sdev;
- 
- 	list_add_rcu(&sdev->list, &svm->devs);
--success:
-+
- 	return &sdev->sva;
- 
- free_sdev:
-@@ -401,32 +393,32 @@ static int intel_svm_unbind_mm(struct device *dev, u32 pasid)
- 	mm = svm->mm;
- 
- 	if (sdev) {
--		sdev->users--;
--		if (!sdev->users) {
--			list_del_rcu(&sdev->list);
--			/* Flush the PASID cache and IOTLB for this device.
--			 * Note that we do depend on the hardware *not* using
--			 * the PASID any more. Just as we depend on other
--			 * devices never using PASIDs that they have no right
--			 * to use. We have a *shared* PASID table, because it's
--			 * large and has to be physically contiguous. So it's
--			 * hard to be as defensive as we might like. */
--			intel_pasid_tear_down_entry(iommu, dev,
--						    svm->pasid, false);
--			intel_svm_drain_prq(dev, svm->pasid);
--			kfree_rcu(sdev, rcu);
--
--			if (list_empty(&svm->devs)) {
--				if (svm->notifier.ops)
--					mmu_notifier_unregister(&svm->notifier, mm);
--				pasid_private_remove(svm->pasid);
--				/* We mandate that no page faults may be outstanding
--				 * for the PASID when intel_svm_unbind_mm() is called.
--				 * If that is not obeyed, subtle errors will happen.
--				 * Let's make them less subtle... */
--				memset(svm, 0x6b, sizeof(*svm));
--				kfree(svm);
--			}
-+		list_del_rcu(&sdev->list);
-+		/*
-+		 * Flush the PASID cache and IOTLB for this device.
-+		 * Note that we do depend on the hardware *not* using
-+		 * the PASID any more. Just as we depend on other
-+		 * devices never using PASIDs that they have no right
-+		 * to use. We have a *shared* PASID table, because it's
-+		 * large and has to be physically contiguous. So it's
-+		 * hard to be as defensive as we might like.
-+		 */
-+		intel_pasid_tear_down_entry(iommu, dev, svm->pasid, false);
-+		intel_svm_drain_prq(dev, svm->pasid);
-+		kfree_rcu(sdev, rcu);
-+
-+		if (list_empty(&svm->devs)) {
-+			if (svm->notifier.ops)
-+				mmu_notifier_unregister(&svm->notifier, mm);
-+			pasid_private_remove(svm->pasid);
-+			/*
-+			 * We mandate that no page faults may be outstanding
-+			 * for the PASID when intel_svm_unbind_mm() is called.
-+			 * If that is not obeyed, subtle errors will happen.
-+			 * Let's make them less subtle...
-+			 */
-+			memset(svm, 0x6b, sizeof(*svm));
-+			kfree(svm);
- 		}
- 	}
- out:
+ 	if (high_pfn < size || new_pfn < low_pfn) {
+-		if (low_pfn == iovad->start_pfn && retry_pfn < limit_pfn) {
++		if (low_pfn == iovad->start_pfn &&
++		    retry_pfn >= iovad->start_pfn && retry_pfn < limit_pfn) {
+ 			high_pfn = limit_pfn;
+ 			low_pfn = retry_pfn;
+ 			curr = iova_find_limit(iovad, limit_pfn);
 -- 
-2.34.1
+2.18.0
 
