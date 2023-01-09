@@ -1,63 +1,48 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2045.outbound.protection.outlook.com [40.107.94.45])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2040.outbound.protection.outlook.com [40.107.94.40])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FA362F21;
-	Mon,  9 Jan 2023 13:43:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C890320A
+	for <iommu@lists.linux.dev>; Mon,  9 Jan 2023 14:23:02 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZEo0mgI1MqEoc6k+ZOzSybeWxYIimLugpJVQcaku/q0xilmtNwwmmQnJOHFHVE6eN2R2lBM6f2XvmXs/SfUK9jLAa3xhLp6qY5+Oy6+wxq6QK2o9y5b+/gbCpqkJPUft5PF6Rr0TgrEojfRANExzki4x7uMsqvM8uk4PgUOloBYNyHlPqbOJkmDXwF5qeF9HT7l+jKrzTdqA4+bjCDKTmv3HiFT7PdELzp9jsQ8efD4Xcw6DQTMuhr4K11SLdFl4PF27CtbTX2Y0dNkMA05fDQ0UhIFx9p/Jm2HV3Ca8EPfQfs81Y/F5d2ETMDkrqCvNVmezeDFXS1Ip7HjdoQ/NJQ==
+ b=DozSD9/PgYG2YK091Zl38uP2K895UN21YF6khJYF64RNkqs2SzOKuIjSxiO99db0WB1NIizg2SN2FkeXr6UWKfBs/JHaRaqztIuxBM8jqvJvJClvsOfM7HqO1QDCaWF+seL6cL0cYMt9k0C00dPbskEoLJdQIUWSMPEfYu9knUDpov+owQ8aRxY9jp0XV5z6caih1+sNiovwaqVUu2M6WxbJIbndWjRZwo6Ha8r+9LSNbx0qB53FxtcH9M7wU86yB3Sv4DPsnjkPvS0kK5oYIKAWl9xkBqUFx61UcVQNKOuQKXx5Y5+4MoOj98PzxAPWAHyDJLYtSrVf9XxiGsDLGw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Qj8BP9xPNjJMBJQXV8+VkFvkrFH/AM/nKiXxfDPLAw4=;
- b=Jahi4OD/wgFWzKwHifu9+5pINscIufyvpyKMndux9PJl3SURyvztkPuXVk0wyShtf98rmgV1r1Z0pBZwQNxrIPGhjcrBqdAdjm8IemLDOryWbgobJtJLFtVA5qFkalwy3+uq0EeqZZ0VKieMbDKJLqa4GXkDlBUv89JPfVRbsVcWdJNEaWjN+gEsRbM5J8WHlgtQaRZOiZDfFnmPqUvRt+fubk//WJ5YlMPbgL4HCicAiiBalzrXOsA6kGqVSst8Fds/piVflptjeCKFqNvKRD00va13j+i7uH2SRu9XylLSPd3AH/bl1Xy/SkUa7iinfo4+LETYCci8ubG+zSOX1g==
+ bh=KTs6oww2X0KgbSAwsUazAuJkbVwve7DTaOiC0Usn52M=;
+ b=ephHBe5FuCaY4f2roAguH88IbomqMColer+G82WE/YtehZNR0bS9CbahIPpVrbr5nrHTf2XB1RsSuJjJABJcI87v9FBI4b/sdIPEpGhTqyjHjkZ4ngEN+DkCheCY1K86Ga5mHpq+Yjmaldl0A/pPE0hN0mC35TVNbcmLAhjnUSeJOQkCxB8NTZ9IjuJLjIFpckJdeThVFfCSXK3DYxBSEnOkd7vQBgXMIZNwxqjJ9Tgfbzk/0DOiBGcrgQ9vy1Lwjl2+3so2hLWD94ixepe4rYE4W79jkrPbshaf/2+t1azQBS+M6ivRIMvibArgv51u8HPKhNYrms5oO+OMp/46gQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Qj8BP9xPNjJMBJQXV8+VkFvkrFH/AM/nKiXxfDPLAw4=;
- b=tVurA441jMC4alDvvkqHOnFdIA/T/tbpyvNG8Bvi0hYfbhcPoeloHMt10UpmpC6kbD0t1sxESQImD+AAYhWmTrTEY0xN5eDZBXBsz05io9yt/PGA85oo9hfC+4Cx0IbyzMKTFhjp76icESH9SRzcNLFHLn+3HFqn/IIsS7rBTUPdY9u4ZW+2spwdj2cNMBaShJ4L1bDPrXXBpDqwKfms3LKvQAYVC//mWAwV3arRgHNslEAVJV4+OUloCGp7w8Mselvxn0eQNjpDOUdVfU1N4oQ+olzX5HIohjwe3N7ufYsrFA1G4TlKwArKTUCWK8J6Ue9XR5grL0i/NDkQ20qVmg==
+ bh=KTs6oww2X0KgbSAwsUazAuJkbVwve7DTaOiC0Usn52M=;
+ b=UOIAAvMtDUJAuSAp0QIV03lwvZ5b+B513lhT8cx4xo8JrC0CKhgKSXPtcsBigjIIEsAoc+uMKlfdqeQx1YtNKkusXoM29ltedo408TFr7iFEXPZMiUcFvKe3ywYQfiniTDCgdEGZIOQK1MdgxuBvDwC1/2IW6BH/KPWH3qGauO1s2K2qqlFjtFrF3eIG1O1Uiv6ZHfJEKC96LWCt1joANxcEYm7ufWAPiWIJ7Y+Qm9Ba1o0gh3SAw85b6hXncvTWe96iT27bWhmOJdCLtpwHCdPJNZgOlMRRP1N0dQeXze+IaONXWggMZIxr1Q1mX4UXLkhWnpa6L9SgUzWWywFAxA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by CY5PR12MB6432.namprd12.prod.outlook.com (2603:10b6:930:38::8) with
+ by IA1PR12MB6210.namprd12.prod.outlook.com (2603:10b6:208:3e6::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18; Mon, 9 Jan
- 2023 13:43:22 +0000
+ 2023 14:23:00 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::f8b0:df13:5f8d:12a%8]) with mapi id 15.20.5986.018; Mon, 9 Jan 2023
- 13:43:22 +0000
-Date: Mon, 9 Jan 2023 09:43:21 -0400
+ 14:23:00 +0000
 From: Jason Gunthorpe <jgg@nvidia.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Vasant Hegde <vasant.hegde@amd.com>,
-	Matt Fagnani <matt.fagnani@bell.net>,
-	Thorsten Leemhuis <regressions@leemhuis.info>,
-	Joerg Roedel <jroedel@suse.de>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	LKML <linux-kernel@vger.kernel.org>,
-	"regressions@lists.linux.dev" <regressions@lists.linux.dev>,
-	Linux PCI <linux-pci@vger.kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [regression, bisected, =?utf-8?Q?pci?=
- =?utf-8?Q?=2Fiommu=5D_Bug=C2=A0216865_-_Black_screen_whe?= =?utf-8?Q?n?=
- amdgpu started during 6.2-rc1 boot with AMD IOMMU enabled
-Message-ID: <Y7wZ+SvT455HS2b6@nvidia.com>
-References: <15d0f9ff-2a56-b3e9-5b45-e6b23300ae3b@leemhuis.info>
- <5aa0e698-f715-0481-36e5-46505024ebc1@bell.net>
- <aea57c5f-2d20-c589-ad44-a63f1133a3db@linux.intel.com>
- <157c4ca4-370a-5d7e-fe32-c64d934f6979@amd.com>
- <223ee6d6-70ea-1d53-8bc2-2d22201d8dde@bell.net>
- <6fff9d10-f77f-e55a-9020-8a1bd34cf508@amd.com>
- <Y7gs0zYKp/VXACBi@nvidia.com>
- <bb865b8f-6f8f-769a-6364-d46b45caca85@linux.intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bb865b8f-6f8f-769a-6364-d46b45caca85@linux.intel.com>
-X-ClientProxiedBy: MN2PR20CA0063.namprd20.prod.outlook.com
- (2603:10b6:208:235::32) To LV2PR12MB5869.namprd12.prod.outlook.com
+To: Alex Williamson <alex.williamson@redhat.com>,
+	Cornelia Huck <cohuck@redhat.com>,
+	iommu@lists.linux.dev,
+	Kevin Tian <kevin.tian@intel.com>,
+	kvm@vger.kernel.org,
+	Yi Liu <yi.l.liu@intel.com>
+Subject: [PATCH] vfio: Support VFIO_NOIOMMU with iommufd
+Date: Mon,  9 Jan 2023 10:22:59 -0400
+Message-Id: <0-v1-5cde901db21d+661fe-iommufd_noiommu_jgg@nvidia.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MN2PR05CA0023.namprd05.prod.outlook.com
+ (2603:10b6:208:c0::36) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -66,125 +51,270 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CY5PR12MB6432:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5c176ff9-6ba8-46b4-f1a4-08daf2477964
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|IA1PR12MB6210:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0a05d7c3-4432-4892-09e3-08daf24d02f6
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	8Q4BEuUpjkvLUEjFHz7v4P+3a11BN2ZtalnylJ06OXgH+FslOpwkfUdIDS101C0uvRv6WbeZGHLyzio1iG9iD3r29/KQjw58AyDbwovu13XBNxKslDNVxSJMbjkGMC/VkRbLu/mCNnKKm0tOQlVYdN5lZNU7nXrRrKXzcdUED5Ii+Ar4rNFVuvGbmtCCbWyPbOTlkeGfHsgpPaChG0jreTn6NbEAMUE3qsDLhudQVGdrMazaWw7ch9zEI57GFC2qso4q4T+OPMQ2j0rdfrJwaZ14lVDrbjtQGKnTtlB9VxhAO2R+xRsTLHgFZjpNjMvR4t7BTMrqI3e6rSjxpTy8zNwDCTHF96dZ6r+5MhyliVXbvkZFbz6CRRo6QY49uLA5GJqUTWObGR92rZHuVDo0kIqz8nRURa4QV3Qoc0TEQEqs+2DW1m9jYwt6untHokyUlLekNdSUQlb1gSG0nhVreCuTPZw3h2HNFjY2clvtM6f56w3FdH4bgxf7D3VfGhSsxhZ9wS/xwZZR7Ous3knR2Te45ATHvEQDdqo38Ts26HODERf7ggOknei+tIbRfIqVQmO7Fm7k3WLAZFVoNT7M31nmCFBCWFp2vxwgMat2rizFA+OzlSqsuDej2C3MJM0RZtjYs0tweVmfLlGu0eEmhSNMLKGBwJNn+unKUIeRl0CNzUZiyLOTCRd7lC+MdEiQ
+	LjIfg7IYqgfdFVdQb4JkqqwOCqBYw9WMoHaU3rZK8krFdqqqblWP49DwnBRdnHsrZj8BWBauMiUNpFNenTs/GtEKxH7DJHqavY8D12rec9DjZjo+0j1C+HDpxgVJp24ba3j+s+0iuuw0gkzmgjoCTBjObnj2PoIgB/SHChQ04lhIAOkVqORqmLll7gFot4ORq6zE7PJZ9fgymWECwHR9sxE/gR0f/nEaFeDpvIXe3fCJ2d5jBjzNorUyczgpUWhX+djMEMbqOu41mpUFqqjp8nENSRPtaj3glOJgdQgGCJGjZpUw8dfRnWy4dDYbW6TWUlX0kp4Zsqi+1a7i2FvEQsjfaV/1Dsmt6Gfq+KxAAaEbgdfQuCwiLdjmSBa8Gu5eBmELZbQU9g8wWfKWfV4182l4wbbcFOamvG6x8yU6tz16huwuVgVYt62IQQ1m70myv2ywcF5+FTW+ayNrROo946woGiKAkGXtCAvmEUMukOCqj9Y9mnngwf2Ye6rVnIlnv+l9UdbJMa4dD4QOcB3HhIutBg7nDuQ7fxHDxE+t/4eLGjC9Snvru4Snrcb0VNqMiNF589Cz7A4grOUbuaixfTxzOVMvPlzreeSSl9ikxQ8uohn7mptBus9fQiwe+vNxkiRurrsAyDgFiNhOyZ6v+PDZRjz1RPlr6GCiJgjRWyYUI4ikhXoWawHOAs9dac3t
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(39860400002)(366004)(396003)(136003)(451199015)(41300700001)(54906003)(2616005)(316002)(66476007)(36756003)(6916009)(4326008)(66556008)(66946007)(86362001)(38100700002)(5660300002)(83380400001)(7416002)(8936002)(2906002)(6506007)(53546011)(6486002)(6512007)(186003)(26005)(478600001)(67856001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(376002)(39860400002)(136003)(396003)(346002)(451199015)(2906002)(6506007)(478600001)(186003)(26005)(6512007)(6486002)(110136005)(2616005)(36756003)(8676002)(66556008)(66476007)(66946007)(316002)(41300700001)(8936002)(5660300002)(38100700002)(83380400001)(86362001)(4216001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?EdfabGIqSPqtPc9/Q2TsthzklkE8SNjC6NreYiKjtOa7LdrQt9gL9i36QdBk?=
- =?us-ascii?Q?uK1yPc7k92vfhj8eMmOY12hrjO5MjUdRMiLwtDoGVJSePsvO6UQQmoOrqfPB?=
- =?us-ascii?Q?yc3wf3hDA1LOfr40nDzgM2MpSN8ccai7UTBaqECGBpFIMxSb4sQCx+uVPk2q?=
- =?us-ascii?Q?I5iSEEmL49b4Af+14TCLJ9H6swfWBb6jM/P193ncQ6dumjGBkj6g8D8ka3tV?=
- =?us-ascii?Q?hK5vBQBmo2OGD5ILn1zSYVJdA/6PicGo1PJov8/uJA8GpaWHKR8Gxl+GNdcO?=
- =?us-ascii?Q?xsTXLf9pPOL8pOUTMsHyzk92JGgxPbY1cMjgTz+e8SVhVpz7RuqJFSzwojze?=
- =?us-ascii?Q?zOkfW1khxVIFbC+2gGB7Fuv3AzxDX933GNK434Sbq95oGGjt1cW9Iz2epHq3?=
- =?us-ascii?Q?E9P1I3K1EyMMrl0JPN9H0D0R+YkhFo7IQ1qUqZlIGMisAvXHiTqSBRCaZf/+?=
- =?us-ascii?Q?Lb3j6iPQbN60Ch2YAdS2524W2eQoOAiy9+phJUcVt+GaXSne04/rjpQjlv3h?=
- =?us-ascii?Q?Vf6tzvdmEfeZcebSqe3jY7xzbG3B7Gq1ulc0ptS7JDhwjIKG7hTuPo0/fvtz?=
- =?us-ascii?Q?8UfhUVPcZRvEwnzbrW4z075bg9NuQbMec2pCM6vJVangeqJRp0uhup7AIMaI?=
- =?us-ascii?Q?y1r17GmwiPgRrZvSVBOyyUPhgOvpx8x73V9aH5zTYYNxmliYjmal+kuAI6Zo?=
- =?us-ascii?Q?39JxPLhYE0Dul31dk/4X9Kh39sjYlhK4+nAzB6MTI253oxHy39a+OA9Yv9a5?=
- =?us-ascii?Q?TcdbKEYW95qZNJ0y/0TZ3IrI9XYkTcD660oP0GkUzN/bn8moqOa1BxnFwnzB?=
- =?us-ascii?Q?mhGnYrEKjwSIGGOWYBHzCAmt+IkNTLzT/9yKCoFAtfSzguiCZrK3Qx44u3V6?=
- =?us-ascii?Q?HemX6MHvfWjhIWbOB7SfOvh7dMXG4rRoh+EljOOvHqA0Sb25EuQDPHMLhiPY?=
- =?us-ascii?Q?oia/7HsD8XRij1s2IQIZ4/B2iIpawpofM9nMyCbVfw+BFEMuOkMGSs+WnAdV?=
- =?us-ascii?Q?lXEGTZIrdAMuwr/5a25+coi480aJS+iqmsCzltxIXXodQcgWUvQPLQjIJzzJ?=
- =?us-ascii?Q?vAw91dD9CkKr9B7y6sh4DiBWqcvNYuQWecK1EieTUgr6NLcGOEszGM+kCONr?=
- =?us-ascii?Q?o/Kpy3Qd3qxz+I3ofak7/PFHoDJ+DxCaXSkvQqnuBtBbDT7T4TtjYwlWj8Ao?=
- =?us-ascii?Q?OO4AwtjyxNTw7ZhQ8Ze+CO1JjFJntuPPZmex0x70Gc3oedrvi+/NuxJWYSne?=
- =?us-ascii?Q?Y8GleTQh6FnoOKO6+i6NKlMbwpcBOQaklOVy8BC5KQs9ADWbexHtftUHH8Tf?=
- =?us-ascii?Q?guOhilY/sfa7zRCN6DWA/LZbDTFTLys6DPAVg2KaPmyIP0wjdOc0Vuq0bNxb?=
- =?us-ascii?Q?RT7FBT7zjcajACLW/8U2mGl6JkGTZ1CAiqwKDQVw1yes4PhSaY3LjyDj4Gxj?=
- =?us-ascii?Q?4/d8gCnwaTXylgvgYZcYZOmvxcUs/kvy75mqP5hmXJvTvdab3yp+6SZiL7/5?=
- =?us-ascii?Q?9V+TiWF2UillF8wnnmYr0L0EdLOlY3EOINubHseDTfCS4YhMecnZgHwuXwZm?=
- =?us-ascii?Q?wqQn41EuXE1bjBZZOhWMNrx0kYeRI7eJFygCyiw4?=
+	=?us-ascii?Q?jyJIJmqlB+hWL70sjz9GL8rcpeCoo8pBgzfy/x0h7eTYMgwpJQ55HkYO7KcP?=
+ =?us-ascii?Q?fo6k9/Baebn1LBbCWVDvSGZ4phkmcJ197qDKPeADpuTRVDnUBSSPZLXknXTU?=
+ =?us-ascii?Q?wiVdmHTOW8njZU37kaoRcvCBvpk5YkWea5PvFhWULtHtvrs9sQG6ytb/H+9I?=
+ =?us-ascii?Q?SCcDg3eKLbdmf53oZMii4+2ITkY19A0WyBev3mmqOSwgqliRxj6jOd9ANa5O?=
+ =?us-ascii?Q?YsO10UW2qOEJfC3GnccyGsk7+5rv9RhgdFM9wVlxSv2eb2cijWF/F+Z//H5l?=
+ =?us-ascii?Q?lKPf3mm2uF8Eq/Ffl8c3JUGpNAD77kv6a6bpu12pOulm0+RaP0oa6LJRlwNJ?=
+ =?us-ascii?Q?yEA3ytWgMYRxITXsTbef20jgGE8ErH1iq0e7L7dI3T+0VJ3S/+pIVZ2411Yp?=
+ =?us-ascii?Q?GQX/GEs6VsR1AZYajrNQIhCWWEAFFCNcrtAV0ve2V3eqWtVkQmLxJad88YXC?=
+ =?us-ascii?Q?u9H9BU+uzz3DEp1VM5Pd/TfH5x2N+pZpraBeN3XnXNPD+ByFftF+gihSlgN+?=
+ =?us-ascii?Q?tC6HG2+3CtiCTG/Pi9uf3DWzaGKxejwGh6Nh20zj81idwff8vDKyJ7QZ0pAf?=
+ =?us-ascii?Q?aMDvLv7XMQYrBzAQ/qh/93ijSoxz+6FWp2KQvBa8q1+Td/QSWFO0XuOF7UEe?=
+ =?us-ascii?Q?DXFt5DdlEWSE5dGzAm5Si6mJ8orxOI2JH3Pza8uu6Jagr5+sH6u2FyHe9kdr?=
+ =?us-ascii?Q?VTR4zhZiOfceQfB793GIWIs4Oewg2CxZSt7KVQ15nVYjFsOnHYdtS55dMjyZ?=
+ =?us-ascii?Q?i3Ypq1wuQLgUf89pNlgJ8Te7UY0hYxtqrh2X8PKxRgo/EoBGGsWoo+oALb52?=
+ =?us-ascii?Q?5879KNMr8QdH9fb0/XmWHpQAUGYuFJEkGBYO2ryWnfMyQz8moNx60wWqG8UO?=
+ =?us-ascii?Q?r3iykA88+O8a+4Q57hvUuL7FCb1bLPxUullsteHBjQHO9iCyLBrhgzw9oaq7?=
+ =?us-ascii?Q?iKS8qouW7AblIE5C2U2Qfv9b5EuCc1VzPS0dNr0BZQXWAOR3kn/qQuZS6AMG?=
+ =?us-ascii?Q?UVkJoClU/pVfSRq1ME3BFYmoiBI8biEwK0FGNHpgTVFxsW4Sfu0HaWuwrqjy?=
+ =?us-ascii?Q?+2DCCRz1dq1W1vRVbsHizg7GMOwsHEqz2CKtSC5JGXG7z2/eTtNzcgIKxONV?=
+ =?us-ascii?Q?tg3URYy7xtzCLZr2alug7IOVLCjq+4KbFrcU3okEJajMo2rQZDI7Ct9334yg?=
+ =?us-ascii?Q?UXtDQel3WqmjehhHUBhelpwKqq5/iTgEGsvOr8AIgkFZuKsT4nNxMck1wkw5?=
+ =?us-ascii?Q?X1aQNxl1CzDIiCIzEk6hkpKyBvxtM5MtCo4jzKYEtWXIcFM7ZI6JFJ4fOJfr?=
+ =?us-ascii?Q?9VKjVFp4okNfFkdlFQZxVogJWAgIs8nd3GMowVPM0MKnR0gsUs9wTEp88eAV?=
+ =?us-ascii?Q?AErE7z5f162bSLalg9EaKk96qUQjInt2aphEpGVJNOBT31gGyr/cogKAj7Va?=
+ =?us-ascii?Q?mlMKLC2H/y+caRxeusrzQ2BuqcDDFlZZmte+xBo9mFYMY89PP7FWOaxc5Dyv?=
+ =?us-ascii?Q?d9k6OJT/zb2J64OEdtzmWxEZw9YpkBxavDuYQFiqzTRXxdV2KN+Xzp7yk+BM?=
+ =?us-ascii?Q?HcVIMxi8IBoqUgkshbgGMiPfdVp7iYfZjji2J7/q?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5c176ff9-6ba8-46b4-f1a4-08daf2477964
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0a05d7c3-4432-4892-09e3-08daf24d02f6
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jan 2023 13:43:22.0386
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jan 2023 14:23:00.3678
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nxlCN//FQaCmKVrIP18tIrLay1sIXBUzF7wpoBaucjlswqaGeXRMaGEGVo0grfDZ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6432
+X-MS-Exchange-CrossTenant-UserPrincipalName: vKy8bke9mSXw9JfNXHNZ048XkZGmM6vrloNWWbJyedKrjpNHFWtD3WmywIXJNQkf
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6210
 
-On Sat, Jan 07, 2023 at 10:44:46AM +0800, Baolu Lu wrote:
-> On 1/6/2023 10:14 PM, Jason Gunthorpe wrote:
-> > On Thu, Jan 05, 2023 at 03:57:28PM +0530, Vasant Hegde wrote:
-> > > Matt,
-> > > 
-> > > On 1/5/2023 6:39 AM, Matt Fagnani wrote:
-> > > > I built 6.2-rc2 with the patch applied. The same black screen problem happened
-> > > > with 6.2-rc2 with the patch. I tried to use early kdump with 6.2-rc2 with the
-> > > > patch twice by panicking the kernel with sysrq+alt+c after the black screen
-> > > > happened. The system rebooted after about 10-20 seconds both times, but no kdump
-> > > > and dmesg files were saved in /var/crash. I'm attaching the lspci -vvv output as
-> > > > requested.
-> > > > 
-> > > 
-> > > Thanks for testing. As mentioned earlier I was not expecting this patch to fix
-> > > the black screen issue. It should fix kernel warnings and IOMMU page fault
-> > > related call traces. By any chance do you have the kernel boot logs?
-> > > 
-> > > 
-> > > @Baolu,
-> > >    Looking into lspci output, it doesn't list ACS feature for Graphics card. So
-> > > with your fix it didn't enable PASID and hence it failed to boot.
-> > 
-> > The ACS checks being done are feature of the path not the end point or
-> > root port.
-> > 
-> > If we are expecting ACS on the end port then it is just a bug in how
-> > the test was written.. The test should be a NOP because there are no
-> > switches in this topology.
-> > 
-> > Looking at it, this seems to just be because pci_enable_pasid is
-> > calling pci_acs_path_enabled wrong, the only other user is here:
-> > 
-> > 	for (bus = pdev->bus; !pci_is_root_bus(bus); bus = bus->parent) {
-> > 		if (!bus->self)
-> > 			continue;
-> > 
-> > 		if (pci_acs_path_enabled(bus->self, NULL, REQ_ACS_FLAGS))
-> > 			break;
-> > 
-> > 		pdev = bus->self;
-> > 
-> > 		group = iommu_group_get(&pdev->dev);
-> > 		if (group)
-> > 			return group;
-> > 	}
-> > 
-> > And notice it is calling it on pdev->bus not on pdev itself which
-> > naturally excludes the end point from the ACS validation.
-> > 
-> > So try something like:
-> > 
-> > 	if (!pci_acs_path_enabled(pdev->bus->self, NULL, PCI_ACS_RR | PCI_ACS_UF))
-> > 
-> > (and probably need to check for null ?)
-> 
-> Yeah! This really is a misuse of pci_acs_path_enabled().
-> 
-> But if @pdev is an endpoint of a multiple function device, perhaps we
-> still need to check acs on it?
+Add a small amount of emulation to vfio_compat to accept the SET_IOMMU
+to VFIO_NOIOMMU_IOMMU and have vfio just ignore iommufd if it is working
+on a no-iommu enabled device.
 
-Ah, I don't know anything about what this means from a spec
-perspective.
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/iommu/iommufd/Kconfig       |  2 +-
+ drivers/iommu/iommufd/vfio_compat.c | 46 ++++++++++++++++++++++++-----
+ drivers/vfio/group.c                | 13 ++++----
+ drivers/vfio/iommufd.c              | 21 ++++++++++++-
+ include/linux/iommufd.h             |  6 ++--
+ 5 files changed, 70 insertions(+), 18 deletions(-)
 
-Certainly if a function can internalize MMIO and loop it back to
-another function then it surely is not OK for PASID either, nor should
-those functions be in different iommu groups.
+This needs a testing confirmation with dpdk to go forward, thanks
 
-So, either this never happens for some spec reason, or the test in the
-iommu code forming groups is incorrect.
+diff --git a/drivers/iommu/iommufd/Kconfig b/drivers/iommu/iommufd/Kconfig
+index 8306616b6d8198..ada693ea51a78e 100644
+--- a/drivers/iommu/iommufd/Kconfig
++++ b/drivers/iommu/iommufd/Kconfig
+@@ -23,7 +23,7 @@ config IOMMUFD_VFIO_CONTAINER
+ 	  removed.
+ 
+ 	  IOMMUFD VFIO container emulation is known to lack certain features
+-	  of the native VFIO container, such as no-IOMMU support, peer-to-peer
++	  of the native VFIO container, such as peer-to-peer
+ 	  DMA mapping, PPC IOMMU support, as well as other potentially
+ 	  undiscovered gaps.  This option is currently intended for the
+ 	  purpose of testing IOMMUFD with unmodified userspace supporting VFIO
+diff --git a/drivers/iommu/iommufd/vfio_compat.c b/drivers/iommu/iommufd/vfio_compat.c
+index 3ceca0e8311c39..6c8e5dc1c221f4 100644
+--- a/drivers/iommu/iommufd/vfio_compat.c
++++ b/drivers/iommu/iommufd/vfio_compat.c
+@@ -26,16 +26,35 @@ static struct iommufd_ioas *get_compat_ioas(struct iommufd_ctx *ictx)
+ }
+ 
+ /**
+- * iommufd_vfio_compat_ioas_id - Return the IOAS ID that vfio should use
++ * iommufd_vfio_compat_ioas_get_id - Ensure a comat IOAS exists
++ * @ictx: Context to operate on
++ *
++ * Return the ID of the current compatibility ioas. The ID can be passed into
++ * other functions that take an ioas_id.
++ */
++int iommufd_vfio_compat_ioas_get_id(struct iommufd_ctx *ictx, u32 *out_ioas_id)
++{
++	struct iommufd_ioas *ioas;
++
++	ioas = get_compat_ioas(ictx);
++	if (IS_ERR(ioas))
++		return PTR_ERR(ioas);
++	*out_ioas_id = ioas->obj.id;
++	iommufd_put_object(&ioas->obj);
++	return 0;
++}
++EXPORT_SYMBOL_NS_GPL(iommufd_vfio_compat_ioas_get_id, IOMMUFD_VFIO);
++
++/**
++ * iommufd_vfio_compat_ioas_create_id - Return the IOAS ID that vfio should use
+  * @ictx: Context to operate on
+- * @out_ioas_id: The ioas_id the caller should use
+  *
+  * The compatibility IOAS is the IOAS that the vfio compatibility ioctls operate
+  * on since they do not have an IOAS ID input in their ABI. Only attaching a
+- * group should cause a default creation of the internal ioas, this returns the
+- * existing ioas if it has already been assigned somehow.
++ * group should cause a default creation of the internal ioas, this does nothing
++ * if an existing ioas has already been assigned somehow.
+  */
+-int iommufd_vfio_compat_ioas_id(struct iommufd_ctx *ictx, u32 *out_ioas_id)
++int iommufd_vfio_compat_ioas_create_id(struct iommufd_ctx *ictx)
+ {
+ 	struct iommufd_ioas *ioas = NULL;
+ 	struct iommufd_ioas *out_ioas;
+@@ -53,7 +72,6 @@ int iommufd_vfio_compat_ioas_id(struct iommufd_ctx *ictx, u32 *out_ioas_id)
+ 	}
+ 	xa_unlock(&ictx->objects);
+ 
+-	*out_ioas_id = out_ioas->obj.id;
+ 	if (out_ioas != ioas) {
+ 		iommufd_put_object(&out_ioas->obj);
+ 		iommufd_object_abort(ictx, &ioas->obj);
+@@ -68,7 +86,7 @@ int iommufd_vfio_compat_ioas_id(struct iommufd_ctx *ictx, u32 *out_ioas_id)
+ 	iommufd_object_finalize(ictx, &ioas->obj);
+ 	return 0;
+ }
+-EXPORT_SYMBOL_NS_GPL(iommufd_vfio_compat_ioas_id, IOMMUFD_VFIO);
++EXPORT_SYMBOL_NS_GPL(iommufd_vfio_compat_ioas_create_id, IOMMUFD_VFIO);
+ 
+ int iommufd_vfio_ioas(struct iommufd_ucmd *ucmd)
+ {
+@@ -235,6 +253,9 @@ static int iommufd_vfio_check_extension(struct iommufd_ctx *ictx,
+ 	case VFIO_UNMAP_ALL:
+ 		return 1;
+ 
++	case VFIO_NOIOMMU_IOMMU:
++	return IS_ENABLED(CONFIG_VFIO_NOIOMMU);
++
+ 	case VFIO_DMA_CC_IOMMU:
+ 		return iommufd_vfio_cc_iommu(ictx);
+ 
+@@ -264,6 +285,17 @@ static int iommufd_vfio_set_iommu(struct iommufd_ctx *ictx, unsigned long type)
+ 	struct iommufd_ioas *ioas = NULL;
+ 	int rc = 0;
+ 
++	/*
++	 * Emulation for NOIMMU is imperfect in that VFIO blocks almost all
++	 * other ioctls. We let them keep working but they mostly fail since no
++	 * IOAS should exist.
++	 */
++	if (IS_ENABLED(CONFIG_VFIO_NOIOMMU) && type == VFIO_NOIOMMU_IOMMU) {
++		if (!capable(CAP_SYS_RAWIO))
++			return -EPERM;
++		return 0;
++	}
++
+ 	if (type != VFIO_TYPE1_IOMMU && type != VFIO_TYPE1v2_IOMMU)
+ 		return -EINVAL;
+ 
+diff --git a/drivers/vfio/group.c b/drivers/vfio/group.c
+index bb24b2f0271e03..0f2a483a1f3bdb 100644
+--- a/drivers/vfio/group.c
++++ b/drivers/vfio/group.c
+@@ -133,12 +133,13 @@ static int vfio_group_ioctl_set_container(struct vfio_group *group,
+ 
+ 	iommufd = iommufd_ctx_from_file(f.file);
+ 	if (!IS_ERR(iommufd)) {
+-		u32 ioas_id;
+-
+-		ret = iommufd_vfio_compat_ioas_id(iommufd, &ioas_id);
+-		if (ret) {
+-			iommufd_ctx_put(group->iommufd);
+-			goto out_unlock;
++		if (!IS_ENABLED(CONFIG_VFIO_NO_IOMMU) ||
++		    group->type != VFIO_NO_IOMMU) {
++			ret = iommufd_vfio_compat_ioas_create_id(iommufd);
++			if (ret) {
++				iommufd_ctx_put(group->iommufd);
++				goto out_unlock;
++			}
+ 		}
+ 
+ 		group->iommufd = iommufd;
+diff --git a/drivers/vfio/iommufd.c b/drivers/vfio/iommufd.c
+index 4f82a6fa7c6c7f..da50feb24b6e1d 100644
+--- a/drivers/vfio/iommufd.c
++++ b/drivers/vfio/iommufd.c
+@@ -18,6 +18,21 @@ int vfio_iommufd_bind(struct vfio_device *vdev, struct iommufd_ctx *ictx)
+ 
+ 	lockdep_assert_held(&vdev->dev_set->lock);
+ 
++	if (IS_ENABLED(CONFIG_VFIO_NO_IOMMU) &&
++	    vdev->group->type == VFIO_NO_IOMMU) {
++		if (!capable(CAP_SYS_RAWIO))
++			return -EPERM;
++
++		/*
++		 * Require no compat ioas to be assigned to proceed. The basic
++		 * statement is that the user cannot have done something that
++		 * implies they expected translation to exist
++		 */
++		if (!iommufd_vfio_compat_ioas_get_id(ictx, &ioas_id))
++			return -EPERM;
++		return 0;
++	}
++
+ 	/*
+ 	 * If the driver doesn't provide this op then it means the device does
+ 	 * not do DMA at all. So nothing to do.
+@@ -29,7 +44,7 @@ int vfio_iommufd_bind(struct vfio_device *vdev, struct iommufd_ctx *ictx)
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = iommufd_vfio_compat_ioas_id(ictx, &ioas_id);
++	ret = iommufd_vfio_compat_ioas_get_id(ictx, &ioas_id);
+ 	if (ret)
+ 		goto err_unbind;
+ 	ret = vdev->ops->attach_ioas(vdev, &ioas_id);
+@@ -52,6 +67,10 @@ void vfio_iommufd_unbind(struct vfio_device *vdev)
+ {
+ 	lockdep_assert_held(&vdev->dev_set->lock);
+ 
++	if (IS_ENABLED(CONFIG_VFIO_NO_IOMMU) &&
++	    vdev->group->type == VFIO_NO_IOMMU)
++		return;
++
+ 	if (vdev->ops->unbind_iommufd)
+ 		vdev->ops->unbind_iommufd(vdev);
+ }
+diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
+index 650d45629647a7..9d1afd417215d0 100644
+--- a/include/linux/iommufd.h
++++ b/include/linux/iommufd.h
+@@ -57,7 +57,8 @@ void iommufd_access_unpin_pages(struct iommufd_access *access,
+ 				unsigned long iova, unsigned long length);
+ int iommufd_access_rw(struct iommufd_access *access, unsigned long iova,
+ 		      void *data, size_t len, unsigned int flags);
+-int iommufd_vfio_compat_ioas_id(struct iommufd_ctx *ictx, u32 *out_ioas_id);
++int iommufd_vfio_compat_ioas_get_id(struct iommufd_ctx *ictx, u32 *out_ioas_id);
++int iommufd_vfio_compat_ioas_create_id(struct iommufd_ctx *ictx);
+ #else /* !CONFIG_IOMMUFD */
+ static inline struct iommufd_ctx *iommufd_ctx_from_file(struct file *file)
+ {
+@@ -89,8 +90,7 @@ static inline int iommufd_access_rw(struct iommufd_access *access, unsigned long
+ 	return -EOPNOTSUPP;
+ }
+ 
+-static inline int iommufd_vfio_compat_ioas_id(struct iommufd_ctx *ictx,
+-					      u32 *out_ioas_id)
++static inline int iommufd_vfio_compat_ioas_create_id(struct iommufd_ctx *ictx)
+ {
+ 	return -EOPNOTSUPP;
+ }
 
-Jason
+base-commit: 88603b6dc419445847923fcb7fe5080067a30f98
+-- 
+2.39.0
+
