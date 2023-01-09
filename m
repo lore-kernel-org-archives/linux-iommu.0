@@ -1,45 +1,45 @@
-Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8BD26108
-	for <iommu@lists.linux.dev>; Mon,  9 Jan 2023 18:18:36 +0000 (UTC)
-Received: by mail-lf1-f43.google.com with SMTP id j17so14314022lfr.3
-        for <iommu@lists.linux.dev>; Mon, 09 Jan 2023 10:18:36 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3B176108
+	for <iommu@lists.linux.dev>; Mon,  9 Jan 2023 18:19:57 +0000 (UTC)
+Received: by mail-wr1-f53.google.com with SMTP id bn26so9133582wrb.0
+        for <iommu@lists.linux.dev>; Mon, 09 Jan 2023 10:19:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=5LmS5ZO2TtDQ6P61GlWGjss8FaAkcuFxtuwA1Gc1BKc=;
-        b=UQ5oyt2wJYJPvyhWkud0csDfT4+TRsuKrLRKk7KKa1oMDZW4QLxwSANhoO8h33NFWQ
-         TwhEa6L9sgnJuFkQFsEw5ML75KiOXSskXam//k1BJ4BI7vjDw+AjsComy+UjSZb7IO0X
-         FfikElm0UKN8L+NnGOe6XnIpw9tvOK8d4BOf8a7tBYsJADC2dmc0L7/9REDH6h95T/gh
-         VnrzXsBENgmzMN1untytGy5hdxcDWSB28wXjOKBZkHN1dBa4ab4X3xV7OhVdP0eHS5sI
-         OP35GZH9N8NjE4KZcXniYEfIj/TRbvCYZ/YJl4f2IG7CeHuL2HpTPGRAOzu4EK06yWgR
-         YH7g==
+        bh=oeo5OtVq8imDZHD82tnbeCo8M/ylS8y24Un+2HomtKs=;
+        b=Sl7Cj1xuTp7WQTESfCdvuPCm6DywpiiwjCQZJYA+LwFzIGbpb333b9Um+7zU1k9ecT
+         2dMrjoE1W70ruVRvUm2evh/DWnuNEhWjQtOLm0wGdm36umYS0BUprjkmc6i58Cm1Pn1N
+         bx2AGC6wH1vxYUu0yIHy1SMsDXAJz4wDO1YOqN29gCQC0pNGH/DPPCMDUW3do2AhBCE0
+         E7CiCp0Fb8sMmO8DjHaKDtxW7Y5XvBjt9fTMHVCCyeusiMLrl7/rvLR5tCh1Q357f0/2
+         gtnnNYQQOFqli8o9Y2iO4yPBnNuFFHW1AgNneNezr7xhQNoEbJOH/J+WiN1gg8HgOoRx
+         0oIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=5LmS5ZO2TtDQ6P61GlWGjss8FaAkcuFxtuwA1Gc1BKc=;
-        b=j8jite+NPictD6HFLMs0c2hu0gOaygnNsbpsdafz347pOYNnzjeJ2wOpLResscvicN
-         PBhzfnGjsOItVolMKpYc21m5cDg1cXPSxEYiADqN/O3l6K0zu17rTGpjKaakXTKfqs1S
-         OT3+U/1FDsxLRtnsoyFyxlGaKbjzwAVTK4fDSD2CLiVWUasEVAEbYZmIq83hsRn1WByX
-         nI4q96zfUDytcCc991DabC3QtT6l6knlgPUK7T9aKq7p72ANgJCyS2sU/Civ+du69CBU
-         9rmNEv7xcyUzDz2q2N9NPRJsKX9uOhx6Zo9w0t7kdvDUFTzxZuvVfc/eE8YtjEUvQBui
-         XDcg==
-X-Gm-Message-State: AFqh2koieuGbmHuG68DkdLEZB2VXqFZWlaOGTPC0Fx9TFEj3QQDLym/W
-	US001g86/0MXIIw/IQd3i1FMDw==
-X-Google-Smtp-Source: AMrXdXvvfOFbQwwZ3SbTKgeWOk2i/0UCppSMUdlr8v90NtZNo80+hz5+ach7NcITAU1Ni/Itfyh0Wg==
-X-Received: by 2002:a05:6512:c1b:b0:4cb:3e50:f5e3 with SMTP id z27-20020a0565120c1b00b004cb3e50f5e3mr8899209lfu.61.1673288315004;
-        Mon, 09 Jan 2023 10:18:35 -0800 (PST)
-Received: from [192.168.1.101] (abxi45.neoplus.adsl.tpnet.pl. [83.9.2.45])
-        by smtp.gmail.com with ESMTPSA id e15-20020a05651236cf00b00492e3c8a986sm1718439lfs.264.2023.01.09.10.18.30
+        bh=oeo5OtVq8imDZHD82tnbeCo8M/ylS8y24Un+2HomtKs=;
+        b=JYhJT0sBI1ULEkFRJa7a/Col5UfOVzVgLfxBgahZy4N+o3MEQaZAXe8Fs9T13tN6kv
+         rydMOD+5vSjsWeMjfjldBoG41hBxRJNU+Fu0gYS76YRMOZr9oKmC8s+QofeVTy5AdEd1
+         OsGub23RVQHBiSX0dJxxrqXgaeezXxpCkgmgA6f6v+Y+ztKRcX2xWXA0D9GK+il+4a8V
+         T7gghpKlfODLK6jM9DV4DQ5XL66/BWY2OAg67wRFqPMg3+sOSjZZVpbfaw77bXrGUDYk
+         JHT8sIJafkkc1WAuLZfD0jK4ZoSGZXBXmffy7/y+4OEvUaHIhgN4Dg588ZsdYNP27oSy
+         LAXA==
+X-Gm-Message-State: AFqh2kozmTtbNOaZCeE5fbpps3EaTM0okBVU5k8vwdwROZbc1IBqh3Zq
+	fYS4RoqZ+HCwcG3rX6DrSVxN/Q==
+X-Google-Smtp-Source: AMrXdXsHmRrRWiLJ0gOPMtFN8/kxB3iO5ZcLc0KpMt7uRGmwjxmNtC8/G2RPCwQiylGezoGMKXZXJQ==
+X-Received: by 2002:a05:6000:382:b0:2b0:eee2:a43e with SMTP id u2-20020a056000038200b002b0eee2a43emr12090389wrf.38.1673288396176;
+        Mon, 09 Jan 2023 10:19:56 -0800 (PST)
+Received: from [192.168.1.109] ([178.197.216.144])
+        by smtp.gmail.com with ESMTPSA id y15-20020adffa4f000000b002bbec19c8acsm3862109wrr.64.2023.01.09.10.19.53
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Jan 2023 10:18:33 -0800 (PST)
-Message-ID: <7b58565f-c512-57c4-c417-49dcff19fa2b@linaro.org>
-Date: Mon, 9 Jan 2023 19:18:29 +0100
+        Mon, 09 Jan 2023 10:19:55 -0800 (PST)
+Message-ID: <8b634315-ae4e-1710-bebd-17f30620e52b@linaro.org>
+Date: Mon, 9 Jan 2023 19:19:52 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,11 +48,12 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Subject: Re: [PATCH 02/18] clk: qcom: add the GCC driver for sa8775p
+Subject: Re: [PATCH 06/18] dt-bindings: interconnect: qcom: document the
+ interconnects for sa8775p
 Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
 To: Bartosz Golaszewski <brgl@bgdev.pl>, Andy Gross <agross@kernel.org>,
- Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+ Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konrad.dybcio@linaro.org>, Rob Herring <robh+dt@kernel.org>,
  Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
  Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
  <sboyd@kernel.org>, Georgi Djakov <djakov@kernel.org>,
@@ -68,133 +69,76 @@ Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
  linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux.dev, linux-gpio@vger.kernel.org, netdev@vger.kernel.org,
- Shazad Hussain <quic_shazhuss@quicinc.com>,
  Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 References: <20230109174511.1740856-1-brgl@bgdev.pl>
- <20230109174511.1740856-3-brgl@bgdev.pl>
- <bbd21894-234e-542e-80ec-8f2bb11e268e@linaro.org>
-In-Reply-To: <bbd21894-234e-542e-80ec-8f2bb11e268e@linaro.org>
+ <20230109174511.1740856-7-brgl@bgdev.pl>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230109174511.1740856-7-brgl@bgdev.pl>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
+On 09/01/2023 18:44, Bartosz Golaszewski wrote:
+> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+> 
+> Add a set of new compatibles and DT include defines for the sa8775p
+> platforms.
+> 
+> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+> ---
+>  .../bindings/interconnect/qcom,rpmh.yaml      |  14 ++
+>  .../dt-bindings/interconnect/qcom,sa8775p.h   | 231 ++++++++++++++++++
+>  2 files changed, 245 insertions(+)
+>  create mode 100644 include/dt-bindings/interconnect/qcom,sa8775p.h
+> 
+> diff --git a/Documentation/devicetree/bindings/interconnect/qcom,rpmh.yaml b/Documentation/devicetree/bindings/interconnect/qcom,rpmh.yaml
+> index a429a1ed1006..ad3e0c7e9430 100644
+> --- a/Documentation/devicetree/bindings/interconnect/qcom,rpmh.yaml
+> +++ b/Documentation/devicetree/bindings/interconnect/qcom,rpmh.yaml
+> @@ -27,6 +27,20 @@ properties:
+>  
+>    compatible:
+>      enum:
+> +      - qcom,sa8775p-aggre1-noc
+> +      - qcom,sa8775p-aggre2-noc
+> +      - qcom,sa8775p-clk-virt
+
+Are you sure they come with IO address space? IOW, was the binding and
+DTS tested against each other?
+
+All recent bindings are split into their own file:
+
+https://lore.kernel.org/all/20221223132040.80858-3-krzysztof.kozlowski@linaro.org/
+
+https://lore.kernel.org/all/20221202232054.2666830-2-abel.vesa@linaro.org/
 
 
-On 9.01.2023 18:58, Konrad Dybcio wrote:
-> 
-> 
-> On 9.01.2023 18:44, Bartosz Golaszewski wrote:
->> From: Shazad Hussain <quic_shazhuss@quicinc.com>
->>
->> Add support for the Global Clock Controller found in the QTI SA8775P
->> platforms.
->>
->> Signed-off-by: Shazad Hussain <quic_shazhuss@quicinc.com>
->> [Bartosz: made the driver ready for upstream]
->> Co-developed-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
->> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
->> ---
-> [...]
-> 
->> +
->> +static struct gdsc usb20_prim_gdsc = {
->> +	.gdscr = 0x1C004,
-> Please use lowercase hex literals outside #defines.
-> 
->> +	.pd = {
->> +		.name = "usb20_prim_gdsc",
->> +	},
->> +	.pwrsts = PWRSTS_OFF_ON,
->> +};
->> +
-> [...]
-> 
->> +
->> +static const struct regmap_config gcc_sa8775p_regmap_config = {
->> +	.reg_bits = 32,
->> +	.reg_stride = 4,
->> +	.val_bits = 32,
->> +	.max_register = 0x472cffc,
-> This is faaaaar more than what your DT node specifies.
-> 
-> With these two fixed, LGTM:
-> 
-> Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-> 
-> Konrad
->> +	.fast_io = true,
->> +};
->> +
->> +static const struct qcom_cc_desc gcc_sa8775p_desc = {
->> +	.config = &gcc_sa8775p_regmap_config,
->> +	.clks = gcc_sa8775p_clocks,
->> +	.num_clks = ARRAY_SIZE(gcc_sa8775p_clocks),
->> +	.resets = gcc_sa8775p_resets,
->> +	.num_resets = ARRAY_SIZE(gcc_sa8775p_resets),
->> +	.gdscs = gcc_sa8775p_gdscs,
->> +	.num_gdscs = ARRAY_SIZE(gcc_sa8775p_gdscs),
->> +};
->> +
->> +static const struct of_device_id gcc_sa8775p_match_table[] = {
->> +	{ .compatible = "qcom,gcc-sa8775p" },
-One more thing, this should be qcom,sa8775p-gcc.
+> +      - qcom,sa8775p-config-noc
+> +      - qcom,sa8775p-dc-noc
+> +      - qcom,sa8775p-gem-noc
+> +      - qcom,sa8775p-gpdsp-anoc
+> +      - qcom,sa8775p-lpass-ag-noc
+> +      - qcom,sa8775p-mc-virt
+> +      - qcom,sa8775p-mmss-noc
+> +      - qcom,sa8775p-nspa-noc
+> +      - qcom,sa8775p-nspb-noc
+> +      - qcom,sa8775p-pcie-anoc
+> +      - qcom,sa8775p-system-noc
+>        - qcom,sc7180-aggre1-noc
+>        - qcom,sc7180-aggre2-noc
+>        - qcom,sc7180-camnoc-virt
+> diff --git a/include/dt-bindings/interconnect/qcom,sa8775p.h b/include/dt-bindings/interconnect/qcom,sa8775p.h
+> new file mode 100644
+> index 000000000000..8d5968854187
+> --- /dev/null
+> +++ b/include/dt-bindings/interconnect/qcom,sa8775p.h
 
-Konrad
->> +	{ }
->> +};
->> +MODULE_DEVICE_TABLE(of, gcc_sa8775p_match_table);
->> +
->> +static int gcc_sa8775p_probe(struct platform_device *pdev)
->> +{
->> +	struct regmap *regmap;
->> +	int ret;
->> +
->> +	regmap = qcom_cc_map(pdev, &gcc_sa8775p_desc);
->> +	if (IS_ERR(regmap))
->> +		return PTR_ERR(regmap);
->> +
->> +	ret = qcom_cc_register_rcg_dfs(regmap, gcc_dfs_clocks,
->> +				       ARRAY_SIZE(gcc_dfs_clocks));
->> +	if (ret)
->> +		return ret;
->> +
->> +	/*
->> +	 * Keep the clocks always-ON
->> +	 * GCC_CAMERA_AHB_CLK, GCC_CAMERA_XO_CLK, GCC_DISP1_AHB_CLK,
->> +	 * GCC_DISP1_XO_CLK, GCC_DISP_AHB_CLK, GCC_DISP_XO_CLK,
->> +	 * GCC_GPU_CFG_AHB_CLK, GCC_VIDEO_AHB_CLK, GCC_VIDEO_XO_CLK.
->> +	 */
->> +	regmap_update_bits(regmap, 0x32004, BIT(0), BIT(0));
->> +	regmap_update_bits(regmap, 0x32020, BIT(0), BIT(0));
->> +	regmap_update_bits(regmap, 0xc7004, BIT(0), BIT(0));
->> +	regmap_update_bits(regmap, 0xc7018, BIT(0), BIT(0));
->> +	regmap_update_bits(regmap, 0x33004, BIT(0), BIT(0));
->> +	regmap_update_bits(regmap, 0x33018, BIT(0), BIT(0));
->> +	regmap_update_bits(regmap, 0x7d004, BIT(0), BIT(0));
->> +	regmap_update_bits(regmap, 0x34004, BIT(0), BIT(0));
->> +	regmap_update_bits(regmap, 0x34024, BIT(0), BIT(0));
->> +
->> +	return qcom_cc_really_probe(pdev, &gcc_sa8775p_desc, regmap);
->> +}
->> +
->> +static struct platform_driver gcc_sa8775p_driver = {
->> +	.probe = gcc_sa8775p_probe,
->> +	.driver = {
->> +		.name = "gcc-sa8775p",
->> +		.of_match_table = gcc_sa8775p_match_table,
->> +	},
->> +};
->> +
->> +static int __init gcc_sa8775p_init(void)
->> +{
->> +	return platform_driver_register(&gcc_sa8775p_driver);
->> +}
->> +subsys_initcall(gcc_sa8775p_init);
->> +
->> +static void __exit gcc_sa8775p_exit(void)
->> +{
->> +	platform_driver_unregister(&gcc_sa8775p_driver);
->> +}
->> +module_exit(gcc_sa8775p_exit);
->> +
->> +MODULE_DESCRIPTION("Qualcomm SA8775P GCC driver");
->> +MODULE_LICENSE("GPL");
+Filename matching family/compatible style, so just like sm8550.
+
+> @@ -0,0 +1,231 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+
+Dual license.
+
+Best regards,
+Krzysztof
+
