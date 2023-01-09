@@ -1,105 +1,115 @@
-Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36E245221
-	for <iommu@lists.linux.dev>; Mon,  9 Jan 2023 21:06:17 +0000 (UTC)
-Received: by mail-lf1-f52.google.com with SMTP id bp15so15002871lfb.13
-        for <iommu@lists.linux.dev>; Mon, 09 Jan 2023 13:06:17 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0B535233
+	for <iommu@lists.linux.dev>; Mon,  9 Jan 2023 22:03:01 +0000 (UTC)
+Received: by mail-pj1-f54.google.com with SMTP id z4-20020a17090a170400b00226d331390cso11268440pjd.5
+        for <iommu@lists.linux.dev>; Mon, 09 Jan 2023 14:03:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ATq9lfwFr3RZyhEmOv68Lea4iswGw4nEYd9xucpaSYI=;
-        b=ZnHdLMPbbgf9UrAg9c/LZOWyW3VZt31oKL8x4C6RX9hvUmc4knhTljAbwJiRv/46jh
-         udIB4KWy1VZo7xUMsjusVkPPts5uuRggRun1Qp7LPTkaJ9JXUr/Pimi7Hqp97vBJgTOA
-         yH+HCn9sSJ3IZwpUjLOlXdm/zkU4vG6Y7+WpaMcSVHu4v6HMlkbxX8Jl8mb+oCWUa1WI
-         VPP8CPXaOUWe9zU7vZ5abd1NYUIzuw+Q67fJbLk4UbBkqgq4K6QdIASOk9RXxRjbJKh4
-         cZvcm26xYwAhfEczyf84Muh2jfibMQgKFN40g4Jrm+2Lg73Hg3a1YFbP5kaEZlu2E7Dg
-         LYiw==
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=k0nIhdmoq2YN+8CYmcGGz5g09uBL17k5HRqIgJjfUJU=;
+        b=F4QSW1fmPta1SdZoMgqppkBUl/S595vxphelnA2n0Z8L7+V9JICv9+FhFq2SezihUL
+         AZzzhDrgCA39Hc/bNA+TttzJcb5t9eNeDk24AJ2XPx+BNVsLNoozshq0sopE0CVIK+mb
+         mldZC1Aw99FFSuOlyX98h9PUcGiDBvSvEDfSQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ATq9lfwFr3RZyhEmOv68Lea4iswGw4nEYd9xucpaSYI=;
-        b=2aVjmiqGIlwzqz41Bhl9/PzWYuNkh4Z/osXAJiy06Sa9+LEENnY7QTCI8BOrgQJZ3C
-         w/L0bnfZxyVUrKCzk+CV232TQLdLVUBG9+mwEZuiLJiE9fbVELqj9fz7e4pFFzsEiZCH
-         BSdQuW3K3iaVQ1wkiEE7iGOpFEt/59LG9w7wdkK1wDLuRX6XMIfHVKNvAf/7InhPEMrC
-         N6P6saRgdCoi0Ok5SAGEDGsh9ncCnnF+VKaSzJqfyvVsjeUoYpuMI7uHga6l9r1iTW8B
-         tFtW6vCPXwbYLohu0aHnNo9QXH7Lnyw9i04F45HRGnE09zAFR4IicAoOu4hpEHbIKwO7
-         zcBQ==
-X-Gm-Message-State: AFqh2kqVwwfHNK2yCQNKUULOnr4H2IK8oeCNVOfl2yEGM2MjYRtLVbQ5
-	blV4/0GVhTZw0V/K9y6TVj6NJA==
-X-Google-Smtp-Source: AMrXdXtMlPauAhWufnKfAA9Z0/kuM8Pxw6F0q+IwmA1VbDLnvpRiG1kH2m6PlPKVn/aIBM8cKwFg9Q==
-X-Received: by 2002:ac2:5191:0:b0:4cb:20b3:e7f6 with SMTP id u17-20020ac25191000000b004cb20b3e7f6mr10698809lfi.19.1673298375321;
-        Mon, 09 Jan 2023 13:06:15 -0800 (PST)
-Received: from ?IPV6:2001:14ba:a085:4d00::8a5? (dzccz6yyyyyyyyyyybcwt-3.rev.dnainternet.fi. [2001:14ba:a085:4d00::8a5])
-        by smtp.gmail.com with ESMTPSA id c19-20020a056512325300b004cb3d77a936sm1780286lfr.46.2023.01.09.13.06.14
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=k0nIhdmoq2YN+8CYmcGGz5g09uBL17k5HRqIgJjfUJU=;
+        b=wqxX31ONJIq8uncyI7FEe/xfb/lirxx56ggzeFQZqBC7YWxLCUSYTWymm2a0gSQoW9
+         FHddqRAyYLbNECZM/1Psg9QUbad6sxanzH46alfgqEnu6FY2PqskoeADHhgkApeSZCed
+         kzEJ5kWrFOeuVaE98ubHRJ4aN/DkxMAzKklRtofd3ERIA+qK0w8XFH5SyP/zLFIDBMDe
+         f/hSbhmUH25lfcigCgYiGc8fzZtK5m8bqBn21FeQF8K3cldVLFYWrQ7nHPAWHuddG+KR
+         PGuz6zZVLtDCgD4ZrYjgMfpdjIvzTDd/01zksorja3ManfMcW4Y+/GjrALbofmQRGIFY
+         lLBQ==
+X-Gm-Message-State: AFqh2kpKFKFRqvd+Q4HThV1Iz+jDDfrx3YLNwKwg1rbQ13EficGmh1dd
+	FsK9hoKM0KtACPU/tKXvP89wWYb5O9H8kEwEfuY=
+X-Google-Smtp-Source: AMrXdXsuR53tJt59kc5g8ENK97Qs9rog+6GQ8DtTNcWkyNgB8SohmXbpat+733w8P/Vtd1d5L30X3g==
+X-Received: by 2002:a17:903:1c3:b0:192:903f:7ac9 with SMTP id e3-20020a17090301c300b00192903f7ac9mr72490590plh.42.1673301781145;
+        Mon, 09 Jan 2023 14:03:01 -0800 (PST)
+Received: from mail-pj1-f44.google.com (mail-pj1-f44.google.com. [209.85.216.44])
+        by smtp.gmail.com with ESMTPSA id jg7-20020a17090326c700b0019324fbec59sm4292589plb.41.2023.01.09.14.03.00
+        for <iommu@lists.linux.dev>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Jan 2023 13:06:14 -0800 (PST)
-Message-ID: <843eed4b-552a-a529-83ed-b813c1346c5f@linaro.org>
-Date: Mon, 9 Jan 2023 23:06:13 +0200
+        Mon, 09 Jan 2023 14:03:00 -0800 (PST)
+Received: by mail-pj1-f44.google.com with SMTP id b9-20020a17090a7ac900b00226ef160dcaso9529274pjl.2
+        for <iommu@lists.linux.dev>; Mon, 09 Jan 2023 14:03:00 -0800 (PST)
+X-Received: by 2002:ad4:4150:0:b0:531:7593:f551 with SMTP id
+ z16-20020ad44150000000b005317593f551mr1338900qvp.89.1673301769392; Mon, 09
+ Jan 2023 14:02:49 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH 02/18] clk: qcom: add the GCC driver for sa8775p
-Content-Language: en-GB
-To: Konrad Dybcio <konrad.dybcio@linaro.org>,
- Bartosz Golaszewski <brgl@bgdev.pl>, Andy Gross <agross@kernel.org>,
- Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
- <sboyd@kernel.org>, Georgi Djakov <djakov@kernel.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, Manivannan Sadhasivam <mani@kernel.org>,
- Jassi Brar <jassisinghbrar@gmail.com>,
- Linus Walleij <linus.walleij@linaro.org>,
- Catalin Marinas <catalin.marinas@arm.com>,
- Richard Cochran <richardcochran@gmail.com>,
- Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
- Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
- linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-gpio@vger.kernel.org, netdev@vger.kernel.org,
- Shazad Hussain <quic_shazhuss@quicinc.com>,
- Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-References: <20230109174511.1740856-1-brgl@bgdev.pl>
- <20230109174511.1740856-3-brgl@bgdev.pl>
- <bbd21894-234e-542e-80ec-8f2bb11e268e@linaro.org>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <bbd21894-234e-542e-80ec-8f2bb11e268e@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20221219153525.632521981@infradead.org> <20221219154119.550996611@infradead.org>
+ <Y7Ri+Uij1GFkI/LB@osiris> <CAHk-=wj9nK825MyHXu7zkegc7Va+ZxcperdOtRMZBCLHqGrr=g@mail.gmail.com>
+ <Y7xAsELYo4srs/z/@hirez.programming.kicks-ass.net>
+In-Reply-To: <Y7xAsELYo4srs/z/@hirez.programming.kicks-ass.net>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Mon, 9 Jan 2023 16:02:33 -0600
+X-Gmail-Original-Message-ID: <CAHk-=whm+u8YoUaE9PKugYBxujhDL5twz6HqzqLP8OTXjKuT4g@mail.gmail.com>
+Message-ID: <CAHk-=whm+u8YoUaE9PKugYBxujhDL5twz6HqzqLP8OTXjKuT4g@mail.gmail.com>
+Subject: Re: [RFC][PATCH 11/12] slub: Replace cmpxchg_double()
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: Heiko Carstens <hca@linux.ibm.com>, corbet@lwn.net, will@kernel.org, 
+	boqun.feng@gmail.com, mark.rutland@arm.com, catalin.marinas@arm.com, 
+	dennis@kernel.org, tj@kernel.org, cl@linux.com, gor@linux.ibm.com, 
+	agordeev@linux.ibm.com, borntraeger@linux.ibm.com, svens@linux.ibm.com, 
+	Herbert Xu <herbert@gondor.apana.org.au>, davem@davemloft.net, tglx@linutronix.de, 
+	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org, 
+	hpa@zytor.com, joro@8bytes.org, suravee.suthikulpanit@amd.com, 
+	robin.murphy@arm.com, dwmw2@infradead.org, baolu.lu@linux.intel.com, 
+	Arnd Bergmann <arnd@arndb.de>, penberg@kernel.org, rientjes@google.com, 
+	iamjoonsoo.kim@lge.com, Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz, 
+	roman.gushchin@linux.dev, 42.hyeyoo@gmail.com, linux-doc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org, linux-s390@vger.kernel.org, 
+	linux-crypto@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-arch@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On 09/01/2023 19:58, Konrad Dybcio wrote:
-> 
-> 
-> On 9.01.2023 18:44, Bartosz Golaszewski wrote:
->> From: Shazad Hussain <quic_shazhuss@quicinc.com>
->>
->> Add support for the Global Clock Controller found in the QTI SA8775P
->> platforms.
->>
->> Signed-off-by: Shazad Hussain <quic_shazhuss@quicinc.com>
->> [Bartosz: made the driver ready for upstream]
->> Co-developed-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
->> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
->> ---
-> [...]
+On Mon, Jan 9, 2023 at 10:29 AM Peter Zijlstra <peterz@infradead.org> wrote:
 >
+> I ran into a ton of casting trouble when compiling kernel/fork.c which
+> uses this_cpu_cmpxchg() on a pointer type and the compiler hates casting
+> pointers to an integer that is not the exact same size.
 
-As the driver didn't get to the list, I'll comment OOB.
+Ahh. Yeah - not because that code needs or wants the 128-bit case, but
+because the macro expands to all sizes in a switch statement, so the
+compiler sees all the cases even if only one is then statically
+picked.
 
-Please use clk_regmap_phy_mux_ops where applicable (PCIe PIPE clocks).
+So the silly casts are for all the cases that never matter.
 
--- 
-With best wishes
-Dmitry
+Annoying.
 
+I wonder if the "this_cpu_cmpxchg()" macro could be made to use
+_Generic() to pick out the pointer case first, and then only use
+'sizeof()' for the integer types, so that we don't have this kind of
+"every architecture needs to deal with the nasty situation" code.
+
+Ok, it's not actually the this_cpu_cmpxchg() macro, it's
+__pcpu_size_call_return() and friends, but whatever.
+
+Another alternative is to try to avoid casting to "u64" as long as
+humanly possible, and use only "typeof((*ptr))" everywhere. Then when
+the type actually *is* 128-bit, it all works out fine, because it
+won't be a pointer. That's the approach the uaccess macros tend to
+take, and then they hit the reverse issue on clang, where using the
+"byte register" constraints would cause warnings for non-byte
+accesses, and we had to do
+
+                unsigned char x_u8__;
+                __get_user_asm(x_u8__, ptr, "b", "=q", label);
+                (x) = x_u8__;
+
+because using '(x)' directly would then warn when 'x' wasn't a
+char-sized thing - even if that asm case never actually was _used_ for
+that case, since it was all inside a "switch (sizeof) case 1:"
+statement.
+
+            Linus
