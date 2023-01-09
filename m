@@ -1,65 +1,70 @@
-Received: from mail-il1-f175.google.com (mail-il1-f175.google.com [209.85.166.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA9F81859;
-	Sun,  8 Jan 2023 20:54:05 +0000 (UTC)
-Received: by mail-il1-f175.google.com with SMTP id o13so3982882ilc.7;
-        Sun, 08 Jan 2023 12:54:05 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=PKnNpQNdzdLgMMqd20StxieGNrz33GPSfX+GftpfArA=;
-        b=Oq7cxz7adr+itqKzQt6xpAb9Cv6UQwGHww9aGksKmyZxx+TPnhd+N3X19Vf14r1C3D
-         mjLLjjIuAD5gqsFOR3nNApGnq6EN/BR5Z2f6EEG4gpm4q4xqppKRZUW9m1lWumv5mpIZ
-         IT/R27v+6nyudRLGmgjiq3vXWlgSgm2Me1YjQfK0EAmTSP5rqudg7Pzh9UOdnrxB7Daf
-         V4UlaDzdITLd3xZz+fprLXmKab9JNUTnpIG9+qxx//9ciWTOzXPHCzYDgiPZ98KA9RBm
-         rRj2KeYhlIDnnpsb0kkipDgV6LPm2A9e6em8S/r6WYDF7L8GuwM8oAf3G92t+EvReWmF
-         Sb2A==
-X-Gm-Message-State: AFqh2kpMBv+UBF+wkUIx0lP4ZsKAvZazFtsrIXOzz30ioyrqtkHekboU
-	qyIg96m7muicyVkyvaJ6OA==
-X-Google-Smtp-Source: AMrXdXuD97K0zSgLYBr6hvBS4jKAj99eoH7O0k7hsPy3oE3DQWUsf0GqPtn1v6cmHrUEnMgWWMuQTQ==
-X-Received: by 2002:a92:dd83:0:b0:300:a953:a263 with SMTP id g3-20020a92dd83000000b00300a953a263mr49546522iln.21.1673211244943;
-        Sun, 08 Jan 2023 12:54:04 -0800 (PST)
-Received: from robh_at_kernel.org ([2605:ef80:8069:516a:f2b0:691e:4315:7c0f])
-        by smtp.gmail.com with ESMTPSA id z18-20020a92d6d2000000b003039e7d680fsm2257683ilp.11.2023.01.08.12.53.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 Jan 2023 12:54:04 -0800 (PST)
-Received: (nullmailer pid 260770 invoked by uid 1000);
-	Sun, 08 Jan 2023 20:53:43 -0000
-Date: Sun, 8 Jan 2023 14:53:43 -0600
-From: Rob Herring <robh@kernel.org>
-To: Samuel Holland <samuel@sholland.org>
-Cc: Chen-Yu Tsai <wens@csie.org>, linux-sunxi@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev, Jernej Skrabec <jernej.skrabec@gmail.com>, Maxime Ripard <mripard@kernel.org>, Joerg Roedel <joro@8bytes.org>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Rob Herring <robh+dt@kernel.org>, Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v2 1/6] dt-bindings: iommu: sun50i: Add compatible for
- Allwinner D1
-Message-ID: <167321122261.260695.4785173456346736432.robh@kernel.org>
-References: <20230103010903.11181-1-samuel@sholland.org>
- <20230103010903.11181-2-samuel@sholland.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12C5C15A4
+	for <iommu@lists.linux.dev>; Mon,  9 Jan 2023 01:58:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1673229482; x=1704765482;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=WXohAuzKXOCDLN4oeNIAHB/IpmqKb5YdiBxzFVDKz8k=;
+  b=JC574yWbZbSC1W5kEkMH3juMWooqaGXsFfc+Gb8LAvt120pQ7dZ2DlWl
+   cpmT/h6k9KsSlCXvj1ZrVTEnBfBxda8qVDJiEmKdKvAag2jyBGdINVY4Q
+   458vdWc08qcgNj1AB7C02OH8Ed6ySZAjFxsFONlD0uDxWMezan+mSWZuA
+   TRl4b63lrztmXNoh7+spOTglrzTjMX6ypdrdm2C4YayDHucrRtgmq33ZL
+   UJrivCYCjSAP1G0J0hMmDrRtWSTqa+xFgGU6J0rjtIiaUSUvCDn536Fzw
+   6w71splNOCBXfbJa6f6ipRRXQwOPhQbocXTAR/R1IauGbVLpPs12qIqij
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10584"; a="322848716"
+X-IronPort-AV: E=Sophos;i="5.96,311,1665471600"; 
+   d="scan'208";a="322848716"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2023 17:57:47 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10584"; a="649867403"
+X-IronPort-AV: E=Sophos;i="5.96,311,1665471600"; 
+   d="scan'208";a="649867403"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by orsmga007.jf.intel.com with ESMTP; 08 Jan 2023 17:57:45 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: iommu@lists.linux.dev
+Cc: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 0/4] iommu/vt-d: SVM implementation cleanup
+Date: Mon,  9 Jan 2023 09:49:51 +0800
+Message-Id: <20230109014955.147068-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230103010903.11181-2-samuel@sholland.org>
+Content-Transfer-Encoding: 8bit
 
+This is a cleanup series after the merge of commit be51b1d6bbff
+("iommu/sva: Refactoring iommu_sva_bind/unbind_device()"). It removes
+the unused/duplicate data and code.
 
-On Mon, 02 Jan 2023 19:08:58 -0600, Samuel Holland wrote:
-> D1 contains an IOMMU similar to the one in the H6 SoC, but the D1
-> variant has no external reset signal.
-> 
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
-> ---
-> 
-> Changes in v2:
->  - Disallow the 'resets' property for the D1 variant
-> 
->  .../iommu/allwinner,sun50i-h6-iommu.yaml      | 20 +++++++++++++++++--
->  1 file changed, 18 insertions(+), 2 deletions(-)
-> 
+Lu Baolu (4):
+  iommu/vt-d: Remove include/linux/intel-svm.h
+  iommu/vt-d: Remove unused fields in svm structures
+  iommu/vt-d: Remove users from intel_svm_dev
+  iommu/vt-d: Remove sva from intel_svm_dev
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+ include/linux/intel-svm.h   | 16 -------
+ drivers/iommu/intel/iommu.h | 11 +++--
+ drivers/iommu/intel/iommu.c |  1 -
+ drivers/iommu/intel/svm.c   | 88 +++++++++++++++----------------------
+ MAINTAINERS                 |  1 -
+ 5 files changed, 41 insertions(+), 76 deletions(-)
+ delete mode 100644 include/linux/intel-svm.h
+
+-- 
+2.34.1
+
