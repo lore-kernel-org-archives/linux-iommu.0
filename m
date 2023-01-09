@@ -1,90 +1,108 @@
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E12413D64
-	for <iommu@lists.linux.dev>; Mon,  9 Jan 2023 18:07:35 +0000 (UTC)
-Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 163191EC0104;
-	Mon,  9 Jan 2023 19:07:34 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-	t=1673287654;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-	bh=DVqtyBgR9RFo+4MqU266YSmw7nsc/65OUVDIpRwU9Dg=;
-	b=IwYGbeiG0aCrE+oxXKqlH/ao29gV72tCEMgCId+NDTNvljeLDPCoPtM46/HFmskCJXBat1
-	jQACmnKk4lJ9UXUthjKUzm0jtsMBjpiRX+3STVWMpad1tLFjyGW/F/1Zp/5cfUonD2VyOz
-	f6GUwmjNgJ6YX1XJTFBLrij/lqoTxps=
-Date: Mon, 9 Jan 2023 19:07:33 +0100
-From: Borislav Petkov <bp@alien8.de>
-To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc: "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	"wei.liu@kernel.org" <wei.liu@kernel.org>,
-	Dexuan Cui <decui@microsoft.com>,
-	"luto@kernel.org" <luto@kernel.org>,
-	"peterz@infradead.org" <peterz@infradead.org>,
-	"davem@davemloft.net" <davem@davemloft.net>,
-	"edumazet@google.com" <edumazet@google.com>,
-	"kuba@kernel.org" <kuba@kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>,
-	"lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-	"robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-	"bhelgaas@google.com" <bhelgaas@google.com>,
-	"arnd@arndb.de" <arnd@arndb.de>,
-	"hch@infradead.org" <hch@infradead.org>,
-	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-	"brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-	"tglx@linutronix.de" <tglx@linutronix.de>,
-	"mingo@redhat.com" <mingo@redhat.com>,
-	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-	Tianyu Lan <Tianyu.Lan@microsoft.com>,
-	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-	"sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>,
-	"ak@linux.intel.com" <ak@linux.intel.com>,
-	"isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-	"dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-	"jane.chu@oracle.com" <jane.chu@oracle.com>,
-	"seanjc@google.com" <seanjc@google.com>,
-	"tony.luck@intel.com" <tony.luck@intel.com>,
-	"x86@kernel.org" <x86@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [Patch v4 06/13] x86/hyperv: Change vTOM handling to use
- standard coco mechanisms
-Message-ID: <Y7xX5RzztxBOBiho@zn.tnic>
-References: <1669951831-4180-1-git-send-email-mikelley@microsoft.com>
- <1669951831-4180-7-git-send-email-mikelley@microsoft.com>
- <Y7xDDNMIDyHKLicG@zn.tnic>
- <BYAPR21MB16889518EB304B1A95FE7D22D7FE9@BYAPR21MB1688.namprd21.prod.outlook.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7178D3D64
+	for <iommu@lists.linux.dev>; Mon,  9 Jan 2023 18:07:44 +0000 (UTC)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 309HJXMg029484;
+	Mon, 9 Jan 2023 18:07:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=b0omC51hQ9dIzKK7x5A+V5ONEtf1YUmVCXFhs5tfw2Q=;
+ b=dZrh9QNB+KBEdlutI+rvAAWK4AOJAUzgjXaR5PHtSKfR0FvPzVm1rp1GUk7+w36B2xrI
+ 4pHVqixvmpDxpw2NofEdsO1sTexI6+OmEG0sgs58WBkGkchGGxkJXmWzgPJshR/fq6mn
+ t1xd/UnsJRZFLdO0HW/sBkuo33kjKyDwX/kW2ZKsTzTuXwrwGN/yzGfNop2SoWDahTb0
+ F6987njhRIZULT5D+J6xXL4BplG4ssCPGTo5Xz4KvcCJDOvutYTCzl6s3meay++sLAQa
+ h6NbSfb6ug01lqM/e6BKlgwaNu5M/ZJRI8IzgtfzMeeCxDSPiyAQkg7V39jA5/9W+KZW Qw== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3myjk7meua-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 09 Jan 2023 18:07:26 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+	by ppma04ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 3098vsjJ000654;
+	Mon, 9 Jan 2023 18:07:24 GMT
+Received: from smtprelay07.fra02v.mail.ibm.com ([9.218.2.229])
+	by ppma04ams.nl.ibm.com (PPS) with ESMTPS id 3my0c6kahm-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 09 Jan 2023 18:07:24 +0000
+Received: from smtpav01.fra02v.mail.ibm.com (smtpav01.fra02v.mail.ibm.com [10.20.54.100])
+	by smtprelay07.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 309I7MZv52560326
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 9 Jan 2023 18:07:22 GMT
+Received: from smtpav01.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 4A66720043;
+	Mon,  9 Jan 2023 18:07:22 +0000 (GMT)
+Received: from smtpav01.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id B9B8320049;
+	Mon,  9 Jan 2023 18:07:21 +0000 (GMT)
+Received: from dilbert5.fritz.box (unknown [9.171.48.140])
+	by smtpav01.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Mon,  9 Jan 2023 18:07:21 +0000 (GMT)
+From: Gerd Bayer <gbayer@linux.ibm.com>
+To: Xiang Chen <chenxiang66@hisilicon.com>, Shuah Khan <shuah@kernel.org>
+Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev,
+        linux-kselftest@vger.kernel.org,
+        Niklas Schnelle <schnelle@linux.ibm.com>
+Subject: [PATCH] selftests:dma: Fix compile error in user-space tool
+Date: Mon,  9 Jan 2023 19:07:21 +0100
+Message-Id: <20230109180721.187324-1-gbayer@linux.ibm.com>
+X-Mailer: git-send-email 2.39.0
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 42Jb_o16O5jOZ8ExxC93aJlM8fsnyZpv
+X-Proofpoint-GUID: 42Jb_o16O5jOZ8ExxC93aJlM8fsnyZpv
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <BYAPR21MB16889518EB304B1A95FE7D22D7FE9@BYAPR21MB1688.namprd21.prod.outlook.com>
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
+ definitions=2023-01-09_11,2023-01-09_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ mlxlogscore=999 impostorscore=0 suspectscore=0 spamscore=0 phishscore=0
+ clxscore=1015 priorityscore=1501 mlxscore=0 bulkscore=0 malwarescore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2301090125
 
-On Mon, Jan 09, 2023 at 05:37:00PM +0000, Michael Kelley (LINUX) wrote:
-> OK.  I have no objection to putting that code in a separate "helper"
-> function.  The only slight messiness is that the helper function must
-> be separately wrapped in #ifdef CONFIG_AMD_MEM_ENCRYPT, or
-> marked __maybe_unused.
+Since [1] the user-space program dma_map_benchmark shares the header file
+linux/map_benchmark.h with the kernel driver in kernel/dma/map_benchmark.c.
+With latest kernel version this does not compile anymore.
 
-I'd vote for __maybe_unused as that doesn't mean more ifdeffery.
+While https://kernelnewbies.org/KernelHeaders suggests otherwise, allow it
+to use kernel headers through the uapi/ include directory. I assume we can
+do so safely, since the controlling user-space program is distributed with
+the kernel.
 
+With this change dma_map_benchmark compiles with just the obvious warning
+about uapi usage on ARCH=x86, arm64, and s390 and runs on ARCH=s390.
+
+[1] commit 8ddde07a3d28 ("dma-mapping: benchmark: extract a common header
+file for map_benchmark definition")
+
+Signed-off-by: Gerd Bayer <gbayer@linux.ibm.com>
+Acked-by: Xiang Chen <chenxiang66@hisilicon.com>
+---
+ tools/testing/selftests/dma/dma_map_benchmark.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/testing/selftests/dma/dma_map_benchmark.c b/tools/testing/selftests/dma/dma_map_benchmark.c
+index 5c997f17fcbd..d49d7ea6a63e 100644
+--- a/tools/testing/selftests/dma/dma_map_benchmark.c
++++ b/tools/testing/selftests/dma/dma_map_benchmark.c
+@@ -10,7 +10,7 @@
+ #include <unistd.h>
+ #include <sys/ioctl.h>
+ #include <sys/mman.h>
+-#include <linux/types.h>
++#include <uapi/linux/types.h>
+ #include <linux/map_benchmark.h>
+ 
+ #define NSEC_PER_MSEC	1000000L
+
+base-commit: 1fe4fd6f5cad346e598593af36caeadc4f5d4fa9
 -- 
-Regards/Gruss,
-    Boris.
+2.39.0
 
-https://people.kernel.org/tglx/notes-about-netiquette
