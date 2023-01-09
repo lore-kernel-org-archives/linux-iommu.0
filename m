@@ -1,32 +1,32 @@
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C736515A4
-	for <iommu@lists.linux.dev>; Mon,  9 Jan 2023 01:58:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7A3015C7
+	for <iommu@lists.linux.dev>; Mon,  9 Jan 2023 01:58:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673229483; x=1704765483;
+  t=1673229484; x=1704765484;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=puzEiCLaFj6PIN4/Wwibk3XN7n6katY+/NOVoiu348c=;
-  b=O5/2AH7MA8Pmw7Pd1baxmnHsxh2LaaI6t+YKUdUz84r8PccgLeP7TtMF
-   /CRrYlH+B3OdiWLLmfLLD6Tp5RLBIAFgTYhxiFnbCoAQmtvBljVpaxoOo
-   EQhbD8uyKXYiHW23DZZnxQ0n/x5+F1Glyy9HNJTc0Tz7MtL9wTxSXvf4I
-   ru8jhm9sfsypco1Oh8Y+5hc00cpb+F4h8DCfk2mzADUR2hq/7OM72PUxA
-   EXktvJw/BFTlblbEYP62xW7oru3EmGsNEUtUeUc7xXS9jBdzCC3+xsjVl
-   pndaqlUcjkp77bbAAqBuXOcDSifUag6Jbm1NPdg1gd6KWijbFSxlPhd6i
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10584"; a="322848731"
+  bh=nBq2eOVotOHuuNbaX+AJBZNl0TFASfXTuzkriWWUcT4=;
+  b=OZAxV0RgsEE3PyfJOVwOolCjD8lee4F9jRvEJ4E/VcHJly74mZhbr8vi
+   WUh20d8415JsoO+3wwPYWCOkbqqubJ4VphYL+BDelKcSpiVra08DDWQfY
+   /h6+tTwrGk3Ousw5iumSwlHF+yH4OgRY7j77AgLPP/rIwtMUlUmOukSwG
+   GYOayvaH8Pw/ub1nWpsMTzErqJxWCSf636e7KkHe8B6JorfpHLeyrqDeX
+   2ZZQ71YFeqHVDH3lcuaM2oJ/5128OJc7q718PUnVYN8KHPnhKM4yhfayM
+   Y3z2kYyTCVuJ92l6jVZNPQNSFk6pXgkPylmaYSvL9x6w3GJMv7+pdfYNJ
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10584"; a="322848747"
 X-IronPort-AV: E=Sophos;i="5.96,311,1665471600"; 
-   d="scan'208";a="322848731"
+   d="scan'208";a="322848747"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2023 17:57:52 -0800
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2023 17:57:58 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10584"; a="649867421"
+X-IronPort-AV: E=McAfee;i="6500,9779,10584"; a="649867438"
 X-IronPort-AV: E=Sophos;i="5.96,311,1665471600"; 
-   d="scan'208";a="649867421"
+   d="scan'208";a="649867438"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga007.jf.intel.com with ESMTP; 08 Jan 2023 17:57:50 -0800
+  by orsmga007.jf.intel.com with ESMTP; 08 Jan 2023 17:57:55 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: iommu@lists.linux.dev
 Cc: Joerg Roedel <joro@8bytes.org>,
@@ -35,9 +35,9 @@ Cc: Joerg Roedel <joro@8bytes.org>,
 	Kevin Tian <kevin.tian@intel.com>,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 2/4] iommu/vt-d: Remove unused fields in svm structures
-Date: Mon,  9 Jan 2023 09:49:53 +0800
-Message-Id: <20230109014955.147068-3-baolu.lu@linux.intel.com>
+Subject: [PATCH 4/4] iommu/vt-d: Remove sva from intel_svm_dev
+Date: Mon,  9 Jan 2023 09:49:55 +0800
+Message-Id: <20230109014955.147068-5-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230109014955.147068-1-baolu.lu@linux.intel.com>
 References: <20230109014955.147068-1-baolu.lu@linux.intel.com>
@@ -49,53 +49,113 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-They aren't used anywhere. Remove them to avoid dead code.
+After commit be51b1d6bbff ("iommu/sva: Refactoring
+iommu_sva_bind/unbind_device()"), the iommu driver doesn't need to
+return an iommu_sva pointer anymore. This removes the sva field
+from intel_svm_dev and cleanups the code accordingly.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel/iommu.h | 4 ----
- drivers/iommu/intel/svm.c   | 2 --
- 2 files changed, 6 deletions(-)
+ drivers/iommu/intel/iommu.h |  1 -
+ drivers/iommu/intel/svm.c   | 23 +++++++++--------------
+ 2 files changed, 9 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index f89f63d7a72a..e7c732979364 100644
+index 2a1619ff0d79..f0222ad38757 100644
 --- a/drivers/iommu/intel/iommu.h
 +++ b/drivers/iommu/intel/iommu.h
-@@ -762,18 +762,14 @@ struct intel_svm_dev {
+@@ -761,7 +761,6 @@ struct intel_svm_dev {
+ 	struct rcu_head rcu;
  	struct device *dev;
  	struct intel_iommu *iommu;
- 	struct iommu_sva sva;
--	u32 pasid;
- 	int users;
+-	struct iommu_sva sva;
  	u16 did;
--	u16 dev_iotlb:1;
  	u16 sid, qdep;
  };
- 
- struct intel_svm {
- 	struct mmu_notifier notifier;
- 	struct mm_struct *mm;
--
--	unsigned int flags;
- 	u32 pasid;
- 	struct list_head devs;
- };
 diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index d38a54396c23..d1e445f03aa6 100644
+index c7dc53e40c26..e7b9bedebcc0 100644
 --- a/drivers/iommu/intel/svm.c
 +++ b/drivers/iommu/intel/svm.c
-@@ -351,11 +351,9 @@ static struct iommu_sva *intel_svm_bind_mm(struct intel_iommu *iommu,
+@@ -298,9 +298,8 @@ static int pasid_to_svm_sdev(struct device *dev, unsigned int pasid,
+ 	return 0;
+ }
+ 
+-static struct iommu_sva *intel_svm_bind_mm(struct intel_iommu *iommu,
+-					   struct device *dev,
+-					   struct mm_struct *mm)
++static int intel_svm_bind_mm(struct intel_iommu *iommu, struct device *dev,
++			     struct mm_struct *mm)
+ {
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 	struct intel_svm_dev *sdev;
+@@ -312,7 +311,7 @@ static struct iommu_sva *intel_svm_bind_mm(struct intel_iommu *iommu,
+ 	if (!svm) {
+ 		svm = kzalloc(sizeof(*svm), GFP_KERNEL);
+ 		if (!svm)
+-			return ERR_PTR(-ENOMEM);
++			return -ENOMEM;
+ 
+ 		svm->pasid = mm->pasid;
+ 		svm->mm = mm;
+@@ -322,14 +321,14 @@ static struct iommu_sva *intel_svm_bind_mm(struct intel_iommu *iommu,
+ 		ret = mmu_notifier_register(&svm->notifier, mm);
+ 		if (ret) {
+ 			kfree(svm);
+-			return ERR_PTR(ret);
++			return ret;
+ 		}
+ 
+ 		ret = pasid_private_add(svm->pasid, svm);
+ 		if (ret) {
+ 			mmu_notifier_unregister(&svm->notifier, mm);
+ 			kfree(svm);
+-			return ERR_PTR(ret);
++			return ret;
+ 		}
+ 	}
+ 
+@@ -343,7 +342,6 @@ static struct iommu_sva *intel_svm_bind_mm(struct intel_iommu *iommu,
+ 	sdev->iommu = iommu;
  	sdev->did = FLPT_DEFAULT_DID;
  	sdev->sid = PCI_DEVID(info->bus, info->devfn);
- 	sdev->users = 1;
--	sdev->pasid = svm->pasid;
- 	sdev->sva.dev = dev;
+-	sdev->sva.dev = dev;
  	init_rcu_head(&sdev->rcu);
  	if (info->ats_enabled) {
--		sdev->dev_iotlb = 1;
  		sdev->qdep = info->ats_qdep;
- 		if (sdev->qdep >= QI_DEV_EIOTLB_MAX_INVS)
- 			sdev->qdep = 0;
+@@ -360,7 +358,7 @@ static struct iommu_sva *intel_svm_bind_mm(struct intel_iommu *iommu,
+ 
+ 	list_add_rcu(&sdev->list, &svm->devs);
+ 
+-	return &sdev->sva;
++	return 0;
+ 
+ free_sdev:
+ 	kfree(sdev);
+@@ -371,7 +369,7 @@ static struct iommu_sva *intel_svm_bind_mm(struct intel_iommu *iommu,
+ 		kfree(svm);
+ 	}
+ 
+-	return ERR_PTR(ret);
++	return ret;
+ }
+ 
+ /* Caller must hold pasid_mutex */
+@@ -843,13 +841,10 @@ static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 	struct intel_iommu *iommu = info->iommu;
+ 	struct mm_struct *mm = domain->mm;
+-	struct iommu_sva *sva;
+-	int ret = 0;
++	int ret;
+ 
+ 	mutex_lock(&pasid_mutex);
+-	sva = intel_svm_bind_mm(iommu, dev, mm);
+-	if (IS_ERR(sva))
+-		ret = PTR_ERR(sva);
++	ret = intel_svm_bind_mm(iommu, dev, mm);
+ 	mutex_unlock(&pasid_mutex);
+ 
+ 	return ret;
 -- 
 2.34.1
 
