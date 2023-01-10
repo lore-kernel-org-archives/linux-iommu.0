@@ -1,202 +1,160 @@
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3668D17C7
-	for <iommu@lists.linux.dev>; Tue, 10 Jan 2023 03:02:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DC6517E5;
+	Tue, 10 Jan 2023 05:28:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673319761; x=1704855761;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=UR5WZP9Av4XTBD2BfO5VWRKQ4DlrRvmKTgHn9rKCd1w=;
-  b=FmfvwiOYYvRjGJMu/hFxksfuFnyc1bYd3zR90v883gvCs2NwQz88JS00
-   mi/8jumfOflCfyJ6NwbMf4fIqj1RYNyOTc1hX3cnk5W+UKo1zn+3S4Nky
-   EPEEWM5Hic7VE0kLRWHns3jtkxjFLTP+vYDHsAJnt87ZoOwiW3Z8g9MMZ
-   VL+/2Ha4qOwzyoX/0JLCZA6OFrOlFYTdLqmgfAiVX6ybv/ZuCk0Hs6PWV
-   kpdE1+TFeR6JXXBJiOoCEX53o3d4UzjCqXvq9dl948W84bL7x5S7pbNMU
-   TNfv+uG6ALuv4uvPUH9hT0Q69IpmQ+dWVJSgnjpW1Jp3OhNXoXfjKIMB+
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="324289196"
-X-IronPort-AV: E=Sophos;i="5.96,313,1665471600"; 
-   d="scan'208";a="324289196"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2023 19:02:40 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="830842002"
-X-IronPort-AV: E=Sophos;i="5.96,313,1665471600"; 
-   d="scan'208";a="830842002"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga005.jf.intel.com with ESMTP; 09 Jan 2023 19:02:33 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Christoph Hellwig <hch@infradead.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Hector Martin <marcan@marcan.st>,
-	Sven Peter <sven@svenpeter.dev>,
-	Rob Clark <robdclark@gmail.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Andy Gross <agross@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Yong Wu <yong.wu@mediatek.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	Heiko Stuebner <heiko@sntech.de>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	Chen-Yu Tsai <wens@csie.org>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v5 5/5] iommu: Remove detach_dev callback
-Date: Tue, 10 Jan 2023 10:54:08 +0800
-Message-Id: <20230110025408.667767-6-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230110025408.667767-1-baolu.lu@linux.intel.com>
-References: <20230110025408.667767-1-baolu.lu@linux.intel.com>
+  t=1673328517; x=1704864517;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=OStWdT2b7reMp2lZS5TUOHeWnuoo/ewUSJYqEeNwDPw=;
+  b=TumdhFKfko4SqK3jz7NfboJ2BTjnNgV8N6+UxIFx8B6MDurf5OStWKNM
+   se+REwzkvIfOinx2qaKNyCfr4Q3wV7kHAtvnDdMolYCwwJGRA9rThik8f
+   EDDUEcokGgwW01o8GObPvZXmyMOmBXjxsSlSGWVbS5cW59oesc6IX6YHF
+   bTM3W/XigVdhsMfxs6JvP7Ws+pZoe1DWLvngpoNHkTLBODmxsYNzhi4he
+   WkwYaZjjsd7z7iDHfIlU82sIq2/xB6nqL5e8L97esZ/UtCEXJJbas2oWZ
+   mEYP5ru8SNnX7VPVq7CNfu+6bhHbFvoiLdyAOZ+bg87h2lbjMIQILrAnQ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="324307216"
+X-IronPort-AV: E=Sophos;i="5.96,314,1665471600"; 
+   d="scan'208";a="324307216"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2023 21:28:36 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10585"; a="720200800"
+X-IronPort-AV: E=Sophos;i="5.96,314,1665471600"; 
+   d="scan'208";a="720200800"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.212.165]) ([10.254.212.165])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2023 21:28:33 -0800
+Message-ID: <ae78b813-34f2-da61-e6c6-f4985c5b6641@linux.intel.com>
+Date: Tue, 10 Jan 2023 13:28:31 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Cc: baolu.lu@linux.intel.com, Vasant Hegde <vasant.hegde@amd.com>,
+ Matt Fagnani <matt.fagnani@bell.net>,
+ Thorsten Leemhuis <regressions@leemhuis.info>, Joerg Roedel
+ <jroedel@suse.de>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ LKML <linux-kernel@vger.kernel.org>,
+ "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+ Linux PCI <linux-pci@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>
+Subject: =?UTF-8?Q?Re=3a_=5bregression=2c_bisected=2c_pci/iommu=5d_Bug=c2=a0?=
+ =?UTF-8?Q?216865_-_Black_screen_when_amdgpu_started_during_6=2e2-rc1_boot_w?=
+ =?UTF-8?Q?ith_AMD_IOMMU_enabled?=
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <15d0f9ff-2a56-b3e9-5b45-e6b23300ae3b@leemhuis.info>
+ <5aa0e698-f715-0481-36e5-46505024ebc1@bell.net>
+ <aea57c5f-2d20-c589-ad44-a63f1133a3db@linux.intel.com>
+ <157c4ca4-370a-5d7e-fe32-c64d934f6979@amd.com>
+ <223ee6d6-70ea-1d53-8bc2-2d22201d8dde@bell.net>
+ <6fff9d10-f77f-e55a-9020-8a1bd34cf508@amd.com> <Y7gs0zYKp/VXACBi@nvidia.com>
+ <bb865b8f-6f8f-769a-6364-d46b45caca85@linux.intel.com>
+ <Y7wZ+SvT455HS2b6@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <Y7wZ+SvT455HS2b6@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The detach_dev callback of domain ops is not called in the IOMMU core.
-Remove this callback to avoid dead code. The trace event for detaching
-domain from device is removed accordingly.
+On 2023/1/9 21:43, Jason Gunthorpe wrote:
+> On Sat, Jan 07, 2023 at 10:44:46AM +0800, Baolu Lu wrote:
+>> On 1/6/2023 10:14 PM, Jason Gunthorpe wrote:
+>>> On Thu, Jan 05, 2023 at 03:57:28PM +0530, Vasant Hegde wrote:
+>>>> Matt,
+>>>>
+>>>> On 1/5/2023 6:39 AM, Matt Fagnani wrote:
+>>>>> I built 6.2-rc2 with the patch applied. The same black screen problem happened
+>>>>> with 6.2-rc2 with the patch. I tried to use early kdump with 6.2-rc2 with the
+>>>>> patch twice by panicking the kernel with sysrq+alt+c after the black screen
+>>>>> happened. The system rebooted after about 10-20 seconds both times, but no kdump
+>>>>> and dmesg files were saved in /var/crash. I'm attaching the lspci -vvv output as
+>>>>> requested.
+>>>>>
+>>>>
+>>>> Thanks for testing. As mentioned earlier I was not expecting this patch to fix
+>>>> the black screen issue. It should fix kernel warnings and IOMMU page fault
+>>>> related call traces. By any chance do you have the kernel boot logs?
+>>>>
+>>>>
+>>>> @Baolu,
+>>>>     Looking into lspci output, it doesn't list ACS feature for Graphics card. So
+>>>> with your fix it didn't enable PASID and hence it failed to boot.
+>>>
+>>> The ACS checks being done are feature of the path not the end point or
+>>> root port.
+>>>
+>>> If we are expecting ACS on the end port then it is just a bug in how
+>>> the test was written.. The test should be a NOP because there are no
+>>> switches in this topology.
+>>>
+>>> Looking at it, this seems to just be because pci_enable_pasid is
+>>> calling pci_acs_path_enabled wrong, the only other user is here:
+>>>
+>>> 	for (bus = pdev->bus; !pci_is_root_bus(bus); bus = bus->parent) {
+>>> 		if (!bus->self)
+>>> 			continue;
+>>>
+>>> 		if (pci_acs_path_enabled(bus->self, NULL, REQ_ACS_FLAGS))
+>>> 			break;
+>>>
+>>> 		pdev = bus->self;
+>>>
+>>> 		group = iommu_group_get(&pdev->dev);
+>>> 		if (group)
+>>> 			return group;
+>>> 	}
+>>>
+>>> And notice it is calling it on pdev->bus not on pdev itself which
+>>> naturally excludes the end point from the ACS validation.
+>>>
+>>> So try something like:
+>>>
+>>> 	if (!pci_acs_path_enabled(pdev->bus->self, NULL, PCI_ACS_RR | PCI_ACS_UF))
+>>>
+>>> (and probably need to check for null ?)
+>>
+>> Yeah! This really is a misuse of pci_acs_path_enabled().
+>>
+>> But if @pdev is an endpoint of a multiple function device, perhaps we
+>> still need to check acs on it?
+> 
+> Ah, I don't know anything about what this means from a spec
+> perspective.
+> 
+> Certainly if a function can internalize MMIO and loop it back to
+> another function then it surely is not OK for PASID either, nor should
+> those functions be in different iommu groups.
+> 
+> So, either this never happens for some spec reason, or the test in the
+> iommu code forming groups is incorrect.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- include/linux/iommu.h        |  2 --
- include/trace/events/iommu.h |  7 -------
- drivers/iommu/iommu-traces.c |  1 -
- drivers/iommu/iommu.c        | 36 ++++--------------------------------
- 4 files changed, 4 insertions(+), 42 deletions(-)
+The pci_device_group() path handles this like below:
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 0d10566b3cb2..a8063f26ff69 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -299,7 +299,6 @@ struct iommu_ops {
-  * * EBUSY	- device is attached to a domain and cannot be changed
-  * * ENODEV	- device specific errors, not able to be attached
-  * * <others>	- treated as ENODEV by the caller. Use is discouraged
-- * @detach_dev: detach an iommu domain from a device
-  * @set_dev_pasid: set an iommu domain to a pasid of device
-  * @map: map a physically contiguous memory region to an iommu domain
-  * @map_pages: map a physically contiguous set of pages of the same size to
-@@ -320,7 +319,6 @@ struct iommu_ops {
+/*
+  * For multifunction devices which are not isolated from each other, find
+  * all the other non-isolated functions and look for existing groups.  For
+  * each function, we also need to look for aliases to or from other devices
+  * that may already have a group.
   */
- struct iommu_domain_ops {
- 	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
--	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
- 	int (*set_dev_pasid)(struct iommu_domain *domain, struct device *dev,
- 			     ioasid_t pasid);
- 
-diff --git a/include/trace/events/iommu.h b/include/trace/events/iommu.h
-index 29096fe12623..70743db1fb75 100644
---- a/include/trace/events/iommu.h
-+++ b/include/trace/events/iommu.h
-@@ -76,13 +76,6 @@ DEFINE_EVENT(iommu_device_event, attach_device_to_domain,
- 	TP_ARGS(dev)
- );
- 
--DEFINE_EVENT(iommu_device_event, detach_device_from_domain,
--
--	TP_PROTO(struct device *dev),
--
--	TP_ARGS(dev)
--);
--
- TRACE_EVENT(map,
- 
- 	TP_PROTO(unsigned long iova, phys_addr_t paddr, size_t size),
-diff --git a/drivers/iommu/iommu-traces.c b/drivers/iommu/iommu-traces.c
-index 1e9ca7789de1..23416bf76df9 100644
---- a/drivers/iommu/iommu-traces.c
-+++ b/drivers/iommu/iommu-traces.c
-@@ -18,7 +18,6 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(remove_device_from_group);
- 
- /* iommu_device_event */
- EXPORT_TRACEPOINT_SYMBOL_GPL(attach_device_to_domain);
--EXPORT_TRACEPOINT_SYMBOL_GPL(detach_device_from_domain);
- 
- /* iommu_map_unmap */
- EXPORT_TRACEPOINT_SYMBOL_GPL(map);
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 85ae20c8ff5e..9135540d7d59 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2045,13 +2045,6 @@ int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
- 	return 0;
- }
- 
--static void __iommu_detach_device(struct iommu_domain *domain,
--				  struct device *dev)
--{
--	domain->ops->detach_dev(domain, dev);
--	trace_detach_device_from_domain(dev);
--}
--
- void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
- {
- 	struct iommu_group *group;
-@@ -2156,15 +2149,6 @@ int iommu_attach_group(struct iommu_domain *domain, struct iommu_group *group)
- }
- EXPORT_SYMBOL_GPL(iommu_attach_group);
- 
--static int iommu_group_do_detach_device(struct device *dev, void *data)
--{
--	struct iommu_domain *domain = data;
--
--	__iommu_detach_device(domain, dev);
--
--	return 0;
--}
--
- static int iommu_group_do_set_platform_dma(struct device *dev, void *data)
- {
- 	const struct iommu_ops *ops = dev_iommu_ops(dev);
-@@ -2184,25 +2168,13 @@ static int __iommu_group_set_domain(struct iommu_group *group,
- 		return 0;
- 
- 	/*
--	 * New drivers should support default domains and so the detach_dev() op
--	 * will never be called. Otherwise the NULL domain represents some
-+	 * New drivers should support default domains, so set_platform_dma()
-+	 * op will never be called. Otherwise the NULL domain represents some
- 	 * platform specific behavior.
- 	 */
- 	if (!new_domain) {
--		struct group_device *grp_dev;
--
--		grp_dev = list_first_entry(&group->devices,
--					   struct group_device, list);
--
--		if (dev_iommu_ops(grp_dev->dev)->set_platform_dma_ops)
--			__iommu_group_for_each_dev(group, NULL,
--					iommu_group_do_set_platform_dma);
--		else if (group->domain->ops->detach_dev)
--			__iommu_group_for_each_dev(group, group->domain,
--					iommu_group_do_detach_device);
--		else
--			WARN_ON_ONCE(1);
--
-+		__iommu_group_for_each_dev(group, NULL,
-+					   iommu_group_do_set_platform_dma);
- 		group->domain = NULL;
- 		return 0;
- 	}
--- 
-2.34.1
+static struct iommu_group *get_pci_function_alias_group(struct pci_dev 
+*pdev,
+                                                         unsigned long 
+*devfns)
+{
+         struct pci_dev *tmp = NULL;
+         struct iommu_group *group;
 
+         if (!pdev->multifunction || pci_acs_enabled(pdev, REQ_ACS_FLAGS))
+                 return NULL;
+
+It seems that all devices of an MFD shares a single iommu group if
+there lacks ACS control.
+
+--
+Best regards,
+baolu
