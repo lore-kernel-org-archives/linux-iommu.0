@@ -1,179 +1,224 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2051.outbound.protection.outlook.com [40.107.94.51])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04B97A921;
-	Tue, 10 Jan 2023 16:12:40 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IloUwU8eFLUl0t/Y/Zf7XvQbroXbtxiXppGROXy8hbv7+Z08gFTwDCbIB5Wqn7BhtZq77wxNQqRCeQMjDNkzQ7GVTF9182tWXsMk3UvXE6huPSbhU8Cvx+G/gOQJn0wC1diPv4UbQsOGjIMvxoWERIlVzS+s9mSpa8uy4gsVuHqv9bW04OF0Urn2qqLLKKfU2mMRl6DWrMk1uXAqpWcjfk/0CIxJRcwSLuAKQtq/+3vyZoIFZ6rfX+MkeJqvOIYC4Tz4DMbD9ZSIkE52LjW85Xzz6/OQKGkfekj0HbTKD7gwh8uJTnGTu/5s54EdYWm5CZSzM54jDS++x+cb97j+xg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0UmDIc0mJ8d02puVT+VwovxQSSYhGPrEYO2ZQE6fxOY=;
- b=kzdpHZzPLtd2D/ZSFanUcepTESjL5ospcgimDgq71e48Ch3jaYOO1oAG4Xrq5+OXK7Q6fkaKU2QjmvweuVuOHuOGJUtoqdd1h713t4wse2r/LjEKFDLvOkKarrCL2rLxjPdvKecuG76h2nRDE7P2/FZQhzvVrltEb7YRs7yRrYoG2hiOhMHxL2BpvOetv4Nw9NI4eBKGKQ/E5vvPlKDM/Hxs2lO4MY8/3DJ+X8caQ/9EJfPBSjt17xsbo5pV1jJRRGblYTVD22NI/7qa1Kq/kkVdt/7nG/DZ/sRe+/b6auxObGohPaANfCGm7oslnNiY74iPIwivU+fWMXKgQbVM5w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0UmDIc0mJ8d02puVT+VwovxQSSYhGPrEYO2ZQE6fxOY=;
- b=TTBr/PIYuUK02C7cgobEd9lU8iLb6JVMfx2DDjVgi8/0tBywdpi6ZKhua+zZIuNdv6jBSzaHxf7XyYwc1o3L/y5YwHznIYYiiakMs/rpd+QlcQ3G/wHDRUTsOC/UqmDXR+bimtPQXqPrPCEY8IJgTNgU/f5AN85AzteKagkHYP4=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- DS0PR12MB7631.namprd12.prod.outlook.com (2603:10b6:8:11e::11) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5986.18; Tue, 10 Jan 2023 16:12:39 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::4014:79ea:392b:b4f6]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::4014:79ea:392b:b4f6%4]) with mapi id 15.20.5986.018; Tue, 10 Jan 2023
- 16:12:39 +0000
-Message-ID: <d6342073-132a-4bdd-e1cb-b14f972b61c8@amd.com>
-Date: Tue, 10 Jan 2023 21:42:26 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: =?UTF-8?Q?Re=3a_=5bregression=2c_bisected=2c_pci/iommu=5d_Bug=c2=a0?=
- =?UTF-8?Q?216865_-_Black_screen_when_amdgpu_started_during_6=2e2-rc1_boot_w?=
- =?UTF-8?Q?ith_AMD_IOMMU_enabled?=
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-To: Matt Fagnani <matt.fagnani@bell.net>, Baolu Lu
- <baolu.lu@linux.intel.com>, Thorsten Leemhuis <regressions@leemhuis.info>
-Cc: Joerg Roedel <jroedel@suse.de>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- LKML <linux-kernel@vger.kernel.org>,
- "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
- Linux PCI <linux-pci@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>
-References: <15d0f9ff-2a56-b3e9-5b45-e6b23300ae3b@leemhuis.info>
- <5aa0e698-f715-0481-36e5-46505024ebc1@bell.net>
- <aea57c5f-2d20-c589-ad44-a63f1133a3db@linux.intel.com>
- <157c4ca4-370a-5d7e-fe32-c64d934f6979@amd.com>
- <223ee6d6-70ea-1d53-8bc2-2d22201d8dde@bell.net>
- <6fff9d10-f77f-e55a-9020-8a1bd34cf508@amd.com>
- <ff26929d-9fb0-3c85-2594-dc2937c1ba9a@bell.net>
- <525730fd-5982-fea7-b6d5-2da69f225f04@amd.com>
-In-Reply-To: <525730fd-5982-fea7-b6d5-2da69f225f04@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN2PR01CA0192.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:e8::17) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE749A921
+	for <iommu@lists.linux.dev>; Tue, 10 Jan 2023 16:22:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CC21C433D2;
+	Tue, 10 Jan 2023 16:22:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1673367754;
+	bh=qDNbGsVF1iuDtf5oq/RNZWeFhJd4UmBBYRdzY/Wm8oY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=iR7D2cGb34GHAf53lrVVjf86IULw680O056biqGB0N3I2LiUIqnXUMqcUjIVGTtCb
+	 lfhe6QCOZL3chvGRvWjrLdKVJzARdnsN/BCsGYqz9TxngOdWtsXfMQqkix2/lHwcod
+	 o2ZtxUEIszFIAv330opllHj/rzkdsftYw8lmAWbLsou6Zu8lymTqalHRVYPqybUwGW
+	 i9tC8/tEB2z6C3JvuI0AJ+RWd9IT68XnODlaV6K6zPqHYGw+nNXDjLkpdF2oKbVfj8
+	 irvPfrJ73t5MYnnd/8F2NJl7wkKOpGLTJebON12p6Uk0xRZwXuzVuWWjxSP+YUi6e+
+	 /P/oI0aIw+OCA==
+Date: Tue, 10 Jan 2023 10:22:30 -0600
+From: Bjorn Andersson <andersson@kernel.org>
+To: Bartosz Golaszewski <brgl@bgdev.pl>
+Cc: Andy Gross <agross@kernel.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>, Georgi Djakov <djakov@kernel.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Manivannan Sadhasivam <mani@kernel.org>,
+	Jassi Brar <jassisinghbrar@gmail.com>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Richard Cochran <richardcochran@gmail.com>,
+	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+	Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>,
+	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+	linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-gpio@vger.kernel.org,
+	netdev@vger.kernel.org,
+	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Subject: Re: [PATCH 09/18] dt-bindings: pinctrl: sa8775p: add bindings for
+ qcom,sa8775p-tlmm
+Message-ID: <20230110162230.s6xr3vvgkx4diakv@builder.lan>
+References: <20230109174511.1740856-1-brgl@bgdev.pl>
+ <20230109174511.1740856-10-brgl@bgdev.pl>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|DS0PR12MB7631:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6991a81b-81b2-407f-2a15-08daf3257e6d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	kPDG2Uuj0Ut9+hbB68CyAveoGaML3uGkRp5cOcJCREUbmGw0ghje+QAT7BmB18FSX5qS7+QGS7VSTaMhOtCXRvPLtMFf8EkdpkNMUlBvkUng2Xypw2PVu9oIQWHH4R3lvT1lP2mPmygWz+K8N/9RpwUl+9Edoq7caJUJkbX5B0K084nj7xTW3kb3IDJzeMKEDt/xyjdagnzh5Jn6C7ubpl51NiwZ8F2DAs3BcyM/aWJVi+nTy/Bo/HuczJ59IBBgmohZknw/pO3UnK2+Px5IxBBAc4RH4cMHtOrDsY2aPUkjKOB3mc5chQwkA4wKZUETdJKKzbcS+Wm10dTRU3A5KKNc3hwOdXAe89reOX+zAVtDRE3tpAVKsh7ziI/igELzW/ZH7plZ7rdP2ecFXi5AHKZ2odh8cll1uUNM56SIDPQ4zxjU0MNLSc/0zuXI425CDjDn/bFUbzHiuqtUIDKuGn8PIepmMNeTfYfEy8eBw02DIneVXKmIx3NfHKYGx+MOMtXDn3XRA7x/RNlzHlxsmDjvwOiOu1Qubr+6zojagKQKXGq5fw8fnGaeVxYq2qTAsNhzIt0eMhF8H+biSKt+OoApoRRusuTPCMZEtmxuXPwN5HEOmcMH4P0XieptJvh5o0vsLOTaQF0W7Zms25L+yVYXkvT7eTUwq5uRUSHPd9U4WeZkRxAJv5iI9cVfTn0I0z0HiC4tbeDjp0GBlzrOxNTU3Kps5moHzMdV6V3HJz4=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(376002)(396003)(39860400002)(366004)(136003)(451199015)(41300700001)(54906003)(316002)(110136005)(2616005)(66476007)(66556008)(4326008)(36756003)(66946007)(86362001)(31696002)(5660300002)(83380400001)(38100700002)(44832011)(8936002)(2906002)(66899015)(6506007)(53546011)(31686004)(6486002)(6512007)(6666004)(186003)(478600001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?MEl1M1ZMdFFzbzA5WVQ1NmROM3lvcEtVOHdvSGhWeGdYZWJRc2xTb0hCenlu?=
- =?utf-8?B?QVlscWNheU4xTXhMbTZuNHNPSU5yUUtuSE9nMkVQY2JmOUNNdCtOYTBLNXBi?=
- =?utf-8?B?TXBiS2V4TnpHZjZNMllRbTJkdHVZak43a3BpRjZJbEVRQlcxRzhDa0haL0Zj?=
- =?utf-8?B?eFNkWmkzVXM2ejVGZlBJQXFJcDByVHg4TzNkU2VGdDBlVXB3cUdhOHRkS0dC?=
- =?utf-8?B?bEdHSlFVVE9WQmpzdUxQRUJJeWNmSThwQWhlbGJMMmdYajlxQTdFdWMzSUZM?=
- =?utf-8?B?MHo2c29pQVNyUTRFV1ZmMnZVYXVUWVZoOVNBVmFqTWFTOUNkbVV3M0dWVUVq?=
- =?utf-8?B?UmRyMEZKMTlWVzUyZXUrKzVSV1ZrajJkUDc3RzhZelNSbERFUG9DZW5UZkhP?=
- =?utf-8?B?cm1JdnRlY2xsN1dXbzltaTRHTGc4alh1em9za2JjRzZmeFZsVTFiNUdpWWRS?=
- =?utf-8?B?Mlplem14MWRQdXE3WkRXNUNMQ0I2cldvNTg3MVFLZ2FUUXFrd044aEZWR2o5?=
- =?utf-8?B?WWNuQWNZeDVsMVlYeTdTWlBzengwNWo3NENRaGt6bmRDNkpiMTlhVmlHUWdN?=
- =?utf-8?B?dU1wbWhVUlJWTllrTCtOeGNhOHR4dFgzSnA1SjJQVFFDMjRja2kxclhqZVk0?=
- =?utf-8?B?KzhlVGN3clZIT1lZVG1BM1JaS0lqU2dwcW5XMGpSYW5VT3F1UnNJblVNeUxF?=
- =?utf-8?B?aXdzWksvOFVkbU53eThsUno0aVdkVURqbDRrL0xVSUVyT29aZHVxOEgwTEk1?=
- =?utf-8?B?ZThVUkJQTHFyTHJBWTd5NHVBMUtrdWo3ZmUycHJ5ZVFVQ2VEajAxYzQxTEQ1?=
- =?utf-8?B?aS95N3VJNUZMMElKMW5vMDBRRXY2dzJJVHpHWFBkbXZKV0E0S1dEejhJMHl6?=
- =?utf-8?B?THUxV09BTGtDZUJEVGJETmdiS2o4TG1wK0U5MHpDdFdpdUNsQXIzaWR4NnFR?=
- =?utf-8?B?dFNQQjVaWS9DbXZyNFBoUk83R1lnTEFKWjAyZjVUQXE5SElBYUpZUlUxdjNG?=
- =?utf-8?B?ZTJVY2U4L2JOUnJMcm5wU1N3T3RyckV1NHJkRjRDd3ljOVpuZUlVVGhJWlJQ?=
- =?utf-8?B?S21XUXdFWHZGR0RZd051TWhCbXZ2VUpVMlN5bDN3bWVldDU4aE5PN0VqSXA0?=
- =?utf-8?B?TG1uS0FyR0hLcUlEYnFiUUo4Qzl6Vmw0dDJ3TXY4OFVEb3Q1a1NqQ2JkQ3F5?=
- =?utf-8?B?NHFIaFNTOGIxWTRuenpRY2RacGVLb0RJS0l1ajZzdkZHaWpTcHR6Si8vdU1F?=
- =?utf-8?B?UTExZUxJYjJHTjZPczgwVzlYU2NJTDdCcEI0bUMydis3Q0YrcVdNUCtvSEha?=
- =?utf-8?B?Z1RFa25XT1NnMzBqZzNXVnlwa1QvSVU5Q0czZWI3T3Y3dVA5VXBUMjNHNCtV?=
- =?utf-8?B?KzhRSUxJR1Rsakh0SHViUS83MTVXaHEzSG94bWIxRXlyQld2T1lvK0lUZjJY?=
- =?utf-8?B?WnN6d2g2djYzWjdIRVpaZy9RTy83d1BQQVJtUlNDZmxoL0xxSEkrVUQ3YmZt?=
- =?utf-8?B?RVI5bWRGa0RHMm52dDhTWkVKajV0WDBvWEI4Q0RVdFlJRjJjV1k0QU1EeEFB?=
- =?utf-8?B?YUw3bVhRQ2t1Syt2MTNNZisva2gvYnpOZlVxUDFIaDZ5ZUlBYUZHWjVpR1RD?=
- =?utf-8?B?RmVSUGVUb0JDYlBRR01GUENHaWluWkxCc0tmUXRIZFVobmhPcFZjOThCMDl0?=
- =?utf-8?B?bGJNd1pUNUhRNDEzOTFRWWhUOGZpbm05UW1WUHRMQjhxQ0Jla044SWlRK1dY?=
- =?utf-8?B?KzRaSW1VbkcxSFo4ZVVPRnVmZHc4TWwrZFlFc3djdjhPYWNVZUxpTTJjV3A4?=
- =?utf-8?B?UkhnVFBYVlpGV0xHdHZVZVcrajhRL3BSdkJTNmZlUGlpaTl3eVIwTjJjZjhY?=
- =?utf-8?B?Z0tvbWdUQktIeU9zS1dhbmhIeUMvVWRmcm16eHNiZDdwOVRBRXJpUXppVE5F?=
- =?utf-8?B?djJINkM4bTNHbm5McHpPb2Exa1JLSTduWkFhUEQzbTNLcy9CUlppSTZKTWdF?=
- =?utf-8?B?d2F2bm1xNmhlWitjb1g3YkRQWEQvUHZjeEN1Sjh1cTVBOENlSllRNnZhVjNL?=
- =?utf-8?B?b1BmdXUwUFdIY2ovcnNzTVBSMy8xTmRlZU95ZnRjeUVCM0NTZ1h2TnJ1UklP?=
- =?utf-8?B?ZmVHcUdRK2hjNFRlWUc2ZHIwYnREaFFxSWNyd3kxRjBYSWhRVWpEVjJhbFRa?=
- =?utf-8?Q?jDIk7Xtcwn0I0tZe1wmV2+fa36vA+v8TLOs+FmIX97aQ?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6991a81b-81b2-407f-2a15-08daf3257e6d
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jan 2023 16:12:39.0375
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XCZ4wCnXVg2KQ0G0CyiYraIv6k3Cjf1XCsZPlM+HWVhOe5RN9YYQq4M/13jxUaFcfG5J4GiwF6imjgZGyeFFVA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7631
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230109174511.1740856-10-brgl@bgdev.pl>
 
+On Mon, Jan 09, 2023 at 06:45:02PM +0100, Bartosz Golaszewski wrote:
+> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+> 
+> Add DT bindings for the TLMM controller on sa8775p platforms.
+> 
+> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+> ---
+>  .../bindings/pinctrl/qcom,sa8775p-tlmm.yaml   | 142 ++++++++++++++++++
+>  1 file changed, 142 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,sa8775p-tlmm.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/pinctrl/qcom,sa8775p-tlmm.yaml b/Documentation/devicetree/bindings/pinctrl/qcom,sa8775p-tlmm.yaml
+> new file mode 100644
+> index 000000000000..44abf83b1358
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pinctrl/qcom,sa8775p-tlmm.yaml
+> @@ -0,0 +1,142 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/pinctrl/qcom,sa8775p-tlmm.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Qualcomm Technologies, Inc. SA8775P TLMM block
+> +
+> +maintainers:
+> +  - Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+> +
+> +description: |
+> +  Top Level Mode Multiplexer pin controller in Qualcomm SA8775P SoC.
+> +
+> +allOf:
+> +  - $ref: /schemas/pinctrl/qcom,tlmm-common.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    const: qcom,sa8775p-tlmm
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts: true
+> +  interrupt-controller: true
+> +  "#interrupt-cells": true
+> +  gpio-controller: true
+> +  "#gpio-cells": true
+> +  gpio-ranges: true
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +additionalProperties: false
+> +
+> +patternProperties:
+> +  "-state$":
+> +    oneOf:
+> +      - $ref: "#/$defs/qcom-sa8775p-tlmm-state"
+> +      - patternProperties:
+> +          "-pins$":
+> +            $ref: "#/$defs/qcom-sa8775p-tlmm-state"
+> +        additionalProperties: false
+> +
+> +$defs:
+> +  qcom-sa8775p-tlmm-state:
+> +    type: object
+> +    description:
+> +      Pinctrl node's client devices use subnodes for desired pin configuration.
+> +      Client device subnodes use below standard properties.
+> +    $ref: qcom,tlmm-common.yaml#/$defs/qcom-tlmm-state
+> +
+> +    properties:
+> +      pins:
+> +        description:
+> +          List of gpio pins affected by the properties specified in this
+> +          subnode.
+> +        items:
+> +          oneOf:
+> +            - pattern: "^gpio([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-1][0-9]|22[0-7])$"
 
+Per the driver, this should be "^gpio([0-9]|[1-9][0-9]|1[0-3][0-9]|14[0-8])$"
 
-On 1/10/2023 9:38 PM, Vasant Hegde wrote:
-> Matt,
-> 
-> 
-> On 1/6/2023 12:58 PM, Matt Fagnani wrote:
->> I booted 6.2-rc2 + patch with rd.driver.blacklist=amdgpu on the kernel command
->> line to prevent amdgpu from being started while the initramfs was in use. The
->> black screen problem happened later in the boot. I pressed sysrq+alt+s,u,b to do
->> an emergency sync, remount read-only, and reboot. The journal for that boot was
->> shown on the next boot. The two warnings which I previously reported weren't
->> shown in the journal, but the same null pointer dereference which made amdgpu
->> crash happened. I'm attaching the kernel log from the journal of that boot.
->>
-> 
-> Thanks for your effort to get boot log. This is helpful.
-> 
-> Looking into the code further,
->   iommu_detach_group() didn't attach devices back to default_domain.
+Regards,
+Bjorn
 
-... because iommu_detach_group() expects new domain should be different from
-group->domain.
-
--Vasant
-
-
-> So IOMMU
-> point of view device group was left in inconsistent state. This resulted in
-> IOMMU throwing page fault errors and amd IOMMU event handler code always assumes
-> that domain is setup properly. That resulted in below NULL pointer dereference
-> issue.
+> +            - enum: [ sdc1_rclk, sdc1_clk, sdc1_cmd, sdc1_data, ufs_reset ]
+> +        minItems: 1
+> +        maxItems: 16
+> +
+> +      function:
+> +        description:
+> +          Specify the alternative function to be configured for the specified
+> +          pins.
+> +
+> +        enum: [ atest_char, atest_char0, atest_char1, atest_char2,
+> +                atest_char3, atest_usb2, atest_usb20, atest_usb21, atest_usb22,
+> +                atest_usb23, audio_ref, cam_mclk, cci_async, cci_i2c,
+> +                cci_timer0, cci_timer1, cci_timer2, cci_timer3, cci_timer4,
+> +                cci_timer5, cci_timer6, cci_timer7, cci_timer8, cci_timer9,
+> +                cri_trng, cri_trng0, cri_trng1, dbg_out, ddr_bist, ddr_pxi0,
+> +                ddr_pxi1, ddr_pxi2, ddr_pxi3, ddr_pxi4, ddr_pxi5, edp0_hot,
+> +                edp0_lcd, edp1_hot, edp1_lcd, edp2_hot, edp2_lcd, edp3_hot,
+> +                edp3_lcd, emac0_mcg0, emac0_mcg1, emac0_mcg2, emac0_mcg3,
+> +                emac0_mdc, emac0_mdio, emac0_ptp, emac1_mcg0, emac1_mcg1,
+> +                emac1_mcg2, emac1_mcg3, emac1_mdc, emac1_mdio, emac1_ptp,
+> +                gcc_gp1, gcc_gp2, gcc_gp3, gcc_gp4, gcc_gp5, hs0_mi2s, hs1_mi2s,
+> +                hs2_mi2s, ibi_i3c, jitter_bist, mdp0_vsync0, mdp0_vsync1,
+> +                mdp0_vsync2, mdp0_vsync3, mdp0_vsync4, mdp0_vsync5, mdp0_vsync6,
+> +                mdp0_vsync7, mdp0_vsync8, mdp1_vsync0, mdp1_vsync1, mdp1_vsync2,
+> +                mdp1_vsync3, mdp1_vsync4, mdp1_vsync5, mdp1_vsync6, mdp1_vsync7,
+> +                mdp1_vsync8, mdp_vsync, mi2s1_data0, mi2s1_data1, mi2s1_sck,
+> +                mi2s1_ws, mi2s2_data0, mi2s2_data1, mi2s2_sck, mi2s2_ws,
+> +                mi2s_mclk0, mi2s_mclk1, pcie0_clkreq, pcie1_clkreq, phase_flag0,
+> +                phase_flag1, phase_flag10, phase_flag11, phase_flag12,
+> +                phase_flag13, phase_flag14, phase_flag15, phase_flag16,
+> +                phase_flag17, phase_flag18, phase_flag19, phase_flag2,
+> +                phase_flag20, phase_flag21, phase_flag22, phase_flag23,
+> +                phase_flag24, phase_flag25, phase_flag26, phase_flag27,
+> +                phase_flag28, phase_flag29, phase_flag3, phase_flag30,
+> +                phase_flag31, phase_flag4, phase_flag5, phase_flag6,
+> +                phase_flag7, phase_flag8, phase_flag9, pll_bist, pll_clk,
+> +                prng_rosc0, prng_rosc1, prng_rosc2, prng_rosc3, qdss_cti,
+> +                qdss_gpio, qdss_gpio0, qdss_gpio1, qdss_gpio10, qdss_gpio11,
+> +                qdss_gpio12, qdss_gpio13, qdss_gpio14, qdss_gpio15, qdss_gpio2,
+> +                qdss_gpio3, qdss_gpio4, qdss_gpio5, qdss_gpio6, qdss_gpio7,
+> +                qdss_gpio8, qdss_gpio9, qup0_se0, qup0_se1, qup0_se2, qup0_se3,
+> +                qup0_se4, qup0_se5, qup1_se0, qup1_se1, qup1_se2, qup1_se3,
+> +                qup1_se4, qup1_se5, qup1_se6, qup2_se0, qup2_se1, qup2_se2,
+> +                qup2_se3, qup2_se4, qup2_se5, qup2_se6, qup3_se0, sail_top,
+> +                sailss_emac0, sailss_ospi, sgmii_phy, tb_trig, tgu_ch0, tgu_ch1,
+> +                tgu_ch2, tgu_ch3, tgu_ch4, tgu_ch5, tsense_pwm1, tsense_pwm2,
+> +                tsense_pwm3, tsense_pwm4, usb2phy_ac, vsense_trigger]
+> +
+> +      bias-disable: true
+> +      bias-pull-down: true
+> +      bias-pull-up: true
+> +      drive-strength: true
+> +      input-enable: true
+> +      output-high: true
+> +      output-low: true
+> +
+> +    required:
+> +      - pins
+> +
+> +    additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    tlmm: pinctrl@f000000 {
+> +        compatible = "qcom,sa8775p-pinctrl";
+> +        reg = <0xf000000 0x1000000>;
+> +        interrupts = <GIC_SPI 208 IRQ_TYPE_LEVEL_HIGH>;
+> +        gpio-controller;
+> +        #gpio-cells = <2>;
+> +        interrupt-controller;
+> +        #interrupt-cells = <2>;
+> +        gpio-ranges = <&tlmm 0 0 149>;
+> +
+> +        qup_uart10_state {
+> +            pins = "gpio46", "gpio47";
+> +            function = "qup1_se3";
+> +        };
+> +    };
+> +...
+> -- 
+> 2.37.2
 > 
->   Jan 06 02:07:52 kernel: BUG: kernel NULL pointer dereference, address:
-> 0000000000000058
->   Jan 06 02:07:52 kernel: #PF: supervisor read access in kernel mode
->   Jan 06 02:07:53 kernel: #PF: error_code(0x0000) - not-present page
->   Jan 06 02:07:53 kernel: PGD 0 P4D 0
->   Jan 06 02:07:53 kernel: Oops: 0000 [#1] PREEMPT SMP NOPTI
->   Jan 06 02:07:53 kernel: CPU: 2 PID: 56 Comm: irq/24-AMD-Vi Not tainted
-> 6.2.0-rc2+ #89
->   Jan 06 02:07:53 kernel: Hardware name: HP HP Laptop 15-bw0xx/8332, BIOS F.52
-> 12/03/2019
->   Jan 06 02:07:53 kernel: RIP: 0010:report_iommu_fault+0x11/0x90
-> 
-> Ideally if domain attach fails (in this case its because pasid capability check
-> returned error) we should put devices back to original domain.. so that it can
-> continue without PASID capability.
-> 
-> I have a patch to handle these error conditions (not the fix for original
-> issue). I will try to post it soon.
-> 
-> -Vasant
