@@ -1,30 +1,41 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 376576FBB
-	for <iommu@lists.linux.dev>; Tue, 10 Jan 2023 11:10:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6E67C433D2;
-	Tue, 10 Jan 2023 11:10:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1673349054;
-	bh=XhcDIdamWlk8EP3uFzZmuFirRRVx4AkOTeNQJtnlEwM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=cGur0OOJqRfo8MpHsMEOzXFbs+nDkkzR7dySApVpVxLf8DO7rMjcPatK6WkVVIZgO
-	 B5Q4WM+jYB41tPALdRNFgSppw3JjVbbceoM/RMypOAnrodkwtnVc4GdPbkH8Sjgdi0
-	 UGVPfCFRB3pI6MdKJyvg61xmJH4BLE8+Y5dgK0YNp/XsQ8HnYHwJ+hKxPpxjyidVcU
-	 /IxtBbdZ2ISR2mF5jHqbI8P+1Wp2J/zoTR5kKs9T3H3ZxwtlK8dlyPYrnyT5VnGM90
-	 Obf9WFG50rfcwWARLeSmwKgxZ+9rA0bRt1azFehaIbXJp4/XwyN0hd7ZIjhnbMFB2/
-	 m/BV/ha/xE1vw==
-Date: Tue, 10 Jan 2023 11:10:50 +0000
-From: Will Deacon <will@kernel.org>
-To: Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] iommu/arm-smmu: Report IOMMU_CAP_CACHE_COHERENCY even
- betterer
-Message-ID: <20230110111049.GA8986@willie-the-truck>
-References: <d6dc41952961e5c7b21acac08a8bf1eb0f69e124.1671123115.git.robin.murphy@arm.com>
- <20230110105625.ououvyfj2g6ttkmf@skbuf>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1D9536FBB
+	for <iommu@lists.linux.dev>; Tue, 10 Jan 2023 11:27:39 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 064784B3;
+	Tue, 10 Jan 2023 03:28:19 -0800 (PST)
+Received: from FVFF77S0Q05N (unknown [10.57.46.95])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DE6AE3F587;
+	Tue, 10 Jan 2023 03:27:30 -0800 (PST)
+Date: Tue, 10 Jan 2023 11:27:28 +0000
+From: Mark Rutland <mark.rutland@arm.com>
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: Heiko Carstens <hca@linux.ibm.com>,
+	Thomas Richter <tmricht@linux.ibm.com>,
+	torvalds@linux-foundation.org, corbet@lwn.net, will@kernel.org,
+	boqun.feng@gmail.com, catalin.marinas@arm.com, dennis@kernel.org,
+	tj@kernel.org, cl@linux.com, gor@linux.ibm.com,
+	agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+	svens@linux.ibm.com, Herbert Xu <herbert@gondor.apana.org.au>,
+	davem@davemloft.net, tglx@linutronix.de, mingo@redhat.com,
+	bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+	hpa@zytor.com, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	robin.murphy@arm.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
+	Arnd Bergmann <arnd@arndb.de>, penberg@kernel.org,
+	rientjes@google.com, iamjoonsoo.kim@lge.com,
+	Andrew Morton <akpm@linux-foundation.org>, vbabka@suse.cz,
+	roman.gushchin@linux.dev, 42.hyeyoo@gmail.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, linux-s390@vger.kernel.org,
+	linux-crypto@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arch@vger.kernel.org
+Subject: Re: [RFC][PATCH 08/12] s390: Replace cmpxchg_double() with
+ cmpxchg128()
+Message-ID: <Y71LoCIl+IFdy9D8@FVFF77S0Q05N>
+References: <20221219153525.632521981@infradead.org>
+ <20221219154119.352918965@infradead.org>
+ <Y70SWXHDmOc3RhMd@osiris>
+ <Y70it59wuvsnKJK1@hirez.programming.kicks-ass.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -33,34 +44,46 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230110105625.ououvyfj2g6ttkmf@skbuf>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <Y70it59wuvsnKJK1@hirez.programming.kicks-ass.net>
 
-On Tue, Jan 10, 2023 at 12:56:25PM +0200, Vladimir Oltean wrote:
-> On Thu, Dec 15, 2022 at 04:51:55PM +0000, Robin Murphy wrote:
-> > Although it's vanishingly unlikely that anyone would integrate an SMMU
-> > within a coherent interconnect without also making the pagetable walk
-> > interface coherent, the same effect happens if a coherent SMMU fails to
-> > advertise CTTW correctly. This turns out to be the case on some popular
-> > NXP SoCs, where VFIO started failing the IOMMU_CAP_CACHE_COHERENCY test,
-> > even though IOMMU_CACHE *was* previously achieving the desired effect
-> > anyway thanks to the underlying integration.
-> > 
-> > While those SoCs stand to gain some more general benefits from a
-> > firmware update to override CTTW correctly in DT/ACPI, it's also easy
-> > to work around this in Linux as well, to avoid imposing too much on
-> > affected users - since the upstream client devices *are* correctly
-> > marked as coherent, we can trivially infer their coherent paths through
-> > the SMMU as well.
-> > 
-> > Reported-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > Fixes: df198b37e72c ("iommu/arm-smmu: Report IOMMU_CAP_CACHE_COHERENCY better")
-> > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> > ---
+On Tue, Jan 10, 2023 at 09:32:55AM +0100, Peter Zijlstra wrote:
+> On Tue, Jan 10, 2023 at 08:23:05AM +0100, Heiko Carstens wrote:
 > 
-> Could someone please apply this patch?
+> > So, Alexander Gordeev reported that this code was already prior to your
+> > changes potentially broken with respect to missing READ_ONCE() within the
+> > cmpxchg_double() loops.
+> 
+> Unless there's an early exit, that shouldn't matter. If you managed to
+> read garbage the cmpxchg itself will simply fail and the loop retries.
 
-Sorry, I missed that this was fixing a recent regression. I'll pick it up
-today and send it to Joerg.
+I don't think that's true; without READ_ONCE() the compiler could (but is
+very unlikely to) read multiple times, and that could cause problems.
 
-Will
+For example:
+
+| 	prev = *ptr;
+| 
+| 	do {
+| 		new = some_function_of(prev);
+| 		old = cmpxchg(ptr, prev, new);
+| 	} while (old != prev);
+
+Could effectively become:
+
+| 	prev1 = *ptr;
+|	prev2 = *ptr;
+|
+| 	do {
+| 		new = some_function_of(prev1)
+| 		old = cmpxchg(ptr, prev2, new);
+| 	} while (old != prev2);
+
+... which would effectively udpate from a stale value, throwing away prev2.
+That and the two generated reads could be in either order.
+
+So I do think it's warranted to use READ_ONCE() for the prev value feeding into
+a cmpxchg operation, even if that's only for the "once" part rather than lack
+of tearing.
+
+Thanks,
+Mark.
