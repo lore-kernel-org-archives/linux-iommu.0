@@ -1,96 +1,120 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2058.outbound.protection.outlook.com [40.107.237.58])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC26A7474
-	for <iommu@lists.linux.dev>; Tue, 10 Jan 2023 14:03:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A38EC433D2;
-	Tue, 10 Jan 2023 14:02:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1673359381;
-	bh=e9t1+X+RfhH7WrNszHXC4AMmV7DcA4dWVnvqtiPupgo=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=rqEVRIg2eQG33muLXzDZdm/qU4hwhkf2aCLw5Dm+3YVtH9vjHLAK3zwI4h1PUOmPs
-	 EU5HcseJddw6MM212c2oEjKD1UapgubXQ/N0JA5zW/TDPUA+4WxkUeyUy9EppSyuDU
-	 ZS8GzMqlJ6lJA7taZ9dfv5Ej3JYY/Cs0+KF9cHwrAqYvZZI+UrPbG+Uk/2AwF3QfGf
-	 yufAW3xWg7qJshGyuZIxo+WXivq+uayOd70huw4nqlvnJ88ylBVp9MAw4x97NF6rMj
-	 HENX96ZYIcgeL+DxFiZkSBqdI4LMhTf5QYgksS1XM/kE+7boGuMGfdzoF820HCqoDg
-	 a7dwxt0Gu9Akg==
-From: Will Deacon <will@kernel.org>
-To: iommu@lists.linux.dev,
-	Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc: catalin.marinas@arm.com,
-	kernel-team@android.com,
-	Will Deacon <will@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	Michael Walle <michael@walle.cc>,
-	netdev@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Claudiu Manoil <claudiu.manoil@nxp.com>,
-	Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-	Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v2 1/2] iommu/arm-smmu: don't unregister on shutdown
-Date: Tue, 10 Jan 2023 14:02:53 +0000
-Message-Id: <167335530178.54040.9319729864816203532.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20221215141251.3688780-1-vladimir.oltean@nxp.com>
-References: <20221215141251.3688780-1-vladimir.oltean@nxp.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C115A33F7
+	for <iommu@lists.linux.dev>; Tue, 10 Jan 2023 14:31:58 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KaszTPqkvEcmE/8fcVs4Mcyzai/5t4TCjwTrpSP2TlA6aHCJDALGd1gwRvZ0MaKdk3MgUmTDP+nn95XTUzg97ndiXzjPDpym/0FTRxOWQAmjrDsCCBOIwqdDZAnld6Kky5ZJcSuDId7qP+s2/agdMYMhvw7Cpa2WSmXZ6ERXfYNDw64tTlM7lX1rrMF0IcTQYdhjK07FzhX/N0BxT0dAkVbFW9GdLELZ4YzsB7ZD4kaBp2EhyZlvIpNEpruL1ugQ75Gt9dxGpfSoWs7DjW4e5qA6xHU2yVhdQ1ztVYdWipxV3iGNTWcy59dZji65OHAMFWTtS71ACYQ8IYC7CEm4dQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=vUCzaRAo3/Yhy4I3ec5wExZ7AcrrNC5IZfPzg0OxckE=;
+ b=CRjIzsYmsVz13yENzbWTOGNpFBVzHT/h64afpQFyMUJuEi0gIFs+UwLNsepOj56V4JkljIumXT0MrKF4D4fc6/TOLTYcrVtqCopZWsdB1inLgoNwQTlvJyEye4tBbYY9FBgyGeIpPdScdHea8T3jcLpldAVO5u2iFQQgzKKva22HDuazlQxTUyRawJ1TPGG4i9BZbraZ8IxHWLzKUgN/PhJquUCkb5GCNqgTTjezZAC977a+lImJ0FiP7sMfffGtOeORQh5Eh4lq/ly5UBAPeGNu6I3UnaXc/iOdZ3fpfy8Ex8yu7Ge4Xt1vEhXs1l4oeVXGAy4gCzL9A6dkbdosTw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vUCzaRAo3/Yhy4I3ec5wExZ7AcrrNC5IZfPzg0OxckE=;
+ b=0yHTxesf4E5KOXebAmpjXXMbm0bwZVRiWGkTxKy2ZPkUU6S40isCXVionVZ182AGmH5ooNXS0MpZlW9UUW0jEXYMpggIvjzd0p5rtHwxqWlOrRJJqqeWFxL6UzN2YdV40nh/BS3/ckusAmoBCiSwN8041K8Xc5o9F8aOXGRVEko=
+Received: from BL1PR13CA0259.namprd13.prod.outlook.com (2603:10b6:208:2ba::24)
+ by CY5PR12MB6371.namprd12.prod.outlook.com (2603:10b6:930:f::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.18; Tue, 10 Jan
+ 2023 14:31:56 +0000
+Received: from BL02EPF0000C402.namprd05.prod.outlook.com
+ (2603:10b6:208:2ba:cafe::7a) by BL1PR13CA0259.outlook.office365.com
+ (2603:10b6:208:2ba::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.12 via Frontend
+ Transport; Tue, 10 Jan 2023 14:31:55 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BL02EPF0000C402.mail.protection.outlook.com (10.167.241.4) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6002.11 via Frontend Transport; Tue, 10 Jan 2023 14:31:55 +0000
+Received: from sp5-759chost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 10 Jan
+ 2023 08:31:54 -0600
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
+CC: <joro@8bytes.org>, <robin.murphy@arm.com>, <ashish.kalra@amd.com>,
+	<thomas.lendacky@amd.com>, <vasant.hegde@amd.com>, <jon.grimm@amd.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: [PATCH 0/4] iommu/amd: Force SNP-enabled VFIO domain to 4K page size
+Date: Tue, 10 Jan 2023 08:31:33 -0600
+Message-ID: <20230110143137.54517-1-suravee.suthikulpanit@amd.com>
+X-Mailer: git-send-email 2.32.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL02EPF0000C402:EE_|CY5PR12MB6371:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9968f72c-d354-433f-4541-08daf3176c7c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	e9tuynT7aGP782gWOg/g1ixc/DulzjlcxHtvzurOv9myZJ4uGb0bPuOvSvZ44Cqi4hWjbgPbZhStQVshSHNp+Rag/MAavRmPvkwLLMtI+vQnmiZkAntiuYZFCtKKtXoSGRitWlvR/dA06PRqxIZdzpYOD7SYFxYX6tGlhyey+L7/r/hOqMYdKWbF6aoe7WpUmQikxdkvfozuEeIDMf6pwOoIPd4fiztz0VbIlh0KSZGRMiEhayzHu0P33eq66mHZfNU+q0yrHj/gxYPqWg7cYoG7MzvZ8q2ltN7nTiLCGZdI/S12rVOPJGyTVro/KvVW9p+CYORdR0f2j71QoAN6MWHG8uA7DKKSQ8tIFdauZ9f83aDwAOraqOFaf2HSLqS/U4acyoI/KColra0v9zEVBfE1ttnsrbjBRSQRTJYW5+NlgvGEAR99A1v5YKzJGQfS8yhM/29CHdomeQsFKiEvXJEibtS3AmrZFxUYUcuYWDNxuzPHcRLW2MwONKGmUKobF4UFG4f+qo2VNG7pguop2eQgjWCDef2dYwaujuvXIEBY+KxhcZMf5JV46ZX+aNDb1CwwInvAYpREoJJdpI422AKtET320tdg/I43zvrAzDP7K2+RgEnL7YiQCwiAoTg0JfBAJSqdzjNUwyXSxsNcjtYlf6CDHdZRWFSUbgDsc6jei7b4xCV5AB9PYgwnyOFz8IJCyxcr4tKFDJDhWqG2o6nQUfBJ1GVlaDqGmOhhwKI=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(376002)(346002)(136003)(396003)(39860400002)(451199015)(46966006)(36840700001)(40470700004)(47076005)(6666004)(478600001)(40480700001)(2616005)(1076003)(4326008)(26005)(336012)(186003)(70206006)(316002)(8676002)(70586007)(16526019)(110136005)(54906003)(7696005)(36860700001)(40460700003)(86362001)(82740400003)(356005)(81166007)(426003)(83380400001)(82310400005)(41300700001)(36756003)(5660300002)(2906002)(8936002)(44832011)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jan 2023 14:31:55.5758
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9968f72c-d354-433f-4541-08daf3176c7c
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL02EPF0000C402.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6371
 
-On Thu, 15 Dec 2022 16:12:50 +0200, Vladimir Oltean wrote:
-> Michael Walle says he noticed the following stack trace while performing
-> a shutdown with "reboot -f". He suggests he got "lucky" and just hit the
-> correct spot for the reboot while there was a packet transmission in
-> flight.
-> 
-> Unable to handle kernel NULL pointer dereference at virtual address 0000000000000098
-> CPU: 0 PID: 23 Comm: kworker/0:1 Not tainted 6.1.0-rc5-00088-gf3600ff8e322 #1930
-> Hardware name: Kontron KBox A-230-LS (DT)
-> pc : iommu_get_dma_domain+0x14/0x20
-> lr : iommu_dma_map_page+0x9c/0x254
-> Call trace:
->  iommu_get_dma_domain+0x14/0x20
->  dma_map_page_attrs+0x1ec/0x250
->  enetc_start_xmit+0x14c/0x10b0
->  enetc_xmit+0x60/0xdc
->  dev_hard_start_xmit+0xb8/0x210
->  sch_direct_xmit+0x11c/0x420
->  __dev_queue_xmit+0x354/0xb20
->  ip6_finish_output2+0x280/0x5b0
->  __ip6_finish_output+0x15c/0x270
->  ip6_output+0x78/0x15c
->  NF_HOOK.constprop.0+0x50/0xd0
->  mld_sendpack+0x1bc/0x320
->  mld_ifc_work+0x1d8/0x4dc
->  process_one_work+0x1e8/0x460
->  worker_thread+0x178/0x534
->  kthread+0xe0/0xe4
->  ret_from_fork+0x10/0x20
-> Code: d503201f f9416800 d503233f d50323bf (f9404c00)
-> ---[ end trace 0000000000000000 ]---
-> Kernel panic - not syncing: Oops: Fatal exception in interrupt
-> 
-> [...]
+To support VFIO pass-through device with SNP-enabled guest, IOMMU needs to
+setup IOMMU page table with matching page size to the RMP. In order for
+the IOMMU driver to setup page table appropriately, it needs to determine:
 
-Applied to will (for-joerg/arm-smmu/fixes), thanks!
+1. If an IOMMU domain is a VFIO domain (PATCH 1)
+2. If an IOMMU domain belongs to an SNP-enabled guest (PATCH 2,3)
+3. Appropriate page size the IOMMU domain (PATCH 4)
 
-[1/2] iommu/arm-smmu: don't unregister on shutdown
-      https://git.kernel.org/will/c/42afa58a2431
-[2/2] iommu/arm-smmu-v3: don't unregister on shutdown
-      https://git.kernel.org/will/c/1dc4b4b5c5e7
+Please note that patch 2/4 is a preparatory patch for an upcoming series
+to support SNP, which implements the call-back for the struct
+amd_iommu_svm_ops.is_snp_guest().
 
-Cheers,
+Best Regards,
+Suravee
+
+Suravee Suthikulpanit (4):
+  iommu/amd: Introduce Protection-domain flag VFIO
+  iommu/amd: Introduce structure amd_iommu_svm_ops.is_snp_guest()
+  iommu: Introduce IOMMU call-back for processing struct KVM assigned to
+    VFIO
+  iommu/amd: Force SNP-enabled VFIO domain to 4K page size
+
+ drivers/iommu/amd/amd_iommu_types.h |  3 ++
+ drivers/iommu/amd/iommu.c           | 45 +++++++++++++++++++++++++++--
+ drivers/iommu/iommu.c               | 10 +++++++
+ drivers/vfio/vfio_main.c            |  1 +
+ include/linux/amd-iommu.h           |  6 ++++
+ include/linux/iommu.h               |  4 +++
+ 6 files changed, 67 insertions(+), 2 deletions(-)
+
 -- 
-Will
+2.32.0
 
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
