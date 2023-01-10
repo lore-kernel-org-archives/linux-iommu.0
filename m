@@ -1,77 +1,85 @@
-Received: from cmx-mtlrgo002.bell.net (mta-mtl-005.bell.net [209.71.208.25])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com [209.85.219.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2A8A28F8;
-	Tue, 10 Jan 2023 08:10:50 +0000 (UTC)
-X-RG-CM-BuS: 0
-X-RG-CM-SC: 0
-X-RG-CM: Clean
-X-Originating-IP: [70.54.80.171]
-X-RG-Env-Sender: matt.fagnani@bell.net
-X-RG-Rigid: 63B600CD009937F6
-X-CM-Envelope: MS4xfCUGo27GhQgcr70sf442nrT2B06JG7JQm4Oo8WeAVI9/mwH+42A9EtzIcaAz/Z409dfEdYCjUrK/DxGZbrK4YAjwOkun/Ymxbn7R/AsKWZxR64kPD0kd
- cvjkrud2NELDAx2JCY1URQMKLYsVKv0heaods7dV9V30vwqcL3BO60Cz+uoPJzPtrkiUzGqzNzAxprKsvsheAcC7jOrvr2xD+kNKQJdg9NLdWHZaG3QyifnS
- C+JNo9k1yMAGDylXuTQUMvZPc4DnGhHXdat8ywuPXvFF43qQrI5CWSt3T/SGIrwln6/EUsoiWfJSQ2QmelgnNTSNx+JF+FV0k33ck/Vs5T4FVN78z2/HZ6wW
- qpDQyjYLlSlbtO6mZCUoicQ6u1nAlY1YY/U+JQS6wGya9etMUQAht3y2D1ta7xsOxyOhFNxyo3W8megGhMipVdC/LEd9eAnF06ecL73Y7xpgTShbwSdeUWOp
- ORE+y58BGvjcJzS6idZVZgkNQqbe+taPyuSOc0EC3VrZolI1LC40FpD1t6M=
-X-CM-Analysis: v=2.4 cv=d6kzizvE c=1 sm=1 tr=0 ts=63bd1c9e
- a=I0QgvDUx5pjUA0xIX2H+Tw==:117 a=I0QgvDUx5pjUA0xIX2H+Tw==:17
- a=IkcTkHD0fZMA:10 a=5KLPUuaC_9wA:10 a=fc0oe9_eLKIsakoo4NEA:9
- a=QEXdDO2ut3YA:10
-Received: from [192.168.2.10] (70.54.80.171) by cmx-mtlrgo002.bell.net (5.8.807) (authenticated as matt.fagnani@bell.net)
-        id 63B600CD009937F6; Tue, 10 Jan 2023 03:06:54 -0500
-Message-ID: <be2b2dfc-ed6c-f762-7e4c-9d22b13717fe@bell.net>
-Date: Tue, 10 Jan 2023 03:06:53 -0500
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDAA628F8
+	for <iommu@lists.linux.dev>; Tue, 10 Jan 2023 08:18:41 +0000 (UTC)
+Received: by mail-yb1-f176.google.com with SMTP id c124so11000000ybb.13
+        for <iommu@lists.linux.dev>; Tue, 10 Jan 2023 00:18:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Rq6kbFa9Q6XePoTGZMyOqndZFFNOA4hEyY3g6DmupTM=;
+        b=peSqu6O2atn6rcoXsO2zx056ilEHN6U4fJ0NwepwoB9a03kpyGWlsG8S+S4f44GhvU
+         EomHOSgabfexEYSUmzfCosXXWVBOZsuiRslBuuSRgU+keh/2x8TA7MvepwuS9VPu2Ddm
+         UMY6JOeug81X3/FaWz3EYU5q9ZlZk3OJ1VZxDOiXhY93tvHjU1I49Gwcfz0axXtEBboV
+         pZo8S18ayW+eMwynh8wWT62o1Hek5swzQJ6xzAndMyPYLWDYNNY6fZdY8tgklzfYDv4B
+         jkAjhJb47GCRwwXXEIrK/nZ2njMYdMh/YiWPKWmOKCOpiBT+/kwie4t/xc4BiR8JhLGi
+         1ocA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Rq6kbFa9Q6XePoTGZMyOqndZFFNOA4hEyY3g6DmupTM=;
+        b=Dm0NZmZv/OO5acBBwnztxPFkdblT4/swDaU7Oc+kCtk9mu6aL7EdW5Urue7RT6bP11
+         nKpBIoUor9Vjff7kuYi0kO3A/pE5O8wMRleVUJOyJmXJxtiRNUZms1RdEJGDuRxS/JyR
+         bwwMNKVucORto2acI6Hw23bxsSu4FC0hnvVlDZqMqKrunSCBubO/FG8JKz9g1/uuqzwU
+         m451EZjSCarm4z6nue583qKKQ3kqLU8z1JbhgYJRGZFloH/DR4p2MvduuyfFiJm8XOjy
+         bxAPK0/YSIC0s0BDigyW/c3Bvpwkm+gE8TVh1LtalR6S0UZ5cp0nhbM0dCLiOZsirgo7
+         Y6pw==
+X-Gm-Message-State: AFqh2kqQ4QVMXiUzJBM31SmHsf4jZOA6Bu1Wy+vaEsFjFGAwz07JeMfp
+	w31vqKNMVEzFEq4xWNQ43r3UPZon3NIskS/lQFvqqw==
+X-Google-Smtp-Source: AMrXdXuRBov6hoRRwKns5OAP09txTff/z7ySQGBUSEs6TNAFQ9Usf4qJbJA5b0gLCb3g8S1mE0oGzUkYOtYbbFCRf1I=
+X-Received: by 2002:a25:4903:0:b0:770:d766:b5e8 with SMTP id
+ w3-20020a254903000000b00770d766b5e8mr4722239yba.24.1673338720651; Tue, 10 Jan
+ 2023 00:18:40 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101
- Firefox/110.0 Thunderbird/110.0a1
-From: Matt Fagnani <matt.fagnani@bell.net>
-Subject: =?UTF-8?Q?Re=3A_=5Bregression=2C_bisected=2C_pci/iommu=5D_Bug=C2=A0?=
- =?UTF-8?Q?216865_-_Black_screen_when_amdgpu_started_during_6=2E2-rc1_boot_w?=
- =?UTF-8?Q?ith_AMD_IOMMU_enabled?=
-To: Baolu Lu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
- Vasant Hegde <vasant.hegde@amd.com>
-Cc: Thorsten Leemhuis <regressions@leemhuis.info>,
- Joerg Roedel <jroedel@suse.de>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, LKML <linux-kernel@vger.kernel.org>,
- "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
- Linux PCI <linux-pci@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>
-References: <15d0f9ff-2a56-b3e9-5b45-e6b23300ae3b@leemhuis.info>
- <5aa0e698-f715-0481-36e5-46505024ebc1@bell.net>
- <aea57c5f-2d20-c589-ad44-a63f1133a3db@linux.intel.com>
- <157c4ca4-370a-5d7e-fe32-c64d934f6979@amd.com>
- <223ee6d6-70ea-1d53-8bc2-2d22201d8dde@bell.net>
- <6fff9d10-f77f-e55a-9020-8a1bd34cf508@amd.com> <Y7gs0zYKp/VXACBi@nvidia.com>
- <f96b1cf3-6865-663d-f1cd-466a71519b08@linux.intel.com>
-Content-Language: en-US
-In-Reply-To: <f96b1cf3-6865-663d-f1cd-466a71519b08@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20230109174511.1740856-1-brgl@bgdev.pl> <20230109174511.1740856-11-brgl@bgdev.pl>
+In-Reply-To: <20230109174511.1740856-11-brgl@bgdev.pl>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Tue, 10 Jan 2023 09:18:29 +0100
+Message-ID: <CACRpkdb7C763xYvZKc=6-oZtGGtqSwdNK5j_aA16f6j7bR1yqw@mail.gmail.com>
+Subject: Re: [PATCH 10/18] pinctrl: qcom: sa8775p: add the pinctrl driver for
+ the sa8775p platform
+To: Bartosz Golaszewski <brgl@bgdev.pl>
+Cc: Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
+	Konrad Dybcio <konrad.dybcio@linaro.org>, Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
+	Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, 
+	Georgi Djakov <djakov@kernel.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, Manivannan Sadhasivam <mani@kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>, 
+	Catalin Marinas <catalin.marinas@arm.com>, Richard Cochran <richardcochran@gmail.com>, 
+	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Vinod Koul <vkoul@kernel.org>, 
+	Alex Elder <elder@kernel.org>, linux-arm-msm@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-clk@vger.kernel.org, linux-pm@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+	linux-gpio@vger.kernel.org, netdev@vger.kernel.org, 
+	Yadu MG <quic_ymg@quicinc.com>, Prasad Sodagudi <quic_psodagud@quicinc.com>, 
+	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 
-Baolu,
+On Mon, Jan 9, 2023 at 6:45 PM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
 
-I tried to apply your patch after checking out 6.2-rc3 and origin/master 
-but there were there the following errors.
+> From: Yadu MG <quic_ymg@quicinc.com>
+>
+> Add support for Lemans TLMM configuration and control via the pinctrl
+> framework.
+>
+> Signed-off-by: Yadu MG <quic_ymg@quicinc.com>
+> Signed-off-by: Prasad Sodagudi <quic_psodagud@quicinc.com>
+> [Bartosz: made the driver ready for upstream]
+> Co-developed-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
-git apply amd-iommu-amdgpu-boot-crash-2.patch
-error: patch failed: drivers/pci/ats.c:382
-error: drivers/pci/ats.c: patch does not apply
+Overall looks good, Konrad has some comments to be addressed.
+Is this something I can just apply in the next iteration?
 
-I manually changed drivers/pci/ats.c as shown in the patch. I built 
-6.2-rc3 + the patch. 6.2-rc3 with the patch had the same black screen 
-problem when booting. I added rd.driver.blacklist=amdgpu on the kernel 
-command line to prevent amdgpu from being started while the initramfs 
-was in use, and the black screen happened later in the boot as I 
-described in my previous email. The journal showed the same two warnings 
-and null pointer dereference which made amdgpu crash as I reported.
-
-Thanks,
-
-Matt
-
-
+Yours,
+Linus Walleij
