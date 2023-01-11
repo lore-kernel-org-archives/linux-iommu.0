@@ -1,51 +1,52 @@
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 695F317D0
-	for <iommu@lists.linux.dev>; Wed, 11 Jan 2023 06:09:23 +0000 (UTC)
-X-UUID: 78094772917611eda06fc9ecc4dadd91-20230111
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B41E617D0
+	for <iommu@lists.linux.dev>; Wed, 11 Jan 2023 06:49:35 +0000 (UTC)
+X-UUID: 176049ba917c11ed945fc101203acc17-20230111
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=i65n54Pntj3LMiHk0kDTcKGqGuncnAshkJdAZpuEpWA=;
-	b=nvfoG21pOh2CcD9c3C/hTaCva/8FDgfUp43AjNHK3Va/SdJ7arP2NqyWh60WOeP3QW2yVJ69MgSySQhkydajWuLElIOiPd9tjL0EqgTE8eEZxX/ltVTphgE1TiTIvJPcrivZBqqQ43ugnsgNBJgpNs2GpQHP5f2yrW6NcWgcjlg=;
+	h=Content-Type:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=YikO2rLCDulYaB/XHgOkJoUwL+d1QDp6nQB4HqkscJU=;
+	b=nQ7yCIi9DmKQ9YNjzUmnJdzUzpdDKXl+/OF4NjrNDhyNnrUbv8L+E6Yls68YSnFTnGlV7qOyuF+Wi8lDi3CPYiSVTFLi/nRLPmoqds19rsV1kwivX22hrLJuY68RmxXqC9f7Dko7i1G7jWY+cs8x33esDixqp+s3JicJaoJzm9M=;
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.17,REQID:471b37f3-1b2e-45f4-9db0-7ea402555533,IP:0,U
-	RL:0,TC:0,Content:9,EDM:0,RT:0,SF:45,FILE:0,BULK:0,RULE:Release_Ham,ACTION
-	:release,TS:54
-X-CID-INFO: VERSION:1.1.17,REQID:471b37f3-1b2e-45f4-9db0-7ea402555533,IP:0,URL
-	:0,TC:0,Content:9,EDM:0,RT:0,SF:45,FILE:0,BULK:0,RULE:Release_Ham,ACTION:r
-	elease,TS:54
-X-CID-META: VersionHash:543e81c,CLOUDID:2c7e5054-dd49-462e-a4be-2143a3ddc739,B
-	ulkID:230111140913KY6GPHWI,BulkQuantity:0,Recheck:0,SF:28|17|19|48|102,TC:
-	nil,Content:4,EDM:-3,IP:nil,URL:11|1,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:
-	0,OSI:0,OSA:0
+X-CID-O-INFO: VERSION:1.1.17,REQID:05102e29-76ff-4b9c-bf6c-9e56d9f78b9c,IP:0,U
+	RL:0,TC:0,Content:-25,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Release_Ham,ACTI
+	ON:release,TS:70
+X-CID-INFO: VERSION:1.1.17,REQID:05102e29-76ff-4b9c-bf6c-9e56d9f78b9c,IP:0,URL
+	:0,TC:0,Content:-25,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Spam_GS981B3D,ACTI
+	ON:quarantine,TS:70
+X-CID-META: VersionHash:543e81c,CLOUDID:e4b2ec8b-8530-4eff-9f77-222cf6e2895b,B
+	ulkID:230111144927FF2QD1BA,BulkQuantity:0,Recheck:0,SF:38|28|17|19|48,TC:n
+	il,Content:0,EDM:-3,IP:nil,URL:11|1,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+	,OSI:0,OSA:0
 X-CID-APTURL: Status:success,Category:nil,Trust:0,Unknown:0,Malicious:0
-X-CID-BVR: 0,NGT
-X-UUID: 78094772917611eda06fc9ecc4dadd91-20230111
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+X-CID-BVR: 0
+X-UUID: 176049ba917c11ed945fc101203acc17-20230111
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
 	(envelope-from <yf.wang@mediatek.com>)
 	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 553618668; Wed, 11 Jan 2023 14:09:12 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Wed, 11 Jan 2023 14:09:11 +0800
+	with ESMTP id 344695001; Wed, 11 Jan 2023 14:49:27 +0800
+Received: from mtkmbs13n2.mediatek.inc (172.21.101.108) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Wed, 11 Jan 2023 14:49:26 +0800
 Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.15 via Frontend Transport; Wed, 11 Jan 2023 14:09:10 +0800
+ mtkmbs13n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.15 via Frontend Transport; Wed, 11 Jan 2023 14:49:24 +0800
 From: <yf.wang@mediatek.com>
-To: <robin.murphy@arm.com>
-CC: <Libo.Kang@mediatek.com>, <Ning.Li@mediatek.com>, <iommu@lists.linux.dev>,
-	<jianjiao.zeng@mediatek.com>, <joro@8bytes.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-	<linux-mediatek@lists.infradead.org>, <matthias.bgg@gmail.com>,
-	<will@kernel.org>, <wsd_upstream@mediatek.com>, <yf.wang@mediatek.com>,
-	<yong.wu@mediatek.com>
-Subject: RE: [PATCH] iommu/iova: Fix alloc iova overflows issue
-Date: Wed, 11 Jan 2023 13:57:49 +0800
-Message-ID: <20230111055749.11519-1-yf.wang@mediatek.com>
+To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, "Will
+ Deacon" <will@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, "open
+ list:IOMMU DMA-API LAYER" <iommu@lists.linux.dev>, open list
+	<linux-kernel@vger.kernel.org>, "moderated list:ARM/Mediatek SoC support"
+	<linux-arm-kernel@lists.infradead.org>, "moderated list:ARM/Mediatek SoC
+ support" <linux-mediatek@lists.infradead.org>
+CC: <wsd_upstream@mediatek.com>, <stable@vger.kernel.org>, Libo Kang
+	<Libo.Kang@mediatek.com>, Yong Wu <yong.wu@mediatek.com>, Ning Li
+	<Ning.Li@mediatek.com>, jianjiao zeng <jianjiao.zeng@mediatek.com>, "Yunfei
+ Wang" <yf.wang@mediatek.com>
+Subject: [PATCH v2] iommu/iova: Fix alloc iova overflows issue
+Date: Wed, 11 Jan 2023 14:38:00 +0800
+Message-ID: <20230111063801.25107-1-yf.wang@mediatek.com>
 X-Mailer: git-send-email 2.18.0
-In-Reply-To: <99695d77-e54f-3270-ee9a-9b3cbb3296e5@arm.com>
-References: <99695d77-e54f-3270-ee9a-9b3cbb3296e5@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -55,88 +56,73 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-MTK: N
 
-On Mon, 2023-01-09 at 11:47 +0000, Robin Murphy wrote:
-> On 2023-01-09 08:34, yf.wang@mediatek.com wrote:
-> > From: Yunfei Wang <yf.wang@mediatek.com>
-> > 
-> > In __alloc_and_insert_iova_range, there is an issue that retry_pfn
-> > overflows. The value of iovad->anchor.pfn_hi is ~0UL, then when
-> > iovad->cached_node is iovad->anchor, curr_iova->pfn_hi + 1 will
-> > overflow. As a result, if the retry logic is executed, low_pfn is
-> > updated to 0, and then new_pfn < low_pfn returns false to make the
-> > allocation successful.
-> > 
-> > This issue occurs in the following two situations:
-> > 1. The first iova size exceeds the domain size. When initializing
-> > iova domain, iovad->cached_node is assigned as iovad->anchor. For
-> > example, the iova domain size is 10M, start_pfn is 0x1_F000_0000,
-> > and the iova size allocated for the first time is 11M. The
-> > following is the log information, new->pfn_lo is smaller than
-> > iovad->cached_node.
-> > 
-> > Example log:
-> > [  223.798112][T1705487] sh:
-> > [name:iova&]__alloc_and_insert_iova_range
-> > start_pfn:0x1f0000,retry_pfn:0x0,size:0xb00,limit_pfn:0x1f0a00
-> > [  223.799590][T1705487] sh:
-> > [name:iova&]__alloc_and_insert_iova_range
-> > success start_pfn:0x1f0000,new->pfn_lo:0x1efe00,new-
-> > >pfn_hi:0x1f08ff
-> > 
-> > 2. The node with the largest iova->pfn_lo value in the iova domain
-> > is deleted, iovad->cached_node will be updated to iovad->anchor,
-> > and then the alloc iova size exceeds the maximum iova size that can
-> > be allocated in the domain.
-> > 
-> > Adding judgment that retry_pfn must be greater than iovad-
-> > >start_pfn
-> > can fix this issue.
-> 
-> Hmm, indeed that's a sneaky little bug - thanks for the thorough 
-> analysis - but couldn't we avoid the overflow entirely? I don't have
-> the 
-> complete logic paged in, but superficially it seems like:
-> 
-> 	retry_pfn = curr_iova->pfn_hi;
-> 	...
-> 		retry_pfn <= limit_pfn
-> 	...
-> 		low_pfn = retry_pfn + 1;
-> 
-> should still work, shouldn't it?
-> 
-> Thanks,
-> Robin.
-> 
+From: Yunfei Wang <yf.wang@mediatek.com>
 
-Hi Robin,
-Thanks for your suggestion, your solution is more perfect,
-PATCH v2 version will modify it.
+In __alloc_and_insert_iova_range, there is an issue that retry_pfn
+overflows. The value of iovad->anchor.pfn_hi is ~0UL, then when
+iovad->cached_node is iovad->anchor, curr_iova->pfn_hi + 1 will
+overflow. As a result, if the retry logic is executed, low_pfn is
+updated to 0, and then new_pfn < low_pfn returns false to make the
+allocation successful.
 
-Thanks,
-Yunfei.
+This issue occurs in the following two situations:
+1. The first iova size exceeds the domain size. When initializing
+iova domain, iovad->cached_node is assigned as iovad->anchor. For
+example, the iova domain size is 10M, start_pfn is 0x1_F000_0000,
+and the iova size allocated for the first time is 11M. The
+following is the log information, new->pfn_lo is smaller than
+iovad->cached_node.
 
-> > Signed-off-by: jianjiao zeng <jianjiao.zeng@mediatek.com>
-> > Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
-> > ---
-> >   drivers/iommu/iova.c | 3 ++-
-> >   1 file changed, 2 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> > index a44ad92fc5eb..0073206c2a95 100644
-> > --- a/drivers/iommu/iova.c
-> > +++ b/drivers/iommu/iova.c
-> > @@ -209,7 +209,8 @@ static int __alloc_and_insert_iova_range(struct
-> > iova_domain *iovad,
-> >   	} while (curr && new_pfn <= curr_iova->pfn_hi && new_pfn >=
-> > low_pfn);
-> >   
-> >   	if (high_pfn < size || new_pfn < low_pfn) {
-> > -		if (low_pfn == iovad->start_pfn && retry_pfn <
-> > limit_pfn) {
-> > +		if (low_pfn == iovad->start_pfn &&
-> > +		    retry_pfn >= iovad->start_pfn && retry_pfn <
-> > limit_pfn) {
-> >   			high_pfn = limit_pfn;
-> >   			low_pfn = retry_pfn;
-> >   			curr = iova_find_limit(iovad, limit_pfn);
+Example log as follows:
+[  223.798112][T1705487] sh: [name:iova&]__alloc_and_insert_iova_range
+start_pfn:0x1f0000,retry_pfn:0x0,size:0xb00,limit_pfn:0x1f0a00
+[  223.799590][T1705487] sh: [name:iova&]__alloc_and_insert_iova_range
+success start_pfn:0x1f0000,new->pfn_lo:0x1efe00,new->pfn_hi:0x1f08ff
+
+2. The node with the largest iova->pfn_lo value in the iova domain
+is deleted, iovad->cached_node will be updated to iovad->anchor,
+and then the alloc iova size exceeds the maximum iova size that can
+be allocated in the domain.
+
+After judging that retry_pfn is less than limit_pfn, call retry_pfn+1
+to fix the overflow issue.
+
+Signed-off-by: jianjiao zeng <jianjiao.zeng@mediatek.com>
+Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+Cc: <stable@vger.kernel.org> # 5.15.*
+---
+v2: Update patch
+    1. Cc stable@vger.kernel.org
+       This patch needs to be merged stable branch,
+       add stable@vger.kernel.org in mail list.
+    2. Refer robin's suggestion to update patch.
+
+---
+ drivers/iommu/iova.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index a44ad92fc5eb..fe452ce46642 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -197,7 +197,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 
+ 	curr = __get_cached_rbnode(iovad, limit_pfn);
+ 	curr_iova = to_iova(curr);
+-	retry_pfn = curr_iova->pfn_hi + 1;
++	retry_pfn = curr_iova->pfn_hi;
+ 
+ retry:
+ 	do {
+@@ -211,7 +211,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 	if (high_pfn < size || new_pfn < low_pfn) {
+ 		if (low_pfn == iovad->start_pfn && retry_pfn < limit_pfn) {
+ 			high_pfn = limit_pfn;
+-			low_pfn = retry_pfn;
++			low_pfn = retry_pfn + 1;
+ 			curr = iova_find_limit(iovad, limit_pfn);
+ 			curr_iova = to_iova(curr);
+ 			goto retry;
+-- 
+2.18.0
+
