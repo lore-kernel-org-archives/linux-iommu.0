@@ -1,28 +1,28 @@
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80F3533D2
-	for <iommu@lists.linux.dev>; Wed, 11 Jan 2023 18:19:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02B1633D2
+	for <iommu@lists.linux.dev>; Wed, 11 Jan 2023 18:22:07 +0000 (UTC)
 From: Thomas Gleixner <tglx@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1673461175;
+	s=2020; t=1673461325;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=v9yLlw+CPPaFudmLWOnzXWazHzYK/LPnpzMb1fBBhH8=;
-	b=qIkO8ofsmxcEhgHvSKYUo3KRpEnxCyaUcJAeHOCr57WMt9SO+scnZh75msdMhcBc71rb77
-	TkRGVISwdV9ZHeDzGic5SqSMhkPrqHgkJagOxeBy8pgcD8awaHqQTMQnAzFKL8hQuVsVFi
-	3Dsbkhob6qwN/WWaX67OGU52eaxSIlGmUzzrbop4drU8kCCHGuj9sfYgpumB0HW7jC301/
-	5d94B/qZrL7IlZSZART3V/qapJqS4RQhiy2JNVKRfFLaKywUeRLYp8rFjDLEErJxUC0vcL
-	5Euadn7w9Z5GuAg35KgUuKmqaoVQJYMcf5d3alB7vzEYNfoCxvslr3yDbIQEWw==
+	bh=jxIOvx/FOCrvFSWu5Y1mdP4fKAkQqLE1G0W7dNcBaVE=;
+	b=tFTGDfgJ9VfFpcWmk4eIX3n8W5MJiSRlNfaUZbeot2kdGccBKC9BCfKn8bLoHX36YwGHjh
+	D3zj8bnRuJ/Si4rujs7Zt88o4RNqyt0NUZkzQ3KsGZrPMHS8w5Lai2yJC9jxNi81fo1Q++
+	Ydn2oOb+PzHgOeIUzbtOjcl6M7qFCUqZqjWa4QBa7YU6wiP86ri3UZ6Ai1efJO79j6T9qz
+	z+TBMVlZHh1cwBMWzjBmGEnxmTm/AS2Ux+EiabpUR91W7qq4ECv6dLHaqxl0UNhnqNKbq3
+	j+/ZEOs+eIOW2K68+EAJV6YXdD/CuIXTe8UIavoG/hRacktU4bjXzQ0cMBShgA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1673461175;
+	s=2020e; t=1673461325;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=v9yLlw+CPPaFudmLWOnzXWazHzYK/LPnpzMb1fBBhH8=;
-	b=+HS771bu4wTJd8NyZ2Q0OZI+lfX2S4cwwJfn6qT9NPXQDhpNZT8oPhUU22ocg+lwT9jLiM
-	PzkudHnDFis62OAg==
+	bh=jxIOvx/FOCrvFSWu5Y1mdP4fKAkQqLE1G0W7dNcBaVE=;
+	b=a3HiVVOcV1Onqj6bTQon3HiFaq5CKrJFRoRLQHmrHQwjYlib3nw36Pp4wjMnnn0kI9MLiW
+	PKFpJ6qzEb62pvAA==
 To: Jason Gunthorpe <jgg@nvidia.com>, Alexander Gordeev
  <agordeev@linux.ibm.com>, Alex Williamson <alex.williamson@redhat.com>, Lu
  Baolu <baolu.lu@linux.intel.com>, Christian Borntraeger
@@ -40,11 +40,12 @@ Cc: Bharat Bhushan <bharat.bhushan@nxp.com>, Christian Borntraeger
  <marc.zyngier@arm.com>, Matthew Rosato <mjrosato@linux.ibm.com>, Tomasz
  Nowicki <tomasz.nowicki@caviumnetworks.com>, Will Deacon
  <will.deacon@arm.com>
-Subject: Re: [PATCH iommufd v3 2/9] iommu: Add iommu_group_has_isolated_msi()
-In-Reply-To: <2-v3-3313bb5dd3a3+10f11-secure_msi_jgg@nvidia.com>
-References: <2-v3-3313bb5dd3a3+10f11-secure_msi_jgg@nvidia.com>
-Date: Wed, 11 Jan 2023 19:19:34 +0100
-Message-ID: <87eds1hr2h.ffs@tglx>
+Subject: Re: [PATCH iommufd v3 5/9] irq: Remove unused
+ irq_domain_check_msi_remap() code
+In-Reply-To: <5-v3-3313bb5dd3a3+10f11-secure_msi_jgg@nvidia.com>
+References: <5-v3-3313bb5dd3a3+10f11-secure_msi_jgg@nvidia.com>
+Date: Wed, 11 Jan 2023 19:22:05 +0100
+Message-ID: <87bkn5hqya.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,34 +55,11 @@ MIME-Version: 1.0
 Content-Type: text/plain
 
 On Thu, Jan 05 2023 at 15:33, Jason Gunthorpe wrote:
-> +
-> +	mutex_lock(&group->mutex);
-> +	list_for_each_entry(group_dev, &group->devices, list)
-> +		ret &= msi_device_has_isolated_msi(group_dev->dev) ||
-> +		       device_iommu_capable(group_dev->dev,
-> +					    IOMMU_CAP_INTR_REMAP);
 
-Nit. This really wants brackets even if they are not required by the
-language. Why?
+Prefix: genirq/irqdomain:
 
-Brackets can be omitted for a single line statement in the loop/if path,
-but this
+git log --online $FILEPATH gives you usually a pretty good hint for the prefix.
 
-> +		ret &= msi_device_has_isolated_msi(group_dev->dev) ||
-> +		       device_iommu_capable(group_dev->dev,
-> +					    IOMMU_CAP_INTR_REMAP);
+Other than that:
 
-is visually a multi line statement. So having brackets makes visual
-parsing of this construct way clearer:
-
-	list_for_each_entry(group_dev, &group->devices, list) {
-		ret &= msi_device_has_isolated_msi(group_dev->dev) ||
-		       device_iommu_capable(group_dev->dev, IOMMU_CAP_INTR_REMAP);
-	}
-
-Also get rid of that extra line break. We lifted the 80 characters line
-length quite some while ago and made it 100.
-
-Thanks,
-
-        tglx
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
