@@ -1,30 +1,30 @@
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0D45BD02
-	for <iommu@lists.linux.dev>; Wed, 11 Jan 2023 20:25:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31ECABD08
+	for <iommu@lists.linux.dev>; Wed, 11 Jan 2023 20:25:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673468733; x=1705004733;
+  t=1673468735; x=1705004735;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=GMeoi/8w6qsbk40t9XpztUuwD163lNMlvbB+trQLXbE=;
-  b=N2j0/xkLZOgLrebHs0oEmESmw1f1aib1BYGKqQHSxW1RueRBycAD1WM9
-   CseAfgeU97ZLIKPVq931yHfgg1ckP3F5yFMHJLwX3NLPmbEqsogbPK1KE
-   jn41mZfeuZa2QEE95C2VeThZlf2VZ1dcv/UOCaAc0yTjy+j2DNc+RYhsT
-   fdtLlpWDucVDWUei3iqehvtAyj9TQbra/bfDS15XdPnkPcf2jUoRu7hHi
-   +L6MQdQl7GbU4Ls7uHDovPCr9a/iD44PMCnK4CC4EA7L/anOP26D13uKk
-   hVLjstQG1jedLxCQchp6++/0OQbaoxB0Uk+L/z/tHEGMiAvKxJn4mwpKa
+  bh=PbKbzo0ebhNuat4Mu85n5Nyk3Ge5hASt79m3RxYgmac=;
+  b=lxzrqsidbUfe5Sje6x6E/6FeEXFpUJbbfYUWIFCnmuxzgFFLXNmH1NUZ
+   XXc6tQWDNR5geZsIe2YxATJCDmw36cVPPMoql/5Hhwn6E5z6lvfdwCkD8
+   agEK17Zv/w77OlA7f8M7sdZDGCsTHdt7a8ky8VcrpNA53DtTbTZkLbDgL
+   PnVwTSwBI0Nq7a/uUI0+3fMzOb67iL63BccU9jCtcCa6qfcydu4J2q1a9
+   aG3Nf5aSX7D785BoEyJnE8a6k2pPkzXLiAxRkHCN1Pa1LsA1PrK+G8om+
+   rpwVLQbSTAJxy8v5SgjJPT4qyMtCiea6EnnaJKiu0SkLyLPmgtnbMOf/q
    g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="350755017"
+X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="350755021"
 X-IronPort-AV: E=Sophos;i="5.96,317,1665471600"; 
-   d="scan'208";a="350755017"
+   d="scan'208";a="350755021"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
   by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2023 12:25:30 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="781518074"
+X-IronPort-AV: E=McAfee;i="6500,9779,10586"; a="781518080"
 X-IronPort-AV: E=Sophos;i="5.96,317,1665471600"; 
-   d="scan'208";a="781518074"
+   d="scan'208";a="781518080"
 Received: from kanliang-dev.jf.intel.com ([10.165.154.102])
   by orsmga004.jf.intel.com with ESMTP; 11 Jan 2023 12:25:28 -0800
 From: kan.liang@linux.intel.com
@@ -39,9 +39,9 @@ To: joro@8bytes.org,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
 Cc: Kan Liang <kan.liang@linux.intel.com>
-Subject: [PATCH 5/7] iommu/vt-d: Support cpumask for IOMMU perfmon
-Date: Wed, 11 Jan 2023 12:25:02 -0800
-Message-Id: <20230111202504.378258-6-kan.liang@linux.intel.com>
+Subject: [PATCH 7/7] iommu/vt-d: Enable IOMMU perfmon support
+Date: Wed, 11 Jan 2023 12:25:04 -0800
+Message-Id: <20230111202504.378258-8-kan.liang@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20230111202504.378258-1-kan.liang@linux.intel.com>
 References: <20230111202504.378258-1-kan.liang@linux.intel.com>
@@ -55,191 +55,59 @@ Content-Transfer-Encoding: 8bit
 
 From: Kan Liang <kan.liang@linux.intel.com>
 
-The perf subsystem assumes that all counters are by default per-CPU. So
-the user space tool reads a counter from each CPU. However, the IOMMU
-counters are system-wide and can be read from any CPU. Here we use a CPU
-mask to restrict counting to one CPU to handle the issue. (with CPU
-hotplug notifier to choose a different CPU if the chosen one is taken
-off-line).
+Register and enable an IOMMU perfmon for each active IOMMU device.
 
-The CPU is exposed to /sys/bus/event_source/devices/dmar*/cpumask for
-the user space perf tool.
+The failure of IOMMU perfmon registration doesn't impact other
+functionalities of an IOMMU device.
 
 Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
 ---
- .../sysfs-bus-event_source-devices-iommu      |   8 ++
- drivers/iommu/intel/perfmon.c                 | 113 ++++++++++++++++--
- include/linux/cpuhotplug.h                    |   1 +
- 3 files changed, 115 insertions(+), 7 deletions(-)
+ drivers/iommu/intel/dmar.c  | 3 +++
+ drivers/iommu/intel/iommu.c | 3 +++
+ 2 files changed, 6 insertions(+)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-event_source-devices-iommu b/Documentation/ABI/testing/sysfs-bus-event_source-devices-iommu
-index 04e08851d8e6..3519954fe713 100644
---- a/Documentation/ABI/testing/sysfs-bus-event_source-devices-iommu
-+++ b/Documentation/ABI/testing/sysfs-bus-event_source-devices-iommu
-@@ -22,3 +22,11 @@ Description:	Read-only.  Attribute group to describe the magic bits
- 		    filter_pasid	= "config1:32-53" - PASID filter
- 		    filter_ats		= "config2:0-4"   - Address Type filter
- 		    filter_page_table	= "config2:8-12"  - Page Table Level filter
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index 94e314320cd9..5a33df9e19ce 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -1152,6 +1152,8 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+ 		err = iommu_device_register(&iommu->iommu, &intel_iommu_ops, NULL);
+ 		if (err)
+ 			goto err_sysfs;
 +
-+What:		/sys/bus/event_source/devices/dmar*/cpumask
-+Date:		Jan 2023
-+KernelVersion:	6.3
-+Contact:	Kan Liang <kan.liang@linux.intel.com>
-+Description:	Read-only.  This file always returns the CPU to which the
-+		IOMMU pmu is bound for access to all IOMMU pmu
-+		performance monitoring events.
-diff --git a/drivers/iommu/intel/perfmon.c b/drivers/iommu/intel/perfmon.c
-index 43a5075eaecd..f332232bb345 100644
---- a/drivers/iommu/intel/perfmon.c
-+++ b/drivers/iommu/intel/perfmon.c
-@@ -32,9 +32,30 @@ static struct attribute_group iommu_pmu_events_attr_group = {
- 	.attrs = attrs_empty,
- };
++		iommu_pmu_register(iommu);
+ 	}
  
-+static cpumask_t iommu_pmu_cpu_mask;
-+
-+static ssize_t iommu_pmu_cpumask_show(struct device *dev,
-+				      struct device_attribute *attr,
-+				      char *buf)
-+{
-+	return cpumap_print_to_pagebuf(true, buf, &iommu_pmu_cpu_mask);
-+}
-+
-+static DEVICE_ATTR(cpumask, S_IRUGO, iommu_pmu_cpumask_show, NULL);
-+
-+static struct attribute *iommu_pmu_cpumask_attrs[] = {
-+	&dev_attr_cpumask.attr,
-+	NULL
-+};
-+
-+static struct attribute_group iommu_pmu_cpumask_attr_group = {
-+	.attrs = iommu_pmu_cpumask_attrs,
-+};
-+
- static const struct attribute_group *iommu_pmu_attr_groups[] = {
- 	&iommu_pmu_format_attr_group,
- 	&iommu_pmu_events_attr_group,
-+	&iommu_pmu_cpumask_attr_group,
- 	NULL
- };
- 
-@@ -637,19 +658,97 @@ void free_iommu_pmu(struct intel_iommu *iommu)
- 	iommu->pmu = NULL;
- }
- 
-+static int iommu_pmu_cpu_online(unsigned int cpu)
-+{
-+	if (cpumask_empty(&iommu_pmu_cpu_mask))
-+		cpumask_set_cpu(cpu, &iommu_pmu_cpu_mask);
-+
-+	return 0;
-+}
-+
-+static int iommu_pmu_cpu_offline(unsigned int cpu)
-+{
-+	struct dmar_drhd_unit *drhd;
-+	struct intel_iommu *iommu;
-+	int target;
-+
-+	if (!cpumask_test_and_clear_cpu(cpu, &iommu_pmu_cpu_mask))
-+		return 0;
-+
-+	target = cpumask_any_but(cpu_online_mask, cpu);
-+
-+	if (target < nr_cpu_ids)
-+		cpumask_set_cpu(target, &iommu_pmu_cpu_mask);
-+	else
-+		target = -1;
-+
-+	rcu_read_lock();
-+
-+	for_each_iommu(iommu, drhd) {
-+		if (!iommu->pmu)
-+			continue;
-+		perf_pmu_migrate_context(&iommu->pmu->pmu, cpu, target);
-+	}
-+	rcu_read_unlock();
-+
-+	return 0;
-+}
-+
-+static int nr_iommu_pmu;
-+
-+static int iommu_pmu_cpuhp_setup(struct iommu_pmu *iommu_pmu)
-+{
-+	int ret;
-+
-+	if (nr_iommu_pmu++)
-+		return 0;
-+
-+	ret = cpuhp_setup_state(CPUHP_AP_PERF_X86_IOMMU_PERF_ONLINE,
-+				"driver/iommu/intel/perfmon:online",
-+				iommu_pmu_cpu_online,
-+				iommu_pmu_cpu_offline);
-+	if (ret)
-+		nr_iommu_pmu = 0;
-+
-+	return ret;
-+}
-+
-+static void iommu_pmu_cpuhp_free(struct iommu_pmu *iommu_pmu)
-+{
-+	if (--nr_iommu_pmu)
-+		return;
-+
-+	cpuhp_remove_state(CPUHP_AP_PERF_X86_IOMMU_PERF_ONLINE);
-+}
-+
- void iommu_pmu_register(struct intel_iommu *iommu)
+ 	drhd->iommu = iommu;
+@@ -1174,6 +1176,7 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+ static void free_iommu(struct intel_iommu *iommu)
  {
--	if (!iommu->pmu)
-+	struct iommu_pmu *iommu_pmu = iommu->pmu;
-+
-+	if (!iommu_pmu)
- 		return;
+ 	if (intel_iommu_enabled && !iommu->drhd->ignored) {
++		iommu_pmu_unregister(iommu);
+ 		iommu_device_unregister(&iommu->iommu);
+ 		iommu_device_sysfs_remove(&iommu->iommu);
+ 	}
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 59df7e42fd53..c57e60c5f353 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -30,6 +30,7 @@
+ #include "../iommu-sva.h"
+ #include "pasid.h"
+ #include "cap_audit.h"
++#include "perfmon.h"
  
--	if (__iommu_pmu_register(iommu)) {
--		pr_err("Failed to register PMU for iommu (seq_id = %d)\n",
--		       iommu->seq_id);
--	}
-+	if (__iommu_pmu_register(iommu))
-+		goto err;
+ #define ROOT_SIZE		VTD_PAGE_SIZE
+ #define CONTEXT_SIZE		VTD_PAGE_SIZE
+@@ -4013,6 +4014,8 @@ int __init intel_iommu_init(void)
+ 				       intel_iommu_groups,
+ 				       "%s", iommu->name);
+ 		iommu_device_register(&iommu->iommu, &intel_iommu_ops, NULL);
 +
-+	if (iommu_pmu_cpuhp_setup(iommu_pmu))
-+		goto unregister;
-+
-+	return;
-+
-+unregister:
-+	perf_pmu_unregister(&iommu_pmu->pmu);
-+err:
-+	pr_err("Failed to register PMU for iommu (seq_id = %d)\n", iommu->seq_id);
- }
++		iommu_pmu_register(iommu);
+ 	}
+ 	up_read(&dmar_global_lock);
  
- void iommu_pmu_unregister(struct intel_iommu *iommu)
- {
--	if (iommu->pmu)
--		perf_pmu_unregister(&iommu->pmu->pmu);
-+	struct iommu_pmu *iommu_pmu = iommu->pmu;
-+
-+	if (!iommu_pmu)
-+		return;
-+
-+	iommu_pmu_cpuhp_free(iommu_pmu);
-+	perf_pmu_unregister(&iommu_pmu->pmu);
- }
-diff --git a/include/linux/cpuhotplug.h b/include/linux/cpuhotplug.h
-index 6c6859bfc454..f2ea348ce3b0 100644
---- a/include/linux/cpuhotplug.h
-+++ b/include/linux/cpuhotplug.h
-@@ -221,6 +221,7 @@ enum cpuhp_state {
- 	CPUHP_AP_PERF_X86_CQM_ONLINE,
- 	CPUHP_AP_PERF_X86_CSTATE_ONLINE,
- 	CPUHP_AP_PERF_X86_IDXD_ONLINE,
-+	CPUHP_AP_PERF_X86_IOMMU_PERF_ONLINE,
- 	CPUHP_AP_PERF_S390_CF_ONLINE,
- 	CPUHP_AP_PERF_S390_SF_ONLINE,
- 	CPUHP_AP_PERF_ARM_CCI_ONLINE,
 -- 
 2.35.1
 
