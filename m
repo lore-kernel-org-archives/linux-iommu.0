@@ -1,128 +1,119 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2089.outbound.protection.outlook.com [40.107.243.89])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A04F2560
-	for <iommu@lists.linux.dev>; Thu, 12 Jan 2023 11:14:06 +0000 (UTC)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30CB64Ag029275;
-	Thu, 12 Jan 2023 11:13:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=2CpYJJvffSxR/qx+Z65ONIz3u9DGwI+Pun3NTqeU50s=;
- b=GM/bPcLAswwBR0dcOm1np18HrXvcmRRsnSIYZINj7Hjr9dGc+amviX7pQzztaVTQkVpn
- WHR6aqbmdpb8csCgYMta/l7eUZ6T2s86uOm6+Tm82ncF6x8cy5MbeFQnf2V4/qxf9Xc6
- O43GKnCeC0dTTIE4rIFOPTRqfeeFkCN0l3vtDu39S0rsJqJHPcNZFKdLi81wBJQ5+1/s
- JOMx3E9CQxnKrWf1nGD1jqfnFhHqd65i9ymBIn30hbez0BTr3GvjttlT8sFICGdJIw0S
- 34w9zxub3HL9y5w/0I6cm/Xfwdgq6QFfiFuXQlz9J9767Ahuw2R8M7rooM86Oyi/fLvm 0w== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3n2h1pr67c-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 12 Jan 2023 11:13:01 +0000
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 30CB6ibV031123;
-	Thu, 12 Jan 2023 11:13:00 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3n2h1pr669-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 12 Jan 2023 11:13:00 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-	by ppma03fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 30BHPFmv031030;
-	Thu, 12 Jan 2023 11:12:57 GMT
-Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
-	by ppma03fra.de.ibm.com (PPS) with ESMTPS id 3n1kyx9p83-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 12 Jan 2023 11:12:57 +0000
-Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
-	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 30CBCr7C22937980
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 12 Jan 2023 11:12:53 GMT
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id A17CB20043;
-	Thu, 12 Jan 2023 11:12:53 +0000 (GMT)
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 2DBF720040;
-	Thu, 12 Jan 2023 11:12:50 +0000 (GMT)
-Received: from li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com (unknown [9.171.13.23])
-	by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTPS;
-	Thu, 12 Jan 2023 11:12:50 +0000 (GMT)
-Date: Thu, 12 Jan 2023 12:12:48 +0100
-From: Alexander Gordeev <agordeev@linux.ibm.com>
-To: Heiko Carstens <hca@linux.ibm.com>
-Cc: Peter Zijlstra <peterz@infradead.org>,
-        Thomas Richter <tmricht@linux.ibm.com>, torvalds@linux-foundation.org,
-        corbet@lwn.net, will@kernel.org, boqun.feng@gmail.com,
-        mark.rutland@arm.com, catalin.marinas@arm.com, dennis@kernel.org,
-        tj@kernel.org, cl@linux.com, gor@linux.ibm.com,
-        borntraeger@linux.ibm.com, svens@linux.ibm.com,
-        Herbert Xu <herbert@gondor.apana.org.au>, davem@davemloft.net,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        joro@8bytes.org, suravee.suthikulpanit@amd.com, robin.murphy@arm.com,
-        dwmw2@infradead.org, baolu.lu@linux.intel.com,
-        Arnd Bergmann <arnd@arndb.de>, penberg@kernel.org, rientjes@google.com,
-        iamjoonsoo.kim@lge.com, Andrew Morton <akpm@linux-foundation.org>,
-        vbabka@suse.cz, roman.gushchin@linux.dev, 42.hyeyoo@gmail.com,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-s390@vger.kernel.org,
-        linux-crypto@vger.kernel.org, iommu@lists.linux.dev,
-        linux-arch@vger.kernel.org
-Subject: Re: [RFC][PATCH 08/12] s390: Replace cmpxchg_double() with
- cmpxchg128()
-Message-ID: <Y7/rMJ75lW7z9PAb@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
-References: <20221219153525.632521981@infradead.org>
- <20221219154119.352918965@infradead.org>
- <Y70SWXHDmOc3RhMd@osiris>
- <Y70it59wuvsnKJK1@hirez.programming.kicks-ass.net>
- <Y71QJBhNTIatvxUT@osiris>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8B3D62F
+	for <iommu@lists.linux.dev>; Thu, 12 Jan 2023 12:38:35 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ks6ab+Qs04fBsYjcOtNrmK09OsiKsurzPmnB473TJzhJhhK06jRrmYlFG00OPftR8h05Vn4offwf2hClvFtJRU3Xji7P4uyr7Z9jjtWAKAz9mwi1vZTub/GfSTQCpU8fsLSVI5BQjVMSOrVA5UTD6N99UBYPetd9Uk+EkB5r9o+yW5fr7efwW83FSzRpJHF8q5CYatEKDbUZrJh5h4ADnMcHuDPJDcIA5IFLTa/F3bDVIYAHD1Kq/RzQshCmW1FPtmwrdr9Pv2OcqFNsspVXj+mfN647sEbzVGITb8RWksB3cndStLM5LJepLvwx7Ake7pjFOnytHghwff6HNYaXBA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=iPbMNpYJ1Dkfv4g3OwIgT87bnkTMtrMGWyhHb5+/oJM=;
+ b=Vcr190PojWMYihFSv4aKA05YqcCuSzU2TIu6zi+x+G2ZE+hwZlv5/qzQZiGMUsS99l3BIeD3uLiP7or2B1ldrs2GrJ9PSqHhDN9NGzVDXWeznq5axE8fqKI3KaDTOchkL+4zYH8RvVlcyxNDBT2AAg7sSjzrEhFfBs467tuTGgKPycXhJJEafreyOddhGPyuWPRP63E/MZ34rWTQVolfhswMEGkwlirYyW7HouUxZ31MEoM/HN6xwgaCRpY/TwlulOfTMtItJ2Js3g2M4IKot89RNT5Njx/4cMwn5VWKd2Z/icJG7qj7S/LYzG1AIjn6MXp0/9XyWS20WZ8Lt72dBg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iPbMNpYJ1Dkfv4g3OwIgT87bnkTMtrMGWyhHb5+/oJM=;
+ b=cAa/VKIFUQYZ7FPxA0Jx2NftEo4JhmN+N+SZKJANDZp/jcmDrZwCdQE3EnuSK37RxRLjqhmb+c5xS622VktwHWB/jt4aRUP+wVH1A4CABQliUgHP6/H55SXcDN5/PxhdpRPJJF3KlEmhcgX5vqqjNSW4kY81ZdURVwjT5uUqUs0w1exysbtRuWJvgLss3Z/Ec4VRAKJNN9lWGyHT2OIAfmOXSnHnTMbbkSc86G7A2roq2I+6u8lQ0J3CWeMpnJ9FOozfvjkmUpFBSIC6czcJTRYvQaIr+ezKmOCdT1DIXY27N3skOQf+k70hsHOOQPJWDTcLmQqQWokMxi7hkTGe5A==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by DM6PR12MB4370.namprd12.prod.outlook.com (2603:10b6:5:2aa::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.13; Thu, 12 Jan
+ 2023 12:38:33 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f8b0:df13:5f8d:12a%9]) with mapi id 15.20.6002.013; Thu, 12 Jan 2023
+ 12:38:33 +0000
+Date: Thu, 12 Jan 2023 08:38:32 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <jroedel@suse.de>,
+	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Vasant Hegde <vasant.hegde@amd.com>, Tony Zhu <tony.zhu@intel.com>,
+	linux-pci@vger.kernel.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Matt Fagnani <matt.fagnani@bell.net>
+Subject: Re: [PATCH 1/1] PCI: Add translated request only opt-in for
+ pci_enable_pasid()
+Message-ID: <Y7//SDtnfXGHfior@nvidia.com>
+References: <20230112084629.737653-1-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230112084629.737653-1-baolu.lu@linux.intel.com>
+X-ClientProxiedBy: BLAPR03CA0116.namprd03.prod.outlook.com
+ (2603:10b6:208:32a::31) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Y71QJBhNTIatvxUT@osiris>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: hrmaJ6_faD8RHCW_pvcyE-JA-vnPIVMq
-X-Proofpoint-GUID: KLt4Oe9V1h3Xoju5iqVMXGihur9SkCzg
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2023-01-12_06,2023-01-12_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- adultscore=0 mlxlogscore=898 bulkscore=0 malwarescore=0 spamscore=0
- suspectscore=0 priorityscore=1501 impostorscore=0 clxscore=1011 mlxscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2301120077
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DM6PR12MB4370:EE_
+X-MS-Office365-Filtering-Correlation-Id: aa25338e-846e-4f4d-688d-08daf499eaeb
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	OjabO9q1YIy17EOQkyKfCp7N1g0Gqtxnred0CpiLL2CK/4MKJeL3yculPVgAvPAapOFB+jf5XW6WJwRfeI3iqcWk/5ftKRhAQXk7ojLs3AvKAv95U7pgVgEfN3RgHXJ20mJYqI5EIna59KTc2/unUHDXOT5puEAY46oCAIBfnfqSg0BzOBP30X0oWllS+L+hniiWfJ5bUV4Fu2GNf6/ghtAAOMZv+QZRnpobyoRasHOs8D6l0CFKOAcxSWVuN3LqcjY5BeAUn8SekEkOk6YeUzSvTwFUqV+kG3UyjeQG9Z7DuioLxX9Gz6uldfvLAP+8creQ2nED6ArVQ1eI3WiZ/c69gsExcP504/0xrP/wGAJtDuBZBPcKpLNSo0Rpz9RaAfkIBTDTtvPM6LybnBF91lpsflmqjr9TI5O1K9S0LaEWAJDWuRVNZj2Cto4DiNNBKnc+AHr26Q2JAGQsbtHcSKYJLhYblrZwFYd1YTy0PWaVCzgwIXo/vL3qSOeC6xOjepBOKHAGrSr0y5H3Q1IjHYbHA0YQHt2FJhngSl+70u7vdplq5gQ2VnjGVfoLihCX03L3QanbD06ERA7daAfvWInzNUBdfIZm33u5mVRSqki01sx88Jm+QwSqBmlHySK+VRbz1go9N9dF1dJ/bP1iTQ==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(376002)(366004)(346002)(136003)(396003)(451199015)(4326008)(6486002)(41300700001)(478600001)(38100700002)(54906003)(2616005)(316002)(26005)(66946007)(186003)(86362001)(8676002)(66476007)(36756003)(5660300002)(6916009)(6506007)(7416002)(2906002)(83380400001)(4744005)(66556008)(6512007)(8936002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?LGZ0YqmmNkoiIibvLseVvMyPQGhY6EsFhNkztmAO2l/WfC5xVFsXLd9obwrt?=
+ =?us-ascii?Q?QvF19fdm4ikmOHu3IFDn1TAbjsG04HTRmUgVo8WHL8TGQe0r9WmKizTL5ySp?=
+ =?us-ascii?Q?QrRNYXkAJLy81flecdwlWn+TVlJU5FLIPwn3EvAQ9sd1o85LSs6+2ssSIZEj?=
+ =?us-ascii?Q?XHnTKfvpdJplbB93SfwmjhyvNtN4Mke0fhS38hA52S1LmW6y9FjajEaaTKwK?=
+ =?us-ascii?Q?ozNzJ95Z7hQRn3crH67NsVDS776bVkXGdYi0Sf/+oDdc4Ywo6UbD8IKbrKq0?=
+ =?us-ascii?Q?Hh9ti2Q6Yjfc4TAxOjD8VXJKBN5LcBG02FvHKWghzHri0nWh0nuNOABTbQEO?=
+ =?us-ascii?Q?3THk8NVjSW8SCFJOMW/T7SZToAp+4SQYN4jmrCbm5TW3DqI+nka1uvIJGzlz?=
+ =?us-ascii?Q?10Z91DoSlL3j7qmKfKPwSRQHhE5Elkws95zlH25purqxmISsks0U3DHH0GtC?=
+ =?us-ascii?Q?gwIW0Q2nweAB1g6sgStOGKh4K5/KE9R75FnWo7hq0tgNmEFEebCMLVJNUX7u?=
+ =?us-ascii?Q?aGNPg3EJgQwKgd/92v82wS+Gi4W3SUhOsk809Um2iyoEyW4oGjWK20svzU7I?=
+ =?us-ascii?Q?dpMLqteSXS/SCY3k1xf2A/NDEemB6PfaSf3bVOrVf1dGBwS5WN18FvlcXywD?=
+ =?us-ascii?Q?xybB/Mra0a2sWuR3YDIUu+cwxJPZ0yhymE3hkWVQkZjf0VqrbEVB2cK6SNdH?=
+ =?us-ascii?Q?dpx/K0x8wHCrzBFqeVM4grHuvsxymeUOcE3UTJqrUk6whNbctDg9va9Ucq+A?=
+ =?us-ascii?Q?0cQYGFR2x27uE/ZpcF0HFJltTiwfxXK6HWO1o6MMB7NgLM5EqrlXGRdtsKmM?=
+ =?us-ascii?Q?JTNe23gYnXLewV1eczcaCLXGAjbV+ghSQOdqA5DW5i7xK5wfIcMADyTR6Yo7?=
+ =?us-ascii?Q?oa0VCGL9GKNemLp+B9+bqBxi8L+bKb9lrkligbJtpq0XC5LXESZwcXdQfH0R?=
+ =?us-ascii?Q?oUOKH4yo3a6EDIhofx96BP29l/M7ON98D0G7PV76lTY2Ni5uWLhRV2Js4kbg?=
+ =?us-ascii?Q?Z58KMRwOVOLG4n1b/J0BewKI8vYIbJ4dGtVc0XYnKz25gn5xm5ldJxzB3/P/?=
+ =?us-ascii?Q?34GvxAsbc1smQvnSO4QG8oxvAtvSGb6btYxv57c57EwnSg/5gVodaByaAkWq?=
+ =?us-ascii?Q?Cy+bsUBAThq4RlsnLveZX8Lq/GBiXTusOU4Ob4D6H7U/5vZXlCg5CYuVBKUu?=
+ =?us-ascii?Q?GiDXiw8YsoYxJgvDUA59aU9wYkw5Brd0rn+S0d0NyxCQ05XLpp4qKhR4epXl?=
+ =?us-ascii?Q?1yRky7lCL1et9P49flwNakpDaOYGS5SzMi7iycHUfCnWlfU1RQxto7VI2xwB?=
+ =?us-ascii?Q?QoyEC+2xila6ct+qOE/5HF/ued6hb/RbTuohqGMHis8ao9v9coYAq0dC7fYX?=
+ =?us-ascii?Q?t9SpLEFCcaBKgQQ3asOYwZZIgP68v69EccGLmf71ChIJSe2RXPMOYubjS8mS?=
+ =?us-ascii?Q?wLY/cZ+3kuO311FKa+iTr3L6z/1RFS4fC8Orn6GWkc695oJrntrdt78IFNG9?=
+ =?us-ascii?Q?TCK2uUfIICsOrpt89Kjax3IwuQbUjjXVJ2Fe8vT2tMV7tjjuWBM9q5M5LYk6?=
+ =?us-ascii?Q?MDlr9drK/B8rcoriPacIVJwXLDEmT2/EMjiy8OmK?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: aa25338e-846e-4f4d-688d-08daf499eaeb
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2023 12:38:33.5753
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: bRdjcNdMpubm3RP8fuR8ma1zfBG6GYwebr2+lHRLx6zrL/yWZtcS3GBFX8AKpSg6
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4370
 
-On Tue, Jan 10, 2023 at 12:46:44PM +0100, Heiko Carstens wrote:
-> > > +	/* READ_ONCE() 16 byte header */
-> > > +	prev.val = __cdsg(&te->header.val, 0, 0);
-> > >  	do {
-> > > +		old.val = prev.val;
-> > > +		new.val = prev.val;
-> > > +		*overflow = old.overflow;
+On Thu, Jan 12, 2023 at 04:46:29PM +0800, Lu Baolu wrote:
 
-I guess, it would also make sense to place write to overflow 
-after the while loop. So the output variable left intact in
-case the function bailed out. Not sure if it should be part
-of this patch though.
+> -int pci_enable_pasid(struct pci_dev *pdev, int features);
+> +int pci_enable_pasid(struct pci_dev *pdev, int features, bool
+> transled_only);
 
-> > > +		if (old.f) {
-> > >  			/*
-> > >  			 * SDB is already set by hardware.
-> > >  			 * Abort and try to set somewhere
-> > > @@ -1490,10 +1509,10 @@ static bool aux_set_alert(struct aux_buffer *aux, unsigned long alert_index,
-> > >  			 */
-> > >  			return false;
-> > >  		}
-> > > +		new.a = 1;
-> > > +		new.overflow = 0;
-> > > +		prev.val = __cdsg(&te->header.val, old.val, new.val);
-> > > +	} while (prev.val != old.val);
-> > 
-> > And while this case has an early exit, it only cares about a single bit
-> > (although you made it a full word) and so also shouldn't care. If
-> > aux_reset_buffer() returns false, @overflow isn't consumed.
-> 
-> Yes, except that it is anything but obvious that @overflow isn't consumed.
+Please use a named flag so we can grep for it..
+
+Discuss in the commit message that this is a temporary step and that
+pci_enable_pasid() needs to be moved to the drivers
+
+Jason
