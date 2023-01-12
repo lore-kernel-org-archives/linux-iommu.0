@@ -1,228 +1,61 @@
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67AC018D
-	for <iommu@lists.linux.dev>; Thu, 12 Jan 2023 16:43:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673541784; x=1705077784;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=QUm1Czj0YnOOgOfeeDBq5rMXb7QLlxqM+dF40uIvsJk=;
-  b=dXYDHzb4MQGWOjdnCdZ/levP7uaLUdw8vXDfeit5XCHDKveW1k3Naqq0
-   OwqciYgBlWui2qLmymByDBwR9Q67fr4yfl4QQO5/crp1v0RqEWzyLzLA3
-   45ANns2vcHomMC8DfVA0pQOdynwkh6DM2s+uKFWqf5PQAsfZN0+hvnvoq
-   nl2iBLyHnibf48pUEpCBRVClDwbB22+AybOdSj38UyLqlD26WGrmsYPqH
-   sNDD4lQoSHzRBZFq7Mev1c+rGMmINu7A+Dj71aXJ+1a2ERPZ9UfP61TsM
-   7WN1dn7JarzR+kIdWDjaS94h8N9clHj7JvQNAVm2RRNAWkyQdfxLwxZ4Y
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10588"; a="323815833"
-X-IronPort-AV: E=Sophos;i="5.97,211,1669104000"; 
-   d="scan'208";a="323815833"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2023 08:42:55 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10588"; a="607858038"
-X-IronPort-AV: E=Sophos;i="5.97,211,1669104000"; 
-   d="scan'208";a="607858038"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga003.jf.intel.com with ESMTP; 12 Jan 2023 08:42:54 -0800
-Received: from [10.252.213.111] (kliang2-mobl1.ccr.corp.intel.com [10.252.213.111])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by linux.intel.com (Postfix) with ESMTPS id 15DAB5808AB;
-	Thu, 12 Jan 2023 08:42:52 -0800 (PST)
-Message-ID: <e7a99c0f-eacc-d27f-e0f6-661350e6d74b@linux.intel.com>
-Date: Thu, 12 Jan 2023 11:42:51 -0500
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D079385
+	for <iommu@lists.linux.dev>; Thu, 12 Jan 2023 18:34:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82B66C433D2;
+	Thu, 12 Jan 2023 18:34:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1673548463;
+	bh=M36E0az9apj/WWDPm0/qsCtZyG5YVmwB7+9Ke5kQ8LU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=sPSsKpSMDwEcWp40JGwOPacz6FK0Cr2zqz0qCkOPDZ8q7+P9fxiCSb/9sksSbOR9x
+	 M1aOoEkm0rO8Bv+1/l4jtqekz5zEI8kbU6mqWCZHwv58ut/km0/wGEBUA6Imv6PpXP
+	 2ngfp9Aino6ysyS1BMe4eQebFM65xlVnArOuS+D/RHCISDY6qKELCTi49Y6A1kHX/H
+	 9A5hC+9aZdHTOPNAMgDRA9maQ0aBgMaJ3P1UC5SURxqVsVJYPf5sHiLZoZH2qurC0m
+	 4yJXHqztabzDiFVA7s4KzandIcus89kPPAERFSUn63FRBm67QwN0j1jc0HAdjzNuJy
+	 5/zHqWxz5T1kg==
+Date: Thu, 12 Jan 2023 12:34:22 -0600
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Bjorn Helgaas <bhelgaas@google.com>,
+	Joerg Roedel <jroedel@suse.de>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Vasant Hegde <vasant.hegde@amd.com>, Tony Zhu <tony.zhu@intel.com>,
+	linux-pci@vger.kernel.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Matt Fagnani <matt.fagnani@bell.net>
+Subject: Re: [PATCH 1/1] PCI: Add translated request only opt-in for
+ pci_enable_pasid()
+Message-ID: <20230112183422.GA1778973@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH 1/7] iommu/vt-d: Support size of the register set in DRHD
-To: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org,
- dwmw2@infradead.org, robin.murphy@arm.com, robert.moore@intel.com,
- rafael.j.wysocki@intel.com, lenb@kernel.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20230111202504.378258-1-kan.liang@linux.intel.com>
- <20230111202504.378258-2-kan.liang@linux.intel.com>
- <367345ad-33cc-2268-63e1-979299d42c2e@linux.intel.com>
-Content-Language: en-US
-From: "Liang, Kan" <kan.liang@linux.intel.com>
-In-Reply-To: <367345ad-33cc-2268-63e1-979299d42c2e@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <78a15f05-29d7-9dd3-175a-3915e7357c11@linux.intel.com>
 
+On Thu, Jan 12, 2023 at 09:25:25PM +0800, Baolu Lu wrote:
+> On 2023/1/12 20:38, Jason Gunthorpe wrote:
+> > On Thu, Jan 12, 2023 at 04:46:29PM +0800, Lu Baolu wrote:
+> > 
+> > > -int pci_enable_pasid(struct pci_dev *pdev, int features);
+> > > +int pci_enable_pasid(struct pci_dev *pdev, int features, bool
+> > > transled_only);
+      ^^^^^^^^
 
+> + * @flags: device-specific flags
+> + *   - PCI_PASID_TRANSLED_REQ_ONLY: The PCI device only issues PASID
+> + *                                  memory requests of translated type.
+                    ^^^^^^^^
 
-On 2023-01-12 7:42 a.m., Baolu Lu wrote:
-> On 2023/1/12 4:24, kan.liang@linux.intel.com wrote:
->> From: Kan Liang <kan.liang@linux.intel.com>
->>
->> A new field, which indicates the size of the remapping hardware register
->> set for this remapping unit, is introduced in the DMA-remapping hardware
->> unit definition (DRHD) structure with the VT-d Spec 4.0.
->> With the information, SW doesn't need to 'guess' the size of the
->> register set anymore.
->>
->> Update the struct acpi_dmar_hardware_unit to reflect the field.
->>
->> Store the size of the register set in struct dmar_drhd_unit for each
->> dmar device.
->>
->> The 'size' information is ResvZ for the old BIOS and platforms. Fall
->> back to the old guessing method. There is nothing changed.
->>
->> Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
->> ---
->>   drivers/iommu/intel/dmar.c | 25 ++++++++++++++++++-------
->>   include/acpi/actbl1.h      |  2 +-
->>   include/linux/dmar.h       |  1 +
->>   3 files changed, 20 insertions(+), 8 deletions(-)
->>
->> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
->> index b00a0ceb2d13..6a411d964474 100644
->> --- a/drivers/iommu/intel/dmar.c
->> +++ b/drivers/iommu/intel/dmar.c
->> @@ -399,6 +399,13 @@ dmar_find_dmaru(struct acpi_dmar_hardware_unit
->> *drhd)
->>       return NULL;
->>   }
->>   +/* The size of the register set is 2 ^ N 4 KB pages. */
->> +static unsigned long
->> +dmar_get_drhd_reg_size(u8 npages)
-> 
-> No need to divide it into two lines. Or put this line of code directly
-> where it is called?
-> 
->> +{
->> +    return 1UL << (npages + 12);
->> +}
->> +
->>   /*
->>    * dmar_parse_one_drhd - parses exactly one DMA remapping hardware
->> definition
->>    * structure which uniquely represent one DMA remapping hardware unit
->> @@ -427,6 +434,7 @@ static int dmar_parse_one_drhd(struct
->> acpi_dmar_header *header, void *arg)
->>       memcpy(dmaru->hdr, header, header->length);
->>       dmaru->reg_base_addr = drhd->address;
->>       dmaru->segment = drhd->segment;
->> +    dmaru->reg_size = dmar_get_drhd_reg_size(drhd->size);
->>       dmaru->include_all = drhd->flags & 0x1; /* BIT0: INCLUDE_ALL */
->>       dmaru->devices = dmar_alloc_dev_scope((void *)(drhd + 1),
->>                             ((void *)drhd) + drhd->header.length,
->> @@ -880,6 +888,7 @@ dmar_validate_one_drhd(struct acpi_dmar_header
->> *entry, void *arg)
->>       struct acpi_dmar_hardware_unit *drhd;
->>       void __iomem *addr;
->>       u64 cap, ecap;
->> +    unsigned long size;
->>         drhd = (void *)entry;
->>       if (!drhd->address) {
->> @@ -887,10 +896,11 @@ dmar_validate_one_drhd(struct acpi_dmar_header
->> *entry, void *arg)
->>           return -EINVAL;
->>       }
->>   +    size = dmar_get_drhd_reg_size(drhd->size);
->>       if (arg)
->> -        addr = ioremap(drhd->address, VTD_PAGE_SIZE);
->> +        addr = ioremap(drhd->address, size);
->>       else
->> -        addr = early_ioremap(drhd->address, VTD_PAGE_SIZE);
->> +        addr = early_ioremap(drhd->address, size);
->>       if (!addr) {
->>           pr_warn("Can't validate DRHD address: %llx\n", drhd->address);
->>           return -EINVAL;
->> @@ -902,7 +912,7 @@ dmar_validate_one_drhd(struct acpi_dmar_header
->> *entry, void *arg)
->>       if (arg)
->>           iounmap(addr);
->>       else
->> -        early_iounmap(addr, VTD_PAGE_SIZE);
->> +        early_iounmap(addr, size);
->>         if (cap == (uint64_t)-1 && ecap == (uint64_t)-1) {
->>           warn_invalid_dmar(drhd->address, " returns all ones");
-> 
-> The cap and ecap registers are always in the first page. Just map one
-> 4K page is enough. There is no need to change it?
+I don't like "transled" since it's not a word itself or an obvious
+combination of "translated" and something else.
 
-Right, one page should be enough for cap and ecap.
+Not sure whether you need to abbreviate it, but if you do, "xlate" is
+a common shortening of "translate".
 
-The perf cap will be checked in the alloc_iommu_pmu() of patch 2. If it
-fails, it should not impact the existing features. No need to change
-here. I will update it in V2.
-
-After the change, there will be only one place which invokes
-dmar_get_drhd_reg_size(). I will move it to the place as well.
-
-> 
->> @@ -956,17 +966,18 @@ static void unmap_iommu(struct intel_iommu *iommu)
->>   /**
->>    * map_iommu: map the iommu's registers
->>    * @iommu: the iommu to map
->> - * @phys_addr: the physical address of the base resgister
->> + * @drhd: DMA remapping hardware definition structure
->>    *
->>    * Memory map the iommu's registers.  Start w/ a single page, and
->>    * possibly expand if that turns out to be insufficent.
->>    */
->> -static int map_iommu(struct intel_iommu *iommu, u64 phys_addr)
->> +static int map_iommu(struct intel_iommu *iommu, struct dmar_drhd_unit
->> *drhd)
->>   {
->> +    u64 phys_addr = drhd->reg_base_addr;
->>       int map_size, err=0;
->>         iommu->reg_phys = phys_addr;
->> -    iommu->reg_size = VTD_PAGE_SIZE;
->> +    iommu->reg_size = drhd->reg_size;
->>         if (!request_mem_region(iommu->reg_phys, iommu->reg_size,
->> iommu->name)) {
->>           pr_err("Can't reserve memory\n");
->> @@ -1050,7 +1061,7 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
->>       }
->>       sprintf(iommu->name, "dmar%d", iommu->seq_id);
->>   -    err = map_iommu(iommu, drhd->reg_base_addr);
->> +    err = map_iommu(iommu, drhd);
->>       if (err) {
->>           pr_err("Failed to map %s\n", iommu->name);
->>           goto error_free_seq_id;
->> diff --git a/include/acpi/actbl1.h b/include/acpi/actbl1.h
->> index 4175dce3967c..bdded0ac46eb 100644
->> --- a/include/acpi/actbl1.h
->> +++ b/include/acpi/actbl1.h
->> @@ -802,7 +802,7 @@ struct acpi_dmar_pci_path {
->>   struct acpi_dmar_hardware_unit {
->>       struct acpi_dmar_header header;
->>       u8 flags;
->> -    u8 reserved;
->> +    u8 size;        /* Size of the register set */
->>       u16 segment;
->>       u64 address;        /* Register Base Address */
->>   };
->> diff --git a/include/linux/dmar.h b/include/linux/dmar.h
->> index d81a51978d01..51d498f0a02b 100644
->> --- a/include/linux/dmar.h
->> +++ b/include/linux/dmar.h
->> @@ -46,6 +46,7 @@ struct dmar_drhd_unit {
->>       u8    include_all:1;
->>       u8    gfx_dedicated:1;    /* graphic dedicated    */
->>       struct intel_iommu *iommu;
->> +    unsigned long reg_size;        /* size of register set */
-> 
-> Move it up and pair it with reg_base_addr.
-
-Sure.
-
-Thanks,
-Kan
-> 
->>   };
->>     struct dmar_pci_path {
-> 
-> -- 
-> Best regards,
-> baolu
+Bjorn
