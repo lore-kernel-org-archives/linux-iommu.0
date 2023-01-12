@@ -1,108 +1,109 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7B78D8814
-	for <iommu@lists.linux.dev>; Thu, 12 Jan 2023 20:00:05 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 16C41FEC;
-	Thu, 12 Jan 2023 12:00:41 -0800 (PST)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 483503F67D;
-	Thu, 12 Jan 2023 11:59:58 -0800 (PST)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org,
-	will@kernel.org
-Cc: iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH] iommu: Tidy up io-pgtable dependencies
-Date: Thu, 12 Jan 2023 19:59:47 +0000
-Message-Id: <51d8c78e2ecc6696ac5907526580209ea6da167f.1673553587.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.36.1.dirty
+Received: from mail-il1-f176.google.com (mail-il1-f176.google.com [209.85.166.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 098862105
+	for <iommu@lists.linux.dev>; Thu, 12 Jan 2023 20:36:55 +0000 (UTC)
+Received: by mail-il1-f176.google.com with SMTP id u8so9953722ilg.0
+        for <iommu@lists.linux.dev>; Thu, 12 Jan 2023 12:36:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=KeK4mXHfx2/sVPkcx7rO2e+6I+Iv6ezw8FJDgQnyG3M=;
+        b=btgsd0yjxZ05R/XKk+8ZYp1ZdSw6JrCgpdhvOMXtXv4gMW97uCzkA80hSlizvH9pd3
+         JVlZ/78KjZ1S0kECoKY/YQeXeEDdACgWj9W8JG/r7SkU0dObYdcfZAaHQzT0JCjccSE2
+         Znq00aRYtAvlJ+udUIjoYGhMt3YwrHPUjKZzM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=KeK4mXHfx2/sVPkcx7rO2e+6I+Iv6ezw8FJDgQnyG3M=;
+        b=0LPs0ikwXcrekgwRbm415O55Yt5pEdVxDqpA7P5mTxtFv2I0y0ioWCkGFo3l1MO2oM
+         3HwxCl1imkLvl443Va08RsYPTyXsW7w5x475Gdn07alNM2RP6lrDBCnqUvR+sMGAnHlk
+         N28677yT4ddbxY8CC4JwLVxVA4mBfDIooKdo6PlikvQJf3+oPp3nrox8X3PrGiem2IQC
+         aZmIt8InuVPqFuNubFVAl5O6OVZmlYmcTkALs3PxTAHQWHuySFhgp9Xs6fHtYzChsqPr
+         OBRNmPl+O3nT4dxsfEAqWSwxn9ojxqHU5XWN+dKyME9Z2xxmbhUNMcSouQ/B/WvR7Nd9
+         uryw==
+X-Gm-Message-State: AFqh2koyvTDj+V9t0wVsgd5LNEjOMEwwB8TPI74dQjcD4q8yzUanxra7
+	VmD2V2f2sySj15p9+29uRka5bw==
+X-Google-Smtp-Source: AMrXdXvLIALi+VAlQRvBFU39GylrVZ7tLSlS73fZH9+4b89AHb9Pq5xgaqT+TZU+au9GwpgKslLcVw==
+X-Received: by 2002:a05:6e02:20e7:b0:30d:9eea:e51 with SMTP id q7-20020a056e0220e700b0030d9eea0e51mr4163579ilv.1.1673555814974;
+        Thu, 12 Jan 2023 12:36:54 -0800 (PST)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id t17-20020a92c911000000b002fa9a1fc421sm5418532ilp.45.2023.01.12.12.36.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 Jan 2023 12:36:54 -0800 (PST)
+Message-ID: <a01b5643-3373-d5a0-a3d7-4fa845725dbd@linuxfoundation.org>
+Date: Thu, 12 Jan 2023 13:36:53 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH] selftests:dma: Fix compile error in user-space tool
+Content-Language: en-US
+To: Gerd Bayer <gbayer@linux.ibm.com>, Xiang Chen
+ <chenxiang66@hisilicon.com>, Shuah Khan <shuah@kernel.org>
+Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev,
+ linux-kselftest@vger.kernel.org, Niklas Schnelle <schnelle@linux.ibm.com>,
+ Shuah Khan <skhan@linuxfoundation.org>
+References: <20230109180721.187324-1-gbayer@linux.ibm.com>
+From: Shuah Khan <skhan@linuxfoundation.org>
+In-Reply-To: <20230109180721.187324-1-gbayer@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Some io-pgtable implementations, and thus their users too, carry a
-slightly odd dependency to get around the GENERIC_ATOMIC64 version of
-cmpxchg64() often failing to compile. Since this is a functional
-dependency, it's a bit misleading and untidy to tie it explicitly to
-COMPILE_TEST while assuming that it's also implied by the other
-platform/architecture options. Make things clearer by separating these
-functional dependencies into distinct statements from those controlling
-visibility, and since they do look a bit non-obvious to the uninitiated,
-also commenting them for good measure.
+On 1/9/23 11:07, Gerd Bayer wrote:
+> Since [1] the user-space program dma_map_benchmark shares the header file
+> linux/map_benchmark.h with the kernel driver in kernel/dma/map_benchmark.c.
+> With latest kernel version this does not compile anymore.
+> 
+> While https://kernelnewbies.org/KernelHeaders suggests otherwise, allow it
+> to use kernel headers through the uapi/ include directory. I assume we can
+> do so safely, since the controlling user-space program is distributed with
+> the kernel.
+> 
+> With this change dma_map_benchmark compiles with just the obvious warning
+> about uapi usage on ARCH=x86, arm64, and s390 and runs on ARCH=s390.
+> 
+> [1] commit 8ddde07a3d28 ("dma-mapping: benchmark: extract a common header
+> file for map_benchmark definition")
+> 
+> Signed-off-by: Gerd Bayer <gbayer@linux.ibm.com>
+> Acked-by: Xiang Chen <chenxiang66@hisilicon.com>
+> ---
+>   tools/testing/selftests/dma/dma_map_benchmark.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/dma/dma_map_benchmark.c b/tools/testing/selftests/dma/dma_map_benchmark.c
+> index 5c997f17fcbd..d49d7ea6a63e 100644
+> --- a/tools/testing/selftests/dma/dma_map_benchmark.c
+> +++ b/tools/testing/selftests/dma/dma_map_benchmark.c
+> @@ -10,7 +10,7 @@
+>   #include <unistd.h>
+>   #include <sys/ioctl.h>
+>   #include <sys/mman.h>
+> -#include <linux/types.h>
+> +#include <uapi/linux/types.h>
+>   #include <linux/map_benchmark.h>
+>   
+>   #define NSEC_PER_MSEC	1000000L
+> 
+> base-commit: 1fe4fd6f5cad346e598593af36caeadc4f5d4fa9
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/Kconfig | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+On Linux 6.2-rc3, dma_map_benchmark compiles just fine. You do
+have to do "make headers_install" first as kselftest depends
+on headers being installed in the repo.
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 79707685d54a..889c7efd050b 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -32,7 +32,8 @@ config IOMMU_IO_PGTABLE
- config IOMMU_IO_PGTABLE_LPAE
- 	bool "ARMv7/v8 Long Descriptor Format"
- 	select IOMMU_IO_PGTABLE
--	depends on ARM || ARM64 || (COMPILE_TEST && !GENERIC_ATOMIC64)
-+	depends on ARM || ARM64 || COMPILE_TEST
-+	depends on !GENERIC_ATOMIC64	# for cpmxchg64()
- 	help
- 	  Enable support for the ARM long descriptor pagetable format.
- 	  This allocator supports 4K/2M/1G, 16K/32M and 64K/512M page
-@@ -70,7 +71,8 @@ config IOMMU_IO_PGTABLE_ARMV7S_SELFTEST
- config IOMMU_IO_PGTABLE_DART
- 	bool "Apple DART Formats"
- 	select IOMMU_IO_PGTABLE
--	depends on ARM64 || (COMPILE_TEST && !GENERIC_ATOMIC64)
-+	depends on ARM64 || COMPILE_TEST
-+	depends on !GENERIC_ATOMIC64	# for cpmxchg64()
- 	help
- 	  Enable support for the Apple DART pagetable formats. These include
- 	  the t8020 and t6000/t8110 DART formats used in Apple M1/M2 family
-@@ -284,7 +286,8 @@ config EXYNOS_IOMMU_DEBUG
- 
- config IPMMU_VMSA
- 	bool "Renesas VMSA-compatible IPMMU"
--	depends on ARCH_RENESAS || (COMPILE_TEST && !GENERIC_ATOMIC64)
-+	depends on ARCH_RENESAS || COMPILE_TEST
-+	depends on !GENERIC_ATOMIC64	# for IOMMU_IO_PGTABLE_LPAE
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
- 	select ARM_DMA_USE_IOMMU
-@@ -304,7 +307,8 @@ config SPAPR_TCE_IOMMU
- 
- config APPLE_DART
- 	tristate "Apple DART IOMMU Support"
--	depends on ARCH_APPLE || (COMPILE_TEST && !GENERIC_ATOMIC64)
-+	depends on ARCH_APPLE || COMPILE_TEST
-+	depends on !GENERIC_ATOMIC64	# for IOMMU_IO_PGTABLE_DART
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_DART
- 	default ARCH_APPLE
-@@ -319,7 +323,8 @@ config APPLE_DART
- # ARM IOMMU support
- config ARM_SMMU
- 	tristate "ARM Ltd. System MMU (SMMU) Support"
--	depends on ARM64 || ARM || (COMPILE_TEST && !GENERIC_ATOMIC64)
-+	depends on ARM64 || ARM || COMPILE_TEST
-+	depends on !GENERIC_ATOMIC64	# for IOMMU_IO_PGTABLE_LPAE
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
- 	select ARM_DMA_USE_IOMMU if ARM
-@@ -466,7 +471,8 @@ config MTK_IOMMU_V1
- config QCOM_IOMMU
- 	# Note: iommu drivers cannot (yet?) be built as modules
- 	bool "Qualcomm IOMMU Support"
--	depends on ARCH_QCOM || (COMPILE_TEST && !GENERIC_ATOMIC64)
-+	depends on ARCH_QCOM || COMPILE_TEST
-+	depends on !GENERIC_ATOMIC64	# for IOMMU_IO_PGTABLE_LPAE
- 	select QCOM_SCM
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
--- 
-2.36.1.dirty
+Please let me know if you are seeing compile problems even after
+installing headers.
+
+thanks,
+-- Shuah
+
 
