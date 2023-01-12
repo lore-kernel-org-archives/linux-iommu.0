@@ -1,97 +1,228 @@
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67AC018D
+	for <iommu@lists.linux.dev>; Thu, 12 Jan 2023 16:43:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1673541784; x=1705077784;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=QUm1Czj0YnOOgOfeeDBq5rMXb7QLlxqM+dF40uIvsJk=;
+  b=dXYDHzb4MQGWOjdnCdZ/levP7uaLUdw8vXDfeit5XCHDKveW1k3Naqq0
+   OwqciYgBlWui2qLmymByDBwR9Q67fr4yfl4QQO5/crp1v0RqEWzyLzLA3
+   45ANns2vcHomMC8DfVA0pQOdynwkh6DM2s+uKFWqf5PQAsfZN0+hvnvoq
+   nl2iBLyHnibf48pUEpCBRVClDwbB22+AybOdSj38UyLqlD26WGrmsYPqH
+   sNDD4lQoSHzRBZFq7Mev1c+rGMmINu7A+Dj71aXJ+1a2ERPZ9UfP61TsM
+   7WN1dn7JarzR+kIdWDjaS94h8N9clHj7JvQNAVm2RRNAWkyQdfxLwxZ4Y
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10588"; a="323815833"
+X-IronPort-AV: E=Sophos;i="5.97,211,1669104000"; 
+   d="scan'208";a="323815833"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2023 08:42:55 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10588"; a="607858038"
+X-IronPort-AV: E=Sophos;i="5.97,211,1669104000"; 
+   d="scan'208";a="607858038"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga003.jf.intel.com with ESMTP; 12 Jan 2023 08:42:54 -0800
+Received: from [10.252.213.111] (kliang2-mobl1.ccr.corp.intel.com [10.252.213.111])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCBF179C9
-	for <iommu@lists.linux.dev>; Thu, 12 Jan 2023 15:46:05 +0000 (UTC)
-Received: by mail-wr1-f49.google.com with SMTP id h16so18490391wrz.12
-        for <iommu@lists.linux.dev>; Thu, 12 Jan 2023 07:46:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=n3a+da2Ixkv3+UWjaOBcx9XincgA8EoIsPdzWIEP5Xs=;
-        b=B0tfqo7jE7yLMGnt5k4IEh2fyztJBU3NkVI59EUvtzIcERfsNgeQHWmCULubiMKtE1
-         hOoJnm60UmqeKtlTjbKOTGTaIVcddcMTTWoF6BAZQP5tK4a+NN7hClja3XJ8RyF7/jOy
-         Xp+M8AqvqGdiLHf+vZDKpA3NEUP9r0vhTR2ua1nw7Rdk5bKRT+dowPsW1j8SCfbQT8LL
-         k00MDKY+H0NZKnS8OBcTen8OcPUC0wPkh+z/6lQZ16Xxk0aYRqKQa1jr4zA4pBO8+ykL
-         iT7E2nt5D2eqX8eAaT3puGVRQVsYuR2TfJRmwxiNhTxb1mDwrdtdxqTGQbIBcpHeZj6e
-         Sl0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=n3a+da2Ixkv3+UWjaOBcx9XincgA8EoIsPdzWIEP5Xs=;
-        b=Z4shL4r62KLTL+l/qDmGf2gT4xxdqHRYn/y0WlutLnuJZn12QP3e11YUj1o1NdX8y/
-         3d1v4UEZVseXMoDpLS1OG5EYGjBRGAxwrLFYlKh/m5xg9QUlyIxzGFj+GpCjiMcRu95Q
-         Wu7+gJr4X2RfRPQ/MyuPdVezhFnxbRhi+ku868buMfnSXIvf0LcpDZfFvbO8bKCsQsw5
-         6I1NtEqLaAmGWbgqGO2ZSYNzro8bXbXGJQoWz4ghvVtbApJX531iVWi5u7+zV9nVnEK3
-         mfFfshJw+a7FSML90Pl8AWeVjympnodqpLvUWWS9qwXZeilijou3ml7LL70uZxuQBrR+
-         05YA==
-X-Gm-Message-State: AFqh2krI+RhTxkc3HLNyJgmITCkt2zqxrvi60Tq8Fj2D+u1IO621hJ6C
-	HtYbkdG3TxydGCKguWTOtCsAMg==
-X-Google-Smtp-Source: AMrXdXvAVKr/5nv/RC9zvUl2zmh1IkA2ZjzZBFcajvmT94k7AqO7muhveMm8oBLXyFRuLTPbR/geJw==
-X-Received: by 2002:a5d:5405:0:b0:284:8a24:59e6 with SMTP id g5-20020a5d5405000000b002848a2459e6mr35819328wrv.3.1673538363871;
-        Thu, 12 Jan 2023 07:46:03 -0800 (PST)
-Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:d8:37a9:b9c7:ec8a])
-        by smtp.gmail.com with ESMTPSA id f19-20020a1c6a13000000b003d9fb04f658sm8223555wmc.4.2023.01.12.07.46.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Jan 2023 07:46:03 -0800 (PST)
-From: Bartosz Golaszewski <brgl@bgdev.pl>
-To: Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Subject: [PATCH v2] dt-bindings: arm-smmu: document the smmu on Qualcomm SA8775P
-Date: Thu, 12 Jan 2023 16:45:54 +0100
-Message-Id: <20230112154554.442808-1-brgl@bgdev.pl>
-X-Mailer: git-send-email 2.37.2
+	by linux.intel.com (Postfix) with ESMTPS id 15DAB5808AB;
+	Thu, 12 Jan 2023 08:42:52 -0800 (PST)
+Message-ID: <e7a99c0f-eacc-d27f-e0f6-661350e6d74b@linux.intel.com>
+Date: Thu, 12 Jan 2023 11:42:51 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH 1/7] iommu/vt-d: Support size of the register set in DRHD
+To: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org,
+ dwmw2@infradead.org, robin.murphy@arm.com, robert.moore@intel.com,
+ rafael.j.wysocki@intel.com, lenb@kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20230111202504.378258-1-kan.liang@linux.intel.com>
+ <20230111202504.378258-2-kan.liang@linux.intel.com>
+ <367345ad-33cc-2268-63e1-979299d42c2e@linux.intel.com>
+Content-Language: en-US
+From: "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <367345ad-33cc-2268-63e1-979299d42c2e@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
-Document the qcom,smmu-500 SMMU on SA8775P platforms.
 
-Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
----
-- rebase on top of Krzysztof's work and add the compatible to the
-  "clock disallow" list
+On 2023-01-12 7:42 a.m., Baolu Lu wrote:
+> On 2023/1/12 4:24, kan.liang@linux.intel.com wrote:
+>> From: Kan Liang <kan.liang@linux.intel.com>
+>>
+>> A new field, which indicates the size of the remapping hardware register
+>> set for this remapping unit, is introduced in the DMA-remapping hardware
+>> unit definition (DRHD) structure with the VT-d Spec 4.0.
+>> With the information, SW doesn't need to 'guess' the size of the
+>> register set anymore.
+>>
+>> Update the struct acpi_dmar_hardware_unit to reflect the field.
+>>
+>> Store the size of the register set in struct dmar_drhd_unit for each
+>> dmar device.
+>>
+>> The 'size' information is ResvZ for the old BIOS and platforms. Fall
+>> back to the old guessing method. There is nothing changed.
+>>
+>> Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+>> ---
+>>   drivers/iommu/intel/dmar.c | 25 ++++++++++++++++++-------
+>>   include/acpi/actbl1.h      |  2 +-
+>>   include/linux/dmar.h       |  1 +
+>>   3 files changed, 20 insertions(+), 8 deletions(-)
+>>
+>> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+>> index b00a0ceb2d13..6a411d964474 100644
+>> --- a/drivers/iommu/intel/dmar.c
+>> +++ b/drivers/iommu/intel/dmar.c
+>> @@ -399,6 +399,13 @@ dmar_find_dmaru(struct acpi_dmar_hardware_unit
+>> *drhd)
+>>       return NULL;
+>>   }
+>>   +/* The size of the register set is 2 ^ N 4 KB pages. */
+>> +static unsigned long
+>> +dmar_get_drhd_reg_size(u8 npages)
+> 
+> No need to divide it into two lines. Or put this line of code directly
+> where it is called?
+> 
+>> +{
+>> +    return 1UL << (npages + 12);
+>> +}
+>> +
+>>   /*
+>>    * dmar_parse_one_drhd - parses exactly one DMA remapping hardware
+>> definition
+>>    * structure which uniquely represent one DMA remapping hardware unit
+>> @@ -427,6 +434,7 @@ static int dmar_parse_one_drhd(struct
+>> acpi_dmar_header *header, void *arg)
+>>       memcpy(dmaru->hdr, header, header->length);
+>>       dmaru->reg_base_addr = drhd->address;
+>>       dmaru->segment = drhd->segment;
+>> +    dmaru->reg_size = dmar_get_drhd_reg_size(drhd->size);
+>>       dmaru->include_all = drhd->flags & 0x1; /* BIT0: INCLUDE_ALL */
+>>       dmaru->devices = dmar_alloc_dev_scope((void *)(drhd + 1),
+>>                             ((void *)drhd) + drhd->header.length,
+>> @@ -880,6 +888,7 @@ dmar_validate_one_drhd(struct acpi_dmar_header
+>> *entry, void *arg)
+>>       struct acpi_dmar_hardware_unit *drhd;
+>>       void __iomem *addr;
+>>       u64 cap, ecap;
+>> +    unsigned long size;
+>>         drhd = (void *)entry;
+>>       if (!drhd->address) {
+>> @@ -887,10 +896,11 @@ dmar_validate_one_drhd(struct acpi_dmar_header
+>> *entry, void *arg)
+>>           return -EINVAL;
+>>       }
+>>   +    size = dmar_get_drhd_reg_size(drhd->size);
+>>       if (arg)
+>> -        addr = ioremap(drhd->address, VTD_PAGE_SIZE);
+>> +        addr = ioremap(drhd->address, size);
+>>       else
+>> -        addr = early_ioremap(drhd->address, VTD_PAGE_SIZE);
+>> +        addr = early_ioremap(drhd->address, size);
+>>       if (!addr) {
+>>           pr_warn("Can't validate DRHD address: %llx\n", drhd->address);
+>>           return -EINVAL;
+>> @@ -902,7 +912,7 @@ dmar_validate_one_drhd(struct acpi_dmar_header
+>> *entry, void *arg)
+>>       if (arg)
+>>           iounmap(addr);
+>>       else
+>> -        early_iounmap(addr, VTD_PAGE_SIZE);
+>> +        early_iounmap(addr, size);
+>>         if (cap == (uint64_t)-1 && ecap == (uint64_t)-1) {
+>>           warn_invalid_dmar(drhd->address, " returns all ones");
+> 
+> The cap and ecap registers are always in the first page. Just map one
+> 4K page is enough. There is no need to change it?
 
- Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+Right, one page should be enough for cap and ecap.
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-index 124253e84c02..ea9205706b7c 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-@@ -36,6 +36,7 @@ properties:
-           - enum:
-               - qcom,qcm2290-smmu-500
-               - qcom,qdu1000-smmu-500
-+              - qcom,sa8775p-smmu-500
-               - qcom,sc7180-smmu-500
-               - qcom,sc7280-smmu-500
-               - qcom,sc8180x-smmu-500
-@@ -326,6 +327,7 @@ allOf:
-               - nvidia,smmu-500
-               - qcom,qcm2290-smmu-500
-               - qcom,qdu1000-smmu-500
-+              - qcom,sa8775p-smmu-500
-               - qcom,sc7180-smmu-500
-               - qcom,sc8180x-smmu-500
-               - qcom,sc8280xp-smmu-500
--- 
-2.37.2
+The perf cap will be checked in the alloc_iommu_pmu() of patch 2. If it
+fails, it should not impact the existing features. No need to change
+here. I will update it in V2.
 
+After the change, there will be only one place which invokes
+dmar_get_drhd_reg_size(). I will move it to the place as well.
+
+> 
+>> @@ -956,17 +966,18 @@ static void unmap_iommu(struct intel_iommu *iommu)
+>>   /**
+>>    * map_iommu: map the iommu's registers
+>>    * @iommu: the iommu to map
+>> - * @phys_addr: the physical address of the base resgister
+>> + * @drhd: DMA remapping hardware definition structure
+>>    *
+>>    * Memory map the iommu's registers.  Start w/ a single page, and
+>>    * possibly expand if that turns out to be insufficent.
+>>    */
+>> -static int map_iommu(struct intel_iommu *iommu, u64 phys_addr)
+>> +static int map_iommu(struct intel_iommu *iommu, struct dmar_drhd_unit
+>> *drhd)
+>>   {
+>> +    u64 phys_addr = drhd->reg_base_addr;
+>>       int map_size, err=0;
+>>         iommu->reg_phys = phys_addr;
+>> -    iommu->reg_size = VTD_PAGE_SIZE;
+>> +    iommu->reg_size = drhd->reg_size;
+>>         if (!request_mem_region(iommu->reg_phys, iommu->reg_size,
+>> iommu->name)) {
+>>           pr_err("Can't reserve memory\n");
+>> @@ -1050,7 +1061,7 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+>>       }
+>>       sprintf(iommu->name, "dmar%d", iommu->seq_id);
+>>   -    err = map_iommu(iommu, drhd->reg_base_addr);
+>> +    err = map_iommu(iommu, drhd);
+>>       if (err) {
+>>           pr_err("Failed to map %s\n", iommu->name);
+>>           goto error_free_seq_id;
+>> diff --git a/include/acpi/actbl1.h b/include/acpi/actbl1.h
+>> index 4175dce3967c..bdded0ac46eb 100644
+>> --- a/include/acpi/actbl1.h
+>> +++ b/include/acpi/actbl1.h
+>> @@ -802,7 +802,7 @@ struct acpi_dmar_pci_path {
+>>   struct acpi_dmar_hardware_unit {
+>>       struct acpi_dmar_header header;
+>>       u8 flags;
+>> -    u8 reserved;
+>> +    u8 size;        /* Size of the register set */
+>>       u16 segment;
+>>       u64 address;        /* Register Base Address */
+>>   };
+>> diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+>> index d81a51978d01..51d498f0a02b 100644
+>> --- a/include/linux/dmar.h
+>> +++ b/include/linux/dmar.h
+>> @@ -46,6 +46,7 @@ struct dmar_drhd_unit {
+>>       u8    include_all:1;
+>>       u8    gfx_dedicated:1;    /* graphic dedicated    */
+>>       struct intel_iommu *iommu;
+>> +    unsigned long reg_size;        /* size of register set */
+> 
+> Move it up and pair it with reg_base_addr.
+
+Sure.
+
+Thanks,
+Kan
+> 
+>>   };
+>>     struct dmar_pci_path {
+> 
+> -- 
+> Best regards,
+> baolu
