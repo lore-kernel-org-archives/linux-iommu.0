@@ -1,92 +1,94 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 442B2628
-	for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 04:11:32 +0000 (UTC)
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30D40LRB012662;
-	Fri, 13 Jan 2023 04:11:11 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=qcppdkim1;
- bh=pHB1SwHMn9vhNtCb67Y1xawf9PwUZdWleR+TFjQEuG4=;
- b=J76K2xs4Upj/F3pd5vLM0CJvFKakvKWszTYgvBWUbPjfoKcFSOr6Q1SMS/BPJ4P5+WO/
- uiqJEUSRG2vhAqhkcpV9EaiBc8NbTjZay87YuygjphS2zZA6jK2p4h44WTABt1WZ2fm9
- aL1dUSQfE2jgYU1LnElXaf0X9EDttxClAE8jD9+Df6lSr1tZwolvSKiRC/Ny2CUoG+2P
- XyI+5NIjGk2jQhgqe//DnK+n5obi5Om/PWsU/T+/vy9veMuKxJFj8lwXNpC9BELS/3bV
- kX9ZH0aue+Q9GlH5byWQp5b3UfzaptGkW4inajc70ylOmq2xaVWXlhuY+Yz9Nft8BMVj mg== 
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3n2hum1rkd-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 13 Jan 2023 04:11:11 +0000
-Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
-	by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 30D4BAPd009768
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 13 Jan 2023 04:11:10 GMT
-Received: from hu-bjorande-lv.qualcomm.com (10.49.16.6) by
- nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.36; Thu, 12 Jan 2023 20:11:09 -0800
-From: Bjorn Andersson <quic_bjorande@quicinc.com>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        "Joerg
- Roedel" <joro@8bytes.org>,
-        Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-CC: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Konrad Dybcio
-	<konrad.dybcio@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] iommu/arm-smmu-qcom: Select identity domain for sc8280xp MDSS
-Date: Thu, 12 Jan 2023 20:11:04 -0800
-Message-ID: <20230113041104.4189152-1-quic_bjorande@quicinc.com>
-X-Mailer: git-send-email 2.25.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0202628
+	for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 04:16:53 +0000 (UTC)
+Received: by mail-lf1-f50.google.com with SMTP id y25so31375738lfa.9
+        for <iommu@lists.linux.dev>; Thu, 12 Jan 2023 20:16:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=heBIA7OkFo1be9hGuAS5uBJi61k6Fgf0lA93SEHuWXo=;
+        b=RDnk+5jTaGGQogsxrMRq6oJCbAPlByl3TcjNHl2k1YASTcmvoqnpy0COr4rxvjywET
+         hIGCjV69Sv98FZ8yUAPUhvVz5rk3SiiSHs7RoI93Rjm1xr9mDldpK4svC7b0602TbRnl
+         eTthdhNbGueSWnlhbzUvu91oQYHz88fUezTEDeMBtsWetozFxkAJQmAqGb/d1x2h2Qng
+         Eg2xSRz0Mv3DUI1ue6Xk5DPwI5ek5A7C8sudsxk+wBNgfphIC7pvRWRUdFAs6O2uo/o5
+         KY/UPe8TFJ8SjE6pmufxt/mthesnAZy5tmA+mPZiRNfrwdlq/ZmgatxEQBE+Sw5wIUvf
+         MkKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=heBIA7OkFo1be9hGuAS5uBJi61k6Fgf0lA93SEHuWXo=;
+        b=vuFpFjfRlVjus1j53LWMqnLMnQfDoLT1TmeefNLekhScqAR+fPIbLjYrEPGwaJDwe3
+         QD8rW+w7jV/y0RBFkdIBkt1y4qjF0CJpr+xSkIwyK1aP6G2VcjusmyQdqLO/PNKKwD5j
+         3EOXZOlOrrwxkVjDFhF6zf6xlCnhGtOxVGI9CFH3kwbz3H/0hRq5N7NY0tcnhhMUMmkv
+         MhIh9tgNgU0ueuoZXBRM1CO/5kD8Mty6G8CK7Bs3OBjXh0gU2cyGGP9WlCn6xz906ZTZ
+         zmjk/TuNz835QaHU/6pMoemgtAiFR+yFPBIzb7zApfZ70CEBfsA6CI55lMA8v7I//2/9
+         9MYw==
+X-Gm-Message-State: AFqh2kpqGOhDsAl4PQs0X/f1HGe4krhmWJiC6//GnlapLsIxuWtKkbKb
+	pRqJnWoSNvyiNVxkh+I1blmbGg==
+X-Google-Smtp-Source: AMrXdXsyNDah0AafD2x1N6FLi6xp5Xf6tvHYOs9VEnDuLD82U0I1Cg4tSBIaCwMgh2l5Gj93eLxxOQ==
+X-Received: by 2002:ac2:498f:0:b0:4a4:86ff:9562 with SMTP id f15-20020ac2498f000000b004a486ff9562mr4084747lfl.38.1673583411896;
+        Thu, 12 Jan 2023 20:16:51 -0800 (PST)
+Received: from [192.168.1.101] (abym53.neoplus.adsl.tpnet.pl. [83.9.32.53])
+        by smtp.gmail.com with ESMTPSA id v20-20020a056512349400b004b55075f813sm3667026lfr.227.2023.01.12.20.16.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 Jan 2023 20:16:50 -0800 (PST)
+Message-ID: <60da722a-9481-0e8d-8f74-1a4205e471eb@linaro.org>
+Date: Fri, 13 Jan 2023 05:16:49 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.49.16.6]
-X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
- nalasex01c.na.qualcomm.com (10.47.97.35)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: kOx46HEsIyfhjYhk1ElO0cimwlFJ29KR
-X-Proofpoint-ORIG-GUID: kOx46HEsIyfhjYhk1ElO0cimwlFJ29KR
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.923,Hydra:6.0.545,FMLib:17.11.122.1
- definitions=2023-01-12_14,2023-01-12_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 adultscore=0
- bulkscore=0 suspectscore=0 mlxlogscore=999 spamscore=0 impostorscore=0
- mlxscore=0 phishscore=0 lowpriorityscore=0 malwarescore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2301130026
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH] iommu/arm-smmu-qcom: Select identity domain for sc8280xp
+ MDSS
+Content-Language: en-US
+To: Bjorn Andersson <quic_bjorande@quicinc.com>, Will Deacon
+ <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>,
+ Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+Cc: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20230113041104.4189152-1-quic_bjorande@quicinc.com>
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+In-Reply-To: <20230113041104.4189152-1-quic_bjorande@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-The Qualcomm display driver installs a translation domain once it has
-mapped a framebuffer. Use the identity domain for this device on
-SC8280XP as well, to avoid faults from EFI FB accessing the framebuffer
-while this is being set up.
 
-Signed-off-by: Bjorn Andersson <quic_bjorande@quicinc.com>
----
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index 4c53824582d4..cebc10c0492d 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -250,6 +250,7 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
- 	{ .compatible = "qcom,sc7280-mdss" },
- 	{ .compatible = "qcom,sc7280-mss-pil" },
- 	{ .compatible = "qcom,sc8180x-mdss" },
-+	{ .compatible = "qcom,sc8280xp-mdss" },
- 	{ .compatible = "qcom,sm8250-mdss" },
- 	{ .compatible = "qcom,sdm845-mdss" },
- 	{ .compatible = "qcom,sdm845-mss-pil" },
--- 
-2.37.3
+On 13.01.2023 05:11, Bjorn Andersson wrote:
+> The Qualcomm display driver installs a translation domain once it has
+> mapped a framebuffer. Use the identity domain for this device on
+> SC8280XP as well, to avoid faults from EFI FB accessing the framebuffer
+> while this is being set up.
+> 
+> Signed-off-by: Bjorn Andersson <quic_bjorande@quicinc.com>
+> ---
+Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 
+Konrad
+>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> index 4c53824582d4..cebc10c0492d 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> @@ -250,6 +250,7 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
+>  	{ .compatible = "qcom,sc7280-mdss" },
+>  	{ .compatible = "qcom,sc7280-mss-pil" },
+>  	{ .compatible = "qcom,sc8180x-mdss" },
+> +	{ .compatible = "qcom,sc8280xp-mdss" },
+>  	{ .compatible = "qcom,sm8250-mdss" },
+>  	{ .compatible = "qcom,sdm845-mdss" },
+>  	{ .compatible = "qcom,sdm845-mss-pil" },
