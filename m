@@ -1,81 +1,218 @@
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+Received: from cmx-torrgo001.bell.net (mta-tor-001.bell.net [209.71.212.28])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DF2A640
-	for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 06:03:28 +0000 (UTC)
-X-UUID: faecd0e0930711ed945fc101203acc17-20230113
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=WsoZK8V4Wbc8JNPHVOfLPCijgDv4vmOwmPyPJeVywi0=;
-	b=cIkJCJgBjM6DiWxM+5MotZzQ/ugXXmksZjy4Be5jpsV45u0CDADEcC2LK16DG/4TurMW3w3gheZ7Na8YNAo2MUlU85CNSPftIgG2deAta+/ZOoVulT+YHtymQloWs1wSRJDj0tTK5Tyc84IYGtb3k0jkcdIIKbe1MAjLct5KwPo=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.17,REQID:c9188c4c-e26a-4cc1-b545-d6e64c9685bb,IP:0,U
-	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-	release,TS:0
-X-CID-META: VersionHash:543e81c,CLOUDID:29f88a54-dd49-462e-a4be-2143a3ddc739,B
-	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0,EDM:-3,IP:nil,U
-	RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0
-X-CID-BVR: 0,NGT
-X-UUID: faecd0e0930711ed945fc101203acc17-20230113
-Received: from mtkmbs13n2.mediatek.inc [(172.21.101.108)] by mailgw02.mediatek.com
-	(envelope-from <yong.wu@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 1413085961; Fri, 13 Jan 2023 14:03:20 +0800
-Received: from mtkmbs13n2.mediatek.inc (172.21.101.108) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Fri, 13 Jan 2023 14:03:18 +0800
-Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
- mtkmbs13n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.15 via Frontend Transport; Fri, 13 Jan 2023 14:03:17 +0800
-From: Yong Wu <yong.wu@mediatek.com>
-To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh+dt@kernel.org>
-CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Hans Verkuil
-	<hverkuil@xs4all.nl>, <nfraprado@collabora.com>,
-	<linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-mediatek@lists.infradead.org>,
-	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>, AngeloGioacchino Del
- Regno <angelogioacchino.delregno@collabora.com>, <mingyuan.ma@mediatek.com>,
-	<yf.wang@mediatek.com>, <libo.kang@mediatek.com>, Yunfei Dong
-	<yunfei.dong@mediatek.com>, kyrie wu
-	<kyrie.wu@mediatek.corp-partner.google.com>, <chengci.xu@mediatek.com>,
-	<youlin.pei@mediatek.com>, <anan.sun@mediatek.com>, Yong Wu
-	<yong.wu@mediatek.com>
-Subject: [PATCH 10/10] arm64: dts: mt8186: Add dma-ranges for the parent "soc" node
-Date: Fri, 13 Jan 2023 14:01:33 +0800
-Message-ID: <20230113060133.9394-11-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20230113060133.9394-1-yong.wu@mediatek.com>
-References: <20230113060133.9394-1-yong.wu@mediatek.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14A137EF
+	for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 08:16:50 +0000 (UTC)
+X-RG-CM-BuS: 0
+X-RG-CM-SC: 0
+X-RG-CM: Clean
+X-Originating-IP: [70.54.81.233]
+X-RG-Env-Sender: matt.fagnani@bell.net
+X-RG-Rigid: 63BF20AC00273F9D
+X-CM-Envelope: MS4xfIYNrOaeC9tjI2qK0BmHN2S6byp/GkK2zmxlZp0dpEHnnyg/Vh+D8gsyJOC54lv15t8Zb6DUhOLvrI2veZZdG5ZvuU8t2rVHXB3ZleLhNtuUodh4rKx6
+ Cq1254lt+HOjKSuzuDWCX+v5sYxKyuxL5HftMWPuc6O0V+DAXYpUihXqDs+wZwQOwtkHs27O1fhTazXOnYiEbV/4KsLWxxuWWZ8STMCg42ngR/TaoqwTYONG
+ cW0xkcHI2XpgjJFmQB4mjO43leEgk2fU7/0YGurKwTEGowCVOOsi2RTmpMB6NAojDev8MD8i3YU+AbeIGNfkTVGFdpXIFgYqDOhBtDQUCpDOReSDxrK+GWj/
+ d2q084l1mHk0tAFKtBTmSa9zGKpRO1H2ag790v23ssMs/H7x+F7Vmu7dOTvgj8rvsvBQrMcqks59yzo0erwU7t81YsAviPQxjaEAMjAiUODS4HiMM2rIJVJv
+ WUNnIB/hF4Ce9Hx1rjwqnWuTzTEvQKxej7/7Yafb/8x/l+J1xc6H3mY7kLv6fL9+KhBgH//Z8Obhc0sk
+X-CM-Analysis: v=2.4 cv=VfAxfnl9 c=1 sm=1 tr=0 ts=63c11305
+ a=qajjuPryiup/b0YLLwyWzQ==:117 a=qajjuPryiup/b0YLLwyWzQ==:17
+ a=IkcTkHD0fZMA:10 a=lAgNKBcoAAAA:8 a=VwQbUJbxAAAA:8 a=FBHGMhGWAAAA:8
+ a=Ikd4Dj_1AAAA:8 a=zd2uoN0lAAAA:8 a=QyXUC8HyAAAA:8 a=uejMiK2NbKTXA1iQnRwA:9
+ a=QEXdDO2ut3YA:10 a=-FEs8UIgK8oA:10 a=drE6d5tx1tjNRBs8zHOc:22
+ a=AjGcO6oz07-iQ99wixmX:22 a=9gvnlMMaQFpL9xblJ6ne:22
+Received: from [192.168.2.10] (70.54.81.233) by cmx-torrgo001.bell.net (5.8.807) (authenticated as matt.fagnani@bell.net)
+        id 63BF20AC00273F9D; Fri, 13 Jan 2023 03:15:01 -0500
+Message-ID: <c34d66a1-1564-1ec5-86de-6ebd1ebb2f71@bell.net>
+Date: Fri, 13 Jan 2023 03:15:00 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK: N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101
+ Firefox/110.0 Thunderbird/110.0a1
+Subject: Re: [PATCH v2 1/1] PCI: Add translated request only flag for
+ pci_enable_pasid()
+To: Lu Baolu <baolu.lu@linux.intel.com>, Bjorn Helgaas <bhelgaas@google.com>,
+ Joerg Roedel <jroedel@suse.de>
+Cc: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Tony Zhu <tony.zhu@intel.com>,
+ linux-pci@vger.kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20230113014409.752405-1-baolu.lu@linux.intel.com>
+Content-Language: en-US
+From: Matt Fagnani <matt.fagnani@bell.net>
+In-Reply-To: <20230113014409.752405-1-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Prepare for the MM nodes whose dma-ranges(iova range) is 16GB.
+Baolu,
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
----
- arch/arm64/boot/dts/mediatek/mt8186.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+6.2-rc3 with v2 of this patch applied booted normally without the black 
+screen problem. regzbot by Thorsten Leemhuis recommends adding the 
+following link tag to the previous discussion at 
+https://linux-regtracking.leemhuis.info/regzbot/mainline/ "When fixing, 
+add this to the commit message to make regzbot notice patch postings and 
+commits to resolve the issue:" Link: 
+https://lore.kernel.org/r/15d0f9ff-2a56-b3e9-5b45-e6b23300ae3b@leemhuis.info/ 
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8186.dtsi b/arch/arm64/boot/dts/mediatek/mt8186.dtsi
-index c326aeb33a10..ea90d2d08316 100644
---- a/arch/arm64/boot/dts/mediatek/mt8186.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8186.dtsi
-@@ -265,6 +265,7 @@
- 		#address-cells = <2>;
- 		#size-cells = <2>;
- 		compatible = "simple-bus";
-+		dma-ranges = <0x0 0x0 0x0 0x0 0x4 0x0>;
- 		ranges;
- 
- 		gic: interrupt-controller@c000000 {
--- 
-2.18.0
 
+Thanks,
+
+Matt
+
+On 1/12/23 20:44, Lu Baolu wrote:
+> The PCIe fabric routes Memory Requests based on the TLP address, ignoring
+> the PASID. In order to ensure system integrity, commit 201007ef707a ("PCI:
+> Enable PASID only when ACS RR & UF enabled on upstream path") requires
+> some ACS features being supported on device's upstream path when enabling
+> PCI/PASID.
+>
+> One alternative is ATS which lets the device resolve the PASID+addr pair
+> before a memory request is made into a routeable TLB address through the
+> TA. Those resolved addresses are then cached on the device instead of
+> in the IOMMU TLB and the device always sets the translated bit for PASID.
+> One example of those devices are AMD graphic devices that always have ACS
+> or ATS enabled together with PASID.
+>
+> This adds a flag parameter in the pci_enable_pasid() helper, with which
+> the device driver could opt-in the fact that device always sets the
+> translated bit for PASID.
+>
+> It also applies this opt-in for AMD graphic devices. Without this change,
+> kernel boots to black screen on a system with below AMD graphic device:
+>
+> 00:01.0 VGA compatible controller: Advanced Micro Devices, Inc.
+>          [AMD/ATI] Wani [Radeon R5/R6/R7 Graphics] (rev ca)
+>          (prog-if 00 [VGA controller])
+> 	DeviceName: ATI EG BROADWAY
+> 	Subsystem: Hewlett-Packard Company Device 8332
+>
+> At present, it is a common practice to enable/disable PCI PASID in the
+> iommu drivers. Considering that the device driver knows more about the
+> specific device, we will follow up by moving pci_enable_pasid() into
+> the specific device drivers.
+>
+> Fixes: 201007ef707a ("PCI: Enable PASID only when ACS RR & UF enabled on upstream path")
+> Link: https://bugzilla.kernel.org/show_bug.cgi?id=216865
+> Reported-by: Matt Fagnani <matt.fagnani@bell.net>
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Suggested-by: Christian König <christian.koenig@amd.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>   include/linux/pci-ats.h                     | 6 ++++--
+>   drivers/iommu/amd/iommu.c                   | 2 +-
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
+>   drivers/iommu/intel/iommu.c                 | 3 ++-
+>   drivers/pci/ats.c                           | 8 ++++++--
+>   5 files changed, 14 insertions(+), 7 deletions(-)
+>
+> Change log:
+> v2:
+>   - Convert the bool to a named flag;
+>   - Convert TRANSLED to XLATED.
+>
+> v1:
+>   - https://lore.kernel.org/linux-iommu/20230112084629.737653-1-baolu.lu@linux.intel.com/
+>
+> diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
+> index df54cd5b15db..750fca736ef4 100644
+> --- a/include/linux/pci-ats.h
+> +++ b/include/linux/pci-ats.h
+> @@ -4,6 +4,8 @@
+>   
+>   #include <linux/pci.h>
+>   
+> +#define PCI_PASID_XLATED_REQ_ONLY	BIT(0)
+> +
+>   #ifdef CONFIG_PCI_ATS
+>   /* Address Translation Service */
+>   bool pci_ats_supported(struct pci_dev *dev);
+> @@ -35,12 +37,12 @@ static inline bool pci_pri_supported(struct pci_dev *pdev)
+>   #endif /* CONFIG_PCI_PRI */
+>   
+>   #ifdef CONFIG_PCI_PASID
+> -int pci_enable_pasid(struct pci_dev *pdev, int features);
+> +int pci_enable_pasid(struct pci_dev *pdev, int features, int flags);
+>   void pci_disable_pasid(struct pci_dev *pdev);
+>   int pci_pasid_features(struct pci_dev *pdev);
+>   int pci_max_pasids(struct pci_dev *pdev);
+>   #else /* CONFIG_PCI_PASID */
+> -static inline int pci_enable_pasid(struct pci_dev *pdev, int features)
+> +static inline int pci_enable_pasid(struct pci_dev *pdev, int features, int flags)
+>   { return -EINVAL; }
+>   static inline void pci_disable_pasid(struct pci_dev *pdev) { }
+>   static inline int pci_pasid_features(struct pci_dev *pdev)
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index cbeaab55c0db..64a8c03d7dfa 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -1700,7 +1700,7 @@ static int pdev_pri_ats_enable(struct pci_dev *pdev)
+>   	int ret;
+>   
+>   	/* Only allow access to user-accessible pages */
+> -	ret = pci_enable_pasid(pdev, 0);
+> +	ret = pci_enable_pasid(pdev, 0, PCI_PASID_XLATED_REQ_ONLY);
+>   	if (ret)
+>   		goto out_err;
+>   
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index ab160198edd6..891bf53c45dc 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2350,7 +2350,7 @@ static int arm_smmu_enable_pasid(struct arm_smmu_master *master)
+>   	if (num_pasids <= 0)
+>   		return num_pasids;
+>   
+> -	ret = pci_enable_pasid(pdev, features);
+> +	ret = pci_enable_pasid(pdev, features, 0);
+>   	if (ret) {
+>   		dev_err(&pdev->dev, "Failed to enable PASID\n");
+>   		return ret;
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 59df7e42fd53..5cc13f02a5ac 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -1425,7 +1425,8 @@ static void iommu_enable_pci_caps(struct device_domain_info *info)
+>   	   undefined. So always enable PASID support on devices which
+>   	   have it, even if we can't yet know if we're ever going to
+>   	   use it. */
+> -	if (info->pasid_supported && !pci_enable_pasid(pdev, info->pasid_supported & ~1))
+> +	if (info->pasid_supported &&
+> +	    !pci_enable_pasid(pdev, info->pasid_supported & ~1, 0))
+>   		info->pasid_enabled = 1;
+>   
+>   	if (info->pri_supported &&
+> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+> index f9cc2e10b676..3a2d9e0ba1d8 100644
+> --- a/drivers/pci/ats.c
+> +++ b/drivers/pci/ats.c
+> @@ -353,12 +353,15 @@ void pci_pasid_init(struct pci_dev *pdev)
+>    * pci_enable_pasid - Enable the PASID capability
+>    * @pdev: PCI device structure
+>    * @features: Features to enable
+> + * @flags: device-specific flags
+> + *   - PCI_PASID_XLATED_REQ_ONLY: The PCI device only issues PASID
+> + *                                memory requests of translated type.
+>    *
+>    * Returns 0 on success, negative value on error. This function checks
+>    * whether the features are actually supported by the device and returns
+>    * an error if not.
+>    */
+> -int pci_enable_pasid(struct pci_dev *pdev, int features)
+> +int pci_enable_pasid(struct pci_dev *pdev, int features, int flags)
+>   {
+>   	u16 control, supported;
+>   	int pasid = pdev->pasid_cap;
+> @@ -382,7 +385,8 @@ int pci_enable_pasid(struct pci_dev *pdev, int features)
+>   	if (!pasid)
+>   		return -EINVAL;
+>   
+> -	if (!pci_acs_path_enabled(pdev, NULL, PCI_ACS_RR | PCI_ACS_UF))
+> +	if (!(flags & PCI_PASID_XLATED_REQ_ONLY) &&
+> +	    !pci_acs_path_enabled(pdev, NULL, PCI_ACS_RR | PCI_ACS_UF))
+>   		return -EINVAL;
+>   
+>   	pci_read_config_word(pdev, pasid + PCI_PASID_CAP, &supported);
