@@ -1,97 +1,60 @@
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 053772F2A
+	for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 15:31:40 +0000 (UTC)
+Received: from 8bytes.org (p549ad69d.dip0.t-ipconnect.de [84.154.214.157])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0865F880C
-	for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 14:12:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673619176; x=1705155176;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=bgR5ummVsveUjZeTs1DpxvmSSGDvw4EF1HbWfjVN/8A=;
-  b=oEBG1DsWYBjKL1ZxXpz0Ohw6A0Bu4DvFT5CxSBISrUAM3KDugHd1P/oO
-   RCXr+ag+fbRBonCIK/XQL+vnYJ29HzZpmNNXsv/3XCO3uKrkXNc/NQiXf
-   qgFvZY5MNLAqZjzmP9s7sdJU/qMGiF5bpkBsycqnVSAvUUdJZhbzRVstM
-   v2HHHeog+oGZvJNR2Uuz6Wicaf/puyqImGf4VUPyVCeozlzK/3F1CPmtx
-   EOiINtAoFMEF2rcd4MjK4aCH2NJCJEWFeTsvRSYbxHU7vJ2EvmxotiLDn
-   Z+1bis0TjCxXU8QwVh3XKKnvkvXQYDOmak0OqhgedSSWaTiJyBW2hXEQo
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10589"; a="324057608"
-X-IronPort-AV: E=Sophos;i="5.97,214,1669104000"; 
-   d="scan'208";a="324057608"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2023 06:12:55 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10589"; a="832078121"
-X-IronPort-AV: E=Sophos;i="5.97,214,1669104000"; 
-   d="scan'208";a="832078121"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.190.181]) ([10.252.190.181])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2023 06:12:51 -0800
-Message-ID: <a84ac37c-2b03-35f2-2275-442b448cf6b5@linux.intel.com>
-Date: Fri, 13 Jan 2023 22:12:48 +0800
+	by mail.8bytes.org (Postfix) with ESMTPSA id 4E268261BE3;
+	Fri, 13 Jan 2023 16:31:39 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1673623899;
+	bh=W0eZQ+91SuOKkGncj7gzewhbmwWHOsQ0mNd5zAk/Afg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=kd3MvqU4M0jhYsQnXTuWTVSnh8u/ySUWg+9yJInC5Nf3HOGNvLRTmxR/rphYWg4Sf
+	 PYoiGuU583mXBOij5+1S2oKSMygZ/8aUhdw84fm70YckG2AD8H2FDMNIZ49oxXjD9D
+	 w4tILH5cAYM+tRhz4OZOHveIUSmEKYzGPPx/mA+YGZxmqn+Q3/vekAHvP02rIASyhW
+	 QvklPlTBURl0l8H95wV/d3XxGm/4Ocyp9bnQ2a/7SEwQKabkeMEyEbocQabC+eW3dH
+	 yy3qLdHjJzKsUgk2R044hZ54dsY0RJRqNqB6RnCH1xm/3ACcxEcHX9VGBeq5qzTIx4
+	 i5ISakzVcqpvw==
+Date: Fri, 13 Jan 2023 16:31:37 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: "Chengci.Xu" <chengci.xu@mediatek.com>, Yong Wu <yong.wu@mediatek.com>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	Project_Global_Chrome_Upstream_Group@mediatek.com
+Subject: Re: [PATCH v6 0/4] MT8188 IOMMU SUPPORT
+Message-ID: <Y8F5WUCr5bzv9SgS@8bytes.org>
+References: <20221223101439.494-1-chengci.xu@mediatek.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Cc: baolu.lu@linux.intel.com
-Subject: Re: [PATCH 3/7] iommu/vt-d: Support Enhanced Command Interface
-To: kan.liang@linux.intel.com, joro@8bytes.org, will@kernel.org,
- dwmw2@infradead.org, robin.murphy@arm.com, robert.moore@intel.com,
- rafael.j.wysocki@intel.com, lenb@kernel.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20230111202504.378258-1-kan.liang@linux.intel.com>
- <20230111202504.378258-4-kan.liang@linux.intel.com>
- <6783f737-2701-77e3-ce83-8d287be51cf6@linux.intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <6783f737-2701-77e3-ce83-8d287be51cf6@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20221223101439.494-1-chengci.xu@mediatek.com>
 
-On 2023/1/13 21:55, Baolu Lu wrote:
->> +/*
->> + * Function to submit a command to the enhanced command interface. The
->> + * valid enhanced command descriptions are defined in Table 47 of the
->> + * VT-d spec. The VT-d hardware implementation may support some but not
->> + * all commands, which can be determined by checking the Enhanced
->> + * Command Capability Register.
->> + *
->> + * Return values:
->> + *  - 0: Command successful without any error;
->> + *  - Negative: software error value;
->> + *  - Nonzero positive: failure status code defined in Table 48.
->> + */
->> +int ecmd_submit_sync(struct intel_iommu *iommu, u8 ecmd,
->> +             u64 oa, bool has_ob, u64 ob)
->> +{
->> +    unsigned long flags;
->> +    u64 res;
->> +    int ret;
->> +
->> +    if (!cap_ecmds(iommu->cap))
->> +        return -ENODEV;
->> +
->> +    raw_spin_lock_irqsave(&iommu->register_lock, flags);
->> +
->> +    res = dmar_readq(iommu->reg + DMAR_ECRSP_REG);
->> +    if (res & DMA_ECMD_ECRSP_IP) {
->> +        ret = -EBUSY;
->> +        goto err;
->> +    }
->> +
->> +    if (has_ob)
->> +        dmar_writeq(iommu->reg + DMAR_ECEO_REG, ob);
+Matthias,
+
+On Fri, Dec 23, 2022 at 06:14:35PM +0800, Chengci.Xu wrote:
+> Chengci.Xu (4):
+>   dt-bindings: mediatek: mt8188: Add binding for MM & INFRA IOMMU
+>   iommu/mediatek: Adjust mtk_iommu_config flow
+>   iommu/mediatek: Add enable IOMMU SMC command for INFRA master
+>   iommu/mediatek: Add MT8188 IOMMU Support
 > 
-> The ecmds that require a Operand B are statically defined in the spec,
-> right? What will it look like if we define a static ignore_ob(ecmd)?
+>  .../bindings/iommu/mediatek,iommu.yaml        |  12 +-
+>  drivers/iommu/mtk_iommu.c                     | 113 +++-
+>  .../memory/mediatek,mt8188-memory-port.h      | 482 ++++++++++++++++++
+>  include/soc/mediatek/smi.h                    |   1 +
+>  4 files changed, 584 insertions(+), 24 deletions(-)
+>  create mode 100644 include/dt-bindings/memory/mediatek,mt8188-memory-port.h
 
-Or simply remove has_ob parameter? The least case is an unnecessary
-write to a register. It's fine as far as I can see since we should avoid
-using it in any critical path.
-
---
-Best regards,
-baolu
+Please let me know when this can be merged.
