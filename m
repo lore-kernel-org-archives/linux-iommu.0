@@ -1,60 +1,56 @@
-Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DDF92115
-	for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 19:45:48 +0000 (UTC)
-Received: by mail-qt1-f179.google.com with SMTP id fa5so14550311qtb.11
-        for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 11:45:48 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B83D52115
+	for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 19:48:56 +0000 (UTC)
+Received: by mail-qt1-f177.google.com with SMTP id y7so1437427qtv.5
+        for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 11:48:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=ziepe.ca; s=google;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=nKGPCf/WnxdeLrYkK1h+ppHtGH89vAKEcp2AHfVnqm4=;
-        b=n2gpmqnoZpxhC3drOnKm7dGJnMc+A5U1oEyYzBn7a1CVOiYw71+v2fp7iRd8sYB3IT
-         gl0cyILRJ1N5OLYiuVxE/GR20AFXznJH3mPXp9/Q6/jZhtv6xQwpGkpupOoocprdfumb
-         5HTc6oYRrawLHVhRVtDT6C6SdwGcYU4FZro0UTJBt+/jX6LA7Bq3rKGCYn0fnVeA+NfH
-         wfGVYwod2iwcU4p9MbM/LBJPOe2hB4QK7OQQGQ2n7y4AzbdXgl3hqQidYze7ArRo0FKs
-         O0lb0Jg04iN/ie1kC/tTTOpt9elPhN/uV41htq2/HBT1oeqzpZJ7JBYhTbCUxe0TrNJk
-         hg2Q==
+        bh=VCsX8uc4cCu1oNFGRmQtZZmdp5RBV4+wTc8HN1xnvho=;
+        b=e+cndpq5AbJCc9ropmy8+4Yd1TlOSMPwhQX6qeOHJmbJ4npOBH+R4Rgtl0Qp4/BK2G
+         sJIdxB8UWVpBrXxGOV6Semfw2WkqB9XY+7S+V8VS+YyVe98F2na5c+Wsnj02XNGXg6Wt
+         VYa2jZYY2i5Mre4MYmOrBY0C2RdWKQtTVUNLU3wnGoPuUYloUFmRibD39QKHMnFbcm8V
+         4QAhBuLCMXHDygbkQhOBzebF5ckjucVjZvZGHA1xpp45CkDNmWJ/cOlPydNz7rM0XUEf
+         PfKIszSirtyvvhSY0gdp7LZ0j2ohnw1RAbYfmVeuf7OixQXYvAGuFrUurJHwXwRv45wt
+         kIFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=nKGPCf/WnxdeLrYkK1h+ppHtGH89vAKEcp2AHfVnqm4=;
-        b=m5KQFfmDrlrZleCCDdiUGa8XIlZmo/cP6BdGzRPxLBuGKKVuVqdPPxnhGcbkzz5bRA
-         S5llL/K90KB+HjwATqBAl/w781dn4wBMIzbGLDuUuKA1QyHTROb/12rbhujoSePFyBVq
-         V9Y9D4DUXW/4Se/wuMB4F2b9ZG33QPKkJ9Ip3QLhjLtDu/zCnkT7aYfEJaZVt/M5dhbr
-         t/26tdo09dV7bfPvtbWhjKmYmAzwmQBEx35Jb1TNuKl4HqcmmnNs1p1y3pMjiDleb08K
-         EPd8e5x4nFVc+R/N/geqaYLfF6YCvF8YGLg16PsDHi66TnONK1RUu0pq1xsNwTRkNCqO
-         Rt2g==
-X-Gm-Message-State: AFqh2kqjK6g1eH7pIan7JjN041HvEz0SbOTF/YTz6SHxT6XTloaf6M0M
-	FcFl0qM62VcRec/Jkg24/7eCww==
-X-Google-Smtp-Source: AMrXdXvfh9K8c6l/h2CIEbjJU3hrWPX5b/ImJDym2kleyYB+2ny0W2SD5wzPbNH4mDp/UDDlMcqwcQ==
-X-Received: by 2002:ac8:1382:0:b0:3a8:1793:76d6 with SMTP id h2-20020ac81382000000b003a8179376d6mr108960695qtj.68.1673639147243;
-        Fri, 13 Jan 2023 11:45:47 -0800 (PST)
+        bh=VCsX8uc4cCu1oNFGRmQtZZmdp5RBV4+wTc8HN1xnvho=;
+        b=uLO8HMEVJnTS+44bdEyAngfO8Q2I53KF3Dgx1Nko7rRExOCV1MenOnxWs9hkSBVREF
+         /pmEfHNFGoaSOPk8pi5MvW+GXE9PWxUTzR1b47dT/y3pL4aeApJID+CzfP/GJzxDZJZ4
+         V2sO3aq03UuLkAlTUSJF8+3n+aJWyFoF9u1vBgKjaR7JmZzk1Zrao1PqwaI1O7US2MF6
+         nsSdZia2YfkPVx/ELVmvFmF7Ed/WBT+SkjnXC7NPn6AhT9twwNmyBkT0uNtkyfupNkIK
+         s67KdCUhyasBe+gWqOCMlCifN6+e466lkiR+Wl3war9yS7w58zDsdxCjYuFm9nM8nawk
+         FlyQ==
+X-Gm-Message-State: AFqh2kqOt7+9zPsICUx4XjS4/G8M53ViwTABs1cNoHcD5KF+btEsqS5E
+	059zuhJUW4e5ZIKAQn0p8dmfkQ==
+X-Google-Smtp-Source: AMrXdXtm3RrwRr6RHb4naiD4l5n6+JmgDWK7TdiQX//Ern7jngXe0ppdvazLqngqV/8wLCwN25LO2g==
+X-Received: by 2002:a05:622a:1e99:b0:39c:da1f:f817 with SMTP id bz25-20020a05622a1e9900b0039cda1ff817mr124418233qtb.61.1673639335588;
+        Fri, 13 Jan 2023 11:48:55 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-142-68-50-193.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.50.193])
-        by smtp.gmail.com with ESMTPSA id h10-20020a05620a284a00b006feea093006sm13223828qkp.124.2023.01.13.11.45.46
+        by smtp.gmail.com with ESMTPSA id az31-20020a05620a171f00b006fbbdc6c68fsm13212326qkb.68.2023.01.13.11.48.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Jan 2023 11:45:46 -0800 (PST)
+        Fri, 13 Jan 2023 11:48:55 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1pGPzm-00AghL-3u;
-	Fri, 13 Jan 2023 15:45:46 -0400
-Date: Fri, 13 Jan 2023 15:45:46 -0400
+	id 1pGQ2o-00AgoL-Fw;
+	Fri, 13 Jan 2023 15:48:54 -0400
+Date: Fri, 13 Jan 2023 15:48:54 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Joerg Roedel <joro@8bytes.org>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	Sven Peter <sven@svenpeter.dev>, iommu@lists.linux.dev,
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
-Subject: Re: [PATCH] iommu/ipmmu-vmsa: Remove ipmmu_utlb_disable()
-Message-ID: <Y8G06onFowE3ZIy8@ziepe.ca>
-References: <20230113185640.8050-1-joro@8bytes.org>
- <Y8GtFcNq2jugBpI3@ziepe.ca>
- <Y8GwHQLKnXyqa3Ty@8bytes.org>
+Subject: Re: [PATCH] iommu/fsl_pamu: Fix compile error after adding
+ set_platform_dma_ops
+Message-ID: <Y8G1puXtbsHrXZfn@ziepe.ca>
+References: <20230113191528.23638-1-joro@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -63,22 +59,23 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y8GwHQLKnXyqa3Ty@8bytes.org>
+In-Reply-To: <20230113191528.23638-1-joro@8bytes.org>
 
-On Fri, Jan 13, 2023 at 08:25:17PM +0100, Joerg Roedel wrote:
-> On Fri, Jan 13, 2023 at 03:12:21PM -0400, Jason Gunthorpe wrote:
-> > I'm surprised the 0-day bot didn't notice?
+On Fri, Jan 13, 2023 at 08:15:28PM +0100, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel@suse.de>
 > 
-> Well, I think 0-day does not spend that much time on iommu patch-sets,
-> especially doing randconfigs or allyes/modconfigs.
+> The struct initializer for set_platform_dma_ops uses a semicolon as
+> separator where a comma is required. Fix the compile error by using the
+> correct separator.
+> 
+> Fixes: c1fe9119ee70 ("iommu: Add set_platform_dma_ops callbacks")
+> Signed-off-by: Joerg Roedel <jroedel@suse.de>
+> ---
+>  drivers/iommu/fsl_pamu_domain.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Intel folks, can you check on this with the 0-day team? Perhaps since
-the list was moved it is not properly subscribed.
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-> In general it is a good idea to at least compile-test every file that is
-> changed in a patch-set before sending it out and not rely on 0-day bot
-> for that.
-
-Against every arch combination? This is why we have automation bots :(
+I'd probably just squash these :\
 
 Jason
