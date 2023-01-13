@@ -1,218 +1,175 @@
-Received: from cmx-torrgo001.bell.net (mta-tor-001.bell.net [209.71.212.28])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14A137EF
-	for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 08:16:50 +0000 (UTC)
-X-RG-CM-BuS: 0
-X-RG-CM-SC: 0
-X-RG-CM: Clean
-X-Originating-IP: [70.54.81.233]
-X-RG-Env-Sender: matt.fagnani@bell.net
-X-RG-Rigid: 63BF20AC00273F9D
-X-CM-Envelope: MS4xfIYNrOaeC9tjI2qK0BmHN2S6byp/GkK2zmxlZp0dpEHnnyg/Vh+D8gsyJOC54lv15t8Zb6DUhOLvrI2veZZdG5ZvuU8t2rVHXB3ZleLhNtuUodh4rKx6
- Cq1254lt+HOjKSuzuDWCX+v5sYxKyuxL5HftMWPuc6O0V+DAXYpUihXqDs+wZwQOwtkHs27O1fhTazXOnYiEbV/4KsLWxxuWWZ8STMCg42ngR/TaoqwTYONG
- cW0xkcHI2XpgjJFmQB4mjO43leEgk2fU7/0YGurKwTEGowCVOOsi2RTmpMB6NAojDev8MD8i3YU+AbeIGNfkTVGFdpXIFgYqDOhBtDQUCpDOReSDxrK+GWj/
- d2q084l1mHk0tAFKtBTmSa9zGKpRO1H2ag790v23ssMs/H7x+F7Vmu7dOTvgj8rvsvBQrMcqks59yzo0erwU7t81YsAviPQxjaEAMjAiUODS4HiMM2rIJVJv
- WUNnIB/hF4Ce9Hx1rjwqnWuTzTEvQKxej7/7Yafb/8x/l+J1xc6H3mY7kLv6fL9+KhBgH//Z8Obhc0sk
-X-CM-Analysis: v=2.4 cv=VfAxfnl9 c=1 sm=1 tr=0 ts=63c11305
- a=qajjuPryiup/b0YLLwyWzQ==:117 a=qajjuPryiup/b0YLLwyWzQ==:17
- a=IkcTkHD0fZMA:10 a=lAgNKBcoAAAA:8 a=VwQbUJbxAAAA:8 a=FBHGMhGWAAAA:8
- a=Ikd4Dj_1AAAA:8 a=zd2uoN0lAAAA:8 a=QyXUC8HyAAAA:8 a=uejMiK2NbKTXA1iQnRwA:9
- a=QEXdDO2ut3YA:10 a=-FEs8UIgK8oA:10 a=drE6d5tx1tjNRBs8zHOc:22
- a=AjGcO6oz07-iQ99wixmX:22 a=9gvnlMMaQFpL9xblJ6ne:22
-Received: from [192.168.2.10] (70.54.81.233) by cmx-torrgo001.bell.net (5.8.807) (authenticated as matt.fagnani@bell.net)
-        id 63BF20AC00273F9D; Fri, 13 Jan 2023 03:15:01 -0500
-Message-ID: <c34d66a1-1564-1ec5-86de-6ebd1ebb2f71@bell.net>
-Date: Fri, 13 Jan 2023 03:15:00 -0500
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 573947EF
+	for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 08:26:03 +0000 (UTC)
+Received: by mail-ej1-f47.google.com with SMTP id az20so31493357ejc.1
+        for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 00:26:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ow5pZFQZCEYCIqWOTwm6DkLVewzWxSQ2hqbyfaIYUMw=;
+        b=AC8rsonIaKcS2a/AKPnyvkOrD5LKOz/E/kypsJqKNj44ntLKk+BZQq0pJYwlExETvH
+         MqJQIHgjIl49HUPLbLmq7kDUTnHbIYva0FXIOZYmPbaGDh1Y3/SLNQhcvvcQV33S6Oqw
+         LWzMeZPhLmbEJ+aXOMPimAuZu0ot1TeNjbfPtLhZcajjKLL2xYNnr7xK62Hq/ECXivB9
+         KR9q2u4MqGg6UDBTgMDMZg2zfotH7Eda07Tz57yWnykG44VGzeLan0+FW6jaHQbJKUpW
+         MQYKFwWhW943wKe9d3rdjA0Vn9dJG//JCfFDTLFLqNrNa34NXsm30uhRzZqVFR3dtRYL
+         oPGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ow5pZFQZCEYCIqWOTwm6DkLVewzWxSQ2hqbyfaIYUMw=;
+        b=EtyHb5Q0uA6ZETjzJDRCTIfunARqFjgLj0XmfA3mZRfkdJwa1uQ5Yb1KTSCIRF4MJC
+         tIdaj2agxgMc9qSM4W0pljwrLNERajZcjUIu4rjbu7zEGI4tgg69NLD/J11j8qYzB+E+
+         CUwGPsBYGRVAIyav9Il3bF1gUowQPqJMeWRW3s9CxvKZezpTQ/vfbJeC6T1haaBAAQIi
+         1LjgzAwc4cA8umIF3diI8UlK6AS6Bu/qWVRBgiIN7v9GVJQMXK+VFMi4IvA1jQvwtNyF
+         9PjPkTy9NcX3daj4hF7gkAg6H5r9CcgIZThuVnMgeNUqhVJnDeKSYmjjZ1RAi05Mt6E/
+         Btkw==
+X-Gm-Message-State: AFqh2kr/aJi8rH+9i0uNsLzfrjVmI3HErJsM9Xrg0TtISgi59VLK4M6o
+	tfns8dZlESb5VfYzVUEQxMtI5A==
+X-Google-Smtp-Source: AMrXdXvtfAJKfd+dEPUQgGjDwVPJIsdk/au7/BL5yCsi6a/MUx3IfCt5RfR2t5rlFGwdCkF3RMDP/g==
+X-Received: by 2002:a17:907:2587:b0:7c0:ac4b:8b9 with SMTP id ad7-20020a170907258700b007c0ac4b08b9mr56938493ejc.14.1673598361438;
+        Fri, 13 Jan 2023 00:26:01 -0800 (PST)
+Received: from [192.168.1.109] ([178.197.216.144])
+        by smtp.gmail.com with ESMTPSA id hq15-20020a1709073f0f00b0084c4b87a69csm8258399ejc.153.2023.01.13.00.25.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 Jan 2023 00:26:00 -0800 (PST)
+Message-ID: <07ecf7cf-4a68-0f80-0452-3737b7d7922d@linaro.org>
+Date: Fri, 13 Jan 2023 09:25:58 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101
- Firefox/110.0 Thunderbird/110.0a1
-Subject: Re: [PATCH v2 1/1] PCI: Add translated request only flag for
- pci_enable_pasid()
-To: Lu Baolu <baolu.lu@linux.intel.com>, Bjorn Helgaas <bhelgaas@google.com>,
- Joerg Roedel <jroedel@suse.de>
-Cc: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
- Vasant Hegde <vasant.hegde@amd.com>, Tony Zhu <tony.zhu@intel.com>,
- linux-pci@vger.kernel.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20230113014409.752405-1-baolu.lu@linux.intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH 01/10] dt-bindings: media: mediatek,vcodec: Remove
+ dma-ranges property
 Content-Language: en-US
-From: Matt Fagnani <matt.fagnani@bell.net>
-In-Reply-To: <20230113014409.752405-1-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh+dt@kernel.org>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Hans Verkuil <hverkuil@xs4all.nl>, nfraprado@collabora.com,
+ linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ mingyuan.ma@mediatek.com, yf.wang@mediatek.com, libo.kang@mediatek.com,
+ Yunfei Dong <yunfei.dong@mediatek.com>,
+ kyrie wu <kyrie.wu@mediatek.corp-partner.google.com>,
+ chengci.xu@mediatek.com, youlin.pei@mediatek.com, anan.sun@mediatek.com,
+ Tiffany Lin <tiffany.lin@mediatek.com>,
+ Andrew-CT Chen <andrew-ct.chen@mediatek.com>
+References: <20230113060133.9394-1-yong.wu@mediatek.com>
+ <20230113060133.9394-2-yong.wu@mediatek.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20230113060133.9394-2-yong.wu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Baolu,
+On 13/01/2023 07:01, Yong Wu wrote:
+> MediaTek iommu has already controlled the masters' iova ranges by the
+> master's larb/port id. then the dma-ranges property is unnecessary for
 
-6.2-rc3 with v2 of this patch applied booted normally without the black 
-screen problem. regzbot by Thorsten Leemhuis recommends adding the 
-following link tag to the previous discussion at 
-https://linux-regtracking.leemhuis.info/regzbot/mainline/ "When fixing, 
-add this to the commit message to make regzbot notice patch postings and 
-commits to resolve the issue:" Link: 
-https://lore.kernel.org/r/15d0f9ff-2a56-b3e9-5b45-e6b23300ae3b@leemhuis.info/ 
+Sentences in English always start with a capital letter, however also
+they do not start with "Then". Make it a proper a proper sentence.
 
+> the master's node. the master is vcodec here.
 
-Thanks,
+Unnecessary or invalid? Don't you depend now on some feature of driver
+added for example recently?
 
-Matt
+> 
+> Cc: Tiffany Lin <tiffany.lin@mediatek.com>
+> Cc: Andrew-CT Chen <andrew-ct.chen@mediatek.com>
+> Cc: Yunfei Dong <yunfei.dong@mediatek.com>
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
 
-On 1/12/23 20:44, Lu Baolu wrote:
-> The PCIe fabric routes Memory Requests based on the TLP address, ignoring
-> the PASID. In order to ensure system integrity, commit 201007ef707a ("PCI:
-> Enable PASID only when ACS RR & UF enabled on upstream path") requires
-> some ACS features being supported on device's upstream path when enabling
-> PCI/PASID.
->
-> One alternative is ATS which lets the device resolve the PASID+addr pair
-> before a memory request is made into a routeable TLB address through the
-> TA. Those resolved addresses are then cached on the device instead of
-> in the IOMMU TLB and the device always sets the translated bit for PASID.
-> One example of those devices are AMD graphic devices that always have ACS
-> or ATS enabled together with PASID.
->
-> This adds a flag parameter in the pci_enable_pasid() helper, with which
-> the device driver could opt-in the fact that device always sets the
-> translated bit for PASID.
->
-> It also applies this opt-in for AMD graphic devices. Without this change,
-> kernel boots to black screen on a system with below AMD graphic device:
->
-> 00:01.0 VGA compatible controller: Advanced Micro Devices, Inc.
->          [AMD/ATI] Wani [Radeon R5/R6/R7 Graphics] (rev ca)
->          (prog-if 00 [VGA controller])
-> 	DeviceName: ATI EG BROADWAY
-> 	Subsystem: Hewlett-Packard Company Device 8332
->
-> At present, it is a common practice to enable/disable PCI PASID in the
-> iommu drivers. Considering that the device driver knows more about the
-> specific device, we will follow up by moving pci_enable_pasid() into
-> the specific device drivers.
->
-> Fixes: 201007ef707a ("PCI: Enable PASID only when ACS RR & UF enabled on upstream path")
-> Link: https://bugzilla.kernel.org/show_bug.cgi?id=216865
-> Reported-by: Matt Fagnani <matt.fagnani@bell.net>
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> Suggested-by: Christian König <christian.koenig@amd.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+There is little point in storing output of get_maintainers.pl forever in
+the git log. If you need it for some reason, please keep it after ---.
+
+> Cc: Matthias Brugger <matthias.bgg@gmail.com>
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 > ---
->   include/linux/pci-ats.h                     | 6 ++++--
->   drivers/iommu/amd/iommu.c                   | 2 +-
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
->   drivers/iommu/intel/iommu.c                 | 3 ++-
->   drivers/pci/ats.c                           | 8 ++++++--
->   5 files changed, 14 insertions(+), 7 deletions(-)
->
-> Change log:
-> v2:
->   - Convert the bool to a named flag;
->   - Convert TRANSLED to XLATED.
->
-> v1:
->   - https://lore.kernel.org/linux-iommu/20230112084629.737653-1-baolu.lu@linux.intel.com/
->
-> diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
-> index df54cd5b15db..750fca736ef4 100644
-> --- a/include/linux/pci-ats.h
-> +++ b/include/linux/pci-ats.h
-> @@ -4,6 +4,8 @@
->   
->   #include <linux/pci.h>
->   
-> +#define PCI_PASID_XLATED_REQ_ONLY	BIT(0)
-> +
->   #ifdef CONFIG_PCI_ATS
->   /* Address Translation Service */
->   bool pci_ats_supported(struct pci_dev *dev);
-> @@ -35,12 +37,12 @@ static inline bool pci_pri_supported(struct pci_dev *pdev)
->   #endif /* CONFIG_PCI_PRI */
->   
->   #ifdef CONFIG_PCI_PASID
-> -int pci_enable_pasid(struct pci_dev *pdev, int features);
-> +int pci_enable_pasid(struct pci_dev *pdev, int features, int flags);
->   void pci_disable_pasid(struct pci_dev *pdev);
->   int pci_pasid_features(struct pci_dev *pdev);
->   int pci_max_pasids(struct pci_dev *pdev);
->   #else /* CONFIG_PCI_PASID */
-> -static inline int pci_enable_pasid(struct pci_dev *pdev, int features)
-> +static inline int pci_enable_pasid(struct pci_dev *pdev, int features, int flags)
->   { return -EINVAL; }
->   static inline void pci_disable_pasid(struct pci_dev *pdev) { }
->   static inline int pci_pasid_features(struct pci_dev *pdev)
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index cbeaab55c0db..64a8c03d7dfa 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -1700,7 +1700,7 @@ static int pdev_pri_ats_enable(struct pci_dev *pdev)
->   	int ret;
->   
->   	/* Only allow access to user-accessible pages */
-> -	ret = pci_enable_pasid(pdev, 0);
-> +	ret = pci_enable_pasid(pdev, 0, PCI_PASID_XLATED_REQ_ONLY);
->   	if (ret)
->   		goto out_err;
->   
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index ab160198edd6..891bf53c45dc 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2350,7 +2350,7 @@ static int arm_smmu_enable_pasid(struct arm_smmu_master *master)
->   	if (num_pasids <= 0)
->   		return num_pasids;
->   
-> -	ret = pci_enable_pasid(pdev, features);
-> +	ret = pci_enable_pasid(pdev, features, 0);
->   	if (ret) {
->   		dev_err(&pdev->dev, "Failed to enable PASID\n");
->   		return ret;
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 59df7e42fd53..5cc13f02a5ac 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -1425,7 +1425,8 @@ static void iommu_enable_pci_caps(struct device_domain_info *info)
->   	   undefined. So always enable PASID support on devices which
->   	   have it, even if we can't yet know if we're ever going to
->   	   use it. */
-> -	if (info->pasid_supported && !pci_enable_pasid(pdev, info->pasid_supported & ~1))
-> +	if (info->pasid_supported &&
-> +	    !pci_enable_pasid(pdev, info->pasid_supported & ~1, 0))
->   		info->pasid_enabled = 1;
->   
->   	if (info->pri_supported &&
-> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-> index f9cc2e10b676..3a2d9e0ba1d8 100644
-> --- a/drivers/pci/ats.c
-> +++ b/drivers/pci/ats.c
-> @@ -353,12 +353,15 @@ void pci_pasid_init(struct pci_dev *pdev)
->    * pci_enable_pasid - Enable the PASID capability
->    * @pdev: PCI device structure
->    * @features: Features to enable
-> + * @flags: device-specific flags
-> + *   - PCI_PASID_XLATED_REQ_ONLY: The PCI device only issues PASID
-> + *                                memory requests of translated type.
->    *
->    * Returns 0 on success, negative value on error. This function checks
->    * whether the features are actually supported by the device and returns
->    * an error if not.
->    */
-> -int pci_enable_pasid(struct pci_dev *pdev, int features)
-> +int pci_enable_pasid(struct pci_dev *pdev, int features, int flags)
->   {
->   	u16 control, supported;
->   	int pasid = pdev->pasid_cap;
-> @@ -382,7 +385,8 @@ int pci_enable_pasid(struct pci_dev *pdev, int features)
->   	if (!pasid)
->   		return -EINVAL;
->   
-> -	if (!pci_acs_path_enabled(pdev, NULL, PCI_ACS_RR | PCI_ACS_UF))
-> +	if (!(flags & PCI_PASID_XLATED_REQ_ONLY) &&
-> +	    !pci_acs_path_enabled(pdev, NULL, PCI_ACS_RR | PCI_ACS_UF))
->   		return -EINVAL;
->   
->   	pci_read_config_word(pdev, pasid + PCI_PASID_CAP, &supported);
+>  .../devicetree/bindings/media/mediatek,vcodec-decoder.yaml | 5 -----
+>  .../devicetree/bindings/media/mediatek,vcodec-encoder.yaml | 5 -----
+>  .../bindings/media/mediatek,vcodec-subdev-decoder.yaml     | 7 -------
+>  3 files changed, 17 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/media/mediatek,vcodec-decoder.yaml b/Documentation/devicetree/bindings/media/mediatek,vcodec-decoder.yaml
+> index aa55ca65d6ed..fad59b486d5d 100644
+> --- a/Documentation/devicetree/bindings/media/mediatek,vcodec-decoder.yaml
+> +++ b/Documentation/devicetree/bindings/media/mediatek,vcodec-decoder.yaml
+> @@ -56,11 +56,6 @@ properties:
+>        List of the hardware port in respective IOMMU block for current Socs.
+>        Refer to bindings/iommu/mediatek,iommu.yaml.
+>  
+> -  dma-ranges:
+> -    maxItems: 1
+> -    description: |
+> -      Describes the physical address space of IOMMU maps to memory.
+> -
+>    mediatek,vpu:
+>      $ref: /schemas/types.yaml#/definitions/phandle
+>      description:
+> diff --git a/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml b/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
+> index 0f2ea8d9a10c..a2051b31fa29 100644
+> --- a/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
+> +++ b/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
+> @@ -49,11 +49,6 @@ properties:
+>        List of the hardware port in respective IOMMU block for current Socs.
+>        Refer to bindings/iommu/mediatek,iommu.yaml.
+>  
+> -  dma-ranges:
+> -    maxItems: 1
+> -    description: |
+> -      Describes the physical address space of IOMMU maps to memory.
+> -
+>    mediatek,vpu:
+>      $ref: /schemas/types.yaml#/definitions/phandle
+>      description:
+> diff --git a/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml b/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml
+> index c4f20acdc1f8..290594bc91cc 100644
+> --- a/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml
+> +++ b/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml
+> @@ -76,11 +76,6 @@ properties:
+>        The node of system control processor (SCP), using
+>        the remoteproc & rpmsg framework.
+>  
+> -  dma-ranges:
+> -    maxItems: 1
+> -    description: |
+> -      Describes the physical address space of IOMMU maps to memory.
+> -
+>    "#address-cells":
+>      const: 2
+>  
+> @@ -203,7 +198,6 @@ required:
+>    - reg
+>    - iommus
+>    - mediatek,scp
+> -  - dma-ranges
+>    - ranges
+>  
+>  if:
+> @@ -236,7 +230,6 @@ examples:
+>              compatible = "mediatek,mt8192-vcodec-dec";
+>              mediatek,scp = <&scp>;
+>              iommus = <&iommu0 M4U_PORT_L4_VDEC_MC_EXT>;
+> -            dma-ranges = <0x1 0x0 0x0 0x40000000 0x0 0xfff00000>;
+>              #address-cells = <2>;
+>              #size-cells = <2>;
+>              ranges = <0 0 0 0x16000000 0 0x40000>;
+
+Best regards,
+Krzysztof
+
