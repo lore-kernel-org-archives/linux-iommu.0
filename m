@@ -1,28 +1,31 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C299033ED
+	for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 12:25:29 +0000 (UTC)
+Received: from 8bytes.org (p200300c277327f0086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:7732:7f00:86ad:4f9d:2505:dd0d])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1913D2F5E
-	for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 11:03:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95287C433EF;
-	Fri, 13 Jan 2023 11:03:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1673607803;
-	bh=NfhxdsF9edW7RUM7O/BWU6t/1TksrMVcjhvCbku6DiI=;
-	h=Date:From:To:Cc:Subject:From;
-	b=GTvrUyodgEq/1CfEY5eKYHHmnQBJyM3eXNjBekKyOnjThnhJlCeAeVnGL12H0+tsG
-	 MsjjeHKoBH1AsFg2g8q4bVgcpZzN3W+4K9A8KUe7p+ROuIO3LeV/CpmwLx+fh2F83x
-	 j0xOgODrHbHrT0AB9hDB2fLaa4jLmS4tACgSPcxTrFS7iH4QqKtUgBLUVJ7D4bJytl
-	 vSiq5DX0GRps/YSMGseyMSyrOaLiM92dzNX0kgUogFOevvPCuuJsqmrFhaPkH2Hexp
-	 47t2fzpc6x2DzcNkfEuQVwgqsEA4nutNzJ5Yc6bA6lQbpzm1pwVvb6Uwn+TNfLFx/c
-	 CnaURoKFJ5BGA==
-Date: Fri, 13 Jan 2023 11:03:18 +0000
-From: Will Deacon <will@kernel.org>
-To: joro@8bytes.org
+	by mail.8bytes.org (Postfix) with ESMTPSA id 6B7A02622F4;
+	Fri, 13 Jan 2023 13:19:47 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1673612387;
+	bh=FbFHaw7CG8FPCkGPoG6HKlHdu8f63492k185xUdeniY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=C4+S4Mg2bqJs6GklAHzrjRrdDc2WLi9Xz7n4g4/yad+HnQQ5+sl51gg4hVig2T3Ot
+	 j7M+eGDa7FpT33hyTPV0J8Nnw+ZFKrjFDJTclRaiAvSyOgC7Qc0A1QimfHV8o3/xlA
+	 WUqGmPtHfibu4Y9gdzqmngZTsbUEGKzaL/x63bNMUw2rWON36cYWrcA8L/BWQEiwIS
+	 EruBlnZC5WluLGPG4cCdYDkOGl9Uflr5DkculBia8YzrZlrLAJAk5a5DrOmRNlzv3k
+	 WrDAN5hA5ZuFcOXestwo5z3ubRcmzr8j1TO8rX7BwyrqZ8Dgtb4Kyl8UjQCFL6SBte
+	 G50nGvUPs2Leg==
+Date: Fri, 13 Jan 2023 13:19:46 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Will Deacon <will@kernel.org>
 Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org, robin.murphy@arm.com,
 	kernel-team@android.com
-Subject: [GIT PULL] iommu/arm-smmu: Fixes for 6.2
-Message-ID: <20230113110318.GA12771@willie-the-truck>
+Subject: Re: [GIT PULL] iommu/arm-smmu: Fixes for 6.2
+Message-ID: <Y8FMYugtpgost7jT@8bytes.org>
+References: <20230113110318.GA12771@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -31,47 +34,13 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20230113110318.GA12771@willie-the-truck>
 
-Hi Joerg,
+Hi Will,
 
-Please can you pull these Arm SMMU fixes for 6.2? The summary is in the
-tag, but the main thing is fixing a VFIO regression due to the way in
-which IOMMU_CAP_CACHE_COHERENCY is reported for SMMUv2 devices.
+On Fri, Jan 13, 2023 at 11:03:18AM +0000, Will Deacon wrote:
+> Please can you pull these Arm SMMU fixes for 6.2? The summary is in the
+> tag, but the main thing is fixing a VFIO regression due to the way in
+> which IOMMU_CAP_CACHE_COHERENCY is reported for SMMUv2 devices.
 
-Cheers,
-
-Will
-
---->8
-
-The following changes since commit 1b929c02afd37871d5afb9d498426f83432e71c2:
-
-  Linux 6.2-rc1 (2022-12-25 13:41:39 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git tags/arm-smmu-fixes
-
-for you to fetch changes up to f1ba05a70f7df4e2e4d2d7fed2d4e63a1e700660:
-
-  iommu/arm-smmu-v3: Don't unregister on shutdown (2023-01-11 12:20:00 +0000)
-
-----------------------------------------------------------------
-Arm SMMU fixes for 6.2
-
-- Fix VFIO regression on NXP SoCs by reporting IOMMU_CAP_CACHE_COHERENCY
-
-- Fix SMMU shutdown paths to avoid device unregistration race
-
-----------------------------------------------------------------
-Robin Murphy (1):
-      iommu/arm-smmu: Report IOMMU_CAP_CACHE_COHERENCY even betterer
-
-Vladimir Oltean (2):
-      iommu/arm-smmu: Don't unregister on shutdown
-      iommu/arm-smmu-v3: Don't unregister on shutdown
-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  4 +++-
- drivers/iommu/arm/arm-smmu/arm-smmu.c       | 32 ++++++++++++++++++++---------
- 2 files changed, 25 insertions(+), 11 deletions(-)
+Pulled now, thanks.
