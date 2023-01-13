@@ -1,33 +1,33 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 269136ADE
-	for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 12:58:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D94C79CE
+	for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 13:56:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673614727; x=1705150727;
+  t=1673618163; x=1705154163;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=/6+W1uNqvtXa/l0g5ferF7PMCddeU8mr3XIWvE1GyG8=;
-  b=K6ZaWdVBY+yvBgRA3hEbz0lT4zNbodKqkCq62EHWXrB4BchenGcbHKNL
-   7bYM921GyOBQ8pNRuprDi3WHr7gi80qhOYr6udlOaBzlX/DMGyjfF2mKM
-   nhh/eJyneh2g/t6wrsForiuPBUKaPgkHTMP5vvdYzuBKtzVVa3fWhZF2a
-   6hfVdf+dAw4+WfhGJqqsT5uWZyGQZO5pRaHuVomkVFaMdChjZNvouaQoC
-   q1PXOx5Aogeo4N+wfP16MRnD8aAojSflO9xACH62idR9aHe+/rAHWeS53
-   oYappDRGdwfLMMpeONTKcbyr8kG9o8/bi9KR0Tjudquz53u1dDnd+GY53
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10588"; a="388483054"
+  bh=VZwFXYFnGMfG3iKDlkJ1lb1QPSC6NG8ZjIgCRDtG7lk=;
+  b=ZL4sg65wpZareORVTZI9jkuZBqMViKNzi/1eWeeyPA+upzqZyBrwevim
+   9AemeFEkJmB3rjPcJirV+CekPr2rJcg8qyBCAV2dv3iY6kDTT+89EaTiE
+   7ljd1WV32aUmO5rFnZPK84wd/6tI3wqC6IPG/Vko2FMhsxtvs/LYGYxYT
+   f+wcZgZ503mlkw86acBcoc/APFKNMyPIvKUuj9PG6oBRVyGofGADENv59
+   OUezEu/f2ifEde0XbjVlmmEqPz8aqPdBvm3x7ylz35yZf7IuE8CyS+3LJ
+   JXNOzz6M1yPUyow1YE9MCeTtqsqoBVHcM3hkMp5BSEo4h7Z1o+RCzz0bJ
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10589"; a="307539821"
 X-IronPort-AV: E=Sophos;i="5.97,214,1669104000"; 
-   d="scan'208";a="388483054"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2023 04:58:46 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10588"; a="903564345"
+   d="scan'208";a="307539821"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2023 05:56:01 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10589"; a="608178088"
 X-IronPort-AV: E=Sophos;i="5.97,214,1669104000"; 
-   d="scan'208";a="903564345"
+   d="scan'208";a="608178088"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.190.181]) ([10.252.190.181])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2023 04:58:42 -0800
-Message-ID: <63905ff2-ee69-39de-507f-b02ebad39444@linux.intel.com>
-Date: Fri, 13 Jan 2023 20:58:39 +0800
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2023 05:55:58 -0800
+Message-ID: <6783f737-2701-77e3-ce83-8d287be51cf6@linux.intel.com>
+Date: Fri, 13 Jan 2023 21:55:55 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -37,444 +37,219 @@ MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
 Cc: baolu.lu@linux.intel.com
-Subject: Re: [PATCH 2/7] iommu/vt-d: Retrieve IOMMU perfmon capability
- information
+Subject: Re: [PATCH 3/7] iommu/vt-d: Support Enhanced Command Interface
 Content-Language: en-US
 To: kan.liang@linux.intel.com, joro@8bytes.org, will@kernel.org,
  dwmw2@infradead.org, robin.murphy@arm.com, robert.moore@intel.com,
  rafael.j.wysocki@intel.com, lenb@kernel.org, iommu@lists.linux.dev,
  linux-kernel@vger.kernel.org
 References: <20230111202504.378258-1-kan.liang@linux.intel.com>
- <20230111202504.378258-3-kan.liang@linux.intel.com>
+ <20230111202504.378258-4-kan.liang@linux.intel.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230111202504.378258-3-kan.liang@linux.intel.com>
+In-Reply-To: <20230111202504.378258-4-kan.liang@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/1/12 4:24, kan.liang@linux.intel.com wrote:
+On 2023/1/12 4:25, kan.liang@linux.intel.com wrote:
 > From: Kan Liang <kan.liang@linux.intel.com>
 > 
-> The performance monitoring infrastructure, perfmon, is to support
-> collection of information about key events occurring during operation of
-> the remapping hardware, to aid performance tuning and debug. Each
-> remapping hardware unit has capability registers that indicate support
-> for performance monitoring features and enumerate the capabilities.
+> The Enhanced Command Register is to submit command and operand of
+> enhanced commands to DMA Remapping hardware. It can supports upto 256
+> enhanced commands.
 > 
-> Add alloc_iommu_pmu() to retrieve IOMMU perfmon capability information
-> for each iommu unit. The information is stored in the iommu->pmu data
-> structure. Capability registers are read-only, so it's safe to prefetch
-> and store them in the pmu structure. This could avoid unnecessary VMEXIT
-> when this code is running in the virtualization environment.
+> There is a HW register to indicate the availability of all 256 enhanced
+> commands. Each bit stands for each command. But there isn't an existing
+> interface to read/write all 256 bits. Introduce the u64 ecmdcap[4] to
+> store the existence of each enhanced command. Read 4 times to get
+> all of them in map_iommu().
 > 
-> Add free_iommu_pmu() to free the saved capability information when
-> freeing the iommu unit.
+> Add a helper to facilitate an enhanced command launch. Make sure hardware
+> complete the command.
 > 
-> Add a kernel config option for the IOMMU perfmon feature. Unless a user
-> explicitly uses the perf tool to monitor the IOMMU perfmon event, there
-> isn't any impact for the existing IOMMU. Enable it by default.
+> Add a helper to facilitate the check of PMU essentials.
+> 
+> The helpers will be used later.
 > 
 > Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
 > ---
->   drivers/iommu/intel/Kconfig   |   9 ++
->   drivers/iommu/intel/Makefile  |   1 +
->   drivers/iommu/intel/dmar.c    |   7 ++
->   drivers/iommu/intel/iommu.h   |  41 +++++++++
->   drivers/iommu/intel/perfmon.c | 159 ++++++++++++++++++++++++++++++++++
->   drivers/iommu/intel/perfmon.h |  41 +++++++++
->   6 files changed, 258 insertions(+)
->   create mode 100644 drivers/iommu/intel/perfmon.c
->   create mode 100644 drivers/iommu/intel/perfmon.h
+>   drivers/iommu/intel/dmar.c  | 63 +++++++++++++++++++++++++++++++++++++
+>   drivers/iommu/intel/iommu.h | 46 +++++++++++++++++++++++++++
+>   2 files changed, 109 insertions(+)
 > 
-> diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
-> index b7dff5092fd2..1a4aebddc9a6 100644
-> --- a/drivers/iommu/intel/Kconfig
-> +++ b/drivers/iommu/intel/Kconfig
-> @@ -96,4 +96,13 @@ config INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON
->   	  passing intel_iommu=sm_on to the kernel. If not sure, please use
->   	  the default value.
->   
-> +config INTEL_IOMMU_PERF_EVENTS
-> +	def_bool y
-> +	bool "Intel IOMMU performance events"
-> +	depends on INTEL_IOMMU && PERF_EVENTS
-> +	help
-> +	  Include support for Intel IOMMU performance events. These are
-> +	  available on modern processors which support Intel VT-d 4.0 and
-> +	  later.
-> +
->   endif # INTEL_IOMMU
-> diff --git a/drivers/iommu/intel/Makefile b/drivers/iommu/intel/Makefile
-> index fa0dae16441c..7af3b8a4f2a0 100644
-> --- a/drivers/iommu/intel/Makefile
-> +++ b/drivers/iommu/intel/Makefile
-> @@ -6,3 +6,4 @@ obj-$(CONFIG_DMAR_PERF) += perf.o
->   obj-$(CONFIG_INTEL_IOMMU_DEBUGFS) += debugfs.o
->   obj-$(CONFIG_INTEL_IOMMU_SVM) += svm.o
->   obj-$(CONFIG_IRQ_REMAP) += irq_remapping.o
-> +obj-$(CONFIG_INTEL_IOMMU_PERF_EVENTS) += perfmon.o
 > diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-> index 6a411d964474..91bb48267df2 100644
+> index 91bb48267df2..dcafa32875c1 100644
 > --- a/drivers/iommu/intel/dmar.c
 > +++ b/drivers/iommu/intel/dmar.c
-> @@ -34,6 +34,7 @@
->   #include "../irq_remapping.h"
->   #include "perf.h"
->   #include "trace.h"
-> +#include "perfmon.h"
->   
->   typedef int (*dmar_res_handler_t)(struct acpi_dmar_header *, void *);
->   struct dmar_res_callback {
-> @@ -1114,6 +1115,9 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
->   	if (sts & DMA_GSTS_QIES)
->   		iommu->gcmd |= DMA_GCMD_QIE;
->   
-> +	if (alloc_iommu_pmu(iommu))
-> +		pr_debug("Cannot alloc PMU for iommu (seq_id = %d)\n", iommu->seq_id);
-> +
->   	raw_spin_lock_init(&iommu->register_lock);
->   
->   	/*
-> @@ -1148,6 +1152,7 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
->   err_sysfs:
->   	iommu_device_sysfs_remove(&iommu->iommu);
->   err_unmap:
-> +	free_iommu_pmu(iommu);
->   	unmap_iommu(iommu);
->   error_free_seq_id:
->   	ida_free(&dmar_seq_ids, iommu->seq_id);
-> @@ -1163,6 +1168,8 @@ static void free_iommu(struct intel_iommu *iommu)
->   		iommu_device_sysfs_remove(&iommu->iommu);
+> @@ -1025,6 +1025,16 @@ static int map_iommu(struct intel_iommu *iommu, struct dmar_drhd_unit *drhd)
+>   			goto release;
+>   		}
 >   	}
->   
-> +	free_iommu_pmu(iommu);
 > +
->   	if (iommu->irq) {
->   		if (iommu->pr_irq) {
->   			free_irq(iommu->pr_irq, iommu);
-> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-> index 06e61e474856..5bcefbea55c9 100644
-> --- a/drivers/iommu/intel/iommu.h
-> +++ b/drivers/iommu/intel/iommu.h
-> @@ -125,6 +125,11 @@
->   #define DMAR_MTRR_PHYSMASK8_REG 0x208
->   #define DMAR_MTRR_PHYSBASE9_REG 0x210
->   #define DMAR_MTRR_PHYSMASK9_REG 0x218
-> +#define DMAR_PERFCAP_REG	0x300
-> +#define DMAR_PERFCFGOFF_REG	0x310
-> +#define DMAR_PERFOVFOFF_REG	0x318
-> +#define DMAR_PERFCNTROFF_REG	0x31c
-> +#define DMAR_PERFEVNTCAP_REG	0x380
->   #define DMAR_VCCAP_REG		0xe30 /* Virtual command capability register */
->   #define DMAR_VCMD_REG		0xe00 /* Virtual command register */
->   #define DMAR_VCRSP_REG		0xe10 /* Virtual command response register */
-> @@ -148,6 +153,7 @@
->    */
->   #define cap_esrtps(c)		(((c) >> 63) & 1)
->   #define cap_esirtps(c)		(((c) >> 62) & 1)
-> +#define cap_ecmds(c)		(((c) >> 61) & 1)
->   #define cap_fl5lp_support(c)	(((c) >> 60) & 1)
->   #define cap_pi_support(c)	(((c) >> 59) & 1)
->   #define cap_fl1gp_support(c)	(((c) >> 56) & 1)
-> @@ -179,6 +185,7 @@
->    * Extended Capability Register
->    */
->   
-> +#define ecap_pms(e)		(((e) >> 51) & 0x1)
->   #define	ecap_rps(e)		(((e) >> 49) & 0x1)
->   #define ecap_smpwc(e)		(((e) >> 48) & 0x1)
->   #define ecap_flts(e)		(((e) >> 47) & 0x1)
-> @@ -210,6 +217,22 @@
->   #define ecap_max_handle_mask(e) (((e) >> 20) & 0xf)
->   #define ecap_sc_support(e)	(((e) >> 7) & 0x1) /* Snooping Control */
->   
-> +/*
-> + * Decoding Perf Capability Register
-> + */
-> +#define pcap_num_cntr(p)	((p) & 0xffff)
-> +#define pcap_cntr_width(p)	(((p) >> 16) & 0x7f)
-> +#define pcap_num_event_group(p)	(((p) >> 24) & 0x1f)
-> +#define pcap_filters_mask(p)	(((p) >> 32) & 0x1f)
-> +#define pcap_interrupt(p)	(((p) >> 50) & 0x1)
-> +/* The counter stride is calculated as 2 ^ (x+10) bytes */
-> +#define pcap_cntr_stride(p)	(1ULL << ((((p) >> 52) & 0x7) + 10))
+> +	if (cap_ecmds(iommu->cap)) {
+> +		int i;
 > +
-> +/*
-> + * Decoding Perf Event Capability Register
-> + */
-> +#define pecap_es(p)		((p) & 0xfffffff)
-> +
->   /* Virtual command interface capability */
->   #define vccap_pasid(v)		(((v) & DMA_VCS_PAS)) /* PASID allocation */
->   
-> @@ -554,6 +577,22 @@ struct dmar_domain {
->   					   iommu core */
->   };
->   
-> +struct iommu_pmu {
-> +	struct intel_iommu	*iommu;
-> +	u32			num_cntr;	/* Number of counters */
-> +	u32			num_eg;		/* Number of event group */
-> +	u32			cntr_width;	/* Counter width */
-> +	u32			cntr_stride;	/* Counter Stride */
-> +	u32			filter;		/* Bitmask of filter support */
-> +	void __iomem		*base;		/* the PerfMon base address */
-> +	void __iomem		*cfg_reg;	/* counter configuration base address */
-> +	void __iomem		*cntr_reg;	/* counter 0 address*/
-> +	void __iomem		*overflow;	/* overflow status register */
-> +
-> +	u64			*evcap;		/* Indicates all supported events */
-> +	u32			**cntr_evcap;	/* Supported events of each counter. */
-> +};
-> +
->   struct intel_iommu {
->   	void __iomem	*reg; /* Pointer to hardware regs, virtual addr */
->   	u64 		reg_phys; /* physical address of hw register set */
-> @@ -600,6 +639,8 @@ struct intel_iommu {
->   
->   	struct dmar_drhd_unit *drhd;
->   	void *perf_statistic;
-> +
-> +	struct iommu_pmu *pmu;
->   };
->   
->   /* PCI domain-device relationship */
-> diff --git a/drivers/iommu/intel/perfmon.c b/drivers/iommu/intel/perfmon.c
-> new file mode 100644
-> index 000000000000..bc090f329c32
-> --- /dev/null
-> +++ b/drivers/iommu/intel/perfmon.c
-> @@ -0,0 +1,159 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * Support Intel IOMMU PerfMon
-> + * Copyright(c) 2022 Intel Corporation.
-
-Copyright 2023
-
-> + */
-> +
-> +#include <linux/dmar.h>
-> +#include "iommu.h"
-> +#include "perfmon.h"
-> +
-> +static inline void __iomem *
-> +get_perf_reg_address(struct intel_iommu *iommu, u32 offset)
-> +{
-> +	u32 off = dmar_readl(iommu->reg + offset);
-> +
-> +	return iommu->reg + off;
-> +}
-> +
-> +int alloc_iommu_pmu(struct intel_iommu *iommu)
-> +{
-> +	struct iommu_pmu *iommu_pmu;
-> +	int i, j, ret;
-> +	u64 perfcap;
-> +	u32 cap;
-> +
-> +	/* The IOMMU PMU requires the ECMD support as well */
-> +	if (!ecap_pms(iommu->ecap) || !cap_ecmds(iommu->cap))
-> +		return -ENODEV;
-
-It's normal that PMS is not supported on an IOMMU, how about,
-
-	if (!ecap_pms(iommu->ecap))
-		return 0;
-
-	/* The IOMMU PMU requires the ECMD support as well */
-	if (!cap_ecmds(iommu->cap))
-		return -ENODEV;
-
-> +
-> +	perfcap = dmar_readq(iommu->reg + DMAR_PERFCAP_REG);
-> +	/* The performance monitoring is not supported. */
-> +	if (!perfcap)
-> +		return -ENODEV;
-> +
-> +	/* Sanity check for the number of the counters and event groups */
-> +	if (!pcap_num_cntr(perfcap) || !pcap_num_event_group(perfcap))
-> +		return -ENODEV;
-> +
-> +	/* The interrupt on overflow is required */
-> +	if (!pcap_interrupt(perfcap))
-> +		return -ENODEV;
-> +
-> +	iommu_pmu = kzalloc(sizeof(*iommu_pmu), GFP_KERNEL);
-> +	if (!iommu_pmu)
-> +		return -ENOMEM;
-> +
-> +	iommu_pmu->num_cntr = pcap_num_cntr(perfcap);
-> +	iommu_pmu->cntr_width = pcap_cntr_width(perfcap);
-> +	iommu_pmu->filter = pcap_filters_mask(perfcap);
-> +	iommu_pmu->cntr_stride = pcap_cntr_stride(perfcap);
-> +	iommu_pmu->num_eg = pcap_num_event_group(perfcap);
-> +
-> +	iommu_pmu->evcap = kcalloc(iommu_pmu->num_eg, sizeof(u64), GFP_KERNEL);
-> +	if (!iommu_pmu->evcap) {
-> +		ret = -ENOMEM;
-> +		goto free_pmu;
-> +	}
-> +
-> +	/* Parse event group capabilities */
-> +	for (i = 0; i < iommu_pmu->num_eg; i++) {
-> +		u64 pcap;
-> +
-> +		pcap = dmar_readq(iommu->reg + DMAR_PERFEVNTCAP_REG +
-> +				  i * IOMMU_PMU_CAP_REGS_STEP);
-> +		iommu_pmu->evcap[i] = pecap_es(pcap);
-> +	}
-> +
-> +	iommu_pmu->cntr_evcap = kcalloc(iommu_pmu->num_cntr, sizeof(u32 *), GFP_KERNEL);
-> +	if (!iommu_pmu->cntr_evcap) {
-> +		ret = -ENOMEM;
-> +		goto free_pmu_evcap;
-> +	}
-> +	for (i = 0; i < iommu_pmu->num_cntr; i++) {
-> +		iommu_pmu->cntr_evcap[i] = kcalloc(iommu_pmu->num_eg, sizeof(u32), GFP_KERNEL);
-> +		if (!iommu_pmu->cntr_evcap[i]) {
-> +			ret = -ENOMEM;
-> +			iommu_pmu->num_cntr = i;
-
-Do we really need above line? kfree() is friendly to a NULL pointer,
-right?
-
-> +			goto free_pmu_cntr_evcap;
-> +		}
-> +		/*
-> +		 * Set to the global capabilities, will adjust according
-> +		 * to per-counter capabilities later.
-> +		 */
-> +		for (j = 0; j < iommu_pmu->num_eg; j++)
-> +			iommu_pmu->cntr_evcap[i][j] = (u32)iommu_pmu->evcap[j];
-> +	}
-> +
-> +	iommu_pmu->cfg_reg = get_perf_reg_address(iommu, DMAR_PERFCFGOFF_REG);
-> +	iommu_pmu->cntr_reg = get_perf_reg_address(iommu, DMAR_PERFCNTROFF_REG);
-> +	iommu_pmu->overflow = get_perf_reg_address(iommu, DMAR_PERFOVFOFF_REG);
-> +
-> +	/*
-> +	 * Check per-counter capabilities
-> +	 * All counters should have the same capabilities on
-> +	 * Interrupt on Overflow Support and Counter Width
-> +	 */
-
-Please re-org this comment and make it neat.
-
-> +	for (i = 0; i < iommu_pmu->num_cntr; i++) {
-> +		cap = dmar_readl(iommu_pmu->cfg_reg +
-> +				 i * IOMMU_PMU_CFG_OFFSET +
-> +				 IOMMU_PMU_CFG_CNTRCAP_OFFSET);
-> +		if (!iommu_cntrcap_pcc(cap))
-> +			continue;
-> +		if ((iommu_cntrcap_cw(cap) != iommu_pmu->cntr_width) ||
-> +		    !iommu_cntrcap_ios(cap))
-> +			iommu_pmu->num_cntr = i;
-
-Can you please add some words describing how do you handle the
-capability inconsistent case? It seems that you just truncate the number
-of counters? Any rationality behind that?
-
-> +
-> +		/* Clear the pre-defined events group */
-> +		for (j = 0; j < iommu_pmu->num_eg; j++)
-> +			iommu_pmu->cntr_evcap[i][j] = 0;
-> +
-> +		/* Override with per-counter event capabilities */
-> +		for (j = 0; j < iommu_cntrcap_egcnt(cap); j++) {
-> +			cap = dmar_readl(iommu_pmu->cfg_reg + i * IOMMU_PMU_CFG_OFFSET +
-> +					 IOMMU_PMU_CFG_CNTREVCAP_OFFSET +
-> +					 (j * IOMMU_PMU_OFF_REGS_STEP));
-> +			iommu_pmu->cntr_evcap[i][iommu_event_group(cap)] = iommu_event_select(cap);
-> +			/*
-> +			 * Some events may only be supported by a specific counter.
-> +			 * Track them in the evcap as well.
-> +			 */
-> +			iommu_pmu->evcap[iommu_event_group(cap)] |= iommu_event_select(cap);
+> +		for (i = 0; i < DMA_MAX_NUM_ECMDCAP; i++) {
+> +			iommu->ecmdcap[i] = dmar_readq(iommu->reg + DMAR_ECCAP_REG +
+> +						       i * DMA_ECMD_REG_STEP);
 > +		}
 > +	}
 > +
-> +	iommu_pmu->iommu = iommu;
-> +	iommu->pmu = iommu_pmu;
+>   	err = 0;
+>   	goto out;
+>   
+> @@ -2434,3 +2444,56 @@ bool dmar_platform_optin(void)
+>   	return ret;
+>   }
+>   EXPORT_SYMBOL_GPL(dmar_platform_optin);
 > +
-> +	return 0;
+> +#ifdef CONFIG_INTEL_IOMMU
+
+Why do you need above #ifdef?
+
+> +#define ecmd_get_status_code(res)	((res & 0xff) >> 1)
 > +
-> +free_pmu_cntr_evcap:
-> +	for (i = 0; i < iommu_pmu->num_cntr; i++)
-> +		kfree(iommu_pmu->cntr_evcap[i]);
-> +	kfree(iommu_pmu->cntr_evcap);
-> +free_pmu_evcap:
-> +	kfree(iommu_pmu->evcap);
-> +free_pmu:
-> +	kfree(iommu_pmu);
+> +/*
+> + * Function to submit a command to the enhanced command interface. The
+> + * valid enhanced command descriptions are defined in Table 47 of the
+> + * VT-d spec. The VT-d hardware implementation may support some but not
+> + * all commands, which can be determined by checking the Enhanced
+> + * Command Capability Register.
+> + *
+> + * Return values:
+> + *  - 0: Command successful without any error;
+> + *  - Negative: software error value;
+> + *  - Nonzero positive: failure status code defined in Table 48.
+> + */
+> +int ecmd_submit_sync(struct intel_iommu *iommu, u8 ecmd,
+> +		     u64 oa, bool has_ob, u64 ob)
+> +{
+> +	unsigned long flags;
+> +	u64 res;
+> +	int ret;
+> +
+> +	if (!cap_ecmds(iommu->cap))
+> +		return -ENODEV;
+> +
+> +	raw_spin_lock_irqsave(&iommu->register_lock, flags);
+> +
+> +	res = dmar_readq(iommu->reg + DMAR_ECRSP_REG);
+> +	if (res & DMA_ECMD_ECRSP_IP) {
+> +		ret = -EBUSY;
+> +		goto err;
+> +	}
+> +
+> +	if (has_ob)
+> +		dmar_writeq(iommu->reg + DMAR_ECEO_REG, ob);
+
+The ecmds that require a Operand B are statically defined in the spec,
+right? What will it look like if we define a static ignore_ob(ecmd)?
+
+> +	dmar_writeq(iommu->reg + DMAR_ECMD_REG, ecmd | (oa << DMA_ECMD_OA_SHIFT));
+> +
+> +	IOMMU_WAIT_OP(iommu, DMAR_ECRSP_REG, dmar_readq,
+> +		      !(res & DMA_ECMD_ECRSP_IP), res);
+> +
+> +	if (res & DMA_ECMD_ECRSP_IP) {
+> +		ret = -ETIMEDOUT;
+> +		goto err;
+> +	}
+> +
+> +	ret = ecmd_get_status_code(res);
+> +err:
+> +	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
 > +
 > +	return ret;
 > +}
+> +#endif /* CONFIG_INTEL_IOMMU */
+> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+> index 5bcefbea55c9..f227107434ac 100644
+> --- a/drivers/iommu/intel/iommu.h
+> +++ b/drivers/iommu/intel/iommu.h
+> @@ -130,6 +130,10 @@
+>   #define DMAR_PERFOVFOFF_REG	0x318
+>   #define DMAR_PERFCNTROFF_REG	0x31c
+>   #define DMAR_PERFEVNTCAP_REG	0x380
+> +#define DMAR_ECMD_REG		0x400
+> +#define DMAR_ECEO_REG		0x408
+> +#define DMAR_ECRSP_REG		0x410
+> +#define DMAR_ECCAP_REG		0x430
+>   #define DMAR_VCCAP_REG		0xe30 /* Virtual command capability register */
+>   #define DMAR_VCMD_REG		0xe00 /* Virtual command register */
+>   #define DMAR_VCRSP_REG		0xe10 /* Virtual command response register */
+> @@ -304,6 +308,26 @@
+>   #define DMA_CCMD_SID(s) (((u64)((s) & 0xffff)) << 16)
+>   #define DMA_CCMD_DID(d) ((u64)((d) & 0xffff))
+>   
+> +/* ECMD_REG */
+> +#define DMA_MAX_NUM_ECMD		256
+> +#define DMA_MAX_NUM_ECMDCAP		(DMA_MAX_NUM_ECMD / 64)
+> +#define DMA_ECMD_REG_STEP		8
+> +#define DMA_ECMD_ENABLE			0xf0
+> +#define DMA_ECMD_DISABLE		0xf1
+> +#define DMA_ECMD_FREEZE			0xf4
+> +#define DMA_ECMD_UNFREEZE		0xf5
+> +#define DMA_ECMD_OA_SHIFT		16
+> +#define DMA_ECMD_ECRSP_IP		0x1
+> +#define DMA_ECMD_ECCAP3			3
+> +#define DMA_ECMD_ECCAP3_ECNTS		(1ULL << 48)
+> +#define DMA_ECMD_ECCAP3_DCNTS		(1ULL << 49)
+> +#define DMA_ECMD_ECCAP3_FCNTS		(1ULL << 52)
+> +#define DMA_ECMD_ECCAP3_UFCNTS		(1ULL << 53)
+> +#define DMA_ECMD_ECCAP3_ESSENTIAL	(DMA_ECMD_ECCAP3_ECNTS |	\
+> +					 DMA_ECMD_ECCAP3_DCNTS |	\
+> +					 DMA_ECMD_ECCAP3_FCNTS |	\
+> +					 DMA_ECMD_ECCAP3_UFCNTS)
 > +
-> +void free_iommu_pmu(struct intel_iommu *iommu)
+>   /* FECTL_REG */
+>   #define DMA_FECTL_IM (((u32)1) << 31)
+>   
+> @@ -600,6 +624,7 @@ struct intel_iommu {
+>   	u64		cap;
+>   	u64		ecap;
+>   	u64		vccap;
+> +	u64		ecmdcap[DMA_MAX_NUM_ECMDCAP];
+>   	u32		gcmd; /* Holds TE, EAFL. Don't need SRTP, SFL, WBF */
+>   	raw_spinlock_t	register_lock; /* protect register handling */
+>   	int		seq_id;	/* sequence id of the iommu */
+> @@ -841,6 +866,15 @@ extern const struct iommu_ops intel_iommu_ops;
+>   extern int intel_iommu_sm;
+>   extern int iommu_calculate_agaw(struct intel_iommu *iommu);
+>   extern int iommu_calculate_max_sagaw(struct intel_iommu *iommu);
+> +extern int ecmd_submit_sync(struct intel_iommu *iommu, u8 ecmd,
+> +			    u64 oa, bool has_ob, u64 ob);
+> +
+> +static inline bool ecmd_has_pmu_essential(struct intel_iommu *iommu)
 > +{
-> +	struct iommu_pmu *iommu_pmu = iommu->pmu;
-> +
-> +	if (!iommu_pmu)
-> +		return;
-> +
-> +	if (iommu_pmu->evcap) {
-> +		int i;
-> +
-> +		for (i = 0; i < iommu_pmu->num_cntr; i++)
-> +			kfree(iommu_pmu->cntr_evcap[i]);
-> +		kfree(iommu_pmu->cntr_evcap);
-> +	}
-> +	kfree(iommu_pmu->evcap);
-> +	kfree(iommu_pmu);
-> +	iommu->pmu = NULL;
+> +	return (iommu->ecmdcap[DMA_ECMD_ECCAP3] & DMA_ECMD_ECCAP3_ESSENTIAL) ==
+> +		DMA_ECMD_ECCAP3_ESSENTIAL;
 > +}
-> diff --git a/drivers/iommu/intel/perfmon.h b/drivers/iommu/intel/perfmon.h
-> new file mode 100644
-> index 000000000000..8587c80501cd
-> --- /dev/null
-> +++ b/drivers/iommu/intel/perfmon.h
-> @@ -0,0 +1,41 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
 > +
-> +/*
-> + * PERFCFGOFF_REG, PERFFRZOFF_REG
-> + * PERFOVFOFF_REG, PERFCNTROFF_REG
-> + */
-> +#define IOMMU_PMU_NUM_OFF_REGS			4
-> +#define IOMMU_PMU_OFF_REGS_STEP			4
+>   extern int dmar_disabled;
+>   extern int intel_iommu_enabled;
+>   #else
+> @@ -852,6 +886,18 @@ static inline int iommu_calculate_max_sagaw(struct intel_iommu *iommu)
+>   {
+>   	return 0;
+>   }
 > +
-> +#define IOMMU_PMU_CFG_OFFSET			0x100
-> +#define IOMMU_PMU_CFG_CNTRCAP_OFFSET		0x80
-> +#define IOMMU_PMU_CFG_CNTREVCAP_OFFSET		0x84
-> +#define IOMMU_PMU_CFG_SIZE			0x8
-> +#define IOMMU_PMU_CFG_FILTERS_OFFSET		0x4
-> +
-> +
-> +#define IOMMU_PMU_CAP_REGS_STEP			8
-> +
-> +#define iommu_cntrcap_pcc(p)			((p) & 0x1)
-> +#define iommu_cntrcap_cw(p)			((p >> 8) & 0xff)
-> +#define iommu_cntrcap_ios(p)			((p >> 16) & 0x1)
-> +#define iommu_cntrcap_egcnt(p)			((p >> 28) & 0xf)
-> +
-> +#define iommu_event_select(p)			((p) & 0xfffffff)
-> +#define iommu_event_group(p)			((p >> 28) & 0xf)
-> +
-> +#ifdef CONFIG_INTEL_IOMMU_PERF_EVENTS
-> +int alloc_iommu_pmu(struct intel_iommu *iommu);
-> +void free_iommu_pmu(struct intel_iommu *iommu);
-> +#else
-> +static inline int
-> +alloc_iommu_pmu(struct intel_iommu *iommu)
+> +static inline int ecmd_submit_sync(struct intel_iommu *iommu, u8 ecmd,
+> +				   u64 oa, bool has_ob, u64 ob)
 > +{
-> +	return 0;
+> +	return -EOPNOTSUPP;
 > +}
 > +
-> +static inline void
-> +free_iommu_pmu(struct intel_iommu *iommu)
+> +static inline bool ecmd_has_pmu_essential(struct intel_iommu *iommu)
 > +{
+> +	return false;
 > +}
-> +#endif /* CONFIG_INTEL_IOMMU_PERF_EVENTS */
+
+Is there any need to call these helpers when INTEL_IOMMU is not
+configured?
+
+> +
+>   #define dmar_disabled	(1)
+>   #define intel_iommu_enabled (0)
+>   #define intel_iommu_sm (0)
 
 --
 Best regards,
