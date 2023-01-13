@@ -1,37 +1,57 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3BEF02F2A;
-	Fri, 13 Jan 2023 15:35:22 +0000 (UTC)
-Received: from 8bytes.org (p549ad69d.dip0.t-ipconnect.de [84.154.214.157])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id E886A261BE3;
-	Fri, 13 Jan 2023 16:35:20 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1673624121;
-	bh=HQll+dtETcToYPK0AFX1WAMkvWIdTPoYlWHDFOoqErY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=sIoRgGoPLXf3TmS73/3zYA9xxsm8n6zU03O0tcCLrwrIlW9fsgXJSA59NGVMyjjl9
-	 Vt7HlxkXoDiMQOgujailfp2yQE6XmxyZcywA2Ot+jv6zJvvfwLDWBZQ9BGxVg9uKKB
-	 Pmh7OeXCRnLW2Q70jzms5n5Z9iLDG6Ys0CQA4CCGi0prMTnB7voo7RGh7hLtQ/CAdJ
-	 UYGsKCM05h35y3F8UG9GVpo3qI5B7qYj5l/DeeZ0WlkBH3kguQLeOkO0vuaI96iYin
-	 9EMUcVFg6F4vBcbpCk2z12HbKwcj5+ShaSIga0eAwfIGfYA2T+3JDARww6iRBNwZ+i
-	 7aFT92K2O/RYw==
-Date: Fri, 13 Jan 2023 16:35:19 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Samuel Holland <samuel@sholland.org>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Chen-Yu Tsai <wens@csie.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-	Maxime Ripard <mripard@kernel.org>
-Subject: Re: [PATCH v2 6/6] riscv: dts: allwinner: d1: Add the IOMMU node
-Message-ID: <Y8F6NxYpJELbvogC@8bytes.org>
-References: <20230103010903.11181-1-samuel@sholland.org>
- <20230103010903.11181-7-samuel@sholland.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9777B2F2A
+	for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 15:35:48 +0000 (UTC)
+Received: by mail-qt1-f176.google.com with SMTP id g9so4675983qtu.2
+        for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 07:35:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=FYVvKGHEE+oYnjn9skOttBAneMTWe58z8SoKkGSeO2g=;
+        b=AioQo+qFcyZG3CO2jiZc3Oky6EkI6b7DYFOaA5yUUD+57NQVLhlSpIYuX90mAKOkWn
+         vZQEZ5Aivi6SFgc+gpMXuTS1GLAt8mfhj1UJjbi7uXRykqdIrhhjq/dc3b/jYL1OOZ6I
+         mmA3n/Teh2lZPVQY1OV4p6XFNnhcLKLAVlhhssJA9E2oXosvGpIKSINbi0TjKQEPocQh
+         1sBa3PhHSaCR1w7IB1KlLBSy1pEd56tnZgsztraOvMr6uc1BoGUpTyS31W7SBEJ/n0A+
+         WrgqigH8xE4y9+qGZfuRssUMSfZCpJEixzgcrAaxpjYLWtp7TpAVZYNn3UMH9UpFf41m
+         AmYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=FYVvKGHEE+oYnjn9skOttBAneMTWe58z8SoKkGSeO2g=;
+        b=2z5kqJmFXMnNv4QhgJ89rOB72qCsW45iY4qeTHzsA1jkvGR6vx5AbdxW454Mmy85+G
+         ikGC9j9RGmKDcbae1vbWCENe/eovrjwnD4ib3zUVAbt0HkJWksYviza2SFLYuX8zI+2g
+         zklHX7UIQ5knxAV+/eyTog6eYxTFW8gsEPakW/xSV+TgRixfw/elCYjZL+cq3aWqA8ja
+         m7M/rH4Ib5pCKYzro0iZhSMwjrVjjq7PY6IjBscjHaeandqrOoYPLBVcECY/hgWTzgRT
+         0kmF5Rj4q7RzpKkTXmFoqtY2awubkDyzzwpsSDwGEz+wIZLzXy6qEaZ81NzF3Yus5pao
+         Fmww==
+X-Gm-Message-State: AFqh2krkT/8tY9bt8wTuJ46Yu0My/Q7t/AyUFdRnX1xvTvi16UcQ+qL1
+	EQ2yVxWpvDs79t5+M7t0nia/tA==
+X-Google-Smtp-Source: AMrXdXv/q++WAk09vRl8JM5uJg5HSfaNv1rW3L1eILGDWoEFZU1DLcO+a+YmZ3RNsHsAmqh8/AdE0A==
+X-Received: by 2002:ac8:6c7:0:b0:3a7:f424:d1bb with SMTP id j7-20020ac806c7000000b003a7f424d1bbmr19820385qth.21.1673624147503;
+        Fri, 13 Jan 2023 07:35:47 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-50-193.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.50.193])
+        by smtp.gmail.com with ESMTPSA id jt14-20020a05622aa00e00b003adc7f652a0sm7087732qtb.66.2023.01.13.07.35.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Jan 2023 07:35:46 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1pGM5q-00AJnI-CF;
+	Fri, 13 Jan 2023 11:35:46 -0400
+Date: Fri, 13 Jan 2023 11:35:46 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
+	robin.murphy@arm.com, ashish.kalra@amd.com, thomas.lendacky@amd.com,
+	vasant.hegde@amd.com, jon.grimm@amd.com
+Subject: Re: [PATCH 3/4] iommu: Introduce IOMMU call-back for processing
+ struct KVM assigned to VFIO
+Message-ID: <Y8F6Uoi73BK6R+mc@ziepe.ca>
+References: <20230110143137.54517-1-suravee.suthikulpanit@amd.com>
+ <20230110143137.54517-4-suravee.suthikulpanit@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,15 +60,30 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230103010903.11181-7-samuel@sholland.org>
+In-Reply-To: <20230110143137.54517-4-suravee.suthikulpanit@amd.com>
 
-On Mon, Jan 02, 2023 at 07:09:03PM -0600, Samuel Holland wrote:
->  arch/riscv/boot/dts/allwinner/sunxi-d1s-t113.dtsi | 10 ++++++++++
+On Tue, Jan 10, 2023 at 08:31:36AM -0600, Suravee Suthikulpanit wrote:
+> Currently, VFIO provide an kvm_vfio_file_set_kvm() interface for assigning
+> a KVM structure to a VFIO group. The information in struct KVM is also
+> useful for IOMMU drivers when setting up VFIO domain.
+> 
+> Introduce struct iommu_domain_ops.set_kvm call-back function to allow
+> IOMMU drivers to provide call-back to process the struct KVM
+> assigned.
 
-This file does not exist in v6.2-rc3, what tree ist this patch-set based
-on?
+Also NAK
 
-Regards,
+Connecting the iommu driver to KVM has to be properly architected
+though iommufd.
 
-	Joerg
+> @@ -1652,6 +1652,7 @@ void vfio_file_set_kvm(struct file *file, struct kvm *kvm)
+>  
+>  	mutex_lock(&group->group_lock);
+>  	group->kvm = kvm;
+> +	iommu_set_kvm(group->iommu_group, kvm);
+>  	mutex_unlock(&group->group_lock);
+>  }
 
+This also has obvious lifetime bugs
+
+Jason
