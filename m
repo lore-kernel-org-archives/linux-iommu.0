@@ -1,38 +1,37 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0F49E6ADE
-	for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 12:43:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 086BC6ADE
+	for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 12:44:44 +0000 (UTC)
 Received: from 8bytes.org (p200300c277327f0086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:7732:7f00:86ad:4f9d:2505:dd0d])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id B52F6262340;
-	Fri, 13 Jan 2023 13:43:26 +0100 (CET)
+	by mail.8bytes.org (Postfix) with ESMTPSA id ED600262340;
+	Fri, 13 Jan 2023 13:44:43 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1673613806;
-	bh=eAedM8kUpXf74wYVvw3sbi954tDx1WJVtgDncIaNFq8=;
+	s=default; t=1673613884;
+	bh=MscDIF3GsS7zhLNLVm/WiZfXdK2GItkr1gCY7Yuq/gI=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=XVvCfrEHbJJBmS+tx4zrgb9AW8hqb3KqzWWGZhf+kizYzwhSaHILZZ/w1IEqVvKUs
-	 82Rr7nw9/Otg4eeV2II5Z9XkfRJmtC29LfRYGbj27HUMzIj8AvZNt73Va4e1sIB6gp
-	 ILFTXXLcLI3dtOoRv6zB98XtnvJsdlmRzsilsXQ967oY0BTT5m7wSt4bu5D1HC0aQP
-	 CPEVAOZTMabLxz8YfwGCGRjLf2evCsYlQoYq7c6OSoOcWgIGErvmPQEiQ8zKQ1qgR0
-	 UAJaYXMH1gSjXdgjKyYu81pur7zkCA6vmnQ/VxYOESwQb7c8uUyghiz/VlACimGvfi
-	 06u70PnpsuPEg==
-Date: Fri, 13 Jan 2023 13:43:25 +0100
+	b=rPPebLs22xmYECIA08EQJNTrmdxY/5R/5bZCTMtoBcDNUjONEC2f+5UAg8dAZe75+
+	 tqE8v/3rLs7mCO3KLHwvNGsPVWQBtuVvqPwY3CkNFofuCjIbjORA2kfOpk1F+SJqHS
+	 vu74z7MbR0+vA3ZD6tOFAUFqsWrOHy3641EGSVcGnfOUn2ROmYiifTNyvZaaOZVeup
+	 CHaSNd8Wxg0IAfMYSzJLIyNFFsgFkFpLl3vTxK06O5163O32q9h66/GXsfrk9ouli+
+	 wblcy2rD81UzrGfIbXJ5pJIvmpHtRjWubRPBGt7+fMH6SD1A1suPCFFH1DEGwtb3oG
+	 3OjlH5HQuawEA==
+Date: Fri, 13 Jan 2023 13:44:42 +0100
 From: Joerg Roedel <joro@8bytes.org>
-To: yf.wang@mediatek.com
-Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc: Yong Wu <yong.wu@mediatek.com>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
 	Matthias Brugger <matthias.bgg@gmail.com>,
-	"open list:IOMMU DMA-API LAYER" <iommu@lists.linux.dev>,
-	open list <linux-kernel@vger.kernel.org>,
-	"moderated list:ARM/Mediatek SoC support" <linux-arm-kernel@lists.infradead.org>,
-	"moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>,
-	wsd_upstream@mediatek.com, stable@vger.kernel.org,
-	Libo Kang <Libo.Kang@mediatek.com>, Yong Wu <yong.wu@mediatek.com>,
-	Ning Li <Ning.Li@mediatek.com>,
-	jianjiao zeng <jianjiao.zeng@mediatek.com>
-Subject: Re: [PATCH v2] iommu/iova: Fix alloc iova overflows issue
-Message-ID: <Y8FR7U8YaDrIF62d@8bytes.org>
-References: <20230111063801.25107-1-yf.wang@mediatek.com>
+	Honghui Zhang <honghui.zhang@mediatek.com>,
+	linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+	Joerg Roedel <jroedel@suse.de>, iommu@lists.linux.dev,
+	linux-mediatek@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] iommu/mediatek-v1: Fix an error handling path in
+ mtk_iommu_v1_probe()
+Message-ID: <Y8FSOqUqQpTa+zAU@8bytes.org>
+References: <593e7b7d97c6e064b29716b091a9d4fd122241fb.1671473163.git.christophe.jaillet@wanadoo.fr>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -41,13 +40,19 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230111063801.25107-1-yf.wang@mediatek.com>
+In-Reply-To: <593e7b7d97c6e064b29716b091a9d4fd122241fb.1671473163.git.christophe.jaillet@wanadoo.fr>
 
-On Wed, Jan 11, 2023 at 02:38:00PM +0800, yf.wang@mediatek.com wrote:
-> v2: Update patch
->     1. Cc stable@vger.kernel.org
->        This patch needs to be merged stable branch,
->        add stable@vger.kernel.org in mail list.
->     2. Refer robin's suggestion to update patch.
+On Mon, Dec 19, 2022 at 07:06:22PM +0100, Christophe JAILLET wrote:
+> Fixes: b17336c55d89 ("iommu/mediatek: add support for mtk iommu generation one HW")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+> Another option would be to use devm_clk_get_enabled(). This would save a
+> few LoC in mtk_iommu_v1_hw_init() and in the remove function.
+> However, it would change the order of function calls in the remove function
+> so I leave it as-is.
+> Let me know if it is fine and if you prefer this alternative.
+> ---
+>  drivers/iommu/mtk_iommu_v1.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 
-Applied for 6.2, thanks.
+Applied, thanks.
