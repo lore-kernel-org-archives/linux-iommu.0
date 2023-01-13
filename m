@@ -1,115 +1,275 @@
-Received: from mail-il1-f182.google.com (mail-il1-f182.google.com [209.85.166.182])
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21F0BAD4A
+	for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 18:20:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1673634034; x=1705170034;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=Wa0kouoAdWT2qadn3J6c8vmc3fFgvMhcyc8wdY2aHdU=;
+  b=BS5+zkYNBNjEu9DhFrvNU7xG8ABiZHwCHdqKX4WVlxHQr3Su5dEcY6sE
+   PeaC3Vv9tizM6qtNmKFAANdmq/LKItbj/AGPF+igLWd3ebGj6Oaa9fhar
+   kKdqfNCVOtxEQ6ebqVpnohdpNciiv4uTgeHXZucIISq87fyhArW1627jI
+   P0NU2iC1aWtd+2LC070JJ0K2UbzGBOmIZ3BVfMSJY5peRDnAlyAn/OCvG
+   7371Xw1WZrOm5kXOHgIOSAu441gd4jHfQ+96IkLPfJqC0M52hiU+gT/Mw
+   GcI+stJIvAe1+NIbTpZP3VGrt+rhBhyy9x26n1rSyO3ZdwwMfWwBnPTZB
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10589"; a="307613706"
+X-IronPort-AV: E=Sophos;i="5.97,214,1669104000"; 
+   d="scan'208";a="307613706"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2023 10:20:21 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10589"; a="782248920"
+X-IronPort-AV: E=Sophos;i="5.97,214,1669104000"; 
+   d="scan'208";a="782248920"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga004.jf.intel.com with ESMTP; 13 Jan 2023 10:20:21 -0800
+Received: from [10.252.208.111] (kliang2-mobl1.ccr.corp.intel.com [10.252.208.111])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEB45AD4A
-	for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 18:15:25 +0000 (UTC)
-Received: by mail-il1-f182.google.com with SMTP id v6so1615117ilq.3
-        for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 10:15:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=zu+0Yl41eoFyIhv8VuC2fbUgUNGvpyTO1MGhXQXnzok=;
-        b=JMAjgxWn6lb6jLu668oSCaWHZWTkfiO68I+SjKa+pSk5HTK/+eFNNlqjQfnGjVFCEx
-         FCFuh2xLTAlRsQVLHnxf6ZEPFfKGgEM2jZTJjEK5fPAlWV4j6LNw1pHp8wr8s7Vg+gqV
-         r9NKrdrbMqEnyC2oxXkilMoSkbP2LSq0OQDfU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=zu+0Yl41eoFyIhv8VuC2fbUgUNGvpyTO1MGhXQXnzok=;
-        b=UqI93ZJMWj4kn4ukNtg5XblpQ2MNhzFcmXTcARLjXjenCzNMC4xuwGH3orxeLbLI9u
-         v04m/2/K4tOB7lOE5rqvqb4cNRfwQVeukFZEIf84R5dZxjon6emS+A0vXFgjMOZYTjCQ
-         aYzz9EUKij13nH5m+0P6+iB87pwc5561iTMc876MKxnEGz5O2OBpid3Cs0X85FeXkLSG
-         60uP/XKNiZFFCnvQ0cU3j+W/58udOHuPZnK3dOBnwJzKr8zJ6LkOUAaY8kmYFgTRlBZY
-         Z31xfONnwGY3x9OqjxFd4H837/GoynCLhqqLreYIktOt726mqIUgHZzd8GRs5syWK6Tx
-         3HZA==
-X-Gm-Message-State: AFqh2kp1NwQ4LY3qkj5Ez8oue6EAo85evCHgNHfUJzlmABuVNHVRe6az
-	pc7FzSNEoHe//OpFpkfQznRrSg==
-X-Google-Smtp-Source: AMrXdXsMA3BoeJsq3+v8W3+bT41hlN/pFvcYijFT9/lZA7WHUOm0H6e5LPSVVodtHkFNCaZLeiHSyQ==
-X-Received: by 2002:a05:6e02:20e7:b0:30d:9eea:e51 with SMTP id q7-20020a056e0220e700b0030d9eea0e51mr4736932ilv.1.1673633724779;
-        Fri, 13 Jan 2023 10:15:24 -0800 (PST)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id k15-20020a02334f000000b0039d71c46577sm5466207jak.21.2023.01.13.10.15.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 Jan 2023 10:15:24 -0800 (PST)
-Message-ID: <ecfeafbc-9f5e-68a8-3a4a-9fce17bde77f@linuxfoundation.org>
-Date: Fri, 13 Jan 2023 11:15:23 -0700
+	by linux.intel.com (Postfix) with ESMTPS id C76BB580AD7;
+	Fri, 13 Jan 2023 10:20:02 -0800 (PST)
+Message-ID: <dd035701-62f0-0a68-ed4d-5347d26753f8@linux.intel.com>
+Date: Fri, 13 Jan 2023 13:19:59 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.4.2
-Subject: Re: [PATCH] selftests:dma: Fix compile error in user-space tool
-To: Gerd Bayer <gbayer@linux.ibm.com>, Xiang Chen
- <chenxiang66@hisilicon.com>, Shuah Khan <shuah@kernel.org>
-Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev,
- linux-kselftest@vger.kernel.org, Niklas Schnelle <schnelle@linux.ibm.com>,
- Shuah Khan <skhan@linuxfoundation.org>
-References: <20230109180721.187324-1-gbayer@linux.ibm.com>
- <a01b5643-3373-d5a0-a3d7-4fa845725dbd@linuxfoundation.org>
- <9d824f0b3642d3b3e8e92fe7a34522f334b003f7.camel@linux.ibm.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH 3/7] iommu/vt-d: Support Enhanced Command Interface
 Content-Language: en-US
-From: Shuah Khan <skhan@linuxfoundation.org>
-In-Reply-To: <9d824f0b3642d3b3e8e92fe7a34522f334b003f7.camel@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+To: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org,
+ dwmw2@infradead.org, robin.murphy@arm.com, robert.moore@intel.com,
+ rafael.j.wysocki@intel.com, lenb@kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20230111202504.378258-1-kan.liang@linux.intel.com>
+ <20230111202504.378258-4-kan.liang@linux.intel.com>
+ <6783f737-2701-77e3-ce83-8d287be51cf6@linux.intel.com>
+From: "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <6783f737-2701-77e3-ce83-8d287be51cf6@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On 1/13/23 09:52, Gerd Bayer wrote:
-> On Thu, 2023-01-12 at 13:36 -0700, Shuah Khan wrote:
->> On 1/9/23 11:07, Gerd Bayer wrote:
->>> With this change dma_map_benchmark compiles with just the obvious
->>> warning
->>> about uapi usage on ARCH=x86, arm64, and s390 and runs on
->>> ARCH=s390.
+
+
+On 2023-01-13 8:55 a.m., Baolu Lu wrote:
+> On 2023/1/12 4:25, kan.liang@linux.intel.com wrote:
+>> From: Kan Liang <kan.liang@linux.intel.com>
 >>
->> On Linux 6.2-rc3, dma_map_benchmark compiles just fine. You do
->> have to do "make headers_install" first as kselftest depends
->> on headers being installed in the repo.
+>> The Enhanced Command Register is to submit command and operand of
+>> enhanced commands to DMA Remapping hardware. It can supports upto 256
+>> enhanced commands.
 >>
->> Please let me know if you are seeing compile problems even after
->> installing headers.
+>> There is a HW register to indicate the availability of all 256 enhanced
+>> commands. Each bit stands for each command. But there isn't an existing
+>> interface to read/write all 256 bits. Introduce the u64 ecmdcap[4] to
+>> store the existence of each enhanced command. Read 4 times to get
+>> all of them in map_iommu().
 >>
->> thanks,
->> -- Shuah
+>> Add a helper to facilitate an enhanced command launch. Make sure hardware
+>> complete the command.
+>>
+>> Add a helper to facilitate the check of PMU essentials.
+>>
+>> The helpers will be used later.
+>>
+>> Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+>> ---
+>>   drivers/iommu/intel/dmar.c  | 63 +++++++++++++++++++++++++++++++++++++
+>>   drivers/iommu/intel/iommu.h | 46 +++++++++++++++++++++++++++
+>>   2 files changed, 109 insertions(+)
+>>
+>> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+>> index 91bb48267df2..dcafa32875c1 100644
+>> --- a/drivers/iommu/intel/dmar.c
+>> +++ b/drivers/iommu/intel/dmar.c
+>> @@ -1025,6 +1025,16 @@ static int map_iommu(struct intel_iommu *iommu,
+>> struct dmar_drhd_unit *drhd)
+>>               goto release;
+>>           }
+>>       }
+>> +
+>> +    if (cap_ecmds(iommu->cap)) {
+>> +        int i;
+>> +
+>> +        for (i = 0; i < DMA_MAX_NUM_ECMDCAP; i++) {
+>> +            iommu->ecmdcap[i] = dmar_readq(iommu->reg + DMAR_ECCAP_REG +
+>> +                               i * DMA_ECMD_REG_STEP);
+>> +        }
+>> +    }
+>> +
+>>       err = 0;
+>>       goto out;
+>>   @@ -2434,3 +2444,56 @@ bool dmar_platform_optin(void)
+>>       return ret;
+>>   }
+>>   EXPORT_SYMBOL_GPL(dmar_platform_optin);
+>> +
+>> +#ifdef CONFIG_INTEL_IOMMU
 > 
-> Hi Shuah,
+> Why do you need above #ifdef?
 > 
-> thank you for this clarification. Once I run "make headers_install"
-> before attempting to build the dma_benchmark_test executable with
->    make -C tools/testing/selftests/ TARGETS="dma"
-> everything works out nicely - even w/o my patch.
+>> +#define ecmd_get_status_code(res)    ((res & 0xff) >> 1)
+>> +
+>> +/*
+>> + * Function to submit a command to the enhanced command interface. The
+>> + * valid enhanced command descriptions are defined in Table 47 of the
+>> + * VT-d spec. The VT-d hardware implementation may support some but not
+>> + * all commands, which can be determined by checking the Enhanced
+>> + * Command Capability Register.
+>> + *
+>> + * Return values:
+>> + *  - 0: Command successful without any error;
+>> + *  - Negative: software error value;
+>> + *  - Nonzero positive: failure status code defined in Table 48.
+>> + */
+>> +int ecmd_submit_sync(struct intel_iommu *iommu, u8 ecmd,
+>> +             u64 oa, bool has_ob, u64 ob)
+>> +{
+>> +    unsigned long flags;
+>> +    u64 res;
+>> +    int ret;
+>> +
+>> +    if (!cap_ecmds(iommu->cap))
+>> +        return -ENODEV;
+>> +
+>> +    raw_spin_lock_irqsave(&iommu->register_lock, flags);
+>> +
+>> +    res = dmar_readq(iommu->reg + DMAR_ECRSP_REG);
+>> +    if (res & DMA_ECMD_ECRSP_IP) {
+>> +        ret = -EBUSY;
+>> +        goto err;
+>> +    }
+>> +
+>> +    if (has_ob)
+>> +        dmar_writeq(iommu->reg + DMAR_ECEO_REG, ob);
 > 
-> I have to apologize for creating this fuzz. I was not aware that one of
-> the dependencies for "make kselftest" was "make headers_install", since
-> I was going straight for the interactive "dma_benchmark_test" control
-> tool of the test that is implemented in kernel/dma/benchmark_test.c.
-> I didn't intend to run the full "make kselftest" suite, primarily since
-> I have distinct test and build systems - most often building cross-
-> arch, even.
+> The ecmds that require a Operand B are statically defined in the spec,
+> right? What will it look like if we define a static ignore_ob(ecmd)?
 > 
+>> +    dmar_writeq(iommu->reg + DMAR_ECMD_REG, ecmd | (oa <<
+>> DMA_ECMD_OA_SHIFT));
+>> +
+>> +    IOMMU_WAIT_OP(iommu, DMAR_ECRSP_REG, dmar_readq,
+>> +              !(res & DMA_ECMD_ECRSP_IP), res);
+>> +
+>> +    if (res & DMA_ECMD_ECRSP_IP) {
+>> +        ret = -ETIMEDOUT;
+>> +        goto err;
+>> +    }
+>> +
+>> +    ret = ecmd_get_status_code(res);
+>> +err:
+>> +    raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
+>> +
+>> +    return ret;
+>> +}
+>> +#endif /* CONFIG_INTEL_IOMMU */
+>> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+>> index 5bcefbea55c9..f227107434ac 100644
+>> --- a/drivers/iommu/intel/iommu.h
+>> +++ b/drivers/iommu/intel/iommu.h
+>> @@ -130,6 +130,10 @@
+>>   #define DMAR_PERFOVFOFF_REG    0x318
+>>   #define DMAR_PERFCNTROFF_REG    0x31c
+>>   #define DMAR_PERFEVNTCAP_REG    0x380
+>> +#define DMAR_ECMD_REG        0x400
+>> +#define DMAR_ECEO_REG        0x408
+>> +#define DMAR_ECRSP_REG        0x410
+>> +#define DMAR_ECCAP_REG        0x430
+>>   #define DMAR_VCCAP_REG        0xe30 /* Virtual command capability
+>> register */
+>>   #define DMAR_VCMD_REG        0xe00 /* Virtual command register */
+>>   #define DMAR_VCRSP_REG        0xe10 /* Virtual command response
+>> register */
+>> @@ -304,6 +308,26 @@
+>>   #define DMA_CCMD_SID(s) (((u64)((s) & 0xffff)) << 16)
+>>   #define DMA_CCMD_DID(d) ((u64)((d) & 0xffff))
+>>   +/* ECMD_REG */
+>> +#define DMA_MAX_NUM_ECMD        256
+>> +#define DMA_MAX_NUM_ECMDCAP        (DMA_MAX_NUM_ECMD / 64)
+>> +#define DMA_ECMD_REG_STEP        8
+>> +#define DMA_ECMD_ENABLE            0xf0
+>> +#define DMA_ECMD_DISABLE        0xf1
+>> +#define DMA_ECMD_FREEZE            0xf4
+>> +#define DMA_ECMD_UNFREEZE        0xf5
+>> +#define DMA_ECMD_OA_SHIFT        16
+>> +#define DMA_ECMD_ECRSP_IP        0x1
+>> +#define DMA_ECMD_ECCAP3            3
+>> +#define DMA_ECMD_ECCAP3_ECNTS        (1ULL << 48)
+>> +#define DMA_ECMD_ECCAP3_DCNTS        (1ULL << 49)
+>> +#define DMA_ECMD_ECCAP3_FCNTS        (1ULL << 52)
+>> +#define DMA_ECMD_ECCAP3_UFCNTS        (1ULL << 53)
+>> +#define DMA_ECMD_ECCAP3_ESSENTIAL    (DMA_ECMD_ECCAP3_ECNTS |    \
+>> +                     DMA_ECMD_ECCAP3_DCNTS |    \
+>> +                     DMA_ECMD_ECCAP3_FCNTS |    \
+>> +                     DMA_ECMD_ECCAP3_UFCNTS)
+>> +
+>>   /* FECTL_REG */
+>>   #define DMA_FECTL_IM (((u32)1) << 31)
+>>   @@ -600,6 +624,7 @@ struct intel_iommu {
+>>       u64        cap;
+>>       u64        ecap;
+>>       u64        vccap;
+>> +    u64        ecmdcap[DMA_MAX_NUM_ECMDCAP];
+>>       u32        gcmd; /* Holds TE, EAFL. Don't need SRTP, SFL, WBF */
+>>       raw_spinlock_t    register_lock; /* protect register handling */
+>>       int        seq_id;    /* sequence id of the iommu */
+>> @@ -841,6 +866,15 @@ extern const struct iommu_ops intel_iommu_ops;
+>>   extern int intel_iommu_sm;
+>>   extern int iommu_calculate_agaw(struct intel_iommu *iommu);
+>>   extern int iommu_calculate_max_sagaw(struct intel_iommu *iommu);
+>> +extern int ecmd_submit_sync(struct intel_iommu *iommu, u8 ecmd,
+>> +                u64 oa, bool has_ob, u64 ob);
+>> +
+>> +static inline bool ecmd_has_pmu_essential(struct intel_iommu *iommu)
+>> +{
+>> +    return (iommu->ecmdcap[DMA_ECMD_ECCAP3] &
+>> DMA_ECMD_ECCAP3_ESSENTIAL) ==
+>> +        DMA_ECMD_ECCAP3_ESSENTIAL;
+>> +}
+>> +
+>>   extern int dmar_disabled;
+>>   extern int intel_iommu_enabled;
+>>   #else
+>> @@ -852,6 +886,18 @@ static inline int
+>> iommu_calculate_max_sagaw(struct intel_iommu *iommu)
+>>   {
+>>       return 0;
+>>   }
+>> +
+>> +static inline int ecmd_submit_sync(struct intel_iommu *iommu, u8 ecmd,
+>> +                   u64 oa, bool has_ob, u64 ob)
+>> +{
+>> +    return -EOPNOTSUPP;
+>> +}
+>> +
+>> +static inline bool ecmd_has_pmu_essential(struct intel_iommu *iommu)
+>> +{
+>> +    return false;
+>> +}
+> 
+> Is there any need to call these helpers when INTEL_IOMMU is not
+> configured?
 
-No worries. The reason for this dependency is to ensure kselftest can
-test the kernel properly. Tests for new or enhanced kernel features
-depend on mew headers. headers_install has been dependency for kselftest
-from the beginning and some individual tests depend on it.
 
-The main Makefile (make kselftest) enforces the dependency  and installs
-headers first. You can use the following commands to compile/run dma test.
-This will install the headers and then compile/run dma test.
+No, I will remove them from non-INTEL_IOMMU.
 
-make kselftest-all TARGETS=dma (compile)
-make kselftest TARGETS=dma (compile and run)
+Thanks,
+Kan
 
-
-> So please, disregard the PATCH.
-
-Done.
-
-thanks,
--- Shuah
+> 
+>> +
+>>   #define dmar_disabled    (1)
+>>   #define intel_iommu_enabled (0)
+>>   #define intel_iommu_sm (0)
+> 
+> -- 
+> Best regards,
+> baolu
