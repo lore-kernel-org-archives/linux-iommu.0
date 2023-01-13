@@ -1,80 +1,243 @@
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B26017EC
-	for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 08:45:05 +0000 (UTC)
-Received: by mail-ed1-f47.google.com with SMTP id x10so27333622edd.10
-        for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 00:45:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=rpXbd029I4RPrcJB43EPCQvzvd9TlAPezPhrvHuKOuc=;
-        b=o3jbXDIKuTrfK/FM8hCEiHzqTQqqdJisJkST2+WPejTG1q7HPRpBjiaAgPihfoufw7
-         xHx7p20QP7Ariimi43Qph8cY7QmKBKEm9+138VJwbw//XL2IGvH0FKvh+yyvQyqD9IDm
-         lrY++lqPr9VJPqTqZt+1hLklqsBTQDoJNHzHU1p5bCFWcOYdPbNDiM1qwbIiN+Qap2l4
-         zA/tGM9fvHMKMzYm3kyAqZjm6EZvMIOvWc9REcL2d8L0B6NCg0fFFBtEw5rYjD/I4duk
-         W0bYs3EAu+s2oUCZ9mjxMW9CzMFGDmFaIqgBcdHj1I3vDqhC9BTbS4++X7RKSJGV1CWb
-         W6XA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=rpXbd029I4RPrcJB43EPCQvzvd9TlAPezPhrvHuKOuc=;
-        b=vaYTlp1uXfquWXwQC+oR7/DXmdaEBuaIs82yAOtHwGQNfkMhqXlCCwojFHyxWNK72u
-         CxgxevIlh1ClS30omEvUMRiFR1AagXPHGINnv6iPUX63+t1pBBgOe1WTMr1msOOJpe8r
-         7Hw99sQ+9Kp5xYMrBINFyPys5wqJsJjkkOF9FmyD+Hj9nOtUDrj9VmVo4XysQjvGyF0/
-         st6hKywvMWTHal3eKnbrODJBB/pCVY/LE0AvpW2hKohxw9NVR3S8XQnAYH6hWc0YPKGN
-         cK4ml/Yc3sypxjMNr1DbFJZypO+HLMoXnGoP9bgRGcePli/1S1ZuqOOBIT6JtW2DeWz5
-         Uihw==
-X-Gm-Message-State: AFqh2kqqUq6ddl6oxwjUSYx0G0JV9a9MYVF3KOEfrbjpT00aUgSaB8S9
-	d6V3PE2fK+l/f1UNRdGXz5dWTg==
-X-Google-Smtp-Source: AMrXdXv/8nXe2cQTPknFxBnq/uaW5tOzgI0h2dOUmh7Bg86HuOIFQ9db4MoU0xWsBZgtyuL10JOf0A==
-X-Received: by 2002:a05:6402:370:b0:492:bf3d:1a15 with SMTP id s16-20020a056402037000b00492bf3d1a15mr25701705edw.1.1673599504036;
-        Fri, 13 Jan 2023 00:45:04 -0800 (PST)
-Received: from [192.168.1.109] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id b2-20020a0564021f0200b0048c85c5ad30sm7913356edb.83.2023.01.13.00.45.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 Jan 2023 00:45:03 -0800 (PST)
-Message-ID: <230e4a92-1114-1217-9d3e-b2aee9b30d41@linaro.org>
-Date: Fri, 13 Jan 2023 09:45:02 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D5BC7EC
+	for <iommu@lists.linux.dev>; Fri, 13 Jan 2023 08:49:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1673599769; x=1705135769;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=SOjSO09isA8OQCKtWEdZRS285mnjUUfSV+vLHXafAtk=;
+  b=G0ZmuXg2TsO71PlOR/dT8gY5Xq6+CN12igR6UPc0fDwl1zbKygLPLmmS
+   pjx6avhxtBap2t+1TE9JctO4sq+XWqvLKLqdH62c1Q3jL5ulNAn7x1orS
+   Bv8yj9e2RWxLVoF39uxjhtYB3C3EtHcqZeDi9yr4vGfxANu3MQnw0qIo2
+   gc+1u0tJzWSi9SRRwjoAaarndK4BUiFn/AiRHrNpwWOdpl8zenLEaDuKH
+   1IqnO01IkG4Wy1j4IUBqnoadq8p2qthSWFKFssTuUdCk73V2el7EF5USl
+   wy2sIuCa4BwhqMTIU2nyeLka4CfNy7y2JLwbyKME7J6qp9R+17fWAwTc4
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10588"; a="303645554"
+X-IronPort-AV: E=Sophos;i="5.97,213,1669104000"; 
+   d="scan'208";a="303645554"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2023 00:49:28 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10588"; a="800534242"
+X-IronPort-AV: E=Sophos;i="5.97,213,1669104000"; 
+   d="scan'208";a="800534242"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.190.181]) ([10.252.190.181])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2023 00:49:25 -0800
+Message-ID: <e40bacb0-701c-5373-3890-d037f668829f@linux.intel.com>
+Date: Fri, 13 Jan 2023 16:49:21 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Subject: Re: [PATCH v2] dt-bindings: arm-smmu: document the smmu on Qualcomm
- SA8775P
+Cc: baolu.lu@linux.intel.com, =?UTF-8?Q?Christian_K=c3=b6nig?=
+ <christian.koenig@amd.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Kevin Tian <kevin.tian@intel.com>, Vasant Hegde <vasant.hegde@amd.com>,
+ Tony Zhu <tony.zhu@intel.com>, linux-pci@vger.kernel.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/1] PCI: Add translated request only flag for
+ pci_enable_pasid()
+To: Matt Fagnani <matt.fagnani@bell.net>, Bjorn Helgaas
+ <bhelgaas@google.com>, Joerg Roedel <jroedel@suse.de>
+References: <20230113014409.752405-1-baolu.lu@linux.intel.com>
+ <c34d66a1-1564-1ec5-86de-6ebd1ebb2f71@bell.net>
 Content-Language: en-US
-To: Bartosz Golaszewski <brgl@bgdev.pl>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-References: <20230112154554.442808-1-brgl@bgdev.pl>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230112154554.442808-1-brgl@bgdev.pl>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <c34d66a1-1564-1ec5-86de-6ebd1ebb2f71@bell.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On 12/01/2023 16:45, Bartosz Golaszewski wrote:
-> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+On 2023/1/13 16:15, Matt Fagnani wrote:
+> Baolu,
 > 
-> Document the qcom,smmu-500 SMMU on SA8775P platforms.
-> 
-> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> ---
+> 6.2-rc3 with v2 of this patch applied booted normally without the black 
+> screen problem. regzbot by Thorsten Leemhuis recommends adding the 
+> following link tag to the previous discussion at 
+> https://linux-regtracking.leemhuis.info/regzbot/mainline/ "When fixing, 
+> add this to the commit message to make regzbot notice patch postings and 
+> commits to resolve the issue:" Link: 
+> https://lore.kernel.org/r/15d0f9ff-2a56-b3e9-5b45-e6b23300ae3b@leemhuis.info/
 
+Sure. I will add below:
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Fixes: 201007ef707a ("PCI: Enable PASID only when ACS RR & UF enabled on 
+upstream path")
+Reported-by: Matt Fagnani <matt.fagnani@bell.net>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216865
+Link: 
+https://lore.kernel.org/r/15d0f9ff-2a56-b3e9-5b45-e6b23300ae3b@leemhuis.info/
 
+By the way, can I add your tested-by?
+
+--
 Best regards,
-Krzysztof
+baolu
+
+> 
+> Thanks,
+> 
+> Matt
+> 
+> On 1/12/23 20:44, Lu Baolu wrote:
+>> The PCIe fabric routes Memory Requests based on the TLP address, ignoring
+>> the PASID. In order to ensure system integrity, commit 201007ef707a 
+>> ("PCI:
+>> Enable PASID only when ACS RR & UF enabled on upstream path") requires
+>> some ACS features being supported on device's upstream path when enabling
+>> PCI/PASID.
+>>
+>> One alternative is ATS which lets the device resolve the PASID+addr pair
+>> before a memory request is made into a routeable TLB address through the
+>> TA. Those resolved addresses are then cached on the device instead of
+>> in the IOMMU TLB and the device always sets the translated bit for PASID.
+>> One example of those devices are AMD graphic devices that always have ACS
+>> or ATS enabled together with PASID.
+>>
+>> This adds a flag parameter in the pci_enable_pasid() helper, with which
+>> the device driver could opt-in the fact that device always sets the
+>> translated bit for PASID.
+>>
+>> It also applies this opt-in for AMD graphic devices. Without this change,
+>> kernel boots to black screen on a system with below AMD graphic device:
+>>
+>> 00:01.0 VGA compatible controller: Advanced Micro Devices, Inc.
+>>          [AMD/ATI] Wani [Radeon R5/R6/R7 Graphics] (rev ca)
+>>          (prog-if 00 [VGA controller])
+>>     DeviceName: ATI EG BROADWAY
+>>     Subsystem: Hewlett-Packard Company Device 8332
+>>
+>> At present, it is a common practice to enable/disable PCI PASID in the
+>> iommu drivers. Considering that the device driver knows more about the
+>> specific device, we will follow up by moving pci_enable_pasid() into
+>> the specific device drivers.
+>>
+>> Fixes: 201007ef707a ("PCI: Enable PASID only when ACS RR & UF enabled 
+>> on upstream path")
+>> Link: https://bugzilla.kernel.org/show_bug.cgi?id=216865
+>> Reported-by: Matt Fagnani <matt.fagnani@bell.net>
+>> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+>> Suggested-by: Christian König <christian.koenig@amd.com>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   include/linux/pci-ats.h                     | 6 ++++--
+>>   drivers/iommu/amd/iommu.c                   | 2 +-
+>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
+>>   drivers/iommu/intel/iommu.c                 | 3 ++-
+>>   drivers/pci/ats.c                           | 8 ++++++--
+>>   5 files changed, 14 insertions(+), 7 deletions(-)
+>>
+>> Change log:
+>> v2:
+>>   - Convert the bool to a named flag;
+>>   - Convert TRANSLED to XLATED.
+>>
+>> v1:
+>>   - 
+>> https://lore.kernel.org/linux-iommu/20230112084629.737653-1-baolu.lu@linux.intel.com/
+>>
+>> diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
+>> index df54cd5b15db..750fca736ef4 100644
+>> --- a/include/linux/pci-ats.h
+>> +++ b/include/linux/pci-ats.h
+>> @@ -4,6 +4,8 @@
+>>   #include <linux/pci.h>
+>> +#define PCI_PASID_XLATED_REQ_ONLY    BIT(0)
+>> +
+>>   #ifdef CONFIG_PCI_ATS
+>>   /* Address Translation Service */
+>>   bool pci_ats_supported(struct pci_dev *dev);
+>> @@ -35,12 +37,12 @@ static inline bool pci_pri_supported(struct 
+>> pci_dev *pdev)
+>>   #endif /* CONFIG_PCI_PRI */
+>>   #ifdef CONFIG_PCI_PASID
+>> -int pci_enable_pasid(struct pci_dev *pdev, int features);
+>> +int pci_enable_pasid(struct pci_dev *pdev, int features, int flags);
+>>   void pci_disable_pasid(struct pci_dev *pdev);
+>>   int pci_pasid_features(struct pci_dev *pdev);
+>>   int pci_max_pasids(struct pci_dev *pdev);
+>>   #else /* CONFIG_PCI_PASID */
+>> -static inline int pci_enable_pasid(struct pci_dev *pdev, int features)
+>> +static inline int pci_enable_pasid(struct pci_dev *pdev, int 
+>> features, int flags)
+>>   { return -EINVAL; }
+>>   static inline void pci_disable_pasid(struct pci_dev *pdev) { }
+>>   static inline int pci_pasid_features(struct pci_dev *pdev)
+>> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+>> index cbeaab55c0db..64a8c03d7dfa 100644
+>> --- a/drivers/iommu/amd/iommu.c
+>> +++ b/drivers/iommu/amd/iommu.c
+>> @@ -1700,7 +1700,7 @@ static int pdev_pri_ats_enable(struct pci_dev 
+>> *pdev)
+>>       int ret;
+>>       /* Only allow access to user-accessible pages */
+>> -    ret = pci_enable_pasid(pdev, 0);
+>> +    ret = pci_enable_pasid(pdev, 0, PCI_PASID_XLATED_REQ_ONLY);
+>>       if (ret)
+>>           goto out_err;
+>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c 
+>> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> index ab160198edd6..891bf53c45dc 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> @@ -2350,7 +2350,7 @@ static int arm_smmu_enable_pasid(struct 
+>> arm_smmu_master *master)
+>>       if (num_pasids <= 0)
+>>           return num_pasids;
+>> -    ret = pci_enable_pasid(pdev, features);
+>> +    ret = pci_enable_pasid(pdev, features, 0);
+>>       if (ret) {
+>>           dev_err(&pdev->dev, "Failed to enable PASID\n");
+>>           return ret;
+>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+>> index 59df7e42fd53..5cc13f02a5ac 100644
+>> --- a/drivers/iommu/intel/iommu.c
+>> +++ b/drivers/iommu/intel/iommu.c
+>> @@ -1425,7 +1425,8 @@ static void iommu_enable_pci_caps(struct 
+>> device_domain_info *info)
+>>          undefined. So always enable PASID support on devices which
+>>          have it, even if we can't yet know if we're ever going to
+>>          use it. */
+>> -    if (info->pasid_supported && !pci_enable_pasid(pdev, 
+>> info->pasid_supported & ~1))
+>> +    if (info->pasid_supported &&
+>> +        !pci_enable_pasid(pdev, info->pasid_supported & ~1, 0))
+>>           info->pasid_enabled = 1;
+>>       if (info->pri_supported &&
+>> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+>> index f9cc2e10b676..3a2d9e0ba1d8 100644
+>> --- a/drivers/pci/ats.c
+>> +++ b/drivers/pci/ats.c
+>> @@ -353,12 +353,15 @@ void pci_pasid_init(struct pci_dev *pdev)
+>>    * pci_enable_pasid - Enable the PASID capability
+>>    * @pdev: PCI device structure
+>>    * @features: Features to enable
+>> + * @flags: device-specific flags
+>> + *   - PCI_PASID_XLATED_REQ_ONLY: The PCI device only issues PASID
+>> + *                                memory requests of translated type.
+>>    *
+>>    * Returns 0 on success, negative value on error. This function checks
+>>    * whether the features are actually supported by the device and 
+>> returns
+>>    * an error if not.
+>>    */
+>> -int pci_enable_pasid(struct pci_dev *pdev, int features)
+>> +int pci_enable_pasid(struct pci_dev *pdev, int features, int flags)
+>>   {
+>>       u16 control, supported;
+>>       int pasid = pdev->pasid_cap;
+>> @@ -382,7 +385,8 @@ int pci_enable_pasid(struct pci_dev *pdev, int 
+>> features)
+>>       if (!pasid)
+>>           return -EINVAL;
+>> -    if (!pci_acs_path_enabled(pdev, NULL, PCI_ACS_RR | PCI_ACS_UF))
+>> +    if (!(flags & PCI_PASID_XLATED_REQ_ONLY) &&
+>> +        !pci_acs_path_enabled(pdev, NULL, PCI_ACS_RR | PCI_ACS_UF))
+>>           return -EINVAL;
+>>       pci_read_config_word(pdev, pasid + PCI_PASID_CAP, &supported);
 
