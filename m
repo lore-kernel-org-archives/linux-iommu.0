@@ -1,53 +1,102 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AFED7C
-	for <iommu@lists.linux.dev>; Sat, 14 Jan 2023 16:58:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 25766C433EF;
-	Sat, 14 Jan 2023 16:58:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1673715521;
-	bh=ys0fWZz1eoacTuHBDBBahYVuGFjQpnMyP6+JdJPTsNI=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=UB0iqWEyVMCkwaVjJtN25D+6uofgivMryT1XrOHBWDMW4Ra95KLN78++usi78o5Hj
-	 9m5oiI215KsMPW7nQNoJlRsjKdQilyaPrQUjQdEFAIiYmnasi9IIwccwGFywHVNBoe
-	 zUB7I25C0YOOSEQkgZG+eHrHtqZvnJ1wiwPk/6br2vAQ+50F3WbgPkOnZLO3mdumL6
-	 LTdtMiexhFcg4WoqSPEB44V/VPR6Uyq+UGm90/a0DuN9mjpOw4BzJmPmENWo5nkylr
-	 akk44EMAbpeX19HXFFitaW7kAmeAVZ8OxZX34xY9D256Kj1jE10M75se0gxVwN//K7
-	 2+DhkTavN5T8A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 042DEC395CA;
-	Sat, 14 Jan 2023 16:58:40 +0000 (UTC)
-Subject: Re: [git pull] IOMMU Fixes for Linux v6.2-rc3
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <Y8LYARivqaRbWWja@8bytes.org>
-References: <Y8LYARivqaRbWWja@8bytes.org>
-X-PR-Tracked-List-Id: <iommu.lists.linux.dev>
-X-PR-Tracked-Message-Id: <Y8LYARivqaRbWWja@8bytes.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.2-rc3
-X-PR-Tracked-Commit-Id: 142e821f68cf5da79ce722cb9c1323afae30e185
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 7c698440524117dca7534592db0e7f465ae4d0bb
-Message-Id: <167371552086.22078.6666131430289552808.pr-tracker-bot@kernel.org>
-Date: Sat, 14 Jan 2023 16:58:40 +0000
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 293507C;
+	Sat, 14 Jan 2023 17:17:09 +0000 (UTC)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+	by mailout.west.internal (Postfix) with ESMTP id 295BC32005BC;
+	Sat, 14 Jan 2023 12:17:08 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute6.internal (MEProxy); Sat, 14 Jan 2023 12:17:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+	cc:cc:content-transfer-encoding:content-type:date:date:from:from
+	:in-reply-to:in-reply-to:message-id:mime-version:references
+	:reply-to:sender:subject:subject:to:to; s=fm1; t=1673716627; x=
+	1673803027; bh=dmv4ZW2RwPvwVF0AI49ZY16g/43x6QFqBEzDKnk951c=; b=X
+	YFU2mVOdpocGPguQe811pw7iJ+MLOCRxXsLtYdfa5bSnS1TTPIFF2OOdvPUx5tZV
+	s69uPNHu/EFMVCnI1dkjXfGlvgOav6Ke46RQ6f1DYRPktB5SFdnTV4leLJnFWgMI
+	mSXQCHkvuPY/HV2BiG8qJ3dOP2VjydqK5NpIDDfI6NH57iXwrbdhXj6Q2j/u11+f
+	W+n+vJHwJsc6UhdCpkRe1O3nnb4O4bkKiO6/x+/rPPwesX5FTg43b/xkl4EP4yEV
+	LUM6ly86fxp7mIoKb31l9/tR2W0MPqXWApFImW9wtL0M3/jN874d4/WWnYejO39y
+	7gPf5HAQVz4NDtDCwiR2A==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:date:date:feedback-id:feedback-id:from:from
+	:in-reply-to:in-reply-to:message-id:mime-version:references
+	:reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1673716627; x=
+	1673803027; bh=dmv4ZW2RwPvwVF0AI49ZY16g/43x6QFqBEzDKnk951c=; b=C
+	Vw+BLjwDPfydH4Vf7Ga++V/AkGeEIWU27X07vuIroUYe4+sE7xSlJyEl5dbLYHkL
+	ENB32gs2VpjVQCTujETQJAKIJjJSlCkbPUFNWCHns7CvRfCxWc0nVmzzSeytRmxd
+	VyyjBgjSKrLITMfstW4EdVuHEePtlzVYKThfUldXHaNwDsHLudJV87M2ZPGzaWiG
+	zfCq/LKQ9VwtQ6AC1vw+8BODsfaflSYJLjZyT3u/HCdW0yXxZBcR6uj5if52u9yM
+	cujq0kCz6Gx1Ln8WKrVXKewk5jzFnEEhc+0dN277dtg6sa0UyHHe2iCbivtjw1JV
+	YRplmSpZfee2ijfUnfK8A==
+X-ME-Sender: <xms:kuPCYwEntTza7b5Hg7ZqzJGaVzvGQ13yujXUDLA2mWg5gOeLFT11EA>
+    <xme:kuPCY5WdDrX-A46fWH8cuTpuhbpSOZwwqDIcJPWqpB5egNK2vIo1XfFsW-iFYqzXf
+    u09dAC4UKUUbgCVeA>
+X-ME-Received: <xmr:kuPCY6JOiav7X-A64h6dJa8zZWi-cRZoidaLH-wU_rVXDAvwc2qUsrgmSO6vmDm7dLE-uGSeu_vLozBqEvvS3UZNQkQyxnRm45nPBLPa_UGMhqadvMipcIAdzQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedruddttddgleekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepkfffgggfvfevfhfhufgjtgfgsehtjeertddtfeejnecuhfhrohhmpefurghm
+    uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
+    ggtffrrghtthgvrhhnpeehtedtfeegueduledvffeljeehjeeuleduudeivdekffegteeu
+    vedvledvteefjeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrh
+    fuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehshhholhhl
+    rghnugdrohhrgh
+X-ME-Proxy: <xmx:kuPCYyFzV6Q9sO7d8ygrs4K51tZIVcIGA9eSpyR-9DTT7BrsJDS76w>
+    <xmx:kuPCY2VvW4eT-sYf0V4PnAdBoAPY8jGla9gWo_12873x73Bi_mJFyg>
+    <xmx:kuPCY1PIBZBm0XOUEaJWeZZxMtUFUQxAQuH6ugY-H60cJ2_AZjDNgA>
+    <xmx:k-PCY9OVOsEUuHvY9xjDc1MgvMMNko7upbISd6klGiyZSScTr0NBNw>
+Feedback-ID: i0ad843c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
+ 14 Jan 2023 12:17:06 -0500 (EST)
+Message-ID: <9a36551c-225c-137c-9376-ad7306c7f3d0@sholland.org>
+Date: Sat, 14 Jan 2023 11:17:06 -0600
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux ppc64le; rv:102.0) Gecko/20100101
+ Thunderbird/102.3.3
+Content-Language: en-US
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Chen-Yu Tsai <wens@csie.org>, Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Rob Herring <robh+dt@kernel.org>, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+ Maxime Ripard <mripard@kernel.org>
+References: <20230103010903.11181-1-samuel@sholland.org>
+ <20230103010903.11181-7-samuel@sholland.org> <Y8F6NxYpJELbvogC@8bytes.org>
+From: Samuel Holland <samuel@sholland.org>
+Subject: Re: [PATCH v2 6/6] riscv: dts: allwinner: d1: Add the IOMMU node
+In-Reply-To: <Y8F6NxYpJELbvogC@8bytes.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-The pull request you sent on Sat, 14 Jan 2023 17:27:45 +0100:
+Hi Joerg,
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.2-rc3
+On 1/13/23 09:35, Joerg Roedel wrote:
+> On Mon, Jan 02, 2023 at 07:09:03PM -0600, Samuel Holland wrote:
+>>  arch/riscv/boot/dts/allwinner/sunxi-d1s-t113.dtsi | 10 ++++++++++
+> 
+> This file does not exist in v6.2-rc3, what tree ist this patch-set based
+> on?
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/7c698440524117dca7534592db0e7f465ae4d0bb
+The D1/D1s/T113 devicetree is added by this series[1], which will be
+merged through the sunxi -> soc tree. That patch is included to show how
+the new compatible string is used, and that the driver changes have been
+tested. You can ignore it when merging the binding/driver changes. The
+rest of the series should apply cleanly to v6.2-rc3.
 
-Thank you!
+Regards,
+Samuel
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+[1]:
+https://lore.kernel.org/linux-sunxi/20221231233851.24923-1-samuel@sholland.org/
+
