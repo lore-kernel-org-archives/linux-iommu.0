@@ -1,33 +1,33 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DCB77C
-	for <iommu@lists.linux.dev>; Sat, 14 Jan 2023 07:45:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEFC97E1
+	for <iommu@lists.linux.dev>; Sat, 14 Jan 2023 09:00:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673682360; x=1705218360;
+  t=1673686808; x=1705222808;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=YtwUw7WiSdXs8hTFDowyAWGWHa7ZjlQBs7CzYFeOpXM=;
-  b=Jhpm7MMjbMs+uNPb/v9Olri1Ff9VwT+9h0XWa27m5+25YGPvL2MBYuVm
-   XUBZYm5uhL1Jaxt/qjaVQcQTVZZFNsDpiDd5Gtkr/iQHDh0ZJ/+tR9N2I
-   WYceBU1wrR6GZ/C7ugzUIWN5+kUCWe6sh0JNabAi1Qcw2PLo2SQGDGzD5
-   HX9fpQyOWG6u5wBSyoTRkNvBuTtjHvEjuuTUslmyOXoZ9NNKju7p6GBha
-   NUXheyI/0Nkm3Ax3idXpepB6ZyJK/HlDio9L6u9Dxy4YE70hBy98tSrvj
-   xO329NoOikNA6hniiMzagQ9X7FX6O0Ztv/oGgESwDXZB4PGaQtYtyu0AD
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10589"; a="386515883"
+  bh=F4iGZco1MC0aEoWxSFlqktMeYN2ex/sAfQVsuGxyTmY=;
+  b=JVBPuzm3MbDOKTgaXi5ztyrgOchd6DQGzSms6WJGiQRJa+O3vIcIHn4W
+   VnfFopdCbBS4zoMUsA7Yv8zhiKOSVAzaVuqxpCuh9LipLJvhiaX2Lf4IV
+   R3L2b+9GWDm8XIXSGxaZfOalWWJCssBE0zgrwSLoRu8lv0PuHjqbXRQ5M
+   oVEzBEY7+kD29Vw8SxgWfAMP3cNBrLAh6mvlrm3ITC3Hn/+ySOJYLwaAu
+   fqtba97RGUkAS/1eVjfzHs1FuiicOB5T1/784bvVuEzSmUjThqPwgcMm0
+   r713txcQG5im9jr+b5tCPmF3bFx8cI/VtXo1obgwicg00cd0E+rrczmDZ
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10589"; a="388672499"
 X-IronPort-AV: E=Sophos;i="5.97,216,1669104000"; 
-   d="scan'208";a="386515883"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2023 23:45:57 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10589"; a="903816055"
+   d="scan'208";a="388672499"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2023 01:00:08 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10589"; a="832323217"
 X-IronPort-AV: E=Sophos;i="5.97,216,1669104000"; 
-   d="scan'208";a="903816055"
+   d="scan'208";a="832323217"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.184.153]) ([10.252.184.153])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2023 23:45:55 -0800
-Message-ID: <225cc780-aa97-0dd2-d624-2d35407e5260@linux.intel.com>
-Date: Sat, 14 Jan 2023 15:45:52 +0800
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2023 01:00:04 -0800
+Message-ID: <05624df9-bea1-5e95-55d6-02ac2d93c68c@linux.intel.com>
+Date: Sat, 14 Jan 2023 17:00:02 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,239 +36,753 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Cc: baolu.lu@linux.intel.com, =?UTF-8?Q?Christian_K=c3=b6nig?=
- <christian.koenig@amd.com>, Jason Gunthorpe <jgg@nvidia.com>,
- Kevin Tian <kevin.tian@intel.com>, Vasant Hegde <vasant.hegde@amd.com>,
- Tony Zhu <tony.zhu@intel.com>, linux-pci@vger.kernel.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] PCI: Add translated request only flag for
- pci_enable_pasid()
+Cc: baolu.lu@linux.intel.com
+Subject: Re: [PATCH 4/7] iommu/vt-d: Add IOMMU perfmon support
 Content-Language: en-US
-To: Matt Fagnani <matt.fagnani@bell.net>, Bjorn Helgaas
- <bhelgaas@google.com>, Joerg Roedel <jroedel@suse.de>
-References: <20230113014409.752405-1-baolu.lu@linux.intel.com>
- <c34d66a1-1564-1ec5-86de-6ebd1ebb2f71@bell.net>
- <e40bacb0-701c-5373-3890-d037f668829f@linux.intel.com>
- <ee114838-cab9-1e0e-c6af-63d476f56582@bell.net>
+To: kan.liang@linux.intel.com, joro@8bytes.org, will@kernel.org,
+ dwmw2@infradead.org, robin.murphy@arm.com, robert.moore@intel.com,
+ rafael.j.wysocki@intel.com, lenb@kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20230111202504.378258-1-kan.liang@linux.intel.com>
+ <20230111202504.378258-5-kan.liang@linux.intel.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <ee114838-cab9-1e0e-c6af-63d476f56582@bell.net>
+In-Reply-To: <20230111202504.378258-5-kan.liang@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 2023/1/13 16:51, Matt Fagnani wrote:
-> Baolu,
+On 2023/1/12 4:25, kan.liang@linux.intel.com wrote:
+> From: Kan Liang <kan.liang@linux.intel.com>
 > 
-> Yes, you can add the tested-by tag for me.
+> Implement the IOMMU performance monitor capability, which supports the
+> collection of information about key events occurring during operation of
+> the remapping hardware, to aid performance tuning and debug.
+> 
+> The IOMMU perfmon support is implemented as part of the IOMMU driver and
+> interfaces with the Linux perf subsystem.
+> 
+> The IOMMU PMU has the following unique features compared with the other
+> PMUs.
+> - Support counting. Not support sampling.
+> - Does not support per-thread counting. The scope is system-wide.
+> - Support per-counter capability register. The event constraints can be
+>    enumerated.
+> - The available event and event group can also be enumerated.
+> - Extra Enhanced Commands are introduced to control the counters.
+> 
+> Add a new variable, struct iommu_pmu *pmu, to in the struct intel_iommu
+> to track the PMU related information.
+> 
+> Add iommu_pmu_register() and iommu_pmu_unregister() to register and
+> unregister a IOMMU PMU. The register function setup the IOMMU PMU ops
+> and invoke the standard perf_pmu_register() interface to register a PMU
+> in the perf subsystem. This patch only exposes the functions. The
+> following patch will enable them in the IOMMU driver.
+> 
+> The IOMMU PMUs can be found under /sys/bus/event_source/devices/dmar*
+> 
+> The available filters and event format can be found at the format folder
+>   $ ls /sys/bus/event_source/devices/dmar0/format/
+> event  event_group  filter_ats  filter_page_table
+> 
+> The supported events can be found at the events folder
+> 
+>   $ ls /sys/bus/event_source/devices/dmar0/events/
+> ats_blocked        int_cache_hit_nonposted  iommu_mrds
+> pasid_cache_lookup
+> ctxt_cache_hit     int_cache_hit_posted     iommu_requests
+> pg_req_posted
+> ctxt_cache_lookup  int_cache_lookup         iotlb_hit
+> pw_occupancy
+> fs_nonleaf_hit     iommu_clocks             iotlb_lookup
+> ss_nonleaf_hit
+> fs_nonleaf_lookup  iommu_mem_blocked        pasid_cache_hit
+> ss_nonleaf_lookup
+> 
+> The command below illustrates filter usage with a simple example.
+> 
+>   $ perf stat -e dmar0/iommu_requests,filter_ats=0/ -a sleep 1
+> 
+>   Performance counter stats for 'system wide':
+> 
+>                2135      dmar0/iommu_requests,filter_ats=0/
+> 
+>         1.001087695 seconds time elapsed
+> 
+> Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+> ---
+>   .../sysfs-bus-event_source-devices-iommu      |  24 +
+>   drivers/iommu/intel/iommu.h                   |  15 +
+>   drivers/iommu/intel/perfmon.c                 | 496 ++++++++++++++++++
+>   drivers/iommu/intel/perfmon.h                 |  24 +
+>   4 files changed, 559 insertions(+)
+>   create mode 100644 Documentation/ABI/testing/sysfs-bus-event_source-devices-iommu
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-event_source-devices-iommu b/Documentation/ABI/testing/sysfs-bus-event_source-devices-iommu
+> new file mode 100644
+> index 000000000000..04e08851d8e6
+> --- /dev/null
+> +++ b/Documentation/ABI/testing/sysfs-bus-event_source-devices-iommu
+> @@ -0,0 +1,24 @@
+> +What:		/sys/bus/event_source/devices/dmar*/format
+> +Date:		Jan 2023
+> +KernelVersion:  6.3
+> +Contact:	Kan Liang <kan.liang@linux.intel.com>
+> +Description:	Read-only.  Attribute group to describe the magic bits
+> +		that go into perf_event_attr.config,
+> +		perf_event_attr.config1 or perf_event_attr.config2 for
+> +		the IOMMU pmu.  (See also
+> +		ABI/testing/sysfs-bus-event_source-devices-format).
+> +
+> +		Each attribute in this group defines a bit range in
+> +		perf_event_attr.config, perf_event_attr.config1,
+> +		or perf_event_attr.config2. All supported attributes
+> +		are listed below (See the VT-d Spec 4.0 for possible
+> +		attribute values)::
+> +
+> +		    event		= "config:0-27"   - event ID
+> +		    event_group		= "config:28-31"  - event group ID
+> +
+> +		    filter_requester_id	= "config1:0-15"  - Requester ID filter
+> +		    filter_domain	= "config1:16-31" - Domain ID filter
+> +		    filter_pasid	= "config1:32-53" - PASID filter
 
-Thank you, Matt. I just posted a new version:
+Just out of curiosity, PCI PASID is 20-bit wide, why do you need 22 bits
+in config1 encoding?
 
-https://lore.kernel.org/linux-iommu/20230114073420.759989-1-baolu.lu@linux.intel.com/
+> +		    filter_ats		= "config2:0-4"   - Address Type filter
+> +		    filter_page_table	= "config2:8-12"  - Page Table Level filter
+> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+> index f227107434ac..bbc5dda903e9 100644
+> --- a/drivers/iommu/intel/iommu.h
+> +++ b/drivers/iommu/intel/iommu.h
+> @@ -22,6 +22,7 @@
+>   #include <linux/ioasid.h>
+>   #include <linux/bitfield.h>
+>   #include <linux/xarray.h>
+> +#include <linux/perf_event.h>
+>   
+>   #include <asm/cacheflush.h>
+>   #include <asm/iommu.h>
+> @@ -601,6 +602,16 @@ struct dmar_domain {
+>   					   iommu core */
+>   };
+>   
+> +/*
+> + * In theory, the VT-d 4.0 spec can support up to 2 ^ 16 counters.
+> + * But in practice, there are only 14 counters for the existing
+> + * platform. Setting the max number of counters to 64 should be good
+> + * enough for a long time. Also, supporting more than 64 counters
+> + * requires more extras, e.g., extra freeze and overflow registers,
+> + * which is not necessary for now.
+> + */
+> +#define IOMMU_PMU_IDX_MAX		64
+> +
+>   struct iommu_pmu {
+>   	struct intel_iommu	*iommu;
+>   	u32			num_cntr;	/* Number of counters */
+> @@ -615,6 +626,10 @@ struct iommu_pmu {
+>   
+>   	u64			*evcap;		/* Indicates all supported events */
+>   	u32			**cntr_evcap;	/* Supported events of each counter. */
+> +
+> +	struct pmu		pmu;
+> +	DECLARE_BITMAP(used_mask, IOMMU_PMU_IDX_MAX);
+> +	struct perf_event	*event_list[IOMMU_PMU_IDX_MAX];
+>   };
+>   
+>   struct intel_iommu {
+> diff --git a/drivers/iommu/intel/perfmon.c b/drivers/iommu/intel/perfmon.c
+> index bc090f329c32..43a5075eaecd 100644
+> --- a/drivers/iommu/intel/perfmon.c
+> +++ b/drivers/iommu/intel/perfmon.c
+> @@ -8,6 +8,475 @@
+>   #include "iommu.h"
+>   #include "perfmon.h"
+>   
+> +PMU_FORMAT_ATTR(event,		"config:0-27");		/* ES: Events Select */
+> +PMU_FORMAT_ATTR(event_group,	"config:28-31");	/* EGI: Event Group Index */
+> +
+> +static struct attribute *iommu_pmu_format_attrs[] = {
+> +	&format_attr_event_group.attr,
+> +	&format_attr_event.attr,
+> +	NULL
+> +};
+> +
+> +static struct attribute_group iommu_pmu_format_attr_group = {
+> +	.name = "format",
+> +	.attrs = iommu_pmu_format_attrs,
+> +};
+> +
+> +/* The available events are added in attr_update later */
+> +static struct attribute *attrs_empty[] = {
+> +	NULL
+> +};
+> +
+> +static struct attribute_group iommu_pmu_events_attr_group = {
+> +	.name = "events",
+> +	.attrs = attrs_empty,
+> +};
+> +
+> +static const struct attribute_group *iommu_pmu_attr_groups[] = {
+> +	&iommu_pmu_format_attr_group,
+> +	&iommu_pmu_events_attr_group,
+> +	NULL
+> +};
+> +
+> +static inline struct iommu_pmu *dev_to_iommu_pmu(struct device *dev)
+> +{
+> +	/*
+> +	 * The perf_event creates its own dev for each PMU.
+> +	 * See pmu_dev_alloc()
+> +	 */
+> +	return container_of(dev_get_drvdata(dev), struct iommu_pmu, pmu);
+> +}
+> +
+> +#define IOMMU_PMU_ATTR(_name, _format, _filter)				\
+> +	PMU_FORMAT_ATTR(_name, _format);				\
+> +									\
+> +static struct attribute *_name##_attr[] = {				\
+> +	&format_attr_##_name.attr,					\
+> +	NULL								\
+> +};									\
+> +									\
+> +static umode_t								\
+> +_name##_is_visible(struct kobject *kobj, struct attribute *attr, int i)	\
+> +{									\
+> +	struct device *dev = kobj_to_dev(kobj);				\
+> +	struct iommu_pmu *iommu_pmu = dev_to_iommu_pmu(dev);		\
+> +									\
+> +	if (!iommu_pmu)							\
+> +		return 0;						\
+> +	return (iommu_pmu->filter & _filter) ? attr->mode : 0;		\
+> +}									\
+> +									\
+> +static struct attribute_group _name = {					\
+> +	.name		= "format",					\
+> +	.attrs		= _name##_attr,					\
+> +	.is_visible	= _name##_is_visible,				\
+> +};
+> +
+> +IOMMU_PMU_ATTR(filter_requester_id,	"config1:0-15",		IOMMU_PMU_FILTER_REQUESTER_ID);
+> +IOMMU_PMU_ATTR(filter_domain,		"config1:16-31",	IOMMU_PMU_FILTER_DOMAIN);
+> +IOMMU_PMU_ATTR(filter_pasid,		"config1:32-53",	IOMMU_PMU_FILTER_PASID);
+> +IOMMU_PMU_ATTR(filter_ats,		"config2:0-4",		IOMMU_PMU_FILTER_ATS);
+> +IOMMU_PMU_ATTR(filter_page_table,	"config2:8-12",		IOMMU_PMU_FILTER_PAGE_TABLE);
+> +
+> +#define iommu_pmu_get_requester_id(filter)	((filter) & 0xffff)
+> +#define iommu_pmu_get_domain(filter)		(((filter) >> 16) & 0xffff)
+> +#define iommu_pmu_get_pasid(filter)		(((filter) >> 32) & 0x3fffff)
+> +#define iommu_pmu_get_ats(filter)		((filter) & 0x1f)
+> +#define iommu_pmu_get_page_table(filter)	(((filter) >> 8) & 0x1f)
+> +
+> +#define iommu_pmu_set_filter(_name, _config, _filter, _idx)			\
+> +{										\
+> +	if ((iommu_pmu->filter & _filter) && iommu_pmu_get_##_name(_config)) {	\
+> +		dmar_writel(iommu_pmu->cfg_reg + _idx * IOMMU_PMU_CFG_OFFSET +	\
+> +			    IOMMU_PMU_CFG_SIZE +				\
+> +			    (ffs(_filter) - 1) * IOMMU_PMU_CFG_FILTERS_OFFSET,	\
+> +			    iommu_pmu_get_##_name(_config) | IOMMU_PMU_FILTER_EN);\
+> +	}									\
+> +}
+> +
+> +#define iommu_pmu_clear_filter(_filter, _idx)					\
+> +{										\
+> +	if (iommu_pmu->filter & _filter) {					\
+> +		dmar_writel(iommu_pmu->cfg_reg + _idx * IOMMU_PMU_CFG_OFFSET +	\
+> +			    IOMMU_PMU_CFG_SIZE +				\
+> +			    (ffs(_filter) - 1) * IOMMU_PMU_CFG_FILTERS_OFFSET,	\
+> +			    0);							\
+> +	}									\
+> +}
+> +
+> +/*
+> + * Define the event attr related functions
+> + * Input: _name: event attr name
+> + *        _string: string of the event in sysfs
+> + *        _g_idx: event group encoding
+> + *        _event: event encoding
+> + */
+> +#define IOMMU_PMU_EVENT_ATTR(_name, _string, _g_idx, _event)			\
+> +	PMU_EVENT_ATTR_STRING(_name, event_attr_##_name, _string)		\
+> +										\
+> +static struct attribute *_name##_attr[] = {					\
+> +	&event_attr_##_name.attr.attr,						\
+> +	NULL									\
+> +};										\
+> +										\
+> +static umode_t									\
+> +_name##_is_visible(struct kobject *kobj, struct attribute *attr, int i)		\
+> +{										\
+> +	struct device *dev = kobj_to_dev(kobj);					\
+> +	struct iommu_pmu *iommu_pmu = dev_to_iommu_pmu(dev);			\
+> +										\
+> +	if (!iommu_pmu)								\
+> +		return 0;							\
+> +	return (iommu_pmu->evcap[_g_idx] & _event) ? attr->mode : 0;		\
+> +}										\
+> +										\
+> +static struct attribute_group _name = {						\
+> +	.name		= "events",						\
+> +	.attrs		= _name##_attr,						\
+> +	.is_visible	= _name##_is_visible,					\
+> +};
+> +
+> +IOMMU_PMU_EVENT_ATTR(iommu_clocks,		"event_group=0x0,event=0x001", 0x0, 0x001)
+> +IOMMU_PMU_EVENT_ATTR(iommu_requests,		"event_group=0x0,event=0x002", 0x0, 0x002)
+> +IOMMU_PMU_EVENT_ATTR(pw_occupancy,		"event_group=0x0,event=0x004", 0x0, 0x004)
+> +IOMMU_PMU_EVENT_ATTR(ats_blocked,		"event_group=0x0,event=0x008", 0x0, 0x008)
+> +IOMMU_PMU_EVENT_ATTR(iommu_mrds,		"event_group=0x1,event=0x001", 0x1, 0x001)
+> +IOMMU_PMU_EVENT_ATTR(iommu_mem_blocked,		"event_group=0x1,event=0x020", 0x1, 0x020)
+> +IOMMU_PMU_EVENT_ATTR(pg_req_posted,		"event_group=0x1,event=0x040", 0x1, 0x040)
+> +IOMMU_PMU_EVENT_ATTR(ctxt_cache_lookup,		"event_group=0x2,event=0x001", 0x2, 0x001)
+> +IOMMU_PMU_EVENT_ATTR(ctxt_cache_hit,		"event_group=0x2,event=0x002", 0x2, 0x002)
+> +IOMMU_PMU_EVENT_ATTR(pasid_cache_lookup,	"event_group=0x2,event=0x004", 0x2, 0x004)
+> +IOMMU_PMU_EVENT_ATTR(pasid_cache_hit,		"event_group=0x2,event=0x008", 0x2, 0x008)
+> +IOMMU_PMU_EVENT_ATTR(ss_nonleaf_lookup,		"event_group=0x2,event=0x010", 0x2, 0x010)
+> +IOMMU_PMU_EVENT_ATTR(ss_nonleaf_hit,		"event_group=0x2,event=0x020", 0x2, 0x020)
+> +IOMMU_PMU_EVENT_ATTR(fs_nonleaf_lookup,		"event_group=0x2,event=0x040", 0x2, 0x040)
+> +IOMMU_PMU_EVENT_ATTR(fs_nonleaf_hit,		"event_group=0x2,event=0x080", 0x2, 0x080)
+> +IOMMU_PMU_EVENT_ATTR(hpt_nonleaf_lookup,	"event_group=0x2,event=0x100", 0x2, 0x100)
+> +IOMMU_PMU_EVENT_ATTR(hpt_nonleaf_hit,		"event_group=0x2,event=0x200", 0x2, 0x200)
+> +IOMMU_PMU_EVENT_ATTR(iotlb_lookup,		"event_group=0x3,event=0x001", 0x3, 0x001)
+> +IOMMU_PMU_EVENT_ATTR(iotlb_hit,			"event_group=0x3,event=0x002", 0x3, 0x002)
+> +IOMMU_PMU_EVENT_ATTR(hpt_leaf_lookup,		"event_group=0x3,event=0x004", 0x3, 0x004)
+> +IOMMU_PMU_EVENT_ATTR(hpt_leaf_hit,		"event_group=0x3,event=0x008", 0x3, 0x008)
+> +IOMMU_PMU_EVENT_ATTR(int_cache_lookup,		"event_group=0x4,event=0x001", 0x4, 0x001)
+> +IOMMU_PMU_EVENT_ATTR(int_cache_hit_nonposted,	"event_group=0x4,event=0x002", 0x4, 0x002)
+> +IOMMU_PMU_EVENT_ATTR(int_cache_hit_posted,	"event_group=0x4,event=0x004", 0x4, 0x004)
+> +
+> +
+> +static const struct attribute_group *iommu_pmu_attr_update[] = {
+> +	&filter_requester_id,
+> +	&filter_domain,
+> +	&filter_pasid,
+> +	&filter_ats,
+> +	&filter_page_table,
+> +	&iommu_clocks,
+> +	&iommu_requests,
+> +	&pw_occupancy,
+> +	&ats_blocked,
+> +	&iommu_mrds,
+> +	&iommu_mem_blocked,
+> +	&pg_req_posted,
+> +	&ctxt_cache_lookup,
+> +	&ctxt_cache_hit,
+> +	&pasid_cache_lookup,
+> +	&pasid_cache_hit,
+> +	&ss_nonleaf_lookup,
+> +	&ss_nonleaf_hit,
+> +	&fs_nonleaf_lookup,
+> +	&fs_nonleaf_hit,
+> +	&hpt_nonleaf_lookup,
+> +	&hpt_nonleaf_hit,
+> +	&iotlb_lookup,
+> +	&iotlb_hit,
+> +	&hpt_leaf_lookup,
+> +	&hpt_leaf_hit,
+> +	&int_cache_lookup,
+> +	&int_cache_hit_nonposted,
+> +	&int_cache_hit_posted,
+> +	NULL
+> +};
+> +
+> +static inline void __iomem *
+> +iommu_event_base(struct iommu_pmu *iommu_pmu, int idx)
+> +{
+> +	return iommu_pmu->cntr_reg + idx * iommu_pmu->cntr_stride;
+> +}
+> +
+> +static inline void __iomem *
+> +iommu_config_base(struct iommu_pmu *iommu_pmu, int idx)
+> +{
+> +	return iommu_pmu->cfg_reg + idx * IOMMU_PMU_CFG_OFFSET;
+> +}
+> +
+> +static inline struct iommu_pmu *iommu_event_to_pmu(struct perf_event *event)
+> +{
+> +	return container_of(event->pmu, struct iommu_pmu, pmu);
+> +}
+> +
+> +static inline u64 iommu_event_config(struct perf_event *event)
+> +{
+> +	u64 config = event->attr.config;
+> +
+> +	return (iommu_event_select(config) << IOMMU_EVENT_CFG_ES_SHIFT) |
+> +	       (iommu_event_group(config) << IOMMU_EVENT_CFG_EGI_SHIFT) |
+> +	       IOMMU_EVENT_CFG_INT;
+> +}
+> +
+> +static inline bool is_iommu_pmu_event(struct iommu_pmu *iommu_pmu,
+> +				      struct perf_event *event)
+> +{
+> +	return event->pmu == &iommu_pmu->pmu;
+> +}
+> +
+> +static int iommu_pmu_validate_event(struct perf_event *event)
+> +{
+> +	struct iommu_pmu *iommu_pmu = iommu_event_to_pmu(event);
+> +	u32 event_group = iommu_event_group(event->attr.config);
+> +
+> +	if (event_group >= iommu_pmu->num_eg)
+> +		return -EINVAL;
+> +
+> +	return 0;
+> +}
+> +
+> +static int iommu_pmu_validate_group(struct perf_event *event)
+> +{
+> +	struct iommu_pmu *iommu_pmu = iommu_event_to_pmu(event);
+> +	struct perf_event *sibling;
+> +	int nr = 0;
+> +
+> +	/*
+> +	 * All events in a group must be scheduled simultaneously.
+> +	 * Check whether there is enough counters for all the events.
+> +	 */
+> +	for_each_sibling_event(sibling, event->group_leader) {
+> +		if (!is_iommu_pmu_event(iommu_pmu, sibling) ||
+> +		    sibling->state <= PERF_EVENT_STATE_OFF)
+> +			continue;
+> +
+> +		if (++nr > iommu_pmu->num_cntr)
+> +			return -EINVAL;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int iommu_pmu_event_init(struct perf_event *event)
+> +{
+> +	struct hw_perf_event *hwc = &event->hw;
+> +
+> +	if (event->attr.type != event->pmu->type)
+> +		return -ENOENT;
+> +
+> +	/* sampling not supported */
+> +	if (event->attr.sample_period)
+> +		return -EINVAL;
+> +
+> +	if (event->cpu < 0)
+> +		return -EINVAL;
+> +
+> +	if (iommu_pmu_validate_event(event))
+> +		return -EINVAL;
+> +
+> +	hwc->config = iommu_event_config(event);
+> +
+> +	return iommu_pmu_validate_group(event);
+> +}
+> +
+> +static void iommu_pmu_event_update(struct perf_event *event)
+> +{
+> +	struct iommu_pmu *iommu_pmu = iommu_event_to_pmu(event);
+> +	struct hw_perf_event *hwc = &event->hw;
+> +	u64 prev_count, new_count, delta;
+> +	int shift = 64 - iommu_pmu->cntr_width;
+> +
+> +again:
+> +	prev_count = local64_read(&hwc->prev_count);
+> +	new_count = dmar_readq(iommu_event_base(iommu_pmu, hwc->idx));
+> +	if (local64_xchg(&hwc->prev_count, new_count) != prev_count)
+> +		goto again;
+> +
+> +	/*
+> +	 * The counter width is enumerated.
+> +	 * Always shift the counter before using it.
+> +	 */
+
+Re-org above comments and make it neat.
+
+> +	delta = (new_count << shift) - (prev_count << shift);
+> +	delta >>= shift;
+> +
+> +	local64_add(delta, &event->count);
+> +}
+> +
+> +static void iommu_pmu_start(struct perf_event *event, int flags)
+> +{
+> +	struct iommu_pmu *iommu_pmu = iommu_event_to_pmu(event);
+> +	struct intel_iommu *iommu = iommu_pmu->iommu;
+> +	struct hw_perf_event *hwc = &event->hw;
+> +	u64 count;
+> +
+> +	if (WARN_ON_ONCE(!(hwc->state & PERF_HES_STOPPED)))
+> +		return;
+> +
+> +	if (WARN_ON_ONCE(hwc->idx < 0 || hwc->idx >= IOMMU_PMU_IDX_MAX))
+> +		return;
+> +
+> +	if (flags & PERF_EF_RELOAD)
+> +		WARN_ON_ONCE(!(event->hw.state & PERF_HES_UPTODATE));
+> +
+> +	hwc->state = 0;
+> +
+> +	/* Always reprogram the period */
+> +	count = dmar_readq(iommu_event_base(iommu_pmu, hwc->idx));
+> +	local64_set((&hwc->prev_count), count);
+> +
+> +	ecmd_submit_sync(iommu, DMA_ECMD_ENABLE, hwc->idx, false, 0);
+
+What happens when emcmd_submit_sync() returns an error? How should we
+handle this case? The same queestion to other places in this patch.
+
+> +
+> +	perf_event_update_userpage(event);
+> +}
+> +
+> +static void iommu_pmu_stop(struct perf_event *event, int flags)
+> +{
+> +	struct iommu_pmu *iommu_pmu = iommu_event_to_pmu(event);
+> +	struct intel_iommu *iommu = iommu_pmu->iommu;
+> +	struct hw_perf_event *hwc = &event->hw;
+> +
+> +	if (!(hwc->state & PERF_HES_STOPPED)) {
+> +		ecmd_submit_sync(iommu, DMA_ECMD_DISABLE, hwc->idx, false, 0);
+> +
+> +		iommu_pmu_event_update(event);
+> +
+> +		hwc->state |= PERF_HES_STOPPED | PERF_HES_UPTODATE;
+> +	}
+> +}
+> +
+> +static inline int
+> +iommu_pmu_validate_per_cntr_event(struct iommu_pmu *iommu_pmu,
+> +				  int idx, struct perf_event *event)
+> +{
+> +	u32 event_group = iommu_event_group(event->attr.config);
+> +	u32 select = iommu_event_select(event->attr.config);
+> +
+> +	if (!(iommu_pmu->cntr_evcap[idx][event_group] & select))
+> +		return -EINVAL;
+> +
+> +	return 0;
+> +}
+> +
+> +static int iommu_pmu_assign_event(struct iommu_pmu *iommu_pmu,
+> +				  struct perf_event *event)
+> +{
+> +	struct hw_perf_event *hwc = &event->hw;
+> +	int idx;
+> +
+> +	/*
+> +	 * The counters which support limited events are usually at the end.
+> +	 * Schedule them first to accommodate more events.
+> +	 */
+> +	for (idx = iommu_pmu->num_cntr - 1; idx >= 0; idx--) {
+> +		if (test_and_set_bit(idx, iommu_pmu->used_mask))
+> +			continue;
+> +		/* Check per-counter event capabilities */
+> +		if (!iommu_pmu_validate_per_cntr_event(iommu_pmu, idx, event))
+> +			break;
+> +		clear_bit(idx, iommu_pmu->used_mask);
+> +	}
+> +	if (idx < 0)
+> +		return -EINVAL;
+> +
+> +	iommu_pmu->event_list[idx] = event;
+> +	hwc->idx = idx;
+> +
+> +	/* config events */
+> +	dmar_writeq(iommu_config_base(iommu_pmu, idx), hwc->config);
+> +
+> +	iommu_pmu_set_filter(requester_id, event->attr.config1,
+> +			     IOMMU_PMU_FILTER_REQUESTER_ID, idx);
+> +	iommu_pmu_set_filter(domain, event->attr.config1,
+> +			     IOMMU_PMU_FILTER_DOMAIN, idx);
+> +	iommu_pmu_set_filter(pasid, event->attr.config1,
+> +			     IOMMU_PMU_FILTER_PASID, idx);
+> +	iommu_pmu_set_filter(ats, event->attr.config2,
+> +			     IOMMU_PMU_FILTER_ATS, idx);
+> +	iommu_pmu_set_filter(page_table, event->attr.config2,
+> +			     IOMMU_PMU_FILTER_PAGE_TABLE, idx);
+> +
+> +	return 0;
+> +}
+> +
+> +static int iommu_pmu_add(struct perf_event *event, int flags)
+> +{
+> +	struct iommu_pmu *iommu_pmu = iommu_event_to_pmu(event);
+> +	struct hw_perf_event *hwc = &event->hw;
+> +	int ret;
+> +
+> +	ret = iommu_pmu_assign_event(iommu_pmu, event);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	hwc->state = PERF_HES_UPTODATE | PERF_HES_STOPPED;
+> +
+> +	if (flags & PERF_EF_START)
+> +		iommu_pmu_start(event, 0);
+> +
+> +	return 0;
+> +}
+> +
+> +static void iommu_pmu_del(struct perf_event *event, int flags)
+> +{
+> +	struct iommu_pmu *iommu_pmu = iommu_event_to_pmu(event);
+> +	int idx = event->hw.idx;
+> +
+> +	iommu_pmu_stop(event, PERF_EF_UPDATE);
+> +
+> +	iommu_pmu_clear_filter(IOMMU_PMU_FILTER_REQUESTER_ID, idx);
+> +	iommu_pmu_clear_filter(IOMMU_PMU_FILTER_DOMAIN, idx);
+> +	iommu_pmu_clear_filter(IOMMU_PMU_FILTER_PASID, idx);
+> +	iommu_pmu_clear_filter(IOMMU_PMU_FILTER_ATS, idx);
+> +	iommu_pmu_clear_filter(IOMMU_PMU_FILTER_PAGE_TABLE, idx);
+> +
+> +	iommu_pmu->event_list[idx] = NULL;
+> +	event->hw.idx = -1;
+> +	clear_bit(idx, iommu_pmu->used_mask);
+> +
+> +	perf_event_update_userpage(event);
+> +}
+> +
+> +static void iommu_pmu_enable(struct pmu *pmu)
+> +{
+> +	struct iommu_pmu *iommu_pmu = container_of(pmu, struct iommu_pmu, pmu);
+> +	struct intel_iommu *iommu = iommu_pmu->iommu;
+> +
+> +	ecmd_submit_sync(iommu, DMA_ECMD_UNFREEZE, 0, false, 0);
+> +}
+> +
+> +static void iommu_pmu_disable(struct pmu *pmu)
+> +{
+> +	struct iommu_pmu *iommu_pmu = container_of(pmu, struct iommu_pmu, pmu);
+> +	struct intel_iommu *iommu = iommu_pmu->iommu;
+> +
+> +	ecmd_submit_sync(iommu, DMA_ECMD_FREEZE, 0, false, 0);
+> +}
+> +
+> +static int __iommu_pmu_register(struct intel_iommu *iommu)
+> +{
+> +	struct iommu_pmu *iommu_pmu = iommu->pmu;
+> +
+> +	iommu_pmu->pmu.name		= iommu->name;
+> +	iommu_pmu->pmu.task_ctx_nr	= perf_invalid_context;
+> +	iommu_pmu->pmu.event_init	= iommu_pmu_event_init;
+> +	iommu_pmu->pmu.pmu_enable	= iommu_pmu_enable;
+> +	iommu_pmu->pmu.pmu_disable	= iommu_pmu_disable;
+> +	iommu_pmu->pmu.add		= iommu_pmu_add;
+> +	iommu_pmu->pmu.del		= iommu_pmu_del;
+> +	iommu_pmu->pmu.start		= iommu_pmu_start;
+> +	iommu_pmu->pmu.stop		= iommu_pmu_stop;
+> +	iommu_pmu->pmu.read		= iommu_pmu_event_update;
+> +	iommu_pmu->pmu.attr_groups	= iommu_pmu_attr_groups;
+> +	iommu_pmu->pmu.attr_update	= iommu_pmu_attr_update;
+> +	iommu_pmu->pmu.capabilities	= PERF_PMU_CAP_NO_EXCLUDE;
+> +	iommu_pmu->pmu.module		= THIS_MODULE;
+> +
+> +	return perf_pmu_register(&iommu_pmu->pmu, iommu_pmu->pmu.name, -1);
+> +}
+> +
+>   static inline void __iomem *
+>   get_perf_reg_address(struct intel_iommu *iommu, u32 offset)
+>   {
+> @@ -40,11 +509,21 @@ int alloc_iommu_pmu(struct intel_iommu *iommu)
+>   	if (!pcap_interrupt(perfcap))
+>   		return -ENODEV;
+>   
+> +	/* Check required Enhanced Command Capability */
+> +	if (!ecmd_has_pmu_essential(iommu))
+> +		return -ENODEV;
+> +
+>   	iommu_pmu = kzalloc(sizeof(*iommu_pmu), GFP_KERNEL);
+>   	if (!iommu_pmu)
+>   		return -ENOMEM;
+>   
+>   	iommu_pmu->num_cntr = pcap_num_cntr(perfcap);
+> +	if (iommu_pmu->num_cntr > IOMMU_PMU_IDX_MAX) {
+> +		WARN_ONCE(1, "The number of IOMMU counters %d > max(%d), clipping!",
+> +			  iommu_pmu->num_cntr, IOMMU_PMU_IDX_MAX);
+
+Do we really need a kernel trace here? This isn't a software flaw,
+perhaps, use pr_info() to let users know about this is enough?
+
+> +		iommu_pmu->num_cntr = IOMMU_PMU_IDX_MAX;
+> +	}
+> +
+>   	iommu_pmu->cntr_width = pcap_cntr_width(perfcap);
+>   	iommu_pmu->filter = pcap_filters_mask(perfcap);
+>   	iommu_pmu->cntr_stride = pcap_cntr_stride(perfcap);
+> @@ -157,3 +636,20 @@ void free_iommu_pmu(struct intel_iommu *iommu)
+>   	kfree(iommu_pmu);
+>   	iommu->pmu = NULL;
+>   }
+> +
+> +void iommu_pmu_register(struct intel_iommu *iommu)
+> +{
+> +	if (!iommu->pmu)
+> +		return;
+> +
+> +	if (__iommu_pmu_register(iommu)) {
+> +		pr_err("Failed to register PMU for iommu (seq_id = %d)\n",
+> +		       iommu->seq_id);
+
+What will happen if iommu_pmu_unregister() is called after
+__iommu_pmu_register() has returned error?
+
+> +	}
+> +}
+> +
+> +void iommu_pmu_unregister(struct intel_iommu *iommu)
+> +{
+> +	if (iommu->pmu)
+> +		perf_pmu_unregister(&iommu->pmu->pmu);
+> +}
+> diff --git a/drivers/iommu/intel/perfmon.h b/drivers/iommu/intel/perfmon.h
+> index 8587c80501cd..b60f0cad5bfd 100644
+> --- a/drivers/iommu/intel/perfmon.h
+> +++ b/drivers/iommu/intel/perfmon.h
+> @@ -7,6 +7,14 @@
+>   #define IOMMU_PMU_NUM_OFF_REGS			4
+>   #define IOMMU_PMU_OFF_REGS_STEP			4
+>   
+> +#define IOMMU_PMU_FILTER_REQUESTER_ID		0x01
+> +#define IOMMU_PMU_FILTER_DOMAIN			0x02
+> +#define IOMMU_PMU_FILTER_PASID			0x04
+> +#define IOMMU_PMU_FILTER_ATS			0x08
+> +#define IOMMU_PMU_FILTER_PAGE_TABLE		0x10
+> +
+> +#define IOMMU_PMU_FILTER_EN			(1 << 31)
+> +
+>   #define IOMMU_PMU_CFG_OFFSET			0x100
+>   #define IOMMU_PMU_CFG_CNTRCAP_OFFSET		0x80
+>   #define IOMMU_PMU_CFG_CNTREVCAP_OFFSET		0x84
+> @@ -21,12 +29,18 @@
+>   #define iommu_cntrcap_ios(p)			((p >> 16) & 0x1)
+>   #define iommu_cntrcap_egcnt(p)			((p >> 28) & 0xf)
+>   
+> +#define IOMMU_EVENT_CFG_EGI_SHIFT		8
+> +#define IOMMU_EVENT_CFG_ES_SHIFT		32
+> +#define IOMMU_EVENT_CFG_INT			(1ULL << 1)
+> +
+>   #define iommu_event_select(p)			((p) & 0xfffffff)
+>   #define iommu_event_group(p)			((p >> 28) & 0xf)
+>   
+>   #ifdef CONFIG_INTEL_IOMMU_PERF_EVENTS
+>   int alloc_iommu_pmu(struct intel_iommu *iommu);
+>   void free_iommu_pmu(struct intel_iommu *iommu);
+> +void iommu_pmu_register(struct intel_iommu *iommu);
+> +void iommu_pmu_unregister(struct intel_iommu *iommu);
+>   #else
+>   static inline int
+>   alloc_iommu_pmu(struct intel_iommu *iommu)
+> @@ -38,4 +52,14 @@ static inline void
+>   free_iommu_pmu(struct intel_iommu *iommu)
+>   {
+>   }
+> +
+> +static inline void
+> +iommu_pmu_register(struct intel_iommu *iommu)
+> +{
+> +}
+> +
+> +static inline void
+> +iommu_pmu_unregister(struct intel_iommu *iommu)
+> +{
+> +}
+>   #endif /* CONFIG_INTEL_IOMMU_PERF_EVENTS */
 
 --
 Best regards,
 baolu
-
-> 
-> Thanks,
-> 
-> Matt
-> 
-> On 1/13/23 03:49, Baolu Lu wrote:
->> On 2023/1/13 16:15, Matt Fagnani wrote:
->>> Baolu,
->>>
->>> 6.2-rc3 with v2 of this patch applied booted normally without the 
->>> black screen problem. regzbot by Thorsten Leemhuis recommends adding 
->>> the following link tag to the previous discussion at 
->>> https://linux-regtracking.leemhuis.info/regzbot/mainline/ "When 
->>> fixing, add this to the commit message to make regzbot notice patch 
->>> postings and commits to resolve the issue:" Link: 
->>> https://lore.kernel.org/r/15d0f9ff-2a56-b3e9-5b45-e6b23300ae3b@leemhuis.info/
->>
->> Sure. I will add below:
->>
->> Fixes: 201007ef707a ("PCI: Enable PASID only when ACS RR & UF enabled 
->> on upstream path")
->> Reported-by: Matt Fagnani <matt.fagnani@bell.net>
->> Link: https://bugzilla.kernel.org/show_bug.cgi?id=216865
->> Link: 
->> https://lore.kernel.org/r/15d0f9ff-2a56-b3e9-5b45-e6b23300ae3b@leemhuis.info/
->>
->> By the way, can I add your tested-by?
->>
->> -- 
->> Best regards,
->> baolu
->>
->>>
->>> Thanks,
->>>
->>> Matt
->>>
->>> On 1/12/23 20:44, Lu Baolu wrote:
->>>> The PCIe fabric routes Memory Requests based on the TLP address, 
->>>> ignoring
->>>> the PASID. In order to ensure system integrity, commit 201007ef707a 
->>>> ("PCI:
->>>> Enable PASID only when ACS RR & UF enabled on upstream path") requires
->>>> some ACS features being supported on device's upstream path when 
->>>> enabling
->>>> PCI/PASID.
->>>>
->>>> One alternative is ATS which lets the device resolve the PASID+addr 
->>>> pair
->>>> before a memory request is made into a routeable TLB address through 
->>>> the
->>>> TA. Those resolved addresses are then cached on the device instead of
->>>> in the IOMMU TLB and the device always sets the translated bit for 
->>>> PASID.
->>>> One example of those devices are AMD graphic devices that always 
->>>> have ACS
->>>> or ATS enabled together with PASID.
->>>>
->>>> This adds a flag parameter in the pci_enable_pasid() helper, with which
->>>> the device driver could opt-in the fact that device always sets the
->>>> translated bit for PASID.
->>>>
->>>> It also applies this opt-in for AMD graphic devices. Without this 
->>>> change,
->>>> kernel boots to black screen on a system with below AMD graphic device:
->>>>
->>>> 00:01.0 VGA compatible controller: Advanced Micro Devices, Inc.
->>>>          [AMD/ATI] Wani [Radeon R5/R6/R7 Graphics] (rev ca)
->>>>          (prog-if 00 [VGA controller])
->>>>     DeviceName: ATI EG BROADWAY
->>>>     Subsystem: Hewlett-Packard Company Device 8332
->>>>
->>>> At present, it is a common practice to enable/disable PCI PASID in the
->>>> iommu drivers. Considering that the device driver knows more about the
->>>> specific device, we will follow up by moving pci_enable_pasid() into
->>>> the specific device drivers.
->>>>
->>>> Fixes: 201007ef707a ("PCI: Enable PASID only when ACS RR & UF 
->>>> enabled on upstream path")
->>>> Link: https://bugzilla.kernel.org/show_bug.cgi?id=216865
->>>> Reported-by: Matt Fagnani <matt.fagnani@bell.net>
->>>> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
->>>> Suggested-by: Christian König <christian.koenig@amd.com>
->>>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->>>> ---
->>>>   include/linux/pci-ats.h                     | 6 ++++--
->>>>   drivers/iommu/amd/iommu.c                   | 2 +-
->>>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
->>>>   drivers/iommu/intel/iommu.c                 | 3 ++-
->>>>   drivers/pci/ats.c                           | 8 ++++++--
->>>>   5 files changed, 14 insertions(+), 7 deletions(-)
->>>>
->>>> Change log:
->>>> v2:
->>>>   - Convert the bool to a named flag;
->>>>   - Convert TRANSLED to XLATED.
->>>>
->>>> v1:
->>>>   - 
->>>> https://lore.kernel.org/linux-iommu/20230112084629.737653-1-baolu.lu@linux.intel.com/
->>>>
->>>> diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
->>>> index df54cd5b15db..750fca736ef4 100644
->>>> --- a/include/linux/pci-ats.h
->>>> +++ b/include/linux/pci-ats.h
->>>> @@ -4,6 +4,8 @@
->>>>   #include <linux/pci.h>
->>>> +#define PCI_PASID_XLATED_REQ_ONLY    BIT(0)
->>>> +
->>>>   #ifdef CONFIG_PCI_ATS
->>>>   /* Address Translation Service */
->>>>   bool pci_ats_supported(struct pci_dev *dev);
->>>> @@ -35,12 +37,12 @@ static inline bool pci_pri_supported(struct 
->>>> pci_dev *pdev)
->>>>   #endif /* CONFIG_PCI_PRI */
->>>>   #ifdef CONFIG_PCI_PASID
->>>> -int pci_enable_pasid(struct pci_dev *pdev, int features);
->>>> +int pci_enable_pasid(struct pci_dev *pdev, int features, int flags);
->>>>   void pci_disable_pasid(struct pci_dev *pdev);
->>>>   int pci_pasid_features(struct pci_dev *pdev);
->>>>   int pci_max_pasids(struct pci_dev *pdev);
->>>>   #else /* CONFIG_PCI_PASID */
->>>> -static inline int pci_enable_pasid(struct pci_dev *pdev, int features)
->>>> +static inline int pci_enable_pasid(struct pci_dev *pdev, int 
->>>> features, int flags)
->>>>   { return -EINVAL; }
->>>>   static inline void pci_disable_pasid(struct pci_dev *pdev) { }
->>>>   static inline int pci_pasid_features(struct pci_dev *pdev)
->>>> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
->>>> index cbeaab55c0db..64a8c03d7dfa 100644
->>>> --- a/drivers/iommu/amd/iommu.c
->>>> +++ b/drivers/iommu/amd/iommu.c
->>>> @@ -1700,7 +1700,7 @@ static int pdev_pri_ats_enable(struct pci_dev 
->>>> *pdev)
->>>>       int ret;
->>>>       /* Only allow access to user-accessible pages */
->>>> -    ret = pci_enable_pasid(pdev, 0);
->>>> +    ret = pci_enable_pasid(pdev, 0, PCI_PASID_XLATED_REQ_ONLY);
->>>>       if (ret)
->>>>           goto out_err;
->>>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c 
->>>> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>> index ab160198edd6..891bf53c45dc 100644
->>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>> @@ -2350,7 +2350,7 @@ static int arm_smmu_enable_pasid(struct 
->>>> arm_smmu_master *master)
->>>>       if (num_pasids <= 0)
->>>>           return num_pasids;
->>>> -    ret = pci_enable_pasid(pdev, features);
->>>> +    ret = pci_enable_pasid(pdev, features, 0);
->>>>       if (ret) {
->>>>           dev_err(&pdev->dev, "Failed to enable PASID\n");
->>>>           return ret;
->>>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->>>> index 59df7e42fd53..5cc13f02a5ac 100644
->>>> --- a/drivers/iommu/intel/iommu.c
->>>> +++ b/drivers/iommu/intel/iommu.c
->>>> @@ -1425,7 +1425,8 @@ static void iommu_enable_pci_caps(struct 
->>>> device_domain_info *info)
->>>>          undefined. So always enable PASID support on devices which
->>>>          have it, even if we can't yet know if we're ever going to
->>>>          use it. */
->>>> -    if (info->pasid_supported && !pci_enable_pasid(pdev, 
->>>> info->pasid_supported & ~1))
->>>> +    if (info->pasid_supported &&
->>>> +        !pci_enable_pasid(pdev, info->pasid_supported & ~1, 0))
->>>>           info->pasid_enabled = 1;
->>>>       if (info->pri_supported &&
->>>> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
->>>> index f9cc2e10b676..3a2d9e0ba1d8 100644
->>>> --- a/drivers/pci/ats.c
->>>> +++ b/drivers/pci/ats.c
->>>> @@ -353,12 +353,15 @@ void pci_pasid_init(struct pci_dev *pdev)
->>>>    * pci_enable_pasid - Enable the PASID capability
->>>>    * @pdev: PCI device structure
->>>>    * @features: Features to enable
->>>> + * @flags: device-specific flags
->>>> + *   - PCI_PASID_XLATED_REQ_ONLY: The PCI device only issues PASID
->>>> + *                                memory requests of translated type.
->>>>    *
->>>>    * Returns 0 on success, negative value on error. This function 
->>>> checks
->>>>    * whether the features are actually supported by the device and 
->>>> returns
->>>>    * an error if not.
->>>>    */
->>>> -int pci_enable_pasid(struct pci_dev *pdev, int features)
->>>> +int pci_enable_pasid(struct pci_dev *pdev, int features, int flags)
->>>>   {
->>>>       u16 control, supported;
->>>>       int pasid = pdev->pasid_cap;
->>>> @@ -382,7 +385,8 @@ int pci_enable_pasid(struct pci_dev *pdev, int 
->>>> features)
->>>>       if (!pasid)
->>>>           return -EINVAL;
->>>> -    if (!pci_acs_path_enabled(pdev, NULL, PCI_ACS_RR | PCI_ACS_UF))
->>>> +    if (!(flags & PCI_PASID_XLATED_REQ_ONLY) &&
->>>> +        !pci_acs_path_enabled(pdev, NULL, PCI_ACS_RR | PCI_ACS_UF))
->>>>           return -EINVAL;
->>>>       pci_read_config_word(pdev, pasid + PCI_PASID_CAP, &supported);
->>
-> 
-
