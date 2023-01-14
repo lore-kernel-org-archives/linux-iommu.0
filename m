@@ -1,290 +1,124 @@
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7AF958498
+	for <iommu@lists.linux.dev>; Sat, 14 Jan 2023 16:27:54 +0000 (UTC)
+Received: from 8bytes.org (p200300c277327f0086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:7732:7f00:86ad:4f9d:2505:dd0d])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D44362C
-	for <iommu@lists.linux.dev>; Sat, 14 Jan 2023 11:05:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673694358; x=1705230358;
-  h=message-id:date:mime-version:cc:to:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=udMV8JX+KP6e3Bghh1vBqQQN6cho5nFLnToaxFf6c6Q=;
-  b=GIDYPQ/P6L5ECUM9CYVXBZl1+8yPjoKSel7mZIN1DpDnQD/4Gfl/YsjL
-   3w+YPGV5virUrvnvkiMBrJK9B89aFG19RvkoIzxgRr40Xeihtr38fJH3A
-   5vQ5U+1+rUrUC4UbwoEt1bZa44jou8qbzXNrPYqfimn1SqezTiwpD/3Jp
-   s4UiZc/VcEJFsf1WYSI//H9QJWxRdufHCoh9H1jKhse47TAUS0dcK+eke
-   7ZHFWGcdGXTe3+HL64tud9+ad/98SO8Xo0c05waz9g3z5hK/rKgl+/pMx
-   BQyiboRMhmjgPEFUto9zF5kQdqDjOxXNEE8k0T1W1UMft64RZbQa0nuCR
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10589"; a="304563858"
-X-IronPort-AV: E=Sophos;i="5.97,216,1669104000"; 
-   d="scan'208";a="304563858"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2023 03:05:57 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10589"; a="689009802"
-X-IronPort-AV: E=Sophos;i="5.97,216,1669104000"; 
-   d="scan'208";a="689009802"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.252.188.254]) ([10.252.188.254])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2023 03:05:54 -0800
-Message-ID: <a21db6ce-e0a4-797e-f023-0920dd4f795f@linux.intel.com>
-Date: Sat, 14 Jan 2023 19:05:52 +0800
+	by mail.8bytes.org (Postfix) with ESMTPSA id D8DCC262023;
+	Sat, 14 Jan 2023 17:27:46 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1673713666;
+	bh=vULKOkbp9CZBwY7oIAXxQR1kopxTS17Ty9VeKoVt+Vg=;
+	h=Date:From:To:Cc:Subject:From;
+	b=A3EHKNmXqEbms4/YLd8gYwVLxMaWLUnTdsLbjMmR1KtPbtSQCwuw2iEHN7XOQ3xnP
+	 7z20tvMF2LJwjP4IBVvPmcTilRXJBuFfOUPEu7eHzw1xzwAwW6o6TLb5PWepiiMbXs
+	 ovCU5xcOR0+ptv+juSxWDgQhBB7dDjLOhqf/uQS6gsBJ40lHwmok7+V3bn624r9jVR
+	 YRcXBJOzAXCEnXWE9qIyAkBAnrJ86Q22ig5mWcf2vGTpkJBf88+yq7CAfvOP/WIH/X
+	 wlTDlBSll8ZAOKA7GdWObbauNYWkeTUGknGSyHNes84SE//PGHVucMj4Zg1Y1UetMb
+	 b+M3uso+4XFlg==
+Date: Sat, 14 Jan 2023 17:27:45 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: [git pull] IOMMU Fixes for Linux v6.2-rc3
+Message-ID: <Y8LYARivqaRbWWja@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Cc: baolu.lu@linux.intel.com
-To: kan.liang@linux.intel.com, joro@8bytes.org, will@kernel.org,
- dwmw2@infradead.org, robin.murphy@arm.com, robert.moore@intel.com,
- rafael.j.wysocki@intel.com, lenb@kernel.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20230111202504.378258-1-kan.liang@linux.intel.com>
- <20230111202504.378258-7-kan.liang@linux.intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH 6/7] iommu/vt-d: Add IOMMU perfmon overflow handler
- support
-In-Reply-To: <20230111202504.378258-7-kan.liang@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="jOjp5fKZ3QeU4oJL"
+Content-Disposition: inline
 
-On 2023/1/12 4:25, kan.liang@linux.intel.com wrote:
-> From: Kan Liang <kan.liang@linux.intel.com>
-> 
-> While enabled to count events and an event occurrence causes the counter
-> value to increment and roll over to or past zero, this is termed a
-> counter overflow. The overflow can trigger an interrupt. The IOMMU
-> perfmon needs to handle the case properly.
-> 
-> New HW IRQs are allocated for each IOMMU device for perfmon. The IRQ IDs
-> are after the SVM range.
-> 
-> In the overflow handler, the counter is not frozen. It's very unlikely
-> that the same counter overflows again during the period. But it's
-> possible that other counters overflow at the same time. Read the
-> overflow register at the end of the handler and check whether there are
-> more.
-> 
-> Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
-> ---
->   drivers/iommu/intel/dmar.c    |  2 +
->   drivers/iommu/intel/iommu.h   | 11 ++++-
->   drivers/iommu/intel/perfmon.c | 82 +++++++++++++++++++++++++++++++++++
->   drivers/iommu/intel/svm.c     |  2 +-
->   4 files changed, 95 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-> index dcafa32875c1..94e314320cd9 100644
-> --- a/drivers/iommu/intel/dmar.c
-> +++ b/drivers/iommu/intel/dmar.c
-> @@ -1887,6 +1887,8 @@ static inline int dmar_msi_reg(struct intel_iommu *iommu, int irq)
->   		return DMAR_FECTL_REG;
->   	else if (iommu->pr_irq == irq)
->   		return DMAR_PECTL_REG;
-> +	else if (iommu->perf_irq == irq)
-> +		return DMAR_PERFINTRCTL_REG;
->   	else
->   		BUG();
->   }
-> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-> index bbc5dda903e9..f616e4f3d765 100644
-> --- a/drivers/iommu/intel/iommu.h
-> +++ b/drivers/iommu/intel/iommu.h
-> @@ -130,6 +130,8 @@
->   #define DMAR_PERFCFGOFF_REG	0x310
->   #define DMAR_PERFOVFOFF_REG	0x318
->   #define DMAR_PERFCNTROFF_REG	0x31c
-> +#define DMAR_PERFINTRSTS_REG	0x324
-> +#define DMAR_PERFINTRCTL_REG	0x328
->   #define DMAR_PERFEVNTCAP_REG	0x380
->   #define DMAR_ECMD_REG		0x400
->   #define DMAR_ECEO_REG		0x408
-> @@ -357,6 +359,9 @@
->   
->   #define DMA_VCS_PAS	((u64)1)
->   
-> +/* PERFINTRSTS_REG */
-> +#define DMA_PERFINTRSTS_PIS	((u32)1)
-> +
->   #define IOMMU_WAIT_OP(iommu, offset, op, cond, sts)			\
->   do {									\
->   	cycles_t start_time = get_cycles();				\
-> @@ -630,8 +635,12 @@ struct iommu_pmu {
->   	struct pmu		pmu;
->   	DECLARE_BITMAP(used_mask, IOMMU_PMU_IDX_MAX);
->   	struct perf_event	*event_list[IOMMU_PMU_IDX_MAX];
-> +	unsigned char		irq_name[16];
->   };
->   
-> +#define IOMMU_IRQ_ID_OFFSET_PRQ		(DMAR_UNITS_SUPPORTED)
-> +#define IOMMU_IRQ_ID_OFFSET_PERF	(2 * DMAR_UNITS_SUPPORTED)
-> +
->   struct intel_iommu {
->   	void __iomem	*reg; /* Pointer to hardware regs, virtual addr */
->   	u64 		reg_phys; /* physical address of hw register set */
-> @@ -645,7 +654,7 @@ struct intel_iommu {
->   	int		seq_id;	/* sequence id of the iommu */
->   	int		agaw; /* agaw of this iommu */
->   	int		msagaw; /* max sagaw of this iommu */
-> -	unsigned int 	irq, pr_irq;
-> +	unsigned int	irq, pr_irq, perf_irq;
->   	u16		segment;     /* PCI segment# */
->   	unsigned char 	name[13];    /* Device Name */
->   
-> diff --git a/drivers/iommu/intel/perfmon.c b/drivers/iommu/intel/perfmon.c
-> index f332232bb345..d0fbf784c827 100644
-> --- a/drivers/iommu/intel/perfmon.c
-> +++ b/drivers/iommu/intel/perfmon.c
-> @@ -476,6 +476,49 @@ static void iommu_pmu_disable(struct pmu *pmu)
->   	ecmd_submit_sync(iommu, DMA_ECMD_FREEZE, 0, false, 0);
->   }
->   
-> +static void iommu_pmu_counter_overflow(struct iommu_pmu *iommu_pmu)
-> +{
-> +	struct perf_event *event;
-> +	int i, handled = 0;
-> +	u64 status;
-> +
-> +	/*
-> +	 * Two counters may be overflowed very close.
-> +	 * Always check whether there are more to handle.
-> +	 */
 
-Keep comment style consistent, like this
+--jOjp5fKZ3QeU4oJL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-         /*
-          * Two counters may be overflowed very close. Always check whether
-          * there are more to handle.
-          */
+Hi Linus,
 
-Same to other places.
+The following changes since commit b7bfaa761d760e72a969d116517eaa12e404c262:
 
-> +	while ((status = dmar_readq(iommu_pmu->overflow))) {
+  Linux 6.2-rc3 (2023-01-08 11:49:43 -0600)
 
-Unnecessary double brackets?
+are available in the Git repository at:
 
-> +		for_each_set_bit(i, (unsigned long *)&status, iommu_pmu->num_cntr) {
-> +			handled++;
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.2-rc3
 
-"handled" isn't used anywhere. Please cleanup it.
+for you to fetch changes up to 142e821f68cf5da79ce722cb9c1323afae30e185:
 
-> +
-> +			/*
-> +			 * Find the assigned event of the counter.
-> +			 * Accumulate the value into the event->count.
-> +			 */
-> +			event = iommu_pmu->event_list[i];
-> +			if (WARN_ON_ONCE(!event))
+  iommu/mediatek-v1: Fix an error handling path in mtk_iommu_v1_probe() (2023-01-13 13:46:32 +0100)
 
-Again, do we need a kernel trace here? This is only because the hardware
-reported an wrong event id, right? How about a pr_warn() to let the user
-know this?
+----------------------------------------------------------------
+IOMMU Fixes for Linux v6.2-rc3
 
-> +				continue;
-> +			iommu_pmu_event_update(event);
-> +		}
-> +
-> +		dmar_writeq(iommu_pmu->overflow, status);
-> +	}
-> +}
-> +
-> +static irqreturn_t iommu_pmu_irq_handler(int irq, void *dev_id)
-> +{
-> +	struct intel_iommu *iommu = dev_id;
-> +
-> +	if (!dmar_readl(iommu->reg + DMAR_PERFINTRSTS_REG))
-> +		return IRQ_NONE;
-> +
-> +	iommu_pmu_counter_overflow(iommu->pmu);
-> +
-> +	/* Clear the status bit */
-> +	dmar_writel(iommu->reg + DMAR_PERFINTRSTS_REG, DMA_PERFINTRSTS_PIS);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
->   static int __iommu_pmu_register(struct intel_iommu *iommu)
->   {
->   	struct iommu_pmu *iommu_pmu = iommu->pmu;
-> @@ -658,6 +701,38 @@ void free_iommu_pmu(struct intel_iommu *iommu)
->   	iommu->pmu = NULL;
->   }
->   
-> +static int iommu_pmu_set_interrupt(struct intel_iommu *iommu)
-> +{
-> +	struct iommu_pmu *iommu_pmu = iommu->pmu;
-> +	int irq, ret;
-> +
-> +	irq = dmar_alloc_hwirq(IOMMU_IRQ_ID_OFFSET_PERF + iommu->seq_id, iommu->node, iommu);
-> +	if (irq <= 0)
-> +		return -EINVAL;
-> +
-> +	snprintf(iommu_pmu->irq_name, sizeof(iommu_pmu->irq_name), "dmar%d-perf", iommu->seq_id);
-> +
-> +	iommu->perf_irq = irq;
-> +	ret = request_threaded_irq(irq, NULL, iommu_pmu_irq_handler,
-> +				   IRQF_ONESHOT, iommu_pmu->irq_name, iommu);
-> +	if (ret) {
-> +		dmar_free_hwirq(irq);
-> +		iommu->perf_irq = 0;
-> +		return ret;
-> +	}
-> +	return 0;
-> +}
-> +
-> +static void iommu_pmu_unset_interrupt(struct intel_iommu *iommu)
-> +{
-> +	if (!iommu->perf_irq)
-> +		return;
-> +
-> +	free_irq(iommu->perf_irq, iommu);
-> +	dmar_free_hwirq(iommu->perf_irq);
-> +	iommu->perf_irq = 0;
-> +}
-> +
->   static int iommu_pmu_cpu_online(unsigned int cpu)
->   {
->   	if (cpumask_empty(&iommu_pmu_cpu_mask))
-> @@ -734,8 +809,14 @@ void iommu_pmu_register(struct intel_iommu *iommu)
->   	if (iommu_pmu_cpuhp_setup(iommu_pmu))
->   		goto unregister;
->   
-> +	/* Set interrupt for overflow */
-> +	if (iommu_pmu_set_interrupt(iommu))
-> +		goto cpuhp_free;
-> +
->   	return;
->   
-> +cpuhp_free:
-> +	iommu_pmu_cpuhp_free(iommu_pmu);
->   unregister:
->   	perf_pmu_unregister(&iommu_pmu->pmu);
->   err:
-> @@ -749,6 +830,7 @@ void iommu_pmu_unregister(struct intel_iommu *iommu)
->   	if (!iommu_pmu)
->   		return;
->   
-> +	iommu_pmu_unset_interrupt(iommu);
->   	iommu_pmu_cpuhp_free(iommu_pmu);
->   	perf_pmu_unregister(&iommu_pmu->pmu);
->   }
-> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-> index c76b66263467..b6c5edd80d5d 100644
-> --- a/drivers/iommu/intel/svm.c
-> +++ b/drivers/iommu/intel/svm.c
-> @@ -79,7 +79,7 @@ int intel_svm_enable_prq(struct intel_iommu *iommu)
->   	}
->   	iommu->prq = page_address(pages);
->   
-> -	irq = dmar_alloc_hwirq(DMAR_UNITS_SUPPORTED + iommu->seq_id, iommu->node, iommu);
-> +	irq = dmar_alloc_hwirq(IOMMU_IRQ_ID_OFFSET_PRQ + iommu->seq_id, iommu->node, iommu);
->   	if (irq <= 0) {
->   		pr_err("IOMMU: %s: Failed to create IRQ vector for page request queue\n",
->   		       iommu->name);
+Including:
 
---
-Best regards,
-baolu
+	- Core: Fix an iommu-group refcount leak
+
+	- Fix overflow issue in IOVA alloc path
+
+	- ARM-SMMU fixes from Will:
+
+	  - Fix VFIO regression on NXP SoCs by reporting IOMMU_CAP_CACHE_COHERENCY
+
+	  - Fix SMMU shutdown paths to avoid device unregistration race
+
+	- Error handling fix for Mediatek IOMMU driver
+
+----------------------------------------------------------------
+Christophe JAILLET (1):
+      iommu/mediatek-v1: Fix an error handling path in mtk_iommu_v1_probe()
+
+Miaoqian Lin (1):
+      iommu: Fix refcount leak in iommu_device_claim_dma_owner
+
+Robin Murphy (1):
+      iommu/arm-smmu: Report IOMMU_CAP_CACHE_COHERENCY even betterer
+
+Vladimir Oltean (2):
+      iommu/arm-smmu: Don't unregister on shutdown
+      iommu/arm-smmu-v3: Don't unregister on shutdown
+
+Yunfei Wang (1):
+      iommu/iova: Fix alloc iova overflows issue
+
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  4 +++-
+ drivers/iommu/arm/arm-smmu/arm-smmu.c       | 32 ++++++++++++++++++++---------
+ drivers/iommu/iommu.c                       |  8 +++++---
+ drivers/iommu/iova.c                        |  4 ++--
+ drivers/iommu/mtk_iommu_v1.c                |  4 +++-
+ 5 files changed, 35 insertions(+), 17 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--jOjp5fKZ3QeU4oJL
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmPC2AEACgkQK/BELZcB
+GuOhnBAArnqzlOLtYDzYKAC7B2/X3bIMD0LtchDIg5+TG0I860XFvCPOStV5Mmgv
+B4bHAFF7upNUfCyrPGfM1bk0dSHfrk5rtW9FV40xgZpliLdCHcYW8sAYCO24HhYw
+4LOvzEYlB9jiEOZUuAOXmTdN24wvKRJIYEX5psMYVhm5pz+yqWvgYLvI2TMjRtVD
+FiBQwcIgkBipxx7zoLspg2oX2rVCMyG8gMNHuPdOEuR4u8VggBI+nZWBXRqsVxha
+eTgAKSs4Xgo5PBtXmKbOeJSsQ0FZmkiOZqhXQzOSq2AApQIb/Nfv55rgUtn4V7Ku
+iRF9fO2JsGNHceybeBUs55wvw86qYAUYc/AMENgXr6/qn4fxLIrBtPHR5iiifbyF
+aGwWxkWeFgxlBA4XG1mHuPKOtHEkNzE3VIY/Itkf6+ccjrfpQrfFRG0sN1+eb1m6
+sXVBROvbL+ShbeXApkbbmxMFu4SPdInTj7lkHN27zICIfDSJPgJ3C9p05wkyTXfy
+UdCd1RFm+7XWm5kaIzSm7p7wGd3x7vi9CC1hWTKYgFftTjhjrggUwXegS1wXv2EM
+OdLuk+njlD7Eot8xtGAspS3pmnkggb5r2ZKWrVDJK1ROjGzWYL8T6H2wIopjGJwc
+hbm2KxINwFqTJoVvGl2n7e0o7JHmQstexJdtk+d4SQu0YS2UIOA=
+=tqwf
+-----END PGP SIGNATURE-----
+
+--jOjp5fKZ3QeU4oJL--
