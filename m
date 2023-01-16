@@ -1,246 +1,170 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2045.outbound.protection.outlook.com [40.107.93.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBDF346B7
-	for <iommu@lists.linux.dev>; Mon, 16 Jan 2023 16:25:07 +0000 (UTC)
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20230116162459euoutp013be702abf204ffb9f7eb46b0032d0214~61riSmWbj0151601516euoutp01B
-	for <iommu@lists.linux.dev>; Mon, 16 Jan 2023 16:24:59 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20230116162459euoutp013be702abf204ffb9f7eb46b0032d0214~61riSmWbj0151601516euoutp01B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1673886299;
-	bh=rIeNW4HYLmJYLi39+ryxT727xkchYje+Z8ssq4AC+3Y=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=toaGEGvpCZmvgJH7VKzEy0YxwYLXDA1FnWt4g89kK0arSk9ht6EPEZWKe+wRMt+v1
-	 ZuDTjgF77dYuK+ghz9AT0n1KsLyVzK7C1rztQ7Krqx/sYCBxi8ijpJDUUZmOKrOmVD
-	 gw0Z0eztC8Ap2tbDf7VF8RsLArUhIhBEXlKoa35E=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-	20230116162459eucas1p1de38d093e8dc85e48f795fb75742de3b~61rh4Vie51596915969eucas1p1P;
-	Mon, 16 Jan 2023 16:24:59 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-	eusmges2new.samsung.com (EUCPMTA) with SMTP id A6.38.61936.B5A75C36; Mon, 16
-	Jan 2023 16:24:59 +0000 (GMT)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20230116162458eucas1p2cd56987b67ace5aaead81665a3377fa1~61rhThD183050730507eucas1p2E;
-	Mon, 16 Jan 2023 16:24:58 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-	20230116162458eusmtrp1b9344dbfae703eb2e7f69933c7ad5552~61rhRIpIE2350823508eusmtrp1T;
-	Mon, 16 Jan 2023 16:24:58 +0000 (GMT)
-X-AuditID: cbfec7f4-a2dff7000002f1f0-74-63c57a5b9804
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-	eusmgms1.samsung.com (EUCPMTA) with SMTP id C1.B1.23420.A5A75C36; Mon, 16
-	Jan 2023 16:24:58 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20230116162457eusmtip19f8a293be5ebd606327ef17fd220b136~61rgBuxd71495514955eusmtip1D;
-	Mon, 16 Jan 2023 16:24:57 +0000 (GMT)
-Message-ID: <b756e833-71c5-e43a-b222-ab9bdcc4f494@samsung.com>
-Date: Mon, 16 Jan 2023 17:24:56 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEC0B4C84
+	for <iommu@lists.linux.dev>; Mon, 16 Jan 2023 16:33:48 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JMtXLrJIdvNgERhDjQajBU2k6AcAI1FNa+E5JVadYVOiW09NpZgeF1WFJ58b86GdDJwG1gnwCfvNvPc5h+FSWFCEx/lnwofA+J6hny/ISXPkU4MIh3r+ZHDDqfrjNPfcWnHjUeHsoC0IZFBisn2EmpuqzmsckefqD91nP5wWuiDUkpoosTQsATvBSIejHc6PYaYlpXDO25XesSv+ol87Yb6rcg+aIaRE8KWLiE1QpAkqv8mRvvnGnvdhETYH150SG8oUjIwO051qj2hYvAtpK6al/hq59lmTSg3oqheSA+zVikGh4SwU6f5O8L+Ui8M+SyMNfvr1KOgLvQYMCgqneQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zrPj7KElq32ykFQKhcA5b+LFDpEfcg0w9/9gvZ9fA/k=;
+ b=D5DTu5QCN0dgH988/1O7IB1fWdDE7Pgo55oVglAzRA6A/kLM6mEZz8uHjwnu2EHo6YRVZyVrJqFpivF3/k1dSQ+vHA8vghyCRFxbu9KLshJO9XG2aLqxLWXfH5D27Jv9uVBa0ucv0jrB2z+bh4U4NYnNsn9bXLAFQIqr5m5AgOHe8d2578LDWSP6OJZa15OKUG48TT3429wuqVLxykSZzh6butZNkWTqXADOMXD6uNN9JwGZWIuoJm9szCjPG/clSDeKOIEjJmaZ2g8TJlYY4OnIFfZOnB3AeuihAOW8fgtwakpqNwGhDfslSrBv8/bBHWdxxelhOi6GxpXmk4koAw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zrPj7KElq32ykFQKhcA5b+LFDpEfcg0w9/9gvZ9fA/k=;
+ b=MZvQQkZ5ahXDZgK3wPt80Tm4YJux6lAvFBgriowRhbxVcpNHnFWdsEHeP9NbVk9gkaxU3MJzrOq4N6sJK2znUOf0XDVkPylqUd9dXk62xsBOW1sFD8vcF5ibVhYu3TcGTdhqj5R4v/OKDQa0ketmcg8+keXjKBGwxaAoXk6d3vQ8+iWFapD2/2Q9IwZECX7006IMDMyrbCmHlPE+9Cd7PpYRYsq3ZI2HCFrcq8rEPrnmwaGZaFAwgxCiF/NHeImOeP9PBHDyZ5wMCSrYY+nLcmrb+zg3ZBOegR7MS5T9OtptDENTCf23fb6d3KuYlFCso4bLhBA+rSYY5v0TvEHF9g==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by BY5PR12MB5510.namprd12.prod.outlook.com (2603:10b6:a03:1d2::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.23; Mon, 16 Jan
+ 2023 16:33:46 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f8b0:df13:5f8d:12a%9]) with mapi id 15.20.6002.013; Mon, 16 Jan 2023
+ 16:33:46 +0000
+Date: Mon, 16 Jan 2023 12:33:44 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Christoph Hellwig <hch@infradead.org>,
+	Kevin Tian <kevin.tian@intel.com>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+	Rob Clark <robdclark@gmail.com>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Andy Gross <agross@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Yong Wu <yong.wu@mediatek.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	Heiko Stuebner <heiko@sntech.de>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
+	Thierry Reding <thierry.reding@gmail.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 0/5] iommu: Retire detach_dev callback
+Message-ID: <Y8V8aOaFb2BWx47j@nvidia.com>
+References: <CGME20230110030211eucas1p10834ec4cc8c227e2cd7051dc85026dbb@eucas1p1.samsung.com>
+ <20230110025408.667767-1-baolu.lu@linux.intel.com>
+ <b756e833-71c5-e43a-b222-ab9bdcc4f494@samsung.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b756e833-71c5-e43a-b222-ab9bdcc4f494@samsung.com>
+X-ClientProxiedBy: MN2PR19CA0019.namprd19.prod.outlook.com
+ (2603:10b6:208:178::32) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0)
-	Gecko/20100101 Thunderbird/102.6.1
-Subject: Re: [PATCH v5 0/5] iommu: Retire detach_dev callback
-Content-Language: en-US
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
-	Kevin Tian <kevin.tian@intel.com>, Will Deacon <will@kernel.org>, Robin
-	Murphy <robin.murphy@arm.com>, Jean-Philippe Brucker
-	<jean-philippe@linaro.org>
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Vasant Hegde
-	<vasant.hegde@amd.com>, Hector Martin <marcan@marcan.st>, Sven Peter
-	<sven@svenpeter.dev>, Rob Clark <robdclark@gmail.com>, Krzysztof Kozlowski
-	<krzysztof.kozlowski@linaro.org>, Andy Gross <agross@kernel.org>, Bjorn
-	Andersson <andersson@kernel.org>, Yong Wu <yong.wu@mediatek.com>, Matthias
-	Brugger <matthias.bgg@gmail.com>, Heiko Stuebner <heiko@sntech.de>, Matthew
-	Rosato <mjrosato@linux.ibm.com>, Orson Zhai <orsonzhai@gmail.com>, Baolin
-	Wang <baolin.wang@linux.alibaba.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
-	Chen-Yu Tsai <wens@csie.org>, Thierry Reding <thierry.reding@gmail.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20230110025408.667767-1-baolu.lu@linux.intel.com>
-Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA02ScUxbVRTGve+9vr7WFR8F5ToUYxUTMXSiklzd3NRo9hCdLjFuOg3ryrPF
-	0bK0gI4YrYgbqzq6ocJaYAWEzlJZobRIR+Ook4pkgMOga9kY0DkowcHEDCijUt6m/HNzzne+
-	3z3n3FwKF7eR66kcdT6rUctyJaSQcHUv9KXuKvpJ/mikdh3qGw8TyFW6CUU83QA5jjhJ1Guo
-	w1BkbIqHFucQ0jUN8NBvy50AHTLZ+ahh2slHnqmVY9BdteIdMvNRccnjyF5vwlHFjAmgK7Xz
-	OOqaCfLQkXkzQEuBCIYW3DUE6i4rJtGCtx9DJcPpaOSog0CWS27+M4lMsKsGYz49d4NkbDU2
-	wNjHmnhMh/ECn3GcSGHqOycxptV6iGSGhzpJpmP0ScZQdxowNT3bmQnHMcDUN3aQTEnPDwTz
-	xSd/ka/GvSnclM3m5hSymg2bdwuV/ou1/H066fsBw1meDpgleiCgIP0EbLxkIvVASInpEwAW
-	V1gBl8wB2GW18bjkbwCbR6+Rt5BQ9QE+V7AA6OofuOmaBfD0uGHFRVEiejPs/Tg+ChB0MrS7
-	m1ZhER0Le44FiajlTjobti4VRuU4+mno6Tm8asHpBOgPHseiV8bTLRhstDetJjgd4ME2a4iI
-	ukg6Deqn9auEgN4Cf/lykeDo+2D7dBUeBSDtEULP1egO0bGfh77vvgJcHAdDvjY+F98De8s/
-	JzjgIIDm8AjGJQYAdVf8N4mNcLhvcXU1nH4YnnRv4ORnobduDERlSMfAP6ZjuSFi4FFXBc7J
-	Ilh6QMy5H4JGX/N/bbsGzuEGIDGueRfjmgcwrlnH+H9fMyCsIIEt0KoUrPYxNfueVCtTaQvU
-	Cqk8T9UKVj5277Jv7ntgCc1KvQCjgBdACpfEi7a5f5SLRdmy/UWsJi9LU5DLar0gkSIkCaJK
-	53G5mFbI8tm9LLuP1dyqYpRgvQ5r0etGJ1iQEbpjSKF8Knfevff19v7R268ujeixxetQPel4
-	qeytR66pPpJsdJ5ftqT40177NtaVnvRu5oQor4JMI6/f+85YLKwvTTrpqNoveHH2tqxIZsNd
-	6wbdM4EzFns5KHrZbk5MyQn4NAUuXjoKB/XfJG6ZUkwL9mQvtusbqKXdPVlYwB/+Wc9m5JQ3
-	3vBk/H5BJhEURna23r2cZD1VKR7MjEuV27bn5NssLTt2hcJvSC8/YOsm749Pl+xRasYrU5Pf
-	7jTVfR1WjmAPnidc0q2ntj23Q3VWnOyaq29+wa2NKfv18pmd1dUXD/o/cH7I/mn6DE9QTWYc
-	nvL+M/+KhNAqZWkpuEYr+xfTiSWyRwQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrKKsWRmVeSWpSXmKPExsVy+t/xu7pRVUeTDd4cV7Q49/g3i8W2DhuL
-	/3uPMVpsnriVzeL0hEVMFv8fvWa1+PXFwqJh9QVWiyv/9jBadM7ewG6x9O1Wdou9r4HE5V1z
-	gGqvLWC3aGoxttiweDazxfQPsxktni/8wWxx8MMTVouJPxYwWvy5/Z/J4ueueSwWx/qb2Cx+
-	HjrPZNFyx9Ti/qTNLBbLH+xid5D2eHJwHpNH66W/bB5r5q1h9NjwaDWrx85Zd9k9Nq/Q8li8
-	5yWTx6ZVnWwed67tYfPY+dDSY8KiA4we804GerzYPJPRY/GynWweLSf3s3j0Nr9jCxCO0rMp
-	yi8tSVXIyC8usVWKNrQw0jO0tNAzMrHUMzQ2j7UyMlXSt7NJSc3JLEst0rdL0Mu4dW8he0GD
-	XsXtCWdZGxgXKHUxcnJICJhIvJrbxt7FyMUhJLCUUeL6n+3sEAkZiZPTGlghbGGJP9e62CCK
-	3jNKnOq/wNjFyMHBK2AncbpRBKSGRUBVYsOu1WwgNq+AoMTJmU9YQGxRgRSJ5ucnweYIC9hK
-	7D3ZB1bDLCAucevJfCYQW0RgI5NE37oUkPnMAndZJQ7+OwdWJCQwiVFix9cqEJtNwFCi620X
-	WJxTwF7i1JRfLBCDzCS6tnYxQtjyEtvfzmGewCg0C8kds5Dsm4WkZRaSlgWMLKsYRVJLi3PT
-	c4sN9YoTc4tL89L1kvNzNzEC09O2Yz8372Cc9+qj3iFGJg7GQ4wSHMxKIrx+uw4nC/GmJFZW
-	pRblxxeV5qQWH2I0BQbGRGYp0eR8YILMK4k3NDMwNTQxszQwtTQzVhLn9SzoSBQSSE8sSc1O
-	TS1ILYLpY+LglGpgslST9WLW2ss25eAxhvyN9hHfGgQL3jSJXtP93Dtl/9airVVhJwJ7Nn/Q
-	nhGhmt63U0pA8AE3h5Hr+YzbboFudxUt9tnY+WptVtlU4eX4cYnRxT0H6+ZU+f5jjNyp88HA
-	t7ln0/bdDxXYko9n9nFeV/BfyH1vQkdMYd6zp9pb3kfc+pLR+cpt0gwJzYcJgdXXFiq/Nf+Z
-	F6DXvu2KknjklZUmDPyn3eec4Kp81sFV9E5P93nIE2e1/u36jdpf9mq6e9ycKXXPU+fza/M6
-	+TnX5xt1z5LfxCeu8tlORd/irI7f8Y3Ms9WnlgiteLj33KXqp7ZScX4Pr3TcWvzX4+Z3oxlz
-	xJ7lX772nT1JU9dFiaU4I9FQi7moOBEAPfWcKtgDAAA=
-X-CMS-MailID: 20230116162458eucas1p2cd56987b67ace5aaead81665a3377fa1
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20230110030211eucas1p10834ec4cc8c227e2cd7051dc85026dbb
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20230110030211eucas1p10834ec4cc8c227e2cd7051dc85026dbb
-References: <CGME20230110030211eucas1p10834ec4cc8c227e2cd7051dc85026dbb@eucas1p1.samsung.com>
-	<20230110025408.667767-1-baolu.lu@linux.intel.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|BY5PR12MB5510:EE_
+X-MS-Office365-Filtering-Correlation-Id: f503e590-bd78-46fb-4e42-08daf7df702e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	a1g1cnLl5PWgZlzJNVnmw1Cx1E0QnM2xEPhVGQTts1ZvR672oQ5IcvLXXM2Uipm+nEPjgwhQAKR/ZOJ1+Oj/3/AFH73fNq//Czw6IG6PWTCQneGVipDwn/IZEY1ts10suOd97+jUIPipZXKpsg1pad3IBtqMMQvxvHjiRMom1XKtJQMnArKdk7XMX8L7W7ywfumgHCQ2bn55EYvUy/eTGhnHB/DBtLIY0KW2kNgxRZ6gmMjt3AoiQ37mkHHCtGCz3Iw8o1n8RSdj9RFuvFstS1HEc484SpD8U9NDVF6LsoDwksrxUT6l+3yZy58dU9N8SCI+uMJx7lUdqvfVdWS0PKMCFH5x25Lui8YgqzFdCcioaVAvgP2EeuypuivZJk7iYFlw4rQKwdA3r5kx4Nxz2nnFeazGDir+Fog7U69jSUkG442ZvTxj77g5E/oCaxzGkiXD5g/JAkEXdAMD1aEouQ0g9U80da7310RDwE9HNYYbPfz7cyDYc+gjzN92x/6xuv4U7Y40YIcK6leLj4ED5LjvEAY+3Nt7YBgayV7B+epJufFn89+k0cP6lQm7RaKjb5DER/39rEtoIQpyym2WzNf7fu+jHfenLffqnimUzwg8wuMncfi2SGbLjIChcOJKaz90WcfPEPCam/lEMYZAvg==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(346002)(39860400002)(376002)(136003)(396003)(84040400005)(451199015)(83380400001)(86362001)(8676002)(38100700002)(5660300002)(7416002)(2906002)(8936002)(6916009)(66476007)(66946007)(66556008)(4326008)(41300700001)(6512007)(186003)(6506007)(26005)(2616005)(54906003)(316002)(6486002)(478600001)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?IC5k/Nm5tFOlE5nMg2mQcrNXM2S+9PwXPo4ztsIB8XNCLMLNfXXGJqWTSugr?=
+ =?us-ascii?Q?MsSRhz6OEPWxcVpXgRst8VDgmngh3kwJPS+epeTOZ4VkwKL3XAD8VRvlm509?=
+ =?us-ascii?Q?uT617pazZbB/IJYLU1ISQMy+HvnnHZGIjC7OVnz6/XgA4okgHCDdEHQSahR6?=
+ =?us-ascii?Q?lZCfa09Qa86eVcPesEfL/gh7HRWoSK4z+QuieYUCeaf+V5GMNzcoaNia+hri?=
+ =?us-ascii?Q?1qjohYmfJ/c1y98DAy0XYo+re8uqRplr3hjroQobCO4EJADHSFLq5JoJ8xso?=
+ =?us-ascii?Q?KfOtXqnLkJ5S7uyHNCs2+GVd3X6KYsrFinjobHxXZmSXhDxHHqWBY8w+Dptz?=
+ =?us-ascii?Q?aWW30UqZSA83clSNw4EAHIahnHLnh1UZv1LxM3mZFVk3Ra9WaVloZMwLR3zM?=
+ =?us-ascii?Q?X8yQT98vdG50pEBXryHEUOSwNKxUOVZvI55qQt0rci88F6tA9EFPIK6zyyOl?=
+ =?us-ascii?Q?3MTqiMR+v8qNV4Srmp+cLy46frSzk8npP61pHdhPI+Xugv8JVIpS5cG6H54Z?=
+ =?us-ascii?Q?ma6k6ofYRuWbxMvm/8MVPE2+xf6NsCDPAKtXU1ZndSAfVyuf067cFiQvuzc6?=
+ =?us-ascii?Q?hxZPfgfyZIzEhKhJi11UxpwopZ3Smyf5A1dFLAP8CFGVYoez4b5baA72pZY0?=
+ =?us-ascii?Q?4/G0eH14smUVBSLQe58cVTRTfEdY5nKRgl/bYFzqBqZjG5OShgC4zEYK9HF4?=
+ =?us-ascii?Q?ory4UZq0kfWGhKAQOjXY9/hLJcAwiMbrdCb2M8KCi5JKgntAYUXGNAkSRU2d?=
+ =?us-ascii?Q?mqSnc7VdwrSxhh5I3L1xNG8EY7cSikOL9VaeVYMEZI6DhpF4ePkgnJJwCl3C?=
+ =?us-ascii?Q?EWo2/iZ4Lt//jSYWPU4ujsYOaztJLYsBjj3A+vY13Od4ja7ZZGiDdFc/YQm7?=
+ =?us-ascii?Q?7xZrBpKe363APgDogNsnVkbUzQ4fpaXGO7bttGBWT572tbaOI1ZKGDjQOKwy?=
+ =?us-ascii?Q?a3ETNR1Iq/FA0lKDahXMaYbKr9WB7iX/sMTGs6R+J/epZ1LtK1xFijERgdo7?=
+ =?us-ascii?Q?P8Gf5t8VFHmICN5a0vWQuzxYuTyugJMihG5wUsxB8Q6iL/P9nX96hm9zHl6C?=
+ =?us-ascii?Q?pCDiAFdNUQC7dRxrow9QfXKjNZj/pfWrsTQcd15RIPRSzKqqctw6bFM3glbx?=
+ =?us-ascii?Q?Ge+mnLl0maPo4R7kLy/jxuuF6d0aUpYeRqwhmDvDnpXAT7d253RPJYIqfVJY?=
+ =?us-ascii?Q?SqTd7HPsqcO6oXn6Tk7MM89Z2EdOCsA1IXRwmQqZ7BoXbLdwAu7MEjYcDNRj?=
+ =?us-ascii?Q?EbgkJ+LRjwFSYj37HILEM8u9Rox9aog7Lo4ug40PyXv6f4axaBNur+rNGPlY?=
+ =?us-ascii?Q?I220pRnk2pPNfG7BsYCsp70JP2NGeabuFOkngQgkORtSlqEPnXsNKBZvDZoB?=
+ =?us-ascii?Q?4pwTE6JpdbOTFnCDYD/FrxvqdvcvDGwPQS5Rulu+9toQJnK/LgHv6Jh6J6No?=
+ =?us-ascii?Q?5Cx9a91s8xlocvxkVqwdbEqYQ4ZI18dG3OsnXstTdxY75y7p+fNdTGJCrRzc?=
+ =?us-ascii?Q?QNopznhe0Bv/PiLiS+rTQHmzGopfM2h2wGFB++bdsltrG9uADNtSwoUif90y?=
+ =?us-ascii?Q?rXfUnPiT56Bjuexgtp0P33A/CHxM6dgsbltMdIAR?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f503e590-bd78-46fb-4e42-08daf7df702e
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jan 2023 16:33:45.9759
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: AkipyX3cRk6xeeV6eJCRrCu8xMh2UuJfR4jvS9l+Rjlh3WIa8QzRh7iQErVwcog3
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB5510
 
-Hi All,
+On Mon, Jan 16, 2023 at 05:24:56PM +0100, Marek Szyprowski wrote:
 
+> > The iommu core calls the driver's detach_dev domain op callback only when
+> > a device is finished assigning to user space and
+> > iommu_group_release_dma_owner() is called to return the device to the
+> > kernel, where iommu core wants to set the default domain to the device but
+> > the driver didn't provide one. The code looks like:
+> >
+> >          /*
+> >           * New drivers should support default domains and so the detach_dev() op
+> >           * will never be called. Otherwise the NULL domain represents some
+> >           * platform specific behavior.
+> >           */
+> >          if (!new_domain) {
+> >                  if (WARN_ON(!group->domain->ops->detach_dev))
+> >                          return -EINVAL;
+> >                  __iommu_group_for_each_dev(group, group->domain,
+> >                                             iommu_group_do_detach_device);
+> >                  group->domain = NULL;
+> >                  return 0;
+> >          }
+> >
+> > In other words, if the iommu driver provides default domains, the
+> > .detach_dev callback will never be called; Otherwise, the .detach_dev
+> > callback is actually called to return control back to the platform DMA
+> > ops, other than detaching the domain from device.
+> >
+> > This series cleanups this by:
+> >
+> > - If the IOMMU driver provides default domains, remove .detach_dev
+> >    callback.
+> > - Adds a new set_platform_dma iommu op. Any IOMMU driver that doesn't
+> >    provide default domain should implement set_platform_dma callback
+> >    instead.
+> > - Retire .detach_dev callback.
+> >
+> > This series originates from various discussion in the community. Thanks
+> > to Jason, Robin and all others for their ideas.
+> 
+> I wonder how to handle the ARM 32bit case, which doesn't use the default 
+> domain solution. Today, once this patchset has been merged to 
+> linux-next, I've noticed that it broke booting of ARM 32bit Exynos based 
+> boards.
 
-On 10.01.2023 03:54, Lu Baolu wrote:
-> Hi folks,
->
-> The iommu core calls the driver's detach_dev domain op callback only when
-> a device is finished assigning to user space and
-> iommu_group_release_dma_owner() is called to return the device to the
-> kernel, where iommu core wants to set the default domain to the device but
-> the driver didn't provide one. The code looks like:
->
->          /*
->           * New drivers should support default domains and so the detach_dev() op
->           * will never be called. Otherwise the NULL domain represents some
->           * platform specific behavior.
->           */
->          if (!new_domain) {
->                  if (WARN_ON(!group->domain->ops->detach_dev))
->                          return -EINVAL;
->                  __iommu_group_for_each_dev(group, group->domain,
->                                             iommu_group_do_detach_device);
->                  group->domain = NULL;
->                  return 0;
->          }
->
-> In other words, if the iommu driver provides default domains, the
-> .detach_dev callback will never be called; Otherwise, the .detach_dev
-> callback is actually called to return control back to the platform DMA
-> ops, other than detaching the domain from device.
->
-> This series cleanups this by:
->
-> - If the IOMMU driver provides default domains, remove .detach_dev
->    callback.
-> - Adds a new set_platform_dma iommu op. Any IOMMU driver that doesn't
->    provide default domain should implement set_platform_dma callback
->    instead.
-> - Retire .detach_dev callback.
->
-> This series originates from various discussion in the community. Thanks
-> to Jason, Robin and all others for their ideas.
+It is supposed to work, can you help debug what went wrong?
 
-I wonder how to handle the ARM 32bit case, which doesn't use the default 
-domain solution. Today, once this patchset has been merged to 
-linux-next, I've noticed that it broke booting of ARM 32bit Exynos based 
-boards.
-
-The final solution would be to switch ARM 32bit to generic DMA-IOMMU 
-glue, but I'm not sure it this will happen soon. I will try to check if 
-any kind of quick workaround can be applied to get it working again.
-
-
-> The whole series is available on github:
-> https://protect2.fireeye.com/v1/url?k=ef2183b6-b0bababa-ef2008f9-000babff3563-336828b3433153d2&q=1&e=4ae5dae4-383f-4a82-9449-3f08f0422cb1&u=https%3A%2F%2Fgithub.com%2FLuBaolu%2Fintel-iommu%2Fcommits%2Fiommu-retire-detach_dev-v5
->
-> Change log:
-> v5:
->   - Merge some patches to make the series cute. No functionality changes.
->   - Check the op directly and WARN_ON the lack of any necessary
->     callbacks. Get rid of the ret and EINVAL.
->
-> v4:
->   - https://lore.kernel.org/linux-iommu/20230104125725.271850-1-baolu.lu@linux.intel.com/
->   - Drop the patch which renamed .attach_dev to .set_dev. As Robin said,
->     "... I also wouldn't say that "attach" loses its meaning in a context
->     where an equivalent "detach" operation is only ever implicit in
->     reattaching to something else...". If we have a better name in the
->     future, we can do it in other series.
->   - Adjust the patch of "iommu: Add set_platform_dma_ops iommu ops"
->     according to Jason's following suggestion " ... This is a bit ugly,
->     it would be better to make the previous patch call set_platform_dma
->     if it is set instead of detach_dev and then these patches should just
->     rename the driver's fsl_pamu_detach_device to
->     fsl_pamu_set_platform_dma ..."
->   - Add a new patch to remove deferred attach check from
->     __iommu_detach_domain() path. Make it a separate patch as the
->     prerequisite to remove __iommu_detach_device() helper.
->   - Rename set_platform_dma to set_platform_dma_ops to make it more
->     meaningful.
->
-> v3:
->   - https://lore.kernel.org/linux-iommu/20221128064648.1934720-1-baolu.lu@linux.intel.com/
->   - Setting blocking domain is not conceptually equal to detach_dev.
->     Dropped all blocking domain related staffs in the previous version.
->
-> v2:
->   - https://lore.kernel.org/linux-iommu/20220826123014.52709-1-baolu.lu@linux.intel.com/
->   - Replace .detach_dev callback with static block domain ops;
->   - Rename .attach_dev to .set_dev.
->
-> v1:
->   - https://lore.kernel.org/linux-iommu/20220516015759.2952771-1-baolu.lu@linux.intel.com/
->
-> Jason Gunthorpe (1):
->    iommu: Remove deferred attach check from __iommu_detach_device()
->
-> Lu Baolu (4):
->    iommu: Remove detach_dev callbacks
->    iommu: Add set_platform_dma_ops iommu ops
->    iommu: Add set_platform_dma_ops callbacks
->    iommu: Remove detach_dev callback
->
->   include/linux/iommu.h                   |  8 ++-
->   include/trace/events/iommu.h            |  7 --
->   drivers/iommu/amd/iommu.c               | 26 -------
->   drivers/iommu/apple-dart.c              | 24 -------
->   drivers/iommu/arm/arm-smmu/qcom_iommu.c | 23 ------
->   drivers/iommu/exynos-iommu.c            |  1 -
->   drivers/iommu/fsl_pamu_domain.c         |  6 +-
->   drivers/iommu/iommu-traces.c            |  1 -
->   drivers/iommu/iommu.c                   | 94 ++++++++++++-------------
->   drivers/iommu/ipmmu-vmsa.c              | 16 -----
->   drivers/iommu/msm_iommu.c               |  6 +-
->   drivers/iommu/mtk_iommu.c               |  9 ---
->   drivers/iommu/mtk_iommu_v1.c            |  4 +-
->   drivers/iommu/omap-iommu.c              |  6 +-
->   drivers/iommu/rockchip-iommu.c          |  1 -
->   drivers/iommu/s390-iommu.c              |  7 +-
->   drivers/iommu/sprd-iommu.c              | 16 -----
->   drivers/iommu/sun50i-iommu.c            |  1 -
->   drivers/iommu/tegra-gart.c              |  6 +-
->   drivers/iommu/tegra-smmu.c              |  5 +-
->   20 files changed, 69 insertions(+), 198 deletions(-)
->
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+Jason
