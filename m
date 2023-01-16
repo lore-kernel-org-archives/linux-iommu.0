@@ -1,311 +1,169 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2086.outbound.protection.outlook.com [40.107.212.86])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 738EE257A
-	for <iommu@lists.linux.dev>; Mon, 16 Jan 2023 15:20:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673882414; x=1705418414;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=wZnwl+4ZXkxlpeScXbixepPy3tirK3J1fow3PHbasI8=;
-  b=l8vSZPoHS/MOiJFOH34h9WnQbcCGKAyKF0AdPRf/yIfbbFuDoptr/T1E
-   M9QSfjP61uS2GoNZuk8G3COilbNFGCqZe1tZYWT2v4oZQ4oLwZv05/nU0
-   AO1eyVKWFLV6uqoKi4KR6g5KEC0XUx4jqO9neJGlvxU4qU/AVJKGkPXEE
-   WoA401zcOWVNrt54KijdRli89vn/fkvWubAPW//b4eWsA8UIumUFT3e0w
-   0g1GuiQJ/NIZY8Jwq3w4AGWR8dVCLN3oYDN2skvFeeQH5daOErhFbEtVk
-   LAqvhUO9kHfpj+ZNC0haR4pLU0d6gqSV/Pp0ra2WOr9Qe80BbpkneUEOC
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10592"; a="308037221"
-X-IronPort-AV: E=Sophos;i="5.97,221,1669104000"; 
-   d="scan'208";a="308037221"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2023 07:20:13 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10592"; a="608925433"
-X-IronPort-AV: E=Sophos;i="5.97,221,1669104000"; 
-   d="scan'208";a="608925433"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga003.jf.intel.com with ESMTP; 16 Jan 2023 07:20:13 -0800
-Received: from [10.209.63.19] (kliang2-mobl1.ccr.corp.intel.com [10.209.63.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by linux.intel.com (Postfix) with ESMTPS id 77546580223;
-	Mon, 16 Jan 2023 07:20:12 -0800 (PST)
-Message-ID: <c94c6e01-27a0-ab77-0f11-9d15361f8e13@linux.intel.com>
-Date: Mon, 16 Jan 2023 10:20:11 -0500
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6E8D29A8
+	for <iommu@lists.linux.dev>; Mon, 16 Jan 2023 15:42:47 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jTptGHOpus90+3ou3kvIJsLxMtqvrOl74q/ipTAdQosgc1JG2h9YsXGkcXPZpa8RP1YdaEvuuAIgKPse8G8qTeWcKNXY/vG/ASjnQqgHcqgoTCKnKdxtGRa0HBRopgc5k89Wk95NJBKU1C8T7xj+iLCPxfqGH7qppkEQX4gyJ7k0S96meRHqQyjvm5a3SHHo7F6NY4CkzXX5YtOQcPt2squ7gDLciMibGdMkug7V33aT4tdSwQVckGb06e8wKG61+sffZhj2YS/qU7ocbvjhm4XqYtryl36fQJb/Y5ZwfImoF/5zjkz3UHMJtHYpehz91E76rq+Ep46ZBg6G+8NHsA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7Pi7PQavYvowI+ojX1CZBqATdwmzD7vygis1tykgKis=;
+ b=MHHU3TEVaJSkmF91lWT0M49zdiTF2NHR+CqjLeftgfJyWW+mCX6Km0KioEuH9SrMsQOFW+EIbmB1yaTeIRRwBuFsLO4o309N6enabDDB5d33cW2h2pO6N50+kf3dtVGxg/dpY868Z5KsIZuvXhVG8BApDTKU51YZwVP/wM84rU5X7rvL5yudoZnCq998M3/r0lIYEi+HkS61MqW760wEogBss7PViDcsRiXgzoV8YXge6znvF1Vtx8fhm1EY6IjM4pVMy2PbgFp5t+S+RnYf45vBN87qgQBJ/edncSnZl7B11zFTVbdNZ2VbK97RPfY6kjsHwnX1xL7t5dD9vDwpdQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7Pi7PQavYvowI+ojX1CZBqATdwmzD7vygis1tykgKis=;
+ b=QjmUQqPD0aFT0EqnI0Zr45NgxOH+j0mcdO2KNj3rXcM1l4NX8xQTYA0MP0AGBCz9xxXrkKb/pncZ5BXjdLUoDay4fswEzM+6b1QNvDqM3JHzXAyjmzn2pAw4m8iTKK/T2vLV8JLFdTWkk/LeO5vbWbnfJ1L1Gls3SlQ9m/kEm6XyWJeX47daOkG8gNGk26rhMKyq3cff8ljCXslPpad+Jw8DlmTc/r9SKnuBHeu/0D1ntxBv5Zo4E9D9/RxZcgITkCwrZExPdrnd4qdjiT8SH2gOkOYV/rIQ75YTcz3GKDgDppkZeZiRbiO4moaXTfUp3URGhDSP9JphqjZ0e7lVbw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by CY5PR12MB6384.namprd12.prod.outlook.com (2603:10b6:930:3c::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.23; Mon, 16 Jan
+ 2023 15:42:45 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f8b0:df13:5f8d:12a%9]) with mapi id 15.20.6002.013; Mon, 16 Jan 2023
+ 15:42:45 +0000
+Date: Mon, 16 Jan 2023 11:42:43 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <jroedel@suse.de>,
+	Matt Fagnani <matt.fagnani@bell.net>,
+	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Vasant Hegde <vasant.hegde@amd.com>, Tony Zhu <tony.zhu@intel.com>,
+	linux-pci@vger.kernel.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/1] PCI: Add translated request only flag for
+ pci_enable_pasid()
+Message-ID: <Y8Vwc/bMwvtICv4T@nvidia.com>
+References: <20230114073420.759989-1-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230114073420.759989-1-baolu.lu@linux.intel.com>
+X-ClientProxiedBy: MN2PR18CA0011.namprd18.prod.outlook.com
+ (2603:10b6:208:23c::16) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH 6/7] iommu/vt-d: Add IOMMU perfmon overflow handler
- support
-Content-Language: en-US
-To: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org,
- dwmw2@infradead.org, robin.murphy@arm.com, robert.moore@intel.com,
- rafael.j.wysocki@intel.com, lenb@kernel.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20230111202504.378258-1-kan.liang@linux.intel.com>
- <20230111202504.378258-7-kan.liang@linux.intel.com>
- <a21db6ce-e0a4-797e-f023-0920dd4f795f@linux.intel.com>
-From: "Liang, Kan" <kan.liang@linux.intel.com>
-In-Reply-To: <a21db6ce-e0a4-797e-f023-0920dd4f795f@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CY5PR12MB6384:EE_
+X-MS-Office365-Filtering-Correlation-Id: 29f89b59-7386-49f4-a9be-08daf7d84faf
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	o1TrsPxPc0GpjFVyrlwoqwhzdSX5zq+TV375GR6J1WYkcZzOabHnSIR/Eqf63UP/boCIB48P4VT8OXIJ9FsTU3K6I6cLQ6CgWtXBJl7ojD2n5FFMKFVh8ealHaSWYmdNoK5etbvFJO++SlufFWDgWDNohPzTMqHBtU3W1QbAVnhSM6Q6tD3CQrNsKbwSPHTjAS5b7uD+2DDqZR3xOq+BfQIPKzs8zjNS31rNv6qLsHP287ys6bwe7WTrtbmzXwGaIkanLPGrrSmMIxGPtM0bGQ9T9SpEVaWPScWTZyBvBZQHeQCgWhO9b/rn7YKy9OPlZ3z2jSs623X69IUxbuUiPbwWk4g/nrRAPu+dwFTwSWw16ghD5fCvY+qcZPgVmlOb94xcSUO704m5D0S0hickc9XC+RBItODGB+Vdo1yRodZgZdT5Q0dMiFm1bXTgoFEzQwymVA83cZ008MMfZjVYSJarD83/WpLYAYuKGHgWJURLEKh6vxBtwQRWLseJzw9i6lSIlKSSXLSZOw3Lty3DJPKxU/gvNl7DnN2kkeNHrLCLw9JaF0TyY89OIeb2rWSvL+gRpmreQj9JhG8bQDX6a0EI49+sL+vQxNOAe2cVD0pcwc5i0TmjZmEVROZ5IKWsiJIN9efATyoh9dKzawP+w98ztDE3Pg9hulIisUiD1hTlZVNIuSyDesChIeSSnx46xDNZCd73T5YrEcukzKUy1x1FpXefRLgjaykwTuFs/P8cR3RhqCulvtDbTkjvIp1ckHatNMBy2BmYGGrqST9NsA==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(136003)(39860400002)(376002)(346002)(366004)(396003)(451199015)(2616005)(6916009)(66476007)(4326008)(26005)(8676002)(186003)(6512007)(66946007)(66556008)(478600001)(54906003)(41300700001)(66574015)(8936002)(7416002)(2906002)(5660300002)(83380400001)(316002)(6506007)(38100700002)(86362001)(966005)(6486002)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?QjFzWnRIMFhjU25LNERTN0hZSnpJQ3JoSzhtb0MwcW9uTFp6d1N6ZEdiT1Nj?=
+ =?utf-8?B?LzFRMEZzUlVzRjFxUlptYzRkTUxmclhMZUdCN0V3cDNQVVFXbi8vY2dKMjFE?=
+ =?utf-8?B?VHVOa0o1UUpxYmxsVlpuZnpCWFpQaTZ2SXdJN3NNdXlPZ2VET2JWc0JETzMr?=
+ =?utf-8?B?VWRKV09KRU9yelp0RVhIVXcwMjFHbDBHMjNDUlVkdFE3TS9DcHo2bjdmUlls?=
+ =?utf-8?B?Y3MvSis0bzB5ck80ZDFWSVhMaVZZamF1elFqeFRSOHllM2JHNWZuUm9jZ0tC?=
+ =?utf-8?B?clhiRlgvR2pOb0NJaU9jZlNaVnVaYWdTZTZCRmV5NjU1UXZIVUhQR0lTNUUv?=
+ =?utf-8?B?VUR5ZXNvYTM4cHdWSjJxSnAxcGdCSW5hK0V0dFY2bldZakt5RjlxRUtxVXVI?=
+ =?utf-8?B?NHJpVVAxZTF0dkoyblU3MjVvTVkreXpwYk9aYXJvakR5Q0U3QnhOYXZnQ0hs?=
+ =?utf-8?B?bkNVci8rcVl6ZzM2TC9nbmtaM0pTSWRIMlQwWEkzWkg3YUV3eTJzcnpsV1Vl?=
+ =?utf-8?B?MGh6VkQ0SnNCUnBhRVA0TGNpNlNpK29tTHRlV3k0T2ttMTZkRlg1WXZxNnAx?=
+ =?utf-8?B?KzVseHlvVWZXY0N2TUZoQS9xeUZMVDl6SVdjNUVLdWpvVnJXSHZyUk1BUVpH?=
+ =?utf-8?B?R0ZGSUNSZk01ZUNZQWVnVlUyQ3QrYmR5M25lbUg5NjJIN0NqVFIvR1ZyOVpL?=
+ =?utf-8?B?MjEwNCtwRllUR3VyeDZsbFQvbGlqUzJVQVVzMlhrV1IrVUdzdkFlRW1VeHFv?=
+ =?utf-8?B?aXVMdkdROW93cUV2NGtqOVVEMnRudmdKRUtCb0dPdGZVRWpJOC9WL2o0WjJv?=
+ =?utf-8?B?eE8yN2kyVkZkdm82Z3ozVk14ZEZ1U1hHUzc1MnFBT1p6QVRFZnRiWUloTmVE?=
+ =?utf-8?B?ZkRkeWgwWXRPd0JHYTZibzZzb0JnOVNIWFlia1ZFS0d3aGM3SXkwYkM3ZTdx?=
+ =?utf-8?B?bTFiSGJOd3FHM21paFpzeWZ2UXY5TEU3amptQXNsZUo5VGp4ZVVBY1dxajZE?=
+ =?utf-8?B?YlMwT0Y4bW9GOW81RjF3aHhhRFp1cGZ0b3ZNNFNUK0VIKzJ0VmZjWCsrMUkr?=
+ =?utf-8?B?U0RmRDlqTnkveFNXekFNNEV2REFGUnFLWWtHNFQ0eXE1akY2VVcyS1g2Wkpq?=
+ =?utf-8?B?Zm50R1l2QVZqWGRyUWRibmk0UjZUOTk5c0ZaOFR2YUFlNkg1TWJnWDAxSG9L?=
+ =?utf-8?B?MHpmdmdMVjdhRDhnVFU0ajRvWG9JYmUyVXpOQ0llbHY0MDIwNVF0RFFKT3B5?=
+ =?utf-8?B?OGdMTSs5VUk5VFpkaUhUcEx1VEVueHFYVUlYK2Voc3E0TE92K0hXVUlibncz?=
+ =?utf-8?B?bWlHbWp4bFh2QWdaZ0NPZEpMMm5LMFFWUXBzcG4xZkdjNGxpdUQ0cHV1M25z?=
+ =?utf-8?B?S3h6OUx1VGZjR0hEUEdaWFJndVdVZFJVdG55Z05DZ010TldQTXlxYW16S2Mz?=
+ =?utf-8?B?VEVhTWlocVdDRzZ4cEp2Wm9VcTM0OUp6WGtZanZsYi83TXFBYWovTEprTjJq?=
+ =?utf-8?B?VXhETjJ4Z0E1NjVtaG9oa3FSTVZaL3cxREpqU1VJa1d2eDZnZS9XczNlWjcw?=
+ =?utf-8?B?blBiWEM3WEwxNS9hTVE0UGV0UmJSL3NQNExBNVJvRlZGcTc2d1RKaXZrSUNH?=
+ =?utf-8?B?alhpdUdNckRJSENDdDVqQUFkRWNzdU5yYVJmMXc4cUlsVHBsemNoOGJWbkFU?=
+ =?utf-8?B?NlpjQXVlQWVhWFI1K2xkWmh0OGlla0tncHVScCtRb0hEL1FOQ1plZmZ1emZ4?=
+ =?utf-8?B?V0ZpN2R2bjJUa2RtYXlReWZ2UUZBR0I2T01VVFVKSGNTV1lRQ0JLeXJJUjZH?=
+ =?utf-8?B?U1RNWHU2RXJqZGVZdnpTVVhEMktmenFqSHU4dnZDVkg3VW5YNjcvWVV0aWJ6?=
+ =?utf-8?B?ekp4aHBGS0pHYnJIUnR2ZllxeGtYTFhMY0dSdFBmMGpkUlpVM0lENW5rcWJQ?=
+ =?utf-8?B?U05HR0hQdWl5YVlVYm10OFRSK3JZV1RzMnlEWmxaK0FPYTE1NmVUQTE2MG5U?=
+ =?utf-8?B?VUtqY1dVWkI4T0Jnam1XQkRWSi8raU91MGNZbkp2TW5URW1TNkJSQzV3VU54?=
+ =?utf-8?B?aHNxMzNqVDJXSTcxRzB5OFl2OWdmeDVoZ01pRjcrYVE5bHVQeVNCK0Q0cEpi?=
+ =?utf-8?Q?SPVTXtg2VlomA+wd2cjdEJ+mO?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 29f89b59-7386-49f4-a9be-08daf7d84faf
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jan 2023 15:42:44.9348
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: jLdi1pccP4JdR1SOkytM615vbKFoT+rzE72pRuygz6Wlba0uP1V/jVZxnuu9F7wl
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6384
 
+On Sat, Jan 14, 2023 at 03:34:20PM +0800, Lu Baolu wrote:
+> The PCIe fabric routes Memory Requests based on the TLP address, ignoring
+> the PASID. In order to ensure system integrity, commit 201007ef707a ("PCI:
+> Enable PASID only when ACS RR & UF enabled on upstream path") requires
+> some ACS features being supported on device's upstream path when enabling
+> PCI/PASID.
+> 
+> One alternative is ATS/PRI which lets the device resolve the PASID + addr
+> pair before a memory request is made into a routeable TLB address through
+> the translation agent. Those resolved addresses are then cached on the
+> device instead of in the IOMMU TLB and the device always sets translated
+> bit for PASID. One example of those devices are AMD graphic devices that
+> always have ACS or ATS/PRI enabled together with PASID.
+> 
+> This adds a flag parameter in the pci_enable_pasid() helper, with which
+> the device driver could opt-in the fact that device always sets the
+> translated bit for PASID.
+> 
+> It also applies this opt-in for AMD graphic devices. Without this change,
+> kernel boots to black screen on a system with below AMD graphic device:
+> 
+> 00:01.0 VGA compatible controller: Advanced Micro Devices, Inc.
+>         [AMD/ATI] Wani [Radeon R5/R6/R7 Graphics] (rev ca)
+>         (prog-if 00 [VGA controller])
+> 	DeviceName: ATI EG BROADWAY
+> 	Subsystem: Hewlett-Packard Company Device 8332
+> 
+> At present, it is a common practice to enable/disable PCI PASID in the
+> iommu drivers. Considering that the device driver knows more about the
+> specific device, we will follow up by moving pci_enable_pasid() into
+> the specific device drivers.
+> 
+> Fixes: 201007ef707a ("PCI: Enable PASID only when ACS RR & UF enabled on upstream path")
+> Reported-and-tested-by: Matt Fagnani <matt.fagnani@bell.net>
+> Link: https://bugzilla.kernel.org/show_bug.cgi?id=216865
+> Link: https://lore.kernel.org/r/15d0f9ff-2a56-b3e9-5b45-e6b23300ae3b@leemhuis.info/
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Suggested-by: Christian König <christian.koenig@amd.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  include/linux/pci-ats.h                     | 6 ++++--
+>  drivers/iommu/amd/iommu.c                   | 2 +-
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
+>  drivers/iommu/intel/iommu.c                 | 3 ++-
+>  drivers/pci/ats.c                           | 8 ++++++--
+>  5 files changed, 14 insertions(+), 7 deletions(-)
 
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-On 2023-01-14 6:05 a.m., Baolu Lu wrote:
-> On 2023/1/12 4:25, kan.liang@linux.intel.com wrote:
->> From: Kan Liang <kan.liang@linux.intel.com>
->>
->> While enabled to count events and an event occurrence causes the counter
->> value to increment and roll over to or past zero, this is termed a
->> counter overflow. The overflow can trigger an interrupt. The IOMMU
->> perfmon needs to handle the case properly.
->>
->> New HW IRQs are allocated for each IOMMU device for perfmon. The IRQ IDs
->> are after the SVM range.
->>
->> In the overflow handler, the counter is not frozen. It's very unlikely
->> that the same counter overflows again during the period. But it's
->> possible that other counters overflow at the same time. Read the
->> overflow register at the end of the handler and check whether there are
->> more.
->>
->> Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
->> ---
->>   drivers/iommu/intel/dmar.c    |  2 +
->>   drivers/iommu/intel/iommu.h   | 11 ++++-
->>   drivers/iommu/intel/perfmon.c | 82 +++++++++++++++++++++++++++++++++++
->>   drivers/iommu/intel/svm.c     |  2 +-
->>   4 files changed, 95 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
->> index dcafa32875c1..94e314320cd9 100644
->> --- a/drivers/iommu/intel/dmar.c
->> +++ b/drivers/iommu/intel/dmar.c
->> @@ -1887,6 +1887,8 @@ static inline int dmar_msi_reg(struct
->> intel_iommu *iommu, int irq)
->>           return DMAR_FECTL_REG;
->>       else if (iommu->pr_irq == irq)
->>           return DMAR_PECTL_REG;
->> +    else if (iommu->perf_irq == irq)
->> +        return DMAR_PERFINTRCTL_REG;
->>       else
->>           BUG();
->>   }
->> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
->> index bbc5dda903e9..f616e4f3d765 100644
->> --- a/drivers/iommu/intel/iommu.h
->> +++ b/drivers/iommu/intel/iommu.h
->> @@ -130,6 +130,8 @@
->>   #define DMAR_PERFCFGOFF_REG    0x310
->>   #define DMAR_PERFOVFOFF_REG    0x318
->>   #define DMAR_PERFCNTROFF_REG    0x31c
->> +#define DMAR_PERFINTRSTS_REG    0x324
->> +#define DMAR_PERFINTRCTL_REG    0x328
->>   #define DMAR_PERFEVNTCAP_REG    0x380
->>   #define DMAR_ECMD_REG        0x400
->>   #define DMAR_ECEO_REG        0x408
->> @@ -357,6 +359,9 @@
->>     #define DMA_VCS_PAS    ((u64)1)
->>   +/* PERFINTRSTS_REG */
->> +#define DMA_PERFINTRSTS_PIS    ((u32)1)
->> +
->>   #define IOMMU_WAIT_OP(iommu, offset, op, cond, sts)            \
->>   do {                                    \
->>       cycles_t start_time = get_cycles();                \
->> @@ -630,8 +635,12 @@ struct iommu_pmu {
->>       struct pmu        pmu;
->>       DECLARE_BITMAP(used_mask, IOMMU_PMU_IDX_MAX);
->>       struct perf_event    *event_list[IOMMU_PMU_IDX_MAX];
->> +    unsigned char        irq_name[16];
->>   };
->>   +#define IOMMU_IRQ_ID_OFFSET_PRQ        (DMAR_UNITS_SUPPORTED)
->> +#define IOMMU_IRQ_ID_OFFSET_PERF    (2 * DMAR_UNITS_SUPPORTED)
->> +
->>   struct intel_iommu {
->>       void __iomem    *reg; /* Pointer to hardware regs, virtual addr */
->>       u64         reg_phys; /* physical address of hw register set */
->> @@ -645,7 +654,7 @@ struct intel_iommu {
->>       int        seq_id;    /* sequence id of the iommu */
->>       int        agaw; /* agaw of this iommu */
->>       int        msagaw; /* max sagaw of this iommu */
->> -    unsigned int     irq, pr_irq;
->> +    unsigned int    irq, pr_irq, perf_irq;
->>       u16        segment;     /* PCI segment# */
->>       unsigned char     name[13];    /* Device Name */
->>   diff --git a/drivers/iommu/intel/perfmon.c
->> b/drivers/iommu/intel/perfmon.c
->> index f332232bb345..d0fbf784c827 100644
->> --- a/drivers/iommu/intel/perfmon.c
->> +++ b/drivers/iommu/intel/perfmon.c
->> @@ -476,6 +476,49 @@ static void iommu_pmu_disable(struct pmu *pmu)
->>       ecmd_submit_sync(iommu, DMA_ECMD_FREEZE, 0, false, 0);
->>   }
->>   +static void iommu_pmu_counter_overflow(struct iommu_pmu *iommu_pmu)
->> +{
->> +    struct perf_event *event;
->> +    int i, handled = 0;
->> +    u64 status;
->> +
->> +    /*
->> +     * Two counters may be overflowed very close.
->> +     * Always check whether there are more to handle.
->> +     */
-> 
-> Keep comment style consistent, like this
-> 
->         /*
->          * Two counters may be overflowed very close. Always check whether
->          * there are more to handle.
->          */
-> 
-> Same to other places.
-
-Sure.
-
-> 
->> +    while ((status = dmar_readq(iommu_pmu->overflow))) {
-> 
-> Unnecessary double brackets?
-> 
->> +        for_each_set_bit(i, (unsigned long *)&status,
->> iommu_pmu->num_cntr) {
->> +            handled++;
-> 
-> "handled" isn't used anywhere. Please cleanup it.
-> 
-
-Sure.
-
->> +
->> +            /*
->> +             * Find the assigned event of the counter.
->> +             * Accumulate the value into the event->count.
->> +             */
->> +            event = iommu_pmu->event_list[i];
->> +            if (WARN_ON_ONCE(!event))
-> 
-> Again, do we need a kernel trace here? This is only because the hardware
-> reported an wrong event id, right? How about a pr_warn() to let the user
-> know this?
-
-The hardware reported ID doesn't match the SW records. It's hard to say
-which one is correct. But I guess pr_warn_once() may be enough. I will
-change it in V2.
-
-Thanks,
-Kan
-
-> 
->> +                continue;
->> +            iommu_pmu_event_update(event);
->> +        }
->> +
->> +        dmar_writeq(iommu_pmu->overflow, status);
->> +    }
->> +}
->> +
->> +static irqreturn_t iommu_pmu_irq_handler(int irq, void *dev_id)
->> +{
->> +    struct intel_iommu *iommu = dev_id;
->> +
->> +    if (!dmar_readl(iommu->reg + DMAR_PERFINTRSTS_REG))
->> +        return IRQ_NONE;
->> +
->> +    iommu_pmu_counter_overflow(iommu->pmu);
->> +
->> +    /* Clear the status bit */
->> +    dmar_writel(iommu->reg + DMAR_PERFINTRSTS_REG, DMA_PERFINTRSTS_PIS);
->> +
->> +    return IRQ_HANDLED;
->> +}
->> +
->>   static int __iommu_pmu_register(struct intel_iommu *iommu)
->>   {
->>       struct iommu_pmu *iommu_pmu = iommu->pmu;
->> @@ -658,6 +701,38 @@ void free_iommu_pmu(struct intel_iommu *iommu)
->>       iommu->pmu = NULL;
->>   }
->>   +static int iommu_pmu_set_interrupt(struct intel_iommu *iommu)
->> +{
->> +    struct iommu_pmu *iommu_pmu = iommu->pmu;
->> +    int irq, ret;
->> +
->> +    irq = dmar_alloc_hwirq(IOMMU_IRQ_ID_OFFSET_PERF + iommu->seq_id,
->> iommu->node, iommu);
->> +    if (irq <= 0)
->> +        return -EINVAL;
->> +
->> +    snprintf(iommu_pmu->irq_name, sizeof(iommu_pmu->irq_name),
->> "dmar%d-perf", iommu->seq_id);
->> +
->> +    iommu->perf_irq = irq;
->> +    ret = request_threaded_irq(irq, NULL, iommu_pmu_irq_handler,
->> +                   IRQF_ONESHOT, iommu_pmu->irq_name, iommu);
->> +    if (ret) {
->> +        dmar_free_hwirq(irq);
->> +        iommu->perf_irq = 0;
->> +        return ret;
->> +    }
->> +    return 0;
->> +}
->> +
->> +static void iommu_pmu_unset_interrupt(struct intel_iommu *iommu)
->> +{
->> +    if (!iommu->perf_irq)
->> +        return;
->> +
->> +    free_irq(iommu->perf_irq, iommu);
->> +    dmar_free_hwirq(iommu->perf_irq);
->> +    iommu->perf_irq = 0;
->> +}
->> +
->>   static int iommu_pmu_cpu_online(unsigned int cpu)
->>   {
->>       if (cpumask_empty(&iommu_pmu_cpu_mask))
->> @@ -734,8 +809,14 @@ void iommu_pmu_register(struct intel_iommu *iommu)
->>       if (iommu_pmu_cpuhp_setup(iommu_pmu))
->>           goto unregister;
->>   +    /* Set interrupt for overflow */
->> +    if (iommu_pmu_set_interrupt(iommu))
->> +        goto cpuhp_free;
->> +
->>       return;
->>   +cpuhp_free:
->> +    iommu_pmu_cpuhp_free(iommu_pmu);
->>   unregister:
->>       perf_pmu_unregister(&iommu_pmu->pmu);
->>   err:
->> @@ -749,6 +830,7 @@ void iommu_pmu_unregister(struct intel_iommu *iommu)
->>       if (!iommu_pmu)
->>           return;
->>   +    iommu_pmu_unset_interrupt(iommu);
->>       iommu_pmu_cpuhp_free(iommu_pmu);
->>       perf_pmu_unregister(&iommu_pmu->pmu);
->>   }
->> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
->> index c76b66263467..b6c5edd80d5d 100644
->> --- a/drivers/iommu/intel/svm.c
->> +++ b/drivers/iommu/intel/svm.c
->> @@ -79,7 +79,7 @@ int intel_svm_enable_prq(struct intel_iommu *iommu)
->>       }
->>       iommu->prq = page_address(pages);
->>   -    irq = dmar_alloc_hwirq(DMAR_UNITS_SUPPORTED + iommu->seq_id,
->> iommu->node, iommu);
->> +    irq = dmar_alloc_hwirq(IOMMU_IRQ_ID_OFFSET_PRQ + iommu->seq_id,
->> iommu->node, iommu);
->>       if (irq <= 0) {
->>           pr_err("IOMMU: %s: Failed to create IRQ vector for page
->> request queue\n",
->>                  iommu->name);
-> 
-> -- 
-> Best regards,
-> baolu
+Jason
