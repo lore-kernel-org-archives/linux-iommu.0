@@ -1,33 +1,33 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C255A1FB2
-	for <iommu@lists.linux.dev>; Tue, 17 Jan 2023 08:12:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86D311FC2
+	for <iommu@lists.linux.dev>; Tue, 17 Jan 2023 08:36:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673943157; x=1705479157;
+  t=1673944567; x=1705480567;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=4cVsvcHZOuTyOZVcrN6WYDuJRfsdenPtfqYqTQoPctA=;
-  b=K9QmwRtdLVSrnlLNGezuk0opEUkN8cRNqdx24sn8ozs8L9IY5J0e+0rN
-   PStSyEJ7txbVgQPE8vQVzWS/LeMLxCIvG1NWXCmgCOxOv9t0BTPqJ4HdZ
-   5cqXocc/oQBoAwprWBy45ZUB1zb++WVQzrIMNlWXX1gKunrZw/iPED3Dj
-   5+tEC4Z/wp/2Y29iTLkL0YKhkJoC+lCxM6giG65I6SMjSZlwrJBZ1rtcY
-   7L+1S5Y7hyGT8aTt8PPbn/gD5t5I2+nJa5LCI+5k7TlnLtrCgPJu7Oxis
-   dv24UTqtMJ2pB5fe6m+qriQLEoP/KoQgQtvMPv9WivDDhuN+/9GpCMB5t
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10592"; a="389138230"
+  bh=+/sep6cg202vL4sr/HrqlldWJYwNCPz0Civ/zJRrPiM=;
+  b=kC944rsttNMM+kTKzgf2E/C+rzjwxmZRrkJVXgzZ3EiDmtz6Rw40MWbC
+   5UEHD4aWdxRx1XjE2T0TxTgPNmZW4mgstfaKJ1TiE2tqdQoXQV/I1Vruw
+   OmJougsFpSQY1CGfNOek7e8WxJ/dko6ceEu1BDK7Sr1lJ94Ero8exXZ4i
+   N1kZQ9oiW6Svwt2hLBk7ruV4FdOWgbeMKQLoEKaP0XZbWofYBFkIQhD6i
+   ls74gTBUo3uw+C9XyVghHutEPDYX2MkNJnMtn5xg2bq+lUwBJruN2OwX7
+   FmOWdhSb7y5Mt/72NB/NfMjejUuvzSKs3mZKm7E6h1hTW2HRqvRsygxyo
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10592"; a="324696296"
 X-IronPort-AV: E=Sophos;i="5.97,222,1669104000"; 
-   d="scan'208";a="389138230"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2023 00:12:21 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10592"; a="801653024"
+   d="scan'208";a="324696296"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2023 00:36:06 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10592"; a="783168240"
 X-IronPort-AV: E=Sophos;i="5.97,222,1669104000"; 
-   d="scan'208";a="801653024"
+   d="scan'208";a="783168240"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.187.178]) ([10.252.187.178])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2023 00:12:18 -0800
-Message-ID: <214ee67e-19f5-265f-63be-f8a6108d25d1@linux.intel.com>
-Date: Tue, 17 Jan 2023 16:12:16 +0800
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2023 00:35:59 -0800
+Message-ID: <c742969d-d692-1580-d22c-0f8f3d897201@linux.intel.com>
+Date: Tue, 17 Jan 2023 16:35:56 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,68 +36,62 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Cc: baolu.lu@linux.intel.com
-Subject: Re: [PATCH 4/7] iommu/vt-d: Add IOMMU perfmon support
-To: "Liang, Kan" <kan.liang@linux.intel.com>, joro@8bytes.org,
- will@kernel.org, dwmw2@infradead.org, robin.murphy@arm.com,
- robert.moore@intel.com, rafael.j.wysocki@intel.com, lenb@kernel.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20230111202504.378258-1-kan.liang@linux.intel.com>
- <20230111202504.378258-5-kan.liang@linux.intel.com>
- <05624df9-bea1-5e95-55d6-02ac2d93c68c@linux.intel.com>
- <dd68ac33-f418-cc1a-9ce7-3cdc97282771@linux.intel.com>
+Cc: baolu.lu@linux.intel.com, Alex Williamson <alex.williamson@redhat.com>,
+ "ath10k@lists.infradead.org" <ath10k@lists.infradead.org>,
+ "ath11k@lists.infradead.org" <ath11k@lists.infradead.org>,
+ Christian Borntraeger <borntraeger@linux.ibm.com>,
+ "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>,
+ "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+ "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+ "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+ "linux-remoteproc@vger.kernel.org" <linux-remoteproc@vger.kernel.org>,
+ "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+ "linux-stm32@st-md-mailman.stormreply.com"
+ <linux-stm32@st-md-mailman.stormreply.com>,
+ "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+ "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "nouveau@lists.freedesktop.org" <nouveau@lists.freedesktop.org>,
+ Niklas Schnelle <schnelle@linux.ibm.com>,
+ "virtualization@lists.linux-foundation.org"
+ <virtualization@lists.linux-foundation.org>
+Subject: Re: [PATCH 7/8] iommu/intel: Support the gfp argument to the
+ map_pages op
 Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Joerg Roedel <joro@8bytes.org>, Matthew Rosato <mjrosato@linux.ibm.com>,
+ Robin Murphy <robin.murphy@arm.com>
+References: <0-v1-6e8b3997c46d+89e-iommu_map_gfp_jgg@nvidia.com>
+ <7-v1-6e8b3997c46d+89e-iommu_map_gfp_jgg@nvidia.com>
+ <BN9PR11MB52765EE38CA21BA27EEA06548CC69@BN9PR11MB5276.namprd11.prod.outlook.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <dd68ac33-f418-cc1a-9ce7-3cdc97282771@linux.intel.com>
+In-Reply-To: <BN9PR11MB52765EE38CA21BA27EEA06548CC69@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 2023/1/16 23:12, Liang, Kan wrote:
->>> +static void iommu_pmu_start(struct perf_event *event, int flags)
->>> +{
->>> +    struct iommu_pmu *iommu_pmu = iommu_event_to_pmu(event);
->>> +    struct intel_iommu *iommu = iommu_pmu->iommu;
->>> +    struct hw_perf_event *hwc = &event->hw;
->>> +    u64 count;
->>> +
->>> +    if (WARN_ON_ONCE(!(hwc->state & PERF_HES_STOPPED)))
->>> +        return;
->>> +
->>> +    if (WARN_ON_ONCE(hwc->idx < 0 || hwc->idx >= IOMMU_PMU_IDX_MAX))
->>> +        return;
->>> +
->>> +    if (flags & PERF_EF_RELOAD)
->>> +        WARN_ON_ONCE(!(event->hw.state & PERF_HES_UPTODATE));
->>> +
->>> +    hwc->state = 0;
->>> +
->>> +    /* Always reprogram the period */
->>> +    count = dmar_readq(iommu_event_base(iommu_pmu, hwc->idx));
->>> +    local64_set((&hwc->prev_count), count);
->>> +
->>> +    ecmd_submit_sync(iommu, DMA_ECMD_ENABLE, hwc->idx, false, 0);
->> What happens when emcmd_submit_sync() returns an error? How should we
->> handle this case? The same queestion to other places in this patch.
+On 2023/1/17 11:38, Tian, Kevin wrote:
+>> From: Jason Gunthorpe<jgg@nvidia.com>
+>> Sent: Saturday, January 7, 2023 12:43 AM
 >>
-> The existing perf_event subsystem doesn't handle the error, because
-> other PMUs never trigger such errors. Perf usually check all the PMU
-> counters once at the beginning when registering/initializing them.
-> 
-> For IOMMU PMU, the error will be ignored. I think it should be OK. Because
-> - It's a corner case, which is very unlikely to happen.
-> - The worst case is that the user will get <not count> with perf
-> command, which can the user some hints.
-> 
-> If it's not good enough, I think we can add a WARN_ON_ONCE() here and
-> everywhere for ecmd to dump the error in the dmesg.
-> 
-> What do you think?
+>> @@ -2368,7 +2372,7 @@ static int iommu_domain_identity_map(struct
+>> dmar_domain *domain,
+>>
+>>   	return __domain_mapping(domain, first_vpfn,
+>>   				first_vpfn, last_vpfn - first_vpfn + 1,
+>> -				DMA_PTE_READ|DMA_PTE_WRITE);
+>> +				DMA_PTE_READ|DMA_PTE_WRITE,
+>> GFP_KERNEL);
+>>   }
+> Baolu, can you help confirm whether switching from GFP_ATOMIC to
+> GFP_KERNEL is OK in this path? it looks fine to me in a quick glance
+> but want to be conservative here.
 
-No need for a WARN() here. If the hardware is stuck, there should be
-warnings everywhere.
+This is also good for me. The memory notifier callback runs in a process
+context and allowed to block.
 
-It's fine to me if you add above comments around the code.
-
---
 Best regards,
 baolu
