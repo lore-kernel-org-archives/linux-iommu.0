@@ -1,113 +1,134 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 106A21FC2
-	for <iommu@lists.linux.dev>; Tue, 17 Jan 2023 08:49:44 +0000 (UTC)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30H7jBg2002153;
-	Tue, 17 Jan 2023 08:49:29 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=H906UnaT+mKc1vvKmTCCEcWqGmxotatY633LkzBqxYU=;
- b=A6BVq7HNMg+oOk9phju+5wb8NvQ5nhXgUGV4aDzrytllvMMkF1QwAASO805mzs95eZ2n
- nFKcix/B9tP3yq5RutbLwr2yS0Abm57uKLmBtWu1LQCnzO68gBvKuRAubGf/f3lwbm/t
- d7yQv+5f0SONkcFHHSaAcX07ZpD4eOvZsvKy1FKh8tdh0yhzrWgHCxFAGAnbCx2hVThN
- Rond9aWSHw3YaiM/1OecQ05uP252qJXP3SYTDx0h1dBaObZJqgSUfIb/xpcCfRKWX9Px
- JCMj5JyJGhH44nebnIBpCrl3064gZ9Rc08Ewv1HQn0ismQJBIsB7Inz4PAelp10g6+mT Qw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3n5hky0gqv-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 17 Jan 2023 08:49:29 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 30H8ftP6001523;
-	Tue, 17 Jan 2023 08:49:28 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-	by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3n5hky0gq2-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 17 Jan 2023 08:49:28 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-	by ppma05fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 30GGKqhH025576;
-	Tue, 17 Jan 2023 08:49:26 GMT
-Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
-	by ppma05fra.de.ibm.com (PPS) with ESMTPS id 3n3m16ajt5-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 17 Jan 2023 08:49:26 +0000
-Received: from smtpav06.fra02v.mail.ibm.com (smtpav06.fra02v.mail.ibm.com [10.20.54.105])
-	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 30H8nMXa14222046
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 17 Jan 2023 08:49:22 GMT
-Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id CAED920049;
-	Tue, 17 Jan 2023 08:49:22 +0000 (GMT)
-Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 33E1620040;
-	Tue, 17 Jan 2023 08:49:22 +0000 (GMT)
-Received: from [9.155.211.163] (unknown [9.155.211.163])
-	by smtpav06.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Tue, 17 Jan 2023 08:49:22 +0000 (GMT)
-Message-ID: <0bd438b3afa979b9f4d4d1e9c76451a93e7ef7eb.camel@linux.ibm.com>
-Subject: Re: [PATCH 8/8] iommu/s390: Push the gfp parameter to the
- kmem_cache_alloc()'s
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Jason Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-        Matthew
- Rosato <mjrosato@linux.ibm.com>,
-        Robin Murphy <robin.murphy@arm.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>, ath10k@lists.infradead.org,
-        ath11k@lists.infradead.org,
-        Christian
- Borntraeger <borntraeger@linux.ibm.com>,
-        dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
-        kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-tegra@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, nouveau@lists.freedesktop.org,
-        virtualization@lists.linux-foundation.org
-Date: Tue, 17 Jan 2023 09:49:22 +0100
-In-Reply-To: <8-v1-6e8b3997c46d+89e-iommu_map_gfp_jgg@nvidia.com>
-References: <8-v1-6e8b3997c46d+89e-iommu_map_gfp_jgg@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5532823A8
+	for <iommu@lists.linux.dev>; Tue, 17 Jan 2023 10:44:19 +0000 (UTC)
+Received: by mail-wr1-f54.google.com with SMTP id r2so30113724wrv.7
+        for <iommu@lists.linux.dev>; Tue, 17 Jan 2023 02:44:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=rDFJAyxdwlXAceDq2HEyYot6ddhmeIhv2ZNqpa+nXCY=;
+        b=mejaY73R9K8EQWWiawJO1bS1S6I4yHsgrohDuS2fhH8cueOsSYZi42eZLXw2ZhqfBj
+         VIdfM3A2WiHmJi7wglW2fcZkPTPCRHfzFakebE0hzRReQV2L7HsuxA2i34ae1WWZMxEj
+         EGS2JQ+ZG+kG2WmARA0PqObGq5tHf7RJAHgYOF2Vbsd95qaBGg6YCWwCGWiaLPq3+q/a
+         QJyxBskSEfe06Z1XJm87x5j8m4UP5stOlFmg0xJ/j5aa1rttQdPDMY90q3XVVu0k7kKi
+         gYwlkW123cPMsiJAJFT6JbsNlUip9QDE9CrBkKfQwt5TTVbCKBSgTa7kvMIijQLLb+Hw
+         RlYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=rDFJAyxdwlXAceDq2HEyYot6ddhmeIhv2ZNqpa+nXCY=;
+        b=lCChjT3mic9Np4x1vKb6jb3LfA2xtge2O3/boKh7qpuxUBJDuy1gZBEZwGizJ1GEFh
+         NvFnGOu73IO+DzFVghsIWCgMzRlmj3cOK1SSHNsZYAYHd7HqfWCzHcNaxRmvPBu0vb+u
+         w6ewDgmtq2+ynyXDMUThqd1ceUmEMUb3UeLGO6cKj8Qo2LvAQ9ByyScOL3OQZW28zxIR
+         0+DuuozhZ94xkJYoVVFKo/KBrbR9Xn+L9QeG96BkCqBe8AKXJL+/WgzTyzZNu6Q2DlXC
+         KTKAkK6yg1iPOc7nBIBe54xLnkwYPrpsGGVeL6vRDNdQ1yqK4BmiyAqbZOxHp2z9gi2Q
+         5SYw==
+X-Gm-Message-State: AFqh2kprQPDstcaFIoHD9C7z3gavdW4S5kkpS5mZk7lBrzjP/LfTeSBr
+	PCoc6+FzFBuLoOBAyIFs1blmdg==
+X-Google-Smtp-Source: AMrXdXtZBBAJRszEFQuiAI8oVhKjjwBpWztQ8LR+hAfpx5+gygc/xT1aXjwWWGgP9vgzwbJyvxRKDQ==
+X-Received: by 2002:adf:fa4e:0:b0:2bd:d415:39c with SMTP id y14-20020adffa4e000000b002bdd415039cmr12015109wrr.4.1673952257509;
+        Tue, 17 Jan 2023 02:44:17 -0800 (PST)
+Received: from [192.168.1.109] ([178.197.216.144])
+        by smtp.gmail.com with ESMTPSA id o17-20020a5d4091000000b0028965dc7c6bsm28121074wrp.73.2023.01.17.02.44.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 Jan 2023 02:44:17 -0800 (PST)
+Message-ID: <3c7e9a5f-24e3-3486-11f8-556428947423@linaro.org>
+Date: Tue, 17 Jan 2023 11:44:14 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: MKx4-ANHPJUrZonOgwaEaY-EVKsDWzHU
-X-Proofpoint-GUID: SbFxmq8QKSSdWBsgb5noBKiad8Yo5FPz
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.923,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-01-17_04,2023-01-13_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501 mlxscore=0
- phishscore=0 malwarescore=0 lowpriorityscore=0 mlxlogscore=713 bulkscore=0
- spamscore=0 impostorscore=0 clxscore=1011 suspectscore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2212070000
- definitions=main-2301170071
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH 01/10] dt-bindings: media: mediatek,vcodec: Remove
+ dma-ranges property
+Content-Language: en-US
+To: =?UTF-8?B?WW9uZyBXdSAo5ZC05YuHKQ==?= <Yong.Wu@mediatek.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
+ =?UTF-8?B?WW91bGluIFBlaSAo6KO05Y+L5p6XKQ==?= <youlin.pei@mediatek.com>,
+ =?UTF-8?B?VGlmZmFueSBMaW4gKOael+aFp+ePiik=?= <tiffany.lin@mediatek.com>,
+ "robh+dt@kernel.org" <robh+dt@kernel.org>,
+ "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ =?UTF-8?B?QW5hbiBTdW4gKOWtmeWuieWuiSk=?= <Anan.Sun@mediatek.com>,
+ =?UTF-8?B?TGlibyBLYW5nICjlurfliKnms6Ip?= <Libo.Kang@mediatek.com>,
+ "kyrie.wu@mediatek.corp-partner.google.com"
+ <kyrie.wu@mediatek.corp-partner.google.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "hverkuil@xs4all.nl" <hverkuil@xs4all.nl>,
+ =?UTF-8?B?Q2hlbmdjaSBYdSAo6K645om/6LWQKQ==?= <Chengci.Xu@mediatek.com>,
+ "mchehab@kernel.org" <mchehab@kernel.org>, "joro@8bytes.org"
+ <joro@8bytes.org>, =?UTF-8?B?WXVuZmVpIERvbmcgKOiRo+S6kemjnik=?=
+ <Yunfei.Dong@mediatek.com>, =?UTF-8?B?WUYgV2FuZyAo546L5LqR6aOeKQ==?=
+ <YF.Wang@mediatek.com>, "nfraprado@collabora.com" <nfraprado@collabora.com>,
+ "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>,
+ "krzysztof.kozlowski+dt@linaro.org" <krzysztof.kozlowski+dt@linaro.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+ =?UTF-8?B?TWluZ3l1YW4gTWEgKOmprOm4o+i/nCk=?= <Mingyuan.Ma@mediatek.com>,
+ =?UTF-8?B?QW5kcmV3LUNUIENoZW4gKOmZs+aZuui/qik=?=
+ <Andrew-CT.Chen@mediatek.com>,
+ "angelogioacchino.delregno@collabora.com"
+ <angelogioacchino.delregno@collabora.com>, "will@kernel.org"
+ <will@kernel.org>
+References: <20230113060133.9394-1-yong.wu@mediatek.com>
+ <20230113060133.9394-2-yong.wu@mediatek.com>
+ <07ecf7cf-4a68-0f80-0452-3737b7d7922d@linaro.org>
+ <796e7fb8619d114c63580e5c4289c59a57449843.camel@mediatek.com>
+ <2e2a0c70-86d2-7ba1-c87c-aaaa9dd460b5@linaro.org>
+ <3da13600844b8a6c3b788bdb26faa537d0287173.camel@mediatek.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <3da13600844b8a6c3b788bdb26faa537d0287173.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Fri, 2023-01-06 at 12:42 -0400, Jason Gunthorpe wrote:
-> dma_alloc_cpu_table() and dma_alloc_page_table() are eventually called by
-> iommufd through s390_iommu_map_pages() and it should not be forced to
-> atomic. Thread the gfp parameter through the call chain starting from
-> s390_iommu_map_pages().
->=20
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  arch/s390/include/asm/pci_dma.h |  5 +++--
->  arch/s390/pci/pci_dma.c         | 31 +++++++++++++++++--------------
->  drivers/iommu/s390-iommu.c      | 15 +++++++++------
->  3 files changed, 29 insertions(+), 22 deletions(-)
->=20
----8<---
-> =20
+On 16/01/2023 10:16, Yong Wu (吴勇) wrote:
+>>>>>
+>>>>> Cc: Tiffany Lin <tiffany.lin@mediatek.com>
+>>>>> Cc: Andrew-CT Chen <andrew-ct.chen@mediatek.com>
+>>>>> Cc: Yunfei Dong <yunfei.dong@mediatek.com>
+>>>>> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+>>>>> Cc: Rob Herring <robh+dt@kernel.org>
+>>>>> Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+>>>>
+>>>> There is little point in storing output of get_maintainers.pl
+>>>> forever
+>>>> in
+>>>> the git log. If you need it for some reason, please keep it after
+>>>> -
+>>>> --.
+>>>
+>>> I did get the list from get_maintainers.pl. Sorry that I didn't
+>>> differentiate.
+>>
+>> Getting the list from get_maintainers.pl is correct but storing it
+>> forever in git log is really unnecessary. It's not useful. It's just
+>> automated output, reproducible at any given time.
+> 
+> This patchset crosses several domains. This patch is about vcodec, the
+> next one is about jpeg and the later ones are about iommu.
+> The reviewers may be different, thus I use "Cc:" here. is this OK in
+> this case? 
 
-Looks good to me and I have no objections.
+I guess we do not talk about the same thing. It does not matter that
+reviewers are different. They are all different. Please show me the
+direct benefit of storing automated output from a tool in Git log.
 
-Reviewed-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> or I should remove this, and put all of them in the cc list
+> of the mail.
+
+I gave you the instruction at beginning, some mails ago...
+
+Best regards,
+Krzysztof
 
