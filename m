@@ -1,105 +1,73 @@
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com [209.85.219.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1641323DF
-	for <iommu@lists.linux.dev>; Tue, 17 Jan 2023 12:45:54 +0000 (UTC)
-Received: by mail-yb1-f179.google.com with SMTP id d62so17666132ybh.8
-        for <iommu@lists.linux.dev>; Tue, 17 Jan 2023 04:45:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=vxknlLDnsxojLcmQ59vK0ZLgoKiVLvxFkDDOG8faM4Q=;
-        b=uqcNVH96+N3QhwEoMwCX0XF8bNjcpWqYdeKTdHchHyJ1W9LW/wuK5nUhmLsPUlqcjz
-         7kV/qMP8k1vWUT7gagwrWaw7KqPt9kl/O1+irrBaSgnivLTfRy1btFgNHs0Gl7SiH9ji
-         A532CpWpeNHRHouB4wkT/dQOWzRCmCVnPNfD0yz9tD2N5LAH6g28XDE2L5EmjbPp6huX
-         HmiS0kgY0TYGihNMa3JOOZNERhi1bTob47MaH4+Nrpum65ConMPIFPErUsUSkUeMwqmm
-         3hVtI2/l7sxxTNcHAoq5MxayhbFf0SXOt3b2IzUI8MGo0MOoUV//HbK6Oam84fX+IabD
-         kN8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=vxknlLDnsxojLcmQ59vK0ZLgoKiVLvxFkDDOG8faM4Q=;
-        b=07s4y7hAkfT+g/GDXs0OVCC/eGB+mJN3fKAiWw9TQGCiA93I1k5KJHdjzFm+xSXq++
-         H/xd213vndQnS/jRQqrlzC8HVajD6OjfB74lZ7Pi3h1CzFIP4AYlbciGVoPQ2BKNfNFp
-         Sl0YZiSf41qReWNOtPzNxOpCIguqbjCJmo8/AVoEXK448ln+P4ua/4suqFmCZw89QRWK
-         wtge4XjF8oj3m8Yemir/BM4llZRrYcpiP83YGEJEZ8db2HDhj/oK0oIcvSRqnZKORtT4
-         3XxcZhmVVKK3OFMva2jeVC6K7PQrBMriLkWJ5GmgWZhLNybgWQgGt4d2LGxkmUJgstuV
-         7UMQ==
-X-Gm-Message-State: AFqh2kqIrWwtkTxIjzoesOJcKCaAnFhJMGOmIIj4wmMvLhzD3iEVhk6b
-	uaRWsvuGStTMWFHM/k9E5ZWpm3cOO2HdSnQ/hsaCVg==
-X-Google-Smtp-Source: AMrXdXuPODb5km1vVWLEOajbQIs4XSX8t9jdXpVQTtsxlKrB6VmMItgiux+DXoc2jwTxQ8qklnWstNG6QM+ZlY6ut2o=
-X-Received: by 2002:a25:ca81:0:b0:7d2:891e:ee59 with SMTP id
- a123-20020a25ca81000000b007d2891eee59mr439542ybg.152.1673959553051; Tue, 17
- Jan 2023 04:45:53 -0800 (PST)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E03E8256A
+	for <iommu@lists.linux.dev>; Tue, 17 Jan 2023 12:51:12 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F0875C14;
+	Tue, 17 Jan 2023 04:51:53 -0800 (PST)
+Received: from [10.57.75.222] (unknown [10.57.75.222])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8D9763F67D;
+	Tue, 17 Jan 2023 04:51:10 -0800 (PST)
+Message-ID: <b366355b-1f63-ee5d-28d7-9269cb699d0e@arm.com>
+Date: Tue, 17 Jan 2023 12:51:03 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230109174511.1740856-1-brgl@bgdev.pl> <20230109174511.1740856-3-brgl@bgdev.pl>
- <bbd21894-234e-542e-80ec-8f2bb11e268e@linaro.org> <843eed4b-552a-a529-83ed-b813c1346c5f@linaro.org>
- <CAMRc=MfTynAACwy+hB+FxOQ=-gA+307viz7LCUk8zmn4H7BaOQ@mail.gmail.com>
-In-Reply-To: <CAMRc=MfTynAACwy+hB+FxOQ=-gA+307viz7LCUk8zmn4H7BaOQ@mail.gmail.com>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Tue, 17 Jan 2023 14:45:42 +0200
-Message-ID: <CAA8EJpp=w=PurE8GYBOPWmz5GnuXPo8Wyd=Xho0M_yNRciG+0w@mail.gmail.com>
-Subject: Re: [PATCH 02/18] clk: qcom: add the GCC driver for sa8775p
-To: Bartosz Golaszewski <brgl@bgdev.pl>
-Cc: Konrad Dybcio <konrad.dybcio@linaro.org>, Andy Gross <agross@kernel.org>, 
-	Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh+dt@kernel.org>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
-	Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, 
-	Georgi Djakov <djakov@kernel.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, Manivannan Sadhasivam <mani@kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>, 
-	Linus Walleij <linus.walleij@linaro.org>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Richard Cochran <richardcochran@gmail.com>, 
-	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Vinod Koul <vkoul@kernel.org>, 
-	Alex Elder <elder@kernel.org>, linux-arm-msm@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-clk@vger.kernel.org, linux-pm@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
-	linux-gpio@vger.kernel.org, netdev@vger.kernel.org, 
-	Shazad Hussain <quic_shazhuss@quicinc.com>, 
-	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH 3/4] iommu: Introduce IOMMU call-back for processing
+ struct KVM assigned to VFIO
+Content-Language: en-GB
+To: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Cc: joro@8bytes.org, ashish.kalra@amd.com, thomas.lendacky@amd.com,
+ vasant.hegde@amd.com, jon.grimm@amd.com
+References: <20230110143137.54517-1-suravee.suthikulpanit@amd.com>
+ <20230110143137.54517-4-suravee.suthikulpanit@amd.com>
+ <e4d5db37-a7b9-9b33-4ecf-c168b6d41a9a@arm.com>
+ <04dc1bc9-05ed-f6ed-f01f-7d28600fc0ce@amd.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <04dc1bc9-05ed-f6ed-f01f-7d28600fc0ce@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, 17 Jan 2023 at 14:44, Bartosz Golaszewski <brgl@bgdev.pl> wrote:
->
-> On Mon, Jan 9, 2023 at 10:06 PM Dmitry Baryshkov
-> <dmitry.baryshkov@linaro.org> wrote:
-> >
-> > On 09/01/2023 19:58, Konrad Dybcio wrote:
-> > >
-> > >
-> > > On 9.01.2023 18:44, Bartosz Golaszewski wrote:
-> > >> From: Shazad Hussain <quic_shazhuss@quicinc.com>
-> > >>
-> > >> Add support for the Global Clock Controller found in the QTI SA8775P
-> > >> platforms.
-> > >>
-> > >> Signed-off-by: Shazad Hussain <quic_shazhuss@quicinc.com>
-> > >> [Bartosz: made the driver ready for upstream]
-> > >> Co-developed-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> > >> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> > >> ---
-> > > [...]
-> > >
-> >
-> > As the driver didn't get to the list, I'll comment OOB.
-> >
-> > Please use clk_regmap_phy_mux_ops where applicable (PCIe PIPE clocks).
-> >
->
-> Looks like it's impossible for this platform as the PCIe PIPE clocks
-> have two parents.
+On 2023-01-17 04:20, Suthikulpanit, Suravee wrote:
+> Hi Robin,
+> 
+> On 1/10/2023 10:11 PM, Robin Murphy wrote:
+>> On 2023-01-10 14:31, Suravee Suthikulpanit wrote:
+>>> Currently, VFIO provide an kvm_vfio_file_set_kvm() interface for 
+>>> assigning
+>>> a KVM structure to a VFIO group. The information in struct KVM is also
+>>> useful for IOMMU drivers when setting up VFIO domain.
+>>>
+>>> Introduce struct iommu_domain_ops.set_kvm call-back function to allow
+>>> IOMMU drivers to provide call-back to process the struct KVM assigned.
+>>
+>> Hmm, it sounds like this has quite some overlap of intent with the 
+>> existing "enable_nesting" op, and my gut feeling is that it's not 
+>> great to have two completely different "this is a VFIO domain" 
+>> mechanisms... :/
+>>
+>> Robin.
+> 
+> Actually, the intention is to communicate KVM information, which is 
+> already available to the VFIO down to the AMD IOMMU driver layer. I am 
+> not sure if the enable_nesting() has enough information or the same 
+> intention since that only communicates VFIO domain information.
 
-That's the point, please check the history of other platforms. XO
-becomes the 'off' state rather than being a separate parent.
+Sure, but from the high level view, we have on the one hand an API for 
+"I want to use this domain in a VM (with nested paging)" and on other an 
+API for "I want to use nested paging in this domain (for a VM)", so 
+clearly it would be most sensible to converge on a single API for what 
+is ultimately one single overarching use-case.
 
--- 
-With best wishes
-Dmitry
+I'm not claiming that the existing enable_nesting op is anywhere near 
+the right design either; in fact I'm pretty sure it isn't, if the Arm 
+SMMU drivers ever want to contemplate sharing stage 2 pagetables with 
+KVM also.
+
+Cheers,
+Robin.
