@@ -1,141 +1,208 @@
-Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AF412906
-	for <iommu@lists.linux.dev>; Tue, 17 Jan 2023 14:19:52 +0000 (UTC)
-Received: by mail-qt1-f172.google.com with SMTP id a25so20068882qto.10
-        for <iommu@lists.linux.dev>; Tue, 17 Jan 2023 06:19:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=IS/YCAtDJfZYt4KhjJik/M0wgHMLxEYwy3qImzZ7s5o=;
-        b=jt487WYlTBPy7KS7BW5/Xw7TwxhYvHsVXi9wgFVHv7nUupnlFGxUHww65F9PHNZSTK
-         IiMziOlEHGUQKA+X/uwE/IGU9swVNLan25OD75e6aqVujD9SNYawp1ZVA/8C0nYksTKK
-         2ITcoyjeBVbiZF5XTYLzhEJ+PcZSg0ViSwmLzlfpAk7AsBv9UBQNHAK1gBb9XLsJoce5
-         Sxc0oTiD8MpbpUKbOcG/QIFEbMWZKFCKCAUdDlk4ccpmmvjKdZPB/cl0o6SAzW5KZfBg
-         DFaL3TNnHsQ/FiJLRbfySLJ1+pRE8sH3yIFCcg0+K7tBlETWLSOFmkaLrzRliOE7Da9p
-         Smbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=IS/YCAtDJfZYt4KhjJik/M0wgHMLxEYwy3qImzZ7s5o=;
-        b=p2if0mKvs7TGZ6YGfNbMK2NY6EFKpivn5F1DwNXkXJIcvoQh7v365biDKA6l/sGbMv
-         ZguJR6mckETCy1IMd4DHW7QrIV3IyJ3QYHrVuJ9ETRWuKI7MmLDrmOOWwNbkYEATpyfF
-         uBDN8o3Yf6T38OHbfXLtdgQOff48fuEdTfiWtkdM6vIqIanC4bXwGn1bI5RAQTWR3lFC
-         KWB600YRbPx1yQWXInJXdwfPcUFf50vqkxqRFmzwYuJ3aBIMEigbFhOVnF34jnLkFFd/
-         MvUQEMlDvLM0Axfk2cJJWAj6fNiBKorLT91cf2zSBl7vQTiTYMWU2GUTpZKbSap2rhBW
-         7ueA==
-X-Gm-Message-State: AFqh2kontoYtzQMe3ipTX0+L6HSCx+AOQna06HlVRxSytVt+UJoKqeT0
-	A4sI8r8bZE7DXEsngWC3PwHn+A==
-X-Google-Smtp-Source: AMrXdXvHjQ21F0zkg5M7NF1gtglTVRGFVCe3l6bOSzS4kEZrhWsWxR5T0lZij2vVT7JnCvQAlUgxgA==
-X-Received: by 2002:ac8:45ce:0:b0:3b6:326f:b69c with SMTP id e14-20020ac845ce000000b003b6326fb69cmr3724557qto.1.1673965191362;
-        Tue, 17 Jan 2023 06:19:51 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-50-193.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.50.193])
-        by smtp.gmail.com with ESMTPSA id o5-20020a05620a2a0500b006f9e103260dsm20640820qkp.91.2023.01.17.06.19.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Jan 2023 06:19:50 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1pHmoY-00CnzW-07;
-	Tue, 17 Jan 2023 10:19:50 -0400
-Date: Tue, 17 Jan 2023 10:19:49 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
-	robin.murphy@arm.com, ashish.kalra@amd.com, thomas.lendacky@amd.com,
-	vasant.hegde@amd.com, jon.grimm@amd.com
-Subject: Re: [PATCH 3/4] iommu: Introduce IOMMU call-back for processing
- struct KVM assigned to VFIO
-Message-ID: <Y8auhTCZBJWkG/FL@ziepe.ca>
-References: <20230110143137.54517-1-suravee.suthikulpanit@amd.com>
- <20230110143137.54517-4-suravee.suthikulpanit@amd.com>
- <Y8F6Uoi73BK6R+mc@ziepe.ca>
- <6d57350a-6d07-42d7-2b1d-153bf5847b0f@amd.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CEA42FAE
+	for <iommu@lists.linux.dev>; Tue, 17 Jan 2023 15:09:26 +0000 (UTC)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30HDVuOO032412;
+	Tue, 17 Jan 2023 15:09:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=EIbj3wLxTFJd1qTVNpbyFlVRke2y8l8BaCHddVopCdQ=;
+ b=UL1ZIPFJJ9egHphdweC8N0T51g3kMQdTTm2JwbCukx1RH/OzZ/zkWFdqdQKbxGpUF5o8
+ rV/PdNjUYaAd/5whW5J6s/WRMfIqT86hozmjiE38uTdhTSOODP0CcVZy/gttoCn3LyNX
+ dGM9A1evymdJwrG6DTKU/F3IRio23LCMrlQYbFf86xJZ6MBNpmIQYLaNSZMR8UN5OrMe
+ mls07KnPQgZzG0JB0cWDg9lx3kOHZ3UkqMm73AtpDTmq5QQlXiSBTwG+LAbhRvFNHngX
+ bqbuxJOxJef/GtzpHkBexG2lRK4wbJeuSguAHJXeZn77hNbUDL5zJI5mUTEKur27P81c nw== 
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3n5egnvpt8-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 17 Jan 2023 15:09:18 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+	by ppma02dal.us.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 30HEtA1f005665;
+	Tue, 17 Jan 2023 15:09:17 GMT
+Received: from smtprelay04.dal12v.mail.ibm.com ([9.208.130.102])
+	by ppma02dal.us.ibm.com (PPS) with ESMTPS id 3n3m17dwrm-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 17 Jan 2023 15:09:17 +0000
+Received: from smtpav01.dal12v.mail.ibm.com (smtpav01.dal12v.mail.ibm.com [10.241.53.100])
+	by smtprelay04.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 30HF9FkG59900220
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 17 Jan 2023 15:09:16 GMT
+Received: from smtpav01.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id C5FFB58059;
+	Tue, 17 Jan 2023 15:09:15 +0000 (GMT)
+Received: from smtpav01.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 3549658058;
+	Tue, 17 Jan 2023 15:09:14 +0000 (GMT)
+Received: from [9.160.180.199] (unknown [9.160.180.199])
+	by smtpav01.dal12v.mail.ibm.com (Postfix) with ESMTP;
+	Tue, 17 Jan 2023 15:09:14 +0000 (GMT)
+Message-ID: <71b9e85d-960f-7403-0113-135746127f3b@linux.ibm.com>
+Date: Tue, 17 Jan 2023 10:09:13 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Subject: Re: [PATCH v4 4/7] s390/pci: Use dma-iommu layer
+Content-Language: en-US
+To: Niklas Schnelle <schnelle@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Jason Gunthorpe <jgg@nvidia.com>, Wenjia Zhang <wenjia@linux.ibm.com>
+Cc: Gerd Bayer <gbayer@linux.ibm.com>, Pierre Morel <pmorel@linux.ibm.com>,
+        iommu@lists.linux.dev, linux-s390@vger.kernel.org,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, linux-kernel@vger.kernel.org,
+        Julian Ruess <julianr@linux.ibm.com>
+References: <20230104120543.308933-1-schnelle@linux.ibm.com>
+ <20230104120543.308933-5-schnelle@linux.ibm.com>
+From: Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <20230104120543.308933-5-schnelle@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: ktKUf8aJ46_K8vbDf3JISy_lCmFa9ZYG
+X-Proofpoint-ORIG-GUID: ktKUf8aJ46_K8vbDf3JISy_lCmFa9ZYG
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6d57350a-6d07-42d7-2b1d-153bf5847b0f@amd.com>
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.923,Hydra:6.0.562,FMLib:17.11.122.1
+ definitions=2023-01-17_06,2023-01-17_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ phishscore=0 bulkscore=0 clxscore=1015 suspectscore=0 mlxscore=0
+ spamscore=0 priorityscore=1501 malwarescore=0 impostorscore=0
+ mlxlogscore=849 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2212070000 definitions=main-2301170122
 
-On Tue, Jan 17, 2023 at 12:31:07PM +0700, Suthikulpanit, Suravee wrote:
-> Hi Jason,
+On 1/4/23 7:05 AM, Niklas Schnelle wrote:
+> While s390 already has a standard IOMMU driver and previous changes have
+> added I/O TLB flushing operations this driver is currently only used for
+> user-space PCI access such as vfio-pci. For the DMA API s390 instead
+> utilizes its own implementation in arch/s390/pci/pci_dma.c which drives
+> the same hardware and shares some code but requires a complex and
+> fragile hand over between DMA API and IOMMU API use of a device and
+> despite code sharing still leads to significant duplication and
+> maintenance effort. Let's utilize the common code DMAP API
+> implementation from drivers/iommu/dma-iommu.c instead allowing us to
+> get rid of arch/s390/pci/pci_dma.c.
 > 
-> On 1/13/2023 10:35 PM, Jason Gunthorpe wrote:
-> > On Tue, Jan 10, 2023 at 08:31:36AM -0600, Suravee Suthikulpanit wrote:
-> > > Currently, VFIO provide an kvm_vfio_file_set_kvm() interface for assigning
-> > > a KVM structure to a VFIO group. The information in struct KVM is also
-> > > useful for IOMMU drivers when setting up VFIO domain.
-> > > 
-> > > Introduce struct iommu_domain_ops.set_kvm call-back function to allow
-> > > IOMMU drivers to provide call-back to process the struct KVM
-> > > assigned.
-> > 
-> > Also NAK
-> > 
-> > Connecting the iommu driver to KVM has to be properly architected
-> > though iommufd.
-> > 
-> 
-> My understanding is the kvm_vfio_file_set_kvm() from the following
-> call-path:
-> 
-> * kvm_vfio_group_add()
-> * kvm_vfio_group_del()
-> * kvm_vfio_destroy()
-> 
-> to attach/detach KVM to/from a particular VFIO domain. 
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
+> index ef38b1514c77..6b0fe8761509 100644
+> --- a/arch/s390/pci/pci.c
+> +++ b/arch/s390/pci/pci.c
+> @@ -124,7 +124,11 @@ int zpci_register_ioat(struct zpci_dev *zdev, u8 dmaas,
+>  
+>  	WARN_ON_ONCE(iota & 0x3fff);
+>  	fib.pba = base;
+> -	fib.pal = limit;
+> +	/* Work around off by one in ISM virt device */
+> +	if (zdev->pft == 0x5 && limit > base)
 
-No, it has nothing to do with a VFIO domain.
+Nit: maybe a named #define for the ISM pft rather than hard-coding 0x5 here
 
-It is intended to connect the KVM to a VFIO device for use in
-architecture specific ways (primarily s390), and to support
-broken-by-design code in GVT's mdev.
+[...]
 
-We currenly have no connection between kvm and the iommu domain at
-all.
+> diff --git a/arch/s390/pci/pci_bus.c b/arch/s390/pci/pci_bus.c
+> index 6a8da1b742ae..b15ad15999f8 100644
+> --- a/arch/s390/pci/pci_bus.c
+> +++ b/arch/s390/pci/pci_bus.c
+> @@ -49,11 +49,6 @@ static int zpci_bus_prepare_device(struct zpci_dev *zdev)
+>  		rc = zpci_enable_device(zdev);
+>  		if (rc)
+>  			return rc;
+> -		rc = zpci_dma_init_device(zdev);
+> -		if (rc) {
+> -			zpci_disable_device(zdev);
+> -			return rc;
+> -		}
+>  	}
+>  
+>  	if (!zdev->has_resources) {
+> diff --git a/arch/s390/pci/pci_debug.c b/arch/s390/pci/pci_debug.c
+> index ca6bd98eec13..60cec57a3907 100644
+> --- a/arch/s390/pci/pci_debug.c
+> +++ b/arch/s390/pci/pci_debug.c
+> @@ -53,9 +53,12 @@ static char *pci_fmt3_names[] = {
+>  };
+>  
+>  static char *pci_sw_names[] = {
+> -	"Allocated pages",
+> +/* TODO "Allocated pages", */
 
-> Could you please elaborate what you have in mind for a properly architected
-> interface via iommufd?
+? Forgot to finish this?
 
-You'd need to explain what this is trying to do. As I said, I want to
-see a comprehensive VFIO solution for CC from the people interested in
-it that supports all three major architectures currently available. I
-really don't want to see three different almost-the-same but
-unmaintainable different versions of this.
+>  	"Mapped pages",
+>  	"Unmapped pages",
+> +	"Global RPCITs",
+> +	"Sync Map RPCITs",
+> +	"Sync RPCITs",
+>  };
 
-Frankly I'm really not clear what role the IOMMU driver should be
-playing in CC at all, certainly not with details about what AMD's
-design requires.
+[...]
 
-AFAIK ARM expects the the IOMMU will be controlled by the realm
-manager. How can AMD be different from this and still be secure? The
-translation of IOVA for DMA is a security critical operation. I would
-expect the KVM page table and the IOMMU S2 to be hardwired together.
+> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+> index 4dfa557270f4..73144ea0adfc 100644
+> --- a/drivers/iommu/s390-iommu.c
+> +++ b/drivers/iommu/s390-iommu.c
+> @@ -14,16 +14,300 @@
 
-So if you need hypervisor involvment you need to start there by
-defining what exactly your architecture needs for iommu programming
-and create a special iommu_domain that encapsulates whatever that is.
+> -static void __s390_iommu_detach_device(struct zpci_dev *zdev)
+> +static void s390_iommu_detach_device(struct iommu_domain *domain,
+> +				     struct device *dev)
+>  {
+> -	struct s390_domain *s390_domain = zdev->s390_domain;
+> +	struct s390_domain *s390_domain = to_s390_domain(domain);
+> +	struct zpci_dev *zdev = to_zpci_dev(dev);
+>  	unsigned long flags;
+>  
+> +	WARN_ON(zdev->s390_domain != to_s390_domain(domain));
+>  	if (!s390_domain)
+>  		return;
+>  
+> @@ -120,9 +412,7 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
+>  		return -EINVAL;
+>  
+>  	if (zdev->s390_domain)
+> -		__s390_iommu_detach_device(zdev);
+> -	else if (zdev->dma_table)
+> -		zpci_dma_exit_device(zdev);
+> +		s390_iommu_detach_device(&zdev->s390_domain->domain, dev);
+>  
+>  	cc = zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
+>  				virt_to_phys(s390_domain->dma_table), &status);
+> @@ -144,17 +434,6 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
+>  	return 0;
+>  }
+>  
+> -static void s390_iommu_detach_device(struct iommu_domain *domain,
+> -				     struct device *dev)
+> -{
+> -	struct zpci_dev *zdev = to_zpci_dev(dev);
+> -
+> -	WARN_ON(zdev->s390_domain != to_s390_domain(domain));
+> -
+> -	__s390_iommu_detach_device(zdev);
+> -	zpci_dma_init_device(zdev);
+> -}
+> ->  static void s390_iommu_get_resv_regions(struct device *dev,
+>  					struct list_head *list)
+>  {
+> @@ -207,7 +486,7 @@ static void s390_iommu_release_device(struct device *dev)
+>  	 * to the device, but keep it attached to other devices in the group.
+>  	 */
+>  	if (zdev)
+> -		__s390_iommu_detach_device(zdev);
+> +		s390_iommu_detach_device(&zdev->s390_domain->domain, dev);
+>  }
+>  
+Looks good overall, but I think these hits above collide with Baolu's series that recently went into -next:
 
-> > > @@ -1652,6 +1652,7 @@ void vfio_file_set_kvm(struct file *file, struct kvm *kvm)
-> > >   	mutex_lock(&group->group_lock);
-> > >   	group->kvm = kvm;
-> > > +	iommu_set_kvm(group->iommu_group, kvm);
-> > >   	mutex_unlock(&group->group_lock);
-> > >   }
-> > 
-> > This also has obvious lifetime bugs
-> 
-> Could you please also elaborate on this part? For detaching case, KVM is
-> NULL, and the same information is passed to the IOMMU driver to handle the
-> detaching case. Am I missing anything?
+https://lore.kernel.org/linux-iommu/20230110025408.667767-1-baolu.lu@linux.intel.com/
 
-The kvm pointer is only valid so long as the group_lock is held.
 
-Jason
