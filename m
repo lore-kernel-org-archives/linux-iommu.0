@@ -1,166 +1,135 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36EC32906
-	for <iommu@lists.linux.dev>; Tue, 17 Jan 2023 13:52:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE3542906
+	for <iommu@lists.linux.dev>; Tue, 17 Jan 2023 13:55:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673963534; x=1705499534;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=yw/vVmB+uKwicZSSe7+nfFW2O/zJWBbF9teZnNFRaCI=;
-  b=O9fs7Dp/jr2b6tvqyj1jYu1OWwPs/mQJnXVcqi+gEhS79hCyYS9liKS8
-   Q3W8PyQZTn5rQa4qqBYC0QJon0PPv47PDjnoIceX969sDfZpDeSQeoW6/
-   XCTk0cHbDG4AZXXeAGWNl4/Q+qpzogokMXH9ylFAr0xiZj4VQW2cTkBkb
-   DJUiBuRWsEGvDfbcdpc9Jh/H2oAj9r6A96NdXnvX1CdIEUjyZwVGM0UKM
-   E9vY3XpWPSCqBmkitqf/JPkHetyqkUbMkw+zELiX3bwTo2lH956F1zmNM
-   p8iXHHTmUTumZaY7W9jUT5zfpwRquzW9i39LsFEhbTwo6LoYl1l8BMsuc
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10592"; a="351943697"
-X-IronPort-AV: E=Sophos;i="5.97,224,1669104000"; 
-   d="scan'208";a="351943697"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2023 05:52:06 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10592"; a="609245847"
-X-IronPort-AV: E=Sophos;i="5.97,224,1669104000"; 
-   d="scan'208";a="609245847"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga003.jf.intel.com with ESMTP; 17 Jan 2023 05:52:06 -0800
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1673963739; x=1705499739;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=dvC8uZf6mFq8/O9g5IC5AsUPCMaXJypD1DTjXpDugSY=;
+  b=nk6OJCVkJMsyQ8FyE9KcrhcKQ7eN59Ly7rfKCK1OvFVr1UpvjLGeoRRF
+   ASv54DLmEHhUtLJMyWSs32SmxGscIf/FFY+KnCwN5G+PPBGkQH8To2FMK
+   Fye2vC10PbrU4x43UwUUvNadTApyrf7XzlzblUKmAHqi90xSTjocfjPAa
+   plXeHBJ9Bm4NH505Qui2qyEIRifO+z0eDGbZobM2gaPjNEGhj1CCtmjqd
+   ZnZyBXDSgB59W/+SM6huOU1GujEr0Uq1xSxJSDutJqiw69SIla99NdCvz
+   Vn46LmJJFJ/XuCtyaiBujI4ZuxXGz7tRDNkoJUWv0Re4kYNZe9kRdIz5G
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.97,224,1669100400"; 
+   d="asc'?scan'208";a="196996069"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Jan 2023 06:54:30 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Tue, 17 Jan 2023 05:52:05 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Tue, 17 Jan 2023 05:52:05 -0800
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Tue, 17 Jan 2023 05:52:05 -0800
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.168)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Tue, 17 Jan 2023 05:52:04 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cRw7hJ0Z4Et7P9VqW+HD6WSeG+X9aGzFAySRqcXZHAngbZaNl6ruyhpfs1PqomVyHU37kW36NpmOJepKpixhk+vGFE9q8oThKgLOUiX9Y/R3jxHO6l7aq1R7wAi8WbsJowyvuPuWpJMzjdG6au9/onxciUB+m1qQV1JpI1KOuXTcckixEWqFQ9pNAXcN0kssIoUk56SkFeo5s3JwbRzwJhg9s4Fovh/9/Q/o65tVY3vzE8UFs2ovZJ2WLuQmP5/msPxwWzrrU8eNu35q7+LGCx8IYDebl5N01+DTwRS2vUgHJ70lt3/u+SQRywZr/uQvsH2JWvc/vp2IdPk42PyUWQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yw/vVmB+uKwicZSSe7+nfFW2O/zJWBbF9teZnNFRaCI=;
- b=cLRaX2TYNuQy2jBaHCeemP1GLHEDTr35ZmriWc52CkxRqHaQs2WIwjb5dRhcUszO6h/1DcBkxejD4pnSYWaaDhImf47/J/CDYPA7mLn5w32tdXe6RszXJegzIFo5vius1RFJhkgg5i7ZmQ0N4+mxfFc+vgM9Q44zAvVy8Rcg7x0OmjIhTtGqi2q4LsoTf9h+eMn+isdD66VrpdPorvp0cbf8nofsla418RtsMsECB9Blo0MVpSaNeVY2PWmfM2CMSNCtDcgHkQU0j49m9c3vXvjtKmgkAArLWTntCmUAK6nxijkyvCJk4q4JqbZPiouyQKcf+cCOpC/3nGTj9IZODw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
- by PH7PR11MB7099.namprd11.prod.outlook.com (2603:10b6:510:20e::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.23; Tue, 17 Jan
- 2023 13:51:57 +0000
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::e1fa:abbe:2009:b0a3]) by DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::e1fa:abbe:2009:b0a3%3]) with mapi id 15.20.5986.023; Tue, 17 Jan 2023
- 13:51:57 +0000
-From: "Liu, Yi L" <yi.l.liu@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Alex Williamson <alex.williamson@redhat.com>, Cornelia Huck
-	<cohuck@redhat.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, "Tian,
- Kevin" <kevin.tian@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>
-Subject: RE: [PATCH v2] vfio: Support VFIO_NOIOMMU with iommufd
-Thread-Topic: [PATCH v2] vfio: Support VFIO_NOIOMMU with iommufd
-Thread-Index: AQHZJS8kfO7o6BZcqkmxMznEHHL4Oa6iGfLAgACMWgCAAASz0A==
-Date: Tue, 17 Jan 2023 13:51:56 +0000
-Message-ID: <DS0PR11MB75290F8DB8B7ED2414CD1B02C3C69@DS0PR11MB7529.namprd11.prod.outlook.com>
-References: <0-v2-568c93fef076+5a-iommufd_noiommu_jgg@nvidia.com>
- <DS0PR11MB75292238656F19908C0D0A4BC3C69@DS0PR11MB7529.namprd11.prod.outlook.com>
- <Y8ajvgYMgM+dKUWJ@nvidia.com>
-In-Reply-To: <Y8ajvgYMgM+dKUWJ@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DS0PR11MB7529:EE_|PH7PR11MB7099:EE_
-x-ms-office365-filtering-correlation-id: 6895a99d-d47b-44db-0664-08daf891ff81
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: p9k1qLXmO06zwCtFcDmMI2nRsNljT80BUk5ePVjYDcfCD3ZdT47ylBUFDh5ZelDMncHplwNN5oVxzJAxgE7M4WJbzWeSJXqsLbxqgHhZ7/mjxSGsi7NY+v6uMDlWF2YIMGtLSwItEp2kniMoTgN8K+SxLpMAEjsSsOjjS+co8/aPJcC48DXCAUYGmfUcZoiQN9yIG/TsduI66zi2mwz24Gh+r5ddD//VKmTaQkQTUE5fmYWXeqMJf6jZKzcL9zMFqQVeX7B1FtbspXwqEJdH0VwuRTjIHI+5Ad5JLS7olg4GmVZzEOqUO4xujkN4CXDwbkMizhL8Kj+Emb6nq8vHlTWm42y3H0eK/omVEOCiNpPIGzNwd5hdX16Vi2TIwZ4lTF4MV6ThKPJblc4cbuKxxa+Nrj+b9eMscxSWVowkFauPD4bRgTpTo48qj8TSENaQs/zc6eLxaexWaq/wJZZnV1caX2lyjcLy6BdnC0+ws5EY/NB/t84wthJKwajqiXOYN8ESIBjQAR4HOoIx8ryUUaGGmuoukEn9Y3+dK87uLbnU5DG5P6rJWIJj89uPH+EXb9sdchb2qriV+Cf+v62NfaGHLbyurUZipkJh1/0/BnUcDK5FkStgjYxvWg8Ep8XLnyvQgeX2Jyizz90F4Xq1BuiL68zQCtbKr+NujCM1r4WGNF7eRgDBBVqqO8ao78oLmH3BoMkGISzFrckVgnJCCQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(39860400002)(376002)(396003)(366004)(136003)(346002)(451199015)(33656002)(66476007)(66446008)(66946007)(66556008)(41300700001)(9686003)(8676002)(26005)(186003)(6916009)(64756008)(4326008)(86362001)(76116006)(5660300002)(83380400001)(82960400001)(52536014)(8936002)(54906003)(478600001)(71200400001)(7696005)(38100700002)(38070700005)(316002)(55016003)(6506007)(2906002)(4744005)(122000001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?dUFPTjJXUjNzdFpXVExIRXlLZ1hnanVZMkNuRmpMM3RiNkt6Zkg3QUFYdjB0?=
- =?utf-8?B?RFBrTWkvWkdZY01lUjRaenNzYnJUNGdOUmRVNkNraHh3RllPeG13Tm1neTJF?=
- =?utf-8?B?dlY4QnR1VEhPbVoxWUFoTzA5SlNjMnJBOCtSbytCLy9QN1p2UWpwM3JsMWUy?=
- =?utf-8?B?V0xhRmxhQTlaYyswa0t3V2t4NGoyYjYycEVVUkNtQWpkbitDc3RnM0lRb0pJ?=
- =?utf-8?B?RWpzNHpUT0xkbXZGTURkWmRzZWhqMUdwVGtIZjMwVGo2cncrWTdMV1hScVhw?=
- =?utf-8?B?MXdCVXlKSnV0Z2pnU1pHUEk5bU9wVjcrbkR5bjc1TUdUSUxOTmhIR3NtOG5r?=
- =?utf-8?B?dTdOQjB0a0ZDVEpvZ2Y3eEJpT0tielh6RFovejN2NGZEemx0Tm1XbkRybmJ4?=
- =?utf-8?B?UWM3ZUYyVU1kb2xPY3BrVkd5bjhsOEpPR0RUWnBLZm1WUUI0cy83RDVGVUlS?=
- =?utf-8?B?UzBCZFJmaFFkckRYVWhMS2hHMGZETzZuV1orT2dYZDJ4c2dxc3hPR29ZZHli?=
- =?utf-8?B?Z3FHd0ZmdVFjaTIzVUVvRmZLV1UzVUJkTnpzWXZTdEZUU2ZKd2pxZ0s0TEFL?=
- =?utf-8?B?K3oraDRKWjIxbktJNmUzWVNoY1B0SWd2UElDZmc5YjNYK3BqckZGelNkdk5l?=
- =?utf-8?B?V3BsMDhYQXVObkZqY0tyNUpUY3MvUng4YVFXNG5ad2U1WCtJZ3VwbUNBT2F6?=
- =?utf-8?B?WWlRc3FUSUlrcWZuRXAvVjVOTlNYcXU0dTI2NENZVHNiNW1udGloTVdwSHJU?=
- =?utf-8?B?ZEJNbWNJMm1VRnJmWktDN1JtTGhNa0kydzN2T3MwRWprdkZNUlRqKzF3RGxo?=
- =?utf-8?B?NGxudWJDUXdnd2NHV3dCSUw1ZUpITnl0K0Nld3VvZUZjL3JSQWFYeUxJN2RZ?=
- =?utf-8?B?VzlrRlFoSFlPenZ4dFdNODZQcmx5bFlrRzM2aHdzdTdaNlF4SCtwdGVDazlZ?=
- =?utf-8?B?b2ZsRVM0RDJ0Y1dCNnpaZDFpQUJmM0dyVi96UEJ4WkVJck1mM1Q4azNza3Jv?=
- =?utf-8?B?WVRmQS91YzBRNUhONFZ1WXZUMWM2NEh2RUd2cTg3c2NWUlo3WTFFMFArVWlj?=
- =?utf-8?B?UTZQa0VJQWFmNHI3M0dPMmFRRHdvMEZvcnNqNnZBSXFCQS9ZSVBCNG9CeE5y?=
- =?utf-8?B?ZTFucEdwQ1dkNk5EY0VlKzR4cDBDcDNrNEc4QXlONFhObTNRMWNTZGpld0l5?=
- =?utf-8?B?UEhrK3MzVER5TkFvK2krTWx1WXZIb2RCMXMxdDdpL1BVOTZyakxnMWtnc1RS?=
- =?utf-8?B?ZlNJUDQwVW54QnQ3Nk9vTm1SQk9zalk5S1NYMmZOcGJ6YlVCYnN3Z3I5OFpD?=
- =?utf-8?B?ek5Uald5ZW9XN1l5R1BlRlNBVjVxdy95OFdEZWpTTmxheUxtY1pzU1ZKRW1s?=
- =?utf-8?B?c29aNjlXbEE1Qis4K3QwRVZ4KzlsOGQraW9jMkhhZ3JXb2p1ZVhpK3lEQmx2?=
- =?utf-8?B?YXNUN0hNZXNwNDcxZE9KT3VlZDdWU2tqcHhCN0JGdmttekNtVjB2ZmMzS3Fm?=
- =?utf-8?B?RTMxT2tCSXRqR29uVmd6Q3RmUzRoeTBnNFlNZHRPV0hndVRrQ3NTdlBrcmVn?=
- =?utf-8?B?UlhPNUdTZDRmWEhKOTZKL2lSVHpNdkczOGRQdFRUK0lEeXJWL054VmE2WEFU?=
- =?utf-8?B?LzlhdFYzN0R0bFZ4RW1SRzVQRHFSeWk3VUtGanVydlJmMXN2SDJvenJoaDVS?=
- =?utf-8?B?ZUZqc0F1amdPUEtJOC81TzJYTC9MTnFSdUFuUHdtN2daaWtQRnRpN0RqbHAx?=
- =?utf-8?B?MHZGbjc4SzdkRGNobFVZSnZHN21Ob25OaTAxekM4VUFqZVdhRHZZWGIwYzNJ?=
- =?utf-8?B?MzY0RkJaeDEwUEZ4cWthZENvdHFtK3VrZzRCUXQ2WXgyam50QUhBM1FNbUNY?=
- =?utf-8?B?WGt5UmJGaXRFVS93bENzRGVxdVFSTTAxVll6RUlPcnRha3dJcFJDZitFVzFZ?=
- =?utf-8?B?UlNnTEtTTkdOdE9JUWhjRFBZVWlyQ3R6N3dBeVZGTUZPamVUbkJNbFFmdXBy?=
- =?utf-8?B?cHlTRGI3bWM3UW9rbjVJcFdVdXFzVUNoYk45V203bklzb1pxcjJlRi9GcWln?=
- =?utf-8?B?TS9PTzY3aVJsTWVVM2kwWTRKWGhhOGRDaTUvVHVxSlBUdllpbkdaT2NPNHZp?=
- =?utf-8?Q?H205bPaakLvdRt1apNhoIv+Z7?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ 15.1.2507.16; Tue, 17 Jan 2023 06:54:30 -0700
+Received: from wendy (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.16 via Frontend
+ Transport; Tue, 17 Jan 2023 06:54:29 -0700
+Date: Tue, 17 Jan 2023 13:54:06 +0000
+From: Conor Dooley <conor.dooley@microchip.com>
+To: Robin Murphy <robin.murphy@arm.com>
+CC: Conor Dooley <conor@kernel.org>, <joro@8bytes.org>, <will@kernel.org>,
+	<iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>,
+	<palmer@dabbelt.com>
+Subject: Re: [PATCH] iommu: Tidy up io-pgtable dependencies
+Message-ID: <Y8aofvs0UtiQqvhZ@wendy>
+References: <51d8c78e2ecc6696ac5907526580209ea6da167f.1673553587.git.robin.murphy@arm.com>
+ <Y8HYlFp2ZIlzIPfB@spud>
+ <7a53ac6f-640b-436d-9bfa-3e49066b2460@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6895a99d-d47b-44db-0664-08daf891ff81
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jan 2023 13:51:56.6496
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: nsjFbsxO8Ix0aAZY9i3MrI39xh2F8NSNcqJTRgdI09D6eNAPwPHJuRK4m3q8c2uV2Y5NSJLBDKGMJtxAzUv8uw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB7099
-X-OriginatorOrg: intel.com
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="1KidAVkd76YXmohN"
+Content-Disposition: inline
+In-Reply-To: <7a53ac6f-640b-436d-9bfa-3e49066b2460@arm.com>
 
-PiBGcm9tOiBKYXNvbiBHdW50aG9ycGUgPGpnZ0BudmlkaWEuY29tPg0KPiBTZW50OiBUdWVzZGF5
-LCBKYW51YXJ5IDE3LCAyMDIzIDk6MzQgUE0NCj4gDQo+IE9uIFR1ZSwgSmFuIDE3LCAyMDIzIGF0
-IDA1OjE0OjEyQU0gKzAwMDAsIExpdSwgWWkgTCB3cm90ZToNCj4gPiBIaSBKYXNvbiwNCj4gPg0K
-PiA+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmZpby9pb21tdWZkLmMgYi9kcml2ZXJzL3ZmaW8v
-aW9tbXVmZC5jDQo+ID4gPiBpbmRleCA0ZjgyYTZmYTdjNmM3Zi4uNzlhNzgxYTRlNzRjMDkgMTAw
-NjQ0DQo+ID4gPiAtLS0gYS9kcml2ZXJzL3ZmaW8vaW9tbXVmZC5jDQo+ID4gPiArKysgYi9kcml2
-ZXJzL3ZmaW8vaW9tbXVmZC5jDQo+ID4gPiBAQCAtMTgsNiArMTgsMjEgQEAgaW50IHZmaW9faW9t
-bXVmZF9iaW5kKHN0cnVjdCB2ZmlvX2RldmljZSAqdmRldiwNCj4gPiA+IHN0cnVjdCBpb21tdWZk
-X2N0eCAqaWN0eCkNCj4gPiA+DQo+ID4gPiAgCWxvY2tkZXBfYXNzZXJ0X2hlbGQoJnZkZXYtPmRl
-dl9zZXQtPmxvY2spOw0KPiA+ID4NCj4gPiA+ICsJaWYgKElTX0VOQUJMRUQoQ09ORklHX1ZGSU9f
-Tk9JT01NVSkgJiYNCj4gPiA+ICsJICAgIHZkZXYtPmdyb3VwLT50eXBlID09IFZGSU9fTk9fSU9N
-TVUpIHsNCj4gPg0KPiA+IFRoaXMgc2hvdWxkIGJlIGRvbmUgd2l0aCBhIGhlbHBlciBwcm92aWRl
-ZCBieSBncm91cC5jIGFzIGl0IHRyaWVzDQo+ID4gdG8gZGVjb2RlIHRoZSBncm91cCBmaWVsZHMu
-IElzIGl0Pw0KPiANCj4gSXQgd2lsbCBtYWtlIHlvdXIgY2RldiBzZXJpZXMgZWFzaWVyDQoNClll
-cCDwn5iKIEkndmUganVzdCBzZW50IG91dCBhIG5ldyBjZGV2IHZlcnNpb24uIE5vdCBiYXNlZCBv
-biB0aGlzDQpwYXRjaCB5ZXQuIFdvdWxkIGdldCBpdCBiZSB3aGVuIHRoaXMgcGF0Y2ggZ290IG1l
-cmdlZC4NCg0KUmVnYXJkcywNCllpIExpdQ0K
+--1KidAVkd76YXmohN
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, Jan 16, 2023 at 10:56:21AM +0000, Robin Murphy wrote:
+> On 2023-01-13 22:17, Conor Dooley wrote:
+> > Hey Robin,
+> >=20
+> > On Thu, Jan 12, 2023 at 07:59:47PM +0000, Robin Murphy wrote:
+> > > Some io-pgtable implementations, and thus their users too, carry a
+> > > slightly odd dependency to get around the GENERIC_ATOMIC64 version of
+> > > cmpxchg64() often failing to compile. Since this is a functional
+> > > dependency, it's a bit misleading and untidy to tie it explicitly to
+> > > COMPILE_TEST while assuming that it's also implied by the other
+> > > platform/architecture options. Make things clearer by separating these
+> > > functional dependencies into distinct statements from those controlli=
+ng
+> > > visibility, and since they do look a bit non-obvious to the uninitiat=
+ed,
+> > > also commenting them for good measure.
+> > >=20
+> > > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> > > ---
+> > >   drivers/iommu/Kconfig | 18 ++++++++++++------
+> > >   1 file changed, 12 insertions(+), 6 deletions(-)
+> >=20
+> > >   config IPMMU_VMSA
+> > >   	bool "Renesas VMSA-compatible IPMMU"
+> > > -	depends on ARCH_RENESAS || (COMPILE_TEST && !GENERIC_ATOMIC64)
+> > > +	depends on ARCH_RENESAS || COMPILE_TEST
+> > > +	depends on !GENERIC_ATOMIC64	# for IOMMU_IO_PGTABLE_LPAE
+> > >   	select IOMMU_API
+> > >   	select IOMMU_IO_PGTABLE_LPAE
+> > >   	select ARM_DMA_USE_IOMMU
+> >=20
+> > This is a fix for the broken riscv32 allmodconfig stuff that Palmer
+> > reported, right?
+>=20
+> Indirectly - that made it clear that the whole area was worth cleaning up=
+ in
+> general, so I did this expecting to rebase it around one of the other fix
+> patches, but none of those seem to have gone anywhere.
+>=20
+> In the meantime I guess it might now be simplest to apply Palmer's config
+> workaround if you want something more expedient.
+
+I amn't too bothered about workarounds, I don't build 32-bit allmodconfig.
+I was hoping that an actual fix would show up, but it's clear that
+no-one other than Palmer does actively build it.
+
+Do you mind if I rip this part out of here & submit it standalone,
+since no-one seems to be bothered by the failure enough to re-submit
+your suggestion from the original threads?
+
+Thanks,
+Conor.
+
+> > https://lore.kernel.org/all/20221214180409.7354-1-palmer@rivosinc.com/
+> >=20
+> > I did a dfn:drivers/iommu/Kconfig search on lore & saw this, but AFAICT
+> > the patch was applied to next rather than fixes.
+> >=20
+> > Apologies if I'm off here, I have had that report in my follow-up-on
+> > queue for a while & since Christmas happened in between I've lost track
+> > of when the build failure was introduced.
+> >=20
+> > Last I remember, Guo Ren sent a patch that was not to your liking, but I
+> > didn't see anything after that.
+
+
+--1KidAVkd76YXmohN
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCY8aofgAKCRB4tDGHoIJi
+0hSIAQDCRz1egYrsYrmMP3Hk2WC9P6CPPMJSi0+oyxS3fj1vyQD/dy+p+1ImvL86
+LF1tuTCirXxpxeCw6m5CoQj7DMiSVww=
+=xNRa
+-----END PGP SIGNATURE-----
+
+--1KidAVkd76YXmohN--
