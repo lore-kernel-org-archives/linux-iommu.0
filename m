@@ -1,321 +1,461 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5B4428EC
-	for <iommu@lists.linux.dev>; Tue, 17 Jan 2023 16:52:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1673974360; x=1705510360;
-  h=message-id:date:mime-version:subject:from:to:references:
-   in-reply-to:content-transfer-encoding;
-  bh=DbAUdnNMbr3F/vB7fW6mvX3eLg2/4FGwoY1vBHMxoqk=;
-  b=AZCrug1YSy/uQsxGIYiOpFOIfS31QRGvQIyjCJJ6No6C2D7+aGDjH0nv
-   vOStOV3YjS+wBEpSb358mOYCE2UHBW7eePAFu4rRLKBC3+eK7gMfaHanw
-   vjrwM3W0xXDB6anqwnThuXLbNZ9re0PmmcZrENDDKwhHsbfZfkVQ8/4k/
-   avcVXFeGv00ARY2Y39E5KdtybJgVNxFq3rhGi571pr2aABIzkTzQlXoYJ
-   LOT0NreGCWfiLUdJVXmPkc20/gt1B3QdBAycb8rQSXAQx8e4hNc5QOc+4
-   qkJdiD6l5fpB6piwlye18RhTNMWashXM70gBry270HC7ht3y/0y0oG8TG
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10592"; a="308312079"
-X-IronPort-AV: E=Sophos;i="5.97,224,1669104000"; 
-   d="scan'208";a="308312079"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2023 08:52:09 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10592"; a="652607329"
-X-IronPort-AV: E=Sophos;i="5.97,224,1669104000"; 
-   d="scan'208";a="652607329"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga007.jf.intel.com with ESMTP; 17 Jan 2023 08:52:07 -0800
-Received: from [10.212.252.43] (kliang2-mobl1.ccr.corp.intel.com [10.212.252.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by linux.intel.com (Postfix) with ESMTPS id E1DB35805CB;
-	Tue, 17 Jan 2023 08:52:05 -0800 (PST)
-Message-ID: <5eb88bee-e1ce-422e-ca1f-dad9733ba124@linux.intel.com>
-Date: Tue, 17 Jan 2023 11:52:04 -0500
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 084EAEB11
+	for <iommu@lists.linux.dev>; Tue, 17 Jan 2023 22:03:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1673992980;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=6atE962YqCerk5PJ1CdBBLah7Xf1FhfgLosmRVXdXDQ=;
+	b=h2cOmjP7ElAL2qBNqL3ZnfwCbChBUWkmrtO/4Rn5Eq5Iu/wdu7Q7l94BwwJ7FynaSxytoK
+	6C0CVQPPFc5pX+1a+sx7bPjMDiHTPOaT5MEnsHuymiiVYsc/5JvClnbTecMBfqaCOS8J42
+	bW7O2mwceC+JeX9JRr0p0H9Q4vSj8+k=
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
+ [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-448-XXHnLxu3MGSQM1HUiKpLwA-1; Tue, 17 Jan 2023 17:02:59 -0500
+X-MC-Unique: XXHnLxu3MGSQM1HUiKpLwA-1
+Received: by mail-il1-f197.google.com with SMTP id l14-20020a056e02066e00b0030bff7a1841so24246708ilt.23
+        for <iommu@lists.linux.dev>; Tue, 17 Jan 2023 14:02:59 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=6atE962YqCerk5PJ1CdBBLah7Xf1FhfgLosmRVXdXDQ=;
+        b=qes5kT7RkurM7TPPuyqMsA51iOQ8vKe9ZYSVP5fNUs4NcvIVxe8yrVKR+oflU5XapY
+         q7oswOMn4pM/dGtc9YgCpkYYF4W7Y6EdxdYg514q9yklm3TpwqmJro8VhcDNv4Pz4RQc
+         +0MJnH52OdYrDOb+Hf/LR9COd5MlXkYfF+xjvP9Fh3jNvi2FM93FREFUGC6/IXLtgGsa
+         Ng8sdGJgEZFqUZnfGfy74RTvV8o7lZ8f4VIvaAceQvFQc/5TYOgNG6KoOEbjyyRPnCPP
+         QwPu8k6yatOSAU0pS0IWuxnMM191rQnvmodjZtabeWgkLnjzNXWIwTYk0aW97gN6reRF
+         lb1w==
+X-Gm-Message-State: AFqh2kqJ2J8ofaD5uUYX8/+LpxCk+11eZ8jYroN4Vi96h0cejuCgRfXt
+	KBZaFx8JUE0LAkAFjM/ME9vGNVYkykpFHzHbxkqo/jJddHMAn5ImA2EcQIggWOKXl8eLrNquf8f
+	qUnk4v//OdHnl8HI=
+X-Received: by 2002:a05:6602:2489:b0:6df:9d01:3376 with SMTP id g9-20020a056602248900b006df9d013376mr3023813ioe.21.1673992978537;
+        Tue, 17 Jan 2023 14:02:58 -0800 (PST)
+X-Google-Smtp-Source: AMrXdXsOqQ6T6RyX8VidoB4oC7CWvQzhCf/NlCQw+A6v6XcRPeYjU2ETi68fBg6eqGsGtMCT5JY+pg==
+X-Received: by 2002:a05:6602:2489:b0:6df:9d01:3376 with SMTP id g9-20020a056602248900b006df9d013376mr3023797ioe.21.1673992978101;
+        Tue, 17 Jan 2023 14:02:58 -0800 (PST)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id w14-20020a02b0ce000000b003a5eae30e55sm955831jah.75.2023.01.17.14.02.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Jan 2023 14:02:57 -0800 (PST)
+Date: Tue, 17 Jan 2023 15:02:56 -0700
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Cornelia Huck <cohuck@redhat.com>, iommu@lists.linux.dev, Kevin Tian
+ <kevin.tian@intel.com>, kvm@vger.kernel.org, Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH v2] vfio: Support VFIO_NOIOMMU with iommufd
+Message-ID: <20230117150256.1937d343.alex.williamson@redhat.com>
+In-Reply-To: <0-v2-568c93fef076+5a-iommufd_noiommu_jgg@nvidia.com>
+References: <0-v2-568c93fef076+5a-iommufd_noiommu_jgg@nvidia.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.35; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH 6/7] iommu/vt-d: Add IOMMU perfmon overflow handler
- support
-Content-Language: en-US
-From: "Liang, Kan" <kan.liang@linux.intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org,
- dwmw2@infradead.org, robin.murphy@arm.com, robert.moore@intel.com,
- rafael.j.wysocki@intel.com, lenb@kernel.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20230111202504.378258-1-kan.liang@linux.intel.com>
- <20230111202504.378258-7-kan.liang@linux.intel.com>
- <a21db6ce-e0a4-797e-f023-0920dd4f795f@linux.intel.com>
- <c94c6e01-27a0-ab77-0f11-9d15361f8e13@linux.intel.com>
-In-Reply-To: <c94c6e01-27a0-ab77-0f11-9d15361f8e13@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+
+On Tue, 10 Jan 2023 16:07:02 -0400
+Jason Gunthorpe <jgg@nvidia.com> wrote:
+
+> Add a small amount of emulation to vfio_compat to accept the SET_IOMMU to
+> VFIO_NOIOMMU_IOMMU and have vfio just ignore iommufd if it is working on a
+> no-iommu enabled device.
+> 
+> Move the enable_unsafe_noiommu_mode module out of container.c into
+> vfio_main.c so that it is always available even if VFIO_CONTAINER=n.
+> 
+> This passes Alex's mini-test:
+> 
+> https://github.com/awilliam/tests/blob/master/vfio-noiommu-pci-device-open.c
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/iommufd/Kconfig           |   2 +-
+>  drivers/iommu/iommufd/iommufd_private.h |   2 +
+>  drivers/iommu/iommufd/vfio_compat.c     | 104 +++++++++++++++++++-----
+>  drivers/vfio/Kconfig                    |   2 +-
+>  drivers/vfio/container.c                |   7 --
+>  drivers/vfio/group.c                    |   7 +-
+>  drivers/vfio/iommufd.c                  |  21 ++++-
+>  drivers/vfio/vfio_main.c                |   7 ++
+>  include/linux/iommufd.h                 |  12 ++-
+>  9 files changed, 130 insertions(+), 34 deletions(-)
+> 
+> v2:
+>  - Passes Alex's test
+>  - Fix a spelling error for s/CONFIG_VFIO_NO_IOMMU/CONFIG_VFIO_NOIOMMU/
+>  - Prevent type1 mode from being requested and prevent a compat IOAS from being
+>    auto created with an additional context global trap door flag
+>  - Make it so VFIO_CONTAINER=n still creates the module option and related machinery
+>  - Comment updates
+> v1: https://lore.kernel.org/all/0-v1-5cde901db21d+661fe-iommufd_noiommu_jgg@nvidia.com
+> 
+> 
+> diff --git a/drivers/iommu/iommufd/Kconfig b/drivers/iommu/iommufd/Kconfig
+> index 8306616b6d8198..ada693ea51a78e 100644
+> --- a/drivers/iommu/iommufd/Kconfig
+> +++ b/drivers/iommu/iommufd/Kconfig
+> @@ -23,7 +23,7 @@ config IOMMUFD_VFIO_CONTAINER
+>  	  removed.
+>  
+>  	  IOMMUFD VFIO container emulation is known to lack certain features
+> -	  of the native VFIO container, such as no-IOMMU support, peer-to-peer
+> +	  of the native VFIO container, such as peer-to-peer
+>  	  DMA mapping, PPC IOMMU support, as well as other potentially
+>  	  undiscovered gaps.  This option is currently intended for the
+>  	  purpose of testing IOMMUFD with unmodified userspace supporting VFIO
+> diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+> index 222e86591f8ac9..9d7f71510ca1bc 100644
+> --- a/drivers/iommu/iommufd/iommufd_private.h
+> +++ b/drivers/iommu/iommufd/iommufd_private.h
+> @@ -18,6 +18,8 @@ struct iommufd_ctx {
+>  	struct xarray objects;
+>  
+>  	u8 account_mode;
+> +	/* Compatibility with VFIO no iommu */
+> +	u8 no_iommu_mode;
+>  	struct iommufd_ioas *vfio_ioas;
+>  };
+>  
+> diff --git a/drivers/iommu/iommufd/vfio_compat.c b/drivers/iommu/iommufd/vfio_compat.c
+> index 3ceca0e8311c39..2c9db251a351e6 100644
+> --- a/drivers/iommu/iommufd/vfio_compat.c
+> +++ b/drivers/iommu/iommufd/vfio_compat.c
+> @@ -26,39 +26,83 @@ static struct iommufd_ioas *get_compat_ioas(struct iommufd_ctx *ictx)
+>  }
+>  
+>  /**
+> - * iommufd_vfio_compat_ioas_id - Return the IOAS ID that vfio should use
+> + * iommufd_vfio_compat_ioas_get_id - Ensure a compat IOAS exists
+> + * @ictx: Context to operate on
 
 
+Nit, @out_ioas_id should be explicitly documented here rather than
+inferred from the comments.
 
-On 2023-01-16 10:20 a.m., Liang, Kan wrote:
-> 
-> 
-> On 2023-01-14 6:05 a.m., Baolu Lu wrote:
->> On 2023/1/12 4:25, kan.liang@linux.intel.com wrote:
->>> From: Kan Liang <kan.liang@linux.intel.com>
->>>
->>> While enabled to count events and an event occurrence causes the counter
->>> value to increment and roll over to or past zero, this is termed a
->>> counter overflow. The overflow can trigger an interrupt. The IOMMU
->>> perfmon needs to handle the case properly.
->>>
->>> New HW IRQs are allocated for each IOMMU device for perfmon. The IRQ IDs
->>> are after the SVM range.
->>>
->>> In the overflow handler, the counter is not frozen. It's very unlikely
->>> that the same counter overflows again during the period. But it's
->>> possible that other counters overflow at the same time. Read the
->>> overflow register at the end of the handler and check whether there are
->>> more.
->>>
->>> Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
->>> ---
->>>   drivers/iommu/intel/dmar.c    |  2 +
->>>   drivers/iommu/intel/iommu.h   | 11 ++++-
->>>   drivers/iommu/intel/perfmon.c | 82 +++++++++++++++++++++++++++++++++++
->>>   drivers/iommu/intel/svm.c     |  2 +-
->>>   4 files changed, 95 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
->>> index dcafa32875c1..94e314320cd9 100644
->>> --- a/drivers/iommu/intel/dmar.c
->>> +++ b/drivers/iommu/intel/dmar.c
->>> @@ -1887,6 +1887,8 @@ static inline int dmar_msi_reg(struct
->>> intel_iommu *iommu, int irq)
->>>           return DMAR_FECTL_REG;
->>>       else if (iommu->pr_irq == irq)
->>>           return DMAR_PECTL_REG;
->>> +    else if (iommu->perf_irq == irq)
->>> +        return DMAR_PERFINTRCTL_REG;
->>>       else
->>>           BUG();
->>>   }
->>> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
->>> index bbc5dda903e9..f616e4f3d765 100644
->>> --- a/drivers/iommu/intel/iommu.h
->>> +++ b/drivers/iommu/intel/iommu.h
->>> @@ -130,6 +130,8 @@
->>>   #define DMAR_PERFCFGOFF_REG    0x310
->>>   #define DMAR_PERFOVFOFF_REG    0x318
->>>   #define DMAR_PERFCNTROFF_REG    0x31c
->>> +#define DMAR_PERFINTRSTS_REG    0x324
->>> +#define DMAR_PERFINTRCTL_REG    0x328
->>>   #define DMAR_PERFEVNTCAP_REG    0x380
->>>   #define DMAR_ECMD_REG        0x400
->>>   #define DMAR_ECEO_REG        0x408
->>> @@ -357,6 +359,9 @@
->>>     #define DMA_VCS_PAS    ((u64)1)
->>>   +/* PERFINTRSTS_REG */
->>> +#define DMA_PERFINTRSTS_PIS    ((u32)1)
->>> +
->>>   #define IOMMU_WAIT_OP(iommu, offset, op, cond, sts)            \
->>>   do {                                    \
->>>       cycles_t start_time = get_cycles();                \
->>> @@ -630,8 +635,12 @@ struct iommu_pmu {
->>>       struct pmu        pmu;
->>>       DECLARE_BITMAP(used_mask, IOMMU_PMU_IDX_MAX);
->>>       struct perf_event    *event_list[IOMMU_PMU_IDX_MAX];
->>> +    unsigned char        irq_name[16];
->>>   };
->>>   +#define IOMMU_IRQ_ID_OFFSET_PRQ        (DMAR_UNITS_SUPPORTED)
->>> +#define IOMMU_IRQ_ID_OFFSET_PERF    (2 * DMAR_UNITS_SUPPORTED)
->>> +
->>>   struct intel_iommu {
->>>       void __iomem    *reg; /* Pointer to hardware regs, virtual addr */
->>>       u64         reg_phys; /* physical address of hw register set */
->>> @@ -645,7 +654,7 @@ struct intel_iommu {
->>>       int        seq_id;    /* sequence id of the iommu */
->>>       int        agaw; /* agaw of this iommu */
->>>       int        msagaw; /* max sagaw of this iommu */
->>> -    unsigned int     irq, pr_irq;
->>> +    unsigned int    irq, pr_irq, perf_irq;
->>>       u16        segment;     /* PCI segment# */
->>>       unsigned char     name[13];    /* Device Name */
->>>   diff --git a/drivers/iommu/intel/perfmon.c
->>> b/drivers/iommu/intel/perfmon.c
->>> index f332232bb345..d0fbf784c827 100644
->>> --- a/drivers/iommu/intel/perfmon.c
->>> +++ b/drivers/iommu/intel/perfmon.c
->>> @@ -476,6 +476,49 @@ static void iommu_pmu_disable(struct pmu *pmu)
->>>       ecmd_submit_sync(iommu, DMA_ECMD_FREEZE, 0, false, 0);
->>>   }
->>>   +static void iommu_pmu_counter_overflow(struct iommu_pmu *iommu_pmu)
->>> +{
->>> +    struct perf_event *event;
->>> +    int i, handled = 0;
->>> +    u64 status;
->>> +
->>> +    /*
->>> +     * Two counters may be overflowed very close.
->>> +     * Always check whether there are more to handle.
->>> +     */
->>
->> Keep comment style consistent, like this
->>
->>         /*
->>          * Two counters may be overflowed very close. Always check whether
->>          * there are more to handle.
->>          */
->>
->> Same to other places.
-> 
-> Sure.
-> 
->>
->>> +    while ((status = dmar_readq(iommu_pmu->overflow))) {
->>
->> Unnecessary double brackets?
 
-I think we need the double brackets to aovid compiler warnning -
-"suggest parentheses around assignment used as truth value"
+> + *
+> + * Return the ID of the current compatibility ioas. The ID can be passed into
+> + * other functions that take an ioas_id.
+> + */
+> +int iommufd_vfio_compat_ioas_get_id(struct iommufd_ctx *ictx, u32 *out_ioas_id)
+> +{
+> +	struct iommufd_ioas *ioas;
+> +
+> +	ioas = get_compat_ioas(ictx);
+> +	if (IS_ERR(ioas))
+> +		return PTR_ERR(ioas);
+> +	*out_ioas_id = ioas->obj.id;
+> +	iommufd_put_object(&ioas->obj);
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_NS_GPL(iommufd_vfio_compat_ioas_get_id, IOMMUFD_VFIO);
+> +
+> +/**
+> + * iommufd_vfio_compat_set_no_iommu - Called when a no-iommu device is attached
+> + * @ictx: Context to operate on
+> + *
+> + * This allows selecting the VFIO_NOIOMMU_IOMMU and blocks normal types.
+> + */
+> +int iommufd_vfio_compat_set_no_iommu(struct iommufd_ctx *ictx)
+> +{
+> +	int ret;
+> +
+> +	xa_lock(&ictx->objects);
+> +	if (!ictx->vfio_ioas) {
+> +		ictx->no_iommu_mode = 1;
+> +		ret = 0;
+> +	} else {
+> +		ret = -EINVAL;
+> +	}
+> +	xa_unlock(&ictx->objects);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_NS_GPL(iommufd_vfio_compat_set_no_iommu, IOMMUFD_VFIO);
+> +
+> +/**
+> + * iommufd_vfio_compat_ioas_create - Ensure the compat IOAS is created
+>   * @ictx: Context to operate on
+> - * @out_ioas_id: The ioas_id the caller should use
+>   *
+>   * The compatibility IOAS is the IOAS that the vfio compatibility ioctls operate
+>   * on since they do not have an IOAS ID input in their ABI. Only attaching a
+> - * group should cause a default creation of the internal ioas, this returns the
+> - * existing ioas if it has already been assigned somehow.
+> + * group should cause a default creation of the internal ioas, this does nothing
+> + * if an existing ioas has already been assigned somehow.
+>   */
+> -int iommufd_vfio_compat_ioas_id(struct iommufd_ctx *ictx, u32 *out_ioas_id)
+> +int iommufd_vfio_compat_ioas_create(struct iommufd_ctx *ictx)
+>  {
+>  	struct iommufd_ioas *ioas = NULL;
+> -	struct iommufd_ioas *out_ioas;
+> +	int ret;
+>  
+>  	ioas = iommufd_ioas_alloc(ictx);
+>  	if (IS_ERR(ioas))
+>  		return PTR_ERR(ioas);
+>  
+>  	xa_lock(&ictx->objects);
+> -	if (ictx->vfio_ioas && iommufd_lock_obj(&ictx->vfio_ioas->obj))
+> -		out_ioas = ictx->vfio_ioas;
+> -	else {
+> -		out_ioas = ioas;
+> -		ictx->vfio_ioas = ioas;
+> +	/*
+> +	 * VFIO won't allow attaching a container to both iommu and no iommu
+> +	 * operation
+> +	 */
+> +	if (ictx->no_iommu_mode) {
+> +		ret = -EINVAL;
+> +		goto out_abort;
+>  	}
+> -	xa_unlock(&ictx->objects);
+>  
+> -	*out_ioas_id = out_ioas->obj.id;
+> -	if (out_ioas != ioas) {
+> -		iommufd_put_object(&out_ioas->obj);
+> -		iommufd_object_abort(ictx, &ioas->obj);
+> -		return 0;
+> +	if (ictx->vfio_ioas && iommufd_lock_obj(&ictx->vfio_ioas->obj)) {
+> +		ret = 0;
+> +		iommufd_put_object(&ictx->vfio_ioas->obj);
+> +		goto out_abort;
+>  	}
+> +	ictx->vfio_ioas = ioas;
+> +	xa_unlock(&ictx->objects);
+> +
+>  	/*
+>  	 * An automatically created compat IOAS is treated as a userspace
+>  	 * created object. Userspace can learn the ID via IOMMU_VFIO_IOAS_GET,
+> @@ -67,8 +111,13 @@ int iommufd_vfio_compat_ioas_id(struct iommufd_ctx *ictx, u32 *out_ioas_id)
+>  	 */
+>  	iommufd_object_finalize(ictx, &ioas->obj);
+>  	return 0;
+> +
+> +out_abort:
+> +	xa_unlock(&ictx->objects);
+> +	iommufd_object_abort(ictx, &ioas->obj);
+> +	return ret;
+>  }
+> -EXPORT_SYMBOL_NS_GPL(iommufd_vfio_compat_ioas_id, IOMMUFD_VFIO);
+> +EXPORT_SYMBOL_NS_GPL(iommufd_vfio_compat_ioas_create, IOMMUFD_VFIO);
+>  
+>  int iommufd_vfio_ioas(struct iommufd_ucmd *ucmd)
+>  {
+> @@ -235,6 +284,9 @@ static int iommufd_vfio_check_extension(struct iommufd_ctx *ictx,
+>  	case VFIO_UNMAP_ALL:
+>  		return 1;
+>  
+> +	case VFIO_NOIOMMU_IOMMU:
+> +	return IS_ENABLED(CONFIG_VFIO_NOIOMMU);
 
-Thanks,
-Kan
->>
->>> +        for_each_set_bit(i, (unsigned long *)&status,
->>> iommu_pmu->num_cntr) {
->>> +            handled++;
->>
->> "handled" isn't used anywhere. Please cleanup it.
->>
+
+Whitespace
+
+
+> +
+>  	case VFIO_DMA_CC_IOMMU:
+>  		return iommufd_vfio_cc_iommu(ictx);
+>  
+> @@ -261,10 +313,24 @@ static int iommufd_vfio_check_extension(struct iommufd_ctx *ictx,
+>  
+>  static int iommufd_vfio_set_iommu(struct iommufd_ctx *ictx, unsigned long type)
+>  {
+> +	bool no_iommu_mode = READ_ONCE(ictx->no_iommu_mode);
+>  	struct iommufd_ioas *ioas = NULL;
+>  	int rc = 0;
+>  
+> -	if (type != VFIO_TYPE1_IOMMU && type != VFIO_TYPE1v2_IOMMU)
+> +	/*
+> +	 * Emulation for NOIOMMU is imperfect in that VFIO blocks almost all
+> +	 * other ioctls. We let them keep working but they mostly fail since no
+> +	 * IOAS should exist.
+> +	 */
+> +	if (IS_ENABLED(CONFIG_VFIO_NOIOMMU) && type == VFIO_NOIOMMU_IOMMU &&
+> +	    no_iommu_mode) {
+> +		if (!capable(CAP_SYS_RAWIO))
+> +			return -EPERM;
+> +		return 0;
+> +	}
+> +
+> +	if ((type != VFIO_TYPE1_IOMMU && type != VFIO_TYPE1v2_IOMMU) ||
+> +	    no_iommu_mode)
+>  		return -EINVAL;
+>  
+>  	/* VFIO fails the set_iommu if there is no group */
+> diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
+> index a8f54462946742..89e06c981e435d 100644
+> --- a/drivers/vfio/Kconfig
+> +++ b/drivers/vfio/Kconfig
+> @@ -32,6 +32,7 @@ config VFIO_IOMMU_SPAPR_TCE
+>  	tristate
+>  	depends on SPAPR_TCE_IOMMU
+>  	default VFIO
+> +endif
+>  
+>  config VFIO_NOIOMMU
+>  	bool "VFIO No-IOMMU support"
+> @@ -46,7 +47,6 @@ config VFIO_NOIOMMU
+>  	  this mode since there is no IOMMU to provide DMA translation.
+>  
+>  	  If you don't know what to do here, say N.
+> -endif
+>  
+>  config VFIO_VIRQFD
+>  	bool
+> diff --git a/drivers/vfio/container.c b/drivers/vfio/container.c
+> index b7a9560ab25e48..89f10becf96255 100644
+> --- a/drivers/vfio/container.c
+> +++ b/drivers/vfio/container.c
+> @@ -29,13 +29,6 @@ static struct vfio {
+>  	struct mutex			iommu_drivers_lock;
+>  } vfio;
+>  
+> -#ifdef CONFIG_VFIO_NOIOMMU
+> -bool vfio_noiommu __read_mostly;
+> -module_param_named(enable_unsafe_noiommu_mode,
+> -		   vfio_noiommu, bool, S_IRUGO | S_IWUSR);
+> -MODULE_PARM_DESC(enable_unsafe_noiommu_mode, "Enable UNSAFE, no-IOMMU mode.  This mode provides no device isolation, no DMA translation, no host kernel protection, cannot be used for device assignment to virtual machines, requires RAWIO permissions, and will taint the kernel.  If you do not know what this is for, step away. (default: false)");
+> -#endif
+> -
+>  static void *vfio_noiommu_open(unsigned long arg)
+>  {
+>  	if (arg != VFIO_NOIOMMU_IOMMU)
+> diff --git a/drivers/vfio/group.c b/drivers/vfio/group.c
+> index bb24b2f0271e03..e166ad7ce6e755 100644
+> --- a/drivers/vfio/group.c
+> +++ b/drivers/vfio/group.c
+> @@ -133,9 +133,12 @@ static int vfio_group_ioctl_set_container(struct vfio_group *group,
+>  
+>  	iommufd = iommufd_ctx_from_file(f.file);
+>  	if (!IS_ERR(iommufd)) {
+> -		u32 ioas_id;
+> +		if (IS_ENABLED(CONFIG_VFIO_NOIOMMU) &&
+> +		    group->type == VFIO_NO_IOMMU)
+
+
+We can't have type == VFIO_NO_IOMMU without CONFIG_VFIO_NOIOMMU in any
+of these cases, so I'm assuming the IS_ENABLED() is just a
+micro-optimization for the compiler here.  It's repeated enough that
+maybe it deserves a macro though.  Thanks,
+
+Alex
+
+
+> +			ret = iommufd_vfio_compat_set_no_iommu(iommufd);
+> +		else
+> +			ret = iommufd_vfio_compat_ioas_create(iommufd);
+>  
+> -		ret = iommufd_vfio_compat_ioas_id(iommufd, &ioas_id);
+>  		if (ret) {
+>  			iommufd_ctx_put(group->iommufd);
+>  			goto out_unlock;
+> diff --git a/drivers/vfio/iommufd.c b/drivers/vfio/iommufd.c
+> index 4f82a6fa7c6c7f..79a781a4e74c09 100644
+> --- a/drivers/vfio/iommufd.c
+> +++ b/drivers/vfio/iommufd.c
+> @@ -18,6 +18,21 @@ int vfio_iommufd_bind(struct vfio_device *vdev, struct iommufd_ctx *ictx)
+>  
+>  	lockdep_assert_held(&vdev->dev_set->lock);
+>  
+> +	if (IS_ENABLED(CONFIG_VFIO_NOIOMMU) &&
+> +	    vdev->group->type == VFIO_NO_IOMMU) {
+> +		if (!capable(CAP_SYS_RAWIO))
+> +			return -EPERM;
+> +
+> +		/*
+> +		 * Require no compat ioas to be assigned to proceed. The basic
+> +		 * statement is that the user cannot have done something that
+> +		 * implies they expected translation to exist
+> +		 */
+> +		if (!iommufd_vfio_compat_ioas_get_id(ictx, &ioas_id))
+> +			return -EPERM;
+> +		return 0;
+> +	}
+> +
+>  	/*
+>  	 * If the driver doesn't provide this op then it means the device does
+>  	 * not do DMA at all. So nothing to do.
+> @@ -29,7 +44,7 @@ int vfio_iommufd_bind(struct vfio_device *vdev, struct iommufd_ctx *ictx)
+>  	if (ret)
+>  		return ret;
+>  
+> -	ret = iommufd_vfio_compat_ioas_id(ictx, &ioas_id);
+> +	ret = iommufd_vfio_compat_ioas_get_id(ictx, &ioas_id);
+>  	if (ret)
+>  		goto err_unbind;
+>  	ret = vdev->ops->attach_ioas(vdev, &ioas_id);
+> @@ -52,6 +67,10 @@ void vfio_iommufd_unbind(struct vfio_device *vdev)
+>  {
+>  	lockdep_assert_held(&vdev->dev_set->lock);
+>  
+> +	if (IS_ENABLED(CONFIG_VFIO_NOIOMMU) &&
+> +	    vdev->group->type == VFIO_NO_IOMMU)
+> +		return;
+> +
+>  	if (vdev->ops->unbind_iommufd)
+>  		vdev->ops->unbind_iommufd(vdev);
+>  }
+> diff --git a/drivers/vfio/vfio_main.c b/drivers/vfio/vfio_main.c
+> index 5177bb061b17b5..90541fc949888c 100644
+> --- a/drivers/vfio/vfio_main.c
+> +++ b/drivers/vfio/vfio_main.c
+> @@ -45,6 +45,13 @@ static struct vfio {
+>  	struct ida			device_ida;
+>  } vfio;
+>  
+> +#ifdef CONFIG_VFIO_NOIOMMU
+> +bool vfio_noiommu __read_mostly;
+> +module_param_named(enable_unsafe_noiommu_mode,
+> +		   vfio_noiommu, bool, S_IRUGO | S_IWUSR);
+> +MODULE_PARM_DESC(enable_unsafe_noiommu_mode, "Enable UNSAFE, no-IOMMU mode.  This mode provides no device isolation, no DMA translation, no host kernel protection, cannot be used for device assignment to virtual machines, requires RAWIO permissions, and will taint the kernel.  If you do not know what this is for, step away. (default: false)");
+> +#endif
+> +
+>  static DEFINE_XARRAY(vfio_device_set_xa);
+>  
+>  int vfio_assign_device_set(struct vfio_device *device, void *set_id)
+> diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
+> index 650d45629647a7..c0b5b3ac34f1e0 100644
+> --- a/include/linux/iommufd.h
+> +++ b/include/linux/iommufd.h
+> @@ -57,7 +57,9 @@ void iommufd_access_unpin_pages(struct iommufd_access *access,
+>  				unsigned long iova, unsigned long length);
+>  int iommufd_access_rw(struct iommufd_access *access, unsigned long iova,
+>  		      void *data, size_t len, unsigned int flags);
+> -int iommufd_vfio_compat_ioas_id(struct iommufd_ctx *ictx, u32 *out_ioas_id);
+> +int iommufd_vfio_compat_ioas_get_id(struct iommufd_ctx *ictx, u32 *out_ioas_id);
+> +int iommufd_vfio_compat_ioas_create(struct iommufd_ctx *ictx);
+> +int iommufd_vfio_compat_set_no_iommu(struct iommufd_ctx *ictx);
+>  #else /* !CONFIG_IOMMUFD */
+>  static inline struct iommufd_ctx *iommufd_ctx_from_file(struct file *file)
+>  {
+> @@ -89,8 +91,12 @@ static inline int iommufd_access_rw(struct iommufd_access *access, unsigned long
+>  	return -EOPNOTSUPP;
+>  }
+>  
+> -static inline int iommufd_vfio_compat_ioas_id(struct iommufd_ctx *ictx,
+> -					      u32 *out_ioas_id)
+> +static inline int iommufd_vfio_compat_ioas_create(struct iommufd_ctx *ictx)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
+> +
+> +static inline int iommufd_vfio_compat_set_no_iommu(struct iommufd_ctx *ictx)
+>  {
+>  	return -EOPNOTSUPP;
+>  }
 > 
-> Sure.
-> 
->>> +
->>> +            /*
->>> +             * Find the assigned event of the counter.
->>> +             * Accumulate the value into the event->count.
->>> +             */
->>> +            event = iommu_pmu->event_list[i];
->>> +            if (WARN_ON_ONCE(!event))
->>
->> Again, do we need a kernel trace here? This is only because the hardware
->> reported an wrong event id, right? How about a pr_warn() to let the user
->> know this?
-> 
-> The hardware reported ID doesn't match the SW records. It's hard to say
-> which one is correct. But I guess pr_warn_once() may be enough. I will
-> change it in V2.
-> 
-> Thanks,
-> Kan
-> 
->>
->>> +                continue;
->>> +            iommu_pmu_event_update(event);
->>> +        }
->>> +
->>> +        dmar_writeq(iommu_pmu->overflow, status);
->>> +    }
->>> +}
->>> +
->>> +static irqreturn_t iommu_pmu_irq_handler(int irq, void *dev_id)
->>> +{
->>> +    struct intel_iommu *iommu = dev_id;
->>> +
->>> +    if (!dmar_readl(iommu->reg + DMAR_PERFINTRSTS_REG))
->>> +        return IRQ_NONE;
->>> +
->>> +    iommu_pmu_counter_overflow(iommu->pmu);
->>> +
->>> +    /* Clear the status bit */
->>> +    dmar_writel(iommu->reg + DMAR_PERFINTRSTS_REG, DMA_PERFINTRSTS_PIS);
->>> +
->>> +    return IRQ_HANDLED;
->>> +}
->>> +
->>>   static int __iommu_pmu_register(struct intel_iommu *iommu)
->>>   {
->>>       struct iommu_pmu *iommu_pmu = iommu->pmu;
->>> @@ -658,6 +701,38 @@ void free_iommu_pmu(struct intel_iommu *iommu)
->>>       iommu->pmu = NULL;
->>>   }
->>>   +static int iommu_pmu_set_interrupt(struct intel_iommu *iommu)
->>> +{
->>> +    struct iommu_pmu *iommu_pmu = iommu->pmu;
->>> +    int irq, ret;
->>> +
->>> +    irq = dmar_alloc_hwirq(IOMMU_IRQ_ID_OFFSET_PERF + iommu->seq_id,
->>> iommu->node, iommu);
->>> +    if (irq <= 0)
->>> +        return -EINVAL;
->>> +
->>> +    snprintf(iommu_pmu->irq_name, sizeof(iommu_pmu->irq_name),
->>> "dmar%d-perf", iommu->seq_id);
->>> +
->>> +    iommu->perf_irq = irq;
->>> +    ret = request_threaded_irq(irq, NULL, iommu_pmu_irq_handler,
->>> +                   IRQF_ONESHOT, iommu_pmu->irq_name, iommu);
->>> +    if (ret) {
->>> +        dmar_free_hwirq(irq);
->>> +        iommu->perf_irq = 0;
->>> +        return ret;
->>> +    }
->>> +    return 0;
->>> +}
->>> +
->>> +static void iommu_pmu_unset_interrupt(struct intel_iommu *iommu)
->>> +{
->>> +    if (!iommu->perf_irq)
->>> +        return;
->>> +
->>> +    free_irq(iommu->perf_irq, iommu);
->>> +    dmar_free_hwirq(iommu->perf_irq);
->>> +    iommu->perf_irq = 0;
->>> +}
->>> +
->>>   static int iommu_pmu_cpu_online(unsigned int cpu)
->>>   {
->>>       if (cpumask_empty(&iommu_pmu_cpu_mask))
->>> @@ -734,8 +809,14 @@ void iommu_pmu_register(struct intel_iommu *iommu)
->>>       if (iommu_pmu_cpuhp_setup(iommu_pmu))
->>>           goto unregister;
->>>   +    /* Set interrupt for overflow */
->>> +    if (iommu_pmu_set_interrupt(iommu))
->>> +        goto cpuhp_free;
->>> +
->>>       return;
->>>   +cpuhp_free:
->>> +    iommu_pmu_cpuhp_free(iommu_pmu);
->>>   unregister:
->>>       perf_pmu_unregister(&iommu_pmu->pmu);
->>>   err:
->>> @@ -749,6 +830,7 @@ void iommu_pmu_unregister(struct intel_iommu *iommu)
->>>       if (!iommu_pmu)
->>>           return;
->>>   +    iommu_pmu_unset_interrupt(iommu);
->>>       iommu_pmu_cpuhp_free(iommu_pmu);
->>>       perf_pmu_unregister(&iommu_pmu->pmu);
->>>   }
->>> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
->>> index c76b66263467..b6c5edd80d5d 100644
->>> --- a/drivers/iommu/intel/svm.c
->>> +++ b/drivers/iommu/intel/svm.c
->>> @@ -79,7 +79,7 @@ int intel_svm_enable_prq(struct intel_iommu *iommu)
->>>       }
->>>       iommu->prq = page_address(pages);
->>>   -    irq = dmar_alloc_hwirq(DMAR_UNITS_SUPPORTED + iommu->seq_id,
->>> iommu->node, iommu);
->>> +    irq = dmar_alloc_hwirq(IOMMU_IRQ_ID_OFFSET_PRQ + iommu->seq_id,
->>> iommu->node, iommu);
->>>       if (irq <= 0) {
->>>           pr_err("IOMMU: %s: Failed to create IRQ vector for page
->>> request queue\n",
->>>                  iommu->name);
->>
->> -- 
->> Best regards,
->> baolu
+> base-commit: b7bfaa761d760e72a969d116517eaa12e404c262
+
