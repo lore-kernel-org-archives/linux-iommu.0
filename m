@@ -1,48 +1,69 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2049.outbound.protection.outlook.com [40.107.237.49])
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2042.outbound.protection.outlook.com [40.107.100.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DE453D64
-	for <iommu@lists.linux.dev>; Wed, 18 Jan 2023 17:50:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8988A3D64
+	for <iommu@lists.linux.dev>; Wed, 18 Jan 2023 18:00:48 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=S0lnMcnESVDPtnBmtRmcCVvYDT5kAqHyuaycf5k8wpVeZXaRdSsx57uj6ukG6FwJOx2idtE53WIUa0NR/rlYUpvuqC5ZG5N3r9/7h0mFYXEB41mDrBQxdJWaHO5jy/uMISaXN5YrXUwNm8WZvr9HonxNpaXVoGerH2H5IF06DOYfh6IiRHZRC0mOiZ4rsKjdw62nGck3yhvoFU7IG1gU5o+02EhEny6ABjmYyq+yYN46P5h0mDwW8bpDFSv1pIMPwB+UrLBU3c/PyAlxUcYa5tAaOZa0samCCuy6OXuMpOFR9pLS9I0zOGGoJ938zV2qckIoyFfYdU5pq/MmqcW1KQ==
+ b=hXoTCCFLZnOD9YXHQINsoNJysimNrVNAz3rNG+c2a8vlhmhYnZKx8Vvj5dsCJcNVEc5iBRKd7nmr76JNdkGzgliNRUSsmBWtS8zsDl4TDrNi6waQ0wAo5a/MwbvXVDcpAFHxjyXlFM53uQkNMqeQ1vfDypvRrHrPJ+knizM1bDSm+IhlkCA9apZ8VLrREpIggCSG/B+Et6xkako5nyUpbDGDYwgSSqczuSim6qSftxp0mqZzFt29HmXaOC6jOYZxL7VcR0KoIbjDkEyw2VN3VvAhpFTd8NFwi9ykBW4qF+pDw4UTW85zHEXPaYJxjmi95pt6+M0hHX+Hy/RW0fgoiA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QLnlldyBu8wjXSdYsCnDX/eDa42rqkpzzj4Pevaj2tg=;
- b=HDPIVtHCPqY5NTtPUDUBKW6FICTjfq40+sGWes7/hL73GH2E+021j0aRTAdgFwcovX7otlxUd8hChdUCKoA9A5uRsERORyN0k40bVmmmpIs0jZx/Bl+VcdMnut5VAxJ+/zDJK5fUwCAxKxgCI42Mm6WgTKIZcvte4MGjw0DmFBIAmtdhi39mFsceVGlyTUmvjqRxizOUbXuRn3fIGJDrV+dBd0vhppfDiDCgtTs3Ex0KAm4kzDTRdUjd8uhdkar8183REwCNB8hVblxgC9ctBpBixFSc5dyfeFol39w8bau21NctxAFd+ylTtGFmthtinTqDQ3CntEWk8D1bbqcxFA==
+ bh=1rgow5diNk+hVt+Qqw0FXU33IcXQf0aq5YG3bZTDQaI=;
+ b=YJHXP40dKqKDwVDEviHWtEf2+d4oYsiHyB21j7UWWRbiUo1Nkuvs2qZxeA4mscr/7D+HNp8dZjq05MnEiKxKWEilFwAceCsGtrfKiH8KnVPP7aIriRrPxsfvsNo4y5lzVxJbXgSKsb/gW5iIJ/sbLlaT3oaPDyPbIab9zByrLu3aallUoA6lx7MHTCoH2AFQ3Afvzfb1p5cvj0j5we87oVaq3Yzi49KORD5bRbr9rwUcV5eOc488WlKRHjBXZwzbfCBKA97Q27qvt65RNFJLvdgFLPUMhp6IgDzWQXU61MP6Rp9z1TGozcfxbNCdtvAoeMIRncmU6njoqWQkKWvaJg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QLnlldyBu8wjXSdYsCnDX/eDa42rqkpzzj4Pevaj2tg=;
- b=pMVUKkEkty+GiilXMuTW/t8bbpFtgjDJ3bl2XF0LlBBHAQcVZuTGCC0Uuq/eyYOsLGqiMJ2/Yz13bL4tvc7qwQ/mRNq149wxJldif6AJ8SO3mBiCESQ9/rNEyFHVtSqVbSvNzUmFVNyDiGxpgb2ApiLEp8RvmFAGau9ZFs9VlT1B6C0wu+4ZFlAfZ7JYp0N94yfzKHM2eGZ8hPT2Y60RFQmm8UG2YrxzE+y5FHyQVvDw7PNQOe3fAnrHVn1H2WCPqYFmnqJBgWmjF/WagfkDerEeTwm6qe9aXitaEn1v4Wxs5ygJJErBSrlP1RxCVWlThfSupPirar/e6g+qgsw8Ag==
+ bh=1rgow5diNk+hVt+Qqw0FXU33IcXQf0aq5YG3bZTDQaI=;
+ b=tB8X5gTZH+CJRpWO9vB+DaX/UJdLa4S44i9WjPyrM+xIhyf75jrjn/O+2SFjtIpe9FHmJ9SKnJjBU2tmnseVEAhJUnJorjbYTudRDGkDhJE/VZEWU19NvDNXfePEa/bt+F1+VmhYXhYHXyYLCGe05jzXFURA8MqzIAbfu44YL1LokoKuHit7lJ3LwGQQlxmaN68vF+3wB0OTI2yfK4SyixAAryHmVM8TPs+KlcVUf0lfKtQ3h0ZV/aEfl8kpybw17TYv2BvUB0VApGiiO8I/sOnMC8qT4pakH5mykmv4xNRt+JTMh3kYPNGbIzVOfBq0rQzHREE9R0yjWNKbzqw9YQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by SA1PR12MB8143.namprd12.prod.outlook.com (2603:10b6:806:333::10) with
+ by IA1PR12MB7614.namprd12.prod.outlook.com (2603:10b6:208:429::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.23; Wed, 18 Jan
- 2023 17:50:29 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.13; Wed, 18 Jan
+ 2023 18:00:45 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::f8b0:df13:5f8d:12a%9]) with mapi id 15.20.6002.013; Wed, 18 Jan 2023
- 17:50:29 +0000
+ 18:00:45 +0000
 From: Jason Gunthorpe <jgg@nvidia.com>
-To: Alex Williamson <alex.williamson@redhat.com>,
-	Cornelia Huck <cohuck@redhat.com>,
-	iommu@lists.linux.dev,
+To: Lu Baolu <baolu.lu@linux.intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
 	Kevin Tian <kevin.tian@intel.com>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Robin Murphy <robin.murphy@arm.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+	ath10k@lists.infradead.org,
+	ath11k@lists.infradead.org,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	dri-devel@lists.freedesktop.org,
+	iommu@lists.linux.dev,
 	kvm@vger.kernel.org,
-	Yi Liu <yi.l.liu@intel.com>
-Subject: [PATCH v3] vfio: Support VFIO_NOIOMMU with iommufd
-Date: Wed, 18 Jan 2023 13:50:28 -0400
-Message-Id: <0-v3-480cd64a16f7+1ad0-iommufd_noiommu_jgg@nvidia.com>
+	linux-arm-kernel@lists.infradead.org,
+	linux-arm-msm@vger.kernel.org,
+	linux-media@vger.kernel.org,
+	linux-rdma@vger.kernel.org,
+	linux-remoteproc@vger.kernel.org,
+	linux-s390@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-tegra@vger.kernel.org,
+	linux-wireless@vger.kernel.org,
+	netdev@vger.kernel.org,
+	nouveau@lists.freedesktop.org,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	virtualization@lists.linux-foundation.org
+Subject: [PATCH v2 03/10] iommu: Add a gfp parameter to iommu_map_sg()
+Date: Wed, 18 Jan 2023 14:00:37 -0400
+Message-Id: <3-v2-ce66f632bd0d+484-iommu_map_gfp_jgg@nvidia.com>
+In-Reply-To: <0-v2-ce66f632bd0d+484-iommu_map_gfp_jgg@nvidia.com>
+References:
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: MN2PR16CA0014.namprd16.prod.outlook.com
- (2603:10b6:208:134::27) To LV2PR12MB5869.namprd12.prod.outlook.com
+X-ClientProxiedBy: BLAPR03CA0064.namprd03.prod.outlook.com
+ (2603:10b6:208:329::9) To LV2PR12MB5869.namprd12.prod.outlook.com
  (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -51,464 +72,187 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SA1PR12MB8143:EE_
-X-MS-Office365-Filtering-Correlation-Id: 34b1315c-644c-4ac8-d6b0-08daf97c7cec
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|IA1PR12MB7614:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3289005d-6cf5-4741-cb9e-08daf97debe6
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	b6SeEFCmC78pV2IH9Y4ODYb5N/oCiu50sRlOyjxap5xqJefUj0tEjnpvDkuzYMGDWzT4hmt7liIZBNWxQRPi4Ag9qS7N1rSTKJ7Y4RxMMbyFWDNY9SX9D00W0OkIL3KVezdXgkR9eKQLop3HS93aqTu1JkBmiu0ZSOBaL/IUHxaXxXsr9+J6tjOHobTt+9pJCsts466DUR+Yffun/UaibAz/HSlydgIWJ5g4PCXtfMo9shNadRi3q2cwRwcIXVU9234cbtfsFvnZ8OQfjtV/yfK3cQZ5z/pmK/7ceeIUweVy95Wp8X3fpWAdbKNbnx0rIXbwrvjKdMnblgvgk/dGtmsc49ZBfMnqNG67ZNpCVzX4dXe9AGp/8amFYm/shq/+/H8t9eSGVVQkzfedvc/obJvsWM6T8onr22mKZ0iWPmdz6+SDwhboNCghZWUICFTkefzXvMGFA2oSFYZy3liRZ4+sz7UYlNWpli9hrDMu1s7pkJ51xmSB2MW28mTJNTN4C4zY/VQa/OMWehrVeSnMzP5bzlcMiWYxFoc1oQFsELcd37yrNMDJJTTV8KYBfHMCfhN3cEC0iYCtzU6T1nPJwCxonbeFuZivQDMzcp+tVWI6FbJ+qTp6UB90MwmPmA963IfSDA7vQPTdvQMvK9S2oagYL40uu/A1YFrwSPb6CcylVjuRiaF0N6Rn9gDo2yFZxaNZG7qeHGSdJkfnt+AbQpp/6THmXr4g3T/6lWxEQZkgwLc7Z4hdRsd9yu5/DFeQXzxq+e2ywYTTOfz+0Yal4xc9azLgeNLzLXeai53PIbHvUNn/IFV+tZzbRLBacZb+
+	EAquh9wTbVTZvNn7pq2JL2hrLPhCXhIIKiU5KfbQCyQk4TWnAjyEY40G8WU8zObnfa+Vl3YB9E8rXOLTjVp0m1Drz4Kic1KbvCmDgfjjRsR2DJvlxOfJ+SkbtwPur6XFoWQfYD9AURxA0yjdOn7I5IOjKDdfueh3sz6AtUQQWbFRvaBAS4EDKvzUp3rTEa9MRfvGKwB06Ny4MCW5Pu4L+WvqcZxmmd809GDu/XGIakZsqFpDLcKl1HbQtGsmBqEnpmh4s8UI9jMTcRNDowLURHPCPSKLL0V2ltLTHPM0bvfgzZi+ObdeXhiQcuE/YZlzZcgjcLUoWayuOUOTRQWufPe+a0ZTd4mOjwwso9ESUQasoILWH858lzexVI6eIx/H5mQUuMUiVLcUtwJqbyfwGP9vwa/a5cGArI46mS9mflNOzIV7Ei1DjGB2PqQLCFiUZhksRGIEwqW4t30zPtZH7NRrcaJghGcVvsGSFPS7IgQYpVhAJRTV79aPi2HJBK42KbuVrAPKJd7XQpVqqi5eKAjri12Hyd/oUFumCqKr7+ymL4rY+KbY8JCoVlHSAd92Z5gyzMwEVvCQMOtSyi2lj2m5KruireIJRJ8vO+VoBLqYCJDfpxBfxnheo3AkW/XI+dT6xb4S3F4acVohgQrq0qffjgS0x7fZjM3sce39dUfGPKE5BeceJ/72mtC3fQcF
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(39860400002)(376002)(346002)(136003)(396003)(451199015)(30864003)(966005)(8936002)(6486002)(478600001)(66556008)(36756003)(41300700001)(8676002)(66476007)(5660300002)(26005)(66946007)(2906002)(316002)(110136005)(86362001)(6512007)(38100700002)(186003)(6506007)(83380400001)(2616005)(4216001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(346002)(39860400002)(396003)(136003)(366004)(376002)(451199015)(6506007)(186003)(26005)(478600001)(6512007)(6486002)(6666004)(54906003)(316002)(110136005)(4326008)(66946007)(66556008)(8676002)(66476007)(36756003)(2616005)(41300700001)(8936002)(83380400001)(2906002)(7416002)(5660300002)(38100700002)(86362001)(4216001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?15uD7kPB7O1Nu6yzeAM4KScyXDBVsRWaCTj2dvCHuy2ZzwTkhFayCqAi1tCI?=
- =?us-ascii?Q?VQpD8ctTG5gnit2LhHKRF4zuRgwzdixUIvLP94lodJ+faQK0bUk0KVw24/AA?=
- =?us-ascii?Q?dKSj/cWZhfdpIJ3svUGyBxE9ZhQXt/ESvFgj5hHXqIV1SG5LySUa4KbejifM?=
- =?us-ascii?Q?L9j7dsJmM/Z+q8qzP9/EnE+RuC1R3yiGJA2yui1WVqnpgVaKHnn4zOPG+Bq4?=
- =?us-ascii?Q?jkFJqrjzqB+psLSWoDfMKXJTEBU7PCzk0Vp/krfYLX+W9+rNYoWgzKBY9vun?=
- =?us-ascii?Q?/Xk70j2bDO4kX4gQ5d02z0KX5+DArkY59zSyJYgpJqgh1HwOsJCwVBbA+zpY?=
- =?us-ascii?Q?zRRh90asTE3Wc5SZwd0jADl4fvDQxitSENDldEsMCG92QzeAD7eQaaGT4kW3?=
- =?us-ascii?Q?K59Azl1qF8mISxtxMaGaiaEERYwRlcDIQfpcv73Grmh6egXHXxrqYlrftPD5?=
- =?us-ascii?Q?COEIgs1o+U5gy/jC1O6G5zkLuXB6r99F8jSrGKhX9JWPEg8UVk/2ftbUXCCI?=
- =?us-ascii?Q?ggbYf+T9M1GbvzAkGF/XqDS5PG/2o+eWkPAUjhnZJrzSXQfYhYLpmsWkS7Q2?=
- =?us-ascii?Q?XNh/1zkp+PUdAv0lPSP9cTTbMw7GEW8FCP/RXAQj+C+d5orHzdK3Y1CaO1hW?=
- =?us-ascii?Q?Unc4WMQoNbQHheIzaNZaJqcWSfW9/bXFlZj04gsBLO5eLNhiVfvq5URnDEPB?=
- =?us-ascii?Q?AriKj22imOJ9uKCEqhQLxBKYwfoitWMs/K6hmI00gbjGB/RUe0+26vHFEsdG?=
- =?us-ascii?Q?M6TzAGM7ulHEua3gURnCw9KEmnES9ZUOLRzBTdrbS8fOUgmAm9xw1w3yC0vh?=
- =?us-ascii?Q?G2YorsImeYK7wIBQo4cr1D+O+J8i44UvwJO3qcN7IWRlMNNGwKjz+taYJbqd?=
- =?us-ascii?Q?Xc382byztbtSygpCyZJ1tOH5UX3KwDLP0+q0gmZeAS2oUjP68xZNqX2cVNaS?=
- =?us-ascii?Q?tPjyv/bHI6oednH0kamv+ex+MAJ6vk/tXsAMebKGkkftcNsrrY03ZEq4ApY/?=
- =?us-ascii?Q?ywQI3J+DpwkbMzDe8kpOuehtyneiieLrJyBxHFt3z3ZexOif0rFqSe/eso22?=
- =?us-ascii?Q?TunCDyaK5ZdTo7Dfod6cCatvEbI34+TgS7+9fWjae0A5tQPFYYOpWAFCU92U?=
- =?us-ascii?Q?+B3k314ERDjF4KR3xA1SJZK7VWMT08rPZOYxQkDZz2lo2uaJxNzyoXhZ8TK+?=
- =?us-ascii?Q?/77lAfAG+LLyvW320NSgY1bkqbBOBtoeW302odXVUi4lN8+y+LFh3718WtSa?=
- =?us-ascii?Q?clwXOYXVpJ0PiUuxeveyihmKFi9BUoqyFovyPRmb+8Wu55zAhGhjU2Zx8Xcu?=
- =?us-ascii?Q?yLn+COf9tY3bqYR5FYffX6BpH9ILkCizzm4+iEsbZJhVdyPpockJBpIhr9Op?=
- =?us-ascii?Q?DCAXlpePID/hubCRDWS+/eRoTC/vrFRz46KzVQOJ+Cpe1XoD33Ck+L2KSvXV?=
- =?us-ascii?Q?cX2Xo8B+804+zjNw3XE/xqG2I9Va+C5Uy/o1nfNqeJfFKhC2SCbNz/4WvnMi?=
- =?us-ascii?Q?aXYHYWQX6uXxG+XR9Gmd7Y5olH5jklDY6WLron8+xY1gN0QeWoMFuoBoUkSm?=
- =?us-ascii?Q?P+YWhf3ms5N1X2DI0yn+nhzJcWfghInoCjSLuxjg?=
+	=?us-ascii?Q?7f+aQxlhcqWHrfjoUc+2E6lpzU9E5X6C5dQ/JnnFutQxJSisp2jl5QB+Klo9?=
+ =?us-ascii?Q?JxohTCoUv5u4LiMOTNsIb20mWefqV3alHEu0oje2vWgGxZHHeDt4rczkIGYC?=
+ =?us-ascii?Q?/+a5tRdbxQlJp4B/2Bj79XdTLw6jyGkpOEIv5lPbzZn7jVUi1hyR56r3KnTq?=
+ =?us-ascii?Q?hV5lrPdFKcIAdx37myMNUYO/h8rhMaa7V9HRigmYNHAsX9msFduCX4vQmumr?=
+ =?us-ascii?Q?PC3QtX+rUxCsWAOOg+eoZoDsKhBUdUB2C4vm9RQZUq194e8c39+mltOJI7ql?=
+ =?us-ascii?Q?FaGShFVVQM99j1t1yd5d93XZpraZdUz+r7xcQwIxQ3/iSPbPGWxzbX/dFEkY?=
+ =?us-ascii?Q?+Nmn+Oa3lIpg+GBgRyoalwdeoDWDnD6CkM0IaGQYMBjQQonjxz+XvaB9+k+C?=
+ =?us-ascii?Q?/RBeJjBx8FxA7yFlSuXm0SD6G09CaO0xLHUwrywAJHpQJAXJH9VhEFeerOCZ?=
+ =?us-ascii?Q?QQX1q0ITQWxD8BqDLofugTuRh21bnjgvqUZAxfMSzZo9tTMBR5vSbD2wpB8X?=
+ =?us-ascii?Q?g7fIXAUl8k9uWuS89+FopjZXOCiabvKyoIvY36h0DPgRjI/kwtjNpD5rKJwK?=
+ =?us-ascii?Q?SrfVI0V5RyBxx+lx+gXFzpDeA0VwbeBOEU5sI5CYV3zfeGM3NJQGOpH3Vo36?=
+ =?us-ascii?Q?e6e1eXn1ZcYHhBU0Tn7xZFb8+nNEwcxm3Y1rNe/jOKEXyQ0D86J98F3YZHiY?=
+ =?us-ascii?Q?aitTN6I39iB99qkG0T6UcxqlD3k/qv0Ob55C0aC/qvMUrN1vB8La9e4clQRL?=
+ =?us-ascii?Q?Hi0VutivUxPvAtbURdFEqMsk0eh1+wm6fLJlD+ks7+lV0DXXC2KrYAr8teDF?=
+ =?us-ascii?Q?4+RIOwZmlwJ3OpHL/xsfehiPHrjythoRXADm0vkBEe8K3ci9sbS87yAFYv6l?=
+ =?us-ascii?Q?dmKChfpD3v3MSLHFEO320DIIN+qgWbfsCt/HIHZtgHKhj3Og6U2DYRDrrLpy?=
+ =?us-ascii?Q?mBtnY7nTMfupE5AoFRq/EqhPR4gYS7qpD9972GvVRFh/QKVh/Rtk9e3b/mBo?=
+ =?us-ascii?Q?hMbrpJATKX4WXBrGIQtRkgm4bDaqtuh4Qc4ArAnWAnDsYrNQNT8rpEJP52M8?=
+ =?us-ascii?Q?ok5C1A5J4iGMVWUQNkbqZlmTkz+AbtgWehIQ8vKWUuFuFEUJMTygf8kCZzQ+?=
+ =?us-ascii?Q?l1kIRL8YnGQaiHa7nff7v09Ah+0nZiTkKoYhxL52+NAz74o6tbC47Jv70BQo?=
+ =?us-ascii?Q?or3Cx0bGEHaEXY1iG2iLfRBPqdy6B0jOmG106Pyby8xO/qlFU3Ue5ZdRClRc?=
+ =?us-ascii?Q?xxqybE9MJE/nJjQ6iaGvcj7JClHbZg880quf8K7KHMtW1yUL2jnKrkkSWWy9?=
+ =?us-ascii?Q?ce7uubi8ithEXhJZrvMlbgteuZ/vaOH48/gHmr4MheP6j6P5sapk8HNAOkHU?=
+ =?us-ascii?Q?bHxgC/aVuvDEcMUTQcSKdZV461mBt53e/9dxWnnSGfE6Li/nW95jW8Y7F1Qr?=
+ =?us-ascii?Q?cGPrzVmPxMTh1o/snnk1Fjgk8sTxenPnYdes8DquN/7c8tT337lRCTGeq9eV?=
+ =?us-ascii?Q?MWmVJeHN3uT+HWGZ5Fn+GBIWBLKB6d00p3r+KQja/fpXYRFWejxZKuQhdGIL?=
+ =?us-ascii?Q?asj6glqzU7D8jkj8sVGqWXaF4wEqHdehu9UHWSSL?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 34b1315c-644c-4ac8-d6b0-08daf97c7cec
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3289005d-6cf5-4741-cb9e-08daf97debe6
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2023 17:50:29.5859
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2023 18:00:45.3015
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sCrXRcCZ4YfXrrqSdkh3D4lXYyrWiQdqvFARm/Uwj7jrUfWYz/4AcVGNNu3R1ENq
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8143
+X-MS-Exchange-CrossTenant-UserPrincipalName: VQ1WX3Ma18fOY83qY8rk8IB+ZaB0YFwzIbDxfHZcEPBDEisJQmbDs0D2J/7qFl9k
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB7614
 
-Add a small amount of emulation to vfio_compat to accept the SET_IOMMU to
-VFIO_NOIOMMU_IOMMU and have vfio just ignore iommufd if it is working on a
-no-iommu enabled device.
+Follow the pattern for iommu_map() and remove iommu_map_sg_atomic().
 
-Move the enable_unsafe_noiommu_mode module out of container.c into
-vfio_main.c so that it is always available even if VFIO_CONTAINER=n.
+This allows __iommu_dma_alloc_noncontiguous() to use a GFP_KERNEL
+allocation here, based on the provided gfp flags.
 
-This passes Alex's mini-test:
-
-https://github.com/awilliam/tests/blob/master/vfio-noiommu-pci-device-open.c
-
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- drivers/iommu/iommufd/Kconfig           |   2 +-
- drivers/iommu/iommufd/iommufd_private.h |   2 +
- drivers/iommu/iommufd/vfio_compat.c     | 105 +++++++++++++++++++-----
- drivers/vfio/Kconfig                    |   2 +-
- drivers/vfio/container.c                |   7 --
- drivers/vfio/group.c                    |   7 +-
- drivers/vfio/iommufd.c                  |  19 ++++-
- drivers/vfio/vfio.h                     |   8 +-
- drivers/vfio/vfio_main.c                |   7 ++
- include/linux/iommufd.h                 |  12 ++-
- 10 files changed, 136 insertions(+), 35 deletions(-)
+ drivers/iommu/dma-iommu.c |  5 +++--
+ drivers/iommu/iommu.c     | 26 ++++++++++----------------
+ include/linux/iommu.h     | 18 +++++-------------
+ 3 files changed, 18 insertions(+), 31 deletions(-)
 
-v3:
- - Missed kdoc
- - Incorrect indent
- - Consolidate duplicate code into vfio_device_is_noiommu()
-v2: https://lore.kernel.org/r/0-v2-568c93fef076+5a-iommufd_noiommu_jgg@nvidia.com
- - Passes Alex's test
- - Fix a spelling error for s/CONFIG_VFIO_NO_IOMMU/CONFIG_VFIO_NOIOMMU/
- - Prevent type1 mode from being requested and prevent a compat IOAS from being
-   auto created with an additional context global trap door flag
- - Make it so VFIO_CONTAINER=n still creates the module option and related machinery
- - Comment updates
-v1: https://lore.kernel.org/all/0-v1-5cde901db21d+661fe-iommufd_noiommu_jgg@nvidia.com
-
-Alex, if you are good with this can you ack it and I'll send you a PR. Yi will
-need to rebase his series on top of it.
-
-Thanks,
-Jason
-
-diff --git a/drivers/iommu/iommufd/Kconfig b/drivers/iommu/iommufd/Kconfig
-index 8306616b6d8198..ada693ea51a78e 100644
---- a/drivers/iommu/iommufd/Kconfig
-+++ b/drivers/iommu/iommufd/Kconfig
-@@ -23,7 +23,7 @@ config IOMMUFD_VFIO_CONTAINER
- 	  removed.
- 
- 	  IOMMUFD VFIO container emulation is known to lack certain features
--	  of the native VFIO container, such as no-IOMMU support, peer-to-peer
-+	  of the native VFIO container, such as peer-to-peer
- 	  DMA mapping, PPC IOMMU support, as well as other potentially
- 	  undiscovered gaps.  This option is currently intended for the
- 	  purpose of testing IOMMUFD with unmodified userspace supporting VFIO
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index 222e86591f8ac9..9d7f71510ca1bc 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -18,6 +18,8 @@ struct iommufd_ctx {
- 	struct xarray objects;
- 
- 	u8 account_mode;
-+	/* Compatibility with VFIO no iommu */
-+	u8 no_iommu_mode;
- 	struct iommufd_ioas *vfio_ioas;
- };
- 
-diff --git a/drivers/iommu/iommufd/vfio_compat.c b/drivers/iommu/iommufd/vfio_compat.c
-index 3ceca0e8311c39..29ef01820a9a0a 100644
---- a/drivers/iommu/iommufd/vfio_compat.c
-+++ b/drivers/iommu/iommufd/vfio_compat.c
-@@ -26,39 +26,84 @@ static struct iommufd_ioas *get_compat_ioas(struct iommufd_ctx *ictx)
- }
- 
- /**
-- * iommufd_vfio_compat_ioas_id - Return the IOAS ID that vfio should use
-+ * iommufd_vfio_compat_ioas_get_id - Ensure a compat IOAS exists
-+ * @ictx: Context to operate on
-+ * @out_ioas_id: The IOAS ID of the compatability IOAS
-+ *
-+ * Return the ID of the current compatibility IOAS. The ID can be passed into
-+ * other functions that take an ioas_id.
-+ */
-+int iommufd_vfio_compat_ioas_get_id(struct iommufd_ctx *ictx, u32 *out_ioas_id)
-+{
-+	struct iommufd_ioas *ioas;
-+
-+	ioas = get_compat_ioas(ictx);
-+	if (IS_ERR(ioas))
-+		return PTR_ERR(ioas);
-+	*out_ioas_id = ioas->obj.id;
-+	iommufd_put_object(&ioas->obj);
-+	return 0;
-+}
-+EXPORT_SYMBOL_NS_GPL(iommufd_vfio_compat_ioas_get_id, IOMMUFD_VFIO);
-+
-+/**
-+ * iommufd_vfio_compat_set_no_iommu - Called when a no-iommu device is attached
-+ * @ictx: Context to operate on
-+ *
-+ * This allows selecting the VFIO_NOIOMMU_IOMMU and blocks normal types.
-+ */
-+int iommufd_vfio_compat_set_no_iommu(struct iommufd_ctx *ictx)
-+{
-+	int ret;
-+
-+	xa_lock(&ictx->objects);
-+	if (!ictx->vfio_ioas) {
-+		ictx->no_iommu_mode = 1;
-+		ret = 0;
-+	} else {
-+		ret = -EINVAL;
-+	}
-+	xa_unlock(&ictx->objects);
-+	return ret;
-+}
-+EXPORT_SYMBOL_NS_GPL(iommufd_vfio_compat_set_no_iommu, IOMMUFD_VFIO);
-+
-+/**
-+ * iommufd_vfio_compat_ioas_create - Ensure the compat IOAS is created
-  * @ictx: Context to operate on
-- * @out_ioas_id: The ioas_id the caller should use
-  *
-  * The compatibility IOAS is the IOAS that the vfio compatibility ioctls operate
-  * on since they do not have an IOAS ID input in their ABI. Only attaching a
-- * group should cause a default creation of the internal ioas, this returns the
-- * existing ioas if it has already been assigned somehow.
-+ * group should cause a default creation of the internal ioas, this does nothing
-+ * if an existing ioas has already been assigned somehow.
-  */
--int iommufd_vfio_compat_ioas_id(struct iommufd_ctx *ictx, u32 *out_ioas_id)
-+int iommufd_vfio_compat_ioas_create(struct iommufd_ctx *ictx)
- {
- 	struct iommufd_ioas *ioas = NULL;
--	struct iommufd_ioas *out_ioas;
-+	int ret;
- 
- 	ioas = iommufd_ioas_alloc(ictx);
- 	if (IS_ERR(ioas))
- 		return PTR_ERR(ioas);
- 
- 	xa_lock(&ictx->objects);
--	if (ictx->vfio_ioas && iommufd_lock_obj(&ictx->vfio_ioas->obj))
--		out_ioas = ictx->vfio_ioas;
--	else {
--		out_ioas = ioas;
--		ictx->vfio_ioas = ioas;
-+	/*
-+	 * VFIO won't allow attaching a container to both iommu and no iommu
-+	 * operation
-+	 */
-+	if (ictx->no_iommu_mode) {
-+		ret = -EINVAL;
-+		goto out_abort;
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 7016db569f81fc..8c2788633c1766 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -833,7 +833,8 @@ static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
+ 			arch_dma_prep_coherent(sg_page(sg), sg->length);
  	}
--	xa_unlock(&ictx->objects);
  
--	*out_ioas_id = out_ioas->obj.id;
--	if (out_ioas != ioas) {
--		iommufd_put_object(&out_ioas->obj);
--		iommufd_object_abort(ictx, &ioas->obj);
--		return 0;
-+	if (ictx->vfio_ioas && iommufd_lock_obj(&ictx->vfio_ioas->obj)) {
-+		ret = 0;
-+		iommufd_put_object(&ictx->vfio_ioas->obj);
-+		goto out_abort;
- 	}
-+	ictx->vfio_ioas = ioas;
-+	xa_unlock(&ictx->objects);
-+
- 	/*
- 	 * An automatically created compat IOAS is treated as a userspace
- 	 * created object. Userspace can learn the ID via IOMMU_VFIO_IOAS_GET,
-@@ -67,8 +112,13 @@ int iommufd_vfio_compat_ioas_id(struct iommufd_ctx *ictx, u32 *out_ioas_id)
+-	ret = iommu_map_sg_atomic(domain, iova, sgt->sgl, sgt->orig_nents, ioprot);
++	ret = iommu_map_sg(domain, iova, sgt->sgl, sgt->orig_nents, ioprot,
++			   gfp);
+ 	if (ret < 0 || ret < size)
+ 		goto out_free_sg;
+ 
+@@ -1281,7 +1282,7 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 	 * We'll leave any physical concatenation to the IOMMU driver's
+ 	 * implementation - it knows better than we do.
  	 */
- 	iommufd_object_finalize(ictx, &ioas->obj);
- 	return 0;
-+
-+out_abort:
-+	xa_unlock(&ictx->objects);
-+	iommufd_object_abort(ictx, &ioas->obj);
-+	return ret;
+-	ret = iommu_map_sg_atomic(domain, iova, sg, nents, prot);
++	ret = iommu_map_sg(domain, iova, sg, nents, prot, GFP_ATOMIC);
+ 	if (ret < 0 || ret < iova_len)
+ 		goto out_free_iova;
+ 
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 9412b420d07257..cc6e7c6bf72758 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2470,9 +2470,9 @@ size_t iommu_unmap_fast(struct iommu_domain *domain,
  }
--EXPORT_SYMBOL_NS_GPL(iommufd_vfio_compat_ioas_id, IOMMUFD_VFIO);
-+EXPORT_SYMBOL_NS_GPL(iommufd_vfio_compat_ioas_create, IOMMUFD_VFIO);
+ EXPORT_SYMBOL_GPL(iommu_unmap_fast);
  
- int iommufd_vfio_ioas(struct iommufd_ucmd *ucmd)
+-static ssize_t __iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+-		struct scatterlist *sg, unsigned int nents, int prot,
+-		gfp_t gfp)
++ssize_t iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
++		     struct scatterlist *sg, unsigned int nents, int prot,
++		     gfp_t gfp)
  {
-@@ -235,6 +285,9 @@ static int iommufd_vfio_check_extension(struct iommufd_ctx *ictx,
- 	case VFIO_UNMAP_ALL:
- 		return 1;
+ 	const struct iommu_domain_ops *ops = domain->ops;
+ 	size_t len = 0, mapped = 0;
+@@ -2480,6 +2480,13 @@ static ssize_t __iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+ 	unsigned int i = 0;
+ 	int ret;
  
-+	case VFIO_NOIOMMU_IOMMU:
-+		return IS_ENABLED(CONFIG_VFIO_NOIOMMU);
++	might_sleep_if(gfpflags_allow_blocking(gfp));
 +
- 	case VFIO_DMA_CC_IOMMU:
- 		return iommufd_vfio_cc_iommu(ictx);
- 
-@@ -261,10 +314,24 @@ static int iommufd_vfio_check_extension(struct iommufd_ctx *ictx,
- 
- static int iommufd_vfio_set_iommu(struct iommufd_ctx *ictx, unsigned long type)
- {
-+	bool no_iommu_mode = READ_ONCE(ictx->no_iommu_mode);
- 	struct iommufd_ioas *ioas = NULL;
- 	int rc = 0;
- 
--	if (type != VFIO_TYPE1_IOMMU && type != VFIO_TYPE1v2_IOMMU)
-+	/*
-+	 * Emulation for NOIOMMU is imperfect in that VFIO blocks almost all
-+	 * other ioctls. We let them keep working but they mostly fail since no
-+	 * IOAS should exist.
-+	 */
-+	if (IS_ENABLED(CONFIG_VFIO_NOIOMMU) && type == VFIO_NOIOMMU_IOMMU &&
-+	    no_iommu_mode) {
-+		if (!capable(CAP_SYS_RAWIO))
-+			return -EPERM;
-+		return 0;
-+	}
++	/* Discourage passing strange GFP flags */
++	if (WARN_ON_ONCE(gfp & (__GFP_COMP | __GFP_DMA | __GFP_DMA32 |
++				__GFP_HIGHMEM)))
++		return -EINVAL;
 +
-+	if ((type != VFIO_TYPE1_IOMMU && type != VFIO_TYPE1v2_IOMMU) ||
-+	    no_iommu_mode)
- 		return -EINVAL;
+ 	while (i <= nents) {
+ 		phys_addr_t s_phys = sg_phys(sg);
  
- 	/* VFIO fails the set_iommu if there is no group */
-diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
-index a8f54462946742..89e06c981e435d 100644
---- a/drivers/vfio/Kconfig
-+++ b/drivers/vfio/Kconfig
-@@ -32,6 +32,7 @@ config VFIO_IOMMU_SPAPR_TCE
- 	tristate
- 	depends on SPAPR_TCE_IOMMU
- 	default VFIO
-+endif
+@@ -2519,21 +2526,8 @@ static ssize_t __iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
  
- config VFIO_NOIOMMU
- 	bool "VFIO No-IOMMU support"
-@@ -46,7 +47,6 @@ config VFIO_NOIOMMU
- 	  this mode since there is no IOMMU to provide DMA translation.
- 
- 	  If you don't know what to do here, say N.
--endif
- 
- config VFIO_VIRQFD
- 	bool
-diff --git a/drivers/vfio/container.c b/drivers/vfio/container.c
-index b7a9560ab25e48..89f10becf96255 100644
---- a/drivers/vfio/container.c
-+++ b/drivers/vfio/container.c
-@@ -29,13 +29,6 @@ static struct vfio {
- 	struct mutex			iommu_drivers_lock;
- } vfio;
- 
--#ifdef CONFIG_VFIO_NOIOMMU
--bool vfio_noiommu __read_mostly;
--module_param_named(enable_unsafe_noiommu_mode,
--		   vfio_noiommu, bool, S_IRUGO | S_IWUSR);
--MODULE_PARM_DESC(enable_unsafe_noiommu_mode, "Enable UNSAFE, no-IOMMU mode.  This mode provides no device isolation, no DMA translation, no host kernel protection, cannot be used for device assignment to virtual machines, requires RAWIO permissions, and will taint the kernel.  If you do not know what this is for, step away. (default: false)");
--#endif
+ 	return ret;
+ }
 -
- static void *vfio_noiommu_open(unsigned long arg)
+-ssize_t iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+-		     struct scatterlist *sg, unsigned int nents, int prot)
+-{
+-	might_sleep();
+-	return __iommu_map_sg(domain, iova, sg, nents, prot, GFP_KERNEL);
+-}
+ EXPORT_SYMBOL_GPL(iommu_map_sg);
+ 
+-ssize_t iommu_map_sg_atomic(struct iommu_domain *domain, unsigned long iova,
+-		    struct scatterlist *sg, unsigned int nents, int prot)
+-{
+-	return __iommu_map_sg(domain, iova, sg, nents, prot, GFP_ATOMIC);
+-}
+-
+ /**
+  * report_iommu_fault() - report about an IOMMU fault to the IOMMU framework
+  * @domain: the iommu domain where the fault has happened
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 521cd79700f4d8..d5c16dc33c87de 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -474,10 +474,8 @@ extern size_t iommu_unmap_fast(struct iommu_domain *domain,
+ 			       unsigned long iova, size_t size,
+ 			       struct iommu_iotlb_gather *iotlb_gather);
+ extern ssize_t iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
+-		struct scatterlist *sg, unsigned int nents, int prot);
+-extern ssize_t iommu_map_sg_atomic(struct iommu_domain *domain,
+-				   unsigned long iova, struct scatterlist *sg,
+-				   unsigned int nents, int prot);
++			    struct scatterlist *sg, unsigned int nents,
++			    int prot, gfp_t gfp);
+ extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova);
+ extern void iommu_set_fault_handler(struct iommu_domain *domain,
+ 			iommu_fault_handler_t handler, void *token);
+@@ -791,14 +789,7 @@ static inline size_t iommu_unmap_fast(struct iommu_domain *domain,
+ 
+ static inline ssize_t iommu_map_sg(struct iommu_domain *domain,
+ 				   unsigned long iova, struct scatterlist *sg,
+-				   unsigned int nents, int prot)
+-{
+-	return -ENODEV;
+-}
+-
+-static inline ssize_t iommu_map_sg_atomic(struct iommu_domain *domain,
+-				  unsigned long iova, struct scatterlist *sg,
+-				  unsigned int nents, int prot)
++				   unsigned int nents, int prot, gfp_t gfp)
  {
- 	if (arg != VFIO_NOIOMMU_IOMMU)
-diff --git a/drivers/vfio/group.c b/drivers/vfio/group.c
-index bb24b2f0271e03..e166ad7ce6e755 100644
---- a/drivers/vfio/group.c
-+++ b/drivers/vfio/group.c
-@@ -133,9 +133,12 @@ static int vfio_group_ioctl_set_container(struct vfio_group *group,
- 
- 	iommufd = iommufd_ctx_from_file(f.file);
- 	if (!IS_ERR(iommufd)) {
--		u32 ioas_id;
-+		if (IS_ENABLED(CONFIG_VFIO_NOIOMMU) &&
-+		    group->type == VFIO_NO_IOMMU)
-+			ret = iommufd_vfio_compat_set_no_iommu(iommufd);
-+		else
-+			ret = iommufd_vfio_compat_ioas_create(iommufd);
- 
--		ret = iommufd_vfio_compat_ioas_id(iommufd, &ioas_id);
- 		if (ret) {
- 			iommufd_ctx_put(group->iommufd);
- 			goto out_unlock;
-diff --git a/drivers/vfio/iommufd.c b/drivers/vfio/iommufd.c
-index 4f82a6fa7c6c7f..db4efbd560425f 100644
---- a/drivers/vfio/iommufd.c
-+++ b/drivers/vfio/iommufd.c
-@@ -18,6 +18,20 @@ int vfio_iommufd_bind(struct vfio_device *vdev, struct iommufd_ctx *ictx)
- 
- 	lockdep_assert_held(&vdev->dev_set->lock);
- 
-+	if (vfio_device_is_noiommu(vdev)) {
-+		if (!capable(CAP_SYS_RAWIO))
-+			return -EPERM;
-+
-+		/*
-+		 * Require no compat ioas to be assigned to proceed. The basic
-+		 * statement is that the user cannot have done something that
-+		 * implies they expected translation to exist
-+		 */
-+		if (!iommufd_vfio_compat_ioas_get_id(ictx, &ioas_id))
-+			return -EPERM;
-+		return 0;
-+	}
-+
- 	/*
- 	 * If the driver doesn't provide this op then it means the device does
- 	 * not do DMA at all. So nothing to do.
-@@ -29,7 +43,7 @@ int vfio_iommufd_bind(struct vfio_device *vdev, struct iommufd_ctx *ictx)
- 	if (ret)
- 		return ret;
- 
--	ret = iommufd_vfio_compat_ioas_id(ictx, &ioas_id);
-+	ret = iommufd_vfio_compat_ioas_get_id(ictx, &ioas_id);
- 	if (ret)
- 		goto err_unbind;
- 	ret = vdev->ops->attach_ioas(vdev, &ioas_id);
-@@ -52,6 +66,9 @@ void vfio_iommufd_unbind(struct vfio_device *vdev)
- {
- 	lockdep_assert_held(&vdev->dev_set->lock);
- 
-+	if (vfio_device_is_noiommu(vdev))
-+		return;
-+
- 	if (vdev->ops->unbind_iommufd)
- 		vdev->ops->unbind_iommufd(vdev);
+ 	return -ENODEV;
  }
-diff --git a/drivers/vfio/vfio.h b/drivers/vfio/vfio.h
-index f8219a438bfbf5..9e94abcf8ee1a8 100644
---- a/drivers/vfio/vfio.h
-+++ b/drivers/vfio/vfio.h
-@@ -10,10 +10,10 @@
- #include <linux/device.h>
- #include <linux/cdev.h>
- #include <linux/module.h>
-+#include <linux/vfio.h>
- 
- struct iommufd_ctx;
- struct iommu_group;
--struct vfio_device;
- struct vfio_container;
- 
- void vfio_device_put_registration(struct vfio_device *device);
-@@ -88,6 +88,12 @@ bool vfio_device_has_container(struct vfio_device *device);
- int __init vfio_group_init(void);
- void vfio_group_cleanup(void);
- 
-+static inline bool vfio_device_is_noiommu(struct vfio_device *vdev)
-+{
-+	return IS_ENABLED(CONFIG_VFIO_NOIOMMU) &&
-+	       vdev->group->type == VFIO_NO_IOMMU;
-+}
-+
- #if IS_ENABLED(CONFIG_VFIO_CONTAINER)
- /* events for the backend driver notify callback */
- enum vfio_iommu_notify_type {
-diff --git a/drivers/vfio/vfio_main.c b/drivers/vfio/vfio_main.c
-index 5177bb061b17b5..90541fc949888c 100644
---- a/drivers/vfio/vfio_main.c
-+++ b/drivers/vfio/vfio_main.c
-@@ -45,6 +45,13 @@ static struct vfio {
- 	struct ida			device_ida;
- } vfio;
- 
-+#ifdef CONFIG_VFIO_NOIOMMU
-+bool vfio_noiommu __read_mostly;
-+module_param_named(enable_unsafe_noiommu_mode,
-+		   vfio_noiommu, bool, S_IRUGO | S_IWUSR);
-+MODULE_PARM_DESC(enable_unsafe_noiommu_mode, "Enable UNSAFE, no-IOMMU mode.  This mode provides no device isolation, no DMA translation, no host kernel protection, cannot be used for device assignment to virtual machines, requires RAWIO permissions, and will taint the kernel.  If you do not know what this is for, step away. (default: false)");
-+#endif
-+
- static DEFINE_XARRAY(vfio_device_set_xa);
- 
- int vfio_assign_device_set(struct vfio_device *device, void *set_id)
-diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
-index 650d45629647a7..c0b5b3ac34f1e0 100644
---- a/include/linux/iommufd.h
-+++ b/include/linux/iommufd.h
-@@ -57,7 +57,9 @@ void iommufd_access_unpin_pages(struct iommufd_access *access,
- 				unsigned long iova, unsigned long length);
- int iommufd_access_rw(struct iommufd_access *access, unsigned long iova,
- 		      void *data, size_t len, unsigned int flags);
--int iommufd_vfio_compat_ioas_id(struct iommufd_ctx *ictx, u32 *out_ioas_id);
-+int iommufd_vfio_compat_ioas_get_id(struct iommufd_ctx *ictx, u32 *out_ioas_id);
-+int iommufd_vfio_compat_ioas_create(struct iommufd_ctx *ictx);
-+int iommufd_vfio_compat_set_no_iommu(struct iommufd_ctx *ictx);
- #else /* !CONFIG_IOMMUFD */
- static inline struct iommufd_ctx *iommufd_ctx_from_file(struct file *file)
+@@ -1109,7 +1100,8 @@ iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid,
+ static inline size_t iommu_map_sgtable(struct iommu_domain *domain,
+ 			unsigned long iova, struct sg_table *sgt, int prot)
  {
-@@ -89,8 +91,12 @@ static inline int iommufd_access_rw(struct iommufd_access *access, unsigned long
- 	return -EOPNOTSUPP;
+-	return iommu_map_sg(domain, iova, sgt->sgl, sgt->orig_nents, prot);
++	return iommu_map_sg(domain, iova, sgt->sgl, sgt->orig_nents, prot,
++			    GFP_KERNEL);
  }
  
--static inline int iommufd_vfio_compat_ioas_id(struct iommufd_ctx *ictx,
--					      u32 *out_ioas_id)
-+static inline int iommufd_vfio_compat_ioas_create(struct iommufd_ctx *ictx)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static inline int iommufd_vfio_compat_set_no_iommu(struct iommufd_ctx *ictx)
- {
- 	return -EOPNOTSUPP;
- }
-
-base-commit: b7bfaa761d760e72a969d116517eaa12e404c262
+ #ifdef CONFIG_IOMMU_DEBUGFS
 -- 
 2.39.0
 
