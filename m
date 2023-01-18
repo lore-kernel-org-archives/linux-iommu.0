@@ -1,107 +1,145 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12D4B53A7
-	for <iommu@lists.linux.dev>; Wed, 18 Jan 2023 18:58:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1674068315;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=jwaWlIaPebdK8DNpQuuvVjS8artPxBM6nDox3pZmeN8=;
-	b=gg8gz4QPbMrIO4R+JJHtF5wyO9KcPI9E95pBKvNR1ihWw6VQ9sdoMtt5dZPXndqBkTb7uj
-	OlM8UrRCQ99JRB2eq4bn3AM87WSi2CjS9YETLHft7amg1tfDswPPNUExOFn/pSfcYC0luJ
-	DVKyE08pNXKjbh7iZ/fKJzCnO08nMIw=
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
- [209.85.166.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-250-UfZBdUj8OA6Vvzkuh_V4Fw-1; Wed, 18 Jan 2023 13:58:34 -0500
-X-MC-Unique: UfZBdUj8OA6Vvzkuh_V4Fw-1
-Received: by mail-il1-f200.google.com with SMTP id 9-20020a056e0220c900b0030f1b0dfa9dso4344940ilq.4
-        for <iommu@lists.linux.dev>; Wed, 18 Jan 2023 10:58:34 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=jwaWlIaPebdK8DNpQuuvVjS8artPxBM6nDox3pZmeN8=;
-        b=zEqTMhz5csU90v6KuGW40eM5eTsYfo7VL/IIIMGCFntNz9vtuSVoI2JwUSTBEeQSXg
-         oiKFpvUJ9/MIli6azuu/09tfBNZlZW8VDRWxhIrodzmUdH+oKbQ+cfjPt4VP3N1St4uq
-         gr1JFvKcXf39k7WGGr7atMLqGXe4BwP7C01/W4uZ614PI9CGDqWP7b+V0QHntw+1G3SI
-         SmLKLOhu7kIB40+AH9qW8sxuZegJSVIl3SaWXGWgPMBxxL4uOJkQsTzz5ftlb6yz4I3b
-         hUthrEAykE3Ld6JjBV+Ugmi3I8nZ2PLJgmTSKrlfOVf7uTwRBjX8nasuqoAboPU+08SY
-         HNuQ==
-X-Gm-Message-State: AFqh2krcqL9yHaQs/0ANpHTntj+BYP1tw/Ckc/75D/ck1ZR13O19a2jU
-	OZ6CGOD/IcdbdhNJMtiX24JBIyM0S3WYztvTgTOzDKXd9X4HW+4WiXHPB8/bhv1l4qzW52KHe+v
-	lZ8aqnhpowKBAAQk=
-X-Received: by 2002:a5d:9f0c:0:b0:704:b286:64c3 with SMTP id q12-20020a5d9f0c000000b00704b28664c3mr5357196iot.16.1674068313897;
-        Wed, 18 Jan 2023 10:58:33 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXuD3FNjIe8uZwiymfGir/K6vuU0PbE/oIAy9VURoxPULmWGDYCX5CqFDoljCfgmrCuNOhASOg==
-X-Received: by 2002:a5d:9f0c:0:b0:704:b286:64c3 with SMTP id q12-20020a5d9f0c000000b00704b28664c3mr5357187iot.16.1674068313655;
-        Wed, 18 Jan 2023 10:58:33 -0800 (PST)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id h7-20020a05660208c700b00704a77b7b28sm3952149ioz.54.2023.01.18.10.58.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Jan 2023 10:58:33 -0800 (PST)
-Date: Wed, 18 Jan 2023 11:58:31 -0700
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Cornelia Huck <cohuck@redhat.com>, iommu@lists.linux.dev, Kevin Tian
- <kevin.tian@intel.com>, kvm@vger.kernel.org, Yi Liu <yi.l.liu@intel.com>
-Subject: Re: [PATCH v3] vfio: Support VFIO_NOIOMMU with iommufd
-Message-ID: <20230118115831.3e76742d.alex.williamson@redhat.com>
-In-Reply-To: <0-v3-480cd64a16f7+1ad0-iommufd_noiommu_jgg@nvidia.com>
-References: <0-v3-480cd64a16f7+1ad0-iommufd_noiommu_jgg@nvidia.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.35; x86_64-redhat-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2DFB53BE
+	for <iommu@lists.linux.dev>; Wed, 18 Jan 2023 20:50:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674075027; x=1705611027;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=NPMhzzz0RKilWU/5JQolES+uiAaNFvLIHnBZFC8yZxM=;
+  b=ks/ArLw3b2pEG0E6bJMbqVjpN1SipGnD3JN6n3lGDJeo4rfwuAtLP+HL
+   xZ2xekIDVz+Iavz/2AVUl17f3mqGnj1GOoBpqr+KASC3/7ugIDb+6dpx+
+   SOyEtxCAecC1+QkX+oD0U2Yrsz7zyvZqIQ6YbcnuoyKPcM6JrVyg/hWT1
+   t+Ns6u8DZx7akgv7xJrrqZ49rjq7Yn7APBZcZ1vDR7fr92RzVp5Uwm/px
+   9l+8zLaQ1UxW1yOQOvQZf3aYoSDltPQEgkn7t/me2S2oJjIoZNREh8/CX
+   DY/VYzfXrFox2ADSIwamZ/+zh4lBOx53w48T5P1mU9cS6Wz5TGWmrnUyj
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="323784119"
+X-IronPort-AV: E=Sophos;i="5.97,226,1669104000"; 
+   d="scan'208";a="323784119"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2023 12:50:26 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="833739565"
+X-IronPort-AV: E=Sophos;i="5.97,226,1669104000"; 
+   d="scan'208";a="833739565"
+Received: from kanliang-dev.jf.intel.com ([10.165.154.102])
+  by orsmga005.jf.intel.com with ESMTP; 18 Jan 2023 12:50:26 -0800
+From: kan.liang@linux.intel.com
+To: joro@8bytes.org,
+	will@kernel.org,
+	baolu.lu@linux.intel.com,
+	dwmw2@infradead.org,
+	robin.murphy@arm.com,
+	robert.moore@intel.com,
+	rafael.j.wysocki@intel.com,
+	lenb@kernel.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: Kan Liang <kan.liang@linux.intel.com>
+Subject: [PATCH V2 0/7] iommu/vt-d: Support performance monitoring for IOMMU
+Date: Wed, 18 Jan 2023 12:49:59 -0800
+Message-Id: <20230118205006.3182907-1-kan.liang@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Wed, 18 Jan 2023 13:50:28 -0400
-Jason Gunthorpe <jgg@nvidia.com> wrote:
-> diff --git a/drivers/vfio/vfio.h b/drivers/vfio/vfio.h
-> index f8219a438bfbf5..9e94abcf8ee1a8 100644
-> --- a/drivers/vfio/vfio.h
-> +++ b/drivers/vfio/vfio.h
-> @@ -10,10 +10,10 @@
->  #include <linux/device.h>
->  #include <linux/cdev.h>
->  #include <linux/module.h>
-> +#include <linux/vfio.h>
->  
->  struct iommufd_ctx;
->  struct iommu_group;
-> -struct vfio_device;
->  struct vfio_container;
->  
->  void vfio_device_put_registration(struct vfio_device *device);
-> @@ -88,6 +88,12 @@ bool vfio_device_has_container(struct vfio_device *device);
->  int __init vfio_group_init(void);
->  void vfio_group_cleanup(void);
->  
-> +static inline bool vfio_device_is_noiommu(struct vfio_device *vdev)
-> +{
-> +	return IS_ENABLED(CONFIG_VFIO_NOIOMMU) &&
-> +	       vdev->group->type == VFIO_NO_IOMMU;
-> +}
+From: Kan Liang <kan.liang@linux.intel.com>
 
+Changes since V1:
+- The cap and ecap registers are always in the first page. It's not
+  necessary to use the reg size in dmar_validate_one_drhd(). (Patch 1)
+- Move reg_size up and pair it with reg_base_addr in struct
+  dmar_drhd_unit (Patch 1)
+- Update the year of Copyright (Patch 2)
+- Return 0 if PMS is not supported (Patch 2)
+- Refine the comments and add a pr_warn for per-counter capabilities
+  check (Patch 2)
+- Remove unnecessary iommu_pmu->num_cntr = i (Patch 2)
+- Remove has_ob of ecmd_submit_sync() (Patch 3)
+- Remove the helpers from non-INTEL_IOMMU. (Patch 3)
+- Still keep #ifdef CONFIG_INTEL_IOMMU for ecmd_submit_sync() to
+  avoid compile warning with non-INTEL_IOMMU config.
+- Use pr_warn_once() to replace WARN_ONCE() (Patch 4 & 6)
+- Free iommu PMU if it fails to be registered. (Patch 4)
+- Remove unnecessary 'handled' variable. (Patch 6)
 
-What about:
+A performance monitoring infrastructure, perfmon, is introduced with
+the VT-d Spec 4.0. The purpose of perfmon is to support collection of
+information about key events occurring during operation of the remapping
+hardware, to aid performance tuning and debug. The patch series is to
+support the perfmon for IOMMU.
 
-static inline bool vfio_group_type_is_noiommu(struct vfio_group *group)
+To facilitate the perfmon support, the patch series also supports two
+new generic features of VT-d Spec 4.0.
+- Support the 'size' field to retrieve the accurate size of the register
+  set for each dmar device from DRHD. (Patch 1)
+- Support the new Enhanced Command Interface. (Patch 3)
 
-which would allow us to pickup the group.c use with only extending the
-callers here as s/vdev/vdev->group/?  Or we could even make a
-vfio_device_group_type_is_noiommu(struct vfio_device*) calling the
-above if we want a device specific interface.  Thanks,
+With the patch series, users can collect the performance data of IOMMU
+via Linux perf tool. For example,
 
-Alex
+ $ perf stat -e dmar0/iommu_requests,filter_ats=0/ -a sleep 1
+
+ Performance counter stats for 'system wide':
+
+              2135      dmar0/iommu_requests,filter_ats=0/
+
+       1.001087695 seconds time elapsed
+
+The IOMMU PMUs can be found under /sys/bus/event_source/devices/dmar*
+
+The available filters and event format can be found at the format folder
+ $ ls /sys/bus/event_source/devices/dmar0/format/
+event  event_group  filter_ats  filter_page_table
+
+The supported events can be found at the events folder
+
+ $ ls /sys/bus/event_source/devices/dmar0/events/
+ats_blocked        int_cache_hit_nonposted  iommu_mrds
+pasid_cache_lookup
+ctxt_cache_hit     int_cache_hit_posted     iommu_requests
+pg_req_posted
+ctxt_cache_lookup  int_cache_lookup         iotlb_hit
+pw_occupancy
+fs_nonleaf_hit     iommu_clocks             iotlb_lookup
+ss_nonleaf_hit
+fs_nonleaf_lookup  iommu_mem_blocked        pasid_cache_hit
+ss_nonleaf_lookup
+
+Kan Liang (7):
+  iommu/vt-d: Support size of the register set in DRHD
+  iommu/vt-d: Retrieve IOMMU perfmon capability information
+  iommu/vt-d: Support Enhanced Command Interface
+  iommu/vt-d: Add IOMMU perfmon support
+  iommu/vt-d: Support cpumask for IOMMU perfmon
+  iommu/vt-d: Add IOMMU perfmon overflow handler support
+  iommu/vt-d: Enable IOMMU perfmon support
+
+ .../sysfs-bus-event_source-devices-iommu      |  32 +
+ drivers/iommu/intel/Kconfig                   |   9 +
+ drivers/iommu/intel/Makefile                  |   1 +
+ drivers/iommu/intel/dmar.c                    |  91 +-
+ drivers/iommu/intel/iommu.c                   |   3 +
+ drivers/iommu/intel/iommu.h                   | 101 ++-
+ drivers/iommu/intel/perfmon.c                 | 850 ++++++++++++++++++
+ drivers/iommu/intel/perfmon.h                 |  65 ++
+ drivers/iommu/intel/svm.c                     |   2 +-
+ include/acpi/actbl1.h                         |   2 +-
+ include/linux/cpuhotplug.h                    |   1 +
+ include/linux/dmar.h                          |   1 +
+ 12 files changed, 1151 insertions(+), 7 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-event_source-devices-iommu
+ create mode 100644 drivers/iommu/intel/perfmon.c
+ create mode 100644 drivers/iommu/intel/perfmon.h
+
+-- 
+2.35.1
 
