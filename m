@@ -1,129 +1,174 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2BD233C7
-	for <iommu@lists.linux.dev>; Wed, 18 Jan 2023 15:47:16 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gSFfiTQ38pXlIdpjQYvKADRZEZwUMHq4znPWFI1OqgmTYf5xqIZHE/1UjJMP4bGw43OIJ7sdZa5uvvvMFcUuvL+atFxmzWoLeCYEXEfOZeVbjLcTTG6Cm39UFzzUUs1RMXJwVQuZh/rGq6RSozduUa6+Yxz4Mrkf0U1dE+Yg0KCmVNB61N16IpUdMBo74aP1TA7WPNDO5RsFCkERCvXkA53ffRHaYwURwufawwU2h0wFkihQ9/qTQo2AN8ZGbEn0QnA+kwSxAsbFH1iDi2TnzJGBLdexFNTUi3WTY1iQD9y3GmBqtCpJ8TQAzQQtheIFiGrbARYasOsMGzwaXzLNTw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Kib7FYygz4Fdu0zEJ+EIYLV6WJKC07gFBKXzXERSXew=;
- b=XnQZOMa26UKr3RsJzo+Yvj5DHiOaNGqZONg/uQfESYhNqPLvqNuqmncSuk74qu1uV9Z7RKvvgfWTp214PRA0QdairPBUgXi7AIAq57IWMfo/HDu6Ppa8tFj0Y96afzlqVozBR/tQ4k1419k7lVOhojgfMp+g4BNqeUMwfSW3IAdDmEOAMHKqIVAygYdzeEthZBU1Ou1BpzacS/t99O3Tu8UCE8EY6vhFdHqf4O0UAr94nF4rnhToupV0sgHVihxwkIchXCm1/zhVK/H3cIbp/7jcQHXryeIZ5vUZTO2pSCi8mkY2Mv5PFLq/TfezZnuFgGAMewzIilsuYBgIc0icqA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Kib7FYygz4Fdu0zEJ+EIYLV6WJKC07gFBKXzXERSXew=;
- b=JBf6xy/6qm3OcUvHNi6rWumCGgWcc8RrIDbNOCJWnutmjPsXkrXOfGNZIWALbI5V1Gul3tVPyPTd32CWt8wX0TTr5hJNoyZOeQ/eWfU+W2sVNhaXJ4Ov1J/LDcxOTKd9qsbnBdiyZ02A+kFjYjtJzXxzFotPn9CznU82A+I/aHnGsNnwiqJ9E2lBid7TRfoNTqmuDK4XfxWEw66ZtSPqvpjALzz9t/SwOVvyzxiNw1DCshpOpAp4Kn3XPeE+39I8gSntQfYn43n/SEt6/FjeDbyvAcb+gPlXysDmb7uNIq9rAmjZlrkPPUGtUewLU8MMZg6h41V19V6po6g7hubaKw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by MN2PR12MB4269.namprd12.prod.outlook.com (2603:10b6:208:1d4::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.23; Wed, 18 Jan
- 2023 15:47:14 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f8b0:df13:5f8d:12a%9]) with mapi id 15.20.6002.013; Wed, 18 Jan 2023
- 15:47:14 +0000
-Date: Wed, 18 Jan 2023 11:47:12 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: Cornelia Huck <cohuck@redhat.com>, iommu@lists.linux.dev,
-	Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
-	Yi Liu <yi.l.liu@intel.com>
-Subject: Re: [PATCH v2] vfio: Support VFIO_NOIOMMU with iommufd
-Message-ID: <Y8gUgL+VWaL8WOZK@nvidia.com>
-References: <0-v2-568c93fef076+5a-iommufd_noiommu_jgg@nvidia.com>
- <20230117150256.1937d343.alex.williamson@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230117150256.1937d343.alex.williamson@redhat.com>
-X-ClientProxiedBy: BL1PR13CA0317.namprd13.prod.outlook.com
- (2603:10b6:208:2c1::22) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 653352F21
+	for <iommu@lists.linux.dev>; Wed, 18 Jan 2023 17:26:09 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 99DB92B;
+	Wed, 18 Jan 2023 09:26:49 -0800 (PST)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id A68C43F445;
+	Wed, 18 Jan 2023 09:26:06 -0800 (PST)
+From: Robin Murphy <robin.murphy@arm.com>
+To: joro@8bytes.org
+Cc: will@kernel.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	John Garry <john.garry@huawei.com>,
+	Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH v3] iommu: Optimise PCI SAC address trick
+Date: Wed, 18 Jan 2023 17:26:00 +0000
+Message-Id: <e9abc601b00e26fd15a583fcd55f2a8227903077.1674061620.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.36.1.dirty
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MN2PR12MB4269:EE_
-X-MS-Office365-Filtering-Correlation-Id: d4eb98f1-6a5c-45dd-17b5-08daf96b44f0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	nI1VGMiR8A+Mm6jTLIC67sU1O+IBK/j67O5tocJ/KFs+YnqqlPCYDRwSM/0Z3vA2McDUd5iBdWNOn757PpjdgA88iv2LI3Guzmir1YFcFDzJAd9k+KyzGnS3nYA47zhJUS1sbo95wbMkYaXc2yGWtiYP7A8iB0xAqiLNge4zKeykZvIgi+F+NLjpvBH9rrZP8MMu52ZIvh6QHsqLmJwj9UbZWA4Ky6pmpuEtbJ+/lwODbDeYip7q5MSxCUOWzMguv9gX7WRsErAVoVRJG/8sRVLpFGzUP6iK6WAndj0XHD5Jd2xKB8dTVqqyq0DHYt8eedk27487S/jL2fWgXMhesl9uizcBUJNBbYMblfGH6ev+ilGhT5709yitBPeBitO28p4hkt5Fi/YsXFhYQG2yPFKf7aJMdQp7JWvqC0U4ZAFnXZOtfbC5nlLpsiKpPBElWWuBgXeiza3QCapmm0KPNSPhhXKXnuOz2MgNACZV+DCXJurQy4kN4aVu96v6UiQ2khCLCVFPmiFCUPDUXUcgHgyDm4fzHb/QdEts5B2o9N++q6luXKP6FBgeJgesIC1XRS053WwJvVaCfJ/QaClrnunGCj7ySf4g0BoUEsXTr6wsuiZ9jEOPb3+d33Bb5yhM1Uqpe47SPyMG2trDHf053h8s3FoSdDCX09tU5lmZu/LMAyNQDJHqK/1ZnhFlQ3Es
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(396003)(366004)(346002)(136003)(376002)(451199015)(2906002)(38100700002)(36756003)(316002)(2616005)(54906003)(66556008)(4744005)(8676002)(4326008)(66946007)(86362001)(41300700001)(6916009)(5660300002)(66476007)(6506007)(478600001)(6512007)(6486002)(26005)(186003)(8936002)(67856001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?THuXHANMtJXo1oYiYqWem/KDX7MNmyRaPpa+9sFps+wYNnJPiimGuzL40VQt?=
- =?us-ascii?Q?hFF8+owz4LCAslddSQrBpo6d1gGQkUCvxrGJEl5hzD/IE4WPpbYRYUgT0Qic?=
- =?us-ascii?Q?xNs1MIN0YjKDqsPZRvxjCyYhanYXL7jdXxPA8lmHEf6BfiaAyMouWC+1bz4T?=
- =?us-ascii?Q?9LmquKc48rQnrBiYKWfbPyKjn+5BeQfbAGdvCaFgWaw80Z/2hm0CKTMP2L5J?=
- =?us-ascii?Q?5uyNT9QmkgblU6WjXPBTEU+jB6RBkxSVvHfojKkmPSZ/CPBm5qAge0Md8Ash?=
- =?us-ascii?Q?MUvqmTpkXUgVVBQN/s2bns0bYQenHtKNxH0O3CYdzcPxy67Mm0A2mhQg27Ka?=
- =?us-ascii?Q?xGVg2GK9M2B5IGgFRcaAINPfRuQ/Dw8P7djNHufUAE5dXJkQTl95xlw4/ADv?=
- =?us-ascii?Q?JHZkO0OECCFun3pXTx+zNzuuqQ9QioVMrGCYMSvnSLRrf6Lr7mgPeZnz8WbW?=
- =?us-ascii?Q?5BFj+S9txWg3iy8zYdbYs8sDiMMOfg9uDCqioh4+lwHvtnguJu7mAQcXdP0e?=
- =?us-ascii?Q?uqxBsylcoKBtuw5h3wq+8P+OvSx07Wcc6fN9oJ0B5I2D/KXpHVTzOTZDxtGe?=
- =?us-ascii?Q?qJtJGnhzBAOO8iW51+OLnoX4TWOVX7aV9RMidAwko4SlvOMdvRJo6bq23zTP?=
- =?us-ascii?Q?ZRkovDgM1lhTf4wCEDjulwcLzlqMu1AGfvJSqycJIXqCyR/CamjTnCb1V9W7?=
- =?us-ascii?Q?QUdoQLjsBFUwUASs0zc4COK7hlAIsU3PYoEFHuAl2nq8Rcthg8g593SpwwJL?=
- =?us-ascii?Q?A4YtKfLupczHSo0MSc+awq3mI9Ai4oOeSOv1sfzjLcIZGnanpHcfEPcydWE8?=
- =?us-ascii?Q?yKSra7HyBUJRZC/KwUQRo3DUCZ+OU9IbaSegUf7vuqFLhMctcELpPpy1A8uu?=
- =?us-ascii?Q?gQvHoO2r+yPuvG+DSy+V/aRIBY3o6bKCx9eVCjmCFS7OSCWBvNCNKcQQqlpb?=
- =?us-ascii?Q?REOKCBlJw8aQZ1xZqFGVHvDS0ZcvxskvMZYSoJI9T/Vk60KxFduPc7l14F6T?=
- =?us-ascii?Q?X1LlOkZeMdmfJ5F8ZcKEFpaHDEffKpebAyMoZv+bqBObrGwZMCr9PwlgLWyV?=
- =?us-ascii?Q?pf/zwPkT2NJUhADY/AYwPtA3THMxpmTb29tR7XFA2W0DUnkZLcnpy8XO8rrn?=
- =?us-ascii?Q?WuFKYUjUxT7Ce49aW7NnObO9pSpEW6brdHDXgrJowQRtMU4f1XzfV8ppKPnd?=
- =?us-ascii?Q?SbCiLeZF8Fy2U+AJ1+/CGp6JdSYvaqj+NvHvtta2ANufZ4kIoZV9RQ7LD6PR?=
- =?us-ascii?Q?TppFk6Y/1iAKconmNtarRdWDw6gH1/KCGSgYE3qpV8ChhfJCGCUfoqQlq0rI?=
- =?us-ascii?Q?zAJ9TXDtW21pinjWJ09aFbEnik+gSyzuzN0mB60N/aezyvGHwszCn5IWEGL4?=
- =?us-ascii?Q?zZF3HgFyCmy249+xnEJE2U5me3orYiUnrOFb6DO8Ijehr64kOOb4krkBDZww?=
- =?us-ascii?Q?MvUYSKW28+AjzI7RZH/kLXLAsufNUH25eGjxYf/uPD1tJaIncNUY1H79ITDo?=
- =?us-ascii?Q?cTpg3s+iynkRRs4DbP9OaxQiS18V86w9eac1/boiRQ5NrjoknEIFQid+NfpM?=
- =?us-ascii?Q?3NA3ApyS/fMbHjYiSSelwBsxTLSVJ1eCC1rbuSzy?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d4eb98f1-6a5c-45dd-17b5-08daf96b44f0
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2023 15:47:14.2092
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gXopjc3W5fGxh6z9DNPl0NCx0j/5tJ1RLtJR2taP1UwkB3JYoxla2aKjlwBDEI/F
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4269
+Content-Transfer-Encoding: 8bit
 
-On Tue, Jan 17, 2023 at 03:02:56PM -0700, Alex Williamson wrote:
-> > diff --git a/drivers/vfio/group.c b/drivers/vfio/group.c
-> > index bb24b2f0271e03..e166ad7ce6e755 100644
-> > --- a/drivers/vfio/group.c
-> > +++ b/drivers/vfio/group.c
-> > @@ -133,9 +133,12 @@ static int vfio_group_ioctl_set_container(struct vfio_group *group,
-> >  
-> >  	iommufd = iommufd_ctx_from_file(f.file);
-> >  	if (!IS_ERR(iommufd)) {
-> > -		u32 ioas_id;
-> > +		if (IS_ENABLED(CONFIG_VFIO_NOIOMMU) &&
-> > +		    group->type == VFIO_NO_IOMMU)
-> 
-> 
-> We can't have type == VFIO_NO_IOMMU without CONFIG_VFIO_NOIOMMU in any
-> of these cases, so I'm assuming the IS_ENABLED() is just a
-> micro-optimization for the compiler here.  It's repeated enough that
-> maybe it deserves a macro though.  Thanks,
+Per the reasoning in commit 4bf7fda4dce2 ("iommu/dma: Add config for
+PCI SAC address trick") and its subsequent revert, this mechanism no
+longer serves its original purpose, but now only works around broken
+hardware/drivers in a way that is unfortunately too impactful to remove.
 
-Yes, I put it in an inline for Yi
+This does not, however prevent us from solving the performance impact
+which the workaround imposes on large-scale systems that don't need it.
+That is felt once the 32-bit IOVA space fills up and we keep
+unsuccessfully trying to allocate from it. However, if we get to that
+point then in fact it's already the endgame. The nature of the allocator
+is such that the first IOVA we give to a device after the 32-bit space
+runs out will be the highest possible address for that device, ever.
+If that works, then great, we can be pretty sure it's safe to optimise
+for speed by always allocating from the full range. And if it doesn't,
+then the worst has already happened and any brokenness is now showing,
+so there's no point continuing to try to hide it.
 
-And did the other stuff
+To that end, implement a flag to refine this into a per-device policy
+that can automatically get itself out of the way if and when it stops
+being useful.
 
-Thanks,
-Jason
+CC: John Garry <john.garry@huawei.com>
+CC: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+
+v3: Expand the flag name, add a print with inline commentary for good
+    measure, and refactor the code flow even more (too many ifs and
+    indents...) such that I didn't presume to carry forward John's R-b.
+
+ drivers/iommu/dma-iommu.c | 26 ++++++++++++++++++++------
+ drivers/iommu/dma-iommu.h |  8 ++++++++
+ drivers/iommu/iommu.c     |  3 +++
+ include/linux/iommu.h     |  2 ++
+ 4 files changed, 33 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index f798c44e0903..1dccee3628cf 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -627,7 +627,7 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
+ {
+ 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+ 	struct iova_domain *iovad = &cookie->iovad;
+-	unsigned long shift, iova_len, iova = 0;
++	unsigned long shift, iova_len, iova;
+ 
+ 	if (cookie->type == IOMMU_DMA_MSI_COOKIE) {
+ 		cookie->msi_iova += size;
+@@ -642,15 +642,29 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
+ 	if (domain->geometry.force_aperture)
+ 		dma_limit = min(dma_limit, (u64)domain->geometry.aperture_end);
+ 
+-	/* Try to get PCI devices a SAC address */
+-	if (dma_limit > DMA_BIT_MASK(32) && !iommu_dma_forcedac && dev_is_pci(dev))
++	/*
++	 * Try to use all the 32-bit PCI addresses first. The original SAC vs.
++	 * DAC reasoning loses relevance with PCIe, but enough hardware and
++	 * firmware bugs are still lurking out there that it's safest not to
++	 * venture into the 64-bit space until necessary.
++	 *
++	 * If your device goes wrong after seeing the notice then likely either
++	 * its driver is not setting DMA masks accurately, the hardware has
++	 * some inherent bug in handling >32-bit addresses, or not all the
++	 * expected address bits are wired up between the device and the IOMMU.
++	 */
++	if (dma_limit > DMA_BIT_MASK(32) && dev->iommu->pci_32bit_workaround) {
+ 		iova = alloc_iova_fast(iovad, iova_len,
+ 				       DMA_BIT_MASK(32) >> shift, false);
++		if (iova)
++			goto done;
+ 
+-	if (!iova)
+-		iova = alloc_iova_fast(iovad, iova_len, dma_limit >> shift,
+-				       true);
++		dev->iommu->pci_32bit_workaround = false;
++		dev_notice(dev, "Using %d-bit DMA addresses\n", bits_per(dma_limit));
++	}
+ 
++	iova = alloc_iova_fast(iovad, iova_len, dma_limit >> shift, true);
++done:
+ 	return (dma_addr_t)iova << shift;
+ }
+ 
+diff --git a/drivers/iommu/dma-iommu.h b/drivers/iommu/dma-iommu.h
+index 942790009292..c829f1f82a99 100644
+--- a/drivers/iommu/dma-iommu.h
++++ b/drivers/iommu/dma-iommu.h
+@@ -17,6 +17,10 @@ int iommu_dma_init_fq(struct iommu_domain *domain);
+ void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);
+ 
+ extern bool iommu_dma_forcedac;
++static inline void iommu_dma_set_pci_32bit_workaround(struct device *dev)
++{
++	dev->iommu->pci_32bit_workaround = !iommu_dma_forcedac;
++}
+ 
+ #else /* CONFIG_IOMMU_DMA */
+ 
+@@ -38,5 +42,9 @@ static inline void iommu_dma_get_resv_regions(struct device *dev, struct list_he
+ {
+ }
+ 
++static inline void iommu_dma_set_pci_32bit_workaround(struct device *dev)
++{
++}
++
+ #endif	/* CONFIG_IOMMU_DMA */
+ #endif	/* __DMA_IOMMU_H */
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index de91dd88705b..b189ed345057 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -353,6 +353,9 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
+ 	mutex_unlock(&iommu_probe_device_lock);
+ 	iommu_device_link(iommu_dev, dev);
+ 
++	if (dev_is_pci(dev))
++		iommu_dma_set_pci_32bit_workaround(dev);
++
+ 	return 0;
+ 
+ out_release:
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 46e1347bfa22..d37bf28faf82 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -401,6 +401,7 @@ struct iommu_fault_param {
+  * @iommu_dev:	 IOMMU device this device is linked to
+  * @priv:	 IOMMU Driver private data
+  * @max_pasids:  number of PASIDs this device can consume
++ * @pci_32bit_workaround: Limit DMA allocations to 32-bit IOVAs
+  *
+  * TODO: migrate other per device data pointers under iommu_dev_data, e.g.
+  *	struct iommu_group	*iommu_group;
+@@ -413,6 +414,7 @@ struct dev_iommu {
+ 	struct iommu_device		*iommu_dev;
+ 	void				*priv;
+ 	u32				max_pasids;
++	bool				pci_32bit_workaround;
+ };
+ 
+ int iommu_device_register(struct iommu_device *iommu,
+-- 
+2.36.1.dirty
+
