@@ -1,118 +1,71 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 044D33C3E
-	for <iommu@lists.linux.dev>; Thu, 19 Jan 2023 11:31:41 +0000 (UTC)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30JBKPcT029702;
-	Thu, 19 Jan 2023 11:31:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=gW7Njcx6fhBoaFfE4jFbb8gaSEz5NLLBXcLB3pwFzbM=;
- b=RbhdUmwG4iDRhS0E/rePywC6ZBlDIAVtm+2fsfJVSRsGLqaRcjhpvfiVVNG9d90QjRg3
- wl5VkbyYJ7/zAZZiJd1OLQxRSaY2McGEyyR2KfE06RO+74eR1asIYac5e1sbCRdSNnNQ
- mu1NX/1uMYFPRv+gxsuFadDAk5rG00qn+XkQOUUo6cj4vhzktx6QTF1oqIZzwJ5sjXlf
- +e0ETJpLzLASb/KUZfbXiSCL2RVg8X1RM6Agbh/AZnmI8Va5qJBJvFk02q3bUYMvaHWA
- IqqJW7WO4YzvPoO7XNSiADVcV9Li4yCiIa6xURqkCSYWkcWmo9mslSXoQPHdfc/Ppkvi 1A== 
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3n74wdr6cr-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 19 Jan 2023 11:31:22 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-	by ppma03fra.de.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 30J9PNbs007302;
-	Thu, 19 Jan 2023 11:31:20 GMT
-Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
-	by ppma03fra.de.ibm.com (PPS) with ESMTPS id 3n3m16mt7t-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 19 Jan 2023 11:31:20 +0000
-Received: from smtpav07.fra02v.mail.ibm.com (smtpav07.fra02v.mail.ibm.com [10.20.54.106])
-	by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 30JBVGXZ37552460
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 19 Jan 2023 11:31:16 GMT
-Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id AA50C2004E;
-	Thu, 19 Jan 2023 11:31:16 +0000 (GMT)
-Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 6840120040;
-	Thu, 19 Jan 2023 11:31:15 +0000 (GMT)
-Received: from [9.171.48.94] (unknown [9.171.48.94])
-	by smtpav07.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Thu, 19 Jan 2023 11:31:15 +0000 (GMT)
-Message-ID: <93d3397b1d0ec4e2ed24dfaccf4cafb0a9206907.camel@linux.ibm.com>
-Subject: Re: [PATCH v4 2/7] iommu: Allow .iotlb_sync_map to fail and handle
- s390's -ENOMEM return
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin
- Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
-        Wenjia
- Zhang <wenjia@linux.ibm.com>
-Cc: Matthew Rosato <mjrosato@linux.ibm.com>,
-        Gerd Bayer
- <gbayer@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev,
-        linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        agordeev@linux.ibm.com, svens@linux.ibm.com,
-        linux-kernel@vger.kernel.org, Julian Ruess <julianr@linux.ibm.com>
-Date: Thu, 19 Jan 2023 12:31:15 +0100
-In-Reply-To: <20230104120543.308933-3-schnelle@linux.ibm.com>
-References: <20230104120543.308933-1-schnelle@linux.ibm.com>
-	 <20230104120543.308933-3-schnelle@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32D686FC2
+	for <iommu@lists.linux.dev>; Thu, 19 Jan 2023 11:47:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674128872; x=1705664872;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=DuOBg1V/kEEpNk+BV4bYqVrWJSOOFRR3sdWDamFrvt0=;
+  b=GUc1sDL2PLjN2+V+ZitG8REELvXg2ry77rnL1wALEEp9g7zCLSwtkvhP
+   2GEG53DjwoA7MfgR/pV33eujZZCrD8Lc95Rb9kpwdpV4DLV69thjCb8+Y
+   2g/8F/8h9/X2fOGgOFvyOLZKw9aUQxSGE3TF2N2obI0bexlZivji6/uUz
+   Pgm4qrguFrApgul0eZ1z0PWYaTGsC1sFuzQB25cknUn6XFl/+zjOKriR/
+   k0A//aYL/4Bv5kuSZhHP9C13jk3sDtFkq7MwY8iU5N/kXWUm11HQJLEKl
+   hWs6L0dsW+vW51TNVYm8UG0RWo4pPV/qzgL/+9UQabnZU6sLtHbIWxQdK
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="308821082"
+X-IronPort-AV: E=Sophos;i="5.97,229,1669104000"; 
+   d="scan'208";a="308821082"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2023 03:47:51 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="988957189"
+X-IronPort-AV: E=Sophos;i="5.97,229,1669104000"; 
+   d="scan'208";a="988957189"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.185.248]) ([10.252.185.248])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2023 03:47:45 -0800
+Message-ID: <08c874f6-0c59-0b74-a2c8-7ad61356af6f@linux.intel.com>
+Date: Thu, 19 Jan 2023 19:47:42 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: nPReWujzTmOiExwTbtTzClco5PZpjCZg
-X-Proofpoint-ORIG-GUID: nPReWujzTmOiExwTbtTzClco5PZpjCZg
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-01-19_09,2023-01-19_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0
- lowpriorityscore=0 phishscore=0 clxscore=1015 impostorscore=0 mlxscore=0
- bulkscore=0 suspectscore=0 spamscore=0 priorityscore=1501 mlxlogscore=690
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2301190090
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Cc: baolu.lu@linux.intel.com, Alex Williamson <alex.williamson@redhat.com>,
+ ath10k@lists.infradead.org, ath11k@lists.infradead.org,
+ Christian Borntraeger <borntraeger@linux.ibm.com>,
+ dri-devel@lists.freedesktop.org, iommu@lists.linux.dev, kvm@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+ linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
+ linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+ linux-stm32@st-md-mailman.stormreply.com, linux-tegra@vger.kernel.org,
+ linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+ nouveau@lists.freedesktop.org, Niklas Schnelle <schnelle@linux.ibm.com>,
+ virtualization@lists.linux-foundation.org
+Subject: Re: [PATCH v2 06/10] iommu/intel: Add a gfp parameter to
+ alloc_pgtable_page()
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Kevin Tian <kevin.tian@intel.com>, Matthew Rosato <mjrosato@linux.ibm.com>,
+ Robin Murphy <robin.murphy@arm.com>
+References: <6-v2-ce66f632bd0d+484-iommu_map_gfp_jgg@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <6-v2-ce66f632bd0d+484-iommu_map_gfp_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, 2023-01-04 at 13:05 +0100, Niklas Schnelle wrote:
-> On s390 when using a paging hypervisor, .iotlb_sync_map is used to sync
-> mappings by letting the hypervisor inspect the synced IOVA range and
-> updating a shadow table. This however means that .iotlb_sync_map can
-> fail as the hypervisor may run out of resources while doing the sync.
-> This can be due to the hypervisor being unable to pin guest pages, due
-> to a limit on mapped addresses such as vfio_iommu_type1.dma_entry_limit
-> or lack of other resources. Either way such a failure to sync a mapping
-> should result in a DMA_MAPPING_ERROR.
->=20
-> Now especially when running with batched IOTLB flushes for unmap it may
-> be that some IOVAs have already been invalidated but not yet synced via
-> .iotlb_sync_map. Thus if the hypervisor indicates running out of
-> resources, first do a global flush allowing the hypervisor to free
-> resources associated with these mappings as well a retry creating the
-> new mappings and only if that also fails report this error to callers.
->=20
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> ---
-> v3 -> v4:
-> - Adapted signature of .iommu_tlb_sync mapo for sun50i IOMMU driver added=
- in
->   v6.2-rc1 (kernel test robot)
->=20
->=20
+On 2023/1/19 2:00, Jason Gunthorpe wrote:
+> This is eventually called by iommufd through intel_iommu_map_pages() and
+> it should not be forced to atomic. Push the GFP_ATOMIC to all callers.
+> 
+> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
 
-@Joerg, this patch, while being a prerequisite to the DMA API
-conversion, is independent and in fact would also be needed for IOMMU
-use in a nested KVM guest. With Baolu's and Matt's R-b's I think it
-would make sense to pick this up for v6.3 even if the DMA API
-conversion takes longer while we figure out details and the flush queue
-changes. What do you think?
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-Thanks,
-Niklas
+Best regards,
+baolu
