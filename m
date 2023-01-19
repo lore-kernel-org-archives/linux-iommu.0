@@ -1,33 +1,39 @@
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6DEF6FC2
-	for <iommu@lists.linux.dev>; Thu, 19 Jan 2023 12:00:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60E8017CD
+	for <iommu@lists.linux.dev>; Thu, 19 Jan 2023 13:24:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674129653; x=1705665653;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=a0VAKNGfVX7Xb0tncsnGiNJiQB7rZGtxb86sJ68DmJ0=;
-  b=eMBmSPsEDMKrHL99mV9lC4DRORcUPu9bVTFjOEtupFxiWvzdgWQNHTbN
-   /3bEBEfSk7hN2e+1yCxjgnvFK06PbsBGWwzUGBEuzZo+NWwWNaZrYc9qX
-   y5Pod1jLOrz+TojLlBGy+nbc5mZ+upy0M0t4b9zjRMhn0peExivLGmPpd
-   v0JZsiBGnLWViB8UM138SPLlwdUg+mMbQiEBb50549RZY/9hi0w7Fgg4i
-   80W/FIXl2soo6mK6VV582uC/b2G4nLyW4P3C2MCBmD7TTmEnM2wIXFE3y
-   S/ZVdcdKaY1XVXBKohlhyy8vi+x/ROmH+XuSYlFX8Mc5F98XOYn2+oKYN
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="305638206"
+  t=1674134684; x=1705670684;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=0rqq/hTud1TpM3IRmZ08IsKip23yN4USGI5J2nOh+I4=;
+  b=KpD4TZwvc7RqrIj75/wpDXFtsRJLPWp6oQWWLkd9WrxTnl61z3Rd3nEi
+   P8oYK7NlGcg09L4xhdPzcBXFZxjU8U4AOQR/YoKNEdWZ80Uh+t7zipwID
+   SKU8wEDtBid5FVdpRTXTDss0TzI7lhYN+Cbzaw1NUcfw1rXSdU/L5ra4+
+   1sduP7xirEr9Mq1alGbftkhd5gn/D+ONMLYKQ62V4Qp1AqolP7FYdxUPN
+   wHrsEJETwbXoiBALaKsBGe7fUD3/XLmACjSEL8MX+jKP+B37/FRj4Ddbr
+   5WaYmj0TfyDuC3Yy24UaqUMjLOWKIHXHXcHgs295fiESBe1VGMy4iFYDe
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="327359469"
 X-IronPort-AV: E=Sophos;i="5.97,229,1669104000"; 
-   d="scan'208";a="305638206"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2023 04:00:52 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="692393552"
+   d="scan'208";a="327359469"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2023 05:24:43 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="728663472"
 X-IronPort-AV: E=Sophos;i="5.97,229,1669104000"; 
-   d="scan'208";a="692393552"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.185.248]) ([10.252.185.248])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2023 04:00:46 -0800
-Message-ID: <4f93e58d-2406-6b29-d546-02f90c4815b8@linux.intel.com>
-Date: Thu, 19 Jan 2023 20:00:44 +0800
+   d="scan'208";a="728663472"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga004.fm.intel.com with ESMTP; 19 Jan 2023 05:24:43 -0800
+Received: from [10.212.175.76] (kliang2-mobl1.ccr.corp.intel.com [10.212.175.76])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by linux.intel.com (Postfix) with ESMTPS id 2CC53580AE0;
+	Thu, 19 Jan 2023 05:24:32 -0800 (PST)
+Message-ID: <b9619bee-7f5c-81db-710d-20550ea01517@linux.intel.com>
+Date: Thu, 19 Jan 2023 08:24:25 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,36 +42,95 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Cc: baolu.lu@linux.intel.com, Alex Williamson <alex.williamson@redhat.com>,
- ath10k@lists.infradead.org, ath11k@lists.infradead.org,
- Christian Borntraeger <borntraeger@linux.ibm.com>,
- dri-devel@lists.freedesktop.org, iommu@lists.linux.dev, kvm@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
- linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
- linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
- linux-stm32@st-md-mailman.stormreply.com, linux-tegra@vger.kernel.org,
- linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
- nouveau@lists.freedesktop.org, Niklas Schnelle <schnelle@linux.ibm.com>,
- virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH v2 08/10] iommu/intel: Use GFP_KERNEL in sleepable
- contexts
+Subject: Re: [PATCH V2 3/7] iommu/vt-d: Support Enhanced Command Interface
+To: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org,
+ dwmw2@infradead.org, robin.murphy@arm.com, robert.moore@intel.com,
+ rafael.j.wysocki@intel.com, lenb@kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20230118205006.3182907-1-kan.liang@linux.intel.com>
+ <20230118205006.3182907-4-kan.liang@linux.intel.com>
+ <379823f4-d1c3-8943-4afe-e33f4d21785c@linux.intel.com>
 Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Kevin Tian <kevin.tian@intel.com>, Matthew Rosato <mjrosato@linux.ibm.com>,
- Robin Murphy <robin.murphy@arm.com>
-References: <8-v2-ce66f632bd0d+484-iommu_map_gfp_jgg@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <8-v2-ce66f632bd0d+484-iommu_map_gfp_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <379823f4-d1c3-8943-4afe-e33f4d21785c@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On 2023/1/19 2:00, Jason Gunthorpe wrote:
-> These contexts are sleepable, so use the proper annotation. The GFP_ATOMIC
-> was added mechanically in the prior patches.
+
+
+On 2023-01-19 3:55 a.m., Baolu Lu wrote:
+> On 2023/1/19 4:50, kan.liang@linux.intel.com wrote:
+>> +#ifdef CONFIG_INTEL_IOMMU
+>> +#define ecmd_get_status_code(res)    ((res & 0xff) >> 1)
+>> +
+>> +/*
+>> + * Function to submit a command to the enhanced command interface. The
+>> + * valid enhanced command descriptions are defined in Table 47 of the
+>> + * VT-d spec. The VT-d hardware implementation may support some but not
+>> + * all commands, which can be determined by checking the Enhanced
+>> + * Command Capability Register.
+>> + *
+>> + * Return values:
+>> + *  - 0: Command successful without any error;
+>> + *  - Negative: software error value;
+>> + *  - Nonzero positive: failure status code defined in Table 48.
+>> + */
+>> +int ecmd_submit_sync(struct intel_iommu *iommu, u8 ecmd, u64 oa, u64 ob)
+>> +{
+>> +    unsigned long flags;
+>> +    u64 res;
+>> +    int ret;
+>> +
+>> +    if (!cap_ecmds(iommu->cap))
+>> +        return -ENODEV;
+>> +
+>> +    raw_spin_lock_irqsave(&iommu->register_lock, flags);
+>> +
+>> +    res = dmar_readq(iommu->reg + DMAR_ECRSP_REG);
+>> +    if (res & DMA_ECMD_ECRSP_IP) {
+>> +        ret = -EBUSY;
+>> +        goto err;
+>> +    }
+>> +
+>> +    /*
+>> +     * Unconditionally write the operand B, because
+>> +     * - There is no side effect if an ecmd doesn't require an
+>> +     *   operand B, but we set the register to some value.
+>> +     * - It's not invoked in any critical path. The extra MMIO
+>> +     *   write doesn't bring any performance concerns.
+>> +     */
+>> +    dmar_writeq(iommu->reg + DMAR_ECEO_REG, ob);
+>> +    dmar_writeq(iommu->reg + DMAR_ECMD_REG, ecmd | (oa <<
+>> DMA_ECMD_OA_SHIFT));
+>> +
+>> +    IOMMU_WAIT_OP(iommu, DMAR_ECRSP_REG, dmar_readq,
+>> +              !(res & DMA_ECMD_ECRSP_IP), res);
+>> +
+>> +    if (res & DMA_ECMD_ECRSP_IP) {
+>> +        ret = -ETIMEDOUT;
+>> +        goto err;
+>> +    }
+>> +
+>> +    ret = ecmd_get_status_code(res);
+>> +err:
+>> +    raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
+>> +
+>> +    return ret;
+>> +}
+>> +#endif /* CONFIG_INTEL_IOMMU */
 > 
-> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+> Can we remove the "#ifdef CONFIG_INTEL_IOMMU"? 
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+In dmar.c, no, there will be a compiler warning when the
+CONFIG_INTEL_IOMMU is not set.
 
-Best regards,
-baolu
+> Or if this is currently
+> only intel-iommu specific, how about moving it to drivers/iommu/intel
+> /iommu.c?
+> 
+
+Yes, it should OK to move it to iommu.c to avoid the "#ifdef
+CONFIG_INTEL_IOMMU". Now, it's intel-iommu specific.
+
+Thanks,
+Kan
