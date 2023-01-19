@@ -1,177 +1,118 @@
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2083.outbound.protection.outlook.com [40.107.100.83])
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B64133FB
-	for <iommu@lists.linux.dev>; Thu, 19 Jan 2023 08:54:50 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Yy2zs7XC5cdYeem8x3TXw95H2Ubbiv9c3vOlHPuGvc6C4ItrYs6QniEXQLAlxjheeVrEDHZVdoLIBqTCPwjKRqrLVlHlWojJCyf0VBwao028OlZZ0mFl5Ho8dGXffJwpwQaZ4kVw5sMgcA58WwgcfVBT0CIS4Pv505Qbmg5C4r0FSgXA15xp98YqFy7sd01opLWDqKBLzlgFgDkhy9kXma+Hkbsv2h1Y/MIdGgcAzuXdWiTLtYzwqOgF7JZakI2Z1JdWTmi/4JfKyxzhpw3xL6GNLN2cQpfsFh97EvqSefgjz6zAES0J35J9QAikkvCX/UW9rDF0IYLDWXCXhaaQoA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UDoUC31Z5DzXwyZbXGyrKXVztTyVb024h8fXVKSXKok=;
- b=bLtohlPs786t5bjGMKYQquQ1G7wvkza2znPWVjnAQEeM+cStiNK/rEbtaRxUosAUxAWH1q8HWKVwwn30I8W5AzTYw69LgOxdK63ioXLtHT+xL6d106NHJ7k6zlilhCxD+p4ga9HRoXSr3peU52LJMzzyDCn6t45uynMikrgYos45u6ssyxK/1IpNFarAcNigRg9vAZ+G6CuBIPF/xa1TxEud26sRADI9lU6ZyXwNF4juMccyebkvskDjw+KT0Noy0gEpbi71OwTY+IMMvzgxdwoltcUlpVoMoJwIkep90TUZWQnMgt13ntctxWfPp5a6yWl5Q3Udmltc86+/BgPpHw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UDoUC31Z5DzXwyZbXGyrKXVztTyVb024h8fXVKSXKok=;
- b=pMjF8N2/zvALuCdL50+I45xdPPid3h4O/fqVRuHufz7L3xvZv5E1poczq1gQRpkEMreS6zSW6AQYEza/0d5iPGcuRWIlsCsu0fHC3k+j+m/h2W7mSL6NIS7wLUWpU+AmSKHZxPuyq05k9Q1h+9z3HmtIoyv+B8JPAKTPn3r9iuY=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from SN6PR12MB2767.namprd12.prod.outlook.com (2603:10b6:805:75::23)
- by SA1PR12MB6993.namprd12.prod.outlook.com (2603:10b6:806:24c::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.23; Thu, 19 Jan
- 2023 08:54:48 +0000
-Received: from SN6PR12MB2767.namprd12.prod.outlook.com
- ([fe80::5317:fa3f:5cbe:45e9]) by SN6PR12MB2767.namprd12.prod.outlook.com
- ([fe80::5317:fa3f:5cbe:45e9%3]) with mapi id 15.20.5986.023; Thu, 19 Jan 2023
- 08:54:47 +0000
-Message-ID: <90762dee-1559-58ac-220d-a13635d5032e@amd.com>
-Date: Thu, 19 Jan 2023 02:54:43 -0600
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.1
-Subject: Re: [PATCH 1/4] iommu/amd: Introduce Protection-domain flag VFIO
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
- robin.murphy@arm.com, thomas.lendacky@amd.com, vasant.hegde@amd.com,
- jon.grimm@amd.com
-References: <20230110143137.54517-1-suravee.suthikulpanit@amd.com>
- <20230110143137.54517-2-suravee.suthikulpanit@amd.com>
- <Y8F53dzdebKLTlOy@ziepe.ca>
-From: "Kalra, Ashish" <ashish.kalra@amd.com>
-In-Reply-To: <Y8F53dzdebKLTlOy@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: CH0P221CA0040.NAMP221.PROD.OUTLOOK.COM
- (2603:10b6:610:11d::20) To SN6PR12MB2767.namprd12.prod.outlook.com
- (2603:10b6:805:75::23)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0653133FB
+	for <iommu@lists.linux.dev>; Thu, 19 Jan 2023 08:55:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674118551; x=1705654551;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=oCO75c7hpSpf7YAc/etqBp/Xdevy0oa9hctB/aBK/D8=;
+  b=afjmY3KnHvcfhgLyNH+QX4Qd++bGXvLm2lRp/8TpuSxtEj2MLa8GMRyQ
+   DY7e0Taohqip4u+n7ARpewvo1VoH9sVVnByFIPHlX7RqeJAO2cre8HYO3
+   27vCYwVAgIMYFNJ1crO90nV5m/sQCsPQBUwhZ3gNYx/f3YTmUk+vMx9Z9
+   UHloJAUzi5FRGpCdRc+7HSyD3fzAhnacZOh2vYj4IsIAtA0uYPWp2n9sE
+   vqw467cAiUzj5lKAuigZEtyplW2xNT6ZnqoWeENbz0qDxRqJnEOWoEzcz
+   wJHQBnP/djfIVvhRa88mSWLmwloVDDUvDCFebiL5BLKdVasVKtZW6UYAo
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="411472482"
+X-IronPort-AV: E=Sophos;i="5.97,228,1669104000"; 
+   d="scan'208";a="411472482"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2023 00:55:51 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10594"; a="660114044"
+X-IronPort-AV: E=Sophos;i="5.97,228,1669104000"; 
+   d="scan'208";a="660114044"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.185.248]) ([10.252.185.248])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2023 00:55:48 -0800
+Message-ID: <379823f4-d1c3-8943-4afe-e33f4d21785c@linux.intel.com>
+Date: Thu, 19 Jan 2023 16:55:45 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN6PR12MB2767:EE_|SA1PR12MB6993:EE_
-X-MS-Office365-Filtering-Correlation-Id: b66e1975-ce25-4a09-b893-08daf9fad108
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	BZdWOxJTkas68reGtXhzLvKudnuN2vOEONbE0zlqPusGXirS0lJdZF0WZA3adPuAjok7UyAPsNunJX9yICN52lY0V4eChZ7NwuZwtiF8YB4i1SdnENY/GlL1+D7kCHDW++qvfqI0mAo33onjiTyiQcMzo0clgJp4YREjtmbxCvg7LGfWepcTv0MJVQ+Yryyex4J/jxoWdBdi9UbeMRB8bjk/k3xbcLOl7U4y21E7B+sv1YU60atbAJivYzTVXQa5WOQs6QF3HHjOkK8kzts3OmBY4JU0cieT1S7Ug+cL+JPomZbmh0yWLYMFJGX3ozD9yjs6pT2xQqxKymNrFrmAC/t6ZBt6OB4YvlToGACe6Dha5XbUhE5SBjq/OM3g573/KMe7Cntq1Cg5AGeCGpSpty7qf8SASkn59TT0Pg9/+bSDQxvqefT1zIX9sf9+PIo7yuPu0Kdyyznpc4hurAwN5oJdCt/jSH2IDvFLebFtaZpxR7aarRXLZDLTRkhzbisCjXlCZWoi3LfZeD5HUSwPhd7fd9JbhiuGNQ1dJs6BBuVkeJ2/Hjw9ARYIbl/lhzd8GXvLRKbvesbaE4Tma5BW+Z4PeXfWZ2GtnZXVuzzu3jvGX04R7r62sUsQH4ZmQAnODYQLTLOYJdHtXCo61od+xbm/TZVJuhRnjKjRVB32NqiyjhTr3F9JT2UyvXC31dYiq7BeE6m+RWQpHHyMjJ1O8WrQMANR3UJKCO9tkfWaZrC25w8pfsBtpEBHqvZljiM5
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR12MB2767.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(136003)(39860400002)(346002)(366004)(376002)(451199015)(478600001)(6512007)(316002)(966005)(86362001)(186003)(26005)(6486002)(31696002)(66476007)(66946007)(8676002)(4326008)(36756003)(41300700001)(31686004)(66556008)(2906002)(53546011)(5660300002)(83380400001)(38100700002)(6506007)(2616005)(6666004)(8936002)(110136005)(6636002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?aFl4KyszZ094NXdIcTI1MmQ0NndUN3FndHA4UEFSUXJaY1lyQUtWM0krSll4?=
- =?utf-8?B?dzV2VU9xWm5tVXNoWHRJa2swNTZsN2xoakp4VWZiMlpucUZXZE1yUXlCYjBx?=
- =?utf-8?B?aW1pTUV6a3ExVzcvWnpYN0hwanFNZkJUZ0NjK1ZaZHhzbTM2RmVNd3ZZY1cr?=
- =?utf-8?B?S2tCQmpvOEZ1VUhYazdVNlFPQjdlK3NXWDkrQ1dDVlJMSXBncktIV1NFZ0pi?=
- =?utf-8?B?UzUxQXBueWNZMVlLSW9heDVvSWxrbXBjeDRFYXF4VndjbzkrcFMyMWVnT2FM?=
- =?utf-8?B?ZS9MaTdQdzRrbWFCUElTYnFmQlJRMFlXelF2cU5pMC9ZUHRWYlh1dzI5eDVr?=
- =?utf-8?B?SUlYV1RYOTRtU3RWZVJNL2NxUm9pdnRWVS9PYXptcUovUWZHeEU1cTlzY2ZW?=
- =?utf-8?B?alpXZzNrb1QyUnJVN2hFamRBY3VMRXR3VVAyRVBKVFRmTnd2RGprZGFCSnVP?=
- =?utf-8?B?SVBtLzZxTXc5VmtBTVUxRllybkt6RHdkR25GdUhEMk1ZYVdCcklUTzhZa3d5?=
- =?utf-8?B?YXpRNnFJbUk3MUxFY1phSGtYVWpnRS90ZDBRWW9meFptOVBXcG40anhOdW1l?=
- =?utf-8?B?bC9ydWRBeVZwSDVCL0FZeXhuT0ZVbmVqOVNkczB2bXQ4SHRQVVJLRXI0VnZC?=
- =?utf-8?B?QXh0aWZtTENOc0M0MGVBTERZZVpLaEFvb2EvSi82YngwL3ZBZFNXYmtmeGlX?=
- =?utf-8?B?UGNtQThHWS94L0FTbk5jRC94amgySG53VmwvQWJKaXVIY3hiaTVBZ0p1blBj?=
- =?utf-8?B?M0NaMEUvQmJhZm83enhLUjE3alg1ekQyNTRSUTNTaW1iSkFCd3NGaFJucUR6?=
- =?utf-8?B?NUFyU1NvODkrS0VaelBXUGJ4Q1RHS1dKeDNMbzR4MSs2dVY4bGFBL1RsS0xn?=
- =?utf-8?B?VDlwTUpWcVdza0xEWGVXU0VESFpObHZZRW9tY2RKNWliTDViQ21KdFFjQVVh?=
- =?utf-8?B?RC84MDRwakp6d1dSejF4Mllic08vZ2hVcll6QTFKSXZUcGFZUlkrZmYvdCtL?=
- =?utf-8?B?dzA3QzlVakZTcGVmdGdqWW9GeXc4MGlWQUp0ZFJ2R3JWbk1zR3RSZXN2MjBR?=
- =?utf-8?B?TzB1Q0JDcW5vdFVVRk5kNFBPV1BqUHo2aEJjbW1UWHhQcUM3OU42eXAwaHRp?=
- =?utf-8?B?TzVXcGVHa2NTcTRxVjJpUFRpdmx3R2l6RHUxRDhwc3VzNldKZE44eDUzM3ox?=
- =?utf-8?B?UW9jM2hUNDZ4c1VxbXRBU21YU01EWXhwOEptVERSVFRVRDIzT0p0WXY5dVRt?=
- =?utf-8?B?N2xheGo2Q0FNQUJYRE9xcW05clNjSitwZDkrZkhHZXVpcWJibjExWnlnZXRv?=
- =?utf-8?B?WGVNWWdFNk9XSkNMaXpERzRyQXZrYUtDeUFhV3BteThkdzAra1Q1Wk1CUTlw?=
- =?utf-8?B?b0tuOWJTVkt0QUxGV2srY29JSzlDWEtzb3ZqRVlrK254TU5CaWxNS3FJRWh3?=
- =?utf-8?B?UTN3anF3YllqTmFEZWg0dVRibUR1Rk1VUXBEY1hPMnRBUzNiZTQwZ1B4eWhV?=
- =?utf-8?B?WWpGMWlQWkdJaWVBY2hlYWc5cjB2dUx3RHFjNThtV0YrUFpiQXpRbURxS3VR?=
- =?utf-8?B?aTMxUWlQUU9kck9WTXp4QlNMTVM2Z2lQdzhXY2lBVnpjTFJmK2xML3RVR0Zt?=
- =?utf-8?B?RXFMSzJONERFSVFuSExzN3FESUtleWM0OVkzbHVlTmdZVWVKcTIyVDRTbnV1?=
- =?utf-8?B?K1ZWNXN3UXVXWmZTbTZZczBEeXQ0VEc4Qld0dE5lUmU1b0E5NGtYb1dvT2tZ?=
- =?utf-8?B?c0d1VnNXNnBnVkw3aVNLYjdVQXhNSmNhZWJDVnQrZG5KOVJpaHlmSFN5SzFk?=
- =?utf-8?B?NGl5anFvcGI3bHlBTnVFZWxrM3IxRm9kZUdsT0xlaURWV3VoLzhrQUJRWkQ3?=
- =?utf-8?B?cVZMbkIwY1MvQ2xBL25GMzJ3VmVwcjMzYnpxdEZJOFE5N08zVG5BV3d2RkdM?=
- =?utf-8?B?Wk00U1I4NjMzU2dKKzF6WXRvWFZUVGEwR1FkeTFCMmlMMjFkTE85b0s5Z2Nx?=
- =?utf-8?B?a2R3ODZVU2V1aW9jWFJZbVVWOGR1ZHQyNStZNkphSVBld0JVc0wySzZINno4?=
- =?utf-8?B?Mm1xZUpTeWlETE5HWC9ZdW9hVzc5MERWZWRzTzFkUHJZRlQveXNEYUllWmxT?=
- =?utf-8?Q?x+lB0lE0qWCUOvrvKv9dTyhW+?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b66e1975-ce25-4a09-b893-08daf9fad108
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR12MB2767.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2023 08:54:47.3621
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5x0zZouqX3BlKReWjkeN2PIkIJ3qqH63Ofi9S4Ul7KtolUCLs6XCcFLjipHpYQnHB/UzFhl+0cbo80pFJ9rW7A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB6993
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Cc: baolu.lu@linux.intel.com
+Subject: Re: [PATCH V2 3/7] iommu/vt-d: Support Enhanced Command Interface
+To: kan.liang@linux.intel.com, joro@8bytes.org, will@kernel.org,
+ dwmw2@infradead.org, robin.murphy@arm.com, robert.moore@intel.com,
+ rafael.j.wysocki@intel.com, lenb@kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20230118205006.3182907-1-kan.liang@linux.intel.com>
+ <20230118205006.3182907-4-kan.liang@linux.intel.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20230118205006.3182907-4-kan.liang@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hello Jason,
+On 2023/1/19 4:50, kan.liang@linux.intel.com wrote:
+> +#ifdef CONFIG_INTEL_IOMMU
+> +#define ecmd_get_status_code(res)	((res & 0xff) >> 1)
+> +
+> +/*
+> + * Function to submit a command to the enhanced command interface. The
+> + * valid enhanced command descriptions are defined in Table 47 of the
+> + * VT-d spec. The VT-d hardware implementation may support some but not
+> + * all commands, which can be determined by checking the Enhanced
+> + * Command Capability Register.
+> + *
+> + * Return values:
+> + *  - 0: Command successful without any error;
+> + *  - Negative: software error value;
+> + *  - Nonzero positive: failure status code defined in Table 48.
+> + */
+> +int ecmd_submit_sync(struct intel_iommu *iommu, u8 ecmd, u64 oa, u64 ob)
+> +{
+> +	unsigned long flags;
+> +	u64 res;
+> +	int ret;
+> +
+> +	if (!cap_ecmds(iommu->cap))
+> +		return -ENODEV;
+> +
+> +	raw_spin_lock_irqsave(&iommu->register_lock, flags);
+> +
+> +	res = dmar_readq(iommu->reg + DMAR_ECRSP_REG);
+> +	if (res & DMA_ECMD_ECRSP_IP) {
+> +		ret = -EBUSY;
+> +		goto err;
+> +	}
+> +
+> +	/*
+> +	 * Unconditionally write the operand B, because
+> +	 * - There is no side effect if an ecmd doesn't require an
+> +	 *   operand B, but we set the register to some value.
+> +	 * - It's not invoked in any critical path. The extra MMIO
+> +	 *   write doesn't bring any performance concerns.
+> +	 */
+> +	dmar_writeq(iommu->reg + DMAR_ECEO_REG, ob);
+> +	dmar_writeq(iommu->reg + DMAR_ECMD_REG, ecmd | (oa << DMA_ECMD_OA_SHIFT));
+> +
+> +	IOMMU_WAIT_OP(iommu, DMAR_ECRSP_REG, dmar_readq,
+> +		      !(res & DMA_ECMD_ECRSP_IP), res);
+> +
+> +	if (res & DMA_ECMD_ECRSP_IP) {
+> +		ret = -ETIMEDOUT;
+> +		goto err;
+> +	}
+> +
+> +	ret = ecmd_get_status_code(res);
+> +err:
+> +	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
+> +
+> +	return ret;
+> +}
+> +#endif /* CONFIG_INTEL_IOMMU */
 
-On 1/13/2023 9:33 AM, Jason Gunthorpe wrote:
-> On Tue, Jan 10, 2023 at 08:31:34AM -0600, Suravee Suthikulpanit wrote:
->> Currently, to detect if a domain is enabled with VFIO support, the driver
->> checks if the domain has devices attached and check if the domain type is
->> IOMMU_DOMAIN_UNMANAGED.
-> 
-> NAK
-> 
-> If you need weird HW specific stuff like this then please implement it
-> properly in iommufd, not try and randomly guess what things need from
-> the domain type.
-> 
-> All this confidential computing stuff needs a comprehensive solution,
-> not some piecemeal mess. How can you even use a CC guest with VFIO in
-> the upstream kernel? Hmm?
-> 
+Can we remove the "#ifdef CONFIG_INTEL_IOMMU"? Or if this is currently
+only intel-iommu specific, how about moving it to drivers/iommu/intel
+/iommu.c?
 
-Currently all guest devices are untrusted - whether they are emulated, 
-virtio or passthrough. In the current use case of VFIO 
-device-passthrough to an SNP guest, the pass-through device will perform 
-DMA to un-encrypted or shared guest memory, in the same way as virtio or 
-emulated devices.
-
-This fix is prompted by an issue reported by Nvidia, they are trying to 
-do PCIe device passthrough to SNP guest. The memory allocated for DMA is 
-through dma_alloc_coherent() in the SNP guest and during DMA I/O an 
-RMP_PAGE_FAULT is observed on the host.
-
-These dma_alloc_coherent() calls map into page state change hypercalls 
-into the host to change guest page state from encrypted to shared in the 
-RMP table.
-
-Following is a link to issue discussed above:
-https://github.com/AMDESE/AMDSEV/issues/109
-
-Now, to set individual 4K entries to different shared/private mappings 
-in NPT or host page tables for large page entries, the RMP and NPT/host 
-page table large page entries are split to 4K pte’s.
-
-The same split is required in iommu page table entries to remain in sync 
-with the corresponding RMP table entry. If the iommu entry is covering a 
-range with a large page entry and the individual 4K mappings in that 
-range have now changed, the RMP checks during IOMMU page table walk will 
-cause a RMP page fault to be signaled.
-
-The fix is to force 4K page size for IOMMU page tables for SNP guests.
-
-This patch-set adds support to detect if a domain belongs to an 
-SNP-enabled guest. This way it can set default page size of a domain to 
-4K only for SNP-enabled guest and allow non-SNP guest to use larger page 
-size.
-
-Hopefully, this explains the usage case for this patch-set.
-
-Thanks,
-Ashish
-
-
+--
+Best regards,
+baolu
