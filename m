@@ -1,55 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CBA1B425
-	for <iommu@lists.linux.dev>; Thu, 19 Jan 2023 19:09:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61705C433EF;
-	Thu, 19 Jan 2023 19:09:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06AD7B425
+	for <iommu@lists.linux.dev>; Thu, 19 Jan 2023 19:09:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99207C433F0;
+	Thu, 19 Jan 2023 19:09:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1674155361;
-	bh=L96CiyxDqJQ1R3tSGxtY8MIZKLSX74xqYGN6oYu3uJw=;
+	s=k20201202; t=1674155363;
+	bh=7x2R7zpWlcagxTzSnRmCFuKtnNpSdj7aLDNu2wlNP5s=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=pvwiCEhA4FKeukST+Pm8eh/01rTbHQ19Mcd3hpODmzZ2H76O6lZZ0qzsXVMkTK8Pd
-	 WffM7EFzIMPUtEQkB8IiS2MyzPDU0r/y9Qcb393Bix5vyGEhd0jAZW4x+MqVSaiJuu
-	 WmN0Zakt4hsyNtLCebhnns02keHskm3gYg9H+vodk+aEn8tckO713zN7j24IB+Aujy
-	 c2RPAQCfTLBO/+Yhjk5ixriW5u8XKzfgpymWu1p84qQcM5oVS565p5rMZSzNTP+CTK
-	 zaXCoTtjKlm1Vtq9ETIPeg6A9vrWiXHVpaunCNEhj06Ul5NrmCZ7ipg3eOzmG/2xSc
-	 MGWT3q9pDLc9A==
+	b=U8iari57TKeUx3a3SrNr6PVIBoGUfhgsl8GEJQpdEsozUR+nG/sgg7dS2umJplGqm
+	 hBO/Wjg3FnqTUTjyOlJfZy+eW/kg7W8V9lXlxK4sO5BA5Hkqaa2GtV7FpgMjJ7J+NM
+	 sVMPkfm8Ja5E+YBkppsGLz0KkQhSOTvkTBk+GSjJqxSeHz7WH3uDC1VVtvVu5T6QNd
+	 feTmI2PG8N/KRjXg72zPhPo2BJitUT3czAMU4mL5S7ltjl2yRwVWa7f7LQ/48BIsRL
+	 tRyTtXc6O1Tz7efN3a/1cv8f77qyNRmxGR4VAXeUG1COhURwL7Z4dAdwtqpjzXxEbO
+	 WWFHTG7ztLhEQ==
 From: Will Deacon <will@kernel.org>
-To: Bjorn Andersson <andersson@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	phone-devel@vger.kernel.org
+To: Sai Prakash Ranjan <quic_saipraka@quicinc.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Bjorn Andersson <quic_bjorande@quicinc.com>,
+	Joerg Roedel <joro@8bytes.org>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Konrad Dybcio <konrad.dybcio@somainline.org>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>,
-	Martin Botka <martin.botka@somainline.org>,
-	Thierry Reding <treding@nvidia.com>,
 	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	linux-kernel@vger.kernel.org,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	linux-arm-msm@vger.kernel.org,
-	Lux Aliaga <they@mint.lgbt>,
-	Jami Kettunen <jami.kettunen@somainline.org>,
-	devicetree@vger.kernel.org,
-	Douglas Anderson <dianders@chromium.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Melody Olvera <quic_molvera@quicinc.com>,
-	Andy Gross <agross@kernel.org>,
-	Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
 	iommu@lists.linux.dev,
-	~postmarketos/upstreaming@lists.sr.ht,
-	Konrad Dybcio <konrad.dybcio@linaro.org>
-Subject: Re: [PATCH v5 0/4] arm64: dts: qcom: sm6125: Enable APPS SMMU
-Date: Thu, 19 Jan 2023 19:08:40 +0000
-Message-Id: <167415032929.2381501.12211116927490999924.b4-ty@kernel.org>
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] iommu/arm-smmu-qcom: Select identity domain for sc8280xp MDSS
+Date: Thu, 19 Jan 2023 19:08:41 +0000
+Message-Id: <167415058811.2382458.12117024092165263386.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20221222193254.126925-1-marijn.suijten@somainline.org>
-References: <20221222193254.126925-1-marijn.suijten@somainline.org>
+In-Reply-To: <20230113041104.4189152-1-quic_bjorande@quicinc.com>
+References: <20230113041104.4189152-1-quic_bjorande@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -59,21 +43,18 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Thu, 22 Dec 2022 20:32:50 +0100, Marijn Suijten wrote:
-> Add APPS SMMU to SM6125 dtsi and use it in SDHCI/USB nodes.
+On Thu, 12 Jan 2023 20:11:04 -0800, Bjorn Andersson wrote:
+> The Qualcomm display driver installs a translation domain once it has
+> mapped a framebuffer. Use the identity domain for this device on
+> SC8280XP as well, to avoid faults from EFI FB accessing the framebuffer
+> while this is being set up.
 > 
-> Changes since v4:
 > 
-> - Use hexadecimal 0x0 for iommu mask;
-> - Add sm6125 to the dt-bindings list without clocks, now depending on:
->   https://lore.kernel.org/linux-arm-kernel/20221222092355.74586-1-krzysztof.kozlowski@linaro.org/
-> 
-> [...]
 
-Applied first patch to will (for-joerg/arm-smmu/bindings), thanks!
+Applied to will (for-joerg/arm-smmu/updates), thanks!
 
-[1/4] dt-bindings: arm-smmu: Document smmu-500 binding for SM6125
-      https://git.kernel.org/will/c/c940c8787929
+[1/1] iommu/arm-smmu-qcom: Select identity domain for sc8280xp MDSS
+      https://git.kernel.org/will/c/1d6316e50572
 
 Cheers,
 -- 
