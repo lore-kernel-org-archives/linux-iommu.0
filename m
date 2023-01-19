@@ -1,39 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A027BA93E
-	for <iommu@lists.linux.dev>; Thu, 19 Jan 2023 17:29:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD721C433EF;
-	Thu, 19 Jan 2023 17:29:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17C63A93E
+	for <iommu@lists.linux.dev>; Thu, 19 Jan 2023 17:34:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0634FC433EF;
+	Thu, 19 Jan 2023 17:34:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1674149368;
-	bh=XjA6FNxjMQiOnXZJOx1apsS33nTEFUkoVAm3T3M6M8M=;
+	s=k20201202; t=1674149696;
+	bh=967XzVwr9ZI/y2wJzz59Q8wegh+ZrWCuDisM/Hq2e90=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=vI7EuC1HYKUg35FJz+wmpXIUQjvqRm71FrejBhtsRO4XtT9ItQR86PhdAESkgM2rl
-	 7s6IlQzP0XSW7IlxDFPBCZ3z3IsEUxb1WdmYcsnLETy9SdoiX2/nmQhgWGjCOOyabB
-	 zqGZhMNFrw6TlZ6001HKwUFH4L//OAwWGr8fjwVabhzlAHxlu/eajf3mElNal1fM6M
-	 SaMmXAd6HflnYdMEot9iGdLyuPeT5RXI6rL0QVXgZdWADTtiEk1BMgHzLEC2/FzJ0h
-	 R9wXeygOsbBT3A+vniK0UL9rpejY4/y6juSijYU//RhqSTZ2On16QdOoQGkn03Qmu6
-	 R9u9NciOXNBZg==
-Date: Thu, 19 Jan 2023 17:29:22 +0000
+	b=ZmfV0nWtfkDYYYnG8Bn2fmqXPhXGd4il5omLxevFLerIraVcmUaRVSrkTCwLH3a/W
+	 MxDsDiww3G29abIMmC2hYWPdkpy1cMPXNNYboaBLLAvxzKUwxlvtTVgiO7G1vy3PMu
+	 N2wn0P0RAXbRC0DE14ByuhnLLC4MIUlq48ric0taEHTGNYSbGsfg5iOobKC6DCyuRF
+	 rYrxjz2/0eHySSyHWx91kflVZbIdnpSSRJqAn/FCXXsKTDG2lggmDwFeXjCSkOH4pB
+	 sl5oNqHdpj6BQ9pVSeTBN9HcHyB/V/bOJwsF+UyU4HIRwxcHV1EHwt3UPOkSySZYxI
+	 PcBR5EKmMkNXA==
+Date: Thu, 19 Jan 2023 17:34:51 +0000
 From: Will Deacon <will@kernel.org>
-To: Luca Weiss <luca@z3ntu.xyz>
-Cc: iommu@lists.linux.dev, ~postmarketos/upstreaming@lists.sr.ht,
-	phone-devel@vger.kernel.org, Rob Herring <robh@kernel.org>,
-	Andy Gross <agross@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@somainline.org>,
-	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+To: Bartosz Golaszewski <brgl@bgdev.pl>
+Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
 	Rob Herring <robh+dt@kernel.org>,
 	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5] dt-bindings: iommu: qcom: Add Qualcomm MSM8953
- compatible
-Message-ID: <20230119172921.GA20092@willie-the-truck>
-References: <20221105142016.93406-1-luca@z3ntu.xyz>
- <20221114134458.GD30263@willie-the-truck>
- <4793103.31r3eYUQgx@g550jk>
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Subject: Re: [PATCH v2] dt-bindings: arm-smmu: document the smmu on Qualcomm
+ SA8775P
+Message-ID: <20230119173448.GB20092@willie-the-truck>
+References: <20230112154554.442808-1-brgl@bgdev.pl>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,44 +36,43 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <4793103.31r3eYUQgx@g550jk>
+In-Reply-To: <20230112154554.442808-1-brgl@bgdev.pl>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Wed, Dec 28, 2022 at 10:34:35PM +0100, Luca Weiss wrote:
-> On Montag, 14. November 2022 14:44:59 CET Will Deacon wrote:
-> > On Sat, Nov 05, 2022 at 03:20:17PM +0100, Luca Weiss wrote:
-> > > Document the compatible used for IOMMU on the msm8953 SoC.
-> > > 
-> > > Acked-by: Rob Herring <robh@kernel.org>
-> > > Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
-> > > ---
-> > > Changes in v5:
-> > > * Change subject so it hopefully gets noticed by iommu maintainers
-> > > 
-> > >   (thanks Krzysztof, maybe this helps..)
-> > >  
-> > >  Documentation/devicetree/bindings/iommu/qcom,iommu.txt | 1 +
-> > >  1 file changed, 1 insertion(+)
-> > > 
-> > > diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-> > > b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt index
-> > > 059139abce35..e6cecfd360eb 100644
-> > > --- a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-> > > +++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-> > > @@ -10,6 +10,7 @@ to non-secure vs secure interrupt line.
-> > > 
-> > >  - compatible       : Should be one of:
-> > >                          "qcom,msm8916-iommu"
-> > > 
-> > > +                        "qcom,msm8953-iommu"
-> > > 
-> > >                       Followed by "qcom,msm-iommu-v1".
-> > 
-> > I'd expect the MSM maintainers (i.e Andy and Bjorn) to pick this up.
+On Thu, Jan 12, 2023 at 04:45:54PM +0100, Bartosz Golaszewski wrote:
+> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 > 
-> Bjorn, could you pick this up for v6.3 please?
+> Document the qcom,smmu-500 SMMU on SA8775P platforms.
+> 
+> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+> ---
+> - rebase on top of Krzysztof's work and add the compatible to the
+>   "clock disallow" list
+> 
+>  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> index 124253e84c02..ea9205706b7c 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> @@ -36,6 +36,7 @@ properties:
+>            - enum:
+>                - qcom,qcm2290-smmu-500
+>                - qcom,qdu1000-smmu-500
+> +              - qcom,sa8775p-smmu-500
+>                - qcom,sc7180-smmu-500
+>                - qcom,sc7280-smmu-500
+>                - qcom,sc8180x-smmu-500
+> @@ -326,6 +327,7 @@ allOf:
+>                - nvidia,smmu-500
+>                - qcom,qcm2290-smmu-500
+>                - qcom,qdu1000-smmu-500
+> +              - qcom,sa8775p-smmu-500
+>                - qcom,sc7180-smmu-500
+>                - qcom,sc8180x-smmu-500
+>                - qcom,sc8280xp-smmu-500
 
-Since this seems to be stagnating here, I'll pick it up into the smmu
-queue along with the other pending bindings patches I have.
+I can't get this to apply. Which tree is it against?
 
 Will
