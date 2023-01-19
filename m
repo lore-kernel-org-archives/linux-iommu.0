@@ -1,12 +1,12 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 865A8B43F
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A4F16B440
 	for <iommu@lists.linux.dev>; Thu, 19 Jan 2023 19:18:51 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BF9001BCB;
-	Thu, 19 Jan 2023 11:19:26 -0800 (PST)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0E3611C00;
+	Thu, 19 Jan 2023 11:19:33 -0800 (PST)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 5AAC73F67D;
-	Thu, 19 Jan 2023 11:18:44 -0800 (PST)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 9E1103F67D;
+	Thu, 19 Jan 2023 11:18:50 -0800 (PST)
 From: Robin Murphy <robin.murphy@arm.com>
 To: joro@8bytes.org,
 	will@kernel.org
@@ -14,9 +14,9 @@ Cc: hch@lst.de,
 	jgg@nvidia.com,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 4/8] iommu: Switch __iommu_domain_alloc() to device ops
-Date: Thu, 19 Jan 2023 19:18:22 +0000
-Message-Id: <25ea8128b9228f9893507ad5a764ff25db5961a0.1673978700.git.robin.murphy@arm.com>
+Subject: [PATCH 8/8] iommu: Pass device through ops->domain_alloc
+Date: Thu, 19 Jan 2023 19:18:26 +0000
+Message-Id: <893b2ef069fad5276d015a7606c01a0da315f9da.1673978700.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.36.1.dirty
 In-Reply-To: <cover.1673978700.git.robin.murphy@arm.com>
 References: <cover.1673978700.git.robin.murphy@arm.com>
@@ -28,167 +28,352 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-In all the places we allocate default domains, we have (or can easily
-get hold of) a device from which to resolve the right IOMMU ops; only
-the public iommu_domain_alloc() interface actually depends on bus ops.
-Reworking the public API is a big enough mission in its own right, but
-in the meantime we can still decouple it from bus ops internally to move
-forward.
+With __iommu_domain_alloc() now aware of a device, we can propagate that
+through to the drivers so that they can also pick up their instance data
+without having to wait until they see the device attach.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/iommu.c | 57 ++++++++++++++++++++++++++++---------------
- 1 file changed, 37 insertions(+), 20 deletions(-)
+ drivers/iommu/amd/iommu.c                   | 3 ++-
+ drivers/iommu/apple-dart.c                  | 3 ++-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 3 ++-
+ drivers/iommu/arm/arm-smmu/arm-smmu.c       | 3 ++-
+ drivers/iommu/arm/arm-smmu/qcom_iommu.c     | 3 ++-
+ drivers/iommu/exynos-iommu.c                | 3 ++-
+ drivers/iommu/fsl_pamu_domain.c             | 3 ++-
+ drivers/iommu/intel/iommu.c                 | 3 ++-
+ drivers/iommu/iommu.c                       | 4 ++--
+ drivers/iommu/ipmmu-vmsa.c                  | 3 ++-
+ drivers/iommu/msm_iommu.c                   | 3 ++-
+ drivers/iommu/mtk_iommu.c                   | 3 ++-
+ drivers/iommu/mtk_iommu_v1.c                | 3 ++-
+ drivers/iommu/omap-iommu.c                  | 3 ++-
+ drivers/iommu/rockchip-iommu.c              | 3 ++-
+ drivers/iommu/s390-iommu.c                  | 3 ++-
+ drivers/iommu/sprd-iommu.c                  | 3 ++-
+ drivers/iommu/sun50i-iommu.c                | 3 ++-
+ drivers/iommu/tegra-gart.c                  | 3 ++-
+ drivers/iommu/tegra-smmu.c                  | 3 ++-
+ drivers/iommu/virtio-iommu.c                | 3 ++-
+ include/linux/iommu.h                       | 3 ++-
+ 22 files changed, 44 insertions(+), 23 deletions(-)
 
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index cbeaab55c0db..f5bc61a4c3d4 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -2084,7 +2084,8 @@ static struct protection_domain *protection_domain_alloc(unsigned int type)
+ 	return NULL;
+ }
+ 
+-static struct iommu_domain *amd_iommu_domain_alloc(unsigned type)
++static struct iommu_domain *amd_iommu_domain_alloc(struct device *dev,
++						   unsigned type)
+ {
+ 	struct protection_domain *domain;
+ 
+diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+index 4f4a323be0d0..95f3aa323a99 100644
+--- a/drivers/iommu/apple-dart.c
++++ b/drivers/iommu/apple-dart.c
+@@ -576,7 +576,8 @@ static void apple_dart_release_device(struct device *dev)
+ 	kfree(cfg);
+ }
+ 
+-static struct iommu_domain *apple_dart_domain_alloc(unsigned int type)
++static struct iommu_domain *apple_dart_domain_alloc(struct device *dev,
++						    unsigned int type)
+ {
+ 	struct apple_dart_domain *dart_domain;
+ 
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index cb05d9771192..453e9dbf4920 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2005,7 +2005,8 @@ static bool arm_smmu_capable(struct device *dev, enum iommu_cap cap)
+ 	}
+ }
+ 
+-static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
++static struct iommu_domain *arm_smmu_domain_alloc(struct device *dev,
++						  unsigned type)
+ {
+ 	struct arm_smmu_domain *smmu_domain;
+ 
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+index 235550db0d59..86c9c6df18ae 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+@@ -851,7 +851,8 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
+ 	arm_smmu_rpm_put(smmu);
+ }
+ 
+-static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
++static struct iommu_domain *arm_smmu_domain_alloc(struct device *dev,
++						  unsigned type)
+ {
+ 	struct arm_smmu_domain *smmu_domain;
+ 
+diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+index b2d3d309be1e..7b9daacf1697 100644
+--- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
++++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+@@ -309,7 +309,8 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
+ 	return ret;
+ }
+ 
+-static struct iommu_domain *qcom_iommu_domain_alloc(unsigned type)
++static struct iommu_domain *qcom_iommu_domain_alloc(struct device *dev,
++						    unsigned type)
+ {
+ 	struct qcom_iommu_domain *qcom_domain;
+ 
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index b0cde2211987..54f9d10a9fb1 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -816,7 +816,8 @@ static inline void exynos_iommu_set_pte(sysmmu_pte_t *ent, sysmmu_pte_t val)
+ 				   DMA_TO_DEVICE);
+ }
+ 
+-static struct iommu_domain *exynos_iommu_domain_alloc(unsigned type)
++static struct iommu_domain *exynos_iommu_domain_alloc(struct device *dev,
++						      unsigned type)
+ {
+ 	struct exynos_iommu_domain *domain;
+ 	dma_addr_t handle;
+diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+index 4408ac3c49b6..69578e574af0 100644
+--- a/drivers/iommu/fsl_pamu_domain.c
++++ b/drivers/iommu/fsl_pamu_domain.c
+@@ -192,7 +192,8 @@ static void fsl_pamu_domain_free(struct iommu_domain *domain)
+ 	kmem_cache_free(fsl_pamu_domain_cache, dma_domain);
+ }
+ 
+-static struct iommu_domain *fsl_pamu_domain_alloc(unsigned type)
++static struct iommu_domain *fsl_pamu_domain_alloc(struct device *dev,
++						  unsigned type)
+ {
+ 	struct fsl_dma_domain *dma_domain;
+ 
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 59df7e42fd53..590594a0d6e1 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4157,7 +4157,8 @@ static struct iommu_domain blocking_domain = {
+ 	}
+ };
+ 
+-static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
++static struct iommu_domain *intel_iommu_domain_alloc(struct device *dev,
++						     unsigned type)
+ {
+ 	struct dmar_domain *dmar_domain;
+ 	struct iommu_domain *domain;
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 5b37766a09e2..1a31d94adff5 100644
+index 8997b8f2e79f..521f6f780294 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -88,7 +88,7 @@ static int iommu_bus_notifier(struct notifier_block *nb,
- 			      unsigned long action, void *data);
- static int iommu_alloc_default_domain(struct iommu_group *group,
- 				      struct device *dev);
--static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
-+static struct iommu_domain *__iommu_domain_alloc(struct device *dev,
- 						 unsigned type);
- static int __iommu_attach_device(struct iommu_domain *domain,
- 				 struct device *dev);
-@@ -1620,15 +1620,15 @@ static int iommu_get_def_domain_type(struct device *dev)
- 	return 0;
- }
- 
--static int iommu_group_alloc_default_domain(struct bus_type *bus,
--					    struct iommu_group *group,
-+static int iommu_group_alloc_default_domain(struct iommu_group *group,
-+					    struct device *dev,
- 					    unsigned int type)
- {
- 	struct iommu_domain *dom;
- 
--	dom = __iommu_domain_alloc(bus, type);
-+	dom = __iommu_domain_alloc(dev, type);
- 	if (!dom && type != IOMMU_DOMAIN_DMA) {
--		dom = __iommu_domain_alloc(bus, IOMMU_DOMAIN_DMA);
-+		dom = __iommu_domain_alloc(dev, IOMMU_DOMAIN_DMA);
- 		if (dom)
- 			pr_warn("Failed to allocate default IOMMU domain of type %u for group %s - Falling back to IOMMU_DOMAIN_DMA",
- 				type, group->name);
-@@ -1653,7 +1653,7 @@ static int iommu_alloc_default_domain(struct iommu_group *group,
- 
- 	type = iommu_get_def_domain_type(dev) ? : iommu_def_domain_type;
- 
--	return iommu_group_alloc_default_domain(dev->bus, group, type);
-+	return iommu_group_alloc_default_domain(group, dev, type);
- }
- 
- /**
-@@ -1766,8 +1766,7 @@ static int probe_get_default_domain_type(struct device *dev, void *data)
- 	return 0;
- }
- 
--static void probe_alloc_default_domain(struct bus_type *bus,
--				       struct iommu_group *group)
-+static void probe_alloc_default_domain(struct iommu_group *group)
- {
- 	struct __group_domain_type gtype;
- 
-@@ -1777,10 +1776,12 @@ static void probe_alloc_default_domain(struct bus_type *bus,
- 	__iommu_group_for_each_dev(group, &gtype,
- 				   probe_get_default_domain_type);
- 
--	if (!gtype.type)
-+	if (!gtype.type) {
- 		gtype.type = iommu_def_domain_type;
-+		gtype.dev = iommu_group_first_dev(group);
-+	}
- 
--	iommu_group_alloc_default_domain(bus, group, gtype.type);
-+	iommu_group_alloc_default_domain(group, gtype.dev, gtype.type);
- 
- }
- 
-@@ -1854,7 +1855,7 @@ int bus_iommu_probe(struct bus_type *bus)
- 		list_del_init(&group->entry);
- 
- 		/* Try to allocate default domain */
--		probe_alloc_default_domain(bus, group);
-+		probe_alloc_default_domain(group);
- 
- 		if (!group->default_domain) {
- 			mutex_unlock(&group->mutex);
-@@ -1943,15 +1944,12 @@ void iommu_set_fault_handler(struct iommu_domain *domain,
- }
- EXPORT_SYMBOL_GPL(iommu_set_fault_handler);
- 
--static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
-+static struct iommu_domain *__iommu_domain_alloc(struct device *dev,
- 						 unsigned type)
- {
--	const struct iommu_ops *ops = bus ? bus->iommu_ops : NULL;
-+	const struct iommu_ops *ops = dev_iommu_ops(dev);
+@@ -1955,7 +1955,7 @@ static struct iommu_domain *__iommu_domain_alloc(struct device *dev,
+ 	const struct iommu_ops *ops = dev_iommu_ops(dev);
  	struct iommu_domain *domain;
  
--	if (!ops)
--		return NULL;
--
- 	domain = ops->domain_alloc(type);
+-	domain = ops->domain_alloc(type);
++	domain = ops->domain_alloc(dev, type);
  	if (!domain)
  		return NULL;
-@@ -1970,9 +1968,28 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
- 	return domain;
- }
  
-+static int __iommu_domain_alloc_dev(struct device *dev, void *data)
-+{
-+	struct device **alloc_dev = data;
-+
-+	if (!device_iommu_mapped(dev))
-+		return 0;
-+
-+	WARN_ONCE(*alloc_dev && dev_iommu_ops(dev) != dev_iommu_ops(*alloc_dev),
-+		"Multiple IOMMU drivers present, which the public IOMMU API can't fully support yet. This may not work as expected, sorry!\n");
-+
-+	*alloc_dev = dev;
-+	return 0;
-+}
-+
- struct iommu_domain *iommu_domain_alloc(struct bus_type *bus)
+@@ -3456,7 +3456,7 @@ struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
+ 	const struct iommu_ops *ops = dev_iommu_ops(dev);
+ 	struct iommu_domain *domain;
+ 
+-	domain = ops->domain_alloc(IOMMU_DOMAIN_SVA);
++	domain = ops->domain_alloc(dev, IOMMU_DOMAIN_SVA);
+ 	if (!domain)
+ 		return NULL;
+ 
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 76e51d8e3732..7bb6c2fd3214 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -567,7 +567,8 @@ static irqreturn_t ipmmu_irq(int irq, void *dev)
+  * IOMMU Operations
+  */
+ 
+-static struct iommu_domain *ipmmu_domain_alloc(unsigned type)
++static struct iommu_domain *ipmmu_domain_alloc(struct device *dev,
++					       unsigned type)
  {
--	return __iommu_domain_alloc(bus, IOMMU_DOMAIN_UNMANAGED);
-+	struct device *dev = NULL;
-+
-+	if (bus_for_each_dev(bus, NULL, &dev, __iommu_domain_alloc_dev))
-+		return NULL;
-+
-+	return __iommu_domain_alloc(dev, IOMMU_DOMAIN_UNMANAGED);
+ 	struct ipmmu_vmsa_domain *domain;
+ 
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index c60624910872..1d9704e7c75f 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -302,7 +302,8 @@ static void __program_context(void __iomem *base, int ctx,
+ 	SET_M(base, ctx, 1);
  }
- EXPORT_SYMBOL_GPL(iommu_domain_alloc);
  
-@@ -2918,7 +2935,7 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
+-static struct iommu_domain *msm_iommu_domain_alloc(unsigned type)
++static struct iommu_domain *msm_iommu_domain_alloc(struct device *dev,
++						   unsigned type)
+ {
+ 	struct msm_priv *priv;
+ 
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 005136a4cc36..711716c8dcdf 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -632,7 +632,8 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
+ 	return 0;
+ }
+ 
+-static struct iommu_domain *mtk_iommu_domain_alloc(unsigned type)
++static struct iommu_domain *mtk_iommu_domain_alloc(struct device *dev,
++						   unsigned type)
+ {
+ 	struct mtk_iommu_domain *dom;
+ 
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index dff8ea0af884..3d1e0635f9b3 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -270,7 +270,8 @@ static int mtk_iommu_v1_domain_finalise(struct mtk_iommu_v1_data *data)
+ 	return 0;
+ }
+ 
+-static struct iommu_domain *mtk_iommu_v1_domain_alloc(unsigned type)
++static struct iommu_domain *mtk_iommu_v1_domain_alloc(struct device *dev,
++						      unsigned type)
+ {
+ 	struct mtk_iommu_v1_domain *dom;
+ 
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index 2fd7702c6709..19a22ba1860d 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -1566,7 +1566,8 @@ static void omap_iommu_detach_dev(struct iommu_domain *domain,
+ 	spin_unlock(&omap_domain->lock);
+ }
+ 
+-static struct iommu_domain *omap_iommu_domain_alloc(unsigned type)
++static struct iommu_domain *omap_iommu_domain_alloc(struct device *dev,
++						    unsigned type)
+ {
+ 	struct omap_iommu_domain *omap_domain;
+ 
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index a68eadd64f38..50b17a096ea5 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -1057,7 +1057,8 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
+ 	return ret;
+ }
+ 
+-static struct iommu_domain *rk_iommu_domain_alloc(unsigned type)
++static struct iommu_domain *rk_iommu_domain_alloc(struct device *dev,
++						  unsigned type)
+ {
+ 	struct rk_iommu_domain *rk_domain;
+ 
+diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+index ed33c6cce083..a56e4e282469 100644
+--- a/drivers/iommu/s390-iommu.c
++++ b/drivers/iommu/s390-iommu.c
+@@ -41,7 +41,8 @@ static bool s390_iommu_capable(struct device *dev, enum iommu_cap cap)
  	}
+ }
  
- 	/* Sets group->default_domain to the newly allocated domain */
--	ret = iommu_group_alloc_default_domain(dev->bus, group, type);
-+	ret = iommu_group_alloc_default_domain(group, dev, type);
- 	if (ret)
- 		goto out;
+-static struct iommu_domain *s390_domain_alloc(unsigned domain_type)
++static struct iommu_domain *s390_domain_alloc(struct device *dev,
++					      unsigned domain_type)
+ {
+ 	struct s390_domain *s390_domain;
  
-@@ -3132,13 +3149,13 @@ static int __iommu_group_alloc_blocking_domain(struct iommu_group *group)
- 	if (group->blocking_domain)
- 		return 0;
+diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
+index 4cebccb6fc8b..32992cb07c4f 100644
+--- a/drivers/iommu/sprd-iommu.c
++++ b/drivers/iommu/sprd-iommu.c
+@@ -132,7 +132,8 @@ sprd_iommu_pgt_size(struct iommu_domain *domain)
+ 		SPRD_IOMMU_PAGE_SHIFT) * sizeof(u32);
+ }
  
--	group->blocking_domain = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_BLOCKED);
-+	group->blocking_domain = __iommu_domain_alloc(dev, IOMMU_DOMAIN_BLOCKED);
- 	if (!group->blocking_domain) {
- 		/*
- 		 * For drivers that do not yet understand IOMMU_DOMAIN_BLOCKED
- 		 * create an empty domain instead.
- 		 */
--		group->blocking_domain = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_UNMANAGED);
-+		group->blocking_domain = __iommu_domain_alloc(dev, IOMMU_DOMAIN_UNMANAGED);
- 		if (!group->blocking_domain)
- 			return -EINVAL;
- 	}
+-static struct iommu_domain *sprd_iommu_domain_alloc(unsigned int domain_type)
++static struct iommu_domain *sprd_iommu_domain_alloc(struct device *dev,
++						    unsigned int domain_type)
+ {
+ 	struct sprd_iommu_domain *dom;
+ 
+diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
+index 5b585eace3d4..10c7eb9c5f11 100644
+--- a/drivers/iommu/sun50i-iommu.c
++++ b/drivers/iommu/sun50i-iommu.c
+@@ -667,7 +667,8 @@ static phys_addr_t sun50i_iommu_iova_to_phys(struct iommu_domain *domain,
+ 		sun50i_iova_get_page_offset(iova);
+ }
+ 
+-static struct iommu_domain *sun50i_iommu_domain_alloc(unsigned type)
++static struct iommu_domain *sun50i_iommu_domain_alloc(struct device *dev,
++						      unsigned type)
+ {
+ 	struct sun50i_iommu_domain *sun50i_domain;
+ 
+diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+index ed53279d1106..75bcf191b091 100644
+--- a/drivers/iommu/tegra-gart.c
++++ b/drivers/iommu/tegra-gart.c
+@@ -141,7 +141,8 @@ static void gart_iommu_detach_dev(struct iommu_domain *domain,
+ 	spin_unlock(&gart->dom_lock);
+ }
+ 
+-static struct iommu_domain *gart_iommu_domain_alloc(unsigned type)
++static struct iommu_domain *gart_iommu_domain_alloc(struct device *dev,
++						    unsigned type)
+ {
+ 	struct iommu_domain *domain;
+ 
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index 5b1af40221ec..c7c34d9f60ec 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -272,7 +272,8 @@ static void tegra_smmu_free_asid(struct tegra_smmu *smmu, unsigned int id)
+ 	clear_bit(id, smmu->asids);
+ }
+ 
+-static struct iommu_domain *tegra_smmu_domain_alloc(unsigned type)
++static struct iommu_domain *tegra_smmu_domain_alloc(struct device *dev,
++						    unsigned type)
+ {
+ 	struct tegra_smmu_as *as;
+ 
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 59f1abd6ee53..7f397767a8e2 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -637,7 +637,8 @@ static void viommu_event_handler(struct virtqueue *vq)
+ 
+ /* IOMMU API */
+ 
+-static struct iommu_domain *viommu_domain_alloc(unsigned type)
++static struct iommu_domain *viommu_domain_alloc(struct device *dev,
++						unsigned type)
+ {
+ 	struct viommu_domain *vdomain;
+ 
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 35af9d4e3969..3a8930d36046 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -252,7 +252,8 @@ struct iommu_ops {
+ 	bool (*capable)(struct device *dev, enum iommu_cap);
+ 
+ 	/* Domain allocation and freeing by the iommu driver */
+-	struct iommu_domain *(*domain_alloc)(unsigned iommu_domain_type);
++	struct iommu_domain *(*domain_alloc)(struct device *dev,
++					     unsigned iommu_domain_type);
+ 
+ 	struct iommu_device *(*probe_device)(struct device *dev);
+ 	void (*release_device)(struct device *dev);
 -- 
 2.36.1.dirty
 
