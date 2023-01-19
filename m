@@ -1,150 +1,183 @@
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2085.outbound.protection.outlook.com [40.107.96.85])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5000E7471
-	for <iommu@lists.linux.dev>; Thu, 19 Jan 2023 14:10:38 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=APyjq5/CZxKwz4RC3CeqUDEhdHcXH97UUgYTM+X/yoRrizotbvS5p1MCtAjdOjD9bgBQuZFyY8/upeA4BoG/t+vlGMioc+VVvHvcOpgh3cxYzkmBruiok+q7n1W3FXICyIrG0G7WSiwVs3nzCK3/FsZpPTu/mcwVr9HY8aW1QOydqkAeFP+mcwOt6JBm4eiYY8T18BTFGHvf0jyepkF1DtnBf4N5cDPwsiWdRT5xnvuvANgUqss6lcEH/cihH/Skb4QOqYx1mzLaDj5oPPWwJeN7DmpXa6Ddlyk1cm6xy63V3vASPOykvUhXp2NW/12f8HADaxGlPbwU8qKfibPdpQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=to0RjQQ75p/pFEQcJpB6sfm808KhZnQvJsYyC/9eDwY=;
- b=LaYSh+D2vB8wTCJqOu40TH9iuVxZ7N8G8w++p2y2IZvjdipqpFUXOcyiCOuV9Cb+A0xIGMi2PHeFLOv535GQuElVU99ekmWft97nLGnMsgU+9qPJ/aZ4JCFfPw/wNUtLpVFfmv46Uc3Sfn/ebwsRfa6dh9b5SZf17ukrzzpgaU64d92AQj0Rzzj437VJPjoxcoLGoh4D3J9PALLKduQwxV4Ue4Dmv+mkSN/mb8S7U+BVh06Rm69ecah/yhAhYt7jjqV3P9Qz6iXpA5GjUULEEx/Qp85Y1bwH+y4okigqwAiEYvhnp4xIsWNMJEYhbaYZh/zq+9kBpzCNOJKMnZDTKA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=to0RjQQ75p/pFEQcJpB6sfm808KhZnQvJsYyC/9eDwY=;
- b=qIaBHAp0zXQ6EE8d+juCnjVvMUAmsrSt3P7y1yCXs6hZEaG90Q5S4EjAkTjK5Zd3h0Lm1KRVC1spNPG0Y+qdiykSIXq91LSmGuEV7qF8uVoXxFh826DDEzDxAt5KqIpxUVrYrmCOFcLiBd2yaNQnG6m3JxcGdWCo4Ug1U7+kBWuHXZFmkvI/xlfJmvvY3w25WBgTGdGyibRakOdzmS89kp9CFJosTTfr7KCAWd1yfioAu/WJBLE+N2zm5m6bGlJXsRpfnDpXLbbeV0/6xTI6cAfa71LqVvP5LzRakWaTFFxgxbs+m0B6Nwxz3cD7q1dzQqITEsMC7hkM7dLTf8M4TA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by DS7PR12MB6215.namprd12.prod.outlook.com (2603:10b6:8:95::7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5986.23; Thu, 19 Jan 2023 14:10:36 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::f8b0:df13:5f8d:12a%9]) with mapi id 15.20.6002.013; Thu, 19 Jan 2023
- 14:10:35 +0000
-Date: Thu, 19 Jan 2023 10:10:34 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: Cornelia Huck <cohuck@redhat.com>, iommu@lists.linux.dev,
-	Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
-	Yi Liu <yi.l.liu@intel.com>
-Subject: Re: [PATCH v3] vfio: Support VFIO_NOIOMMU with iommufd
-Message-ID: <Y8lPWoRPUrDjLCNn@nvidia.com>
-References: <0-v3-480cd64a16f7+1ad0-iommufd_noiommu_jgg@nvidia.com>
- <20230118115831.3e76742d.alex.williamson@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20230118115831.3e76742d.alex.williamson@redhat.com>
-X-ClientProxiedBy: BL1P221CA0010.NAMP221.PROD.OUTLOOK.COM
- (2603:10b6:208:2c5::14) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFF6DA922
+	for <iommu@lists.linux.dev>; Thu, 19 Jan 2023 15:56:10 +0000 (UTC)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30JFtQro004492;
+	Thu, 19 Jan 2023 15:56:01 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=SKoKjezuRUpE8QqitDy7L0+4qpiJpPKUTSPtiyu4Kgk=;
+ b=oBtf0sRwUx1VD7RFOxzrH6XKrWe+8XCEK9B8ExViTeNDkSokhEhdnibtpiNWP0+sY4UH
+ JAv2u/CJf4vCOnuBSd56ETgWewQOlj8nGrayUfZ5QFAnBCQW6EM3xTpkL850rd3W4xJP
+ pgSyROYswCgPLWZqi7SpP0EqjAz0phVXEGzLfU48o+I5taYZQRnLludW9CVs0cEWJ1a8
+ o2XCna+s1KkWgxpyKdIv7+/18BJR1c05vqbheNf0B88eIgnzqYCFkTiBPCcFJqrA7gfp
+ G4ps/n+19N7TrkPOh+OS4ECuwfZV6q+J1cFxGQupO4gjd9WTJzkdiv14k6sOLTA+UKIR dA== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3n78qs8cth-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 19 Jan 2023 15:56:01 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+	by ppma03ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 30J5X3Ha023782;
+	Thu, 19 Jan 2023 15:55:58 GMT
+Received: from smtprelay05.fra02v.mail.ibm.com ([9.218.2.225])
+	by ppma03ams.nl.ibm.com (PPS) with ESMTPS id 3n3m16pvwv-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 19 Jan 2023 15:55:58 +0000
+Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
+	by smtprelay05.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 30JFttRu45023556
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 19 Jan 2023 15:55:55 GMT
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 4CB9F20043;
+	Thu, 19 Jan 2023 15:55:55 +0000 (GMT)
+Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 1468220040;
+	Thu, 19 Jan 2023 15:55:54 +0000 (GMT)
+Received: from [9.171.48.94] (unknown [9.171.48.94])
+	by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Thu, 19 Jan 2023 15:55:53 +0000 (GMT)
+Message-ID: <5692d7fbc3d4bd2ac624c82a77f642c36a2cf04e.camel@linux.ibm.com>
+Subject: Re: [PATCH v4 5/7] iommu/dma: Allow a single FQ in addition to
+ per-CPU FQs
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin
+ Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
+        Wenjia
+ Zhang <wenjia@linux.ibm.com>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>,
+        Gerd Bayer
+ <gbayer@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev,
+        linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
+        hca@linux.ibm.com, gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        agordeev@linux.ibm.com, svens@linux.ibm.com,
+        linux-kernel@vger.kernel.org, Julian Ruess <julianr@linux.ibm.com>
+Date: Thu, 19 Jan 2023 16:55:53 +0100
+In-Reply-To: <20230104120543.308933-6-schnelle@linux.ibm.com>
+References: <20230104120543.308933-1-schnelle@linux.ibm.com>
+	 <20230104120543.308933-6-schnelle@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 32Y_g2cJL13woYx4FV75o6tdk8YdLotJ
+X-Proofpoint-ORIG-GUID: 32Y_g2cJL13woYx4FV75o6tdk8YdLotJ
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|DS7PR12MB6215:EE_
-X-MS-Office365-Filtering-Correlation-Id: d9ca145e-e8c3-4828-6fa5-08dafa26ef5e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	09/0b2Bnx+pd+8ryxeC5YuekLeAAOPhC1jxez0nx8Rvu/BiiMMoVvWGVXJsEnt+mX+M/JpFL1rysq/wRC7Y3u2w1Bf1PsKT2YJ6gaIAhMGKdEkqvIMX5Y4jj62iFouCNvypQq31UECGnwJkewJ4M7+3DH/TWhXpBWPXmM2Pq4sdKvRIXtW8jCKJTkii/a9pmDeUYZjVYKlo8jVZM4FrdA9rFrwHzCsO2bNtJ/qr4rx+RmZPnh+MzxkbNUUm6K+QEgVJBWUuCHNl0JuxcuZWqYhBaZskSAPhf6L6+m8ICaOAso+ks6Y471rpHIH4LT8SLNxCDvB2eFdxm81BWle6nswxz7GiojYt1SanOETIkWzFjZY8fLb1pVGY4Cb4xKVQdsU5wGLqq3cTjPXR3hlPOXOkEhSq4HbnNjbopn3QVgPCa5+7e28HkU78GQKeueieIRJ1dHrFtqNuJuGuKbvUAnvP4fp63YCSPTvueUJoPcGzfcIcaynBdQcaWumPG4KegLmI/aWu1KmYjSRIP5aSuriYO5X47Xnwg2ON2bMN9iXf1jUT8L+Hp/x3kzFrJ80+cN3mkcwUI/J4qRPRZUm94PxV+Pt7ZbN4viVaCFU/uvj73mBWV+jScuC6sh21y0HEtrSmUGCDjTMq2ExE5iVRQuQ==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(346002)(396003)(39860400002)(136003)(376002)(451199015)(8936002)(36756003)(86362001)(2616005)(4326008)(66476007)(66946007)(6512007)(41300700001)(66556008)(6916009)(26005)(8676002)(186003)(2906002)(316002)(6506007)(478600001)(54906003)(6486002)(38100700002)(5660300002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?BhMuHMJh/Drpzg4HNSCyHPqsmI+LFeQliuAx4APMAfPnojyGoV/GzYZ/hNM0?=
- =?us-ascii?Q?UgLdUoZENZRMegzqlDGzTC8iqaUa/rr4KZnkXV/rgwupAT4Op37mlKlDnLzN?=
- =?us-ascii?Q?/F90FtBHuNjBxqp7nttSO6/IMn6bv6F6ootRjAqmIqh/vnvRZ+tYXkEwzNfR?=
- =?us-ascii?Q?Ob7yUD0BYoWOlUB/tLOeQnp2knbWUK3QjkxDTAklvWyCPiiDkNh6NZVLyYHr?=
- =?us-ascii?Q?nb7HMgFciXu8zC5kSyi7MiMIm935wzffgJyD2T+W3P6zbBpVFA51yHJKiPs1?=
- =?us-ascii?Q?qgU7v4F1OR8IGlw0C47c1Jt0LLfr0tdyqiz1JUrR9Gzk4g2+OQCxkRKTpXyF?=
- =?us-ascii?Q?MvWSGYO4puDnQQp6rje8QBRQ3N/pDcUBmjMcPT/GBtqkQzsAZdHbntjBR5f9?=
- =?us-ascii?Q?cq5mESGVcNDAk/4N1EyWyjC6m3yrj8zBINq2HJ71h3Y4IDAGzVPaZUr6Se3s?=
- =?us-ascii?Q?pRlwNKs8KBBr6EiTtIsF9ssJyXSDzKIy8/fRm52eBGYHIbGLrR3QjE8XYwLp?=
- =?us-ascii?Q?QNtY++WD4ZhxlujJToIbNeQFlMMrYO56xhtXC+rnEvZqIfhFlWKSW9CwzzUO?=
- =?us-ascii?Q?NWXu/roJYhocjPe5NFV52utpexABE2QSQIj6l6WQAY/fwEpNmonOnHaFPYAs?=
- =?us-ascii?Q?Kiw+tNHPb121z1h0zueNoUxF2BmLzfch4V5Ub64TT5CHWM/R8R32C7p+4OAD?=
- =?us-ascii?Q?JmmjGweFUBHqDElgMhaaiv9VEWuD8Mll3VTvckqHOHm+qJflus/rT9xj7Z4n?=
- =?us-ascii?Q?mqgdGgYSBxA18UuODehTCejdovVnfH9XEaptD5oBltdv7ERarq8/d9T2+68b?=
- =?us-ascii?Q?U8z/aaKgM5JJMIH2pJZ3DXOrh/Hfl1tuEexTHJmBfWQkl+236EneHr+GCFRq?=
- =?us-ascii?Q?ivBIyI1mlzSj/pryXs8T6O5jzI8lUc3jIS/EtoA++TYCYUSUp9I5pRVwuPm8?=
- =?us-ascii?Q?mwHAk+tVAY2+gszvW5jL42kLCEnIOfpHzznEsa4484oQMYuEHDEfsZTTpJOv?=
- =?us-ascii?Q?DvZTwq36k1sUnIzh0vzpzH8rPqz+ZeRmpuZnU+4Fuz7I2xRHSWH/5+UW55bI?=
- =?us-ascii?Q?ls4qfWzqkPCZKGorzueAbiR+LZcmRrNhAKfUKjK/W09+/m4CnmFWwAUmIea2?=
- =?us-ascii?Q?X2FM6sP8OaNc/4qloXgRveK+UI3PnWVjkB1IeF53m/crSxE1jZkGx3T4+Mun?=
- =?us-ascii?Q?HeZoByZbA1TuXveaCBSXdlY9sPMAfpu4lZRG2zf7HPgqU2nTpxl1UyZg8Hhn?=
- =?us-ascii?Q?LHqjn5ArYSuOyEQS9/mFb3srgv7zgGzcaIUmR0GxaFVwyOJHE1TsrqzwxnjO?=
- =?us-ascii?Q?zudgfhLxQzQvYxX+ZQhAHqmzarVvJ7LrzWnharLUcXl4HdfJgX3i2CA93aZi?=
- =?us-ascii?Q?UccaiJRdMTMOwws4ne6OABAZO2EhU62tfqwZN/vZ+Mmu4+PAR9rNrjP63kZo?=
- =?us-ascii?Q?rjfrjhYnos9WwPIdUASlLPl9mJHdObNlJW0Clk34USiCFVd/TcDiJGuXbHlL?=
- =?us-ascii?Q?cUA8eX8jTQIc0Dga2YVDu3lm5sLrsj6Do9rTamcmPiirBU+L+v5V2VPsfjrB?=
- =?us-ascii?Q?cDfhyQ4K7GUN+q6jmdkJ5lxYcyN/zrjetpmZ2QwB?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d9ca145e-e8c3-4828-6fa5-08dafa26ef5e
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2023 14:10:35.9254
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PBcP8z3cMOfv/VMjmCMto5OWuRLamneKNcdG+Ci2E5IP8YDWS2fxjVx8pH0PCgIS
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6215
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
+ definitions=2023-01-19_09,2023-01-19_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=658
+ priorityscore=1501 clxscore=1015 impostorscore=0 mlxscore=0 spamscore=0
+ bulkscore=0 phishscore=0 adultscore=0 suspectscore=0 lowpriorityscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2212070000 definitions=main-2301190125
 
-On Wed, Jan 18, 2023 at 11:58:31AM -0700, Alex Williamson wrote:
-> On Wed, 18 Jan 2023 13:50:28 -0400
-> Jason Gunthorpe <jgg@nvidia.com> wrote:
-> > diff --git a/drivers/vfio/vfio.h b/drivers/vfio/vfio.h
-> > index f8219a438bfbf5..9e94abcf8ee1a8 100644
-> > --- a/drivers/vfio/vfio.h
-> > +++ b/drivers/vfio/vfio.h
-> > @@ -10,10 +10,10 @@
-> >  #include <linux/device.h>
-> >  #include <linux/cdev.h>
-> >  #include <linux/module.h>
-> > +#include <linux/vfio.h>
-> >  
-> >  struct iommufd_ctx;
-> >  struct iommu_group;
-> > -struct vfio_device;
-> >  struct vfio_container;
-> >  
-> >  void vfio_device_put_registration(struct vfio_device *device);
-> > @@ -88,6 +88,12 @@ bool vfio_device_has_container(struct vfio_device *device);
-> >  int __init vfio_group_init(void);
-> >  void vfio_group_cleanup(void);
-> >  
-> > +static inline bool vfio_device_is_noiommu(struct vfio_device *vdev)
-> > +{
-> > +	return IS_ENABLED(CONFIG_VFIO_NOIOMMU) &&
-> > +	       vdev->group->type == VFIO_NO_IOMMU;
-> > +}
-> 
-> 
-> What about:
-> 
-> static inline bool vfio_group_type_is_noiommu(struct vfio_group *group)
+On Wed, 2023-01-04 at 13:05 +0100, Niklas Schnelle wrote:
+> In some virtualized environments, including s390 paged memory guests,
+> IOTLB flushes are used to update IOMMU shadow tables. Due to this, they
+> are much more expensive than in typical bare metal environments or
+> non-paged s390 guests. In addition they may parallelize more poorly in
+> virtualized environments. This changes the trade off for flushing IOVAs
+> such that minimizing the number of IOTLB flushes trumps any benefit of
+> cheaper queuing operations or increased paralellism.
+>=20
+> In this scenario per-CPU flush queues pose several problems. Firstly
+> per-CPU memory is often quite limited prohibiting larger queues.
+> Secondly collecting IOVAs per-CPU but flushing via a global timeout
+> reduces the number of IOVAs flushed for each timeout especially on s390
+> where PCI interrupts may not be bound to a specific CPU.
+>=20
+> Thus let's introduce a single flush queue mode IOMMU_DOMAIN_DMA_SQ that
+> reuses the same queue logic but only allocates a single global queue
+> allowing larger batches of IOVAs to be freed at once and with larger
+> timeouts. This is to allow the common IOVA flushing code to more closely
+> resemble the global flush behavior used on s390's previous internal DMA
+> API implementation.
+>=20
+> As we now support two different variants of flush queues rename the
+> existing __IOMMU_DOMAIN_DMA_FQ to __IOMMU_DOMAIN_DMA_LAZY to indicate
+> the general case of having a flush queue and introduce separate
+> __IOMMU_DOMAIN_DMA_PERCPU_Q and __IOMMU_DOMAIN_DMA_SINGLE_Q bits to
+> indicate the two queue variants.
+>=20
+> Link: https://lore.kernel.org/linux-iommu/3e402947-61f9-b7e8-1414-fde0062=
+57b6f@arm.com/
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> ---
+> v2 -> v3:
+> - Rename __IOMMU_DOMAIN_DMA_FQ to __IOMMU_DOMAIN_DMA_LAZY to make it more=
+ clear
+>   that this bit indicates flush queue use independent of the exact queuing
+>   strategy
+>=20
+---8<---
+>=20=20
+>  /* sysfs updates are serialised by the mutex of the group owning @domain=
+ */
+>  int iommu_dma_init_fq(struct iommu_domain *domain)
+>  {
+>  	struct iommu_dma_cookie *cookie =3D domain->iova_cookie;
+> -	struct iova_fq __percpu *queue;
+> -	int i, cpu;
+> +	int rc;
+>=20=20
+>  	if (cookie->fq_domain)
+>  		return 0;
+> @@ -250,26 +336,16 @@ int iommu_dma_init_fq(struct iommu_domain *domain)
+>  	atomic64_set(&cookie->fq_flush_start_cnt,  0);
+>  	atomic64_set(&cookie->fq_flush_finish_cnt, 0);
+>=20=20
+>=20
+---8<---
+> +	if (domain->type =3D=3D IOMMU_DOMAIN_DMA_FQ)
+> +		rc =3D iommu_dma_init_fq_percpu(cookie);
+> +	else
+> +		rc =3D iommu_dma_init_fq_single(cookie);
 
-For Yi's series to work we can't refer to device->group outside
-group.c - it should be compiled out entirely in some kconfigs.
+Found out in testing that the above doesn't work for the "echo XYZ >
+/sys/../iommu_group/type" interface as domain->type is not set before
+calling iommu_dma_init_fq() so it would always init for DMA-SQ which is
+of course the case that I used during earlier testing. I think the
+easiest fix is to add a type parameter to iommu_dma_init_fq().
 
-So this function is the right signature for the call sites I added
+>=20=20
+> -		for (i =3D 0; i < IOVA_FQ_SIZE; i++)
+> -			INIT_LIST_HEAD(&fq->entries[i].freelist);
+> +	if (rc) {
+> +		pr_warn("iova flush queue initialization failed\n");
+> +		return rc;
+>  	}
+>=20
+---8<---=20
+>=20
+>  	mutex_unlock(&group->mutex);
+> @@ -2896,10 +2900,10 @@ static int iommu_change_dev_def_domain(struct iom=
+mu_group *group,
+>  	}
+>=20=20
+>  	/* We can bring up a flush queue without tearing down the domain */
+> -	if (type =3D=3D IOMMU_DOMAIN_DMA_FQ && prev_dom->type =3D=3D IOMMU_DOMA=
+IN_DMA) {
+> +	if (!!(type & __IOMMU_DOMAIN_DMA_LAZY) && prev_dom->type =3D=3D IOMMU_D=
+OMAIN_DMA) {
+>  		ret =3D iommu_dma_init_fq(prev_dom);
+>  		if (!ret)
+> -			prev_dom->type =3D IOMMU_DOMAIN_DMA_FQ;
+> +			prev_dom->type =3D type;
 
-> which would allow us to pickup the group.c use with only extending the
-> callers here as s/vdev/vdev->group/?  
+Here domain->type is set only after calling iommu_dma_init_fq().
 
-I think this would an OK mini-cleanup for group.c..
+>  		goto out;
+>  	}
+>=20=20
 
-Are you OK with it as is?
-
-Jason
