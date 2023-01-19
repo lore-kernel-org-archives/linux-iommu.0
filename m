@@ -1,326 +1,177 @@
-Received: from mail-ua1-f50.google.com (mail-ua1-f50.google.com [209.85.222.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2083.outbound.protection.outlook.com [40.107.100.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C90C195
-	for <iommu@lists.linux.dev>; Thu, 19 Jan 2023 08:43:38 +0000 (UTC)
-Received: by mail-ua1-f50.google.com with SMTP id m17so346673uap.7
-        for <iommu@lists.linux.dev>; Thu, 19 Jan 2023 00:43:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=CwD8DaTV7HbTR4hShcporK6xZauIpXkKV4HSg2vJsOI=;
-        b=aqcrT+v6oIoHD135mvgEusjsxtXhZ8taKAVLc7UdJ3YFZPQ4YP8snRUewKE8gM1u8J
-         Y7G4B11Fi1ayid0O9YB+z4drcZqc5ztn92ELVRALm1ynv9EY2lhSugneJzgFaykWgeRl
-         Cw+RE47hrNjjpf0Ian1DEYImJr1XUDm5Bqh0kp7GsEUm3Kmn322BuJzh4PB/tCprwV2O
-         CmCK9N3o0Qx6QnEBye6uQA2Y1lCCZXm1vrE2hQyRPilw9kdS/syex7rek/iNu4uoQ6GK
-         IYYaAoVIw7wvYW1Y1gNAEstfnJlM4/BFiiMgDmUGrfdHLsvb378PbLfw/7o7OsKJpmpN
-         bP2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=CwD8DaTV7HbTR4hShcporK6xZauIpXkKV4HSg2vJsOI=;
-        b=JrquG+iq147+IpNzWRkFZTuR+QUehY4B+0fkyaG6scnvNp2VHrPw7347r7WbtpPrlu
-         jCxI+Hv7f351y0L4yyvGHVcACi7ZS8P8jOiRExrfS1NBFS0db2+/gig9fJvbsBhOftFA
-         NQMIutxUGh1hdQQCSfNVizP7vs1FyKavfLuju4QZf5j891gk/FLnohA4/SmIgPwIBm6y
-         Ejc/Cv03MX764p8E2y4W1KEbSdpVpF/OSyqCbhpjeejUqK+eZZMxgHvHjZ/jTZ+7/TZh
-         7ed7JWf6AjGauQHzRQ3mtwJk3nOlsvKPSRyyppf6KtiwM6WWhtCh55h5FgTL4pXtNjHI
-         S4gg==
-X-Gm-Message-State: AFqh2kps/g/c4sScU+fs0JrK+SHVGogYPwQk40N5cAfoDVowdQqPHEQF
-	i3jCqaprpLsXZsA0gVTtTUV3aK6WNJk/VnARkkaJKw==
-X-Google-Smtp-Source: AMrXdXvkfjcS4LxHkJp5jmtmIoknkiHBM4iIQVohRz8hS301Ex+SgUvD6mSYEC8kFB1/MpTkU7BZ5sY0Jb+cvbiq4rI=
-X-Received: by 2002:a9f:3748:0:b0:5ab:8b60:2a44 with SMTP id
- a8-20020a9f3748000000b005ab8b602a44mr1179224uae.33.1674117817192; Thu, 19 Jan
- 2023 00:43:37 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B64133FB
+	for <iommu@lists.linux.dev>; Thu, 19 Jan 2023 08:54:50 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Yy2zs7XC5cdYeem8x3TXw95H2Ubbiv9c3vOlHPuGvc6C4ItrYs6QniEXQLAlxjheeVrEDHZVdoLIBqTCPwjKRqrLVlHlWojJCyf0VBwao028OlZZ0mFl5Ho8dGXffJwpwQaZ4kVw5sMgcA58WwgcfVBT0CIS4Pv505Qbmg5C4r0FSgXA15xp98YqFy7sd01opLWDqKBLzlgFgDkhy9kXma+Hkbsv2h1Y/MIdGgcAzuXdWiTLtYzwqOgF7JZakI2Z1JdWTmi/4JfKyxzhpw3xL6GNLN2cQpfsFh97EvqSefgjz6zAES0J35J9QAikkvCX/UW9rDF0IYLDWXCXhaaQoA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UDoUC31Z5DzXwyZbXGyrKXVztTyVb024h8fXVKSXKok=;
+ b=bLtohlPs786t5bjGMKYQquQ1G7wvkza2znPWVjnAQEeM+cStiNK/rEbtaRxUosAUxAWH1q8HWKVwwn30I8W5AzTYw69LgOxdK63ioXLtHT+xL6d106NHJ7k6zlilhCxD+p4ga9HRoXSr3peU52LJMzzyDCn6t45uynMikrgYos45u6ssyxK/1IpNFarAcNigRg9vAZ+G6CuBIPF/xa1TxEud26sRADI9lU6ZyXwNF4juMccyebkvskDjw+KT0Noy0gEpbi71OwTY+IMMvzgxdwoltcUlpVoMoJwIkep90TUZWQnMgt13ntctxWfPp5a6yWl5Q3Udmltc86+/BgPpHw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UDoUC31Z5DzXwyZbXGyrKXVztTyVb024h8fXVKSXKok=;
+ b=pMjF8N2/zvALuCdL50+I45xdPPid3h4O/fqVRuHufz7L3xvZv5E1poczq1gQRpkEMreS6zSW6AQYEza/0d5iPGcuRWIlsCsu0fHC3k+j+m/h2W7mSL6NIS7wLUWpU+AmSKHZxPuyq05k9Q1h+9z3HmtIoyv+B8JPAKTPn3r9iuY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from SN6PR12MB2767.namprd12.prod.outlook.com (2603:10b6:805:75::23)
+ by SA1PR12MB6993.namprd12.prod.outlook.com (2603:10b6:806:24c::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.23; Thu, 19 Jan
+ 2023 08:54:48 +0000
+Received: from SN6PR12MB2767.namprd12.prod.outlook.com
+ ([fe80::5317:fa3f:5cbe:45e9]) by SN6PR12MB2767.namprd12.prod.outlook.com
+ ([fe80::5317:fa3f:5cbe:45e9%3]) with mapi id 15.20.5986.023; Thu, 19 Jan 2023
+ 08:54:47 +0000
+Message-ID: <90762dee-1559-58ac-220d-a13635d5032e@amd.com>
+Date: Thu, 19 Jan 2023 02:54:43 -0600
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.1
+Subject: Re: [PATCH 1/4] iommu/amd: Introduce Protection-domain flag VFIO
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@ziepe.ca>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
+ robin.murphy@arm.com, thomas.lendacky@amd.com, vasant.hegde@amd.com,
+ jon.grimm@amd.com
+References: <20230110143137.54517-1-suravee.suthikulpanit@amd.com>
+ <20230110143137.54517-2-suravee.suthikulpanit@amd.com>
+ <Y8F53dzdebKLTlOy@ziepe.ca>
+From: "Kalra, Ashish" <ashish.kalra@amd.com>
+In-Reply-To: <Y8F53dzdebKLTlOy@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: CH0P221CA0040.NAMP221.PROD.OUTLOOK.COM
+ (2603:10b6:610:11d::20) To SN6PR12MB2767.namprd12.prod.outlook.com
+ (2603:10b6:805:75::23)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230109174511.1740856-1-brgl@bgdev.pl> <20230109174511.1740856-11-brgl@bgdev.pl>
- <20230110162654.sm7yzyzfucbmuyhx@builder.lan>
-In-Reply-To: <20230110162654.sm7yzyzfucbmuyhx@builder.lan>
-From: Bartosz Golaszewski <brgl@bgdev.pl>
-Date: Thu, 19 Jan 2023 09:43:26 +0100
-Message-ID: <CAMRc=MdcqfRATCzwpwLskFqZdtS6ELJtyuVGvNMq3Y33uS+5mw@mail.gmail.com>
-Subject: Re: [PATCH 10/18] pinctrl: qcom: sa8775p: add the pinctrl driver for
- the sa8775p platform
-To: Bjorn Andersson <andersson@kernel.org>
-Cc: Andy Gross <agross@kernel.org>, Konrad Dybcio <konrad.dybcio@linaro.org>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Stephen Boyd <sboyd@kernel.org>, 
-	Manivannan Sadhasivam <mani@kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>, 
-	Linus Walleij <linus.walleij@linaro.org>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Vinod Koul <vkoul@kernel.org>, 
-	Alex Elder <elder@kernel.org>, linux-arm-msm@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-clk@vger.kernel.org, linux-pm@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
-	linux-gpio@vger.kernel.org, netdev@vger.kernel.org, 
-	Prasad Sodagudi <quic_psodagud@quicinc.com>, 
-	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>, Yadu MG <quic_ymg@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN6PR12MB2767:EE_|SA1PR12MB6993:EE_
+X-MS-Office365-Filtering-Correlation-Id: b66e1975-ce25-4a09-b893-08daf9fad108
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	BZdWOxJTkas68reGtXhzLvKudnuN2vOEONbE0zlqPusGXirS0lJdZF0WZA3adPuAjok7UyAPsNunJX9yICN52lY0V4eChZ7NwuZwtiF8YB4i1SdnENY/GlL1+D7kCHDW++qvfqI0mAo33onjiTyiQcMzo0clgJp4YREjtmbxCvg7LGfWepcTv0MJVQ+Yryyex4J/jxoWdBdi9UbeMRB8bjk/k3xbcLOl7U4y21E7B+sv1YU60atbAJivYzTVXQa5WOQs6QF3HHjOkK8kzts3OmBY4JU0cieT1S7Ug+cL+JPomZbmh0yWLYMFJGX3ozD9yjs6pT2xQqxKymNrFrmAC/t6ZBt6OB4YvlToGACe6Dha5XbUhE5SBjq/OM3g573/KMe7Cntq1Cg5AGeCGpSpty7qf8SASkn59TT0Pg9/+bSDQxvqefT1zIX9sf9+PIo7yuPu0Kdyyznpc4hurAwN5oJdCt/jSH2IDvFLebFtaZpxR7aarRXLZDLTRkhzbisCjXlCZWoi3LfZeD5HUSwPhd7fd9JbhiuGNQ1dJs6BBuVkeJ2/Hjw9ARYIbl/lhzd8GXvLRKbvesbaE4Tma5BW+Z4PeXfWZ2GtnZXVuzzu3jvGX04R7r62sUsQH4ZmQAnODYQLTLOYJdHtXCo61od+xbm/TZVJuhRnjKjRVB32NqiyjhTr3F9JT2UyvXC31dYiq7BeE6m+RWQpHHyMjJ1O8WrQMANR3UJKCO9tkfWaZrC25w8pfsBtpEBHqvZljiM5
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR12MB2767.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(136003)(39860400002)(346002)(366004)(376002)(451199015)(478600001)(6512007)(316002)(966005)(86362001)(186003)(26005)(6486002)(31696002)(66476007)(66946007)(8676002)(4326008)(36756003)(41300700001)(31686004)(66556008)(2906002)(53546011)(5660300002)(83380400001)(38100700002)(6506007)(2616005)(6666004)(8936002)(110136005)(6636002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?aFl4KyszZ094NXdIcTI1MmQ0NndUN3FndHA4UEFSUXJaY1lyQUtWM0krSll4?=
+ =?utf-8?B?dzV2VU9xWm5tVXNoWHRJa2swNTZsN2xoakp4VWZiMlpucUZXZE1yUXlCYjBx?=
+ =?utf-8?B?aW1pTUV6a3ExVzcvWnpYN0hwanFNZkJUZ0NjK1ZaZHhzbTM2RmVNd3ZZY1cr?=
+ =?utf-8?B?S2tCQmpvOEZ1VUhYazdVNlFPQjdlK3NXWDkrQ1dDVlJMSXBncktIV1NFZ0pi?=
+ =?utf-8?B?UzUxQXBueWNZMVlLSW9heDVvSWxrbXBjeDRFYXF4VndjbzkrcFMyMWVnT2FM?=
+ =?utf-8?B?ZS9MaTdQdzRrbWFCUElTYnFmQlJRMFlXelF2cU5pMC9ZUHRWYlh1dzI5eDVr?=
+ =?utf-8?B?SUlYV1RYOTRtU3RWZVJNL2NxUm9pdnRWVS9PYXptcUovUWZHeEU1cTlzY2ZW?=
+ =?utf-8?B?alpXZzNrb1QyUnJVN2hFamRBY3VMRXR3VVAyRVBKVFRmTnd2RGprZGFCSnVP?=
+ =?utf-8?B?SVBtLzZxTXc5VmtBTVUxRllybkt6RHdkR25GdUhEMk1ZYVdCcklUTzhZa3d5?=
+ =?utf-8?B?YXpRNnFJbUk3MUxFY1phSGtYVWpnRS90ZDBRWW9meFptOVBXcG40anhOdW1l?=
+ =?utf-8?B?bC9ydWRBeVZwSDVCL0FZeXhuT0ZVbmVqOVNkczB2bXQ4SHRQVVJLRXI0VnZC?=
+ =?utf-8?B?QXh0aWZtTENOc0M0MGVBTERZZVpLaEFvb2EvSi82YngwL3ZBZFNXYmtmeGlX?=
+ =?utf-8?B?UGNtQThHWS94L0FTbk5jRC94amgySG53VmwvQWJKaXVIY3hiaTVBZ0p1blBj?=
+ =?utf-8?B?M0NaMEUvQmJhZm83enhLUjE3alg1ekQyNTRSUTNTaW1iSkFCd3NGaFJucUR6?=
+ =?utf-8?B?NUFyU1NvODkrS0VaelBXUGJ4Q1RHS1dKeDNMbzR4MSs2dVY4bGFBL1RsS0xn?=
+ =?utf-8?B?VDlwTUpWcVdza0xEWGVXU0VESFpObHZZRW9tY2RKNWliTDViQ21KdFFjQVVh?=
+ =?utf-8?B?RC84MDRwakp6d1dSejF4Mllic08vZ2hVcll6QTFKSXZUcGFZUlkrZmYvdCtL?=
+ =?utf-8?B?dzA3QzlVakZTcGVmdGdqWW9GeXc4MGlWQUp0ZFJ2R3JWbk1zR3RSZXN2MjBR?=
+ =?utf-8?B?TzB1Q0JDcW5vdFVVRk5kNFBPV1BqUHo2aEJjbW1UWHhQcUM3OU42eXAwaHRp?=
+ =?utf-8?B?TzVXcGVHa2NTcTRxVjJpUFRpdmx3R2l6RHUxRDhwc3VzNldKZE44eDUzM3ox?=
+ =?utf-8?B?UW9jM2hUNDZ4c1VxbXRBU21YU01EWXhwOEptVERSVFRVRDIzT0p0WXY5dVRt?=
+ =?utf-8?B?N2xheGo2Q0FNQUJYRE9xcW05clNjSitwZDkrZkhHZXVpcWJibjExWnlnZXRv?=
+ =?utf-8?B?WGVNWWdFNk9XSkNMaXpERzRyQXZrYUtDeUFhV3BteThkdzAra1Q1Wk1CUTlw?=
+ =?utf-8?B?b0tuOWJTVkt0QUxGV2srY29JSzlDWEtzb3ZqRVlrK254TU5CaWxNS3FJRWh3?=
+ =?utf-8?B?UTN3anF3YllqTmFEZWg0dVRibUR1Rk1VUXBEY1hPMnRBUzNiZTQwZ1B4eWhV?=
+ =?utf-8?B?WWpGMWlQWkdJaWVBY2hlYWc5cjB2dUx3RHFjNThtV0YrUFpiQXpRbURxS3VR?=
+ =?utf-8?B?aTMxUWlQUU9kck9WTXp4QlNMTVM2Z2lQdzhXY2lBVnpjTFJmK2xML3RVR0Zt?=
+ =?utf-8?B?RXFMSzJONERFSVFuSExzN3FESUtleWM0OVkzbHVlTmdZVWVKcTIyVDRTbnV1?=
+ =?utf-8?B?K1ZWNXN3UXVXWmZTbTZZczBEeXQ0VEc4Qld0dE5lUmU1b0E5NGtYb1dvT2tZ?=
+ =?utf-8?B?c0d1VnNXNnBnVkw3aVNLYjdVQXhNSmNhZWJDVnQrZG5KOVJpaHlmSFN5SzFk?=
+ =?utf-8?B?NGl5anFvcGI3bHlBTnVFZWxrM3IxRm9kZUdsT0xlaURWV3VoLzhrQUJRWkQ3?=
+ =?utf-8?B?cVZMbkIwY1MvQ2xBL25GMzJ3VmVwcjMzYnpxdEZJOFE5N08zVG5BV3d2RkdM?=
+ =?utf-8?B?Wk00U1I4NjMzU2dKKzF6WXRvWFZUVGEwR1FkeTFCMmlMMjFkTE85b0s5Z2Nx?=
+ =?utf-8?B?a2R3ODZVU2V1aW9jWFJZbVVWOGR1ZHQyNStZNkphSVBld0JVc0wySzZINno4?=
+ =?utf-8?B?Mm1xZUpTeWlETE5HWC9ZdW9hVzc5MERWZWRzTzFkUHJZRlQveXNEYUllWmxT?=
+ =?utf-8?Q?x+lB0lE0qWCUOvrvKv9dTyhW+?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b66e1975-ce25-4a09-b893-08daf9fad108
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR12MB2767.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2023 08:54:47.3621
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5x0zZouqX3BlKReWjkeN2PIkIJ3qqH63Ofi9S4Ul7KtolUCLs6XCcFLjipHpYQnHB/UzFhl+0cbo80pFJ9rW7A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB6993
 
-On Tue, Jan 10, 2023 at 5:26 PM Bjorn Andersson <andersson@kernel.org> wrote:
->
-> On Mon, Jan 09, 2023 at 06:45:03PM +0100, Bartosz Golaszewski wrote:
-> [..]
-> > +enum sa8775p_functions {
-> > +     msm_mux_gpio,
-> > +     msm_mux_atest_char,
-> > +     msm_mux_atest_char0,
-> > +     msm_mux_atest_char1,
-> > +     msm_mux_atest_char2,
-> > +     msm_mux_atest_char3,
-> > +     msm_mux_atest_usb2,
-> > +     msm_mux_atest_usb20,
-> > +     msm_mux_atest_usb21,
-> > +     msm_mux_atest_usb22,
-> > +     msm_mux_atest_usb23,
->
-> Please squash these to a single msm_mux_atest.
+Hello Jason,
 
-How about staying consistent with the sc8280xp which is the closest
-platform to sa8775p and do a group for atest_char, a separate group
-for atest_usb2...
+On 1/13/2023 9:33 AM, Jason Gunthorpe wrote:
+> On Tue, Jan 10, 2023 at 08:31:34AM -0600, Suravee Suthikulpanit wrote:
+>> Currently, to detect if a domain is enabled with VFIO support, the driver
+>> checks if the domain has devices attached and check if the domain type is
+>> IOMMU_DOMAIN_UNMANAGED.
+> 
+> NAK
+> 
+> If you need weird HW specific stuff like this then please implement it
+> properly in iommufd, not try and randomly guess what things need from
+> the domain type.
+> 
+> All this confidential computing stuff needs a comprehensive solution,
+> not some piecemeal mess. How can you even use a CC guest with VFIO in
+> the upstream kernel? Hmm?
+> 
 
->
-> > +     msm_mux_audio_ref,
-> > +     msm_mux_cam_mclk,
-> > +     msm_mux_cci_async,
-> > +     msm_mux_cci_i2c,
-> > +     msm_mux_cci_timer0,
-> > +     msm_mux_cci_timer1,
-> > +     msm_mux_cci_timer2,
-> > +     msm_mux_cci_timer3,
-> > +     msm_mux_cci_timer4,
-> > +     msm_mux_cci_timer5,
-> > +     msm_mux_cci_timer6,
-> > +     msm_mux_cci_timer7,
-> > +     msm_mux_cci_timer8,
-> > +     msm_mux_cci_timer9,
-> > +     msm_mux_cri_trng,
-> > +     msm_mux_cri_trng0,
-> > +     msm_mux_cri_trng1,
-> > +     msm_mux_dbg_out,
-> > +     msm_mux_ddr_bist,
-> > +     msm_mux_ddr_pxi0,
-> > +     msm_mux_ddr_pxi1,
-> > +     msm_mux_ddr_pxi2,
-> > +     msm_mux_ddr_pxi3,
-> > +     msm_mux_ddr_pxi4,
-> > +     msm_mux_ddr_pxi5,
-> > +     msm_mux_edp0_hot,
-> > +     msm_mux_edp0_lcd,
-> > +     msm_mux_edp1_hot,
-> > +     msm_mux_edp1_lcd,
-> > +     msm_mux_edp2_hot,
-> > +     msm_mux_edp2_lcd,
-> > +     msm_mux_edp3_hot,
-> > +     msm_mux_edp3_lcd,
-> > +     msm_mux_emac0_mcg0,
-> > +     msm_mux_emac0_mcg1,
-> > +     msm_mux_emac0_mcg2,
-> > +     msm_mux_emac0_mcg3,
-> > +     msm_mux_emac0_mdc,
-> > +     msm_mux_emac0_mdio,
-> > +     msm_mux_emac0_ptp,
->
-> msm_mux_emac0
->
-> > +     msm_mux_emac1_mcg0,
-> > +     msm_mux_emac1_mcg1,
-> > +     msm_mux_emac1_mcg2,
-> > +     msm_mux_emac1_mcg3,
-> > +     msm_mux_emac1_mdc,
-> > +     msm_mux_emac1_mdio,
-> > +     msm_mux_emac1_ptp,
->
-> msm_mux_emac1
->
+Currently all guest devices are untrusted - whether they are emulated, 
+virtio or passthrough. In the current use case of VFIO 
+device-passthrough to an SNP guest, the pass-through device will perform 
+DMA to un-encrypted or shared guest memory, in the same way as virtio or 
+emulated devices.
 
-...leave these two here as is...
+This fix is prompted by an issue reported by Nvidia, they are trying to 
+do PCIe device passthrough to SNP guest. The memory allocated for DMA is 
+through dma_alloc_coherent() in the SNP guest and during DMA I/O an 
+RMP_PAGE_FAULT is observed on the host.
 
-> > +     msm_mux_gcc_gp1,
-> > +     msm_mux_gcc_gp2,
-> > +     msm_mux_gcc_gp3,
-> > +     msm_mux_gcc_gp4,
-> > +     msm_mux_gcc_gp5,
-> > +     msm_mux_hs0_mi2s,
-> > +     msm_mux_hs1_mi2s,
-> > +     msm_mux_hs2_mi2s,
-> > +     msm_mux_ibi_i3c,
-> > +     msm_mux_jitter_bist,
-> > +     msm_mux_mdp0_vsync0,
-> > +     msm_mux_mdp0_vsync1,
-> > +     msm_mux_mdp0_vsync2,
-> > +     msm_mux_mdp0_vsync3,
-> > +     msm_mux_mdp0_vsync4,
-> > +     msm_mux_mdp0_vsync5,
-> > +     msm_mux_mdp0_vsync6,
-> > +     msm_mux_mdp0_vsync7,
-> > +     msm_mux_mdp0_vsync8,
-> > +     msm_mux_mdp1_vsync0,
-> > +     msm_mux_mdp1_vsync1,
-> > +     msm_mux_mdp1_vsync2,
-> > +     msm_mux_mdp1_vsync3,
-> > +     msm_mux_mdp1_vsync4,
-> > +     msm_mux_mdp1_vsync5,
-> > +     msm_mux_mdp1_vsync6,
-> > +     msm_mux_mdp1_vsync7,
-> > +     msm_mux_mdp1_vsync8,
-> > +     msm_mux_mdp_vsync,
-> > +     msm_mux_mi2s1_data0,
-> > +     msm_mux_mi2s1_data1,
-> > +     msm_mux_mi2s1_sck,
-> > +     msm_mux_mi2s1_ws,
-> > +     msm_mux_mi2s2_data0,
-> > +     msm_mux_mi2s2_data1,
-> > +     msm_mux_mi2s2_sck,
-> > +     msm_mux_mi2s2_ws,
-> > +     msm_mux_mi2s_mclk0,
-> > +     msm_mux_mi2s_mclk1,
-> > +     msm_mux_pcie0_clkreq,
-> > +     msm_mux_pcie1_clkreq,
-> > +     msm_mux_phase_flag0,
-> > +     msm_mux_phase_flag1,
-> > +     msm_mux_phase_flag10,
-> > +     msm_mux_phase_flag11,
-> > +     msm_mux_phase_flag12,
-> > +     msm_mux_phase_flag13,
-> > +     msm_mux_phase_flag14,
-> > +     msm_mux_phase_flag15,
-> > +     msm_mux_phase_flag16,
-> > +     msm_mux_phase_flag17,
-> > +     msm_mux_phase_flag18,
-> > +     msm_mux_phase_flag19,
-> > +     msm_mux_phase_flag2,
-> > +     msm_mux_phase_flag20,
-> > +     msm_mux_phase_flag21,
-> > +     msm_mux_phase_flag22,
-> > +     msm_mux_phase_flag23,
-> > +     msm_mux_phase_flag24,
-> > +     msm_mux_phase_flag25,
-> > +     msm_mux_phase_flag26,
-> > +     msm_mux_phase_flag27,
-> > +     msm_mux_phase_flag28,
-> > +     msm_mux_phase_flag29,
-> > +     msm_mux_phase_flag3,
-> > +     msm_mux_phase_flag30,
-> > +     msm_mux_phase_flag31,
-> > +     msm_mux_phase_flag4,
-> > +     msm_mux_phase_flag5,
-> > +     msm_mux_phase_flag6,
-> > +     msm_mux_phase_flag7,
-> > +     msm_mux_phase_flag8,
-> > +     msm_mux_phase_flag9,
->
-> msm_mux_phase_flag
->
+These dma_alloc_coherent() calls map into page state change hypercalls 
+into the host to change guest page state from encrypted to shared in the 
+RMP table.
 
-... change this one as you suggest...
+Following is a link to issue discussed above:
+https://github.com/AMDESE/AMDSEV/issues/109
 
-> > +     msm_mux_pll_bist,
-> > +     msm_mux_pll_clk,
-> > +     msm_mux_prng_rosc0,
-> > +     msm_mux_prng_rosc1,
-> > +     msm_mux_prng_rosc2,
-> > +     msm_mux_prng_rosc3,
-> > +     msm_mux_qdss_cti,
-> > +     msm_mux_qdss_gpio,
-> > +     msm_mux_qdss_gpio0,
-> > +     msm_mux_qdss_gpio1,
-> > +     msm_mux_qdss_gpio10,
-> > +     msm_mux_qdss_gpio11,
-> > +     msm_mux_qdss_gpio12,
-> > +     msm_mux_qdss_gpio13,
-> > +     msm_mux_qdss_gpio14,
-> > +     msm_mux_qdss_gpio15,
-> > +     msm_mux_qdss_gpio2,
-> > +     msm_mux_qdss_gpio3,
-> > +     msm_mux_qdss_gpio4,
-> > +     msm_mux_qdss_gpio5,
-> > +     msm_mux_qdss_gpio6,
-> > +     msm_mux_qdss_gpio7,
-> > +     msm_mux_qdss_gpio8,
-> > +     msm_mux_qdss_gpio9,
->
-> msm_mux_qdss
+Now, to set individual 4K entries to different shared/private mappings 
+in NPT or host page tables for large page entries, the RMP and NPT/host 
+page table large page entries are split to 4K pte’s.
 
-... and have these as qdss_cti and qdss_gpio.
+The same split is required in iommu page table entries to remain in sync 
+with the corresponding RMP table entry. If the iommu entry is covering a 
+range with a large page entry and the individual 4K mappings in that 
+range have now changed, the RMP checks during IOMMU page table walk will 
+cause a RMP page fault to be signaled.
 
->
-> > +     msm_mux_qup0_se0,
-> > +     msm_mux_qup0_se1,
-> > +     msm_mux_qup0_se2,
-> > +     msm_mux_qup0_se3,
-> > +     msm_mux_qup0_se4,
-> > +     msm_mux_qup0_se5,
-> > +     msm_mux_qup1_se0,
-> > +     msm_mux_qup1_se1,
-> > +     msm_mux_qup1_se2,
-> > +     msm_mux_qup1_se3,
-> > +     msm_mux_qup1_se4,
-> > +     msm_mux_qup1_se5,
-> > +     msm_mux_qup1_se6,
-> > +     msm_mux_qup2_se0,
-> > +     msm_mux_qup2_se1,
-> > +     msm_mux_qup2_se2,
-> > +     msm_mux_qup2_se3,
-> > +     msm_mux_qup2_se4,
-> > +     msm_mux_qup2_se5,
-> > +     msm_mux_qup2_se6,
-> > +     msm_mux_qup3_se0,
-> > +     msm_mux_sail_top,
-> > +     msm_mux_sailss_emac0,
-> > +     msm_mux_sailss_ospi,
-> > +     msm_mux_sgmii_phy,
-> > +     msm_mux_tb_trig,
-> > +     msm_mux_tgu_ch0,
-> > +     msm_mux_tgu_ch1,
-> > +     msm_mux_tgu_ch2,
-> > +     msm_mux_tgu_ch3,
-> > +     msm_mux_tgu_ch4,
-> > +     msm_mux_tgu_ch5,
-> > +     msm_mux_tsense_pwm1,
-> > +     msm_mux_tsense_pwm2,
-> > +     msm_mux_tsense_pwm3,
-> > +     msm_mux_tsense_pwm4,
-> > +     msm_mux_usb2phy_ac,
-> > +     msm_mux_vsense_trigger,
-> > +     msm_mux__,
-> > +};
-> > +
-> [..]
-> > +static const struct msm_pingroup sa8775p_groups[] = {
-> > +     [0] = PINGROUP(0, _, _, _, _, _, _, _, _, _),
-> > +     [1] = PINGROUP(1, pcie0_clkreq, _, _, _, _, _, _, _, _),
-> > +     [2] = PINGROUP(2, _, _, _, _, _, _, _, _, _),
-> > +     [3] = PINGROUP(3, pcie1_clkreq, _, _, _, _, _, _, _, _),
-> > +     [4] = PINGROUP(4, _, _, _, _, _, _, _, _, _),
-> > +     [5] = PINGROUP(5, _, _, _, _, _, _, _, _, _),
-> > +     [6] = PINGROUP(6, emac0_ptp, emac0_ptp, emac1_ptp, emac1_ptp, _, _, _, _, _),
->
-> How is it possible to select the first or the second one of these
-> functions when they are named the same?
->
+The fix is to force 4K page size for IOMMU page tables for SNP guests.
 
-I think Prasad and Yadu (the original authors of the driver) followed
-the example from sc8280xp:
+This patch-set adds support to detect if a domain belongs to an 
+SNP-enabled guest. This way it can set default page size of a domain to 
+4K only for SNP-enabled guest and allow non-SNP guest to use larger page 
+size.
 
-c0e4c71a9e7ce (Bjorn Andersson 2022-03-08 14:11:32 -0800 1804) [156] =
-PINGROUP(156, qup6, emac0_ptp, emac0_ptp, _, _, _, _),
+Hopefully, this explains the usage case for this patch-set.
 
-Do you remember what your original intention was? I also see that the
-GPIOs repeat in the groups definitions:
+Thanks,
+Ashish
 
- 980 static const char * const emac0_ptp_groups[] = {
- 981         "gpio130", "gpio130", "gpio131", "gpio131", "gpio156", "gpio156",
- 982         "gpio157", "gpio157", "gpio158", "gpio158", "gpio159", "gpio159",
- 983 };
 
-[...]
-
-Bart
