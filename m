@@ -1,379 +1,145 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A4F16B440
-	for <iommu@lists.linux.dev>; Thu, 19 Jan 2023 19:18:51 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0E3611C00;
-	Thu, 19 Jan 2023 11:19:33 -0800 (PST)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 9E1103F67D;
-	Thu, 19 Jan 2023 11:18:50 -0800 (PST)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org,
-	will@kernel.org
-Cc: hch@lst.de,
-	jgg@nvidia.com,
-	iommu@lists.linux.dev,
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2044.outbound.protection.outlook.com [40.107.94.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCA94B43E
+	for <iommu@lists.linux.dev>; Thu, 19 Jan 2023 19:23:04 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gKtVdJrjGwccWD8QYPH5LBJsW7D5oynPxvS1/CwuL0GAfR9n72RM4rnrvNvg9/HQ6PdCO24b6TQjPGCewZ7g0aVUSnriLg/c/o7LJ0E9zfM/eA4q/iZl9EBYS7wBhiEGHiEJ1bdCyBNgi0aOg4DhqKJ2LGelEMFgOpmgc8lsjXe4XmdjvjCyJY3el0ydC9k1M3EO4uj0KA+UjLnifWS2G5hxf7ErIqEKdQQUQgVE6hIG2bVY5eLZ6MxK2usXVHCE+mPLkndbTgwTPnD0Lxl5LidHZGAYHFzsJ/IG/k+3yeSqYf7Y/jLhac/ZwVMkUo5UfdbvxXth6f5zOopO+eYBBQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cw2BqFd2mN+LQdtBuFDNwiBdqXEBLE1c0Z4rRTRrbek=;
+ b=Lgw517UQ2qc8Zq/DmA+R12Wew+CSM6tBbfQnFwZxAR5grnme6wMsne1y19OzikV2OLM4UjNQC2PITJ4B2473RUvE8X842tWrq5B9H0kWDGecAcEne1sS0c5iaZdu/hlgmH3bxL4/wC8Z1Ch+r7wnWs4Jw0QM+K0nKNx4u3CynTV1+pcxJYJdg1bPOvipJ2jYH3PIc+lEswlLIwZNwB6JwmcQp8ulwcZ4aoDVVRub6QrZ/RK8hsXTXcOMa06/K/iKT2NLscRveejPV0WxEtJCqUoEziQgxDhdXidW4u0BbDJ9jXRsyYlZgYZgfrhpGOiWL09LQRg1QDso1jR8CukwsQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cw2BqFd2mN+LQdtBuFDNwiBdqXEBLE1c0Z4rRTRrbek=;
+ b=itM5VEIlkKLhGz+oJpmSrzwHeYsHXa5CFf2/8ImXIx0jgpv6JTpCFOU0vqUGDfV1JwtIdj3RKcIHnRmsroMdSe7892L25nko8Lw3uHARjJGdzAA0lGVZUYd8XhMn7bUARcYCVcmLRadtzsuv152siXFQkj70/0Gxrsu/lyEAfGRoZEHkx/sdaw/CR/gsb3dYbRkJehTUiJcbiqXic+6aW2vzb+ymuvuAKAIYPjr/W/8iCGbD6cMnR78uJmWq4dA2PRl5+7OpDm4CxoLOaVSy226EX2tA2/JX6N7oqeWs0hr+Wuogb92/AcPIK9qTk7Y1tBAip8dLW8FHWf04CXkIwQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by SA0PR12MB7074.namprd12.prod.outlook.com (2603:10b6:806:2d5::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5986.23; Thu, 19 Jan
+ 2023 19:23:02 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f8b0:df13:5f8d:12a]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::f8b0:df13:5f8d:12a%9]) with mapi id 15.20.6002.013; Thu, 19 Jan 2023
+ 19:23:02 +0000
+Date: Thu, 19 Jan 2023 15:23:01 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, will@kernel.org, hch@lst.de, iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 8/8] iommu: Pass device through ops->domain_alloc
-Date: Thu, 19 Jan 2023 19:18:26 +0000
-Message-Id: <893b2ef069fad5276d015a7606c01a0da315f9da.1673978700.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.36.1.dirty
-In-Reply-To: <cover.1673978700.git.robin.murphy@arm.com>
+Subject: Re: [PATCH 3/8] iommu: Factor out a "first device in group" helper
+Message-ID: <Y8mYlV/ODKZ3EG57@nvidia.com>
 References: <cover.1673978700.git.robin.murphy@arm.com>
+ <592bff75a7fc4d50d5b2435a09dfff19f1072973.1673978700.git.robin.murphy@arm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <592bff75a7fc4d50d5b2435a09dfff19f1072973.1673978700.git.robin.murphy@arm.com>
+X-ClientProxiedBy: MN2PR16CA0024.namprd16.prod.outlook.com
+ (2603:10b6:208:134::37) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SA0PR12MB7074:EE_
+X-MS-Office365-Filtering-Correlation-Id: 453d9201-22fd-4c41-64fe-08dafa52955c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	BHCSFX48yJQx5ESn2DWZoCOZ7Wc9NSEH+QgOrXw08pHkMuwgn1nJsOBYD84WSHv79ouqFSrocIuU/EWiIdbHcx+q7h2Dgr2IccLe59mIWaGEBtHWt5zG/oZrdUjxoI93L2yJJGvHUZIFQKSPA3WLRfUMMB8uccKjqkOyhnZgvY4jGv0s2nmQssveK4Yva3EU6x24LRhgpcE6LOvdds4vzjOyqGCPWfHbqd3jwN/tzXwQhA5nS0uvErttR55KZbrRcXLXsUJyfln7wkwO9/FAL0WFDiVDGN/Qr6RzEHGN6ydGxZnJbkp2FYk5gJYGmUWGm9x5PBt55YJngTYJ34AYCHbDqjAL3zm4t7ICKVlQsABc0aYs/FclfrLIHldViHj24ipfYTq9Dmdh8+FvWLauZPj48pNY8/sn4EQTvR20LkCq5ThDwrM+91IfBwBSc7N3/A4hqGEefSePWsT3N34Nd9QmTF6fOISNrTcP4Lt84KkbNk93EFXsdphwI/1mdhXBXcjQmteukpRaWr+mNc2W2uOC8+jlLF2FazYZZIbdb9tNAHFkHC0FJW4dvcQXaZB+I2FF1uZ2ZliUOo3fPANHXuG9PMG3zpt0d1v2hRmncS0ni0ZAEDgY90ZvU4IbrhANGT87ZFS5ZRwD7MUxp00MdA==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(39860400002)(376002)(346002)(366004)(396003)(136003)(451199015)(4326008)(41300700001)(2616005)(6916009)(66476007)(66946007)(26005)(66556008)(186003)(8676002)(6512007)(36756003)(86362001)(5660300002)(83380400001)(38100700002)(478600001)(8936002)(316002)(6486002)(2906002)(6506007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?te0WtrnZENyg9xQoo9cLFEaZtw6CJlQC63VIWqCnT6haJJjxf6llA4KRo+Za?=
+ =?us-ascii?Q?5QUcNW0Yc+/sxpugu6GZ5bZy9IwawNc9cUPQT83U6uEEg0OcuxOVpMn653c5?=
+ =?us-ascii?Q?qtvEopgDDpVLUiaZtPeYOFQxS6J/aq8SQNsh+QJDzFOoyXu8rv0kiEe1XWEH?=
+ =?us-ascii?Q?HVd2t7KuRR0bEH2LcBfvysichwmFwEnO7UCKbZfidh2NXyafnldJ5TAbKxu+?=
+ =?us-ascii?Q?JsmOBw/a9NknU1TAvWWqYZukRgmZywoVrWkvMoTQS2NAhk0czOoWtZ+2+ZmZ?=
+ =?us-ascii?Q?SAEJoxpZRqgiYK0AvkINUuPy5SwB6jLDhlqQFZBz9d7Oy/cXgPg4JW04tqYQ?=
+ =?us-ascii?Q?g9dJbUoCYfjNFobHXuo135KSrLSBzvPcYE1ZcCnp5XuUYrqLmBCsRtCZ/LYL?=
+ =?us-ascii?Q?mr/oSqVza9SkRSLCYczEg4/ijY+3TcfrWBFO2qVSRz1J8XRsSdEjvfKvCTAb?=
+ =?us-ascii?Q?h9kqVeJ19JUljo5KydqCL2jXyPNrILrnDSKKMOzAQ5fhawJ1G3qligmWCXPI?=
+ =?us-ascii?Q?5DS7ZUbWu0xMHeActVvscolL0KiGtr6l3gI9T42dfGaHzQLqMxgib6+fAEd0?=
+ =?us-ascii?Q?uo0RJTHz3UUYzh9EUnLO418VtfK51o04OXzJyFdmw/GKR2hOnN9UM6U1r89u?=
+ =?us-ascii?Q?XrwHUDf8guCjovK5Bm7varoBUI+wS4KqmEded88jYHTS/SruV8R5OX3wppt3?=
+ =?us-ascii?Q?Vb+oNB+VEWWMyRXnuXLdj3bs9y+BjOFWaJs2i8r3Z/tCxRBymaJEbLbaTCg8?=
+ =?us-ascii?Q?hqstt7Cnj3aW+yk4fX3ckY5m+o/rw115qKhBGlgySQ5h9cZ6nJia8cvMVtqm?=
+ =?us-ascii?Q?d72Nu6swy7DkoR5SlB/vcFrqNQhTAbXUtKGZq0HbaLRRTxGISrC4jX/Z4nFt?=
+ =?us-ascii?Q?cdMudBxMAMw0gPQ1E448I/XPAFULmL7TKlHEMBSWxVU8fzOMVjHl82BqAJws?=
+ =?us-ascii?Q?Pn1Nx2bOOl+JGWU1gvhVm2LXztmU9gmsZi4Q9NtzE3epyghW4QhP9cGivVy5?=
+ =?us-ascii?Q?mBzBLL54Yck9Xj26Itbu5QIzD8WLWUkwChRQisNPm8wwrqPF0R9lNhi2Mqd6?=
+ =?us-ascii?Q?SeAs/NouzNptfklRZEoRiI/lF74i/jKIiy9lABswungh8liNjGgPx9Ad3ZZ8?=
+ =?us-ascii?Q?eicGlsrKTnQHgr97I9ud63r5T4ATpRWTMHPmtwYzNAJ5qJ/6/pYbl3C6RxLL?=
+ =?us-ascii?Q?VHkYoRjdmaK5tdlsHfmLAZgtVVrZ0aie5a8pnoAPFon8YZq5lvUKjg5zjS+w?=
+ =?us-ascii?Q?7EDjMHhAt2HD3i80C3LhPew2uGR0eeoydtMZ+I8Le+x5qf5WJARl7Bc4w0fo?=
+ =?us-ascii?Q?w1buMy7Gn1XE/ZVbgeuSMc1WE/hhPKDFML4Y/CqTx9N7V5TKBkeR2T/Pk4gp?=
+ =?us-ascii?Q?KH0nkj8mwzxZhEXlL1DzeRKiw/IKaU30m4ZrC9+VI4eCK9ViDvzSaGxHBU22?=
+ =?us-ascii?Q?3TsPqKst3a9/LVZhL/W9ADGQ1l2KHkdsJSrFMlKLjvJpToXFAXHOk3BU4fZ/?=
+ =?us-ascii?Q?BnJJWPlTJbBj6Bdr370F9SAeM3b1Isb3BVSahL4jb/v8uXW3y7D5ycPb2rCd?=
+ =?us-ascii?Q?71mWwJgi3110DQyG/rWLy+2WW0yftAvrySz+BmTx?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 453d9201-22fd-4c41-64fe-08dafa52955c
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2023 19:23:02.7562
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: npO07yQD/U0yRK6zG8J90yTxCYtH4CsmARikQyZO9r4vQVV9vEftrBFAa2nnlRTy
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB7074
 
-With __iommu_domain_alloc() now aware of a device, we can propagate that
-through to the drivers so that they can also pick up their instance data
-without having to wait until they see the device attach.
+On Thu, Jan 19, 2023 at 07:18:21PM +0000, Robin Murphy wrote:
+> This pattern for picking the first device out of the group list is
+> repeated a few times now, so it's clearly worth factoring out.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+>  drivers/iommu/iommu.c | 22 ++++++++++------------
+>  1 file changed, 10 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index bc53ffbba4de..5b37766a09e2 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1084,6 +1084,11 @@ void iommu_group_remove_device(struct device *dev)
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_group_remove_device);
+>  
+> +static struct device *iommu_group_first_dev(struct iommu_group *group)
+> +{
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/amd/iommu.c                   | 3 ++-
- drivers/iommu/apple-dart.c                  | 3 ++-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 3 ++-
- drivers/iommu/arm/arm-smmu/arm-smmu.c       | 3 ++-
- drivers/iommu/arm/arm-smmu/qcom_iommu.c     | 3 ++-
- drivers/iommu/exynos-iommu.c                | 3 ++-
- drivers/iommu/fsl_pamu_domain.c             | 3 ++-
- drivers/iommu/intel/iommu.c                 | 3 ++-
- drivers/iommu/iommu.c                       | 4 ++--
- drivers/iommu/ipmmu-vmsa.c                  | 3 ++-
- drivers/iommu/msm_iommu.c                   | 3 ++-
- drivers/iommu/mtk_iommu.c                   | 3 ++-
- drivers/iommu/mtk_iommu_v1.c                | 3 ++-
- drivers/iommu/omap-iommu.c                  | 3 ++-
- drivers/iommu/rockchip-iommu.c              | 3 ++-
- drivers/iommu/s390-iommu.c                  | 3 ++-
- drivers/iommu/sprd-iommu.c                  | 3 ++-
- drivers/iommu/sun50i-iommu.c                | 3 ++-
- drivers/iommu/tegra-gart.c                  | 3 ++-
- drivers/iommu/tegra-smmu.c                  | 3 ++-
- drivers/iommu/virtio-iommu.c                | 3 ++-
- include/linux/iommu.h                       | 3 ++-
- 22 files changed, 44 insertions(+), 23 deletions(-)
+Add a
+ lockdep_assert_held(&group->lock);
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index cbeaab55c0db..f5bc61a4c3d4 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2084,7 +2084,8 @@ static struct protection_domain *protection_domain_alloc(unsigned int type)
- 	return NULL;
- }
- 
--static struct iommu_domain *amd_iommu_domain_alloc(unsigned type)
-+static struct iommu_domain *amd_iommu_domain_alloc(struct device *dev,
-+						   unsigned type)
- {
- 	struct protection_domain *domain;
- 
-diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-index 4f4a323be0d0..95f3aa323a99 100644
---- a/drivers/iommu/apple-dart.c
-+++ b/drivers/iommu/apple-dart.c
-@@ -576,7 +576,8 @@ static void apple_dart_release_device(struct device *dev)
- 	kfree(cfg);
- }
- 
--static struct iommu_domain *apple_dart_domain_alloc(unsigned int type)
-+static struct iommu_domain *apple_dart_domain_alloc(struct device *dev,
-+						    unsigned int type)
- {
- 	struct apple_dart_domain *dart_domain;
- 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index cb05d9771192..453e9dbf4920 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2005,7 +2005,8 @@ static bool arm_smmu_capable(struct device *dev, enum iommu_cap cap)
- 	}
- }
- 
--static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
-+static struct iommu_domain *arm_smmu_domain_alloc(struct device *dev,
-+						  unsigned type)
- {
- 	struct arm_smmu_domain *smmu_domain;
- 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 235550db0d59..86c9c6df18ae 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -851,7 +851,8 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
- 	arm_smmu_rpm_put(smmu);
- }
- 
--static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
-+static struct iommu_domain *arm_smmu_domain_alloc(struct device *dev,
-+						  unsigned type)
- {
- 	struct arm_smmu_domain *smmu_domain;
- 
-diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index b2d3d309be1e..7b9daacf1697 100644
---- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -309,7 +309,8 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
- 	return ret;
- }
- 
--static struct iommu_domain *qcom_iommu_domain_alloc(unsigned type)
-+static struct iommu_domain *qcom_iommu_domain_alloc(struct device *dev,
-+						    unsigned type)
- {
- 	struct qcom_iommu_domain *qcom_domain;
- 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index b0cde2211987..54f9d10a9fb1 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -816,7 +816,8 @@ static inline void exynos_iommu_set_pte(sysmmu_pte_t *ent, sysmmu_pte_t val)
- 				   DMA_TO_DEVICE);
- }
- 
--static struct iommu_domain *exynos_iommu_domain_alloc(unsigned type)
-+static struct iommu_domain *exynos_iommu_domain_alloc(struct device *dev,
-+						      unsigned type)
- {
- 	struct exynos_iommu_domain *domain;
- 	dma_addr_t handle;
-diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-index 4408ac3c49b6..69578e574af0 100644
---- a/drivers/iommu/fsl_pamu_domain.c
-+++ b/drivers/iommu/fsl_pamu_domain.c
-@@ -192,7 +192,8 @@ static void fsl_pamu_domain_free(struct iommu_domain *domain)
- 	kmem_cache_free(fsl_pamu_domain_cache, dma_domain);
- }
- 
--static struct iommu_domain *fsl_pamu_domain_alloc(unsigned type)
-+static struct iommu_domain *fsl_pamu_domain_alloc(struct device *dev,
-+						  unsigned type)
- {
- 	struct fsl_dma_domain *dma_domain;
- 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 59df7e42fd53..590594a0d6e1 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4157,7 +4157,8 @@ static struct iommu_domain blocking_domain = {
- 	}
- };
- 
--static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
-+static struct iommu_domain *intel_iommu_domain_alloc(struct device *dev,
-+						     unsigned type)
- {
- 	struct dmar_domain *dmar_domain;
- 	struct iommu_domain *domain;
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 8997b8f2e79f..521f6f780294 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1955,7 +1955,7 @@ static struct iommu_domain *__iommu_domain_alloc(struct device *dev,
- 	const struct iommu_ops *ops = dev_iommu_ops(dev);
- 	struct iommu_domain *domain;
- 
--	domain = ops->domain_alloc(type);
-+	domain = ops->domain_alloc(dev, type);
- 	if (!domain)
- 		return NULL;
- 
-@@ -3456,7 +3456,7 @@ struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
- 	const struct iommu_ops *ops = dev_iommu_ops(dev);
- 	struct iommu_domain *domain;
- 
--	domain = ops->domain_alloc(IOMMU_DOMAIN_SVA);
-+	domain = ops->domain_alloc(dev, IOMMU_DOMAIN_SVA);
- 	if (!domain)
- 		return NULL;
- 
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 76e51d8e3732..7bb6c2fd3214 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -567,7 +567,8 @@ static irqreturn_t ipmmu_irq(int irq, void *dev)
-  * IOMMU Operations
-  */
- 
--static struct iommu_domain *ipmmu_domain_alloc(unsigned type)
-+static struct iommu_domain *ipmmu_domain_alloc(struct device *dev,
-+					       unsigned type)
- {
- 	struct ipmmu_vmsa_domain *domain;
- 
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index c60624910872..1d9704e7c75f 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -302,7 +302,8 @@ static void __program_context(void __iomem *base, int ctx,
- 	SET_M(base, ctx, 1);
- }
- 
--static struct iommu_domain *msm_iommu_domain_alloc(unsigned type)
-+static struct iommu_domain *msm_iommu_domain_alloc(struct device *dev,
-+						   unsigned type)
- {
- 	struct msm_priv *priv;
- 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 005136a4cc36..711716c8dcdf 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -632,7 +632,8 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
- 	return 0;
- }
- 
--static struct iommu_domain *mtk_iommu_domain_alloc(unsigned type)
-+static struct iommu_domain *mtk_iommu_domain_alloc(struct device *dev,
-+						   unsigned type)
- {
- 	struct mtk_iommu_domain *dom;
- 
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index dff8ea0af884..3d1e0635f9b3 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -270,7 +270,8 @@ static int mtk_iommu_v1_domain_finalise(struct mtk_iommu_v1_data *data)
- 	return 0;
- }
- 
--static struct iommu_domain *mtk_iommu_v1_domain_alloc(unsigned type)
-+static struct iommu_domain *mtk_iommu_v1_domain_alloc(struct device *dev,
-+						      unsigned type)
- {
- 	struct mtk_iommu_v1_domain *dom;
- 
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index 2fd7702c6709..19a22ba1860d 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -1566,7 +1566,8 @@ static void omap_iommu_detach_dev(struct iommu_domain *domain,
- 	spin_unlock(&omap_domain->lock);
- }
- 
--static struct iommu_domain *omap_iommu_domain_alloc(unsigned type)
-+static struct iommu_domain *omap_iommu_domain_alloc(struct device *dev,
-+						    unsigned type)
- {
- 	struct omap_iommu_domain *omap_domain;
- 
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index a68eadd64f38..50b17a096ea5 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -1057,7 +1057,8 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
- 	return ret;
- }
- 
--static struct iommu_domain *rk_iommu_domain_alloc(unsigned type)
-+static struct iommu_domain *rk_iommu_domain_alloc(struct device *dev,
-+						  unsigned type)
- {
- 	struct rk_iommu_domain *rk_domain;
- 
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index ed33c6cce083..a56e4e282469 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -41,7 +41,8 @@ static bool s390_iommu_capable(struct device *dev, enum iommu_cap cap)
- 	}
- }
- 
--static struct iommu_domain *s390_domain_alloc(unsigned domain_type)
-+static struct iommu_domain *s390_domain_alloc(struct device *dev,
-+					      unsigned domain_type)
- {
- 	struct s390_domain *s390_domain;
- 
-diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
-index 4cebccb6fc8b..32992cb07c4f 100644
---- a/drivers/iommu/sprd-iommu.c
-+++ b/drivers/iommu/sprd-iommu.c
-@@ -132,7 +132,8 @@ sprd_iommu_pgt_size(struct iommu_domain *domain)
- 		SPRD_IOMMU_PAGE_SHIFT) * sizeof(u32);
- }
- 
--static struct iommu_domain *sprd_iommu_domain_alloc(unsigned int domain_type)
-+static struct iommu_domain *sprd_iommu_domain_alloc(struct device *dev,
-+						    unsigned int domain_type)
- {
- 	struct sprd_iommu_domain *dom;
- 
-diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
-index 5b585eace3d4..10c7eb9c5f11 100644
---- a/drivers/iommu/sun50i-iommu.c
-+++ b/drivers/iommu/sun50i-iommu.c
-@@ -667,7 +667,8 @@ static phys_addr_t sun50i_iommu_iova_to_phys(struct iommu_domain *domain,
- 		sun50i_iova_get_page_offset(iova);
- }
- 
--static struct iommu_domain *sun50i_iommu_domain_alloc(unsigned type)
-+static struct iommu_domain *sun50i_iommu_domain_alloc(struct device *dev,
-+						      unsigned type)
- {
- 	struct sun50i_iommu_domain *sun50i_domain;
- 
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index ed53279d1106..75bcf191b091 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -141,7 +141,8 @@ static void gart_iommu_detach_dev(struct iommu_domain *domain,
- 	spin_unlock(&gart->dom_lock);
- }
- 
--static struct iommu_domain *gart_iommu_domain_alloc(unsigned type)
-+static struct iommu_domain *gart_iommu_domain_alloc(struct device *dev,
-+						    unsigned type)
- {
- 	struct iommu_domain *domain;
- 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 5b1af40221ec..c7c34d9f60ec 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -272,7 +272,8 @@ static void tegra_smmu_free_asid(struct tegra_smmu *smmu, unsigned int id)
- 	clear_bit(id, smmu->asids);
- }
- 
--static struct iommu_domain *tegra_smmu_domain_alloc(unsigned type)
-+static struct iommu_domain *tegra_smmu_domain_alloc(struct device *dev,
-+						    unsigned type)
- {
- 	struct tegra_smmu_as *as;
- 
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index 59f1abd6ee53..7f397767a8e2 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -637,7 +637,8 @@ static void viommu_event_handler(struct virtqueue *vq)
- 
- /* IOMMU API */
- 
--static struct iommu_domain *viommu_domain_alloc(unsigned type)
-+static struct iommu_domain *viommu_domain_alloc(struct device *dev,
-+						unsigned type)
- {
- 	struct viommu_domain *vdomain;
- 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 35af9d4e3969..3a8930d36046 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -252,7 +252,8 @@ struct iommu_ops {
- 	bool (*capable)(struct device *dev, enum iommu_cap);
- 
- 	/* Domain allocation and freeing by the iommu driver */
--	struct iommu_domain *(*domain_alloc)(unsigned iommu_domain_type);
-+	struct iommu_domain *(*domain_alloc)(struct device *dev,
-+					     unsigned iommu_domain_type);
- 
- 	struct iommu_device *(*probe_device)(struct device *dev);
- 	void (*release_device)(struct device *dev);
--- 
-2.36.1.dirty
+?
 
+> -	group->blocking_domain =
+> -		__iommu_domain_alloc(dev->dev->bus, IOMMU_DOMAIN_BLOCKED);
+> +	group->blocking_domain = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_BLOCKED);
+>  	if (!group->blocking_domain) {
+>  		/*
+>  		 * For drivers that do not yet understand IOMMU_DOMAIN_BLOCKED
+>  		 * create an empty domain instead.
+>  		 */
+> -		group->blocking_domain = __iommu_domain_alloc(
+> -			dev->dev->bus, IOMMU_DOMAIN_UNMANAGED);
+> +		group->blocking_domain = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_UNMANAGED);
+>  		if (!group->blocking_domain)
+>  			return -EINVAL;
+
+These are extra hunks?
+
+Jason
