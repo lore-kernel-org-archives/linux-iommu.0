@@ -1,70 +1,62 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0FC00360
-	for <iommu@lists.linux.dev>; Fri, 20 Jan 2023 12:31:27 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 05EC31515;
-	Fri, 20 Jan 2023 04:32:09 -0800 (PST)
-Received: from [10.57.89.132] (unknown [10.57.89.132])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C5DF73F8D6;
-	Fri, 20 Jan 2023 04:31:25 -0800 (PST)
-Message-ID: <4a065a3f-d189-711a-e351-73852ed00369@arm.com>
-Date: Fri, 20 Jan 2023 12:31:21 +0000
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EF48320FE
+	for <iommu@lists.linux.dev>; Fri, 20 Jan 2023 12:33:49 +0000 (UTC)
+Received: from 8bytes.org (p200300c27714bc0086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:7714:bc00:86ad:4f9d:2505:dd0d])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 62635262AD8;
+	Fri, 20 Jan 2023 13:33:48 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1674218028;
+	bh=csy5J+aBBw+ljg735Z0CMZzrwjNKIRCnav1RHwVR7pw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=SS/lHWPUxd357hY5g77/cL88CXuo5rW5HAXy01ZYFCiCspg4OQ4Zi1ghP5XUcI9V7
+	 pglVypaf2zjVp/I3qzE6fGCwpVrxGK3LRkYSwol6wc1tgAVpipAgrVss9alNE2m+oi
+	 D09wHKx6C18iLszIsAu/nuii6sJkG+6SsI6fo23sE/geMvgj56VOxiuHxAdrzaP8tA
+	 aeZt8MyoGqSf9guVi3CN3ATvLTx+jbweSaqDCkOwrKshplVSd1vahVXJYVwO9hK/G6
+	 niNYW/udaVz4r8b6q4PeJHP00NanLG2uB0rlyTOiJXceoQ2H4u2+hnLQY1+/C//Vef
+	 6uOPKwvFEqnWQ==
+Date: Fri, 20 Jan 2023 13:33:47 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: will@kernel.org, hch@lst.de, jgg@nvidia.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, rafael.j.wysocki@intel.com,
+	gregkh@linuxfoundation.org
+Subject: Re: [PATCH 0/8] iommu: The early demise of bus ops
+Message-ID: <Y8qKK78BecPNpf+Q@8bytes.org>
+References: <cover.1673978700.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH 6/8] iommu: Retire bus ops
-To: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org
-Cc: hch@lst.de, jgg@nvidia.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, "Rafael J . Wysocki"
- <rafael.j.wysocki@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <cover.1673978700.git.robin.murphy@arm.com>
- <a2db51f8f417bbe0032e2c4231579f8c4ce9a089.1673978700.git.robin.murphy@arm.com>
- <d798bc7b-a87a-26b2-17e0-48e9c7715abc@linux.intel.com>
-Content-Language: en-GB
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <d798bc7b-a87a-26b2-17e0-48e9c7715abc@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1673978700.git.robin.murphy@arm.com>
 
-On 2023-01-20 00:27, Baolu Lu wrote:
-> On 2023/1/20 3:18, Robin Murphy wrote:
->> +    /*
->> +     * For FDT-based systems and ACPI IORT/VIOT, drivers register IOMMU
->> +     * instances with non-NULL fwnodes, and client devices should 
->> have been
->> +     * identified with a fwspec by this point. For 
->> Intel/AMD/s390/PAMU we
->> +     * can assume a single active driver with global ops, and so grab 
->> those
->> +     * from any registered instance, cheekily co-opting the same 
->> mechanism.
->> +     */
->> +    fwspec = dev_iommu_fwspec_get(dev);
->> +    if (fwspec && fwspec->ops)
->> +        ops = fwspec->ops;
->> +    else
->> +        ops = iommu_ops_from_fwnode(NULL);
-> 
-> I'm imagining if Intel/AMD/s390 drivers need to give up global ops.
-> Is there any way to allow them to make such conversion? I am just
-> thinking about whether this is a hard limitation for these drivers.
+Hi Robin,
 
-Yes, they could perhaps bodge into the existing fwnode mechanism, or we 
-could make bigger changes to adapt and generalise the whole 
-instance-registration-token-lookup concept, or if the driver can resolve 
-the correct instance for a device internally, then it could suffice to 
-just have all its device ops share a single common .probe_device 
-implementation that does the right thing.
+On Thu, Jan 19, 2023 at 07:18:18PM +0000, Robin Murphy wrote:
+> This is sort of an RFC, in the sense that the patches are functionally
+> ready but I don't expect that we necessarily want to merge all them
+> right away; at this point it's more for the sake of visibility and
+> checking if anyone strongly objects to the direction I'm taking. As such
+> I've based these patches on 6.2-rc3 and made no effort to integrate them
+> with the IOMMUFD-related work going on in parallel and/or already
+> queued, even though there is some functional intersection and almost
+> certain conflicts. If we reach a consensus that we would like any of
+> this for 6.3 I'll rebase as appropriate.
 
-The comment is merely noting the fact that we can get away without 
-having to worry about those changes just yet, since all the drivers 
-*are* currently still built around the hard constraint of a single set 
-of device ops per bus.
+Thanks for doing this, I like the direction this is taking! I see no
+strict reason to wait with this, but also no strict reason to hurry it
+in.
 
-Thanks,
-Robin.
+I would say we have another week for this to get ready to be merged into
+6.3, which means having a version based on iommu/core with the reviews
+addressed and enough relevant Reviewed-by's.
+
+Regards,
+
+	Joerg
