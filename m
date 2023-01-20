@@ -1,72 +1,83 @@
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE00E20EF
-	for <iommu@lists.linux.dev>; Fri, 20 Jan 2023 11:58:35 +0000 (UTC)
-Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 32E491EC04DA;
-	Fri, 20 Jan 2023 12:58:33 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-	t=1674215913;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-	bh=5sRgTMv+ImX0RHcEs9fymhJia2CIfblYcntDjPRHUWE=;
-	b=E/n8jPTElF3/IUDz38TCo4i4iuS3yqWh+E8bFIsd/mmdqN0/oOImwTweHtLWYcepufJDte
-	6PbiavIjYpDXgD+XrLl8Psjxm8wnXKG+ieevXzsdua3qXDfU4iUasrODH+afXOzBRu6iY9
-	muTGoo6GBbrfl7WO8EdfMnrBocSFgfU=
-Date: Fri, 20 Jan 2023 12:58:29 +0100
-From: Borislav Petkov <bp@alien8.de>
-To: Wei Liu <wei.liu@kernel.org>
-Cc: Michael Kelley <mikelley@microsoft.com>, hpa@zytor.com,
-	kys@microsoft.com, haiyangz@microsoft.com, decui@microsoft.com,
-	luto@kernel.org, peterz@infradead.org, davem@davemloft.net,
-	edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-	lpieralisi@kernel.org, robh@kernel.org, kw@linux.com,
-	bhelgaas@google.com, arnd@arndb.de, hch@infradead.org,
-	m.szyprowski@samsung.com, robin.murphy@arm.com,
-	thomas.lendacky@amd.com, brijesh.singh@amd.com, tglx@linutronix.de,
-	mingo@redhat.com, dave.hansen@linux.intel.com,
-	Tianyu.Lan@microsoft.com, kirill.shutemov@linux.intel.com,
-	sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
-	isaku.yamahata@intel.com, dan.j.williams@intel.com,
-	jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com,
-	x86@kernel.org, linux-kernel@vger.kernel.org,
-	linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9000B20EF
+	for <iommu@lists.linux.dev>; Fri, 20 Jan 2023 12:20:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674217242; x=1705753242;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Tgo1gQ7gSdxjO4L2CZmSW0g/1s7bejNlbjGJMrJ3PDQ=;
+  b=mcRxKTH3deMlfQSD7ZtaX0fP9S3UaZO3z7qJ3moNaCYoHKat92XF8nrf
+   q1SJ5LexgUt7AdvFVa5eRC89LQW9EOOBNLuyN00MEjsm5aJ/PzazgOTeW
+   R+7D78DSIP4LA0CYRARbnWDhSln/rk0JjBgRXnDYGUHNuggFrprdhqWpl
+   jBdhiKGzFm8wpEKPLm3VlkUxig2nW8zuJS6GF77eFxV0s5Gx2SqH8F4Tz
+   VfANU/TM2oY4X37cvuH2jRIkHYVPcIEVzq08bm+F2ydvzhhyaRmPiZVds
+   vEYYVK+wS7F4br+FdTCpEZuuobGQoynmEeXihMhBZHX0erdztmc7FHcbe
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="323257798"
+X-IronPort-AV: E=Sophos;i="5.97,232,1669104000"; 
+   d="scan'208";a="323257798"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2023 04:20:41 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10595"; a="834395473"
+X-IronPort-AV: E=Sophos;i="5.97,232,1669104000"; 
+   d="scan'208";a="834395473"
+Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
+  by orsmga005.jf.intel.com with ESMTP; 20 Jan 2023 04:20:41 -0800
+From: Yi Liu <yi.l.liu@intel.com>
+To: jgg@nvidia.com,
+	kevin.tian@intel.com
+Cc: yi.l.liu@intel.com,
+	kvm@vger.kernel.org,
 	iommu@lists.linux.dev
-Subject: Re: [Patch v4 00/13] Add PCI pass-thru support to Hyper-V
- Confidential VMs
-Message-ID: <Y8qB5ZN5Czj9lQVK@zn.tnic>
-References: <1669951831-4180-1-git-send-email-mikelley@microsoft.com>
- <Y7xhLCgCq0MOsqxH@zn.tnic>
- <Y8ATN9mPCx6P4vB6@liuwe-devbox-debian-v2>
+Subject: [PATCH v2] iommufd: Add three missing structures in ucmd_buffer
+Date: Fri, 20 Jan 2023 04:20:40 -0800
+Message-Id: <20230120122040.280219-1-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Y8ATN9mPCx6P4vB6@liuwe-devbox-debian-v2>
+Content-Transfer-Encoding: 8bit
 
-On Thu, Jan 12, 2023 at 02:03:35PM +0000, Wei Liu wrote:
-> I can take all the patches if that's easier for you. I don't think
-> anyone else is depending on the x86 patches in this series.
+struct iommu_ioas_copy, struct iommu_option and struct iommu_vfio_ioas
+are missed in ucmd_buffer. Although they are smaller than the size of
+ucmd_buffer, it is safer to list them in ucmd_buffer explicitly.
 
-But we have a bunch of changes in tip so I'd prefer if all were in one place.
+Fixes: aad37e71d5c4 ("iommufd: IOCTLs for the io_pagetable")
+Fixes: d624d6652a65 ("iommufd: vfio container FD ioctl compatibility")
+Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+---
+v2:
+  - add iommu_ioas_copy as KevinT pointed
 
-> Giving me an immutable branch works too.
+v1: https://lore.kernel.org/kvm/20230120055757.67879-1-yi.l.liu@intel.com/
 
-Yap, lemme do that after applying.
+ drivers/iommu/iommufd/main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Thx.
-
+diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
+index 083e6fcbe10a..3fbe636c3d8a 100644
+--- a/drivers/iommu/iommufd/main.c
++++ b/drivers/iommu/iommufd/main.c
+@@ -252,9 +252,12 @@ union ucmd_buffer {
+ 	struct iommu_destroy destroy;
+ 	struct iommu_ioas_alloc alloc;
+ 	struct iommu_ioas_allow_iovas allow_iovas;
++	struct iommu_ioas_copy ioas_copy;
+ 	struct iommu_ioas_iova_ranges iova_ranges;
+ 	struct iommu_ioas_map map;
+ 	struct iommu_ioas_unmap unmap;
++	struct iommu_option option;
++	struct iommu_vfio_ioas vfio_ioas;
+ #ifdef CONFIG_IOMMUFD_TEST
+ 	struct iommu_test_cmd test;
+ #endif
 -- 
-Regards/Gruss,
-    Boris.
+2.34.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
