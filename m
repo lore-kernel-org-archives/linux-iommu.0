@@ -1,76 +1,69 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B47C920FE
-	for <iommu@lists.linux.dev>; Fri, 20 Jan 2023 12:47:24 +0000 (UTC)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E5A4228E7;
+	Fri, 20 Jan 2023 15:11:33 +0000 (UTC)
+Received: from 8bytes.org (p5b006afb.dip0.t-ipconnect.de [91.0.106.251])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id 247845F9A3;
-	Fri, 20 Jan 2023 12:47:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1674218837; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=0iW4bxpzyfiS1Xr0QYpWy5DrZdVyjcp1783y3lQmmDo=;
-	b=yAKQQOYR6pt0roxMHDb3S+MmXAuhZMoYgOK0XOhbi6MLgomsD6UNHdG2eUh8GurpGqgyUj
-	Mtxdy4MH8jHyk+cvvE27k1V4Q0jh2Q9/lnIXgkJjd5C/BqdahdWrvS/rBOv++2/28tUGiz
-	EES8nnfhOmwfia5EwfZ5ertENgVdKJE=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1674218837;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=0iW4bxpzyfiS1Xr0QYpWy5DrZdVyjcp1783y3lQmmDo=;
-	b=xsRcwalk8p6OwQXfqj+SepPKeMeXtbwlj9SWOz+6bmKdSqxZ37/akPKAOrD1KTKj4WmFgs
-	i5Cio4O0kC6J00Ag==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id EA1821390C;
-	Fri, 20 Jan 2023 12:47:16 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-	by imap2.suse-dmz.suse.de with ESMTPSA
-	id 6vy/N1SNymN7JAAAMHmgww
-	(envelope-from <jroedel@suse.de>); Fri, 20 Jan 2023 12:47:16 +0000
-Date: Fri, 20 Jan 2023 13:47:15 +0100
-From: Joerg Roedel <jroedel@suse.de>
-To: Yang Yingliang <yangyingliang@huawei.com>
-Cc: iommu@lists.linux.dev, linux-samsung-soc@vger.kernel.org,
-	m.szyprowski@samsung.com, semen.protsenko@linaro.org
-Subject: Re: [PATCH] iommu/exynos: fix error handling in exynos_iommu_init()
-Message-ID: <Y8qNU6e4DbXVCC68@suse.de>
-References: <20230104095702.2591122-1-yangyingliang@huawei.com>
+	by mail.8bytes.org (Postfix) with ESMTPSA id 7EDEB2628DF;
+	Fri, 20 Jan 2023 16:11:30 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1674227490;
+	bh=3kxvogQXz1g+FrZuw43iM0YtoqpaustpLZ6efuvtDwA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=idDsgB5UMdxJQ3U59ZwOvtVDRJuWYS8XDZKc1+KP1ItQtJjXCJFtlZfq7aEXgYHO1
+	 Fsslo77XyeqLHIC1VOb72jZ0kba1vj1m+ks6QHyKGXbO/tA13GOeOmlgeQ9/y3zNUr
+	 XrYBixWDQ4CakVXKrDbNqkSjc+eoZYRoSfsybOZV408NKrIIlF6sPLMSNES9QGLGk1
+	 zWFJnlDYrbrkTh3l7eaBGUrl5++0C9p2Yhk+AjpIcdmoxe22+LB0tqcVsQWPDp8XXM
+	 TvGGAxAd/6JTrLfKNHXZ+qiHHBd3On5DFQ2FX7JfjWrJT4KFgUQWv5bA4nM78kKGJE
+	 odchpgKWwtY0A==
+Date: Fri, 20 Jan 2023 16:11:29 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Samuel Holland <samuel@sholland.org>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Chen-Yu Tsai <wens@csie.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Rob Herring <robh+dt@kernel.org>, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	Maxime Ripard <mripard@kernel.org>
+Subject: Re: [PATCH v2 0/6] iommu/sun50i: Allwinner D1 support
+Message-ID: <Y8qvIRXcCdLZjDCK@8bytes.org>
+References: <20230103010903.11181-1-samuel@sholland.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20230104095702.2591122-1-yangyingliang@huawei.com>
+In-Reply-To: <20230103010903.11181-1-samuel@sholland.org>
 
-On Wed, Jan 04, 2023 at 05:57:02PM +0800, Yang Yingliang wrote:
->  drivers/iommu/exynos-iommu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Hi Samuel,
 
-Applied, thanks.
+On Mon, Jan 02, 2023 at 07:08:57PM -0600, Samuel Holland wrote:
+> Samuel Holland (6):
+>   dt-bindings: iommu: sun50i: Add compatible for Allwinner D1
+>   iommu/sun50i: Track masters attached to the domain
+>   iommu/sun50i: Keep the bypass register up to date
+>   iommu/sun50i: Support variants without an external reset
+>   iommu/sun50i: Add support for the D1 variant
+>   riscv: dts: allwinner: d1: Add the IOMMU node
 
--- 
-Jörg Rödel
-jroedel@suse.de
+There is a conflict between these patches and changes in the IOMMU core
+branch. With those merged in there is a compile warning about
+sun50i_iommu_detach_domain() being unused. Fixing that requires removing
+of 3-4 functions, which I am not sure is the right solution.
 
-SUSE Software Solutions Germany GmbH
-Frankenstraße 146
-90461 Nürnberg
-Germany
+I pushed the arm/allwinner branch out to the iommu tree (with the core
+branch merged in) and exluded it from next for now. Can you please have
+a look and fix this up in a way that does not break the driver?
 
-(HRB 36809, AG Nürnberg)
-Geschäftsführer: Ivo Totev, Andrew Myers, Andrew McDonald, Boudien Moerman
+Once this is fixed I will include the arm/allwinner branch into my next
+branch again.
 
+Thanks,
+
+	Joerg
