@@ -1,31 +1,27 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E7DFFBD3E
-	for <iommu@lists.linux.dev>; Fri, 20 Jan 2023 09:42:39 +0000 (UTC)
-Received: from 8bytes.org (p200300c27714bc0086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:7714:bc00:86ad:4f9d:2505:dd0d])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id B1A78262AAF;
-	Fri, 20 Jan 2023 10:42:38 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1674207758;
-	bh=AxvLserjHePoULY2jhyau9FVv0QQcDxxMY4MWDasHdM=;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B51D17E6
+	for <iommu@lists.linux.dev>; Fri, 20 Jan 2023 10:23:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F1E4C433EF;
+	Fri, 20 Jan 2023 10:23:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1674210198;
+	bh=4DqJuaqYnQUzbKI9fdDrJ0+L9YbU5DcdCL9EUTYH51Y=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ALggVwHX9UO5pPw9VaDzbw5dtfoZU0pyBE7/3a9ssHBlM9mRN3wgsV57Nzm+Tlpj3
-	 8/A8iCEKZjuTD+41hIFgoOAKDca/etI5shPOvIJrbo+CP+6mtyiGPX6KyJgakZYXGg
-	 g6ebnIu90CrVPvtvJT757bIqu08QXsxcgFLENHX8pXUq5LRAzADnI1JfHmquH2hYtK
-	 BsmIB1AlHnCrGKW+iM/yI1z725D8B+72OLW67Hfwm3dZcN7d7o2HDEFihIfMTAbPw9
-	 XHOb4JUrX69e+1kMjy9H5SA1opTqIcXq0/Wr7vuWCVfyPQy/QYYeesOVxmzffZdThp
-	 MRpD4qILus5Pg==
-Date: Fri, 20 Jan 2023 10:42:37 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, suravee.suthikulpanit@amd.com,
-	Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [PATCH v2] iommu/amd: Do not clear event/ppr log buffer when snp
- is enabled
-Message-ID: <Y8piDWhq7uNqFrqo@8bytes.org>
-References: <20230117044038.5728-1-vasant.hegde@amd.com>
+	b=de5qBTzjZ6upncynJLhZCDPDup/eo1j5JNxaK9aCISufhpvNxj5V1j6XiHbaSCPIn
+	 yCbDzD+xumNWbtnAPPbizV6vdAAfpInoil7jg/oa3xPht9Ck6KhOWj6/UO/8JfX/Q8
+	 nox8Rq+qeb0KFdIoJ9l8+7IxyGqomfL8ZjlLIHE0=
+Date: Fri, 20 Jan 2023 11:23:15 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, will@kernel.org, hch@lst.de, jgg@nvidia.com,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	"Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
+Subject: Re: [PATCH 6/8] iommu: Retire bus ops
+Message-ID: <Y8prk3YD/dMvxTOz@kroah.com>
+References: <cover.1673978700.git.robin.murphy@arm.com>
+ <a2db51f8f417bbe0032e2c4231579f8c4ce9a089.1673978700.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -34,10 +30,25 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230117044038.5728-1-vasant.hegde@amd.com>
+In-Reply-To: <a2db51f8f417bbe0032e2c4231579f8c4ce9a089.1673978700.git.robin.murphy@arm.com>
 
-On Tue, Jan 17, 2023 at 04:40:38AM +0000, Vasant Hegde wrote:
->  drivers/iommu/amd/iommu.c | 18 ++++++++++++++----
->  1 file changed, 14 insertions(+), 4 deletions(-)
+On Thu, Jan 19, 2023 at 07:18:24PM +0000, Robin Murphy wrote:
+> With the rest of the API internals converted, it's time to finally
+> tackle probe_device and how we bootstrap the per-device ops association
+> to begin with. This ends up being disappointingly straightforward, since
+> fwspec users are already doing it in order to find their of_xlate
+> callback, and it works out that we can easily do the equivalent for
+> other drivers too. Then shuffle the remaining awareness of iommu_ops
+> into the couple of core headers that still need it, and breathe a sigh
+> of relief...
+> 
+> Ding dong the bus ops are gone!
+> 
+> CC: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> CC: Christoph Hellwig <hch@lst.de>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
-Applied, thanks Vasant and Tom.
+Nice work!
+
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
