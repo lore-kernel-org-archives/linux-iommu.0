@@ -1,30 +1,30 @@
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD192321D
-	for <iommu@lists.linux.dev>; Fri, 20 Jan 2023 16:54:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8051733C9
+	for <iommu@lists.linux.dev>; Fri, 20 Jan 2023 16:54:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674233688; x=1705769688;
+  t=1674233690; x=1705769690;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=wKXXJ+m3tEvR8w1YatVl7Ut7WalvD7GwpQ7ajuSMxXM=;
-  b=TYCnHm3Ay8YDKbVlO0gM4+i+aG6FF92iKZodCgcTaNYxWJzVsjCqdv80
-   vvuwT4J+fMwH9/EPH20sbZt2iSxYgc7rXJ1CNwcrCM969jtagiOOWZzny
-   uaR9f4dT/bTknrdowj+krqrIq+d5E7EtqhnmliHB0jjoKmnq/JMFrYJ7n
-   D6LYEBq+0Rm/VHHWzipQynWcwvtNDmbxuu9disQD6QwJajwXOUCOFxE3W
-   LEnJXgHU5T/GWvds2FV07UmY94/jMGgUXaWh4Zj+Se5bpcag8FkYD2h8J
-   8Rr7bcSyPU/GeyPBe2yuFTzWE+zimSytYKd/UtgkMDke+iAE4icZtY3Mm
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="324315182"
+  bh=WhP3gcWYCS7xo0wx/7ua+wfZyMPklVLgkK1gKPLpHbQ=;
+  b=irRCNsb5YyCpRTAWe5TV4KYhUu8z7sn/1mS0COaIpeHo9RNgwQYJUQUY
+   hkuFGhDbKqAiRbOKUvV+yx2EwodNJgTVcrHHbg9TNyiQU5D5FgoXcwwHQ
+   2FC7loz4EEY/udN4icUsg31Bw2fodHvpLWsQK2em03C5gs4l/IHyVeVa/
+   VjNqKOAgB5xnIvvTIQ/3tjWFPEMseXdTLOW8zZJ/ZE0ahNkjLzrbcOqJo
+   kKfdk1FPm7J+dpAQGB8JNt1PQ7QUzvu9bYEioFrQBXGwQNQd3JnGppTH7
+   HID9eS9kq5PlOb3HVda79XQXGPkZxxm8El4/GFELZDEUMhMajkYwUSU1K
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="324315193"
 X-IronPort-AV: E=Sophos;i="5.97,232,1669104000"; 
-   d="scan'208";a="324315182"
+   d="scan'208";a="324315193"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2023 08:54:47 -0800
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2023 08:54:48 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="638207830"
+X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="638207839"
 X-IronPort-AV: E=Sophos;i="5.97,232,1669104000"; 
-   d="scan'208";a="638207830"
+   d="scan'208";a="638207839"
 Received: from kanliang-dev.jf.intel.com ([10.165.154.102])
   by orsmga006.jf.intel.com with ESMTP; 20 Jan 2023 08:54:46 -0800
 From: kan.liang@linux.intel.com
@@ -40,9 +40,9 @@ To: joro@8bytes.org,
 	linux-kernel@vger.kernel.org
 Cc: yu-cheng.yu@intel.com,
 	Kan Liang <kan.liang@linux.intel.com>
-Subject: [PATCH V3 1/7] iommu/vt-d: Support size of the register set in DRHD
-Date: Fri, 20 Jan 2023 08:54:02 -0800
-Message-Id: <20230120165408.500511-2-kan.liang@linux.intel.com>
+Subject: [PATCH V3 3/7] iommu/vt-d: Support Enhanced Command Interface
+Date: Fri, 20 Jan 2023 08:54:04 -0800
+Message-Id: <20230120165408.500511-4-kan.liang@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20230120165408.500511-1-kan.liang@linux.intel.com>
 References: <20230120165408.500511-1-kan.liang@linux.intel.com>
@@ -56,96 +56,181 @@ Content-Transfer-Encoding: 8bit
 
 From: Kan Liang <kan.liang@linux.intel.com>
 
-A new field, which indicates the size of the remapping hardware register
-set for this remapping unit, is introduced in the DMA-remapping hardware
-unit definition (DRHD) structure with the VT-d Spec 4.0.
-With the information, SW doesn't need to 'guess' the size of the
-register set anymore.
+The Enhanced Command Register is to submit command and operand of
+enhanced commands to DMA Remapping hardware. It can supports upto 256
+enhanced commands.
 
-Update the struct acpi_dmar_hardware_unit to reflect the field.
+There is a HW register to indicate the availability of all 256 enhanced
+commands. Each bit stands for each command. But there isn't an existing
+interface to read/write all 256 bits. Introduce the u64 ecmdcap[4] to
+store the existence of each enhanced command. Read 4 times to get
+all of them in map_iommu().
 
-Store the size of the register set in struct dmar_drhd_unit for each
-dmar device.
+Add a helper to facilitate an enhanced command launch. Make sure hardware
+complete the command.
 
-The 'size' information is ResvZ for the old BIOS and platforms. Fall
-back to the old guessing method. There is nothing changed.
+Add a helper to facilitate the check of PMU essentials.
+
+The helpers will be used later.
 
 Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
 ---
- drivers/iommu/intel/dmar.c | 11 +++++++----
- include/acpi/actbl1.h      |  2 +-
- include/linux/dmar.h       |  1 +
- 3 files changed, 9 insertions(+), 5 deletions(-)
+ drivers/iommu/intel/dmar.c  | 10 +++++++
+ drivers/iommu/intel/iommu.c | 56 +++++++++++++++++++++++++++++++++++++
+ drivers/iommu/intel/iommu.h | 34 ++++++++++++++++++++++
+ 3 files changed, 100 insertions(+)
 
 diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index b00a0ceb2d13..3a40fef1ec1b 100644
+index 7a03cadb13ff..0e429bab436f 100644
 --- a/drivers/iommu/intel/dmar.c
 +++ b/drivers/iommu/intel/dmar.c
-@@ -427,6 +427,8 @@ static int dmar_parse_one_drhd(struct acpi_dmar_header *header, void *arg)
- 	memcpy(dmaru->hdr, header, header->length);
- 	dmaru->reg_base_addr = drhd->address;
- 	dmaru->segment = drhd->segment;
-+	/* The size of the register set is 2 ^ N 4 KB pages. */
-+	dmaru->reg_size = 1UL << (drhd->size + 12);
- 	dmaru->include_all = drhd->flags & 0x1; /* BIT0: INCLUDE_ALL */
- 	dmaru->devices = dmar_alloc_dev_scope((void *)(drhd + 1),
- 					      ((void *)drhd) + drhd->header.length,
-@@ -956,17 +958,18 @@ static void unmap_iommu(struct intel_iommu *iommu)
- /**
-  * map_iommu: map the iommu's registers
-  * @iommu: the iommu to map
-- * @phys_addr: the physical address of the base resgister
-+ * @drhd: DMA remapping hardware definition structure
-  *
-  * Memory map the iommu's registers.  Start w/ a single page, and
-  * possibly expand if that turns out to be insufficent.
-  */
--static int map_iommu(struct intel_iommu *iommu, u64 phys_addr)
-+static int map_iommu(struct intel_iommu *iommu, struct dmar_drhd_unit *drhd)
- {
-+	u64 phys_addr = drhd->reg_base_addr;
- 	int map_size, err=0;
- 
- 	iommu->reg_phys = phys_addr;
--	iommu->reg_size = VTD_PAGE_SIZE;
-+	iommu->reg_size = drhd->reg_size;
- 
- 	if (!request_mem_region(iommu->reg_phys, iommu->reg_size, iommu->name)) {
- 		pr_err("Can't reserve memory\n");
-@@ -1050,7 +1053,7 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+@@ -1017,6 +1017,16 @@ static int map_iommu(struct intel_iommu *iommu, struct dmar_drhd_unit *drhd)
+ 			goto release;
+ 		}
  	}
- 	sprintf(iommu->name, "dmar%d", iommu->seq_id);
++
++	if (cap_ecmds(iommu->cap)) {
++		int i;
++
++		for (i = 0; i < DMA_MAX_NUM_ECMDCAP; i++) {
++			iommu->ecmdcap[i] = dmar_readq(iommu->reg + DMAR_ECCAP_REG +
++						       i * DMA_ECMD_REG_STEP);
++		}
++	}
++
+ 	err = 0;
+ 	goto out;
  
--	err = map_iommu(iommu, drhd->reg_base_addr);
-+	err = map_iommu(iommu, drhd);
- 	if (err) {
- 		pr_err("Failed to map %s\n", iommu->name);
- 		goto error_free_seq_id;
-diff --git a/include/acpi/actbl1.h b/include/acpi/actbl1.h
-index 4175dce3967c..bdded0ac46eb 100644
---- a/include/acpi/actbl1.h
-+++ b/include/acpi/actbl1.h
-@@ -802,7 +802,7 @@ struct acpi_dmar_pci_path {
- struct acpi_dmar_hardware_unit {
- 	struct acpi_dmar_header header;
- 	u8 flags;
--	u8 reserved;
-+	u8 size;		/* Size of the register set */
- 	u16 segment;
- 	u64 address;		/* Register Base Address */
- };
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index d81a51978d01..725d5e6acec0 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -39,6 +39,7 @@ struct dmar_drhd_unit {
- 	struct list_head list;		/* list of drhd units	*/
- 	struct  acpi_dmar_header *hdr;	/* ACPI header		*/
- 	u64	reg_base_addr;		/* register base address*/
-+	unsigned long reg_size;		/* size of register set */
- 	struct	dmar_dev_scope *devices;/* target device array	*/
- 	int	devices_cnt;		/* target device count	*/
- 	u16	segment;		/* PCI domain		*/
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 59df7e42fd53..560a54c3cbda 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -5023,3 +5023,59 @@ void quirk_extra_dev_tlb_flush(struct device_domain_info *info,
+ 					 pasid, qdep, address, mask);
+ 	}
+ }
++
++#define ecmd_get_status_code(res)	((res & 0xff) >> 1)
++
++/*
++ * Function to submit a command to the enhanced command interface. The
++ * valid enhanced command descriptions are defined in Table 47 of the
++ * VT-d spec. The VT-d hardware implementation may support some but not
++ * all commands, which can be determined by checking the Enhanced
++ * Command Capability Register.
++ *
++ * Return values:
++ *  - 0: Command successful without any error;
++ *  - Negative: software error value;
++ *  - Nonzero positive: failure status code defined in Table 48.
++ */
++int ecmd_submit_sync(struct intel_iommu *iommu, u8 ecmd, u64 oa, u64 ob)
++{
++	unsigned long flags;
++	u64 res;
++	int ret;
++
++	if (!cap_ecmds(iommu->cap))
++		return -ENODEV;
++
++	raw_spin_lock_irqsave(&iommu->register_lock, flags);
++
++	res = dmar_readq(iommu->reg + DMAR_ECRSP_REG);
++	if (res & DMA_ECMD_ECRSP_IP) {
++		ret = -EBUSY;
++		goto err;
++	}
++
++	/*
++	 * Unconditionally write the operand B, because
++	 * - There is no side effect if an ecmd doesn't require an
++	 *   operand B, but we set the register to some value.
++	 * - It's not invoked in any critical path. The extra MMIO
++	 *   write doesn't bring any performance concerns.
++	 */
++	dmar_writeq(iommu->reg + DMAR_ECEO_REG, ob);
++	dmar_writeq(iommu->reg + DMAR_ECMD_REG, ecmd | (oa << DMA_ECMD_OA_SHIFT));
++
++	IOMMU_WAIT_OP(iommu, DMAR_ECRSP_REG, dmar_readq,
++		      !(res & DMA_ECMD_ECRSP_IP), res);
++
++	if (res & DMA_ECMD_ECRSP_IP) {
++		ret = -ETIMEDOUT;
++		goto err;
++	}
++
++	ret = ecmd_get_status_code(res);
++err:
++	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
++
++	return ret;
++}
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 5bcefbea55c9..c25a574680ce 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -130,6 +130,10 @@
+ #define DMAR_PERFOVFOFF_REG	0x318
+ #define DMAR_PERFCNTROFF_REG	0x31c
+ #define DMAR_PERFEVNTCAP_REG	0x380
++#define DMAR_ECMD_REG		0x400
++#define DMAR_ECEO_REG		0x408
++#define DMAR_ECRSP_REG		0x410
++#define DMAR_ECCAP_REG		0x430
+ #define DMAR_VCCAP_REG		0xe30 /* Virtual command capability register */
+ #define DMAR_VCMD_REG		0xe00 /* Virtual command register */
+ #define DMAR_VCRSP_REG		0xe10 /* Virtual command response register */
+@@ -304,6 +308,26 @@
+ #define DMA_CCMD_SID(s) (((u64)((s) & 0xffff)) << 16)
+ #define DMA_CCMD_DID(d) ((u64)((d) & 0xffff))
+ 
++/* ECMD_REG */
++#define DMA_MAX_NUM_ECMD		256
++#define DMA_MAX_NUM_ECMDCAP		(DMA_MAX_NUM_ECMD / 64)
++#define DMA_ECMD_REG_STEP		8
++#define DMA_ECMD_ENABLE			0xf0
++#define DMA_ECMD_DISABLE		0xf1
++#define DMA_ECMD_FREEZE			0xf4
++#define DMA_ECMD_UNFREEZE		0xf5
++#define DMA_ECMD_OA_SHIFT		16
++#define DMA_ECMD_ECRSP_IP		0x1
++#define DMA_ECMD_ECCAP3			3
++#define DMA_ECMD_ECCAP3_ECNTS		(1ULL << 48)
++#define DMA_ECMD_ECCAP3_DCNTS		(1ULL << 49)
++#define DMA_ECMD_ECCAP3_FCNTS		(1ULL << 52)
++#define DMA_ECMD_ECCAP3_UFCNTS		(1ULL << 53)
++#define DMA_ECMD_ECCAP3_ESSENTIAL	(DMA_ECMD_ECCAP3_ECNTS |	\
++					 DMA_ECMD_ECCAP3_DCNTS |	\
++					 DMA_ECMD_ECCAP3_FCNTS |	\
++					 DMA_ECMD_ECCAP3_UFCNTS)
++
+ /* FECTL_REG */
+ #define DMA_FECTL_IM (((u32)1) << 31)
+ 
+@@ -600,6 +624,7 @@ struct intel_iommu {
+ 	u64		cap;
+ 	u64		ecap;
+ 	u64		vccap;
++	u64		ecmdcap[DMA_MAX_NUM_ECMDCAP];
+ 	u32		gcmd; /* Holds TE, EAFL. Don't need SRTP, SFL, WBF */
+ 	raw_spinlock_t	register_lock; /* protect register handling */
+ 	int		seq_id;	/* sequence id of the iommu */
+@@ -841,6 +866,15 @@ extern const struct iommu_ops intel_iommu_ops;
+ extern int intel_iommu_sm;
+ extern int iommu_calculate_agaw(struct intel_iommu *iommu);
+ extern int iommu_calculate_max_sagaw(struct intel_iommu *iommu);
++extern int ecmd_submit_sync(struct intel_iommu *iommu, u8 ecmd,
++			    u64 oa, u64 ob);
++
++static inline bool ecmd_has_pmu_essential(struct intel_iommu *iommu)
++{
++	return (iommu->ecmdcap[DMA_ECMD_ECCAP3] & DMA_ECMD_ECCAP3_ESSENTIAL) ==
++		DMA_ECMD_ECCAP3_ESSENTIAL;
++}
++
+ extern int dmar_disabled;
+ extern int intel_iommu_enabled;
+ #else
 -- 
 2.35.1
 
