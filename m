@@ -1,79 +1,76 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 813FE20FE
-	for <iommu@lists.linux.dev>; Fri, 20 Jan 2023 12:42:34 +0000 (UTC)
-Received: by mail-wm1-f49.google.com with SMTP id bg13-20020a05600c3c8d00b003d9712b29d2so5767480wmb.2
-        for <iommu@lists.linux.dev>; Fri, 20 Jan 2023 04:42:34 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mKZyysgUPNvqWFopfSE1dHJ7iNOImONyPzrcMggiuJc=;
-        b=aUk+GAzVw9exH5bNRHGpHOb4ANOLNvPUgN4qtHNYFY0yUlSD8IVGJ+iNo1BTc1exJ5
-         SHKbkDtXGNx/XibheocxjFDjeNLmjfeP5KY3jQslydM7yOxTJ5NfSIUAfF34VW7aJ/Gu
-         8KrP8w7FMlhqoiQcsUePC5WbwqWxs28cuF5jEPxKKknOWb5fDLcQnsTbVSdHxLjM6WQk
-         ry4wKy9PeY59JSXaplGpcOyUSqqZlW7CMORM5MtmiT6rXxffPqGMckixngY0RXBmuO19
-         WZbCFLuB5xr/nCWUmGHLUAZf0p/gcIhknn+SfDZSAKXP8KKr2blpRDYsbazSXcJhsuas
-         Aglg==
-X-Gm-Message-State: AFqh2kr35vru2VjYQ/ec4fcrjI0NPfrdvUTwnsNb9NMqv6CvvtgACu3c
-	Jl5ZEzIB1nL42PM5dklwSXQ=
-X-Google-Smtp-Source: AMrXdXtpf1blAKy5JSCCwoqiLvsfdaYzkSWfJUxJBySB4u4LThpB6hdiWSZsrCuSgL8RYE2tZGj5Ww==
-X-Received: by 2002:a1c:f317:0:b0:3d0:480b:ac53 with SMTP id q23-20020a1cf317000000b003d0480bac53mr14349205wmq.12.1674218552698;
-        Fri, 20 Jan 2023 04:42:32 -0800 (PST)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id n16-20020a05600c181000b003d1de805de5sm2032908wmp.16.2023.01.20.04.42.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Jan 2023 04:42:32 -0800 (PST)
-Date: Fri, 20 Jan 2023 12:42:30 +0000
-From: Wei Liu <wei.liu@kernel.org>
-To: Borislav Petkov <bp@alien8.de>
-Cc: Wei Liu <wei.liu@kernel.org>, Michael Kelley <mikelley@microsoft.com>,
-	hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
-	decui@microsoft.com, luto@kernel.org, peterz@infradead.org,
-	davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-	pabeni@redhat.com, lpieralisi@kernel.org, robh@kernel.org,
-	kw@linux.com, bhelgaas@google.com, arnd@arndb.de, hch@infradead.org,
-	m.szyprowski@samsung.com, robin.murphy@arm.com,
-	thomas.lendacky@amd.com, brijesh.singh@amd.com, tglx@linutronix.de,
-	mingo@redhat.com, dave.hansen@linux.intel.com,
-	Tianyu.Lan@microsoft.com, kirill.shutemov@linux.intel.com,
-	sathyanarayanan.kuppuswamy@linux.intel.com, ak@linux.intel.com,
-	isaku.yamahata@intel.com, dan.j.williams@intel.com,
-	jane.chu@oracle.com, seanjc@google.com, tony.luck@intel.com,
-	x86@kernel.org, linux-kernel@vger.kernel.org,
-	linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [Patch v4 00/13] Add PCI pass-thru support to Hyper-V
- Confidential VMs
-Message-ID: <Y8qMNhrhfN1JX4uA@liuwe-devbox-debian-v2>
-References: <1669951831-4180-1-git-send-email-mikelley@microsoft.com>
- <Y7xhLCgCq0MOsqxH@zn.tnic>
- <Y8ATN9mPCx6P4vB6@liuwe-devbox-debian-v2>
- <Y8qB5ZN5Czj9lQVK@zn.tnic>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B47C920FE
+	for <iommu@lists.linux.dev>; Fri, 20 Jan 2023 12:47:24 +0000 (UTC)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 247845F9A3;
+	Fri, 20 Jan 2023 12:47:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1674218837; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=0iW4bxpzyfiS1Xr0QYpWy5DrZdVyjcp1783y3lQmmDo=;
+	b=yAKQQOYR6pt0roxMHDb3S+MmXAuhZMoYgOK0XOhbi6MLgomsD6UNHdG2eUh8GurpGqgyUj
+	Mtxdy4MH8jHyk+cvvE27k1V4Q0jh2Q9/lnIXgkJjd5C/BqdahdWrvS/rBOv++2/28tUGiz
+	EES8nnfhOmwfia5EwfZ5ertENgVdKJE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1674218837;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=0iW4bxpzyfiS1Xr0QYpWy5DrZdVyjcp1783y3lQmmDo=;
+	b=xsRcwalk8p6OwQXfqj+SepPKeMeXtbwlj9SWOz+6bmKdSqxZ37/akPKAOrD1KTKj4WmFgs
+	i5Cio4O0kC6J00Ag==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	(No client certificate requested)
+	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id EA1821390C;
+	Fri, 20 Jan 2023 12:47:16 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+	by imap2.suse-dmz.suse.de with ESMTPSA
+	id 6vy/N1SNymN7JAAAMHmgww
+	(envelope-from <jroedel@suse.de>); Fri, 20 Jan 2023 12:47:16 +0000
+Date: Fri, 20 Jan 2023 13:47:15 +0100
+From: Joerg Roedel <jroedel@suse.de>
+To: Yang Yingliang <yangyingliang@huawei.com>
+Cc: iommu@lists.linux.dev, linux-samsung-soc@vger.kernel.org,
+	m.szyprowski@samsung.com, semen.protsenko@linaro.org
+Subject: Re: [PATCH] iommu/exynos: fix error handling in exynos_iommu_init()
+Message-ID: <Y8qNU6e4DbXVCC68@suse.de>
+References: <20230104095702.2591122-1-yangyingliang@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <Y8qB5ZN5Czj9lQVK@zn.tnic>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20230104095702.2591122-1-yangyingliang@huawei.com>
 
-On Fri, Jan 20, 2023 at 12:58:29PM +0100, Borislav Petkov wrote:
-> On Thu, Jan 12, 2023 at 02:03:35PM +0000, Wei Liu wrote:
-> > I can take all the patches if that's easier for you. I don't think
-> > anyone else is depending on the x86 patches in this series.
-> 
-> But we have a bunch of changes in tip so I'd prefer if all were in one place.
-> 
-> > Giving me an immutable branch works too.
-> 
-> Yap, lemme do that after applying.
-> 
-Ack. Thanks!
+On Wed, Jan 04, 2023 at 05:57:02PM +0800, Yang Yingliang wrote:
+>  drivers/iommu/exynos-iommu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Wei.
+Applied, thanks.
+
+-- 
+Jörg Rödel
+jroedel@suse.de
+
+SUSE Software Solutions Germany GmbH
+Frankenstraße 146
+90461 Nürnberg
+Germany
+
+(HRB 36809, AG Nürnberg)
+Geschäftsführer: Ivo Totev, Andrew Myers, Andrew McDonald, Boudien Moerman
+
