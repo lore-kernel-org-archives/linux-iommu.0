@@ -1,32 +1,32 @@
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5686520FD
-	for <iommu@lists.linux.dev>; Fri, 20 Jan 2023 16:54:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD192321D
+	for <iommu@lists.linux.dev>; Fri, 20 Jan 2023 16:54:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1674233688; x=1705769688;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=L5adZLDfpzZ5TjZGsFBthPz0tUNZi5rcH/sfXtmD1yM=;
-  b=bF39oWarPEO5goET8kysBBXhFsQeL8/gxgXcRoQIv358N0p0E78bG6vw
-   tCXyIhudgKeoPx4bl9IeirU7Ob9zzc5PxA0RFj0V3RqSDRYXM6xafTnmy
-   DU5cMMpOaCxi5JSBqcqlWvHFsuoU6J7mr9giHjWHRr1ehe379pnKmSuul
-   YT2OoJCdQvXtsuGmNs7AxKSfaA7/bgV8dP1P3iYGnGPq92aOjOx0Y3fqb
-   GDnIlEjs0BodEAKUyWSL1QpUmU1NkIs+xdlVdtVjBGxVYM+BndfYCvCfe
-   R8+EIBIh6I346kBWWdftfB90Xq21gOnt8tfAC+zeT8Wk32CklwqylphqJ
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="324315176"
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=wKXXJ+m3tEvR8w1YatVl7Ut7WalvD7GwpQ7ajuSMxXM=;
+  b=TYCnHm3Ay8YDKbVlO0gM4+i+aG6FF92iKZodCgcTaNYxWJzVsjCqdv80
+   vvuwT4J+fMwH9/EPH20sbZt2iSxYgc7rXJ1CNwcrCM969jtagiOOWZzny
+   uaR9f4dT/bTknrdowj+krqrIq+d5E7EtqhnmliHB0jjoKmnq/JMFrYJ7n
+   D6LYEBq+0Rm/VHHWzipQynWcwvtNDmbxuu9disQD6QwJajwXOUCOFxE3W
+   LEnJXgHU5T/GWvds2FV07UmY94/jMGgUXaWh4Zj+Se5bpcag8FkYD2h8J
+   8Rr7bcSyPU/GeyPBe2yuFTzWE+zimSytYKd/UtgkMDke+iAE4icZtY3Mm
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="324315182"
 X-IronPort-AV: E=Sophos;i="5.97,232,1669104000"; 
-   d="scan'208";a="324315176"
+   d="scan'208";a="324315182"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
   by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2023 08:54:47 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="638207825"
+X-IronPort-AV: E=McAfee;i="6500,9779,10596"; a="638207830"
 X-IronPort-AV: E=Sophos;i="5.97,232,1669104000"; 
-   d="scan'208";a="638207825"
+   d="scan'208";a="638207830"
 Received: from kanliang-dev.jf.intel.com ([10.165.154.102])
-  by orsmga006.jf.intel.com with ESMTP; 20 Jan 2023 08:54:45 -0800
+  by orsmga006.jf.intel.com with ESMTP; 20 Jan 2023 08:54:46 -0800
 From: kan.liang@linux.intel.com
 To: joro@8bytes.org,
 	will@kernel.org,
@@ -40,10 +40,12 @@ To: joro@8bytes.org,
 	linux-kernel@vger.kernel.org
 Cc: yu-cheng.yu@intel.com,
 	Kan Liang <kan.liang@linux.intel.com>
-Subject: [PATCH V3 0/7] iommu/vt-d: Support performance monitoring for IOMMU
-Date: Fri, 20 Jan 2023 08:54:01 -0800
-Message-Id: <20230120165408.500511-1-kan.liang@linux.intel.com>
+Subject: [PATCH V3 1/7] iommu/vt-d: Support size of the register set in DRHD
+Date: Fri, 20 Jan 2023 08:54:02 -0800
+Message-Id: <20230120165408.500511-2-kan.liang@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20230120165408.500511-1-kan.liang@linux.intel.com>
+References: <20230120165408.500511-1-kan.liang@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,96 +56,96 @@ Content-Transfer-Encoding: 8bit
 
 From: Kan Liang <kan.liang@linux.intel.com>
 
-Changes since V2:
-- Move ecmd_submit_sync() to iommu.c to avoid #ifdef CONFIG_INTEL_IOMMU
+A new field, which indicates the size of the remapping hardware register
+set for this remapping unit, is introduced in the DMA-remapping hardware
+unit definition (DRHD) structure with the VT-d Spec 4.0.
+With the information, SW doesn't need to 'guess' the size of the
+register set anymore.
 
-Changes since V1:
-- The cap and ecap registers are always in the first page. It's not
-  necessary to use the reg size in dmar_validate_one_drhd(). (Patch 1)
-- Move reg_size up and pair it with reg_base_addr in struct
-  dmar_drhd_unit (Patch 1)
-- Update the year of Copyright (Patch 2)
-- Return 0 if PMS is not supported (Patch 2)
-- Refine the comments and add a pr_warn for per-counter capabilities
-  check (Patch 2)
-- Remove unnecessary iommu_pmu->num_cntr = i (Patch 2)
-- Remove has_ob of ecmd_submit_sync() (Patch 3)
-- Remove the helpers from non-INTEL_IOMMU. (Patch 3)
-- Still keep #ifdef CONFIG_INTEL_IOMMU for ecmd_submit_sync() to
-  avoid compile warning with non-INTEL_IOMMU config.
-- Use pr_warn_once() to replace WARN_ONCE() (Patch 4 & 6)
-- Free iommu PMU if it fails to be registered. (Patch 4)
-- Remove unnecessary 'handled' variable. (Patch 6)
+Update the struct acpi_dmar_hardware_unit to reflect the field.
 
-A performance monitoring infrastructure, perfmon, is introduced with
-the VT-d Spec 4.0. The purpose of perfmon is to support collection of
-information about key events occurring during operation of the remapping
-hardware, to aid performance tuning and debug. The patch series is to
-support the perfmon for IOMMU.
+Store the size of the register set in struct dmar_drhd_unit for each
+dmar device.
 
-To facilitate the perfmon support, the patch series also supports two
-new generic features of VT-d Spec 4.0.
-- Support the 'size' field to retrieve the accurate size of the register
-  set for each dmar device from DRHD. (Patch 1)
-- Support the new Enhanced Command Interface. (Patch 3)
+The 'size' information is ResvZ for the old BIOS and platforms. Fall
+back to the old guessing method. There is nothing changed.
 
-With the patch series, users can collect the performance data of IOMMU
-via Linux perf tool. For example,
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+---
+ drivers/iommu/intel/dmar.c | 11 +++++++----
+ include/acpi/actbl1.h      |  2 +-
+ include/linux/dmar.h       |  1 +
+ 3 files changed, 9 insertions(+), 5 deletions(-)
 
- $ perf stat -e dmar0/iommu_requests,filter_ats=0/ -a sleep 1
-
- Performance counter stats for 'system wide':
-
-              2135      dmar0/iommu_requests,filter_ats=0/
-
-       1.001087695 seconds time elapsed
-
-The IOMMU PMUs can be found under /sys/bus/event_source/devices/dmar*
-
-The available filters and event format can be found at the format folder
- $ ls /sys/bus/event_source/devices/dmar0/format/
-event  event_group  filter_ats  filter_page_table
-
-The supported events can be found at the events folder
-
- $ ls /sys/bus/event_source/devices/dmar0/events/
-ats_blocked        int_cache_hit_nonposted  iommu_mrds
-pasid_cache_lookup
-ctxt_cache_hit     int_cache_hit_posted     iommu_requests
-pg_req_posted
-ctxt_cache_lookup  int_cache_lookup         iotlb_hit
-pw_occupancy
-fs_nonleaf_hit     iommu_clocks             iotlb_lookup
-ss_nonleaf_hit
-fs_nonleaf_lookup  iommu_mem_blocked        pasid_cache_hit
-ss_nonleaf_lookup
-
-Kan Liang (7):
-  iommu/vt-d: Support size of the register set in DRHD
-  iommu/vt-d: Retrieve IOMMU perfmon capability information
-  iommu/vt-d: Support Enhanced Command Interface
-  iommu/vt-d: Add IOMMU perfmon support
-  iommu/vt-d: Support cpumask for IOMMU perfmon
-  iommu/vt-d: Add IOMMU perfmon overflow handler support
-  iommu/vt-d: Enable IOMMU perfmon support
-
- .../sysfs-bus-event_source-devices-iommu      |  32 +
- drivers/iommu/intel/Kconfig                   |   9 +
- drivers/iommu/intel/Makefile                  |   1 +
- drivers/iommu/intel/dmar.c                    |  33 +-
- drivers/iommu/intel/iommu.c                   |  59 ++
- drivers/iommu/intel/iommu.h                   | 101 +-
- drivers/iommu/intel/perfmon.c                 | 860 ++++++++++++++++++
- drivers/iommu/intel/perfmon.h                 |  65 ++
- drivers/iommu/intel/svm.c                     |   2 +-
- include/acpi/actbl1.h                         |   2 +-
- include/linux/cpuhotplug.h                    |   1 +
- include/linux/dmar.h                          |   1 +
- 12 files changed, 1159 insertions(+), 7 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-event_source-devices-iommu
- create mode 100644 drivers/iommu/intel/perfmon.c
- create mode 100644 drivers/iommu/intel/perfmon.h
-
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index b00a0ceb2d13..3a40fef1ec1b 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -427,6 +427,8 @@ static int dmar_parse_one_drhd(struct acpi_dmar_header *header, void *arg)
+ 	memcpy(dmaru->hdr, header, header->length);
+ 	dmaru->reg_base_addr = drhd->address;
+ 	dmaru->segment = drhd->segment;
++	/* The size of the register set is 2 ^ N 4 KB pages. */
++	dmaru->reg_size = 1UL << (drhd->size + 12);
+ 	dmaru->include_all = drhd->flags & 0x1; /* BIT0: INCLUDE_ALL */
+ 	dmaru->devices = dmar_alloc_dev_scope((void *)(drhd + 1),
+ 					      ((void *)drhd) + drhd->header.length,
+@@ -956,17 +958,18 @@ static void unmap_iommu(struct intel_iommu *iommu)
+ /**
+  * map_iommu: map the iommu's registers
+  * @iommu: the iommu to map
+- * @phys_addr: the physical address of the base resgister
++ * @drhd: DMA remapping hardware definition structure
+  *
+  * Memory map the iommu's registers.  Start w/ a single page, and
+  * possibly expand if that turns out to be insufficent.
+  */
+-static int map_iommu(struct intel_iommu *iommu, u64 phys_addr)
++static int map_iommu(struct intel_iommu *iommu, struct dmar_drhd_unit *drhd)
+ {
++	u64 phys_addr = drhd->reg_base_addr;
+ 	int map_size, err=0;
+ 
+ 	iommu->reg_phys = phys_addr;
+-	iommu->reg_size = VTD_PAGE_SIZE;
++	iommu->reg_size = drhd->reg_size;
+ 
+ 	if (!request_mem_region(iommu->reg_phys, iommu->reg_size, iommu->name)) {
+ 		pr_err("Can't reserve memory\n");
+@@ -1050,7 +1053,7 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+ 	}
+ 	sprintf(iommu->name, "dmar%d", iommu->seq_id);
+ 
+-	err = map_iommu(iommu, drhd->reg_base_addr);
++	err = map_iommu(iommu, drhd);
+ 	if (err) {
+ 		pr_err("Failed to map %s\n", iommu->name);
+ 		goto error_free_seq_id;
+diff --git a/include/acpi/actbl1.h b/include/acpi/actbl1.h
+index 4175dce3967c..bdded0ac46eb 100644
+--- a/include/acpi/actbl1.h
++++ b/include/acpi/actbl1.h
+@@ -802,7 +802,7 @@ struct acpi_dmar_pci_path {
+ struct acpi_dmar_hardware_unit {
+ 	struct acpi_dmar_header header;
+ 	u8 flags;
+-	u8 reserved;
++	u8 size;		/* Size of the register set */
+ 	u16 segment;
+ 	u64 address;		/* Register Base Address */
+ };
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index d81a51978d01..725d5e6acec0 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -39,6 +39,7 @@ struct dmar_drhd_unit {
+ 	struct list_head list;		/* list of drhd units	*/
+ 	struct  acpi_dmar_header *hdr;	/* ACPI header		*/
+ 	u64	reg_base_addr;		/* register base address*/
++	unsigned long reg_size;		/* size of register set */
+ 	struct	dmar_dev_scope *devices;/* target device array	*/
+ 	int	devices_cnt;		/* target device count	*/
+ 	u16	segment;		/* PCI domain		*/
 -- 
 2.35.1
 
