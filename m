@@ -1,131 +1,235 @@
-Received: from mail-vs1-f42.google.com (mail-vs1-f42.google.com [209.85.217.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from DM6FTOPR00CU001-vft-obe.outbound.protection.outlook.com (mail-cusazon11020014.outbound.protection.outlook.com [52.101.61.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91ACD7E
-	for <iommu@lists.linux.dev>; Sat, 21 Jan 2023 00:09:06 +0000 (UTC)
-Received: by mail-vs1-f42.google.com with SMTP id i188so7400093vsi.8
-        for <iommu@lists.linux.dev>; Fri, 20 Jan 2023 16:09:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=J7BKazUSzb1FuErPzK4kF9qsdvEIt5ZVPv77Xw43Sic=;
-        b=Lv6dLxXyu3T7dCN1lyJJvzbBKoBwk6tonW4rIMmuQ/8rtpir0a1+37L2jxKr7FYxTa
-         v68sRwqiyjkkOvpKog+fDlcUXr0+EmV+yaXzZ22AQfzjjc+NFALFIGsVUc5ldTKbS231
-         2MixXyLizzVu9ZsHwJRSlGFkcNqmi/T1e2JND2RGE5gq8fkINzqGfjzqZW1EEdtnHYX4
-         I0Fa6v8Y+/cjTwb/A9rqyGsvQWOrgoInqep5TrjRdDSHSdHGq/7DCa4CDhx3nekkrpQ6
-         nuyMajBWPHebMNEqDV0eXaawKW19GCvmI+K5qO39wQWaWT6fjD6Nl3bpCuTIlEm537bV
-         lfmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=J7BKazUSzb1FuErPzK4kF9qsdvEIt5ZVPv77Xw43Sic=;
-        b=HTf9LSWEXSG19/3yUBjHnGiHfIZpOzjkr565yiVCvPbsziEhUN/NLqi4XfDSVzoKuJ
-         gNGmV62en3v8L3LmJ7lJXr1lsXtDhYISxq6iSP7jl9fbeC9duH5Kc2K1T+fRNqz8ELbM
-         tEpMaY1pfk3Y+tX7OeOkh3zithdKgSRe8yBs67ciMjzy533ghxkO30B4eTNzeoafZSLl
-         ixs4ubuJqTna2JpSfR8H8YWflbe8kNQDvXCe1phOPOotePkEYbL80FzQu2G1rGCiQ5nS
-         Jx+C4nJ0hXwV0xICIje7Hf0eWNrEN2wNszBmAxGsPLieLljvG72+hokK+MDHXTVC2cJd
-         L5lw==
-X-Gm-Message-State: AFqh2kqy/R5CkbZ7o7oPzS3keL+v8NzL6BaS114DhwBPht0MUKK8/UaR
-	b5dEQgea7TOuO5s8ZNlTYyoblw==
-X-Google-Smtp-Source: AMrXdXsqYs732eIFEJxe8fLjdOnsesRBsekrMmjo9aqzufULnunaDZN6UZ5io5tMGIRNcMJjKzFT4w==
-X-Received: by 2002:a67:ebd5:0:b0:3d0:fce9:d9c0 with SMTP id y21-20020a67ebd5000000b003d0fce9d9c0mr9632517vso.31.1674259745390;
-        Fri, 20 Jan 2023 16:09:05 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-167-59-176.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.59.176])
-        by smtp.gmail.com with ESMTPSA id u12-20020a05620a430c00b006ee949b8051sm26866756qko.51.2023.01.20.16.09.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Jan 2023 16:09:04 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1pJ1RQ-00F5ku-7B;
-	Fri, 20 Jan 2023 20:09:04 -0400
-Date: Fri, 20 Jan 2023 20:09:04 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: "Kalra, Ashish" <ashish.kalra@amd.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	joro@8bytes.org, robin.murphy@arm.com, vasant.hegde@amd.com,
-	jon.grimm@amd.com
-Subject: Re: [PATCH 1/4] iommu/amd: Introduce Protection-domain flag VFIO
-Message-ID: <Y8stIO6oAw8wEgEI@ziepe.ca>
-References: <20230110143137.54517-2-suravee.suthikulpanit@amd.com>
- <Y8F53dzdebKLTlOy@ziepe.ca>
- <90762dee-1559-58ac-220d-a13635d5032e@amd.com>
- <Y8mBczFH/Hw6xot0@ziepe.ca>
- <c3fbec52-1281-eb1c-40f8-588438146c14@amd.com>
- <Y8q9ocj2IZB2r6Np@ziepe.ca>
- <1ba09b11-8a07-24dd-a99f-eeacb2f5c96c@amd.com>
- <Y8rUYTjVhksAu+i9@ziepe.ca>
- <da56ae0c-8f72-b39f-95b8-8870ec9fb336@amd.com>
- <1e1e98ea-5215-be21-b732-58c67e9c8fd6@amd.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAD56386
+	for <iommu@lists.linux.dev>; Sat, 21 Jan 2023 04:10:26 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Q2xsINtbGix14NGb8FSyhEYjCbAyFyDzE0oJcbz7o3djwV5Q06qCuR2OCfMdXD2tNU/JsrCxlnx4q+cK6oyZrFQMGJdBnRYEoP+yjYGWaybd5qlsVKMloBqKb0Xiwmo90Y0hRc3VkIcKBnCQStXoXn/1C8KeNX43dEsptIF2L9YRg5f+qHX75EuTnomI0qw/OiPSu6XKPvEsP2x4WJPOAQ4VkJGTGxHqCTt2JP2xOWcLzAeQDlo1BPmPjeWKELxcvp0qdCAkI8dRqMQ0drX0cXME5HsQNj5i1/6aO/RQyyMap6aJVYOeI//Fx5BdxempC8AuX9FceCDpbfPth5l9mg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=VY3CrOWypNFbpmUAYPR2E5XqNhoPHNTgdl8mm3kru0o=;
+ b=CqjT93FS2/O9ia7LeCbHjKyQf+qk+daOGhfCdkvphFDKMzCeXK/j+2vH3L9Px8fmG9PNkqsBw2FAteWcYybo3wYa15twQi4zwA3hlbKvqoMMavY90vkS+1E0BVOCdsmLU43IJGbkhPZtb2W7sRZ58USg1M96f3ScOt6OvesaNvvy7euFHO1laH4YSmhC5JssZQyb7cUwtiNZa+vJ3OO7QV2LN5rQAgkdjLxIuSEyD3DslKhGqLW3/eL7Ylp9H+0OCFO53pYcwhlNZEjH3LKMbRC8I0bjPs65h/kpm4fD4dMGuSV51zdCxrFZW8ZEVt0pHWSredR+Rgk2ovxJa+hznA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VY3CrOWypNFbpmUAYPR2E5XqNhoPHNTgdl8mm3kru0o=;
+ b=LYXI99xYQjD+iLcbMkEKZyGG506/04+NCqQrWiVQZ5DvynfT83KxBMm7ztun8WD99kIf4jUOKrAWvn45SW/v/pMG36pYL+YTMi013QNuw0k1nsKFpRnU2Q5ExWFPYIm4J79tpN6Lb/c1n1vsduvUY/mjvxKcoftN4okBFG9eXPo=
+Received: from BYAPR21MB1688.namprd21.prod.outlook.com (2603:10b6:a02:bf::26)
+ by PH7PR21MB3879.namprd21.prod.outlook.com (2603:10b6:510:242::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.8; Sat, 21 Jan
+ 2023 04:10:23 +0000
+Received: from BYAPR21MB1688.namprd21.prod.outlook.com
+ ([fe80::9a9e:c614:a89f:396e]) by BYAPR21MB1688.namprd21.prod.outlook.com
+ ([fe80::9a9e:c614:a89f:396e%9]) with mapi id 15.20.6043.008; Sat, 21 Jan 2023
+ 04:10:23 +0000
+From: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+To: Borislav Petkov <bp@alien8.de>
+CC: "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>, "wei.liu@kernel.org"
+	<wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>, "luto@kernel.org"
+	<luto@kernel.org>, "peterz@infradead.org" <peterz@infradead.org>,
+	"davem@davemloft.net" <davem@davemloft.net>, "edumazet@google.com"
+	<edumazet@google.com>, "kuba@kernel.org" <kuba@kernel.org>,
+	"pabeni@redhat.com" <pabeni@redhat.com>, "lpieralisi@kernel.org"
+	<lpieralisi@kernel.org>, "robh@kernel.org" <robh@kernel.org>, "kw@linux.com"
+	<kw@linux.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "arnd@arndb.de"
+	<arnd@arndb.de>, "hch@lst.de" <hch@lst.de>, "m.szyprowski@samsung.com"
+	<m.szyprowski@samsung.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"thomas.lendacky@amd.com" <thomas.lendacky@amd.com>, "brijesh.singh@amd.com"
+	<brijesh.singh@amd.com>, "tglx@linutronix.de" <tglx@linutronix.de>,
+	"mingo@redhat.com" <mingo@redhat.com>, "dave.hansen@linux.intel.com"
+	<dave.hansen@linux.intel.com>, Tianyu Lan <Tianyu.Lan@microsoft.com>,
+	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+	"sathyanarayanan.kuppuswamy@linux.intel.com"
+	<sathyanarayanan.kuppuswamy@linux.intel.com>, "ak@linux.intel.com"
+	<ak@linux.intel.com>, "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
+	"dan.j.williams@intel.com" <dan.j.williams@intel.com>, "jane.chu@oracle.com"
+	<jane.chu@oracle.com>, "seanjc@google.com" <seanjc@google.com>,
+	"tony.luck@intel.com" <tony.luck@intel.com>, "x86@kernel.org"
+	<x86@kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-hyperv@vger.kernel.org"
+	<linux-hyperv@vger.kernel.org>, "netdev@vger.kernel.org"
+	<netdev@vger.kernel.org>, "linux-pci@vger.kernel.org"
+	<linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org"
+	<linux-arch@vger.kernel.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: RE: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
+ to map as encrypted
+Thread-Topic: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
+ to map as encrypted
+Thread-Index: AQHZJs7d1RPl+inmE0Kn2DbFJZ3EJa6nyiwAgAAUafA=
+Date: Sat, 21 Jan 2023 04:10:23 +0000
+Message-ID:
+ <BYAPR21MB168897DBA98E91B72B4087E1D7CA9@BYAPR21MB1688.namprd21.prod.outlook.com>
+References: <1673559753-94403-1-git-send-email-mikelley@microsoft.com>
+ <1673559753-94403-7-git-send-email-mikelley@microsoft.com>
+ <Y8r2TjW/R3jymmqT@zn.tnic>
+In-Reply-To: <Y8r2TjW/R3jymmqT@zn.tnic>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=f61f949b-413f-43f3-a3a3-5fe2fe2522ea;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2023-01-20T21:28:12Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BYAPR21MB1688:EE_|PH7PR21MB3879:EE_
+x-ms-office365-filtering-correlation-id: d1840588-0cc9-4406-1890-08dafb656b13
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ dZtwbFF+2rzliQ9MmUfy8MO8yWaRUfBXqrHe9UAd70V9EFr8teQPNCTGjKIDumt3MLvPSY5CdD3GW8Ab97ToZGCTI1rYMxrs37J7Y1oGsdVS7eWqVIZFoszYOmkCe2JYBUFUl11ei5BZBkhzlz3TxT+OOEZ36gNYKzUJGwlEi3hkMcRzAZu1YSuH2NkeMsPmPKiJ4R76U8ID/VAeObXj1qp1PGHgBK1qq6NPGTuh5zZ9kzePINPoC12uYfhcX1cVHcdFxl29WJR3gpGpjcwiJeQlM4s1IjzaFQjOoFDLUOW2DyPZsPUpyV3UkzPIlBPi/4vy/yHruDhhUamTiu7b6kxWKrNpjjYWJP1QjwLL3Rw238JxIbZrsFmZPq4tjmZh1mbPX9ferRXOE4m3VABDjdqOPUqhfLxwp/WdgC3OgWkR+NY8Zc8/Cff4XPL9OGwx3d4fh5Z2hZBwGt00v+TLWpNRy1w0rRaefIGTzQfuMXOS8zTN54kwPC/9JBLZzHT8XsUyC4oeaDOCzxDxmlGH5gFZKoef7NQNeTSSNOfyedtDMUT3H5j77OCG0K+dKwamrLUeOThpbChFRQkZNm7VHz+HDKrfuBCCbli2cbqFckL/z/EBUKvm5EjcN0Ed2GrM1KM0O9CY3eFhKBcxKn+2uQdqjVv0Jxxd9pzv8L6nkR341RHsSGK2kqditBFSrCdnHN8wNK5DM3LUWY37gvdqIsmH14K5UqGy6jNUP6Ic62e+TUXCEF+rmlp8HDCWD7YT
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1688.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(39860400002)(376002)(136003)(346002)(396003)(451199015)(2906002)(478600001)(8990500004)(6506007)(55016003)(66476007)(26005)(9686003)(186003)(41300700001)(6916009)(66556008)(82950400001)(64756008)(66446008)(82960400001)(38100700002)(54906003)(122000001)(316002)(76116006)(8676002)(4326008)(66946007)(71200400001)(86362001)(83380400001)(7416002)(8936002)(7406005)(52536014)(10290500003)(7696005)(5660300002)(38070700005)(66899015)(33656002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?w08aoKG9MpdVPnTDOSmULY56F0NPLyojvNgTWdBpMbH0bSHFGF+CHv19PDiI?=
+ =?us-ascii?Q?KVLQ+XCO8vKZhwqGwDje9KUYYj+tCf8V4V7YcvLrNzXbEHJYhnFhn4oeDPuK?=
+ =?us-ascii?Q?X7Mgw0HvQJIzPGgOR/DvsM6bqTkdImcs0GUoUxx3pRW2OIpPk7Jh3ITB+I9E?=
+ =?us-ascii?Q?L1oiXTxYP7FZorjvAL7WVlXKzIt9Y2S0kbSTIdU4aiQXN8H0Zhw7spGfbszz?=
+ =?us-ascii?Q?x2AyLRuKo164/2Mvzu4EHYYHKkH1jLQlyZEsW/6DSxVhqoG3BVPbxF4ky71K?=
+ =?us-ascii?Q?BJIhqkDtpGGcwhpLYLXC9+U/qBOGJME0mbErtV8lOKWwfxRX7r4tSW66V8Ra?=
+ =?us-ascii?Q?1pyqrV+CSEHKyt6UdOs29by8DV6c2GSHfjfooiBjkX+iI7iUNf/OR1lIP7q2?=
+ =?us-ascii?Q?nQENIESArVSzNbposHUA8EttswFTRn2Ri+4A8ye59zwO99v3KHFyKadyXypE?=
+ =?us-ascii?Q?EIKhoM3jeqlGwmquZ4RfxNz5ei5mI6Rh1zwTciwXbMvt88P6vsVpoP2Brk22?=
+ =?us-ascii?Q?6eYDQzrET1S8hnUNk5awDj08XLJzga4mJH/w/UTjivRv42vKr6qSKctO/w0J?=
+ =?us-ascii?Q?/tFuqIQEfM0asjdfMC3mzkBY/q9MBde4V42aLkQUYHGK1cfIJ+kG7UG0knOf?=
+ =?us-ascii?Q?Kc1cQ0HO6foBxmZc2MX6NblcXc8teLuyl4HHYkccqCQlcSX+es1hgkd2Y64x?=
+ =?us-ascii?Q?bilH6YDBjTgq73bCUKV/OX1nMtOotgIn0ZUQ9i9VpQ61Jw4HYgJOr9mm5b/w?=
+ =?us-ascii?Q?jYnhIJ2iCeTSvh5DN2nhNBRqfQ0yOQV9tXzV4eFs5pXq4GfrkMW/e4GGavHq?=
+ =?us-ascii?Q?thS5vHPFYGqr5YBZhPxax3OHLIHOfzGlp+NK++8KKBuk/mv6AxKde86Mc68z?=
+ =?us-ascii?Q?yKG8C9as2IxbCvaemPSCVLki6BFvgKrLi/Vpo8BlwEym7r/JHrfCBPwzNqnv?=
+ =?us-ascii?Q?JUiF94mMhBLBqpcjOHf8DcbXdaO8dAgbzGXXOz/1omPpJP04f4sXPh6OG70b?=
+ =?us-ascii?Q?gCzprTkgbeKn8osZDXPyfFAyVoNhVnO9aIgAgn0CgUCVl3HwTFyS2kZpmtu+?=
+ =?us-ascii?Q?S04tih4WMNnS2hM056XT+nt88XXnZr6EFrk2398xnegW5g/uqhn+RReDGvGT?=
+ =?us-ascii?Q?haaM6C0y2yZyn4Xkbhibyr0aishRxvessL3Y+9+KbNJNYdXU28MTq8MAGAmW?=
+ =?us-ascii?Q?UWd2O1V7rbfEa8OFN0032n173W4WgZWLigusJc9FXlpNyv6JO9SvAXE8uDMt?=
+ =?us-ascii?Q?L8c+bFS8RDhhNcOl/U4BWCUP3aWc73/+Zxr8MW6DqHvHVlEHlytj0prwhzEt?=
+ =?us-ascii?Q?34ICr4ofC3nGa2QAiuHjeU4zABf5ERU0lkJCYRhbjcG/BWsn7q90ZC0uZl5u?=
+ =?us-ascii?Q?IGf1Yv4Xxjx34rcIU+HuFDiuEbn9fR5Zr50Y391Gcul8mhbT0Wiyc4lIbM6i?=
+ =?us-ascii?Q?GoR4JMgQ0u5P/IREnepMPdaofvmF4z8yOUn3OUlgRrmLwERSuHerx4RQFLr8?=
+ =?us-ascii?Q?648DiUO/fERNRxF4r7NKj15wghYGVM1fxWpbbQpA3kXQdKmkzyGDBsIfTX/u?=
+ =?us-ascii?Q?Q7kGjeezkjPlmHZ4aVZ1T98afOiqpmM/Tw/O5tUOLO/pi9/YJphb++sYqEDw?=
+ =?us-ascii?Q?tg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1e1e98ea-5215-be21-b732-58c67e9c8fd6@amd.com>
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1688.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d1840588-0cc9-4406-1890-08dafb656b13
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jan 2023 04:10:23.2403
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: aalF5HgECv8MPoGurR6MIj4d7D2ieqqBO9mNa4U8EeRF2o6vPE4TkUPlNuxUwLbKHg0ChOr/5fkgLcTsdibwRHZIQkZfoqlAyC6xCeaJBXA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR21MB3879
 
-On Fri, Jan 20, 2023 at 04:42:26PM -0600, Tom Lendacky wrote:
-> On 1/20/23 13:55, Kalra, Ashish wrote:
-> > On 1/20/2023 11:50 AM, Jason Gunthorpe wrote:
-> > > On Fri, Jan 20, 2023 at 11:01:21AM -0600, Kalra, Ashish wrote:
-> > > 
-> > > > We basically get the RMP #PF from the IOMMU because there is a page size
-> > > > mismatch between the RMP table and the IOMMU page table. The RMP table's
-> > > > large page entry has been smashed to 4K PTEs to handle page
-> > > > state change to
-> > > > shared on 4K mappings, so this change has to be synced up with the IOMMU
-> > > > page table, otherwise there is now a page size mismatch between RMP table
-> > > > and IOMMU page table which causes the RMP #PF.
-> > > 
-> > > I understand that, you haven't answered my question:
-> > > 
-> > > Why is the IOMMU being programmed with pages it cannot access in the
-> > > first place?
-> > > 
-> > 
-> > I believe the IOMMU page tables are setup as part of device pass-through
-> > to be able to do DMA to all of the guest memory, but i am not an IOMMU
-> > expert, so i will let Suravee elaborate on this.
-> 
-> Right. And what I believe Jason is saying is, that for SNP, since we know we
-> can only DMA into shared pages, there is no need to setup the initial IOMMU
-> page tables for all of guest memory. Instead, wait and set up IOMMU mappings
-> when we do a page state change to shared and remove any mappings when we do
-> a page state change to private.
+From: Borislav Petkov <bp@alien8.de> Sent: Friday, January 20, 2023 12:15 P=
+M
+>=20
+> On Thu, Jan 12, 2023 at 01:42:25PM -0800, Michael Kelley wrote:
+> > In a AMD SEV-SNP VM using vTOM, devices in MMIO space may be provided b=
+y
+> > the paravisor and need to be mapped as encrypted.  Provide a function
+> > for the hypervisor to specify the address range for such devices.
+> > In __ioremap_caller(), map addresses in this range as encrypted.
+> >
+> > Only a single range is supported. If multiple devices need to be
+> > mapped encrypted, the paravisor must place them within the single
+> > contiguous range.
+>=20
+> This already is starting to sound insufficient and hacky. And it also mak=
+es
+> CC_ATTR_ACCESS_IOAPIC_ENCRYPTED insufficient either.
+>=20
+> So, the situation we have is, we're a SEV-SNP VM using vTOM. Which means,
+> MSR_AMD64_SEV[3] =3D 1. Or SEV_FEATURES[1], alternatively - same thing.
+>=20
+> That MSR cannot be intercepted by the HV and we use it extensively in Lin=
+ux when
+> it runs as a SEV-* guest. And I had asked this before, during review, but=
+ why
+> aren't you checking this bit above when you wanna do vTOM-specific work?
 
-Correct.
+Per the commit message for 009767dbf42a, it's not safe to read MSR_AMD64_SE=
+V
+on all implementations of AMD processors.  CC_ATTR_ACCESS_IOAPIC_ENCRYPTED
+is used in io_apic_set_fixmap(), which is called on all Intel/AMD systems w=
+ithout
+any qualifications.   Even if rdmsrl_safe() works at this point in boot, I'=
+m a little
+leery of reading a new MSR in a path that essentially every x86 bare-metal =
+system
+or VM takes during boot.  Or am I being overly paranoid about old processor
+models or hypervisor versions potentially doing something weird?
 
-I don't know the details of how the shared/private works on AMD, eg if
-the hypervisor even knows of the private/shared transformation..
+But in any case, the whole point of cc_platform_has() is to provide a level=
+ of
+abstraction from the hardware registers, and it's fully safe to use on ever=
+y x86
+bare-metal system or VM.  And while I don't anticipate it now, maybe there'=
+s
+some future scheme where a paravisor-like entity could be used with Intel
+TDX.  It seems like using a cc_platform_has() abstraction is better than di=
+rectly
+accessing the MSR.
 
-At the very worst I suppose if you just turn on the vIOMMU it should
-just start working as the vIOMMU mode should make the paging
-dynamic. eg virtio-iommu or something general might even do the job.
+>=20
+> Because then you can do that check and
+>=20
+> 1. map the IO-APIC encrypted
+> 2. map MMIO space of devices from the driver encrypted too
+> 3. ...
 
-Pinning pages is expensive, breaks swap, defragmentation and wastes a
-lot of iommu memory. Given that the bounce buffers really shouldn't be
-reallocated constantly I'd expect vIOMMU to be performance OK.
+My resolution of the TPM driver issue is admittedly a work-around.   I thin=
+k
+of it as temporary in anticipation of future implementations of PCIe TDISP
+hardware, which allows PCI devices to DMA directly into guest encrypted
+memory.  TDISP also places the device's BAR values in an encrypted portion
+of the GPA space. Assuming TDISP hardware comes along in the next couple
+of years, Linux will need a robust way to deal with a mix of PCI devices
+being in unencrypted and encrypted GPA space.  I don't know how a
+specific device will be mapped correctly, but I hope it can happen in the
+generic PCI code, and not by modifying each device driver.  It's probably
+premature to build that robust mechanism now, but when it comes, my
+work-around would be replaced.
+=20
+With all that in mind, I don't want to modify the TPM driver to special-cas=
+e
+its MMIO space being encrypted.  FWIW, the TPM driver today uses
+devm_ioremap_resource() to do the mapping, which defaults to mapping
+decrypted except for the exceptions implemented in __ioremap_caller().
+There's no devm_* option for specifying encrypted.  Handling decrypted
+vs. encrypted in the driver would require extending the driver API to
+provide an "encrypted" option, and that seems like going in the wrong
+long-term direction.
 
-This solves the page size mistmatch issue because the iommu never has
-a PFN installed that would generate a RMP #PF. The iommu can continue
-to use large page sizes whenever possible.
+Finally, I would have liked to handle the IO-APIC and the vTPM the same
+way.  But the IO-APIC doesn't use the normal ioremap_* functions because
+it's done early in boot via the fixmap.  I didn't see a reasonable way to
+unify them.
 
-It seems to me the current approach of just stuffing all memory into
-the iommu is a just a shortcut to get something working.
+Anyway, that's my thoughts.  I'm certainly open if someone has a better
+way to do it.
 
-Otherwise, what I said before is still the case: only the VMM knows
-what it is doing. It knows if it is using a model where it programs
-private memory into the IOMMU so it knows if it should ask the kernel
-to use a 4k iommu page size.
+Michael
 
-Trying to have the kernel guess what userspace is doing based on the
-kvm is simply architecturally wrong.
-
-Jason
+>=20
+> and so on.
+>=20
+> And you won't need those other, not as nice things...
+>=20
+> Hmmm.
