@@ -1,235 +1,308 @@
-Received: from DM6FTOPR00CU001-vft-obe.outbound.protection.outlook.com (mail-cusazon11020014.outbound.protection.outlook.com [52.101.61.14])
+Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAD56386
-	for <iommu@lists.linux.dev>; Sat, 21 Jan 2023 04:10:26 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Q2xsINtbGix14NGb8FSyhEYjCbAyFyDzE0oJcbz7o3djwV5Q06qCuR2OCfMdXD2tNU/JsrCxlnx4q+cK6oyZrFQMGJdBnRYEoP+yjYGWaybd5qlsVKMloBqKb0Xiwmo90Y0hRc3VkIcKBnCQStXoXn/1C8KeNX43dEsptIF2L9YRg5f+qHX75EuTnomI0qw/OiPSu6XKPvEsP2x4WJPOAQ4VkJGTGxHqCTt2JP2xOWcLzAeQDlo1BPmPjeWKELxcvp0qdCAkI8dRqMQ0drX0cXME5HsQNj5i1/6aO/RQyyMap6aJVYOeI//Fx5BdxempC8AuX9FceCDpbfPth5l9mg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VY3CrOWypNFbpmUAYPR2E5XqNhoPHNTgdl8mm3kru0o=;
- b=CqjT93FS2/O9ia7LeCbHjKyQf+qk+daOGhfCdkvphFDKMzCeXK/j+2vH3L9Px8fmG9PNkqsBw2FAteWcYybo3wYa15twQi4zwA3hlbKvqoMMavY90vkS+1E0BVOCdsmLU43IJGbkhPZtb2W7sRZ58USg1M96f3ScOt6OvesaNvvy7euFHO1laH4YSmhC5JssZQyb7cUwtiNZa+vJ3OO7QV2LN5rQAgkdjLxIuSEyD3DslKhGqLW3/eL7Ylp9H+0OCFO53pYcwhlNZEjH3LKMbRC8I0bjPs65h/kpm4fD4dMGuSV51zdCxrFZW8ZEVt0pHWSredR+Rgk2ovxJa+hznA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VY3CrOWypNFbpmUAYPR2E5XqNhoPHNTgdl8mm3kru0o=;
- b=LYXI99xYQjD+iLcbMkEKZyGG506/04+NCqQrWiVQZ5DvynfT83KxBMm7ztun8WD99kIf4jUOKrAWvn45SW/v/pMG36pYL+YTMi013QNuw0k1nsKFpRnU2Q5ExWFPYIm4J79tpN6Lb/c1n1vsduvUY/mjvxKcoftN4okBFG9eXPo=
-Received: from BYAPR21MB1688.namprd21.prod.outlook.com (2603:10b6:a02:bf::26)
- by PH7PR21MB3879.namprd21.prod.outlook.com (2603:10b6:510:242::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.8; Sat, 21 Jan
- 2023 04:10:23 +0000
-Received: from BYAPR21MB1688.namprd21.prod.outlook.com
- ([fe80::9a9e:c614:a89f:396e]) by BYAPR21MB1688.namprd21.prod.outlook.com
- ([fe80::9a9e:c614:a89f:396e%9]) with mapi id 15.20.6043.008; Sat, 21 Jan 2023
- 04:10:23 +0000
-From: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-To: Borislav Petkov <bp@alien8.de>
-CC: "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>, "wei.liu@kernel.org"
-	<wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>, "luto@kernel.org"
-	<luto@kernel.org>, "peterz@infradead.org" <peterz@infradead.org>,
-	"davem@davemloft.net" <davem@davemloft.net>, "edumazet@google.com"
-	<edumazet@google.com>, "kuba@kernel.org" <kuba@kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>, "lpieralisi@kernel.org"
-	<lpieralisi@kernel.org>, "robh@kernel.org" <robh@kernel.org>, "kw@linux.com"
-	<kw@linux.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "arnd@arndb.de"
-	<arnd@arndb.de>, "hch@lst.de" <hch@lst.de>, "m.szyprowski@samsung.com"
-	<m.szyprowski@samsung.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"thomas.lendacky@amd.com" <thomas.lendacky@amd.com>, "brijesh.singh@amd.com"
-	<brijesh.singh@amd.com>, "tglx@linutronix.de" <tglx@linutronix.de>,
-	"mingo@redhat.com" <mingo@redhat.com>, "dave.hansen@linux.intel.com"
-	<dave.hansen@linux.intel.com>, Tianyu Lan <Tianyu.Lan@microsoft.com>,
-	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-	"sathyanarayanan.kuppuswamy@linux.intel.com"
-	<sathyanarayanan.kuppuswamy@linux.intel.com>, "ak@linux.intel.com"
-	<ak@linux.intel.com>, "isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-	"dan.j.williams@intel.com" <dan.j.williams@intel.com>, "jane.chu@oracle.com"
-	<jane.chu@oracle.com>, "seanjc@google.com" <seanjc@google.com>,
-	"tony.luck@intel.com" <tony.luck@intel.com>, "x86@kernel.org"
-	<x86@kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-hyperv@vger.kernel.org"
-	<linux-hyperv@vger.kernel.org>, "netdev@vger.kernel.org"
-	<netdev@vger.kernel.org>, "linux-pci@vger.kernel.org"
-	<linux-pci@vger.kernel.org>, "linux-arch@vger.kernel.org"
-	<linux-arch@vger.kernel.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: RE: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
- to map as encrypted
-Thread-Topic: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
- to map as encrypted
-Thread-Index: AQHZJs7d1RPl+inmE0Kn2DbFJZ3EJa6nyiwAgAAUafA=
-Date: Sat, 21 Jan 2023 04:10:23 +0000
-Message-ID:
- <BYAPR21MB168897DBA98E91B72B4087E1D7CA9@BYAPR21MB1688.namprd21.prod.outlook.com>
-References: <1673559753-94403-1-git-send-email-mikelley@microsoft.com>
- <1673559753-94403-7-git-send-email-mikelley@microsoft.com>
- <Y8r2TjW/R3jymmqT@zn.tnic>
-In-Reply-To: <Y8r2TjW/R3jymmqT@zn.tnic>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=f61f949b-413f-43f3-a3a3-5fe2fe2522ea;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2023-01-20T21:28:12Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BYAPR21MB1688:EE_|PH7PR21MB3879:EE_
-x-ms-office365-filtering-correlation-id: d1840588-0cc9-4406-1890-08dafb656b13
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- dZtwbFF+2rzliQ9MmUfy8MO8yWaRUfBXqrHe9UAd70V9EFr8teQPNCTGjKIDumt3MLvPSY5CdD3GW8Ab97ToZGCTI1rYMxrs37J7Y1oGsdVS7eWqVIZFoszYOmkCe2JYBUFUl11ei5BZBkhzlz3TxT+OOEZ36gNYKzUJGwlEi3hkMcRzAZu1YSuH2NkeMsPmPKiJ4R76U8ID/VAeObXj1qp1PGHgBK1qq6NPGTuh5zZ9kzePINPoC12uYfhcX1cVHcdFxl29WJR3gpGpjcwiJeQlM4s1IjzaFQjOoFDLUOW2DyPZsPUpyV3UkzPIlBPi/4vy/yHruDhhUamTiu7b6kxWKrNpjjYWJP1QjwLL3Rw238JxIbZrsFmZPq4tjmZh1mbPX9ferRXOE4m3VABDjdqOPUqhfLxwp/WdgC3OgWkR+NY8Zc8/Cff4XPL9OGwx3d4fh5Z2hZBwGt00v+TLWpNRy1w0rRaefIGTzQfuMXOS8zTN54kwPC/9JBLZzHT8XsUyC4oeaDOCzxDxmlGH5gFZKoef7NQNeTSSNOfyedtDMUT3H5j77OCG0K+dKwamrLUeOThpbChFRQkZNm7VHz+HDKrfuBCCbli2cbqFckL/z/EBUKvm5EjcN0Ed2GrM1KM0O9CY3eFhKBcxKn+2uQdqjVv0Jxxd9pzv8L6nkR341RHsSGK2kqditBFSrCdnHN8wNK5DM3LUWY37gvdqIsmH14K5UqGy6jNUP6Ic62e+TUXCEF+rmlp8HDCWD7YT
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1688.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(366004)(39860400002)(376002)(136003)(346002)(396003)(451199015)(2906002)(478600001)(8990500004)(6506007)(55016003)(66476007)(26005)(9686003)(186003)(41300700001)(6916009)(66556008)(82950400001)(64756008)(66446008)(82960400001)(38100700002)(54906003)(122000001)(316002)(76116006)(8676002)(4326008)(66946007)(71200400001)(86362001)(83380400001)(7416002)(8936002)(7406005)(52536014)(10290500003)(7696005)(5660300002)(38070700005)(66899015)(33656002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?w08aoKG9MpdVPnTDOSmULY56F0NPLyojvNgTWdBpMbH0bSHFGF+CHv19PDiI?=
- =?us-ascii?Q?KVLQ+XCO8vKZhwqGwDje9KUYYj+tCf8V4V7YcvLrNzXbEHJYhnFhn4oeDPuK?=
- =?us-ascii?Q?X7Mgw0HvQJIzPGgOR/DvsM6bqTkdImcs0GUoUxx3pRW2OIpPk7Jh3ITB+I9E?=
- =?us-ascii?Q?L1oiXTxYP7FZorjvAL7WVlXKzIt9Y2S0kbSTIdU4aiQXN8H0Zhw7spGfbszz?=
- =?us-ascii?Q?x2AyLRuKo164/2Mvzu4EHYYHKkH1jLQlyZEsW/6DSxVhqoG3BVPbxF4ky71K?=
- =?us-ascii?Q?BJIhqkDtpGGcwhpLYLXC9+U/qBOGJME0mbErtV8lOKWwfxRX7r4tSW66V8Ra?=
- =?us-ascii?Q?1pyqrV+CSEHKyt6UdOs29by8DV6c2GSHfjfooiBjkX+iI7iUNf/OR1lIP7q2?=
- =?us-ascii?Q?nQENIESArVSzNbposHUA8EttswFTRn2Ri+4A8ye59zwO99v3KHFyKadyXypE?=
- =?us-ascii?Q?EIKhoM3jeqlGwmquZ4RfxNz5ei5mI6Rh1zwTciwXbMvt88P6vsVpoP2Brk22?=
- =?us-ascii?Q?6eYDQzrET1S8hnUNk5awDj08XLJzga4mJH/w/UTjivRv42vKr6qSKctO/w0J?=
- =?us-ascii?Q?/tFuqIQEfM0asjdfMC3mzkBY/q9MBde4V42aLkQUYHGK1cfIJ+kG7UG0knOf?=
- =?us-ascii?Q?Kc1cQ0HO6foBxmZc2MX6NblcXc8teLuyl4HHYkccqCQlcSX+es1hgkd2Y64x?=
- =?us-ascii?Q?bilH6YDBjTgq73bCUKV/OX1nMtOotgIn0ZUQ9i9VpQ61Jw4HYgJOr9mm5b/w?=
- =?us-ascii?Q?jYnhIJ2iCeTSvh5DN2nhNBRqfQ0yOQV9tXzV4eFs5pXq4GfrkMW/e4GGavHq?=
- =?us-ascii?Q?thS5vHPFYGqr5YBZhPxax3OHLIHOfzGlp+NK++8KKBuk/mv6AxKde86Mc68z?=
- =?us-ascii?Q?yKG8C9as2IxbCvaemPSCVLki6BFvgKrLi/Vpo8BlwEym7r/JHrfCBPwzNqnv?=
- =?us-ascii?Q?JUiF94mMhBLBqpcjOHf8DcbXdaO8dAgbzGXXOz/1omPpJP04f4sXPh6OG70b?=
- =?us-ascii?Q?gCzprTkgbeKn8osZDXPyfFAyVoNhVnO9aIgAgn0CgUCVl3HwTFyS2kZpmtu+?=
- =?us-ascii?Q?S04tih4WMNnS2hM056XT+nt88XXnZr6EFrk2398xnegW5g/uqhn+RReDGvGT?=
- =?us-ascii?Q?haaM6C0y2yZyn4Xkbhibyr0aishRxvessL3Y+9+KbNJNYdXU28MTq8MAGAmW?=
- =?us-ascii?Q?UWd2O1V7rbfEa8OFN0032n173W4WgZWLigusJc9FXlpNyv6JO9SvAXE8uDMt?=
- =?us-ascii?Q?L8c+bFS8RDhhNcOl/U4BWCUP3aWc73/+Zxr8MW6DqHvHVlEHlytj0prwhzEt?=
- =?us-ascii?Q?34ICr4ofC3nGa2QAiuHjeU4zABf5ERU0lkJCYRhbjcG/BWsn7q90ZC0uZl5u?=
- =?us-ascii?Q?IGf1Yv4Xxjx34rcIU+HuFDiuEbn9fR5Zr50Y391Gcul8mhbT0Wiyc4lIbM6i?=
- =?us-ascii?Q?GoR4JMgQ0u5P/IREnepMPdaofvmF4z8yOUn3OUlgRrmLwERSuHerx4RQFLr8?=
- =?us-ascii?Q?648DiUO/fERNRxF4r7NKj15wghYGVM1fxWpbbQpA3kXQdKmkzyGDBsIfTX/u?=
- =?us-ascii?Q?Q7kGjeezkjPlmHZ4aVZ1T98afOiqpmM/Tw/O5tUOLO/pi9/YJphb++sYqEDw?=
- =?us-ascii?Q?tg=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8955B643;
+	Sat, 21 Jan 2023 08:48:21 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: linasend@asahilina.net)
+	by mail.marcansoft.com (Postfix) with ESMTPSA id 8456E424EB;
+	Sat, 21 Jan 2023 08:48:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=asahilina.net;
+	s=default; t=1674290898;
+	bh=Trk1r4f9UJjlxj5XEJA/iW4CHhEy4cvK9cYiIMgdahg=;
+	h=From:To:Cc:Subject:Date;
+	b=HUXUMSzeLZtn0lgaK1qRbz5tp11xnaXhqx8AAofJvhp7zDuC4isAqv2b7/MXMo8vn
+	 PTJ16VrCwnOOmAhsi7Z0Tbijm0cQtZtuqhdCJY1RBpG4mszfk49hVuNeg3//jRaGZp
+	 2kZjL9AEOIJFyeCpl0B9ERyrSTwMKZiA4pT//p5Df2XtD9eZjGDhlppVal9T720VgY
+	 z0rVeXlBToj5solh1nnzVjb4H+VL8QTrcFEnadXKz3yMPcvlE19e6D2l5gBwawn6cl
+	 35C2GQux48EoZE6MVAvepCb/XBT0+qWoyApBoTj6R7U0utFqJ4pVlt2NgTmYwkhi8o
+	 9rPo6KGFUNhZg==
+From: Asahi Lina <lina@asahilina.net>
+To: Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>
+Cc: Hector Martin <marcan@marcan.st>,
+	Sven Peter <sven@svenpeter.dev>,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	asahi@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev,
+	Asahi Lina <lina@asahilina.net>
+Subject: [PATCH] iommu/io-pgtable: Add Apple UAT variant format
+Date: Sat, 21 Jan 2023 17:47:58 +0900
+Message-Id: <20230121084758.31875-1-lina@asahilina.net>
+X-Mailer: git-send-email 2.35.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1688.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d1840588-0cc9-4406-1890-08dafb656b13
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jan 2023 04:10:23.2403
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: aalF5HgECv8MPoGurR6MIj4d7D2ieqqBO9mNa4U8EeRF2o6vPE4TkUPlNuxUwLbKHg0ChOr/5fkgLcTsdibwRHZIQkZfoqlAyC6xCeaJBXA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR21MB3879
+Content-Transfer-Encoding: 8bit
 
-From: Borislav Petkov <bp@alien8.de> Sent: Friday, January 20, 2023 12:15 P=
-M
->=20
-> On Thu, Jan 12, 2023 at 01:42:25PM -0800, Michael Kelley wrote:
-> > In a AMD SEV-SNP VM using vTOM, devices in MMIO space may be provided b=
-y
-> > the paravisor and need to be mapped as encrypted.  Provide a function
-> > for the hypervisor to specify the address range for such devices.
-> > In __ioremap_caller(), map addresses in this range as encrypted.
-> >
-> > Only a single range is supported. If multiple devices need to be
-> > mapped encrypted, the paravisor must place them within the single
-> > contiguous range.
->=20
-> This already is starting to sound insufficient and hacky. And it also mak=
-es
-> CC_ATTR_ACCESS_IOAPIC_ENCRYPTED insufficient either.
->=20
-> So, the situation we have is, we're a SEV-SNP VM using vTOM. Which means,
-> MSR_AMD64_SEV[3] =3D 1. Or SEV_FEATURES[1], alternatively - same thing.
->=20
-> That MSR cannot be intercepted by the HV and we use it extensively in Lin=
-ux when
-> it runs as a SEV-* guest. And I had asked this before, during review, but=
- why
-> aren't you checking this bit above when you wanna do vTOM-specific work?
+Apple Silicon SoCs (M1, M2, etc.) have a GPU with an ARM64 firmware
+coprocessor. The firmware and the GPU share page tables in the standard
+ARM64 format (the firmware literally sets the base as its TTBR0/1
+registers). TTBR0 covers the low half of the address space and is
+intended to be per-GPU-VM (GPU user mappings and kernel-managed
+buffers), while TTBR1 covers the upper half and is global (firmware
+code, data, management structures shared with the AP, and a few
+GPU-accessible data structures).
 
-Per the commit message for 009767dbf42a, it's not safe to read MSR_AMD64_SE=
-V
-on all implementations of AMD processors.  CC_ATTR_ACCESS_IOAPIC_ENCRYPTED
-is used in io_apic_set_fixmap(), which is called on all Intel/AMD systems w=
-ithout
-any qualifications.   Even if rdmsrl_safe() works at this point in boot, I'=
-m a little
-leery of reading a new MSR in a path that essentially every x86 bare-metal =
-system
-or VM takes during boot.  Or am I being overly paranoid about old processor
-models or hypervisor versions potentially doing something weird?
+In typical Apple fashion, the permissions are interpreted differently
+from traditional ARM PTEs. By default, firmware mappings use Apple SPRR
+permission remapping. The firmware only uses that for its own
+code/data/MMIO mappings, and those pages are not accessible by the GPU
+hardware. We never need to touch/manage these mappings, so this patch
+does not support them.
 
-But in any case, the whole point of cc_platform_has() is to provide a level=
- of
-abstraction from the hardware registers, and it's fully safe to use on ever=
-y x86
-bare-metal system or VM.  And while I don't anticipate it now, maybe there'=
-s
-some future scheme where a paravisor-like entity could be used with Intel
-TDX.  It seems like using a cc_platform_has() abstraction is better than di=
-rectly
-accessing the MSR.
+When a specific bit is set in the PTEs, permissions switch to a
+different scheme which supports various combinations of firmware/GPU
+access. This is the mode intended to be used by AP GPU drivers, and what
+we implement here.
 
->=20
-> Because then you can do that check and
->=20
-> 1. map the IO-APIC encrypted
-> 2. map MMIO space of devices from the driver encrypted too
-> 3. ...
+The prot bits are interpreted as follows:
 
-My resolution of the TPM driver issue is admittedly a work-around.   I thin=
-k
-of it as temporary in anticipation of future implementations of PCIe TDISP
-hardware, which allows PCI devices to DMA directly into guest encrypted
-memory.  TDISP also places the device's BAR values in an encrypted portion
-of the GPA space. Assuming TDISP hardware comes along in the next couple
-of years, Linux will need a robust way to deal with a mix of PCI devices
-being in unencrypted and encrypted GPA space.  I don't know how a
-specific device will be mapped correctly, but I hope it can happen in the
-generic PCI code, and not by modifying each device driver.  It's probably
-premature to build that robust mechanism now, but when it comes, my
-work-around would be replaced.
-=20
-With all that in mind, I don't want to modify the TPM driver to special-cas=
-e
-its MMIO space being encrypted.  FWIW, the TPM driver today uses
-devm_ioremap_resource() to do the mapping, which defaults to mapping
-decrypted except for the exceptions implemented in __ioremap_caller().
-There's no devm_* option for specifying encrypted.  Handling decrypted
-vs. encrypted in the driver would require extending the driver API to
-provide an "encrypted" option, and that seems like going in the wrong
-long-term direction.
+- IOMMU_READ and IOMMU_WRITE have the usual meaning.
 
-Finally, I would have liked to handle the IO-APIC and the vTPM the same
-way.  But the IO-APIC doesn't use the normal ioremap_* functions because
-it's done early in boot via the fixmap.  I didn't see a reasonable way to
-unify them.
+- IOMMU_PRIV creates firmware-only mappings (no GPU access)
+- IOMMU_NOEXEC creates GPU-only structures (no FW access)
+- Otherwise structures are accessible by both GPU and FW
 
-Anyway, that's my thoughts.  I'm certainly open if someone has a better
-way to do it.
+- IOMMU_MMIO creates Device mappings for firmware
+- IOMMU_CACHE creates Normal-NC mappings for firmware (cache-coherent
+  from the point of view of the AP, but slower)
+- Otherwise creates Normal mappings for firmware (this requires manual
+  cache management on the firmware side, as it is not coherent with the
+  SoC fabric)
 
-Michael
+GPU-only mappings (textures/etc) are expected to use IOMMU_CACHE and are
+seemingly coherent with the CPU (or otherwise the firmware/GPU already
+issue the required cache management operations when correctly
+configured).
 
->=20
-> and so on.
->=20
-> And you won't need those other, not as nice things...
->=20
-> Hmmm.
+There is a GPU-RO/FW-RW mode, but it is not currently implemented (it
+doesn't seem to be very useful for the driver). There seems to be no
+real noexec control (i.e. for shaders) on the GPU side. All of these
+mappings are implicitly noexec for the firmware.
+
+Drivers are expected to fully manage per-user (TTBR0) page tables, but
+ownership of shared kernel (TTBR1) page tables is shared between the
+firmware and the AP OS. We handle this by simply using a smaller IAS to
+drop down one level of page tables, so the driver can install a PTE in
+the top-level (firmware-initialized) page table directly and just add an
+offset to the VAs passed into the io_pgtable code. This avoids having to
+have any special handling for this here. The firmware-relevant data
+structures are small, so we do not expect to ever require more VA space
+than one top-level PTE covers (IAS=36 for the next level, 64 GiB).
+
+Only 16K page mode is supported. The coprocessor MMU supports huge pages
+as usual for ARM64, but the GPU MMU does not, so we do not enable them.
+
+Signed-off-by: Asahi Lina <lina@asahilina.net>
+---
+ drivers/iommu/io-pgtable-arm.c | 101 +++++++++++++++++++++++++++++++--
+ drivers/iommu/io-pgtable.c     |   1 +
+ include/linux/io-pgtable.h     |   6 ++
+ 3 files changed, 104 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 72dcdd468cf3..85f35035ae95 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -130,6 +130,15 @@
+ #define ARM_MALI_LPAE_MEMATTR_IMP_DEF	0x88ULL
+ #define ARM_MALI_LPAE_MEMATTR_WRITE_ALLOC 0x8DULL
+ 
++#define APPLE_UAT_MEMATTR_PRIV		(((arm_lpae_iopte)0x0) << 2)
++#define APPLE_UAT_MEMATTR_DEV		(((arm_lpae_iopte)0x1) << 2)
++#define APPLE_UAT_MEMATTR_SHARED	(((arm_lpae_iopte)0x2) << 2)
++#define APPLE_UAT_GPU_ACCESS			(((arm_lpae_iopte)1) << 55)
++#define APPLE_UAT_UXN				(((arm_lpae_iopte)1) << 54)
++#define APPLE_UAT_PXN				(((arm_lpae_iopte)1) << 53)
++#define APPLE_UAT_AP1				(((arm_lpae_iopte)1) << 7)
++#define APPLE_UAT_AP0				(((arm_lpae_iopte)1) << 6)
++
+ /* IOPTE accessors */
+ #define iopte_deref(pte,d) __va(iopte_to_paddr(pte, d))
+ 
+@@ -402,7 +411,42 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
+ {
+ 	arm_lpae_iopte pte;
+ 
+-	if (data->iop.fmt == ARM_64_LPAE_S1 ||
++	if (data->iop.fmt == APPLE_UAT) {
++		/*
++		 * This bit enables GPU access and the particular permission
++		 * rules that follow. Without it, access is firmware-only and
++		 * permissions follow the firmware's Apple SPRR configuration.
++		 */
++		pte = APPLE_UAT_GPU_ACCESS;
++		if (prot & IOMMU_PRIV) {
++			/* Firmware structures */
++			pte |= APPLE_UAT_AP0;
++			if (prot & IOMMU_WRITE) {
++				/* Firmware RW */
++				pte |= APPLE_UAT_UXN;
++			} else if (!(prot & IOMMU_READ)) {
++				/* No access */
++				pte |= APPLE_UAT_PXN;
++			}
++		} else if (prot & IOMMU_NOEXEC) {
++			/* GPU structures (no FW access) */
++			pte |= APPLE_UAT_AP1 | ARM_LPAE_PTE_nG;
++			if (!(prot & IOMMU_READ)) {
++				pte |= APPLE_UAT_PXN;
++				if (!(prot & IOMMU_WRITE))
++					pte |= APPLE_UAT_UXN;
++			} else if (prot & IOMMU_WRITE) {
++				pte |= APPLE_UAT_UXN;
++			}
++		} else {
++			pte |= ARM_LPAE_PTE_nG;
++			/* GPU structures (also FW accessible) */
++			if (prot & IOMMU_WRITE)
++				pte |= APPLE_UAT_UXN;
++			if (prot & IOMMU_READ)
++				pte |= APPLE_UAT_PXN;
++		}
++	} else if (data->iop.fmt == ARM_64_LPAE_S1 ||
+ 	    data->iop.fmt == ARM_32_LPAE_S1) {
+ 		pte = ARM_LPAE_PTE_nG;
+ 		if (!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
+@@ -421,7 +465,14 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
+ 	 * Note that this logic is structured to accommodate Mali LPAE
+ 	 * having stage-1-like attributes but stage-2-like permissions.
+ 	 */
+-	if (data->iop.fmt == ARM_64_LPAE_S2 ||
++	if (data->iop.fmt == APPLE_UAT) {
++		if (prot & IOMMU_MMIO)
++			pte |= APPLE_UAT_MEMATTR_DEV;
++		else if (prot & IOMMU_CACHE)
++			pte |= APPLE_UAT_MEMATTR_SHARED;
++		else
++			pte |= APPLE_UAT_MEMATTR_PRIV;
++	} else if (data->iop.fmt == ARM_64_LPAE_S2 ||
+ 	    data->iop.fmt == ARM_32_LPAE_S2) {
+ 		if (prot & IOMMU_MMIO)
+ 			pte |= ARM_LPAE_PTE_MEMATTR_DEV;
+@@ -444,12 +495,14 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
+ 	 * "outside the GPU" (i.e. either the Inner or System domain in CPU
+ 	 * terms, depending on coherency).
+ 	 */
+-	if (prot & IOMMU_CACHE && data->iop.fmt != ARM_MALI_LPAE)
++	if (data->iop.fmt == APPLE_UAT)
++		pte |= ARM_LPAE_PTE_SH_NS;
++	else if (prot & IOMMU_CACHE && data->iop.fmt != ARM_MALI_LPAE)
+ 		pte |= ARM_LPAE_PTE_SH_IS;
+ 	else
+ 		pte |= ARM_LPAE_PTE_SH_OS;
+ 
+-	if (prot & IOMMU_NOEXEC)
++	if (prot & IOMMU_NOEXEC && data->iop.fmt != APPLE_UAT)
+ 		pte |= ARM_LPAE_PTE_XN;
+ 
+ 	if (data->iop.cfg.quirks & IO_PGTABLE_QUIRK_ARM_NS)
+@@ -1079,6 +1132,41 @@ arm_mali_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
+ 	return NULL;
+ }
+ 
++static struct io_pgtable *
++apple_uat_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
++{
++	struct arm_lpae_io_pgtable *data;
++
++	/* No quirks for UAT (hopefully) */
++	if (cfg->quirks)
++		return NULL;
++
++	if (cfg->ias > 48 || cfg->oas > 42)
++		return NULL;
++
++	cfg->pgsize_bitmap &= SZ_16K;
++
++	data = arm_lpae_alloc_pgtable(cfg);
++	if (!data)
++		return NULL;
++
++	data->pgd = __arm_lpae_alloc_pages(ARM_LPAE_PGD_SIZE(data), GFP_KERNEL,
++					   cfg);
++	if (!data->pgd)
++		goto out_free_data;
++
++	/* Ensure the empty pgd is visible before the TTBAT can be written */
++	wmb();
++
++	cfg->apple_uat_cfg.ttbr = virt_to_phys(data->pgd);
++
++	return &data->iop;
++
++out_free_data:
++	kfree(data);
++	return NULL;
++}
++
+ struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns = {
+ 	.alloc	= arm_64_lpae_alloc_pgtable_s1,
+ 	.free	= arm_lpae_free_pgtable,
+@@ -1104,6 +1192,11 @@ struct io_pgtable_init_fns io_pgtable_arm_mali_lpae_init_fns = {
+ 	.free	= arm_lpae_free_pgtable,
+ };
+ 
++struct io_pgtable_init_fns io_pgtable_apple_uat_init_fns = {
++	.alloc	= apple_uat_alloc_pgtable,
++	.free	= arm_lpae_free_pgtable,
++};
++
+ #ifdef CONFIG_IOMMU_IO_PGTABLE_LPAE_SELFTEST
+ 
+ static struct io_pgtable_cfg *cfg_cookie __initdata;
+diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
+index b843fcd365d2..faec53e22388 100644
+--- a/drivers/iommu/io-pgtable.c
++++ b/drivers/iommu/io-pgtable.c
+@@ -20,6 +20,7 @@ io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] = {
+ 	[ARM_64_LPAE_S1] = &io_pgtable_arm_64_lpae_s1_init_fns,
+ 	[ARM_64_LPAE_S2] = &io_pgtable_arm_64_lpae_s2_init_fns,
+ 	[ARM_MALI_LPAE] = &io_pgtable_arm_mali_lpae_init_fns,
++	[APPLE_UAT] = &io_pgtable_apple_uat_init_fns,
+ #endif
+ #ifdef CONFIG_IOMMU_IO_PGTABLE_DART
+ 	[APPLE_DART] = &io_pgtable_apple_dart_init_fns,
+diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+index e4697ff48d3a..50d4dce53ded 100644
+--- a/include/linux/io-pgtable.h
++++ b/include/linux/io-pgtable.h
+@@ -19,6 +19,7 @@ enum io_pgtable_fmt {
+ 	AMD_IOMMU_V2,
+ 	APPLE_DART,
+ 	APPLE_DART2,
++	APPLE_UAT,
+ 	IO_PGTABLE_NUM_FMTS,
+ };
+ 
+@@ -148,6 +149,10 @@ struct io_pgtable_cfg {
+ 			u64 ttbr[4];
+ 			u32 n_ttbrs;
+ 		} apple_dart_cfg;
++
++		struct {
++			u64	ttbr;
++		} apple_uat_cfg;
+ 	};
+ };
+ 
+@@ -262,5 +267,6 @@ extern struct io_pgtable_init_fns io_pgtable_arm_mali_lpae_init_fns;
+ extern struct io_pgtable_init_fns io_pgtable_amd_iommu_v1_init_fns;
+ extern struct io_pgtable_init_fns io_pgtable_amd_iommu_v2_init_fns;
+ extern struct io_pgtable_init_fns io_pgtable_apple_dart_init_fns;
++extern struct io_pgtable_init_fns io_pgtable_apple_uat_init_fns;
+ 
+ #endif /* __IO_PGTABLE_H */
+-- 
+2.35.1
+
