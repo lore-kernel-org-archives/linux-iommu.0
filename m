@@ -1,82 +1,136 @@
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E102AA4F
-	for <iommu@lists.linux.dev>; Mon, 23 Jan 2023 09:06:49 +0000 (UTC)
-Received: by mail-wr1-f45.google.com with SMTP id d2so10078603wrp.8
-        for <iommu@lists.linux.dev>; Mon, 23 Jan 2023 01:06:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Kx6lFX3j04Q0LzfM4ypmKaDgLGfR8Nzb5Ptw2ZM7Ai0=;
-        b=Q9rwXWmKNkh3imiVeAMPf9xbwXOYzS7OVZYehFEOJ/w+VMwzKWrPZYoPrhwR2pXsyI
-         jFLgfo1o1ekaQz6y7hGp52dlEWnTRW8R2jMCu42nzRvTPdLJXcGxxQLjEj4Pg3yic8o2
-         /u75y734LDoHV1i9uEGxH2Fq30hy/0A84M52eyEIKRjEATC5IAFzU1wIq3Gq2xbyU0zH
-         nCtjnU00n5sSbj0KccAK9oySkL0t8prqLXbZTyW7ClXDFwLsLjqkFbT5FlvlyzsxYm5P
-         xLz3TdTKqpb71HcvBzwT3WrWD1Ifqo1nTw4HFu7hpcsz7091YugF8xLsa6I0ESn4+Mer
-         RDfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Kx6lFX3j04Q0LzfM4ypmKaDgLGfR8Nzb5Ptw2ZM7Ai0=;
-        b=KvrPQuv/RKfywRKRysCefH4MiGEF5QigDNTeXZmT3aDoaS/k3Qoaf2LvxwvfC7E/7q
-         I8OndflX0oElL03ZysIjPh4s2FO0ZC0/jycKRCkcCeeKQ6E75meDdUIV0frI4dQ1x9s3
-         TUCaiV+WSPHUxpCosmPKYkKBAJ4li/6WiyRpkUb4zjJoTe4c28dC3ok405fAFt51LlCB
-         DyBvGYNEZ/2uO8YNVOTCh+Dp6UeohvfQ/ycMUiGSTu2qXcB/Un6KDZhEr9/1MGpluKLP
-         knbHyN9qCF0bTNTVAV7L2r1cVoh2BmeSLl0h08agV1ofM01K7toJ8c3I+4FhmKdR3ID9
-         e3FQ==
-X-Gm-Message-State: AFqh2krTjVr5QjgL2sRKTB0U74Df+BDC6NLaq7/ShYagHH+ANu0NFDuh
-	8x96RzipBUJyx+/ZAhhJ87JaUA==
-X-Google-Smtp-Source: AMrXdXsFjvmYYKBk3lKGUaDn6ljTehr4S0fyGsCTso32csm32DOPPv4UKuqI0VryfPqFx1JBDLOXVw==
-X-Received: by 2002:a5d:4842:0:b0:2bd:eccd:7ea4 with SMTP id n2-20020a5d4842000000b002bdeccd7ea4mr21041451wrs.47.1674464808207;
-        Mon, 23 Jan 2023 01:06:48 -0800 (PST)
-Received: from [192.168.1.109] ([178.197.216.144])
-        by smtp.gmail.com with ESMTPSA id g12-20020a5d554c000000b00275970a85f4sm4120891wrw.74.2023.01.23.01.06.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Jan 2023 01:06:47 -0800 (PST)
-Message-ID: <be938064-60dc-e54c-473d-f7acd799c959@linaro.org>
-Date: Mon, 23 Jan 2023 10:06:45 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EB69A4F
+	for <iommu@lists.linux.dev>; Mon, 23 Jan 2023 09:31:24 +0000 (UTC)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20230123093116euoutp01faf29f13b00456a69f51a8f47c3527dc~85jUFdtHc1295412954euoutp01k
+	for <iommu@lists.linux.dev>; Mon, 23 Jan 2023 09:31:16 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20230123093116euoutp01faf29f13b00456a69f51a8f47c3527dc~85jUFdtHc1295412954euoutp01k
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1674466276;
+	bh=4zV+eG9XbXpFrZW9hlNXTuBt/h9eAz60gaf5VjB/OIc=;
+	h=From:To:Cc:Subject:Date:References:From;
+	b=RbMFD4ta7/6KM5RljtQU/LHpVWr+l7rVbh+ZVc/MJXBp+AMAkQ+UdfxMhzI22IB8j
+	 eyEb7aP5d8DvBvTGDMBM3e2t+y69ImII+3i7y6go9EeNkf0+ie+ExXKFYXFMfxQkHK
+	 SgHwj3a8DMbAkl8RIgwS5vq8XvTSA7kax5VjNo3k=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+	20230123093116eucas1p137e58e30a755dd783c46dc3c04a2fa08~85jTupqKz1918919189eucas1p1J;
+	Mon, 23 Jan 2023 09:31:16 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+	eusmges2new.samsung.com (EUCPMTA) with SMTP id 4F.6A.13597.4E35EC36; Mon, 23
+	Jan 2023 09:31:16 +0000 (GMT)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20230123093116eucas1p19b8fe8afc4b631debbdc5321c53009e9~85jTdo1NZ1918919189eucas1p1G;
+	Mon, 23 Jan 2023 09:31:16 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+	20230123093116eusmtrp2bf3a9e709b94b7f3b795b39ce4b89d12~85jTc8l4O3141931419eusmtrp26;
+	Mon, 23 Jan 2023 09:31:16 +0000 (GMT)
+X-AuditID: cbfec7f4-1f1ff7000000351d-af-63ce53e4a0a5
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+	eusmgms2.samsung.com (EUCPMTA) with SMTP id 5C.06.00518.4E35EC36; Mon, 23
+	Jan 2023 09:31:16 +0000 (GMT)
+Received: from AMDC2765.digital.local (unknown [106.120.51.73]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20230123093115eusmtip20321ffdb202fbd9a701979b1b180ce12~85jS3ke5U0807508075eusmtip2_;
+	Mon, 23 Jan 2023 09:31:15 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: iommu@lists.linux.dev, linux-samsung-soc@vger.kernel.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel
+	<joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+	<robin.murphy@arm.com>, Krzysztof Kozlowski
+	<krzysztof.kozlowski@linaro.org>, lim Akhtar <alim.akhtar@samsung.com>, Lu
+	Baolu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>
+Subject: [PATCH] iommu/exynos: add missing set_platform_dma_ops callback
+Date: Mon, 23 Jan 2023 10:31:01 +0100
+Message-Id: <20230123093102.12392-1-m.szyprowski@samsung.com>
+X-Mailer: git-send-email 2.39.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.7.0
-Subject: Re: [PATCH] dt-bindings: iommu: renesas,ipmmu-vmsa: Update
- descriptions for R-Car Gen4
-Content-Language: en-US
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, joro@8bytes.org,
- will@kernel.org, robin.murphy@arm.com, robh+dt@kernel.org,
- krzysztof.kozlowski+dt@linaro.org
-Cc: iommu@lists.linux.dev, devicetree@vger.kernel.org,
- linux-renesas-soc@vger.kernel.org
-References: <20230123012940.1250879-1-yoshihiro.shimoda.uh@renesas.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20230123012940.1250879-1-yoshihiro.shimoda.uh@renesas.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrMKsWRmVeSWpSXmKPExsWy7djPc7pPgs8lG8z7JGnxYN42NovNE7ey
+	Wfz6YmExc8YJRovO2RvYLfa+3spuMeP8PiaLtUfuslsc/PCE1aLljqkDl8eTg/OYPNbMW8Po
+	sWlVJ5vHnWt72DzmnQz0eLF5JqNH35ZVjB6fN8l5bP18myWAM4rLJiU1J7MstUjfLoEr4+3U
+	+UwF17gqvs4SaGDs4Oxi5OSQEDCRmNl0i6WLkYtDSGAFo0TTUxjnC6PE3ptPWSGcz4wSN7t7
+	mWBalrw+wwaRWM4o0Xd9IULL8m/fGUGq2AQMJbredrGB2CICNhJXTi0B62AW2MMkseXlPXaQ
+	hLCAh8TZA7/AxrIIqErMuf6fFcTmFbCVWDF1BTvEOnmJ1udboeKCEidnPmEBsZmB4s1bZzOD
+	DJUQOMMhcWLRY0aIBheJaR+6WCFsYYlXx7dADZKR+L9zPhNEQzujxILf96GcCYwSDc9vQXVb
+	S9w59wvoVg6gFZoS63fpQ4QdJfadbWEHCUsI8EnceCsIcQSfxKRt05khwrwSHW1CENVqErOO
+	r4Nbe/DCJWYI20NiweQDYHEhgViJQ6ses05gVJiF5LVZSF6bhXDDAkbmVYziqaXFuempxUZ5
+	qeV6xYm5xaV56XrJ+bmbGIHp6vS/4192MC5/9VHvECMTB+MhRgkOZiUR3jOLTycL8aYkVlal
+	FuXHF5XmpBYfYpTmYFES59W2PZksJJCeWJKanZpakFoEk2Xi4JRqYGpZ9cfvWJ5+sel9lwCW
+	V0rtF7RXXtP7cjv2acN8/R5R5ayPW5/P9PPnVP97vPCR1KFPZ71DivZJhImfCNyz9ne0uc79
+	nf+C83UbSu8uje3xlMySljx5bc406auuhnzbFjql7jmhfyOi9P6Z+5uMdBeb60/r+XlUxO35
+	dcagkxmpJ7IeSeasClys+9s5LeNiViP3Pcvs6FfLNXjsJs3XWBsgY3Lhb8HyG11/DL5/XFAZ
+	vjnt1/UfvZmhiXMtGRMeequ2KdodcfsuOctNabFPS0VsyNtJp+wb1yRyrDu8Z7HWjTvZ6a01
+	PSHOGxmealbrlfcmmqg/O9GQdu7txl/Ppmf9vcAs6Xj61OxJgk7d15RYijMSDbWYi4oTAdcH
+	hLTGAwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupgkeLIzCtJLcpLzFFi42I5/e/4Pd0nweeSDa7O5bB4MG8bm8XmiVvZ
+	LH59sbCYOeMEo0Xn7A3sFntfb2W3mHF+H5PF2iN32S0OfnjCatFyx9SBy+PJwXlMHmvmrWH0
+	2LSqk83jzrU9bB7zTgZ6vNg8k9Gjb8sqRo/Pm+Q8tn6+zRLAGaVnU5RfWpKqkJFfXGKrFG1o
+	YaRnaGmhZ2RiqWdobB5rZWSqpG9nk5Kak1mWWqRvl6CX8XbqfKaCa1wVX2cJNDB2cHYxcnJI
+	CJhILHl9hq2LkYtDSGApo0Tz6mdsEAkZiZPTGlghbGGJP9e6oIo+MUqsP/GZGSTBJmAo0fW2
+	C6xBRMBO4trnxcwgRcwCh5gkXu6ZB1YkLOAhcfbALyYQm0VAVWLO9f9gU3kFbCVWTF3BDrFB
+	XqL1+VaouKDEyZlPWEBsZqB489bZzBMY+WYhSc1CklrAyLSKUSS1tDg3PbfYSK84Mbe4NC9d
+	Lzk/dxMjMEq2Hfu5ZQfjylcf9Q4xMnEwHmKU4GBWEuE9s/h0shBvSmJlVWpRfnxRaU5q8SFG
+	U6D7JjJLiSbnA+M0ryTe0MzA1NDEzNLA1NLMWEmc17OgI1FIID2xJDU7NbUgtQimj4mDU6qB
+	qVjl/LFfrE8F/wv4rX5+QXxGl1X5+bS7xWlzH5k0PjeVk7zyXIjJ5HaYoUwQ4/3Gl74bN77/
+	Izijwa/O+0G4bNnDlQ0vpxaXHa/n+sqbw2L4lrFAxTeLS+qYZ4OxhK1VirxpSXXvnduXtlwJ
+	/ccptmq39+bNaTO86sQLJx6c8bTy3OfUVNZpO2cWF5k7O52bLb8uTuJ6YlNb3h3+OccF1vkv
+	eKjpmWae6X3n8KlFUw8m7Wnf1jalzHP2FZclrr1vnv42D/Kq3JvE4/TIJ31DLV9IqO2y6/0v
+	33094n61pvZT783DHGL1sSEe7zQutT45Kiu95NeKHVIhLc/P/LzX3v0ub87/wIuHq9Qbiies
+	VGIpzkg01GIuKk4EAHhK0SobAwAA
+X-CMS-MailID: 20230123093116eucas1p19b8fe8afc4b631debbdc5321c53009e9
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20230123093116eucas1p19b8fe8afc4b631debbdc5321c53009e9
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20230123093116eucas1p19b8fe8afc4b631debbdc5321c53009e9
+References: <CGME20230123093116eucas1p19b8fe8afc4b631debbdc5321c53009e9@eucas1p1.samsung.com>
 
-On 23/01/2023 02:29, Yoshihiro Shimoda wrote:
-> Since R-Car Gen4 doens't have the main IPMMU IMSSTR register, but
-> each cache IPMMU has own module id. So, update descriptions of
-> renesas,ipmmu-main property for R-Car Gen4.
-> 
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> ---
->  The old R-Car S4-8 datasheet had described IPMMU IMSSTR register, but
->  the latest datasheet undocumented the register. So, update the propeties
->  description. Note that the second argument is not used on the driver.
->  So no behavior change.
-> 
+Add set_platform_dma_ops() required for proper driver operation on ARM
+32bit arch after recent changes in the IOMMU framework (detach ops
+removal).
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Fixes: c1fe9119ee70 ("iommu: Add set_platform_dma_ops callbacks")
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+---
+ drivers/iommu/exynos-iommu.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Best regards,
-Krzysztof
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 6fc58e89712f..c4955d045855 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -1346,8 +1346,10 @@ static void exynos_iommu_release_device(struct device *dev)
+ 		struct iommu_group *group = iommu_group_get(dev);
+ 
+ 		if (group) {
++#ifndef CONFIG_ARM
+ 			WARN_ON(owner->domain !=
+ 				iommu_group_default_domain(group));
++#endif
+ 			exynos_iommu_detach_device(owner->domain, dev);
+ 			iommu_group_put(group);
+ 		}
+@@ -1398,6 +1400,9 @@ static int exynos_iommu_of_xlate(struct device *dev,
+ static const struct iommu_ops exynos_iommu_ops = {
+ 	.domain_alloc = exynos_iommu_domain_alloc,
+ 	.device_group = generic_device_group,
++#ifdef CONFIG_ARM
++	.set_platform_dma_ops = exynos_iommu_release_device,
++#endif
+ 	.probe_device = exynos_iommu_probe_device,
+ 	.release_device = exynos_iommu_release_device,
+ 	.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
+-- 
+2.39.0
 
