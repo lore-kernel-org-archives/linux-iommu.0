@@ -1,75 +1,62 @@
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 71655624
-	for <iommu@lists.linux.dev>; Mon, 23 Jan 2023 01:29:54 +0000 (UTC)
-X-IronPort-AV: E=Sophos;i="5.97,238,1669042800"; 
-   d="scan'208";a="150243657"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie6.idc.renesas.com with ESMTP; 23 Jan 2023 10:29:47 +0900
-Received: from localhost.localdomain (unknown [10.166.15.32])
-	by relmlir6.idc.renesas.com (Postfix) with ESMTP id E8F654126E2B;
-	Mon, 23 Jan 2023 10:29:46 +0900 (JST)
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To: joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	robh+dt@kernel.org,
-	krzysztof.kozlowski+dt@linaro.org
-Cc: iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: [PATCH] dt-bindings: iommu: renesas,ipmmu-vmsa: Update descriptions for R-Car Gen4
-Date: Mon, 23 Jan 2023 10:29:40 +0900
-Message-Id: <20230123012940.1250879-1-yoshihiro.shimoda.uh@renesas.com>
-X-Mailer: git-send-email 2.25.1
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55C877C;
+	Mon, 23 Jan 2023 04:36:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=gn+EEhD9AwqmASOet+WmWkkx11j/sBtEj1r0Vez2fZ8=; b=cnSg/aTEkcd6NarLXKMWFH55Hj
+	+tnCgTrOR1ZFnaARi0DacKX4/GvKX6g9aY7vLQiWcHE03/Q++qgFKL5/KLz6IvbiusZFSRqQjzodp
+	hzGE5KGiQM4bkWS0tbn132VKC+JnGmdfLjVKLfVoEukfFHOTHxIuGxL0XsZKqJQ1w1131oDNRScq6
+	IJHLfNnq1urBDj6F2ZAJeNs68ZIuPMrMyQ9s1xTAt83D5QmmygtC31t7L8Gz+QZmANxmvYOtIB+fs
+	I0eKJDci8/bA4Wp1N3jeQ2dA4mixnjLp0Bb13foCgJQTnoy9ebMBWQ0/hSAkW4t6biPiQqK7Y2RAQ
+	bHU9lDQQ==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1pJoZF-003yRD-Jz; Mon, 23 Jan 2023 04:36:25 +0000
+Date: Mon, 23 Jan 2023 04:36:25 +0000
+From: Matthew Wilcox <willy@infradead.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: lsf-pc@lists.linuxfoundation.org, linux-mm@kvack.org,
+	iommu@lists.linux.dev, linux-rdma@vger.kernel.org,
+	Christoph Hellwig <hch@lst.de>,
+	Joao Martins <joao.m.martins@oracle.com>,
+	John Hubbard <jhubbard@nvidia.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Ming Lei <ming.lei@redhat.com>, linux-block@vger.kernel.org,
+	netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	nvdimm@lists.linux.dev, Shakeel Butt <shakeelb@google.com>
+Subject: Re: [LSF/MM/BPF proposal]: Physr discussion
+Message-ID: <Y84OyQSKHelPOkW3@casper.infradead.org>
+References: <Y8v+qVZ8OmodOCQ9@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y8v+qVZ8OmodOCQ9@nvidia.com>
 
-Since R-Car Gen4 doens't have the main IPMMU IMSSTR register, but
-each cache IPMMU has own module id. So, update descriptions of
-renesas,ipmmu-main property for R-Car Gen4.
+On Sat, Jan 21, 2023 at 11:03:05AM -0400, Jason Gunthorpe wrote:
+> I would like to have a session at LSF to talk about Matthew's
+> physr discussion starter:
+> 
+>  https://lore.kernel.org/linux-mm/YdyKWeU0HTv8m7wD@casper.infradead.org/
 
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
----
- The old R-Car S4-8 datasheet had described IPMMU IMSSTR register, but
- the latest datasheet undocumented the register. So, update the propeties
- description. Note that the second argument is not used on the driver.
- So no behavior change.
+I'm definitely interested in discussing phyrs (even if you'd rather
+pronounce it "fizzers" than "fires" ;-)
 
- .../bindings/iommu/renesas,ipmmu-vmsa.yaml          | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+> I've been working on an implementation and hope to have something
+> draft to show on the lists in a few weeks. It is pretty clear there
+> are several interesting decisions to make that I think will benefit
+> from a live discussion.
 
-diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-index 72308a4c14e7..7f63ecb467e6 100644
---- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-+++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-@@ -76,14 +76,15 @@ properties:
-     items:
-       - items:
-           - description: phandle to main IPMMU
--          - description: the interrupt bit number associated with the particular
--              cache IPMMU device. The interrupt bit number needs to match the main
--              IPMMU IMSSTR register. Only used by cache IPMMU instances.
-+          - description: The interrupt bit number or module id associated with
-+              the particular cache IPMMU device. The interrupt bit number needs
-+              to match the main IPMMU IMSSTR register. Only used by cache IPMMU
-+              instances.
-     description:
-       Reference to the main IPMMU phandle plus 1 cell. The cell is
--      the interrupt bit number associated with the particular cache IPMMU
--      device. The interrupt bit number needs to match the main IPMMU IMSSTR
--      register. Only used by cache IPMMU instances.
-+      the interrupt bit number or module id associated with the particular
-+      cache IPMMU device. The interrupt bit number needs to match the main
-+      IPMMU IMSSTR register. Only used by cache IPMMU instances.
- 
- required:
-   - compatible
--- 
-2.25.1
+Cool!  Here's my latest noodlings:
+https://git.infradead.org/users/willy/pagecache.git/shortlog/refs/heads/phyr
+
+Just the top two commits; the other stuff is unrelated.  Shakeel has
+also been interested in this.
 
