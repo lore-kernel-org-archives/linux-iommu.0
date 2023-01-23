@@ -1,59 +1,38 @@
-Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DF37880A
-	for <iommu@lists.linux.dev>; Mon, 23 Jan 2023 21:00:30 +0000 (UTC)
-Received: by mail-qt1-f177.google.com with SMTP id o5so11367021qtr.11
-        for <iommu@lists.linux.dev>; Mon, 23 Jan 2023 13:00:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZXDL5RuH8txeRC32pIrNwcID1tphIyL0d4ewJC29Z2k=;
-        b=Jp7IYY9SFAf0Bb7VotdhTUvYg7B6B0cvQHe4FKQX6C3QHoscsyLUJz0f2xvjeftLZV
-         5JeCwh27TIPuUoaoS51XmkfP1mxlhfXH7KXMC3cYG2JDqJrsZ1XzsuVDrQXRoT+X+g9d
-         tWq1eep+fLdZyB95A8ZGYK3YxzWMIP4hvefJ4GISVx72x5PiKeyZaMF7zDDElCerPNpD
-         ZuWXabLdyaH+1E00GRrb2ydrVguomBAn0izjQDmw8IO1P4p1RWN3M77BUxuVVUbNHnp+
-         PJ3VibU5aXiqbu3hIIsKZY5sgkajitLLCW9gvb6CAv9A0K0SMh/4/hI0iH20gFgIS0X2
-         Ofgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZXDL5RuH8txeRC32pIrNwcID1tphIyL0d4ewJC29Z2k=;
-        b=37HI41UGeTQV4SawkOLt0gbttVs2T0bqAFo7zxXktUBsjriGBcfSmr17UPcrXVlh8I
-         qwWfQbjsbe6r6Dm/+aHMPhDEVkG3uIUhTmi+3e7ch5NpL8OEXkYWUKf2O37NDTQ7QTFw
-         46+l2LjKjj78qtyoDTeck2XiSt1a9PMK2RJqA97pzuC/7DlthA0R6sySEnthSuiKRtKh
-         ot9aXD0+8el6LA6WFHnmc2m6dGJqxsF69drMI1D1e9HLN5jFQcCBPcqmEg3RkUu256kM
-         cjnQgXTuNtH177XnZSED0BKaTOrGl0Uk9CyZganPVjNJQ1eEqGYqxV+aLBMYxuxey9v/
-         UOEA==
-X-Gm-Message-State: AFqh2kqxsj4NbaHeHFf1YCgai6YvY3b0HHwATNonwVwLyJNt12fy++r+
-	LDtetoAYIvY10KD1imiTwP6toPk0858IGycM
-X-Google-Smtp-Source: AMrXdXvk0lKk3hog7WDGIvJKXmhpeR0Oamsk2YOzXOrJOL5dD26wKyjUmFgat09PiP8CQ1mRLtE3MQ==
-X-Received: by 2002:ac8:760b:0:b0:3ac:7f6b:ed11 with SMTP id t11-20020ac8760b000000b003ac7f6bed11mr35732463qtq.15.1674507629037;
-        Mon, 23 Jan 2023 13:00:29 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-167-59-176.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.59.176])
-        by smtp.gmail.com with ESMTPSA id r3-20020ac87943000000b003a82562c90fsm11274878qtt.62.2023.01.23.13.00.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Jan 2023 13:00:28 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1pK3vX-00GND6-C4;
-	Mon, 23 Jan 2023 17:00:27 -0400
-Date: Mon, 23 Jan 2023 17:00:27 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: iommu@lists.linux.dev, linux-samsung-soc@vger.kernel.org,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	lim Akhtar <alim.akhtar@samsung.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH] iommu/exynos: add missing set_platform_dma_ops callback
-Message-ID: <Y871a3elCP1gmPQi@ziepe.ca>
-References: <CGME20230123093116eucas1p19b8fe8afc4b631debbdc5321c53009e9@eucas1p1.samsung.com>
- <20230123093102.12392-1-m.szyprowski@samsung.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7D312F27;
+	Mon, 23 Jan 2023 22:46:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=LdoL9WInNn9g+7kuigf9617DZzkmnyUk0PPwEqtnDNs=; b=Wec3MZQ4Im+pfSZhNixMoikgQp
+	dmKOI1VP02JxTetKhMElCRQohV5UlH7bhT0BzBqDbpvYyuJYJWxjXRxbgvhpmeUlzdCIQFeuKq/A0
+	jCu0V4X2OYa1fc5HkzlSNF/fHViupU5ybyDv7lCZbWBVBHYVW8M+USztiscjCz+X+nAUnDTxEisH5
+	71HMkc7qFGE4VRVNmLKFEizQCLLWsJX+lovKSQVkUc7p3kV9EZQljwmNOGfSh4d1U/PYToPKA1QbI
+	n0eZstbbByNQIOrRWB8Kpy8kAFlH6RUnzb9MT7/zm0BKA8LENilntYWJHHi06b8R2qWJKVB4mgozr
+	IbueYMUQ==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1pK5aM-004aMF-EK; Mon, 23 Jan 2023 22:46:42 +0000
+Date: Mon, 23 Jan 2023 22:46:42 +0000
+From: Matthew Wilcox <willy@infradead.org>
+To: Dan Williams <dan.j.williams@intel.com>
+Cc: nvdimm@lists.linux.dev, lsf-pc@lists.linuxfoundation.org,
+	linux-rdma@vger.kernel.org, John Hubbard <jhubbard@nvidia.com>,
+	dri-devel@lists.freedesktop.org, Ming Lei <ming.lei@redhat.com>,
+	linux-block@vger.kernel.org, linux-mm@kvack.org,
+	iommu@lists.linux.dev, netdev@vger.kernel.org,
+	Joao Martins <joao.m.martins@oracle.com>,
+	Jason Gunthorpe via Lsf-pc <lsf-pc@lists.linux-foundation.org>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Christoph Hellwig <hch@lst.de>
+Subject: Re: [Lsf-pc] [LSF/MM/BPF proposal]: Physr discussion
+Message-ID: <Y88OUobZeJH2ak+s@casper.infradead.org>
+References: <Y8v+qVZ8OmodOCQ9@nvidia.com>
+ <63cee1d3eaaef_3a36e529488@dwillia2-xfh.jf.intel.com.notmuch>
+ <Y87p9i0vCZo/3Qa0@casper.infradead.org>
+ <63cef32cbafc3_3a36e529465@dwillia2-xfh.jf.intel.com.notmuch>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -62,43 +41,40 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230123093102.12392-1-m.szyprowski@samsung.com>
+In-Reply-To: <63cef32cbafc3_3a36e529465@dwillia2-xfh.jf.intel.com.notmuch>
 
-On Mon, Jan 23, 2023 at 10:31:01AM +0100, Marek Szyprowski wrote:
-> Add set_platform_dma_ops() required for proper driver operation on ARM
-> 32bit arch after recent changes in the IOMMU framework (detach ops
-> removal).
+On Mon, Jan 23, 2023 at 12:50:52PM -0800, Dan Williams wrote:
+> Matthew Wilcox wrote:
+> > On Mon, Jan 23, 2023 at 11:36:51AM -0800, Dan Williams wrote:
+> > > Jason Gunthorpe via Lsf-pc wrote:
+> > > > I would like to have a session at LSF to talk about Matthew's
+> > > > physr discussion starter:
+> > > > 
+> > > >  https://lore.kernel.org/linux-mm/YdyKWeU0HTv8m7wD@casper.infradead.org/
+> > > > 
+> > > > I have become interested in this with some immediacy because of
+> > > > IOMMUFD and this other discussion with Christoph:
+> > > > 
+> > > >  https://lore.kernel.org/kvm/4-v2-472615b3877e+28f7-vfio_dma_buf_jgg@nvidia.com/
+> > > 
+> > > I think this is a worthwhile discussion. My main hangup with 'struct
+> > > page' elimination in general is that if anything needs to be allocated
+> > 
+> > You're the first one to bring up struct page elimination.  Neither Jason
+> > nor I have that as our motivation.
+> 
+> Oh, ok, then maybe I misread the concern in the vfio discussion. I
+> thought the summary there is debating the ongoing requirement for
+> 'struct page' for P2PDMA?
 
-Thanks for looking into this!
-
-Can you explain more about how this actually solves the problem in the
-commit message? I don't get it.
-
-> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index 6fc58e89712f..c4955d045855 100644
-> --- a/drivers/iommu/exynos-iommu.c
-> +++ b/drivers/iommu/exynos-iommu.c
-> @@ -1346,8 +1346,10 @@ static void exynos_iommu_release_device(struct device *dev)
->  		struct iommu_group *group = iommu_group_get(dev);
->  
->  		if (group) {
-> +#ifndef CONFIG_ARM
->  			WARN_ON(owner->domain !=
->  				iommu_group_default_domain(group));
-> +#endif
->  			exynos_iommu_detach_device(owner->domain, dev);
->  			iommu_group_put(group);
->  		}
-> @@ -1398,6 +1400,9 @@ static int exynos_iommu_of_xlate(struct device *dev,
->  static const struct iommu_ops exynos_iommu_ops = {
->  	.domain_alloc = exynos_iommu_domain_alloc,
->  	.device_group = generic_device_group,
-> +#ifdef CONFIG_ARM
-> +	.set_platform_dma_ops = exynos_iommu_release_device,
-> +#endif
-
-This is ugly, if you need a set_platform_dma_ops it should not be
-called release... Release is supposed to be about putting the HW back
-to some idle state because we are unplugging the struct device.
-
-Jason
+My reading of that thread is that while it started out that way, it
+became more about "So what would a good interface be for doing this".  And
+Jason's right, he and I are approaching this from different directions.
+My concern is from the GUP side where we start out by getting a folio
+(which we know is physically contiguous) and decomposing it into pages.
+Then we aggregate all those pages together which are physically contiguous
+and stuff them into a bio_vec.  After that, I lose interest; I was
+planning on having DMA mapping interfaces which took in an array of
+phyr and spat out scatterlists.  Then we could shrink the scatterlist
+by removing page_link and offset, leaving us with only dma_address,
+length and maybe flags.
