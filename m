@@ -1,143 +1,130 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2076.outbound.protection.outlook.com [40.107.93.76])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2082.outbound.protection.outlook.com [40.107.243.82])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49154EA4;
-	Tue, 24 Jan 2023 06:15:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D08FB10F9
+	for <iommu@lists.linux.dev>; Tue, 24 Jan 2023 10:44:48 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fwtpwqr93O6xRNasTVBgW2oF8FsRn9CtKSshN2mNIC8EqShkIDMFeHogif+ZrNvtGIbPPpgpKSFQnuRcrthU1YSXhbZXf1sVS5JvD6bDVAvQM+bWwlU+5zuZeri+rWvyRYH5KHEVLBlrwkOrPlVDI+WrM1z7mnOaA0/50YOHwGt/AAeaestuyjk+JF0cq8zCgx3GSnADD7jLZWWI4jgW3clXtu8K9WdKNZb8nh460iFgHZ4lB0xsXacQ83uzUonE1bFLc9m09GGRQhfkQ+Vl5u8jn5nKBnob6KZABxgPMnZw4El91GaQh1JG3HHyHQnP+gC98HXbr60Zt2y72xiL8Q==
+ b=fWhM7EukON1t7LNCOvAtOzkmSDZ+v5kQHcvaev+uSeDTZKOOhrNb5qaYRfroQ1sm6O3xrRLBodO24b9iNjA7CiPf613VKiB4kVclcjo7m/ZL7wrMC3FyAQQe65FYCQYwEXBHRzByGYA5/6VFL9KIYHpEA5/fb5dijMR/FbKkMbFYDXzAzoKVNgelk+V3Y4bmZkMCBosr9v62YdQplBThnUUvf3Wc1nclN4Cl5DuE+gnNSTBagc0Ts0MUDkWNS4dFXtvL17o7j0vX2i+6RDfyijvjk+eHvXrIkRlu8pYdWlVKhnxwtymfBFQ+ePWV0ImqMrB+lSyJS9Oz9Tme4bgOIQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Bu2Nex2cIEfNsT0o2G25HNrMCHBP376sWYWQA60xJDM=;
- b=lRqCWmxoejpqr7zxh7HvO98ifT3U4IygS8kl6+mFnacHp5sEsEnb0UaoiU1edwtRZ8OwdMVFSpKcb1Rlili3/820ZJvI6jnliJvYSYMVYxiQu0UnQwUwQIIHr7xMgCA7wp1ddFW4OgMmHBpPJrDuAdOZQwW6ZdOPi6Lu1gUDxk/pXWu/mGuYgMFlhJ6iUuXkjoaqDqjIavAXZ+fE/+pvcfjUNlJiJRiHwD2QP+d1KWHRJ6FwGhuHwIEsBZoH8WWvJJo1f0oyQzQS0w4xQe/L3koqhDhy4FD/EdXu14aFtikEPZp5ZzpsJTrXO71NnWk3PwpCb9j0o72Y99nxE27SYA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=g4eQ5S1B0DwirJFi2acRwQVw8br//ok+RZ3cU3H4O54=;
+ b=PbWpT9F/07OhlpAgKz5IMIZmpnvfMtVAea6ZdnJGiDvGAcguzNK+mPyjscg3PnJYTLvD8CuxdocKjruNwhTaYrd+27PwQ7lsGJGuXyq95Igwx07iguuxIfYw9c9xLOHZsxtvr/5AK2k7PUi/POwyZjDJnbgxQ6VfWkXUHPa5LHXkVxkCvKAzi9Yt6YMieOxb7JOA0e1dbcJg9sCYLcn1VuiQBwz8N2EGQVhJGXVjM/S9irBtp2TybrLGLJjH62r3xzhP8F5ggEdM5QoiApsv982ussmamk9mx58WXI9eurL+Ms7tk3YijlYLumAZLlbJZmt76JF01/QEl/z1egOF7A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Bu2Nex2cIEfNsT0o2G25HNrMCHBP376sWYWQA60xJDM=;
- b=RYI84IDw7fx8E6z9JuCUtuRQ4qvjmYBPvA/Yp6gFNtkeusMNCdzWHmW+epNaUVbOCCzMqwtsdHAhUNyIdXhNNHZV7D2to8WZmRsvWa4nnGMUX/QD56Q9AN63u8JRa8nKZq39xhVxFW8WgC7dffRZXM9pEZiyr31tvswlHuAVdZ5kY2NN4pjTzgrgznudAh488WiIth3jEPnLw7hnEHWe82YqHFcjt1IToV4dJhhcbSU+Qi2aYNrW/UCCH5G5vHWMvSWxhphW7N7EXg3nQ6wtn1bXceDAeMLqriQFMPRYOdhHDk4Go+ErGTk5KaILtQexZH05Fc5FON3dBFdHv57aYQ==
-Received: from MW2PR12MB4667.namprd12.prod.outlook.com (2603:10b6:302:12::28)
- by PH7PR12MB8013.namprd12.prod.outlook.com (2603:10b6:510:27c::16) with
+ bh=g4eQ5S1B0DwirJFi2acRwQVw8br//ok+RZ3cU3H4O54=;
+ b=07n2oFnBYyUhM6nur9d81KEAZ5B4mC1X0PLm+libS2/Wu4ZfPl6cx5YSNSFSiuCczxzEjeXVOn9ulTz9MoCTvMkX+bxYmWmeVgxmuAmA1bf95yu1USSO8YaGagcU+2IOY3YV61oLmsUyJicWQsOA7qlKEwQ3OVSe7bKu9Osxlys=
+Received: from DS7PR03CA0024.namprd03.prod.outlook.com (2603:10b6:5:3b8::29)
+ by SA1PR12MB6894.namprd12.prod.outlook.com (2603:10b6:806:24d::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33; Tue, 24 Jan
- 2023 06:15:18 +0000
-Received: from MW2PR12MB4667.namprd12.prod.outlook.com
- ([fe80::b84c:b6e:dc0:8d7]) by MW2PR12MB4667.namprd12.prod.outlook.com
- ([fe80::b84c:b6e:dc0:8d7%2]) with mapi id 15.20.6002.033; Tue, 24 Jan 2023
- 06:15:18 +0000
-From: Chaitanya Kulkarni <chaitanyak@nvidia.com>
-To: "lsf-pc@lists.linuxfoundation.org" <lsf-pc@lists.linuxfoundation.org>,
-	Bart Van Assche <bvanassche@acm.org>, Jason Gunthorpe <jgg@nvidia.com>,
-	Matthew Wilcox <willy@infradead.org>
-CC: "linux-mm@kvack.org" <linux-mm@kvack.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-rdma@vger.kernel.org"
-	<linux-rdma@vger.kernel.org>, Christoph Hellwig <hch@lst.de>, Joao Martins
-	<joao.m.martins@oracle.com>, John Hubbard <jhubbard@nvidia.com>, Logan
- Gunthorpe <logang@deltatee.com>, Ming Lei <ming.lei@redhat.com>,
-	"linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-	"nvdimm@lists.linux.dev" <nvdimm@lists.linux.dev>, Shakeel Butt
-	<shakeelb@google.com>
-Subject: Re: [LSF/MM/BPF proposal]: Physr discussion
-Thread-Topic: [LSF/MM/BPF proposal]: Physr discussion
-Thread-Index: AQHZLamA3iTNPLXsDkOaW3tA+bsD5q6rbS2AgACZLACAAGVZgIAAr3EA
-Date: Tue, 24 Jan 2023 06:15:18 +0000
-Message-ID: <bcd58332-c9ba-2c5e-71bb-3dabfa068856@nvidia.com>
-References: <Y8v+qVZ8OmodOCQ9@nvidia.com>
- <Y84OyQSKHelPOkW3@casper.infradead.org> <Y86PRiNCUIKbfUZz@nvidia.com>
- <771236a2-b746-368d-f15f-23585f760ebd@acm.org>
-In-Reply-To: <771236a2-b746-368d-f15f-23585f760ebd@acm.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: MW2PR12MB4667:EE_|PH7PR12MB8013:EE_
-x-ms-office365-filtering-correlation-id: c834c03d-2766-4dce-66c4-08dafdd25dd4
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- vAZEFNdscJjKVTDcbHdwjE0Yx8sbVXyUZRIavUXkA6XGw3lbbFwb434VGMsJ0GReFGsNIEGosHjhfLbqmCoRXdw+cs7tLKsh/q1fscJUF2kAlZyA1pByqeEwIsKuNPVsfxvg9rnE2S+TcwGwyKTYpdq60hoZT+ujAgnSuyUm6ld46JV6aDBUx1cKr/++nAb8SuuyRJQUMjl+8UYYP60oWvfV2U7oZIHxTZV38ikqcYgAV7+8rUBcbgeN1DtHUW3xSl/7OIsai3ccEdnN5EX+1f4exB9033vjsWX+ts0OUt7/t1h+5XUemuaZSbdHotNSzVbfWXQIVYpNTIEVHCNFprrIL3kC6bSub06fZ1wRefGOPVtDwHdF3whS6ReZmtBIHv2jIjBrAoQDXkGyuBDejlNrezQIFoDyZbSL2KpchR7Q5xcwNZU7xUQriQ3ryRNNbR0elvPB5wNBpxwPsqkdWqhBR2ReATY2yCN0Y82PByiOeuPVcscbaq4ho7XOJBECTquVDEyQ1xps0SQyVP+ZA8vV6bJ2ie8n7e1HQGX5u3Fc1/4dxXz++FWMnjVLNyxjsUeOP73q2NXHyA2OTeW6351kq2QONxNAcHgqBF5cNPqhTLFZly45xmBvZsPyPYUcd3KUejOU6mCPDruDB0x+KIwXpeg9fB4DaiJresYaIN5qi/L2zMNLtG9+ZT9x3Knoyr1NktxslWAv1VKlD06TjzliGn3jc7xBHY3w2L7FVo09qyH5jNVldTgGLaj7f8hBCNuIzH9WJdMN/NcHi7nPkg==
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW2PR12MB4667.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230022)(4636009)(396003)(136003)(376002)(39860400002)(346002)(366004)(451199015)(122000001)(83380400001)(38100700002)(31696002)(86362001)(38070700005)(2906002)(4744005)(5660300002)(41300700001)(8936002)(7416002)(4326008)(186003)(66446008)(8676002)(6512007)(26005)(6506007)(316002)(76116006)(66556008)(64756008)(53546011)(2616005)(66476007)(54906003)(66946007)(478600001)(71200400001)(6486002)(110136005)(91956017)(31686004)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?OC9aMldNc1lNMnFYSEhpV3ZER3lkRXJWcEJjM1V2dkt4STQ2M1dsRk5mWVQ1?=
- =?utf-8?B?OUdPZ3NRWWZlVmQrem16blRXMnlKWnZ2a1REL1dmRjZpR3ZCeEVkbkVidkZj?=
- =?utf-8?B?QzREUjdlQkk5c2trb2ZZc2I5ZEFMdjM2UVdxdUd3K1B5UW8wS0VTLzZzNFJk?=
- =?utf-8?B?QlFaVGlUdFIwQkRDZTg0d3diRWdRSmVqeHUrZ09mKzBiRE0wK1lxTmNDTWZV?=
- =?utf-8?B?VTJJK1JmRmwvMlA1UWNYLzFhQnVNbk0yOHpRRmFqaU4zL1hzekpKc0RydldO?=
- =?utf-8?B?QWhEUFBTN3FFbjdrWEQwNW5tVjBjc0xZc3hUODRld1pSUGNKVTFRcXhrcHZo?=
- =?utf-8?B?UHZidEc5U3BMZjdaUVp0NWl1ZUxpY1FXTWExNlppZ1hMa3lSM0R0S2dEek9P?=
- =?utf-8?B?SUNrazFSeVJTZzlMdEdWd2lJaGthQmN2dGFMaFJHWC9lV0lqWGJzRzJnWW5n?=
- =?utf-8?B?RVU3OGNlTTV3YnhvaTVjRklJYWdCYkxPeUdEM1pFSnc0RW5HaFRQQTdYcElZ?=
- =?utf-8?B?R3E1VWVTcm9vOEtYbU5UVnFBSzA2aXd6S2EreFgxSGRKY2NVVUxtTC9iRFlj?=
- =?utf-8?B?V1I4YWNPYkpnMGgzSVdTWmVzeXdLZndOa1BDaEVkRSs4S0lhQkFKNG5YdHNu?=
- =?utf-8?B?U3lJUzVncEtHZG5HWGpLdkcwTXVTUFRCaTMrNnM2V2tyYWIrRHFDVzkzaFY3?=
- =?utf-8?B?RTh4bzVrclNJZ21GZlZnbkhWak9xWjlReGcyQk5RVDZCZC8vQmlzNzlva0Fj?=
- =?utf-8?B?M0RJSzZSYVQwNXUxU29rM0xyZzFtQk54QTIrV1I1OEtmUXpjckZNSGh3T3g4?=
- =?utf-8?B?ZGFWWUxnMUZYWWpyZC9BYVNUa0E3Z0VVMk94U3lYcklzdFlYdlVod3lnVjVu?=
- =?utf-8?B?cFQ3V0EyL3kwcDB5N2R1aDZ0elM3VEpoOGZjL1R1MnkwYUJoTkRjWExFZ214?=
- =?utf-8?B?OFZBMS91ZkE4YjlvMS9MRW5iVXg4a0xnUHphNU1IeGRSeThVbTJ2WFlEOHln?=
- =?utf-8?B?MUtUU2JZVHhtTjhMUTVndFBldjVqY0JHWDhpVldyVUVOSHp2QlVwc3JrRnZC?=
- =?utf-8?B?OFlGOUZ3bVM3YVFneUZEWFRnTDZ5SkV3dE80aDlwQk9WaWtyeVpaQi95WWpZ?=
- =?utf-8?B?cGVSV3hRSFhubWl4L2lDUGdBVGJrZENCb0x5dTR1MjZxVCtnaUc3MllIS2wy?=
- =?utf-8?B?bWVxSzRrU1dSS1h6N1NMeVMwLzlLYWxOS2tiWmxOWEF3WGpwSS9yajBXYldH?=
- =?utf-8?B?WXE2NUVKcEViaktaSFdTQ2UzV3NhQUI3N0dabFlKc2wvekpzcnpUaWM4VDVu?=
- =?utf-8?B?aVJzblZKc2F4RVV2QXJIRk5yQVA2WDczd2xXUHB4aGNZY3AxekJVdmJIRHRz?=
- =?utf-8?B?MTZuWXBydzVqQ2QvSnQ3NFIxWnpZQkZwNGVCa3c3OEI0Z3VwbEtlT21KYXpH?=
- =?utf-8?B?c2lNVk0zdnYxVEdiSjRtU0d6UjErT3RNMGJHN2htYlBJb1dGVm45Z2RiTHBu?=
- =?utf-8?B?Tjdpd3lFYjVmYkREY2VuVVZFdXMyZ2YzSlFEcVNIbk80RDRSS3pRRis1eURG?=
- =?utf-8?B?eGRtY3NvTnJrNGgzM3A4NFEramVOaXhKZ1M4VGVyS2k5Y2lMYU5OcENsSkEy?=
- =?utf-8?B?VGdhWXNzOXpkTVlPVGxrNDVWU1h4NlJmcGl4V0ZSUklEeDExR0VIK2dkOHN2?=
- =?utf-8?B?UTM4ZHdmS1AyOFAzU3A2bXlGK05JcHhSU2Z4RS9YRlNhZnFlUS9GaVZJenVt?=
- =?utf-8?B?Q2h1ZVR3Mys3TzZQM0hqOXlUejg5MUJFOCtqRDJDbnd3cXB4YWI5V0xpcTN4?=
- =?utf-8?B?OXBFV0huT3FGN2YybGVBNXExZXV3b2JjV3BIOG9qbHRYYTZ0MUFHWVZCZ3Fu?=
- =?utf-8?B?a3lnZ1NRUFk1RnlmY1dmTHlsSW9xMVMyTXpZd2hqelY4bmF1dTVJakxtb2lr?=
- =?utf-8?B?MUU4RjVhOFA2WHduNldIamloRFNVOUJOMk9ZeFhVTDY1eHpEZ0ZUSkRZQjdt?=
- =?utf-8?B?R0pmK1h2ZTNiNmo3bytoTkxMMWdRUUZmemxvMlQ2ek1pNjZGZytPWmNCZEdK?=
- =?utf-8?B?MzZoY0VyM2pXZVBCRDBtdGo5RmNWQVlMc3MzV3pNdk8wWno5dnJJSkpDM28y?=
- =?utf-8?Q?EStqts3Clr1rD39rR1JJWUkRs?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <ABD20B45826F23438CA133533E8AB1DF@namprd12.prod.outlook.com>
-Content-Transfer-Encoding: base64
+ 2023 10:44:45 +0000
+Received: from DM6NAM11FT031.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:3b8:cafe::46) by DS7PR03CA0024.outlook.office365.com
+ (2603:10b6:5:3b8::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33 via Frontend
+ Transport; Tue, 24 Jan 2023 10:44:45 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT031.mail.protection.outlook.com (10.13.172.203) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.6023.16 via Frontend Transport; Tue, 24 Jan 2023 10:44:44 +0000
+Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Tue, 24 Jan
+ 2023 04:44:40 -0600
+From: Vasant Hegde <vasant.hegde@amd.com>
+To: <iommu@lists.linux.dev>, <joro@8bytes.org>
+CC: <suravee.suthikulpanit@amd.com>, <jgg@nvidia.com>, Vasant Hegde
+	<vasant.hegde@amd.com>, Daniel Marcovitch <dmarcovitch@nvidia.com>
+Subject: [PATCH 0/3] iommu/amd/iommu_v2: Fix refcount related issues
+Date: Tue, 24 Jan 2023 10:43:52 +0000
+Message-ID: <20230124104355.119166-1-vasant.hegde@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW2PR12MB4667.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c834c03d-2766-4dce-66c4-08dafdd25dd4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jan 2023 06:15:18.5194
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6NAM11FT031:EE_|SA1PR12MB6894:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8dfcfd5b-45d6-4f99-ee42-08dafdf801d0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	Eg52aibog7b3hs+9jy5kTjxTXH+Rnkm0olHLXjNsYTYGROt1Qc3SuLqLymWux5desf/C6dqlbpYyWElya4hfBUTzugTFE0ilVav1srQ+VLnHBEHm3aBRCk0a7W51jkXewkVr3QjVBJPoacyYHb+7Xe0Wer1YVBEkSs4glv1Npx5/OHP1VueeN8PhUt3RxTnvt7qaFagP91TXaTjgs7IRUKvCnW9TOQEYfQodJqnVz+yGjBQ8eH1Az5rXlEDE3f/lUYaqMZ/jRJi0jXUyEKobWELe81Ylt9YVp8wxL9xRtOT+q19DysEIVCP0dRB4sKGZ6anVKnP1qbVWlsXd8hecUAdxJIaiRg9IxpZXM07XLYYbGYQM6U+71Vke3lbBq20B7mR7PK56M6YsFZCZVpbmzTXef7tuioPxwg7RrWik9tKS7UQrlwzjjj/apajRl2tb6uCyBAL/69c8+CvzzOQwl4S8OXB3IAEo01kD6ieJau0nbAF5xN7CH3HG29kPyS5hrpBe//9jeJsicnfqOYxLvEAzBha/WZI/RMVSg2RRsmoFuGM03RFv6N70CkLLC6imCD05dcHDPJS8Y4ML/bPYYBvgFLDWLzM6PACiMDmkYrBCPkx4+DM0PLnhAJTD4BGA4CvAJyUXuQsm/u7zsIyXq33fCdoDMfyR7HtZ6jSkdX6oP+hxHMKAW0/Ft8tt7sItEwZDp4wc9+2QZREpHlXkVYKgFXVEMyTnx1C82Nt7juQ=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230022)(4636009)(136003)(396003)(39860400002)(346002)(376002)(451199015)(36840700001)(46966006)(40470700004)(36860700001)(83380400001)(82740400003)(2906002)(86362001)(81166007)(356005)(44832011)(5660300002)(8936002)(41300700001)(4326008)(82310400005)(186003)(40460700003)(40480700001)(16526019)(8676002)(26005)(316002)(47076005)(336012)(426003)(6666004)(70586007)(70206006)(2616005)(54906003)(1076003)(478600001)(7696005)(110136005)(36756003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jan 2023 10:44:44.9751
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 3Sfbl0l3FSPXFsSalKgqyYXrJv4JuFUjwSZLLvJtPwIBSb6jJL8XiUA3HJAgcquw80JaZB/Rw4vufJJOEP/R9g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB8013
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8dfcfd5b-45d6-4f99-ee42-08dafdf801d0
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DM6NAM11FT031.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB6894
 
-T24gMS8yMy8yMyAxMTo0NywgQmFydCBWYW4gQXNzY2hlIHdyb3RlOg0KPiBPbiAxLzIzLzIzIDA1
-OjQ0LCBKYXNvbiBHdW50aG9ycGUgd3JvdGU6DQo+PiBJJ3ZlIGdvbmUgZnJvbSBxdWl0ZSBhIGRp
-ZmZlcmVudCBzdGFydGluZyBwb2ludCAtIEkndmUgYmVlbiB3b3JraW5nDQo+PiBETUEgQVBJIHVw
-d2FyZHMsIHNvIHdoYXQgZG9lcyB0aGUgZG1hX21hcF9YWCBsb29rIGxpa2UsIHdoYXQgQVBJcyBk
-bw0KPj4gd2UgbmVlZCB0byBzdXBwb3J0IHRoZSBkbWFfbWFwX29wcyBpbXBsZW1lbnRhdGlvbnMg
-dG8gaXRlcmF0ZS9ldGMsIGhvdw0KPj4gZG8gd2UgZm9ybSBhbmQgcmV0dXJuIHRoZSBkbWEgbWFw
-cGVkIGxpc3QsIGhvdyBkb2VzIFAyUCwgd2l0aCBhbGwgdGhlDQo+PiBjaGVja3MsIGFjdHVhbGx5
-IHdvcmssIGV0Yy4gVGhlc2UgaGVscCBpbmZvcm0gd2hhdCB3ZSB3YW50IGZyb20gdGhlDQo+PiAi
-cGh5ciIgYXMgYW4gQVBJLg0KPiANCj4gSSdtIGludGVyZXN0ZWQgaW4gdGhpcyB0b3BpYy4gSSdt
-IHdvbmRlcmluZyB3aGV0aGVyIGVsaW1pbmF0aW5nIA0KPiBzY2F0dGVybGlzdHMgY291bGQgaGVs
-cCB0byBtYWtlIHRoZSBibG9jayBsYXllciBmYXN0ZXIuDQo+IA0KPiBUaGFua3MsDQo+IA0KPiBC
-YXJ0Lg0KPiANCg0KSSB0aGluayBpdCB3aWxsIGJlIHZlcnkgaW50ZXJlc3RpbmcgdG8gZGlzY3Vz
-cyB0aGlzIGluIGdyZWF0IGRldGFpbA0KYW5kIGNvbWUgdXAgd2l0aCB0aGUgcGxhbi4NCg0KKzEg
-ZnJvbSBtZS4NCg0KLWNrDQoNCg==
+This patch series fixes various issues around pasid refcount handling.
+
+Issues addressed in this patchset are as follows:
+
+1. refcount_dec assumes that refcount will never reach 0:
+   threfore: REFCOUNT_WARN("decrement hit 0; leaking memory")
+   will be invoked on pasid unbind
+
+   *  Fixed by changing refcount_dec to refcount_dec_and_test
+      to explicitly handle refcount=1 (skip waiting for wait queue)
+
+2. ppr_handler calls the wake_up API on the pasid_state wait_queue.
+   However, once refcount has been decremented, unbind_pasid may have
+   already freed this object - causing unallocated memory access
+
+   *  Fixed by adding spinlock to ensure atomicity between refcount
+      check and event queue handling. Moved wait_queue APIs to
+      wake_up_locked / wake_event_interruptible_locked accordingly
+
+3. If new ppr_handler arrives after get_pasid_wait once pasid unbind
+   has decremented refcount to 0 - get_pasid_state can still acquire
+   a pointer to pasid_state after being freed by unbind_pasid causing
+   unallocated memory access
+
+   *  Fixed by changing ref_count_inc to ref_count_inc_not_zero
+      to ensure no new ppr_handle starts after pasid has been unbound
+      and NULL (invalid) pasid_state is returned on zero.
+
+Signed-off-by: Daniel Marcovitch <dmarcovitch@nvidia.com>
+Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+
+Base commit: v6.2-rc5
+
+Daniel Marcovitch (3):
+  iommu/amd/iommu_v2: Fix pasid_state refcount dec hit 0 warning on pasid unbind
+  iommu/amd/iommu_v2: Fix pasid_state->wq race
+  iommu/amd/iommu_v2: Prevent scheduling new ppr notifier during unbind_pasid
+
+ drivers/iommu/amd/iommu_v2.c | 19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
+
+-- 
+2.31.1
+
