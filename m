@@ -1,467 +1,186 @@
-Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2127.outbound.protection.outlook.com [40.107.113.127])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE7EA28FA
-	for <iommu@lists.linux.dev>; Tue, 24 Jan 2023 20:50:47 +0000 (UTC)
-Received: by mail-pj1-f53.google.com with SMTP id nn18-20020a17090b38d200b0022bfb584987so1646990pjb.2
-        for <iommu@lists.linux.dev>; Tue, 24 Jan 2023 12:50:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=paQ7j486LMTI09MRoppE1hFSpQyJiFhQxIwTJPuElYo=;
-        b=lYfxlHE+R9vcMM2MjiApPaidTBTuPScjraXm39Ly62Wn+yBQJfmt00iG3of85pgqTk
-         vbK0r8cxAY4TIAN3fjpotkjFY6uTYoI2tuq4OGFOBkIEd7u62Nc5/9KJTTcaALgSkWzA
-         fm7vPGcuKXc9y/CPEOQDES6f57JjxE3huFuIS5Uj2KoQd0P+KIrxi05j06o/kqDLRaxM
-         9KRPn/5b+XA29UD92FlPz0zc7JeQxVRIiyGdrAcIQGzvUQirjxRJkp+T6DL//PjTxSCp
-         S5TJQ3L4iOnBGQbvT8XzjcOUED6ckUFb3pByU5Z/Q5TYKC6w45zl3wc6otuyCU25qQcj
-         UgcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=paQ7j486LMTI09MRoppE1hFSpQyJiFhQxIwTJPuElYo=;
-        b=UmR+swBvscw2n8ieunWa0c4qAX7AzJN9RIsZiZOnQ6RzjatlSlLIa/HUqilG406Zkb
-         1/Jc/wQCGtYsFn9y0knZedrEcebtoCh5xAvZQ0IrWwUtAuCyBPpIHVNZANZ89mbI89GZ
-         nFlOYLOTcEmOl8rwx7RJaQ+DOaKg9ZjeN98JvkYdjRJCqIsmuzYiQ2NDoIanTQLA2UEq
-         KGkCBVVY0I/Eh6psOFAaG34MXxpFoS6/2NU1GwB2oMv1001bPs5d059KfwelCSBPZmnS
-         lX2G5C9Aa8CG9behGe/L9hufmw+5RmHwJAECGfnDvOf7pn76p0W3qGmIfOqe/biVmF6p
-         PygQ==
-X-Gm-Message-State: AFqh2kpxsUtt0tflbyRXV76PZFbdsEXCVDjqKXio0i5TPVrR9zp5Y97Z
-	C9KOOaPxTephMuW7XN6i0poxwA==
-X-Google-Smtp-Source: AMrXdXsbmfGmTuHmeZkBI1Lt+n9FwN9LiLWmEadvEKZal+YS0enunw/0CF3BCnip5pLyuZLVwd5PHA==
-X-Received: by 2002:a17:902:e78f:b0:194:d5ec:9be6 with SMTP id cp15-20020a170902e78f00b00194d5ec9be6mr19250738plb.23.1674593447072;
-        Tue, 24 Jan 2023 12:50:47 -0800 (PST)
-Received: from p14s ([2604:3d09:148c:c800:2f0d:21f1:1136:64f5])
-        by smtp.gmail.com with ESMTPSA id az3-20020a170902a58300b001899c2a0ae0sm2120701plb.40.2023.01.24.12.50.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Jan 2023 12:50:46 -0800 (PST)
-Date: Tue, 24 Jan 2023 13:50:43 -0700
-From: Mathieu Poirier <mathieu.poirier@linaro.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	ath10k@lists.infradead.org, ath11k@lists.infradead.org,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
-	kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
-	linux-rdma@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-	linux-s390@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-tegra@vger.kernel.org, linux-wireless@vger.kernel.org,
-	netdev@vger.kernel.org, nouveau@lists.freedesktop.org,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH v3 01/10] iommu: Add a gfp parameter to iommu_map()
-Message-ID: <20230124205043.GA3869975@p14s>
-References: <0-v3-76b587fe28df+6e3-iommu_map_gfp_jgg@nvidia.com>
- <1-v3-76b587fe28df+6e3-iommu_map_gfp_jgg@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 679CAEC3
+	for <iommu@lists.linux.dev>; Wed, 25 Jan 2023 00:49:49 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bwg10XIVMYzNmQswok0/HSuvCBm7OyGXZPs2iGnIT6ZDC+HWk+7HfFacO8P93QLPqsrsDUClbaaUtA4Za+pGXhXKYm7XCZOFtcPsuPwdr7w/R3tL0FDKB2gKud7Fhk4bj9+cbaif4b6b3pBriXODi83pQJ0xXXDVdQdcOqnTeNdxxaP1ggiU4yxsxIf7YXs5Gk2dfmGxsnIQQydz8WQGnhIE7S7RbcYM6WIiR0XJKZYTj0eK89fJDcHTiOHkD74hQnhoWMwT7cd8Jp4IxVbIIlgOoypDJlqsPzB9DzjOqcd3TzbtHOIfO9hO0BfD3qKk+mej7y8NOYrUya1dqjZ5kA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lcmIZJLqMGYIKKt6S5TmEJPFVJgvJcXtfyIXgJqUs9E=;
+ b=mSSyV7XqOUyuUsdsDsC8pf0OymOujW8rSO3BfRvxXchVPYnvBM7yk2m6menIOzKUCw3ekDprXF5FwzGi8tco9T3G2Jm/LwpEwjyQZS1fnvxBAeQTgvRJYHFVRpWGYwbAwRKqAM+rl1GnouPkryi3h29uNktfYvQ70Qoj6GLet+INUZXnJxGvT7o0dkNSlCDex30OMOfhMbKstVCM3Dn8YGVZXDMsXwFMvQTutqQ1W12f1r/ml602GjrPOl8IPBdhVCLpIR3+f5y8BKqY1Ket8DU1dC6yDUclBo0RtPJ0RS59JMPCBwwfKnwAmmINXyVk+C3xupJuAaEN94yAfsiWjg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lcmIZJLqMGYIKKt6S5TmEJPFVJgvJcXtfyIXgJqUs9E=;
+ b=mMe1FkGZSbr6R75wevDP8ao2TXiB/yfSo/+VGtTUfJ3Nw2DlC91E82yE97b9TGxKnsGSuiOMuiut8Z1QjSBzxkBo/EbJkauXjUxFFa9OsMI2/B1Y7IxQWsCaoOUE4JMXiK7f5iB63lrQMd3dUqFs3A2vvE4sJ9oaypdglQMFjvc=
+Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
+ (2603:1096:404:8028::13) by TYBPR01MB5423.jpnprd01.prod.outlook.com
+ (2603:1096:404:802f::9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6002.33; Wed, 25 Jan
+ 2023 00:49:46 +0000
+Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
+ ([fe80::3e61:3792:227e:5f18]) by TYBPR01MB5341.jpnprd01.prod.outlook.com
+ ([fe80::3e61:3792:227e:5f18%9]) with mapi id 15.20.6043.020; Wed, 25 Jan 2023
+ 00:49:46 +0000
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+CC: "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "robh+dt@kernel.org"
+	<robh+dt@kernel.org>, "krzysztof.kozlowski+dt@linaro.org"
+	<krzysztof.kozlowski+dt@linaro.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "devicetree@vger.kernel.org"
+	<devicetree@vger.kernel.org>, "linux-renesas-soc@vger.kernel.org"
+	<linux-renesas-soc@vger.kernel.org>
+Subject: RE: [PATCH] dt-bindings: iommu: renesas,ipmmu-vmsa: Update
+ descriptions for R-Car Gen4
+Thread-Topic: [PATCH] dt-bindings: iommu: renesas,ipmmu-vmsa: Update
+ descriptions for R-Car Gen4
+Thread-Index: AQHZLsourgLTvtmvK0W71iwTdWHd8a6tpGsAgACkryA=
+Date: Wed, 25 Jan 2023 00:49:46 +0000
+Message-ID:
+ <TYBPR01MB5341B023178B4A10DE52B844D8CE9@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+References: <20230123012940.1250879-1-yoshihiro.shimoda.uh@renesas.com>
+ <CAMuHMdX92KMeON0xC9p17kiqWT7ksEBX_NyPiiQk0fLaucDZBA@mail.gmail.com>
+In-Reply-To:
+ <CAMuHMdX92KMeON0xC9p17kiqWT7ksEBX_NyPiiQk0fLaucDZBA@mail.gmail.com>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=renesas.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: TYBPR01MB5341:EE_|TYBPR01MB5423:EE_
+x-ms-office365-filtering-correlation-id: 29975f70-7926-4f85-a71f-08dafe6e0e13
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ KGAJsAqYr10lI9uk5I1pbopLQWY3DTWYOcCH2KeaxiunZyb9bg5cVyGOp/MylRpxXsHPSNf8sJcboJzuEblUOncykm1tUoq/4SHIcauOzcuJrTARy3E3/83NqKxla6+G48Wgn4gM2o+7YsLIrJQvl3xOBx3wxUNdwzSsE8Pv/Ggo0eErqDXAMx+eZsmgwoq8BceHwC7Qiop3/K5x+xA4OPntLMsC2Pv12m3pwsONWTYD8u/aYWB8foLoN3HSdARbDdXksirTgaH9r9QHwzbaoTzgPhhwSKnglMFZ4gZCPrUo6P3WCPC9ZJvG6wieVWOXqhnoHs5JBa2zsbEzc7skGYfT/RuWicVwI4Xx4KNA52jV0yjAN0nL7F2aWcnbjl23lbTULYkj1SdbwyLBD16kIgcVSDpFmT1sAlWLmLBUjk111ZHwH2imUoPY6zlpXVPpvVYbGwqlYQYi+MsHp+ZUMKFVcQc4c7Ypla7ltqBftSmTmulLo5++0gESJFK22ovrT6+JMiRjjcVyFAHLGnumR598jNITBsx490MAGNmATN3pJNqzA084RzTw1O8tLexSeL3WikECEBcV4/TNO8JQkXubXWagC9n2DOI8FIAxL16C8YE9G4xVsRtfBGvjRmX7PBPZZFTGbF2D7VYMrLoxj+nB6kUEPg4qLSIaPVBq+CtMM6Tnypb+7oYUaGnaW+HP3RADIlsi5bOOYlQEb6S4hw==
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYBPR01MB5341.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(346002)(376002)(366004)(136003)(396003)(451199018)(38100700002)(86362001)(38070700005)(5660300002)(8936002)(2906002)(41300700001)(4326008)(66446008)(55016003)(122000001)(33656002)(15650500001)(478600001)(66476007)(52536014)(7696005)(71200400001)(6916009)(8676002)(9686003)(186003)(64756008)(83380400001)(316002)(66946007)(53546011)(66556008)(54906003)(76116006)(6506007);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?Z3ZLZXNKOXQ0SGhNVlg4aGpWOVhxT0QybFFVbDJoT0lsVjNTdkN3ZnlFMVlo?=
+ =?utf-8?B?QWEzbmsyV25rQjd2a1BLMDgybUk1UFNNRTE4MVFpV2I4SUY3cjZPUE4zRVUw?=
+ =?utf-8?B?a3Y2V3ozV2wyb1creHp4L1ZlK1duTHdlWm5wQjB2bGRQdmRmd2dLb0lkWS9I?=
+ =?utf-8?B?QVBzUFMyZE03c3hsUUtKNVB5Tzc5OTljWHgveWNobzhMeXlnSzVOWFo4V0lp?=
+ =?utf-8?B?Wi9oUk5MMjF0THN1bmpGd2krTTBtY2ZVYWxUY3dJd09ETkQwSE8wSjJCOWJ4?=
+ =?utf-8?B?ZzJpSi9VUE9tYjlWc3REZGRjT3U2SFVtN2hhcHUwUldkQnhweUxUUFFNKzlR?=
+ =?utf-8?B?dXNzaWQxTHJIMFl5dDZGaXNldHFMN0FpQjFIbUxKOFRpZEx5cnIxVlVHQkZP?=
+ =?utf-8?B?Vm1zeG5YbEg3c1FVdFVjZU9YSy9sUXd2UmgzZjN0T0xpWlFIb001UjZmblkz?=
+ =?utf-8?B?SHJsV0lFQS8ySkVwWWZDNjV1cFRsc3U1YXBXN1V0V01aNHFPZUpHMUZKdElk?=
+ =?utf-8?B?UHArYWZva2VHc1RXWWw3Ky9oZ1ovaXgxMitYSlFSWlFGalgzaWtLSUUrQ29L?=
+ =?utf-8?B?SG5EMHdGVWJwemtPNUN0RjFIbVV5dkVtK0Z2WDJrcy9SbHdpNWF0ZFZNTm9L?=
+ =?utf-8?B?TU96V2FHZ2tteXVWOU5Pb1ZjcXJ5U04zU1A3dk1UclNHWnIwcElSTSs3NEo0?=
+ =?utf-8?B?aUs3UzgvVm9oZjAreWVVK1FrRnBrNmdOZXRVY0k4OXVGd3JQd04rZlZQdVFB?=
+ =?utf-8?B?ZUtjTUFnamRTdjljRHU0Y2gyNC9zZGpTb2pWRWxXTXdjQXdEWGoxY0EvQ1Y5?=
+ =?utf-8?B?OTdwRmo1bkZFUHUzb3BXdUZtdFpWdzlodmZmRU9wNnY3aEpBTEt1cTBlL2Q4?=
+ =?utf-8?B?THNWZ0JKMFdRMFFyR0JoWUlJNUJXdW91WHBHMEJKM0hRajJQL1pBcFA4dDE2?=
+ =?utf-8?B?ODNndGwzS3JPVnR4YmdlNEwzM0RuSlNGWnhSaHhiRVBKZ2FzN3hseHdldEpj?=
+ =?utf-8?B?MDFQZU1DUUVDNjdTNmZUSzRySEo4RVlGb2cwOFNFY2tJcHJlb3Jxb0pQOVFE?=
+ =?utf-8?B?R040eDgybWt2WERjK045NGhjalliVndTL0JEb28zTzBObitoWU9DWi9nTXdC?=
+ =?utf-8?B?b1FtVnJGSXBHUSs1MkFNT1dtS0pLYkJuUmxXS3RORHRJdWNPejIwTkZBRkVz?=
+ =?utf-8?B?dkxRNmNiSjhDY1dFY25aUm1WYWFYeFhZU1J5RzZEK0JqM3dDTWFvdVRxTCsy?=
+ =?utf-8?B?STFKbEhlbTlza2lHcTNHWGxvbWU0c2ZzTGxEaWEzQy92NGhIYWVGZjJoTEth?=
+ =?utf-8?B?MVJqVlY5MndWWmlaaW8ray9wOENyejB6SzhSSEZlcE9sWUxmdGNRZFBmWEE3?=
+ =?utf-8?B?LzU1WTRucy9GMGZNc01WYnduMGVQbnVrWUdLTEVIZElpT1JWTEE5aWU3ZXh5?=
+ =?utf-8?B?eFBDV212M2gzM0laZG5GVEt6blUraW1US2NIMmhSVGRkZDFSdWNlczg5bnBk?=
+ =?utf-8?B?TE5uZ2M2bzM3Nk8rRjJRcXkxcWlxS3RPdVR0N0JmVERqcjgxRk5hL1YvSFpE?=
+ =?utf-8?B?b3lxS2V2YkVodXgyTWNCcGp5ckdESWFMU0VLaDlNYk1IeGtvbnhndmVQdSsx?=
+ =?utf-8?B?UCtjbHVMYUEyOE5LeENubGkzMUpFNVcrTUtZc0JYai8vUmxSM3pXRWpXd2VI?=
+ =?utf-8?B?UXVPTFhGd0tXNjZUMG5nVEtUY0VuVEttUEx1QnRPUXR6RXA5YWRWWXdseFJC?=
+ =?utf-8?B?cDVzdXg0bmtCZXpVL2hnQVhlK1Z1SmNYU2tjU3dOMFFiZlNuUnh4b3dmeStu?=
+ =?utf-8?B?K2FLekErRnNsQVZoa1pDTm5wZ3I4eWU2K21idlBTRE9JRm8wQTdVc1hWQ3l6?=
+ =?utf-8?B?eHlkMjJ4Yjh6STQwcnBQVko3ZDFITktpeTJteDFIRFI0VW9yVWNxeGMwQXJX?=
+ =?utf-8?B?MmMwMFMyeDlDbi9ZM1lkK2lZS05TUkdyWGluTjdRMlNLQXJDVTdUbzJESHdT?=
+ =?utf-8?B?ZjZDRVdiQndIYWVvUE9QZGFKOENrYWJFcG1KNk1Ya0o5K3U0NWNTSjROZHh2?=
+ =?utf-8?B?MEY5VEozZGdmYUk5TVV6VHNnQjI3RkR4TVMyNXBvc2ErV3ViLzZQc2Z5bWpm?=
+ =?utf-8?B?dFV0Qmo2eXo0RnNUYlBpT3IreWVCQ0JKaTdmS3JpazUzd21Zby9NWm1OTHZh?=
+ =?utf-8?B?Wm5QRzRidkNjc25kaU9IcDBJWFBOK2FJNUJzQmdLSFhiOTZSOTJSa3Z0L1Ra?=
+ =?utf-8?B?ek1IaW9MbytPTFFHM1Q5REhPZHhRPT0=?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1-v3-76b587fe28df+6e3-iommu_map_gfp_jgg@nvidia.com>
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TYBPR01MB5341.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 29975f70-7926-4f85-a71f-08dafe6e0e13
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jan 2023 00:49:46.1733
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: dJnScfTsz89ua1bZ/aSYO8m3DJlJZsPkEsf6huYsPsjcK+E9LQ9ZcUwHhd7sVU0RvHmHAHH67toVJv1uVl0JRbHTPfZcK8zIblzMvjUSdXWnQPp1w62auE/DS60EMaku
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYBPR01MB5423
 
-On Mon, Jan 23, 2023 at 04:35:54PM -0400, Jason Gunthorpe wrote:
-> The internal mechanisms support this, but instead of exposting the gfp to
-> the caller it wrappers it into iommu_map() and iommu_map_atomic()
-> 
-> Fix this instead of adding more variants for GFP_KERNEL_ACCOUNT.
-> 
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  arch/arm/mm/dma-mapping.c                     | 11 ++++++----
->  .../drm/nouveau/nvkm/subdev/instmem/gk20a.c   |  3 ++-
->  drivers/gpu/drm/tegra/drm.c                   |  2 +-
->  drivers/gpu/host1x/cdma.c                     |  2 +-
->  drivers/infiniband/hw/usnic/usnic_uiom.c      |  4 ++--
->  drivers/iommu/dma-iommu.c                     |  2 +-
->  drivers/iommu/iommu.c                         | 22 +++++++++----------
->  drivers/iommu/iommufd/pages.c                 |  6 +++--
->  drivers/media/platform/qcom/venus/firmware.c  |  2 +-
->  drivers/net/ipa/ipa_mem.c                     |  6 +++--
->  drivers/net/wireless/ath/ath10k/snoc.c        |  2 +-
->  drivers/net/wireless/ath/ath11k/ahb.c         |  4 ++--
->  drivers/remoteproc/remoteproc_core.c          |  5 +++--
-
-Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
-
->  drivers/vfio/vfio_iommu_type1.c               |  9 ++++----
->  drivers/vhost/vdpa.c                          |  2 +-
->  include/linux/iommu.h                         |  4 ++--
->  16 files changed, 48 insertions(+), 38 deletions(-)
-> 
-> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-> index c135f6e37a00ca..8bc01071474ab7 100644
-> --- a/arch/arm/mm/dma-mapping.c
-> +++ b/arch/arm/mm/dma-mapping.c
-> @@ -984,7 +984,8 @@ __iommu_create_mapping(struct device *dev, struct page **pages, size_t size,
->  
->  		len = (j - i) << PAGE_SHIFT;
->  		ret = iommu_map(mapping->domain, iova, phys, len,
-> -				__dma_info_to_prot(DMA_BIDIRECTIONAL, attrs));
-> +				__dma_info_to_prot(DMA_BIDIRECTIONAL, attrs),
-> +				GFP_KERNEL);
->  		if (ret < 0)
->  			goto fail;
->  		iova += len;
-> @@ -1207,7 +1208,8 @@ static int __map_sg_chunk(struct device *dev, struct scatterlist *sg,
->  
->  		prot = __dma_info_to_prot(dir, attrs);
->  
-> -		ret = iommu_map(mapping->domain, iova, phys, len, prot);
-> +		ret = iommu_map(mapping->domain, iova, phys, len, prot,
-> +				GFP_KERNEL);
->  		if (ret < 0)
->  			goto fail;
->  		count += len >> PAGE_SHIFT;
-> @@ -1379,7 +1381,8 @@ static dma_addr_t arm_iommu_map_page(struct device *dev, struct page *page,
->  
->  	prot = __dma_info_to_prot(dir, attrs);
->  
-> -	ret = iommu_map(mapping->domain, dma_addr, page_to_phys(page), len, prot);
-> +	ret = iommu_map(mapping->domain, dma_addr, page_to_phys(page), len,
-> +			prot, GFP_KERNEL);
->  	if (ret < 0)
->  		goto fail;
->  
-> @@ -1443,7 +1446,7 @@ static dma_addr_t arm_iommu_map_resource(struct device *dev,
->  
->  	prot = __dma_info_to_prot(dir, attrs) | IOMMU_MMIO;
->  
-> -	ret = iommu_map(mapping->domain, dma_addr, addr, len, prot);
-> +	ret = iommu_map(mapping->domain, dma_addr, addr, len, prot, GFP_KERNEL);
->  	if (ret < 0)
->  		goto fail;
->  
-> diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c b/drivers/gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c
-> index 648ecf5a8fbc2a..a4ac94a2ab57fc 100644
-> --- a/drivers/gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c
-> +++ b/drivers/gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c
-> @@ -475,7 +475,8 @@ gk20a_instobj_ctor_iommu(struct gk20a_instmem *imem, u32 npages, u32 align,
->  		u32 offset = (r->offset + i) << imem->iommu_pgshift;
->  
->  		ret = iommu_map(imem->domain, offset, node->dma_addrs[i],
-> -				PAGE_SIZE, IOMMU_READ | IOMMU_WRITE);
-> +				PAGE_SIZE, IOMMU_READ | IOMMU_WRITE,
-> +				GFP_KERNEL);
->  		if (ret < 0) {
->  			nvkm_error(subdev, "IOMMU mapping failure: %d\n", ret);
->  
-> diff --git a/drivers/gpu/drm/tegra/drm.c b/drivers/gpu/drm/tegra/drm.c
-> index 7bd2e65c2a16c5..6ca9f396e55be4 100644
-> --- a/drivers/gpu/drm/tegra/drm.c
-> +++ b/drivers/gpu/drm/tegra/drm.c
-> @@ -1057,7 +1057,7 @@ void *tegra_drm_alloc(struct tegra_drm *tegra, size_t size, dma_addr_t *dma)
->  
->  	*dma = iova_dma_addr(&tegra->carveout.domain, alloc);
->  	err = iommu_map(tegra->domain, *dma, virt_to_phys(virt),
-> -			size, IOMMU_READ | IOMMU_WRITE);
-> +			size, IOMMU_READ | IOMMU_WRITE, GFP_KERNEL);
->  	if (err < 0)
->  		goto free_iova;
->  
-> diff --git a/drivers/gpu/host1x/cdma.c b/drivers/gpu/host1x/cdma.c
-> index 103fda055394ab..4ddfcd2138c95b 100644
-> --- a/drivers/gpu/host1x/cdma.c
-> +++ b/drivers/gpu/host1x/cdma.c
-> @@ -105,7 +105,7 @@ static int host1x_pushbuffer_init(struct push_buffer *pb)
->  
->  		pb->dma = iova_dma_addr(&host1x->iova, alloc);
->  		err = iommu_map(host1x->domain, pb->dma, pb->phys, size,
-> -				IOMMU_READ);
-> +				IOMMU_READ, GFP_KERNEL);
->  		if (err)
->  			goto iommu_free_iova;
->  	} else {
-> diff --git a/drivers/infiniband/hw/usnic/usnic_uiom.c b/drivers/infiniband/hw/usnic/usnic_uiom.c
-> index c301b3be9f303d..aeeaca65ace96a 100644
-> --- a/drivers/infiniband/hw/usnic/usnic_uiom.c
-> +++ b/drivers/infiniband/hw/usnic/usnic_uiom.c
-> @@ -277,7 +277,7 @@ static int usnic_uiom_map_sorted_intervals(struct list_head *intervals,
->  				usnic_dbg("va 0x%lx pa %pa size 0x%zx flags 0x%x",
->  					va_start, &pa_start, size, flags);
->  				err = iommu_map(pd->domain, va_start, pa_start,
-> -							size, flags);
-> +						size, flags, GFP_KERNEL);
->  				if (err) {
->  					usnic_err("Failed to map va 0x%lx pa %pa size 0x%zx with err %d\n",
->  						va_start, &pa_start, size, err);
-> @@ -294,7 +294,7 @@ static int usnic_uiom_map_sorted_intervals(struct list_head *intervals,
->  				usnic_dbg("va 0x%lx pa %pa size 0x%zx flags 0x%x\n",
->  					va_start, &pa_start, size, flags);
->  				err = iommu_map(pd->domain, va_start, pa_start,
-> -						size, flags);
-> +						size, flags, GFP_KERNEL);
->  				if (err) {
->  					usnic_err("Failed to map va 0x%lx pa %pa size 0x%zx with err %d\n",
->  						va_start, &pa_start, size, err);
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index f798c44e090337..8bdb65e7686ff9 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -1615,7 +1615,7 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
->  	if (!iova)
->  		goto out_free_page;
->  
-> -	if (iommu_map(domain, iova, msi_addr, size, prot))
-> +	if (iommu_map(domain, iova, msi_addr, size, prot, GFP_KERNEL))
->  		goto out_free_iova;
->  
->  	INIT_LIST_HEAD(&msi_page->list);
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 5f6a85aea501ec..7dac062b58f039 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -930,7 +930,7 @@ static int iommu_create_device_direct_mappings(struct iommu_group *group,
->  			if (map_size) {
->  				ret = iommu_map(domain, addr - map_size,
->  						addr - map_size, map_size,
-> -						entry->prot);
-> +						entry->prot, GFP_KERNEL);
->  				if (ret)
->  					goto out;
->  				map_size = 0;
-> @@ -2360,31 +2360,31 @@ static int __iommu_map(struct iommu_domain *domain, unsigned long iova,
->  	return ret;
->  }
->  
-> -static int _iommu_map(struct iommu_domain *domain, unsigned long iova,
-> -		      phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
-> +int iommu_map(struct iommu_domain *domain, unsigned long iova,
-> +	      phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
->  {
->  	const struct iommu_domain_ops *ops = domain->ops;
->  	int ret;
->  
-> +	might_sleep_if(gfpflags_allow_blocking(gfp));
-> +
-> +	/* Discourage passing strange GFP flags */
-> +	if (WARN_ON_ONCE(gfp & (__GFP_COMP | __GFP_DMA | __GFP_DMA32 |
-> +				__GFP_HIGHMEM)))
-> +		return -EINVAL;
-> +
->  	ret = __iommu_map(domain, iova, paddr, size, prot, gfp);
->  	if (ret == 0 && ops->iotlb_sync_map)
->  		ops->iotlb_sync_map(domain, iova, size);
->  
->  	return ret;
->  }
-> -
-> -int iommu_map(struct iommu_domain *domain, unsigned long iova,
-> -	      phys_addr_t paddr, size_t size, int prot)
-> -{
-> -	might_sleep();
-> -	return _iommu_map(domain, iova, paddr, size, prot, GFP_KERNEL);
-> -}
->  EXPORT_SYMBOL_GPL(iommu_map);
->  
->  int iommu_map_atomic(struct iommu_domain *domain, unsigned long iova,
->  	      phys_addr_t paddr, size_t size, int prot)
->  {
-> -	return _iommu_map(domain, iova, paddr, size, prot, GFP_ATOMIC);
-> +	return iommu_map(domain, iova, paddr, size, prot, GFP_ATOMIC);
->  }
->  EXPORT_SYMBOL_GPL(iommu_map_atomic);
->  
-> diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
-> index 1e1d3509efae5e..22cc3bb0c6c55a 100644
-> --- a/drivers/iommu/iommufd/pages.c
-> +++ b/drivers/iommu/iommufd/pages.c
-> @@ -456,7 +456,8 @@ static int batch_iommu_map_small(struct iommu_domain *domain,
->  			size % PAGE_SIZE);
->  
->  	while (size) {
-> -		rc = iommu_map(domain, iova, paddr, PAGE_SIZE, prot);
-> +		rc = iommu_map(domain, iova, paddr, PAGE_SIZE, prot,
-> +			       GFP_KERNEL);
->  		if (rc)
->  			goto err_unmap;
->  		iova += PAGE_SIZE;
-> @@ -500,7 +501,8 @@ static int batch_to_domain(struct pfn_batch *batch, struct iommu_domain *domain,
->  		else
->  			rc = iommu_map(domain, iova,
->  				       PFN_PHYS(batch->pfns[cur]) + page_offset,
-> -				       next_iova - iova, area->iommu_prot);
-> +				       next_iova - iova, area->iommu_prot,
-> +				       GFP_KERNEL);
->  		if (rc)
->  			goto err_unmap;
->  		iova = next_iova;
-> diff --git a/drivers/media/platform/qcom/venus/firmware.c b/drivers/media/platform/qcom/venus/firmware.c
-> index 142d4c74017c04..07d4dceb5e72c7 100644
-> --- a/drivers/media/platform/qcom/venus/firmware.c
-> +++ b/drivers/media/platform/qcom/venus/firmware.c
-> @@ -158,7 +158,7 @@ static int venus_boot_no_tz(struct venus_core *core, phys_addr_t mem_phys,
->  	core->fw.mapped_mem_size = mem_size;
->  
->  	ret = iommu_map(iommu, VENUS_FW_START_ADDR, mem_phys, mem_size,
-> -			IOMMU_READ | IOMMU_WRITE | IOMMU_PRIV);
-> +			IOMMU_READ | IOMMU_WRITE | IOMMU_PRIV, GFP_KERNEL);
->  	if (ret) {
->  		dev_err(dev, "could not map video firmware region\n");
->  		return ret;
-> diff --git a/drivers/net/ipa/ipa_mem.c b/drivers/net/ipa/ipa_mem.c
-> index 9ec5af323f731d..991a7d39f06661 100644
-> --- a/drivers/net/ipa/ipa_mem.c
-> +++ b/drivers/net/ipa/ipa_mem.c
-> @@ -466,7 +466,8 @@ static int ipa_imem_init(struct ipa *ipa, unsigned long addr, size_t size)
->  	size = PAGE_ALIGN(size + addr - phys);
->  	iova = phys;	/* We just want a direct mapping */
->  
-> -	ret = iommu_map(domain, iova, phys, size, IOMMU_READ | IOMMU_WRITE);
-> +	ret = iommu_map(domain, iova, phys, size, IOMMU_READ | IOMMU_WRITE,
-> +			GFP_KERNEL);
->  	if (ret)
->  		return ret;
->  
-> @@ -574,7 +575,8 @@ static int ipa_smem_init(struct ipa *ipa, u32 item, size_t size)
->  	size = PAGE_ALIGN(size + addr - phys);
->  	iova = phys;	/* We just want a direct mapping */
->  
-> -	ret = iommu_map(domain, iova, phys, size, IOMMU_READ | IOMMU_WRITE);
-> +	ret = iommu_map(domain, iova, phys, size, IOMMU_READ | IOMMU_WRITE,
-> +			GFP_KERNEL);
->  	if (ret)
->  		return ret;
->  
-> diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
-> index cfcb759a87deac..9a82f0336d9537 100644
-> --- a/drivers/net/wireless/ath/ath10k/snoc.c
-> +++ b/drivers/net/wireless/ath/ath10k/snoc.c
-> @@ -1639,7 +1639,7 @@ static int ath10k_fw_init(struct ath10k *ar)
->  
->  	ret = iommu_map(iommu_dom, ar_snoc->fw.fw_start_addr,
->  			ar->msa.paddr, ar->msa.mem_size,
-> -			IOMMU_READ | IOMMU_WRITE);
-> +			IOMMU_READ | IOMMU_WRITE, GFP_KERNEL);
->  	if (ret) {
->  		ath10k_err(ar, "failed to map firmware region: %d\n", ret);
->  		goto err_iommu_detach;
-> diff --git a/drivers/net/wireless/ath/ath11k/ahb.c b/drivers/net/wireless/ath/ath11k/ahb.c
-> index d34a4d6325b2b4..df8fdc7067f99c 100644
-> --- a/drivers/net/wireless/ath/ath11k/ahb.c
-> +++ b/drivers/net/wireless/ath/ath11k/ahb.c
-> @@ -1021,7 +1021,7 @@ static int ath11k_ahb_fw_resources_init(struct ath11k_base *ab)
->  
->  	ret = iommu_map(iommu_dom, ab_ahb->fw.msa_paddr,
->  			ab_ahb->fw.msa_paddr, ab_ahb->fw.msa_size,
-> -			IOMMU_READ | IOMMU_WRITE);
-> +			IOMMU_READ | IOMMU_WRITE, GFP_KERNEL);
->  	if (ret) {
->  		ath11k_err(ab, "failed to map firmware region: %d\n", ret);
->  		goto err_iommu_detach;
-> @@ -1029,7 +1029,7 @@ static int ath11k_ahb_fw_resources_init(struct ath11k_base *ab)
->  
->  	ret = iommu_map(iommu_dom, ab_ahb->fw.ce_paddr,
->  			ab_ahb->fw.ce_paddr, ab_ahb->fw.ce_size,
-> -			IOMMU_READ | IOMMU_WRITE);
-> +			IOMMU_READ | IOMMU_WRITE, GFP_KERNEL);
->  	if (ret) {
->  		ath11k_err(ab, "failed to map firmware CE region: %d\n", ret);
->  		goto err_iommu_unmap;
-> diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
-> index 1cd4815a6dd197..80072b6b628358 100644
-> --- a/drivers/remoteproc/remoteproc_core.c
-> +++ b/drivers/remoteproc/remoteproc_core.c
-> @@ -643,7 +643,8 @@ static int rproc_handle_devmem(struct rproc *rproc, void *ptr,
->  	if (!mapping)
->  		return -ENOMEM;
->  
-> -	ret = iommu_map(rproc->domain, rsc->da, rsc->pa, rsc->len, rsc->flags);
-> +	ret = iommu_map(rproc->domain, rsc->da, rsc->pa, rsc->len, rsc->flags,
-> +			GFP_KERNEL);
->  	if (ret) {
->  		dev_err(dev, "failed to map devmem: %d\n", ret);
->  		goto out;
-> @@ -737,7 +738,7 @@ static int rproc_alloc_carveout(struct rproc *rproc,
->  		}
->  
->  		ret = iommu_map(rproc->domain, mem->da, dma, mem->len,
-> -				mem->flags);
-> +				mem->flags, GFP_KERNEL);
->  		if (ret) {
->  			dev_err(dev, "iommu_map failed: %d\n", ret);
->  			goto free_mapping;
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index 23c24fe98c00d4..e14f86a8ef5258 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -1480,7 +1480,8 @@ static int vfio_iommu_map(struct vfio_iommu *iommu, dma_addr_t iova,
->  
->  	list_for_each_entry(d, &iommu->domain_list, next) {
->  		ret = iommu_map(d->domain, iova, (phys_addr_t)pfn << PAGE_SHIFT,
-> -				npage << PAGE_SHIFT, prot | IOMMU_CACHE);
-> +				npage << PAGE_SHIFT, prot | IOMMU_CACHE,
-> +				GFP_KERNEL);
->  		if (ret)
->  			goto unwind;
->  
-> @@ -1777,8 +1778,8 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
->  				size = npage << PAGE_SHIFT;
->  			}
->  
-> -			ret = iommu_map(domain->domain, iova, phys,
-> -					size, dma->prot | IOMMU_CACHE);
-> +			ret = iommu_map(domain->domain, iova, phys, size,
-> +					dma->prot | IOMMU_CACHE, GFP_KERNEL);
->  			if (ret) {
->  				if (!dma->iommu_mapped) {
->  					vfio_unpin_pages_remote(dma, iova,
-> @@ -1866,7 +1867,7 @@ static void vfio_test_domain_fgsp(struct vfio_domain *domain)
->  		return;
->  
->  	ret = iommu_map(domain->domain, 0, page_to_phys(pages), PAGE_SIZE * 2,
-> -			IOMMU_READ | IOMMU_WRITE | IOMMU_CACHE);
-> +			IOMMU_READ | IOMMU_WRITE | IOMMU_CACHE, GFP_KERNEL);
->  	if (!ret) {
->  		size_t unmapped = iommu_unmap(domain->domain, 0, PAGE_SIZE);
->  
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index ec32f785dfdec1..fd1536de5b1df0 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -792,7 +792,7 @@ static int vhost_vdpa_map(struct vhost_vdpa *v, struct vhost_iotlb *iotlb,
->  			r = ops->set_map(vdpa, asid, iotlb);
->  	} else {
->  		r = iommu_map(v->domain, iova, pa, size,
-> -			      perm_to_iommu_flags(perm));
-> +			      perm_to_iommu_flags(perm), GFP_KERNEL);
->  	}
->  	if (r) {
->  		vhost_iotlb_del_range(iotlb, iova, iova + size - 1);
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 46e1347bfa2286..d2020994f292db 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -467,7 +467,7 @@ extern int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
->  extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
->  extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
->  extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
-> -		     phys_addr_t paddr, size_t size, int prot);
-> +		     phys_addr_t paddr, size_t size, int prot, gfp_t gfp);
->  extern int iommu_map_atomic(struct iommu_domain *domain, unsigned long iova,
->  			    phys_addr_t paddr, size_t size, int prot);
->  extern size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
-> @@ -773,7 +773,7 @@ static inline struct iommu_domain *iommu_get_domain_for_dev(struct device *dev)
->  }
->  
->  static inline int iommu_map(struct iommu_domain *domain, unsigned long iova,
-> -			    phys_addr_t paddr, size_t size, int prot)
-> +			    phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
->  {
->  	return -ENODEV;
->  }
-> -- 
-> 2.39.0
-> 
+SGkgR2VlcnQtc2FuLA0KDQo+IEZyb206IEdlZXJ0IFV5dHRlcmhvZXZlbiwgU2VudDogVHVlc2Rh
+eSwgSmFudWFyeSAyNCwgMjAyMyAxMTozNSBQTQ0KPiANCj4gSGkgU2hpbW9kYS1zYW4sDQo+IA0K
+PiBPbiBNb24sIEphbiAyMywgMjAyMyBhdCAyOjM1IEFNIFlvc2hpaGlybyBTaGltb2RhDQo+IDx5
+b3NoaWhpcm8uc2hpbW9kYS51aEByZW5lc2FzLmNvbT4gd3JvdGU6DQo+ID4gU2luY2UgUi1DYXIg
+R2VuNCBkb2Vucyd0IGhhdmUgdGhlIG1haW4gSVBNTVUgSU1TU1RSIHJlZ2lzdGVyLCBidXQNCj4g
+PiBlYWNoIGNhY2hlIElQTU1VIGhhcyBvd24gbW9kdWxlIGlkLiBTbywgdXBkYXRlIGRlc2NyaXB0
+aW9ucyBvZg0KPiA+IHJlbmVzYXMsaXBtbXUtbWFpbiBwcm9wZXJ0eSBmb3IgUi1DYXIgR2VuNC4N
+Cj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IFlvc2hpaGlybyBTaGltb2RhIDx5b3NoaWhpcm8uc2hp
+bW9kYS51aEByZW5lc2FzLmNvbT4NCj4gDQo+IFRoYW5rcyBmb3IgeW91ciBwYXRjaCENCg0KVGhh
+bmsgeW91IGZvciB5b3VyIHJldmlldyENCg0KPiA+IC0tLQ0KPiA+ICBUaGUgb2xkIFItQ2FyIFM0
+LTggZGF0YXNoZWV0IGhhZCBkZXNjcmliZWQgSVBNTVUgSU1TU1RSIHJlZ2lzdGVyLCBidXQNCj4g
+PiAgdGhlIGxhdGVzdCBkYXRhc2hlZXQgdW5kb2N1bWVudGVkIHRoZSByZWdpc3Rlci4gU28sIHVw
+ZGF0ZSB0aGUgcHJvcGV0aWVzDQo+ID4gIGRlc2NyaXB0aW9uLiBOb3RlIHRoYXQgdGhlIHNlY29u
+ZCBhcmd1bWVudCBpcyBub3QgdXNlZCBvbiB0aGUgZHJpdmVyLg0KPiANCj4gRFQgZGVzY3JpYmVz
+IGhhcmR3YXJlLCBub3Qgc29mdHdhcmUgcG9saWN5Lg0KDQpJIHRoaW5rIHNvLg0KDQo+ID4gIFNv
+IG5vIGJlaGF2aW9yIGNoYW5nZS4NCj4gDQo+IFNvIHdoZXJlIGRvIHdlIGdldCB0aGUgbW9kdWxl
+IGlkIG51bWJlcnMgdG8gdXNlLCBpZiB0aGV5IGFyZSBubyBsb25nZXINCj4gZG9jdW1lbnRlZCBp
+biB0aGUgSGFyZHdhcmUgTWFudWFsPw0KDQpJZiBzbywgd2UgY2Fubm90IGdldCB0aGUgbW9kdWxl
+IGlkIG51bWJlcnMuIFNvLCBzaG91bGQgd2UgdXNlIG90aGVyDQppbmZvcm1hdGlvbiB3aGljaCBp
+cyBjb21wbGV0ZWx5IGZpeGVkIGluc3RlYWQ/IEkgaGF2ZSBzb21lIGlkZWFzOg0KMSkgSnVzdCAw
+IChvciBvdGhlciBmaXhlZCB2YWx1ZSkgaWYgdGhlIElNU1NUUiByZWdpc3RlciBkb2Vzbid0IGV4
+aXN0Lg0KMikgU2VxdWVudGlhbCBudW1iZXJzIGZyb20gcmVnaXN0ZXIgYmFzZSBvZmZzZXQuDQog
+ICBJbiBSLUNhciBTNDogaXBtbXVfcnQwIGlzIHRoZSBmaXJzdCBub2RlIGZyb20gcmVnaXN0ZXIg
+YmFzZSBvZmZzZXQsDQogICBhbmQgaXBtbXVfcnQxIGlzIHRoZSBzZWNvbmQgb25lLg0KICAgU28s
+IGlwbW11X3J0MCBpcyAwLCBpcG1tdV9ydDEgaXMgMSwgaXBtbXVfZHMwIGlzIDIgYW5kIGlwbW11
+X2hjIGlzIDMuDQozKSBVc2luZyBiYXNlIGFkZHJlc3MgdXBwZXIgMTYtYml0cy4gDQogICBJbiBS
+LUNhciBTNDogaXBtbXVfcnQwIGlzIDB4ZWU0ODAwMDAuIFNvLCB0aGUgdmFsdWUgaXMgMHhlZTQ4
+Lg0KDQpQZXJoYXBzLCB0aGUgb3B0aW9uIDEpIGlzIHJlYXNvbmFibGUsIEkgdGhpbmsuIEJ1dCwg
+d2hhdCBkbyB5b3UgdGhpbms/DQoNCkJlc3QgcmVnYXJkcywNCllvc2hpaGlybyBTaGltb2RhDQoN
+Cj4gPiAtLS0gYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaW9tbXUvcmVuZXNh
+cyxpcG1tdS12bXNhLnlhbWwNCj4gPiArKysgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmlu
+ZGluZ3MvaW9tbXUvcmVuZXNhcyxpcG1tdS12bXNhLnlhbWwNCj4gPiBAQCAtNzYsMTQgKzc2LDE1
+IEBAIHByb3BlcnRpZXM6DQo+ID4gICAgICBpdGVtczoNCj4gPiAgICAgICAgLSBpdGVtczoNCj4g
+PiAgICAgICAgICAgIC0gZGVzY3JpcHRpb246IHBoYW5kbGUgdG8gbWFpbiBJUE1NVQ0KPiA+IC0g
+ICAgICAgICAgLSBkZXNjcmlwdGlvbjogdGhlIGludGVycnVwdCBiaXQgbnVtYmVyIGFzc29jaWF0
+ZWQgd2l0aCB0aGUgcGFydGljdWxhcg0KPiA+IC0gICAgICAgICAgICAgIGNhY2hlIElQTU1VIGRl
+dmljZS4gVGhlIGludGVycnVwdCBiaXQgbnVtYmVyIG5lZWRzIHRvIG1hdGNoIHRoZSBtYWluDQo+
+ID4gLSAgICAgICAgICAgICAgSVBNTVUgSU1TU1RSIHJlZ2lzdGVyLiBPbmx5IHVzZWQgYnkgY2Fj
+aGUgSVBNTVUgaW5zdGFuY2VzLg0KPiA+ICsgICAgICAgICAgLSBkZXNjcmlwdGlvbjogVGhlIGlu
+dGVycnVwdCBiaXQgbnVtYmVyIG9yIG1vZHVsZSBpZCBhc3NvY2lhdGVkIHdpdGgNCj4gPiArICAg
+ICAgICAgICAgICB0aGUgcGFydGljdWxhciBjYWNoZSBJUE1NVSBkZXZpY2UuIFRoZSBpbnRlcnJ1
+cHQgYml0IG51bWJlciBuZWVkcw0KPiA+ICsgICAgICAgICAgICAgIHRvIG1hdGNoIHRoZSBtYWlu
+IElQTU1VIElNU1NUUiByZWdpc3Rlci4gT25seSB1c2VkIGJ5IGNhY2hlIElQTU1VDQo+ID4gKyAg
+ICAgICAgICAgICAgaW5zdGFuY2VzLg0KPiA+ICAgICAgZGVzY3JpcHRpb246DQo+ID4gICAgICAg
+IFJlZmVyZW5jZSB0byB0aGUgbWFpbiBJUE1NVSBwaGFuZGxlIHBsdXMgMSBjZWxsLiBUaGUgY2Vs
+bCBpcw0KPiA+IC0gICAgICB0aGUgaW50ZXJydXB0IGJpdCBudW1iZXIgYXNzb2NpYXRlZCB3aXRo
+IHRoZSBwYXJ0aWN1bGFyIGNhY2hlIElQTU1VDQo+ID4gLSAgICAgIGRldmljZS4gVGhlIGludGVy
+cnVwdCBiaXQgbnVtYmVyIG5lZWRzIHRvIG1hdGNoIHRoZSBtYWluIElQTU1VIElNU1NUUg0KPiA+
+IC0gICAgICByZWdpc3Rlci4gT25seSB1c2VkIGJ5IGNhY2hlIElQTU1VIGluc3RhbmNlcy4NCj4g
+PiArICAgICAgdGhlIGludGVycnVwdCBiaXQgbnVtYmVyIG9yIG1vZHVsZSBpZCBhc3NvY2lhdGVk
+IHdpdGggdGhlIHBhcnRpY3VsYXINCj4gPiArICAgICAgY2FjaGUgSVBNTVUgZGV2aWNlLiBUaGUg
+aW50ZXJydXB0IGJpdCBudW1iZXIgbmVlZHMgdG8gbWF0Y2ggdGhlIG1haW4NCj4gPiArICAgICAg
+SVBNTVUgSU1TU1RSIHJlZ2lzdGVyLiBPbmx5IHVzZWQgYnkgY2FjaGUgSVBNTVUgaW5zdGFuY2Vz
+Lg0KPiANCj4gR3J7b2V0amUsZWV0aW5nfXMsDQo+IA0KPiAgICAgICAgICAgICAgICAgICAgICAg
+ICBHZWVydA0KPiANCj4gLS0NCj4gR2VlcnQgVXl0dGVyaG9ldmVuIC0tIFRoZXJlJ3MgbG90cyBv
+ZiBMaW51eCBiZXlvbmQgaWEzMiAtLSBnZWVydEBsaW51eC1tNjhrLm9yZw0KPiANCj4gSW4gcGVy
+c29uYWwgY29udmVyc2F0aW9ucyB3aXRoIHRlY2huaWNhbCBwZW9wbGUsIEkgY2FsbCBteXNlbGYg
+YSBoYWNrZXIuIEJ1dA0KPiB3aGVuIEknbSB0YWxraW5nIHRvIGpvdXJuYWxpc3RzIEkganVzdCBz
+YXkgInByb2dyYW1tZXIiIG9yIHNvbWV0aGluZyBsaWtlIHRoYXQuDQo+ICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgLS0gTGludXMgVG9ydmFsZHMNCg==
