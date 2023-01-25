@@ -1,170 +1,118 @@
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from xtrwsqbh.outbound-mail.sendgrid.net (xtrwsqbh.outbound-mail.sendgrid.net [167.89.100.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DE7C3FE1
-	for <iommu@lists.linux.dev>; Wed, 25 Jan 2023 14:55:45 +0000 (UTC)
-Received: from zn.tnic (p5de8e9fe.dip0.t-ipconnect.de [93.232.233.254])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id C565B1EC0493;
-	Wed, 25 Jan 2023 15:55:43 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-	t=1674658543;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-	bh=Y5InzrMMR7tYD7K8IQxbCKmCrcbndsF98jURDpiEvtA=;
-	b=QhsVXgG9+mQg62pSTSotZNXiTHgj4Kr6DjoD6RzyyIrLoNuw0inT+OEDkhvYR4sZ9y9twf
-	dkUtWiZR9A2rC/a29R9t7FALlEu268HgkolBGU6CkU1ELWPMp15xxUqQFFuhLce3GKLUNv
-	ZZy1MIaPxdrIzvmknDNQqsceFa0jwx4=
-Date: Wed, 25 Jan 2023 15:55:40 +0100
-From: Borislav Petkov <bp@alien8.de>
-To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc: "hpa@zytor.com" <hpa@zytor.com>, KY Srinivasan <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	"wei.liu@kernel.org" <wei.liu@kernel.org>,
-	Dexuan Cui <decui@microsoft.com>,
-	"luto@kernel.org" <luto@kernel.org>,
-	"peterz@infradead.org" <peterz@infradead.org>,
-	"davem@davemloft.net" <davem@davemloft.net>,
-	"edumazet@google.com" <edumazet@google.com>,
-	"kuba@kernel.org" <kuba@kernel.org>,
-	"pabeni@redhat.com" <pabeni@redhat.com>,
-	"lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-	"robh@kernel.org" <robh@kernel.org>, "kw@linux.com" <kw@linux.com>,
-	"bhelgaas@google.com" <bhelgaas@google.com>,
-	"arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
-	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-	"brijesh.singh@amd.com" <brijesh.singh@amd.com>,
-	"tglx@linutronix.de" <tglx@linutronix.de>,
-	"mingo@redhat.com" <mingo@redhat.com>,
-	"dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-	Tianyu Lan <Tianyu.Lan@microsoft.com>,
-	"kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
-	"sathyanarayanan.kuppuswamy@linux.intel.com" <sathyanarayanan.kuppuswamy@linux.intel.com>,
-	"ak@linux.intel.com" <ak@linux.intel.com>,
-	"isaku.yamahata@intel.com" <isaku.yamahata@intel.com>,
-	"dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-	"jane.chu@oracle.com" <jane.chu@oracle.com>,
-	"seanjc@google.com" <seanjc@google.com>,
-	"tony.luck@intel.com" <tony.luck@intel.com>,
-	"x86@kernel.org" <x86@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v5 06/14] x86/ioremap: Support hypervisor specified range
- to map as encrypted
-Message-ID: <Y9FC7Dpzr5Uge/Mi@zn.tnic>
-References: <1673559753-94403-1-git-send-email-mikelley@microsoft.com>
- <1673559753-94403-7-git-send-email-mikelley@microsoft.com>
- <Y8r2TjW/R3jymmqT@zn.tnic>
- <BYAPR21MB168897DBA98E91B72B4087E1D7CA9@BYAPR21MB1688.namprd21.prod.outlook.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4251379C6
+	for <iommu@lists.linux.dev>; Wed, 25 Jan 2023 22:18:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kwiboo.se;
+	h=from:subject:in-reply-to:references:mime-version:to:cc:
+	content-transfer-encoding:content-type:cc:content-type:from:subject:to;
+	s=s1; bh=v/+7TIKYeL3kSElncchHEqaouv/ZY1YfqWgkjj3Wl8c=;
+	b=lG96mQWWdWgwMCw2+oIkuZjnI+KQC/mIrcJdO6BxadIf1FWJvJRMCJMI3nFxpdh/1jw4
+	RyNi+903jOXwy3eHQNVVluXBRKDdgkYk8W7S0dI86YBjCu7UhBm0KgNHoWor3nO4DH0Lo1
+	qHpwW1cEM5nMw7jcoc0qRyQW+oQ390mwGDF50yNaLJwDV2ZcLbxS+wBlnVribstX9OI4at
+	epcImt3UejXSGdstAu5cLVBlTR3g4C2wtxY5SIfssjXA2R7fhYI5gllHsZYCkqgjwIxEGG
+	W3YSbHv60yUK2kNMHimtLTI7m1X+Ti6BOIeV/vdOmJVeGyLctv/WxQaUBhGF67dQ==
+Received: by filterdrecv-8569859b9-97x8c with SMTP id filterdrecv-8569859b9-97x8c-1-63D1AAA4-23
+        2023-01-25 22:18:12.571250041 +0000 UTC m=+5958685.948296575
+Received: from bionic.localdomain (unknown)
+	by geopod-ismtpd-5-2 (SG)
+	with ESMTP
+	id jPjw9qkGQaSNJoFiiH0Fjw
+	Wed, 25 Jan 2023 22:18:12.364 +0000 (UTC)
+From: Jonas Karlman <jonas@kwiboo.se>
+Subject: [PATCH 1/3] iommu: rockchip: Fix discovery table address encoding
+Date: Wed, 25 Jan 2023 22:18:12 +0000 (UTC)
+Message-Id: <20230125221809.3275481-2-jonas@kwiboo.se>
+X-Mailer: git-send-email 2.39.1
+In-Reply-To: <20230125221809.3275481-1-jonas@kwiboo.se>
+References: <20230125221809.3275481-1-jonas@kwiboo.se>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <BYAPR21MB168897DBA98E91B72B4087E1D7CA9@BYAPR21MB1688.namprd21.prod.outlook.com>
+X-SG-EID: 
+ =?us-ascii?Q?TdbjyGynYnRZWhH+7lKUQJL+ZxmxpowvO2O9SQF5CwCVrYgcwUXgU5DKUU3QxA?=
+ =?us-ascii?Q?fZekEeQsTe+RrMu3cja6a0hzE9y3ON40KepxhFB?=
+ =?us-ascii?Q?b7izHX1JjXxyuEqDlHxxqRyDUjHN6Q7El3VcYON?=
+ =?us-ascii?Q?IjJcWc2HkzGQB9uZ1ZUBAwtO2Uy94ebmA5WmwUc?=
+ =?us-ascii?Q?KdHdutd19gGnwDs1wnHeKwL8Equsk0ySpnS9=2FOX?=
+ =?us-ascii?Q?0OP6cEsvbsNMcvuFqgWDw0VBzlQQi8E=2Fxp9qGL?=
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Heiko Stuebner <heiko@sntech.de>
+Cc: Robin Murphy <robin.murphy@arm.com>, Benjamin Gaignard
+	<benjamin.gaignard@collabora.com>, iommu@lists.linux.dev,
+	linux-rockchip@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
+	Jonas Karlman <jonas@kwiboo.se>
+X-Entity-ID: P7KYpSJvGCELWjBME/J5tg==
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 
-On Sat, Jan 21, 2023 at 04:10:23AM +0000, Michael Kelley (LINUX) wrote:
-> Per the commit message for 009767dbf42a, it's not safe to read MSR_AMD64_SEV
-> on all implementations of AMD processors.
+The address to the discovery table is currently encoded using the
+following bit layout.
 
-1. Why does that matter to you? This is Hygon.
+ 31:12 - Address bit 31:0
+ 11: 4 - Address bit 39:32
 
-2. The MSR access is behind CPUID check.
+This is also the bit layout used by the vendor kernel.
 
-> CC_ATTR_ACCESS_IOAPIC_ENCRYPTED is used in io_apic_set_fixmap(), which is
-> called on all Intel/AMD systems without any qualifications.   Even if
-> rdmsrl_safe() works at this point in boot, I'm a little leery of reading a new
-> MSR in a path that essentially every x86 bare-metal system or VM takes during
-> boot.
+However, testing has shown that addresses to the discovery/page tables
+and memory pages are all encoded using the same bit layout.
 
-You read the MSR once and cache it. sme_enable() already does that. I don't see
-what the problem is.
+IOMMU v1:
+ 31:12 - Address bit 31:0
 
-> Or am I being overly paranoid about old processor models or hypervisor
-> versions potentially doing something weird?
+IOMMU v2:
+ 31:12 - Address bit 31:0
+ 11: 8 - Address bit 35:32
+  7: 4 - Address bit 39:36
 
-Yes, you are. :)
+Change to use the mk_dtentries ops to encode the discovery table address
+currently. Also update the bit layout comment for the page address.
 
-If they're doing something weird which is out of spec, then we'll deal with them
-later.
+These changes render the dte_addr_phys and dma_addr_dte ops unused
+and will be removed in a following patch.
 
-> But in any case, the whole point of cc_platform_has() is to provide a level of
-> abstraction from the hardware registers, and it's fully safe to use on every x86
-> bare-metal system or VM.  And while I don't anticipate it now, maybe there's
-> some future scheme where a paravisor-like entity could be used with Intel
-> TDX.  It seems like using a cc_platform_has() abstraction is better than directly
-> accessing the MSR.
+Fixes: 227014b33f62 ("iommu: rockchip: Add internal ops to handle variants")
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ drivers/iommu/rockchip-iommu.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-That's fine but we're talking about this particular implementation and that is
-vTOM-like with the address space split. If TDX does address space split later,
-we can accomodate it too. (Although I think they are not interested in this).
-
-And if you really want to use cc_platform_has(), we could do
-
-	cc_platform_has(CC_ADDRESS_SPACE_SPLIT_ON_A_PARAVISOR)
-
-or something with a better name.
-
-The point is, you want to do things which are specific for this particular
-implementation. If so, then check for it. Do not do hacky things which get the
-work done for your case but can very easily be misused by others.
-
-> My resolution of the TPM driver issue is admittedly a work-around.   I think
-> of it as temporary in anticipation of future implementations of PCIe TDISP
-> hardware, which allows PCI devices to DMA directly into guest encrypted
-> memory.
-
-Yap, that sounds real nice.
-
-> TDISP also places the device's BAR values in an encrypted portion
-> of the GPA space. Assuming TDISP hardware comes along in the next couple
-> of years, Linux will need a robust way to deal with a mix of PCI devices
-> being in unencrypted and encrypted GPA space.  I don't know how a
-> specific device will be mapped correctly, but I hope it can happen in the
-> generic PCI code, and not by modifying each device driver.
-
-I guess those devices would advertize that capability somehow so that code can
-query it and act accordingly.
-
-> It's probably premature to build that robust mechanism now, but when it comes,
-> my work-around would be replaced.
-
-It would be replaced if it doesn't have any users. By the looks of it, it'll
-soon grow others and then good luck removing it.
-
-> With all that in mind, I don't want to modify the TPM driver to special-case
-> its MMIO space being encrypted.  FWIW, the TPM driver today uses
-> devm_ioremap_resource() to do the mapping, which defaults to mapping
-> decrypted except for the exceptions implemented in __ioremap_caller().
-> There's no devm_* option for specifying encrypted.
-
-You mean, it is hard to add a DEVM_IOREMAP_ENCRYPTED type which will have
-__devm_ioremap() call ioremap_encrypted()?
-
-Or define a IORESOURCE_ENCRYPTED and pass it through the ioresource flags?
-
-Why is that TPM driver so precious that it can be touched and the arch code
-would have to accept hacks?
-
-> Handling decrypted vs. encrypted in the driver would require extending the
-> driver API to provide an "encrypted" option, and that seems like going in the
-> wrong long-term direction.
-
-Sorry, I can't follow here.
-
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index f30db22ea5d7..3f92b95e6b67 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -277,8 +277,8 @@ static u32 rk_mk_pte(phys_addr_t page, int prot)
+ /*
+  * In v2:
+  * 31:12 - Page address bit 31:0
+- *  11:9 - Page address bit 34:32
+- *   8:4 - Page address bit 39:35
++ * 11: 8 - Page address bit 35:32
++ *  7: 4 - Page address bit 39:36
+  *     3 - Security
+  *     2 - Writable
+  *     1 - Readable
+@@ -576,7 +576,7 @@ static void log_iova(struct rk_iommu *iommu, int index, dma_addr_t iova)
+ 	page_offset = rk_iova_page_offset(iova);
+ 
+ 	mmu_dte_addr = rk_iommu_read(base, RK_MMU_DTE_ADDR);
+-	mmu_dte_addr_phys = rk_ops->dte_addr_phys(mmu_dte_addr);
++	mmu_dte_addr_phys = rk_ops->pt_address(mmu_dte_addr);
+ 
+ 	dte_addr_phys = mmu_dte_addr_phys + (4 * dte_index);
+ 	dte_addr = phys_to_virt(dte_addr_phys);
+@@ -966,7 +966,7 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
+ 
+ 	for (i = 0; i < iommu->num_mmu; i++) {
+ 		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR,
+-			       rk_ops->dma_addr_dte(rk_domain->dt_dma));
++			       rk_ops->mk_dtentries(rk_domain->dt_dma));
+ 		rk_iommu_base_command(iommu->bases[i], RK_MMU_CMD_ZAP_CACHE);
+ 		rk_iommu_write(iommu->bases[i], RK_MMU_INT_MASK, RK_MMU_IRQ_MASK);
+ 	}
 -- 
-Regards/Gruss,
-    Boris.
+2.39.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
