@@ -1,31 +1,45 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E2A941C29
-	for <iommu@lists.linux.dev>; Wed, 25 Jan 2023 10:44:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6DB011C29
+	for <iommu@lists.linux.dev>; Wed, 25 Jan 2023 10:59:30 +0000 (UTC)
 Received: from 8bytes.org (p200300c27714bc0086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:7714:bc00:86ad:4f9d:2505:dd0d])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 84CC0262B81;
-	Wed, 25 Jan 2023 11:44:48 +0100 (CET)
+	by mail.8bytes.org (Postfix) with ESMTPSA id EA1A7262E65;
+	Wed, 25 Jan 2023 11:59:28 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1674643488;
-	bh=Ilub4utYrtn510+vgmeCYSL2yOYdmVh9IKnzwy00Ee0=;
+	s=default; t=1674644369;
+	bh=T38KYBmqOO/YysbFxidRcHI2EqxeKT2mSwZbXhYqf1E=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=QCNsFEJPFAJYAyhhp7zelWTtZ9GUm8HUPteiuXl1wKrqCuzLw5BN8A6iYkPssrCig
-	 W3D+pE4WbY7mjEyRR7EDrhmB+2Izv+JZhz9T0uLGE7fukhPwBU9IKM05ZtYQWEx2fz
-	 CH5TubfzxR2hFoD2YMM3Lww9qMvl5yLRP55RiJrctJjcjpgYqKnqErrGgw1b45fm4X
-	 Bk97tp2PPT9AMVWlXc36+51mkzmmVrjW5OfwvYYkG5HMJ0bEY7Djogk1vQ4fAZt0Zu
-	 Zc5XHIb4JrqLIQ1fkNokdlkoRTn9LiQh49FF6MqaBGijZjUib6WnU62eTqUchM9Q54
-	 J6f8UGtEkdtDg==
-Date: Wed, 25 Jan 2023 11:44:47 +0100
+	b=xjLIYBe2Reb4sUbyDIO/QWp7US6P8C31V+nRPiKC12bUvIf7ZM2sEz6rexMly82MG
+	 SdqC2ipNyx624847dznAPsTr5JegX+avBcrYfRuhpCCtUCj00j5UMMKFv2s5yqcp78
+	 M0y7wdWzVXQ3svUwvlcuJMoxQJuspChvYRhYbBD4VgYfSxytDzzifVhHBhI3LbACxs
+	 T3fe0NZnfc4OI4+mzTVEq4TCO9vBUsWz4/KYFySgVFLjFM48o+FEL/Pas2FYAxM+s5
+	 h6WCzD311EPYK4UyWDMAMAz7XrOhVE163Ksfw3L/LtMiYeejlNUntipX85M2JSVOt+
+	 8KBgiGtflHGcg==
+Date: Wed, 25 Jan 2023 11:59:27 +0100
 From: Joerg Roedel <joro@8bytes.org>
-To: Will Deacon <will@kernel.org>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com,
-	kernel-team@android.com
-Subject: Re: [GIT PULL v2] iommu/arm-smmu: Updates for 6.3
-Message-ID: <Y9EIHxU21Alud4qo@8bytes.org>
-References: <20230124142957.GA26873@willie-the-truck>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	ath10k@lists.infradead.org, ath11k@lists.infradead.org,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+	kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
+	linux-rdma@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+	linux-s390@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-tegra@vger.kernel.org, linux-wireless@vger.kernel.org,
+	netdev@vger.kernel.org, nouveau@lists.freedesktop.org,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	virtualization@lists.linux-foundation.org
+Subject: Re: [PATCH v3 00/10] Let iommufd charge IOPTE allocations to the
+ memory cgroup
+Message-ID: <Y9ELj1yKsE58mlgi@8bytes.org>
+References: <0-v3-76b587fe28df+6e3-iommu_map_gfp_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -34,10 +48,27 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230124142957.GA26873@willie-the-truck>
+In-Reply-To: <0-v3-76b587fe28df+6e3-iommu_map_gfp_jgg@nvidia.com>
 
-On Tue, Jan 24, 2023 at 02:29:59PM +0000, Will Deacon wrote:
->   git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git tags/arm-smmu-updates
+On Mon, Jan 23, 2023 at 04:35:53PM -0400, Jason Gunthorpe wrote:
+> Jason Gunthorpe (10):
+>   iommu: Add a gfp parameter to iommu_map()
+>   iommu: Remove iommu_map_atomic()
+>   iommu: Add a gfp parameter to iommu_map_sg()
+>   iommu/dma: Use the gfp parameter in __iommu_dma_alloc_noncontiguous()
+>   iommufd: Use GFP_KERNEL_ACCOUNT for iommu_map()
+>   iommu/intel: Add a gfp parameter to alloc_pgtable_page()
+>   iommu/intel: Support the gfp argument to the map_pages op
+>   iommu/intel: Use GFP_KERNEL in sleepable contexts
+>   iommu/s390: Push the gfp parameter to the kmem_cache_alloc()'s
+>   iommu/s390: Use GFP_KERNEL in sleepable contexts
 
-Pulled. Thanks a lot, Will.
+Merged into branch iommu-memory-accounting and merged that branch into
+core.
 
+The merge commit contains your cover-letter descriptions. Given all
+tests pass I will push it out later today.
+
+Regards,
+
+	Joerg
