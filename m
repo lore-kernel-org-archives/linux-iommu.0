@@ -1,102 +1,43 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 230BE1C29
-	for <iommu@lists.linux.dev>; Wed, 25 Jan 2023 10:42:17 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2DFA74B3;
-	Wed, 25 Jan 2023 02:42:58 -0800 (PST)
-Received: from [10.57.90.68] (unknown [10.57.90.68])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 013D33F71E;
-	Wed, 25 Jan 2023 02:42:14 -0800 (PST)
-Message-ID: <3c3e1dc2-1f66-565c-c677-2eae368e10be@arm.com>
-Date: Wed, 25 Jan 2023 10:42:13 +0000
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E2A941C29
+	for <iommu@lists.linux.dev>; Wed, 25 Jan 2023 10:44:55 +0000 (UTC)
+Received: from 8bytes.org (p200300c27714bc0086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:7714:bc00:86ad:4f9d:2505:dd0d])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 84CC0262B81;
+	Wed, 25 Jan 2023 11:44:48 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1674643488;
+	bh=Ilub4utYrtn510+vgmeCYSL2yOYdmVh9IKnzwy00Ee0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=QCNsFEJPFAJYAyhhp7zelWTtZ9GUm8HUPteiuXl1wKrqCuzLw5BN8A6iYkPssrCig
+	 W3D+pE4WbY7mjEyRR7EDrhmB+2Izv+JZhz9T0uLGE7fukhPwBU9IKM05ZtYQWEx2fz
+	 CH5TubfzxR2hFoD2YMM3Lww9qMvl5yLRP55RiJrctJjcjpgYqKnqErrGgw1b45fm4X
+	 Bk97tp2PPT9AMVWlXc36+51mkzmmVrjW5OfwvYYkG5HMJ0bEY7Djogk1vQ4fAZt0Zu
+	 Zc5XHIb4JrqLIQ1fkNokdlkoRTn9LiQh49FF6MqaBGijZjUib6WnU62eTqUchM9Q54
+	 J6f8UGtEkdtDg==
+Date: Wed, 25 Jan 2023 11:44:47 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, robin.murphy@arm.com,
+	kernel-team@android.com
+Subject: Re: [GIT PULL v2] iommu/arm-smmu: Updates for 6.3
+Message-ID: <Y9EIHxU21Alud4qo@8bytes.org>
+References: <20230124142957.GA26873@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH] dt-bindings: iommu: renesas,ipmmu-vmsa: Update
- descriptions for R-Car Gen4
-Content-Language: en-GB
-To: Geert Uytterhoeven <geert@linux-m68k.org>,
- Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
- "robh+dt@kernel.org" <robh+dt@kernel.org>,
- "krzysztof.kozlowski+dt@linaro.org" <krzysztof.kozlowski+dt@linaro.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>
-References: <20230123012940.1250879-1-yoshihiro.shimoda.uh@renesas.com>
- <CAMuHMdX92KMeON0xC9p17kiqWT7ksEBX_NyPiiQk0fLaucDZBA@mail.gmail.com>
- <TYBPR01MB5341B023178B4A10DE52B844D8CE9@TYBPR01MB5341.jpnprd01.prod.outlook.com>
- <CAMuHMdXXnu88Tn2ucuHZK=3G18v-nCfaTYpomchRXBu3bD7UuA@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <CAMuHMdXXnu88Tn2ucuHZK=3G18v-nCfaTYpomchRXBu3bD7UuA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230124142957.GA26873@willie-the-truck>
 
-On 2023-01-25 08:54, Geert Uytterhoeven wrote:
-> Hi Shimoda-san,
-> 
-> On Wed, Jan 25, 2023 at 1:49 AM Yoshihiro Shimoda
-> <yoshihiro.shimoda.uh@renesas.com> wrote:
->>> From: Geert Uytterhoeven, Sent: Tuesday, January 24, 2023 11:35 PM
->>> On Mon, Jan 23, 2023 at 2:35 AM Yoshihiro Shimoda
->>> <yoshihiro.shimoda.uh@renesas.com> wrote:
->>>> Since R-Car Gen4 doens't have the main IPMMU IMSSTR register, but
->>>> each cache IPMMU has own module id. So, update descriptions of
->>>> renesas,ipmmu-main property for R-Car Gen4.
->>>>
->>>> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> 
->>>> ---
->>>>   The old R-Car S4-8 datasheet had described IPMMU IMSSTR register, but
->>>>   the latest datasheet undocumented the register. So, update the propeties
->>>>   description. Note that the second argument is not used on the driver.
->>>
->>> DT describes hardware, not software policy.
->>
->> I think so.
->>
->>>>   So no behavior change.
->>>
->>> So where do we get the module id numbers to use, if they are no longer
->>> documented in the Hardware Manual?
->>
->> If so, we cannot get the module id numbers. So, should we use other
->> information which is completely fixed instead? I have some ideas:
->> 1) Just 0 (or other fixed value) if the IMSSTR register doesn't exist.
->> 2) Sequential numbers from register base offset.
->>     In R-Car S4: ipmmu_rt0 is the first node from register base offset,
->>     and ipmmu_rt1 is the second one.
->>     So, ipmmu_rt0 is 0, ipmmu_rt1 is 1, ipmmu_ds0 is 2 and ipmmu_hc is 3.
->> 3) Using base address upper 16-bits.
->>     In R-Car S4: ipmmu_rt0 is 0xee480000. So, the value is 0xee48.
->>
->> Perhaps, the option 1) is reasonable, I think. But, what do you think?
-> 
-> I would not make up numbers, as that would cause confusion with SoCs
-> where the numbers do match the hardware.
-> As the driver doesn't use the module id number (it already loops
-> over all domains, instead of checking IMSSTR, probably because of
-> historical (R-Car Gen2) reasons?), what about dropping it from the
-> property? I.e. add "minItems: 1", possibly only when compatible with
-> renesas,rcar-gen4-ipmmu-vmsa?
+On Tue, Jan 24, 2023 at 02:29:59PM +0000, Will Deacon wrote:
+>   git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git tags/arm-smmu-updates
 
-Right, if there really is no meaningful ID for this model then its 
-binding should not require one.
+Pulled. Thanks a lot, Will.
 
-> BTW, the related IMCTR register is still documented, and the driver
-> does enable the interrupt bit (IMCTR_INTEN), so I'm wondering how the
-> hardware (documentation) people intend this to be used...
-> Perhaps IMCTR_INTEN will be removed/undocumented, too?
-> Or perhaps the removal/undocumentation of IMSSTR was a mistake?
-
-I guess it should be pretty straightforward to just try reading the 
-expected IMSSTR register locations on this SoC to double-check whether 
-anything is there.
-
-Thanks,
-Robin.
