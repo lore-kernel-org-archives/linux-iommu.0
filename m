@@ -1,45 +1,38 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6DB011C29
-	for <iommu@lists.linux.dev>; Wed, 25 Jan 2023 10:59:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 80AE41C29
+	for <iommu@lists.linux.dev>; Wed, 25 Jan 2023 11:05:08 +0000 (UTC)
 Received: from 8bytes.org (p200300c27714bc0086ad4f9d2505dd0d.dip0.t-ipconnect.de [IPv6:2003:c2:7714:bc00:86ad:4f9d:2505:dd0d])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id EA1A7262E65;
-	Wed, 25 Jan 2023 11:59:28 +0100 (CET)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 2C55D262E57;
+	Wed, 25 Jan 2023 12:05:07 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1674644369;
-	bh=T38KYBmqOO/YysbFxidRcHI2EqxeKT2mSwZbXhYqf1E=;
+	s=default; t=1674644707;
+	bh=oWJS0LBFuo75V0UDkvT4uRIAxgDGoN8u+uH5AtaO5Z4=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=xjLIYBe2Reb4sUbyDIO/QWp7US6P8C31V+nRPiKC12bUvIf7ZM2sEz6rexMly82MG
-	 SdqC2ipNyx624847dznAPsTr5JegX+avBcrYfRuhpCCtUCj00j5UMMKFv2s5yqcp78
-	 M0y7wdWzVXQ3svUwvlcuJMoxQJuspChvYRhYbBD4VgYfSxytDzzifVhHBhI3LbACxs
-	 T3fe0NZnfc4OI4+mzTVEq4TCO9vBUsWz4/KYFySgVFLjFM48o+FEL/Pas2FYAxM+s5
-	 h6WCzD311EPYK4UyWDMAMAz7XrOhVE163Ksfw3L/LtMiYeejlNUntipX85M2JSVOt+
-	 8KBgiGtflHGcg==
-Date: Wed, 25 Jan 2023 11:59:27 +0100
+	b=mV3tL2Qj4IsD4klO7XjicPz8pjaUpUPGzwcyQPmKJ5sOfRXIaHbKX1QGcDKf7nrLM
+	 jmjqQT6lF6/7yNzH6GcBle8jFIyX7J+GCAmlNZm7KhzmKWb9cZFbarrcWWi66TMq/Y
+	 9cEzObSD0Lo4PQVOPzEqzJ3h91ENCCMOGAQ62hbnF1W9MvaIDGqEBP75CGtHjXedNV
+	 cZVuW8VFYs5pxo8xwtetdyrGVEjHrD+UHm90kNMy9MXKnB1yDfoQKtQO5sbWPvRrZJ
+	 cBiUmt2QfHC62DK4W/gUajjgisJK9SEiUEfsuZSBvHUaro+V5oW9jBh8l7ZPm3K2l4
+	 5TNiBRxKGYTGQ==
+Date: Wed, 25 Jan 2023 12:05:06 +0100
 From: Joerg Roedel <joro@8bytes.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	ath10k@lists.infradead.org, ath11k@lists.infradead.org,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
-	kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
-	linux-rdma@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-	linux-s390@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-tegra@vger.kernel.org, linux-wireless@vger.kernel.org,
-	netdev@vger.kernel.org, nouveau@lists.freedesktop.org,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH v3 00/10] Let iommufd charge IOPTE allocations to the
- memory cgroup
-Message-ID: <Y9ELj1yKsE58mlgi@8bytes.org>
-References: <0-v3-76b587fe28df+6e3-iommu_map_gfp_jgg@nvidia.com>
+To: Sam Protsenko <semen.protsenko@linaro.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Janghyuck Kim <janghyuck.kim@samsung.com>,
+	Cho KyongHo <pullip.cho@samsung.com>,
+	Daniel Mentz <danielmentz@google.com>,
+	David Virag <virag.david003@gmail.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] iommu/exynos: Add fault handling on SysMMU v7
+Message-ID: <Y9EM4v0uZC9BaAm7@8bytes.org>
+References: <20220726200739.30017-1-semen.protsenko@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,27 +41,11 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0-v3-76b587fe28df+6e3-iommu_map_gfp_jgg@nvidia.com>
+In-Reply-To: <20220726200739.30017-1-semen.protsenko@linaro.org>
 
-On Mon, Jan 23, 2023 at 04:35:53PM -0400, Jason Gunthorpe wrote:
-> Jason Gunthorpe (10):
->   iommu: Add a gfp parameter to iommu_map()
->   iommu: Remove iommu_map_atomic()
->   iommu: Add a gfp parameter to iommu_map_sg()
->   iommu/dma: Use the gfp parameter in __iommu_dma_alloc_noncontiguous()
->   iommufd: Use GFP_KERNEL_ACCOUNT for iommu_map()
->   iommu/intel: Add a gfp parameter to alloc_pgtable_page()
->   iommu/intel: Support the gfp argument to the map_pages op
->   iommu/intel: Use GFP_KERNEL in sleepable contexts
->   iommu/s390: Push the gfp parameter to the kmem_cache_alloc()'s
->   iommu/s390: Use GFP_KERNEL in sleepable contexts
+On Tue, Jul 26, 2022 at 11:07:37PM +0300, Sam Protsenko wrote:
+> Sam Protsenko (2):
+>   iommu/exynos: Abstract getting the fault info
+>   iommu/exynos: Implement fault handling on SysMMU v7
 
-Merged into branch iommu-memory-accounting and merged that branch into
-core.
-
-The merge commit contains your cover-letter descriptions. Given all
-tests pass I will push it out later today.
-
-Regards,
-
-	Joerg
+Applied, thanks.
