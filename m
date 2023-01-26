@@ -1,122 +1,273 @@
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2082.outbound.protection.outlook.com [40.107.101.82])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+	(using TLSv1.2 with cipher AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A37D41107
-	for <iommu@lists.linux.dev>; Thu, 26 Jan 2023 14:41:12 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=auD8MwDZ7xlZiZIgBCI5SjFrVgS6fJN1RkYJbvnQIwWeFt/Tq0nipvAErkwXuOChbNeXDORGg1pizZ46IZPkCTAQ86WpCUMIy6LCfslnujZ4T/l94JpG+cPDKXOvtcUvoXOlOz/MsCCJZbrtjZHwkg3Fs7JpCiC3yQSIT6wn5ZgQWhLTkgDOVxEAj59TuxD5nkNTufn7PLJ7din3m2htsHtyo/8l//a1eUUy59KGr3TKPnOKvyYuNcOj+6ILmuEkYAAes1EVCcUwGwv/MG7BRtWMP+dpzNEJ4qmDMNyKvYRTHlQqUi6ykno7uT/oJtpVcndgq9tqIe+CzqWGpkun8A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7mAAVp0BOZRP3udEsBeTmTePAA6Ius7jLWpWHfC2AjE=;
- b=CqF+plAC2ZxzZGb3A/SNEQ9jMkYi91ItIryHQ1N7MlHYy9Up78czsUPj7XDxBZy0jVbwQkZ9yopXvgWKnY9NfSKQH1AtsWck2T8aA7F5c+ZXHHjd7/FsADYPYA9iYtDkCyV0PYrR+GWEGpnMj2gSqPY7NO3xbXLcVOAwIio9iRRef8eeHiBhIV7i2mtU41GknUWxZNPyBqh8Zph1hSmCny4Og8w3DC0/CeJy0ExZStMafhNUEGfCGe5lhhV1d76CfM5pVpLIMJ8aTIkonNfywM0dXRYpjbNUZcIf+dzeGM2h0z1g17XJmO2+TGsyg/XEiisv+YWfF6pi1eD8faMt5w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7mAAVp0BOZRP3udEsBeTmTePAA6Ius7jLWpWHfC2AjE=;
- b=LY8OmMuF0YYvIE8xDurTeUkI5NX/CKcN7l+ScMqE1VzSw/F5DrH1wALxzE8GX6K15ds155BOdzd4cxTt/Aj82DeeZT6zXQFDnk5FT8YOo51mXN7DAp3BDg12f+9NVe8PbBdzvLeOXXIrEfeskSuX+QqPM+7TWHpNRtTKSglOF1AnqN7LySzCnpil+6hy0x1RZ35gun3zm+GODMTtl3egEeBO6t7b33nnK8Oh26tphYVCHcmJL7tFVNKojlMgExJFEqf3WteT2F+p2kHTWRGsVbrFwd5QzCVerYW+sVFhn9GN8IbmW7NyuFIoOj0aMiRjhleTgeCLA4QJszWZ9zC+5A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by IA1PR12MB8467.namprd12.prod.outlook.com (2603:10b6:208:448::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.22; Thu, 26 Jan
- 2023 14:41:10 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee%4]) with mapi id 15.20.6043.021; Thu, 26 Jan 2023
- 14:41:10 +0000
-Date: Thu, 26 Jan 2023 10:41:09 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org,
-	hch@lst.de, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/8] iommu: Decouple iommu_present() from bus ops
-Message-ID: <Y9KRBRKdwSIRrvQw@nvidia.com>
-References: <cover.1673978700.git.robin.murphy@arm.com>
- <1fb168b22cbbb5c24162d29d2a9aca339cda2c72.1673978700.git.robin.murphy@arm.com>
- <c96aaa6c-0f46-39dc-0c72-f38394e37cc3@linux.intel.com>
- <ce25dcdc-99a9-61ff-0cad-6c6cd9552680@arm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ce25dcdc-99a9-61ff-0cad-6c6cd9552680@arm.com>
-X-ClientProxiedBy: BL1P221CA0021.NAMP221.PROD.OUTLOOK.COM
- (2603:10b6:208:2c5::17) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D93A946A7
+	for <iommu@lists.linux.dev>; Thu, 26 Jan 2023 16:46:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1674751576; x=1706287576;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=E3hZTaN7e8xeBU+qY1XSgpCP3PwtDd9AxdSxXLGsMjg=;
+  b=qc7NHb+lanpaMav4mSUxraEG3c6Xyhf7QyaLOObKvBmj4w2IHOD3Vqqq
+   aLRslDAONij+57rQ4esAn8HTR7HH8cYIDgNtf7X3s82ERLcT/jRICCY5Z
+   /Bu0aQF8ucr98jJkBffWv/8d+FSIpU6+ZARwIkuLDiFpC1zp/zjNlPM8D
+   0=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 26 Jan 2023 08:44:07 -0800
+X-QCInternal: smtphost
+Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2023 08:44:06 -0800
+Received: from hu-c-gdjako-lv.qualcomm.com (10.49.16.6) by
+ nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.36; Thu, 26 Jan 2023 08:44:06 -0800
+From: Georgi Djakov <quic_c_gdjako@quicinc.com>
+To: <catalin.marinas@arm.com>, <will@kernel.org>
+CC: <dave.hansen@linux.intel.com>, <luto@kernel.org>, <peterz@infradead.org>,
+	<tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>, <hpa@zytor.com>,
+	<hch@lst.de>, <m.szyprowski@samsung.com>, <robin.murphy@arm.com>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <djakov@kernel.org>
+Subject: [RFC] mm: Allow ZONE_DMA32 to be disabled via kernel command line
+Date: Thu, 26 Jan 2023 08:43:52 -0800
+Message-ID: <20230126164352.17562-1-quic_c_gdjako@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|IA1PR12MB8467:EE_
-X-MS-Office365-Filtering-Correlation-Id: bc99f0d1-1902-41c6-f74c-08daffab5dc8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	qd80SWhjC0CBuIEsX3qJ6Smtk6K8VT8VLCuDaskpSwss+Ib1tMtFBmGWZgxZD/GzbFjPMNbdRAcj+M3oJ6/JzXxVwj4NXNMyDr8B1UwyyQ6aTPKGraJTpjBa65F6B7fQ9T6RptifOabbbMgcPXAr3R17eLNUewJRBOB7zt3zdyatxYcDPBPHz1aHU8eDSA+GWKiVrfYqvsTWwoyaB1oWM12YsTJDLN6s2+21yNSNddWj3koNIgMPO2NhKbQaX2UhH23bUT9wW40s8avbzwdN/MsSKFTZksX4GTXPet5Tx+GigkrxILLxOPfgczmKjYs/fbdpcmy3HKS4inMK6WTlylkRL6oLmLMmw8QEKrDX/g4xSfxze2DWXZcPRrQAs7X5fZZe4ndDfcB0U30p9dspCDjHXRK8UOf1HJELcewQfgiLwxJwlYZ34d3/8m2r2ISFzHRWcbV8r9bBgXOgZIfjTi04q5TFSMYGF54pSkNHGgrzOC6at84eslG+pXX0A6mkwVSNXA2cMqkPum67PjGkpB4HaCJ3+N9AZi0/lxeBdWNpZczJlB7+/567nH0lR3yLCPueBP3cRYU3SbZa5Dt/iz178QFrculkmrcl6KpCO3cQKRLfJMb5+uoqoQ/WkkyKSRQ28eHWKPRpb5fFh4j2HQ==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(366004)(346002)(39860400002)(136003)(376002)(396003)(451199018)(2616005)(6512007)(26005)(186003)(36756003)(38100700002)(66946007)(66476007)(66556008)(86362001)(4326008)(6916009)(8676002)(316002)(4744005)(41300700001)(5660300002)(8936002)(2906002)(478600001)(6486002)(6506007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?TFpbvMlO9fyJUH4mljhBcpTkP77Q8l3HpWfNpn+KjhUEl52HAVCWhGM/VCI8?=
- =?us-ascii?Q?8rZhMgczWCkIfRbu1nHzpgvKS9icTe/qDeIL17AowqhxiLpxYmI4aGuwN+Yh?=
- =?us-ascii?Q?swWLDGuiHV7f43qTztzt6Wt839Uh45sFUlq8efP7TbZ0YnY9W1cX7KRJkF0v?=
- =?us-ascii?Q?yEkSqU7GiDPsrEYteby/v1pd8Kg1qWEusR5yYyoi1Z4O+9Lz9lbS339mIkz3?=
- =?us-ascii?Q?2nWf7y0E0/i391nBaztWU55cmPEhvz21X0s/hy9i3ijO7IPgjUe56moc1pUw?=
- =?us-ascii?Q?CxF+1OJ7bpNYJloqjnRWYXy/oN4C+T4Dh6gr6BD90oRppZm5QxZQ12z7PYAM?=
- =?us-ascii?Q?p9zdy56ndz62egeHBP5skEaea3roCWOhvaBIZKPE6ntz15Vi2e88h5cZmANt?=
- =?us-ascii?Q?280XeN3JeFKyMPXM0Aebqcc+Bv3vbDbkHA3K/iyUuICWcpdCk8g/7asB1X3c?=
- =?us-ascii?Q?TKTM5KaS7sAsUeFjCaRYSfULJj0TBM0yE0ZR7SWpTtL0l+kTbpz1w57z8AKe?=
- =?us-ascii?Q?nZ0B38oCv/7JgoNrYnasPWGgXCjyCDLTPh5pCK5UxsKemMWkQOUjWV26y1mw?=
- =?us-ascii?Q?l9LuK29ZTsSdmG5Tf/jA+VTQ5DFKfYpi5pyulst5Mlb7HE1xCq4WWYeky9gi?=
- =?us-ascii?Q?mCLN8JUAVADAM9zrOUaQLQ/0p+U7Ltm441VQxYK3OTMvHhXspFJr2SSOpx2V?=
- =?us-ascii?Q?VWW+S4Nj4xfRMsarbavRozRVsG8eEcSNNFib8Y3KO/rAiI0gTK8zOhLupf2u?=
- =?us-ascii?Q?ANl8LkDlQogCLztkq8n5qxBOtMRyJEZkmSJIf+IgGVECV12TWVQEI+AZQXCN?=
- =?us-ascii?Q?Y+1o0UuuUeclmbTznSaEtugAdPgW71LW6XFohjCrcVa95BrXaeLAdcY6ALB3?=
- =?us-ascii?Q?Jf56cATPG4DnpIhaC6DOaF+SkKkpSh2/UiTiOW5+Lbpb5eBpDAhmY74fx28I?=
- =?us-ascii?Q?RoNakmNW5k+1Kg/fS7jxi9JhnsjwbFAGL2/T8vYywLyBgS0TIie5TV93pE2x?=
- =?us-ascii?Q?dygmywbDpsPjC7oOJ5QA51FPo/xh2dGHPG3iY+k0QHr7f3IJkA66v1iWV1oF?=
- =?us-ascii?Q?/Y/Yaxnunoa14vFhK6PaDRsdNPOkfVNfgTg8j0KbFpUiCcfeI26E+gycNlC+?=
- =?us-ascii?Q?ff+a+cZ4PX3kT8grRR7boQWZ6EVAgAKj4p6x3XCzttXJJjBMkktOyduaPV/Q?=
- =?us-ascii?Q?FOoj0+XX7REAlFmh+KHFIlMKaUuMJrFuINGNqJbTMxBUWEGX0LkPaiObn2oQ?=
- =?us-ascii?Q?0vMFykGzJe+cX1t5BJlsGEvpelz2DXWINiyLvwKCZfLNflZZoqsJu6NPvpGl?=
- =?us-ascii?Q?7YZa4aN2GmwdVfslY3XJzYx2AocVgWbWlhVsdi2/zePWdS9hty77pBKIMG1N?=
- =?us-ascii?Q?sywwBJ4k0f/ZeKlIsow+H+jaeABUDibY3rqm8nTtRnxfP8FOLBARW4H2o9x3?=
- =?us-ascii?Q?YQMFcv9+VbBABtUnoHQKqijsYloYjvMoLN9NRjiTVebyI5g6NnFvZi/AZbZx?=
- =?us-ascii?Q?1V4wluSQNUh96vbqzNYH8kn6hnamTic/aKNWMsWKOp4ib0Z0ukix6yQndN8g?=
- =?us-ascii?Q?a4wj1oljibqR6yfoHBg8qxKmqslZZU8GGkBqEU+r?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bc99f0d1-1902-41c6-f74c-08daffab5dc8
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2023 14:41:10.5538
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3kRZsodtlsJTxH7UyQDWOOH3bnVdzbFyGUPxP+21RXI145K/mV0Eo53LKmQ5BxLj
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8467
+Content-Type: text/plain
+X-Originating-IP: [10.49.16.6]
+X-ClientProxiedBy: nalasex01b.na.qualcomm.com (10.47.209.197) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
 
-On Thu, Jan 26, 2023 at 02:21:29PM +0000, Robin Murphy wrote:
+From: Chris Goldsworthy <quic_cgoldswo@quicinc.com>
 
-> The "check" is inherent in the fact that it's been called at all. VFIO
-> noiommu *is* an IOMMU driver in the sense that it provides a bare minimum of
-> IOMMU API functionality (i.e. creating groups), sufficient to support
-> (careful) usage by VFIO drivers. There would not seem to be a legitimate
-> reason for some *other* driver to be specifically querying a device while it
-> is already bound to a VFIO driver (and thus may have a noiommu group).
+It's useful to have an option to disable the ZONE_DMA32 during boot as
+CONFIG_ZONE_DMA32 is by default enabled (on multiplatform kernels for
+example). There are platforms that do not use this zone and in some high
+memory pressure scenarios this would help on easing kswapd (to leave file
+backed memory intact / unreclaimed). When the ZONE_DMA32 is enabled on
+these platforms - kswapd is woken up more easily and drains the file cache
+which leads to some performance issues.
 
-Yes, the devices that VFIO assigns to its internal groups never leak
-outside VFIO's control during their assignment - ie they are
-continuously bound to VFIO never another driver.
+Signed-off-by: Chris Goldsworthy <quic_cgoldswo@quicinc.com>
+[georgi: updated commit text]
+Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
+---
+The main question here is whether we can have a kernel command line
+option to disable CONFIG_ZONE_DMA32 during boot (at least on arm64).
+I can imagine this being useful also for Linux distros. 
 
-So no other driver can ever see the internal groups unless it is
-messing around with devices it is not bound to :)
+ .../admin-guide/kernel-parameters.txt         |  5 +++++
+ arch/arm64/mm/init.c                          | 20 ++++++++++++++++-
+ arch/x86/mm/init.c                            | 20 ++++++++++++++++-
+ include/linux/dma-direct.h                    | 22 +++++++++++++++++++
+ kernel/dma/direct.c                           |  5 +++--
+ kernel/dma/pool.c                             |  8 +++----
+ 6 files changed, 72 insertions(+), 8 deletions(-)
 
-Jason
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index cb12df402161..854ff65ac6b0 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -1070,6 +1070,11 @@
+ 			Disable Dynamic DMA Window support. Use this
+ 			to workaround buggy firmware.
+ 
++	disable_dma32=	[KNL]
++			Dynamically disable ZONE_DMA32 on kernels compiled with
++			CONFIG_ZONE_DMA32=y.
++
++
+ 	disable_ipv6=	[IPV6]
+ 			See Documentation/networking/ipv6.rst.
+ 
+diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+index 58a0bb2c17f1..1a56098c0e19 100644
+--- a/arch/arm64/mm/init.c
++++ b/arch/arm64/mm/init.c
+@@ -118,6 +118,12 @@ static int __init reserve_crashkernel_low(unsigned long long low_size)
+ 	return 0;
+ }
+ 
++/*
++ * Provide a run-time mean of disabling ZONE_DMA32 if it is enabled via
++ * CONFIG_ZONE_DMA32.
++ */
++static bool disable_dma32 __ro_after_init;
++
+ /*
+  * reserve_crashkernel() - reserves memory for crash kernel
+  *
+@@ -244,7 +250,7 @@ static void __init zone_sizes_init(void)
+ 	max_zone_pfns[ZONE_DMA] = PFN_DOWN(arm64_dma_phys_limit);
+ #endif
+ #ifdef CONFIG_ZONE_DMA32
+-	max_zone_pfns[ZONE_DMA32] = PFN_DOWN(dma32_phys_limit);
++	max_zone_pfns[ZONE_DMA32] = disable_dma32 ? 0 : PFN_DOWN(dma32_phys_limit);
+ 	if (!arm64_dma_phys_limit)
+ 		arm64_dma_phys_limit = dma32_phys_limit;
+ #endif
+@@ -253,6 +259,18 @@ static void __init zone_sizes_init(void)
+ 	free_area_init(max_zone_pfns);
+ }
+ 
++static int __init early_disable_dma32(char *buf)
++{
++	if (!buf)
++		return -EINVAL;
++
++	if (!strcmp(buf, "on"))
++		disable_dma32 = true;
++
++	return 0;
++}
++early_param("disable_dma32", early_disable_dma32);
++
+ int pfn_is_map_memory(unsigned long pfn)
+ {
+ 	phys_addr_t addr = PFN_PHYS(pfn);
+diff --git a/arch/x86/mm/init.c b/arch/x86/mm/init.c
+index cb258f58fdc8..b8af7e2f21f5 100644
+--- a/arch/x86/mm/init.c
++++ b/arch/x86/mm/init.c
+@@ -112,6 +112,12 @@ static unsigned long min_pfn_mapped;
+ 
+ static bool __initdata can_use_brk_pgt = true;
+ 
++/*
++ * Provide a run-time mean of disabling ZONE_DMA32 if it is enabled via
++ * CONFIG_ZONE_DMA32.
++ */
++static bool disable_dma32 __ro_after_init;
++
+ /*
+  * Pages returned are already directly mapped.
+  *
+@@ -1032,7 +1038,7 @@ void __init zone_sizes_init(void)
+ 	max_zone_pfns[ZONE_DMA]		= min(MAX_DMA_PFN, max_low_pfn);
+ #endif
+ #ifdef CONFIG_ZONE_DMA32
+-	max_zone_pfns[ZONE_DMA32]	= min(MAX_DMA32_PFN, max_low_pfn);
++	max_zone_pfns[ZONE_DMA32]	= disable_dma32 ? 0 : min(MAX_DMA32_PFN, max_low_pfn);
+ #endif
+ 	max_zone_pfns[ZONE_NORMAL]	= max_low_pfn;
+ #ifdef CONFIG_HIGHMEM
+@@ -1042,6 +1048,18 @@ void __init zone_sizes_init(void)
+ 	free_area_init(max_zone_pfns);
+ }
+ 
++static int __init early_disable_dma32(char *buf)
++{
++	if (!buf)
++		return -EINVAL;
++
++	if (!strcmp(buf, "on"))
++		disable_dma32 = true;
++
++	return 0;
++}
++early_param("disable_dma32", early_disable_dma32);
++
+ __visible DEFINE_PER_CPU_ALIGNED(struct tlb_state, cpu_tlbstate) = {
+ 	.loaded_mm = &init_mm,
+ 	.next_asid = 1,
+diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
+index 18aade195884..ed69618cf1fc 100644
+--- a/include/linux/dma-direct.h
++++ b/include/linux/dma-direct.h
+@@ -24,6 +24,28 @@ struct bus_dma_region {
+ 	u64		offset;
+ };
+ 
++static inline bool zone_dma32_is_empty(int node)
++{
++#ifdef CONFIG_ZONE_DMA32
++	pg_data_t *pgdat = NODE_DATA(node);
++
++	return zone_is_empty(&pgdat->node_zones[ZONE_DMA32]);
++#else
++	return true;
++#endif
++}
++
++static inline bool zone_dma32_are_empty(void)
++{
++	int node;
++
++	for_each_node(node)
++		if (!zone_dma32_is_empty(node))
++			return false;
++
++	return true;
++}
++
+ static inline dma_addr_t translate_phys_to_dma(struct device *dev,
+ 		phys_addr_t paddr)
+ {
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 63859a101ed8..754210c65658 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -60,7 +60,7 @@ static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
+ 	*phys_limit = dma_to_phys(dev, dma_limit);
+ 	if (*phys_limit <= DMA_BIT_MASK(zone_dma_bits))
+ 		return GFP_DMA;
+-	if (*phys_limit <= DMA_BIT_MASK(32))
++	if (*phys_limit <= DMA_BIT_MASK(32) && !zone_dma32_is_empty(dev_to_node(dev)))
+ 		return GFP_DMA32;
+ 	return 0;
+ }
+@@ -145,7 +145,8 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
+ 
+ 		if (IS_ENABLED(CONFIG_ZONE_DMA32) &&
+ 		    phys_limit < DMA_BIT_MASK(64) &&
+-		    !(gfp & (GFP_DMA32 | GFP_DMA))) {
++		    !(gfp & (GFP_DMA32 | GFP_DMA)) &&
++		    !zone_dma32_is_empty(node)) {
+ 			gfp |= GFP_DMA32;
+ 			goto again;
+ 		}
+diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+index 4d40dcce7604..8e79903fbda8 100644
+--- a/kernel/dma/pool.c
++++ b/kernel/dma/pool.c
+@@ -71,7 +71,7 @@ static bool cma_in_zone(gfp_t gfp)
+ 	end = cma_get_base(cma) + size - 1;
+ 	if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp & GFP_DMA))
+ 		return end <= DMA_BIT_MASK(zone_dma_bits);
+-	if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32))
++	if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32) && !zone_dma32_are_empty())
+ 		return end <= DMA_BIT_MASK(32);
+ 	return true;
+ }
+@@ -153,7 +153,7 @@ static void atomic_pool_work_fn(struct work_struct *work)
+ 	if (IS_ENABLED(CONFIG_ZONE_DMA))
+ 		atomic_pool_resize(atomic_pool_dma,
+ 				   GFP_KERNEL | GFP_DMA);
+-	if (IS_ENABLED(CONFIG_ZONE_DMA32))
++	if (IS_ENABLED(CONFIG_ZONE_DMA32) && !zone_dma32_are_empty())
+ 		atomic_pool_resize(atomic_pool_dma32,
+ 				   GFP_KERNEL | GFP_DMA32);
+ 	atomic_pool_resize(atomic_pool_kernel, GFP_KERNEL);
+@@ -209,7 +209,7 @@ static int __init dma_atomic_pool_init(void)
+ 		if (!atomic_pool_dma)
+ 			ret = -ENOMEM;
+ 	}
+-	if (IS_ENABLED(CONFIG_ZONE_DMA32)) {
++	if (IS_ENABLED(CONFIG_ZONE_DMA32) && !zone_dma32_are_empty()) {
+ 		atomic_pool_dma32 = __dma_atomic_pool_init(atomic_pool_size,
+ 						GFP_KERNEL | GFP_DMA32);
+ 		if (!atomic_pool_dma32)
+@@ -224,7 +224,7 @@ postcore_initcall(dma_atomic_pool_init);
+ static inline struct gen_pool *dma_guess_pool(struct gen_pool *prev, gfp_t gfp)
+ {
+ 	if (prev == NULL) {
+-		if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32))
++		if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32) && !zone_dma32_are_empty())
+ 			return atomic_pool_dma32;
+ 		if (atomic_pool_dma && (gfp & GFP_DMA))
+ 			return atomic_pool_dma;
