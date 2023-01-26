@@ -1,96 +1,88 @@
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FAAE15A1;
-	Thu, 26 Jan 2023 01:45:44 +0000 (UTC)
-Message-ID: <56ce760f-188c-3a1d-0512-9122247ea100@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1674697536;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Z4KOttIHpVKCbLr1jUjmRYQ6CJOVPDQyGMQ4zA8kCVw=;
-	b=prmflUUZo/lJoWZPYQY87qo96iE00QkhoR3A/ixwEGMb9JQ6SKYt9nzyVxcTjLGf/yfVjN
-	TbMjehqyfU6FV4JtcWz1tTOthCDG5h9phv4zjocA9eGILYXgFBFlBlNn+Orqc28NlWVdNR
-	YE/ym7jgTyojydoL5rMqJd/l0E9dLmA=
-Date: Thu, 26 Jan 2023 09:45:21 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38BA11110
+	for <iommu@lists.linux.dev>; Thu, 26 Jan 2023 08:34:07 +0000 (UTC)
+Received: by mail-qt1-f175.google.com with SMTP id x5so753111qti.3
+        for <iommu@lists.linux.dev>; Thu, 26 Jan 2023 00:34:07 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=vRIB8MnpWStVHpiH44fh5LractuJCY2Y+UfvjAsI8p8=;
+        b=c86gG9zuPGI+Xspu+aqWLdsY1dhrHSz83aaEFFAR9xK646RBQ/dmb41AXOXNnYf/iQ
+         I9MUE2/VUdYs18E/M40Gw9qfImNsXO/hvGP9c/ywht4+o5okz+IiolTirGvblbGyE8ca
+         IJPtQY+ttMcWzXUkRJJrcm9r+4ZQ7i4wEuZxyN+Hc3q44LQMrowOCWWMgfp+nfO6LaP2
+         XaZ/pmDH05mDdSkp4He+WLlruDT2o3qd9F95jqFi0ZNgCtXUYZL1vqdknZp3mWTovfuU
+         S6rA5N7/AK46rXBGvPUGx+38KLTvCRZMkCxMVRLTTILnQ8Q/gEvHu9U9y4yAre9tBuaq
+         oTmQ==
+X-Gm-Message-State: AFqh2kqRry3WDUdSQqPBwVJw/9qSH5jNgOo28jKYUuD+Eggzg5+5O6/F
+	FsNcLm06g8MmAQLZTXWGPUIssO4C2mGVSQ==
+X-Google-Smtp-Source: AMrXdXsXvzmgFzvDRyJNOXZhfQulSQT73Pt937X9fiN8EiM8+x/EP/hbBFTBphwikqL1UhANMgwTrw==
+X-Received: by 2002:a05:622a:22a6:b0:39c:da20:f7af with SMTP id ay38-20020a05622a22a600b0039cda20f7afmr52539405qtb.12.1674722046002;
+        Thu, 26 Jan 2023 00:34:06 -0800 (PST)
+Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com. [209.85.128.172])
+        by smtp.gmail.com with ESMTPSA id y6-20020a05620a25c600b007023fc46b64sm267332qko.113.2023.01.26.00.34.05
+        for <iommu@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 Jan 2023 00:34:05 -0800 (PST)
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-4c24993965eso13537977b3.12
+        for <iommu@lists.linux.dev>; Thu, 26 Jan 2023 00:34:05 -0800 (PST)
+X-Received: by 2002:a81:4b02:0:b0:507:6027:60e7 with SMTP id
+ y2-20020a814b02000000b00507602760e7mr453322ywa.47.1674722045305; Thu, 26 Jan
+ 2023 00:34:05 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Subject: Re: [LSF/MM/BPF proposal]: Physr discussion
-To: Jason Gunthorpe <jgg@nvidia.com>, lsf-pc@lists.linuxfoundation.org,
- linux-mm@kvack.org, iommu@lists.linux.dev, linux-rdma@vger.kernel.org
-Cc: Matthew Wilcox <willy@infradead.org>, Christoph Hellwig <hch@lst.de>,
- Joao Martins <joao.m.martins@oracle.com>, John Hubbard
- <jhubbard@nvidia.com>, Logan Gunthorpe <logang@deltatee.com>,
- Ming Lei <ming.lei@redhat.com>, linux-block@vger.kernel.org,
- netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
- nvdimm@lists.linux.dev
-References: <Y8v+qVZ8OmodOCQ9@nvidia.com>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Zhu Yanjun <yanjun.zhu@linux.dev>
-In-Reply-To: <Y8v+qVZ8OmodOCQ9@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
+References: <20230123012940.1250879-1-yoshihiro.shimoda.uh@renesas.com>
+ <CAMuHMdX92KMeON0xC9p17kiqWT7ksEBX_NyPiiQk0fLaucDZBA@mail.gmail.com>
+ <TYBPR01MB5341B023178B4A10DE52B844D8CE9@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+ <CAMuHMdXXnu88Tn2ucuHZK=3G18v-nCfaTYpomchRXBu3bD7UuA@mail.gmail.com> <3c3e1dc2-1f66-565c-c677-2eae368e10be@arm.com>
+In-Reply-To: <3c3e1dc2-1f66-565c-c677-2eae368e10be@arm.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Thu, 26 Jan 2023 09:33:53 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWa3YSX482NTmh1e0LAqEiKrOBTHxrb=cqS3u36c-jw8g@mail.gmail.com>
+Message-ID: <CAMuHMdWa3YSX482NTmh1e0LAqEiKrOBTHxrb=cqS3u36c-jw8g@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: iommu: renesas,ipmmu-vmsa: Update
+ descriptions for R-Car Gen4
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, "joro@8bytes.org" <joro@8bytes.org>, 
+	"will@kernel.org" <will@kernel.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, 
+	"krzysztof.kozlowski+dt@linaro.org" <krzysztof.kozlowski+dt@linaro.org>, 
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, 
+	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-在 2023/1/21 23:03, Jason Gunthorpe 写道:
-> I would like to have a session at LSF to talk about Matthew's
-> physr discussion starter:
-> 
->   https://lore.kernel.org/linux-mm/YdyKWeU0HTv8m7wD@casper.infradead.org/
-> 
-> I have become interested in this with some immediacy because of
-> IOMMUFD and this other discussion with Christoph:
-> 
->   https://lore.kernel.org/kvm/4-v2-472615b3877e+28f7-vfio_dma_buf_jgg@nvidia.com/
+Hi Robin,
 
-I read through the above patches. I am interested in the dma-buf.
+On Wed, Jan 25, 2023 at 11:42 AM Robin Murphy <robin.murphy@arm.com> wrote:
+> On 2023-01-25 08:54, Geert Uytterhoeven wrote:
+> > BTW, the related IMCTR register is still documented, and the driver
+> > does enable the interrupt bit (IMCTR_INTEN), so I'm wondering how the
+> > hardware (documentation) people intend this to be used...
+> > Perhaps IMCTR_INTEN will be removed/undocumented, too?
+> > Or perhaps the removal/undocumentation of IMSSTR was a mistake?
+>
+> I guess it should be pretty straightforward to just try reading the
+> expected IMSSTR register locations on this SoC to double-check whether
+> anything is there.
 
-Zhu Yanjun
+FTR, I did try this.  Unfortunately the IMSSTR register value is zero
+by default, and interrupts are generated only for error conditions (how
+to trigger them?), so my debug print in ipmmu_irq() never triggered.
 
->      
-> Which results in, more or less, we have no way to do P2P DMA
-> operations without struct page - and from the RDMA side solving this
-> well at the DMA API means advancing at least some part of the physr
-> idea.
-> 
-> So - my objective is to enable to DMA API to "DMA map" something that
-> is not a scatterlist, may or may not contain struct pages, but can
-> still contain P2P DMA data. From there I would move RDMA MR's to use
-> this new API, modify DMABUF to export it, complete the above VFIO
-> series, and finally, use all of this to add back P2P support to VFIO
-> when working with IOMMUFD by allowing IOMMUFD to obtain a safe
-> reference to the VFIO memory using DMABUF. From there we'd want to see
-> pin_user_pages optimized, and that also will need some discussion how
-> best to structure it.
-> 
-> I also have several ideas on how something like physr can optimize the
-> iommu driver ops when working with dma-iommu.c and IOMMUFD.
-> 
-> I've been working on an implementation and hope to have something
-> draft to show on the lists in a few weeks. It is pretty clear there
-> are several interesting decisions to make that I think will benefit
-> from a live discussion.
-> 
-> Providing a kernel-wide alternative to scatterlist is something that
-> has general interest across all the driver subsystems. I've started to
-> view the general problem rather like xarray where the main focus is to
-> create the appropriate abstraction and then go about transforming
-> users to take advatange of the cleaner abstraction. scatterlist
-> suffers here because it has an incredibly leaky API, a huge number of
-> (often sketchy driver) users, and has historically been very difficult
-> to improve.
-> 
-> The session would quickly go over the current state of whatever the
-> mailing list discussion evolves into and an open discussion around the
-> different ideas.
-> 
-> Thanks,
-> Jason
-> 
+Gr{oetje,eeting}s,
 
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
