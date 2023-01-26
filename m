@@ -1,1042 +1,284 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 038C61854
-	for <iommu@lists.linux.dev>; Thu, 26 Jan 2023 20:35:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1674765314;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=/3acAYFg343aBaQOikQ0aKIqJXF8w0Nm3+a/l/JWer0=;
-	b=ZdRLchIoeVlaTjIBe6TZjoTpaBrQA+ksWoxmfQ7Rdgweq9SSVyOHa566otpVOEq2ukqP7e
-	uSa/mwuz623TxZybBY+zUyyc3lIC4cuOOzezy8pT8vm6uOzCHZDkSYgEPZ6VChU1G/kYKZ
-	vP0haCvmHyzKP+HlaJ37Ixfcm92KOzY=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-558-rxB2YyhUPDaYTw6XYMaO7A-1; Thu, 26 Jan 2023 15:35:05 -0500
-X-MC-Unique: rxB2YyhUPDaYTw6XYMaO7A-1
-Received: by mail-qv1-f72.google.com with SMTP id mx2-20020a0562142e0200b0053807f3eb76so884834qvb.15
-        for <iommu@lists.linux.dev>; Thu, 26 Jan 2023 12:35:05 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=/3acAYFg343aBaQOikQ0aKIqJXF8w0Nm3+a/l/JWer0=;
-        b=s2BaK8TYa3HtRPwqN040PmU5RzygbVqpRpOSRPY9z6N8GvbyL8WjQec02EVTPo4ISE
-         Lea4TlAAhnragRt5/haN//GrOo9uQv4gS8U6aofL3hDw3vVoUGtRzvScFVH9S9gJaYfR
-         N0mFmjuzsPFSTIkgnJLgjJSH4PLsUuKA/qA3ORtBjnGC8aam37yNHbrXrB21oGmrjKxx
-         d6YS7pPBFmA6ZJ8p9W6n414vm2nlvSCp3sXoFdaY6hzCPtGzvCpNoBypvCXCFdk9zyYB
-         JoeJj0qRwhcMc6xuqWxg08P4JaGSAwfDaY0rE5E8mWGdfEguuIEfc9TtTGoMSlla0lyC
-         Evpw==
-X-Gm-Message-State: AFqh2ko1Ai7etZmSI+TFxwfW7dig2eGk1Ji8pugXbo73sSjq7P3qQSs9
-	acS5DkqctOXcYiCv3EuB9RI/VHPcyylpqxzSGSRVFA/lXHuiPfRPQIUnrP9m9CvwyI9+l8ehfUT
-	v7GCa25p6eNYtaTg=
-X-Received: by 2002:ac8:72ce:0:b0:3a5:ff6e:d43e with SMTP id o14-20020ac872ce000000b003a5ff6ed43emr51026184qtp.2.1674765302295;
-        Thu, 26 Jan 2023 12:35:02 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXvawXxSE85cH7VlDOSx0KLjjmAX5cXCfTYY79GCeiB/r8zBVFxtdXe+Lsgpp8zV4eN6b8v2EA==
-X-Received: by 2002:ac8:72ce:0:b0:3a5:ff6e:d43e with SMTP id o14-20020ac872ce000000b003a5ff6ed43emr51026089qtp.2.1674765301492;
-        Thu, 26 Jan 2023 12:35:01 -0800 (PST)
-Received: from localhost (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id e11-20020ac8414b000000b003b63c08a888sm1431243qtm.4.2023.01.26.12.35.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Jan 2023 12:35:00 -0800 (PST)
-Date: Thu, 26 Jan 2023 15:35:00 -0500
-From: Eric Chanudet <echanude@redhat.com>
-To: Bartosz Golaszewski <brgl@bgdev.pl>
-Cc: Andy Gross <agross@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>, Georgi Djakov <djakov@kernel.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Jassi Brar <jassisinghbrar@gmail.com>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Richard Cochran <richardcochran@gmail.com>,
-	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-	Vinod Koul <vkoul@kernel.org>, Alex Elder <elder@kernel.org>,
-	linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-	linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, linux-gpio@vger.kernel.org,
-	netdev@vger.kernel.org,
-	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Subject: Re: [PATCH 18/18] arm64: dts: qcom: add initial support for qcom
- sa8775p-ride
-Message-ID: <20230126203500.wd3mhihk4zjsop2w@echanude>
-References: <20230109174511.1740856-1-brgl@bgdev.pl>
- <20230109174511.1740856-19-brgl@bgdev.pl>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1961328EC
+	for <iommu@lists.linux.dev>; Thu, 26 Jan 2023 22:56:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEB52C433D2;
+	Thu, 26 Jan 2023 22:56:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1674773817;
+	bh=zCe67ocfpC6zy4xRPoMccT9H8OiRW/uumpEJQMrr5C8=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=he5YX+Sv4QL4bkhj5YNRvhhPaIkGF0yiCr3GD+z56IfcIRtT/O3yBqlBE1x5cqznU
+	 uGWqd43u/yYVzKLFofT3QSF0MjAFQfVTu7yVe5jKuuUvJ104dXaE/kcpEIBQmLacfg
+	 HDxNM5sucrKo0R3M08gREJVXeeozs3wUo6DAajfWGdm2juj/ASYNrQ9NzCxJYKk7A3
+	 q9TaRJumrggHOoco6LwKIhvLLF/Qt2MClHxcadov/cLfMU62nZJ2hj5TgD9E/hEY8z
+	 bLszD83bG4s3C29yYkIYZgNXIVGMn4VSUVK1VD/KFSOCvO9rh+bobO0222Ph1R/TV0
+	 X77zu5h7Uu9RA==
+Message-ID: <4c00ee1b-c2d6-b543-9135-9116912255c7@kernel.org>
+Date: Fri, 27 Jan 2023 00:56:50 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20230109174511.1740856-19-brgl@bgdev.pl>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Subject: Re: [RFC] mm: Allow ZONE_DMA32 to be disabled via kernel command line
+To: Dave Hansen <dave.hansen@intel.com>,
+ Georgi Djakov <quic_c_gdjako@quicinc.com>, catalin.marinas@arm.com,
+ will@kernel.org
+Cc: dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
+ tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
+ hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, quic_cgoldswo@quicinc.com,
+ quic_sukadev@quicinc.com
+References: <20230126164352.17562-1-quic_c_gdjako@quicinc.com>
+ <dca84e05-e376-c593-74fa-37c58f30767a@intel.com>
+Content-Language: en-US
+From: Georgi Djakov <djakov@kernel.org>
+In-Reply-To: <dca84e05-e376-c593-74fa-37c58f30767a@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Jan 09, 2023 at 06:45:11PM +0100, Bartosz Golaszewski wrote:
-> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Hi Dave,
+
+Thanks for the detailed review and comments!
+
+On 26.01.23 20:51, Dave Hansen wrote:
+> On 1/26/23 08:43, Georgi Djakov wrote:
+>> From: Chris Goldsworthy <quic_cgoldswo@quicinc.com>
+>>
+>> It's useful to have an option to disable the ZONE_DMA32 during boot as
+>> CONFIG_ZONE_DMA32 is by default enabled (on multiplatform kernels for
+>> example). There are platforms that do not use this zone and in some high
+>> memory pressure scenarios this would help on easing kswapd (to leave file
+>> backed memory intact / unreclaimed). When the ZONE_DMA32 is enabled on
+>> these platforms - kswapd is woken up more easily and drains the file cache
+>> which leads to some performance issues.
 > 
-> This adds basic support for the Qualcomm sa8775p platform and the
-> reference board: sa8775p-ride. The dt files describe the basics of the
-> SoC and enable booting to shell.
+> Any chance you could expound on "some performance issues", maybe with
+> actual workloads and numbers?
+
+The goal is to prevent any reclaim at all or defer it as much as possible.
+I can gather some numbers, but let me explain the scenario first. Let's say
+you have 100 processes and you put some to sleep. After some time kswapd
+reclaims file cached memory. You wake one of these processes back and some
+lagging is observed because files have to be re-opened, as they were reclaimed
+from the file cache.
+
 > 
-> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> ---
->  arch/arm64/boot/dts/qcom/Makefile         |   1 +
->  arch/arm64/boot/dts/qcom/sa8775p-ride.dts |  39 +
->  arch/arm64/boot/dts/qcom/sa8775p.dtsi     | 841 ++++++++++++++++++++++
->  3 files changed, 881 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/qcom/sa8775p-ride.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/sa8775p.dtsi
+> Also, what are the practical implications here?  There are obviously an
+> ever decreasing number of 32-bit DMA devices out there.  Somebody that
+> has one and uses this option might be sad because now they're stuck
+> using ZONE_DMA which is quite tiny.
+
+True. There are side effects indeed.
+
+I think that Robin's suggestion to try to control kswapd's behavior is
+really something worth exploring!
+
+Thanks,
+Georgi
+
+> What other ZONE_DMA32 users are left?  Will anyone else care?  There is
+> some DMA32 slab and vmalloc() functionality remaining.  Is it impacted?
 > 
-> diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
-> index 3e79496292e7..39b8206f7131 100644
-> --- a/arch/arm64/boot/dts/qcom/Makefile
-> +++ b/arch/arm64/boot/dts/qcom/Makefile
-> @@ -61,6 +61,7 @@ dtb-$(CONFIG_ARCH_QCOM)	+= qrb5165-rb5-vision-mezzanine.dtb
->  dtb-$(CONFIG_ARCH_QCOM)	+= sa8155p-adp.dtb
->  dtb-$(CONFIG_ARCH_QCOM)	+= sa8295p-adp.dtb
->  dtb-$(CONFIG_ARCH_QCOM)	+= sa8540p-ride.dtb
-> +dtb-$(CONFIG_ARCH_QCOM) += sa8775p-ride.dtb
->  dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-idp.dtb
->  dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-coachz-r1.dtb
->  dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-coachz-r1-lte.dtb
-> diff --git a/arch/arm64/boot/dts/qcom/sa8775p-ride.dts b/arch/arm64/boot/dts/qcom/sa8775p-ride.dts
-> new file mode 100644
-> index 000000000000..d4dae32a84cc
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/qcom/sa8775p-ride.dts
-> @@ -0,0 +1,39 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (c) 2023, Linaro Limited
-> + */
-> +
-> +/dts-v1/;
-> +
-> +#include "sa8775p.dtsi"
-> +
-> +/ {
-> +	model = "Qualcomm SA8875P Ride";
-
-s/SA8875P/SA8775P/
-
-> +	compatible = "qcom,sa8775p-ride", "qcom,sa8775p";
-> +
-> +	aliases {
-> +		serial0 = &uart10;
-> +	};
-> +
-> +	chosen {
-> +		stdout-path = "serial0:115200n8";
-> +	};
-
-Tested-by: Eric Chanudet <echanude@redhat.com>
-
-I could not get past ABL on sa8775p-ride initially. It seems it requires
-__symbols__ to be in the DTB and looks for at least qcom_tzlog:
-        qcom_tzlog: tz-log@146aa720 {
-                compatible = "qcom,tz-log";
-                reg = <0x146aa720 0x3000>;
-                qcom,hyplog-enabled;
-                hyplog-address-offset = <0x410>;
-                hyplog-size-offset = <0x414>;
-        };
-
-In addition, an early hang happened without the following work-around:
---- a/drivers/firmware/smccc/smccc.c
-+++ b/drivers/firmware/smccc/smccc.c
-@@ -23,7 +23,7 @@ void __init arm_smccc_version_init(u32 version, enum arm_smccc_conduit conduit)
-        smccc_version = version;
-        smccc_conduit = conduit;
- 
--       smccc_trng_available = smccc_probe_trng();
-+       smccc_trng_available = false /* smccc_probe_trng() */;
-        if (IS_ENABLED(CONFIG_ARM64_SVE) &&
-            smccc_version >= ARM_SMCCC_VERSION_1_3)
-                smccc_has_sve_hint = true;
-
-This is not related to this patch set directly, I am merely mentioning
-it in case someone else encounters the issue.
-
-> +};
-> +
-> +&qupv3_id_1 {
-> +	status = "okay";
-> +};
-> +
-> +&uart10 {
-> +	compatible = "qcom,geni-debug-uart";
-> +	status = "okay";
-> +	pinctrl-names = "default";
-> +	pinctrl-0 = <&qup_uart10_state>;
-> +};
-> +
-> +&tlmm {
-> +	qup_uart10_state: qup_uart10_state {
-> +		pins = "gpio46", "gpio47";
-> +		function = "qup1_se3";
-> +	};
-> +};
-> diff --git a/arch/arm64/boot/dts/qcom/sa8775p.dtsi b/arch/arm64/boot/dts/qcom/sa8775p.dtsi
-> new file mode 100644
-> index 000000000000..1a3b11628e38
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/qcom/sa8775p.dtsi
-> @@ -0,0 +1,841 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (c) 2023, Linaro Limited
-> + */
-> +
-> +#include <dt-bindings/interrupt-controller/arm-gic.h>
-> +#include <dt-bindings/clock/qcom,gcc-sa8775p.h>
-> +#include <dt-bindings/clock/qcom,rpmh.h>
-> +#include <dt-bindings/interconnect/qcom,sa8775p.h>
-> +#include <dt-bindings/power/qcom-rpmpd.h>
-> +#include <dt-bindings/soc/qcom,rpmh-rsc.h>
-> +
-> +/ {
-> +	interrupt-parent = <&intc>;
-> +
-> +	#address-cells = <2>;
-> +	#size-cells = <2>;
-> +
-> +	clocks {
-> +		xo_board_clk: xo-board-clk {
-> +			compatible = "fixed-clock";
-> +			#clock-cells = <0>;
-> +		};
-> +
-> +		sleep_clk: sleep-clk {
-> +			compatible = "fixed-clock";
-> +			#clock-cells = <0>;
-> +			clock-frequency = <32764>;
-> +		};
-> +	};
-> +
-> +	cpus {
-> +		#address-cells = <2>;
-> +		#size-cells = <0>;
-> +
-> +		CPU0: cpu@0 {
-> +			device_type = "cpu";
-> +			compatible = "qcom,kryo";
-> +			reg = <0x0 0x0>;
-> +			enable-method = "psci";
-> +			next-level-cache = <&L2_0>;
-> +			L2_0: l2-cache {
-> +			      compatible = "cache";
-> +			      next-level-cache = <&L3_0>;
-> +				L3_0: l3-cache {
-> +				      compatible = "cache";
-> +				};
-> +			};
-> +		};
-> +
-> +		CPU1: cpu@100 {
-> +			device_type = "cpu";
-> +			compatible = "qcom,kryo";
-> +			reg = <0x0 0x100>;
-> +			enable-method = "psci";
-> +			cpu-release-addr = <0x0 0x90000000>;
-> +			next-level-cache = <&L2_1>;
-> +			L2_1: l2-cache {
-> +			      compatible = "cache";
-> +			      next-level-cache = <&L3_0>;
-> +			};
-> +		};
-> +
-> +		CPU2: cpu@200 {
-> +			device_type = "cpu";
-> +			compatible = "qcom,kryo";
-> +			reg = <0x0 0x200>;
-> +			enable-method = "psci";
-> +			next-level-cache = <&L2_2>;
-> +			L2_2: l2-cache {
-> +			      compatible = "cache";
-> +			      next-level-cache = <&L3_0>;
-> +			};
-> +		};
-> +
-> +		CPU3: cpu@300 {
-> +			device_type = "cpu";
-> +			compatible = "qcom,kryo";
-> +			reg = <0x0 0x300>;
-> +			enable-method = "psci";
-> +			next-level-cache = <&L2_3>;
-> +			L2_3: l2-cache {
-> +			      compatible = "cache";
-> +			      next-level-cache = <&L3_0>;
-> +			};
-> +		};
-> +
-> +		CPU4: cpu@10000 {
-> +			device_type = "cpu";
-> +			compatible = "qcom,kryo";
-> +			reg = <0x0 0x10000>;
-> +			enable-method = "psci";
-> +			next-level-cache = <&L2_4>;
-> +			L2_4: l2-cache {
-> +			      compatible = "cache";
-> +			      next-level-cache = <&L3_1>;
-> +				L3_1: l3-cache {
-> +				      compatible = "cache";
-> +				};
-> +
-> +			};
-> +		};
-> +
-> +		CPU5: cpu@10100 {
-> +			device_type = "cpu";
-> +			compatible = "qcom,kryo";
-> +			reg = <0x0 0x10100>;
-> +			enable-method = "psci";
-> +			next-level-cache = <&L2_5>;
-> +			L2_5: l2-cache {
-> +			      compatible = "cache";
-> +			      next-level-cache = <&L3_1>;
-> +			};
-> +		};
-> +
-> +		CPU6: cpu@10200 {
-> +			device_type = "cpu";
-> +			compatible = "qcom,kryo";
-> +			reg = <0x0 0x10200>;
-> +			enable-method = "psci";
-> +			next-level-cache = <&L2_6>;
-> +			L2_6: l2-cache {
-> +			      compatible = "cache";
-> +			      next-level-cache = <&L3_1>;
-> +			};
-> +		};
-> +
-> +		CPU7: cpu@10300 {
-> +			device_type = "cpu";
-> +			compatible = "qcom,kryo";
-> +			reg = <0x0 0x10300>;
-> +			enable-method = "psci";
-> +			next-level-cache = <&L2_7>;
-> +			L2_7: l2-cache {
-> +			      compatible = "cache";
-> +			      next-level-cache = <&L3_1>;
-> +			};
-> +		};
-> +
-> +		cpu-map {
-> +			cluster0 {
-> +				core0 {
-> +					cpu = <&CPU0>;
-> +				};
-> +
-> +				core1 {
-> +					cpu = <&CPU1>;
-> +				};
-> +
-> +				core2 {
-> +					cpu = <&CPU2>;
-> +				};
-> +
-> +				core3 {
-> +					cpu = <&CPU3>;
-> +				};
-> +			};
-> +
-> +			cluster1 {
-> +				core0 {
-> +					cpu = <&CPU4>;
-> +				};
-> +
-> +				core1 {
-> +					cpu = <&CPU5>;
-> +				};
-> +
-> +				core2 {
-> +					cpu = <&CPU6>;
-> +				};
-> +
-> +				core3 {
-> +					cpu = <&CPU7>;
-> +				};
-> +			};
-> +		};
-> +	};
-> +
-> +	/* Will be updated by the bootloader. */
-> +	memory {
-> +		device_type = "memory";
-> +		reg = <0 0 0 0>;
-> +	};
-> +
-> +	reserved-memory {
-> +		#address-cells = <2>;
-> +		#size-cells = <2>;
-> +		ranges;
-> +
-> +		sail_ss_mem: sail_ss_region@80000000 {
-> +			no-map;
-> +			reg = <0x0 0x80000000 0x0 0x10000000>;
-> +		};
-> +
-> +		hyp_mem: hyp_region@90000000 {
-> +			no-map;
-> +			reg = <0x0 0x90000000 0x0 0x600000>;
-> +		};
-> +
-> +		xbl_boot_mem: xbl_boot_region@90600000 {
-> +			no-map;
-> +			reg = <0x0 0x90600000 0x0 0x200000>;
-> +		};
-> +
-> +		aop_image_mem: aop_image_region@90800000 {
-> +			no-map;
-> +			reg = <0x0 0x90800000 0x0 0x60000>;
-> +		};
-> +
-> +		aop_cmd_db_mem: aop_cmd_db_region@90860000 {
-> +			compatible = "qcom,cmd-db";
-> +			no-map;
-> +			reg = <0x0 0x90860000 0x0 0x20000>;
-> +		};
-> +
-> +		uefi_log: uefi_log_region@908b0000 {
-> +			no-map;
-> +			reg = <0x0 0x908b0000 0x0 0x10000>;
-> +		};
-> +
-> +		reserved_mem: reserved_region@908f0000 {
-> +			no-map;
-> +			reg = <0x0 0x908f0000 0x0 0xf000>;
-> +		};
-> +
-> +		secdata_apss_mem: secdata_apss_region@908ff000 {
-> +			no-map;
-> +			reg = <0x0 0x908ff000 0x0 0x1000>;
-> +		};
-> +
-> +		smem_mem: smem_region@90900000 {
-> +			compatible = "qcom,smem";
-> +			reg = <0x0 0x90900000 0x0 0x200000>;
-> +			no-map;
-> +			hwlocks = <&tcsr_mutex 3>;
-> +		};
-> +
-> +		cpucp_fw_mem: cpucp_fw_region@90b00000 {
-> +			no-map;
-> +			reg = <0x0 0x90b00000 0x0 0x100000>;
-> +		};
-> +
-> +		lpass_machine_learning_mem: lpass_machine_learning_region@93b00000 {
-> +			no-map;
-> +			reg = <0x0 0x93b00000 0x0 0xf00000>;
-> +		};
-> +
-> +		adsp_rpc_remote_heap_mem: adsp_rpc_remote_heap_region@94a00000 {
-> +			no-map;
-> +			reg = <0x0 0x94a00000 0x0 0x800000>;
-> +		};
-> +
-> +		pil_camera_mem: pil_camera_region@95200000 {
-> +			no-map;
-> +			reg = <0x0 0x95200000 0x0 0x500000>;
-> +		};
-> +
-> +		pil_adsp_mem: pil_adsp_region@95c00000 {
-> +			no-map;
-> +			reg = <0x0 0x95c00000 0x0 0x1e00000>;
-> +		};
-> +
-> +		pil_gdsp0_mem: pil_gdsp0_region@97b00000 {
-> +			no-map;
-> +			reg = <0x0 0x97b00000 0x0 0x1e00000>;
-> +		};
-> +
-> +		pil_gdsp1_mem: pil_gdsp1_region@99900000 {
-> +			no-map;
-> +			reg = <0x0 0x99900000 0x0 0x1e00000>;
-> +		};
-> +
-> +		pil_cdsp0_mem: pil_cdsp0_region@9b800000 {
-> +			no-map;
-> +			reg = <0x0 0x9b800000 0x0 0x1e00000>;
-> +		};
-> +
-> +		pil_gpu_mem: pil_gpu_region@9d600000 {
-> +			no-map;
-> +			reg = <0x0 0x9d600000 0x0 0x2000>;
-> +		};
-> +
-> +		pil_cdsp1_mem: pil_cdsp1_region@9d700000 {
-> +			no-map;
-> +			reg = <0x0 0x9d700000 0x0 0x1e00000>;
-> +		};
-> +
-> +		pil_cvp_mem: pil_cvp_region@9f500000 {
-> +			no-map;
-> +			reg = <0x0 0x9f500000 0x0 0x700000>;
-> +		};
-> +
-> +		pil_video_mem: pil_video_region@9fc00000 {
-> +			no-map;
-> +			reg = <0x0 0x9fc00000 0x0 0x700000>;
-> +		};
-> +
-> +		hyptz_reserved_mem: hyptz_reserved_region@beb00000 {
-> +			no-map;
-> +			reg = <0x0 0xbeb00000 0x0 0x11500000>;
-> +		};
-> +
-> +		tz_stat_mem: tz_stat_region@d0000000 {
-> +			no-map;
-> +			reg = <0x0 0xd0000000 0x0 0x100000>;
-> +		};
-> +
-> +		tags_mem: tags_region@d0100000 {
-> +			no-map;
-> +			reg = <0x0 0xd0100000 0x0 0x1200000>;
-> +		};
-> +
-> +		qtee_mem: qtee_region@d1300000 {
-> +			no-map;
-> +			reg = <0x0 0xd1300000 0x0 0x500000>;
-> +		};
-> +
-> +		trusted_apps_mem: trusted_apps_region@d1800000 {
-> +			no-map;
-> +			reg = <0x0 0xd1800000 0x0 0x3900000>;
-> +		};
-> +
-> +		dump_mem: mem_dump_region {
-> +			compatible = "shared-dma-pool";
-> +			alloc-ranges = <0x0 0x00000000 0x0 0xffffffff>;
-> +			reusable;
-> +			size = <0 0x3000000>;
-> +		};
-> +
-> +		/* global autoconfigured region for contiguous allocations */
-> +		linux,cma {
-> +			compatible = "shared-dma-pool";
-> +			alloc-ranges = <0x0 0x00000000 0x0 0xdfffffff>;
-> +			reusable;
-> +			alignment = <0x0 0x400000>;
-> +			size = <0x0 0x2000000>;
-> +			linux,cma-default;
-> +		};
-> +	};
-> +
-> +	psci {
-> +		compatible = "arm,psci-1.0";
-> +		method = "smc";
-> +	};
-> +
-> +	firmware {
-> +		scm {
-> +			compatible = "qcom,scm";
-> +		};
-> +	};
-> +
-> +	qup_opp_table_100mhz: qup-100mhz-opp-table {
-> +		compatible = "operating-points-v2";
-> +
-> +		opp-100000000 {
-> +			opp-hz = /bits/ 64 <100000000>;
-> +			required-opps = <&rpmhpd_opp_svs_l1>;
-> +		};
-> +	};
-> +
-> +	soc: soc@0 {
-> +		compatible = "simple-bus";
-> +		#address-cells = <1>;
-> +		#size-cells = <1>;
-> +		ranges = <0 0 0 0xffffffff>;
-> +
-> +		gcc: clock-controller@100000 {
-> +			compatible = "qcom,gcc-sa8775p";
-> +			reg = <0x100000 0xc7018>;
-> +			#clock-cells = <1>;
-> +			#reset-cells = <1>;
-> +			#power-domain-cells = <1>;
-> +			clocks = <&rpmhcc RPMH_CXO_CLK>,
-> +				 <&sleep_clk>,
-> +				 <0>,
-> +				 <0>,
-> +				 <0>,
-> +				 <0>,
-> +				 <0>,
-> +				 <0>,
-> +				 <0>,
-> +				 <0>,
-> +				 <0>, /* TODO: usb_0_ssphy */
-> +				 <0>,
-> +				 <0>,
-> +				 <0>,
-> +				 <0>;
-> +			power-domains = <&rpmhpd SA8775P_CX>;
-> +		};
-> +
-> +		ipcc: mailbox@408000 {
-> +			compatible = "qcom,sa8775p-ipcc", "qcom,ipcc";
-> +			reg = <0x408000 0x1000>;
-> +			interrupts = <GIC_SPI 229 IRQ_TYPE_LEVEL_HIGH>;
-> +			interrupt-controller;
-> +			#interrupt-cells = <3>;
-> +			#mbox-cells = <2>;
-> +		};
-> +
-> +		aggre1_noc:interconnect-aggre1-noc {
-> +			compatible = "qcom,sa8775p-aggre1-noc";
-> +			#interconnect-cells = <2>;
-> +			qcom,bcm-voters = <&apps_bcm_voter>;
-> +		};
-> +
-> +		aggre2_noc: interconnect-aggre2-noc {
-> +			compatible = "qcom,sa8775p-aggre2-noc";
-> +			#interconnect-cells = <2>;
-> +			qcom,bcm-voters = <&apps_bcm_voter>;
-> +		};
-> +
-> +		clk_virt: interconnect-clk-virt {
-> +			compatible = "qcom,sa8775p-clk-virt";
-> +			#interconnect-cells = <2>;
-> +			qcom,bcm-voters = <&apps_bcm_voter>;
-> +		};
-> +
-> +		config_noc: interconnect-config-noc {
-> +			compatible = "qcom,sa8775p-config-noc";
-> +			#interconnect-cells = <2>;
-> +			qcom,bcm-voters = <&apps_bcm_voter>;
-> +		};
-> +
-> +		dc_noc: interconnect-dc-noc {
-> +			compatible = "qcom,sa8775p-dc-noc";
-> +			#interconnect-cells = <2>;
-> +			qcom,bcm-voters = <&apps_bcm_voter>;
-> +		};
-> +
-> +		gem_noc: interconnect-gem-noc {
-> +			compatible = "qcom,sa8775p-gem-noc";
-> +			#interconnect-cells = <2>;
-> +			qcom,bcm-voters = <&apps_bcm_voter>;
-> +		};
-> +
-> +		gpdsp_anoc: interconnect-gpdsp-anoc {
-> +			compatible = "qcom,sa8775p-gpdsp-anoc";
-> +			#interconnect-cells = <2>;
-> +			qcom,bcm-voters = <&apps_bcm_voter>;
-> +		};
-> +
-> +		lpass_ag_noc: interconnect-lpass-ag-noc {
-> +			compatible = "qcom,sa8775p-lpass-ag-noc";
-> +			#interconnect-cells = <2>;
-> +			qcom,bcm-voters = <&apps_bcm_voter>;
-> +		};
-> +
-> +		mc_virt: interconnect-mc-virt {
-> +			compatible = "qcom,sa8775p-mc-virt";
-> +			#interconnect-cells = <2>;
-> +			qcom,bcm-voters = <&apps_bcm_voter>;
-> +		};
-> +
-> +		mmss_noc: interconnect-mmss-noc {
-> +			compatible = "qcom,sa8775p-mmss-noc";
-> +			#interconnect-cells = <2>;
-> +			qcom,bcm-voters = <&apps_bcm_voter>;
-> +		};
-> +
-> +		nspa_noc: interconnect-nspa-noc {
-> +			compatible = "qcom,sa8775p-nspa-noc";
-> +			#interconnect-cells = <2>;
-> +			qcom,bcm-voters = <&apps_bcm_voter>;
-> +		};
-> +
-> +		nspb_noc: interconnect-nspb-noc {
-> +			compatible = "qcom,sa8775p-nspb-noc";
-> +			#interconnect-cells = <2>;
-> +			qcom,bcm-voters = <&apps_bcm_voter>;
-> +		};
-> +
-> +		pcie_anoc: interconnect-pcie-anoc {
-> +			compatible = "qcom,sa8775p-pcie-anoc";
-> +			#interconnect-cells = <2>;
-> +			qcom,bcm-voters = <&apps_bcm_voter>;
-> +		};
-> +
-> +		system_noc: interconnect-system-noc {
-> +			compatible = "qcom,sa8775p-system-noc";
-> +			#interconnect-cells = <2>;
-> +			qcom,bcm-voters = <&apps_bcm_voter>;
-> +		};
-> +
-> +		intc: interrupt-controller@17a00000 {
-> +			compatible = "arm,gic-v3";
-> +			#interrupt-cells = <3>;
-> +			interrupt-controller;
-> +			#address-cells = <1>;
-> +			#size-cells = <1>;
-> +			ranges;
-> +			#redistributor-regions = <1>;
-> +			redistributor-stride = <0x0 0x20000>;
-> +			reg = <0x17a00000 0x10000>,     /* GICD */
-> +			      <0x17a60000 0x100000>;    /* GICR * 8 */
-> +			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
-> +		};
-> +
-> +		apps_rsc: rsc@18200000 {
-> +			compatible = "qcom,rpmh-rsc";
-> +			reg = <0x18200000 0x10000>,
-> +			      <0x18210000 0x10000>,
-> +			      <0x18220000 0x10000>;
-> +			reg-names = "drv-0", "drv-1", "drv-2";
-> +			interrupts = <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
-> +			      <GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
-> +			      <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>;
-> +			qcom,tcs-offset = <0xd00>;
-> +			qcom,drv-id = <2>;
-> +			qcom,tcs-config = <ACTIVE_TCS 2>,
-> +					  <SLEEP_TCS 3>,
-> +					  <WAKE_TCS 3>,
-> +					  <CONTROL_TCS 0>;
-> +			label = "apps_rsc";
-> +
-> +			apps_bcm_voter: bcm_voter {
-> +				compatible = "qcom,bcm-voter";
-> +			};
-> +
-> +			rpmhcc: clock-controller {
-> +				compatible = "qcom,sa8775p-rpmh-clk";
-> +				#clock-cells = <1>;
-> +				clock-names = "xo";
-> +				clocks = <&xo_board_clk>;
-> +			};
-> +
-> +			rpmhpd: power-controller {
-> +				compatible = "qcom,sa8775p-rpmhpd";
-> +				#power-domain-cells = <1>;
-> +				operating-points-v2 = <&rpmhpd_opp_table>;
-> +
-> +				rpmhpd_opp_table: opp-table {
-> +					compatible = "operating-points-v2";
-> +
-> +					rpmhpd_opp_ret: opp1 {
-> +						opp-level = <RPMH_REGULATOR_LEVEL_RETENTION>;
-> +					};
-> +
-> +					rpmhpd_opp_min_svs: opp2 {
-> +						opp-level = <RPMH_REGULATOR_LEVEL_MIN_SVS>;
-> +					};
-> +
-> +					rpmhpd_opp_low_svs: opp3 {
-> +						opp-level = <RPMH_REGULATOR_LEVEL_LOW_SVS>;
-> +					};
-> +
-> +					rpmhpd_opp_svs: opp4 {
-> +						opp-level = <RPMH_REGULATOR_LEVEL_SVS>;
-> +					};
-> +
-> +					rpmhpd_opp_svs_l1: opp5 {
-> +						opp-level = <RPMH_REGULATOR_LEVEL_SVS_L1>;
-> +					};
-> +
-> +					rpmhpd_opp_nom: opp6 {
-> +						opp-level = <RPMH_REGULATOR_LEVEL_NOM>;
-> +					};
-> +
-> +					rpmhpd_opp_nom_l1: opp7 {
-> +						opp-level = <RPMH_REGULATOR_LEVEL_NOM_L1>;
-> +					};
-> +
-> +					rpmhpd_opp_nom_l2: opp8 {
-> +						opp-level = <RPMH_REGULATOR_LEVEL_NOM_L2>;
-> +					};
-> +
-> +					rpmhpd_opp_turbo: opp9 {
-> +						opp-level = <RPMH_REGULATOR_LEVEL_TURBO>;
-> +					};
-> +
-> +					rpmhpd_opp_turbo_l1: opp10 {
-> +						opp-level = <RPMH_REGULATOR_LEVEL_TURBO_L1>;
-> +					};
-> +				};
-> +			};
-> +		};
-> +
-> +		arch_timer: timer {
-> +			compatible = "arm,armv8-timer";
-> +			interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
-> +				     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
-> +				     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
-> +				     <GIC_PPI 12 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>;
-> +			clock-frequency = <19200000>;
-> +		};
-> +
-> +		memtimer: timer@17c20000 {
-> +			#address-cells = <1>;
-> +			#size-cells = <1>;
-> +			ranges;
-> +			compatible = "arm,armv7-timer-mem";
-> +			reg = <0x17c20000 0x1000>;
-> +			clock-frequency = <19200000>;
-> +
-> +			frame@17c21000 {
-> +				frame-number = <0>;
-> +				interrupts = <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
-> +					     <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>;
-> +				reg = <0x17c21000 0x1000>,
-> +				      <0x17c22000 0x1000>;
-> +			};
-> +
-> +			frame@17c23000 {
-> +				frame-number = <1>;
-> +				interrupts = <GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>;
-> +				reg = <0x17c23000 0x1000>;
-> +				status = "disabled";
-> +			};
-> +
-> +			frame@17c25000 {
-> +				frame-number = <2>;
-> +				interrupts = <GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>;
-> +				reg = <0x17c25000 0x1000>;
-> +				status = "disabled";
-> +			};
-> +
-> +			frame@17c27000 {
-> +				frame-number = <3>;
-> +				interrupts = <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
-> +				reg = <0x17c27000 0x1000>;
-> +				status = "disabled";
-> +			};
-> +
-> +			frame@17c29000 {
-> +				frame-number = <4>;
-> +				interrupts = <GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>;
-> +				reg = <0x17c29000 0x1000>;
-> +				status = "disabled";
-> +			};
-> +
-> +			frame@17c2b000 {
-> +				frame-number = <5>;
-> +				interrupts = <GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
-> +				reg = <0x17c2b000 0x1000>;
-> +				status = "disabled";
-> +			};
-> +
-> +			frame@17c2d000 {
-> +				frame-number = <6>;
-> +				interrupts = <GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>;
-> +				reg = <0x17c2d000 0x1000>;
-> +				status = "disabled";
-> +			};
-> +		};
-> +
-> +		tcsr_mutex: hwlock@1f40000 {
-> +			compatible = "qcom,tcsr-mutex";
-> +			reg = <0x1f40000 0x20000>;
-> +			#hwlock-cells = <1>;
-> +		};
-> +
-> +		tlmm: pinctrl@f000000 {
-> +			compatible = "qcom,sa8775p-pinctrl";
-> +			reg = <0xf000000 0x1000000>;
-> +			interrupts = <GIC_SPI 208 IRQ_TYPE_LEVEL_HIGH>;
-> +			gpio-controller;
-> +			#gpio-cells = <2>;
-> +			interrupt-controller;
-> +			#interrupt-cells = <2>;
-> +			gpio-ranges = <&tlmm 0 0 149>;
-> +		};
-> +
-> +		qcom-wdt@17c10000 {
-> +			compatible = "qcom,kpss-wdt";
-> +			reg = <0x17c10000 0x1000>;
-> +			clocks = <&sleep_clk>;
-> +			interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>;
-> +		};
-> +
-> +		qupv3_id_1: geniqup@ac0000 {
-> +			compatible = "qcom,geni-se-qup";
-> +			reg = <0xac0000 0x6000>;
-> +			#address-cells = <1>;
-> +			#size-cells = <1>;
-> +			ranges;
-> +			clock-names = "m-ahb", "s-ahb";
-> +			clocks = <&gcc GCC_QUPV3_WRAP_1_M_AHB_CLK>,
-> +				 <&gcc GCC_QUPV3_WRAP_1_S_AHB_CLK>;
-> +			iommus = <&apps_smmu 0x443 0x0>;
-> +			status = "disabled";
-> +
-> +			uart10: serial@a8c000 {
-> +				compatible = "qcom,geni-uart";
-> +				reg = <0xa8c000 0x4000>;
-> +				interrupts = <GIC_SPI 356 IRQ_TYPE_LEVEL_HIGH>;
-> +				clock-names = "se";
-> +				clocks = <&gcc GCC_QUPV3_WRAP1_S3_CLK>;
-> +				interconnect-names = "qup-core", "qup-config", "qup-memory";
-> +				interconnects = <&clk_virt MASTER_QUP_CORE_1 0 &clk_virt SLAVE_QUP_CORE_1 0>,
-> +						<&gem_noc MASTER_APPSS_PROC 0 &config_noc SLAVE_QUP_1 0>,
-> +						<&aggre2_noc MASTER_QUP_1 0 &mc_virt SLAVE_EBI1 0>;
-> +				power-domains = <&rpmhpd SA8775P_CX>;
-> +				operating-points-v2 = <&qup_opp_table_100mhz>;
-> +				status = "disabled";
-> +			};
-> +		};
-> +
-> +		apps_smmu: apps-smmu@15000000 {
-> +			compatible = "qcom,sa8775p-smmu-500", "arm,mmu-500";
-> +			reg = <0x15000000 0x100000>, <0x15182000 0x28>;
-> +			reg-names = "base", "tcu-base";
-> +			#iommu-cells = <2>;
-> +			qcom,skip-init;
-> +			qcom,use-3-lvl-tables;
-> +			#global-interrupts = <2>;
-> +			#size-cells = <1>;
-> +			#address-cells = <1>;
-> +			ranges;
-> +
-> +			interrupts = <GIC_SPI 119 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 120 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 104 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 105 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 112 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 114 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 181 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 182 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 183 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 184 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 185 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 187 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 188 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 189 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 190 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 191 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 192 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 315 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 316 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 317 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 318 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 319 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 320 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 321 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 322 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 323 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 324 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 325 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 326 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 327 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 328 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 329 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 330 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 331 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 332 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 333 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 334 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 335 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 336 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 337 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 338 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 339 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 340 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 341 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 342 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 343 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 344 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 345 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 395 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 396 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 397 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 398 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 399 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 400 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 401 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 402 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 403 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 404 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 405 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 406 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 407 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 408 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 409 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 418 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 419 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 412 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 421 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 706 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 423 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 424 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 425 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 689 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 690 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 691 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 692 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 693 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 694 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 695 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 696 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 410 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 411 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 420 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 413 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 422 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 707 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 708 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 709 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 710 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 711 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 414 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 712 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 713 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 714 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 715 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 912 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 911 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 910 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 909 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 908 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 907 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 906 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 905 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 904 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 903 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 902 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 901 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 900 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 899 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 898 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 897 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 896 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 895 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 894 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 893 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 892 IRQ_TYPE_LEVEL_HIGH>,
-> +				      <GIC_SPI 891 IRQ_TYPE_LEVEL_HIGH>;
-> +		};
-> +	};
-> +};
-
--- 
-Eric Chanudet
+> What should the default be?  If disable_dma32=0 by default, this seems
+> like code that will never get tested.  There are some rather subtle
+> relationships between ZONE_DMA32 and other zones that could get missed
+> without sufficient testing, like...
+> 
+> alloc_flags_nofragment() has some rather relevant comments that are left
+> unaddressed:
+> 
+>>          /*
+>>           * If ZONE_DMA32 exists, assume it is the one after ZONE_NORMAL and
+>>           * the pointer is within zone->zone_pgdat->node_zones[]. Also assume
+>>           * on UMA that if Normal is populated then so is DMA32.
+>>           */
+> 
+> This patch appears to break the "on UMA" assumption.
+> 
+> 
+>> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+>> index 58a0bb2c17f1..1a56098c0e19 100644
+>> --- a/arch/arm64/mm/init.c
+>> +++ b/arch/arm64/mm/init.c
+>> @@ -118,6 +118,12 @@ static int __init reserve_crashkernel_low(unsigned long long low_size)
+>>   	return 0;
+>>   }
+>>   
+>> +/*
+>> + * Provide a run-time mean of disabling ZONE_DMA32 if it is enabled via
+>> + * CONFIG_ZONE_DMA32.
+>> + */
+>> +static bool disable_dma32 __ro_after_init;
+> 
+> Is this referenced in any hot paths?  It might deserve a static branch.
+> 
+>> diff --git a/arch/x86/mm/init.c b/arch/x86/mm/init.c
+>> index cb258f58fdc8..b8af7e2f21f5 100644
+>> --- a/arch/x86/mm/init.c
+>> +++ b/arch/x86/mm/init.c
+>> @@ -112,6 +112,12 @@ static unsigned long min_pfn_mapped;
+>>   
+>>   static bool __initdata can_use_brk_pgt = true;
+>>   
+>> +/*
+>> + * Provide a run-time mean of disabling ZONE_DMA32 if it is enabled via
+>> + * CONFIG_ZONE_DMA32.
+>> + */
+>> +static bool disable_dma32 __ro_after_init;
+>> +
+>>   /*
+>>    * Pages returned are already directly mapped.
+>>    *
+>> @@ -1032,7 +1038,7 @@ void __init zone_sizes_init(void)
+>>   	max_zone_pfns[ZONE_DMA]		= min(MAX_DMA_PFN, max_low_pfn);
+>>   #endif
+>>   #ifdef CONFIG_ZONE_DMA32
+>> -	max_zone_pfns[ZONE_DMA32]	= min(MAX_DMA32_PFN, max_low_pfn);
+>> +	max_zone_pfns[ZONE_DMA32]	= disable_dma32 ? 0 : min(MAX_DMA32_PFN, max_low_pfn);
+>>   #endif
+>>   	max_zone_pfns[ZONE_NORMAL]	= max_low_pfn;
+>>   #ifdef CONFIG_HIGHMEM
+>> @@ -1042,6 +1048,18 @@ void __init zone_sizes_init(void)
+>>   	free_area_init(max_zone_pfns);
+>>   }
+>>   
+>> +static int __init early_disable_dma32(char *buf)
+>> +{
+>> +	if (!buf)
+>> +		return -EINVAL;
+>> +
+>> +	if (!strcmp(buf, "on"))
+>> +		disable_dma32 = true;
+>> +
+>> +	return 0;
+>> +}
+>> +early_param("disable_dma32", early_disable_dma32);
+> 
+> Ick.  Is there no way to do this other than a cross-arch copy/paste?
+> 
+>> diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
+>> index 18aade195884..ed69618cf1fc 100644
+>> --- a/include/linux/dma-direct.h
+>> +++ b/include/linux/dma-direct.h
+>> @@ -24,6 +24,28 @@ struct bus_dma_region {
+>>   	u64		offset;
+>>   };
+>>   
+>> +static inline bool zone_dma32_is_empty(int node)
+>> +{
+>> +#ifdef CONFIG_ZONE_DMA32
+>> +	pg_data_t *pgdat = NODE_DATA(node);
+>> +
+>> +	return zone_is_empty(&pgdat->node_zones[ZONE_DMA32]);
+>> +#else
+>> +	return true;
+>> +#endif
+>> +}
+>> +
+>> +static inline bool zone_dma32_are_empty(void)
+>> +{
+>> +	int node;
+>> +
+>> +	for_each_node(node)
+>> +		if (!zone_dma32_is_empty(node))
+>> +			return false;
+>> +
+>> +	return true;
+>> +}
+> 
+> That for_each_node() loop can be 1024 nodes long.  I hope this isn't in
+> any hot paths.  It'll be fine on DMA32 systems because it'll fall out of
+> the loop on the first pass.  But, if someone uses your shiny new option,
+> they're in for a long loop.
+> 
+> Oh, and this is:
+> 
+> #define for_each_node(node)        for_each_node_state(node, N_POSSIBLE)
+> 
+> Did you really want all *possible* nodes?  Or will
+> for_each_online_node() do?
+> 
+> Also, I'd be rather shocked if there wasn't one-stop-shopping for this
+> somewhere.  Consulting your new 'disable_dma32' variable would make this
+> function rather cheap.  I suspect a totally empty set of DMA32 will also
+> leave its mark in arch_zone_*_possible_pfn[].
+> 
+>>   static inline dma_addr_t translate_phys_to_dma(struct device *dev,
+>>   		phys_addr_t paddr)
+>>   {
+>> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+>> index 63859a101ed8..754210c65658 100644
+>> --- a/kernel/dma/direct.c
+>> +++ b/kernel/dma/direct.c
+>> @@ -60,7 +60,7 @@ static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
+>>   	*phys_limit = dma_to_phys(dev, dma_limit);
+>>   	if (*phys_limit <= DMA_BIT_MASK(zone_dma_bits))
+>>   		return GFP_DMA;
+>> -	if (*phys_limit <= DMA_BIT_MASK(32))
+>> +	if (*phys_limit <= DMA_BIT_MASK(32) && !zone_dma32_is_empty(dev_to_node(dev)))
+>>   		return GFP_DMA32;
+>>   	return 0;
+>>   }
+>> @@ -145,7 +145,8 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
+>>   
+>>   		if (IS_ENABLED(CONFIG_ZONE_DMA32) &&
+>>   		    phys_limit < DMA_BIT_MASK(64) &&
+>> -		    !(gfp & (GFP_DMA32 | GFP_DMA))) {
+>> +		    !(gfp & (GFP_DMA32 | GFP_DMA)) &&
+>> +		    !zone_dma32_is_empty(node)) {
+>>   			gfp |= GFP_DMA32;
+>>   			goto again;
+>>   		}
+> 
+> The zone_dma32_is_empty() value is known at compile-time if
+> !CONFIG_ZONE_DMA32.  That would make it redundant to check both.
+> 
+>> diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+>> index 4d40dcce7604..8e79903fbda8 100644
+>> --- a/kernel/dma/pool.c
+>> +++ b/kernel/dma/pool.c
+>> @@ -71,7 +71,7 @@ static bool cma_in_zone(gfp_t gfp)
+>>   	end = cma_get_base(cma) + size - 1;
+>>   	if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp & GFP_DMA))
+>>   		return end <= DMA_BIT_MASK(zone_dma_bits);
+>> -	if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32))
+>> +	if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32) && !zone_dma32_are_empty())
+>>   		return end <= DMA_BIT_MASK(32);
+>>   	return true;
+>>   }
+>> @@ -153,7 +153,7 @@ static void atomic_pool_work_fn(struct work_struct *work)
+>>   	if (IS_ENABLED(CONFIG_ZONE_DMA))
+>>   		atomic_pool_resize(atomic_pool_dma,
+>>   				   GFP_KERNEL | GFP_DMA);
+>> -	if (IS_ENABLED(CONFIG_ZONE_DMA32))
+>> +	if (IS_ENABLED(CONFIG_ZONE_DMA32) && !zone_dma32_are_empty())
+>>   		atomic_pool_resize(atomic_pool_dma32,
+>>   				   GFP_KERNEL | GFP_DMA32);
+>>   	atomic_pool_resize(atomic_pool_kernel, GFP_KERNEL);
+>> @@ -209,7 +209,7 @@ static int __init dma_atomic_pool_init(void)
+>>   		if (!atomic_pool_dma)
+>>   			ret = -ENOMEM;
+>>   	}
+>> -	if (IS_ENABLED(CONFIG_ZONE_DMA32)) {
+>> +	if (IS_ENABLED(CONFIG_ZONE_DMA32) && !zone_dma32_are_empty()) {
+>>   		atomic_pool_dma32 = __dma_atomic_pool_init(atomic_pool_size,
+>>   						GFP_KERNEL | GFP_DMA32);
+>>   		if (!atomic_pool_dma32)
+>> @@ -224,7 +224,7 @@ postcore_initcall(dma_atomic_pool_init);
+>>   static inline struct gen_pool *dma_guess_pool(struct gen_pool *prev, gfp_t gfp)
+>>   {
+>>   	if (prev == NULL) {
+>> -		if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32))
+>> +		if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32) && !zone_dma32_are_empty())
+>>   			return atomic_pool_dma32;
+>>   		if (atomic_pool_dma && (gfp & GFP_DMA))
+>>   			return atomic_pool_dma;
+> 
+> I think every single call to zone_dma32_are_empty() is !'d.  It seems
+> like it chose the wrong polarity.
 
