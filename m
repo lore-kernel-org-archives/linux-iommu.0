@@ -1,276 +1,129 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2EC6B4C92
-	for <iommu@lists.linux.dev>; Thu, 26 Jan 2023 19:15:37 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6F2BC4B3;
-	Thu, 26 Jan 2023 11:16:18 -0800 (PST)
-Received: from [10.57.89.209] (unknown [10.57.89.209])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 292133F64C;
-	Thu, 26 Jan 2023 11:15:34 -0800 (PST)
-Message-ID: <555fca66-81b6-3406-eac1-140c00669477@arm.com>
-Date: Thu, 26 Jan 2023 19:15:26 +0000
+Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2740E4C9B
+	for <iommu@lists.linux.dev>; Thu, 26 Jan 2023 19:38:18 +0000 (UTC)
+Received: by mail-qt1-f171.google.com with SMTP id s4so2203326qtx.6
+        for <iommu@lists.linux.dev>; Thu, 26 Jan 2023 11:38:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=548u3Fp4tscAsRqm8ZTE2VWhUoxZOCMAGUWVcX6Go58=;
+        b=epV5VW3hrViYljNLAdWJDqX3fAl4wYMv55qfvqUl+cZybWCeeDvqryFJs7Zk1z1ge0
+         +YfWxsTDgetquN/yOeHPal429etypXOBpel4tIAV8vd4EP8H055kKatEvKe6oZxMs3PT
+         LcO0xq4K0msdWtCUNqYN4NK0vLHs5L0h44+WlAHrYWvJgXcgjDmqAFXJlLbfBB/UTvvN
+         9vIhPdjjmCe8giVOUtXcRKZC0HKhopCXDpNQUBIZSpW7Qbo2/7o+/aS/ZPpfQVm1O7vS
+         K1a26f+LNFd2YzHSgykx3DHZbq9/58TJ23dpXqRpwr3NjRuHpKkuas3uu7YQGuqzHxWI
+         HpSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=548u3Fp4tscAsRqm8ZTE2VWhUoxZOCMAGUWVcX6Go58=;
+        b=GmBq2BZ4nQzIdFuQ1yZYdgv5xitKz3Rbj5bNSK6WKiyfjO9Zq3ORu5Wmh0iN/WKQCf
+         gHy7kPpduikdEdz8e5Wjn41XAQ1yrcJE81wHXVr3Egrky+w5j9wc64iyxafihsrayZTN
+         BnNW+plSFw02gb9uVslUmkCspswO4hLyUkMVCpBhot+aRDzGoYiHJQNfwdGPAjP9ZDP9
+         YTXyqQxS0f8GCOSZ1r/lgYz7EEveoCuaEZmQ/bnX+TJNyThbS3wLY9UWSjcwLiQR0get
+         lnIjnZyjMlP6+owKuRzLkRUtM+AykuoveMzlY5cr+n0IyR+YGg6q++UYC946zNZ0leZg
+         7yXg==
+X-Gm-Message-State: AFqh2korKx5BxjExF1uFytDPAHk7ZtQ+tYWdENEYHAISuIicW+12HFhW
+	03A1Ee1IDOO95axfRRFAXLeHmA==
+X-Google-Smtp-Source: AMrXdXv+huCHA7ip/FVnskiv66KzYaO0gWPYCPL7QS4WBmaP67lWrrmrdvcrLuRJ9ZU3cV/x/SyhoQ==
+X-Received: by 2002:ac8:70a:0:b0:3b1:c477:eb65 with SMTP id g10-20020ac8070a000000b003b1c477eb65mr52142649qth.60.1674761897975;
+        Thu, 26 Jan 2023 11:38:17 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-167-59-176.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.59.176])
+        by smtp.gmail.com with ESMTPSA id v3-20020ac87283000000b003b62e9c82ebsm1276806qto.48.2023.01.26.11.38.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Jan 2023 11:38:16 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1pL84e-00HP8B-92;
+	Thu, 26 Jan 2023 15:38:16 -0400
+Date: Thu, 26 Jan 2023 15:38:16 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Dan Williams <dan.j.williams@intel.com>
+Cc: Matthew Wilcox <willy@infradead.org>, nvdimm@lists.linux.dev,
+	lsf-pc@lists.linuxfoundation.org, linux-rdma@vger.kernel.org,
+	John Hubbard <jhubbard@nvidia.com>, dri-devel@lists.freedesktop.org,
+	Ming Lei <ming.lei@redhat.com>, linux-block@vger.kernel.org,
+	linux-mm@kvack.org, iommu@lists.linux.dev, netdev@vger.kernel.org,
+	Joao Martins <joao.m.martins@oracle.com>,
+	Jason Gunthorpe via Lsf-pc <lsf-pc@lists.linux-foundation.org>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Christoph Hellwig <hch@lst.de>
+Subject: Re: [Lsf-pc] [LSF/MM/BPF proposal]: Physr discussion
+Message-ID: <Y9LWqEtmkmsMrHne@ziepe.ca>
+References: <Y8v+qVZ8OmodOCQ9@nvidia.com>
+ <63cee1d3eaaef_3a36e529488@dwillia2-xfh.jf.intel.com.notmuch>
+ <Y87p9i0vCZo/3Qa0@casper.infradead.org>
+ <63cef32cbafc3_3a36e529465@dwillia2-xfh.jf.intel.com.notmuch>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [RFC] mm: Allow ZONE_DMA32 to be disabled via kernel command line
-Content-Language: en-GB
-To: Georgi Djakov <quic_c_gdjako@quicinc.com>, catalin.marinas@arm.com,
- will@kernel.org
-Cc: dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
- tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
- hch@lst.de, m.szyprowski@samsung.com, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, djakov@kernel.org
-References: <20230126164352.17562-1-quic_c_gdjako@quicinc.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20230126164352.17562-1-quic_c_gdjako@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <63cef32cbafc3_3a36e529465@dwillia2-xfh.jf.intel.com.notmuch>
 
-On 2023-01-26 16:43, Georgi Djakov wrote:
-> From: Chris Goldsworthy <quic_cgoldswo@quicinc.com>
+On Mon, Jan 23, 2023 at 12:50:52PM -0800, Dan Williams wrote:
+> Matthew Wilcox wrote:
+> > On Mon, Jan 23, 2023 at 11:36:51AM -0800, Dan Williams wrote:
+> > > Jason Gunthorpe via Lsf-pc wrote:
+> > > > I would like to have a session at LSF to talk about Matthew's
+> > > > physr discussion starter:
+> > > > 
+> > > >  https://lore.kernel.org/linux-mm/YdyKWeU0HTv8m7wD@casper.infradead.org/
+> > > > 
+> > > > I have become interested in this with some immediacy because of
+> > > > IOMMUFD and this other discussion with Christoph:
+> > > > 
+> > > >  https://lore.kernel.org/kvm/4-v2-472615b3877e+28f7-vfio_dma_buf_jgg@nvidia.com/
+> > > 
+> > > I think this is a worthwhile discussion. My main hangup with 'struct
+> > > page' elimination in general is that if anything needs to be allocated
+> > 
+> > You're the first one to bring up struct page elimination.  Neither Jason
+> > nor I have that as our motivation.
 > 
-> It's useful to have an option to disable the ZONE_DMA32 during boot as
-> CONFIG_ZONE_DMA32 is by default enabled (on multiplatform kernels for
-> example). There are platforms that do not use this zone and in some high
-> memory pressure scenarios this would help on easing kswapd (to leave file
-> backed memory intact / unreclaimed). When the ZONE_DMA32 is enabled on
-> these platforms - kswapd is woken up more easily and drains the file cache
-> which leads to some performance issues.
-> 
-> Signed-off-by: Chris Goldsworthy <quic_cgoldswo@quicinc.com>
-> [georgi: updated commit text]
-> Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
-> ---
-> The main question here is whether we can have a kernel command line
-> option to disable CONFIG_ZONE_DMA32 during boot (at least on arm64).
-> I can imagine this being useful also for Linux distros.
+> Oh, ok, then maybe I misread the concern in the vfio discussion. I
+> thought the summary there is debating the ongoing requirement for
+> 'struct page' for P2PDMA?
 
-FWIW I'd say that "disabled" and "left empty then awkwardly tiptoed 
-around in a few places" are very different notions...
+The VFIO problem is we need a unique pgmap at 4k granuals (or maybe
+smaller, technically), tightly packed, because VFIO exposes PCI BAR
+space that can be sized in such small amounts.
 
-However, I'm just going to take a step back and read the commit message 
-a few more times... Given what it claims, I can't help but ask why 
-wouldn't we want a parameter to control kswapd's behaviour and address 
-that issue directly, rather than a massive hammer that breaks everyone 
-allocating explicitly or implicitly with __GFP_DMA32 (especially on 
-systems where it doesn't normally matter because all memory is below 4GB 
-anyway), just to achieve one rather niche side-effect?
+So, using struct page means some kind of adventure in the memory
+hotplug code to allow tightly packed 4k pgmaps.
 
-Thanks,
-Robin.
+And that is assuming that every architecture that wants to support
+VFIO supports pgmap and memory hot plug. I was just told that s390
+doesn't, that is kind of important..
 
->   .../admin-guide/kernel-parameters.txt         |  5 +++++
->   arch/arm64/mm/init.c                          | 20 ++++++++++++++++-
->   arch/x86/mm/init.c                            | 20 ++++++++++++++++-
->   include/linux/dma-direct.h                    | 22 +++++++++++++++++++
->   kernel/dma/direct.c                           |  5 +++--
->   kernel/dma/pool.c                             |  8 +++----
->   6 files changed, 72 insertions(+), 8 deletions(-)
-> 
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index cb12df402161..854ff65ac6b0 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -1070,6 +1070,11 @@
->   			Disable Dynamic DMA Window support. Use this
->   			to workaround buggy firmware.
->   
-> +	disable_dma32=	[KNL]
-> +			Dynamically disable ZONE_DMA32 on kernels compiled with
-> +			CONFIG_ZONE_DMA32=y.
-> +
-> +
->   	disable_ipv6=	[IPV6]
->   			See Documentation/networking/ipv6.rst.
->   
-> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-> index 58a0bb2c17f1..1a56098c0e19 100644
-> --- a/arch/arm64/mm/init.c
-> +++ b/arch/arm64/mm/init.c
-> @@ -118,6 +118,12 @@ static int __init reserve_crashkernel_low(unsigned long long low_size)
->   	return 0;
->   }
->   
-> +/*
-> + * Provide a run-time mean of disabling ZONE_DMA32 if it is enabled via
-> + * CONFIG_ZONE_DMA32.
-> + */
-> +static bool disable_dma32 __ro_after_init;
-> +
->   /*
->    * reserve_crashkernel() - reserves memory for crash kernel
->    *
-> @@ -244,7 +250,7 @@ static void __init zone_sizes_init(void)
->   	max_zone_pfns[ZONE_DMA] = PFN_DOWN(arm64_dma_phys_limit);
->   #endif
->   #ifdef CONFIG_ZONE_DMA32
-> -	max_zone_pfns[ZONE_DMA32] = PFN_DOWN(dma32_phys_limit);
-> +	max_zone_pfns[ZONE_DMA32] = disable_dma32 ? 0 : PFN_DOWN(dma32_phys_limit);
->   	if (!arm64_dma_phys_limit)
->   		arm64_dma_phys_limit = dma32_phys_limit;
->   #endif
-> @@ -253,6 +259,18 @@ static void __init zone_sizes_init(void)
->   	free_area_init(max_zone_pfns);
->   }
->   
-> +static int __init early_disable_dma32(char *buf)
-> +{
-> +	if (!buf)
-> +		return -EINVAL;
-> +
-> +	if (!strcmp(buf, "on"))
-> +		disable_dma32 = true;
-> +
-> +	return 0;
-> +}
-> +early_param("disable_dma32", early_disable_dma32);
-> +
->   int pfn_is_map_memory(unsigned long pfn)
->   {
->   	phys_addr_t addr = PFN_PHYS(pfn);
-> diff --git a/arch/x86/mm/init.c b/arch/x86/mm/init.c
-> index cb258f58fdc8..b8af7e2f21f5 100644
-> --- a/arch/x86/mm/init.c
-> +++ b/arch/x86/mm/init.c
-> @@ -112,6 +112,12 @@ static unsigned long min_pfn_mapped;
->   
->   static bool __initdata can_use_brk_pgt = true;
->   
-> +/*
-> + * Provide a run-time mean of disabling ZONE_DMA32 if it is enabled via
-> + * CONFIG_ZONE_DMA32.
-> + */
-> +static bool disable_dma32 __ro_after_init;
-> +
->   /*
->    * Pages returned are already directly mapped.
->    *
-> @@ -1032,7 +1038,7 @@ void __init zone_sizes_init(void)
->   	max_zone_pfns[ZONE_DMA]		= min(MAX_DMA_PFN, max_low_pfn);
->   #endif
->   #ifdef CONFIG_ZONE_DMA32
-> -	max_zone_pfns[ZONE_DMA32]	= min(MAX_DMA32_PFN, max_low_pfn);
-> +	max_zone_pfns[ZONE_DMA32]	= disable_dma32 ? 0 : min(MAX_DMA32_PFN, max_low_pfn);
->   #endif
->   	max_zone_pfns[ZONE_NORMAL]	= max_low_pfn;
->   #ifdef CONFIG_HIGHMEM
-> @@ -1042,6 +1048,18 @@ void __init zone_sizes_init(void)
->   	free_area_init(max_zone_pfns);
->   }
->   
-> +static int __init early_disable_dma32(char *buf)
-> +{
-> +	if (!buf)
-> +		return -EINVAL;
-> +
-> +	if (!strcmp(buf, "on"))
-> +		disable_dma32 = true;
-> +
-> +	return 0;
-> +}
-> +early_param("disable_dma32", early_disable_dma32);
-> +
->   __visible DEFINE_PER_CPU_ALIGNED(struct tlb_state, cpu_tlbstate) = {
->   	.loaded_mm = &init_mm,
->   	.next_asid = 1,
-> diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
-> index 18aade195884..ed69618cf1fc 100644
-> --- a/include/linux/dma-direct.h
-> +++ b/include/linux/dma-direct.h
-> @@ -24,6 +24,28 @@ struct bus_dma_region {
->   	u64		offset;
->   };
->   
-> +static inline bool zone_dma32_is_empty(int node)
-> +{
-> +#ifdef CONFIG_ZONE_DMA32
-> +	pg_data_t *pgdat = NODE_DATA(node);
-> +
-> +	return zone_is_empty(&pgdat->node_zones[ZONE_DMA32]);
-> +#else
-> +	return true;
-> +#endif
-> +}
-> +
-> +static inline bool zone_dma32_are_empty(void)
-> +{
-> +	int node;
-> +
-> +	for_each_node(node)
-> +		if (!zone_dma32_is_empty(node))
-> +			return false;
-> +
-> +	return true;
-> +}
-> +
->   static inline dma_addr_t translate_phys_to_dma(struct device *dev,
->   		phys_addr_t paddr)
->   {
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index 63859a101ed8..754210c65658 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -60,7 +60,7 @@ static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
->   	*phys_limit = dma_to_phys(dev, dma_limit);
->   	if (*phys_limit <= DMA_BIT_MASK(zone_dma_bits))
->   		return GFP_DMA;
-> -	if (*phys_limit <= DMA_BIT_MASK(32))
-> +	if (*phys_limit <= DMA_BIT_MASK(32) && !zone_dma32_is_empty(dev_to_node(dev)))
->   		return GFP_DMA32;
->   	return 0;
->   }
-> @@ -145,7 +145,8 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
->   
->   		if (IS_ENABLED(CONFIG_ZONE_DMA32) &&
->   		    phys_limit < DMA_BIT_MASK(64) &&
-> -		    !(gfp & (GFP_DMA32 | GFP_DMA))) {
-> +		    !(gfp & (GFP_DMA32 | GFP_DMA)) &&
-> +		    !zone_dma32_is_empty(node)) {
->   			gfp |= GFP_DMA32;
->   			goto again;
->   		}
-> diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
-> index 4d40dcce7604..8e79903fbda8 100644
-> --- a/kernel/dma/pool.c
-> +++ b/kernel/dma/pool.c
-> @@ -71,7 +71,7 @@ static bool cma_in_zone(gfp_t gfp)
->   	end = cma_get_base(cma) + size - 1;
->   	if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp & GFP_DMA))
->   		return end <= DMA_BIT_MASK(zone_dma_bits);
-> -	if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32))
-> +	if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32) && !zone_dma32_are_empty())
->   		return end <= DMA_BIT_MASK(32);
->   	return true;
->   }
-> @@ -153,7 +153,7 @@ static void atomic_pool_work_fn(struct work_struct *work)
->   	if (IS_ENABLED(CONFIG_ZONE_DMA))
->   		atomic_pool_resize(atomic_pool_dma,
->   				   GFP_KERNEL | GFP_DMA);
-> -	if (IS_ENABLED(CONFIG_ZONE_DMA32))
-> +	if (IS_ENABLED(CONFIG_ZONE_DMA32) && !zone_dma32_are_empty())
->   		atomic_pool_resize(atomic_pool_dma32,
->   				   GFP_KERNEL | GFP_DMA32);
->   	atomic_pool_resize(atomic_pool_kernel, GFP_KERNEL);
-> @@ -209,7 +209,7 @@ static int __init dma_atomic_pool_init(void)
->   		if (!atomic_pool_dma)
->   			ret = -ENOMEM;
->   	}
-> -	if (IS_ENABLED(CONFIG_ZONE_DMA32)) {
-> +	if (IS_ENABLED(CONFIG_ZONE_DMA32) && !zone_dma32_are_empty()) {
->   		atomic_pool_dma32 = __dma_atomic_pool_init(atomic_pool_size,
->   						GFP_KERNEL | GFP_DMA32);
->   		if (!atomic_pool_dma32)
-> @@ -224,7 +224,7 @@ postcore_initcall(dma_atomic_pool_init);
->   static inline struct gen_pool *dma_guess_pool(struct gen_pool *prev, gfp_t gfp)
->   {
->   	if (prev == NULL) {
-> -		if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32))
-> +		if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32) && !zone_dma32_are_empty())
->   			return atomic_pool_dma32;
->   		if (atomic_pool_dma && (gfp & GFP_DMA))
->   			return atomic_pool_dma;
+If there is a straightforward way to get a pgmap into VFIO then I'd do
+that and give up this quest :)
+
+I've never been looking at this from the angle of eliminating struct
+page, but from the perspective of allowing the DMA API to correctly do
+scatter/gather IO to non-struct page P2P memory because I *can't* get
+a struct page for it. Ie make dma_map_resource() better. Make P2P
+DMABUF work properly.
+
+This has to come along with a different way to store address ranges
+because the basic datum that needs to cross all the functional
+boundaries we have is an address range list.
+
+My general current sketch is we'd allocate some 'DMA P2P provider'
+structure analogous to the MEMORY_DEVICE_PCI_P2PDMA pgmap and a single
+provider would cover the entire MMIO aperture - eg the providing
+device's MMIO BAR. This is enough information for the DMA API to do
+its job.
+
+We get this back either by searching an interval treey thing on the
+physical address or by storing it directly in the address range list.
+
+Jason
