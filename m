@@ -1,186 +1,96 @@
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2106.outbound.protection.outlook.com [40.107.255.106])
+Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C2B11389
-	for <iommu@lists.linux.dev>; Thu, 26 Jan 2023 01:24:38 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ecCtky/OFDoq3FwwrNNQ3GqmJokkpEZKWYYZ2V6qjnAbi1Mbo1UOZGsoccfSTYZfCR+dRY1i9q16K1gWP3hOsFVDaYgx3B707u1o7Oz7CjgM2ZaOLzWtIv1WT7D49M8pShhr2J9R9bNETPWtSZ8ythOFEjr1tN6oeJKF5bt+CdWMijQLEjuxqAf4GvmcJ++l5X4KPFeyhxYnpoGIDGC7XOsctlDEY5SoKbFNyfBCFAe6VL0pLiRl68fmURSThxfEtf/AS1HkIz89R+yWvYnC0AlgnU730DVBVTLVBdsG+sH1fwDt0GqAxQws9APuA78RCVhWv7o151ZLnQvrqIQASA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VmG8eCLm0dkaI7C308KPqqAIwtxlkSu4TbkqN0RNstQ=;
- b=nrahsgMN175/M49MndKPA6+nzT2bzE8Cu+Ku+uq83sqiFnqa7LsIgFI3xeUFAoi7cVnTtlpeagVtoNhlEWSf96puzvQZKVerJakRyyp/mGMnTr5RjoSvQMf9H8Ulv8t6oXESkBMxm59xooHsvCF/AiRBdz3QbcVRzCVPtbW+fwCZcvgiL83EdeNgrBXrwlUrAKTKSu6c5Gqv7Clq9CVSXSrHGPzf3ZB7YBcmzZw3CKQz/D79KeMjRVnaJ2XqYpHwL3SIkqxA3kc/rOh1zLnqpBNnQd9j1DGTVSSsh3QGZDwZnQChv+An2+bOO68/53fHaKkWf6b3t8AQp/zcJFTnyA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VmG8eCLm0dkaI7C308KPqqAIwtxlkSu4TbkqN0RNstQ=;
- b=Uh5BMs2wTrTq6IruuAhyUL9vW+V5q/eVio9NawRHzZk2INlk38mDbWw2vdyI5jbJvW44iVq5/+oZiHAxcYI7CWxJ2v8elBX5JVjp38f2DMQexOuGLQk+XJkh8qNmRqluChd/ma3vhAZOW3xWmvhUIhdjWMRVxVpcl7JljrYQcDE=
-Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
- (2603:1096:404:8028::13) by TYVPR01MB11128.jpnprd01.prod.outlook.com
- (2603:1096:400:364::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.22; Thu, 26 Jan
- 2023 01:24:35 +0000
-Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
- ([fe80::3e61:3792:227e:5f18]) by TYBPR01MB5341.jpnprd01.prod.outlook.com
- ([fe80::3e61:3792:227e:5f18%7]) with mapi id 15.20.6043.021; Thu, 26 Jan 2023
- 01:24:35 +0000
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To: Robin Murphy <robin.murphy@arm.com>, Geert Uytterhoeven
-	<geert@linux-m68k.org>
-CC: "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
-	"robh+dt@kernel.org" <robh+dt@kernel.org>,
-	"krzysztof.kozlowski+dt@linaro.org" <krzysztof.kozlowski+dt@linaro.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "devicetree@vger.kernel.org"
-	<devicetree@vger.kernel.org>, "linux-renesas-soc@vger.kernel.org"
-	<linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH] dt-bindings: iommu: renesas,ipmmu-vmsa: Update
- descriptions for R-Car Gen4
-Thread-Topic: [PATCH] dt-bindings: iommu: renesas,ipmmu-vmsa: Update
- descriptions for R-Car Gen4
-Thread-Index: AQHZLsourgLTvtmvK0W71iwTdWHd8a6tpGsAgACkryCAAI6eAIAAHhGAgAD13pA=
-Date: Thu, 26 Jan 2023 01:24:34 +0000
-Message-ID:
- <TYBPR01MB53413152631A581004C3535ED8CF9@TYBPR01MB5341.jpnprd01.prod.outlook.com>
-References: <20230123012940.1250879-1-yoshihiro.shimoda.uh@renesas.com>
- <CAMuHMdX92KMeON0xC9p17kiqWT7ksEBX_NyPiiQk0fLaucDZBA@mail.gmail.com>
- <TYBPR01MB5341B023178B4A10DE52B844D8CE9@TYBPR01MB5341.jpnprd01.prod.outlook.com>
- <CAMuHMdXXnu88Tn2ucuHZK=3G18v-nCfaTYpomchRXBu3bD7UuA@mail.gmail.com>
- <3c3e1dc2-1f66-565c-c677-2eae368e10be@arm.com>
-In-Reply-To: <3c3e1dc2-1f66-565c-c677-2eae368e10be@arm.com>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=renesas.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: TYBPR01MB5341:EE_|TYVPR01MB11128:EE_
-x-ms-office365-filtering-correlation-id: 0d78bc0f-a9b5-4172-6405-08daff3c1580
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- 0bqBpa3u2ELfdFUul5KI5FWuxYlDdeLuOG5qaOt+n3KiuGW5S2fHHhdh+9bMpvMgYXS9TXj1hDO/Kvbj/Mi+AWloHQdIICGDBb9bezJ+M4YhTTSMBFIu1xneJWO5lrA1ViRpA/Hks+oedoMpx/uf85+4yMpHujA1/cG+qwj5PSeIclXoX1It+lvFvP55qy2j1R0pVSaw9COcoqTL6EDyOE1QtYHzWj8Fcc529B2CkAfgM/D8DVCIdryZPymJy6FdMiUWEg5gYmhCFVgTnPF6eIVk/dj+FtCG73YX0UrmVQzkDJMSN1Rj8RfIsUgQsYAzjVPwUf49O7Tm1I6loj8neN9JtO61uuqWzLI0spHP/AmnEhWdauJk8YDrUy5VtHrBJY0HSFGcPld4nhuGNBjxCNPk5B3rX4B0tAGwmyIbRzYZMjBIbOVirM/uIfPugojKoC89mgqEJQV3SevXJXfn7g9iDNyyiV025hdgigXtMR9dPeZEFjFi1JeEfcwA+DwwjxM4J89/4SClJVjFKckzVzvwO0rEmBb+pczuvBZK+734PwLldfLtbA6Vs4thEhztH1pnY5Le7SKYkP3QiWnBTbcLqpbS88dY3Scnwuoh94SSUjvRXgO57XF1V3m466XmECdouOsaVgvo3+01AeQxMKo37vEUhNMrx+8+LCrntKR0dXa222Hdi+VSrM2/kimEm6arIn9pwJJ6KflEvCT3xY6RB6Pudl2jPOyQ0kcHb+w=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYBPR01MB5341.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(346002)(376002)(136003)(396003)(366004)(39860400002)(451199018)(86362001)(38070700005)(38100700002)(122000001)(33656002)(41300700001)(66946007)(52536014)(5660300002)(8936002)(4326008)(54906003)(66556008)(66476007)(66446008)(64756008)(8676002)(76116006)(316002)(55016003)(15650500001)(2906002)(110136005)(83380400001)(7696005)(478600001)(966005)(45080400002)(53546011)(6506007)(9686003)(186003)(71200400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?OEhDY25LVUExd3BNaWMvRTZSanhSOGUvK2VKc2ZtektXejRUQjlZdHBNUkE4?=
- =?utf-8?B?N3J6bzlHWjhNSmp5TThpSExkZ2JmSnFaeVRiQlJKQVNXNHFJb2dWOWk1MHVp?=
- =?utf-8?B?TmtUQzZXeXFmTW0rRGpyZE1jelEwRXl3aUhjWUR2VlZhNHROa1pJVjBnVHEx?=
- =?utf-8?B?ZHIyU3RudDlGWHprQVdSRVF0dkdKZm1haG1ZMzd3QmtSbWEyWlBuaVhKNUdm?=
- =?utf-8?B?dThRQm5wRE15VHJOZkJWNFJ0V1c1MjNYRzdsQWpxeThJZjZvMGU4V1haQlp3?=
- =?utf-8?B?MEJkWlNMUFRVR294cWs1KzBCbDY1dnR2UE1US2ZEN2NZWWhrMjl0MC92ekha?=
- =?utf-8?B?MldVMzRzKzJsbkZDMXpIbVRyUDFEME9zSC8vdFZaOEdSUFplZ0pMREFRd2dX?=
- =?utf-8?B?VnFJLy9wQVRYZVB4TGxxbEVLSU9MMTBlalUvYXJCOFoyZVJFOTZHU1ZEKzBL?=
- =?utf-8?B?eVVKTUhqeVRDM2pjVU1jSllvRGFYU0pZUGpEQ2xrVzhHNkY1RjkrNWJRMXNz?=
- =?utf-8?B?R2tUdmEzcWdndk1DeTd0TGZWdk9hQ3BmMlVkRy9jNXZkSmZTdHYvVGxmRVAy?=
- =?utf-8?B?SHdpUWhLd0JhRy8vdWc2cXNIUUxrRDUxNmprR3dJWDhPZmRVelVrd1I3dVVl?=
- =?utf-8?B?K3NJRlJmR3dNeHpPQU92Q2doYVFHSmJPd0FZSytPL0RTTGZ3VEhzMTliT3Z2?=
- =?utf-8?B?YTdqUkNpN2ZzbkE4MVRHWXBlS1gyR0RKQk5nSVVQU1l5WTV4SGpveU9jWFdK?=
- =?utf-8?B?TVY1eGxXa09heFVoZnFVV3FZN083ME5xalFiOGNMSXI2c0hLUVIwV2JSbWZ1?=
- =?utf-8?B?RGFhdGFjb25zcmFrVVJzM2ljSExmaXp3Y1NiTGRVLzNRbkNCekVlTWJnU2hs?=
- =?utf-8?B?YktHR1NZYW1vUjBrVWIwWGlVWDJlOG5EQUVzdlV4MlNYYzNMMnl2WDZ0WW9j?=
- =?utf-8?B?U2tqZ1p5YWdDRERUN2hpQndIejdxTTJCSENDTmcyUENJVGZQSzJwYml3K3dZ?=
- =?utf-8?B?RkdJdnZIKzlYQ3UreXRFbVhhVW9Xd3ZrYnYrWVpTNGg5SXM4dExiU0h0L0Vt?=
- =?utf-8?B?a2VzV09wTXNQVFd0bTVmUWVvbHdZQ3BNbXcxT1NVVndJbUhIVnpNTm5zM05Z?=
- =?utf-8?B?OFlwMUdPd2thL1VUVXRsNHVpNk5TZkJpSUFvaDFRcEp2SzkwdFJhdzJqSW16?=
- =?utf-8?B?V1NMcWtYZktRSlVoRkw5bTRBdElsWU85UDYwVGVEQ1ZkNlRtNFpTUzhLY21M?=
- =?utf-8?B?V0NFY2hRWWpjUlZEMGJjZllOU0VwL1FhN0Zla0d4L0hiWDV0cU1VVXlHNitX?=
- =?utf-8?B?SVNtS3ZHRU5lVGhvajh0UVBjc1M0K0pmWTFqM0RmSWZEM09SL3dLSGRDQUNn?=
- =?utf-8?B?anE2S1hxT2RrdDU2b1ZZLzBHRHhoRWhSM3RWYVNFa1EzNkpLMzZmUFUyaXk5?=
- =?utf-8?B?aTlnclhBMlA1RVFrMExqbitIL1k3NnNtZW1sVmh4ZlpHcHBJUVRkUmRFbnBU?=
- =?utf-8?B?VnJLS3FTZ2dnOXpNb1g2L1EzSUZJVWZxZXppbW5qQTNMa2NNSW5QYjRQTW5s?=
- =?utf-8?B?Ym5SYXZJUXdRMGpCdDQ2dUpiNytTRVBMdDRrNXhxRjhUY0VqVm40ZDI3OWdy?=
- =?utf-8?B?YnZMR1JjTnNpd3dRRWo5WnVGV1N3SVRzNW5na0tlZ1dQSU1SL3NUS0N4eWN6?=
- =?utf-8?B?RUJzQVNVM29HLzFmYktqZHh5dTZVcjZ3V3MrTWsyRlp1c3h4OURndlVET1ha?=
- =?utf-8?B?dnYyWEJpTlFIeUs4eUtVbk1MOEwrVzBkRkp3cjE5OUJEOVhSYmhhZGtEOXJB?=
- =?utf-8?B?bWFmUkRKSXl3enlnTnZsYmZPRDVJK2MzYklJTTl1bFR0T2RxVWVkaHB2ZytL?=
- =?utf-8?B?WVJ1Ujc3RFVnRFpFT3llSWhHSVJnVDJmczlGK0crZzlicm5aUnR3RWtqK0FW?=
- =?utf-8?B?Ykp2NklFOVlpTkZyVC93dkhERVVQNjNzVzcvNEdLOS9uQUUyMHFsdTBGMGE1?=
- =?utf-8?B?SStIRGVqM0F1Z21pYmlsVnBocVhhSEd4Q21GN1RXdUdpeSs0eEx0dWxUUi9p?=
- =?utf-8?B?eUtiUHh5VngwNWFEWHZTdXZnaWN2dzZwb0tHQVdVWlVvNWpiMlN5cjF0bVVl?=
- =?utf-8?B?MmVFbUZjSkJiQytzUWtvUDBDOTh1ZHRoZUpDYVlKWi9zdGpjM3UxZllicnB2?=
- =?utf-8?B?MS9WMHd5eDh6OVE4ZXRON0RJZEdyUzliWkYvZzhWWGdYTHVYbGtkOEk4WExm?=
- =?utf-8?B?cHlidUt0WXFlK0lWOENETW1kQ3NBPT0=?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FAAE15A1;
+	Thu, 26 Jan 2023 01:45:44 +0000 (UTC)
+Message-ID: <56ce760f-188c-3a1d-0512-9122247ea100@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1674697536;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Z4KOttIHpVKCbLr1jUjmRYQ6CJOVPDQyGMQ4zA8kCVw=;
+	b=prmflUUZo/lJoWZPYQY87qo96iE00QkhoR3A/ixwEGMb9JQ6SKYt9nzyVxcTjLGf/yfVjN
+	TbMjehqyfU6FV4JtcWz1tTOthCDG5h9phv4zjocA9eGILYXgFBFlBlNn+Orqc28NlWVdNR
+	YE/ym7jgTyojydoL5rMqJd/l0E9dLmA=
+Date: Thu, 26 Jan 2023 09:45:21 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYBPR01MB5341.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0d78bc0f-a9b5-4172-6405-08daff3c1580
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jan 2023 01:24:34.9265
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: m8bS7+ozN0enbMx8gC7DOLt6uAUH+hYaNPIuZTrjfDXY/iAMj+wMkoXryCQ1BPT5tQX35CRcI2xksuimszcNHoXsVhup+GGE4PrFPSaReZELnAR7fye9QMYifBFeDktO
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYVPR01MB11128
+Subject: Re: [LSF/MM/BPF proposal]: Physr discussion
+To: Jason Gunthorpe <jgg@nvidia.com>, lsf-pc@lists.linuxfoundation.org,
+ linux-mm@kvack.org, iommu@lists.linux.dev, linux-rdma@vger.kernel.org
+Cc: Matthew Wilcox <willy@infradead.org>, Christoph Hellwig <hch@lst.de>,
+ Joao Martins <joao.m.martins@oracle.com>, John Hubbard
+ <jhubbard@nvidia.com>, Logan Gunthorpe <logang@deltatee.com>,
+ Ming Lei <ming.lei@redhat.com>, linux-block@vger.kernel.org,
+ netdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ nvdimm@lists.linux.dev
+References: <Y8v+qVZ8OmodOCQ9@nvidia.com>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Zhu Yanjun <yanjun.zhu@linux.dev>
+In-Reply-To: <Y8v+qVZ8OmodOCQ9@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 
-SGkgUm9iaW4sDQoNCj4gRnJvbTogUm9iaW4gTXVycGh5LCBTZW50OiBXZWRuZXNkYXksIEphbnVh
-cnkgMjUsIDIwMjMgNzo0MiBQTQ0KPiANCj4gT24gMjAyMy0wMS0yNSAwODo1NCwgR2VlcnQgVXl0
-dGVyaG9ldmVuIHdyb3RlOg0KPiA+IEhpIFNoaW1vZGEtc2FuLA0KPiA+DQo+ID4gT24gV2VkLCBK
-YW4gMjUsIDIwMjMgYXQgMTo0OSBBTSBZb3NoaWhpcm8gU2hpbW9kYQ0KPiA+IDx5b3NoaWhpcm8u
-c2hpbW9kYS51aEByZW5lc2FzLmNvbT4gd3JvdGU6DQo+ID4+PiBGcm9tOiBHZWVydCBVeXR0ZXJo
-b2V2ZW4sIFNlbnQ6IFR1ZXNkYXksIEphbnVhcnkgMjQsIDIwMjMgMTE6MzUgUE0NCj4gPj4+IE9u
-IE1vbiwgSmFuIDIzLCAyMDIzIGF0IDI6MzUgQU0gWW9zaGloaXJvIFNoaW1vZGENCj4gPj4+IDx5
-b3NoaWhpcm8uc2hpbW9kYS51aEByZW5lc2FzLmNvbT4gd3JvdGU6DQo+ID4+Pj4gU2luY2UgUi1D
-YXIgR2VuNCBkb2Vucyd0IGhhdmUgdGhlIG1haW4gSVBNTVUgSU1TU1RSIHJlZ2lzdGVyLCBidXQN
-Cj4gPj4+PiBlYWNoIGNhY2hlIElQTU1VIGhhcyBvd24gbW9kdWxlIGlkLiBTbywgdXBkYXRlIGRl
-c2NyaXB0aW9ucyBvZg0KPiA+Pj4+IHJlbmVzYXMsaXBtbXUtbWFpbiBwcm9wZXJ0eSBmb3IgUi1D
-YXIgR2VuNC4NCj4gPj4+Pg0KPiA+Pj4+IFNpZ25lZC1vZmYtYnk6IFlvc2hpaGlybyBTaGltb2Rh
-IDx5b3NoaWhpcm8uc2hpbW9kYS51aEByZW5lc2FzLmNvbT4NCj4gPg0KPiA+Pj4+IC0tLQ0KPiA+
-Pj4+ICAgVGhlIG9sZCBSLUNhciBTNC04IGRhdGFzaGVldCBoYWQgZGVzY3JpYmVkIElQTU1VIElN
-U1NUUiByZWdpc3RlciwgYnV0DQo+ID4+Pj4gICB0aGUgbGF0ZXN0IGRhdGFzaGVldCB1bmRvY3Vt
-ZW50ZWQgdGhlIHJlZ2lzdGVyLiBTbywgdXBkYXRlIHRoZSBwcm9wZXRpZXMNCj4gPj4+PiAgIGRl
-c2NyaXB0aW9uLiBOb3RlIHRoYXQgdGhlIHNlY29uZCBhcmd1bWVudCBpcyBub3QgdXNlZCBvbiB0
-aGUgZHJpdmVyLg0KPiA+Pj4NCj4gPj4+IERUIGRlc2NyaWJlcyBoYXJkd2FyZSwgbm90IHNvZnR3
-YXJlIHBvbGljeS4NCj4gPj4NCj4gPj4gSSB0aGluayBzby4NCj4gPj4NCj4gPj4+PiAgIFNvIG5v
-IGJlaGF2aW9yIGNoYW5nZS4NCj4gPj4+DQo+ID4+PiBTbyB3aGVyZSBkbyB3ZSBnZXQgdGhlIG1v
-ZHVsZSBpZCBudW1iZXJzIHRvIHVzZSwgaWYgdGhleSBhcmUgbm8gbG9uZ2VyDQo+ID4+PiBkb2N1
-bWVudGVkIGluIHRoZSBIYXJkd2FyZSBNYW51YWw/DQo+ID4+DQo+ID4+IElmIHNvLCB3ZSBjYW5u
-b3QgZ2V0IHRoZSBtb2R1bGUgaWQgbnVtYmVycy4gU28sIHNob3VsZCB3ZSB1c2Ugb3RoZXINCj4g
-Pj4gaW5mb3JtYXRpb24gd2hpY2ggaXMgY29tcGxldGVseSBmaXhlZCBpbnN0ZWFkPyBJIGhhdmUg
-c29tZSBpZGVhczoNCj4gPj4gMSkgSnVzdCAwIChvciBvdGhlciBmaXhlZCB2YWx1ZSkgaWYgdGhl
-IElNU1NUUiByZWdpc3RlciBkb2Vzbid0IGV4aXN0Lg0KPiA+PiAyKSBTZXF1ZW50aWFsIG51bWJl
-cnMgZnJvbSByZWdpc3RlciBiYXNlIG9mZnNldC4NCj4gPj4gICAgIEluIFItQ2FyIFM0OiBpcG1t
-dV9ydDAgaXMgdGhlIGZpcnN0IG5vZGUgZnJvbSByZWdpc3RlciBiYXNlIG9mZnNldCwNCj4gPj4g
-ICAgIGFuZCBpcG1tdV9ydDEgaXMgdGhlIHNlY29uZCBvbmUuDQo+ID4+ICAgICBTbywgaXBtbXVf
-cnQwIGlzIDAsIGlwbW11X3J0MSBpcyAxLCBpcG1tdV9kczAgaXMgMiBhbmQgaXBtbXVfaGMgaXMg
-My4NCj4gPj4gMykgVXNpbmcgYmFzZSBhZGRyZXNzIHVwcGVyIDE2LWJpdHMuDQo+ID4+ICAgICBJ
-biBSLUNhciBTNDogaXBtbXVfcnQwIGlzIDB4ZWU0ODAwMDAuIFNvLCB0aGUgdmFsdWUgaXMgMHhl
-ZTQ4Lg0KPiA+Pg0KPiA+PiBQZXJoYXBzLCB0aGUgb3B0aW9uIDEpIGlzIHJlYXNvbmFibGUsIEkg
-dGhpbmsuIEJ1dCwgd2hhdCBkbyB5b3UgdGhpbms/DQo+ID4NCj4gPiBJIHdvdWxkIG5vdCBtYWtl
-IHVwIG51bWJlcnMsIGFzIHRoYXQgd291bGQgY2F1c2UgY29uZnVzaW9uIHdpdGggU29Dcw0KPiA+
-IHdoZXJlIHRoZSBudW1iZXJzIGRvIG1hdGNoIHRoZSBoYXJkd2FyZS4NCj4gPiBBcyB0aGUgZHJp
-dmVyIGRvZXNuJ3QgdXNlIHRoZSBtb2R1bGUgaWQgbnVtYmVyIChpdCBhbHJlYWR5IGxvb3BzDQo+
-ID4gb3ZlciBhbGwgZG9tYWlucywgaW5zdGVhZCBvZiBjaGVja2luZyBJTVNTVFIsIHByb2JhYmx5
-IGJlY2F1c2Ugb2YNCj4gPiBoaXN0b3JpY2FsIChSLUNhciBHZW4yKSByZWFzb25zPyksIHdoYXQg
-YWJvdXQgZHJvcHBpbmcgaXQgZnJvbSB0aGUNCj4gPiBwcm9wZXJ0eT8gSS5lLiBhZGQgIm1pbkl0
-ZW1zOiAxIiwgcG9zc2libHkgb25seSB3aGVuIGNvbXBhdGlibGUgd2l0aA0KPiA+IHJlbmVzYXMs
-cmNhci1nZW40LWlwbW11LXZtc2E/DQo+IA0KPiBSaWdodCwgaWYgdGhlcmUgcmVhbGx5IGlzIG5v
-IG1lYW5pbmdmdWwgSUQgZm9yIHRoaXMgbW9kZWwgdGhlbiBpdHMNCj4gYmluZGluZyBzaG91bGQg
-bm90IHJlcXVpcmUgb25lLg0KDQpUaGFuayB5b3UgZm9yIHlvdXIgY29tbWVudC4gSSBnb3QgaXQu
-DQoNCj4gPiBCVFcsIHRoZSByZWxhdGVkIElNQ1RSIHJlZ2lzdGVyIGlzIHN0aWxsIGRvY3VtZW50
-ZWQsIGFuZCB0aGUgZHJpdmVyDQo+ID4gZG9lcyBlbmFibGUgdGhlIGludGVycnVwdCBiaXQgKElN
-Q1RSX0lOVEVOKSwgc28gSSdtIHdvbmRlcmluZyBob3cgdGhlDQo+ID4gaGFyZHdhcmUgKGRvY3Vt
-ZW50YXRpb24pIHBlb3BsZSBpbnRlbmQgdGhpcyB0byBiZSB1c2VkLi4uDQo+ID4gUGVyaGFwcyBJ
-TUNUUl9JTlRFTiB3aWxsIGJlIHJlbW92ZWQvdW5kb2N1bWVudGVkLCB0b28/DQo+ID4gT3IgcGVy
-aGFwcyB0aGUgcmVtb3ZhbC91bmRvY3VtZW50YXRpb24gb2YgSU1TU1RSIHdhcyBhIG1pc3Rha2U/
-DQo+IA0KPiBJIGd1ZXNzIGl0IHNob3VsZCBiZSBwcmV0dHkgc3RyYWlnaHRmb3J3YXJkIHRvIGp1
-c3QgdHJ5IHJlYWRpbmcgdGhlDQo+IGV4cGVjdGVkIElNU1NUUiByZWdpc3RlciBsb2NhdGlvbnMg
-b24gdGhpcyBTb0MgdG8gZG91YmxlLWNoZWNrIHdoZXRoZXINCj4gYW55dGhpbmcgaXMgdGhlcmUu
-DQoNCkFzIEkgbWVudGlvbmVkIG9uIG90aGVyIGVtYWlsIFsxXSwgd2Ugc2hvdWxkIG5vdCBhY2Nl
-c3MgSU1TU1RSIHRvIGF2b2lkDQphIHBvdGVudGlhbCBpc3N1ZS4uLg0KDQpbMV0NCmh0dHBzOi8v
-bG9yZS5rZXJuZWwub3JnL2FsbC9UWUJQUjAxTUI1MzQxRjhEQzM2RUFENjU5MjA5QTJCREREOENG
-OUBUWUJQUjAxTUI1MzQxLmpwbnByZDAxLnByb2Qub3V0bG9vay5jb20vDQoNCkJlc3QgcmVnYXJk
-cywNCllvc2hpaGlybyBTaGltb2RhDQoNCj4gVGhhbmtzLA0KPiBSb2Jpbi4NCg==
+在 2023/1/21 23:03, Jason Gunthorpe 写道:
+> I would like to have a session at LSF to talk about Matthew's
+> physr discussion starter:
+> 
+>   https://lore.kernel.org/linux-mm/YdyKWeU0HTv8m7wD@casper.infradead.org/
+> 
+> I have become interested in this with some immediacy because of
+> IOMMUFD and this other discussion with Christoph:
+> 
+>   https://lore.kernel.org/kvm/4-v2-472615b3877e+28f7-vfio_dma_buf_jgg@nvidia.com/
+
+I read through the above patches. I am interested in the dma-buf.
+
+Zhu Yanjun
+
+>      
+> Which results in, more or less, we have no way to do P2P DMA
+> operations without struct page - and from the RDMA side solving this
+> well at the DMA API means advancing at least some part of the physr
+> idea.
+> 
+> So - my objective is to enable to DMA API to "DMA map" something that
+> is not a scatterlist, may or may not contain struct pages, but can
+> still contain P2P DMA data. From there I would move RDMA MR's to use
+> this new API, modify DMABUF to export it, complete the above VFIO
+> series, and finally, use all of this to add back P2P support to VFIO
+> when working with IOMMUFD by allowing IOMMUFD to obtain a safe
+> reference to the VFIO memory using DMABUF. From there we'd want to see
+> pin_user_pages optimized, and that also will need some discussion how
+> best to structure it.
+> 
+> I also have several ideas on how something like physr can optimize the
+> iommu driver ops when working with dma-iommu.c and IOMMUFD.
+> 
+> I've been working on an implementation and hope to have something
+> draft to show on the lists in a few weeks. It is pretty clear there
+> are several interesting decisions to make that I think will benefit
+> from a live discussion.
+> 
+> Providing a kernel-wide alternative to scatterlist is something that
+> has general interest across all the driver subsystems. I've started to
+> view the general problem rather like xarray where the main focus is to
+> create the appropriate abstraction and then go about transforming
+> users to take advatange of the cleaner abstraction. scatterlist
+> suffers here because it has an incredibly leaky API, a huge number of
+> (often sketchy driver) users, and has historically been very difficult
+> to improve.
+> 
+> The session would quickly go over the current state of whatever the
+> mailing list discussion evolves into and an open discussion around the
+> different ideas.
+> 
+> Thanks,
+> Jason
+> 
+
