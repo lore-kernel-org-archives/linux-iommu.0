@@ -1,73 +1,103 @@
-Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
+Received: from r3-19.sinamail.sina.com.cn (r3-19.sinamail.sina.com.cn [202.108.3.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A86D23A8
-	for <iommu@lists.linux.dev>; Fri, 27 Jan 2023 07:23:53 +0000 (UTC)
-Received: from [127.0.0.1] ([73.223.250.219])
-	(authenticated bits=0)
-	by mail.zytor.com (8.17.1/8.17.1) with ESMTPSA id 30R6qhuh3764081
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
-	Thu, 26 Jan 2023 22:52:44 -0800
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 30R6qhuh3764081
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
-	s=2023010601; t=1674802366;
-	bh=b3YKjhFfbcn5/+mWnBhEeUVeuE8HPWoX5snX+0lZVVA=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
-	b=XB4jlMmsK9Zy+2cyyf6zHN5KWWZ58SEa3ySitW5VxHSJxxq/VlF/vPtI/8zcLKuME
-	 NEWeCFPfWTKL8whIeftkgjfOet9uz7FrLYt+TFiwiJBH4QeBufdVjBBaV4oSVXZB8E
-	 9GAmNONMnkxWY5sT8u7JuD+h7D3HXQTj4tZGdI71ZODR6dJUTLnJ4ajsBh1P4RYP1y
-	 AO6vjgQPtwPNXjVQ0juDp28gjk/XqTNG78DpvgopfYSfo0v7k3noYICRey++3k+scp
-	 +v/rVGCMQA6S41VwOmMnt9SGf6wRdOGsZm/rtWs1MJVEQwvWyCIXwCkcvWuxX0IhDs
-	 6qjnhQOgNmUzw==
-Date: Thu, 26 Jan 2023 22:52:43 -0800
-From: "H. Peter Anvin" <hpa@zytor.com>
-To: Christoph Hellwig <hch@lst.de>, Dave Hansen <dave.hansen@intel.com>
-CC: Georgi Djakov <quic_c_gdjako@quicinc.com>, catalin.marinas@arm.com,
-        will@kernel.org, dave.hansen@linux.intel.com, luto@kernel.org,
-        peterz@infradead.org, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, hch@lst.de, m.szyprowski@samsung.com,
-        robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux.dev, linux-kernel@vger.kernel.org, djakov@kernel.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE84810F2
+	for <iommu@lists.linux.dev>; Fri, 27 Jan 2023 08:58:31 +0000 (UTC)
+Received: from unknown (HELO localhost.localdomain)([114.249.61.130])
+	by sina.com (172.16.97.35) with ESMTP
+	id 63D390C600034FB0; Fri, 27 Jan 2023 16:52:24 +0800 (CST)
+X-Sender: hdanton@sina.com
+X-Auth-ID: hdanton@sina.com
+X-SMAIL-MID: 68793615073583
+From: Hillf Danton <hdanton@sina.com>
+To: Chris Goldsworthy <quic_cgoldswo@quicinc.com>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	dave.hansen@linux.intel.com,
+	bp@alien8.de,
+	hpa@zytor.com,
+	hch@lst.de,
+	m.szyprowski@samsung.com,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	djakov@kernel.org
 Subject: Re: [RFC] mm: Allow ZONE_DMA32 to be disabled via kernel command line
-User-Agent: K-9 Mail for Android
-In-Reply-To: <20230127063555.GA3300@lst.de>
-References: <20230126164352.17562-1-quic_c_gdjako@quicinc.com> <dca84e05-e376-c593-74fa-37c58f30767a@intel.com> <20230127063555.GA3300@lst.de>
-Message-ID: <C7DCCCB1-AABE-4D3B-80B1-AB755A68D460@zytor.com>
+Date: Fri, 27 Jan 2023 16:55:53 +0800
+Message-Id: <20230127085553.5120-1-hdanton@sina.com>
+In-Reply-To: <20230127021348.GA3754@hu-cgoldswo-sd.qualcomm.com>
+References: <20230126164352.17562-1-quic_c_gdjako@quicinc.com> <555fca66-81b6-3406-eac1-140c00669477@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On January 26, 2023 10:35:55 PM PST, Christoph Hellwig <hch@lst=2Ede> wrote=
-:
->On Thu, Jan 26, 2023 at 10:51:17AM -0800, Dave Hansen wrote:
->>=20
->> Also, what are the practical implications here?  There are obviously an
->> ever decreasing number of 32-bit DMA devices out there=2E  Somebody tha=
-t
->> has one and uses this option might be sad because now they're stuck
->> using ZONE_DMA which is quite tiny=2E
->>=20
->> What other ZONE_DMA32 users are left?  Will anyone else care?  There is
->> some DMA32 slab and vmalloc() functionality remaining=2E  Is it impacte=
-d?
->
->DMA32 never supported lab=2E  But < 64-bit DMA device are unfortunately
->still not uncommon, and configuring out ZONE_DMA32 breaks them pretty
->badly as we guarantee that a DMA mask of 32-bit always works=2E
->
->So I'm not only very much against this patch, but also the currently
->existing way to configure out ZONE_DMA32 on arm64, which needs to
->go away=2E
->
->If people want ZONE_DMA32 to go away we need something to replace
->it first, like a large enough CMA region in the 32-bit addressable
->range=2E
+On Thu, 26 Jan 2023 18:20:26 -0800 Chris Goldsworthy <quic_cgoldswo@quicinc.com>
+> On Thu, Jan 26, 2023 at 07:15:26PM +0000, Robin Murphy wrote:
+> > On 2023-01-26 16:43, Georgi Djakov wrote:
+> > >From: Chris Goldsworthy <quic_cgoldswo@quicinc.com>
+> > >
+> > >It's useful to have an option to disable the ZONE_DMA32 during boot as
+> > >CONFIG_ZONE_DMA32 is by default enabled (on multiplatform kernels for
+> > >example). There are platforms that do not use this zone and in some high
+> > >memory pressure scenarios this would help on easing kswapd (to leave file
+> > >backed memory intact / unreclaimed). When the ZONE_DMA32 is enabled on
+> > >these platforms - kswapd is woken up more easily and drains the file cache
+> > >which leads to some performance issues.
+> > >
+> > >Signed-off-by: Chris Goldsworthy <quic_cgoldswo@quicinc.com>
+> > >[georgi: updated commit text]
+> > >Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
+> > >---
+> > >The main question here is whether we can have a kernel command line
+> > >option to disable CONFIG_ZONE_DMA32 during boot (at least on arm64).
+> > >I can imagine this being useful also for Linux distros.
+> > 
+> > FWIW I'd say that "disabled" and "left empty then awkwardly tiptoed around
+> > in a few places" are very different notions...
+> > 
+> > However, I'm just going to take a step back and read the commit message a
+> > few more times... Given what it claims, I can't help but ask why wouldn't we
+> > want a parameter to control kswapd's behaviour and address that issue
+> > directly, rather than a massive hammer that breaks everyone allocating
+> > explicitly or implicitly with __GFP_DMA32 (especially on systems where it
+> > doesn't normally matter because all memory is below 4GB anyway), just to
+> > achieve one rather niche side-effect?
+> > 
+> > Thanks,
+> > Robin.
+> 
+> Hi Robin,
+> 
+> The commit text doesn't spell out the scenario we want to avoid, so I
+> will do that for clarity. We use a kernel binary compiled for us, and
+> by default has CONFIG_ZONE_DMA32 (and it can't be disabled for now as
+> another party needs it). Our higher-end SoCs are usually used with
+> 8-12 GB of DDR, so using a 12 GB device as an example, we would have 8
+> GB of ZONE_NORMAL memory and 4 GB of ZONE_MOVABLE memory with the
+> feature, and 4 GB of ZONE_DMA32, 4 GB of ZONE_NORMAL and 4 GB of
+> ZONE_MOVABLE otherwise.
+> 
+> Without the feature enabled, consider a GFP_KERNEL allocation that
+> causes a low watermark beach in ZONE_NORMAL, such that such that
+> ZONE_DMA32 is almost full. This will cause kswapd to start reclaiming
+> memory, despite the fact that that we might have gigabytes of free
+> memory in ZONE_DMA32 that can be used by anyone (since GFP_MOVABLE and
+> GFP_NORMAL can fall back to using ZONE_DMA32).
 
-Not to mention all kinds of odd masks like 30, 31, 39, 40, 46, =2E=2E=2E b=
-its=2E
+If kswapd is busy reclaiming pages even given gigabytes of free memory
+in the DMA32 zone then it is a CPU hog.
+
+Feel free to check pgdat_balanced() and prepare_kswapd_sleep().
+> 
+> So, fleshing out your suggestion to make it concrete for our case, we
+> would want to stop kswapd from doing reclaim on ZONE_NORMAL watermark
+> breaches when ZONE_DMA32 is present (since anything targeting
+> ZONE_NORMAL can fall back to ZONE_DMA32).
+> 
+> Thanks,
+> 
+> Chris.
+> 
