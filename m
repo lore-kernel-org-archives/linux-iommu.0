@@ -1,107 +1,93 @@
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62CB528F7;
-	Fri, 27 Jan 2023 11:30:27 +0000 (UTC)
-Received: from [2a02:8108:963f:de38:4bc7:2566:28bd:b73c]; authenticated
-	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-	id 1pLMvy-0001YU-VO; Fri, 27 Jan 2023 12:30:19 +0100
-Message-ID: <493cf6bd-6c68-2415-2b24-76ec634df240@leemhuis.info>
-Date: Fri, 27 Jan 2023 12:30:18 +0100
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D074F28EF
+	for <iommu@lists.linux.dev>; Fri, 27 Jan 2023 11:42:44 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5B7D92B;
+	Fri, 27 Jan 2023 03:43:26 -0800 (PST)
+Received: from [10.57.88.221] (unknown [10.57.88.221])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3755B3F64C;
+	Fri, 27 Jan 2023 03:42:43 -0800 (PST)
+Message-ID: <389082e3-f4c3-4e84-a2d0-629612eed305@arm.com>
+Date: Fri, 27 Jan 2023 11:42:27 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: [PATCH v3 1/1] PCI: Add translated request only flag for
- pci_enable_pasid()
-Content-Language: en-US, de-DE
-To: Jason Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <jroedel@suse.de>,
- Matt Fagnani <matt.fagnani@bell.net>,
- =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
- Kevin Tian <kevin.tian@intel.com>, Vasant Hegde <vasant.hegde@amd.com>,
- Tony Zhu <tony.zhu@intel.com>, linux-pci@vger.kernel.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- Linux kernel regressions list <regressions@lists.linux.dev>
-References: <20230114073420.759989-1-baolu.lu@linux.intel.com>
- <Y8Vwc/bMwvtICv4T@nvidia.com>
-From: "Linux kernel regression tracking (Thorsten Leemhuis)"
- <regressions@leemhuis.info>
-Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>
-In-Reply-To: <Y8Vwc/bMwvtICv4T@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1674819027;f0f1d124;
-X-HE-SMSGID: 1pLMvy-0001YU-VO
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v2 5/8] iommu: Switch __iommu_domain_alloc() to device ops
+Content-Language: en-GB
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, hch@lst.de, jgg@nvidia.com,
+ baolu.lu@linux.intel.com
+References: <cover.1674753627.git.robin.murphy@arm.com>
+ <23b51c84247cb36e96c242d3aef8ef555b6d05cd.1674753627.git.robin.murphy@arm.com>
+ <20230126152237.2f8b681f@jacob-builder>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20230126152237.2f8b681f@jacob-builder>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi, this is your Linux kernel regression tracker. Top-posting for once,
-to make this easily accessible to everyone.
-
-What happened to below patch? It looks like there was no progress since
-ten days now. Or did I miss something?
-
-Reminder, the patch is fixing a regression, hence it would be good if
-this could be fixed rather sooner than later.
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
---
-Everything you wanna know about Linux kernel regression tracking:
-https://linux-regtracking.leemhuis.info/about/#tldr
-If I did something stupid, please tell me, as explained on that page.
-
-On 16.01.23 16:42, Jason Gunthorpe wrote:
-> On Sat, Jan 14, 2023 at 03:34:20PM +0800, Lu Baolu wrote:
->> The PCIe fabric routes Memory Requests based on the TLP address, ignoring
->> the PASID. In order to ensure system integrity, commit 201007ef707a ("PCI:
->> Enable PASID only when ACS RR & UF enabled on upstream path") requires
->> some ACS features being supported on device's upstream path when enabling
->> PCI/PASID.
->>
->> One alternative is ATS/PRI which lets the device resolve the PASID + addr
->> pair before a memory request is made into a routeable TLB address through
->> the translation agent. Those resolved addresses are then cached on the
->> device instead of in the IOMMU TLB and the device always sets translated
->> bit for PASID. One example of those devices are AMD graphic devices that
->> always have ACS or ATS/PRI enabled together with PASID.
->>
->> This adds a flag parameter in the pci_enable_pasid() helper, with which
->> the device driver could opt-in the fact that device always sets the
->> translated bit for PASID.
->>
->> It also applies this opt-in for AMD graphic devices. Without this change,
->> kernel boots to black screen on a system with below AMD graphic device:
->>
->> 00:01.0 VGA compatible controller: Advanced Micro Devices, Inc.
->>         [AMD/ATI] Wani [Radeon R5/R6/R7 Graphics] (rev ca)
->>         (prog-if 00 [VGA controller])
->> 	DeviceName: ATI EG BROADWAY
->> 	Subsystem: Hewlett-Packard Company Device 8332
->>
->> At present, it is a common practice to enable/disable PCI PASID in the
->> iommu drivers. Considering that the device driver knows more about the
->> specific device, we will follow up by moving pci_enable_pasid() into
->> the specific device drivers.
->>
->> Fixes: 201007ef707a ("PCI: Enable PASID only when ACS RR & UF enabled on upstream path")
->> Reported-and-tested-by: Matt Fagnani <matt.fagnani@bell.net>
->> Link: https://bugzilla.kernel.org/show_bug.cgi?id=216865
->> Link: https://lore.kernel.org/r/15d0f9ff-2a56-b3e9-5b45-e6b23300ae3b@leemhuis.info/
->> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
->> Suggested-by: Christian König <christian.koenig@amd.com>
->> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> ---
->>  include/linux/pci-ats.h                     | 6 ++++--
->>  drivers/iommu/amd/iommu.c                   | 2 +-
->>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
->>  drivers/iommu/intel/iommu.c                 | 3 ++-
->>  drivers/pci/ats.c                           | 8 ++++++--
->>  5 files changed, 14 insertions(+), 7 deletions(-)
+On 2023-01-26 23:22, Jacob Pan wrote:
+> Hi Robin,
 > 
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> On Thu, 26 Jan 2023 18:26:20 +0000, Robin Murphy <robin.murphy@arm.com>
+> wrote:
 > 
-> Jason
+>>   
+>> +static int __iommu_domain_alloc_dev(struct device *dev, void *data)
+>> +{
+>> +	struct device **alloc_dev = data;
+>> +
+>> +	if (!dev_iommu_ops_valid(dev))
+>> +		return 0;
+>> +
+>> +	WARN_ONCE(*alloc_dev && dev_iommu_ops(dev) !=
+>> dev_iommu_ops(*alloc_dev),
+>> +		"Multiple IOMMU drivers present, which the public IOMMU
+>> API can't fully support yet. You may still need to disable one or more to
+>> get the expected result here, sorry!\n"); +
+>> +	*alloc_dev = dev;
+>> +	return 0;
+>> +}
+>> +
+>>   struct iommu_domain *iommu_domain_alloc(struct bus_type *bus)
+>>   {
+>> -	return __iommu_domain_alloc(bus, IOMMU_DOMAIN_UNMANAGED);
+>> +	struct device *dev = NULL;
+>> +
+>> +	/* We always check the whole bus, so the return value isn't
+>> useful */
+>> +	bus_for_each_dev(bus, NULL, &dev, __iommu_domain_alloc_dev);
+>> +	if (!dev)
+>> +		return NULL;
+> Since __iommu_domain_alloc_dev() will always return 0, bus_for_each_dev()
+> will never breakout until the whole dev list is iterated over. If so, would
+> dev only record the last one? i.e. prior results get overwritten.  Maybe a
+> misunderstood the logic.
+
+Yes, as the comment points out, the intent is to walk the whole bus to 
+check it for consistency. Beyond that, we just need *a* device with 
+IOMMU ops; it doesn't matter at all which one it is. It happens to be 
+the last one off the list because that's what fell out of writing the 
+fewest lines of code.
+
+(You could argue that there's no need to repeat the full walk if the 
+WARN_ONCE has already fired, but I'd rather keep the behaviour simple 
+and consistent - this is only meant to be a short-term solution, and 
+it's not a performance-critical path)
+
+Thanks,
+Robin.
+
+> 
+>> +	return __iommu_domain_alloc(dev, IOMMU_DOMAIN_UNMANAGED);
+>>   }
+>>   EXPORT_SYMBOL_GPL(iommu_domain_alloc);
+> 
+> Thanks,
+> 
+> Jacob
