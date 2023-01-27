@@ -1,95 +1,70 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C273428EC
-	for <iommu@lists.linux.dev>; Thu, 26 Jan 2023 23:19:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674775147; x=1706311147;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=DxlPrkYaIFKagw6UlcDQbNMx71f4Jcar7GKHOEvVQIw=;
-  b=OaroDJLk4oOsWsaI7QPoboa2HmhVP4tQLx9RwFzj3fY4vw8zEvadNfaW
-   yK4aSKVy96StvX5mWZgBwpJBe/UVbZqVbOIFgaKAq2rGmlh510UMhqeOw
-   0HQWi0IahY5/2zKfdYT1N3QQOJ9XFVfUPBbOKK8I3k1A8vAxNAd7xeD4I
-   2BJi0BkKyH/7saIEXtdQx14cor6o+4PKxyMGbveaMamKrZFSMEI4z4a1Z
-   LWW9tmkF5aNKfgVBYyfYEppnfvKJWpV6Gb98C/bVnaY/8++SXH6KMh6Uz
-   nvXxf5V9RXdk67dGwIk7w8QCb16cuXekv+GIdLy+4oMOT0ePEH4t5vbaU
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10602"; a="389357771"
-X-IronPort-AV: E=Sophos;i="5.97,249,1669104000"; 
-   d="scan'208";a="389357771"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2023 15:19:07 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10602"; a="787022867"
-X-IronPort-AV: E=Sophos;i="5.97,249,1669104000"; 
-   d="scan'208";a="787022867"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2023 15:19:06 -0800
-Date: Thu, 26 Jan 2023 15:22:37 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, hch@lst.de, jgg@nvidia.com,
- baolu.lu@linux.intel.com, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v2 5/8] iommu: Switch __iommu_domain_alloc() to device
- ops
-Message-ID: <20230126152237.2f8b681f@jacob-builder>
-In-Reply-To: <23b51c84247cb36e96c242d3aef8ef555b6d05cd.1674753627.git.robin.murphy@arm.com>
-References: <cover.1674753627.git.robin.murphy@arm.com>
-	<23b51c84247cb36e96c242d3aef8ef555b6d05cd.1674753627.git.robin.murphy@arm.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 379D415A8
+	for <iommu@lists.linux.dev>; Fri, 27 Jan 2023 00:57:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+	bh=Sq5aYXXfyyNpc0H8ii9+zFl0bV7CjQBLfTj9RTjmMaU=; b=r9oNogqGQ3zoHfy5mD6OCWHMkN
+	kWlUwBMzgs1gzLt+Jfp61AjtYzHG5mu66XzdJC/kUbVyL/hCKp40MqE8caRRe5CZiIP2Bf+FL8tTd
+	37kWEsVAfOdPyVw/gZ5GCQ4BLZuP+h2NakTAM3is2m9K8lZSeV1EN0rqtMpVnNe6lj2IHUGTWpwMj
+	c2a9JTIiij1xjg6v5ugitaARBG8LcbMvq6ucKV9f6qHsrV61Fbg5FveQQsgdDQo4ZD4uagPp666we
+	3GDhCDHu9UlhIJ0bFGGOwRLbM5TayvHg8oooPDI9b1azc1aRAPcymyJEKjqTXf5LOqrI20wFJuGJi
+	4H9h/pkw==;
+Received: from [2601:1c2:d80:3110::9307]
+	by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1pLD3Q-00D2Ym-D9; Fri, 27 Jan 2023 00:57:21 +0000
+Message-ID: <70ab19eb-c41a-980d-46f6-2bb02163974e@infradead.org>
+Date: Thu, 26 Jan 2023 16:57:18 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [RFC] mm: Allow ZONE_DMA32 to be disabled via kernel command line
+Content-Language: en-US
+To: Dave Hansen <dave.hansen@intel.com>,
+ Georgi Djakov <quic_c_gdjako@quicinc.com>, catalin.marinas@arm.com,
+ will@kernel.org
+Cc: dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
+ tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
+ hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, djakov@kernel.org
+References: <20230126164352.17562-1-quic_c_gdjako@quicinc.com>
+ <dca84e05-e376-c593-74fa-37c58f30767a@intel.com>
+From: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <dca84e05-e376-c593-74fa-37c58f30767a@intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-Hi Robin,
 
-On Thu, 26 Jan 2023 18:26:20 +0000, Robin Murphy <robin.murphy@arm.com>
-wrote:
 
->  
-> +static int __iommu_domain_alloc_dev(struct device *dev, void *data)
-> +{
-> +	struct device **alloc_dev = data;
-> +
-> +	if (!dev_iommu_ops_valid(dev))
-> +		return 0;
-> +
-> +	WARN_ONCE(*alloc_dev && dev_iommu_ops(dev) !=
-> dev_iommu_ops(*alloc_dev),
-> +		"Multiple IOMMU drivers present, which the public IOMMU
-> API can't fully support yet. You may still need to disable one or more to
-> get the expected result here, sorry!\n"); +
-> +	*alloc_dev = dev;
-> +	return 0;
-> +}
-> +
->  struct iommu_domain *iommu_domain_alloc(struct bus_type *bus)
->  {
-> -	return __iommu_domain_alloc(bus, IOMMU_DOMAIN_UNMANAGED);
-> +	struct device *dev = NULL;
-> +
-> +	/* We always check the whole bus, so the return value isn't
-> useful */
-> +	bus_for_each_dev(bus, NULL, &dev, __iommu_domain_alloc_dev);
-> +	if (!dev)
-> +		return NULL;
-Since __iommu_domain_alloc_dev() will always return 0, bus_for_each_dev()
-will never breakout until the whole dev list is iterated over. If so, would
-dev only record the last one? i.e. prior results get overwritten.  Maybe a
-misunderstood the logic.
+On 1/26/23 10:51, Dave Hansen wrote:
+> On 1/26/23 08:43, Georgi Djakov wrote:
+>> From: Chris Goldsworthy <quic_cgoldswo@quicinc.com>
 
-> +	return __iommu_domain_alloc(dev, IOMMU_DOMAIN_UNMANAGED);
->  }
->  EXPORT_SYMBOL_GPL(iommu_domain_alloc);
+  
+>> +static int __init early_disable_dma32(char *buf)
+>> +{
+>> +	if (!buf)
+>> +		return -EINVAL;
+>> +
+>> +	if (!strcmp(buf, "on"))
+>> +		disable_dma32 = true;
+>> +
+>> +	return 0;
+>> +}
+>> +early_param("disable_dma32", early_disable_dma32);
+> 
+> Ick.  Is there no way to do this other than a cross-arch copy/paste?
 
-Thanks,
+I think that using __setup() instead of early_param() would allow that.
 
-Jacob
+-- 
+~Randy
