@@ -1,76 +1,82 @@
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 44CD1290D
-	for <iommu@lists.linux.dev>; Fri, 27 Jan 2023 14:04:56 +0000 (UTC)
-X-IronPort-AV: E=Sophos;i="5.97,251,1669042800"; 
-   d="scan'208";a="150775484"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie6.idc.renesas.com with ESMTP; 27 Jan 2023 23:04:50 +0900
-Received: from localhost.localdomain (unknown [10.166.15.32])
-	by relmlir6.idc.renesas.com (Postfix) with ESMTP id 124B4432BC63;
-	Fri, 27 Jan 2023 23:04:50 +0900 (JST)
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To: joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	robh+dt@kernel.org,
-	krzysztof.kozlowski+dt@linaro.org
-Cc: iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: [PATCH v2] dt-bindings: iommu: renesas,ipmmu-vmsa: Update for R-Car Gen4
-Date: Fri, 27 Jan 2023 23:04:46 +0900
-Message-Id: <20230127140446.1728102-1-yoshihiro.shimoda.uh@renesas.com>
-X-Mailer: git-send-email 2.25.1
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C19F62F48
+	for <iommu@lists.linux.dev>; Fri, 27 Jan 2023 15:20:13 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7C7EB2B;
+	Fri, 27 Jan 2023 07:20:49 -0800 (PST)
+Received: from [10.57.88.221] (unknown [10.57.88.221])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 77FFF3F64C;
+	Fri, 27 Jan 2023 07:20:06 -0800 (PST)
+Message-ID: <6e0728ae-74a3-b76f-c5c3-6504e13c721f@arm.com>
+Date: Fri, 27 Jan 2023 15:19:55 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH 1/8] iommu: Decouple iommu_present() from bus ops
+Content-Language: en-GB
+To: Baolu Lu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@nvidia.com>
+Cc: joro@8bytes.org, will@kernel.org, hch@lst.de, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <cover.1673978700.git.robin.murphy@arm.com>
+ <1fb168b22cbbb5c24162d29d2a9aca339cda2c72.1673978700.git.robin.murphy@arm.com>
+ <c96aaa6c-0f46-39dc-0c72-f38394e37cc3@linux.intel.com>
+ <ce25dcdc-99a9-61ff-0cad-6c6cd9552680@arm.com> <Y9KRBRKdwSIRrvQw@nvidia.com>
+ <b6b55688-1390-4e92-8184-770154a8955d@linux.intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <b6b55688-1390-4e92-8184-770154a8955d@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-Since R-Car Gen4 doens't have the main IPMMU IMSSTR register, update
-the renesas,ipmmu-main property which allows to only set the first
-argument for R-Car Gen4.
+On 2023-01-27 13:50, Baolu Lu wrote:
+> On 2023/1/26 22:41, Jason Gunthorpe wrote:
+>> On Thu, Jan 26, 2023 at 02:21:29PM +0000, Robin Murphy wrote:
+>>
+>>> The "check" is inherent in the fact that it's been called at all. VFIO
+>>> noiommu*is*  an IOMMU driver in the sense that it provides a bare 
+>>> minimum of
+>>> IOMMU API functionality (i.e. creating groups), sufficient to support
+>>> (careful) usage by VFIO drivers. There would not seem to be a legitimate
+>>> reason for some*other*  driver to be specifically querying a device 
+>>> while it
+>>> is already bound to a VFIO driver (and thus may have a noiommu group).
+>> Yes, the devices that VFIO assigns to its internal groups never leak
+>> outside VFIO's control during their assignment - ie they are
+>> continuously bound to VFIO never another driver.
+>>
+>> So no other driver can ever see the internal groups unless it is
+>> messing around with devices it is not bound to 😄
+> 
+> Fair enough. I was thinking that probably we could make it like below:
+> 
+> /**
+>   * device_iommu_mapped - Returns true when the device DMA is translated
+>   *                       by an IOMMU
+>   * @dev: Device to perform the check on
+>   */
+> static inline bool device_iommu_mapped(struct device *dev)
+> {
+>          return (dev->iommu && dev->iommu->iommu_dev);
+> }
+> 
+> The iommu probe device code guarantees that dev->iommu->iommu_dev is
+> valid only after the IOMMU driver's .probe_device returned successfully.
+> 
+> Any thoughts?
 
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
----
-Changes from v1:
-https://lore.kernel.org/all/20230123012940.1250879-1-yoshihiro.shimoda.uh@renesas.com/
- - Change number of argument for R-Car Gen4 instead of "module id".
-   On the discussion, using 'minItems' is a solution. But, it causes
-   "too short" errors on dtbs_check. So, using "oneOf" instead.
+Heh, I actually wrote that helper yesterday for v2, but as an internal 
+check for valid ops :)
 
- .../bindings/iommu/renesas,ipmmu-vmsa.yaml         | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+The current implementation of device_iommu_mapped() just dates back to 
+when dev->iommu_group was the only per-device thing we had, so in 
+principle I don't have any conceptual objection to redefining it in 
+terms of "device has ops" rather than "device has a group", but as 
+things stand you'd still have to do something about PPC first (I know 
+Jason had been pushing on that, but I've not kept track of where it got to).
 
-diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-index 72308a4c14e7..8e8f79f612e5 100644
---- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-+++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-@@ -73,12 +73,16 @@ properties:
- 
-   renesas,ipmmu-main:
-     $ref: /schemas/types.yaml#/definitions/phandle-array
--    items:
-+    oneOf:
-+      - items:
-+          - items:
-+              - description: phandle to main IPMMU
-+              - description: the interrupt bit number associated with the particular
-+                  cache IPMMU device. The interrupt bit number needs to match the main
-+                  IPMMU IMSSTR register. Only used by cache IPMMU instances.
-       - items:
--          - description: phandle to main IPMMU
--          - description: the interrupt bit number associated with the particular
--              cache IPMMU device. The interrupt bit number needs to match the main
--              IPMMU IMSSTR register. Only used by cache IPMMU instances.
-+          - items:
-+              - description: phandle to main IPMMU
-     description:
-       Reference to the main IPMMU phandle plus 1 cell. The cell is
-       the interrupt bit number associated with the particular cache IPMMU
--- 
-2.25.1
-
+Thanks,
+Robin.
