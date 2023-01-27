@@ -1,116 +1,119 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2044.outbound.protection.outlook.com [40.107.220.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C058B3205
-	for <iommu@lists.linux.dev>; Fri, 27 Jan 2023 22:38:19 +0000 (UTC)
-Received: by mail-pl1-f171.google.com with SMTP id jm10so6371480plb.13
-        for <iommu@lists.linux.dev>; Fri, 27 Jan 2023 14:38:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=v8KUQGK7MJtzuKGRGDT0BQ6/1Z8fLbRNluB/Og9OPvw=;
-        b=WsypvYtPfkPUjon6FlpkUez3/t7ERj4dR0qDWPjh+OxIGuPsOyODltDLvl0hNi7yh1
-         tHX6ZBa0vmEm4pZWaWnzIZjhhg6LXLlxX50zsD6n+XwFWKUcfNswh/fCwQb1uHo5ciew
-         X8yz53VEK25sNyYArevRoax9uOlgS2FUp6sok=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=v8KUQGK7MJtzuKGRGDT0BQ6/1Z8fLbRNluB/Og9OPvw=;
-        b=CWQl/6jXXk0KVCgT8p0/DAZpHItxTstCj/kCup5bQ6/tFxQN/xW9osr5YHm4iDLNvh
-         uJtvauOv9ZgAQhMLzgaSs5Ijic0Mhw4ZSuBNJ5exna0wqWCfOukTNxiSTryMjHuo8dXl
-         uVysdTuafuk6jCZNlV++DTw+jbqFFJNN6cDLfApqZoJt/YeMneSgTF6d0VKfO+o2K9aY
-         UEu/uHFvdaZbIOODzuJArVDywjwVtvEb/Urkkc3VkmYo9jiCNOB3nLNfQWoJ9YNk9BnY
-         RP9QYXSG4YYreUdWu13gAs4jF/6wCC/4lK5Ja4gbJdRZR7JfO8WhOPtYYjRCoA+zLHLr
-         H8Fw==
-X-Gm-Message-State: AO0yUKUysRyxfk7U0yy8RdggQwvgL2VNPX8UaSmOR4sw6W7UoLJUlhEv
-	59ub3ENJMHAVoiQAwjC79hPiyQ==
-X-Google-Smtp-Source: AK7set8ZJl02n6oFmIl8pxXtG1MZuC84fRHK08N8jgqRjWLycq2flaq6sz5rhHHqCU8FgQIcPFB0Rw==
-X-Received: by 2002:a17:90b:4d04:b0:22c:f74:9417 with SMTP id mw4-20020a17090b4d0400b0022c0f749417mr10949646pjb.32.1674859099176;
-        Fri, 27 Jan 2023 14:38:19 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id n19-20020a637213000000b0044ed37dbca8sm2869837pgc.2.2023.01.27.14.38.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Jan 2023 14:38:18 -0800 (PST)
-From: Kees Cook <keescook@chromium.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Kees Cook <keescook@chromium.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-hardening@vger.kernel.org
-Subject: [PATCH] iommufd: Add top-level bounds check on kernel buffer size
-Date: Fri, 27 Jan 2023 14:38:17 -0800
-Message-Id: <20230127223816.never.413-kees@kernel.org>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10EFC3205
+	for <iommu@lists.linux.dev>; Fri, 27 Jan 2023 22:52:00 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DPBO46Y+IzpSdMF3AppJqhDiJzrKusUWZAeYJfd+Fx88vNV+YkVJk5dj/7KXeIStqQvm9vknjsWsbp/aRujsA5ahxwORN+yZlbGeDeBhzsupQHu6a2xej8I2udbFephn6wCiO2XUe+BWlMmPo/oxksAMaw7cSjb9j6afQeN4OPcBL6mk8kI0+BB74GlVHshbKKD+3n2Kkh9X00GnRJusYlpq+oUHYm4/pVdU55hXdiO6c5BtPItkladw98FJXXoogPZB9yyXHn5i/+llhqWksv+lMkQMeuKs+p5vuavsoCkwNrri1/Y1J27aCW9mRb/uOADLO1eV5RguCu8tr0atCA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SeMy6+Yg2PGakm3qSiX1Tv0sKSod3nKYJ4AwEfDlcko=;
+ b=PQbDF9soEbJQmmF1gkv3npyxYKbbxkH+C17V9MF8boNKfTi8gxdkjOWOK6P9eKFEpgQRrb7BVh3RWLimFKubSi9CME7HJJcMrQoqRrYGhhXG3gSDVVDnI6I98k5+4DZB7JiFTwrhr6ucrQd9HLqzsFtsEaWH7T7KNRXOGaePZ3uA6Tx0uM0DGRYQ7ZIWiqi+qg9o0apdoq+D9laqrVLlexC0ZYfv9eodzuolgZ34itRm2a6CZntQ5K8p9sTesFsQGEbKVM+4E37L8jgAbwlndTHNW+OSOlTmW4ptUKpw5ziKLx4T3D664TqWwqe+pHkuUWk3C7rDwH6fjtCdqaXg8g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SeMy6+Yg2PGakm3qSiX1Tv0sKSod3nKYJ4AwEfDlcko=;
+ b=KTCmQNFE8WENc+Pu4y63VdHQCBF/2wm1FZHt0MhtfHXyV+pOqI7PXTPnLscgM4aaIgCo/Hz27YG5Nk65eJIvr2XaC/mAYlmSL4DrFUjRPZVD1Pyoijzd2YO6kKPxT8pcACmOfQOxOPs0SAIls7JhAflNovRRVSYchLnZk/I3oPZEYpV6jXOfMKu6X1NofPvzu4SATnE8jUUm6xS6qScbXiUUQMFog/NURyuWoOreGNRheX6UW7INpy80NRYq5HM+w5NOFS+mW43z1TFVJM0VqlcgwoRPslDqhlM+Fve8z0PU/+NlslIfmHGepB6KPvq8sSneG04gydQRfkJMm1dYmg==
+Received: from BN9P223CA0014.NAMP223.PROD.OUTLOOK.COM (2603:10b6:408:10b::19)
+ by DS0PR12MB7899.namprd12.prod.outlook.com (2603:10b6:8:149::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.21; Fri, 27 Jan
+ 2023 22:51:59 +0000
+Received: from BL02EPF0000EE3C.namprd05.prod.outlook.com
+ (2603:10b6:408:10b:cafe::92) by BN9P223CA0014.outlook.office365.com
+ (2603:10b6:408:10b::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.23 via Frontend
+ Transport; Fri, 27 Jan 2023 22:51:58 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ BL02EPF0000EE3C.mail.protection.outlook.com (10.167.241.132) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6043.10 via Frontend Transport; Fri, 27 Jan 2023 22:51:58 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 27 Jan
+ 2023 14:51:45 -0800
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 27 Jan
+ 2023 14:51:45 -0800
+Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com (10.129.68.8)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36 via Frontend
+ Transport; Fri, 27 Jan 2023 14:51:44 -0800
+Date: Fri, 27 Jan 2023 14:51:42 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+CC: <jgg@nvidia.com>, <kevin.tian@intel.com>, <joro@8bytes.org>,
+	<will@kernel.org>, <agross@kernel.org>, <andersson@kernel.org>,
+	<konrad.dybcio@linaro.org>, <yong.wu@mediatek.com>, <matthias.bgg@gmail.com>,
+	<thierry.reding@gmail.com>, <alex.williamson@redhat.com>,
+	<cohuck@redhat.com>, <vdumpa@nvidia.com>, <jonathanh@nvidia.com>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-msm@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-tegra@vger.kernel.org>,
+	<kvm@vger.kernel.org>
+Subject: Re: [PATCH 2/4] iommu/dma: Do not init domain if
+ broken_unmanaged_domain
+Message-ID: <Y9RVftHuARKQnfN1@Asurada-Nvidia>
+References: <cover.1674849118.git.nicolinc@nvidia.com>
+ <451e7beb57ec6de66ee0da5b38886105436f53d7.1674849118.git.nicolinc@nvidia.com>
+ <89da64c8-fef4-2cea-f15c-86264073500c@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2558; h=from:subject:message-id; bh=DvvDSCPrtiZf/vMBP8xmsL1zlu6L3aeqhNadd+7X3/I=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBj1FJYszVzg798jHCOXWzXgYux6qhv5/f16dGlhaEB rqrNfm+JAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCY9RSWAAKCRCJcvTf3G3AJrDmEA CbYqX7OsaxA+dCd3NJ1XX0DkPmMT3rasLziMOqYGfiyPrkphRzxwJpqE4RmVRUGLh/l/rq0IDEqN9q CU/+3WbpR1gnnAkU9S999jWfdgFMwDeU9faCxzWGfOURx4qmzdeChhirJ4tCIOjWaBWkaplF0dBFHn XNei+7Dm2NhtUTEPrCGw8ksJ4LV5vw11l5N5GQ+7nCTPz3bKjFxDUsujvoSTezYtRJ0d5EEP1qEirN kPvVp/L5Gj9nWjiXu1IuK8ccZZsL6sVIqPJHGleRSazpuHs2A1oNOAybyglMN0c3szknlqtSsiTrmK Tn3h+0a/eXCyAZMmnUD9si1ShI4cDVscNZJPARDGWPPVFpltHPr2ujsLrdttQM8TuXYiuQGXP1HhIB LB+eJU7qzVovH7LmgDgRT+pCLKL7CTh1DdyKqZWIFMZ5OdU7o+5EDsKNuWiTvFfdHvo5vbEzS8TCvc ud8D62925NjOCzjA/HwBKDgSTR8EZQGgcFH7BhUIPeBoc0LfgzFzNKdhK6e/KeHwM/UAOd3L0aYwCt A1f/DHjI6mRQu7J8WuOEUYwU2ByNFDvzKsVOrUYwoYM9HLozJt5774fE2XaNcoVbnOB+F6CERVXHby UhmpHr10nXfMTJo+08gdjgW0TUTMQ4bh3JBFaDYxLb4DdWtEBD9ii+7MxrGA==
-X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <89da64c8-fef4-2cea-f15c-86264073500c@arm.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL02EPF0000EE3C:EE_|DS0PR12MB7899:EE_
+X-MS-Office365-Filtering-Correlation-Id: 24c33fe0-2cc5-4206-f232-08db00b918b5
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	4KiZt/HA766sIlkz0MQ1APNL/QmVhfGWlhRp/8iEVD3BDLqqF56Z8BkR3QbRlmtw5943DqclNXxg8oztgNvD3KwmtkDWVwZ0v05uW2vTDna/Sc2KM5y1tIjJDBe87YsEZEzoos4SnBOvDGcJ7q6C/IT+/IEC6Nsu97xzC1ffROnJL/gTn6VHk+6UMmI9QFYdrp73YefhfHXH3ozYnYj50j+xOy/Gdy9aRcqHuVlEoquqaBGAjECVQwddE1tb4/Osrgl5wm5ZLQ8yWYukbQSxfFcfDPoCw0crAp3Vzv3ikdt14XyYdyk6I1lAzjDFWfw+uBBLCQ/W7JnmBuLeZNaQz/JRNgpG1l9Pyy5MaNzt/t/8T+HaY2MNaW7Th+wsKHVZgoP4idYc5QSPx/6ZP8ZsXLcuwEnWtHccQrDkkSffWEjF7Xm1zk4d1KOsUPSTMHnmaRLANPlPStKOpmViwGMo2J30J1CKK5Xayj3MhTWfPOZxwDHurSxeEB3ryyFcJ4NSTD42TVjLIIF9dsjb4qy/wLS766kp2+6p3cSfu0n8sN24s/swsJbVrbM0p9bkR7/JilZSi36L8Ym1FJ7JKk18Ka0f9Y5pOvx2JS7LWFWjiZridg2jQkM/TRIvUD5gNSsWdyi7um8g/7DqeCohV68cFGq5LVXVy8g5kDLZzrErIqHdosf+vsZTA8fhpiBEaseg/TZNI74Tcun9X2yEF9dF9w==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(396003)(39860400002)(136003)(346002)(376002)(451199018)(40470700004)(46966006)(36840700001)(47076005)(82310400005)(55016003)(86362001)(40480700001)(40460700003)(356005)(33716001)(36860700001)(54906003)(7416002)(82740400003)(7636003)(4744005)(2906002)(70206006)(8936002)(41300700001)(4326008)(186003)(8676002)(5660300002)(6916009)(9686003)(53546011)(70586007)(26005)(316002)(426003)(478600001)(336012);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jan 2023 22:51:58.4552
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 24c33fe0-2cc5-4206-f232-08db00b918b5
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL02EPF0000EE3C.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7899
 
-While the op->size assignments are already bounds-checked at static
-initializer time, these limits aren't aggregated and tracked when doing
-later variable range checking under -Warray-bounds. Help the compiler
-see that we know what we're talking about, and we'll never ask to
-write more that sizeof(ucmd.cmd) bytes during the memset() inside
-copy_struct_from_user(). Seen under GCC 13:
+On Fri, Jan 27, 2023 at 09:59:50PM +0000, Robin Murphy wrote:
+> External email: Use caution opening links or attachments
+> 
+> 
+> On 2023-01-27 20:04, Nicolin Chen wrote:
+> > Add a sanity of the broken_unmanaged_domain flag to reject the use of
+> > dma-iommu in the early stage, if the flag is set by the iommu driver.
+> 
+> Realistically, iommu-dma will never be enabled on PPC32, let alone used.
+> It will not be enabled on ARM until I've fixed any drivers which need
+> fixing to work with it. We don't need to add dead code here.
 
-In function 'copy_struct_from_user',
-    inlined from 'iommufd_fops_ioctl' at ../drivers/iommu/iommufd/main.c:333:8:
-../include/linux/fortify-string.h:59:33: warning: '__builtin_memset' offset [57, 4294967294] is out of the bounds [0, 56] of object 'buf' with type 'union ucmd_buffer' [-Warray-bounds=]
-   59 | #define __underlying_memset     __builtin_memset
-      |                                 ^
-../include/linux/fortify-string.h:453:9: note: in expansion of macro '__underlying_memset'
-  453 |         __underlying_memset(p, c, __fortify_size); \
-      |         ^~~~~~~~~~~~~~~~~~~
-../include/linux/fortify-string.h:461:25: note: in expansion of macro '__fortify_memset_chk'
-  461 | #define memset(p, c, s) __fortify_memset_chk(p, c, s, \
-      |                         ^~~~~~~~~~~~~~~~~~~~
-../include/linux/uaccess.h:334:17: note: in expansion of macro 'memset'
-  334 |                 memset(dst + size, 0, rest);
-      |                 ^~~~~~
-../drivers/iommu/iommufd/main.c: In function 'iommufd_fops_ioctl':
-../drivers/iommu/iommufd/main.c:311:27: note: 'buf' declared here
-  311 |         union ucmd_buffer buf;
-      |                           ^~~
+OK. Sounds like I can drop this patch.
 
-Cc: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev
-Signed-off-by: Kees Cook <keescook@chromium.org>
----
- drivers/iommu/iommufd/main.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-index 3fbe636c3d8a..34a1785da33a 100644
---- a/drivers/iommu/iommufd/main.c
-+++ b/drivers/iommu/iommufd/main.c
-@@ -330,8 +330,9 @@ static long iommufd_fops_ioctl(struct file *filp, unsigned int cmd,
- 		return -EINVAL;
- 
- 	ucmd.cmd = &buf;
--	ret = copy_struct_from_user(ucmd.cmd, op->size, ucmd.ubuffer,
--				    ucmd.user_size);
-+	ret = copy_struct_from_user(ucmd.cmd,
-+				    min_t(size_t, op->size, sizeof(ucmd.cmd)),
-+				    ucmd.ubuffer, ucmd.user_size);
- 	if (ret)
- 		return ret;
- 	ret = op->execute(&ucmd);
--- 
-2.34.1
-
+Thanks
+Nicolin
