@@ -1,103 +1,107 @@
-Received: from r3-19.sinamail.sina.com.cn (r3-19.sinamail.sina.com.cn [202.108.3.19])
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [80.237.130.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE84810F2
-	for <iommu@lists.linux.dev>; Fri, 27 Jan 2023 08:58:31 +0000 (UTC)
-Received: from unknown (HELO localhost.localdomain)([114.249.61.130])
-	by sina.com (172.16.97.35) with ESMTP
-	id 63D390C600034FB0; Fri, 27 Jan 2023 16:52:24 +0800 (CST)
-X-Sender: hdanton@sina.com
-X-Auth-ID: hdanton@sina.com
-X-SMAIL-MID: 68793615073583
-From: Hillf Danton <hdanton@sina.com>
-To: Chris Goldsworthy <quic_cgoldswo@quicinc.com>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	dave.hansen@linux.intel.com,
-	bp@alien8.de,
-	hpa@zytor.com,
-	hch@lst.de,
-	m.szyprowski@samsung.com,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	djakov@kernel.org
-Subject: Re: [RFC] mm: Allow ZONE_DMA32 to be disabled via kernel command line
-Date: Fri, 27 Jan 2023 16:55:53 +0800
-Message-Id: <20230127085553.5120-1-hdanton@sina.com>
-In-Reply-To: <20230127021348.GA3754@hu-cgoldswo-sd.qualcomm.com>
-References: <20230126164352.17562-1-quic_c_gdjako@quicinc.com> <555fca66-81b6-3406-eac1-140c00669477@arm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62CB528F7;
+	Fri, 27 Jan 2023 11:30:27 +0000 (UTC)
+Received: from [2a02:8108:963f:de38:4bc7:2566:28bd:b73c]; authenticated
+	by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+	id 1pLMvy-0001YU-VO; Fri, 27 Jan 2023 12:30:19 +0100
+Message-ID: <493cf6bd-6c68-2415-2b24-76ec634df240@leemhuis.info>
+Date: Fri, 27 Jan 2023 12:30:18 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.0
+Subject: Re: [PATCH v3 1/1] PCI: Add translated request only flag for
+ pci_enable_pasid()
+Content-Language: en-US, de-DE
+To: Jason Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <jroedel@suse.de>,
+ Matt Fagnani <matt.fagnani@bell.net>,
+ =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+ Kevin Tian <kevin.tian@intel.com>, Vasant Hegde <vasant.hegde@amd.com>,
+ Tony Zhu <tony.zhu@intel.com>, linux-pci@vger.kernel.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Linux kernel regressions list <regressions@lists.linux.dev>
+References: <20230114073420.759989-1-baolu.lu@linux.intel.com>
+ <Y8Vwc/bMwvtICv4T@nvidia.com>
+From: "Linux kernel regression tracking (Thorsten Leemhuis)"
+ <regressions@leemhuis.info>
+Reply-To: Linux regressions mailing list <regressions@lists.linux.dev>
+In-Reply-To: <Y8Vwc/bMwvtICv4T@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1674819027;f0f1d124;
+X-HE-SMSGID: 1pLMvy-0001YU-VO
 
-On Thu, 26 Jan 2023 18:20:26 -0800 Chris Goldsworthy <quic_cgoldswo@quicinc.com>
-> On Thu, Jan 26, 2023 at 07:15:26PM +0000, Robin Murphy wrote:
-> > On 2023-01-26 16:43, Georgi Djakov wrote:
-> > >From: Chris Goldsworthy <quic_cgoldswo@quicinc.com>
-> > >
-> > >It's useful to have an option to disable the ZONE_DMA32 during boot as
-> > >CONFIG_ZONE_DMA32 is by default enabled (on multiplatform kernels for
-> > >example). There are platforms that do not use this zone and in some high
-> > >memory pressure scenarios this would help on easing kswapd (to leave file
-> > >backed memory intact / unreclaimed). When the ZONE_DMA32 is enabled on
-> > >these platforms - kswapd is woken up more easily and drains the file cache
-> > >which leads to some performance issues.
-> > >
-> > >Signed-off-by: Chris Goldsworthy <quic_cgoldswo@quicinc.com>
-> > >[georgi: updated commit text]
-> > >Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
-> > >---
-> > >The main question here is whether we can have a kernel command line
-> > >option to disable CONFIG_ZONE_DMA32 during boot (at least on arm64).
-> > >I can imagine this being useful also for Linux distros.
-> > 
-> > FWIW I'd say that "disabled" and "left empty then awkwardly tiptoed around
-> > in a few places" are very different notions...
-> > 
-> > However, I'm just going to take a step back and read the commit message a
-> > few more times... Given what it claims, I can't help but ask why wouldn't we
-> > want a parameter to control kswapd's behaviour and address that issue
-> > directly, rather than a massive hammer that breaks everyone allocating
-> > explicitly or implicitly with __GFP_DMA32 (especially on systems where it
-> > doesn't normally matter because all memory is below 4GB anyway), just to
-> > achieve one rather niche side-effect?
-> > 
-> > Thanks,
-> > Robin.
-> 
-> Hi Robin,
-> 
-> The commit text doesn't spell out the scenario we want to avoid, so I
-> will do that for clarity. We use a kernel binary compiled for us, and
-> by default has CONFIG_ZONE_DMA32 (and it can't be disabled for now as
-> another party needs it). Our higher-end SoCs are usually used with
-> 8-12 GB of DDR, so using a 12 GB device as an example, we would have 8
-> GB of ZONE_NORMAL memory and 4 GB of ZONE_MOVABLE memory with the
-> feature, and 4 GB of ZONE_DMA32, 4 GB of ZONE_NORMAL and 4 GB of
-> ZONE_MOVABLE otherwise.
-> 
-> Without the feature enabled, consider a GFP_KERNEL allocation that
-> causes a low watermark beach in ZONE_NORMAL, such that such that
-> ZONE_DMA32 is almost full. This will cause kswapd to start reclaiming
-> memory, despite the fact that that we might have gigabytes of free
-> memory in ZONE_DMA32 that can be used by anyone (since GFP_MOVABLE and
-> GFP_NORMAL can fall back to using ZONE_DMA32).
+Hi, this is your Linux kernel regression tracker. Top-posting for once,
+to make this easily accessible to everyone.
 
-If kswapd is busy reclaiming pages even given gigabytes of free memory
-in the DMA32 zone then it is a CPU hog.
+What happened to below patch? It looks like there was no progress since
+ten days now. Or did I miss something?
 
-Feel free to check pgdat_balanced() and prepare_kswapd_sleep().
+Reminder, the patch is fixing a regression, hence it would be good if
+this could be fixed rather sooner than later.
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+--
+Everything you wanna know about Linux kernel regression tracking:
+https://linux-regtracking.leemhuis.info/about/#tldr
+If I did something stupid, please tell me, as explained on that page.
+
+On 16.01.23 16:42, Jason Gunthorpe wrote:
+> On Sat, Jan 14, 2023 at 03:34:20PM +0800, Lu Baolu wrote:
+>> The PCIe fabric routes Memory Requests based on the TLP address, ignoring
+>> the PASID. In order to ensure system integrity, commit 201007ef707a ("PCI:
+>> Enable PASID only when ACS RR & UF enabled on upstream path") requires
+>> some ACS features being supported on device's upstream path when enabling
+>> PCI/PASID.
+>>
+>> One alternative is ATS/PRI which lets the device resolve the PASID + addr
+>> pair before a memory request is made into a routeable TLB address through
+>> the translation agent. Those resolved addresses are then cached on the
+>> device instead of in the IOMMU TLB and the device always sets translated
+>> bit for PASID. One example of those devices are AMD graphic devices that
+>> always have ACS or ATS/PRI enabled together with PASID.
+>>
+>> This adds a flag parameter in the pci_enable_pasid() helper, with which
+>> the device driver could opt-in the fact that device always sets the
+>> translated bit for PASID.
+>>
+>> It also applies this opt-in for AMD graphic devices. Without this change,
+>> kernel boots to black screen on a system with below AMD graphic device:
+>>
+>> 00:01.0 VGA compatible controller: Advanced Micro Devices, Inc.
+>>         [AMD/ATI] Wani [Radeon R5/R6/R7 Graphics] (rev ca)
+>>         (prog-if 00 [VGA controller])
+>> 	DeviceName: ATI EG BROADWAY
+>> 	Subsystem: Hewlett-Packard Company Device 8332
+>>
+>> At present, it is a common practice to enable/disable PCI PASID in the
+>> iommu drivers. Considering that the device driver knows more about the
+>> specific device, we will follow up by moving pci_enable_pasid() into
+>> the specific device drivers.
+>>
+>> Fixes: 201007ef707a ("PCI: Enable PASID only when ACS RR & UF enabled on upstream path")
+>> Reported-and-tested-by: Matt Fagnani <matt.fagnani@bell.net>
+>> Link: https://bugzilla.kernel.org/show_bug.cgi?id=216865
+>> Link: https://lore.kernel.org/r/15d0f9ff-2a56-b3e9-5b45-e6b23300ae3b@leemhuis.info/
+>> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+>> Suggested-by: Christian König <christian.koenig@amd.com>
+>> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>  include/linux/pci-ats.h                     | 6 ++++--
+>>  drivers/iommu/amd/iommu.c                   | 2 +-
+>>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
+>>  drivers/iommu/intel/iommu.c                 | 3 ++-
+>>  drivers/pci/ats.c                           | 8 ++++++--
+>>  5 files changed, 14 insertions(+), 7 deletions(-)
 > 
-> So, fleshing out your suggestion to make it concrete for our case, we
-> would want to stop kswapd from doing reclaim on ZONE_NORMAL watermark
-> breaches when ZONE_DMA32 is present (since anything targeting
-> ZONE_NORMAL can fall back to ZONE_DMA32).
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 > 
-> Thanks,
-> 
-> Chris.
-> 
+> Jason
