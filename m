@@ -1,166 +1,140 @@
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6CE433F7
-	for <iommu@lists.linux.dev>; Sat, 28 Jan 2023 18:58:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81A9133F7
+	for <iommu@lists.linux.dev>; Sat, 28 Jan 2023 20:04:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674932297; x=1706468297;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=0igZZSZ35WPHNtplLHFg7EG3QA4Q2VrQiwYSgkKTf7o=;
-  b=EspsFKrjZsG+pxRkrN0SGZXSHlJxN74/kEhsnfj6Sx1dCcFRzFexvzJk
-   ZcL7Hk2iZRbHTPw+yIt9mmsUUnkBKX05LbEhzuYaKISSvpI/hJ/JVkySF
-   UPDS2YJiqXQUmYKB8AMTepnCD6RqFcPoGinPaw5nEDy48P1CHuocJUzhe
-   aP07EfqMzEtsy8ZyIYzlW0c7XgcOGoaqv0eiDUgoxhX4LcyH2lxTtt3vM
-   R8bXM3ZHuJicbYeCLyupyMCdKognBfJrxz/jqlrqk29I+DxSGSBDmT+s/
-   pRpDNcarYWULJ1D0bf2eU8tyKZiJVZAD2rrr2ze3tHPVstzLQctsaH9Ow
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="325015397"
+  t=1674936270; x=1706472270;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=2mmFy3LVygpRkwWTSVvzettbUV4gF4wIiSThu2j5Nak=;
+  b=lxdluZj8hfAzbahFVxnxzxaf9pAfFj+UfqAq48PukqLVy2ZtxDHuq0FF
+   6o498nunWWmpMnUM3Kh9yLE17jdtNckAvgF7tMYanceECnlHkcum9O22E
+   adV0YxTjF+J+e/7dsxE7JQbY0n4c7RmcJuL3yrOKqJ5oX0rTJLGKAL2gq
+   53mmgvobNOB7Evq4DKrEdMxUEuPZbcFnCkxZ1JA0MMal8YxbVrpoIc5xB
+   rC7B1xZTajcoQ6ZZzhhJNc0BU4fvVOy9qmWKFf8qDe0ql19wCJwU+VzPF
+   KPuwY2yVR5Ev9OoI/MBdi+OUt/Fc7gzVHfVLhf8UiZMA4a0xVGLVvaqr7
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="325022487"
 X-IronPort-AV: E=Sophos;i="5.97,254,1669104000"; 
-   d="scan'208";a="325015397"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2023 10:58:17 -0800
+   d="scan'208";a="325022487"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2023 12:04:29 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="771960983"
+X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="909038357"
 X-IronPort-AV: E=Sophos;i="5.97,254,1669104000"; 
-   d="scan'208";a="771960983"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga002.fm.intel.com with ESMTP; 28 Jan 2023 10:58:16 -0800
-Received: from [10.209.53.179] (shedrick-mobl.amr.corp.intel.com [10.209.53.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by linux.intel.com (Postfix) with ESMTPS id 1C6F158093E;
-	Sat, 28 Jan 2023 10:58:15 -0800 (PST)
-Message-ID: <7c4b3e4e-1c5d-04f1-1891-84f686c94736@linux.intel.com>
-Date: Sat, 28 Jan 2023 13:58:14 -0500
+   d="scan'208";a="909038357"
+Received: from kanliang-dev.jf.intel.com ([10.165.154.102])
+  by fmsmga006.fm.intel.com with ESMTP; 28 Jan 2023 12:04:29 -0800
+From: kan.liang@linux.intel.com
+To: joro@8bytes.org,
+	will@kernel.org,
+	baolu.lu@linux.intel.com,
+	dwmw2@infradead.org,
+	robin.murphy@arm.com,
+	robert.moore@intel.com,
+	rafael.j.wysocki@intel.com,
+	lenb@kernel.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: yu-cheng.yu@intel.com,
+	Kan Liang <kan.liang@linux.intel.com>
+Subject: [PATCH V4 0/7] iommu/vt-d: Support performance monitoring for IOMMU
+Date: Sat, 28 Jan 2023 12:04:21 -0800
+Message-Id: <20230128200428.1459118-1-kan.liang@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH V3 0/7] iommu/vt-d: Support performance monitoring for
- IOMMU
-To: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org,
- dwmw2@infradead.org, robin.murphy@arm.com, robert.moore@intel.com,
- rafael.j.wysocki@intel.com, lenb@kernel.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Cc: yu-cheng.yu@intel.com
-References: <20230120165408.500511-1-kan.liang@linux.intel.com>
- <723f8070-1f03-dcab-4592-bceaf9cbdf07@linux.intel.com>
-Content-Language: en-US
-From: "Liang, Kan" <kan.liang@linux.intel.com>
-In-Reply-To: <723f8070-1f03-dcab-4592-bceaf9cbdf07@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
+From: Kan Liang <kan.liang@linux.intel.com>
 
+Changes since V3:
+- Fix issues found by "./scripts/checkpatch.pl --strict" scripts
+  Doesn't fix the "macros should not use a trailing semicolon" warning,
+  since the macros has to include several struct and functions to
+  further reduce the code duplication.
+- To fix the 0 value filter issue, introduce new "*_filter_en" attrs
+  for each filter. The end user must set both filter_en and filter
+  to utilize a filter.
+- Re-organize the layout of config1 and config2.
 
-On 2023-01-28 2:10 a.m., Baolu Lu wrote:
-> On 2023/1/21 0:54, kan.liang@linux.intel.com wrote:
->> From: Kan Liang <kan.liang@linux.intel.com>
->>
->> Changes since V2:
->> - Move ecmd_submit_sync() to iommu.c to avoid #ifdef CONFIG_INTEL_IOMMU
->>
->> Changes since V1:
->> - The cap and ecap registers are always in the first page. It's not
->>    necessary to use the reg size in dmar_validate_one_drhd(). (Patch 1)
->> - Move reg_size up and pair it with reg_base_addr in struct
->>    dmar_drhd_unit (Patch 1)
->> - Update the year of Copyright (Patch 2)
->> - Return 0 if PMS is not supported (Patch 2)
->> - Refine the comments and add a pr_warn for per-counter capabilities
->>    check (Patch 2)
->> - Remove unnecessary iommu_pmu->num_cntr = i (Patch 2)
->> - Remove has_ob of ecmd_submit_sync() (Patch 3)
->> - Remove the helpers from non-INTEL_IOMMU. (Patch 3)
->> - Still keep #ifdef CONFIG_INTEL_IOMMU for ecmd_submit_sync() to
->>    avoid compile warning with non-INTEL_IOMMU config.
->> - Use pr_warn_once() to replace WARN_ONCE() (Patch 4 & 6)
->> - Free iommu PMU if it fails to be registered. (Patch 4)
->> - Remove unnecessary 'handled' variable. (Patch 6)
->>
->> A performance monitoring infrastructure, perfmon, is introduced with
->> the VT-d Spec 4.0. The purpose of perfmon is to support collection of
->> information about key events occurring during operation of the remapping
->> hardware, to aid performance tuning and debug. The patch series is to
->> support the perfmon for IOMMU.
->>
->> To facilitate the perfmon support, the patch series also supports two
->> new generic features of VT-d Spec 4.0.
->> - Support the 'size' field to retrieve the accurate size of the register
->>    set for each dmar device from DRHD. (Patch 1)
->> - Support the new Enhanced Command Interface. (Patch 3)
->>
->> With the patch series, users can collect the performance data of IOMMU
->> via Linux perf tool. For example,
->>
->>   $ perf stat -e dmar0/iommu_requests,filter_ats=0/ -a sleep 1
->>
->>   Performance counter stats for 'system wide':
->>
->>                2135      dmar0/iommu_requests,filter_ats=0/
->>
->>         1.001087695 seconds time elapsed
->>
->> The IOMMU PMUs can be found under /sys/bus/event_source/devices/dmar*
->>
->> The available filters and event format can be found at the format folder
->>   $ ls /sys/bus/event_source/devices/dmar0/format/
->> event  event_group  filter_ats  filter_page_table
->>
->> The supported events can be found at the events folder
->>
->>   $ ls /sys/bus/event_source/devices/dmar0/events/
->> ats_blocked        int_cache_hit_nonposted  iommu_mrds
->> pasid_cache_lookup
->> ctxt_cache_hit     int_cache_hit_posted     iommu_requests
->> pg_req_posted
->> ctxt_cache_lookup  int_cache_lookup         iotlb_hit
->> pw_occupancy
->> fs_nonleaf_hit     iommu_clocks             iotlb_lookup
->> ss_nonleaf_hit
->> fs_nonleaf_lookup  iommu_mem_blocked        pasid_cache_hit
->> ss_nonleaf_lookup
->>
->> Kan Liang (7):
->>    iommu/vt-d: Support size of the register set in DRHD
->>    iommu/vt-d: Retrieve IOMMU perfmon capability information
->>    iommu/vt-d: Support Enhanced Command Interface
->>    iommu/vt-d: Add IOMMU perfmon support
->>    iommu/vt-d: Support cpumask for IOMMU perfmon
->>    iommu/vt-d: Add IOMMU perfmon overflow handler support
->>    iommu/vt-d: Enable IOMMU perfmon support
->>
->>   .../sysfs-bus-event_source-devices-iommu      |  32 +
->>   drivers/iommu/intel/Kconfig                   |   9 +
->>   drivers/iommu/intel/Makefile                  |   1 +
->>   drivers/iommu/intel/dmar.c                    |  33 +-
->>   drivers/iommu/intel/iommu.c                   |  59 ++
->>   drivers/iommu/intel/iommu.h                   | 101 +-
->>   drivers/iommu/intel/perfmon.c                 | 860 ++++++++++++++++++
->>   drivers/iommu/intel/perfmon.h                 |  65 ++
->>   drivers/iommu/intel/svm.c                     |   2 +-
->>   include/acpi/actbl1.h                         |   2 +-
->>   include/linux/cpuhotplug.h                    |   1 +
->>   include/linux/dmar.h                          |   1 +
->>   12 files changed, 1159 insertions(+), 7 deletions(-)
->>   create mode 100644
->> Documentation/ABI/testing/sysfs-bus-event_source-devices-iommu
->>   create mode 100644 drivers/iommu/intel/perfmon.c
->>   create mode 100644 drivers/iommu/intel/perfmon.h
-> 
-> Thanks for the work. The overall looks good to me now. But I am still
-> seeing some code style issues after running "./scripts/checkpatch.pl
-> --strict" scripts.
-> 
-> Can you please fix those issues and post a v4?
-> 
-Sure.
+Changes since V2:
+- Move ecmd_submit_sync() to iommu.c to avoid #ifdef CONFIG_INTEL_IOMMU
 
-Thanks,
-Kan
+Changes since V1:
+- The cap and ecap registers are always in the first page. It's not
+  necessary to use the reg size in dmar_validate_one_drhd(). (Patch 1)
+- Move reg_size up and pair it with reg_base_addr in struct
+  dmar_drhd_unit (Patch 1)
+- Update the year of Copyright (Patch 2)
+- Return 0 if PMS is not supported (Patch 2)
+- Refine the comments and add a pr_warn for per-counter capabilities
+  check (Patch 2)
+- Remove unnecessary iommu_pmu->num_cntr = i (Patch 2)
+- Remove has_ob of ecmd_submit_sync() (Patch 3)
+- Remove the helpers from non-INTEL_IOMMU. (Patch 3)
+- Still keep #ifdef CONFIG_INTEL_IOMMU for ecmd_submit_sync() to
+  avoid compile warning with non-INTEL_IOMMU config.
+- Use pr_warn_once() to replace WARN_ONCE() (Patch 4 & 6)
+- Free iommu PMU if it fails to be registered. (Patch 4)
+- Remove unnecessary 'handled' variable. (Patch 6)
+
+A performance monitoring infrastructure, perfmon, is introduced with
+the VT-d Spec 4.0. The purpose of perfmon is to support collection of
+information about key events occurring during operation of the remapping
+hardware, to aid performance tuning and debug. The patch series is to
+support the perfmon for IOMMU.
+
+To facilitate the perfmon support, the patch series also supports two
+new generic features of VT-d Spec 4.0.
+- Support the 'size' field to retrieve the accurate size of the register
+  set for each dmar device from DRHD. (Patch 1)
+- Support the new Enhanced Command Interface. (Patch 3)
+
+With the patch series, users can collect the performance data of IOMMU
+via Linux perf tool. For example,
+
+ $ perf stat -e dmar1/iommu_requests,filter_ats_en=0x1,filter_ats=0x1/
+   -a sleep 1
+
+ Performance counter stats for 'system wide':
+
+   368,947      dmar1/iommu_requests,filter_ats_en=0x1,filter_ats=0x1/
+
+ 1.002592074 seconds time elapsed
+
+Kan Liang (7):
+  iommu/vt-d: Support size of the register set in DRHD
+  iommu/vt-d: Retrieve IOMMU perfmon capability information
+  iommu/vt-d: Support Enhanced Command Interface
+  iommu/vt-d: Add IOMMU perfmon support
+  iommu/vt-d: Support cpumask for IOMMU perfmon
+  iommu/vt-d: Add IOMMU perfmon overflow handler support
+  iommu/vt-d: Enable IOMMU perfmon support
+
+ .../sysfs-bus-event_source-devices-iommu      |  37 +
+ drivers/iommu/intel/Kconfig                   |  11 +
+ drivers/iommu/intel/Makefile                  |   1 +
+ drivers/iommu/intel/dmar.c                    |  33 +-
+ drivers/iommu/intel/iommu.c                   |  59 ++
+ drivers/iommu/intel/iommu.h                   | 102 +-
+ drivers/iommu/intel/perfmon.c                 | 877 ++++++++++++++++++
+ drivers/iommu/intel/perfmon.h                 |  64 ++
+ drivers/iommu/intel/svm.c                     |   2 +-
+ include/acpi/actbl1.h                         |   2 +-
+ include/linux/cpuhotplug.h                    |   1 +
+ include/linux/dmar.h                          |   1 +
+ 12 files changed, 1182 insertions(+), 8 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-event_source-devices-iommu
+ create mode 100644 drivers/iommu/intel/perfmon.c
+ create mode 100644 drivers/iommu/intel/perfmon.h
+
+-- 
+2.35.1
+
