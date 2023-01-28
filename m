@@ -1,26 +1,26 @@
 Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36E5D3232;
-	Sat, 28 Jan 2023 11:44:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 874913232;
+	Sat, 28 Jan 2023 11:45:44 +0000 (UTC)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
 	(No client certificate requested)
 	(Authenticated sender: marcan@marcan.st)
-	by mail.marcansoft.com (Postfix) with ESMTPSA id 8131B426ED;
-	Sat, 28 Jan 2023 11:44:52 +0000 (UTC)
+	by mail.marcansoft.com (Postfix) with ESMTPSA id 7C716424D0;
+	Sat, 28 Jan 2023 11:45:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=marcan.st; s=default;
-	t=1674906295; bh=y6NjkpFqlOQK1FSsD4eLjzZgK5uIpnQZ0YXWid4+Q4c=;
+	t=1674906342; bh=izttfsBM8FR0txRob5fPFR1ElRpJR+EMtvZG2dF3LfQ=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=e0mF4vXkfbWFXEabiUuBQJt7nfOuTDhewCng07+Nkp0H7xfRoKPePFQ4cOa7qxNsW
-	 qmlKS1cMaehu65VPYqinQYsiMdOD/dNI0PnIj1FpLSV0+6XmKOAzPag18BHI9rD72C
-	 vRdCO3ozZJMX1Vd7NWcGyLsl0Tj6pXRWy1DY9r9+z2VdtSvpiAO/min0ntLKJxFeq9
-	 uDEkvvK6XWvAAzbczFZ8rfd7rZhLSD/IPCbygcGyk00ZnA/T6KJUXEVnHpOYRP0Bec
-	 BReNp9ZhpCSmmEcubYn6ZRf/2WX8sRAmoUVLekBPfuMoRk+5BB6yww1ygDQFnM0FNg
-	 bzJv9uBiJ9iBg==
-Message-ID: <b4428d3b-bcad-cea0-7364-753b050faa78@marcan.st>
-Date: Sat, 28 Jan 2023 20:44:50 +0900
+	b=Bapk+bDshERBmlwTnHFQeQJ0Dx1YtANznhHJijZm0H0Q47HMZDnOaIfi+hFHPEjmi
+	 Qdi+xL4ZMDV4KAGLhJ8+0yzk9/Qjv3bBS3VbVaAG53aS7EEzCHn5g0R+/JLQM062xH
+	 hk6jf9rjUEjC2b5jytAAgkczIplMi7spn5MxvL+LqU9GoiZBjIVM1Xx6uLnL7cdpy9
+	 iEkvNU0Or6xVFTjhMukMHPElqh5UEGFwLxRYYOeecR35HJVsTVCJncCV3e2GZF0h6p
+	 Ez2DbHmw8C67tshDZskxcKxGv2bCmX+OK1yi9/wmztt5LVD0iLkEFr47Vw9A81HBpE
+	 k736D4Vf46IwQ==
+Message-ID: <defcbb1a-599f-c905-1f4c-5c512d0a67c1@marcan.st>
+Date: Sat, 28 Jan 2023 20:45:37 +0900
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -29,7 +29,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH 2/4] iommu: dart: Add flag to override bypass support
+Subject: Re: [PATCH 3/4] iommu: dart: Write to all DART_T8020_STREAM_SELECT
 Content-Language: en-US
 To: Sven Peter <sven@svenpeter.dev>, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
@@ -40,45 +40,43 @@ Cc: Rob Herring <robh+dt@kernel.org>,
  iommu@lists.linux.dev, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org
 References: <20230128111114.4049-1-sven@svenpeter.dev>
- <20230128111114.4049-3-sven@svenpeter.dev>
+ <20230128111114.4049-4-sven@svenpeter.dev>
 From: Hector Martin <marcan@marcan.st>
-In-Reply-To: <20230128111114.4049-3-sven@svenpeter.dev>
+In-Reply-To: <20230128111114.4049-4-sven@svenpeter.dev>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 28/01/2023 20.11, Sven Peter wrote:
-> The USB4 PCIe DARTs claim to support bypass but we never want to allow
-> that on externally facing ports.
+> We're about to add support for a DART variant that use more than 16
+> streams and requires writing to two separate stream select registers
+> when issuing TLB flushes.
 > 
 > Signed-off-by: Sven Peter <sven@svenpeter.dev>
 > ---
->  drivers/iommu/apple-dart.c | 5 +++++
->  1 file changed, 5 insertions(+)
+>  drivers/iommu/apple-dart.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
 > 
 > diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-> index 42666617803d..7d8b2b90cdb6 100644
+> index 7d8b2b90cdb6..7579c97a9062 100644
 > --- a/drivers/iommu/apple-dart.c
 > +++ b/drivers/iommu/apple-dart.c
-> @@ -182,6 +182,8 @@ struct apple_dart_hw {
->  	u64 ttbr_addr_field_shift;
->  	u64 ttbr_shift;
->  	int ttbr_count;
-> +
-> +	bool disable_bypass;
->  };
+> @@ -372,12 +372,14 @@ apple_dart_t8020_hw_stream_command(struct apple_dart_stream_map *stream_map,
+>  			     u32 command)
+>  {
+>  	unsigned long flags;
+> -	int ret;
+> +	int ret, i;
+>  	u32 command_reg;
 >  
->  /*
-> @@ -1075,6 +1077,9 @@ static int apple_dart_probe(struct platform_device *pdev)
->  	dart->pgsize = 1 << FIELD_GET(DART_PARAMS1_PAGE_SHIFT, dart_params[0]);
->  	dart->supports_bypass = dart_params[1] & DART_PARAMS2_BYPASS_SUPPORT;
+>  	spin_lock_irqsave(&stream_map->dart->lock, flags);
 >  
-> +	if (dart->hw->disable_bypass)
-> +		dart->supports_bypass = 0;
-> +
->  	switch (dart->hw->type) {
->  	case DART_T8020:
->  	case DART_T6000:
-
+> -	writel(stream_map->sidmap[0], stream_map->dart->regs + DART_T8020_STREAM_SELECT);
+> +	for (i = 0; i < BITS_TO_U32(stream_map->dart->num_streams); i++)
+> +		writel(stream_map->sidmap[i],
+> +		       stream_map->dart->regs + DART_T8020_STREAM_SELECT + 4 * i);
+>  	writel(command, stream_map->dart->regs + DART_T8020_STREAM_COMMAND);
+>  
+>  	ret = readl_poll_timeout_atomic(
 
 Acked-by: Hector Martin <marcan@marcan.st>
 
