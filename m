@@ -1,208 +1,166 @@
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E6845C9D;
-	Sat, 28 Jan 2023 12:55:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6CE433F7
+	for <iommu@lists.linux.dev>; Sat, 28 Jan 2023 18:58:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674910533; x=1706446533;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yCSmWskfWwstmtUECi0Ec3AU/KX75cj9BgYJcLcePps=;
-  b=a+WJ1O8qDthNzhR0ixAjJtBnwtDgptQBOx/KSrncwcEsL/ItzzKWGAA3
-   KbkF191n32+D3R/jRkgCUVEMLAw1V50rRzLDxEZ4ABCbyUkbTF3tEUkRX
-   D6wT9+gew3WGKWO6F72rxDkaS7UH/ty7vh7g1nNHnxZNRjHuVLA8e/ZIl
-   2veNZ7ynD+tnlt7TUW3SftPjwOh2OE2ewQesT2WT+le3GaESshXg4C5IX
-   iN7VneABof7xWWAjeaNWq0gYhndalCBSlKGo73GgArEDJB1uLllw0T37e
-   hQ6SeVpGAeOtv6EcqkQT+tHFvG3CuJMSD1pkKLyOaJNozZIiVzpo3j+fZ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="328574896"
+  t=1674932297; x=1706468297;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=0igZZSZ35WPHNtplLHFg7EG3QA4Q2VrQiwYSgkKTf7o=;
+  b=EspsFKrjZsG+pxRkrN0SGZXSHlJxN74/kEhsnfj6Sx1dCcFRzFexvzJk
+   ZcL7Hk2iZRbHTPw+yIt9mmsUUnkBKX05LbEhzuYaKISSvpI/hJ/JVkySF
+   UPDS2YJiqXQUmYKB8AMTepnCD6RqFcPoGinPaw5nEDy48P1CHuocJUzhe
+   aP07EfqMzEtsy8ZyIYzlW0c7XgcOGoaqv0eiDUgoxhX4LcyH2lxTtt3vM
+   R8bXM3ZHuJicbYeCLyupyMCdKognBfJrxz/jqlrqk29I+DxSGSBDmT+s/
+   pRpDNcarYWULJ1D0bf2eU8tyKZiJVZAD2rrr2ze3tHPVstzLQctsaH9Ow
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="325015397"
 X-IronPort-AV: E=Sophos;i="5.97,254,1669104000"; 
-   d="scan'208";a="328574896"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2023 04:55:32 -0800
+   d="scan'208";a="325015397"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2023 10:58:17 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="992375551"
+X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="771960983"
 X-IronPort-AV: E=Sophos;i="5.97,254,1669104000"; 
-   d="scan'208";a="992375551"
-Received: from lkp-server01.sh.intel.com (HELO ffa7f14d1d0f) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 28 Jan 2023 04:55:29 -0800
-Received: from kbuild by ffa7f14d1d0f with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1pLkjw-0000eq-2T;
-	Sat, 28 Jan 2023 12:55:28 +0000
-Date: Sat, 28 Jan 2023 20:55:09 +0800
-From: kernel test robot <lkp@intel.com>
-To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, hch@lst.de,
-	jgg@nvidia.com, baolu.lu@linux.intel.com,
-	"Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2 7/8] iommu: Retire bus ops
-Message-ID: <202301282015.hjj2YFYy-lkp@intel.com>
-References: <198e82a6b1a28605409c395da4ec1a67b0e1587b.1674753627.git.robin.murphy@arm.com>
+   d="scan'208";a="771960983"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga002.fm.intel.com with ESMTP; 28 Jan 2023 10:58:16 -0800
+Received: from [10.209.53.179] (shedrick-mobl.amr.corp.intel.com [10.209.53.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by linux.intel.com (Postfix) with ESMTPS id 1C6F158093E;
+	Sat, 28 Jan 2023 10:58:15 -0800 (PST)
+Message-ID: <7c4b3e4e-1c5d-04f1-1891-84f686c94736@linux.intel.com>
+Date: Sat, 28 Jan 2023 13:58:14 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <198e82a6b1a28605409c395da4ec1a67b0e1587b.1674753627.git.robin.murphy@arm.com>
-
-Hi Robin,
-
-I love your patch! Yet something to improve:
-
-[auto build test ERROR on rafael-pm/linux-next]
-[also build test ERROR on linus/master v6.2-rc5]
-[cannot apply to joro-iommu/next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Robin-Murphy/iommu-Decouple-iommu_present-from-bus-ops/20230128-141510
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git linux-next
-patch link:    https://lore.kernel.org/r/198e82a6b1a28605409c395da4ec1a67b0e1587b.1674753627.git.robin.murphy%40arm.com
-patch subject: [PATCH v2 7/8] iommu: Retire bus ops
-config: s390-randconfig-r012-20230123 (https://download.01.org/0day-ci/archive/20230128/202301282015.hjj2YFYy-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 4196ca3278f78c6e19246e54ab0ecb364e37d66a)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install s390 cross compiling tool for clang build
-        # apt-get install binutils-s390x-linux-gnu
-        # https://github.com/intel-lab-lkp/linux/commit/399f4b37d8065bffafeec12de1344a7ff6098e64
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Robin-Murphy/iommu-Decouple-iommu_present-from-bus-ops/20230128-141510
-        git checkout 399f4b37d8065bffafeec12de1344a7ff6098e64
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash drivers/iommu/
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from drivers/iommu/iommufd/selftest.c:7:
-   In file included from include/linux/iommu.h:10:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:547:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __raw_readb(PCI_IOBASE + addr);
-                             ~~~~~~~~~~ ^
-   include/asm-generic/io.h:560:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
-   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
-                                                             ^
-   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
-   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
-                                                        ^
-   In file included from drivers/iommu/iommufd/selftest.c:7:
-   In file included from include/linux/iommu.h:10:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:573:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
-                                                             ^
-   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
-   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
-                                                        ^
-   In file included from drivers/iommu/iommufd/selftest.c:7:
-   In file included from include/linux/iommu.h:10:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:584:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writeb(value, PCI_IOBASE + addr);
-                               ~~~~~~~~~~ ^
-   include/asm-generic/io.h:594:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:604:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:692:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsb(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:700:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsw(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:708:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsl(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:717:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesb(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:726:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesw(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:735:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesl(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
->> drivers/iommu/iommufd/selftest.c:276:39: error: field designator 'iommu_ops' does not refer to any field in type 'struct bus_type'
-           static struct bus_type mock_bus = { .iommu_ops = &mock_ops };
-                                                ^
-   12 warnings and 1 error generated.
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH V3 0/7] iommu/vt-d: Support performance monitoring for
+ IOMMU
+To: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org,
+ dwmw2@infradead.org, robin.murphy@arm.com, robert.moore@intel.com,
+ rafael.j.wysocki@intel.com, lenb@kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Cc: yu-cheng.yu@intel.com
+References: <20230120165408.500511-1-kan.liang@linux.intel.com>
+ <723f8070-1f03-dcab-4592-bceaf9cbdf07@linux.intel.com>
+Content-Language: en-US
+From: "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <723f8070-1f03-dcab-4592-bceaf9cbdf07@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 
-vim +276 drivers/iommu/iommufd/selftest.c
 
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  271  
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  272  /* Create an hw_pagetable with the mock domain so we can test the domain ops */
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  273  static int iommufd_test_mock_domain(struct iommufd_ucmd *ucmd,
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  274  				    struct iommu_test_cmd *cmd)
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  275  {
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29 @276  	static struct bus_type mock_bus = { .iommu_ops = &mock_ops };
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  277  	struct iommufd_hw_pagetable *hwpt;
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  278  	struct selftest_obj *sobj;
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  279  	struct iommufd_ioas *ioas;
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  280  	int rc;
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  281  
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  282  	ioas = iommufd_get_ioas(ucmd, cmd->id);
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  283  	if (IS_ERR(ioas))
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  284  		return PTR_ERR(ioas);
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  285  
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  286  	sobj = iommufd_object_alloc(ucmd->ictx, sobj, IOMMUFD_OBJ_SELFTEST);
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  287  	if (IS_ERR(sobj)) {
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  288  		rc = PTR_ERR(sobj);
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  289  		goto out_ioas;
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  290  	}
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  291  	sobj->idev.ictx = ucmd->ictx;
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  292  	sobj->type = TYPE_IDEV;
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  293  	sobj->idev.mock_dev.bus = &mock_bus;
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  294  
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  295  	hwpt = iommufd_device_selftest_attach(ucmd->ictx, ioas,
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  296  					      &sobj->idev.mock_dev);
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  297  	if (IS_ERR(hwpt)) {
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  298  		rc = PTR_ERR(hwpt);
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  299  		goto out_sobj;
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  300  	}
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  301  	sobj->idev.hwpt = hwpt;
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  302  
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  303  	/* Userspace must destroy both of these IDs to destroy the object */
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  304  	cmd->mock_domain.out_hwpt_id = hwpt->obj.id;
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  305  	cmd->mock_domain.out_device_id = sobj->obj.id;
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  306  	iommufd_object_finalize(ucmd->ictx, &sobj->obj);
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  307  	iommufd_put_object(&ioas->obj);
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  308  	return iommufd_ucmd_respond(ucmd, sizeof(*cmd));
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  309  
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  310  out_sobj:
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  311  	iommufd_object_abort(ucmd->ictx, &sobj->obj);
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  312  out_ioas:
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  313  	iommufd_put_object(&ioas->obj);
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  314  	return rc;
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  315  }
-f4b20bb34c83dc Jason Gunthorpe 2022-11-29  316  
+On 2023-01-28 2:10 a.m., Baolu Lu wrote:
+> On 2023/1/21 0:54, kan.liang@linux.intel.com wrote:
+>> From: Kan Liang <kan.liang@linux.intel.com>
+>>
+>> Changes since V2:
+>> - Move ecmd_submit_sync() to iommu.c to avoid #ifdef CONFIG_INTEL_IOMMU
+>>
+>> Changes since V1:
+>> - The cap and ecap registers are always in the first page. It's not
+>>    necessary to use the reg size in dmar_validate_one_drhd(). (Patch 1)
+>> - Move reg_size up and pair it with reg_base_addr in struct
+>>    dmar_drhd_unit (Patch 1)
+>> - Update the year of Copyright (Patch 2)
+>> - Return 0 if PMS is not supported (Patch 2)
+>> - Refine the comments and add a pr_warn for per-counter capabilities
+>>    check (Patch 2)
+>> - Remove unnecessary iommu_pmu->num_cntr = i (Patch 2)
+>> - Remove has_ob of ecmd_submit_sync() (Patch 3)
+>> - Remove the helpers from non-INTEL_IOMMU. (Patch 3)
+>> - Still keep #ifdef CONFIG_INTEL_IOMMU for ecmd_submit_sync() to
+>>    avoid compile warning with non-INTEL_IOMMU config.
+>> - Use pr_warn_once() to replace WARN_ONCE() (Patch 4 & 6)
+>> - Free iommu PMU if it fails to be registered. (Patch 4)
+>> - Remove unnecessary 'handled' variable. (Patch 6)
+>>
+>> A performance monitoring infrastructure, perfmon, is introduced with
+>> the VT-d Spec 4.0. The purpose of perfmon is to support collection of
+>> information about key events occurring during operation of the remapping
+>> hardware, to aid performance tuning and debug. The patch series is to
+>> support the perfmon for IOMMU.
+>>
+>> To facilitate the perfmon support, the patch series also supports two
+>> new generic features of VT-d Spec 4.0.
+>> - Support the 'size' field to retrieve the accurate size of the register
+>>    set for each dmar device from DRHD. (Patch 1)
+>> - Support the new Enhanced Command Interface. (Patch 3)
+>>
+>> With the patch series, users can collect the performance data of IOMMU
+>> via Linux perf tool. For example,
+>>
+>>   $ perf stat -e dmar0/iommu_requests,filter_ats=0/ -a sleep 1
+>>
+>>   Performance counter stats for 'system wide':
+>>
+>>                2135      dmar0/iommu_requests,filter_ats=0/
+>>
+>>         1.001087695 seconds time elapsed
+>>
+>> The IOMMU PMUs can be found under /sys/bus/event_source/devices/dmar*
+>>
+>> The available filters and event format can be found at the format folder
+>>   $ ls /sys/bus/event_source/devices/dmar0/format/
+>> event  event_group  filter_ats  filter_page_table
+>>
+>> The supported events can be found at the events folder
+>>
+>>   $ ls /sys/bus/event_source/devices/dmar0/events/
+>> ats_blocked        int_cache_hit_nonposted  iommu_mrds
+>> pasid_cache_lookup
+>> ctxt_cache_hit     int_cache_hit_posted     iommu_requests
+>> pg_req_posted
+>> ctxt_cache_lookup  int_cache_lookup         iotlb_hit
+>> pw_occupancy
+>> fs_nonleaf_hit     iommu_clocks             iotlb_lookup
+>> ss_nonleaf_hit
+>> fs_nonleaf_lookup  iommu_mem_blocked        pasid_cache_hit
+>> ss_nonleaf_lookup
+>>
+>> Kan Liang (7):
+>>    iommu/vt-d: Support size of the register set in DRHD
+>>    iommu/vt-d: Retrieve IOMMU perfmon capability information
+>>    iommu/vt-d: Support Enhanced Command Interface
+>>    iommu/vt-d: Add IOMMU perfmon support
+>>    iommu/vt-d: Support cpumask for IOMMU perfmon
+>>    iommu/vt-d: Add IOMMU perfmon overflow handler support
+>>    iommu/vt-d: Enable IOMMU perfmon support
+>>
+>>   .../sysfs-bus-event_source-devices-iommu      |  32 +
+>>   drivers/iommu/intel/Kconfig                   |   9 +
+>>   drivers/iommu/intel/Makefile                  |   1 +
+>>   drivers/iommu/intel/dmar.c                    |  33 +-
+>>   drivers/iommu/intel/iommu.c                   |  59 ++
+>>   drivers/iommu/intel/iommu.h                   | 101 +-
+>>   drivers/iommu/intel/perfmon.c                 | 860 ++++++++++++++++++
+>>   drivers/iommu/intel/perfmon.h                 |  65 ++
+>>   drivers/iommu/intel/svm.c                     |   2 +-
+>>   include/acpi/actbl1.h                         |   2 +-
+>>   include/linux/cpuhotplug.h                    |   1 +
+>>   include/linux/dmar.h                          |   1 +
+>>   12 files changed, 1159 insertions(+), 7 deletions(-)
+>>   create mode 100644
+>> Documentation/ABI/testing/sysfs-bus-event_source-devices-iommu
+>>   create mode 100644 drivers/iommu/intel/perfmon.c
+>>   create mode 100644 drivers/iommu/intel/perfmon.h
+> 
+> Thanks for the work. The overall looks good to me now. But I am still
+> seeing some code style issues after running "./scripts/checkpatch.pl
+> --strict" scripts.
+> 
+> Can you please fix those issues and post a v4?
+> 
+Sure.
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+Thanks,
+Kan
