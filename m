@@ -1,75 +1,69 @@
 Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 089E23232;
-	Sat, 28 Jan 2023 11:11:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF79F3232;
+	Sat, 28 Jan 2023 11:35:43 +0000 (UTC)
 Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-	by mailout.west.internal (Postfix) with ESMTP id 501583200437;
-	Sat, 28 Jan 2023 06:11:43 -0500 (EST)
+	by mailout.west.internal (Postfix) with ESMTP id 4FFE03200921;
+	Sat, 28 Jan 2023 06:35:42 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Sat, 28 Jan 2023 06:11:44 -0500
+  by compute5.internal (MEProxy); Sat, 28 Jan 2023 06:35:43 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
 	 h=cc:cc:content-transfer-encoding:date:date:from:from
-	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:sender:subject:subject:to:to; s=fm3; t=1674904302; x=
-	1674990702; bh=493UH9whhEk1w0ep2M9HRG0EP8+U1OlA4AfdHG/OFhw=; b=d
-	e1jlgU34CGxuCvyj8cZMBK6/bWoiFIZZ14RcjZHMjYqEeQhToEkBt90vb4EG/Fzv
-	ptuZ1dki+TmLwHkSUoHsw/FQCSC6jrAX9gtJYcucp/E7FKWkWXAJzF7bxBbC9PBf
-	ZbeWNtztp4wUs0FvUdASrT+bk2cN1Ftkf0lK9rgdiGj2/6ljdFsXfTuKFgh2T1lp
-	3MzKs3vpVbXcuCzTKOj9Qv3W8h6Ly2u/zzWsJxF3zaPcJ0EhNtcsnUMZDigSMDaN
-	Yl9dC/aSurjv2YkLsul5saJgHY43Oejy9rL7z/3WqMQXou/vOhmDLiIqNEjx6q/a
-	hn9I43GvOxJ7j3OqSLagA==
+	:in-reply-to:message-id:mime-version:reply-to:sender:subject
+	:subject:to:to; s=fm3; t=1674905741; x=1674992141; bh=4olYd8m5Y3
+	m/Ketj4EwpMONs8K8Rrl0HRXvFBBCSojM=; b=bljsgFRJbyiyanK0zuGhiY2eKE
+	1w8dNqZ6EXngJ3Xk9DEgDZND5FceFkvIGJ566U7Dcf/RoJU555MnVTZPhYxyf3ji
+	9eGALqBWpsDzC3uVebiO2s+qseU6La9Ys4hirvioO8uw5uituT/tn9aOE3Pb9ASC
+	BVIeBEpj32yj+/r/uOZ1YGtKAgCx8MeU50kd2PNdL8MBK5SvtwPdAATZq/gfd4Rv
+	ZrQWlyHpi2ydEg6/tRcL3bgHV/th+uLA9ZIXXVQjsoKzUUDgB+p3sDN+t2Q8R1+x
+	7/vwGmB8USIBumdPiT4RNJv4nhDMWEf1UmGS5X7Ye/LhrUb0XqLEnq+Zz8cQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:sender:subject
-	:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-	:x-sasl-enc; s=fm3; t=1674904302; x=1674990702; bh=493UH9whhEk1w
-	0ep2M9HRG0EP8+U1OlA4AfdHG/OFhw=; b=PiC/NiSwFoLtaE5G9J5ld6e2XJUJc
-	15KN4gg4UVQFlPLMuT1t7H0mzQXqsehV8LNDs+cfarFaZBfPwgl2ZfE5uyS+IKUG
-	w5Xj+QbmPDj5d/aby83veig5W0liEQ15XRFOI76cpcQsPv3VDuevHTVcwZbbsQJg
-	knsaiOTyyk7zmCokE591nRt84XTYNhtmfc+9EmYqwx4ilwTgOAE30/unrQd6IOyZ
-	cH8E8u6PSa1EqImcI4ROrNHxk3daX0GksTtT75G0BzufUlaQfA8yAoQydiY2Enef
-	Y9R+AFqB+Cv5GYRQ0tkiBUzTQyXREMPA4Sh6NI8pTVFbUrbr5CsEFrhfQ==
-X-ME-Sender: <xms:7gLVY4nvck79p42jxXJL_nV3K0FoHJxIPO-J3dux_3rQk5uR8fsPjQ>
-    <xme:7gLVY30vZ5J-P2v2s5GGRHNxtFSEAxSxXrQzlw8VGZigVL7WW5xu5rTzKTn2uZ1-H
-    9IajvmSHc-msO_r6eg>
-X-ME-Received: <xmr:7gLVY2reNS9WhSXBKUeCCslFd4iu8DTVYbR9axTZxtPRivPobJv4Yxu4py82ZNP_8qXfWDQkshUQYfi1DsPp-RTBadWUZG8jYdr6kngpBIwHQeQzL9_pONsplnnzXQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedruddvkedgvdegucetufdoteggodetrfdotf
+	:feedback-id:feedback-id:from:from:in-reply-to:message-id
+	:mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+	:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
+	1674905741; x=1674992141; bh=4olYd8m5Y3m/Ketj4EwpMONs8K8Rrl0HRXv
+	FBBCSojM=; b=hDpqJwehKURHYH2X8/xGLrBUD+TpPSYu9hCLfuI5QFBGzDM2b0z
+	pshS+EG0vkK4avyUSz/Wxo0dk6nrCDESi9Dsi+wufoDQpKJ3p6iC8dGyhKzMbjos
+	p3AiklKV/Xr36lAacL0uXPxysuRu7mPcv/zGkn0di7TYsKO4kZjujgFVJiTDVW6m
+	FGIhak3pygmSfm/TZeV+/hFd5x/ME8SKcZCZ/s5MKapzueqeU0nqE9MaVdyv59aT
+	tDSAqxrEaoWTaPGZST9BogqzWjMI0sWOsB9XuttBy7LWs6aToKeZlNRmuf2+G6ZA
+	aWcwpnibBdh6JC2OXOUu4dxiHOytX6HM7xg==
+X-ME-Sender: <xms:jQjVY3Slwgfj5AekHjbAcdhhLpAKlw0qydxNrqWkb-G2Uodxa-0TxA>
+    <xme:jQjVY4zGbJXD2HpCyg83OP1HSkZcGaRTK8jmssJFIBhNc9yHxuIrMvZuz-RAfwN2n
+    uFA4WYkMj6f1B84qbc>
+X-ME-Received: <xmr:jQjVY82pIsIb9L2Lbejms4NdvZ8YaVyeaO5Tv2_Ljrx0r79lIc6CvnZXa3RXVGP1BAIuJ_T4j8LiFP71CMH3udn2Oe94PzflfUGxWxY5ebJ92qI3PCtTi2XfBC6TYA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedruddvkedgvdelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvvefufffkofgjfhgggfestdekredtredttdenucfhrhhomhepufhvvghn
-    ucfrvghtvghruceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrghtth
-    gvrhhnpeejieehheekgedvjefhveekjefguddtfefhteehtdeiffelkeeiuedufeelkeej
-    geenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsvh
-    gvnhesshhvvghnphgvthgvrhdruggvvh
-X-ME-Proxy: <xmx:7gLVY0lbXrrVF7HgW2kTl-OeedJJzagd7BRCKrjPrhx0_mvzqCVJhg>
-    <xmx:7gLVY204wNFjpfMcZBILTvxh1bZsgbXQv9G5LHhvgo5K1TIQca3iig>
-    <xmx:7gLVY7uQ7AxsshVmj8mfveE0p_G8aCAVOahDv8Dxin77r9PY3STdjw>
-    <xmx:7gLVYztIhBTfWIEwZv-re8MnBN1pgNsmTNkRPDh6krWi6sNFNvPfhw>
+    cujfgurhephffvvefufffkofgggfestdekredtredttdenucfhrhhomhepufhvvghnucfr
+    vghtvghruceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrghtthgvrh
+    hnpeeludffieehueevtdffvedtueelleejuddugfettdevhfefffdvgffhjeehgfelleen
+    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsvhgvnh
+    esshhvvghnphgvthgvrhdruggvvh
+X-ME-Proxy: <xmx:jQjVY3DmL2FkvGSzKPA5kXJhldLQJNRkolLH6Xn67T4zKUuahAEsqg>
+    <xmx:jQjVYwiC8TXuTDk08hHu4QEkz3RRs1eHo6QcvqvWVPUPefuwCLL98w>
+    <xmx:jQjVY7op7kLEOSe10kzi3fnv10YhaevUoyDcc43a2LaLULLj9wHRSQ>
+    <xmx:jQjVY5Wfs5iOzs8TkveFBWFXZv2RbTK_HHv07A8tdNkDX_zTTtFz7w>
 Feedback-ID: i51094778:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
- 28 Jan 2023 06:11:40 -0500 (EST)
+ 28 Jan 2023 06:35:40 -0500 (EST)
 From: Sven Peter <sven@svenpeter.dev>
 To: Hector Martin <marcan@marcan.st>,
 	Sven Peter <sven@svenpeter.dev>,
 	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-	linux-arm-kernel@lists.infradead.org,
+	Will Deacon <will@kernel.org>
+Cc: Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	Robin Murphy <robin.murphy@arm.com>,
 	asahi@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 4/4] iommu: dart: Add support for M1 USB4 PCIe DART
-Date: Sat, 28 Jan 2023 12:11:14 +0100
-Message-Id: <20230128111114.4049-5-sven@svenpeter.dev>
+Subject: [PATCH] iommu/dart: Fix apple_dart_device_group for PCI groups
+Date: Sat, 28 Jan 2023 12:35:32 +0100
+Message-Id: <20230128113532.94651-1-sven@svenpeter.dev>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
-In-Reply-To: <20230128111114.4049-1-sven@svenpeter.dev>
-References: <20230128111114.4049-1-sven@svenpeter.dev>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -78,73 +72,97 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This variant of the regular t8103 DART is used for the two
-USB4/Thunderbolt PCIe controllers. It supports 64 instead of 16 streams
-which requires a slightly different MMIO layout. We also disallow bypass
-support since these DARTs will only ever be used for externally facing
-devices on the USB4 ports.
+pci_device_group() can return an already existing IOMMU group if the PCI
+device's pagetables have to be shared with another one due to bus
+toplogy, isolation features and/or DMA alias quirks.
+apple_dart_device_group() however assumes that the group has just been
+created and overwrites its iommudata which will eventually lead to
+apple_dart_release_group leaving stale entries in sid2group.
+Fix that by merging the iommudata if the returned group already exists.
 
+Fixes: f0b636804c7c ("iommu/dart: Clear sid2group entry when a group is freed")
 Signed-off-by: Sven Peter <sven@svenpeter.dev>
 ---
- drivers/iommu/apple-dart.c | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+ drivers/iommu/apple-dart.c | 51 ++++++++++++++++++++++++++++++++------
+ 1 file changed, 44 insertions(+), 7 deletions(-)
+
+This won't apply cleanly to iommu/fixes as it's based on the t8110 DART
+changes since the USB4/Thunderbolt DART itself also depends on those.
+That's not a big deal though since it's not possible to run into this
+bug without complex PCI bus topologies which can only be created using
+USB4/Thunderbolt on these SoCs and there's no support for that upstream
+yet.
 
 diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-index 7579c97a9062..a1304ba3639b 100644
+index a1304ba3639b..02f7a1740b14 100644
 --- a/drivers/iommu/apple-dart.c
 +++ b/drivers/iommu/apple-dart.c
-@@ -81,6 +81,7 @@
- #define DART_T8020_TCR_BYPASS_DAPF      BIT(12)
+@@ -840,6 +840,29 @@ static void apple_dart_release_group(void *iommu_data)
+ 	mutex_unlock(&apple_dart_groups_lock);
+ }
  
- #define DART_T8020_TTBR       0x200
-+#define DART_T8020_USB4_TTBR  0x400
- #define DART_T8020_TTBR_VALID BIT(31)
- #define DART_T8020_TTBR_ADDR_FIELD_SHIFT 0
- #define DART_T8020_TTBR_SHIFT 12
-@@ -1184,6 +1185,35 @@ static const struct apple_dart_hw apple_dart_hw_t8103 = {
- 	.ttbr_shift = DART_T8020_TTBR_SHIFT,
- 	.ttbr_count = 4,
- };
++static int apple_dart_merge_master_cfg(struct apple_dart_master_cfg *dst,
++				       struct apple_dart_master_cfg *src)
++{
++	/*
++	 * We know that this function is only called for groups returned from
++	 * pci_device_group and that all Apple Silicon platforms never spread
++	 * PCIe devices from the same bus across multiple DARTs such that we can
++	 * just assume that both src and dst only have the same single DART.
++	 */
++	if (src->stream_maps[1].dart)
++		return -EINVAL;
++	if (dst->stream_maps[1].dart)
++		return -EINVAL;
++	if (src->stream_maps[0].dart != dst->stream_maps[0].dart)
++		return -EINVAL;
 +
-+static const struct apple_dart_hw apple_dart_hw_t8103_usb4 = {
-+	.type = DART_T8020,
-+	.irq_handler = apple_dart_t8020_irq,
-+	.invalidate_tlb = apple_dart_t8020_hw_invalidate_tlb,
-+	.oas = 36,
-+	.fmt = APPLE_DART,
-+	.max_sid_count = 64,
++	bitmap_or(dst->stream_maps[0].sidmap,
++		  dst->stream_maps[0].sidmap,
++		  src->stream_maps[0].sidmap,
++		  dst->stream_maps[0].dart->num_streams);
++	return 0;
++}
 +
-+	.enable_streams = DART_T8020_STREAMS_ENABLE,
-+	.lock = DART_T8020_CONFIG,
-+	.lock_bit = DART_T8020_CONFIG_LOCK,
-+
-+	.error = DART_T8020_ERROR,
-+
-+	.tcr = DART_T8020_TCR,
-+	.tcr_enabled = DART_T8020_TCR_TRANSLATE_ENABLE,
-+	.tcr_disabled = 0,
-+	.tcr_bypass = 0,
-+
-+	.ttbr = DART_T8020_USB4_TTBR,
-+	.ttbr_valid = DART_T8020_TTBR_VALID,
-+	.ttbr_addr_field_shift = DART_T8020_TTBR_ADDR_FIELD_SHIFT,
-+	.ttbr_shift = DART_T8020_TTBR_SHIFT,
-+	.ttbr_count = 4,
-+
-+	.disable_bypass = true,
-+};
-+
- static const struct apple_dart_hw apple_dart_hw_t6000 = {
- 	.type = DART_T6000,
- 	.irq_handler = apple_dart_t8020_irq,
-@@ -1276,6 +1306,7 @@ DEFINE_SIMPLE_DEV_PM_OPS(apple_dart_pm_ops, apple_dart_suspend, apple_dart_resum
+ static struct iommu_group *apple_dart_device_group(struct device *dev)
+ {
+ 	int i, sid;
+@@ -881,14 +904,28 @@ static struct iommu_group *apple_dart_device_group(struct device *dev)
+ 	if (!group)
+ 		goto out;
  
- static const struct of_device_id apple_dart_of_match[] = {
- 	{ .compatible = "apple,t8103-dart", .data = &apple_dart_hw_t8103 },
-+	{ .compatible = "apple,t8103-dart-usb4", .data = &apple_dart_hw_t8103_usb4 },
- 	{ .compatible = "apple,t8110-dart", .data = &apple_dart_hw_t8110 },
- 	{ .compatible = "apple,t6000-dart", .data = &apple_dart_hw_t6000 },
- 	{},
+-	group_master_cfg = kmemdup(cfg, sizeof(*group_master_cfg), GFP_KERNEL);
+-	if (!group_master_cfg) {
+-		iommu_group_put(group);
+-		goto out;
+-	}
++	group_master_cfg = iommu_group_get_iommudata(group);
++	if (group_master_cfg) {
++		int ret;
+ 
+-	iommu_group_set_iommudata(group, group_master_cfg,
+-		apple_dart_release_group);
++		ret = apple_dart_merge_master_cfg(group_master_cfg, cfg);
++		if (ret) {
++			dev_err(dev, "Failed to merge DART IOMMU grups.\n");
++			iommu_group_put(group);
++			res = ERR_PTR(ret);
++			goto out;
++		}
++	} else {
++		group_master_cfg = kmemdup(cfg, sizeof(*group_master_cfg),
++					   GFP_KERNEL);
++		if (!group_master_cfg) {
++			iommu_group_put(group);
++			goto out;
++		}
++
++		iommu_group_set_iommudata(group, group_master_cfg,
++			apple_dart_release_group);
++	}
+ 
+ 	for_each_stream_map(i, cfg, stream_map)
+ 		for_each_set_bit(sid, stream_map->sidmap, stream_map->dart->num_streams)
 -- 
 2.25.1
 
