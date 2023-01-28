@@ -1,33 +1,33 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C0BD3214
-	for <iommu@lists.linux.dev>; Sat, 28 Jan 2023 08:21:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B86F199
+	for <iommu@lists.linux.dev>; Sat, 28 Jan 2023 08:49:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674894096; x=1706430096;
+  t=1674895757; x=1706431757;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=z/39axW8OVNf9pdo5HdE9iOLcsilAPmckDFMN9tvMvo=;
-  b=U0Br6DU/bRdA2Dp+KZ3AmM3rQ5niz3KYRVXGtx4GqvDkH3RNSesgb5En
-   BZxh9N3OAMFDZGBhbRhzlDB/ye9iBp7UgLM2Zg5AxZgxEEXcCxt2AMvHm
-   zZNS/mGJYMsRgyoQvGTC7/+Ky2QzDmVVdAo6+fz5SNf83N1eH7l4SdrQj
-   aCoYGIZmwSvGsiIHMF+0OiwhgTXt8az7jdafXzLPe0K9r7gTKzP+VB/zk
-   W8fcR0T8kZ8URvuypNHg8EauMdB+wpl12yxkm3AxT532o+uDMy17mBW9P
-   QbA/FLFYuKrL4hD03Gt1XHzGh3f9l1etkiLtQplCreMZvGEoe9/C7Sa3l
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10603"; a="310896763"
+  bh=mR5VBMjCs+XRveeUOubky32oufU08sOYbLJ69XTsVo8=;
+  b=OHv7aNrNdD5kGlSjR6/hxX0k8BeAJcieAXEp0aV7lEERd+2lvMNlvWi+
+   or4uF+gbNT57EhOfe+BrRPAsMWaB/CgzInYYqlcOBT5bEfzGbQ7yoKo/b
+   UqeX4EvwO4f+6GjaGoL4TZkg+h9MMTMywj5a6vgrCGBiaiABDfG8XdskZ
+   7UKR8LvDvHW5EoR7pwoi9UvMkpFLTzAu1q5MWqXnHmE5fDcaZzklzEpQf
+   kBH0JZVfqVZUK/kwCvegzDcmbwRmsaHwvxqEtzmbNrarRymfsskLCerOV
+   eAlCfBdJ8FLuiC0soqsEmQBlCWafLHSqf9Uv18xS6TDHoHniACES0ouA3
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10603"; a="329403529"
 X-IronPort-AV: E=Sophos;i="5.97,253,1669104000"; 
-   d="scan'208";a="310896763"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2023 00:21:35 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10603"; a="693979601"
+   d="scan'208";a="329403529"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2023 00:49:16 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10603"; a="726957023"
 X-IronPort-AV: E=Sophos;i="5.97,253,1669104000"; 
-   d="scan'208";a="693979601"
+   d="scan'208";a="726957023"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.186.212]) ([10.252.186.212])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2023 00:21:32 -0800
-Message-ID: <21f313e5-1c5f-c508-b8e7-c1d9193d4098@linux.intel.com>
-Date: Sat, 28 Jan 2023 16:21:29 +0800
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2023 00:49:14 -0800
+Message-ID: <df59477f-3751-7314-40ab-9519dbfe0fe2@linux.intel.com>
+Date: Sat, 28 Jan 2023 16:49:11 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,29 +36,94 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, hch@lst.de, jgg@nvidia.com
-Subject: Re: [PATCH v2 5/8] iommu: Switch __iommu_domain_alloc() to device ops
+Cc: baolu.lu@linux.intel.com, joro@8bytes.org, will@kernel.org, hch@lst.de,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/8] iommu: Decouple iommu_present() from bus ops
 Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org
-References: <cover.1674753627.git.robin.murphy@arm.com>
- <23b51c84247cb36e96c242d3aef8ef555b6d05cd.1674753627.git.robin.murphy@arm.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>
+References: <cover.1673978700.git.robin.murphy@arm.com>
+ <1fb168b22cbbb5c24162d29d2a9aca339cda2c72.1673978700.git.robin.murphy@arm.com>
+ <c96aaa6c-0f46-39dc-0c72-f38394e37cc3@linux.intel.com>
+ <ce25dcdc-99a9-61ff-0cad-6c6cd9552680@arm.com> <Y9KRBRKdwSIRrvQw@nvidia.com>
+ <b6b55688-1390-4e92-8184-770154a8955d@linux.intel.com>
+ <6e0728ae-74a3-b76f-c5c3-6504e13c721f@arm.com> <Y9PxKLyQg/+ZrK6a@nvidia.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <23b51c84247cb36e96c242d3aef8ef555b6d05cd.1674753627.git.robin.murphy@arm.com>
+In-Reply-To: <Y9PxKLyQg/+ZrK6a@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/1/27 2:26, Robin Murphy wrote:
-> In all the places we allocate default domains, we have (or can easily
-> get hold of) a device from which to resolve the right IOMMU ops; only
-> the public iommu_domain_alloc() interface actually depends on bus ops.
-> Reworking the public API is a big enough mission in its own right, but
-> in the meantime we can still decouple it from bus ops internally to move
-> forward.
+On 2023/1/27 23:43, Jason Gunthorpe wrote:
+> On Fri, Jan 27, 2023 at 03:19:55PM +0000, Robin Murphy wrote:
 > 
-> Signed-off-by: Robin Murphy<robin.murphy@arm.com>
+>> The current implementation of device_iommu_mapped() just dates back to when
+>> dev->iommu_group was the only per-device thing we had, so in principle I
+>> don't have any conceptual objection to redefining it in terms of "device has
+>> ops" rather than "device has a group", but as things stand you'd still have
+>> to do something about PPC first (I know Jason had been pushing on that, but
+>> I've not kept track of where it got to).
+> PPC hasn't moved at all, AFAICT. In a few more months I'm going to
+> suggest we delete the special VFIO support due to it being broken,
+> distros already having turned it off and nobody caring enough to fix
+> it..
+> 
+> What does device_iommu_mapped() even really mean?
+> 
+> Looking at usages..
+> 
+> These are fixing SOC HW bugs/issues - the desire seems to be "is the SOC's
+> IOMMU enabled"
+> 
+> drivers/char/agp/intel-gtt.c:           device_iommu_mapped(&intel_private.pcidev->dev));
+> drivers/dma/sh/rcar-dmac.c:     if (device_iommu_mapped(&pdev->dev))
+> drivers/gpu/drm/i915/i915_utils.c:      if (device_iommu_mapped(i915->drm.dev))
+> ?
+> drivers/usb/dwc3/dwc3-xilinx.c: if (of_dma_is_coherent(dev->of_node) || device_iommu_mapped(dev)) {
+> drivers/usb/host/xhci.c:        if (!(xhci->quirks & XHCI_ZERO_64B_REGS) || !device_iommu_mapped(dev))
+> drivers/crypto/qat/qat_common/adf_sriov.c:      if (!device_iommu_mapped(&pdev->dev))
+> ?
+> 
+> These seem to be trying to decide if iommu_domain's can be used (and
+> they can't be on power):
+> 
+> drivers/gpu/drm/msm/msm_drv.c:  if (device_iommu_mapped(mdp_dev))
+> drivers/gpu/drm/msm/msm_drv.c:          device_iommu_mapped(dev->dev) ||
+> drivers/gpu/drm/msm/msm_drv.c:          device_iommu_mapped(dev->dev->parent);
+> drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c:     if (device_iommu_mapped(dev)) {
+> drivers/gpu/drm/rockchip/rockchip_drm_drv.c:    if (!device_iommu_mapped(dev))
+> drivers/gpu/drm/tegra/uapi.c:   if (device_iommu_mapped(client->base.dev) && client->ops->can_use_memory_ctx) {
+> drivers/gpu/host1x/context.c:           if (!fwspec || !device_iommu_mapped(&ctx->dev)) {
+> drivers/infiniband/hw/usnic/usnic_ib_main.c:    if (!device_iommu_mapped(&pdev->dev)) {
+> 
+> Yikes, trying to map DMA addresses programmed into devices back to CPU addresses:
+> 
+> drivers/misc/habanalabs/common/debugfs.c: if (!user_address || device_iommu_mapped(&hdev->pdev->dev)) {
+> drivers/misc/habanalabs/gaudi2/gaudi2.c:                if (!device_iommu_mapped(&hdev->pdev->dev))
+> 
+> And then sequencing the call to iommu_probe_device() which doesn't
+> apply to power:
+> 
+> drivers/acpi/scan.c:    if (!err && dev->bus && !device_iommu_mapped(dev))
+> drivers/iommu/of_iommu.c:       if (!err && dev->bus && !device_iommu_mapped(dev))
+> 
+> Leaving these:
+> 
+> arch/powerpc/kernel/eeh.c:      if (device_iommu_mapped(dev)) {
+> 
+> This is only used to support eeh_iommu_group_to_pe which is only
+> caleld by vfio_iommu_spapr_tce.c. Since power vfio doesn't work right
+> now this is uncallable, and when power is fixed this will work
+> properly.
+> 
+> arch/powerpc/kernel/iommu.c:    if (device_iommu_mapped(dev)) {
+> arch/powerpc/kernel/iommu.c:    if (!device_iommu_mapped(dev)) {
+> 
+> These should both be replaced with some kind of 'device has iommu group', since
+> it is really driving ppc unique group logic.
+> 
+> So, I'd say Baolu's approach is the right thing, just replace the
+> above two in ppc with something else.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Thank you both. I will follow up a series later.
 
 Best regards,
 baolu
