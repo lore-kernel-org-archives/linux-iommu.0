@@ -1,168 +1,208 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CCF63232
-	for <iommu@lists.linux.dev>; Sat, 28 Jan 2023 12:24:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1674908649;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=03GFZKsTOOOpaDJp/S3NzI8t/p2gCtQxJMJc4T/9yBg=;
-	b=MEDAkj/d07bAHG5tGDSh9Xj6srnUq5YDXKbtDenX1P13k9nQRXDiPflVeOJQSFee5rTVD6
-	dPkgE53TX8aC5aBS3l3Y/GPIyc0iCAIp2acxDOwzT6MpKjinI1OdUmHo3Z+rR7AKzRQ0TV
-	FDWlzuLNgKeorX/Xr83t5bOtf9TreF4=
-Received: from mail-vk1-f199.google.com (mail-vk1-f199.google.com
- [209.85.221.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-113-Wg0FIwAgOt2aJna24Me6dQ-1; Sat, 28 Jan 2023 07:24:08 -0500
-X-MC-Unique: Wg0FIwAgOt2aJna24Me6dQ-1
-Received: by mail-vk1-f199.google.com with SMTP id 16-20020a1f1610000000b003ea10940e34so279346vkw.23
-        for <iommu@lists.linux.dev>; Sat, 28 Jan 2023 04:24:08 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=03GFZKsTOOOpaDJp/S3NzI8t/p2gCtQxJMJc4T/9yBg=;
-        b=KG37t1NiEPmY+xZBvjh4p1Byk+CeCk7J1xq4sG3EhlH43XAFZjUJ7EwbDouNMmKwxX
-         SQZnEid6ougPPfL4Xi4vr8oa00PnHCCHEN7Vf/Vh2l8KqbU3ATp51RiL9jwcFjhyFx5w
-         k7PmVzh/GzXYLK9daoxAedxVjnReit3KkEDYPBLQ892V44It7ZhGaUz51YTmggjStTO+
-         MyQkywHFeaKINiFmlLdoew6ku3MLZOrKJMw1oOg7PcFuyolIgQY7DAyI4ivTw9UcVbHd
-         sCFYO05lFmtC/c+Z8ZEnVoVh/9vDxUdNMerY0F8d5w2xNWq1GiKZDQDPqNtfFHDZ8I/F
-         0LRQ==
-X-Gm-Message-State: AFqh2koc7WvvZYV3xvKeYMNWr1LvM/bHk1p3dWC0l2li/3ikGSSCdy2D
-	lXhlSPpIzufF1lqO3lAD+/YhEvyEwuSzGtdxNeTGh+MBiZRoMJYtp2p6L49SOVGKQwpPQPq1H1g
-	U9ajuRECVSnO+92YWKQzzE+wPKT2qdzE=
-X-Received: by 2002:a67:ea04:0:b0:3d3:ec78:1d72 with SMTP id g4-20020a67ea04000000b003d3ec781d72mr6956101vso.13.1674908647620;
-        Sat, 28 Jan 2023 04:24:07 -0800 (PST)
-X-Google-Smtp-Source: AMrXdXujUr3nmTvR4IYft+VhWLaB9CaLr0rUquJiWtbPKQVgUOJtr2ccTZPeu3VmmCd7OwP4b9ukbqxY7/EVlW27Z14=
-X-Received: by 2002:a67:ea04:0:b0:3d3:ec78:1d72 with SMTP id
- g4-20020a67ea04000000b003d3ec781d72mr6956096vso.13.1674908647381; Sat, 28 Jan
- 2023 04:24:07 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E6845C9D;
+	Sat, 28 Jan 2023 12:55:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674910533; x=1706446533;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=yCSmWskfWwstmtUECi0Ec3AU/KX75cj9BgYJcLcePps=;
+  b=a+WJ1O8qDthNzhR0ixAjJtBnwtDgptQBOx/KSrncwcEsL/ItzzKWGAA3
+   KbkF191n32+D3R/jRkgCUVEMLAw1V50rRzLDxEZ4ABCbyUkbTF3tEUkRX
+   D6wT9+gew3WGKWO6F72rxDkaS7UH/ty7vh7g1nNHnxZNRjHuVLA8e/ZIl
+   2veNZ7ynD+tnlt7TUW3SftPjwOh2OE2ewQesT2WT+le3GaESshXg4C5IX
+   iN7VneABof7xWWAjeaNWq0gYhndalCBSlKGo73GgArEDJB1uLllw0T37e
+   hQ6SeVpGAeOtv6EcqkQT+tHFvG3CuJMSD1pkKLyOaJNozZIiVzpo3j+fZ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="328574896"
+X-IronPort-AV: E=Sophos;i="5.97,254,1669104000"; 
+   d="scan'208";a="328574896"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2023 04:55:32 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="992375551"
+X-IronPort-AV: E=Sophos;i="5.97,254,1669104000"; 
+   d="scan'208";a="992375551"
+Received: from lkp-server01.sh.intel.com (HELO ffa7f14d1d0f) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 28 Jan 2023 04:55:29 -0800
+Received: from kbuild by ffa7f14d1d0f with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1pLkjw-0000eq-2T;
+	Sat, 28 Jan 2023 12:55:28 +0000
+Date: Sat, 28 Jan 2023 20:55:09 +0800
+From: kernel test robot <lkp@intel.com>
+To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, hch@lst.de,
+	jgg@nvidia.com, baolu.lu@linux.intel.com,
+	"Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2 7/8] iommu: Retire bus ops
+Message-ID: <202301282015.hjj2YFYy-lkp@intel.com>
+References: <198e82a6b1a28605409c395da4ec1a67b0e1587b.1674753627.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230128113532.94651-1-sven@svenpeter.dev>
-In-Reply-To: <20230128113532.94651-1-sven@svenpeter.dev>
-From: Eric Curtin <ecurtin@redhat.com>
-Date: Sat, 28 Jan 2023 12:23:51 +0000
-Message-ID: <CAOgh=Fw5FXPKde9PtTRRVeJ9eos8wqt72F_TLe_2XjWpKmCZ-A@mail.gmail.com>
-Subject: Re: [PATCH] iommu/dart: Fix apple_dart_device_group for PCI groups
-To: Sven Peter <sven@svenpeter.dev>
-Cc: Hector Martin <marcan@marcan.st>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Alyssa Rosenzweig <alyssa@rosenzweig.io>, Robin Murphy <robin.murphy@arm.com>, asahi@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <198e82a6b1a28605409c395da4ec1a67b0e1587b.1674753627.git.robin.murphy@arm.com>
 
-On Sat, 28 Jan 2023 at 11:43, Sven Peter <sven@svenpeter.dev> wrote:
->
-> pci_device_group() can return an already existing IOMMU group if the PCI
-> device's pagetables have to be shared with another one due to bus
-> toplogy, isolation features and/or DMA alias quirks.
-> apple_dart_device_group() however assumes that the group has just been
-> created and overwrites its iommudata which will eventually lead to
-> apple_dart_release_group leaving stale entries in sid2group.
-> Fix that by merging the iommudata if the returned group already exists.
->
-> Fixes: f0b636804c7c ("iommu/dart: Clear sid2group entry when a group is freed")
-> Signed-off-by: Sven Peter <sven@svenpeter.dev>
-> ---
+Hi Robin,
 
-Reviewed-by: Eric Curtin <ecurtin@redhat.com>
+I love your patch! Yet something to improve:
 
-Is mise le meas/Regards,
+[auto build test ERROR on rafael-pm/linux-next]
+[also build test ERROR on linus/master v6.2-rc5]
+[cannot apply to joro-iommu/next]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Eric Curtin
+url:    https://github.com/intel-lab-lkp/linux/commits/Robin-Murphy/iommu-Decouple-iommu_present-from-bus-ops/20230128-141510
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git linux-next
+patch link:    https://lore.kernel.org/r/198e82a6b1a28605409c395da4ec1a67b0e1587b.1674753627.git.robin.murphy%40arm.com
+patch subject: [PATCH v2 7/8] iommu: Retire bus ops
+config: s390-randconfig-r012-20230123 (https://download.01.org/0day-ci/archive/20230128/202301282015.hjj2YFYy-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 4196ca3278f78c6e19246e54ab0ecb364e37d66a)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/399f4b37d8065bffafeec12de1344a7ff6098e64
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Robin-Murphy/iommu-Decouple-iommu_present-from-bus-ops/20230128-141510
+        git checkout 399f4b37d8065bffafeec12de1344a7ff6098e64
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 olddefconfig
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash drivers/iommu/
 
->  drivers/iommu/apple-dart.c | 51 ++++++++++++++++++++++++++++++++------
->  1 file changed, 44 insertions(+), 7 deletions(-)
->
-> This won't apply cleanly to iommu/fixes as it's based on the t8110 DART
-> changes since the USB4/Thunderbolt DART itself also depends on those.
-> That's not a big deal though since it's not possible to run into this
-> bug without complex PCI bus topologies which can only be created using
-> USB4/Thunderbolt on these SoCs and there's no support for that upstream
-> yet.
->
-> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-> index a1304ba3639b..02f7a1740b14 100644
-> --- a/drivers/iommu/apple-dart.c
-> +++ b/drivers/iommu/apple-dart.c
-> @@ -840,6 +840,29 @@ static void apple_dart_release_group(void *iommu_data)
->         mutex_unlock(&apple_dart_groups_lock);
->  }
->
-> +static int apple_dart_merge_master_cfg(struct apple_dart_master_cfg *dst,
-> +                                      struct apple_dart_master_cfg *src)
-> +{
-> +       /*
-> +        * We know that this function is only called for groups returned from
-> +        * pci_device_group and that all Apple Silicon platforms never spread
-> +        * PCIe devices from the same bus across multiple DARTs such that we can
-> +        * just assume that both src and dst only have the same single DART.
-> +        */
-> +       if (src->stream_maps[1].dart)
-> +               return -EINVAL;
-> +       if (dst->stream_maps[1].dart)
-> +               return -EINVAL;
-> +       if (src->stream_maps[0].dart != dst->stream_maps[0].dart)
-> +               return -EINVAL;
-> +
-> +       bitmap_or(dst->stream_maps[0].sidmap,
-> +                 dst->stream_maps[0].sidmap,
-> +                 src->stream_maps[0].sidmap,
-> +                 dst->stream_maps[0].dart->num_streams);
-> +       return 0;
-> +}
-> +
->  static struct iommu_group *apple_dart_device_group(struct device *dev)
->  {
->         int i, sid;
-> @@ -881,14 +904,28 @@ static struct iommu_group *apple_dart_device_group(struct device *dev)
->         if (!group)
->                 goto out;
->
-> -       group_master_cfg = kmemdup(cfg, sizeof(*group_master_cfg), GFP_KERNEL);
-> -       if (!group_master_cfg) {
-> -               iommu_group_put(group);
-> -               goto out;
-> -       }
-> +       group_master_cfg = iommu_group_get_iommudata(group);
-> +       if (group_master_cfg) {
-> +               int ret;
->
-> -       iommu_group_set_iommudata(group, group_master_cfg,
-> -               apple_dart_release_group);
-> +               ret = apple_dart_merge_master_cfg(group_master_cfg, cfg);
-> +               if (ret) {
-> +                       dev_err(dev, "Failed to merge DART IOMMU grups.\n");
-> +                       iommu_group_put(group);
-> +                       res = ERR_PTR(ret);
-> +                       goto out;
-> +               }
-> +       } else {
-> +               group_master_cfg = kmemdup(cfg, sizeof(*group_master_cfg),
-> +                                          GFP_KERNEL);
-> +               if (!group_master_cfg) {
-> +                       iommu_group_put(group);
-> +                       goto out;
-> +               }
-> +
-> +               iommu_group_set_iommudata(group, group_master_cfg,
-> +                       apple_dart_release_group);
-> +       }
->
->         for_each_stream_map(i, cfg, stream_map)
->                 for_each_set_bit(sid, stream_map->sidmap, stream_map->dart->num_streams)
-> --
-> 2.25.1
->
->
+If you fix the issue, kindly add following tag where applicable
+| Reported-by: kernel test robot <lkp@intel.com>
 
+All errors (new ones prefixed by >>):
+
+   In file included from drivers/iommu/iommufd/selftest.c:7:
+   In file included from include/linux/iommu.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:547:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:560:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
+                                                             ^
+   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
+   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
+                                                        ^
+   In file included from drivers/iommu/iommufd/selftest.c:7:
+   In file included from include/linux/iommu.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:573:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
+                                                             ^
+   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
+   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
+                                                        ^
+   In file included from drivers/iommu/iommufd/selftest.c:7:
+   In file included from include/linux/iommu.h:10:
+   In file included from include/linux/scatterlist.h:9:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:584:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:594:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:604:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:692:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsb(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:700:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsw(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:708:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsl(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:717:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesb(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:726:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesw(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:735:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesl(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+>> drivers/iommu/iommufd/selftest.c:276:39: error: field designator 'iommu_ops' does not refer to any field in type 'struct bus_type'
+           static struct bus_type mock_bus = { .iommu_ops = &mock_ops };
+                                                ^
+   12 warnings and 1 error generated.
+
+
+vim +276 drivers/iommu/iommufd/selftest.c
+
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  271  
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  272  /* Create an hw_pagetable with the mock domain so we can test the domain ops */
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  273  static int iommufd_test_mock_domain(struct iommufd_ucmd *ucmd,
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  274  				    struct iommu_test_cmd *cmd)
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  275  {
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29 @276  	static struct bus_type mock_bus = { .iommu_ops = &mock_ops };
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  277  	struct iommufd_hw_pagetable *hwpt;
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  278  	struct selftest_obj *sobj;
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  279  	struct iommufd_ioas *ioas;
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  280  	int rc;
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  281  
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  282  	ioas = iommufd_get_ioas(ucmd, cmd->id);
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  283  	if (IS_ERR(ioas))
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  284  		return PTR_ERR(ioas);
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  285  
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  286  	sobj = iommufd_object_alloc(ucmd->ictx, sobj, IOMMUFD_OBJ_SELFTEST);
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  287  	if (IS_ERR(sobj)) {
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  288  		rc = PTR_ERR(sobj);
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  289  		goto out_ioas;
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  290  	}
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  291  	sobj->idev.ictx = ucmd->ictx;
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  292  	sobj->type = TYPE_IDEV;
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  293  	sobj->idev.mock_dev.bus = &mock_bus;
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  294  
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  295  	hwpt = iommufd_device_selftest_attach(ucmd->ictx, ioas,
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  296  					      &sobj->idev.mock_dev);
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  297  	if (IS_ERR(hwpt)) {
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  298  		rc = PTR_ERR(hwpt);
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  299  		goto out_sobj;
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  300  	}
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  301  	sobj->idev.hwpt = hwpt;
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  302  
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  303  	/* Userspace must destroy both of these IDs to destroy the object */
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  304  	cmd->mock_domain.out_hwpt_id = hwpt->obj.id;
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  305  	cmd->mock_domain.out_device_id = sobj->obj.id;
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  306  	iommufd_object_finalize(ucmd->ictx, &sobj->obj);
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  307  	iommufd_put_object(&ioas->obj);
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  308  	return iommufd_ucmd_respond(ucmd, sizeof(*cmd));
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  309  
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  310  out_sobj:
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  311  	iommufd_object_abort(ucmd->ictx, &sobj->obj);
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  312  out_ioas:
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  313  	iommufd_put_object(&ioas->obj);
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  314  	return rc;
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  315  }
+f4b20bb34c83dc Jason Gunthorpe 2022-11-29  316  
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests
