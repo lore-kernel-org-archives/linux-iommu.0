@@ -1,165 +1,73 @@
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFE9E3232;
-	Sat, 28 Jan 2023 11:53:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6560B3232
+	for <iommu@lists.linux.dev>; Sat, 28 Jan 2023 12:11:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674906811; x=1706442811;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=v56gkPCfVmp/5J0sTIEWbfckxqrXa5C8j87HJqOVgQA=;
-  b=e0DfkXeYxPhkERCC0I6UZzivxRcxm2Erf4wvr/3I3xjJFDuVz6/OSvi9
-   8h2sGubwDa3Hj/rxFJU287A2rfJVGV/F0tOJreuzBLHeolAOaLVyKp+nH
-   dvi/w/cn2JySWv839vfWhyFJuuLzWtIkLDIsxH3FFcvOxAprF6E4SF27t
-   vK3z+VOmtxqVWfnJV/PkZue0jazmPizcFJw0KM/g9MuhqJOPjkEb1p7q6
-   tqn+bB7kns+knMDecPOjDPYw/R63jO9MJhFbqUhWM7lvFYO/cTc0E48PN
-   1ZNM4LpYvPKh3YWan+w8ThPU3oUJgOoW2qX7m/J6otRkQIjfXHHHNRsUb
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10603"; a="329412099"
+  t=1674907865; x=1706443865;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=dspaCVJ8KT211kM1MllVTsePB3smslSwogobefeUDHY=;
+  b=fbiX3giEv6+1+otLfbJzlmwAlNabCWxXZStrbcMs67ltqbUQiSc2ZMcV
+   Fm6Tmu9nfgLccTP6QMHuqBfiUC5V1HxubCSAU3EKKgAUlMez//yGpxWGj
+   GdGXSiEdrs9VatkKBZB2l+Rm6bEGKgDZK999PbopJAQwM7blsklY63Yu8
+   o87v2IJsGGLR0PPhIpNULueEL6f06GLiecmRvNKsInZSTDVTrvqZGIpaF
+   IIFfq77YpJbQAbh8topp9XGy57UnxBV1PznUWLPdcfyDGOMQZtzSMxcnx
+   qdUEHApSDigMnyt0XES4cjwLD8016kiEJ5n8BNeWxmZWPdtj7aXiCdGSg
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10603"; a="307628209"
 X-IronPort-AV: E=Sophos;i="5.97,254,1669104000"; 
-   d="scan'208";a="329412099"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2023 03:53:30 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10603"; a="992368716"
+   d="scan'208";a="307628209"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2023 04:11:04 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10603"; a="771896680"
 X-IronPort-AV: E=Sophos;i="5.97,254,1669104000"; 
-   d="scan'208";a="992368716"
-Received: from lkp-server01.sh.intel.com (HELO ffa7f14d1d0f) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 28 Jan 2023 03:53:27 -0800
-Received: from kbuild by ffa7f14d1d0f with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1pLjlv-0000cP-06;
-	Sat, 28 Jan 2023 11:53:27 +0000
-Date: Sat, 28 Jan 2023 19:52:54 +0800
-From: kernel test robot <lkp@intel.com>
-To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com,
-	kevin.tian@intel.com
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev, yi.l.liu@intel.com,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] iommufd/device: Make hwpt_list list_add/del symmetric
-Message-ID: <202301281943.Jdvwci2p-lkp@intel.com>
-References: <25b3b85b03fc2a7968c476b0533f451acecdfd13.1674872884.git.nicolinc@nvidia.com>
+   d="scan'208";a="771896680"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.252.186.212]) ([10.252.186.212])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2023 04:11:01 -0800
+Message-ID: <0c08daf4-ad2f-9047-db52-c87d4e8b07b6@linux.intel.com>
+Date: Sat, 28 Jan 2023 20:10:58 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <25b3b85b03fc2a7968c476b0533f451acecdfd13.1674872884.git.nicolinc@nvidia.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, hch@lst.de, jgg@nvidia.com,
+ "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2 7/8] iommu: Retire bus ops
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org
+References: <cover.1674753627.git.robin.murphy@arm.com>
+ <198e82a6b1a28605409c395da4ec1a67b0e1587b.1674753627.git.robin.murphy@arm.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <198e82a6b1a28605409c395da4ec1a67b0e1587b.1674753627.git.robin.murphy@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Nicolin,
+On 2023/1/27 2:26, Robin Murphy wrote:
+> With the rest of the API internals converted, it's time to finally
+> tackle probe_device and how we bootstrap the per-device ops association
+> to begin with. This ends up being disappointingly straightforward, since
+> fwspec users are already doing it in order to find their of_xlate
+> callback, and it works out that we can easily do the equivalent for
+> other drivers too. Then shuffle the remaining awareness of iommu_ops
+> into the couple of core headers that still need it, and breathe a sigh
+> of relief.
+> 
+> Ding dong the bus ops are gone!
+> 
+> CC: Rafael J. Wysocki<rafael.j.wysocki@intel.com>
+> CC: Christoph Hellwig<hch@lst.de>
+> Acked-by: Greg Kroah-Hartman<gregkh@linuxfoundation.org>
+> Signed-off-by: Robin Murphy<robin.murphy@arm.com>
 
-I love your patch! Perhaps something to improve:
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-[auto build test WARNING on v6.2-rc5]
-[also build test WARNING on linus/master next-20230127]
-[cannot apply to joro-iommu/next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Nicolin-Chen/iommufd-Add-devices_users-to-track-the-hw_pagetable-usage-by-device/20230128-150429
-patch link:    https://lore.kernel.org/r/25b3b85b03fc2a7968c476b0533f451acecdfd13.1674872884.git.nicolinc%40nvidia.com
-patch subject: [PATCH 2/3] iommufd/device: Make hwpt_list list_add/del symmetric
-config: x86_64-randconfig-a011-20230123 (https://download.01.org/0day-ci/archive/20230128/202301281943.Jdvwci2p-lkp@intel.com/config)
-compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/4d48fdd86375f6d888bbcf830a10c48720008955
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Nicolin-Chen/iommufd-Add-devices_users-to-track-the-hw_pagetable-usage-by-device/20230128-150429
-        git checkout 4d48fdd86375f6d888bbcf830a10c48720008955
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 olddefconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/iommu/iommufd/
-
-If you fix the issue, kindly add following tag where applicable
-| Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/iommu/iommufd/device.c:279:23: warning: variable 'hwpt' is uninitialized when used here [-Wuninitialized]
-           lockdep_assert_held(&hwpt->ioas->mutex);
-                                ^~~~
-   include/linux/lockdep.h:319:33: note: expanded from macro 'lockdep_assert_held'
-           lockdep_assert(lockdep_is_held(l) != LOCK_STATE_NOT_HELD)
-                                          ^
-   include/linux/lockdep.h:286:47: note: expanded from macro 'lockdep_is_held'
-   #define lockdep_is_held(lock)           lock_is_held(&(lock)->dep_map)
-                                                          ^~~~
-   include/linux/lockdep.h:313:32: note: expanded from macro 'lockdep_assert'
-           do { WARN_ON(debug_locks && !(cond)); } while (0)
-                                         ^~~~
-   include/asm-generic/bug.h:122:25: note: expanded from macro 'WARN_ON'
-           int __ret_warn_on = !!(condition);                              \
-                                  ^~~~~~~~~
-   drivers/iommu/iommufd/device.c:276:35: note: initialize the variable 'hwpt' to silence this warning
-           struct iommufd_hw_pagetable *hwpt;
-                                            ^
-                                             = NULL
-   1 warning generated.
-
-
-vim +/hwpt +279 drivers/iommu/iommufd/device.c
-
-   267	
-   268	/*
-   269	 * When automatically managing the domains we search for a compatible domain in
-   270	 * the iopt and if one is found use it, otherwise create a new domain.
-   271	 * Automatic domain selection will never pick a manually created domain.
-   272	 */
-   273	static int iommufd_device_auto_get_domain(struct iommufd_device *idev,
-   274						  struct iommufd_ioas *ioas)
-   275	{
-   276		struct iommufd_hw_pagetable *hwpt;
-   277		int rc;
-   278	
- > 279		lockdep_assert_held(&hwpt->ioas->mutex);
-   280	
-   281		/*
-   282		 * There is no differentiation when domains are allocated, so any domain
-   283		 * that is willing to attach to the device is interchangeable with any
-   284		 * other.
-   285		 */
-   286		list_for_each_entry(hwpt, &ioas->hwpt_list, hwpt_item) {
-   287			if (!hwpt->auto_domain)
-   288				continue;
-   289	
-   290			rc = iommufd_device_do_attach(idev, hwpt);
-   291	
-   292			/*
-   293			 * -EINVAL means the domain is incompatible with the device.
-   294			 * Other error codes should propagate to userspace as failure.
-   295			 * Success means the domain is attached.
-   296			 */
-   297			if (rc == -EINVAL)
-   298				continue;
-   299			return rc;
-   300		}
-   301	
-   302		hwpt = iommufd_hw_pagetable_alloc(idev->ictx, ioas, idev->dev);
-   303		if (IS_ERR(hwpt))
-   304			return PTR_ERR(hwpt);
-   305		hwpt->auto_domain = true;
-   306	
-   307		rc = iommufd_device_do_attach(idev, hwpt);
-   308		if (rc)
-   309			goto out_abort;
-   310	
-   311		iommufd_object_finalize(idev->ictx, &hwpt->obj);
-   312		return 0;
-   313	
-   314	out_abort:
-   315		iommufd_object_abort_and_destroy(idev->ictx, &hwpt->obj);
-   316		return rc;
-   317	}
-   318	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests
+Best regards,
+baolu
