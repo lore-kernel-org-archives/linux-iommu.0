@@ -1,63 +1,25 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2071.outbound.protection.outlook.com [40.107.244.71])
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10F0C17CD
-	for <iommu@lists.linux.dev>; Sat, 28 Jan 2023 02:30:09 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JWUIzosy6E+ruB72Kxew7FM8Cj+33gfhZGbQKtxbj/lu65UwccN1TICDYH5AawhR4v6wKfmHhjYnYW78CrQ+8r2Tp4cOfFvHIRINcCmxXihV+UmSeb6k3nC4FvtKh/9mWDx7z3cMFHz/eWw4fnvGsdPhJStHsch3ScssPknLxWh3XYIDNrhO5xW+qR8cEAR0Z0DScJ9t1kS/FWOLE8hyD7Ne007FCOISlJWVy4rKZR5teg1JlaYHrYv2uzWCkCoP/kLa5Q7xbkHC7/2H1t1wkW4lXJzX6qmkomCXMDBIxJfwlutE6vqfwWF05KQKUjnspyYvAK0ESWeS8Ug19YLtFA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=E2U+QTpfYZULBCD+BnrvwHuunpSVInT4gfpSXHj3L2k=;
- b=ChwQr5E36MqXa79okvPj+PsedvUko82Qj1y9Kh4wx+UD7kGzUAAd45igriAyMAERCzJKzmqMGF6/GIBPtniwGO1hQBULhikx3VEQ/jubfKdw8qarLlx/o2a5KYGsVKSN2CV4g9N2UuALgGIctthx/xfq5RmhnU0xdiWaNaEk70x1A6VSAJpnPTgsCVUtGsuCH1HmTI1FXbJLWaULlHqLSZdaAyGQyG38UJJ4qLWLO7RB/6ALj13b8BzJxvddDTFqTD5GrZZEpNFhvBmEpEheUX2VxtELhCNquihjxquv01UHp+HFs7CqBE0lIZRHrZKli5Y9ZN3tVqqt5as1tyw0+g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=E2U+QTpfYZULBCD+BnrvwHuunpSVInT4gfpSXHj3L2k=;
- b=NlvRng0yKzt4KHPST+0Dt5qNsa7ng3vUfOZGgTHaZ88qLR4nyjEfxn87GmLpcqdLT6UjMkXofrqAalipXyPKjAemCyvbB2ZhyaGw0/AC/sien3RnFEyAflEOJ/Z+3liU38oEl6FYDO+YLYiCckD0T4vRyBtW5McjmXWkFJIUz/HaXd3+rqMiDNvgSAi/72tUe3FLShbeDyy2qPwdPihkTmTuI3/gxpwOby9Vtho4b0RBxKuAv8LrDLOvZ9j6AIrtyKLUB4aQpTdvWCZ2THRWxhIzJRjVDkhCctkRzDZki+XFz8e1vqpry/y27V3Rx5ke+DAIDts6UDasRIy8o7iPaQ==
-Received: from MW4PR03CA0103.namprd03.prod.outlook.com (2603:10b6:303:b7::18)
- by DS7PR12MB5935.namprd12.prod.outlook.com (2603:10b6:8:7e::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.21; Sat, 28 Jan
- 2023 02:30:06 +0000
-Received: from CO1NAM11FT041.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:b7:cafe::cb) by MW4PR03CA0103.outlook.office365.com
- (2603:10b6:303:b7::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.25 via Frontend
- Transport; Sat, 28 Jan 2023 02:30:06 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- CO1NAM11FT041.mail.protection.outlook.com (10.13.174.217) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6043.23 via Frontend Transport; Sat, 28 Jan 2023 02:30:06 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Fri, 27 Jan
- 2023 18:29:59 -0800
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.36; Fri, 27 Jan 2023 18:29:59 -0800
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.12) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server id 15.2.986.36 via Frontend
- Transport; Fri, 27 Jan 2023 18:29:59 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <jgg@nvidia.com>, <kevin.tian@intel.com>
-CC: <yi.l.liu@intel.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>
-Subject: [PATCH 0/3] iommufd: Remove iommufd_hw_pagetable_has_group
-Date: Fri, 27 Jan 2023 18:29:39 -0800
-Message-ID: <cover.1674872884.git.nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.39.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E1D417CD
+	for <iommu@lists.linux.dev>; Sat, 28 Jan 2023 02:43:12 +0000 (UTC)
+Received: from kwepemm600003.china.huawei.com (unknown [172.30.72.53])
+	by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4P3dX0039Pz16NNs;
+	Sat, 28 Jan 2023 10:22:55 +0800 (CST)
+Received: from huawei.com (10.175.113.32) by kwepemm600003.china.huawei.com
+ (7.193.23.202) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.34; Sat, 28 Jan
+ 2023 10:24:51 +0800
+From: Nanyong Sun <sunnanyong@huawei.com>
+To: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
+	<mst@redhat.com>, <jasowang@redhat.com>
+CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+	<netdev@vger.kernel.org>, <wangrong68@huawei.com>, <sunnanyong@huawei.com>
+Subject: [PATCH] vhost/vdpa: Add MSI translation tables to iommu for software-managed MSI
+Date: Sat, 28 Jan 2023 11:17:40 +0800
+Message-ID: <20230128031740.166743-1-sunnanyong@huawei.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -66,64 +28,114 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT041:EE_|DS7PR12MB5935:EE_
-X-MS-Office365-Filtering-Correlation-Id: bef3df45-5d4d-4aa3-d5d6-08db00d79190
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	wNfSu4r4/2Gj2+cfc3yV7fk+DEuNE9OCxYwXVe4wXZTxFb1YgPpWAzXREKth5W226bp7NPEgaycpudvhgFZrZWDPJHYcxq9PFLQmHnNIXl0gB1NgH/zLvv1pNusjLD1qZKP3OOB1kBzF7EX8SjIq+dVIIGLIa/wDLHDE2qCGtZzk6XwkQL10UTUogODVyHif6ATKm5cIewnOD8E5pEpyE21O2xJVjzaEqKl4FAzY20qx18bjj7VjBWqA9fSdkkdfVCof4Jts5UZJu0SXMjJ9UZdxAHm8K/21E/HAVTzm8dxDRgdbcktb6vvhWhSXEnsVEZjqHO7LtHDBoA2A7S66HScdkqBrAZzC7jzpUGtzXggOO6BGYYMKeuEx4upCMvIbvHI63oKVry0L4bZq0K3ZpjArs6JZ3ZbEPbdetEVUDb0Qf9maPY820quCQ5RrfDFIwegBA5OyAUiRWRobcecNA86hfgYe1DTkudPYv+x+q+aC0J9TAqRdJ+VCTtrXtWHzJK57a4lio4VdcPOtRL0/c5CNASfUu/dqTVq4NarFDsbfEPcCuVkPyrhc56SCNP7EsqRnUXM5mDxKTe/bA1uQEsz5l3L1VvHIyVOrKRBhbcxbsMmvB1jsy49XesixWuVY2uaqk11CizYe5JPJN9N98OLWjW8gGa2qKbqMXPvzXpuXRHgFSTFB2Y1oWpayF2GrW9zURy/fv5+oc7dEuKv+UTnsmDkimRY3BV21DGndzGiTnNx+6Y1RNNPgZW3nktw4QzJH32TvuEQobEUB88MA3/yHRa90967OWuIl8Nv3afE=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(346002)(396003)(136003)(376002)(39860400002)(451199018)(36840700001)(46966006)(40470700004)(7696005)(26005)(82310400005)(186003)(6666004)(478600001)(36860700001)(54906003)(110136005)(316002)(40460700003)(40480700001)(70206006)(8676002)(4326008)(70586007)(36756003)(356005)(47076005)(41300700001)(426003)(2616005)(336012)(8936002)(966005)(83380400001)(86362001)(82740400003)(7636003)(5660300002)(2906002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jan 2023 02:30:06.2120
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: bef3df45-5d4d-4aa3-d5d6-08db00d79190
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT041.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5935
+X-Originating-IP: [10.175.113.32]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
 
-The iommufd_hw_pagetable_has_group is not a device-centric API and has
-been a bit of a hack. And it needs to keep tracking an attached device
-list on the hw_pagetable, and a device lock to protect the device list.
+From: Rong Wang <wangrong68@huawei.com>
 
-However, the coming domain replacement series can overcomplicate this
-list/lock solution, especially to handle nested hw_pagetable use cases.
-So, as a preparatory series, remove the device list/lock and also fix
-the iommufd_hw_pagetable_has_group hack.
+Once enable iommu domain for one device, the MSI
+translation tables have to be there for software-managed MSI.
+Otherwise, platform with software-managed MSI without an
+irq bypass function, can not get a correct memory write event
+from pcie, will not get irqs.
+The solution is to obtain the MSI phy base address from
+iommu reserved region, and set it to iommu MSI cookie,
+then translation tables will be created while request irq.
 
-The iommufd_hw_pagetable_has_group() using the device list could be
-replaced with a domain-pointer comparison between the hwpt->domain and
-iommu_get_domain_for_dev(). The piece of dependency on list_empty() of
-the device list can be also replaced with a refcount. Yet, the removal
-of the device lock might introduce a race condition, so the ioas mutex
-can be moved as an alternative protection.
+Signed-off-by: Rong Wang <wangrong68@huawei.com>
+Signed-off-by: Nanyong Sun <sunnanyong@huawei.com>
+---
+ drivers/iommu/iommu.c |  1 +
+ drivers/vhost/vdpa.c  | 53 ++++++++++++++++++++++++++++++++++++++++---
+ 2 files changed, 51 insertions(+), 3 deletions(-)
 
-You can also find this series on Github:
-https://github.com/nicolinc/iommufd/commits/remove_iommufd_hw_pagetable_has_group
-
-Thanks
-Nicolin Chen
-
-Nicolin Chen (2):
-  iommufd/device: Make hwpt_list list_add/del symmetric
-  iommufd/device: Change iommufd_hw_pagetable_has_group to device
-    centric
-
-Yi Liu (1):
-  iommufd: Add devices_users to track the hw_pagetable usage by device
-
- drivers/iommu/iommufd/device.c          | 72 ++++++++++---------------
- drivers/iommu/iommufd/hw_pagetable.c    | 16 ++++--
- drivers/iommu/iommufd/iommufd_private.h |  3 +-
- 3 files changed, 40 insertions(+), 51 deletions(-)
-
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index de91dd88705b..f6c65d5d8e2b 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2623,6 +2623,7 @@ void iommu_get_resv_regions(struct device *dev, struct list_head *list)
+ 	if (ops->get_resv_regions)
+ 		ops->get_resv_regions(dev, list);
+ }
++EXPORT_SYMBOL_GPL(iommu_get_resv_regions);
+ 
+ /**
+  * iommu_put_resv_regions - release resered regions
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index ec32f785dfde..31d3e9ed4cfa 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -1103,6 +1103,48 @@ static ssize_t vhost_vdpa_chr_write_iter(struct kiocb *iocb,
+ 	return vhost_chr_write_iter(dev, from);
+ }
+ 
++static bool vhost_vdpa_check_sw_msi(struct list_head *dev_resv_regions, phys_addr_t *base)
++{
++	struct iommu_resv_region *region;
++	bool ret = false;
++
++	list_for_each_entry(region, dev_resv_regions, list) {
++		/*
++		 * The presence of any 'real' MSI regions should take
++		 * precedence over the software-managed one if the
++		 * IOMMU driver happens to advertise both types.
++		 */
++		if (region->type == IOMMU_RESV_MSI) {
++			ret = false;
++			break;
++		}
++
++		if (region->type == IOMMU_RESV_SW_MSI) {
++			*base = region->start;
++			ret = true;
++		}
++	}
++
++	return ret;
++}
++
++static int vhost_vdpa_get_msi_cookie(struct iommu_domain *domain, struct device *dma_dev)
++{
++	struct list_head dev_resv_regions;
++	phys_addr_t resv_msi_base = 0;
++	int ret = 0;
++
++	INIT_LIST_HEAD(&dev_resv_regions);
++	iommu_get_resv_regions(dma_dev, &dev_resv_regions);
++
++	if (vhost_vdpa_check_sw_msi(&dev_resv_regions, &resv_msi_base))
++		ret = iommu_get_msi_cookie(domain, resv_msi_base);
++
++	iommu_put_resv_regions(dma_dev, &dev_resv_regions);
++
++	return ret;
++}
++
+ static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
+ {
+ 	struct vdpa_device *vdpa = v->vdpa;
+@@ -1128,11 +1170,16 @@ static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
+ 
+ 	ret = iommu_attach_device(v->domain, dma_dev);
+ 	if (ret)
+-		goto err_attach;
++		goto err_alloc_domain;
+ 
+-	return 0;
++	ret = vhost_vdpa_get_msi_cookie(v->domain, dma_dev);
++	if (ret)
++		goto err_attach_device;
+ 
+-err_attach:
++	return 0;
++err_attach_device:
++	iommu_detach_device(v->domain, dma_dev);
++err_alloc_domain:
+ 	iommu_domain_free(v->domain);
+ 	return ret;
+ }
 -- 
-2.39.1
+2.25.1
 
