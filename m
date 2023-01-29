@@ -1,227 +1,213 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AEDA17CB
-	for <iommu@lists.linux.dev>; Sun, 29 Jan 2023 08:12:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27FC917CB
+	for <iommu@lists.linux.dev>; Sun, 29 Jan 2023 08:42:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1674979922; x=1706515922;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=OB0K3dnMMDIfCUzS3arXQJXhSo/lZrEYNeBQPVp5arQ=;
-  b=OhHZ9JM9K5X4MXZQJu4HM7cDTIOA9mPJoojaO38qE0jDb0SDYFqTwq4j
-   cELBGm42UrbjnjcSNLUmqq+hNC0tZnZbFeuGlXUr+oBoxPu9hsu2xM+zK
-   R4eA/h3qYB40CQPkOuryZv1EeR1pPHqAq1kW2eBe1qK+OxDeU2UBZo0qK
-   qPt+vStqGJlcZ55d2RkLpmYb2cKcv0WM4WwfdgmBzldIwd77MglexCz27
-   LDnXUb4ds2NXty1J/vfea4ESjNS+8paQI6jf1Snyaix34o9RitxhkrZcN
-   x6DyC4yVTKAFw0Kf8NzXNXuhrwZA2eporUdVWEkjrop8QHduyfnw3f7VS
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="310995577"
-X-IronPort-AV: E=Sophos;i="5.97,254,1669104000"; 
-   d="scan'208";a="310995577"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2023 00:11:53 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="694198065"
-X-IronPort-AV: E=Sophos;i="5.97,254,1669104000"; 
-   d="scan'208";a="694198065"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by orsmga008.jf.intel.com with ESMTP; 29 Jan 2023 00:11:52 -0800
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Sun, 29 Jan 2023 00:11:51 -0800
-Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16; Sun, 29 Jan 2023 00:11:51 -0800
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.16 via Frontend Transport; Sun, 29 Jan 2023 00:11:51 -0800
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.46) by
- edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.16; Sun, 29 Jan 2023 00:11:50 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=COdmmv4+WFMUvdHpEWKmmbSI7Em9MzmRHEJMc3VRa55LXuehLbzz1gZ/BZRtVNqE3T7ROAbOIwkUH1DE32DnTPOgZkjxTGDvjDjh792f70KJwFHmzjLPV66lF1EaxBaKAs2gzN0TeW+5yO0ENagbmtUQDc3/BI4e9mCkt3j1h/XIKdB44VJpFjg53MVPepfFQyFljy++qxI87nUEKvXnbuJEVfkeFOxAq5MCNhKgKOwn7NWqf0BLfrcDbLYi8htEqKxOgkqyS5ogrC4VYZ/VyPdpA/IUoU5bpRFj6gtg3kTCQhZstCTa2NQJjrp9bbtPqIDjcyBZy8Pj+aysbvuXeQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=RLyQLDur+d/2k9oShru//yHdPdelVvVagoPAfjuf/Hc=;
- b=hbSkkOX4Nd4uHcMnK0ts7le9H6TyxvBUk6+7edntkeGMLCincQarG1HT2TZNqdsXNAKNM8MUYDo1Lxdk3hMgg1P5JH02MXMmW503afsJqjeQPWKvp64dL8OVGFdAALVfBdY7DO/xOjS6aIDy6B4nBHxg2QeJq5JgBG3Au7BahlFRYqR6y7amPoHOywoJEa2/BFbb1KdVEC4ohhomoEd7RV9LCpOTHNe9pNQ7XiR1KOBqkGn0QLx481Flzi0ClsGvQTO5hX/Pj04s08EBo8r7n8/FrVzD2Fw6X2RDWEAO9UuWzMZsd/HKa5CBFy7b/TgbD5hVCux7KUTNDrBOhvUD2w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by DM4PR11MB5280.namprd11.prod.outlook.com (2603:10b6:5:38b::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.33; Sun, 29 Jan
- 2023 08:11:49 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::6a8d:b95:e1b5:d79d]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::6a8d:b95:e1b5:d79d%9]) with mapi id 15.20.6043.033; Sun, 29 Jan 2023
- 08:11:48 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>
-CC: Nicolin Chen <nicolinc@nvidia.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"will@kernel.org" <will@kernel.org>, "agross@kernel.org" <agross@kernel.org>,
-	"andersson@kernel.org" <andersson@kernel.org>, "konrad.dybcio@linaro.org"
-	<konrad.dybcio@linaro.org>, "yong.wu@mediatek.com" <yong.wu@mediatek.com>,
-	"matthias.bgg@gmail.com" <matthias.bgg@gmail.com>, "thierry.reding@gmail.com"
-	<thierry.reding@gmail.com>, "alex.williamson@redhat.com"
-	<alex.williamson@redhat.com>, "cohuck@redhat.com" <cohuck@redhat.com>,
-	"vdumpa@nvidia.com" <vdumpa@nvidia.com>, "jonathanh@nvidia.com"
-	<jonathanh@nvidia.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
-	"linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-tegra@vger.kernel.org"
-	<linux-tegra@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>
-Subject: RE: [PATCH 1/4] iommu: Add a broken_unmanaged_domain flag in
- iommu_ops
-Thread-Topic: [PATCH 1/4] iommu: Add a broken_unmanaged_domain flag in
- iommu_ops
-Thread-Index: AQHZMoqzsVwORV4fDkqb25GPYvi+2K6yz/kAgAAgNYCAAhsCEA==
-Date: Sun, 29 Jan 2023 08:11:48 +0000
-Message-ID: <BN9PR11MB5276C9BDCCA7FB295C25BC738CD29@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <cover.1674849118.git.nicolinc@nvidia.com>
- <0875479d24a53670e17db8a11945664a6bb4a25b.1674849118.git.nicolinc@nvidia.com>
- <dfad6d75-6f4d-99ef-1c6a-4bf397dcaa13@arm.com> <Y9RkG2dejdXptUTB@nvidia.com>
-In-Reply-To: <Y9RkG2dejdXptUTB@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|DM4PR11MB5280:EE_
-x-ms-office365-filtering-correlation-id: 7b34692e-28e1-4195-c9fa-08db01d07861
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: eEFdMtYdQSITrTnoWYv0TaArLcHhDhQ0/nlwP+8H6qaIqITuSg3rt8TLKQpwGk7hsDCLTXTghn4YGUt9m7aTdPEs1wnw6V/8dhaiP7bHvODTTCxaPzJbAQBFN8WLSim6KSZPHtW4KKA1gqtAUmSey1TT0qQ+YdKcOcf9qGKEQbM4lBe03c3MfaMUN3yFN/BPJj1v9utKC1M+FJAMOjUg3nAvdiWqutjDmUmbRDYOBajijI+PqXauzGiBqgj8smyV2LjgiFIyrVoY52fSP4kHt9qYqK3MaJ9KyCHc3gaWYAtVZx+VQ+qnHmM/bNjzVuIyWFTAZqVMxYL/KcR5nQ7qW/QWiDs6b+tRCt+O8R9YAZoDWB6RAP2KSiI+BPTjEvCCyFpLD3XW+jfCUg1pf7ea8dvLVogrp8FlIvS9xUOypAPR/BJnlh/sWy1jP/aKnTdKrvNml1TczCc9DvGovME/ZlzJEk1/JSVu2vdM6VYYAOoGMpfdeGlrrZd0l202eA9VtD3W8MmjJms8TMoQ2NJ642UoROwujbnWkEX8039KZootUCL6XnRRJDTYlto5+CChJMdGQy1lJH9fhwODJw1V1VYj8q0dacAlmZZMxjagzE8oc/SXtRHnadajNEObG3U9Wpp3li8ziLbKGX18+jzhFJnTjRaPFvvHt2619p57924/hL6rMXRu8JHEdfnvJ/76qcTcdPZANEGZlKiptfloHV2OvCZqnVI5Ng6kjUF/Q5M=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(39850400004)(376002)(366004)(136003)(346002)(396003)(451199018)(6506007)(478600001)(9686003)(26005)(186003)(7696005)(966005)(66446008)(76116006)(4326008)(64756008)(66476007)(66556008)(82960400001)(66946007)(71200400001)(83380400001)(41300700001)(8936002)(8676002)(86362001)(52536014)(38100700002)(122000001)(55016003)(2906002)(33656002)(316002)(5660300002)(110136005)(54906003)(38070700005)(7416002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?JQu0wno+5+ML6Nh5b9YbiBOMxfyaA5/Ev7zR6eA5LH0sMFqVJOy3iobIPmqi?=
- =?us-ascii?Q?Fw6Gaq7HjacOwbSi5chtM91LeT+NecugLZ1YGQ0s5GsCva3OUVyHYSAQds0b?=
- =?us-ascii?Q?4AWn4ioENX7ewxNkSTtZ4Hczr4NFx9wB6SL5AhRMGHI3hX3kiR3jTxHTEMU+?=
- =?us-ascii?Q?FMybjtPcA084M5zlv2pDzTtsdaBL+Y01f8xa3dmHxaUQGXc6ej7nHH+5gACG?=
- =?us-ascii?Q?TGYsOprYF4Q1ASkXVYxBCnXd88KX8fxmLFWhGQ4tVbtlVjxqBtFUCzmZ0y84?=
- =?us-ascii?Q?HJuaPzeHNFZpQcltvjBrv57Xgy7ugn/794fA7UGJ7YDZKAPPJLDlBtjfqTbh?=
- =?us-ascii?Q?/pQdn6yDRnbtQGjHXzv/G4ersbA57rMtRP5HvygQpFeHohRBSLRzNGO6y1+A?=
- =?us-ascii?Q?/9RmpmPlU6WAShYK5ibMLBIivcWYJUrhhWuWnynlOUfez3Q/c3Wx/d4+gWf3?=
- =?us-ascii?Q?Ttr87LHAUo3sQNz1jjCFF+bEeIyu68xFRh1LzIQiE/0mBk6yN2Bzo/Ni5LnX?=
- =?us-ascii?Q?N/WNPM35UZrnzCxG4go9VK4oYTOfDCJArNBAtCR7lc/FG2ggdKrMVJV3UyVR?=
- =?us-ascii?Q?ATbJyngMNaOILRZ8dhFfyn8XEKDomGKw9NatH2T475vtB5j3COkq6jqxWmxS?=
- =?us-ascii?Q?3v5PGPd04m9j0w+zMUnV20Q5jMdoKq8nOKquyjjPo8fEoWiyBMPuKUkYta78?=
- =?us-ascii?Q?9ii/DfCKfTxwaZkelK53pCBAVZghlpDa6d0cGnaWDOEVA/V+H8wYxV0MrmP4?=
- =?us-ascii?Q?BxcJad0RKJSmoBTuLuWlppXVfdArZNxJyL9tozHJodiSdpPmwRqV6WdyC9Pm?=
- =?us-ascii?Q?+mN9SLT1FwhmGXMpg2OWQJSMuE8dIMMQQ+0bgDqNWnu40YD6Xr9IhucMPg+Z?=
- =?us-ascii?Q?bcLKoOsQ6zNgSC+jnqUkd6rlbg2dAld3TcGS58WdO3S7eCbxWiegI0K6dJDo?=
- =?us-ascii?Q?vHkZZbx6ZnUYsLa70KLDstOe/qlrttTGrd6Su4gmbCsOQbDG1RHJ1Bu24Vjf?=
- =?us-ascii?Q?xug2SMttKWri4TKys3fb4DyNeMFl0+0CbathI+hNWc5wAQ8tY4JDeF87EPig?=
- =?us-ascii?Q?DPwlKuDoNEv92LWG+nCmGiNfbpMwgyJHPBUpytzUt3YrrpgOXS0TxWhy5zy9?=
- =?us-ascii?Q?sydMByg3gAspCGOFTrpsvaoBV8cR9OA/6MIMwsAcwjVTwyalb5T3qBZU+fDa?=
- =?us-ascii?Q?oJGoxUsqzy1I3/HCLoUXhUwoW7ngL0hfNGQGLw1QEyaIBt8QSHJbfRYiLz8G?=
- =?us-ascii?Q?dL5oIT2wc+sstnQdSD/iamU5VUYJSQMe5kCACpyBQTTGEdGtmmAGV7xQQiz0?=
- =?us-ascii?Q?q6IRcCb6zQrE8cFYubmwraN9Zm++fqlOFZZNoeUeciuwdcInt/gtSkH01HEK?=
- =?us-ascii?Q?VBE+ognL1P0ESYGiFPO4kYsT7pCXPvduweY2UosEQx3IoaOAeLKiUunyMnRB?=
- =?us-ascii?Q?Pl6MHHtfnj1/cgOZmoE6LmANa3V3DBeTYy1g2blLjhmrE3O94C/2JR2N4Qaz?=
- =?us-ascii?Q?YHDAR3p2kn0oUqtt7uItn2Ani5CL+ryjkrK6uCXxveiT49V4pdBXpFQnN4aB?=
- =?us-ascii?Q?RF9GZaMXx/FiAJWbAt70vMKrmiokXUzPPwSwTFIT?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+  t=1674981759; x=1706517759;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=yj31DtnhOPC3pgFppYWP6STDM0yAE4vERS7w0dRmqG8=;
+  b=cN8i4PRF334sI5pX0BpnVRQQHSJCQ44apQrKRcO845E4F2DXNd1X+ErO
+   pn6CRhBK505Ke9DLQtFDm0rGfG4It0vEuma8PjXphFsc8VdSn7Tdu6/J5
+   S8nrRl9V54ldhcJhdKk8N5pzPSgSg40iwj4lLMVEjJngq4lA7xtK3nri6
+   Tu7asomShTj0D1nmakfDILB8Xj/rstr7ppS2AIMKhqE7dFCe7+JoD0CRp
+   uO9NsNtZB2JgNEsShK/n3dJImw5j00R0fzHYmRPbSWIBm7EgMoH2dKBQ5
+   5JcQnSl7zs4HvCUFYNFzWox7IFiEqFT6RsUukPXcSOkC2DK9AfpFPReH7
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="354690544"
+X-IronPort-AV: E=Sophos;i="5.97,256,1669104000"; 
+   d="scan'208";a="354690544"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2023 00:42:38 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="613680311"
+X-IronPort-AV: E=Sophos;i="5.97,256,1669104000"; 
+   d="scan'208";a="613680311"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.214.247]) ([10.254.214.247])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2023 00:42:34 -0800
+Message-ID: <647de371-fe11-15b4-5e11-8ca43a754180@linux.intel.com>
+Date: Sun, 29 Jan 2023 16:42:32 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7b34692e-28e1-4195-c9fa-08db01d07861
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Jan 2023 08:11:48.6932
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: PBMcSZIpkqHY5fdtW2R4ipWWRKtwr2At3wczOS97f2AtXHVw3uPYJyv66WmavN3E9qZW7fUgCUtSTiCCZ1n8rA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB5280
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Cc: baolu.lu@linux.intel.com, Bjorn Helgaas <bhelgaas@google.com>,
+ Joerg Roedel <jroedel@suse.de>, Matt Fagnani <matt.fagnani@bell.net>,
+ =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Tony Zhu <tony.zhu@intel.com>,
+ linux-pci@vger.kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/1] PCI: Add translated request only flag for
+ pci_enable_pasid()
+To: Bjorn Helgaas <helgaas@kernel.org>
+References: <20230127173035.GA994835@bhelgaas>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20230127173035.GA994835@bhelgaas>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Saturday, January 28, 2023 7:54 AM
->=20
-> On Fri, Jan 27, 2023 at 09:58:46PM +0000, Robin Murphy wrote:
->=20
-> > Please just add IOMMU_CAP_IOMMUFD to represent whatever the
-> nebulous
-> > requirements of IOMMUFD actually are (frankly it's no less informative
-> than
-> > calling domains "broken"), handle that in the drivers you care about
-> > and
->=20
-> I don't want to tie this to iommufd, that isn't the point.
->=20
-> We clearly have drivers that don't implement the iommu kernel API
-> properly, because their only use is between the iommu driver and some
-> other same-SOC driver.
->=20
-> As a user of the iommu API iommufd and VFIO want to avoid these
-> drivers.
->=20
-> We have that acknowledgment already via the IOMMU_DOMAIN_DMA stuff
-> protecting the dma_iommu.c from those same drivers.
->=20
-> So, how about this below instead. Imagine it is followed by something alo=
-ng
-> the lines of my other sketch:
->=20
-> https://lore.kernel.org/linux-iommu/Y4%2FLsZKmR3iWFphU@nvidia.com/
->=20
-> And we completely delete IOMMU_DOMAIN_DMA/_FQ and get dma-
-> iommu.c
-> mostly out of driver code.
->=20
-> iommufd/vfio would refuse to work with drivers that don't indicate
-> they support dma_iommu.c, that is good enough.
+Hi Bjorn,
 
-this is a good idea. Just one doubt. Robin mentioned that sprd-iommu
-might have a broken unmanaged domains:
+Thanks for your review comments.
 
-" I'd also question sprd-iommu, which hardly has a generally-useful
-domain size, and has only just recently gained the ability to unmap
-anything successfully."
+On 2023/1/28 1:30, Bjorn Helgaas wrote:
+> On Sat, Jan 14, 2023 at 03:34:20PM +0800, Lu Baolu wrote:
+>> The PCIe fabric routes Memory Requests based on the TLP address, ignoring
+>> the PASID. In order to ensure system integrity, commit 201007ef707a ("PCI:
+>> Enable PASID only when ACS RR & UF enabled on upstream path") requires
+>> some ACS features being supported on device's upstream path when enabling
+>> PCI/PASID.
+>>
+>> One alternative is ATS/PRI which lets the device resolve the PASID + addr
+>> pair before a memory request is made into a routeable TLB address through
+>> the translation agent.
+> 
+> This sounds like "ATS/PRI" is a solution to a problem, but we haven't
+> stated the problem yet.
+> 
+>> Those resolved addresses are then cached on the
+>> device instead of in the IOMMU TLB and the device always sets translated
+>> bit for PASID. One example of those devices are AMD graphic devices that
+>> always have ACS or ATS/PRI enabled together with PASID.
+>>
+>> This adds a flag parameter in the pci_enable_pasid() helper, with which
+>> the device driver could opt-in the fact that device always sets the
+>> translated bit for PASID.
+> 
+> Nit: "Add a flag ..." and "Apply this opt-in ..." (below).
+> 
+>> It also applies this opt-in for AMD graphic devices. Without this change,
+>> kernel boots to black screen on a system with below AMD graphic device:
+>>
+>> 00:01.0 VGA compatible controller: Advanced Micro Devices, Inc.
+>>          [AMD/ATI] Wani [Radeon R5/R6/R7 Graphics] (rev ca)
+>>          (prog-if 00 [VGA controller])
+>> 	DeviceName: ATI EG BROADWAY
+>> 	Subsystem: Hewlett-Packard Company Device 8332
+> 
+> What is the underlying failure here?  "Black screen" is useful but we
+> should say *why* that happens, e.g., transactions went the wrong place
+> or whatever.
 
-Want to understand why that restriction is not a problem for DMA API.
+All above make sense to me. I post my new commit message at the end of
+this reply.
 
-what Jason proposed here assumes that existing driver support for
-DMA API can be safely applied to vfio/iommufd. But above looks
-warning certain exception?
+> 
+>> At present, it is a common practice to enable/disable PCI PASID in the
+>> iommu drivers. Considering that the device driver knows more about the
+>> specific device, we will follow up by moving pci_enable_pasid() into
+>> the specific device drivers.
+> 
+>> @@ -353,12 +353,15 @@ void pci_pasid_init(struct pci_dev *pdev)
+>>    * pci_enable_pasid - Enable the PASID capability
+>>    * @pdev: PCI device structure
+>>    * @features: Features to enable
+>> + * @flags: device-specific flags
+>> + *   - PCI_PASID_XLATED_REQ_ONLY: The PCI device always use translated type
+>> + *                                for all PASID memory requests.
+> 
+> s/use/uses/
 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 59df7e42fd533c..bb34d3f641f17b 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -4165,8 +4165,6 @@ static struct iommu_domain
-> *intel_iommu_domain_alloc(unsigned type)
->  	switch (type) {
->  	case IOMMU_DOMAIN_BLOCKED:
->  		return &blocking_domain;
-> -	case IOMMU_DOMAIN_DMA:
-> -	case IOMMU_DOMAIN_DMA_FQ:
->  	case IOMMU_DOMAIN_UNMANAGED:
->  		dmar_domain =3D alloc_domain(type);
->  		if (!dmar_domain) {
-> @@ -4761,6 +4759,7 @@ static void intel_iommu_remove_dev_pasid(struct
-> device *dev, ioasid_t pasid)
->  }
->=20
->  const struct iommu_ops intel_iommu_ops =3D {
-> +	.use_dma_iommu		=3D true,
+Yes.
 
-missed:
-+	.allow_dma_fq			=3D true,
+> 
+> I guess PCI_PASID_XLATED_REQ_ONLY is something only the driver knows,
+> right?  We can't deduce from architected config space that the device
+> will produce PASID prefixes for every Memory Request, can we?
+
+No, we can't. That's the reason why we need a flag here.
+
+[ Below is an updated commit message. Hope it can describe things
+   clearly.]
+
+PCI: Add translated request only flag for pci_enable_pasid()
+
+The PCIe fabric routes Memory Requests based on the TLP address, ignoring
+the PASID. In order to ensure system integrity, commit 201007ef707a ("PCI:
+Enable PASID only when ACS RR & UF enabled on upstream path") requires
+some ACS features being supported on device's upstream path when enabling
+PCI/PASID.
+
+However, above change causes the Linux kernel boots to black screen on a
+system with below graphic device:
+
+00:01.0 VGA compatible controller: Advanced Micro Devices, Inc.
+         [AMD/ATI] Wani [Radeon R5/R6/R7 Graphics] (rev ca)
+         (prog-if 00 [VGA controller])
+         DeviceName: ATI EG BROADWAY
+         Subsystem: Hewlett-Packard Company Device 8332
+
+The kernel trace looks like below:
+
+  Call Trace:
+   <TASK>
+   amd_iommu_attach_device+0x2e0/0x300
+   __iommu_attach_device+0x1b/0x90
+   iommu_attach_group+0x65/0xa0
+   amd_iommu_init_device+0x16b/0x250 [iommu_v2]
+   kfd_iommu_resume+0x4c/0x1a0 [amdgpu]
+   kgd2kfd_resume_iommu+0x12/0x30 [amdgpu]
+   kgd2kfd_device_init.cold+0x346/0x49a [amdgpu]
+   amdgpu_amdkfd_device_init+0x142/0x1d0 [amdgpu]
+   amdgpu_device_init.cold+0x19f5/0x1e21 [amdgpu]
+   ? _raw_spin_lock_irqsave+0x23/0x50
+   amdgpu_driver_load_kms+0x15/0x110 [amdgpu]
+   amdgpu_pci_probe+0x161/0x370 [amdgpu]
+   local_pci_probe+0x41/0x80
+   pci_device_probe+0xb3/0x220
+   really_probe+0xde/0x380
+   ? pm_runtime_barrier+0x50/0x90
+   __driver_probe_device+0x78/0x170
+   driver_probe_device+0x1f/0x90
+   __driver_attach+0xce/0x1c0
+   ? __pfx___driver_attach+0x10/0x10
+   bus_for_each_dev+0x73/0xa0
+   bus_add_driver+0x1ae/0x200
+   driver_register+0x89/0xe0
+   ? __pfx_init_module+0x10/0x10 [amdgpu]
+   do_one_initcall+0x59/0x230
+   do_init_module+0x4a/0x200
+   __do_sys_init_module+0x157/0x180
+   do_syscall_64+0x5b/0x80
+   ? handle_mm_fault+0xff/0x2f0
+   ? do_user_addr_fault+0x1ef/0x690
+   ? exc_page_fault+0x70/0x170
+   entry_SYSCALL_64_after_hwframe+0x72/0xdc
+
+The AMD iommu driver allocates a new domain (called v2 domain) for the
+amdgpu device and enables its PCI PASID/ATS/PRI before attaching the
+v2 domain to it. The failure of pci_enable_pasid() due to lack of ACS
+causes the domain attaching device to fail. The amdgpu device is unable
+to DMA normally, resulting in a black screen of the system.
+
+However, this device is special as it relies on ATS/PRI to resolve the
+PASID + addr pair before a memory request is made into a routeable TLB
+address through the translation agent. Those resolved addresses are then
+cached on the device instead of in the IOMMU TLB and the device always
+uses translated memory request for PASID.
+
+ACS is not necessary for the devices that always use translated memory
+request for PASID. But this is device specific and only device driver
+knows this. We can't deduce this from architected config space.
+
+Add a flag for pci_enable_pasid(), with which the device drivers could
+opt-in the fact that device always uses translated memory requests for
+PASID hence the ACS is not a necessity. Apply this opt-in for above AMD
+graphic device.
+
+At present, it is a common practice to enable/disable PCI PASID in the
+iommu drivers. Considering that the device driver knows more about the
+specific device, it's better to move pci_enable_pasid() into the specific
+device drivers.
+[-- end --]
+
+--
+Best regards,
+baolu
