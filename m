@@ -1,182 +1,175 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55C1ABD24
-	for <iommu@lists.linux.dev>; Sun, 29 Jan 2023 06:02:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1674972141;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=G+y0lNUe2D3FZqvZZMcDdGneE6tCR0dFmD5Cj+Ac+co=;
-	b=jGyshBpiuc7o4x6BkaXId/RJsmg5fjNiGBlrzg022tz6bNBIi7z79qil7jRDQL1K2ln7LY
-	1Ee2iMaZ6oPQmVHZckJVNeRUcPB30MyPSke4O5lARXGUmmBU7uwv2bAH4rRdguEYKULXjq
-	UGLEP9CaZrCexerYSJ/cuLvpl5ikr4I=
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com
- [209.85.161.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-458-ctow_CdrOY2qFHElFBlxRQ-1; Sun, 29 Jan 2023 01:02:20 -0500
-X-MC-Unique: ctow_CdrOY2qFHElFBlxRQ-1
-Received: by mail-oo1-f69.google.com with SMTP id i10-20020a4a900a000000b004f1f4aa7f3bso1920255oog.7
-        for <iommu@lists.linux.dev>; Sat, 28 Jan 2023 22:02:20 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=G+y0lNUe2D3FZqvZZMcDdGneE6tCR0dFmD5Cj+Ac+co=;
-        b=2gwN05JGbu7U5cprTyBfmlYMWD6k1xn1nF9XqtgaVF7MubEDETGbm5IreCNoDGJaIT
-         m4m7gr1Dkge9NCpseliiSkxxeMBmfvU9JMWq/7R/jdeqXcZfaisOaO4ExP4wkFRAkZ0q
-         M351qKfrDrdvmxujjjVrskI4nn2rsU0uOl6zz5T8Zuq3ZcJjPc38nPWZS4XQ3lyaIZkw
-         a+uTOrVwJ2JyXudXgzGkXkMUAVycqKgeCA8q7mfHjZbckvYQLjGPrgShUQps19w+anYG
-         U73xTtKwQtgF+Whw2miltZ2HLJrjhKGYV1vg+ESt1a8TD0CGRKc4IcctoZFue98QpWYs
-         E/hA==
-X-Gm-Message-State: AO0yUKXeAihZU3rHcf8ArWactkd98bnLtn3iFnS7tT8Wb4eVv0klIPVT
-	zL+E1egK4Ulu8lVc5mFz+cs40MENXqpFyhkaslBrNDiRN5K+K8mlizJ18GTnWdLV7Scka1+RMT/
-	usIkz33dJ4o1zUAR6rzD4YeYlqWGA/yg=
-X-Received: by 2002:a4a:3457:0:b0:517:7850:6483 with SMTP id n23-20020a4a3457000000b0051778506483mr952oof.3.1674972139716;
-        Sat, 28 Jan 2023 22:02:19 -0800 (PST)
-X-Google-Smtp-Source: AK7set8mW0JZ/n8lyZTTpcC67kMpT2Kinp8/MANimSerBoRFqCNzWu7WVdXpOca4BzGXE3JkgQMmFmJ+hFInW8+aXt4=
-X-Received: by 2002:a4a:3457:0:b0:517:7850:6483 with SMTP id
- n23-20020a4a3457000000b0051778506483mr940oof.3.1674972139474; Sat, 28 Jan
- 2023 22:02:19 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E503615A2
+	for <iommu@lists.linux.dev>; Sun, 29 Jan 2023 07:47:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1674978426; x=1706514426;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=Pe+fxxroHvbEh79dlKPYHtpwvzuWVAKeequTTDy0EHY=;
+  b=NiRw9kh/pJF+2CQmzqS6OkaYWHi21c0h6U3gJ+rdZ2tRen+6Ctq/wcWz
+   K1p+1rJiDBSz2pfep97JIZolIHWCgO/PxtzeXqQFNO7KoFW5x3QuYftRa
+   rmFJzYgjy7Fzv7BrsIJ2dfQ8haTz08GzLxK5XGVgSk5iCaOgTk0AJ8L+M
+   5gFBht3Mby9KJquv+jCVoWGlNNEanI+ZeSqbsYT03f1lcIKWZSxZuYIGg
+   sCb872wKt5l/vx3zJMOhXpkpQecPFGI85QCTxY2EX9wM8f683Yyr/LOas
+   7OcR2W9MIuIOWjczn648mOCjsL2yQBwKnYOkAXL0PxPouWGBuQr276utS
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="315329211"
+X-IronPort-AV: E=Sophos;i="5.97,254,1669104000"; 
+   d="scan'208";a="315329211"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2023 23:47:06 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6500,9779,10604"; a="665723040"
+X-IronPort-AV: E=Sophos;i="5.97,254,1669104000"; 
+   d="scan'208";a="665723040"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga007.fm.intel.com with ESMTP; 28 Jan 2023 23:47:05 -0800
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Sat, 28 Jan 2023 23:47:05 -0800
+Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16; Sat, 28 Jan 2023 23:46:58 -0800
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.16 via Frontend Transport; Sat, 28 Jan 2023 23:46:58 -0800
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.171)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.16; Sat, 28 Jan 2023 23:46:57 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dSj9GULtI1BHTJtYRSxS5w6TIBk3JXt06Qi5b3q7RhylScZNi52nerjXIXSZMlaYJc27Qodr/3YEKe4mDXB8TFD3hzxVqe/vuVIfR+9YVwXwN+gIpCbs3N9Dx2bJO9OE9VoCsTFzhjc67UjrikwgZatVxlyO/7bh7S/jLP8Paw90C1i2fMEP0SfaQIMx26QHKkheOkaeBWRud7dR7mLaARpANi8z4crwhqP/I+dV14ILDxoaVSR8uVYgNkqYNI428tqTzCgwUhiEZv/1vyJMlqdqIlV3+mQgG7Fr7bKjykVSVdgdAdW750JLqlnQCnEXUAud2cU29PteRjOUX/cUnw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Pe+fxxroHvbEh79dlKPYHtpwvzuWVAKeequTTDy0EHY=;
+ b=BkPx7oQB4Y2UzSU4Tx48voTkSyfheOhqXeQhzoTQPnB5VJ/pV77iXNbF2zcaY9NdS1LNRI3bzq4t7zxRi3s16DmFk+mYkeiK8d8lZudkNJUYhhE/NoFOXNoYJLiwbJsyAzSxp+Kmw9tCN/02ufRQdOHAHhjmIZHQDXeW1RzA3tFSDy5wPdzfHdiyR7Wb9Sz6gn7F8+7FRBnNiWoB2MQ67p8RLQPDWb2qFWFTve9x/0eYzrvbYk2t4IPO8wxBjO/RvVTqvLWUhUlWM5qRRZ2sJVq4Hpc9xx3fR+jlU7wmelHV11lflQDhkp+7blDNZ0b0y6yt4ZsLFq+eR+82fXOfmg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BL1PR11MB5271.namprd11.prod.outlook.com (2603:10b6:208:31a::21)
+ by CH0PR11MB5377.namprd11.prod.outlook.com (2603:10b6:610:b8::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.33; Sun, 29 Jan
+ 2023 07:46:56 +0000
+Received: from BL1PR11MB5271.namprd11.prod.outlook.com
+ ([fe80::2caf:11b5:858d:2978]) by BL1PR11MB5271.namprd11.prod.outlook.com
+ ([fe80::2caf:11b5:858d:2978%9]) with mapi id 15.20.6043.033; Sun, 29 Jan 2023
+ 07:46:56 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Nicolin Chen <nicolinc@nvidia.com>, "jgg@nvidia.com" <jgg@nvidia.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "joro@8bytes.org"
+	<joro@8bytes.org>, "will@kernel.org" <will@kernel.org>, "agross@kernel.org"
+	<agross@kernel.org>, "andersson@kernel.org" <andersson@kernel.org>,
+	"konrad.dybcio@linaro.org" <konrad.dybcio@linaro.org>, "yong.wu@mediatek.com"
+	<yong.wu@mediatek.com>, "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+	"thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+	"cohuck@redhat.com" <cohuck@redhat.com>
+CC: "vdumpa@nvidia.com" <vdumpa@nvidia.com>, "jonathanh@nvidia.com"
+	<jonathanh@nvidia.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+	"linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "linux-tegra@vger.kernel.org"
+	<linux-tegra@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>
+Subject: RE: [PATCH 0/4] iommu: Reject drivers with broken_unmanaged_domain
+Thread-Topic: [PATCH 0/4] iommu: Reject drivers with broken_unmanaged_domain
+Thread-Index: AQHZMoqzQ5srsykynEue8R0BgBzSX661BYgg
+Date: Sun, 29 Jan 2023 07:46:55 +0000
+Message-ID: <BL1PR11MB5271CE591B0CA093C8900FF78CD29@BL1PR11MB5271.namprd11.prod.outlook.com>
+References: <cover.1674849118.git.nicolinc@nvidia.com>
+In-Reply-To: <cover.1674849118.git.nicolinc@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BL1PR11MB5271:EE_|CH0PR11MB5377:EE_
+x-ms-office365-filtering-correlation-id: 400a0a63-9ff3-4edd-f6fe-08db01ccfe61
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 5q1W07vUdnq7E9SDxMNfj3qsMip+gnsnZQOlto7o9LySgQ4teaSq1HA+T+7ZPKtUeveht2+jkVTOh5Sn+u+WCJq9jhbHQPcOB+snDhLdRjFS7dAcMvjh6UAv8Yr0dMTtpcGbI60DYnf+dRrANlfHhurdgg9SLuZeffOgmMgqz1gDEK837w5Hzh4XoX7AUk5d2oVWJXkEflbj50kMSQtGNCAfwhGO1CAED0dZIfo7y4+dAOsj6vMnKsoeky+6LFzBa7nKOfeG0cdws2H7QmWX4jVxjaz6ZYZqui4gfLRJwJbv/h1VBR/DKD67xoO+iJhA8E6/p5MPQGFoB7Sf0p6GkCOVMxp1X3sI9lmcwxqJXdSA/HnYCnuZZcDiPjoNQjZIaYfK1FThBsE22yB/UNcpsI76O0l0GjRVhZsXpz+0GcVZyRsmyXFhbrsMHB4+OoSbBjoxN8mSP3K2Z99RT6iXhXKrswoEwJXdHd1HZSTjR7gs73ZZ3VjmHXlhJG/eCB27TOojSFxWycQ+gaCLgq/NGthTZYxHXAiSoVW7EcGPqnOPm20z8EdAWfWMLs8mP8YdGnFphKy2OkWCbNceauDs/ojEOOUda36njY+7BqodybT3wXx2W5J5EfQbVIFCRcR60nUCTAJfat+WW5KdZVyW45gZ9IMlC1kMfvVnZmTZQNj79QI4PnUw4M4doFPAadMIrIQmBeTPSxChBKfxH+xRu4u/lH4oJ2kpb/Quu6P4y2E=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR11MB5271.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(39860400002)(346002)(376002)(366004)(396003)(136003)(451199018)(2906002)(4744005)(5660300002)(7416002)(55016003)(82960400001)(186003)(122000001)(38100700002)(26005)(9686003)(52536014)(8676002)(86362001)(4326008)(66946007)(76116006)(110136005)(54906003)(316002)(66476007)(66556008)(66446008)(8936002)(41300700001)(33656002)(64756008)(921005)(6506007)(38070700005)(71200400001)(7696005)(478600001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?RbPeaX33POKw6flRhCPNOQcc1lKXmaeFyRYSxhDUq7PkqojgbJiyTZ0tz5uL?=
+ =?us-ascii?Q?1yc0+KExtmi4tJ2MyDlvDIfidGXB7q7ScPdyUVOuBBctrNqSwywKrjx5cAW+?=
+ =?us-ascii?Q?DlruU8gPbseiYQ0Njcvp8x7L0RbVVcrgxR+BfmQLhrneF8mpTI4R+OkqwrEs?=
+ =?us-ascii?Q?QA9MSaVvaTY6Jw/aQMZ4sCwAKJiEadxQXK9VfjkPJkaq/WhmT0ndU1/0LXyP?=
+ =?us-ascii?Q?BRpphYw332KTe9ZdSPNOxdAxs3PjeTww5ugrbee6RJ3EkZkO+Atc0lKz42gq?=
+ =?us-ascii?Q?x1iWnhOA6m7CHrLH3btYCLlo0/zFqxWGwU+oWnNxzByxyogwfNGUIA3PjtQj?=
+ =?us-ascii?Q?thZP1gs38zAFxe/JztzFk8k+JnnCkAGlx44fVwWU06hU6Yu5/yrdPpcdNij/?=
+ =?us-ascii?Q?hk3hFq9/+nPr+JRzT1nZzidZmt9KNHvTsjs+QexVlfl5glF9nqRK0ZDyfbYC?=
+ =?us-ascii?Q?ZqatXbAYxM8X1Ss7I8ibMkrwmUXotjHBK4yXIl0MOLTHQac3PXFNx2lrm3Rl?=
+ =?us-ascii?Q?d0H9X79BgoNly8NkJYpItPKw7i6rePjXbvNs4lADWACX9icS3GBMD7INI+Ko?=
+ =?us-ascii?Q?frzgVBF2ryKBYly9kQpjHk0mSyS+7Dyq4AhwasZE+jbn1/HD/G9/QI++/KfV?=
+ =?us-ascii?Q?88XAiPdD561yrYAc0jfXBo6kQNbXfLtVlX8tU8WfE4nRdZk64ipGmMjHrIck?=
+ =?us-ascii?Q?Cosqn2XaDNYRoQfg++1tgYGkjO2poR+louT4h8+C8KRc42/ZsBcuotD8WjXV?=
+ =?us-ascii?Q?vkTdwNPIJ1uoDsWmhpNC5iFf+8ZDBDxE5eXE668mskv8xtNpKPad691QcWHg?=
+ =?us-ascii?Q?JsSDrciOHP1K6Z+FCxNb7p9duUQxkxKLWMTygV6lk5vompru6aoXPqd3dtcb?=
+ =?us-ascii?Q?PdCo2JcqTmmp/JoONKFqlvaOCh+pIuMZ7/8b/vSTCVTSRLUOnW+dwp4P21JF?=
+ =?us-ascii?Q?uuFc0XjDecp39XEwUBsT++eR0BgLy0MiosGuUVPpcjjUbp7Ln9TFqnC7iKnd?=
+ =?us-ascii?Q?Ov0nYAWn2xqSqeMS6G+vhogQvuFyfSDQppXqLOV4pyQ/QX+Dli76UNTXTgXz?=
+ =?us-ascii?Q?y5yNTPa6NBVPYOJ+fCnnM9xEUoVPEfdMGR3xykMNpRcr84Jd02XerfZM7zaJ?=
+ =?us-ascii?Q?fCPl6y+cwMTOrG74Wkreb/URrtb1z4ELX/dGm6fQ2rSq219DfhZtaP6YTebu?=
+ =?us-ascii?Q?JoiWKXOHhOpzTmrmN4SFOzuXFl7oZEpcWUu2bEj8KgzolWv8mmtBQ4RBz9Go?=
+ =?us-ascii?Q?rYvwfXWqPJUalDukhEuzfiKrRNZacRd9RYtISt8YCj4Ji4VTJ+qv090rgzHl?=
+ =?us-ascii?Q?pLZZWBNhB4CNwOdMTYb2F4sLrOSju7tzUl1/riX6y+sWi/Xl5M0puXvF1mml?=
+ =?us-ascii?Q?jI5XvcFlsxV8pTruPDBXMKrO8HMUrpLc3NnfFYvdTU7mj6acwwVwk3TAvqmv?=
+ =?us-ascii?Q?7FH5WNUXjCSqEngysbjdqw7RvSqr2nacuf2NZEHEqe4Hhr+xf8MBDKsAJPJI?=
+ =?us-ascii?Q?sTBXd3yUFRLgCdgasLccEKejNK4R6ceFp6+mW4FnNt8jSJ5UHPsVOREIf8/X?=
+ =?us-ascii?Q?Fs9xWgZIcAbBPXRM5bxXx18ijpuXBHfIncWhOESF?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230128031740.166743-1-sunnanyong@huawei.com>
-In-Reply-To: <20230128031740.166743-1-sunnanyong@huawei.com>
-From: Jason Wang <jasowang@redhat.com>
-Date: Sun, 29 Jan 2023 14:02:08 +0800
-Message-ID: <CACGkMEtMAFMbhPnaaTwGRFofPM-p8ceKzAUbD2AFBz=fbR6hYQ@mail.gmail.com>
-Subject: Re: [PATCH] vhost/vdpa: Add MSI translation tables to iommu for
- software-managed MSI
-To: Nanyong Sun <sunnanyong@huawei.com>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, mst@redhat.com, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, 
-	virtualization@lists.linux-foundation.org, netdev@vger.kernel.org, 
-	wangrong68@huawei.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BL1PR11MB5271.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 400a0a63-9ff3-4edd-f6fe-08db01ccfe61
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Jan 2023 07:46:55.5533
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: sGApY2u5FO8zLE+SXyjEJRFzW5iyu1+gqQ3JW5qAHWUJ9Oy7GUJhrQAFVMckzbl/fkGj4FoTzneSuTYypcqw3A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR11MB5377
+X-OriginatorOrg: intel.com
 
-On Sat, Jan 28, 2023 at 10:25 AM Nanyong Sun <sunnanyong@huawei.com> wrote:
->
-> From: Rong Wang <wangrong68@huawei.com>
->
-> Once enable iommu domain for one device, the MSI
-> translation tables have to be there for software-managed MSI.
-> Otherwise, platform with software-managed MSI without an
-> irq bypass function, can not get a correct memory write event
-> from pcie, will not get irqs.
-> The solution is to obtain the MSI phy base address from
-> iommu reserved region, and set it to iommu MSI cookie,
-> then translation tables will be created while request irq.
->
-> Signed-off-by: Rong Wang <wangrong68@huawei.com>
-> Signed-off-by: Nanyong Sun <sunnanyong@huawei.com>
-> ---
->  drivers/iommu/iommu.c |  1 +
->  drivers/vhost/vdpa.c  | 53 ++++++++++++++++++++++++++++++++++++++++---
->  2 files changed, 51 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index de91dd88705b..f6c65d5d8e2b 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -2623,6 +2623,7 @@ void iommu_get_resv_regions(struct device *dev, struct list_head *list)
->         if (ops->get_resv_regions)
->                 ops->get_resv_regions(dev, list);
->  }
-> +EXPORT_SYMBOL_GPL(iommu_get_resv_regions);
->
->  /**
->   * iommu_put_resv_regions - release resered regions
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index ec32f785dfde..31d3e9ed4cfa 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -1103,6 +1103,48 @@ static ssize_t vhost_vdpa_chr_write_iter(struct kiocb *iocb,
->         return vhost_chr_write_iter(dev, from);
->  }
->
-> +static bool vhost_vdpa_check_sw_msi(struct list_head *dev_resv_regions, phys_addr_t *base)
-> +{
-> +       struct iommu_resv_region *region;
-> +       bool ret = false;
-> +
-> +       list_for_each_entry(region, dev_resv_regions, list) {
-> +               /*
-> +                * The presence of any 'real' MSI regions should take
-> +                * precedence over the software-managed one if the
-> +                * IOMMU driver happens to advertise both types.
-> +                */
-> +               if (region->type == IOMMU_RESV_MSI) {
-> +                       ret = false;
-> +                       break;
-> +               }
-> +
-> +               if (region->type == IOMMU_RESV_SW_MSI) {
-> +                       *base = region->start;
-> +                       ret = true;
-> +               }
-> +       }
-> +
-> +       return ret;
-> +}
+> From: Nicolin Chen <nicolinc@nvidia.com>
+> Sent: Saturday, January 28, 2023 4:04 AM
+>=20
+> Hi all,
+>=20
+> Both IOMMU_DOMAIN_UNMANAGED and IOMMU_DOMAIN_DMA require
+> the support
+> of __IOMMU_DOMAIN_PAGING capability, i.e. iommu_map/unmap.
+> However,
+> some older iommu drivers do not fully support that, and these drivers
+> also do not advertise support for dma-iommu.c via IOMMU_DOMAIN_DMA,
+> or use arm_iommu_create_mapping(), so largely their implementations
+> of IOMMU_DOMAIN_UNMANAGED are untested. This means that a user like
+> vfio/iommufd does not likely work with them.
+>=20
+> Thus, mark all these drivers as having "broken" UNAMANGED domains and
+> add a new device_iommu_unmanaged_supported() API for vfio/iommufd
+> and
+> dma-iommu to refuse to work with these drivers.
+>=20
 
-Can we unify this with what VFIO had?
-
-> +
-> +static int vhost_vdpa_get_msi_cookie(struct iommu_domain *domain, struct device *dma_dev)
-> +{
-> +       struct list_head dev_resv_regions;
-> +       phys_addr_t resv_msi_base = 0;
-> +       int ret = 0;
-> +
-> +       INIT_LIST_HEAD(&dev_resv_regions);
-> +       iommu_get_resv_regions(dma_dev, &dev_resv_regions);
-> +
-> +       if (vhost_vdpa_check_sw_msi(&dev_resv_regions, &resv_msi_base))
-> +               ret = iommu_get_msi_cookie(domain, resv_msi_base);
-> +
-> +       iommu_put_resv_regions(dma_dev, &dev_resv_regions);
-> +
-> +       return ret;
-> +}
-> +
->  static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
->  {
->         struct vdpa_device *vdpa = v->vdpa;
-> @@ -1128,11 +1170,16 @@ static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
->
->         ret = iommu_attach_device(v->domain, dma_dev);
->         if (ret)
-> -               goto err_attach;
-> +               goto err_alloc_domain;
->
-> -       return 0;
-> +       ret = vhost_vdpa_get_msi_cookie(v->domain, dma_dev);
-
-Do we need to check the overlap mapping and record it in the interval
-tree (as what VFIO did)?
-
-Thanks
-
-> +       if (ret)
-> +               goto err_attach_device;
->
-> -err_attach:
-> +       return 0;
-> +err_attach_device:
-> +       iommu_detach_device(v->domain, dma_dev);
-> +err_alloc_domain:
->         iommu_domain_free(v->domain);
->         return ret;
->  }
-> --
-> 2.25.1
->
-
+Why not making an explicit way to mark which drivers are tested to
+support vfio/iommufd? Not sure whether pure code review is reliable
+to filter out 'broken' vs. 'non-broken'...
