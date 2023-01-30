@@ -1,143 +1,77 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2076.outbound.protection.outlook.com [40.107.244.76])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2649329AC
-	for <iommu@lists.linux.dev>; Mon, 30 Jan 2023 20:54:18 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VuR3xfuZ2IhPnTbLBlpiUAXyyD0RL7EpeFOvzPXUY1XA2VmxXOZlhGDJWSi4pKIX7noQYjVKopMYv9ng7NDiNeqRVxe2BMaaC4JcSg1NrUizoE86CKvGmhXAmwwIe070hY0C6Tqzb9pWUpaE+kXhgfr+f4hzd91107ko7auzRr/ACbWhWOHSNOMZTn23hs67C34FocCb6MFElxtpJbNMAd+8MfA28BBWk7jmHZ8hrfsFCc5YGhnAGegEAXCy9zgb7AAPFDFGjuMRVGhzU9Avbc2YjJ/yVMRZGnlZ6SkkTmdwQPw1RNWPZ3GU6hPlmJeVMeSHGRHK1jGyVRBj3ototQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NWRl1T6FeG8vRd/lOkR3G5o95rOX0BlgyOKNRzwL4pY=;
- b=eY0ImjRBAqddLLDdUXqLcXYDgif8YjIXIjqbMij8+h2l/Jj1Ps4tXPlTsnPPrax8njzcQdBrvMZWq5crxZwZHILHVaZLXbLqS46WKzkG/qSAiO8xLeeCix4Kp6RdUGHasIxQtbln+YEDZeNdkUEMCfZYcRqNaZO621Jzp3V+wSHpHLumJ81cvE4+N7WAe9wkIM/7JlGd1NX3VTfgsK7jyQQA9+sPtIGqF/JcBw6e8MsYiC08qZIiwcyftmTUtWsjZpWBZHcqglIj2CgGP5LcGq0gohg/DWgDgZhepmNrQcHELZBfTpMsxHq64e8RNSUpIQp7pCOC9Xj5Qsfuxwjwhw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NWRl1T6FeG8vRd/lOkR3G5o95rOX0BlgyOKNRzwL4pY=;
- b=QYsqhc8q/B1sgOPEYinVLBYoKN26o1+lXuwktpEE0efRAGnRqAFU7vg1TaOkx8reCZsa3LhvkE1Zth3f6d1Tt1aKMVMgy5DSqoKB41KtNT9pObWoJs+nMU6DqL37qRhm9q+WWld6emZqDt20DKx4FMyAZVMvDWBeAJgTd1ykUMzLi51XwM2+0hNf9/zv8mNXFpBAlEzfIFaTfc69ziA4HAvFHWc6+qFG00zBB+tsWiLiJA36I460agkfBWGIk0N01ikKxJu/APMwHm8wnFatuAt98O4NFb38izF/pwjH2wWa6UJpas8gGo2KMlSvmJPuVK/uAApf0R2Bwa1TB+2HuA==
-Received: from BL1PR13CA0272.namprd13.prod.outlook.com (2603:10b6:208:2bc::7)
- by IA1PR12MB6211.namprd12.prod.outlook.com (2603:10b6:208:3e5::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.33; Mon, 30 Jan
- 2023 20:54:16 +0000
-Received: from BL02EPF000108E9.namprd05.prod.outlook.com
- (2603:10b6:208:2bc:cafe::81) by BL1PR13CA0272.outlook.office365.com
- (2603:10b6:208:2bc::7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.21 via Frontend
- Transport; Mon, 30 Jan 2023 20:54:16 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- BL02EPF000108E9.mail.protection.outlook.com (10.167.241.202) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6064.17 via Frontend Transport; Mon, 30 Jan 2023 20:54:15 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Mon, 30 Jan
- 2023 12:54:01 -0800
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Mon, 30 Jan
- 2023 12:54:00 -0800
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.10)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36 via Frontend
- Transport; Mon, 30 Jan 2023 12:54:00 -0800
-Date: Mon, 30 Jan 2023 12:53:58 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <kevin.tian@intel.com>, <yi.l.liu@intel.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/3] iommufd: Add devices_users to track the
- hw_pagetable usage by device
-Message-ID: <Y9guZhNve8A1DGL6@Asurada-Nvidia>
-References: <cover.1674939002.git.nicolinc@nvidia.com>
- <c1c65ce093a3b585546dd17a77949efbe03a81d9.1674939002.git.nicolinc@nvidia.com>
- <Y9fcAdFxl7GVSH9r@nvidia.com>
- <Y9gaKaMKOf+P2NtK@Asurada-Nvidia>
- <Y9gfbx/fszb0aTJn@nvidia.com>
- <Y9gi0UaE1PlKVzmn@Asurada-Nvidia>
- <Y9gqFwDNd3VKQvC3@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3967D79F7;
+	Mon, 30 Jan 2023 21:41:33 +0000 (UTC)
+Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-15fe106c7c7so16944410fac.8;
+        Mon, 30 Jan 2023 13:41:33 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=F8L0iZJB3bUGW9JLNkuI2s2g9EvqK3MUpW23NqWSMDg=;
+        b=gB04fic9RLvPQDzP9prffHyJIfKIn4iwXM9111G44PI1QMJoLDjOepdc+f0o7rFegd
+         +CwbURqTj5WFUGMuFPV0DE4X5I3mEDtTnpfm9dC7RujodtN8K2hpU+4xmWUYbtA1uH2U
+         NSmgCM+O9/9OjZyf+XYOyR6eOVGmWLXdJLE7YfC+d0BEQadonmWtq0zY6VYPW4GcWYL8
+         4O5MgHeopbB2gvgH03dSl6X+EOHEeFbyhI2tOCZwpFOae0ZgYGASML0UTc0HC1gtfjtx
+         /5vIzcsZkcssmUmk78RqrOJGwSDTj3UH8301Ege4nfyI6Qqwik/cOIK/HHKSQYAVi1AJ
+         HpBA==
+X-Gm-Message-State: AFqh2kpaAzAJjbA6EsSeSYyi12yRWdLhztRgB0uAnFnWHdA5MLSt2oj7
+	cP82g+8Gz2Af2SjTGXMrNg==
+X-Google-Smtp-Source: AMrXdXuUUyx0J2fyOl+V0z9H3zFvJSnOqxZ+0A4HPV/Hc7mTZNyygaal32QIuFxRT/LW5jQm6sHG6w==
+X-Received: by 2002:a05:6870:b14c:b0:15e:d25e:6d18 with SMTP id a12-20020a056870b14c00b0015ed25e6d18mr28491405oal.12.1675114892154;
+        Mon, 30 Jan 2023 13:41:32 -0800 (PST)
+Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id w12-20020a4aa98c000000b004a0ad937ccdsm5421116oom.1.2023.01.30.13.41.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Jan 2023 13:41:31 -0800 (PST)
+Received: (nullmailer pid 3578192 invoked by uid 1000);
+	Mon, 30 Jan 2023 21:41:30 -0000
+Date: Mon, 30 Jan 2023 15:41:30 -0600
+From: Rob Herring <robh@kernel.org>
+To: Sven Peter <sven@svenpeter.dev>
+Cc: Hector Martin <marcan@marcan.st>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Alyssa Rosenzweig <alyssa@rosenzweig.io>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org, asahi@lists.linux.dev, iommu@lists.linux.dev, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] dt-bindings: iommu: dart: Add t8103-usb4-dart
+ compatible
+Message-ID: <20230130214130.GA3576591-robh@kernel.org>
+References: <20230128111114.4049-1-sven@svenpeter.dev>
+ <20230128111114.4049-2-sven@svenpeter.dev>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Y9gqFwDNd3VKQvC3@nvidia.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF000108E9:EE_|IA1PR12MB6211:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8a4c87ff-8f4d-447d-8099-08db03042656
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	HVXRAz+K7OQvabNr7RoeX7Y5uGuy9Zf6+mdC8rvxuhM+6ck7qh14u+X/91nTKyqKj6hfattIkk6W2TCpbzAyIkP089visV2+pIUu+ez4/UnCFFbdZY0NEk3DpwaG29mJs4ab20buRtKi7Rxl/ZQN6jzl69Mfy2CYh7ay9ExZYmRinNUYXwaYlLVOxVtCTz7Qn8TwpeIW+8YEDKpJ+TvhebBX/auLfpaUOi/VQj/1MO4xrmRbsD5TpVZPv5812iezaXAtua2MkjwOWcCnZdLfyzQQE3yqA6uasoD2yVDAo588QIDStzcf88ofspDpl4xgiKoo7rxnR7iuBQbSwrn42Xw5yl9qTPt/jF2YNytHQG1w1ImhxZYERyJY3HcxJldAjYoCKnaPvi7PrGmT3A7+ebHerGQ80DkHzRmBvHHQssEWEyTyykTwYSKpi9d4qDF2q7cnVev8WF85vtWBugJKmNjJArxj7TUrHiI9l6Vs1BaRJ3EyReX5bViRFrXAxIwglu5W6Agp+j2dwoV5fr21zPcSCAZlZzPhuNAMD62oRgbHycM/TkK5e1cwU1TeO5vz4gvmSFhsJLV5q2xO0dQIV0v639T+lTav1Spxm6gBygm2FNfgg7ZmpJcthfwUKvdV1L/cDqyzIilwLXr0TJ7ZGxJlyq9UU1zRmajbv44uNWJRLzdlCCPsJjC6ayeaLC6YHzW0PV5jggHQEkUV+j21OQ==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(346002)(39860400002)(136003)(396003)(376002)(451199018)(46966006)(40470700004)(36840700001)(70586007)(336012)(70206006)(4326008)(7636003)(82740400003)(40460700003)(54906003)(36860700001)(6636002)(86362001)(6862004)(33716001)(356005)(55016003)(5660300002)(40480700001)(316002)(2906002)(426003)(83380400001)(82310400005)(8936002)(41300700001)(47076005)(9686003)(26005)(478600001)(8676002)(186003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jan 2023 20:54:15.9137
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8a4c87ff-8f4d-447d-8099-08db03042656
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL02EPF000108E9.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6211
+In-Reply-To: <20230128111114.4049-2-sven@svenpeter.dev>
 
-On Mon, Jan 30, 2023 at 04:35:35PM -0400, Jason Gunthorpe wrote:
-> On Mon, Jan 30, 2023 at 12:04:33PM -0800, Nicolin Chen wrote:
+On Sat, Jan 28, 2023 at 12:11:11PM +0100, Sven Peter wrote:
+> This DART variant is found in the t8103 (M1) SoCs and used for the
+> USB4/Thunderbolt PCIe ports. Unlike the regular t8103 DART these support
+> up to 64 SIDs and require a slightly different MMIO layout. This variant
+> is only found on the M1 SoCs.
+
+Looks fine to me other than the discrepancy in the name.
+
+> Signed-off-by: Sven Peter <sven@svenpeter.dev>
+> ---
+>  Documentation/devicetree/bindings/iommu/apple,dart.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> > I recall we've discussed this that SMMU sets up domain when it
-> > attaches the device to, so we made a compromise here...
+> diff --git a/Documentation/devicetree/bindings/iommu/apple,dart.yaml b/Documentation/devicetree/bindings/iommu/apple,dart.yaml
+> index 903edf85d72e..f9c1843c074d 100644
+> --- a/Documentation/devicetree/bindings/iommu/apple,dart.yaml
+> +++ b/Documentation/devicetree/bindings/iommu/apple,dart.yaml
+> @@ -24,6 +24,7 @@ properties:
+>    compatible:
+>      enum:
+>        - apple,t8103-dart
+> +      - apple,t8103-dart-usb4
+>        - apple,t8110-dart
+>        - apple,t6000-dart
+>  
+> -- 
+> 2.25.1
 > 
-> The ARM driver has a problem that it doesn't know what SMMU instance
-> will host the domain when it is allocated so it doesn't know if it
-> should select a S1 or S2 page table format - which is determined by
-> the capabilities of the specific SMMU HW block.
-> 
-> However, we don't have this problem when creating the S2. The S2
-> should be created by a special alloc_domain_iommufd() asking for the
-> S2 format. Not only does the new alloc_domain_iommufd API directly
-> request a S2 format table, but it also specifies the struct device so
-> any residual details can be determined directly.
-> 
-> Thus there is no need to do the two stage process when working with
-> the S2.
-
-Ah, right! Taking a quick look, we should be able to call that
-arm_smmu_domain_finalise when handling alloc_domain_iommufd().
-
-> So fixup the driver to create fully configured iommu_domain's
-> immediately and get rid of this problem.
-
-OK. I will draft a patch today.
-
-> IMHO I would structure the smmu driver so that all the different
-> iommu_domain formats have their own ops pointer. The special
-> "undecided" format would have a special ops with only attach_dev and
-> at first attach it would switch the ops to whatever format it
-> selected.
-> 
-> I think this could get rid of a lot of the 'if undecided/S1/S2/CD'
-> complexity all over the place. You know what type it is because you
-> were called on a op that is only called on its type.
-
-I see. I can try that as well. Hopefully it won't touch too
-many places that cam raise a potential big concern/objection..
-
-Thanks
-Nicolin
