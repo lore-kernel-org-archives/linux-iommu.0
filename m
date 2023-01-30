@@ -1,94 +1,98 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 938FD17F8
-	for <iommu@lists.linux.dev>; Mon, 30 Jan 2023 10:26:41 +0000 (UTC)
-Received: by mail-wr1-f42.google.com with SMTP id r2so10541414wrv.7
-        for <iommu@lists.linux.dev>; Mon, 30 Jan 2023 02:26:41 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 533FD20E3
+	for <iommu@lists.linux.dev>; Mon, 30 Jan 2023 11:57:17 +0000 (UTC)
+Received: by mail-wr1-f52.google.com with SMTP id m7so10801556wru.8
+        for <iommu@lists.linux.dev>; Mon, 30 Jan 2023 03:57:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZPoBz9/1/N6ODRgUu0zywPKZ5Pb9peKUsXrjhFsletU=;
-        b=ZRyN6STZ1TLPVz4LQ6q3JE4PIWOJj1I9SrDzQgnNUxCnJuucnPb47K5T+FT5VJqJhK
-         O7/cyqU8K6RTZ+xoZ92FBBgXMi1SXmIumyAw3zE49VeVoVkCg+xC4bMIp9CwVBpGwgV+
-         y1MxJbFLq0iCWns2b+hVFDDcpyNc720nV1LmafAtHn/n2W96sBotkpDyOvna77pG9sP6
-         pPdfwpT2P+ZdYR6Qk6guRYpEpokyLcJ7bBJ2yNGthRpuCqIw7AOsVGJ/Yib4yo/Oh8fN
-         FVTH/apMKrbFOcEOzGxtAc29B7xT//JupyxHXJDrXcqSVdyNziI2+Z/zZVg0y0FIe7Fe
-         jywQ==
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=XmcsKjHOKYvrUOUyXFN2fyX5681YPhZugfu38EMuB08=;
+        b=H2FPuCMk/NF+fT6BAcIMqqiJEBfns65LIpOPsw5l2IRunMicVdx3XMV5/qZ+gvz80o
+         c2ym7rtY3PllyRlph6/nAcDVro7vxo5QN37nVetUJ8fnIhYKNcNYT36gON1zlwpkhfKm
+         TqyJLZKKFYc9gomPikcHOSM/Fh+IIAhxBYRllJTJ5B9ZarX1C4CLORSnT8Q9qWSyRx+M
+         SarrGtpFcNeORELwQaDTH87A9GuMt0YwGJKiBRYhjyZqi0/aPRb9w3/rPvoVSi0AM3td
+         qpRwW2J7Xg+vy7C8cVsDH0kwHXosXoncBm0nLFU/oaAdQdioTu2E/pc95qo4vOQ+CITZ
+         t+tA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ZPoBz9/1/N6ODRgUu0zywPKZ5Pb9peKUsXrjhFsletU=;
-        b=23GlGaPZantNxt53cJcpoEzVBbHxT4IUIhMS+0DkgfK0yavLcH6/LjkA1xMRvA+tSE
-         Fs4DIqDoLVppCQFx/e1PWjx/qH6waLNt8tm55XMQgNq8t6NavTHcgaG83bkITe6qxbNa
-         F6acc0CV03qRu+vcw8AX6i5XfwgBdpEMu3fSM++EWMCeG+7DnmLXDtwTeh0t/fy/P/tK
-         ZvTpz4VY/77FgF0obKAS8sGkG4uEAkQZTf0YntuUN0ui8NyP5WQfpdkIL9jKDwTInN+H
-         w3Q4oakZSLl5z5SOtkE23DTwchX7mu5S7c6dSIpVOHn0eTBwFDoIonPlbpdgrtjtRWAR
-         sepQ==
-X-Gm-Message-State: AFqh2ko5ZLd5fzqXXUXXUfjFgIthO41G0c0snod0adjf5RVD0wMQx7js
-	81yT+5W+N2fuVpOVR42uPR+woA==
-X-Google-Smtp-Source: AMrXdXsW7ZQDGKlzFTYhQEjR+p+Zk8AHHZFaUSI9MHLnvUkGztcTA7MZHFFlS/Gqk/Zh0lJ9wDVJ1g==
-X-Received: by 2002:a05:6000:1e18:b0:2bc:846a:8ead with SMTP id bj24-20020a0560001e1800b002bc846a8eadmr46483687wrb.37.1675074399921;
-        Mon, 30 Jan 2023 02:26:39 -0800 (PST)
-Received: from alex-T14.baylibre (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.gmail.com with ESMTPSA id s5-20020a5d5105000000b002bdfcd8c77csm11426785wrt.101.2023.01.30.02.26.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Jan 2023 02:26:39 -0800 (PST)
-From: Alexandre Bailon <abailon@baylibre.com>
-To: yong.wu@mediatek.com,
-	joro@8bytes.org,
-	will@kernel.org
-Cc: robin.murphy@arm.com,
-	matthias.bgg@gmail.com,
-	krzysztof.kozlowski@linaro.org,
-	robh+dt@kernel.org,
-	iommu@lists.linux.dev,
-	linux-mediatek@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	Alexandre Bailon <abailon@baylibre.com>
-Subject: [PATCH 3/3] dt-bindings: iommu: memory: Use unmanaged iommu domain for the APU
-Date: Mon, 30 Jan 2023 11:27:22 +0100
-Message-Id: <20230130102722.133271-4-abailon@baylibre.com>
-X-Mailer: git-send-email 2.38.2
-In-Reply-To: <20230130102722.133271-1-abailon@baylibre.com>
-References: <20230130102722.133271-1-abailon@baylibre.com>
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=XmcsKjHOKYvrUOUyXFN2fyX5681YPhZugfu38EMuB08=;
+        b=jfOh3mwn4ScIg4m9xEntjWtnMMiQ2yU49ydN4eOkXRrfKFn5VPQ5A+bdP4iI5lGsdW
+         3O8XgOzP701rw7D+eh+ry2b5oHYRd+hlyNL7hbt0LCw3h3pcf9UnMp85JSoGV+VwWjCJ
+         agA3CkhgLko1FIFATR928QZQhJVvZTile290+1sbe4dKblqcwNRXMbWgfBZkkwkhjn+f
+         OlfgdLdvvM4GDa4zlL73hvVPGcHqFdKZk1CyUli3GX8GYlkXOcn1twXalYHelkjEx2ox
+         e+7O+zbpoKt8rZCL0OHvt3QUMHWdjgtcYP9FKKGNXonCOdofHsMZCQUBkX0g6P2mFH8F
+         WlAA==
+X-Gm-Message-State: AFqh2koT7v5gm/tub4hhdbo7qH7jMr1Umqm6ALPb+3RDvM4ZafAW4Fm2
+	si0Du70XT3dh/lkQ6ZTq36KByg==
+X-Google-Smtp-Source: AMrXdXvY1RmKLr2Gv1YwpANPagILR9MGIr+duSCkotDjClMAoKjRsaSW02r6KnsoxsJY+EfDL1FMlA==
+X-Received: by 2002:adf:8bd6:0:b0:2bf:95d0:fa5d with SMTP id w22-20020adf8bd6000000b002bf95d0fa5dmr32299686wra.9.1675079835446;
+        Mon, 30 Jan 2023 03:57:15 -0800 (PST)
+Received: from [192.168.1.172] (158.22.5.93.rev.sfr.net. [93.5.22.158])
+        by smtp.gmail.com with ESMTPSA id m2-20020a056000180200b002bfb5618ee7sm11648461wrh.91.2023.01.30.03.57.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 30 Jan 2023 03:57:14 -0800 (PST)
+Message-ID: <921aa473-b2a6-0905-2b52-1acf84ed399a@baylibre.com>
+Date: Mon, 30 Jan 2023 12:57:13 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.4.2
+Subject: Re: [PATCH 1/3] dt-bindings: memory: mediatek: Add support of
+ unmanaged iommu domain
+To: Alexandre Bailon <abailon@baylibre.com>, yong.wu@mediatek.com,
+ joro@8bytes.org, will@kernel.org
+Cc: robin.murphy@arm.com, matthias.bgg@gmail.com,
+ krzysztof.kozlowski@linaro.org, robh+dt@kernel.org, iommu@lists.linux.dev,
+ linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <20230130102722.133271-1-abailon@baylibre.com>
+ <20230130102722.133271-2-abailon@baylibre.com>
+Content-Language: en-US
+From: Alexandre Mergnat <amergnat@baylibre.com>
+In-Reply-To: <20230130102722.133271-2-abailon@baylibre.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-This updates the iommu id to use unmanaged iommu domain for the APU.
-This is required by remoteproc to use the iommu.
+On 30/01/2023 11:27, Alexandre Bailon wrote:
+> Currently, the only way to have an unmanaged domain for a device
+> is having a dedicated iova region or bank.
+> This adds a new bit to MTK_M4U_ID that allows defining devices
+> that needs unmanaged iommu domain.
+> 
+> Signed-off-by: Alexandre Bailon <abailon@baylibre.com>
+> ---
+>   include/dt-bindings/memory/mtk-memory-port.h | 3 +++
+>   1 file changed, 3 insertions(+)
+> 
+> diff --git a/include/dt-bindings/memory/mtk-memory-port.h b/include/dt-bindings/memory/mtk-memory-port.h
+> index 2f68a0511a257..86896c776691a 100644
+> --- a/include/dt-bindings/memory/mtk-memory-port.h
+> +++ b/include/dt-bindings/memory/mtk-memory-port.h
+> @@ -7,11 +7,14 @@
+>   #define __DT_BINDINGS_MEMORY_MTK_MEMORY_PORT_H_
+>   
+>   #define MTK_LARB_NR_MAX			32
+> +#define MTK_UNMANAGED_DEVICE            (1 << 31)
+>   
+>   #define MTK_M4U_ID(larb, port)		(((larb) << 5) | (port))
+>   #define MTK_M4U_TO_LARB(id)		(((id) >> 5) & 0x1f)
+>   #define MTK_M4U_TO_PORT(id)		((id) & 0x1f)
+> +#define MTK_M4U_UNMANAGED(id)		((id) & MTK_UNMANAGED_DEVICE)
+>   
+>   #define MTK_IFAIOMMU_PERI_ID(port)	MTK_M4U_ID(0, port)
+> +#define MTK_M4U_UNMANAGED_ID(larb, port) (MTK_M4U_ID(larb, port) | MTK_UNMANAGED_DEVICE)
+>   
+>   #endif
 
-Signed-off-by: Alexandre Bailon <abailon@baylibre.com>
----
- include/dt-bindings/memory/mediatek,mt8365-larb-port.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/include/dt-bindings/memory/mediatek,mt8365-larb-port.h b/include/dt-bindings/memory/mediatek,mt8365-larb-port.h
-index 56d5a5dd519e7..86d82a8f6017d 100644
---- a/include/dt-bindings/memory/mediatek,mt8365-larb-port.h
-+++ b/include/dt-bindings/memory/mediatek,mt8365-larb-port.h
-@@ -24,8 +24,8 @@
- #define M4U_PORT_MDP_WROT0		MTK_M4U_ID(M4U_LARB0_ID, 7)
- #define M4U_PORT_MDP_RDMA1		MTK_M4U_ID(M4U_LARB0_ID, 8)
- #define M4U_PORT_DISP_FAKE0		MTK_M4U_ID(M4U_LARB0_ID, 9)
--#define M4U_PORT_APU_READ		MTK_M4U_ID(M4U_LARB0_ID, 10)
--#define M4U_PORT_APU_WRITE		MTK_M4U_ID(M4U_LARB0_ID, 11)
-+#define M4U_PORT_APU_READ		MTK_M4U_UNMANAGED_ID(M4U_LARB0_ID, 10)
-+#define M4U_PORT_APU_WRITE		MTK_M4U_UNMANAGED_ID(M4U_LARB0_ID, 11)
- 
- /* larb1 */
- #define M4U_PORT_VENC_RCPU		MTK_M4U_ID(M4U_LARB1_ID, 0)
--- 
-2.38.2
-
+Reviewed-by: Alexandre Mergnat <amergnat@baylibre.com>
