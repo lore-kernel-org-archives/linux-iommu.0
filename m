@@ -1,70 +1,182 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 048B2323C
-	for <iommu@lists.linux.dev>; Mon, 30 Jan 2023 14:22:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1870C4339E
-	for <iommu@lists.linux.dev>; Mon, 30 Jan 2023 14:22:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1675088552;
-	bh=Rv7vpedtXmMsC2ZldBorrpLV/hQ3cPb3cZwp/JPOZMo=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=PU5fThWqx7vIQyvz3mb74830sa8egZGsH2qeMRCRy43qW6nOElB5Nb+7LguvkSUvv
-	 eIf/W6YzfJygJaSbS2P9Lz0XBYCRnIGQUIfcCD9aME9acc2v5mOAlrbBNIsC03gpFC
-	 nEDTuaPOwviKV6EF4rSqLFqLY881xSSX6A5UjmcfmZxo/73Gltjtq+szt9dSpiqeFq
-	 2Nb/PwncE1oGBgYKKaV3Iwb37qub0kNJ3ap4KDMUlMcx9wIXUycBGhRpccWySMxFmq
-	 RbHsmckF7gub26TuexrKXaaxwZiAjEOHlmzDQeUf60+HFVTv2MRP6QMrGw/AUrg0f9
-	 1PJcaH8dzXZcg==
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-4b718cab0e4so161191417b3.9
-        for <iommu@lists.linux.dev>; Mon, 30 Jan 2023 06:22:32 -0800 (PST)
-X-Gm-Message-State: AO0yUKUfijxW/2f4oI7jpCUrnyb8J5p5TlT/anu7/PXGFt6fhuzaqFI4
-	Gt1uy4ozm1sd5zSPIEDJGyuvrj3h5IFPdHeOmF8=
-X-Google-Smtp-Source: AK7set/iKN4GPoJ3AAU9c4a2d2Iu3bNsL3i+70I4GSg0waYe1ZW2WThCeen4GZUVB6daPLK/wVYIgd144SKxmDFciPE=
-X-Received: by 2002:a81:6007:0:b0:50f:9101:2eb4 with SMTP id
- u7-20020a816007000000b0050f91012eb4mr701547ywb.182.1675088551824; Mon, 30 Jan
- 2023 06:22:31 -0800 (PST)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1563D28E3
+	for <iommu@lists.linux.dev>; Mon, 30 Jan 2023 14:59:07 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3081E19F0;
+	Mon, 30 Jan 2023 06:59:49 -0800 (PST)
+Received: from [10.57.89.162] (unknown [10.57.89.162])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DF2623F882;
+	Mon, 30 Jan 2023 06:59:05 -0800 (PST)
+Message-ID: <6da0519b-5541-3590-ec3e-43c75f3a73b8@arm.com>
+Date: Mon, 30 Jan 2023 14:59:00 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1673978700.git.robin.murphy@arm.com> <1fb168b22cbbb5c24162d29d2a9aca339cda2c72.1673978700.git.robin.murphy@arm.com>
- <c96aaa6c-0f46-39dc-0c72-f38394e37cc3@linux.intel.com> <ce25dcdc-99a9-61ff-0cad-6c6cd9552680@arm.com>
- <Y9KRBRKdwSIRrvQw@nvidia.com> <b6b55688-1390-4e92-8184-770154a8955d@linux.intel.com>
- <6e0728ae-74a3-b76f-c5c3-6504e13c721f@arm.com> <Y9PxKLyQg/+ZrK6a@nvidia.com>
- <df59477f-3751-7314-40ab-9519dbfe0fe2@linux.intel.com> <14a5130c-3180-87db-5a14-2aaeaf97b7ce@arm.com>
- <Y9fL6gc4gZlQSzht@nvidia.com>
-In-Reply-To: <Y9fL6gc4gZlQSzht@nvidia.com>
-From: Oded Gabbay <ogabbay@kernel.org>
-Date: Mon, 30 Jan 2023 16:22:05 +0200
-X-Gmail-Original-Message-ID: <CAFCwf135w+iVn2qiucNrgig+cj=+kQiSUwxMcBPVYVPp-doE5Q@mail.gmail.com>
-Message-ID: <CAFCwf135w+iVn2qiucNrgig+cj=+kQiSUwxMcBPVYVPp-doE5Q@mail.gmail.com>
-Subject: Re: [PATCH 1/8] iommu: Decouple iommu_present() from bus ops
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, 
-	will@kernel.org, hch@lst.de, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v2 3/8] iommu: Add lockdep annotations for group list
+ iterators
+Content-Language: en-GB
+To: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, hch@lst.de,
+ jgg@nvidia.com
+References: <cover.1674753627.git.robin.murphy@arm.com>
+ <57cba0cf89556d586e554a9c64cbd28205d67c5c.1674753627.git.robin.murphy@arm.com>
+ <66867d21-3412-9050-5e8d-2071c6896f54@linux.intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <66867d21-3412-9050-5e8d-2071c6896f54@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Mon, Jan 30, 2023 at 3:53 PM Jason Gunthorpe <jgg@nvidia.com> wrote:
->
-> On Mon, Jan 30, 2023 at 01:49:20PM +0000, Robin Murphy wrote:
->
-> > All in all, it's only actually the habanalabs ones that I'm slightly wary
-> > of, since they're effectively (mis)using device_iommu_mapped() to infer the
-> > DMA ops implementation, which could potentially go wrong (or at least *more*
-> > wrong) on POWER with this change. I guess the saving grace is that
-> > although
->
-> IMHO habana is not using the DMA API abstraction properly. If it
-> doesn't work on some archs is their bugs to deal with - we don't need
-> to complexify the core code to tiptoe around around such an abuse in
-> an obscure driver.
->
-> Jason
-Agreed, feel free to change the kapi as you see fit. Do the right
-thing for the kernel.
-In any case, we limit ourselves to x86-64 arch in the 6.3 merge cycle.
+On 2023-01-28 12:20, Baolu Lu wrote:
+> On 2023/1/27 2:26, Robin Murphy wrote:
+>> Before we add any more common helpers for iterating or otherwise
+>> accessing the group device list, let's start the good habit of
+>> annotating their locking expectations for robustness.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+>>
+>> v2: New. Note that I've left the group_pasid helpers, since they're
+>>      pretty much right next to where the relevant locking happens, and
+>>      highly unlikely to be reused from anywhere else anyway.
+>>
+>>   drivers/iommu/iommu.c | 3 +++
+>>   1 file changed, 3 insertions(+)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index d48e5499e0fa..77f076030995 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -20,6 +20,7 @@
+>>   #include <linux/iommu.h>
+>>   #include <linux/idr.h>
+>>   #include <linux/err.h>
+>> +#include <linux/lockdep.h>
+>>   #include <linux/pci.h>
+>>   #include <linux/pci-ats.h>
+>>   #include <linux/bitops.h>
+>> @@ -1100,6 +1101,7 @@ static int iommu_group_device_count(struct 
+>> iommu_group *group)
+>>       struct group_device *entry;
+>>       int ret = 0;
+>> +    lockdep_assert_held(&group->mutex);
+>>       list_for_each_entry(entry, &group->devices, list)
+>>           ret++;
+>> @@ -1112,6 +1114,7 @@ static int __iommu_group_for_each_dev(struct 
+>> iommu_group *group, void *data,
+>>       struct group_device *device;
+>>       int ret = 0;
+>> +    lockdep_assert_held(&group->mutex);
+> 
+> When I tested this patch on an Intel platform, I found that the
+> bus_iommu_probe() path iterates the group device list but does not hold
+> the lock.
 
-Oded
+Urgh, that's what I get for being in a hurry and not boot-testing it 
+myself :(
+
+> 1831 static void __iommu_group_dma_finalize(struct iommu_group *group)
+> 1832 {
+> 1833         __iommu_group_for_each_dev(group, group->default_domain,
+> 1834                                    iommu_group_do_probe_finalize);
+> 1835 }
+> 
+> bus_iommu_probe:
+> 
+> 1873                 /* Try to allocate default domain */
+> 1874                 probe_alloc_default_domain(group);
+> 1875
+> 1876                 if (!group->default_domain) {
+> 1877                         mutex_unlock(&group->mutex);
+> 1878                         continue;
+> 1879                 }
+> 1880
+> 1881                 iommu_group_create_direct_mappings(group);
+> 1882
+> 1883                 ret = __iommu_group_dma_first_attach(group);
+> 1884
+> 1885                 mutex_unlock(&group->mutex);
+> 1886
+> 1887                 if (ret)
+> 1888                         break;
+> 1889
+> 1890                 __iommu_group_dma_finalize(group);
+
+...and of course it's the one case where the reason for not holding the 
+lock is a bit dodgy, but most definitely intentional. I can see ways to 
+hack around it further, but frankly I think the most practical solution 
+would be to just drop this patch for now until I've sorted out the ARM 
+stuff.
+
+Thanks,
+Robin.
+
+> The lockdep_assert_held() caused below kernel trace:
+> 
+> [   70.022590] ------------[ cut here ]------------
+> [   70.027967] WARNING: CPU: 1 PID: 1 at drivers/iommu/iommu.c:1135 
+> __iommu_group_for_each_dev+0x72/0x80
+> [   70.038672] Modules linked in:
+> [   70.042264] CPU: 1 PID: 1 Comm: swapper/0 Tainted: G        W 
+>   6.2.0-rc5+ #421
+> [   70.063860] RIP: 0010:__iommu_group_for_each_dev+0x72/0x80
+> [   70.070267] Code: 5c 41 5d c3 cc cc cc cc 5b 31 c0 5d 41 5c 41 5d c3 
+> cc cc cc cc 48 8d bf 10 01 00 00 be ff ff ff ff e8 92 7b 8f 00 85 c0 75 
+> ac <0f> 0b eb a8 66 2e 0f 1f 84 00 00 00 00 00 90 90 90 90 90 90 90 90
+> [   70.091981] RSP: 0000:ffffad104006fd30 EFLAGS: 00010246
+> [   70.098058] RAX: 0000000000000000 RBX: ffff9f490bb95600 RCX: 
+> 0000000000000001
+> [   70.106378] RDX: 0000000000000001 RSI: ffff9f490bb95710 RDI: 
+> ffff9f4900b10d88
+> [   70.114674] RBP: ffff9f490bb95600 R08: ffffcd26844fde80 R09: 
+> ffffcd26844fde40
+> [   70.122970] R10: 0000000000000000 R11: 0000000000000000 R12: 
+> ffff9f490bb95ed0
+> [   70.131265] R13: ffffffff8aadd520 R14: ffffffff8aade3a0 R15: 
+> 0000000000000000
+> [   70.139561] FS:  0000000000000000(0000) GS:ffff9f583ff00000(0000) 
+> knlGS:0000000000000000
+> [   70.148969] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   70.155667] CR2: 0000000000000000 CR3: 0000000cc2012001 CR4: 
+> 0000000000370ee0
+> [   70.163963] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 
+> 0000000000000000
+> [   70.172282] DR3: 0000000000000000 DR6: 00000000ffff07f0 DR7: 
+> 0000000000000400
+> [   70.180559] Call Trace:
+> [   70.183469]  <TASK>
+> [   70.185972]  bus_iommu_probe+0xee/0x1e0
+> [   70.190496]  iommu_device_register+0xaf/0x100
+> [   70.195580]  intel_iommu_init+0x3e9/0x6f2
+> [   70.200271]  ? __pfx_pci_iommu_init+0x10/0x10
+> [   70.205381]  ? __pfx_ignore_unknown_bootoption+0x10/0x10
+> [   70.211564]  pci_iommu_init+0x12/0x3a
+> [   70.215870]  do_one_initcall+0x65/0x330
+> [   70.220376]  ? __pfx_ignore_unknown_bootoption+0x10/0x10
+> [   70.226577]  ? rcu_read_lock_sched_held+0x5a/0x80
+> [   70.232076]  kernel_init_freeable+0x287/0x2f0
+> [   70.237914]  ? __pfx_kernel_init+0x10/0x10
+> [   70.241979]  kernel_init+0x1a/0x130
+> [   70.246075]  ret_from_fork+0x29/0x50
+> [   70.251014]  </TASK>
+> [   70.252867] irq event stamp: 16350051
+> [   70.257167] hardirqs last  enabled at (16350061): 
+> [<ffffffff8a1c3ed2>] __up_console_sem+0x52/0x60
+> [   70.267468] hardirqs last disabled at (16350070): 
+> [<ffffffff8a1c3eb7>] __up_console_sem+0x37/0x60
+> [   70.277768] softirqs last  enabled at (16350006): 
+> [<ffffffff8b3edd03>] __do_softirq+0x283/0x451
+> [   70.287859] softirqs last disabled at (16350001): 
+> [<ffffffff8a132c6a>] irq_exit_rcu+0xaa/0xc0
+> [   70.297777] ---[ end trace 0000000000000000 ]---
+> 
+>>       list_for_each_entry(device, &group->devices, list) {
+>>           ret = fn(device->dev, data);
+>>           if (ret)
+> 
+> Best regards,
+> baolu
