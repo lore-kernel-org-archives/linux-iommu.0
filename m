@@ -1,42 +1,42 @@
-Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3967D79F7;
-	Mon, 30 Jan 2023 21:41:33 +0000 (UTC)
-Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-15fe106c7c7so16944410fac.8;
-        Mon, 30 Jan 2023 13:41:33 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44B99160
+	for <iommu@lists.linux.dev>; Mon, 30 Jan 2023 22:50:34 +0000 (UTC)
+Received: by mail-ot1-f48.google.com with SMTP id n25-20020a9d7119000000b0068bd8c1e836so761717otj.3
+        for <iommu@lists.linux.dev>; Mon, 30 Jan 2023 14:50:34 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=F8L0iZJB3bUGW9JLNkuI2s2g9EvqK3MUpW23NqWSMDg=;
-        b=gB04fic9RLvPQDzP9prffHyJIfKIn4iwXM9111G44PI1QMJoLDjOepdc+f0o7rFegd
-         +CwbURqTj5WFUGMuFPV0DE4X5I3mEDtTnpfm9dC7RujodtN8K2hpU+4xmWUYbtA1uH2U
-         NSmgCM+O9/9OjZyf+XYOyR6eOVGmWLXdJLE7YfC+d0BEQadonmWtq0zY6VYPW4GcWYL8
-         4O5MgHeopbB2gvgH03dSl6X+EOHEeFbyhI2tOCZwpFOae0ZgYGASML0UTc0HC1gtfjtx
-         /5vIzcsZkcssmUmk78RqrOJGwSDTj3UH8301Ege4nfyI6Qqwik/cOIK/HHKSQYAVi1AJ
-         HpBA==
-X-Gm-Message-State: AFqh2kpaAzAJjbA6EsSeSYyi12yRWdLhztRgB0uAnFnWHdA5MLSt2oj7
-	cP82g+8Gz2Af2SjTGXMrNg==
-X-Google-Smtp-Source: AMrXdXuUUyx0J2fyOl+V0z9H3zFvJSnOqxZ+0A4HPV/Hc7mTZNyygaal32QIuFxRT/LW5jQm6sHG6w==
-X-Received: by 2002:a05:6870:b14c:b0:15e:d25e:6d18 with SMTP id a12-20020a056870b14c00b0015ed25e6d18mr28491405oal.12.1675114892154;
-        Mon, 30 Jan 2023 13:41:32 -0800 (PST)
+        bh=UNYhsjqG2sWgs2gWLKftBwFAL6CYNRc5b+6o4KuBP3k=;
+        b=h9syQGIJ1mJt7D/ZNOadz1n9J0OW2AnHvUaUIgnoIM8HlRleplKW2stuLvr0YOcEdB
+         IW5y4Y03XtyzhSLnXC9xuTwKyYd1Yjj/FZOnrgAxxPJ8xb9W3hMmYCD8Rq53cNei26Um
+         x77aDX6QYDAqtDButH18zGoE1vsJoQjnb1bZYUJwqN5qNFh0cnOY/LfIpfiuWGpOzj6i
+         PbP2amwdEnDvEHd0a1aAQtYgRYXnYUiXuyMF5n0fnsmAg5NJo0yDkpQfqiWe0jXvtQ/5
+         KpgXkq/258YGlKEksvZgtKFsMtqwuyOGIH1Qs6NpSnoMl1fB6Zgf3RTQmkK5aU+0jXc7
+         +Asw==
+X-Gm-Message-State: AFqh2kowcAN3OALKqlCSYrsntZGOzwJ/BFiwWl4+xkIZI5iQh1OlrJJA
+	7zPZ7xaf+Ux/qkjdAfDmIQ==
+X-Google-Smtp-Source: AMrXdXtNhfsgDIvcAEdKu4kp+ybHhn5D1DqJVvcgUAHM5OWYY9UuqtZ807Orrl5sp6zWPu6BiNyBAg==
+X-Received: by 2002:a9d:7614:0:b0:66e:c863:ea94 with SMTP id k20-20020a9d7614000000b0066ec863ea94mr21399528otl.27.1675119033197;
+        Mon, 30 Jan 2023 14:50:33 -0800 (PST)
 Received: from robh_at_kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id w12-20020a4aa98c000000b004a0ad937ccdsm5421116oom.1.2023.01.30.13.41.31
+        by smtp.gmail.com with ESMTPSA id b17-20020a056830311100b006863ccbf067sm5954261ots.74.2023.01.30.14.50.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Jan 2023 13:41:31 -0800 (PST)
-Received: (nullmailer pid 3578192 invoked by uid 1000);
-	Mon, 30 Jan 2023 21:41:30 -0000
-Date: Mon, 30 Jan 2023 15:41:30 -0600
+        Mon, 30 Jan 2023 14:50:32 -0800 (PST)
+Received: (nullmailer pid 3670295 invoked by uid 1000);
+	Mon, 30 Jan 2023 22:50:32 -0000
+Date: Mon, 30 Jan 2023 16:50:32 -0600
 From: Rob Herring <robh@kernel.org>
-To: Sven Peter <sven@svenpeter.dev>
-Cc: Hector Martin <marcan@marcan.st>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Alyssa Rosenzweig <alyssa@rosenzweig.io>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org, asahi@lists.linux.dev, iommu@lists.linux.dev, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] dt-bindings: iommu: dart: Add t8103-usb4-dart
- compatible
-Message-ID: <20230130214130.GA3576591-robh@kernel.org>
-References: <20230128111114.4049-1-sven@svenpeter.dev>
- <20230128111114.4049-2-sven@svenpeter.dev>
+To: Alexandre Bailon <abailon@baylibre.com>
+Cc: yong.wu@mediatek.com, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, matthias.bgg@gmail.com, krzysztof.kozlowski@linaro.org, iommu@lists.linux.dev, linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH 3/3] dt-bindings: iommu: memory: Use unmanaged iommu
+ domain for the APU
+Message-ID: <20230130225032.GA3667757-robh@kernel.org>
+References: <20230130102722.133271-1-abailon@baylibre.com>
+ <20230130102722.133271-4-abailon@baylibre.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -45,33 +45,37 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20230128111114.4049-2-sven@svenpeter.dev>
+In-Reply-To: <20230130102722.133271-4-abailon@baylibre.com>
 
-On Sat, Jan 28, 2023 at 12:11:11PM +0100, Sven Peter wrote:
-> This DART variant is found in the t8103 (M1) SoCs and used for the
-> USB4/Thunderbolt PCIe ports. Unlike the regular t8103 DART these support
-> up to 64 SIDs and require a slightly different MMIO layout. This variant
-> is only found on the M1 SoCs.
+On Mon, Jan 30, 2023 at 11:27:22AM +0100, Alexandre Bailon wrote:
+> This updates the iommu id to use unmanaged iommu domain for the APU.
+> This is required by remoteproc to use the iommu.
 
-Looks fine to me other than the discrepancy in the name.
+Explain how a mixture of DTs with or without this value changed would 
+work with kernels with or without support for unmanaged domains? Looks 
+like a compatibility problem to me.
 
-> Signed-off-by: Sven Peter <sven@svenpeter.dev>
-> ---
->  Documentation/devicetree/bindings/iommu/apple,dart.yaml | 1 +
->  1 file changed, 1 insertion(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/iommu/apple,dart.yaml b/Documentation/devicetree/bindings/iommu/apple,dart.yaml
-> index 903edf85d72e..f9c1843c074d 100644
-> --- a/Documentation/devicetree/bindings/iommu/apple,dart.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/apple,dart.yaml
-> @@ -24,6 +24,7 @@ properties:
->    compatible:
->      enum:
->        - apple,t8103-dart
-> +      - apple,t8103-dart-usb4
->        - apple,t8110-dart
->        - apple,t6000-dart
+> Signed-off-by: Alexandre Bailon <abailon@baylibre.com>
+> ---
+>  include/dt-bindings/memory/mediatek,mt8365-larb-port.h | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/dt-bindings/memory/mediatek,mt8365-larb-port.h b/include/dt-bindings/memory/mediatek,mt8365-larb-port.h
+> index 56d5a5dd519e7..86d82a8f6017d 100644
+> --- a/include/dt-bindings/memory/mediatek,mt8365-larb-port.h
+> +++ b/include/dt-bindings/memory/mediatek,mt8365-larb-port.h
+> @@ -24,8 +24,8 @@
+>  #define M4U_PORT_MDP_WROT0		MTK_M4U_ID(M4U_LARB0_ID, 7)
+>  #define M4U_PORT_MDP_RDMA1		MTK_M4U_ID(M4U_LARB0_ID, 8)
+>  #define M4U_PORT_DISP_FAKE0		MTK_M4U_ID(M4U_LARB0_ID, 9)
+> -#define M4U_PORT_APU_READ		MTK_M4U_ID(M4U_LARB0_ID, 10)
+> -#define M4U_PORT_APU_WRITE		MTK_M4U_ID(M4U_LARB0_ID, 11)
+> +#define M4U_PORT_APU_READ		MTK_M4U_UNMANAGED_ID(M4U_LARB0_ID, 10)
+> +#define M4U_PORT_APU_WRITE		MTK_M4U_UNMANAGED_ID(M4U_LARB0_ID, 11)
 >  
+>  /* larb1 */
+>  #define M4U_PORT_VENC_RCPU		MTK_M4U_ID(M4U_LARB1_ID, 0)
 > -- 
-> 2.25.1
+> 2.38.2
 > 
