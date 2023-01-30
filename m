@@ -1,157 +1,125 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 810BF2560
-	for <iommu@lists.linux.dev>; Mon, 30 Jan 2023 13:49:26 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BAB551758;
-	Mon, 30 Jan 2023 05:50:07 -0800 (PST)
-Received: from [10.57.89.162] (unknown [10.57.89.162])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 98B1E3F885;
-	Mon, 30 Jan 2023 05:49:24 -0800 (PST)
-Message-ID: <14a5130c-3180-87db-5a14-2aaeaf97b7ce@arm.com>
-Date: Mon, 30 Jan 2023 13:49:20 +0000
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2056.outbound.protection.outlook.com [40.107.93.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0AF428F3
+	for <iommu@lists.linux.dev>; Mon, 30 Jan 2023 13:53:51 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eLQuuDxDAQzSK8Lc/P3xvoyimnj+Bam/1MT5Y02wCFg0asc2/kcn5n5eRfygtQwXoUHEyOl31Iz1eMzA6Yeov5OGMps1IdRFyNa/f4AzCvq0JuBhFCknXljtOODmoS1zAQdJsoXb/BLqDbts2TMwq3ldj3bV/jyQ5Ph3W/glugBa6gHHplxHnCiLt/qYgDox46u2IhyeGOj0mJl06vc33I96R8cur/MIIBZ9/ef0Ib42VNZ/uZhuw5aVgUz2tA75qf5vmgahO1g6oT0Y974Dn4fvgjDa7jbvZjSyYqOBBLyDTOAcSo/fQz290Y1joP7aGzWcSgHiN883zZKccEceBQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=EEUavwcM6ArKRu8OT6ztDG/yKPY5SLheACcX1Sf1ZH0=;
+ b=l0sstRdNffE85m3WhvxSfosD6cyWqIsFau9wdmGC63gRTbt3CZ0C0h5spdckgkEVtJhHlhBFS/4jBtkD3w7Vp6upCnrDd5y5JXWpuNqkmpRYkY+uiSWwB92C0NTasyM07cC6EovOgN3v9FQoj6+jC9no2Wvvymsvff9agQgkZlK77LlrH5jjVHaOxC9Sp2EefUdLv+W44Ij2aUHWiWJxChzuLF38ip/AwFUkzG3b/upwDbC9pAPbhcACFDbHqpqP9VF32+XPYjsBJjf/ifK3x35pBuHxt0SlZo9tVxKlDtZc86SdHVovOuo1XDlgpMjcKIWETPbLGQ/EY3izUWA1KQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EEUavwcM6ArKRu8OT6ztDG/yKPY5SLheACcX1Sf1ZH0=;
+ b=jluXcax5uCoVZfgN4NHAhsKvyCqsfRxhdUjZJ9wqIMnny6tBB1qpAbTvmZvyHG30goS2DkSVJ9m9HgAkdZ5NBzePXBtA8beU3uLcGrchDVFaPFKtBBa+JU4iB9HKx1GPz/yQzl2TZkV9zEFCVAJ0JNv8kCeCVH5/zdrYRwhQ6PRyfLBSAHHqKAZ2cFZjIH7x6HPBaIurG9o4BrU1p5u5eb6ebVeMI0S/q2ZWitFxnFguSHRLUWz036Zn99r6fEZ91KXZ8t+jqpxDhCij0+Zq82FF0kHfGUNvekYaO7TS0WA+WXRM+9cuziQhoL1Yo4W/s8gDZlsDtLL8d2gJ8/Cx9A==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by SJ0PR12MB6783.namprd12.prod.outlook.com (2603:10b6:a03:44e::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.36; Mon, 30 Jan
+ 2023 13:53:48 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3cb3:2fce:5c8f:82ee%4]) with mapi id 15.20.6043.033; Mon, 30 Jan 2023
+ 13:53:48 +0000
+Date: Mon, 30 Jan 2023 09:53:46 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org,
+	hch@lst.de, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/8] iommu: Decouple iommu_present() from bus ops
+Message-ID: <Y9fL6gc4gZlQSzht@nvidia.com>
+References: <cover.1673978700.git.robin.murphy@arm.com>
+ <1fb168b22cbbb5c24162d29d2a9aca339cda2c72.1673978700.git.robin.murphy@arm.com>
+ <c96aaa6c-0f46-39dc-0c72-f38394e37cc3@linux.intel.com>
+ <ce25dcdc-99a9-61ff-0cad-6c6cd9552680@arm.com>
+ <Y9KRBRKdwSIRrvQw@nvidia.com>
+ <b6b55688-1390-4e92-8184-770154a8955d@linux.intel.com>
+ <6e0728ae-74a3-b76f-c5c3-6504e13c721f@arm.com>
+ <Y9PxKLyQg/+ZrK6a@nvidia.com>
+ <df59477f-3751-7314-40ab-9519dbfe0fe2@linux.intel.com>
+ <14a5130c-3180-87db-5a14-2aaeaf97b7ce@arm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <14a5130c-3180-87db-5a14-2aaeaf97b7ce@arm.com>
+X-ClientProxiedBy: BL0PR0102CA0035.prod.exchangelabs.com
+ (2603:10b6:207:18::48) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH 1/8] iommu: Decouple iommu_present() from bus ops
-Content-Language: en-GB
-To: Baolu Lu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: joro@8bytes.org, will@kernel.org, hch@lst.de, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <cover.1673978700.git.robin.murphy@arm.com>
- <1fb168b22cbbb5c24162d29d2a9aca339cda2c72.1673978700.git.robin.murphy@arm.com>
- <c96aaa6c-0f46-39dc-0c72-f38394e37cc3@linux.intel.com>
- <ce25dcdc-99a9-61ff-0cad-6c6cd9552680@arm.com> <Y9KRBRKdwSIRrvQw@nvidia.com>
- <b6b55688-1390-4e92-8184-770154a8955d@linux.intel.com>
- <6e0728ae-74a3-b76f-c5c3-6504e13c721f@arm.com> <Y9PxKLyQg/+ZrK6a@nvidia.com>
- <df59477f-3751-7314-40ab-9519dbfe0fe2@linux.intel.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <df59477f-3751-7314-40ab-9519dbfe0fe2@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SJ0PR12MB6783:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2d97268d-de50-4baf-1beb-08db02c9691f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	hjF5GF9dHCTmX4SGqCf2VXnVCujwpuCeAPuFTpCki0UgXJXeJJMvAIEmkiUBKItA90p4MxHs6aJ/QY1CToTWWZkGqGexFGSDL0Ttr6lawaa4FE7xvAf3+Cd+yAlYYdFEH5DqtOm5kWxD4Ozy3do3eG0qnIBvRFSg0wyBsXLNDHqw1QoXH57MeDFma/5tIOE4wbkq0ETfUyr8pqEGpKkNykfmqRoP4FraUDMFXq6tVWpfTZj0cO3juesRV7XK+apXfvXKEt/0HoW1OxEpEw107vPqIccnHtt2VdZJFBsEIQHPWnfm/0/D+yZyZHvVMZeQqwm0z4ij4FG5jf+oiqmzI3ydrmPR34NCK2dDECFvlJiV5tI4hFbqyj77If3GnMrvEiEj4QWXRkSXYOlAxjexiCUCK9NPWqWdqHanGbNx5zpLVAy0/EaXldRHJLqjBcm1Gcj5vwWnYjw5t9Vx3Lb3i9UTmhCvknRvSq7q9BTgeh0j1Dn3KnbpeC3eF2TOWwmOqn8DuoC4tcBCqYtLw5utr+BkrsJYujA+MDTP9qKHqVtQfM9Ano6XkGuDhp32VP7pFOXqvW3LXh/rttR/S3ewJttUoiSsEEFUbJt3Bp4KDlqicBw5uEARWijWLoJesXmnydkfr7Xw/bg4Et2JZHgwZg==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(39860400002)(396003)(376002)(346002)(366004)(451199018)(2906002)(316002)(186003)(4744005)(6512007)(26005)(6506007)(5660300002)(36756003)(2616005)(38100700002)(6486002)(66899018)(86362001)(478600001)(4326008)(66556008)(8676002)(66476007)(6916009)(66946007)(8936002)(41300700001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?SYr2k0bOK4vV/nkZZeMxE5KwOXj+mvUS7ArUOAL8sIWlszlO0jSC5KkJrfJB?=
+ =?us-ascii?Q?rFnl5gnyDqE53r9Wk+oSv3fggEmQbxgcen1NOssr0FjfdwtnwxfxMW+b7Ia0?=
+ =?us-ascii?Q?wtu6aqZnXSFdv15ZXXbm73Agu/FKl4ESIEy2Viw+WUf8hUBkVXzWccqk48Ur?=
+ =?us-ascii?Q?IXZEua0oXMaxFA5y2KKDmWt+Jfyfip7iiykF/uQ9LafmH5XwLVhcWewOZVeQ?=
+ =?us-ascii?Q?eOtoH1ILS91uhoBB1bwONReQHHqHU79A3FX5hVOcZBPGWUIgrw4bafkn7az3?=
+ =?us-ascii?Q?0qFKhLQnvJKEzz1h+aKaYqhZV3oMYVL4gCq+v3gXlFunwkUXsaILMTWCz/LA?=
+ =?us-ascii?Q?ayO3uNmyKnI8nacyHcwXEzATzPYwEfcMcpOYZ164SX/CR169SIotewcEOkO4?=
+ =?us-ascii?Q?flUcVXB4dHF/JOWLVDH4L23gJnlf5pXREdW+MQ0b8eEV8cxdUfPsOux8aTDx?=
+ =?us-ascii?Q?1yC99rE9VcisHrjN93U9LyhwiurAdWwIwo5ybACYVsNrLcKQZ04UAxH2uHzV?=
+ =?us-ascii?Q?aw2nX/PhiMLSdTR504vjwne7C2i3b52+VVtokRRhF0V3/Sqs2JbSJc+wTKoJ?=
+ =?us-ascii?Q?8AB2pmIOngO6JkK+3P4yFlGTk+pHxZQmB0IU8gSS+52vg47x1x9+S+R8h6ec?=
+ =?us-ascii?Q?fuji92+hXQdOgnYkasxkYjc0oXZK1brER/eUXTq6n8W5rzbLjbri5VexwgOv?=
+ =?us-ascii?Q?jd1nEnu/BIujVM2LUGKWwuP9ZrN/wfAIwVpU0+TRzt84vQSFzYzvAY9FzPQZ?=
+ =?us-ascii?Q?SJSBjUjWCVcmQszmhmaTtCkF0fVQq+8etugx129okeI5t3CG/Z1ovylXk9dN?=
+ =?us-ascii?Q?YlUqQ+ucVaSoMNMR+KiSrEv6MCtSaN3uJ0lJ+s1ouDjBMz73oqeAwLzEGdvL?=
+ =?us-ascii?Q?JJla9iHiCA249BC1fPzDFD+DBCBPcIaWaIs7Cu8FCoPLkk27ki9kAeCj1Lq9?=
+ =?us-ascii?Q?UItrBMDzgYNCouMzC1oBnbTgBSALwfvZruOwPD/gE2mH6sDXePGKjq3r9Q7T?=
+ =?us-ascii?Q?oTiUPKuYzChdUIfG2r/JMiLKiXLXS3dlj4XrUA/fjjFGFWol1s53CyUWs5lp?=
+ =?us-ascii?Q?v53qiffrCYdi1iuuhIyusyljNHPAq6N/0pCINMpRtw5nmFU+LLGbjKhU6PWl?=
+ =?us-ascii?Q?oXWNIpErQhHQffzF8p/L9wOAwJkhFe/yff+eefE05ZkP3iVL3w+KYObfaB8r?=
+ =?us-ascii?Q?DyR8VwFAl1a3q2iEghMzevpgg2C59AQBlDCvfpNq6Mn2X0KQxJeC0UK1cELJ?=
+ =?us-ascii?Q?/VJ+D2fM3DUSaXmY6HCoVQJLg1EzdHycAL4b2Yp0GMcizcd0QTrv132JfYvM?=
+ =?us-ascii?Q?/SliUPkQQXJl2VrPN5SPPvFk7PiwNTpApQS8h3ouxpjiRB7rkK4F56YqjBAt?=
+ =?us-ascii?Q?T6TRjCOMI8EvbI4qY1ammkCRfiZ6x554y41KGbpPZYwy7zawDbsL0F8546Hy?=
+ =?us-ascii?Q?1WQsZ6gPvCeDcZ/A7L5FbAgamGLUwN0fJQ43THb0J1E4gAQ+ngYQmZtWP3kS?=
+ =?us-ascii?Q?sih9+oAwzEeY6HM6SxzsG8mwmQdFclNUqSRWDpLFiRgEEeYfAvf9LR/zxcOd?=
+ =?us-ascii?Q?cYYm44SySYX4YKFT+TPPbYo5zjSmok9vqzF1IEjR?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2d97268d-de50-4baf-1beb-08db02c9691f
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jan 2023 13:53:47.9335
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gSePNL5u4o/Nj583jKCA4ozYGP0VV2bbkJ4pwe/+T2jnYb8I2/ojUU9xGPcSgF7r
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB6783
 
-On 2023-01-28 08:49, Baolu Lu wrote:
-> On 2023/1/27 23:43, Jason Gunthorpe wrote:
->> On Fri, Jan 27, 2023 at 03:19:55PM +0000, Robin Murphy wrote:
->>
->>> The current implementation of device_iommu_mapped() just dates back 
->>> to when
->>> dev->iommu_group was the only per-device thing we had, so in principle I
->>> don't have any conceptual objection to redefining it in terms of 
->>> "device has
->>> ops" rather than "device has a group", but as things stand you'd 
->>> still have
->>> to do something about PPC first (I know Jason had been pushing on 
->>> that, but
->>> I've not kept track of where it got to).
->> PPC hasn't moved at all, AFAICT. In a few more months I'm going to
->> suggest we delete the special VFIO support due to it being broken,
->> distros already having turned it off and nobody caring enough to fix
->> it..
->>
->> What does device_iommu_mapped() even really mean?
->>
->> Looking at usages..
->>
->> These are fixing SOC HW bugs/issues - the desire seems to be "is the 
->> SOC's
->> IOMMU enabled"
->>
->> drivers/char/agp/intel-gtt.c:           
->> device_iommu_mapped(&intel_private.pcidev->dev));
->> drivers/dma/sh/rcar-dmac.c:     if (device_iommu_mapped(&pdev->dev))
->> drivers/gpu/drm/i915/i915_utils.c:      if 
->> (device_iommu_mapped(i915->drm.dev))
->> ?
->> drivers/usb/dwc3/dwc3-xilinx.c: if (of_dma_is_coherent(dev->of_node) 
->> || device_iommu_mapped(dev)) {
->> drivers/usb/host/xhci.c:        if (!(xhci->quirks & 
->> XHCI_ZERO_64B_REGS) || !device_iommu_mapped(dev))
->> drivers/crypto/qat/qat_common/adf_sriov.c:      if 
->> (!device_iommu_mapped(&pdev->dev))
->> ?
->>
->> These seem to be trying to decide if iommu_domain's can be used (and
->> they can't be on power):
->>
->> drivers/gpu/drm/msm/msm_drv.c:  if (device_iommu_mapped(mdp_dev))
->> drivers/gpu/drm/msm/msm_drv.c:          device_iommu_mapped(dev->dev) ||
->> drivers/gpu/drm/msm/msm_drv.c:          
->> device_iommu_mapped(dev->dev->parent);
->> drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c:     if 
->> (device_iommu_mapped(dev)) {
->> drivers/gpu/drm/rockchip/rockchip_drm_drv.c:    if 
->> (!device_iommu_mapped(dev))
->> drivers/gpu/drm/tegra/uapi.c:   if 
->> (device_iommu_mapped(client->base.dev) && 
->> client->ops->can_use_memory_ctx) {
->> drivers/gpu/host1x/context.c:           if (!fwspec || 
->> !device_iommu_mapped(&ctx->dev)) {
->> drivers/infiniband/hw/usnic/usnic_ib_main.c:    if 
->> (!device_iommu_mapped(&pdev->dev)) {
->>
->> Yikes, trying to map DMA addresses programmed into devices back to CPU 
->> addresses:
->>
->> drivers/misc/habanalabs/common/debugfs.c: if (!user_address || 
->> device_iommu_mapped(&hdev->pdev->dev)) {
->> drivers/misc/habanalabs/gaudi2/gaudi2.c:                if 
->> (!device_iommu_mapped(&hdev->pdev->dev))
->>
->> And then sequencing the call to iommu_probe_device() which doesn't
->> apply to power:
->>
->> drivers/acpi/scan.c:    if (!err && dev->bus && 
->> !device_iommu_mapped(dev))
->> drivers/iommu/of_iommu.c:       if (!err && dev->bus && 
->> !device_iommu_mapped(dev))
->>
->> Leaving these:
->>
->> arch/powerpc/kernel/eeh.c:      if (device_iommu_mapped(dev)) {
->>
->> This is only used to support eeh_iommu_group_to_pe which is only
->> caleld by vfio_iommu_spapr_tce.c. Since power vfio doesn't work right
->> now this is uncallable, and when power is fixed this will work
->> properly.
+On Mon, Jan 30, 2023 at 01:49:20PM +0000, Robin Murphy wrote:
 
-Oh wow, I should have looked at more context... Even better, this one is 
-already just an elaborate "if (true)" - it has been impossible for 
-dev_has_iommu_table() to return 0 since at least 2015 :D
->> arch/powerpc/kernel/iommu.c:    if (device_iommu_mapped(dev)) {
->> arch/powerpc/kernel/iommu.c:    if (!device_iommu_mapped(dev)) {
->>
->> These should both be replaced with some kind of 'device has iommu 
->> group', since
->> it is really driving ppc unique group logic.
+> All in all, it's only actually the habanalabs ones that I'm slightly wary
+> of, since they're effectively (mis)using device_iommu_mapped() to infer the
+> DMA ops implementation, which could potentially go wrong (or at least *more*
+> wrong) on POWER with this change. I guess the saving grace is that
+> although
 
-And in fact those appear to mostly serve for printing debug messages; if 
-we made iommu_group_add_device() return -EBUSY for duplicate calls (not 
-necessarily a bad idea anyway vs. relying on the noisy failure of 
-sysfs_create_link()), they could arguably just go.
+IMHO habana is not using the DMA API abstraction properly. If it
+doesn't work on some archs is their bugs to deal with - we don't need
+to complexify the core code to tiptoe around around such an abuse in
+an obscure driver.
 
-All in all, it's only actually the habanalabs ones that I'm slightly 
-wary of, since they're effectively (mis)using device_iommu_mapped() to 
-infer the DMA ops implementation, which could potentially go wrong (or 
-at least *more* wrong) on POWER with this change. I guess the saving 
-grace is that although they are available on PCIe-interfaced modules, 
-the userspace driver stack seems to be implicitly x86_64-only - as far 
-as I could tell from a quick poke around their site and documentation, 
-which doesn't appear to acknowledge the concept of CPU architectures at 
-all - so the chances of anyone actually trying to use the kernel drivers 
-in anger on POWER seem minimal.
-
-Thanks,
-Robin.
-
->> So, I'd say Baolu's approach is the right thing, just replace the
->> above two in ppc with something else.
-> 
-> Thank you both. I will follow up a series later.
-> 
-> Best regards,
-> baolu
+Jason
