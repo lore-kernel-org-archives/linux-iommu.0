@@ -1,128 +1,316 @@
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2087.outbound.protection.outlook.com [40.107.100.87])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B21146AA3
-	for <iommu@lists.linux.dev>; Mon, 30 Jan 2023 17:51:16 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=E+FXWytXVz6puV7SvkwSN54I2Jyp+JbLFCHCbrLjD5LRRgfy3aVsYupbOsW6AfZ3oqU8asHyX2Zlfspq4atHvOuYq3105MprVkVmKM1CfseIPPT9tfiPr4/NWAilEgVJIyG9GkyN/3WYlstwapc9hmrXuEuT0ApGu6/JZ28Ik41x03BVCYUKwcjYjeZiEAvZ+X0+atvVxnwG6e4lZsSvcGPWtqj+43BXPk+vx2nsZDRq70XP1iCVFc5YfqeduWUiVgsaeH0CIngmCN1aAjGYSU0kVSJBwGW4hta11o5Kao3FyBbKzQFZi0QoHfXjVCP3NMtJBd4lx1z/e6Tt+tDTCg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dt9uRrQkZbjY78Q2VvVJ2TVM3raLhuf9QVR2iA5uMJ0=;
- b=D7vucG+qO37H3j2OOwv1GxVZ27pcVMMr0fCj+4pfygWKZZEXTX2BXUZmJaSRJB83tHHNbVAnRnDUQ+p8LLKiecyW1E/DacVLonHo8YFBNXsIOzpnm6c5ga+LXhexQLQaF27upUxpzRSISU8Hx1WP4U9KzelRhksr8w0wqBOBO82wppJu2fraAbRZsPt2Xu1ou8eTaYSv5MRP1+YFsIebUaeMjvKYmHg9mCxuYRv768xJpfJgNkgs0opk5oY93dCQpsfYuZjKZPIM/vzvw125N/D/dIsckbx3a/0ETyrBAV+jVcCTqaLvtCj8+4aKP+IApwyaAfbLm+7qWngYEJSYeg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dt9uRrQkZbjY78Q2VvVJ2TVM3raLhuf9QVR2iA5uMJ0=;
- b=qCxfSbes7A7wbNebklPMMm11XSGokx2Qi8m50bn+WI7ynvRxKatJdEiHS5B91+fmIPTi+zZOogINGb2H2lBxEcvGhVjxbvRy3U6Z1oI/BY6r9u50vfKpeDbsdKGNFpCeb0y7do+T+upmGi0pIfb84WV97NrgOfZkXdFUYxZuwn4iW5z7Q1DHOz94zJZaOelYua+ybUhkz+zVLcW10zc03ZSW3bztjUUPDKmFwMNPQqhx2T0yu20SOmnnwheH7lgvLr23LEQkKAP6qndyiQZl3AJfixttCwRDGLRhSzXxgyNBfkvgQjTmV66UsHJqjcMfh61JaOgCCi4Rj+5nj3JW/Q==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by IA1PR12MB8312.namprd12.prod.outlook.com (2603:10b6:208:3fc::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.36; Mon, 30 Jan
- 2023 17:51:14 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::3cb3:2fce:5c8f:82ee%4]) with mapi id 15.20.6043.033; Mon, 30 Jan 2023
- 17:51:14 +0000
-Date: Mon, 30 Jan 2023 13:51:13 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, hch@lst.de, baolu.lu@linux.intel.com
-Subject: Re: [PATCH v2 5/8] iommu: Switch __iommu_domain_alloc() to device ops
-Message-ID: <Y9gDkUc0rMFjHd2w@nvidia.com>
-References: <cover.1674753627.git.robin.murphy@arm.com>
- <23b51c84247cb36e96c242d3aef8ef555b6d05cd.1674753627.git.robin.murphy@arm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <23b51c84247cb36e96c242d3aef8ef555b6d05cd.1674753627.git.robin.murphy@arm.com>
-X-ClientProxiedBy: BLAPR03CA0136.namprd03.prod.outlook.com
- (2603:10b6:208:32e::21) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E0EE26AA3
+	for <iommu@lists.linux.dev>; Mon, 30 Jan 2023 18:05:19 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DD70A1FB;
+	Mon, 30 Jan 2023 10:06:00 -0800 (PST)
+Received: from [10.57.89.162] (unknown [10.57.89.162])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AAA743F71E;
+	Mon, 30 Jan 2023 10:05:17 -0800 (PST)
+Message-ID: <01b0254f-41b0-2cbc-7d47-5507258f35b5@arm.com>
+Date: Mon, 30 Jan 2023 18:05:12 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|IA1PR12MB8312:EE_
-X-MS-Office365-Filtering-Correlation-Id: dae4ca81-933a-4192-0537-08db02ea94c9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	PfKyohnpk5RJLAq5vLPnATtkEbn0Rs6dAvhpK+ConwsrKky7tAX0la6sjXtMuhsc40VDyR8T/jm6F91zTYtbujoKXqT2eWB0+y8PfLWRuMY3XwjmqPyQYDP03ozS96DyH2YVQvn2WjT9F4pMKZC8hyT/h66kMekK8Kqyo5Hapg5RX4CvbEpw1vNgYlMjnPDbmaUQxXdBuWRhOF0ko9vKRQAmr9jz47Q2ZHDWopqrQpmbaeJ5/yBhTyy8qvUg/HlnSqnCZ7tFhAF47qeS1anh7QRp2Qyg5ETvnMCmFGCYQKR/uJlhd09u64bw3EuoY5zaAaKtd2M2/zVFgR1Et4icB69Ag8CPsPlRO1+PMUQ6v8ypd0Lbbljs1ovmoXilDtmL8vsP+Ef0IjrheASbRlmdl7fVdXVRczQ/THusRB5cSD14odJ5z/vGH2mrGEVk+6xVX5DRUho7is2vpv3O5TkmHlLJReQHZz46693Zld9JeDDlDzv2ngnE6LtGtaVcpXyOB/VVNdWumJCaRGM/QO7dSRtJcPYNSB7uG1WRuzrj0QPsnRFa8U0LZRc3kCHTIlSj6L39b6NFHhwlbwliAKYp19CUxs7nlh/HyHOcnAgzgDlPTW40W428hgMC3f/BylZ929FK9Kx+An2t7ZQsy38l4w==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(376002)(346002)(396003)(39860400002)(366004)(451199018)(66476007)(4326008)(41300700001)(8676002)(8936002)(6916009)(66946007)(316002)(66556008)(6486002)(5660300002)(4744005)(83380400001)(36756003)(2906002)(186003)(26005)(6512007)(478600001)(6506007)(86362001)(2616005)(38100700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?AVn9NxCITDTWknoqQgan17got9YBCMiuxAruTbQ4BbW687Mgs3+QnWrqkBp0?=
- =?us-ascii?Q?EZ+0gNXF8bjUvBtt6zLG9JZqQd6EZNc2xdt9N6eiQUQx1OEKWqHiKEgy0jSy?=
- =?us-ascii?Q?mmZhzZBhYLomDi1Ml/eAJy8MIxel4dsUVKkHMz6/s95mPDluiXpiYo79OF1U?=
- =?us-ascii?Q?8YsCbwogVz3B5ogZvRJlPoTVa6lBFDaVDf6ejTVyYXTu3EMrii0hGL77rJlV?=
- =?us-ascii?Q?LtqLqDVZpV4x8nmaElRulmasYg+Sai/JsnXFe8McmPP1sVdLFdebxTCT1aW2?=
- =?us-ascii?Q?iEcbkHpVao7qwrmP6hox0dMtbo4e1tkPqeZ6tFIqpd58rmPSzrOORYvEI28v?=
- =?us-ascii?Q?mEE2TPCUbomTR9YxtcxrsENqwsg7/sUNg6piNsh7QePvIggMCtSy/q8dXbqT?=
- =?us-ascii?Q?aHeLms2S7Puu6nhWZIh6m37mBriZW8/jtBxes9+TjKl5ARM/5ERzaKvBa3PS?=
- =?us-ascii?Q?Y1Ht1HADi+f6sJZtfTkgEGBDrFbiVZSxd+uAK2LUok5zHtNjjYSBC0Qs9Ei9?=
- =?us-ascii?Q?hlEOQnlr+mzXfG9/5dzx7ulTLLHcBnayHS4mGUzwNXffvytyBgFSellemlFJ?=
- =?us-ascii?Q?sYEDhoJc3cYXIvi81m6SGTvLOYZLKopPWAJ875oacIgfCiZC2neqpLHxew8u?=
- =?us-ascii?Q?AJCNB8KLhwSo1Fvof68sp9d1mw4/ucuS1+GVVH/GlO92BX0Z00bK7ZwzxYN2?=
- =?us-ascii?Q?Or8MZqXUHknha1fKQfws6J/lJb/yu+Bh1iuSso6HJAvwtP10V0OaUXWj7zkH?=
- =?us-ascii?Q?s6HvD5PwUZ8zsa+YPH0a0BcpH67UxGkCCGFvfFWGbzaqTQRbYB80BU5r6LAU?=
- =?us-ascii?Q?WtnipzvLK4qXbU5WhqUK5RB9qjx5Myl30JftQel7L019dO2DV65s6hWQIdPV?=
- =?us-ascii?Q?MvOI0dbMzGg8yivpkH9dV+Y8Yl3cIWkaSpPc/+GUwrqUjbcYRNQTfRKrSOI/?=
- =?us-ascii?Q?+27/ZfPUl5PzwglgvnP19xPlB030/cULDBk5i+vW6dgtgrzaTYounR3M3unm?=
- =?us-ascii?Q?HQHF5UxTN56tESqQvaIXqn5CT9gRJgV30fZ3BU9rTmnhaOh2nDTGG/g3K1FL?=
- =?us-ascii?Q?QIMiy/eUX9f7eb9xh4XawiG89Pr3m/iqdn8Q1P84gzjWW2azSXTlc9IbWPU4?=
- =?us-ascii?Q?DD0HUfWB43X4bbLuiwax18MNtyIpGFwSCJmUKy4SfVXOT7E2cSs8TQk3STI5?=
- =?us-ascii?Q?AYQPgMbQqRc4rLC1vaWScNnY4HjDihO36Pd6WAWeMf3dAs2YczSuNKkxMHq6?=
- =?us-ascii?Q?k8CHIeEkhpF2p387uGKMrvlL1bbqmVEEH8QFOGyU0dpKi9gT6D1sbKgVY0zr?=
- =?us-ascii?Q?uzgZFh1ERP1gfyvy7dB9VfXZjyUt+0076kQkOWIC3hAxqc2fJGxjuFDXszFR?=
- =?us-ascii?Q?dPhRY+LCWYmxWAtvCjGlx8DuCBvvd+3URdVVpl9gRTIJneb65WlmwTbP8r5i?=
- =?us-ascii?Q?gSPU33Z9+BjEwq94q8iPxjk/MpTQhuP+iJhMkPmtk51smRSrZMvSPBPZGq7B?=
- =?us-ascii?Q?WkRWjAXSLAM2dw1FFFfdwNmBFPHHYI4X2ofp8ClAMqwUr//iyRoMTo8D8OLv?=
- =?us-ascii?Q?bPZ72IgKny9ImkS3Gzhrutw2e10hyltrZ7x4a006?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dae4ca81-933a-4192-0537-08db02ea94c9
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jan 2023 17:51:14.6723
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GTU/EdGjOi88Fbk6Mw9mQ5l81faAoAT+nylzFw8cuiwTmC7YmKKlHsVvZJeVU3Mi
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8312
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Subject: Re: [PATCH v2 4/8] iommu: Factor out some helpers
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, hch@lst.de, baolu.lu@linux.intel.com
+References: <cover.1674753627.git.robin.murphy@arm.com>
+ <959a1e8d598c0a82f94123e017cafb273784f848.1674753627.git.robin.murphy@arm.com>
+ <Y9fyaRGp7Q8E5to2@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <Y9fyaRGp7Q8E5to2@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Jan 26, 2023 at 06:26:20PM +0000, Robin Murphy wrote:
-
-> @@ -1980,9 +1978,30 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
->  	return domain;
->  }
->  
-> +static int __iommu_domain_alloc_dev(struct device *dev, void *data)
+On 2023-01-30 16:38, Jason Gunthorpe wrote:
+> On Thu, Jan 26, 2023 at 06:26:19PM +0000, Robin Murphy wrote:
+>> The pattern for picking the first device out of the group list is
+>> repeated a few times now, so it's clearly worth factoring out to hide
+>> the group_device detail from places that don't need to know. Similarly,
+>> the safety check for dev_iommu_ops() at public interfaces starts looking
+>> a bit repetitive, and might not be completely obvious at first glance,
+>> so let's factor that out for clarity as well, in preparation for more
+>> uses of both.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+>>
+>> v2: - Add dev_iommu_ops_valid() helper
+>>      - Add lockdep assertion [Jason]
+>>
+>>   drivers/iommu/iommu.c | 39 ++++++++++++++++++++++-----------------
+>>   1 file changed, 22 insertions(+), 17 deletions(-)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 77f076030995..440bb3b7bded 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -284,6 +284,12 @@ static void dev_iommu_free(struct device *dev)
+>>   	kfree(param);
+>>   }
+>>   
+>> +/* Only needed in public APIs which allow unchecked devices for convenience */
+>> +static bool dev_iommu_ops_valid(struct device *dev)
+>> +{
+>> +	return dev->iommu && dev->iommu->iommu_dev;
+>> +}
+> 
+> I did an audit and more than half the callers need this test, and a
+> few places are missing it already.
+> 
+> We've kind of made a systematic error that assumes being in a group is
+> sufficient to prove there are non-NULL ops.
+> 
+> So I suggest that we make dev_iommu_ops() return NULL in all cases
+> where there is no driver and have a new API to get the ops in cases
+> where the call chain knows that it is safe, and there are only 5 of
+> those cases.
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index de91dd88705bd3..4b04ad50de8d6b 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -98,7 +98,8 @@ static int __iommu_group_set_domain(struct iommu_group *group,
+>   				    struct iommu_domain *new_domain);
+>   static int iommu_create_device_direct_mappings(struct iommu_group *group,
+>   					       struct device *dev);
+> -static struct iommu_group *iommu_group_get_for_dev(struct device *dev);
+> +static struct iommu_group *iommu_group_get_for_dev(struct device *dev,
+> +						   const struct iommu_ops *ops);
+>   static ssize_t iommu_group_store_type(struct iommu_group *group,
+>   				      const char *buf, size_t count);
+>   
+> @@ -130,6 +131,19 @@ static struct bus_type * const iommu_buses[] = {
+>   #endif
+>   };
+>   
+> +/*
+> + * This may only be called if it is already clear from the calling context that
+> + * the device has an ops. Seeing the device is part of an iommu_group is not
+> + * enough as VFIO and POWER put devices in iommu_groups and do not attach
+> + * drivers. Thus the only places that are safe have either already called
+> + * dev_iommu_ops() on their call chain, or were responsible for assigning ops in
+> + * the first place.
+> + */
+> +static inline const struct iommu_ops *dev_iommu_ops_safe(struct device *dev)
 > +{
-> +	struct device **alloc_dev = data;
+> +	return dev->iommu->iommu_dev->ops;
+> +}
 > +
-> +	if (!dev_iommu_ops_valid(dev))
-> +		return 0;
+>   /*
+>    * Use a function instead of an array here because the domain-type is a
+>    * bit-field, so an array would waste memory.
+> @@ -338,7 +352,7 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
+>   	dev->iommu->iommu_dev = iommu_dev;
+>   	dev->iommu->max_pasids = dev_iommu_get_max_pasids(dev);
+>   
+> -	group = iommu_group_get_for_dev(dev);
+> +	group = iommu_group_get_for_dev(dev, ops);
 
-This valid check is necessary to be done in __iommu_domain_alloc()
-because the callback coming from iommu_device_claim_dma_owner() never
-validated that the device/group has an iommu driver:
+Why? We've literally just assigned dev->iommu->iommu_dev 2 lines above; 
+it is not allowed to have invalid ops. Plus in future they may 
+potentially be a different set of device ops from the ones we initially 
+found to provide ->probe_device - in that case we definitely want 
+group_get_for_dev to use the proper instance ops. This is the only place 
+it is (and should be) called, so I don't see any problem.
 
-> @@ -3120,13 +3139,13 @@ static int __iommu_group_alloc_blocking_domain(struct iommu_group *group)
->  	if (group->blocking_domain)
->  		return 0;
->  
-> -	group->blocking_domain = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_BLOCKED);
-> +	group->blocking_domain = __iommu_domain_alloc(dev, IOMMU_DOMAIN_BLOCKED);
+>   	if (IS_ERR(group)) {
+>   		ret = PTR_ERR(group);
+>   		goto out_release;
+> @@ -414,7 +428,8 @@ int iommu_probe_device(struct device *dev)
+>   	mutex_unlock(&group->mutex);
+>   	iommu_group_put(group);
+>   
+> -	ops = dev_iommu_ops(dev);
+> +	/* __iommu_probe_device() set the ops */
+> +	ops = dev_iommu_ops_safe(dev);
+>   	if (ops->probe_finalize)
+>   		ops->probe_finalize(dev);
+>   
+> @@ -430,14 +445,13 @@ int iommu_probe_device(struct device *dev)
+>   
+>   void iommu_release_device(struct device *dev)
+>   {
+> -	const struct iommu_ops *ops;
+> +	const struct iommu_ops *ops = dev_iommu_ops(dev);
 
-Jason
+This is just moving an existing check around.
+
+> -	if (!dev->iommu)
+> +	if (!ops)
+>   		return;
+>   
+>   	iommu_device_unlink(dev->iommu->iommu_dev, dev);
+>   
+> -	ops = dev_iommu_ops(dev);
+>   	if (ops->release_device)
+>   		ops->release_device(dev);
+>   
+> @@ -614,13 +628,6 @@ int iommu_get_group_resv_regions(struct iommu_group *group,
+>   	list_for_each_entry(device, &group->devices, list) {
+>   		struct list_head dev_resv_regions;
+>   
+> -		/*
+> -		 * Non-API groups still expose reserved_regions in sysfs,
+> -		 * so filter out calls that get here that way.
+> -		 */
+> -		if (!device->dev->iommu)
+> -			break;
+> -
+>   		INIT_LIST_HEAD(&dev_resv_regions);
+>   		iommu_get_resv_regions(device->dev, &dev_resv_regions);
+>   		ret = iommu_insert_device_resv_regions(&dev_resv_regions, head);
+> @@ -1332,7 +1339,8 @@ int iommu_page_response(struct device *dev,
+>   	struct iommu_fault_event *evt;
+>   	struct iommu_fault_page_request *prm;
+>   	struct dev_iommu *param = dev->iommu;
+> -	const struct iommu_ops *ops = dev_iommu_ops(dev);
+> +	/* This API should only be called from an IOMMU driver */
+> +	const struct iommu_ops *ops = dev_iommu_ops_safe(dev);
+>   	bool has_pasid = msg->flags & IOMMU_PAGE_RESP_PASID_VALID;
+>   
+>   	if (!ops->page_response)
+> @@ -1601,7 +1609,8 @@ EXPORT_SYMBOL_GPL(fsl_mc_device_group);
+>   
+>   static int iommu_get_def_domain_type(struct device *dev)
+>   {
+> -	const struct iommu_ops *ops = dev_iommu_ops(dev);
+> +	/* It is not locked but all callers know there is an ops */
+> +	const struct iommu_ops *ops = dev_iommu_ops_safe(dev);
+>   
+>   	if (dev_is_pci(dev) && to_pci_dev(dev)->untrusted)
+>   		return IOMMU_DOMAIN_DMA;
+> @@ -1658,9 +1667,9 @@ static int iommu_alloc_default_domain(struct iommu_group *group,
+>    * to the returned IOMMU group, which will already include the provided
+>    * device.  The reference should be released with iommu_group_put().
+>    */
+> -static struct iommu_group *iommu_group_get_for_dev(struct device *dev)
+> +static struct iommu_group *iommu_group_get_for_dev(struct device *dev,
+> +						   const struct iommu_ops *ops)
+>   {
+> -	const struct iommu_ops *ops = dev_iommu_ops(dev);
+>   	struct iommu_group *group;
+>   	int ret;
+>   
+> @@ -1795,7 +1804,8 @@ static int __iommu_group_dma_attach(struct iommu_group *group)
+>   
+>   static int iommu_group_do_probe_finalize(struct device *dev, void *data)
+>   {
+> -	const struct iommu_ops *ops = dev_iommu_ops(dev);
+> +	/* It is unlocked but all callers know there is an ops */
+> +	const struct iommu_ops *ops = dev_iommu_ops_safe(dev);
+>   
+>   	if (ops->probe_finalize)
+>   		ops->probe_finalize(dev);
+> @@ -1884,13 +1894,9 @@ EXPORT_SYMBOL_GPL(iommu_present);
+>    */
+>   bool device_iommu_capable(struct device *dev, enum iommu_cap cap)
+>   {
+> -	const struct iommu_ops *ops;
+> -
+> -	if (!dev->iommu || !dev->iommu->iommu_dev)
+> -		return false;
+> +	const struct iommu_ops *ops = dev_iommu_ops(dev);
+>   
+> -	ops = dev_iommu_ops(dev);
+> -	if (!ops->capable)
+> +	if (!ops || !ops->capable)
+>   		return false;
+>   
+>   	return ops->capable(dev, cap);
+> @@ -2620,7 +2626,11 @@ void iommu_get_resv_regions(struct device *dev, struct list_head *list)
+>   {
+>   	const struct iommu_ops *ops = dev_iommu_ops(dev);
+>   
+> -	if (ops->get_resv_regions)
+> +	/*
+> +	 * Non-API groups still expose reserved_regions in sysfs, so filter out
+> +	 * calls that get here that way.
+> +	 */
+> +	if (ops && ops->get_resv_regions)
+
+This is just moving the existing check from the public interface to 
+pointlessly impose it on the internal call path as well.
+
+>   		ops->get_resv_regions(dev, list);
+>   }
+>   
+> @@ -2979,6 +2989,11 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
+>   	/* Since group has only one device */
+>   	grp_dev = list_first_entry(&group->devices, struct group_device, list);
+>   	dev = grp_dev->dev;
+> +	if (!dev_iommu_ops(dev)) {
+> +		/* The group doesn't have an iommu driver attached */
+> +		mutex_unlock(&group->mutex);
+> +		return -EINVAL;
+> +	}
+
+Withot any ops, group->default_domain will be NULL so we could never 
+even get here.
+
+>   	get_device(dev);
+>   
+>   	/*
+> @@ -3301,7 +3316,7 @@ static void __iommu_remove_group_pasid(struct iommu_group *group,
+>   	const struct iommu_ops *ops;
+>   
+>   	list_for_each_entry(device, &group->devices, list) {
+> -		ops = dev_iommu_ops(device->dev);
+> +		ops = dev_iommu_ops_safe(device->dev);
+>   		ops->remove_dev_pasid(device->dev, pasid);
+>   	}
+>   }
+> @@ -3413,6 +3428,9 @@ struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
+>   	const struct iommu_ops *ops = dev_iommu_ops(dev);
+>   	struct iommu_domain *domain;
+>   
+> +	if (!ops)
+> +		return NULL;
+
+Anyone who incorrectly calls sva_domain_alloc() directly without having 
+successfully called iommu_dev_enable_feature() first deserves to crash.
+
+(Incidentally, you've missed enable/disable_feature here.)
+
+> +
+>   	domain = ops->domain_alloc(IOMMU_DOMAIN_SVA);
+>   	if (!domain)
+>   		return NULL;
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 46e1347bfa2286..60e84f8c7c46e9 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -441,14 +441,11 @@ static inline void iommu_iotlb_gather_init(struct iommu_iotlb_gather *gather)
+>   	};
+>   }
+>   
+> +/* May return NULL if the device has no iommu driver */
+>   static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
+>   {
+> -	/*
+> -	 * Assume that valid ops must be installed if iommu_probe_device()
+> -	 * has succeeded. The device ops are essentially for internal use
+> -	 * within the IOMMU subsystem itself, so we should be able to trust
+> -	 * ourselves not to misuse the helper.
+> -	 */
+> +	if (!dev->iommu)
+> +		return NULL;
+>   	return dev->iommu->iommu_dev->ops;
+
+This is actively broken, since dev->iommu may be non-NULL before 
+dev->iommu->iommu_dev is set (a fwspec will always be set before the 
+instyance is registered, and a device may potentially hang around in 
+that state for evertt if the relevant IOMMU instance never appears).
+
+Sorry, I don't think any of this makes sense :/
+
+Thanks,
+Robin.
