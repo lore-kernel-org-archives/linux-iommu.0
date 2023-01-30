@@ -1,121 +1,125 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2086.outbound.protection.outlook.com [40.107.100.86])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48E973C13
-	for <iommu@lists.linux.dev>; Mon, 30 Jan 2023 15:58:14 +0000 (UTC)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 30UFuUHN016154;
-	Mon, 30 Jan 2023 15:58:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=DzCFf31liEnJkW9Xw8x3a1M1MvPxqDhF5FHxXmHBWpE=;
- b=USFQUQk+5TxxWb0dtdgZeXTcTdPvO3qMfO7DdcTBfLEzdn8KzE5utbLmaEuCha77mpm3
- aFu7U1TJF7Taya3bWnC2PxKflHHrxamx7BuAlSA3QEQzbWRbsUMJtoJOr2epsu+ukeub
- 1rq2L6EZsxM5r0OWqHHprVEVZDs/qoUlKuuyDZDh89tBECSFprrzpGpmJXNv2cLhC1U8
- xezYoZp1LYV4npyEDKub2R1M2A33ba0TBHkYw1mC9U1o/ltIFVlVYGLno9rZeluFgDqr
- nFwBoBeR+WtuQ/zg7Kapii46tkPiPZPenSNJtOPP/eP3W9+Dp2vZhApIia1Ozjlos2g5 lg== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3nebxf0gjw-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 30 Jan 2023 15:58:04 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-	by ppma03ams.nl.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 30U5KK5Z012873;
-	Mon, 30 Jan 2023 15:58:02 GMT
-Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
-	by ppma03ams.nl.ibm.com (PPS) with ESMTPS id 3ncvtyaefc-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 30 Jan 2023 15:58:02 +0000
-Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
-	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 30UFvwtI16319196
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 30 Jan 2023 15:57:58 GMT
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 6BD722004B;
-	Mon, 30 Jan 2023 15:57:58 +0000 (GMT)
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 3654920040;
-	Mon, 30 Jan 2023 15:57:57 +0000 (GMT)
-Received: from [9.171.38.212] (unknown [9.171.38.212])
-	by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Mon, 30 Jan 2023 15:57:57 +0000 (GMT)
-Message-ID: <8209c172aaa415eace9dcd4b5675ef8506a34538.camel@linux.ibm.com>
-Subject: Re: [PATCH v5 5/7] iommu/dma: Allow a single FQ in addition to
- per-CPU FQs
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Wenjia
- Zhang <wenjia@linux.ibm.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Gerd
- Bayer <gbayer@linux.ibm.com>,
-        Pierre Morel <pmorel@linux.ibm.com>, iommu@lists.linux.dev,
-        linux-s390@vger.kernel.org, borntraeger@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
-        agordeev@linux.ibm.com, svens@linux.ibm.com,
-        linux-kernel@vger.kernel.org, Julian Ruess
- <julianr@linux.ibm.com>
-Date: Mon, 30 Jan 2023 16:57:56 +0100
-In-Reply-To: <Y9ficPosWtGqbDit@nvidia.com>
-References: <20230124125037.3201345-1-schnelle@linux.ibm.com>
-	 <20230124125037.3201345-6-schnelle@linux.ibm.com>
-	 <1e016926-b965-3b71-07e1-1f63bc45f1a0@arm.com>
-	 <Y9ficPosWtGqbDit@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.3 (3.46.3-1.fc37) 
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AC4B3C13
+	for <iommu@lists.linux.dev>; Mon, 30 Jan 2023 15:59:17 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=A5cT115EoiiXMM+yLT8iNSnKm7dVtIQq3nDPgsjw3I77GJQSk3NTqVfV8PvLdwTS4NtKDpwt2U+oRedrc2PMQh3bo81kOmmX6mqglsTN0ptkFgGhdcN5BOqPi/86q6cfkGXeNPhtskV7T5OF5/dqwBPqnWSX666YxIrff1+YkOAI0pzyOTC4k5fI7hlELmMji6vEotm0D06TQLU5h7Eqi46VJOO3pBnbYKfcU6ez5L02vhomczdq7+Bz3qzYwn/FoBTy2vJwQP+tnWTnpB/qaNsg2vFAMfebHOAibN8X18TLXG3AZe/MIBfVSj/uNrzD0HP3Vl6egM57tcgKcGCk9A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bbDqjQPll1iR03xwp9YM7r52N8aRLG2TOBs2LNKmr2c=;
+ b=eclOScNxrESK816qa8NQgDvjdZVuiIU051r7XB0MGyf3StTb261BKc/Sucg/+FXglfpl/I3P4XykOawtYy9BK4wIpRI6EEgov1L1dCSiSyOZrppt10Pek2aB24DTj/Pve5Rt/ch8NERX3KUeQ7Few4PO7Jr3vSYEEaaYXudVoBgiEVWM3nYjgftVlxMhQ00IWXuWwXN9/LtTXlyP+asQ2uTLgMFCAm1zO1BnHg65gN/IsHxG6Fans1ufQPJmlyx5RKYtahIuVGb+2ZKb+KTc103EyVJLQg0LwTUaBPd/zo2JAc1GN3Uo2pqQerv4uySNPXpRVq2wvICr4bdufQHrcA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bbDqjQPll1iR03xwp9YM7r52N8aRLG2TOBs2LNKmr2c=;
+ b=eQA2EEelNcyvJHOe1tJ4tg2z1hSzk8tn3tk8RdNrpQsLXGJ7sx3MWePloy2KKM3xmeebisNB0ziXrbC75iYw5Zb7R+rG3WfzsWjyjG+iTlLNxMIb0toivWxOk/Vpb6l3yv2bjI/jbbji6ZtvCwVR5aAtOEZvBVanF0KV66ZxqOa1+mCLHVUSihZN+uZd/huu2la7MAMHf3HoF6pimnrBM7xtRv4vY4RgVoi2DfYpTmXBisHa0lIFSrhLFXZniAtdHMHD5oqNr/vTgZc3q4Rprd/GoWW//+cx6jotBX6Vc1xYOuZ9Oz2YsezmD0Cv4xjdOjTP50Hh+JlEIUwQV1hjYA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by SJ0PR12MB6686.namprd12.prod.outlook.com (2603:10b6:a03:479::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.33; Mon, 30 Jan
+ 2023 15:59:14 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3cb3:2fce:5c8f:82ee%4]) with mapi id 15.20.6043.033; Mon, 30 Jan 2023
+ 15:59:14 +0000
+Date: Mon, 30 Jan 2023 11:59:13 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, hch@lst.de, baolu.lu@linux.intel.com
+Subject: Re: [PATCH v2 2/8] iommu: Validate that devices match domains
+Message-ID: <Y9fpUTg9wN+SXD+x@nvidia.com>
+References: <cover.1674753627.git.robin.murphy@arm.com>
+ <0f78ba36a7b31a0d534416e56ea0f1af0efc2659.1674753627.git.robin.murphy@arm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0f78ba36a7b31a0d534416e56ea0f1af0efc2659.1674753627.git.robin.murphy@arm.com>
+X-ClientProxiedBy: BL1PR13CA0154.namprd13.prod.outlook.com
+ (2603:10b6:208:2bd::9) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 9rPIUMDXBzv6yaFTQkv6a_30SpWJWZQP
-X-Proofpoint-ORIG-GUID: 9rPIUMDXBzv6yaFTQkv6a_30SpWJWZQP
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.219,Aquarius:18.0.930,Hydra:6.0.562,FMLib:17.11.122.1
- definitions=2023-01-30_14,2023-01-30_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=1 clxscore=1015 adultscore=0
- phishscore=0 bulkscore=0 malwarescore=0 lowpriorityscore=0
- priorityscore=1501 spamscore=1 impostorscore=0 mlxscore=1 mlxlogscore=213
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2212070000 definitions=main-2301300151
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SJ0PR12MB6686:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4705aae0-8d24-4ccb-a30e-08db02daef69
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	81lBdR1s5Ib5dImHqK32ycb1NcaQDYrWsQFrvJOlpkMcjuAKPly2U2tdGuE/YkWB3AEKEkRnzWl02V9ytEHpxaHVyVINWtTwTOYpWcRZm1Sn7/zEJV1jRcxNnLZg2WxyHdhUleEqQUl7zE48agqfPWKrJ9JVB2l4LPRLjAdQEEbKcZWx+ALEd7n8ChurKLXtCGGmgvWMrrXLmHV9FKw7wFVIMeud8T4wOvLUyJpELJt4Sh8Hzo8vEk3S2HGf5CXPCrHQgxZA0LCnG2bxxy6L6O6ZHbRZaFiRES9dTAyjyyXaKhTrDlqhRjMOGe/5woMGUusQP+YAfesJSQjUUPjSDv+2YKNSsH7+1gHLCq/925JN0Zf5EaZ6cjgUADEetd5xzI3RBnkithzv+EqWNmvMgsWUzIBZAK50fiRhVxJPcEsAyv1sbTbIdukk5aqDikiyoQli0hlIEFTLSlCqI/O0Y2vagE987hbgsEfSeBWj53v0kcfuikscT2rrfHY7qpypUO4Fvn/O4iu7yfpQ3u1rx1k2mo/JSyWeIsoNZ4hOEUDLYoV9rPdfUG2HSFxTx3RDazzc3jcfaOEzlZBkCRJfE6emAv6p4lOxpCUP/E0eS3vSWX/8bagHa5l7kbT6r/Bf6V9kt7qC4kVl1ybWLn3klg==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(396003)(39860400002)(376002)(366004)(136003)(346002)(451199018)(36756003)(26005)(6512007)(38100700002)(2616005)(186003)(5660300002)(4744005)(2906002)(478600001)(6486002)(6506007)(66946007)(6916009)(8676002)(4326008)(86362001)(66556008)(316002)(41300700001)(66476007)(8936002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?FBP0eNuALr7QGaIl0XlbP7RM+1MLGXUG+0Q0816T2o8YYwOZWkx7SSiWPfT9?=
+ =?us-ascii?Q?mtCcyA7ZnkdU6w6B1R6Np5u6StOoibH+f0wQuVVjFMxNu4VxgSWlHxYI2kJu?=
+ =?us-ascii?Q?NLHOVyQVHN4KiLAav7wIg+lTnRZq1Z231FaBsVYpPdgLSuZLbszD2+aDELKJ?=
+ =?us-ascii?Q?qrBwosJxHBJ2qAZWM3MYpAFbhXqwcUXM98xIHAxArKPD+mzcCpLcHrTAZQa0?=
+ =?us-ascii?Q?C9+8wiJm631BbAAB5e1PMzkbFsuO18TWEm7nJw+PicnZptDM/lfZePjnZEHb?=
+ =?us-ascii?Q?7k5uUzpcjMlwIosQ+akZ9M8r85IZKg5LudTBdyKqziZpWEZaifF+Wy4+g0UY?=
+ =?us-ascii?Q?ABXQaXpabQaJkYJyqvE692MkdVYjU+gURKXFSnI0M5bIFoSA6o0V1JKTrvgN?=
+ =?us-ascii?Q?lgzcjnUcGtW01qeSUfb3AoVH9uvVO0D3xH5qjzpNsFQGPMVeohWAW4OUom89?=
+ =?us-ascii?Q?9jthYbBCWlq/uXTLflVvLnnZXFBoUWoYYHw/6mGl9DODfL7Ut1sP02ZTynZ0?=
+ =?us-ascii?Q?VZl7T0T1TR4LiKz+mE6EMRHYM9anDcfp0FZBnp1SxGW5d0V5wIvHbqXpfKf1?=
+ =?us-ascii?Q?fmR9W0knaTHfEdrcuXVPr3pH9AifcMHqS2mvPzBQmy9gWVXTHnJol37EaEPn?=
+ =?us-ascii?Q?xdxIG5oNTTk/3zTYOBBx7aNZsWmMgPk81QSum37vU0NRS2J08gAXsdOAoTaJ?=
+ =?us-ascii?Q?byIFo9B2j/whBy1l8LLe9xCeVxUacuJv5IIV5u1/REqtNmUD9XcW2ZnZ2qzt?=
+ =?us-ascii?Q?+ZfgXXoDBj+hhKHlyrHFt4dcHRx47zLyJaDIyvL2jM/ZZwmEcD74CTfcXj7c?=
+ =?us-ascii?Q?B4OOQhW9Fw/L2co4kp195ZQNsCephd1jgzcddp+uj4bAwSQxDasGP8GBaGuk?=
+ =?us-ascii?Q?R8Btw/tZRHVMhjsi8NWUhGdbve495xJuZY7gAKZVbTkjDwUb/fUcwG2jjlmQ?=
+ =?us-ascii?Q?5j+83xAAR+AVcKj2k/oBM+BvmxNTWlThYSGjBUQW5ulBAmFuSedVrTqSxcrr?=
+ =?us-ascii?Q?p3TYTjqkiywa5J/u7JSMtVPmsrnyubzGHKdwXSFQyiOtvuDFwTItfqF/x212?=
+ =?us-ascii?Q?0/HjlDhTDkTCxRBXxeVJuySRQDcWOufO0z0mB4DZLSPf5nvg88OEdM/lQ+Ww?=
+ =?us-ascii?Q?gHiWIAKB3eocwmeKyiSBq77rfYt7OwXcQKdmRi4Z6Ohvs/npFrk+cnwqg6dj?=
+ =?us-ascii?Q?KgB5EIeeTYHqIbfmGpG1ywz4p1hawK74LS4mEMInoj7R/CmD0ksMBKAo9OdD?=
+ =?us-ascii?Q?PkU7wZnw38VfWTssDGnG7UyfeLgmWTbRLKlU7CxERqXJnk8XAcXhhO26nq0g?=
+ =?us-ascii?Q?2HwveOfqGiFhPNL86E9aYRE5WK4CLOafZ72HlCccUlyArLohRNYNIPXjd81T?=
+ =?us-ascii?Q?s7r0t2+R0P2al7QXN484vVBrfz+jDt47nqMt6w29THxoLynGh0eCe2yzSsgw?=
+ =?us-ascii?Q?/qekeyrSOFntU+vxFVemw4W5LebL4jkg4d2hBLWnz9VN1Q5ZXC0P57NEHQzh?=
+ =?us-ascii?Q?JVp4acRH7i/Jqo99YdOxxUITDf6KUEOfsoqYqRhOUVzesbOt8v0BQ2ZGTqJV?=
+ =?us-ascii?Q?il1UNpAUx7C8KG5Nv5OAg1PS9w/fzeyEPale6qGM?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4705aae0-8d24-4ccb-a30e-08db02daef69
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jan 2023 15:59:14.6954
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: jZQ/RCmAXGHVndLjgpEL5NplK7QKH1Xq8nPXSjNYfqurSLZEpK+qnMMNNyXtuVNZ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB6686
 
-On Mon, 2023-01-30 at 11:29 -0400, Jason Gunthorpe wrote:
-> On Mon, Jan 30, 2023 at 03:13:22PM +0000, Robin Murphy wrote:
->=20
-> > Either way, the more I think about this the more I'm starting to agree =
-that
-> > adding more domain types for iommu-dma policy is a step in the wrong
-> > direction. If I may, I'd like to fall back on the "or at least some def=
-inite
-> > internal flag" part of my original suggestion :)
->=20
-> Yes please, lets try to remove IOMMU_DOMAIN_DMA, not add more :)
->=20
-> At this point we should probably just sort of hackily add a ops flag
-> to indicate single queue and when we fixup the policy logic we can
-> make it a user selectable policy as well.
->=20
-> Jason
+On Thu, Jan 26, 2023 at 06:26:17PM +0000, Robin Murphy wrote:
 
-Ok yeah I did like the policy idea you brought up a while back. If we
-want to do the conversion to dma-iommu before that we do need an
-interim solution though. So if I'm reading your ops flag idea right I
-think it could even re-use much of the logic in this series and just
-not introduce a new domain type.
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 3589d1b8f922..86fa52025e75 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -95,6 +95,7 @@ struct iommu_domain_geometry {
+>  struct iommu_domain {
+>  	unsigned type;
+>  	const struct iommu_domain_ops *ops;
+> +	const struct iommu_ops *owner; /* Whose domain_alloc we came from */
 
-I'm wondering if maybe instead of plain flag bits it makes more sense
-to have a dma_iommu_options struct that contains the queue size and a
-flags value which indicates whether a single or per-CPU queue is used.
-Then I could add an iommu_ops callback that takes a device and a
-pointer to the dma_iommu_options. That way we can still set the options
-per device but don't need a whole extra domain type. This callback
-would then just be called during initialization of the DMA-FQ domain
-and not having the callback just leaves the defaults unchanged. Does
-that go in the right direction?
+For some reason I thought we were trying to save bytes in this struct?
 
-Thanks,
-Niklas
+Putting a pointer back to iommu_ops in iommu_domain_ops would allow
+that, then it is just domain->ops->owner
+
+Regardless,
+
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+
+Jason
