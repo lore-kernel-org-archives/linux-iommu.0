@@ -1,40 +1,40 @@
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEFE17F1
-	for <iommu@lists.linux.dev>; Tue, 31 Jan 2023 07:46:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C61CC7F3
+	for <iommu@lists.linux.dev>; Tue, 31 Jan 2023 07:46:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675151169; x=1706687169;
+  t=1675151170; x=1706687170;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=cjBgirNm5pIeDvvzUxGA1RbTCC4lfrnHwE9vlSINv4g=;
-  b=Z2ku5nA9HPIhOlCxa2mKj1eIMF6TszPQih8/rSF3W+UbC9hCIvX0M5UY
-   PMhXit9jWwg1sEEPWUX3VXu8ettr1eJKS2h7yN/4/JK/Y5nDJsbC2ptgl
-   SG2otftFOqWy3R6ZsmSumg5761vhNwlje0ZU3qEYYo7soAlWZiyyfJcqz
-   e/jeHwBi13+OX2jrmzA+mfNziZPrBAGlGOb7sOpam1Tk6awERVWHWWAvH
-   Wb4jfKkWDoEvF5qnhWDS7mSFI2cDFWRd5/05w0FwVtUhhE32D3klU9sLA
-   5f5hyhNuEPUJe69ppkkNHROewDS6jhyd6ZxjOzsYgYlMy3EETMsfyRV01
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="315736609"
+  bh=5j0AQLikYlRRnQOHzKRdwcTeWDE/SCGwovkljtCjx10=;
+  b=kgPClQZsPt+T0YNHYe6xJFewDVOvMOHXZ4mRp+hiI/vVUppxqurzcmul
+   3YbQn7O9SSBCYd8emmKmabZ1a1SpBho7JBk97uFqAOE9xmnqVD+NNq+Xb
+   AhWnaVmd/CubUqgPg6BTZ8HOXZc9OFnCpnul/3RliuXrGl7pdVXgsZkbE
+   vVHGs1HHH3cEmCV9ICFbiqsggzu5voZoRTj66bclr25ElbR/MpvNSqrfo
+   zqJYlNnpBRDwL6BHLX2ZxGjJXbnarv+DzbTPU4+SAz5sh11bSit5pV5ZE
+   qY9MZ+kkhnTbuvtni82lThSG0yl1vVpdDCxOeoLdBIeSnKMjworJc8hjO
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="315736613"
 X-IronPort-AV: E=Sophos;i="5.97,259,1669104000"; 
-   d="scan'208";a="315736609"
+   d="scan'208";a="315736613"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2023 23:46:00 -0800
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2023 23:46:01 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="657775524"
+X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="657775532"
 X-IronPort-AV: E=Sophos;i="5.97,259,1669104000"; 
-   d="scan'208";a="657775524"
+   d="scan'208";a="657775532"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga007.jf.intel.com with ESMTP; 30 Jan 2023 23:45:59 -0800
+  by orsmga007.jf.intel.com with ESMTP; 30 Jan 2023 23:46:00 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: kan.liang@linux.intel.com,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 05/12] iommu/vt-d: Set No Execute Enable bit in PASID table entry
-Date: Tue, 31 Jan 2023 15:37:33 +0800
-Message-Id: <20230131073740.378984-6-baolu.lu@linux.intel.com>
+Subject: [PATCH 06/12] iommu/vt-d: Support size of the register set in DRHD
+Date: Tue, 31 Jan 2023 15:37:34 +0800
+Message-Id: <20230131073740.378984-7-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20230131073740.378984-1-baolu.lu@linux.intel.com>
 References: <20230131073740.378984-1-baolu.lu@linux.intel.com>
@@ -46,47 +46,98 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Setup No Execute Enable bit (Bit 133) of a scalable mode PASID entry.
-This is to allow the use of XD bit of the first level page table.
+From: Kan Liang <kan.liang@linux.intel.com>
 
-Fixes: ddf09b6d43ec ("iommu/vt-d: Setup pasid entries for iova over first level")
-Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+A new field, which indicates the size of the remapping hardware register
+set for this remapping unit, is introduced in the DMA-remapping hardware
+unit definition (DRHD) structure with the VT-d Spec 4.0. With this
+information, SW doesn't need to 'guess' the size of the register set
+anymore.
+
+Update the struct acpi_dmar_hardware_unit to reflect the field. Store the
+size of the register set in struct dmar_drhd_unit for each dmar device.
+
+The 'size' information is ResvZ for the old BIOS and platforms. Fall back
+to the old guessing method. There is nothing changed.
+
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Link: https://lore.kernel.org/r/20230128200428.1459118-2-kan.liang@linux.intel.com
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Link: https://lore.kernel.org/r/20230126095438.354205-1-baolu.lu@linux.intel.com
 ---
- drivers/iommu/intel/pasid.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ include/linux/dmar.h       |  1 +
+ include/acpi/actbl1.h      |  2 +-
+ drivers/iommu/intel/dmar.c | 11 +++++++----
+ 3 files changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index fb3c7020028d..ec964ac7d797 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -364,6 +364,16 @@ static inline void pasid_set_page_snoop(struct pasid_entry *pe, bool value)
- 	pasid_set_bits(&pe->val[1], 1 << 23, value << 23);
- }
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index d81a51978d01..725d5e6acec0 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -39,6 +39,7 @@ struct dmar_drhd_unit {
+ 	struct list_head list;		/* list of drhd units	*/
+ 	struct  acpi_dmar_header *hdr;	/* ACPI header		*/
+ 	u64	reg_base_addr;		/* register base address*/
++	unsigned long reg_size;		/* size of register set */
+ 	struct	dmar_dev_scope *devices;/* target device array	*/
+ 	int	devices_cnt;		/* target device count	*/
+ 	u16	segment;		/* PCI domain		*/
+diff --git a/include/acpi/actbl1.h b/include/acpi/actbl1.h
+index 4175dce3967c..bdded0ac46eb 100644
+--- a/include/acpi/actbl1.h
++++ b/include/acpi/actbl1.h
+@@ -802,7 +802,7 @@ struct acpi_dmar_pci_path {
+ struct acpi_dmar_hardware_unit {
+ 	struct acpi_dmar_header header;
+ 	u8 flags;
+-	u8 reserved;
++	u8 size;		/* Size of the register set */
+ 	u16 segment;
+ 	u64 address;		/* Register Base Address */
+ };
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index b00a0ceb2d13..3a40fef1ec1b 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -427,6 +427,8 @@ static int dmar_parse_one_drhd(struct acpi_dmar_header *header, void *arg)
+ 	memcpy(dmaru->hdr, header, header->length);
+ 	dmaru->reg_base_addr = drhd->address;
+ 	dmaru->segment = drhd->segment;
++	/* The size of the register set is 2 ^ N 4 KB pages. */
++	dmaru->reg_size = 1UL << (drhd->size + 12);
+ 	dmaru->include_all = drhd->flags & 0x1; /* BIT0: INCLUDE_ALL */
+ 	dmaru->devices = dmar_alloc_dev_scope((void *)(drhd + 1),
+ 					      ((void *)drhd) + drhd->header.length,
+@@ -956,17 +958,18 @@ static void unmap_iommu(struct intel_iommu *iommu)
+ /**
+  * map_iommu: map the iommu's registers
+  * @iommu: the iommu to map
+- * @phys_addr: the physical address of the base resgister
++ * @drhd: DMA remapping hardware definition structure
+  *
+  * Memory map the iommu's registers.  Start w/ a single page, and
+  * possibly expand if that turns out to be insufficent.
+  */
+-static int map_iommu(struct intel_iommu *iommu, u64 phys_addr)
++static int map_iommu(struct intel_iommu *iommu, struct dmar_drhd_unit *drhd)
+ {
++	u64 phys_addr = drhd->reg_base_addr;
+ 	int map_size, err=0;
  
-+/*
-+ * Setup No Execute Enable bit (Bit 133) of a scalable mode PASID
-+ * entry. It is required when XD bit of the first level page table
-+ * entry is about to be set.
-+ */
-+static inline void pasid_set_nxe(struct pasid_entry *pe)
-+{
-+	pasid_set_bits(&pe->val[2], 1 << 5, 1 << 5);
-+}
-+
- /*
-  * Setup the Page Snoop (PGSNP) field (Bit 88) of a scalable mode
-  * PASID entry.
-@@ -557,6 +567,7 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
- 	pasid_set_domain_id(pte, did);
- 	pasid_set_address_width(pte, iommu->agaw);
- 	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
-+	pasid_set_nxe(pte);
+ 	iommu->reg_phys = phys_addr;
+-	iommu->reg_size = VTD_PAGE_SIZE;
++	iommu->reg_size = drhd->reg_size;
  
- 	/* Setup Present and PASID Granular Transfer Type: */
- 	pasid_set_translation_type(pte, PASID_ENTRY_PGTT_FL_ONLY);
+ 	if (!request_mem_region(iommu->reg_phys, iommu->reg_size, iommu->name)) {
+ 		pr_err("Can't reserve memory\n");
+@@ -1050,7 +1053,7 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+ 	}
+ 	sprintf(iommu->name, "dmar%d", iommu->seq_id);
+ 
+-	err = map_iommu(iommu, drhd->reg_base_addr);
++	err = map_iommu(iommu, drhd);
+ 	if (err) {
+ 		pr_err("Failed to map %s\n", iommu->name);
+ 		goto error_free_seq_id;
 -- 
 2.34.1
 
