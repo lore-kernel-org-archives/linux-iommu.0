@@ -1,108 +1,67 @@
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F40767EF
-	for <iommu@lists.linux.dev>; Tue, 31 Jan 2023 07:46:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB8DB65F
+	for <iommu@lists.linux.dev>; Tue, 31 Jan 2023 07:51:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675151173; x=1706687173;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=tIIPqWLDaXi88jATwWGBnjxjewiMTRegyRpE2yrmVj8=;
-  b=WIBg1jP5aBJcdT3u72drkjFz7cLZ8m37t9VindJqrNId6X4W9AmqofNE
-   fBLam3Me6fkNyBlo3O3e/KvhAlDv4K8rOOB1GK/FXycTw3e8N5MidOgCU
-   gjBHxc3offQSHdL8xPre6GRpPTouxMi9zbH/CfxzsuQlJJHzQfBKkQqcs
-   HRMzGobWnBA3MRmAmtAhvWox7+iB6FMFDiNGe1Q/bWSZsBjVE5UPUGPzz
-   OA3PqYYFFYYEkQ0C8IkzPmt6k1KuD6RGPmNZH32bvo9e3aBwpnBScr8Mj
-   o29FS37oJ1h5Gsv3YMnMqxl78O3Z9P1I1ck+6nD8zngwbSVbCeqkkGttb
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="315736653"
+  t=1675151495; x=1706687495;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=kyUTQkrz9mWJxP+tOYE6CbK4sQ6wiEtAftpUXLRxRs0=;
+  b=Xz47mGKZ4eqpa+sYMexQzOB4z4KlHIAaq2z2Hj9JRqLY3hrKqSnksG4n
+   wfRg2m7Pjx+8mMcwWNOfoPEPiWaMDpg3COsljtPOpGa5YG03+lIB2sSTM
+   YsAJdNm19DhDr5oQUMQLclDGBBCPGwkoxuWh/4NVlK0c+XZz8nOw0irqU
+   DNOHGxKwmGAie0URqzKa+9PRPTNNPsrro+NSG2PqZJnL/wqO/L0aMCTvK
+   J4DQgNUEJAwDHKwBssDl9UqAJdtwcWgCr6qhc+c3e/I3wCSNc2ramtHSZ
+   JnZmoYxRbNkfYAKRhJy51XxZYQvCW0WdJtDHldeqy9vsnG37zhe8GaWvo
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="308120199"
 X-IronPort-AV: E=Sophos;i="5.97,259,1669104000"; 
-   d="scan'208";a="315736653"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2023 23:46:11 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="657775587"
+   d="scan'208";a="308120199"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2023 23:51:35 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="909813199"
 X-IronPort-AV: E=Sophos;i="5.97,259,1669104000"; 
-   d="scan'208";a="657775587"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga007.jf.intel.com with ESMTP; 30 Jan 2023 23:46:10 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: kan.liang@linux.intel.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 12/12] iommu/vt-d: Enable IOMMU perfmon support
-Date: Tue, 31 Jan 2023 15:37:40 +0800
-Message-Id: <20230131073740.378984-13-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20230131073740.378984-1-baolu.lu@linux.intel.com>
-References: <20230131073740.378984-1-baolu.lu@linux.intel.com>
+   d="scan'208";a="909813199"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.172.41]) ([10.249.172.41])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2023 23:51:32 -0800
+Message-ID: <a766837f-2c24-68bc-d0c1-74e64f8aa97d@linux.intel.com>
+Date: Tue, 31 Jan 2023 15:51:30 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.6.1
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/4] iommu/vt-d: SVM implementation cleanup
+To: iommu@lists.linux.dev
+References: <20230109014955.147068-1-baolu.lu@linux.intel.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20230109014955.147068-1-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Kan Liang <kan.liang@linux.intel.com>
+On 2023/1/9 9:49, Lu Baolu wrote:
+> This is a cleanup series after the merge of commit be51b1d6bbff
+> ("iommu/sva: Refactoring iommu_sva_bind/unbind_device()"). It removes
+> the unused/duplicate data and code.
+> 
+> Lu Baolu (4):
+>    iommu/vt-d: Remove include/linux/intel-svm.h
+>    iommu/vt-d: Remove unused fields in svm structures
+>    iommu/vt-d: Remove users from intel_svm_dev
+>    iommu/vt-d: Remove sva from intel_svm_dev
 
-Register and enable an IOMMU perfmon for each active IOMMU device.
+Patches queued for v6.3.
 
-The failure of IOMMU perfmon registration doesn't impact other
-functionalities of an IOMMU device.
+https://lore.kernel.org/linux-iommu/20230131073740.378984-1-baolu.lu@linux.intel.com/
 
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
-Link: https://lore.kernel.org/r/20230128200428.1459118-8-kan.liang@linux.intel.com
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/dmar.c  | 3 +++
- drivers/iommu/intel/iommu.c | 3 +++
- 2 files changed, 6 insertions(+)
-
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 43db6ebe8b57..6acfe879589c 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -1144,6 +1144,8 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
- 		err = iommu_device_register(&iommu->iommu, &intel_iommu_ops, NULL);
- 		if (err)
- 			goto err_sysfs;
-+
-+		iommu_pmu_register(iommu);
- 	}
- 
- 	drhd->iommu = iommu;
-@@ -1166,6 +1168,7 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
- static void free_iommu(struct intel_iommu *iommu)
- {
- 	if (intel_iommu_enabled && !iommu->drhd->ignored) {
-+		iommu_pmu_unregister(iommu);
- 		iommu_device_unregister(&iommu->iommu);
- 		iommu_device_sysfs_remove(&iommu->iommu);
- 	}
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index e314c30d371a..691b306fada5 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -29,6 +29,7 @@
- #include "../iommu-sva.h"
- #include "pasid.h"
- #include "cap_audit.h"
-+#include "perfmon.h"
- 
- #define ROOT_SIZE		VTD_PAGE_SIZE
- #define CONTEXT_SIZE		VTD_PAGE_SIZE
-@@ -4012,6 +4013,8 @@ int __init intel_iommu_init(void)
- 				       intel_iommu_groups,
- 				       "%s", iommu->name);
- 		iommu_device_register(&iommu->iommu, &intel_iommu_ops, NULL);
-+
-+		iommu_pmu_register(iommu);
- 	}
- 	up_read(&dmar_global_lock);
- 
--- 
-2.34.1
-
+Best regards,
+baolu
