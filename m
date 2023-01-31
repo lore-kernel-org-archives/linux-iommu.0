@@ -1,257 +1,160 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id ABA068803
-	for <iommu@lists.linux.dev>; Mon, 30 Jan 2023 23:34:02 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BA9F91FB;
-	Mon, 30 Jan 2023 15:34:43 -0800 (PST)
-Received: from [10.57.89.162] (unknown [10.57.89.162])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8547C3F882;
-	Mon, 30 Jan 2023 15:34:00 -0800 (PST)
-Message-ID: <5498680f-df9e-287c-03f1-020848ba9b37@arm.com>
-Date: Mon, 30 Jan 2023 23:33:54 +0000
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96FB4373
+	for <iommu@lists.linux.dev>; Tue, 31 Jan 2023 01:32:18 +0000 (UTC)
+Received: from kwepemm600003.china.huawei.com (unknown [172.30.72.53])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4P5SCT6GXnzRrJX;
+	Tue, 31 Jan 2023 09:29:57 +0800 (CST)
+Received: from [10.174.179.79] (10.174.179.79) by
+ kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.34; Tue, 31 Jan 2023 09:32:08 +0800
+Subject: Re: [PATCH] vhost/vdpa: Add MSI translation tables to iommu for
+ software-managed MSI
+To: Jason Wang <jasowang@redhat.com>
+CC: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
+	<mst@redhat.com>, <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+	<netdev@vger.kernel.org>, <wangrong68@huawei.com>
+References: <20230128031740.166743-1-sunnanyong@huawei.com>
+ <CACGkMEtMAFMbhPnaaTwGRFofPM-p8ceKzAUbD2AFBz=fbR6hYQ@mail.gmail.com>
+From: Nanyong Sun <sunnanyong@huawei.com>
+Message-ID: <ffe21085-13cf-e2e9-e5cc-8755e9e3250b@huawei.com>
+Date: Tue, 31 Jan 2023 09:32:07 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Subject: Re: [PATCH v2 4/8] iommu: Factor out some helpers
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, hch@lst.de, baolu.lu@linux.intel.com
-References: <cover.1674753627.git.robin.murphy@arm.com>
- <959a1e8d598c0a82f94123e017cafb273784f848.1674753627.git.robin.murphy@arm.com>
- <Y9fyaRGp7Q8E5to2@nvidia.com> <01b0254f-41b0-2cbc-7d47-5507258f35b5@arm.com>
- <Y9gKewvVuVsrB4nI@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <Y9gKewvVuVsrB4nI@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <CACGkMEtMAFMbhPnaaTwGRFofPM-p8ceKzAUbD2AFBz=fbR6hYQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.179.79]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
 
-On 2023-01-30 18:20, Jason Gunthorpe wrote:
-> On Mon, Jan 30, 2023 at 06:05:12PM +0000, Robin Murphy wrote:
->>>     * Use a function instead of an array here because the domain-type is a
->>>     * bit-field, so an array would waste memory.
->>> @@ -338,7 +352,7 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
->>>    	dev->iommu->iommu_dev = iommu_dev;
->>>    	dev->iommu->max_pasids = dev_iommu_get_max_pasids(dev);
->>> -	group = iommu_group_get_for_dev(dev);
->>> +	group = iommu_group_get_for_dev(dev, ops);
+On 2023/1/29 14:02, Jason Wang wrote:
+> On Sat, Jan 28, 2023 at 10:25 AM Nanyong Sun <sunnanyong@huawei.com> wrote:
+>> From: Rong Wang <wangrong68@huawei.com>
 >>
->> Why? We've literally just assigned dev->iommu->iommu_dev 2 lines above; it
->> is not allowed to have invalid ops. Plus in future they may potentially be a
->> different set of device ops from the ones we initially found to provide
->> ->probe_device - in that case we definitely want group_get_for_dev to use
->> the proper instance ops. This is the only place it is (and should be)
->> called, so I don't see any problem.
-> 
-> Sure, but IMHO it was clearer to pass the ops down than to obtain it
-> again. But maybe this could be tidied in a different way.
-
-I disagree. In what we have now, every operation which calls into a 
-driver consistently uses the instance ops (or domain ops), except for 
-->probe_device for obvious reasons. Making ->device_group look special 
-for no technical reason is less consistent, and as such less clear. It 
-would be the only place in the kernel where ops are called from a 
-function argument, and to anyone unfamiliar looking at the code and 
-wondering why that is, the answer "because Jason thinks it looks better" 
-is not going to be obvious at all.
-
->>>    	if (IS_ERR(group)) {
->>>    		ret = PTR_ERR(group);
->>>    		goto out_release;
->>> @@ -414,7 +428,8 @@ int iommu_probe_device(struct device *dev)
->>>    	mutex_unlock(&group->mutex);
->>>    	iommu_group_put(group);
->>> -	ops = dev_iommu_ops(dev);
->>> +	/* __iommu_probe_device() set the ops */
->>> +	ops = dev_iommu_ops_safe(dev);
->>>    	if (ops->probe_finalize)
->>>    		ops->probe_finalize(dev);
->>> @@ -430,14 +445,13 @@ int iommu_probe_device(struct device *dev)
->>>    void iommu_release_device(struct device *dev)
->>>    {
->>> -	const struct iommu_ops *ops;
->>> +	const struct iommu_ops *ops = dev_iommu_ops(dev);
+>> Once enable iommu domain for one device, the MSI
+>> translation tables have to be there for software-managed MSI.
+>> Otherwise, platform with software-managed MSI without an
+>> irq bypass function, can not get a correct memory write event
+>> from pcie, will not get irqs.
+>> The solution is to obtain the MSI phy base address from
+>> iommu reserved region, and set it to iommu MSI cookie,
+>> then translation tables will be created while request irq.
 >>
->> This is just moving an existing check around.
-> 
-> The point is to have one check. If you need to get the ops and you
-> don't know the state of dev then you calll dev_iommu_ops() and check
-> for NULL. Simple and consistent.
-> 
->>> -     if (!dev->iommu)
->>> +     if (!ops)
->>>                return;
-> 
-> As you pointed out below this isn't even coded right since iommu can
-> be non-NULL.
-
-Oh, indeed that is technically a bug, although it's pretty much 
-impossible to hit in practice because there's no real device hotplug on 
-DT-based systems using fwspec - "dynamic" buses like PCI SR-IOV or 
-fsl-mc aren't going to be discovered at all until the relevant IOMMU 
-associated with the main controller device is ready, thus no removable 
-child device would ever be in the "half-probed" state. I missed this one 
-since I was looking for the dev->iommu->iommu_dev pattern - since it 
-looks like this series is headed for a v3 next cycle, I've added this 
-site to $SUBJECT locally.
-
->>> @@ -2620,7 +2626,11 @@ void iommu_get_resv_regions(struct device *dev, struct list_head *list)
->>>    {
->>>    	const struct iommu_ops *ops = dev_iommu_ops(dev);
->>> -	if (ops->get_resv_regions)
->>> +	/*
->>> +	 * Non-API groups still expose reserved_regions in sysfs, so filter out
->>> +	 * calls that get here that way.
->>> +	 */
->>> +	if (ops && ops->get_resv_regions)
+>> Signed-off-by: Rong Wang <wangrong68@huawei.com>
+>> Signed-off-by: Nanyong Sun <sunnanyong@huawei.com>
+>> ---
+>>   drivers/iommu/iommu.c |  1 +
+>>   drivers/vhost/vdpa.c  | 53 ++++++++++++++++++++++++++++++++++++++++---
+>>   2 files changed, 51 insertions(+), 3 deletions(-)
 >>
->> This is just moving the existing check from the public interface to
->> pointlessly impose it on the internal call path as well.
-> 
-> Who cares? We don't need to micro-optimize this stuff. The fact there
-> are a few bugs already is proof enough of that.
-
-"a few"? So far there's only one, and it's not even the class of bug 
-you're trying to address, because there _is_ an explicit validity check 
-already, it just has an oversight in it.
-
-This isn't micro-optimisation, it's consistency: we have validity checks 
-close to the entrypoints of public interfaces where they are required. 
-On internal paths where they are not required, we do not sometimes have 
-checks and sometimes not, leaving people to wonder what the requirements 
-actually are - in fact someone went so far as to call such patterns 
-"confusing" and "overzealous" back when dev_iommu_ops() was reviewed. It 
-was agreed that the lack of a check where ops are retrieved clearly 
-documents where they are expected to be valid.
-
->>>    		ops->get_resv_regions(dev, list);
->>>    }
->>> @@ -2979,6 +2989,11 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
->>>    	/* Since group has only one device */
->>>    	grp_dev = list_first_entry(&group->devices, struct group_device, list);
->>>    	dev = grp_dev->dev;
->>> +	if (!dev_iommu_ops(dev)) {
->>> +		/* The group doesn't have an iommu driver attached */
->>> +		mutex_unlock(&group->mutex);
->>> +		return -EINVAL;
->>> +	}
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index de91dd88705b..f6c65d5d8e2b 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -2623,6 +2623,7 @@ void iommu_get_resv_regions(struct device *dev, struct list_head *list)
+>>          if (ops->get_resv_regions)
+>>                  ops->get_resv_regions(dev, list);
+>>   }
+>> +EXPORT_SYMBOL_GPL(iommu_get_resv_regions);
 >>
->> Withot any ops, group->default_domain will be NULL so we could never even
->> get here.
-> 
-> Fair enough, deserves a comment
-
-Great big function specifically for changing the default domain of a 
-group... right at the top, literally the second thing it does on entry 
-is check that the group and default domain are valid, and return if not. 
-If that isn't sufficiently clear, I'm not sure what to say :/
-
->>>    	get_device(dev);
->>>    	/*
->>> @@ -3301,7 +3316,7 @@ static void __iommu_remove_group_pasid(struct iommu_group *group,
->>>    	const struct iommu_ops *ops;
->>>    	list_for_each_entry(device, &group->devices, list) {
->>> -		ops = dev_iommu_ops(device->dev);
->>> +		ops = dev_iommu_ops_safe(device->dev);
->>>    		ops->remove_dev_pasid(device->dev, pasid);
->>>    	}
->>>    }
->>> @@ -3413,6 +3428,9 @@ struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
->>>    	const struct iommu_ops *ops = dev_iommu_ops(dev);
->>>    	struct iommu_domain *domain;
->>> +	if (!ops)
->>> +		return NULL;
+>>   /**
+>>    * iommu_put_resv_regions - release resered regions
+>> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+>> index ec32f785dfde..31d3e9ed4cfa 100644
+>> --- a/drivers/vhost/vdpa.c
+>> +++ b/drivers/vhost/vdpa.c
+>> @@ -1103,6 +1103,48 @@ static ssize_t vhost_vdpa_chr_write_iter(struct kiocb *iocb,
+>>          return vhost_chr_write_iter(dev, from);
+>>   }
 >>
->> Anyone who incorrectly calls sva_domain_alloc() directly without having
->> successfully called iommu_dev_enable_feature() first deserves to crash.
-> 
-> Lets not build assumptions like this into the code please. That
-> iommu_dev_enable_feature() thing is on my hitlist too :(
-
-Huh? The whole public API is full of assumptions that callers aren't 
-doing nonsensical things. Pass a bogus group or domain pointer to 
-iommu_attach_group()? Boom! Pass a bogus domain pointer to iommu_map()? 
-Boom! AFAICT the only thing that should be calling 
-iommu_sva_domain_alloc() at all at the moment is 
-iommu_sva_bind_device(), so it's effectively an internal interface where 
-bogus device pointers really shouldn't be expected at all.
-
-Sure, if you change the interface so that random drivers are free to 
-allocate SVA domains directly and feed them to iommu_attach_group(), and 
-checks are warranted in different places, then add them then.
-
->> (Incidentally, you've missed enable/disable_feature here.)
-> 
-> Yes, because they don't call dev_iommu_ops for some reason. It should
-> be fixed too.
-
-It is, in the patch you're replying to.
-
->>> +/* May return NULL if the device has no iommu driver */
->>>    static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
->>>    {
->>> -	/*
->>> -	 * Assume that valid ops must be installed if iommu_probe_device()
->>> -	 * has succeeded. The device ops are essentially for internal use
->>> -	 * within the IOMMU subsystem itself, so we should be able to trust
->>> -	 * ourselves not to misuse the helper.
->>> -	 */
->>> +	if (!dev->iommu)
->>> +		return NULL;
->>>    	return dev->iommu->iommu_dev->ops;
+>> +static bool vhost_vdpa_check_sw_msi(struct list_head *dev_resv_regions, phys_addr_t *base)
+>> +{
+>> +       struct iommu_resv_region *region;
+>> +       bool ret = false;
+>> +
+>> +       list_for_each_entry(region, dev_resv_regions, list) {
+>> +               /*
+>> +                * The presence of any 'real' MSI regions should take
+>> +                * precedence over the software-managed one if the
+>> +                * IOMMU driver happens to advertise both types.
+>> +                */
+>> +               if (region->type == IOMMU_RESV_MSI) {
+>> +                       ret = false;
+>> +                       break;
+>> +               }
+>> +
+>> +               if (region->type == IOMMU_RESV_SW_MSI) {
+>> +                       *base = region->start;
+>> +                       ret = true;
+>> +               }
+>> +       }
+>> +
+>> +       return ret;
+>> +}
+> Can we unify this with what VFIO had?
+Yes, these two functions are just the same.
+Do you think move this function to iommu.c, and export from iommu is a 
+good choice?
+>
+>> +
+>> +static int vhost_vdpa_get_msi_cookie(struct iommu_domain *domain, struct device *dma_dev)
+>> +{
+>> +       struct list_head dev_resv_regions;
+>> +       phys_addr_t resv_msi_base = 0;
+>> +       int ret = 0;
+>> +
+>> +       INIT_LIST_HEAD(&dev_resv_regions);
+>> +       iommu_get_resv_regions(dma_dev, &dev_resv_regions);
+>> +
+>> +       if (vhost_vdpa_check_sw_msi(&dev_resv_regions, &resv_msi_base))
+>> +               ret = iommu_get_msi_cookie(domain, resv_msi_base);
+>> +
+>> +       iommu_put_resv_regions(dma_dev, &dev_resv_regions);
+>> +
+>> +       return ret;
+>> +}
+>> +
+>>   static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
+>>   {
+>>          struct vdpa_device *vdpa = v->vdpa;
+>> @@ -1128,11 +1170,16 @@ static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
 >>
->> This is actively broken, since dev->iommu may be non-NULL before
->> dev->iommu->iommu_dev is set (a fwspec will always be set before the
->> instyance is registered, and a device may potentially hang around in that
->> state for evertt if the relevant IOMMU instance never appears).
-> 
-> Sure, I missed a NULL
-> 
->> Sorry, I don't think any of this makes sense :/
-> 
-> The point is to be more consistent and not just blindly add more
-> helpers. If you need ops then ask for the ops. If you aren't sure the
-> dev has ops then check ops for NULL. It is pretty simple.
-
-I'm not "blindly" adding more helpers, I'm ratifying clear common 
-elements of the code and logic that we already have, to make them that 
-much easier to replicate further. And I'm still no less puzzled by this 
-thread... adding a new helper to consolidate having one thing in some 
-places and another in others so offends your sensibilities that what 
-you'd much rather do instead is add a new helper to have one thing in 
-some places and another thing in others? There is a logical consistency 
-to the current code already, which I assume is sufficiently clear to the 
-majority of us because it's what made it through community review and 
-what we've all been working on top of for the last year. "If you need 
-ops then ask for the ops. If you aren't sure the dev has ops then check 
-for valid ops first." Just as simple.
-
-FWIW, personally I find up-front availability checks perfectly intuitive 
-and natural, because they can easily be imagined as a real-life interaction:
-
-"Do you have any coffee?"
-"No, sorry."
-
-vs.
-
-"Please give me a cup of coffee."
-<hands over empty cup>
-"Is this coffee?"
-"No."
-
-One could possibly even argue that a separate up-front check also 
-visibly implies that there are no concurrency or TOCTOU considerations 
-expected, which for dev_iommu_ops() there should certainly not be.
-
-Please understand that I'm not going to this length just to be 
-objectionable; this is me genuinely being unable to rationalise your 
-argument and spending my entire evening on a deep dive into my own 
-thought process to lay it out and check for any obvious errors.
-
-Thanks,
-Robin.
+>>          ret = iommu_attach_device(v->domain, dma_dev);
+>>          if (ret)
+>> -               goto err_attach;
+>> +               goto err_alloc_domain;
+>>
+>> -       return 0;
+>> +       ret = vhost_vdpa_get_msi_cookie(v->domain, dma_dev);
+> Do we need to check the overlap mapping and record it in the interval
+> tree (as what VFIO did)?
+>
+> Thanks
+Yes, we need to care about this part, I will handle this recently.
+Thanks a lot.
+>> +       if (ret)
+>> +               goto err_attach_device;
+>>
+>> -err_attach:
+>> +       return 0;
+>> +err_attach_device:
+>> +       iommu_detach_device(v->domain, dma_dev);
+>> +err_alloc_domain:
+>>          iommu_domain_free(v->domain);
+>>          return ret;
+>>   }
+>> --
+>> 2.25.1
+>>
+> .
