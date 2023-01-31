@@ -1,85 +1,128 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B708A33EF
-	for <iommu@lists.linux.dev>; Tue, 31 Jan 2023 12:25:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675167911; x=1706703911;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Xwpytf7n2WVkp5REBbivE5cf38oXPNvYW56xA7xKr2k=;
-  b=HRB/xJLuZJ8Of+vPMUyYZRSNe/UX17NKqDRGOVMoQjrMjJGelB6J2ejt
-   8O/ad2aNcBTJdflybVQ+A/1HREewC596/Whot/HPUxNGke998WmKe8NQN
-   M6cJbOsLNwFsm641tB9eoutpHMhKzFqbsCST4eAYOQeWnC9Mo7uiO5dVw
-   NH1/yuL1aEOLysflC8HlS25DOz+5VnfambDQVhJXqqzcbaFQEA5iYvSIf
-   kcZrQNSr6r7QO5uMe/NzQrAu1hL68Hk7VtpcX6TPXOwtf8h3NbNaqG+gK
-   BUY7Cwmeq456BW2gzdH4zz3DcxSzUcPTc5QMKvuR1BRy0sXTWM+zCQxGc
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="390188362"
-X-IronPort-AV: E=Sophos;i="5.97,261,1669104000"; 
-   d="scan'208";a="390188362"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2023 04:25:10 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="657853563"
-X-IronPort-AV: E=Sophos;i="5.97,261,1669104000"; 
-   d="scan'208";a="657853563"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.172.41]) ([10.249.172.41])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2023 04:25:07 -0800
-Message-ID: <8cb478bf-db44-0a8f-8521-771529ca0706@linux.intel.com>
-Date: Tue, 31 Jan 2023 20:25:05 +0800
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 108C033EF
+	for <iommu@lists.linux.dev>; Tue, 31 Jan 2023 12:28:06 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 65F302F4;
+	Tue, 31 Jan 2023 04:28:48 -0800 (PST)
+Received: from [10.57.88.157] (unknown [10.57.88.157])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E96CE3F71E;
+	Tue, 31 Jan 2023 04:28:04 -0800 (PST)
+Message-ID: <23408b52-32f0-9098-e434-78cb85c8e75b@arm.com>
+Date: Tue, 31 Jan 2023 12:28:00 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Cc: baolu.lu@linux.intel.com, Bjorn Helgaas <bhelgaas@google.com>,
- Joerg Roedel <jroedel@suse.de>, Matt Fagnani <matt.fagnani@bell.net>,
- =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
- Vasant Hegde <vasant.hegde@amd.com>, Tony Zhu <tony.zhu@intel.com>,
- linux-pci@vger.kernel.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/1] PCI: Add translated request only flag for
- pci_enable_pasid()
-Content-Language: en-US
-To: Bjorn Helgaas <helgaas@kernel.org>
-References: <20230130183810.GA1692786@bhelgaas>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230130183810.GA1692786@bhelgaas>
+Subject: Re: [PATCH] dt-bindings: iommu: renesas,ipmmu-vmsa: Update
+ descriptions for R-Car Gen4
+Content-Language: en-GB
+To: Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh@kernel.org>
+Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+ "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+ "krzysztof.kozlowski+dt@linaro.org" <krzysztof.kozlowski+dt@linaro.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>
+References: <20230123012940.1250879-1-yoshihiro.shimoda.uh@renesas.com>
+ <CAMuHMdX92KMeON0xC9p17kiqWT7ksEBX_NyPiiQk0fLaucDZBA@mail.gmail.com>
+ <TYBPR01MB5341B023178B4A10DE52B844D8CE9@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+ <CAMuHMdXXnu88Tn2ucuHZK=3G18v-nCfaTYpomchRXBu3bD7UuA@mail.gmail.com>
+ <3c3e1dc2-1f66-565c-c677-2eae368e10be@arm.com>
+ <20230130193604.GA3218335-robh@kernel.org>
+ <CAMuHMdU4j3drFt6jAZPHTJMrrL7GTWHxNqMGHR-1pScqg4H2xg@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <CAMuHMdU4j3drFt6jAZPHTJMrrL7GTWHxNqMGHR-1pScqg4H2xg@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/1/31 2:38, Bjorn Helgaas wrote:
-> PCIe r6.0, sec 6.20.1:
+On 2023-01-31 08:20, Geert Uytterhoeven wrote:
+> Hi Rob,
 > 
->    A Function is not permitted to generate Requests using Translated
->    Addresses and a PASID unless both PASID Enable and Translated
->    Requests with PASID Enable are Set.
+> On Mon, Jan 30, 2023 at 8:36 PM Rob Herring <robh@kernel.org> wrote:
+>> On Wed, Jan 25, 2023 at 10:42:13AM +0000, Robin Murphy wrote:
+>>> On 2023-01-25 08:54, Geert Uytterhoeven wrote:
+>>>> On Wed, Jan 25, 2023 at 1:49 AM Yoshihiro Shimoda
+>>>> <yoshihiro.shimoda.uh@renesas.com> wrote:
+>>>>>> From: Geert Uytterhoeven, Sent: Tuesday, January 24, 2023 11:35 PM
+>>>>>> On Mon, Jan 23, 2023 at 2:35 AM Yoshihiro Shimoda
+>>>>>> <yoshihiro.shimoda.uh@renesas.com> wrote:
+>>>>>>> Since R-Car Gen4 doens't have the main IPMMU IMSSTR register, but
+>>>>>>> each cache IPMMU has own module id. So, update descriptions of
+>>>>>>> renesas,ipmmu-main property for R-Car Gen4.
+>>>>>>>
+>>>>>>> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+>>>>
+>>>>>>> ---
+>>>>>>>    The old R-Car S4-8 datasheet had described IPMMU IMSSTR register, but
+>>>>>>>    the latest datasheet undocumented the register. So, update the propeties
+>>>>>>>    description. Note that the second argument is not used on the driver.
+>>>>>>
+>>>>>> DT describes hardware, not software policy.
+>>>>>
+>>>>> I think so.
+>>>>>
+>>>>>>>    So no behavior change.
+>>>>>>
+>>>>>> So where do we get the module id numbers to use, if they are no longer
+>>>>>> documented in the Hardware Manual?
+>>>>>
+>>>>> If so, we cannot get the module id numbers. So, should we use other
+>>>>> information which is completely fixed instead? I have some ideas:
+>>>>> 1) Just 0 (or other fixed value) if the IMSSTR register doesn't exist.
+>>>>> 2) Sequential numbers from register base offset.
+>>>>>      In R-Car S4: ipmmu_rt0 is the first node from register base offset,
+>>>>>      and ipmmu_rt1 is the second one.
+>>>>>      So, ipmmu_rt0 is 0, ipmmu_rt1 is 1, ipmmu_ds0 is 2 and ipmmu_hc is 3.
+>>>>> 3) Using base address upper 16-bits.
+>>>>>      In R-Car S4: ipmmu_rt0 is 0xee480000. So, the value is 0xee48.
+>>>>>
+>>>>> Perhaps, the option 1) is reasonable, I think. But, what do you think?
+>>>>
+>>>> I would not make up numbers, as that would cause confusion with SoCs
+>>>> where the numbers do match the hardware.
+>>>> As the driver doesn't use the module id number (it already loops
+>>>> over all domains, instead of checking IMSSTR, probably because of
+>>>> historical (R-Car Gen2) reasons?), what about dropping it from the
+>>>> property? I.e. add "minItems: 1", possibly only when compatible with
+>>>> renesas,rcar-gen4-ipmmu-vmsa?
+>>>
+>>> Right, if there really is no meaningful ID for this model then its binding
+>>> should not require one.
+>>
+>> I agree, however that makes parsing the property a pain (for both the
+>> schema and driver). This property is a matrix. The number of entries is
+>> already variable. If both dimensions are variable, we have to then look
+>> at the compatible to know how to parse it. I would go with option 1.
 > 
-> You want AMD graphics devices to do DMA with translated addresses and
-> PASID, right?  pci_enable_pasid() sets PASID Enable
-> (PCI_PASID_CTRL_ENABLE), but I don't see where "Translated Requests
-> with PASID Enable" is set.  We don't even have a #define for it.
+> But it does not have to be two-dimensional.
+> The second dimension was added in commit 39bd2b6a3783b899 ("dt-bindings
+>   Improve phandle-array schemas"), but is not needed.
+> Can this be simplified again?
+
+Maybe the answer is that it's a cell-array of one item which contains a 
+bare phandle and an (optional) integer that happens to look a bit like a 
+phandle argument but isn't?
+
+Robin.
+
+> The driver doesn't care, it just checks for the presence of the
+> property, i.e. treats it as a boolean flag.
 > 
-> I would think we should check "Translated Requests with PASID
-> Supported" before setting "Translated Requests with PASID Enable",
-> too?
-
-This seems to be an ECN for PCIe 5.x:
-
-https://members.pcisig.com/wg/PCI-SIG/document/14929
-
-What I read from this ECN is that,
-
-With this ECN, translated memory requests for PASIDs are not allowed to
-carry a PASID prefix if "Translated Requests with PASID Enabled" is not
-set. It does not mean whether the device can generate translated memory
-requests for PASID, but whether the memory request can carry a PASID
-prefix.
-
-Best regards,
-baolu
+>> A 4th option is a new property.
+> 
+> If all else fails, a new boolean flag would work...
+> 
+> Gr{oetje,eeting}s,
+> 
+>                          Geert
+> 
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> 
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                  -- Linus Torvalds
