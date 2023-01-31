@@ -1,128 +1,158 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 108C033EF
-	for <iommu@lists.linux.dev>; Tue, 31 Jan 2023 12:28:06 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 65F302F4;
-	Tue, 31 Jan 2023 04:28:48 -0800 (PST)
-Received: from [10.57.88.157] (unknown [10.57.88.157])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E96CE3F71E;
-	Tue, 31 Jan 2023 04:28:04 -0800 (PST)
-Message-ID: <23408b52-32f0-9098-e434-78cb85c8e75b@arm.com>
-Date: Tue, 31 Jan 2023 12:28:00 +0000
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 034FB6ADE
+	for <iommu@lists.linux.dev>; Tue, 31 Jan 2023 12:56:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1675169778; x=1706705778;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=I8q8o/ZI/4HN/pJZcZMoEMEToapOPQxN7jKgDXKYvQI=;
+  b=dmwVtxc21O8JHZMXgA9CktLlFcmvXZujsXn1AkPZmhMjeuNXDce4g6c2
+   /4ttV+ogg62qiZBm3LzhSlZhOC8MZOVsyRD2Gn2Y/6PzzIroakBk/CKUH
+   Zu6p5KWwWxBMdNsHQegV7XnAnfEp1GUQNiSqgO29LIwHyLwNev+/119oz
+   u8ADod3gl/nb0DynzYrCXKHiIXBXm6TdqaS5uLGspQm5Q74dj8H5NCBQh
+   88uu3TmsMdpn1X4LtAP0UmSgPgqCstiMv+6JFQR6wPtffEk6tQz75IciZ
+   +9PTy5w6lEh/FAXhDfMabYQPAZdfEbi/zof+oEUKNUS23mUrSzOO+iigH
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="315791587"
+X-IronPort-AV: E=Sophos;i="5.97,261,1669104000"; 
+   d="scan'208";a="315791587"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2023 04:56:18 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="614439953"
+X-IronPort-AV: E=Sophos;i="5.97,261,1669104000"; 
+   d="scan'208";a="614439953"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.172.41]) ([10.249.172.41])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2023 04:56:15 -0800
+Message-ID: <030e66e0-fb54-b77d-5094-4786684ba97d@linux.intel.com>
+Date: Tue, 31 Jan 2023 20:56:13 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Subject: Re: [PATCH] dt-bindings: iommu: renesas,ipmmu-vmsa: Update
- descriptions for R-Car Gen4
-Content-Language: en-GB
-To: Geert Uytterhoeven <geert@linux-m68k.org>, Rob Herring <robh@kernel.org>
-Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
- "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
- "krzysztof.kozlowski+dt@linaro.org" <krzysztof.kozlowski+dt@linaro.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>
-References: <20230123012940.1250879-1-yoshihiro.shimoda.uh@renesas.com>
- <CAMuHMdX92KMeON0xC9p17kiqWT7ksEBX_NyPiiQk0fLaucDZBA@mail.gmail.com>
- <TYBPR01MB5341B023178B4A10DE52B844D8CE9@TYBPR01MB5341.jpnprd01.prod.outlook.com>
- <CAMuHMdXXnu88Tn2ucuHZK=3G18v-nCfaTYpomchRXBu3bD7UuA@mail.gmail.com>
- <3c3e1dc2-1f66-565c-c677-2eae368e10be@arm.com>
- <20230130193604.GA3218335-robh@kernel.org>
- <CAMuHMdU4j3drFt6jAZPHTJMrrL7GTWHxNqMGHR-1pScqg4H2xg@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <CAMuHMdU4j3drFt6jAZPHTJMrrL7GTWHxNqMGHR-1pScqg4H2xg@mail.gmail.com>
+Cc: baolu.lu@linux.intel.com, Bjorn Helgaas <bhelgaas@google.com>,
+ Joerg Roedel <jroedel@suse.de>, Matt Fagnani <matt.fagnani@bell.net>,
+ =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Tony Zhu <tony.zhu@intel.com>,
+ linux-pci@vger.kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/1] PCI: Add translated request only flag for
+ pci_enable_pasid()
+Content-Language: en-US
+To: Bjorn Helgaas <helgaas@kernel.org>
+References: <20230130183810.GA1692786@bhelgaas>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20230130183810.GA1692786@bhelgaas>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023-01-31 08:20, Geert Uytterhoeven wrote:
-> Hi Rob,
-> 
-> On Mon, Jan 30, 2023 at 8:36 PM Rob Herring <robh@kernel.org> wrote:
->> On Wed, Jan 25, 2023 at 10:42:13AM +0000, Robin Murphy wrote:
->>> On 2023-01-25 08:54, Geert Uytterhoeven wrote:
->>>> On Wed, Jan 25, 2023 at 1:49 AM Yoshihiro Shimoda
->>>> <yoshihiro.shimoda.uh@renesas.com> wrote:
->>>>>> From: Geert Uytterhoeven, Sent: Tuesday, January 24, 2023 11:35 PM
->>>>>> On Mon, Jan 23, 2023 at 2:35 AM Yoshihiro Shimoda
->>>>>> <yoshihiro.shimoda.uh@renesas.com> wrote:
->>>>>>> Since R-Car Gen4 doens't have the main IPMMU IMSSTR register, but
->>>>>>> each cache IPMMU has own module id. So, update descriptions of
->>>>>>> renesas,ipmmu-main property for R-Car Gen4.
->>>>>>>
->>>>>>> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
->>>>
->>>>>>> ---
->>>>>>>    The old R-Car S4-8 datasheet had described IPMMU IMSSTR register, but
->>>>>>>    the latest datasheet undocumented the register. So, update the propeties
->>>>>>>    description. Note that the second argument is not used on the driver.
->>>>>>
->>>>>> DT describes hardware, not software policy.
->>>>>
->>>>> I think so.
->>>>>
->>>>>>>    So no behavior change.
->>>>>>
->>>>>> So where do we get the module id numbers to use, if they are no longer
->>>>>> documented in the Hardware Manual?
->>>>>
->>>>> If so, we cannot get the module id numbers. So, should we use other
->>>>> information which is completely fixed instead? I have some ideas:
->>>>> 1) Just 0 (or other fixed value) if the IMSSTR register doesn't exist.
->>>>> 2) Sequential numbers from register base offset.
->>>>>      In R-Car S4: ipmmu_rt0 is the first node from register base offset,
->>>>>      and ipmmu_rt1 is the second one.
->>>>>      So, ipmmu_rt0 is 0, ipmmu_rt1 is 1, ipmmu_ds0 is 2 and ipmmu_hc is 3.
->>>>> 3) Using base address upper 16-bits.
->>>>>      In R-Car S4: ipmmu_rt0 is 0xee480000. So, the value is 0xee48.
->>>>>
->>>>> Perhaps, the option 1) is reasonable, I think. But, what do you think?
->>>>
->>>> I would not make up numbers, as that would cause confusion with SoCs
->>>> where the numbers do match the hardware.
->>>> As the driver doesn't use the module id number (it already loops
->>>> over all domains, instead of checking IMSSTR, probably because of
->>>> historical (R-Car Gen2) reasons?), what about dropping it from the
->>>> property? I.e. add "minItems: 1", possibly only when compatible with
->>>> renesas,rcar-gen4-ipmmu-vmsa?
->>>
->>> Right, if there really is no meaningful ID for this model then its binding
->>> should not require one.
+On 2023/1/31 2:38, Bjorn Helgaas wrote:
+>> PCI: Add translated request only flag for pci_enable_pasid()
 >>
->> I agree, however that makes parsing the property a pain (for both the
->> schema and driver). This property is a matrix. The number of entries is
->> already variable. If both dimensions are variable, we have to then look
->> at the compatible to know how to parse it. I would go with option 1.
-> 
-> But it does not have to be two-dimensional.
-> The second dimension was added in commit 39bd2b6a3783b899 ("dt-bindings
->   Improve phandle-array schemas"), but is not needed.
-> Can this be simplified again?
+>> The PCIe fabric routes Memory Requests based on the TLP address, ignoring
+>> the PASID. In order to ensure system integrity, commit 201007ef707a ("PCI:
+>> Enable PASID only when ACS RR & UF enabled on upstream path") requires
+>> some ACS features being supported on device's upstream path when enabling
+>> PCI/PASID.
+>>
+>> However, above change causes the Linux kernel boots to black screen on a
+>> system with below graphic device:
+> We need a PCIe concept-level description of the issue first, i.e., in
+> terms of DMA, PASID, ACS, etc.  Then we can mention the AMD GPU issue
+> as an instance.
 
-Maybe the answer is that it's a cell-array of one item which contains a 
-bare phandle and an (optional) integer that happens to look a bit like a 
-phandle argument but isn't?
+How about below description?
 
-Robin.
+PCIe endpoints can use ATS to request DMA remapping hardware to
+translate an IOVA to its mapped physical address. If the translation is
+missing or the permissions are insufficient, the PRI is used to trigger
+an I/O page fault. The IOMMU driver will fill the mapping with desired
+permissions and return the translated address to the device.
 
-> The driver doesn't care, it just checks for the presence of the
-> property, i.e. treats it as a boolean flag.
+The translated address is specified by the IOMMU driver. The IOMMU
+driver ensures that the address is a DMA buffer address instead of any
+P2P address in the PCI fabric. Therefore, any translated memory request
+will eventually be routed to IOMMU regardless of whether there is ACS
+control in the up-streaming path.
+
+AMD GPU is one of those devices. Furthermore, it always uses translated
+memory requests for PASID.
+
 > 
->> A 4th option is a new property.
+>> 00:01.0 VGA compatible controller: Advanced Micro Devices, Inc.
+>>          [AMD/ATI] Wani [Radeon R5/R6/R7 Graphics] (rev ca)
+>>          (prog-if 00 [VGA controller])
+>>          DeviceName: ATI EG BROADWAY
+>>          Subsystem: Hewlett-Packard Company Device 8332
+>>
+>> The kernel trace looks like below:
+>>
+>>   Call Trace:
+>>    <TASK>
+>>    amd_iommu_attach_device+0x2e0/0x300
+>>    __iommu_attach_device+0x1b/0x90
+>>    iommu_attach_group+0x65/0xa0
+>>    amd_iommu_init_device+0x16b/0x250 [iommu_v2]
+>>    kfd_iommu_resume+0x4c/0x1a0 [amdgpu]
+>>    kgd2kfd_resume_iommu+0x12/0x30 [amdgpu]
+>>    kgd2kfd_device_init.cold+0x346/0x49a [amdgpu]
+>>    amdgpu_amdkfd_device_init+0x142/0x1d0 [amdgpu]
+>>    amdgpu_device_init.cold+0x19f5/0x1e21 [amdgpu]
+>>    ? _raw_spin_lock_irqsave+0x23/0x50
+>>    amdgpu_driver_load_kms+0x15/0x110 [amdgpu]
+>>    amdgpu_pci_probe+0x161/0x370 [amdgpu]
+>>    local_pci_probe+0x41/0x80
+>>    pci_device_probe+0xb3/0x220
+>>    really_probe+0xde/0x380
+>>    ? pm_runtime_barrier+0x50/0x90
+>>    __driver_probe_device+0x78/0x170
+>>    driver_probe_device+0x1f/0x90
+>>    __driver_attach+0xce/0x1c0
+>>    ? __pfx___driver_attach+0x10/0x10
+>>    bus_for_each_dev+0x73/0xa0
+>>    bus_add_driver+0x1ae/0x200
+>>    driver_register+0x89/0xe0
+>>    ? __pfx_init_module+0x10/0x10 [amdgpu]
+>>    do_one_initcall+0x59/0x230
+>>    do_init_module+0x4a/0x200
+>>    __do_sys_init_module+0x157/0x180
+>>    do_syscall_64+0x5b/0x80
+>>    ? handle_mm_fault+0xff/0x2f0
+>>    ? do_user_addr_fault+0x1ef/0x690
+>>    ? exc_page_fault+0x70/0x170
+>>    entry_SYSCALL_64_after_hwframe+0x72/0xdc
+> The stack trace doesn't seem like it shows a failure, so I'm not sure
+> it's useful this time.  If it is, we can at least strip out the
+> irrelevant pieces.
+
+I will drop above from the commit message.
+
 > 
-> If all else fails, a new boolean flag would work...
+>> The AMD iommu driver allocates a new domain (called v2 domain) for the
+> "v2 domain" needs to be something greppable -- an identifier,
+> filename, etc.
 > 
-> Gr{oetje,eeting}s,
-> 
->                          Geert
-> 
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-> 
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                  -- Linus Torvalds
+
+The code reads,
+
+2052         if (iommu_feature(iommu, FEATURE_GT) &&
+2053             iommu_feature(iommu, FEATURE_PPR)) {
+2054                 iommu->is_iommu_v2   = true;
+
+So, how about
+
+..The AMD GPU has a private interface to its own AMD IOMMU, which could
+be detected by the FEATURE_GT && FEATURE_PPR features. The AMD iommu
+driver allocates a special domain for the GPU device ..
+
+?
+
+Best regards,
+baolu
