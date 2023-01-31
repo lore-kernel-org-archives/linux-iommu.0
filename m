@@ -1,33 +1,33 @@
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A4887EC
-	for <iommu@lists.linux.dev>; Tue, 31 Jan 2023 07:53:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACCF97EC
+	for <iommu@lists.linux.dev>; Tue, 31 Jan 2023 07:55:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675151605; x=1706687605;
+  t=1675151704; x=1706687704;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=JG+wb8bqGbnOoAJrhM94NIsc3fCfzpe0Naap9WNrSdA=;
-  b=a3PpqgyvMq9G17Ubn2KjixXgzmHYGX0lLxO+esRvDqvx3ujmW0hRjxSj
-   w1COvtaCGr4N+gJICCOinKKehdDNvtn3lJBTI+7tZnCtlwieilk/FkaQm
-   YrD9rtH+HRXXjkwassHQ73qIi0QqtvE9Jb0Sb9Q1/Lsob6I6vwkIazOU2
-   44TrCbRMVEpYcxbJise+5vyAh0bwkWLSSLULC2h6aZDepEuUXY59XAdjY
-   d7bD/r3D5kxMvJroPN74TrbyeH3hU1tHel/q23WYUZNDDBStaxCkTx/tb
-   ei8Mqk2WrSQpf+7sqil/oQ8XTHsZAIcNUT8IKKmhwYgm7DHV73ClKTL0k
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="307434055"
+  bh=YGP3Zf7KaslK46KT4ZdpOe8BqHP3ROGlVR+cuxazIyA=;
+  b=dJONDMyT+Ow9dULZweLgbYcPgK1+NvgNeJiIARK1tC6eA7gytS/sWOgJ
+   tgjm2j7wj/e01TQYg0t9jZQPd1HzfUS902KN4+8KwCjoxqfLqeQm9yLEn
+   +Mzpaiell3uKj78cSf4mDBMdwwyhD3yQ3cn/f2xhOimp90nK6MQrPqf47
+   5nZ6shTrKF49KfvOCAGfs3t8npmPxRaYR6Ud8aDqJYkND2rX2kjHdUawT
+   8CB5AkwUn8tmfqvdNKwdkPnKzFIAPRmY78Gt//4axIDihghBgvdjQ/X9I
+   c5+SbyZxongalHKp8ZZgOTNuy/0fN0XsKeEjE0ZuXChOsROHZmdh10lwY
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="355101011"
 X-IronPort-AV: E=Sophos;i="5.97,259,1669104000"; 
-   d="scan'208";a="307434055"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2023 23:53:25 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="666392693"
+   d="scan'208";a="355101011"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2023 23:55:03 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="788348067"
 X-IronPort-AV: E=Sophos;i="5.97,259,1669104000"; 
-   d="scan'208";a="666392693"
+   d="scan'208";a="788348067"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.172.41]) ([10.249.172.41])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2023 23:53:23 -0800
-Message-ID: <a9a4552e-a401-3ef3-1a29-f4b8f169afa0@linux.intel.com>
-Date: Tue, 31 Jan 2023 15:53:20 +0800
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2023 23:55:00 -0800
+Message-ID: <91b485f7-ffd9-65ce-5656-5659a48968b4@linux.intel.com>
+Date: Tue, 31 Jan 2023 15:54:58 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,30 +36,88 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.6.1
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] iommu/vt-d: Set No Execute Enable bit in PASID table
- entry
+Cc: baolu.lu@linux.intel.com, yu-cheng.yu@intel.com
+Subject: Re: [PATCH V4 0/7] iommu/vt-d: Support performance monitoring for
+ IOMMU
 Content-Language: en-US
-To: iommu@lists.linux.dev
-References: <20230126095438.354205-1-baolu.lu@linux.intel.com>
+To: kan.liang@linux.intel.com, joro@8bytes.org, will@kernel.org,
+ dwmw2@infradead.org, robin.murphy@arm.com, robert.moore@intel.com,
+ rafael.j.wysocki@intel.com, lenb@kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20230128200428.1459118-1-kan.liang@linux.intel.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230126095438.354205-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20230128200428.1459118-1-kan.liang@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2023/1/26 17:54, Lu Baolu wrote:
-> Setup No Execute Enable bit (Bit 133) of a scalable mode PASID
-> entry. It is required when XD bit of the first level page table
-> entry is about to be set.
+On 2023/1/29 4:04, kan.liang@linux.intel.com wrote:
+> From: Kan Liang<kan.liang@linux.intel.com>
 > 
-> Fixes: ddf09b6d43ec ("iommu/vt-d: Setup pasid entries for iova over first level")
-> Signed-off-by: Ashok Raj<ashok.raj@intel.com>
-> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+> Changes since V3:
+> - Fix issues found by "./scripts/checkpatch.pl --strict" scripts
+>    Doesn't fix the "macros should not use a trailing semicolon" warning,
+>    since the macros has to include several struct and functions to
+>    further reduce the code duplication.
+> - To fix the 0 value filter issue, introduce new "*_filter_en" attrs
+>    for each filter. The end user must set both filter_en and filter
+>    to utilize a filter.
+> - Re-organize the layout of config1 and config2.
+> 
+> Changes since V2:
+> - Move ecmd_submit_sync() to iommu.c to avoid #ifdef CONFIG_INTEL_IOMMU
+> 
+> Changes since V1:
+> - The cap and ecap registers are always in the first page. It's not
+>    necessary to use the reg size in dmar_validate_one_drhd(). (Patch 1)
+> - Move reg_size up and pair it with reg_base_addr in struct
+>    dmar_drhd_unit (Patch 1)
+> - Update the year of Copyright (Patch 2)
+> - Return 0 if PMS is not supported (Patch 2)
+> - Refine the comments and add a pr_warn for per-counter capabilities
+>    check (Patch 2)
+> - Remove unnecessary iommu_pmu->num_cntr = i (Patch 2)
+> - Remove has_ob of ecmd_submit_sync() (Patch 3)
+> - Remove the helpers from non-INTEL_IOMMU. (Patch 3)
+> - Still keep #ifdef CONFIG_INTEL_IOMMU for ecmd_submit_sync() to
+>    avoid compile warning with non-INTEL_IOMMU config.
+> - Use pr_warn_once() to replace WARN_ONCE() (Patch 4 & 6)
+> - Free iommu PMU if it fails to be registered. (Patch 4)
+> - Remove unnecessary 'handled' variable. (Patch 6)
+> 
+> A performance monitoring infrastructure, perfmon, is introduced with
+> the VT-d Spec 4.0. The purpose of perfmon is to support collection of
+> information about key events occurring during operation of the remapping
+> hardware, to aid performance tuning and debug. The patch series is to
+> support the perfmon for IOMMU.
+> 
+> To facilitate the perfmon support, the patch series also supports two
+> new generic features of VT-d Spec 4.0.
+> - Support the 'size' field to retrieve the accurate size of the register
+>    set for each dmar device from DRHD. (Patch 1)
+> - Support the new Enhanced Command Interface. (Patch 3)
+> 
+> With the patch series, users can collect the performance data of IOMMU
+> via Linux perf tool. For example,
+> 
+>   $ perf stat -e dmar1/iommu_requests,filter_ats_en=0x1,filter_ats=0x1/
+>     -a sleep 1
+> 
+>   Performance counter stats for 'system wide':
+> 
+>     368,947      dmar1/iommu_requests,filter_ats_en=0x1,filter_ats=0x1/
+> 
+>   1.002592074 seconds time elapsed
+> 
+> Kan Liang (7):
+>    iommu/vt-d: Support size of the register set in DRHD
+>    iommu/vt-d: Retrieve IOMMU perfmon capability information
+>    iommu/vt-d: Support Enhanced Command Interface
+>    iommu/vt-d: Add IOMMU perfmon support
+>    iommu/vt-d: Support cpumask for IOMMU perfmon
+>    iommu/vt-d: Add IOMMU perfmon overflow handler support
+>    iommu/vt-d: Enable IOMMU perfmon support
 
-Patch queued for v6.3.
+Patches queued for v6.3. Thank you!
 
 https://lore.kernel.org/linux-iommu/20230131073740.378984-1-baolu.lu@linux.intel.com/
 
