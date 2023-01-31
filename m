@@ -1,200 +1,199 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from APC01-TYZ-obe.outbound.protection.outlook.com (mail-tyzapc01on2090.outbound.protection.outlook.com [40.107.117.90])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82B6A629
-	for <iommu@lists.linux.dev>; Tue, 31 Jan 2023 03:06:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1675134391;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=KdMSX2PGXe45qBgqP8RMLgntuCYyndOvWlGnSWr1I1w=;
-	b=Gvb+bXLJpCbjV+7vrajRYyqQI+LUlHoVzGSYZdK/Z7UBCXfDIymGOXMinwR5GImF9G1sbc
-	u5KfT8Yz6VN0Fw0LM9M7LZdBdHxm6E+1fOgac5AZ5nFc9K1PUELqWruiGl5bFIlpCFguVT
-	AZaqsVL86uVzzNMMjvduBOccd2V6jnQ=
-Received: from mail-oa1-f70.google.com (mail-oa1-f70.google.com
- [209.85.160.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-252-dlCQDcKvMQSeKdvfCivLdg-1; Mon, 30 Jan 2023 22:06:29 -0500
-X-MC-Unique: dlCQDcKvMQSeKdvfCivLdg-1
-Received: by mail-oa1-f70.google.com with SMTP id 586e51a60fabf-1634c8f8b54so4920115fac.14
-        for <iommu@lists.linux.dev>; Mon, 30 Jan 2023 19:06:29 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=KdMSX2PGXe45qBgqP8RMLgntuCYyndOvWlGnSWr1I1w=;
-        b=s32eElXG+/VmX/zRMN3kcHqnNlTe2uRqtJG/ZcsV8FrY0zyeAwtgWBFBjFHJoC5/V6
-         IUnp72FkWi+L7f52Z4mMT5obMwe3ddhwVJfyjaWZsu+4b2UMvupIPqCoODD7f2e3+mJE
-         aXzyyHQQ+xFZy8844z/JQ4whwD27alWuZX9nTC9s1f+P55iz2CXDwRrgMfENJTEUOlIY
-         vT9G2JXofc8wwEI+uC/GV08nzI7KI9LXRKul9dL5oP5MwfA2V5FfPjxTDjtCHI4kJ3GB
-         AGh5R7tmTcbdFpTqYR0DLvwglhHNWtnaWKmCNaI5bw1XazvECzSxGjQbnY1gelrrWW0A
-         6rjg==
-X-Gm-Message-State: AO0yUKWhqqEPW+Rwv660+O0/S78AVd57Tf15PXnos6mMsBbuAS2LOmiU
-	G75QFbDFHj644ktOLrRWEqYxhOtjQu4mG0ctqcs0AR63CtVkowDT0W7XkSmeYRjTUCXskaXgKmS
-	PHMZdtKFjSGo/hYIBhfkEGpCqOxfI/g4=
-X-Received: by 2002:a05:6870:959e:b0:163:9cea:eea7 with SMTP id k30-20020a056870959e00b001639ceaeea7mr565251oao.35.1675134389118;
-        Mon, 30 Jan 2023 19:06:29 -0800 (PST)
-X-Google-Smtp-Source: AK7set/gy6zeCHS7dDqTzLgm0l0HH281Gpnu1QcOaLODISHVTb7n1+4QzN8Fzmkkj1rEtYbW+m8iASC8yFpzqnKRkFM=
-X-Received: by 2002:a05:6870:959e:b0:163:9cea:eea7 with SMTP id
- k30-20020a056870959e00b001639ceaeea7mr565247oao.35.1675134388839; Mon, 30 Jan
- 2023 19:06:28 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 383EA640
+	for <iommu@lists.linux.dev>; Tue, 31 Jan 2023 05:59:47 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IxinNXIqClg7J1BoguUcJzatHO2kW6RVu1URo6U76zGxvz6jUbp2lhINcLgMO1r/ua9/2P7Mhhyn0qJr7IGxhton7yqfGgjEboxIp4ZF9O6vtPCTY/w4eg3wbaHyprxXA+Aw8x8VRAieRfB5SXsxkCEK1owoWgUMAkYJ37LgHg6fz4ylyA72GznNZVqMhL3TDih+Aief6CupOA3Xs1ZjAiurm/W/vD74pe7cOmHZtH4BEMP6G70sW22ic86d8QYlM+cCt6CWbgytMOLRMnwEgmliwkDYjx22SHIxUY8Q5ock+GooC7OHS0wwl46KMuXXiriOpYc+9HABLaOYQ/ZHcQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bcOojTwWRfInNltB7gTPx2faTj4+hT7o1I87cObT0Ic=;
+ b=XW8G6HNt1SM//S3ZUmPAOnBGddTZM7DV9gl+Xk8P2v3xC0u4rGf26AMcIZ6kMU1va7dk4urs/Xmwd3iHkCOpxtnjLxDd7zf+9hVikuxuyc0fkV3pMgXH8scpDVNe6k8GV+YCe+sDInIw+93Sat3RkYh2cm2fKOzpts+3G+1mtYNscSK8lmD62LCus/EozlVk90kTqTZNxjGCfuEsIxaZ1vJ4T6+pSdrxSXPYfQm7Ax4AWp2kDm9ili9wCXYTxBfLlRG+ACxJG2jWKNhmTURViptPblymlgrtYJyB0JEoN7zv6Mn2Etjqo0YQ4RphyQkZK7eg1HDqhaQDj2RUMSy4IQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bcOojTwWRfInNltB7gTPx2faTj4+hT7o1I87cObT0Ic=;
+ b=dAUae5MNrp1cFyXMODsxK43ey73Jqnaz4HtQ02DRMXcQqGv54YCTB+FkQfhIz28F8CsCd1kcCSSzOD3ozLeJ2SDT0TMa2jpSfV3Fi82ob2hDaBJnf078KZ9SGo6RZThVoUBMMahz/wF1wvZRGNkO0wejZKo28gqMR2hiNLva9fs=
+Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
+ (2603:1096:404:8028::13) by TYYPR01MB10593.jpnprd01.prod.outlook.com
+ (2603:1096:400:30d::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.36; Tue, 31 Jan
+ 2023 05:59:44 +0000
+Received: from TYBPR01MB5341.jpnprd01.prod.outlook.com
+ ([fe80::3e61:3792:227e:5f18]) by TYBPR01MB5341.jpnprd01.prod.outlook.com
+ ([fe80::3e61:3792:227e:5f18%9]) with mapi id 15.20.6043.036; Tue, 31 Jan 2023
+ 05:59:44 +0000
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To: Rob Herring <robh@kernel.org>
+CC: "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"krzysztof.kozlowski+dt@linaro.org" <krzysztof.kozlowski+dt@linaro.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "devicetree@vger.kernel.org"
+	<devicetree@vger.kernel.org>, "linux-renesas-soc@vger.kernel.org"
+	<linux-renesas-soc@vger.kernel.org>
+Subject: RE: [PATCH v2] dt-bindings: iommu: renesas,ipmmu-vmsa: Update for
+ R-Car Gen4
+Thread-Topic: [PATCH v2] dt-bindings: iommu: renesas,ipmmu-vmsa: Update for
+ R-Car Gen4
+Thread-Index: AQHZMlhSG+P1Tx3KPUK26BD/OfHwlq63X8+AgACrN5A=
+Date: Tue, 31 Jan 2023 05:59:44 +0000
+Message-ID:
+ <TYBPR01MB5341900BBB1A4692BE085B35D8D09@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+References: <20230127140446.1728102-1-yoshihiro.shimoda.uh@renesas.com>
+ <20230130193713.GA3213851-robh@kernel.org>
+In-Reply-To: <20230130193713.GA3213851-robh@kernel.org>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=renesas.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: TYBPR01MB5341:EE_|TYYPR01MB10593:EE_
+x-ms-office365-filtering-correlation-id: 30859c28-ecf2-441b-7f63-08db035059eb
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ nv76HG+G6ZrgZsKtNG2OvG3o7IDz86x5UwgBGZS43QtB0LZZ3mAkYuY2SdAHEfCKl0/ItB5zkI+vR4xFzIOfO8i52TbTvmLgJfOnCugPRUPvhMPIq8mq/to4mdrmxZh37y/DzqPUgg8NMSTgFlmhvPTcMxLGP0t0Rr15V0bmowM1IiWMGhOQpglm+ynN0qbdIJK7uN9YvvKT/fwkONZeWfsUpff87ZkdG3KJl+EXtb+w8aHP+i5wna+WdRZntfCwkm88pnUb+C0Y69+nhFfvSzUGPJhGWytBNYudnS//SIWfKBHi80mMANxQmY/B49AujohvKIq2fI/ikCXr+Smw80DCUuGGejHIgG42KmxJm/MkofjKGQDZA6jFkoXm/6IEJjWIPvKJp+N5pslSHsFopuyKeE8Gt2Ow9DXOuJYBoenlyGaNETMRejZV/jBnbnLB5/KOasKXmQVsY7M95uzx6GSgeTViEFQMhxuwj+2m9kvMw+RPEsml6xMKdmzdOhT8g0eFREKV62Ri6iHu9aqXonca5KxzK8z2sBTMnhwCa9k6PR8OepEKO3eJZFCcF6By9ONIWtYzClx9AZrA/lgqP1JwhGMIdbfZ+kFEi24b/biNNi1jXk1LqziXmeHxRSPlmW8JOJTEBPCJLK5bd4zn7XyU3kDG+kBHfXdnK19lcmw2tOHZvnzzzKkiAwbI+mWfi5CWoWUsDiyDCOKlFed7Bg==
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYBPR01MB5341.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(136003)(346002)(366004)(396003)(39860400002)(376002)(451199018)(8936002)(41300700001)(52536014)(66556008)(66446008)(83380400001)(55016003)(38100700002)(5660300002)(6916009)(122000001)(86362001)(66476007)(4326008)(38070700005)(7696005)(71200400001)(64756008)(316002)(76116006)(8676002)(54906003)(478600001)(66946007)(186003)(9686003)(6506007)(33656002)(15650500001)(2906002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?9PekW/rl1V3k2DQ9WbTTyt8HZWHCsSbesqswrqcFle+dOre6Zh8t0yXvLJNJ?=
+ =?us-ascii?Q?LxAASnwJyRikg+5uBa4acY/0FsyDHti+h7C9UMEk92ViykIpRSDfneHUVtCG?=
+ =?us-ascii?Q?h/kuiS417HLVh1JyHwKIroRGOy4uK6hvFrawCLv4Hww6GGhy4X4Al02aEdGY?=
+ =?us-ascii?Q?XIRTpNUn0P0XevvPzsR/QjzuQX7KhHr5S4DyevYmf4lFtblMWLu3qq0aGFNC?=
+ =?us-ascii?Q?KujF0bxVRQMAchSYwKl3Z52xmfU+sM4W/dPmIkXj0B5ijathpubrFoqYfToo?=
+ =?us-ascii?Q?J3+JGkm+4lpYkg4MFIsCLKZBdA5le5bckoh76VS9+CHMYRlMmK1Oz6FHAV/Z?=
+ =?us-ascii?Q?28V95olSemjrSPAWAd7vRj2PwTGlaUnJziuRkrLxuD0Ywx5aVVYoAv/nBi5N?=
+ =?us-ascii?Q?usSTguzuj/RNS/0NaHJXybodEYuzVN4+nuJB8cgK73ce53F8f9W5B/WZQjW/?=
+ =?us-ascii?Q?UwmIElh/TycWbpGXnwRDFoanFG77NInQpJnAy+UeuiElbQozGCde9dNjiv3f?=
+ =?us-ascii?Q?aVV7wn/MTxDNDxtrbH0ZFkRSamIL4rRwTXxQExnrYcFdqdp07dcsy9p1yelE?=
+ =?us-ascii?Q?9mxz7udhlltUjIqdTC62WceJD5m0H9ENet+XqINfQ+Mxo+9lUCAAJYU4GNMy?=
+ =?us-ascii?Q?acBmO98sWOlmhntXfUGZNgLE2hPfoabb7LBnqETjacs+/EKzTgU+/SLiKLL6?=
+ =?us-ascii?Q?MySQPOmIn9hyReaHvdmyH7h1OCeSYwMmAHUSTh8O0XAkat11N0KSV3vfSWvb?=
+ =?us-ascii?Q?G8nnUB9WYeguARmSBEYDV+MgnrM1fm6X+FjJM799zd2YDOwMm5Sf/Ma/omnv?=
+ =?us-ascii?Q?TQwM79VPGxvoBgbQZ/mwOBF4xX4dQOXxl6aduDrZ2v8tYnUPvJ+w7Bptql32?=
+ =?us-ascii?Q?9Amz3QpIUjx9HtNra805mzAbyIc8KZ7QecQDJu/r+tMqM2lDpowwJejug72z?=
+ =?us-ascii?Q?XfK6K0zP7bZ8g9Ofl0P7N0Nk1M2QbiYp4jm/zLxFaEai0AJMMuwQ4Mb2UkFY?=
+ =?us-ascii?Q?KdhukymtVxqRRgES1py13xdwLEE3KSB/8IrOLnuLLA4lmvd6WUaUE5KMIcx2?=
+ =?us-ascii?Q?LOwL7sS80yNvsaZBdafNF8LROobRS7x5wG+A0pEOBRFZ36XIIyQZLOBazch8?=
+ =?us-ascii?Q?16QPzpniAH9eYndPd0XEy3ZqpMmP4EXtcGeGg70zMAFVn5bVXmmE5ZCTo27n?=
+ =?us-ascii?Q?J1nm6Uui18g++FSRWpJ/mFGytt3ED4T9lMq4LPbzj3rFPUaCiMS1T8ik91cC?=
+ =?us-ascii?Q?183j0XicEhhqymSMxE5GtZRw2XG1sMLxCb0WqsksGcyznGD2vC3M8eZtscGA?=
+ =?us-ascii?Q?l9O9pQBaBQ1JKPUM5pIUL0+Eg6s8bAfoAjyIuUHaGBuoX5X605yvCY1ewlEX?=
+ =?us-ascii?Q?IEhAYRMpu6tQnGLwKqXpsoHtsNjKFgCIOMQlGTEd2QqW7z2dTYneEFPTRoga?=
+ =?us-ascii?Q?c7AiF2ZvrzBtBgCvCHCuyL/fCTf6s3aq4BfcZTiN0KIO9fnILlsoFkBp040J?=
+ =?us-ascii?Q?MTWuCTuWUfJv/wFifOTUsNofK5p18TLSADlGV0AZwg1IH87vS27J2J38UW3c?=
+ =?us-ascii?Q?4MZO915SJhvpi/DN9ZOs5YHOG9PB2VcTJDglSZGOGbT1z0KnXYLbSWfvotvT?=
+ =?us-ascii?Q?RInuPJux9dnLsIIj6/B8IvegGM2Rxt9OB3tEosasdg03WowqCfMo++ExZ8vQ?=
+ =?us-ascii?Q?9Z1dUQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230128031740.166743-1-sunnanyong@huawei.com>
- <CACGkMEtMAFMbhPnaaTwGRFofPM-p8ceKzAUbD2AFBz=fbR6hYQ@mail.gmail.com> <ffe21085-13cf-e2e9-e5cc-8755e9e3250b@huawei.com>
-In-Reply-To: <ffe21085-13cf-e2e9-e5cc-8755e9e3250b@huawei.com>
-From: Jason Wang <jasowang@redhat.com>
-Date: Tue, 31 Jan 2023 11:06:17 +0800
-Message-ID: <CACGkMEsuYLen=pXd0e3hFNcUj-GQzj8ggh_8NDgWR2HbsD2S1A@mail.gmail.com>
-Subject: Re: [PATCH] vhost/vdpa: Add MSI translation tables to iommu for
- software-managed MSI
-To: Nanyong Sun <sunnanyong@huawei.com>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, mst@redhat.com, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, 
-	virtualization@lists.linux-foundation.org, netdev@vger.kernel.org, 
-	wangrong68@huawei.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TYBPR01MB5341.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 30859c28-ecf2-441b-7f63-08db035059eb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Jan 2023 05:59:44.3617
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: aC+/kiQnz0KCOIpWjK8aJjvdcceJDod7sCNIGIgGOD3U4o+geYH+ZHecU6fnzSMy1trKTjUyMfiB5NVCI93MDJSYSYDlDatDflRaqTaahB6pf6xgeFjt58eRwGCn4hUJ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYYPR01MB10593
 
-On Tue, Jan 31, 2023 at 9:32 AM Nanyong Sun <sunnanyong@huawei.com> wrote:
->
-> On 2023/1/29 14:02, Jason Wang wrote:
-> > On Sat, Jan 28, 2023 at 10:25 AM Nanyong Sun <sunnanyong@huawei.com> wrote:
-> >> From: Rong Wang <wangrong68@huawei.com>
-> >>
-> >> Once enable iommu domain for one device, the MSI
-> >> translation tables have to be there for software-managed MSI.
-> >> Otherwise, platform with software-managed MSI without an
-> >> irq bypass function, can not get a correct memory write event
-> >> from pcie, will not get irqs.
-> >> The solution is to obtain the MSI phy base address from
-> >> iommu reserved region, and set it to iommu MSI cookie,
-> >> then translation tables will be created while request irq.
-> >>
-> >> Signed-off-by: Rong Wang <wangrong68@huawei.com>
-> >> Signed-off-by: Nanyong Sun <sunnanyong@huawei.com>
-> >> ---
-> >>   drivers/iommu/iommu.c |  1 +
-> >>   drivers/vhost/vdpa.c  | 53 ++++++++++++++++++++++++++++++++++++++++---
-> >>   2 files changed, 51 insertions(+), 3 deletions(-)
-> >>
-> >> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> >> index de91dd88705b..f6c65d5d8e2b 100644
-> >> --- a/drivers/iommu/iommu.c
-> >> +++ b/drivers/iommu/iommu.c
-> >> @@ -2623,6 +2623,7 @@ void iommu_get_resv_regions(struct device *dev, struct list_head *list)
-> >>          if (ops->get_resv_regions)
-> >>                  ops->get_resv_regions(dev, list);
-> >>   }
-> >> +EXPORT_SYMBOL_GPL(iommu_get_resv_regions);
-> >>
-> >>   /**
-> >>    * iommu_put_resv_regions - release resered regions
-> >> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> >> index ec32f785dfde..31d3e9ed4cfa 100644
-> >> --- a/drivers/vhost/vdpa.c
-> >> +++ b/drivers/vhost/vdpa.c
-> >> @@ -1103,6 +1103,48 @@ static ssize_t vhost_vdpa_chr_write_iter(struct kiocb *iocb,
-> >>          return vhost_chr_write_iter(dev, from);
-> >>   }
-> >>
-> >> +static bool vhost_vdpa_check_sw_msi(struct list_head *dev_resv_regions, phys_addr_t *base)
-> >> +{
-> >> +       struct iommu_resv_region *region;
-> >> +       bool ret = false;
-> >> +
-> >> +       list_for_each_entry(region, dev_resv_regions, list) {
-> >> +               /*
-> >> +                * The presence of any 'real' MSI regions should take
-> >> +                * precedence over the software-managed one if the
-> >> +                * IOMMU driver happens to advertise both types.
-> >> +                */
-> >> +               if (region->type == IOMMU_RESV_MSI) {
-> >> +                       ret = false;
-> >> +                       break;
-> >> +               }
-> >> +
-> >> +               if (region->type == IOMMU_RESV_SW_MSI) {
-> >> +                       *base = region->start;
-> >> +                       ret = true;
-> >> +               }
-> >> +       }
-> >> +
-> >> +       return ret;
-> >> +}
-> > Can we unify this with what VFIO had?
-> Yes, these two functions are just the same.
-> Do you think move this function to iommu.c, and export from iommu is a
-> good choice?
-
-Probably, we can try and see.
-
+> From: Rob Herring, Sent: Tuesday, January 31, 2023 4:37 AM
+>=20
+> On Fri, Jan 27, 2023 at 11:04:46PM +0900, Yoshihiro Shimoda wrote:
+> > Since R-Car Gen4 doens't have the main IPMMU IMSSTR register, update
+> > the renesas,ipmmu-main property which allows to only set the first
+> > argument for R-Car Gen4.
 > >
-> >> +
-> >> +static int vhost_vdpa_get_msi_cookie(struct iommu_domain *domain, struct device *dma_dev)
-> >> +{
-> >> +       struct list_head dev_resv_regions;
-> >> +       phys_addr_t resv_msi_base = 0;
-> >> +       int ret = 0;
-> >> +
-> >> +       INIT_LIST_HEAD(&dev_resv_regions);
-> >> +       iommu_get_resv_regions(dma_dev, &dev_resv_regions);
-> >> +
-> >> +       if (vhost_vdpa_check_sw_msi(&dev_resv_regions, &resv_msi_base))
-> >> +               ret = iommu_get_msi_cookie(domain, resv_msi_base);
-> >> +
-> >> +       iommu_put_resv_regions(dma_dev, &dev_resv_regions);
-> >> +
-> >> +       return ret;
-> >> +}
-> >> +
-> >>   static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
-> >>   {
-> >>          struct vdpa_device *vdpa = v->vdpa;
-> >> @@ -1128,11 +1170,16 @@ static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
-> >>
-> >>          ret = iommu_attach_device(v->domain, dma_dev);
-> >>          if (ret)
-> >> -               goto err_attach;
-> >> +               goto err_alloc_domain;
-> >>
-> >> -       return 0;
-> >> +       ret = vhost_vdpa_get_msi_cookie(v->domain, dma_dev);
-> > Do we need to check the overlap mapping and record it in the interval
-> > tree (as what VFIO did)?
+> > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> > ---
+> > Changes from v1:
 > >
-> > Thanks
-> Yes, we need to care about this part, I will handle this recently.
-> Thanks a lot.
+<snip the URL>
+> >  - Change number of argument for R-Car Gen4 instead of "module id".
+> >    On the discussion, using 'minItems' is a solution. But, it causes
+> >    "too short" errors on dtbs_check. So, using "oneOf" instead.
+>=20
+> What was the schema you had?
 
-I think for parents that requires vendor specific mapping logic we
-probably also need this.
+I added "minItems: 1" like below:
+---
+--- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
++++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
+@@ -74,6 +74,7 @@ properties:
+   renesas,ipmmu-main:
+     $ref: /schemas/types.yaml#/definitions/phandle-array
+     items:
++      - minItems: 1
+       - items:
+           - description: phandle to main IPMMU
+           - description: the interrupt bit number associated with the part=
+icular
+---
 
-But this could be added on top (via a new config ops probably).
+But, a lot of following errors happened on dtbs_check.
+---
+  DTC_CHK arch/arm64/boot/dts/renesas/r8a774a1-beacon-rzg2m-kit.dtb
+/home/shimoda/development/linux/worktrees/iommu/arch/arm64/boot/dts/renesas=
+/r8a774a1-beacon-rzg2m-kit.dtb: iommu@e6740000: renesas,ipmmu-main:1: [0] i=
+s too short
+        From schema: /home/shimoda/development/linux/worktrees/iommu/Docume=
+ntation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
+---
 
-Thanks
+If I modified the file like below, the error disappeared.
+But, this is not matched with the commit 39bd2b6a3783 ("dt-bindings: Improv=
+e phandle-array schemas"), I think.
+---
+--- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
++++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
+@@ -73,12 +73,12 @@ properties:
 
-> >> +       if (ret)
-> >> +               goto err_attach_device;
-> >>
-> >> -err_attach:
-> >> +       return 0;
-> >> +err_attach_device:
-> >> +       iommu_detach_device(v->domain, dma_dev);
-> >> +err_alloc_domain:
-> >>          iommu_domain_free(v->domain);
-> >>          return ret;
-> >>   }
-> >> --
-> >> 2.25.1
-> >>
-> > .
->
+   renesas,ipmmu-main:
+     $ref: /schemas/types.yaml#/definitions/phandle-array
++    minItems: 1
+     items:
+-      - items:
+-          - description: phandle to main IPMMU
+-          - description: the interrupt bit number associated with the part=
+icular
+-              cache IPMMU device. The interrupt bit number needs to match =
+the main
+-              IPMMU IMSSTR register. Only used by cache IPMMU instances.
++      - description: phandle to main IPMMU
++      - description: the interrupt bit number associated with the particul=
+ar
++          cache IPMMU device. The interrupt bit number needs to match the =
+main
++          IPMMU IMSSTR register. Only used by cache IPMMU instances.
+     description:
+       Reference to the main IPMMU phandle plus 1 cell. The cell is
+       the interrupt bit number associated with the particular cache IPMMU
+---
 
+Best regards,
+Yoshihiro Shimoda
+
+> I've commented on v1.
+
+Thank you for your comment on v1!
+
+Best regards,
+Yoshihiro Shimoda
+
+> Rob
