@@ -1,125 +1,142 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACCF97EC
-	for <iommu@lists.linux.dev>; Tue, 31 Jan 2023 07:55:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675151704; x=1706687704;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=YGP3Zf7KaslK46KT4ZdpOe8BqHP3ROGlVR+cuxazIyA=;
-  b=dJONDMyT+Ow9dULZweLgbYcPgK1+NvgNeJiIARK1tC6eA7gytS/sWOgJ
-   tgjm2j7wj/e01TQYg0t9jZQPd1HzfUS902KN4+8KwCjoxqfLqeQm9yLEn
-   +Mzpaiell3uKj78cSf4mDBMdwwyhD3yQ3cn/f2xhOimp90nK6MQrPqf47
-   5nZ6shTrKF49KfvOCAGfs3t8npmPxRaYR6Ud8aDqJYkND2rX2kjHdUawT
-   8CB5AkwUn8tmfqvdNKwdkPnKzFIAPRmY78Gt//4axIDihghBgvdjQ/X9I
-   c5+SbyZxongalHKp8ZZgOTNuy/0fN0XsKeEjE0ZuXChOsROHZmdh10lwY
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="355101011"
-X-IronPort-AV: E=Sophos;i="5.97,259,1669104000"; 
-   d="scan'208";a="355101011"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2023 23:55:03 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10606"; a="788348067"
-X-IronPort-AV: E=Sophos;i="5.97,259,1669104000"; 
-   d="scan'208";a="788348067"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.172.41]) ([10.249.172.41])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2023 23:55:00 -0800
-Message-ID: <91b485f7-ffd9-65ce-5656-5659a48968b4@linux.intel.com>
-Date: Tue, 31 Jan 2023 15:54:58 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 475087EC
+	for <iommu@lists.linux.dev>; Tue, 31 Jan 2023 08:20:53 +0000 (UTC)
+Received: by mail-qv1-f42.google.com with SMTP id k2so10622008qvd.12
+        for <iommu@lists.linux.dev>; Tue, 31 Jan 2023 00:20:53 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=bRHAGhQgk4pQ7LOPV0/iV6SDvyC1guNRZ8CaTTxtQfo=;
+        b=1EFJQRkYmlaahd2zNnCJhvUo/3ACENVkrKJkTt9g+RhLZxojTibNDumNMrcdYWJ1Cb
+         Te8la6zkdOWOZWPT2I72o9ZUdeXbiVJ0v88gwawTfTARGT/apYa+hyBXOV+0hkhsh+xt
+         tpP4L/+zw82K7v8+8GMJlKSixH3ExheH554ZcPeUwVMlMAFlPkVieYPLDfm1Qk6snbTW
+         3/LKwAJ4791AjR+yXLwRbm+ZpfEXEy7JHb3H/lqbk0pIFs0n4bMVL3Xbnf5DKM3IYw5J
+         qvG3sVdc94iRQ4SJ30V4loWAIlTpBQHWwatxoA5AoW6JDvae8eaJ1n3Y4XAQOjhXM/kF
+         iLhA==
+X-Gm-Message-State: AFqh2kr6R/Fphv7tZxY3td5PzmuuSUH0qyk34HSPnc9IAsVLE01A52tf
+	tLL4/J0YMYtMP5L4itt6IA00P7DYdeqF3Q==
+X-Google-Smtp-Source: AMrXdXsDqe/xt3g8FNU2D+YGiQgeqsKFVSRi/Ul9G1w/R+z9LPHdv5i7PBAUqkC6ypTRHAMfCQYl2A==
+X-Received: by 2002:ad4:4181:0:b0:535:5a91:f4c8 with SMTP id e1-20020ad44181000000b005355a91f4c8mr53020808qvp.49.1675153251703;
+        Tue, 31 Jan 2023 00:20:51 -0800 (PST)
+Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com. [209.85.219.170])
+        by smtp.gmail.com with ESMTPSA id op52-20020a05620a537400b007186c9e167esm8009495qkn.52.2023.01.31.00.20.50
+        for <iommu@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 Jan 2023 00:20:51 -0800 (PST)
+Received: by mail-yb1-f170.google.com with SMTP id p141so17099356ybg.12
+        for <iommu@lists.linux.dev>; Tue, 31 Jan 2023 00:20:50 -0800 (PST)
+X-Received: by 2002:a25:4483:0:b0:839:c329:be37 with SMTP id
+ r125-20020a254483000000b00839c329be37mr73386yba.89.1675153250731; Tue, 31 Jan
+ 2023 00:20:50 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Cc: baolu.lu@linux.intel.com, yu-cheng.yu@intel.com
-Subject: Re: [PATCH V4 0/7] iommu/vt-d: Support performance monitoring for
- IOMMU
-Content-Language: en-US
-To: kan.liang@linux.intel.com, joro@8bytes.org, will@kernel.org,
- dwmw2@infradead.org, robin.murphy@arm.com, robert.moore@intel.com,
- rafael.j.wysocki@intel.com, lenb@kernel.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20230128200428.1459118-1-kan.liang@linux.intel.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20230128200428.1459118-1-kan.liang@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20230123012940.1250879-1-yoshihiro.shimoda.uh@renesas.com>
+ <CAMuHMdX92KMeON0xC9p17kiqWT7ksEBX_NyPiiQk0fLaucDZBA@mail.gmail.com>
+ <TYBPR01MB5341B023178B4A10DE52B844D8CE9@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+ <CAMuHMdXXnu88Tn2ucuHZK=3G18v-nCfaTYpomchRXBu3bD7UuA@mail.gmail.com>
+ <3c3e1dc2-1f66-565c-c677-2eae368e10be@arm.com> <20230130193604.GA3218335-robh@kernel.org>
+In-Reply-To: <20230130193604.GA3218335-robh@kernel.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 31 Jan 2023 09:20:38 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdU4j3drFt6jAZPHTJMrrL7GTWHxNqMGHR-1pScqg4H2xg@mail.gmail.com>
+Message-ID: <CAMuHMdU4j3drFt6jAZPHTJMrrL7GTWHxNqMGHR-1pScqg4H2xg@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: iommu: renesas,ipmmu-vmsa: Update
+ descriptions for R-Car Gen4
+To: Rob Herring <robh@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, 
+	Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, "joro@8bytes.org" <joro@8bytes.org>, 
+	"will@kernel.org" <will@kernel.org>, 
+	"krzysztof.kozlowski+dt@linaro.org" <krzysztof.kozlowski+dt@linaro.org>, 
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, 
+	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-On 2023/1/29 4:04, kan.liang@linux.intel.com wrote:
-> From: Kan Liang<kan.liang@linux.intel.com>
-> 
-> Changes since V3:
-> - Fix issues found by "./scripts/checkpatch.pl --strict" scripts
->    Doesn't fix the "macros should not use a trailing semicolon" warning,
->    since the macros has to include several struct and functions to
->    further reduce the code duplication.
-> - To fix the 0 value filter issue, introduce new "*_filter_en" attrs
->    for each filter. The end user must set both filter_en and filter
->    to utilize a filter.
-> - Re-organize the layout of config1 and config2.
-> 
-> Changes since V2:
-> - Move ecmd_submit_sync() to iommu.c to avoid #ifdef CONFIG_INTEL_IOMMU
-> 
-> Changes since V1:
-> - The cap and ecap registers are always in the first page. It's not
->    necessary to use the reg size in dmar_validate_one_drhd(). (Patch 1)
-> - Move reg_size up and pair it with reg_base_addr in struct
->    dmar_drhd_unit (Patch 1)
-> - Update the year of Copyright (Patch 2)
-> - Return 0 if PMS is not supported (Patch 2)
-> - Refine the comments and add a pr_warn for per-counter capabilities
->    check (Patch 2)
-> - Remove unnecessary iommu_pmu->num_cntr = i (Patch 2)
-> - Remove has_ob of ecmd_submit_sync() (Patch 3)
-> - Remove the helpers from non-INTEL_IOMMU. (Patch 3)
-> - Still keep #ifdef CONFIG_INTEL_IOMMU for ecmd_submit_sync() to
->    avoid compile warning with non-INTEL_IOMMU config.
-> - Use pr_warn_once() to replace WARN_ONCE() (Patch 4 & 6)
-> - Free iommu PMU if it fails to be registered. (Patch 4)
-> - Remove unnecessary 'handled' variable. (Patch 6)
-> 
-> A performance monitoring infrastructure, perfmon, is introduced with
-> the VT-d Spec 4.0. The purpose of perfmon is to support collection of
-> information about key events occurring during operation of the remapping
-> hardware, to aid performance tuning and debug. The patch series is to
-> support the perfmon for IOMMU.
-> 
-> To facilitate the perfmon support, the patch series also supports two
-> new generic features of VT-d Spec 4.0.
-> - Support the 'size' field to retrieve the accurate size of the register
->    set for each dmar device from DRHD. (Patch 1)
-> - Support the new Enhanced Command Interface. (Patch 3)
-> 
-> With the patch series, users can collect the performance data of IOMMU
-> via Linux perf tool. For example,
-> 
->   $ perf stat -e dmar1/iommu_requests,filter_ats_en=0x1,filter_ats=0x1/
->     -a sleep 1
-> 
->   Performance counter stats for 'system wide':
-> 
->     368,947      dmar1/iommu_requests,filter_ats_en=0x1,filter_ats=0x1/
-> 
->   1.002592074 seconds time elapsed
-> 
-> Kan Liang (7):
->    iommu/vt-d: Support size of the register set in DRHD
->    iommu/vt-d: Retrieve IOMMU perfmon capability information
->    iommu/vt-d: Support Enhanced Command Interface
->    iommu/vt-d: Add IOMMU perfmon support
->    iommu/vt-d: Support cpumask for IOMMU perfmon
->    iommu/vt-d: Add IOMMU perfmon overflow handler support
->    iommu/vt-d: Enable IOMMU perfmon support
+Hi Rob,
 
-Patches queued for v6.3. Thank you!
+On Mon, Jan 30, 2023 at 8:36 PM Rob Herring <robh@kernel.org> wrote:
+> On Wed, Jan 25, 2023 at 10:42:13AM +0000, Robin Murphy wrote:
+> > On 2023-01-25 08:54, Geert Uytterhoeven wrote:
+> > > On Wed, Jan 25, 2023 at 1:49 AM Yoshihiro Shimoda
+> > > <yoshihiro.shimoda.uh@renesas.com> wrote:
+> > > > > From: Geert Uytterhoeven, Sent: Tuesday, January 24, 2023 11:35 PM
+> > > > > On Mon, Jan 23, 2023 at 2:35 AM Yoshihiro Shimoda
+> > > > > <yoshihiro.shimoda.uh@renesas.com> wrote:
+> > > > > > Since R-Car Gen4 doens't have the main IPMMU IMSSTR register, but
+> > > > > > each cache IPMMU has own module id. So, update descriptions of
+> > > > > > renesas,ipmmu-main property for R-Car Gen4.
+> > > > > >
+> > > > > > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> > >
+> > > > > > ---
+> > > > > >   The old R-Car S4-8 datasheet had described IPMMU IMSSTR register, but
+> > > > > >   the latest datasheet undocumented the register. So, update the propeties
+> > > > > >   description. Note that the second argument is not used on the driver.
+> > > > >
+> > > > > DT describes hardware, not software policy.
+> > > >
+> > > > I think so.
+> > > >
+> > > > > >   So no behavior change.
+> > > > >
+> > > > > So where do we get the module id numbers to use, if they are no longer
+> > > > > documented in the Hardware Manual?
+> > > >
+> > > > If so, we cannot get the module id numbers. So, should we use other
+> > > > information which is completely fixed instead? I have some ideas:
+> > > > 1) Just 0 (or other fixed value) if the IMSSTR register doesn't exist.
+> > > > 2) Sequential numbers from register base offset.
+> > > >     In R-Car S4: ipmmu_rt0 is the first node from register base offset,
+> > > >     and ipmmu_rt1 is the second one.
+> > > >     So, ipmmu_rt0 is 0, ipmmu_rt1 is 1, ipmmu_ds0 is 2 and ipmmu_hc is 3.
+> > > > 3) Using base address upper 16-bits.
+> > > >     In R-Car S4: ipmmu_rt0 is 0xee480000. So, the value is 0xee48.
+> > > >
+> > > > Perhaps, the option 1) is reasonable, I think. But, what do you think?
+> > >
+> > > I would not make up numbers, as that would cause confusion with SoCs
+> > > where the numbers do match the hardware.
+> > > As the driver doesn't use the module id number (it already loops
+> > > over all domains, instead of checking IMSSTR, probably because of
+> > > historical (R-Car Gen2) reasons?), what about dropping it from the
+> > > property? I.e. add "minItems: 1", possibly only when compatible with
+> > > renesas,rcar-gen4-ipmmu-vmsa?
+> >
+> > Right, if there really is no meaningful ID for this model then its binding
+> > should not require one.
+>
+> I agree, however that makes parsing the property a pain (for both the
+> schema and driver). This property is a matrix. The number of entries is
+> already variable. If both dimensions are variable, we have to then look
+> at the compatible to know how to parse it. I would go with option 1.
 
-https://lore.kernel.org/linux-iommu/20230131073740.378984-1-baolu.lu@linux.intel.com/
+But it does not have to be two-dimensional.
+The second dimension was added in commit 39bd2b6a3783b899 ("dt-bindings
+ Improve phandle-array schemas"), but is not needed.
+Can this be simplified again?
 
-Best regards,
-baolu
+The driver doesn't care, it just checks for the presence of the
+property, i.e. treats it as a boolean flag.
+
+> A 4th option is a new property.
+
+If all else fails, a new boolean flag would work...
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
