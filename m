@@ -1,33 +1,52 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0AE57F
-	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 00:14:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41378C4339B;
-	Wed,  1 Feb 2023 00:14:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1675210461;
-	bh=VrkTkh6sMfICNOUk5NZrD7fgvs8RF21aHhoYAwfB2Uo=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=sqnLiyMXkgfW9mlamfTWgJ1sZbtC2gIfY0hjWHQCvx0fGp0qWgh5PZtDL6FoXeaYZ
-	 xWZREiaBUtHNCiXuQu4UQWNF9oSsi5YfXuaN9uyWaHwvLsbeyKesqU/uB4owTDN7MI
-	 LTCx7a1FSeUUfQBhwJ0WX2zQGr0kqt1Ps5jz+7KIe5WEYioligobIzT1QJZBm8Um5X
-	 NNSr5C7Cb0hrZOcFfiRcN2+KLM+QYl4XtTIDCCQT2Hh3zzxRuhrlDJmSmxkAOnNmAm
-	 Ui4L+GOcFgEQf++rdWS3phUMVuzNfzHC9rXfWb+BVtVDFsBKPrNk5sZAmFCwvW4WhW
-	 X7RLsy45uhHsw==
-Date: Tue, 31 Jan 2023 18:14:19 -0600
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <jroedel@suse.de>,
-	Matt Fagnani <matt.fagnani@bell.net>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Tony Zhu <tony.zhu@intel.com>,
-	linux-pci@vger.kernel.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/1] PCI: Add translated request only flag for
- pci_enable_pasid()
-Message-ID: <20230201001419.GA1776086@bhelgaas>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58A557E
+	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 01:01:58 +0000 (UTC)
+Received: by mail-pl1-f175.google.com with SMTP id z1so9361127plg.6
+        for <iommu@lists.linux.dev>; Tue, 31 Jan 2023 17:01:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=SpBWoDp/3flZl8bPy43i9040zDcEsLFVYFfMuUc2+Es=;
+        b=Kb9SK73S5T1u0sxTpP5FA4YPRwnBawwGTQQOZEo5Q6ShIX6BUDTe5C6pZ8HbEX/e5R
+         lFk7DRZ4x3EuEWcediPIoTGVHRq3GEhMMSYLDvSD5ydDkTJZo9Eqz7i/P5IjgRibdOsc
+         D25ed0YfFzYPYSVHjdsLvL0FUYp9h2hBB7Rcg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=SpBWoDp/3flZl8bPy43i9040zDcEsLFVYFfMuUc2+Es=;
+        b=Y6Fn0AdlS35dqj6gp8KsHF2tvhdEBskdfCnTbpI7eAeH9JJkZcTX8gbhMFq+8GP4qH
+         mJaSZ9hrCWshp6197XDWl2EG5rVvXtqH8RqvwUnSWFe1Y50u+QKPwwitit6S3hd1iI9u
+         BeFOoLHuyrqwQkqFvc5DIuxiQG7kKzhNmCgaiM7GWSJytR6t0+yOwiPJRwRdLCEvV3xj
+         D8+/mN/8RDBiIio7VAeLtKzOmYEfL5bQQyEJtjqpGlxeAbmw4alam0NLpsr714Vy/dm4
+         h+fJj8XlWoOJWLIjC45YLFeYYFq9+PxDWeQIeZ/GliorGnump2wG41ISxYfunNLzFmt5
+         ljxg==
+X-Gm-Message-State: AO0yUKX1u+GUv5TenIfFDRwiMm20FCrvxARLTS9opZ2wZhjwKvQxzed9
+	i0yo4VoPPJNAUScX/+C2WCeTRuxm7Ugctt2C
+X-Google-Smtp-Source: AK7set+EpJZI8wxe7gBZSV5g7iNUu4Xv7xovIlQqaZFU/RH1CWjrTCKVYa7BL+XQ13E1jef0Ze20qg==
+X-Received: by 2002:a05:6a20:1446:b0:be:93c7:4f69 with SMTP id a6-20020a056a20144600b000be93c74f69mr668274pzi.52.1675213317724;
+        Tue, 31 Jan 2023 17:01:57 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id bg6-20020a1709028e8600b00189a50d2a3esm10380584plb.241.2023.01.31.17.01.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Jan 2023 17:01:57 -0800 (PST)
+Date: Tue, 31 Jan 2023 17:01:56 -0800
+From: Kees Cook <keescook@chromium.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] iommufd: Add top-level bounds check on kernel buffer size
+Message-ID: <202301271824.851168A@keescook>
+References: <20230127223816.never.413-kees@kernel.org>
+ <Y9RwpuVyEi2SBmdQ@ziepe.ca>
+ <202301271655.A51DC1CF@keescook>
+ <Y9R2u7VrJB7pkY26@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,142 +55,47 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <030e66e0-fb54-b77d-5094-4786684ba97d@linux.intel.com>
+In-Reply-To: <Y9R2u7VrJB7pkY26@ziepe.ca>
 
-On Tue, Jan 31, 2023 at 08:56:13PM +0800, Baolu Lu wrote:
-> On 2023/1/31 2:38, Bjorn Helgaas wrote:
-> > > PCI: Add translated request only flag for pci_enable_pasid()
+On Fri, Jan 27, 2023 at 09:13:31PM -0400, Jason Gunthorpe wrote:
+> On Fri, Jan 27, 2023 at 04:57:26PM -0800, Kees Cook wrote:
+> > On Fri, Jan 27, 2023 at 08:47:34PM -0400, Jason Gunthorpe wrote:
+> > > On Fri, Jan 27, 2023 at 02:38:17PM -0800, Kees Cook wrote:
+> > > > While the op->size assignments are already bounds-checked at static
+> > > > initializer time, these limits aren't aggregated and tracked when doing
+> > > > later variable range checking under -Warray-bounds. Help the compiler
+> > > > see that we know what we're talking about, and we'll never ask to
+> > > > write more that sizeof(ucmd.cmd) bytes during the memset() inside
+> > > > copy_struct_from_user(). Seen under GCC 13:
+> > > > 
+> > > > In function 'copy_struct_from_user',
+> > > >     inlined from 'iommufd_fops_ioctl' at ../drivers/iommu/iommufd/main.c:333:8:
+> > > > ../include/linux/fortify-string.h:59:33: warning: '__builtin_memset' offset [57, 4294967294] is out of the bounds [0, 56] of object 'buf' with type 'union ucmd_buffer' [-Warray-bounds=]
+> > > >    59 | #define __underlying_memset     __builtin_memset
 > > > 
-> > > The PCIe fabric routes Memory Requests based on the TLP address, ignoring
-> > > the PASID. In order to ensure system integrity, commit 201007ef707a ("PCI:
-> > > Enable PASID only when ACS RR & UF enabled on upstream path") requires
-> > > some ACS features being supported on device's upstream path when enabling
-> > > PCI/PASID.
-
-Looking up 201007ef707a to see what ensuring system integrity means,
-it prevents Memory Requests with PASID, which should always be routed
-to the RC, from being mistakenly routed as peer-to-peer requests.
-
-> > > However, above change causes the Linux kernel boots to black screen on a
-> > > system with below graphic device:
-> >
-> > We need a PCIe concept-level description of the issue first, i.e., in
-> > terms of DMA, PASID, ACS, etc.  Then we can mention the AMD GPU issue
-> > as an instance.
+> > > This seems strange to me
+> > > 
+> > > I thought the way gcc handled this was if it knew the value must be in
+> > > a certain range then it would check it
+> > > 
+> > > If it couldn't figure out any ranges it would not make a warning.
+> > > 
+> > > So why did it decide "rest" was in that really weird range?
+> > 
+> > It's because it got bounds-checked at the lower end (for the minimum
+> > size test).
 > 
-> How about below description?
+> Where? There is no sizeof(ucmd.ubuffer) in this code.
 
-Thanks, this is exactly the sort of thing I'm looking for.  But my
-understanding of ATS/PRI/PASID is weak, so I'm still working through
-this.  Tell me when I say something wrong below...
+memset() is internally doing that via __builtin_object_size(dst + size, 1).
 
-> PCIe endpoints can use ATS to request DMA remapping hardware to
-> translate an IOVA to its mapped physical address. If the translation is
-> missing or the permissions are insufficient, the PRI is used to trigger
-> an I/O page fault. The IOMMU driver will fill the mapping with desired
-> permissions and return the translated address to the device.
+> There are no statically computable constants at all.
 
-In PCIe spec language, I think you're saying that a PCIe Function may
-contain an ATC.  If the ATC Capability Enable bit is set, the Function
-can issue Translation Requests.
+I think it's some logic that excludes a range based on ucmd.user_size
+internally to the additional checks in copy_struct_from_user().
 
-The TA (aka IOMMU) will respond with a Translation Completion.  If the
-Completion is a CplD, it contains the translated address and the
-Function can store the entry in its ATC.  I assume the I/O page fault
-case corresponds to a Cpl (with no data) meaning that the TA could not
-translate the address.
+Regardless, I think the correct fix should be with
+copy_struct_from_user(), so please disregard this patch. :)
 
-If the TA doesn't have a mapping with the desired permissions, and the
-Function's Page Request Capability Enable bit is set, it may issue a
-Page Request Message.  It's up to the TA/IOMMU to make this message
-visible to the OS, which can make the page resident, create an IOMMU
-mapping, and enable a PRG Response Message.  After the Function
-receives the PRG Response Message, it would issue another Translation
-Request.
-
-> The translated address is specified by the IOMMU driver. The IOMMU
-> driver ensures that the address is a DMA buffer address instead of any
-> P2P address in the PCI fabric. Therefore, any translated memory request
-> will eventually be routed to IOMMU regardless of whether there is ACS
-> control in the up-streaming path.
-
-A Memory Request with an address that is not a P2P address, i.e., it
-is not contained in any bridge aperture, will *always* be routed
-toward the RC, won't it?  Isn't that the case regardless of whether
-the address is translated or untranslated, and even regardless of ACS?
-
-IIUC, ACS basically causes peer-to-peer requests to be routed upstream
-instead of directly to the peer.
-
-OK, reading this again, I realize that I just restated exactly what
-you had already written, sorry about that.
-
-> AMD GPU is one of those devices.
-
-I guess you mean the AMD GPU has ATS, PRI, and PASID Capabilities?
-And furthermore, that the GPU *always* uses Translated addresses with
-PASID?
-
-So I guess what's going on here is that if:
-
-  - A device only uses PASID with Translated addresses, and 
-  - those Translated addresses are never P2P addresses, then
-  - those transactions will always be routed to the RC.  
-
-And this applies even if there is no ACS or ACS doesn't support
-PCI_ACS_RR and PCI_ACS_UF.
-
-The black screen happens because ... ?
-
-What can we include in the commit log to help people find this fix?  I
-see these in the bugzilla:
-
-  WARNING: CPU: 0 PID: 477 at drivers/pci/ats.c:251 pci_disable_pri+0x75/0x80
-  WARNING: CPU: 0 PID: 477 at drivers/pci/ats.c:419 pci_disable_pasid+0x45/0x50
-
-(These look like defects in pdev_pri_ats_enable(), so really just
-distractions)
-
-  kfd kfd: amdgpu: Failed to resume IOMMU for device 1002:9874
-  kfd kfd: amdgpu: device 1002:9874 NOT added due to errors
-  BUG: kernel NULL pointer dereference, address: 0000000000000058
-  RIP: 0010:report_iommu_fault+0x11/0x90
-
-I couldn't figure out the NULL pointer dereference.  I expected it to
-be from a BUG() or similar in report_iommu_fault(), but I don't see
-that.
-
-> Furthermore, it always uses translated memory requests for PASID.
->
-> > > 00:01.0 VGA compatible controller: Advanced Micro Devices, Inc.
-> > >          [AMD/ATI] Wani [Radeon R5/R6/R7 Graphics] (rev ca)
-> > >          (prog-if 00 [VGA controller])
-> > >          DeviceName: ATI EG BROADWAY
-> > >          Subsystem: Hewlett-Packard Company Device 8332
-
-> > > The AMD iommu driver allocates a new domain (called v2 domain) for the
-> > "v2 domain" needs to be something greppable -- an identifier,
-> > filename, etc.
-> 
-> The code reads,
-> 
-> 2052         if (iommu_feature(iommu, FEATURE_GT) &&
-> 2053             iommu_feature(iommu, FEATURE_PPR)) {
-> 2054                 iommu->is_iommu_v2   = true;
-> 
-> So, how about
-> 
-> ..The AMD GPU has a private interface to its own AMD IOMMU, which could
-> be detected by the FEATURE_GT && FEATURE_PPR features. The AMD iommu
-> driver allocates a special domain for the GPU device ..
-
-Where is this special domain allocated?  I think the above tests for
-*IOMMU* features (I assume "GTSup: Guest translations supported" and
-"PPRSup: Peripheral page request support" based on the AMD IOMMU
-spec).  It doesn't test that this is a GPU.
-
-This change doesn't feel safe for all possible devices that have a
-PASID Capability because we don't know whether they *always* use
-Translated addresses with PASID TLPs.
-
-Bjorn
+-- 
+Kees Cook
