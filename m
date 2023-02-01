@@ -1,43 +1,43 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D70F22F5A
-	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 12:59:29 +0000 (UTC)
-Received: by mail-wm1-f45.google.com with SMTP id j29-20020a05600c1c1d00b003dc52fed235so1365194wms.1
-        for <iommu@lists.linux.dev>; Wed, 01 Feb 2023 04:59:29 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B5EF3207
+	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 12:59:30 +0000 (UTC)
+Received: by mail-wr1-f46.google.com with SMTP id o18so7753590wrj.3
+        for <iommu@lists.linux.dev>; Wed, 01 Feb 2023 04:59:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=yvsZEZd93DQdk3Gw4NS1NraTmYfO9Oz159bdinMkA6M=;
-        b=oItCvCgzbiMM79tWChYKkG5G1ZGcdUz0gKcyWcJtAcqX32+3N+ydf/mJG3YDZ3H4yU
-         ZlRpMMjbnmXiOTDySDVdU5ydxmEmOVJbBDWuilJNR4fr7Om+Lwre+KiXYG+a02PzMgXl
-         vA7UC+RpgBu+Dvd1PGbVsC3j2RzgivRmI3OzYGbO1h9qivNQDPZ2hCqw/OHp518gf29x
-         DTLO2VAbm1JKbIUI2mup5i3KtCbnFe2NgQX7RwLjWUIC9pkcJSMfmVUdoxCboL+XsXpP
-         h9osaVsOzKGfSfIR3kFDQggjhnvQvHJM8Q1oWL+hq/425+aTB8HpZdlDJp7i7xcON34p
-         LZGQ==
+        bh=XRJgdMdcBYAn8GCsksV5+iIqwprfPIABeIWgyP5LWbc=;
+        b=vxx76hjuHBg6kz3QouqdplT80m0HuVrQQ2SXEjueNrrxS6l2LYfPFH4yDLRiiLMsDG
+         jpCcELs8krbnD4ePXxYpMlLiHUykuqQbDq4iE/TuEGr3napuMp2zDVjoaaTp/socubr0
+         VOgzRpYubOM2SvtRmhnJ68dv1kOxJqbjNm1uDCQ5fJBR0/St7/iyvJhb1VGsOqCuAJjh
+         KpgR2bOfqz7NNa9Ps68DJJUPhDsOHxD0mYLB50+wwhtIKhV433fD6E1DyEp2Teo6wfBM
+         TRxtIwFFT8ItQB48VmGLHs6vKthvsZR6gddoMK3xQ2ilKufxjFhTL9RWCXlD594pQEob
+         +vMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=yvsZEZd93DQdk3Gw4NS1NraTmYfO9Oz159bdinMkA6M=;
-        b=vxb2f0yoJSPmcl4IYWCXqopLNt8XVQpTIKMO1nOvH0sKhjth7UJrMyZPJrSx1YG8+1
-         C9vLlEkvFiCkte1B/8rYXADpsx+VpfLjD40+AXW5rx9Fru7yjfs7T2iPYNA0acsdE09b
-         WKTj01bzb7K43G64t+jFjFI01fKySnh9NCZ8o5DajL85v42yT1fr35Mc6RVBCQZ2QhLL
-         5ALXpogymTleCfXL+0wY9DaYO7B9vrZIvTXo+sA/gdlHcHwperyrH5gtdEmcjWaMY4nA
-         Gqe41M3SR4e3QItQb2t5dODjjMR0nMNbEXGX20rjmT1ru3DQoQR6jbIaxc7TXCyGha1/
-         2GNA==
-X-Gm-Message-State: AO0yUKW0++sTIWd2QPw4qeFVOaDCykYulDgWdfNhuR4H3D1XoCciQuJW
-	zc11hztZw7JgtFHtc9nD/WEhaQ==
-X-Google-Smtp-Source: AK7set9N6OXBd89JzPHrqu15NAgJtTXIO8rAEPNule/gn66F+3qLMRl53iaOB7E+zcMNN668hoyKoA==
-X-Received: by 2002:a7b:ce94:0:b0:3dc:43a0:83bb with SMTP id q20-20020a7bce94000000b003dc43a083bbmr2087275wmj.3.1675256368023;
+        bh=XRJgdMdcBYAn8GCsksV5+iIqwprfPIABeIWgyP5LWbc=;
+        b=UGkQ6z3Dzep0zeLNna1VKZRBLRObOlZ//vvGLYvHy96JfibMqbhVx8kFi/LKZgMX+U
+         nDZulyb6+DVurtRBq8e9KQKmSnOzxPW2CyiTna2j0aiq/EoLzvMOl4fBwz9sG7XI6yKk
+         0QRMlmvq/AeV8Mq3Q8hMBl5b/tq49+flP26uLkZOxTORvk0qyG5sPWEYduFYDl1KNP8D
+         a1AcZ9SIQ+t7o6HJyc5sWSDhimFE3/VQqjRgVvZLc9RbGUTiOC40S6yYcQOkkSL+Q4DP
+         TA93kmoP1SqXu0kt7rNXWvxiFQTw8dyXDQ9Z/6yBn1S4PEFgRjThAlvz1Gm7XmHl4qiz
+         zDtQ==
+X-Gm-Message-State: AO0yUKVY3S3OL7dwDqU+az8HpY+lLPS0ESG+BNBc1Wn6w/4/i7/CWogg
+	k+yKdMOdgDam5eJ1a5bj8osRFA==
+X-Google-Smtp-Source: AK7set/hW5ZAcObPErBUJzQi2gCLjPyNt9O9D278zKuPYtqDAlofquElbIfsEMoFml8u8ROlxfgf1Q==
+X-Received: by 2002:a5d:684d:0:b0:2c3:293:3c64 with SMTP id o13-20020a5d684d000000b002c302933c64mr2106297wrw.71.1675256368822;
         Wed, 01 Feb 2023 04:59:28 -0800 (PST)
 Received: from localhost.localdomain (054592b0.skybroadband.com. [5.69.146.176])
-        by smtp.gmail.com with ESMTPSA id m15-20020a056000024f00b002bfae16ee2fsm17972811wrz.111.2023.02.01.04.59.27
+        by smtp.gmail.com with ESMTPSA id m15-20020a056000024f00b002bfae16ee2fsm17972811wrz.111.2023.02.01.04.59.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Feb 2023 04:59:27 -0800 (PST)
+        Wed, 01 Feb 2023 04:59:28 -0800 (PST)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: maz@kernel.org,
 	catalin.marinas@arm.com,
@@ -55,9 +55,9 @@ Cc: robin.murphy@arm.com,
 	kvmarm@lists.linux.dev,
 	iommu@lists.linux.dev,
 	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [RFC PATCH 11/45] KVM: arm64: pkvm: Expose pkvm_admit_host_page()
-Date: Wed,  1 Feb 2023 12:52:55 +0000
-Message-Id: <20230201125328.2186498-12-jean-philippe@linaro.org>
+Subject: [RFC PATCH 12/45] KVM: arm64: pkvm: Unify pkvm_pkvm_teardown_donated_memory()
+Date: Wed,  1 Feb 2023 12:52:56 +0000
+Message-Id: <20230201125328.2186498-13-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230201125328.2186498-1-jean-philippe@linaro.org>
 References: <20230201125328.2186498-1-jean-philippe@linaro.org>
@@ -69,121 +69,134 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Since the IOMMU driver will need admit_host_page(), make it non static.
-As a result we can drop refill_memcache() and call admit_host_page()
-directly from pkvm_refill_memcache().
+Tearing down donated memory requires clearing the memory, pushing the
+pages into the reclaim memcache, and moving the mapping into the host
+stage-2. Keep these operations in a single function.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- arch/arm64/kvm/hyp/include/nvhe/mem_protect.h |  2 --
- arch/arm64/kvm/hyp/include/nvhe/mm.h          |  1 +
- arch/arm64/kvm/hyp/nvhe/hyp-main.c            | 16 ++++++++---
- arch/arm64/kvm/hyp/nvhe/mm.c                  | 27 +++++--------------
- 4 files changed, 20 insertions(+), 26 deletions(-)
+ arch/arm64/kvm/hyp/include/nvhe/mem_protect.h |  2 +
+ arch/arm64/kvm/hyp/nvhe/mem_protect.c         |  3 +-
+ arch/arm64/kvm/hyp/nvhe/pkvm.c                | 50 +++++++------------
+ 3 files changed, 22 insertions(+), 33 deletions(-)
 
 diff --git a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
-index 40decbe4cc70..d4f4ffbb7dbb 100644
+index d4f4ffbb7dbb..021825aee854 100644
 --- a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
 +++ b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
-@@ -83,8 +83,6 @@ void handle_host_mem_abort(struct kvm_cpu_context *host_ctxt);
- int hyp_pin_shared_mem(void *from, void *to);
- void hyp_unpin_shared_mem(void *from, void *to);
- void reclaim_guest_pages(struct pkvm_hyp_vm *vm, struct kvm_hyp_memcache *mc);
--int refill_memcache(struct kvm_hyp_memcache *mc, unsigned long min_pages,
--		    struct kvm_hyp_memcache *host_mc);
+@@ -86,6 +86,8 @@ void reclaim_guest_pages(struct pkvm_hyp_vm *vm, struct kvm_hyp_memcache *mc);
  
  void *pkvm_map_donated_memory(unsigned long host_va, size_t size);
  void pkvm_unmap_donated_memory(void *va, size_t size);
-diff --git a/arch/arm64/kvm/hyp/include/nvhe/mm.h b/arch/arm64/kvm/hyp/include/nvhe/mm.h
-index 84db840f2057..a8c46a0ebc4a 100644
---- a/arch/arm64/kvm/hyp/include/nvhe/mm.h
-+++ b/arch/arm64/kvm/hyp/include/nvhe/mm.h
-@@ -26,6 +26,7 @@ int pkvm_create_mappings_locked(void *from, void *to, enum kvm_pgtable_prot prot
- int __pkvm_create_private_mapping(phys_addr_t phys, size_t size,
- 				  enum kvm_pgtable_prot prot,
- 				  unsigned long *haddr);
-+void *pkvm_admit_host_page(struct kvm_hyp_memcache *mc);
- int pkvm_alloc_private_va_range(size_t size, unsigned long *haddr);
- int pkvm_create_hyp_device_mapping(u64 base, u64 size, void __iomem *haddr);
++void pkvm_teardown_donated_memory(struct kvm_hyp_memcache *mc, void *addr,
++				  size_t dirty_size);
  
-diff --git a/arch/arm64/kvm/hyp/nvhe/hyp-main.c b/arch/arm64/kvm/hyp/nvhe/hyp-main.c
-index e8328f54200e..29ce7b09edbb 100644
---- a/arch/arm64/kvm/hyp/nvhe/hyp-main.c
-+++ b/arch/arm64/kvm/hyp/nvhe/hyp-main.c
-@@ -766,14 +766,24 @@ static void handle___kvm_vcpu_run(struct kvm_cpu_context *host_ctxt)
- 	cpu_reg(host_ctxt, 1) =  ret;
- }
- 
-+static void *admit_host_page(void *arg)
-+{
-+	return pkvm_admit_host_page(arg);
-+}
-+
- static int pkvm_refill_memcache(struct pkvm_hyp_vcpu *hyp_vcpu)
+ static __always_inline void __load_host_stage2(void)
  {
-+	int ret;
- 	struct pkvm_hyp_vm *hyp_vm = pkvm_hyp_vcpu_to_hyp_vm(hyp_vcpu);
- 	u64 nr_pages = VTCR_EL2_LVLS(hyp_vm->kvm.arch.vtcr) - 1;
--	struct kvm_vcpu *host_vcpu = hyp_vcpu->host_vcpu;
-+	struct kvm_hyp_memcache host_mc = hyp_vcpu->host_vcpu->arch.pkvm_memcache;
-+
-+	ret =  __topup_hyp_memcache(&hyp_vcpu->vcpu.arch.pkvm_memcache,
-+				    nr_pages, admit_host_page,
-+				    hyp_virt_to_phys, &host_mc);
- 
--	return refill_memcache(&hyp_vcpu->vcpu.arch.pkvm_memcache, nr_pages,
--			       &host_vcpu->arch.pkvm_memcache);
-+	hyp_vcpu->host_vcpu->arch.pkvm_memcache = host_mc;
-+	return ret;
+diff --git a/arch/arm64/kvm/hyp/nvhe/mem_protect.c b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
+index 410361f41e38..cad5736026d5 100644
+--- a/arch/arm64/kvm/hyp/nvhe/mem_protect.c
++++ b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
+@@ -314,8 +314,7 @@ void reclaim_guest_pages(struct pkvm_hyp_vm *vm, struct kvm_hyp_memcache *mc)
+ 	addr = hyp_alloc_pages(&vm->pool, 0);
+ 	while (addr) {
+ 		memset(hyp_virt_to_page(addr), 0, sizeof(struct hyp_page));
+-		push_hyp_memcache(mc, addr, hyp_virt_to_phys);
+-		WARN_ON(__pkvm_hyp_donate_host(hyp_virt_to_pfn(addr), 1));
++		pkvm_teardown_donated_memory(mc, addr, 0);
+ 		addr = hyp_alloc_pages(&vm->pool, 0);
+ 	}
+ }
+diff --git a/arch/arm64/kvm/hyp/nvhe/pkvm.c b/arch/arm64/kvm/hyp/nvhe/pkvm.c
+index a3711979bbd3..c51a8a592849 100644
+--- a/arch/arm64/kvm/hyp/nvhe/pkvm.c
++++ b/arch/arm64/kvm/hyp/nvhe/pkvm.c
+@@ -602,27 +602,28 @@ void *pkvm_map_donated_memory(unsigned long host_va, size_t size)
+ 	return va;
  }
  
- static void handle___pkvm_host_map_guest(struct kvm_cpu_context *host_ctxt)
-diff --git a/arch/arm64/kvm/hyp/nvhe/mm.c b/arch/arm64/kvm/hyp/nvhe/mm.c
-index 318298eb3d6b..9daaf2b2b191 100644
---- a/arch/arm64/kvm/hyp/nvhe/mm.c
-+++ b/arch/arm64/kvm/hyp/nvhe/mm.c
-@@ -340,35 +340,20 @@ int hyp_create_idmap(u32 hyp_va_bits)
- 	return __pkvm_create_mappings(start, end - start, start, PAGE_HYP_EXEC);
- }
- 
--static void *admit_host_page(void *arg)
-+void *pkvm_admit_host_page(struct kvm_hyp_memcache *mc)
+-static void __unmap_donated_memory(void *va, size_t size)
++void pkvm_teardown_donated_memory(struct kvm_hyp_memcache *mc, void *va,
++				  size_t dirty_size)
  {
--	struct kvm_hyp_memcache *host_mc = arg;
+-	WARN_ON(__pkvm_hyp_donate_host(hyp_virt_to_pfn(va),
+-				       PAGE_ALIGN(size) >> PAGE_SHIFT));
+-}
++	size_t size = max(PAGE_ALIGN(dirty_size), PAGE_SIZE);
+ 
+-void pkvm_unmap_donated_memory(void *va, size_t size)
+-{
+ 	if (!va)
+ 		return;
+ 
+-	memset(va, 0, size);
+-	__unmap_donated_memory(va, size);
++	memset(va, 0, dirty_size);
++
++	if (mc) {
++		for (void *start = va; start < va + size; start += PAGE_SIZE)
++			push_hyp_memcache(mc, start, hyp_virt_to_phys);
++	}
++
++	WARN_ON(__pkvm_hyp_donate_host(hyp_virt_to_pfn(va),
++				       size >> PAGE_SHIFT));
+ }
+ 
+-static void unmap_donated_memory_noclear(void *va, size_t size)
++void pkvm_unmap_donated_memory(void *va, size_t size)
+ {
+-	if (!va)
+-		return;
 -
--	if (!host_mc->nr_pages)
-+	if (!mc->nr_pages)
- 		return NULL;
+-	__unmap_donated_memory(va, size);
++	pkvm_teardown_donated_memory(NULL, va, size);
+ }
  
- 	/*
- 	 * The host still owns the pages in its memcache, so we need to go
- 	 * through a full host-to-hyp donation cycle to change it. Fortunately,
- 	 * __pkvm_host_donate_hyp() takes care of races for us, so if it
--	 * succeeds we're good to go.
-+	 * succeeds we're good to go. Because mc is a copy of the memcache
-+	 * struct, the host cannot modify mc->head between donate and pop.
- 	 */
--	if (__pkvm_host_donate_hyp(hyp_phys_to_pfn(host_mc->head), 1))
-+	if (__pkvm_host_donate_hyp(hyp_phys_to_pfn(mc->head), 1))
- 		return NULL;
+ /*
+@@ -759,18 +760,6 @@ int __pkvm_init_vcpu(pkvm_handle_t handle, struct kvm_vcpu *host_vcpu,
+ 	return ret;
+ }
  
--	return pop_hyp_memcache(host_mc, hyp_phys_to_virt);
+-static void
+-teardown_donated_memory(struct kvm_hyp_memcache *mc, void *addr, size_t size)
+-{
+-	size = PAGE_ALIGN(size);
+-	memset(addr, 0, size);
+-
+-	for (void *start = addr; start < addr + size; start += PAGE_SIZE)
+-		push_hyp_memcache(mc, start, hyp_virt_to_phys);
+-
+-	unmap_donated_memory_noclear(addr, size);
 -}
 -
--/* Refill our local memcache by poping pages from the one provided by the host. */
--int refill_memcache(struct kvm_hyp_memcache *mc, unsigned long min_pages,
--		    struct kvm_hyp_memcache *host_mc)
--{
--	struct kvm_hyp_memcache tmp = *host_mc;
--	int ret;
--
--	ret =  __topup_hyp_memcache(mc, min_pages, admit_host_page,
--				    hyp_virt_to_phys, &tmp);
--	*host_mc = tmp;
--
--	return ret;
-+	return pop_hyp_memcache(mc, hyp_phys_to_virt);
- }
+ int __pkvm_teardown_vm(pkvm_handle_t handle)
+ {
+ 	size_t vm_size, last_ran_size;
+@@ -813,19 +802,18 @@ int __pkvm_teardown_vm(pkvm_handle_t handle)
+ 		vcpu_mc = &hyp_vcpu->vcpu.arch.pkvm_memcache;
+ 		while (vcpu_mc->nr_pages) {
+ 			addr = pop_hyp_memcache(vcpu_mc, hyp_phys_to_virt);
+-			push_hyp_memcache(mc, addr, hyp_virt_to_phys);
+-			unmap_donated_memory_noclear(addr, PAGE_SIZE);
++			pkvm_teardown_donated_memory(mc, addr, 0);
+ 		}
+ 
+-		teardown_donated_memory(mc, hyp_vcpu, sizeof(*hyp_vcpu));
++		pkvm_teardown_donated_memory(mc, hyp_vcpu, sizeof(*hyp_vcpu));
+ 	}
+ 
+ 	last_ran_size = pkvm_get_last_ran_size();
+-	teardown_donated_memory(mc, hyp_vm->kvm.arch.mmu.last_vcpu_ran,
+-				last_ran_size);
++	pkvm_teardown_donated_memory(mc, hyp_vm->kvm.arch.mmu.last_vcpu_ran,
++				     last_ran_size);
+ 
+ 	vm_size = pkvm_get_hyp_vm_size(hyp_vm->kvm.created_vcpus);
+-	teardown_donated_memory(mc, hyp_vm, vm_size);
++	pkvm_teardown_donated_memory(mc, hyp_vm, vm_size);
+ 	hyp_unpin_shared_mem(host_kvm, host_kvm + 1);
+ 	return 0;
+ 
 -- 
 2.39.0
 
