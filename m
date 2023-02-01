@@ -1,43 +1,43 @@
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2457333D0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B86633D8
 	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 12:59:34 +0000 (UTC)
-Received: by mail-wr1-f48.google.com with SMTP id y1so17249010wru.2
+Received: by mail-wr1-f54.google.com with SMTP id q5so17271772wrv.0
         for <iommu@lists.linux.dev>; Wed, 01 Feb 2023 04:59:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=GNUt4LXC/vnI+uinFgyT66VRoqWna4CviemrNT21aBc=;
-        b=thk5T6OXjBQKQ8JCuo3/JBvaiAeliPJbKUA6Ev5LIvBWS09yiKK0shaiUVxTtsTeBt
-         c+XuSCQ1TP1IABgnoI6i3lGgX+giB2jgzc1THVgnusuLSQNNNt6bS+ImpDXuysQeJ11F
-         JLcR0da7d/4keUdWrMMV2L7qbinuKb59mEpdP3CKABCoa7skqfyKpnUaZECC+1fYWn+j
-         l070kGUPgEqRTrzSe+a7rh2sFc8U5Y5/WwbZmcxsKDn5r9s/zFcm47LcB05dNt10Vb1q
-         pEcW8SBeF5Bj3vtIw+Q+nhL7Z+MyrwOPXm6jZ+5aZvuVzUPsAqGjE1ZVojd5nV5B6WZX
-         GYGg==
+        bh=zbZLsQb0xg2PPl0XoduEhMIm9PR89tvM6CYFFsggaVQ=;
+        b=EJPFEmmztrvIgrDqJ3MkjHOSDg10LW20VhEO2fXjPBvc6j5UWEZd1MsrLv1vfwRpiT
+         cc62+AK11q+MLrLeHagED0GqHtTtgNMbjWYdLu4JQS8/BN8YkB9FYd7h4PIS2zdC3+vu
+         2iKKBnOpCcuwH0AbFAob7chGyqYiAxwVQoA8kDen4hca8LfZn6MGq5be+PVb9L4jZd3j
+         tjp9gmImOJ77dnwKcjQL6qp+oB8pN7DPKOFoIDuuRYA4K2SsX9UQuEM4INZKmw/TnRgF
+         b4/t3kcPLOY61LKoEA8twExnhgN2rtn+rPvfdcRIIP5T/5EdnDPr5LLk3KfRf/5YLi0y
+         gqFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=GNUt4LXC/vnI+uinFgyT66VRoqWna4CviemrNT21aBc=;
-        b=gBZjdg5YF499+lGGq3wOl9/bUPJKRyuJdBn02bInM8LOMC0vwt6kiZHzmhoqxigYXC
-         OIix78zTspKm544weFEX11pWxiXZn0BN60FVv5bhyIfQoVcrtKewo2YACyg59q+w4JcB
-         C2+ARuTz1Pi+tGUXkU5k73whh978EPlDHl487PMYhY3GyOkYNEkbG/WNYcLBVIXfLzXW
-         1WRyDo9uNEOf9WeWcoMyWWIkqx39tuRhckYK1SRbzgYVjTTN1AR4xt8Yj6MogPqDEyK/
-         S2wUXpZVvW0hhhIyDoN6EMBSWkNueIl3PFI5bjUO3dlZIzQME5kNFv3zM5DR1H0iMiyK
-         XgPQ==
-X-Gm-Message-State: AO0yUKV6Lk+X3yn0bMcpxeIgTPgaeJmkpUrKTUIT5eaHX8wRg5th0e5L
-	gLomM+QN59zyyWuF9t3vvZ0YGg==
-X-Google-Smtp-Source: AK7set9dF9IqnNhJnBWjTtGsSxR/PrtlZWcMlOX8jMonsihAZRhFZWtS6tLGLt7ILypTZ2wjrtzJig==
-X-Received: by 2002:a05:6000:1889:b0:2bf:c5e4:1af4 with SMTP id a9-20020a056000188900b002bfc5e41af4mr2995748wri.15.1675256373642;
-        Wed, 01 Feb 2023 04:59:33 -0800 (PST)
+        bh=zbZLsQb0xg2PPl0XoduEhMIm9PR89tvM6CYFFsggaVQ=;
+        b=SEXUyq5Lltqs7Ov8DlZktitL3H7F6I+xlGY1VcSrEfG7dbuCh7sR0V2ihhAqt10X5k
+         HfOcO+vKiHaaNEtYCoJqi7t7Tfp7LtOJwux8L+A++0+hlWdh98MyGlH85Ww3Kw2y7arE
+         WoFEgvD454XyIzBVA0FCs792Dn5tN3lew2RCM2R3KmaNvVritJy9gYOIOzq8c4qH1aph
+         QNzBu1kygbmOd2l+cvwOSSqfrCyHxKSrN5p6WcILyDsOKeUkqY8FLvZlX8PK+16f23q+
+         OonfeCVxZ5MDkP//suLLrplxxsQ0l46Qj78DX0/ekzM80BWIl2iy/KwRWJ+RUqjs1HQy
+         NaGg==
+X-Gm-Message-State: AO0yUKW4V35T52+waWN7UZ9Spp+EfAAvbtSDQvSFui8qXygo9u99klE2
+	WCLPmSxbvY+VgtdkfckwBUgC/KfevYsw9dGx
+X-Google-Smtp-Source: AK7set9gMQhL6pt9dp/2vtz2l2umJOa+pYslGi7ef3uzOBfAa+HuE2R6nT4pVnYJgiPfcb1UxI1NgA==
+X-Received: by 2002:a5d:6b89:0:b0:2bf:b571:1f18 with SMTP id n9-20020a5d6b89000000b002bfb5711f18mr2573727wrx.61.1675256372895;
+        Wed, 01 Feb 2023 04:59:32 -0800 (PST)
 Received: from localhost.localdomain (054592b0.skybroadband.com. [5.69.146.176])
         by smtp.gmail.com with ESMTPSA id m15-20020a056000024f00b002bfae16ee2fsm17972811wrz.111.2023.02.01.04.59.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Feb 2023 04:59:33 -0800 (PST)
+        Wed, 01 Feb 2023 04:59:32 -0800 (PST)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: maz@kernel.org,
 	catalin.marinas@arm.com,
@@ -55,9 +55,9 @@ Cc: robin.murphy@arm.com,
 	kvmarm@lists.linux.dev,
 	iommu@lists.linux.dev,
 	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [RFC PATCH 18/45] KVM: arm64: iommu: Add per-cpu page queue
-Date: Wed,  1 Feb 2023 12:53:02 +0000
-Message-Id: <20230201125328.2186498-19-jean-philippe@linaro.org>
+Subject: [RFC PATCH 17/45] KVM: arm64: pkvm: Add IOMMU hypercalls
+Date: Wed,  1 Feb 2023 12:53:01 +0000
+Message-Id: <20230201125328.2186498-18-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230201125328.2186498-1-jean-philippe@linaro.org>
 References: <20230201125328.2186498-1-jean-philippe@linaro.org>
@@ -69,135 +69,223 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The hyp driver will need to allocate pages when handling some
-hypercalls, to populate page, stream and domain tables. Add a per-cpu
-page queue that will contain host pages to be donated and reclaimed.
-When the driver needs a new page, it sets the needs_page bit and returns
-to the host with an error. The host pushes a page and retries the
-hypercall.
+The unprivileged host IOMMU driver forwards some of the IOMMU API calls
+to the hypervisor, which installs and populates the page tables.
 
-The queue is per-cpu to ensure that IOMMU map()/unmap() requests from
-different CPUs don't step on each others. It is populated on demand
-rather than upfront to avoid wasting memory, as these allocations should
-be relatively rare.
+Note that this is not a stable ABI. Those hypercalls change with the
+kernel just like internal function calls.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- arch/arm64/kvm/hyp/nvhe/Makefile        |  2 +
- arch/arm64/kvm/hyp/include/nvhe/iommu.h |  4 ++
- include/kvm/iommu.h                     | 15 +++++++
- arch/arm64/kvm/hyp/nvhe/iommu/iommu.c   | 52 +++++++++++++++++++++++++
- 4 files changed, 73 insertions(+)
- create mode 100644 include/kvm/iommu.h
- create mode 100644 arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
+ virt/kvm/Kconfig                        |  3 +
+ arch/arm64/include/asm/kvm_asm.h        |  7 +++
+ arch/arm64/kvm/hyp/include/nvhe/iommu.h | 68 ++++++++++++++++++++++
+ arch/arm64/kvm/hyp/nvhe/hyp-main.c      | 77 +++++++++++++++++++++++++
+ 4 files changed, 155 insertions(+)
 
-diff --git a/arch/arm64/kvm/hyp/nvhe/Makefile b/arch/arm64/kvm/hyp/nvhe/Makefile
-index 530347cdebe3..f7dfc88c9f5b 100644
---- a/arch/arm64/kvm/hyp/nvhe/Makefile
-+++ b/arch/arm64/kvm/hyp/nvhe/Makefile
-@@ -28,6 +28,8 @@ hyp-obj-y += ../vgic-v3-sr.o ../aarch32.o ../vgic-v2-cpuif-proxy.o ../entry.o \
- hyp-obj-$(CONFIG_DEBUG_LIST) += list_debug.o
- hyp-obj-y += $(lib-objs)
+diff --git a/virt/kvm/Kconfig b/virt/kvm/Kconfig
+index 9fb1ff6f19e5..99b0ddc50443 100644
+--- a/virt/kvm/Kconfig
++++ b/virt/kvm/Kconfig
+@@ -92,3 +92,6 @@ config KVM_XFER_TO_GUEST_WORK
  
-+hyp-obj-$(CONFIG_KVM_IOMMU) += iommu/iommu.o
+ config HAVE_KVM_PM_NOTIFIER
+        bool
 +
- ##
- ## Build rules for compiling nVHE hyp code
- ## Output of this folder is `kvm_nvhe.o`, a partially linked object
++config KVM_IOMMU
++       bool
+diff --git a/arch/arm64/include/asm/kvm_asm.h b/arch/arm64/include/asm/kvm_asm.h
+index 12aa0ccc3b3d..e2ced352b49c 100644
+--- a/arch/arm64/include/asm/kvm_asm.h
++++ b/arch/arm64/include/asm/kvm_asm.h
+@@ -81,6 +81,13 @@ enum __kvm_host_smccc_func {
+ 	__KVM_HOST_SMCCC_FUNC___pkvm_vcpu_load,
+ 	__KVM_HOST_SMCCC_FUNC___pkvm_vcpu_put,
+ 	__KVM_HOST_SMCCC_FUNC___pkvm_vcpu_sync_state,
++	__KVM_HOST_SMCCC_FUNC___pkvm_host_iommu_alloc_domain,
++	__KVM_HOST_SMCCC_FUNC___pkvm_host_iommu_free_domain,
++	__KVM_HOST_SMCCC_FUNC___pkvm_host_iommu_attach_dev,
++	__KVM_HOST_SMCCC_FUNC___pkvm_host_iommu_detach_dev,
++	__KVM_HOST_SMCCC_FUNC___pkvm_host_iommu_map_pages,
++	__KVM_HOST_SMCCC_FUNC___pkvm_host_iommu_unmap_pages,
++	__KVM_HOST_SMCCC_FUNC___pkvm_host_iommu_iova_to_phys,
+ };
+ 
+ #define DECLARE_KVM_VHE_SYM(sym)	extern char sym[]
 diff --git a/arch/arm64/kvm/hyp/include/nvhe/iommu.h b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
-index 26a95717b613..4959c30977b8 100644
+index c728c8e913da..26a95717b613 100644
 --- a/arch/arm64/kvm/hyp/include/nvhe/iommu.h
 +++ b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
-@@ -3,6 +3,10 @@
+@@ -2,6 +2,74 @@
+ #ifndef __ARM64_KVM_NVHE_IOMMU_H__
  #define __ARM64_KVM_NVHE_IOMMU_H__
  
- #if IS_ENABLED(CONFIG_KVM_IOMMU)
-+int kvm_iommu_init(void);
-+void *kvm_iommu_donate_page(void);
-+void kvm_iommu_reclaim_page(void *p);
-+
- /* Hypercall handlers */
- int kvm_iommu_alloc_domain(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
- 			   unsigned long pgd_hva);
-diff --git a/include/kvm/iommu.h b/include/kvm/iommu.h
-new file mode 100644
-index 000000000000..12b06a5df889
---- /dev/null
-+++ b/include/kvm/iommu.h
-@@ -0,0 +1,15 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef __KVM_IOMMU_H
-+#define __KVM_IOMMU_H
-+
-+#include <asm/kvm_host.h>
-+
-+struct kvm_hyp_iommu_memcache {
-+	struct kvm_hyp_memcache	pages;
-+	bool needs_page;
-+} ____cacheline_aligned_in_smp;
-+
-+extern struct kvm_hyp_iommu_memcache *kvm_nvhe_sym(kvm_hyp_iommu_memcaches);
-+#define kvm_hyp_iommu_memcaches kvm_nvhe_sym(kvm_hyp_iommu_memcaches)
-+
-+#endif /* __KVM_IOMMU_H */
-diff --git a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-new file mode 100644
-index 000000000000..1a9184fbbd27
---- /dev/null
-+++ b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-@@ -0,0 +1,52 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * IOMMU operations for pKVM
-+ *
-+ * Copyright (C) 2022 Linaro Ltd.
-+ */
-+
-+#include <asm/kvm_hyp.h>
-+#include <kvm/iommu.h>
-+#include <nvhe/iommu.h>
-+#include <nvhe/mem_protect.h>
-+#include <nvhe/mm.h>
-+
-+struct kvm_hyp_iommu_memcache __ro_after_init *kvm_hyp_iommu_memcaches;
-+
-+void *kvm_iommu_donate_page(void)
++#if IS_ENABLED(CONFIG_KVM_IOMMU)
++/* Hypercall handlers */
++int kvm_iommu_alloc_domain(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
++			   unsigned long pgd_hva);
++int kvm_iommu_free_domain(pkvm_handle_t iommu_id, pkvm_handle_t domain_id);
++int kvm_iommu_attach_dev(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
++			 u32 endpoint_id);
++int kvm_iommu_detach_dev(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
++			 u32 endpoint_id);
++int kvm_iommu_map_pages(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
++			unsigned long iova, phys_addr_t paddr, size_t pgsize,
++			size_t pgcount, int prot);
++int kvm_iommu_unmap_pages(pkvm_handle_t iommu_id, pkvm_handle_t domain_id,
++			  unsigned long iova, size_t pgsize, size_t pgcount);
++phys_addr_t kvm_iommu_iova_to_phys(pkvm_handle_t iommu_id,
++				   pkvm_handle_t domain_id, unsigned long iova);
++#else /* !CONFIG_KVM_IOMMU */
++static inline int kvm_iommu_alloc_domain(pkvm_handle_t iommu_id,
++					 pkvm_handle_t domain_id,
++					 unsigned long pgd_hva)
 +{
-+	void *p;
-+	int cpu = hyp_smp_processor_id();
-+	struct kvm_hyp_memcache tmp = kvm_hyp_iommu_memcaches[cpu].pages;
-+
-+	if (!tmp.nr_pages) {
-+		kvm_hyp_iommu_memcaches[cpu].needs_page = true;
-+		return NULL;
-+	}
-+
-+	p = pkvm_admit_host_page(&tmp);
-+	if (!p)
-+		return NULL;
-+
-+	kvm_hyp_iommu_memcaches[cpu].pages = tmp;
-+	memset(p, 0, PAGE_SIZE);
-+	return p;
++	return -ENODEV;
 +}
 +
-+void kvm_iommu_reclaim_page(void *p)
++static inline int kvm_iommu_free_domain(pkvm_handle_t iommu_id,
++					pkvm_handle_t domain_id)
 +{
-+	int cpu = hyp_smp_processor_id();
-+
-+	pkvm_teardown_donated_memory(&kvm_hyp_iommu_memcaches[cpu].pages, p,
-+				     PAGE_SIZE);
++	return -ENODEV;
 +}
 +
-+int kvm_iommu_init(void)
++static inline int kvm_iommu_attach_dev(pkvm_handle_t iommu_id,
++				       pkvm_handle_t domain_id,
++				       u32 endpoint_id)
 +{
-+	enum kvm_pgtable_prot prot;
-+
-+	/* The memcache is shared with the host */
-+	prot = pkvm_mkstate(PAGE_HYP, PKVM_PAGE_SHARED_OWNED);
-+	return pkvm_create_mappings(kvm_hyp_iommu_memcaches,
-+				    kvm_hyp_iommu_memcaches + NR_CPUS, prot);
++	return -ENODEV;
 +}
++
++static inline int kvm_iommu_detach_dev(pkvm_handle_t iommu_id,
++				       pkvm_handle_t domain_id,
++				       u32 endpoint_id)
++{
++	return -ENODEV;
++}
++
++static inline int kvm_iommu_map_pages(pkvm_handle_t iommu_id,
++				      pkvm_handle_t domain_id,
++				      unsigned long iova, phys_addr_t paddr,
++				      size_t pgsize, size_t pgcount, int prot)
++{
++	return -ENODEV;
++}
++
++static inline int kvm_iommu_unmap_pages(pkvm_handle_t iommu_id,
++					pkvm_handle_t domain_id,
++					unsigned long iova, size_t pgsize,
++					size_t pgcount)
++{
++	return 0;
++}
++
++static inline phys_addr_t kvm_iommu_iova_to_phys(pkvm_handle_t iommu_id,
++						 pkvm_handle_t domain_id,
++						 unsigned long iova)
++{
++	return 0;
++}
++#endif /* CONFIG_KVM_IOMMU */
++
+ struct kvm_iommu_ops {
+ 	int (*init)(void);
+ };
+diff --git a/arch/arm64/kvm/hyp/nvhe/hyp-main.c b/arch/arm64/kvm/hyp/nvhe/hyp-main.c
+index 37e308337fec..34ec46b890f0 100644
+--- a/arch/arm64/kvm/hyp/nvhe/hyp-main.c
++++ b/arch/arm64/kvm/hyp/nvhe/hyp-main.c
+@@ -1059,6 +1059,76 @@ static void handle___pkvm_teardown_vm(struct kvm_cpu_context *host_ctxt)
+ 	cpu_reg(host_ctxt, 1) = __pkvm_teardown_vm(handle);
+ }
+ 
++static void handle___pkvm_host_iommu_alloc_domain(struct kvm_cpu_context *host_ctxt)
++{
++	DECLARE_REG(pkvm_handle_t, iommu, host_ctxt, 1);
++	DECLARE_REG(pkvm_handle_t, domain, host_ctxt, 2);
++	DECLARE_REG(unsigned long, pgd_hva, host_ctxt, 3);
++
++	cpu_reg(host_ctxt, 1) = kvm_iommu_alloc_domain(iommu, domain, pgd_hva);
++}
++
++static void handle___pkvm_host_iommu_free_domain(struct kvm_cpu_context *host_ctxt)
++{
++	DECLARE_REG(pkvm_handle_t, iommu, host_ctxt, 1);
++	DECLARE_REG(pkvm_handle_t, domain, host_ctxt, 2);
++
++	cpu_reg(host_ctxt, 1) = kvm_iommu_free_domain(iommu, domain);
++}
++
++static void handle___pkvm_host_iommu_attach_dev(struct kvm_cpu_context *host_ctxt)
++{
++	DECLARE_REG(pkvm_handle_t, iommu, host_ctxt, 1);
++	DECLARE_REG(pkvm_handle_t, domain, host_ctxt, 2);
++	DECLARE_REG(unsigned int, endpoint, host_ctxt, 3);
++
++	cpu_reg(host_ctxt, 1) = kvm_iommu_attach_dev(iommu, domain, endpoint);
++}
++
++static void handle___pkvm_host_iommu_detach_dev(struct kvm_cpu_context *host_ctxt)
++{
++	DECLARE_REG(pkvm_handle_t, iommu, host_ctxt, 1);
++	DECLARE_REG(pkvm_handle_t, domain, host_ctxt, 2);
++	DECLARE_REG(unsigned int, endpoint, host_ctxt, 3);
++
++	cpu_reg(host_ctxt, 1) = kvm_iommu_detach_dev(iommu, domain, endpoint);
++}
++
++static void handle___pkvm_host_iommu_map_pages(struct kvm_cpu_context *host_ctxt)
++{
++	DECLARE_REG(pkvm_handle_t, iommu, host_ctxt, 1);
++	DECLARE_REG(pkvm_handle_t, domain, host_ctxt, 2);
++	DECLARE_REG(unsigned long, iova, host_ctxt, 3);
++	DECLARE_REG(phys_addr_t, paddr, host_ctxt, 4);
++	DECLARE_REG(size_t, pgsize, host_ctxt, 5);
++	DECLARE_REG(size_t, pgcount, host_ctxt, 6);
++	DECLARE_REG(unsigned int, prot, host_ctxt, 7);
++
++	cpu_reg(host_ctxt, 1) = kvm_iommu_map_pages(iommu, domain, iova, paddr,
++						    pgsize, pgcount, prot);
++}
++
++static void handle___pkvm_host_iommu_unmap_pages(struct kvm_cpu_context *host_ctxt)
++{
++	DECLARE_REG(pkvm_handle_t, iommu, host_ctxt, 1);
++	DECLARE_REG(pkvm_handle_t, domain, host_ctxt, 2);
++	DECLARE_REG(unsigned long, iova, host_ctxt, 3);
++	DECLARE_REG(size_t, pgsize, host_ctxt, 4);
++	DECLARE_REG(size_t, pgcount, host_ctxt, 5);
++
++	cpu_reg(host_ctxt, 1) = kvm_iommu_unmap_pages(iommu, domain, iova,
++						      pgsize, pgcount);
++}
++
++static void handle___pkvm_host_iommu_iova_to_phys(struct kvm_cpu_context *host_ctxt)
++{
++	DECLARE_REG(pkvm_handle_t, iommu, host_ctxt, 1);
++	DECLARE_REG(pkvm_handle_t, domain, host_ctxt, 2);
++	DECLARE_REG(unsigned long, iova, host_ctxt, 3);
++
++	cpu_reg(host_ctxt, 1) = kvm_iommu_iova_to_phys(iommu, domain, iova);
++}
++
+ typedef void (*hcall_t)(struct kvm_cpu_context *);
+ 
+ #define HANDLE_FUNC(x)	[__KVM_HOST_SMCCC_FUNC_##x] = (hcall_t)handle_##x
+@@ -1093,6 +1163,13 @@ static const hcall_t host_hcall[] = {
+ 	HANDLE_FUNC(__pkvm_vcpu_load),
+ 	HANDLE_FUNC(__pkvm_vcpu_put),
+ 	HANDLE_FUNC(__pkvm_vcpu_sync_state),
++	HANDLE_FUNC(__pkvm_host_iommu_alloc_domain),
++	HANDLE_FUNC(__pkvm_host_iommu_free_domain),
++	HANDLE_FUNC(__pkvm_host_iommu_attach_dev),
++	HANDLE_FUNC(__pkvm_host_iommu_detach_dev),
++	HANDLE_FUNC(__pkvm_host_iommu_map_pages),
++	HANDLE_FUNC(__pkvm_host_iommu_unmap_pages),
++	HANDLE_FUNC(__pkvm_host_iommu_iova_to_phys),
+ };
+ 
+ static void handle_host_hcall(struct kvm_cpu_context *host_ctxt)
 -- 
 2.39.0
 
