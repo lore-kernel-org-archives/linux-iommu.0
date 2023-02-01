@@ -1,43 +1,43 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB3AB847F
-	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 12:59:48 +0000 (UTC)
-Received: by mail-wr1-f42.google.com with SMTP id m14so16760930wrg.13
-        for <iommu@lists.linux.dev>; Wed, 01 Feb 2023 04:59:48 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C44DD847C
+	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 12:59:49 +0000 (UTC)
+Received: by mail-wr1-f41.google.com with SMTP id q5so17272512wrv.0
+        for <iommu@lists.linux.dev>; Wed, 01 Feb 2023 04:59:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=9Dh/SuicpAUNOw64qrqjagLAfYYRP7GDUICNSAPWkEY=;
-        b=sXyiSrRhQ03FjrQeAHXjhFoy/QwVyYKEscKoUYb3OZRIaH21HsrZEtSD5AL7zuiIFV
-         vDmfHFdxA8m9jWRbzQBklMRmgEyQ8+yrurctzwyqsImPtLAcqi2b+RXEPT6gAqI7QsND
-         +2RffjhJqi6hLIOeiiX9cDf5HGfIXxluoUmwfM5XmIHifSZEe86EmJPHIsdVqVX6OOzg
-         e1uI55R5fQEInMR7Q4YM0Y6z0F2RxFH8mM5Slfd91Sypx3NOF0Hf+r9f59c975D6zMRc
-         mL3qqvwrhHy14hSMyfJGg5gGthQWrjaqR0dYTk08kP4fcqUHPg0Bbxxmk0MaT4GaZEDO
-         x2jA==
+        bh=/mQgjjPfntTEYktl5YrbY8Zrdu7ool4i44pQG74D6kk=;
+        b=uqT0FSjB+l/XDMkVXFvBdgrL2J1Pb16FQPBIibne3w+RA4w7ZHPEnJd22+zxU8HfKd
+         uiqDg2LvM9mRSy4apdViIghUV5RiGpJ9xBgsXYd6cKHBt/TpwnC8GMrC5ko0Iaweq0z/
+         CmUdRKtmq7JFkN77fcuz8OnmfGchAp3YYrnMcIiHnhVzF9vSnEeydQzkuMixbhCMfjEz
+         vUrnAhJySZtl5+SiR5kS/OhbSljiIekXWL9ZacrQilp0vifaVxWXWanc9DLxC94l3IoI
+         MYetvwJmX0Zxy5mpnmnLi/ktsZyCSUnBrEMc+P2kFBHo928MJkgF0p9IzZDGEvEHMqtX
+         s3Ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=9Dh/SuicpAUNOw64qrqjagLAfYYRP7GDUICNSAPWkEY=;
-        b=wWZbvHCCoZtD1ED0EJEsULw2nrFAh/M7mKKTfAosRKTMxeT+l+rgX1/CGZGzvgF5tg
-         VTUGko0A0/oWONnkNzaS+m/DfOOlPuvwYcsrw2MzQxYSmCiZ9WCjiFV9uww5hHNl++aY
-         z54L+SyW9kqawULzx8jXSQSA1E57VgmA8oGqPq9S7Z08NTyDcsR1mvvHdLOviPV3Z0xS
-         YzJXpUW0zKxULdAU0GJBxnOjhsZHC2riIZ1IuKaqfCK5afveS+wnUu11YrhnB/H3CEvd
-         ckRNHO8Q13GAY9lZwv9FbGagbvYAE5u1PityrAn05Vx9dUKCNywXiUh8EUh7OX+FqD1G
-         Sh2g==
-X-Gm-Message-State: AO0yUKXol7B3dBM96IJkvwG5LMoJ53HaC3e8c0NZpAeW6fCLjspr8pCW
-	0Cq0b8dujUGhHNIa+t4b+NQ2vQ==
-X-Google-Smtp-Source: AK7set+68/Lq7+7dw7L5pKpw0HIza+anyCOmSfiVtB5lzEVXRlZZF1Y8GjmD8XI2Ho4LfqXQo9439g==
-X-Received: by 2002:a5d:5092:0:b0:2bf:c753:573f with SMTP id a18-20020a5d5092000000b002bfc753573fmr1910182wrt.24.1675256387073;
-        Wed, 01 Feb 2023 04:59:47 -0800 (PST)
+        bh=/mQgjjPfntTEYktl5YrbY8Zrdu7ool4i44pQG74D6kk=;
+        b=vfAPFq0kD0xsDmzhiBcNKptzomy21Za4nDstwu9XQnBJGm6EWj/4l8qSb9tt47mC/8
+         P+VBKiTMc9gNGOu+CVL0DgFmePgiU60F/MR8C0bYsBJr7lswMAoppWI/oyh7YXF4tl9W
+         1auNenGtAHFlJNbOp7UvmpCC3F3VmzwphaGBiFpU+LuQVDgkik4c7A2aO7+utO8Nt8xE
+         HK49AgZSBtXXTAalguOneKVvgJbdUCzsDNA2a8hTYhzgHlwNmTq7FzLev8MQ0I2Mfxf8
+         kUg/ZwfPZmpICPzvwP8A2ooBILxAVYPmAMGOFJ+CAZ3tMIesq2ZUuS3upwsyOKCEEs9o
+         stGg==
+X-Gm-Message-State: AO0yUKXWyEHjQPLApeJpJCQQ+9oirdwA/61frZA2EMcAbIRLHlc2kUwS
+	ZBss9Ii0hhK9CPEBOpUEJoNTCw==
+X-Google-Smtp-Source: AK7set//4GU7QGGJ9JCNwt9lq+EdDL/CqmMxgfwo0Z2qvjFGyJ3BYHcNzGcdlCitnKLcy3y+gHrMfQ==
+X-Received: by 2002:a05:6000:186a:b0:298:4baf:ac8a with SMTP id d10-20020a056000186a00b002984bafac8amr2908303wri.44.1675256389370;
+        Wed, 01 Feb 2023 04:59:49 -0800 (PST)
 Received: from localhost.localdomain (054592b0.skybroadband.com. [5.69.146.176])
-        by smtp.gmail.com with ESMTPSA id m15-20020a056000024f00b002bfae16ee2fsm17972811wrz.111.2023.02.01.04.59.46
+        by smtp.gmail.com with ESMTPSA id m15-20020a056000024f00b002bfae16ee2fsm17972811wrz.111.2023.02.01.04.59.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Feb 2023 04:59:46 -0800 (PST)
+        Wed, 01 Feb 2023 04:59:48 -0800 (PST)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: maz@kernel.org,
 	catalin.marinas@arm.com,
@@ -55,9 +55,9 @@ Cc: robin.murphy@arm.com,
 	kvmarm@lists.linux.dev,
 	iommu@lists.linux.dev,
 	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [RFC PATCH 35/45] iommu/arm-smmu-v3-kvm: Pass a list of SMMU devices to the hypervisor
-Date: Wed,  1 Feb 2023 12:53:19 +0000
-Message-Id: <20230201125328.2186498-36-jean-philippe@linaro.org>
+Subject: [RFC PATCH 38/45] iommu/arm-smmu-v3-kvm: Add per-cpu page queue
+Date: Wed,  1 Feb 2023 12:53:22 +0000
+Message-Id: <20230201125328.2186498-39-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230201125328.2186498-1-jean-philippe@linaro.org>
 References: <20230201125328.2186498-1-jean-philippe@linaro.org>
@@ -69,177 +69,158 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Build a list of devices and donate the page to the hypervisor. At this
-point the host is trusted and this would be a good opportunity to
-provide more information about the system. For example, which devices
-are owned by the host (perhaps via the VMID and SW bits in the stream
-table, although we populate the stream table lazily at the moment.)
+Allocate page queues shared with the hypervisor for page donation and
+reclaim. A local_lock ensures that only one thread fills the queue
+during a hypercall.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c   | 123 +++++++++++++++++-
- 1 file changed, 120 insertions(+), 3 deletions(-)
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c   | 93 ++++++++++++++++++-
+ 1 file changed, 92 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
-index 4092da8050ef..1e0daf9ea4ac 100644
+index 8808890f4dc0..755c77bc0417 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
-@@ -4,15 +4,78 @@
-  *
+@@ -5,6 +5,7 @@
   * Copyright (C) 2022 Linaro Ltd.
   */
-+#include <asm/kvm_mmu.h>
+ #include <asm/kvm_mmu.h>
++#include <linux/local_lock.h>
  #include <linux/of_platform.h>
  
  #include <kvm/arm_smmu_v3.h>
- 
- #include "arm-smmu-v3.h"
- 
-+struct host_arm_smmu_device {
-+	struct arm_smmu_device		smmu;
-+	pkvm_handle_t			id;
-+};
+@@ -23,6 +24,81 @@ struct host_arm_smmu_device {
+ static size_t				kvm_arm_smmu_cur;
+ static size_t				kvm_arm_smmu_count;
+ static struct hyp_arm_smmu_v3_device	*kvm_arm_smmu_array;
++static struct kvm_hyp_iommu_memcache	*kvm_arm_smmu_memcache;
 +
-+#define smmu_to_host(_smmu) \
-+	container_of(_smmu, struct host_arm_smmu_device, smmu);
++static DEFINE_PER_CPU(local_lock_t, memcache_lock) =
++				INIT_LOCAL_LOCK(memcache_lock);
 +
-+static size_t				kvm_arm_smmu_cur;
-+static size_t				kvm_arm_smmu_count;
-+static struct hyp_arm_smmu_v3_device	*kvm_arm_smmu_array;
-+
- static int kvm_arm_smmu_probe(struct platform_device *pdev)
- {
--	return -ENOSYS;
-+	int ret;
-+	bool bypass;
-+	size_t size;
-+	phys_addr_t ioaddr;
-+	struct resource *res;
-+	struct arm_smmu_device *smmu;
-+	struct device *dev = &pdev->dev;
-+	struct host_arm_smmu_device *host_smmu;
-+	struct hyp_arm_smmu_v3_device *hyp_smmu;
-+
-+	if (kvm_arm_smmu_cur >= kvm_arm_smmu_count)
-+		return -ENOSPC;
-+
-+	hyp_smmu = &kvm_arm_smmu_array[kvm_arm_smmu_cur];
-+
-+	host_smmu = devm_kzalloc(dev, sizeof(*host_smmu), GFP_KERNEL);
-+	if (!host_smmu)
-+		return -ENOMEM;
-+
-+	smmu = &host_smmu->smmu;
-+	smmu->dev = dev;
-+
-+	ret = arm_smmu_fw_probe(pdev, smmu, &bypass);
-+	if (ret || bypass)
-+		return ret ?: -EINVAL;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	size = resource_size(res);
-+	if (size < SZ_128K) {
-+		dev_err(dev, "unsupported MMIO region size (%pr)\n", res);
-+		return -EINVAL;
-+	}
-+	ioaddr = res->start;
-+	host_smmu->id = kvm_arm_smmu_cur;
-+
-+	smmu->base = devm_ioremap_resource(dev, res);
-+	if (IS_ERR(smmu->base))
-+		return PTR_ERR(smmu->base);
-+
-+	ret = arm_smmu_device_hw_probe(smmu);
-+	if (ret)
-+		return ret;
-+
-+	platform_set_drvdata(pdev, host_smmu);
-+
-+	/* Hypervisor parameters */
-+	hyp_smmu->mmio_addr = ioaddr;
-+	hyp_smmu->mmio_size = size;
-+	kvm_arm_smmu_cur++;
-+
-+	return 0;
- }
- 
- static int kvm_arm_smmu_remove(struct platform_device *pdev)
-@@ -33,6 +96,36 @@ static struct platform_driver kvm_arm_smmu_driver = {
- 	.remove = kvm_arm_smmu_remove,
- };
- 
-+static int kvm_arm_smmu_array_alloc(void)
++static void *kvm_arm_smmu_alloc_page(void *opaque)
 +{
-+	int smmu_order;
-+	struct device_node *np;
++	struct arm_smmu_device *smmu = opaque;
++	struct page *p;
 +
-+	kvm_arm_smmu_count = 0;
-+	for_each_compatible_node(np, NULL, "arm,smmu-v3")
-+		kvm_arm_smmu_count++;
++	p = alloc_pages_node(dev_to_node(smmu->dev), GFP_ATOMIC, 0);
++	if (!p)
++		return NULL;
 +
-+	if (!kvm_arm_smmu_count)
-+		return 0;
-+
-+	/* Allocate the parameter list shared with the hypervisor */
-+	smmu_order = get_order(kvm_arm_smmu_count * sizeof(*kvm_arm_smmu_array));
-+	kvm_arm_smmu_array = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
-+						      smmu_order);
-+	if (!kvm_arm_smmu_array)
-+		return -ENOMEM;
-+
-+	return 0;
++	return page_address(p);
 +}
 +
-+static void kvm_arm_smmu_array_free(void)
++static void kvm_arm_smmu_free_page(void *va, void *opaque)
 +{
-+	int order;
-+
-+	order = get_order(kvm_arm_smmu_count * sizeof(*kvm_arm_smmu_array));
-+	free_pages((unsigned long)kvm_arm_smmu_array, order);
++	free_page((unsigned long)va);
 +}
 +
- /**
-  * kvm_arm_smmu_v3_init() - Reserve the SMMUv3 for KVM
-  * @count: on success, number of SMMUs successfully initialized
-@@ -44,12 +137,36 @@ int kvm_arm_smmu_v3_init(unsigned int *count)
++static phys_addr_t kvm_arm_smmu_host_pa(void *va)
++{
++	return __pa(va);
++}
++
++static void *kvm_arm_smmu_host_va(phys_addr_t pa)
++{
++	return __va(pa);
++}
++
++__maybe_unused
++static int kvm_arm_smmu_topup_memcache(struct arm_smmu_device *smmu)
++{
++	struct kvm_hyp_memcache *mc;
++	int cpu = raw_smp_processor_id();
++
++	lockdep_assert_held(this_cpu_ptr(&memcache_lock));
++	mc = &kvm_arm_smmu_memcache[cpu].pages;
++
++	if (!kvm_arm_smmu_memcache[cpu].needs_page)
++		return -EBADE;
++
++	kvm_arm_smmu_memcache[cpu].needs_page = false;
++	return  __topup_hyp_memcache(mc, 1, kvm_arm_smmu_alloc_page,
++				     kvm_arm_smmu_host_pa, smmu);
++}
++
++__maybe_unused
++static void kvm_arm_smmu_reclaim_memcache(void)
++{
++	struct kvm_hyp_memcache *mc;
++	int cpu = raw_smp_processor_id();
++
++	lockdep_assert_held(this_cpu_ptr(&memcache_lock));
++	mc = &kvm_arm_smmu_memcache[cpu].pages;
++
++	__free_hyp_memcache(mc, kvm_arm_smmu_free_page,
++			    kvm_arm_smmu_host_va, NULL);
++}
++
++/*
++ * Issue hypercall, and retry after filling the memcache if necessary.
++ * After the call, reclaim pages pushed in the memcache by the hypervisor.
++ */
++#define kvm_call_hyp_nvhe_mc(smmu, ...)				\
++({								\
++	int __ret;						\
++	do {							\
++		__ret = kvm_call_hyp_nvhe(__VA_ARGS__);		\
++	} while (__ret && !kvm_arm_smmu_topup_memcache(smmu));	\
++	kvm_arm_smmu_reclaim_memcache();			\
++	__ret;							\
++})
+ 
+ static bool kvm_arm_smmu_validate_features(struct arm_smmu_device *smmu)
  {
- 	int ret;
+@@ -211,7 +287,7 @@ static struct platform_driver kvm_arm_smmu_driver = {
  
-+	/*
-+	 * Check whether any device owned by the host is behind an SMMU.
-+	 */
-+	ret = kvm_arm_smmu_array_alloc();
-+	*count = kvm_arm_smmu_count;
-+	if (ret || !kvm_arm_smmu_count)
-+		return ret;
-+
- 	ret = platform_driver_probe(&kvm_arm_smmu_driver, kvm_arm_smmu_probe);
- 	if (ret)
--		return ret;
-+		goto err_free;
+ static int kvm_arm_smmu_array_alloc(void)
+ {
+-	int smmu_order;
++	int smmu_order, mc_order;
+ 	struct device_node *np;
  
--	*count = 0;
-+	if (kvm_arm_smmu_cur != kvm_arm_smmu_count) {
-+		/* A device exists but failed to probe */
-+		ret = -EUNATCH;
-+		goto err_free;
-+	}
+ 	kvm_arm_smmu_count = 0;
+@@ -228,7 +304,17 @@ static int kvm_arm_smmu_array_alloc(void)
+ 	if (!kvm_arm_smmu_array)
+ 		return -ENOMEM;
+ 
++	mc_order = get_order(NR_CPUS * sizeof(*kvm_arm_smmu_memcache));
++	kvm_arm_smmu_memcache = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
++							 mc_order);
++	if (!kvm_arm_smmu_memcache)
++		goto err_free_array;
 +
-+	/*
-+	 * These variables are stored in the nVHE image, and won't be accessible
-+	 * after KVM initialization. Ownership of kvm_arm_smmu_array will be
-+	 * transferred to the hypervisor as well.
-+	 */
-+	kvm_hyp_arm_smmu_v3_smmus = kern_hyp_va(kvm_arm_smmu_array);
-+	kvm_hyp_arm_smmu_v3_count = kvm_arm_smmu_count;
  	return 0;
 +
-+err_free:
-+	kvm_arm_smmu_array_free();
-+	return ret;
++err_free_array:
++	free_pages((unsigned long)kvm_arm_smmu_array, smmu_order);
++	return -ENOMEM;
  }
  
- void kvm_arm_smmu_v3_remove(void)
+ static void kvm_arm_smmu_array_free(void)
+@@ -237,6 +323,8 @@ static void kvm_arm_smmu_array_free(void)
+ 
+ 	order = get_order(kvm_arm_smmu_count * sizeof(*kvm_arm_smmu_array));
+ 	free_pages((unsigned long)kvm_arm_smmu_array, order);
++	order = get_order(NR_CPUS * sizeof(*kvm_arm_smmu_memcache));
++	free_pages((unsigned long)kvm_arm_smmu_memcache, order);
+ }
+ 
+ /**
+@@ -272,9 +360,12 @@ int kvm_arm_smmu_v3_init(unsigned int *count)
+ 	 * These variables are stored in the nVHE image, and won't be accessible
+ 	 * after KVM initialization. Ownership of kvm_arm_smmu_array will be
+ 	 * transferred to the hypervisor as well.
++	 *
++	 * kvm_arm_smmu_memcache is shared between hypervisor and host.
+ 	 */
+ 	kvm_hyp_arm_smmu_v3_smmus = kern_hyp_va(kvm_arm_smmu_array);
+ 	kvm_hyp_arm_smmu_v3_count = kvm_arm_smmu_count;
++	kvm_hyp_iommu_memcaches = kern_hyp_va(kvm_arm_smmu_memcache);
+ 	return 0;
+ 
+ err_free:
 -- 
 2.39.0
 
