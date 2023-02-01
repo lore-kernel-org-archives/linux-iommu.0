@@ -1,43 +1,43 @@
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE2E7847F
-	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 12:59:46 +0000 (UTC)
-Received: by mail-wr1-f53.google.com with SMTP id m14so16760897wrg.13
-        for <iommu@lists.linux.dev>; Wed, 01 Feb 2023 04:59:46 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 480F963B2
+	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 12:59:48 +0000 (UTC)
+Received: by mail-wr1-f47.google.com with SMTP id m7so17223198wru.8
+        for <iommu@lists.linux.dev>; Wed, 01 Feb 2023 04:59:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Hw6sl7oFDdNkKrpSvS4DEk1bWbFMgLKs0ATS0rkQZn8=;
-        b=CbNaDaiXaXT6GtrdMMULs+E/jbHUR9HhPSILUa/OiUR34pmTwRsBPOIgtXkdjKO84s
-         +tBqu2DpS6al0V7yB61IKnv+b10H2hGIu4mSo23kyjfta6kIjuixhQP0x0rEXX/18oY/
-         5a/qIg/aGsRb8qL3tZ5QXMBb/MUc2X2+EhILxj2/ZHfc71FDOYtuWVdYCb75H7I2xGt3
-         dVv+kvRgOm9tSJFfaFFV6aj2whuG6A6473t88RFMCqgBbAoY2Ueaw7+cCeyrj/MBwuAd
-         9KMQAhZOpmADWbMrzT36SQbCGLLON1lZWw1KneZXadbfVjbmMX8sVoqte7988sXYtrPm
-         mEqA==
+        bh=T1XbjFRROGqTsKVaKlJ9OMpS1XHI6QRbg+Uxdf993wI=;
+        b=vGASOMbylysHRfrGLv6YhTO7WEjv6c1RwzKjV7XsdcywE+jEFIsdsb5w+2OghxLS9/
+         qXlv60FR7L4TDsiNTkGc7CFP9sOBBSMgFZJP6RehQWKk+xblpDCkv+NdoiRZJc4lo+MB
+         OHZI/Ska0NQGQp6sf6XYaGIC4f/Sqp2c09J4jQvzaOnijt2sBekilaucOj/jUKSNd/AX
+         5pRusIs+/gQ0kDODgdeueanv2yN6KNe+s7ycRNU9ypbQUkV21yxob/1nlBgVHMhIfud/
+         OgRirqcvdAhkcPaU2A0Q77RWKieLbANDuuIfIpzi/IVRF8f+n9FVapUusjVNOE82ZS44
+         c4Sw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Hw6sl7oFDdNkKrpSvS4DEk1bWbFMgLKs0ATS0rkQZn8=;
-        b=37Ruj9SkVLYmt29vu6DZR0xx64cgu2kIMvcP++5qoPBBjs6Na8ffee5pinmjwyGsYf
-         subQgbysejpebGy3a5K7FCdWewLrWm91nzj3Nljz+EnObCVqgtfJ7bUsozN8My8VgxUm
-         Il9EVvL1M5qOMfIjdOLpXJdxkRFd2vUquDGu5C6WCjxFJsn5inBION6zebJOrOn95WuU
-         scU6dkwF4/LdPtsCNmh75frsipSqP4o4T2ybzbdl3V4r9VZlr+1PU/w7IfC9RKoknvqY
-         tmzmOGzditsb0K95v42SIQ3ZlY2hwtBA1b1B1zBCvnWpk51MR+KX2EKS9pBS+7kgmse6
-         13rA==
-X-Gm-Message-State: AO0yUKUg82JVgpiyynWUrqYiByIJY5xtNrqpUu1d4tDq1wItYP378Sm5
-	HH2dZdrH6PxgmQ2Fkjhbe/2MwA==
-X-Google-Smtp-Source: AK7set+Pwyjpj/A8PSxsfEiu2UEOKeiweKmB/2zupayUhYBIdKRAMAWRGCPU2Xjlg1Qgye4T4MctNQ==
-X-Received: by 2002:a5d:6110:0:b0:2bf:b9a4:f688 with SMTP id v16-20020a5d6110000000b002bfb9a4f688mr2377259wrt.23.1675256386278;
-        Wed, 01 Feb 2023 04:59:46 -0800 (PST)
+        bh=T1XbjFRROGqTsKVaKlJ9OMpS1XHI6QRbg+Uxdf993wI=;
+        b=EqKl1cI9rVYlcT3/y4JldSA3NMvK2zxGqH2lJ0A/6gpI2nNi4kU9+vVYHZeIWBuanw
+         FkeXmRsmSkdIBJbQT+e6dNfwVO2kPNwbCwXxl0M6nOHsi3Bd+00SEhe4TJHHGg2P7WTe
+         5pIX0Krb22C4bSbR1P5uxlfKzFbs9pmX/JwToacFyAMK3MkC9VDlOiOYpFoDn1utizLI
+         CAYyDZtaejJITObFLHsth4JwDUSJhJW1//hb+NsvHwVMaq+0fq4962jdyiR1Qz6ApyLK
+         gldS6Mj+ZI0lMDgDi4jGidXU2uknbvcx/L2JZntRbq+TqaAMbjnct9suLCwSHuGbqqTL
+         at6Q==
+X-Gm-Message-State: AO0yUKXWBAdT5StzFaD6bRjdr1AClvHLeZlxJ7fU51qiMVnSHmDMQBVs
+	42uOm+VSA9d2ro53cIS8xbSzXg==
+X-Google-Smtp-Source: AK7set/A9Wvge/x9I0c0N1VcVRmzSfGiz2QGPnhn/EemCOX5Ccigvrx/7k9pg7r6kMkCHM3qkXEWvg==
+X-Received: by 2002:a5d:6b48:0:b0:2bf:963a:f266 with SMTP id x8-20020a5d6b48000000b002bf963af266mr1586152wrw.27.1675256387822;
+        Wed, 01 Feb 2023 04:59:47 -0800 (PST)
 Received: from localhost.localdomain (054592b0.skybroadband.com. [5.69.146.176])
-        by smtp.gmail.com with ESMTPSA id m15-20020a056000024f00b002bfae16ee2fsm17972811wrz.111.2023.02.01.04.59.45
+        by smtp.gmail.com with ESMTPSA id m15-20020a056000024f00b002bfae16ee2fsm17972811wrz.111.2023.02.01.04.59.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Feb 2023 04:59:45 -0800 (PST)
+        Wed, 01 Feb 2023 04:59:47 -0800 (PST)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: maz@kernel.org,
 	catalin.marinas@arm.com,
@@ -55,9 +55,9 @@ Cc: robin.murphy@arm.com,
 	kvmarm@lists.linux.dev,
 	iommu@lists.linux.dev,
 	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [RFC PATCH 34/45] iommu/arm-smmu-v3: Add host driver for pKVM
-Date: Wed,  1 Feb 2023 12:53:18 +0000
-Message-Id: <20230201125328.2186498-35-jean-philippe@linaro.org>
+Subject: [RFC PATCH 36/45] iommu/arm-smmu-v3-kvm: Validate device features
+Date: Wed,  1 Feb 2023 12:53:20 +0000
+Message-Id: <20230201125328.2186498-37-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230201125328.2186498-1-jean-philippe@linaro.org>
 References: <20230201125328.2186498-1-jean-philippe@linaro.org>
@@ -69,168 +69,94 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Under protected KVM (pKVM), the host does not have access to guest or
-hypervisor memory. This means that devices owned by the host must be
-isolated by the SMMU, and the hypervisor is in charge of the SMMU.
-
-Introduce the host component that replaces the normal SMMUv3 driver when
-pKVM is enabled, and sends configuration and requests to the actual
-driver running in the hypervisor (EL2).
-
-Rather than rely on regular driver probe, pKVM directly calls
-kvm_arm_smmu_v3_init(), which synchronously finds all SMMUs and hands
-them to the hypervisor. If the regular driver is enabled, it will not
-find any free SMMU to drive once it gets probed.
+The KVM hypervisor driver supports a small subset of features. Ensure
+the implementation is compatible, and disable some unused features.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- drivers/iommu/arm/arm-smmu-v3/Makefile        |  5 ++
- include/kvm/arm_smmu_v3.h                     | 14 +++++
- arch/arm64/kvm/arm.c                          | 18 +++++-
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c   | 58 +++++++++++++++++++
- 4 files changed, 94 insertions(+), 1 deletion(-)
- create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c   | 57 +++++++++++++++++++
+ 1 file changed, 57 insertions(+)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/Makefile b/drivers/iommu/arm/arm-smmu-v3/Makefile
-index c4fcc796213c..a90b97d8bae3 100644
---- a/drivers/iommu/arm/arm-smmu-v3/Makefile
-+++ b/drivers/iommu/arm/arm-smmu-v3/Makefile
-@@ -4,3 +4,8 @@ arm_smmu_v3-objs-y += arm-smmu-v3.o
- arm_smmu_v3-objs-y += arm-smmu-v3-common.o
- arm_smmu_v3-objs-$(CONFIG_ARM_SMMU_V3_SVA) += arm-smmu-v3-sva.o
- arm_smmu_v3-objs := $(arm_smmu_v3-objs-y)
-+
-+obj-$(CONFIG_ARM_SMMU_V3_PKVM) += arm_smmu_v3_kvm.o
-+arm_smmu_v3_kvm-objs-y += arm-smmu-v3-kvm.o
-+arm_smmu_v3_kvm-objs-y += arm-smmu-v3-common.o
-+arm_smmu_v3_kvm-objs := $(arm_smmu_v3_kvm-objs-y)
-diff --git a/include/kvm/arm_smmu_v3.h b/include/kvm/arm_smmu_v3.h
-index ed139b0e9612..373b915b6661 100644
---- a/include/kvm/arm_smmu_v3.h
-+++ b/include/kvm/arm_smmu_v3.h
-@@ -40,4 +40,18 @@ extern struct hyp_arm_smmu_v3_device *kvm_nvhe_sym(kvm_hyp_arm_smmu_v3_smmus);
- 
- #endif /* CONFIG_ARM_SMMU_V3_PKVM */
- 
-+#ifndef __KVM_NVHE_HYPERVISOR__
-+# if IS_ENABLED(CONFIG_ARM_SMMU_V3_PKVM)
-+int kvm_arm_smmu_v3_init(unsigned int *count);
-+void kvm_arm_smmu_v3_remove(void);
-+
-+# else /* CONFIG_ARM_SMMU_V3_PKVM */
-+static inline int kvm_arm_smmu_v3_init(unsigned int *count)
-+{
-+	return -ENODEV;
-+}
-+static void kvm_arm_smmu_v3_remove(void) {}
-+# endif /* CONFIG_ARM_SMMU_V3_PKVM */
-+#endif /* __KVM_NVHE_HYPERVISOR__ */
-+
- #endif /* __KVM_ARM_SMMU_V3_H */
-diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
-index 31faae76d519..a4cd09fc4abf 100644
---- a/arch/arm64/kvm/arm.c
-+++ b/arch/arm64/kvm/arm.c
-@@ -44,6 +44,7 @@
- #include <kvm/arm_hypercalls.h>
- #include <kvm/arm_pmu.h>
- #include <kvm/arm_psci.h>
-+#include <kvm/arm_smmu_v3.h>
- 
- static enum kvm_mode kvm_mode = KVM_MODE_DEFAULT;
- DEFINE_STATIC_KEY_FALSE(kvm_protected_mode_initialized);
-@@ -1901,11 +1902,26 @@ static bool init_psci_relay(void)
- 
- static int init_stage2_iommu(void)
- {
--	return KVM_IOMMU_DRIVER_NONE;
-+	int ret;
-+	unsigned int smmu_count;
-+
-+	ret = kvm_arm_smmu_v3_init(&smmu_count);
-+	if (ret)
-+		return ret;
-+	else if (!smmu_count)
-+		return KVM_IOMMU_DRIVER_NONE;
-+	return KVM_IOMMU_DRIVER_SMMUV3;
- }
- 
- static void remove_stage2_iommu(enum kvm_iommu_driver iommu)
- {
-+	switch (iommu) {
-+	case KVM_IOMMU_DRIVER_SMMUV3:
-+		kvm_arm_smmu_v3_remove();
-+		break;
-+	default:
-+		break;
-+	}
- }
- 
- static int init_subsystems(void)
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
-new file mode 100644
-index 000000000000..4092da8050ef
---- /dev/null
+index 1e0daf9ea4ac..2cc632f6b256 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
-@@ -0,0 +1,58 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * pKVM host driver for the Arm SMMUv3
-+ *
-+ * Copyright (C) 2022 Linaro Ltd.
-+ */
-+#include <linux/of_platform.h>
-+
-+#include <kvm/arm_smmu_v3.h>
-+
-+#include "arm-smmu-v3.h"
-+
-+static int kvm_arm_smmu_probe(struct platform_device *pdev)
+@@ -23,6 +23,59 @@ static size_t				kvm_arm_smmu_cur;
+ static size_t				kvm_arm_smmu_count;
+ static struct hyp_arm_smmu_v3_device	*kvm_arm_smmu_array;
+ 
++static bool kvm_arm_smmu_validate_features(struct arm_smmu_device *smmu)
 +{
-+	return -ENOSYS;
++	unsigned long oas;
++	unsigned int required_features =
++		ARM_SMMU_FEAT_TRANS_S2 |
++		ARM_SMMU_FEAT_TT_LE;
++	unsigned int forbidden_features =
++		ARM_SMMU_FEAT_STALL_FORCE;
++	unsigned int keep_features =
++		ARM_SMMU_FEAT_2_LVL_STRTAB	|
++		ARM_SMMU_FEAT_2_LVL_CDTAB	|
++		ARM_SMMU_FEAT_TT_LE		|
++		ARM_SMMU_FEAT_SEV		|
++		ARM_SMMU_FEAT_COHERENCY		|
++		ARM_SMMU_FEAT_TRANS_S1		|
++		ARM_SMMU_FEAT_TRANS_S2		|
++		ARM_SMMU_FEAT_VAX		|
++		ARM_SMMU_FEAT_RANGE_INV;
++
++	if (smmu->options & ARM_SMMU_OPT_PAGE0_REGS_ONLY) {
++		dev_err(smmu->dev, "unsupported layout\n");
++		return false;
++	}
++
++	if ((smmu->features & required_features) != required_features) {
++		dev_err(smmu->dev, "missing features 0x%x\n",
++			required_features & ~smmu->features);
++		return false;
++	}
++
++	if (smmu->features & forbidden_features) {
++		dev_err(smmu->dev, "features 0x%x forbidden\n",
++			smmu->features & forbidden_features);
++		return false;
++	}
++
++	smmu->features &= keep_features;
++
++	/*
++	 * This can be relaxed (although the spec says that OAS "must match
++	 * the system physical address size."), but requires some changes. All
++	 * table and queue allocations must use GFP_DMA* to ensure the SMMU can
++	 * access them.
++	 */
++	oas = get_kvm_ipa_limit();
++	if (smmu->oas < oas) {
++		dev_err(smmu->dev, "incompatible address size\n");
++		return false;
++	}
++
++	return true;
 +}
 +
-+static int kvm_arm_smmu_remove(struct platform_device *pdev)
-+{
-+	return 0;
-+}
+ static int kvm_arm_smmu_probe(struct platform_device *pdev)
+ {
+ 	int ret;
+@@ -68,11 +121,15 @@ static int kvm_arm_smmu_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
++	if (!kvm_arm_smmu_validate_features(smmu))
++		return -ENODEV;
 +
-+static const struct of_device_id arm_smmu_of_match[] = {
-+	{ .compatible = "arm,smmu-v3", },
-+	{ },
-+};
-+
-+static struct platform_driver kvm_arm_smmu_driver = {
-+	.driver = {
-+		.name = "kvm-arm-smmu-v3",
-+		.of_match_table = arm_smmu_of_match,
-+	},
-+	.remove = kvm_arm_smmu_remove,
-+};
-+
-+/**
-+ * kvm_arm_smmu_v3_init() - Reserve the SMMUv3 for KVM
-+ * @count: on success, number of SMMUs successfully initialized
-+ *
-+ * Return 0 if all present SMMUv3 were probed successfully, or an error.
-+ *   If no SMMU was found, return 0, with a count of 0.
-+ */
-+int kvm_arm_smmu_v3_init(unsigned int *count)
-+{
-+	int ret;
-+
-+	ret = platform_driver_probe(&kvm_arm_smmu_driver, kvm_arm_smmu_probe);
-+	if (ret)
-+		return ret;
-+
-+	*count = 0;
-+	return 0;
-+}
-+
-+void kvm_arm_smmu_v3_remove(void)
-+{
-+	platform_driver_unregister(&kvm_arm_smmu_driver);
-+}
+ 	platform_set_drvdata(pdev, host_smmu);
+ 
+ 	/* Hypervisor parameters */
+ 	hyp_smmu->mmio_addr = ioaddr;
+ 	hyp_smmu->mmio_size = size;
++	hyp_smmu->features = smmu->features;
+ 	kvm_arm_smmu_cur++;
+ 
+ 	return 0;
 -- 
 2.39.0
 
