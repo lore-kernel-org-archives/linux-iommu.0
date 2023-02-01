@@ -1,43 +1,43 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4217849D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C21A8499
 	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 12:59:55 +0000 (UTC)
-Received: by mail-wm1-f44.google.com with SMTP id q8so12594724wmo.5
+Received: by mail-wr1-f46.google.com with SMTP id d14so17222782wrr.9
         for <iommu@lists.linux.dev>; Wed, 01 Feb 2023 04:59:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=6jBsZPV3gipM57S7lAbp42QSD9Ff7K7v1FMixncXNZ8=;
-        b=jqqn6lEE7IVGOwDOGUD7sfXW39/KCeRyDY2/IuSjMlatK+c9ZDof8lJLlOvnpmvWTA
-         tlSQGbKWdoTrC/MOU9HAgwktipxQF610xlaH/dYWp+pmmSLnjBtuGF9Qz95H06qb4MwO
-         yAncx8QkWUkTvExb8Th18C0UWALTn9rEn+/sdpo30zE2K+g2rBF/PNys2yCbMr6w+Wmp
-         DDS1ImzyVxYg4MQ2uUELVaL6vRyTQgT4Fqez6mH6JQcaaAothn5+3OPvFjFMrR8thoAg
-         NqSNMBiuDqpmnSyRybV9FGZN/QmMk9u78DMmhJDZ3DZf9x1VV6qC7nVG8reMe3AtwLcM
-         EisA==
+        bh=+QwuD9TuGNSCLvPM2blxffUhnZ2RtJhExgcIPoLd+QM=;
+        b=UOhwrweWo/dydtFfuzgOipklc5rQNm46Jqg9SLNN7DWbSNa217VcZcYEtfDbWKZ+ro
+         pTpyujtdOm5j39A7vRbwrc8tS/GrxqLOzHnnEUY7yEGvujURXprc4qYFtTNAo9N1kcm4
+         uYS9th+lV2uBPj3HZEnl/Z6KRtqw0Hwdb748wqe6A1px9tdg7Ot6+y9BVFUlqYq3XpXm
+         BuSX32azdekNqG+ojYiLZsVLQhK0RuRQk6FIokSXLujaG/wGGCMS6oWZ0ogTCbS7YIma
+         qoW223lpxoJMh5dJHTtTCurAbnQ1ZZTT96CtKot03dCMBiSYzhTq3qML2YsGbb6CPITP
+         vhCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=6jBsZPV3gipM57S7lAbp42QSD9Ff7K7v1FMixncXNZ8=;
-        b=mFeJ2eoCLEgzcok3P1JSsXGdLYsjXuS+Zq1G7HKisit6QMPchbf6S4PYiTo5IrTcrz
-         ag1o/pmrBwdcLhrJYP4Ic99AWZazlky8qSIMRSueabOB5XYlwsJFbAa2h1oZya6v/+Xm
-         pi/9A76D/oxCVCpgWlqZASXQoae3z+P2WUNZyaQC6HbBtNtxz70JwbG7B/uFF8WkTNzs
-         9AXtJnNR1bw9maF9Zn7H+trx5dNAYkM1yhCwQvENUaqcLy4ereTcGlmhKzWf8E0k/Uaf
-         8Y2kPDyJrq8CoA2uQCLv+jixVflMOB44ZN+zE18AqW875zoULKHn7mE8oC+sNHP8XYEz
-         z2Vw==
-X-Gm-Message-State: AO0yUKW9dU2OI5leWbziOyv8O+5dxW7ELvXds3YLlS6TMx/q1vBCWLQS
-	EWVpUOuaWdbFjritqcomGXf+Kg==
-X-Google-Smtp-Source: AK7set8FozBKO7/9zd4lyvhy8/1NGzLPtlJydoeNS4hNBerIjmIljLa1nO5xlOdJHO+Uy2Ds9zc7/A==
-X-Received: by 2002:a05:600c:3d0b:b0:3d0:7fee:8a70 with SMTP id bh11-20020a05600c3d0b00b003d07fee8a70mr2118223wmb.19.1675256394202;
+        bh=+QwuD9TuGNSCLvPM2blxffUhnZ2RtJhExgcIPoLd+QM=;
+        b=omemzPUVyaRL2aDzt9MPSf7gg4n5U+zIHK7DpANwz1YCqI1j7ex9G0+Mmt2DjVW5BJ
+         f+wnEAedpD2exfEzaoSX3AEnd1NozWnGB9QRparzsOzvatVUazzM1IfcPEWB8lBvxW01
+         TZDtIyUg5XMRVCMRZennS2G/S2Lc2z2ujSLj/2dH584RTJYMkwgdS9W+wvClCNBNuz4f
+         SyCkVwxO5DorrzWqJmv0g6Vy/0HiK/CDzrdRvVJBer2hhwDuWAoba3Qpg8Bd3HmZewBv
+         H0njdt/QgJvYHNa5/FHvejZReVfqzD1ELbsLPG5THq1C+zD/AEf+RO+n+XWyubTX6a+/
+         aMCw==
+X-Gm-Message-State: AO0yUKWKwSPow2S3uJxeUTRv0j54fA2WhzLv9wDOr2Y77J9AP22kiuib
+	EoKsGq4dU0ChWqDph0b1olph5g==
+X-Google-Smtp-Source: AK7set9bqN341dPHhfT97aUYzzSZBGnfTu3JIZgicnUoniM+wDk0UFc0vzIdu1RIl/3gjqCIATPA8g==
+X-Received: by 2002:a05:6000:10c3:b0:2bf:b2c2:e122 with SMTP id b3-20020a05600010c300b002bfb2c2e122mr2349373wrx.29.1675256394953;
         Wed, 01 Feb 2023 04:59:54 -0800 (PST)
 Received: from localhost.localdomain (054592b0.skybroadband.com. [5.69.146.176])
-        by smtp.gmail.com with ESMTPSA id m15-20020a056000024f00b002bfae16ee2fsm17972811wrz.111.2023.02.01.04.59.53
+        by smtp.gmail.com with ESMTPSA id m15-20020a056000024f00b002bfae16ee2fsm17972811wrz.111.2023.02.01.04.59.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Feb 2023 04:59:53 -0800 (PST)
+        Wed, 01 Feb 2023 04:59:54 -0800 (PST)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: maz@kernel.org,
 	catalin.marinas@arm.com,
@@ -55,9 +55,9 @@ Cc: robin.murphy@arm.com,
 	kvmarm@lists.linux.dev,
 	iommu@lists.linux.dev,
 	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [RFC PATCH 44/45] iommu/arm-smmu-v3-kvm: Support power management with SCMI SMC
-Date: Wed,  1 Feb 2023 12:53:28 +0000
-Message-Id: <20230201125328.2186498-45-jean-philippe@linaro.org>
+Subject: [RFC PATCH 45/45] iommu/arm-smmu-v3-kvm: Enable runtime PM
+Date: Wed,  1 Feb 2023 12:53:29 +0000
+Message-Id: <20230201125328.2186498-46-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.39.0
 In-Reply-To: <20230201125328.2186498-1-jean-philippe@linaro.org>
 References: <20230201125328.2186498-1-jean-philippe@linaro.org>
@@ -69,131 +69,117 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Discover SCMI parameters for the SMMUv3 power domain, and pass them to
-the hypervisor. Power management must use a method based on SMC, so the
-hypervisor driver can catch them and keep the software state in sync
-with the hardware.
+Enable runtime PM for the KVM SMMUv3 driver. The PM link to DMA masters
+dictates when the SMMU should be powered on.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c   | 76 +++++++++++++++++++
- 1 file changed, 76 insertions(+)
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c   | 54 +++++++++++++++++++
+ 1 file changed, 54 insertions(+)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
-index 930d78f6e29f..198e41d808b0 100644
+index 198e41d808b0..cd865049f89a 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
-@@ -6,6 +6,7 @@
-  */
- #include <asm/kvm_mmu.h>
+@@ -8,6 +8,7 @@
  #include <linux/local_lock.h>
-+#include <linux/of_address.h>
+ #include <linux/of_address.h>
  #include <linux/of_platform.h>
++#include <linux/pm_runtime.h>
  
  #include <kvm/arm_smmu_v3.h>
-@@ -495,6 +496,75 @@ static int kvm_arm_smmu_device_reset(struct host_arm_smmu_device *host_smmu)
- 	return 0;
- }
  
-+static int kvm_arm_probe_scmi_pd(struct device_node *scmi_node,
-+				 struct kvm_power_domain *pd)
-+{
+@@ -18,6 +19,7 @@ struct host_arm_smmu_device {
+ 	pkvm_handle_t			id;
+ 	u32				boot_gbpa;
+ 	unsigned int			pgd_order;
++	atomic_t			initialized;
+ };
+ 
+ #define smmu_to_host(_smmu) \
+@@ -134,8 +136,10 @@ static struct iommu_ops kvm_arm_smmu_ops;
+ 
+ static struct iommu_device *kvm_arm_smmu_probe_device(struct device *dev)
+ {
 +	int ret;
-+	struct resource res;
-+	struct of_phandle_args args;
-+
-+	pd->type = KVM_POWER_DOMAIN_ARM_SCMI;
-+
-+	ret = of_parse_phandle_with_args(scmi_node, "shmem", NULL, 0, &args);
-+	if (ret)
-+		return ret;
-+
-+	ret = of_address_to_resource(args.np, 0, &res);
-+	if (ret)
-+		goto out_put_nodes;
-+
-+	ret = of_property_read_u32(scmi_node, "arm,smc-id",
-+				   &pd->arm_scmi.smc_id);
-+	if (ret)
-+		goto out_put_nodes;
+ 	struct arm_smmu_device *smmu;
+ 	struct kvm_arm_smmu_master *master;
++	struct host_arm_smmu_device *host_smmu;
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 
+ 	if (!fwspec || fwspec->ops != &kvm_arm_smmu_ops)
+@@ -156,7 +160,28 @@ static struct iommu_device *kvm_arm_smmu_probe_device(struct device *dev)
+ 	master->smmu = smmu;
+ 	dev_iommu_priv_set(dev, master);
+ 
++	if (!device_link_add(dev, smmu->dev,
++			     DL_FLAG_PM_RUNTIME | DL_FLAG_RPM_ACTIVE |
++			     DL_FLAG_AUTOREMOVE_SUPPLIER)) {
++		ret = -ENOLINK;
++		goto err_free;
++	}
 +
 +	/*
-+	 * The shared buffer is unmapped from the host while a request is in
-+	 * flight, so it has to be on its own page.
++	 * If the SMMU has just been initialized by the hypervisor, release the
++	 * extra PM reference taken by kvm_arm_smmu_probe().  Not sure yet how
++	 * to improve this. Maybe have KVM call us back when it finished
++	 * initializing?
 +	 */
-+	if (!IS_ALIGNED(res.start, SZ_64K) || resource_size(&res) < SZ_64K) {
-+		ret = -EINVAL;
-+		goto out_put_nodes;
-+	}
++	host_smmu = smmu_to_host(smmu);
++	if (atomic_add_unless(&host_smmu->initialized, 1, 1))
++		pm_runtime_put_noidle(smmu->dev);
 +
-+	pd->arm_scmi.shmem_base = res.start;
-+	pd->arm_scmi.shmem_size = resource_size(&res);
+ 	return &smmu->iommu;
 +
-+out_put_nodes:
-+	of_node_put(args.np);
-+	return ret;
-+}
-+
-+/* TODO: Move this. None of it is specific to SMMU */
-+static int kvm_arm_probe_power_domain(struct device *dev,
-+				      struct kvm_power_domain *pd)
-+{
-+	int ret;
-+	struct device_node *parent;
-+	struct of_phandle_args args;
-+
-+	if (!of_get_property(dev->of_node, "power-domains", NULL))
-+		return 0;
-+
-+	ret = of_parse_phandle_with_args(dev->of_node, "power-domains",
-+					 "#power-domain-cells", 0, &args);
-+	if (ret)
-+		return ret;
-+
-+	parent = of_get_parent(args.np);
-+	if (parent && of_device_is_compatible(parent, "arm,scmi-smc") &&
-+	    args.args_count > 0) {
-+		pd->arm_scmi.domain_id = args.args[0];
-+		ret = kvm_arm_probe_scmi_pd(parent, pd);
-+	} else {
-+		dev_err(dev, "Unsupported PM method for %pOF\n", args.np);
-+		ret = -EINVAL;
-+	}
-+	of_node_put(parent);
-+	of_node_put(args.np);
-+	return ret;
-+}
-+
- static void *kvm_arm_smmu_alloc_domains(struct arm_smmu_device *smmu)
- {
- 	return (void *)devm_get_free_pages(smmu->dev, GFP_KERNEL | __GFP_ZERO,
-@@ -513,6 +583,7 @@ static int kvm_arm_smmu_probe(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	struct host_arm_smmu_device *host_smmu;
- 	struct hyp_arm_smmu_v3_device *hyp_smmu;
-+	struct kvm_power_domain power_domain = {};
++err_free:
++	kfree(master);
++	return ERR_PTR(ret);
+ }
  
- 	if (kvm_arm_smmu_cur >= kvm_arm_smmu_count)
- 		return -ENOSPC;
-@@ -530,6 +601,10 @@ static int kvm_arm_smmu_probe(struct platform_device *pdev)
- 	if (ret || bypass)
- 		return ret ?: -EINVAL;
- 
-+	ret = kvm_arm_probe_power_domain(dev, &power_domain);
-+	if (ret)
-+		return ret;
-+
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	size = resource_size(res);
- 	if (size < SZ_128K) {
-@@ -606,6 +681,7 @@ static int kvm_arm_smmu_probe(struct platform_device *pdev)
- 	hyp_smmu->mmio_size = size;
- 	hyp_smmu->features = smmu->features;
- 	hyp_smmu->iommu.pgtable_cfg = cfg;
-+	hyp_smmu->iommu.power_domain = power_domain;
+ static void kvm_arm_smmu_release_device(struct device *dev)
+@@ -685,6 +710,30 @@ static int kvm_arm_smmu_probe(struct platform_device *pdev)
  
  	kvm_arm_smmu_cur++;
  
++	/*
++	 * The state of endpoints dictates when the SMMU is powered off. To turn
++	 * the SMMU on and off, a genpd driver uses SCMI over the SMC transport,
++	 * or some other platform-specific SMC. Those power requests are caught
++	 * by the hypervisor, so that the hyp driver doesn't touch the hardware
++	 * state while it is off.
++	 *
++	 * We are making a big assumption here, that TLBs and caches are invalid
++	 * on power on, and therefore we don't need to wake the SMMU when
++	 * modifying page tables, stream tables and context tables. If this
++	 * assumption does not hold on some systems, then we'll need to grab RPM
++	 * reference in map(), attach(), etc, so the hyp driver can send
++	 * invalidations.
++	 */
++	hyp_smmu->caches_clean_on_power_on = true;
++
++	pm_runtime_set_active(dev);
++	pm_runtime_enable(dev);
++	/*
++	 * Take a reference to keep the SMMU powered on while the hypervisor
++	 * initializes it.
++	 */
++	pm_runtime_resume_and_get(dev);
++
+ 	return 0;
+ }
+ 
+@@ -697,6 +746,11 @@ static int kvm_arm_smmu_remove(struct platform_device *pdev)
+ 	 * There was an error during hypervisor setup. The hyp driver may
+ 	 * have already enabled the device, so disable it.
+ 	 */
++
++	if (!atomic_read(&host_smmu->initialized))
++		pm_runtime_put_noidle(&pdev->dev);
++	pm_runtime_disable(&pdev->dev);
++	pm_runtime_set_suspended(&pdev->dev);
+ 	arm_smmu_unregister_iommu(smmu);
+ 	arm_smmu_device_disable(smmu);
+ 	arm_smmu_update_gbpa(smmu, host_smmu->boot_gbpa, GBPA_ABORT);
 -- 
 2.39.0
 
