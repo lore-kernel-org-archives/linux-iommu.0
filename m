@@ -1,64 +1,64 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2079.outbound.protection.outlook.com [40.107.92.79])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2050.outbound.protection.outlook.com [40.107.93.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01AC280F
-	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 07:48:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F211A21
+	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 07:56:18 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JvtNnzR49NJL/Cih6Li68ySWEwJlwMoDGKQZQTpkK4B3U1ly6heNcAJL+S4hxWqgF3slHIVWOSGF6NtpUjurTLc1xI27tI8W5swrJ7VCnnhKqWD72lZ/DKYNwkscTi8KLbr7LKY+FFNbHeLXWgjxd667vg8wzdGXo5WhPiAA5Shm2kjYrPlWIPK6deSD2xc8gg5LWaicrgJRhYWXYNt/nsyhd09ut6rV9rXPn/iAahYyxIO9pQhjSQeOXDMNMEK6R6OOrdHHtevUypT83L6wg8a3zOa2cyA+PhPlITcJa3/HojF5BTPPUQWen9Ddg5/HxSM50xRhvH/fa2HxC61sjg==
+ b=JDfByL6iAab/rOCdtmjwu/7bGPJSBoR0PmcqaFyMJfJIKPrQE3d0dcBmqFW9eS1Ibi+D+Bfxcgcv1q+zBvHhJPwfy1QWiUzrGxSRlO9QI/66gB5eeMsc+TY8w5kGM/kn6LMpv83ISV0WfXsBvViituF0RanlHallqzcVxwWBVKlVlQnLoc0LAsv5nzxN6tbcgieV07oLrBpv4lZSBbB8N1JNEGv20qQtmtgPLaOeERLQLYBI8Aad/92Y0exb1ILdJv7V2CgFvx24g9rnArZJLxqIqEMdAaEe8gJ/Xu7v81GtWcKPk1ExUvLTV+9IJTS1QtYWHKxavWC2Z80e/AjFSA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=txv+m/RxcUhyo/PrnTTKYlAHByfjbkYvB4CYHiqDjPk=;
- b=DRLdA3x6D2JemolECQQDCLW6VosvV3YKqeAwv740WCwCxS78x+as9mJAeS1RsG2B+HJeQ+MWabiUYBWbXF2yg6wcvAbGEGfLZQmgJv1UMnf3FaioBh7NJbiYuucQ8oF7bx/saJSKrNylY/dhtNwuyOoX5urHi/dXrv9xKsSX24kVtAKRNZ5m+hV4MuS2SesjPHnFACH8phuazFwF6gfx1qaK9B/jj0Hxx/okjSRKsh1+8ASC6K8jTSTInXtdN+QHchflFwJYb4ejI+ixcu+5qfCrfiZHpZrJUGAE656j++sqeEz1BiVKCB1ETAQ+wafPXNYIntZ3Eq4LNhY1jDbebw==
+ bh=dGu/IJsL8GTl4kXctjMaByKl4keLj+Tnrg5HnnsBuo0=;
+ b=I3cukDTC0a3GNkvJJLH2dU2N/pLpjhrF30R5LCTerumSR2Exnb7eLf3E+wef9G+f95gF3rRWhsU2xnuwwaJuje6AoRWFUySKoy58f8e1ZRN7ya4GbS+Y5fzTj4rCDqporuaUK508V1MiFVW4C9NWF91XbCZ4C3upYJjVcr6ozixOB0mFwhVT5/YvcF2UYPNEQS/LrVE3VgKqvpeIQ+TKl7TRoS+dBadjBsnds+74V/cBivpahLpTOxGjeI0lKeyX1IelKE3PnAjXEan9/axTEV1jg7eyRg/f9wvf4j7apeJEomL7uHQv4MtOYSlPNpvrrziVqvM/Thkm/SWHSRMveQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ 216.228.118.233) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=txv+m/RxcUhyo/PrnTTKYlAHByfjbkYvB4CYHiqDjPk=;
- b=sY+lH5ySeBtRb/KeqIrcm6JTzDiAU7ixmmpGXaApL/I1dvMd7xPK+pLsphQJJWjKfmKUzXcaMmo32k36e/eji6x8GfRLXtpX05xnfpl/7Y9RnziJD403V5eitvMG2ZJFIOMyxq8eJd54Is0hBqNs/W+gYjXnBNy6jurpcQbZlGxEwCrDRIfqJm/HRzkqOxmlvxv3xfBs7xoW3p2TFyLI3gOQTPtGABt+uHLIp4/OSlEjiuNPtD5jtftzCVYbfVtKBxVdCgn3nq/GO35atS34nmI+QRmC6b6oXE8Mp3bq7NKgAAf6D5xjPDBqRfg+Nz3YMpH2U3uPqJs3/1trk5Aqyw==
-Received: from DM6PR14CA0043.namprd14.prod.outlook.com (2603:10b6:5:18f::20)
- by MW4PR12MB7439.namprd12.prod.outlook.com (2603:10b6:303:22b::7) with
+ bh=dGu/IJsL8GTl4kXctjMaByKl4keLj+Tnrg5HnnsBuo0=;
+ b=HaJQ/4ILgQNnFHfaUFX81J6oLN55nPhAV4YG06Ayo0QNhehznMZYPfz9zX8vjfV9UPgYlGvsBnhfncn8iCreXsx9Jc5hr//KeIh1gHxMBz+9Jr5FHMWRbvUsqiz0ccEVKEq89DWJKHaeHyLXLjZiA+F6uokAXkK4zVg7Na6kUGgbhU6z4lPX2eUWCUVhq28MIpjmu6GBEIjbBliggYxVHldsXJjz+I/jZsbNrHqT16/5HrpOZT7JRw6iDVS59JKZRyK870bvmBszdV+fpAk44vN9Euits0iKptCkMjkp1+9KKUrdRpwmSnCvVK991oQUSerGcFeoePUo/4GcKiKtfA==
+Received: from MW2PR16CA0049.namprd16.prod.outlook.com (2603:10b6:907:1::26)
+ by SA3PR12MB7783.namprd12.prod.outlook.com (2603:10b6:806:314::19) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.36; Wed, 1 Feb
- 2023 07:48:13 +0000
-Received: from DM6NAM11FT065.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:18f:cafe::b1) by DM6PR14CA0043.outlook.office365.com
- (2603:10b6:5:18f::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.38 via Frontend
- Transport; Wed, 1 Feb 2023 07:48:13 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ 2023 07:56:15 +0000
+Received: from CO1NAM11FT013.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:907:1:cafe::ad) by MW2PR16CA0049.outlook.office365.com
+ (2603:10b6:907:1::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.23 via Frontend
+ Transport; Wed, 1 Feb 2023 07:56:15 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- DM6NAM11FT065.mail.protection.outlook.com (10.13.172.109) with Microsoft SMTP
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ CO1NAM11FT013.mail.protection.outlook.com (10.13.174.227) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6043.22 via Frontend Transport; Wed, 1 Feb 2023 07:48:13 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ 15.20.6064.25 via Frontend Transport; Wed, 1 Feb 2023 07:56:15 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Tue, 31 Jan
- 2023 23:48:04 -0800
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Tue, 31 Jan
- 2023 23:48:03 -0800
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.8)
+ 2023 23:56:05 -0800
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.36; Tue, 31 Jan 2023 23:56:05 -0800
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.126.190.182)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36 via Frontend
- Transport; Tue, 31 Jan 2023 23:48:03 -0800
-Date: Tue, 31 Jan 2023 23:48:01 -0800
+ Transport; Tue, 31 Jan 2023 23:56:04 -0800
+Date: Tue, 31 Jan 2023 23:56:03 -0800
 From: Nicolin Chen <nicolinc@nvidia.com>
-To: <yi.l.liu@intel.com>
-CC: <kevin.tian@intel.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, Jason Gunthorpe <jgg@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <kevin.tian@intel.com>, <yi.l.liu@intel.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>
 Subject: Re: [PATCH v2 1/3] iommufd: Add devices_users to track the
  hw_pagetable usage by device
-Message-ID: <Y9oZMTMRG4mL5FT1@Asurada-Nvidia>
+Message-ID: <Y9obE5HpTkqlpXO5@Asurada-Nvidia>
 References: <cover.1674939002.git.nicolinc@nvidia.com>
  <c1c65ce093a3b585546dd17a77949efbe03a81d9.1674939002.git.nicolinc@nvidia.com>
  <Y9fcAdFxl7GVSH9r@nvidia.com>
@@ -66,7 +66,7 @@ References: <cover.1674939002.git.nicolinc@nvidia.com>
  <Y9gfbx/fszb0aTJn@nvidia.com>
  <Y9gi0UaE1PlKVzmn@Asurada-Nvidia>
  <Y9gqFwDNd3VKQvC3@nvidia.com>
- <Y9guZhNve8A1DGL6@Asurada-Nvidia>
+ <Y9oNSUbDe1YOTj+b@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -75,87 +75,62 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <Y9guZhNve8A1DGL6@Asurada-Nvidia>
+In-Reply-To: <Y9oNSUbDe1YOTj+b@Asurada-Nvidia>
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6NAM11FT065:EE_|MW4PR12MB7439:EE_
-X-MS-Office365-Filtering-Correlation-Id: 964d0612-61c9-4c63-d6d8-08db0428ac17
+X-MS-TrafficTypeDiagnostic: CO1NAM11FT013:EE_|SA3PR12MB7783:EE_
+X-MS-Office365-Filtering-Correlation-Id: b2e70a1a-4e35-4513-2b9c-08db0429cb59
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	WIQw8MPiHRBsBqn9OYk8+lOFBe0zkkgh8sze0r+iD+LWGm9bFkxYAHgcSur77r5FZrN+k1o0BldfP8GWAr4XCBxHiGc8pywypjC7yFe42++UCtAIiZ0s4cfVfFTxqeeGKZQjH5zWd0s0jr+Hm4Le6NRWFCri4UqEhbMMqaB5wb1IImo/sABT0bE01fhG7GlkSGwgL3np83MqeYhMS7QqS2qkwmc13IxsDFLWjtY7sfetT2puJfggC2uRYoWrJ3tPwmlHSpFZzCk6/6sS7OXcMahEpo6DpDr2llQUzmQNCmOwaSfZIgaykFdEzNy+YxyK0xKHtfJClAvoRibhLPZ+9ldavlrQdRAJdM10pgqfM3Ufsjp32saApmVKAOsXV2X7+pgIIDcw+D5wNe6o/lRzVE9B2tvEZMj991cX/W22PyTQo8Frt3OLpv23am+2d6BNyGLx6LZ1DlqziJJuNc+j5hcw7VGPAPAXZB/dwATsGYJYyrA0JRzjXDeZF1JYrsqDxtLtFOv5kMAXcE9EFmkSkW7iCba5w13qdVzLQS7nmWKltQHmr3PLjM9dkTZLZNgywFmYyr3hB3t833LwnW+or4CgIVZPSO1YlO3nkYk7HVHbs/prKTJoAPX+YzcB7uC4vwN/n50M7ydc2woIjMC5zp6JmlFU+U10qmLxWoiNDf2B7z/Gdd27FdbDKWrxPkq6rmMiZxFthvzu0QHvrHzJNyOeT+l5wVNr2Q6O4/B8RQlalhPvD/7AQGHSarEs3yt/JPxbOdC9Q1tRyD9IoINdlfBlbcYgb3Eo6jcwkRMwGIacAQqZ1l4VzuJTofE+PGZk/NP5m//P8rbw98exTWzZJQ==
+	1yalXd2ZJGNQY0dMmwIlB3d56bfar6TpBqo7GNHKuRkyB1ftHuwXmWObya1dFUKj+KSKSoUKln/LNUWqxXWxl5UYj9OLYta10EFoWj2gT6wZ9PHwximHqOBAxFk3gKm0FLHfUxVd2ZbflBNvuDDXSweEqrEWBBBcxnYRLDpDGcHD+GnsFwq7NRMMmNXDQFDbjOiiypKyRoO5zfS0NmzKxi935KjfJR/z9nohLwyDnOp1dUbfw82smtoPOULaXlUJQBgSQkpluBXGvLrbzb32gxwPCr0fkhTFImPUjvohE+AQvbXLdNM7E+YlqngXlbVWnfzNEM4nXa+xbA8Smbj3eMJYYftG7yEvt7HLO5npLM1rQJ0OrQcJH5u69K7qFRBtURLjCZQGrmxN83Nnl7B/24Pnu1/H4VT9M9ZmIagrUX/Pf2TO0PYoTJOxcrucZ33GhHBLfUri+atC7hgYbmr0BY9craFNH1q65m4CJNPuTawAHuctOB9c7CT5e3EbfIno0dz3escHJgpnflQCjidb51ac6OoHc91z96Jr300qJbpMKlIz6O4XDN99pYYBWSf0Q58uYDdDsWbc+v+EyUnPh1jGPpdVwqBnN/RjHqVKcl3+JwWo7elxRA+VWxf+mEPnFiOtKPfa+tsnVGsAuHz+dnZuTBCDdGB+9ZxS4Te0yuyoD5tr++6byjJGlROSmg4d4goPLrfVz4TH8ec6Mm2v4Q==
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(396003)(346002)(39860400002)(136003)(376002)(451199018)(46966006)(40470700004)(36840700001)(70206006)(70586007)(8936002)(4326008)(316002)(8676002)(6916009)(54906003)(5660300002)(2906002)(41300700001)(478600001)(966005)(336012)(40460700003)(107886003)(186003)(26005)(9686003)(83380400001)(82310400005)(36860700001)(426003)(33716001)(55016003)(86362001)(7636003)(40480700001)(356005)(47076005)(82740400003);DIR:OUT;SFP:1101;
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(346002)(136003)(376002)(396003)(451199018)(36840700001)(46966006)(40470700004)(356005)(7636003)(86362001)(70206006)(82740400003)(54906003)(6862004)(6636002)(5660300002)(316002)(70586007)(4326008)(33716001)(36860700001)(8936002)(8676002)(40460700003)(2906002)(40480700001)(41300700001)(55016003)(82310400005)(336012)(83380400001)(426003)(478600001)(47076005)(26005)(9686003)(186003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Feb 2023 07:48:13.4097
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Feb 2023 07:56:15.3908
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 964d0612-61c9-4c63-d6d8-08db0428ac17
+X-MS-Exchange-CrossTenant-Network-Message-Id: b2e70a1a-4e35-4513-2b9c-08db0429cb59
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	DM6NAM11FT065.eop-nam11.prod.protection.outlook.com
+	CO1NAM11FT013.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7439
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB7783
 
-On Mon, Jan 30, 2023 at 12:54:01PM -0800, Nicolin Chen wrote:
+On Tue, Jan 31, 2023 at 10:57:19PM -0800, Nicolin Chen wrote:
 > On Mon, Jan 30, 2023 at 04:35:35PM -0400, Jason Gunthorpe wrote:
-> > On Mon, Jan 30, 2023 at 12:04:33PM -0800, Nicolin Chen wrote:
+>  
+> > IMHO I would structure the smmu driver so that all the different
+> > iommu_domain formats have their own ops pointer. The special
+> > "undecided" format would have a special ops with only attach_dev and
+> > at first attach it would switch the ops to whatever format it
+> > selected.
 > > 
-> > > I recall we've discussed this that SMMU sets up domain when it
-> > > attaches the device to, so we made a compromise here...
-> > 
-> > The ARM driver has a problem that it doesn't know what SMMU instance
-> > will host the domain when it is allocated so it doesn't know if it
-> > should select a S1 or S2 page table format - which is determined by
-> > the capabilities of the specific SMMU HW block.
-> > 
-> > However, we don't have this problem when creating the S2. The S2
-> > should be created by a special alloc_domain_iommufd() asking for the
-> > S2 format. Not only does the new alloc_domain_iommufd API directly
-> > request a S2 format table, but it also specifies the struct device so
-> > any residual details can be determined directly.
-> > 
-> > Thus there is no need to do the two stage process when working with
-> > the S2.
+> > I think this could get rid of a lot of the 'if undecided/S1/S2/CD'
+> > complexity all over the place. You know what type it is because you
+> > were called on a op that is only called on its type.
 > 
-> Ah, right! Taking a quick look, we should be able to call that
-> arm_smmu_domain_finalise when handling alloc_domain_iommufd().
-> 
-> > So fixup the driver to create fully configured iommu_domain's
-> > immediately and get rid of this problem.
-> 
-> OK. I will draft a patch today.
+> An auto/unmanaged domain allocation via iommu_domain_alloc() would
+> be S1, while an allocation via ops->domain_alloc_user can be S1 or
+> S2 with a given parameter/flag. So, actually the format is always
+> decided. The trouble we have with the iommu_domain_alloc() path is
+> that we don't pass the dev pointer down to ops->domain_alloc. So,
 
-@Yi
-Do you recall doing iopt_table_add_domain() in hwpt_alloc()?
-
-Jason has a great point above. So even SMMU should be able to
-call the iopt_table_add_domain() after a kernel-manged hwpt
-allocation rather than after an iommu_attach_group(), except
-an auto_domain or a selftest mock_domain that still needs to
-attach the device first, otherwise the SMMU driver (currently)
-cannot finalize the domain aperture.
-
-I made a draft today, and ran some sanity with SMMUv3:
-  "iommufd: Attach/detach hwpt to IOAS at alloc/destroy"
-  https://github.com/nicolinc/iommufd/commit/5ae54f360495aae35b5967d1eb00149912145639
-
-The change basically: moves iopt_table_add/remove_domain()
-next to hwpt_alloc/destroy(); an auto_domain or a mock_domain
-needs to attach_dev first, before calling the add_domain().
-
-With this change, following patches of attach_ioas() and new
-selftest should be also updated. I have them in a wip branch:
-https://github.com/nicolinc/iommufd/commits/wip/iommufd-v6.2-rc4-nesting-01312023
-
-Can you check if there's anything wrong with this approach?
-And would it be possible for you to integrate this into the
-nesting series?
-
-I can also help cleanup and polish the changes with a proper
-commit message.
+Precisely, the undecided part is not the format but the ias/ios
+and SMMU feature bits of the SMMU HW device's, in order to set
+up the domain->geometry. And the regular domain_alloc() taking
+a "type" augment alone can't get the SMMU pointer.
 
 Thanks
 Nic
+
+> the SMMU driver can't know which SMMU device the device is behind,
+> resulting in being unable to finalizing the domain. Robin mentioned
+> that he has a patch "iommu: Pass device through ops->domain_alloc".
+> Perhaps that is required for us to entirely fix the add_domain()
+> problem?
+> 
+> Thanks
+> Nic
