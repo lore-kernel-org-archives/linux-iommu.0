@@ -1,33 +1,33 @@
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 201577F4
-	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 06:11:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D150E62C
+	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 06:31:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675231874; x=1706767874;
+  t=1675233083; x=1706769083;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=fM9aVRyfPZVOiEclQoecEGbZD5Hw0zxzcZoALRhhn+Y=;
-  b=J4PzpjlIVPrTSI52X3THdTElIzBPZCQHnOR1FR5HAgz/STgTrre6VGsR
-   whDYYHDYGbakNMqzqyqBYhkt5lUo21C5q1I4piz9CqSkJFAuoR3jUleNc
-   jj/ARrP5I4peZzRrCuShqSNyizcpQPuzFXyZd9H9TQJ4BHVLpeMcjcXgF
-   yPW8BP3QNNpqEP/8T3SW9y7v9NA2NKGDHnULM+hJ/oZ+vOLjWhEZhcLMv
-   Okcgziam7kbnboBp6dWG7iq3UNQsZ9PMmMbh5BgaZ/YZuLr/jGit256ZT
-   k/esBGfqYgeaO0XrjcrpulWZSIudVvHGxSLBOwXRpa3B06T5guypGqhad
+  bh=lYiilF9w4hh4QaB7nPR19tby+N0vKxSAPNw6Txy0jvM=;
+  b=HItX2eaYQCHylgcQpxaytnRdfz8UZyRbIMTtb6tBM2+BTHEZw1WveRic
+   iykXVwNbH+TbK7ID1QYPk6aaEf8FNHualmzQAcWKAYgsGdxGsIq+LDRXc
+   +ZA9/rC+vfelG9hAUS+21bpijksuo0EcYfQLLBcxDcfismglsoPvtUiqy
+   KYKvz5eJTJOcA8jcohfyS5txA1BcjmzinSuLhQqRgUtEz0tQqL1umhWld
+   CxY5w2TLoCRViNK2X0IIaHeHIdS/z0N6fEhmHXrQaVUNTgduZ9qAVUwsJ
+   v731AbX9DtOiGpxqkVPd8Q1nQyZNF51a4No1FS9GcJWYa5ycBumRxfbcV
    w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10607"; a="392632218"
+X-IronPort-AV: E=McAfee;i="6500,9779,10607"; a="329355147"
 X-IronPort-AV: E=Sophos;i="5.97,263,1669104000"; 
-   d="scan'208";a="392632218"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2023 21:59:37 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10607"; a="697110220"
+   d="scan'208";a="329355147"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2023 22:31:23 -0800
+X-IronPort-AV: E=McAfee;i="6500,9779,10607"; a="773322656"
 X-IronPort-AV: E=Sophos;i="5.97,263,1669104000"; 
-   d="scan'208";a="697110220"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.215.167]) ([10.254.215.167])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2023 21:59:34 -0800
-Message-ID: <1e01166f-93eb-c49b-3c0e-c7fb7f927b8a@linux.intel.com>
-Date: Wed, 1 Feb 2023 13:59:32 +0800
+   d="scan'208";a="773322656"
+Received: from xduan-mobl1.ccr.corp.intel.com (HELO [10.254.215.167]) ([10.254.215.167])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2023 22:31:06 -0800
+Message-ID: <9c34747e-453f-8344-e7f2-cc24669160ec@linux.intel.com>
+Date: Wed, 1 Feb 2023 14:31:04 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -45,138 +45,44 @@ Cc: baolu.lu@linux.intel.com, Bjorn Helgaas <bhelgaas@google.com>,
  linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v3 1/1] PCI: Add translated request only flag for
  pci_enable_pasid()
+Content-Language: en-US
 To: Bjorn Helgaas <helgaas@kernel.org>
 References: <20230201001419.GA1776086@bhelgaas>
-Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
 In-Reply-To: <20230201001419.GA1776086@bhelgaas>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 2023/2/1 8:14, Bjorn Helgaas wrote:
-> On Tue, Jan 31, 2023 at 08:56:13PM +0800, Baolu Lu wrote:
->> On 2023/1/31 2:38, Bjorn Helgaas wrote:
->>>> PCI: Add translated request only flag for pci_enable_pasid()
->>>>
->>>> The PCIe fabric routes Memory Requests based on the TLP address, ignoring
->>>> the PASID. In order to ensure system integrity, commit 201007ef707a ("PCI:
->>>> Enable PASID only when ACS RR & UF enabled on upstream path") requires
->>>> some ACS features being supported on device's upstream path when enabling
->>>> PCI/PASID.
-> 
-> Looking up 201007ef707a to see what ensuring system integrity means,
-> it prevents Memory Requests with PASID, which should always be routed
-> to the RC, from being mistakenly routed as peer-to-peer requests.
-
-Yes, exactly. I will update above paragraph like below
-
-The PCIe fabric routes Memory Requests based on the TLP address, ignoring
-the PASID. In order to prevent Memory Requests with PASID, which should
-always be routed to the RC, from being mistakenly routed as peer-to-peer
-requests, commit 201007ef707a ("PCI: Enable PASID only when ACS RR & UF
-enabled on upstream path") requires some ACS features being supported on
-device's upstream path when enabling PCI/PASID.
-
-
-> 
->>>> However, above change causes the Linux kernel boots to black screen on a
->>>> system with below graphic device:
->>>
->>> We need a PCIe concept-level description of the issue first, i.e., in
->>> terms of DMA, PASID, ACS, etc.  Then we can mention the AMD GPU issue
->>> as an instance.
+>>>> The AMD iommu driver allocates a new domain (called v2 domain) for the
+>>> "v2 domain" needs to be something greppable -- an identifier,
+>>> filename, etc.
+>> The code reads,
 >>
->> How about below description?
-> 
-> Thanks, this is exactly the sort of thing I'm looking for.  But my
-> understanding of ATS/PRI/PASID is weak, so I'm still working through
-> this.  Tell me when I say something wrong below...
-> 
->> PCIe endpoints can use ATS to request DMA remapping hardware to
->> translate an IOVA to its mapped physical address. If the translation is
->> missing or the permissions are insufficient, the PRI is used to trigger
->> an I/O page fault. The IOMMU driver will fill the mapping with desired
->> permissions and return the translated address to the device.
-> 
-> In PCIe spec language, I think you're saying that a PCIe Function may
-> contain an ATC.  If the ATC Capability Enable bit is set, the Function
-> can issue Translation Requests.
-> 
-> The TA (aka IOMMU) will respond with a Translation Completion.  If the
-> Completion is a CplD, it contains the translated address and the
-> Function can store the entry in its ATC.  I assume the I/O page fault
-> case corresponds to a Cpl (with no data) meaning that the TA could not
-> translate the address.
-> 
-> If the TA doesn't have a mapping with the desired permissions, and the
-> Function's Page Request Capability Enable bit is set, it may issue a
-> Page Request Message.  It's up to the TA/IOMMU to make this message
-> visible to the OS, which can make the page resident, create an IOMMU
-> mapping, and enable a PRG Response Message.  After the Function
-> receives the PRG Response Message, it would issue another Translation
-> Request.
-> 
->> The translated address is specified by the IOMMU driver. The IOMMU
->> driver ensures that the address is a DMA buffer address instead of any
->> P2P address in the PCI fabric. Therefore, any translated memory request
->> will eventually be routed to IOMMU regardless of whether there is ACS
->> control in the up-streaming path.
-> 
-> A Memory Request with an address that is not a P2P address, i.e., it
-> is not contained in any bridge aperture, will *always* be routed
-> toward the RC, won't it?  Isn't that the case regardless of whether
-> the address is translated or untranslated, and even regardless of ACS?
-> 
-> IIUC, ACS basically causes peer-to-peer requests to be routed upstream
-> instead of directly to the peer.
-> 
-> OK, reading this again, I realize that I just restated exactly what
-> you had already written, sorry about that.
+>> 2052         if (iommu_feature(iommu, FEATURE_GT) &&
+>> 2053             iommu_feature(iommu, FEATURE_PPR)) {
+>> 2054                 iommu->is_iommu_v2   = true;
+>>
+>> So, how about
+>>
+>> ..The AMD GPU has a private interface to its own AMD IOMMU, which could
+>> be detected by the FEATURE_GT && FEATURE_PPR features. The AMD iommu
+>> driver allocates a special domain for the GPU device ..
+> Where is this special domain allocated?  I think the above tests for
+> *IOMMU*  features (I assume "GTSup: Guest translations supported" and
+> "PPRSup: Peripheral page request support" based on the AMD IOMMU
+> spec).  It doesn't test that this is a GPU.
 
-Never mind. It's really a good chance for me to learn how to describe
-this from the perspective of the PCI subsystem.. :-)
+ From the discussion, my understanding is that the IOMMU is a GPU
+dedicated IOMMU. The translated-request-only feature is enumerated
+through the IOMMU feature bits. However, I am not familiar with AMD
+architecture. AMD guys may have a better explanation.
 
-> 
->> AMD GPU is one of those devices.
-> 
-> I guess you mean the AMD GPU has ATS, PRI, and PASID Capabilities?
-> And furthermore, that the GPU *always* uses Translated addresses with
-> PASID?
-> 
-> So I guess what's going on here is that if:
-> 
->    - A device only uses PASID with Translated addresses, and
->    - those Translated addresses are never P2P addresses, then
->    - those transactions will always be routed to the RC.
-> 
-> And this applies even if there is no ACS or ACS doesn't support
-> PCI_ACS_RR and PCI_ACS_UF.
+> This change doesn't feel safe for all possible devices that have a
+> PASID Capability because we don't know whether they*always*  use
+> Translated addresses with PASID TLPs.
 
-Yes.
-
-> 
-> The black screen happens because ... ?
-> 
-> What can we include in the commit log to help people find this fix?  I
-> see these in the bugzilla:
-> 
->    WARNING: CPU: 0 PID: 477 at drivers/pci/ats.c:251 pci_disable_pri+0x75/0x80
->    WARNING: CPU: 0 PID: 477 at drivers/pci/ats.c:419 pci_disable_pasid+0x45/0x50
-> 
-> (These look like defects in pdev_pri_ats_enable(), so really just
-> distractions)
-> 
->    kfd kfd: amdgpu: Failed to resume IOMMU for device 1002:9874
->    kfd kfd: amdgpu: device 1002:9874 NOT added due to errors
->    BUG: kernel NULL pointer dereference, address: 0000000000000058
->    RIP: 0010:report_iommu_fault+0x11/0x90
-> 
-> I couldn't figure out the NULL pointer dereference.  I expected it to
-> be from a BUG() or similar in report_iommu_fault(), but I don't see
-> that.
-
-Above has been answered by Vasant Hegde in a separated reply.
+I tend to think you are right. :-)
 
 Best regards,
 baolu
-
