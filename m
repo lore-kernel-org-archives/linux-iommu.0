@@ -1,111 +1,125 @@
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2064.outbound.protection.outlook.com [40.107.96.64])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9B0562C
-	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 06:49:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1675234152; x=1706770152;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=HHPn6pdrMP+Yeqd9fDLmVbypM3R0VnG01kodEBiqXv8=;
-  b=Up3xd6gQ9fCyn8xH0MCCMOZaDF9ai85Dndvp/6Y0vL0jkrNVhUep5CPf
-   1mWPbWukRmPBkNLPfrau6Cr5QTVOXp/oC5o/6Vto1kx6mStPiARo9dJqd
-   Uzc6qCUtG/mjsAKA5iubvnpZTp4Hi0/e7rUqhMNKxmDcPh7M8QtPD9Afd
-   Nt6js4jXh4dfRxqwV3MVUaQ6SxzWyQVMKyAyHqJEZTkJ12qgnsGPgJwEN
-   Bxrf/ECBhw5WszFgTHedfLsR2bLwH/YbUq5WnEc7kqw3apotoEy3T76L3
-   rqIEKlCSA+MD3t+QEeEqvsEktu1ZBeTYTxDKfj5P2vZdb4y8g6IbMu0Kc
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10607"; a="329358381"
-X-IronPort-AV: E=Sophos;i="5.97,263,1669104000"; 
-   d="scan'208";a="329358381"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2023 22:49:12 -0800
-X-IronPort-AV: E=McAfee;i="6500,9779,10607"; a="753555901"
-X-IronPort-AV: E=Sophos;i="5.97,263,1669104000"; 
-   d="scan'208";a="753555901"
-Received: from xduan-mobl1.ccr.corp.intel.com (HELO [10.254.215.167]) ([10.254.215.167])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2023 22:49:10 -0800
-Message-ID: <df494d34-d804-e743-023f-d1effc881628@linux.intel.com>
-Date: Wed, 1 Feb 2023 14:49:08 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFA4D80F
+	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 06:57:31 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NRVbRZU7NatCkZIorRyTKxbmcwThW1QV99YVSz7AlUt5zss6frBRl/+BEaX9q7LmIzb+lIqIA7u4CudlMkRtU3h8+BnsA6UXf2nyb88DlKe4JIezJD+5lGxos1LxanpMtADhIE2J0vfts/VEDMpcm5TWCr08bnsf84zEiErzVkyfLk0eGf54P8r11OKoATdL/JwPpFAnF+Y01fOq7xzPI5QjzsjcgkJJEL0OYaB65a4y8SpHkJMtC/NSYLfVvguS5Uc0mtxNa91p3UoFByznFoDpb/alglSQx3KkWMT+w2xhcAOobGqwpuMrb5P+z/HnfwwsJhEX0uSWLImILt2DWQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7yvVarZTSBwAMpXjr83CotaXizJswu6U4UhR2KDzf2w=;
+ b=DFnO4haP0Rq0mu2NPS+z9o0TZyhw0oVsg5DK0apqWvYdcYJXSRjI6rqu5qhvlHLEhogrbGASTwoHxRnNJa7kvI2MhI8Afgov5mrK7sKe4LXN4d1j08VEapIOQCH/+aIVfS5or3IW5ZYI8JozD1EkEHL13NCX48lMCaOO8dUHY00rTqzwXGyI5vyPpNn6T02BhDBH6LJtG5iRoePP203CaTn9m+jEj/1dIE2OIsn1zF7RLtLJJXYHofI8kPI4kjCZCO76HqkPXAsy/KdUd94ItHnI6tncv++4GJngDtLW3jzmLLGuBNGQEr15YDdjhTUXK5LuxMyKgaUjAmxjLZqFpA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7yvVarZTSBwAMpXjr83CotaXizJswu6U4UhR2KDzf2w=;
+ b=YPkKuHczFgMcfpqi/eupOoo64B65CurWc6UzSMH89BpfbDk+MdBlowLu78Wl6TzWYlBLtM7lZsnODKxtBEyVWPzFWHw9UtYVJKRKR3bhsdgE3MQGnQaC8QY4535Tzr0jTLSf20zmFD71pAo/8JVuB4jt/kOYd5o575j8JTKeeJ+zfj2sHvsojcrOtF/nln5uVhg2XwnWamgnypwHrH4uXhIZqNOk9hiEvz8zBdegelXer0dw9gYLfV7d6qmmQry5r2ZXB8Uw1Gv1H9LxQS1VAQR/F0N0JYdxJBHLp+mxH1Rg8HiAtC/OX8KnbLyTJLM74Ik97q6t/GR+7iwlREPERw==
+Received: from BN9PR03CA0238.namprd03.prod.outlook.com (2603:10b6:408:f8::33)
+ by PH7PR12MB6956.namprd12.prod.outlook.com (2603:10b6:510:1b9::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.36; Wed, 1 Feb
+ 2023 06:57:28 +0000
+Received: from BN8NAM11FT016.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:f8:cafe::d) by BN9PR03CA0238.outlook.office365.com
+ (2603:10b6:408:f8::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.24 via Frontend
+ Transport; Wed, 1 Feb 2023 06:57:27 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BN8NAM11FT016.mail.protection.outlook.com (10.13.176.97) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6064.22 via Frontend Transport; Wed, 1 Feb 2023 06:57:26 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Tue, 31 Jan
+ 2023 22:57:15 -0800
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Tue, 31 Jan
+ 2023 22:57:15 -0800
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.10)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36 via Frontend
+ Transport; Tue, 31 Jan 2023 22:57:15 -0800
+Date: Tue, 31 Jan 2023 22:57:13 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <kevin.tian@intel.com>, <yi.l.liu@intel.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 1/3] iommufd: Add devices_users to track the
+ hw_pagetable usage by device
+Message-ID: <Y9oNSUbDe1YOTj+b@Asurada-Nvidia>
+References: <cover.1674939002.git.nicolinc@nvidia.com>
+ <c1c65ce093a3b585546dd17a77949efbe03a81d9.1674939002.git.nicolinc@nvidia.com>
+ <Y9fcAdFxl7GVSH9r@nvidia.com>
+ <Y9gaKaMKOf+P2NtK@Asurada-Nvidia>
+ <Y9gfbx/fszb0aTJn@nvidia.com>
+ <Y9gi0UaE1PlKVzmn@Asurada-Nvidia>
+ <Y9gqFwDNd3VKQvC3@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.1
-Cc: baolu.lu@linux.intel.com, "Liu, Yi L" <yi.l.liu@intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 3/3] iommufd/device: Change
- iommufd_hw_pagetable_has_group to device centric
-Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>, Nicolin Chen <nicolinc@nvidia.com>,
- "jgg@nvidia.com" <jgg@nvidia.com>, "Lu, Baolu" <baolu.lu@intel.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>
-References: <cover.1674939002.git.nicolinc@nvidia.com>
- <002911839dd30990d5e3135f8a0f8d41f14e856b.1674939002.git.nicolinc@nvidia.com>
- <BN9PR11MB527697E1E24784576C3FB7628CD29@BN9PR11MB5276.namprd11.prod.outlook.com>
- <Y9ZMulxEyGvnvW0X@Asurada-Nvidia> <Y9eaLpD1XIvE/3Nh@Asurada-Nvidia>
- <BN9PR11MB52769883FEE25F0BA731220B8CD19@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB52769883FEE25F0BA731220B8CD19@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <Y9gqFwDNd3VKQvC3@nvidia.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN8NAM11FT016:EE_|PH7PR12MB6956:EE_
+X-MS-Office365-Filtering-Correlation-Id: bbacb330-56c8-42f2-f7c5-08db04219439
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	ufkkJQ8B6Us9MKgNzskhE6QBmhLIRXI/w68+QL2cnLSnjhV0xS9RGbrusBD97Ug+pqg2WMj/asxdb2qXQAjukgWJTGkBHHGjmKZGeAanBP5gC8lzJZyQ+9bxnP9dC92NQiELljTFWXtXHt2GQ0flBHm/Mi/SzCRW8GZ/8bF8XQP925ODGXPHSrAyTHsuz9gS0tNQfuE28J8/NUOa97GjkBm50QQWRFQhIRJx7HNlltEW1MVqaVB/eqxqyioF81c4qr1WqEf18M3fM5BfO/+XR7yVLzSiCnCb6278QipC1md10sFUqZI4qBDNIoR0lcsups/UqP/ofTUKNWMd/k/TJAmdBoqvPdpqBooyXT4FwZZfiEInnNC91TdpiwTU/IMPeq0JEmcYymRBQrdBtYyHqJyu196mDW9F8CFgza2cE5DeJMdgKi/cVqn4GFuwFNeiNdEYVRoYzVjLyFwlrPiXMSYZrJZPFeAlS72Hve5IFcAUQrTlX7LN81LuQfqYbpf/WhrKHPGuTaDGNfD6sEr0BVUaZM3DrsIsrWfTrhiy739p1yYNctSPviotiUfpsO6ozYKvHwYFkYtUSiJWykdpoG5ESb3YFHZy9qEcDeFROpju9t9S+XAOK/4o9tR9st1ynuUARwlXsphTSpoetyzS0g2p8IKgf/MCB6G4hmbxPEyoAoMOVfMp0KFOQvwemjNqE9XC/PhTjPXGqU68Z13HR6Kunl89VfYJ8i+/sPSkdZM=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(396003)(39860400002)(376002)(136003)(346002)(451199018)(36840700001)(40470700004)(46966006)(82310400005)(33716001)(2906002)(6862004)(9686003)(47076005)(36860700001)(55016003)(40480700001)(5660300002)(8936002)(41300700001)(86362001)(26005)(186003)(336012)(426003)(356005)(70206006)(4326008)(40460700003)(7636003)(70586007)(478600001)(54906003)(8676002)(316002)(82740400003)(6636002)(67856001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Feb 2023 06:57:26.8441
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: bbacb330-56c8-42f2-f7c5-08db04219439
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN8NAM11FT016.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6956
 
-On 2023/2/1 11:07, Tian, Kevin wrote:
->> From: Nicolin Chen <nicolinc@nvidia.com>
->> Sent: Monday, January 30, 2023 6:22 PM
->>
->> On Sun, Jan 29, 2023 at 02:38:55AM -0800, Nicolin Chen wrote:
->>
->>>>> @@ -385,10 +372,8 @@ void iommufd_device_detach(struct
->>>>> iommufd_device *idev)
->>>>>        struct iommufd_hw_pagetable *hwpt = idev->hwpt;
->>>>>
->>>>>        mutex_lock(&hwpt->ioas->mutex);
->>>>> -     mutex_lock(&hwpt->devices_lock);
->>>>>        refcount_dec(hwpt->devices_users);
->>>>> -     list_del(&idev->devices_item);
->>>>> -     if (!iommufd_hw_pagetable_has_group(hwpt, idev->group)) {
->>>>> +     if (iommufd_hw_pagetable_has_device(hwpt, idev->dev)) {
->>>>>                if (refcount_read(hwpt->devices_users) == 1) {
->>>>>                        iopt_table_remove_domain(&hwpt->ioas->iopt,
->>>>>                                                 hwpt->domain);
->>>>> @@ -397,7 +382,6 @@ void iommufd_device_detach(struct
->> iommufd_device
->>>>> *idev)
->>>>>                iommu_detach_group(hwpt->domain, idev->group);
->>>>>        }
->>>>
->>>> emmm how do we track last device detach in a group? Here the first
->>>> device detach already leads to group detach...
->>>
->>> Oh no. That's a bug. Thanks for catching it.
->>>
->>> We need an additional refcount somewhere to track the number of
->>> attached devices in the iommu_group.
->>
->> Wondering if we can let iommu_attach/detach_device handle this:
->>
+On Mon, Jan 30, 2023 at 04:35:35PM -0400, Jason Gunthorpe wrote:
+ 
+> IMHO I would structure the smmu driver so that all the different
+> iommu_domain formats have their own ops pointer. The special
+> "undecided" format would have a special ops with only attach_dev and
+> at first attach it would switch the ops to whatever format it
+> selected.
 > 
-> that is the desired way to fully remove group awareness in iommufd.
-> 
-> but iirc there were some concerns on changing their semantics. But
-> I don't remember the detail now. Jason might know. also +Baolu/Robin.
-> 
-> otherwise as long as the group attach/detach continues to be used
-> then identifying last device in the group always needs some hack
-> within iommufd itself.
+> I think this could get rid of a lot of the 'if undecided/S1/S2/CD'
+> complexity all over the place. You know what type it is because you
+> were called on a op that is only called on its type.
 
-I have tried to solve this problem.
+An auto/unmanaged domain allocation via iommu_domain_alloc() would
+be S1, while an allocation via ops->domain_alloc_user can be S1 or
+S2 with a given parameter/flag. So, actually the format is always
+decided. The trouble we have with the iommu_domain_alloc() path is
+that we don't pass the dev pointer down to ops->domain_alloc. So,
+the SMMU driver can't know which SMMU device the device is behind,
+resulting in being unable to finalizing the domain. Robin mentioned
+that he has a patch "iommu: Pass device through ops->domain_alloc".
+Perhaps that is required for us to entirely fix the add_domain()
+problem?
 
-https://lore.kernel.org/linux-iommu/20220106022053.2406748-1-baolu.lu@linux.intel.com/
-
-I may need to review the original discussion to see if I can update a
-new version.
-
-Best regards,
-baolu
+Thanks
+Nic
