@@ -1,64 +1,42 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2049.outbound.protection.outlook.com [40.107.244.49])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2066.outbound.protection.outlook.com [40.107.92.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2925E8483
-	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 17:46:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39A8533FA
+	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 18:37:46 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XLKmJFG4USz3EY0Ql3ja6KWpkyrfN6eXpF71cI4EzSzDxiHv22DWby3RVdwM5UvcQxK5I4uPt8KX78AlK9oekx9204r7EOenK3ownFC0mztARUYkFnMXBFjd/xqT24dxeicT7FROJKBojc7aUo5049yGLe4+fIktIotYilOs9uXxPE4VZq3c7E2hN3L6qkvL1IIN8nyJW4sRi3Jg9thJvRFRwzkDw5k0zhwLbIoqXrsWZI9wQ5DgZP+xdpY2SBvKNAji6HLLoj7qHDye/hFRq5ZSqeZbk1DUxjcdyKwYK2Qn1oz9L7PObuVTg7knCJCxTnxtogZHlZo5mntDvwMPrw==
+ b=CtcMcNYD1QujZCbQqCz6eKzveoEy8NvjycpjHEDClDsBKnzRiaY1qvPCS832fP36AIEsOSpG+wvQl0/SZWgQEYVW9/dGFztcu1XO3Bw4PdRgQ3Fshg6wXuUSCUleditsfYvru6xLeQz4h/vv3dKjGoxUEOlKOYzxfXEyT6oNRphHppGDqqmVn5YX9ldyFiyWxf24t82knh9JqompBz0w2H2W94x7NcAFMquEbWgXo8kcfG19IMinOBCdlTg6NoLwntfcXk7wqwK8qKJ/x0tya4jKzfaKjaKqCy3MHrwTvFOZAZWq3eO2K/rJvDAQRmw2eJA+ZZr32MWFioX5KYDtVQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=d8Oux2vjEEcrJ3T6P0ma5Rzyyx1qmZnUUjYoZAz80go=;
- b=hgEXACcbH7DTAGW5Lmax/by6bLYs5ceHqUHMkqdAxULpxmWqKwVAEjOcv7B5anXDPNuP/MAVdb9PxIcKSONRfBKFaKI+LbXaMhrCmROxQWLEQX1dOd32n+e1U0fYwHC9cInBB88AcivllMsCmQSR918/VoYgD0vEubukvLLmprwMhnDTTAj8jih1206YHiKMbQ8rsdA/tE23rj84E179pOVUtLozSyoNC6wNZT1pq3+1ri6mXD+NYjZy2zOllCPRpYVCzyFkc52qyP0piqObC0ync38hbih54NROURS3SbuDRSp+Te6QuAfoLuXhhsnuRTEEUWLSrCSpDU5RIQ9tiA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
+ bh=oqGlX3RovztdkxN334ojDrJvkQj2B4n88xgvNVUgzRg=;
+ b=COUYMjWpv/H+Ame8DstoK4hXJDBumEF8aF7dPyII9BP9Ch9Tr+3BmieLPftWgwis6FZ3Ny7Hb47Preb3DwwO0g5DfFolE1nrSVfwBOf81OTQtl08fddy9TgaZSho4qWLWyWMqmFaElO/8EYgnw9wchZcnBR81V4k9hlbG+VQL2texy3DG23EzkFnocjmTELkOLxdJiPOZf5YNZeHTdO7mKYRoXqexhZTfesjIihFc5hifX2WLGG+s+O5yyNnwHqB6zKgjEcJMbLfe8FsTuFIO+qv/rmJU02GUrAOA9fE7xSDC9HcHZML3E/Nh52phIOmXi5+FIvGmW5oLK1LdIeluA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=d8Oux2vjEEcrJ3T6P0ma5Rzyyx1qmZnUUjYoZAz80go=;
- b=ggU80eNNsj6cgSUVTukGkSkmLCG67G+ISSG/Jf3Ogo+aZG3YvMcP837dLhR6pu8ipePvAI5VKn8gZIe8yYf9YQ6fh6Cud1PYn7xn1elr9N/C8hNEmP+d8wIykHI4vwlX8rEf5MG3VfYxNT9fLHO7Y54591CXaTRrahjjX4RcxA77XLP3s9A/Va0+QAaBSvDeVO4/fmwZXHr1qQLHnwu4rHh52kfNh43QjHf1vdUN8fzouEmXhBETs1NzB26ZxNmaHpybHRl3nYeB7h8R5RAcs0KikRDZNzqWRVosRIMUzbBkJuVbjim27GOUcHNBfiRHqLCLOAPsuKGLE7itAesrzg==
-Received: from MW4PR04CA0363.namprd04.prod.outlook.com (2603:10b6:303:81::8)
- by MN0PR12MB6224.namprd12.prod.outlook.com (2603:10b6:208:3c0::21) with
+ bh=oqGlX3RovztdkxN334ojDrJvkQj2B4n88xgvNVUgzRg=;
+ b=YFmXS+sEXB+CCBQBNvCtQB9uhEOmq6hMFgUVpM8VTaaqh4cP90yGOm/LHfrBmASWW1Xy0yUiouVLJu8oiqZ0dHgFuyqPaMQ+cz7RWNr5RDKpjecV6UhuPOtf0I7/CrzvA4iuKuAn9ciWshfFB8wLCc9tuSmwSGLTvjXqTLaSY2JA6uxkHkx7nf/mGvH0YiWFKz8eClzaYkwDV5jW4zOXGGhYhHOJGB2sFJS7qwsyVYTpazzKHNqYuwrAtpf5NHhk3i0+uET2zfO0oVPr9i63/EZsgSXuijoImo3qcuTbl1lCSVwfQkw0mYzDDjzj6MsZfM6/DbU8uHsCbpkeRk1wyA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by CH3PR12MB7522.namprd12.prod.outlook.com (2603:10b6:610:142::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.25; Wed, 1 Feb
- 2023 17:46:38 +0000
-Received: from CO1NAM11FT074.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:81:cafe::7b) by MW4PR04CA0363.outlook.office365.com
- (2603:10b6:303:81::8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.25 via Frontend
- Transport; Wed, 1 Feb 2023 17:46:38 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CO1NAM11FT074.mail.protection.outlook.com (10.13.174.254) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.6064.25 via Frontend Transport; Wed, 1 Feb 2023 17:46:38 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 1 Feb 2023
- 09:46:25 -0800
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 1 Feb 2023
- 09:46:25 -0800
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.7)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36 via Frontend
- Transport; Wed, 1 Feb 2023 09:46:24 -0800
-Date: Wed, 1 Feb 2023 09:46:23 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <kevin.tian@intel.com>, <yi.l.liu@intel.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6043.38; Wed, 1 Feb
+ 2023 18:37:43 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3cb3:2fce:5c8f:82ee]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::3cb3:2fce:5c8f:82ee%4]) with mapi id 15.20.6043.038; Wed, 1 Feb 2023
+ 18:37:43 +0000
+Date: Wed, 1 Feb 2023 14:37:42 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: kevin.tian@intel.com, yi.l.liu@intel.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v2 1/3] iommufd: Add devices_users to track the
  hw_pagetable usage by device
-Message-ID: <Y9qlb0SZWEpJs0v1@Asurada-Nvidia>
+Message-ID: <Y9qxdinaS6anoWhH@nvidia.com>
 References: <cover.1674939002.git.nicolinc@nvidia.com>
  <c1c65ce093a3b585546dd17a77949efbe03a81d9.1674939002.git.nicolinc@nvidia.com>
  <Y9fcAdFxl7GVSH9r@nvidia.com>
@@ -68,156 +46,140 @@ References: <cover.1674939002.git.nicolinc@nvidia.com>
  <Y9gqFwDNd3VKQvC3@nvidia.com>
  <Y9oNSUbDe1YOTj+b@Asurada-Nvidia>
  <Y9qK3nJHjU4Bvxaf@nvidia.com>
+ <Y9qlb0SZWEpJs0v1@Asurada-Nvidia>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Y9qlb0SZWEpJs0v1@Asurada-Nvidia>
+X-ClientProxiedBy: BL1PR13CA0248.namprd13.prod.outlook.com
+ (2603:10b6:208:2ba::13) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <Y9qK3nJHjU4Bvxaf@nvidia.com>
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1NAM11FT074:EE_|MN0PR12MB6224:EE_
-X-MS-Office365-Filtering-Correlation-Id: cdfc4110-aba0-4bb3-b57a-08db047c4504
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CH3PR12MB7522:EE_
+X-MS-Office365-Filtering-Correlation-Id: 731413d7-38e1-4eab-f8ab-08db048367bc
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	YolmMjG3Tp6XaBxgIpmjZox3fBfbAJup6i1ZN+i6Kzw/9Uyv4kfI7mc6H4/4ropHKcHBOFjZQZFT6YN74OpUVuElJ5FbodJwcLQ0d98aB8qBK82nn3dL2Jip4ahhLaG8JvXmwMWm1h42HJIlabNs0oWwvUBypVk7Zq6mke8gkeiut4NfcxSNYqFkQxMBu/nXp5YjKqzAC+UATvZFNDV1E9Nr6KYYo3xrtBi8Srg/7cKVe8K+V69QZwkTuwiR9OOVd8kW4MeR/baDQ9FkHStZMElW3R4S82pmb5IboTe/unpLsyzaKvh+Xn96yDR/bzLH9vHs+3ygPmCtq4vaqkjxfzxtbKbFkb4AbV4w87ydFwRht3zr9B968cc2T5cxfrM3nONSRhvH3KdwpdrEYS0XFflFHVu/bERUY9nj6yjJMhyt8M6hKY6aZ8hkCciUmIXWNRUIe9Z8zFCeoUPjdQvtaaO4HToMJL9dzJnDTP2UuBWy7pRGhP6h3TK4grYQkZHhV5XwUVQlPzNlxyEGECzA0yc5H1pXhCkK5ucqk7Xi1iH1XKptYJaBCv/XJNs8ocpRdX3TGwQkcO0mfnUlbOdFnWnTxC4ckos0DXxTtijlZUW0qNAoCD+0LG1YSwahb0PiUQtGAc+5vzcY+XlLChFVY40VuDNfo9gkb/RXk2qHMY9nJFrSuZOzP+wOtb/Uqd6I6bRGY5A7diPIcsrqH09z/w==
+	lxV5CuVCjCHqE430JwIXKCeirzfajceP/v3wMOOSYF81Ag9Bnm5j+HeAKWn2mCuH/5LIwGQ7ugJyHU1RrpbIMUUPdlXo477c6yxT6rjqriJNvjFm3gqhN/uGT23T20KLxw9JrI997Yz5O9d34lBmqrgpPDu9yGOhtonSwGcn69TCucQrjE3gWrM2nUGfM/Yc9NEAV7K6RYmsnkB0YpWhTDKSdrgzRzHmriyVQ40hHda7IXLoOQqUhUqDZiiJPJqMv98wGg7XQTImJ/tVjGISwXix9wkRpuHJ3VmFhXbWCSg2A1g2FqXOeKOj30er6gUv+jC/U/4RGaN0mIS8RdZqgGqYkqi2lJPAFeh4QRVJ9AwQJLpkDM+eNXKVOU9Ve+2A4MGaNTRBkSMiXqnCcfEKplZSFPa069cC18olEa3tkosxb4Lgbhg8wuC3kJzOPI2scwexL3W+ezBOmhtN3Fw4rwnZNOK/eFlVFduTnXmFhyIk7cru+eD6LJd7pV+U16IiMd53/HIMZUZZeOiD5ydSyaob/+wjj2rTUxvApbmnKQvVZLsbJ9PfN6LuDIR6KCJ56s+sqemV+bSaF+HXJVYcgunBJ53Ey7bF8WEreTuCMUWkT4QMxlr6It3d1B1CbU4woMKI6pqjM1CKqO1b3AK2xQ1mC7B17VfG0QTkGGqNQSta9Fwdnhmi7XmYPz3KBJPR
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(346002)(376002)(39860400002)(396003)(136003)(451199018)(46966006)(40470700004)(36840700001)(5660300002)(41300700001)(2906002)(70586007)(70206006)(316002)(4326008)(8676002)(6636002)(54906003)(82310400005)(36860700001)(47076005)(478600001)(336012)(26005)(33716001)(8936002)(6862004)(186003)(9686003)(55016003)(40480700001)(86362001)(426003)(82740400003)(356005)(83380400001)(7636003)(40460700003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230025)(4636009)(39860400002)(376002)(346002)(366004)(396003)(136003)(451199018)(38100700002)(6506007)(83380400001)(186003)(6486002)(86362001)(478600001)(26005)(6512007)(36756003)(2616005)(37006003)(6862004)(6636002)(8936002)(41300700001)(2906002)(66946007)(66556008)(66476007)(4326008)(8676002)(316002)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?1/tzN+i15uwI0lsRR4hhOpXp+TaUrxFiNFoRBLeb1iX4tQr4frHdK6l96FI9?=
+ =?us-ascii?Q?kXSACDZy3qjzTm7LXSjfDaKBNT6EGdJzD1Nj5pkZeWX/2kHVTyqB0IvWhWBS?=
+ =?us-ascii?Q?yVKxX/GUidCZq0aDVNAVqSXfdukiUBhyygEi/pnqxEiAWgqAwYDM6qCHVrxR?=
+ =?us-ascii?Q?IU+IA0EKWCWKcKwPpZ93jtjSJrtvYpmgQnlS9MjP35LwEcPwO0CH9V7twBwC?=
+ =?us-ascii?Q?l1+4+qso5OQKcXGICDJ70HwZdcjpKk3pEPawtO+EDqEaxYkOf4RsKc3KJNrE?=
+ =?us-ascii?Q?i0rVHx4EGZKgA0zW0+ua0++gd+8AUU1rFLM0OCJkY3i+ImfjpHYr7iFOXmks?=
+ =?us-ascii?Q?m7KfoN6Tm9l8tfdbTHZRs5SLx0qoXS9PIblPgOpGXkUHemk8pzSSHK671iJt?=
+ =?us-ascii?Q?34OXAK+BaU98CY7xKBnvFdzhToeloMcqunQ0PC9Bi9yuGgV1JQCAEHn2d003?=
+ =?us-ascii?Q?C3+biQgWeYdAwrrKvMJULBHn0iYP3xfgCc2xZY+SEkC5oLtCVKTPWeZtDIll?=
+ =?us-ascii?Q?b4F6fzfsg8P0v6rGvb/P/so7kPowGaKB3wpvVtQxCNzekISnx3aWcTN5U8oc?=
+ =?us-ascii?Q?z0CNfMkCfWQmq2PfZF4LyFI891JfxM/H3tuHSLuVjTPcontUwdg8GVuksdMR?=
+ =?us-ascii?Q?DlNYMvNusiApCXJoIG3kO3T8Ct3603xGGccebBd65ZelQNzD38BrGJEuuEPU?=
+ =?us-ascii?Q?n3CbH8rAtejskvJiW+ManeLP8hqt+Ci9ycCp4/P5YKBSYHRqpMr0VCyW/vP6?=
+ =?us-ascii?Q?GX4fEB1nIzdW97Lg5LVufuA/YcxAJkMOCpjchrHuhQCaicoXtTHFHgZ2S0B4?=
+ =?us-ascii?Q?oUTjsI020Z/iMaAoOUfyi+54VYkergHS6qPaRLMDln59sllnXuX3u48eP6+n?=
+ =?us-ascii?Q?NWbKWmB5KB0HK3JbEUfeAC8iL5/mg74qS4YhtH1SAyj1EkvlOzj9yQB3ga5f?=
+ =?us-ascii?Q?RsVcmbIVg+HKMFPlpURbsXTEENkuW5tY/RFJ6/DQKcTe9SrbqKnj5FWQ3M5y?=
+ =?us-ascii?Q?TUZYUJ62MrgIDRgl8Gq6Z3tn90Qp5012LHxq6pGqG67n6oWm9aMuBRFe9q2e?=
+ =?us-ascii?Q?IUr7I4kh+zpu3moXdWfwoisasE9DoisKNt36o7HJJ/WpsW+MH9cNrbWi8YOX?=
+ =?us-ascii?Q?WcoqJPGwviNdkwpicOV0klxkXmP5+wsZYY32TzAj4okwI/uCK8JnePVCF/qU?=
+ =?us-ascii?Q?pIDyZ8RAFFHtwiuxKiQk7xMEDcXN8ynVaXbipSkbKgI+2lsHt3HKVLUdLrxS?=
+ =?us-ascii?Q?kTr3+a0OHM3xv6DM9L/tPgj7UZ6OFh2mbSjftNhhiSJjuruAjfSew5Iv0EDD?=
+ =?us-ascii?Q?cRrUaedE8meK6gT/xBZlXuH5DZaEg5XUWYH9SMksN9vmXt6BMt9FXQF+PNCw?=
+ =?us-ascii?Q?VvoZCgVPL0dlBGGumarQLMmVOkOeDXO2nWzqxn3j3kBmcZR04Mdr7TJw/zTq?=
+ =?us-ascii?Q?5f8l7/iIhIgqSqoV42C0oBkXgYJK+QTbgyLm4dxdxjiFPnxxcmxgMV/P3j60?=
+ =?us-ascii?Q?JNKuafyUnCzCyuexy27FhHZZ9QEFVYPiRw4xw/XmWNfAidd2zUv7nWUCn9/Q?=
+ =?us-ascii?Q?oS1kBPvREkX+PrQOiXpUBich/axf8VmSG+hB+pl9?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Feb 2023 17:46:38.1887
+X-MS-Exchange-CrossTenant-Network-Message-Id: 731413d7-38e1-4eab-f8ab-08db048367bc
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Feb 2023 18:37:43.2440
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: cdfc4110-aba0-4bb3-b57a-08db047c4504
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1NAM11FT074.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6224
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1WDdS5DVBU8S9PoFo+H7bM8YcErEnnsQ6EtktTZUdOYxTuwwMI7xcX4wYJxe+RLA
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB7522
 
-On Wed, Feb 01, 2023 at 11:53:02AM -0400, Jason Gunthorpe wrote:
-> On Tue, Jan 31, 2023 at 10:57:13PM -0800, Nicolin Chen wrote:
-> > On Mon, Jan 30, 2023 at 04:35:35PM -0400, Jason Gunthorpe wrote:
-> >  
-> > > IMHO I would structure the smmu driver so that all the different
-> > > iommu_domain formats have their own ops pointer. The special
-> > > "undecided" format would have a special ops with only attach_dev and
-> > > at first attach it would switch the ops to whatever format it
-> > > selected.
-> > > 
-> > > I think this could get rid of a lot of the 'if undecided/S1/S2/CD'
-> > > complexity all over the place. You know what type it is because you
-> > > were called on a op that is only called on its type.
-> > 
-> > An auto/unmanaged domain allocation via iommu_domain_alloc() would
-> > be S1, while an allocation via ops->domain_alloc_user can be S1 or
-> > S2 with a given parameter/flag. So, actually the format is always
-> > decided. 
+On Wed, Feb 01, 2023 at 09:46:23AM -0800, Nicolin Chen wrote:
+> > So the issue is with replace you need to have the domain populated
+> > before we can call replace but you can't populate the domain until it
+> > is bound because of the above issue? That seems unsovlable without
+> > fixing up the driver.
 > 
-> No, it can't decide the S1/S2 format until it knows the smmu because
-> of this:
+> Not really. A REPLACE ioctl is just an ATTACH, if the device just
+> gets BIND-ed. So the SMMU driver will initialize ("finalise") the
+> domain during the replace() call, then iopt_table_add_domain() can
+> be done.
 > 
-> 	/* Restrict the stage to what we can actually support */
-> 	if (!(smmu->features & ARM_SMMU_FEAT_TRANS_S1))
-> 		smmu_domain->stage = ARM_SMMU_DOMAIN_S2;
-> 	if (!(smmu->features & ARM_SMMU_FEAT_TRANS_S2))
-> 		smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
+> So, not a blocker here.
+
+Well, yes, there sort of is because the whole flow becomes nonsensical
+- we are supposed to have the iommu_domain populated by the time we do
+replace. Otherwise replace is extra-pointless..
+
+> > Is there another issue?
 > 
-> So the format is never decided.
-
-OK. That's right. And the solution to that is also passing a dev
-pointer in regular ->domain_alloc() op.
-
-> > that we don't pass the dev pointer down to ops->domain_alloc. So,
-> > the SMMU driver can't know which SMMU device the device is behind,
-> > resulting in being unable to finalizing the domain. Robin mentioned
-> > that he has a patch "iommu: Pass device through ops->domain_alloc".
-> > Perhaps that is required for us to entirely fix the add_domain()
-> > problem?
+> Oh. I think we mixed the topics here. These three patches were
+> not to unblock but to clean up a way for the replace series and
+> the nesting series, for the device locking issue:
 > 
-> Robin is making progress, hopefully soon
-> 
-> So the issue is with replace you need to have the domain populated
-> before we can call replace but you can't populate the domain until it
-> is bound because of the above issue? That seems unsovlable without
-> fixing up the driver.
+> 	if (cur_hwpt != hwpt)
+> 		mutex_lock(&cur_hwpt->device_lock);
+> 	mutex_lock(&hwpt->device_lock);
+> 	...
+> 	if (iommufd_hw_pagetabe_has_group()) {	// touching device list
+> 		...
+> 		iommu_group_replace_domain();
+> 		...
+> 	}
+> 	if (cur_hwpt && hwpt)
+> 		list_del(&idev->devices_item);
+> 	list_add(&idev->devices_item, &cur_hwpt->devices);
+> 	...
+> 	mutex_unlock(&hwpt->device_lock);
+> 	if (cur_hwpt != hwpt)
+> 		mutex_unlock(&cur_hwpt->device_lock);
 
-Not really. A REPLACE ioctl is just an ATTACH, if the device just
-gets BIND-ed. So the SMMU driver will initialize ("finalise") the
-domain during the replace() call, then iopt_table_add_domain() can
-be done.
+What is the issue? That isn't quite right, but the basic bit is fine
 
-So, not a blocker here.
+If you want to do replace then you have to hold both devices_lock and
+you write that super ugly thing like this
 
-> I'd say replace can go ahead ingoring that issue and that for now
-> replace will only work on ARM with domains created by
-> domain_alloc_user that are fully configured.
-> 
-> It will start working correctly for auto domains once Robin's changes
-> get finished.
-> 
-> Is there another issue?
+lock_both:
+   if (hwpt_a < hwpt_b) {
+      mutex_lock(&hwpt_a->devices_lock);
+      mutex_lock_nested(&hwpt_b->devices_lock);
+   } else if (hwpt_a > hwpt_b) {
+      mutex_lock(&hwpt_b->devices_lock);
+      mutex_lock_nested(&hwpt_a->devices_lock);
+   } else
+      mutex_lock(&hwpt_a->devices_lock);
 
-Oh. I think we mixed the topics here. These three patches were
-not to unblock but to clean up a way for the replace series and
-the nesting series, for the device locking issue:
+And then it is trivial, yes?
 
-	if (cur_hwpt != hwpt)
-		mutex_lock(&cur_hwpt->device_lock);
-	mutex_lock(&hwpt->device_lock);
-	...
-	if (iommufd_hw_pagetabe_has_group()) {	// touching device list
-		...
-		iommu_group_replace_domain();
-		...
-	}
-	if (cur_hwpt && hwpt)
-		list_del(&idev->devices_item);
-	list_add(&idev->devices_item, &cur_hwpt->devices);
-	...
-	mutex_unlock(&hwpt->device_lock);
-	if (cur_hwpt != hwpt)
-		mutex_unlock(&cur_hwpt->device_lock);
+Using the group_lock in the iommu core is the right way to fix
+this.. Maybe someday we can do that.
 
-I just gave another thought about it. Since we have the patch-2
-from this series moving the ioas->mutex, it already serializes
-attach/detach routines. And I see that all the places touching
-idev->device_item and hwpt->devices are protected by ioas->mutex.
-So, perhaps we can simply remove the device_lock?
+(also document that replace causes all the devices in the group to
+change iommu_domains at once)
 
-do_attach():
-	mutex_lock(&ioas->mutex); // protect both devices_item and hwpt_item
-	...
-	if (iommufd_hw_pagetabe_has_group()) {	// touching device list
-		...
-		iommu_group_replace_domain();
-		...
-	}
-	if (cur_hwpt && hwpt)
-		list_del(&idev->devices_item);
-	list_add(&idev->devices_item, &cur_hwpt->devices);
-	...
-	mutex_unlock(&ioas->mutex);
+> I just gave another thought about it. Since we have the patch-2
+> from this series moving the ioas->mutex, it already serializes
+> attach/detach routines. And I see that all the places touching
+> idev->device_item and hwpt->devices are protected by ioas->mutex.
+> So, perhaps we can simply remove the device_lock?
 
-do_detach():
-	mutex_lock(&ioas->mutex); // protect both devices_item and hwpt_item
-	...
-	if (iommufd_hw_pagetabe_has_group()) {	// touching device list
-		...
-		iommu_detach_group();
-		...
-	}
-	list_del(&idev->devices_item);
-	...
-	mutex_unlock(&ioas->mutex);
+The two hwpts are not required to have the same ioas, so this doesn't
+really help..
 
-If this is correct, I think I can prepare the replace series and
-send it by the end of the day.
-
-Thanks
-Nic
+Jason
