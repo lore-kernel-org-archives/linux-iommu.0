@@ -1,382 +1,156 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2082.outbound.protection.outlook.com [40.107.237.82])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D19A367
-	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 20:48:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69ABEC433D2;
-	Wed,  1 Feb 2023 20:48:49 +0000 (UTC)
-Message-ID: <d363902d-e465-8411-0c1e-58411b3a19b0@xs4all.nl>
-Date: Wed, 1 Feb 2023 21:48:46 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 152DE882A
+	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 21:18:24 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XnXlhzOONYF9Ypermr3qMSTBAVXOWvuZvCKpi4yyD02popLcuj9eMHvPOq50UVoRB/ncpX2Fnnl+7InvoPqg/tuw5BqAJl8+iPw80q1+TKyBesjLol7j7NWnjd8GmzE/v3N4RptCkRNQYMZ+YUOdGgubSVgA8pOT5PAQEJs9MDHi9OBN2+IVxGK96bh4/YRVsNHYx8fpgK3uC4+qTF3GyqeiJwJcHFpzBXS8Sd0Ii6Oy1lXi4fJYLuQM2OCkixbMx6He0KnK2Ew4PYsBbhp3Y+KJ+Yo3n4oo0/aED3tds+ti5eq1xFmLlBcq1SMcKt40PAphIedWDU6OH2GQ5yZgeA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=l1IDttaQsSGuc8DRIRAOlq3DgOAWB0N7V5XTJmXjk7Y=;
+ b=NqsSkO3dI/ak3DZz4uIHNkTXgsz6tcbRVJ/Z15ykVTvgdvXaRe9L6foNeOEZZdmoc4/m4y6N91N+NT2r1b+xSVWHD+pADShPwiKsEE3zo50rAH5gGv3dtjjczHs6CLe3Iysm4xtl5cV630iHLsVpFAnRberU1nQzrCB+0ORi+GoFYEgZeNseKZZ+PV8VPHEfpJXYA26F3mIHTeHT2LmTdcEjdGKDm0Xv/dP1xPpja6DX0zjH9Jwl1tD9jXZ3HtxiuM3QV/iVkWrR+igUcxSHCw8x3mkI4t8FUwz7xyCz0A0y277agsM63J7cXf57Z6EFhNHFd+wMVK7jugRkHG6dLg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=l1IDttaQsSGuc8DRIRAOlq3DgOAWB0N7V5XTJmXjk7Y=;
+ b=fUJx0D1ApTRI7s2AJe/bN6WbGHIsZTG7D5hwIqwOPGHEqvFgF2daPjIp+EVBiFMCOXxCjcMFw2eqAaQWFhESPucpJ362hmCUBBMWe5hE6hjLGLYfOtkqAi8gGvbJEVROYrVSVn4p0BUBvIQhfiGLYO/h4GZZ1DiEAOA5ivkEWpB22h1Wbc+kvrVRj8RqpRFv4slJTBBjXKYYJgmLJRBJ4bZaDHiMOZKPzIEpVDPgtPA7GarWz0SCYB8vyuqmb2NzWKWI0SKkiEuCP30dAAMwt4d4985PEDJO7VGcvQEMd3T/S5s9Z1QbnHm9CCU5NpKUDd9sTY7/MyEPdiU0aV5njQ==
+Received: from BN0PR04CA0099.namprd04.prod.outlook.com (2603:10b6:408:ec::14)
+ by SA3PR12MB7857.namprd12.prod.outlook.com (2603:10b6:806:31e::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.24; Wed, 1 Feb
+ 2023 21:18:23 +0000
+Received: from BL02EPF0000C405.namprd05.prod.outlook.com
+ (2603:10b6:408:ec:cafe::61) by BN0PR04CA0099.outlook.office365.com
+ (2603:10b6:408:ec::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.6064.25 via Frontend
+ Transport; Wed, 1 Feb 2023 21:18:22 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ BL02EPF0000C405.mail.protection.outlook.com (10.167.241.7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.6064.17 via Frontend Transport; Wed, 1 Feb 2023 21:18:22 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 1 Feb 2023
+ 13:18:05 -0800
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36; Wed, 1 Feb 2023
+ 13:18:05 -0800
+Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.10)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.36 via Frontend
+ Transport; Wed, 1 Feb 2023 13:18:04 -0800
+Date: Wed, 1 Feb 2023 13:18:03 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <kevin.tian@intel.com>, <yi.l.liu@intel.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 1/3] iommufd: Add devices_users to track the
+ hw_pagetable usage by device
+Message-ID: <Y9rW01eROepZuMt3@Asurada-Nvidia>
+References: <Y9gaKaMKOf+P2NtK@Asurada-Nvidia>
+ <Y9gfbx/fszb0aTJn@nvidia.com>
+ <Y9gi0UaE1PlKVzmn@Asurada-Nvidia>
+ <Y9gqFwDNd3VKQvC3@nvidia.com>
+ <Y9oNSUbDe1YOTj+b@Asurada-Nvidia>
+ <Y9qK3nJHjU4Bvxaf@nvidia.com>
+ <Y9qlb0SZWEpJs0v1@Asurada-Nvidia>
+ <Y9qxdinaS6anoWhH@nvidia.com>
+ <Y9q8llC0JVokHLf7@Asurada-Nvidia>
+ <Y9rE6L8Nr0xShiKy@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.6.0
-Subject: Re: Regression: v4l/bttv vbi vs iommu
-Content-Language: en-US
-To: "Dr. David Alan Gilbert" <dave@treblig.org>, iommu@lists.linux.dev,
- mchehab@kernel.org, hch@lst.de, linux-media@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-References: <Y9qSwkLxeMpffZK/@gallifrey>
-From: Hans Verkuil <hverkuil@xs4all.nl>
-In-Reply-To: <Y9qSwkLxeMpffZK/@gallifrey>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <Y9rE6L8Nr0xShiKy@nvidia.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL02EPF0000C405:EE_|SA3PR12MB7857:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0a1842be-9f52-4820-5e97-08db0499d987
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	fy130gaACuWk5B6MBs8E/8JMOXct63qoZ6FZbpSw7RS8rOOtOhZ01UMvFdnfMJcVbz2cZkbS0uevk2EdWYp6hLuqerDCq/+PppSlInj0m1N4loIE1Ol3GRlwaXgREvQ7rV4XUZe5SFSWsKGgi7frD7Do4ni+1Ch3ViAdZWEtge9P7RetdwXXO12KPMO6uyBdCCKiH6MOrfxsdOeLYKKkwNdLm2YgDN339nd41raXAMzfZhyxlXMTpqqaZqdp31o2z4rUMruqIqEJUDpzGWBQYCAKrDIsEatgMgpWfOwbTJOfMpb+fRYSanOFKHaeOaGB9jF54JnE46ejn+l4E08MNd8eh36tz2XhF5PjMOcoljhuwWrdsHkx5ZGiS+NJrV4PTWuibdGmFk36N1tFqUfRjsrBBzU80ImTgqdh0MhK+QMQ4q6RuGpHqzjL4IDPOjOeWwHStCEygJmuWtPTuk8mqP8tsPdyuI1GWu/pPkuP4bfh69gkKaI2sgqMZTLfZt58knOSkFP8ZxWc8r/luMtYe4UP3Z74HDuFnaeNKoA0Mo+4tAsVOszOn5c7VvScfxGYZn48F9mi1TxkGkC/ZkRLn2s5qLohyDstKjfDe8zmdbFJtqPEfI64Z0ALUKmfi/ciTFo2H+eOjQXGvlMUYi5Av7Lh8UvZqsnx43G7idwATA86tueA3OUyKghqifMq0S3vW7oXWf8Dwl3vRgybm5s5LA==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230025)(4636009)(346002)(136003)(396003)(376002)(39860400002)(451199018)(36840700001)(46966006)(40470700004)(70586007)(5660300002)(8936002)(40480700001)(41300700001)(7636003)(70206006)(336012)(36860700001)(82740400003)(33716001)(82310400005)(4326008)(6862004)(8676002)(55016003)(478600001)(186003)(356005)(26005)(40460700003)(2906002)(47076005)(426003)(83380400001)(9686003)(316002)(86362001)(54906003)(6636002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Feb 2023 21:18:22.6904
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0a1842be-9f52-4820-5e97-08db0499d987
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL02EPF0000C405.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB7857
 
-Hi Dave,
+On Wed, Feb 01, 2023 at 04:00:40PM -0400, Jason Gunthorpe wrote:
+> On Wed, Feb 01, 2023 at 11:25:10AM -0800, Nicolin Chen wrote:
+> 
+> > The "finalise" is one of the very first lines of the attach_dev()
+> > callback function in SMMU driver, though it might still undesirably
+> > fail the replace().
+> 
+> It won't get that far.
+> 
+> Remember how this all works - only autodomains have the special path
+> that allocates a domain, attaches the empty domain, and then populates
+> it with the ioas. We made this special path specifically to accomodate
+> the current ARM drivers, otherwise they wouldn't work at all.
 
-It is probably related to the use of VM_IOREMAP in drivers/media/v4l2-cor=
-e/videobuf-dma-sg.c.
+Yes.
 
-If you drop that flag, does it work? I'm not really sure what it does in =
-the first place,
-or if it should be used at all. The videobuf code is very old and messy.
+> replace can't do this - replace must always start out with a
+> pre-existing hwpt that was allocated with a dedicated hwpt allocation
+> ioctl.
+> 
+> Wwhen the hwpt was allocated it must be linked to the IOAS at that
+> time, because we definately don't do defered IOAS linkage.
+>
+> So on ARM when you create an unfinalizes iommu_domain it cannot be
+> added to the IOAS (because it has an empty aperture) and creation will
+> fail, or worse, it will get added to an empty IOAS and make the IOAS
+> permanently unusable.
 
-In fact, the plan is to replace the old and deprecated videobuf framework=
- by the vb2
-framework in the bttv driver in the next 2-3 months or so. That will also=
- automatically
-solve this problem.
+IIUIC, user space might add some IOVA mappings to the hwpt/iopt,
+before doing a replace(). If we do a deferred IOAS linkage to
+this hwpt/iopt, it will cause a problem because we are adding
+the reserved region for the MSI window later than IOMMU_IOAS_MAP
+calls. Thus, "we definately don't do defered IOAS linkage".
 
-Regards,
+With this justification, I think I should include my patch of
+moving iopt_table_add/remove_domain(), in the replace series.
 
-	Hans
+> > Hmm...in that case, we should hold two ioas->mutex locks in
+> > addition to two device locks?
+> 
+> No, the device lock is the thing that protects the data you are
+> touching no reason to make it any different.
 
-On 01/02/2023 17:26, Dr. David Alan Gilbert wrote:
-> Hi,
->   I've got a regression that started out somewhere around 5.17
-> that's triggered in the v4l/bttv code when IOMMU is enabled.
->=20
-> A bisection got me to:
->=20
-> GOOD [37fcacb50be7071d146144a6c5c5bf0194b9a1cf] phy: PHY_FSL_LYNX_28G s=
-hould depend on ARCH_LAYERSCAPE
-> BAD [f5ff79fddf0efecca538046b5cc20fb3ded2ec4f] dma-mapping: remove CONF=
-IG_DMA_REMAP
-> GOOD [e62c17f0455a74b182ce6373e2777817256afaa1] MAINTAINERS: update mai=
-ntainer list of DMA MAPPING BENCHMARK
-> GOOD [0fb3436b4b36cf69f4544385aa2bb8c5a4913509] sparc: Remove usage of =
-the deprecated "pci-dma-compat.h" API
-> GOOD [fba09099c6e506608e05e08ac717bf34501f821b] media: v4l2-pci-skeleto=
-n: Remove usage of the deprecated "pci-dma-compat.h" API
->=20
-> dg@major:~/kernel/kernel-clone$ git bisect good
-> f5ff79fddf0efecca538046b5cc20fb3ded2ec4f is the first bad commit
-> commit f5ff79fddf0efecca538046b5cc20fb3ded2ec4f
-> Author: Christoph Hellwig <hch@lst.de>
-> Date:   Sat Feb 26 16:40:21 2022 +0100
->=20
->     dma-mapping: remove CONFIG_DMA_REMAP
->=20
-> It still happens on 6.2rc6
->=20
-> a) Trigger
->=20
->    cat /dev/vbi0 > /dev/null
->=20
->   (Originally found using Alistair Buxton's Teletext recovery script)
->=20
->   xawtv works fine on this card/box, so it's only the vbi that seems to=
+Thinking it deeper: we don't really touch the old_hwpt->ioas or
+its iopt, but only the new_hwpt->ioas/iopt to reserve the MSI
+window, so there isn't an actual need to hold old_hwpt->ioas's
+mutex.
 
->    be upset.
->=20
-> b) Symptom
->   On head we get:
-> Feb 01 13:58:00 major kernel: ------------[ cut here ]------------
-> Feb 01 13:58:00 major kernel: WARNING: CPU: 1 PID: 899 at mm/vmalloc.c:=
-490 __vmap_pages_range_noflush+0x3e4/0x4e0
-> Feb 01 13:58:00 major kernel: Modules linked in: rfkill qrtr intel_powe=
-rclamp tuner_simple tuner_types tuner coretemp tda7432 kvm_intel binfmt_m=
-isc snd_hda_codec_via snd_hda_codec_generic tvaudio kvm msp3400 snd_hda_c=
-odec_hdmi ledtrig_a>
-> Feb 01 13:58:00 major kernel:  firewire_ohci r8169 scsi_mod realtek mdi=
-o_devres crc32c_intel libphy lpc_ich firewire_core i2c_smbus usb_common s=
-csi_common crc_itu_t button
-> Feb 01 13:58:00 major kernel: CPU: 1 PID: 899 Comm: cat Tainted: G     =
-     I        6.2.0-rc6dg #21
-> Feb 01 13:58:00 major kernel: Hardware name: To Be Filled By O.E.M. To =
-Be Filled By O.E.M./P55M Pro, BIOS P1.50 09/10/2009
-> Feb 01 13:58:00 major kernel: RIP: 0010:__vmap_pages_range_noflush+0x3e=
-4/0x4e0
-> Feb 01 13:58:00 major kernel: Code: 48 48 83 c6 08 4d 39 d6 0f 85 39 fd=
- ff ff 48 83 c4 58 31 c0 5b 5d 41 5c 41 5d 41 5e 41 5f c3 cc cc cc cc 0f =
-0b e9 5f fc ff ff <0f> 0b b8 f4 ff ff ff e9 bd fc ff ff 48 8b 4c 24 18 48=
- 31 cf 48 21
-> Feb 01 13:58:00 major kernel: RSP: 0018:ffffb02a41773c30 EFLAGS: 000102=
-46
-> Feb 01 13:58:00 major kernel: RAX: 000000000004dc48 RBX: ffff894a2b4da2=
-00 RCX: ffffe7c549054640
-> Feb 01 13:58:00 major kernel: RDX: 000000026e241519 RSI: 00000000000000=
-00 RDI: 000000026e241519
-> Feb 01 13:58:00 major kernel: RBP: 0000000000000000 R08: 00000000000009=
-b8 R09: ffffb02a41850000
-> Feb 01 13:58:00 major kernel: R10: ffffb02a41850000 R11: ffffb02a418510=
-00 R12: 8000000000000063
-> Feb 01 13:58:00 major kernel: R13: ffffb02a41840000 R14: ffffb02a418500=
-00 R15: ffff894a2c360380
-> Feb 01 13:58:00 major kernel: FS:  00007fd7738c0740(0000) GS:ffff894a2f=
-c40000(0000) knlGS:0000000000000000
-> Feb 01 13:58:00 major kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 00000000=
-80050033
-> Feb 01 13:58:00 major kernel: CR2: 00007fd77389e000 CR3: 000000011f21e0=
-00 CR4: 00000000000006e0
-> Feb 01 13:58:00 major kernel: Call Trace:
-> Feb 01 13:58:00 major kernel:  <TASK>
-> Feb 01 13:58:00 major kernel:  vmap+0xa7/0x100
-> Feb 01 13:58:00 major kernel:  __videobuf_iolock+0x5b2/0x670 [videobuf_=
-dma_sg]
-> Feb 01 13:58:00 major kernel:  vbi_buffer_prepare+0x1b2/0x2c0 [bttv]
-> Feb 01 13:58:00 major kernel:  __videobuf_read_start+0xb9/0x1d0 [videob=
-uf_core]
-> Feb 01 13:58:00 major kernel:  videobuf_read_stream+0x2d7/0x330 [videob=
-uf_core]
-> Feb 01 13:58:00 major kernel:  bttv_read+0xc8/0x210 [bttv]
-> Feb 01 13:58:00 major kernel:  v4l2_read+0x73/0x90 [videodev]
-> Feb 01 13:58:00 major kernel:  vfs_read+0xa9/0x2d0
-> Feb 01 13:58:00 major kernel:  ? handle_mm_fault+0xd7/0x2b0
-> Feb 01 13:58:00 major kernel:  ksys_read+0x67/0xe0
-> Feb 01 13:58:00 major kernel:  do_syscall_64+0x3e/0x90
-> Feb 01 13:58:00 major kernel:  entry_SYSCALL_64_after_hwframe+0x72/0xdc=
+I will prepare the replace series and send it by the end of the
+day, upon certain level of sanity/verification.
 
-> Feb 01 13:58:00 major kernel: RIP: 0033:0x7fd7739bb0ed
-> Feb 01 13:58:00 major kernel: Code: 31 c0 e9 c6 fe ff ff 50 48 8d 3d f6=
- 54 0a 00 e8 39 fe 01 00 66 0f 1f 84 00 00 00 00 00 80 3d f1 24 0e 00 00 =
-74 17 31 c0 0f 05 <48> 3d 00 f0 ff ff 77 5b c3 66 2e 0f 1f 84 00 00 00 00=
- 00 48 83 ec
-> Feb 01 13:58:00 major kernel: RSP: 002b:00007fffe000df38 EFLAGS: 000002=
-46 ORIG_RAX: 0000000000000000
-> Feb 01 13:58:00 major kernel: RAX: ffffffffffffffda RBX: 00000000000200=
-00 RCX: 00007fd7739bb0ed
-> Feb 01 13:58:00 major kernel: RDX: 0000000000020000 RSI: 00007fd77389f0=
-00 RDI: 0000000000000003
-> Feb 01 13:58:00 major kernel: RBP: 0000000000020000 R08: 00000000ffffff=
-ff R09: 0000000000000000
-> Feb 01 13:58:00 major kernel: R10: 00007fd7738d2b40 R11: 00000000000002=
-46 R12: 00007fd77389f000
-> Feb 01 13:58:00 major kernel: R13: 0000000000000003 R14: 00000000000200=
-00 R15: 0000000000000000
-> Feb 01 13:58:00 major kernel:  </TASK>
-> Feb 01 13:58:00 major kernel: ---[ end trace 0000000000000000 ]---
->=20
-> On the first version after the bisect the failure is a BUG rather than =
-the warn:
->=20
-> [   78.988024] BUG: unable to handle page fault for address: ffffbd7fc1=
-100000
-> [   78.988033] #PF: supervisor write access in kernel mode
-> [   78.988036] #PF: error_code(0x000b) - reserved bit violation
-> [   78.988038] PGD 100000067 P4D 100000067 PUD 1001a6067 PMD 22b791067 =
-PTE 8000270800cb9063
-> [   78.988046] Oops: 000b [#1] PREEMPT SMP PTI
-> [   78.988050] CPU: 7 PID: 879 Comm: cat Tainted: G          I       5.=
-17.0-rc1dg+ #20
-> [   78.988054] Hardware name: To Be Filled By O.E.M. To Be Filled By O.=
-E.M./P55M Pro, BIOS P1.50 09/10/2009
-> [   78.988056] RIP: 0010:__memset+0x24/0x30
-> [   78.988063] Code: cc cc cc cc cc cc 0f 1f 44 00 00 49 89 f9 48 89 d1=
- 83 e2 07 48 c1 e9 03 40 0f b6 f6 48 b8 01 01 01 01 01 01 01 01 48 0f af =
-c6 <f3> 48 ab 89 d1 f3 aa 4c 89 c8 c3 90 49 89 f9 40 88 f0 48 89 d1 f3
-> [   78.988067] RSP: 0018:ffffbd7fc0cc7d50 EFLAGS: 00010206
-> [   78.988071] RAX: 0000000000000000 RBX: ffff9679eb788a88 RCX: 0000000=
-000002000
-> [   78.988073] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffbd7=
-fc1100000
-> [   78.988076] RBP: 0000000080000000 R08: 0000000000000000 R09: ffffbd7=
-fc1100000
-> [   78.988079] R10: 0000000000010000 R11: ffffbd7fc1100000 R12: 0000000=
-000000010
-> [   78.988081] R13: 0000000000000010 R14: ffff9679ec8e4130 R15: 0000000=
-000000010
-> [   78.988084] FS:  00007f91fb65a740(0000) GS:ffff9679efdc0000(0000) kn=
-lGS:0000000000000000
-> [   78.988087] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   78.988090] CR2: ffffbd7fc1100000 CR3: 000000022ce02000 CR4: 0000000=
-0000006e0
-> [   78.988093] Call Trace:
-> [   78.988096]  <TASK>
-> [   78.988100]  __videobuf_iolock+0x5cd/0x659 [videobuf_dma_sg]
-> [   78.988110]  vbi_buffer_prepare+0x1aa/0x2b0 [bttv]
-> [   78.988125]  __videobuf_read_start+0xb9/0x1d0 [videobuf_core]
-> [   78.988133]  videobuf_read_stream+0x2cb/0x330 [videobuf_core]
-> [   78.988140]  bttv_read+0xc5/0x1d0 [bttv]
-> [   78.988151]  v4l2_read+0x6b/0x80 [videodev]
-> [   78.988169]  vfs_read+0x97/0x190
-> [   78.988175]  ksys_read+0x63/0xe0
-> [   78.988179]  do_syscall_64+0x3a/0x80
-> [   78.988185]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> [   78.988191] RIP: 0033:0x7f91fb7550ed
-> [   78.988194] Code: 31 c0 e9 c6 fe ff ff 50 48 8d 3d f6 54 0a 00 e8 39=
- fe 01 00 66 0f 1f 84 00 00 00 00 00 80 3d f1 24 0e 00 00 74 17 31 c0 0f =
-05 <48> 3d 00 f0 ff ff 77 5b c3 66 2e 0f 1f 84 00 00 00 00 00 48 83 ec
-> [   78.988198] RSP: 002b:00007ffdad058348 EFLAGS: 00000246 ORIG_RAX: 00=
-00000000000000
-> [   78.988202] RAX: ffffffffffffffda RBX: 0000000000020000 RCX: 00007f9=
-1fb7550ed
-> [   78.988204] RDX: 0000000000020000 RSI: 00007f91fb350000 RDI: 0000000=
-000000003
-> [   78.988207] RBP: 0000000000020000 R08: 00000000ffffffff R09: 0000000=
-000000000
-> [   78.988209] R10: 00007f91fb66cb40 R11: 0000000000000246 R12: 00007f9=
-1fb350000
-> [   78.988212] R13: 0000000000000003 R14: 0000000000020000 R15: 0000000=
-000000000
-> [   78.988216]  </TASK>
-> [   78.988218] Modules linked in: rfkill qrtr tuner_simple tuner_types =
-intel_powerclamp coretemp tuner snd_hda_codec_via tda7432 kvm_intel snd_h=
-da_codec_generic snd_hda_codec_hdmi tvaudio ledtrig_audio msp3400 snd_hda=
-_intel kvm snd_intel_dspcfg bttv snd_intel_sdw_acpi snd_hda_codec irqbypa=
-ss tea575x snd_hda_core tveeprom videobuf_dma_sg intel_cstate videobuf_co=
-re videodev snd_hwdep snd_bt87x intel_uncore snd_pcm serio_raw pcspkr iTC=
-O_wdt i7core_edac mc joydev intel_pmc_bxt snd_timer iTCO_vendor_support s=
-nd watchdog soundcore sg evdev acpi_cpufreq firewire_sbp2 fuse msr config=
-fs efi_pstore ip_tables x_tables autofs4 ext4 crc32c_generic crc16 mbcach=
-e jbd2 nouveau sd_mod t10_pi crc_t10dif crct10dif_generic ata_generic crc=
-t10dif_common hid_generic usbhid hid mxm_wmi wmi video i2c_algo_bit drm_t=
-tm_helper ttm drm_kms_helper cec rc_core drm ahci libahci pata_via libata=
- ehci_pci ehci_hcd psmouse r8169 usbcore scsi_mod crc32c_intel realtek i2=
-c_i801 mdio_devres i2c_smbus libphy firewire_ohci
-> [   78.988301]  firewire_core lpc_ich usb_common scsi_common crc_itu_t =
-button
-> [   78.988311] CR2: ffffbd7fc1100000
-> [   78.988314] ---[ end trace 0000000000000000 ]---
-> [   78.988316] RIP: 0010:__memset+0x24/0x30
-> [   78.988320] Code: cc cc cc cc cc cc 0f 1f 44 00 00 49 89 f9 48 89 d1=
- 83 e2 07 48 c1 e9 03 40 0f b6 f6 48 b8 01 01 01 01 01 01 01 01 48 0f af =
-c6 <f3> 48 ab 89 d1 f3 aa 4c 89 c8 c3 90 49 89 f9 40 88 f0 48 89 d1 f3
-> [   78.988324] RSP: 0018:ffffbd7fc0cc7d50 EFLAGS: 00010206
-> [   78.988327] RAX: 0000000000000000 RBX: ffff9679eb788a88 RCX: 0000000=
-000002000
-> [   78.988329] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffbd7=
-fc1100000
-> [   78.988332] RBP: 0000000080000000 R08: 0000000000000000 R09: ffffbd7=
-fc1100000
-> [   78.988334] R10: 0000000000010000 R11: ffffbd7fc1100000 R12: 0000000=
-000000010
-> [   78.988337] R13: 0000000000000010 R14: ffff9679ec8e4130 R15: 0000000=
-000000010
-> [   78.988340] FS:  00007f91fb65a740(0000) GS:ffff9679efdc0000(0000) kn=
-lGS:0000000000000000
-> [   78.988343] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   78.988346] CR2: ffffbd7fc1100000 CR3: 000000022ce02000 CR4: 0000000=
-0000006e0
->=20
-> c) Hardware
->   Motherboard: ASRock P55M Pro=20
->     + 8GB RAM
->   Video capture card: Hauppage WinTV 44805
->      That's a 32bit PCI card
->   =20
-> 01:00.0 Multimedia video controller: Brooktree Corporation Bt878 Video =
-Capture (rev 11)
-> 	Subsystem: Hauppauge computer works Inc. WinTV Series
-> 	Flags: bus master, medium devsel, latency 32, IRQ 21, IOMMU group 15
-> 	Memory at d5bfe000 (32-bit, prefetchable) [size=3D4K]
-> 	Capabilities: [44] Vital Product Data
-> 	Capabilities: [4c] Power Management version 2
-> 	Kernel driver in use: bttv
-> 	Kernel modules: bttv
->=20
-> 01:00.1 Multimedia controller: Brooktree Corporation Bt878 Audio Captur=
-e (rev 11)
-> 	Subsystem: Hauppauge computer works Inc. WinTV Series
-> 	Flags: bus master, medium devsel, latency 32, IRQ 21, IOMMU group 15
-> 	Memory at d5bff000 (32-bit, prefetchable) [size=3D4K]
-> 	Capabilities: [44] Vital Product Data
-> 	Capabilities: [4c] Power Management version 2
-> 	Kernel driver in use: snd_bt87x
-> 	Kernel modules: snd_bt87x
->=20
-> d) Bug link
->    https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D1029968
->    I origianlly triggered this on Debian 12's kernel which has iommu on=
-
->    by default, but it triggers on upstream as long as I turn iommu on
->=20
-> e) kernel command line
->    root=3DUUID=3Dbce3fb05-edb4-4c73-b71d-86707031ffd1 ro intel_iommu=3D=
-on intremap=3Dnosid quiet
->=20
->    The intremap issue is a long known problem on this board.
->=20
-> f) Some more debug
->=20
-> I added some more debug:
->         switch (vb->memory) {
->         case V4L2_MEMORY_MMAP:
->         case V4L2_MEMORY_USERPTR:
-> +                pr_warn("__videobuf_iolock: USERPTR case; size=3D%zx b=
-addr=3D%lx bsize=3D%lx\n",
-> +                        vb->size, vb->baddr, vb->bsize);
->                 if (0 =3D=3D vb->baddr) {
->                         /* no userspace addr -- kernel bounce buffer */=
-
->                         pages =3D PAGE_ALIGN(vb->size) >> PAGE_SHIFT;
->=20
-> [  890.606742] __videobuf_iolock: USERPTR case; size=3D10000 baddr=3D0 =
-bsize=3D10000
->=20
-> +++ b/mm/vmalloc.c
-> @@ -487,8 +487,11 @@ static int vmap_pages_pte_range(pmd_t *pmd, unsign=
-ed long addr,
->                         return -EBUSY;
->                 if (WARN_ON(!page))
->                         return -ENOMEM;
-> -               if (WARN_ON(!pfn_valid(page_to_pfn(page))))
-> +               if (WARN_ON(!pfn_valid(page_to_pfn(page)))) {
-> +                        pr_warn("vmap_pages_pte_range pfn not valid nr=
-=3D%d page=3D%p pfn=3D%lx addr=3D%lx end=3D%lx\n",
-> +                                 *nr, page, page_to_pfn(page), addr, e=
-nd);
->                         return -EINVAL;
-> +                }
->=20
-> [  395.134606] vmap_pages_pte_range pfn not valid nr=3D0 page=3D0000000=
-0ec8bb27c pfn=3D1b0280053 addr=3Dffffaaef00ce0000 end=3Dffffaaef00cf0000
->=20
-> g) Note
-> There are some DMAR warnings during boot, so I'm not sure if it's
-> just this system or not, but hmm I doubt it from the other debug?
-> Feb 01 15:38:31 major kernel: DMAR: Host address width 36
-> Feb 01 15:38:31 major kernel: DMAR: DRHD base: 0x000000fed91000 flags: =
-0x0
-> Feb 01 15:38:31 major kernel: DMAR: dmar0: reg_base_addr fed91000 ver 1=
-:0 cap c9008010e60262 ecap f0206a
-> Feb 01 15:38:31 major kernel: DMAR: DRHD base: 0x000000fed90000 flags: =
-0x1
-> Feb 01 15:38:31 major kernel: DMAR: dmar1: reg_base_addr fed90000 ver 1=
-:0 cap c90780106f0462 ecap f020ea
-> Feb 01 15:38:31 major kernel: DMAR: RMRR base: 0x000000000e4000 end: 0x=
-000000000e8bff
-> Feb 01 15:38:31 major kernel: DMAR: [Firmware Bug]: Your BIOS is broken=
-; bad RMRR [0x00000000000e4000-0x00000000000e8bff]
->                               BIOS vendor: American Megatrends Inc.; Ve=
-r: P1.50; Product Version: To Be Filled By O.E.M.
-> Feb 01 15:38:31 major kernel: DMAR: RMRR base: 0x000000cf7eb400 end: 0x=
-000000cf7fffff
-> Feb 01 15:38:31 major kernel: DMAR: [Firmware Bug]: Your BIOS is broken=
-; bad RMRR [0x00000000cf7eb400-0x00000000cf7fffff]
->                               BIOS vendor: American Megatrends Inc.; Ve=
-r: P1.50; Product Version: To Be Filled By O.E.M.
-> Feb 01 15:38:31 major kernel: DMAR-IR: IOAPIC id 8 under DRHD base  0xf=
-ed90000 IOMMU 1
-> Feb 01 15:38:31 major kernel: DMAR-IR: HPET id 0 under DRHD base 0xfed9=
-0000
-> Feb 01 15:38:31 major kernel: DMAR-IR: IRQ remapping was enabled on dma=
-r0 but we are not in kdump mode
-> Feb 01 15:38:31 major kernel: DMAR: DRHD: handling fault status reg 400=
-
-> Feb 01 15:38:31 major kernel: DMAR-IR: IRQ remapping was enabled on dma=
-r1 but we are not in kdump mode
-> Feb 01 15:38:31 major kernel: DMAR-IR: Enabled IRQ remapping in xapic m=
-ode
-> Feb 01 15:38:31 major kernel: ..TIMER: vector=3D0x30 apic1=3D0 pin1=3D2=
- apic2=3D-1 pin2=3D-1
->=20
-> Thanks in advance for any suggestions,
->=20
-> Dave
->=20
-
+Thanks!
+Nic
