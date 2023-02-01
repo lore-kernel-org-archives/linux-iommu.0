@@ -1,85 +1,105 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AD578483
-	for <iommu@lists.linux.dev>; Wed,  1 Feb 2023 16:58:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4D7CC433EF;
-	Wed,  1 Feb 2023 16:58:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1675270734;
-	bh=9Cau6PyVE2GtVxFGlwOHuWzyHir/3fJpWhTQRdW+NkI=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=ipvF/xaMGsJj1RPkbilfTBacfCIfc+CnK8ILbhc7Rzg0XOfdyBC0z9uLdGlLdaRMg
-	 lANpe4Ci0BO9cv/Wo3kqTttJUkQvb0L7266E6398ztRx0NBbw1CYRA+1VPn32Pl1Ng
-	 Zd6H2FDYHAcFx1Uh1FJARqDqD9XTG001++RAWsRWmt9RIL6gCsJ96aovqsR6xmc24a
-	 SDel2H0tkqxQzwgMpt+QvNNDRs64Z2IZv2AVtzDMxUO32boZAzU2msep7wcbN4UorQ
-	 7+EvjNSNGRSmxqRaC8AkMr7wjP8MqLseRGZ6vORyEkoDvr/xHE6KRJ/XF+RF5inE2A
-	 7dhJIj7SSsBVw==
-Date: Wed, 1 Feb 2023 10:58:52 -0600
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <jroedel@suse.de>,
-	Matt Fagnani <matt.fagnani@bell.net>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Tony Zhu <tony.zhu@intel.com>,
-	linux-pci@vger.kernel.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/1] PCI: Add translated request only flag for
- pci_enable_pasid()
-Message-ID: <20230201165852.GA1775862@bhelgaas>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A05CE8483;
+	Wed,  1 Feb 2023 17:00:12 +0000 (UTC)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	by mailout.nyi.internal (Postfix) with ESMTP id 9A5C95C0210;
+	Wed,  1 Feb 2023 12:00:11 -0500 (EST)
+Received: from imap47 ([10.202.2.97])
+  by compute5.internal (MEProxy); Wed, 01 Feb 2023 12:00:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
+	 h=cc:cc:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:sender
+	:subject:subject:to:to; s=fm3; t=1675270811; x=1675357211; bh=IO
+	10+nilpedjbvmOpZzEp7HKkUv6C8ukma2dy3Zsi04=; b=M1hgTUNftfYkdR/ybU
+	Aux1Rj7OUNnKoWZZZsXM9oZ904m5ADSdR/OFFmZHo3OYioEMjyhfycC0DdqyyI7H
+	qIN+Bcxnf+BMvYfKdbtqrLob14/LGidDdzL6sWYxKrcmYwf6bsGRuf3OVTezDrv+
+	jkjVAjaKCqbziQXuh1n6th9HtEZWcg+kNejXFTm2awr3LnQLtF6T1SehkMlNeTMJ
+	kyziwiPxhSM1i6lYR5Yq852Wca2lenJS4G49W9LWqZt8ppPK+wuEsRWPBRgxOjMs
+	s6qZvvQxrKbSy5ZI7EcKZ0L9hEBCzHP0huAnJ82tx1WIPXrLFdTW+xmcbHVtJ4dQ
+	jk8Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+	:feedback-id:from:from:in-reply-to:in-reply-to:message-id
+	:mime-version:references:reply-to:sender:subject:subject:to:to
+	:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+	fm3; t=1675270811; x=1675357211; bh=IO10+nilpedjbvmOpZzEp7HKkUv6
+	C8ukma2dy3Zsi04=; b=fYZsrYaEbWClH7AP6UXkj9pmDGHncYCD49WJixMHC/kZ
+	I5ifjLGg8XNVEeY4ZUzPuseavQRDoNAkrsd889Zot4vHLHdJM+xQk1bErgTa09eD
+	xEMQi76gGTuYID81Rij+vimoUqzWn8zur8o03of/5TEzbxx5r4H5uywtofY1KTkG
+	5rxoMers/ejLLZVYE099oPU++mjMcWm6PtnoGx1h6MFvT6f7Vs4UN88t8uBKI0V9
+	aGv9Lm+dVjVVlMq5hRgiiqZRUTp7MRdUwB3yxNoFC7Uslg+D3WhHeC/7eCs7bCnm
+	dOxQj68kq3LGkPCUvCZWSYg8Z+bSBAvOJprggFXnVA==
+X-ME-Sender: <xms:mpraY5h3WiOb5GXQO1Inp813iJN43rQwCHq14z3QUhKJNu-hjj-oUQ>
+    <xme:mpraY-CXDa3sAnjtT4USR5fuCSdpNeryrh4AG9DTFOy2ngShnqM9ax1LRfUXImcOv
+    fXeShYpWTT9A_60Nbc>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvhedrudefiedgleeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedfufhv
+    vghnucfrvghtvghrfdcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrf
+    grthhtvghrnhepgeegkeektdejveeiteffvddugffggeeuudehvdfgtddvudfgjedtuedu
+    vdevueevnecuffhomhgrihhnpehgihhthhhusgdrtghomhenucevlhhushhtvghrufhiii
+    gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsvhgvnhesshhvvghnphgvthgvrhdr
+    uggvvh
+X-ME-Proxy: <xmx:mpraY5FCHR8Jo7S9F1YYttoSyQWkTWBZOyvLCO4LvSUazUFU7sS9Pw>
+    <xmx:mpraY-QJ0-lvqM3Ptw-7sQe4nbdVx5fvJHRgyctcA-DMXM8bgR3_Ow>
+    <xmx:mpraY2zSMTyEKm8u5pMt7U0yPCd0mjvBUtgRFs3RMN_LyjBJI4nI2Q>
+    <xmx:m5raY1nxVeJjPcFmceI7hWTpfKEpnLiv5u6ER4ZKvqV8uXww1u7PhQ>
+Feedback-ID: i51094778:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id B24AEA6007C; Wed,  1 Feb 2023 12:00:10 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.9.0-alpha0-107-g82c3c54364-fm-20230131.002-g82c3c543
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8cb478bf-db44-0a8f-8521-771529ca0706@linux.intel.com>
+Mime-Version: 1.0
+Message-Id: <b7462a4f-c64e-4517-86f4-574dc1de9612@app.fastmail.com>
+In-Reply-To: <20230201124257.7801-1-ecurtin@redhat.com>
+References: <20230201124257.7801-1-ecurtin@redhat.com>
+Date: Wed, 01 Feb 2023 18:00:09 +0100
+From: "Sven Peter" <sven@svenpeter.dev>
+To: "Eric Curtin" <ecurtin@redhat.com>, asahi@lists.linux.dev
+Cc: "Dan Carpenter" <error27@gmail.com>, "Hector Martin" <marcan@marcan.st>,
+ "Alyssa Rosenzweig" <alyssa@rosenzweig.io>, "Joerg Roedel" <joro@8bytes.org>,
+ "Will Deacon" <will@kernel.org>, "Robin Murphy" <robin.murphy@arm.com>,
+ "moderated list:ARM/APPLE MACHINE SUPPORT" <linux-arm-kernel@lists.infradead.org>,
+ "open list:IOMMU SUBSYSTEM" <iommu@lists.linux.dev>,
+ "open list" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] iommu: dart: DART_T8110_ERROR range should be 0 to 5
+Content-Type: text/plain
 
-On Tue, Jan 31, 2023 at 08:25:05PM +0800, Baolu Lu wrote:
-> On 2023/1/31 2:38, Bjorn Helgaas wrote:
-> > PCIe r6.0, sec 6.20.1:
-> > 
-> >    A Function is not permitted to generate Requests using Translated
-> >    Addresses and a PASID unless both PASID Enable and Translated
-> >    Requests with PASID Enable are Set.
-> > 
-> > You want AMD graphics devices to do DMA with translated addresses and
-> > PASID, right?  pci_enable_pasid() sets PASID Enable
-> > (PCI_PASID_CTRL_ENABLE), but I don't see where "Translated Requests
-> > with PASID Enable" is set.  We don't even have a #define for it.
-> > 
-> > I would think we should check "Translated Requests with PASID
-> > Supported" before setting "Translated Requests with PASID Enable",
-> > too?
-> 
-> This seems to be an ECN for PCIe 5.x:
-> 
-> https://members.pcisig.com/wg/PCI-SIG/document/14929
-> 
-> What I read from this ECN is that,
-> 
-> With this ECN, translated memory requests for PASIDs are not allowed to
-> carry a PASID prefix if "Translated Requests with PASID Enabled" is not
-> set. It does not mean whether the device can generate translated memory
-> requests for PASID, but whether the memory request can carry a PASID
-> prefix.
+Hi,
 
-My assumption that "you want AMD graphics devices to do DMA with
-translated addresses and PASID" was wrong.
+On Wed, Feb 1, 2023, at 13:42, Eric Curtin wrote:
+> This was detected by smatch as one "else if" statement could never be
+> reached. Confirmed bit order by comparing with python implementation [1].
+>
+> drivers/iommu/apple-dart.c:991 apple_dart_t8110_irq()
+> warn: duplicate check 'error_code == ((((1))) << (3))'
+>   (previous on line 989)
+>
+> Link: https://github.com/AsahiLinux/m1n1/commit/96b2d584feec1e3f7bfa [1]
+>
+> Fixes: d8bcc870d99d ("iommu: dart: Add t8110 DART support")
+> Reported-by: Dan Carpenter <error27@gmail.com>
+> Signed-off-by: Eric Curtin <ecurtin@redhat.com
 
-Per Jason [1], it sounds like the AMD GPU generates Translation
-Requests (sec 10.2.2) with a PASID.  The GPU will cache the translated
-address from the Translation Completion in its local ATC, and will do
-DMA (MemRd/Wr) with that translated address but *without* PASID
-prefixes.
+You're missing a ">" here but I hope Joerg can fix that when
+merging it!
 
-That makes sense because (PASID, IOVA) maps to a translated address,
-e.g., a a CPU physical address, and the GPU can DMA to that address
-directly without needing the PASID.
+> ---
+> Changes in v2: Remove DART_T8110_ERROR_ADDR_HI change
+> ---
 
-Bjorn
+Reviewed-by: Sven Peter <sven@svenpeter.dev>
 
-[1] https://lore.kernel.org/r/Y9nQK9P3HOxEeZ4U@nvidia.com
+
+Thanks,
+
+
+Sven
